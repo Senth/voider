@@ -6,7 +6,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
-import com.spiddekauga.voider.DebugOptions;
+import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Scene;
 /**
  * The main game
@@ -47,7 +47,7 @@ public class GameScene extends Scene {
 
 	@Override
 	public void render() {
-		if (DebugOptions.Graphics.USE_DEBUG_RENDERER) {
+		if (Config.Graphics.USE_DEBUG_RENDERER) {
 			mDebugRenderer.render(mWorld, mCamera.combined);
 		} else {
 			super.render();

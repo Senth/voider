@@ -14,10 +14,8 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
 import javax.crypto.ShortBufferException;
-import javax.crypto.spec.DESKeySpec;
-import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.SecretKeySpec;
 
 /**
  * Encrypts and decrypts objects
@@ -27,28 +25,20 @@ import javax.crypto.spec.SecretKeySpec;
  */
 public class ObjectCrypter {
 	/**
-	 * @param keyBytes
-	 * @param ivBytes
+	 * Creates an AES crypter with the specified key
+	 * @param key the key to be used for the cipher
 	 */
-	public ObjectCrypter(byte[] keyBytes,   byte[] ivBytes) {
-		// wrap key data in Key/IV specs to pass to cipher
-
-
-		mIvSpec = new IvParameterSpec(ivBytes);
+	public ObjectCrypter(SecretKey key) {
 		// create the cipher with the algorithm you choose
 		// see javadoc for Cipher class for more info, e.g.
 		try {
-			DESKeySpec dkey = new  DESKeySpec(keyBytes);
-			mKey = new SecretKeySpec(dkey.getKey(), "DES");
-			mDeCipher = Cipher.getInstance("DES/CBC/PKCS5Padding");
-			mEnCipher = Cipher.getInstance("DES/CBC/PKCS5Padding");
+			mKey = key;
+			mDeCipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+			mEnCipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
 		} catch (NoSuchAlgorithmException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (NoSuchPaddingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InvalidKeyException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -68,7 +58,7 @@ public class ObjectCrypter {
 	 */
 	public byte[] encrypt(Object obj) throws InvalidKeyException, InvalidAlgorithmParameterException, IOException, IllegalBlockSizeException, ShortBufferException, BadPaddingException {
 		byte[] input = convertToByteArray(obj);
-		mEnCipher.init(Cipher.ENCRYPT_MODE, mKey, mIvSpec);
+		mEnCipher.init(Cipher.ENCRYPT_MODE, mKey);
 
 		return mEnCipher.doFinal(input);
 	}
@@ -86,7 +76,7 @@ public class ObjectCrypter {
 	 * @throws ClassNotFoundException
 	 */
 	public Object decrypt( byte[]  encrypted) throws InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, IOException, ClassNotFoundException {
-		mDeCipher.init(Cipher.DECRYPT_MODE, mKey, mIvSpec);
+		mDeCipher.init(Cipher.DECRYPT_MODE, mKey);
 
 		return convertFromByteArray(mDeCipher.doFinal(encrypted));
 
@@ -95,8 +85,9 @@ public class ObjectCrypter {
 
 
 	/**
+	 * Converts a byte array back to the original object
 	 * @param byteObject
-	 * @return
+	 * @return object recreated from the byte array
 	 * @throws IOException
 	 * @throws ClassNotFoundException
 	 */
@@ -116,8 +107,9 @@ public class ObjectCrypter {
 
 
 	/**
+	 * Converts an object into a byte array
 	 * @param complexObject
-	 * @return
+	 * @return byte array of the converted object
 	 * @throws IOException
 	 */
 	private byte[] convertToByteArray(Object complexObject) throws IOException {
@@ -138,8 +130,6 @@ public class ObjectCrypter {
 	/** Enciphers an object */
 	private Cipher mEnCipher;
 	/** The secret key, not to be shared */
-	private SecretKeySpec mKey;
-	/** What algorithms to use on the encryption */
-	private IvParameterSpec mIvSpec;
+	private SecretKey mKey;
 
 }

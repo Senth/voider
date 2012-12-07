@@ -1,11 +1,11 @@
 package com.spiddekauga.voider;
 
 /**
- * Debugging options, global for all classes
+ * Game configuration
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class DebugOptions {
+public class Config {
 	/**
 	 * All graphical options
 	 * 

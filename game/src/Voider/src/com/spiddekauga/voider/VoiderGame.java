@@ -1,6 +1,10 @@
 package com.spiddekauga.voider;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.LinkedList;
+
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
@@ -8,10 +12,8 @@ import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.utils.Json;
 import com.spiddekauga.voider.game.ActorDef;
 import com.spiddekauga.voider.game.GameScene;
-import com.spiddekauga.voider.game.Level;
 import com.spiddekauga.voider.game.actors.Types;
 
 /**
@@ -75,19 +77,17 @@ public class VoiderGame implements ApplicationListener {
 		fixtureDef.friction = 0.2f;
 		fixtureDef.restitution = 0.3f;
 		ActorDef actorDef = new ActorDef(100, Types.PLAYER, null, "player", fixtureDef);
-		ActorDef actorDef2 = new ActorDef(200, Types.ENEMY, null, "enemy", fixtureDef);
-		Level levelTest = new Level();
-		levelTest.actorDefs[0] = actorDef;
-		levelTest.actorDefs[1] = actorDef2;
 
-		Json json = new Json();
-		String jsonText = json.toJson(levelTest);
-		System.out.println(json.prettyPrint(jsonText));
+		try {
+			KeyGenerator keyGen = KeyGenerator.getInstance("AES");
+			keyGen.init(128);
+			SecretKey secretKey = keyGen.generateKey();
 
-		//		ActorDef jsonActorDef = json.fromJson(ActorDef.class, jsonText);
-		Level jsonLevelTest = json.fromJson(Level.class, jsonText);
-		boolean something = true;
-		something = false;
+		} catch (NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 
 	/**
