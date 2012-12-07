@@ -11,6 +11,7 @@ import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.OrderedMap;
 import com.spiddekauga.voider.game.actors.Types;
+import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.Textures;
 
 /**
@@ -20,7 +21,7 @@ import com.spiddekauga.voider.resources.Textures;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class ActorDef implements Json.Serializable {
+public class ActorDef extends Def implements Json.Serializable {
 	/**
 	 * Constructor that sets all variables
 	 * @param maxLife maximum life of the actor, also starting amount of life
@@ -140,18 +141,17 @@ public class ActorDef implements Json.Serializable {
 	 */
 	@Override
 	public void write(Json json) {
-		json.writeValue("object_version", VERSION);
+		json.writeValue("VERSIONO", VERSION);
+
+		json.writeObjectStart("Def");
+		super.write(json);
+		json.writeObjectEnd();
 
 		// Write ActorDef's variables first
-		json.writeValue("max_life", mMaxLife);
-		json.writeValue("type", mType);
-		json.writeValue("name", mName);
-		/** @TODO remove when json has been fixed */
-		if (mTextureTypes == null) {
-			json.writeValue("texture_types", mTextureTypes, null, null);
-		} else {
-			json.writeValue("texture_types", mTextureTypes);
-		}
+		json.writeValue("mMaxLife", mMaxLife);
+		json.writeValue("mType", mType);
+		json.writeValue("mName", mName);
+		json.writeValue("mTextureTypes", mTextureTypes);
 
 
 		// Fixture
@@ -159,7 +159,7 @@ public class ActorDef implements Json.Serializable {
 		json.writeValue("density", mFixtureDef.density);
 		json.writeValue("filter", mFixtureDef.filter);
 		json.writeValue("friction", mFixtureDef.friction);
-		json.writeValue("is_sensor", mFixtureDef.isSensor);
+		json.writeValue("isSensor", mFixtureDef.isSensor);
 		json.writeValue("restitution", mFixtureDef.restitution);
 
 
@@ -216,10 +216,14 @@ public class ActorDef implements Json.Serializable {
 			//...
 		}
 
-		mMaxLife = json.readValue("max_life", float.class, jsonData);
-		mType = json.readValue("type", Types.class, jsonData);
-		mName = json.readValue("name", String.class, jsonData);
-		mTextureTypes = json.readValue("texture_types", Textures.Types[].class, jsonData);
+		@SuppressWarnings("unchecked")
+		OrderedMap<String, Object> superMap = json.readValue("Def", OrderedMap.class, jsonData);
+		super.read(json, superMap);
+
+		mMaxLife = json.readValue("mMaxLife", float.class, jsonData);
+		mType = json.readValue("mType", Types.class, jsonData);
+		mName = json.readValue("mName", String.class, jsonData);
+		mTextureTypes = json.readValue("mTextureTypes", Textures.Types[].class, jsonData);
 
 
 		// Fixture definition
@@ -228,6 +232,7 @@ public class ActorDef implements Json.Serializable {
 		mFixtureDef.density = json.readValue("density", float.class, fixtureDefMap);
 		mFixtureDef.friction = json.readValue("friction", float.class, fixtureDefMap);
 		mFixtureDef.restitution = json.readValue("restitution", float.class, fixtureDefMap);
+		mFixtureDef.isSensor = json.readValue("isSensor",  boolean.class, fixtureDefMap);
 
 
 		// Filter
