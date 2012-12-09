@@ -5,7 +5,6 @@ import java.util.Set;
 import java.util.UUID;
 
 import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.OrderedMap;
 
 /**
@@ -38,7 +37,7 @@ public class Def {
 	/**
 	 * @return all external dependencies
 	 */
-	public final ObjectMap<UUID, Class<?>> getExternalDependencies() {
+	public final Set<QueueItem> getExternalDependencies() {
 		return mExternalDependencies;
 	}
 
@@ -76,7 +75,7 @@ public class Def {
 	protected void read(Json json, OrderedMap<String, Object> jsonData) {
 		mUniqueId = json.readValue("mUniqueId", UUID.class, jsonData);
 		mInternalDependencies = json.readValue("mInternalDependencies", HashSet.class, jsonData);
-		mExternalDependencies = json.readValue("mExternalDependencies", ObjectMap.class, jsonData);
+		mExternalDependencies = json.readValue("mExternalDependencies", HashSet.class, jsonData);
 	}
 
 	/**
@@ -86,9 +85,9 @@ public class Def {
 	 */
 	protected void addDependency(Def dependency) {
 		if (mExternalDependencies == null) {
-			mExternalDependencies = new ObjectMap<UUID, Class<?>>();
+			mExternalDependencies = new HashSet<QueueItem>();
 		}
-		mExternalDependencies.put(dependency.getId(), dependency.getClass());
+		mExternalDependencies.add(new QueueItem(dependency.getId(), dependency.getClass()));
 	}
 
 	/**
@@ -122,7 +121,7 @@ public class Def {
 	/** A unique id for the resource */
 	private UUID mUniqueId;
 	/** Dependencies for the resource */
-	private ObjectMap<UUID, Class<?>> mExternalDependencies = null;
+	private Set<QueueItem> mExternalDependencies = null;
 	/** Internal dependencies, such as textures, sound, particle effects */
 	private Set<ResourceNames> mInternalDependencies = null;
 }

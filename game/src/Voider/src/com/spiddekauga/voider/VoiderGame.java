@@ -9,15 +9,12 @@ import javax.crypto.SecretKey;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL10;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.spiddekauga.voider.game.ActorDef;
 import com.spiddekauga.voider.game.GameScene;
 import com.spiddekauga.voider.game.actors.Types;
-import com.spiddekauga.voider.resources.ResourceCacheFacade;
-import com.spiddekauga.voider.resources.ResourceNames;
 
 /**
  * The main application, i.e. start point
@@ -111,12 +108,12 @@ public class VoiderGame implements ApplicationListener {
 
 		//ResourceCacheFacade.load(base, true);
 
-		ResourceCacheFacade.load(ResourceNames.TEXTURE_PLAYER);
-		ResourceCacheFacade.finishLoading();
-		Texture texture = ResourceCacheFacade.get(ResourceNames.TEXTURE_PLAYER);
-
-		boolean something = true;
-		something = false;
+		//		ResourceCacheFacade.load(ResourceNames.TEXTURE_PLAYER);
+		//		ResourceCacheFacade.finishLoading();
+		//		Texture texture = ResourceCacheFacade.get(ResourceNames.TEXTURE_PLAYER);
+		//
+		//		boolean something = true;
+		//		something = false;
 	}
 
 	/**
