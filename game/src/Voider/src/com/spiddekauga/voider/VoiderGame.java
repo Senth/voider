@@ -34,7 +34,7 @@ public class VoiderGame implements ApplicationListener {
 		mActiveScene.push(Scenes.GAME.ordinal());
 
 		//		testActor();
-		testResource();
+		//		testResource();
 	}
 
 	@Override

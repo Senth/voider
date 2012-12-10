@@ -7,7 +7,6 @@ import com.badlogic.gdx.utils.OrderedMap;
 
 /**
  * Wrapper to simplify the queue. Only available for this pacakage
- * @param <ResourceType> the resource class
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
@@ -37,23 +36,27 @@ class QueueItem implements Json.Serializable {
 		fullName = ResourceNames.getDirPath(resourceType) + resourceId.toString();
 	}
 
+	/**
+	 * Default constructor for queue item, used for when reading instances from json
+	 */
+	QueueItem() {
+		// Does nothing
+	}
+
 	/** Unique id */
-	UUID resourceId;
+	UUID resourceId = null;;
 	/** Resource Type */
-	Class<?> resourceType;
+	Class<?> resourceType = null;;
 	/** The full file path to this resource */
-	String fullName;
+	String fullName = null;;
 
 	/* (non-Javadoc)
 	 * @see com.badlogic.gdx.utils.Json.Serializable#write(com.badlogic.gdx.utils.Json)
 	 */
 	@Override
 	public void write(Json json) {
-		json.writeValue("resourceId", resourceId);
+		json.writeValue("resourceId", resourceId.toString());
 		json.writeValue("resourceType", resourceType.getName());
-
-		// TODO how do we save the resource type?
-
 
 		// We don't write the fullName.
 	}
@@ -63,9 +66,10 @@ class QueueItem implements Json.Serializable {
 	 */
 	@Override
 	public void read(Json json, OrderedMap<String, Object> jsonData) {
-		resourceId = json.readValue("resourceId", UUID.class, jsonData);
-		String className = json.readValue("resourceType", String.class, jsonData);
+		resourceId = UUID.fromString(json.readValue("resourceId", String.class, jsonData));
 
+		// resourceType
+		String className = json.readValue("resourceType", String.class, jsonData);
 		try {
 			resourceType = Class.forName(className);
 		} catch (ClassNotFoundException e) {
@@ -73,7 +77,8 @@ class QueueItem implements Json.Serializable {
 			e.printStackTrace();
 		}
 
-		// TODO read resource type
-		// TODO derive the fullName from the resource id and type
+
+		// Derive the fullName from the resource id and type
+		fullName = ResourceNames.getDirPath(resourceType) + resourceId.toString();
 	}
 }
