@@ -185,6 +185,7 @@ public class ActorDef extends Def implements Json.Serializable {
 					PolygonShape polygon = (PolygonShape)mFixtureDef.shape;
 					Vector2[] vertices = new Vector2[polygon.getVertexCount()];
 					for (int i = 0; i < polygon.getVertexCount(); i++) {
+						vertices[i] = new Vector2();
 						polygon.getVertex(i, vertices[i]);
 					}
 					json.writeValue("vertices", vertices);
