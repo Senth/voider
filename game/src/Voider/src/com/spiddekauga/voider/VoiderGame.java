@@ -15,6 +15,8 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.spiddekauga.voider.game.ActorDef;
 import com.spiddekauga.voider.game.GameScene;
 import com.spiddekauga.voider.game.actors.Types;
+import com.spiddekauga.voider.resources.ResourceCacheFacade;
+import com.spiddekauga.voider.resources.ResourceSaver;
 
 /**
  * The main application, i.e. start point
@@ -26,6 +28,11 @@ public class VoiderGame implements ApplicationListener {
 
 	@Override
 	public void create() {
+		// Init various classes
+		Config.init();
+		ResourceSaver.init();
+		ResourceCacheFacade.init();
+
 		mScenes = new Scene[Scenes.values().length];
 
 		mScenes[Scenes.GAME.ordinal()] = new GameScene();
@@ -33,7 +40,7 @@ public class VoiderGame implements ApplicationListener {
 		/** @TODO display splash screen */
 		mActiveScene.push(Scenes.GAME.ordinal());
 
-		//		testActor();
+		testActor();
 		//		testResource();
 	}
 

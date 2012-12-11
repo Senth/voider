@@ -14,8 +14,9 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
-import javax.crypto.SecretKey;
 import javax.crypto.ShortBufferException;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 
 /**
  * Encrypts and decrypts objects
@@ -28,7 +29,7 @@ public class ObjectCrypter {
 	 * Creates an AES crypter with the specified key
 	 * @param key the key to be used for the cipher
 	 */
-	public ObjectCrypter(SecretKey key) {
+	public ObjectCrypter(SecretKeySpec key) {
 		// create the cipher with the algorithm you choose
 		// see javadoc for Cipher class for more info, e.g.
 		try {
@@ -60,7 +61,17 @@ public class ObjectCrypter {
 		byte[] input = convertToByteArray(obj);
 		mEnCipher.init(Cipher.ENCRYPT_MODE, mKey);
 
-		return mEnCipher.doFinal(input);
+		// Get IV for the encryption
+		byte[] iv = mEnCipher.getIV();
+		byte[] encryptedBytes = mEnCipher.doFinal(input);
+
+		// Includes IV for decrypting
+		// Concatenates both byte arrays to message
+		byte[] ivAndEncrypted = new byte [iv.length + encryptedBytes.length];
+		System.arraycopy(iv, 0, ivAndEncrypted, 0, iv.length);
+		System.arraycopy(encryptedBytes, 0, ivAndEncrypted, iv.length, encryptedBytes.length);
+
+		return ivAndEncrypted;
 	}
 
 	/**
@@ -75,10 +86,18 @@ public class ObjectCrypter {
 	 * @throws IOException
 	 * @throws ClassNotFoundException
 	 */
-	public Object decrypt( byte[]  encrypted) throws InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, IOException, ClassNotFoundException {
-		mDeCipher.init(Cipher.DECRYPT_MODE, mKey);
+	public Object decrypt(byte[]  encrypted) throws InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, IOException, ClassNotFoundException {
+		// Get the IV from the byte array
+		byte[] iv = new byte [IV_LENGTH];
+		System.arraycopy(encrypted, 0, iv, 0, IV_LENGTH);
 
-		return convertFromByteArray(mDeCipher.doFinal(encrypted));
+		// Get the actual encrypted message
+		byte[] encryptedMessage = new byte [encrypted.length - IV_LENGTH];
+		System.arraycopy(encrypted, IV_LENGTH, encryptedMessage, 0, encrypted.length - IV_LENGTH);
+
+		mDeCipher.init(Cipher.DECRYPT_MODE, mKey, new IvParameterSpec(iv));
+
+		return convertFromByteArray(mDeCipher.doFinal(encryptedMessage));
 
 	}
 
@@ -130,6 +149,9 @@ public class ObjectCrypter {
 	/** Enciphers an object */
 	private Cipher mEnCipher;
 	/** The secret key, not to be shared */
-	private SecretKey mKey;
+	private SecretKeySpec mKey;
+
+	/** The initialization vector length */
+	private static final int IV_LENGTH = 16;
 
 }

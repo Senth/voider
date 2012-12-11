@@ -141,7 +141,7 @@ public class ActorDef extends Def implements Json.Serializable {
 	 */
 	@Override
 	public void write(Json json) {
-		json.writeValue("VERSIONO", VERSION);
+		json.writeValue("VERSION", VERSION);
 
 		json.writeObjectStart("Def");
 		super.write(json);
@@ -155,52 +155,60 @@ public class ActorDef extends Def implements Json.Serializable {
 
 
 		// Fixture
-		json.writeObjectStart("FixtureDef");
-		json.writeValue("density", mFixtureDef.density);
-		json.writeValue("filter", mFixtureDef.filter);
-		json.writeValue("friction", mFixtureDef.friction);
-		json.writeValue("isSensor", mFixtureDef.isSensor);
-		json.writeValue("restitution", mFixtureDef.restitution);
+		if (mFixtureDef == null) {
+			json.writeValue("mFixtureDef", mFixtureDef);
+		} else {
+			json.writeObjectStart("mFixtureDef");
+			json.writeValue("density", mFixtureDef.density);
+			json.writeValue("filter", mFixtureDef.filter);
+			json.writeValue("friction", mFixtureDef.friction);
+			json.writeValue("isSensor", mFixtureDef.isSensor);
+			json.writeValue("restitution", mFixtureDef.restitution);
 
 
-		// Shape
-		json.writeObjectStart("Shape");
-		json.writeValue("type", mFixtureDef.shape.getType());
+			// Shape
+			if (mFixtureDef.shape == null) {
+				json.writeValue("shape", mFixtureDef.shape);
+			} else {
+				json.writeObjectStart("shape");
+				json.writeValue("type", mFixtureDef.shape.getType());
 
-		// Shape specific actions
-		switch (mFixtureDef.shape.getType()) {
-		case Circle:
-			CircleShape circle = (CircleShape)mFixtureDef.shape;
-			json.writeValue("position", circle.getPosition());
-			json.writeValue("radius", circle.getRadius());
-			break;
+				// Shape specific actions
+				switch (mFixtureDef.shape.getType()) {
+				case Circle:
+					CircleShape circle = (CircleShape)mFixtureDef.shape;
+					json.writeValue("position", circle.getPosition());
+					json.writeValue("radius", circle.getRadius());
+					break;
 
-		case Polygon:
-			PolygonShape polygon = (PolygonShape)mFixtureDef.shape;
-			Vector2[] vertices = new Vector2[polygon.getVertexCount()];
-			for (int i = 0; i < polygon.getVertexCount(); i++) {
-				polygon.getVertex(i, vertices[i]);
-			}
-			json.writeValue("vertices", vertices);
-			break;
+				case Polygon:
+					PolygonShape polygon = (PolygonShape)mFixtureDef.shape;
+					Vector2[] vertices = new Vector2[polygon.getVertexCount()];
+					for (int i = 0; i < polygon.getVertexCount(); i++) {
+						polygon.getVertex(i, vertices[i]);
+					}
+					json.writeValue("vertices", vertices);
+					break;
 
-		case Edge:
-			EdgeShape edge = (EdgeShape)mFixtureDef.shape;
-			Vector2 tempVector = new Vector2();
-			edge.getVertex1(tempVector);
-			json.writeValue("vertex1", tempVector);
-			edge.getVertex2(tempVector);
-			json.writeValue("vertex2", tempVector);
-			break;
+				case Edge:
+					EdgeShape edge = (EdgeShape)mFixtureDef.shape;
+					Vector2 tempVector = new Vector2();
+					edge.getVertex1(tempVector);
+					json.writeValue("vertex1", tempVector);
+					edge.getVertex2(tempVector);
+					json.writeValue("vertex2", tempVector);
+					break;
 
-		case Chain:
-			assert("Chains not supported" == null);
-			break;
+				case Chain:
+					assert("Chains not supported" == null);
+					break;
 
-		}
+				}
+				json.writeObjectEnd();
+			} // Shape
 
-		json.writeObjectEnd();
-		json.writeObjectEnd();
+			json.writeObjectEnd();
+		} // Fixture def
 	}
 
 	/* (non-Javadoc)
@@ -209,7 +217,7 @@ public class ActorDef extends Def implements Json.Serializable {
 	@Override
 	public void read(Json json, OrderedMap<String, Object> jsonData) {
 		// Actor
-		int version = json.readValue("object_version", int.class, jsonData);
+		long version = json.readValue("VERSION", long.class, jsonData);
 
 		/** @TODO do something when another version... */
 		if (version != VERSION) {
@@ -227,52 +235,60 @@ public class ActorDef extends Def implements Json.Serializable {
 
 
 		// Fixture definition
-		OrderedMap<?,?> fixtureDefMap = json.readValue("FixtureDef", OrderedMap.class, jsonData);
-		mFixtureDef = new FixtureDef();
-		mFixtureDef.density = json.readValue("density", float.class, fixtureDefMap);
-		mFixtureDef.friction = json.readValue("friction", float.class, fixtureDefMap);
-		mFixtureDef.restitution = json.readValue("restitution", float.class, fixtureDefMap);
-		mFixtureDef.isSensor = json.readValue("isSensor",  boolean.class, fixtureDefMap);
+		OrderedMap<?,?> fixtureDefMap = json.readValue("mFixtureDef", OrderedMap.class, jsonData);
+		if (fixtureDefMap != null) {
+			mFixtureDef = new FixtureDef();
+			mFixtureDef.density = json.readValue("density", float.class, fixtureDefMap);
+			mFixtureDef.friction = json.readValue("friction", float.class, fixtureDefMap);
+			mFixtureDef.restitution = json.readValue("restitution", float.class, fixtureDefMap);
+			mFixtureDef.isSensor = json.readValue("isSensor",  boolean.class, fixtureDefMap);
 
 
-		// Filter
-		Filter tempFilter = json.readValue("filter", Filter.class, fixtureDefMap);
-		mFixtureDef.filter.categoryBits = tempFilter.categoryBits;
-		mFixtureDef.filter.groupIndex = tempFilter.groupIndex;
-		mFixtureDef.filter.maskBits = tempFilter.maskBits;
+			// Filter
+			Filter tempFilter = json.readValue("filter", Filter.class, fixtureDefMap);
+			mFixtureDef.filter.categoryBits = tempFilter.categoryBits;
+			mFixtureDef.filter.groupIndex = tempFilter.groupIndex;
+			mFixtureDef.filter.maskBits = tempFilter.maskBits;
 
 
-		// Shape
-		OrderedMap<?,?> shapeMap = json.readValue("Shape", OrderedMap.class, fixtureDefMap);
-		Shape.Type shapeType = json.readValue("type", Shape.Type.class, shapeMap);
-		switch (shapeType) {
-		case Circle:
-			float radius = json.readValue("radius", float.class, shapeMap);
-			Vector2 position = json.readValue("position", Vector2.class, shapeMap);
-			CircleShape circle = new CircleShape();
-			mFixtureDef.shape = circle;
-			circle.setPosition(position);
-			circle.setRadius(radius);
-			break;
+			// Shape
+			OrderedMap<?,?> shapeMap = json.readValue("shape", OrderedMap.class, fixtureDefMap);
+			if (shapeMap != null) {
+				Shape.Type shapeType = json.readValue("type", Shape.Type.class, shapeMap);
+				switch (shapeType) {
+				case Circle:
+					float radius = json.readValue("radius", float.class, shapeMap);
+					Vector2 position = json.readValue("position", Vector2.class, shapeMap);
+					CircleShape circle = new CircleShape();
+					mFixtureDef.shape = circle;
+					circle.setPosition(position);
+					circle.setRadius(radius);
+					break;
 
-		case Polygon:
-			Vector2[] vertices = json.readValue("vertices", Vector2[].class, shapeMap);
-			PolygonShape polygon = new PolygonShape();
-			mFixtureDef.shape = polygon;
-			polygon.set(vertices);
-			break;
+				case Polygon:
+					Vector2[] vertices = json.readValue("vertices", Vector2[].class, shapeMap);
+					PolygonShape polygon = new PolygonShape();
+					mFixtureDef.shape = polygon;
+					polygon.set(vertices);
+					break;
 
-		case Edge:
-			Vector2 vertex1 = json.readValue("vertex1", Vector2.class, shapeMap);
-			Vector2 vertex2 = json.readValue("vertex2", Vector2.class, shapeMap);
-			EdgeShape edge = new EdgeShape();
-			mFixtureDef.shape = edge;
-			edge.set(vertex1, vertex2);
-			break;
+				case Edge:
+					Vector2 vertex1 = json.readValue("vertex1", Vector2.class, shapeMap);
+					Vector2 vertex2 = json.readValue("vertex2", Vector2.class, shapeMap);
+					EdgeShape edge = new EdgeShape();
+					mFixtureDef.shape = edge;
+					edge.set(vertex1, vertex2);
+					break;
 
-		case Chain:
-			assert("Chains not supported!" == null);
-			break;
+				case Chain:
+					assert("Chains not supported!" == null);
+					break;
+				}
+			} else {
+				mFixtureDef.shape = null;
+			}
+		} else {
+			mFixtureDef = null;
 		}
 	}
 }

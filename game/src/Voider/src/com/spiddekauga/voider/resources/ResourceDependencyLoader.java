@@ -32,7 +32,7 @@ class ResourceDependencyLoader {
 	 */
 	<DefType> void load(UUID defId, Class<DefType> type) {
 		// Add definition to wait queue
-		mLoadingDefs.add(new QueueItem(defId, type));
+		mLoadingDefs.add(new DefinitionItem(defId, type));
 
 		// Load the resource
 		/** @note by loading again, this might cause problems in the future */
@@ -52,7 +52,7 @@ class ResourceDependencyLoader {
 		}
 
 		// External
-		for (QueueItem dependency : def.getExternalDependencies()) {
+		for (DefinitionItem dependency : def.getExternalDependencies()) {
 			Def externalDef = (Def) mAssetManager.get(dependency.fullName, dependency.resourceType);
 			unload(externalDef);
 			// DO NOT USE externalDef AFTER THIS TIME, IT HAS BEEN UNLOADED!
@@ -79,7 +79,7 @@ class ResourceDependencyLoader {
 		// If any of the resources we're waiting for been loaded ->
 		// Check for its dependencies and remove from load
 		for (int i = 0; i < mLoadingDefs.size; ++i) {
-			QueueItem queueItem = mLoadingDefs.get(i);
+			DefinitionItem queueItem = mLoadingDefs.get(i);
 
 			if (mAssetManager.isLoaded(queueItem.fullName)) {
 				Def def = (Def) mAssetManager.get(queueItem.fullName, queueItem.resourceType);
@@ -87,7 +87,7 @@ class ResourceDependencyLoader {
 
 				// Load dependencies
 				// External
-				for (QueueItem dependency : def.getExternalDependencies()) {
+				for (DefinitionItem dependency : def.getExternalDependencies()) {
 					load(dependency.resourceId, dependency.resourceType);
 				}
 
@@ -106,7 +106,7 @@ class ResourceDependencyLoader {
 	}
 
 	/** The load queue which we're loading the resources */
-	private Array<QueueItem> mLoadingDefs = new Array<QueueItem>();
+	private Array<DefinitionItem> mLoadingDefs = new Array<DefinitionItem>();
 	/** The class actually loading the resources */
 	private AssetManager mAssetManager;
 }

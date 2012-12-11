@@ -10,7 +10,7 @@ import com.badlogic.gdx.utils.OrderedMap;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-class QueueItem implements Json.Serializable {
+class DefinitionItem implements Json.Serializable {
 	/**
 	 * Checks whether the resources are the same
 	 * @param queueItem another queue item
@@ -19,7 +19,7 @@ class QueueItem implements Json.Serializable {
 	@Override
 	public boolean equals(Object queueItem) {
 		if (queueItem.getClass() == this.getClass()) {
-			return ((QueueItem) queueItem).resourceId == resourceId;
+			return ((DefinitionItem) queueItem).resourceId == resourceId;
 		} else {
 			return false;
 		}
@@ -30,7 +30,7 @@ class QueueItem implements Json.Serializable {
 	 * @param resourceId id of the resource
 	 * @param resourceType class of the resource
 	 */
-	QueueItem(UUID resourceId, Class<?> resourceType) {
+	DefinitionItem(UUID resourceId, Class<?> resourceType) {
 		this.resourceId = resourceId;
 		this.resourceType = resourceType;
 		fullName = ResourceNames.getDirPath(resourceType) + resourceId.toString();
@@ -39,7 +39,7 @@ class QueueItem implements Json.Serializable {
 	/**
 	 * Default constructor for queue item, used for when reading instances from json
 	 */
-	QueueItem() {
+	DefinitionItem() {
 		// Does nothing
 	}
 
@@ -58,7 +58,7 @@ class QueueItem implements Json.Serializable {
 		json.writeValue("resourceId", resourceId.toString());
 		json.writeValue("resourceType", resourceType.getName());
 
-		// We don't write the fullName.
+		// We don't write the fullName, it's derived when reading the file again
 	}
 
 	/* (non-Javadoc)

@@ -3,6 +3,8 @@
 	<name>Voider-JUnit</name>
 	<comment></comment>
 	<projects>
+		<project>Voider</project>
+		<project>Voider-desktop</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

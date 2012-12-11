@@ -22,7 +22,7 @@ public class ResourceCacheFacade {
 	 * Initializes the ResourceCacheFacade. This needs to be called before using any other
 	 * method
 	 */
-	public void init() {
+	public static void init() {
 		mDependencyLoader = new ResourceDependencyLoader(mAssetManager);
 	}
 
@@ -51,7 +51,7 @@ public class ResourceCacheFacade {
 		load(def, true);
 
 		// Add the level to the queue. Load this level once all dependencies are loaded
-		mLoadQueue.add(new QueueItem(resourceId, resourceType));
+		mLoadQueue.add(new DefinitionItem(resourceId, resourceType));
 	}
 
 	/**
@@ -150,7 +150,7 @@ public class ResourceCacheFacade {
 	private ResourceCacheFacade() {}
 
 	/**
-	 * Resource loader. This directly takes care of internal resourcesâ it can load
+	 * Resource loader. This directly takes care of internal resourcesï¿½ it can load
 	 * directly, no need to go through ResourceDependencyLoader. All Defs needs
 	 * to be loaded via the ResourceDependencyLoader. A level is a special case
 	 * and is also loaded directly via this manager, but still needs to load
@@ -171,5 +171,5 @@ public class ResourceCacheFacade {
 	 * is to wait until the asset manager have loaded everything and then load the
 	 * instances from the queue.
 	 */
-	private static LinkedList<QueueItem> mLoadQueue = new LinkedList<QueueItem>();
+	private static LinkedList<DefinitionItem> mLoadQueue = new LinkedList<DefinitionItem>();
 }

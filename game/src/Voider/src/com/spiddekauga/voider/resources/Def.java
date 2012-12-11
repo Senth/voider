@@ -28,6 +28,21 @@ public class Def {
 	}
 
 	/**
+	 * Checks if two definitions are equal to each other. Note that these only test
+	 * the unique id and nothing else.
+	 * @param object the other object to test if it is the same definition
+	 * @return true if the object is a definition and has the same unique id as this
+	 */
+	@Override
+	public boolean equals(Object object) {
+		if (object != null && object instanceof Def) {
+			return ((Def) object).mUniqueId.equals(mUniqueId);
+		} else {
+			return false;
+		}
+	}
+
+	/**
 	 * @return the unique id of the resource
 	 */
 	public final UUID getId() {
@@ -37,7 +52,7 @@ public class Def {
 	/**
 	 * @return all external dependencies
 	 */
-	public final Set<QueueItem> getExternalDependencies() {
+	public final Set<DefinitionItem> getExternalDependencies() {
 		return mExternalDependencies;
 	}
 
@@ -57,7 +72,7 @@ public class Def {
 	 * @param json the object which we write all this classe's variables to.
 	 */
 	protected void write(Json json) {
-		json.writeValue("mUniqueId", mUniqueId);
+		json.writeValue("mUniqueId", mUniqueId.toString());
 		json.writeValue("mInternalDependencies", mInternalDependencies);
 		json.writeValue("mExternalDependencies", mExternalDependencies);
 	}
@@ -73,7 +88,7 @@ public class Def {
 	 */
 	@SuppressWarnings("unchecked")
 	protected void read(Json json, OrderedMap<String, Object> jsonData) {
-		mUniqueId = json.readValue("mUniqueId", UUID.class, jsonData);
+		mUniqueId = UUID.fromString(json.readValue("mUniqueId", String.class, jsonData));
 		mInternalDependencies = json.readValue("mInternalDependencies", HashSet.class, jsonData);
 		mExternalDependencies = json.readValue("mExternalDependencies", HashSet.class, jsonData);
 	}
@@ -85,9 +100,9 @@ public class Def {
 	 */
 	protected void addDependency(Def dependency) {
 		if (mExternalDependencies == null) {
-			mExternalDependencies = new HashSet<QueueItem>();
+			mExternalDependencies = new HashSet<DefinitionItem>();
 		}
-		mExternalDependencies.add(new QueueItem(dependency.getId(), dependency.getClass()));
+		mExternalDependencies.add(new DefinitionItem(dependency.getId(), dependency.getClass()));
 	}
 
 	/**
@@ -121,7 +136,7 @@ public class Def {
 	/** A unique id for the resource */
 	private UUID mUniqueId;
 	/** Dependencies for the resource */
-	private Set<QueueItem> mExternalDependencies = null;
+	private Set<DefinitionItem> mExternalDependencies = null;
 	/** Internal dependencies, such as textures, sound, particle effects */
 	private Set<ResourceNames> mInternalDependencies = null;
 }
