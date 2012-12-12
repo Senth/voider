@@ -3,5 +3,15 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/Voider"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="lib" path="/Voider/libs/bodyeditor-loader-sources.jar"/>
+	<classpathentry kind="lib" path="/Voider/libs/bodyeditor-loader.jar" sourcepath="/Voider/libs/bodyeditor-loader-sources.jar"/>
+	<classpathentry kind="lib" path="/Voider/libs/gdx-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="/Voider/libs/gdx.jar" sourcepath="/Voider/libs/gdx-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="/Voider-desktop/libs/gdx-backend-lwjgl-natives.jar"/>
+	<classpathentry kind="lib" path="/Voider-desktop/libs/gdx-backend-lwjgl-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="/Voider-desktop/libs/gdx-backend-lwjgl.jar" sourcepath="/Voider-desktop/libs/gdx-backend-lwjgl-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="/Voider-desktop/libs/gdx-natives.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/Voider-desktop"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
