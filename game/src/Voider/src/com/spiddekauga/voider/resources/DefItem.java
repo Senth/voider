@@ -2,6 +2,7 @@ package com.spiddekauga.voider.resources;
 
 import java.util.UUID;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.OrderedMap;
 
@@ -40,7 +41,11 @@ class DefItem implements Json.Serializable {
 		this.resourceId = resourceId;
 		this.resourceType = resourceType;
 		if (resourceType != null) {
-			fullName = ResourceNames.getDirPath(resourceType) + resourceId.toString();
+			try {
+				fullName = ResourceNames.getDirPath(resourceType) + resourceId.toString();
+			} catch (UndefinedResourceTypeException e) {
+				Gdx.app.error("UndefinedResourceType", e.toString());
+			}
 		}
 	}
 
@@ -92,6 +97,10 @@ class DefItem implements Json.Serializable {
 
 
 		// Derive the fullName from the resource id and type
-		fullName = ResourceNames.getDirPath(resourceType) + resourceId.toString();
+		try {
+			fullName = ResourceNames.getDirPath(resourceType) + resourceId.toString();
+		} catch (UndefinedResourceTypeException e) {
+			Gdx.app.error("UndefinedResourceType", e.toString());
+		}
 	}
 }

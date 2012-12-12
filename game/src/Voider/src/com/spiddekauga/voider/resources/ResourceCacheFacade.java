@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import java.util.UUID;
 
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.utils.Disposable;
 
 
 /**
@@ -17,7 +18,7 @@ import com.badlogic.gdx.assets.AssetManager;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class ResourceCacheFacade {
+public class ResourceCacheFacade implements Disposable {
 	/**
 	 * Initializes the ResourceCacheFacade. This needs to be called before using any other
 	 * method
@@ -46,8 +47,9 @@ public class ResourceCacheFacade {
 	 * definition's id).
 	 * @param resourceType the class of the resource to load
 	 * @param def the definition of the resource we're loading
+	 * @throws UndefinedResourceTypeException
 	 */
-	public static <ResourceType> void load(UUID resourceId, Class<ResourceType> resourceType, Def def) {
+	public static <ResourceType> void load(UUID resourceId, Class<ResourceType> resourceType, Def def) throws UndefinedResourceTypeException {
 		load(def, true);
 
 		// Add the level to the queue. Load this level once all dependencies are loaded
@@ -60,8 +62,9 @@ public class ResourceCacheFacade {
 	 * @param def the resource we want to load. This includes a unique id
 	 * as well as dependencies.
 	 * @param loadDependencies if we also shall load the dependencies
+	 * @throws UndefinedResourceTypeException
 	 */
-	public static void load(Def def, boolean loadDependencies) {
+	public static void load(Def def, boolean loadDependencies) throws UndefinedResourceTypeException {
 		load(def.getId(), def.getClass(), loadDependencies);
 	}
 
@@ -72,8 +75,9 @@ public class ResourceCacheFacade {
 	 * @param defId the unique id of the resource we want to load
 	 * @param type the class type of the resource
 	 * @param loadDependencies if we also shall load the dependencies
+	 * @throws UndefinedResourceTypeException
 	 */
-	public static <DefClass> void load(UUID defId, Class<DefClass> type, boolean loadDependencies) {
+	public static <DefClass> void load(UUID defId, Class<DefClass> type, boolean loadDependencies) throws UndefinedResourceTypeException {
 		if (loadDependencies) {
 			mDependencyLoader.load(defId, type);
 		} else {
@@ -87,8 +91,9 @@ public class ResourceCacheFacade {
 	 * such as textures, music, etc.
 	 * @param resource the name of the resource to load
 	 * Texture, Music, etc.
+	 * @throws UndefinedResourceTypeException
 	 */
-	public static void load(ResourceNames resource) {
+	public static void load(ResourceNames resource) throws UndefinedResourceTypeException {
 		final String fullPath = ResourceNames.getDirPath(resource.type) + resource.filename;
 		mAssetManager.load(fullPath, resource.type);
 	}
@@ -98,9 +103,10 @@ public class ResourceCacheFacade {
 	 * @param <ResourceType> the type to be returned
 	 * @param resource the resource to return
 	 * @return the actual resource
+	 * @throws UndefinedResourceTypeException
 	 */
 	@SuppressWarnings("unchecked")
-	public static <ResourceType> ResourceType get(ResourceNames resource) {
+	public static <ResourceType> ResourceType get(ResourceNames resource) throws UndefinedResourceTypeException {
 		final String fullPath = ResourceNames.getDirPath(resource.type) + resource.filename;
 		return (ResourceType) mAssetManager.get(fullPath, resource.type);
 	}
@@ -111,8 +117,9 @@ public class ResourceCacheFacade {
 	 * @param resourceId id of the resource, can be both def and instance resource
 	 * @param resourceType the class of the resource
 	 * @return the actual resource
+	 * @throws UndefinedResourceTypeException
 	 */
-	public static <ResourceType> ResourceType get(UUID resourceId, Class<ResourceType> resourceType) {
+	public static <ResourceType> ResourceType get(UUID resourceId, Class<ResourceType> resourceType) throws UndefinedResourceTypeException {
 		final String fullPath = ResourceNames.getDirPath(resourceType) + resourceId.toString();
 		return mAssetManager.get(fullPath, resourceType);
 	}
@@ -120,14 +127,20 @@ public class ResourceCacheFacade {
 	/**
 	 * Checks if everything has loaded and can be used.
 	 * @return true if everything has been loaded
+	 * @throws UndefinedResourceTypeException
 	 */
-	public static boolean update() {
+	public static boolean update() throws UndefinedResourceTypeException {
 		boolean fullyLoaded = true;
-		if (!mDependencyLoader.update()) {
-			fullyLoaded = false;
-		}
-		if (!mAssetManager.update()) {
-			fullyLoaded = false;
+		try {
+			if (!mDependencyLoader.update()) {
+				fullyLoaded = false;
+			}
+			if (!mAssetManager.update()) {
+				fullyLoaded = false;
+			}
+		} catch (UndefinedResourceTypeException e) {
+			mLoadQueue.clear();
+			throw e;
 		}
 		return fullyLoaded;
 	}
@@ -135,13 +148,21 @@ public class ResourceCacheFacade {
 	/**
 	 * Waits for the cache to finish loading all files into the cache. I.e.
 	 * blocks this thread
+	 * @throws UndefinedResourceTypeException
 	 */
-	public static void finishLoading() {
+	public static void finishLoading() throws UndefinedResourceTypeException {
 		while (!update()) {
 			// Does nothing
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see com.badlogic.gdx.utils.Disposable#dispose()
+	 */
+	@Override
+	public void dispose() {
+		mAssetManager.dispose();
+	}
 
 	/**
 	 * Private constructor to enforce that no instance can be created from this

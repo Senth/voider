@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import org.junit.Test;
 
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.Json;
 import com.spiddekauga.voider.game.ActorDef;
 
@@ -23,11 +24,11 @@ public class QueueItemTest {
 	public void equalsObject() {
 		// Queue item should equal if the UUID is equal, that is enough
 		UUID equalUUID = UUID.randomUUID();
-		DefItem equalUUID1 = new DefItem(equalUUID, DefItem.class);
-		DefItem equalUUID2 = new DefItem(equalUUID, Class.class);
+		DefItem equalUUID1 = new DefItem(equalUUID, Texture.class);
+		DefItem equalUUID2 = new DefItem(equalUUID, ActorDef.class);
 		assertTrue("QueueItem.equals() with same UUID, but different types", equalUUID1.equals(equalUUID2));
 
-		DefItem inequal = new DefItem(UUID.randomUUID(), DefItem.class);
+		DefItem inequal = new DefItem(UUID.randomUUID(), Texture.class);
 		assertTrue("QueueItem.equals() inequality different UUID, but same types", !equalUUID1.equals(inequal));
 	}
 

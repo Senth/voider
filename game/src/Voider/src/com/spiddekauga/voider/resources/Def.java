@@ -14,7 +14,7 @@ import com.badlogic.gdx.utils.OrderedMap;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class Def {
+public class Def implements IUniqueId {
 	/**
 	 * Default constructor for the resource.
 	 */
@@ -48,6 +48,7 @@ public class Def {
 	/**
 	 * @return the unique id of the resource
 	 */
+	@Override
 	public final UUID getId() {
 		return mUniqueId;
 	}
@@ -77,7 +78,7 @@ public class Def {
 	protected void write(Json json) {
 		json.writeValue("mUniqueId", mUniqueId.toString());
 
-		if (mInternalDependencies == null || mInternalDependencies.isEmpty()) {
+		if (mInternalDependencies.isEmpty()) {
 			json.writeValue("mInternalDependencies", (OrderedMap<?,?>) null);
 		} else {
 			json.writeObjectStart("mInternalDependencies");
@@ -87,7 +88,7 @@ public class Def {
 			json.writeObjectEnd();
 		}
 
-		if (mExternalDependencies == null || mExternalDependencies.isEmpty()) {
+		if (mExternalDependencies.isEmpty()) {
 			json.writeValue("mExternalDependencies", (OrderedMap<?,?>) null);
 		} else {
 			json.writeObjectStart("mExternalDependencies");
@@ -109,13 +110,11 @@ public class Def {
 	 * @param json the json to read the value from
 	 * @param jsonData this is where all the json variables have been loaded
 	 */
-	@SuppressWarnings("unchecked")
 	protected void read(Json json, OrderedMap<String, Object> jsonData) {
 		mUniqueId = UUID.fromString(json.readValue("mUniqueId", String.class, jsonData));
 
 		OrderedMap<?,?> internalMap = json.readValue("mInternalDependencies", OrderedMap.class, jsonData);
 		if (internalMap != null) {
-			mInternalDependencies = new HashSet<ResourceNames>(internalMap.size);
 			for (Entry<?,?> entry : internalMap.entries()) {
 				mInternalDependencies.add(ResourceNames.valueOf((String)entry.value));
 			}
@@ -123,7 +122,6 @@ public class Def {
 
 		OrderedMap<?,?> externalMap = json.readValue("mExternalDependencies", OrderedMap.class, jsonData);
 		if (externalMap != null) {
-			mExternalDependencies = new HashSet<DefItem>(externalMap.size);
 			for (int i = 0; i < externalMap.size; ++i) {
 				DefItem def = json.readValue(Integer.toString(i), DefItem.class, externalMap);
 				mExternalDependencies.add(def);
@@ -137,9 +135,6 @@ public class Def {
 	 * @see #addDependency(ResourceNames)
 	 */
 	protected void addDependency(Def dependency) {
-		if (mExternalDependencies == null) {
-			mExternalDependencies = new HashSet<DefItem>();
-		}
 		mExternalDependencies.add(new DefItem(dependency.getId(), dependency.getClass()));
 	}
 
@@ -149,9 +144,6 @@ public class Def {
 	 * @see #addDependency(Def)
 	 */
 	protected void addDependency(ResourceNames dependency) {
-		if (mInternalDependencies == null) {
-			mInternalDependencies = new HashSet<ResourceNames>();
-		}
 		mInternalDependencies.add(dependency);
 	}
 
@@ -160,9 +152,6 @@ public class Def {
 	 * @param dependency the id of the dependency to remove
 	 */
 	protected void removeDependency(UUID dependency) {
-		if (mExternalDependencies == null) {
-			return;
-		}
 		mExternalDependencies.remove(new DefItem(dependency, null));
 	}
 
@@ -171,16 +160,13 @@ public class Def {
 	 * @param dependency the name of the dependency to remove
 	 */
 	protected void removeDependency(ResourceNames dependency) {
-		if (mInternalDependencies == null) {
-			return;
-		}
 		mInternalDependencies.remove(dependency);
 	}
 
 	/** A unique id for the resource */
 	private UUID mUniqueId;
 	/** Dependencies for the resource */
-	private Set<DefItem> mExternalDependencies = null;
+	private Set<DefItem> mExternalDependencies = new HashSet<DefItem>();
 	/** Internal dependencies, such as textures, sound, particle effects */
-	private Set<ResourceNames> mInternalDependencies = null;
+	private Set<ResourceNames> mInternalDependencies = new HashSet<ResourceNames>();
 }

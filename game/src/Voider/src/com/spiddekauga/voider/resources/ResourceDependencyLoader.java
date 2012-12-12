@@ -2,6 +2,7 @@ package com.spiddekauga.voider.resources;
 
 import java.util.UUID;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.utils.Array;
 
@@ -29,8 +30,9 @@ class ResourceDependencyLoader {
 	 * @param <DefType> class of the defId to load
 	 * @param defId the definition and its dependencies to load
 	 * @param type the class type of defId
+	 * @throws UndefinedResourceTypeException thrown when type is an undefined resourec type
 	 */
-	<DefType> void load(UUID defId, Class<DefType> type) {
+	<DefType> void load(UUID defId, Class<DefType> type) throws UndefinedResourceTypeException {
 		// Add definition to wait queue
 		mLoadingDefs.add(new DefItem(defId, type));
 
@@ -38,6 +40,7 @@ class ResourceDependencyLoader {
 		/** @note by loading again, this might cause problems in the future */
 		final String fullPath = ResourceNames.getDirPath(type) + defId.toString();
 		mAssetManager.load(fullPath, type);
+
 	}
 
 	/**
@@ -59,8 +62,13 @@ class ResourceDependencyLoader {
 		}
 
 		// unload this def
-		final String fullName = ResourceNames.getDirPath(def.getClass()) + def.getId().toString();
-		mAssetManager.unload(fullName);
+		try {
+			String fullName = ResourceNames.getDirPath(def.getClass()) + def.getId().toString();
+			mAssetManager.unload(fullName);
+		} catch (UndefinedResourceTypeException e) {
+			Gdx.app.error("UndefinedResourceType", e.toString());
+		}
+
 	}
 
 	/**
@@ -68,8 +76,9 @@ class ResourceDependencyLoader {
 	 * has any dependencies that shall be loaded. If so it will add
 	 * these to the queue.
 	 * @return true if it has finished all the loading
+	 * @throws UndefinedResourceTypeException thrown when a resource has an invalid type
 	 */
-	boolean update() {
+	boolean update() throws UndefinedResourceTypeException {
 		// Skip update if we aren't waiting for any definitions to be done loading
 		// I.e. not loading anything
 		if (mLoadingDefs.size == 0) {
@@ -88,7 +97,13 @@ class ResourceDependencyLoader {
 				// Load dependencies
 				// External
 				for (DefItem dependency : def.getExternalDependencies()) {
-					load(dependency.resourceId, dependency.resourceType);
+					try {
+						load(dependency.resourceId, dependency.resourceType);
+					} catch (UndefinedResourceTypeException e) {
+						// Reset entire loading queue
+						mLoadingDefs.clear();
+						throw e;
+					}
 				}
 
 				// Internal

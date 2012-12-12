@@ -2,7 +2,6 @@ package com.spiddekauga.voider.resources;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.UUID;
@@ -89,7 +88,8 @@ public class DefTest {
 
 		assertNotNull("def dependencies not null", def.getExternalDependencies());
 		assertEquals("def dependencies size", def.getExternalDependencies().size(), 2);
-		assertNull("res dependencies", def.getInternalDependencies());
+		assertNotNull("res dependencies not null", def.getInternalDependencies());
+		assertEquals("res dependencies", def.getInternalDependencies().size(), 0);
 
 
 		// Test to add the same dependency again, should remain the same
@@ -107,7 +107,8 @@ public class DefTest {
 		def.addDependency(ResourceNames.TEXTURE_PLAYER);
 		def.addDependency(ResourceNames.SOUND_TEST);
 
-		assertNull("def dependencies", def.getExternalDependencies());
+		assertNotNull("def dependencies null", def.getExternalDependencies());
+		assertEquals("def dependencies", def.getExternalDependencies().size(), 0);
 		assertNotNull("res dependencies not null", def.getInternalDependencies());
 		assertEquals("res dependencies size", def.getInternalDependencies().size(), 3);
 
@@ -131,7 +132,8 @@ public class DefTest {
 
 		assertNotNull("def dependencies not null", def.getExternalDependencies());
 		assertEquals("def dependencies size", def.getExternalDependencies().size(), 1);
-		assertNull("res dependencies", def.getInternalDependencies());
+		assertNotNull("res dependencies not null", def.getInternalDependencies());
+		assertEquals("res dependencies", def.getInternalDependencies().size(), 0);
 
 		// Test to remove a dependency that doesn't exist
 		def.removeDependency(UUID.randomUUID());
@@ -157,7 +159,8 @@ public class DefTest {
 		def.addDependency(ResourceNames.SOUND_TEST);
 		def.removeDependency(ResourceNames.PARTICLE_TEST);
 
-		assertNull("def dependencies", def.getExternalDependencies());
+		assertNotNull("def dependencies null", def.getExternalDependencies());
+		assertEquals("def dependencies", def.getExternalDependencies().size(), 0);
 		assertNotNull("res dependencies not null", def.getInternalDependencies());
 		assertEquals("res dependencies size", def.getInternalDependencies().size(), 1);
 

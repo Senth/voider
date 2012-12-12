@@ -7,6 +7,7 @@ import java.util.UUID;
 
 import org.junit.Test;
 
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.Json;
 import com.spiddekauga.voider.game.ActorDef;
 
@@ -23,14 +24,14 @@ public class DefItemTest {
 	@Test
 	public void equals() {
 		UUID uuid = UUID.randomUUID();
-		DefItem item = new DefItem(uuid, String.class);
-		DefItem testItem = new DefItem(uuid, Integer.class);
+		DefItem item = new DefItem(uuid, ActorDef.class);
+		DefItem testItem = new DefItem(uuid, Texture.class);
 
 		assertEquals("testing with uuid directly", item.resourceId, uuid);
 		assertEquals("different types", testItem, item);
 
 		UUID otherUuid = UUID.randomUUID();
-		testItem = new DefItem(otherUuid, String.class);
+		testItem = new DefItem(otherUuid, ActorDef.class);
 		assertTrue("different uuid", !item.equals(testItem));
 
 
@@ -53,7 +54,13 @@ public class DefItemTest {
 
 		assertEquals("uuid", testItem.resourceId, uuid);
 		assertEquals("type", testItem.resourceType, ActorDef.class);
-		String fullName = ResourceNames.getDirPath(ActorDef.class) + uuid.toString();
+		String fullName = null;
+		try {
+			fullName = ResourceNames.getDirPath(ActorDef.class) + uuid.toString();
+		} catch (UndefinedResourceTypeException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		assertEquals("fullname", testItem.fullName, fullName);
 	}
 

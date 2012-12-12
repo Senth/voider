@@ -1,5 +1,6 @@
 package com.spiddekauga.voider.resources;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
@@ -19,7 +20,9 @@ import com.spiddekauga.voider.game.LevelDef;
 public enum ResourceNames {
 	/** Texture player */
 	TEXTURE_PLAYER("libgdx.png", Texture.class),
+	/** test */
 	PARTICLE_TEST("test", ParticleEffect.class),
+	/** test */
 	SOUND_TEST("test2", Sound.class);
 
 
@@ -31,7 +34,14 @@ public enum ResourceNames {
 	private ResourceNames(String filename, Class<?> type) {
 		this.filename = filename;
 		this.type = type;
-		fullName = getDirPath(type) + filename;
+
+		String name = "";
+		try {
+			name = getDirPath(type) + filename;
+		} catch (UndefinedResourceTypeException e) {
+			Gdx.app.error("UndefinedResourceType", e.toString());
+		}
+		fullName = name;
 	}
 
 	/** Filename of the resource */
@@ -45,8 +55,9 @@ public enum ResourceNames {
 	 * Gets the fully qualified folder name the resource should be in
 	 * @param type the class type of the resource. This determines where to look
 	 * @return full path to the resource
+	 * @throws UndefinedResourceTypeException throws this for all undefined resource types
 	 */
-	static <ResourceType> String getDirPath(Class<ResourceType> type) {
+	static String getDirPath(Class<?> type) throws UndefinedResourceTypeException {
 		if (type == Texture.class) {
 			return TEXTURE_PATH;
 		} else if (type == ActorDef.class) {
@@ -55,10 +66,13 @@ public enum ResourceNames {
 			return LEVEL_DEF_PATH;
 		} else if (type == Level.class) {
 			return LEVEL_PATH;
+		} else if (type == ParticleEffect.class){
+			return PARTICLE_PATH;
+		} else if (type == Sound.class) {
+			return SOUND_PATH;
 		} else {
-			// TODO throw something
+			throw new UndefinedResourceTypeException(type);
 		}
-		return null;
 	}
 
 	/** Directory for all texture */
@@ -69,4 +83,9 @@ public enum ResourceNames {
 	private static final String LEVEL_DEF_PATH = "levelDefs/";
 	/** Directory for all the actual levels */
 	private static final String LEVEL_PATH = "levels/";
+	/** Directory for all particle effects */
+	private static final String PARTICLE_PATH = "particles/";
+	/** Directory for all sound effects */
+	private static final String SOUND_PATH = "sound/";
+
 }
