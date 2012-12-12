@@ -51,7 +51,7 @@ public class ResourceCacheFacade {
 		load(def, true);
 
 		// Add the level to the queue. Load this level once all dependencies are loaded
-		mLoadQueue.add(new DefinitionItem(resourceId, resourceType));
+		mLoadQueue.add(new DefItem(resourceId, resourceType));
 	}
 
 	/**
@@ -171,5 +171,5 @@ public class ResourceCacheFacade {
 	 * is to wait until the asset manager have loaded everything and then load the
 	 * instances from the queue.
 	 */
-	private static LinkedList<DefinitionItem> mLoadQueue = new LinkedList<DefinitionItem>();
+	private static LinkedList<DefItem> mLoadQueue = new LinkedList<DefItem>();
 }

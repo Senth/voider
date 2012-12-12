@@ -5,6 +5,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import com.badlogic.gdx.utils.Json;
+import com.badlogic.gdx.utils.ObjectMap.Entry;
 import com.badlogic.gdx.utils.OrderedMap;
 
 /**
@@ -35,7 +36,9 @@ public class Def {
 	 */
 	@Override
 	public boolean equals(Object object) {
-		if (object != null && object instanceof Def) {
+		if (object == this) {
+			return true;
+		} else if (object != null && object.getClass() == this.getClass()) {
 			return ((Def) object).mUniqueId.equals(mUniqueId);
 		} else {
 			return false;
@@ -52,7 +55,7 @@ public class Def {
 	/**
 	 * @return all external dependencies
 	 */
-	public final Set<DefinitionItem> getExternalDependencies() {
+	public final Set<DefItem> getExternalDependencies() {
 		return mExternalDependencies;
 	}
 
@@ -73,8 +76,28 @@ public class Def {
 	 */
 	protected void write(Json json) {
 		json.writeValue("mUniqueId", mUniqueId.toString());
-		json.writeValue("mInternalDependencies", mInternalDependencies);
-		json.writeValue("mExternalDependencies", mExternalDependencies);
+
+		if (mInternalDependencies == null || mInternalDependencies.isEmpty()) {
+			json.writeValue("mInternalDependencies", (OrderedMap<?,?>) null);
+		} else {
+			json.writeObjectStart("mInternalDependencies");
+			for (ResourceNames item : mInternalDependencies) {
+				json.writeValue(item.toString(), item);
+			}
+			json.writeObjectEnd();
+		}
+
+		if (mExternalDependencies == null || mExternalDependencies.isEmpty()) {
+			json.writeValue("mExternalDependencies", (OrderedMap<?,?>) null);
+		} else {
+			json.writeObjectStart("mExternalDependencies");
+			int i= 0;
+			for (DefItem item : mExternalDependencies) {
+				json.writeValue(Integer.toString(i), item);
+				++i;
+			}
+			json.writeObjectEnd();
+		}
 	}
 
 	/**
@@ -89,8 +112,23 @@ public class Def {
 	@SuppressWarnings("unchecked")
 	protected void read(Json json, OrderedMap<String, Object> jsonData) {
 		mUniqueId = UUID.fromString(json.readValue("mUniqueId", String.class, jsonData));
-		mInternalDependencies = json.readValue("mInternalDependencies", HashSet.class, jsonData);
-		mExternalDependencies = json.readValue("mExternalDependencies", HashSet.class, jsonData);
+
+		OrderedMap<?,?> internalMap = json.readValue("mInternalDependencies", OrderedMap.class, jsonData);
+		if (internalMap != null) {
+			mInternalDependencies = new HashSet<ResourceNames>(internalMap.size);
+			for (Entry<?,?> entry : internalMap.entries()) {
+				mInternalDependencies.add(ResourceNames.valueOf((String)entry.value));
+			}
+		}
+
+		OrderedMap<?,?> externalMap = json.readValue("mExternalDependencies", OrderedMap.class, jsonData);
+		if (externalMap != null) {
+			mExternalDependencies = new HashSet<DefItem>(externalMap.size);
+			for (int i = 0; i < externalMap.size; ++i) {
+				DefItem def = json.readValue(Integer.toString(i), DefItem.class, externalMap);
+				mExternalDependencies.add(def);
+			}
+		}
 	}
 
 	/**
@@ -100,9 +138,9 @@ public class Def {
 	 */
 	protected void addDependency(Def dependency) {
 		if (mExternalDependencies == null) {
-			mExternalDependencies = new HashSet<DefinitionItem>();
+			mExternalDependencies = new HashSet<DefItem>();
 		}
-		mExternalDependencies.add(new DefinitionItem(dependency.getId(), dependency.getClass()));
+		mExternalDependencies.add(new DefItem(dependency.getId(), dependency.getClass()));
 	}
 
 	/**
@@ -122,7 +160,10 @@ public class Def {
 	 * @param dependency the id of the dependency to remove
 	 */
 	protected void removeDependency(UUID dependency) {
-		mExternalDependencies.remove(dependency);
+		if (mExternalDependencies == null) {
+			return;
+		}
+		mExternalDependencies.remove(new DefItem(dependency, null));
 	}
 
 	/**
@@ -130,13 +171,16 @@ public class Def {
 	 * @param dependency the name of the dependency to remove
 	 */
 	protected void removeDependency(ResourceNames dependency) {
+		if (mInternalDependencies == null) {
+			return;
+		}
 		mInternalDependencies.remove(dependency);
 	}
 
 	/** A unique id for the resource */
 	private UUID mUniqueId;
 	/** Dependencies for the resource */
-	private Set<DefinitionItem> mExternalDependencies = null;
+	private Set<DefItem> mExternalDependencies = null;
 	/** Internal dependencies, such as textures, sound, particle effects */
 	private Set<ResourceNames> mInternalDependencies = null;
 }

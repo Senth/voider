@@ -10,16 +10,22 @@ import com.badlogic.gdx.utils.OrderedMap;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-class DefinitionItem implements Json.Serializable {
+class DefItem implements Json.Serializable {
 	/**
 	 * Checks whether the resources are the same
-	 * @param queueItem another queue item
+	 * @param object another queue item
 	 * @return true if the parameter is a queue item and they have the same resourceId.
 	 */
 	@Override
-	public boolean equals(Object queueItem) {
-		if (queueItem.getClass() == this.getClass()) {
-			return ((DefinitionItem) queueItem).resourceId == resourceId;
+	public boolean equals(Object object) {
+		if (object == this) {
+			return true;
+		} else if (object == null) {
+			return false;
+		} else if (object.getClass() == this.getClass()) {
+			return ((DefItem) object).resourceId.equals(resourceId);
+		} else if (object instanceof UUID) {
+			return resourceId.equals(object);
 		} else {
 			return false;
 		}
@@ -30,25 +36,32 @@ class DefinitionItem implements Json.Serializable {
 	 * @param resourceId id of the resource
 	 * @param resourceType class of the resource
 	 */
-	DefinitionItem(UUID resourceId, Class<?> resourceType) {
+	DefItem(UUID resourceId, Class<?> resourceType) {
 		this.resourceId = resourceId;
 		this.resourceType = resourceType;
-		fullName = ResourceNames.getDirPath(resourceType) + resourceId.toString();
+		if (resourceType != null) {
+			fullName = ResourceNames.getDirPath(resourceType) + resourceId.toString();
+		}
 	}
 
 	/**
 	 * Default constructor for queue item, used for when reading instances from json
 	 */
-	DefinitionItem() {
+	DefItem() {
 		// Does nothing
 	}
 
+	@Override
+	public int hashCode() {
+		return resourceId.hashCode();
+	}
+
 	/** Unique id */
-	UUID resourceId = null;;
+	UUID resourceId = null;
 	/** Resource Type */
-	Class<?> resourceType = null;;
+	Class<?> resourceType = null;
 	/** The full file path to this resource */
-	String fullName = null;;
+	String fullName = null;
 
 	/* (non-Javadoc)
 	 * @see com.badlogic.gdx.utils.Json.Serializable#write(com.badlogic.gdx.utils.Json)
