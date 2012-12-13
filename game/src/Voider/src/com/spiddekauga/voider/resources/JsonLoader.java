@@ -39,7 +39,7 @@ public class JsonLoader<StoredType> extends AsynchronousAssetLoader<StoredType, 
 		FileHandle file = resolve(fileName);
 
 		if (!file.exists()) {
-			/** @TODO Throw something */
+			throw new ResourceNotFoundException(fileName);
 		}
 
 		byte[] encryptedJson = file.readBytes();
@@ -47,7 +47,7 @@ public class JsonLoader<StoredType> extends AsynchronousAssetLoader<StoredType, 
 		try {
 			jsonString = (String) mCrypter.decrypt(encryptedJson);
 		} catch (Exception e) {
-			/** @TODO throw something */
+			throw new ResourceCorruptException(fileName);
 		}
 
 		Json json = new Json();

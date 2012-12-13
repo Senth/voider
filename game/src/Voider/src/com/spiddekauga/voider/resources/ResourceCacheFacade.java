@@ -5,8 +5,10 @@ import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.assets.loaders.resolvers.ExternalFileHandleResolver;
 import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.utils.Disposable;
+import com.badlogic.gdx.utils.GdxRuntimeException;
+import com.spiddekauga.voider.game.ActorDef;
 
 
 /**
@@ -20,12 +22,14 @@ import com.badlogic.gdx.utils.Disposable;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class ResourceCacheFacade implements Disposable {
+public class ResourceCacheFacade {
 	/**
 	 * Initializes the ResourceCacheFacade. This needs to be called before using any other
 	 * method
 	 */
 	public static void init() {
+		mAssetManager = new AssetManager();
+		mAssetManager.setLoader(ActorDef.class, new JsonLoader<ActorDef>(new ExternalFileHandleResolver(), ActorDef.class));
 		mDependencyLoader = new ResourceDependencyLoader(mAssetManager);
 	}
 
@@ -115,10 +119,14 @@ public class ResourceCacheFacade implements Disposable {
 	 * such as textures, music, etc.
 	 * @param resource the name of the resource to load
 	 * Texture, Music, etc.
-	 * @throws UndefinedResourceTypeException
 	 */
-	public static void load(ResourceNames resource) throws UndefinedResourceTypeException {
-		final String fullPath = ResourceNames.getDirPath(resource.type) + resource.filename;
+	public static void load(ResourceNames resource) {
+		String fullPath = null;
+		try {
+			fullPath = ResourceNames.getDirPath(resource.type) + resource.filename;
+		} catch (UndefinedResourceTypeException e) {
+			Gdx.app.error("UndefinedType", "Undefined resource type for a resource name. This should NEVER happen");
+		}
 		mAssetManager.load(fullPath, resource.type);
 	}
 
@@ -127,11 +135,15 @@ public class ResourceCacheFacade implements Disposable {
 	 * @param <ResourceType> the type to be returned
 	 * @param resource the resource to return
 	 * @return the actual resource
-	 * @throws UndefinedResourceTypeException
 	 */
 	@SuppressWarnings("unchecked")
-	public static <ResourceType> ResourceType get(ResourceNames resource) throws UndefinedResourceTypeException {
-		final String fullPath = ResourceNames.getDirPath(resource.type) + resource.filename;
+	public static <ResourceType> ResourceType get(ResourceNames resource) {
+		String fullPath = null;
+		try {
+			fullPath = ResourceNames.getDirPath(resource.type) + resource.filename;
+		} catch (UndefinedResourceTypeException e) {
+			Gdx.app.error("UndefinedType", "Undefined resource type for a resource name. This should NEVER happen");
+		}
 		return (ResourceType) mAssetManager.get(fullPath, resource.type);
 	}
 
@@ -178,6 +190,22 @@ public class ResourceCacheFacade implements Disposable {
 	}
 
 	/**
+	 * Checks whether a resource has been loaded or not
+	 * @param <ResourceType> type of the resource to check if it has been loaded
+	 * @param uuid unique id of the object to test if it's loaded
+	 * @param type the type of resource
+	 * @return true if the object has been loaded
+	 */
+	public static <ResourceType> boolean isLoaded(UUID uuid, Class<ResourceType> type) {
+		try {
+			String fullPath = ResourceNames.getDirPath(type) + uuid.toString();
+			return mAssetManager.isLoaded(fullPath, type);
+		} catch (UndefinedResourceTypeException e) {
+			return false;
+		}
+	}
+
+	/**
 	 * Checks if everything has loaded and can be used.
 	 * @return true if everything has been loaded
 	 * @throws UndefinedResourceTypeException
@@ -185,15 +213,19 @@ public class ResourceCacheFacade implements Disposable {
 	public static boolean update() throws UndefinedResourceTypeException {
 		boolean fullyLoaded = true;
 		try {
-			if (!mDependencyLoader.update()) {
-				fullyLoaded = false;
+			try {
+				if (!mDependencyLoader.update()) {
+					fullyLoaded = false;
+				}
+				if (!mAssetManager.update()) {
+					fullyLoaded = false;
+				}
+			} catch (UndefinedResourceTypeException e) {
+				mLoadQueue.clear();
+				throw e;
 			}
-			if (!mAssetManager.update()) {
-				fullyLoaded = false;
-			}
-		} catch (UndefinedResourceTypeException e) {
-			mLoadQueue.clear();
-			throw e;
+		} catch (GdxRuntimeException e) {
+			// TODO check what caused the exception
 		}
 		return fullyLoaded;
 	}
@@ -209,11 +241,18 @@ public class ResourceCacheFacade implements Disposable {
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see com.badlogic.gdx.utils.Disposable#dispose()
+	/**
+	 * Checks how many resources are loaded
+	 * @return number of loaded resources
 	 */
-	@Override
-	public void dispose() {
+	public static int getLoadedCount() {
+		return mAssetManager.getLoadedAssets();
+	}
+
+	/**
+	 * Disposes all the resources allocated.
+	 */
+	public static void dispose() {
 		mAssetManager.dispose();
 	}
 
@@ -231,7 +270,7 @@ public class ResourceCacheFacade implements Disposable {
 	 * its LevelDef through ResourceDependencyLoader first. All resources
 	 * can be directly accessed through this manager once loaded.
 	 */
-	private static AssetManager mAssetManager = new AssetManager();
+	private static AssetManager mAssetManager = null;
 
 	/**
 	 * Handles loading all dependencies.

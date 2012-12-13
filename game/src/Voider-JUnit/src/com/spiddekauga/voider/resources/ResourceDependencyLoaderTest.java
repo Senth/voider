@@ -1,5 +1,6 @@
 package com.spiddekauga.voider.resources;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -17,7 +18,7 @@ import com.spiddekauga.voider.game.ActorDef;
 import com.spiddekauga.voider.game.actors.Types;
 
 /**
- * 
+ * Tests the resource depnedency loader
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
@@ -78,6 +79,7 @@ public class ResourceDependencyLoaderTest {
 			assertTrue("dep1 is loaded", mAssetManager.isLoaded(getPath(dep1)));
 			assertTrue("dep2 is loaded", mAssetManager.isLoaded(getPath(dep2)));
 			assertTrue("depdep is loaded", mAssetManager.isLoaded(getPath(depdep)));
+			assertEquals("number of resources", mAssetManager.getLoadedAssets(), 4);
 		} catch (UndefinedResourceTypeException e) {
 			e.printStackTrace();
 			fail("Exception when loading!");
@@ -89,6 +91,7 @@ public class ResourceDependencyLoaderTest {
 		assertTrue("dep1 is loaded", !mAssetManager.isLoaded(getPath(dep1)));
 		assertTrue("dep2 is loaded", !mAssetManager.isLoaded(getPath(dep2)));
 		assertTrue("depdep is loaded", !mAssetManager.isLoaded(getPath(depdep)));
+		assertEquals("number of resources", mAssetManager.getLoadedAssets(), 0);
 
 		delete(def);
 		delete(dep1);
@@ -101,7 +104,7 @@ public class ResourceDependencyLoaderTest {
 	 * place and be amongst some of the valid actors.
 	 * @param resource the resource to remove from the hard drive.
 	 */
-	private void delete(IUniqueId resource) {
+	static void delete(IUniqueId resource) {
 		try {
 			FileHandle saveFile = Gdx.files.external(getPath(resource));
 
@@ -117,7 +120,7 @@ public class ResourceDependencyLoaderTest {
 	 * @param resource the resource we want the path to
 	 * @return the path to the resource
 	 */
-	private String getPath(IUniqueId resource) {
+	static String getPath(IUniqueId resource) {
 		try {
 			return ResourceNames.getDirPath(resource.getClass()) + resource.getId().toString();
 		} catch (Exception e) {
