@@ -35,9 +35,8 @@ public class Config {
 		public final static String STORAGE = "Voider/";
 		/** Backup extension */
 		public final static String BACKUP_EXT = ".bak";
-		/** Test file extension, used for JUnit test so that these
-		 * easily can be distinguished from normal save files. */
-		public final static String TEST_PREFIX = "test-";
+		/** The external directory used when storing test game data */
+		public final static String TEST_STORAGE = "Voider-test/";
 	}
 
 	/**

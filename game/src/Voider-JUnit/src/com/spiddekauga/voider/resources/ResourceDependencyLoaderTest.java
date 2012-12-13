@@ -31,6 +31,7 @@ public class ResourceDependencyLoaderTest {
 	public static void setUpBeforeClass() throws Exception {
 		Config.init();
 		ResourceSaver.init();
+		ResourceNames.useTestPath();
 		LwjglNativesLoader.load();
 		Gdx.files = new LwjglFiles();
 

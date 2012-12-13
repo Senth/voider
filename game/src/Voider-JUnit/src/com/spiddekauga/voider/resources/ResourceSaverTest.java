@@ -30,7 +30,8 @@ public class ResourceSaverTest {
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 		Config.init();
-		ResourceSaver.init(true);
+		ResourceSaver.init();
+		ResourceNames.useTestPath();
 		LwjglNativesLoader.load();
 		Gdx.files = new LwjglFiles();
 	}
@@ -47,7 +48,7 @@ public class ResourceSaverTest {
 
 		String relativePath = null;
 		try {
-			relativePath = ResourceNames.getDirPath(def.getClass()) + Config.File.TEST_PREFIX + def.getId().toString();
+			relativePath = ResourceNames.getDirPath(def.getClass()) + def.getId().toString();
 		} catch (UndefinedResourceTypeException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();

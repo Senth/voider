@@ -69,6 +69,41 @@ public class ResourceCacheFacade {
 	}
 
 	/**
+	 * Unloads all of the specified resources
+	 * @param <ResourceType> the type of resource to unload
+	 * @param type the type of resource to unload
+	 * @param unloadDependencies true if the cache shall unload all the dependencies.
+	 * @throws UndefinedResourceTypeException
+	 */
+	public static <ResourceType> void unloadAllOf(Class<ResourceType> type, boolean unloadDependencies) throws UndefinedResourceTypeException {
+		String dirPath = ResourceNames.getDirPath(type);
+
+		// Get all resource files
+		FileHandle dir = Gdx.files.external(dirPath);
+		if (!dir.exists() || !dir.isDirectory()) {
+			throw new UndefinedResourceTypeException(type);
+		}
+
+		FileHandle[] files = dir.list();
+		// Only load the resource, no dependencies
+		if (!unloadDependencies) {
+			for (FileHandle file : files) {
+				mAssetManager.load(file.path(), type);
+			}
+		}
+		// Load dependencies too
+		else {
+			for (FileHandle file : files) {
+				if (mAssetManager.isLoaded(file.path())) {
+					mDependencyLoader.unload((Def) mAssetManager.get(file.path(), type));
+				} else {
+					Gdx.app.error("ResourceNotLoaded", "unloadAllOf(), a resource wasn't loaded before");
+				}
+			}
+		}
+	}
+
+	/**
 	 * Loads the resource including all dependencies.
 	 * @param <ResourceType> Class of the resource that shall be loaded.
 	 * @param resourceId the id of the resource we're loading (i.e. not the
@@ -97,7 +132,7 @@ public class ResourceCacheFacade {
 	}
 
 	/**
-	 * Loads a resource of dynamic type. Included in these are in general resources
+	 * Loads a definition. Included in these are in general resources
 	 * that the user can add and remove. E.g. all actor, definitions, levels, etc.
 	 * @param <DefClass> Class of the definition to load
 	 * @param defId the unique id of the resource we want to load
@@ -111,6 +146,24 @@ public class ResourceCacheFacade {
 		} else {
 			final String fullName = ResourceNames.getDirPath(type) + defId.toString();
 			mAssetManager.load(fullName, type);
+		}
+	}
+
+	/**
+	 * Unloads a definition.
+	 * @param def the definition to unload
+	 * @param unloadDependencies if we shall unload the dependencies
+	 */
+	public static void unload(Def def, boolean unloadDependencies) {
+		if (unloadDependencies) {
+			mDependencyLoader.unload(def);
+		} else {
+			try {
+				final String fullName = ResourceNames.getDirPath(def.getClass()) + def.getId().toString();
+				mAssetManager.unload(fullName);
+			} catch (UndefinedResourceTypeException e) {
+				Gdx.app.error("Unknown resource type", "Should never happen when unloading");
+			}
 		}
 	}
 

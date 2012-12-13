@@ -76,14 +76,23 @@ public enum ResourceNames {
 		}
 	}
 
+	/**
+	 * Changes the external storage path to the TEST_STORAGE instead
+	 */
+	static void useTestPath() {
+		ACTOR_DEF_PATH = Config.File.TEST_STORAGE + "actors/";
+		LEVEL_DEF_PATH = Config.File.TEST_STORAGE + "levelDefs/";
+		LEVEL_PATH = Config.File.TEST_STORAGE + "levels/";
+	}
+
 	/** Directory for all texture */
 	private static final String TEXTURE_PATH = "gfx/";
 	/** Directory for all actor definitions */
-	private static final String ACTOR_DEF_PATH = Config.File.STORAGE + "actors/";
+	private static String ACTOR_DEF_PATH = Config.File.STORAGE + "actors/";
 	/** Directory for all level definitions */
-	private static final String LEVEL_DEF_PATH = Config.File.STORAGE + "levelDefs/";
+	private static String LEVEL_DEF_PATH = Config.File.STORAGE + "levelDefs/";
 	/** Directory for all the actual levels */
-	private static final String LEVEL_PATH = Config.File.STORAGE + "levels/";
+	private static String LEVEL_PATH = Config.File.STORAGE + "levels/";
 	/** Directory for all particle effects */
 	private static final String PARTICLE_PATH = "particles/";
 	/** Directory for all sound effects */
