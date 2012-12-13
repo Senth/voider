@@ -3,7 +3,9 @@ package com.spiddekauga.voider.resources;
 import java.util.LinkedList;
 import java.util.UUID;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Disposable;
 
 
@@ -14,7 +16,7 @@ import com.badlogic.gdx.utils.Disposable;
  * methods. To read (and get an object) from the cache, use one of the
  * get() methods. To unload cache use one of the appropriate unload() methods.
  * 
- * @see #ResourceSaver for how to save files
+ * @see ResourceSaver for how to save files
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
@@ -29,14 +31,37 @@ public class ResourceCacheFacade implements Disposable {
 
 	/**
 	 * Loads all resources of the specified type
+	 * @param <ResourceType> the type of resource to load
 	 * @param type the type of resource to load
 	 * @param loadDependencies Set to true if the cache shall load all the files
 	 * dependencies. E.g. For ActorDef it has some textures, maybe particle
 	 * effects, etc. If loadDependencies are set to true the cache will
 	 * load these dependencies too.
+	 * @throws UndefinedResourceTypeException
 	 */
-	public static <ResourceType> void loadAllOf(Class<ResourceType> type, boolean loadDependencies) {
-		// TODO
+	public static <ResourceType> void loadAllOf(Class<ResourceType> type, boolean loadDependencies) throws UndefinedResourceTypeException {
+		String dirPath = ResourceNames.getDirPath(type);
+
+		// Get all resource files
+		FileHandle dir = Gdx.files.external(dirPath);
+		if (!dir.exists() || !dir.isDirectory()) {
+			throw new UndefinedResourceTypeException(type);
+		}
+
+		FileHandle[] files = dir.list();
+		// Only load the resource, no dependencies
+		if (!loadDependencies) {
+			for (FileHandle file : files) {
+				mAssetManager.load(file.path(), type);
+			}
+		}
+		// Load dependencies too
+		else {
+			for (FileHandle file : files) {
+				UUID uuid = UUID.fromString(file.name());
+				mDependencyLoader.load(uuid, type);
+			}
+		}
 	}
 
 	/**
@@ -129,9 +154,27 @@ public class ResourceCacheFacade implements Disposable {
 	 * @param <ResourceType> the resource type that will be returned
 	 * @param type resource type that will be returned
 	 * @return array with all the resources of that type
+	 * @throws UndefinedResourceTypeException
 	 */
-	public static <ResourceType> ResourceType[] get(Class<ResourceType> resourceType) {
-		return null;
+	@SuppressWarnings("unchecked")
+	public static <ResourceType> ResourceType[] get(Class<ResourceType> type) throws UndefinedResourceTypeException {
+		String dirPath = ResourceNames.getDirPath(type);
+
+		// Get all resource files
+		FileHandle dir = Gdx.files.external(dirPath);
+		if (!dir.exists() || !dir.isDirectory()) {
+			throw new UndefinedResourceTypeException(type);
+		}
+
+		FileHandle[] files = dir.list();
+
+		Object[] resources = new Object[files.length];
+
+		for (int i = 0; i < files.length; ++i) {
+			resources[i] = mAssetManager.get(files[i].path(), type);
+		}
+
+		return (ResourceType[]) resources;
 	}
 
 	/**

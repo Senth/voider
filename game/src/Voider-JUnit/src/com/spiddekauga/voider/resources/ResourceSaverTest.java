@@ -47,7 +47,7 @@ public class ResourceSaverTest {
 
 		String relativePath = null;
 		try {
-			relativePath = Config.File.STORAGE + ResourceNames.getDirPath(def.getClass()) + Config.File.TEST_PREFIX + def.getId().toString();
+			relativePath = ResourceNames.getDirPath(def.getClass()) + Config.File.TEST_PREFIX + def.getId().toString();
 		} catch (UndefinedResourceTypeException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();

@@ -4,7 +4,9 @@ import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.assets.loaders.resolvers.ExternalFileHandleResolver;
 import com.badlogic.gdx.utils.Array;
+import com.spiddekauga.voider.game.ActorDef;
 
 /**
  * Makes sure that all dependencies to the specified resource is loaded
@@ -21,6 +23,7 @@ class ResourceDependencyLoader {
 	 */
 	ResourceDependencyLoader(AssetManager assetManager) {
 		mAssetManager = assetManager;
+		mAssetManager.setLoader(ActorDef.class, new JsonLoader<ActorDef>(new ExternalFileHandleResolver(), ActorDef.class));
 	}
 
 	/**
@@ -84,6 +87,8 @@ class ResourceDependencyLoader {
 		if (mLoadingDefs.size == 0) {
 			return true;
 		}
+
+		mAssetManager.update();
 
 		// If any of the resources we're waiting for been loaded ->
 		// Check for its dependencies and remove from load

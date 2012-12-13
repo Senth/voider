@@ -55,7 +55,7 @@ public class ResourceSaver {
 		try {
 			byte[] encryptedDef = mCrypter.encrypt(jsonString);
 
-			String relativePath = Config.File.STORAGE + ResourceNames.getDirPath(object.getClass());
+			String relativePath = ResourceNames.getDirPath(object.getClass());
 			if (mTesting) {
 				relativePath += Config.File.TEST_PREFIX;
 			}

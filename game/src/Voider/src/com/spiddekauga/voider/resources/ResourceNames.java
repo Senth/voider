@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
+import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.ActorDef;
 import com.spiddekauga.voider.game.Level;
 import com.spiddekauga.voider.game.LevelDef;
@@ -78,11 +79,11 @@ public enum ResourceNames {
 	/** Directory for all texture */
 	private static final String TEXTURE_PATH = "gfx/";
 	/** Directory for all actor definitions */
-	private static final String ACTOR_DEF_PATH = "actors/";
+	private static final String ACTOR_DEF_PATH = Config.File.STORAGE + "actors/";
 	/** Directory for all level definitions */
-	private static final String LEVEL_DEF_PATH = "levelDefs/";
+	private static final String LEVEL_DEF_PATH = Config.File.STORAGE + "levelDefs/";
 	/** Directory for all the actual levels */
-	private static final String LEVEL_PATH = "levels/";
+	private static final String LEVEL_PATH = Config.File.STORAGE + "levels/";
 	/** Directory for all particle effects */
 	private static final String PARTICLE_PATH = "particles/";
 	/** Directory for all sound effects */

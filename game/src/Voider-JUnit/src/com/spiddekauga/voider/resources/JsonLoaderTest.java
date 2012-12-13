@@ -32,7 +32,6 @@ public class JsonLoaderTest {
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 		Config.init();
-		ResourceSaver.init();
 		LwjglNativesLoader.load();
 		Gdx.files = new LwjglFiles();
 
@@ -138,7 +137,7 @@ public class JsonLoaderTest {
 	 */
 	private String getPath(IUniqueId resource) {
 		try {
-			return Config.File.STORAGE + ResourceNames.getDirPath(resource.getClass()) + Config.File.TEST_PREFIX + resource.getId().toString();
+			return ResourceNames.getDirPath(resource.getClass()) + Config.File.TEST_PREFIX + resource.getId().toString();
 		} catch (Exception e) {
 
 		}
