@@ -29,7 +29,6 @@ public class ResourceCacheFacade implements Disposable {
 
 	/**
 	 * Loads all resources of the specified type
-	 * @param <ResourceType> Class of the type to load
 	 * @param type the type of resource to load
 	 * @param loadDependencies Set to true if the cache shall load all the files
 	 * dependencies. E.g. For ActorDef it has some textures, maybe particle
@@ -122,6 +121,17 @@ public class ResourceCacheFacade implements Disposable {
 	public static <ResourceType> ResourceType get(UUID resourceId, Class<ResourceType> resourceType) throws UndefinedResourceTypeException {
 		final String fullPath = ResourceNames.getDirPath(resourceType) + resourceId.toString();
 		return mAssetManager.get(fullPath, resourceType);
+	}
+
+	/**
+	 * Returns all of the specified resource type
+	 * @Precondition the resources have been loaded
+	 * @param <ResourceType> the resource type that will be returned
+	 * @param type resource type that will be returned
+	 * @return array with all the resources of that type
+	 */
+	public static <ResourceType> ResourceType[] get(Class<ResourceType> resourceType) {
+		return null;
 	}
 
 	/**
