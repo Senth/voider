@@ -13,7 +13,7 @@ public class ResourceCorruptException extends RuntimeException {
 	 * @param filename the resource's filename
 	 */
 	public ResourceCorruptException(String filename) {
-		mFilename = filename;
+		super(filename);
 	}
 
 	/**
@@ -21,11 +21,9 @@ public class ResourceCorruptException extends RuntimeException {
 	 */
 	@Override
 	public String toString() {
-		return mFilename;
+		return "ResourceCorruptException: " + getMessage();
 	}
 
-	/** Name of the resource */
-	private String mFilename = null;
 	/** For java serialization */
 	private static final long serialVersionUID = -8265952225410023281L;
 

@@ -13,7 +13,7 @@ public class ResourceNotFoundException extends RuntimeException {
 	 * @param filename the resource's filename
 	 */
 	public ResourceNotFoundException(String filename) {
-		mFilename = filename;
+		super(filename);
 	}
 
 	/**
@@ -21,11 +21,9 @@ public class ResourceNotFoundException extends RuntimeException {
 	 */
 	@Override
 	public String toString() {
-		return mFilename;
+		return "ResourceNotFoundException: " + getMessage();
 	}
 
-	/** Name of the resource */
-	private String mFilename = null;
 	/** For java serialization */
 	private static final long serialVersionUID = -6894610361348804648L;
 

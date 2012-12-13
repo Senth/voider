@@ -171,6 +171,15 @@ public class ResourceCacheFacadeTest {
 		} catch (UndefinedResourceTypeException e) {
 			fail("Undefined resource type exception");
 		}
+
+		try {
+			ResourceCacheFacade.finishLoading();
+		} catch (UndefinedResourceTypeException e) {
+			fail("Undefined resource type exception");
+		} catch (ResourceCorruptException e) {
+			ResourceDependencyLoaderTest.delete(tempDef);
+			throw e;
+		}
 	}
 
 	/**

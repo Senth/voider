@@ -225,7 +225,19 @@ public class ResourceCacheFacade {
 				throw e;
 			}
 		} catch (GdxRuntimeException e) {
-			// TODO check what caused the exception
+			if (e.getCause() != null && e.getCause().getCause() != null && e.getCause().getCause().getCause() != null) {
+				Throwable source = e.getCause().getCause().getCause();
+				Class<?> type = source.getClass();
+				if (type == ResourceNotFoundException.class) {
+					throw new ResourceNotFoundException(source.getMessage());
+				} else if (type == ResourceCorruptException.class) {
+					throw new ResourceCorruptException(source.getMessage());
+				} else {
+					throw e;
+				}
+			} else {
+				throw e;
+			}
 		}
 		return fullyLoaded;
 	}
