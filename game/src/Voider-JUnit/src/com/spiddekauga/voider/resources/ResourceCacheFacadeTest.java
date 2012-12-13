@@ -77,10 +77,11 @@ public class ResourceCacheFacadeTest {
 	}
 
 	/**
-	 * Test method for {@link com.spiddekauga.voider.resources.ResourceCacheFacade#loadAllOf(java.lang.Class, boolean)}.
+	 * Test to load all ActorDefs
 	 */
 	@Test
 	public void loadAllOf() {
+
 		fail("Not yet implemented");
 	}
 
