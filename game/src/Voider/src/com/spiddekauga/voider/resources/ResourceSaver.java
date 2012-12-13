@@ -17,9 +17,19 @@ public class ResourceSaver {
 
 	/**
 	 * Initializes the class
+	 * @param test if the class is used for testing, i.e. it will add
+	 * a prefix of Config.File.TEST_PREFIX to all files it saves
+	 */
+	public static void init(boolean test) {
+		mCrypter = new ObjectCrypter(Config.Crypto.getFileKey());
+		mTesting = test;
+	}
+
+	/**
+	 * Initializes the class with default parameters
 	 */
 	public static void init() {
-		mCrypter = new ObjectCrypter(Config.Crypto.getFileKey());
+		init(false);
 	}
 
 	/**
@@ -45,7 +55,11 @@ public class ResourceSaver {
 		try {
 			byte[] encryptedDef = mCrypter.encrypt(jsonString);
 
-			String relativePath = Config.File.STORAGE + ResourceNames.getDirPath(object.getClass()) + filename;
+			String relativePath = Config.File.STORAGE + ResourceNames.getDirPath(object.getClass());
+			if (mTesting) {
+				relativePath += Config.File.TEST_PREFIX;
+			}
+			relativePath += filename;
 			FileHandle saveFile = Gdx.files.external(relativePath);
 
 			// File already exist, create backup
@@ -66,6 +80,8 @@ public class ResourceSaver {
 		// Does nothing
 	}
 
+	/** If this class only is used for testing */
+	private static boolean mTesting = false;
 	/** Crypter used for encrypting/decrypting files */
 	private static ObjectCrypter mCrypter = null;
 }

@@ -30,13 +30,13 @@ public class ResourceSaverTest {
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 		Config.init();
-		ResourceSaver.init();
+		ResourceSaver.init(true);
 		LwjglNativesLoader.load();
 		Gdx.files = new LwjglFiles();
 	}
 
 	/**
-	 * Test method for {@link com.spiddekauga.voider.resources.ResourceSaver#save(com.spiddekauga.voider.resources.Def)}.
+	 * Test method for {@link com.spiddekauga.voider.resources.ResourceSaver#save(com.spiddekauga.voider.resources.IUniqueId)}.
 	 */
 	@Test
 	public void testSave() {
@@ -47,7 +47,7 @@ public class ResourceSaverTest {
 
 		String relativePath = null;
 		try {
-			relativePath = Config.File.STORAGE + ResourceNames.getDirPath(def.getClass()) + def.getId().toString();
+			relativePath = Config.File.STORAGE + ResourceNames.getDirPath(def.getClass()) + Config.File.TEST_PREFIX + def.getId().toString();
 		} catch (UndefinedResourceTypeException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();

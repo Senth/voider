@@ -8,6 +8,7 @@ import com.badlogic.gdx.physics.box2d.Filter;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.Shape;
+import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.OrderedMap;
 import com.spiddekauga.voider.game.actors.Types;
@@ -21,7 +22,7 @@ import com.spiddekauga.voider.resources.Textures;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class ActorDef extends Def implements Json.Serializable {
+public class ActorDef extends Def implements Json.Serializable, Disposable {
 	/**
 	 * Constructor that sets all variables
 	 * @param maxLife maximum life of the actor, also starting amount of life
@@ -104,6 +105,16 @@ public class ActorDef extends Def implements Json.Serializable {
 	 */
 	public FixtureDef getFixtureDef() {
 		return mFixtureDef;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.badlogic.gdx.utils.Disposable#dispose()
+	 */
+	@Override
+	public void dispose() {
+		if (mFixtureDef != null && mFixtureDef.shape != null) {
+			mFixtureDef.shape.dispose();
+		}
 	}
 
 	/**
