@@ -1,6 +1,6 @@
 package com.spiddekauga.voider.resources;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.fail;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -31,7 +31,7 @@ public class ResourceCacheFacadeTest {
 	 * Test method for {@link com.spiddekauga.voider.resources.ResourceCacheFacade#loadAllOf(java.lang.Class, boolean)}.
 	 */
 	@Test
-	public void testLoadAllOf() {
+	public void loadAllOf() {
 		fail("Not yet implemented");
 	}
 
@@ -39,7 +39,7 @@ public class ResourceCacheFacadeTest {
 	 * Test method for {@link com.spiddekauga.voider.resources.ResourceCacheFacade#load(java.util.UUID, java.lang.Class, com.spiddekauga.voider.resources.Def)}.
 	 */
 	@Test
-	public void testLoadUUIDClassOfResourceTypeDef() {
+	public void loadLevel() {
 		fail("Not yet implemented");
 	}
 
@@ -47,7 +47,7 @@ public class ResourceCacheFacadeTest {
 	 * Test method for {@link com.spiddekauga.voider.resources.ResourceCacheFacade#load(com.spiddekauga.voider.resources.Def, boolean)}.
 	 */
 	@Test
-	public void testLoadDefBoolean() {
+	public void loadDef() {
 		fail("Not yet implemented");
 	}
 
@@ -55,7 +55,7 @@ public class ResourceCacheFacadeTest {
 	 * Test method for {@link com.spiddekauga.voider.resources.ResourceCacheFacade#load(com.spiddekauga.voider.resources.ResourceNames)}.
 	 */
 	@Test
-	public void testLoadResourceNames() {
+	public void loadResourceName() {
 		fail("Not yet implemented");
 	}
 
