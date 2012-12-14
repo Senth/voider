@@ -37,7 +37,7 @@ public class ResourceSaverTest {
 	}
 
 	/**
-	 * Test method for {@link com.spiddekauga.voider.resources.ResourceSaver#save(com.spiddekauga.voider.resources.IUniqueId)}.
+	 * Test method for {@link com.spiddekauga.voider.resources.ResourceSaver#save(com.spiddekauga.voider.resources.IResource)}.
 	 */
 	@Test
 	public void testSave() {

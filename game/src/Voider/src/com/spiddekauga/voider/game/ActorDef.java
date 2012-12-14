@@ -39,10 +39,10 @@ public class ActorDef extends Def implements Json.Serializable, Disposable {
 			FixtureDef fixtureDef
 			)
 	{
+		setName(name);
 		mMaxLife = maxLife;
 		mType = type;
 		mTextureTypes = textureTypes;
-		mName = name;
 		mFixtureDef = fixtureDef;
 	}
 
@@ -50,7 +50,6 @@ public class ActorDef extends Def implements Json.Serializable, Disposable {
 	 * Default constructor
 	 */
 	public ActorDef() {
-		mName = "unknown";
 	}
 
 	/**
@@ -67,15 +66,6 @@ public class ActorDef extends Def implements Json.Serializable, Disposable {
 	 */
 	public com.spiddekauga.voider.game.actors.Types getType() {
 		return mType;
-	}
-
-	/**
-	 * The name of the actor. This is not the same as actor type. I.e.
-	 * enemies have different names
-	 * @return common name
-	 */
-	public String getName() {
-		return mName;
 	}
 
 	/**
@@ -134,10 +124,6 @@ public class ActorDef extends Def implements Json.Serializable, Disposable {
 	 */
 	private Textures.Types[] mTextureTypes = null;
 	/**
-	 * Name of the actor
-	 */
-	private String mName = null;
-	/**
 	 * @todo weapon type
 	 * @todo move type (for enemies)
 	 */
@@ -161,7 +147,6 @@ public class ActorDef extends Def implements Json.Serializable, Disposable {
 		// Write ActorDef's variables first
 		json.writeValue("mMaxLife", mMaxLife);
 		json.writeValue("mType", mType);
-		json.writeValue("mName", mName);
 		json.writeValue("mTextureTypes", mTextureTypes);
 
 
@@ -228,7 +213,6 @@ public class ActorDef extends Def implements Json.Serializable, Disposable {
 	 */
 	@Override
 	public void read(Json json, OrderedMap<String, Object> jsonData) {
-		// Actor
 		long version = json.readValue("VERSION", long.class, jsonData);
 
 		/** @TODO do something when another version... */
@@ -236,13 +220,17 @@ public class ActorDef extends Def implements Json.Serializable, Disposable {
 			//...
 		}
 
+		// Superclass
 		@SuppressWarnings("unchecked")
 		OrderedMap<String, Object> superMap = json.readValue("Def", OrderedMap.class, jsonData);
-		super.read(json, superMap);
+		if (superMap != null) {
+			super.read(json, superMap);
+		}
 
+
+		// Our variables
 		mMaxLife = json.readValue("mMaxLife", float.class, jsonData);
 		mType = json.readValue("mType", Types.class, jsonData);
-		mName = json.readValue("mName", String.class, jsonData);
 		mTextureTypes = json.readValue("mTextureTypes", Textures.Types[].class, jsonData);
 
 

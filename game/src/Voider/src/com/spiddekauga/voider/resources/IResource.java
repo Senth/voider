@@ -7,7 +7,7 @@ import java.util.UUID;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public interface IUniqueId {
+public interface IResource {
 	/**
 	 * @return a unique id for the type
 	 */

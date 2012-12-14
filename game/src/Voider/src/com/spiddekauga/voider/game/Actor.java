@@ -77,9 +77,4 @@ public abstract class Actor implements ITriggerListener, Json.Serializable {
 	 * The belonging definition of this actor
 	 */
 	private final ActorDef mDef;
-
-	/**
-	 * For serialization
-	 */
-	private static final int VERSION = 1;
 }

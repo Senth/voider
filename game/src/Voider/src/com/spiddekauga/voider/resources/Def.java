@@ -14,18 +14,14 @@ import com.badlogic.gdx.utils.OrderedMap;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class Def implements IUniqueId {
+public abstract class Def implements IResource, Json.Serializable {
 	/**
 	 * Default constructor for the resource.
 	 */
 	public Def() {
 		mUniqueId = UUID.randomUUID();
 
-		// We don't initialize the external and internal dependencies
-		// here because:
-		// 1. We don't want them to take up extra space if they aren't needed.
-		// 2. When loading from file they would first be initialized with an
-		// empty map/set, then initialized with the proper one.
+		/** @TODO Set creator and original creator somehow */
 	}
 
 	/**
@@ -54,29 +50,74 @@ public class Def implements IUniqueId {
 	}
 
 	/**
-	 * @return all external dependencies
+	 * @return number of external dependencies
 	 */
-	public final Set<DefItem> getExternalDependencies() {
-		return mExternalDependencies;
+	public int getExternalDependenciesCount() {
+		return mExternalDependencies.size();
 	}
 
 	/**
-	 * @return all internal dependencies
+	 * @return number of internal dependencies
 	 */
-	public final Set<ResourceNames> getInternalDependencies() {
-		return mInternalDependencies;
+	public int getInternalDependenciesCount() {
+		return mInternalDependencies.size();
 	}
 
 	/**
-	 * Writes this class to a json object. This method is only required to
-	 * be called when a derived class implements the Json.Serializable interface
-	 * @note This class does not implement this interface, the method just looks
-	 * the same for simplicity; this allows derived classes to skip implementing
-	 * (and overriding) the write method.
+	 * @return the name of the definition
+	 */
+	public final String getName() {
+		return mName;
+	}
+
+	/**
+	 * Sets the name of the definition
+	 * @param name the new name of the definition
+	 */
+	public void setName(String name) {
+		mName = name;
+	}
+
+	/**
+	 * @return the name of the creator
+	 */
+	public final String getCreator() {
+		return mCreator;
+	}
+
+	/**
+	 * @return the original creator of this definition
+	 */
+	public final String getOriginalCreator() {
+		return mOriginalCreator;
+	}
+
+	/**
+	 * @return the comment of the definition
+	 */
+	public final String getComment() {
+		return mComment;
+	}
+
+	/**
+	 * Sets the comment of the definition
+	 * @param comment the new comment
+	 */
+	public void setComment(String comment) {
+		mComment = comment;
+	}
+
+	/**
+	 * Writes this class to a json object.
 	 * @param json the object which we write all this classe's variables to.
 	 */
-	protected void write(Json json) {
+	@Override
+	public void write(Json json) {
 		json.writeValue("mUniqueId", mUniqueId.toString());
+		json.writeValue("mName", mName);
+		json.writeValue("mComment", mComment);
+		json.writeValue("mCreator", mCreator);
+		json.writeValue("mOriginalCreator", mOriginalCreator);
 
 		if (mInternalDependencies.isEmpty()) {
 			json.writeValue("mInternalDependencies", (OrderedMap<?,?>) null);
@@ -102,16 +143,17 @@ public class Def implements IUniqueId {
 	}
 
 	/**
-	 * Reads this class as a json object. This method is only required to be
-	 * called when a derived class implements the Json.Serializable interface.
-	 * @note This class does not implement this interface, the method just look
-	 * the same for simplicity; this allows derived classes to skip implementing
-	 * (and overriding) the read method.
+	 * Reads this class as a json object.
 	 * @param json the json to read the value from
 	 * @param jsonData this is where all the json variables have been loaded
 	 */
-	protected void read(Json json, OrderedMap<String, Object> jsonData) {
+	@Override
+	public void read(Json json, OrderedMap<String, Object> jsonData) {
 		mUniqueId = UUID.fromString(json.readValue("mUniqueId", String.class, jsonData));
+		mName = json.readValue("mName", String.class, jsonData);
+		mCreator = json.readValue("mCreator", String.class, jsonData);
+		mOriginalCreator = json.readValue("mOriginalCreator", String.class, jsonData);
+		mComment = json.readValue("mComment", String.class, jsonData);
 
 		OrderedMap<?,?> internalMap = json.readValue("mInternalDependencies", OrderedMap.class, jsonData);
 		if (internalMap != null) {
@@ -139,6 +181,15 @@ public class Def implements IUniqueId {
 	}
 
 	/**
+	 * Adds an external dependency to the resource
+	 * @param uuid the unique id of the dependency
+	 * @param type the type of dependency
+	 */
+	protected void addDependency(UUID uuid, Class<?> type) {
+		mExternalDependencies.add(new DefItem(uuid, type));
+	}
+
+	/**
 	 * Adds an internal dependency to the resource
 	 * @param dependency the resource dependency
 	 * @see #addDependency(Def)
@@ -163,10 +214,48 @@ public class Def implements IUniqueId {
 		mInternalDependencies.remove(dependency);
 	}
 
+	/**
+	 * @return all external dependencies
+	 */
+	final Set<DefItem> getExternalDependencies() {
+		return mExternalDependencies;
+	}
+
+	/**
+	 * @return all internal dependencies
+	 */
+	final Set<ResourceNames> getInternalDependencies() {
+		return mInternalDependencies;
+	}
+
+	/**
+	 * Sets the creator, only for JUNIT testing
+	 * @param creator the new creator name
+	 */
+	void setCreator(String creator) {
+		mCreator = creator;
+	}
+
+	/**
+	 * Sets the original creator, only for JUNIT testing
+	 * @param creator the original creator
+	 */
+	void setOriginalCreator(String creator) {
+		mOriginalCreator = creator;
+	}
+
 	/** A unique id for the resource */
 	private UUID mUniqueId;
 	/** Dependencies for the resource */
 	private Set<DefItem> mExternalDependencies = new HashSet<DefItem>();
 	/** Internal dependencies, such as textures, sound, particle effects */
 	private Set<ResourceNames> mInternalDependencies = new HashSet<ResourceNames>();
+	/** Name of the definition */
+	private String mName = "Unnamed";
+	/** Original creator name */
+	private String mOriginalCreator = "Unnamed";
+	/** Creator name */
+	private String mCreator = "Unnamed";
+	/** Comment of the definition */
+	private String mComment = null;
 }

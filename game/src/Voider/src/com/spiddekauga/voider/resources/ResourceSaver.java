@@ -26,7 +26,7 @@ public class ResourceSaver {
 	 * Saves a resource that has a unique id
 	 * @param resource the resource to save
 	 */
-	public static void save(IUniqueId resource) {
+	public static void save(IResource resource) {
 		save(resource, resource.getId().toString());
 	}
 

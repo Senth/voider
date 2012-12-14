@@ -51,6 +51,9 @@ public class DefTest {
 		Def def = new ActorDef(100, Types.PLAYER, null, "player", null);
 		Def dependency1 = new ActorDef(200, Types.BOSS, null, "boss", null);
 		Def dependency2 = new ActorDef(300, Types.BULLET, null, "bullet", null);
+		def.setComment("testComment");
+		def.setOriginalCreator("originalCreator");
+		def.setCreator("testCreator");
 		def.addDependency(dependency1);
 		def.addDependency(dependency2);
 		def.addDependency(ResourceNames.PARTICLE_TEST);
@@ -60,16 +63,20 @@ public class DefTest {
 		String jsonString = json.toJson(def);
 		Def testDef = json.fromJson(ActorDef.class, jsonString);
 
-		assertEquals("UUID equals", testDef.getId(), def.getId());
+		assertEquals("UUID equals", def.getId(), testDef.getId());
+		assertEquals("Name", def.getName(), testDef.getName());
+		assertEquals("Comment", def.getComment(), testDef.getComment());
+		assertEquals("Creator", def.getCreator(), testDef.getCreator());
+		assertEquals("Original Creator", def.getOriginalCreator(), testDef.getOriginalCreator());
 
 		// Def dependencies
-		assertEquals("Dep def size", testDef.getExternalDependencies().size(), def.getExternalDependencies().size());
+		assertEquals("Dep def size", def.getExternalDependencies().size(), testDef.getExternalDependencies().size());
 		for (DefItem item : def.getExternalDependencies()) {
 			assertTrue("Dep def item", testDef.getExternalDependencies().contains(item));
 		}
 
 		// ResourceNames dependencies
-		assertEquals("Dep res size", testDef.getInternalDependencies().size(), def.getInternalDependencies().size());
+		assertEquals("Dep res size", def.getInternalDependencies().size(), testDef.getInternalDependencies().size());
 		for (ResourceNames item : def.getInternalDependencies()) {
 			assertTrue("Dep res item", testDef.getInternalDependencies().contains(item));
 		}

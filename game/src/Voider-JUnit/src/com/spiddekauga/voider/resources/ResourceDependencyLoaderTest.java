@@ -105,7 +105,7 @@ public class ResourceDependencyLoaderTest {
 	 * place and be amongst some of the valid actors.
 	 * @param resource the resource to remove from the hard drive.
 	 */
-	static void delete(IUniqueId resource) {
+	static void delete(IResource resource) {
 		try {
 			FileHandle saveFile = Gdx.files.external(getPath(resource));
 
@@ -121,7 +121,7 @@ public class ResourceDependencyLoaderTest {
 	 * @param resource the resource we want the path to
 	 * @return the path to the resource
 	 */
-	static String getPath(IUniqueId resource) {
+	static String getPath(IResource resource) {
 		try {
 			return ResourceNames.getDirPath(resource.getClass()) + resource.getId().toString();
 		} catch (Exception e) {

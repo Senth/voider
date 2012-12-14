@@ -90,7 +90,7 @@ public class JsonLoaderTest {
 	 * Just used for easily save a definition
 	 * @param resource the definition to save
 	 */
-	private void save(IUniqueId resource) {
+	private void save(IResource resource) {
 		assert(mCrypter != null);
 
 		Json json = new Json();
@@ -119,7 +119,7 @@ public class JsonLoaderTest {
 	 * place and be amongst some of the valid actors.
 	 * @param resource the resource to remove from the hard drive.
 	 */
-	private void delete(IUniqueId resource) {
+	private void delete(IResource resource) {
 		try {
 			FileHandle saveFile = Gdx.files.external(getPath(resource));
 
@@ -135,7 +135,7 @@ public class JsonLoaderTest {
 	 * @param resource the resource we want the path to
 	 * @return the path to the resource
 	 */
-	private String getPath(IUniqueId resource) {
+	private String getPath(IResource resource) {
 		try {
 			return ResourceNames.getDirPath(resource.getClass()) + resource.getId().toString();
 		} catch (Exception e) {

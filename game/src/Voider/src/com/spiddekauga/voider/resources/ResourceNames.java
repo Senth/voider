@@ -8,6 +8,7 @@ import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.ActorDef;
 import com.spiddekauga.voider.game.Level;
 import com.spiddekauga.voider.game.LevelDef;
+import com.spiddekauga.voider.game.ThemeDef;
 
 /**
  * All static resources. Name and a corresponding filename
@@ -67,6 +68,8 @@ public enum ResourceNames {
 			return LEVEL_DEF_PATH;
 		} else if (type == Level.class) {
 			return LEVEL_PATH;
+		} else if (type == ThemeDef.class) {
+			return LEVEL_THEME_DEF_PATH;
 		} else if (type == ParticleEffect.class){
 			return PARTICLE_PATH;
 		} else if (type == Sound.class) {
@@ -83,6 +86,7 @@ public enum ResourceNames {
 		ACTOR_DEF_PATH = Config.File.TEST_STORAGE + "actors/";
 		LEVEL_DEF_PATH = Config.File.TEST_STORAGE + "levelDefs/";
 		LEVEL_PATH = Config.File.TEST_STORAGE + "levels/";
+		LEVEL_THEME_DEF_PATH = Config.File.TEST_STORAGE + "theme/levels/";
 	}
 
 	/** Directory for all texture */
@@ -93,6 +97,8 @@ public enum ResourceNames {
 	private static String LEVEL_DEF_PATH = Config.File.STORAGE + "levelDefs/";
 	/** Directory for all the actual levels */
 	private static String LEVEL_PATH = Config.File.STORAGE + "levels/";
+	/** Directory for all the level themes */
+	private static String LEVEL_THEME_DEF_PATH = Config.File.STORAGE + "theme/levels/";
 	/** Directory for all particle effects */
 	private static final String PARTICLE_PATH = "particles/";
 	/** Directory for all sound effects */

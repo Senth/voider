@@ -4,14 +4,14 @@ import java.util.UUID;
 
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.OrderedMap;
-import com.spiddekauga.voider.resources.IUniqueId;
+import com.spiddekauga.voider.resources.IResource;
 
 /**
  * A game level
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class Level implements Json.Serializable, IUniqueId {
+public class Level implements Json.Serializable, IResource {
 	/**
 	 * Default constructor. Creates an empty level with a unique id
 	 */
@@ -31,6 +31,8 @@ public class Level implements Json.Serializable, IUniqueId {
 			return false;
 		} else if (object instanceof Level) {
 			return ((Level)object).mUniqueId.equals(mUniqueId);
+		} else if (object instanceof UUID) {
+			return mUniqueId.equals(object);
 		} else {
 			return false;
 		}
@@ -43,8 +45,6 @@ public class Level implements Json.Serializable, IUniqueId {
 	public UUID getId() {
 		return mUniqueId;
 	}
-
-
 
 	/** Unique id for the level */
 	private UUID mUniqueId = null;
