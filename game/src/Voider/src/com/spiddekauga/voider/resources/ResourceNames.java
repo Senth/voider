@@ -82,7 +82,7 @@ public enum ResourceNames {
 	/**
 	 * Changes the external storage path to the TEST_STORAGE instead
 	 */
-	static void useTestPath() {
+	public static void useTestPath() {
 		ACTOR_DEF_PATH = Config.File.TEST_STORAGE + "actors/";
 		LEVEL_DEF_PATH = Config.File.TEST_STORAGE + "levelDefs/";
 		LEVEL_PATH = Config.File.TEST_STORAGE + "levels/";

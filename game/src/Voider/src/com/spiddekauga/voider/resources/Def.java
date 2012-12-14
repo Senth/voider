@@ -228,22 +228,6 @@ public abstract class Def implements IResource, Json.Serializable {
 		return mInternalDependencies;
 	}
 
-	/**
-	 * Sets the creator, only for JUNIT testing
-	 * @param creator the new creator name
-	 */
-	void setCreator(String creator) {
-		mCreator = creator;
-	}
-
-	/**
-	 * Sets the original creator, only for JUNIT testing
-	 * @param creator the original creator
-	 */
-	void setOriginalCreator(String creator) {
-		mOriginalCreator = creator;
-	}
-
 	/** A unique id for the resource */
 	private UUID mUniqueId;
 	/** Dependencies for the resource */

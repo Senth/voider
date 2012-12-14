@@ -9,6 +9,9 @@ import com.badlogic.gdx.assets.loaders.resolvers.ExternalFileHandleResolver;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.spiddekauga.voider.game.ActorDef;
+import com.spiddekauga.voider.game.Level;
+import com.spiddekauga.voider.game.LevelDef;
+import com.spiddekauga.voider.game.ThemeDef;
 
 
 /**
@@ -30,6 +33,10 @@ public class ResourceCacheFacade {
 	public static void init() {
 		mAssetManager = new AssetManager();
 		mAssetManager.setLoader(ActorDef.class, new JsonLoader<ActorDef>(new ExternalFileHandleResolver(), ActorDef.class));
+		mAssetManager.setLoader(ThemeDef.class, new JsonLoader<ThemeDef>(new ExternalFileHandleResolver(), ThemeDef.class));
+		mAssetManager.setLoader(LevelDef.class, new JsonLoader<LevelDef>(new ExternalFileHandleResolver(), LevelDef.class));
+		mAssetManager.setLoader(Level.class, new JsonLoader<Level>(new ExternalFileHandleResolver(), Level.class));
+
 		mDependencyLoader = new ResourceDependencyLoader(mAssetManager);
 	}
 

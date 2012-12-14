@@ -3,9 +3,12 @@ package com.spiddekauga.voider.resources;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
+import java.lang.reflect.Field;
 import java.util.UUID;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.badlogic.gdx.utils.Json;
@@ -18,6 +21,20 @@ import com.spiddekauga.voider.game.actors.Types;
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
 public class DefTest {
+
+	/**
+	 * Setup def class; make some variables public
+	 * @throws NoSuchFieldException
+	 * @throws SecurityException
+	 */
+	@BeforeClass
+	static public void setUpBeforeClass() throws SecurityException, NoSuchFieldException {
+		mCreator = Def.class.getDeclaredField("mCreator");
+		mCreator.setAccessible(true);
+
+		mOriginalCreator = Def.class.getDeclaredField("mOriginalCreator");
+		mOriginalCreator.setAccessible(true);
+	}
 
 	/**
 	 * Test method for {@link com.spiddekauga.voider.resources.Def#equals(java.lang.Object)}.
@@ -52,8 +69,12 @@ public class DefTest {
 		Def dependency1 = new ActorDef(200, Types.BOSS, null, "boss", null);
 		Def dependency2 = new ActorDef(300, Types.BULLET, null, "bullet", null);
 		def.setComment("testComment");
-		def.setOriginalCreator("originalCreator");
-		def.setCreator("testCreator");
+		try {
+			mCreator.set(def, "originalCreator");
+			mOriginalCreator.set(def, "creator");
+		} catch (Exception e) {
+			fail("One of the creator field failed");
+		}
 		def.addDependency(dependency1);
 		def.addDependency(dependency2);
 		def.addDependency(ResourceNames.PARTICLE_TEST);
@@ -68,6 +89,7 @@ public class DefTest {
 		assertEquals("Comment", def.getComment(), testDef.getComment());
 		assertEquals("Creator", def.getCreator(), testDef.getCreator());
 		assertEquals("Original Creator", def.getOriginalCreator(), testDef.getOriginalCreator());
+
 
 		// Def dependencies
 		assertEquals("Dep def size", def.getExternalDependencies().size(), testDef.getExternalDependencies().size());
@@ -185,4 +207,8 @@ public class DefTest {
 		assertEquals("res dependencies size readded one", def.getInternalDependencies().size(), 1);
 	}
 
+	/** Field to the original creator in def class */
+	static Field mOriginalCreator = null;
+	/** Field to the creator in the def class */
+	static Field mCreator = null;
 }

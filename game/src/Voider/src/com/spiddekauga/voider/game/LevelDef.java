@@ -166,6 +166,21 @@ public class LevelDef extends Def {
 	}
 
 	/**
+	 * Sets the end x coordinate of the level
+	 * @param endXCoord end x coordinate of the level (left screen edge)
+	 */
+	public void setEndXCoord(float endXCoord) {
+		mEndXCoord = endXCoord;
+	}
+
+	/**
+	 * @return the end x coordinate of the level (left screen edge)
+	 */
+	public float getEndXCoord() {
+		return mEndXCoord;
+	}
+
+	/**
 	 * Sets the theme id, also adds it as a dependency
 	 * @param themeId the theme of the level
 	 */
@@ -192,12 +207,23 @@ public class LevelDef extends Def {
 		json.writeObjectEnd();
 
 		json.writeValue("mMusic", mMusic);
-		json.writeValue("mCampaignId", mCampaignId.toString());
 		json.writeValue("mStoryBefore", mStoryBefore);
 		json.writeValue("mStoryAfter", mStoryAfter);
 		json.writeValue("mRevision", mRevision);
 		json.writeValue("mVersion", getVersionString());
-		json.writeValue("mThemeId", mThemeId.toString());
+		json.writeValue("mEndXCoord", mEndXCoord);
+
+		if (mCampaignId != null) {
+			json.writeValue("mCampaignId", mCampaignId.toString());
+		} else {
+			json.writeValue("mCampaignId", (String)null);
+		}
+
+		if (mThemeId != null) {
+			json.writeValue("mThemeId", mThemeId.toString());
+		} else {
+			json.writeValue("mThemeId", (String)null);
+		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -220,11 +246,20 @@ public class LevelDef extends Def {
 
 		// Variables
 		mMusic = json.readValue("mMusic", ResourceNames.class, jsonData);
-		mCampaignId = UUID.fromString(json.readValue("mCampaignId", String.class, jsonData));
 		mStoryBefore = json.readValue("mStoryBefore", String.class, jsonData);
 		mStoryAfter = json.readValue("mStoryAfter", String.class, jsonData);
 		mRevision = json.readValue("mRevision", long.class, jsonData);
-		mThemeId = UUID.fromString(json.readValue("mThemeId", String.class, jsonData));
+		mEndXCoord = json.readValue("mEndXCoord", float.class, jsonData);
+
+		// UUIDs
+		String stringUuid = json.readValue("mCampaignId", String.class, jsonData);
+		if (stringUuid != null) {
+			mCampaignId = UUID.fromString(stringUuid);
+		}
+		stringUuid = json.readValue("mThemeId", String.class, jsonData);
+		if (stringUuid != null) {
+			mThemeId = UUID.fromString(stringUuid);
+		}
 
 		// Version
 		String stringVersion = json.readValue("mVersion", String.class, jsonData);
@@ -244,6 +279,8 @@ public class LevelDef extends Def {
 	private String mStoryBefore = null;
 	/** Story after the level, set to null to not show */
 	private String mStoryAfter = null;
+	/** End of the map (left screen edge) */
+	private float mEndXCoord = 100.0f;
 	/** The revision of the map, this increases after each save */
 	private long mRevision = 1;
 	/** Main version (1 in 1.0.13) */
