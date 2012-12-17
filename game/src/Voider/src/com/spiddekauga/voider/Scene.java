@@ -23,7 +23,6 @@ public abstract class Scene {
 		update();
 	}
 
-
 	/**
 	 * Updates the scene
 	 */
