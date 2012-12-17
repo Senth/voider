@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.OrderedMap;
+import com.spiddekauga.voider.Config;
 
 /**
  * The abstract base class for all actors
@@ -38,11 +39,22 @@ public abstract class Actor implements ITriggerListener, Json.Serializable {
 	public abstract void update(float deltaTime);
 
 	/**
+	 * @return the definition of the actor
+	 */
+	public ActorDef getDef() {
+		return mDef;
+	}
+
+	/**
 	 * Renders the actor
 	 * @param spriteBatch the current sprite batch for the scene
 	 */
+	@SuppressWarnings("unused")
 	public void render(SpriteBatch spriteBatch) {
-		mSprite.draw(spriteBatch);
+		if (mSprite != null && !Config.Graphics.USE_DEBUG_RENDERER) {
+			mSprite.draw(spriteBatch);
+		}
+
 	}
 
 	/* (non-Javadoc)

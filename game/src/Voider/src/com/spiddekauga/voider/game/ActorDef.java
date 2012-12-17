@@ -11,7 +11,6 @@ import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.OrderedMap;
-import com.spiddekauga.voider.game.actors.ActorTypes;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.Textures;
 
@@ -22,18 +21,16 @@ import com.spiddekauga.voider.resources.Textures;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class ActorDef extends Def implements Json.Serializable, Disposable {
+public abstract class ActorDef extends Def implements Json.Serializable, Disposable {
 	/**
 	 * Constructor that sets all variables
 	 * @param maxLife maximum life of the actor, also starting amount of life
-	 * @param type the actor type
 	 * @param textureTypes all the texture types that are used for the actor
 	 * @param name name of the actor
 	 * @param fixtureDef physical representation of the object
 	 */
 	public ActorDef(
 			float maxLife,
-			com.spiddekauga.voider.game.actors.ActorTypes type,
 			Textures.Types[] textureTypes,
 			String name,
 			FixtureDef fixtureDef
@@ -41,7 +38,6 @@ public class ActorDef extends Def implements Json.Serializable, Disposable {
 	{
 		setName(name);
 		mMaxLife = maxLife;
-		mType = type;
 		mTextureTypes = textureTypes;
 		mFixtureDef = fixtureDef;
 	}
@@ -58,14 +54,6 @@ public class ActorDef extends Def implements Json.Serializable, Disposable {
 	 */
 	public float getMaxLife() {
 		return mMaxLife;
-	}
-
-	/**
-	 * What kind of actor this is, e.g. enemy, player, bullet
-	 * @return actor type
-	 */
-	public com.spiddekauga.voider.game.actors.ActorTypes getType() {
-		return mType;
 	}
 
 	/**
@@ -107,31 +95,20 @@ public class ActorDef extends Def implements Json.Serializable, Disposable {
 		}
 	}
 
-	/**
-	 * Defines the mass, shape, etc.
-	 */
+	/** Defines the mass, shape, etc. */
 	private FixtureDef mFixtureDef = null;
-	/**
-	 * Maximum life of the actor, usually starting amount of life
-	 */
+	/** Maximum life of the actor, usually starting amount of life */
 	private float mMaxLife = 0;
-	/**
-	 * The actor type this definition belongs to
-	 */
-	private com.spiddekauga.voider.game.actors.ActorTypes mType = ActorTypes.INVALID;
-	/**
-	 * All textures for the actor
-	 */
+	/** All textures for the actor */
 	private Textures.Types[] mTextureTypes = null;
 	/**
 	 * @todo weapon type
 	 * @todo move type (for enemies)
 	 */
 
-	/**
-	 * For serialization
-	 */
+	/** For serialization */
 	private static final long VERSION = 100;
+
 
 	/* (non-Javadoc)
 	 * @see com.badlogic.gdx.utils.Json.Serializable#write(com.badlogic.gdx.utils.Json)
@@ -146,7 +123,6 @@ public class ActorDef extends Def implements Json.Serializable, Disposable {
 
 		// Write ActorDef's variables first
 		json.writeValue("mMaxLife", mMaxLife);
-		json.writeValue("mType", mType);
 		json.writeValue("mTextureTypes", mTextureTypes);
 
 
@@ -230,7 +206,6 @@ public class ActorDef extends Def implements Json.Serializable, Disposable {
 
 		// Our variables
 		mMaxLife = json.readValue("mMaxLife", float.class, jsonData);
-		mType = json.readValue("mType", ActorTypes.class, jsonData);
 		mTextureTypes = json.readValue("mTextureTypes", Textures.Types[].class, jsonData);
 
 

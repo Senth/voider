@@ -85,6 +85,13 @@ public class Level implements Json.Serializable, IResource {
 	}
 
 	/**
+	 * @return current x-coordinate of the map
+	 */
+	public float getXCoord() {
+		return mXCoord;
+	}
+
+	/**
 	 * Renders the level
 	 */
 	public void render() {

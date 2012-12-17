@@ -37,6 +37,16 @@ public enum Scenes {
 	 */
 	GAME,
 	/**
+	 * Arbitrary text to display. Used for story before and after a level.
+	 * For before a level this also includes all the loading, meaning no
+	 * loading screen will be called.
+	 */
+	TEXT,
+	/**
+	 * Loading screen.
+	 */
+	LOADING,
+	/**
 	 * When editing a level
 	 */
 	EDITOR_LEVEL,

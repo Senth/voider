@@ -10,12 +10,13 @@ import org.junit.Test;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.assets.loaders.resolvers.ExternalFileHandleResolver;
 import com.badlogic.gdx.backends.lwjgl.LwjglFiles;
 import com.badlogic.gdx.backends.lwjgl.LwjglNativesLoader;
 import com.badlogic.gdx.files.FileHandle;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.ActorDef;
-import com.spiddekauga.voider.game.actors.ActorTypes;
+import com.spiddekauga.voider.game.actors.PlayerActorDef;
 
 /**
  * Tests the resource depnedency loader
@@ -36,6 +37,7 @@ public class ResourceDependencyLoaderTest {
 		Gdx.files = new LwjglFiles();
 
 		mAssetManager = new AssetManager();
+		mAssetManager.setLoader(PlayerActorDef.class, new JsonLoader<PlayerActorDef>(new ExternalFileHandleResolver(), PlayerActorDef.class));
 	}
 
 	/**
@@ -51,10 +53,10 @@ public class ResourceDependencyLoaderTest {
 	 */
 	@Test
 	public void loadUnload() {
-		ActorDef def = new ActorDef(100, ActorTypes.BULLET, null, "bullet", null);
-		ActorDef dep1 = new ActorDef(200, ActorTypes.PLAYER, null, "player", null);
-		ActorDef dep2 = new ActorDef(300, ActorTypes.BOSS, null, "boss", null);
-		ActorDef depdep = new ActorDef(1000, ActorTypes.PICKUP, null, "pickup", null);
+		ActorDef def = new PlayerActorDef(100, null, "bullet", null);
+		ActorDef dep1 = new PlayerActorDef(200, null, "player", null);
+		ActorDef dep2 = new PlayerActorDef(300, null, "boss", null);
+		ActorDef depdep = new PlayerActorDef(1000, null, "pickup", null);
 
 		dep1.addDependency(depdep);
 		def.addDependency(dep1);
@@ -67,7 +69,7 @@ public class ResourceDependencyLoaderTest {
 
 		ResourceDependencyLoader dependencyLoader = new ResourceDependencyLoader(mAssetManager);
 
-		// Try to load all actors via resource depnedency loader
+		// Try to load all actors via resource dependency loader
 		try {
 			dependencyLoader.load(def.getId(), def.getClass());
 

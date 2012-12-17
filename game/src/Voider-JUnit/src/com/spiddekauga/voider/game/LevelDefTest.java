@@ -48,7 +48,7 @@ public class LevelDefTest {
 		assertEquals("level id", def.getLevelId(), jsonDef.getLevelId());
 
 
-		// Test with an empty
+		// Test with an empty level def
 		def = new LevelDef();
 		jsonString = json.toJson(def);
 

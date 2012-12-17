@@ -8,10 +8,15 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.resolvers.ExternalFileHandleResolver;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.GdxRuntimeException;
-import com.spiddekauga.voider.game.ActorDef;
 import com.spiddekauga.voider.game.Level;
 import com.spiddekauga.voider.game.LevelDef;
 import com.spiddekauga.voider.game.ThemeDef;
+import com.spiddekauga.voider.game.actors.BossActorDef;
+import com.spiddekauga.voider.game.actors.BulletActorDef;
+import com.spiddekauga.voider.game.actors.EnemyActorDef;
+import com.spiddekauga.voider.game.actors.PickupActorDef;
+import com.spiddekauga.voider.game.actors.PlayerActorDef;
+import com.spiddekauga.voider.game.actors.StaticTerrainActorDef;
 
 
 /**
@@ -32,7 +37,12 @@ public class ResourceCacheFacade {
 	 */
 	public static void init() {
 		mAssetManager = new AssetManager();
-		mAssetManager.setLoader(ActorDef.class, new JsonLoader<ActorDef>(new ExternalFileHandleResolver(), ActorDef.class));
+		mAssetManager.setLoader(BossActorDef.class, new JsonLoader<BossActorDef>(new ExternalFileHandleResolver(), BossActorDef.class));
+		mAssetManager.setLoader(BulletActorDef.class, new JsonLoader<BulletActorDef>(new ExternalFileHandleResolver(), BulletActorDef.class));
+		mAssetManager.setLoader(EnemyActorDef.class, new JsonLoader<EnemyActorDef>(new ExternalFileHandleResolver(), EnemyActorDef.class));
+		mAssetManager.setLoader(PickupActorDef.class, new JsonLoader<PickupActorDef>(new ExternalFileHandleResolver(), PickupActorDef.class));
+		mAssetManager.setLoader(PlayerActorDef.class, new JsonLoader<PlayerActorDef>(new ExternalFileHandleResolver(), PlayerActorDef.class));
+		mAssetManager.setLoader(StaticTerrainActorDef.class, new JsonLoader<StaticTerrainActorDef>(new ExternalFileHandleResolver(), StaticTerrainActorDef.class));
 		mAssetManager.setLoader(ThemeDef.class, new JsonLoader<ThemeDef>(new ExternalFileHandleResolver(), ThemeDef.class));
 		mAssetManager.setLoader(LevelDef.class, new JsonLoader<LevelDef>(new ExternalFileHandleResolver(), LevelDef.class));
 		mAssetManager.setLoader(Level.class, new JsonLoader<Level>(new ExternalFileHandleResolver(), Level.class));

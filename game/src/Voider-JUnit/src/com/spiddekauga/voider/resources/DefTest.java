@@ -12,8 +12,9 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.badlogic.gdx.utils.Json;
-import com.spiddekauga.voider.game.ActorDef;
-import com.spiddekauga.voider.game.actors.ActorTypes;
+import com.spiddekauga.voider.game.actors.BossActorDef;
+import com.spiddekauga.voider.game.actors.BulletActorDef;
+import com.spiddekauga.voider.game.actors.PlayerActorDef;
 
 /**
  * Tests the def class so that it works.
@@ -41,8 +42,8 @@ public class DefTest {
 	 */
 	@Test
 	public void equalsObject() {
-		Def def = new ActorDef(100, ActorTypes.PLAYER, null, "player", null);
-		Def def2 = new ActorDef(100, ActorTypes.PICKUP, null, "player", null);
+		Def def = new PlayerActorDef(100, null, "player", null);
+		Def def2 = new PlayerActorDef(100, null, "player", null);
 
 		assertEquals("equals()", def, def);
 		assertTrue("not equals()", !def.equals(def2));
@@ -51,7 +52,7 @@ public class DefTest {
 		// Use JSON to create a second definition with the same UUID
 		Json json = new Json();
 		String jsonString = json.toJson(def);
-		Def testDef = json.fromJson(ActorDef.class, jsonString);
+		Def testDef = json.fromJson(PlayerActorDef.class, jsonString);
 		assertEquals("equals() from json", testDef, def);
 
 		// Change dependencies
@@ -65,9 +66,9 @@ public class DefTest {
 	 */
 	@Test
 	public void writeRead() {
-		Def def = new ActorDef(100, ActorTypes.PLAYER, null, "player", null);
-		Def dependency1 = new ActorDef(200, ActorTypes.BOSS, null, "boss", null);
-		Def dependency2 = new ActorDef(300, ActorTypes.BULLET, null, "bullet", null);
+		Def def = new PlayerActorDef(100, null, "player", null);
+		Def dependency1 = new BossActorDef(200, null, "boss", null);
+		Def dependency2 = new BulletActorDef(300, null, "bullet", null);
 		def.setComment("testComment");
 		try {
 			mfCreator.set(def, "originalCreator");
@@ -82,7 +83,7 @@ public class DefTest {
 
 		Json json = new Json();
 		String jsonString = json.toJson(def);
-		Def testDef = json.fromJson(ActorDef.class, jsonString);
+		Def testDef = json.fromJson(PlayerActorDef.class, jsonString);
 
 		assertEquals("UUID equals", def.getId(), testDef.getId());
 		assertEquals("Name", def.getName(), testDef.getName());
@@ -109,9 +110,9 @@ public class DefTest {
 	 */
 	@Test
 	public void addDependencyDef() {
-		Def def = new ActorDef(100, ActorTypes.PLAYER, null, "player", null);
-		Def dependency1 = new ActorDef(200, ActorTypes.BOSS, null, "boss", null);
-		Def dependency2 = new ActorDef(300, ActorTypes.BULLET, null, "bullet", null);
+		Def def = new PlayerActorDef(100, null, "player", null);
+		Def dependency1 = new BossActorDef(200, null, "boss", null);
+		Def dependency2 = new BulletActorDef(300, null, "bullet", null);
 		def.addDependency(dependency1);
 		def.addDependency(dependency2);
 
@@ -131,7 +132,7 @@ public class DefTest {
 	 */
 	@Test
 	public void addDependencyResourceNames() {
-		Def def = new ActorDef(100, ActorTypes.PLAYER, null, "player", null);
+		Def def = new PlayerActorDef(100, null, "player", null);
 		def.addDependency(ResourceNames.PARTICLE_TEST);
 		def.addDependency(ResourceNames.TEXTURE_PLAYER);
 		def.addDependency(ResourceNames.SOUND_TEST);
@@ -151,9 +152,9 @@ public class DefTest {
 	 */
 	@Test
 	public void removeDependencyUUID() {
-		Def def = new ActorDef(100, ActorTypes.PLAYER, null, "player", null);
-		Def dependency1 = new ActorDef(200, ActorTypes.BOSS, null, "boss", null);
-		Def dependency2 = new ActorDef(300, ActorTypes.BULLET, null, "bullet", null);
+		Def def = new PlayerActorDef(100, null, "player", null);
+		Def dependency1 = new BossActorDef(200, null, "boss", null);
+		Def dependency2 = new BulletActorDef(300, null, "bullet", null);
 		def.addDependency(dependency1);
 		def.addDependency(dependency2);
 
@@ -183,7 +184,7 @@ public class DefTest {
 	 */
 	@Test
 	public void removeDependencyResourceNames() {
-		Def def = new ActorDef(100, ActorTypes.PLAYER, null, "player", null);
+		Def def = new PlayerActorDef(100, null, "player", null);
 		def.addDependency(ResourceNames.PARTICLE_TEST);
 		def.addDependency(ResourceNames.SOUND_TEST);
 		def.removeDependency(ResourceNames.PARTICLE_TEST);

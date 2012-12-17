@@ -19,7 +19,7 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.utils.Json;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.ActorDef;
-import com.spiddekauga.voider.game.actors.ActorTypes;
+import com.spiddekauga.voider.game.actors.PlayerActorDef;
 
 /**
  * Test cases for encrypting objects
@@ -46,7 +46,7 @@ public class ObjectCrypterTest {
 		fixtureDef.density = 0.1f;
 		fixtureDef.friction = 0.2f;
 		fixtureDef.restitution = 0.3f;
-		ActorDef actorDef = new ActorDef(100, ActorTypes.PLAYER, null, "player", fixtureDef);
+		ActorDef actorDef = new PlayerActorDef(100, null, "player", fixtureDef);
 
 		Json json = new Json();
 		String jsonString = json.toJson(actorDef);
@@ -107,7 +107,7 @@ public class ObjectCrypterTest {
 		assertTrue("decrypted json not null", decryptedJson != null);
 		assertEquals("decrypted json equal original json string", decryptedJson, jsonString);
 
-		ActorDef newActorDef = json.fromJson(ActorDef.class, decryptedJson);
+		ActorDef newActorDef = json.fromJson(PlayerActorDef.class, decryptedJson);
 
 		assertEquals("new actor def equals original", newActorDef, actorDef);
 		assertEquals("ActorDefs' fixture def", newActorDef.getFixtureDef().shape, actorDef.getFixtureDef().shape);
@@ -119,7 +119,6 @@ public class ObjectCrypterTest {
 		assertEquals("ActorDefs' fixture def", newActorDef.getFixtureDef().filter.groupIndex, actorDef.getFixtureDef().filter.groupIndex);
 		assertEquals("ActorDefs' fixture def", newActorDef.getFixtureDef().filter.maskBits, actorDef.getFixtureDef().filter.maskBits);
 		assertEquals("ActorDefs' max life", newActorDef.getMaxLife(), actorDef.getMaxLife(), 0.0f);
-		assertEquals("ActorDefs' type", newActorDef.getType(), actorDef.getType());
 		assertEquals("ActorDefs' name", newActorDef.getName(), actorDef.getName());
 	}
 }

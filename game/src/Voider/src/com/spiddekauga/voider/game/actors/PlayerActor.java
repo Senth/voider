@@ -1,6 +1,5 @@
 package com.spiddekauga.voider.game.actors;
 
-import com.spiddekauga.voider.game.ActorDef;
 
 /**
  * The ship the player controls
@@ -12,7 +11,7 @@ public class PlayerActor extends com.spiddekauga.voider.game.Actor {
 	 * Player constructor
 	 */
 	public PlayerActor() {
-		super(new ActorDef(100.0f, ActorTypes.PLAYER, null, "Player", null));
+		super(new PlayerActorDef(100.0f,  null, "Player", null));
 	}
 
 	/* (non-Javadoc)

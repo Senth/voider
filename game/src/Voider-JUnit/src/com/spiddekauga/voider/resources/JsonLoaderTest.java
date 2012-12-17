@@ -16,7 +16,9 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Json;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.ActorDef;
-import com.spiddekauga.voider.game.actors.ActorTypes;
+import com.spiddekauga.voider.game.actors.BossActorDef;
+import com.spiddekauga.voider.game.actors.BulletActorDef;
+import com.spiddekauga.voider.game.actors.PlayerActorDef;
 import com.spiddekauga.voider.utils.ObjectCrypter;
 
 /**
@@ -53,19 +55,21 @@ public class JsonLoaderTest {
 	 */
 	@Test
 	public void load() {
-		ActorDef def1 = new ActorDef(100, ActorTypes.BULLET, null, "bullet", null);
-		ActorDef def2 = new ActorDef(200, ActorTypes.PLAYER, null, "player", null);
-		ActorDef def3 = new ActorDef(300, ActorTypes.BOSS, null, "boss", null);
+		ActorDef def1 = new BulletActorDef(100, null, "bullet", null);
+		ActorDef def2 = new PlayerActorDef(200, null, "player", null);
+		ActorDef def3 = new BossActorDef(300, null, "boss", null);
 
 		save(def1);
 		save(def2);
 		save(def3);
 
 		// Try to actually load the file using the asset manager
-		mAssetManager.setLoader(ActorDef.class, new JsonLoader<ActorDef>(new ExternalFileHandleResolver(), ActorDef.class));
-		mAssetManager.load(getPath(def1), ActorDef.class);
-		mAssetManager.load(getPath(def2), ActorDef.class);
-		mAssetManager.load(getPath(def3), ActorDef.class);
+		mAssetManager.setLoader(PlayerActorDef.class, new JsonLoader<PlayerActorDef>(new ExternalFileHandleResolver(), PlayerActorDef.class));
+		mAssetManager.setLoader(BossActorDef.class, new JsonLoader<BossActorDef>(new ExternalFileHandleResolver(), BossActorDef.class));
+		mAssetManager.setLoader(BulletActorDef.class, new JsonLoader<BulletActorDef>(new ExternalFileHandleResolver(), BulletActorDef.class));
+		mAssetManager.load(getPath(def1), BulletActorDef.class);
+		mAssetManager.load(getPath(def2), PlayerActorDef.class);
+		mAssetManager.load(getPath(def3), BossActorDef.class);
 
 		// Wait until the loading has finished
 		mAssetManager.finishLoading();
@@ -73,9 +77,9 @@ public class JsonLoaderTest {
 		assertTrue("Def 1 loaded()", mAssetManager.isLoaded(getPath(def1)));
 		assertTrue("Def 2 loaded()", mAssetManager.isLoaded(getPath(def2)));
 		assertTrue("Def 3 loaded()", mAssetManager.isLoaded(getPath(def3)));
-		assertEquals("Def 1 equals()", mAssetManager.get(getPath(def1), ActorDef.class), def1);
-		assertEquals("Def 2 equals()", mAssetManager.get(getPath(def2), ActorDef.class), def2);
-		assertEquals("Def 3 equals()", mAssetManager.get(getPath(def3), ActorDef.class), def3);
+		assertEquals("Def 1 equals()", mAssetManager.get(getPath(def1), BulletActorDef.class), def1);
+		assertEquals("Def 2 equals()", mAssetManager.get(getPath(def2), PlayerActorDef.class), def2);
+		assertEquals("Def 3 equals()", mAssetManager.get(getPath(def3), BossActorDef.class), def3);
 
 		mAssetManager.unload(getPath(def1));
 		mAssetManager.unload(getPath(def2));

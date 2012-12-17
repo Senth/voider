@@ -18,7 +18,7 @@ import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.ActorDef;
 import com.spiddekauga.voider.game.Level;
 import com.spiddekauga.voider.game.LevelDef;
-import com.spiddekauga.voider.game.actors.ActorTypes;
+import com.spiddekauga.voider.game.actors.PlayerActorDef;
 
 /**
  * Tests whether the cache facade works correctly
@@ -44,7 +44,7 @@ public class ResourceCacheFacadeTest {
 
 		// Delete the ActorDef directory, else previous saved but not deleted actors
 		// might be left, which will fail some of these tests
-		String actorPath = ResourceNames.getDirPath(ActorDef.class);
+		String actorPath = ResourceNames.getDirPath(PlayerActorDef.class);
 		Gdx.files.external(actorPath).deleteDirectory();
 
 		ResourceSaver.save(mDef1);
@@ -90,7 +90,7 @@ public class ResourceCacheFacadeTest {
 	@Test
 	public void loadAllOf() {
 		try {
-			ResourceCacheFacade.loadAllOf(ActorDef.class, false);
+			ResourceCacheFacade.loadAllOf(PlayerActorDef.class, false);
 			ResourceCacheFacade.finishLoading();
 		} catch (UndefinedResourceTypeException e) {
 			fail("Undefined resource type exception");
@@ -99,7 +99,7 @@ public class ResourceCacheFacadeTest {
 		assertEquals("number of actors loaded", ACTORS, ResourceCacheFacade.getLoadedCount());
 
 		try {
-			ResourceCacheFacade.unloadAllOf(ActorDef.class, false);
+			ResourceCacheFacade.unloadAllOf(PlayerActorDef.class, false);
 		} catch (UndefinedResourceTypeException e) {
 			fail("Undefined resource type exception");
 		}
@@ -142,18 +142,18 @@ public class ResourceCacheFacadeTest {
 	@Test
 	public void loadDef() {
 		try {
-			ResourceCacheFacade.load(mDef1.getId(), ActorDef.class, false);
-			ResourceCacheFacade.load(mDef2.getId(), ActorDef.class, false);
-			ResourceCacheFacade.load(mUsingDefDeps.getId(), ActorDef.class, false);
+			ResourceCacheFacade.load(mDef1.getId(), PlayerActorDef.class, false);
+			ResourceCacheFacade.load(mDef2.getId(), PlayerActorDef.class, false);
+			ResourceCacheFacade.load(mUsingDefDeps.getId(), PlayerActorDef.class, false);
 			ResourceCacheFacade.finishLoading();
 		} catch (UndefinedResourceTypeException e) {
 			fail("Failed to load the definition, undefinined type");
 		}
 
 		assertEquals("Loaded three resources", 3, ResourceCacheFacade.getLoadedCount());
-		assertTrue("Loaded def 1", ResourceCacheFacade.isLoaded(mDef1.getId(), ActorDef.class));
-		assertTrue("Loaded def 2", ResourceCacheFacade.isLoaded(mDef2.getId(), ActorDef.class));
-		assertTrue("Loaded def using def dependencies", ResourceCacheFacade.isLoaded(mUsingDefDeps.getId(), ActorDef.class));
+		assertTrue("Loaded def 1", ResourceCacheFacade.isLoaded(mDef1.getId(), PlayerActorDef.class));
+		assertTrue("Loaded def 2", ResourceCacheFacade.isLoaded(mDef2.getId(), PlayerActorDef.class));
+		assertTrue("Loaded def using def dependencies", ResourceCacheFacade.isLoaded(mUsingDefDeps.getId(), PlayerActorDef.class));
 	}
 
 	/**
@@ -170,18 +170,18 @@ public class ResourceCacheFacadeTest {
 	 */
 	@Test(expected = ResourceCorruptException.class)
 	public void loadCorruptResource() {
-		ActorDef tempDef = new ActorDef();
+		ActorDef tempDef = new PlayerActorDef(100f, null, "test", null);
 		ResourceSaver.save(tempDef);
 
 		try {
-			FileHandle file = Gdx.files.external(ResourceNames.getDirPath(ActorDef.class) + tempDef.getId().toString());
+			FileHandle file = Gdx.files.external(ResourceNames.getDirPath(PlayerActorDef.class) + tempDef.getId().toString());
 			file.writeString("Corrupting the actor HAHAHAHA!", false);
 		} catch (UndefinedResourceTypeException e) {
 			fail("Undefined resource type exception");
 		}
 
 		try {
-			ResourceCacheFacade.load(tempDef.getId(), ActorDef.class, false);
+			ResourceCacheFacade.load(tempDef.getId(), PlayerActorDef.class, false);
 		} catch (UndefinedResourceTypeException e) {
 			fail("Undefined resource type exception");
 		} catch (ResourceCorruptException e) {
@@ -204,9 +204,9 @@ public class ResourceCacheFacadeTest {
 	 */
 	@Test(expected = ResourceNotFoundException.class)
 	public void loadNoneExistingResource() {
-		ActorDef tempDef = new ActorDef();
+		PlayerActorDef tempDef = new PlayerActorDef(100, null, "test", null);
 		try {
-			ResourceCacheFacade.load(tempDef.getId(), ActorDef.class, false);
+			ResourceCacheFacade.load(tempDef.getId(), PlayerActorDef.class, false);
 		} catch (UndefinedResourceTypeException e) {
 			fail("Undefined resource type exception");
 		}
@@ -228,7 +228,7 @@ public class ResourceCacheFacadeTest {
 	public void loadDefWithDefDependencies() {
 		try {
 			// Load
-			ResourceCacheFacade.load(mUsingDefDeps.getId(), ActorDef.class, true);
+			ResourceCacheFacade.load(mUsingDefDeps.getId(), PlayerActorDef.class, true);
 			ResourceCacheFacade.finishLoading();
 			assertEquals("Loaded actors with dependencies", 4, ResourceCacheFacade.getLoadedCount());
 
@@ -258,17 +258,17 @@ public class ResourceCacheFacadeTest {
 	}
 
 	/** Regular actor with no dependencies */
-	private static ActorDef mDef1 = new ActorDef(100, ActorTypes.BULLET, null, "def1", null);
+	private static PlayerActorDef mDef1 = new PlayerActorDef(100, null, "def1", null);
 	/** Regular actor with no dependencies */
-	private static ActorDef mDef2 = new ActorDef(150, ActorTypes.BULLET, null, "def2", null);
+	private static PlayerActorDef mDef2 = new PlayerActorDef(150, null, "def2", null);
 	/** Actor using dependencies */
-	private static ActorDef mUsingDefDeps = new ActorDef(155, ActorTypes.BULLET, null, "using dep", null);
+	private static PlayerActorDef mUsingDefDeps = new PlayerActorDef(155, null, "using dep", null);
 	/** Actor dependency with a dependency */
-	private static ActorDef mDepWithDep = new ActorDef(200, ActorTypes.PLAYER, null, "player", null);
+	private static PlayerActorDef mDepWithDep = new PlayerActorDef(200, null, "player", null);
 	/** Actor dependency */
-	private static ActorDef mDep = new ActorDef(300, ActorTypes.BOSS, null, "boss", null);
+	private static PlayerActorDef mDep = new PlayerActorDef(300, null, "boss", null);
 	/** Actor under dependency, i.e. UsingDefDeps -> DepWithDep -> UnderDep */
-	private static ActorDef mUnderDep = new ActorDef(1000, ActorTypes.PICKUP, null, "pickup", null);
+	private static PlayerActorDef mUnderDep = new PlayerActorDef(1000, null, "pickup", null);
 
 	/** Total number of actors */
 	private static int ACTORS = 6;

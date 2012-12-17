@@ -1,16 +1,18 @@
 package com.spiddekauga.voider;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 
 /**
  * Base class for all scenes that should be rendered. Examples of scenes:
- * Game, Menus, Editors.
+ * Game, Menus, Editors. It extends InputAdapter which makes it able to
+ * handle all input events through derived classes (if necessary).
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public abstract class Scene {
+public abstract class Scene extends InputAdapter {
 	/**
 	 * Runs the scene. Don't Override this method as this method clears the screen,
 	 * renders it, and updates the scene elements.
@@ -22,7 +24,6 @@ public abstract class Scene {
 		render();
 		update();
 	}
-
 
 	/**
 	 * Updates the scene

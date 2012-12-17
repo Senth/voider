@@ -8,7 +8,7 @@ import org.junit.Test;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.Json;
-import com.spiddekauga.voider.game.ActorDef;
+import com.spiddekauga.voider.game.actors.PlayerActorDef;
 
 /**
  * JUnit test for QueueItem class
@@ -25,7 +25,7 @@ public class QueueItemTest {
 		// Queue item should equal if the UUID is equal, that is enough
 		UUID equalUUID = UUID.randomUUID();
 		DefItem equalUUID1 = new DefItem(equalUUID, Texture.class);
-		DefItem equalUUID2 = new DefItem(equalUUID, ActorDef.class);
+		DefItem equalUUID2 = new DefItem(equalUUID, PlayerActorDef.class);
 		assertTrue("QueueItem.equals() with same UUID, but different types", equalUUID1.equals(equalUUID2));
 
 		DefItem inequal = new DefItem(UUID.randomUUID(), Texture.class);
@@ -37,7 +37,7 @@ public class QueueItemTest {
 	 */
 	@Test
 	public void writeAndRead() {
-		DefItem writeItem = new DefItem(UUID.randomUUID(), ActorDef.class);
+		DefItem writeItem = new DefItem(UUID.randomUUID(), PlayerActorDef.class);
 		Json json = new Json();
 
 		String jsonString = json.toJson(writeItem);

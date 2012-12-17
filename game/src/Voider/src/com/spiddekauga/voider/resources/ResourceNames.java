@@ -5,10 +5,15 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.spiddekauga.voider.Config;
-import com.spiddekauga.voider.game.ActorDef;
 import com.spiddekauga.voider.game.Level;
 import com.spiddekauga.voider.game.LevelDef;
 import com.spiddekauga.voider.game.ThemeDef;
+import com.spiddekauga.voider.game.actors.BossActorDef;
+import com.spiddekauga.voider.game.actors.BulletActorDef;
+import com.spiddekauga.voider.game.actors.EnemyActorDef;
+import com.spiddekauga.voider.game.actors.PickupActorDef;
+import com.spiddekauga.voider.game.actors.PlayerActorDef;
+import com.spiddekauga.voider.game.actors.StaticTerrainActorDef;
 
 /**
  * All static resources. Name and a corresponding filename
@@ -62,8 +67,18 @@ public enum ResourceNames {
 	static String getDirPath(Class<?> type) throws UndefinedResourceTypeException {
 		if (type == Texture.class) {
 			return TEXTURE_PATH;
-		} else if (type == ActorDef.class) {
-			return ACTOR_DEF_PATH;
+		} else if (type == BossActorDef.class) {
+			return ACTOR_BOSS_PATH;
+		} else if (type == BulletActorDef.class) {
+			return ACTOR_BULLET_PATH;
+		} else if (type == EnemyActorDef.class) {
+			return ACTOR_ENEMY_PATH;
+		} else if (type == PickupActorDef.class) {
+			return ACTOR_PICKUP_PATH;
+		} else if (type == PlayerActorDef.class){
+			return ACTOR_PLAYER_PATH;
+		} else if (type == StaticTerrainActorDef.class) {
+			return ACTOR_STATIC_TERRAIN_PATH;
 		} else if (type == LevelDef.class) {
 			return LEVEL_DEF_PATH;
 		} else if (type == Level.class) {
@@ -83,16 +98,37 @@ public enum ResourceNames {
 	 * Changes the external storage path to the TEST_STORAGE instead
 	 */
 	public static void useTestPath() {
-		ACTOR_DEF_PATH = Config.File.TEST_STORAGE + "actors/";
 		LEVEL_DEF_PATH = Config.File.TEST_STORAGE + "levelDefs/";
 		LEVEL_PATH = Config.File.TEST_STORAGE + "levels/";
 		LEVEL_THEME_DEF_PATH = Config.File.TEST_STORAGE + "theme/levels/";
+
+		// Actors
+		ACTOR_DEF_PATH = Config.File.TEST_STORAGE + "actors/";
+		ACTOR_BOSS_PATH = ACTOR_DEF_PATH + "bosses/";
+		ACTOR_BULLET_PATH = ACTOR_DEF_PATH + "bullets/";
+		ACTOR_ENEMY_PATH = ACTOR_DEF_PATH + "enemies/";
+		ACTOR_PICKUP_PATH = ACTOR_DEF_PATH + "pickups/";
+		ACTOR_PLAYER_PATH = ACTOR_DEF_PATH + "player_ships/";
+		ACTOR_STATIC_TERRAIN_PATH = ACTOR_DEF_PATH + "static_terrain/";
+
 	}
 
 	/** Directory for all texture */
 	private static final String TEXTURE_PATH = "gfx/";
 	/** Directory for all actor definitions */
 	private static String ACTOR_DEF_PATH = Config.File.STORAGE + "actors/";
+	/** Directory for all boss actor definitions */
+	private static String ACTOR_BOSS_PATH = ACTOR_DEF_PATH + "bosses/";
+	/** Directory for all bullet actor definitions */
+	private static String ACTOR_BULLET_PATH = ACTOR_DEF_PATH + "bullets/";
+	/** Directory for all enemy actor definitions */
+	private static String ACTOR_ENEMY_PATH = ACTOR_DEF_PATH + "enemies/";
+	/** Directory for all pickup actor definitions */
+	private static String ACTOR_PICKUP_PATH = ACTOR_DEF_PATH + "pickups/";
+	/** Directory for all player actor definitions */
+	private static String ACTOR_PLAYER_PATH = ACTOR_DEF_PATH + "player_ships/";
+	/** Directory for all static terrain actor definitions */
+	private static String ACTOR_STATIC_TERRAIN_PATH = ACTOR_DEF_PATH + "static_terrain/";
 	/** Directory for all level definitions */
 	private static String LEVEL_DEF_PATH = Config.File.STORAGE + "levelDefs/";
 	/** Directory for all the actual levels */

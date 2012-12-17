@@ -2,6 +2,7 @@ package com.spiddekauga.voider.resources;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -12,8 +13,7 @@ import com.badlogic.gdx.backends.lwjgl.LwjglNativesLoader;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Json;
 import com.spiddekauga.voider.Config;
-import com.spiddekauga.voider.game.ActorDef;
-import com.spiddekauga.voider.game.actors.ActorTypes;
+import com.spiddekauga.voider.game.actors.PickupActorDef;
 import com.spiddekauga.voider.utils.ObjectCrypter;
 
 /**
@@ -41,7 +41,7 @@ public class ResourceSaverTest {
 	 */
 	@Test
 	public void testSave() {
-		Def def = new ActorDef(100, ActorTypes.PICKUP, null, "pickup", null);
+		Def def = new PickupActorDef(100, null, "pickup", null);
 
 		// Test to save it and then load
 		ResourceSaver.save(def);
@@ -50,8 +50,7 @@ public class ResourceSaverTest {
 		try {
 			relativePath = ResourceNames.getDirPath(def.getClass()) + def.getId().toString();
 		} catch (UndefinedResourceTypeException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			fail("Undefined resource type exception");
 		}
 		FileHandle savedFile = Gdx.files.external(relativePath);
 
@@ -64,11 +63,11 @@ public class ResourceSaverTest {
 		try {
 			jsonString = (String) crypter.decrypt(encryptedDef);
 		} catch (Exception e) {
-			e.printStackTrace();
+			fail("Undefined resource type exception");
 		}
 
 		Json json = new Json();
-		Def savedDef = json.fromJson(ActorDef.class, jsonString);
+		Def savedDef = json.fromJson(PickupActorDef.class, jsonString);
 
 		assertEquals("saved def equals()", savedDef, def);
 
@@ -86,7 +85,7 @@ public class ResourceSaverTest {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		savedDef = json.fromJson(ActorDef.class, jsonString);
+		savedDef = json.fromJson(PickupActorDef.class, jsonString);
 		assertEquals("new saved file shall have one dependency", savedDef.getInternalDependencies().size(), 1);
 
 		// Check backup, should have 0 dependencies
@@ -99,7 +98,7 @@ public class ResourceSaverTest {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		savedDef = json.fromJson(ActorDef.class, jsonString);
+		savedDef = json.fromJson(PickupActorDef.class, jsonString);
 		assertEquals("backup saved file shall have zero dependencies", savedDef.getInternalDependencies().size(), 0);
 
 		// Delete the files

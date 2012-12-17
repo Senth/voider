@@ -5,7 +5,6 @@ import java.util.LinkedList;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL10;
-import com.spiddekauga.voider.game.GameScene;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceSaver;
 
@@ -24,12 +23,8 @@ public class VoiderGame implements ApplicationListener {
 		ResourceSaver.init();
 		ResourceCacheFacade.init();
 
-		mScenes = new Scene[Scenes.values().length];
-
-		mScenes[Scenes.GAME.ordinal()] = new GameScene();
 
 		/** @TODO display splash screen */
-		mActiveScene.push(Scenes.GAME.ordinal());
 
 	}
 
@@ -43,8 +38,9 @@ public class VoiderGame implements ApplicationListener {
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
 
-		if (mScenes[mActiveScene.getFirst()] != null) {
-			//mScenes[mActiveScene.getFirst()].run();
+		if (!mActiveScene.isEmpty()) {
+			mActiveScene.getFirst().update();
+			mActiveScene.getFirst().render();
 		}
 	}
 
@@ -61,12 +57,8 @@ public class VoiderGame implements ApplicationListener {
 	}
 
 	/**
-	 * All the different scenes
-	 */
-	private Scene[] mScenes;
-	/**
 	 * A stack of the active scenes. This makes it easier to make back
 	 * key, return to the previous scene.
 	 */
-	private LinkedList<Integer> mActiveScene = new LinkedList<Integer>();
+	private LinkedList<Scene> mActiveScene = new LinkedList<Scene>();
 }

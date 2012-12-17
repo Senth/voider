@@ -15,7 +15,7 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.utils.Json;
-import com.spiddekauga.voider.game.actors.ActorTypes;
+import com.spiddekauga.voider.game.actors.PlayerActorDef;
 
 /**
  * Tester for ActorDef class.
@@ -38,16 +38,15 @@ public class ActorDefTest {
 	@Test
 	public void writeRead() {
 		// No Fixture
-		ActorDef actor = new ActorDef(100, ActorTypes.PLAYER, null, "player", null);
+		ActorDef actor = new PlayerActorDef(100,  null, "player", null);
 
 		Json json = new Json();
 		String jsonString = json.toJson(actor);
-		ActorDef testActor = json.fromJson(ActorDef.class, jsonString);
+		ActorDef testActor = json.fromJson(PlayerActorDef.class, jsonString);
 
 		assertEquals("ActorDefs equals", actor, testActor);
 		assertNull("ActorDefs' fixture null", testActor.getFixtureDef());
 		assertEquals("ActorDefs' max life", testActor.getMaxLife(), actor.getMaxLife(), 0.0f);
-		assertEquals("ActorDefs' type", testActor.getType(), actor.getType());
 		assertEquals("ActorDefs' name", testActor.getName(), actor.getName());
 
 
@@ -62,13 +61,12 @@ public class ActorDefTest {
 		fixtureDef.filter.groupIndex = 12;
 		fixtureDef.filter.maskBits = 127;
 
-		actor = new ActorDef(100, ActorTypes.PLAYER, null, "player", fixtureDef);
+		actor = new PlayerActorDef(100, null, "player", fixtureDef);
 		jsonString = json.toJson(actor);
-		testActor = json.fromJson(ActorDef.class, jsonString);
+		testActor = json.fromJson(PlayerActorDef.class, jsonString);
 
 		assertEquals("ActorDefs equals", actor, testActor);
 		assertEquals("ActorDefs' max life", testActor.getMaxLife(), actor.getMaxLife(), 0.0f);
-		assertEquals("ActorDefs' type", testActor.getType(), actor.getType());
 		assertEquals("ActorDefs' name", testActor.getName(), actor.getName());
 
 		// Appended tests
@@ -89,13 +87,12 @@ public class ActorDefTest {
 		circle.setPosition(new Vector2(1, 2));
 		fixtureDef.shape = circle;
 
-		actor = new ActorDef(100, ActorTypes.PLAYER, null, "player", fixtureDef);
+		actor = new PlayerActorDef(100, null, "player", fixtureDef);
 		jsonString = json.toJson(actor);
-		testActor = json.fromJson(ActorDef.class, jsonString);
+		testActor = json.fromJson(PlayerActorDef.class, jsonString);
 
 		assertEquals("ActorDefs equals", actor, testActor);
 		assertEquals("ActorDefs' max life", testActor.getMaxLife(), actor.getMaxLife(), 0.0f);
-		assertEquals("ActorDefs' type", testActor.getType(), actor.getType());
 		assertEquals("ActorDefs' name", testActor.getName(), actor.getName());
 		assertNotNull("Fixture not null", testActor.getFixtureDef());
 		assertEquals("Fixture friction", testActor.getFixtureDef().friction, actor.getFixtureDef().friction, 0.0f);
@@ -127,13 +124,12 @@ public class ActorDefTest {
 		polygon.set(vertices);
 		fixtureDef.shape = polygon;
 
-		actor = new ActorDef(100, ActorTypes.PLAYER, null, "player", fixtureDef);
+		actor = new PlayerActorDef(100, null, "player", fixtureDef);
 		jsonString = json.toJson(actor);
-		testActor = json.fromJson(ActorDef.class, jsonString);
+		testActor = json.fromJson(PlayerActorDef.class, jsonString);
 
 		assertEquals("ActorDefs equals", actor, testActor);
 		assertEquals("ActorDefs' max life", testActor.getMaxLife(), actor.getMaxLife(), 0.0f);
-		assertEquals("ActorDefs' type", testActor.getType(), actor.getType());
 		assertEquals("ActorDefs' name", testActor.getName(), actor.getName());
 		assertNotNull("Fixture not null", testActor.getFixtureDef());
 		assertEquals("Fixture friction", testActor.getFixtureDef().friction, actor.getFixtureDef().friction, 0.0f);
@@ -166,13 +162,12 @@ public class ActorDefTest {
 		edge.set(new Vector2(1, 2), new Vector2(11, 12));
 		fixtureDef.shape = edge;
 
-		actor = new ActorDef(100, ActorTypes.PLAYER, null, "player", fixtureDef);
+		actor = new PlayerActorDef(100, null, "player", fixtureDef);
 		jsonString = json.toJson(actor);
-		testActor = json.fromJson(ActorDef.class, jsonString);
+		testActor = json.fromJson(PlayerActorDef.class, jsonString);
 
 		assertEquals("ActorDefs equals", actor, testActor);
 		assertEquals("ActorDefs' max life", testActor.getMaxLife(), actor.getMaxLife(), 0.0f);
-		assertEquals("ActorDefs' type", testActor.getType(), actor.getType());
 		assertEquals("ActorDefs' name", testActor.getName(), actor.getName());
 		assertNotNull("Fixture not null", testActor.getFixtureDef());
 		assertEquals("Fixture friction", testActor.getFixtureDef().friction, actor.getFixtureDef().friction, 0.0f);
