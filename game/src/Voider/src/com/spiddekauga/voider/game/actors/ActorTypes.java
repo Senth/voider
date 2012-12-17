@@ -5,7 +5,7 @@ package com.spiddekauga.voider.game.actors;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public enum Types {
+public enum ActorTypes {
 	/**
 	 * Player, this is the ship that the player controls
 	 */

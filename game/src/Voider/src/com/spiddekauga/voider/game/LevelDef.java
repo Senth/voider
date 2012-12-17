@@ -14,6 +14,13 @@ import com.spiddekauga.voider.resources.ResourceNames;
  */
 public class LevelDef extends Def {
 	/**
+	 * Constructor that create the level id for this definition
+	 */
+	public LevelDef() {
+		mLevelId = UUID.randomUUID();
+	}
+
+	/**
 	 * @return the music of the level
 	 */
 	public ResourceNames getMusic() {
@@ -181,6 +188,30 @@ public class LevelDef extends Def {
 	}
 
 	/**
+	 * Sets the base speed of the level. This should only be changed when
+	 * editing the map, and for the whole level. To change the level's current
+	 * speed see #Level.setSpeed(float)
+	 * @param speed the new base speed
+	 */
+	public void setBaseSpeed(float speed) {
+		mSpeed = speed;
+	}
+
+	/**
+	 * @return base speed of the level
+	 */
+	public float getBaseSpeed() {
+		return mSpeed;
+	}
+
+	/**
+	 * @return the level's id, i.e. not this definition's id
+	 */
+	public UUID getLevelId() {
+		return mLevelId;
+	}
+
+	/**
 	 * Sets the theme id, also adds it as a dependency
 	 * @param themeId the theme of the level
 	 */
@@ -212,6 +243,8 @@ public class LevelDef extends Def {
 		json.writeValue("mRevision", mRevision);
 		json.writeValue("mVersion", getVersionString());
 		json.writeValue("mEndXCoord", mEndXCoord);
+		json.writeValue("mSpeed", mSpeed);
+		json.writeValue("mLevelId", mLevelId.toString());
 
 		if (mCampaignId != null) {
 			json.writeValue("mCampaignId", mCampaignId.toString());
@@ -250,6 +283,8 @@ public class LevelDef extends Def {
 		mStoryAfter = json.readValue("mStoryAfter", String.class, jsonData);
 		mRevision = json.readValue("mRevision", long.class, jsonData);
 		mEndXCoord = json.readValue("mEndXCoord", float.class, jsonData);
+		mSpeed = json.readValue("mSpeed", float.class, jsonData);
+
 
 		// UUIDs
 		String stringUuid = json.readValue("mCampaignId", String.class, jsonData);
@@ -259,6 +294,10 @@ public class LevelDef extends Def {
 		stringUuid = json.readValue("mThemeId", String.class, jsonData);
 		if (stringUuid != null) {
 			mThemeId = UUID.fromString(stringUuid);
+		}
+		stringUuid = json.readValue("mLevelId", String.class, jsonData);
+		if (stringUuid != null) {
+			mLevelId = UUID.fromString(stringUuid);
 		}
 
 		// Version
@@ -271,6 +310,8 @@ public class LevelDef extends Def {
 
 	/** Theme of the level */
 	private UUID mThemeId = null;
+	/** The actual level id, i.e. not this definition's id */
+	private UUID mLevelId = null;
 	/** The level's music */
 	private ResourceNames mMusic = null;
 	/** Campaign id the level belongs to, null if it doesn't belong to any */
@@ -279,6 +320,9 @@ public class LevelDef extends Def {
 	private String mStoryBefore = null;
 	/** Story after the level, set to null to not show */
 	private String mStoryAfter = null;
+	/** Base speed of the level, the actual level speed may vary as it can
+	 * be changed by triggers */
+	private float mSpeed = 1.0f;
 	/** End of the map (left screen edge) */
 	private float mEndXCoord = 100.0f;
 	/** The revision of the map, this increases after each save */

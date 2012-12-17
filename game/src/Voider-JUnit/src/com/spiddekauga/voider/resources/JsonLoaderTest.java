@@ -16,7 +16,7 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Json;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.ActorDef;
-import com.spiddekauga.voider.game.actors.Types;
+import com.spiddekauga.voider.game.actors.ActorTypes;
 import com.spiddekauga.voider.utils.ObjectCrypter;
 
 /**
@@ -53,9 +53,9 @@ public class JsonLoaderTest {
 	 */
 	@Test
 	public void load() {
-		ActorDef def1 = new ActorDef(100, Types.BULLET, null, "bullet", null);
-		ActorDef def2 = new ActorDef(200, Types.PLAYER, null, "player", null);
-		ActorDef def3 = new ActorDef(300, Types.BOSS, null, "boss", null);
+		ActorDef def1 = new ActorDef(100, ActorTypes.BULLET, null, "bullet", null);
+		ActorDef def2 = new ActorDef(200, ActorTypes.PLAYER, null, "player", null);
+		ActorDef def3 = new ActorDef(300, ActorTypes.BOSS, null, "boss", null);
 
 		save(def1);
 		save(def2);

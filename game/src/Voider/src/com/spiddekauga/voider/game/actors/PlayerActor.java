@@ -7,12 +7,12 @@ import com.spiddekauga.voider.game.ActorDef;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class Player extends com.spiddekauga.voider.game.Actor {
+public class PlayerActor extends com.spiddekauga.voider.game.Actor {
 	/**
 	 * Player constructor
 	 */
-	public Player() {
-		super(new ActorDef(100.0f, Types.PLAYER, null, "Player", null));
+	public PlayerActor() {
+		super(new ActorDef(100.0f, ActorTypes.PLAYER, null, "Player", null));
 	}
 
 	/* (non-Javadoc)

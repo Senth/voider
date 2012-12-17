@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.UUID;
 import java.util.Vector;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.OrderedMap;
 import com.spiddekauga.voider.resources.IResource;
@@ -23,9 +24,11 @@ public class Level implements Json.Serializable, IResource {
 	 */
 	public Level(LevelDef levelDef) {
 		mLevelDef = levelDef;
-		mUniqueId = UUID.randomUUID();
+		mUniqueId = levelDef.getLevelId();
 		mActors = new Vector<Actor>();
 		mTriggers = new Vector<Trigger>();
+		mSpeed = mLevelDef.getBaseSpeed();
+		mCompletedLevel = false;
 	}
 
 	/**
@@ -56,13 +59,29 @@ public class Level implements Json.Serializable, IResource {
 	}
 
 	/**
+	 * @return true if the player has completed the level
+	 */
+	public boolean hasCompletedLevel() {
+		return mCompletedLevel;
+	}
+
+	/**
 	 * Updates all the actors in the level.
 	 * This shall always be run, even in the editor
 	 * @param run set this to true if you want to play the level
 	 * as this will make the screen move, the units move etc
 	 */
 	public void update(boolean run) {
-		// TODO
+		// Make the map move forward
+		if (run) {
+			mXCoord += mSpeed * Gdx.graphics.getDeltaTime();
+
+			if (!mCompletedLevel) {
+				if (mXCoord >= mLevelDef.getEndXCoord()) {
+					mCompletedLevel = true;
+				}
+			}
+		}
 	}
 
 	/**
@@ -83,6 +102,10 @@ public class Level implements Json.Serializable, IResource {
 	private float mXCoord = 0.0f;
 	/** Level definition for this level */
 	private LevelDef mLevelDef = null;
+	/** Current speed of the level */
+	private float mSpeed;
+	/** If the level has been completed */
+	private boolean mCompletedLevel;
 
 
 	/* (non-Javadoc)
@@ -94,16 +117,21 @@ public class Level implements Json.Serializable, IResource {
 		json.writeValue("mActors", mActors);
 		json.writeValue("mTriggers", mTriggers);
 		json.writeValue("mLevelDefId", mLevelDef.getId().toString());
+		json.writeValue("mXCoord", mXCoord);
+		json.writeValue("mSpeed", mSpeed);
+		json.writeValue("mCompletedLevel", mCompletedLevel);
 	}
 
 
 	/* (non-Javadoc)
 	 * @see com.badlogic.gdx.utils.Json.Serializable#read(com.badlogic.gdx.utils.Json, com.badlogic.gdx.utils.OrderedMap)
 	 */
-	@SuppressWarnings("unchecked")
 	@Override
 	public void read(Json json, OrderedMap<String, Object> jsonData) {
 		mUniqueId = UUID.fromString(json.readValue("mUniqueId", String.class, jsonData));
+		mXCoord = json.readValue("mXCoord", float.class, jsonData);
+		mSpeed = json.readValue("mSpeed", float.class, jsonData);
+		mCompletedLevel = json.readValue("mCompletedLevel", boolean.class, jsonData);
 
 		// Actors
 		Actor[] actors = json.readValue("mActors", Actor[].class, jsonData);
@@ -123,8 +151,7 @@ public class Level implements Json.Serializable, IResource {
 	}
 
 	/**
-	 * Default constructor, used for when loading levels. Do not use
-	 * this otherwise
+	 * Default constructor, used for when loading levels.
 	 */
 	@SuppressWarnings("unused")
 	private Level() {

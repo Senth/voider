@@ -19,7 +19,7 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.utils.Json;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.ActorDef;
-import com.spiddekauga.voider.game.actors.Types;
+import com.spiddekauga.voider.game.actors.ActorTypes;
 
 /**
  * Test cases for encrypting objects
@@ -46,7 +46,7 @@ public class ObjectCrypterTest {
 		fixtureDef.density = 0.1f;
 		fixtureDef.friction = 0.2f;
 		fixtureDef.restitution = 0.3f;
-		ActorDef actorDef = new ActorDef(100, Types.PLAYER, null, "player", fixtureDef);
+		ActorDef actorDef = new ActorDef(100, ActorTypes.PLAYER, null, "player", fixtureDef);
 
 		Json json = new Json();
 		String jsonString = json.toJson(actorDef);

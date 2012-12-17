@@ -15,7 +15,7 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.utils.Json;
-import com.spiddekauga.voider.game.actors.Types;
+import com.spiddekauga.voider.game.actors.ActorTypes;
 
 /**
  * Tester for ActorDef class.
@@ -38,7 +38,7 @@ public class ActorDefTest {
 	@Test
 	public void writeRead() {
 		// No Fixture
-		ActorDef actor = new ActorDef(100, Types.PLAYER, null, "player", null);
+		ActorDef actor = new ActorDef(100, ActorTypes.PLAYER, null, "player", null);
 
 		Json json = new Json();
 		String jsonString = json.toJson(actor);
@@ -62,7 +62,7 @@ public class ActorDefTest {
 		fixtureDef.filter.groupIndex = 12;
 		fixtureDef.filter.maskBits = 127;
 
-		actor = new ActorDef(100, Types.PLAYER, null, "player", fixtureDef);
+		actor = new ActorDef(100, ActorTypes.PLAYER, null, "player", fixtureDef);
 		jsonString = json.toJson(actor);
 		testActor = json.fromJson(ActorDef.class, jsonString);
 
@@ -89,7 +89,7 @@ public class ActorDefTest {
 		circle.setPosition(new Vector2(1, 2));
 		fixtureDef.shape = circle;
 
-		actor = new ActorDef(100, Types.PLAYER, null, "player", fixtureDef);
+		actor = new ActorDef(100, ActorTypes.PLAYER, null, "player", fixtureDef);
 		jsonString = json.toJson(actor);
 		testActor = json.fromJson(ActorDef.class, jsonString);
 
@@ -127,7 +127,7 @@ public class ActorDefTest {
 		polygon.set(vertices);
 		fixtureDef.shape = polygon;
 
-		actor = new ActorDef(100, Types.PLAYER, null, "player", fixtureDef);
+		actor = new ActorDef(100, ActorTypes.PLAYER, null, "player", fixtureDef);
 		jsonString = json.toJson(actor);
 		testActor = json.fromJson(ActorDef.class, jsonString);
 
@@ -166,7 +166,7 @@ public class ActorDefTest {
 		edge.set(new Vector2(1, 2), new Vector2(11, 12));
 		fixtureDef.shape = edge;
 
-		actor = new ActorDef(100, Types.PLAYER, null, "player", fixtureDef);
+		actor = new ActorDef(100, ActorTypes.PLAYER, null, "player", fixtureDef);
 		jsonString = json.toJson(actor);
 		testActor = json.fromJson(ActorDef.class, jsonString);
 

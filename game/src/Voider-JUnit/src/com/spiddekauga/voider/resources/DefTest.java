@@ -13,7 +13,7 @@ import org.junit.Test;
 
 import com.badlogic.gdx.utils.Json;
 import com.spiddekauga.voider.game.ActorDef;
-import com.spiddekauga.voider.game.actors.Types;
+import com.spiddekauga.voider.game.actors.ActorTypes;
 
 /**
  * Tests the def class so that it works.
@@ -29,11 +29,11 @@ public class DefTest {
 	 */
 	@BeforeClass
 	static public void setUpBeforeClass() throws SecurityException, NoSuchFieldException {
-		mCreator = Def.class.getDeclaredField("mCreator");
-		mCreator.setAccessible(true);
+		mfCreator = Def.class.getDeclaredField("mCreator");
+		mfCreator.setAccessible(true);
 
-		mOriginalCreator = Def.class.getDeclaredField("mOriginalCreator");
-		mOriginalCreator.setAccessible(true);
+		mfOriginalCreator = Def.class.getDeclaredField("mOriginalCreator");
+		mfOriginalCreator.setAccessible(true);
 	}
 
 	/**
@@ -41,8 +41,8 @@ public class DefTest {
 	 */
 	@Test
 	public void equalsObject() {
-		Def def = new ActorDef(100, Types.PLAYER, null, "player", null);
-		Def def2 = new ActorDef(100, Types.PICKUP, null, "player", null);
+		Def def = new ActorDef(100, ActorTypes.PLAYER, null, "player", null);
+		Def def2 = new ActorDef(100, ActorTypes.PICKUP, null, "player", null);
 
 		assertEquals("equals()", def, def);
 		assertTrue("not equals()", !def.equals(def2));
@@ -65,13 +65,13 @@ public class DefTest {
 	 */
 	@Test
 	public void writeRead() {
-		Def def = new ActorDef(100, Types.PLAYER, null, "player", null);
-		Def dependency1 = new ActorDef(200, Types.BOSS, null, "boss", null);
-		Def dependency2 = new ActorDef(300, Types.BULLET, null, "bullet", null);
+		Def def = new ActorDef(100, ActorTypes.PLAYER, null, "player", null);
+		Def dependency1 = new ActorDef(200, ActorTypes.BOSS, null, "boss", null);
+		Def dependency2 = new ActorDef(300, ActorTypes.BULLET, null, "bullet", null);
 		def.setComment("testComment");
 		try {
-			mCreator.set(def, "originalCreator");
-			mOriginalCreator.set(def, "creator");
+			mfCreator.set(def, "originalCreator");
+			mfOriginalCreator.set(def, "creator");
 		} catch (Exception e) {
 			fail("One of the creator field failed");
 		}
@@ -109,9 +109,9 @@ public class DefTest {
 	 */
 	@Test
 	public void addDependencyDef() {
-		Def def = new ActorDef(100, Types.PLAYER, null, "player", null);
-		Def dependency1 = new ActorDef(200, Types.BOSS, null, "boss", null);
-		Def dependency2 = new ActorDef(300, Types.BULLET, null, "bullet", null);
+		Def def = new ActorDef(100, ActorTypes.PLAYER, null, "player", null);
+		Def dependency1 = new ActorDef(200, ActorTypes.BOSS, null, "boss", null);
+		Def dependency2 = new ActorDef(300, ActorTypes.BULLET, null, "bullet", null);
 		def.addDependency(dependency1);
 		def.addDependency(dependency2);
 
@@ -131,7 +131,7 @@ public class DefTest {
 	 */
 	@Test
 	public void addDependencyResourceNames() {
-		Def def = new ActorDef(100, Types.PLAYER, null, "player", null);
+		Def def = new ActorDef(100, ActorTypes.PLAYER, null, "player", null);
 		def.addDependency(ResourceNames.PARTICLE_TEST);
 		def.addDependency(ResourceNames.TEXTURE_PLAYER);
 		def.addDependency(ResourceNames.SOUND_TEST);
@@ -151,9 +151,9 @@ public class DefTest {
 	 */
 	@Test
 	public void removeDependencyUUID() {
-		Def def = new ActorDef(100, Types.PLAYER, null, "player", null);
-		Def dependency1 = new ActorDef(200, Types.BOSS, null, "boss", null);
-		Def dependency2 = new ActorDef(300, Types.BULLET, null, "bullet", null);
+		Def def = new ActorDef(100, ActorTypes.PLAYER, null, "player", null);
+		Def dependency1 = new ActorDef(200, ActorTypes.BOSS, null, "boss", null);
+		Def dependency2 = new ActorDef(300, ActorTypes.BULLET, null, "bullet", null);
 		def.addDependency(dependency1);
 		def.addDependency(dependency2);
 
@@ -183,7 +183,7 @@ public class DefTest {
 	 */
 	@Test
 	public void removeDependencyResourceNames() {
-		Def def = new ActorDef(100, Types.PLAYER, null, "player", null);
+		Def def = new ActorDef(100, ActorTypes.PLAYER, null, "player", null);
 		def.addDependency(ResourceNames.PARTICLE_TEST);
 		def.addDependency(ResourceNames.SOUND_TEST);
 		def.removeDependency(ResourceNames.PARTICLE_TEST);
@@ -208,7 +208,7 @@ public class DefTest {
 	}
 
 	/** Field to the original creator in def class */
-	static Field mOriginalCreator = null;
+	private static Field mfOriginalCreator = null;
 	/** Field to the creator in the def class */
-	static Field mCreator = null;
+	private static Field mfCreator = null;
 }

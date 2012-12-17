@@ -16,7 +16,9 @@ import com.badlogic.gdx.backends.lwjgl.LwjglNativesLoader;
 import com.badlogic.gdx.files.FileHandle;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.ActorDef;
-import com.spiddekauga.voider.game.actors.Types;
+import com.spiddekauga.voider.game.Level;
+import com.spiddekauga.voider.game.LevelDef;
+import com.spiddekauga.voider.game.actors.ActorTypes;
 
 /**
  * Tests whether the cache facade works correctly
@@ -118,7 +120,20 @@ public class ResourceCacheFacadeTest {
 	 */
 	@Test
 	public void loadLevel() {
-		fail("Not yet implemented");
+		LevelDef levelDef = new LevelDef();
+		Level level = new Level(levelDef);
+
+		ResourceSaver.save(level);
+		ResourceSaver.save(levelDef);
+
+		try {
+			ResourceCacheFacade.load(levelDef.getLevelId(), Level.class, levelDef);
+		} catch (UndefinedResourceTypeException e) {
+			fail("undefined resource type exception");
+		}
+
+		ResourceDependencyLoaderTest.delete(level);
+		ResourceDependencyLoaderTest.delete(levelDef);
 	}
 
 	/**
@@ -243,17 +258,17 @@ public class ResourceCacheFacadeTest {
 	}
 
 	/** Regular actor with no dependencies */
-	private static ActorDef mDef1 = new ActorDef(100, Types.BULLET, null, "def1", null);
+	private static ActorDef mDef1 = new ActorDef(100, ActorTypes.BULLET, null, "def1", null);
 	/** Regular actor with no dependencies */
-	private static ActorDef mDef2 = new ActorDef(150, Types.BULLET, null, "def2", null);
+	private static ActorDef mDef2 = new ActorDef(150, ActorTypes.BULLET, null, "def2", null);
 	/** Actor using dependencies */
-	private static ActorDef mUsingDefDeps = new ActorDef(155, Types.BULLET, null, "using dep", null);
+	private static ActorDef mUsingDefDeps = new ActorDef(155, ActorTypes.BULLET, null, "using dep", null);
 	/** Actor dependency with a dependency */
-	private static ActorDef mDepWithDep = new ActorDef(200, Types.PLAYER, null, "player", null);
+	private static ActorDef mDepWithDep = new ActorDef(200, ActorTypes.PLAYER, null, "player", null);
 	/** Actor dependency */
-	private static ActorDef mDep = new ActorDef(300, Types.BOSS, null, "boss", null);
+	private static ActorDef mDep = new ActorDef(300, ActorTypes.BOSS, null, "boss", null);
 	/** Actor under dependency, i.e. UsingDefDeps -> DepWithDep -> UnderDep */
-	private static ActorDef mUnderDep = new ActorDef(1000, Types.PICKUP, null, "pickup", null);
+	private static ActorDef mUnderDep = new ActorDef(1000, ActorTypes.PICKUP, null, "pickup", null);
 
 	/** Total number of actors */
 	private static int ACTORS = 6;

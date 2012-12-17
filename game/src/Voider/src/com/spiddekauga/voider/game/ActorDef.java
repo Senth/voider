@@ -11,7 +11,7 @@ import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.OrderedMap;
-import com.spiddekauga.voider.game.actors.Types;
+import com.spiddekauga.voider.game.actors.ActorTypes;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.Textures;
 
@@ -33,7 +33,7 @@ public class ActorDef extends Def implements Json.Serializable, Disposable {
 	 */
 	public ActorDef(
 			float maxLife,
-			com.spiddekauga.voider.game.actors.Types type,
+			com.spiddekauga.voider.game.actors.ActorTypes type,
 			Textures.Types[] textureTypes,
 			String name,
 			FixtureDef fixtureDef
@@ -64,7 +64,7 @@ public class ActorDef extends Def implements Json.Serializable, Disposable {
 	 * What kind of actor this is, e.g. enemy, player, bullet
 	 * @return actor type
 	 */
-	public com.spiddekauga.voider.game.actors.Types getType() {
+	public com.spiddekauga.voider.game.actors.ActorTypes getType() {
 		return mType;
 	}
 
@@ -73,7 +73,7 @@ public class ActorDef extends Def implements Json.Serializable, Disposable {
 	 * @return number of textures
 	 */
 	public int getTextureCount() {
-		return mTextureTypes.length;
+		return mTextureTypes == null ? 0 : mTextureTypes.length;
 	}
 
 	/**
@@ -118,7 +118,7 @@ public class ActorDef extends Def implements Json.Serializable, Disposable {
 	/**
 	 * The actor type this definition belongs to
 	 */
-	private com.spiddekauga.voider.game.actors.Types mType = Types.INVALID;
+	private com.spiddekauga.voider.game.actors.ActorTypes mType = ActorTypes.INVALID;
 	/**
 	 * All textures for the actor
 	 */
@@ -230,7 +230,7 @@ public class ActorDef extends Def implements Json.Serializable, Disposable {
 
 		// Our variables
 		mMaxLife = json.readValue("mMaxLife", float.class, jsonData);
-		mType = json.readValue("mType", Types.class, jsonData);
+		mType = json.readValue("mType", ActorTypes.class, jsonData);
 		mTextureTypes = json.readValue("mTextureTypes", Textures.Types[].class, jsonData);
 
 

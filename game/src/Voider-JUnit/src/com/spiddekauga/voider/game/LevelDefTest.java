@@ -44,6 +44,8 @@ public class LevelDefTest {
 		assertEquals("version", def.getVersionString(), jsonDef.getVersionString());
 		assertEquals("theme id", def.getThemeId(), jsonDef.getThemeId());
 		assertEquals("revision", def.getRevision(), jsonDef.getRevision());
+		assertEquals("base speed", def.getBaseSpeed(), jsonDef.getBaseSpeed(), 0.0f);
+		assertEquals("level id", def.getLevelId(), jsonDef.getLevelId());
 
 
 		// Test with an empty
@@ -60,6 +62,8 @@ public class LevelDefTest {
 		assertEquals("version", def.getVersionString(), jsonDef.getVersionString());
 		assertEquals("theme id", def.getThemeId(), jsonDef.getThemeId());
 		assertEquals("revision", def.getRevision(), jsonDef.getRevision());
+		assertEquals("base speed", def.getBaseSpeed(), jsonDef.getBaseSpeed(), 0.0f);
+		assertEquals("level id", def.getLevelId(), jsonDef.getLevelId());
 	}
 
 	/**

@@ -15,7 +15,7 @@ import com.badlogic.gdx.backends.lwjgl.LwjglNativesLoader;
 import com.badlogic.gdx.files.FileHandle;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.ActorDef;
-import com.spiddekauga.voider.game.actors.Types;
+import com.spiddekauga.voider.game.actors.ActorTypes;
 
 /**
  * Tests the resource depnedency loader
@@ -51,10 +51,10 @@ public class ResourceDependencyLoaderTest {
 	 */
 	@Test
 	public void loadUnload() {
-		ActorDef def = new ActorDef(100, Types.BULLET, null, "bullet", null);
-		ActorDef dep1 = new ActorDef(200, Types.PLAYER, null, "player", null);
-		ActorDef dep2 = new ActorDef(300, Types.BOSS, null, "boss", null);
-		ActorDef depdep = new ActorDef(1000, Types.PICKUP, null, "pickup", null);
+		ActorDef def = new ActorDef(100, ActorTypes.BULLET, null, "bullet", null);
+		ActorDef dep1 = new ActorDef(200, ActorTypes.PLAYER, null, "player", null);
+		ActorDef dep2 = new ActorDef(300, ActorTypes.BOSS, null, "boss", null);
+		ActorDef depdep = new ActorDef(1000, ActorTypes.PICKUP, null, "pickup", null);
 
 		dep1.addDependency(depdep);
 		def.addDependency(dep1);

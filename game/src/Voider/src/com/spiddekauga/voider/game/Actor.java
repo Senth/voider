@@ -19,9 +19,11 @@ public abstract class Actor implements ITriggerListener, Json.Serializable {
 	 * @param def actor definition
 	 */
 	public Actor(ActorDef def) {
-		TextureRegion region = def.getTextureRegion(0);
-		if (region != null) {
-			mSprite = new Sprite(region);
+		if (def.getTextureCount() > 0) {
+			TextureRegion region = def.getTextureRegion(0);
+			if (region != null) {
+				mSprite = new Sprite(region);
+			}
 		}
 
 		mDef = def;
