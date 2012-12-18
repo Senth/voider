@@ -3,9 +3,9 @@ package com.spiddekauga.voider;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-mport com.badlogic.gdx.scenes.scene2d.Stage;
 
 /**
  * Base class for all scenes that should be rendered. Examples of scenes:
@@ -69,8 +69,8 @@ public abstract class Scene extends InputAdapter {
 		return null;
 	}
 
-	/**
-	 * Handles user interfaces for the scene
-	 */
+	/** Handles user interfaces for the scene */
 	protected Stage mUi = new Stage();
+	/** Sprite Batch used for rendering stuff */
+	protected SpriteBatch mSpriteBatch = new SpriteBatch();
 }

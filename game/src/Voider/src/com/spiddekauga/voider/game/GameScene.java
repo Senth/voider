@@ -17,20 +17,32 @@ import com.spiddekauga.voider.Scene;
 public class GameScene extends Scene {
 	/**
 	 * Initializes the game scene.
-	 * @param level the level to play
 	 * @param testing if we're just testing the level, i.e. unlimited lives
 	 * but still has health. Scoring will still be used (player could be testing
 	 * scoring).
 	 */
-	public GameScene(Level level, boolean testing) {
+	public GameScene(boolean testing) {
 		super();
 
-		mLevel = level;
 		mTesting = testing;
 
 		/** TODO fix aspect ratio */
 		mWorld = new World(new Vector2(0, 0), true);
 		mCamera = new OrthographicCamera(80, 48);
+
+		if (Config.Graphics.USE_DEBUG_RENDERER) {
+			mDebugRenderer = new Box2DDebugRenderer();
+		}
+
+		/** TODO use different shaders */
+	}
+
+	/**
+	 * Sets the level that shall be played
+	 * @param level level to play
+	 */
+	public void setLevel(Level level) {
+		mLevel = level;
 	}
 
 	@Override
@@ -63,17 +75,25 @@ public class GameScene extends Scene {
 		if (Config.Graphics.USE_DEBUG_RENDERER) {
 			mDebugRenderer.render(mWorld, mCamera.combined);
 		} else {
-			mLevel.render();
+			mLevel.render(mSpriteBatch);
 			super.render();
 		}
+	}
+
+	/**
+	 * @return physics world of the game scene
+	 */
+	@Override
+	public World getWorld() {
+		return mWorld;
 	}
 
 	/** The Box2D physical world */
 	private final World mWorld;
 	/** Displays nice render graphics for all physical objects. */
-	private Box2DDebugRenderer mDebugRenderer;
+	private Box2DDebugRenderer mDebugRenderer = null;
 	/** The current level used in the game */
-	private Level mLevel;
+	private Level mLevel = null;
 	/** If we're just testing */
 	private boolean mTesting;
 	/** Camera for the world */
