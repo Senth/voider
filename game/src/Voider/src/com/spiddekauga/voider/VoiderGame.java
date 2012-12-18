@@ -5,12 +5,14 @@ import java.util.LinkedList;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL10;
+import com.badlogic.gdx.physics.box2d.CircleShape;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.spiddekauga.voider.game.actors.PlayerActorDef;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceSaver;
 
 /**
  * The main application, i.e. start point
- * 
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
@@ -26,6 +28,14 @@ public class VoiderGame implements ApplicationListener {
 
 		/** @TODO display splash screen */
 
+		FixtureDef fixtureDef = new FixtureDef();
+		CircleShape circleShape = new CircleShape();
+		circleShape.setRadius(1.0f);
+		fixtureDef.shape = circleShape;
+		PlayerActorDef def = new PlayerActorDef(100.0f, null, "Normal", fixtureDef);
+
+		ResourceSaver.save(def);
+		def.dispose();
 	}
 
 	@Override

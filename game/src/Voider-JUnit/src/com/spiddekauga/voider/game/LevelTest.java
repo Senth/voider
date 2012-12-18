@@ -12,9 +12,14 @@ import org.junit.Test;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.lwjgl.LwjglFiles;
 import com.badlogic.gdx.backends.lwjgl.LwjglNativesLoader;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.CircleShape;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Json;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.actors.PlayerActor;
+import com.spiddekauga.voider.game.actors.PlayerActorDef;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceDependencyLoaderTest;
 import com.spiddekauga.voider.resources.ResourceNames;
@@ -40,7 +45,13 @@ public class LevelTest {
 		LwjglNativesLoader.load();
 		Gdx.files = new LwjglFiles();
 
+		mPlayerActorDef.getFixtureDef().shape = new CircleShape();
+		mWorld = new World(new Vector2(), false);
+		Actor.setWorld(mWorld);
+
 		ResourceSaver.save(mUsingLevelDef);
+		ResourceSaver.save(mPlayerActorDef);
+		ResourceCacheFacade.load(mPlayerActorDef, false);
 		ResourceCacheFacade.load(mUsingLevelDef, false);
 		ResourceCacheFacade.finishLoading();
 
@@ -64,6 +75,9 @@ public class LevelTest {
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
 		ResourceDependencyLoaderTest.delete(mUsingLevelDef);
+		ResourceDependencyLoaderTest.delete(mPlayerActorDef);
+
+		mWorld.dispose();
 	}
 
 	/**
@@ -91,7 +105,7 @@ public class LevelTest {
 
 
 		// Test with setting the values to something else
-		((Vector<Actor>) mfActors.get(level)).add(new PlayerActor());
+		((Vector<Actor>) mfActors.get(level)).add(new PlayerActor(mPlayerActorDef));
 		((Vector<Trigger>) mfTriggers.get(level)).add(new Trigger());
 		mfXCoord.set(level, 55.3f);
 		mfSpeed.set(level, 0.578f);
@@ -111,6 +125,10 @@ public class LevelTest {
 
 	/** Level definition used for the tests */
 	private static LevelDef mUsingLevelDef = new LevelDef();
+	/** Player definition used for the tests */
+	private static PlayerActorDef mPlayerActorDef = new PlayerActorDef(100, null, "player", new FixtureDef());
+	/** World used for actors */
+	private static World mWorld = null;
 
 	// Fields for testing private members
 	/** Actors */

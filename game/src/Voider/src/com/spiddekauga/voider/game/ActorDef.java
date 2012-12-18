@@ -2,9 +2,9 @@ package com.spiddekauga.voider.game;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.EdgeShape;
-import com.badlogic.gdx.physics.box2d.Filter;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.Shape;
@@ -40,6 +40,9 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 		mMaxLife = maxLife;
 		mTextureTypes = textureTypes;
 		mFixtureDef = fixtureDef;
+		mBodyDef = new BodyDef();
+
+		setFilterCollisionData();
 	}
 
 	/**
@@ -81,8 +84,32 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	 * Returns the fixture definition. Includes shape, mass, etc.
 	 * @return fixture definition.
 	 */
-	public FixtureDef getFixtureDef() {
+	public final FixtureDef getFixtureDef() {
 		return mFixtureDef;
+	}
+
+	/**
+	 * @return body definition of the actor
+	 */
+	public final BodyDef getBodyDef() {
+		return mBodyDef;
+	}
+
+	/**
+	 * @return a copy of the body definition
+	 */
+	public BodyDef getBodyDefCopy() {
+		BodyDef copy = new BodyDef();
+		copy.active = mBodyDef.active;
+		copy.allowSleep = mBodyDef.allowSleep;
+		copy.angularDamping = mBodyDef.angularDamping;
+		copy.awake = mBodyDef.awake;
+		copy.bullet = mBodyDef.bullet;
+		copy.fixedRotation = mBodyDef.fixedRotation;
+		copy.gravityScale = mBodyDef.gravityScale;
+		copy.linearDamping = mBodyDef.linearDamping;
+		copy.type = mBodyDef.type;
+		return copy;
 	}
 
 	/* (non-Javadoc)
@@ -95,12 +122,37 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 		}
 	}
 
+	/**
+	 * @return the filter category this actor belongs to
+	 */
+	protected abstract short getFilterCategory();
+
+	/**
+	 * @return the mask bit used for determening who the actor
+	 * should collide with
+	 */
+	protected abstract short getFilterCollidingCategories();
+
+	/**
+	 * Sets the filter information based on derived information
+	 */
+	private void setFilterCollisionData() {
+		if (mFixtureDef != null) {
+			mFixtureDef.filter.categoryBits = getFilterCategory();
+			mFixtureDef.filter.maskBits = getFilterCollidingCategories();
+		}
+	}
+
+
 	/** Defines the mass, shape, etc. */
 	private FixtureDef mFixtureDef = null;
 	/** Maximum life of the actor, usually starting amount of life */
 	private float mMaxLife = 0;
 	/** All textures for the actor */
 	private Textures.Types[] mTextureTypes = null;
+	/** The body definition of the actor */
+	private BodyDef mBodyDef = null;
+
 	/**
 	 * @todo weapon type
 	 * @todo move type (for enemies)
@@ -124,6 +176,7 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 		// Write ActorDef's variables first
 		json.writeValue("mMaxLife", mMaxLife);
 		json.writeValue("mTextureTypes", mTextureTypes);
+		json.writeValue("mBodyDef", mBodyDef);
 
 
 		// Fixture
@@ -132,7 +185,6 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 		} else {
 			json.writeObjectStart("mFixtureDef");
 			json.writeValue("density", mFixtureDef.density);
-			json.writeValue("filter", mFixtureDef.filter);
 			json.writeValue("friction", mFixtureDef.friction);
 			json.writeValue("isSensor", mFixtureDef.isSensor);
 			json.writeValue("restitution", mFixtureDef.restitution);
@@ -207,6 +259,7 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 		// Our variables
 		mMaxLife = json.readValue("mMaxLife", float.class, jsonData);
 		mTextureTypes = json.readValue("mTextureTypes", Textures.Types[].class, jsonData);
+		mBodyDef = json.readValue("mBodyDef", BodyDef.class, jsonData);
 
 
 		// Fixture definition
@@ -218,13 +271,7 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 			mFixtureDef.restitution = json.readValue("restitution", float.class, fixtureDefMap);
 			mFixtureDef.isSensor = json.readValue("isSensor",  boolean.class, fixtureDefMap);
 
-
-			// Filter
-			Filter tempFilter = json.readValue("filter", Filter.class, fixtureDefMap);
-			mFixtureDef.filter.categoryBits = tempFilter.categoryBits;
-			mFixtureDef.filter.groupIndex = tempFilter.groupIndex;
-			mFixtureDef.filter.maskBits = tempFilter.maskBits;
-
+			setFilterCollisionData();
 
 			// Shape
 			OrderedMap<?,?> shapeMap = json.readValue("shape", OrderedMap.class, fixtureDefMap);

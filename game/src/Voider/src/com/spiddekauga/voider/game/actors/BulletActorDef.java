@@ -34,4 +34,24 @@ public class BulletActorDef extends ActorDef {
 	@SuppressWarnings("unused")
 	private BulletActorDef() {
 	}
+
+	/**
+	 * @return category of the bullet, can be either enemy or player, depends on
+	 * who shot the bullet
+	 */
+	@Override
+	protected short getFilterCategory() {
+		/** @TODO set bullet category */
+		return 0;
+	}
+
+	/**
+	 * Collides with static terrain and either player or enemy, dependending who
+	 * shot the bullet.
+	 */
+	@Override
+	protected short getFilterCollidingCategories() {
+		/** @TODO set bullet category mask */
+		return FixtureFilterCategories.STATIC_TERRAIN;
+	}
 }

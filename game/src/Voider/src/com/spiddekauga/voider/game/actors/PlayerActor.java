@@ -1,6 +1,7 @@
 package com.spiddekauga.voider.game.actors;
 
 
+
 /**
  * The ship the player controls
  * 
@@ -9,9 +10,10 @@ package com.spiddekauga.voider.game.actors;
 public class PlayerActor extends com.spiddekauga.voider.game.Actor {
 	/**
 	 * Player constructor
+	 * @param playerDef the player definition
 	 */
-	public PlayerActor() {
-		super(new PlayerActorDef(100.0f,  null, "Player", null));
+	public PlayerActor(PlayerActorDef playerDef) {
+		super(playerDef);
 	}
 
 	/* (non-Javadoc)
@@ -32,5 +34,11 @@ public class PlayerActor extends com.spiddekauga.voider.game.Actor {
 
 	}
 
-
+	/**
+	 * Private constructor, used for JSON
+	 */
+	@SuppressWarnings("unused")
+	private PlayerActor() {
+		// Does notihng
+	}
 }

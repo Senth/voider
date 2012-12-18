@@ -91,8 +91,7 @@ class DefItem implements Json.Serializable {
 		try {
 			resourceType = Class.forName(className);
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Gdx.app.error("JsonRead", "Class not found for class: " + className);
 		}
 
 

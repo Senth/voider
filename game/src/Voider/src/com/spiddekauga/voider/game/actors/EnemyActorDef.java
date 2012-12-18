@@ -35,4 +35,21 @@ public class EnemyActorDef extends ActorDef {
 	@SuppressWarnings("unused")
 	private EnemyActorDef() {
 	}
+
+	/**
+	 * @return enemy filter category
+	 */
+	@Override
+	protected short getFilterCategory() {
+		return FixtureFilterCategories.ENEMY;
+	}
+
+	/**
+	 * Can collide only with other players
+	 * @return colliding categories
+	 */
+	@Override
+	protected short getFilterCollidingCategories() {
+		return FixtureFilterCategories.PLAYER;
+	}
 }

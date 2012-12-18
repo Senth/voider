@@ -57,9 +57,6 @@ public class ActorDefTest {
 		fixtureDef.isSensor = true;
 		fixtureDef.restitution = 70.6f;
 		fixtureDef.friction = 15f;
-		fixtureDef.filter.categoryBits = 13;
-		fixtureDef.filter.groupIndex = 12;
-		fixtureDef.filter.maskBits = 127;
 
 		actor = new PlayerActorDef(100, null, "player", fixtureDef);
 		jsonString = json.toJson(actor);
@@ -157,7 +154,7 @@ public class ActorDefTest {
 		testPolygon.dispose();
 
 
-		// POLYGON SHAPE
+		// EDGE SHAPE
 		EdgeShape edge = new EdgeShape();
 		edge.set(new Vector2(1, 2), new Vector2(11, 12));
 		fixtureDef.shape = edge;

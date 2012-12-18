@@ -2,8 +2,10 @@ package com.spiddekauga.voider;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
-import com.badlogic.gdx.graphics.GL10;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+mport com.badlogic.gdx.scenes.scene2d.Stage;
 
 /**
  * Base class for all scenes that should be rendered. Examples of scenes:
@@ -19,7 +21,7 @@ public abstract class Scene extends InputAdapter {
 	 */
 	public void run() {
 		Gdx.gl.glClearColor(0, 0, 0, 1);
-		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
 		render();
 		update();
@@ -46,11 +48,25 @@ public abstract class Scene extends InputAdapter {
 	}
 
 	/**
+	 * Called when the scene is deleted
+	 */
+	public void onDisposed() {
+		// Does nothing
+	}
+
+	/**
 	 * Renders the scene
 	 */
 	public void render() {
 		mUi.act(Gdx.graphics.getDeltaTime());
 		mUi.draw();
+	}
+
+	/**
+	 * @return the world of the scene (if it has any), otherwise it returns null.
+	 */
+	public World getWorld() {
+		return null;
 	}
 
 	/**

@@ -35,4 +35,21 @@ public class StaticTerrainActorDef extends ActorDef {
 	private StaticTerrainActorDef() {
 
 	}
+
+	/**
+	 * @return static terrain filter category
+	 */
+	@Override
+	protected short getFilterCategory() {
+		return FixtureFilterCategories.STATIC_TERRAIN;
+	}
+
+	/**
+	 * Can collide only with other players
+	 * @return colliding categories
+	 */
+	@Override
+	protected short getFilterCollidingCategories() {
+		return FixtureFilterCategories.PLAYER;
+	}
 }

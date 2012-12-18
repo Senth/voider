@@ -35,4 +35,21 @@ public class PlayerActorDef extends ActorDef {
 	private PlayerActorDef() {
 
 	}
+
+	/**
+	 * @return player filter category
+	 */
+	@Override
+	protected short getFilterCategory() {
+		return FixtureFilterCategories.ENEMY;
+	}
+
+	/**
+	 * Can collide with everything except player and player bullets
+	 * @return colliding categories
+	 */
+	@Override
+	protected short getFilterCollidingCategories() {
+		return (short) (FixtureFilterCategories.ENEMY | FixtureFilterCategories.PICKUP | FixtureFilterCategories.STATIC_TERRAIN);
+	}
 }
