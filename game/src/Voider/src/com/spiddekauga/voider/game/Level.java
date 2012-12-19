@@ -8,7 +8,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.OrderedMap;
-import com.spiddekauga.voider.game.actors.PlayerActor;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.UndefinedResourceTypeException;
@@ -94,6 +93,13 @@ public class Level implements Json.Serializable, IResource {
 	}
 
 	/**
+	 * @return current speed of the level
+	 */
+	public float getSpeed() {
+		return mSpeed;
+	}
+
+	/**
 	 * Renders the level
 	 * @param spriteBatch the SpriteBatch to use for rendering
 	 */
@@ -101,15 +107,6 @@ public class Level implements Json.Serializable, IResource {
 		for (Actor actor : mActors) {
 			actor.render(spriteBatch);
 		}
-		mPlayer.render(spriteBatch);
-	}
-
-	/**
-	 * Sets the player for the level
-	 * @param player
-	 */
-	public void setPlayer(PlayerActor player) {
-		mPlayer = player;
 	}
 
 
@@ -119,8 +116,6 @@ public class Level implements Json.Serializable, IResource {
 	private Vector<Actor> mActors = null;
 	/** All triggers in the level */
 	private Vector<Trigger> mTriggers = null;
-	/** Player actor playing the level */
-	private PlayerActor mPlayer = null;
 	/** Current x coordinate (of the screen's left edge) */
 	private float mXCoord = 0.0f;
 	/** Level definition for this level */

@@ -154,8 +154,8 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	private BodyDef mBodyDef = null;
 
 	/**
-	 * @todo weapon type
-	 * @todo move type (for enemies)
+	 * @TODO weapon type
+	 * @TODO move type (for enemies)
 	 */
 
 	/** For serialization */

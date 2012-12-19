@@ -1,5 +1,6 @@
 package com.spiddekauga.voider.game.actors;
 
+import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.spiddekauga.voider.game.ActorDef;
 import com.spiddekauga.voider.resources.Textures;
@@ -26,6 +27,7 @@ public class PlayerActorDef extends ActorDef {
 			)
 	{
 		super(maxLife, textureTypes, name, fixtureDef);
+		getBodyDef().type = BodyType.DynamicBody;
 	}
 
 	/**

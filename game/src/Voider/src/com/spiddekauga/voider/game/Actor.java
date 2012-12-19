@@ -163,6 +163,13 @@ public abstract class Actor implements ITriggerListener, Json.Serializable {
 	}
 
 	/**
+	 * @return the body of the actor
+	 */
+	public Body getBody() {
+		return mBody;
+	}
+
+	/**
 	 * Protected constructor used for classes to create an empty actor
 	 */
 	protected Actor() {

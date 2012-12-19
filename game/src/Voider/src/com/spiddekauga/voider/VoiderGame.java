@@ -5,14 +5,9 @@ import java.util.LinkedList;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL10;
-import com.badlogic.gdx.physics.box2d.CircleShape;
-import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.spiddekauga.voider.game.Actor;
 import com.spiddekauga.voider.game.GameScene;
 import com.spiddekauga.voider.game.Level;
 import com.spiddekauga.voider.game.LevelDef;
-import com.spiddekauga.voider.game.actors.PlayerActor;
-import com.spiddekauga.voider.game.actors.PlayerActorDef;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceSaver;
 
@@ -34,22 +29,13 @@ public class VoiderGame implements ApplicationListener {
 		/** @TODO display splash screen */
 
 		GameScene gameScene = new GameScene(false);
-		Actor.setWorld(gameScene.getWorld());
-
-		FixtureDef fixtureDef = new FixtureDef();
-		CircleShape circleShape = new CircleShape();
-		circleShape.setRadius(1.0f);
-		fixtureDef.shape = circleShape;
-		PlayerActorDef def = new PlayerActorDef(100.0f, null, "Normal", fixtureDef);
-		PlayerActor player = new PlayerActor(def);
 
 		LevelDef levelDef = new LevelDef();
 		Level level = new Level(levelDef);
-		level.setPlayer(player);
-
 		gameScene.setLevel(level);
-
 		mActiveScene.push(gameScene);
+
+		Gdx.input.setInputProcessor(gameScene.getInputMultiplexer());
 	}
 
 	@Override
