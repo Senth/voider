@@ -11,6 +11,7 @@ import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.OrderedMap;
+import com.badlogic.gdx.utils.Pools;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.Textures;
 
@@ -209,19 +210,23 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 					PolygonShape polygon = (PolygonShape)mFixtureDef.shape;
 					Vector2[] vertices = new Vector2[polygon.getVertexCount()];
 					for (int i = 0; i < polygon.getVertexCount(); i++) {
-						vertices[i] = new Vector2();
+						vertices[i] = Pools.obtain(Vector2.class);
 						polygon.getVertex(i, vertices[i]);
 					}
 					json.writeValue("vertices", vertices);
+					for (Vector2 vertex : vertices) {
+						Pools.free(vertex);
+					}
 					break;
 
 				case Edge:
 					EdgeShape edge = (EdgeShape)mFixtureDef.shape;
-					Vector2 tempVector = new Vector2();
+					Vector2 tempVector = Pools.obtain(Vector2.class);
 					edge.getVertex1(tempVector);
 					json.writeValue("vertex1", tempVector);
 					edge.getVertex2(tempVector);
 					json.writeValue("vertex2", tempVector);
+					Pools.free(tempVector);
 					break;
 
 				case Chain:

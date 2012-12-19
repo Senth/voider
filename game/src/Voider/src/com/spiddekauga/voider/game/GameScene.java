@@ -1,6 +1,5 @@
 package com.spiddekauga.voider.game;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
@@ -35,12 +34,9 @@ public class GameScene extends Scene {
 
 		mTesting = testing;
 
-		/** TODO fix aspect ratio */
+		/** @TODO fix aspect ratio */
 		mWorld = new World(new Vector2(0, 0), true);
 		mCamera = new OrthographicCamera(80, 48);
-		if (Config.Graphics.USE_DEBUG_RENDERER) {
-			mDebugRenderer = new Box2DDebugRenderer();
-		}
 
 
 		// Initialize player
@@ -86,7 +82,7 @@ public class GameScene extends Scene {
 	public void update() {
 		// Set player velocity (so it moves along with the screen)
 		mPlayerActor.getBody().setLinearVelocity(mLevel.getSpeed(), 0.0f);
-		mWorld.step(Gdx.graphics.getDeltaTime(), 6, 2);
+		mWorld.step(1/60f, 6, 2);
 		mLevel.update(true);
 
 
@@ -168,7 +164,7 @@ public class GameScene extends Scene {
 	/** The Box2D physical world */
 	private final World mWorld;
 	/** Displays nice render graphics for all physical objects. */
-	private Box2DDebugRenderer mDebugRenderer = null;
+	private Box2DDebugRenderer mDebugRenderer = new Box2DDebugRenderer();
 	/** The current level used in the game */
 	private Level mLevel = null;
 	/** If we're just testing */
