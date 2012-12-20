@@ -14,7 +14,7 @@ import com.badlogic.gdx.utils.OrderedMap;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public abstract class Def implements IResource, Json.Serializable {
+public abstract class Def extends Resource implements Json.Serializable {
 	/**
 	 * Default constructor for the resource.
 	 */
@@ -22,31 +22,6 @@ public abstract class Def implements IResource, Json.Serializable {
 		mUniqueId = UUID.randomUUID();
 
 		/** @TODO Set creator and original creator somehow */
-	}
-
-	/**
-	 * Checks if two definitions are equal to each other. Note that these only test
-	 * the unique id and nothing else.
-	 * @param object the other object to test if it is the same definition
-	 * @return true if the object is a definition and has the same unique id as this
-	 */
-	@Override
-	public boolean equals(Object object) {
-		if (object == this) {
-			return true;
-		} else if (object != null && object.getClass() == this.getClass()) {
-			return ((Def) object).mUniqueId.equals(mUniqueId);
-		} else {
-			return false;
-		}
-	}
-
-	/**
-	 * @return the unique id of the resource
-	 */
-	@Override
-	public final UUID getId() {
-		return mUniqueId;
 	}
 
 	/**
@@ -113,7 +88,8 @@ public abstract class Def implements IResource, Json.Serializable {
 	 */
 	@Override
 	public void write(Json json) {
-		json.writeValue("mUniqueId", mUniqueId.toString());
+		super.write(json);
+
 		json.writeValue("mName", mName);
 		json.writeValue("mComment", mComment);
 		json.writeValue("mCreator", mCreator);
@@ -149,7 +125,8 @@ public abstract class Def implements IResource, Json.Serializable {
 	 */
 	@Override
 	public void read(Json json, OrderedMap<String, Object> jsonData) {
-		mUniqueId = UUID.fromString(json.readValue("mUniqueId", String.class, jsonData));
+		super.read(json, jsonData);
+
 		mName = json.readValue("mName", String.class, jsonData);
 		mCreator = json.readValue("mCreator", String.class, jsonData);
 		mOriginalCreator = json.readValue("mOriginalCreator", String.class, jsonData);
@@ -228,8 +205,6 @@ public abstract class Def implements IResource, Json.Serializable {
 		return mInternalDependencies;
 	}
 
-	/** A unique id for the resource */
-	private UUID mUniqueId;
 	/** Dependencies for the resource */
 	private Set<DefItem> mExternalDependencies = new HashSet<DefItem>();
 	/** Internal dependencies, such as textures, sound, particle effects */

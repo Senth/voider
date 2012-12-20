@@ -8,7 +8,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.OrderedMap;
-import com.spiddekauga.voider.resources.IResource;
+import com.spiddekauga.voider.resources.Resource;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.UndefinedResourceTypeException;
 
@@ -17,7 +17,7 @@ import com.spiddekauga.voider.resources.UndefinedResourceTypeException;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class Level implements Json.Serializable, IResource {
+public class Level extends Resource implements ITriggerListener, Json.Serializable {
 	/**
 	 * Constructor which creates an new empty level with the bound
 	 * level definition
@@ -28,35 +28,9 @@ public class Level implements Json.Serializable, IResource {
 		mUniqueId = levelDef.getLevelId();
 		mActors = new Vector<Actor>();
 		mTriggers = new Vector<Trigger>();
+		mTriggerInformation = new TriggerContainer();
 		mSpeed = mLevelDef.getBaseSpeed();
 		mCompletedLevel = false;
-	}
-
-	/**
-	 * Tests whether two levels are equal. This is done by the unique id
-	 * @param object the object to test if it's equal
-	 */
-	@Override
-	public boolean equals(Object object) {
-		if (object == this) {
-			return true;
-		} else if (object == null) {
-			return false;
-		} else if (object instanceof Level) {
-			return ((Level)object).mUniqueId.equals(mUniqueId);
-		} else if (object instanceof UUID) {
-			return mUniqueId.equals(object);
-		} else {
-			return false;
-		}
-	}
-
-	/* (non-Javadoc)
-	 * @see com.spiddekauga.voider.resources.IResource#getId()
-	 */
-	@Override
-	public UUID getId() {
-		return mUniqueId;
 	}
 
 	/**
@@ -110,12 +84,12 @@ public class Level implements Json.Serializable, IResource {
 	}
 
 
-	/** Unique id for the level */
-	private UUID mUniqueId = null;
 	/** All actors in the level */
 	private Vector<Actor> mActors = null;
 	/** All triggers in the level */
 	private Vector<Trigger> mTriggers = null;
+	/** All trigger information in the level, needed for duplication saving/loading and binding */
+	private TriggerContainer mTriggerInformation = null;
 	/** Current x coordinate (of the screen's left edge) */
 	private float mXCoord = 0.0f;
 	/** Level definition for this level */
@@ -131,7 +105,8 @@ public class Level implements Json.Serializable, IResource {
 	 */
 	@Override
 	public void write(Json json) {
-		json.writeValue("mUniqueId", mUniqueId.toString());
+		super.write(json);
+
 		json.writeValue("mActors", mActors);
 		json.writeValue("mTriggers", mTriggers);
 		json.writeValue("mLevelDefId", mLevelDef.getId().toString());
@@ -146,7 +121,8 @@ public class Level implements Json.Serializable, IResource {
 	 */
 	@Override
 	public void read(Json json, OrderedMap<String, Object> jsonData) {
-		mUniqueId = UUID.fromString(json.readValue("mUniqueId", String.class, jsonData));
+		super.read(json, jsonData);
+
 		mXCoord = json.readValue("mXCoord", float.class, jsonData);
 		mSpeed = json.readValue("mSpeed", float.class, jsonData);
 		mCompletedLevel = json.readValue("mCompletedLevel", boolean.class, jsonData);
@@ -174,5 +150,14 @@ public class Level implements Json.Serializable, IResource {
 	@SuppressWarnings("unused")
 	private Level() {
 		// Does nothing
+	}
+
+	/* (non-Javadoc)
+	 * @see com.spiddekauga.voider.game.ITriggerListener#onTriggered(java.lang.String)
+	 */
+	@Override
+	public void onTriggered(String action) {
+		// TODO Auto-generated method stub
+
 	}
 }

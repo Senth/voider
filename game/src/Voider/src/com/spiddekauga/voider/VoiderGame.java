@@ -28,6 +28,13 @@ public class VoiderGame implements ApplicationListener {
 
 		/** @TODO display splash screen */
 
+		testGame();
+	}
+
+	/**
+	 * testing to start a game
+	 */
+	private void testGame() {
 		GameScene gameScene = new GameScene(false);
 
 		LevelDef levelDef = new LevelDef();

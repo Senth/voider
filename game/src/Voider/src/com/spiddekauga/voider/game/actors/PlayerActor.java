@@ -35,10 +35,9 @@ public class PlayerActor extends com.spiddekauga.voider.game.Actor {
 	}
 
 	/**
-	 * Private constructor, used for JSON
+	 * protected constructor, used for JSON
 	 */
-	@SuppressWarnings("unused")
-	private PlayerActor() {
+	protected PlayerActor() {
 		// Does notihng
 	}
 }

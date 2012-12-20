@@ -18,12 +18,14 @@
  */
 package com.spiddekauga.voider.game;
 
+import com.spiddekauga.voider.resources.IResource;
+
 /**
  * Interface for listening to trigger events
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public interface ITriggerListener {
+public interface ITriggerListener extends IResource {
 	/**
 	 * Called when the trigger has been triggered.
 	 * @param action the action the listener should take (i.e. what it was

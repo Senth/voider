@@ -14,6 +14,7 @@ import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.OrderedMap;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.resources.Resource;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.UndefinedResourceTypeException;
 
@@ -22,7 +23,7 @@ import com.spiddekauga.voider.resources.UndefinedResourceTypeException;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public abstract class Actor implements ITriggerListener, Json.Serializable {
+public abstract class Actor extends Resource implements ITriggerListener, Json.Serializable {
 	/**
 	 * Sets the texture of the actor including the actor definition.
 	 * Automatically creates a body for the actor.
@@ -38,6 +39,7 @@ public abstract class Actor implements ITriggerListener, Json.Serializable {
 
 		mDef = def;
 		mLife = def.getMaxLife();
+		mUniqueId = UUID.randomUUID();
 
 		createBody();
 	}
@@ -78,6 +80,8 @@ public abstract class Actor implements ITriggerListener, Json.Serializable {
 	 */
 	@Override
 	public void write(Json json) {
+		super.write(json);
+
 		json.writeValue("VERSION", VERSION);
 		json.writeValue("mLife", mLife);
 		json.writeValue("mDefId", mDef.getId().toString());
@@ -103,10 +107,11 @@ public abstract class Actor implements ITriggerListener, Json.Serializable {
 	 */
 	@Override
 	public void read(Json json, OrderedMap<String, Object> jsonData) {
+		super.read(json, jsonData);
+
 		/** @TODO check version */
 
 		mLife = json.readValue("mLife", float.class, jsonData);
-
 
 		// Get definition information to be able to load it
 		UUID defId = UUID.fromString(json.readValue("mDefId", String.class, jsonData));
@@ -170,7 +175,7 @@ public abstract class Actor implements ITriggerListener, Json.Serializable {
 	}
 
 	/**
-	 * Protected constructor used for classes to create an empty actor
+	 * Protected constructor, used for JSON
 	 */
 	protected Actor() {
 		// Does nothing
