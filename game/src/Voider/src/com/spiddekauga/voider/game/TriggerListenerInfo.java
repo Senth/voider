@@ -40,4 +40,16 @@ public class TriggerListenerInfo implements Json.Serializable {
 		action = json.readValue("action", String.class, jsonData);
 		delay = json.readValue("delay", float.class, jsonData);
 	}
+
+	@Override
+	public boolean equals(Object object) {
+		if (object == null) {
+			return false;
+		} else if (object.getClass() == this.getClass()) {
+			return listenerId.equals(((TriggerListenerInfo)object).listenerId);
+		} else if (object instanceof UUID) {
+			return listenerId.equals(object);
+		}
+		return false;
+	}
 }

@@ -106,7 +106,7 @@ public class LevelTest {
 
 		// Test with setting the values to something else
 		((Vector<Actor>) mfActors.get(level)).add(new PlayerActor(mPlayerActorDef));
-		((Vector<Trigger>) mfTriggers.get(level)).add(new Trigger());
+		((Vector<Trigger>) mfTriggers.get(level)).add(new TestTrigger());
 		mfXCoord.set(level, 55.3f);
 		mfSpeed.set(level, 0.578f);
 		mfCompletedLevel.set(level, true);

@@ -10,7 +10,10 @@ import java.util.UUID;
 import org.junit.AfterClass;
 import org.junit.Test;
 
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
+import com.spiddekauga.voider.game.LevelDef;
+import com.spiddekauga.voider.resources.Def;
 
 /**
  * 
@@ -29,6 +32,7 @@ public class JsonExtendedTest {
 	/**
 	 * Tests if the extended json can write/read uuid correctly
 	 */
+	@SuppressWarnings("unchecked")
 	@Test
 	public void uuid() {
 		Json json = new JsonExtended();
@@ -75,6 +79,19 @@ public class JsonExtendedTest {
 		}
 
 		assertNull("UUID was null", jsonUuid);
+
+
+		Array<Def> testArray = new Array<Def>();
+		testArray.add(new LevelDef());
+		jsonString = json.toJson(testArray);
+
+
+		// Test when inside a collection
+		Array<UUID> uuidArray = new Array<UUID>();
+		uuidArray.add(UUID.randomUUID());
+		jsonString = json.toJson(uuidArray);
+		Array<UUID> jsonArray = json.fromJson(Array.class, jsonString);
+		assertEquals("Array the same", uuidArray.get(0), jsonArray.get(0));
 	}
 
 }

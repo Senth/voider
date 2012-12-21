@@ -2,15 +2,15 @@ package com.spiddekauga.voider.game;
 
 import java.util.UUID;
 
+import com.badlogic.gdx.utils.Array;
 import com.spiddekauga.voider.resources.Resource;
 
 /**
  * Base class for all triggers
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
- * @TODO set to abstract
  */
-public class Trigger extends Resource {
+public abstract class Trigger extends Resource {
 	/**
 	 * Default constructor for the trigger. Creates a new unique id
 	 */
@@ -21,9 +21,25 @@ public class Trigger extends Resource {
 	/**
 	 * Updates the trigger, i.e. checks if it shall send a trigger event
 	 * to the listeners
-	 * @TODO set to abstract
 	 */
 	public void update() {
 
 	}
+
+	/**
+	 * Checks if the trigger is triggered
+	 * @return true if the trigger has triggered
+	 */
+	protected abstract boolean isTriggered();
+
+	/**
+	 * Sets the listener array
+	 * @param listeners array of listeners
+	 */
+	void setListeners(Array<TriggerListenerInfo> listeners) {
+		mListeners = listeners;
+	}
+
+	/** Listener information about the trigger */
+	Array<TriggerListenerInfo> mListeners = null;
 }
