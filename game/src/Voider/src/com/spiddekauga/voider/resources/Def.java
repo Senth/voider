@@ -4,9 +4,9 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.ObjectMap.Entry;
 import com.badlogic.gdx.utils.OrderedMap;
+import com.spiddekauga.utils.Json;
 
 /**
  * Base class for all "definitions", e.g. ActorDef, WeaponDef. All definitions
@@ -96,7 +96,7 @@ public abstract class Def extends Resource implements Json.Serializable {
 		json.writeValue("mOriginalCreator", mOriginalCreator);
 
 		if (mInternalDependencies.isEmpty()) {
-			json.writeValue("mInternalDependencies", (OrderedMap<?,?>) null);
+			json.writeValue("mInternalDependencies", (Set<?>) null);
 		} else {
 			json.writeObjectStart("mInternalDependencies");
 			for (ResourceNames item : mInternalDependencies) {
@@ -106,7 +106,7 @@ public abstract class Def extends Resource implements Json.Serializable {
 		}
 
 		if (mExternalDependencies.isEmpty()) {
-			json.writeValue("mExternalDependencies", (OrderedMap<?,?>) null);
+			json.writeValue("mExternalDependencies", (Set<?>) null);
 		} else {
 			json.writeObjectStart("mExternalDependencies");
 			int i= 0;

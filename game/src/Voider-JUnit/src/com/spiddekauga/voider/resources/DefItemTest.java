@@ -8,7 +8,7 @@ import java.util.UUID;
 import org.junit.Test;
 
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.utils.Json;
+import com.spiddekauga.utils.Json;
 import com.spiddekauga.voider.game.actors.PlayerActorDef;
 
 /**

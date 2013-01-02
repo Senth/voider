@@ -3,8 +3,8 @@ package com.spiddekauga.voider.resources;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.OrderedMap;
+import com.spiddekauga.utils.Json;
 
 /**
  * Wrapper to simplify the queue. Only available for this pacakage

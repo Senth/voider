@@ -14,9 +14,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.ObjectMap;
-import com.spiddekauga.voider.utils.JsonExtended;
+import com.spiddekauga.utils.Json;
 
 /**
  * Test for TriggerContainer class
@@ -377,10 +376,11 @@ public class TriggerContainerTest {
 	}
 
 	/**
-	 * Test method for {@link com.spiddekauga.voider.game.TriggerContainer#write(com.badlogic.gdx.utils.Json)}.
+	 * Test method for {@link com.spiddekauga.voider.game.TriggerContainer#write(com.spiddekauga.utils.Json)}.
 	 * @throws IllegalAccessException
 	 * @throws IllegalArgumentException
 	 */
+	@SuppressWarnings("unchecked")
 	@Test
 	public void writeRead() throws IllegalArgumentException, IllegalAccessException {
 		Trigger trigger1 = new TestTrigger();
@@ -421,7 +421,7 @@ public class TriggerContainerTest {
 		mTriggerContainer.addListener(trigger1.getId(), listenerInfo3);
 		mTriggerContainer.removeListener(trigger1.getId(), listener1.getId());
 
-		Json json = new JsonExtended();
+		Json json = new Json();
 		String jsonString = json.toJson(mTriggerContainer);
 		json.prettyPrint(jsonString);
 		jsonString = json.toJson(mTriggerContainer);

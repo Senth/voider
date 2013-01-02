@@ -11,7 +11,7 @@ import java.util.UUID;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.badlogic.gdx.utils.Json;
+import com.spiddekauga.utils.Json;
 import com.spiddekauga.voider.game.actors.BossActorDef;
 import com.spiddekauga.voider.game.actors.BulletActorDef;
 import com.spiddekauga.voider.game.actors.PlayerActorDef;
@@ -62,7 +62,7 @@ public class DefTest {
 	}
 
 	/**
-	 * Test method for {@link com.spiddekauga.voider.resources.Def#write(com.badlogic.gdx.utils.Json)}.
+	 * Test method for {@link com.spiddekauga.voider.resources.Def#write(com.spiddekauga.utils.Json)}.
 	 */
 	@Test
 	public void writeRead() {

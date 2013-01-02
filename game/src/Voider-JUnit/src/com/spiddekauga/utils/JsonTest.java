@@ -1,4 +1,4 @@
-package com.spiddekauga.voider.utils;
+package com.spiddekauga.utils;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -7,26 +7,48 @@ import static org.junit.Assert.fail;
 
 import java.util.UUID;
 
-import org.junit.AfterClass;
 import org.junit.Test;
 
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.Json;
+import com.badlogic.gdx.utils.ObjectMap;
 import com.spiddekauga.voider.game.LevelDef;
 import com.spiddekauga.voider.resources.Def;
-
 /**
- * 
+ * Tests the extended json class
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class JsonExtendedTest {
-
+public class JsonTest {
 	/**
-	 * @throws java.lang.Exception
+	 * Tests maps with keys
 	 */
-	@AfterClass
-	public static void tearDownAfterClass() throws Exception {
+	@SuppressWarnings("unchecked")
+	@Test
+	public void maps() {
+		Json json = new Json();
+
+		// String - Integer
+		ObjectMap<String, Integer> stringMap = new ObjectMap<String, Integer>();
+		stringMap.put("First", 1);
+		stringMap.put("Second", 2);
+		String jsonString = json.toJson(stringMap);
+		ObjectMap<String, Integer> jsonStringMap = json.fromJson(ObjectMap.class, jsonString);
+		assertTrue(jsonStringMap.containsKey("First"));
+		assertTrue(jsonStringMap.containsKey("Second"));
+		assertTrue(jsonStringMap.containsValue(1, false));
+		assertTrue(jsonStringMap.containsValue(2, false));
+
+
+		// Integer - Integer
+		ObjectMap<Integer, Integer> intMap = new ObjectMap<Integer, Integer>();
+		intMap.put(1, 1);
+		intMap.put(2, 2);
+		jsonString = json.toJson(intMap);
+		ObjectMap<Integer, Integer> jsonIntMap = json.fromJson(ObjectMap.class, jsonString);
+		assertTrue(jsonIntMap.containsKey(1));
+		assertTrue(jsonIntMap.containsKey(2));
+		assertTrue(jsonIntMap.containsValue(1, false));
+		assertTrue(jsonIntMap.containsValue(2, false));
 	}
 
 	/**
@@ -35,7 +57,7 @@ public class JsonExtendedTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void uuid() {
-		Json json = new JsonExtended();
+		Json json = new Json();
 		String jsonString = null;
 		UUID testUuid = UUID.randomUUID();
 		try {
@@ -92,6 +114,15 @@ public class JsonExtendedTest {
 		jsonString = json.toJson(uuidArray);
 		Array<UUID> jsonArray = json.fromJson(Array.class, jsonString);
 		assertEquals("Array the same", uuidArray.get(0), jsonArray.get(0));
+
+
+		// Test when used as a key
+		ObjectMap<UUID, String> uuidMap = new ObjectMap<UUID, String>();
+		testUuid = UUID.randomUUID();
+		uuidMap.put(testUuid, "test");
+		jsonString = json.toJson(uuidMap);
+		ObjectMap<UUID, String> jsonMap = json.fromJson(ObjectMap.class, jsonString);
+		assertTrue(jsonMap.containsKey(testUuid));
 	}
 
 }

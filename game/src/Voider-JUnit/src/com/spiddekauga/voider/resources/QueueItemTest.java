@@ -7,7 +7,7 @@ import java.util.UUID;
 import org.junit.Test;
 
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.utils.Json;
+import com.spiddekauga.utils.Json;
 import com.spiddekauga.voider.game.actors.PlayerActorDef;
 
 /**
@@ -33,7 +33,7 @@ public class QueueItemTest {
 	}
 
 	/**
-	 * Test method for {@link com.spiddekauga.voider.resources.DefItem#write(com.badlogic.gdx.utils.Json)}.
+	 * Test method for {@link com.spiddekauga.voider.resources.DefItem#write(com.spiddekauga.utils.Json)}.
 	 */
 	@Test
 	public void writeAndRead() {

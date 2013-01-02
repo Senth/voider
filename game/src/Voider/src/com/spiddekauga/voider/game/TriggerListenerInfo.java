@@ -2,8 +2,8 @@ package com.spiddekauga.voider.game;
 
 import java.util.UUID;
 
-import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.OrderedMap;
+import com.spiddekauga.utils.Json;
 
 /**
  * Listener information for the trigger

@@ -6,7 +6,7 @@ import java.util.UUID;
 
 import org.junit.Test;
 
-import com.badlogic.gdx.utils.Json;
+import com.spiddekauga.utils.Json;
 import com.spiddekauga.voider.resources.ResourceNames;
 
 /**
@@ -16,7 +16,7 @@ import com.spiddekauga.voider.resources.ResourceNames;
  */
 public class LevelDefTest {
 	/**
-	 * Test method for {@link com.spiddekauga.voider.game.LevelDef#write(com.badlogic.gdx.utils.Json)}.
+	 * Test method for {@link com.spiddekauga.voider.game.LevelDef#write(com.spiddekauga.utils.Json)}.
 	 * Tests to write and read to/from a Json object
 	 */
 	@Test
