@@ -1,5 +1,7 @@
 package com.spiddekauga.voider.game;
 
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
@@ -28,7 +30,18 @@ class TriggerContainer implements Json.Serializable{
 	 * Removes all unused triggers
 	 */
 	public void removeUnusedTriggers() {
-		/** @TODO implement removeUnusedTriggers() */
+		LinkedList<UUID> triggersToRemove = new LinkedList<UUID>();
+
+		for (ObjectMap.Entry<UUID, Array<TriggerListenerInfo>> entry : mTriggerListeners.entries()) {
+			if (entry.value.size == 0) {
+				triggersToRemove.add(entry.key);
+			}
+		}
+
+		for (UUID triggerId : triggersToRemove) {
+			mTriggerListeners.remove(triggerId);
+			mTriggers.remove(triggerId);
+		}
 	}
 
 	/**
@@ -55,11 +68,15 @@ class TriggerContainer implements Json.Serializable{
 	public void removeTrigger(Trigger trigger) {
 		Object removedObject = mTriggers.remove(trigger.getId());
 		if (removedObject == null) {
-			Gdx.app.error("Trigger", "Could not found the trigger to remove ");
+			Gdx.app.error("Trigger", "Could not find the trigger to remove ");
 		}
-		mTriggerListeners.remove(trigger.getId());
-		if (removedObject == null) {
-			Gdx.app.error("Trigger", "Could not found the trigger with listener to remove");
+		Array<TriggerListenerInfo> listeners = mTriggerListeners.remove(trigger.getId());
+		if (listeners != null) {
+			for (TriggerListenerInfo listenerInfo : listeners) {
+				removeTriggerFromListener(trigger.getId(), listenerInfo.listenerId);
+			}
+		} else {
+			Gdx.app.error("Trigger", "Could not find the trigger with listener to remove");
 		}
 	}
 
@@ -100,6 +117,32 @@ class TriggerContainer implements Json.Serializable{
 
 		// Add the trigger
 		listenersTriggers.add(triggerId);
+	}
+
+	/**
+	 * Removes a listener from all triggers
+	 * @param listenerId the listener to remove
+	 */
+	public void removeListener(UUID listenerId) {
+		Array<UUID> triggers = mListenerTriggers.remove(listenerId);
+		if (triggers != null) {
+			for (UUID triggerId : triggers) {
+				Array<TriggerListenerInfo> listeners = mTriggerListeners.get(triggerId);
+				if (listeners != null) {
+					Iterator<TriggerListenerInfo> iterator = listeners.iterator();
+					while (iterator.hasNext()) {
+						if (iterator.next().listenerId.equals(listenerId)) {
+							iterator.remove();
+							break;
+						}
+					}
+				} else {
+					Gdx.app.error("Trigger", "Could not find the listeners for a trigger when removing a listener");
+				}
+			}
+		} else {
+			Gdx.app.error("Trigger", "Could not find the listener to remove");
+		}
 	}
 
 	/**
@@ -167,19 +210,10 @@ class TriggerContainer implements Json.Serializable{
 		for (ObjectMap.Entry<UUID, Array<TriggerListenerInfo>> listenerInfos : mTriggerListeners.entries()) {
 			for (TriggerListenerInfo listenerInfo : listenerInfos.value) {
 
-				// Set the refenerence to the listener
+				// Set the reference to the listener
 				ITriggerListener listener = listeners.get(listenerInfo.listenerId);
 				if (listener != null) {
 					listenerInfo.listener = listener;
-
-					// Add trigger to the listener's trigger list
-					Array<UUID> listenerTriggers = mListenerTriggers.get(listener.getId());
-					if (listenerTriggers == null) {
-						listenerTriggers = new Array<UUID>(false, 1);
-						mListenerTriggers.put(listener.getId(), listenerTriggers);
-					}
-
-					listenerTriggers.add(listenerInfos.key);
 				} else {
 					Gdx.app.error("Trigger", "Could not find the trigger for the listener");
 				}
@@ -195,6 +229,7 @@ class TriggerContainer implements Json.Serializable{
 	public void write(Json json) {
 		json.writeValue("mTriggerListeners", mTriggerListeners);
 		json.writeValue("mTriggers", mTriggers);
+		json.writeValue("mListenerTriggers", mListenerTriggers);
 	}
 
 	/* (non-Javadoc)
@@ -207,6 +242,35 @@ class TriggerContainer implements Json.Serializable{
 		mTriggerListeners = (ObjectMap<UUID, Array<TriggerListenerInfo>>) triggerListeners;
 		ObjectMap<?, ?> triggers = json.readValue("mTriggers", ObjectMap.class, jsonData);
 		mTriggers = (ObjectMap<UUID, Trigger>)triggers;
+		ObjectMap<?, ?> listenerTriggers = json.readValue("mTriggers", ObjectMap.class, jsonData);
+		mListenerTriggers = (ObjectMap<UUID, Array<UUID>>)listenerTriggers;
+
+
+		// Set the listeners for the triggers
+		for (ObjectMap.Entry<UUID, Trigger> trigger : mTriggers.entries()) {
+			trigger.value.setListeners(mTriggerListeners.get(trigger.key));
+		}
+	}
+
+	/**
+	 * Removes a trigger from a listener
+	 * @param triggerId the trigger to remove
+	 * @param listenerId the listener id to remove it from
+	 */
+	private void removeTriggerFromListener(UUID triggerId, UUID listenerId) {
+		Array<UUID> triggers = mListenerTriggers.get(listenerId);
+		if (triggers != null) {
+			boolean removed = triggers.removeValue(triggerId, false);
+			if (!removed) {
+				Gdx.app.error("Trigger", "Could not find the trigger in the listener to remove it from");
+			}
+
+			if (triggers.size == 0) {
+				mListenerTriggers.remove(listenerId);
+			}
+		} else {
+			Gdx.app.error("Trigger", "Could not find triggers for listener that was removed");
+		}
 	}
 
 
