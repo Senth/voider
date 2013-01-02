@@ -19,7 +19,7 @@ import com.badlogic.gdx.utils.ObjectMap;
 import com.spiddekauga.voider.utils.JsonExtended;
 
 /**
- * 
+ * Test for TriggerContainer class
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
@@ -423,6 +423,8 @@ public class TriggerContainerTest {
 
 		Json json = new JsonExtended();
 		String jsonString = json.toJson(mTriggerContainer);
+		json.prettyPrint(jsonString);
+		jsonString = json.toJson(mTriggerContainer);
 		TriggerContainer jsonTriggerContainer = json.fromJson(TriggerContainer.class, jsonString);
 
 		Array<TriggerListenerInfo> listeners = ((ObjectMap<UUID, Array<TriggerListenerInfo>>) mfTriggerListeners.get(jsonTriggerContainer)).get(trigger1.getId());
