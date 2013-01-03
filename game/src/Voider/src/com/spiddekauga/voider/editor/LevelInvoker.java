@@ -12,6 +12,13 @@ import com.spiddekauga.voider.game.Level;
  */
 public class LevelInvoker {
 	/**
+	 * Default constructor, a level needs to be set before this invoker can be used
+	 */
+	public LevelInvoker() {
+		// Does nothing
+	}
+
+	/**
 	 * Constructor which takes a level to invoke the commands on
 	 * @param level the level to execute the actions on
 	 */

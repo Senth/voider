@@ -31,10 +31,9 @@ public class PlayerActorDef extends ActorDef {
 	}
 
 	/**
-	 * Private default constructor used for JSON
+	 * Protected default constructor used for JSON
 	 */
-	@SuppressWarnings("unused")
-	private PlayerActorDef() {
+	protected PlayerActorDef() {
 
 	}
 

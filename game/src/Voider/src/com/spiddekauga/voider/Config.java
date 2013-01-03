@@ -6,6 +6,9 @@ import java.util.Arrays;
 
 import javax.crypto.spec.SecretKeySpec;
 
+import com.badlogic.gdx.physics.box2d.CircleShape;
+import com.badlogic.gdx.physics.box2d.Shape;
+
 /**
  * Game configuration
  * 
@@ -17,6 +20,14 @@ public class Config {
 	 */
 	public static void init() {
 		Crypto.init();
+		Editor.init();
+	}
+
+	/**
+	 * Dispose all objects that have been initialized
+	 */
+	public static void dispose() {
+		Editor.PICKING_CIRCLE_SHAPE.dispose();
 	}
 
 	/**
@@ -25,6 +36,23 @@ public class Config {
 	public static class Graphics {
 		/** If we shall use debug_renderer to display graphics instead of sprites (where applicable) */
 		public final static boolean USE_DEBUG_RENDERER = true;
+	}
+
+	/**
+	 * Editor options
+	 */
+	public static class Editor {
+		/** Radius of all picking circles */
+		public final static float PICKING_CIRCLE_RADIUS = 1.0f;
+		/** Picking shape of the */
+		public final static Shape PICKING_CIRCLE_SHAPE = new CircleShape();
+
+		/**
+		 * Initialization of the editor configuration
+		 */
+		public static void init() {
+			PICKING_CIRCLE_SHAPE.setRadius(PICKING_CIRCLE_RADIUS);
+		}
 	}
 
 	/**

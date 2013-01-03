@@ -83,6 +83,32 @@ public class Level extends Resource implements ITriggerListener, Json.Serializab
 		}
 	}
 
+	/**
+	 * Renders extra information from actors when level editor is active
+	 * @param spriteBatch the SpriteBatch to use for rendering
+	 */
+	public void renderEditor(SpriteBatch spriteBatch) {
+		for (Actor actor : mActors) {
+			actor.renderEditor(spriteBatch);
+		}
+	}
+
+	/**
+	 * Adds an actor to the level
+	 * @param actor the actor to add to the level
+	 */
+	public void addActor(Actor actor) {
+		mActors.add(actor);
+	}
+
+	/**
+	 * Removes an actor from the level
+	 * @param actorId the actor to remove
+	 */
+	public void removeActor(UUID actorId) {
+		/** @TODO removeActor() */
+	}
+
 
 	/** All actors in the level */
 	private Vector<Actor> mActors = null;

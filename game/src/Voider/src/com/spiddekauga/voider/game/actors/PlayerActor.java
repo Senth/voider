@@ -38,6 +38,6 @@ public class PlayerActor extends com.spiddekauga.voider.game.Actor {
 	 * protected constructor, used for JSON
 	 */
 	protected PlayerActor() {
-		// Does notihng
+		// Does nothing
 	}
 }

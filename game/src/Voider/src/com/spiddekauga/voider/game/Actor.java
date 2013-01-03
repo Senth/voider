@@ -69,6 +69,14 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 	}
 
 	/**
+	 * Renders additional information when using an editor
+	 * @param spriteBatch the current sprite batch for the scene
+	 */
+	public void renderEditor(SpriteBatch spriteBatch) {
+		// Does nothing
+	}
+
+	/**
 	 * @return current life of the actor
 	 */
 	public float getLife() {
@@ -100,6 +108,8 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 		} else {
 			json.writeValue("mBody", (String) null);
 		}
+
+
 	}
 
 	/* (non-Javadoc)
@@ -168,6 +178,14 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 	}
 
 	/**
+	 * Sets if the editor will be active for all the actors
+	 * @param editorActive true if the editor will be active
+	 */
+	public static void setEditorActive(boolean editorActive) {
+		mEditorActive = editorActive;
+	}
+
+	/**
 	 * @return the body of the actor
 	 */
 	public Body getBody() {
@@ -189,7 +207,10 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 		if (mWorld != null) {
 			BodyDef bodyDef = mDef.getBodyDef();
 			mBody = mWorld.createBody(bodyDef);
-			mBody.createFixture(mDef.getFixtureDef());
+			if (mDef.getFixtureDef() != null) {
+				mBody.createFixture(mDef.getFixtureDef());
+			}
+			mBody.setUserData(this);
 		}
 	}
 
@@ -201,8 +222,11 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 	private Sprite mSprite = null;
 	/** The belonging definition of this actor */
 	private ActorDef mDef = null;
+
 	/** The world used for creating bodies */
-	private static World mWorld = null;
+	protected static World mWorld = null;
+	/** If the actor will be used for an editor */
+	protected static boolean mEditorActive = false;
 
 	/** Current version of this actor, used for reading/writing to json */
 	private static final long VERSION = 100;

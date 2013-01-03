@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL10;
+import com.spiddekauga.voider.editor.LevelEditor;
 import com.spiddekauga.voider.game.GameScene;
 import com.spiddekauga.voider.game.Level;
 import com.spiddekauga.voider.game.LevelDef;
@@ -28,7 +29,22 @@ public class VoiderGame implements ApplicationListener {
 
 		/** @TODO display splash screen */
 
-		testGame();
+		//testGame();
+		testEditor();
+	}
+
+	/**
+	 * Testing the editor
+	 */
+	private void testEditor() {
+		LevelEditor levelEditor = new LevelEditor();
+
+		LevelDef levelDef = new LevelDef();
+		Level level = new Level(levelDef);
+		levelEditor.setLevel(level);
+		mActiveScene.push(levelEditor);
+
+		Gdx.input.setInputProcessor(levelEditor.getInputMultiplexer());
 	}
 
 	/**

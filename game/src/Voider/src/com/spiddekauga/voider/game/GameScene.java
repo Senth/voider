@@ -41,6 +41,7 @@ public class GameScene extends Scene {
 
 		// Initialize player
 		Actor.setWorld(mWorld);
+		Actor.setEditorActive(false);
 
 		FixtureDef fixtureDef = new FixtureDef();
 		CircleShape circleShape = new CircleShape();
@@ -177,6 +178,7 @@ public class GameScene extends Scene {
 	private int mPlayerPointer = INVALID_POINTER;
 	/** Last known location of the pointer (on the screen) */
 	private Vector2 mLastPointer;
+
 
 	// Temporary variables
 	/** For ray testing on player ship when touching it */
