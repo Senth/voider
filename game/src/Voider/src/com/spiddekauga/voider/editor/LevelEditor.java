@@ -32,6 +32,10 @@ public class LevelEditor extends Scene {
 		mCamera = new OrthographicCamera(80, 48);
 		Actor.setWorld(mWorld);
 		Actor.setEditorActive(true);
+
+		/** @TODO remove active tool */
+		mToolActive = Tools.STATIC_TERRAIN;
+		mEventHandlerCurrent = mStaticTerrainHandler;
 	}
 
 	@Override
@@ -77,21 +81,18 @@ public class LevelEditor extends Scene {
 			return true;
 		}
 
-		// What tool is active?
+		// Only do something for the first pointer
+		if (pointer == 0) {
+			mTestPoint.set(x, y, 0);
+			mCamera.unproject(mTestPoint);
+			mTouchCurrent.x = mTestPoint.x;
+			mTouchCurrent.y = mTestPoint.y;
+			mTouchOrigin.set(mTouchCurrent);
 
-		// Create Terrain
-		if (mActor == null) {
-			mActor = new StaticTerrainActor();
-			mLevel.addActor(mActor);
+			mEventHandlerCurrent.down();
+
+			return true;
 		}
-
-
-		mTestPoint.set(x, y, 0);
-		mCamera.unproject(mTestPoint);
-
-
-		mActor.addCorner(new Vector2(mTestPoint.x, mTestPoint.y));
-
 
 		// Disable GUI?
 
@@ -100,7 +101,17 @@ public class LevelEditor extends Scene {
 
 	@Override
 	public boolean touchDragged(int x, int y, int pointer) {
+		// Only do something for the first pointer
+		if (pointer == 0) {
+			mTestPoint.set(x, y, 0);
+			mCamera.unproject(mTestPoint);
+			mTouchCurrent.x = mTestPoint.x;
+			mTouchCurrent.y = mTestPoint.y;
 
+			mEventHandlerCurrent.dragged();
+
+			return true;
+		}
 		return false;
 	}
 
@@ -112,9 +123,30 @@ public class LevelEditor extends Scene {
 			return true;
 		}
 
-		// Enabel GUI?
+		// Only do something for the first pointer
+		if (pointer == 0) {
+			mTestPoint.set(x, y, 0);
+			mCamera.unproject(mTestPoint);
+			mTouchCurrent.x = mTestPoint.x;
+			mTouchCurrent.y = mTestPoint.y;
+
+			mEventHandlerCurrent.up();
+
+			return true;
+		}
+
+		// Enable GUI?
 
 		return false;
+	}
+
+	/**
+	 * Runs a test for picking
+	 * @param callback the callback function to use
+	 */
+	public void testPick(QueryCallback callback) {
+		mHitBody = null;
+		mWorld.QueryAABB(callback, mTouchCurrent.x - 0.0001f, mTouchCurrent.y - 0.0001f, mTouchCurrent.x + 0.0001f, mTouchCurrent.y + 0.0001f);
 	}
 
 	/** Physics world */
@@ -128,10 +160,11 @@ public class LevelEditor extends Scene {
 	/** Level invoker, sends all editing commands through this */
 	private LevelInvoker mLevelInvoker = new LevelInvoker();
 
+	// Event stuff
 	/** If we're scrolling the map */
 	private boolean mScrolling = false;
-	/** Active actor, this actor gets the transformation etc */
-	private StaticTerrainActor mActor = null;
+	/** The active tool */
+	private Tools mToolActive = Tools.NONE;
 
 
 	// Temporary variables for touch detection
@@ -143,16 +176,129 @@ public class LevelEditor extends Scene {
 	private Vector3 mTestPoint = new Vector3();
 	/** Body that was hit */
 	private Body mHitBody = null;
-	/** Callback for "ray testing" */
-	private QueryCallback mCallback = new QueryCallback() {
+
+	/**
+	 * All tools in the level editor
+	 */
+	enum Tools {
+		/** Creating static terrain */
+		STATIC_TERRAIN,
+		/** No tool active */
+		NONE,
+	}
+
+
+	// -------------------------------------
+	//		EVENT HANDLING FOR TOOLS
+	// -------------------------------------
+	/** Event handler for the current tool */
+	private EventHandler mEventHandlerCurrent = null;
+
+	/** Event handler for static terrain tool */
+	private StaticTerrainHandler mStaticTerrainHandler = new StaticTerrainHandler();
+	/** Event handler for when no tool is active */
+	private NoneHandler mNoneHandler = new NoneHandler();
+
+	/**
+	 * Common interface for all event handlers
+	 */
+	private interface EventHandler {
+		/**
+		 * Handles touch down events
+		 */
+		public void down();
+
+		/**
+		 * Handles touch dragged events
+		 */
+		public void dragged();
+
+		/**
+		 * Handles touch up events
+		 */
+		public void up();
+	}
+
+	/**
+	 * Handles all events when static terrain tool is active
+	 * 
+	 * @author Matteus Magnusson <senth.wallace@gmail.com>
+	 */
+	private class StaticTerrainHandler implements EventHandler {
 		@Override
-		public boolean reportFixture(Fixture fixture) {
-			if (fixture.testPoint(mTestPoint.x, mTestPoint.y)) {
-				mHitBody = fixture.getBody();
-				return false;
-			} else {
-				return true;
+		public void down() {
+			// Create Terrain
+			if (mActor == null) {
+				mActor = new StaticTerrainActor();
+				mLevel.addActor(mActor);
+			}
+
+			/** @TODO two double hits on the actor (not corners) completes the terrain
+			 * This will make it possible to start another terrain */
+
+			// Test if we hit a corner...
+			testPick(mCallback);
+			if (mHitBody != null) {
+				mCornerCurrentIndex = mActor.getCornerIndex(mHitBody.getPosition());
+			}
+			// Else create a new corner
+			else {
+				mCornerCurrentIndex = mActor.addCorner(mTouchOrigin);
 			}
 		}
-	};
+
+		@Override
+		public void dragged() {
+			if (mCornerCurrentIndex != -1) {
+				mActor.moveCorner(mCornerCurrentIndex, mTouchCurrent);
+			}
+		}
+
+		@Override
+		public void up() {
+
+		}
+
+		/** Index of the current corner */
+		private int mCornerCurrentIndex = -1;
+		/** Current Static terrain actor */
+		private StaticTerrainActor mActor = null;
+
+		/**
+		 * Picking for static terrains
+		 */
+		private QueryCallback mCallback = new QueryCallback() {
+			@Override
+			public boolean reportFixture(Fixture fixture) {
+				if (fixture.testPoint(mTouchCurrent)) {
+					if (fixture.getBody().getUserData() instanceof StaticTerrainActor) {
+						mHitBody = fixture.getBody();
+						mActor = (StaticTerrainActor) mHitBody.getUserData();
+						return false;
+					}
+				}
+				return true;
+			}
+		};
+	}
+
+	/**
+	 * Handles all events for when no tool is active
+	 */
+	public class NoneHandler implements EventHandler {
+		@Override
+		public void down() {
+			// TODO Auto-generated method stub
+		}
+
+		@Override
+		public void dragged() {
+			// TODO Auto-generated method stub
+		}
+
+		@Override
+		public void up() {
+			// TODO Auto-generated method stub
+		}
+	}
 }

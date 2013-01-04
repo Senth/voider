@@ -59,14 +59,17 @@ public class StaticTerrainActor extends Actor {
 	/**
 	 * Add another corner position to the back of the array
 	 * @param corner a new corner that will be placed at the back
+	 * @return index of the new corner
 	 */
-	public void addCorner(Vector2 corner) {
-		mCorners.add(corner);
+	public int addCorner(Vector2 corner) {
+		mCorners.add(corner.cpy());
 		readjustFixtures();
 
 		if (mEditorActive) {
 			createBodyCorner(corner);
 		}
+
+		return mCorners.size - 1;
 	}
 
 	/**
@@ -96,11 +99,26 @@ public class StaticTerrainActor extends Actor {
 	}
 
 	/**
-	 * Moves a corner
+	 * @param position the position of a corner
+	 * @return corner index of the specified position, -1 if none was found
+	 */
+	public int getCornerIndex(Vector2 position) {
+		for (int i = 0; i < mCorners.size; ++i) {
+			if (mCorners.get(i).equals(position)) {
+				return i;
+			}
+		}
+
+		return -1;
+	}
+
+	/**
+	 * Moves a corner, identifying the corner from the original position
 	 * @param originalPos the original position of the corner
 	 * @param newPos the new position of the corner
+	 * @return index of the currently moving corner, -1 if none was found
 	 */
-	public void moveCorner(Vector2 originalPos, Vector2 newPos) {
+	public int moveCorner(Vector2 originalPos, Vector2 newPos) {
 		Vector2 corner = null;
 		int i = 0;
 		while (corner == null && i < mCorners.size) {
@@ -113,13 +131,28 @@ public class StaticTerrainActor extends Actor {
 
 		if (corner == null) {
 			Gdx.app.error("Terrain", "Could not find the corner to move");
-			return;
+			return -1;
 		}
 
 		corner.set(newPos);
 
 		if (mEditorActive) {
 			mCornerBodies.get(i).setTransform(newPos, 0f);
+		}
+
+		return i;
+	}
+
+	/**
+	 * Moves a corner, identifying the corner from index
+	 * @param index index of the corner to move
+	 * @param newPos new position of the corner
+	 */
+	public void moveCorner(int index, Vector2 newPos) {
+		mCorners.get(index).set(newPos);
+
+		if (mEditorActive) {
+			mCornerBodies.get(index).setTransform(newPos, 0f);
 		}
 	}
 
@@ -138,6 +171,7 @@ public class StaticTerrainActor extends Actor {
 		Body body = mWorld.createBody(new BodyDef());
 		body.createFixture(Config.Editor.PICKING_CIRCLE_SHAPE, 0f);
 		body.setTransform(corner, 0f);
+		body.setUserData(this);
 		mCornerBodies.add(body);
 	}
 

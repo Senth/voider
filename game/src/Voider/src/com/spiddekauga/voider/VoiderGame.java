@@ -29,6 +29,11 @@ public class VoiderGame implements ApplicationListener {
 
 		/** @TODO display splash screen */
 
+		double a1 = Math.atan2(0, 0);
+		double a2 = Math.atan2(1, 0);
+		double a3 = Math.atan2(-1, 0);
+		double a4 = Math.atan2(0, -1);
+
 		//testGame();
 		testEditor();
 	}
