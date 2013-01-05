@@ -207,7 +207,7 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 		if (mWorld != null) {
 			BodyDef bodyDef = mDef.getBodyDef();
 			mBody = mWorld.createBody(bodyDef);
-			if (mDef.getFixtureDef() != null) {
+			if (mDef.getFixtureDef() != null && mDef.getFixtureDef().shape != null) {
 				mBody.createFixture(mDef.getFixtureDef());
 			}
 			mBody.setUserData(this);

@@ -1,10 +1,16 @@
 package com.spiddekauga.voider.game.actors;
 
+import java.util.ArrayList;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.ChainShape;
+import com.badlogic.gdx.physics.box2d.EdgeShape;
+import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.OrderedMap;
 import com.spiddekauga.utils.Json;
@@ -49,11 +55,15 @@ public class StaticTerrainActor extends Actor {
 	@Override
 	public void write(Json json) {
 		super.write(json);
+
+		/** @TODO save points */
 	}
 
 	@Override
 	public void read(Json json, OrderedMap<String, Object> jsonData) {
 		super.read(json, jsonData);
+
+		/** @TODO read points */
 	}
 
 	/**
@@ -140,6 +150,8 @@ public class StaticTerrainActor extends Actor {
 			mCornerBodies.get(i).setTransform(newPos, 0f);
 		}
 
+		readjustFixtures();
+
 		return i;
 	}
 
@@ -154,13 +166,43 @@ public class StaticTerrainActor extends Actor {
 		if (mEditorActive) {
 			mCornerBodies.get(index).setTransform(newPos, 0f);
 		}
+
+		readjustFixtures();
 	}
 
 	/**
 	 * Readjust fixtures, this makes all the fixtures convex
 	 */
 	private void readjustFixtures() {
-		/** @TODO readjustFixtures() */
+		// Destroy previous fixture
+		@SuppressWarnings("unchecked")
+		ArrayList<Fixture> fixtures = (ArrayList<Fixture>) getBody().getFixtureList().clone();
+		for (Fixture fixture : fixtures) {
+			getBody().destroyFixture(fixture);
+		}
+
+		FixtureDef fixtureDef = getDef().getFixtureDef();
+		if (fixtureDef.shape != null) {
+			fixtureDef.shape.dispose();
+			fixtureDef.shape = null;
+		}
+
+
+		// Create the new fixture
+		// Chain
+		if (mCorners.size >= 3) {
+			ChainShape chain = new ChainShape();
+			chain.createLoop(mCorners.toArray(Vector2.class));
+			fixtureDef.shape = chain;
+			getBody().createFixture(fixtureDef);
+		}
+		// Edge
+		else if (mCorners.size == 2) {
+			EdgeShape edge = new EdgeShape();
+			edge.set(mCorners.get(0), mCorners.get(1));
+			fixtureDef.shape = edge;
+			getBody().createFixture(fixtureDef);
+		}
 	}
 
 	/**
