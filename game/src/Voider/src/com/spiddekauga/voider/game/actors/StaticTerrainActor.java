@@ -169,7 +169,7 @@ public class StaticTerrainActor extends Actor {
 	 */
 	private void createBodyCorner(Vector2 corner) {
 		Body body = mWorld.createBody(new BodyDef());
-		body.createFixture(Config.Editor.PICKING_CIRCLE_SHAPE, 0f);
+		body.createFixture(Config.Editor.getPickingShape(), 0f);
 		body.setTransform(corner, 0f);
 		body.setUserData(this);
 		mCornerBodies.add(body);

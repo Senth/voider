@@ -12,9 +12,11 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.ShortBufferException;
 
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.badlogic.gdx.backends.lwjgl.LwjglNativesLoader;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.spiddekauga.utils.Json;
 import com.spiddekauga.voider.Config;
@@ -32,8 +34,18 @@ public class ObjectCrypterTest {
 	 * Initializes the config class that has the key
 	 */
 	@BeforeClass
-	public static void init() {
+	public static void setUpBeforeClass() {
+		LwjglNativesLoader.load();
 		Config.init();
+	}
+
+	/**
+	 * Tears down the class
+	 * @throws Exception
+	 */
+	@AfterClass
+	public static void tearDownAfterClass() {
+		Config.dispose();
 	}
 
 	/**

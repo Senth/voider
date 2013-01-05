@@ -8,8 +8,10 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.badlogic.gdx.backends.lwjgl.LwjglNativesLoader;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
+import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.Actor;
 import com.spiddekauga.voider.game.Level;
 import com.spiddekauga.voider.game.LevelDef;
@@ -26,6 +28,8 @@ public class LevelInvokerTest {
 	 */
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
+		LwjglNativesLoader.load();
+		Config.init();
 		World world = new World(new Vector2(), true);
 		Actor.setWorld(world);
 	}
@@ -35,6 +39,7 @@ public class LevelInvokerTest {
 	 */
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
+		Config.dispose();
 	}
 
 	/**

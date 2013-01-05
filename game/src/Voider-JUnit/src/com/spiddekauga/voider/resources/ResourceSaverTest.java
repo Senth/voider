@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -29,11 +30,20 @@ public class ResourceSaverTest {
 	 */
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
+		LwjglNativesLoader.load();
+		Gdx.files = new LwjglFiles();
 		Config.init();
 		ResourceSaver.init();
 		ResourceNames.useTestPath();
-		LwjglNativesLoader.load();
-		Gdx.files = new LwjglFiles();
+	}
+
+	/**
+	 * Tears down the class
+	 * @throws Exception
+	 */
+	@AfterClass
+	public static void tearDownAfterClass() throws Exception {
+		Config.dispose();
 	}
 
 	/**

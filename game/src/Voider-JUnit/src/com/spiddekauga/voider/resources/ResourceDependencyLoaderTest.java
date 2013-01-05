@@ -30,11 +30,11 @@ public class ResourceDependencyLoaderTest {
 	 */
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
+		LwjglNativesLoader.load();
+		Gdx.files = new LwjglFiles();
 		Config.init();
 		ResourceSaver.init();
 		ResourceNames.useTestPath();
-		LwjglNativesLoader.load();
-		Gdx.files = new LwjglFiles();
 
 		mAssetManager = new AssetManager();
 		mAssetManager.setLoader(PlayerActorDef.class, new JsonLoader<PlayerActorDef>(new ExternalFileHandleResolver(), PlayerActorDef.class));
@@ -46,6 +46,7 @@ public class ResourceDependencyLoaderTest {
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
 		mAssetManager.dispose();
+		Config.dispose();
 	}
 
 	/**

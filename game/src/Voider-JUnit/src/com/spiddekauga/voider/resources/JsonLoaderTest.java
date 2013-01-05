@@ -33,10 +33,10 @@ public class JsonLoaderTest {
 	 */
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
-		Config.init();
-		ResourceNames.useTestPath();
 		LwjglNativesLoader.load();
 		Gdx.files = new LwjglFiles();
+		Config.init();
+		ResourceNames.useTestPath();
 
 		mCrypter = new ObjectCrypter(Config.Crypto.getFileKey());
 		mAssetManager = new AssetManager();
@@ -48,6 +48,7 @@ public class JsonLoaderTest {
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
 		mAssetManager.dispose();
+		Config.dispose();
 	}
 
 	/**

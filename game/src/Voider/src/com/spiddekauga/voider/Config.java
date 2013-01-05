@@ -27,7 +27,9 @@ public class Config {
 	 * Dispose all objects that have been initialized
 	 */
 	public static void dispose() {
-		Editor.PICKING_CIRCLE_SHAPE.dispose();
+		if (Editor.PICKING_CIRCLE_SHAPE != null) {
+			Editor.PICKING_CIRCLE_SHAPE.dispose();
+		}
 	}
 
 	/**
@@ -42,17 +44,25 @@ public class Config {
 	 * Editor options
 	 */
 	public static class Editor {
-		/** Radius of all picking circles */
-		public final static float PICKING_CIRCLE_RADIUS = 1.0f;
-		/** Picking shape of the */
-		public final static Shape PICKING_CIRCLE_SHAPE = new CircleShape();
+		/**
+		 * @return picking shape
+		 */
+		public static Shape getPickingShape() {
+			return PICKING_CIRCLE_SHAPE;
+		}
 
 		/**
 		 * Initialization of the editor configuration
 		 */
 		public static void init() {
+			PICKING_CIRCLE_SHAPE = new CircleShape();
 			PICKING_CIRCLE_SHAPE.setRadius(PICKING_CIRCLE_RADIUS);
 		}
+
+		/** Radius of all picking circles */
+		private final static float PICKING_CIRCLE_RADIUS = 1.0f;
+		/** Picking shape of the */
+		private static Shape PICKING_CIRCLE_SHAPE = null;
 	}
 
 	/**

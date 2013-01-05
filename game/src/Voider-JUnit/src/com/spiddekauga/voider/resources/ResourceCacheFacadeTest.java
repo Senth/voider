@@ -32,11 +32,11 @@ public class ResourceCacheFacadeTest {
 	 */
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
+		LwjglNativesLoader.load();
+		Gdx.files = new LwjglFiles();
 		Config.init();
 		ResourceSaver.init();
 		ResourceNames.useTestPath();
-		LwjglNativesLoader.load();
-		Gdx.files = new LwjglFiles();
 
 		mDepWithDep.addDependency(mUnderDep);
 		mUsingDefDeps.addDependency(mDep);
@@ -66,6 +66,8 @@ public class ResourceCacheFacadeTest {
 		ResourceDependencyLoaderTest.delete(mDepWithDep);
 		ResourceDependencyLoaderTest.delete(mUnderDep);
 		ResourceDependencyLoaderTest.delete(mUsingDefDeps);
+
+		Config.dispose();
 	}
 
 	/**

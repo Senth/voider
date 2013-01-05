@@ -3,6 +3,7 @@ package com.spiddekauga.voider.game;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.ChainShape;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.EdgeShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
@@ -206,18 +207,23 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 					json.writeValue("radius", circle.getRadius());
 					break;
 
-				case Polygon:
+				case Polygon: {
 					PolygonShape polygon = (PolygonShape)mFixtureDef.shape;
-					Vector2[] vertices = new Vector2[polygon.getVertexCount()];
-					for (int i = 0; i < polygon.getVertexCount(); i++) {
-						vertices[i] = Pools.obtain(Vector2.class);
-						polygon.getVertex(i, vertices[i]);
-					}
-					json.writeValue("vertices", vertices);
-					for (Vector2 vertex : vertices) {
-						Pools.free(vertex);
+					if (polygon.getVertexCount() >= 3) {
+						Vector2[] vertices = new Vector2[polygon.getVertexCount()];
+						for (int i = 0; i < polygon.getVertexCount(); ++i) {
+							vertices[i] = Pools.obtain(Vector2.class);
+							polygon.getVertex(i, vertices[i]);
+						}
+						json.writeValue("vertices", vertices);
+						for (Vector2 vertex : vertices) {
+							Pools.free(vertex);
+						}
+					} else {
+						json.writeValue("vertices", (Object)null);
 					}
 					break;
+				}
 
 				case Edge:
 					EdgeShape edge = (EdgeShape)mFixtureDef.shape;
@@ -229,9 +235,24 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 					Pools.free(tempVector);
 					break;
 
-				case Chain:
-					assert("Chains not supported" == null);
+				case Chain: {
+					ChainShape chainShape = (ChainShape)mFixtureDef.shape;
+					if (chainShape.getVertexCount() >= 3) {
+						// Treat all as loops, this will make the last vertex a duplicate, so skip it
+						Vector2[] vertices = new Vector2[chainShape.getVertexCount() - 1];
+						for (int i = 0; i < chainShape.getVertexCount() - 1; ++i) {
+							vertices[i] = Pools.obtain(Vector2.class);
+							chainShape.getVertex(i, vertices[i]);
+						}
+						json.writeValue("vertices", vertices);
+						for (Vector2 vertex : vertices) {
+							Pools.free(vertex);
+						}
+					} else {
+						json.writeValue("vertices", (Object)null);
+					}
 					break;
+				}
 
 				}
 				json.writeObjectEnd();
@@ -292,12 +313,15 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 					circle.setRadius(radius);
 					break;
 
-				case Polygon:
+				case Polygon: {
 					Vector2[] vertices = json.readValue("vertices", Vector2[].class, shapeMap);
 					PolygonShape polygon = new PolygonShape();
 					mFixtureDef.shape = polygon;
-					polygon.set(vertices);
+					if (vertices != null) {
+						polygon.set(vertices);
+					}
 					break;
+				}
 
 				case Edge:
 					Vector2 vertex1 = json.readValue("vertex1", Vector2.class, shapeMap);
@@ -307,9 +331,15 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 					edge.set(vertex1, vertex2);
 					break;
 
-				case Chain:
-					assert("Chains not supported!" == null);
+				case Chain: {
+					Vector2[] vertices = json.readValue("vertices", Vector2[].class, shapeMap);
+					ChainShape chainShape = new ChainShape();
+					mFixtureDef.shape = chainShape;
+					if (vertices != null) {
+						chainShape.createLoop(vertices);
+					}
 					break;
+				}
 				}
 			} else {
 				mFixtureDef.shape = null;

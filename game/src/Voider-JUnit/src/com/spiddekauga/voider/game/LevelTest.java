@@ -38,12 +38,12 @@ public class LevelTest {
 	 */
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
+		LwjglNativesLoader.load();
+		Gdx.files = new LwjglFiles();
 		Config.init();
 		ResourceSaver.init();
 		ResourceNames.useTestPath();
 		ResourceCacheFacade.init();
-		LwjglNativesLoader.load();
-		Gdx.files = new LwjglFiles();
 
 		mPlayerActorDef.getFixtureDef().shape = new CircleShape();
 		mWorld = new World(new Vector2(), false);
@@ -78,6 +78,7 @@ public class LevelTest {
 		ResourceDependencyLoaderTest.delete(mPlayerActorDef);
 
 		mWorld.dispose();
+		Config.dispose();
 	}
 
 	/**
