@@ -238,9 +238,23 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 				case Chain: {
 					ChainShape chainShape = (ChainShape)mFixtureDef.shape;
 					if (chainShape.getVertexCount() >= 3) {
-						// Treat all as loops, this will make the last vertex a duplicate, so skip it
-						Vector2[] vertices = new Vector2[chainShape.getVertexCount() - 1];
-						for (int i = 0; i < chainShape.getVertexCount() - 1; ++i) {
+						// If first and same vertex is the same, it's a loop
+						Vector2 firstVertex = Pools.obtain(Vector2.class);
+						Vector2 lastVertex = Pools.obtain(Vector2.class);
+						chainShape.getVertex(0, firstVertex);
+						chainShape.getVertex(chainShape.getVertexCount() - 1, lastVertex);
+
+						int cVertices = 0;
+						if (firstVertex.equals(lastVertex)) {
+							cVertices = chainShape.getVertexCount() - 1;
+							json.writeValue("loop", true);
+						} else {
+							cVertices = chainShape.getVertexCount();
+							json.writeValue("loop", false);
+						}
+
+						Vector2[] vertices = new Vector2[cVertices];
+						for (int i = 0; i < cVertices; ++i) {
 							vertices[i] = Pools.obtain(Vector2.class);
 							chainShape.getVertex(i, vertices[i]);
 						}
@@ -336,7 +350,12 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 					ChainShape chainShape = new ChainShape();
 					mFixtureDef.shape = chainShape;
 					if (vertices != null) {
-						chainShape.createLoop(vertices);
+						boolean loop = json.readValue("loop", boolean.class, shapeMap);
+						if (loop) {
+							chainShape.createLoop(vertices);
+						} else {
+							chainShape.createChain(vertices);
+						}
 					}
 					break;
 				}

@@ -16,7 +16,6 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.Shape;
 import com.spiddekauga.utils.Json;
-import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.actors.PlayerActorDef;
 
 /**
@@ -211,7 +210,7 @@ public class ActorDefTest {
 		testEdge.dispose();
 
 
-		// CHAIN SHAPE
+		// CHAIN SHAPE (looped)
 		ChainShape chain = new ChainShape();
 		vertices = new Vector2[4];
 		vertices[0] = new Vector2(2,0);
@@ -250,6 +249,35 @@ public class ActorDefTest {
 		}
 		chain.dispose();
 		testActor.dispose();
+
+
+		// CHAIN SHAPE (chained)
+		chain = new ChainShape();
+		vertices = new Vector2[4];
+		vertices[0] = new Vector2(2,0);
+		vertices[1] = new Vector2(10,10);
+		vertices[2] = new Vector2(5, 10);
+		vertices[3] = new Vector2(0, 10);
+		chain.createChain(vertices);
+		fixtureDef.shape = chain;
+
+		actor = new PlayerActorDef(100, null, "player", fixtureDef);
+		jsonString = json.toJson(actor);
+		testActor = json.fromJson(PlayerActorDef.class, jsonString);
+
+		// Appended tests
+		assertNotNull("Shape not null", testActor.getFixtureDef().shape);
+		assertEquals("Shape type", Shape.Type.Chain, testActor.getFixtureDef().shape.getType());
+		testChain = (ChainShape) testActor.getFixtureDef().shape;
+
+		assertEquals("chain size", 4, testChain.getVertexCount());
+		for (int i = 0; i < vertices.length; ++i) {
+			testChain.getVertex(i, testVertex);
+			assertEquals("vertex 1", vertices[i], testVertex);
+		}
+		chain.dispose();
+		testActor.dispose();
+
 
 		// CHAIN SHAPE (null vertices)
 		chain = new ChainShape();
