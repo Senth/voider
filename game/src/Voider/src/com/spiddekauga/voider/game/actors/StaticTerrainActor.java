@@ -13,9 +13,11 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.OrderedMap;
+import com.badlogic.gdx.utils.Pools;
 import com.spiddekauga.utils.Json;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.Actor;
+import com.spiddekauga.voider.utils.Geometry;
 
 /**
  * Static terrain actor. This terrain will not move, and cannot be destroyed.
@@ -106,6 +108,24 @@ public class StaticTerrainActor extends Actor {
 		if (mEditorActive) {
 			mCornerBodies.removeIndex(i);
 		}
+
+		readjustFixtures();
+	}
+
+	/**
+	 * Removes a corner with the specific id
+	 * @param index the corner to remove
+	 */
+	public void removeCorner(int index) {
+		if (index >= 0 && index < mCorners.size) {
+			mCorners.removeIndex(index);
+
+			if (mEditorActive) {
+				mCornerBodies.removeIndex(index);
+			}
+
+			readjustFixtures();
+		}
 	}
 
 	/**
@@ -120,6 +140,90 @@ public class StaticTerrainActor extends Actor {
 		}
 
 		return -1;
+	}
+
+	/**
+	 * Checks if a line, that starts/énds from the specified index, intersects
+	 * with any other line from the polygon.
+	 * @param index the corner to check the lines from
+	 * @return true if there is an intersection
+	 */
+	public boolean intersectionExists(int index) {
+		if (mCorners.size <= 3 || index < 0 || index >= mCorners.size) {
+			return false;
+		}
+
+
+		// Get the two lines
+		// First vertex is between before
+		Vector2 vertexBefore = null;
+
+		// If index is 0, get the last corner instead
+		if (index == 0) {
+			vertexBefore = mCorners.get(mCorners.size - 1);
+		} else {
+			vertexBefore = mCorners.get(index - 1);
+		}
+
+		// Vertex of index
+		Vector2 vertexIndex = mCorners.get(index);
+
+		// Vertex after index
+		Vector2 vertexAfter = null;
+
+		// If index is the last, wrap and use first
+		if (index == mCorners.size - 1) {
+			vertexAfter = mCorners.get(0);
+		} else {
+			vertexAfter = mCorners.get(index + 1);
+		}
+
+		ChainShape shape = null;
+		// Not a chainshape, somethings wrong, abort
+		if (!(getDef().getFixtureDef().shape instanceof ChainShape)) {
+			Gdx.app.error("StaticTerrainActor", "Shape is not a chainshape when checking intersection");
+			return false;
+		} else {
+			shape = (ChainShape) getDef().getFixtureDef().shape;
+		}
+
+
+		Vector2 lineA = Pools.obtain(Vector2.class);
+		Vector2 lineB = Pools.obtain(Vector2.class);
+
+		boolean intersects = false;
+
+		// Using shape because the chain is looped, i.e. first and last is the same vertex
+		for (int i = 0; i < mCorners.size; ++i) {
+			// Skip checking index before and the current index, these are the lines
+			// we are checking with... If index is 0 we need to wrap it
+			if (i == index || i == index - 1 || (index == 0 && i == mCorners.size - 1)) {
+				continue;
+			}
+
+
+			/** @TODO can be optimized if necessary */
+			shape.getVertex(i, lineA);
+			shape.getVertex(i+1, lineB);
+
+
+			// Check with first line
+			if (Geometry.linesIntersects(vertexBefore, vertexIndex, lineA, lineB)) {
+				intersects = true;
+				break;
+			}
+
+			// Check second line
+			if (Geometry.linesIntersects(vertexIndex, vertexAfter, lineA, lineB)) {
+				intersects = true;
+				break;
+			}
+		}
+
+		Pools.free(lineA);
+		Pools.free(lineB);
+
+		return intersects;
 	}
 
 	/**

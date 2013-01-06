@@ -118,7 +118,7 @@ public class LevelEditor extends Scene {
 	@Override
 	public boolean touchUp(int x, int y, int pointer, int button) {
 		// Not scrolling any more
-		if (button == 3 || !Gdx.app.getInput().isTouched(0) || !Gdx.app.getInput().isTouched(1)) {
+		if (mScrolling && (button == 3 || !Gdx.app.getInput().isTouched(0) || !Gdx.app.getInput().isTouched(1))) {
 			mScrolling = false;
 			return true;
 		}
@@ -240,10 +240,13 @@ public class LevelEditor extends Scene {
 			testPick(mCallback);
 			if (mHitBody != null) {
 				mCornerCurrentIndex = mActor.getCornerIndex(mHitBody.getPosition());
+				mCornerCurrentOrigin = mHitBody.getPosition();
+				mCornerCurrentAddedNow = false;
 			}
 			// Else create a new corner
 			else {
 				mCornerCurrentIndex = mActor.addCorner(mTouchOrigin);
+				mCornerCurrentAddedNow = true;
 			}
 		}
 
@@ -256,11 +259,27 @@ public class LevelEditor extends Scene {
 
 		@Override
 		public void up() {
+			if (mCornerCurrentIndex != -1) {
+				// Check so that terrain isn't intersecting
+				// If it does either remove it or reset it
+				if (mActor.intersectionExists(mCornerCurrentIndex)) {
+					if (mCornerCurrentAddedNow) {
+						mActor.removeCorner(mCornerCurrentIndex);
+					} else {
+						mActor.moveCorner(mCornerCurrentIndex, mCornerCurrentOrigin);
+					}
+				}
+			}
 
+			mCornerCurrentIndex = -1;
 		}
 
+		/** Origin of the corner, before dragging it */
+		private Vector2 mCornerCurrentOrigin = new Vector2();
 		/** Index of the current corner */
 		private int mCornerCurrentIndex = -1;
+		/** True if the current corner was added now */
+		private boolean mCornerCurrentAddedNow = false;
 		/** Current Static terrain actor */
 		private StaticTerrainActor mActor = null;
 
