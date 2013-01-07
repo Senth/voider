@@ -13,8 +13,10 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Scene;
 import com.spiddekauga.voider.game.Actor;
+import com.spiddekauga.voider.game.GameTime;
 import com.spiddekauga.voider.game.Level;
 import com.spiddekauga.voider.game.actors.StaticTerrainActor;
+import com.spiddekauga.voider.game.actors.StaticTerrainActor.PolygonComplexException;
 import com.spiddekauga.voider.ui.UiEvent;
 
 /**
@@ -81,6 +83,14 @@ public class LevelEditor extends Scene {
 			return true;
 		}
 
+		if (mClickTimeLast + Config.Input.DOUBLE_CLICK_TIME > GameTime.getTotalTimeElapsed()) {
+			mClickTimeLast = 0f;
+			mDoubleClick = true;
+		} else {
+			mDoubleClick = false;
+			mClickTimeLast = GameTime.getTotalTimeElapsed();
+		}
+
 		// Only do something for the first pointer
 		if (pointer == 0) {
 			mTestPoint.set(x, y, 0);
@@ -102,11 +112,13 @@ public class LevelEditor extends Scene {
 	@Override
 	public boolean touchDragged(int x, int y, int pointer) {
 		// Only do something for the first pointer
-		if (pointer == 0) {
+		if (!mScrolling && pointer == 0) {
 			mTestPoint.set(x, y, 0);
 			mCamera.unproject(mTestPoint);
 			mTouchCurrent.x = mTestPoint.x;
 			mTouchCurrent.y = mTestPoint.y;
+
+			/** @TODO check long click */
 
 			mEventHandlerCurrent.dragged();
 
@@ -165,6 +177,10 @@ public class LevelEditor extends Scene {
 	private boolean mScrolling = false;
 	/** The active tool */
 	private Tools mToolActive = Tools.NONE;
+	/** True if double clicked */
+	private boolean mDoubleClick = false;
+	/** Last click time */
+	private float mClickTimeLast = 0f;
 
 
 	// Temporary variables for touch detection
@@ -233,42 +249,56 @@ public class LevelEditor extends Scene {
 				mLevel.addActor(mActor);
 			}
 
-			/** @TODO two double hits on the actor (not corners) completes the terrain
-			 * This will make it possible to start another terrain */
+
+
+			Body lastHitBody = mHitBody;
 
 			// Test if we hit a corner...
 			testPick(mCallback);
 			if (mHitBody != null) {
+				/** @TODO two double hits on the actor (not corners) completes the terrain
+				 * This will make it possible to start another terrain */
+
+				/** @TODO hit inside actor, but not double click? create a new corner */
+
 				mCornerCurrentIndex = mActor.getCornerIndex(mHitBody.getPosition());
 				mCornerCurrentOrigin = mHitBody.getPosition();
 				mCornerCurrentAddedNow = false;
 			}
 			// Else create a new corner
 			else {
-				mCornerCurrentIndex = mActor.addCorner(mTouchOrigin);
-				mCornerCurrentAddedNow = true;
+				try {
+					mCornerCurrentIndex = mActor.addCorner(mTouchOrigin);
+					mCornerCurrentAddedNow = true;
+				} catch (PolygonComplexException e) {
+					/** @TODO print some error message on screen, cannot add corner here */
+				}
 			}
 		}
 
 		@Override
 		public void dragged() {
 			if (mCornerCurrentIndex != -1) {
-				mActor.moveCorner(mCornerCurrentIndex, mTouchCurrent);
+				try {
+					mActor.moveCorner(mCornerCurrentIndex, mTouchCurrent);
+				} catch (PolygonComplexException e) {
+					// Does nothing
+				}
 			}
 		}
 
 		@Override
 		public void up() {
 			if (mCornerCurrentIndex != -1) {
-				// Check so that terrain isn't intersecting
-				// If it does either remove it or reset it
-				if (mActor.intersectionExists(mCornerCurrentIndex)) {
-					if (mCornerCurrentAddedNow) {
-						mActor.removeCorner(mCornerCurrentIndex);
-					} else {
-						mActor.moveCorner(mCornerCurrentIndex, mCornerCurrentOrigin);
-					}
-				}
+				//				// Check so that terrain isn't intersecting
+				//				// If it does either remove it or reset it
+				//				if (mActor.intersectionExists(mCornerCurrentIndex)) {
+				//					if (mCornerCurrentAddedNow) {
+				//						mActor.removeCorner(mCornerCurrentIndex);
+				//					} else {
+				//						mActor.moveCorner(mCornerCurrentIndex, mCornerCurrentOrigin);
+				//					}
+				//				}
 			}
 
 			mCornerCurrentIndex = -1;
@@ -283,9 +313,7 @@ public class LevelEditor extends Scene {
 		/** Current Static terrain actor */
 		private StaticTerrainActor mActor = null;
 
-		/**
-		 * Picking for static terrains
-		 */
+		/** Picking for static terrains */
 		private QueryCallback mCallback = new QueryCallback() {
 			@Override
 			public boolean reportFixture(Fixture fixture) {

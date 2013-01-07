@@ -45,7 +45,9 @@ public class LevelTest {
 		ResourceNames.useTestPath();
 		ResourceCacheFacade.init();
 
-		mPlayerActorDef.getFixtureDef().shape = new CircleShape();
+		FixtureDef fixtureDef = new FixtureDef();
+		fixtureDef.shape = new CircleShape();
+		mPlayerActorDef.addFixtureDef(fixtureDef);
 		mWorld = new World(new Vector2(), false);
 		Actor.setWorld(mWorld);
 

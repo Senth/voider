@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.OrderedMap;
@@ -207,8 +208,10 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 		if (mWorld != null) {
 			BodyDef bodyDef = mDef.getBodyDef();
 			mBody = mWorld.createBody(bodyDef);
-			if (mDef.getFixtureDef() != null && mDef.getFixtureDef().shape != null) {
-				mBody.createFixture(mDef.getFixtureDef());
+			for (FixtureDef fixtureDef : mDef.getFixtureDefs()) {
+				if (fixtureDef.shape != null) {
+					mBody.createFixture(fixtureDef);
+				}
 			}
 			mBody.setUserData(this);
 		}

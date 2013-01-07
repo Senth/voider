@@ -122,14 +122,6 @@ public class ObjectCrypterTest {
 		ActorDef newActorDef = json.fromJson(PlayerActorDef.class, decryptedJson);
 
 		assertEquals("new actor def equals original", newActorDef, actorDef);
-		assertEquals("ActorDefs' fixture def", newActorDef.getFixtureDef().shape, actorDef.getFixtureDef().shape);
-		assertEquals("ActorDefs' fixture def", newActorDef.getFixtureDef().friction, actorDef.getFixtureDef().friction, 0.0f);
-		assertEquals("ActorDefs' fixture def", newActorDef.getFixtureDef().restitution, actorDef.getFixtureDef().restitution, 0.0f);
-		assertEquals("ActorDefs' fixture def", newActorDef.getFixtureDef().density, actorDef.getFixtureDef().density, 0.0f);
-		assertEquals("ActorDefs' fixture def", newActorDef.getFixtureDef().isSensor, actorDef.getFixtureDef().isSensor);
-		assertEquals("ActorDefs' fixture def", newActorDef.getFixtureDef().filter.categoryBits, actorDef.getFixtureDef().filter.categoryBits);
-		assertEquals("ActorDefs' fixture def", newActorDef.getFixtureDef().filter.groupIndex, actorDef.getFixtureDef().filter.groupIndex);
-		assertEquals("ActorDefs' fixture def", newActorDef.getFixtureDef().filter.maskBits, actorDef.getFixtureDef().filter.maskBits);
 		assertEquals("ActorDefs' max life", newActorDef.getMaxLife(), actorDef.getMaxLife(), 0.0f);
 		assertEquals("ActorDefs' name", newActorDef.getName(), actorDef.getName());
 	}

@@ -7,6 +7,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL10;
 import com.spiddekauga.voider.editor.LevelEditor;
 import com.spiddekauga.voider.game.GameScene;
+import com.spiddekauga.voider.game.GameTime;
 import com.spiddekauga.voider.game.Level;
 import com.spiddekauga.voider.game.LevelDef;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
@@ -72,6 +73,7 @@ public class VoiderGame implements ApplicationListener {
 		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
 
 		if (!mActiveScene.isEmpty()) {
+			GameTime.update(Gdx.graphics.getDeltaTime());
 			mActiveScene.getFirst().update();
 			mActiveScene.getFirst().render();
 		}

@@ -35,6 +35,14 @@ import java.util.Map;
 import java.util.UUID;
 
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.ChainShape;
+import com.badlogic.gdx.physics.box2d.CircleShape;
+import com.badlogic.gdx.physics.box2d.EdgeShape;
+import com.badlogic.gdx.physics.box2d.Filter;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ArrayMap;
 import com.badlogic.gdx.utils.JsonReader;
@@ -43,6 +51,7 @@ import com.badlogic.gdx.utils.JsonWriter.OutputType;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.ObjectMap.Entry;
 import com.badlogic.gdx.utils.OrderedMap;
+import com.badlogic.gdx.utils.Pools;
 import com.badlogic.gdx.utils.SerializationException;
 
 /**
@@ -492,6 +501,18 @@ public class Json {
 				return;
 			}
 
+			// FixtureDef
+			if (value instanceof FixtureDef) {
+				writeFixtureDef((FixtureDef) value);
+				return;
+			}
+
+			// Shape
+			if (value instanceof Shape) {
+				writeShape((Shape) value);
+				return;
+			}
+
 			if (value instanceof Serializable) {
 				writeObjectStart(actualType, knownType);
 				((Serializable)value).write(this);
@@ -608,6 +629,94 @@ public class Json {
 		} catch (IOException ex) {
 			throw new SerializationException(ex);
 		}
+	}
+
+	private void writeFixtureDef(FixtureDef fixtureDef) {
+		writeObjectStart(FixtureDef.class, null);
+		writeValue("density", fixtureDef.density);
+		writeValue("friction", fixtureDef.friction);
+		writeValue("isSensor", fixtureDef.isSensor);
+		writeValue("restitution", fixtureDef.restitution);
+		writeValue("filter", fixtureDef.filter);
+		writeValue("shape", fixtureDef.shape);
+		writeObjectEnd();
+	}
+
+	private void writeShape(Shape shape) {
+		writeObjectStart(Shape.class, null);
+		writeValue("type", shape.getType());
+
+		// Shape specific actions
+		switch (shape.getType()) {
+		case Circle:
+			CircleShape circle = (CircleShape)shape;
+			writeValue("position", circle.getPosition());
+			writeValue("radius", circle.getRadius());
+			break;
+
+		case Polygon: {
+			PolygonShape polygon = (PolygonShape)shape;
+			if (polygon.getVertexCount() >= 3) {
+				Vector2[] vertices = new Vector2[polygon.getVertexCount()];
+				for (int i = 0; i < polygon.getVertexCount(); ++i) {
+					vertices[i] = Pools.obtain(Vector2.class);
+					polygon.getVertex(i, vertices[i]);
+				}
+				writeValue("vertices", vertices);
+				for (Vector2 vertex : vertices) {
+					Pools.free(vertex);
+				}
+			} else {
+				writeValue("vertices", (Object)null);
+			}
+			break;
+		}
+
+		case Edge:
+			EdgeShape edge = (EdgeShape)shape;
+			Vector2 tempVector = Pools.obtain(Vector2.class);
+			edge.getVertex1(tempVector);
+			writeValue("vertex1", tempVector);
+			edge.getVertex2(tempVector);
+			writeValue("vertex2", tempVector);
+			Pools.free(tempVector);
+			break;
+
+		case Chain: {
+			ChainShape chainShape = (ChainShape)shape;
+			if (chainShape.getVertexCount() >= 3) {
+				// If first and same vertex is the same, it's a loop
+				Vector2 firstVertex = Pools.obtain(Vector2.class);
+				Vector2 lastVertex = Pools.obtain(Vector2.class);
+				chainShape.getVertex(0, firstVertex);
+				chainShape.getVertex(chainShape.getVertexCount() - 1, lastVertex);
+
+				int cVertices = 0;
+				if (firstVertex.equals(lastVertex)) {
+					cVertices = chainShape.getVertexCount() - 1;
+					writeValue("loop", true);
+				} else {
+					cVertices = chainShape.getVertexCount();
+					writeValue("loop", false);
+				}
+
+				Vector2[] vertices = new Vector2[cVertices];
+				for (int i = 0; i < cVertices; ++i) {
+					vertices[i] = Pools.obtain(Vector2.class);
+					chainShape.getVertex(i, vertices[i]);
+				}
+				writeValue("vertices", vertices);
+				for (Vector2 vertex : vertices) {
+					Pools.free(vertex);
+				}
+			} else {
+				writeValue("vertices", (Object)null);
+			}
+			break;
+		}
+		}
+
+		writeObjectEnd();
 	}
 
 	private void writeMapEntry(Object key, Object value) {
@@ -935,6 +1044,9 @@ public class Json {
 		if (type == UUID.class && jsonData instanceof UUID) {
 			return (T)jsonData;
 		}
+		if (type == FixtureDef.class && jsonData instanceof FixtureDef) {
+			return (T)jsonData;
+		}
 
 		if (jsonData instanceof OrderedMap) {
 			OrderedMap<String, Object> jsonMap = (OrderedMap<String, Object>)jsonData;
@@ -954,6 +1066,12 @@ public class Json {
 			// UUID
 			if (type == UUID.class) {
 				return (T) UUID.fromString((String)((OrderedMap<String, Object>)jsonData).get("uuid"));
+			}
+			if (type == FixtureDef.class) {
+				return (T) readFixtureDef(jsonMap);
+			}
+			if (type == Shape.class) {
+				return (T) readShape(jsonMap);
 			}
 
 			Object object;
@@ -1122,6 +1240,76 @@ public class Json {
 		}
 
 		return null;
+	}
+
+	private FixtureDef readFixtureDef(OrderedMap<String, Object> jsonData) {
+		FixtureDef fixtureDef = new FixtureDef();
+		fixtureDef.density = readValue("density", float.class, jsonData);
+		fixtureDef.friction = readValue("friction", float.class, jsonData);
+		fixtureDef.restitution = readValue("restitution", float.class, jsonData);
+		fixtureDef.isSensor = readValue("isSensor",  boolean.class, jsonData);
+		fixtureDef.shape = readValue("shape", Shape.class, jsonData);
+
+		// Filter
+		Filter filter = readValue("filter", Filter.class, jsonData);
+		fixtureDef.filter.categoryBits = filter.categoryBits;
+		fixtureDef.filter.groupIndex = filter.groupIndex;
+		fixtureDef.filter.maskBits = filter.maskBits;
+
+		return fixtureDef;
+	}
+
+	private Shape readShape(OrderedMap<String, Object> jsonData) {
+		Shape newShape = null;
+
+		// Shape
+		Shape.Type shapeType = readValue("type", Shape.Type.class, jsonData);
+		switch (shapeType) {
+		case Circle:
+			float radius = readValue("radius", float.class, jsonData);
+			Vector2 position = readValue("position", Vector2.class, jsonData);
+			CircleShape circle = new CircleShape();
+			newShape = circle;
+			circle.setPosition(position);
+			circle.setRadius(radius);
+			break;
+
+		case Polygon: {
+			Vector2[] vertices = readValue("vertices", Vector2[].class, jsonData);
+			PolygonShape polygon = new PolygonShape();
+			newShape = polygon;
+			if (vertices != null) {
+				polygon.set(vertices);
+			}
+			break;
+		}
+
+		case Edge:
+			Vector2 vertex1 = readValue("vertex1", Vector2.class, jsonData);
+			Vector2 vertex2 = readValue("vertex2", Vector2.class, jsonData);
+			EdgeShape edge = new EdgeShape();
+			newShape = edge;
+			edge.set(vertex1, vertex2);
+			break;
+
+		case Chain: {
+			Vector2[] vertices = readValue("vertices", Vector2[].class, jsonData);
+			ChainShape chainShape = new ChainShape();
+			newShape = chainShape;
+			if (vertices != null) {
+				boolean loop = readValue("loop", boolean.class, jsonData);
+				if (loop) {
+					chainShape.createLoop(vertices);
+				} else {
+					chainShape.createChain(vertices);
+				}
+			}
+			break;
+		}
+		}
+
+		return newShape;
+
 	}
 
 	@SuppressWarnings("unchecked")

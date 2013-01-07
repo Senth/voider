@@ -33,11 +33,41 @@ public class Config {
 	}
 
 	/**
-	 * All graphical options
+	 * Encryption
 	 */
-	public static class Graphics {
-		/** If we shall use debug_renderer to display graphics instead of sprites (where applicable) */
-		public final static boolean USE_DEBUG_RENDERER = true;
+	public static class Crypto {
+		/**
+		 * Initialization of the config class
+		 */
+		public static void init() {
+			// Create file key
+			try {
+				MessageDigest sha;
+				sha = MessageDigest.getInstance("SHA-1");
+				byte[] hashedFileKey = sha.digest(FILE_KEY_BYTES);
+
+				// Use only the first 128 bits
+				hashedFileKey = Arrays.copyOf(hashedFileKey,  16);
+
+				mFileKey = new SecretKeySpec(hashedFileKey, "AES");
+			} catch (NoSuchAlgorithmException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
+		/**
+		 * Returns the file key
+		 * @return key for encrypting/decrypting files
+		 */
+		public static SecretKeySpec getFileKey() {
+			return mFileKey;
+		}
+
+		/** Salt for file key */
+		private static final byte[] FILE_KEY_BYTES = {15, 35, 68, 86, 57, 2, 99, 105, 127, -38, -100, -35, 35, 48, 68, -79, 95, -22, 0, 15, 0, 0, 98, 15, 27, 35};
+		/** The actual file key */
+		private static SecretKeySpec mFileKey = null;
 	}
 
 	/**
@@ -78,41 +108,19 @@ public class Config {
 	}
 
 	/**
-	 * Encryption
+	 * All graphical options
 	 */
-	public static class Crypto {
-		/**
-		 * Initialization of the config class
-		 */
-		public static void init() {
-			// Create file key
-			try {
-				MessageDigest sha;
-				sha = MessageDigest.getInstance("SHA-1");
-				byte[] hashedFileKey = sha.digest(FILE_KEY_BYTES);
+	public static class Graphics {
+		/** If we shall use debug_renderer to display graphics instead of sprites (where applicable) */
+		public final static boolean USE_DEBUG_RENDERER = true;
+	}
 
-				// Use only the first 128 bits
-				hashedFileKey = Arrays.copyOf(hashedFileKey,  16);
-
-				mFileKey = new SecretKeySpec(hashedFileKey, "AES");
-			} catch (NoSuchAlgorithmException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-
-		/**
-		 * Returns the file key
-		 * @return key for encrypting/decrypting files
-		 */
-		public static SecretKeySpec getFileKey() {
-			return mFileKey;
-		}
-
-		/** Salt for file key */
-		private static final byte[] FILE_KEY_BYTES = {15, 35, 68, 86, 57, 2, 99, 105, 127, -38, -100, -35, 35, 48, 68, -79, 95, -22, 0, 15, 0, 0, 98, 15, 27, 35};
-		/** The actual file key */
-		private static SecretKeySpec mFileKey = null;
+	/**
+	 * Input options
+	 */
+	public static class Input {
+		/** How many milliseconds for a double click? */
+		public final static float DOUBLE_CLICK_TIME = 500f;
 	}
 
 	/**

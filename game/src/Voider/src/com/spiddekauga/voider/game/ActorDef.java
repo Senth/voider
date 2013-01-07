@@ -1,17 +1,13 @@
 package com.spiddekauga.voider.game;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.ChainShape;
-import com.badlogic.gdx.physics.box2d.CircleShape;
-import com.badlogic.gdx.physics.box2d.EdgeShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
-import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.OrderedMap;
-import com.badlogic.gdx.utils.Pools;
 import com.spiddekauga.utils.Json;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.Textures;
@@ -41,10 +37,10 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 		setName(name);
 		mMaxLife = maxLife;
 		mTextureTypes = textureTypes;
-		mFixtureDef = fixtureDef;
+		if (fixtureDef != null) {
+			addFixtureDef(fixtureDef);
+		}
 		mBodyDef = new BodyDef();
-
-		setFilterCollisionData();
 	}
 
 	/**
@@ -83,11 +79,33 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	}
 
 	/**
+	 * Adds another fixture definition
+	 * @param fixtureDef
+	 */
+	public void addFixtureDef(FixtureDef fixtureDef) {
+		mFixtureDefs.add(fixtureDef);
+		setFilterCollisionData(fixtureDef);
+	}
+
+	/**
+	 * Clears all existing fixtures
+	 */
+	public void clearFixtures() {
+		for (FixtureDef fixtureDef : mFixtureDefs) {
+			if (fixtureDef.shape != null) {
+				fixtureDef.shape.dispose();
+			}
+		}
+
+		mFixtureDefs.clear();
+	}
+
+	/**
 	 * Returns the fixture definition. Includes shape, mass, etc.
 	 * @return fixture definition.
 	 */
-	public final FixtureDef getFixtureDef() {
-		return mFixtureDef;
+	public final List<FixtureDef> getFixtureDefs() {
+		return mFixtureDefs;
 	}
 
 	/**
@@ -119,9 +137,7 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	 */
 	@Override
 	public void dispose() {
-		if (mFixtureDef != null && mFixtureDef.shape != null) {
-			mFixtureDef.shape.dispose();
-		}
+		clearFixtures();
 	}
 
 	/**
@@ -137,17 +153,18 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 
 	/**
 	 * Sets the filter information based on derived information
+	 * @param fixtureDef the fixture def to set the collision data for
 	 */
-	private void setFilterCollisionData() {
-		if (mFixtureDef != null) {
-			mFixtureDef.filter.categoryBits = getFilterCategory();
-			mFixtureDef.filter.maskBits = getFilterCollidingCategories();
+	private void setFilterCollisionData(FixtureDef fixtureDef) {
+		if (fixtureDef != null) {
+			fixtureDef.filter.categoryBits = getFilterCategory();
+			fixtureDef.filter.maskBits = getFilterCollidingCategories();
 		}
 	}
 
 
 	/** Defines the mass, shape, etc. */
-	private FixtureDef mFixtureDef = null;
+	private ArrayList<FixtureDef> mFixtureDefs = new ArrayList<FixtureDef>();
 	/** Maximum life of the actor, usually starting amount of life */
 	private float mMaxLife = 0;
 	/** All textures for the actor */
@@ -179,106 +196,13 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 		json.writeValue("mMaxLife", mMaxLife);
 		json.writeValue("mTextureTypes", mTextureTypes);
 		json.writeValue("mBodyDef", mBodyDef);
-
-
-		// Fixture
-		if (mFixtureDef == null) {
-			json.writeValue("mFixtureDef", mFixtureDef);
-		} else {
-			json.writeObjectStart("mFixtureDef");
-			json.writeValue("density", mFixtureDef.density);
-			json.writeValue("friction", mFixtureDef.friction);
-			json.writeValue("isSensor", mFixtureDef.isSensor);
-			json.writeValue("restitution", mFixtureDef.restitution);
-
-
-			// Shape
-			if (mFixtureDef.shape == null) {
-				json.writeValue("shape", mFixtureDef.shape);
-			} else {
-				json.writeObjectStart("shape");
-				json.writeValue("type", mFixtureDef.shape.getType());
-
-				// Shape specific actions
-				switch (mFixtureDef.shape.getType()) {
-				case Circle:
-					CircleShape circle = (CircleShape)mFixtureDef.shape;
-					json.writeValue("position", circle.getPosition());
-					json.writeValue("radius", circle.getRadius());
-					break;
-
-				case Polygon: {
-					PolygonShape polygon = (PolygonShape)mFixtureDef.shape;
-					if (polygon.getVertexCount() >= 3) {
-						Vector2[] vertices = new Vector2[polygon.getVertexCount()];
-						for (int i = 0; i < polygon.getVertexCount(); ++i) {
-							vertices[i] = Pools.obtain(Vector2.class);
-							polygon.getVertex(i, vertices[i]);
-						}
-						json.writeValue("vertices", vertices);
-						for (Vector2 vertex : vertices) {
-							Pools.free(vertex);
-						}
-					} else {
-						json.writeValue("vertices", (Object)null);
-					}
-					break;
-				}
-
-				case Edge:
-					EdgeShape edge = (EdgeShape)mFixtureDef.shape;
-					Vector2 tempVector = Pools.obtain(Vector2.class);
-					edge.getVertex1(tempVector);
-					json.writeValue("vertex1", tempVector);
-					edge.getVertex2(tempVector);
-					json.writeValue("vertex2", tempVector);
-					Pools.free(tempVector);
-					break;
-
-				case Chain: {
-					ChainShape chainShape = (ChainShape)mFixtureDef.shape;
-					if (chainShape.getVertexCount() >= 3) {
-						// If first and same vertex is the same, it's a loop
-						Vector2 firstVertex = Pools.obtain(Vector2.class);
-						Vector2 lastVertex = Pools.obtain(Vector2.class);
-						chainShape.getVertex(0, firstVertex);
-						chainShape.getVertex(chainShape.getVertexCount() - 1, lastVertex);
-
-						int cVertices = 0;
-						if (firstVertex.equals(lastVertex)) {
-							cVertices = chainShape.getVertexCount() - 1;
-							json.writeValue("loop", true);
-						} else {
-							cVertices = chainShape.getVertexCount();
-							json.writeValue("loop", false);
-						}
-
-						Vector2[] vertices = new Vector2[cVertices];
-						for (int i = 0; i < cVertices; ++i) {
-							vertices[i] = Pools.obtain(Vector2.class);
-							chainShape.getVertex(i, vertices[i]);
-						}
-						json.writeValue("vertices", vertices);
-						for (Vector2 vertex : vertices) {
-							Pools.free(vertex);
-						}
-					} else {
-						json.writeValue("vertices", (Object)null);
-					}
-					break;
-				}
-
-				}
-				json.writeObjectEnd();
-			} // Shape
-
-			json.writeObjectEnd();
-		} // Fixture def
+		json.writeValue("mFixtureDefs", mFixtureDefs);
 	}
 
 	/* (non-Javadoc)
 	 * @see com.badlogic.gdx.utils.Json.Serializable#read(com.badlogic.gdx.utils.Json, com.badlogic.gdx.utils.OrderedMap)
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public void read(Json json, OrderedMap<String, Object> jsonData) {
 		long version = json.readValue("VERSION", long.class, jsonData);
@@ -289,7 +213,6 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 		}
 
 		// Superclass
-		@SuppressWarnings("unchecked")
 		OrderedMap<String, Object> superMap = json.readValue("Def", OrderedMap.class, jsonData);
 		if (superMap != null) {
 			super.read(json, superMap);
@@ -300,71 +223,6 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 		mMaxLife = json.readValue("mMaxLife", float.class, jsonData);
 		mTextureTypes = json.readValue("mTextureTypes", Textures.Types[].class, jsonData);
 		mBodyDef = json.readValue("mBodyDef", BodyDef.class, jsonData);
-
-
-		// Fixture definition
-		OrderedMap<?,?> fixtureDefMap = json.readValue("mFixtureDef", OrderedMap.class, jsonData);
-		if (fixtureDefMap != null) {
-			mFixtureDef = new FixtureDef();
-			mFixtureDef.density = json.readValue("density", float.class, fixtureDefMap);
-			mFixtureDef.friction = json.readValue("friction", float.class, fixtureDefMap);
-			mFixtureDef.restitution = json.readValue("restitution", float.class, fixtureDefMap);
-			mFixtureDef.isSensor = json.readValue("isSensor",  boolean.class, fixtureDefMap);
-
-			setFilterCollisionData();
-
-			// Shape
-			OrderedMap<?,?> shapeMap = json.readValue("shape", OrderedMap.class, fixtureDefMap);
-			if (shapeMap != null) {
-				Shape.Type shapeType = json.readValue("type", Shape.Type.class, shapeMap);
-				switch (shapeType) {
-				case Circle:
-					float radius = json.readValue("radius", float.class, shapeMap);
-					Vector2 position = json.readValue("position", Vector2.class, shapeMap);
-					CircleShape circle = new CircleShape();
-					mFixtureDef.shape = circle;
-					circle.setPosition(position);
-					circle.setRadius(radius);
-					break;
-
-				case Polygon: {
-					Vector2[] vertices = json.readValue("vertices", Vector2[].class, shapeMap);
-					PolygonShape polygon = new PolygonShape();
-					mFixtureDef.shape = polygon;
-					if (vertices != null) {
-						polygon.set(vertices);
-					}
-					break;
-				}
-
-				case Edge:
-					Vector2 vertex1 = json.readValue("vertex1", Vector2.class, shapeMap);
-					Vector2 vertex2 = json.readValue("vertex2", Vector2.class, shapeMap);
-					EdgeShape edge = new EdgeShape();
-					mFixtureDef.shape = edge;
-					edge.set(vertex1, vertex2);
-					break;
-
-				case Chain: {
-					Vector2[] vertices = json.readValue("vertices", Vector2[].class, shapeMap);
-					ChainShape chainShape = new ChainShape();
-					mFixtureDef.shape = chainShape;
-					if (vertices != null) {
-						boolean loop = json.readValue("loop", boolean.class, shapeMap);
-						if (loop) {
-							chainShape.createLoop(vertices);
-						} else {
-							chainShape.createChain(vertices);
-						}
-					}
-					break;
-				}
-				}
-			} else {
-				mFixtureDef.shape = null;
-			}
-		} else {
-			mFixtureDef = null;
-		}
+		mFixtureDefs = json.readValue("mFixtureDefs", ArrayList.class, jsonData);
 	}
 }

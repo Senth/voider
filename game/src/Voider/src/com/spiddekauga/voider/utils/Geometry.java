@@ -1,5 +1,8 @@
 package com.spiddekauga.voider.utils;
 
+import java.util.Collections;
+import java.util.List;
+
 import com.badlogic.gdx.math.Vector2;
 
 /**
@@ -40,6 +43,8 @@ public class Geometry {
 	 * @return true if the lines intersect within the lines' range.
 	 * 
 	 * @author CommanderKeith on http://Java-Gaming.org
+	 * 
+	 * @see #linesIntersectNoCorners(Vector2,Vector2,Vector2,Vector2)
 	 */
 	public static boolean linesIntersect(Vector2 line1a, Vector2 line1b, Vector2 line2a, Vector2 line2b) {
 		// Return false if either of the lines have zero length
@@ -98,5 +103,46 @@ public class Geometry {
 			return false;
 		}
 		return true;
+	}
+
+	/**
+	 * Makes a polygon counter-clockwise if it isn't
+	 * @param[in,out] vertices list of vertices for the polygon
+	 */
+	public static void makePolygonCounterClockwise(List<Vector2> vertices) {
+		// Reverse order of vertices
+		if (!isPolygonCounterClockwise(vertices)) {
+			Collections.reverse(vertices);
+		}
+	}
+
+	/**
+	 * Checks if the vertices of a polygon are counter-clockwise
+	 * @param vertices all vertices of the polygon
+	 * @return true if the polygon is counter-clockwise
+	 */
+	public static boolean isPolygonCounterClockwise(final List<Vector2> vertices) {
+		float area = 0;
+		for (int i = 0; i < vertices.size(); i++) {
+			final Vector2 p1 = vertices.get(i);
+			final Vector2 p2 = vertices.get(computeNextIndex(vertices, i));
+			area += p1.x * p2.y - p2.x * p1.y;
+		}
+
+		if (area < 0) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+	/**
+	 * Computes the next index of a polygon, i.e. it wraps the index from back to front if needed.
+	 * @param vertices list of vertices for teh polygon
+	 * @param index the index of the vertex
+	 * @return next index for the index
+	 */
+	public static int computeNextIndex(final List<Vector2> vertices, final int index) {
+		return index == vertices.size() - 1 ? 0 : index + 1;
 	}
 }
