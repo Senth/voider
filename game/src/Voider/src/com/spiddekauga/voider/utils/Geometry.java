@@ -9,6 +9,28 @@ import com.badlogic.gdx.math.Vector2;
  */
 public class Geometry {
 	/**
+	 * Checks if two lines intersects, but skips the vertex points of the lines (i.e. if
+	 * a point is the same, it simply skips the calculation. Note that the lines might still
+	 * intersect, e.g. LINE1: (0,0) - (5,0), LINE2: (0,0) - (2,0).
+	 * @param line1a first vertex point for line 1
+	 * @param line1b second vertex point for line 1
+	 * @param line2a first vertex point for line 2
+	 * @param line2b second vertex point for line 2
+	 * @return true if the lines intersect within the lines' range.
+	 * 
+	 * @see #linesIntersect(Vector2,Vector2,Vector2,Vector2)
+	 */
+	public static boolean linesIntersectNoCorners(Vector2 line1a, Vector2 line1b, Vector2 line2a, Vector2 line2b) {
+		if (line1a.equals(line2a) || line1a.equals(line2b) ||
+				line1b.equals(line2a) || line1b.equals(line2b))
+		{
+			return false;
+		}
+
+		return linesIntersect(line1a, line1b, line2a, line2b);
+	}
+
+	/**
 	 * Checks if two lines intersects. They only intersect if the intersection
 	 * point is within the lines' range (i.e. these are not infinite lines)
 	 * @param line1a first vertex point for line 1
@@ -19,10 +41,10 @@ public class Geometry {
 	 * 
 	 * @author CommanderKeith on http://Java-Gaming.org
 	 */
-	public static boolean linesIntersects(Vector2 line1a, Vector2 line1b, Vector2 line2a, Vector2 line2b) {
+	public static boolean linesIntersect(Vector2 line1a, Vector2 line1b, Vector2 line2a, Vector2 line2b) {
 		// Return false if either of the lines have zero length
-		if (line1a.x == line1b.x && line1a.y == line1b.y ||
-				line2a.x == line2b.x && line2a.y == line2b.y){
+		if ((line1a.x == line1b.x && line1a.y == line1b.y) ||
+				(line2a.x == line2b.x && line2a.y == line2b.y)){
 			return false;
 		}
 		// Fastest method, based on Franklin Antonio's "Faster Line Segment Intersection" topic "in Graphics Gems III" book (http://www.graphicsgems.org/)

@@ -106,7 +106,7 @@ public class StaticTerrainActor extends Actor {
 		mCorners.removeIndex(i);
 
 		if (mEditorActive) {
-			mCornerBodies.removeIndex(i);
+			removeBodyCorner(i);
 		}
 
 		readjustFixtures();
@@ -121,7 +121,7 @@ public class StaticTerrainActor extends Actor {
 			mCorners.removeIndex(index);
 
 			if (mEditorActive) {
-				mCornerBodies.removeIndex(index);
+				removeBodyCorner(index);
 			}
 
 			readjustFixtures();
@@ -208,13 +208,13 @@ public class StaticTerrainActor extends Actor {
 
 
 			// Check with first line
-			if (Geometry.linesIntersects(vertexBefore, vertexIndex, lineA, lineB)) {
+			if (Geometry.linesIntersectNoCorners(vertexBefore, vertexIndex, lineA, lineB)) {
 				intersects = true;
 				break;
 			}
 
 			// Check second line
-			if (Geometry.linesIntersects(vertexIndex, vertexAfter, lineA, lineB)) {
+			if (Geometry.linesIntersectNoCorners(vertexIndex, vertexAfter, lineA, lineB)) {
 				intersects = true;
 				break;
 			}
@@ -319,6 +319,17 @@ public class StaticTerrainActor extends Actor {
 		body.setTransform(corner, 0f);
 		body.setUserData(this);
 		mCornerBodies.add(body);
+	}
+
+	/**
+	 * Removes a corner body of the specified index
+	 * @param index corner body to remove
+	 */
+	private void removeBodyCorner(int index) {
+		Body removedBody = mCornerBodies.removeIndex(index);
+		if (removedBody != null) {
+			mWorld.destroyBody(removedBody);
+		}
 	}
 
 	/** An array with all corner positions of the vector */
