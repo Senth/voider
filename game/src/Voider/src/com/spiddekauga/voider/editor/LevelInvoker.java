@@ -2,6 +2,7 @@ package com.spiddekauga.voider.editor;
 
 import java.util.LinkedList;
 
+import com.badlogic.gdx.utils.Disposable;
 import com.spiddekauga.voider.editor.commands.LevelCommand;
 import com.spiddekauga.voider.game.Level;
 
@@ -10,7 +11,7 @@ import com.spiddekauga.voider.game.Level;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class LevelInvoker {
+public class LevelInvoker implements Disposable {
 	/**
 	 * Default constructor, a level needs to be set before this invoker can be used
 	 */
@@ -24,6 +25,12 @@ public class LevelInvoker {
 	 */
 	public LevelInvoker(Level level) {
 		mLevel = level;
+	}
+
+	@Override
+	public void dispose() {
+		disposeRedo();
+		disposeUndo();
 	}
 
 	/**
@@ -41,13 +48,18 @@ public class LevelInvoker {
 	 * Executes the specified action on the level contained in this invoker.
 	 * This also clears the redo stack.
 	 * @param command the command to execute
+	 * @return true if the command was executed successfully
 	 */
-	public void execute(LevelCommand command) {
-		command.execute(mLevel);
-		mUndoCommands.push(command);
-		mRedoCommands.clear();
+	public boolean execute(LevelCommand command) {
+		boolean success = command.execute(mLevel);
+		if (success) {
+			mUndoCommands.push(command);
+			disposeRedo();
 
-		/** @TODO maybe set a limit on 100 undo commands? */
+			/** @TODO maybe set a limit on 100 undo commands? */
+		}
+
+		return success;
 	}
 
 	/**
@@ -86,6 +98,26 @@ public class LevelInvoker {
 	 */
 	public boolean canRedo() {
 		return !mRedoCommands.isEmpty();
+	}
+
+	/**
+	 * Disposes all undo commands
+	 */
+	private void disposeUndo() {
+		for (LevelCommand command : mUndoCommands) {
+			command.dispose();
+		}
+		mUndoCommands.clear();
+	}
+
+	/**
+	 * Disposes all redo commands
+	 */
+	private void disposeRedo() {
+		for (LevelCommand command : mRedoCommands) {
+			command.dispose();
+		}
+		mRedoCommands.clear();
 	}
 
 	/** Level to invoke commands on */

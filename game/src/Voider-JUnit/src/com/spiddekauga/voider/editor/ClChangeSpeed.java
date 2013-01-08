@@ -34,28 +34,34 @@ public class ClChangeSpeed extends LevelCommand {
 	 * @see com.spiddekauga.voider.editor.commands.LevelCommand#execute(com.spiddekauga.voider.game.Level)
 	 */
 	@Override
-	public void execute(Level level) {
+	public boolean execute(Level level) {
 		try {
 			mSpeedField.set(level, mNewSpeed);
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
+			return false;
 		} catch (IllegalAccessException e) {
 			e.printStackTrace();
+			return false;
 		}
+		return true;
 	}
 
 	/* (non-Javadoc)
 	 * @see com.spiddekauga.voider.editor.commands.LevelCommand#undo(com.spiddekauga.voider.game.Level)
 	 */
 	@Override
-	public void undo(Level level) {
+	public boolean undo(Level level) {
 		try {
 			mSpeedField.set(level, mOldSpeed);
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
+			return false;
 		} catch (IllegalAccessException e) {
 			e.printStackTrace();
+			return false;
 		}
+		return true;
 	}
 
 	/** Old speed before changing */

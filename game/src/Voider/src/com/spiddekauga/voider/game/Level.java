@@ -1,8 +1,7 @@
 package com.spiddekauga.voider.game;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.UUID;
-import java.util.Vector;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -26,8 +25,8 @@ public class Level extends Resource implements ITriggerListener, Json.Serializab
 	public Level(LevelDef levelDef) {
 		mLevelDef = levelDef;
 		mUniqueId = levelDef.getLevelId();
-		mActors = new Vector<Actor>();
-		mTriggers = new Vector<Trigger>();
+		mActors = new ArrayList<Actor>();
+		mTriggers = new ArrayList<Trigger>();
 		mTriggerInformation = new TriggerContainer();
 		mSpeed = mLevelDef.getBaseSpeed();
 		mCompletedLevel = false;
@@ -99,6 +98,7 @@ public class Level extends Resource implements ITriggerListener, Json.Serializab
 	 */
 	public void addActor(Actor actor) {
 		mActors.add(actor);
+		actor.createBody();
 	}
 
 	/**
@@ -106,14 +106,26 @@ public class Level extends Resource implements ITriggerListener, Json.Serializab
 	 * @param actorId the actor to remove
 	 */
 	public void removeActor(UUID actorId) {
-		/** @TODO removeActor() */
+		Actor actor = null;
+		for (int i = 0; i < mActors.size(); ++i) {
+			if (mActors.get(i).equals(actorId)) {
+				actor = mActors.remove(i);
+				break;
+			}
+		}
+
+		if (actor != null) {
+			actor.destroyBody();
+		} else {
+			Gdx.app.error("Level", "Could not find the actor to remove");
+		}
 	}
 
 
 	/** All actors in the level */
-	private Vector<Actor> mActors = null;
+	private ArrayList<Actor> mActors = null;
 	/** All triggers in the level */
-	private Vector<Trigger> mTriggers = null;
+	private ArrayList<Trigger> mTriggers = null;
 	/** All trigger information in the level, needed for duplication saving/loading and binding */
 	private TriggerContainer mTriggerInformation = null;
 	/** Current x coordinate (of the screen's left edge) */
@@ -145,6 +157,7 @@ public class Level extends Resource implements ITriggerListener, Json.Serializab
 	/* (non-Javadoc)
 	 * @see com.badlogic.gdx.utils.Json.Serializable#read(com.badlogic.gdx.utils.Json, com.badlogic.gdx.utils.OrderedMap)
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public void read(Json json, OrderedMap<String, Object> jsonData) {
 		super.read(json, jsonData);
@@ -154,12 +167,8 @@ public class Level extends Resource implements ITriggerListener, Json.Serializab
 		mCompletedLevel = json.readValue("mCompletedLevel", boolean.class, jsonData);
 
 		// Actors
-		Actor[] actors = json.readValue("mActors", Actor[].class, jsonData);
-		mActors = new Vector<Actor>(Arrays.asList(actors));
-
-		// Trigger
-		Trigger[] triggers = json.readValue("mTriggers", Trigger[].class, jsonData);
-		mTriggers = new Vector<Trigger>(Arrays.asList(triggers));
+		mActors = json.readValue("mActors", ArrayList.class, jsonData);
+		mTriggers = json.readValue("mTriggers", ArrayList.class, jsonData);
 
 		// Get the actual LevelDef
 		UUID levelDefId = UUID.fromString(json.readValue("mLevelDefId", String.class, jsonData));

@@ -73,11 +73,10 @@ public class StaticTerrainActor extends Actor {
 	/**
 	 * Add another corner position to the back of the array
 	 * @param corner a new corner that will be placed at the back
-	 * @return index of the new corner
 	 * @throws PolygonComplexException thrown when the adding corner would make the
 	 * polygon an complex polygon, i.e. intersect itself.
 	 */
-	public int addCorner(Vector2 corner) throws PolygonComplexException {
+	public void addCorner(Vector2 corner) throws PolygonComplexException {
 		mCorners.add(corner.cpy());
 
 		// Make sure no intersection exists
@@ -92,7 +91,14 @@ public class StaticTerrainActor extends Actor {
 			createBodyCorner(corner);
 		}
 
-		return mCorners.size() - 1;
+		mLastAddedCornerIndex = mCorners.size()-1;
+	}
+
+	/**
+	 * @return index of last added corner
+	 */
+	public int getLastAddedCornerIndex() {
+		return mLastAddedCornerIndex;
 	}
 
 	/**
@@ -137,6 +143,14 @@ public class StaticTerrainActor extends Actor {
 
 			readjustFixtures();
 		}
+	}
+
+	/**
+	 * @param index corner's index which position we want to get
+	 * @return position of the specified corner
+	 */
+	public Vector2 getCorner(int index) {
+		return mCorners.get(index);
 	}
 
 	/**
@@ -296,6 +310,29 @@ public class StaticTerrainActor extends Actor {
 		readjustFixtures();
 	}
 
+	@Override
+	public void createBody() {
+		super.createBody();
+
+		if (mEditorActive) {
+			for (Body body : mCornerBodies) {
+				body.getWorld().destroyBody(body);
+			}
+			mCornerBodies.clear();
+		}
+	}
+
+	@Override
+	public void destroyBody() {
+		super.destroyBody();
+
+		if (mEditorActive && mWorld != null) {
+			for (Vector2 corner : mCorners) {
+				createBodyCorner(corner);
+			}
+		}
+	}
+
 	/**
 	 * Exception class for when trying to create a new, or move an existing corner
 	 * and this makes the polygon complex, i.e. it intersects with itself.
@@ -328,16 +365,16 @@ public class StaticTerrainActor extends Actor {
 
 			int cTriangles = triangles.size() / 3;
 			Vector2[] triangleVertices = new Vector2[3];
-			triangleVertices[0] = Pools.obtain(Vector2.class);
-			triangleVertices[1] = Pools.obtain(Vector2.class);
-			triangleVertices[2] = Pools.obtain(Vector2.class);
+			for (int i = 0; i < triangleVertices.length; ++i) {
+				triangleVertices[i] = Pools.obtain(Vector2.class);
+			}
 
 
 			// Add the fixtures
 			for (int triangle = 0; triangle < cTriangles; ++triangle) {
 				for (int vertex = 0; vertex < triangleVertices.length; ++vertex) {
 					int offset = triangle * 3;
-					triangleVertices[vertex] = triangles.get(offset + vertex);
+					triangleVertices[vertex].set(triangles.get(offset + vertex));
 				}
 
 				PolygonShape polygonShape = new PolygonShape();
@@ -384,10 +421,12 @@ public class StaticTerrainActor extends Actor {
 	private void removeBodyCorner(int index) {
 		Body removedBody = mCornerBodies.remove(index);
 		if (removedBody != null) {
-			mWorld.destroyBody(removedBody);
+			removedBody.getWorld().destroyBody(removedBody);
 		}
 	}
 
+	/** Index of last added corner */
+	private int mLastAddedCornerIndex = -1;
 	/** An array with all corner positions of the vector */
 	private ArrayList<Vector2> mCorners = new ArrayList<Vector2>();
 	/** All bodies for the corners, used for picking */

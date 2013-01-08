@@ -43,8 +43,6 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 		mDef = def;
 		mLife = def.getMaxLife();
 		mUniqueId = UUID.randomUUID();
-
-		createBody();
 	}
 
 	/**
@@ -95,7 +93,7 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 
 		json.writeValue("VERSION", VERSION);
 		json.writeValue("mLife", mLife);
-		json.writeValue("mDefId", mDef.getId().toString());
+		json.writeValue("mDefId", mDef.getId());
 		json.writeValue("mDefType", mDef.getClass().getName());
 
 
@@ -111,8 +109,6 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 		} else {
 			json.writeValue("mBody", (String) null);
 		}
-
-
 	}
 
 	/* (non-Javadoc)
@@ -127,7 +123,7 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 		mLife = json.readValue("mLife", float.class, jsonData);
 
 		// Get definition information to be able to load it
-		UUID defId = UUID.fromString(json.readValue("mDefId", String.class, jsonData));
+		UUID defId = json.readValue("mDefId", UUID.class, jsonData);
 		String defTypeName = json.readValue("mDefType", String.class, jsonData);
 		Class<?> defType = null;
 		try {
@@ -159,13 +155,11 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 			bodyDef.position.set(json.readValue("position", Vector2.class, bodyMap));
 			bodyDef.awake = json.readValue("awake", boolean.class, bodyMap);
 			bodyDef.active = json.readValue("active", boolean.class, bodyMap);
-		} else {
-			Gdx.app.error("JsonRead", "Could not find body map");
-			throw new GdxRuntimeException("Could not find body map in json string");
 		}
 
 		if (mWorld != null) {
 			mBody = mWorld.createBody(bodyDef);
+			/** @TODO Create fixture? */
 		} else {
 			Gdx.app.error("JsonRead", "World was null when creating body");
 			throw new GdxRuntimeException("World was null when creating body from json");
@@ -196,6 +190,32 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 	}
 
 	/**
+	 * Creates a new body out of the fixture and body definition. This body will however not have
+	 * any angle, velocity, or position set to it.
+	 */
+	public void createBody(){
+		if (mWorld != null && mBody == null) {
+			BodyDef bodyDef = mDef.getBodyDef();
+			mBody = mWorld.createBody(bodyDef);
+			for (FixtureDef fixtureDef : mDef.getFixtureDefs()) {
+				if (fixtureDef.shape != null) {
+					mBody.createFixture(fixtureDef);
+				}
+			}
+			mBody.setUserData(this);
+		}
+	}
+
+	/**
+	 * Destroys the body of the actor. This will remove it from the world
+	 */
+	public void destroyBody() {
+		if (mBody != null) {
+			mBody.getWorld().destroyBody(mBody);
+		}
+	}
+
+	/**
 	 * Protected constructor, used for JSON
 	 */
 	protected Actor() {
@@ -222,23 +242,6 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 		}
 
 		mDef.clearFixtures();
-	}
-
-	/**
-	 * Creates a new body out of the fixture and body definition. This body will however not have
-	 * any angle, velocity, or position set to it.
-	 */
-	private void createBody(){
-		if (mWorld != null) {
-			BodyDef bodyDef = mDef.getBodyDef();
-			mBody = mWorld.createBody(bodyDef);
-			for (FixtureDef fixtureDef : mDef.getFixtureDefs()) {
-				if (fixtureDef.shape != null) {
-					mBody.createFixture(fixtureDef);
-				}
-			}
-			mBody.setUserData(this);
-		}
 	}
 
 	/** Physical body */

@@ -3,7 +3,7 @@ package com.spiddekauga.voider.game;
 import static org.junit.Assert.assertEquals;
 
 import java.lang.reflect.Field;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -99,8 +99,8 @@ public class LevelTest {
 		Level jsonLevel = json.fromJson(Level.class, jsonString);
 
 		assertEquals("uuid", level.getId(), jsonLevel.getId());
-		assertEquals("actors", 0, ((Vector<Actor>) mfActors.get(jsonLevel)).size());
-		assertEquals("triggers", 0, ((Vector<Trigger>) mfTriggers.get(jsonLevel)).size());
+		assertEquals("actors", 0, ((ArrayList<Actor>) mfActors.get(jsonLevel)).size());
+		assertEquals("triggers", 0, ((ArrayList<Trigger>) mfTriggers.get(jsonLevel)).size());
 		assertEquals("x-coord", 0.0f, mfXCoord.get(jsonLevel));
 		assertEquals("level def", mUsingLevelDef, mfLevelDef.get(jsonLevel));
 		assertEquals("speed", mfSpeed.get(level), mfSpeed.get(jsonLevel));
@@ -108,8 +108,8 @@ public class LevelTest {
 
 
 		// Test with setting the values to something else
-		((Vector<Actor>) mfActors.get(level)).add(new PlayerActor(mPlayerActorDef));
-		((Vector<Trigger>) mfTriggers.get(level)).add(new TestTrigger());
+		((ArrayList<Actor>) mfActors.get(level)).add(new PlayerActor(mPlayerActorDef));
+		((ArrayList<Trigger>) mfTriggers.get(level)).add(new TestTrigger());
 		mfXCoord.set(level, 55.3f);
 		mfSpeed.set(level, 0.578f);
 		mfCompletedLevel.set(level, true);
@@ -118,8 +118,8 @@ public class LevelTest {
 		jsonLevel = json.fromJson(Level.class, jsonString);
 
 		assertEquals("uuid", level.getId(), jsonLevel.getId());
-		assertEquals("actors", 1, ((Vector<Actor>) mfActors.get(jsonLevel)).size());
-		assertEquals("triggers", 1, ((Vector<Trigger>) mfTriggers.get(jsonLevel)).size());
+		assertEquals("actors", 1, ((ArrayList<Actor>) mfActors.get(jsonLevel)).size());
+		assertEquals("triggers", 1, ((ArrayList<Trigger>) mfTriggers.get(jsonLevel)).size());
 		assertEquals("x-coord", 55.3f, mfXCoord.get(jsonLevel));
 		assertEquals("level def", mUsingLevelDef, mfLevelDef.get(jsonLevel));
 		assertEquals("speed", 0.578f, mfSpeed.get(jsonLevel));

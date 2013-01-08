@@ -17,6 +17,7 @@ public class ClMoveActor extends LevelCommand {
 	 * @param newPosition the new position of the actor
 	 */
 	public ClMoveActor(Actor actor, Vector2 newPosition) {
+		mActor = actor;
 		mDiffMovement = Pools.obtain(Vector2.class);
 		mDiffMovement.set(newPosition);
 		mDiffMovement.sub(actor.getBody().getPosition());
@@ -26,19 +27,29 @@ public class ClMoveActor extends LevelCommand {
 	 * @see com.spiddekauga.voider.editor.commands.LevelCommand#execute(com.spiddekauga.voider.game.Level)
 	 */
 	@Override
-	public void execute(Level level) {
-
+	public boolean execute(Level level) {
+		// TODO Auto-generated method stub
+		return true;
 	}
 
 	/* (non-Javadoc)
 	 * @see com.spiddekauga.voider.editor.commands.LevelCommand#undo(com.spiddekauga.voider.game.Level)
 	 */
 	@Override
-	public void undo(Level level) {
+	public boolean undo(Level level) {
 		// TODO Auto-generated method stub
+		return true;
+	}
 
+	@Override
+	public void dispose() {
+		if (mDiffMovement != null) {
+			Pools.free(mDiffMovement);
+		}
 	}
 
 	/** The difference vector for moving the actor back and forth */
-	private Vector2 mDiffMovement = null;
+	private Vector2 mDiffMovement;
+	/** The actor to move */
+	private Actor mActor;
 }

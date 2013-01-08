@@ -12,8 +12,13 @@ import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.Pools;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Scene;
+import com.spiddekauga.voider.editor.commands.ClAddActor;
+import com.spiddekauga.voider.editor.commands.ClTerrainActorAddCorner;
+import com.spiddekauga.voider.editor.commands.ClTerrainActorMoveCorner;
+import com.spiddekauga.voider.editor.commands.LevelCommand;
 import com.spiddekauga.voider.game.Actor;
 import com.spiddekauga.voider.game.GameTime;
 import com.spiddekauga.voider.game.Level;
@@ -257,7 +262,8 @@ public class LevelEditor extends Scene {
 			// Create Terrain
 			if (mActor == null) {
 				mActor = new StaticTerrainActor();
-				mLevel.addActor(mActor);
+				ClAddActor command = new ClAddActor(mActor);
+				mLevelInvoker.execute(command);
 			}
 
 			// Double click inside current actor finishes closes it
@@ -280,7 +286,7 @@ public class LevelEditor extends Scene {
 				// Else - Hit a corner, start moving it
 				else {
 					mCornerCurrentIndex = mActor.getCornerIndex(mHitBody.getPosition());
-					mCornerCurrentOrigin = mHitBody.getPosition();
+					mCornerCurrentOrigin.set(mHitBody.getPosition());
 					mCornerCurrentAddedNow = false;
 				}
 			}
@@ -303,6 +309,22 @@ public class LevelEditor extends Scene {
 
 		@Override
 		public void up() {
+			// ACTIONS VIA COMMANDS INSTEAD
+			// MOVE CORNER
+			if (mCornerCurrentIndex != -1 && mActor != null) {
+				// Reset to original position
+				Vector2 newPos = Pools.obtain(Vector2.class);
+				newPos.set(mActor.getCorner(mCornerCurrentIndex));
+				try {
+					mActor.moveCorner(mCornerCurrentIndex, mCornerCurrentOrigin);
+					LevelCommand command = new ClTerrainActorMoveCorner(mActor, mCornerCurrentIndex, newPos);
+					mLevelInvoker.execute(command);
+				} catch (PolygonComplexException e) {
+					// Does nothing
+				}
+				Pools.free(newPos);
+			}
+
 			mCornerLastIndex = mCornerCurrentIndex;
 			mCornerCurrentIndex = -1;
 		}
@@ -322,10 +344,10 @@ public class LevelEditor extends Scene {
 						mActor = (StaticTerrainActor) mHitBody.getUserData();
 					}
 				}
-				// A corner select it, and quick return
+				// A corner - select it, and quick return
 				else if (body.getUserData() instanceof HitWrapper) {
 					mHitBody = body;
-					// Still saame actor
+					// Still same actor
 					mActor = oldActor;
 					return;
 				}
@@ -337,10 +359,13 @@ public class LevelEditor extends Scene {
 		 * an error message if it didn't work
 		 */
 		private void createCorner() {
-			try {
-				mCornerCurrentIndex = mActor.addCorner(mTouchOrigin);
+			ClTerrainActorAddCorner command = new ClTerrainActorAddCorner(mActor, mTouchOrigin);
+			boolean added = mLevelInvoker.execute(command);
+			if (added) {
+				mCornerCurrentIndex = mActor.getLastAddedCornerIndex();
+				mCornerCurrentOrigin.set(mTouchOrigin);
 				mCornerCurrentAddedNow = true;
-			} catch (PolygonComplexException e) {
+			} else {
 				/** @TODO print some error message on screen, cannot add corner here */
 			}
 		}
