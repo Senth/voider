@@ -119,8 +119,8 @@ public class Config {
 	 * Input options
 	 */
 	public static class Input {
-		/** How many milliseconds for a double click? */
-		public final static float DOUBLE_CLICK_TIME = 500f;
+		/** How many seconds for a double click? */
+		public final static float DOUBLE_CLICK_TIME = 0.5f;
 	}
 
 	/**

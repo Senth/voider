@@ -1,5 +1,7 @@
 package com.spiddekauga.voider.editor;
 
+import java.util.LinkedList;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -157,8 +159,10 @@ public class LevelEditor extends Scene {
 	 * @param callback the callback function to use
 	 */
 	public void testPick(QueryCallback callback) {
+		mHitBodies.clear();
 		mHitBody = null;
 		mWorld.QueryAABB(callback, mTouchCurrent.x - 0.0001f, mTouchCurrent.y - 0.0001f, mTouchCurrent.x + 0.0001f, mTouchCurrent.y + 0.0001f);
+		mEventHandlerCurrent.filterPicks();
 	}
 
 	/** Physics world */
@@ -190,8 +194,10 @@ public class LevelEditor extends Scene {
 	private Vector2 mTouchCurrent = new Vector2();
 	/** For ray testing on player ship when touching it */
 	private Vector3 mTestPoint = new Vector3();
-	/** Body that was hit */
+	/** Body that was hit (and prioritized) */
 	private Body mHitBody = null;
+	/** Bodies that were hit and selected for filtering, before mHitBody is set */
+	private LinkedList<Body> mHitBodies = new LinkedList<Body>();
 
 	/**
 	 * All tools in the level editor
@@ -233,6 +239,11 @@ public class LevelEditor extends Scene {
 		 * Handles touch up events
 		 */
 		public void up();
+
+		/**
+		 * Filter picks
+		 */
+		public void filterPicks();
 	}
 
 	/**
@@ -249,9 +260,15 @@ public class LevelEditor extends Scene {
 				mLevel.addActor(mActor);
 			}
 
-
-
-			Body lastHitBody = mHitBody;
+			// Double click inside current actor finishes closes it
+			if (mDoubleClick && mHitBody != null && mHitBody.getUserData() == mActor) {
+				// Remove the last corner if we accidently added one when double clicking
+				if (mCornerLastIndex != -1) {
+					mActor.removeCorner(mCornerLastIndex);
+				}
+				mActor = null;
+				return;
+			}
 
 			// Test if we hit a corner...
 			testPick(mCallback);
@@ -289,17 +306,41 @@ public class LevelEditor extends Scene {
 
 		@Override
 		public void up() {
-			if (mCornerCurrentIndex != -1) {
-
-			}
-
+			mCornerLastIndex = mCornerCurrentIndex;
 			mCornerCurrentIndex = -1;
+		}
+
+		/**
+		 * This will filter so that corners of the active terrain will
+		 * be selected first, then any click on terrain
+		 */
+		@Override
+		public void filterPicks() {
+			StaticTerrainActor oldActor = mActor;
+			for (Body body : mHitBodies) {
+				// Only set hit terrain if no hit body has been set
+				if (body.getUserData() instanceof StaticTerrainActor) {
+					if (mHitBody == null) {
+						mHitBody = body;
+						mActor = (StaticTerrainActor) mHitBody.getUserData();
+					}
+				}
+				// A corner select it, and quick return
+				else if (body.getUserData() instanceof HitWrapper) {
+					mHitBody = body;
+					// Still saame actor
+					mActor = oldActor;
+					return;
+				}
+			}
 		}
 
 		/** Origin of the corner, before dragging it */
 		private Vector2 mCornerCurrentOrigin = new Vector2();
 		/** Index of the current corner */
 		private int mCornerCurrentIndex = -1;
+		/** Last corner index */
+		private int mCornerLastIndex = -1;
 		/** True if the current corner was added now */
 		private boolean mCornerCurrentAddedNow = false;
 		/** Current Static terrain actor */
@@ -310,10 +351,19 @@ public class LevelEditor extends Scene {
 			@Override
 			public boolean reportFixture(Fixture fixture) {
 				if (fixture.testPoint(mTouchCurrent)) {
+					// Hit a terrain actor directly
 					if (fixture.getBody().getUserData() instanceof StaticTerrainActor) {
-						mHitBody = fixture.getBody();
-						mActor = (StaticTerrainActor) mHitBody.getUserData();
-						return false;
+						mHitBodies.add(fixture.getBody());
+					}
+					// Hit a corner
+					else if (fixture.getBody().getUserData() instanceof HitWrapper) {
+						HitWrapper hitWrapper = (HitWrapper) fixture.getBody().getUserData();
+						if (hitWrapper.actor instanceof StaticTerrainActor) {
+							if (mActor != null && mActor == hitWrapper.actor) {
+								mHitBodies.add(fixture.getBody());
+								return false;
+							}
+						}
 					}
 				}
 				return true;
@@ -337,6 +387,11 @@ public class LevelEditor extends Scene {
 
 		@Override
 		public void up() {
+			// TODO Auto-generated method stub
+		}
+
+		@Override
+		public void filterPicks() {
 			// TODO Auto-generated method stub
 		}
 	}

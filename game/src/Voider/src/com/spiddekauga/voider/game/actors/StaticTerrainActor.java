@@ -17,6 +17,7 @@ import com.badlogic.gdx.utils.OrderedMap;
 import com.badlogic.gdx.utils.Pools;
 import com.spiddekauga.utils.Json;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.editor.HitWrapper;
 import com.spiddekauga.voider.game.Actor;
 import com.spiddekauga.voider.utils.Geometry;
 
@@ -47,7 +48,7 @@ public class StaticTerrainActor extends Actor {
 	 */
 	@Override
 	public void update(float deltaTime) {
-		/** @TODO render the terrain */
+		// Does nothing
 	}
 
 	@Override
@@ -371,7 +372,8 @@ public class StaticTerrainActor extends Actor {
 		Body body = mWorld.createBody(new BodyDef());
 		body.createFixture(Config.Editor.getPickingShape(), 0f);
 		body.setTransform(corner, 0f);
-		body.setUserData(this);
+		HitWrapper hitWrapper = new HitWrapper(this, true);
+		body.setUserData(hitWrapper);
 		mCornerBodies.add(body);
 	}
 
