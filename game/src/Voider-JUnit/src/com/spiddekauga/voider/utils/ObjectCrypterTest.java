@@ -44,7 +44,7 @@ public class ObjectCrypterTest {
 	 * @throws Exception
 	 */
 	@AfterClass
-	public static void tearDownAfterClass() {
+	public static void tearDownAfterClass() throws Exception {
 		Config.dispose();
 	}
 

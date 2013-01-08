@@ -107,7 +107,7 @@ public class Geometry {
 
 	/**
 	 * Makes a polygon counter-clockwise if it isn't
-	 * @param[in,out] vertices list of vertices for the polygon
+	 * @param vertices list of vertices for the polygon
 	 */
 	public static void makePolygonCounterClockwise(List<Vector2> vertices) {
 		// Reverse order of vertices

@@ -273,23 +273,20 @@ public class LevelEditor extends Scene {
 			// Test if we hit a corner...
 			testPick(mCallback);
 			if (mHitBody != null) {
-				/** @TODO two double hits on the actor (not corners) completes the terrain
-				 * This will make it possible to start another terrain */
-
-				/** @TODO hit inside actor, but not double click? create a new corner */
-
-				mCornerCurrentIndex = mActor.getCornerIndex(mHitBody.getPosition());
-				mCornerCurrentOrigin = mHitBody.getPosition();
-				mCornerCurrentAddedNow = false;
+				// Hit the terrain body (no corner), create corner
+				if (mHitBody.getUserData() == mActor) {
+					createCorner();
+				}
+				// Else - Hit a corner, start moving it
+				else {
+					mCornerCurrentIndex = mActor.getCornerIndex(mHitBody.getPosition());
+					mCornerCurrentOrigin = mHitBody.getPosition();
+					mCornerCurrentAddedNow = false;
+				}
 			}
 			// Else create a new corner
 			else {
-				try {
-					mCornerCurrentIndex = mActor.addCorner(mTouchOrigin);
-					mCornerCurrentAddedNow = true;
-				} catch (PolygonComplexException e) {
-					/** @TODO print some error message on screen, cannot add corner here */
-				}
+				createCorner();
 			}
 		}
 
@@ -332,6 +329,19 @@ public class LevelEditor extends Scene {
 					mActor = oldActor;
 					return;
 				}
+			}
+		}
+
+		/**
+		 * Tries to create a new corner. Will print out
+		 * an error message if it didn't work
+		 */
+		private void createCorner() {
+			try {
+				mCornerCurrentIndex = mActor.addCorner(mTouchOrigin);
+				mCornerCurrentAddedNow = true;
+			} catch (PolygonComplexException e) {
+				/** @TODO print some error message on screen, cannot add corner here */
 			}
 		}
 

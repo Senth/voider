@@ -204,7 +204,7 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 
 	/**
 	 * Adds a fixture to the body and fixture list
-	 * @param fixture the fixture to add
+	 * @param fixtureDef the fixture to add
 	 */
 	protected void addFixture(FixtureDef fixtureDef) {
 		mDef.addFixtureDef(fixtureDef);
