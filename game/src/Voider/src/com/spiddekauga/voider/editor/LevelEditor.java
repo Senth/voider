@@ -290,15 +290,7 @@ public class LevelEditor extends Scene {
 		@Override
 		public void up() {
 			if (mCornerCurrentIndex != -1) {
-				//				// Check so that terrain isn't intersecting
-				//				// If it does either remove it or reset it
-				//				if (mActor.intersectionExists(mCornerCurrentIndex)) {
-				//					if (mCornerCurrentAddedNow) {
-				//						mActor.removeCorner(mCornerCurrentIndex);
-				//					} else {
-				//						mActor.moveCorner(mCornerCurrentIndex, mCornerCurrentOrigin);
-				//					}
-				//				}
+
 			}
 
 			mCornerCurrentIndex = -1;

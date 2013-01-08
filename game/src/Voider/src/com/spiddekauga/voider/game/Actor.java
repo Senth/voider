@@ -1,5 +1,6 @@
 package com.spiddekauga.voider.game;
 
+import java.util.ArrayList;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
@@ -9,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.GdxRuntimeException;
@@ -198,6 +200,28 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 	 */
 	protected Actor() {
 		// Does nothing
+	}
+
+	/**
+	 * Adds a fixture to the body and fixture list
+	 * @param fixture the fixture to add
+	 */
+	protected void addFixture(FixtureDef fixtureDef) {
+		mDef.addFixtureDef(fixtureDef);
+		mBody.createFixture(fixtureDef);
+	}
+
+	/**
+	 * Clears all fixtures
+	 */
+	@SuppressWarnings("unchecked")
+	protected void clearFixtures() {
+		ArrayList<Fixture> fixtures = (ArrayList<Fixture>) mBody.getFixtureList().clone();
+		for (Fixture fixture : fixtures) {
+			mBody.destroyFixture(fixture);
+		}
+
+		mDef.clearFixtures();
 	}
 
 	/**

@@ -308,7 +308,7 @@ public class StaticTerrainActor extends Actor {
 	 */
 	private void readjustFixtures() {
 		// Destroy previous fixture
-		getDef().clearFixtures();
+		clearFixtures();
 
 
 		// Create the new fixture
@@ -333,19 +333,18 @@ public class StaticTerrainActor extends Actor {
 
 
 			// Add the fixtures
-			PolygonShape polygonShape = new PolygonShape();
 			for (int triangle = 0; triangle < cTriangles; ++triangle) {
 				for (int vertex = 0; vertex < triangleVertices.length; ++vertex) {
 					int offset = triangle * 3;
 					triangleVertices[vertex] = triangles.get(offset + vertex);
 				}
 
+				PolygonShape polygonShape = new PolygonShape();
 				polygonShape.set(triangleVertices);
 				FixtureDef fixtureDef = new FixtureDef();
 				fixtureDef.shape = polygonShape;
 				fixtureDef.density = 0f;
-				getDef().addFixtureDef(fixtureDef);
-				getBody().createFixture(fixtureDef);
+				addFixture(fixtureDef);
 			}
 
 			// Free stuff
@@ -360,8 +359,7 @@ public class StaticTerrainActor extends Actor {
 			FixtureDef fixtureDef = new FixtureDef();
 			fixtureDef.shape = edge;
 			fixtureDef.density = 0f;
-			getDef().addFixtureDef(fixtureDef);
-			getBody().createFixture(fixtureDef);
+			addFixture(fixtureDef);
 		}
 	}
 
