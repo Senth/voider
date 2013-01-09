@@ -58,16 +58,27 @@ public class StaticTerrainActor extends Actor {
 
 	@Override
 	public void write(Json json) {
+		json.writeObjectStart("Actor");
 		super.write(json);
+		json.writeObjectEnd();
 
-		/** @TODO save corners */
+
+		json.writeValue("mCorners", mCorners);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void read(Json json, OrderedMap<String, Object> jsonData) {
-		super.read(json, jsonData);
+		OrderedMap<String, Object> actorMap = json.readValue("Actor", OrderedMap.class, jsonData);
+		super.read(json, actorMap);
 
-		/** @TODO read corners */
+
+		mCorners = json.readValue("mCorners", ArrayList.class, jsonData);
+
+		// Create corner bodies if editor...
+		if (mEditorActive) {
+			createBodyCorners();
+		}
 	}
 
 	/**
@@ -315,10 +326,7 @@ public class StaticTerrainActor extends Actor {
 		super.createBody();
 
 		if (mEditorActive) {
-			for (Body body : mCornerBodies) {
-				body.getWorld().destroyBody(body);
-			}
-			mCornerBodies.clear();
+			createBodyCorners();
 		}
 	}
 
@@ -326,10 +334,11 @@ public class StaticTerrainActor extends Actor {
 	public void destroyBody() {
 		super.destroyBody();
 
-		if (mEditorActive && mWorld != null) {
-			for (Vector2 corner : mCorners) {
-				createBodyCorner(corner);
+		if (mEditorActive) {
+			for (Body body : mCornerBodies) {
+				body.getWorld().destroyBody(body);
 			}
+			mCornerBodies.clear();
 		}
 	}
 
@@ -412,6 +421,18 @@ public class StaticTerrainActor extends Actor {
 		HitWrapper hitWrapper = new HitWrapper(this, true);
 		body.setUserData(hitWrapper);
 		mCornerBodies.add(body);
+	}
+
+	/**
+	 * Creates all body corners, will only have an effect if
+	 * no body corners have been created yet
+	 */
+	private void createBodyCorners() {
+		if (mCornerBodies.size() == 0 && mEditorActive) {
+			for (Vector2 corner : mCorners) {
+				createBodyCorner(corner);
+			}
+		}
 	}
 
 	/**

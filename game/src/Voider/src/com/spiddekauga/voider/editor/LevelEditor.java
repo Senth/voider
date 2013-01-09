@@ -179,7 +179,7 @@ public class LevelEditor extends Scene {
 
 		// Enable GUI?
 
-		return false;
+		return handled;
 	}
 
 	/**
