@@ -335,8 +335,11 @@ public class LevelEditor extends Scene {
 				return;
 			}
 
+
 			// Test if we hit a corner...
 			testPick(mCallback);
+
+			// If we didn't change actor, do something
 			if (mHitBody != null) {
 				// Hit the terrain body (no corner), create corner
 				if (mHitBody.getUserData() == mActor && !mChangedActorSinceUp) {
@@ -425,7 +428,17 @@ public class LevelEditor extends Scene {
 		@Override
 		public void setActor() {
 			if (mSelectedActor == null || mSelectedActor instanceof StaticTerrainActor) {
+				// Destroy corners of the old selected actor
+				if (mActor != null) {
+					mActor.destroyBodyCorners();
+				}
+
 				mActor = (StaticTerrainActor) mSelectedActor;
+
+				// Create corners of the new selected actor
+				if (mActor != null) {
+					mActor.createBodyCorners();
+				}
 			}
 		}
 
@@ -453,7 +466,11 @@ public class LevelEditor extends Scene {
 			// Get current position of the corner
 			Vector2 cornerPos = mActor.getCorner(mCornerCurrentIndex);
 			mActor.removeCorner(mCornerCurrentIndex);
-			ClTerrainActorAddCorner command = new ClTerrainActorAddCorner(mActor, cornerPos);
+
+			// Set as chained if no corner exist in the terrain
+			boolean chained = mActor.getCornerCount() == 0;
+
+			ClTerrainActorAddCorner command = new ClTerrainActorAddCorner(mActor, cornerPos, chained);
 			boolean added = mLevelInvoker.execute(command);
 			if (!added) {
 				/** @TODO print some error message on screen, cannot add corner here */

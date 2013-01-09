@@ -167,6 +167,26 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 	}
 
 	/**
+	 * Sets the position of the actor
+	 * @param position the new position
+	 */
+	public void setPosition(Vector2 position) {
+		mDef.getBodyDef().position.set(position);
+
+		// Change body if exist
+		if (mBody != null) {
+			mBody.setTransform(position, mBody.getAngle());
+		}
+	}
+
+	/**
+	 * @return current position of the actor
+	 */
+	public Vector2 getPosition() {
+		return mDef.getBodyDef().position;
+	}
+
+	/**
 	 * Sets the world that shall be used for creating new bodies
 	 * @param world the new world
 	 */

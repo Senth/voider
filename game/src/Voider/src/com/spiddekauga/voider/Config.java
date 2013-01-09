@@ -96,6 +96,19 @@ public class Config {
 	}
 
 	/**
+	 * Actors
+	 */
+	public static class Actor {
+		/**
+		 * Static terrain
+		 */
+		public static class Terrain {
+			/** Default size of terrain circle */
+			public final static float DEFAULT_CIRCLE_RADIUS = 2.0f;
+		}
+	}
+
+	/**
 	 * Files
 	 */
 	public static class File {
@@ -122,7 +135,7 @@ public class Config {
 	 */
 	public static class Input {
 		/** How many seconds for a double click? */
-		public final static float DOUBLE_CLICK_TIME = 0.5f;
+		public final static float DOUBLE_CLICK_TIME = 0.2f;
 	}
 
 	/**

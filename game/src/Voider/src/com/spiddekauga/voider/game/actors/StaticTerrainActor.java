@@ -10,7 +10,7 @@ import com.badlogic.gdx.math.EarClippingTriangulator;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.EdgeShape;
+import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.utils.OrderedMap;
@@ -162,6 +162,13 @@ public class StaticTerrainActor extends Actor {
 	}
 
 	/**
+	 * @return number of corners in this terrain
+	 */
+	public int getCornerCount() {
+		return mCorners.size();
+	}
+
+	/**
 	 * Checks if a line, that starts/énds from the specified index, intersects
 	 * with any other line from the polygon.
 	 * @param index the corner to check the lines from
@@ -282,11 +289,30 @@ public class StaticTerrainActor extends Actor {
 		super.destroyBody();
 
 		if (mEditorActive) {
-			for (Body body : mCornerBodies) {
-				body.getWorld().destroyBody(body);
-			}
-			mCornerBodies.clear();
+			destroyBodyCorners();
 		}
+	}
+
+	/**
+	 * Creates all body corners, will only have an effect if
+	 * no body corners have been created yet
+	 */
+	public void createBodyCorners() {
+		if (mCornerBodies.size() == 0 && mEditorActive) {
+			for (Vector2 corner : mCorners) {
+				createBodyCorner(corner);
+			}
+		}
+	}
+
+	/**
+	 * Destroys all body corners
+	 */
+	public void destroyBodyCorners() {
+		for (Body body : mCornerBodies) {
+			body.getWorld().destroyBody(body);
+		}
+		mCornerBodies.clear();
 	}
 
 	/**
@@ -388,12 +414,24 @@ public class StaticTerrainActor extends Actor {
 				throw new PolygonCornerTooCloseException();
 			}
 		}
-		// Edge
-		else if (mCorners.size() == 2) {
-			EdgeShape edge = new EdgeShape();
-			edge.set(mCorners.get(0), mCorners.get(1));
+		// Circle
+		else if (mCorners.size() >= 1) {
+			CircleShape circle = new CircleShape();
+			circle.setPosition(mCorners.get(0));
+
+			// One corner, use standard size
+			if (mCorners.size() == 1) {
+				circle.setRadius(Config.Actor.Terrain.DEFAULT_CIRCLE_RADIUS);
+			}
+			// Else two corners, determine radius of circle
+			else {
+				Vector2 lengthVector = Pools.obtain(Vector2.class);
+				lengthVector.set(mCorners.get(0)).sub(mCorners.get(1));
+				circle.setRadius(lengthVector.len());
+				Pools.free(lengthVector);
+			}
 			FixtureDef fixtureDef = new FixtureDef();
-			fixtureDef.shape = edge;
+			fixtureDef.shape = circle;
 			fixtureDef.density = 0f;
 			addFixture(fixtureDef);
 		}
@@ -410,18 +448,6 @@ public class StaticTerrainActor extends Actor {
 		HitWrapper hitWrapper = new HitWrapper(this, true);
 		body.setUserData(hitWrapper);
 		mCornerBodies.add(body);
-	}
-
-	/**
-	 * Creates all body corners, will only have an effect if
-	 * no body corners have been created yet
-	 */
-	private void createBodyCorners() {
-		if (mCornerBodies.size() == 0 && mEditorActive) {
-			for (Vector2 corner : mCorners) {
-				createBodyCorner(corner);
-			}
-		}
 	}
 
 	/**

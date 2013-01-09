@@ -16,8 +16,10 @@ public class ClTerrainActorAddCorner extends LevelCommand {
 	 * Constructs the command where the corner should be added
 	 * @param actor terrain actor which we want to add a new corner to
 	 * @param cornerPos the corner position
+	 * @param chained true if the command shall be chained
 	 */
-	public ClTerrainActorAddCorner(StaticTerrainActor actor, Vector2 cornerPos) {
+	public ClTerrainActorAddCorner(StaticTerrainActor actor, Vector2 cornerPos, boolean chained) {
+		super(chained);
 		mActor = actor;
 		mCornerPos = Pools.obtain(Vector2.class);
 		mCornerPos.set(cornerPos);

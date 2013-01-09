@@ -27,7 +27,7 @@ public class ClActorSelect extends LevelCommand {
 	public boolean execute(Level level, LevelEditor levelEditor) {
 		mOldSelectedActor = levelEditor.getSelectedActor();
 		levelEditor.setSelectedActor(mSelectActor);
-		return false;
+		return true;
 	}
 
 	/* (non-Javadoc)
@@ -36,7 +36,7 @@ public class ClActorSelect extends LevelCommand {
 	@Override
 	public boolean undo(Level level, LevelEditor levelEditor) {
 		levelEditor.setSelectedActor(mOldSelectedActor);
-		return false;
+		return true;
 	}
 
 	/** The actor to select on execute */

@@ -128,6 +128,7 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 		copy.fixedRotation = mBodyDef.fixedRotation;
 		copy.gravityScale = mBodyDef.gravityScale;
 		copy.linearDamping = mBodyDef.linearDamping;
+		copy.position.set(mBodyDef.position);
 		copy.type = mBodyDef.type;
 		return copy;
 	}
