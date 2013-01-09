@@ -321,6 +321,7 @@ public class LevelEditor extends Scene {
 			// Create Terrain
 			if (mActor == null || !mLevel.containsActor(mActor)) {
 				Actor newActor = new StaticTerrainActor();
+				newActor.setPosition(mTouchOrigin);
 				mLevelInvoker.execute(new ClActorAdd(newActor));
 				mLevelInvoker.execute(new ClActorSelect(newActor, true));
 			}

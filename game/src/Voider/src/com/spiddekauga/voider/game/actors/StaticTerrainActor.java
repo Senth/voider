@@ -63,7 +63,7 @@ public class StaticTerrainActor extends Actor {
 		json.writeObjectEnd();
 
 
-		json.writeValue("mCorners", mCorners);
+		json.writeValue("mCorners", mWorldCorners);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -73,7 +73,7 @@ public class StaticTerrainActor extends Actor {
 		super.read(json, actorMap);
 
 
-		mCorners = json.readValue("mCorners", ArrayList.class, jsonData);
+		mWorldCorners = json.readValue("mCorners", ArrayList.class, jsonData);
 
 		// Create corner bodies if editor...
 		if (mEditorActive) {
@@ -90,18 +90,21 @@ public class StaticTerrainActor extends Actor {
 	 * another corner inside the polygon.
 	 */
 	public void addCorner(Vector2 corner) throws PolygonComplexException, PolygonCornerTooCloseException {
-		mCorners.add(corner.cpy());
+		mWorldCorners.add(corner.cpy());
 
 		// Make sure no intersection exists
-		if (intersectionExists(mCorners.size() - 1)) {
-			mCorners.remove(mCorners.size() - 1);
+		if (intersectionExists(mWorldCorners.size() - 1)) {
+			mWorldCorners.remove(mWorldCorners.size() - 1);
 			throw new PolygonComplexException();
 		}
+
+		mLocalCorners.add(toLocalPos(corner));
 
 		try {
 			readjustFixtures();
 		} catch (PolygonCornerTooCloseException e) {
-			mCorners.remove(mCorners.size() - 1);
+			mWorldCorners.remove(mWorldCorners.size() - 1);
+			mLocalCorners.remove(mLocalCorners.size() - 1);
 			throw e;
 		}
 
@@ -109,7 +112,7 @@ public class StaticTerrainActor extends Actor {
 			createBodyCorner(corner);
 		}
 
-		mLastAddedCornerIndex = mCorners.size()-1;
+		mLastAddedCornerIndex = mWorldCorners.size()-1;
 	}
 
 	/**
@@ -124,8 +127,14 @@ public class StaticTerrainActor extends Actor {
 	 * @param index the corner to remove
 	 */
 	public void removeCorner(int index) {
-		if (index >= 0 && index < mCorners.size()) {
-			mCorners.remove(index);
+		if (index >= 0 && index < mWorldCorners.size()) {
+			mWorldCorners.remove(index);
+
+			// Only free local corners as world corners still could be used outside this class
+			Vector2 removedCorner = mLocalCorners.remove(index);
+			if (removedCorner != null) {
+				Pools.free(removedCorner);
+			}
 
 			if (mEditorActive) {
 				removeBodyCorner(index);
@@ -144,7 +153,7 @@ public class StaticTerrainActor extends Actor {
 	 * @return position of the specified corner
 	 */
 	public Vector2 getCorner(int index) {
-		return mCorners.get(index);
+		return mWorldCorners.get(index);
 	}
 
 	/**
@@ -152,8 +161,8 @@ public class StaticTerrainActor extends Actor {
 	 * @return corner index of the specified position, -1 if none was found
 	 */
 	public int getCornerIndex(Vector2 position) {
-		for (int i = 0; i < mCorners.size(); ++i) {
-			if (mCorners.get(i).equals(position)) {
+		for (int i = 0; i < mWorldCorners.size(); ++i) {
+			if (mWorldCorners.get(i).equals(position)) {
 				return i;
 			}
 		}
@@ -165,7 +174,7 @@ public class StaticTerrainActor extends Actor {
 	 * @return number of corners in this terrain
 	 */
 	public int getCornerCount() {
-		return mCorners.size();
+		return mWorldCorners.size();
 	}
 
 	/**
@@ -175,7 +184,7 @@ public class StaticTerrainActor extends Actor {
 	 * @return true if there is an intersection
 	 */
 	public boolean intersectionExists(int index) {
-		if (mCorners.size() < 3 || index < 0 || index >= mCorners.size()) {
+		if (mWorldCorners.size() < 3 || index < 0 || index >= mWorldCorners.size()) {
 			return false;
 		}
 
@@ -186,39 +195,39 @@ public class StaticTerrainActor extends Actor {
 
 		// If index is 0, get the last corner instead
 		if (index == 0) {
-			vertexBefore = mCorners.get(mCorners.size() - 1);
+			vertexBefore = mWorldCorners.get(mWorldCorners.size() - 1);
 		} else {
-			vertexBefore = mCorners.get(index - 1);
+			vertexBefore = mWorldCorners.get(index - 1);
 		}
 
 		// Vertex of index
-		Vector2 vertexIndex = mCorners.get(index);
+		Vector2 vertexIndex = mWorldCorners.get(index);
 
 		// Vertex after index
 		Vector2 vertexAfter = null;
 
 		// If index is the last, wrap and use first
-		if (index == mCorners.size() - 1) {
-			vertexAfter = mCorners.get(0);
+		if (index == mWorldCorners.size() - 1) {
+			vertexAfter = mWorldCorners.get(0);
 		} else {
-			vertexAfter = mCorners.get(index + 1);
+			vertexAfter = mWorldCorners.get(index + 1);
 		}
 
 
 		boolean intersects = false;
 		// Using shape because the chain is looped, i.e. first and last is the same vertex
-		for (int i = 0; i < mCorners.size(); ++i) {
+		for (int i = 0; i < mWorldCorners.size(); ++i) {
 			// Skip checking index before and the current index, these are the lines
 			// we are checking with... If index is 0 we need to wrap it
-			if (i == index || i == index - 1 || (index == 0 && i == mCorners.size() - 1)) {
+			if (i == index || i == index - 1 || (index == 0 && i == mWorldCorners.size() - 1)) {
 				continue;
 			}
 
 
 			/** @TODO can be optimized if necessary. Swap instead of getting
 			 * new vertexes all the time. */
-			Vector2 lineA = mCorners.get(i);
-			Vector2 lineB = mCorners.get(Geometry.computeNextIndex(mCorners, i));
+			Vector2 lineA = mWorldCorners.get(i);
+			Vector2 lineB = mWorldCorners.get(Geometry.computeNextIndex(mWorldCorners, i));
 
 
 			// Check with first line
@@ -248,31 +257,41 @@ public class StaticTerrainActor extends Actor {
 	 * another corner inside the polygon.
 	 */
 	public void moveCorner(int index, Vector2 newPos) throws PolygonComplexException, PolygonCornerTooCloseException {
-		Vector2 oldPos = Pools.obtain(Vector2.class);
-		oldPos.set(mCorners.get(index));
-		mCorners.get(index).set(newPos);
+		Vector2 oldWorldPos = Pools.obtain(Vector2.class);
+		oldWorldPos.set(mWorldCorners.get(index));
+		mWorldCorners.get(index).set(newPos);
+
+		// Set local
+		Vector2 localPos = toLocalPos(newPos);
+		Vector2 oldLocalPos = Pools.obtain(Vector2.class);
+		oldLocalPos.set(mLocalCorners.get(index));
+		mLocalCorners.get(index).set(localPos);
+		Pools.free(localPos);
 
 		if (intersectionExists(index)) {
-			mCorners.get(index).set(oldPos);
-			Pools.free(oldPos);
+			mWorldCorners.get(index).set(oldWorldPos);
+			mLocalCorners.get(index).set(oldWorldPos);
+			Pools.free(oldLocalPos);
+			Pools.free(oldWorldPos);
 			throw new PolygonComplexException();
 		}
 
 		try {
 			readjustFixtures();
 		} catch (PolygonCornerTooCloseException e) {
-			mCorners.get(index).set(oldPos);
-			Pools.free(oldPos);
+			mWorldCorners.get(index).set(oldWorldPos);
+			mLocalCorners.get(index).set(oldLocalPos);
+			Pools.free(oldLocalPos);
+			Pools.free(oldWorldPos);
 			throw e;
 		}
 
-		Pools.free(oldPos);
+		Pools.free(oldLocalPos);
+		Pools.free(oldWorldPos);
 
 		if (mEditorActive) {
 			mCornerBodies.get(index).setTransform(newPos, 0f);
 		}
-
-
 	}
 
 	@Override
@@ -299,7 +318,7 @@ public class StaticTerrainActor extends Actor {
 	 */
 	public void createBodyCorners() {
 		if (mCornerBodies.size() == 0 && mEditorActive) {
-			for (Vector2 corner : mCorners) {
+			for (Vector2 corner : mLocalCorners) {
 				createBodyCorner(corner);
 			}
 		}
@@ -334,6 +353,24 @@ public class StaticTerrainActor extends Actor {
 	}
 
 	/**
+	 * @param worldPos the position to convert to local
+	 * @return the local position of a position. This shall be freed with
+	 * Pools.free() later.
+	 */
+	private Vector2 toLocalPos(Vector2 worldPos) {
+		return Pools.obtain(Vector2.class).set(worldPos).sub(getPosition());
+	}
+
+	/**
+	 * @param localPos the position to convert to world position
+	 * @return the world position of the local position. This shall be freed with
+	 * Pools.free() later.
+	 */
+	private Vector2 toWorldPos(Vector2 localPos) {
+		return Pools.obtain(Vector2.class).set(localPos).add(getPosition());
+	}
+
+	/**
 	 * Readjust fixtures, this makes all the fixtures convex
 	 * @throws PolygonCornerTooCloseException thrown when a resulting triangle polygon
 	 * would become too small. NOTE: When this exception is thrown all fixtures
@@ -347,13 +384,13 @@ public class StaticTerrainActor extends Actor {
 
 		// Create the new fixture
 		// Polygon
-		if (mCorners.size() >= 3) {
+		if (mLocalCorners.size() >= 3) {
 			List<Vector2> triangles = null;
-			if (mCorners.size() == 3) {
-				triangles = new ArrayList<Vector2>(mCorners);
+			if (mLocalCorners.size() == 3) {
+				triangles = new ArrayList<Vector2>(mLocalCorners);
 				Geometry.makePolygonCounterClockwise(triangles);
 			} else {
-				triangles = mEarClippingTriangulator.computeTriangles(mCorners);
+				triangles = mEarClippingTriangulator.computeTriangles(mLocalCorners);
 				// Always reverse, triangles should always be clockwise, whereas box2d needs
 				// counter clockwise...
 				Collections.reverse(triangles);
@@ -415,18 +452,18 @@ public class StaticTerrainActor extends Actor {
 			}
 		}
 		// Circle
-		else if (mCorners.size() >= 1) {
+		else if (mLocalCorners.size() >= 1) {
 			CircleShape circle = new CircleShape();
-			circle.setPosition(mCorners.get(0));
+			circle.setPosition(mLocalCorners.get(0));
 
 			// One corner, use standard size
-			if (mCorners.size() == 1) {
+			if (mLocalCorners.size() == 1) {
 				circle.setRadius(Config.Actor.Terrain.DEFAULT_CIRCLE_RADIUS);
 			}
 			// Else two corners, determine radius of circle
 			else {
 				Vector2 lengthVector = Pools.obtain(Vector2.class);
-				lengthVector.set(mCorners.get(0)).sub(mCorners.get(1));
+				lengthVector.set(mLocalCorners.get(0)).sub(mLocalCorners.get(1));
 				circle.setRadius(lengthVector.len());
 				Pools.free(lengthVector);
 			}
@@ -463,8 +500,10 @@ public class StaticTerrainActor extends Actor {
 
 	/** Index of last added corner */
 	private int mLastAddedCornerIndex = -1;
-	/** An array with all corner positions of the vector */
-	private ArrayList<Vector2> mCorners = new ArrayList<Vector2>();
+	/** An array with all world corner positions */
+	private ArrayList<Vector2> mWorldCorners = new ArrayList<Vector2>();
+	/** Array with all local corner positions */
+	private ArrayList<Vector2> mLocalCorners = new ArrayList<Vector2>();
 	/** All bodies for the corners, used for picking */
 	private ArrayList<Body> mCornerBodies = new ArrayList<Body>();
 	/** Ear clipping triangulator */
