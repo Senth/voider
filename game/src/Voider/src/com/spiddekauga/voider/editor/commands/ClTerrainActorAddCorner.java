@@ -5,7 +5,6 @@ import com.badlogic.gdx.utils.Pools;
 import com.spiddekauga.voider.editor.LevelEditor;
 import com.spiddekauga.voider.game.Level;
 import com.spiddekauga.voider.game.actors.StaticTerrainActor;
-import com.spiddekauga.voider.game.actors.StaticTerrainActor.PolygonComplexException;
 
 /**
  * Creates a new corner for the specified terrain actor
@@ -32,7 +31,7 @@ public class ClTerrainActorAddCorner extends LevelCommand {
 		try {
 			mActor.addCorner(mCornerPos);
 			mAddedCornerIndex = mActor.getLastAddedCornerIndex();
-		} catch (PolygonComplexException e) {
+		} catch (Exception e) {
 			return false;
 		}
 		return true;

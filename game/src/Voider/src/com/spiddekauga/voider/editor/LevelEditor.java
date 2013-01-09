@@ -26,6 +26,7 @@ import com.spiddekauga.voider.game.GameTime;
 import com.spiddekauga.voider.game.Level;
 import com.spiddekauga.voider.game.actors.StaticTerrainActor;
 import com.spiddekauga.voider.game.actors.StaticTerrainActor.PolygonComplexException;
+import com.spiddekauga.voider.game.actors.StaticTerrainActor.PolygonCornerTooCloseException;
 import com.spiddekauga.voider.ui.UiEvent;
 
 /**
@@ -359,7 +360,7 @@ public class LevelEditor extends Scene {
 			if (mCornerCurrentIndex != -1) {
 				try {
 					mActor.moveCorner(mCornerCurrentIndex, mTouchCurrent);
-				} catch (PolygonComplexException e) {
+				} catch (Exception e) {
 					// Does nothing
 				}
 			}
@@ -382,7 +383,7 @@ public class LevelEditor extends Scene {
 						mActor.moveCorner(mCornerCurrentIndex, mCornerCurrentOrigin);
 						LevelCommand command = new ClTerrainActorMoveCorner(mActor, mCornerCurrentIndex, newPos);
 						mLevelInvoker.execute(command);
-					} catch (PolygonComplexException e) {
+					} catch (Exception e) {
 						// Does nothing
 					}
 					Pools.free(newPos);
@@ -439,6 +440,8 @@ public class LevelEditor extends Scene {
 				mCornerCurrentAddedNow = true;
 			} catch (PolygonComplexException e) {
 				/** @TODO print some error message on screen, cannot add corner here */
+			} catch (PolygonCornerTooCloseException e) {
+				/** @TODO print error message on screen */
 			}
 		}
 

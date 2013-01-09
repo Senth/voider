@@ -7,6 +7,7 @@ import com.spiddekauga.voider.editor.LevelEditor;
 import com.spiddekauga.voider.game.Level;
 import com.spiddekauga.voider.game.actors.StaticTerrainActor;
 import com.spiddekauga.voider.game.actors.StaticTerrainActor.PolygonComplexException;
+import com.spiddekauga.voider.game.actors.StaticTerrainActor.PolygonCornerTooCloseException;
 
 /**
  * Executes a move command on a terrain corner
@@ -42,6 +43,9 @@ public class ClTerrainActorMoveCorner extends LevelCommand {
 		} catch (PolygonComplexException e) {
 			moveSuccess = false;
 			Gdx.app.error("ClTerrainActorMoveCorner", "Complex polygon");
+		} catch (PolygonCornerTooCloseException e) {
+			moveSuccess = false;
+			Gdx.app.error("ClTerrainActorMoveCorner", "Corner too close");
 		}
 		Pools.free(newPos);
 
@@ -62,6 +66,9 @@ public class ClTerrainActorMoveCorner extends LevelCommand {
 		} catch (PolygonComplexException e) {
 			moveSuccess = false;
 			Gdx.app.error("ClTerrainActorMoveCorner", "Complex polygon");
+		} catch (PolygonCornerTooCloseException e) {
+			moveSuccess = false;
+			Gdx.app.error("ClTerrainActorMoveCorner", "Corner too close");
 		}
 		Pools.free(newPos);
 		return moveSuccess;

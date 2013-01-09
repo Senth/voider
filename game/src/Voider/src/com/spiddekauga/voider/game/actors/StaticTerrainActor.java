@@ -86,8 +86,10 @@ public class StaticTerrainActor extends Actor {
 	 * @param corner a new corner that will be placed at the back
 	 * @throws PolygonComplexException thrown when the adding corner would make the
 	 * polygon an complex polygon, i.e. intersect itself.
+	 * @throws PolygonCornerTooCloseException thrown when a corner is too close to
+	 * another corner inside the polygon.
 	 */
-	public void addCorner(Vector2 corner) throws PolygonComplexException {
+	public void addCorner(Vector2 corner) throws PolygonComplexException, PolygonCornerTooCloseException {
 		mCorners.add(corner.cpy());
 
 		// Make sure no intersection exists
@@ -96,7 +98,12 @@ public class StaticTerrainActor extends Actor {
 			throw new PolygonComplexException();
 		}
 
-		readjustFixtures();
+		try {
+			readjustFixtures();
+		} catch (PolygonCornerTooCloseException e) {
+			mCorners.remove(mCorners.size() - 1);
+			throw e;
+		}
 
 		if (mEditorActive) {
 			createBodyCorner(corner);
@@ -113,34 +120,6 @@ public class StaticTerrainActor extends Actor {
 	}
 
 	/**
-	 * Removes a corner position
-	 * @param corner the corner to remove
-	 */
-	public void removeCorner(Vector2 corner) {
-		Vector2 removeCorner = null;
-		int i = 0;
-		while (removeCorner == null && i < mCorners.size()) {
-			if (mCorners.get(i).equals(corner)) {
-				removeCorner = mCorners.get(i);
-			} else {
-				++i;
-			}
-		}
-
-		if (removeCorner == null) {
-			Gdx.app.error("Terrain", "Could not find the corner to remove");
-			return;
-		}
-		mCorners.remove(i);
-
-		if (mEditorActive) {
-			removeBodyCorner(i);
-		}
-
-		readjustFixtures();
-	}
-
-	/**
 	 * Removes a corner with the specific id
 	 * @param index the corner to remove
 	 */
@@ -152,7 +131,11 @@ public class StaticTerrainActor extends Actor {
 				removeBodyCorner(index);
 			}
 
-			readjustFixtures();
+			try {
+				readjustFixtures();
+			} catch (PolygonCornerTooCloseException e) {
+				Gdx.app.error("StaticTerrainActor", "Failed to remove corner, exception, should never happen");
+			}
 		}
 	}
 
@@ -249,59 +232,15 @@ public class StaticTerrainActor extends Actor {
 	}
 
 	/**
-	 * Moves a corner, identifying the corner from the original position
-	 * @param originalPos the original position of the corner
-	 * @param newPos the new position of the corner
-	 * @return index of the currently moving corner, -1 if none was found
-	 * @throws PolygonComplexException thrown when the adding corner would make the
-	 * polygon an complex polygon, i.e. intersect itself.
-	 */
-	public int moveCorner(Vector2 originalPos, Vector2 newPos) throws PolygonComplexException {
-		Vector2 corner = null;
-		int i = 0;
-		while (corner == null && i < mCorners.size()) {
-			if (mCorners.get(i).equals(originalPos)) {
-				corner = mCorners.get(i);
-			} else {
-				++i;
-			}
-		}
-
-		if (corner == null) {
-			Gdx.app.error("Terrain", "Could not find the corner to move");
-			return -1;
-		}
-
-		Vector2 oldPos = Pools.obtain(Vector2.class);
-		oldPos.set(corner);
-		corner.set(newPos);
-
-		if (intersectionExists(i)) {
-			corner.set(oldPos);
-			Pools.free(oldPos);
-			throw new PolygonComplexException();
-		} else {
-			Pools.free(oldPos);
-		}
-
-
-		if (mEditorActive) {
-			mCornerBodies.get(i).setTransform(newPos, 0f);
-		}
-
-		readjustFixtures();
-
-		return i;
-	}
-
-	/**
 	 * Moves a corner, identifying the corner from index
 	 * @param index index of the corner to move
 	 * @param newPos new position of the corner
 	 * @throws PolygonComplexException thrown when the adding corner would make the
 	 * polygon an complex polygon, i.e. intersect itself.
+	 * @throws PolygonCornerTooCloseException thrown when a corner is too close to
+	 * another corner inside the polygon.
 	 */
-	public void moveCorner(int index, Vector2 newPos) throws PolygonComplexException {
+	public void moveCorner(int index, Vector2 newPos) throws PolygonComplexException, PolygonCornerTooCloseException {
 		Vector2 oldPos = Pools.obtain(Vector2.class);
 		oldPos.set(mCorners.get(index));
 		mCorners.get(index).set(newPos);
@@ -310,15 +249,23 @@ public class StaticTerrainActor extends Actor {
 			mCorners.get(index).set(oldPos);
 			Pools.free(oldPos);
 			throw new PolygonComplexException();
-		} else {
-			Pools.free(oldPos);
 		}
+
+		try {
+			readjustFixtures();
+		} catch (PolygonCornerTooCloseException e) {
+			mCorners.get(index).set(oldPos);
+			Pools.free(oldPos);
+			throw e;
+		}
+
+		Pools.free(oldPos);
 
 		if (mEditorActive) {
 			mCornerBodies.get(index).setTransform(newPos, 0f);
 		}
 
-		readjustFixtures();
+
 	}
 
 	@Override
@@ -348,12 +295,26 @@ public class StaticTerrainActor extends Actor {
 	 */
 	public class PolygonComplexException extends Exception {
 		/** for serialization */
-		private static final long serialVersionUID = -2564535357356811708L;}
+		private static final long serialVersionUID = -2564535357356811708L;
+	}
+
+	/**
+	 * Exception class for when a triangle of the polygon would make too
+	 * small area.
+	 */
+	public class PolygonCornerTooCloseException extends Exception {
+		/** For serialization */
+		private static final long serialVersionUID = 5402912928691451496L;
+	}
 
 	/**
 	 * Readjust fixtures, this makes all the fixtures convex
+	 * @throws PolygonCornerTooCloseException thrown when a resulting triangle polygon
+	 * would become too small. NOTE: When this exception is thrown all fixtures
+	 * have been removed and some might have been added. Fix the faulty corner
+	 * and call readjustFixtures() again to fix this.
 	 */
-	private void readjustFixtures() {
+	private void readjustFixtures() throws PolygonCornerTooCloseException {
 		// Destroy previous fixture
 		clearFixtures();
 
@@ -377,14 +338,37 @@ public class StaticTerrainActor extends Actor {
 			for (int i = 0; i < triangleVertices.length; ++i) {
 				triangleVertices[i] = Pools.obtain(Vector2.class);
 			}
-
+			Vector2 lengthTest = Pools.obtain(Vector2.class);
 
 			// Add the fixtures
+			boolean cornerTooClose = false;
 			for (int triangle = 0; triangle < cTriangles; ++triangle) {
 				for (int vertex = 0; vertex < triangleVertices.length; ++vertex) {
 					int offset = triangle * 3;
 					triangleVertices[vertex].set(triangles.get(offset + vertex));
 				}
+
+
+				// Check so that the length between two corners isn't too small
+				// 0 - 1
+				lengthTest.set(triangleVertices[0]).sub(triangleVertices[1]);
+				if (lengthTest.len2() <= Config.Graphics.EDGE_LENGTH_MIN) {
+					cornerTooClose = true;
+					break;
+				}
+				// 0 - 2
+				lengthTest.set(triangleVertices[0]).sub(triangleVertices[2]);
+				if (lengthTest.len2() <= Config.Graphics.EDGE_LENGTH_MIN) {
+					cornerTooClose = true;
+					break;
+				}
+				// 1 - 2
+				lengthTest.set(triangleVertices[1]).sub(triangleVertices[2]);
+				if (lengthTest.len2() <= Config.Graphics.EDGE_LENGTH_MIN) {
+					cornerTooClose = true;
+					break;
+				}
+
 
 				PolygonShape polygonShape = new PolygonShape();
 				polygonShape.set(triangleVertices);
@@ -397,6 +381,11 @@ public class StaticTerrainActor extends Actor {
 			// Free stuff
 			for (int i = 0; i < triangleVertices.length; ++i) {
 				Pools.free(triangleVertices[i]);
+			}
+			Pools.free(lengthTest);
+
+			if (cornerTooClose) {
+				throw new PolygonCornerTooCloseException();
 			}
 		}
 		// Edge
