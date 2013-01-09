@@ -49,7 +49,8 @@ public class LevelInvokerTest {
 	public void setUp() {
 		mLevelDef= new LevelDef();
 		mLevel = new Level(mLevelDef);
-		mLevelInvoker = new LevelInvoker(mLevel);
+		mLevelInvoker = new LevelInvoker();
+		mLevelInvoker.setLevel(mLevel, null);
 	}
 
 	/**
@@ -96,6 +97,36 @@ public class LevelInvokerTest {
 
 		assertTrue("can redo", mLevelInvoker.canRedo());
 		assertTrue("can undo", mLevelInvoker.canUndo());
+	}
+
+	/**
+	 * Tests execute, undo, and redo with commands that are chained
+	 */
+	@Test
+	public void executeUndeRedoChained() {
+		mLevelInvoker.execute(new ClChangeSpeed(mLevel, 5.5f));
+		assertEquals("first speed", 5.5f, mLevel.getSpeed(), 0.0f);
+		mLevelInvoker.undo();
+		assertEquals("initial speed", mLevelDef.getBaseSpeed(), mLevel.getSpeed(), 0.0f);
+		assertTrue("can redo", mLevelInvoker.canRedo());
+
+		// New execute clears redo map
+		mLevelInvoker.execute(new ClChangeSpeed(mLevel, 6.0f));
+		assertTrue("cannot redo", !mLevelInvoker.canRedo());
+		assertEquals("first speed", 6.0f, mLevel.getSpeed(), 0.0f);
+
+		mLevelInvoker.execute(new ClChangeSpeed(mLevel, 3.0f, true));
+		assertEquals("second speed", 3.0f, mLevel.getSpeed(), 0.0f);
+		mLevelInvoker.execute(new ClChangeSpeed(mLevel, 17.0f));
+		mLevelInvoker.undo();
+		mLevelInvoker.undo();
+		assertEquals("undo second speed (chained)", mLevelDef.getBaseSpeed(), mLevel.getSpeed(), 0.0f);
+		mLevelInvoker.redo();
+		assertEquals("redo second speed (chained)", 3.0f, mLevel.getSpeed(), 0.0f);
+		mLevelInvoker.undo();
+
+		assertTrue("can redo", mLevelInvoker.canRedo());
+		assertTrue("cannot undo", !mLevelInvoker.canUndo());
 	}
 
 	/**

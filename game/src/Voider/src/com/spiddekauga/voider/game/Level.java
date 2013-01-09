@@ -102,6 +102,15 @@ public class Level extends Resource implements ITriggerListener, Json.Serializab
 	}
 
 	/**
+	 * Checks if the actor exists inside this level
+	 * @param actor the actor check if it exist
+	 * @return true if this level contains the specified actor
+	 */
+	public boolean containsActor(Actor actor) {
+		return mActors.contains(actor);
+	}
+
+	/**
 	 * Removes an actor from the level
 	 * @param actorId the actor to remove
 	 */

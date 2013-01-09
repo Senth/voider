@@ -3,6 +3,7 @@ package com.spiddekauga.voider.editor.commands;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Pools;
+import com.spiddekauga.voider.editor.LevelEditor;
 import com.spiddekauga.voider.game.Level;
 import com.spiddekauga.voider.game.actors.StaticTerrainActor;
 import com.spiddekauga.voider.game.actors.StaticTerrainActor.PolygonComplexException;
@@ -31,7 +32,7 @@ public class ClTerrainActorMoveCorner extends LevelCommand {
 	 * @see com.spiddekauga.voider.editor.commands.LevelCommand#execute(com.spiddekauga.voider.game.Level)
 	 */
 	@Override
-	public boolean execute(Level level) {
+	public boolean execute(Level level, LevelEditor levelEditor) {
 		Vector2 newPos = Pools.obtain(Vector2.class);
 		newPos.set(mActor.getCorner(mIndex));
 		newPos.add(mDiffMovement);
@@ -51,7 +52,7 @@ public class ClTerrainActorMoveCorner extends LevelCommand {
 	 * @see com.spiddekauga.voider.editor.commands.LevelCommand#undo(com.spiddekauga.voider.game.Level)
 	 */
 	@Override
-	public boolean undo(Level level) {
+	public boolean undo(Level level, LevelEditor levelEditor) {
 		Vector2 newPos = Pools.obtain(Vector2.class);
 		newPos.set(mActor.getCorner(mIndex));
 		newPos.sub(mDiffMovement);

@@ -60,14 +60,14 @@ public class StaticTerrainActor extends Actor {
 	public void write(Json json) {
 		super.write(json);
 
-		/** @TODO save points */
+		/** @TODO save corners */
 	}
 
 	@Override
 	public void read(Json json, OrderedMap<String, Object> jsonData) {
 		super.read(json, jsonData);
 
-		/** @TODO read points */
+		/** @TODO read corners */
 	}
 
 	/**

@@ -3,6 +3,7 @@ package com.spiddekauga.voider.editor;
 import java.util.LinkedList;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
@@ -15,7 +16,8 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Pools;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Scene;
-import com.spiddekauga.voider.editor.commands.ClAddActor;
+import com.spiddekauga.voider.editor.commands.ClActorAdd;
+import com.spiddekauga.voider.editor.commands.ClActorSelect;
 import com.spiddekauga.voider.editor.commands.ClTerrainActorAddCorner;
 import com.spiddekauga.voider.editor.commands.ClTerrainActorMoveCorner;
 import com.spiddekauga.voider.editor.commands.LevelCommand;
@@ -70,7 +72,24 @@ public class LevelEditor extends Scene {
 	 */
 	public void setLevel(Level level) {
 		mLevel = level;
-		mLevelInvoker.setLevel(level);
+		mLevelInvoker.setLevel(level, this);
+	}
+
+	/**
+	 * Sets the currently selected actor
+	 * @param actor the new selected actor
+	 */
+	public void setSelectedActor(Actor actor) {
+		mSelectedActor = actor;
+		mEventHandlerCurrent.setActor();
+		mChangedActorSinceUp = true;
+	}
+
+	/**
+	 * @return the currently selected actor
+	 */
+	public Actor getSelectedActor() {
+		return mSelectedActor;
 	}
 
 	// --------------------------------
@@ -136,14 +155,16 @@ public class LevelEditor extends Scene {
 
 	@Override
 	public boolean touchUp(int x, int y, int pointer, int button) {
+		boolean handled = false;
+
 		// Not scrolling any more
 		if (mScrolling && (button == 3 || !Gdx.app.getInput().isTouched(0) || !Gdx.app.getInput().isTouched(1))) {
 			mScrolling = false;
-			return true;
+			handled = true;
 		}
 
 		// Only do something for the first pointer
-		if (pointer == 0) {
+		else if (pointer == 0) {
 			mTestPoint.set(x, y, 0);
 			mCamera.unproject(mTestPoint);
 			mTouchCurrent.x = mTestPoint.x;
@@ -151,10 +172,37 @@ public class LevelEditor extends Scene {
 
 			mEventHandlerCurrent.up();
 
+			handled = true;
+		}
+
+		mChangedActorSinceUp = false;
+
+		// Enable GUI?
+
+		return false;
+	}
+
+	/**
+	 * Only for PC users...
+	 */
+	@Override
+	public boolean keyDown(int keycode) {
+		// Redo - Ctrl + Shift + Z || Ctrl + Y
+		if ((keycode == Keys.Z && (Gdx.input.isKeyPressed(Keys.CONTROL_LEFT) || Gdx.input.isKeyPressed(Keys.CONTROL_RIGHT)) && (Gdx.input.isKeyPressed(Keys.SHIFT_LEFT) || Gdx.input.isKeyPressed(Keys.SHIFT_RIGHT))) ||
+				(keycode == Keys.Y && (Gdx.input.isKeyPressed(Keys.CONTROL_LEFT) || Gdx.input.isKeyPressed(Keys.CONTROL_RIGHT)))) {
+			if (mLevelInvoker.canRedo()) {
+				mLevelInvoker.redo();
+			}
 			return true;
 		}
 
-		// Enable GUI?
+		// Undo - Ctrl + Z
+		if (keycode == Keys.Z && (Gdx.input.isKeyPressed(Keys.CONTROL_LEFT) || Gdx.input.isKeyPressed(Keys.CONTROL_RIGHT))) {
+			if (mLevelInvoker.canUndo()) {
+				mLevelInvoker.undo();
+			}
+			return true;
+		}
 
 		return false;
 	}
@@ -180,6 +228,8 @@ public class LevelEditor extends Scene {
 	private Level mLevel = null;
 	/** Level invoker, sends all editing commands through this */
 	private LevelInvoker mLevelInvoker = new LevelInvoker();
+	/** Currently selected actor */
+	private Actor mSelectedActor = null;
 
 	// Event stuff
 	/** If we're scrolling the map */
@@ -190,6 +240,8 @@ public class LevelEditor extends Scene {
 	private boolean mDoubleClick = false;
 	/** Last click time */
 	private float mClickTimeLast = 0f;
+	/** Changed actor since last up */
+	private boolean mChangedActorSinceUp = false;
 
 
 	// Temporary variables for touch detection
@@ -249,6 +301,12 @@ public class LevelEditor extends Scene {
 		 * Filter picks
 		 */
 		public void filterPicks();
+
+		/**
+		 * Sets the actor. This allows the class to filter which actors
+		 * should be set and which should not be set...
+		 */
+		public void setActor();
 	}
 
 	/**
@@ -260,19 +318,19 @@ public class LevelEditor extends Scene {
 		@Override
 		public void down() {
 			// Create Terrain
-			if (mActor == null) {
-				mActor = new StaticTerrainActor();
-				ClAddActor command = new ClAddActor(mActor);
-				mLevelInvoker.execute(command);
+			if (mActor == null || !mLevel.containsActor(mActor)) {
+				Actor newActor = new StaticTerrainActor();
+				mLevelInvoker.execute(new ClActorAdd(newActor));
+				mLevelInvoker.execute(new ClActorSelect(newActor, true));
 			}
 
 			// Double click inside current actor finishes closes it
 			if (mDoubleClick && mHitBody != null && mHitBody.getUserData() == mActor) {
 				// Remove the last corner if we accidently added one when double clicking
 				if (mCornerLastIndex != -1) {
-					mActor.removeCorner(mCornerLastIndex);
+					mLevelInvoker.undo();
 				}
-				mActor = null;
+				mLevelInvoker.execute(new ClActorSelect(null, false));
 				return;
 			}
 
@@ -280,8 +338,8 @@ public class LevelEditor extends Scene {
 			testPick(mCallback);
 			if (mHitBody != null) {
 				// Hit the terrain body (no corner), create corner
-				if (mHitBody.getUserData() == mActor) {
-					createCorner();
+				if (mHitBody.getUserData() == mActor && !mChangedActorSinceUp) {
+					createTempCorner();
 				}
 				// Else - Hit a corner, start moving it
 				else {
@@ -292,7 +350,7 @@ public class LevelEditor extends Scene {
 			}
 			// Else create a new corner
 			else {
-				createCorner();
+				createTempCorner();
 			}
 		}
 
@@ -310,19 +368,25 @@ public class LevelEditor extends Scene {
 		@Override
 		public void up() {
 			// ACTIONS VIA COMMANDS INSTEAD
-			// MOVE CORNER
-			if (mCornerCurrentIndex != -1 && mActor != null) {
-				// Reset to original position
-				Vector2 newPos = Pools.obtain(Vector2.class);
-				newPos.set(mActor.getCorner(mCornerCurrentIndex));
-				try {
-					mActor.moveCorner(mCornerCurrentIndex, mCornerCurrentOrigin);
-					LevelCommand command = new ClTerrainActorMoveCorner(mActor, mCornerCurrentIndex, newPos);
-					mLevelInvoker.execute(command);
-				} catch (PolygonComplexException e) {
-					// Does nothing
+			if (mActor != null && mCornerCurrentIndex != -1) {
+				// NEW CORNER
+				if (mCornerCurrentAddedNow) {
+					createCornerFromTemp();
 				}
-				Pools.free(newPos);
+				// MOVE CORNER
+				else {
+					// Reset to original position
+					Vector2 newPos = Pools.obtain(Vector2.class);
+					newPos.set(mActor.getCorner(mCornerCurrentIndex));
+					try {
+						mActor.moveCorner(mCornerCurrentIndex, mCornerCurrentOrigin);
+						LevelCommand command = new ClTerrainActorMoveCorner(mActor, mCornerCurrentIndex, newPos);
+						mLevelInvoker.execute(command);
+					} catch (PolygonComplexException e) {
+						// Does nothing
+					}
+					Pools.free(newPos);
+				}
 			}
 
 			mCornerLastIndex = mCornerCurrentIndex;
@@ -335,22 +399,46 @@ public class LevelEditor extends Scene {
 		 */
 		@Override
 		public void filterPicks() {
+			Actor newActor = mActor;
 			StaticTerrainActor oldActor = mActor;
 			for (Body body : mHitBodies) {
 				// Only set hit terrain if no hit body has been set
 				if (body.getUserData() instanceof StaticTerrainActor) {
 					if (mHitBody == null) {
 						mHitBody = body;
-						mActor = (StaticTerrainActor) mHitBody.getUserData();
+						newActor = (StaticTerrainActor) mHitBody.getUserData();
 					}
 				}
 				// A corner - select it, and quick return
 				else if (body.getUserData() instanceof HitWrapper) {
 					mHitBody = body;
-					// Still same actor
-					mActor = oldActor;
 					return;
 				}
+			}
+
+			if (newActor != oldActor) {
+				mLevelInvoker.execute(new ClActorSelect(newActor, false));
+			}
+		}
+
+		@Override
+		public void setActor() {
+			if (mSelectedActor == null || mSelectedActor instanceof StaticTerrainActor) {
+				mActor = (StaticTerrainActor) mSelectedActor;
+			}
+		}
+
+		/**
+		 * Creates a temporary corner (until touch up)
+		 */
+		private void createTempCorner() {
+			try {
+				mActor.addCorner(mTouchCurrent);
+				mCornerCurrentIndex = mActor.getLastAddedCornerIndex();
+				mCornerCurrentOrigin.set(mTouchOrigin);
+				mCornerCurrentAddedNow = true;
+			} catch (PolygonComplexException e) {
+				/** @TODO print some error message on screen, cannot add corner here */
 			}
 		}
 
@@ -358,14 +446,13 @@ public class LevelEditor extends Scene {
 		 * Tries to create a new corner. Will print out
 		 * an error message if it didn't work
 		 */
-		private void createCorner() {
-			ClTerrainActorAddCorner command = new ClTerrainActorAddCorner(mActor, mTouchOrigin);
+		private void createCornerFromTemp() {
+			// Get current position of the corner
+			Vector2 cornerPos = mActor.getCorner(mCornerCurrentIndex);
+			mActor.removeCorner(mCornerCurrentIndex);
+			ClTerrainActorAddCorner command = new ClTerrainActorAddCorner(mActor, cornerPos);
 			boolean added = mLevelInvoker.execute(command);
-			if (added) {
-				mCornerCurrentIndex = mActor.getLastAddedCornerIndex();
-				mCornerCurrentOrigin.set(mTouchOrigin);
-				mCornerCurrentAddedNow = true;
-			} else {
+			if (!added) {
 				/** @TODO print some error message on screen, cannot add corner here */
 			}
 		}
@@ -427,6 +514,11 @@ public class LevelEditor extends Scene {
 
 		@Override
 		public void filterPicks() {
+			// TODO Auto-generated method stub
+		}
+
+		@Override
+		public void setActor() {
 			// TODO Auto-generated method stub
 		}
 	}

@@ -2,6 +2,7 @@ package com.spiddekauga.voider.editor.commands;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Pools;
+import com.spiddekauga.voider.editor.LevelEditor;
 import com.spiddekauga.voider.game.Actor;
 import com.spiddekauga.voider.game.Level;
 
@@ -10,13 +11,13 @@ import com.spiddekauga.voider.game.Level;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class ClMoveActor extends LevelCommand {
+public class ClActorMove extends LevelCommand {
 	/**
 	 * Moves the actor to the specified position
 	 * @param actor the actor to move
 	 * @param newPosition the new position of the actor
 	 */
-	public ClMoveActor(Actor actor, Vector2 newPosition) {
+	public ClActorMove(Actor actor, Vector2 newPosition) {
 		mActor = actor;
 		mDiffMovement = Pools.obtain(Vector2.class);
 		mDiffMovement.set(newPosition);
@@ -27,7 +28,7 @@ public class ClMoveActor extends LevelCommand {
 	 * @see com.spiddekauga.voider.editor.commands.LevelCommand#execute(com.spiddekauga.voider.game.Level)
 	 */
 	@Override
-	public boolean execute(Level level) {
+	public boolean execute(Level level, LevelEditor levelEditor) {
 		// TODO Auto-generated method stub
 		return true;
 	}
@@ -36,7 +37,7 @@ public class ClMoveActor extends LevelCommand {
 	 * @see com.spiddekauga.voider.editor.commands.LevelCommand#undo(com.spiddekauga.voider.game.Level)
 	 */
 	@Override
-	public boolean undo(Level level) {
+	public boolean undo(Level level, LevelEditor levelEditor) {
 		// TODO Auto-generated method stub
 		return true;
 	}

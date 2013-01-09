@@ -19,14 +19,6 @@ public class LevelInvoker implements Disposable {
 		// Does nothing
 	}
 
-	/**
-	 * Constructor which takes a level to invoke the commands on
-	 * @param level the level to execute the actions on
-	 */
-	public LevelInvoker(Level level) {
-		mLevel = level;
-	}
-
 	@Override
 	public void dispose() {
 		disposeRedo();
@@ -37,9 +29,11 @@ public class LevelInvoker implements Disposable {
 	 * Sets a new level to invoke commands on.
 	 * @note entire undo and redo stack will be cleared
 	 * @param level the new level to execute the actions on
+	 * @param levelEditor the editor of the level
 	 */
-	public void setLevel(Level level) {
+	public void setLevel(Level level, LevelEditor levelEditor) {
 		mLevel = level;
+		mLevelEditor = levelEditor;
 		mUndoCommands.clear();
 		mRedoCommands.clear();
 	}
@@ -51,7 +45,7 @@ public class LevelInvoker implements Disposable {
 	 * @return true if the command was executed successfully
 	 */
 	public boolean execute(LevelCommand command) {
-		boolean success = command.execute(mLevel);
+		boolean success = command.execute(mLevel, mLevelEditor);
 		if (success) {
 			mUndoCommands.push(command);
 			disposeRedo();
@@ -67,9 +61,11 @@ public class LevelInvoker implements Disposable {
 	 * be called multiple times in a row.
 	 */
 	public void undo() {
-		if (!mUndoCommands.isEmpty()) {
+		boolean chained = true;
+		while (canUndo() && chained) {
 			LevelCommand undoCommand = mUndoCommands.pop();
-			undoCommand.undo(mLevel);
+			chained = undoCommand.isChained();
+			undoCommand.undo(mLevel, mLevelEditor);
 			mRedoCommands.push(undoCommand);
 		}
 	}
@@ -79,10 +75,16 @@ public class LevelInvoker implements Disposable {
 	 * be called multiple times in a row.
 	 */
 	public void redo() {
-		if (!mRedoCommands.isEmpty()) {
+		boolean chained = true;
+		while (canRedo() && chained) {
 			LevelCommand redoCommand = mRedoCommands.pop();
-			redoCommand.execute(mLevel);
+			redoCommand.execute(mLevel, mLevelEditor);
 			mUndoCommands.push(redoCommand);
+
+			// Is next redo chained? -> Execute it too
+			if (canRedo()) {
+				chained = mRedoCommands.getFirst().isChained();
+			}
 		}
 	}
 
@@ -120,6 +122,8 @@ public class LevelInvoker implements Disposable {
 		mRedoCommands.clear();
 	}
 
+	/** LevelEditor to invoke some commands on */
+	private LevelEditor mLevelEditor = null;
 	/** Level to invoke commands on */
 	private Level mLevel = null;
 	/** The stack with undo commands */

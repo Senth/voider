@@ -12,11 +12,23 @@ import com.spiddekauga.voider.game.Level;
  */
 public class ClChangeSpeed extends LevelCommand {
 	/**
-	 * New speeed of the level
+	 * New speed of the level
 	 * @param level to change the command on
 	 * @param newSpeed the new speed of the level
 	 */
 	public ClChangeSpeed(Level level, float newSpeed) {
+		this(level, newSpeed, false);
+	}
+
+	/**
+	 * New speed of the level (and chained?)
+	 * @param level to change the speed on
+	 * @param newSpeed the new speed of the level
+	 * @param chained true if chained
+	 */
+	public ClChangeSpeed(Level level, float newSpeed, boolean chained) {
+		super(chained);
+
 		mNewSpeed = newSpeed;
 		mOldSpeed = level.getSpeed();
 
@@ -34,7 +46,7 @@ public class ClChangeSpeed extends LevelCommand {
 	 * @see com.spiddekauga.voider.editor.commands.LevelCommand#execute(com.spiddekauga.voider.game.Level)
 	 */
 	@Override
-	public boolean execute(Level level) {
+	public boolean execute(Level level, LevelEditor levelEditor) {
 		try {
 			mSpeedField.set(level, mNewSpeed);
 		} catch (IllegalArgumentException e) {
@@ -51,7 +63,7 @@ public class ClChangeSpeed extends LevelCommand {
 	 * @see com.spiddekauga.voider.editor.commands.LevelCommand#undo(com.spiddekauga.voider.game.Level)
 	 */
 	@Override
-	public boolean undo(Level level) {
+	public boolean undo(Level level, LevelEditor levelEditor) {
 		try {
 			mSpeedField.set(level, mOldSpeed);
 		} catch (IllegalArgumentException e) {
