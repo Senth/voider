@@ -4,6 +4,7 @@ import java.util.LinkedList;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
@@ -13,6 +14,9 @@ import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.utils.Pools;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Scene;
@@ -48,6 +52,8 @@ public class LevelEditor extends Scene {
 		/** @TODO remove active tool */
 		mToolActive = Tools.STATIC_TERRAIN;
 		mEventHandlerCurrent = mStaticTerrainHandler;
+
+		initGui();
 	}
 
 	@Override
@@ -60,6 +66,7 @@ public class LevelEditor extends Scene {
 	public void render() {
 		if (Config.Graphics.USE_DEBUG_RENDERER) {
 			mDebugRenderer.render(mWorld, mCamera.combined);
+			super.render();
 		} else {
 			mLevel.render(mSpriteBatch);
 			mLevel.renderEditor(mSpriteBatch);
@@ -267,6 +274,32 @@ public class LevelEditor extends Scene {
 		NONE,
 	}
 
+	// -------------------------------------
+	//			GUI HANDLING
+	// -------------------------------------
+	/**
+	 * Initializes all the buttons for the GUI
+	 */
+	private void initGui() {
+		Table table = new Table();
+		table.setFillParent(true);
+		table.align(Align.top | Align.right);
+		mUi.addActor(table);
+
+		FileHandle skinFile = Gdx.files.internal("ui/uiskin.json");
+		Skin skin = new Skin(skinFile);
+
+		//		TextButtonStyle style = skin.get("default", TextButtonStyle.class);
+		//		TextButton button = new TextButton("A", style);
+		//		button.scale(2);
+		//		mUi.addActor(button);
+		//		table.add(button);
+		//		table.row();
+		//		button = new TextButton("B", style);
+		//		table.add(button);
+		//		table.debug();
+
+	}
 
 	// -------------------------------------
 	//		EVENT HANDLING FOR TOOLS
