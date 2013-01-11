@@ -4,7 +4,6 @@ import java.util.LinkedList;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
@@ -14,8 +13,12 @@ import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Button.ButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.utils.Pools;
 import com.spiddekauga.voider.Config;
@@ -31,6 +34,9 @@ import com.spiddekauga.voider.game.Level;
 import com.spiddekauga.voider.game.actors.StaticTerrainActor;
 import com.spiddekauga.voider.game.actors.StaticTerrainActor.PolygonComplexException;
 import com.spiddekauga.voider.game.actors.StaticTerrainActor.PolygonCornerTooCloseException;
+import com.spiddekauga.voider.resources.ResourceCacheFacade;
+import com.spiddekauga.voider.resources.ResourceNames;
+import com.spiddekauga.voider.resources.UndefinedResourceTypeException;
 import com.spiddekauga.voider.ui.UiEvent;
 
 /**
@@ -52,6 +58,13 @@ public class LevelEditor extends Scene {
 		/** @TODO remove active tool */
 		mToolActive = Tools.STATIC_TERRAIN;
 		mEventHandlerCurrent = mStaticTerrainHandler;
+
+		ResourceCacheFacade.load(ResourceNames.EDITOR_BUTTONS);
+		try {
+			ResourceCacheFacade.finishLoading();
+		} catch (UndefinedResourceTypeException e) {
+			e.printStackTrace();
+		}
 
 		initGui();
 	}
@@ -286,18 +299,23 @@ public class LevelEditor extends Scene {
 		table.align(Align.top | Align.right);
 		mUi.addActor(table);
 
-		FileHandle skinFile = Gdx.files.internal("ui/uiskin.json");
-		Skin skin = new Skin(skinFile);
+		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
+		//		FileHandle skinFile = Gdx.files.internal("ui/editor.json");
+		//		Skin editorSkin = new Skin(skinFile);
 
-		//		TextButtonStyle style = skin.get("default", TextButtonStyle.class);
-		//		TextButton button = new TextButton("A", style);
-		//		button.scale(2);
-		//		mUi.addActor(button);
-		//		table.add(button);
-		//		table.row();
-		//		button = new TextButton("B", style);
-		//		table.add(button);
-		//		table.debug();
+		//		FileHandle skinFile = Gdx.files.internal("ui/uiskin.json");
+		//		Skin skin = new Skin(skinFile);
+
+		TextButtonStyle style = editorSkin.get("default", TextButtonStyle.class);
+		Button button = new TextButton("TEXT :D :D", style);
+		button.scale(2);
+		mUi.addActor(button);
+		table.add(button);
+		table.row();
+		ButtonStyle buttonStyle = editorSkin.get("add", ButtonStyle.class);
+		button = new Button(buttonStyle);
+		table.add(button);
+		table.debug();
 
 	}
 

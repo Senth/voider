@@ -1,0 +1,39 @@
+
+editor.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+button-add-down
+  rotate: false
+  xy: 1, 1
+  size: 126, 126
+  split: 5, 5, 5, 5
+  orig: 126, 126
+  offset: 0, 0
+  index: -1
+button-add-up
+  rotate: false
+  xy: 129, 1
+  size: 126, 126
+  split: 5, 5, 5, 5
+  orig: 126, 126
+  offset: 0, 0
+  index: -1
+button-default-down
+  rotate: false
+  xy: 257, 1
+  size: 126, 126
+  split: 61, 64, 55, 70
+  pad: 5, 5, 5, 5
+  orig: 126, 126
+  offset: 0, 0
+  index: -1
+button-default-up
+  rotate: false
+  xy: 385, 1
+  size: 126, 126
+  split: 61, 64, 55, 70
+  pad: 5, 5, 5, 5
+  orig: 126, 126
+  offset: 0, 0
+  index: -1

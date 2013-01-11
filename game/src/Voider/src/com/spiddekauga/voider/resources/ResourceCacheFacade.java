@@ -5,8 +5,11 @@ import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.assets.loaders.SkinLoader;
 import com.badlogic.gdx.assets.loaders.resolvers.ExternalFileHandleResolver;
+import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.spiddekauga.voider.game.Level;
 import com.spiddekauga.voider.game.LevelDef;
@@ -37,6 +40,8 @@ public class ResourceCacheFacade {
 	 */
 	public static void init() {
 		mAssetManager = new AssetManager();
+
+		// Own loaders
 		mAssetManager.setLoader(BossActorDef.class, new JsonLoader<BossActorDef>(new ExternalFileHandleResolver(), BossActorDef.class));
 		mAssetManager.setLoader(BulletActorDef.class, new JsonLoader<BulletActorDef>(new ExternalFileHandleResolver(), BulletActorDef.class));
 		mAssetManager.setLoader(EnemyActorDef.class, new JsonLoader<EnemyActorDef>(new ExternalFileHandleResolver(), EnemyActorDef.class));
@@ -46,6 +51,9 @@ public class ResourceCacheFacade {
 		mAssetManager.setLoader(ThemeDef.class, new JsonLoader<ThemeDef>(new ExternalFileHandleResolver(), ThemeDef.class));
 		mAssetManager.setLoader(LevelDef.class, new JsonLoader<LevelDef>(new ExternalFileHandleResolver(), LevelDef.class));
 		mAssetManager.setLoader(Level.class, new JsonLoader<Level>(new ExternalFileHandleResolver(), Level.class));
+
+		// Existing loaders
+		mAssetManager.setLoader(Skin.class, new SkinLoader(new InternalFileHandleResolver()));
 
 		mDependencyLoader = new ResourceDependencyLoader(mAssetManager);
 	}
