@@ -16,7 +16,7 @@
  * General Public License for more details at
  * http://www.gnu.org/copyleft/gpl.html
  */
-package com.spiddekauga.voider;
+package com.spiddekauga.voider.scene;
 
 /**
  * All scenes for the game. E.g. Menus, Games, Editors.

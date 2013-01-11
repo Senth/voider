@@ -22,7 +22,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.utils.Pools;
 import com.spiddekauga.voider.Config;
-import com.spiddekauga.voider.Scene;
 import com.spiddekauga.voider.editor.commands.ClActorAdd;
 import com.spiddekauga.voider.editor.commands.ClActorSelect;
 import com.spiddekauga.voider.editor.commands.ClTerrainActorAddCorner;
@@ -37,6 +36,8 @@ import com.spiddekauga.voider.game.actors.StaticTerrainActor.PolygonCornerTooClo
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceNames;
 import com.spiddekauga.voider.resources.UndefinedResourceTypeException;
+import com.spiddekauga.voider.scene.LoadingScene;
+import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.ui.UiEvent;
 
 /**
@@ -59,6 +60,8 @@ public class LevelEditor extends Scene {
 		mToolActive = Tools.STATIC_TERRAIN;
 		mEventHandlerCurrent = mStaticTerrainHandler;
 
+
+		/** @TODO Move loading resources and GUI initialization to other parts */
 		ResourceCacheFacade.load(ResourceNames.EDITOR_BUTTONS);
 		try {
 			ResourceCacheFacade.finishLoading();
@@ -111,6 +114,31 @@ public class LevelEditor extends Scene {
 	 */
 	public Actor getSelectedActor() {
 		return mSelectedActor;
+	}
+
+
+	// --------------------------------
+	//		Resource loading etc.
+	// --------------------------------
+	@Override
+	public LoadingScene getLoadingScene() {
+		/** @TODO create default loading scene */
+		return null;
+	}
+
+	@Override
+	public boolean hasResources() {
+		return true;
+	}
+
+	@Override
+	public void loadResources() {
+		/** @TODO load resources */
+	}
+
+	@Override
+	public void unloadResources() {
+		/** @TODO unload resources */
 	}
 
 	// --------------------------------

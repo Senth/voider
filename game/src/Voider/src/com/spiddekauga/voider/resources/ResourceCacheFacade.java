@@ -129,6 +129,13 @@ public class ResourceCacheFacade {
 	}
 
 	/**
+	 * @return true if the resource cache facade is currently loading
+	 */
+	public static boolean isLoading() {
+		return mAssetManager.getQueuedAssets() > 0 || mDependencyLoader.isLoading();
+	}
+
+	/**
 	 * Loads the resource including all dependencies.
 	 * @param <ResourceType> Class of the resource that shall be loaded.
 	 * @param resourceId the id of the resource we're loading (i.e. not the

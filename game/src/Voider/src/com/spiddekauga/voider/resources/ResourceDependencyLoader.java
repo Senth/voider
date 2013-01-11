@@ -6,6 +6,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.resolvers.ExternalFileHandleResolver;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.spiddekauga.voider.game.ActorDef;
 
 /**
@@ -108,6 +109,9 @@ class ResourceDependencyLoader {
 						// Reset entire loading queue
 						mLoadingDefs.clear();
 						throw e;
+					} catch (GdxRuntimeException e) {
+						mLoadingDefs.clear();
+						throw e;
 					}
 				}
 
@@ -123,6 +127,13 @@ class ResourceDependencyLoader {
 		}
 
 		return mLoadingDefs.size == 0;
+	}
+
+	/**
+	 * @return true if this class is loading
+	 */
+	boolean isLoading() {
+		return mLoadingDefs.size != 0;
 	}
 
 	/** The load queue which we're loading the resources */

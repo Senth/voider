@@ -12,9 +12,9 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.World;
 import com.spiddekauga.voider.Config;
-import com.spiddekauga.voider.Scene;
 import com.spiddekauga.voider.game.actors.PlayerActor;
 import com.spiddekauga.voider.game.actors.PlayerActorDef;
+import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.ui.UiEvent;
 /**
  * The main game. Starts with a level and could either be in regular or
@@ -63,7 +63,7 @@ public class GameScene extends Scene {
 	}
 
 	@Override
-	public void onReActivate(Outcomes outcome, String message) {
+	public void onActivate(Outcomes outcome, String message) {
 		/** @TODO loading done */
 
 		/** @TODO game completed, aborted? */
@@ -102,6 +102,14 @@ public class GameScene extends Scene {
 			mPlayerActor.render(mSpriteBatch);
 			super.render();
 		}
+	}
+
+	// --------------------------------
+	//		Resource loading etc.
+	// --------------------------------
+	@Override
+	public boolean hasResources() {
+		return true;
 	}
 
 

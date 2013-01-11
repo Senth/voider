@@ -1,4 +1,4 @@
-package com.spiddekauga.voider;
+package com.spiddekauga.voider.scene;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
@@ -43,26 +43,78 @@ public abstract class Scene extends InputAdapter implements IUiListener {
 	public abstract void update();
 
 	/**
-	 * Called just before the scene reactivates. I.e. this scene has been activated
-	 * before and in turn activated another scene on the stack. Now this scene has
-	 * been reactivated due to some actions.
-	 * @param outcome the outcome of the previous scene that was on the stack.
-	 * @param message the outcome message provided with the outcome, null if none
-	 * was provided.
+	 * Checks whether the derived class has any resources that needs to be loaded.
+	 * If this method returns true. SceneSwitcher will call loadResources() before
+	 * activating this resource and unloadResources() after this class has been
+	 * deactivated.
+	 * @return true if this scene has any resources that needs to be loaded.
 	 */
-	public void onReActivate(Outcomes outcome, String message) {
+	public abstract boolean hasResources();
+
+	/**
+	 * Override this function if you want your scene to unload all of its resources
+	 * when deactivated (not disposed, when disposed it will always unload its
+	 * resources). NOTE: Due to making it more efficient, SceneSwitcher will load the
+	 * resources of the next scene before unloading this scene's resources. So that the
+	 * same resources aren't unloaded in this scene and loaded again in the very next.
+	 * Due to obvious reasons it will not, however, unload the resources when loadResources
+	 * supplied a loading scene.
+	 * @return true if this scene shall unload all of its resources when deactivated.
+	 * Defaults to false.
+	 */
+	public boolean unloadResourcesOnDeactivate() {
+		return false;
+	}
+
+	/**
+	 * @return a loading scene for this scene. This will scene will be displayed while
+	 * loading the resources for this scene. Defaults to null, which means no loading
+	 * scene will be displayed.
+	 */
+	public LoadingScene getLoadingScene() {
+		return null;
+	}
+
+	/**
+	 * Loads the resources of the scene. Called before #onActivate(Outcome,String)
+	 * @see #getLoadingScene() if this scene should have some sort of loading scene
+	 */
+	public void loadResources() {
 		// Does nothing
 	}
 
 	/**
-	 * Called when the scene deactivates (another one is activated)
+	 * Unloads the resources of the scene. If unloadResourcesOnDeactivate() returns true
+	 * this function will get called whenever this scene is deactivated, except when it
+	 * supplied a loading scene.
+	 * Called after #onDispose() and #onDeactive().
+	 */
+	public void unloadResources() {
+		// Does nothing
+	}
+
+	/**
+	 * Called just before the scene activates.
+	 * @param outcome the outcome of the previous scene that was on the stack if there was
+	 * any, else null.
+	 * @param message the outcome message provided with the outcome, null if none
+	 * was provided.
+	 */
+	public void onActivate(Outcomes outcome, String message) {
+		// Does nothing
+	}
+
+	/**
+	 * Called when the scene deactivates (another one is activated, push onto the scene stack).
+	 * @note #onDisposed() instead when this scene is deleted (popped from the scene stack).
 	 */
 	public void onDeactivate() {
 		// Does nothing
 	}
 
 	/**
-	 * Called when the scene is deleted
+	 * Called when the scene is deleted. Called before #unloadResources() if this
+	 * scene has resources.
 	 */
 	public void onDisposed() {
 		// Does nothing
@@ -145,10 +197,14 @@ public abstract class Scene extends InputAdapter implements IUiListener {
 		LEVEL_QUIT,
 		/** Loading succeeded */
 		LOADING_SUCCEEDED,
+		/** Loading failed, undefined resource type */
+		LOADING_FAILED_UNDEFINED_TYPE,
 		/** Loading failed, missing file */
 		LOADING_FAILED_MISSING_FILE,
 		/** Loading failed, corrupt file */
 		LOADING_FAILED_CORRUPT_FILE,
+		/** No outcome when an outcome isn't applicable, e.g. first time */
+		NOT_APPLICAPLE,
 	}
 
 	/** Handles user interfaces for the scene */

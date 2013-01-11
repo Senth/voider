@@ -1,7 +1,5 @@
 package com.spiddekauga.voider;
 
-import java.util.LinkedList;
-
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL10;
@@ -12,6 +10,7 @@ import com.spiddekauga.voider.game.Level;
 import com.spiddekauga.voider.game.LevelDef;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceSaver;
+import com.spiddekauga.voider.scene.SceneSwitcher;
 
 /**
  * The main application, i.e. start point
@@ -43,9 +42,7 @@ public class VoiderGame implements ApplicationListener {
 		LevelDef levelDef = new LevelDef();
 		Level level = new Level(levelDef);
 		levelEditor.setLevel(level);
-		mActiveScene.push(levelEditor);
-
-		Gdx.input.setInputProcessor(levelEditor.getInputMultiplexer());
+		SceneSwitcher.switchTo(levelEditor);
 	}
 
 	/**
@@ -57,9 +54,7 @@ public class VoiderGame implements ApplicationListener {
 		LevelDef levelDef = new LevelDef();
 		Level level = new Level(levelDef);
 		gameScene.setLevel(level);
-		mActiveScene.push(gameScene);
-
-		Gdx.input.setInputProcessor(gameScene.getInputMultiplexer());
+		SceneSwitcher.switchTo(gameScene);
 	}
 
 	@Override
@@ -72,11 +67,8 @@ public class VoiderGame implements ApplicationListener {
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
 
-		if (!mActiveScene.isEmpty()) {
-			GameTime.update(Gdx.graphics.getDeltaTime());
-			mActiveScene.getFirst().update();
-			mActiveScene.getFirst().render();
-		}
+		GameTime.update(Gdx.graphics.getDeltaTime());
+		SceneSwitcher.update();
 	}
 
 	@Override
@@ -90,10 +82,4 @@ public class VoiderGame implements ApplicationListener {
 	@Override
 	public void resume() {
 	}
-
-	/**
-	 * A stack of the active scenes. This makes it easier to make back
-	 * key, return to the previous scene.
-	 */
-	private LinkedList<Scene> mActiveScene = new LinkedList<Scene>();
 }
