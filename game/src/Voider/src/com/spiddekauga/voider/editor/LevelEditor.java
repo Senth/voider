@@ -116,6 +116,11 @@ public class LevelEditor extends Scene {
 		return mSelectedActor;
 	}
 
+	@Override
+	public void onResize(int width, int height) {
+		mUi.setViewport(width, height, true);
+		scaleGui();
+	}
 
 	// --------------------------------
 	//		Resource loading etc.
@@ -280,6 +285,9 @@ public class LevelEditor extends Scene {
 	/** Currently selected actor */
 	private Actor mSelectedActor = null;
 
+	// GUI
+	private Table mTable = null;
+
 	// Event stuff
 	/** If we're scrolling the map */
 	private boolean mScrolling = false;
@@ -322,29 +330,66 @@ public class LevelEditor extends Scene {
 	 * Initializes all the buttons for the GUI
 	 */
 	private void initGui() {
-		Table table = new Table();
-		table.setFillParent(true);
-		table.align(Align.top | Align.right);
-		mUi.addActor(table);
+		mTable = new Table();
+		mTable.align(Align.top | Align.right);
+		mUi.addActor(mTable);
 
 		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
-		//		FileHandle skinFile = Gdx.files.internal("ui/editor.json");
-		//		Skin editorSkin = new Skin(skinFile);
-
-		//		FileHandle skinFile = Gdx.files.internal("ui/uiskin.json");
-		//		Skin skin = new Skin(skinFile);
 
 		TextButtonStyle style = editorSkin.get("default", TextButtonStyle.class);
-		Button button = new TextButton("TEXT :D :D", style);
-		button.scale(2);
-		mUi.addActor(button);
-		table.add(button);
-		table.row();
 		ButtonStyle buttonStyle = editorSkin.get("add", ButtonStyle.class);
-		button = new Button(buttonStyle);
-		table.add(button);
-		table.debug();
+		Button button = new TextButton("TEXT :D :D", style);
+		mTable.add(button);
 
+		mTable.row();
+
+		button = new Button(buttonStyle);
+		mTable.add(button);
+		mTable.row();
+
+		button = new TextButton("TEXu :D :D", style);
+		mTable.add(button);
+		mTable.row();
+
+		button = new TextButton("TEXu :D :D", style);
+		mTable.add(button);
+		mTable.row();
+
+		button = new Button(buttonStyle);
+		mTable.add(button);
+
+		mTable.setTransform(true);
+
+		scaleGui();
+		mTable.debug();
+	}
+
+	/**
+	 * Scale GUI
+	 */
+	private void scaleGui() {
+		float tableHeight = mTable.getPrefHeight();
+
+		// Division by 0 check
+		if (tableHeight == 0.0f || Gdx.graphics.getHeight() == 0.0f) {
+			return;
+		}
+
+		float scale = Gdx.graphics.getHeight() / tableHeight;
+		// Don't scale over 1?
+		if (scale < 1.0f) {
+			float negativeScale = 1 / scale;
+			mTable.setHeight(Gdx.graphics.getHeight()*negativeScale);
+			float screenWidth = Gdx.graphics.getWidth();
+			mTable.setWidth(screenWidth*negativeScale);
+			mTable.invalidate();
+			mTable.setScale(scale);
+		} else {
+			mTable.setScale(1.0f);
+			mTable.setWidth(Gdx.graphics.getWidth());
+			mTable.setHeight(Gdx.graphics.getHeight());
+			mTable.invalidate();
+		}
 	}
 
 	// -------------------------------------

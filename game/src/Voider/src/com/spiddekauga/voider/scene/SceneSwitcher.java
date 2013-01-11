@@ -47,6 +47,18 @@ public class SceneSwitcher {
 	}
 
 	/**
+	 * Call when the window has been resized. This will resize all scenes
+	 * @param width new width of the window
+	 * @param height new height of the window
+	 */
+	public static void resize(int width, int height) {
+		for (Scene scene : mScenes) {
+			scene.onResize(width, height);
+		}
+	}
+
+
+	/**
 	 * Updates (and renders) the scene switcher and the current scene.
 	 */
 	public static void update() {

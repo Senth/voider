@@ -59,7 +59,8 @@ public class VoiderGame implements ApplicationListener {
 
 	@Override
 	public void dispose() {
-
+		ResourceCacheFacade.dispose();
+		Config.dispose();
 	}
 
 	@Override
@@ -73,6 +74,7 @@ public class VoiderGame implements ApplicationListener {
 
 	@Override
 	public void resize(int width, int height) {
+		SceneSwitcher.resize(width, height);
 	}
 
 	@Override

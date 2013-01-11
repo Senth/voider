@@ -38,6 +38,15 @@ public abstract class Scene extends InputAdapter implements IUiListener {
 	}
 
 	/**
+	 * Called when the window has been resized
+	 * @param width new width of the window
+	 * @param height new height of the window
+	 */
+	public void onResize(int width, int height) {
+		// Does nothing
+	}
+
+	/**
 	 * Updates the scene
 	 */
 	public abstract void update();
