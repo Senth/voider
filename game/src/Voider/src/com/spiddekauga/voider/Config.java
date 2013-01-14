@@ -128,6 +128,12 @@ public class Config {
 		public final static boolean USE_DEBUG_RENDERER = true;
 		/** Minimum length between two corners in a polygon */
 		public final static float EDGE_LENGTH_MIN = 1.19209289550781250000e-7F * 1.19209289550781250000e-7F;
+		/** Default width of the graphics */
+		public final static float WIDTH = 800;
+		/** Default height of the graphics */
+		public final static float HEIGHT = 480;
+		/** World scaling factor */
+		public final static float WORLD_SCALE = 0.1f;
 	}
 
 	/**

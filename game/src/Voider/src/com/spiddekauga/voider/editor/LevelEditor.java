@@ -277,7 +277,11 @@ public class LevelEditor extends Scene {
 	 * Fixes the camera resolution
 	 */
 	private void fixCamera() {
-		mCamera = new OrthographicCamera(Gdx.graphics.getWidth()*0.1f, 60);
+		float width = Gdx.graphics.getWidth() * Config.Graphics.WORLD_SCALE;
+		// Decrease scale of width depending on height scaled
+		float heightScale = Config.Graphics.HEIGHT / Gdx.graphics.getHeight();
+		width *= heightScale;
+		mCamera = new OrthographicCamera(width , Config.Graphics.HEIGHT * Config.Graphics.WORLD_SCALE);
 	}
 
 	/** Physics world */
