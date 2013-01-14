@@ -26,5 +26,8 @@ public class UiEvents {
 			/** Move terrain */
 			public static final String MOVE = "move";
 		}
+
+		/** Select Static Terrain tool */
+		public static final String STATIC_TERRAIN = "static_terrain";
 	}
 }
