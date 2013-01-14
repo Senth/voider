@@ -369,6 +369,25 @@ public class StaticTerrainActor extends Actor {
 		mCornerBodies.clear();
 	}
 
+	@Override
+	public void setPosition(Vector2 position) {
+		// Get diff movement for moving all corners
+		Vector2 diffMovement = Pools.obtain(Vector2.class);
+		diffMovement.set(position).sub(getPosition());
+
+		super.setPosition(position);
+
+		// Move all corners
+		for (int i = 0; i < mWorldCorners.size(); ++i) {
+			mWorldCorners.get(i).add(diffMovement);
+
+			// Move body corners
+			if (mEditorActive) {
+				mCornerBodies.get(i).setTransform(mWorldCorners.get(i), 0.0f);
+			}
+		}
+	}
+
 	/**
 	 * Exception class for when trying to create a new, or move an existing corner
 	 * and this makes the polygon complex, i.e. it intersects with itself.

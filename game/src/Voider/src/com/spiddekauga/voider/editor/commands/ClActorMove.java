@@ -29,7 +29,10 @@ public class ClActorMove extends LevelCommand {
 	 */
 	@Override
 	public boolean execute(Level level, LevelEditor levelEditor) {
-		// TODO Auto-generated method stub
+		Vector2 newPos = Pools.obtain(Vector2.class);
+		newPos.set(mActor.getPosition()).add(mDiffMovement);
+		mActor.setPosition(newPos);
+		Pools.free(newPos);
 		return true;
 	}
 
@@ -38,7 +41,10 @@ public class ClActorMove extends LevelCommand {
 	 */
 	@Override
 	public boolean undo(Level level, LevelEditor levelEditor) {
-		// TODO Auto-generated method stub
+		Vector2 newPos = Pools.obtain(Vector2.class);
+		newPos.set(mActor.getPosition()).sub(mDiffMovement);
+		mActor.setPosition(newPos);
+		Pools.free(newPos);
 		return true;
 	}
 

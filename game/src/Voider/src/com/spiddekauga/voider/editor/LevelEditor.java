@@ -25,6 +25,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Pools;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.editor.commands.ClActorAdd;
+import com.spiddekauga.voider.editor.commands.ClActorMove;
 import com.spiddekauga.voider.editor.commands.ClActorRemove;
 import com.spiddekauga.voider.editor.commands.ClActorSelect;
 import com.spiddekauga.voider.editor.commands.ClTerrainActorAddCorner;
@@ -55,7 +56,7 @@ public class LevelEditor extends Scene {
 	public LevelEditor() {
 		/** @TODO fix aspect ratio */
 		mWorld = new World(new Vector2(), true);
-		mCamera = new OrthographicCamera(80, 48);
+		fixCamera();
 		Actor.setWorld(mWorld);
 		Actor.setEditorActive(true);
 
@@ -110,6 +111,7 @@ public class LevelEditor extends Scene {
 
 	@Override
 	public void onResize(int width, int height) {
+		fixCamera();
 		mUi.setViewport(width, height, true);
 		if (mGuiInitialized) {
 			scaleGui();
@@ -271,6 +273,13 @@ public class LevelEditor extends Scene {
 		mEventHandlerCurrent.filterPicks();
 	}
 
+	/**
+	 * Fixes the camera resolution
+	 */
+	private void fixCamera() {
+		mCamera = new OrthographicCamera(Gdx.graphics.getWidth()*0.1f, 60);
+	}
+
 	/** Physics world */
 	private World mWorld = null;
 	/** Camera for the editor */
@@ -365,6 +374,8 @@ public class LevelEditor extends Scene {
 		mTable.row();
 
 		button = new ImageButton(imageStyle);
+		button.addListener(mStaticTerrainHandler);
+		button.setName(UiEvents.LevelEditor.StaticTerrain.MOVE);
 		mTable.add(button);
 		mTable.row();
 
@@ -400,6 +411,7 @@ public class LevelEditor extends Scene {
 		}
 
 		float scale = Gdx.graphics.getHeight() / tableHeight;
+
 		// Don't scale over 1?
 		if (scale < 1.0f) {
 			float negativeScale = 1 / scale;
@@ -482,14 +494,6 @@ public class LevelEditor extends Scene {
 		public void down() {
 			switch (mTool) {
 			case ADD:
-				// Create Terrain
-				if (mActor == null || !mLevel.containsActor(mActor)) {
-					Actor newActor = new StaticTerrainActor();
-					newActor.setPosition(mTouchOrigin);
-					mLevelInvoker.execute(new ClActorAdd(newActor));
-					mLevelInvoker.execute(new ClActorSelect(newActor, true));
-				}
-
 				// Double click inside current actor finishes closes it
 				if (mDoubleClick && mHitBody != null && mHitBody.getUserData() == mActor) {
 					// Remove the last corner if we accidently added one when double clicking
@@ -501,7 +505,7 @@ public class LevelEditor extends Scene {
 				}
 
 
-				// Test if we hit a corner...
+				// Test if we hit a body or corner
 				testPick(mCallback);
 
 				// If we didn't change actor, do something
@@ -513,19 +517,41 @@ public class LevelEditor extends Scene {
 					// Else - Hit a corner, start moving it
 					else {
 						mCornerCurrentIndex = mActor.getCornerIndex(mHitBody.getPosition());
-						mCornerCurrentOrigin.set(mHitBody.getPosition());
+						mDragOrigin.set(mHitBody.getPosition());
 						mCornerCurrentAddedNow = false;
 					}
 				}
 				// Else create a new corner
 				else {
+					// No actor, create terrain
+					if (mActor == null || !mLevel.containsActor(mActor)) {
+						Actor newActor = new StaticTerrainActor();
+						newActor.setPosition(mTouchOrigin);
+						mLevelInvoker.execute(new ClActorAdd(newActor));
+						mLevelInvoker.execute(new ClActorSelect(newActor, true));
+					}
+
 					createTempCorner();
 				}
 				break;
 
 
 			case MOVE_TERRAIN:
-				/** @TODO move terrain */
+				testPick(mCallback);
+
+				// If hit terrain (no corner), start dragging the terrain
+				if (mHitBody != null && mHitBody.getUserData() instanceof StaticTerrainActor) {
+					// Select the actor
+					if (mActor != mHitBody.getUserData()) {
+						mLevelInvoker.execute(new ClActorSelect(mActor, false));
+					}
+					mDragOrigin.set(mHitBody.getPosition());
+				} else {
+					if (mActor != null) {
+						mLevelInvoker.execute(new ClActorSelect(null, false));
+					}
+				}
+
 				break;
 
 
@@ -571,7 +597,17 @@ public class LevelEditor extends Scene {
 
 
 			case MOVE_TERRAIN:
-				/** @TODO move terrain */
+				if (mActor != null) {
+					// Get diff movement
+					Vector2 newPosition = Pools.obtain(Vector2.class);
+					newPosition.set(mTouchCurrent).sub(mTouchOrigin);
+
+					// Add original position
+					newPosition.add(mDragOrigin);
+					mActor.setPosition(newPosition);
+
+					Pools.free(newPosition);
+				}
 				break;
 
 
@@ -597,7 +633,7 @@ public class LevelEditor extends Scene {
 						Vector2 newPos = Pools.obtain(Vector2.class);
 						newPos.set(mActor.getCorner(mCornerCurrentIndex));
 						try {
-							mActor.moveCorner(mCornerCurrentIndex, mCornerCurrentOrigin);
+							mActor.moveCorner(mCornerCurrentIndex, mDragOrigin);
 							LevelCommand command = new ClTerrainActorMoveCorner(mActor, mCornerCurrentIndex, newPos);
 							mLevelInvoker.execute(command);
 						} catch (Exception e) {
@@ -613,7 +649,22 @@ public class LevelEditor extends Scene {
 
 
 			case MOVE_TERRAIN:
-				/** @TODO move terrain */
+				if (mActor != null) {
+					// Reset actor to original position
+					mActor.setPosition(mDragOrigin);
+
+					// Set the new position through a command
+					// Get diff movement
+					Vector2 newPosition = Pools.obtain(Vector2.class);
+					newPosition.set(mTouchCurrent).sub(mTouchOrigin);
+
+					// Add original position
+					newPosition.add(mDragOrigin);
+
+					mLevelInvoker.execute(new ClActorMove(mActor, newPosition));
+
+					Pools.free(newPosition);
+				}
 				break;
 
 
@@ -675,7 +726,7 @@ public class LevelEditor extends Scene {
 			try {
 				mActor.addCorner(mTouchCurrent);
 				mCornerCurrentIndex = mActor.getLastAddedCornerIndex();
-				mCornerCurrentOrigin.set(mTouchOrigin);
+				mDragOrigin.set(mTouchOrigin);
 				mCornerCurrentAddedNow = true;
 			} catch (PolygonComplexException e) {
 				/** @TODO print some error message on screen, cannot add corner here */
@@ -704,7 +755,7 @@ public class LevelEditor extends Scene {
 		}
 
 		/** Origin of the corner, before dragging it */
-		private Vector2 mCornerCurrentOrigin = new Vector2();
+		private Vector2 mDragOrigin = new Vector2();
 		/** Index of the current corner */
 		private int mCornerCurrentIndex = -1;
 		/** Last corner index */
