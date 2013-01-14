@@ -78,10 +78,10 @@ public class SceneSwitcher {
 		// Loading using no loading scene
 		if (mSwitcherLoading) {
 			try {
-				ResourceCacheFacade.update();
+				boolean allLoaded = ResourceCacheFacade.update();
 
 				// Loading done -> Activate scene
-				if (!ResourceCacheFacade.isLoading()) {
+				if (allLoaded) {
 					currentScene.onActivate(Outcomes.LOADING_SUCCEEDED, null);
 					Gdx.input.setInputProcessor(currentScene.getInputMultiplexer());
 					mSwitcherLoading = false;
@@ -149,6 +149,7 @@ public class SceneSwitcher {
 	 */
 	private static void loadActiveSceneResources() {
 		Scene currentsScene = mScenes.getFirst();
+		currentsScene.loadResources();
 		LoadingScene loadingScene = currentsScene.getLoadingScene();
 
 		if (loadingScene != null) {

@@ -4,7 +4,6 @@ import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceCorruptException;
 import com.spiddekauga.voider.resources.ResourceNotFoundException;
 import com.spiddekauga.voider.resources.UndefinedResourceTypeException;
-import com.spiddekauga.voider.ui.UiEvent;
 
 /**
  * Base class for all loading scenes
@@ -12,14 +11,6 @@ import com.spiddekauga.voider.ui.UiEvent;
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
 public abstract class LoadingScene extends Scene {
-
-	/* (non-Javadoc)
-	 * @see com.spiddekauga.voider.ui.IUiListener#onUiEvent(com.spiddekauga.voider.ui.UiEvent)
-	 */
-	@Override
-	public void onUiEvent(UiEvent event) {
-		// Does nothing
-	}
 
 	@Override
 	public void update() {

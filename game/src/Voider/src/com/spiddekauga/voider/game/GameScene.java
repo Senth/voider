@@ -15,7 +15,6 @@ import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.actors.PlayerActor;
 import com.spiddekauga.voider.game.actors.PlayerActorDef;
 import com.spiddekauga.voider.scene.Scene;
-import com.spiddekauga.voider.ui.UiEvent;
 /**
  * The main game. Starts with a level and could either be in regular or
  * testing mode. Testing mode will set the player to unlimited lives.
@@ -116,14 +115,6 @@ public class GameScene extends Scene {
 	// --------------------------------
 	//				EVENTS
 	// --------------------------------
-	/* (non-Javadoc)
-	 * @see com.spiddekauga.voider.ui.IUiListener#onUiEvent(com.spiddekauga.voider.ui.UiEvent)
-	 */
-	@Override
-	public void onUiEvent(UiEvent event) {
-		/** @TODO handle ui events */
-	}
-
 	@Override
 	public boolean touchDown(int x, int y, int pointer, int button) {
 		// Test if touching player

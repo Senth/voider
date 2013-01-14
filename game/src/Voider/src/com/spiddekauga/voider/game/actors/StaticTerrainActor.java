@@ -116,6 +116,41 @@ public class StaticTerrainActor extends Actor {
 	}
 
 	/**
+	 * Add a corner in the specified index
+	 * @param corner position of the corner to add
+	 * @param index where in the list the corner will be added
+	 * @throws PolygonComplexException thrown when the adding corner would make the
+	 * polygon an complex polygon, i.e. intersect itself.
+	 * @throws PolygonCornerTooCloseException thrown when a corner is too close to
+	 * another corner inside the polygon.
+	 */
+	public void addCorner(Vector2 corner, int index) throws PolygonComplexException, PolygonCornerTooCloseException{
+		mWorldCorners.add(index, corner.cpy());
+
+		// Make sure no intersection exists
+		if (intersectionExists(mWorldCorners.size() - 1)) {
+			mWorldCorners.remove(mWorldCorners.size() - 1);
+			throw new PolygonComplexException();
+		}
+
+		mLocalCorners.add(toLocalPos(corner));
+
+		try {
+			readjustFixtures();
+		} catch (PolygonCornerTooCloseException e) {
+			mWorldCorners.remove(mWorldCorners.size() - 1);
+			mLocalCorners.remove(mLocalCorners.size() - 1);
+			throw e;
+		}
+
+		if (mEditorActive) {
+			createBodyCorner(corner);
+		}
+
+		mLastAddedCornerIndex = index;
+	}
+
+	/**
 	 * @return index of last added corner
 	 */
 	public int getLastAddedCornerIndex() {

@@ -6,7 +6,6 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.spiddekauga.voider.ui.IUiListener;
 
 /**
  * Base class for all scenes that should be rendered. Examples of scenes:
@@ -15,7 +14,7 @@ import com.spiddekauga.voider.ui.IUiListener;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public abstract class Scene extends InputAdapter implements IUiListener {
+public abstract class Scene extends InputAdapter {
 	/**
 	 * Default constructor. Creates the input multiplexer. UI always has
 	 * priority over everything else.
