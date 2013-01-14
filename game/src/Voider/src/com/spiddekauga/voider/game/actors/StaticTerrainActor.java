@@ -128,18 +128,18 @@ public class StaticTerrainActor extends Actor {
 		mWorldCorners.add(index, corner.cpy());
 
 		// Make sure no intersection exists
-		if (intersectionExists(mWorldCorners.size() - 1)) {
-			mWorldCorners.remove(mWorldCorners.size() - 1);
+		if (intersectionExists(index)) {
+			mWorldCorners.remove(index);
 			throw new PolygonComplexException();
 		}
 
-		mLocalCorners.add(toLocalPos(corner));
+		mLocalCorners.add(index, toLocalPos(corner));
 
 		try {
 			readjustFixtures();
 		} catch (PolygonCornerTooCloseException e) {
-			mWorldCorners.remove(mWorldCorners.size() - 1);
-			mLocalCorners.remove(mLocalCorners.size() - 1);
+			mWorldCorners.remove(index);
+			mLocalCorners.remove(index);
 			throw e;
 		}
 
@@ -353,7 +353,7 @@ public class StaticTerrainActor extends Actor {
 	 */
 	public void createBodyCorners() {
 		if (mCornerBodies.size() == 0 && mEditorActive) {
-			for (Vector2 corner : mLocalCorners) {
+			for (Vector2 corner : mWorldCorners) {
 				createBodyCorner(corner);
 			}
 		}

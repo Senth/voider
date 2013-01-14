@@ -232,6 +232,7 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 	public void destroyBody() {
 		if (mBody != null) {
 			mBody.getWorld().destroyBody(mBody);
+			mBody = null;
 		}
 	}
 

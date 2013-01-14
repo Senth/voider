@@ -35,7 +35,7 @@ public class ClActorRemove extends LevelCommand {
 	@Override
 	public boolean execute(Level level, LevelEditor levelEditor) {
 		level.removeActor(mActor.getId());
-		return false;
+		return true;
 	}
 
 	/* (non-Javadoc)
@@ -44,7 +44,7 @@ public class ClActorRemove extends LevelCommand {
 	@Override
 	public boolean undo(Level level, LevelEditor levelEditor) {
 		level.addActor(mActor);
-		return false;
+		return true;
 	}
 
 	/** Actor to remove/add */
