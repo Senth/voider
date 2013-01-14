@@ -27,5 +27,14 @@ com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
 		up: button-default-up,
 		font: default-font,
 	}
+},
+
+com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
+	add: {
+		down: button-default-down,
+		up: button-default-up,
+		imageDown: button-add,
+		imageUp: button-add
+	}
 }
 }
