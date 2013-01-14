@@ -144,7 +144,7 @@ public class StaticTerrainActor extends Actor {
 		}
 
 		if (mEditorActive) {
-			createBodyCorner(corner);
+			createBodyCorner(corner, index);
 		}
 
 		mLastAddedCornerIndex = index;
@@ -533,12 +533,21 @@ public class StaticTerrainActor extends Actor {
 	 * @param corner the corner to create a body for
 	 */
 	private void createBodyCorner(Vector2 corner) {
+		createBodyCorner(corner, mCornerBodies.size());
+	}
+
+	/**
+	 * Creates a body for the specific point at the specific index
+	 * @param corner the corner to create a body for
+	 * @param index where in the list the body corner should be stored.
+	 */
+	private void createBodyCorner(Vector2 corner, int index) {
 		Body body = mWorld.createBody(new BodyDef());
 		body.createFixture(Config.Editor.getPickingShape(), 0f);
 		body.setTransform(corner, 0f);
 		HitWrapper hitWrapper = new HitWrapper(this, true);
 		body.setUserData(hitWrapper);
-		mCornerBodies.add(body);
+		mCornerBodies.add(index, body);
 	}
 
 	/**
