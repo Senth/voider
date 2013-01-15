@@ -175,9 +175,10 @@ public class LevelEditor extends Scene implements EventListener {
 			mClickTimeLast = GameTime.getTotalTimeElapsed();
 		}
 
+
 		// Only do something for the first pointer
 		if (pointer == 0) {
-			mTestPoint.set(x, y, 0);
+			mTestPoint.set(clampX(x), clampY(y), 0);
 			mCamera.unproject(mTestPoint);
 			mTouchCurrent.x = mTestPoint.x;
 			mTouchCurrent.y = mTestPoint.y;
@@ -199,7 +200,7 @@ public class LevelEditor extends Scene implements EventListener {
 	public boolean touchDragged(int x, int y, int pointer) {
 		// Only do something for the first pointer
 		if (!mScrolling && pointer == 0) {
-			mTestPoint.set(x, y, 0);
+			mTestPoint.set(clampX(x), clampY(y), 0);
 			mCamera.unproject(mTestPoint);
 			mTouchCurrent.x = mTestPoint.x;
 			mTouchCurrent.y = mTestPoint.y;
@@ -225,7 +226,7 @@ public class LevelEditor extends Scene implements EventListener {
 
 		// Only do something for the first pointer
 		else if (pointer == 0) {
-			mTestPoint.set(x, y, 0);
+			mTestPoint.set(clampX(x), clampY(y), 0);
 			mCamera.unproject(mTestPoint);
 			mTouchCurrent.x = mTestPoint.x;
 			mTouchCurrent.y = mTestPoint.y;

@@ -215,6 +215,38 @@ public abstract class Scene extends InputAdapter {
 		NOT_APPLICAPLE,
 	}
 
+	/**
+	 * Clamps the X-coordinate of a pointer to the screen, i.e. if it's out of
+	 * screen it will be clamped to the screen
+	 * @param x the x value to clamp
+	 * @return X in the range of [0, Gdx.graphics.getWidth()]
+	 */
+	protected int clampX(int x) {
+		if (x < 0) {
+			return 0;
+		} else if (x > Gdx.graphics.getWidth()) {
+			return Gdx.graphics.getWidth();
+		} else {
+			return x;
+		}
+	}
+
+	/**
+	 * Clamps the Y-coordinate of a pointer to the screen, i.e. if it's out of
+	 * screen it will be clamped to the screen
+	 * @param y the y value to clamp
+	 * @return X in the range of [0, Gdx.graphics.getHeight()]
+	 */
+	protected int clampY(int y) {
+		if (y < 0) {
+			return 0;
+		} else if (y > Gdx.graphics.getHeight()) {
+			return Gdx.graphics.getHeight();
+		} else {
+			return y;
+		}
+	}
+
 	/** Handles user interfaces for the scene */
 	protected Stage mUi = new Stage();
 	/** Sprite Batch used for rendering stuff */

@@ -216,8 +216,10 @@ public class VoiderGame implements ApplicationListener {
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
 
-		mStage.act();
-		mStage.draw();
+		if (mStage != null) {
+			mStage.act();
+			mStage.draw();
+		}
 
 		GameTime.update(Gdx.graphics.getDeltaTime());
 		SceneSwitcher.update();
@@ -225,7 +227,9 @@ public class VoiderGame implements ApplicationListener {
 
 	@Override
 	public void resize(int width, int height) {
-		mStage.setViewport(width, height, true);
+		if (mStage != null) {
+			mStage.setViewport(width, height, true);
+		}
 		SceneSwitcher.resize(width, height);
 	}
 
@@ -238,5 +242,5 @@ public class VoiderGame implements ApplicationListener {
 	}
 
 	/** Testing stage */
-	private Stage mStage;
+	private Stage mStage = null;
 }
