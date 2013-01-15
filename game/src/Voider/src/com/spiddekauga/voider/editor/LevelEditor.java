@@ -149,6 +149,10 @@ public class LevelEditor extends Scene implements EventListener {
 		} else {
 			scaleGui();
 		}
+
+		if (mToolCurrent == null) {
+			mToolCurrent = mNoneHandler;
+		}
 	}
 
 	// --------------------------------
@@ -179,7 +183,9 @@ public class LevelEditor extends Scene implements EventListener {
 			mTouchCurrent.y = mTestPoint.y;
 			mTouchOrigin.set(mTouchCurrent);
 
-			mToolCurrent.down();
+			if (mToolCurrent != null) {
+				mToolCurrent.down();
+			}
 
 			return true;
 		}
@@ -400,6 +406,7 @@ public class LevelEditor extends Scene implements EventListener {
 		ImageButtonStyle imageStyle = editorSkin.get(UiEvents.LevelEditor.StaticTerrain.ADD, ImageButtonStyle.class);
 
 		mToolTable = new Table();
+		mToolTable.setTransform(true);
 		Button button = new TextButton("Static Terrain", textStyle);
 		button.addListener(this);
 		button.setName(UiEvents.LevelEditor.STATIC_TERRAIN);
@@ -407,6 +414,10 @@ public class LevelEditor extends Scene implements EventListener {
 		mToolTable.row();
 
 		button = new ImageButton(imageStyle);
+		button.setTransform(true);
+		button.setHeight(50);
+		button.setWidth(50);
+		button.invalidate();
 		mToolTable.add(button);
 		mToolTable.row();
 
@@ -419,7 +430,23 @@ public class LevelEditor extends Scene implements EventListener {
 		mToolTable.row();
 
 		button = new ImageButton(imageStyle);
-		mToolTable.add(button);
+		//		mToolTable.add(button);
+
+		button.setTransform(true);
+		button.setHeight(50);
+		button.setWidth(50);
+		//				button.scale(0.5f);
+		//		((ImageButton)button).setScale(0.5f);
+		button.invalidate();
+		mUi.addActor(button);
+
+		//		ButtonStyle buttonStyle = editorSkin.get("add", ButtonStyle.class);
+		//		button = new Button(buttonStyle);
+		//		button.setTransform(true);
+		//		button.setScale(0.5f);
+		//		button.setPosition(50, 50);
+		//		button.invalidate();
+		//		mUi.addActor(button);
 
 		mGui.add(mToolTable);
 		mGui.setTransform(true);
