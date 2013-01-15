@@ -1041,10 +1041,10 @@ public class Json {
 			return null;
 		}
 
-		if (type == UUID.class && jsonData instanceof UUID) {
+		if (jsonData instanceof UUID) {
 			return (T)jsonData;
 		}
-		if (type == FixtureDef.class && jsonData instanceof FixtureDef) {
+		if (jsonData instanceof FixtureDef) {
 			return (T)jsonData;
 		}
 
@@ -1479,7 +1479,7 @@ public class Json {
 				buffer.append(']');
 			}
 		} else if (object instanceof String) {
-			buffer.append(outputType.quoteValue((String)object));
+			buffer.append(outputType.quoteValue(object));
 		} else if (object instanceof Float) {
 			Float floatValue = (Float)object;
 			int intValue = floatValue.intValue();

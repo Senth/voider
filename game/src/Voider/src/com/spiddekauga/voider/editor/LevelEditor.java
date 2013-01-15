@@ -1,6 +1,7 @@
 package com.spiddekauga.voider.editor;
 
 import java.util.LinkedList;
+import java.util.List;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
@@ -38,11 +39,14 @@ import com.spiddekauga.voider.editor.commands.LevelCommand;
 import com.spiddekauga.voider.game.Actor;
 import com.spiddekauga.voider.game.GameTime;
 import com.spiddekauga.voider.game.Level;
+import com.spiddekauga.voider.game.LevelDef;
 import com.spiddekauga.voider.game.actors.StaticTerrainActor;
 import com.spiddekauga.voider.game.actors.StaticTerrainActor.PolygonComplexException;
 import com.spiddekauga.voider.game.actors.StaticTerrainActor.PolygonCornerTooCloseException;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceNames;
+import com.spiddekauga.voider.resources.ResourceSaver;
+import com.spiddekauga.voider.resources.UndefinedResourceTypeException;
 import com.spiddekauga.voider.scene.LoadingScene;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.ui.UiEvents;
@@ -338,8 +342,6 @@ public class LevelEditor extends Scene implements EventListener {
 	// -------------------------------------
 	//				TOOLS
 	// -------------------------------------
-
-
 	/**
 	 * Static terrain tools
 	 */
@@ -361,10 +363,52 @@ public class LevelEditor extends Scene implements EventListener {
 			return false;
 		}
 
-		// Action name
 		String actionName = event.getTarget().getName();
+
+		// STATIC TERRAIN
 		if (actionName.equals(UiEvents.LevelEditor.STATIC_TERRAIN)) {
 			switchTool(mStaticTerrainHandler);
+		}
+
+
+		/** @TODO remove */
+		// SAVE
+		else if (actionName.equals("save")) {
+			ResourceSaver.save(mLevel.getDef());
+			ResourceSaver.save(mLevel);
+		}
+
+		// LOAD - existing level (use first available
+		else if (actionName.equals("load")) {
+			// Load all level defs
+			try {
+				ResourceCacheFacade.loadAllOf(LevelDef.class, true);
+				ResourceCacheFacade.finishLoading();
+
+				List<LevelDef> levelDefs = ResourceCacheFacade.get(LevelDef.class);
+
+				// Load first
+				if (levelDefs.size() > 0) {
+					ResourceCacheFacade.load(levelDefs.get(0).getLevelId(), Level.class, false);
+					ResourceCacheFacade.finishLoading();
+					Level loadedLevel = ResourceCacheFacade.get(levelDefs.get(0).getLevelId(), Level.class);
+					if (loadedLevel != null) {
+						mLevel.dispose();
+						setLevel(loadedLevel);
+					}
+				}
+
+			} catch (UndefinedResourceTypeException e) {
+				e.printStackTrace();
+			}
+		}
+
+		// NEW - add new level
+		else if (actionName.equals("new")) {
+			mLevel.dispose();
+			LevelDef levelDef = new LevelDef();
+			Level level = new Level(levelDef);
+			setLevel(level);
 		}
 
 		return false;
@@ -422,11 +466,21 @@ public class LevelEditor extends Scene implements EventListener {
 		mToolTable.add(button);
 		mToolTable.row();
 
-		button = new TextButton("TEXu :D :D", textStyle);
+		button = new TextButton("SAVE", textStyle);
+		button.setName("save");
+		button.addListener(this);
 		mToolTable.add(button);
 		mToolTable.row();
 
-		button = new TextButton("TEXu :D :D", textStyle);
+		button = new TextButton("LOAD", textStyle);
+		button.setName("load");
+		button.addListener(this);
+		mToolTable.add(button);
+		mToolTable.row();
+
+		button = new TextButton("NEW", textStyle);
+		button.setName("new");
+		button.addListener(this);
 		mToolTable.add(button);
 		mToolTable.row();
 
@@ -565,7 +619,7 @@ public class LevelEditor extends Scene implements EventListener {
 		public void down() {
 			switch (mTool) {
 			case ADD:
-				// Double click inside current actor finishes closes it
+				// Double click inside current actor finishes/closes it
 				if (mDoubleClick && mHitBody != null && mHitBody.getUserData() == mActor) {
 					// Remove the last corner if we accidently added one when double clicking
 					if (mCornerLastIndex != -1) {
@@ -582,8 +636,10 @@ public class LevelEditor extends Scene implements EventListener {
 				// If we didn't change actor, do something
 				if (mHitBody != null) {
 					// Hit the terrain body (no corner), create corner
-					if (mHitBody.getUserData() == mActor && !mChangedActorSinceUp) {
-						createTempCorner();
+					if (mHitBody.getUserData() == mActor) {
+						if (!mChangedActorSinceUp) {
+							createTempCorner();
+						}
 					}
 					// Else - Hit a corner, start moving it
 					else {
@@ -633,9 +689,12 @@ public class LevelEditor extends Scene implements EventListener {
 				// all the corners. If we hit a corner that corner is deleted.
 				if (mHitBody != null) {
 					// Hit terrain body (no corner) and it's second time -> Delet actor
-					if (mHitBody.getUserData() == mActor && !mChangedActorSinceUp) {
-						mLevelInvoker.execute(new ClActorRemove(mActor));
-						mLevelInvoker.execute(new ClActorSelect(null, true));
+					if (mHitBody.getUserData() == mActor) {
+						// Only do something if we didn't hit the actor the first time
+						if (!mChangedActorSinceUp) {
+							mLevelInvoker.execute(new ClActorRemove(mActor));
+							mLevelInvoker.execute(new ClActorSelect(null, true));
+						}
 					}
 					// Else hit corner, delete it
 					else {
@@ -732,7 +791,7 @@ public class LevelEditor extends Scene implements EventListener {
 					// Add original position
 					newPosition.add(mDragOrigin);
 
-					mLevelInvoker.execute(new ClActorMove(mActor, newPosition));
+					mLevelInvoker.execute(new ClActorMove(mActor, newPosition, mChangedActorSinceUp));
 
 					Pools.free(newPosition);
 				}

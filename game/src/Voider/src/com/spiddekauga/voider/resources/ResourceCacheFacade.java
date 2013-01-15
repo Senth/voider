@@ -1,6 +1,8 @@
 package com.spiddekauga.voider.resources;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
@@ -253,8 +255,7 @@ public class ResourceCacheFacade {
 	 * @return array with all the resources of that type
 	 * @throws UndefinedResourceTypeException
 	 */
-	@SuppressWarnings("unchecked")
-	public static <ResourceType> ResourceType[] get(Class<ResourceType> type) throws UndefinedResourceTypeException {
+	public static <ResourceType> List<ResourceType> get(Class<ResourceType> type) throws UndefinedResourceTypeException {
 		String dirPath = ResourceNames.getDirPath(type);
 
 		// Get all resource files
@@ -265,13 +266,13 @@ public class ResourceCacheFacade {
 
 		FileHandle[] files = dir.list();
 
-		Object[] resources = new Object[files.length];
+		ArrayList<ResourceType> resources = new ArrayList<ResourceType>();
 
 		for (int i = 0; i < files.length; ++i) {
-			resources[i] = mAssetManager.get(files[i].path(), type);
+			resources.add(mAssetManager.get(files[i].path(), type));
 		}
 
-		return (ResourceType[]) resources;
+		return resources;
 	}
 
 	/**

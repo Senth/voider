@@ -75,10 +75,12 @@ public class StaticTerrainActor extends Actor {
 
 		mWorldCorners = json.readValue("mCorners", ArrayList.class, jsonData);
 
-		// Create corner bodies if editor...
-		if (mEditorActive) {
-			createBodyCorners();
+		// Create local corners
+		for (Vector2 worldCorner : mWorldCorners) {
+			mLocalCorners.add(toLocalPos(worldCorner));
 		}
+
+		// Corner bodies are created via createBody which is called in Actor superclass.
 	}
 
 	/**
@@ -404,6 +406,11 @@ public class StaticTerrainActor extends Actor {
 	public class PolygonCornerTooCloseException extends Exception {
 		/** For serialization */
 		private static final long serialVersionUID = 5402912928691451496L;
+	}
+
+	@Override
+	protected boolean savesDef() {
+		return true;
 	}
 
 	/**

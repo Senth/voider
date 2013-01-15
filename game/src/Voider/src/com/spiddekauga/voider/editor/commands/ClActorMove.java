@@ -18,15 +18,23 @@ public class ClActorMove extends LevelCommand {
 	 * @param newPosition the new position of the actor
 	 */
 	public ClActorMove(Actor actor, Vector2 newPosition) {
+		this(actor, newPosition, false);
+	}
+
+	/**
+	 * Moves the actor to the specified position
+	 * @param actor the actor to move
+	 * @param newPosition the new position of the actor
+	 * @param chained set to true if the command shall be chained
+	 */
+	public ClActorMove(Actor actor, Vector2 newPosition, boolean chained) {
+		super(chained);
 		mActor = actor;
 		mDiffMovement = Pools.obtain(Vector2.class);
 		mDiffMovement.set(newPosition);
 		mDiffMovement.sub(actor.getBody().getPosition());
 	}
 
-	/* (non-Javadoc)
-	 * @see com.spiddekauga.voider.editor.commands.LevelCommand#execute(com.spiddekauga.voider.game.Level)
-	 */
 	@Override
 	public boolean execute(Level level, LevelEditor levelEditor) {
 		Vector2 newPos = Pools.obtain(Vector2.class);
@@ -36,9 +44,6 @@ public class ClActorMove extends LevelCommand {
 		return true;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.spiddekauga.voider.editor.commands.LevelCommand#undo(com.spiddekauga.voider.game.Level)
-	 */
 	@Override
 	public boolean undo(Level level, LevelEditor levelEditor) {
 		Vector2 newPos = Pools.obtain(Vector2.class);

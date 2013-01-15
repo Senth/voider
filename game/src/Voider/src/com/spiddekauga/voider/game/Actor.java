@@ -13,10 +13,13 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.OrderedMap;
+import com.badlogic.gdx.utils.Pools;
 import com.spiddekauga.utils.Json;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.game.actors.StaticTerrainActorDef;
 import com.spiddekauga.voider.resources.Resource;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.UndefinedResourceTypeException;
@@ -26,7 +29,7 @@ import com.spiddekauga.voider.resources.UndefinedResourceTypeException;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public abstract class Actor extends Resource implements ITriggerListener, Json.Serializable {
+public abstract class Actor extends Resource implements ITriggerListener, Json.Serializable, Disposable {
 	/**
 	 * Sets the texture of the actor including the actor definition.
 	 * Automatically creates a body for the actor.
@@ -84,17 +87,20 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 		return mLife;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.badlogic.gdx.utils.Json.Serializable#write(com.badlogic.gdx.utils.Json)
-	 */
 	@Override
 	public void write(Json json) {
 		super.write(json);
 
 		json.writeValue("VERSION", VERSION);
 		json.writeValue("mLife", mLife);
-		json.writeValue("mDefId", mDef.getId());
-		json.writeValue("mDefType", mDef.getClass().getName());
+		json.writeValue("mPosition", mPosition);
+
+		if (savesDef()) {
+			json.writeValue("mDef", mDef);
+		} else {
+			json.writeValue("mDefId", mDef.getId());
+			json.writeValue("mDefType", mDef.getClass().getName());
+		}
 
 
 		if (mBody != null) {
@@ -102,7 +108,6 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 			json.writeValue("angle", mBody.getAngle());
 			json.writeValue("angular_velocity", mBody.getAngularVelocity());
 			json.writeValue("linear_velocity", mBody.getLinearVelocity());
-			json.writeValue("position", mBody.getPosition());
 			json.writeValue("awake", mBody.isAwake());
 			json.writeValue("active", mBody.isActive());
 			json.writeObjectEnd();
@@ -111,9 +116,6 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see com.badlogic.gdx.utils.Json.Serializable#read(com.badlogic.gdx.utils.Json, com.badlogic.gdx.utils.OrderedMap)
-	 */
 	@Override
 	public void read(Json json, OrderedMap<String, Object> jsonData) {
 		super.read(json, jsonData);
@@ -121,25 +123,30 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 		/** @TODO check version */
 
 		mLife = json.readValue("mLife", float.class, jsonData);
+		mPosition = json.readValue("mPosition", Vector2.class, jsonData);
 
-		// Get definition information to be able to load it
-		UUID defId = json.readValue("mDefId", UUID.class, jsonData);
-		String defTypeName = json.readValue("mDefType", String.class, jsonData);
-		Class<?> defType = null;
-		try {
-			defType = Class.forName(defTypeName);
-		} catch (ClassNotFoundException e) {
-			Gdx.app.error("JsonRead", "Class not found for class: " + defTypeName);
-			throw new GdxRuntimeException(e);
+		if (savesDef()) {
+			mDef = json.readValue("mDef", StaticTerrainActorDef.class, jsonData);
 		}
+		// Get definition information to be able to load it
+		else {
+			UUID defId = json.readValue("mDefId", UUID.class, jsonData);
+			String defTypeName = json.readValue("mDefType", String.class, jsonData);
+			Class<?> defType = null;
+			try {
+				defType = Class.forName(defTypeName);
+			} catch (ClassNotFoundException e) {
+				Gdx.app.error("JsonRead", "Class not found for class: " + defTypeName);
+				throw new GdxRuntimeException(e);
+			}
 
-
-		// Set the actual actor definition
-		try {
-			mDef = (ActorDef) ResourceCacheFacade.get(defId, defType);
-		} catch (UndefinedResourceTypeException e) {
-			Gdx.app.error("JsonRead", "Undefined Resource Type exception!");
-			throw new GdxRuntimeException(e);
+			// Set the actual actor definition
+			try {
+				mDef = (ActorDef) ResourceCacheFacade.get(defId, defType);
+			} catch (UndefinedResourceTypeException e) {
+				Gdx.app.error("JsonRead", "Undefined Resource Type exception!");
+				throw new GdxRuntimeException(e);
+			}
 		}
 
 
@@ -152,14 +159,15 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 			bodyDef.angle = json.readValue("angle", float.class, bodyMap);
 			bodyDef.angularVelocity = json.readValue("angular_velocity", float.class, bodyMap);
 			bodyDef.linearVelocity.set(json.readValue("linear_velocity", Vector2.class, bodyMap));
-			bodyDef.position.set(json.readValue("position", Vector2.class, bodyMap));
 			bodyDef.awake = json.readValue("awake", boolean.class, bodyMap);
 			bodyDef.active = json.readValue("active", boolean.class, bodyMap);
+
+			// Set position
+			bodyDef.position.set(mPosition);
 		}
 
 		if (mWorld != null) {
-			mBody = mWorld.createBody(bodyDef);
-			/** @TODO Create fixture? */
+			createBody(bodyDef);
 		} else {
 			Gdx.app.error("JsonRead", "World was null when creating body");
 			throw new GdxRuntimeException("World was null when creating body from json");
@@ -171,7 +179,7 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 	 * @param position the new position
 	 */
 	public void setPosition(Vector2 position) {
-		mDef.getBodyDef().position.set(position);
+		mPosition.set(position);
 
 		// Change body if exist
 		if (mBody != null) {
@@ -183,7 +191,7 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 	 * @return current position of the actor
 	 */
 	public Vector2 getPosition() {
-		return mDef.getBodyDef().position;
+		return mPosition;
 	}
 
 	/**
@@ -211,14 +219,23 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 
 	/**
 	 * Creates a new body out of the fixture and body definition. This body will however not have
-	 * any angle, velocity, or position set to it.
+	 * any angle, velocity set to it. Position is however set
 	 */
 	public void createBody(){
+		BodyDef bodyDef = mDef.getBodyDefCopy();
+		bodyDef.position.set(mPosition);
+		createBody(bodyDef);
+	}
+
+	/**
+	 * Creates a new body out of the fixture definition and the specified body definition
+	 * @param bodyDef the body definition to use for the body
+	 */
+	public void createBody(BodyDef bodyDef) {
 		if (mWorld != null && mBody == null) {
-			BodyDef bodyDef = mDef.getBodyDef();
 			mBody = mWorld.createBody(bodyDef);
 			for (FixtureDef fixtureDef : mDef.getFixtureDefs()) {
-				if (fixtureDef.shape != null) {
+				if (fixtureDef != null && fixtureDef.shape != null) {
 					mBody.createFixture(fixtureDef);
 				}
 			}
@@ -234,6 +251,26 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 			mBody.getWorld().destroyBody(mBody);
 			mBody = null;
 		}
+	}
+
+	/**
+	 * Removes the body from the world
+	 */
+	@Override
+	public void dispose() {
+		if (mBody != null) {
+			destroyBody();
+		}
+		Pools.free(mPosition);
+	}
+
+	/**
+	 * @return true if this actor saves its def, i.e. #ResourceCacheFacade will not
+	 * handle the def. This is true for terrain actors, as there is only one actor
+	 * per definition, defaults to false.
+	 */
+	protected boolean savesDef() {
+		return false;
 	}
 
 	/**
@@ -273,6 +310,8 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 	private Sprite mSprite = null;
 	/** The belonging definition of this actor */
 	private ActorDef mDef = null;
+	/** Body position, remember even when we don't have a body */
+	private Vector2 mPosition = Pools.obtain(Vector2.class).set(0, 0);
 
 	/** The world used for creating bodies */
 	protected static World mWorld = null;

@@ -5,6 +5,8 @@ import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.utils.Disposable;
+import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.OrderedMap;
 import com.spiddekauga.utils.Json;
 import com.spiddekauga.voider.resources.Resource;
@@ -16,7 +18,7 @@ import com.spiddekauga.voider.resources.UndefinedResourceTypeException;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class Level extends Resource implements ITriggerListener, Json.Serializable {
+public class Level extends Resource implements ITriggerListener, Json.Serializable, Disposable {
 	/**
 	 * Constructor which creates an new empty level with the bound
 	 * level definition
@@ -26,7 +28,6 @@ public class Level extends Resource implements ITriggerListener, Json.Serializab
 		mLevelDef = levelDef;
 		mUniqueId = levelDef.getLevelId();
 		mActors = new ArrayList<Actor>();
-		mTriggers = new ArrayList<Trigger>();
 		mTriggerInformation = new TriggerContainer();
 		mSpeed = mLevelDef.getBaseSpeed();
 		mCompletedLevel = false;
@@ -130,11 +131,22 @@ public class Level extends Resource implements ITriggerListener, Json.Serializab
 		}
 	}
 
+	@Override
+	public void dispose() {
+		for (Actor actor : mActors) {
+			actor.dispose();
+		}
+	}
+
+	/**
+	 * @return the level definition
+	 */
+	public LevelDef getDef() {
+		return mLevelDef;
+	}
 
 	/** All actors in the level */
 	private ArrayList<Actor> mActors = null;
-	/** All triggers in the level */
-	private ArrayList<Trigger> mTriggers = null;
 	/** All trigger information in the level, needed for duplication saving/loading and binding */
 	private TriggerContainer mTriggerInformation = null;
 	/** Current x coordinate (of the screen's left edge) */
@@ -155,11 +167,11 @@ public class Level extends Resource implements ITriggerListener, Json.Serializab
 		super.write(json);
 
 		json.writeValue("mActors", mActors);
-		json.writeValue("mTriggers", mTriggers);
-		json.writeValue("mLevelDefId", mLevelDef.getId().toString());
+		json.writeValue("mLevelDefId", mLevelDef.getId());
 		json.writeValue("mXCoord", mXCoord);
 		json.writeValue("mSpeed", mSpeed);
 		json.writeValue("mCompletedLevel", mCompletedLevel);
+		json.writeValue("mTriggerInformation", mTriggerInformation);
 	}
 
 
@@ -177,31 +189,36 @@ public class Level extends Resource implements ITriggerListener, Json.Serializab
 
 		// Actors
 		mActors = json.readValue("mActors", ArrayList.class, jsonData);
-		mTriggers = json.readValue("mTriggers", ArrayList.class, jsonData);
 
 		// Get the actual LevelDef
-		UUID levelDefId = UUID.fromString(json.readValue("mLevelDefId", String.class, jsonData));
+		UUID levelDefId = json.readValue("mLevelDefId", UUID.class, jsonData);
 		try {
 			mLevelDef = ResourceCacheFacade.get(levelDefId, LevelDef.class);
 		} catch (UndefinedResourceTypeException e) {
-			e.printStackTrace();
+			Gdx.app.error("Level", "Could not get level def when loading level");
 		}
+
+
+		// Triggers
+		mTriggerInformation = json.readValue("mTriggerInformation", TriggerContainer.class, jsonData);
+
+		// Bind triggers
+		ObjectMap<UUID, ITriggerListener> actorsMap = new ObjectMap<UUID, ITriggerListener>();
+		for (Actor actor : mActors) {
+			actorsMap.put(actor.getId(), actor);
+		}
+		mTriggerInformation.bindTriggers(actorsMap);
+	}
+
+	@Override
+	public void onTriggered(String action) {
+		/** @TODO Auto-generated method stub */
 	}
 
 	/**
-	 * Default constructor, used for when loading levels.
+	 * Default constructor, used when loading levels.
 	 */
-	@SuppressWarnings("unused")
-	private Level() {
+	protected Level() {
 		// Does nothing
-	}
-
-	/* (non-Javadoc)
-	 * @see com.spiddekauga.voider.game.ITriggerListener#onTriggered(java.lang.String)
-	 */
-	@Override
-	public void onTriggered(String action) {
-		// TODO Auto-generated method stub
-
 	}
 }
