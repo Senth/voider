@@ -100,6 +100,11 @@ public class Level extends Resource implements ITriggerListener, Json.Serializab
 	public void addActor(Actor actor) {
 		mActors.add(actor);
 		actor.createBody();
+
+		// Add to dependency, if it doesn't load its own def
+		if (!actor.savesDef()) {
+			mLevelDef.addDependency(actor.getDef());
+		}
 	}
 
 	/**

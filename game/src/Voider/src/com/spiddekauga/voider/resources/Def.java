@@ -153,7 +153,7 @@ public abstract class Def extends Resource implements Json.Serializable {
 	 * @param dependency the resource dependency
 	 * @see #addDependency(ResourceNames)
 	 */
-	protected void addDependency(Def dependency) {
+	public void addDependency(Def dependency) {
 		mExternalDependencies.add(new DefItem(dependency.getId(), dependency.getClass()));
 	}
 
@@ -162,7 +162,7 @@ public abstract class Def extends Resource implements Json.Serializable {
 	 * @param uuid the unique id of the dependency
 	 * @param type the type of dependency
 	 */
-	protected void addDependency(UUID uuid, Class<?> type) {
+	public void addDependency(UUID uuid, Class<?> type) {
 		mExternalDependencies.add(new DefItem(uuid, type));
 	}
 
@@ -171,7 +171,7 @@ public abstract class Def extends Resource implements Json.Serializable {
 	 * @param dependency the resource dependency
 	 * @see #addDependency(Def)
 	 */
-	protected void addDependency(ResourceNames dependency) {
+	public void addDependency(ResourceNames dependency) {
 		mInternalDependencies.add(dependency);
 	}
 
@@ -179,7 +179,7 @@ public abstract class Def extends Resource implements Json.Serializable {
 	 * Removes an external dependency from the resource
 	 * @param dependency the id of the dependency to remove
 	 */
-	protected void removeDependency(UUID dependency) {
+	public void removeDependency(UUID dependency) {
 		mExternalDependencies.remove(new DefItem(dependency, null));
 	}
 
@@ -187,21 +187,21 @@ public abstract class Def extends Resource implements Json.Serializable {
 	 * Removes an internal dependency from the resource
 	 * @param dependency the name of the dependency to remove
 	 */
-	protected void removeDependency(ResourceNames dependency) {
+	public void removeDependency(ResourceNames dependency) {
 		mInternalDependencies.remove(dependency);
 	}
 
 	/**
 	 * @return all external dependencies
 	 */
-	final Set<DefItem> getExternalDependencies() {
+	Set<DefItem> getExternalDependencies() {
 		return mExternalDependencies;
 	}
 
 	/**
 	 * @return all internal dependencies
 	 */
-	final Set<ResourceNames> getInternalDependencies() {
+	Set<ResourceNames> getInternalDependencies() {
 		return mInternalDependencies;
 	}
 
