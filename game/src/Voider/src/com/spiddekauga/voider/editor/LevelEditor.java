@@ -49,7 +49,6 @@ import com.spiddekauga.voider.resources.ResourceSaver;
 import com.spiddekauga.voider.resources.UndefinedResourceTypeException;
 import com.spiddekauga.voider.scene.LoadingScene;
 import com.spiddekauga.voider.scene.Scene;
-import com.spiddekauga.voider.ui.UiEvents;
 
 /**
  * The level editor scene
@@ -343,15 +342,65 @@ public class LevelEditor extends Scene implements EventListener {
 	//				TOOLS
 	// -------------------------------------
 	/**
+	 * All the main tool buttons
+	 */
+	private enum Tools {
+		/** @TODO change style */
+		STATIC_TERRAIN("toggle"),
+
+		/** No tool selected */
+		NONE("");
+
+		/**
+		 * @return style of the tool
+		 */
+		public String getStyleName() {
+			return mStyleName;
+		}
+
+		/**
+		 * Constructor for terrain tool, binds the tool with a style
+		 * @param style the style bound to the tool
+		 */
+		private Tools(String style) {
+			mStyleName = style;
+		}
+
+		/** Name of the style the tool shall use */
+		private String mStyleName;
+	}
+
+	/**
 	 * Static terrain tools
 	 */
 	private enum StaticTerrainTools {
 		/** Add/Create corners, can move corners too */
-		ADD,
-		/** Move terrain */
-		MOVE_TERRAIN,
-		/** Remove corners and terrain */
-		REMOVE,
+		ADD("add"),
+		/** Move terrain @TODO change style*/
+		MOVE_TERRAIN("toggle"),
+		/** Remove corners and terrain @TODO change style */
+		REMOVE("toggle"),
+
+		/** No tool selected */
+		NONE("");
+
+		/**
+		 * @return style of the tool
+		 */
+		public String getStyleName() {
+			return mStyleName;
+		}
+
+		/**
+		 * Constructor for terrain tool, binds the tool with a style
+		 * @param style the style bound to the tool
+		 */
+		private StaticTerrainTools(String style) {
+			mStyleName = style;
+		}
+
+		/** Name of the style the tool shall use */
+		private String mStyleName;
 	}
 
 	// -------------------------------------
@@ -359,15 +408,22 @@ public class LevelEditor extends Scene implements EventListener {
 	// -------------------------------------
 	@Override
 	public boolean handle(Event event) {
-		if (!(event instanceof ChangeEvent)) {
+		if (!(event instanceof ChangeEvent) || !(event.getTarget() instanceof Button)) {
 			return false;
 		}
 
+		Button button = (Button)event.getTarget();
+
 		String actionName = event.getTarget().getName();
 
-		// STATIC TERRAIN
-		if (actionName.equals(UiEvents.LevelEditor.STATIC_TERRAIN)) {
-			switchTool(mStaticTerrainHandler);
+		// Toggle buttons
+		if (button.isChecked()) {
+			// STATIC TERRAIN
+			if (actionName.equals(Tools.STATIC_TERRAIN.toString())) {
+				switchTool(mStaticTerrainHandler, Tools.STATIC_TERRAIN);
+			}
+
+			return false;
 		}
 
 
@@ -411,27 +467,47 @@ public class LevelEditor extends Scene implements EventListener {
 			setLevel(level);
 		}
 
+		// Select no tool
+		else {
+			switchTool(mNoneHandler, Tools.NONE);
+		}
+
 		return false;
 	}
 
 	/**
 	 * Switches the tool to the selected tool
 	 * @param selectedTool the new main tool
+	 * @param tool the new tool type
 	 */
-	private void switchTool(Tool selectedTool) {
+	private void switchTool(Tool selectedTool, Tools tool) {
+		// Deselect cucrent tool
+		com.badlogic.gdx.scenes.scene2d.Actor oldActor = mToolTable.findActor(mTool.toString());
+		if (oldActor != null && oldActor instanceof Button) {
+			Button oldButton = (Button)oldActor;
+			oldButton.setChecked(false);
+		}
+
+		// Set cucrent tool
+		mTool = tool;
 		mToolCurrent = selectedTool;
+
+
+		// Clear GUI table and readd the correct GUI
 		mGui.clear();
-		mGui.top();
 		Table toolGui = mToolCurrent.getGui();
-		mGui.add(mToolCurrent.getGui());
-		mGui.top();
+		if (toolGui != null) {
+			mGui.add(mToolCurrent.getGui());
+		}
 		mGui.add(mToolTable);
 		mGui.invalidate();
 
 		/** @TODO remove, scale appropriately the first time */
 		scaleGui();
 
-		toolGui.padBottom(mToolTable.getPrefHeight() - toolGui.getPrefHeight());
+		if (toolGui != null) {
+			toolGui.padBottom(mToolTable.getPrefHeight() - toolGui.getPrefHeight());
+		}
 	}
 
 
@@ -447,14 +523,15 @@ public class LevelEditor extends Scene implements EventListener {
 
 		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
 
-		TextButtonStyle textStyle = editorSkin.get("default", TextButtonStyle.class);
-		ImageButtonStyle imageStyle = editorSkin.get(UiEvents.LevelEditor.StaticTerrain.ADD, ImageButtonStyle.class);
+		TextButtonStyle textToogleStyle = editorSkin.get("toggle", TextButtonStyle.class);
+		TextButtonStyle textStyle = editorSkin.get("toggle", TextButtonStyle.class);
+		ImageButtonStyle imageStyle = editorSkin.get(StaticTerrainTools.ADD.getStyleName(), ImageButtonStyle.class);
 
 		mToolTable = new Table();
 		mToolTable.setTransform(true);
-		Button button = new TextButton("Static Terrain", textStyle);
+		Button button = new TextButton("Static Terrain", textToogleStyle);
 		button.addListener(this);
-		button.setName(UiEvents.LevelEditor.STATIC_TERRAIN);
+		button.setName(Tools.STATIC_TERRAIN.toString());
 		mToolTable.add(button);
 		mToolTable.row();
 
@@ -548,6 +625,8 @@ public class LevelEditor extends Scene implements EventListener {
 	// -------------------------------------
 	/** Event handler for the current tool */
 	private Tool mToolCurrent = null;
+	/** Current selected tool */
+	private Tools mTool = Tools.NONE;
 
 	/** Event handler for static terrain tool */
 	private StaticTerrainHandler mStaticTerrainHandler = new StaticTerrainHandler();
@@ -603,16 +682,39 @@ public class LevelEditor extends Scene implements EventListener {
 	private class StaticTerrainHandler extends Tool {
 		@Override
 		public void changed(ChangeEvent event, com.badlogic.gdx.scenes.scene2d.Actor actor) {
-			String actionName = actor.getName();
-			if (actionName.equals(UiEvents.LevelEditor.StaticTerrain.ADD)) {
-				mTool = StaticTerrainTools.ADD;
-			} else if (actionName.equals(UiEvents.LevelEditor.StaticTerrain.REMOVE)) {
-				mTool = StaticTerrainTools.REMOVE;
-			} else if (actionName.equals(UiEvents.LevelEditor.StaticTerrain.MOVE)) {
-				mTool = StaticTerrainTools.MOVE_TERRAIN;
-			}
+			// Buttons
+			if (actor instanceof Button) {
+				Button button = (Button)actor;
 
-			/** @TODO make the button pressed down */
+				// Checked means it was pressed down
+				if (button.isChecked()) {
+
+					// Deselect previous tool
+					mGuiTable.findActor(StaticTerrainTools.ADD.toString());
+
+					String actionName = actor.getName();
+
+					// Find which tool was pressed
+					for (StaticTerrainTools tool : StaticTerrainTools.values()) {
+						if (actionName.equals(tool.toString())) {
+							// Uncheck old tool
+							com.badlogic.gdx.scenes.scene2d.Actor oldActor = mGuiTable.findActor(mTool.toString());
+							if (oldActor != null && oldActor instanceof Button) {
+								Button oldButton = (Button)oldActor;
+								oldButton.setChecked(false);
+							}
+
+							// Select tool
+							mTool = tool;
+							break;
+						}
+					}
+				}
+				// Else it was unchecked, and thus select no tool
+				else {
+					mTool = StaticTerrainTools.NONE;
+				}
+			}
 		}
 
 		@Override
@@ -851,27 +953,27 @@ public class LevelEditor extends Scene implements EventListener {
 
 		@Override
 		public void initGui() {
-			mGuiTable.setName(UiEvents.LevelEditor.STATIC_TERRAIN);
+			mGuiTable.setName(Tools.STATIC_TERRAIN.toString() + "-table");
 
 			Skin editorSkin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
-			TextButtonStyle textStyle = editorSkin.get("default", TextButtonStyle.class);
-			ImageButtonStyle imageStyle = editorSkin.get(UiEvents.LevelEditor.StaticTerrain.ADD, ImageButtonStyle.class);
+			TextButtonStyle textStyle = editorSkin.get(StaticTerrainTools.MOVE_TERRAIN.getStyleName(), TextButtonStyle.class);
+			ImageButtonStyle imageStyle = editorSkin.get(StaticTerrainTools.ADD.getStyleName(), ImageButtonStyle.class);
 
 
 			Button button = new ImageButton(imageStyle);
-			button.setName(UiEvents.LevelEditor.StaticTerrain.ADD);
+			button.setName(StaticTerrainTools.ADD.toString());
 			button.addListener(this);
 			mGuiTable.add(button);
 			mGuiTable.row();
 
 			button = new TextButton("Remove", textStyle);
-			button.setName(UiEvents.LevelEditor.StaticTerrain.REMOVE);
+			button.setName(StaticTerrainTools.REMOVE.toString());
 			button.addListener(this);
 			mGuiTable.add(button);
 			mGuiTable.row();
 
 			button = new TextButton("Move", textStyle);
-			button.setName(UiEvents.LevelEditor.StaticTerrain.MOVE);
+			button.setName(StaticTerrainTools.MOVE_TERRAIN.toString());
 			button.addListener(this);
 			mGuiTable.add(button);
 			mGuiTable.align(Align.top);
@@ -929,7 +1031,7 @@ public class LevelEditor extends Scene implements EventListener {
 		/** Current Static terrain actor */
 		private StaticTerrainActor mActor = null;
 		/** The current active tool for the static terrain tool */
-		private StaticTerrainTools mTool = StaticTerrainTools.ADD;
+		private StaticTerrainTools mTool = StaticTerrainTools.NONE;
 		/** GUI buttons for the terrain */
 		private Table mGuiTable = new Table();
 
