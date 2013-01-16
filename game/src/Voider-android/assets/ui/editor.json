@@ -17,6 +17,7 @@ com.badlogic.gdx.scenes.scene2d.ui.Button$ButtonStyle: {
 	},
 	add: {
 		down: button-add-down,
+		checked: button-add-down,
 		up: button-add-up
 	}
 },
@@ -26,12 +27,19 @@ com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
 		down: button-default-down,
 		up: button-default-up,
 		font: default-font,
+	},
+	toggle: {
+		down: button-default-down,
+		checked: button-default-down,
+		up: button-default-up,
+		font: default-font,
 	}
 },
 
 com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 	add: {
 		down: button-default-down,
+		checked: button-default-down,
 		up: button-default-up,
 		imageDown: button-add,
 		imageUp: button-add

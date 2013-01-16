@@ -1,4 +1,4 @@
-package com.spiddekauga.voider.game;
+package com.spiddekauga.utils;
 
 /**
  * Measures the total game time of the game.

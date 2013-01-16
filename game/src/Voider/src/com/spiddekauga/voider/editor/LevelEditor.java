@@ -27,6 +27,9 @@ import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent;
 import com.badlogic.gdx.utils.Pools;
+import com.spiddekauga.utils.GameTime;
+import com.spiddekauga.utils.Scroller;
+import com.spiddekauga.utils.Scroller.ScrollAxis;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.editor.commands.ClActorAdd;
 import com.spiddekauga.voider.editor.commands.ClActorMove;
@@ -37,7 +40,6 @@ import com.spiddekauga.voider.editor.commands.ClTerrainActorMoveCorner;
 import com.spiddekauga.voider.editor.commands.ClTerrainActorRemoveCorner;
 import com.spiddekauga.voider.editor.commands.LevelCommand;
 import com.spiddekauga.voider.game.Actor;
-import com.spiddekauga.voider.game.GameTime;
 import com.spiddekauga.voider.game.Level;
 import com.spiddekauga.voider.game.LevelDef;
 import com.spiddekauga.voider.game.actors.StaticTerrainActor;
@@ -54,23 +56,47 @@ import com.spiddekauga.voider.scene.Scene;
  * The level editor scene
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * 
+ * @TODO unload level
  */
 public class LevelEditor extends Scene implements EventListener {
 	/**
 	 * Constructor for the level editor
 	 */
 	public LevelEditor() {
-		/** @TODO fix aspect ratio */
 		mWorld = new World(new Vector2(), true);
 		fixCamera();
 		Actor.setWorld(mWorld);
 		Actor.setEditorActive(true);
+
+		mScroller = new Scroller(50, 2000, 10, 200, ScrollAxis.X);
 	}
 
 	@Override
 	public void update() {
 		mWorld.step(1/60f, 6, 2);
 		mLevel.update(false);
+
+		// Scrolling
+		if (mScroller.isScrolling()) {
+			mScroller.update(Gdx.graphics.getDeltaTime());
+
+			// Update the camera
+			Vector2 scrollCameraOrigin = Pools.obtain(Vector2.class);
+			screenToWorldCoord(mScroller.getOriginScroll(), scrollCameraOrigin, false);
+			Vector2 scrollCameraCurrent = Pools.obtain(Vector2.class);
+			screenToWorldCoord(mScroller.getCurrentScroll(), scrollCameraCurrent, false);
+
+			Vector2 diffScroll = Pools.obtain(Vector2.class);
+			diffScroll.set(scrollCameraCurrent).sub(scrollCameraOrigin);
+
+			mCamera.position.x = diffScroll.x + mScrollCameraOrigin.x;
+			mCamera.update();
+
+			Pools.free(scrollCameraCurrent);
+			Pools.free(scrollCameraOrigin);
+			Pools.free(diffScroll);
+		}
 	}
 
 	@Override
@@ -141,7 +167,7 @@ public class LevelEditor extends Scene implements EventListener {
 
 	@Override
 	public void unloadResources() {
-		/** @TODO unload resources */
+		ResourceCacheFacade.unload(ResourceNames.EDITOR_BUTTONS);
 	}
 
 	@Override
@@ -165,8 +191,9 @@ public class LevelEditor extends Scene implements EventListener {
 	public boolean touchDown(int x, int y, int pointer, int button) {
 		// Special case, scrolling the map. This is the case if pressed
 		// middle mouse button, or two fingers are on the screen
-		if (button == 3 || (Gdx.app.getInput().isTouched(0) && Gdx.app.getInput().isTouched(1))) {
-			mScrolling = true;
+		if (button == 2 || (Gdx.app.getInput().isTouched(0) && Gdx.app.getInput().isTouched(1))) {
+			mScroller.touchDown(x, y);
+			mScrollCameraOrigin.set(mCamera.position.x, mCamera.position.y);
 			return true;
 		}
 
@@ -181,11 +208,8 @@ public class LevelEditor extends Scene implements EventListener {
 
 		// Only do something for the first pointer
 		if (pointer == 0) {
-			mTestPoint.set(clampX(x), clampY(y), 0);
-			mCamera.unproject(mTestPoint);
-			mTouchCurrent.x = mTestPoint.x;
-			mTouchCurrent.y = mTestPoint.y;
-			mTouchOrigin.set(mTouchCurrent);
+			screenToWorldCoord(x, y, mTouchOrigin, true);
+			mTouchCurrent.set(mTouchOrigin);
 
 			if (mToolCurrent != null) {
 				mToolCurrent.down();
@@ -202,16 +226,18 @@ public class LevelEditor extends Scene implements EventListener {
 	@Override
 	public boolean touchDragged(int x, int y, int pointer) {
 		// Only do something for the first pointer
-		if (!mScrolling && pointer == 0) {
-			mTestPoint.set(clampX(x), clampY(y), 0);
-			mCamera.unproject(mTestPoint);
-			mTouchCurrent.x = mTestPoint.x;
-			mTouchCurrent.y = mTestPoint.y;
+		if (!mScroller.isScrolling() && pointer == 0) {
+			screenToWorldCoord(x, y, mTouchCurrent, true);
 
 			/** @TODO check long click */
 
 			mToolCurrent.dragged();
 
+			return true;
+		}
+		// Scrolling, move the map
+		else if (mScroller.isScrolling() && pointer == 0) {
+			mScroller.touchDragged(x, y);
 			return true;
 		}
 		return false;
@@ -222,17 +248,14 @@ public class LevelEditor extends Scene implements EventListener {
 		boolean handled = false;
 
 		// Not scrolling any more
-		if (mScrolling && (button == 3 || !Gdx.app.getInput().isTouched(0) || !Gdx.app.getInput().isTouched(1))) {
-			mScrolling = false;
+		if (mScroller.isScrolling() && (button == 2 || !Gdx.app.getInput().isTouched(0) || !Gdx.app.getInput().isTouched(1))) {
+			mScroller.touchUp(x, y);
 			handled = true;
 		}
 
 		// Only do something for the first pointer
 		else if (pointer == 0) {
-			mTestPoint.set(clampX(x), clampY(y), 0);
-			mCamera.unproject(mTestPoint);
-			mTouchCurrent.x = mTestPoint.x;
-			mTouchCurrent.y = mTestPoint.y;
+			screenToWorldCoord(x, y, mTouchCurrent, true);
 
 			mToolCurrent.up();
 
@@ -316,8 +339,8 @@ public class LevelEditor extends Scene implements EventListener {
 
 
 	// Event stuff
-	/** If we're scrolling the map */
-	private boolean mScrolling = false;
+	/** Scrolling for nice scrolling */
+	private Scroller mScroller;
 	/** True if double clicked */
 	private boolean mDoubleClick = false;
 	/** Last click time */
@@ -331,6 +354,10 @@ public class LevelEditor extends Scene implements EventListener {
 	private Vector2 mTouchOrigin = new Vector2();
 	/** Current point when pressing */
 	private Vector2 mTouchCurrent = new Vector2();
+	/** Starting position for the scroll */
+	private Vector2 mScrollOrigin = new Vector2();
+	/** Starting position for the camera scroll */
+	private Vector2 mScrollCameraOrigin = new Vector2();
 	/** For ray testing on player ship when touching it */
 	private Vector3 mTestPoint = new Vector3();
 	/** Body that was hit (and prioritized) */
@@ -476,6 +503,34 @@ public class LevelEditor extends Scene implements EventListener {
 	}
 
 	/**
+	 * Screen to world coordinate
+	 * @param screenPos screen position
+	 * @param worldCoordinate the vector to set the world coordinate for
+	 * @param clamp if the x and y coordinates should be clamped
+	 */
+	private void screenToWorldCoord(Vector2 screenPos, Vector2 worldCoordinate, boolean clamp) {
+		screenToWorldCoord(screenPos.x, screenPos.y, worldCoordinate, clamp);
+	}
+
+	/**
+	 * Screen to world coordinate
+	 * @param x the X-coordinate of the screen
+	 * @param y the Y-coordinate of the screen
+	 * @param worldCoordinate the vector to set the world coordinate for
+	 * @param clamp if the x and y coordinates should be clamped
+	 */
+	private void screenToWorldCoord(float x, float y, Vector2 worldCoordinate, boolean clamp) {
+		if (clamp) {
+			mTestPoint.set(clampX(x), clampY(y), 0);
+		} else {
+			mTestPoint.set(x, y, 0);
+		}
+		mCamera.unproject(mTestPoint);
+		worldCoordinate.x = mTestPoint.x;
+		worldCoordinate.y = mTestPoint.y;
+	}
+
+	/**
 	 * Switches the tool to the selected tool
 	 * @param selectedTool the new main tool
 	 * @param tool the new tool type
@@ -488,7 +543,7 @@ public class LevelEditor extends Scene implements EventListener {
 			oldButton.setChecked(false);
 		}
 
-		// Set cucrent tool
+		// Set current tool
 		mTool = tool;
 		mToolCurrent = selectedTool;
 
@@ -524,7 +579,7 @@ public class LevelEditor extends Scene implements EventListener {
 		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
 
 		TextButtonStyle textToogleStyle = editorSkin.get("toggle", TextButtonStyle.class);
-		TextButtonStyle textStyle = editorSkin.get("toggle", TextButtonStyle.class);
+		TextButtonStyle textStyle = editorSkin.get("default", TextButtonStyle.class);
 		ImageButtonStyle imageStyle = editorSkin.get(StaticTerrainTools.ADD.getStyleName(), ImageButtonStyle.class);
 
 		mToolTable = new Table();

@@ -202,6 +202,14 @@ public class ResourceCacheFacade {
 	}
 
 	/**
+	 * Unloads a regular resource
+	 * @param resourceName the name of the resource
+	 */
+	public static void unload(ResourceNames resourceName) {
+		mAssetManager.unload(resourceName.fullName);
+	}
+
+	/**
 	 * Loads a resources of static type. Usually those in internal assets,
 	 * such as textures, music, etc.
 	 * @param resource the name of the resource to load

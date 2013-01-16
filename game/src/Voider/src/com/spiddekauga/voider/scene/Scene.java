@@ -221,9 +221,9 @@ public abstract class Scene extends InputAdapter {
 	 * @param x the x value to clamp
 	 * @return X in the range of [0, Gdx.graphics.getWidth()]
 	 */
-	protected int clampX(int x) {
-		if (x < 0) {
-			return 0;
+	protected float clampX(float x) {
+		if (x < 0.0f) {
+			return 0.0f;
 		} else if (x > Gdx.graphics.getWidth()) {
 			return Gdx.graphics.getWidth();
 		} else {
@@ -237,9 +237,9 @@ public abstract class Scene extends InputAdapter {
 	 * @param y the y value to clamp
 	 * @return X in the range of [0, Gdx.graphics.getHeight()]
 	 */
-	protected int clampY(int y) {
-		if (y < 0) {
-			return 0;
+	protected float clampY(float y) {
+		if (y < 0.0f) {
+			return 0.0f;
 		} else if (y > Gdx.graphics.getHeight()) {
 			return Gdx.graphics.getHeight();
 		} else {
