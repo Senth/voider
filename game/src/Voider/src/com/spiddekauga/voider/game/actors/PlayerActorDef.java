@@ -28,6 +28,7 @@ public class PlayerActorDef extends ActorDef {
 	{
 		super(maxLife, textureTypes, name, fixtureDef);
 		getBodyDef().type = BodyType.DynamicBody;
+		getBodyDef().fixedRotation = true;
 	}
 
 	/**
@@ -42,7 +43,7 @@ public class PlayerActorDef extends ActorDef {
 	 */
 	@Override
 	protected short getFilterCategory() {
-		return FixtureFilterCategories.ENEMY;
+		return FixtureFilterCategories.PLAYER;
 	}
 
 	/**

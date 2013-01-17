@@ -473,8 +473,6 @@ public class LevelEditor extends Scene implements EventListener {
 			if (actionName.equals(Tools.STATIC_TERRAIN.toString())) {
 				switchTool(mStaticTerrainHandler, Tools.STATIC_TERRAIN);
 			}
-
-			return false;
 		}
 
 		// --- ACTIONS ---

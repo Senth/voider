@@ -6,12 +6,15 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.physics.box2d.joints.MouseJoint;
+import com.badlogic.gdx.physics.box2d.joints.MouseJointDef;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.actors.PlayerActor;
 import com.spiddekauga.voider.game.actors.PlayerActorDef;
@@ -44,15 +47,26 @@ public class GameScene extends Scene {
 		Actor.setEditorActive(false);
 
 
-		/** @TODO remove the player from GameScene */
+		/** @TODO remove the player creation, it shall be created in level instead */
 		FixtureDef fixtureDef = new FixtureDef();
 		CircleShape circleShape = new CircleShape();
 		circleShape.setRadius(1.0f);
+		fixtureDef.friction = 0.0f;
+		fixtureDef.restitution = 0.0f;
+		fixtureDef.density = 0.0001f;
 		fixtureDef.shape = circleShape;
 		PlayerActorDef def = new PlayerActorDef(100.0f, null, "Normal", fixtureDef);
 		mPlayerActor = new PlayerActor(def);
 		mPlayerActor.createBody();
 
+
+		// Create mouse joint
+		BodyDef bodyDef = new BodyDef();
+		mMouseBody = mWorld.createBody(bodyDef);
+		mMouseJointDef.bodyA = mMouseBody;
+		mMouseJointDef.bodyB = mPlayerActor.getBody(); // TODO REMOVE, set in onActivate instead
+		mMouseJointDef.collideConnected = true;
+		mMouseJointDef.maxForce = 10000000000000.0f;
 
 		/** TODO use different shaders */
 	}
@@ -88,6 +102,9 @@ public class GameScene extends Scene {
 		mWorld.step(1/60f, 6, 2);
 		mLevel.update(true);
 
+		if (mMouseBody != null) {
+			mMouseBody.setLinearVelocity(mLevel.getSpeed(), 0.0f);
+		}
 
 		/** @TODO Move the camera relative to the level */
 		mCamera.position.x = mLevel.getXCoord() + mCamera.viewportWidth * 0.5f;
@@ -124,13 +141,17 @@ public class GameScene extends Scene {
 			mTestPoint.set(x, y, 0);
 			mCamera.unproject(mTestPoint);
 
-			mHitBody = null;
 			mWorld.QueryAABB(mCallback, mTestPoint.x - 0.0001f, mTestPoint.y - 0.0001f, mTestPoint.x + 0.0001f, mTestPoint.y + 0.0001f);
 
-			if (mHitBody == mPlayerActor.getBody()) {
+			if (mMovingPlayer) {
 				mPlayerPointer = pointer;
-				Body playerBody = mPlayerActor.getBody();
-				playerBody.setTransform(mTestPoint.x, mTestPoint.y, playerBody.getAngle());
+
+				mMouseJointDef.target.set(mTestPoint.x, mTestPoint.y);
+				mMouseJoint = (MouseJoint) mWorld.createJoint(mMouseJointDef);
+				mPlayerActor.getBody().setAwake(true);
+
+				//				Body playerBody = mPlayerActor.getBody();
+				//				playerBody.setTransform(mTestPoint.x, mTestPoint.y, playerBody.getAngle());
 				return true;
 			}
 		}
@@ -140,11 +161,15 @@ public class GameScene extends Scene {
 
 	@Override
 	public boolean touchDragged(int x, int y, int pointer) {
-		if (mPlayerPointer == pointer) {
+		if (mPlayerPointer == pointer && mMovingPlayer) {
 			mTestPoint.set(x, y, 0);
 			mCamera.unproject(mTestPoint);
-			Body playerBody = mPlayerActor.getBody();
-			playerBody.setTransform(mTestPoint.x, mTestPoint.y, playerBody.getAngle());
+
+			mJointTarget.set(mTestPoint.x, mTestPoint.y);
+			mMouseJoint.setTarget(mJointTarget);
+
+			//			Body playerBody = mPlayerActor.getBody();
+			//			playerBody.setTransform(mTestPoint.x, mTestPoint.y, playerBody.getAngle());
 			return true;
 		}
 
@@ -153,8 +178,14 @@ public class GameScene extends Scene {
 
 	@Override
 	public boolean touchUp(int x, int y, int pointer, int button) {
-		if (mPlayerPointer == pointer) {
+		if (mPlayerPointer == pointer && mMovingPlayer) {
 			mPlayerPointer = INVALID_POINTER;
+			mMovingPlayer = false;
+
+			mWorld.destroyJoint(mMouseJoint);
+			mMouseJoint = null;
+
+			return true;
 		}
 
 		return false;
@@ -187,25 +218,36 @@ public class GameScene extends Scene {
 	private PlayerActor mPlayerActor;
 	/** Current pointer that moves the player */
 	private int mPlayerPointer = INVALID_POINTER;
-	/** Last known location of the pointer (on the screen) */
-	private Vector2 mLastPointer;
+	/** If we're currently moving the player */
+	private boolean mMovingPlayer = false;
+
+	// MOUSE JOINT
+	/** Mouse joint definition */
+	private MouseJointDef mMouseJointDef = new MouseJointDef();
+	/** Mouse joint for player */
+	private MouseJoint mMouseJoint = null;
+	/** Target for the mouse joint */
+	private Vector2 mJointTarget = new Vector2();
+	/** Body of the mouse, for mouse joint */
+	private Body mMouseBody = null;
 
 
 	// Temporary variables
 	/** For ray testing on player ship when touching it */
 	private Vector3 mTestPoint = new Vector3();
 	/** Body that was hit */
-	private Body mHitBody = null;
+	//	private Body mHitBody = null;
 	/** Callback for "ray testing" */
 	private QueryCallback mCallback = new QueryCallback() {
 		@Override
 		public boolean reportFixture(Fixture fixture) {
 			if (fixture.testPoint(mTestPoint.x, mTestPoint.y)) {
-				mHitBody = fixture.getBody();
-				return false;
-			} else {
-				return true;
+				if (fixture.getBody().getUserData() instanceof PlayerActor) {
+					mMovingPlayer = true;
+					return false;
+				}
 			}
+			return true;
 		}
 	};
 }
