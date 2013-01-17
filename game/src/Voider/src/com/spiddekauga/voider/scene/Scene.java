@@ -3,8 +3,11 @@ package com.spiddekauga.voider.scene;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 
 /**
@@ -221,7 +224,7 @@ public abstract class Scene extends InputAdapter {
 	 * @param x the x value to clamp
 	 * @return X in the range of [0, Gdx.graphics.getWidth()]
 	 */
-	protected float clampX(float x) {
+	protected static float clampX(float x) {
 		if (x < 0.0f) {
 			return 0.0f;
 		} else if (x > Gdx.graphics.getWidth()) {
@@ -237,7 +240,7 @@ public abstract class Scene extends InputAdapter {
 	 * @param y the y value to clamp
 	 * @return X in the range of [0, Gdx.graphics.getHeight()]
 	 */
-	protected float clampY(float y) {
+	protected static float clampY(float y) {
 		if (y < 0.0f) {
 			return 0.0f;
 		} else if (y > Gdx.graphics.getHeight()) {
@@ -246,6 +249,37 @@ public abstract class Scene extends InputAdapter {
 			return y;
 		}
 	}
+
+	/**
+	 * Screen to world coordinate
+	 * @param camera for the world coordinate
+	 * @param screenPos screen position
+	 * @param worldCoordinate the vector to set the world coordinate for
+	 * @param clamp if the x and y coordinates should be clamped
+	 */
+	protected static void screenToWorldCoord(Camera camera, Vector2 screenPos, Vector2 worldCoordinate, boolean clamp) {
+		screenToWorldCoord(camera, screenPos.x, screenPos.y, worldCoordinate, clamp);
+	}
+
+	/**
+	 * Screen to world coordinate
+	 * @param camera camera for the world coordinate
+	 * @param x the X-coordinate of the screen
+	 * @param y the Y-coordinate of the screen
+	 * @param worldCoordinate the vector to set the world coordinate for
+	 * @param clamp if the x and y coordinates should be clamped
+	 */
+	protected static void screenToWorldCoord(Camera camera, float x, float y, Vector2 worldCoordinate, boolean clamp) {
+		if (clamp) {
+			mTestPoint.set(clampX(x), clampY(y), 0);
+		} else {
+			mTestPoint.set(x, y, 0);
+		}
+		camera.unproject(mTestPoint);
+		worldCoordinate.x = mTestPoint.x;
+		worldCoordinate.y = mTestPoint.y;
+	}
+
 
 	/** Handles user interfaces for the scene */
 	protected Stage mUi = new Stage();
@@ -258,4 +292,8 @@ public abstract class Scene extends InputAdapter {
 	private Outcomes mOutcome = null;
 	/** Message of the outcome */
 	private String mOutcomeMessage = null;
+
+	// Temporary variables
+	/** For ray testing on player ship when touching it */
+	private static Vector3 mTestPoint = new Vector3();
 }

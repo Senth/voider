@@ -1,31 +1,34 @@
 package com.spiddekauga.voider.game;
 
+import java.util.ArrayList;
+
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
-import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
+import com.badlogic.gdx.physics.box2d.ChainShape;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.QueryCallback;
-import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.joints.MouseJoint;
 import com.badlogic.gdx.physics.box2d.joints.MouseJointDef;
+import com.badlogic.gdx.utils.Pools;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.game.actors.FixtureFilterCategories;
 import com.spiddekauga.voider.game.actors.PlayerActor;
 import com.spiddekauga.voider.game.actors.PlayerActorDef;
-import com.spiddekauga.voider.scene.Scene;
+import com.spiddekauga.voider.scene.WorldScene;
 /**
  * The main game. Starts with a level and could either be in regular or
  * testing mode. Testing mode will set the player to unlimited lives.
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class GameScene extends Scene {
+public class GameScene extends WorldScene {
 	/**
 	 * Initializes the game scene.
 	 * @param testing if we're just testing the level, i.e. unlimited lives
@@ -33,17 +36,8 @@ public class GameScene extends Scene {
 	 * scoring).
 	 */
 	public GameScene(boolean testing) {
-		super();
-
 		mTesting = testing;
 
-		/** @TODO fix aspect ratio */
-		mWorld = new World(new Vector2(0, 0), true);
-		mCamera = new OrthographicCamera(80, 48);
-
-
-		// Initialize player
-		Actor.setWorld(mWorld);
 		Actor.setEditorActive(false);
 
 
@@ -53,7 +47,7 @@ public class GameScene extends Scene {
 		circleShape.setRadius(1.0f);
 		fixtureDef.friction = 0.0f;
 		fixtureDef.restitution = 0.0f;
-		fixtureDef.density = 0.0001f;
+		fixtureDef.density = 0.001f;
 		fixtureDef.shape = circleShape;
 		PlayerActorDef def = new PlayerActorDef(100.0f, null, "Normal", fixtureDef);
 		mPlayerActor = new PlayerActor(def);
@@ -63,10 +57,11 @@ public class GameScene extends Scene {
 		// Create mouse joint
 		BodyDef bodyDef = new BodyDef();
 		mMouseBody = mWorld.createBody(bodyDef);
+		mMouseJointDef.frequencyHz = 500;
 		mMouseJointDef.bodyA = mMouseBody;
 		mMouseJointDef.bodyB = mPlayerActor.getBody(); // TODO REMOVE, set in onActivate instead
 		mMouseJointDef.collideConnected = true;
-		mMouseJointDef.maxForce = 10000000000000.0f;
+		mMouseJointDef.maxForce = 10000.0f;
 
 		/** TODO use different shaders */
 	}
@@ -78,6 +73,8 @@ public class GameScene extends Scene {
 	public void setLevel(Level level) {
 		mLevel = level;
 		mLevel.setPlayer(mPlayerActor);
+
+		createBorder();
 	}
 
 	@Override
@@ -99,12 +96,18 @@ public class GameScene extends Scene {
 
 	@Override
 	public void update() {
+		// Make sure border maintains same speed as level
+		if (mBorderBody != null) {
+			mBorderBody.setLinearVelocity(mLevel.getSpeed(), 0.0f);
+		}
+
+		// Update mouse position even when still
+		if (mMouseBody != null && mMovingPlayer) {
+			screenToWorldCoord(mCamera, mCursorScreen, mCursorWorld, true);
+			mMouseJoint.setTarget(mCursorWorld);
+		}
 		mWorld.step(1/60f, 6, 2);
 		mLevel.update(true);
-
-		if (mMouseBody != null) {
-			mMouseBody.setLinearVelocity(mLevel.getSpeed(), 0.0f);
-		}
 
 		/** @TODO Move the camera relative to the level */
 		mCamera.position.x = mLevel.getXCoord() + mCamera.viewportWidth * 0.5f;
@@ -138,20 +141,18 @@ public class GameScene extends Scene {
 	public boolean touchDown(int x, int y, int pointer, int button) {
 		// Test if touching player
 		if (mPlayerPointer == INVALID_POINTER) {
-			mTestPoint.set(x, y, 0);
-			mCamera.unproject(mTestPoint);
+			mCursorScreen.set(x, y);
+			screenToWorldCoord(mCamera, x, y, mCursorWorld, true);
 
-			mWorld.QueryAABB(mCallback, mTestPoint.x - 0.0001f, mTestPoint.y - 0.0001f, mTestPoint.x + 0.0001f, mTestPoint.y + 0.0001f);
+			mWorld.QueryAABB(mCallback, mCursorWorld.x - 0.0001f, mCursorWorld.y - 0.0001f, mCursorWorld.x + 0.0001f, mCursorWorld.y + 0.0001f);
 
 			if (mMovingPlayer) {
 				mPlayerPointer = pointer;
 
-				mMouseJointDef.target.set(mTestPoint.x, mTestPoint.y);
+				mMouseJointDef.target.set(mPlayerActor.getBody().getPosition());
 				mMouseJoint = (MouseJoint) mWorld.createJoint(mMouseJointDef);
 				mPlayerActor.getBody().setAwake(true);
 
-				//				Body playerBody = mPlayerActor.getBody();
-				//				playerBody.setTransform(mTestPoint.x, mTestPoint.y, playerBody.getAngle());
 				return true;
 			}
 		}
@@ -162,14 +163,7 @@ public class GameScene extends Scene {
 	@Override
 	public boolean touchDragged(int x, int y, int pointer) {
 		if (mPlayerPointer == pointer && mMovingPlayer) {
-			mTestPoint.set(x, y, 0);
-			mCamera.unproject(mTestPoint);
-
-			mJointTarget.set(mTestPoint.x, mTestPoint.y);
-			mMouseJoint.setTarget(mJointTarget);
-
-			//			Body playerBody = mPlayerActor.getBody();
-			//			playerBody.setTransform(mTestPoint.x, mTestPoint.y, playerBody.getAngle());
+			mCursorScreen.set(x, y);
 			return true;
 		}
 
@@ -179,6 +173,7 @@ public class GameScene extends Scene {
 	@Override
 	public boolean touchUp(int x, int y, int pointer, int button) {
 		if (mPlayerPointer == pointer && mMovingPlayer) {
+			mCursorScreen.set(x, y);
 			mPlayerPointer = INVALID_POINTER;
 			mMovingPlayer = false;
 
@@ -201,47 +196,86 @@ public class GameScene extends Scene {
 		return false;
 	}
 
+	/**
+	 * Creates the border around the screen so the player can't escape
+	 */
+	private void createBorder() {
+		// If body already exists, just delete existing fixtures
+		if (mBorderBody != null) {
+			ArrayList<Fixture> fixtures = mBorderBody.getFixtureList();
+			for (Fixture fixture : fixtures) {
+				mBorderBody.destroyFixture(fixture);
+			}
+		}
+		// No body, create one
+		else {
+			BodyDef bodyDef = new BodyDef();
+			bodyDef.type = BodyType.KinematicBody;
+			mBorderBody = mWorld.createBody(bodyDef);
+		}
+
+
+		// Get world coordinates for the screen's corners
+		Vector2[] corners = new Vector2[4];
+		for (int i = 0; i < corners.length; ++i) {
+			corners[i] = Pools.obtain(Vector2.class);
+		}
+		screenToWorldCoord(mCamera, 0, 0, corners[0], false);
+		screenToWorldCoord(mCamera, Gdx.graphics.getWidth(), 0, corners[1], false);
+		screenToWorldCoord(mCamera, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), corners[2], false);
+		screenToWorldCoord(mCamera, 0, Gdx.graphics.getHeight(), corners[3], false);
+
+
+		// Create fixture
+		ChainShape shape = new ChainShape();
+		shape.createLoop(corners);
+		FixtureDef fixtureDef = new FixtureDef();
+		fixtureDef.shape = shape;
+		fixtureDef.filter.categoryBits = FixtureFilterCategories.STATIC_TERRAIN;
+		fixtureDef.filter.maskBits = FixtureFilterCategories.PLAYER;
+		mBorderBody.createFixture(fixtureDef);
+
+
+		// Free stuff
+		for (int i = 0; i < corners.length; ++i) {
+			Pools.free(corners[i]);
+		}
+		shape.dispose();
+	}
+
 
 	/** Invalid pointer id */
 	private static final int INVALID_POINTER = -1;
-	/** The Box2D physical world */
-	private final World mWorld;
 	/** Displays nice render graphics for all physical objects. */
 	private Box2DDebugRenderer mDebugRenderer = new Box2DDebugRenderer();
 	/** The current level used in the game */
 	private Level mLevel = null;
 	/** If we're just testing */
 	private boolean mTesting;
-	/** Camera for the world */
-	private final Camera mCamera;
 	/** Player ship actor, plays the game */
 	private PlayerActor mPlayerActor;
 	/** Current pointer that moves the player */
 	private int mPlayerPointer = INVALID_POINTER;
 	/** If we're currently moving the player */
 	private boolean mMovingPlayer = false;
+	/** Border around the screen so the player can't "escape" */
+	private Body mBorderBody = null;
 
 	// MOUSE JOINT
+	/** Screen coordinate for the cursor */
+	private Vector2 mCursorScreen = new Vector2();
 	/** Mouse joint definition */
 	private MouseJointDef mMouseJointDef = new MouseJointDef();
 	/** Mouse joint for player */
 	private MouseJoint mMouseJoint = null;
-	/** Target for the mouse joint */
-	private Vector2 mJointTarget = new Vector2();
 	/** Body of the mouse, for mouse joint */
 	private Body mMouseBody = null;
 
-
-	// Temporary variables
-	/** For ray testing on player ship when touching it */
-	private Vector3 mTestPoint = new Vector3();
-	/** Body that was hit */
-	//	private Body mHitBody = null;
 	/** Callback for "ray testing" */
 	private QueryCallback mCallback = new QueryCallback() {
 		@Override
 		public boolean reportFixture(Fixture fixture) {
-			if (fixture.testPoint(mTestPoint.x, mTestPoint.y)) {
+			if (fixture.testPoint(mCursorWorld.x, mCursorWorld.y)) {
 				if (fixture.getBody().getUserData() instanceof PlayerActor) {
 					mMovingPlayer = true;
 					return false;
@@ -250,4 +284,8 @@ public class GameScene extends Scene {
 			return true;
 		}
 	};
+
+	// Temporary variables
+	/** World coordinate for the cursor */
+	private Vector2 mCursorWorld = new Vector2();
 }

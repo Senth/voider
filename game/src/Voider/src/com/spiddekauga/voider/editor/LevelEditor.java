@@ -5,15 +5,11 @@ import java.util.List;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
-import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.QueryCallback;
-import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
@@ -51,8 +47,8 @@ import com.spiddekauga.voider.resources.ResourceNames;
 import com.spiddekauga.voider.resources.ResourceSaver;
 import com.spiddekauga.voider.resources.UndefinedResourceTypeException;
 import com.spiddekauga.voider.scene.LoadingScene;
-import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
+import com.spiddekauga.voider.scene.WorldScene;
 
 /**
  * The level editor scene
@@ -61,14 +57,11 @@ import com.spiddekauga.voider.scene.SceneSwitcher;
  * 
  * @TODO unload level
  */
-public class LevelEditor extends Scene implements EventListener {
+public class LevelEditor extends WorldScene implements EventListener {
 	/**
 	 * Constructor for the level editor
 	 */
 	public LevelEditor() {
-		mWorld = new World(new Vector2(), true);
-		fixCamera();
-		Actor.setWorld(mWorld);
 		Actor.setEditorActive(true);
 
 		mScroller = new Scroller(50, 2000, 10, 200, ScrollAxis.X);
@@ -85,9 +78,9 @@ public class LevelEditor extends Scene implements EventListener {
 
 			// Update the camera
 			Vector2 scrollCameraOrigin = Pools.obtain(Vector2.class);
-			screenToWorldCoord(mScroller.getOriginScroll(), scrollCameraOrigin, false);
+			screenToWorldCoord(mCamera, mScroller.getOriginScroll(), scrollCameraOrigin, false);
 			Vector2 scrollCameraCurrent = Pools.obtain(Vector2.class);
-			screenToWorldCoord(mScroller.getCurrentScroll(), scrollCameraCurrent, false);
+			screenToWorldCoord(mCamera, mScroller.getCurrentScroll(), scrollCameraCurrent, false);
 
 			Vector2 diffScroll = Pools.obtain(Vector2.class);
 			diffScroll.set(scrollCameraCurrent).sub(scrollCameraOrigin);
@@ -141,7 +134,7 @@ public class LevelEditor extends Scene implements EventListener {
 
 	@Override
 	public void onResize(int width, int height) {
-		fixCamera();
+		super.onResize(width, height);
 		mUi.setViewport(width, height, true);
 		if (mGuiInitialized) {
 			scaleGui();
@@ -218,7 +211,7 @@ public class LevelEditor extends Scene implements EventListener {
 
 		// Only do something for the first pointer
 		if (pointer == 0) {
-			screenToWorldCoord(x, y, mTouchOrigin, true);
+			screenToWorldCoord(mCamera, x, y, mTouchOrigin, true);
 			mTouchCurrent.set(mTouchOrigin);
 
 			if (mToolCurrent != null) {
@@ -237,7 +230,7 @@ public class LevelEditor extends Scene implements EventListener {
 	public boolean touchDragged(int x, int y, int pointer) {
 		// Only do something for the first pointer
 		if (!mScroller.isScrolling() && pointer == 0) {
-			screenToWorldCoord(x, y, mTouchCurrent, true);
+			screenToWorldCoord(mCamera, x, y, mTouchCurrent, true);
 
 			/** @TODO check long click */
 
@@ -265,7 +258,7 @@ public class LevelEditor extends Scene implements EventListener {
 
 		// Only do something for the first pointer
 		else if (pointer == 0) {
-			screenToWorldCoord(x, y, mTouchCurrent, true);
+			screenToWorldCoord(mCamera, x, y, mTouchCurrent, true);
 
 			mToolCurrent.up();
 
@@ -327,21 +320,7 @@ public class LevelEditor extends Scene implements EventListener {
 		SceneSwitcher.switchTo(testGame);
 	}
 
-	/**
-	 * Fixes the camera resolution
-	 */
-	private void fixCamera() {
-		float width = Gdx.graphics.getWidth() * Config.Graphics.WORLD_SCALE;
-		// Decrease scale of width depending on height scaled
-		float heightScale = Config.Graphics.HEIGHT / Gdx.graphics.getHeight();
-		width *= heightScale;
-		mCamera = new OrthographicCamera(width , Config.Graphics.HEIGHT * Config.Graphics.WORLD_SCALE);
-	}
 
-	/** Physics world */
-	private World mWorld = null;
-	/** Camera for the editor */
-	private Camera mCamera = null;
 	/** Debug renderer */
 	private Box2DDebugRenderer mDebugRenderer = new Box2DDebugRenderer();
 	/** Level we're currently editing */
@@ -376,12 +355,8 @@ public class LevelEditor extends Scene implements EventListener {
 	private Vector2 mTouchOrigin = new Vector2();
 	/** Current point when pressing */
 	private Vector2 mTouchCurrent = new Vector2();
-	/** Starting position for the scroll */
-	private Vector2 mScrollOrigin = new Vector2();
 	/** Starting position for the camera scroll */
 	private Vector2 mScrollCameraOrigin = new Vector2();
-	/** For ray testing on player ship when touching it */
-	private Vector3 mTestPoint = new Vector3();
 	/** Body that was hit (and prioritized) */
 	private Body mHitBody = null;
 	/** Bodies that were hit and selected for filtering, before mHitBody is set */
@@ -528,34 +503,6 @@ public class LevelEditor extends Scene implements EventListener {
 		}
 
 		return false;
-	}
-
-	/**
-	 * Screen to world coordinate
-	 * @param screenPos screen position
-	 * @param worldCoordinate the vector to set the world coordinate for
-	 * @param clamp if the x and y coordinates should be clamped
-	 */
-	private void screenToWorldCoord(Vector2 screenPos, Vector2 worldCoordinate, boolean clamp) {
-		screenToWorldCoord(screenPos.x, screenPos.y, worldCoordinate, clamp);
-	}
-
-	/**
-	 * Screen to world coordinate
-	 * @param x the X-coordinate of the screen
-	 * @param y the Y-coordinate of the screen
-	 * @param worldCoordinate the vector to set the world coordinate for
-	 * @param clamp if the x and y coordinates should be clamped
-	 */
-	private void screenToWorldCoord(float x, float y, Vector2 worldCoordinate, boolean clamp) {
-		if (clamp) {
-			mTestPoint.set(clampX(x), clampY(y), 0);
-		} else {
-			mTestPoint.set(x, y, 0);
-		}
-		mCamera.unproject(mTestPoint);
-		worldCoordinate.x = mTestPoint.x;
-		worldCoordinate.y = mTestPoint.y;
 	}
 
 	/**
