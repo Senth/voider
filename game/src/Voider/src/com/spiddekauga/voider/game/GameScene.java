@@ -1,5 +1,6 @@
 package com.spiddekauga.voider.game;
 
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
@@ -42,12 +43,15 @@ public class GameScene extends Scene {
 		Actor.setWorld(mWorld);
 		Actor.setEditorActive(false);
 
+
+		/** @TODO remove the player from GameScene */
 		FixtureDef fixtureDef = new FixtureDef();
 		CircleShape circleShape = new CircleShape();
 		circleShape.setRadius(1.0f);
 		fixtureDef.shape = circleShape;
 		PlayerActorDef def = new PlayerActorDef(100.0f, null, "Normal", fixtureDef);
 		mPlayerActor = new PlayerActor(def);
+		mPlayerActor.createBody();
 
 
 		/** TODO use different shaders */
@@ -59,6 +63,7 @@ public class GameScene extends Scene {
 	 */
 	public void setLevel(Level level) {
 		mLevel = level;
+		mLevel.setPlayer(mPlayerActor);
 	}
 
 	@Override
@@ -80,14 +85,12 @@ public class GameScene extends Scene {
 
 	@Override
 	public void update() {
-		// Set player velocity (so it moves along with the screen)
-		mPlayerActor.getBody().setLinearVelocity(mLevel.getSpeed(), 0.0f);
 		mWorld.step(1/60f, 6, 2);
 		mLevel.update(true);
 
 
 		/** @TODO Move the camera relative to the level */
-		mCamera.position.x = mLevel.getXCoord();
+		mCamera.position.x = mLevel.getXCoord() + mCamera.viewportWidth * 0.5f;
 		mCamera.update();
 	}
 
@@ -98,7 +101,6 @@ public class GameScene extends Scene {
 
 		} else {
 			mLevel.render(mSpriteBatch);
-			mPlayerActor.render(mSpriteBatch);
 			super.render();
 		}
 	}
@@ -153,6 +155,16 @@ public class GameScene extends Scene {
 	public boolean touchUp(int x, int y, int pointer, int button) {
 		if (mPlayerPointer == pointer) {
 			mPlayerPointer = INVALID_POINTER;
+		}
+
+		return false;
+	}
+
+	@Override
+	public boolean keyDown(int keycode) {
+		// Set level as complete if we want to go back while testing
+		if (mTesting && (keycode == Keys.ESCAPE || keycode == Keys.BACK)) {
+			setOutcome(Outcomes.LEVEL_QUIT);
 		}
 
 		return false;

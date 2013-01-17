@@ -40,6 +40,7 @@ import com.spiddekauga.voider.editor.commands.ClTerrainActorMoveCorner;
 import com.spiddekauga.voider.editor.commands.ClTerrainActorRemoveCorner;
 import com.spiddekauga.voider.editor.commands.LevelCommand;
 import com.spiddekauga.voider.game.Actor;
+import com.spiddekauga.voider.game.GameScene;
 import com.spiddekauga.voider.game.Level;
 import com.spiddekauga.voider.game.LevelDef;
 import com.spiddekauga.voider.game.actors.StaticTerrainActor;
@@ -51,6 +52,7 @@ import com.spiddekauga.voider.resources.ResourceSaver;
 import com.spiddekauga.voider.resources.UndefinedResourceTypeException;
 import com.spiddekauga.voider.scene.LoadingScene;
 import com.spiddekauga.voider.scene.Scene;
+import com.spiddekauga.voider.scene.SceneSwitcher;
 
 /**
  * The level editor scene
@@ -172,15 +174,23 @@ public class LevelEditor extends Scene implements EventListener {
 
 	@Override
 	public void onActivate(Outcomes outcome, String message) {
-		if (!mGuiInitialized) {
-			initGui();
-			mGuiInitialized = true;
-		} else {
-			scaleGui();
-		}
+		// Check so that all resources have been loaded
+		if (outcome == Outcomes.LOADING_SUCCEEDED) {
+			if (!mGuiInitialized) {
+				initGui();
+				mGuiInitialized = true;
+			} else {
+				scaleGui();
+			}
 
-		if (mToolCurrent == null) {
-			mToolCurrent = mNoneHandler;
+			if (mToolCurrent == null) {
+				mToolCurrent = mNoneHandler;
+			}
+		}
+		// Changed back to level editor from testing game, reset world etc
+		else if (outcome == Outcomes.LEVEL_QUIT) {
+			Actor.setEditorActive(true);
+			Actor.setWorld(mWorld);
 		}
 	}
 
@@ -306,6 +316,18 @@ public class LevelEditor extends Scene implements EventListener {
 	}
 
 	/**
+	 * Tests to run a game from the current location
+	 */
+	private void runFromHere() {
+		GameScene testGame = new GameScene(true);
+		Level copyLevel = mLevel.copy();
+		copyLevel.setXCoord(mCamera.position.x - mCamera.viewportWidth * 0.5f);
+		testGame.setLevel(copyLevel);
+
+		SceneSwitcher.switchTo(testGame);
+	}
+
+	/**
 	 * Fixes the camera resolution
 	 */
 	private void fixCamera() {
@@ -372,8 +394,10 @@ public class LevelEditor extends Scene implements EventListener {
 	 * All the main tool buttons
 	 */
 	private enum Tools {
-		/** @TODO change style */
+		/** Terrain tool @TODO change style */
 		STATIC_TERRAIN("toggle"),
+		/** Tests to run the map from the current location @TODO change style */
+		RUN("toggle"),
 
 		/** No tool selected */
 		NONE("");
@@ -451,6 +475,12 @@ public class LevelEditor extends Scene implements EventListener {
 			}
 
 			return false;
+		}
+
+		// --- ACTIONS ---
+		// RUN
+		if (actionName.equals(Tools.RUN.toString())) {
+			runFromHere();
 		}
 
 
@@ -616,24 +646,10 @@ public class LevelEditor extends Scene implements EventListener {
 		mToolTable.add(button);
 		mToolTable.row();
 
-		button = new ImageButton(imageStyle);
-		//		mToolTable.add(button);
-
-		button.setTransform(true);
-		button.setHeight(50);
-		button.setWidth(50);
-		//				button.scale(0.5f);
-		//		((ImageButton)button).setScale(0.5f);
-		button.invalidate();
-		mUi.addActor(button);
-
-		//		ButtonStyle buttonStyle = editorSkin.get("add", ButtonStyle.class);
-		//		button = new Button(buttonStyle);
-		//		button.setTransform(true);
-		//		button.setScale(0.5f);
-		//		button.setPosition(50, 50);
-		//		button.invalidate();
-		//		mUi.addActor(button);
+		button = new TextButton("RUN", textStyle);
+		button.setName(Tools.RUN.toString());
+		button.addListener(this);
+		mToolTable.add(button);
 
 		mGui.add(mToolTable);
 		mGui.setTransform(true);

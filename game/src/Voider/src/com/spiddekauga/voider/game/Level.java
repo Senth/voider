@@ -5,10 +5,14 @@ import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.OrderedMap;
+import com.badlogic.gdx.utils.Pools;
 import com.spiddekauga.utils.Json;
+import com.spiddekauga.voider.game.actors.PlayerActor;
 import com.spiddekauga.voider.resources.Resource;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.UndefinedResourceTypeException;
@@ -51,12 +55,47 @@ public class Level extends Resource implements ITriggerListener, Json.Serializab
 		if (run) {
 			mXCoord += mSpeed * Gdx.graphics.getDeltaTime();
 
+			if (mPlayerActor != null && mPlayerActor.getBody() != null) {
+				mPlayerActor.getBody().setLinearVelocity(mSpeed, 0.0f);
+			}
+
 			if (!mCompletedLevel) {
 				if (mXCoord >= mLevelDef.getEndXCoord()) {
 					mCompletedLevel = true;
 				}
 			}
 		}
+	}
+
+	/**
+	 * @return a copy of this level.
+	 * @pre world has to been changed to the new world before copy is called()
+	 */
+	public Level copy() {
+		Json json = new Json();
+		String jsonString = json.toJson(this);
+		return json.fromJson(Level.class, jsonString);
+	}
+
+	/**
+	 * Sets the player ship, also determines its location
+	 * @param playerActor
+	 */
+	public void setPlayer(PlayerActor playerActor) {
+		mPlayerActor = playerActor;
+
+		resetPlayerPosition();
+	}
+
+	/**
+	 * Sets the x-coordinate of the level. This makes the level jump to or start
+	 * at the specific place. Also updates the player if one exists
+	 * @param x the current x-coordinate of the level
+	 */
+	public void setXCoord(float x) {
+		mXCoord = x;
+
+		resetPlayerPosition();
 	}
 
 	/**
@@ -81,6 +120,7 @@ public class Level extends Resource implements ITriggerListener, Json.Serializab
 		for (Actor actor : mActors) {
 			actor.render(spriteBatch);
 		}
+		mPlayerActor.render(spriteBatch);
 	}
 
 	/**
@@ -162,6 +202,8 @@ public class Level extends Resource implements ITriggerListener, Json.Serializab
 	private float mSpeed;
 	/** If the level has been completed */
 	private boolean mCompletedLevel;
+	/** The player actor */
+	private PlayerActor mPlayerActor = null;
 
 
 	/* (non-Javadoc)
@@ -225,5 +267,26 @@ public class Level extends Resource implements ITriggerListener, Json.Serializab
 	 */
 	protected Level() {
 		// Does nothing
+	}
+
+	/**
+	 * Resets the player position
+	 */
+	private void resetPlayerPosition() {
+		if (mPlayerActor != null && mPlayerActor.getBody() != null) {
+			Vector2 playerPosition = Pools.obtain(Vector2.class);
+			playerPosition.set(mXCoord, 0);
+
+			// Get radius of player and offset it with the width
+			ArrayList<Fixture> playerFixtures = mPlayerActor.getBody().getFixtureList();
+
+			if (playerFixtures.size() > 0) {
+				float radius = playerFixtures.get(0).getShape().getRadius();
+				playerPosition.x += radius * 2;
+
+				mPlayerActor.getBody().setTransform(playerPosition, 0.0f);
+			}
+			Pools.free(playerPosition);
+		}
 	}
 }
