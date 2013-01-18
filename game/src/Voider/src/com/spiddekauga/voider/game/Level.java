@@ -213,6 +213,8 @@ public class Level extends Resource implements ITriggerListener, Json.Serializab
 	private boolean mCompletedLevel;
 	/** The player actor */
 	private PlayerActor mPlayerActor = null;
+	/** Version of level layout */
+	private static final int VERSION = 1;
 
 
 	/* (non-Javadoc)
@@ -222,6 +224,7 @@ public class Level extends Resource implements ITriggerListener, Json.Serializab
 	public void write(Json json) {
 		super.write(json);
 
+		json.writeValue("VERSION", VERSION);
 		json.writeValue("mActors", mActors);
 		json.writeValue("mLevelDefId", mLevelDef.getId());
 		json.writeValue("mXCoord", mXCoord);
@@ -238,6 +241,9 @@ public class Level extends Resource implements ITriggerListener, Json.Serializab
 	@Override
 	public void read(Json json, OrderedMap<String, Object> jsonData) {
 		super.read(json, jsonData);
+
+		@SuppressWarnings("unused")
+		int version = json.readValue("VERSION", int.class, jsonData);
 
 		mXCoord = json.readValue("mXCoord", float.class, jsonData);
 		mSpeed = json.readValue("mSpeed", float.class, jsonData);
@@ -267,7 +273,7 @@ public class Level extends Resource implements ITriggerListener, Json.Serializab
 	}
 
 	@Override
-	public void onTriggered(String action) {
+	public void onTriggered(TriggerAction action) {
 		/** @TODO Auto-generated method stub */
 	}
 

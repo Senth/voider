@@ -22,7 +22,7 @@ public class TestListener extends Def implements ITriggerListener {
 	 * @see com.spiddekauga.voider.game.ITriggerListener#onTriggered(java.lang.String)
 	 */
 	@Override
-	public void onTriggered(String action) {
+	public void onTriggered(TriggerAction action) {
 		// TODO Auto-generated method stub
 
 	}

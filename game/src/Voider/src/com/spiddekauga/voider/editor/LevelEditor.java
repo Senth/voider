@@ -827,7 +827,12 @@ public class LevelEditor extends WorldScene implements EventListener {
 				}
 
 				break;
+
+			case NONE:
+				// Does nothing
+				break;
 			}
+
 		}
 
 		@Override
@@ -860,6 +865,10 @@ public class LevelEditor extends WorldScene implements EventListener {
 
 
 			case REMOVE:
+				// Does nothing
+				break;
+
+			case NONE:
 				// Does nothing
 				break;
 			}
@@ -917,6 +926,10 @@ public class LevelEditor extends WorldScene implements EventListener {
 
 
 			case REMOVE:
+				// Does nothing
+				break;
+
+			case NONE:
 				// Does nothing
 				break;
 			}

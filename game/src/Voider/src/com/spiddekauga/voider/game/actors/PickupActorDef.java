@@ -26,10 +26,9 @@ public class PickupActorDef extends ActorDef {
 	}
 
 	/**
-	 * Private default constructor, used for JSON.
+	 * Default constructor
 	 */
-	@SuppressWarnings("unused")
-	private PickupActorDef() {
+	public PickupActorDef() {
 
 	}
 

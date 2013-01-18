@@ -19,6 +19,7 @@ import com.spiddekauga.utils.Json;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.editor.HitWrapper;
 import com.spiddekauga.voider.game.Actor;
+import com.spiddekauga.voider.game.TriggerAction;
 import com.spiddekauga.voider.utils.Geometry;
 
 /**
@@ -39,7 +40,7 @@ public class StaticTerrainActor extends Actor {
 	 * @see com.spiddekauga.voider.game.ITriggerListener#onTriggered(java.lang.String)
 	 */
 	@Override
-	public void onTriggered(String action) {
+	public void onTriggered(TriggerAction action) {
 		// Does nothing
 	}
 
@@ -412,15 +413,6 @@ public class StaticTerrainActor extends Actor {
 	 */
 	private Vector2 toLocalPos(Vector2 worldPos) {
 		return Pools.obtain(Vector2.class).set(worldPos).sub(getPosition());
-	}
-
-	/**
-	 * @param localPos the position to convert to world position
-	 * @return the world position of the local position. This shall be freed with
-	 * Pools.free() later.
-	 */
-	private Vector2 toWorldPos(Vector2 localPos) {
-		return Pools.obtain(Vector2.class).set(localPos).add(getPosition());
 	}
 
 	/**

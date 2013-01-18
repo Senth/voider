@@ -16,7 +16,7 @@ public class TriggerListenerInfo implements Json.Serializable {
 	/** Id of the listener */
 	public UUID listenerId;
 	/** The action to take to pass to the listener */
-	public String action;
+	public TriggerAction.Actions action;
 	/** Delay of the trigger in seconds */
 	public float delay;
 
@@ -37,7 +37,7 @@ public class TriggerListenerInfo implements Json.Serializable {
 	@Override
 	public void read(Json json, OrderedMap<String, Object> jsonData) {
 		listenerId = UUID.fromString(json.readValue("listenerId", String.class, jsonData));
-		action = json.readValue("action", String.class, jsonData);
+		action = json.readValue("action", TriggerAction.Actions.class, jsonData);
 		delay = json.readValue("delay", float.class, jsonData);
 	}
 

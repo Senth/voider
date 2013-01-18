@@ -182,7 +182,7 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	 */
 
 	/** For serialization */
-	private static final long VERSION = 101;
+	private static final long VERSION = 1;
 
 
 	/* (non-Javadoc)
@@ -209,6 +209,7 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	@SuppressWarnings("unchecked")
 	@Override
 	public void read(Json json, OrderedMap<String, Object> jsonData) {
+		@SuppressWarnings("unused")
 		long version = json.readValue("VERSION", long.class, jsonData);
 
 		// Superclass
@@ -222,9 +223,6 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 		mMaxLife = json.readValue("mMaxLife", float.class, jsonData);
 		mBodyDef = json.readValue("mBodyDef", BodyDef.class, jsonData);
 		mFixtureDefs = json.readValue("mFixtureDefs", ArrayList.class, jsonData);
-
-		if (version >= 101) {
-			mCollisionDamage = json.readValue("mCollisionDamage", float.class, jsonData);
-		}
+		mCollisionDamage = json.readValue("mCollisionDamage", float.class, jsonData);
 	}
 }

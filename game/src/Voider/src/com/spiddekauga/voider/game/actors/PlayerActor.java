@@ -1,5 +1,7 @@
 package com.spiddekauga.voider.game.actors;
 
+import com.spiddekauga.voider.game.TriggerAction;
+
 
 
 
@@ -21,7 +23,7 @@ public class PlayerActor extends com.spiddekauga.voider.game.Actor {
 	 * @see com.spiddekauga.voider.game.ITriggerListener#onTriggered(java.lang.String)
 	 */
 	@Override
-	public void onTriggered(String action) {
+	public void onTriggered(TriggerAction action) {
 		// TODO Auto-generated method stub
 
 	}

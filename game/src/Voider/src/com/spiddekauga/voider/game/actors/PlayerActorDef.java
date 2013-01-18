@@ -29,10 +29,11 @@ public class PlayerActorDef extends ActorDef {
 	}
 
 	/**
-	 * Protected default constructor used for JSON
+	 * Default constructor
 	 */
 	protected PlayerActorDef() {
-
+		getBodyDef().type = BodyType.DynamicBody;
+		getBodyDef().fixedRotation = true;
 	}
 
 	/**

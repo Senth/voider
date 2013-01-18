@@ -31,5 +31,5 @@ public interface ITriggerListener extends IResource {
 	 * @param action the action the listener should take (i.e. what it was
 	 * associated with).
 	 */
-	public void onTriggered(String action);
+	public void onTriggered(TriggerAction action);
 }

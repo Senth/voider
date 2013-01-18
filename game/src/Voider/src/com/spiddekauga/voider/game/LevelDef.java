@@ -262,13 +262,8 @@ public class LevelDef extends Def {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void read(Json json, OrderedMap<String, Object> jsonData) {
+		@SuppressWarnings("unused")
 		long version = json.readValue("VERSION", long.class, jsonData);
-
-		/** @TODO do something when another version... */
-		if (version != VERSION) {
-			//...
-		}
-
 
 		// Superclass
 		OrderedMap<String, Object> defMap = json.readValue("Def", OrderedMap.class, jsonData);
@@ -335,6 +330,6 @@ public class LevelDef extends Def {
 	private int mVersionThird = 0;
 
 	/** The version of this level definition structure */
-	private static final long VERSION = 100;
+	private static final long VERSION = 1;
 
 }

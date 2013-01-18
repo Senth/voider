@@ -17,6 +17,7 @@ import org.junit.Test;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.spiddekauga.utils.Json;
+import com.spiddekauga.voider.game.TriggerAction.Actions;
 
 /**
  * Test for TriggerContainer class
@@ -74,7 +75,7 @@ public class TriggerContainerTest {
 
 		// Create listener info
 		TriggerListenerInfo listenerInfo10 = new TriggerListenerInfo();
-		listenerInfo10.action = "listener1 first action";
+		listenerInfo10.action = Actions.ACTOR_ACTIVATE;
 		listenerInfo10.listener = listener1;
 		listenerInfo10.listenerId = listener1.getId();
 
@@ -122,7 +123,7 @@ public class TriggerContainerTest {
 
 		// Create listener info
 		TriggerListenerInfo listenerInfo10 = new TriggerListenerInfo();
-		listenerInfo10.action = "listener1 first action";
+		listenerInfo10.action =Actions.ACTOR_ACTIVATE;
 		listenerInfo10.listener = listener1;
 		listenerInfo10.listenerId = listener1.getId();
 
@@ -276,12 +277,12 @@ public class TriggerContainerTest {
 
 		// Create listener info
 		TriggerListenerInfo listenerInfo10 = new TriggerListenerInfo();
-		listenerInfo10.action = "listener1 first action";
+		listenerInfo10.action = Actions.ACTOR_ACTIVATE;
 		listenerInfo10.listener = listener1;
 		listenerInfo10.listenerId = listener1.getId();
 
 		TriggerListenerInfo listenerInfo11 = new TriggerListenerInfo();
-		listenerInfo11.action = "second action";
+		listenerInfo11.action = Actions.ACTOR_CREATE;
 		listenerInfo11.listener = listener1;
 		listenerInfo11.listenerId = listener1.getId();
 
@@ -373,12 +374,12 @@ public class TriggerContainerTest {
 
 		// Create listener info
 		TriggerListenerInfo listenerInfo10 = new TriggerListenerInfo();
-		listenerInfo10.action = "listener1 first action";
+		listenerInfo10.action = Actions.ACTOR_ACTIVATE;
 		listenerInfo10.listener = listener1;
 		listenerInfo10.listenerId = listener1.getId();
 
 		TriggerListenerInfo listenerInfo11 = new TriggerListenerInfo();
-		listenerInfo11.action = "second action";
+		listenerInfo11.action = Actions.ACTOR_CREATE;
 		listenerInfo11.listener = listener1;
 		listenerInfo11.listenerId = listener1.getId();
 
@@ -432,12 +433,12 @@ public class TriggerContainerTest {
 
 		// Create listener info
 		TriggerListenerInfo listenerInfo10 = new TriggerListenerInfo();
-		listenerInfo10.action = "listener1 first action";
+		listenerInfo10.action = Actions.ACTOR_ACTIVATE;
 		listenerInfo10.listener = listener1;
 		listenerInfo10.listenerId = listener1.getId();
 
 		TriggerListenerInfo listenerInfo11 = new TriggerListenerInfo();
-		listenerInfo11.action = "second action";
+		listenerInfo11.action = Actions.ACTOR_CREATE;
 		listenerInfo11.listener = listener1;
 		listenerInfo11.listenerId = listener1.getId();
 
@@ -543,12 +544,12 @@ public class TriggerContainerTest {
 
 		// Create listener info
 		TriggerListenerInfo listenerInfo10 = new TriggerListenerInfo();
-		listenerInfo10.action = "listener1 first action";
+		listenerInfo10.action = Actions.ACTOR_ACTIVATE;
 		listenerInfo10.listener = listener1;
 		listenerInfo10.listenerId = listener1.getId();
 
 		TriggerListenerInfo listenerInfo11 = new TriggerListenerInfo();
-		listenerInfo11.action = "second action";
+		listenerInfo11.action = Actions.ACTOR_CREATE;
 		listenerInfo11.listener = listener1;
 		listenerInfo11.listenerId = listener1.getId();
 
@@ -638,12 +639,12 @@ public class TriggerContainerTest {
 
 		// Create listener info
 		TriggerListenerInfo listenerInfo10 = new TriggerListenerInfo();
-		listenerInfo10.action = "listener1 first action";
+		listenerInfo10.action = Actions.ACTOR_ACTIVATE;
 		listenerInfo10.listener = listener1;
 		listenerInfo10.listenerId = listener1.getId();
 
 		TriggerListenerInfo listenerInfo11 = new TriggerListenerInfo();
-		listenerInfo11.action = "second action";
+		listenerInfo11.action = Actions.ACTOR_CREATE;
 		listenerInfo11.listener = listener1;
 		listenerInfo11.listenerId = listener1.getId();
 

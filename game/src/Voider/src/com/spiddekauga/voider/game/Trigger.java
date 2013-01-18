@@ -27,6 +27,16 @@ public abstract class Trigger extends Resource {
 	}
 
 	/**
+	 * @return the reason for the trigger
+	 */
+	protected abstract TriggerAction.Reasons getReason();
+
+	/**
+	 * @return object that caused the trigger to trigger
+	 */
+	protected abstract Object getCauseObject();
+
+	/**
 	 * Checks if the trigger is triggered
 	 * @return true if the trigger has triggered
 	 */
