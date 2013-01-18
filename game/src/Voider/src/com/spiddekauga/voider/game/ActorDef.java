@@ -3,14 +3,12 @@ package com.spiddekauga.voider.game;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.OrderedMap;
 import com.spiddekauga.utils.Json;
 import com.spiddekauga.voider.resources.Def;
-import com.spiddekauga.voider.resources.Textures;
 
 /**
  * Definition of the actor. This include common attribute for a common type of actor.
@@ -23,20 +21,17 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	/**
 	 * Constructor that sets all variables
 	 * @param maxLife maximum life of the actor, also starting amount of life
-	 * @param textureTypes all the texture types that are used for the actor
 	 * @param name name of the actor
 	 * @param fixtureDef physical representation of the object
 	 */
 	public ActorDef(
 			float maxLife,
-			Textures.Types[] textureTypes,
 			String name,
 			FixtureDef fixtureDef
 			)
 	{
 		setName(name);
 		mMaxLife = maxLife;
-		mTextureTypes = textureTypes;
 		if (fixtureDef != null) {
 			addFixtureDef(fixtureDef);
 		}
@@ -50,32 +45,40 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	}
 
 	/**
-	 * Maximum life of the actor, usually starting amount of life
-	 * @return maximum life
+	 * Sets the collision damage of the actor
+	 * @param collisionDamage damage (per second) this actor will make to another when
+	 * colliding actor.
+	 * @return this for chaining commands
+	 */
+	public ActorDef setCollisionDamage(float collisionDamage) {
+		mCollisionDamage = collisionDamage;
+		return this;
+	}
+
+	/**
+	 * @return the collision damage (per second) this actor will make to another
+	 * colliding actor.
+	 */
+	public float getCollisionDamage() {
+		return mCollisionDamage;
+	}
+
+	/**
+	 * Sets the maximum life of the actor. I.e. starting amount of
+	 * life.
+	 * @param maxLife the maximum/starting amount of life.
+	 * @return this for chaining commands
+	 */
+	public ActorDef setMaxLife(float maxLife) {
+		mMaxLife = maxLife;
+		return this;
+	}
+
+	/**
+	 * @return Maximum life of the actor. I.e. starting amount of life
 	 */
 	public float getMaxLife() {
 		return mMaxLife;
-	}
-
-	/**
-	 * Checks how many textures this actor has
-	 * @return number of textures
-	 */
-	public int getTextureCount() {
-		return mTextureTypes == null ? 0 : mTextureTypes.length;
-	}
-
-	/**
-	 * Gets the texture region (not the type) with the current id.
-	 * @param index texture's index
-	 * @return texture region if index was valid, null if index is out of bounds
-	 */
-	public TextureRegion getTextureRegion(int index) {
-		if (index >= 0 && index < mTextureTypes.length) {
-			return Textures.getTexture(mTextureTypes[index]);
-		} else {
-			return null;
-		}
 	}
 
 	/**
@@ -168,10 +171,10 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	private ArrayList<FixtureDef> mFixtureDefs = new ArrayList<FixtureDef>();
 	/** Maximum life of the actor, usually starting amount of life */
 	private float mMaxLife = 0;
-	/** All textures for the actor */
-	private Textures.Types[] mTextureTypes = null;
 	/** The body definition of the actor */
 	private BodyDef mBodyDef = null;
+	/** Collision damage (per second) */
+	private float mCollisionDamage = 0;
 
 	/**
 	 * @TODO weapon type
@@ -179,7 +182,7 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	 */
 
 	/** For serialization */
-	private static final long VERSION = 100;
+	private static final long VERSION = 101;
 
 
 	/* (non-Javadoc)
@@ -195,9 +198,9 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 
 		// Write ActorDef's variables first
 		json.writeValue("mMaxLife", mMaxLife);
-		json.writeValue("mTextureTypes", mTextureTypes);
 		json.writeValue("mBodyDef", mBodyDef);
 		json.writeValue("mFixtureDefs", mFixtureDefs);
+		json.writeValue("mCollisionDamage", mCollisionDamage);
 	}
 
 	/* (non-Javadoc)
@@ -208,11 +211,6 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	public void read(Json json, OrderedMap<String, Object> jsonData) {
 		long version = json.readValue("VERSION", long.class, jsonData);
 
-		/** @TODO do something when another version... */
-		if (version != VERSION) {
-			//...
-		}
-
 		// Superclass
 		OrderedMap<String, Object> superMap = json.readValue("Def", OrderedMap.class, jsonData);
 		if (superMap != null) {
@@ -222,8 +220,11 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 
 		// Our variables
 		mMaxLife = json.readValue("mMaxLife", float.class, jsonData);
-		mTextureTypes = json.readValue("mTextureTypes", Textures.Types[].class, jsonData);
 		mBodyDef = json.readValue("mBodyDef", BodyDef.class, jsonData);
 		mFixtureDefs = json.readValue("mFixtureDefs", ArrayList.class, jsonData);
+
+		if (version >= 101) {
+			mCollisionDamage = json.readValue("mCollisionDamage", float.class, jsonData);
+		}
 	}
 }

@@ -42,8 +42,8 @@ public class DefTest {
 	 */
 	@Test
 	public void equalsObject() {
-		Def def = new PlayerActorDef(100, null, "player", null);
-		Def def2 = new PlayerActorDef(100, null, "player", null);
+		Def def = new PlayerActorDef(100, "player", null);
+		Def def2 = new PlayerActorDef(100, "player", null);
 
 		assertEquals("equals()", def, def);
 		assertTrue("not equals()", !def.equals(def2));
@@ -66,9 +66,9 @@ public class DefTest {
 	 */
 	@Test
 	public void writeRead() {
-		Def def = new PlayerActorDef(100, null, "player", null);
-		Def dependency1 = new BossActorDef(200, null, "boss", null);
-		Def dependency2 = new BulletActorDef(300, null, "bullet", null);
+		Def def = new PlayerActorDef(100, "player", null);
+		Def dependency1 = new BossActorDef(200, "boss", null);
+		Def dependency2 = new BulletActorDef(300, "bullet", null);
 		def.setComment("testComment");
 		try {
 			mfCreator.set(def, "originalCreator");
@@ -110,9 +110,9 @@ public class DefTest {
 	 */
 	@Test
 	public void addDependencyDef() {
-		Def def = new PlayerActorDef(100, null, "player", null);
-		Def dependency1 = new BossActorDef(200, null, "boss", null);
-		Def dependency2 = new BulletActorDef(300, null, "bullet", null);
+		Def def = new PlayerActorDef(100, "player", null);
+		Def dependency1 = new BossActorDef(200, "boss", null);
+		Def dependency2 = new BulletActorDef(300, "bullet", null);
 		def.addDependency(dependency1);
 		def.addDependency(dependency2);
 
@@ -132,7 +132,7 @@ public class DefTest {
 	 */
 	@Test
 	public void addDependencyResourceNames() {
-		Def def = new PlayerActorDef(100, null, "player", null);
+		Def def = new PlayerActorDef(100, "player", null);
 		def.addDependency(ResourceNames.PARTICLE_TEST);
 		def.addDependency(ResourceNames.TEXTURE_PLAYER);
 		def.addDependency(ResourceNames.SOUND_TEST);
@@ -152,9 +152,9 @@ public class DefTest {
 	 */
 	@Test
 	public void removeDependencyUUID() {
-		Def def = new PlayerActorDef(100, null, "player", null);
-		Def dependency1 = new BossActorDef(200, null, "boss", null);
-		Def dependency2 = new BulletActorDef(300, null, "bullet", null);
+		Def def = new PlayerActorDef(100, "player", null);
+		Def dependency1 = new BossActorDef(200, "boss", null);
+		Def dependency2 = new BulletActorDef(300, "bullet", null);
 		def.addDependency(dependency1);
 		def.addDependency(dependency2);
 
@@ -184,7 +184,7 @@ public class DefTest {
 	 */
 	@Test
 	public void removeDependencyResourceNames() {
-		Def def = new PlayerActorDef(100, null, "player", null);
+		Def def = new PlayerActorDef(100, "player", null);
 		def.addDependency(ResourceNames.PARTICLE_TEST);
 		def.addDependency(ResourceNames.SOUND_TEST);
 		def.removeDependency(ResourceNames.PARTICLE_TEST);

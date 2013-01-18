@@ -31,7 +31,7 @@ public class ActorDefTest {
 	@Test
 	public void writeRead() {
 		// No Fixture
-		ActorDef actor = new PlayerActorDef(100,  null, "player", null);
+		ActorDef actor = new PlayerActorDef(100,  "player", null);
 
 		Json json = new Json();
 		String jsonString = json.toJson(actor);

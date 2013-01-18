@@ -15,7 +15,8 @@ public class StaticTerrainActorDef extends ActorDef {
 	 */
 	public StaticTerrainActorDef()
 	{
-		super(-1, null, "StaticTerrain", new FixtureDef());
+		super(-1, "StaticTerrain", new FixtureDef());
+		setCollisionDamage(20);
 	}
 
 	/**

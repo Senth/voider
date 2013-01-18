@@ -59,8 +59,6 @@ public class LevelTest {
 
 		mfActors = Level.class.getDeclaredField("mActors");
 		mfActors.setAccessible(true);
-		mfTriggers = Level.class.getDeclaredField("mTriggers");
-		mfTriggers.setAccessible(true);
 		mfXCoord = Level.class.getDeclaredField("mXCoord");
 		mfXCoord.setAccessible(true);
 		mfLevelDef = Level.class.getDeclaredField("mLevelDef");
@@ -100,7 +98,6 @@ public class LevelTest {
 
 		assertEquals("uuid", level.getId(), jsonLevel.getId());
 		assertEquals("actors", 0, ((ArrayList<Actor>) mfActors.get(jsonLevel)).size());
-		assertEquals("triggers", 0, ((ArrayList<Trigger>) mfTriggers.get(jsonLevel)).size());
 		assertEquals("x-coord", 0.0f, mfXCoord.get(jsonLevel));
 		assertEquals("level def", mUsingLevelDef, mfLevelDef.get(jsonLevel));
 		assertEquals("speed", mfSpeed.get(level), mfSpeed.get(jsonLevel));
@@ -109,7 +106,6 @@ public class LevelTest {
 
 		// Test with setting the values to something else
 		((ArrayList<Actor>) mfActors.get(level)).add(new PlayerActor(mPlayerActorDef));
-		((ArrayList<Trigger>) mfTriggers.get(level)).add(new TestTrigger());
 		mfXCoord.set(level, 55.3f);
 		mfSpeed.set(level, 0.578f);
 		mfCompletedLevel.set(level, true);
@@ -119,7 +115,6 @@ public class LevelTest {
 
 		assertEquals("uuid", level.getId(), jsonLevel.getId());
 		assertEquals("actors", 1, ((ArrayList<Actor>) mfActors.get(jsonLevel)).size());
-		assertEquals("triggers", 1, ((ArrayList<Trigger>) mfTriggers.get(jsonLevel)).size());
 		assertEquals("x-coord", 55.3f, mfXCoord.get(jsonLevel));
 		assertEquals("level def", mUsingLevelDef, mfLevelDef.get(jsonLevel));
 		assertEquals("speed", 0.578f, mfSpeed.get(jsonLevel));
@@ -129,15 +124,13 @@ public class LevelTest {
 	/** Level definition used for the tests */
 	private static LevelDef mUsingLevelDef = new LevelDef();
 	/** Player definition used for the tests */
-	private static PlayerActorDef mPlayerActorDef = new PlayerActorDef(100, null, "player", new FixtureDef());
+	private static PlayerActorDef mPlayerActorDef = new PlayerActorDef(100, "player", new FixtureDef());
 	/** World used for actors */
 	private static World mWorld = null;
 
 	// Fields for testing private members
 	/** Actors */
 	private static Field mfActors = null;
-	/** Triggers */
-	private static Field mfTriggers = null;
 	/** X-Coord */
 	private static Field mfXCoord = null;
 	/** Level Def */

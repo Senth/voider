@@ -6,7 +6,6 @@ import java.util.UUID;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -36,13 +35,6 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 	 * @param def actor definition
 	 */
 	public Actor(ActorDef def) {
-		if (def.getTextureCount() > 0) {
-			TextureRegion region = def.getTextureRegion(0);
-			if (region != null) {
-				mSprite = new Sprite(region);
-			}
-		}
-
 		mDef = def;
 		mLife = def.getMaxLife();
 		mUniqueId = UUID.randomUUID();
@@ -52,7 +44,16 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 	 * Updates the actor
 	 * @param deltaTime seconds elapsed since last call
 	 */
-	public abstract void update(float deltaTime);
+	public void update(float deltaTime) {
+		// Decrease life if colliding with something...
+		if (mDef.getMaxLife() > 0 && mLife > 0) {
+			for (ActorDef collidingActor : mCollidingActors) {
+				mLife -= collidingActor.getCollisionDamage() * deltaTime;
+			}
+		}
+
+		// Do something if life is 0?
+	}
 
 	/**
 	 * @return the definition of the actor
@@ -81,6 +82,25 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 	}
 
 	/**
+	 * Adds a colliding actor to this actor
+	 * @param actorDef the actor definition this actor is colliding with
+	 */
+	public void addCollidingActor(ActorDef actorDef) {
+		mCollidingActors.add(actorDef);
+	}
+
+	/**
+	 * Removes a colliding actor from this actor
+	 * @param actorDef the actor definition this actor is colliding with, but to now remove
+	 */
+	public void removeCollidingActor(ActorDef actorDef) {
+		boolean removeSuccess = mCollidingActors.remove(actorDef);
+		if (!removeSuccess) {
+			Gdx.app.error("Actor", "Could not find colliding actor to remove");
+		}
+	}
+
+	/**
 	 * @return current life of the actor
 	 */
 	public float getLife() {
@@ -95,6 +115,7 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 		json.writeValue("mLife", mLife);
 		json.writeValue("mPosition", mPosition);
 
+
 		if (savesDef()) {
 			json.writeValue("mDef", mDef);
 		} else {
@@ -102,6 +123,7 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 			json.writeValue("mDefType", mDef.getClass().getName());
 		}
 
+		/** @TODO Do we need to save colliding actors? */
 
 		if (mBody != null) {
 			json.writeObjectStart("mBody");
@@ -125,6 +147,8 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 		mLife = json.readValue("mLife", float.class, jsonData);
 		mPosition = json.readValue("mPosition", Vector2.class, jsonData);
 
+
+		// Definition
 		if (savesDef()) {
 			mDef = json.readValue("mDef", StaticTerrainActorDef.class, jsonData);
 		}
@@ -312,6 +336,8 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 	private ActorDef mDef = null;
 	/** Body position, remember even when we don't have a body */
 	private Vector2 mPosition = Pools.obtain(Vector2.class).set(0, 0);
+	/** Current actors we're colliding with */
+	private ArrayList<ActorDef> mCollidingActors = new ArrayList<ActorDef>();
 
 	/** The world used for creating bodies */
 	protected static World mWorld = null;

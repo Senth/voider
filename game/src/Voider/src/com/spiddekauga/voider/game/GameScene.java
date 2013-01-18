@@ -39,6 +39,7 @@ public class GameScene extends WorldScene {
 		mTesting = testing;
 
 		Actor.setEditorActive(false);
+		mWorld.setContactListener(mCollisionResolver);
 
 
 		/** @TODO remove the player creation, it shall be created in level instead */
@@ -46,10 +47,10 @@ public class GameScene extends WorldScene {
 		CircleShape circleShape = new CircleShape();
 		circleShape.setRadius(1.0f);
 		fixtureDef.friction = 0.0f;
-		fixtureDef.restitution = 0.0f;
+		fixtureDef.restitution = 0.1f;
 		fixtureDef.density = 0.001f;
 		fixtureDef.shape = circleShape;
-		PlayerActorDef def = new PlayerActorDef(100.0f, null, "Normal", fixtureDef);
+		PlayerActorDef def = new PlayerActorDef(100.0f, "Normal", fixtureDef);
 		mPlayerActor = new PlayerActor(def);
 		mPlayerActor.createBody();
 
@@ -57,11 +58,11 @@ public class GameScene extends WorldScene {
 		// Create mouse joint
 		BodyDef bodyDef = new BodyDef();
 		mMouseBody = mWorld.createBody(bodyDef);
-		mMouseJointDef.frequencyHz = 500;
+		mMouseJointDef.frequencyHz = Config.Game.MouseJoint.FREQUENCY;
 		mMouseJointDef.bodyA = mMouseBody;
 		mMouseJointDef.bodyB = mPlayerActor.getBody(); // TODO REMOVE, set in onActivate instead
 		mMouseJointDef.collideConnected = true;
-		mMouseJointDef.maxForce = 10000.0f;
+		mMouseJointDef.maxForce = Config.Game.MouseJoint.FORCE_MAX;
 
 		/** TODO use different shaders */
 	}
@@ -112,6 +113,11 @@ public class GameScene extends WorldScene {
 		/** @TODO Move the camera relative to the level */
 		mCamera.position.x = mLevel.getXCoord() + mCamera.viewportWidth * 0.5f;
 		mCamera.update();
+
+		// Is the player dead?
+		if (mPlayerActor.getLife() <= 0 && !mTesting) {
+			setOutcome(Outcomes.LEVEL_PLAYER_DIED);
+		}
 	}
 
 	@Override
@@ -231,7 +237,7 @@ public class GameScene extends WorldScene {
 		shape.createLoop(corners);
 		FixtureDef fixtureDef = new FixtureDef();
 		fixtureDef.shape = shape;
-		fixtureDef.filter.categoryBits = FixtureFilterCategories.STATIC_TERRAIN;
+		fixtureDef.filter.categoryBits = FixtureFilterCategories.SCREEN_BORDER;
 		fixtureDef.filter.maskBits = FixtureFilterCategories.PLAYER;
 		mBorderBody.createFixture(fixtureDef);
 
@@ -260,6 +266,8 @@ public class GameScene extends WorldScene {
 	private boolean mMovingPlayer = false;
 	/** Border around the screen so the player can't "escape" */
 	private Body mBorderBody = null;
+	/** Handles collision between actors/bodies */
+	private CollisionResolver mCollisionResolver = new CollisionResolver();
 
 	// MOUSE JOINT
 	/** Screen coordinate for the cursor */

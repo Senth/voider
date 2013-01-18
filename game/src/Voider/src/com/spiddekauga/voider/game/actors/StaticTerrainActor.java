@@ -43,14 +43,6 @@ public class StaticTerrainActor extends Actor {
 		// Does nothing
 	}
 
-	/* (non-Javadoc)
-	 * @see com.spiddekauga.voider.game.Actor#update(float)
-	 */
-	@Override
-	public void update(float deltaTime) {
-		// Does nothing
-	}
-
 	@Override
 	public void renderEditor(SpriteBatch spriteBatch) {
 		/** @TODO render the corners */

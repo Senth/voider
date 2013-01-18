@@ -51,7 +51,7 @@ public class ResourceSaverTest {
 	 */
 	@Test
 	public void testSave() {
-		Def def = new PickupActorDef(100, null, "pickup", null);
+		Def def = new PickupActorDef(100, "pickup", null);
 
 		// Test to save it and then load
 		ResourceSaver.save(def);

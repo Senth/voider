@@ -58,7 +58,7 @@ public class ObjectCrypterTest {
 		fixtureDef.density = 0.1f;
 		fixtureDef.friction = 0.2f;
 		fixtureDef.restitution = 0.3f;
-		ActorDef actorDef = new PlayerActorDef(100, null, "player", fixtureDef);
+		ActorDef actorDef = new PlayerActorDef(100, "player", fixtureDef);
 
 		Json json = new Json();
 		String jsonString = json.toJson(actorDef);

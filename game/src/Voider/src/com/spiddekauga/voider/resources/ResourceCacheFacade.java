@@ -81,16 +81,34 @@ public class ResourceCacheFacade {
 
 		FileHandle[] files = dir.list();
 		// Only load the resource, no dependencies
+		// Skip filenames that aren't fully UUIDs, e.g. backup files
 		if (!loadDependencies) {
 			for (FileHandle file : files) {
-				mAssetManager.load(file.path(), type);
+				// Skip files with extension (these can be backup files etc)
+				if (file.extension().length() == 0) {
+					// Is it really an UUID?
+					try {
+						UUID.fromString(file.name());
+						mAssetManager.load(file.path(), type);
+					} catch (IllegalArgumentException e) {
+						Gdx.app.error("ResourceCacheFacade", "File is not resource: " + file.path());
+					}
+				}
 			}
 		}
-		// Load dependencies too
+		// Load dependencies too, note dependency loader will load this resource too. Thus
+		// No call to asset manager should be done from this class.
 		else {
 			for (FileHandle file : files) {
-				UUID uuid = UUID.fromString(file.name());
-				mDependencyLoader.load(uuid, type);
+				// Skif files with extension (these can be backup files etc)
+				if (file.extension().length() == 0) {
+					try {
+						UUID uuid = UUID.fromString(file.name());
+						mDependencyLoader.load(uuid, type);
+					} catch (IllegalArgumentException e) {
+						Gdx.app.error("ResourceCacheFacade", "File is not resource: " + file.path());
+					}
+				}
 			}
 		}
 	}
@@ -115,7 +133,9 @@ public class ResourceCacheFacade {
 		// Only load the resource, no dependencies
 		if (!unloadDependencies) {
 			for (FileHandle file : files) {
-				mAssetManager.load(file.path(), type);
+				if (mAssetManager.isLoaded(file.path())) {
+					mAssetManager.unload(file.path());
+				}
 			}
 		}
 		// Load dependencies too
@@ -123,8 +143,6 @@ public class ResourceCacheFacade {
 			for (FileHandle file : files) {
 				if (mAssetManager.isLoaded(file.path())) {
 					mDependencyLoader.unload((Def) mAssetManager.get(file.path(), type));
-				} else {
-					Gdx.app.error("ResourceNotLoaded", "unloadAllOf(), a resource wasn't loaded before");
 				}
 			}
 		}
@@ -276,8 +294,10 @@ public class ResourceCacheFacade {
 
 		ArrayList<ResourceType> resources = new ArrayList<ResourceType>();
 
-		for (int i = 0; i < files.length; ++i) {
-			resources.add(mAssetManager.get(files[i].path(), type));
+		for (FileHandle file : files) {
+			if (mAssetManager.isLoaded(file.path())) {
+				resources.add(mAssetManager.get(file.path(), type));
+			}
 		}
 
 		return resources;

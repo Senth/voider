@@ -2,6 +2,7 @@ package com.spiddekauga.voider.game.actors;
 
 
 
+
 /**
  * The ship the player controls
  * 
@@ -21,15 +22,6 @@ public class PlayerActor extends com.spiddekauga.voider.game.Actor {
 	 */
 	@Override
 	public void onTriggered(String action) {
-		// TODO Auto-generated method stub
-
-	}
-
-	/* (non-Javadoc)
-	 * @see com.spiddekauga.voider.game.Actor#update(float)
-	 */
-	@Override
-	public void update(float deltaTime) {
 		// TODO Auto-generated method stub
 
 	}

@@ -172,7 +172,7 @@ public class ResourceCacheFacadeTest {
 	 */
 	@Test(expected = ResourceCorruptException.class)
 	public void loadCorruptResource() {
-		ActorDef tempDef = new PlayerActorDef(100f, null, "test", null);
+		ActorDef tempDef = new PlayerActorDef(100f, "test", null);
 		ResourceSaver.save(tempDef);
 
 		try {
@@ -206,7 +206,7 @@ public class ResourceCacheFacadeTest {
 	 */
 	@Test(expected = ResourceNotFoundException.class)
 	public void loadNoneExistingResource() {
-		PlayerActorDef tempDef = new PlayerActorDef(100, null, "test", null);
+		PlayerActorDef tempDef = new PlayerActorDef(100, "test", null);
 		try {
 			ResourceCacheFacade.load(tempDef.getId(), PlayerActorDef.class, false);
 		} catch (UndefinedResourceTypeException e) {
@@ -256,21 +256,32 @@ public class ResourceCacheFacadeTest {
 	 */
 	@Test
 	public void loadResourceName() {
-		fail("Not yet implemented");
+		//		try {
+		//			ResourceCacheFacade.load(ResourceNames.EDITOR_BUTTONS);
+		//			ResourceCacheFacade.finishLoading();
+		//			assertEquals("Loaded internal resource", 1, ResourceCacheFacade.getLoadedCount());
+		//
+		//			// Unload
+		//			ResourceCacheFacade.unload(ResourceNames.EDITOR_BUTTONS);
+		//			assertEquals("Unloaded internal resource", 0, ResourceCacheFacade.getLoadedCount());
+		//
+		//		} catch (UndefinedResourceTypeException e) {
+		//			fail("Undefined resource type exception");
+		//		}
 	}
 
 	/** Regular actor with no dependencies */
-	private static PlayerActorDef mDef1 = new PlayerActorDef(100, null, "def1", null);
+	private static PlayerActorDef mDef1 = new PlayerActorDef(100, "def1", null);
 	/** Regular actor with no dependencies */
-	private static PlayerActorDef mDef2 = new PlayerActorDef(150, null, "def2", null);
+	private static PlayerActorDef mDef2 = new PlayerActorDef(150, "def2", null);
 	/** Actor using dependencies */
-	private static PlayerActorDef mUsingDefDeps = new PlayerActorDef(155, null, "using dep", null);
+	private static PlayerActorDef mUsingDefDeps = new PlayerActorDef(155, "using dep", null);
 	/** Actor dependency with a dependency */
-	private static PlayerActorDef mDepWithDep = new PlayerActorDef(200, null, "player", null);
+	private static PlayerActorDef mDepWithDep = new PlayerActorDef(200, "player", null);
 	/** Actor dependency */
-	private static PlayerActorDef mDep = new PlayerActorDef(300, null, "boss", null);
+	private static PlayerActorDef mDep = new PlayerActorDef(300, "boss", null);
 	/** Actor under dependency, i.e. UsingDefDeps -> DepWithDep -> UnderDep */
-	private static PlayerActorDef mUnderDep = new PlayerActorDef(1000, null, "pickup", null);
+	private static PlayerActorDef mUnderDep = new PlayerActorDef(1000, "pickup", null);
 
 	/** Total number of actors */
 	private static int ACTORS = 6;

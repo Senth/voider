@@ -14,4 +14,6 @@ public class FixtureFilterCategories {
 	static public short STATIC_TERRAIN = 0x0004;
 	/** Category for pickups, gold, etc */
 	static public short PICKUP = 0x0008;
+	/** Border around the screen */
+	static public short SCREEN_BORDER = 0x0010;
 }

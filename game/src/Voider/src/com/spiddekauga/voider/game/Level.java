@@ -64,6 +64,15 @@ public class Level extends Resource implements ITriggerListener, Json.Serializab
 					mCompletedLevel = true;
 				}
 			}
+
+			// Update actors
+			for (Actor actor : mActors) {
+				actor.update(Gdx.graphics.getDeltaTime());
+			}
+			mPlayerActor.update(Gdx.graphics.getDeltaTime());
+
+			// Update triggers
+			mTriggerInformation.update();
 		}
 	}
 

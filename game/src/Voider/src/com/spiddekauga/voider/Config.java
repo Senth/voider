@@ -121,6 +121,21 @@ public class Config {
 	}
 
 	/**
+	 * Some general game settings
+	 */
+	public static class Game {
+		/**
+		 * Various mouse joint settings
+		 */
+		public static class MouseJoint {
+			/** Update frequency of the mouse joint */
+			public final static float FREQUENCY = 500;
+			/** Maximum force the mouse joint has */
+			public final static float FORCE_MAX = 10000;
+		}
+	}
+
+	/**
 	 * All graphical options
 	 */
 	public static class Graphics {
