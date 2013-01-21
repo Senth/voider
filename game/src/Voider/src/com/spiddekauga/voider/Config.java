@@ -111,7 +111,7 @@ public class Config {
 		 */
 		public static class Pickup {
 			/** Default radius for the pickups */
-			public final static float RADIUS = 30f;
+			public final static float RADIUS = 1f;
 		}
 	}
 

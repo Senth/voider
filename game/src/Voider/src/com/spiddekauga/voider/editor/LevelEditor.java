@@ -36,9 +36,12 @@ import com.spiddekauga.voider.editor.commands.ClTerrainActorMoveCorner;
 import com.spiddekauga.voider.editor.commands.ClTerrainActorRemoveCorner;
 import com.spiddekauga.voider.editor.commands.LevelCommand;
 import com.spiddekauga.voider.game.Actor;
+import com.spiddekauga.voider.game.Collectibles;
 import com.spiddekauga.voider.game.GameScene;
 import com.spiddekauga.voider.game.Level;
 import com.spiddekauga.voider.game.LevelDef;
+import com.spiddekauga.voider.game.actors.PickupActor;
+import com.spiddekauga.voider.game.actors.PickupActorDef;
 import com.spiddekauga.voider.game.actors.StaticTerrainActor;
 import com.spiddekauga.voider.game.actors.StaticTerrainActor.PolygonComplexException;
 import com.spiddekauga.voider.game.actors.StaticTerrainActor.PolygonCornerTooCloseException;
@@ -369,6 +372,8 @@ public class LevelEditor extends WorldScene implements EventListener {
 	 * All the main tool buttons
 	 */
 	private enum Tools {
+		/** Pickup tool @TODO change style*/
+		PICKUP("toggle"),
 		/** Terrain tool @TODO change style */
 		STATIC_TERRAIN("toggle"),
 		/** Tests to run the map from the current location @TODO change style */
@@ -429,6 +434,41 @@ public class LevelEditor extends WorldScene implements EventListener {
 		private String mStyleName;
 	}
 
+	/**
+	 * Pickup tools
+	 */
+	private enum PickupTools {
+		/** Add/create health 25 @TODO change style */
+		ADD_HEALTH_25("toggle"),
+		/** Add/Create health 50 @TODO change style */
+		ADD_HEALTH_50("toggle"),
+		/** Moves a pickup @TODO change style */
+		MOVE("toggle"),
+		/** Remove a pickup @TODO change style */
+		REMOVE("toggle"),
+
+		/** No tool selected */
+		NONE("");
+
+		/**
+		 * @return style of the tool
+		 */
+		public String getStyleName() {
+			return mStyleName;
+		}
+
+		/**
+		 * Constructor for terrain tool, binds the tool with a style
+		 * @param style the style bound to the tool
+		 */
+		private PickupTools(String style) {
+			mStyleName = style;
+		}
+
+		/** Name of the style the tool shall use */
+		private String mStyleName;
+	}
+
 	// -------------------------------------
 	//			GUI HANDLING
 	// -------------------------------------
@@ -447,8 +487,11 @@ public class LevelEditor extends WorldScene implements EventListener {
 			// STATIC TERRAIN
 			if (actionName.equals(Tools.STATIC_TERRAIN.toString())) {
 				switchTool(mStaticTerrainHandler, Tools.STATIC_TERRAIN);
+			} else if (actionName.equals(Tools.PICKUP.toString())) {
+				switchTool(mPickupTool, Tools.PICKUP);
 			}
-		}			// Select no tool
+		}
+		// Select no tool
 		else {
 			switchTool(mNoneHandler, Tools.NONE);
 		}
@@ -513,7 +556,7 @@ public class LevelEditor extends WorldScene implements EventListener {
 	private void switchTool(Tool selectedTool, Tools tool) {
 		// Deselect cucrent tool
 		com.badlogic.gdx.scenes.scene2d.Actor oldActor = mToolTable.findActor(mTool.toString());
-		if (oldActor != null && oldActor instanceof Button) {
+		if (oldActor instanceof Button) {
 			Button oldButton = (Button)oldActor;
 			oldButton.setChecked(false);
 		}
@@ -527,7 +570,7 @@ public class LevelEditor extends WorldScene implements EventListener {
 		mGui.clear();
 		Table toolGui = mToolCurrent.getGui();
 		if (toolGui != null) {
-			mGui.add(mToolCurrent.getGui());
+			mGui.add(toolGui);
 		}
 		mGui.add(mToolTable);
 		mGui.invalidate();
@@ -562,6 +605,12 @@ public class LevelEditor extends WorldScene implements EventListener {
 		Button button = new TextButton("Static Terrain", textToogleStyle);
 		button.addListener(this);
 		button.setName(Tools.STATIC_TERRAIN.toString());
+		mToolTable.add(button);
+		mToolTable.row();
+
+		button = new TextButton("Pickup", textToogleStyle);
+		button.addListener(this);
+		button.setName(Tools.PICKUP.toString());
 		mToolTable.add(button);
 		mToolTable.row();
 
@@ -602,6 +651,7 @@ public class LevelEditor extends WorldScene implements EventListener {
 
 		// Initialize all the tools' GUI
 		mStaticTerrainHandler.initGui();
+		mPickupTool.initGui();
 
 
 		scaleGui();
@@ -644,9 +694,11 @@ public class LevelEditor extends WorldScene implements EventListener {
 	/** Current selected tool */
 	private Tools mTool = Tools.NONE;
 
-	/** Event handler for static terrain tool */
-	private StaticTerrainHandler mStaticTerrainHandler = new StaticTerrainHandler();
-	/** Event handler for when no tool is active */
+	/** Tool for pickups */
+	private PickupTool mPickupTool = new PickupTool();
+	/** Tool for static terrain */
+	private StaticTerrainTool mStaticTerrainHandler = new StaticTerrainTool();
+	/** Tool for when no tool is active */
 	private NoneHandler mNoneHandler = new NoneHandler();
 
 	/**
@@ -691,11 +743,178 @@ public class LevelEditor extends WorldScene implements EventListener {
 	}
 
 	/**
-	 * Handles all events when static terrain tool is active
+	 * Handles all pickup things in the editor
 	 * 
 	 * @author Matteus Magnusson <senth.wallace@gmail.com>
 	 */
-	private class StaticTerrainHandler extends Tool {
+	private class PickupTool extends Tool {
+		@Override
+		public void down() {
+			Collectibles collectibleToAdd = null;
+			switch (mTool) {
+			case ADD_HEALTH_25:
+				collectibleToAdd = Collectibles.HEALTH_25;
+				break;
+
+
+			case ADD_HEALTH_50:
+				collectibleToAdd = Collectibles.HEALTH_50;
+				break;
+
+
+			case MOVE:
+				testPick(mCallback);
+				if (mHitBody != null && mSelectedActor != null) {
+					mMoving = true;
+					mDragOrigin.set(mHitBody.getPosition());
+				}
+				break;
+
+
+			case REMOVE:
+				testPick(mCallback);
+				if (mHitBody != null && mSelectedActor != null) {
+					mLevelInvoker.execute(new ClActorRemove(mSelectedActor, true));
+					mLevelInvoker.execute(new ClActorSelect(null, true));
+				}
+				break;
+
+
+			case NONE:
+				// Does nothing
+				break;
+			}
+
+
+			// Add a new pickup at the specific location
+			if (collectibleToAdd != null) {
+				PickupActorDef pickupActorDef = new PickupActorDef();
+				pickupActorDef.setCollectible(collectibleToAdd);
+				mActorAdding = new PickupActor();
+				mActorAdding.setDef(pickupActorDef);
+				mActorAdding.setPosition(mTouchOrigin);
+
+				// Add temporary actor
+				mLevel.addActor(mActorAdding);
+			}
+		}
+
+		@Override
+		public void dragged() {
+
+			switch (mTool) {
+			case ADD_HEALTH_25:
+			case ADD_HEALTH_50:
+				mActorAdding.setPosition(mTouchCurrent);
+				break;
+
+			case MOVE:
+				if (mMoving) {
+					mSelectedActor.setPosition(mTouchCurrent);
+				}
+				break;
+
+
+			case REMOVE:
+			case NONE:
+				// Does nothing
+				break;
+			}
+		}
+
+		@Override
+		public void up() {
+			boolean addActor = false;
+
+			switch (mTool) {
+			case ADD_HEALTH_25:
+			case ADD_HEALTH_50:
+				addActor = true;
+
+			case MOVE:
+				if (mMoving) {
+					// Reset position of the selected actor
+					mSelectedActor.setPosition(mDragOrigin);
+
+					// Move actor through command
+					mLevelInvoker.execute(new ClActorMove(mSelectedActor, mTouchCurrent, true));
+				}
+				break;
+
+
+			case REMOVE:
+			case NONE:
+				// Does nothing
+				break;
+			}
+
+			if (addActor) {
+				mLevel.removeActor(mActorAdding.getId());
+				mLevelInvoker.execute(new ClActorAdd(mActorAdding));
+				mLevelInvoker.execute(new ClActorSelect(mActorAdding, true));
+			}
+		}
+
+		@Override
+		public void filterPicks() {
+			Actor newActor = mSelectedActor;
+			Actor oldActor = mSelectedActor;
+			for (Body body : mHitBodies) {
+				if (body.getUserData() instanceof PickupActor) {
+					mHitBody = body;
+					newActor = (Actor) mHitBody.getUserData();
+					break;
+				}
+			}
+
+			if (newActor != oldActor) {
+				mLevelInvoker.execute(new ClActorSelect(newActor, false));
+			}
+		}
+
+		@Override
+		public void setActor() {
+			// Does nothing
+		}
+
+		@Override
+		public void initGui() {
+			mGuiTable.setName(Tools.PICKUP.toString() + "-table");
+
+			Skin editorSkin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
+			TextButtonStyle textStyle = editorSkin.get("toggle", TextButtonStyle.class);
+
+			Button button = new TextButton("25HP", textStyle);
+			button.setName(PickupTools.ADD_HEALTH_25.toString());
+			button.addListener(this);
+			mGuiTable.add(button);
+			mGuiTable.row();
+
+			button = new TextButton("50HP", textStyle);
+			button.setName(PickupTools.ADD_HEALTH_50.toString());
+			button.addListener(this);
+			mGuiTable.add(button);
+			mGuiTable.row();
+
+			button = new TextButton("Remove", textStyle);
+			button.setName(PickupTools.REMOVE.toString());
+			button.addListener(this);
+			mGuiTable.add(button);
+			mGuiTable.row();
+
+			button = new TextButton("Move", textStyle);
+			button.setName(PickupTools.MOVE.toString());
+			button.addListener(this);
+			mGuiTable.add(button);
+			mGuiTable.align(Align.top);
+			mGuiTable.setTransform(true);
+		}
+
+		@Override
+		public Table getGui() {
+			return mGuiTable;
+		}
+
 		@Override
 		public void changed(ChangeEvent event, com.badlogic.gdx.scenes.scene2d.Actor actor) {
 			// Buttons
@@ -706,20 +925,79 @@ public class LevelEditor extends WorldScene implements EventListener {
 				if (button.isChecked()) {
 
 					// Deselect previous tool
-					mGuiTable.findActor(StaticTerrainTools.ADD.toString());
+					com.badlogic.gdx.scenes.scene2d.Actor oldToolButton = mGuiTable.findActor(mTool.toString());
+					if (oldToolButton instanceof Button) {
+						((Button)oldToolButton).setChecked(false);
+					}
 
-					String actionName = actor.getName();
 
-					// Find which tool was pressed
+					// Find enum of tool that was pressed
+					for (PickupTools tool : PickupTools.values()) {
+						if (actor.getName().equals(tool.toString())) {
+							// Select tool
+							mTool = tool;
+							break;
+						}
+					}
+				}
+				// Else it was unchecked, and thus select no tool
+				else {
+					mTool = PickupTools.NONE;
+				}
+			}
+		}
+
+		/** Picking for static terrains */
+		private QueryCallback mCallback = new QueryCallback() {
+			@Override
+			public boolean reportFixture(Fixture fixture) {
+				if (fixture.testPoint(mTouchCurrent)) {
+					// Hit a terrain actor directly
+					if (fixture.getBody().getUserData() instanceof PickupActor) {
+						mHitBodies.add(fixture.getBody());
+					}
+				}
+				return true;
+			}
+		};
+
+		/** Table for the GUI */
+		private Table mGuiTable = new Table();
+		/** Current tool for pickup */
+		private PickupTools mTool = PickupTools.NONE;
+		/** Actor we're currently adding */
+		private PickupActor mActorAdding = null;
+		/** Original position of a dragging actor */
+		private Vector2 mDragOrigin = new Vector2();
+		/** True if we're moving an actor */
+		private boolean mMoving = false;
+	}
+
+	/**
+	 * Handles all events when static terrain tool is active
+	 * 
+	 * @author Matteus Magnusson <senth.wallace@gmail.com>
+	 */
+	private class StaticTerrainTool extends Tool {
+		@Override
+		public void changed(ChangeEvent event, com.badlogic.gdx.scenes.scene2d.Actor actor) {
+			// Buttons
+			if (actor instanceof Button) {
+				Button button = (Button)actor;
+
+				// Checked means it was pressed down
+				if (button.isChecked()) {
+
+					// Deselect previous tool
+					com.badlogic.gdx.scenes.scene2d.Actor oldToolButton = mGuiTable.findActor(mTool.toString());
+					if (oldToolButton instanceof Button) {
+						((Button)oldToolButton).setChecked(false);
+					}
+
+
+					// Find enum of tool that was pressed
 					for (StaticTerrainTools tool : StaticTerrainTools.values()) {
-						if (actionName.equals(tool.toString())) {
-							// Uncheck old tool
-							com.badlogic.gdx.scenes.scene2d.Actor oldActor = mGuiTable.findActor(mTool.toString());
-							if (oldActor != null && oldActor instanceof Button) {
-								Button oldButton = (Button)oldActor;
-								oldButton.setChecked(false);
-							}
-
+						if (actor.getName().equals(tool.toString())) {
 							// Select tool
 							mTool = tool;
 							break;

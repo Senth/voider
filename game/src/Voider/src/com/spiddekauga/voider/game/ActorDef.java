@@ -35,13 +35,13 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 		if (fixtureDef != null) {
 			addFixtureDef(fixtureDef);
 		}
-		mBodyDef = new BodyDef();
 	}
 
 	/**
 	 * Default constructor
 	 */
 	public ActorDef() {
+		// Does nothing
 	}
 
 	/**
@@ -180,7 +180,7 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	/** Maximum life of the actor, usually starting amount of life */
 	private float mMaxLife = 0;
 	/** The body definition of the actor */
-	private BodyDef mBodyDef = null;
+	private BodyDef mBodyDef = new BodyDef();
 	/** Collision damage (per second) */
 	private float mCollisionDamage = 0;
 

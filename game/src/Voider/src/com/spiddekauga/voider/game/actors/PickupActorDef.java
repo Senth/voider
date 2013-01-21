@@ -24,7 +24,6 @@ public class PickupActorDef extends ActorDef {
 		FixtureDef fixtureDef = new FixtureDef();
 		fixtureDef.shape = circle;
 		addFixtureDef(fixtureDef);
-		circle.dispose();
 	}
 
 	/**
@@ -32,9 +31,13 @@ public class PickupActorDef extends ActorDef {
 	 * @param collectible the collectible this pickup has
 	 */
 	public void setCollectible(Collectibles collectible) {
-		mCollectible = collectible;
+		if (collectible != null) {
+			mCollectible = collectible;
 
-		/** @TODO change picture or something? */
+			setName(collectible.toString());
+
+			/** @TODO change picture or something? */
+		}
 	}
 
 	@Override

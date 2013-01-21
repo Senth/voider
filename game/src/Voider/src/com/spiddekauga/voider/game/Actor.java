@@ -68,13 +68,16 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 	 */
 	public void setDef(ActorDef def) {
 		if (def != null) {
+			// Change fixtures as we have a new def now
+			clearFixtures();
+
 			mDef = def;
 			mLife = mDef.getMaxLife();
 
-			// Change fixtures as we have a new def now
-			clearFixtures();
-			for (FixtureDef fixtureDef : mDef.getFixtureDefs()) {
-				mBody.createFixture(fixtureDef);
+			if (mBody != null) {
+				for (FixtureDef fixtureDef : mDef.getFixtureDefs()) {
+					mBody.createFixture(fixtureDef);
+				}
 			}
 		}
 	}
@@ -343,12 +346,16 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 	 */
 	@SuppressWarnings("unchecked")
 	protected void clearFixtures() {
-		ArrayList<Fixture> fixtures = (ArrayList<Fixture>) mBody.getFixtureList().clone();
-		for (Fixture fixture : fixtures) {
-			mBody.destroyFixture(fixture);
+		if (mBody != null) {
+			ArrayList<Fixture> fixtures = (ArrayList<Fixture>) mBody.getFixtureList().clone();
+			for (Fixture fixture : fixtures) {
+				mBody.destroyFixture(fixture);
+			}
 		}
 
-		mDef.clearFixtures();
+		if (mDef != null) {
+			mDef.clearFixtures();
+		}
 	}
 
 	/** Current life */
