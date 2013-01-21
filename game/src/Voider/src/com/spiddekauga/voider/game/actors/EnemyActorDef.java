@@ -1,6 +1,5 @@
 package com.spiddekauga.voider.game.actors;
 
-import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.spiddekauga.voider.game.ActorDef;
 
 /**
@@ -11,26 +10,10 @@ import com.spiddekauga.voider.game.ActorDef;
  */
 public class EnemyActorDef extends ActorDef {
 	/**
-	 * Constructor that sets all variables
-	 * @param maxLife maximum life of the actor, also starting amount of life
-	 * @param name name of the actor
-	 * @param fixtureDef physical representation of the object
-	 * @TODO add more parameters for weapon type etc
-	 */
-	public EnemyActorDef(
-			float maxLife,
-			String name,
-			FixtureDef fixtureDef
-			)
-	{
-		super(maxLife, name, fixtureDef);
-	}
-
-	/**
 	 * Private default constructor used for json
 	 */
-	@SuppressWarnings("unused")
-	private EnemyActorDef() {
+	public EnemyActorDef() {
+		// Does nothing
 	}
 
 	/**

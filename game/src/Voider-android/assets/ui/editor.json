@@ -10,6 +10,12 @@ com.badlogic.gdx.graphics.Color: {
 	black: { a: 1, b: 0, g: 0, r: 0 }
 },
 
+com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
+	default: {
+		font: default-font,
+	}
+},
+
 com.badlogic.gdx.scenes.scene2d.ui.Button$ButtonStyle: {
 	default: {
 		down: button-default-down,
@@ -43,6 +49,14 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		up: button-default-up,
 		imageDown: button-add,
 		imageUp: button-add
+	}
+},
+
+com.badlogic.gdx.scenes.scene2d.ui.CheckBox$CheckBoxStyle: {
+	default: {
+		checkboxOn: radio-button-on,
+		checkboxOff: radio-button-off,
+		font: default-font
 	}
 }
 }

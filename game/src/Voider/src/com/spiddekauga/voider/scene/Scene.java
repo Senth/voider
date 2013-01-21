@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 
 /**
  * Base class for all scenes that should be rendered. Examples of scenes:
@@ -23,8 +24,9 @@ public abstract class Scene extends InputAdapter {
 	 * priority over everything else.
 	 */
 	public Scene() {
-		mInputMultiplexer.addProcessor(0, mUi);
+		mInputMultiplexer.addProcessor(0, mStage);
 		mInputMultiplexer.addProcessor(1, this);
+		mStage.addActor(mGui);
 	}
 
 	/**
@@ -45,7 +47,8 @@ public abstract class Scene extends InputAdapter {
 	 * @param height new height of the window
 	 */
 	public void onResize(int width, int height) {
-		// Does nothing
+		mStage.setViewport(width, height, true);
+		scaleGui();
 	}
 
 	/**
@@ -135,8 +138,8 @@ public abstract class Scene extends InputAdapter {
 	 * Renders the scene
 	 */
 	public void render() {
-		mUi.act(Gdx.graphics.getDeltaTime());
-		mUi.draw();
+		mStage.act(Gdx.graphics.getDeltaTime());
+		mStage.draw();
 	}
 
 	/**
@@ -280,14 +283,44 @@ public abstract class Scene extends InputAdapter {
 		worldCoordinate.y = mTestPoint.y;
 	}
 
+	/**
+	 * Scale GUI
+	 */
+	protected void scaleGui() {
+		float tableHeight = mGui.getPrefHeight();
 
-	/** Handles user interfaces for the scene */
-	protected Stage mUi = new Stage();
+		// Division by 0 check
+		if (tableHeight == 0.0f || Gdx.graphics.getHeight() == 0.0f) {
+			return;
+		}
+
+		float scale = Gdx.graphics.getHeight() / tableHeight;
+
+		// Don't scale over 1?
+		if (scale < 1.0f) {
+			float negativeScale = 1 / scale;
+			mGui.setHeight(Gdx.graphics.getHeight()*negativeScale);
+			float screenWidth = Gdx.graphics.getWidth();
+			mGui.setWidth(screenWidth*negativeScale);
+			mGui.invalidate();
+			mGui.setScale(scale);
+		} else {
+			mGui.setScale(1.0f);
+			mGui.setWidth(Gdx.graphics.getWidth());
+			mGui.setHeight(Gdx.graphics.getHeight());
+			mGui.invalidate();
+		}
+	}
+
+	/** GUI table */
+	protected Table mGui = new Table();
 	/** Sprite Batch used for rendering stuff */
 	protected SpriteBatch mSpriteBatch = new SpriteBatch();
 	/** Input multiplexer */
 	protected InputMultiplexer mInputMultiplexer = new InputMultiplexer();
 
+	/** Handles user interfaces for the scene */
+	private Stage mStage = new Stage();
 	/** Outcome of scene, this is set when a derived class calls setOutcome */
 	private Outcomes mOutcome = null;
 	/** Message of the outcome */

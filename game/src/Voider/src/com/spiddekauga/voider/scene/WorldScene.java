@@ -25,8 +25,8 @@ public abstract class WorldScene extends Scene {
 
 	@Override
 	public void onResize(int width, int height) {
+		super.onResize(width, height);
 		fixCamera();
-		mUi.setViewport(width, height, true);
 	}
 
 	/**

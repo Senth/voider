@@ -13,6 +13,7 @@ import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -133,15 +134,6 @@ public class LevelEditor extends WorldScene implements EventListener {
 	 */
 	public Actor getSelectedActor() {
 		return mSelectedActor;
-	}
-
-	@Override
-	public void onResize(int width, int height) {
-		super.onResize(width, height);
-		mUi.setViewport(width, height, true);
-		if (mGuiInitialized) {
-			scaleGui();
-		}
 	}
 
 	// --------------------------------
@@ -336,8 +328,6 @@ public class LevelEditor extends WorldScene implements EventListener {
 	// GUI
 	/** Table the tool buttons */
 	private Table mToolTable = null;
-	/** Table for all gui */
-	private Table mGui = null;
 	/** If the GUI has been initialized */
 	private boolean mGuiInitialized = false;
 
@@ -554,13 +544,6 @@ public class LevelEditor extends WorldScene implements EventListener {
 	 * @param tool the new tool type
 	 */
 	private void switchTool(Tool selectedTool, Tools tool) {
-		// Deselect cucrent tool
-		com.badlogic.gdx.scenes.scene2d.Actor oldActor = mToolTable.findActor(mTool.toString());
-		if (oldActor instanceof Button) {
-			Button oldButton = (Button)oldActor;
-			oldButton.setChecked(false);
-		}
-
 		// Set current tool
 		mTool = tool;
 		mToolCurrent = selectedTool;
@@ -588,11 +571,7 @@ public class LevelEditor extends WorldScene implements EventListener {
 	 * Initializes all the buttons for the GUI
 	 */
 	private void initGui() {
-		mGui = new Table();
-
-
 		mGui.align(Align.top | Align.right);
-		mUi.addActor(mGui);
 
 		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
 
@@ -602,15 +581,18 @@ public class LevelEditor extends WorldScene implements EventListener {
 
 		mToolTable = new Table();
 		mToolTable.setTransform(true);
+		ButtonGroup toggleGroup = new ButtonGroup();
 		Button button = new TextButton("Static Terrain", textToogleStyle);
 		button.addListener(this);
 		button.setName(Tools.STATIC_TERRAIN.toString());
+		toggleGroup.add(button);
 		mToolTable.add(button);
 		mToolTable.row();
 
 		button = new TextButton("Pickup", textToogleStyle);
 		button.addListener(this);
 		button.setName(Tools.PICKUP.toString());
+		toggleGroup.add(button);
 		mToolTable.add(button);
 		mToolTable.row();
 
@@ -655,35 +637,6 @@ public class LevelEditor extends WorldScene implements EventListener {
 
 
 		scaleGui();
-	}
-
-	/**
-	 * Scale GUI
-	 */
-	private void scaleGui() {
-		float tableHeight = mGui.getPrefHeight();
-
-		// Division by 0 check
-		if (tableHeight == 0.0f || Gdx.graphics.getHeight() == 0.0f) {
-			return;
-		}
-
-		float scale = Gdx.graphics.getHeight() / tableHeight;
-
-		// Don't scale over 1?
-		if (scale < 1.0f) {
-			float negativeScale = 1 / scale;
-			mGui.setHeight(Gdx.graphics.getHeight()*negativeScale);
-			float screenWidth = Gdx.graphics.getWidth();
-			mGui.setWidth(screenWidth*negativeScale);
-			mGui.invalidate();
-			mGui.setScale(scale);
-		} else {
-			mGui.setScale(1.0f);
-			mGui.setWidth(Gdx.graphics.getWidth());
-			mGui.setHeight(Gdx.graphics.getHeight());
-			mGui.invalidate();
-		}
 	}
 
 	// -------------------------------------
@@ -884,27 +837,32 @@ public class LevelEditor extends WorldScene implements EventListener {
 			Skin editorSkin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
 			TextButtonStyle textStyle = editorSkin.get("toggle", TextButtonStyle.class);
 
+			ButtonGroup toggleGroup = new ButtonGroup();
 			Button button = new TextButton("25HP", textStyle);
 			button.setName(PickupTools.ADD_HEALTH_25.toString());
 			button.addListener(this);
+			toggleGroup.add(button);
 			mGuiTable.add(button);
 			mGuiTable.row();
 
 			button = new TextButton("50HP", textStyle);
 			button.setName(PickupTools.ADD_HEALTH_50.toString());
 			button.addListener(this);
+			toggleGroup.add(button);
 			mGuiTable.add(button);
 			mGuiTable.row();
 
 			button = new TextButton("Remove", textStyle);
 			button.setName(PickupTools.REMOVE.toString());
 			button.addListener(this);
+			toggleGroup.add(button);
 			mGuiTable.add(button);
 			mGuiTable.row();
 
 			button = new TextButton("Move", textStyle);
 			button.setName(PickupTools.MOVE.toString());
 			button.addListener(this);
+			toggleGroup.add(button);
 			mGuiTable.add(button);
 			mGuiTable.align(Align.top);
 			mGuiTable.setTransform(true);
@@ -923,14 +881,6 @@ public class LevelEditor extends WorldScene implements EventListener {
 
 				// Checked means it was pressed down
 				if (button.isChecked()) {
-
-					// Deselect previous tool
-					com.badlogic.gdx.scenes.scene2d.Actor oldToolButton = mGuiTable.findActor(mTool.toString());
-					if (oldToolButton instanceof Button) {
-						((Button)oldToolButton).setChecked(false);
-					}
-
-
 					// Find enum of tool that was pressed
 					for (PickupTools tool : PickupTools.values()) {
 						if (actor.getName().equals(tool.toString())) {
@@ -987,14 +937,6 @@ public class LevelEditor extends WorldScene implements EventListener {
 
 				// Checked means it was pressed down
 				if (button.isChecked()) {
-
-					// Deselect previous tool
-					com.badlogic.gdx.scenes.scene2d.Actor oldToolButton = mGuiTable.findActor(mTool.toString());
-					if (oldToolButton instanceof Button) {
-						((Button)oldToolButton).setChecked(false);
-					}
-
-
 					// Find enum of tool that was pressed
 					for (StaticTerrainTools tool : StaticTerrainTools.values()) {
 						if (actor.getName().equals(tool.toString())) {
@@ -1266,22 +1208,25 @@ public class LevelEditor extends WorldScene implements EventListener {
 			TextButtonStyle textStyle = editorSkin.get(StaticTerrainTools.MOVE_TERRAIN.getStyleName(), TextButtonStyle.class);
 			ImageButtonStyle imageStyle = editorSkin.get(StaticTerrainTools.ADD.getStyleName(), ImageButtonStyle.class);
 
-
+			ButtonGroup toggleGroup = new ButtonGroup();
 			Button button = new ImageButton(imageStyle);
 			button.setName(StaticTerrainTools.ADD.toString());
 			button.addListener(this);
+			toggleGroup.add(button);
 			mGuiTable.add(button);
 			mGuiTable.row();
 
 			button = new TextButton("Remove", textStyle);
 			button.setName(StaticTerrainTools.REMOVE.toString());
 			button.addListener(this);
+			toggleGroup.add(button);
 			mGuiTable.add(button);
 			mGuiTable.row();
 
 			button = new TextButton("Move", textStyle);
 			button.setName(StaticTerrainTools.MOVE_TERRAIN.toString());
 			button.addListener(this);
+			toggleGroup.add(button);
 			mGuiTable.add(button);
 			mGuiTable.align(Align.top);
 			mGuiTable.setTransform(true);

@@ -26,19 +26,33 @@ button-add
   orig: 110, 110
   offset: 0, 0
   index: -1
+radio-button-off
+  rotate: false
+  xy: 369, 111
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+radio-button-on
+  rotate: false
+  xy: 369, 93
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
 button-default-down
   rotate: false
-  xy: 257, 5
-  size: 11, 10
-  split: 5, 5, 5, 4
-  orig: 11, 10
+  xy: 257, 6
+  size: 9, 9
+  split: 4, 4, 4, 4
+  orig: 9, 9
   offset: 0, 0
   index: -1
 button-default-up
   rotate: false
-  xy: 369, 117
-  size: 11, 10
-  split: 5, 5, 5, 4
-  orig: 11, 10
+  xy: 387, 118
+  size: 9, 9
+  split: 4, 4, 4, 4
+  orig: 9, 9
   offset: 0, 0
   index: -1

@@ -15,6 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.spiddekauga.utils.GameTime;
+import com.spiddekauga.voider.editor.EnemyEditor;
 import com.spiddekauga.voider.editor.LevelEditor;
 import com.spiddekauga.voider.game.GameScene;
 import com.spiddekauga.voider.game.Level;
@@ -44,7 +45,8 @@ public class VoiderGame implements ApplicationListener {
 		/** @TODO set main menu as start screen */
 
 		//testGame();
-		testEditor();
+		testEnemyEditor();
+		//testEditor();
 		//testStage();
 	}
 
@@ -190,6 +192,13 @@ public class VoiderGame implements ApplicationListener {
 		Level level = new Level(levelDef);
 		levelEditor.setLevel(level);
 		SceneSwitcher.switchTo(levelEditor);
+	}
+
+	/**
+	 * Testing the enemy editor
+	 */
+	private void testEnemyEditor() {
+		SceneSwitcher.switchTo(new EnemyEditor());
 	}
 
 	/**
