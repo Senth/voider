@@ -7,6 +7,7 @@ import java.util.UUID;
 import com.badlogic.gdx.utils.ObjectMap.Entry;
 import com.badlogic.gdx.utils.OrderedMap;
 import com.spiddekauga.utils.Json;
+import com.spiddekauga.voider.Config;
 
 /**
  * Base class for all "definitions", e.g. ActorDef, WeaponDef. All definitions
@@ -90,6 +91,7 @@ public abstract class Def extends Resource implements Json.Serializable {
 	public void write(Json json) {
 		super.write(json);
 
+		json.writeValue("REVISION", Config.REVISION);
 		json.writeValue("mName", mName);
 		json.writeValue("mComment", mComment);
 		json.writeValue("mCreator", mCreator);

@@ -15,6 +15,7 @@ import com.badlogic.gdx.files.FileHandle;
 import com.spiddekauga.utils.Json;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.actors.PickupActorDef;
+import com.spiddekauga.voider.game.actors.PlayerActorDef;
 import com.spiddekauga.voider.utils.ObjectCrypter;
 
 /**
@@ -51,7 +52,7 @@ public class ResourceSaverTest {
 	 */
 	@Test
 	public void testSave() {
-		Def def = new PickupActorDef(100, "pickup", null);
+		Def def = new PlayerActorDef(100, "pickup", null);
 
 		// Test to save it and then load
 		ResourceSaver.save(def);

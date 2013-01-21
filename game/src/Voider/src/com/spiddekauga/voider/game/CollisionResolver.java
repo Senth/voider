@@ -5,6 +5,7 @@ import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Manifold;
+import com.spiddekauga.voider.game.actors.PlayerActor;
 
 /**
  * Resolves collisions between two objects, generally a player
@@ -27,6 +28,27 @@ public class CollisionResolver implements ContactListener {
 			Actor actorB = (Actor)bodyB.getUserData();
 			actorA.addCollidingActor(actorB.getDef());
 			actorB.addCollidingActor(actorA.getDef());
+
+
+			// Transfer collectible to player
+			// A collectible, B player
+			PlayerActor playerActor = null;
+			Actor collectibleActor = null;
+			if (actorA.getDef().getCollectible() != null && actorB instanceof PlayerActor) {
+				playerActor = (PlayerActor)actorB;
+				collectibleActor = actorA;
+			}
+			// A player, B collectible
+			else if (actorA instanceof PlayerActor && actorB.getDef().getCollectible() != null) {
+				playerActor = (PlayerActor)actorA;
+				collectibleActor = actorB;
+			}
+
+			// Transfer then destroy the collectible
+			if (playerActor != null && collectibleActor != null) {
+				playerActor.addCollectible(collectibleActor.getDef().getCollectible());
+				collectibleActor.dispose();
+			}
 		}
 	}
 

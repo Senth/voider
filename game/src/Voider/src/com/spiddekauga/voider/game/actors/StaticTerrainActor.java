@@ -55,7 +55,7 @@ public class StaticTerrainActor extends Actor {
 		super.write(json);
 		json.writeObjectEnd();
 
-
+		json.writeValue("REVISION", Config.REVISION);
 		json.writeValue("mCorners", mWorldCorners);
 	}
 

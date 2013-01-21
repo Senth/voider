@@ -67,7 +67,9 @@ public class Level extends Resource implements ITriggerListener, Json.Serializab
 
 			// Update actors
 			for (Actor actor : mActors) {
-				actor.update(Gdx.graphics.getDeltaTime());
+				if (!actor.isDisposed()) {
+					actor.update(Gdx.graphics.getDeltaTime());
+				}
 			}
 			mPlayerActor.update(Gdx.graphics.getDeltaTime());
 
@@ -127,7 +129,9 @@ public class Level extends Resource implements ITriggerListener, Json.Serializab
 	 */
 	public void render(SpriteBatch spriteBatch) {
 		for (Actor actor : mActors) {
-			actor.render(spriteBatch);
+			if (!actor.isDisposed()) {
+				actor.render(spriteBatch);
+			}
 		}
 		mPlayerActor.render(spriteBatch);
 	}
@@ -138,7 +142,9 @@ public class Level extends Resource implements ITriggerListener, Json.Serializab
 	 */
 	public void renderEditor(SpriteBatch spriteBatch) {
 		for (Actor actor : mActors) {
-			actor.renderEditor(spriteBatch);
+			if (!actor.isDisposed()) {
+				actor.renderEditor(spriteBatch);
+			}
 		}
 	}
 
@@ -188,7 +194,10 @@ public class Level extends Resource implements ITriggerListener, Json.Serializab
 	@Override
 	public void dispose() {
 		for (Actor actor : mActors) {
-			actor.dispose();
+			// Don't dispose actor twice...
+			if (!actor.isDisposed()) {
+				actor.dispose();
+			}
 		}
 	}
 

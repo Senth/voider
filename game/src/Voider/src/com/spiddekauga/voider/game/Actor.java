@@ -63,6 +63,23 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 	}
 
 	/**
+	 * Sets the definition of the actor.
+	 * @param def the new definition of the actor, if null nothing happens
+	 */
+	public void setDef(ActorDef def) {
+		if (def != null) {
+			mDef = def;
+			mLife = mDef.getMaxLife();
+
+			// Change fixtures as we have a new def now
+			clearFixtures();
+			for (FixtureDef fixtureDef : mDef.getFixtureDefs()) {
+				mBody.createFixture(fixtureDef);
+			}
+		}
+	}
+
+	/**
 	 * Renders the actor
 	 * @param spriteBatch the current sprite batch for the scene
 	 */
@@ -111,7 +128,7 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 	public void write(Json json) {
 		super.write(json);
 
-		json.writeValue("VERSION", VERSION);
+		json.writeValue("REVISION", Config.REVISION);
 		json.writeValue("mLife", mLife);
 		json.writeValue("mPosition", mPosition);
 
@@ -141,8 +158,6 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 	@Override
 	public void read(Json json, OrderedMap<String, Object> jsonData) {
 		super.read(json, jsonData);
-
-		/** @TODO check version */
 
 		mLife = json.readValue("mLife", float.class, jsonData);
 		mPosition = json.readValue("mPosition", Vector2.class, jsonData);
@@ -278,7 +293,8 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 	}
 
 	/**
-	 * Removes the body from the world
+	 * Disables the actor fully. Removes the body from the world and a level will
+	 * not render it as it has been disposed.
 	 */
 	@Override
 	public void dispose() {
@@ -286,6 +302,15 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 			destroyBody();
 		}
 		Pools.free(mPosition);
+		mPosition = null;
+		mDisposed = true;
+	}
+
+	/**
+	 * @return true if the actor has been disposed. I.e. it shall not be used anymore.
+	 */
+	public boolean isDisposed() {
+		return mDisposed;
 	}
 
 	/**
@@ -301,7 +326,7 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 	 * Protected constructor, used for JSON
 	 */
 	protected Actor() {
-		// Does nothing
+		mUniqueId = UUID.randomUUID();
 	}
 
 	/**
@@ -326,10 +351,11 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 		mDef.clearFixtures();
 	}
 
+	/** Current life */
+	protected float mLife = 0.0f;
+
 	/** Physical body */
 	private Body mBody = null;
-	/** Current life */
-	private float mLife = 0.0f;
 	/** Sprite, i.e. the graphical representation */
 	private Sprite mSprite = null;
 	/** The belonging definition of this actor */
@@ -338,12 +364,11 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 	private Vector2 mPosition = Pools.obtain(Vector2.class).set(0, 0);
 	/** Current actors we're colliding with */
 	private ArrayList<ActorDef> mCollidingActors = new ArrayList<ActorDef>();
+	/** True if the actor has been disposed of and is invalid to use */
+	private boolean mDisposed = false;
 
 	/** The world used for creating bodies */
 	protected static World mWorld = null;
 	/** If the actor will be used for an editor */
 	protected static boolean mEditorActive = false;
-
-	/** Current version of this actor, used for reading/writing to json */
-	private static final long VERSION = 100;
 }

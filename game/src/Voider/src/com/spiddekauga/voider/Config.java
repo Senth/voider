@@ -106,6 +106,13 @@ public class Config {
 			/** Default size of terrain circle */
 			public final static float DEFAULT_CIRCLE_RADIUS = 2.0f;
 		}
+		/**
+		 * Pickups
+		 */
+		public static class Pickup {
+			/** Default radius for the pickups */
+			public final static float RADIUS = 30f;
+		}
 	}
 
 	/**
@@ -158,6 +165,10 @@ public class Config {
 		/** How many seconds for a double click? */
 		public final static float DOUBLE_CLICK_TIME = 0.2f;
 	}
+
+	/** Revision of the game, as in code. This allows files of older revisions
+	 * to be loaded into new revisions */
+	public final static int REVISION = 1;
 
 	/**
 	 * Private constructor so that no instance can be created

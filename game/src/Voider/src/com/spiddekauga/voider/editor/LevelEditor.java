@@ -448,58 +448,58 @@ public class LevelEditor extends WorldScene implements EventListener {
 			if (actionName.equals(Tools.STATIC_TERRAIN.toString())) {
 				switchTool(mStaticTerrainHandler, Tools.STATIC_TERRAIN);
 			}
+		}			// Select no tool
+		else {
+			switchTool(mNoneHandler, Tools.NONE);
 		}
 
 		// --- ACTIONS ---
-		// RUN
-		if (actionName.equals(Tools.RUN.toString())) {
-			runFromHere();
-		}
-
-
-		/** @TODO remove */
-		// SAVE
-		else if (actionName.equals("save")) {
-			ResourceSaver.save(mLevel.getDef());
-			ResourceSaver.save(mLevel);
-		}
-
-		// LOAD - existing level (use first available
-		else if (actionName.equals("load")) {
-			// Load all level defs
-			try {
-				ResourceCacheFacade.loadAllOf(LevelDef.class, true);
-				ResourceCacheFacade.finishLoading();
-
-				List<LevelDef> levelDefs = ResourceCacheFacade.get(LevelDef.class);
-
-				// Load first
-				if (levelDefs.size() > 0) {
-					ResourceCacheFacade.load(levelDefs.get(0).getLevelId(), Level.class, false);
-					ResourceCacheFacade.finishLoading();
-					Level loadedLevel = ResourceCacheFacade.get(levelDefs.get(0).getLevelId(), Level.class);
-					if (loadedLevel != null) {
-						mLevel.dispose();
-						setLevel(loadedLevel);
-					}
-				}
-
-			} catch (UndefinedResourceTypeException e) {
-				e.printStackTrace();
+		if (button.isPressed()) {
+			// RUN
+			if (actionName.equals(Tools.RUN.toString())) {
+				runFromHere();
 			}
-		}
 
-		// NEW - add new level
-		else if (actionName.equals("new")) {
-			mLevel.dispose();
-			LevelDef levelDef = new LevelDef();
-			Level level = new Level(levelDef);
-			setLevel(level);
-		}
 
-		// Select no tool
-		else {
-			switchTool(mNoneHandler, Tools.NONE);
+			/** @TODO remove */
+			// SAVE
+			else if (actionName.equals("save")) {
+				ResourceSaver.save(mLevel.getDef());
+				ResourceSaver.save(mLevel);
+			}
+
+			// LOAD - existing level (use first available
+			else if (actionName.equals("load")) {
+				// Load all level defs
+				try {
+					ResourceCacheFacade.loadAllOf(LevelDef.class, true);
+					ResourceCacheFacade.finishLoading();
+
+					List<LevelDef> levelDefs = ResourceCacheFacade.get(LevelDef.class);
+
+					// Load first
+					if (levelDefs.size() > 0) {
+						ResourceCacheFacade.load(levelDefs.get(0).getLevelId(), Level.class, false);
+						ResourceCacheFacade.finishLoading();
+						Level loadedLevel = ResourceCacheFacade.get(levelDefs.get(0).getLevelId(), Level.class);
+						if (loadedLevel != null) {
+							mLevel.dispose();
+							setLevel(loadedLevel);
+						}
+					}
+
+				} catch (UndefinedResourceTypeException e) {
+					e.printStackTrace();
+				}
+			}
+
+			// NEW - add new level
+			else if (actionName.equals("new")) {
+				mLevel.dispose();
+				LevelDef levelDef = new LevelDef();
+				Level level = new Level(levelDef);
+				setLevel(level);
+			}
 		}
 
 		return false;

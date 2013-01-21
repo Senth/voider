@@ -8,8 +8,8 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.OrderedMap;
 import com.spiddekauga.utils.Json;
+import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.resources.Def;
-
 /**
  * Definition of the actor. This include common attribute for a common type of actor.
  * E.g. A specific enemy will have the same variables here. The only thing changed during
@@ -88,6 +88,14 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	public void addFixtureDef(FixtureDef fixtureDef) {
 		mFixtureDefs.add(fixtureDef);
 		setFilterCollisionData(fixtureDef);
+	}
+
+	/**
+	 * @return collectible of the actor def. Only works for PickupActorDef other
+	 * actors defs returns null.
+	 */
+	public Collectibles getCollectible() {
+		return null;
 	}
 
 	/**
@@ -181,16 +189,9 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	 * @TODO move type (for enemies)
 	 */
 
-	/** For serialization */
-	private static final long VERSION = 1;
-
-
-	/* (non-Javadoc)
-	 * @see com.badlogic.gdx.utils.Json.Serializable#write(com.badlogic.gdx.utils.Json)
-	 */
 	@Override
 	public void write(Json json) {
-		json.writeValue("VERSION", VERSION);
+		json.writeValue("REVISION", Config.REVISION);
 
 		json.writeObjectStart("Def");
 		super.write(json);
@@ -203,15 +204,9 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 		json.writeValue("mCollisionDamage", mCollisionDamage);
 	}
 
-	/* (non-Javadoc)
-	 * @see com.badlogic.gdx.utils.Json.Serializable#read(com.badlogic.gdx.utils.Json, com.badlogic.gdx.utils.OrderedMap)
-	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	public void read(Json json, OrderedMap<String, Object> jsonData) {
-		@SuppressWarnings("unused")
-		long version = json.readValue("VERSION", long.class, jsonData);
-
 		// Superclass
 		OrderedMap<String, Object> superMap = json.readValue("Def", OrderedMap.class, jsonData);
 		if (superMap != null) {
