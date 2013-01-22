@@ -16,4 +16,6 @@ public class FixtureFilterCategories {
 	static public short PICKUP = 0x0008;
 	/** Border around the screen */
 	static public short SCREEN_BORDER = 0x0010;
+	/** No collision at all */
+	static public short NONE = 0x0011;
 }

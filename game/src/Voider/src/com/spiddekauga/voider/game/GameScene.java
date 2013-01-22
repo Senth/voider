@@ -8,7 +8,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
-import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.ChainShape;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.Fixture;
@@ -122,12 +121,10 @@ public class GameScene extends WorldScene {
 
 	@Override
 	public void render() {
-		if (Config.Graphics.USE_DEBUG_RENDERER) {
-			mDebugRenderer.render(mWorld, mCamera.combined);
+		super.render();
 
-		} else {
+		if (!Config.Graphics.USE_DEBUG_RENDERER) {
 			mLevel.render(mSpriteBatch);
-			super.render();
 		}
 	}
 
@@ -252,8 +249,6 @@ public class GameScene extends WorldScene {
 
 	/** Invalid pointer id */
 	private static final int INVALID_POINTER = -1;
-	/** Displays nice render graphics for all physical objects. */
-	private Box2DDebugRenderer mDebugRenderer = new Box2DDebugRenderer();
 	/** The current level used in the game */
 	private Level mLevel = null;
 	/** If we're just testing */

@@ -8,7 +8,9 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 
 /**
@@ -219,6 +221,48 @@ public abstract class Scene extends InputAdapter {
 		LOADING_FAILED_CORRUPT_FILE,
 		/** No outcome when an outcome isn't applicable, e.g. first time */
 		NOT_APPLICAPLE,
+	}
+
+	/**
+	 * Checks if a button is checked (from the event).
+	 * @param event checks if the target inside the event is a button and it's checked
+	 * @return checked button. If the target isn't a button or the button isn't checked
+	 * it returns null.
+	 */
+	protected static Button getCheckedButton(Event event) {
+		if (event.getTarget() instanceof Button) {
+			Button button  = (Button)event.getTarget();
+			if (button.isChecked()) {
+				return button;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Checks if a button is checked
+	 * @param event checks if the target inside the event is a button and it's checked
+	 * @return true if the button is checked, false if the target isn't a button or the
+	 * button isn't checked.
+	 */
+	protected static boolean isButtonChecked(Event event) {
+		if (event.getTarget() instanceof Button) {
+			return ((Button)event.getTarget()).isChecked();
+		}
+		return false;
+	}
+
+	/**
+	 * Checks if a button is pressed
+	 * @param event checks if the target inside the event is a button and it's pressed
+	 * @return true if the button is pressed, false if the target isn't a button or the
+	 * button isn't checked.
+	 */
+	protected static boolean isButtonPressed(Event event) {
+		if (event.getTarget() instanceof Button) {
+			return ((Button)event.getTarget()).isPressed();
+		}
+		return false;
 	}
 
 	/**

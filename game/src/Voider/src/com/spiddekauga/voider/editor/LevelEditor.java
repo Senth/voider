@@ -7,7 +7,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.scenes.scene2d.Event;
@@ -100,13 +99,11 @@ public class LevelEditor extends WorldScene implements EventListener {
 
 	@Override
 	public void render() {
-		if (Config.Graphics.USE_DEBUG_RENDERER) {
-			mDebugRenderer.render(mWorld, mCamera.combined);
-			super.render();
-		} else {
+		super.render();
+
+		if (!Config.Graphics.USE_DEBUG_RENDERER) {
 			mLevel.render(mSpriteBatch);
 			mLevel.renderEditor(mSpriteBatch);
-			super.render();
 		}
 	}
 
@@ -316,8 +313,7 @@ public class LevelEditor extends WorldScene implements EventListener {
 	}
 
 
-	/** Debug renderer */
-	private Box2DDebugRenderer mDebugRenderer = new Box2DDebugRenderer();
+
 	/** Level we're currently editing */
 	private Level mLevel = null;
 	/** Level invoker, sends all editing commands through this */

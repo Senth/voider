@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.Actor;
@@ -29,6 +30,14 @@ public abstract class WorldScene extends Scene {
 		fixCamera();
 	}
 
+	@Override
+	public void render() {
+		super.render();
+		if (Config.Graphics.USE_DEBUG_RENDERER) {
+			mDebugRenderer.render(mWorld, mCamera.combined);
+		}
+	}
+
 	/**
 	 * Fixes the camera resolution
 	 */
@@ -44,4 +53,7 @@ public abstract class WorldScene extends Scene {
 	protected World mWorld = null;
 	/** Camera for the editor */
 	protected Camera mCamera = null;
+
+	/** Debug renderer */
+	private Box2DDebugRenderer mDebugRenderer = new Box2DDebugRenderer();
 }
