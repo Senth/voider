@@ -346,13 +346,13 @@ public abstract class Scene extends InputAdapter {
 			mGui.setHeight(Gdx.graphics.getHeight()*negativeScale);
 			float screenWidth = Gdx.graphics.getWidth();
 			mGui.setWidth(screenWidth*negativeScale);
-			mGui.invalidate();
+			mGui.invalidateHierarchy();
 			mGui.setScale(scale);
 		} else {
 			mGui.setScale(1.0f);
 			mGui.setWidth(Gdx.graphics.getWidth());
 			mGui.setHeight(Gdx.graphics.getHeight());
-			mGui.invalidate();
+			mGui.invalidateHierarchy();
 		}
 	}
 

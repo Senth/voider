@@ -468,7 +468,8 @@ public class LevelEditor extends WorldScene implements EventListener {
 
 		String actionName = event.getTarget().getName();
 
-		// Toggle buttons
+
+		// --- TOGGLE BUTTONS ---
 		if (button.isChecked()) {
 			// STATIC TERRAIN
 			if (actionName.equals(Tools.STATIC_TERRAIN.toString())) {
@@ -477,10 +478,7 @@ public class LevelEditor extends WorldScene implements EventListener {
 				switchTool(mPickupTool, Tools.PICKUP);
 			}
 		}
-		// Select no tool
-		else {
-			switchTool(mNoneHandler, Tools.NONE);
-		}
+
 
 		// --- ACTIONS ---
 		if (button.isPressed()) {
@@ -488,7 +486,6 @@ public class LevelEditor extends WorldScene implements EventListener {
 			if (actionName.equals(Tools.RUN.toString())) {
 				runFromHere();
 			}
-
 
 			/** @TODO remove */
 			// SAVE
@@ -554,11 +551,11 @@ public class LevelEditor extends WorldScene implements EventListener {
 		mGui.add(mToolTable);
 		mGui.invalidate();
 
-		/** @TODO remove, scale appropriately the first time */
-		scaleGui();
-
+		// Pad first time
 		if (toolGui != null) {
-			toolGui.padBottom(mToolTable.getPrefHeight() - toolGui.getPrefHeight());
+			if (toolGui.getPadBottom() == 0f) {
+				toolGui.padBottom(mToolTable.getPrefHeight() - toolGui.getPrefHeight());
+			}
 		}
 	}
 
@@ -579,16 +576,16 @@ public class LevelEditor extends WorldScene implements EventListener {
 		mToolTable.setTransform(true);
 		ButtonGroup toggleGroup = new ButtonGroup();
 		Button button = new TextButton("Static Terrain", textToogleStyle);
-		button.addListener(this);
 		button.setName(Tools.STATIC_TERRAIN.toString());
 		toggleGroup.add(button);
+		button.addListener(this);
 		mToolTable.add(button);
 		mToolTable.row();
 
 		button = new TextButton("Pickup", textToogleStyle);
-		button.addListener(this);
 		button.setName(Tools.PICKUP.toString());
 		toggleGroup.add(button);
+		button.addListener(this);
 		mToolTable.add(button);
 		mToolTable.row();
 
@@ -631,6 +628,7 @@ public class LevelEditor extends WorldScene implements EventListener {
 		mStaticTerrainHandler.initGui();
 		mPickupTool.initGui();
 
+		switchTool(mStaticTerrainHandler, Tools.STATIC_TERRAIN);
 
 		scaleGui();
 	}

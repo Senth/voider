@@ -312,29 +312,29 @@ public class EnemyEditor extends WorldScene {
 
 
 		// ONCE
-		mPathOnce.setPathType(PathTypes.ONCE);
-		mPathOnce.setWorld(mWorld);
+		mPathBackAndForth.setPathType(PathTypes.BACK_AND_FORTH);
+		mPathBackAndForth.setWorld(mWorld);
 		for (Vector2 node : nodes) {
-			mPathOnce.addNodeToBack(node);
+			mPathBackAndForth.addNodeToBack(node);
 		}
 
 		// LOOP
-		//		mPathLoop.setPathType(PathTypes.LOOP);
-		//		//mPathLoop.setWorld(mWorld);
-		//		// Offset all y values so we don't get same path
-		//		for (Vector2 node : nodes) {
-		//			node.y += Gdx.graphics.getHeight() * 0.25f + offset;
-		//			mPathLoop.addNodeToBack(node);
-		//		}
-		//
-		//		// BACK AND FORTH
-		//		mPathBackAndForth.setPathType(PathTypes.BACK_AND_FORTH);
-		//		//mPathBackAndForth.setWorld(mWorld);
-		//		// Offset all y values so we don't get same path
-		//		for (Vector2 node : nodes) {
-		//			node.y += Gdx.graphics.getHeight() * 0.25f + offset;
-		//			mPathBackAndForth.addNodeToBack(node);
-		//		}
+		mPathLoop.setPathType(PathTypes.LOOP);
+		mPathLoop.setWorld(mWorld);
+		// Offset all y values so we don't get same path
+		for (Vector2 node : nodes) {
+			node.y += Gdx.graphics.getHeight() * 0.25f + offset;
+			mPathLoop.addNodeToBack(node);
+		}
+
+		// BACK AND FORTH
+		mPathOnce.setPathType(PathTypes.ONCE);
+		mPathOnce.setWorld(mWorld);
+		// Offset all y values so we don't get same path
+		for (Vector2 node : nodes) {
+			node.y += Gdx.graphics.getHeight() * 0.25f + offset;
+			mPathOnce.addNodeToBack(node);
+		}
 
 		// Free stuff
 		for (Vector2 node : nodes) {
