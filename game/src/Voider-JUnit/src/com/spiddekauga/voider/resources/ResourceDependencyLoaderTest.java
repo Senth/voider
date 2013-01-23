@@ -54,10 +54,10 @@ public class ResourceDependencyLoaderTest {
 	 */
 	@Test
 	public void loadUnload() {
-		ActorDef def = new PlayerActorDef(100, "bullet", null);
-		ActorDef dep1 = new PlayerActorDef(200, "player", null);
-		ActorDef dep2 = new PlayerActorDef(300, "boss", null);
-		ActorDef depdep = new PlayerActorDef(1000, "pickup", null);
+		ActorDef def = new PlayerActorDef();
+		ActorDef dep1 = new PlayerActorDef();
+		ActorDef dep2 = new PlayerActorDef();
+		ActorDef depdep = new PlayerActorDef();
 
 		dep1.addDependency(depdep);
 		def.addDependency(dep1);

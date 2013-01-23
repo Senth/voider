@@ -1,5 +1,7 @@
 package com.spiddekauga.voider.editor;
 
+import java.lang.reflect.Field;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Event;
@@ -16,11 +18,16 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.utils.Pools;
+import com.badlogic.gdx.utils.SnapshotArray;
+import com.spiddekauga.utils.GameTime;
+import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.game.Actor;
 import com.spiddekauga.voider.game.Path;
 import com.spiddekauga.voider.game.Path.PathTypes;
 import com.spiddekauga.voider.game.actors.EnemyActor;
 import com.spiddekauga.voider.game.actors.EnemyActorDef;
 import com.spiddekauga.voider.game.actors.EnemyActorDef.MovementTypes;
+import com.spiddekauga.voider.game.actors.PlayerActor;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceNames;
 import com.spiddekauga.voider.resources.ResourceSaver;
@@ -37,8 +44,17 @@ public class EnemyEditor extends WorldScene {
 	 * Creates the enemy editor
 	 */
 	public EnemyEditor() {
+		//		Actor.setEditorActive(true);
+		mPlayerActor = new PlayerActor();
 		setEnemyDef();
 		createExamplePaths();
+
+		try {
+			mfEnemyOnceReachEnd = EnemyActor.class.getDeclaredField("mPathOnceReachedEnd");
+			mfEnemyOnceReachEnd.setAccessible(true);
+		} catch (Exception e) {
+			Gdx.app.error("EnemyEditor", "Could not access mPathOnceReachEnd");
+		}
 	}
 
 	@Override
@@ -46,11 +62,52 @@ public class EnemyEditor extends WorldScene {
 		if (outcome == Outcomes.LOADING_SUCCEEDED) {
 			initGui();
 		}
+		Actor.setPlayerActor(mPlayerActor);
 	}
 
 	@Override
 	public void update() {
-		// TODO Auto-generated method stub
+		super.update();
+
+		switch (mDef.getMovementType()) {
+		case AI:
+		case STATIONARY:
+			mEnemyActor.update(Gdx.graphics.getDeltaTime());
+			break;
+
+		case PATH:
+			mEnemyPathLoop.update(Gdx.graphics.getDeltaTime());
+			mEnemyPathOnce.update(Gdx.graphics.getDeltaTime());
+			mEnemyPathBackAndForth.update(Gdx.graphics.getDeltaTime());
+
+			// Reset Once enemy ever 4 seconds
+			if (mfEnemyOnceReachEnd != null) {
+				try {
+					if ((Boolean)mfEnemyOnceReachEnd.get(mEnemyPathOnce)) {
+						if (mEnemyPathOnceOutOfBoundsTime != 0.0f) {
+							if (mEnemyPathOnceOutOfBoundsTime + Config.Editor.ENEMY_ONCE_RESET_TIME <= GameTime.getTotalTimeElapsed()) {
+								mEnemyPathOnce.resetPathMovement();
+								mEnemyPathOnceOutOfBoundsTime = 0.0f;
+							}
+						} else {
+							mEnemyPathOnceOutOfBoundsTime = GameTime.getTotalTimeElapsed();
+						}
+					}
+				} catch (Exception e) {
+					Gdx.app.error("EnemyEditor", "Could not access mPathOnceReachEnd");
+				}
+			}
+			break;
+		}
+	}
+
+	@Override
+	public void onDisposed() {
+		mPlayerActor.dispose();
+		mEnemyActor.dispose();
+		mEnemyPathBackAndForth.dispose();
+		mEnemyPathLoop.dispose();
+		mEnemyPathOnce.dispose();
 	}
 
 	@Override
@@ -149,24 +206,29 @@ public class EnemyEditor extends WorldScene {
 		mGui.add(rowTable);
 
 		// Type of movement?
+		MovementTypes movementType = mDef.getMovementType();
+		mDef.setMovementType(null);
 		// Path
 		mGui.row();
 		ButtonGroup buttonGroup = new ButtonGroup();
 		CheckBoxStyle checkBoxStyle = editorSkin.get("default", CheckBoxStyle.class);
 		CheckBox checkBox = new CheckBox("Path", checkBoxStyle);
-		buttonGroup.add(checkBox);
 		checkBox.addListener(new EventListener() {
 			@Override
 			public boolean handle(Event event) {
-				if (isButtonChecked(event)) {
+				if (isButtonChecked(event) && mDef.getMovementType() != MovementTypes.PATH) {
 					addInnerTable(mPathTable, mMovementTable);
+					mStage.addActor(mPathLabels);
 					mDef.setMovementType(MovementTypes.PATH);
+					mEnemyActor.destroyBody();
+					createPathBodies();
 				}
 
 				return true;
 			}
 		});
-		checkBox.setChecked(mDef.getMovementType() == MovementTypes.PATH);
+		buttonGroup.add(checkBox);
+		checkBox.setChecked(movementType == MovementTypes.PATH);
 		rowTable = new Table();
 		checkBox.padRight(label.getPrefHeight() * 0.5f);
 		rowTable.add(checkBox);
@@ -176,16 +238,18 @@ public class EnemyEditor extends WorldScene {
 		checkBox.addListener(new EventListener() {
 			@Override
 			public boolean handle(Event event) {
-				if (isButtonChecked(event)) {
+				if (isButtonChecked(event) && mDef.getMovementType() != MovementTypes.STATIONARY) {
 					addInnerTable(null, mMovementTable);
 					mDef.setMovementType(MovementTypes.STATIONARY);
+					clearExamplePaths();
+					createEnemyBody();
 				}
 				return true;
 			}
 		});
 		buttonGroup.add(checkBox);
 		checkBox.padRight(label.getPrefHeight() * 0.5f);
-		checkBox.setChecked(mDef.getMovementType() == MovementTypes.STATIONARY);
+		checkBox.setChecked(movementType == MovementTypes.STATIONARY);
 		rowTable.add(checkBox);
 
 		// AI
@@ -193,73 +257,43 @@ public class EnemyEditor extends WorldScene {
 		checkBox.addListener(new EventListener() {
 			@Override
 			public boolean handle(Event event) {
-				if (isButtonChecked(event)) {
+				if (isButtonChecked(event) && mDef.getMovementType() != MovementTypes.AI) {
 					addInnerTable(mAiTable, mMovementTable);
 					mDef.setMovementType(MovementTypes.AI);
+					clearExamplePaths();
+					createEnemyBody();
 				}
 				return true;
 			}
 		});
 		buttonGroup.add(checkBox);
-		checkBox.setChecked(mDef.getMovementType() == MovementTypes.AI);
+		checkBox.setChecked(movementType == MovementTypes.AI);
 		rowTable.add(checkBox);
 		mGui.add(rowTable);
 		mGui.row();
 		mGui.add(mMovementTable);
 
+		// Labels for movement
+		label = new Label("Back and Forth", labelStyle);
+		Table wrapTable = new Table();
+		wrapTable.add(label);
+		mPathLabels.add(wrapTable);
+		mPathLabels.row();
 
-		//		// Path Movement
-		//		// Once
-		//		buttonGroup = new ButtonGroup();
-		//		checkBox = new CheckBox("Once", checkBoxStyle);
-		//		checkBox.setChecked(mPath.getPathType() == PathTypes.ONCE);
-		//		buttonGroup.add(checkBox);
-		//		checkBox.addListener(new EventListener() {
-		//			@Override
-		//			public boolean handle(Event event) {
-		//				if (isButtonChecked(event)) {
-		//					mPath.setPathType(PathTypes.ONCE);
-		//				}
-		//				return true;
-		//			}
-		//		});
-		//		checkBox.padRight(label.getPrefHeight() * 0.5f);
-		//		mPathTable.add(checkBox);
-		//
-		//		// Back and Forth
-		//		checkBox = new CheckBox("Back & Forth", checkBoxStyle);
-		//		checkBox.setChecked(mPath.getPathType() == PathTypes.BACK_AND_FORTH);
-		//		checkBox.addListener(new EventListener() {
-		//			@Override
-		//			public boolean handle(Event event) {
-		//				if (isButtonChecked(event)) {
-		//					mPath.setPathType(PathTypes.BACK_AND_FORTH);
-		//				}
-		//				return true;
-		//			}
-		//		});
-		//		checkBox.padRight(label.getPrefHeight() * 0.5f);
-		//		buttonGroup.add(checkBox);
-		//		mPathTable.add(checkBox);
-		//
-		//		// Loop
-		//		checkBox = new CheckBox("Loop", checkBoxStyle);
-		//		checkBox.setChecked(mPath.getPathType() == PathTypes.LOOP);
-		//		checkBox.addListener(new EventListener() {
-		//			@Override
-		//			public boolean handle(Event event) {
-		//				mPath.setPathType(PathTypes.LOOP);
-		//				return true;
-		//			}
-		//		});
-		//		buttonGroup.add(checkBox);
-		//		mPathTable.add(checkBox);
-		//
-		//		button = new TextButton("Clear path", textStyle);
-		//		mPathTable.row();
-		//		mPathTable.add();
-		//		mPathTable.add(button);
+		label = new Label("Loop", labelStyle);
+		wrapTable = new Table();
+		wrapTable.add(label);
+		mPathLabels.add(wrapTable);
+		mPathLabels.row();
 
+		label = new Label("Once", labelStyle);
+		wrapTable = new Table();
+		wrapTable.add(label);
+		mPathLabels.add(wrapTable);
+		mPathLabels.row();
+
+
+		scalePathLabels();
 		scaleGui();
 	}
 
@@ -290,57 +324,116 @@ public class EnemyEditor extends WorldScene {
 		// 2 ------- 1
 		// 3 |     | 0
 		Vector2[] nodes = new Vector2[4];
+		Vector2[] screenPos = new Vector2[4];
 		for (int i = 0; i < nodes.length; ++i) {
+			screenPos[i] = Pools.obtain(Vector2.class);
 			nodes[i] = Pools.obtain(Vector2.class);
 		}
-		// X-area: From middle of screen to 1/4 of the screen width
-		// Y-area: Height of each path should be 1/4. Offset it with 1/20 so it doesn't touch the borders
-		Vector2 screenPos = Pools.obtain(Vector2.class);
-		float offset = Gdx.graphics.getHeight() * 0.05f;
+		// X-area: From middle of screen to 1/6 of the screen width
+		// Y-area: Height of each path should be 1/5. Offset it with 1/20 so it doesn't touch the borders
+		float spaceBetween = Gdx.graphics.getHeight() * 0.1f;
+		float height = Gdx.graphics.getHeight() * 0.2f;
+		float heightOffset = height + spaceBetween;
+		float initialOffset = spaceBetween;
 		// 0
-		screenPos.set(Gdx.graphics.getWidth() * 0.5f, offset);
-		screenToWorldCoord(mCamera, screenPos, nodes[0], false);
+		screenPos[0].set(Gdx.graphics.getWidth() * 0.5f, initialOffset + height);
 		// 1
-		screenPos.y += Gdx.graphics.getHeight() * 0.25f;
-		screenToWorldCoord(mCamera, screenPos, nodes[1], false);
+		screenPos[1].set(screenPos[0]);
+		screenPos[1].y = initialOffset;
 		// 2
-		screenPos.x = Gdx.graphics.getWidth() * 0.25f;
-		screenToWorldCoord(mCamera, screenPos, nodes[2], false);
+		screenPos[2].set(screenPos[1]);
+		screenPos[2].x = Gdx.graphics.getWidth() / 6f;
 		// 3
-		screenPos.y = offset;
-		screenToWorldCoord(mCamera, screenPos, nodes[3], false);
+		screenPos[3].set(screenPos[2]);
+		screenPos[3].y = initialOffset + height;
 
 
-		// ONCE
+		// BACK AND FORTH
 		mPathBackAndForth.setPathType(PathTypes.BACK_AND_FORTH);
-		mPathBackAndForth.setWorld(mWorld);
-		for (Vector2 node : nodes) {
-			mPathBackAndForth.addNodeToBack(node);
+		mEnemyPathBackAndForth.setPath(mPathBackAndForth);
+		for (int i = 0; i < nodes.length; ++i) {
+			screenToWorldCoord(mCamera, screenPos[i], nodes[i], true);
+			mPathBackAndForth.addNodeToBack(nodes[i]);
 		}
 
 		// LOOP
 		mPathLoop.setPathType(PathTypes.LOOP);
-		mPathLoop.setWorld(mWorld);
+		mEnemyPathLoop.setPath(mPathLoop);
 		// Offset all y values so we don't get same path
-		for (Vector2 node : nodes) {
-			node.y += Gdx.graphics.getHeight() * 0.25f + offset;
-			mPathLoop.addNodeToBack(node);
+		for (int i = 0; i < nodes.length; ++i) {
+			screenPos[i].y += heightOffset;
+			screenToWorldCoord(mCamera, screenPos[i], nodes[i], true);
+			mPathLoop.addNodeToBack(nodes[i]);
 		}
 
-		// BACK AND FORTH
+		// ONCE
 		mPathOnce.setPathType(PathTypes.ONCE);
-		mPathOnce.setWorld(mWorld);
+		mEnemyPathOnce.setPath(mPathOnce);
 		// Offset all y values so we don't get same path
-		for (Vector2 node : nodes) {
-			node.y += Gdx.graphics.getHeight() * 0.25f + offset;
-			mPathOnce.addNodeToBack(node);
+		for (int i = 0; i < nodes.length; ++i) {
+			screenPos[i].y += heightOffset;
+			screenToWorldCoord(mCamera, screenPos[i], nodes[i], true);
+			mPathOnce.addNodeToBack(nodes[i]);
 		}
 
 		// Free stuff
-		for (Vector2 node : nodes) {
-			Pools.free(node);
+		for (int i = 0; i < nodes.length; ++i) {
+			Pools.free(nodes[i]);
+			Pools.free(screenPos[i]);
 		}
-		Pools.free(screenPos);
+	}
+
+	/**
+	 * Creates enemy bodies of the paths
+	 */
+	private void createPathBodies() {
+		mPathOnce.setWorld(mWorld);
+		mPathLoop.setWorld(mWorld);
+		mPathBackAndForth.setWorld(mWorld);
+		mEnemyPathOnce.createBody();
+		mEnemyPathOnce.resetPathMovement();
+		mEnemyPathLoop.createBody();
+		mEnemyPathLoop.resetPathMovement();
+		mEnemyPathBackAndForth.createBody();
+		mEnemyPathBackAndForth.resetPathMovement();
+		mEnemyPathOnceOutOfBoundsTime = 0f;
+	}
+
+	/**
+	 * Clears all the example paths
+	 */
+	private void clearExamplePaths() {
+		mPathOnce.setWorld(null);
+		mPathLoop.setWorld(null);
+		mPathBackAndForth.setWorld(null);
+		mEnemyPathOnce.destroyBody();
+		mEnemyPathLoop.destroyBody();
+		mEnemyPathBackAndForth.destroyBody();
+
+		// Clear GUI text
+		mStage.clear();
+		mStage.addActor(mGui);
+	}
+
+	/**
+	 * Scale label for paths
+	 */
+	private void scalePathLabels() {
+		float spaceBetween = Gdx.graphics.getHeight() * 0.1f;
+		float height = Gdx.graphics.getHeight() * 0.2f;
+		float initialOffset = spaceBetween + height * 0.5f + spaceBetween + height;
+
+		mPathLabels.setPosition(Gdx.graphics.getWidth() / 3f, initialOffset);
+
+		// Fix padding
+		SnapshotArray<com.badlogic.gdx.scenes.scene2d.Actor> actors = mPathLabels.getChildren();
+		for (int i = 0; i < actors.size - 1; ++i) {
+			if (actors.get(i) instanceof Table) {
+				Table table = (Table) actors.get(i);
+				table.padBottom(spaceBetween + height - table.getPrefHeight());
+				table.invalidateHierarchy();
+			}
+		}
 	}
 
 	/**
@@ -352,6 +445,15 @@ public class EnemyEditor extends WorldScene {
 		mEnemyPathOnce.setDef(mDef);
 		mEnemyPathLoop.setDef(mDef);
 		mEnemyPathBackAndForth.setDef(mDef);
+	}
+
+	/**
+	 * Create enemy test body (for AI and STATIONARY)
+	 */
+	private void createEnemyBody() {
+		if (mEnemyActor.getBody() == null) {
+			mEnemyActor.createBody();
+		}
 	}
 
 	/** Current enemy actor */
@@ -372,12 +474,20 @@ public class EnemyEditor extends WorldScene {
 	private Path mPathLoop = new Path();
 	/** Display path how back and forth works */
 	private Path mPathBackAndForth = new Path();
+	/** When the ONCE enemy path actor was removed */
+	private float mEnemyPathOnceOutOfBoundsTime = 0.0f;
+	/** Field for accessing when the ONCE enemy actor reached the end */
+	private Field mfEnemyOnceReachEnd = null;
+	/** Player actor, for the enemies to work properly */
+	private PlayerActor mPlayerActor = null;
 
 
 	/** Container for the different movement variables */
 	private Table mMovementTable = new Table();
 	/** Table for path movement */
 	private Table mPathTable = new Table();
+	/** Table for path lables, these are added directly to the stage */
+	private Table mPathLabels = new Table();
 	/** Table for AI movement */
 	private Table mAiTable = new Table();
 }

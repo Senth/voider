@@ -1,6 +1,7 @@
 package com.spiddekauga.voider.game.actors;
 
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.spiddekauga.voider.game.ActorDef;
 
@@ -12,28 +13,21 @@ import com.spiddekauga.voider.game.ActorDef;
  */
 public class PlayerActorDef extends ActorDef {
 	/**
-	 * Constructor that sets all variables
-	 * @param maxLife maximum life of the actor, also starting amount of life
-	 * @param name name of the actor
-	 * @param fixtureDef physical representation of the object
-	 */
-	public PlayerActorDef(
-			float maxLife,
-			String name,
-			FixtureDef fixtureDef
-			)
-	{
-		super(maxLife, name, fixtureDef);
-		getBodyDef().type = BodyType.DynamicBody;
-		getBodyDef().fixedRotation = true;
-	}
-
-	/**
 	 * Default constructor
 	 */
-	protected PlayerActorDef() {
+	public PlayerActorDef() {
+		setName("Default");
+		setMaxLife(100f);
 		getBodyDef().type = BodyType.DynamicBody;
 		getBodyDef().fixedRotation = true;
+		FixtureDef fixtureDef = new FixtureDef();
+		CircleShape circleShape = new CircleShape();
+		circleShape.setRadius(1.0f);
+		fixtureDef.friction = 0.0f;
+		fixtureDef.restitution = 0.1f;
+		fixtureDef.density = 0.001f;
+		fixtureDef.shape = circleShape;
+		addFixtureDef(fixtureDef);
 	}
 
 	/**

@@ -89,6 +89,10 @@ public class Config {
 			PICKING_CIRCLE_SHAPE.setRadius(PICKING_CIRCLE_RADIUS);
 		}
 
+		/** How long time ONCE enemy should have reached the goal before it is reset.
+		 * In EnemyEditor */
+		public final static float ENEMY_ONCE_RESET_TIME = 2;
+
 		/** Radius of all picking circles */
 		private final static float PICKING_CIRCLE_RADIUS = 1.0f;
 		/** Picking shape of the */
@@ -112,6 +116,13 @@ public class Config {
 		public static class Pickup {
 			/** Default radius for the pickups */
 			public final static float RADIUS = 1f;
+		}
+		/**
+		 * Enemies
+		 */
+		public static class Enemy {
+			/** How close the enemy should be to a path point before it goes to the next */
+			public final static float PATH_NODE_CLOSE_SQ = 0.1f * 0.1f;
 		}
 	}
 

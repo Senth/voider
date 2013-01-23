@@ -31,6 +31,11 @@ public abstract class WorldScene extends Scene {
 	}
 
 	@Override
+	public void update() {
+		mWorld.step(1/60f, 6, 2);
+	}
+
+	@Override
 	public void render() {
 		super.render();
 		if (Config.Graphics.USE_DEBUG_RENDERER) {

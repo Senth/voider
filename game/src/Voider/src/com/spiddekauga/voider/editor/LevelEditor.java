@@ -72,7 +72,7 @@ public class LevelEditor extends WorldScene implements EventListener {
 
 	@Override
 	public void update() {
-		mWorld.step(1/60f, 6, 2);
+		super.update();
 		mLevel.update(false);
 
 		// Scrolling

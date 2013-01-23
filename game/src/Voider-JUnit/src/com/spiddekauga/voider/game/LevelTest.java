@@ -13,13 +13,10 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.lwjgl.LwjglFiles;
 import com.badlogic.gdx.backends.lwjgl.LwjglNativesLoader;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.CircleShape;
-import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
 import com.spiddekauga.utils.Json;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.actors.PlayerActor;
-import com.spiddekauga.voider.game.actors.PlayerActorDef;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceDependencyLoaderTest;
 import com.spiddekauga.voider.resources.ResourceNames;
@@ -45,15 +42,13 @@ public class LevelTest {
 		ResourceNames.useTestPath();
 		ResourceCacheFacade.init();
 
-		FixtureDef fixtureDef = new FixtureDef();
-		fixtureDef.shape = new CircleShape();
-		mPlayerActorDef.addFixtureDef(fixtureDef);
 		mWorld = new World(new Vector2(), false);
 		Actor.setWorld(mWorld);
+		mPlayerActor = new PlayerActor();
 
 		ResourceSaver.save(mUsingLevelDef);
-		ResourceSaver.save(mPlayerActorDef);
-		ResourceCacheFacade.load(mPlayerActorDef, false);
+		ResourceSaver.save(mPlayerActor.getDef());
+		ResourceCacheFacade.load(mPlayerActor.getDef(), false);
 		ResourceCacheFacade.load(mUsingLevelDef, false);
 		ResourceCacheFacade.finishLoading();
 
@@ -75,7 +70,7 @@ public class LevelTest {
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
 		ResourceDependencyLoaderTest.delete(mUsingLevelDef);
-		ResourceDependencyLoaderTest.delete(mPlayerActorDef);
+		ResourceDependencyLoaderTest.delete(mPlayerActor.getDef());
 
 		mWorld.dispose();
 		Config.dispose();
@@ -105,7 +100,7 @@ public class LevelTest {
 
 
 		// Test with setting the values to something else
-		((ArrayList<Actor>) mfActors.get(level)).add(new PlayerActor(mPlayerActorDef));
+		((ArrayList<Actor>) mfActors.get(level)).add(new PlayerActor());
 		mfXCoord.set(level, 55.3f);
 		mfSpeed.set(level, 0.578f);
 		mfCompletedLevel.set(level, true);
@@ -123,8 +118,8 @@ public class LevelTest {
 
 	/** Level definition used for the tests */
 	private static LevelDef mUsingLevelDef = new LevelDef();
-	/** Player definition used for the tests */
-	private static PlayerActorDef mPlayerActorDef = new PlayerActorDef(100, "player", new FixtureDef());
+	/** Player */
+	private static PlayerActor mPlayerActor = null;
 	/** World used for actors */
 	private static World mWorld = null;
 

@@ -9,7 +9,6 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.ChainShape;
-import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.QueryCallback;
@@ -19,7 +18,6 @@ import com.badlogic.gdx.utils.Pools;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.actors.FixtureFilterCategories;
 import com.spiddekauga.voider.game.actors.PlayerActor;
-import com.spiddekauga.voider.game.actors.PlayerActorDef;
 import com.spiddekauga.voider.scene.WorldScene;
 /**
  * The main game. Starts with a level and could either be in regular or
@@ -41,16 +39,7 @@ public class GameScene extends WorldScene {
 		mWorld.setContactListener(mCollisionResolver);
 
 
-		/** @TODO remove the player creation, it shall be created in level instead */
-		FixtureDef fixtureDef = new FixtureDef();
-		CircleShape circleShape = new CircleShape();
-		circleShape.setRadius(1.0f);
-		fixtureDef.friction = 0.0f;
-		fixtureDef.restitution = 0.1f;
-		fixtureDef.density = 0.001f;
-		fixtureDef.shape = circleShape;
-		PlayerActorDef def = new PlayerActorDef(100.0f, "Normal", fixtureDef);
-		mPlayerActor = new PlayerActor(def);
+		mPlayerActor = new PlayerActor();
 		mPlayerActor.createBody();
 
 
@@ -106,7 +95,7 @@ public class GameScene extends WorldScene {
 			screenToWorldCoord(mCamera, mCursorScreen, mCursorWorld, true);
 			mMouseJoint.setTarget(mCursorWorld);
 		}
-		mWorld.step(1/60f, 6, 2);
+		super.update();
 		mLevel.update(true);
 
 		/** @TODO Move the camera relative to the level */

@@ -172,7 +172,7 @@ public class ResourceCacheFacadeTest {
 	 */
 	@Test(expected = ResourceCorruptException.class)
 	public void loadCorruptResource() {
-		ActorDef tempDef = new PlayerActorDef(100f, "test", null);
+		ActorDef tempDef = new PlayerActorDef();
 		ResourceSaver.save(tempDef);
 
 		try {
@@ -206,7 +206,7 @@ public class ResourceCacheFacadeTest {
 	 */
 	@Test(expected = ResourceNotFoundException.class)
 	public void loadNoneExistingResource() {
-		PlayerActorDef tempDef = new PlayerActorDef(100, "test", null);
+		PlayerActorDef tempDef = new PlayerActorDef();
 		try {
 			ResourceCacheFacade.load(tempDef.getId(), PlayerActorDef.class, false);
 		} catch (UndefinedResourceTypeException e) {
@@ -271,17 +271,17 @@ public class ResourceCacheFacadeTest {
 	}
 
 	/** Regular actor with no dependencies */
-	private static PlayerActorDef mDef1 = new PlayerActorDef(100, "def1", null);
+	private static PlayerActorDef mDef1 = new PlayerActorDef();
 	/** Regular actor with no dependencies */
-	private static PlayerActorDef mDef2 = new PlayerActorDef(150, "def2", null);
+	private static PlayerActorDef mDef2 = new PlayerActorDef();
 	/** Actor using dependencies */
-	private static PlayerActorDef mUsingDefDeps = new PlayerActorDef(155, "using dep", null);
+	private static PlayerActorDef mUsingDefDeps = new PlayerActorDef();
 	/** Actor dependency with a dependency */
-	private static PlayerActorDef mDepWithDep = new PlayerActorDef(200, "player", null);
+	private static PlayerActorDef mDepWithDep = new PlayerActorDef();
 	/** Actor dependency */
-	private static PlayerActorDef mDep = new PlayerActorDef(300, "boss", null);
+	private static PlayerActorDef mDep = new PlayerActorDef();
 	/** Actor under dependency, i.e. UsingDefDeps -> DepWithDep -> UnderDep */
-	private static PlayerActorDef mUnderDep = new PlayerActorDef(1000, "pickup", null);
+	private static PlayerActorDef mUnderDep = new PlayerActorDef();
 
 	/** Total number of actors */
 	private static int ACTORS = 6;

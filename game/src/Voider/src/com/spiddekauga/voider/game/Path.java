@@ -81,6 +81,21 @@ public class Path implements IResource, Json.Serializable, Disposable {
 	}
 
 	/**
+	 * @return number of nodes in the path
+	 */
+	public int getNodeCount() {
+		return mNodes.size();
+	}
+
+	/**
+	 * @param index index of the node we want to get
+	 * @return node at the specified index
+	 */
+	public Vector2 getNodeAt(int index) {
+		return mNodes.get(index);
+	}
+
+	/**
 	 * @return all nodes of the path. These node are used by reference, thus
 	 * the returned array will be invalid after a #clearNodes() call.
 	 * @see #getNodesCopy() if you want to save the nodes after a #clearNodes() call
@@ -187,7 +202,7 @@ public class Path implements IResource, Json.Serializable, Disposable {
 	 * Creates the fixtures for the path
 	 */
 	private void createFixture() {
-		if (mNodes.size() == 3) {
+		if (mNodes.size() >= 2) {
 			if (mFixtureDef == null) {
 				mFixtureDef = new FixtureDef();
 				mFixtureDef.filter.categoryBits = FixtureFilterCategories.NONE;

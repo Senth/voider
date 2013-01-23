@@ -18,6 +18,7 @@ import com.badlogic.gdx.utils.OrderedMap;
 import com.badlogic.gdx.utils.Pools;
 import com.spiddekauga.utils.Json;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.game.actors.PlayerActor;
 import com.spiddekauga.voider.game.actors.StaticTerrainActorDef;
 import com.spiddekauga.voider.resources.Resource;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
@@ -45,6 +46,11 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 	 * @param deltaTime seconds elapsed since last call
 	 */
 	public void update(float deltaTime) {
+		// Update positino
+		if (mBody != null) {
+			mPosition.set(mBody.getPosition());
+		}
+
 		// Decrease life if colliding with something...
 		if (mDef.getMaxLife() > 0 && mLife > 0) {
 			for (ActorDef collidingActor : mCollidingActors) {
@@ -55,11 +61,30 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 		// Do something if life is 0?
 	}
 
+	@Override
+	public void onTriggered(TriggerAction action) {
+		/** @TODO implement trigger responses */
+	}
+
 	/**
 	 * @return the definition of the actor
 	 */
 	public ActorDef getDef() {
 		return mDef;
+	}
+
+	/**
+	 * Returns the definition of the specified type
+	 * @param <DefType> derived definition type to get instead
+	 * @param defType the derived definition type to get instead of default ActorDef
+	 * @return if the actor's definition is an instance of type it will return this type
+	 * instead, if not null is returned
+	 */
+	public <DefType> DefType getDef(Class<DefType> defType) {
+		if (mDef.getClass() == defType) {
+			return (DefType)mDef;
+		}
+		return null;
 	}
 
 	/**
@@ -253,6 +278,14 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 	}
 
 	/**
+	 * Sets the current player for all the actors
+	 * @param playerActor the current player actor
+	 */
+	public static void setPlayerActor(PlayerActor playerActor) {
+		mPlayerActor = playerActor;
+	}
+
+	/**
 	 * @return the body of the actor
 	 */
 	public Body getBody() {
@@ -378,4 +411,6 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 	protected static World mWorld = null;
 	/** If the actor will be used for an editor */
 	protected static boolean mEditorActive = false;
+	/** The player of this game, for derived actor to have easy access */
+	protected static PlayerActor mPlayerActor = null;
 }

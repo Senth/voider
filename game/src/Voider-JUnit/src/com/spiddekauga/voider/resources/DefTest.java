@@ -42,8 +42,8 @@ public class DefTest {
 	 */
 	@Test
 	public void equalsObject() {
-		Def def = new PlayerActorDef(100, "player", null);
-		Def def2 = new PlayerActorDef(100, "player", null);
+		Def def = new PlayerActorDef();
+		Def def2 = new PlayerActorDef();
 
 		assertEquals("equals()", def, def);
 		assertTrue("not equals()", !def.equals(def2));
@@ -66,7 +66,7 @@ public class DefTest {
 	 */
 	@Test
 	public void writeRead() {
-		Def def = new PlayerActorDef(100, "player", null);
+		Def def = new PlayerActorDef();
 		Def dependency1 = new BossActorDef(200, "boss", null);
 		Def dependency2 = new BulletActorDef(300, "bullet", null);
 		def.setComment("testComment");
@@ -110,7 +110,7 @@ public class DefTest {
 	 */
 	@Test
 	public void addDependencyDef() {
-		Def def = new PlayerActorDef(100, "player", null);
+		Def def = new PlayerActorDef();
 		Def dependency1 = new BossActorDef(200, "boss", null);
 		Def dependency2 = new BulletActorDef(300, "bullet", null);
 		def.addDependency(dependency1);
@@ -132,7 +132,7 @@ public class DefTest {
 	 */
 	@Test
 	public void addDependencyResourceNames() {
-		Def def = new PlayerActorDef(100, "player", null);
+		Def def = new PlayerActorDef();
 		def.addDependency(ResourceNames.PARTICLE_TEST);
 		def.addDependency(ResourceNames.TEXTURE_PLAYER);
 		def.addDependency(ResourceNames.SOUND_TEST);
@@ -152,7 +152,7 @@ public class DefTest {
 	 */
 	@Test
 	public void removeDependencyUUID() {
-		Def def = new PlayerActorDef(100, "player", null);
+		Def def = new PlayerActorDef();
 		Def dependency1 = new BossActorDef(200, "boss", null);
 		Def dependency2 = new BulletActorDef(300, "bullet", null);
 		def.addDependency(dependency1);
@@ -184,7 +184,7 @@ public class DefTest {
 	 */
 	@Test
 	public void removeDependencyResourceNames() {
-		Def def = new PlayerActorDef(100, "player", null);
+		Def def = new PlayerActorDef();
 		def.addDependency(ResourceNames.PARTICLE_TEST);
 		def.addDependency(ResourceNames.SOUND_TEST);
 		def.removeDependency(ResourceNames.PARTICLE_TEST);

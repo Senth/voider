@@ -52,7 +52,7 @@ public class ResourceSaverTest {
 	 */
 	@Test
 	public void testSave() {
-		Def def = new PlayerActorDef(100, "pickup", null);
+		Def def = new PlayerActorDef();
 
 		// Test to save it and then load
 		ResourceSaver.save(def);

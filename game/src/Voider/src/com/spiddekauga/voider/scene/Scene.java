@@ -362,9 +362,9 @@ public abstract class Scene extends InputAdapter {
 	protected SpriteBatch mSpriteBatch = new SpriteBatch();
 	/** Input multiplexer */
 	protected InputMultiplexer mInputMultiplexer = new InputMultiplexer();
-
 	/** Handles user interfaces for the scene */
-	private Stage mStage = new Stage();
+	protected Stage mStage = new Stage();
+
 	/** Outcome of scene, this is set when a derived class calls setOutcome */
 	private Outcomes mOutcome = null;
 	/** Message of the outcome */

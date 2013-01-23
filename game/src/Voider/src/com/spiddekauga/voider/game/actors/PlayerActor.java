@@ -1,7 +1,6 @@
 package com.spiddekauga.voider.game.actors;
 
 import com.spiddekauga.voider.game.Collectibles;
-import com.spiddekauga.voider.game.TriggerAction;
 
 
 
@@ -13,16 +12,10 @@ import com.spiddekauga.voider.game.TriggerAction;
  */
 public class PlayerActor extends com.spiddekauga.voider.game.Actor {
 	/**
-	 * Player constructor
-	 * @param playerDef the player definition
+	 * Creates a default player
 	 */
-	public PlayerActor(PlayerActorDef playerDef) {
-		super(playerDef);
-	}
-
-	@Override
-	public void onTriggered(TriggerAction action) {
-		// TODO Auto-generated method stub
+	public PlayerActor() {
+		super(new PlayerActorDef());
 	}
 
 	/**
@@ -39,12 +32,5 @@ public class PlayerActor extends com.spiddekauga.voider.game.Actor {
 			mLife += 50;
 			break;
 		}
-	}
-
-	/**
-	 * protected constructor, used for JSON
-	 */
-	protected PlayerActor() {
-		// Does nothing
 	}
 }
