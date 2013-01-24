@@ -102,6 +102,12 @@ public class EnemyEditor extends WorldScene {
 	}
 
 	@Override
+	public void onResize(int width, int height) {
+		super.onResize(width, height);
+		scalePathLabels();
+	}
+
+	@Override
 	public void onDisposed() {
 		mPlayerActor.dispose();
 		mEnemyActor.dispose();
@@ -205,6 +211,14 @@ public class EnemyEditor extends WorldScene {
 		rowTable.add(label);
 		mGui.add(rowTable);
 
+		// Speed
+		rowTable = new Table();
+		label = new Label("Speed", labelStyle);
+		rowTable.add(label);
+		rowTable.padRight(mGui.getPrefWidth() - label.getPrefWidth());
+		mGui.row();
+		mGui.add(rowTable);
+
 		// Type of movement?
 		MovementTypes movementType = mDef.getMovementType();
 		mDef.setMovementType(null);
@@ -232,6 +246,7 @@ public class EnemyEditor extends WorldScene {
 		rowTable = new Table();
 		checkBox.padRight(label.getPrefHeight() * 0.5f);
 		rowTable.add(checkBox);
+
 
 		// Stationary
 		checkBox = new CheckBox("Stationary", checkBoxStyle);
@@ -425,8 +440,19 @@ public class EnemyEditor extends WorldScene {
 
 		mPathLabels.setPosition(Gdx.graphics.getWidth() / 3f, initialOffset);
 
+
+
 		// Fix padding
 		SnapshotArray<com.badlogic.gdx.scenes.scene2d.Actor> actors = mPathLabels.getChildren();
+		// Reset padding first
+		for (int i = 0; i < actors.size - 1; ++i) {
+			if (actors.get(i) instanceof Table) {
+				Table table = (Table) actors.get(i);
+				table.padBottom(0);
+				table.invalidateHierarchy();
+			}
+		}
+
 		for (int i = 0; i < actors.size - 1; ++i) {
 			if (actors.get(i) instanceof Table) {
 				Table table = (Table) actors.get(i);

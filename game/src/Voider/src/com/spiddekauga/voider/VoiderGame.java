@@ -2,26 +2,28 @@ package com.spiddekauga.voider;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
-import com.badlogic.gdx.scenes.scene2d.ui.Button.ButtonStyle;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
+import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
+import com.badlogic.gdx.scenes.scene2d.ui.CheckBox.CheckBoxStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
-import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.spiddekauga.utils.GameTime;
+import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.voider.editor.EnemyEditor;
 import com.spiddekauga.voider.editor.LevelEditor;
 import com.spiddekauga.voider.game.GameScene;
 import com.spiddekauga.voider.game.Level;
 import com.spiddekauga.voider.game.LevelDef;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
+import com.spiddekauga.voider.resources.ResourceNames;
 import com.spiddekauga.voider.resources.ResourceSaver;
+import com.spiddekauga.voider.resources.UndefinedResourceTypeException;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 
 /**
@@ -30,9 +32,6 @@ import com.spiddekauga.voider.scene.SceneSwitcher;
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
 public class VoiderGame implements ApplicationListener {
-
-	/** SKIN LOCATION, CHANGE THIS! */
-	private static final String SKIN_LOCATION = "ui/editor.json";
 
 	@Override
 	public void create() {
@@ -45,9 +44,9 @@ public class VoiderGame implements ApplicationListener {
 		/** @TODO set main menu as start screen */
 
 		//testGame();
-		testEnemyEditor();
+		//testEnemyEditor();
 		//testEditor();
-		//testStage();
+		testStage();
 	}
 
 	/**
@@ -56,128 +55,76 @@ public class VoiderGame implements ApplicationListener {
 	@SuppressWarnings("unused")
 	private void testStage() {
 		mStage = new Stage();
-		FileHandle skinFile = Gdx.files.internal(SKIN_LOCATION);
-		Skin skin = new Skin(skinFile);
-		ButtonStyle buttonStyle = skin.get("add", ButtonStyle.class);
-		ImageButtonStyle imageStyle = skin.get("add", ImageButtonStyle.class);
-		TextButtonStyle textStyle = skin.get("default", TextButtonStyle.class);
+		AlignTable table = new AlignTable();
+		table.setWidth(Gdx.graphics.getWidth());
+		table.setHeight(Gdx.graphics.getHeight());
 
-		// TOP LEFT - Does not scale button (9patch image)
-		// Probably same error as BOTTOM LEFT
-		Button button = new Button(buttonStyle);
-		button.setTransform(true);
-		button.setPosition(0, 350);
-		button.setScale(0.5f);
-		button.invalidate();
-		mStage.addActor(button);
+		ResourceCacheFacade.load(ResourceNames.EDITOR_BUTTONS);
+		try {
+			ResourceCacheFacade.finishLoading();
+		} catch (UndefinedResourceTypeException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
 
+		TextButtonStyle textToogleStyle = editorSkin.get("toggle", TextButtonStyle.class);
+		TextButtonStyle textStyle = editorSkin.get("default", TextButtonStyle.class);
+		LabelStyle labelStyle = editorSkin.get("default", LabelStyle.class);
 
-		// TOP MIDDLE - Can be scaled appropriately with setSize, the 9patch
-		// scales appropriately (9patch image)
-		button = new Button(buttonStyle);
-		button.setTransform(true);
-		button.setPosition(350, 350);
-		button.setSize(button.getPrefWidth()*0.5f, button.getPrefHeight()*0.5f);
-		button.invalidate();
-		mStage.addActor(button);
+		// New Enemy
+		Button button = new TextButton("New Enemy", textStyle);
+		table.add(button);
 
+		// Save
+		button = new TextButton("Save", textStyle);
+		table.add(button);
 
-		// TOP RIGHT - TABLE Cannot scale button in any way...
-		// Should be same size as TOP MIDDLE
-		// Border is 9patch, inner image is regular png
-		// ---
-		// Testing scaling with some text buttons too
-		// I know scaling text isn't good, but this displays that the button
-		// itself isn't scaling, just the text
-		Table tableScale = new Table();
-		button = new ImageButton(imageStyle);
-		button.setTransform(true);
-		button.setScale(0.5f);
-		button.invalidate();
-		tableScale.setTransform(true);
-		tableScale.add(button);
-		tableScale.row();
-		button = new TextButton("Upscaled", textStyle);
-		button.setTransform(true);
-		button.setScale(2.0f);
-		button.invalidate();
-		tableScale.add(button);
-		tableScale.row();
-		button = new TextButton("Downscaled", textStyle);
-		button.setTransform(true);
-		button.setScale(0.5f);
-		button.invalidate();
-		tableScale.add(button);
+		// Load
+		button = new TextButton("Load", textStyle);
+		/** @TODO load enemy actor, use browser */
+		table.add(button);
 
-		tableScale.align(Align.top | Align.right);
-		tableScale.setHeight(480);
-		tableScale.setPosition(800, 0);
-		tableScale.invalidateHierarchy();
-		mStage.addActor(tableScale);
+		// Duplicate
+		button = new TextButton("Duplicate", textStyle);
+		/** @TODO duplicate enemy actor, use browser */
+		table.add(button);
+		mStage.addActor(table);
 
 
+		// Movement
+		table.row();
+		Label label = new Label("Movement", labelStyle);
+		table.add(label);
 
-		// BOTTOM LEFT - Image Button, only inner image is scaled with setScale
-		// Same with TextButton and probably other buttons too
-		// Border is 9patch, inner image is regular png
-		button = new ImageButton(imageStyle);
-		button.setTransform(true);
-		button.setScale(0.5f);
-		mStage.addActor(button);
+		// Speed
+		label = new Label("Speed", labelStyle);
+		table.add(label);
+		table.row();
 
+		// Path
+		ButtonGroup buttonGroup = new ButtonGroup();
+		CheckBoxStyle checkBoxStyle = editorSkin.get("default", CheckBoxStyle.class);
+		CheckBox checkBox = new CheckBox("Path", checkBoxStyle);
 
-		// BOTTOM MIDDLE - Image Button, use of setSize scales the image appropriately
-		// Border is 9patch, inner image is regular png
-		button = new ImageButton(imageStyle);
-		button.setTransform(true);
-		button.setPosition(350, 0);
-		button.setSize(button.getPrefWidth()*0.5f, button.getPrefHeight()*0.5f);
-		button.invalidate();
-		mStage.addActor(button);
-
-
-		// BOTTOM RIGHT - TABLE Cannot scale button using setSize
-		// Border is 9patch, inner image is regular png
-		tableScale = new Table();
-		button = new ImageButton(imageStyle);
-		button.setTransform(true);
-		button.setSize(button.getPrefWidth()*0.5f, button.getPrefWidth()*0.5f);
-		button.invalidate();
-		tableScale.setTransform(true);
-		tableScale.add(button);
-		tableScale.row();
-		button = new TextButton("Upscaled", textStyle);
-		button.setTransform(true);
-		button.setSize(button.getPrefWidth()*2.0f, button.getPrefWidth()*2.0f);
-		button.invalidate();
-		tableScale.add(button);
-		tableScale.row();
-		button = new TextButton("Downscaled", textStyle);
-		button.setTransform(true);
-		button.setSize(button.getPrefWidth()*0.5f, button.getPrefWidth()*0.5f);
-		button.invalidate();
-		tableScale.add(button);
-
-		tableScale.align(Align.bottom | Align.right);
-		tableScale.setPosition(800, 0);
-		tableScale.invalidateHierarchy();
-		mStage.addActor(tableScale);
+		buttonGroup.add(checkBox);
+		checkBox.padRight(label.getPrefHeight() * 0.5f);
+		table.add(checkBox);
 
 
-		// CENTER - scaling the table with buttonImage does not produce the same
-		// result as scaling the button (the border gets scaled)
-		// Should be the same as TOP middle or BOTTOM middle
-		// Border is 9patch, inner image is regular png
-		tableScale = new Table();
-		button = new ImageButton(imageStyle);
-		button.setTransform(true);
-		tableScale.setTransform(true);
-		tableScale.add(button);
-		tableScale.align(Align.center);
-		tableScale.setPosition(400, 240);
-		tableScale.setScale(0.5f);
-		tableScale.invalidateHierarchy();
-		mStage.addActor(tableScale);
+		// Stationary
+		checkBox = new CheckBox("Stationary", checkBoxStyle);
+		buttonGroup.add(checkBox);
+		checkBox.padRight(label.getPrefHeight() * 0.5f);
+		table.add(checkBox);
+
+		// AI
+		checkBox = new CheckBox("AI", checkBoxStyle);
+		buttonGroup.add(checkBox);
+		table.add(checkBox);
+
+		table.setTransform(true);
+		table.layout();
 
 		Gdx.input.setInputProcessor(mStage);
 	}
