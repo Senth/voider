@@ -67,6 +67,15 @@ public class Cell implements Poolable {
 		return mActor.getHeight();
 	}
 
+	/**
+	 * Calculates the size of the cell
+	 */
+	void calculateSize() {
+		if (mActor instanceof Layout) {
+			((Layout)mActor).validate();
+		}
+	}
+
 	@Override
 	public void reset() {
 		if (mActor instanceof Disposable) {

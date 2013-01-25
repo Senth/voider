@@ -14,6 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.spiddekauga.utils.GameTime;
+import com.spiddekauga.utils.scene.ui.Align;
 import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.voider.editor.EnemyEditor;
 import com.spiddekauga.voider.editor.LevelEditor;
@@ -58,12 +59,13 @@ public class VoiderGame implements ApplicationListener {
 		AlignTable table = new AlignTable();
 		table.setWidth(Gdx.graphics.getWidth());
 		table.setHeight(Gdx.graphics.getHeight());
+		table.setTableAlign(Align.CENTER | Align.MIDDLE);
+		table.setRowAlign(Align.CENTER | Align.MIDDLE);
 
 		ResourceCacheFacade.load(ResourceNames.EDITOR_BUTTONS);
 		try {
 			ResourceCacheFacade.finishLoading();
 		} catch (UndefinedResourceTypeException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
@@ -71,60 +73,40 @@ public class VoiderGame implements ApplicationListener {
 		TextButtonStyle textToogleStyle = editorSkin.get("toggle", TextButtonStyle.class);
 		TextButtonStyle textStyle = editorSkin.get("default", TextButtonStyle.class);
 		LabelStyle labelStyle = editorSkin.get("default", LabelStyle.class);
+		ButtonGroup buttonGroup = new ButtonGroup();
+		CheckBoxStyle checkBoxStyle = editorSkin.get("default", CheckBoxStyle.class);
 
-		// New Enemy
+
 		Button button = new TextButton("New Enemy", textStyle);
 		table.add(button);
-
-		// Save
 		button = new TextButton("Save", textStyle);
 		table.add(button);
-
-		// Load
 		button = new TextButton("Load", textStyle);
-		/** @TODO load enemy actor, use browser */
 		table.add(button);
-
-		// Duplicate
 		button = new TextButton("Duplicate", textStyle);
-		/** @TODO duplicate enemy actor, use browser */
 		table.add(button);
 		mStage.addActor(table);
-
 
 		// Movement
 		table.row();
 		Label label = new Label("Movement", labelStyle);
 		table.add(label);
-
-		// Speed
 		label = new Label("Speed", labelStyle);
 		table.add(label);
 		table.row();
 
 		// Path
-		ButtonGroup buttonGroup = new ButtonGroup();
-		CheckBoxStyle checkBoxStyle = editorSkin.get("default", CheckBoxStyle.class);
 		CheckBox checkBox = new CheckBox("Path", checkBoxStyle);
-
 		buttonGroup.add(checkBox);
-		checkBox.padRight(label.getPrefHeight() * 0.5f);
 		table.add(checkBox);
-
-
-		// Stationary
 		checkBox = new CheckBox("Stationary", checkBoxStyle);
 		buttonGroup.add(checkBox);
-		checkBox.padRight(label.getPrefHeight() * 0.5f);
 		table.add(checkBox);
-
-		// AI
 		checkBox = new CheckBox("AI", checkBoxStyle);
 		buttonGroup.add(checkBox);
 		table.add(checkBox);
-
 		table.setTransform(true);
-		table.layout();
+		table.invalidate();
 
 		Gdx.input.setInputProcessor(mStage);
 	}

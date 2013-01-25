@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Group;
-import com.badlogic.gdx.scenes.scene2d.utils.Layout;
 import com.badlogic.gdx.utils.Pool.Poolable;
 import com.badlogic.gdx.utils.Pools;
 
@@ -127,7 +126,7 @@ public class Row implements Poolable {
 			if ((mAlign & Align.RIGHT) > 0) {
 				offset.x += size.x - getWidth();
 			} else if ((mAlign & Align.CENTER) > 0) {
-				offset.x += size.x * 0.5f + getWidth() * 0.5f;
+				offset.x += size.x * 0.5f - getWidth() * 0.5f;
 			}
 
 			float halfSizeY = size.y * 0.5f;
@@ -141,7 +140,7 @@ public class Row implements Poolable {
 					offset.y = startPos.y + halfSizeY - cell.getHeight() * 0.5f;
 				}
 
-				cell.mActor.setPosition(offset.x, offset.y);
+				cell.mActor.setPosition((int)offset.x, (int)offset.y);
 
 				offset.x += cell.getWidth();
 			}
@@ -157,6 +156,30 @@ public class Row implements Poolable {
 	void add(Cell cell) {
 		mCells.add(cell);
 
+		addSize(cell);
+	}
+
+	/**
+	 * Recalculates the preferred width and preferred height
+	 */
+	void calculateSize() {
+		mPrefHeight = 0;
+		mPrefWidth = 0;
+		mWidth = 0;
+		mHeight = 0;
+
+		for (Cell cell : mCells) {
+			cell.calculateSize();
+			addSize(cell);
+		}
+	}
+
+	/**
+	 * Adds the width/height, preferred width/height to the total count of
+	 * this rows size.
+	 * @param cell the cell which width/height we want to add
+	 */
+	private void addSize(Cell cell) {
 		// Get pref width/height
 		if (mEqualSize) {
 			float maxSize = cell.getPrefWidth() * mCells.size();
@@ -171,30 +194,15 @@ public class Row implements Poolable {
 
 		if (cell.getPrefHeight() > mPrefHeight) {
 			mPrefHeight = cell.getPrefHeight();
+		}
+		if (cell.getHeight() > mHeight) {
 			mHeight = cell.getHeight();
 		}
 	}
 
 	/**
-	 * Recalculates the preferred width and preferred height
-	 */
-	void calculateSize() {
-		mPrefHeight = 0;
-		mPrefWidth = 0;
-
-		for (Cell cell : mCells) {
-			if (cell.mActor  instanceof Layout) {
-				Layout layout = (Layout)cell.mActor;
-				mPrefWidth += layout.getPrefWidth();
-				if (layout.getPrefHeight() > mPrefHeight) {
-					mPrefHeight = layout.getPrefHeight();
-				}
-			}
-		}
-	}
-
-	/**
-	 * Sets transform for all cells in this actor
+	 * Sets transform for all cells in this row
+	 * @param transform true if the all cells in this row shall be able to transform
 	 */
 	void setTransform(boolean transform) {
 		for (Cell cell : mCells) {

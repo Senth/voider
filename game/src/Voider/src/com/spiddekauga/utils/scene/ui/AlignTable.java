@@ -2,10 +2,11 @@ package com.spiddekauga.utils.scene.ui;
 
 import java.util.ArrayList;
 
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup;
+import com.badlogic.gdx.scenes.scene2d.utils.Layout;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.Pools;
 
@@ -20,7 +21,7 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	 * Constructor, creates an empty first row
 	 */
 	public AlignTable() {
-		mRows.add(Pools.obtain(Row.class));
+		setTouchable(Touchable.enabled);
 	}
 
 	@Override
@@ -29,7 +30,6 @@ public class AlignTable extends WidgetGroup implements Disposable {
 			Pools.free(row);
 		}
 		mRows.clear();
-		mChildren.clear();
 	}
 
 	/**
@@ -58,11 +58,22 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	 * @return cell that was added
 	 */
 	public Cell add(Actor actor) {
+		// Add a row if none exists
+		if (mRows.isEmpty()) {
+			row();
+		}
+
 		Row row = mRows.get(mRows.size() -1);
 
 		// Subtract old height from this height, we will add the new height
 		// later
 		mPrefHeight -= row.getPrefHeight();
+
+		actor.setVisible(true);
+
+		if (actor instanceof Layout) {
+			((Layout) actor).invalidate();
+		}
 
 		Cell newCell = Pools.obtain(Cell.class).setActor(actor);
 		row.add(newCell);
@@ -74,7 +85,7 @@ public class AlignTable extends WidgetGroup implements Disposable {
 			mPrefWidth = row.getPrefWidth();
 		}
 
-		mChildren.add(actor);
+		addActor(actor);
 
 		return newCell;
 	}
@@ -100,6 +111,7 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	 */
 	public Row row(int align) {
 		Row row = Pools.obtain(Row.class);
+		row.setAlign(align);
 		mRows.add(row);
 		return row;
 	}
@@ -147,19 +159,19 @@ public class AlignTable extends WidgetGroup implements Disposable {
 		/** @TODO scale */
 	}
 
-	@Override
-	public void act(float delta) {
-		for (Actor actor : mChildren) {
-			actor.act(delta);
-		}
-	}
-
-	@Override
-	public void draw (SpriteBatch batch, float parentAlpha) {
-		for (Actor actor : mChildren) {
-			actor.draw(batch, parentAlpha);
-		}
-	}
+	//	@Override
+	//	public void act(float delta) {
+	//		for (Actor actor : mChildren) {
+	//			actor.act(delta);
+	//		}
+	//	}
+	//
+	//	@Override
+	//	public void draw (SpriteBatch batch, float parentAlpha) {
+	//		for (Actor actor : mChildren) {
+	//			actor.draw(batch, parentAlpha);
+	//		}
+	//	}
 
 	@Override
 	public void layout() {
@@ -191,8 +203,9 @@ public class AlignTable extends WidgetGroup implements Disposable {
 		size.x = getPrefWidth();
 		for (int i = mRows.size() - 1; i >= 0; --i) {
 			Row row = mRows.get(i);
-			size.y = row.getPrefHeight();
+			size.y = row.getHeight();
 			row.layout(offset, size);
+			offset.y += row.getHeight();
 		}
 
 		Pools.free(size);
@@ -205,8 +218,6 @@ public class AlignTable extends WidgetGroup implements Disposable {
 			row.setTransform(transform);
 		}
 	}
-
-
 
 	/**
 	 * Recalculates the preferred width and height
@@ -226,8 +237,6 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	}
 
 
-	/** All actor children */
-	private ArrayList<Actor> mChildren = new ArrayList<Actor>();
 	/** All the rows of the table */
 	private ArrayList<Row> mRows = new ArrayList<Row>();
 	/** Table alignment (not cell alignment) */
