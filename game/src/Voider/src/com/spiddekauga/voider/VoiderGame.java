@@ -7,6 +7,9 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox.CheckBoxStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -57,7 +60,7 @@ public class VoiderGame implements ApplicationListener {
 	@SuppressWarnings("unused")
 	private void testStage() {
 		mStage = new Stage();
-		AlignTable table = new AlignTable();
+		table = new AlignTable();
 		table.setWidth(Gdx.graphics.getWidth());
 		table.setHeight(Gdx.graphics.getHeight());
 		table.setTableAlign(Horizontal.LEFT, Vertical.BOTTOM);
@@ -77,23 +80,22 @@ public class VoiderGame implements ApplicationListener {
 		LabelStyle labelStyle = editorSkin.get("default", LabelStyle.class);
 		ButtonGroup buttonGroup = new ButtonGroup();
 		CheckBoxStyle checkBoxStyle = editorSkin.get("default", CheckBoxStyle.class);
+		ImageButtonStyle imageStyle = editorSkin.get("add", ImageButtonStyle.class);
 
 		Row row = table.row();
 		Button button = new TextButton("New Enemy", textStyle);
 		Cell cell = table.add(button);
 		button = new TextButton("Save", textStyle);
 		table.add(button);
-		button.size(150, 50);
 		button = new TextButton("Load", textStyle);
 		cell = table.add(button);
-		cell.setPadding(10);
+		cell.setScalable(false);
 		cell.setAlign(Horizontal.RIGHT, Vertical.MIDDLE);
 		button = new TextButton("Duplicate", textStyle);
 		cell = table.add(button);
 		cell.setAlign(Horizontal.LEFT, Vertical.MIDDLE);
 
 		row = table.row(Horizontal.LEFT, Vertical.TOP);
-		row.setPadTop(10);
 		button = new TextButton("New Enemy", textStyle);
 		cell = table.add(button);
 		button = new TextButton("Save", textStyle);
@@ -113,7 +115,18 @@ public class VoiderGame implements ApplicationListener {
 		button = new TextButton("Duplicate", textStyle);
 		cell = table.add(button);
 
+		Label label = new Label("Testing scale", labelStyle);
+		table.row();
+		table.add(label);
 
+		table.row();
+		button = new ImageButton(imageStyle);
+		cell = table.add(button);
+		button = new TextButton("test", textStyle);
+		cell = table.add(button);
+		cell.setScalable(false);
+
+		table.setTransform(true);
 		Gdx.input.setInputProcessor(mStage);
 	}
 
@@ -173,6 +186,8 @@ public class VoiderGame implements ApplicationListener {
 	public void resize(int width, int height) {
 		if (mStage != null) {
 			mStage.setViewport(width, height, true);
+			table.setWidth(width);
+			table.setHeight(height);
 		}
 		SceneSwitcher.resize(width, height);
 	}
@@ -187,4 +202,6 @@ public class VoiderGame implements ApplicationListener {
 
 	/** Testing stage */
 	private Stage mStage = null;
+	/** Testing table */
+	private AlignTable table = null;
 }

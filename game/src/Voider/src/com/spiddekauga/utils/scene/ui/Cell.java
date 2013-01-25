@@ -2,6 +2,7 @@ package com.spiddekauga.utils.scene.ui;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.utils.Layout;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.Pool.Poolable;
@@ -35,6 +36,7 @@ public class Cell implements Poolable {
 		}
 		mAlign.horizontal = Horizontal.LEFT;
 		mAlign.vertical = Vertical.MIDDLE;
+		mScalable = true;
 
 		mPadLeft = 0;
 		mPadRight = 0;
@@ -175,6 +177,44 @@ public class Cell implements Poolable {
 	}
 
 	/**
+	 * Sets if the cell can be scaled or not. Cells are scalable by default.
+	 * Can be good to turn off for buttons with text.
+	 * @param scalable true if the cell should be scalable. If set to false this
+	 * will reset any scale.
+	 * @return this cell for chaining
+	 */
+	public Cell setScalable(boolean scalable) {
+
+		if (!scalable) {
+			setScaleX(1);
+			setScaleY(1);
+		}
+
+		mScalable = scalable;
+
+		return this;
+	}
+
+	/**
+	 * @return true if the cell is scalable
+	 */
+	public boolean isScalable() {
+		return mScalable;
+	}
+
+	/**
+	 * Sets transform for the cell
+	 * @param transform true if the cell shall be able to transform
+	 * @return this cell for chaining
+	 */
+	Cell setTransform(boolean transform) {
+		if (mActor instanceof Group) {
+			((Group) mActor).setTransform(transform);
+		}
+		return this;
+	}
+
+	/**
 	 * Sets the actor for the cell
 	 * @param actor the actor for the cell
 	 * @return this cell for chaining
@@ -259,41 +299,55 @@ public class Cell implements Poolable {
 	}
 
 	/**
-	 * Sets the scaling factor for x
-	 * @param x the x scaling factor
+	 * Sets the scaling factor for x.
+	 * @param scaleX the x scaling factor
 	 * @return this cell for chaining
+	 * @note Scaling only works if this cell is scalable (on by default)
 	 */
 	Cell setScaleX(float scaleX) {
-		mActor.setScaleX(scaleX);
+		if (mScalable) {
+			if (mDynamicPadding) {
+				mPadScaleLeft = mPadLeft * scaleX;
+				mPadScaleRight = mPadRight * scaleX;
+			}
 
-		if (mDynamicPadding) {
-			mPadScaleLeft = mPadLeft * scaleX;
-			mPadScaleRight = mPadRight * scaleX;
+			if (mActor instanceof Layout) {
+				mActor.setWidth(((Layout) mActor).getPrefWidth() * scaleX);
+			}
+			mActor.setScaleX(scaleX);
 		}
 
 		return this;
 	}
 
 	/**
-	 * Sets the scaling factor for x
-	 * @param x the x scaling factor
+	 * Sets the scaling factor for y
+	 * @param scaleY the y scaling factor
 	 * @return this cell for chaining
+	 * @note Scaling only works if this cell is scalable (on by default)
 	 */
 	Cell setScaleY(float scaleY) {
-		mActor.setScaleY(scaleY);
+		if (mScalable) {
+			if (mDynamicPadding) {
+				mPadScaleTop = mPadTop * scaleY;
+				mPadScaleBottom = mPadBottom * scaleY;
+			}
 
-		if (mDynamicPadding) {
-			mPadScaleTop = mPadTop * scaleY;
-			mPadScaleBottom = mPadBottom * scaleY;
+			if (mActor instanceof Layout) {
+				mActor.setHeight(((Layout) mActor).getPrefHeight() * scaleY);
+			}
+			mActor.setScaleY(scaleY);
 		}
 
 		return this;
 	}
 
 	/** Actor in the cell */
-	Actor mActor = null;
+	private Actor mActor = null;
 	/** Alignment of the cell */
-	Align mAlign = new Align(Horizontal.LEFT, Vertical.MIDDLE);
+	private Align mAlign = new Align(Horizontal.LEFT, Vertical.MIDDLE);
+	/** If the cell is scaleable */
+	private boolean mScalable = true;
 
 	// Padding
 	private boolean mDynamicPadding = false;

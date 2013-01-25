@@ -3,7 +3,6 @@ package com.spiddekauga.utils.scene.ui;
 import java.util.ArrayList;
 
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.utils.Pool.Poolable;
 import com.badlogic.gdx.utils.Pools;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
@@ -20,6 +19,15 @@ public class Row implements Poolable {
 	public void reset() {
 		mPrefHeight = 0;
 		mPrefWidth = 0;
+		mMinHeight = 0;
+		mMinWidth = 0;
+		mWidth = 0;
+		mHeight = 0;
+		mScaleX = 1;
+		mScaleY = 1;
+
+		mEqualSize = false;
+		mUseCellAlign = false;
 
 		for (Cell cell : mCells) {
 			Pools.free(cell);
@@ -224,6 +232,20 @@ public class Row implements Poolable {
 	}
 
 	/**
+	 * @return minimum height of the row. Equals the non-scalable cells' height
+	 */
+	public float getMinHeight() {
+		return mMinHeight;
+	}
+
+	/**
+	 * @return minimum width of the row. Equals tho non-scalable cells' width
+	 */
+	public float getMinWidth() {
+		return mMinWidth;
+	}
+
+	/**
 	 * @return preferred height of the row
 	 */
 	float getPrefHeight() {
@@ -309,6 +331,8 @@ public class Row implements Poolable {
 	void calculateSize() {
 		mPrefHeight = 0;
 		mPrefWidth = 0;
+		mMinHeight = 0;
+		mMinWidth = 0;
 		mWidth = 0;
 		mHeight = 0;
 
@@ -325,23 +349,21 @@ public class Row implements Poolable {
 	 */
 	Row setTransform(boolean transform) {
 		for (Cell cell : mCells) {
-			if (cell.mActor instanceof Group) {
-				((Group) cell.mActor).setTransform(transform);
-			}
+			cell.setTransform(transform);
 		}
 		return this;
 	}
 
 	/**
 	 * Sets the scaling factor for x
-	 * @param x the x scaling factor
+	 * @param scaleX the x scaling factor
 	 * @return this row for chaining
 	 */
 	Row setScaleX(float scaleX) {
 		mScaleX = scaleX;
 
 		for (Cell cell : mCells) {
-			setScaleX(scaleX);
+			cell.setScaleX(scaleX);
 		}
 
 		if (mDynamicPadding) {
@@ -353,15 +375,15 @@ public class Row implements Poolable {
 	}
 
 	/**
-	 * Sets the scaling factor for x
-	 * @param x the x scaling factor
+	 * Sets the scaling factor for y
+	 * @param scaleY the y scaling factor
 	 * @return this row for chaining
 	 */
 	Row setScaleY(float scaleY) {
 		mScaleY = scaleY;
 
 		for (Cell cell : mCells) {
-			setScaleY(scaleY);
+			cell.setScaleY(scaleY);
 		}
 
 		if (mDynamicPadding) {
@@ -385,13 +407,36 @@ public class Row implements Poolable {
 				mPrefWidth = maxSize;
 				mWidth = cell.getWidth() * mCells.size();
 			}
+
+			// Minimum size of the table (because of non-scalable)
+			if (!cell.isScalable()) {
+				float minWidth = cell.getPrefWidth() * mCells.size();
+				if (minWidth > mMinWidth) {
+					mMinWidth = minWidth;
+				}
+			}
 		} else {
 			mPrefWidth += cell.getPrefWidth();
 			mWidth += cell.getWidth();
+
+			if (!cell.isScalable()) {
+				mMinWidth += cell.getPrefWidth();
+
+				float minHeight = cell.getPrefHeight();
+				if (minHeight > mMinHeight) {
+					mMinHeight = minHeight;
+				}
+			}
 		}
 
 		if (cell.getPrefHeight() > mPrefHeight) {
 			mPrefHeight = cell.getPrefHeight();
+		}
+		if (!cell.isScalable()) {
+			float minHeight = cell.getPrefHeight();
+			if (minHeight > mMinHeight) {
+				mMinHeight = minHeight;
+			}
 		}
 		if (cell.getHeight() > mHeight) {
 			mHeight = cell.getHeight();
@@ -415,6 +460,10 @@ public class Row implements Poolable {
 	private float mWidth = 0;
 	/** Height of the row, calculated from the cells */
 	private float mHeight = 0;
+	/** Minimum width, equals all non-scalable cells' width */
+	private float mMinWidth = 0;
+	/** Minimum height, equals all non-scalable cells' height */
+	private float mMinHeight = 0;
 	/** Scaling x-factor */
 	private float mScaleX = 1;
 	/** Scaling y-factor */

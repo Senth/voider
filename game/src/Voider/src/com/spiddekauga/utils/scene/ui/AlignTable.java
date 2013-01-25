@@ -84,6 +84,8 @@ public class AlignTable extends WidgetGroup implements Disposable {
 		}
 
 		Cell newCell = Pools.obtain(Cell.class).setActor(actor);
+		newCell.setScaleX(mScaleX);
+		newCell.setScaleY(mScaleY);
 		row.add(newCell);
 
 		// Update size
@@ -121,21 +123,64 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	public Row row(Horizontal horizontal, Vertical vertical) {
 		Row row = Pools.obtain(Row.class);
 		row.setAlign(horizontal, vertical);
+		row.setScaleX(mScaleX);
+		row.setScaleY(mScaleY);
 		mRows.add(row);
 		return row;
 	}
 
 	/**
-	 * @return preferred height of the row
+	 * Sets the width of the table, including scales all the actors inside if necessary
+	 * @param width new width of the table
 	 */
+	@Override
+	public void setWidth(float width) {
+		float oldWidth = getWidth();
+		super.setWidth(width);
+
+		// Scaling needed?
+		if (getWidth() < getPrefWidth()) {
+			scaleToFit();
+		}
+		// Scale to 1
+		else if (oldWidth < getPrefWidth() && getHeight() >= getPrefHeight()) {
+			setScale(1);
+		}
+	}
+
+	/**
+	 * Sets the height of the table, including scales all the actors inside if necessary
+	 * @param height new height of the table
+	 */
+	@Override
+	public void setHeight(float height) {
+		float oldHeight = getHeight();
+		super.setHeight(height);
+
+		// Scaling needed?
+		if (getHeight() < getPrefHeight()) {
+			scaleToFit();
+		}
+		else if (oldHeight < getPrefHeight() && getWidth() >= getPrefWidth()) {
+			setScale(1);
+		}
+	}
+
+	@Override
+	public float getMinHeight() {
+		return mMinHeight;
+	}
+
+	@Override
+	public float getMinWidth() {
+		return mMinWidth;
+	}
+
 	@Override
 	public float getPrefHeight() {
 		return mPrefHeight;
 	}
 
-	/**
-	 * @return preferred width of the row
-	 */
 	@Override
 	public float getPrefWidth() {
 		return mPrefWidth;
@@ -160,27 +205,23 @@ public class AlignTable extends WidgetGroup implements Disposable {
 
 	@Override
 	public void setScaleX(float scale) {
-		/** @TODO scale */
+		mScaleX = scale;
+
+		for (Row row : mRows) {
+			row.setScaleX(scale);
+		}
+		invalidate();
 	}
 
 	@Override
 	public void setScaleY(float scale) {
-		/** @TODO scale */
-	}
+		mScaleY = scale;
 
-	//	@Override
-	//	public void act(float delta) {
-	//		for (Actor actor : mChildren) {
-	//			actor.act(delta);
-	//		}
-	//	}
-	//
-	//	@Override
-	//	public void draw (SpriteBatch batch, float parentAlpha) {
-	//		for (Actor actor : mChildren) {
-	//			actor.draw(batch, parentAlpha);
-	//		}
-	//	}
+		for (Row row : mRows) {
+			row.setScaleY(scale);
+		}
+		invalidate();
+	}
 
 	@Override
 	public void layout() {
@@ -209,12 +250,12 @@ public class AlignTable extends WidgetGroup implements Disposable {
 
 		// Layout the rows
 		Vector2 size = Pools.obtain(Vector2.class);
-		size.x = getPrefWidth();
+		size.x = getPrefWidth() > getMinWidth() ? getPrefWidth() : getMinWidth();
 		for (int i = mRows.size() - 1; i >= 0; --i) {
 			Row row = mRows.get(i);
 			size.y = row.getHeight();
 			row.layout(offset, size);
-			offset.y += row.getHeight();
+			offset.y += size.y;
 		}
 
 		Pools.free(size);
@@ -234,14 +275,63 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	private void calculateSize() {
 		mPrefHeight = 0;
 		mPrefWidth = 0;
+		mMinHeight = 0;
+		mMinWidth = 0;
+		mExtraHeight = 0;
+		mExtraWidth = 0;
+
 
 		for (Row row : mRows) {
 			row.calculateSize();
 			mPrefHeight += row.getPrefHeight();
+			mMinHeight += row.getMinHeight();
+
+			// Add extra height
+			if (row.getMinHeight() < row.getPrefHeight()) {
+				mExtraHeight += row.getPrefHeight() - row.getMinHeight();
+			}
 
 			if (row.getPrefWidth() > mPrefWidth) {
 				mPrefWidth = row.getPrefWidth();
 			}
+
+			if (row.getMinWidth() > mMinWidth) {
+				mMinWidth = row.getMinWidth();
+			}
+		}
+
+		if (getMinWidth() < getPrefWidth()) {
+			mExtraWidth = getPrefWidth() - getMinWidth();
+		}
+	}
+
+	/**
+	 * Scales the rows and cells to fit the table
+	 */
+	private void scaleToFit() {
+		// Division by 0 check
+		if (getPrefWidth() == 0 || getWidth() == 0 || getPrefHeight() == 0 || getHeight() == 0) {
+			return;
+		}
+
+		float widthScale = 1;
+		if (getPrefWidth() - getWidth() > mExtraWidth) {
+			widthScale = (getWidth() - getMinWidth()) / (getPrefWidth() - getMinWidth());
+		} else {
+			widthScale = getWidth() / getPrefWidth();
+		}
+
+		float heightScale = 1;
+		if (getPrefHeight() - getHeight() > mExtraHeight) {
+			heightScale = (getHeight() - getMinHeight()) / (getPrefHeight() - getMinHeight());
+		} else {
+			heightScale = getHeight() / getPrefHeight();
+		}
+
+		if (widthScale < heightScale && widthScale < 1) {
+			setScale(widthScale);
+		} else if (heightScale < widthScale && heightScale < 1) {
+			setScale(heightScale);
 		}
 	}
 
@@ -256,4 +346,16 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	private float mPrefWidth = 0;
 	/** Preferred height of the table, adds all rows preferred width */
 	private float mPrefHeight = 0;
+	/** Minimum width, equals all non-scalable cells' width */
+	private float mMinWidth = 0;
+	/** Minimum height, equals all non-scalable cells' height */
+	private float mMinHeight = 0;
+	/** Extra height for scaling, i.e. non-scalable cells' are not the highest one */
+	private float mExtraHeight = 0;
+	/** Extra width for scaling, i.e. non-scalable cells' (rows) are not the widest ones */
+	private float mExtraWidth = 0;
+	/** Scale X value */
+	private float mScaleX = 1;
+	/** Scale Y value */
+	private float mScaleY = 1;
 }
