@@ -9,6 +9,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup;
 import com.badlogic.gdx.scenes.scene2d.utils.Layout;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.Pools;
+import com.spiddekauga.utils.scene.ui.Align.Horizontal;
+import com.spiddekauga.utils.scene.ui.Align.Vertical;
 
 /**
  * Table that allows for aligning inside the widgets.
@@ -34,22 +36,28 @@ public class AlignTable extends WidgetGroup implements Disposable {
 
 	/**
 	 * Sets the table alignment
-	 * @param align the table alignment
-	 * @see #setRowAlign(int) sets the row alignment instead
-	 * @See Align for alignment variables
+	 * @param horizontal horizontal alignment of the table
+	 * @param vertical vertical alignment of the table
+	 * @return this table for chaining
+	 * @see #setRowAlign(Horizontal,Vertical) sets the row alignment instead
 	 */
-	public void setTableAlign(int align) {
-		mTableAlign = align;
+	public AlignTable setTableAlign(Horizontal horizontal, Vertical vertical) {
+		mTableAlign.horizontal = horizontal;
+		mTableAlign.vertical = vertical;
+		return this;
 	}
 
 	/**
 	 * Sets the default row alignment for new rows that are added
-	 * @param align cell alignment for new cells
-	 * @see #setTableAlign(int) sets table alignment instead
-	 * @see Align for alignment variables
+	 * @param horizontal default horizontal alignment for new rows
+	 * @param vertical default vertical alignment for new rows
+	 * @return this table for chaining
+	 * @see #setTableAlign(Horizontal,Vertical) sets table alignment instead
 	 */
-	public void setRowAlign(int align) {
-		mRowAlign = align;
+	public AlignTable setRowAlign(Horizontal horizontal, Vertical vertical) {
+		mRowAlign.horizontal = horizontal;
+		mRowAlign.vertical = vertical;
+		return this;
 	}
 
 	/**
@@ -93,25 +101,26 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	/**
 	 * Adds another row to the table.
 	 * Uses the default row alignment
-	 * @see #row(int) for adding a new row with the specified alignment
-	 * @see #setRowAlign(int) for setting the default row alignment
+	 * @see #row(Horizontal,Vertical) for adding a new row with the specified alignment
+	 * @see #setRowAlign(Horizontal,Vertical) for setting the default row alignment
 	 * @return the created row
 	 */
 	public Row row() {
-		return row(mRowAlign);
+		return row(mRowAlign.horizontal, mRowAlign.vertical);
 	}
 
 	/**
 	 * Adds another row to the table with a specified layout. This does not set
 	 * the default row alignment.
-	 * @param align the row alignment to be used for this row.
+	 * @param horizontal horizontal alignment for this new row
+	 * @param vertical vertical alignment for this new row
 	 * @see #row() for adding a row with the default row alignment
-	 * @see #setRowAlign(int) for setting the default row alignment
+	 * @see #setRowAlign(Horizontal,Vertical) for setting the default row alignment
 	 * @return the created row
 	 */
-	public Row row(int align) {
+	public Row row(Horizontal horizontal, Vertical vertical) {
 		Row row = Pools.obtain(Row.class);
-		row.setAlign(align);
+		row.setAlign(horizontal, vertical);
 		mRows.add(row);
 		return row;
 	}
@@ -180,20 +189,20 @@ public class AlignTable extends WidgetGroup implements Disposable {
 		Vector2 offset = Pools.obtain(Vector2.class);
 		// Horizontal offset
 		// Calculate initial offset and offset between rows
-		if ((mTableAlign & Align.LEFT) > 0) {
+		if (mTableAlign.horizontal == Horizontal.LEFT) {
 			offset.x = getX();
-		} else if ((mTableAlign & Align.RIGHT) > 0) {
+		} else if (mTableAlign.horizontal == Horizontal.RIGHT) {
 			offset.x = getX() + getWidth() - getPrefWidth();
-		} else if ((mTableAlign & Align.CENTER) > 0) {
+		} else if (mTableAlign.horizontal == Horizontal.CENTER) {
 			offset.x = getX() + getWidth() * 0.5f - getPrefWidth() * 0.5f;
 		}
 
 		// Vertical
-		if ((mTableAlign & Align.BOTTOM) > 0) {
+		if (mTableAlign.vertical == Vertical.BOTTOM) {
 			offset.y = getY();
-		} else if ((mTableAlign & Align.TOP) > 0) {
+		} else if (mTableAlign.vertical == Vertical.TOP) {
 			offset.y = getY() + getHeight() - getPrefHeight();
-		} else if ((mTableAlign & Align.MIDDLE) > 0) {
+		} else if (mTableAlign.vertical == Vertical.MIDDLE) {
 			offset.y = getY() + getHeight() * 0.5f - getPrefHeight() * 0.5f;
 		}
 
@@ -240,9 +249,9 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	/** All the rows of the table */
 	private ArrayList<Row> mRows = new ArrayList<Row>();
 	/** Table alignment (not cell alignment) */
-	private int mTableAlign = Align.CENTER | Align.MIDDLE;
+	private Align mTableAlign = new Align();
 	/** Standard row alignment */
-	private int mRowAlign = Align.LEFT | Align.MIDDLE;
+	private Align mRowAlign = new Align();
 	/** Preferred width of the actors, this is set to the row with highest preferred width */
 	private float mPrefWidth = 0;
 	/** Preferred height of the table, adds all rows preferred width */

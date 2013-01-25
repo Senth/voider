@@ -6,16 +6,17 @@ import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
-import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox.CheckBoxStyle;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.spiddekauga.utils.GameTime;
-import com.spiddekauga.utils.scene.ui.Align;
+import com.spiddekauga.utils.scene.ui.Align.Horizontal;
+import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
+import com.spiddekauga.utils.scene.ui.Cell;
+import com.spiddekauga.utils.scene.ui.Row;
 import com.spiddekauga.voider.editor.EnemyEditor;
 import com.spiddekauga.voider.editor.LevelEditor;
 import com.spiddekauga.voider.game.GameScene;
@@ -59,8 +60,9 @@ public class VoiderGame implements ApplicationListener {
 		AlignTable table = new AlignTable();
 		table.setWidth(Gdx.graphics.getWidth());
 		table.setHeight(Gdx.graphics.getHeight());
-		table.setTableAlign(Align.CENTER | Align.MIDDLE);
-		table.setRowAlign(Align.CENTER | Align.MIDDLE);
+		table.setTableAlign(Horizontal.LEFT, Vertical.BOTTOM);
+		table.setRowAlign(Horizontal.LEFT, Vertical.BOTTOM);
+		mStage.addActor(table);
 
 		ResourceCacheFacade.load(ResourceNames.EDITOR_BUTTONS);
 		try {
@@ -76,37 +78,41 @@ public class VoiderGame implements ApplicationListener {
 		ButtonGroup buttonGroup = new ButtonGroup();
 		CheckBoxStyle checkBoxStyle = editorSkin.get("default", CheckBoxStyle.class);
 
-
+		Row row = table.row();
 		Button button = new TextButton("New Enemy", textStyle);
+		Cell cell = table.add(button);
+		button = new TextButton("Save", textStyle);
 		table.add(button);
+		button.size(150, 50);
+		button = new TextButton("Load", textStyle);
+		cell = table.add(button);
+		cell.setPadding(10);
+		cell.setAlign(Horizontal.RIGHT, Vertical.MIDDLE);
+		button = new TextButton("Duplicate", textStyle);
+		cell = table.add(button);
+		cell.setAlign(Horizontal.LEFT, Vertical.MIDDLE);
+
+		row = table.row(Horizontal.LEFT, Vertical.TOP);
+		row.setPadTop(10);
+		button = new TextButton("New Enemy", textStyle);
+		cell = table.add(button);
 		button = new TextButton("Save", textStyle);
 		table.add(button);
 		button = new TextButton("Load", textStyle);
-		table.add(button);
+		cell = table.add(button);
 		button = new TextButton("Duplicate", textStyle);
+		cell = table.add(button);
+
+		row = table.row();
+		button = new TextButton("New Enemy", textStyle);
+		cell = table.add(button);
+		button = new TextButton("Save", textStyle);
 		table.add(button);
-		mStage.addActor(table);
+		button = new TextButton("Load", textStyle);
+		cell = table.add(button);
+		button = new TextButton("Duplicate", textStyle);
+		cell = table.add(button);
 
-		// Movement
-		table.row();
-		Label label = new Label("Movement", labelStyle);
-		table.add(label);
-		label = new Label("Speed", labelStyle);
-		table.add(label);
-		table.row();
-
-		// Path
-		CheckBox checkBox = new CheckBox("Path", checkBoxStyle);
-		buttonGroup.add(checkBox);
-		table.add(checkBox);
-		checkBox = new CheckBox("Stationary", checkBoxStyle);
-		buttonGroup.add(checkBox);
-		table.add(checkBox);
-		checkBox = new CheckBox("AI", checkBoxStyle);
-		buttonGroup.add(checkBox);
-		table.add(checkBox);
-		table.setTransform(true);
-		table.invalidate();
 
 		Gdx.input.setInputProcessor(mStage);
 	}
