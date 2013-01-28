@@ -11,7 +11,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.spiddekauga.utils.scene.ui.AlignTable;
 
 /**
  * Base class for all scenes that should be rendered. Examples of scenes:
@@ -29,6 +29,8 @@ public abstract class Scene extends InputAdapter {
 		mInputMultiplexer.addProcessor(0, mStage);
 		mInputMultiplexer.addProcessor(1, this);
 		mStage.addActor(mGui);
+		mGui.setKeepSize(true);
+		mGui.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 	}
 
 	/**
@@ -50,7 +52,7 @@ public abstract class Scene extends InputAdapter {
 	 */
 	public void onResize(int width, int height) {
 		mStage.setViewport(width, height, true);
-		scaleGui();
+		mGui.setSize(width, height);
 	}
 
 	/**
@@ -327,37 +329,8 @@ public abstract class Scene extends InputAdapter {
 		worldCoordinate.y = mTestPoint.y;
 	}
 
-	/**
-	 * Scale GUI
-	 */
-	protected void scaleGui() {
-		float tableHeight = mGui.getPrefHeight();
-
-		// Division by 0 check
-		if (tableHeight == 0.0f || Gdx.graphics.getHeight() == 0.0f) {
-			return;
-		}
-
-		float scale = Gdx.graphics.getHeight() / tableHeight;
-
-		// Don't scale over 1?
-		if (scale < 1.0f) {
-			float negativeScale = 1 / scale;
-			mGui.setHeight(Gdx.graphics.getHeight()*negativeScale);
-			float screenWidth = Gdx.graphics.getWidth();
-			mGui.setWidth(screenWidth*negativeScale);
-			mGui.invalidateHierarchy();
-			mGui.setScale(scale);
-		} else {
-			mGui.setScale(1.0f);
-			mGui.setWidth(Gdx.graphics.getWidth());
-			mGui.setHeight(Gdx.graphics.getHeight());
-			mGui.invalidateHierarchy();
-		}
-	}
-
 	/** GUI table */
-	protected Table mGui = new Table();
+	protected AlignTable mGui = new AlignTable();
 	/** Sprite Batch used for rendering stuff */
 	protected SpriteBatch mSpriteBatch = new SpriteBatch();
 	/** Input multiplexer */

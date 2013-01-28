@@ -16,10 +16,13 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
-import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.utils.Pools;
 import com.badlogic.gdx.utils.SnapshotArray;
 import com.spiddekauga.utils.GameTime;
+import com.spiddekauga.utils.scene.ui.Align.Horizontal;
+import com.spiddekauga.utils.scene.ui.Align.Vertical;
+import com.spiddekauga.utils.scene.ui.AlignTable;
+import com.spiddekauga.utils.scene.ui.Row;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.Actor;
 import com.spiddekauga.voider.game.Path;
@@ -150,17 +153,14 @@ public class EnemyEditor extends WorldScene {
 	 * Initializes the GUI
 	 */
 	private void initGui() {
-		mGui.align(Align.top | Align.right);
-		mGui.setTransform(true);
+		mGui.setTableAlign(Horizontal.RIGHT, Vertical.TOP);
+		mGui.setRowAlign(Horizontal.LEFT, Vertical.MIDDLE);
 
 		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
 
 		TextButtonStyle textToogleStyle = editorSkin.get("toggle", TextButtonStyle.class);
 		TextButtonStyle textStyle = editorSkin.get("default", TextButtonStyle.class);
 		LabelStyle labelStyle = editorSkin.get("default", LabelStyle.class);
-
-		Table rowTable = new Table();
-		rowTable.setTransform(true);
 
 		// New Enemy
 		Button button = new TextButton("New Enemy", textStyle);
@@ -176,7 +176,7 @@ public class EnemyEditor extends WorldScene {
 				return true;
 			}
 		});
-		rowTable.add(button);
+		mGui.add(button);
 
 		// Save
 		button = new TextButton("Save", textStyle);
@@ -189,41 +189,37 @@ public class EnemyEditor extends WorldScene {
 				return true;
 			}
 		});
-		rowTable.add(button);
+		mGui.add(button);
 
 		// Load
 		button = new TextButton("Load", textStyle);
 		/** @TODO load enemy actor, use browser */
-		rowTable.add(button);
+		mGui.add(button);
 
 		// Duplicate
 		button = new TextButton("Duplicate", textStyle);
 		/** @TODO duplicate enemy actor, use browser */
-		rowTable.add(button);
-		mGui.add(rowTable);
+		mGui.add(button);
 
 
 		// Movement
-		mGui.row();
-		rowTable = new Table();
+		Row row = mGui.row();
+		row.setAlign(Horizontal.CENTER, Vertical.BOTTOM);
 		Label label = new Label("Movement", labelStyle);
-		rowTable.padTop(label.getPrefHeight() * 0.5f);
-		rowTable.add(label);
-		mGui.add(rowTable);
+		row.setPadTop(label.getPrefHeight() * 0.5f);
+		mGui.add(label);
+		mGui.row();
 
 		// Speed
-		rowTable = new Table();
 		label = new Label("Speed", labelStyle);
-		rowTable.add(label);
-		rowTable.padRight(mGui.getPrefWidth() - label.getPrefWidth());
-		mGui.row();
-		mGui.add(rowTable);
+		mGui.add(label);
 
 		// Type of movement?
 		MovementTypes movementType = mDef.getMovementType();
 		mDef.setMovementType(null);
 		// Path
-		mGui.row();
+		row = mGui.row();
+		row.setScalable(false);
 		ButtonGroup buttonGroup = new ButtonGroup();
 		CheckBoxStyle checkBoxStyle = editorSkin.get("default", CheckBoxStyle.class);
 		CheckBox checkBox = new CheckBox("Path", checkBoxStyle);
@@ -231,7 +227,7 @@ public class EnemyEditor extends WorldScene {
 			@Override
 			public boolean handle(Event event) {
 				if (isButtonChecked(event) && mDef.getMovementType() != MovementTypes.PATH) {
-					addInnerTable(mPathTable, mMovementTable);
+					addInnerTable(null, mMovementTable);
 					mStage.addActor(mPathLabels);
 					mDef.setMovementType(MovementTypes.PATH);
 					mEnemyActor.destroyBody();
@@ -243,9 +239,8 @@ public class EnemyEditor extends WorldScene {
 		});
 		buttonGroup.add(checkBox);
 		checkBox.setChecked(movementType == MovementTypes.PATH);
-		rowTable = new Table();
 		checkBox.padRight(label.getPrefHeight() * 0.5f);
-		rowTable.add(checkBox);
+		mGui.add(checkBox);
 
 
 		// Stationary
@@ -265,7 +260,7 @@ public class EnemyEditor extends WorldScene {
 		buttonGroup.add(checkBox);
 		checkBox.padRight(label.getPrefHeight() * 0.5f);
 		checkBox.setChecked(movementType == MovementTypes.STATIONARY);
-		rowTable.add(checkBox);
+		mGui.add(checkBox);
 
 		// AI
 		checkBox = new CheckBox("AI", checkBoxStyle);
@@ -283,8 +278,7 @@ public class EnemyEditor extends WorldScene {
 		});
 		buttonGroup.add(checkBox);
 		checkBox.setChecked(movementType == MovementTypes.AI);
-		rowTable.add(checkBox);
-		mGui.add(rowTable);
+		mGui.add(checkBox);
 		mGui.row();
 		mGui.add(mMovementTable);
 
@@ -309,7 +303,8 @@ public class EnemyEditor extends WorldScene {
 
 
 		scalePathLabels();
-		scaleGui();
+		mGui.setTransform(true);
+		mGui.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 	}
 
 	/**
@@ -318,7 +313,7 @@ public class EnemyEditor extends WorldScene {
 	 * only be cleared.
 	 * @param outerTable the table to clear and then add innerTable to.
 	 */
-	private static void addInnerTable(Table innerTable, Table outerTable) {
+	private static void addInnerTable(AlignTable innerTable, AlignTable outerTable) {
 		outerTable.clear();
 
 		if (innerTable != null) {
@@ -509,11 +504,9 @@ public class EnemyEditor extends WorldScene {
 
 
 	/** Container for the different movement variables */
-	private Table mMovementTable = new Table();
-	/** Table for path movement */
-	private Table mPathTable = new Table();
+	private AlignTable mMovementTable = new AlignTable();
 	/** Table for path lables, these are added directly to the stage */
 	private Table mPathLabels = new Table();
 	/** Table for AI movement */
-	private Table mAiTable = new Table();
+	private AlignTable mAiTable = new AlignTable();
 }

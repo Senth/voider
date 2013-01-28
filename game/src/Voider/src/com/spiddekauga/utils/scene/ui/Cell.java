@@ -46,7 +46,7 @@ public class Cell implements Poolable {
 		mPadScaleRight = 0;
 		mPadScaleTop = 0;
 		mPadScaleBottom = 0;
-		mDynamicPadding = false;
+		mDynamicPadding = true;
 	}
 
 	/**
@@ -55,9 +55,18 @@ public class Cell implements Poolable {
 	 * will result in setPadLeft(5).
 	 * @param dynamicPadding set to true to activate dynamic padding
 	 * @return this cell for chaining
+	 * @note Setting this to false does not work with scaling AlignTable
+	 * depending on the size.
 	 */
 	public Cell setDynamicPadding(boolean dynamicPadding) {
 		mDynamicPadding = dynamicPadding;
+
+		if (mDynamicPadding) {
+			mPadScaleLeft = mPadLeft * mActor.getScaleX();
+			mPadScaleRight = mPadRight * mActor.getScaleX();
+			mPadScaleTop = mPadTop * mActor.getScaleY();
+			mPadScaleBottom = mPadBottom * mActor.getScaleY();
+		}
 		return this;
 	}
 
@@ -215,12 +224,23 @@ public class Cell implements Poolable {
 	}
 
 	/**
-	 * Sets the actor for the cell
+	 * Sets the actor for the cell. Resizes the actor to the preferred
+	 * size if its of size 0.
 	 * @param actor the actor for the cell
 	 * @return this cell for chaining
 	 */
 	Cell setActor(Actor actor) {
-		this.mActor = actor;
+		mActor = actor;
+
+		if (mActor instanceof Layout) {
+			if (mActor.getHeight() == 0) {
+				mActor.setHeight(((Layout) mActor).getPrefHeight());
+			}
+			if (mActor.getWidth() == 0) {
+				mActor.setWidth(((Layout) mActor).getPrefWidth());
+			}
+		}
+
 		return this;
 	}
 
@@ -271,6 +291,7 @@ public class Cell implements Poolable {
 		}
 
 		mActor.setPosition((int)offset.x, (int)offset.y);
+
 
 		Pools.free(offset);
 	}
@@ -350,7 +371,8 @@ public class Cell implements Poolable {
 	private boolean mScalable = true;
 
 	// Padding
-	private boolean mDynamicPadding = false;
+	/** If the padding can be scaled */
+	private boolean mDynamicPadding = true;
 	/** Padding to the left of the cell */
 	private float mPadLeft = 0;
 	/** Padding to the right of the cell */

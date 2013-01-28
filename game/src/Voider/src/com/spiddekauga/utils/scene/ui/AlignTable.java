@@ -88,13 +88,6 @@ public class AlignTable extends WidgetGroup implements Disposable {
 		newCell.setScaleY(mScaleY);
 		row.add(newCell);
 
-		// Update size
-		mPrefHeight += row.getPrefHeight();
-
-		if (row.getPrefWidth() > mPrefWidth) {
-			mPrefWidth = row.getPrefWidth();
-		}
-
 		addActor(actor);
 
 		return newCell;
@@ -146,6 +139,13 @@ public class AlignTable extends WidgetGroup implements Disposable {
 		else if (oldWidth < getPrefWidth() && getHeight() >= getPrefHeight()) {
 			setScale(1);
 		}
+		invalidate();
+	}
+
+	@Override
+	public void setSize(float width, float height) {
+		setWidth(width);
+		setHeight(height);
 	}
 
 	/**
@@ -164,6 +164,7 @@ public class AlignTable extends WidgetGroup implements Disposable {
 		else if (oldHeight < getPrefHeight() && getWidth() >= getPrefWidth()) {
 			setScale(1);
 		}
+		invalidate();
 	}
 
 	@Override
@@ -227,30 +228,39 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	public void layout() {
 		calculateSize();
 
+		float rowHeight = 0;
+		float rowWidth = 0;
+		for (Row row : mRows) {
+			rowHeight += row.getHeight();
+			if (row.getWidth() > rowWidth) {
+				rowWidth = row.getWidth();
+			}
+		}
+
 		Vector2 offset = Pools.obtain(Vector2.class);
 		// Horizontal offset
 		// Calculate initial offset and offset between rows
 		if (mTableAlign.horizontal == Horizontal.LEFT) {
-			offset.x = getX();
+			offset.x = 0;
 		} else if (mTableAlign.horizontal == Horizontal.RIGHT) {
-			offset.x = getX() + getWidth() - getPrefWidth();
+			offset.x = getWidth() - rowWidth;
 		} else if (mTableAlign.horizontal == Horizontal.CENTER) {
-			offset.x = getX() + getWidth() * 0.5f - getPrefWidth() * 0.5f;
+			offset.x = getWidth() * 0.5f - rowWidth * 0.5f;
 		}
 
 		// Vertical
 		if (mTableAlign.vertical == Vertical.BOTTOM) {
-			offset.y = getY();
+			offset.y = 0;
 		} else if (mTableAlign.vertical == Vertical.TOP) {
-			offset.y = getY() + getHeight() - getPrefHeight();
+			offset.y = getHeight() - rowHeight;
 		} else if (mTableAlign.vertical == Vertical.MIDDLE) {
-			offset.y = getY() + getHeight() * 0.5f - getPrefHeight() * 0.5f;
+			offset.y = getHeight() * 0.5f - rowHeight * 0.5f;
 		}
 
 
 		// Layout the rows
 		Vector2 size = Pools.obtain(Vector2.class);
-		size.x = getPrefWidth() > getMinWidth() ? getPrefWidth() : getMinWidth();
+		size.x = getWidth() < getPrefWidth() ? getWidth() : getPrefWidth();
 		for (int i = mRows.size() - 1; i >= 0; --i) {
 			Row row = mRows.get(i);
 			size.y = row.getHeight();
@@ -270,6 +280,32 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	}
 
 	/**
+	 * Clears the table
+	 * @note this does not dispose the rows in a correct manner. You have to
+	 * do this manually. This can be useful if you want reorder some rows/columns
+	 * and save the actors manually.
+	 */
+	@Override
+	public void clear() {
+		super.clear();
+		mRows.clear();
+	}
+
+	/**
+	 * Makes the table keep its size (that was set through #setSize(float,float), #setWidth(float), or
+	 * #setHeight(float)) after the table has been invalidated. I.e. it will not resize the table to fit
+	 * the contents.
+	 * @param keepSize set to true to keep the size of the table. If set to false table will not always be
+	 * the same size as getPrefWidth/Height. If the table's content have been scaled down/up the table size
+	 * will be smaller/larger than the preferred size.
+	 * @return this table for chaining
+	 */
+	public AlignTable setKeepSize(boolean keepSize) {
+		mKeepSize = keepSize;
+		return this;
+	}
+
+	/**
 	 * Recalculates the preferred width and height
 	 */
 	private void calculateSize() {
@@ -280,11 +316,14 @@ public class AlignTable extends WidgetGroup implements Disposable {
 		mExtraHeight = 0;
 		mExtraWidth = 0;
 
+		float width = 0;
+		float height = 0;
 
 		for (Row row : mRows) {
 			row.calculateSize();
 			mPrefHeight += row.getPrefHeight();
 			mMinHeight += row.getMinHeight();
+			height += row.getHeight();
 
 			// Add extra height
 			if (row.getMinHeight() < row.getPrefHeight()) {
@@ -298,10 +337,20 @@ public class AlignTable extends WidgetGroup implements Disposable {
 			if (row.getMinWidth() > mMinWidth) {
 				mMinWidth = row.getMinWidth();
 			}
+
+			if (row.getWidth() > width) {
+				width = row.getWidth();
+			}
 		}
 
 		if (getMinWidth() < getPrefWidth()) {
 			mExtraWidth = getPrefWidth() - getMinWidth();
+		}
+
+		// Set the size of the table (without scaling)
+		if (!mKeepSize) {
+			super.setWidth(width);
+			super.setHeight(height);
 		}
 	}
 
@@ -315,18 +364,18 @@ public class AlignTable extends WidgetGroup implements Disposable {
 		}
 
 		float widthScale = 1;
-		if (getPrefWidth() - getWidth() > mExtraWidth) {
-			widthScale = (getWidth() - getMinWidth()) / (getPrefWidth() - getMinWidth());
-		} else {
-			widthScale = getWidth() / getPrefWidth();
-		}
+		//		if (getPrefWidth() - getWidth() > mExtraWidth) {
+		widthScale = (getWidth() - getMinWidth()) / (getPrefWidth() - getMinWidth());
+		//		} else {
+		//		widthScale = getWidth() / getPrefWidth();
+		//		}
 
 		float heightScale = 1;
-		if (getPrefHeight() - getHeight() > mExtraHeight) {
-			heightScale = (getHeight() - getMinHeight()) / (getPrefHeight() - getMinHeight());
-		} else {
-			heightScale = getHeight() / getPrefHeight();
-		}
+		//		if (getPrefHeight() - getHeight() > mExtraHeight) {
+		heightScale = (getHeight() - getMinHeight()) / (getPrefHeight() - getMinHeight());
+		//		} else {
+		//		heightScale = getHeight() / getPrefHeight();
+		//		}
 
 		if (widthScale < heightScale && widthScale < 1) {
 			setScale(widthScale);
@@ -358,4 +407,6 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	private float mScaleX = 1;
 	/** Scale Y value */
 	private float mScaleY = 1;
+	/** If the table shall keep size after layout, or it shall resize itself */
+	private boolean mKeepSize = false;
 }

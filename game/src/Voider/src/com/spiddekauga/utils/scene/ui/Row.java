@@ -45,7 +45,7 @@ public class Row implements Poolable {
 		mPadScaleRight = 0;
 		mPadScaleTop = 0;
 		mPadScaleBottom = 0;
-		mDynamicPadding = false;
+		mDynamicPadding = true;
 	}
 
 	/**
@@ -105,14 +105,43 @@ public class Row implements Poolable {
 	}
 
 	/**
+	 * Sets if the row (and its children) can be scaled or not. Rows are scalable by default.
+	 * Can be good to turn off for buttons with text.
+	 * @param scalable true if the cell should be scalable. If set to false this
+	 * will reset any scale.
+	 * @return this row for chaining
+	 */
+	public Row setScalable(boolean scalable) {
+
+		if (!scalable) {
+			setScaleX(1);
+			setScaleY(1);
+		}
+
+		mScalable = scalable;
+
+		return this;
+	}
+
+	/**
 	 * Sets the padding values to be dynamic. I.e. they will scale depending on the
 	 * current scale factor of the table. E.g. setPadLeft(10) and table.setScale(0.5f)
 	 * will result in setPadLeft(5).
 	 * @param dynamicPadding set to true to activate dynamic padding
 	 * @return this row for chaining
+	 * @note Setting this to false does not work with scaling AlignTable
+	 * depending on the size.
 	 */
 	public Row setDynamicPadding(boolean dynamicPadding) {
 		mDynamicPadding = dynamicPadding;
+
+		if (mDynamicPadding) {
+			mPadScaleLeft = mPadLeft * mScaleX;
+			mPadScaleRight = mPadRight * mScaleX;
+			mPadScaleTop = mPadTop * mScaleY;
+			mPadScaleBottom = mPadBottom * mScaleY;
+		}
+
 		return this;
 	}
 
@@ -303,10 +332,10 @@ public class Row implements Poolable {
 			}
 
 			Vector2 cellSize = Pools.obtain(Vector2.class);
-			size.y = mHeight;
+			cellSize.y = mHeight;
 			for (Cell cell : mCells) {
-				size.x = cell.getWidth();
-				cell.layout(offset, size);
+				cellSize.x = cell.getWidth();
+				cell.layout(offset, cellSize);
 				offset.x += cell.getWidth();
 			}
 			Pools.free(cellSize);
@@ -316,13 +345,12 @@ public class Row implements Poolable {
 	}
 
 	/**
-	 * Add a cell to the row
+	 * Add a cell to the row. Sets the alignment for the actor
 	 * @param cell new cell with actor to append
 	 */
 	void add(Cell cell) {
 		mCells.add(cell);
-
-		addSize(cell);
+		cell.setAlign(mAlign.horizontal, mAlign.vertical);
 	}
 
 	/**
@@ -360,15 +388,17 @@ public class Row implements Poolable {
 	 * @return this row for chaining
 	 */
 	Row setScaleX(float scaleX) {
-		mScaleX = scaleX;
+		if (mScalable) {
+			mScaleX = scaleX;
 
-		for (Cell cell : mCells) {
-			cell.setScaleX(scaleX);
-		}
+			for (Cell cell : mCells) {
+				cell.setScaleX(scaleX);
+			}
 
-		if (mDynamicPadding) {
-			mPadScaleLeft = mPadLeft * mScaleX;
-			mPadScaleRight = mPadRight * mScaleX;
+			if (mDynamicPadding) {
+				mPadScaleLeft = mPadLeft * mScaleX;
+				mPadScaleRight = mPadRight * mScaleX;
+			}
 		}
 
 		return this;
@@ -380,15 +410,17 @@ public class Row implements Poolable {
 	 * @return this row for chaining
 	 */
 	Row setScaleY(float scaleY) {
-		mScaleY = scaleY;
+		if (mScalable) {
+			mScaleY = scaleY;
 
-		for (Cell cell : mCells) {
-			cell.setScaleY(scaleY);
-		}
+			for (Cell cell : mCells) {
+				cell.setScaleY(scaleY);
+			}
 
-		if (mDynamicPadding) {
-			mPadScaleTop = mPadTop * mScaleY;
-			mPadScaleBottom = mPadBottom * mScaleY;
+			if (mDynamicPadding) {
+				mPadScaleTop = mPadTop * mScaleY;
+				mPadScaleBottom = mPadBottom * mScaleY;
+			}
 		}
 
 		return this;
@@ -468,6 +500,8 @@ public class Row implements Poolable {
 	private float mScaleX = 1;
 	/** Scaling y-factor */
 	private float mScaleY = 1;
+	/** If the row and its cells can be scaled */
+	private boolean mScalable = true;
 	/** Row alignment */
 	private Align mAlign = new Align(Horizontal.LEFT, Vertical.MIDDLE);
 
@@ -490,5 +524,5 @@ public class Row implements Poolable {
 	private float mPadScaleBottom = 0;
 	/** If the padding value should be dynamic, i.e. it will increase/decrease
 	 * the padding depending on the scale factor */
-	private boolean mDynamicPadding = false;
+	private boolean mDynamicPadding = true;
 }

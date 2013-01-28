@@ -16,16 +16,17 @@ import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
-import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent;
 import com.badlogic.gdx.utils.Pools;
 import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.utils.Scroller;
 import com.spiddekauga.utils.Scroller.ScrollAxis;
+import com.spiddekauga.utils.scene.ui.Align.Horizontal;
+import com.spiddekauga.utils.scene.ui.Align.Vertical;
+import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.editor.commands.ClActorAdd;
 import com.spiddekauga.voider.editor.commands.ClActorMove;
@@ -164,8 +165,6 @@ public class LevelEditor extends WorldScene implements EventListener {
 			if (!mGuiInitialized) {
 				initGui();
 				mGuiInitialized = true;
-			} else {
-				scaleGui();
 			}
 
 			if (mToolCurrent == null) {
@@ -323,7 +322,7 @@ public class LevelEditor extends WorldScene implements EventListener {
 
 	// GUI
 	/** Table the tool buttons */
-	private Table mToolTable = null;
+	private AlignTable mToolTable = null;
 	/** If the GUI has been initialized */
 	private boolean mGuiInitialized = false;
 
@@ -542,21 +541,21 @@ public class LevelEditor extends WorldScene implements EventListener {
 		mToolCurrent = selectedTool;
 
 
-		// Clear GUI table and readd the correct GUI
+		// Clear GUI table and re-add the correct GUI
 		mGui.clear();
-		Table toolGui = mToolCurrent.getGui();
+		AlignTable toolGui = mToolCurrent.getGui();
 		if (toolGui != null) {
 			mGui.add(toolGui);
 		}
 		mGui.add(mToolTable);
 		mGui.invalidate();
 
-		// Pad first time
-		if (toolGui != null) {
-			if (toolGui.getPadBottom() == 0f) {
-				toolGui.padBottom(mToolTable.getPrefHeight() - toolGui.getPrefHeight());
-			}
-		}
+		//		// Pad first time
+		//		if (toolGui != null) {
+		//			if (toolGui.getPadBottom() == 0f) {
+		//				toolGui.padBottom(mToolTable.getPrefHeight() - toolGui.getPrefHeight());
+		//			}
+		//		}
 	}
 
 
@@ -564,7 +563,8 @@ public class LevelEditor extends WorldScene implements EventListener {
 	 * Initializes all the buttons for the GUI
 	 */
 	private void initGui() {
-		mGui.align(Align.top | Align.right);
+		mGui.setTableAlign(Horizontal.RIGHT, Vertical.TOP);
+		mGui.setRowAlign(Horizontal.RIGHT, Vertical.TOP);
 
 		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
 
@@ -572,8 +572,8 @@ public class LevelEditor extends WorldScene implements EventListener {
 		TextButtonStyle textStyle = editorSkin.get("default", TextButtonStyle.class);
 		ImageButtonStyle imageStyle = editorSkin.get(StaticTerrainTools.ADD.getStyleName(), ImageButtonStyle.class);
 
-		mToolTable = new Table();
-		mToolTable.setTransform(true);
+		mToolTable = new AlignTable();
+		mToolTable.setRowAlign(Horizontal.RIGHT, Vertical.TOP);
 		ButtonGroup toggleGroup = new ButtonGroup();
 		Button button = new TextButton("Static Terrain", textToogleStyle);
 		button.setName(Tools.STATIC_TERRAIN.toString());
@@ -590,10 +590,6 @@ public class LevelEditor extends WorldScene implements EventListener {
 		mToolTable.row();
 
 		button = new ImageButton(imageStyle);
-		button.setTransform(true);
-		button.setHeight(50);
-		button.setWidth(50);
-		button.invalidate();
 		mToolTable.add(button);
 		mToolTable.row();
 
@@ -629,8 +625,7 @@ public class LevelEditor extends WorldScene implements EventListener {
 		mPickupTool.initGui();
 
 		switchTool(mStaticTerrainHandler, Tools.STATIC_TERRAIN);
-
-		scaleGui();
+		mGui.invalidate();
 	}
 
 	// -------------------------------------
@@ -686,7 +681,7 @@ public class LevelEditor extends WorldScene implements EventListener {
 		/**
 		 * @return the table with the GUI for this tool
 		 */
-		public abstract Table getGui();
+		public abstract AlignTable getGui();
 	}
 
 	/**
@@ -827,6 +822,7 @@ public class LevelEditor extends WorldScene implements EventListener {
 		@Override
 		public void initGui() {
 			mGuiTable.setName(Tools.PICKUP.toString() + "-table");
+			mGuiTable.setRowAlign(Horizontal.RIGHT, Vertical.BOTTOM);
 
 			Skin editorSkin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
 			TextButtonStyle textStyle = editorSkin.get("toggle", TextButtonStyle.class);
@@ -858,12 +854,11 @@ public class LevelEditor extends WorldScene implements EventListener {
 			button.addListener(this);
 			toggleGroup.add(button);
 			mGuiTable.add(button);
-			mGuiTable.align(Align.top);
 			mGuiTable.setTransform(true);
 		}
 
 		@Override
-		public Table getGui() {
+		public AlignTable getGui() {
 			return mGuiTable;
 		}
 
@@ -906,7 +901,7 @@ public class LevelEditor extends WorldScene implements EventListener {
 		};
 
 		/** Table for the GUI */
-		private Table mGuiTable = new Table();
+		private AlignTable mGuiTable = new AlignTable();
 		/** Current tool for pickup */
 		private PickupTools mTool = PickupTools.NONE;
 		/** Actor we're currently adding */
@@ -1197,6 +1192,7 @@ public class LevelEditor extends WorldScene implements EventListener {
 		@Override
 		public void initGui() {
 			mGuiTable.setName(Tools.STATIC_TERRAIN.toString() + "-table");
+			mGuiTable.setRowAlign(Horizontal.RIGHT, Vertical.TOP);
 
 			Skin editorSkin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
 			TextButtonStyle textStyle = editorSkin.get(StaticTerrainTools.MOVE_TERRAIN.getStyleName(), TextButtonStyle.class);
@@ -1222,12 +1218,11 @@ public class LevelEditor extends WorldScene implements EventListener {
 			button.addListener(this);
 			toggleGroup.add(button);
 			mGuiTable.add(button);
-			mGuiTable.align(Align.top);
 			mGuiTable.setTransform(true);
 		}
 
 		@Override
-		public Table getGui() {
+		public AlignTable getGui() {
 			return mGuiTable;
 		}
 
@@ -1279,7 +1274,7 @@ public class LevelEditor extends WorldScene implements EventListener {
 		/** The current active tool for the static terrain tool */
 		private StaticTerrainTools mTool = StaticTerrainTools.NONE;
 		/** GUI buttons for the terrain */
-		private Table mGuiTable = new Table();
+		private AlignTable mGuiTable = new AlignTable();
 
 		/** Picking for static terrains */
 		private QueryCallback mCallback = new QueryCallback() {
@@ -1347,7 +1342,7 @@ public class LevelEditor extends WorldScene implements EventListener {
 		}
 
 		@Override
-		public Table getGui() {
+		public AlignTable getGui() {
 			/** @TODO return table */
 			return null;
 		}

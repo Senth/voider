@@ -9,7 +9,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox.CheckBoxStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -49,9 +48,9 @@ public class VoiderGame implements ApplicationListener {
 		/** @TODO set main menu as start screen */
 
 		//testGame();
-		//testEnemyEditor();
-		//testEditor();
-		testStage();
+		testEnemyEditor();
+		//		testEditor();
+		//testStage();
 	}
 
 	/**
@@ -63,7 +62,7 @@ public class VoiderGame implements ApplicationListener {
 		table = new AlignTable();
 		table.setWidth(Gdx.graphics.getWidth());
 		table.setHeight(Gdx.graphics.getHeight());
-		table.setTableAlign(Horizontal.LEFT, Vertical.BOTTOM);
+		table.setTableAlign(Horizontal.CENTER, Vertical.MIDDLE);
 		table.setRowAlign(Horizontal.LEFT, Vertical.BOTTOM);
 		mStage.addActor(table);
 
@@ -89,13 +88,13 @@ public class VoiderGame implements ApplicationListener {
 		table.add(button);
 		button = new TextButton("Load", textStyle);
 		cell = table.add(button);
-		cell.setScalable(false);
 		cell.setAlign(Horizontal.RIGHT, Vertical.MIDDLE);
 		button = new TextButton("Duplicate", textStyle);
 		cell = table.add(button);
 		cell.setAlign(Horizontal.LEFT, Vertical.MIDDLE);
 
 		row = table.row(Horizontal.LEFT, Vertical.TOP);
+		row.setPadBottom(20);
 		button = new TextButton("New Enemy", textStyle);
 		cell = table.add(button);
 		button = new TextButton("Save", textStyle);
@@ -115,18 +114,14 @@ public class VoiderGame implements ApplicationListener {
 		button = new TextButton("Duplicate", textStyle);
 		cell = table.add(button);
 
-		Label label = new Label("Testing scale", labelStyle);
-		table.row();
-		table.add(label);
-
 		table.row();
 		button = new ImageButton(imageStyle);
 		cell = table.add(button);
 		button = new TextButton("test", textStyle);
 		cell = table.add(button);
-		cell.setScalable(false);
 
 		table.setTransform(true);
+		table.invalidate();
 		Gdx.input.setInputProcessor(mStage);
 	}
 
