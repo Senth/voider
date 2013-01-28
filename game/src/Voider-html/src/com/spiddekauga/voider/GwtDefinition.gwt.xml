@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<module>
-    <entry-point class="com.spiddekauga.voider.client.GwtLauncher"/>
-    <set-configuration-property name="gdx.assetpath" value="../Voider-android/assets"/>
-    <inherits name="VoiderGame"/>
-    <inherits name="aurelienribon.bodyeditorloader"/>
-    <inherits name="com.badlogic.gdx.backends.gdx_backends_gwt"/>
-</module>
