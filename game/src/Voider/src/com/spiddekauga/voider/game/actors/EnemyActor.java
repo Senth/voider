@@ -60,6 +60,20 @@ public class EnemyActor extends Actor {
 	}
 
 	/**
+	 * Sets the speed of the actor, although not the definition, so this is
+	 * just a temporary speed
+	 * @param speed new temporary speed.
+	 */
+	public void setSpeed(float speed) {
+		if (getBody() != null) {
+			Vector2 velocity = getBody().getLinearVelocity();
+			velocity.nor();
+			velocity.mul(speed);
+			getBody().setLinearVelocity(velocity);
+		}
+	}
+
+	/**
 	 * Resets the movement. This resets the movement to start from the beginning of the path.
 	 * Only applicable for path movement
 	 */

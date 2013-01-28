@@ -61,6 +61,42 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	}
 
 	/**
+	 * Sets the default padding for all new cells in the table. By default this is
+	 * 0 for all sides. This only affects new cells added to the table.
+	 * To change the padding of a Cell, you need to retrieve it from the {@link #add(Actor)}
+	 * method and then call the appropriate padding method.
+	 * @param top padding at the top
+	 * @param right padding to the right
+	 * @param bottom padding at the bottom
+	 * @param left padding to the left
+	 * @return this table for chaining
+	 */
+	public AlignTable setCellPaddingDefault(float top, float right, float bottom, float left) {
+		mCellPaddingDefault.top = top;
+		mCellPaddingDefault.right = right;
+		mCellPaddingDefault.bottom = bottom;
+		mCellPaddingDefault.left = left;
+		return this;
+	}
+
+	/**
+	 * Sets the default padding for all new rows in the table. By default this
+	 * is 0 for all sides. Only affects new rows created after this call.
+	 * @param top padding at the top
+	 * @param right padding to the right
+	 * @param bottom padding at the bottom
+	 * @param left padding to the left
+	 * @return this table for chaining
+	 */
+	public AlignTable setRowPaddingDefault(float top, float right, float bottom, float left) {
+		mRowPaddingDefault.top = top;
+		mRowPaddingDefault.right = right;
+		mRowPaddingDefault.bottom = bottom;
+		mRowPaddingDefault.left = left;
+		return this;
+	}
+
+	/**
 	 * Adds a new actor to the current row.
 	 * @param actor new actor to add
 	 * @return cell that was added
@@ -84,8 +120,7 @@ public class AlignTable extends WidgetGroup implements Disposable {
 		}
 
 		Cell newCell = Pools.obtain(Cell.class).setActor(actor);
-		newCell.setScaleX(mScaleX);
-		newCell.setScaleY(mScaleY);
+		newCell.setPadding(mCellPaddingDefault);
 		row.add(newCell);
 
 		addActor(actor);
@@ -116,8 +151,7 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	public Row row(Horizontal horizontal, Vertical vertical) {
 		Row row = Pools.obtain(Row.class);
 		row.setAlign(horizontal, vertical);
-		row.setScaleX(mScaleX);
-		row.setScaleY(mScaleY);
+		row.setPadding(mRowPaddingDefault);
 		mRows.add(row);
 		return row;
 	}
@@ -409,4 +443,8 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	private float mScaleY = 1;
 	/** If the table shall keep size after layout, or it shall resize itself */
 	private boolean mKeepSize = false;
+	/** Default cell padding */
+	private Padding mCellPaddingDefault = new Padding();
+	/** Default row padding */
+	private Padding mRowPaddingDefault = new Padding();
 }

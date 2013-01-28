@@ -89,9 +89,20 @@ public class Config {
 			PICKING_CIRCLE_SHAPE.setRadius(PICKING_CIRCLE_RADIUS);
 		}
 
-		/** How long time ONCE enemy should have reached the goal before it is reset.
-		 * In EnemyEditor */
-		public final static float ENEMY_ONCE_RESET_TIME = 2;
+		/**
+		 * Enemy editor options
+		 */
+		public static class Enemy {
+			/** How long time ONCE enemy should have reached the goal before it is reset.
+			 * In EnemyEditor */
+			public final static float PATH_ONCE_RESET_TIME = 2;
+			/** Minimum speed of enemies */
+			public final static float ENEMY_SPEED_MIN = 0.5f;
+			/** Maximum speed of enemies */
+			public final static float ENEMY_SPEED_MAX = 30;
+			/** Step size for slider */
+			public final static float ENEMY_SPEED_STEP_SIZE = 0.1f;
+		}
 
 		/** Radius of all picking circles */
 		private final static float PICKING_CIRCLE_RADIUS = 1.0f;
@@ -122,7 +133,7 @@ public class Config {
 		 */
 		public static class Enemy {
 			/** How close the enemy should be to a path point before it goes to the next */
-			public final static float PATH_NODE_CLOSE_SQ = 0.1f * 0.1f;
+			public final static float PATH_NODE_CLOSE_SQ = 0.25f * 0.25f;
 		}
 	}
 

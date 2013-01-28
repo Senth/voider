@@ -37,14 +37,8 @@ public class Row implements Poolable {
 		mAlign.horizontal = Horizontal.LEFT;
 		mAlign.vertical = Vertical.MIDDLE;
 
-		mPadLeft = 0;
-		mPadRight = 0;
-		mPadTop = 0;
-		mPadBottom = 0;
-		mPadScaleLeft = 0;
-		mPadScaleRight = 0;
-		mPadScaleTop = 0;
-		mPadScaleBottom = 0;
+		mPadding.reset();
+		mScaledPadding.reset();
 		mDynamicPadding = true;
 	}
 
@@ -136,10 +130,10 @@ public class Row implements Poolable {
 		mDynamicPadding = dynamicPadding;
 
 		if (mDynamicPadding) {
-			mPadScaleLeft = mPadLeft * mScaleX;
-			mPadScaleRight = mPadRight * mScaleX;
-			mPadScaleTop = mPadTop * mScaleY;
-			mPadScaleBottom = mPadBottom * mScaleY;
+			mScaledPadding.left = mPadding.left * mScaleX;
+			mScaledPadding.right = mPadding.right * mScaleX;
+			mScaledPadding.top = mPadding.top * mScaleY;
+			mScaledPadding.bottom = mPadding.top * mScaleY;
 		}
 
 		return this;
@@ -161,16 +155,46 @@ public class Row implements Poolable {
 	}
 
 	/**
+	 * Sets the padding for top, right, bottom, and left.
+	 * @param top top padding
+	 * @param right right padding
+	 * @param bottom bottom padding
+	 * @param left left padding
+	 * @see #setDynamicPadding(boolean)
+	 * @return this cell for chaining
+	 */
+	public Row setPadding(float top, float right, float bottom, float left) {
+		setPadLeft(left);
+		setPadRight(right);
+		setPadTop(top);
+		setPadBottom(bottom);
+		return this;
+	}
+
+	/**
+	 * Sets the padding of the row
+	 * @param padding padding information
+	 * @return this cell for chaining
+	 */
+	Row setPadding(Padding padding) {
+		setPadLeft(padding.left);
+		setPadRight(padding.right);
+		setPadTop(padding.top);
+		setPadBottom(padding.bottom);
+		return this;
+	}
+
+	/**
 	 * Sets the padding to the left of the row
 	 * @param padLeft how much padding should be to the left of the row
 	 * @return this row for chaining
 	 * @see #setDynamicPadding(boolean)
 	 */
 	public Row setPadLeft(float padLeft) {
-		mPadLeft = padLeft;
+		mPadding.left = padLeft;
 
 		if (mDynamicPadding) {
-			mPadScaleLeft = mPadLeft * mScaleX;
+			mScaledPadding.left = mPadding.left * mScaleX;
 		}
 
 		return this;
@@ -183,10 +207,10 @@ public class Row implements Poolable {
 	 * @see #setDynamicPadding(boolean)
 	 */
 	public Row setPadRight(float padRight) {
-		mPadRight = padRight;
+		mPadding.right = padRight;
 
 		if (mDynamicPadding) {
-			mPadScaleRight = mPadRight * mScaleX;
+			mScaledPadding.right = mPadding.right * mScaleX;
 		}
 
 		return this;
@@ -199,10 +223,10 @@ public class Row implements Poolable {
 	 * @see #setDynamicPadding(boolean)
 	 */
 	public Row setPadTop(float padTop) {
-		mPadTop = padTop;
+		mPadding.top = padTop;
 
 		if (mDynamicPadding) {
-			mPadScaleTop = mPadTop * mScaleY;
+			mScaledPadding.top = mPadding.top * mScaleY;
 		}
 
 		return this;
@@ -215,10 +239,10 @@ public class Row implements Poolable {
 	 * @see #setDynamicPadding(boolean)
 	 */
 	public Row setPadBottom(float padBottom) {
-		mPadBottom = padBottom;
+		mPadding.bottom = padBottom;
 
 		if (mDynamicPadding) {
-			mPadScaleBottom = mPadBottom * mScaleY;
+			mScaledPadding.bottom = mPadding.bottom * mScaleY;
 		}
 
 		return this;
@@ -230,7 +254,7 @@ public class Row implements Poolable {
 	 * @see #setDynamicPadding(boolean)
 	 */
 	public float getPadLeft() {
-		return mDynamicPadding ? mPadScaleLeft : mPadLeft;
+		return mDynamicPadding ? mScaledPadding.left : mPadding.left;
 	}
 
 	/**
@@ -239,7 +263,7 @@ public class Row implements Poolable {
 	 * @see #setDynamicPadding(boolean)
 	 */
 	public float getPadRight() {
-		return mDynamicPadding ? mPadScaleRight : mPadRight;
+		return mDynamicPadding ? mScaledPadding.right : mPadding.right;
 	}
 
 	/**
@@ -248,7 +272,7 @@ public class Row implements Poolable {
 	 * @see #setDynamicPadding(boolean)
 	 */
 	public float getPadTop() {
-		return mDynamicPadding ? mPadScaleTop : mPadTop;
+		return mDynamicPadding ? mScaledPadding.top : mPadding.top;
 	}
 
 	/**
@@ -257,7 +281,7 @@ public class Row implements Poolable {
 	 * @see #setDynamicPadding(boolean)
 	 */
 	public float getPadBottom() {
-		return mDynamicPadding ? mPadScaleBottom : mPadBottom;
+		return mDynamicPadding ? mScaledPadding.bottom : mPadding.bottom;
 	}
 
 	/**
@@ -278,14 +302,14 @@ public class Row implements Poolable {
 	 * @return preferred height of the row
 	 */
 	float getPrefHeight() {
-		return mPrefHeight + mPadTop + mPadBottom;
+		return mPrefHeight + mPadding.top + mPadding.bottom;
 	}
 
 	/**
 	 * @return preferred width of the row
 	 */
 	float getPrefWidth() {
-		return mPrefWidth + mPadLeft + mPadRight;
+		return mPrefWidth + mPadding.left + mPadding.right;
 	}
 
 	/**
@@ -396,8 +420,8 @@ public class Row implements Poolable {
 			}
 
 			if (mDynamicPadding) {
-				mPadScaleLeft = mPadLeft * mScaleX;
-				mPadScaleRight = mPadRight * mScaleX;
+				mScaledPadding.left = mPadding.left * mScaleX;
+				mScaledPadding.right = mPadding.right * mScaleX;
 			}
 		}
 
@@ -418,8 +442,8 @@ public class Row implements Poolable {
 			}
 
 			if (mDynamicPadding) {
-				mPadScaleTop = mPadTop * mScaleY;
-				mPadScaleBottom = mPadBottom * mScaleY;
+				mScaledPadding.top = mPadding.top * mScaleY;
+				mScaledPadding.bottom = mPadding.bottom * mScaleY;
 			}
 		}
 
@@ -506,22 +530,10 @@ public class Row implements Poolable {
 	private Align mAlign = new Align(Horizontal.LEFT, Vertical.MIDDLE);
 
 	// Padding
-	/** Padding to the left of the row */
-	private float mPadLeft = 0;
-	/** Padding to the right of the row */
-	private float mPadRight = 0;
-	/** Padding at the top of the row */
-	private float mPadTop = 0;
-	/** Padding at the bottom of the row */
-	private float mPadBottom = 0;
-	/** Scale padding to the left, when dynamic padding is on */
-	private float mPadScaleLeft = 0;
-	/** Scale padding to the right, when dynamic padding is on */
-	private float mPadScaleRight = 0;
-	/** Scale padding at the top, when dynamic padding is on */
-	private float mPadScaleTop = 0;
-	/** Scale padding at the bottom, when dynamic padding is on */
-	private float mPadScaleBottom = 0;
+	/** Padding for this row */
+	private Padding mPadding = new Padding();
+	/** Scaled padding for this row */
+	private Padding mScaledPadding = new Padding();
 	/** If the padding value should be dynamic, i.e. it will increase/decrease
 	 * the padding depending on the scale factor */
 	private boolean mDynamicPadding = true;

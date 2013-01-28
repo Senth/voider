@@ -13,16 +13,22 @@ import com.badlogic.gdx.scenes.scene2d.ui.CheckBox.CheckBoxStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Slider;
+import com.badlogic.gdx.scenes.scene2d.ui.Slider.SliderStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
 import com.badlogic.gdx.utils.Pools;
 import com.badlogic.gdx.utils.SnapshotArray;
 import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
+import com.spiddekauga.utils.scene.ui.Cell;
 import com.spiddekauga.utils.scene.ui.Row;
+import com.spiddekauga.utils.scene.ui.SliderListener;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.Actor;
 import com.spiddekauga.voider.game.Path;
@@ -88,7 +94,7 @@ public class EnemyEditor extends WorldScene {
 				try {
 					if ((Boolean)mfEnemyOnceReachEnd.get(mEnemyPathOnce)) {
 						if (mEnemyPathOnceOutOfBoundsTime != 0.0f) {
-							if (mEnemyPathOnceOutOfBoundsTime + Config.Editor.ENEMY_ONCE_RESET_TIME <= GameTime.getTotalTimeElapsed()) {
+							if (mEnemyPathOnceOutOfBoundsTime + Config.Editor.Enemy.PATH_ONCE_RESET_TIME <= GameTime.getTotalTimeElapsed()) {
 								mEnemyPathOnce.resetPathMovement();
 								mEnemyPathOnceOutOfBoundsTime = 0.0f;
 							}
@@ -155,12 +161,15 @@ public class EnemyEditor extends WorldScene {
 	private void initGui() {
 		mGui.setTableAlign(Horizontal.RIGHT, Vertical.TOP);
 		mGui.setRowAlign(Horizontal.LEFT, Vertical.MIDDLE);
+		mGui.setCellPaddingDefault(2, 2, 2, 2);
 
 		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
 
 		TextButtonStyle textToogleStyle = editorSkin.get("toggle", TextButtonStyle.class);
 		TextButtonStyle textStyle = editorSkin.get("default", TextButtonStyle.class);
 		LabelStyle labelStyle = editorSkin.get("default", LabelStyle.class);
+		SliderStyle sliderStyle = editorSkin.get("default", SliderStyle.class);
+		TextFieldStyle textFieldStyle = editorSkin.get("default", TextFieldStyle.class);
 
 		// New Enemy
 		Button button = new TextButton("New Enemy", textStyle);
@@ -213,6 +222,25 @@ public class EnemyEditor extends WorldScene {
 		// Speed
 		label = new Label("Speed", labelStyle);
 		mGui.add(label);
+		row = mGui.row();
+		row.setScalable(false);
+		Slider slider = new Slider(Config.Editor.Enemy.ENEMY_SPEED_MIN, Config.Editor.Enemy.ENEMY_SPEED_MAX, Config.Editor.Enemy.ENEMY_SPEED_STEP_SIZE, false, sliderStyle);
+		mGui.add(slider);
+		TextField textField = new TextField("", textFieldStyle);
+		textField.setWidth(45);
+		mGui.add(textField);
+		new SliderListener(slider, textField) {
+			@Override
+			public void onChange(float newValue) {
+				mDef.setSpeed(newValue);
+				mEnemyActor.setSpeed(newValue);
+				mEnemyPathBackAndForth.setSpeed(newValue);
+				mEnemyPathLoop.setSpeed(newValue);
+				mEnemyPathOnce.setSpeed(newValue);
+			}
+		};
+		slider.setValue(mDef.getSpeed());
+
 
 		// Type of movement?
 		MovementTypes movementType = mDef.getMovementType();
@@ -239,8 +267,8 @@ public class EnemyEditor extends WorldScene {
 		});
 		buttonGroup.add(checkBox);
 		checkBox.setChecked(movementType == MovementTypes.PATH);
-		checkBox.padRight(label.getPrefHeight() * 0.5f);
-		mGui.add(checkBox);
+		Cell cell = mGui.add(checkBox);
+		cell.setPadRight(10);
 
 
 		// Stationary
@@ -258,9 +286,10 @@ public class EnemyEditor extends WorldScene {
 			}
 		});
 		buttonGroup.add(checkBox);
-		checkBox.padRight(label.getPrefHeight() * 0.5f);
 		checkBox.setChecked(movementType == MovementTypes.STATIONARY);
-		mGui.add(checkBox);
+		cell = mGui.add(checkBox);
+		cell.setPadRight(10);
+
 
 		// AI
 		checkBox = new CheckBox("AI", checkBoxStyle);
@@ -434,7 +463,6 @@ public class EnemyEditor extends WorldScene {
 		float initialOffset = spaceBetween + height * 0.5f + spaceBetween + height;
 
 		mPathLabels.setPosition(Gdx.graphics.getWidth() / 3f, initialOffset);
-
 
 
 		// Fix padding

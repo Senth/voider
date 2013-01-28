@@ -38,14 +38,8 @@ public class Cell implements Poolable {
 		mAlign.vertical = Vertical.MIDDLE;
 		mScalable = true;
 
-		mPadLeft = 0;
-		mPadRight = 0;
-		mPadTop = 0;
-		mPadBottom = 0;
-		mPadScaleLeft = 0;
-		mPadScaleRight = 0;
-		mPadScaleTop = 0;
-		mPadScaleBottom = 0;
+		mPadding.reset();
+		mScaledPadding.reset();
 		mDynamicPadding = true;
 	}
 
@@ -62,10 +56,10 @@ public class Cell implements Poolable {
 		mDynamicPadding = dynamicPadding;
 
 		if (mDynamicPadding) {
-			mPadScaleLeft = mPadLeft * mActor.getScaleX();
-			mPadScaleRight = mPadRight * mActor.getScaleX();
-			mPadScaleTop = mPadTop * mActor.getScaleY();
-			mPadScaleBottom = mPadBottom * mActor.getScaleY();
+			mScaledPadding.left = mPadding.left * mActor.getScaleX();
+			mScaledPadding.right = mPadding.right * mActor.getScaleX();
+			mScaledPadding.top = mPadding.top * mActor.getScaleY();
+			mScaledPadding.bottom = mPadding.bottom * mActor.getScaleY();
 		}
 		return this;
 	}
@@ -86,16 +80,47 @@ public class Cell implements Poolable {
 	}
 
 	/**
+	 * Sets the padding for top, right, bottom, and left.
+	 * @param top top padding
+	 * @param right right padding
+	 * @param bottom bottom padding
+	 * @param left left padding
+	 * @see #setDynamicPadding(boolean)
+	 * @return this cell for chaining
+	 */
+	public Cell setPadding(float top, float right, float bottom, float left) {
+		setPadLeft(left);
+		setPadRight(right);
+		setPadTop(top);
+		setPadBottom(bottom);
+		return this;
+	}
+
+	/**
+	 * Sets the padding of the cell
+	 * @param padding padding information
+	 * @return this cell for chaining
+	 */
+	Cell setPadding(Padding padding) {
+		setPadLeft(padding.left);
+		setPadRight(padding.right);
+		setPadTop(padding.top);
+		setPadBottom(padding.bottom);
+		return this;
+	}
+
+
+	/**
 	 * Sets the padding to the left of the cell
 	 * @param padLeft how much padding should be to the left of the cell
 	 * @return this cell for chaining
 	 * @see #setDynamicPadding(boolean)
 	 */
 	public Cell setPadLeft(float padLeft) {
-		mPadLeft = padLeft;
+		mPadding.left = padLeft;
 
 		if (mDynamicPadding) {
-			mPadScaleLeft = mPadLeft * mActor.getScaleX();
+			mScaledPadding.left = mPadding.left * mActor.getScaleX();
 		}
 
 		return this;
@@ -108,10 +133,10 @@ public class Cell implements Poolable {
 	 * @see #setDynamicPadding(boolean)
 	 */
 	public Cell setPadRight(float padRight) {
-		mPadRight = padRight;
+		mPadding.right = padRight;
 
 		if (mDynamicPadding) {
-			mPadScaleRight = mPadRight * mActor.getScaleX();
+			mScaledPadding.right = mPadding.right * mActor.getScaleX();
 		}
 
 		return this;
@@ -124,10 +149,10 @@ public class Cell implements Poolable {
 	 * @see #setDynamicPadding(boolean)
 	 */
 	public Cell setPadTop(float padTop) {
-		mPadTop = padTop;
+		mPadding.top = padTop;
 
 		if (mDynamicPadding) {
-			mPadScaleTop = mPadTop * mActor.getScaleY();
+			mScaledPadding.top = mPadding.top * mActor.getScaleY();
 		}
 
 		return this;
@@ -140,10 +165,10 @@ public class Cell implements Poolable {
 	 * @see #setDynamicPadding(boolean)
 	 */
 	public Cell setPadBottom(float padBottom) {
-		mPadBottom = padBottom;
+		mPadding.bottom = padBottom;
 
 		if (mDynamicPadding) {
-			mPadScaleBottom = mPadBottom * mActor.getScaleY();
+			mScaledPadding.bottom = mPadding.bottom * mActor.getScaleY();
 		}
 
 		return this;
@@ -155,7 +180,7 @@ public class Cell implements Poolable {
 	 * @see #setDynamicPadding(boolean)
 	 */
 	public float getPadLeft() {
-		return mDynamicPadding ? mPadScaleLeft : mPadLeft;
+		return mDynamicPadding ? mScaledPadding.left : mPadding.left;
 	}
 
 	/**
@@ -164,7 +189,7 @@ public class Cell implements Poolable {
 	 * @see #setDynamicPadding(boolean)
 	 */
 	public float getPadRight() {
-		return mDynamicPadding ? mPadScaleRight : mPadRight;
+		return mDynamicPadding ? mScaledPadding.right : mPadding.right;
 	}
 
 	/**
@@ -173,7 +198,7 @@ public class Cell implements Poolable {
 	 * @see #setDynamicPadding(boolean)
 	 */
 	public float getPadTop() {
-		return mDynamicPadding ? mPadScaleTop : mPadTop;
+		return mDynamicPadding ? mScaledPadding.top : mPadding.top;
 	}
 
 	/**
@@ -182,7 +207,7 @@ public class Cell implements Poolable {
 	 * @see #setDynamicPadding(boolean)
 	 */
 	public float getPadBottom() {
-		return mDynamicPadding ? mPadScaleBottom : mPadBottom;
+		return mDynamicPadding ? mScaledPadding.bottom : mPadding.bottom;
 	}
 
 	/**
@@ -249,7 +274,7 @@ public class Cell implements Poolable {
 	 */
 	float getPrefWidth() {
 		if (mActor instanceof Layout) {
-			return ((Layout)mActor).getPrefWidth() + mPadLeft + mPadRight;
+			return ((Layout)mActor).getPrefWidth() + mPadding.left + mPadding.right;
 		}
 		return 0;
 	}
@@ -259,7 +284,7 @@ public class Cell implements Poolable {
 	 */
 	float getPrefHeight() {
 		if (mActor instanceof Layout) {
-			return ((Layout)mActor).getPrefHeight() + mPadTop + mPadBottom;
+			return ((Layout)mActor).getPrefHeight() + mPadding.top + mPadding.bottom;
 		}
 		return 0;
 	}
@@ -328,8 +353,8 @@ public class Cell implements Poolable {
 	Cell setScaleX(float scaleX) {
 		if (mScalable) {
 			if (mDynamicPadding) {
-				mPadScaleLeft = mPadLeft * scaleX;
-				mPadScaleRight = mPadRight * scaleX;
+				mScaledPadding.left = mPadding.left * scaleX;
+				mScaledPadding.right = mPadding.right * scaleX;
 			}
 
 			if (mActor instanceof Layout) {
@@ -350,8 +375,8 @@ public class Cell implements Poolable {
 	Cell setScaleY(float scaleY) {
 		if (mScalable) {
 			if (mDynamicPadding) {
-				mPadScaleTop = mPadTop * scaleY;
-				mPadScaleBottom = mPadBottom * scaleY;
+				mScaledPadding.top = mPadding.top * scaleY;
+				mScaledPadding.bottom = mPadding.bottom * scaleY;
 			}
 
 			if (mActor instanceof Layout) {
@@ -373,20 +398,8 @@ public class Cell implements Poolable {
 	// Padding
 	/** If the padding can be scaled */
 	private boolean mDynamicPadding = true;
-	/** Padding to the left of the cell */
-	private float mPadLeft = 0;
-	/** Padding to the right of the cell */
-	private float mPadRight = 0;
-	/** Padding at the top of the cell */
-	private float mPadTop = 0;
-	/** Padding at the bottom of the cell */
-	private float mPadBottom = 0;
-	/** Scale padding to the left, when dynamic padding is on */
-	private float mPadScaleLeft = 0;
-	/** Scale padding to the right, when dynamic padding is on */
-	private float mPadScaleRight = 0;
-	/** Scale padding at the top, when dynamic padding is on */
-	private float mPadScaleTop = 0;
-	/** Scale padding at the bottom, when dynamic padding is on */
-	private float mPadScaleBottom = 0;
+	/** Padding for this cell */
+	private Padding mPadding = new Padding();
+	/** Scaled padding */
+	private Padding mScaledPadding = new Padding();
 }
