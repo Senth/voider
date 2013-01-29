@@ -61,6 +61,21 @@ public class EnemyActorDef extends ActorDef {
 	}
 
 	/**
+	 * Sets the turning speed of the enemy
+	 * @param degrees how many degrees it can turn per second
+	 */
+	public void setTurnSpeed(float degrees) {
+		mTurnSpeed = degrees;
+	}
+
+	/**
+	 * @return how many degrees the enemy can turn per second
+	 */
+	public float getTurnSpeed() {
+		return mTurnSpeed;
+	}
+
+	/**
 	 * Sets if the enemy shall turn
 	 * @param turn true if enemy shall turn
 	 */
@@ -107,5 +122,7 @@ public class EnemyActorDef extends ActorDef {
 	/** What type of movement the enemy has */
 	private MovementTypes mMovementType = MovementTypes.PATH;
 	/** Speed of the enemy */
-	private float mSpeed = 10f;
+	private float mSpeed = 1;
+	/** How fast the enemy can turn */
+	private float mTurnSpeed = 1;
 }

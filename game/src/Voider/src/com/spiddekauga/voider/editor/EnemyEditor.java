@@ -27,6 +27,8 @@ import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.Cell;
+import com.spiddekauga.utils.scene.ui.CheckedListener;
+import com.spiddekauga.utils.scene.ui.DisableListener;
 import com.spiddekauga.utils.scene.ui.Row;
 import com.spiddekauga.utils.scene.ui.SliderListener;
 import com.spiddekauga.voider.Config;
@@ -162,6 +164,11 @@ public class EnemyEditor extends WorldScene {
 		mGui.setTableAlign(Horizontal.RIGHT, Vertical.TOP);
 		mGui.setRowAlign(Horizontal.LEFT, Vertical.MIDDLE);
 		mGui.setCellPaddingDefault(2, 2, 2, 2);
+		mMovementTable.setRowAlign(Horizontal.LEFT, Vertical.MIDDLE);
+		mMovementTable.setCellPaddingDefault(2, 2, 2, 2);
+		mWeaponTable.setRowAlign(Horizontal.LEFT, Vertical.MIDDLE);
+		mWeaponTable.setCellPaddingDefault(2, 2, 2, 2);
+
 
 		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
 
@@ -211,24 +218,54 @@ public class EnemyEditor extends WorldScene {
 		mGui.add(button);
 
 
+		// Type (Movement OR Weapons)
 		// Movement
 		Row row = mGui.row();
 		row.setAlign(Horizontal.CENTER, Vertical.BOTTOM);
-		Label label = new Label("Movement", labelStyle);
-		row.setPadTop(label.getPrefHeight() * 0.5f);
-		mGui.add(label);
-		mGui.row();
-
-		// Speed
-		label = new Label("Speed", labelStyle);
-		mGui.add(label);
-		row = mGui.row();
 		row.setScalable(false);
-		Slider slider = new Slider(Config.Editor.Enemy.ENEMY_SPEED_MIN, Config.Editor.Enemy.ENEMY_SPEED_MAX, Config.Editor.Enemy.ENEMY_SPEED_STEP_SIZE, false, sliderStyle);
-		mGui.add(slider);
+		ButtonGroup buttonGroup = new ButtonGroup();
+		button = new TextButton("Movement", textToogleStyle);
+		new CheckedListener(button) {
+			@Override
+			public void onChange(boolean checked) {
+				if (checked) {
+					addInnerTable(mMovementTable, mTypeTable);
+				}
+			}
+		};
+		buttonGroup.add(button);
+		mGui.add(button);
+
+		// Weapons
+		button = new TextButton("Weapons", textToogleStyle);
+		new CheckedListener(button) {
+			@Override
+			public void onChange(boolean checked) {
+				if (checked) {
+					addInnerTable(mWeaponTable, mTypeTable);
+				}
+			}
+		};
+		buttonGroup.add(button);
+		mGui.add(button);
+
+		mGui.row();
+		mGui.add(mTypeTable);
+
+
+		// MOVEMENT
+		// Movement Speed
+		row = mMovementTable.row();
+		row.setScalable(false);
+		Label label = new Label("Movement speed", labelStyle);
+		mMovementTable.add(label);
+		row = mMovementTable.row();
+		row.setScalable(false);
+		Slider slider = new Slider(Config.Editor.Enemy.MOVE_SPEED_MIN, Config.Editor.Enemy.MOVE_SPEED_MAX, Config.Editor.Enemy.MOVE_SPEED_STEP_SIZE, false, sliderStyle);
+		mMovementTable.add(slider);
 		TextField textField = new TextField("", textFieldStyle);
-		textField.setWidth(45);
-		mGui.add(textField);
+		textField.setWidth(Config.Editor.Enemy.TEXT_FIELD_NUMBER_WIDTH);
+		mMovementTable.add(textField);
 		new SliderListener(slider, textField) {
 			@Override
 			public void onChange(float newValue) {
@@ -239,23 +276,64 @@ public class EnemyEditor extends WorldScene {
 				mEnemyPathOnce.setSpeed(newValue);
 			}
 		};
-		slider.setValue(mDef.getSpeed());
+		slider.setValue(Config.Editor.Enemy.MOVE_SPEED_DEFAULT);
 
+		// Turning
+		row = mMovementTable.row();
+		row.setScalable(false);
+		button = new TextButton("On", textToogleStyle);
+		button.setChecked(false);
+		mMovementTable.add(button);
+		DisableListener disableListener = new DisableListener(button) {
+			@Override
+			public void onChange(boolean disabled) {
+				if (mButton instanceof TextButton) {
+					if (disabled) {
+						((TextButton)mButton).setText("Off");
+					} else {
+						((TextButton)mButton).setText("On");
+					}
+					mDef.setTurn(!disabled);
+					mEnemyActor.resetPathMovement();
+					mEnemyPathBackAndForth.resetPathMovement();
+					mEnemyPathLoop.resetPathMovement();
+					mEnemyPathOnce.resetPathMovement();
+				}
+			}
+		};
+		label = new Label("Turning speed", labelStyle);
+		mMovementTable.add(label);
+		row = mMovementTable.row();
+		row.setScalable(false);
+		slider = new Slider(Config.Editor.Enemy.TURN_SPEED_MIN, Config.Editor.Enemy.TURN_SPEED_MAX, Config.Editor.Enemy.TURN_SPEED_STEP_SIZE, false, sliderStyle);
+		mMovementTable.add(slider);
+		disableListener.addToggleActor(slider);
+		textField = new TextField("", textFieldStyle);
+		textField.setWidth(Config.Editor.Enemy.TEXT_FIELD_NUMBER_WIDTH);
+		mMovementTable.add(textField);
+		disableListener.addToggleActor(textField);
+		new SliderListener(slider, textField) {
+			@Override
+			public void onChange(float newValue) {
+				mDef.setTurnSpeed(newValue);
+			}
+		};
+		slider.setValue(Config.Editor.Enemy.TURN_SPEED_DEFAULT);
 
 		// Type of movement?
 		MovementTypes movementType = mDef.getMovementType();
 		mDef.setMovementType(null);
 		// Path
-		row = mGui.row();
+		row = mMovementTable.row();
 		row.setScalable(false);
-		ButtonGroup buttonGroup = new ButtonGroup();
+		buttonGroup = new ButtonGroup();
 		CheckBoxStyle checkBoxStyle = editorSkin.get("default", CheckBoxStyle.class);
 		CheckBox checkBox = new CheckBox("Path", checkBoxStyle);
 		checkBox.addListener(new EventListener() {
 			@Override
 			public boolean handle(Event event) {
 				if (isButtonChecked(event) && mDef.getMovementType() != MovementTypes.PATH) {
-					addInnerTable(null, mMovementTable);
+					addInnerTable(null, mMovementTypeTable);
 					mStage.addActor(mPathLabels);
 					mDef.setMovementType(MovementTypes.PATH);
 					mEnemyActor.destroyBody();
@@ -267,7 +345,7 @@ public class EnemyEditor extends WorldScene {
 		});
 		buttonGroup.add(checkBox);
 		checkBox.setChecked(movementType == MovementTypes.PATH);
-		Cell cell = mGui.add(checkBox);
+		Cell cell = mMovementTable.add(checkBox);
 		cell.setPadRight(10);
 
 
@@ -277,7 +355,7 @@ public class EnemyEditor extends WorldScene {
 			@Override
 			public boolean handle(Event event) {
 				if (isButtonChecked(event) && mDef.getMovementType() != MovementTypes.STATIONARY) {
-					addInnerTable(null, mMovementTable);
+					addInnerTable(null, mMovementTypeTable);
 					mDef.setMovementType(MovementTypes.STATIONARY);
 					clearExamplePaths();
 					createEnemyBody();
@@ -287,7 +365,7 @@ public class EnemyEditor extends WorldScene {
 		});
 		buttonGroup.add(checkBox);
 		checkBox.setChecked(movementType == MovementTypes.STATIONARY);
-		cell = mGui.add(checkBox);
+		cell = mMovementTable.add(checkBox);
 		cell.setPadRight(10);
 
 
@@ -297,7 +375,7 @@ public class EnemyEditor extends WorldScene {
 			@Override
 			public boolean handle(Event event) {
 				if (isButtonChecked(event) && mDef.getMovementType() != MovementTypes.AI) {
-					addInnerTable(mAiTable, mMovementTable);
+					addInnerTable(mAiTable, mMovementTypeTable);
 					mDef.setMovementType(MovementTypes.AI);
 					clearExamplePaths();
 					createEnemyBody();
@@ -307,9 +385,9 @@ public class EnemyEditor extends WorldScene {
 		});
 		buttonGroup.add(checkBox);
 		checkBox.setChecked(movementType == MovementTypes.AI);
-		mGui.add(checkBox);
-		mGui.row();
-		mGui.add(mMovementTable);
+		mMovementTable.add(checkBox);
+		mMovementTable.row();
+		mMovementTable.add(mMovementTypeTable);
 
 		// Labels for movement
 		label = new Label("Back and Forth", labelStyle);
@@ -333,6 +411,9 @@ public class EnemyEditor extends WorldScene {
 
 		scalePathLabels();
 		mGui.setTransform(true);
+		mMovementTable.setTransform(true);
+		mWeaponTable.setTransform(true);
+		mAiTable.setTransform(true);
 		mGui.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 	}
 
@@ -530,9 +611,15 @@ public class EnemyEditor extends WorldScene {
 	/** Player actor, for the enemies to work properly */
 	private PlayerActor mPlayerActor = null;
 
-
-	/** Container for the different movement variables */
+	// Tables
+	/** Wrapping table for the activate type */
+	private AlignTable mTypeTable = new AlignTable();
+	/** Container for all movement options */
 	private AlignTable mMovementTable = new AlignTable();
+	/** Container for all weapon options */
+	private AlignTable mWeaponTable = new AlignTable();
+	/** Container for the different movement variables */
+	private AlignTable mMovementTypeTable = new AlignTable();
 	/** Table for path lables, these are added directly to the stage */
 	private Table mPathLabels = new Table();
 	/** Table for AI movement */

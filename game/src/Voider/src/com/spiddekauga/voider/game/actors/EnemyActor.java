@@ -29,7 +29,7 @@ public class EnemyActor extends Actor {
 		if (def != null && def.getMovementType() != null && getBody() != null) {
 			switch (def.getMovementType()) {
 			case PATH:
-				updatePathMovement();
+				updatePathMovement(deltaTime);
 				break;
 
 			case AI:
@@ -85,8 +85,9 @@ public class EnemyActor extends Actor {
 
 	/**
 	 * Follow the path
+	 * @param deltaTime time elapsed since last frame
 	 */
-	private void updatePathMovement() {
+	private void updatePathMovement(float deltaTime) {
 		if (mPath == null || mPath.getNodeCount() < 2 || mPathOnceReachedEnd) {
 			return;
 		}
@@ -114,18 +115,77 @@ public class EnemyActor extends Actor {
 
 			calculateNextPathIndex();
 
-			// Turning
-			if (getDef(EnemyActorDef.class).isTurning()) {
-
-			}
 			// No turning, change direction directly
-			else {
+			if (!getDef(EnemyActorDef.class).isTurning()) {
 				Vector2 velocity = Pools.obtain(Vector2.class);
 				velocity.set(mPath.getNodeAt(mPathIndexNext)).sub(getPosition());
 				velocity.nor().mul(getDef(EnemyActorDef.class).getSpeed());
 				getBody().setLinearVelocity(velocity);
 				Pools.free(velocity);
 			}
+		}
+
+
+		if (getDef(EnemyActorDef.class).isTurning()) {
+			Vector2 velocity = Pools.obtain(Vector2.class);
+			velocity.set(getBody().getLinearVelocity());
+
+			Vector2 toTarget = Pools.obtain(Vector2.class);
+			toTarget.set(mPath.getNodeAt(mPathIndexNext)).sub(getPosition());
+
+			// Calculate angle between the vectors
+			boolean clockwise = false;
+			float velocityAngle = velocity.angle();
+			if (velocityAngle > 180) {
+				clockwise = !clockwise;
+				velocityAngle -= 180;
+			}
+			float toTargetAngle = toTarget.angle();
+			if (toTargetAngle > 180) {
+				clockwise = !clockwise;
+				toTargetAngle -= 180;
+			}
+
+			float diffAngle = velocityAngle - toTargetAngle;
+			if (diffAngle >= Config.Actor.Enemy.TURN_ANGLE_MIN || diffAngle <= -Config.Actor.Enemy.TURN_ANGLE_MIN) {
+				if (diffAngle < 0) {
+					clockwise = !clockwise;
+				}
+
+				float rotation = getDef(EnemyActorDef.class).getTurnSpeed() * deltaTime * getDef(EnemyActorDef.class).getSpeed();
+				if (!clockwise) {
+					rotation = -rotation;
+				}
+				boolean angleWrapped = velocity.angle() + rotation > 360 || velocity.angle() + rotation < 0;
+				velocity.rotate(rotation);
+
+				// Check if we turned too much?
+				float newVelocityAngle = velocity.angle();
+				if (newVelocityAngle > 180) {
+					newVelocityAngle -= 180;
+				}
+				float newDiffAngle = newVelocityAngle - toTargetAngle;
+				boolean turnedTooMuch = false;
+				if (angleWrapped) {
+					if ((diffAngle > 0 && newDiffAngle > 0) || (diffAngle < 0 && newDiffAngle < 0)) {
+						turnedTooMuch = true;
+					}
+				} else {
+					if ((diffAngle > 0 && newDiffAngle < 0) || (diffAngle < 0 && newDiffAngle > 0)) {
+						turnedTooMuch = true;
+					}
+				}
+
+				if (turnedTooMuch) {
+					//					velocity.set(toTarget);
+					//					velocity.nor().mul(getDef(EnemyActorDef.class).getSpeed());
+				}
+
+				getBody().setLinearVelocity(velocity);
+			}
+
+			Pools.free(velocity);
+			Pools.free(toTarget);
 		}
 	}
 

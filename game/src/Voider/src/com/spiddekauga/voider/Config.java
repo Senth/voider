@@ -33,6 +33,36 @@ public class Config {
 	}
 
 	/**
+	 * Actors
+	 */
+	public static class Actor {
+		/**
+		 * Static terrain
+		 */
+		public static class Terrain {
+			/** Default size of terrain circle */
+			public final static float DEFAULT_CIRCLE_RADIUS = 2.0f;
+		}
+		/**
+		 * Pickups
+		 */
+		public static class Pickup {
+			/** Default radius for the pickups */
+			public final static float RADIUS = 1f;
+		}
+		/**
+		 * Enemies
+		 */
+		public static class Enemy {
+			/** How close the enemy should be to a path point before it goes to the next */
+			public final static float PATH_NODE_CLOSE_SQ = 0.25f * 0.25f;
+			/** Minimum angle if we shall turn */
+			public final static float TURN_ANGLE_MIN = 0.1f;
+		}
+	}
+
+
+	/**
 	 * Encryption
 	 */
 	public static class Crypto {
@@ -97,44 +127,29 @@ public class Config {
 			 * In EnemyEditor */
 			public final static float PATH_ONCE_RESET_TIME = 2;
 			/** Minimum speed of enemies */
-			public final static float ENEMY_SPEED_MIN = 0.5f;
+			public final static float MOVE_SPEED_MIN = 0.5f;
 			/** Maximum speed of enemies */
-			public final static float ENEMY_SPEED_MAX = 30;
-			/** Step size for slider */
-			public final static float ENEMY_SPEED_STEP_SIZE = 0.1f;
+			public final static float MOVE_SPEED_MAX = 30;
+			/** Default movement speed */
+			public final static float MOVE_SPEED_DEFAULT = 10;
+			/** Step size for movement speed slider */
+			public final static float MOVE_SPEED_STEP_SIZE = 0.1f;
+			/** Minimum turning speed */
+			public final static float TURN_SPEED_MIN = 10;
+			/** Maximum turning speed */
+			public final static float TURN_SPEED_MAX = 100;
+			/** Default turning speed */
+			public final static float TURN_SPEED_DEFAULT = 20;
+			/** Step size for turning speed slider */
+			public final static float TURN_SPEED_STEP_SIZE = 1;
+			/** Text field size for numbers */
+			public final static float TEXT_FIELD_NUMBER_WIDTH = 70;
 		}
 
 		/** Radius of all picking circles */
 		private final static float PICKING_CIRCLE_RADIUS = 1.0f;
 		/** Picking shape of the */
 		private static Shape PICKING_CIRCLE_SHAPE = null;
-	}
-
-	/**
-	 * Actors
-	 */
-	public static class Actor {
-		/**
-		 * Static terrain
-		 */
-		public static class Terrain {
-			/** Default size of terrain circle */
-			public final static float DEFAULT_CIRCLE_RADIUS = 2.0f;
-		}
-		/**
-		 * Pickups
-		 */
-		public static class Pickup {
-			/** Default radius for the pickups */
-			public final static float RADIUS = 1f;
-		}
-		/**
-		 * Enemies
-		 */
-		public static class Enemy {
-			/** How close the enemy should be to a path point before it goes to the next */
-			public final static float PATH_NODE_CLOSE_SQ = 0.25f * 0.25f;
-		}
 	}
 
 	/**
