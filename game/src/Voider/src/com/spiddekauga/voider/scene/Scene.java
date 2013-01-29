@@ -31,6 +31,7 @@ public abstract class Scene extends InputAdapter {
 		mStage.addActor(mGui);
 		mGui.setKeepSize(true);
 		mGui.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		mGui.setName("GUI");
 	}
 
 	/**

@@ -168,6 +168,10 @@ public class EnemyEditor extends WorldScene {
 		mMovementTable.setCellPaddingDefault(2, 2, 2, 2);
 		mWeaponTable.setRowAlign(Horizontal.LEFT, Vertical.MIDDLE);
 		mWeaponTable.setCellPaddingDefault(2, 2, 2, 2);
+		mAiTable.setRowAlign(Horizontal.LEFT, Vertical.MIDDLE);
+		mAiTable.setCellPaddingDefault(2, 2, 2, 2);
+		mPathTable.setRowAlign(Horizontal.LEFT, Vertical.MIDDLE);
+		mPathTable.setCellPaddingDefault(2, 2, 2, 2);
 
 
 		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
@@ -222,7 +226,6 @@ public class EnemyEditor extends WorldScene {
 		// Movement
 		Row row = mGui.row();
 		row.setAlign(Horizontal.CENTER, Vertical.BOTTOM);
-		row.setScalable(false);
 		ButtonGroup buttonGroup = new ButtonGroup();
 		button = new TextButton("Movement", textToogleStyle);
 		new CheckedListener(button) {
@@ -253,73 +256,6 @@ public class EnemyEditor extends WorldScene {
 		mGui.add(mTypeTable);
 
 
-		// MOVEMENT
-		// Movement Speed
-		row = mMovementTable.row();
-		row.setScalable(false);
-		Label label = new Label("Movement speed", labelStyle);
-		mMovementTable.add(label);
-		row = mMovementTable.row();
-		row.setScalable(false);
-		Slider slider = new Slider(Config.Editor.Enemy.MOVE_SPEED_MIN, Config.Editor.Enemy.MOVE_SPEED_MAX, Config.Editor.Enemy.MOVE_SPEED_STEP_SIZE, false, sliderStyle);
-		mMovementTable.add(slider);
-		TextField textField = new TextField("", textFieldStyle);
-		textField.setWidth(Config.Editor.Enemy.TEXT_FIELD_NUMBER_WIDTH);
-		mMovementTable.add(textField);
-		new SliderListener(slider, textField) {
-			@Override
-			public void onChange(float newValue) {
-				mDef.setSpeed(newValue);
-				mEnemyActor.setSpeed(newValue);
-				mEnemyPathBackAndForth.setSpeed(newValue);
-				mEnemyPathLoop.setSpeed(newValue);
-				mEnemyPathOnce.setSpeed(newValue);
-			}
-		};
-		slider.setValue(Config.Editor.Enemy.MOVE_SPEED_DEFAULT);
-
-		// Turning
-		row = mMovementTable.row();
-		row.setScalable(false);
-		button = new TextButton("On", textToogleStyle);
-		button.setChecked(false);
-		mMovementTable.add(button);
-		DisableListener disableListener = new DisableListener(button) {
-			@Override
-			public void onChange(boolean disabled) {
-				if (mButton instanceof TextButton) {
-					if (disabled) {
-						((TextButton)mButton).setText("Off");
-					} else {
-						((TextButton)mButton).setText("On");
-					}
-					mDef.setTurn(!disabled);
-					mEnemyActor.resetPathMovement();
-					mEnemyPathBackAndForth.resetPathMovement();
-					mEnemyPathLoop.resetPathMovement();
-					mEnemyPathOnce.resetPathMovement();
-				}
-			}
-		};
-		label = new Label("Turning speed", labelStyle);
-		mMovementTable.add(label);
-		row = mMovementTable.row();
-		row.setScalable(false);
-		slider = new Slider(Config.Editor.Enemy.TURN_SPEED_MIN, Config.Editor.Enemy.TURN_SPEED_MAX, Config.Editor.Enemy.TURN_SPEED_STEP_SIZE, false, sliderStyle);
-		mMovementTable.add(slider);
-		disableListener.addToggleActor(slider);
-		textField = new TextField("", textFieldStyle);
-		textField.setWidth(Config.Editor.Enemy.TEXT_FIELD_NUMBER_WIDTH);
-		mMovementTable.add(textField);
-		disableListener.addToggleActor(textField);
-		new SliderListener(slider, textField) {
-			@Override
-			public void onChange(float newValue) {
-				mDef.setTurnSpeed(newValue);
-			}
-		};
-		slider.setValue(Config.Editor.Enemy.TURN_SPEED_DEFAULT);
-
 		// Type of movement?
 		MovementTypes movementType = mDef.getMovementType();
 		mDef.setMovementType(null);
@@ -333,7 +269,7 @@ public class EnemyEditor extends WorldScene {
 			@Override
 			public boolean handle(Event event) {
 				if (isButtonChecked(event) && mDef.getMovementType() != MovementTypes.PATH) {
-					addInnerTable(null, mMovementTypeTable);
+					addInnerTable(mPathTable, mMovementTypeTable);
 					mStage.addActor(mPathLabels);
 					mDef.setMovementType(MovementTypes.PATH);
 					mEnemyActor.destroyBody();
@@ -375,7 +311,10 @@ public class EnemyEditor extends WorldScene {
 			@Override
 			public boolean handle(Event event) {
 				if (isButtonChecked(event) && mDef.getMovementType() != MovementTypes.AI) {
-					addInnerTable(mAiTable, mMovementTypeTable);
+					addInnerTable(mPathTable, mMovementTypeTable);
+					mMovementTypeTable.row();
+					mMovementTypeTable.add(mAiTable);
+					mAiTable.invalidate();
 					mDef.setMovementType(MovementTypes.AI);
 					clearExamplePaths();
 					createEnemyBody();
@@ -389,7 +328,75 @@ public class EnemyEditor extends WorldScene {
 		mMovementTable.row();
 		mMovementTable.add(mMovementTypeTable);
 
-		// Labels for movement
+
+		// MOVEMENT path/AI
+		// Movement Speed
+		row = mMovementTable.row();
+		row.setScalable(false);
+		Label label = new Label("Movement speed", labelStyle);
+		mPathTable.add(label);
+		row = mPathTable.row();
+		row.setScalable(false);
+		Slider slider = new Slider(Config.Editor.Enemy.MOVE_SPEED_MIN, Config.Editor.Enemy.MOVE_SPEED_MAX, Config.Editor.Enemy.MOVE_SPEED_STEP_SIZE, false, sliderStyle);
+		mPathTable.add(slider);
+		TextField textField = new TextField("", textFieldStyle);
+		textField.setWidth(Config.Editor.Enemy.TEXT_FIELD_NUMBER_WIDTH);
+		mPathTable.add(textField);
+		new SliderListener(slider, textField) {
+			@Override
+			public void onChange(float newValue) {
+				mDef.setSpeed(newValue);
+				mEnemyActor.setSpeed(newValue);
+				mEnemyPathBackAndForth.setSpeed(newValue);
+				mEnemyPathLoop.setSpeed(newValue);
+				mEnemyPathOnce.setSpeed(newValue);
+			}
+		};
+		slider.setValue(Config.Editor.Enemy.MOVE_SPEED_DEFAULT);
+
+		// Turning
+		row = mPathTable.row();
+		row.setScalable(false);
+		button = new TextButton("On", textToogleStyle);
+		button.setChecked(false);
+		mPathTable.add(button);
+		DisableListener disableListener = new DisableListener(button) {
+			@Override
+			public void onChange(boolean disabled) {
+				if (mButton instanceof TextButton) {
+					if (disabled) {
+						((TextButton)mButton).setText("Off");
+					} else {
+						((TextButton)mButton).setText("On");
+					}
+					mDef.setTurn(!disabled);
+					mEnemyActor.resetPathMovement();
+					mEnemyPathBackAndForth.resetPathMovement();
+					mEnemyPathLoop.resetPathMovement();
+					mEnemyPathOnce.resetPathMovement();
+				}
+			}
+		};
+		label = new Label("Turning speed", labelStyle);
+		mPathTable.add(label);
+		row = mPathTable.row();
+		row.setScalable(false);
+		slider = new Slider(Config.Editor.Enemy.TURN_SPEED_MIN, Config.Editor.Enemy.TURN_SPEED_MAX, Config.Editor.Enemy.TURN_SPEED_STEP_SIZE, false, sliderStyle);
+		mPathTable.add(slider);
+		disableListener.addToggleActor(slider);
+		textField = new TextField("", textFieldStyle);
+		textField.setWidth(Config.Editor.Enemy.TEXT_FIELD_NUMBER_WIDTH);
+		mPathTable.add(textField);
+		disableListener.addToggleActor(textField);
+		new SliderListener(slider, textField) {
+			@Override
+			public void onChange(float newValue) {
+				mDef.setTurnSpeed(newValue);
+			}
+		};
+		slider.setValue(Config.Editor.Enemy.TURN_SPEED_DEFAULT);
+
+		// Labels for path movement
 		label = new Label("Back and Forth", labelStyle);
 		Table wrapTable = new Table();
 		wrapTable.add(label);
@@ -407,6 +414,9 @@ public class EnemyEditor extends WorldScene {
 		wrapTable.add(label);
 		mPathLabels.add(wrapTable);
 		mPathLabels.row();
+
+
+		// Movement AI
 
 
 		scalePathLabels();
@@ -428,6 +438,7 @@ public class EnemyEditor extends WorldScene {
 
 		if (innerTable != null) {
 			outerTable.add(innerTable);
+			innerTable.invalidateHierarchy();
 		}
 
 		outerTable.invalidateHierarchy();
@@ -622,6 +633,8 @@ public class EnemyEditor extends WorldScene {
 	private AlignTable mMovementTypeTable = new AlignTable();
 	/** Table for path lables, these are added directly to the stage */
 	private Table mPathLabels = new Table();
+	/** Table for Path movement */
+	private AlignTable mPathTable = new AlignTable();
 	/** Table for AI movement */
 	private AlignTable mAiTable = new AlignTable();
 }

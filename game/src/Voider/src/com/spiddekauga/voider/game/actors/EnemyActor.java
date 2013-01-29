@@ -134,51 +134,57 @@ public class EnemyActor extends Actor {
 			toTarget.set(mPath.getNodeAt(mPathIndexNext)).sub(getPosition());
 
 			// Calculate angle between the vectors
-			boolean clockwise = false;
+			boolean counterClockwise = false;
 			float velocityAngle = velocity.angle();
 			if (velocityAngle > 180) {
-				clockwise = !clockwise;
+				counterClockwise = !counterClockwise;
 				velocityAngle -= 180;
 			}
 			float toTargetAngle = toTarget.angle();
 			if (toTargetAngle > 180) {
-				clockwise = !clockwise;
+				counterClockwise = !counterClockwise;
 				toTargetAngle -= 180;
 			}
 
 			float diffAngle = velocityAngle - toTargetAngle;
 			if (diffAngle >= Config.Actor.Enemy.TURN_ANGLE_MIN || diffAngle <= -Config.Actor.Enemy.TURN_ANGLE_MIN) {
 				if (diffAngle < 0) {
-					clockwise = !clockwise;
+					counterClockwise = !counterClockwise;
 				}
+
+				float angleBefore = velocity.angle();
+				float angleAfter = 0;
 
 				float rotation = getDef(EnemyActorDef.class).getTurnSpeed() * deltaTime * getDef(EnemyActorDef.class).getSpeed();
-				if (!clockwise) {
+				if (!counterClockwise) {
 					rotation = -rotation;
 				}
-				boolean angleWrapped = velocity.angle() + rotation > 360 || velocity.angle() + rotation < 0;
+				if (velocity.angle() + rotation > 360) {
+					angleAfter += 360;
+				} else if (velocity.angle() + rotation < 0) {
+					angleAfter -= 360;
+				}
 				velocity.rotate(rotation);
+				angleAfter += velocity.angle();
 
 				// Check if we turned too much?
-				float newVelocityAngle = velocity.angle();
-				if (newVelocityAngle > 180) {
-					newVelocityAngle -= 180;
-				}
-				float newDiffAngle = newVelocityAngle - toTargetAngle;
 				boolean turnedTooMuch = false;
-				if (angleWrapped) {
-					if ((diffAngle > 0 && newDiffAngle > 0) || (diffAngle < 0 && newDiffAngle < 0)) {
+				// If toTarget angle is between the before and after velocity angles
+				// We have turned too much
+				if (counterClockwise) {
+					if (angleBefore < toTarget.angle() && toTarget.angle() < angleAfter) {
 						turnedTooMuch = true;
 					}
 				} else {
-					if ((diffAngle > 0 && newDiffAngle < 0) || (diffAngle < 0 && newDiffAngle > 0)) {
+					if (angleBefore > toTarget.angle() && toTarget.angle() > angleAfter) {
 						turnedTooMuch = true;
 					}
 				}
 
+
 				if (turnedTooMuch) {
-					//					velocity.set(toTarget);
-					//					velocity.nor().mul(getDef(EnemyActorDef.class).getSpeed());
+					velocity.set(toTarget);
+					velocity.nor().mul(getDef(EnemyActorDef.class).getSpeed());
 				}
 
 				getBody().setLinearVelocity(velocity);

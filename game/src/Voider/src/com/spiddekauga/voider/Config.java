@@ -55,7 +55,7 @@ public class Config {
 		 */
 		public static class Enemy {
 			/** How close the enemy should be to a path point before it goes to the next */
-			public final static float PATH_NODE_CLOSE_SQ = 0.25f * 0.25f;
+			public final static float PATH_NODE_CLOSE_SQ = 0.5f * 0.5f;
 			/** Minimum angle if we shall turn */
 			public final static float TURN_ANGLE_MIN = 0.1f;
 		}
@@ -129,15 +129,15 @@ public class Config {
 			/** Minimum speed of enemies */
 			public final static float MOVE_SPEED_MIN = 0.5f;
 			/** Maximum speed of enemies */
-			public final static float MOVE_SPEED_MAX = 30;
+			public final static float MOVE_SPEED_MAX = 40;
 			/** Default movement speed */
 			public final static float MOVE_SPEED_DEFAULT = 10;
 			/** Step size for movement speed slider */
 			public final static float MOVE_SPEED_STEP_SIZE = 0.1f;
 			/** Minimum turning speed */
-			public final static float TURN_SPEED_MIN = 10;
+			public final static float TURN_SPEED_MIN = 5;
 			/** Maximum turning speed */
-			public final static float TURN_SPEED_MAX = 100;
+			public final static float TURN_SPEED_MAX = 50;
 			/** Default turning speed */
 			public final static float TURN_SPEED_DEFAULT = 20;
 			/** Step size for turning speed slider */

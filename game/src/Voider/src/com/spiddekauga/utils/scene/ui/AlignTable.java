@@ -294,7 +294,7 @@ public class AlignTable extends WidgetGroup implements Disposable {
 
 		// Layout the rows
 		Vector2 size = Pools.obtain(Vector2.class);
-		size.x = getWidth() < getPrefWidth() ? getWidth() : getPrefWidth();
+		size.x = rowWidth < getPrefWidth() ? rowWidth : getPrefWidth();
 		for (int i = mRows.size() - 1; i >= 0; --i) {
 			Row row = mRows.get(i);
 			size.y = row.getHeight();
@@ -323,6 +323,10 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	public void clear() {
 		super.clear();
 		mRows.clear();
+
+		mScaleX = 1;
+		mScaleY = 1;
+		invalidate();
 	}
 
 	/**
