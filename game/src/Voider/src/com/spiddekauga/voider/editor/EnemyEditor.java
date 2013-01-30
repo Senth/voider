@@ -4,6 +4,12 @@ import java.lang.reflect.Field;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.QueryCallback;
+import com.badlogic.gdx.physics.box2d.joints.MouseJoint;
+import com.badlogic.gdx.physics.box2d.joints.MouseJointDef;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
@@ -56,10 +62,8 @@ public class EnemyEditor extends WorldScene {
 	 */
 	public EnemyEditor() {
 		mPlayerActor = new PlayerActor();
-		Vector2 playerPosition = Pools.obtain(Vector2.class);
-		screenToWorldCoord(mCamera, Gdx.graphics.getWidth() * 0.1f, Gdx.graphics.getHeight() * 0.5f, playerPosition, true);
-		mPlayerActor.setPosition(playerPosition);
 		mPlayerActor.createBody();
+		resetPlayerPosition();
 		setEnemyDef();
 		createExamplePaths();
 
@@ -71,6 +75,16 @@ public class EnemyEditor extends WorldScene {
 		}
 
 		createBorder();
+
+
+		// Create mouse joint
+		BodyDef bodyDef = new BodyDef();
+		mMouseBody = mWorld.createBody(bodyDef);
+		mMouseJointDef.frequencyHz = Config.Game.MouseJoint.FREQUENCY;
+		mMouseJointDef.bodyA = mMouseBody;
+		mMouseJointDef.bodyB = mPlayerActor.getBody(); // TODO REMOVE, set in onActivate instead
+		mMouseJointDef.collideConnected = true;
+		mMouseJointDef.maxForce = Config.Game.MouseJoint.FORCE_MAX;
 	}
 
 	@Override
@@ -162,6 +176,85 @@ public class EnemyEditor extends WorldScene {
 			Gdx.app.error("EnemyEditor", "UndefinedResourceTypeException: " + e);
 		}
 	}
+
+	// --------------------------------
+	//		INPUT EVENTS (not gui)
+	// --------------------------------
+	@Override
+	public boolean touchDown(int x, int y, int pointer, int button) {
+		// Test if touching player
+		if (mPlayerPointer == INVALID_POINTER) {
+			screenToWorldCoord(mCamera, x, y, mCursorWorld, true);
+
+			mWorld.QueryAABB(mCallback, mCursorWorld.x - 0.0001f, mCursorWorld.y - 0.0001f, mCursorWorld.x + 0.0001f, mCursorWorld.y + 0.0001f);
+
+			if (mMovingPlayer) {
+				mPlayerPointer = pointer;
+
+				mMouseJointDef.target.set(mPlayerActor.getBody().getPosition());
+				mMouseJoint = (MouseJoint) mWorld.createJoint(mMouseJointDef);
+				mMouseJoint.setTarget(mCursorWorld);
+				mPlayerActor.getBody().setAwake(true);
+
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	@Override
+	public boolean touchDragged(int x, int y, int pointer) {
+		if (mPlayerPointer == pointer && mMovingPlayer) {
+			screenToWorldCoord(mCamera, x, y, mCursorWorld, true);
+			mMouseJoint.setTarget(mCursorWorld);
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public boolean touchUp(int x, int y, int pointer, int button) {
+		if (mPlayerPointer == pointer && mMovingPlayer) {
+			mPlayerPointer = INVALID_POINTER;
+			mMovingPlayer = false;
+
+			mWorld.destroyJoint(mMouseJoint);
+			mMouseJoint = null;
+
+			return true;
+		}
+
+		return false;
+	}
+
+	/** Invalid pointer id */
+	private static final int INVALID_POINTER = -1;
+	/** Current pointer that moves the player */
+	private int mPlayerPointer = INVALID_POINTER;
+	/** If we're currently moving the player */
+	private boolean mMovingPlayer = false;
+	/** Mouse joint definition */
+	private MouseJointDef mMouseJointDef = new MouseJointDef();
+	/** Mouse joint for player */
+	private MouseJoint mMouseJoint = null;
+	/** Body of the mouse, for mouse joint */
+	private Body mMouseBody = null;
+	/** Callback for "ray testing" */
+	private QueryCallback mCallback = new QueryCallback() {
+		@Override
+		public boolean reportFixture(Fixture fixture) {
+			if (fixture.testPoint(mCursorWorld.x, mCursorWorld.y)) {
+				if (fixture.getBody().getUserData() instanceof PlayerActor) {
+					mMovingPlayer = true;
+					return false;
+				}
+			}
+			return true;
+		}
+	};
+	/** World coordinate for the cursor */
+	private Vector2 mCursorWorld = new Vector2();
 
 	/**
 	 * Initializes the GUI
@@ -280,6 +373,7 @@ public class EnemyEditor extends WorldScene {
 					mDef.setMovementType(MovementTypes.PATH);
 					mEnemyActor.destroyBody();
 					createPathBodies();
+					resetPlayerPosition();
 				}
 
 				return true;
@@ -300,7 +394,9 @@ public class EnemyEditor extends WorldScene {
 					addInnerTable(null, mMovementTypeTable);
 					mDef.setMovementType(MovementTypes.STATIONARY);
 					clearExamplePaths();
-					createEnemyBody();
+					mEnemyActor.destroyBody();
+					createEnemyActor();
+					resetPlayerPosition();
 				}
 				return true;
 			}
@@ -323,7 +419,9 @@ public class EnemyEditor extends WorldScene {
 					mAiTable.invalidate();
 					mDef.setMovementType(MovementTypes.AI);
 					clearExamplePaths();
-					createEnemyBody();
+					mEnemyActor.destroyBody();
+					createEnemyActor();
+					resetPlayerPosition();
 				}
 				return true;
 			}
@@ -647,12 +745,21 @@ public class EnemyEditor extends WorldScene {
 	}
 
 	/**
-	 * Create enemy test body (for AI and STATIONARY)
+	 * Creates the enemy actor and resets its position
 	 */
-	private void createEnemyBody() {
-		if (mEnemyActor.getBody() == null) {
-			mEnemyActor.createBody();
-		}
+	private void createEnemyActor() {
+		mEnemyActor.setPosition(0, 0);
+		mEnemyActor.createBody();
+	}
+
+	/**
+	 * Resets the player position
+	 */
+	private void resetPlayerPosition() {
+		Vector2 playerPosition = Pools.obtain(Vector2.class);
+		screenToWorldCoord(mCamera, Gdx.graphics.getWidth() * 0.1f, Gdx.graphics.getHeight() * 0.5f, playerPosition, true);
+		mPlayerActor.setPosition(playerPosition);
+		mPlayerActor.getBody().setLinearVelocity(0, 0);
 	}
 
 	/** Current enemy actor */

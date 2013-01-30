@@ -206,6 +206,7 @@ public class Path implements IResource, Json.Serializable, Disposable {
 			if (mFixtureDef == null) {
 				mFixtureDef = new FixtureDef();
 				mFixtureDef.filter.categoryBits = FixtureFilterCategories.NONE;
+				mFixtureDef.filter.groupIndex = FixtureFilterCategories.NONE;
 			} else {
 				if (mFixtureDef.shape != null) {
 					mFixtureDef.shape.dispose();

@@ -3,6 +3,8 @@ package com.spiddekauga.voider.game.actors;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.utils.OrderedMap;
+import com.spiddekauga.utils.Json;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.ActorDef;
 
@@ -68,6 +70,7 @@ public class EnemyActorDef extends ActorDef {
 	 */
 	public void setPlayerDistanceMin(float minDistance) {
 		mPlayerDistanceMin = minDistance;
+		mPlayerDistanceMinSq = mPlayerDistanceMin * mPlayerDistanceMin;
 	}
 
 	/**
@@ -78,12 +81,21 @@ public class EnemyActorDef extends ActorDef {
 	}
 
 	/**
+	 * @return Squared version of minimum distance from the player.
+	 * This has been pre-calculated.
+	 */
+	public float getPlayerDistanceMinSq() {
+		return mPlayerDistanceMinSq;
+	}
+
+	/**
 	 * Sets the maximum distance from the player the enemy shall have.
 	 * Only applicable if the enemy movement is set to AI
 	 * @param maxDistance the maximum distance from the player
 	 */
 	public void setPlayerDistanceMax(float maxDistance) {
 		mPlayerDistanceMax = maxDistance;
+		mPlayerDistanceMaxSq = mPlayerDistanceMax * mPlayerDistanceMax;
 	}
 
 	/**
@@ -91,6 +103,14 @@ public class EnemyActorDef extends ActorDef {
 	 */
 	public float getPlayerDistanceMax() {
 		return mPlayerDistanceMax;
+	}
+
+	/**
+	 * @return Squared version of maximum distance from the player.
+	 * This has been pre-calculated.
+	 */
+	public float getPlayerDistanceMaxSq() {
+		return mPlayerDistanceMaxSq;
 	}
 
 	/**
@@ -121,6 +141,24 @@ public class EnemyActorDef extends ActorDef {
 	 */
 	public boolean isTurning() {
 		return !getBodyDef().fixedRotation;
+	}
+
+	@Override
+	public void write(Json json) {
+		json.writeObjectStart("ActorDef");
+		super.write(json);
+		json.writeObjectEnd();
+
+		/** @TODO write object */
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public void read(Json json, OrderedMap<String, Object> jsonData) {
+		OrderedMap<String, Object> superMap = json.readValue("ActorDef", OrderedMap.class, jsonData);
+		super.read(json, superMap);
+
+		/** @TODO read object */
 	}
 
 	/**
@@ -160,6 +198,10 @@ public class EnemyActorDef extends ActorDef {
 	private float mTurnSpeed = Config.Editor.Enemy.TURN_SPEED_DEFAULT;
 	/** Minimum distance from the player */
 	private float mPlayerDistanceMin = Config.Editor.Enemy.AI_DISTANCE_MIN_DEFAULT;
+	/** Minimum distance from player, squared */
+	private float mPlayerDistanceMinSq = mPlayerDistanceMin * mPlayerDistanceMin;
 	/** Maximum distance from the player */
 	private float mPlayerDistanceMax = Config.Editor.Enemy.AI_DISTANCE_MAX_DEFAULT;
+	/** Maximum distance from the player, squared */
+	private float mPlayerDistanceMaxSq = mPlayerDistanceMax * mPlayerDistanceMax;
 }
