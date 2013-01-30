@@ -8,10 +8,6 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.scenes.scene2d.Event;
-import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
-import com.spiddekauga.utils.scene.ui.AlignTable;
 
 /**
  * Base class for all scenes that should be rendered. Examples of scenes:
@@ -22,16 +18,13 @@ import com.spiddekauga.utils.scene.ui.AlignTable;
  */
 public abstract class Scene extends InputAdapter {
 	/**
-	 * Default constructor. Creates the input multiplexer. UI always has
-	 * priority over everything else.
+	 * Creates the input multiplexer. UI always has priority over everything else.
+	 * @param gui the GUI to use for the scene
 	 */
-	public Scene() {
-		mInputMultiplexer.addProcessor(0, mStage);
+	public Scene(Gui gui) {
+		mGui = gui;
+		mInputMultiplexer.addProcessor(0, mGui.getStage());
 		mInputMultiplexer.addProcessor(1, this);
-		mStage.addActor(mGui);
-		mGui.setKeepSize(true);
-		mGui.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		mGui.setName("GUI");
 	}
 
 	/**
@@ -52,8 +45,7 @@ public abstract class Scene extends InputAdapter {
 	 * @param height new height of the window
 	 */
 	public void onResize(int width, int height) {
-		mStage.setViewport(width, height, true);
-		mGui.setSize(width, height);
+		mGui.resize(width, height);
 	}
 
 	/**
@@ -143,8 +135,7 @@ public abstract class Scene extends InputAdapter {
 	 * Renders the scene
 	 */
 	public void render() {
-		mStage.act(Gdx.graphics.getDeltaTime());
-		mStage.draw();
+		mGui.render();
 	}
 
 	/**
@@ -227,48 +218,6 @@ public abstract class Scene extends InputAdapter {
 	}
 
 	/**
-	 * Checks if a button is checked (from the event).
-	 * @param event checks if the target inside the event is a button and it's checked
-	 * @return checked button. If the target isn't a button or the button isn't checked
-	 * it returns null.
-	 */
-	protected static Button getCheckedButton(Event event) {
-		if (event.getTarget() instanceof Button) {
-			Button button  = (Button)event.getTarget();
-			if (button.isChecked()) {
-				return button;
-			}
-		}
-		return null;
-	}
-
-	/**
-	 * Checks if a button is checked
-	 * @param event checks if the target inside the event is a button and it's checked
-	 * @return true if the button is checked, false if the target isn't a button or the
-	 * button isn't checked.
-	 */
-	protected static boolean isButtonChecked(Event event) {
-		if (event.getTarget() instanceof Button) {
-			return ((Button)event.getTarget()).isChecked();
-		}
-		return false;
-	}
-
-	/**
-	 * Checks if a button is pressed
-	 * @param event checks if the target inside the event is a button and it's pressed
-	 * @return true if the button is pressed, false if the target isn't a button or the
-	 * button isn't checked.
-	 */
-	protected static boolean isButtonPressed(Event event) {
-		if (event.getTarget() instanceof Button) {
-			return ((Button)event.getTarget()).isPressed();
-		}
-		return false;
-	}
-
-	/**
 	 * Clamps the X-coordinate of a pointer to the screen, i.e. if it's out of
 	 * screen it will be clamped to the screen
 	 * @param x the x value to clamp
@@ -330,14 +279,12 @@ public abstract class Scene extends InputAdapter {
 		worldCoordinate.y = mTestPoint.y;
 	}
 
-	/** GUI table */
-	protected AlignTable mGui = new AlignTable();
 	/** Sprite Batch used for rendering stuff */
 	protected SpriteBatch mSpriteBatch = new SpriteBatch();
 	/** Input multiplexer */
 	protected InputMultiplexer mInputMultiplexer = new InputMultiplexer();
-	/** Handles user interfaces for the scene */
-	protected Stage mStage = new Stage();
+	/** GUI for the scene */
+	protected Gui mGui = null;
 
 	/** Outcome of scene, this is set when a derived class calls setOutcome */
 	private Outcomes mOutcome = null;

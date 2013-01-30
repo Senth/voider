@@ -26,9 +26,10 @@ import com.spiddekauga.voider.game.actors.FixtureFilterCategories;
  */
 public abstract class WorldScene extends Scene {
 	/**
-	 * Default constructor
+	 * @param gui the GUI to use for the scene
 	 */
-	public WorldScene() {
+	public WorldScene(Gui gui) {
+		super(gui);
 		mWorld = new World(new Vector2(), true);
 		fixCamera();
 		Actor.setWorld(mWorld);

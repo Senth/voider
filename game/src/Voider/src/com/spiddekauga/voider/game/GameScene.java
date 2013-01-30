@@ -25,6 +25,7 @@ public class GameScene extends WorldScene {
 	 * scoring).
 	 */
 	public GameScene(boolean testing) {
+		super(null);
 		mTesting = testing;
 
 		Actor.setEditorActive(false);

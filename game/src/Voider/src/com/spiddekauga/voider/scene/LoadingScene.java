@@ -11,6 +11,13 @@ import com.spiddekauga.voider.resources.UndefinedResourceTypeException;
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
 public abstract class LoadingScene extends Scene {
+	/**
+	 * Constructor which takes the GUI object
+	 * @param gui the gui this loading scene is bound to.
+	 */
+	public LoadingScene(Gui gui){
+		super(gui);
+	}
 
 	@Override
 	public void update() {
@@ -25,9 +32,6 @@ public abstract class LoadingScene extends Scene {
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see com.spiddekauga.voider.Scene#hasResources()
-	 */
 	@Override
 	public final boolean hasResources() {
 		return false;

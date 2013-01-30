@@ -66,6 +66,7 @@ public class LevelEditor extends WorldScene implements EventListener {
 	 * Constructor for the level editor
 	 */
 	public LevelEditor() {
+		super(null);
 		Actor.setEditorActive(true);
 
 		mScroller = new Scroller(50, 2000, 10, 200, ScrollAxis.X);
@@ -536,26 +537,19 @@ public class LevelEditor extends WorldScene implements EventListener {
 	 * @param tool the new tool type
 	 */
 	private void switchTool(Tool selectedTool, Tools tool) {
-		// Set current tool
-		mTool = tool;
-		mToolCurrent = selectedTool;
-
-
-		// Clear GUI table and re-add the correct GUI
-		mGui.clear();
-		AlignTable toolGui = mToolCurrent.getGui();
-		if (toolGui != null) {
-			mGui.add(toolGui);
-		}
-		mGui.add(mToolTable);
-		mGui.invalidate();
-
-		//		// Pad first time
+		//		// Set current tool
+		//		mTool = tool;
+		//		mToolCurrent = selectedTool;
+		//
+		//
+		//		// Clear GUI table and re-add the correct GUI
+		//		mMainTable.clear();
+		//		AlignTable toolGui = mToolCurrent.getGui();
 		//		if (toolGui != null) {
-		//			if (toolGui.getPadBottom() == 0f) {
-		//				toolGui.padBottom(mToolTable.getPrefHeight() - toolGui.getPrefHeight());
-		//			}
+		//			mMainTable.add(toolGui);
 		//		}
+		//		mMainTable.add(mToolTable);
+		//		mMainTable.invalidate();
 	}
 
 
@@ -563,69 +557,69 @@ public class LevelEditor extends WorldScene implements EventListener {
 	 * Initializes all the buttons for the GUI
 	 */
 	private void initGui() {
-		mGui.setTableAlign(Horizontal.RIGHT, Vertical.TOP);
-		mGui.setRowAlign(Horizontal.RIGHT, Vertical.TOP);
-
-		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
-
-		TextButtonStyle textToogleStyle = editorSkin.get("toggle", TextButtonStyle.class);
-		TextButtonStyle textStyle = editorSkin.get("default", TextButtonStyle.class);
-		ImageButtonStyle imageStyle = editorSkin.get(StaticTerrainTools.ADD.getStyleName(), ImageButtonStyle.class);
-
-		mToolTable = new AlignTable();
-		mToolTable.setRowAlign(Horizontal.RIGHT, Vertical.TOP);
-		ButtonGroup toggleGroup = new ButtonGroup();
-		Button button = new TextButton("Static Terrain", textToogleStyle);
-		button.setName(Tools.STATIC_TERRAIN.toString());
-		toggleGroup.add(button);
-		button.addListener(this);
-		mToolTable.add(button);
-		mToolTable.row();
-
-		button = new TextButton("Pickup", textToogleStyle);
-		button.setName(Tools.PICKUP.toString());
-		toggleGroup.add(button);
-		button.addListener(this);
-		mToolTable.add(button);
-		mToolTable.row();
-
-		button = new ImageButton(imageStyle);
-		mToolTable.add(button);
-		mToolTable.row();
-
-		button = new TextButton("SAVE", textStyle);
-		button.setName("save");
-		button.addListener(this);
-		mToolTable.add(button);
-		mToolTable.row();
-
-		button = new TextButton("LOAD", textStyle);
-		button.setName("load");
-		button.addListener(this);
-		mToolTable.add(button);
-		mToolTable.row();
-
-		button = new TextButton("NEW", textStyle);
-		button.setName("new");
-		button.addListener(this);
-		mToolTable.add(button);
-		mToolTable.row();
-
-		button = new TextButton("RUN", textStyle);
-		button.setName(Tools.RUN.toString());
-		button.addListener(this);
-		mToolTable.add(button);
-
-		mGui.add(mToolTable);
-		mGui.setTransform(true);
-
-
-		// Initialize all the tools' GUI
-		mStaticTerrainHandler.initGui();
-		mPickupTool.initGui();
-
-		switchTool(mStaticTerrainHandler, Tools.STATIC_TERRAIN);
-		mGui.invalidate();
+		//		mMainTable.setTableAlign(Horizontal.RIGHT, Vertical.TOP);
+		//		mMainTable.setRowAlign(Horizontal.RIGHT, Vertical.TOP);
+		//
+		//		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
+		//
+		//		TextButtonStyle textToogleStyle = editorSkin.get("toggle", TextButtonStyle.class);
+		//		TextButtonStyle textStyle = editorSkin.get("default", TextButtonStyle.class);
+		//		ImageButtonStyle imageStyle = editorSkin.get(StaticTerrainTools.ADD.getStyleName(), ImageButtonStyle.class);
+		//
+		//		mToolTable = new AlignTable();
+		//		mToolTable.setRowAlign(Horizontal.RIGHT, Vertical.TOP);
+		//		ButtonGroup toggleGroup = new ButtonGroup();
+		//		Button button = new TextButton("Static Terrain", textToogleStyle);
+		//		button.setName(Tools.STATIC_TERRAIN.toString());
+		//		toggleGroup.add(button);
+		//		button.addListener(this);
+		//		mToolTable.add(button);
+		//		mToolTable.row();
+		//
+		//		button = new TextButton("Pickup", textToogleStyle);
+		//		button.setName(Tools.PICKUP.toString());
+		//		toggleGroup.add(button);
+		//		button.addListener(this);
+		//		mToolTable.add(button);
+		//		mToolTable.row();
+		//
+		//		button = new ImageButton(imageStyle);
+		//		mToolTable.add(button);
+		//		mToolTable.row();
+		//
+		//		button = new TextButton("SAVE", textStyle);
+		//		button.setName("save");
+		//		button.addListener(this);
+		//		mToolTable.add(button);
+		//		mToolTable.row();
+		//
+		//		button = new TextButton("LOAD", textStyle);
+		//		button.setName("load");
+		//		button.addListener(this);
+		//		mToolTable.add(button);
+		//		mToolTable.row();
+		//
+		//		button = new TextButton("NEW", textStyle);
+		//		button.setName("new");
+		//		button.addListener(this);
+		//		mToolTable.add(button);
+		//		mToolTable.row();
+		//
+		//		button = new TextButton("RUN", textStyle);
+		//		button.setName(Tools.RUN.toString());
+		//		button.addListener(this);
+		//		mToolTable.add(button);
+		//
+		//		mMainTable.add(mToolTable);
+		//		mMainTable.setTransform(true);
+		//
+		//
+		//		// Initialize all the tools' GUI
+		//		mStaticTerrainHandler.initGui();
+		//		mPickupTool.initGui();
+		//
+		//		switchTool(mStaticTerrainHandler, Tools.STATIC_TERRAIN);
+		//		mMainTable.invalidate();
 	}
 
 	// -------------------------------------

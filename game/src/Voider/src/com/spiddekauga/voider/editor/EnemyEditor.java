@@ -10,45 +10,21 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.joints.MouseJoint;
 import com.badlogic.gdx.physics.box2d.joints.MouseJointDef;
-import com.badlogic.gdx.scenes.scene2d.Event;
-import com.badlogic.gdx.scenes.scene2d.EventListener;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
-import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
-import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
-import com.badlogic.gdx.scenes.scene2d.ui.CheckBox.CheckBoxStyle;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Slider;
-import com.badlogic.gdx.scenes.scene2d.ui.Slider.SliderStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
-import com.badlogic.gdx.scenes.scene2d.ui.TextField;
-import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
 import com.badlogic.gdx.utils.Pools;
 import com.badlogic.gdx.utils.SnapshotArray;
 import com.spiddekauga.utils.GameTime;
-import com.spiddekauga.utils.scene.ui.Align.Horizontal;
-import com.spiddekauga.utils.scene.ui.Align.Vertical;
-import com.spiddekauga.utils.scene.ui.AlignTable;
-import com.spiddekauga.utils.scene.ui.Cell;
-import com.spiddekauga.utils.scene.ui.CheckedListener;
-import com.spiddekauga.utils.scene.ui.DisableListener;
-import com.spiddekauga.utils.scene.ui.Row;
-import com.spiddekauga.utils.scene.ui.SliderListener;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.Actor;
 import com.spiddekauga.voider.game.Path;
 import com.spiddekauga.voider.game.Path.PathTypes;
 import com.spiddekauga.voider.game.actors.EnemyActor;
 import com.spiddekauga.voider.game.actors.EnemyActorDef;
-import com.spiddekauga.voider.game.actors.EnemyActorDef.MovementTypes;
 import com.spiddekauga.voider.game.actors.PlayerActor;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceNames;
-import com.spiddekauga.voider.resources.ResourceSaver;
 import com.spiddekauga.voider.resources.UndefinedResourceTypeException;
+import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.WorldScene;
 
 /**
@@ -61,11 +37,14 @@ public class EnemyEditor extends WorldScene {
 	 * Creates the enemy editor
 	 */
 	public EnemyEditor() {
+		super(new EnemyEditorGui());
 		mPlayerActor = new PlayerActor();
 		mPlayerActor.createBody();
 		resetPlayerPosition();
 		setEnemyDef();
 		createExamplePaths();
+
+		((EnemyEditorGui)mGui).init(mEnemyActor, mEnemyPathOnce, mEnemyPathLoop, mEnemyPathBackAndForth, mDef, this, mPathLabels);
 
 		try {
 			mfEnemyOnceReachEnd = EnemyActor.class.getDeclaredField("mPathOnceReachedEnd");
@@ -90,7 +69,7 @@ public class EnemyEditor extends WorldScene {
 	@Override
 	public void onActivate(Outcomes outcome, String message) {
 		if (outcome == Outcomes.LOADING_SUCCEEDED) {
-			initGui();
+			mGui.initGui();
 		}
 		Actor.setPlayerActor(mPlayerActor);
 	}
@@ -228,6 +207,86 @@ public class EnemyEditor extends WorldScene {
 		return false;
 	}
 
+	/**
+	 * Resets the player position
+	 */
+	void resetPlayerPosition() {
+		Vector2 playerPosition = Pools.obtain(Vector2.class);
+		Scene.screenToWorldCoord(mCamera, Gdx.graphics.getWidth() * 0.1f, Gdx.graphics.getHeight() * 0.5f, playerPosition, true);
+		mPlayerActor.setPosition(playerPosition);
+		mPlayerActor.getBody().setLinearVelocity(0, 0);
+	}
+
+	/**
+	 * Creates enemy bodies of the paths
+	 */
+	void createPathBodies() {
+		mPathOnce.setWorld(mWorld);
+		mPathLoop.setWorld(mWorld);
+		mPathBackAndForth.setWorld(mWorld);
+		mEnemyPathOnce.createBody();
+		mEnemyPathOnce.resetPathMovement();
+		mEnemyPathLoop.createBody();
+		mEnemyPathLoop.resetPathMovement();
+		mEnemyPathBackAndForth.createBody();
+		mEnemyPathBackAndForth.resetPathMovement();
+		mEnemyPathOnceOutOfBoundsTime = 0f;
+	}
+
+	/**
+	 * Clears all the example paths
+	 */
+	void clearExamplePaths() {
+		mPathOnce.setWorld(null);
+		mPathLoop.setWorld(null);
+		mPathBackAndForth.setWorld(null);
+		mEnemyPathOnce.destroyBody();
+		mEnemyPathLoop.destroyBody();
+		mEnemyPathBackAndForth.destroyBody();
+
+		// Clear GUI text
+		mGui.reset();
+	}
+
+	/**
+	 * Scale label for paths
+	 */
+	void scalePathLabels() {
+		float spaceBetween = Gdx.graphics.getHeight() * 0.1f;
+		float height = Gdx.graphics.getHeight() * 0.2f;
+		float initialOffset = spaceBetween + height * 0.5f + spaceBetween + height;
+
+		mPathLabels.setPosition(Gdx.graphics.getWidth() / 3f, initialOffset);
+
+
+		// Fix padding
+		SnapshotArray<com.badlogic.gdx.scenes.scene2d.Actor> actors = mPathLabels.getChildren();
+		// Reset padding first
+		for (int i = 0; i < actors.size - 1; ++i) {
+			if (actors.get(i) instanceof Table) {
+				Table table = (Table) actors.get(i);
+				table.padBottom(0);
+				table.invalidateHierarchy();
+			}
+		}
+
+		for (int i = 0; i < actors.size - 1; ++i) {
+			if (actors.get(i) instanceof Table) {
+				Table table = (Table) actors.get(i);
+				table.padBottom(spaceBetween + height - table.getPrefHeight());
+				table.invalidateHierarchy();
+			}
+		}
+	}
+
+	/**
+	 * Creates a new enemy
+	 */
+	void newEnemy() {
+		mDef = new EnemyActorDef();
+		setEnemyDef();
+	}
+
 	/** Invalid pointer id */
 	private static final int INVALID_POINTER = -1;
 	/** Current pointer that moves the player */
@@ -255,350 +314,6 @@ public class EnemyEditor extends WorldScene {
 	};
 	/** World coordinate for the cursor */
 	private Vector2 mCursorWorld = new Vector2();
-
-	/**
-	 * Initializes the GUI
-	 */
-	private void initGui() {
-		mGui.setTableAlign(Horizontal.RIGHT, Vertical.TOP);
-		mGui.setRowAlign(Horizontal.LEFT, Vertical.MIDDLE);
-		mGui.setCellPaddingDefault(2, 2, 2, 2);
-		mMovementTable.setRowAlign(Horizontal.LEFT, Vertical.MIDDLE);
-		mMovementTable.setCellPaddingDefault(2, 2, 2, 2);
-		mWeaponTable.setRowAlign(Horizontal.LEFT, Vertical.MIDDLE);
-		mWeaponTable.setCellPaddingDefault(2, 2, 2, 2);
-		mAiTable.setRowAlign(Horizontal.LEFT, Vertical.MIDDLE);
-		mAiTable.setCellPaddingDefault(2, 2, 2, 2);
-		mPathTable.setRowAlign(Horizontal.LEFT, Vertical.MIDDLE);
-		mPathTable.setCellPaddingDefault(2, 2, 2, 2);
-
-
-		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
-
-		TextButtonStyle textToogleStyle = editorSkin.get("toggle", TextButtonStyle.class);
-		TextButtonStyle textStyle = editorSkin.get("default", TextButtonStyle.class);
-		LabelStyle labelStyle = editorSkin.get("default", LabelStyle.class);
-		SliderStyle sliderStyle = editorSkin.get("default", SliderStyle.class);
-		TextFieldStyle textFieldStyle = editorSkin.get("default", TextFieldStyle.class);
-
-		// New Enemy
-		Button button = new TextButton("New Enemy", textStyle);
-		button.addListener(new EventListener() {
-			@Override
-			public boolean handle(Event event) {
-				if (isButtonPressed(event)) {
-					/** @TODO Check if player want to save old actor */
-
-					mDef = new EnemyActorDef();
-					setEnemyDef();
-				}
-				return true;
-			}
-		});
-		mGui.add(button);
-
-		// Save
-		button = new TextButton("Save", textStyle);
-		button.addListener(new EventListener() {
-			@Override
-			public boolean handle(Event event) {
-				if (isButtonPressed(event)) {
-					ResourceSaver.save(mDef);
-				}
-				return true;
-			}
-		});
-		mGui.add(button);
-
-		// Load
-		button = new TextButton("Load", textStyle);
-		/** @TODO load enemy actor, use browser */
-		mGui.add(button);
-
-		// Duplicate
-		button = new TextButton("Duplicate", textStyle);
-		/** @TODO duplicate enemy actor, use browser */
-		mGui.add(button);
-
-
-		// --- Type (Movement OR Weapons) ---
-		// Movement
-		Row row = mGui.row();
-		row.setAlign(Horizontal.CENTER, Vertical.BOTTOM);
-		ButtonGroup buttonGroup = new ButtonGroup();
-		button = new TextButton("Movement", textToogleStyle);
-		new CheckedListener(button) {
-			@Override
-			public void onChange(boolean checked) {
-				if (checked) {
-					addInnerTable(mMovementTable, mTypeTable);
-				}
-			}
-		};
-		buttonGroup.add(button);
-		mGui.add(button);
-
-		// Weapons
-		button = new TextButton("Weapons", textToogleStyle);
-		new CheckedListener(button) {
-			@Override
-			public void onChange(boolean checked) {
-				if (checked) {
-					addInnerTable(mWeaponTable, mTypeTable);
-				}
-			}
-		};
-		buttonGroup.add(button);
-		mGui.add(button);
-
-		mGui.row();
-		mGui.add(mTypeTable);
-
-
-		// Type of movement?
-		MovementTypes movementType = mDef.getMovementType();
-		mDef.setMovementType(null);
-		// Path
-		row = mMovementTable.row();
-		row.setScalable(false);
-		buttonGroup = new ButtonGroup();
-		CheckBoxStyle checkBoxStyle = editorSkin.get("default", CheckBoxStyle.class);
-		CheckBox checkBox = new CheckBox("Path", checkBoxStyle);
-		checkBox.addListener(new EventListener() {
-			@Override
-			public boolean handle(Event event) {
-				if (isButtonChecked(event) && mDef.getMovementType() != MovementTypes.PATH) {
-					addInnerTable(mPathTable, mMovementTypeTable);
-					mStage.addActor(mPathLabels);
-					mDef.setMovementType(MovementTypes.PATH);
-					mEnemyActor.destroyBody();
-					createPathBodies();
-					resetPlayerPosition();
-				}
-
-				return true;
-			}
-		});
-		buttonGroup.add(checkBox);
-		checkBox.setChecked(movementType == MovementTypes.PATH);
-		Cell cell = mMovementTable.add(checkBox);
-		cell.setPadRight(10);
-
-
-		// Stationary
-		checkBox = new CheckBox("Stationary", checkBoxStyle);
-		checkBox.addListener(new EventListener() {
-			@Override
-			public boolean handle(Event event) {
-				if (isButtonChecked(event) && mDef.getMovementType() != MovementTypes.STATIONARY) {
-					addInnerTable(null, mMovementTypeTable);
-					mDef.setMovementType(MovementTypes.STATIONARY);
-					clearExamplePaths();
-					mEnemyActor.destroyBody();
-					createEnemyActor();
-					resetPlayerPosition();
-				}
-				return true;
-			}
-		});
-		buttonGroup.add(checkBox);
-		checkBox.setChecked(movementType == MovementTypes.STATIONARY);
-		cell = mMovementTable.add(checkBox);
-		cell.setPadRight(10);
-
-
-		// AI
-		checkBox = new CheckBox("AI", checkBoxStyle);
-		checkBox.addListener(new EventListener() {
-			@Override
-			public boolean handle(Event event) {
-				if (isButtonChecked(event) && mDef.getMovementType() != MovementTypes.AI) {
-					addInnerTable(mPathTable, mMovementTypeTable);
-					mMovementTypeTable.row();
-					mMovementTypeTable.add(mAiTable);
-					mAiTable.invalidate();
-					mDef.setMovementType(MovementTypes.AI);
-					clearExamplePaths();
-					mEnemyActor.destroyBody();
-					createEnemyActor();
-					resetPlayerPosition();
-				}
-				return true;
-			}
-		});
-		buttonGroup.add(checkBox);
-		checkBox.setChecked(movementType == MovementTypes.AI);
-		mMovementTable.add(checkBox);
-		mMovementTable.row();
-		mMovementTable.add(mMovementTypeTable);
-
-
-		// --- MOVEMENT path/AI ---
-		// Movement Speed
-		row = mMovementTable.row();
-		row.setScalable(false);
-		Label label = new Label("Movement speed", labelStyle);
-		mPathTable.add(label);
-		row = mPathTable.row();
-		row.setScalable(false);
-		Slider slider = new Slider(Config.Editor.Enemy.MOVE_SPEED_MIN, Config.Editor.Enemy.MOVE_SPEED_MAX, Config.Editor.Enemy.MOVE_SPEED_STEP_SIZE, false, sliderStyle);
-		mPathTable.add(slider);
-		TextField textField = new TextField("", textFieldStyle);
-		textField.setWidth(Config.Editor.Enemy.TEXT_FIELD_NUMBER_WIDTH);
-		mPathTable.add(textField);
-		new SliderListener(slider, textField) {
-			@Override
-			public void onChange(float newValue) {
-				mDef.setSpeed(newValue);
-				mEnemyActor.setSpeed(newValue);
-				mEnemyPathBackAndForth.setSpeed(newValue);
-				mEnemyPathLoop.setSpeed(newValue);
-				mEnemyPathOnce.setSpeed(newValue);
-			}
-		};
-		slider.setValue(Config.Editor.Enemy.MOVE_SPEED_DEFAULT);
-
-		// Turning
-		row = mPathTable.row();
-		row.setScalable(false);
-		button = new TextButton("On", textToogleStyle);
-		button.setChecked(false);
-		mPathTable.add(button);
-		DisableListener disableListener = new DisableListener(button) {
-			@Override
-			public void onChange(boolean disabled) {
-				if (mButton instanceof TextButton) {
-					if (disabled) {
-						((TextButton)mButton).setText("Off");
-					} else {
-						((TextButton)mButton).setText("On");
-					}
-					mDef.setTurn(!disabled);
-					mEnemyActor.resetPathMovement();
-					mEnemyPathBackAndForth.resetPathMovement();
-					mEnemyPathLoop.resetPathMovement();
-					mEnemyPathOnce.resetPathMovement();
-				}
-			}
-		};
-		label = new Label("Turning speed", labelStyle);
-		mPathTable.add(label);
-		row = mPathTable.row();
-		row.setScalable(false);
-		slider = new Slider(Config.Editor.Enemy.TURN_SPEED_MIN, Config.Editor.Enemy.TURN_SPEED_MAX, Config.Editor.Enemy.TURN_SPEED_STEP_SIZE, false, sliderStyle);
-		mPathTable.add(slider);
-		disableListener.addToggleActor(slider);
-		textField = new TextField("", textFieldStyle);
-		textField.setWidth(Config.Editor.Enemy.TEXT_FIELD_NUMBER_WIDTH);
-		mPathTable.add(textField);
-		disableListener.addToggleActor(textField);
-		new SliderListener(slider, textField) {
-			@Override
-			public void onChange(float newValue) {
-				mDef.setTurnSpeed(newValue);
-			}
-		};
-		slider.setValue(Config.Editor.Enemy.TURN_SPEED_DEFAULT);
-
-		// Labels for path movement
-		label = new Label("Back and Forth", labelStyle);
-		Table wrapTable = new Table();
-		wrapTable.add(label);
-		mPathLabels.add(wrapTable);
-		mPathLabels.row();
-
-		label = new Label("Loop", labelStyle);
-		wrapTable = new Table();
-		wrapTable.add(label);
-		mPathLabels.add(wrapTable);
-		mPathLabels.row();
-
-		label = new Label("Once", labelStyle);
-		wrapTable = new Table();
-		wrapTable.add(label);
-		mPathLabels.add(wrapTable);
-		mPathLabels.row();
-
-
-		// --- Movement AI ---
-		mAiTable.setScalable(false);
-		mAiTable.row();
-		label = new Label("Minimum distance", labelStyle);
-		mAiTable.add(label);
-		mAiTable.row();
-		Slider sliderMin = new Slider(Config.Editor.Enemy.AI_DISTANCE_MIN, Config.Editor.Enemy.AI_DISTANCE_MAX, Config.Editor.Enemy.AI_DISTANCE_STEP_SIZE, false, sliderStyle);
-		sliderMin.setValue(Config.Editor.Enemy.AI_DISTANCE_MIN_DEFAULT);
-		mAiTable.add(sliderMin);
-		textField = new TextField("", textFieldStyle);
-		textField.setWidth(Config.Editor.Enemy.TEXT_FIELD_NUMBER_WIDTH);
-		mAiTable.add(textField);
-		SliderListener sliderMinListener = new SliderListener(sliderMin, textField) {
-			@Override
-			protected boolean isValidValue(float newValue) {
-				if (mValidingObject instanceof Slider) {
-					return ((Slider) mValidingObject).getValue() >= mSlider.getValue();
-				}
-				return false;
-			}
-
-			@Override
-			public void onChange(float newValue) {
-				mDef.setPlayerDistanceMin(newValue);
-			}
-		};
-
-		mAiTable.row();
-		label = new Label("Maximum distance", labelStyle);
-		mAiTable.add(label);
-		mAiTable.row();
-		Slider sliderMax = new Slider(Config.Editor.Enemy.AI_DISTANCE_MIN, Config.Editor.Enemy.AI_DISTANCE_MAX, Config.Editor.Enemy.AI_DISTANCE_STEP_SIZE, false, sliderStyle);
-		sliderMax.setValue(Config.Editor.Enemy.AI_DISTANCE_MAX_DEFAULT);
-		mAiTable.add(sliderMax);
-		textField = new TextField("", textFieldStyle);
-		textField.setWidth(Config.Editor.Enemy.TEXT_FIELD_NUMBER_WIDTH);
-		mAiTable.add(textField);
-		SliderListener sliderMaxListener = new SliderListener(sliderMax, textField) {
-			@Override
-			protected boolean isValidValue(float newValue) {
-				if (mValidingObject instanceof Slider) {
-					return ((Slider) mValidingObject).getValue() <= mSlider.getValue();
-				}
-				return false;
-			}
-
-			@Override
-			public void onChange(float newValue) {
-				mDef.setPlayerDistanceMax(newValue);
-			}
-		};
-
-		sliderMinListener.setValidatingObject(sliderMax);
-		sliderMaxListener.setValidatingObject(sliderMin);
-
-		scalePathLabels();
-		mGui.setTransform(true);
-		mMovementTable.setTransform(true);
-		mWeaponTable.setTransform(true);
-		mAiTable.setTransform(true);
-		mGui.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-	}
-
-	/**
-	 * Adds inner table to the outer table
-	 * @param innerTable the table to add to the outerTable, if null outerTable will
-	 * only be cleared.
-	 * @param outerTable the table to clear and then add innerTable to.
-	 */
-	private static void addInnerTable(AlignTable innerTable, AlignTable outerTable) {
-		outerTable.clear();
-
-		if (innerTable != null) {
-			outerTable.add(innerTable);
-			innerTable.invalidateHierarchy();
-		}
-
-		outerTable.invalidateHierarchy();
-	}
 
 	/**
 	 * Creates the example paths that are used
@@ -671,69 +386,6 @@ public class EnemyEditor extends WorldScene {
 	}
 
 	/**
-	 * Creates enemy bodies of the paths
-	 */
-	private void createPathBodies() {
-		mPathOnce.setWorld(mWorld);
-		mPathLoop.setWorld(mWorld);
-		mPathBackAndForth.setWorld(mWorld);
-		mEnemyPathOnce.createBody();
-		mEnemyPathOnce.resetPathMovement();
-		mEnemyPathLoop.createBody();
-		mEnemyPathLoop.resetPathMovement();
-		mEnemyPathBackAndForth.createBody();
-		mEnemyPathBackAndForth.resetPathMovement();
-		mEnemyPathOnceOutOfBoundsTime = 0f;
-	}
-
-	/**
-	 * Clears all the example paths
-	 */
-	private void clearExamplePaths() {
-		mPathOnce.setWorld(null);
-		mPathLoop.setWorld(null);
-		mPathBackAndForth.setWorld(null);
-		mEnemyPathOnce.destroyBody();
-		mEnemyPathLoop.destroyBody();
-		mEnemyPathBackAndForth.destroyBody();
-
-		// Clear GUI text
-		mStage.clear();
-		mStage.addActor(mGui);
-	}
-
-	/**
-	 * Scale label for paths
-	 */
-	private void scalePathLabels() {
-		float spaceBetween = Gdx.graphics.getHeight() * 0.1f;
-		float height = Gdx.graphics.getHeight() * 0.2f;
-		float initialOffset = spaceBetween + height * 0.5f + spaceBetween + height;
-
-		mPathLabels.setPosition(Gdx.graphics.getWidth() / 3f, initialOffset);
-
-
-		// Fix padding
-		SnapshotArray<com.badlogic.gdx.scenes.scene2d.Actor> actors = mPathLabels.getChildren();
-		// Reset padding first
-		for (int i = 0; i < actors.size - 1; ++i) {
-			if (actors.get(i) instanceof Table) {
-				Table table = (Table) actors.get(i);
-				table.padBottom(0);
-				table.invalidateHierarchy();
-			}
-		}
-
-		for (int i = 0; i < actors.size - 1; ++i) {
-			if (actors.get(i) instanceof Table) {
-				Table table = (Table) actors.get(i);
-				table.padBottom(spaceBetween + height - table.getPrefHeight());
-				table.invalidateHierarchy();
-			}
-		}
-	}
-
-	/**
 	 * Sets the definition for the enemy actors. Uses the definition from
 	 * mDef.
 	 */
@@ -742,24 +394,6 @@ public class EnemyEditor extends WorldScene {
 		mEnemyPathOnce.setDef(mDef);
 		mEnemyPathLoop.setDef(mDef);
 		mEnemyPathBackAndForth.setDef(mDef);
-	}
-
-	/**
-	 * Creates the enemy actor and resets its position
-	 */
-	private void createEnemyActor() {
-		mEnemyActor.setPosition(0, 0);
-		mEnemyActor.createBody();
-	}
-
-	/**
-	 * Resets the player position
-	 */
-	private void resetPlayerPosition() {
-		Vector2 playerPosition = Pools.obtain(Vector2.class);
-		screenToWorldCoord(mCamera, Gdx.graphics.getWidth() * 0.1f, Gdx.graphics.getHeight() * 0.5f, playerPosition, true);
-		mPlayerActor.setPosition(playerPosition);
-		mPlayerActor.getBody().setLinearVelocity(0, 0);
 	}
 
 	/** Current enemy actor */
@@ -787,19 +421,6 @@ public class EnemyEditor extends WorldScene {
 	/** Player actor, for the enemies to work properly */
 	private PlayerActor mPlayerActor = null;
 
-	// Tables
-	/** Wrapping table for the activate type */
-	private AlignTable mTypeTable = new AlignTable();
-	/** Container for all movement options */
-	private AlignTable mMovementTable = new AlignTable();
-	/** Container for all weapon options */
-	private AlignTable mWeaponTable = new AlignTable();
-	/** Container for the different movement variables */
-	private AlignTable mMovementTypeTable = new AlignTable();
 	/** Table for path lables, these are added directly to the stage */
 	private Table mPathLabels = new Table();
-	/** Table for Path movement */
-	private AlignTable mPathTable = new AlignTable();
-	/** Table for AI movement */
-	private AlignTable mAiTable = new AlignTable();
 }
