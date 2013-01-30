@@ -12,7 +12,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider.SliderStyle;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
@@ -26,12 +25,9 @@ import com.spiddekauga.utils.scene.ui.DisableListener;
 import com.spiddekauga.utils.scene.ui.Row;
 import com.spiddekauga.utils.scene.ui.SliderListener;
 import com.spiddekauga.voider.Config;
-import com.spiddekauga.voider.game.actors.EnemyActor;
-import com.spiddekauga.voider.game.actors.EnemyActorDef;
 import com.spiddekauga.voider.game.actors.EnemyActorDef.MovementTypes;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceNames;
-import com.spiddekauga.voider.resources.ResourceSaver;
 import com.spiddekauga.voider.scene.Gui;
 
 /**
@@ -42,30 +38,10 @@ import com.spiddekauga.voider.scene.Gui;
 class EnemyEditorGui extends Gui {
 	/**
 	 * Initializes the variables needed for this GUI class
-	 * @param enemyActor
-	 * @param enemyPathOnce
-	 * @param enemyPathLoop
-	 * @param enemyPathBackAndForth
-	 * @param def
-	 * @param enemyEditor
-	 * @param pathLabels
+	 * @param enemyEditor the enemy editor bound to this class
 	 */
-	public void init(
-			EnemyActor enemyActor,
-			EnemyActor enemyPathOnce,
-			EnemyActor enemyPathLoop,
-			EnemyActor enemyPathBackAndForth,
-			EnemyActorDef def,
-			EnemyEditor enemyEditor,
-			Table pathLabels)
-	{
-		mEnemyActor = enemyActor;
-		mEnemyPathOnce = enemyPathOnce;
-		mEnemyPathLoop = enemyPathLoop;
-		mEnemyPathBackAndForth = enemyPathBackAndForth;
-		mDef = def;
+	public void init(EnemyEditor enemyEditor) {
 		mEnemyEditor = enemyEditor;
-		mPathLabels = pathLabels;
 	}
 
 	@Override
@@ -112,7 +88,7 @@ class EnemyEditorGui extends Gui {
 			@Override
 			public boolean handle(Event event) {
 				if (isButtonPressed(event)) {
-					ResourceSaver.save(mDef);
+					mEnemyEditor.saveEnemy();
 				}
 				return true;
 			}
@@ -165,8 +141,7 @@ class EnemyEditorGui extends Gui {
 
 
 		// Type of movement?
-		MovementTypes movementType = mDef.getMovementType();
-		mDef.setMovementType(null);
+		MovementTypes movementType = mEnemyEditor.getMovementType();
 		// Path
 		row = mMovementTable.row();
 		row.setScalable(false);
@@ -176,13 +151,9 @@ class EnemyEditorGui extends Gui {
 		checkBox.addListener(new EventListener() {
 			@Override
 			public boolean handle(Event event) {
-				if (isButtonChecked(event) && mDef.getMovementType() != MovementTypes.PATH) {
+				if (isButtonChecked(event) && mEnemyEditor.getMovementType() != MovementTypes.PATH) {
 					addInnerTable(mPathTable, mMovementTypeTable);
-					addActor(mPathLabels);
-					mDef.setMovementType(MovementTypes.PATH);
-					mEnemyActor.destroyBody();
-					mEnemyEditor.createPathBodies();
-					mEnemyEditor.resetPlayerPosition();
+					mEnemyEditor.setMovementType(MovementTypes.PATH);
 				}
 
 				return true;
@@ -199,13 +170,9 @@ class EnemyEditorGui extends Gui {
 		checkBox.addListener(new EventListener() {
 			@Override
 			public boolean handle(Event event) {
-				if (isButtonChecked(event) && mDef.getMovementType() != MovementTypes.STATIONARY) {
+				if (isButtonChecked(event) && mEnemyEditor.getMovementType() != MovementTypes.STATIONARY) {
 					addInnerTable(null, mMovementTypeTable);
-					mDef.setMovementType(MovementTypes.STATIONARY);
-					mEnemyEditor.clearExamplePaths();
-					mEnemyActor.destroyBody();
-					createEnemyActor();
-					mEnemyEditor.resetPlayerPosition();
+					mEnemyEditor.setMovementType(MovementTypes.STATIONARY);
 				}
 				return true;
 			}
@@ -221,16 +188,12 @@ class EnemyEditorGui extends Gui {
 		checkBox.addListener(new EventListener() {
 			@Override
 			public boolean handle(Event event) {
-				if (isButtonChecked(event) && mDef.getMovementType() != MovementTypes.AI) {
+				if (isButtonChecked(event) && mEnemyEditor.getMovementType() != MovementTypes.AI) {
 					addInnerTable(mPathTable, mMovementTypeTable);
 					mMovementTypeTable.row();
 					mMovementTypeTable.add(mAiTable);
 					mAiTable.invalidate();
-					mDef.setMovementType(MovementTypes.AI);
-					mEnemyEditor.clearExamplePaths();
-					mEnemyActor.destroyBody();
-					createEnemyActor();
-					mEnemyEditor.resetPlayerPosition();
+					mEnemyEditor.setMovementType(MovementTypes.AI);
 				}
 				return true;
 			}
@@ -258,11 +221,7 @@ class EnemyEditorGui extends Gui {
 		new SliderListener(slider, textField) {
 			@Override
 			public void onChange(float newValue) {
-				mDef.setSpeed(newValue);
-				mEnemyActor.setSpeed(newValue);
-				mEnemyPathBackAndForth.setSpeed(newValue);
-				mEnemyPathLoop.setSpeed(newValue);
-				mEnemyPathOnce.setSpeed(newValue);
+				mEnemyEditor.setSpeed(newValue);
 			}
 		};
 		slider.setValue(Config.Editor.Enemy.MOVE_SPEED_DEFAULT);
@@ -282,11 +241,7 @@ class EnemyEditorGui extends Gui {
 					} else {
 						((TextButton)mButton).setText("On");
 					}
-					mDef.setTurn(!disabled);
-					mEnemyActor.resetPathMovement();
-					mEnemyPathBackAndForth.resetPathMovement();
-					mEnemyPathLoop.resetPathMovement();
-					mEnemyPathOnce.resetPathMovement();
+					mEnemyEditor.setTurning(disabled);
 				}
 			}
 		};
@@ -304,29 +259,10 @@ class EnemyEditorGui extends Gui {
 		new SliderListener(slider, textField) {
 			@Override
 			public void onChange(float newValue) {
-				mDef.setTurnSpeed(newValue);
+				mEnemyEditor.setTurnSpeed(newValue);
 			}
 		};
 		slider.setValue(Config.Editor.Enemy.TURN_SPEED_DEFAULT);
-
-		// Labels for path movement
-		label = new Label("Back and Forth", labelStyle);
-		Table wrapTable = new Table();
-		wrapTable.add(label);
-		mPathLabels.add(wrapTable);
-		mPathLabels.row();
-
-		label = new Label("Loop", labelStyle);
-		wrapTable = new Table();
-		wrapTable.add(label);
-		mPathLabels.add(wrapTable);
-		mPathLabels.row();
-
-		label = new Label("Once", labelStyle);
-		wrapTable = new Table();
-		wrapTable.add(label);
-		mPathLabels.add(wrapTable);
-		mPathLabels.row();
 
 
 		// --- Movement AI ---
@@ -352,7 +288,7 @@ class EnemyEditorGui extends Gui {
 
 			@Override
 			public void onChange(float newValue) {
-				mDef.setPlayerDistanceMin(newValue);
+				mEnemyEditor.setPlayerDistanceMin(newValue);
 			}
 		};
 
@@ -377,29 +313,19 @@ class EnemyEditorGui extends Gui {
 
 			@Override
 			public void onChange(float newValue) {
-				mDef.setPlayerDistanceMax(newValue);
+				mEnemyEditor.setPlayerDistanceMax(newValue);
 			}
 		};
 
 		sliderMinListener.setValidatingObject(sliderMax);
 		sliderMaxListener.setValidatingObject(sliderMin);
 
-		mEnemyEditor.scalePathLabels();
 		mMainTable.setTransform(true);
 		mMovementTable.setTransform(true);
 		mWeaponTable.setTransform(true);
 		mAiTable.setTransform(true);
 		mMainTable.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 	}
-
-	/**
-	 * Creates the enemy actor and resets its position
-	 */
-	private void createEnemyActor() {
-		mEnemyActor.setPosition(0, 0);
-		mEnemyActor.createBody();
-	}
-
 
 
 	// Tables
@@ -416,19 +342,6 @@ class EnemyEditorGui extends Gui {
 	/** Table for AI movement */
 	private AlignTable mAiTable = new AlignTable();
 
-	// EnemyEditor variables
 	/** The actual enemy editor bound to this gui */
 	private EnemyEditor mEnemyEditor = null;
-	/** Current enemy actor */
-	private EnemyActor mEnemyActor = null;
-	/** Enemy actor for path once */
-	private EnemyActor mEnemyPathOnce = null;
-	/** Enemy actor for path loop */
-	private EnemyActor mEnemyPathLoop = null;
-	/** Enemy actor for path back and forth */
-	private EnemyActor mEnemyPathBackAndForth = null;
-	/** Current enemy actor definition */
-	private EnemyActorDef mDef = null;
-	/** Table for path lables, these are added directly to the stage */
-	private Table mPathLabels = null;
 }

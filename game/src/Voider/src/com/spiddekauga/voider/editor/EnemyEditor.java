@@ -10,6 +10,9 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.joints.MouseJoint;
 import com.badlogic.gdx.physics.box2d.joints.MouseJointDef;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Pools;
 import com.badlogic.gdx.utils.SnapshotArray;
@@ -20,9 +23,11 @@ import com.spiddekauga.voider.game.Path;
 import com.spiddekauga.voider.game.Path.PathTypes;
 import com.spiddekauga.voider.game.actors.EnemyActor;
 import com.spiddekauga.voider.game.actors.EnemyActorDef;
+import com.spiddekauga.voider.game.actors.EnemyActorDef.MovementTypes;
 import com.spiddekauga.voider.game.actors.PlayerActor;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceNames;
+import com.spiddekauga.voider.resources.ResourceSaver;
 import com.spiddekauga.voider.resources.UndefinedResourceTypeException;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.WorldScene;
@@ -44,7 +49,7 @@ public class EnemyEditor extends WorldScene {
 		setEnemyDef();
 		createExamplePaths();
 
-		((EnemyEditorGui)mGui).init(mEnemyActor, mEnemyPathOnce, mEnemyPathLoop, mEnemyPathBackAndForth, mDef, this, mPathLabels);
+		((EnemyEditorGui)mGui).init(this);
 
 		try {
 			mfEnemyOnceReachEnd = EnemyActor.class.getDeclaredField("mPathOnceReachedEnd");
@@ -55,6 +60,7 @@ public class EnemyEditor extends WorldScene {
 
 		createBorder();
 
+		mDef.setMovementType(null);
 
 		// Create mouse joint
 		BodyDef bodyDef = new BodyDef();
@@ -64,12 +70,36 @@ public class EnemyEditor extends WorldScene {
 		mMouseJointDef.bodyB = mPlayerActor.getBody(); // TODO REMOVE, set in onActivate instead
 		mMouseJointDef.collideConnected = true;
 		mMouseJointDef.maxForce = Config.Game.MouseJoint.FORCE_MAX;
+
 	}
 
 	@Override
 	public void onActivate(Outcomes outcome, String message) {
 		if (outcome == Outcomes.LOADING_SUCCEEDED) {
 			mGui.initGui();
+
+			// Path labels
+			Skin editorSkin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
+			LabelStyle labelStyle = editorSkin.get("default", LabelStyle.class);
+			Label label = new Label("Back and Forth", labelStyle);
+			Table wrapTable = new Table();
+			wrapTable.add(label);
+			mPathLabels.add(wrapTable);
+			mPathLabels.row();
+
+			label = new Label("Loop", labelStyle);
+			wrapTable = new Table();
+			wrapTable.add(label);
+			mPathLabels.add(wrapTable);
+			mPathLabels.row();
+
+			label = new Label("Once", labelStyle);
+			wrapTable = new Table();
+			wrapTable.add(label);
+			mPathLabels.add(wrapTable);
+			mPathLabels.row();
+
+			scalePathLabels();
 		}
 		Actor.setPlayerActor(mPlayerActor);
 	}
@@ -208,75 +238,10 @@ public class EnemyEditor extends WorldScene {
 	}
 
 	/**
-	 * Resets the player position
+	 * Saves the current enemy actor
 	 */
-	void resetPlayerPosition() {
-		Vector2 playerPosition = Pools.obtain(Vector2.class);
-		Scene.screenToWorldCoord(mCamera, Gdx.graphics.getWidth() * 0.1f, Gdx.graphics.getHeight() * 0.5f, playerPosition, true);
-		mPlayerActor.setPosition(playerPosition);
-		mPlayerActor.getBody().setLinearVelocity(0, 0);
-	}
-
-	/**
-	 * Creates enemy bodies of the paths
-	 */
-	void createPathBodies() {
-		mPathOnce.setWorld(mWorld);
-		mPathLoop.setWorld(mWorld);
-		mPathBackAndForth.setWorld(mWorld);
-		mEnemyPathOnce.createBody();
-		mEnemyPathOnce.resetPathMovement();
-		mEnemyPathLoop.createBody();
-		mEnemyPathLoop.resetPathMovement();
-		mEnemyPathBackAndForth.createBody();
-		mEnemyPathBackAndForth.resetPathMovement();
-		mEnemyPathOnceOutOfBoundsTime = 0f;
-	}
-
-	/**
-	 * Clears all the example paths
-	 */
-	void clearExamplePaths() {
-		mPathOnce.setWorld(null);
-		mPathLoop.setWorld(null);
-		mPathBackAndForth.setWorld(null);
-		mEnemyPathOnce.destroyBody();
-		mEnemyPathLoop.destroyBody();
-		mEnemyPathBackAndForth.destroyBody();
-
-		// Clear GUI text
-		mGui.reset();
-	}
-
-	/**
-	 * Scale label for paths
-	 */
-	void scalePathLabels() {
-		float spaceBetween = Gdx.graphics.getHeight() * 0.1f;
-		float height = Gdx.graphics.getHeight() * 0.2f;
-		float initialOffset = spaceBetween + height * 0.5f + spaceBetween + height;
-
-		mPathLabels.setPosition(Gdx.graphics.getWidth() / 3f, initialOffset);
-
-
-		// Fix padding
-		SnapshotArray<com.badlogic.gdx.scenes.scene2d.Actor> actors = mPathLabels.getChildren();
-		// Reset padding first
-		for (int i = 0; i < actors.size - 1; ++i) {
-			if (actors.get(i) instanceof Table) {
-				Table table = (Table) actors.get(i);
-				table.padBottom(0);
-				table.invalidateHierarchy();
-			}
-		}
-
-		for (int i = 0; i < actors.size - 1; ++i) {
-			if (actors.get(i) instanceof Table) {
-				Table table = (Table) actors.get(i);
-				table.padBottom(spaceBetween + height - table.getPrefHeight());
-				table.invalidateHierarchy();
-			}
-		}
+	void saveEnemy() {
+		ResourceSaver.save(mDef);
 	}
 
 	/**
@@ -285,6 +250,90 @@ public class EnemyEditor extends WorldScene {
 	void newEnemy() {
 		mDef = new EnemyActorDef();
 		setEnemyDef();
+	}
+
+	/**
+	 * Sets the speed of the enemy
+	 * @param speed new speed of the enemy
+	 */
+	void setSpeed(float speed) {
+		mDef.setSpeed(speed);
+		mEnemyActor.setSpeed(speed);
+		mEnemyPathBackAndForth.setSpeed(speed);
+		mEnemyPathLoop.setSpeed(speed);
+		mEnemyPathOnce.setSpeed(speed);
+	}
+
+	/**
+	 * Sets the turning of the enemy
+	 * @param disabled true if enemy turning is disabled
+	 */
+	void setTurning(boolean disabled) {
+		mDef.setTurn(!disabled);
+		mEnemyActor.resetPathMovement();
+		mEnemyPathBackAndForth.resetPathMovement();
+		mEnemyPathLoop.resetPathMovement();
+		mEnemyPathOnce.resetPathMovement();
+	}
+
+	/**
+	 * Sets the minimum distance from the player the enemy want to be
+	 * @param minDistance minimum distance from the player
+	 */
+	void setPlayerDistanceMin(float minDistance) {
+		mDef.setPlayerDistanceMin(minDistance);
+	}
+
+	/**
+	 * Sets the maximum distance from the player the enemy want to be
+	 * @param maxDistance maximum distance from the player
+	 */
+	void setPlayerDistanceMax(float maxDistance) {
+		mDef.setPlayerDistanceMax(maxDistance);
+	}
+
+	/**
+	 * @return movement type of the enemy
+	 */
+	MovementTypes getMovementType() {
+		return mDef.getMovementType();
+	}
+
+	/**
+	 * Sets the movement type for the enemy
+	 * @param movementType new movement type
+	 */
+	void setMovementType(MovementTypes movementType) {
+		mEnemyActor.destroyBody();
+		mDef.setMovementType(movementType);
+
+		switch (movementType) {
+		case PATH:
+			mGui.addActor(mPathLabels);
+			createPathBodies();
+			resetPlayerPosition();
+			break;
+
+		case STATIONARY:
+			clearExamplePaths();
+			createEnemyActor();
+			resetPlayerPosition();
+			break;
+
+		case AI:
+			clearExamplePaths();
+			createEnemyActor();
+			resetPlayerPosition();
+			break;
+		}
+	}
+
+	/**
+	 * Sets the turning speed of the enemy
+	 * @param turnSpeed how fast the enemy shall turn
+	 */
+	void setTurnSpeed(float turnSpeed) {
+		mDef.setTurnSpeed(turnSpeed);
 	}
 
 	/** Invalid pointer id */
@@ -394,6 +443,86 @@ public class EnemyEditor extends WorldScene {
 		mEnemyPathOnce.setDef(mDef);
 		mEnemyPathLoop.setDef(mDef);
 		mEnemyPathBackAndForth.setDef(mDef);
+	}
+
+	/**
+	 * Creates enemy bodies of the paths
+	 */
+	private void createPathBodies() {
+		mPathOnce.setWorld(mWorld);
+		mPathLoop.setWorld(mWorld);
+		mPathBackAndForth.setWorld(mWorld);
+		mEnemyPathOnce.createBody();
+		mEnemyPathOnce.resetPathMovement();
+		mEnemyPathLoop.createBody();
+		mEnemyPathLoop.resetPathMovement();
+		mEnemyPathBackAndForth.createBody();
+		mEnemyPathBackAndForth.resetPathMovement();
+		mEnemyPathOnceOutOfBoundsTime = 0f;
+	}
+
+	/**
+	 * Clears all the example paths
+	 */
+	private void clearExamplePaths() {
+		mPathOnce.setWorld(null);
+		mPathLoop.setWorld(null);
+		mPathBackAndForth.setWorld(null);
+		mEnemyPathOnce.destroyBody();
+		mEnemyPathLoop.destroyBody();
+		mEnemyPathBackAndForth.destroyBody();
+
+		// Clear GUI text
+		mGui.reset();
+	}
+
+	/**
+	 * Resets the player position
+	 */
+	private void resetPlayerPosition() {
+		Vector2 playerPosition = Pools.obtain(Vector2.class);
+		Scene.screenToWorldCoord(mCamera, Gdx.graphics.getWidth() * 0.1f, Gdx.graphics.getHeight() * 0.5f, playerPosition, true);
+		mPlayerActor.setPosition(playerPosition);
+		mPlayerActor.getBody().setLinearVelocity(0, 0);
+	}
+
+	/**
+	 * Scale label for paths
+	 */
+	private void scalePathLabels() {
+		float spaceBetween = Gdx.graphics.getHeight() * 0.1f;
+		float height = Gdx.graphics.getHeight() * 0.2f;
+		float initialOffset = spaceBetween + height * 0.5f + spaceBetween + height;
+
+		mPathLabels.setPosition(Gdx.graphics.getWidth() / 3f, initialOffset);
+
+
+		// Fix padding
+		SnapshotArray<com.badlogic.gdx.scenes.scene2d.Actor> actors = mPathLabels.getChildren();
+		// Reset padding first
+		for (int i = 0; i < actors.size - 1; ++i) {
+			if (actors.get(i) instanceof Table) {
+				Table table = (Table) actors.get(i);
+				table.padBottom(0);
+				table.invalidateHierarchy();
+			}
+		}
+
+		for (int i = 0; i < actors.size - 1; ++i) {
+			if (actors.get(i) instanceof Table) {
+				Table table = (Table) actors.get(i);
+				table.padBottom(spaceBetween + height - table.getPrefHeight());
+				table.invalidateHierarchy();
+			}
+		}
+	}
+
+	/**
+	 * Creates the enemy actor and resets its position
+	 */
+	private void createEnemyActor() {
+		mEnemyActor.setPosition(0, 0);
+		mEnemyActor.createBody();
 	}
 
 	/** Current enemy actor */
