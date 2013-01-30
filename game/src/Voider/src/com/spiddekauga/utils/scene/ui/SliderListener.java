@@ -38,6 +38,14 @@ public abstract class SliderListener implements EventListener {
 		mTextField.addListener(this);
 	}
 
+	/**
+	 * Sets the validating object
+	 * @param validatingObject object to use for validating later
+	 */
+	public void setValidatingObject(Object validatingObject) {
+		mValidingObject = validatingObject;
+	}
+
 	@Override
 	public boolean handle(Event event) {
 		if (mSlider == null && mTextField == null) {
@@ -48,21 +56,30 @@ public abstract class SliderListener implements EventListener {
 		if (event.getTarget() == mSlider) {
 			int cursorPosition = mTextField.getCursorPosition();
 			float rounded = (float) Maths.round(mSlider.getValue(), mPrecision, BigDecimal.ROUND_HALF_UP);
-			mTextField.setText(Float.toString(rounded));
-			mTextField.setCursorPosition(cursorPosition);
+			if (isValidValue(rounded)) {
+				mTextField.setText(Float.toString(rounded));
+				mTextField.setCursorPosition(cursorPosition);
+			} else {
+				mSlider.setValue(mOldValue);
+			}
 		} else if (event.getTarget() == mTextField) {
-			/** @TODO check for valid value */
-
 			try {
 				float newValue = Float.parseFloat(mTextField.getText());
 
 				// Clamp value
 				newValue = MathUtils.clamp(newValue, mSlider.getMinValue(), mSlider.getMaxValue());
-				mSlider.setValue(newValue);
-				int cursorPosition = mTextField.getCursorPosition();
-				float rounded = (float) Maths.round(mSlider.getValue(), mPrecision, BigDecimal.ROUND_HALF_UP);
-				mTextField.setText(Float.toString(rounded));
-				mTextField.setCursorPosition(cursorPosition);
+				float rounded = (float) Maths.round(newValue, mPrecision, BigDecimal.ROUND_HALF_UP);
+
+				if (isValidValue(rounded)) {
+					mSlider.setValue(newValue);
+					int cursorPosition = mTextField.getCursorPosition();
+					mTextField.setText(Float.toString(rounded));
+					mTextField.setCursorPosition(cursorPosition);
+				} else {
+					int cursorPosition = mTextField.getCursorPosition();
+					mTextField.setText(Float.toString(mOldValue));
+					mTextField.setCursorPosition(cursorPosition);
+				}
 			}
 			// Not a valid format, reset to old value
 			catch (NumberFormatException e) {
@@ -87,10 +104,23 @@ public abstract class SliderListener implements EventListener {
 	 */
 	public abstract void onChange(float newValue);
 
+	/** Called before the new value is set, this validates the new value
+	 * one extra time. The value has already been clamped and rounded
+	 * @param newValue the new value that is to be validated
+	 * @return true if the new range is valid
+	 * @see #setValidatingObject(Object)
+	 */
+	protected boolean isValidValue(float newValue) {
+		return true;
+	}
+
+	/** Extra optional object used for validating the change */
+	protected Object mValidingObject = null;
 	/**	The slider that was bound */
-	private Slider mSlider = null;
+	protected Slider mSlider = null;
 	/** The text the value is bound with */
-	private TextField mTextField = null;
+	protected TextField mTextField = null;
+
 	/** Old value of the slider */
 	private float mOldValue = 0;
 	/** Precision of the slider */

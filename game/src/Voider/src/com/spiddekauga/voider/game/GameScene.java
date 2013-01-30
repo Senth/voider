@@ -1,22 +1,14 @@
 package com.spiddekauga.voider.game;
 
-import java.util.ArrayList;
-
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
-import com.badlogic.gdx.physics.box2d.ChainShape;
 import com.badlogic.gdx.physics.box2d.Fixture;
-import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.joints.MouseJoint;
 import com.badlogic.gdx.physics.box2d.joints.MouseJointDef;
-import com.badlogic.gdx.utils.Pools;
 import com.spiddekauga.voider.Config;
-import com.spiddekauga.voider.game.actors.FixtureFilterCategories;
 import com.spiddekauga.voider.game.actors.PlayerActor;
 import com.spiddekauga.voider.scene.WorldScene;
 /**
@@ -188,53 +180,6 @@ public class GameScene extends WorldScene {
 		return false;
 	}
 
-	/**
-	 * Creates the border around the screen so the player can't escape
-	 */
-	private void createBorder() {
-		// If body already exists, just delete existing fixtures
-		if (mBorderBody != null) {
-			ArrayList<Fixture> fixtures = mBorderBody.getFixtureList();
-			for (Fixture fixture : fixtures) {
-				mBorderBody.destroyFixture(fixture);
-			}
-		}
-		// No body, create one
-		else {
-			BodyDef bodyDef = new BodyDef();
-			bodyDef.type = BodyType.KinematicBody;
-			mBorderBody = mWorld.createBody(bodyDef);
-		}
-
-
-		// Get world coordinates for the screen's corners
-		Vector2[] corners = new Vector2[4];
-		for (int i = 0; i < corners.length; ++i) {
-			corners[i] = Pools.obtain(Vector2.class);
-		}
-		screenToWorldCoord(mCamera, 0, 0, corners[0], false);
-		screenToWorldCoord(mCamera, Gdx.graphics.getWidth(), 0, corners[1], false);
-		screenToWorldCoord(mCamera, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), corners[2], false);
-		screenToWorldCoord(mCamera, 0, Gdx.graphics.getHeight(), corners[3], false);
-
-
-		// Create fixture
-		ChainShape shape = new ChainShape();
-		shape.createLoop(corners);
-		FixtureDef fixtureDef = new FixtureDef();
-		fixtureDef.shape = shape;
-		fixtureDef.filter.categoryBits = FixtureFilterCategories.SCREEN_BORDER;
-		fixtureDef.filter.maskBits = FixtureFilterCategories.PLAYER;
-		mBorderBody.createFixture(fixtureDef);
-
-
-		// Free stuff
-		for (int i = 0; i < corners.length; ++i) {
-			Pools.free(corners[i]);
-		}
-		shape.dispose();
-	}
-
 
 	/** Invalid pointer id */
 	private static final int INVALID_POINTER = -1;
@@ -248,8 +193,6 @@ public class GameScene extends WorldScene {
 	private int mPlayerPointer = INVALID_POINTER;
 	/** If we're currently moving the player */
 	private boolean mMovingPlayer = false;
-	/** Border around the screen so the player can't "escape" */
-	private Body mBorderBody = null;
 	/** Handles collision between actors/bodies */
 	private CollisionResolver mCollisionResolver = new CollisionResolver();
 

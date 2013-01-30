@@ -218,7 +218,6 @@ public class Cell implements Poolable {
 	 * @return this cell for chaining
 	 */
 	public Cell setScalable(boolean scalable) {
-
 		if (!scalable) {
 			setScaleX(1);
 			setScaleY(1);
@@ -264,6 +263,10 @@ public class Cell implements Poolable {
 			if (mActor.getWidth() == 0) {
 				mActor.setWidth(((Layout) mActor).getPrefWidth());
 			}
+		}
+
+		if (mActor instanceof AlignTable) {
+			mScalable = ((AlignTable) mActor).isScalable();
 		}
 
 		return this;
@@ -341,6 +344,9 @@ public class Cell implements Poolable {
 	void calculateSize() {
 		if (mActor instanceof Layout) {
 			((Layout)mActor).validate();
+		}
+		if (mActor instanceof AlignTable) {
+			mScalable = ((AlignTable) mActor).isScalable();
 		}
 	}
 

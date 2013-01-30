@@ -55,8 +55,11 @@ public class EnemyEditor extends WorldScene {
 	 * Creates the enemy editor
 	 */
 	public EnemyEditor() {
-		//		Actor.setEditorActive(true);
 		mPlayerActor = new PlayerActor();
+		Vector2 playerPosition = Pools.obtain(Vector2.class);
+		screenToWorldCoord(mCamera, Gdx.graphics.getWidth() * 0.1f, Gdx.graphics.getHeight() * 0.5f, playerPosition, true);
+		mPlayerActor.setPosition(playerPosition);
+		mPlayerActor.createBody();
 		setEnemyDef();
 		createExamplePaths();
 
@@ -66,6 +69,8 @@ public class EnemyEditor extends WorldScene {
 		} catch (Exception e) {
 			Gdx.app.error("EnemyEditor", "Could not access mPathOnceReachEnd");
 		}
+
+		createBorder();
 	}
 
 	@Override
@@ -79,6 +84,7 @@ public class EnemyEditor extends WorldScene {
 	@Override
 	public void update() {
 		super.update();
+		mPlayerActor.update(Gdx.graphics.getDeltaTime());
 
 		switch (mDef.getMovementType()) {
 		case AI:
@@ -222,7 +228,7 @@ public class EnemyEditor extends WorldScene {
 		mGui.add(button);
 
 
-		// Type (Movement OR Weapons)
+		// --- Type (Movement OR Weapons) ---
 		// Movement
 		Row row = mGui.row();
 		row.setAlign(Horizontal.CENTER, Vertical.BOTTOM);
@@ -329,7 +335,7 @@ public class EnemyEditor extends WorldScene {
 		mMovementTable.add(mMovementTypeTable);
 
 
-		// MOVEMENT path/AI
+		// --- MOVEMENT path/AI ---
 		// Movement Speed
 		row = mMovementTable.row();
 		row.setScalable(false);
@@ -416,8 +422,60 @@ public class EnemyEditor extends WorldScene {
 		mPathLabels.row();
 
 
-		// Movement AI
+		// --- Movement AI ---
+		mAiTable.setScalable(false);
+		mAiTable.row();
+		label = new Label("Minimum distance", labelStyle);
+		mAiTable.add(label);
+		mAiTable.row();
+		Slider sliderMin = new Slider(Config.Editor.Enemy.AI_DISTANCE_MIN, Config.Editor.Enemy.AI_DISTANCE_MAX, Config.Editor.Enemy.AI_DISTANCE_STEP_SIZE, false, sliderStyle);
+		sliderMin.setValue(Config.Editor.Enemy.AI_DISTANCE_MIN_DEFAULT);
+		mAiTable.add(sliderMin);
+		textField = new TextField("", textFieldStyle);
+		textField.setWidth(Config.Editor.Enemy.TEXT_FIELD_NUMBER_WIDTH);
+		mAiTable.add(textField);
+		SliderListener sliderMinListener = new SliderListener(sliderMin, textField) {
+			@Override
+			protected boolean isValidValue(float newValue) {
+				if (mValidingObject instanceof Slider) {
+					return ((Slider) mValidingObject).getValue() >= mSlider.getValue();
+				}
+				return false;
+			}
 
+			@Override
+			public void onChange(float newValue) {
+				mDef.setPlayerDistanceMin(newValue);
+			}
+		};
+
+		mAiTable.row();
+		label = new Label("Maximum distance", labelStyle);
+		mAiTable.add(label);
+		mAiTable.row();
+		Slider sliderMax = new Slider(Config.Editor.Enemy.AI_DISTANCE_MIN, Config.Editor.Enemy.AI_DISTANCE_MAX, Config.Editor.Enemy.AI_DISTANCE_STEP_SIZE, false, sliderStyle);
+		sliderMax.setValue(Config.Editor.Enemy.AI_DISTANCE_MAX_DEFAULT);
+		mAiTable.add(sliderMax);
+		textField = new TextField("", textFieldStyle);
+		textField.setWidth(Config.Editor.Enemy.TEXT_FIELD_NUMBER_WIDTH);
+		mAiTable.add(textField);
+		SliderListener sliderMaxListener = new SliderListener(sliderMax, textField) {
+			@Override
+			protected boolean isValidValue(float newValue) {
+				if (mValidingObject instanceof Slider) {
+					return ((Slider) mValidingObject).getValue() <= mSlider.getValue();
+				}
+				return false;
+			}
+
+			@Override
+			public void onChange(float newValue) {
+				mDef.setPlayerDistanceMax(newValue);
+			}
+		};
+
+		sliderMinListener.setValidatingObject(sliderMax);
+		sliderMaxListener.setValidatingObject(sliderMin);
 
 		scalePathLabels();
 		mGui.setTransform(true);

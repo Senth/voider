@@ -46,7 +46,7 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 	 * @param deltaTime seconds elapsed since last call
 	 */
 	public void update(float deltaTime) {
-		// Update positino
+		// Update position
 		if (mBody != null) {
 			mPosition.set(mBody.getPosition());
 		}
@@ -246,11 +246,20 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 	 * @param position the new position
 	 */
 	public void setPosition(Vector2 position) {
-		mPosition.set(position);
+		setPosition(position.x, position.y);
+	}
+
+	/**
+	 * Sets the position of the actor
+	 * @param x x-coordinate of new position
+	 * @param y y-coordinate of new position
+	 */
+	public void setPosition(float x, float y) {
+		mPosition.set(x, y);
 
 		// Change body if exist
 		if (mBody != null) {
-			mBody.setTransform(position, mBody.getAngle());
+			mBody.setTransform(mPosition, mBody.getAngle());
 		}
 	}
 

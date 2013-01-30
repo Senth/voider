@@ -2,6 +2,7 @@ package com.spiddekauga.voider.game.actors;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Pools;
+import com.spiddekauga.utils.Maths;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.Actor;
 import com.spiddekauga.voider.game.Path;
@@ -101,6 +102,12 @@ public class EnemyActor extends Actor {
 			velocity.set(mPath.getNodeAt(mPathIndexNext)).sub(getPosition());
 			velocity.nor().mul(getDef(EnemyActorDef.class).getSpeed());
 			getBody().setLinearVelocity(velocity);
+
+			// Set angle
+			if (getDef(EnemyActorDef.class).isTurning()) {
+				getBody().setTransform(getPosition(), (float)Math.toRadians(velocity.angle()));
+			}
+
 			Pools.free(velocity);
 		}
 
@@ -147,11 +154,10 @@ public class EnemyActor extends Actor {
 			}
 
 			float diffAngle = velocityAngle - toTargetAngle;
-			if (diffAngle >= Config.Actor.Enemy.TURN_ANGLE_MIN || diffAngle <= -Config.Actor.Enemy.TURN_ANGLE_MIN) {
-				if (diffAngle < 0) {
-					counterClockwise = !counterClockwise;
-				}
-
+			if (diffAngle < 0) {
+				counterClockwise = !counterClockwise;
+			}
+			if (!Maths.approxCompare(diffAngle, Config.Actor.Enemy.TURN_ANGLE_MIN)) {
 				float angleBefore = velocity.angle();
 				float angleAfter = 0;
 
@@ -189,6 +195,43 @@ public class EnemyActor extends Actor {
 
 				getBody().setLinearVelocity(velocity);
 			}
+
+
+			// Rotate till we're at the right angle
+			float bodyAngle = (float)Math.toDegrees(getBody().getAngle());
+			bodyAngle = bodyAngle % 360;
+			velocityAngle = getBody().getLinearVelocity().angle();
+			diffAngle = velocityAngle - bodyAngle;
+			if (diffAngle > 180) {
+				counterClockwise = false;
+				diffAngle -= 360;
+			} else if (diffAngle > 0) {
+				counterClockwise = true;
+			} else if (diffAngle < -180) {
+				counterClockwise = true;
+				diffAngle += 360;
+			}
+			// else (diffAngle < 0 && diffAngle >= -180)
+			else {
+				counterClockwise = false;
+			}
+
+			if (!Maths.approxCompare(diffAngle, Config.Actor.Enemy.TURN_ANGLE_MIN)) {
+
+				float rotationSpeed = getDef(EnemyActorDef.class).getTurnSpeed() * getDef(EnemyActorDef.class).getSpeed() * deltaTime;
+				if (!counterClockwise) {
+					rotationSpeed = -rotationSpeed;
+				}
+
+				if (Maths.approxCompare(diffAngle, Config.Actor.Enemy.ROTATION_SLOW_DOWN_ANGLE)) {
+					rotationSpeed *= Config.Actor.Enemy.ROTATION_SLOW_DOWN_RATE;
+				}
+
+				getBody().setAngularVelocity(rotationSpeed);
+			} else {
+				getBody().setAngularVelocity(0);
+			}
+
 
 			Pools.free(velocity);
 			Pools.free(toTarget);

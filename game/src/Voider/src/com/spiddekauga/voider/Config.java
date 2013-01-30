@@ -58,6 +58,10 @@ public class Config {
 			public final static float PATH_NODE_CLOSE_SQ = 0.5f * 0.5f;
 			/** Minimum angle if we shall turn */
 			public final static float TURN_ANGLE_MIN = 0.1f;
+			/** When the rotation shall be slowed down */
+			public final static float ROTATION_SLOW_DOWN_ANGLE = 10;
+			/** How much it shall slow down with */
+			public final static float ROTATION_SLOW_DOWN_RATE = 0.1f;
 		}
 	}
 
@@ -142,6 +146,16 @@ public class Config {
 			public final static float TURN_SPEED_DEFAULT = 20;
 			/** Step size for turning speed slider */
 			public final static float TURN_SPEED_STEP_SIZE = 1;
+			/** AI distance slider minimum */
+			public final static float AI_DISTANCE_MIN = 0;
+			/** Default minimum distance for the AI */
+			public final static float AI_DISTANCE_MIN_DEFAULT = 20;
+			/** AI distance slider maximum */
+			public final static float AI_DISTANCE_MAX = 70;
+			/** Default maximum distance for teh AI */
+			public final static float AI_DISTANCE_MAX_DEFAULT = 40;
+			/** AI distance slider step size */
+			public final static float AI_DISTANCE_STEP_SIZE = 1;
 			/** Text field size for numbers */
 			public final static float TEXT_FIELD_NUMBER_WIDTH = 70;
 		}

@@ -3,6 +3,7 @@ package com.spiddekauga.voider.game.actors;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.ActorDef;
 
 /**
@@ -58,6 +59,38 @@ public class EnemyActorDef extends ActorDef {
 	 */
 	public float getSpeed() {
 		return mSpeed;
+	}
+
+	/**
+	 * Sets the minimum distance from the player the enemy shall have.
+	 * Only applicable if the enemy movement is set to AI
+	 * @param minDistance the minimum distance from the player
+	 */
+	public void setPlayerDistanceMin(float minDistance) {
+		mPlayerDistanceMin = minDistance;
+	}
+
+	/**
+	 * @return minimum distance from the player the enemy shall have
+	 */
+	public float getPlayerDistanceMin() {
+		return mPlayerDistanceMin;
+	}
+
+	/**
+	 * Sets the maximum distance from the player the enemy shall have.
+	 * Only applicable if the enemy movement is set to AI
+	 * @param maxDistance the maximum distance from the player
+	 */
+	public void setPlayerDistanceMax(float maxDistance) {
+		mPlayerDistanceMax = maxDistance;
+	}
+
+	/**
+	 * @return maximum distance from the player the enemy shall have
+	 */
+	public float getPlayerDistanceMax() {
+		return mPlayerDistanceMax;
 	}
 
 	/**
@@ -122,7 +155,11 @@ public class EnemyActorDef extends ActorDef {
 	/** What type of movement the enemy has */
 	private MovementTypes mMovementType = MovementTypes.PATH;
 	/** Speed of the enemy */
-	private float mSpeed = 1;
+	private float mSpeed = Config.Editor.Enemy.MOVE_SPEED_DEFAULT;
 	/** How fast the enemy can turn */
-	private float mTurnSpeed = 1;
+	private float mTurnSpeed = Config.Editor.Enemy.TURN_SPEED_DEFAULT;
+	/** Minimum distance from the player */
+	private float mPlayerDistanceMin = Config.Editor.Enemy.AI_DISTANCE_MIN_DEFAULT;
+	/** Maximum distance from the player */
+	private float mPlayerDistanceMax = Config.Editor.Enemy.AI_DISTANCE_MAX_DEFAULT;
 }

@@ -221,6 +221,28 @@ public class AlignTable extends WidgetGroup implements Disposable {
 		return mPrefWidth;
 	}
 
+	/**
+	 * Sets if the table should be able to scale or not. Will return the table
+	 * to 1 scale if scalable is set to false
+	 * @param scalable set to true if the table should not be able to scale
+	 * @note Will not set the scalable variable in the rows and cells. If false, however
+	 * it will reset the scale to 1 for this table, the rows, and the cells.
+	 */
+	public void setScalable(boolean scalable) {
+		if (!scalable) {
+			setScale(1);
+		}
+
+		mScalable = scalable;
+	}
+
+	/**
+	 * @return true if this table can be scaled
+	 */
+	public boolean isScalable() {
+		return mScalable;
+	}
+
 	@Override
 	public void setScale(float scale) {
 		setScaleX(scale);
@@ -240,22 +262,26 @@ public class AlignTable extends WidgetGroup implements Disposable {
 
 	@Override
 	public void setScaleX(float scale) {
-		mScaleX = scale;
+		if (mScalable) {
+			mScaleX = scale;
 
-		for (Row row : mRows) {
-			row.setScaleX(scale);
+			for (Row row : mRows) {
+				row.setScaleX(scale);
+			}
+			invalidate();
 		}
-		invalidate();
 	}
 
 	@Override
 	public void setScaleY(float scale) {
-		mScaleY = scale;
+		if (mScalable) {
+			mScaleY = scale;
 
-		for (Row row : mRows) {
-			row.setScaleY(scale);
+			for (Row row : mRows) {
+				row.setScaleY(scale);
+			}
+			invalidate();
 		}
-		invalidate();
 	}
 
 	@Override
@@ -445,6 +471,8 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	private float mScaleX = 1;
 	/** Scale Y value */
 	private float mScaleY = 1;
+	/** True if the table can be scaled */
+	private boolean mScalable = true;
 	/** If the table shall keep size after layout, or it shall resize itself */
 	private boolean mKeepSize = false;
 	/** Default cell padding */
