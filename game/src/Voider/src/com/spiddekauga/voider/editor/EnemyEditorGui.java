@@ -57,17 +57,21 @@ class EnemyEditorGui extends Gui {
 		mAiTable.setCellPaddingDefault(2, 2, 2, 2);
 		mPathTable.setRowAlign(Horizontal.LEFT, Vertical.MIDDLE);
 		mPathTable.setCellPaddingDefault(2, 2, 2, 2);
+		mVisualTable.setRowAlign(Horizontal.LEFT, Vertical.MIDDLE);
+		mVisualTable.setCellPaddingDefault(2, 2, 2, 2);
 
 
 		initMenu();
 		initMovement();
 		initWeapon();
+		initVisual();
 
 
 		mMainTable.setTransform(true);
 		mMovementTable.setTransform(true);
 		mWeaponTable.setTransform(true);
 		mAiTable.setTransform(true);
+		mVisualTable.setTransform(true);
 		mMainTable.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 	}
 
@@ -120,7 +124,7 @@ class EnemyEditorGui extends Gui {
 		mMainTable.add(button);
 
 
-		// --- Type (Movement OR Weapons) ---
+		// --- Active options ---
 		// Movement
 		Row row = mMainTable.row();
 		row.setAlign(Horizontal.CENTER, Vertical.BOTTOM);
@@ -130,7 +134,7 @@ class EnemyEditorGui extends Gui {
 			@Override
 			public void onChange(boolean checked) {
 				if (checked) {
-					addInnerTable(mMovementTable, mTypeTable);
+					addInnerTable(mMovementTable, mOptionsContainerTable);
 				}
 			}
 		};
@@ -143,14 +147,30 @@ class EnemyEditorGui extends Gui {
 			@Override
 			public void onChange(boolean checked) {
 				if (checked) {
-					addInnerTable(mWeaponTable, mTypeTable);
+					addInnerTable(mWeaponTable, mOptionsContainerTable);
 				}
 			}
 		};
 		buttonGroup.add(button);
 		mMainTable.add(button);
+
+		// Visuals
+		button = new TextButton("Visuals", textToogleStyle);
+		new CheckedListener(button) {
+			@Override
+			public void onChange(boolean checked) {
+				if (checked) {
+					addInnerTable(mVisualTable, mOptionsContainerTable);
+				}
+			}
+		};
+		buttonGroup.add(button);
+		mMainTable.add(button);
+
+
+		// Add the options wrapper
 		mMainTable.row();
-		mMainTable.add(mTypeTable);
+		mMainTable.add(mOptionsContainerTable);
 	}
 
 	/**
@@ -351,13 +371,45 @@ class EnemyEditorGui extends Gui {
 
 	}
 
+	/**
+	 * Initializes the visual GUI parts
+	 */
+	void initVisual() {
+		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
+		LabelStyle labelStyle = editorSkin.get("default", LabelStyle.class);
+		SliderStyle sliderStyle = editorSkin.get("default", SliderStyle.class);
+		TextFieldStyle textFieldStyle = editorSkin.get("default", TextFieldStyle.class);
+
+		mVisualTable.setScalable(false);
+
+		Label label = new Label("Starting angle", labelStyle);
+		mVisualTable.add(label);
+
+
+		mVisualTable.row();
+		Slider slider = new Slider(0, 360, 1, false, sliderStyle);
+		mVisualTable.add(slider);
+		TextField textField = new TextField("", textFieldStyle);
+		textField.setWidth(Config.Editor.Enemy.TEXT_FIELD_NUMBER_WIDTH);
+		mVisualTable.add(textField);
+
+		new SliderListener(slider, textField) {
+			@Override
+			public void onChange(float newValue) {
+				mEnemyEditor.setStartingAngle(newValue);
+			}
+		};
+	}
+
 	// Tables
 	/** Wrapping table for the activate type */
-	private AlignTable mTypeTable = new AlignTable();
+	private AlignTable mOptionsContainerTable = new AlignTable();
 	/** Container for all movement options */
 	private AlignTable mMovementTable = new AlignTable();
 	/** Container for all weapon options */
 	private AlignTable mWeaponTable = new AlignTable();
+	/** Container for all visual options */
+	private AlignTable mVisualTable = new AlignTable();
 	/** Container for the different movement variables */
 	private AlignTable mMovementTypeTable = new AlignTable();
 	/** Table for Path movement */

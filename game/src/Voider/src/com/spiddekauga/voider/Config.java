@@ -59,9 +59,13 @@ public class Config {
 			/** Minimum angle if we shall turn */
 			public final static float TURN_ANGLE_MIN = 0.1f;
 			/** When the rotation shall be slowed down */
-			public final static float ROTATION_SLOW_DOWN_ANGLE = 10;
-			/** How much it shall slow down with */
+			public final static float ROTATION_SLOW_DOWN_ANGLE = 3;
+			/** How much the rotation shall slow down */
 			public final static float ROTATION_SLOW_DOWN_RATE = 0.1f;
+			/** When the rotation shall be speeded */
+			public final static float ROTATION_SPEED_UP_ANGLE = 10;
+			/** How much the rotation shall speed up */
+			public final static float ROTATION_SPSEED_UP_RATE = 3;
 		}
 	}
 

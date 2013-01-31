@@ -70,7 +70,6 @@ public class EnemyEditor extends WorldScene {
 		mMouseJointDef.bodyB = mPlayerActor.getBody(); // TODO REMOVE, set in onActivate instead
 		mMouseJointDef.collideConnected = true;
 		mMouseJointDef.maxForce = Config.Game.MouseJoint.FORCE_MAX;
-
 	}
 
 	@Override
@@ -334,6 +333,14 @@ public class EnemyEditor extends WorldScene {
 	 */
 	void setTurnSpeed(float turnSpeed) {
 		mDef.setTurnSpeed(turnSpeed);
+	}
+
+	/**
+	 * Sets the starting angle of the enemy
+	 * @param angle starting angle of the enemy
+	 */
+	void setStartingAngle(float angle) {
+		mDef.getBodyDef().angle = angle;
 	}
 
 	/** Invalid pointer id */

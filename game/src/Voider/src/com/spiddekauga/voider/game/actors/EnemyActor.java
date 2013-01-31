@@ -166,6 +166,7 @@ public class EnemyActor extends Actor {
 		// Enemy in range
 		else {
 			getBody().setLinearVelocity(0, 0);
+			getBody().setAngularVelocity(0);
 		}
 	}
 
@@ -204,16 +205,30 @@ public class EnemyActor extends Actor {
 	private void moveToTargetTurning(Vector2 targetDirection, float deltaTime) {
 		Vector2 velocity = Pools.obtain(Vector2.class);
 		velocity.set(getBody().getLinearVelocity());
-
+		boolean noVelocity = velocity.len2() == 0;
 
 		// Calculate angle between the vectors
 		boolean counterClockwise = false;
-		float velocityAngle = velocity.angle();
+		float bodyAngle = (float)Math.toDegrees(getBody().getAngle()) % 360;
+		if (bodyAngle < 0) {
+			bodyAngle += 360;
+		}
+		float velocityAngleOriginal = 0;
+		float velocityAngle = 0;
+		// We have no speed, use body angle instead
+		if (noVelocity) {
+			velocityAngleOriginal = bodyAngle;
+		} else {
+			velocityAngleOriginal = velocity.angle();
+		}
+		velocityAngle = velocityAngleOriginal;
 		if (velocityAngle > 180) {
 			counterClockwise = !counterClockwise;
 			velocityAngle -= 180;
 		}
-		float targetAngle = targetDirection.angle();
+
+		float targetAngleOriginal = targetDirection.angle();
+		float targetAngle = targetAngleOriginal;
 		if (targetAngle > 180) {
 			counterClockwise = !counterClockwise;
 			targetAngle -= 180;
@@ -223,32 +238,38 @@ public class EnemyActor extends Actor {
 		if (diffAngle < 0) {
 			counterClockwise = !counterClockwise;
 		}
-		if (!Maths.approxCompare(diffAngle, Config.Actor.Enemy.TURN_ANGLE_MIN)) {
-			float angleBefore = velocity.angle();
-			float angleAfter = 0;
 
+		// Because we only use 0-180 it could be 0 degrees when we should actually
+		// head the other direction, take this into account!
+		boolean oppositeDirection = Maths.approxCompare(velocityAngleOriginal, targetDirection.angle(), Config.Actor.Enemy.TURN_ANGLE_MIN);
+
+		if (!Maths.approxCompare(diffAngle, Config.Actor.Enemy.TURN_ANGLE_MIN) || oppositeDirection) {
+			float angleBefore = velocity.angle();
 			float rotation = getDef(EnemyActorDef.class).getTurnSpeed() * deltaTime * getDef(EnemyActorDef.class).getSpeed();
 			if (!counterClockwise) {
 				rotation = -rotation;
 			}
-			if (velocity.angle() + rotation > 360) {
-				angleAfter += 360;
-			} else if (velocity.angle() + rotation < 0) {
-				angleAfter -= 360;
+
+			float angleAfter = velocityAngleOriginal + rotation;
+
+			if (noVelocity) {
+				velocity.x = 1;
+				velocity.setAngle(angleAfter);
+				velocity.mul(getDef(EnemyActorDef.class).getSpeed());
+			} else {
+				velocity.rotate(rotation);
 			}
-			velocity.rotate(rotation);
-			angleAfter += velocity.angle();
 
 			// Check if we turned too much?
 			boolean turnedTooMuch = false;
 			// If toTarget angle is between the before and after velocity angles
 			// We have turned too much
 			if (counterClockwise) {
-				if (angleBefore < targetDirection.angle() && targetDirection.angle() < angleAfter) {
+				if (angleBefore < targetAngleOriginal && targetAngleOriginal < angleAfter) {
 					turnedTooMuch = true;
 				}
 			} else {
-				if (angleBefore > targetDirection.angle() && targetDirection.angle() > angleAfter) {
+				if (angleBefore > targetAngleOriginal && targetAngleOriginal > angleAfter) {
 					turnedTooMuch = true;
 				}
 			}
@@ -264,8 +285,6 @@ public class EnemyActor extends Actor {
 
 
 		// Rotate till we're at the right angle
-		float bodyAngle = (float)Math.toDegrees(getBody().getAngle());
-		bodyAngle = bodyAngle % 360;
 		velocityAngle = getBody().getLinearVelocity().angle();
 		diffAngle = velocityAngle - bodyAngle;
 		if (diffAngle > 180) {
@@ -291,6 +310,8 @@ public class EnemyActor extends Actor {
 
 			if (Maths.approxCompare(diffAngle, Config.Actor.Enemy.ROTATION_SLOW_DOWN_ANGLE)) {
 				rotationSpeed *= Config.Actor.Enemy.ROTATION_SLOW_DOWN_RATE;
+			} else if (!Maths.approxCompare(diffAngle, Config.Actor.Enemy.ROTATION_SPEED_UP_ANGLE)) {
+				rotationSpeed *= Config.Actor.Enemy.ROTATION_SPSEED_UP_RATE;
 			}
 
 			getBody().setAngularVelocity(rotationSpeed);

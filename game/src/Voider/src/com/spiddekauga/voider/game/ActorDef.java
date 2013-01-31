@@ -131,6 +131,7 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	 */
 	public BodyDef getBodyDefCopy() {
 		BodyDef copy = new BodyDef();
+		copy.angle = mBodyDef.angle;
 		copy.active = mBodyDef.active;
 		copy.allowSleep = mBodyDef.allowSleep;
 		copy.angularDamping = mBodyDef.angularDamping;
