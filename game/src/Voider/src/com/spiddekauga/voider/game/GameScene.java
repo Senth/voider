@@ -25,12 +25,13 @@ public class GameScene extends WorldScene {
 	 * scoring).
 	 */
 	public GameScene(boolean testing) {
-		super(null);
+		super(new GameSceneGui());
+		((GameSceneGui)mGui).setGameScene(this);
+
 		mTesting = testing;
 
 		Actor.setEditorActive(false);
 		mWorld.setContactListener(mCollisionResolver);
-
 
 		mPlayerActor = new PlayerActor();
 		mPlayerActor.createBody();
@@ -62,6 +63,9 @@ public class GameScene extends WorldScene {
 	@Override
 	public void onActivate(Outcomes outcome, String message) {
 		/** @TODO loading done */
+		if (outcome == Outcomes.LOADING_SUCCEEDED) {
+			mGui.initGui();
+		}
 
 		/** @TODO game completed, aborted? */
 	}

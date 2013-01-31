@@ -49,7 +49,7 @@ public class EnemyEditor extends WorldScene {
 		setEnemyDef();
 		createExamplePaths();
 
-		((EnemyEditorGui)mGui).init(this);
+		((EnemyEditorGui)mGui).setEnemyEditor(this);
 
 		try {
 			mfEnemyOnceReachEnd = EnemyActor.class.getDeclaredField("mPathOnceReachedEnd");

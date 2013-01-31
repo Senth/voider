@@ -12,7 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button;
 public abstract class CheckedListener implements EventListener {
 	/**
 	 * Creates a checked listener for the specified button. Always
-	 * calls onChange.
+	 * calls onChange. Adds this class to the button automatically as a listener.
 	 * @param button the button to listen to
 	 */
 	public CheckedListener(Button button) {

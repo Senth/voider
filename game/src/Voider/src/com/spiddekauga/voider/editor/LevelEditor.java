@@ -9,23 +9,10 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.QueryCallback;
-import com.badlogic.gdx.scenes.scene2d.Event;
-import com.badlogic.gdx.scenes.scene2d.EventListener;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
-import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent;
 import com.badlogic.gdx.utils.Pools;
 import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.utils.Scroller;
 import com.spiddekauga.utils.Scroller.ScrollAxis;
-import com.spiddekauga.utils.scene.ui.Align.Horizontal;
-import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.editor.commands.ClActorAdd;
@@ -61,12 +48,14 @@ import com.spiddekauga.voider.scene.WorldScene;
  * 
  * @TODO unload level
  */
-public class LevelEditor extends WorldScene implements EventListener {
+public class LevelEditor extends WorldScene {
 	/**
 	 * Constructor for the level editor
 	 */
 	public LevelEditor() {
-		super(null);
+		super(new LevelEditorGui());
+		((LevelEditorGui)mGui).setLevelEditor(this);
+
 		Actor.setEditorActive(true);
 
 		mScroller = new Scroller(50, 2000, 10, 200, ScrollAxis.X);
@@ -164,7 +153,7 @@ public class LevelEditor extends WorldScene implements EventListener {
 		// Check so that all resources have been loaded
 		if (outcome == Outcomes.LOADING_SUCCEEDED) {
 			if (!mGuiInitialized) {
-				initGui();
+				mGui.initGui();
 				mGuiInitialized = true;
 			}
 
@@ -301,9 +290,32 @@ public class LevelEditor extends WorldScene implements EventListener {
 	}
 
 	/**
+	 * Switches the tool to the selected tool
+	 * @param tool the new tool type
+	 */
+	void switchTool(Tools tool) {
+		// Set current tool
+		mTool = tool;
+
+		switch (mTool) {
+		case PICKUP:
+			mToolCurrent = mPickupTool;
+			break;
+
+		case STATIC_TERRAIN:
+			mToolCurrent = mStaticTerrainTool;
+			break;
+
+		default:
+			Gdx.app.error("LevelEditor", "Switched to an unknown tool!");
+			break;
+		}
+	}
+
+	/**
 	 * Tests to run a game from the current location
 	 */
-	private void runFromHere() {
+	void runFromHere() {
 		GameScene testGame = new GameScene(true);
 		Level copyLevel = mLevel.copy();
 		copyLevel.setXCoord(mCamera.position.x - mCamera.viewportWidth * 0.5f);
@@ -312,7 +324,66 @@ public class LevelEditor extends WorldScene implements EventListener {
 		SceneSwitcher.switchTo(testGame);
 	}
 
+	/**
+	 * Saves the current level
+	 */
+	void save() {
+		ResourceSaver.save(mLevel.getDef());
+		ResourceSaver.save(mLevel);
+	}
 
+	/**
+	 * Loads a level
+	 */
+	void load() {
+		// Load all level defs
+		try {
+			ResourceCacheFacade.loadAllOf(LevelDef.class, true);
+			ResourceCacheFacade.finishLoading();
+
+			List<LevelDef> levelDefs = ResourceCacheFacade.get(LevelDef.class);
+
+			// Load first
+			if (levelDefs.size() > 0) {
+				ResourceCacheFacade.load(levelDefs.get(0).getLevelId(), Level.class, false);
+				ResourceCacheFacade.finishLoading();
+				Level loadedLevel = ResourceCacheFacade.get(levelDefs.get(0).getLevelId(), Level.class);
+				if (loadedLevel != null) {
+					mLevel.dispose();
+					setLevel(loadedLevel);
+				}
+			}
+
+		} catch (UndefinedResourceTypeException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Creates a new empty level
+	 */
+	void newLevel() {
+		mLevel.dispose();
+		LevelDef levelDef = new LevelDef();
+		Level level = new Level(levelDef);
+		setLevel(level);
+	}
+
+	/**
+	 * Sets the current active pickup tool
+	 * @param pickupTool the new active pickup tool
+	 */
+	void setPickupTool(PickupTools pickupTool) {
+		mPickupTool.setTool(pickupTool);
+	}
+
+	/**
+	 * Sets the current active static terrain tool
+	 * @param staticTerrainTool new active static terrain tool
+	 */
+	void setStaticTerrainTool(StaticTerrainTools staticTerrainTool) {
+		mStaticTerrainTool.setTool(staticTerrainTool);
+	}
 
 	/** Level we're currently editing */
 	private Level mLevel = null;
@@ -357,7 +428,7 @@ public class LevelEditor extends WorldScene implements EventListener {
 	/**
 	 * All the main tool buttons
 	 */
-	private enum Tools {
+	enum Tools {
 		/** Pickup tool @TODO change style*/
 		PICKUP("toggle"),
 		/** Terrain tool @TODO change style */
@@ -390,11 +461,11 @@ public class LevelEditor extends WorldScene implements EventListener {
 	/**
 	 * Static terrain tools
 	 */
-	private enum StaticTerrainTools {
+	enum StaticTerrainTools {
 		/** Add/Create corners, can move corners too */
 		ADD("add"),
 		/** Move terrain @TODO change style*/
-		MOVE_TERRAIN("toggle"),
+		MOVE("toggle"),
 		/** Remove corners and terrain @TODO change style */
 		REMOVE("toggle"),
 
@@ -423,7 +494,7 @@ public class LevelEditor extends WorldScene implements EventListener {
 	/**
 	 * Pickup tools
 	 */
-	private enum PickupTools {
+	enum PickupTools {
 		/** Add/create health 25 @TODO change style */
 		ADD_HEALTH_25("toggle"),
 		/** Add/Create health 50 @TODO change style */
@@ -456,173 +527,6 @@ public class LevelEditor extends WorldScene implements EventListener {
 	}
 
 	// -------------------------------------
-	//			GUI HANDLING
-	// -------------------------------------
-	@Override
-	public boolean handle(Event event) {
-		if (!(event instanceof ChangeEvent) || !(event.getTarget() instanceof Button)) {
-			return false;
-		}
-
-		Button button = (Button)event.getTarget();
-
-		String actionName = event.getTarget().getName();
-
-
-		// --- TOGGLE BUTTONS ---
-		if (button.isChecked()) {
-			// STATIC TERRAIN
-			if (actionName.equals(Tools.STATIC_TERRAIN.toString())) {
-				switchTool(mStaticTerrainHandler, Tools.STATIC_TERRAIN);
-			} else if (actionName.equals(Tools.PICKUP.toString())) {
-				switchTool(mPickupTool, Tools.PICKUP);
-			}
-		}
-
-
-		// --- ACTIONS ---
-		if (button.isPressed()) {
-			// RUN
-			if (actionName.equals(Tools.RUN.toString())) {
-				runFromHere();
-			}
-
-			/** @TODO remove */
-			// SAVE
-			else if (actionName.equals("save")) {
-				ResourceSaver.save(mLevel.getDef());
-				ResourceSaver.save(mLevel);
-			}
-
-			// LOAD - existing level (use first available
-			else if (actionName.equals("load")) {
-				// Load all level defs
-				try {
-					ResourceCacheFacade.loadAllOf(LevelDef.class, true);
-					ResourceCacheFacade.finishLoading();
-
-					List<LevelDef> levelDefs = ResourceCacheFacade.get(LevelDef.class);
-
-					// Load first
-					if (levelDefs.size() > 0) {
-						ResourceCacheFacade.load(levelDefs.get(0).getLevelId(), Level.class, false);
-						ResourceCacheFacade.finishLoading();
-						Level loadedLevel = ResourceCacheFacade.get(levelDefs.get(0).getLevelId(), Level.class);
-						if (loadedLevel != null) {
-							mLevel.dispose();
-							setLevel(loadedLevel);
-						}
-					}
-
-				} catch (UndefinedResourceTypeException e) {
-					e.printStackTrace();
-				}
-			}
-
-			// NEW - add new level
-			else if (actionName.equals("new")) {
-				mLevel.dispose();
-				LevelDef levelDef = new LevelDef();
-				Level level = new Level(levelDef);
-				setLevel(level);
-			}
-		}
-
-		return false;
-	}
-
-	/**
-	 * Switches the tool to the selected tool
-	 * @param selectedTool the new main tool
-	 * @param tool the new tool type
-	 */
-	private void switchTool(Tool selectedTool, Tools tool) {
-		//		// Set current tool
-		//		mTool = tool;
-		//		mToolCurrent = selectedTool;
-		//
-		//
-		//		// Clear GUI table and re-add the correct GUI
-		//		mMainTable.clear();
-		//		AlignTable toolGui = mToolCurrent.getGui();
-		//		if (toolGui != null) {
-		//			mMainTable.add(toolGui);
-		//		}
-		//		mMainTable.add(mToolTable);
-		//		mMainTable.invalidate();
-	}
-
-
-	/**
-	 * Initializes all the buttons for the GUI
-	 */
-	private void initGui() {
-		//		mMainTable.setTableAlign(Horizontal.RIGHT, Vertical.TOP);
-		//		mMainTable.setRowAlign(Horizontal.RIGHT, Vertical.TOP);
-		//
-		//		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
-		//
-		//		TextButtonStyle textToogleStyle = editorSkin.get("toggle", TextButtonStyle.class);
-		//		TextButtonStyle textStyle = editorSkin.get("default", TextButtonStyle.class);
-		//		ImageButtonStyle imageStyle = editorSkin.get(StaticTerrainTools.ADD.getStyleName(), ImageButtonStyle.class);
-		//
-		//		mToolTable = new AlignTable();
-		//		mToolTable.setRowAlign(Horizontal.RIGHT, Vertical.TOP);
-		//		ButtonGroup toggleGroup = new ButtonGroup();
-		//		Button button = new TextButton("Static Terrain", textToogleStyle);
-		//		button.setName(Tools.STATIC_TERRAIN.toString());
-		//		toggleGroup.add(button);
-		//		button.addListener(this);
-		//		mToolTable.add(button);
-		//		mToolTable.row();
-		//
-		//		button = new TextButton("Pickup", textToogleStyle);
-		//		button.setName(Tools.PICKUP.toString());
-		//		toggleGroup.add(button);
-		//		button.addListener(this);
-		//		mToolTable.add(button);
-		//		mToolTable.row();
-		//
-		//		button = new ImageButton(imageStyle);
-		//		mToolTable.add(button);
-		//		mToolTable.row();
-		//
-		//		button = new TextButton("SAVE", textStyle);
-		//		button.setName("save");
-		//		button.addListener(this);
-		//		mToolTable.add(button);
-		//		mToolTable.row();
-		//
-		//		button = new TextButton("LOAD", textStyle);
-		//		button.setName("load");
-		//		button.addListener(this);
-		//		mToolTable.add(button);
-		//		mToolTable.row();
-		//
-		//		button = new TextButton("NEW", textStyle);
-		//		button.setName("new");
-		//		button.addListener(this);
-		//		mToolTable.add(button);
-		//		mToolTable.row();
-		//
-		//		button = new TextButton("RUN", textStyle);
-		//		button.setName(Tools.RUN.toString());
-		//		button.addListener(this);
-		//		mToolTable.add(button);
-		//
-		//		mMainTable.add(mToolTable);
-		//		mMainTable.setTransform(true);
-		//
-		//
-		//		// Initialize all the tools' GUI
-		//		mStaticTerrainHandler.initGui();
-		//		mPickupTool.initGui();
-		//
-		//		switchTool(mStaticTerrainHandler, Tools.STATIC_TERRAIN);
-		//		mMainTable.invalidate();
-	}
-
-	// -------------------------------------
 	//		EVENT HANDLING FOR TOOLS
 	// -------------------------------------
 	/** Event handler for the current tool */
@@ -633,14 +537,14 @@ public class LevelEditor extends WorldScene implements EventListener {
 	/** Tool for pickups */
 	private PickupTool mPickupTool = new PickupTool();
 	/** Tool for static terrain */
-	private StaticTerrainTool mStaticTerrainHandler = new StaticTerrainTool();
+	private StaticTerrainTool mStaticTerrainTool = new StaticTerrainTool();
 	/** Tool for when no tool is active */
 	private NoneHandler mNoneHandler = new NoneHandler();
 
 	/**
 	 * Common interface for all event handlers
 	 */
-	private abstract class Tool extends ChangeListener {
+	private abstract class Tool {
 		/**
 		 * Handles touch down events
 		 */
@@ -666,16 +570,6 @@ public class LevelEditor extends WorldScene implements EventListener {
 		 * should be set and which should not be set...
 		 */
 		public abstract void setActor();
-
-		/**
-		 * Initializes the GUI for this tool
-		 */
-		public abstract void initGui();
-
-		/**
-		 * @return the table with the GUI for this tool
-		 */
-		public abstract AlignTable getGui();
 	}
 
 	/**
@@ -813,71 +707,12 @@ public class LevelEditor extends WorldScene implements EventListener {
 			// Does nothing
 		}
 
-		@Override
-		public void initGui() {
-			mGuiTable.setName(Tools.PICKUP.toString() + "-table");
-			mGuiTable.setRowAlign(Horizontal.RIGHT, Vertical.BOTTOM);
-
-			Skin editorSkin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
-			TextButtonStyle textStyle = editorSkin.get("toggle", TextButtonStyle.class);
-
-			ButtonGroup toggleGroup = new ButtonGroup();
-			Button button = new TextButton("25HP", textStyle);
-			button.setName(PickupTools.ADD_HEALTH_25.toString());
-			button.addListener(this);
-			toggleGroup.add(button);
-			mGuiTable.add(button);
-			mGuiTable.row();
-
-			button = new TextButton("50HP", textStyle);
-			button.setName(PickupTools.ADD_HEALTH_50.toString());
-			button.addListener(this);
-			toggleGroup.add(button);
-			mGuiTable.add(button);
-			mGuiTable.row();
-
-			button = new TextButton("Remove", textStyle);
-			button.setName(PickupTools.REMOVE.toString());
-			button.addListener(this);
-			toggleGroup.add(button);
-			mGuiTable.add(button);
-			mGuiTable.row();
-
-			button = new TextButton("Move", textStyle);
-			button.setName(PickupTools.MOVE.toString());
-			button.addListener(this);
-			toggleGroup.add(button);
-			mGuiTable.add(button);
-			mGuiTable.setTransform(true);
-		}
-
-		@Override
-		public AlignTable getGui() {
-			return mGuiTable;
-		}
-
-		@Override
-		public void changed(ChangeEvent event, com.badlogic.gdx.scenes.scene2d.Actor actor) {
-			// Buttons
-			if (actor instanceof Button) {
-				Button button = (Button)actor;
-
-				// Checked means it was pressed down
-				if (button.isChecked()) {
-					// Find enum of tool that was pressed
-					for (PickupTools tool : PickupTools.values()) {
-						if (actor.getName().equals(tool.toString())) {
-							// Select tool
-							mTool = tool;
-							break;
-						}
-					}
-				}
-				// Else it was unchecked, and thus select no tool
-				else {
-					mTool = PickupTools.NONE;
-				}
-			}
+		/**
+		 * Sets the current active pickup tool
+		 * @param tool new active pickup tool
+		 */
+		public void setTool(PickupTools tool) {
+			mTool = tool;
 		}
 
 		/** Picking for static terrains */
@@ -894,8 +729,6 @@ public class LevelEditor extends WorldScene implements EventListener {
 			}
 		};
 
-		/** Table for the GUI */
-		private AlignTable mGuiTable = new AlignTable();
 		/** Current tool for pickup */
 		private PickupTools mTool = PickupTools.NONE;
 		/** Actor we're currently adding */
@@ -912,30 +745,6 @@ public class LevelEditor extends WorldScene implements EventListener {
 	 * @author Matteus Magnusson <senth.wallace@gmail.com>
 	 */
 	private class StaticTerrainTool extends Tool {
-		@Override
-		public void changed(ChangeEvent event, com.badlogic.gdx.scenes.scene2d.Actor actor) {
-			// Buttons
-			if (actor instanceof Button) {
-				Button button = (Button)actor;
-
-				// Checked means it was pressed down
-				if (button.isChecked()) {
-					// Find enum of tool that was pressed
-					for (StaticTerrainTools tool : StaticTerrainTools.values()) {
-						if (actor.getName().equals(tool.toString())) {
-							// Select tool
-							mTool = tool;
-							break;
-						}
-					}
-				}
-				// Else it was unchecked, and thus select no tool
-				else {
-					mTool = StaticTerrainTools.NONE;
-				}
-			}
-		}
-
 		@Override
 		public void down() {
 			switch (mTool) {
@@ -984,7 +793,7 @@ public class LevelEditor extends WorldScene implements EventListener {
 				break;
 
 
-			case MOVE_TERRAIN:
+			case MOVE:
 				testPick(mCallback);
 
 				// If hit terrain (no corner), start dragging the terrain
@@ -1052,7 +861,7 @@ public class LevelEditor extends WorldScene implements EventListener {
 				break;
 
 
-			case MOVE_TERRAIN:
+			case MOVE:
 				if (mActor != null) {
 					// Get diff movement
 					Vector2 newPosition = Pools.obtain(Vector2.class);
@@ -1108,7 +917,7 @@ public class LevelEditor extends WorldScene implements EventListener {
 				break;
 
 
-			case MOVE_TERRAIN:
+			case MOVE:
 				if (mActor != null) {
 					// Reset actor to original position
 					mActor.setPosition(mDragOrigin);
@@ -1183,41 +992,12 @@ public class LevelEditor extends WorldScene implements EventListener {
 			}
 		}
 
-		@Override
-		public void initGui() {
-			mGuiTable.setName(Tools.STATIC_TERRAIN.toString() + "-table");
-			mGuiTable.setRowAlign(Horizontal.RIGHT, Vertical.TOP);
-
-			Skin editorSkin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
-			TextButtonStyle textStyle = editorSkin.get(StaticTerrainTools.MOVE_TERRAIN.getStyleName(), TextButtonStyle.class);
-			ImageButtonStyle imageStyle = editorSkin.get(StaticTerrainTools.ADD.getStyleName(), ImageButtonStyle.class);
-
-			ButtonGroup toggleGroup = new ButtonGroup();
-			Button button = new ImageButton(imageStyle);
-			button.setName(StaticTerrainTools.ADD.toString());
-			button.addListener(this);
-			toggleGroup.add(button);
-			mGuiTable.add(button);
-			mGuiTable.row();
-
-			button = new TextButton("Remove", textStyle);
-			button.setName(StaticTerrainTools.REMOVE.toString());
-			button.addListener(this);
-			toggleGroup.add(button);
-			mGuiTable.add(button);
-			mGuiTable.row();
-
-			button = new TextButton("Move", textStyle);
-			button.setName(StaticTerrainTools.MOVE_TERRAIN.toString());
-			button.addListener(this);
-			toggleGroup.add(button);
-			mGuiTable.add(button);
-			mGuiTable.setTransform(true);
-		}
-
-		@Override
-		public AlignTable getGui() {
-			return mGuiTable;
+		/**
+		 * Sets the current active static terrain tool
+		 * @param tool the new active static terrain tool
+		 */
+		public void setTool(StaticTerrainTools tool) {
+			mTool = tool;
 		}
 
 		/**
@@ -1267,8 +1047,6 @@ public class LevelEditor extends WorldScene implements EventListener {
 		private StaticTerrainActor mActor = null;
 		/** The current active tool for the static terrain tool */
 		private StaticTerrainTools mTool = StaticTerrainTools.NONE;
-		/** GUI buttons for the terrain */
-		private AlignTable mGuiTable = new AlignTable();
 
 		/** Picking for static terrains */
 		private QueryCallback mCallback = new QueryCallback() {
@@ -1300,12 +1078,6 @@ public class LevelEditor extends WorldScene implements EventListener {
 	 */
 	private class NoneHandler extends Tool {
 		@Override
-		public void changed(ChangeEvent event, com.badlogic.gdx.scenes.scene2d.Actor actor) {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
 		public void down() {
 			// TODO Auto-generated method stub
 		}
@@ -1328,17 +1100,6 @@ public class LevelEditor extends WorldScene implements EventListener {
 		@Override
 		public void setActor() {
 			// TODO Auto-generated method stub
-		}
-
-		@Override
-		public void initGui() {
-			/** @TODO init gui */
-		}
-
-		@Override
-		public AlignTable getGui() {
-			/** @TODO return table */
-			return null;
 		}
 	}
 }

@@ -37,10 +37,10 @@ import com.spiddekauga.voider.scene.Gui;
  */
 class EnemyEditorGui extends Gui {
 	/**
-	 * Initializes the variables needed for this GUI class
-	 * @param enemyEditor the enemy editor bound to this class
+	 * Takes an enemy editor that will be bound to this GUI
+	 * @param enemyEditor the scene that will be bound to this GUI
 	 */
-	public void init(EnemyEditor enemyEditor) {
+	public void setEnemyEditor(EnemyEditor enemyEditor) {
 		mEnemyEditor = enemyEditor;
 	}
 
@@ -59,13 +59,27 @@ class EnemyEditorGui extends Gui {
 		mPathTable.setCellPaddingDefault(2, 2, 2, 2);
 
 
+		initMenu();
+		initMovement();
+		initWeapon();
+
+
+		mMainTable.setTransform(true);
+		mMovementTable.setTransform(true);
+		mWeaponTable.setTransform(true);
+		mAiTable.setTransform(true);
+		mMainTable.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+	}
+
+	/**
+	 * Initializes the menu buttons
+	 */
+	void initMenu() {
 		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
 
 		TextButtonStyle textToogleStyle = editorSkin.get("toggle", TextButtonStyle.class);
 		TextButtonStyle textStyle = editorSkin.get("default", TextButtonStyle.class);
-		LabelStyle labelStyle = editorSkin.get("default", LabelStyle.class);
-		SliderStyle sliderStyle = editorSkin.get("default", SliderStyle.class);
-		TextFieldStyle textFieldStyle = editorSkin.get("default", TextFieldStyle.class);
+
 
 		// New Enemy
 		Button button = new TextButton("New Enemy", textStyle);
@@ -135,18 +149,27 @@ class EnemyEditorGui extends Gui {
 		};
 		buttonGroup.add(button);
 		mMainTable.add(button);
-
 		mMainTable.row();
 		mMainTable.add(mTypeTable);
+	}
 
+	/**
+	 * Initializes the movement GUI part
+	 */
+	void initMovement() {
+		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
+		CheckBoxStyle checkBoxStyle = editorSkin.get("default", CheckBoxStyle.class);
+		LabelStyle labelStyle = editorSkin.get("default", LabelStyle.class);
+		SliderStyle sliderStyle = editorSkin.get("default", SliderStyle.class);
+		TextFieldStyle textFieldStyle = editorSkin.get("default", TextFieldStyle.class);
+		TextButtonStyle textToogleStyle = editorSkin.get("toggle", TextButtonStyle.class);
 
 		// Type of movement?
 		MovementTypes movementType = mEnemyEditor.getMovementType();
 		// Path
-		row = mMovementTable.row();
+		Row row = mMovementTable.row();
 		row.setScalable(false);
-		buttonGroup = new ButtonGroup();
-		CheckBoxStyle checkBoxStyle = editorSkin.get("default", CheckBoxStyle.class);
+		ButtonGroup buttonGroup = new ButtonGroup();
 		CheckBox checkBox = new CheckBox("Path", checkBoxStyle);
 		checkBox.addListener(new EventListener() {
 			@Override
@@ -229,7 +252,7 @@ class EnemyEditorGui extends Gui {
 		// Turning
 		row = mPathTable.row();
 		row.setScalable(false);
-		button = new TextButton("On", textToogleStyle);
+		Button button = new TextButton("On", textToogleStyle);
 		button.setChecked(false);
 		mPathTable.add(button);
 		DisableListener disableListener = new DisableListener(button) {
@@ -319,14 +342,14 @@ class EnemyEditorGui extends Gui {
 
 		sliderMinListener.setValidatingObject(sliderMax);
 		sliderMaxListener.setValidatingObject(sliderMin);
-
-		mMainTable.setTransform(true);
-		mMovementTable.setTransform(true);
-		mWeaponTable.setTransform(true);
-		mAiTable.setTransform(true);
-		mMainTable.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 	}
 
+	/**
+	 * Initializes the weapon GUI part
+	 */
+	void initWeapon() {
+
+	}
 
 	// Tables
 	/** Wrapping table for the activate type */
