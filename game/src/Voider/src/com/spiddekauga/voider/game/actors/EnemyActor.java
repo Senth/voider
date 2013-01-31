@@ -1,7 +1,9 @@
 package com.spiddekauga.voider.game.actors;
 
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.OrderedMap;
 import com.badlogic.gdx.utils.Pools;
+import com.spiddekauga.utils.Json;
 import com.spiddekauga.utils.Maths;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.Actor;
@@ -72,6 +74,16 @@ public class EnemyActor extends Actor {
 			velocity.mul(speed);
 			getBody().setLinearVelocity(velocity);
 		}
+	}
+
+	@Override
+	public void write(Json json) {
+		/** @TODO write json */
+	}
+
+	@Override
+	public void read(Json json, OrderedMap<String, Object> jsonData) {
+		/** @TODO read json */
 	}
 
 	/**
@@ -157,16 +169,54 @@ public class EnemyActor extends Actor {
 		// Enemy too far from the player?
 		if (targetDistanceSq > getDef(EnemyActorDef.class).getPlayerDistanceMaxSq()) {
 			moveToTarget(targetDirection, deltaTime);
+			resetRandomMove();
 		}
 		// Enemy too close to player?
 		else if (targetDistanceSq < getDef(EnemyActorDef.class).getPlayerDistanceMinSq()) {
 			targetDirection.mul(-1);
 			moveToTarget(targetDirection, deltaTime);
+			resetRandomMove();
 		}
 		// Enemy in range
 		else {
-			getBody().setLinearVelocity(0, 0);
-			getBody().setAngularVelocity(0);
+			if (getDef(EnemyActorDef.class).isMovingRandomly()) {
+				calculateRandomMove(deltaTime);
+			} else {
+				getBody().setLinearVelocity(0, 0);
+				getBody().setAngularVelocity(0);
+				resetRandomMove();
+			}
+		}
+	}
+
+	/**
+	 * Resets the random movement
+	 */
+	private void resetRandomMove() {
+		mRandomMoveNext = 0;
+	}
+
+	/**
+	 * Calculates the random movement of an enemy
+	 * @param deltaTime time elapsed since last fram
+	 */
+	private void calculateRandomMove(float deltaTime) {
+		boolean newMove = false;
+		if (mRandomMoveNext <= 0) {
+			float range = getDef(EnemyActorDef.class).getRandomTimeMax() - getDef(EnemyActorDef.class).getRandomTimeMin();
+			mRandomMoveNext = (float) Math.random() * range + getDef(EnemyActorDef.class).getRandomTimeMin();
+			newMove = true;
+		} else {
+			mRandomMoveNext -= deltaTime;
+		}
+
+		if (newMove) {
+			float angle = (float) Math.random() * 360;
+			mRandomMoveDirection.set(1, 0);
+			mRandomMoveDirection.setAngle(angle);
+			moveToTarget(mRandomMoveDirection, deltaTime);
+		} else {
+			moveToTarget(mRandomMoveDirection, deltaTime);
 		}
 	}
 
@@ -370,6 +420,17 @@ public class EnemyActor extends Actor {
 		Pools.free(diff);
 		return distanceSq <= Config.Actor.Enemy.PATH_NODE_CLOSE_SQ;
 	}
+
+
+	/** If the enemy has entered the screen, used when enemy shall stay inside the screen */
+	private boolean mEnteredScreen = false;
+
+	// AI MOVEMENT
+	/** Next random move time */
+	private float mRandomMoveNext = 0;
+	/** Direction of the current random move */
+	private Vector2 mRandomMoveDirection = new Vector2();
+
 
 	// PATH MOVEMENT
 	/** Path we're currently following */

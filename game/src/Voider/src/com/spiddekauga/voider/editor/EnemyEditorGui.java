@@ -305,17 +305,21 @@ class EnemyEditorGui extends Gui {
 				mEnemyEditor.setTurnSpeed(newValue);
 			}
 		};
-		slider.setValue(Config.Editor.Enemy.TURN_SPEED_DEFAULT);
+		slider.setValue(mEnemyEditor.getTurnSpeed());
 
 
 		// --- Movement AI ---
 		mAiTable.setScalable(false);
 		mAiTable.row();
-		label = new Label("Minimum distance", labelStyle);
+		label = new Label("Distance", labelStyle);
 		mAiTable.add(label);
+
+		label = new Label("Min:", labelStyle);
 		mAiTable.row();
+		cell = mAiTable.add(label);
+		cell.setPadRight(Config.Editor.Enemy.LABEL_PADDING_BEFORE_SLIDER);
 		Slider sliderMin = new Slider(Config.Editor.Enemy.AI_DISTANCE_MIN, Config.Editor.Enemy.AI_DISTANCE_MAX, Config.Editor.Enemy.AI_DISTANCE_STEP_SIZE, false, sliderStyle);
-		sliderMin.setValue(Config.Editor.Enemy.AI_DISTANCE_MIN_DEFAULT);
+		sliderMin.setValue(mEnemyEditor.getPlayerDistanceMin());
 		mAiTable.add(sliderMin);
 		textField = new TextField("", textFieldStyle);
 		textField.setWidth(Config.Editor.Enemy.TEXT_FIELD_NUMBER_WIDTH);
@@ -336,11 +340,12 @@ class EnemyEditorGui extends Gui {
 		};
 
 		mAiTable.row();
-		label = new Label("Maximum distance", labelStyle);
-		mAiTable.add(label);
+		label = new Label("Max:", labelStyle);
 		mAiTable.row();
+		cell = mAiTable.add(label);
+		cell.setPadRight(Config.Editor.Enemy.LABEL_PADDING_BEFORE_SLIDER);
 		Slider sliderMax = new Slider(Config.Editor.Enemy.AI_DISTANCE_MIN, Config.Editor.Enemy.AI_DISTANCE_MAX, Config.Editor.Enemy.AI_DISTANCE_STEP_SIZE, false, sliderStyle);
-		sliderMax.setValue(Config.Editor.Enemy.AI_DISTANCE_MAX_DEFAULT);
+		sliderMax.setValue(mEnemyEditor.getPlayerDistanceMax());
 		mAiTable.add(sliderMax);
 		textField = new TextField("", textFieldStyle);
 		textField.setWidth(Config.Editor.Enemy.TEXT_FIELD_NUMBER_WIDTH);
@@ -362,6 +367,72 @@ class EnemyEditorGui extends Gui {
 
 		sliderMinListener.setValidatingObject(sliderMax);
 		sliderMaxListener.setValidatingObject(sliderMin);
+
+
+		mAiTable.row();
+		button = new TextButton("Random Movement", textToogleStyle);
+		button.setChecked(false);
+		mAiTable.add(button);
+		disableListener = new DisableListener(button) {
+			@Override
+			public void onChange(boolean disabled) {
+				if (mButton instanceof TextButton) {
+					mEnemyEditor.setMoveRandomly(!disabled);
+				}
+			}
+		};
+
+		label = new Label("Min:", labelStyle);
+		mAiTable.row();
+		cell = mAiTable.add(label);
+		cell.setPadRight(8);
+
+		slider = new Slider(Config.Editor.Enemy.RANDOM_MOVEMENT_TIME_MIN, Config.Editor.Enemy.RANDOM_MOVEMENT_TIME_MAX, Config.Editor.Enemy.RANDOM_MOVEMENT_TIME_STEP_SIZE, false, sliderStyle);
+		mAiTable.add(slider);
+		disableListener.addToggleActor(slider);
+		textField = new TextField("", textFieldStyle);
+		textField.setWidth(Config.Editor.Enemy.TEXT_FIELD_NUMBER_WIDTH);
+		mAiTable.add(textField);
+		disableListener.addToggleActor(textField);
+		sliderMinListener = new SliderListener(slider, textField) {
+			@Override
+			public void onChange(float newValue) {
+				mEnemyEditor.setRandomTimeMin(newValue);
+			}
+		};
+		slider.setValue(mEnemyEditor.getRandomTimeMin());
+
+
+		label = new Label("Max:", labelStyle);
+		mAiTable.row();
+		cell = mAiTable.add(label);
+		cell.setPadRight(8);
+
+		slider = new Slider(Config.Editor.Enemy.RANDOM_MOVEMENT_TIME_MIN, Config.Editor.Enemy.RANDOM_MOVEMENT_TIME_MAX, Config.Editor.Enemy.RANDOM_MOVEMENT_TIME_STEP_SIZE, false, sliderStyle);
+		mAiTable.add(slider);
+		disableListener.addToggleActor(slider);
+		textField = new TextField("", textFieldStyle);
+		textField.setWidth(Config.Editor.Enemy.TEXT_FIELD_NUMBER_WIDTH);
+		mAiTable.add(textField);
+		disableListener.addToggleActor(textField);
+		sliderMaxListener = new SliderListener(slider, textField) {
+			@Override
+			public void onChange(float newValue) {
+				mEnemyEditor.setRandomTimeMax(newValue);
+			}
+		};
+		slider.setValue(mEnemyEditor.getRandomTimeMax());
+
+
+		//		button = new TextButton("StayScreen", textToogleStyle);
+		//		new CheckedListener(button) {
+		//			@Override
+		//			public void onChange(boolean checked) {
+		//				mEnemyEditor.setStayOnScreen(checked);
+		//			}
+		//		};
+		//		mAiTable.row();
+		//		mAiTable.add(button);
 	}
 
 	/**

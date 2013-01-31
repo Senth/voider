@@ -284,6 +284,20 @@ public class EnemyEditor extends WorldScene {
 	}
 
 	/**
+	 * @return minimum distance from the player the enemy wants to be
+	 */
+	float getPlayerDistanceMin() {
+		return mDef.getPlayerDistanceMin();
+	}
+
+	/**
+	 * @return maximum distance from the player the enemy wants to be
+	 */
+	float getPlayerDistanceMax() {
+		return mDef.getPlayerDistanceMax();
+	}
+
+	/**
 	 * Sets the maximum distance from the player the enemy want to be
 	 * @param maxDistance maximum distance from the player
 	 */
@@ -336,12 +350,86 @@ public class EnemyEditor extends WorldScene {
 	}
 
 	/**
+	 * @return turning speed of the enemy
+	 */
+	float getTurnSpeed() {
+		return mDef.getTurnSpeed();
+	}
+
+	/**
 	 * Sets the starting angle of the enemy
 	 * @param angle starting angle of the enemy
 	 */
 	void setStartingAngle(float angle) {
 		mDef.getBodyDef().angle = angle;
 	}
+
+	/**
+	 * Sets if the enemy shall stay on the screen after it has entered it
+	 * @param stayOnScreen true if enemy shall stay on screen
+	 */
+	void setStayOnScreen(boolean stayOnScreen) {
+		mDef.setStayOnScreen(stayOnScreen);
+	}
+
+	/**
+	 * @return true if the enemy shall stay on the screen
+	 */
+	boolean shallStayOnScreen() {
+		return mDef.shallStayOnScreen();
+	}
+
+	/**
+	 * Sets if the enemy shall move randomly using the random spread set through
+	 * #setRandomSpread(float).
+	 * @param moveRandomly true if the enemy shall move randomly.
+	 */
+	void setMoveRandomly(boolean moveRandomly) {
+		mDef.setMoveRandomly(moveRandomly);
+	}
+
+	/**
+	 * @return true if the enemy shall move randomly.
+	 * @see #setRandomTimeMin(float) to set how random the enemy shall move
+	 */
+	boolean isMovingRandomly() {
+		return mDef.isMovingRandomly();
+	}
+
+	/**
+	 * Sets the minimum time that must have passed until the enemy will decide
+	 * on another direction.
+	 * @param minTime how many degrees it will can move
+	 * @see #setMoveRandomly(boolean) to activate/deactivate the random movement
+	 */
+	void setRandomTimeMin(float minTime) {
+		mDef.setRandomTimeMin(minTime);
+	}
+
+	/**
+	 * @return Minimum time until next random move
+	 */
+	float getRandomTimeMin() {
+		return mDef.getRandomTimeMin();
+	}
+
+	/**
+	 * Sets the maximum time that must have passed until the enemy will decide
+	 * on another direction.
+	 * @param maxTime how many degrees it will can move
+	 * @see #setMoveRandomly(boolean) to activate/deactivate the random movement
+	 */
+	void setRandomTimeMax(float maxTime) {
+		mDef.setRandomTimeMax(maxTime);
+	}
+
+	/**
+	 * @return Maximum time until next random move
+	 */
+	float getRandomTimeMax() {
+		return mDef.getRandomTimeMax();
+	}
+
 
 	/** Invalid pointer id */
 	private static final int INVALID_POINTER = -1;

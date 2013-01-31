@@ -53,14 +53,31 @@ public class EnemyActorDef extends ActorDef {
 	 * @param speed the new speed of the enemy
 	 */
 	public void setSpeed(float speed) {
-		mSpeed = speed;
+		mMovementVars.speed = speed;
 	}
 
 	/**
 	 * @return speed of the enemy
 	 */
 	public float getSpeed() {
-		return mSpeed;
+		return mMovementVars.speed;
+	}
+
+	/**
+	 * Sets if the enemy shall stay on the screen once it has entered it.
+	 * Only applicable for AI movement
+	 * @param stayOnScreen true if the enemy shall stay on the screen.
+	 */
+	public void setStayOnScreen(boolean stayOnScreen) {
+		mAiMovementVars.stayOnScreen = stayOnScreen;
+	}
+
+	/**
+	 * @return true if the enemy shall stay on the screen once it has
+	 * entered it. Only applicable for AI movement.
+	 */
+	public boolean shallStayOnScreen() {
+		return mAiMovementVars.stayOnScreen;
 	}
 
 	/**
@@ -69,15 +86,15 @@ public class EnemyActorDef extends ActorDef {
 	 * @param minDistance the minimum distance from the player
 	 */
 	public void setPlayerDistanceMin(float minDistance) {
-		mPlayerDistanceMin = minDistance;
-		mPlayerDistanceMinSq = mPlayerDistanceMin * mPlayerDistanceMin;
+		mAiMovementVars.playerDistanceMin = minDistance;
+		mAiMovementVars.playerDistanceMinSq = mAiMovementVars.playerDistanceMin * mAiMovementVars.playerDistanceMin;
 	}
 
 	/**
 	 * @return minimum distance from the player the enemy shall have
 	 */
 	public float getPlayerDistanceMin() {
-		return mPlayerDistanceMin;
+		return mAiMovementVars.playerDistanceMin;
 	}
 
 	/**
@@ -85,7 +102,7 @@ public class EnemyActorDef extends ActorDef {
 	 * This has been pre-calculated.
 	 */
 	public float getPlayerDistanceMinSq() {
-		return mPlayerDistanceMinSq;
+		return mAiMovementVars.playerDistanceMinSq;
 	}
 
 	/**
@@ -94,15 +111,15 @@ public class EnemyActorDef extends ActorDef {
 	 * @param maxDistance the maximum distance from the player
 	 */
 	public void setPlayerDistanceMax(float maxDistance) {
-		mPlayerDistanceMax = maxDistance;
-		mPlayerDistanceMaxSq = mPlayerDistanceMax * mPlayerDistanceMax;
+		mAiMovementVars.playerDistanceMax = maxDistance;
+		mAiMovementVars.playerDistanceMaxSq = mAiMovementVars.playerDistanceMax * mAiMovementVars.playerDistanceMax;
 	}
 
 	/**
 	 * @return maximum distance from the player the enemy shall have
 	 */
 	public float getPlayerDistanceMax() {
-		return mPlayerDistanceMax;
+		return mAiMovementVars.playerDistanceMax;
 	}
 
 	/**
@@ -110,7 +127,58 @@ public class EnemyActorDef extends ActorDef {
 	 * This has been pre-calculated.
 	 */
 	public float getPlayerDistanceMaxSq() {
-		return mPlayerDistanceMaxSq;
+		return mAiMovementVars.playerDistanceMaxSq;
+	}
+
+	/**
+	 * Sets if the enemy shall move randomly using the random spread set through
+	 * #setRandomSpread(float).
+	 * @param moveRandomly true if the enemy shall move randomly.
+	 */
+	public void setMoveRandomly(boolean moveRandomly) {
+		mAiMovementVars.randomMove = moveRandomly;
+	}
+
+	/**
+	 * @return true if the enemy shall move randomly.
+	 * @see #setRandomTimeMin(float) to set how random the enemy shall move
+	 */
+	public boolean isMovingRandomly() {
+		return mAiMovementVars.randomMove;
+	}
+
+	/**
+	 * Sets the minimum time that must have passed until the enemy will decide
+	 * on another direction.
+	 * @param minTime how many degrees it will can move
+	 * @see #setMoveRandomly(boolean) to activate/deactivate the random movement
+	 */
+	public void setRandomTimeMin(float minTime) {
+		mAiMovementVars.randomTimeMin = minTime;
+	}
+
+	/**
+	 * @return Minimum time until next random move
+	 */
+	public float getRandomTimeMin() {
+		return mAiMovementVars.randomTimeMin;
+	}
+
+	/**
+	 * Sets the maximum time that must have passed until the enemy will decide
+	 * on another direction.
+	 * @param maxTime how many degrees it will can move
+	 * @see #setMoveRandomly(boolean) to activate/deactivate the random movement
+	 */
+	public void setRandomTimeMax(float maxTime) {
+		mAiMovementVars.randomTimeMax = maxTime;
+	}
+
+	/**
+	 * @return Maximum time until next random move
+	 */
+	public float getRandomTimeMax() {
+		return mAiMovementVars.randomTimeMax;
 	}
 
 	/**
@@ -118,14 +186,14 @@ public class EnemyActorDef extends ActorDef {
 	 * @param degrees how many degrees it can turn per second
 	 */
 	public void setTurnSpeed(float degrees) {
-		mTurnSpeed = degrees;
+		mMovementVars.turnSpeed = degrees;
 	}
 
 	/**
 	 * @return how many degrees the enemy can turn per second
 	 */
 	public float getTurnSpeed() {
-		return mTurnSpeed;
+		return mMovementVars.turnSpeed;
 	}
 
 	/**
@@ -192,16 +260,40 @@ public class EnemyActorDef extends ActorDef {
 
 	/** What type of movement the enemy has */
 	private MovementTypes mMovementType = MovementTypes.PATH;
-	/** Speed of the enemy */
-	private float mSpeed = Config.Editor.Enemy.MOVE_SPEED_DEFAULT;
-	/** How fast the enemy can turn */
-	private float mTurnSpeed = Config.Editor.Enemy.TURN_SPEED_DEFAULT;
-	/** Minimum distance from the player */
-	private float mPlayerDistanceMin = Config.Editor.Enemy.AI_DISTANCE_MIN_DEFAULT;
-	/** Minimum distance from player, squared */
-	private float mPlayerDistanceMinSq = mPlayerDistanceMin * mPlayerDistanceMin;
-	/** Maximum distance from the player */
-	private float mPlayerDistanceMax = Config.Editor.Enemy.AI_DISTANCE_MAX_DEFAULT;
-	/** Maximum distance from the player, squared */
-	private float mPlayerDistanceMaxSq = mPlayerDistanceMax * mPlayerDistanceMax;
+	/** Movement variables */
+	private MovementVars mMovementVars = new MovementVars();
+	/** AI movement variables */
+	private AiMovementVars mAiMovementVars = new AiMovementVars();
+
+	/**
+	 * Class for all movement variables (both AI and path)
+	 */
+	private class MovementVars {
+		/** Speed of the enemy */
+		public float speed = Config.Editor.Enemy.MOVE_SPEED_DEFAULT;
+		/** How fast the enemy can turn */
+		public float turnSpeed = Config.Editor.Enemy.TURN_SPEED_DEFAULT;
+	}
+
+	/**
+	 * Class for all AI movement variables
+	 */
+	private class AiMovementVars {
+		/** Minimum distance from the player */
+		public float playerDistanceMin = Config.Editor.Enemy.AI_DISTANCE_MIN_DEFAULT;
+		/** Minimum distance from player, squared */
+		public float playerDistanceMinSq = playerDistanceMin * playerDistanceMin;
+		/** Maximum distance from the player */
+		public float playerDistanceMax = Config.Editor.Enemy.AI_DISTANCE_MAX_DEFAULT;
+		/** Maximum distance from the player, squared */
+		public float playerDistanceMaxSq = playerDistanceMax * playerDistanceMax;
+		/** If the enemy shall stay on the screen */
+		public boolean stayOnScreen = Config.Editor.Enemy.STAY_ON_SCREEN_DEFAULT;
+		/** If the enemy shall move randomly when inside the preferred space */
+		public boolean randomMove = Config.Editor.Enemy.RANDOM_MOVEMENT_DEFAULT;
+		/** Minimum time until next random move */
+		public float randomTimeMin = Config.Editor.Enemy.RANDOM_MOVEMENT_TIME_MIN_DEFAULT;
+		/** Maxumum time until next random move */
+		public float randomTimeMax = Config.Editor.Enemy.RANDOM_MOVEMENT_TIME_MAX_DEFAULT;
+	}
 }

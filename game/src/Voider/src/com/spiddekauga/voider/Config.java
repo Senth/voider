@@ -162,6 +162,22 @@ public class Config {
 			public final static float AI_DISTANCE_STEP_SIZE = 1;
 			/** Text field size for numbers */
 			public final static float TEXT_FIELD_NUMBER_WIDTH = 70;
+			/** Label padding in front of a slider */
+			public final static float LABEL_PADDING_BEFORE_SLIDER = 8;
+			/** If the enemy shall saty on screen */
+			public final static boolean STAY_ON_SCREEN_DEFAULT = true;
+			/** Minimum random movement time */
+			public final static float RANDOM_MOVEMENT_TIME_MIN = 0.1f;
+			/** Maximum random movement time */
+			public final static float RANDOM_MOVEMENT_TIME_MAX = 5;
+			/** Default minimum random movement time */
+			public final static float RANDOM_MOVEMENT_TIME_MIN_DEFAULT = 0.5f;
+			/** Default maximum random movement time */
+			public final static float RANDOM_MOVEMENT_TIME_MAX_DEFAULT = 2;
+			/** Slide step size for random movement time */
+			public final static float RANDOM_MOVEMENT_TIME_STEP_SIZE = 0.1f;
+			/** If random movement shall be turned on by default */
+			public final static boolean RANDOM_MOVEMENT_DEFAULT = false;
 		}
 
 		/** Radius of all picking circles */
