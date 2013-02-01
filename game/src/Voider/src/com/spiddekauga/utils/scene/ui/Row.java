@@ -358,9 +358,11 @@ public class Row implements Poolable {
 			Vector2 cellSize = Pools.obtain(Vector2.class);
 			cellSize.y = mHeight;
 			for (Cell cell : mCells) {
-				cellSize.x = cell.getWidth();
-				cell.layout(offset, cellSize);
-				offset.x += cell.getWidth();
+				if (cell.isVisible()) {
+					cellSize.x = cell.getWidth();
+					cell.layout(offset, cellSize);
+					offset.x += cell.getWidth();
+				}
 			}
 			Pools.free(cellSize);
 		}

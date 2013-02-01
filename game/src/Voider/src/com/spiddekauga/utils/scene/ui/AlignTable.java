@@ -113,8 +113,6 @@ public class AlignTable extends WidgetGroup implements Disposable {
 		// later
 		mPrefHeight -= row.getPrefHeight();
 
-		actor.setVisible(true);
-
 		if (actor instanceof Layout) {
 			((Layout) actor).invalidate();
 		}

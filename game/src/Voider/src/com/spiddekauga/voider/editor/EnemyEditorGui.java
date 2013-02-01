@@ -59,10 +59,10 @@ class EnemyEditorGui extends Gui {
 		mVisualTable.setPreferences(mMainTable);
 
 
-		initMenu();
 		initMovement();
 		initWeapon();
 		initVisual();
+		initMenu();
 
 
 		mMainTable.setTransform(true);
@@ -71,6 +71,7 @@ class EnemyEditorGui extends Gui {
 		mAiTable.setTransform(true);
 		mVisualTable.setTransform(true);
 		mMainTable.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		mMainTable.invalidate();
 	}
 
 	/**
@@ -123,52 +124,35 @@ class EnemyEditorGui extends Gui {
 
 
 		// --- Active options ---
-		// Movement
 		Row row = mMainTable.row();
 		row.setAlign(Horizontal.CENTER, Vertical.BOTTOM);
 		ButtonGroup buttonGroup = new ButtonGroup();
+
+		// Movement
 		button = new TextButton("Movement", textToogleStyle);
-		new CheckedListener(button) {
-			@Override
-			public void onChange(boolean checked) {
-				if (checked) {
-					addInnerTable(mMovementTable, mOptionsContainerTable);
-				}
-			}
-		};
 		buttonGroup.add(button);
 		mMainTable.add(button);
+		mMovementHider.addToggleActor(mMovementTable);
+		mMovementHider.setButton(button);
 
 		// Weapons
 		button = new TextButton("Weapons", textToogleStyle);
-		new CheckedListener(button) {
-			@Override
-			public void onChange(boolean checked) {
-				if (checked) {
-					addInnerTable(mWeaponTable, mOptionsContainerTable);
-				}
-			}
-		};
 		buttonGroup.add(button);
 		mMainTable.add(button);
+		mWeaponHider.addToggleActor(mWeaponTable);
+		mWeaponHider.setButton(button);
 
 		// Visuals
 		button = new TextButton("Visuals", textToogleStyle);
-		new CheckedListener(button) {
-			@Override
-			public void onChange(boolean checked) {
-				if (checked) {
-					addInnerTable(mVisualTable, mOptionsContainerTable);
-				}
-			}
-		};
 		buttonGroup.add(button);
 		mMainTable.add(button);
+		mVisualHider.setButton(button);
+		mVisualHider.addToggleActor(mVisualTable);
 
-
-		// Add the options wrapper
 		mMainTable.row();
-		mMainTable.add(mOptionsContainerTable);
+		mMainTable.add(mWeaponTable);
+		mMainTable.add(mVisualTable);
+		mMainTable.add(mMovementTable);
 	}
 
 	/**
@@ -474,8 +458,7 @@ class EnemyEditorGui extends Gui {
 				}
 			}
 		};
-		HideListener weaponHider = new HideListener(button, true);
-
+		HideListener weaponInnerHider = new HideListener(button, true);
 
 		// TYPES
 		mWeaponTable.row();
@@ -483,14 +466,14 @@ class EnemyEditorGui extends Gui {
 		button = new TextButton("Bullet", toggleButtonStyle);
 		buttonGroup.add(button);
 		mWeaponTable.add(button);
-		weaponHider.addToggleActor(button);
+		weaponInnerHider.addToggleActor(button);
 		HideListener bulletHider = new HideListener(button, true);
 
 		button = new TextButton("Aim", toggleButtonStyle);
 		buttonGroup.add(button);
 		mWeaponTable.add(button);
-		weaponHider.addToggleActor(button);
-		weaponHider.addChild(bulletHider);
+		weaponInnerHider.addToggleActor(button);
+		weaponInnerHider.addChild(bulletHider);
 
 
 		// BULLET
@@ -613,7 +596,8 @@ class EnemyEditorGui extends Gui {
 
 
 
-		weaponHider.addToggleActor(bulletTable);
+		weaponInnerHider.addToggleActor(bulletTable);
+		mWeaponHider.addChild(weaponInnerHider);
 	}
 
 	/**
@@ -647,8 +631,6 @@ class EnemyEditorGui extends Gui {
 	}
 
 	// Tables
-	/** Wrapping table for the activate type */
-	private AlignTable mOptionsContainerTable = new AlignTable();
 	/** Container for all movement options */
 	private AlignTable mMovementTable = new AlignTable();
 	/** Container for all weapon options */
@@ -661,6 +643,14 @@ class EnemyEditorGui extends Gui {
 	private AlignTable mPathTable = new AlignTable();
 	/** Table for AI movement */
 	private AlignTable mAiTable = new AlignTable();
+
+	// Hiders
+	/** Hides weapon options */
+	private HideListener mWeaponHider = new HideListener(true);
+	/** Hides visual options */
+	private HideListener mVisualHider = new HideListener(true);
+	/** Hides movement options */
+	private HideListener mMovementHider = new HideListener(true);
 
 	/** The actual enemy editor bound to this gui */
 	private EnemyEditor mEnemyEditor = null;

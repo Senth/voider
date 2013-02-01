@@ -15,17 +15,43 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button;
 public class HideListener implements EventListener {
 	/**
 	 * Creates a hide listener, listens to the specified button if it's enabled
-	 * or not. Calls onHide() when the buttons gets hidden, and onShow() when they
-	 * are showed.
+	 * or not. Calls onHide() after the actors get hidden, and onShow() after
+	 * they are shown.
 	 * @param button the button to listen for (checked/unchecked)
 	 * @param showWhenChecked set to true to show the actors when this is checked.
 	 * Set to false to show the actors when the button is unchecked.
 	 */
 	public HideListener(Button button, boolean showWhenChecked) {
-		mButton = button;
-		mButton.addListener(this);
+		setButton(button);
 		mShowWhenChecked = showWhenChecked;
-		mCheckedLast = mButton.isChecked();
+	}
+
+	/**
+	 * Creates a hide listener. Calls onHide() after the actors get hidden, and onShow() after
+	 * they are shown.
+	 * @param showWhenChecked set to true to show the actors when this is checked.
+	 * @note remember to set a button via #setButton(Button)
+	 */
+	public HideListener(boolean showWhenChecked) {
+		mShowWhenChecked = showWhenChecked;
+	}
+
+	/**
+	 * Sets the button to listen to. Also corrects the state of the actors to toggle
+	 * @param button the button to listen for (checked/unchecked)
+	 */
+	public void setButton(Button button) {
+		if (mButton != null) {
+			mButton.removeListener(this);
+		}
+
+		mButton = button;
+
+		if (mButton != null) {
+			mButton.addListener(this);
+			mCheckedLast = mButton.isChecked();
+			updateToggleActors();
+		}
 	}
 
 	/**
@@ -45,30 +71,16 @@ public class HideListener implements EventListener {
 	 */
 	public void addToggleActor(Actor toggleActor) {
 		mToggles.add(toggleActor);
-		toggleActor.setVisible(shallShowActors());
+		if (mButton != null) {
+			toggleActor.setVisible(shallShowActors());
+		}
 	}
 
 	@Override
 	public final boolean handle(Event event) {
 		if (mButton.isChecked() != mCheckedLast) {
 			mCheckedLast = mButton.isChecked();
-			if (shallShowActors()) {
-				for (Actor toggleActor : mToggles) {
-					toggleActor.setVisible(true);
-				}
-
-				// Shall children remain hidden?
-				for (HideListener hideListener : mChildren) {
-					if (!hideListener.shallShowActors()) {
-						hideListener.hide();
-					}
-				}
-
-				onShow();
-			} else {
-				hide();
-				onHide();
-			}
+			updateToggleActors();
 		}
 		return true;
 	}
@@ -88,19 +100,33 @@ public class HideListener implements EventListener {
 	}
 
 	/**
+	 * Updates all toggle actors
+	 */
+	private void updateToggleActors() {
+		if (shallShowActors()) {
+			for (Actor toggleActor : mToggles) {
+				toggleActor.setVisible(true);
+			}
+
+			// Shall children remain hidden?
+			for (HideListener hideListener : mChildren) {
+				hideListener.updateToggleActors();
+			}
+
+			onShow();
+		} else {
+			for (Actor toggleActor : mToggles) {
+				toggleActor.setVisible(false);
+			}
+			onHide();
+		}
+	}
+
+	/**
 	 * @return true if the actors should be shown
 	 */
 	private boolean shallShowActors() {
 		return (mButton.isChecked() && mShowWhenChecked) || (!mButton.isChecked() && !mShowWhenChecked);
-	}
-
-	/**
-	 * Hides all toggle actors
-	 */
-	private void hide() {
-		for (Actor toggleActor : mToggles) {
-			toggleActor.setVisible(false);
-		}
 	}
 
 	/** Button to listen for */
