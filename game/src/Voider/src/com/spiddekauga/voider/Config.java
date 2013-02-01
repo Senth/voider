@@ -131,53 +131,92 @@ public class Config {
 		 * Enemy editor options
 		 */
 		public static class Enemy {
-			/** How long time ONCE enemy should have reached the goal before it is reset.
-			 * In EnemyEditor */
-			public final static float PATH_ONCE_RESET_TIME = 2;
-			/** Minimum speed of enemies */
-			public final static float MOVE_SPEED_MIN = 0.5f;
-			/** Maximum speed of enemies */
-			public final static float MOVE_SPEED_MAX = 40;
-			/** Default movement speed */
-			public final static float MOVE_SPEED_DEFAULT = 10;
-			/** Step size for movement speed slider */
-			public final static float MOVE_SPEED_STEP_SIZE = 0.1f;
-			/** Minimum turning speed */
-			public final static float TURN_SPEED_MIN = 5;
-			/** Maximum turning speed */
-			public final static float TURN_SPEED_MAX = 50;
-			/** Default turning speed */
-			public final static float TURN_SPEED_DEFAULT = 20;
-			/** Step size for turning speed slider */
-			public final static float TURN_SPEED_STEP_SIZE = 1;
-			/** AI distance slider minimum */
-			public final static float AI_DISTANCE_MIN = 0;
-			/** Default minimum distance for the AI */
-			public final static float AI_DISTANCE_MIN_DEFAULT = 20;
-			/** AI distance slider maximum */
-			public final static float AI_DISTANCE_MAX = 70;
-			/** Default maximum distance for teh AI */
-			public final static float AI_DISTANCE_MAX_DEFAULT = 40;
-			/** AI distance slider step size */
-			public final static float AI_DISTANCE_STEP_SIZE = 1;
-			/** Text field size for numbers */
-			public final static float TEXT_FIELD_NUMBER_WIDTH = 70;
+
+			/**
+			 * Enemy movement
+			 */
+			public static class Movement {
+				/** How long time ONCE enemy should have reached the goal before it is reset.
+				 * In EnemyEditor */
+				public final static float PATH_ONCE_RESET_TIME = 2;
+				/** Minimum speed of enemies */
+				public final static float MOVE_SPEED_MIN = 0.5f;
+				/** Maximum speed of enemies */
+				public final static float MOVE_SPEED_MAX = 40;
+				/** Default movement speed */
+				public final static float MOVE_SPEED_DEFAULT = 10;
+				/** Step size for movement speed slider */
+				public final static float MOVE_SPEED_STEP_SIZE = 0.1f;
+				/** Minimum turning speed */
+				public final static float TURN_SPEED_MIN = 5;
+				/** Maximum turning speed */
+				public final static float TURN_SPEED_MAX = 50;
+				/** Default turning speed */
+				public final static float TURN_SPEED_DEFAULT = 20;
+				/** Step size for turning speed slider */
+				public final static float TURN_SPEED_STEP_SIZE = 1;
+				/** AI distance slider minimum */
+				public final static float AI_DISTANCE_MIN = 0;
+				/** Default minimum distance for the AI */
+				public final static float AI_DISTANCE_MIN_DEFAULT = 20;
+				/** AI distance slider maximum */
+				public final static float AI_DISTANCE_MAX = 70;
+				/** Default maximum distance for teh AI */
+				public final static float AI_DISTANCE_MAX_DEFAULT = 40;
+				/** AI distance slider step size */
+				public final static float AI_DISTANCE_STEP_SIZE = 1;
+				/** If the enemy shall saty on screen */
+				public final static boolean STAY_ON_SCREEN_DEFAULT = true;
+				/** Minimum random movement time */
+				public final static float RANDOM_MOVEMENT_TIME_MIN = 0.1f;
+				/** Maximum random movement time */
+				public final static float RANDOM_MOVEMENT_TIME_MAX = 5;
+				/** Default minimum random movement time */
+				public final static float RANDOM_MOVEMENT_TIME_MIN_DEFAULT = 0.5f;
+				/** Default maximum random movement time */
+				public final static float RANDOM_MOVEMENT_TIME_MAX_DEFAULT = 2;
+				/** Slide step size for random movement time */
+				public final static float RANDOM_MOVEMENT_TIME_STEP_SIZE = 0.1f;
+				/** If random movement shall be turned on by default */
+				public final static boolean RANDOM_MOVEMENT_DEFAULT = false;
+			}
+
 			/** Label padding in front of a slider */
 			public final static float LABEL_PADDING_BEFORE_SLIDER = 8;
-			/** If the enemy shall saty on screen */
-			public final static boolean STAY_ON_SCREEN_DEFAULT = true;
-			/** Minimum random movement time */
-			public final static float RANDOM_MOVEMENT_TIME_MIN = 0.1f;
-			/** Maximum random movement time */
-			public final static float RANDOM_MOVEMENT_TIME_MAX = 5;
-			/** Default minimum random movement time */
-			public final static float RANDOM_MOVEMENT_TIME_MIN_DEFAULT = 0.5f;
-			/** Default maximum random movement time */
-			public final static float RANDOM_MOVEMENT_TIME_MAX_DEFAULT = 2;
-			/** Slide step size for random movement time */
-			public final static float RANDOM_MOVEMENT_TIME_STEP_SIZE = 0.1f;
-			/** If random movement shall be turned on by default */
-			public final static boolean RANDOM_MOVEMENT_DEFAULT = false;
+			/** Text field size for numbers */
+			public final static float TEXT_FIELD_NUMBER_WIDTH = 70;
+		}
+
+		/**
+		 * Weapon specifics
+		 */
+		public static class Weapon {
+			/** Minimum bullet speed */
+			public final static float BULLET_SPEED_MIN = 1;
+			/** Maximum bullet speed */
+			public final static float BULLET_SPEED_MAX = 50;
+			/** Default bullet speed */
+			public final static float BULLET_SPEED_DEFAULT = 10;
+			/** Step size of bullet speed */
+			public final static float BULLET_SPEED_STEP_SIZE = 1;
+			/** Minimum cooldown, used for random effect */
+			public final static float COOLDOWN_MIN = 0.1f;
+			/** Maximum cooldown, used for random effect */
+			public final static float COOLDOWN_MAX = 10;
+			/** Default minimum cooldown */
+			public final static float COOLDOWN_MIN_DEFAULT = 2;
+			/** Default maximum cooldown */
+			public final static float COOLDOWN_MAX_DEFAULT = COOLDOWN_MIN_DEFAULT;
+			/** Step size of cooldown */
+			public final static float COOLDOWN_STEP_SIZE = 0.1f;
+			/** Minimum bullet damage */
+			public final static float DAMAGE_MIN = 1;
+			/** Maximum bullet damage  */
+			public final static float DAMAGE_MAX = 100;
+			/** Default bullet damage */
+			public final static float DAMAGE_DEFAULT = 5;
+			/** Step size of bullet damage */
+			public final static float DAMAGE_STEP_SIZE = 1;
 		}
 
 		/** Radius of all picking circles */

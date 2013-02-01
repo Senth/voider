@@ -1,5 +1,6 @@
 package com.spiddekauga.voider.game.actors;
 
+import com.badlogic.gdx.physics.box2d.EdgeShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.spiddekauga.voider.game.ActorDef;
 
@@ -11,25 +12,17 @@ import com.spiddekauga.voider.game.ActorDef;
  */
 public class BulletActorDef extends ActorDef {
 	/**
-	 * Constructor that sets all variables
-	 * @param maxLife maximum life of the actor, also starting amount of life
-	 * @param name name of the actor
-	 * @param fixtureDef physical representation of the object
+	 * Default constructor
 	 */
-	public BulletActorDef(
-			float maxLife,
-			String name,
-			FixtureDef fixtureDef
-			)
-	{
-		super(maxLife, name, fixtureDef);
-	}
-
-	/**
-	 * Default constructor that does nothing. Used for JSON
-	 */
-	@SuppressWarnings("unused")
-	private BulletActorDef() {
+	public BulletActorDef() {
+		FixtureDef fixtureDef = new FixtureDef();
+		fixtureDef.friction = 0.0f;
+		fixtureDef.restitution = 0.1f;
+		fixtureDef.density = 0.001f;
+		EdgeShape shape = new EdgeShape();
+		shape.set(0, 0, 1, 0);
+		fixtureDef.shape = shape;
+		addFixtureDef(fixtureDef);
 	}
 
 	/**
@@ -38,7 +31,6 @@ public class BulletActorDef extends ActorDef {
 	 */
 	@Override
 	protected short getFilterCategory() {
-		/** @TODO set bullet category */
 		return 0;
 	}
 
@@ -48,7 +40,6 @@ public class BulletActorDef extends ActorDef {
 	 */
 	@Override
 	protected short getFilterCollidingCategories() {
-		/** @TODO set bullet category mask */
 		return FixtureFilterCategories.STATIC_TERRAIN;
 	}
 }

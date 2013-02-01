@@ -18,9 +18,11 @@ import com.badlogic.gdx.utils.Pools;
 import com.badlogic.gdx.utils.SnapshotArray;
 import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.Config.Editor.Enemy;
 import com.spiddekauga.voider.game.Actor;
 import com.spiddekauga.voider.game.Path;
 import com.spiddekauga.voider.game.Path.PathTypes;
+import com.spiddekauga.voider.game.actors.BulletActorDef;
 import com.spiddekauga.voider.game.actors.EnemyActor;
 import com.spiddekauga.voider.game.actors.EnemyActorDef;
 import com.spiddekauga.voider.game.actors.EnemyActorDef.MovementTypes;
@@ -124,7 +126,7 @@ public class EnemyEditor extends WorldScene {
 				try {
 					if ((Boolean)mfEnemyOnceReachEnd.get(mEnemyPathOnce)) {
 						if (mEnemyPathOnceOutOfBoundsTime != 0.0f) {
-							if (mEnemyPathOnceOutOfBoundsTime + Config.Editor.Enemy.PATH_ONCE_RESET_TIME <= GameTime.getTotalTimeElapsed()) {
+							if (mEnemyPathOnceOutOfBoundsTime + Enemy.Movement.PATH_ONCE_RESET_TIME <= GameTime.getTotalTimeElapsed()) {
 								mEnemyPathOnce.resetPathMovement();
 								mEnemyPathOnceOutOfBoundsTime = 0.0f;
 							}
@@ -428,6 +430,108 @@ public class EnemyEditor extends WorldScene {
 	 */
 	float getRandomTimeMax() {
 		return mDef.getRandomTimeMax();
+	}
+
+	/**
+	 * Sets the bullet actor definition. I.e. what bullets it shall shoot
+	 * @param bulletActorDef the bullet definition, set to null to deactivate shooting
+	 */
+	void setBulletActorDef(BulletActorDef bulletActorDef) {
+		if (mDef.getWeapon().getBulletActorDef() != null) {
+			mDef.removeDependency(mDef.getWeapon().getBulletActorDef().getId());
+		}
+
+		mDef.getWeapon().setBulletActorDef(bulletActorDef);
+
+		if (bulletActorDef != null) {
+			mDef.addDependency(bulletActorDef);
+		}
+	}
+
+	/**
+	 * @return the bullet actor definition of this enemy, null if it doesn't shoot.
+	 */
+	BulletActorDef getBulletActorDef() {
+		return mDef.getWeapon().getBulletActorDef();
+	}
+
+	/**
+	 * Sets if the enemy shall use weapons or not
+	 * @param useWeapon true if the enemy shall use weapons
+	 */
+	void setUseWeapon(boolean useWeapon) {
+		mDef.setUseWeapon(useWeapon);
+	}
+
+	/**
+	 * @return true if the enemy shall use weapons
+	 */
+	boolean hasWeapon() {
+		return mDef.hasWeapon();
+	}
+
+	/**
+	 * \copydoc #com.spiddekauga.voider.game.Weapon.setBulletSpeed(float)
+	 */
+	@SuppressWarnings("javadoc")
+	void setBulletSpeed(float speed) {
+		mDef.getWeapon().setBulletSpeed(speed);
+	}
+
+	/**
+	 * \copydoc #com.spiddekauga.voider.game.Weapon.getBulletSpeed()
+	 */
+	@SuppressWarnings("javadoc")
+	float getBulletSpeed() {
+		return mDef.getWeapon().getBulletSpeed();
+	}
+
+	/**
+	 * \copydoc #com.spiddekauga.voider.game.Weapon.setDamage(float)
+	 */
+	@SuppressWarnings("javadoc")
+	void setDamage(float damage) {
+		mDef.getWeapon().setDamage(damage);
+	}
+
+	/**
+	 * \copydoc #com.spiddekauga.voider.game.Weapon.getDamage()
+	 */
+	@SuppressWarnings("javadoc")
+	float getDamage() {
+		return mDef.getWeapon().getDamage();
+	}
+
+	/**
+	 * \copydoc #com.spiddekauga.voider.game.Weapon.setCooldownMin(float)
+	 */
+	@SuppressWarnings("javadoc")
+	void setCooldownMin(float minCooldown) {
+		mDef.getWeapon().setCooldownMin(minCooldown);
+	}
+
+	/**
+	 * \copydoc #com.spiddekauga.voider.game.Weapon.getCooldownMin()
+	 */
+	@SuppressWarnings("javadoc")
+	float getCooldownMin() {
+		return mDef.getWeapon().getCooldownMin();
+	}
+
+	/**
+	 * \copydoc #com.spiddekauga.voider.game.Weapon.setCooldownMax(float)
+	 */
+	@SuppressWarnings("javadoc")
+	void setCooldownMax(float maxCooldown) {
+		mDef.getWeapon().setCooldownMax(maxCooldown);
+	}
+
+	/**
+	 * \copydoc #com.spiddekauga.voider.game.Weapon.getCooldownMin()
+	 */
+	@SuppressWarnings("javadoc")
+	float getCooldownMax() {
+		return mDef.getWeapon().getCooldownMax();
 	}
 
 

@@ -56,7 +56,7 @@ public class JsonLoaderTest {
 	 */
 	@Test
 	public void load() {
-		ActorDef def1 = new BulletActorDef(100, "bullet", null);
+		ActorDef def1 = new BulletActorDef();
 		ActorDef def2 = new PlayerActorDef();
 		ActorDef def3 = new BossActorDef(300, "boss", null);
 

@@ -29,7 +29,7 @@ public class DisableListener implements EventListener{
 	}
 
 	/**
-	 * Adds a button to activate/deactivate when the button is checked/unchecked
+	 * Adds a actor to activate/deactivate when the button is checked/unchecked
 	 * @param toggleActor the actor to activate/deactivate
 	 */
 	public void addToggleActor(Actor toggleActor) {

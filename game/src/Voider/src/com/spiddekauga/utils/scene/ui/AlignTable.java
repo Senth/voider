@@ -157,6 +157,26 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	}
 
 	/**
+	 * Sets the preferences of this table from another table. Such as default cell padding
+	 * default row padding, table alignment, default row alignment.
+	 * @param preferencesTable the table to get all the preferences for.
+	 * @note scalable is not set here.
+	 */
+	public void setPreferences(AlignTable preferencesTable) {
+		mCellPaddingDefault.set(preferencesTable.mCellPaddingDefault);
+		mRowPaddingDefault.set(preferencesTable.mRowPaddingDefault);
+		mTableAlign.set(preferencesTable.mTableAlign);
+		mRowAlign.set(preferencesTable.mRowAlign);
+	}
+
+	@Override
+	public void setVisible(boolean visible) {
+		super.setVisible(visible);
+
+		invalidateHierarchy();
+	}
+
+	/**
 	 * Sets the width of the table, including scales all the actors inside if necessary
 	 * @param width new width of the table
 	 */

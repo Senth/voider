@@ -1,5 +1,7 @@
 package com.spiddekauga.utils.scene.ui;
 
+import javax.swing.GroupLayout.Alignment;
+
 
 /**
  * Alignment for UI
@@ -22,6 +24,15 @@ public class Align {
 	Align(Horizontal horizontal, Vertical vertical) {
 		this.horizontal = horizontal;
 		this.vertical = vertical;
+	}
+
+	/**
+	 * Sets the alignment from another alignment
+	 * @param align the other alignment to copy values from
+	 */
+	void set(Align align) {
+		horizontal = align.horizontal;
+		vertical = align.vertical;
 	}
 
 	/** Horizontal Alignment */

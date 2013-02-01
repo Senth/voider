@@ -6,7 +6,9 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.utils.OrderedMap;
 import com.spiddekauga.utils.Json;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.Config.Editor.Enemy;
 import com.spiddekauga.voider.game.ActorDef;
+import com.spiddekauga.voider.game.Weapon;
 
 /**
  * Enemy actor definition, does nothing more than specify that the actor is
@@ -211,13 +213,53 @@ public class EnemyActorDef extends ActorDef {
 		return !getBodyDef().fixedRotation;
 	}
 
+	/**
+	 * Sets if this enemy has a weapon or not
+	 * @param useWeapon set to true to make the enemy use a weapon
+	 * @see #hasWeapon()
+	 */
+	public void setUseWeapon(boolean useWeapon) {
+		mHasWeapon = useWeapon;
+	}
+
+	/**
+	 * @return true if the enemy has a weapon
+	 * @see #setUseWeapon(boolean)
+	 */
+	public boolean hasWeapon() {
+		return mHasWeapon;
+	}
+
+	/**
+	 * @return weapon of the enemy
+	 */
+	public Weapon getWeapon() {
+		return mWeapon;
+	}
+
 	@Override
 	public void write(Json json) {
+		json.writeValue("REVISION", Config.REVISION);
+
 		json.writeObjectStart("ActorDef");
 		super.write(json);
 		json.writeObjectEnd();
 
-		/** @TODO write object */
+
+		json.writeValue("mHasWeapon", mHasWeapon);
+		json.writeValue("mMovementType", mMovementType);
+
+
+		// Conditional variables to write
+		if (mHasWeapon) {
+			json.writeValue("mWeapon", mWeapon);
+		}
+		if (mMovementType != MovementTypes.STATIONARY) {
+			json.writeValue("mMovementVars", mMovementVars);
+		}
+		if (mMovementType == MovementTypes.AI) {
+			json.writeValue("mAiMovementVars", mAiMovementVars);
+		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -226,7 +268,21 @@ public class EnemyActorDef extends ActorDef {
 		OrderedMap<String, Object> superMap = json.readValue("ActorDef", OrderedMap.class, jsonData);
 		super.read(json, superMap);
 
-		/** @TODO read object */
+
+		mHasWeapon = json.readValue("mUniqueId", boolean.class, jsonData);
+		mMovementType = json.readValue("mMovementType", MovementTypes.class, jsonData);
+
+
+		// Conditional variables to read
+		if (mHasWeapon) {
+			mWeapon = json.readValue("mWeapon", Weapon.class, jsonData);
+		}
+		if (mMovementType == MovementTypes.AI) {
+			mAiMovementVars = json.readValue("mAiMovementVars", AiMovementVars.class, jsonData);
+		}
+		if (mMovementType != MovementTypes.STATIONARY) {
+			mMovementVars = json.readValue("mMovementVars", MovementVars.class, jsonData);
+		}
 	}
 
 	/**
@@ -258,6 +314,10 @@ public class EnemyActorDef extends ActorDef {
 		return FixtureFilterCategories.PLAYER;
 	}
 
+	/** If the enemy has a weapon */
+	private boolean mHasWeapon = false;
+	/** Weapon of the enemy */
+	private Weapon mWeapon = new Weapon();
 	/** What type of movement the enemy has */
 	private MovementTypes mMovementType = MovementTypes.PATH;
 	/** Movement variables */
@@ -270,9 +330,9 @@ public class EnemyActorDef extends ActorDef {
 	 */
 	private class MovementVars {
 		/** Speed of the enemy */
-		public float speed = Config.Editor.Enemy.MOVE_SPEED_DEFAULT;
+		public float speed = Enemy.Movement.MOVE_SPEED_DEFAULT;
 		/** How fast the enemy can turn */
-		public float turnSpeed = Config.Editor.Enemy.TURN_SPEED_DEFAULT;
+		public float turnSpeed = Enemy.Movement.TURN_SPEED_DEFAULT;
 	}
 
 	/**
@@ -280,20 +340,20 @@ public class EnemyActorDef extends ActorDef {
 	 */
 	private class AiMovementVars {
 		/** Minimum distance from the player */
-		public float playerDistanceMin = Config.Editor.Enemy.AI_DISTANCE_MIN_DEFAULT;
+		public float playerDistanceMin = Enemy.Movement.AI_DISTANCE_MIN_DEFAULT;
 		/** Minimum distance from player, squared */
 		public float playerDistanceMinSq = playerDistanceMin * playerDistanceMin;
 		/** Maximum distance from the player */
-		public float playerDistanceMax = Config.Editor.Enemy.AI_DISTANCE_MAX_DEFAULT;
+		public float playerDistanceMax = Enemy.Movement.AI_DISTANCE_MAX_DEFAULT;
 		/** Maximum distance from the player, squared */
 		public float playerDistanceMaxSq = playerDistanceMax * playerDistanceMax;
 		/** If the enemy shall stay on the screen */
-		public boolean stayOnScreen = Config.Editor.Enemy.STAY_ON_SCREEN_DEFAULT;
+		public boolean stayOnScreen = Enemy.Movement.STAY_ON_SCREEN_DEFAULT;
 		/** If the enemy shall move randomly when inside the preferred space */
-		public boolean randomMove = Config.Editor.Enemy.RANDOM_MOVEMENT_DEFAULT;
+		public boolean randomMove = Enemy.Movement.RANDOM_MOVEMENT_DEFAULT;
 		/** Minimum time until next random move */
-		public float randomTimeMin = Config.Editor.Enemy.RANDOM_MOVEMENT_TIME_MIN_DEFAULT;
+		public float randomTimeMin = Enemy.Movement.RANDOM_MOVEMENT_TIME_MIN_DEFAULT;
 		/** Maxumum time until next random move */
-		public float randomTimeMax = Config.Editor.Enemy.RANDOM_MOVEMENT_TIME_MAX_DEFAULT;
+		public float randomTimeMax = Enemy.Movement.RANDOM_MOVEMENT_TIME_MAX_DEFAULT;
 	}
 }

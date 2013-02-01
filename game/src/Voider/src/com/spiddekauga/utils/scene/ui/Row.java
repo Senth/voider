@@ -389,8 +389,10 @@ public class Row implements Poolable {
 		mHeight = 0;
 
 		for (Cell cell : mCells) {
-			cell.calculateSize();
-			addSize(cell);
+			if (cell.isVisible()) {
+				cell.calculateSize();
+				addSize(cell);
+			}
 		}
 	}
 

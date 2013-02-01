@@ -236,6 +236,13 @@ public class Cell implements Poolable {
 	}
 
 	/**
+	 * @return true if the cell is visible
+	 */
+	public boolean isVisible() {
+		return mActor.isVisible();
+	}
+
+	/**
 	 * Sets transform for the cell
 	 * @param transform true if the cell shall be able to transform
 	 * @return this cell for chaining
