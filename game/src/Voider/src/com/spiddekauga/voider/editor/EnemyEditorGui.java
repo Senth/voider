@@ -387,20 +387,28 @@ class EnemyEditorGui extends Gui {
 		cell = mAiTable.add(label);
 		cell.setPadRight(8);
 
-		slider = new Slider(Config.Editor.Enemy.RANDOM_MOVEMENT_TIME_MIN, Config.Editor.Enemy.RANDOM_MOVEMENT_TIME_MAX, Config.Editor.Enemy.RANDOM_MOVEMENT_TIME_STEP_SIZE, false, sliderStyle);
-		mAiTable.add(slider);
-		disableListener.addToggleActor(slider);
+		sliderMin = new Slider(Config.Editor.Enemy.RANDOM_MOVEMENT_TIME_MIN, Config.Editor.Enemy.RANDOM_MOVEMENT_TIME_MAX, Config.Editor.Enemy.RANDOM_MOVEMENT_TIME_STEP_SIZE, false, sliderStyle);
+		mAiTable.add(sliderMin);
+		disableListener.addToggleActor(sliderMin);
 		textField = new TextField("", textFieldStyle);
 		textField.setWidth(Config.Editor.Enemy.TEXT_FIELD_NUMBER_WIDTH);
 		mAiTable.add(textField);
 		disableListener.addToggleActor(textField);
-		sliderMinListener = new SliderListener(slider, textField) {
+		sliderMinListener = new SliderListener(sliderMin, textField) {
+			@Override
+			protected boolean isValidValue(float newValue) {
+				if (mValidingObject instanceof Slider) {
+					return ((Slider) mValidingObject).getValue() >= mSlider.getValue();
+				}
+				return false;
+			}
+
 			@Override
 			public void onChange(float newValue) {
 				mEnemyEditor.setRandomTimeMin(newValue);
 			}
 		};
-		slider.setValue(mEnemyEditor.getRandomTimeMin());
+		sliderMin.setValue(mEnemyEditor.getRandomTimeMin());
 
 
 		label = new Label("Max:", labelStyle);
@@ -408,21 +416,31 @@ class EnemyEditorGui extends Gui {
 		cell = mAiTable.add(label);
 		cell.setPadRight(8);
 
-		slider = new Slider(Config.Editor.Enemy.RANDOM_MOVEMENT_TIME_MIN, Config.Editor.Enemy.RANDOM_MOVEMENT_TIME_MAX, Config.Editor.Enemy.RANDOM_MOVEMENT_TIME_STEP_SIZE, false, sliderStyle);
-		mAiTable.add(slider);
-		disableListener.addToggleActor(slider);
+		sliderMax = new Slider(Config.Editor.Enemy.RANDOM_MOVEMENT_TIME_MIN, Config.Editor.Enemy.RANDOM_MOVEMENT_TIME_MAX, Config.Editor.Enemy.RANDOM_MOVEMENT_TIME_STEP_SIZE, false, sliderStyle);
+		mAiTable.add(sliderMax);
+		disableListener.addToggleActor(sliderMax);
 		textField = new TextField("", textFieldStyle);
 		textField.setWidth(Config.Editor.Enemy.TEXT_FIELD_NUMBER_WIDTH);
 		mAiTable.add(textField);
 		disableListener.addToggleActor(textField);
-		sliderMaxListener = new SliderListener(slider, textField) {
+		sliderMaxListener = new SliderListener(sliderMax, textField) {
+			@Override
+			protected boolean isValidValue(float newValue) {
+				if (mValidingObject instanceof Slider) {
+					return ((Slider) mValidingObject).getValue() <= mSlider.getValue();
+				}
+				return false;
+			}
+
 			@Override
 			public void onChange(float newValue) {
 				mEnemyEditor.setRandomTimeMax(newValue);
 			}
 		};
-		slider.setValue(mEnemyEditor.getRandomTimeMax());
+		sliderMax.setValue(mEnemyEditor.getRandomTimeMax());
 
+		sliderMinListener.setValidatingObject(sliderMax);
+		sliderMaxListener.setValidatingObject(sliderMin);
 
 		//		button = new TextButton("StayScreen", textToogleStyle);
 		//		new CheckedListener(button) {

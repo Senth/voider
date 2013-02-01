@@ -64,7 +64,16 @@ public abstract class SliderListener implements EventListener {
 			}
 		} else if (event.getTarget() == mTextField) {
 			try {
-				float newValue = Float.parseFloat(mTextField.getText());
+				// Skip if text wasn't changed
+				if (Float.parseFloat(mTextField.getText()) == mOldValue) {
+					return true;
+				}
+
+				// Remove text after cursor position
+				int cursorPosition = mTextField.getCursorPosition();
+				String cutText = mTextField.getText().substring(0, cursorPosition);
+
+				float newValue = Float.parseFloat(cutText);
 
 				// Clamp value
 				newValue = MathUtils.clamp(newValue, mSlider.getMinValue(), mSlider.getMaxValue());
@@ -72,11 +81,9 @@ public abstract class SliderListener implements EventListener {
 
 				if (isValidValue(rounded)) {
 					mSlider.setValue(newValue);
-					int cursorPosition = mTextField.getCursorPosition();
 					mTextField.setText(Float.toString(rounded));
 					mTextField.setCursorPosition(cursorPosition);
 				} else {
-					int cursorPosition = mTextField.getCursorPosition();
 					mTextField.setText(Float.toString(mOldValue));
 					mTextField.setCursorPosition(cursorPosition);
 				}
