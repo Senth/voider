@@ -53,7 +53,7 @@ public class DisableListener implements EventListener{
 	 * Override this if you want to change something
 	 * @param disabled true if the button isn't checked
 	 */
-	public void onChange(boolean disabled) {
+	protected void onChange(boolean disabled) {
 		// Does nothing
 	}
 

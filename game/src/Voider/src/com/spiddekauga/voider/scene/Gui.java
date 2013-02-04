@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent;
 import com.spiddekauga.utils.scene.ui.AlignTable;
 
 /**
@@ -100,8 +101,10 @@ public abstract class Gui {
 	 * button isn't checked.
 	 */
 	protected static boolean isButtonChecked(Event event) {
-		if (event.getTarget() instanceof Button) {
-			return ((Button)event.getTarget()).isChecked();
+		if (event instanceof ChangeEvent) {
+			if (event.getTarget() instanceof Button) {
+				return ((Button)event.getTarget()).isChecked();
+			}
 		}
 		return false;
 	}

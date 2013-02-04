@@ -117,10 +117,8 @@ public abstract class SliderListener implements EventListener {
 				// Clamp value
 				newValue = MathUtils.clamp(newValue, mSlider.getMinValue(), mSlider.getMaxValue());
 				float rounded = (float) Maths.round(newValue, mPrecision, BigDecimal.ROUND_HALF_UP);
-				boolean validValue = false;
 
 				if (isValidValue(rounded)) {
-					validValue = true;
 					mSlider.setValue(newValue);
 				}
 
@@ -138,6 +136,14 @@ public abstract class SliderListener implements EventListener {
 		if (mOldValue != mSlider.getValue()) {
 			onChange(mSlider.getValue());
 			mOldValue = mSlider.getValue();
+
+			if (mLesserSlider != null && mLesserSlider.getValue() > mSlider.getValue()) {
+				mLesserSlider.setValue(mSlider.getValue());
+			}
+
+			if (mGreaterSlider != null && mGreaterSlider.getValue() < mSlider.getValue()) {
+				mGreaterSlider.setValue(mSlider.getValue());
+			}
 		}
 
 
@@ -145,10 +151,27 @@ public abstract class SliderListener implements EventListener {
 	}
 
 	/**
+	 * Sets another slider that always should be less or equal to this slider.
+	 * This will change the other slider's value if this condition isn't met
+	 * @param lesserSlider slider that always shall be less or equal to the internal slider.
+	 */
+	public void setLesserSlider(Slider lesserSlider) {
+		mLesserSlider = lesserSlider;
+	}
+
+	/** Sets another slider that always should be greater or equal to this slider.
+	 * This will change the other slider's value if this condition isn't met
+	 * @param greaterSlider slider that always shall be greater or equal to the internal slider.
+	 */
+	public void setGreaterSlider(Slider greaterSlider) {
+		mGreaterSlider = greaterSlider;
+	}
+
+	/**
 	 * Called whenever the value in either slider or text has changed
 	 * @param newValue the new value for slider and text.
 	 */
-	public abstract void onChange(float newValue);
+	protected abstract void onChange(float newValue);
 
 	/** Called before the new value is set, this validates the new value
 	 * one extra time. The value has already been clamped and rounded
@@ -168,6 +191,7 @@ public abstract class SliderListener implements EventListener {
 		float rounded = (float) Maths.round(mSlider.getValue(), mPrecision, BigDecimal.ROUND_HALF_UP);
 		mTextField.setText(Float.toString(rounded));
 		mTextField.setCursorPosition(cursorPosition);
+		mOldText = mTextField.getText();
 	}
 
 	/** Extra optional object used for validating the change */
@@ -178,6 +202,10 @@ public abstract class SliderListener implements EventListener {
 	protected TextField mTextField = null;
 
 
+	/** Shall always be less or equal to mSlider */
+	private Slider mLesserSlider = null;
+	/** Shall always be greater or equal to mSlider */
+	private Slider mGreaterSlider = null;
 	/** If changing text atm */
 	private boolean mEditingText = false;
 	/** Old text value */

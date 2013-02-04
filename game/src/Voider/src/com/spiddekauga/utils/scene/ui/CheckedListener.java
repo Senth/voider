@@ -36,7 +36,7 @@ public abstract class CheckedListener implements EventListener {
 	 * Called when an actor changed from checked to unchecked or vice versa
 	 * @param checked true if the new state is checked
 	 */
-	public abstract void onChange(boolean checked);
+	protected abstract void onChange(boolean checked);
 
 	/** The button we check for the checked state */
 	protected Button mButton;
