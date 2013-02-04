@@ -275,10 +275,10 @@ public class EnemyEditor extends WorldScene {
 
 	/**
 	 * Sets the turning of the enemy
-	 * @param disabled true if enemy turning is disabled
+	 * @param enabled true if enemy turning is enabled
 	 */
-	void setTurning(boolean disabled) {
-		mDef.setTurn(!disabled);
+	void setTurning(boolean enabled) {
+		mDef.setTurn(enabled);
 		mEnemyActor.resetPathMovement();
 		mEnemyPathBackAndForth.resetPathMovement();
 		mEnemyPathLoop.resetPathMovement();

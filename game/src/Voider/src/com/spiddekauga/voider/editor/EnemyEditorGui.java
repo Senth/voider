@@ -21,7 +21,6 @@ import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.Cell;
 import com.spiddekauga.utils.scene.ui.CheckedListener;
-import com.spiddekauga.utils.scene.ui.DisableListener;
 import com.spiddekauga.utils.scene.ui.HideListener;
 import com.spiddekauga.utils.scene.ui.Row;
 import com.spiddekauga.utils.scene.ui.SliderListener;
@@ -293,18 +292,21 @@ class EnemyEditorGui extends Gui {
 		row.setScalable(false);
 		mWidgets.movement.turnSpeedToggleButton = new TextButton("Turning speed OFF", textToogleStyle);
 		mPathTable.add(mWidgets.movement.turnSpeedToggleButton);
-		/** @TODO remove disable listener and add HideListener instead */
-		new DisableListener(mWidgets.movement.turnSpeedToggleButton) {
+		HideListener hideListener = new HideListener(mWidgets.movement.turnSpeedToggleButton, true) {
 			@Override
-			protected void onChange(boolean disabled) {
+			protected void onShow() {
 				if (mButton instanceof TextButton) {
-					if (disabled) {
-						((TextButton)mButton).setText("Turning speed OFF");
-					} else {
-						((TextButton)mButton).setText("Turning speed ON");
-					}
-					mEnemyEditor.setTurning(disabled);
+					((TextButton) mButton).setText("Turning speed ON");
 				}
+				mEnemyEditor.setTurning(true);
+			}
+
+			@Override
+			protected void onHide() {
+				if (mButton instanceof TextButton) {
+					((TextButton) mButton).setText("Turning speed OFF");
+				}
+				mEnemyEditor.setTurning(false);
 			}
 		};
 
@@ -321,6 +323,9 @@ class EnemyEditorGui extends Gui {
 				mEnemyEditor.setTurnSpeed(newValue);
 			}
 		};
+		mMovementHider.addChild(hideListener);
+		hideListener.addToggleActor(mWidgets.movement.turnSpeedSlider);
+		hideListener.addToggleActor(textField);
 
 
 		// --- Movement AI ---
@@ -367,17 +372,28 @@ class EnemyEditorGui extends Gui {
 
 
 		mAiTable.row();
-		mWidgets.movement.aiRandomMovementToggleButton = new TextButton("Random Movement", textToogleStyle);
+		mWidgets.movement.aiRandomMovementToggleButton = new TextButton("Random Movement OFF", textToogleStyle);
 		mAiTable.add(mWidgets.movement.aiRandomMovementToggleButton);
-		/** @TODO remove disable listener and add HideListener instead */
-		new DisableListener(mWidgets.movement.aiRandomMovementToggleButton) {
+		hideListener = new HideListener(mWidgets.movement.aiRandomMovementToggleButton, true) {
 			@Override
-			protected void onChange(boolean disabled) {
+			protected void onShow() {
+				mEnemyEditor.setMoveRandomly(true);
+
 				if (mButton instanceof TextButton) {
-					mEnemyEditor.setMoveRandomly(!disabled);
+					((TextButton) mButton).setText("Random Movement ON");
+				}
+			}
+
+			@Override
+			protected void onHide() {
+				mEnemyEditor.setMoveRandomly(false);
+
+				if (mButton instanceof TextButton) {
+					((TextButton) mButton).setText("Random Movement OFF");
 				}
 			}
 		};
+		mMovementHider.addChild(hideListener);
 
 		label = new Label("Min", labelStyle);
 		mAiTable.row();
@@ -395,6 +411,9 @@ class EnemyEditorGui extends Gui {
 				mEnemyEditor.setRandomTimeMin(newValue);
 			}
 		};
+		hideListener.addToggleActor(label);
+		hideListener.addToggleActor(mWidgets.movement.aiRandomTimeMin);
+		hideListener.addToggleActor(textField);
 
 
 		label = new Label("Max", labelStyle);
@@ -413,6 +432,9 @@ class EnemyEditorGui extends Gui {
 				mEnemyEditor.setRandomTimeMax(newValue);
 			}
 		};
+		hideListener.addToggleActor(label);
+		hideListener.addToggleActor(mWidgets.movement.aiRandomTimeMax);
+		hideListener.addToggleActor(textField);
 
 		sliderMinListener.setGreaterSlider(mWidgets.movement.aiRandomTimeMax);
 		sliderMaxListener.setLesserSlider(mWidgets.movement.aiRandomTimeMin);
