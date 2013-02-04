@@ -2,11 +2,16 @@ package com.spiddekauga.utils.scene.ui;
 
 import java.math.BigDecimal;
 
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputEvent.Type;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldFilter;
+import com.badlogic.gdx.scenes.scene2d.utils.FocusListener.FocusEvent;
 import com.spiddekauga.utils.Maths;
 
 /**
@@ -26,6 +31,14 @@ public abstract class SliderListener implements EventListener {
 		mTextField = textField;
 		mTextField.setText(Float.toString(mSlider.getValue()));
 		mOldValue = slider.getValue();
+		mOldText = mTextField.getText();
+
+		mTextField.setTextFieldFilter(new TextFieldFilter() {
+			@Override
+			public boolean acceptChar(TextField textField, char key) {
+				return Character.isDigit(key) || key == '.';
+			}
+		});
 
 		// Calculate precision
 		float stepSize = mSlider.getStepSize();
@@ -52,46 +65,72 @@ public abstract class SliderListener implements EventListener {
 			return false;
 		}
 
+		// Skip certain input events
+		if (event instanceof InputEvent) {
+			InputEvent inputEvent = (InputEvent)event;
+			if (inputEvent.getType() == Type.mouseMoved ||
+					inputEvent.getType() == Type.enter ||
+					inputEvent.getType() == Type.exit) {
+				return true;
+			}
+		}
+
+
+
 		// Slider changed the value
 		if (event.getTarget() == mSlider) {
-			int cursorPosition = mTextField.getCursorPosition();
-			float rounded = (float) Maths.round(mSlider.getValue(), mPrecision, BigDecimal.ROUND_HALF_UP);
-			if (isValidValue(rounded)) {
-				mTextField.setText(Float.toString(rounded));
-				mTextField.setCursorPosition(cursorPosition);
+			if (isValidValue(mSlider.getValue())) {
+				if (!mEditingText) {
+					setTextFieldFromSlider();
+				}
 			} else {
 				mSlider.setValue(mOldValue);
 			}
 		} else if (event.getTarget() == mTextField) {
 			try {
+				// Is this a focus out event?
+				if (event instanceof FocusEvent) {
+					if (!((FocusEvent) event).isFocused()) {
+						setTextFieldFromSlider();
+						return true;
+					}
+				}
+				// Enter was pressed
+				else if (event instanceof InputEvent) {
+					InputEvent inputEvent = (InputEvent)event;
+					if (inputEvent.getType() == Type.keyDown && inputEvent.getKeyCode() == Input.Keys.ENTER) {
+						setTextFieldFromSlider();
+						return true;
+					}
+				}
 				// Skip if text wasn't changed
-				if (Float.parseFloat(mTextField.getText()) == mOldValue) {
+				else if (mOldText.equals(mTextField.getText())) {
 					return true;
 				}
 
-				// Remove text after cursor position
-				int cursorPosition = mTextField.getCursorPosition();
-				String cutText = mTextField.getText().substring(0, cursorPosition);
 
-				float newValue = Float.parseFloat(cutText);
+				mEditingText = true;
+
+
+				float newValue = Float.parseFloat(mTextField.getText());
 
 				// Clamp value
 				newValue = MathUtils.clamp(newValue, mSlider.getMinValue(), mSlider.getMaxValue());
 				float rounded = (float) Maths.round(newValue, mPrecision, BigDecimal.ROUND_HALF_UP);
+				boolean validValue = false;
 
 				if (isValidValue(rounded)) {
+					validValue = true;
 					mSlider.setValue(newValue);
-					mTextField.setText(Float.toString(rounded));
-					mTextField.setCursorPosition(cursorPosition);
-				} else {
-					mTextField.setText(Float.toString(mOldValue));
-					mTextField.setCursorPosition(cursorPosition);
 				}
+
+				mOldText = mTextField.getText();
+				mEditingText = false;
 			}
 			// Not a valid format, reset to old value
 			catch (NumberFormatException e) {
 				int cursorPosition = mTextField.getCursorPosition();
-				mTextField.setText(Float.toString(mOldValue));
+				mTextField.setText(mOldText);
 				mTextField.setCursorPosition(cursorPosition);
 			}
 		}
@@ -121,6 +160,16 @@ public abstract class SliderListener implements EventListener {
 		return true;
 	}
 
+	/**
+	 * Sets the text field from the slider value. Rounds correctly
+	 */
+	private void setTextFieldFromSlider() {
+		int cursorPosition = mTextField.getCursorPosition();
+		float rounded = (float) Maths.round(mSlider.getValue(), mPrecision, BigDecimal.ROUND_HALF_UP);
+		mTextField.setText(Float.toString(rounded));
+		mTextField.setCursorPosition(cursorPosition);
+	}
+
 	/** Extra optional object used for validating the change */
 	protected Object mValidingObject = null;
 	/**	The slider that was bound */
@@ -128,6 +177,11 @@ public abstract class SliderListener implements EventListener {
 	/** The text the value is bound with */
 	protected TextField mTextField = null;
 
+
+	/** If changing text atm */
+	private boolean mEditingText = false;
+	/** Old text value */
+	private String mOldText;
 	/** Old value of the slider */
 	private float mOldValue = 0;
 	/** Precision of the slider */
