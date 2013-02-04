@@ -251,11 +251,12 @@ public class EnemyEditor extends WorldScene {
 	void newEnemy() {
 		mDef = new EnemyActorDef();
 		setEnemyDef();
+		mGui.resetValues();
 	}
 
 	/**
-	 * Sets the speed of the enemy
-	 * @param speed new speed of the enemy
+	 * Sets the movement speed of the enemy
+	 * @param speed new movement speed of the enemy
 	 */
 	void setSpeed(float speed) {
 		mDef.setSpeed(speed);
@@ -263,6 +264,13 @@ public class EnemyEditor extends WorldScene {
 		mEnemyPathBackAndForth.setSpeed(speed);
 		mEnemyPathLoop.setSpeed(speed);
 		mEnemyPathOnce.setSpeed(speed);
+	}
+
+	/**
+	 * @return movement speed of the enemy
+	 */
+	float getSpeed() {
+		return mDef.getSpeed();
 	}
 
 	/**
@@ -275,6 +283,13 @@ public class EnemyEditor extends WorldScene {
 		mEnemyPathBackAndForth.resetPathMovement();
 		mEnemyPathLoop.resetPathMovement();
 		mEnemyPathOnce.resetPathMovement();
+	}
+
+	/**
+	 * @return true if the enemy is turning
+	 */
+	boolean isTurning() {
+		return mDef.isTurning();
 	}
 
 	/**
@@ -364,6 +379,13 @@ public class EnemyEditor extends WorldScene {
 	 */
 	void setStartingAngle(float angle) {
 		mDef.getBodyDef().angle = angle;
+	}
+
+	/**
+	 * @return starting angle of the enemy
+	 */
+	float getStartingAngle() {
+		return mDef.getBodyDef().angle;
 	}
 
 	/**

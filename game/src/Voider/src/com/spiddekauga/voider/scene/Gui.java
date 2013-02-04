@@ -56,6 +56,13 @@ public abstract class Gui {
 	public abstract void initGui();
 
 	/**
+	 * Resets the value of the GUI
+	 */
+	public void resetValues() {
+		// Does nothing
+	}
+
+	/**
 	 * Renders the GUI
 	 */
 	public final void render() {

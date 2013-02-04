@@ -64,6 +64,8 @@ class EnemyEditorGui extends Gui {
 		initVisual();
 		initMenu();
 
+		resetValues();
+
 
 		mMainTable.setTransform(true);
 		mMovementTable.setTransform(true);
@@ -72,6 +74,47 @@ class EnemyEditorGui extends Gui {
 		mVisualTable.setTransform(true);
 		mMainTable.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		mMainTable.invalidate();
+	}
+
+	@Override
+	public void resetValues() {
+		// Movement
+		switch (mEnemyEditor.getMovementType()) {
+		case PATH:
+			mWidgets.movement.pathBox.setChecked(true);
+			break;
+
+		case STATIONARY:
+			mWidgets.movement.stationaryBox.setChecked(true);
+			break;
+
+		case AI:
+			mWidgets.movement.aiBox.setChecked(true);
+			break;
+		}
+
+		mWidgets.movement.speedSlider.setValue(mEnemyEditor.getSpeed());
+		mWidgets.movement.turnSpeedToggleButton.setChecked(mEnemyEditor.isTurning());
+		mWidgets.movement.turnSpeedSlider.setValue(mEnemyEditor.getTurnSpeed());
+
+		// AI movement
+		mWidgets.movement.aiDistanceMin.setValue(mEnemyEditor.getPlayerDistanceMin());
+		mWidgets.movement.aiDistanceMax.setValue(mEnemyEditor.getPlayerDistanceMax());
+		mWidgets.movement.aiRandomMovementToggleButton.setChecked(mEnemyEditor.isMovingRandomly());
+		mWidgets.movement.aiRandomTimeMin.setValue(mEnemyEditor.getRandomTimeMin());
+		mWidgets.movement.aiRandomTimeMax.setValue(mEnemyEditor.getRandomTimeMax());
+
+
+		// Weapons
+		mWidgets.weapon.toggleButton.setChecked(mEnemyEditor.hasWeapon());
+		mWidgets.weapon.bulletSpeed.setValue(mEnemyEditor.getBulletSpeed());
+		mWidgets.weapon.damage.setValue(mEnemyEditor.getDamage());
+		mWidgets.weapon.cooldownMin.setValue(mEnemyEditor.getCooldownMin());
+		mWidgets.weapon.cooldownMax.setValue(mEnemyEditor.getCooldownMax());
+
+
+		// Visuals
+		mWidgets.visual.startAngle.setValue(mEnemyEditor.getStartingAngle());
 	}
 
 	/**
@@ -166,14 +209,12 @@ class EnemyEditorGui extends Gui {
 		TextFieldStyle textFieldStyle = editorSkin.get("default", TextFieldStyle.class);
 		TextButtonStyle textToogleStyle = editorSkin.get("toggle", TextButtonStyle.class);
 
-		// Type of movement?
-		MovementTypes movementType = mEnemyEditor.getMovementType();
 		// Path
 		Row row = mMovementTable.row();
 		row.setScalable(false);
 		ButtonGroup buttonGroup = new ButtonGroup();
-		CheckBox checkBox = new CheckBox("Path", checkBoxStyle);
-		checkBox.addListener(new EventListener() {
+		mWidgets.movement.pathBox = new CheckBox("Path", checkBoxStyle);
+		mWidgets.movement.pathBox.addListener(new EventListener() {
 			@Override
 			public boolean handle(Event event) {
 				if (isButtonChecked(event) && mEnemyEditor.getMovementType() != MovementTypes.PATH) {
@@ -184,15 +225,14 @@ class EnemyEditorGui extends Gui {
 				return true;
 			}
 		});
-		buttonGroup.add(checkBox);
-		checkBox.setChecked(movementType == MovementTypes.PATH);
-		Cell cell = mMovementTable.add(checkBox);
+		buttonGroup.add(mWidgets.movement.pathBox);
+		Cell cell = mMovementTable.add(mWidgets.movement.pathBox);
 		cell.setPadRight(10);
 
 
 		// Stationary
-		checkBox = new CheckBox("Stationary", checkBoxStyle);
-		checkBox.addListener(new EventListener() {
+		mWidgets.movement.stationaryBox = new CheckBox("Stationary", checkBoxStyle);
+		mWidgets.movement.stationaryBox.addListener(new EventListener() {
 			@Override
 			public boolean handle(Event event) {
 				if (isButtonChecked(event) && mEnemyEditor.getMovementType() != MovementTypes.STATIONARY) {
@@ -202,15 +242,14 @@ class EnemyEditorGui extends Gui {
 				return true;
 			}
 		});
-		buttonGroup.add(checkBox);
-		checkBox.setChecked(movementType == MovementTypes.STATIONARY);
-		cell = mMovementTable.add(checkBox);
+		buttonGroup.add(mWidgets.movement.stationaryBox);
+		cell = mMovementTable.add(mWidgets.movement.stationaryBox);
 		cell.setPadRight(10);
 
 
 		// AI
-		checkBox = new CheckBox("AI", checkBoxStyle);
-		checkBox.addListener(new EventListener() {
+		mWidgets.movement.aiBox = new CheckBox("AI", checkBoxStyle);
+		mWidgets.movement.aiBox.addListener(new EventListener() {
 			@Override
 			public boolean handle(Event event) {
 				if (isButtonChecked(event) && mEnemyEditor.getMovementType() != MovementTypes.AI) {
@@ -223,9 +262,8 @@ class EnemyEditorGui extends Gui {
 				return true;
 			}
 		});
-		buttonGroup.add(checkBox);
-		checkBox.setChecked(movementType == MovementTypes.AI);
-		mMovementTable.add(checkBox);
+		buttonGroup.add(mWidgets.movement.aiBox);
+		mMovementTable.add(mWidgets.movement.aiBox);
 		mMovementTable.row();
 		mMovementTable.add(mMovementTypeTable);
 
@@ -238,56 +276,51 @@ class EnemyEditorGui extends Gui {
 		mPathTable.add(label);
 		row = mPathTable.row();
 		row.setScalable(false);
-		Slider slider = new Slider(Enemy.Movement.MOVE_SPEED_MIN, Enemy.Movement.MOVE_SPEED_MAX, Enemy.Movement.MOVE_SPEED_STEP_SIZE, false, sliderStyle);
-		mPathTable.add(slider);
+		mWidgets.movement.speedSlider = new Slider(Enemy.Movement.MOVE_SPEED_MIN, Enemy.Movement.MOVE_SPEED_MAX, Enemy.Movement.MOVE_SPEED_STEP_SIZE, false, sliderStyle);
+		mPathTable.add(mWidgets.movement.speedSlider );
 		TextField textField = new TextField("", textFieldStyle);
 		textField.setWidth(Enemy.TEXT_FIELD_NUMBER_WIDTH);
 		mPathTable.add(textField);
-		new SliderListener(slider, textField) {
+		new SliderListener(mWidgets.movement.speedSlider, textField) {
 			@Override
 			public void onChange(float newValue) {
 				mEnemyEditor.setSpeed(newValue);
 			}
 		};
-		slider.setValue(Enemy.Movement.MOVE_SPEED_DEFAULT);
 
 		// Turning
 		row = mPathTable.row();
 		row.setScalable(false);
-		Button button = new TextButton("On", textToogleStyle);
-		button.setChecked(false);
-		mPathTable.add(button);
-		DisableListener disableListener = new DisableListener(button) {
+		mWidgets.movement.turnSpeedToggleButton = new TextButton("Turning speed OFF", textToogleStyle);
+		mPathTable.add(mWidgets.movement.turnSpeedToggleButton);
+		/** @TODO remove disable listener and add HideListener instead */
+		new DisableListener(mWidgets.movement.turnSpeedToggleButton) {
 			@Override
 			public void onChange(boolean disabled) {
 				if (mButton instanceof TextButton) {
 					if (disabled) {
-						((TextButton)mButton).setText("Off");
+						((TextButton)mButton).setText("Turning speed OFF");
 					} else {
-						((TextButton)mButton).setText("On");
+						((TextButton)mButton).setText("Turning speed ON");
 					}
 					mEnemyEditor.setTurning(disabled);
 				}
 			}
 		};
-		label = new Label("Turning speed", labelStyle);
-		mPathTable.add(label);
+
 		row = mPathTable.row();
 		row.setScalable(false);
-		slider = new Slider(Movement.TURN_SPEED_MIN, Movement.TURN_SPEED_MAX, Enemy.Movement.TURN_SPEED_STEP_SIZE, false, sliderStyle);
-		mPathTable.add(slider);
-		disableListener.addToggleActor(slider);
+		mWidgets.movement.turnSpeedSlider = new Slider(Movement.TURN_SPEED_MIN, Movement.TURN_SPEED_MAX, Enemy.Movement.TURN_SPEED_STEP_SIZE, false, sliderStyle);
+		mPathTable.add(mWidgets.movement.turnSpeedSlider);
 		textField = new TextField("", textFieldStyle);
 		textField.setWidth(Enemy.TEXT_FIELD_NUMBER_WIDTH);
 		mPathTable.add(textField);
-		disableListener.addToggleActor(textField);
-		new SliderListener(slider, textField) {
+		new SliderListener(mWidgets.movement.turnSpeedSlider, textField) {
 			@Override
 			public void onChange(float newValue) {
 				mEnemyEditor.setTurnSpeed(newValue);
 			}
 		};
-		slider.setValue(mEnemyEditor.getTurnSpeed());
 
 
 		// --- Movement AI ---
@@ -300,13 +333,12 @@ class EnemyEditorGui extends Gui {
 		mAiTable.row();
 		cell = mAiTable.add(label);
 		cell.setPadRight(Enemy.LABEL_PADDING_BEFORE_SLIDER);
-		Slider sliderMin = new Slider(Enemy.Movement.AI_DISTANCE_MIN, Enemy.Movement.AI_DISTANCE_MAX, Enemy.Movement.AI_DISTANCE_STEP_SIZE, false, sliderStyle);
-		sliderMin.setValue(mEnemyEditor.getPlayerDistanceMin());
-		mAiTable.add(sliderMin);
+		mWidgets.movement.aiDistanceMin = new Slider(Enemy.Movement.AI_DISTANCE_MIN, Enemy.Movement.AI_DISTANCE_MAX, Enemy.Movement.AI_DISTANCE_STEP_SIZE, false, sliderStyle);
+		mAiTable.add(mWidgets.movement.aiDistanceMin);
 		textField = new TextField("", textFieldStyle);
 		textField.setWidth(Enemy.TEXT_FIELD_NUMBER_WIDTH);
 		mAiTable.add(textField);
-		SliderListener sliderMinListener = new SliderListener(sliderMin, textField) {
+		SliderListener sliderMinListener = new SliderListener(mWidgets.movement.aiDistanceMin, textField) {
 			@Override
 			protected boolean isValidValue(float newValue) {
 				if (mValidingObject instanceof Slider) {
@@ -326,13 +358,12 @@ class EnemyEditorGui extends Gui {
 		mAiTable.row();
 		cell = mAiTable.add(label);
 		cell.setPadRight(Enemy.LABEL_PADDING_BEFORE_SLIDER);
-		Slider sliderMax = new Slider(Enemy.Movement.AI_DISTANCE_MIN, Enemy.Movement.AI_DISTANCE_MAX, Enemy.Movement.AI_DISTANCE_STEP_SIZE, false, sliderStyle);
-		sliderMax.setValue(mEnemyEditor.getPlayerDistanceMax());
-		mAiTable.add(sliderMax);
+		mWidgets.movement.aiDistanceMax = new Slider(Enemy.Movement.AI_DISTANCE_MIN, Enemy.Movement.AI_DISTANCE_MAX, Enemy.Movement.AI_DISTANCE_STEP_SIZE, false, sliderStyle);
+		mAiTable.add(mWidgets.movement.aiDistanceMax);
 		textField = new TextField("", textFieldStyle);
 		textField.setWidth(Enemy.TEXT_FIELD_NUMBER_WIDTH);
 		mAiTable.add(textField);
-		SliderListener sliderMaxListener = new SliderListener(sliderMax, textField) {
+		SliderListener sliderMaxListener = new SliderListener(mWidgets.movement.aiDistanceMax, textField) {
 			@Override
 			protected boolean isValidValue(float newValue) {
 				if (mValidingObject instanceof Slider) {
@@ -347,15 +378,16 @@ class EnemyEditorGui extends Gui {
 			}
 		};
 
-		sliderMinListener.setValidatingObject(sliderMax);
-		sliderMaxListener.setValidatingObject(sliderMin);
+		sliderMinListener.setValidatingObject(mWidgets.movement.aiDistanceMax);
+		sliderMaxListener.setValidatingObject(mWidgets.movement.aiDistanceMin);
 
 
 		mAiTable.row();
-		button = new TextButton("Random Movement", textToogleStyle);
-		button.setChecked(false);
-		mAiTable.add(button);
-		disableListener = new DisableListener(button) {
+		mWidgets.movement.aiRandomMovementToggleButton = new TextButton("Random Movement", textToogleStyle);
+		//		mWidgets.movement.aiRandomMovementToggleButton.setChecked(false);
+		mAiTable.add(mWidgets.movement.aiRandomMovementToggleButton);
+		/** @TODO remove disable listener and add HideListener instead */
+		new DisableListener(mWidgets.movement.aiRandomMovementToggleButton) {
 			@Override
 			public void onChange(boolean disabled) {
 				if (mButton instanceof TextButton) {
@@ -369,15 +401,12 @@ class EnemyEditorGui extends Gui {
 		cell = mAiTable.add(label);
 		cell.setPadRight(Enemy.LABEL_PADDING_BEFORE_SLIDER);
 
-		sliderMin = new Slider(Enemy.Movement.RANDOM_MOVEMENT_TIME_MIN, Enemy.Movement.RANDOM_MOVEMENT_TIME_MAX, Enemy.Movement.RANDOM_MOVEMENT_TIME_STEP_SIZE, false, sliderStyle);
-		mAiTable.add(sliderMin);
-		disableListener.addToggleActor(sliderMin);
+		mWidgets.movement.aiRandomTimeMin = new Slider(Enemy.Movement.RANDOM_MOVEMENT_TIME_MIN, Enemy.Movement.RANDOM_MOVEMENT_TIME_MAX, Enemy.Movement.RANDOM_MOVEMENT_TIME_STEP_SIZE, false, sliderStyle);
+		mAiTable.add(mWidgets.movement.aiRandomTimeMin);
 		textField = new TextField("", textFieldStyle);
 		textField.setWidth(Enemy.TEXT_FIELD_NUMBER_WIDTH);
 		mAiTable.add(textField);
-		disableListener.addToggleActor(textField);
-		sliderMin.setValue(mEnemyEditor.getRandomTimeMin());
-		sliderMinListener = new SliderListener(sliderMin, textField) {
+		sliderMinListener = new SliderListener(mWidgets.movement.aiRandomTimeMin, textField) {
 			@Override
 			protected boolean isValidValue(float newValue) {
 				if (mValidingObject instanceof Slider) {
@@ -398,15 +427,12 @@ class EnemyEditorGui extends Gui {
 		cell = mAiTable.add(label);
 		cell.setPadRight(Enemy.LABEL_PADDING_BEFORE_SLIDER);
 
-		sliderMax = new Slider(Enemy.Movement.RANDOM_MOVEMENT_TIME_MIN, Enemy.Movement.RANDOM_MOVEMENT_TIME_MAX, Enemy.Movement.RANDOM_MOVEMENT_TIME_STEP_SIZE, false, sliderStyle);
-		mAiTable.add(sliderMax);
-		disableListener.addToggleActor(sliderMax);
+		mWidgets.movement.aiRandomTimeMax = new Slider(Enemy.Movement.RANDOM_MOVEMENT_TIME_MIN, Enemy.Movement.RANDOM_MOVEMENT_TIME_MAX, Enemy.Movement.RANDOM_MOVEMENT_TIME_STEP_SIZE, false, sliderStyle);
+		mAiTable.add(mWidgets.movement.aiRandomTimeMax);
 		textField = new TextField("", textFieldStyle);
 		textField.setWidth(Enemy.TEXT_FIELD_NUMBER_WIDTH);
 		mAiTable.add(textField);
-		disableListener.addToggleActor(textField);
-		sliderMax.setValue(mEnemyEditor.getRandomTimeMax());
-		sliderMaxListener = new SliderListener(sliderMax, textField) {
+		sliderMaxListener = new SliderListener(mWidgets.movement.aiRandomTimeMax, textField) {
 			@Override
 			protected boolean isValidValue(float newValue) {
 				if (mValidingObject instanceof Slider) {
@@ -421,8 +447,8 @@ class EnemyEditorGui extends Gui {
 			}
 		};
 
-		sliderMinListener.setValidatingObject(sliderMax);
-		sliderMaxListener.setValidatingObject(sliderMin);
+		sliderMinListener.setValidatingObject(mWidgets.movement.aiRandomTimeMax);
+		sliderMaxListener.setValidatingObject(mWidgets.movement.aiRandomTimeMin);
 	}
 
 	/**
@@ -439,9 +465,9 @@ class EnemyEditorGui extends Gui {
 
 		mWeaponTable.setScalable(false);
 
-		Button button = new TextButton("Weapons OFF", toggleButtonStyle);
-		mWeaponTable.add(button);
-		new CheckedListener(button) {
+		mWidgets.weapon.toggleButton = new TextButton("Weapons OFF", toggleButtonStyle);
+		mWeaponTable.add(mWidgets.weapon.toggleButton);
+		new CheckedListener(mWidgets.weapon.toggleButton) {
 			@Override
 			public void onChange(boolean checked) {
 				if (checked) {
@@ -458,12 +484,12 @@ class EnemyEditorGui extends Gui {
 				}
 			}
 		};
-		HideListener weaponInnerHider = new HideListener(button, true);
+		HideListener weaponInnerHider = new HideListener(mWidgets.weapon.toggleButton, true);
 
 		// TYPES
 		mWeaponTable.row();
 		ButtonGroup buttonGroup = new ButtonGroup();
-		button = new TextButton("Bullet", toggleButtonStyle);
+		Button button = new TextButton("Bullet", toggleButtonStyle);
 		buttonGroup.add(button);
 		mWeaponTable.add(button);
 		weaponInnerHider.addToggleActor(button);
@@ -504,7 +530,7 @@ class EnemyEditorGui extends Gui {
 		Cell cell = bulletTable.add(label);
 		cell.setPadRight(Enemy.LABEL_PADDING_BEFORE_SLIDER);
 		Slider slider = new Slider(Weapon.BULLET_SPEED_MIN, Weapon.BULLET_SPEED_MAX, Weapon.BULLET_SPEED_STEP_SIZE, false, sliderStyle);
-		slider.setValue(mEnemyEditor.getBulletSpeed());
+		mWidgets.weapon.bulletSpeed = slider;
 		bulletTable.add(slider);
 		TextField textField = new TextField("", textFieldStyle);
 		textField.setWidth(Enemy.TEXT_FIELD_NUMBER_WIDTH);
@@ -521,8 +547,8 @@ class EnemyEditorGui extends Gui {
 		label = new Label("Damage", labelStyle);
 		cell = bulletTable.add(label);
 		cell.setPadRight(Enemy.LABEL_PADDING_BEFORE_SLIDER);
-		slider = new Slider(Weapon.BULLET_SPEED_MIN, Weapon.BULLET_SPEED_MAX, Weapon.BULLET_SPEED_STEP_SIZE, false, sliderStyle);
-		slider.setValue(mEnemyEditor.getDamage());
+		slider = new Slider(Weapon.DAMAGE_MIN, Weapon.DAMAGE_MAX, Weapon.DAMAGE_STEP_SIZE, false, sliderStyle);
+		mWidgets.weapon.damage = slider;
 		bulletTable.add(slider);
 		textField = new TextField("", textFieldStyle);
 		textField.setWidth(Enemy.TEXT_FIELD_NUMBER_WIDTH);
@@ -544,11 +570,11 @@ class EnemyEditorGui extends Gui {
 		cell.setPadRight(Enemy.LABEL_PADDING_BEFORE_SLIDER);
 
 		Slider sliderMin = new Slider(Weapon.COOLDOWN_MIN, Weapon.COOLDOWN_MAX, Weapon.COOLDOWN_STEP_SIZE, false, sliderStyle);
+		mWidgets.weapon.cooldownMin = sliderMin;
 		bulletTable.add(sliderMin);
 		textField = new TextField("", textFieldStyle);
 		textField.setWidth(Enemy.TEXT_FIELD_NUMBER_WIDTH);
 		bulletTable.add(textField);
-		sliderMin.setValue(mEnemyEditor.getCooldownMin());
 		SliderListener sliderMinListener = new SliderListener(sliderMin, textField) {
 			@Override
 			protected boolean isValidValue(float newValue) {
@@ -571,11 +597,11 @@ class EnemyEditorGui extends Gui {
 		cell.setPadRight(Enemy.LABEL_PADDING_BEFORE_SLIDER);
 
 		Slider sliderMax = new Slider(Weapon.COOLDOWN_MIN, Weapon.COOLDOWN_MAX, Weapon.COOLDOWN_STEP_SIZE, false, sliderStyle);
+		mWidgets.weapon.cooldownMax = sliderMax;
 		bulletTable.add(sliderMax);
 		textField = new TextField("", textFieldStyle);
 		textField.setWidth(Enemy.TEXT_FIELD_NUMBER_WIDTH);
 		bulletTable.add(textField);
-		sliderMax.setValue(mEnemyEditor.getCooldownMax());
 		SliderListener sliderMaxListener = new SliderListener(sliderMax, textField) {
 			@Override
 			protected boolean isValidValue(float newValue) {
@@ -617,6 +643,7 @@ class EnemyEditorGui extends Gui {
 
 		mVisualTable.row();
 		Slider slider = new Slider(0, 360, 1, false, sliderStyle);
+		mWidgets.visual.startAngle = slider;
 		mVisualTable.add(slider);
 		TextField textField = new TextField("", textFieldStyle);
 		textField.setWidth(Enemy.TEXT_FIELD_NUMBER_WIDTH);
@@ -651,6 +678,67 @@ class EnemyEditorGui extends Gui {
 	private HideListener mVisualHider = new HideListener(true);
 	/** Hides movement options */
 	private HideListener mMovementHider = new HideListener(true);
+
+	/** All widgets that needs updating when an actor is changed */
+	private InnerWidgets mWidgets = new InnerWidgets();
+
+	/**
+	 * All the widgets which state can be changed and thus reset
+	 */
+	@SuppressWarnings("javadoc")
+	private static class InnerWidgets {
+		MovementWidgets movement = new MovementWidgets();
+		WeaponWidgets weapon = new WeaponWidgets();
+		VisualWidgets visual = new VisualWidgets();
+
+		/**
+		 * Movement widget
+		 */
+		static class MovementWidgets {
+			// Movement type
+			CheckBox pathBox = null;
+			CheckBox stationaryBox = null;
+			CheckBox aiBox = null;
+
+			// Generic movement variables
+			Slider speedSlider = null;
+			Button turnSpeedToggleButton = null;
+			Slider turnSpeedSlider = null;
+
+
+			// AI Movement
+			Slider aiDistanceMin = null;
+			Slider aiDistanceMax = null;
+			Button aiRandomMovementToggleButton = null;
+			Slider aiRandomTimeMin = null;
+			Slider aiRandomTimeMax = null;
+		}
+
+
+		/**
+		 * Weapon widgets
+		 */
+		static class WeaponWidgets {
+			Button toggleButton = null;
+
+
+			// Bullet
+			Slider bulletSpeed = null;
+			Slider damage = null;
+			Slider cooldownMin = null;
+			Slider cooldownMax = null;
+
+
+			// Aim
+		}
+
+		/**
+		 * Visual vidgets
+		 */
+		static class VisualWidgets {
+			Slider startAngle = null;
+		}
+	}
 
 	/** The actual enemy editor bound to this gui */
 	private EnemyEditor mEnemyEditor = null;
