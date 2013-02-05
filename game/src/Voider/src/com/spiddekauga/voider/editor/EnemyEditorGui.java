@@ -27,6 +27,7 @@ import com.spiddekauga.utils.scene.ui.SliderListener;
 import com.spiddekauga.voider.Config.Editor.Enemy;
 import com.spiddekauga.voider.Config.Editor.Enemy.Movement;
 import com.spiddekauga.voider.Config.Editor.Weapon;
+import com.spiddekauga.voider.game.actors.EnemyActorDef.AimTypes;
 import com.spiddekauga.voider.game.actors.EnemyActorDef.MovementTypes;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceNames;
@@ -110,6 +111,27 @@ class EnemyEditorGui extends Gui {
 		mWidgets.weapon.damage.setValue(mEnemyEditor.getDamage());
 		mWidgets.weapon.cooldownMax.setValue(mEnemyEditor.getCooldownMax());
 		mWidgets.weapon.cooldownMin.setValue(mEnemyEditor.getCooldownMin());
+
+		// Aim
+		mWidgets.weapon.aimRotateSpeed.setValue(mEnemyEditor.getAimRotateSpeed());
+		mWidgets.weapon.aimRotateStartAngle.setValue(mEnemyEditor.getAimStartAngle());
+		switch (mEnemyEditor.getAimType()) {
+		case ON_PLAYER:
+			mWidgets.weapon.aimOnPlayer.setChecked(true);
+			break;
+
+		case MOVE_DIRECTION:
+			mWidgets.weapon.aimMoveDirection.setChecked(true);
+			break;
+
+		case IN_FRONT_OF_PLAYER:
+			mWidgets.weapon.aimInFrontOfPlayer.setChecked(true);
+			break;
+
+		case ROTATE:
+			mWidgets.weapon.aimRotate.setChecked(true);
+			break;
+		}
 
 
 		// Visuals
@@ -451,12 +473,14 @@ class EnemyEditorGui extends Gui {
 		LabelStyle labelStyle = editorSkin.get("default", LabelStyle.class);
 		SliderStyle sliderStyle = editorSkin.get("default", SliderStyle.class);
 		TextFieldStyle textFieldStyle = editorSkin.get("default", TextFieldStyle.class);
+		CheckBoxStyle checkBoxStyle = editorSkin.get("default", CheckBoxStyle.class);
 
 		mWeaponTable.setScalable(false);
 
-		mWidgets.weapon.toggleButton = new TextButton("Weapons OFF", toggleButtonStyle);
-		mWeaponTable.add(mWidgets.weapon.toggleButton);
-		new CheckedListener(mWidgets.weapon.toggleButton) {
+		Button button = new TextButton("Weapons OFF", toggleButtonStyle);
+		mWidgets.weapon.toggleButton = button;
+		mWeaponTable.add(button);
+		new CheckedListener(button) {
 			@Override
 			protected void onChange(boolean checked) {
 				if (checked) {
@@ -473,23 +497,24 @@ class EnemyEditorGui extends Gui {
 				}
 			}
 		};
-		HideListener weaponInnerHider = new HideListener(mWidgets.weapon.toggleButton, true);
+		HideListener weaponInnerHider = new HideListener(button, true);
 
 		// TYPES
 		mWeaponTable.row();
 		ButtonGroup buttonGroup = new ButtonGroup();
-		Button button = new TextButton("Bullet", toggleButtonStyle);
+		button = new TextButton("Bullet", toggleButtonStyle);
 		buttonGroup.add(button);
 		mWeaponTable.add(button);
 		weaponInnerHider.addToggleActor(button);
 		HideListener bulletHider = new HideListener(button, true);
+		weaponInnerHider.addChild(bulletHider);
 
 		button = new TextButton("Aim", toggleButtonStyle);
 		buttonGroup.add(button);
 		mWeaponTable.add(button);
 		weaponInnerHider.addToggleActor(button);
-		weaponInnerHider.addChild(bulletHider);
-
+		HideListener aimHider = new HideListener(button, true);
+		weaponInnerHider.addChild(aimHider);
 
 		// BULLET
 		AlignTable bulletTable = new AlignTable();
@@ -593,6 +618,109 @@ class EnemyEditorGui extends Gui {
 		sliderMinListener.setGreaterSlider(sliderMax);
 		sliderMaxListener.setLesserSlider(sliderMin);
 
+
+		// -- Aim --
+		// Aim on what?
+		mWeaponTable.row();
+		button = new TextButton("On Player", toggleButtonStyle);
+		mWidgets.weapon.aimOnPlayer = button;
+		mWeaponTable.add(button);
+		aimHider.addToggleActor(button);
+		buttonGroup = new ButtonGroup();
+		buttonGroup.add(button);
+		new CheckedListener(button) {
+			@Override
+			protected void onChange(boolean checked) {
+				if (checked) {
+					mEnemyEditor.setAimType(AimTypes.ON_PLAYER);
+				}
+			}
+		};
+
+		button = new TextButton("Move Dir", toggleButtonStyle);
+		mWidgets.weapon.aimMoveDirection = button;
+		mWeaponTable.add(button);
+		aimHider.addToggleActor(button);
+		buttonGroup.add(button);
+		new CheckedListener(button) {
+			@Override
+			protected void onChange(boolean checked) {
+				if (checked) {
+					mEnemyEditor.setAimType(AimTypes.MOVE_DIRECTION);
+				}
+			}
+		};
+
+		mWeaponTable.row();
+		button = new TextButton("In front of Player", toggleButtonStyle);
+		mWidgets.weapon.aimInFrontOfPlayer = button;
+		mWeaponTable.add(button);
+		aimHider.addToggleActor(button);
+		buttonGroup.add(button);
+		new CheckedListener(button) {
+			@Override
+			protected void onChange(boolean checked) {
+				if (checked) {
+					mEnemyEditor.setAimType(AimTypes.IN_FRONT_OF_PLAYER);
+				}
+			}
+		};
+
+		button = new TextButton("Rotate", toggleButtonStyle);
+		mWidgets.weapon.aimRotate = button;
+		mWeaponTable.add(button);
+		buttonGroup.add(button);
+		HideListener rotateHider = new HideListener(button, true) {
+			@Override
+			protected void onShow() {
+				mEnemyEditor.setAimType(AimTypes.ROTATE);
+			}
+		};
+		aimHider.addToggleActor(button);
+		aimHider.addChild(rotateHider);
+
+
+		// Rotate
+		mWeaponTable.row();
+		AlignTable rotateTable = new AlignTable();
+		rotateTable.setPreferences(mWeaponTable);
+		rotateTable.setScalable(false);
+		rotateHider.addToggleActor(rotateTable);
+		mWeaponTable.add(rotateTable);
+
+		rotateTable.row();
+		label = new Label("Start angle", labelStyle);
+		rotateTable.add(label);
+		rotateTable.row();
+		slider = new Slider(Enemy.Weapon.START_ANGLE_MIN, Enemy.Weapon.START_ANGLE_MAX, Enemy.Weapon.START_ANGLE_STEP_SIZE, false, sliderStyle);
+		mWidgets.weapon.aimRotateStartAngle = slider;
+		rotateTable.add(slider);
+		textField = new TextField("", textFieldStyle);
+		textField.setWidth(Enemy.TEXT_FIELD_NUMBER_WIDTH);
+		rotateTable.add(textField);
+		new SliderListener(slider, textField) {
+			@Override
+			protected void onChange(float newValue) {
+				mEnemyEditor.setAimStartAngle(newValue);
+			}
+		};
+
+		rotateTable.row();
+		label = new Label("Rotate speed", labelStyle);
+		rotateTable.add(label);
+		rotateTable.row();
+		slider = new Slider(Enemy.Weapon.ROTATE_SPEED_MIN, Enemy.Weapon.ROTATE_SPEED_MAX, Enemy.Weapon.ROTATE_SPEED_STEP_SIZE, false, sliderStyle);
+		mWidgets.weapon.aimRotateSpeed = slider;
+		rotateTable.add(slider);
+		textField = new TextField("", textFieldStyle);
+		textField.setWidth(Enemy.TEXT_FIELD_NUMBER_WIDTH);
+		rotateTable.add(textField);
+		new SliderListener(slider, textField) {
+			@Override
+			protected void onChange(float newValue) {
+				mEnemyEditor.setAimRotateSpeed(newValue);
+			}
+		};
 
 
 		weaponInnerHider.addToggleActor(bulletTable);
@@ -703,6 +831,14 @@ class EnemyEditorGui extends Gui {
 
 
 			// Aim
+			Button aimOnPlayer = null;
+			Button aimMoveDirection = null;
+			Button aimInFrontOfPlayer = null;
+			Button aimRotate = null;
+
+			// Aim - rotate
+			Slider aimRotateStartAngle = null;
+			Slider aimRotateSpeed = null;
 		}
 
 		/**

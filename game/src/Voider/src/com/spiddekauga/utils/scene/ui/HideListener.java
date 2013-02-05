@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.utils.Layout;
 
 /**
  * Hides specified GUI elements when a button is enabled/disabled
@@ -22,8 +23,8 @@ public class HideListener implements EventListener {
 	 * Set to false to show the actors when the button is unchecked.
 	 */
 	public HideListener(Button button, boolean showWhenChecked) {
-		setButton(button);
 		mShowWhenChecked = showWhenChecked;
+		setButton(button);
 	}
 
 	/**
@@ -106,6 +107,10 @@ public class HideListener implements EventListener {
 		if (shallShowActors()) {
 			for (Actor toggleActor : mToggles) {
 				toggleActor.setVisible(true);
+
+				if (toggleActor instanceof Layout) {
+					((Layout) toggleActor).invalidateHierarchy();
+				}
 			}
 
 			// Shall children remain hidden?
@@ -115,10 +120,21 @@ public class HideListener implements EventListener {
 
 			onShow();
 		} else {
-			for (Actor toggleActor : mToggles) {
-				toggleActor.setVisible(false);
-			}
+			hideAll();
 			onHide();
+		}
+	}
+
+	/**
+	 * Hides all actors including childrens' actors
+	 */
+	private void hideAll() {
+		for (Actor toggleActor : mToggles) {
+			toggleActor.setVisible(false);
+		}
+
+		for (HideListener hideListener : mChildren) {
+			hideListener.hideAll();
 		}
 	}
 

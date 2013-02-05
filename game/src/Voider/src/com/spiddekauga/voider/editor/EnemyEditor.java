@@ -25,6 +25,7 @@ import com.spiddekauga.voider.game.Path.PathTypes;
 import com.spiddekauga.voider.game.actors.BulletActorDef;
 import com.spiddekauga.voider.game.actors.EnemyActor;
 import com.spiddekauga.voider.game.actors.EnemyActorDef;
+import com.spiddekauga.voider.game.actors.EnemyActorDef.AimTypes;
 import com.spiddekauga.voider.game.actors.EnemyActorDef.MovementTypes;
 import com.spiddekauga.voider.game.actors.PlayerActor;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
@@ -493,69 +494,114 @@ public class EnemyEditor extends WorldScene {
 	}
 
 	/**
-	 * \copydoc #com.spiddekauga.voider.game.Weapon.setBulletSpeed(float)
+	 * Sets the bullet speed
+	 * @param speed new bullet speed
 	 */
-	@SuppressWarnings("javadoc")
 	void setBulletSpeed(float speed) {
 		mDef.getWeapon().setBulletSpeed(speed);
 	}
 
 	/**
-	 * \copydoc #com.spiddekauga.voider.game.Weapon.getBulletSpeed()
+	 * @return the bullet speed
 	 */
-	@SuppressWarnings("javadoc")
 	float getBulletSpeed() {
 		return mDef.getWeapon().getBulletSpeed();
 	}
 
 	/**
-	 * \copydoc #com.spiddekauga.voider.game.Weapon.setDamage(float)
+	 * Sets the weapon damage
+	 * @param damage how much damage the bullets will take when they hit something
 	 */
-	@SuppressWarnings("javadoc")
 	void setDamage(float damage) {
 		mDef.getWeapon().setDamage(damage);
 	}
 
 	/**
-	 * \copydoc #com.spiddekauga.voider.game.Weapon.getDamage()
+	 * @return weapon damage
 	 */
-	@SuppressWarnings("javadoc")
 	float getDamage() {
 		return mDef.getWeapon().getDamage();
 	}
 
 	/**
-	 * \copydoc #com.spiddekauga.voider.game.Weapon.setCooldownMin(float)
+	 * Sets the minimum weapon cooldown. If this is equal to the max value set
+	 * through #setCooldownMax(float) it will always have the same cooldown; if not
+	 * it will get a random cooldown between min and max time.
+	 * @param minCooldown minimum cooldown.
 	 */
-	@SuppressWarnings("javadoc")
 	void setCooldownMin(float minCooldown) {
 		mDef.getWeapon().setCooldownMin(minCooldown);
 	}
 
 	/**
-	 * \copydoc #com.spiddekauga.voider.game.Weapon.getCooldownMin()
+	 * @return minimum cooldown time
 	 */
-	@SuppressWarnings("javadoc")
 	float getCooldownMin() {
 		return mDef.getWeapon().getCooldownMin();
 	}
 
 	/**
-	 * \copydoc Weapon.setCooldownMax(float)
+	 * Sets the maximum weapon cooldown. If this is equal to the min value set
+	 * through #setCooldownMin(float) it will always have the same cooldown; if not
+	 * it will get a random cooldown between min and max time.
+	 * @param maxCooldown maximum cooldown.
 	 */
-	@SuppressWarnings("javadoc")
 	void setCooldownMax(float maxCooldown) {
 		mDef.getWeapon().setCooldownMax(maxCooldown);
 	}
 
 	/**
-	 * \copydoc Weapon.getCooldownMin()
+	 * @return minimum cooldown time
 	 */
-	@SuppressWarnings("javadoc")
 	float getCooldownMax() {
 		return mDef.getWeapon().getCooldownMax();
 	}
 
+	/**
+	 * Sets the aim type of the enemy
+	 * @param aimType new aim type
+	 */
+	void setAimType(AimTypes aimType) {
+		mDef.setAimType(aimType);
+	}
+
+	/**
+	 * @return the aim type of the enemy
+	 */
+	AimTypes getAimType() {
+		return mDef.getAimType();
+	}
+
+	/**
+	 * Sets the starting aim angle, when rotating
+	 * @param angle starting angle of aim.
+	 */
+	void setAimStartAngle(float angle) {
+		mDef.setAimStartAngle(angle);
+	}
+
+	/**
+	 * @return starting aim angle.
+	 */
+	float getAimStartAngle() {
+		return mDef.getAimStartAngle();
+	}
+
+	/**
+	 * Sets the aim's rotation speed. Only applicable when aim is set
+	 * to rotating.
+	 * @param rotateSpeed new rotation speed
+	 */
+	void setAimRotateSpeed(float rotateSpeed) {
+		mDef.setAimRotateSpeed(rotateSpeed);
+	}
+
+	/**
+	 * @return aim's rotation speed.
+	 */
+	float getAimRotateSpeed() {
+		return mDef.getAimRotateSpeed();
+	}
 
 	/** Invalid pointer id */
 	private static final int INVALID_POINTER = -1;

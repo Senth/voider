@@ -181,6 +181,28 @@ public class Config {
 				public final static boolean RANDOM_MOVEMENT_DEFAULT = false;
 			}
 
+			/**
+			 * Weapon aim
+			 */
+			public static class Weapon {
+				/** Minimum rotate speed of the weapon */
+				public final static float ROTATE_SPEED_MIN = 0;
+				/** Maximum rotate speed of the weapon */
+				public final static float ROTATE_SPEED_MAX = 720;
+				/** Default rotate speed of the weapon */
+				public final static float ROTATE_SPEED_DEFAULT = 20;
+				/** Step size of rotate speed */
+				public final static float ROTATE_SPEED_STEP_SIZE = 1;
+				/** Minimum starting angle */
+				public final static float START_ANGLE_MIN = 0;
+				/** Maximum start angle */
+				public final static float START_ANGLE_MAX = 360;
+				/** Default starting angle */
+				public final static float START_ANGLE_DEFAULT = 180;
+				/** Step size of starting angle */
+				public final static float START_ANGLE_STEP_SIZE = 1;
+			}
+
 			/** Label padding in front of a slider */
 			public final static float LABEL_PADDING_BEFORE_SLIDER = 8;
 			/** Text field size for numbers */

@@ -237,6 +237,52 @@ public class EnemyActorDef extends ActorDef {
 		return mWeapon;
 	}
 
+	/**
+	 * Sets the aim type of the enemy
+	 * @param aimType new aim type
+	 */
+	public void setAimType(AimTypes aimType) {
+		mAimType = aimType;
+	}
+
+	/**
+	 * @return the aim type of the enemy
+	 */
+	public AimTypes getAimType() {
+		return mAimType;
+	}
+
+	/**
+	 * Sets the starting aim angle, when rotating
+	 * @param angle starting angle of aim.
+	 */
+	public void setAimStartAngle(float angle) {
+		mAimRotateVars.startAngle = angle;
+	}
+
+	/**
+	 * @return starting aim angle.
+	 */
+	public float getAimStartAngle() {
+		return mAimRotateVars.startAngle;
+	}
+
+	/**
+	 * Sets the aim's rotation speed. Only applicable when aim is set
+	 * to rotating.
+	 * @param rotateSpeed new rotation speed
+	 */
+	public void setAimRotateSpeed(float rotateSpeed) {
+		mAimRotateVars.rotateSpeed = rotateSpeed;
+	}
+
+	/**
+	 * @return aim's rotation speed.
+	 */
+	public float getAimRotateSpeed() {
+		return mAimRotateVars.rotateSpeed;
+	}
+
 	@Override
 	public void write(Json json) {
 		json.writeValue("REVISION", Config.REVISION);
@@ -298,6 +344,20 @@ public class EnemyActorDef extends ActorDef {
 	}
 
 	/**
+	 * Enumeration for how how to aim
+	 */
+	public enum AimTypes {
+		/** On the player */
+		ON_PLAYER,
+		/** In front of the player */
+		IN_FRONT_OF_PLAYER,
+		/** In the moving direction */
+		MOVE_DIRECTION,
+		/** Rotates */
+		ROTATE
+	}
+
+	/**
 	 * @return enemy filter category
 	 */
 	@Override
@@ -318,6 +378,10 @@ public class EnemyActorDef extends ActorDef {
 	private boolean mHasWeapon = false;
 	/** Weapon of the enemy */
 	private Weapon mWeapon = new Weapon();
+	/** How the enemy will aim if it has a weapon */
+	private AimTypes mAimType = AimTypes.MOVE_DIRECTION;
+	/** Aim variables when using rotation aim */
+	private AimRotateVars mAimRotateVars = new AimRotateVars();
 	/** What type of movement the enemy has */
 	private MovementTypes mMovementType = MovementTypes.PATH;
 	/** Movement variables */
@@ -330,9 +394,9 @@ public class EnemyActorDef extends ActorDef {
 	 */
 	private class MovementVars {
 		/** Speed of the enemy */
-		public float speed = Enemy.Movement.MOVE_SPEED_DEFAULT;
+		float speed = Enemy.Movement.MOVE_SPEED_DEFAULT;
 		/** How fast the enemy can turn */
-		public float turnSpeed = Enemy.Movement.TURN_SPEED_DEFAULT;
+		float turnSpeed = Enemy.Movement.TURN_SPEED_DEFAULT;
 	}
 
 	/**
@@ -340,20 +404,30 @@ public class EnemyActorDef extends ActorDef {
 	 */
 	private class AiMovementVars {
 		/** Minimum distance from the player */
-		public float playerDistanceMin = Enemy.Movement.AI_DISTANCE_MIN_DEFAULT;
+		float playerDistanceMin = Enemy.Movement.AI_DISTANCE_MIN_DEFAULT;
 		/** Minimum distance from player, squared */
-		public float playerDistanceMinSq = playerDistanceMin * playerDistanceMin;
+		float playerDistanceMinSq = playerDistanceMin * playerDistanceMin;
 		/** Maximum distance from the player */
-		public float playerDistanceMax = Enemy.Movement.AI_DISTANCE_MAX_DEFAULT;
+		float playerDistanceMax = Enemy.Movement.AI_DISTANCE_MAX_DEFAULT;
 		/** Maximum distance from the player, squared */
-		public float playerDistanceMaxSq = playerDistanceMax * playerDistanceMax;
+		float playerDistanceMaxSq = playerDistanceMax * playerDistanceMax;
 		/** If the enemy shall stay on the screen */
-		public boolean stayOnScreen = Enemy.Movement.STAY_ON_SCREEN_DEFAULT;
+		boolean stayOnScreen = Enemy.Movement.STAY_ON_SCREEN_DEFAULT;
 		/** If the enemy shall move randomly when inside the preferred space */
-		public boolean randomMove = Enemy.Movement.RANDOM_MOVEMENT_DEFAULT;
+		boolean randomMove = Enemy.Movement.RANDOM_MOVEMENT_DEFAULT;
 		/** Minimum time until next random move */
-		public float randomTimeMin = Enemy.Movement.RANDOM_MOVEMENT_TIME_MIN_DEFAULT;
+		float randomTimeMin = Enemy.Movement.RANDOM_MOVEMENT_TIME_MIN_DEFAULT;
 		/** Maxumum time until next random move */
-		public float randomTimeMax = Enemy.Movement.RANDOM_MOVEMENT_TIME_MAX_DEFAULT;
+		float randomTimeMax = Enemy.Movement.RANDOM_MOVEMENT_TIME_MAX_DEFAULT;
+	}
+
+	/**
+	 * Class for aim rotating variables
+	 */
+	private class AimRotateVars {
+		/** Starting angle */
+		float startAngle = Enemy.Weapon.START_ANGLE_DEFAULT;
+		/** Rotating speed */
+		float rotateSpeed = Enemy.Weapon.ROTATE_SPEED_DEFAULT;
 	}
 }
