@@ -541,7 +541,7 @@ public class EnemyEditor extends WorldScene {
 	}
 
 	/**
-	 * \copydoc #com.spiddekauga.voider.game.Weapon.setCooldownMax(float)
+	 * \copydoc com.spiddekauga.voider.game.Weapon.setCooldownMax(float)
 	 */
 	@SuppressWarnings("javadoc")
 	void setCooldownMax(float maxCooldown) {
@@ -549,7 +549,7 @@ public class EnemyEditor extends WorldScene {
 	}
 
 	/**
-	 * \copydoc #com.spiddekauga.voider.game.Weapon.getCooldownMin()
+	 * \copydoc com.spiddekauga.voider.game.Weapon.getCooldownMin()
 	 */
 	@SuppressWarnings("javadoc")
 	float getCooldownMax() {
