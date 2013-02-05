@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.spiddekauga.utils.GameTime;
 
 /**
  * Base class for all scenes that should be rendered. Examples of scenes:
@@ -36,6 +37,7 @@ public abstract class Scene extends InputAdapter {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
 		render();
+		mGameTime.update(Gdx.graphics.getDeltaTime());
 		update();
 	}
 
@@ -218,6 +220,13 @@ public abstract class Scene extends InputAdapter {
 	}
 
 	/**
+	 * @return Game time of the current scene
+	 */
+	GameTime getGameTime() {
+		return mGameTime;
+	}
+
+	/**
 	 * Clamps the X-coordinate of a pointer to the screen, i.e. if it's out of
 	 * screen it will be clamped to the screen
 	 * @param x the x value to clamp
@@ -286,6 +295,8 @@ public abstract class Scene extends InputAdapter {
 	/** GUI for the scene */
 	protected Gui mGui = null;
 
+	/** Game time of current scene */
+	private GameTime mGameTime = new GameTime();
 	/** Outcome of scene, this is set when a derived class calls setOutcome */
 	private Outcomes mOutcome = null;
 	/** Message of the outcome */

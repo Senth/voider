@@ -176,9 +176,19 @@ public class EnemyActor extends Actor {
 			shootDirection.set(getBody().getLinearVelocity());
 			break;
 
-		case IN_FRONT_OF_PLAYER:
-			/** @todo calculate in front of player shoot direction */
+		case IN_FRONT_OF_PLAYER: {
+			Vector2 playerVelocity = mPlayerActor.getBody().getLinearVelocity();
+
+			// If velocity is standing still, just shoot at the player...
+			if (playerVelocity.len2() == 0) {
+				shootDirection.set(mPlayerActor.getPosition()).sub(getPosition());
+			}
+			// Calculate where the bullet would intersect with the player
+			else {
+
+			}
 			break;
+		}
 
 		case ROTATE:
 			/** @todo calculate rotate shoot direction */

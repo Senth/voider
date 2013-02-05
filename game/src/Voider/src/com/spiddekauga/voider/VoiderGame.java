@@ -13,7 +13,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
-import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
@@ -173,7 +172,6 @@ public class VoiderGame implements ApplicationListener {
 			mStage.draw();
 		}
 
-		GameTime.update(Gdx.graphics.getDeltaTime());
 		SceneSwitcher.update();
 	}
 

@@ -67,6 +67,13 @@ public class Config {
 			/** How much the rotation shall speed up */
 			public final static float ROTATION_SPSEED_UP_RATE = 3;
 		}
+		/**
+		 * Player
+		 */
+		public static class Player {
+			/** How many seconds we shall save the player's position, in seconds */
+			public static float RECENT_POS_SAVE_TIME = 1;
+		}
 	}
 
 

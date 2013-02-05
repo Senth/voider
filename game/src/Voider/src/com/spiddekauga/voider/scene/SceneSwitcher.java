@@ -3,6 +3,7 @@ package com.spiddekauga.voider.scene;
 import java.util.LinkedList;
 
 import com.badlogic.gdx.Gdx;
+import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceCorruptException;
 import com.spiddekauga.voider.resources.ResourceNotFoundException;
@@ -57,6 +58,17 @@ public class SceneSwitcher {
 		}
 	}
 
+	/**
+	 * Gets the GameTime object from the scene at the top of the stack.
+	 * @return game time object, null if no scene exists
+	 */
+	public static GameTime getGameTime() {
+		if (mScenes.isEmpty()) {
+			return null;
+		} else {
+			return mScenes.peek().getGameTime();
+		}
+	}
 
 	/**
 	 * Updates (and renders) the scene switcher and the current scene.

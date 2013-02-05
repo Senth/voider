@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Pool;
 import com.badlogic.gdx.utils.Pools;
+import com.spiddekauga.voider.scene.SceneSwitcher;
 
 /**
  * A virtual scroller, this scroller both scrolls and emulates scrolls when
@@ -99,7 +100,7 @@ public class Scroller {
 
 		// Calculate if we shall emulate scrolling...
 		float distance = 0.0f;
-		float time = GameTime.getTotalTimeElapsed() - mRecentPointerLocation.getLast().time;
+		float time = SceneSwitcher.getGameTime().getTotalTimeElapsed() - mRecentPointerLocation.getLast().time;
 		switch (mScrollAxis) {
 		case X:
 			distance = mScrollCurrent.x - mRecentPointerLocation.getLast().position.x;
@@ -209,7 +210,7 @@ public class Scroller {
 	 */
 	private void savePointerLocation() {
 		PointerTime pointerTime = mPointerPool.obtain();
-		pointerTime.set(mScrollCurrent, GameTime.getTotalTimeElapsed());
+		pointerTime.set(mScrollCurrent, SceneSwitcher.getGameTime().getTotalTimeElapsed());
 		mRecentPointerLocation.addFirst(pointerTime);
 	}
 
@@ -218,7 +219,7 @@ public class Scroller {
 	 * #MEASURE_TIME seconds ago
 	 */
 	private void removeOldPointerLocations() {
-		float currentTime = GameTime.getTotalTimeElapsed();
+		float currentTime = SceneSwitcher.getGameTime().getTotalTimeElapsed();
 		while (!mRecentPointerLocation.isEmpty() && currentTime - mRecentPointerLocation.getLast().time > MEASURE_TIME) {
 			mPointerPool.free(mRecentPointerLocation.removeLast());
 		}

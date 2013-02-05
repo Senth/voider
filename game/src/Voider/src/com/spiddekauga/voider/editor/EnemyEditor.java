@@ -16,7 +16,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Pools;
 import com.badlogic.gdx.utils.SnapshotArray;
-import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Editor.Enemy;
 import com.spiddekauga.voider.game.Actor;
@@ -33,6 +32,7 @@ import com.spiddekauga.voider.resources.ResourceNames;
 import com.spiddekauga.voider.resources.ResourceSaver;
 import com.spiddekauga.voider.resources.UndefinedResourceTypeException;
 import com.spiddekauga.voider.scene.Scene;
+import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.scene.WorldScene;
 
 /**
@@ -127,12 +127,12 @@ public class EnemyEditor extends WorldScene {
 				try {
 					if ((Boolean)mfEnemyOnceReachEnd.get(mEnemyPathOnce)) {
 						if (mEnemyPathOnceOutOfBoundsTime != 0.0f) {
-							if (mEnemyPathOnceOutOfBoundsTime + Enemy.Movement.PATH_ONCE_RESET_TIME <= GameTime.getTotalTimeElapsed()) {
+							if (mEnemyPathOnceOutOfBoundsTime + Enemy.Movement.PATH_ONCE_RESET_TIME <= SceneSwitcher.getGameTime().getTotalTimeElapsed()) {
 								mEnemyPathOnce.resetPathMovement();
 								mEnemyPathOnceOutOfBoundsTime = 0.0f;
 							}
 						} else {
-							mEnemyPathOnceOutOfBoundsTime = GameTime.getTotalTimeElapsed();
+							mEnemyPathOnceOutOfBoundsTime = SceneSwitcher.getGameTime().getTotalTimeElapsed();
 						}
 					}
 				} catch (Exception e) {

@@ -10,7 +10,6 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.utils.Pools;
-import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.utils.Scroller;
 import com.spiddekauga.utils.Scroller.ScrollAxis;
 import com.spiddekauga.utils.scene.ui.AlignTable;
@@ -181,12 +180,12 @@ public class LevelEditor extends WorldScene {
 			return true;
 		}
 
-		if (mClickTimeLast + Config.Input.DOUBLE_CLICK_TIME > GameTime.getTotalTimeElapsed()) {
+		if (mClickTimeLast + Config.Input.DOUBLE_CLICK_TIME > SceneSwitcher.getGameTime().getTotalTimeElapsed()) {
 			mClickTimeLast = 0f;
 			mDoubleClick = true;
 		} else {
 			mDoubleClick = false;
-			mClickTimeLast = GameTime.getTotalTimeElapsed();
+			mClickTimeLast = SceneSwitcher.getGameTime().getTotalTimeElapsed();
 		}
 
 
