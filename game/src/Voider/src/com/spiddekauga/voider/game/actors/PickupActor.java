@@ -9,5 +9,20 @@ import com.spiddekauga.voider.game.Actor;
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
 public class PickupActor extends Actor {
+	/**
+	 * @return pickup filter category
+	 */
+	@Override
+	protected short getFilterCategory() {
+		return ActorFilterCategories.PICKUP;
+	}
 
+	/**
+	 * Can collide only with other players
+	 * @return colliding categories
+	 */
+	@Override
+	protected short getFilterCollidingCategories() {
+		return ActorFilterCategories.PLAYER;
+	}
 }

@@ -32,21 +32,4 @@ public class BossActorDef extends ActorDef {
 	@SuppressWarnings("unused")
 	private BossActorDef() {
 	}
-
-	/**
-	 * @return belongs to the enemy category
-	 */
-	@Override
-	protected short getFilterCategory() {
-		return FixtureFilterCategories.ENEMY;
-	}
-
-	/**
-	 * Can collide only with the player
-	 * @return collide information
-	 */
-	@Override
-	protected short getFilterCollidingCategories() {
-		return FixtureFilterCategories.PICKUP;
-	}
 }

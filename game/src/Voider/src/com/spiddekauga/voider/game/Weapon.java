@@ -1,101 +1,98 @@
 package com.spiddekauga.voider.game;
 
-import com.spiddekauga.voider.Config.Editor;
-import com.spiddekauga.voider.game.actors.BulletActorDef;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Disposable;
+import com.badlogic.gdx.utils.Pools;
+import com.spiddekauga.voider.game.actors.BulletActor;
 
 /**
- * Holds all the necessary information about a weapon
+ * Weapon that hadles the shooting and cooldown.
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class Weapon {
+public class Weapon implements Disposable {
 	/**
-	 * Sets the bullet speed
-	 * @param speed new bullet speed
+	 * Creates an invalid weapon. setWeaponDef needs to be called one can shoot with
+	 * the weapon.
 	 */
-	public void setBulletSpeed(float speed) {
-		mBulletSpeed = speed;
+	public Weapon() {
+		// Does nothing
 	}
 
 	/**
-	 * @return the bullet speed
+	 * Sets the weapon definition of the weapon. This resets the cooldown of the weapon
+	 * @param weaponDef new weapon definition
 	 */
-	public float getBulletSpeed() {
-		return mBulletSpeed;
+	public void setWeaponDef(WeaponDef weaponDef) {
+		mDef = weaponDef;
+		mCooldown = 0;
 	}
 
 	/**
-	 * Sets the weapon damage
-	 * @param damage how much damage the bullets will take when they hit something
+	 * Updates the weapon, this reduces the cooldown
+	 * @param deltaTime elapsed time since last frame
 	 */
-	public void setDamage(float damage) {
-		mDamage = damage;
+	public void update(float deltaTime) {
+		if (mCooldown > 0) {
+			mCooldown -= deltaTime;
+		}
 	}
 
 	/**
-	 * @return weapon damage
+	 * @return true if the weapon can shoot, i.e. no cooldown left
 	 */
-	public float getDamage() {
-		return mDamage;
+	public boolean canShoot() {
+		return mCooldown <= 0;
 	}
 
 	/**
-	 * Sets the minimum weapon cooldown. If this is equal to the max value set
-	 * through #setCooldownMax(float) it will always have the same cooldown; if not
-	 * it will get a random cooldown between min and max time.
-	 * @param minCooldown minimum cooldown.
+	 * Shoots a bullet in the specified direction
+	 * @param direction direction of the bullet
 	 */
-	public void setCooldownMin(float minCooldown) {
-		mCooldownMin = minCooldown;
+	public void shoot(Vector2 direction) {
+		BulletActor bullet = Pools.obtain(BulletActor.class);
+		bullet.setDef(getDef().getBulletActorDef());
+		bullet.shoot(mPosition, direction, getDef().getBulletSpeed(), getDef().getDamage(), false);
+
+
+		// Cooldown
+		// Random cooldown
+		if (getDef().getCooldownMin() != getDef().getCooldownMax()) {
+			mCooldown = (float) Math.random();
+			mCooldown *= getDef().getCooldownMax() - getDef().getCooldownMin();
+			mCooldown += getDef().getCooldownMin();
+		}
+		// Else always same cooldown
+		else {
+			mCooldown = getDef().getCooldownMax();
+		}
 	}
 
 	/**
-	 * @return minimum cooldown time
+	 * Sets the position of the weapon. It will copy the position and use its
+	 * own Vector2 for containing the data.
+	 * @param position the position of the weapon.
 	 */
-	public float getCooldownMin() {
-		return mCooldownMin;
+	public void setPosition(Vector2 position) {
+		mPosition.set(position);
+	}
+
+	@Override
+	public void dispose() {
+		Pools.free(mPosition);
 	}
 
 	/**
-	 * Sets the maximum weapon cooldown. If this is equal to the min value set
-	 * through #setCooldownMin(float) it will always have the same cooldown; if not
-	 * it will get a random cooldown between min and max time.
-	 * @param maxCooldown maximum cooldown.
+	 * @return weapon definition
 	 */
-	public void setCooldownMax(float maxCooldown) {
-		mCooldownMax = maxCooldown;
+	public WeaponDef getDef() {
+		return mDef;
 	}
 
-	/**
-	 * @return maximum cooldown time
-	 */
-	public float getCooldownMax() {
-		return mCooldownMax;
-	}
-
-	/**
-	 * Sets the bullet actor definition. The look of bullets.
-	 * @param bulletActorDef bullet definition
-	 */
-	public void setBulletActorDef(BulletActorDef bulletActorDef) {
-		mBulletActorDef = bulletActorDef;
-	}
-
-	/**
-	 * @return the bullet actor definition, i.e. the look of the bullets.
-	 */
-	public BulletActorDef getBulletActorDef() {
-		return mBulletActorDef;
-	}
-
-	/** Type and visuals of the bullet */
-	private BulletActorDef mBulletActorDef = null;
-	/** Bullet speed */
-	private float mBulletSpeed = Editor.Weapon.BULLET_SPEED_DEFAULT;
-	/** Damage when bullet hits */
-	private float mDamage = Editor.Weapon.DAMAGE_DEFAULT;
-	/** Minimum weapon cooldown */
-	private float mCooldownMin = Editor.Weapon.COOLDOWN_MIN_DEFAULT;
-	/** Maximum weapon coolown */
-	private float mCooldownMax = Editor.Weapon.COOLDOWN_MAX_DEFAULT;
+	/** Weapon definition */
+	private WeaponDef mDef = null;
+	/** Current cooldown timer */
+	private float mCooldown = 0;
+	/** Position of the weapon */
+	private Vector2 mPosition = Pools.obtain(Vector2.class);
 }

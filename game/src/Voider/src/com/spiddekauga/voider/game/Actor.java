@@ -15,6 +15,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.OrderedMap;
+import com.badlogic.gdx.utils.Pool.Poolable;
 import com.badlogic.gdx.utils.Pools;
 import com.spiddekauga.utils.Json;
 import com.spiddekauga.voider.Config;
@@ -29,7 +30,7 @@ import com.spiddekauga.voider.resources.UndefinedResourceTypeException;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public abstract class Actor extends Resource implements ITriggerListener, Json.Serializable, Disposable {
+public abstract class Actor extends Resource implements ITriggerListener, Json.Serializable, Disposable, Poolable {
 	/**
 	 * Sets the texture of the actor including the actor definition.
 	 * Automatically creates a body for the actor.
@@ -320,6 +321,7 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 			mBody = mWorld.createBody(bodyDef);
 			for (FixtureDef fixtureDef : mDef.getFixtureDefs()) {
 				if (fixtureDef != null && fixtureDef.shape != null) {
+					setFilterCollisionData(fixtureDef);
 					mBody.createFixture(fixtureDef);
 				}
 			}
@@ -346,8 +348,6 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 		if (mBody != null) {
 			destroyBody();
 		}
-		Pools.free(mPosition);
-		mPosition = null;
 		mDisposed = true;
 	}
 
@@ -356,6 +356,18 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 	 */
 	public boolean isDisposed() {
 		return mDisposed;
+	}
+
+	@Override
+	public void reset() {
+		if (mBody != null) {
+			destroyBody();
+		}
+		mDisposed = false;
+		mBody = null;
+		mDef = null;
+		mPosition.set(0,0);
+		mCollidingActors.clear();
 	}
 
 	/**
@@ -397,6 +409,28 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 
 		if (mDef != null) {
 			mDef.clearFixtures();
+		}
+	}
+
+	/**
+	 * @return the filter category this actor belongs to
+	 */
+	protected abstract short getFilterCategory();
+
+	/**
+	 * @return the mask bit used for determening who the actor
+	 * should collide with
+	 */
+	protected abstract short getFilterCollidingCategories();
+
+	/**
+	 * Sets the filter information based on derived information
+	 * @param fixtureDef the fixture def to set the collision data for
+	 */
+	private void setFilterCollisionData(FixtureDef fixtureDef) {
+		if (fixtureDef != null) {
+			fixtureDef.filter.categoryBits = getFilterCategory();
+			fixtureDef.filter.maskBits = getFilterCollidingCategories();
 		}
 	}
 

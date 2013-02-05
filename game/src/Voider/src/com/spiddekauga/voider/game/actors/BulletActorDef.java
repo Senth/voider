@@ -1,5 +1,6 @@
 package com.spiddekauga.voider.game.actors;
 
+import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.EdgeShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.spiddekauga.voider.game.ActorDef;
@@ -23,23 +24,7 @@ public class BulletActorDef extends ActorDef {
 		shape.set(0, 0, 1, 0);
 		fixtureDef.shape = shape;
 		addFixtureDef(fixtureDef);
-	}
 
-	/**
-	 * @return category of the bullet, can be either enemy or player, depends on
-	 * who shot the bullet
-	 */
-	@Override
-	protected short getFilterCategory() {
-		return 0;
-	}
-
-	/**
-	 * Collides with static terrain and either player or enemy, dependending who
-	 * shot the bullet.
-	 */
-	@Override
-	protected short getFilterCollidingCategories() {
-		return FixtureFilterCategories.STATIC_TERRAIN;
+		getBodyDef().type = BodyType.KinematicBody;
 	}
 }

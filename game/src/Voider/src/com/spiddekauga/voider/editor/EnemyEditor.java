@@ -460,11 +460,11 @@ public class EnemyEditor extends WorldScene {
 	 * @param bulletActorDef the bullet definition, set to null to deactivate shooting
 	 */
 	void setBulletActorDef(BulletActorDef bulletActorDef) {
-		if (mDef.getWeapon().getBulletActorDef() != null) {
-			mDef.removeDependency(mDef.getWeapon().getBulletActorDef().getId());
+		if (mDef.getWeaponDef().getBulletActorDef() != null) {
+			mDef.removeDependency(mDef.getWeaponDef().getBulletActorDef().getId());
 		}
 
-		mDef.getWeapon().setBulletActorDef(bulletActorDef);
+		mDef.getWeaponDef().setBulletActorDef(bulletActorDef);
 
 		if (bulletActorDef != null) {
 			mDef.addDependency(bulletActorDef);
@@ -475,7 +475,7 @@ public class EnemyEditor extends WorldScene {
 	 * @return the bullet actor definition of this enemy, null if it doesn't shoot.
 	 */
 	BulletActorDef getBulletActorDef() {
-		return mDef.getWeapon().getBulletActorDef();
+		return mDef.getWeaponDef().getBulletActorDef();
 	}
 
 	/**
@@ -498,14 +498,14 @@ public class EnemyEditor extends WorldScene {
 	 * @param speed new bullet speed
 	 */
 	void setBulletSpeed(float speed) {
-		mDef.getWeapon().setBulletSpeed(speed);
+		mDef.getWeaponDef().setBulletSpeed(speed);
 	}
 
 	/**
 	 * @return the bullet speed
 	 */
 	float getBulletSpeed() {
-		return mDef.getWeapon().getBulletSpeed();
+		return mDef.getWeaponDef().getBulletSpeed();
 	}
 
 	/**
@@ -513,14 +513,14 @@ public class EnemyEditor extends WorldScene {
 	 * @param damage how much damage the bullets will take when they hit something
 	 */
 	void setDamage(float damage) {
-		mDef.getWeapon().setDamage(damage);
+		mDef.getWeaponDef().setDamage(damage);
 	}
 
 	/**
 	 * @return weapon damage
 	 */
 	float getDamage() {
-		return mDef.getWeapon().getDamage();
+		return mDef.getWeaponDef().getDamage();
 	}
 
 	/**
@@ -530,14 +530,14 @@ public class EnemyEditor extends WorldScene {
 	 * @param minCooldown minimum cooldown.
 	 */
 	void setCooldownMin(float minCooldown) {
-		mDef.getWeapon().setCooldownMin(minCooldown);
+		mDef.getWeaponDef().setCooldownMin(minCooldown);
 	}
 
 	/**
 	 * @return minimum cooldown time
 	 */
 	float getCooldownMin() {
-		return mDef.getWeapon().getCooldownMin();
+		return mDef.getWeaponDef().getCooldownMin();
 	}
 
 	/**
@@ -547,14 +547,14 @@ public class EnemyEditor extends WorldScene {
 	 * @param maxCooldown maximum cooldown.
 	 */
 	void setCooldownMax(float maxCooldown) {
-		mDef.getWeapon().setCooldownMax(maxCooldown);
+		mDef.getWeaponDef().setCooldownMax(maxCooldown);
 	}
 
 	/**
 	 * @return minimum cooldown time
 	 */
 	float getCooldownMax() {
-		return mDef.getWeapon().getCooldownMax();
+		return mDef.getWeaponDef().getCooldownMax();
 	}
 
 	/**

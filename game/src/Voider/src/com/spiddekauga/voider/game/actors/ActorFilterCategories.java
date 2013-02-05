@@ -5,17 +5,17 @@ package com.spiddekauga.voider.game.actors;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class FixtureFilterCategories {
+public class ActorFilterCategories {
 	/** Category for all enemies */
-	static public short ENEMY = 0x0001;
+	static public short ENEMY = 1 << 1;
 	/** Category for the player */
-	static public short PLAYER = 0x0002;
+	static public short PLAYER = 1 << 2;
 	/** Category for the static terrain */
-	static public short STATIC_TERRAIN = 0x0004;
+	static public short STATIC_TERRAIN = 1 << 3;
 	/** Category for pickups, gold, etc */
-	static public short PICKUP = 0x0008;
+	static public short PICKUP = 1 << 4;
 	/** Border around the screen */
-	static public short SCREEN_BORDER = 0x0010;
+	static public short SCREEN_BORDER = 1 << 5;
 	/** No collision at all */
-	static public short NONE = 0x0020;
+	static public short NONE = 1 << 6;
 }

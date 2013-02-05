@@ -407,6 +407,23 @@ public class StaticTerrainActor extends Actor {
 	}
 
 	/**
+	 * @return static terrain filter category
+	 */
+	@Override
+	protected short getFilterCategory() {
+		return ActorFilterCategories.STATIC_TERRAIN;
+	}
+
+	/**
+	 * Can collide only with other players
+	 * @return colliding categories
+	 */
+	@Override
+	protected short getFilterCollidingCategories() {
+		return ActorFilterCategories.PLAYER;
+	}
+
+	/**
 	 * @param worldPos the position to convert to local
 	 * @return the local position of a position. This shall be freed with
 	 * Pools.free() later.

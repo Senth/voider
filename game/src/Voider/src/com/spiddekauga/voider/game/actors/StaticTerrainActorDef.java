@@ -18,21 +18,4 @@ public class StaticTerrainActorDef extends ActorDef {
 		super(-1, "StaticTerrain", new FixtureDef());
 		setCollisionDamage(20);
 	}
-
-	/**
-	 * @return static terrain filter category
-	 */
-	@Override
-	protected short getFilterCategory() {
-		return FixtureFilterCategories.STATIC_TERRAIN;
-	}
-
-	/**
-	 * Can collide only with other players
-	 * @return colliding categories
-	 */
-	@Override
-	protected short getFilterCollidingCategories() {
-		return FixtureFilterCategories.PLAYER;
-	}
 }

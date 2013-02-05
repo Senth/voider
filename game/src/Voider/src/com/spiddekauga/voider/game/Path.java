@@ -16,7 +16,7 @@ import com.badlogic.gdx.utils.OrderedMap;
 import com.badlogic.gdx.utils.Pools;
 import com.spiddekauga.utils.Json;
 import com.spiddekauga.voider.Config;
-import com.spiddekauga.voider.game.actors.FixtureFilterCategories;
+import com.spiddekauga.voider.game.actors.ActorFilterCategories;
 import com.spiddekauga.voider.resources.IResource;
 
 
@@ -205,8 +205,8 @@ public class Path implements IResource, Json.Serializable, Disposable {
 		if (mNodes.size() >= 2) {
 			if (mFixtureDef == null) {
 				mFixtureDef = new FixtureDef();
-				mFixtureDef.filter.categoryBits = FixtureFilterCategories.NONE;
-				mFixtureDef.filter.groupIndex = FixtureFilterCategories.NONE;
+				mFixtureDef.filter.categoryBits = ActorFilterCategories.NONE;
+				mFixtureDef.filter.groupIndex = ActorFilterCategories.NONE;
 			} else {
 				if (mFixtureDef.shape != null) {
 					mFixtureDef.shape.dispose();

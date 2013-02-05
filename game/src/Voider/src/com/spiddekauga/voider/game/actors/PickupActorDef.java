@@ -67,23 +67,6 @@ public class PickupActorDef extends ActorDef {
 		mCollectible = json.readValue("mCollectible", Collectibles.class, jsonData);
 	}
 
-	/**
-	 * @return pickup filter category
-	 */
-	@Override
-	protected short getFilterCategory() {
-		return FixtureFilterCategories.PICKUP;
-	}
-
-	/**
-	 * Can collide only with other players
-	 * @return colliding categories
-	 */
-	@Override
-	protected short getFilterCollidingCategories() {
-		return FixtureFilterCategories.PLAYER;
-	}
-
 	/** Collectible inside the pickup */
 	private Collectibles mCollectible = null;
 }

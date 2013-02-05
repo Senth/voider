@@ -489,8 +489,9 @@ class EnemyEditorGui extends Gui {
 					if (mButton instanceof TextButton) {
 						((TextButton) mButton).setText("Weapons ON");
 					}
+					mEnemyEditor.setUseWeapon(true);
 				} else {
-					mEnemyEditor.setBulletActorDef(null);
+					mEnemyEditor.setUseWeapon(false);
 					if (mButton instanceof TextButton) {
 						((TextButton) mButton).setText("Weapons OFF");
 					}
@@ -592,7 +593,7 @@ class EnemyEditorGui extends Gui {
 		SliderListener sliderMinListener = new SliderListener(sliderMin, textField) {
 			@Override
 			protected void onChange(float newValue) {
-				mEnemyEditor.setRandomTimeMin(newValue);
+				mEnemyEditor.setCooldownMin(newValue);
 			}
 		};
 
@@ -611,7 +612,7 @@ class EnemyEditorGui extends Gui {
 		SliderListener sliderMaxListener = new SliderListener(sliderMax, textField) {
 			@Override
 			protected void onChange(float newValue) {
-				mEnemyEditor.setRandomTimeMax(newValue);
+				mEnemyEditor.setCooldownMax(newValue);
 			}
 		};
 

@@ -87,7 +87,6 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	 */
 	public void addFixtureDef(FixtureDef fixtureDef) {
 		mFixtureDefs.add(fixtureDef);
-		setFilterCollisionData(fixtureDef);
 	}
 
 	/**
@@ -152,29 +151,6 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	public void dispose() {
 		clearFixtures();
 	}
-
-	/**
-	 * @return the filter category this actor belongs to
-	 */
-	protected abstract short getFilterCategory();
-
-	/**
-	 * @return the mask bit used for determening who the actor
-	 * should collide with
-	 */
-	protected abstract short getFilterCollidingCategories();
-
-	/**
-	 * Sets the filter information based on derived information
-	 * @param fixtureDef the fixture def to set the collision data for
-	 */
-	private void setFilterCollisionData(FixtureDef fixtureDef) {
-		if (fixtureDef != null) {
-			fixtureDef.filter.categoryBits = getFilterCategory();
-			fixtureDef.filter.maskBits = getFilterCollidingCategories();
-		}
-	}
-
 
 	/** Defines the mass, shape, etc. */
 	private ArrayList<FixtureDef> mFixtureDefs = new ArrayList<FixtureDef>();

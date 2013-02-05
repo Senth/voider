@@ -33,4 +33,21 @@ public class PlayerActor extends com.spiddekauga.voider.game.Actor {
 			break;
 		}
 	}
+
+	/**
+	 * @return player filter category
+	 */
+	@Override
+	protected short getFilterCategory() {
+		return ActorFilterCategories.PLAYER;
+	}
+
+	/**
+	 * Can collide with everything except player and player bullets
+	 * @return colliding categories
+	 */
+	@Override
+	protected short getFilterCollidingCategories() {
+		return (short) (ActorFilterCategories.ENEMY | ActorFilterCategories.PICKUP | ActorFilterCategories.STATIC_TERRAIN | ActorFilterCategories.SCREEN_BORDER);
+	}
 }

@@ -7,8 +7,10 @@ import com.spiddekauga.utils.Json;
 import com.spiddekauga.utils.Maths;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.Actor;
+import com.spiddekauga.voider.game.ActorDef;
 import com.spiddekauga.voider.game.Path;
 import com.spiddekauga.voider.game.Path.PathTypes;
+import com.spiddekauga.voider.game.Weapon;
 
 /**
  * An enemy actor, these can generally shoot on the player.
@@ -21,6 +23,17 @@ public class EnemyActor extends Actor {
 	 */
 	public EnemyActor() {
 		super(new EnemyActorDef());
+
+		// Set weapon
+		resetWeapon();
+	}
+
+	@Override
+	public void setDef(ActorDef def) {
+		super.setDef(def);
+
+		// Set weapon
+		resetWeapon();
 	}
 
 	@Override
@@ -43,6 +56,11 @@ public class EnemyActor extends Actor {
 				// Does nothing
 				break;
 			}
+		}
+
+		// Update weapon
+		if (def.hasWeapon()) {
+			updateWeapon(deltaTime);
 		}
 	}
 
@@ -76,14 +94,21 @@ public class EnemyActor extends Actor {
 		}
 	}
 
+	/**
+	 * Resets the weapon
+	 */
+	public void resetWeapon() {
+		mWeapon.setWeaponDef(getDef(EnemyActorDef.class).getWeaponDef());
+	}
+
 	@Override
 	public void write(Json json) {
-		/** @TODO write json */
+		/** @todo write json */
 	}
 
 	@Override
 	public void read(Json json, OrderedMap<String, Object> jsonData) {
-		/** @TODO read json */
+		/** @todo read json */
 	}
 
 	/**
@@ -98,6 +123,69 @@ public class EnemyActor extends Actor {
 			getBody().setAngularVelocity(0);
 			getBody().setTransform(getPosition(), getDef().getBodyDef().angle);
 		}
+	}
+
+	/**
+	 * @return enemy filter category
+	 */
+	@Override
+	protected short getFilterCategory() {
+		return ActorFilterCategories.ENEMY;
+	}
+
+	/**
+	 * Can collide only with other players
+	 * @return colliding categories
+	 */
+	@Override
+	protected short getFilterCollidingCategories() {
+		return ActorFilterCategories.PLAYER;
+	}
+
+	/**
+	 * Updates the weapon
+	 * @param deltaTime time elapsed since last frame
+	 */
+	private void updateWeapon(float deltaTime) {
+		mWeapon.update(deltaTime);
+
+		mWeapon.setPosition(getPosition());
+
+		if (mWeapon.canShoot()) {
+			Vector2 shootDirection = getShootDirection();
+
+			mWeapon.shoot(shootDirection);
+
+			Pools.free(shootDirection);
+		}
+	}
+
+	/**
+	 * @return direction which we want to shoot in. Be sure to free this
+	 * vector using Pools.free(vector);.
+	 */
+	private Vector2 getShootDirection() {
+		Vector2 shootDirection = Pools.obtain(Vector2.class);
+
+		switch (getDef(EnemyActorDef.class).getAimType()) {
+		case ON_PLAYER:
+			shootDirection.set(mPlayerActor.getPosition()).sub(getPosition());
+			break;
+
+		case MOVE_DIRECTION:
+			shootDirection.set(getBody().getLinearVelocity());
+			break;
+
+		case IN_FRONT_OF_PLAYER:
+			/** @todo calculate in front of player shoot direction */
+			break;
+
+		case ROTATE:
+			/** @todo calculate rotate shoot direction */
+			break;
+		}
+
+		return shootDirection;
 	}
 
 	/**
@@ -422,8 +510,9 @@ public class EnemyActor extends Actor {
 	}
 
 
-	/** If the enemy has entered the screen, used when enemy shall stay inside the screen */
-	private boolean mEnteredScreen = false;
+	/** Enemy weapon */
+	private Weapon mWeapon = new Weapon();
+
 
 	// AI MOVEMENT
 	/** Next random move time */

@@ -17,7 +17,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Pools;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.Actor;
-import com.spiddekauga.voider.game.actors.FixtureFilterCategories;
+import com.spiddekauga.voider.game.actors.ActorFilterCategories;
 
 /**
  * Common class for all world scenes
@@ -100,8 +100,8 @@ public abstract class WorldScene extends Scene {
 		shape.createLoop(corners);
 		FixtureDef fixtureDef = new FixtureDef();
 		fixtureDef.shape = shape;
-		fixtureDef.filter.categoryBits = FixtureFilterCategories.SCREEN_BORDER;
-		fixtureDef.filter.maskBits = FixtureFilterCategories.PLAYER;
+		fixtureDef.filter.categoryBits = ActorFilterCategories.SCREEN_BORDER;
+		fixtureDef.filter.maskBits = ActorFilterCategories.PLAYER;
 		mBorderBody.createFixture(fixtureDef);
 
 

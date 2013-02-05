@@ -8,7 +8,7 @@ import com.spiddekauga.utils.Json;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Editor.Enemy;
 import com.spiddekauga.voider.game.ActorDef;
-import com.spiddekauga.voider.game.Weapon;
+import com.spiddekauga.voider.game.WeaponDef;
 
 /**
  * Enemy actor definition, does nothing more than specify that the actor is
@@ -233,7 +233,7 @@ public class EnemyActorDef extends ActorDef {
 	/**
 	 * @return weapon of the enemy
 	 */
-	public Weapon getWeapon() {
+	public WeaponDef getWeaponDef() {
 		return mWeapon;
 	}
 
@@ -299,6 +299,11 @@ public class EnemyActorDef extends ActorDef {
 		// Conditional variables to write
 		if (mHasWeapon) {
 			json.writeValue("mWeapon", mWeapon);
+			json.writeValue("mAimType", mAimType);
+
+			if (mAimType == AimTypes.ROTATE) {
+				json.writeValue("mAimRotateVars", mAimRotateVars);
+			}
 		}
 		if (mMovementType != MovementTypes.STATIONARY) {
 			json.writeValue("mMovementVars", mMovementVars);
@@ -321,7 +326,12 @@ public class EnemyActorDef extends ActorDef {
 
 		// Conditional variables to read
 		if (mHasWeapon) {
-			mWeapon = json.readValue("mWeapon", Weapon.class, jsonData);
+			mWeapon = json.readValue("mWeapon", WeaponDef.class, jsonData);
+			mAimType = json.readValue("mAimType", AimTypes.class, jsonData);
+
+			if (mAimType == AimTypes.ROTATE) {
+				mAimRotateVars = json.readValue("mAimRotateVars", AimRotateVars.class, jsonData);
+			}
 		}
 		if (mMovementType == MovementTypes.AI) {
 			mAiMovementVars = json.readValue("mAiMovementVars", AiMovementVars.class, jsonData);
@@ -357,27 +367,10 @@ public class EnemyActorDef extends ActorDef {
 		ROTATE
 	}
 
-	/**
-	 * @return enemy filter category
-	 */
-	@Override
-	protected short getFilterCategory() {
-		return FixtureFilterCategories.ENEMY;
-	}
-
-	/**
-	 * Can collide only with other players
-	 * @return colliding categories
-	 */
-	@Override
-	protected short getFilterCollidingCategories() {
-		return FixtureFilterCategories.PLAYER;
-	}
-
 	/** If the enemy has a weapon */
 	private boolean mHasWeapon = false;
 	/** Weapon of the enemy */
-	private Weapon mWeapon = new Weapon();
+	private WeaponDef mWeapon = new WeaponDef();
 	/** How the enemy will aim if it has a weapon */
 	private AimTypes mAimType = AimTypes.MOVE_DIRECTION;
 	/** Aim variables when using rotation aim */
