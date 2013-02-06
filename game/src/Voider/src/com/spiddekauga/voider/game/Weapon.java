@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.Pools;
 import com.spiddekauga.voider.game.actors.BulletActor;
+import com.spiddekauga.voider.scene.SceneSwitcher;
 
 /**
  * Weapon that hadles the shooting and cooldown.
@@ -59,10 +60,12 @@ public class Weapon implements Disposable {
 	 * @param direction direction of the bullet
 	 */
 	public void shoot(Vector2 direction) {
-		BulletActor bullet = Pools.obtain(BulletActor.class);
+		BulletActor bullet = BulletPools.bullet.obtain();
 		bullet.setDef(getDef().getBulletActorDef());
 		bullet.shoot(mPosition, direction, getDef().getBulletSpeed(), getDef().getDamage(), false);
 
+		// Add to bullet destroyer
+		SceneSwitcher.getBulletDestroyer().add(bullet);
 
 		// Cooldown
 		// Random cooldown

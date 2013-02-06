@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.spiddekauga.utils.GameTime;
+import com.spiddekauga.voider.game.BulletDestroyer;
 
 /**
  * Base class for all scenes that should be rendered. Examples of scenes:
@@ -222,8 +223,15 @@ public abstract class Scene extends InputAdapter {
 	/**
 	 * @return Game time of the current scene
 	 */
-	GameTime getGameTime() {
+	public GameTime getGameTime() {
 		return mGameTime;
+	}
+
+	/**
+	 * @return bullet destroyer for the scene. Always returns null in Scene.
+	 */
+	BulletDestroyer getBulletDestroyer() {
+		return null;
 	}
 
 	/**

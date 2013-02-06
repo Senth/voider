@@ -37,18 +37,13 @@ public class Config {
 	 */
 	public static class Actor {
 		/**
-		 * Static terrain
+		 * Bullet
 		 */
-		public static class Terrain {
-			/** Default size of terrain circle */
-			public final static float DEFAULT_CIRCLE_RADIUS = 2.0f;
-		}
-		/**
-		 * Pickups
-		 */
-		public static class Pickup {
-			/** Default radius for the pickups */
-			public final static float RADIUS = 1f;
+		public static class Bullet {
+			/** How often to check if the bullet is out of bounds */
+			public final static float CHECK_OUT_OF_BOUNDS_TIME = 1;
+			/** Maximum number of bullets */
+			public final static int BULLETS_MAX = 1000;
 		}
 		/**
 		 * Enemies
@@ -68,11 +63,25 @@ public class Config {
 			public final static float ROTATION_SPSEED_UP_RATE = 3;
 		}
 		/**
+		 * Pickups
+		 */
+		public static class Pickup {
+			/** Default radius for the pickups */
+			public final static float RADIUS = 1f;
+		}
+		/**
 		 * Player
 		 */
 		public static class Player {
 			/** How many seconds we shall save the player's position, in seconds */
 			public static float RECENT_POS_SAVE_TIME = 1;
+		}
+		/**
+		 * Static terrain
+		 */
+		public static class Terrain {
+			/** Default size of terrain circle */
+			public final static float DEFAULT_CIRCLE_RADIUS = 2.0f;
 		}
 	}
 

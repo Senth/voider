@@ -4,6 +4,7 @@ import java.util.LinkedList;
 
 import com.badlogic.gdx.Gdx;
 import com.spiddekauga.utils.GameTime;
+import com.spiddekauga.voider.game.BulletDestroyer;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceCorruptException;
 import com.spiddekauga.voider.resources.ResourceNotFoundException;
@@ -67,6 +68,19 @@ public class SceneSwitcher {
 			return null;
 		} else {
 			return mScenes.peek().getGameTime();
+		}
+	}
+
+	/**
+	 * Gets the Bullet destroyer for the scene at the top of the stack.
+	 * @return bullet destroy, null if the scene doesn't have a bullet destroyer or if
+	 * no scenes are on the stack.
+	 */
+	public static BulletDestroyer getBulletDestroyer() {
+		if (mScenes.isEmpty()) {
+			return null;
+		} else {
+			return mScenes.peek().getBulletDestroyer();
 		}
 	}
 

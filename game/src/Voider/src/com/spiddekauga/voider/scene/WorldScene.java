@@ -17,6 +17,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Pools;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.Actor;
+import com.spiddekauga.voider.game.BulletDestroyer;
 import com.spiddekauga.voider.game.actors.ActorFilterCategories;
 
 /**
@@ -44,6 +45,17 @@ public abstract class WorldScene extends Scene {
 	@Override
 	public void update() {
 		mWorld.step(1/60f, 6, 2);
+
+		// Remove unwanted bullets
+		Vector2 minScreenPos = Pools.obtain(Vector2.class);
+		Vector2 maxScreenPos = Pools.obtain(Vector2.class);
+
+		screenToWorldCoord(mCamera, 0, Gdx.graphics.getHeight(), minScreenPos, false);
+		screenToWorldCoord(mCamera, Gdx.graphics.getWidth(), 0, maxScreenPos, false);
+		mBulletDestroyer.removeOutOfBondsBullets(minScreenPos, maxScreenPos);
+
+		Pools.free(minScreenPos);
+		Pools.free(maxScreenPos);
 	}
 
 	@Override
@@ -52,6 +64,18 @@ public abstract class WorldScene extends Scene {
 		if (Config.Graphics.USE_DEBUG_RENDERER) {
 			mDebugRenderer.render(mWorld, mCamera.combined);
 		}
+	}
+
+	@Override
+	BulletDestroyer getBulletDestroyer() {
+		return mBulletDestroyer;
+	}
+
+	@Override
+	public void onDisposed() {
+		mBulletDestroyer.dispose();
+
+		super.onDisposed();
 	}
 
 	/**
@@ -118,6 +142,8 @@ public abstract class WorldScene extends Scene {
 	protected Camera mCamera = null;
 	/** Border around the screen so the player can't "escape" */
 	protected Body mBorderBody = null;
+	/** Bullet destroyer for this scene */
+	protected BulletDestroyer mBulletDestroyer = new BulletDestroyer();
 
 	/** Debug renderer */
 	private Box2DDebugRenderer mDebugRenderer = new Box2DDebugRenderer();

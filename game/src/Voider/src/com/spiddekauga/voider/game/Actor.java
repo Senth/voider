@@ -81,6 +81,7 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 	 * @return if the actor's definition is an instance of type it will return this type
 	 * instead, if not null is returned
 	 */
+	@SuppressWarnings("unchecked")
 	public <DefType> DefType getDef(Class<DefType> defType) {
 		if (mDef.getClass() == defType) {
 			return (DefType)mDef;

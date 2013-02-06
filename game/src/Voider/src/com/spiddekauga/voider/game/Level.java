@@ -12,6 +12,7 @@ import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.OrderedMap;
 import com.badlogic.gdx.utils.Pools;
 import com.spiddekauga.utils.Json;
+import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.actors.PlayerActor;
 import com.spiddekauga.voider.resources.Resource;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
@@ -222,8 +223,6 @@ public class Level extends Resource implements ITriggerListener, Json.Serializab
 	private boolean mCompletedLevel;
 	/** The player actor */
 	private PlayerActor mPlayerActor = null;
-	/** Version of level layout */
-	private static final int VERSION = 1;
 
 
 	/* (non-Javadoc)
@@ -233,7 +232,7 @@ public class Level extends Resource implements ITriggerListener, Json.Serializab
 	public void write(Json json) {
 		super.write(json);
 
-		json.writeValue("VERSION", VERSION);
+		json.writeValue("REVISION", Config.REVISION);
 		json.writeValue("mActors", mActors);
 		json.writeValue("mLevelDefId", mLevelDef.getId());
 		json.writeValue("mXCoord", mXCoord);

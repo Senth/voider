@@ -156,6 +156,8 @@ public class EnemyEditor extends WorldScene {
 		mEnemyPathBackAndForth.dispose();
 		mEnemyPathLoop.dispose();
 		mEnemyPathOnce.dispose();
+
+		super.onDisposed();
 	}
 
 	@Override
