@@ -1,5 +1,6 @@
 package com.spiddekauga.voider.utils;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
@@ -48,4 +49,24 @@ public class GeometryTest {
 		assertTrue("lines intersect", Geometry.linesIntersectNoCorners(line1a, line1b, line2a, line2b));
 	}
 
+	/**
+	 * Test interception
+	 */
+	@Test
+	public void interceptTarget() {
+		Vector2 objectPosition = new Vector2(2,4);
+		Vector2 targetPosition = new Vector2(0,0);
+		Vector2 targetVelocity = new Vector2(1, 0);
+		float objectSpeed = 2;
+
+		// Shall meet at (2,0). I.e. object velocity shall be (0,-2);
+		Vector2 objectVelocity = Geometry.interceptTarget(objectPosition, objectSpeed, targetPosition, targetVelocity);
+		assertEquals("can intercept", new Vector2(0, -2), objectVelocity);
+
+		objectSpeed = 0.5f;
+
+		// Will never reach target, invalid velocity
+		objectVelocity = Geometry.interceptTarget(objectPosition, objectSpeed, targetPosition, targetVelocity);
+		assertEquals("cannot intercept", new Vector2(Float.NaN, Float.NaN), objectVelocity);
+	}
 }

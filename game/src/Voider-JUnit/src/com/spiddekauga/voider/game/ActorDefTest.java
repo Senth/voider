@@ -38,10 +38,9 @@ public class ActorDefTest {
 		ActorDef testActor = json.fromJson(PlayerActorDef.class, jsonString);
 
 		assertEquals("ActorDefs equals", actor, testActor);
-		assertEquals("ActorDefs' fixture size", 0, testActor.getFixtureDefs().size());
+		assertEquals("ActorDefs' fixture size", 1, testActor.getFixtureDefs().size());
 		assertEquals("ActorDefs' max life", testActor.getMaxLife(), actor.getMaxLife(), 0.0f);
 		assertEquals("ActorDefs' name", testActor.getName(), actor.getName());
-		assertEquals("ActorDefs' fixtureDefs", 0, testActor.getFixtureDefs().size());
 
 
 		/** @TODO write other tests for fixtures */
