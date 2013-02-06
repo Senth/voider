@@ -12,21 +12,33 @@ import com.spiddekauga.voider.game.Actor;
  */
 public class BulletActor extends Actor {
 	/**
-	 * Shoots the bullet
+	 * Shoots the bullet. Automatically normalizes the direction vector to the speed.
 	 * @param position the original position of the bullet, i.e. where to shoot from
 	 * @param direction the direction of the bullet
 	 * @param speed of the bullet
 	 * @param hitDamage how much life the bullet will inflict when it hits another actor
 	 * @param shotByPlayer true if the player shot this bullet, false if the enemy shot this bullet
+	 * @see #shoot(Vector2,Vector2,float,boolean) to use a velocity of the bullet directly
 	 */
 	public void shoot(Vector2 position, Vector2 direction, float speed, float hitDamage, boolean shotByPlayer) {
-		mShotByPlayer = shotByPlayer;
-
-
-		createBody();
-
 		Vector2 velocity = Pools.obtain(Vector2.class);
 		velocity.set(direction).nor().mul(speed);
+
+		shoot(position, velocity, hitDamage, shotByPlayer);
+	}
+
+	/**
+	 * Shoots the bullet in the specified velocity.
+	 * @param position the original position of the bullet, i.e. where to shoot from
+	 * @param velocity velocity of the bullet
+	 * @param hitDamage how much life the bullet will inflict when it hits another actor
+	 * @param shotByPlayer true if the player shot this bullet, false if the enemy shot this bullet
+	 * @see #shoot(Vector2,Vector2,float,float,boolean) to use a direction and speed to calculate the velocity
+	 */
+	public void shoot(Vector2 position, Vector2 velocity, float hitDamage, boolean shotByPlayer) {
+		mShotByPlayer = shotByPlayer;
+
+		createBody();
 
 		// Rotate the bullet to face the shooting direction
 		double angle = velocity.angle();

@@ -153,8 +153,9 @@ public class Geometry {
 	 * @param objectSpeed object speed
 	 * @param targetPosition current position of the target
 	 * @param targetVelocity current velocity of the target
-	 * @return velocity of the object needed to intercept the object. Be sure to free this
-	 * using Pools.free(velocity);
+	 * @return velocity of the object needed to intercept the object. Returns Vector2(NaN,NaN)
+	 * if the object cannot intercept the target (because of speed).
+	 * Be sure to free the returning variable using Pools.free(velocity);
 	 */
 	public static Vector2 interceptTarget(Vector2 objectPosition, float objectSpeed, Vector2 targetPosition, Vector2 targetVelocity) {
 		Vector2 distanceVector = Pools.obtain(Vector2.class);
@@ -166,6 +167,8 @@ public class Geometry {
 
 		Vector2 objectVelocity = Pools.obtain(Vector2.class);
 		objectVelocity.set(distanceVector).div(t).add(targetVelocity);
+
+		Pools.free(distanceVector);
 
 		return objectVelocity;
 	}

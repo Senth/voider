@@ -11,6 +11,7 @@ import com.spiddekauga.voider.game.ActorDef;
 import com.spiddekauga.voider.game.Path;
 import com.spiddekauga.voider.game.Path.PathTypes;
 import com.spiddekauga.voider.game.Weapon;
+import com.spiddekauga.voider.utils.Geometry;
 
 /**
  * An enemy actor, these can generally shoot on the player.
@@ -179,13 +180,26 @@ public class EnemyActor extends Actor {
 		case IN_FRONT_OF_PLAYER: {
 			Vector2 playerVelocity = mPlayerActor.getBody().getLinearVelocity();
 
+			boolean targetPlayerInstead = false;
+
 			// If velocity is standing still, just shoot at the player...
 			if (playerVelocity.len2() == 0) {
-				shootDirection.set(mPlayerActor.getPosition()).sub(getPosition());
+				targetPlayerInstead = true;
 			}
 			// Calculate where the bullet would intersect with the player
 			else {
+				Vector2 bulletVelocity = Geometry.interceptTarget(getPosition(), mWeapon.getDef().getBulletSpeed(), mPlayerActor.getPosition(), playerVelocity);
+				shootDirection.set(bulletVelocity);
+				Pools.free(bulletVelocity);
 
+				// Cannot intercept, target player
+				if (shootDirection.x != shootDirection.x || shootDirection.y != shootDirection.y) {
+					targetPlayerInstead = true;
+				}
+			}
+
+			if (targetPlayerInstead) {
+				shootDirection.set(mPlayerActor.getPosition()).sub(getPosition());
 			}
 			break;
 		}
