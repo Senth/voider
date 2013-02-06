@@ -193,7 +193,7 @@ public class Config {
 			 */
 			public static class Weapon {
 				/** Minimum rotate speed of the weapon */
-				public final static float ROTATE_SPEED_MIN = 0;
+				public final static float ROTATE_SPEED_MIN = -720;
 				/** Maximum rotate speed of the weapon */
 				public final static float ROTATE_SPEED_MAX = 720;
 				/** Default rotate speed of the weapon */
@@ -225,7 +225,7 @@ public class Config {
 			/** Maximum bullet speed */
 			public final static float BULLET_SPEED_MAX = 50;
 			/** Default bullet speed */
-			public final static float BULLET_SPEED_DEFAULT = 10;
+			public final static float BULLET_SPEED_DEFAULT = 20;
 			/** Step size of bullet speed */
 			public final static float BULLET_SPEED_STEP_SIZE = 1;
 			/** Minimum cooldown, used for random effect */

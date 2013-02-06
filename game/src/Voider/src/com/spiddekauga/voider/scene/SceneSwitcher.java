@@ -117,8 +117,7 @@ public class SceneSwitcher {
 			}
 			// Else -> Update it
 			else {
-				currentScene.update();
-				currentScene.render();
+				currentScene.run();
 			}
 		}
 	}

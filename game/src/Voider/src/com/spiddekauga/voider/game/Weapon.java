@@ -35,6 +35,8 @@ public class Weapon implements Disposable {
 	public void update(float deltaTime) {
 		if (mCooldown > 0) {
 			mCooldown -= deltaTime;
+		} else {
+			mCooldown = 0;
 		}
 	}
 
@@ -43,6 +45,13 @@ public class Weapon implements Disposable {
 	 */
 	public boolean canShoot() {
 		return mCooldown <= 0;
+	}
+
+	/**
+	 * @return remaining cooldown of the weapon. 0 if the weapon can be shot now
+	 */
+	public float getCooldownTime() {
+		return mCooldown;
 	}
 
 	/**

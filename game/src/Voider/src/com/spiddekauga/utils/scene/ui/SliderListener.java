@@ -36,7 +36,7 @@ public abstract class SliderListener implements EventListener {
 		mTextField.setTextFieldFilter(new TextFieldFilter() {
 			@Override
 			public boolean acceptChar(TextField textField, char key) {
-				return Character.isDigit(key) || key == '.';
+				return Character.isDigit(key) || key == '.' || key == '-';
 			}
 		});
 
@@ -74,7 +74,6 @@ public abstract class SliderListener implements EventListener {
 				return true;
 			}
 		}
-
 
 
 		// Slider changed the value

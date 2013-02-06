@@ -11,6 +11,7 @@ import com.spiddekauga.voider.game.ActorDef;
 import com.spiddekauga.voider.game.Path;
 import com.spiddekauga.voider.game.Path.PathTypes;
 import com.spiddekauga.voider.game.Weapon;
+import com.spiddekauga.voider.game.actors.EnemyActorDef.AimTypes;
 import com.spiddekauga.voider.utils.Geometry;
 
 /**
@@ -100,6 +101,8 @@ public class EnemyActor extends Actor {
 	 */
 	public void resetWeapon() {
 		mWeapon.setWeaponDef(getDef(EnemyActorDef.class).getWeaponDef());
+
+		mShootAngle = getDef(EnemyActorDef.class).getAimStartAngle();
 	}
 
 	@Override
@@ -157,6 +160,11 @@ public class EnemyActor extends Actor {
 
 			mWeapon.shoot(shootDirection);
 
+			// Calculate next shooting angle
+			if (getDef(EnemyActorDef.class).getAimType() == AimTypes.ROTATE) {
+				mShootAngle += mWeapon.getCooldownTime() * getDef(EnemyActorDef.class).getAimRotateSpeed();
+			}
+
 			Pools.free(shootDirection);
 		}
 	}
@@ -205,7 +213,9 @@ public class EnemyActor extends Actor {
 		}
 
 		case ROTATE:
-			/** @todo calculate rotate shoot direction */
+			// Shoot in current direction
+			shootDirection.set(1,0);
+			shootDirection.rotate(mShootAngle);
 			break;
 		}
 
@@ -536,6 +546,8 @@ public class EnemyActor extends Actor {
 
 	/** Enemy weapon */
 	private Weapon mWeapon = new Weapon();
+	/** Shooting angle (used when rotating) */
+	private float mShootAngle = 0;
 
 
 	// AI MOVEMENT

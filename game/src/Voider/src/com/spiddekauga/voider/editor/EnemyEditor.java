@@ -578,6 +578,10 @@ public class EnemyEditor extends WorldScene {
 	 */
 	void setAimStartAngle(float angle) {
 		mDef.setAimStartAngle(angle);
+		mEnemyActor.resetWeapon();
+		mEnemyPathBackAndForth.resetWeapon();
+		mEnemyPathOnce.resetWeapon();
+		mEnemyPathLoop.resetWeapon();
 	}
 
 	/**
