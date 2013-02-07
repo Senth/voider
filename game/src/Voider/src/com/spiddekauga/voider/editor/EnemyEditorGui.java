@@ -178,12 +178,28 @@ class EnemyEditorGui extends Gui {
 
 		// Load
 		button = new TextButton("Load", textStyle);
-		/** @TODO load enemy actor, use browser */
+		button.addListener(new EventListener() {
+			@Override
+			public boolean handle(Event event) {
+				if (isButtonPressed(event)) {
+					mEnemyEditor.loadEnemy();
+				}
+				return true;
+			}
+		});
 		mMainTable.add(button);
 
 		// Duplicate
 		button = new TextButton("Duplicate", textStyle);
-		/** @TODO duplicate enemy actor, use browser */
+		button.addListener(new EventListener() {
+			@Override
+			public boolean handle(Event event) {
+				if (isButtonPressed(event)) {
+					mEnemyEditor.duplicateEnemy();
+				}
+				return true;
+			}
+		});
 		mMainTable.add(button);
 
 
@@ -473,7 +489,6 @@ class EnemyEditorGui extends Gui {
 		LabelStyle labelStyle = editorSkin.get("default", LabelStyle.class);
 		SliderStyle sliderStyle = editorSkin.get("default", SliderStyle.class);
 		TextFieldStyle textFieldStyle = editorSkin.get("default", TextFieldStyle.class);
-		CheckBoxStyle checkBoxStyle = editorSkin.get("default", CheckBoxStyle.class);
 
 		mWeaponTable.setScalable(false);
 

@@ -8,6 +8,7 @@ import com.badlogic.gdx.utils.ObjectMap.Entry;
 import com.badlogic.gdx.utils.OrderedMap;
 import com.spiddekauga.utils.Json;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.User;
 
 /**
  * Base class for all "definitions", e.g. ActorDef, WeaponDef. All definitions
@@ -216,7 +217,7 @@ public abstract class Def extends Resource implements Json.Serializable {
 	/** Original creator name */
 	private String mOriginalCreator = "Unnamed";
 	/** Creator name */
-	private String mCreator = "Unnamed";
+	private String mCreator = User.getNickName();
 	/** Comment of the definition */
 	private String mComment = null;
 }

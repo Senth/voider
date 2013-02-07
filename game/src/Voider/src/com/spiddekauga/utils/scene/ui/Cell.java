@@ -41,6 +41,11 @@ public class Cell implements Poolable {
 		mPadding.reset();
 		mScaledPadding.reset();
 		mDynamicPadding = true;
+
+		mFillHeight = false;
+		mFillWidth = false;
+		mWidthBeforeFill = 0;
+		mHeightBeforeFill = 0;
 	}
 
 	/**
@@ -243,6 +248,52 @@ public class Cell implements Poolable {
 	}
 
 	/**
+	 * Sets if the cell shall fill the remaining width of the row.
+	 * @todo only works with on cell per row for now.
+	 * @param fillWidth set to true if the cell shall fill the remaining width of the row
+	 * @return this cell for chaining
+	 */
+	public Cell setFillWidth(boolean fillWidth) {
+		mFillWidth = true;
+
+		if (mFillWidth) {
+			mWidthBeforeFill = mActor.getWidth();
+		}
+
+		return this;
+	}
+
+	/**
+	 * @return true if the cell shall fill the remaining width of the row
+	 */
+	public boolean shallfillWidth() {
+		return mFillWidth;
+	}
+
+	/**
+	 * Sets if the cell shall fill the remaining height of the row.
+	 * This works for all cells in the row.
+	 * @param fillHeight true if the cell shall fill the remaining height of the row.
+	 * @return this cell for chaining
+	 */
+	public Cell setFillHeight(boolean fillHeight) {
+		mFillHeight = fillHeight;
+
+		if (mFillHeight) {
+			mWidthBeforeFill = mActor.getHeight();
+		}
+
+		return this;
+	}
+
+	/**
+	 * @return true if the cell shall fill the height of the row
+	 */
+	public boolean shallFillHeight() {
+		return mFillHeight;
+	}
+
+	/**
 	 * Sets transform for the cell
 	 * @param transform true if the cell shall be able to transform
 	 * @return this cell for chaining
@@ -309,6 +360,13 @@ public class Cell implements Poolable {
 		offset.set(startPos);
 		offset.x += getPadLeft();
 
+		if (mFillWidth) {
+			setWidth(size.x - getPadLeft() - getPadRight());
+		}
+		if (mFillHeight) {
+			setHeight(size.y - getPadTop() - getPadBottom());
+		}
+
 		// Horizontal
 		if (mAlign.horizontal == Horizontal.RIGHT) {
 			offset.x += size.x - getWidth();
@@ -349,12 +407,37 @@ public class Cell implements Poolable {
 	 * Calculates the size of the cell
 	 */
 	void calculateSize() {
+		// Reset width/height if it is set fill width/height
+		if (mFillHeight) {
+			mActor.setHeight(mHeightBeforeFill);
+		}
+		if (mFillWidth) {
+			mActor.setWidth(mWidthBeforeFill);
+		}
 		if (mActor instanceof Layout) {
 			((Layout)mActor).validate();
 		}
 		if (mActor instanceof AlignTable) {
 			mScalable = ((AlignTable) mActor).isScalable();
 		}
+	}
+
+	/**
+	 * Sets the width of the cell. Don't use this together with scaling!
+	 * Does not change the preferred width.
+	 * @param width new width of the cell.
+	 */
+	void setWidth(float width) {
+		mActor.setWidth(width);
+	}
+
+	/**
+	 * Sets the height of the cell. Don't use this together with scaling!
+	 * Does not change the preferred height.
+	 * @param height new height of the cell.
+	 */
+	void setHeight(float height) {
+		mActor.setHeight(height);
 	}
 
 	/**
@@ -405,8 +488,16 @@ public class Cell implements Poolable {
 	private Actor mActor = null;
 	/** Alignment of the cell */
 	private Align mAlign = new Align(Horizontal.LEFT, Vertical.MIDDLE);
-	/** If the cell is scaleable */
+	/** If the cell is scalable */
 	private boolean mScalable = true;
+	/** If the cell shall fill the width of the row */
+	private boolean mFillWidth = false;
+	/** Old width before filling the width */
+	private float mWidthBeforeFill = 0;
+	/** If the cell shall fill the height of the row */
+	private boolean mFillHeight = false;
+	/** Old height before filling the height */
+	private float mHeightBeforeFill = 0;
 
 	// Padding
 	/** If the padding can be scaled */

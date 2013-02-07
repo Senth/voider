@@ -33,6 +33,7 @@ import com.spiddekauga.voider.resources.ResourceSaver;
 import com.spiddekauga.voider.resources.UndefinedResourceTypeException;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
+import com.spiddekauga.voider.scene.SelectDefScene;
 import com.spiddekauga.voider.scene.WorldScene;
 
 /**
@@ -103,6 +104,11 @@ public class EnemyEditor extends WorldScene {
 
 			scalePathLabels();
 		}
+		else if (outcome == Outcomes.DEF_SELECTED) {
+			/** @TODO select the definition */
+		}
+
+		Actor.setEditorActive(true);
 		Actor.setPlayerActor(mPlayerActor);
 	}
 
@@ -246,12 +252,18 @@ public class EnemyEditor extends WorldScene {
 	 */
 	void saveEnemy() {
 		ResourceSaver.save(mDef);
+		mActorSavedSinceLastEdit = true;
 	}
 
 	/**
 	 * Creates a new enemy
 	 */
 	void newEnemy() {
+		/** @todo shall we save first */
+		if (!mActorSavedSinceLastEdit) {
+
+		}
+
 		mDef = new EnemyActorDef();
 		setEnemyDef();
 		mGui.resetValues();
@@ -267,6 +279,7 @@ public class EnemyEditor extends WorldScene {
 		mEnemyPathBackAndForth.setSpeed(speed);
 		mEnemyPathLoop.setSpeed(speed);
 		mEnemyPathOnce.setSpeed(speed);
+		mActorSavedSinceLastEdit = false;
 	}
 
 	/**
@@ -286,6 +299,7 @@ public class EnemyEditor extends WorldScene {
 		mEnemyPathBackAndForth.resetPathMovement();
 		mEnemyPathLoop.resetPathMovement();
 		mEnemyPathOnce.resetPathMovement();
+		mActorSavedSinceLastEdit = false;
 	}
 
 	/**
@@ -301,6 +315,7 @@ public class EnemyEditor extends WorldScene {
 	 */
 	void setPlayerDistanceMin(float minDistance) {
 		mDef.setPlayerDistanceMin(minDistance);
+		mActorSavedSinceLastEdit = false;
 	}
 
 	/**
@@ -323,6 +338,7 @@ public class EnemyEditor extends WorldScene {
 	 */
 	void setPlayerDistanceMax(float maxDistance) {
 		mDef.setPlayerDistanceMax(maxDistance);
+		mActorSavedSinceLastEdit = false;
 	}
 
 	/**
@@ -359,6 +375,7 @@ public class EnemyEditor extends WorldScene {
 			resetPlayerPosition();
 			break;
 		}
+		mActorSavedSinceLastEdit = false;
 	}
 
 	/**
@@ -367,6 +384,7 @@ public class EnemyEditor extends WorldScene {
 	 */
 	void setTurnSpeed(float turnSpeed) {
 		mDef.setTurnSpeed(turnSpeed);
+		mActorSavedSinceLastEdit = false;
 	}
 
 	/**
@@ -382,6 +400,7 @@ public class EnemyEditor extends WorldScene {
 	 */
 	void setStartingAngle(float angle) {
 		mDef.getBodyDef().angle = angle;
+		mActorSavedSinceLastEdit = false;
 	}
 
 	/**
@@ -391,20 +410,20 @@ public class EnemyEditor extends WorldScene {
 		return mDef.getBodyDef().angle;
 	}
 
-	/**
-	 * Sets if the enemy shall stay on the screen after it has entered it
-	 * @param stayOnScreen true if enemy shall stay on screen
-	 */
-	void setStayOnScreen(boolean stayOnScreen) {
-		mDef.setStayOnScreen(stayOnScreen);
-	}
-
-	/**
-	 * @return true if the enemy shall stay on the screen
-	 */
-	boolean shallStayOnScreen() {
-		return mDef.shallStayOnScreen();
-	}
+	//	/**
+	//	 * Sets if the enemy shall stay on the screen after it has entered it
+	//	 * @param stayOnScreen true if enemy shall stay on screen
+	//	 */
+	//	void setStayOnScreen(boolean stayOnScreen) {
+	//		mDef.setStayOnScreen(stayOnScreen);
+	//	}
+	//
+	//	/**
+	//	 * @return true if the enemy shall stay on the screen
+	//	 */
+	//	boolean shallStayOnScreen() {
+	//		return mDef.shallStayOnScreen();
+	//	}
 
 	/**
 	 * Sets if the enemy shall move randomly using the random spread set through
@@ -413,6 +432,7 @@ public class EnemyEditor extends WorldScene {
 	 */
 	void setMoveRandomly(boolean moveRandomly) {
 		mDef.setMoveRandomly(moveRandomly);
+		mActorSavedSinceLastEdit = false;
 	}
 
 	/**
@@ -431,6 +451,7 @@ public class EnemyEditor extends WorldScene {
 	 */
 	void setRandomTimeMin(float minTime) {
 		mDef.setRandomTimeMin(minTime);
+		mActorSavedSinceLastEdit = false;
 	}
 
 	/**
@@ -448,6 +469,7 @@ public class EnemyEditor extends WorldScene {
 	 */
 	void setRandomTimeMax(float maxTime) {
 		mDef.setRandomTimeMax(maxTime);
+		mActorSavedSinceLastEdit = false;
 	}
 
 	/**
@@ -471,6 +493,7 @@ public class EnemyEditor extends WorldScene {
 		if (bulletActorDef != null) {
 			mDef.addDependency(bulletActorDef);
 		}
+		mActorSavedSinceLastEdit = false;
 	}
 
 	/**
@@ -486,6 +509,7 @@ public class EnemyEditor extends WorldScene {
 	 */
 	void setUseWeapon(boolean useWeapon) {
 		mDef.setUseWeapon(useWeapon);
+		mActorSavedSinceLastEdit = false;
 	}
 
 	/**
@@ -501,6 +525,7 @@ public class EnemyEditor extends WorldScene {
 	 */
 	void setBulletSpeed(float speed) {
 		mDef.getWeaponDef().setBulletSpeed(speed);
+		mActorSavedSinceLastEdit = false;
 	}
 
 	/**
@@ -516,6 +541,7 @@ public class EnemyEditor extends WorldScene {
 	 */
 	void setDamage(float damage) {
 		mDef.getWeaponDef().setDamage(damage);
+		mActorSavedSinceLastEdit = false;
 	}
 
 	/**
@@ -533,6 +559,7 @@ public class EnemyEditor extends WorldScene {
 	 */
 	void setCooldownMin(float minCooldown) {
 		mDef.getWeaponDef().setCooldownMin(minCooldown);
+		mActorSavedSinceLastEdit = false;
 	}
 
 	/**
@@ -550,6 +577,7 @@ public class EnemyEditor extends WorldScene {
 	 */
 	void setCooldownMax(float maxCooldown) {
 		mDef.getWeaponDef().setCooldownMax(maxCooldown);
+		mActorSavedSinceLastEdit = false;
 	}
 
 	/**
@@ -565,6 +593,7 @@ public class EnemyEditor extends WorldScene {
 	 */
 	void setAimType(AimTypes aimType) {
 		mDef.setAimType(aimType);
+		mActorSavedSinceLastEdit = false;
 	}
 
 	/**
@@ -584,6 +613,7 @@ public class EnemyEditor extends WorldScene {
 		mEnemyPathBackAndForth.resetWeapon();
 		mEnemyPathOnce.resetWeapon();
 		mEnemyPathLoop.resetWeapon();
+		mActorSavedSinceLastEdit = false;
 	}
 
 	/**
@@ -600,6 +630,7 @@ public class EnemyEditor extends WorldScene {
 	 */
 	void setAimRotateSpeed(float rotateSpeed) {
 		mDef.setAimRotateSpeed(rotateSpeed);
+		mActorSavedSinceLastEdit = false;
 	}
 
 	/**
@@ -607,6 +638,43 @@ public class EnemyEditor extends WorldScene {
 	 */
 	float getAimRotateSpeed() {
 		return mDef.getAimRotateSpeed();
+	}
+
+	/**
+	 * Switches scene to select a bullet type for the weapon
+	 */
+	void selectBulletType() {
+		mSelectionAction = SelectionActions.BULLET_TYPE;
+
+		Scene selectionScene = new SelectDefScene(BulletActorDef.class, false, false);
+		SceneSwitcher.switchTo(selectionScene);
+	}
+
+	/**
+	 * Switches scene to load an enemy
+	 */
+	void loadEnemy() {
+		/** @todo ask to save enemy before loading another one */
+		if (!mActorSavedSinceLastEdit) {
+
+		}
+
+		mSelectionAction = SelectionActions.LOAD_ENEMY;
+
+		Scene selectionScene = new SelectDefScene(EnemyActorDef.class, true, true);
+		SceneSwitcher.switchTo(selectionScene);
+	}
+
+	/**
+	 * Duplicates the current enemy
+	 */
+	void duplicateEnemy() {
+		/** @todo ask to save enemy before duplicating it */
+		if (!mActorSavedSinceLastEdit) {
+
+		}
+
+		/** @todo duplicate enemy */
 	}
 
 	/** Invalid pointer id */
@@ -798,6 +866,19 @@ public class EnemyEditor extends WorldScene {
 		mEnemyActor.createBody();
 	}
 
+	/**
+	 * Which selection action we're currently using (when a SelectDefScene is active)
+	 */
+	enum SelectionActions {
+		/** Bullet type for the weapon */
+		BULLET_TYPE,
+		/** Load an existing enemy */
+		LOAD_ENEMY,
+	}
+
+
+	/** Current selection action, null if none */
+	private SelectionActions mSelectionAction = null;
 	/** Current enemy actor */
 	private EnemyActor mEnemyActor = new EnemyActor();
 	/** Enemy actor for path once */

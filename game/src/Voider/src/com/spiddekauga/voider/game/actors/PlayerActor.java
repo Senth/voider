@@ -34,34 +34,6 @@ public class PlayerActor extends com.spiddekauga.voider.game.Actor {
 		}
 	}
 
-	//	@Override
-	//	public void update(float deltaTime) {
-	//		super.update(deltaTime);
-	//
-	//		// Append position
-	//		TimePos timePos = mTimePosPool.obtain();
-	//		timePos.position.set(getPosition());
-	//		timePos.time = SceneSwitcher.getGameTime().getTotalTimeElapsed();
-	//		mPositionRecent.addLast(timePos);
-	//
-	//
-	//		// Remove old position
-	//		while (!mPositionRecent.isEmpty() && mPositionRecent.getFirst().time + Config.Actor.Player.RECENT_POS_SAVE_TIME < timePos.time) {
-	//			TimePos oldTimePos = mPositionRecent.removeFirst();
-	//			mTimePosPool.free(oldTimePos);
-	//		}
-	//	}
-	//
-	//	/**
-	//	 * Velocity of the player. This is determined by using a diff vector of the oldest
-	//	 * and newest positions the player had, time between these are set in
-	//	 * #Config.Actor.Player.RECENT_POS_SAVE_TIME
-	//	 * @return velocity of the player. Please free this vector using Pools.free(velocity);
-	//	 */
-	//	public Vector2 getVelocity() {
-	//		Vector2 velocity = Pools.obtain(Vector2.class);
-	//	}
-
 	/**
 	 * @return player filter category
 	 */

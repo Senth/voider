@@ -308,45 +308,78 @@ public class AlignTable extends WidgetGroup implements Disposable {
 
 		float rowHeight = 0;
 		float rowWidth = 0;
+		boolean rowFillHeight = false;
+		boolean rowFillWidth = false;
 		for (Row row : mRows) {
 			rowHeight += row.getHeight();
 			if (row.getWidth() > rowWidth) {
 				rowWidth = row.getWidth();
 			}
+
+			if (row.shallFillHeight()) {
+				rowFillHeight = true;
+			}
+			if (row.shallfillWidth()) {
+				rowFillWidth = true;
+			}
 		}
 
 		Vector2 offset = Pools.obtain(Vector2.class);
 		// Horizontal offset
-		// Calculate initial offset and offset between rows
-		if (mTableAlign.horizontal == Horizontal.LEFT) {
+		// If fill row, the x offset will always be 0
+		if (rowFillWidth) {
 			offset.x = 0;
-		} else if (mTableAlign.horizontal == Horizontal.RIGHT) {
-			offset.x = getWidth() - rowWidth;
-		} else if (mTableAlign.horizontal == Horizontal.CENTER) {
-			offset.x = getWidth() * 0.5f - rowWidth * 0.5f;
+		}
+		// Calculate offset depending on alignment
+		else {
+			if (mTableAlign.horizontal == Horizontal.LEFT) {
+				offset.x = 0;
+			} else if (mTableAlign.horizontal == Horizontal.RIGHT) {
+				offset.x = getWidth() - rowWidth;
+			} else if (mTableAlign.horizontal == Horizontal.CENTER) {
+				offset.x = getWidth() * 0.5f - rowWidth * 0.5f;
+			}
 		}
 
 		// Vertical
-		if (mTableAlign.vertical == Vertical.BOTTOM) {
+		// If fill height, the y offset will always be 0
+		if (rowFillHeight) {
 			offset.y = 0;
-		} else if (mTableAlign.vertical == Vertical.TOP) {
-			offset.y = getHeight() - rowHeight;
-		} else if (mTableAlign.vertical == Vertical.MIDDLE) {
-			offset.y = getHeight() * 0.5f - rowHeight * 0.5f;
+		}
+		// Calculate offset depending on alignment
+		else {
+			if (mTableAlign.vertical == Vertical.BOTTOM) {
+				offset.y = 0;
+			} else if (mTableAlign.vertical == Vertical.TOP) {
+				offset.y = getHeight() - rowHeight;
+			} else if (mTableAlign.vertical == Vertical.MIDDLE) {
+				offset.y = getHeight() * 0.5f - rowHeight * 0.5f;
+			}
 		}
 
 
 		// Layout the rows
-		Vector2 size = Pools.obtain(Vector2.class);
-		size.x = rowWidth < getPrefWidth() ? rowWidth : getPrefWidth();
+		Vector2 rowSize = Pools.obtain(Vector2.class);
+		if (rowFillWidth) {
+			rowSize.x = getWidth();
+		} else {
+			rowSize.x = rowWidth < getPrefWidth() ? rowWidth : getPrefWidth();
+		}
 		for (int i = mRows.size() - 1; i >= 0; --i) {
 			Row row = mRows.get(i);
-			size.y = row.getHeight();
-			row.layout(offset, size);
-			offset.y += size.y;
+			rowSize.y = row.getHeight();
+
+			// If row shall fill height, give it the extra height
+			if (row.shallFillHeight()) {
+				float fillHeight = getHeight() - getPrefHeight();
+				rowSize.y += fillHeight;
+			}
+
+			row.layout(offset, rowSize);
+			offset.y += rowSize.y;
 		}
 
-		Pools.free(size);
+		Pools.free(rowSize);
 		Pools.free(offset);
 	}
 

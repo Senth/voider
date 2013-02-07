@@ -96,6 +96,7 @@ public class SceneSwitcher {
 		// Scene which resources needs to be unloaded after we have loaded all for the next scene
 		if (mSceneNeedsUnloading != null && !ResourceCacheFacade.isLoading()) {
 			mSceneNeedsUnloading.unloadResources();
+			mSceneNeedsUnloading = null;
 		}
 
 

@@ -202,6 +202,10 @@ public abstract class Scene extends InputAdapter {
 	 * Different outcomes a scene can have
 	 */
 	public enum Outcomes {
+		/** Selected a definition */
+		DEF_SELECTED,
+		/** Canceled definition selection */
+		DEF_SELECT_CANCEL,
 		/** Level was successfully completed */
 		LEVEL_COMPLETED,
 		/** Player died during the level */
@@ -216,6 +220,7 @@ public abstract class Scene extends InputAdapter {
 		LOADING_FAILED_MISSING_FILE,
 		/** Loading failed, corrupt file */
 		LOADING_FAILED_CORRUPT_FILE,
+
 		/** No outcome when an outcome isn't applicable, e.g. first time */
 		NOT_APPLICAPLE,
 	}

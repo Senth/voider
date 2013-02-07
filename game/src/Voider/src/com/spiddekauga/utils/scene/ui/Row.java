@@ -40,6 +40,9 @@ public class Row implements Poolable {
 		mPadding.reset();
 		mScaledPadding.reset();
 		mDynamicPadding = true;
+
+		mFillHeight = false;
+		mFillWidth = false;
 	}
 
 	/**
@@ -299,6 +302,42 @@ public class Row implements Poolable {
 	}
 
 	/**
+	 * Sets if the row shall fill the remaining width of the table.
+	 * This works for all rows in the table.
+	 * @param fillWidth set to true if the row shall fill the remaining width of the table
+	 * @return this row for chaining
+	 */
+	public Row setFillWidth(boolean fillWidth) {
+		mFillWidth = true;
+		return this;
+	}
+
+	/**
+	 * @return true if the row shall fill the remaining width of the table
+	 */
+	public boolean shallfillWidth() {
+		return mFillWidth;
+	}
+
+	/**
+	 * Sets if the row shall fill the remaining height of the table.
+	 * @todo fill width for row only works on one row per table.
+	 * @param fillHeight true if the row shall fill the remaining height of the table.
+	 * @return this row for chaining
+	 */
+	public Row setFillHeight(boolean fillHeight) {
+		mFillHeight = fillHeight;
+		return this;
+	}
+
+	/**
+	 * @return true if the row shall fill the height of the table
+	 */
+	public boolean shallFillHeight() {
+		return mFillHeight;
+	}
+
+	/**
 	 * @return preferred height of the row
 	 */
 	float getPrefHeight() {
@@ -336,6 +375,13 @@ public class Row implements Poolable {
 		offset.set(startPos);
 		offset.x += getPadLeft();
 
+		if (mFillWidth) {
+			mWidth = size.x - getPadLeft() - getPadRight();
+		}
+		if (mFillHeight) {
+			mHeight = size.y - getPadTop() - getPadBottom();
+		}
+
 		if (mEqualSize) {
 			/** @TODO implement equal size */
 		} else {
@@ -360,6 +406,13 @@ public class Row implements Poolable {
 			for (Cell cell : mCells) {
 				if (cell.isVisible()) {
 					cellSize.x = cell.getWidth();
+
+					// If this cell shall fill the width, add extra width to the cell
+					if (cell.shallfillWidth()) {
+						float fillWidth = size.x - getPrefWidth();
+						cellSize.x += fillWidth;
+					}
+
 					cell.layout(offset, cellSize);
 					offset.x += cell.getWidth();
 				}
@@ -532,6 +585,10 @@ public class Row implements Poolable {
 	private boolean mScalable = true;
 	/** Row alignment */
 	private Align mAlign = new Align(Horizontal.LEFT, Vertical.MIDDLE);
+	/** If the row shall fill the width of the table */
+	private boolean mFillWidth = false;
+	/** If the row shall fill the height of the table */
+	private boolean mFillHeight = false;
 
 	// Padding
 	/** Padding for this row */

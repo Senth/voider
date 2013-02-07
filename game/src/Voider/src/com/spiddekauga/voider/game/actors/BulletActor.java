@@ -40,7 +40,7 @@ public class BulletActor extends Actor {
 
 		createBody();
 
-		// Rotate the bullet to face the shooting direction
+		// Position and rotate the bullet to face the shooting direction
 		double angle = velocity.angle();
 		angle = Math.toRadians(angle);
 		getBody().setTransform(position, (float) angle);

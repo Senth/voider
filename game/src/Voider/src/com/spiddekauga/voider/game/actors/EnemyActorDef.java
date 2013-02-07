@@ -65,22 +65,22 @@ public class EnemyActorDef extends ActorDef {
 		return mMovementVars.speed;
 	}
 
-	/**
-	 * Sets if the enemy shall stay on the screen once it has entered it.
-	 * Only applicable for AI movement
-	 * @param stayOnScreen true if the enemy shall stay on the screen.
-	 */
-	public void setStayOnScreen(boolean stayOnScreen) {
-		mAiMovementVars.stayOnScreen = stayOnScreen;
-	}
-
-	/**
-	 * @return true if the enemy shall stay on the screen once it has
-	 * entered it. Only applicable for AI movement.
-	 */
-	public boolean shallStayOnScreen() {
-		return mAiMovementVars.stayOnScreen;
-	}
+	//	/**
+	//	 * Sets if the enemy shall stay on the screen once it has entered it.
+	//	 * Only applicable for AI movement
+	//	 * @param stayOnScreen true if the enemy shall stay on the screen.
+	//	 */
+	//	public void setStayOnScreen(boolean stayOnScreen) {
+	//		mAiMovementVars.stayOnScreen = stayOnScreen;
+	//	}
+	//
+	//	/**
+	//	 * @return true if the enemy shall stay on the screen once it has
+	//	 * entered it. Only applicable for AI movement.
+	//	 */
+	//	public boolean shallStayOnScreen() {
+	//		return mAiMovementVars.stayOnScreen;
+	//	}
 
 	/**
 	 * Sets the minimum distance from the player the enemy shall have.
@@ -404,8 +404,8 @@ public class EnemyActorDef extends ActorDef {
 		float playerDistanceMax = Enemy.Movement.AI_DISTANCE_MAX_DEFAULT;
 		/** Maximum distance from the player, squared */
 		float playerDistanceMaxSq = playerDistanceMax * playerDistanceMax;
-		/** If the enemy shall stay on the screen */
-		boolean stayOnScreen = Enemy.Movement.STAY_ON_SCREEN_DEFAULT;
+		//		/** If the enemy shall stay on the screen */
+		//		boolean stayOnScreen = Enemy.Movement.STAY_ON_SCREEN_DEFAULT;
 		/** If the enemy shall move randomly when inside the preferred space */
 		boolean randomMove = Enemy.Movement.RANDOM_MOVEMENT_DEFAULT;
 		/** Minimum time until next random move */
