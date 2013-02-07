@@ -107,23 +107,42 @@ public class AlignTable extends WidgetGroup implements Disposable {
 			row();
 		}
 
-		Row row = mRows.get(mRows.size() -1);
-
-		// Subtract old height from this height, we will add the new height
-		// later
-		mPrefHeight -= row.getPrefHeight();
-
 		if (actor instanceof Layout) {
 			((Layout) actor).invalidate();
 		}
 
 		Cell newCell = Pools.obtain(Cell.class).setActor(actor);
 		newCell.setPadding(mCellPaddingDefault);
+
+		Row row = mRows.get(mRows.size() -1);
 		row.add(newCell);
 
-		addActor(actor);
+		if (actor != null) {
+			addActor(actor);
+		}
 
 		return newCell;
+	}
+
+	/**
+	 * Adds an empty cell to the row
+	 * @return cell that was added
+	 */
+	public Cell add() {
+		return add(null);
+	}
+
+	/**
+	 * Adds a number of empty cells to the current row
+	 * @param cellCount number of cells to add
+	 * @return a list of all cells that were added
+	 */
+	public ArrayList<Cell> add(int cellCount) {
+		ArrayList<Cell> cells = new ArrayList<Cell>();
+		for (int i = 0; i < cellCount; ++i) {
+			cells.add(add());
+		}
+		return cells;
 	}
 
 	/**

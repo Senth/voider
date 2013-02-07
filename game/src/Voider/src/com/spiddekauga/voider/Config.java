@@ -257,6 +257,9 @@ public class Config {
 			public final static float DAMAGE_STEP_SIZE = 1;
 		}
 
+		/** Select definition scene, maximum width of definition */
+		public static float SELECT_DEF_WIDTH_MAX = 200;
+
 		/** Radius of all picking circles */
 		private final static float PICKING_CIRCLE_RADIUS = 1.0f;
 		/** Picking shape of the */

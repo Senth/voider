@@ -84,7 +84,7 @@ public class Row implements Poolable {
 	 * @return This row for chaining
 	 * @see #setEqualCellSize(boolean,boolean) for using cell alignment instead
 	 */
-	public Row setEqualSpacing(boolean equalSize) {
+	public Row setEqualCellSize(boolean equalSize) {
 		setEqualCellSize(equalSize, false);
 		return this;
 	}
@@ -382,30 +382,51 @@ public class Row implements Poolable {
 			mHeight = size.y - getPadTop() - getPadBottom();
 		}
 
-		if (mEqualSize) {
-			/** @TODO implement equal size */
-		} else {
-			// Horizontal
+		// Check if there's a cell that wants to fill the width
+		boolean cellFillWidth = false;
+		for (Cell cell : mCells) {
+			if (cell.shallfillWidth()) {
+				cellFillWidth = true;
+				break;
+			}
+		}
+
+		// Horizontal
+		if (!cellFillWidth) {
 			if (mAlign.horizontal == Horizontal.RIGHT) {
 				offset.x += size.x - getWidth();
 			} else if (mAlign.horizontal == Horizontal.CENTER) {
 				offset.x += size.x * 0.5f - getWidth() * 0.5f;
 			}
+		}
 
-			// Vertical
-			if (mAlign.vertical == Vertical.BOTTOM) {
-				offset.y = startPos.y + getPadBottom();
-			} else if (mAlign.vertical == Vertical.TOP) {
-				offset.y = startPos.y + size.y - mHeight - getPadTop();
-			} else if (mAlign.vertical == Vertical.MIDDLE) {
-				offset.y = startPos.y + (size.y - mHeight + getPadBottom() - getPadTop()) * 0.5f;
+		// Vertical
+		if (mAlign.vertical == Vertical.BOTTOM) {
+			offset.y = startPos.y + getPadBottom();
+		} else if (mAlign.vertical == Vertical.TOP) {
+			offset.y = startPos.y + size.y - mHeight - getPadTop();
+		} else if (mAlign.vertical == Vertical.MIDDLE) {
+			offset.y = startPos.y + (size.y - mHeight + getPadBottom() - getPadTop()) * 0.5f;
+		}
+
+		Vector2 cellSize = Pools.obtain(Vector2.class);
+		if (mEqualSize) {
+			cellSize.y = mHeight;
+			cellSize.x = mWidth / mCells.size();
+
+			for (Cell cell : mCells) {
+				cell.layout(offset, cellSize);
+				offset.x += cellSize.x;
 			}
-
-			Vector2 cellSize = Pools.obtain(Vector2.class);
+		} else {
 			cellSize.y = mHeight;
 			for (Cell cell : mCells) {
 				if (cell.isVisible()) {
 					cellSize.x = cell.getWidth();
+
+					if (cellSize.x == 0) {
+						cellSize.x = cell.getPrefWidth();
+					}
 
 					// If this cell shall fill the width, add extra width to the cell
 					if (cell.shallfillWidth()) {
@@ -417,9 +438,9 @@ public class Row implements Poolable {
 					offset.x += cell.getWidth();
 				}
 			}
-			Pools.free(cellSize);
-		}
 
+		}
+		Pools.free(cellSize);
 		Pools.free(offset);
 	}
 

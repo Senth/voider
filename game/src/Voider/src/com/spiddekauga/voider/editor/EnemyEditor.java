@@ -1,6 +1,7 @@
 package com.spiddekauga.voider.editor;
 
 import java.lang.reflect.Field;
+import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
@@ -105,7 +106,20 @@ public class EnemyEditor extends WorldScene {
 			scalePathLabels();
 		}
 		else if (outcome == Outcomes.DEF_SELECTED) {
-			/** @TODO select the definition */
+			switch (mSelectionAction) {
+			case BULLET_TYPE:
+
+				break;
+
+			case LOAD_ENEMY:
+				try {
+					mDef = ResourceCacheFacade.get(UUID.fromString(message), EnemyActorDef.class);
+					setEnemyDef();
+				} catch (UndefinedResourceTypeException e) {
+					Gdx.app.error("EnemyEditor", e.toString());
+				}
+				break;
+			}
 		}
 
 		Actor.setEditorActive(true);

@@ -1,8 +1,14 @@
 package com.spiddekauga.voider.scene;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
+import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceNames;
+import com.spiddekauga.voider.resources.UndefinedResourceTypeException;
 
 /**
  * Scene for selecting definitions (actors, levels). It will display a scene
@@ -38,6 +44,19 @@ public class SelectDefScene extends WorldScene {
 	@Override
 	public void onActivate(Outcomes outcome, String message) {
 		if (outcome  == Outcomes.LOADING_SUCCEEDED) {
+			try {
+				@SuppressWarnings("unchecked")
+				List<Def> defs = (List<Def>) ResourceCacheFacade.get(mDefType);
+
+				for (Def def : defs) {
+					mDefs.add(new DefVisible(def));
+				}
+
+			} catch (UndefinedResourceTypeException e) {
+				Gdx.app.error("SelectDefScene", e.toString());
+			}
+
+
 			mGui.initGui();
 		}
 	}
@@ -55,6 +74,13 @@ public class SelectDefScene extends WorldScene {
 	@Override
 	public boolean hasResources() {
 		return true;
+	}
+
+	@Override
+	public void onResize(int width, int height) {
+		super.onResize(width, height);
+
+		((SelectDefGui)mGui).refillDefTable();
 	}
 
 	@Override
@@ -82,6 +108,55 @@ public class SelectDefScene extends WorldScene {
 		return mShowMineOnly;
 	}
 
+	/**
+	 * Sets the filter for the definitions
+	 * @param filter the filtering string
+	 */
+	void setFilter(String filter) {
+		mFilter = filter;
+
+		/** @todo update loaded definitions to show/hide */
+	}
+
+	/**
+	 * @return all loaded definitions
+	 */
+	ArrayList<DefVisible> getDefs() {
+		return mDefs;
+	}
+
+	/**
+	 * Wrapper for a definition and if it shall be shown (due to filters)
+	 */
+	class DefVisible {
+		/**
+		 * Creates the wrapper and sets definition and visibility
+		 * @param def the definition
+		 * @param visible true if it shall be visible
+		 */
+		DefVisible(Def def, boolean visible) {
+			this.def = def;
+			this.visible = visible;
+		}
+
+		/**
+		 * Creates the wrapper. The visibility will be set to true
+		 * @param def the definition
+		 */
+		DefVisible(Def def) {
+			this(def, true);
+		}
+
+		/** The definition */
+		Def def = null;
+		/** If it shall be visible or not */
+		boolean visible = true;
+	}
+
+	/** All the loaded definitions */
+	private ArrayList<DefVisible> mDefs = new ArrayList<DefVisible>();
+	/** Filter for the definitions, which to show and which to hide */
+	private String mFilter = "";
 	/** Shows only one's own actors, this is the value of the checkbox */
 	private boolean mShowMineOnly;
 	/** Definition type to select from */

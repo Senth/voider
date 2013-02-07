@@ -320,7 +320,7 @@ public class EnemyActorDef extends ActorDef {
 		super.read(json, superMap);
 
 
-		mHasWeapon = json.readValue("mUniqueId", boolean.class, jsonData);
+		mHasWeapon = json.readValue("mHasWeapon", boolean.class, jsonData);
 		mMovementType = json.readValue("mMovementType", MovementTypes.class, jsonData);
 
 
@@ -385,7 +385,7 @@ public class EnemyActorDef extends ActorDef {
 	/**
 	 * Class for all movement variables (both AI and path)
 	 */
-	private class MovementVars {
+	private static class MovementVars {
 		/** Speed of the enemy */
 		float speed = Enemy.Movement.MOVE_SPEED_DEFAULT;
 		/** How fast the enemy can turn */
@@ -395,7 +395,7 @@ public class EnemyActorDef extends ActorDef {
 	/**
 	 * Class for all AI movement variables
 	 */
-	private class AiMovementVars {
+	private static class AiMovementVars {
 		/** Minimum distance from the player */
 		float playerDistanceMin = Enemy.Movement.AI_DISTANCE_MIN_DEFAULT;
 		/** Minimum distance from player, squared */
@@ -417,7 +417,7 @@ public class EnemyActorDef extends ActorDef {
 	/**
 	 * Class for aim rotating variables
 	 */
-	private class AimRotateVars {
+	private static class AimRotateVars {
 		/** Starting angle */
 		float startAngle = Enemy.Weapon.START_ANGLE_DEFAULT;
 		/** Rotating speed */

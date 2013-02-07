@@ -60,7 +60,7 @@ public class Cell implements Poolable {
 	public Cell setDynamicPadding(boolean dynamicPadding) {
 		mDynamicPadding = dynamicPadding;
 
-		if (mDynamicPadding) {
+		if (mDynamicPadding && mActor != null) {
 			mScaledPadding.left = mPadding.left * mActor.getScaleX();
 			mScaledPadding.right = mPadding.right * mActor.getScaleX();
 			mScaledPadding.top = mPadding.top * mActor.getScaleY();
@@ -124,7 +124,7 @@ public class Cell implements Poolable {
 	public Cell setPadLeft(float padLeft) {
 		mPadding.left = padLeft;
 
-		if (mDynamicPadding) {
+		if (mDynamicPadding && mActor != null) {
 			mScaledPadding.left = mPadding.left * mActor.getScaleX();
 		}
 
@@ -140,7 +140,7 @@ public class Cell implements Poolable {
 	public Cell setPadRight(float padRight) {
 		mPadding.right = padRight;
 
-		if (mDynamicPadding) {
+		if (mDynamicPadding && mActor != null) {
 			mScaledPadding.right = mPadding.right * mActor.getScaleX();
 		}
 
@@ -156,7 +156,7 @@ public class Cell implements Poolable {
 	public Cell setPadTop(float padTop) {
 		mPadding.top = padTop;
 
-		if (mDynamicPadding) {
+		if (mDynamicPadding && mActor != null) {
 			mScaledPadding.top = mPadding.top * mActor.getScaleY();
 		}
 
@@ -172,7 +172,7 @@ public class Cell implements Poolable {
 	public Cell setPadBottom(float padBottom) {
 		mPadding.bottom = padBottom;
 
-		if (mDynamicPadding) {
+		if (mDynamicPadding && mActor != null) {
 			mScaledPadding.bottom = mPadding.bottom * mActor.getScaleY();
 		}
 
@@ -244,7 +244,11 @@ public class Cell implements Poolable {
 	 * @return true if the cell is visible
 	 */
 	public boolean isVisible() {
-		return mActor.isVisible();
+		if (mActor != null) {
+			return mActor.isVisible();
+		} else {
+			return true;
+		}
 	}
 
 	/**
@@ -256,7 +260,7 @@ public class Cell implements Poolable {
 	public Cell setFillWidth(boolean fillWidth) {
 		mFillWidth = true;
 
-		if (mFillWidth) {
+		if (mFillWidth && mActor != null) {
 			mWidthBeforeFill = mActor.getWidth();
 		}
 
@@ -279,7 +283,7 @@ public class Cell implements Poolable {
 	public Cell setFillHeight(boolean fillHeight) {
 		mFillHeight = fillHeight;
 
-		if (mFillHeight) {
+		if (mFillHeight && mActor != null) {
 			mWidthBeforeFill = mActor.getHeight();
 		}
 
@@ -336,8 +340,9 @@ public class Cell implements Poolable {
 	float getPrefWidth() {
 		if (mActor instanceof Layout) {
 			return ((Layout)mActor).getPrefWidth() + mPadding.left + mPadding.right;
+		} else {
+			return mPadding.left + mPadding.right;
 		}
-		return 0;
 	}
 
 	/**
@@ -346,8 +351,9 @@ public class Cell implements Poolable {
 	float getPrefHeight() {
 		if (mActor instanceof Layout) {
 			return ((Layout)mActor).getPrefHeight() + mPadding.top + mPadding.bottom;
+		} else {
+			return mPadding.top + mPadding.bottom;
 		}
-		return 0;
 	}
 
 	/**
@@ -362,9 +368,15 @@ public class Cell implements Poolable {
 
 		if (mFillWidth) {
 			setWidth(size.x - getPadLeft() - getPadRight());
+			if (mActor instanceof Layout) {
+				((Layout) mActor).invalidate();
+			}
 		}
 		if (mFillHeight) {
 			setHeight(size.y - getPadTop() - getPadBottom());
+			if (mActor instanceof Layout) {
+				((Layout) mActor).invalidate();
+			}
 		}
 
 		// Horizontal
@@ -378,12 +390,22 @@ public class Cell implements Poolable {
 		if (mAlign.vertical == Vertical.BOTTOM) {
 			offset.y = startPos.y + getPadBottom();
 		} else if (mAlign.vertical == Vertical.TOP) {
-			offset.y = startPos.y + size.y - mActor.getHeight() - getPadTop();
+			if (mActor != null) {
+				offset.y = startPos.y + size.y - mActor.getHeight() - getPadTop();
+			} else {
+				offset.y = startPos.y + size.y - getPadTop();
+			}
 		} else if (mAlign.vertical == Vertical.MIDDLE) {
-			offset.y = startPos.y + (size.y - mActor.getHeight() + getPadBottom() - getPadTop()) * 0.5f;
+			if (mActor != null) {
+				offset.y = startPos.y + (size.y - mActor.getHeight() + getPadBottom() - getPadTop()) * 0.5f;
+			} else {
+				offset.y = startPos.y + (size.y + getPadBottom() - getPadTop()) * 0.5f;
+			}
 		}
 
-		mActor.setPosition((int)offset.x, (int)offset.y);
+		if (mActor != null) {
+			mActor.setPosition((int)offset.x, (int)offset.y);
+		}
 
 
 		Pools.free(offset);
@@ -393,14 +415,22 @@ public class Cell implements Poolable {
 	 * @return width of the cell
 	 */
 	float getWidth() {
-		return mActor.getWidth() + getPadLeft() + getPadRight();
+		if (mActor != null) {
+			return mActor.getWidth() + getPadLeft() + getPadRight();
+		} else {
+			return getPadLeft() + getPadRight();
+		}
 	}
 
 	/**
 	 * @return height of the cell
 	 */
 	float getHeight() {
-		return mActor.getHeight() + getPadTop() + getPadBottom();
+		if (mActor != null) {
+			return mActor.getHeight() + getPadTop() + getPadBottom();
+		} else {
+			return getPadTop() + getPadBottom();
+		}
 	}
 
 	/**
@@ -428,7 +458,9 @@ public class Cell implements Poolable {
 	 * @param width new width of the cell.
 	 */
 	void setWidth(float width) {
-		mActor.setWidth(width);
+		if (mActor != null) {
+			mActor.setWidth(width);
+		}
 	}
 
 	/**
@@ -437,7 +469,9 @@ public class Cell implements Poolable {
 	 * @param height new height of the cell.
 	 */
 	void setHeight(float height) {
-		mActor.setHeight(height);
+		if (mActor != null) {
+			mActor.setHeight(height);
+		}
 	}
 
 	/**
@@ -453,10 +487,12 @@ public class Cell implements Poolable {
 				mScaledPadding.right = mPadding.right * scaleX;
 			}
 
-			if (mActor instanceof Layout) {
-				mActor.setWidth(((Layout) mActor).getPrefWidth() * scaleX);
+			if (mActor!= null) {
+				if (mActor instanceof Layout) {
+					mActor.setWidth(((Layout) mActor).getPrefWidth() * scaleX);
+				}
+				mActor.setScaleX(scaleX);
 			}
-			mActor.setScaleX(scaleX);
 		}
 
 		return this;
@@ -475,14 +511,28 @@ public class Cell implements Poolable {
 				mScaledPadding.bottom = mPadding.bottom * scaleY;
 			}
 
-			if (mActor instanceof Layout) {
-				mActor.setHeight(((Layout) mActor).getPrefHeight() * scaleY);
+			if (mActor != null) {
+				if (mActor instanceof Layout) {
+					mActor.setHeight(((Layout) mActor).getPrefHeight() * scaleY);
+				}
+				mActor.setScaleY(scaleY);
 			}
-			mActor.setScaleY(scaleY);
 		}
 
 		return this;
 	}
+
+	/**
+	 * @return the name of the actor inside, null if no actor is inside or no name has been set
+	 */
+	String getName() {
+		if (mActor != null) {
+			return mActor.getName();
+		} else {
+			return null;
+		}
+	}
+
 
 	/** Actor in the cell */
 	private Actor mActor = null;
