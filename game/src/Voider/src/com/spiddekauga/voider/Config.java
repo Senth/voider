@@ -8,6 +8,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.Shape;
+import com.spiddekauga.voider.game.actors.EnemyActorDef.ShapeTypes;
 
 /**
  * Game configuration
@@ -195,6 +196,30 @@ public class Config {
 				public final static float RANDOM_MOVEMENT_TIME_STEP_SIZE = 0.1f;
 				/** If random movement shall be turned on by default */
 				public final static boolean RANDOM_MOVEMENT_DEFAULT = false;
+			}
+
+			/**
+			 * Visuals
+			 */
+			public static class Visual {
+				/** Minimum radius for the enemy (when it's a circle) */
+				public final static float RADIUS_MIN = 0.2f;
+				/** Maximum radius for the enemy (when it's a circle) */
+				public final static float RADIUS_MAX = 10f;
+				/** Default radius of the enemy (when it's a circle) */
+				public final static float RADIUS_DEFAULT = 1;
+				/** Step size for radius */
+				public final static float RADIUS_STEP_SIZE = 0.1f;
+				/** Minimum width/height for the enemy (when it's a rectangle/triangle */
+				public final static float SIZE_MIN = RADIUS_MIN * 2;
+				/** Maximum width/height for the enemy (when it's a rectangle/triangle */
+				public final static float SIZE_MAX = RADIUS_MAX * 2;
+				/** Default width/height for the enemy (when it's a rectangle/triangle */
+				public final static float SIZE_DEFAULT = RADIUS_DEFAULT * 2;
+				/** Step size for the enemy width/height */
+				public final static float SIZE_STEP_SIZE = RADIUS_STEP_SIZE;
+				/** Default shape type of the enemy */
+				public final static ShapeTypes SHAPE_DEFAULT = ShapeTypes.CIRCLE;
 			}
 
 			/**

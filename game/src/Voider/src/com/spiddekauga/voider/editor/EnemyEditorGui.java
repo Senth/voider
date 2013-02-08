@@ -24,11 +24,14 @@ import com.spiddekauga.utils.scene.ui.CheckedListener;
 import com.spiddekauga.utils.scene.ui.HideListener;
 import com.spiddekauga.utils.scene.ui.Row;
 import com.spiddekauga.utils.scene.ui.SliderListener;
+import com.spiddekauga.voider.Config.Editor;
 import com.spiddekauga.voider.Config.Editor.Enemy;
 import com.spiddekauga.voider.Config.Editor.Enemy.Movement;
+import com.spiddekauga.voider.Config.Editor.Enemy.Visual;
 import com.spiddekauga.voider.Config.Editor.Weapon;
 import com.spiddekauga.voider.game.actors.EnemyActorDef.AimTypes;
 import com.spiddekauga.voider.game.actors.EnemyActorDef.MovementTypes;
+import com.spiddekauga.voider.game.actors.EnemyActorDef.ShapeTypes;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceNames;
 import com.spiddekauga.voider.scene.Gui;
@@ -136,6 +139,26 @@ class EnemyEditorGui extends Gui {
 
 		// Visuals
 		mWidgets.visual.startAngle.setValue(mEnemyEditor.getStartingAngle());
+
+		// Shape
+		mWidgets.visual.shapeCircleRadius.setValue(mEnemyEditor.getShapeRadius());
+		mWidgets.visual.shapeRectangleWidth.setValue(mEnemyEditor.getShapeWidth());
+		mWidgets.visual.shapeRectangleHeight.setValue(mEnemyEditor.getShapeHeight());
+		mWidgets.visual.shapeTriangleWidth.setValue(mEnemyEditor.getShapeWidth());
+		mWidgets.visual.shapeTriangleHeight.setValue(mEnemyEditor.getShapeHeight());
+		switch (mEnemyEditor.getShapeType()) {
+		case CIRCLE:
+			mWidgets.visual.shapeCircle.setChecked(true);
+			break;
+
+		case RECTANGLE:
+			mWidgets.visual.shapeRectangle.setChecked(true);
+			break;
+
+		case TRIANGLE:
+			mWidgets.visual.shapeTriangle.setChecked(true);
+			break;
+		}
 	}
 
 	/**
@@ -751,12 +774,14 @@ class EnemyEditorGui extends Gui {
 		LabelStyle labelStyle = editorSkin.get("default", LabelStyle.class);
 		SliderStyle sliderStyle = editorSkin.get("default", SliderStyle.class);
 		TextFieldStyle textFieldStyle = editorSkin.get("default", TextFieldStyle.class);
+		TextButtonStyle toggleStyle = editorSkin.get("toggle", TextButtonStyle.class);
 
 		mVisualTable.setScalable(false);
 
+
+		// Starting angle
 		Label label = new Label("Starting angle", labelStyle);
 		mVisualTable.add(label);
-
 
 		mVisualTable.row();
 		Slider slider = new Slider(0, 360, 1, false, sliderStyle);
@@ -772,6 +797,165 @@ class EnemyEditorGui extends Gui {
 				mEnemyEditor.setStartingAngle(newValue);
 			}
 		};
+
+
+		// Different shapes
+		mVisualTable.row();
+		Button button = new TextButton("Circle", toggleStyle);
+		mWidgets.visual.shapeCircle = button;
+		mVisualTable.add(button);
+		ButtonGroup buttonGroup = new ButtonGroup();
+		buttonGroup.add(button);
+		HideListener circleHider = new HideListener(button, true) {
+			@Override
+			protected void onShow() {
+				mEnemyEditor.setShapeType(ShapeTypes.CIRCLE);
+			}
+		};
+
+		button = new TextButton("Rect", toggleStyle);
+		mWidgets.visual.shapeRectangle = button;
+		mVisualTable.add(button);
+		buttonGroup.add(button);
+		HideListener rectangleHider = new HideListener(button, true) {
+			@Override
+			protected void onShow() {
+				mEnemyEditor.setShapeType(ShapeTypes.RECTANGLE);
+			}
+		};
+
+		button = new TextButton("Triangle", toggleStyle);
+		mWidgets.visual.shapeTriangle = button;
+		mVisualTable.add(button);
+		buttonGroup.add(button);
+		HideListener triangleHider = new HideListener(button, true) {
+			@Override
+			protected void onShow() {
+				mEnemyEditor.setShapeType(ShapeTypes.TRIANGLE);
+			}
+		};
+
+
+		// Circle
+		mVisualTable.row();
+		label = new Label("Radius", labelStyle);
+		Cell cell = mVisualTable.add(label);
+		cell.setPadRight(Enemy.LABEL_PADDING_BEFORE_SLIDER);
+		circleHider.addToggleActor(label);
+
+		slider = new Slider(Visual.RADIUS_MIN, Visual.RADIUS_MAX, Visual.RADIUS_STEP_SIZE, false, sliderStyle);
+		mWidgets.visual.shapeCircleRadius = slider;
+		mVisualTable.add(slider);
+		circleHider.addToggleActor(slider);
+
+		textField = new TextField("", textFieldStyle);
+		mVisualTable.add(textField);
+		textField.setWidth(Editor.Enemy.TEXT_FIELD_NUMBER_WIDTH);
+		circleHider.addToggleActor(textField);
+		new SliderListener(slider, textField) {
+			@Override
+			protected void onChange(float newValue) {
+				mEnemyEditor.setShapeRadius(newValue);
+			}
+		};
+
+
+		// Rectangle
+		mVisualTable.row();
+		label = new Label("Width", labelStyle);
+		cell = mVisualTable.add(label);
+		cell.setPadRight(Enemy.LABEL_PADDING_BEFORE_SLIDER);
+		rectangleHider.addToggleActor(label);
+
+		slider = new Slider(Visual.SIZE_MIN, Visual.SIZE_MAX, Visual.SIZE_STEP_SIZE, false, sliderStyle);
+		mWidgets.visual.shapeRectangleWidth = slider;
+		mVisualTable.add(slider);
+		rectangleHider.addToggleActor(slider);
+
+		textField = new TextField("", textFieldStyle);
+		mVisualTable.add(textField);
+		textField.setWidth(Editor.Enemy.TEXT_FIELD_NUMBER_WIDTH);
+		rectangleHider.addToggleActor(textField);
+		new SliderListener(slider, textField) {
+			@Override
+			protected void onChange(float newValue) {
+				mEnemyEditor.setShapeWidth(newValue);
+			}
+		};
+
+		mVisualTable.row();
+		label = new Label("Height", labelStyle);
+		cell = mVisualTable.add(label);
+		cell.setPadRight(Enemy.LABEL_PADDING_BEFORE_SLIDER);
+		rectangleHider.addToggleActor(label);
+
+		slider = new Slider(Visual.SIZE_MIN, Visual.SIZE_MAX, Visual.SIZE_STEP_SIZE, false, sliderStyle);
+		mWidgets.visual.shapeRectangleHeight = slider;
+		mVisualTable.add(slider);
+		rectangleHider.addToggleActor(slider);
+
+		textField = new TextField("", textFieldStyle);
+		mVisualTable.add(textField);
+		textField.setWidth(Editor.Enemy.TEXT_FIELD_NUMBER_WIDTH);
+		rectangleHider.addToggleActor(textField);
+		new SliderListener(slider, textField) {
+			@Override
+			protected void onChange(float newValue) {
+				mEnemyEditor.setShapeHeight(newValue);
+			}
+		};
+
+
+		// Triangle
+		mVisualTable.row();
+		label = new Label("Width", labelStyle);
+		cell = mVisualTable.add(label);
+		cell.setPadRight(Enemy.LABEL_PADDING_BEFORE_SLIDER);
+		triangleHider.addToggleActor(label);
+
+		slider = new Slider(Visual.SIZE_MIN, Visual.SIZE_MAX, Visual.SIZE_STEP_SIZE, false, sliderStyle);
+		mWidgets.visual.shapeTriangleWidth = slider;
+		mVisualTable.add(slider);
+		triangleHider.addToggleActor(slider);
+
+		textField = new TextField("", textFieldStyle);
+		mVisualTable.add(textField);
+		textField.setWidth(Editor.Enemy.TEXT_FIELD_NUMBER_WIDTH);
+		triangleHider.addToggleActor(textField);
+		new SliderListener(slider, textField) {
+			@Override
+			protected void onChange(float newValue) {
+				mEnemyEditor.setShapeWidth(newValue);
+			}
+		};
+
+		mVisualTable.row();
+		label = new Label("Height", labelStyle);
+		cell = mVisualTable.add(label);
+		cell.setPadRight(Enemy.LABEL_PADDING_BEFORE_SLIDER);
+		triangleHider.addToggleActor(label);
+
+		slider = new Slider(Visual.SIZE_MIN, Visual.SIZE_MAX, Visual.SIZE_STEP_SIZE, false, sliderStyle);
+		mWidgets.visual.shapeTriangleHeight = slider;
+		mVisualTable.add(slider);
+		triangleHider.addToggleActor(slider);
+
+		textField = new TextField("", textFieldStyle);
+		mVisualTable.add(textField);
+		textField.setWidth(Editor.Enemy.TEXT_FIELD_NUMBER_WIDTH);
+		triangleHider.addToggleActor(textField);
+		new SliderListener(slider, textField) {
+			@Override
+			protected void onChange(float newValue) {
+				mEnemyEditor.setShapeHeight(newValue);
+			}
+		};
+
+
+
+		circleHider.addChild(mVisualHider);
+		rectangleHider.addChild(mVisualHider);
+		triangleHider.addChild(mVisualHider);
 	}
 
 	// Tables
@@ -858,10 +1042,21 @@ class EnemyEditorGui extends Gui {
 		}
 
 		/**
-		 * Visual vidgets
+		 * Visual widgets
 		 */
 		static class VisualWidgets {
 			Slider startAngle = null;
+
+			// Shapes
+			Button shapeCircle = null;
+			Button shapeTriangle = null;
+			Button shapeRectangle = null;
+
+			Slider shapeCircleRadius = null;
+			Slider shapeTriangleWidth = null;
+			Slider shapeTriangleHeight = null;
+			Slider shapeRectangleWidth = null;
+			Slider shapeRectangleHeight = null;
 		}
 	}
 

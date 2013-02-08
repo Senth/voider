@@ -144,9 +144,6 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 		return copy;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.badlogic.gdx.utils.Disposable#dispose()
-	 */
 	@Override
 	public void dispose() {
 		clearFixtures();

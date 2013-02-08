@@ -96,7 +96,7 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 	public void setDef(ActorDef def) {
 		if (def != null) {
 			// Change fixtures as we have a new def now
-			clearFixtures();
+			clearFixturesDefs();
 
 			mDef = def;
 			mLife = mDef.getMaxLife();
@@ -372,6 +372,21 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 	}
 
 	/**
+	 * Reload fixtures. This destroys all the existing fixtures and creates
+	 * new fixtures from the actor definition. Does nothing if the actor
+	 * doesn't have a body.
+	 */
+	public void reloadFixtures() {
+		if (mBody != null) {
+			destroyFixtures();
+
+			for (FixtureDef fixtureDef : mDef.getFixtureDefs()) {
+				mBody.createFixture(fixtureDef);
+			}
+		}
+	}
+
+	/**
 	 * @return true if this actor saves its def, i.e. #ResourceCacheFacade will not
 	 * handle the def. This is true for terrain actors, as there is only one actor
 	 * per definition, defaults to false.
@@ -397,19 +412,26 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 	}
 
 	/**
-	 * Clears all fixtures
+	 * Clears all fixtures, both from the actor and from the definition...
 	 */
-	@SuppressWarnings("unchecked")
-	protected void clearFixtures() {
+	protected void clearFixturesDefs() {
+		destroyFixtures();
+
+		if (mDef != null) {
+			mDef.clearFixtures();
+		}
+	}
+
+	/**
+	 * Destroys all fixtures from the body
+	 */
+	protected void destroyFixtures() {
 		if (mBody != null) {
+			@SuppressWarnings("unchecked")
 			ArrayList<Fixture> fixtures = (ArrayList<Fixture>) mBody.getFixtureList().clone();
 			for (Fixture fixture : fixtures) {
 				mBody.destroyFixture(fixture);
 			}
-		}
-
-		if (mDef != null) {
-			mDef.clearFixtures();
 		}
 	}
 

@@ -75,7 +75,6 @@ public class EnemyActor extends Actor {
 	 */
 	public void setPath(Path path) {
 		mPath = path;
-		resetPathMovement();
 	}
 
 	/**

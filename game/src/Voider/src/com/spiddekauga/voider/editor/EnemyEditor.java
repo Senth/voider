@@ -27,6 +27,7 @@ import com.spiddekauga.voider.game.actors.EnemyActor;
 import com.spiddekauga.voider.game.actors.EnemyActorDef;
 import com.spiddekauga.voider.game.actors.EnemyActorDef.AimTypes;
 import com.spiddekauga.voider.game.actors.EnemyActorDef.MovementTypes;
+import com.spiddekauga.voider.game.actors.EnemyActorDef.ShapeTypes;
 import com.spiddekauga.voider.game.actors.PlayerActor;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceNames;
@@ -672,6 +673,74 @@ public class EnemyEditor extends WorldScene {
 	}
 
 	/**
+	 * Sets the shape of the enemy
+	 * @param shapeType new shape type of the enemy
+	 */
+	void setShapeType(ShapeTypes shapeType) {
+		mDef.setShapeType(shapeType);
+
+		resetBodyShapes();
+	}
+
+	/**
+	 * @return current shape type of the enemy
+	 */
+	ShapeTypes getShapeType() {
+		return mDef.getShapeType();
+	}
+
+	/**
+	 * Sets the circle radius of a shape
+	 * @param radius new radius of the shape
+	 */
+	void setShapeRadius(float radius) {
+		mDef.setShapeRadius(radius);
+
+		resetBodyShapes();
+	}
+
+	/**
+	 * @return current circle radius of the shape
+	 */
+	float getShapeRadius() {
+		return mDef.getShapeRadius();
+	}
+
+	/**
+	 * Sets the width of the shape
+	 * @param width new width of the shape
+	 */
+	void setShapeWidth(float width) {
+		mDef.setShapeWidth(width);
+
+		resetBodyShapes();
+	}
+
+	/**
+	 * @return current shape width
+	 */
+	float getShapeWidth() {
+		return mDef.getShapeWidth();
+	}
+
+	/**
+	 * Sets the height of the shape
+	 * @param height new height of the shape
+	 */
+	void setShapeHeight(float height) {
+		mDef.setShapeHeight(height);
+
+		resetBodyShapes();
+	}
+
+	/**
+	 * @return current shape height
+	 */
+	float getShapeHeight() {
+		return mDef.getShapeHeight();
+	}
+
+	/**
 	 * Switches scene to load an enemy
 	 */
 	void loadEnemy() {
@@ -764,6 +833,7 @@ public class EnemyEditor extends WorldScene {
 		// BACK AND FORTH
 		mPathBackAndForth.setPathType(PathTypes.BACK_AND_FORTH);
 		mEnemyPathBackAndForth.setPath(mPathBackAndForth);
+		mEnemyPathBackAndForth.resetPathMovement();
 		for (int i = 0; i < nodes.length; ++i) {
 			screenToWorldCoord(mCamera, screenPos[i], nodes[i], true);
 			mPathBackAndForth.addNodeToBack(nodes[i]);
@@ -772,6 +842,7 @@ public class EnemyEditor extends WorldScene {
 		// LOOP
 		mPathLoop.setPathType(PathTypes.LOOP);
 		mEnemyPathLoop.setPath(mPathLoop);
+		mEnemyPathLoop.resetPathMovement();
 		// Offset all y values so we don't get same path
 		for (int i = 0; i < nodes.length; ++i) {
 			screenPos[i].y += heightOffset;
@@ -782,6 +853,7 @@ public class EnemyEditor extends WorldScene {
 		// ONCE
 		mPathOnce.setPathType(PathTypes.ONCE);
 		mEnemyPathOnce.setPath(mPathOnce);
+		mEnemyPathOnce.resetPathMovement();
 		// Offset all y values so we don't get same path
 		for (int i = 0; i < nodes.length; ++i) {
 			screenPos[i].y += heightOffset;
@@ -885,6 +957,16 @@ public class EnemyEditor extends WorldScene {
 	private void createEnemyActor() {
 		mEnemyActor.setPosition(0, 0);
 		mEnemyActor.createBody();
+	}
+
+	/**
+	 * Resets all the bodies shapes to use the new updated shape
+	 */
+	private void resetBodyShapes() {
+		mEnemyActor.reloadFixtures();
+		mEnemyPathBackAndForth.reloadFixtures();
+		mEnemyPathLoop.reloadFixtures();
+		mEnemyPathOnce.reloadFixtures();
 	}
 
 	/**

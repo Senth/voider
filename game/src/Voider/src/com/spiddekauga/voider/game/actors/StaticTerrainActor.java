@@ -441,7 +441,7 @@ public class StaticTerrainActor extends Actor {
 	 */
 	private void readjustFixtures() throws PolygonCornerTooCloseException {
 		// Destroy previous fixture
-		clearFixtures();
+		clearFixturesDefs();
 
 
 		// Create the new fixture
