@@ -121,6 +121,7 @@ public class EnemyEditor extends WorldScene {
 				try {
 					mDef = ResourceCacheFacade.get(UUID.fromString(message), EnemyActorDef.class);
 					setEnemyDef();
+					mGui.resetValues();
 				} catch (UndefinedResourceTypeException e) {
 					Gdx.app.error("EnemyEditor", e.toString());
 				}
@@ -738,6 +739,36 @@ public class EnemyEditor extends WorldScene {
 	 */
 	float getShapeHeight() {
 		return mDef.getShapeHeight();
+	}
+
+	/**
+	 * Sets the name of the actor
+	 * @param name new name of the actor
+	 */
+	void setName(String name) {
+		mDef.setName(name);
+	}
+
+	/**
+	 * @return name of the actor
+	 */
+	String getName() {
+		return mDef.getName();
+	}
+
+	/**
+	 * Sets the description of the actor
+	 * @param description description text of the actor
+	 */
+	void setDescription(String description) {
+		mDef.setDescription(description);
+	}
+
+	/**
+	 * @return description of the actor
+	 */
+	String getDescription() {
+		return mDef.getDescription();
 	}
 
 	/**

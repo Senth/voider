@@ -45,7 +45,7 @@ public class TextFieldListener implements EventListener {
 						mTextField.setText("");
 					}
 				} else {
-					onDone();
+					onDone(mTextField.getText());
 
 					if (mDefaultText != null && isTextFieldEmpty()) {
 						mTextField.setText(mDefaultText);
@@ -63,21 +63,23 @@ public class TextFieldListener implements EventListener {
 						inputEvent.getKeyCode() == Keys.BACK) {
 					mTextField.getStage().setKeyboardFocus(null);
 				}
-				// Else check if the text was changed
-				else if (!mTextField.getText().equals(mOldText)){
-					onChange();
+			}
+			if (inputEvent.getType() == InputEvent.Type.keyTyped) {
+				if (!mTextField.getText().equals(mOldText)){
+					onChange(mTextField.getText());
 				}
 			}
 		}
 
-		return false;
+		return true;
 	}
 
 	/**
 	 * Called when the value inside the text field is changed. This
 	 * is never called when the text is changed to the default text.
+	 * @param newText the new text value for the text field
 	 */
-	protected void onChange() {
+	protected void onChange(String newText) {
 		// Does nothing
 	}
 
@@ -85,8 +87,9 @@ public class TextFieldListener implements EventListener {
 	 * Called when the text field looses focus, or when enter is pressed.
 	 * If the text field is empty when this happens, it is called <b>before</b>
 	 * the field is set to the default text.
+	 * @param newText the new text value for the text field
 	 */
-	protected void onDone() {
+	protected void onDone(String newText) {
 		// Does nothing
 	}
 

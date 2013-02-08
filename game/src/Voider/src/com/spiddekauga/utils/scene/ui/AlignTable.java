@@ -386,12 +386,14 @@ public class AlignTable extends WidgetGroup implements Disposable {
 		}
 		for (int i = mRows.size() - 1; i >= 0; --i) {
 			Row row = mRows.get(i);
-			rowSize.y = row.getHeight();
+
 
 			// If row shall fill height, give it the extra height
 			if (row.shallFillHeight()) {
 				float fillHeight = getHeight() - getPrefHeight();
-				rowSize.y += fillHeight;
+				rowSize.y = row.getPrefHeight() + fillHeight;
+			} else {
+				rowSize.y = row.getHeight();
 			}
 
 			row.layout(offset, rowSize);

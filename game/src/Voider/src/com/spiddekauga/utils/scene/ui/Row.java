@@ -422,16 +422,13 @@ public class Row implements Poolable {
 			cellSize.y = mHeight;
 			for (Cell cell : mCells) {
 				if (cell.isVisible()) {
-					cellSize.x = cell.getWidth();
-
-					if (cellSize.x == 0) {
-						cellSize.x = cell.getPrefWidth();
-					}
 
 					// If this cell shall fill the width, add extra width to the cell
 					if (cell.shallfillWidth()) {
 						float fillWidth = size.x - getPrefWidth();
-						cellSize.x += fillWidth;
+						cellSize.x = cell.getPrefWidth() + fillWidth;
+					} else {
+						cellSize.x = cell.getWidth();
 					}
 
 					cell.layout(offset, cellSize);

@@ -74,7 +74,7 @@ public class SelectDefGui extends Gui {
 		cell.setFillWidth(true);
 		new TextFieldListener(textField, "Filter") {
 			@Override
-			protected void onChange() {
+			protected void onChange(String newText) {
 				/** @todo set filter */
 			}
 		};
@@ -95,7 +95,6 @@ public class SelectDefGui extends Gui {
 		row.setFillWidth(true);
 		cell = mMainTable.add(mDefTable);
 		cell.setFillWidth(true);
-		mDefTable.setName("deftable");
 
 		refillDefTable();
 	}

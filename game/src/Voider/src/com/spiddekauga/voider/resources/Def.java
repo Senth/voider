@@ -70,18 +70,18 @@ public abstract class Def extends Resource implements Json.Serializable {
 	}
 
 	/**
-	 * @return the comment of the definition
+	 * @return the comment/description of the definition
 	 */
-	public final String getComment() {
-		return mComment;
+	public final String getDescription() {
+		return mDescription;
 	}
 
 	/**
-	 * Sets the comment of the definition
-	 * @param comment the new comment
+	 * Sets the comment/description of the definition
+	 * @param description the new comment
 	 */
-	public void setComment(String comment) {
-		mComment = comment;
+	public void setDescription(String description) {
+		mDescription = description;
 	}
 
 	/**
@@ -94,7 +94,7 @@ public abstract class Def extends Resource implements Json.Serializable {
 
 		json.writeValue("REVISION", Config.REVISION);
 		json.writeValue("mName", mName);
-		json.writeValue("mComment", mComment);
+		json.writeValue("mDescription", mDescription);
 		json.writeValue("mCreator", mCreator);
 		json.writeValue("mOriginalCreator", mOriginalCreator);
 
@@ -133,7 +133,7 @@ public abstract class Def extends Resource implements Json.Serializable {
 		mName = json.readValue("mName", String.class, jsonData);
 		mCreator = json.readValue("mCreator", String.class, jsonData);
 		mOriginalCreator = json.readValue("mOriginalCreator", String.class, jsonData);
-		mComment = json.readValue("mComment", String.class, jsonData);
+		mDescription = json.readValue("mDescription", String.class, jsonData);
 
 		OrderedMap<?,?> internalMap = json.readValue("mInternalDependencies", OrderedMap.class, jsonData);
 		if (internalMap != null) {
@@ -215,9 +215,9 @@ public abstract class Def extends Resource implements Json.Serializable {
 	/** Name of the definition */
 	private String mName = "Unnamed";
 	/** Original creator name */
-	private String mOriginalCreator = "Unnamed";
+	private String mOriginalCreator = User.getNickName();
 	/** Creator name */
 	private String mCreator = User.getNickName();
 	/** Comment of the definition */
-	private String mComment = null;
+	private String mDescription = "";
 }

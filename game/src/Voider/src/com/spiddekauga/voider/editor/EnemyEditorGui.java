@@ -24,6 +24,7 @@ import com.spiddekauga.utils.scene.ui.CheckedListener;
 import com.spiddekauga.utils.scene.ui.HideListener;
 import com.spiddekauga.utils.scene.ui.Row;
 import com.spiddekauga.utils.scene.ui.SliderListener;
+import com.spiddekauga.utils.scene.ui.TextFieldListener;
 import com.spiddekauga.voider.Config.Editor;
 import com.spiddekauga.voider.Config.Editor.Enemy;
 import com.spiddekauga.voider.Config.Editor.Enemy.Movement;
@@ -60,11 +61,13 @@ class EnemyEditorGui extends Gui {
 		mAiTable.setPreferences(mMainTable);
 		mPathTable.setPreferences(mPathTable);
 		mVisualTable.setPreferences(mMainTable);
+		mOptionTable.setPreferences(mMainTable);
 
 
 		initMovement();
 		initWeapon();
 		initVisual();
+		initOptions();
 		initMenu();
 
 		resetValues();
@@ -75,6 +78,7 @@ class EnemyEditorGui extends Gui {
 		mWeaponTable.setTransform(true);
 		mAiTable.setTransform(true);
 		mVisualTable.setTransform(true);
+		mOptionTable.setTransform(true);
 		mMainTable.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		mMainTable.invalidate();
 	}
@@ -159,12 +163,18 @@ class EnemyEditorGui extends Gui {
 			mWidgets.visual.shapeTriangle.setChecked(true);
 			break;
 		}
+
+
+		// Options
+		mWidgets.option.name.setText(mEnemyEditor.getName());
+		mWidgets.option.description.setText(mEnemyEditor.getDescription());
+		mWidgets.option.description.setTextFieldListener(null);
 	}
 
 	/**
 	 * Initializes the menu buttons
 	 */
-	void initMenu() {
+	private void initMenu() {
 		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
 
 		TextButtonStyle textToogleStyle = editorSkin.get("toggle", TextButtonStyle.class);
@@ -252,16 +262,24 @@ class EnemyEditorGui extends Gui {
 		mVisualHider.setButton(button);
 		mVisualHider.addToggleActor(mVisualTable);
 
-		mMainTable.row();
+		// Options
+		button = new TextButton("Options", textToogleStyle);
+		buttonGroup.add(button);
+		mMainTable.add(button);
+		mOptionHider.setButton(button);
+		mOptionHider.addToggleActor(mOptionTable);
+
+		mMainTable.row().setFillHeight(true).setAlign(Horizontal.LEFT, Vertical.TOP);
 		mMainTable.add(mWeaponTable);
 		mMainTable.add(mVisualTable);
 		mMainTable.add(mMovementTable);
+		mMainTable.add(mOptionTable).setFillWidth(true).setFillHeight(true);
 	}
 
 	/**
 	 * Initializes the movement GUI part
 	 */
-	void initMovement() {
+	private void initMovement() {
 		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
 		CheckBoxStyle checkBoxStyle = editorSkin.get("default", CheckBoxStyle.class);
 		LabelStyle labelStyle = editorSkin.get("default", LabelStyle.class);
@@ -504,7 +522,7 @@ class EnemyEditorGui extends Gui {
 	/**
 	 * Initializes the weapon GUI part
 	 */
-	void initWeapon() {
+	private void initWeapon() {
 		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
 
 		TextButtonStyle toggleButtonStyle = editorSkin.get("toggle", TextButtonStyle.class);
@@ -769,7 +787,7 @@ class EnemyEditorGui extends Gui {
 	/**
 	 * Initializes the visual GUI parts
 	 */
-	void initVisual() {
+	private void initVisual() {
 		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
 		LabelStyle labelStyle = editorSkin.get("default", LabelStyle.class);
 		SliderStyle sliderStyle = editorSkin.get("default", SliderStyle.class);
@@ -962,6 +980,49 @@ class EnemyEditorGui extends Gui {
 		triangleHider.addChild(mVisualHider);
 	}
 
+	/**
+	 * Initializes GUI for options
+	 */
+	private void initOptions() {
+		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
+		LabelStyle labelStyle = editorSkin.get("default", LabelStyle.class);
+		TextFieldStyle textFieldStyle = editorSkin.get("default", TextFieldStyle.class);
+
+		mOptionTable.setScalable(false);
+		mOptionTable.setTableAlign(Horizontal.LEFT, Vertical.TOP);
+		mOptionTable.setName("optiontable");
+		mOptionTable.setKeepSize(true);
+
+		Label label = new Label("Name", labelStyle);
+		mOptionTable.add(label);
+
+		mOptionTable.row().setFillWidth(true);
+		TextField textField = new TextField("", textFieldStyle);
+		mOptionTable.add(textField).setFillWidth(true);
+		mWidgets.option.name = textField;
+		new TextFieldListener(textField, "Name") {
+			@Override
+			protected void onChange(String newText) {
+				mEnemyEditor.setName(newText);
+			}
+		};
+
+		mOptionTable.row();
+		label = new Label("Description", labelStyle);
+		mOptionTable.add(label);
+
+		mOptionTable.row().setFillWidth(true).setFillHeight(true).setAlign(Horizontal.LEFT, Vertical.TOP);
+		textField = new TextField("shit", textFieldStyle);
+		mOptionTable.add(textField).setFillWidth(true).setFillHeight(true);
+		mWidgets.option.description = textField;
+		new TextFieldListener(textField, "Write your description here...") {
+			@Override
+			protected void onChange(String newText) {
+				mEnemyEditor.setDescription(newText);
+			}
+		};
+	}
+
 	// Tables
 	/** Container for all movement options */
 	private AlignTable mMovementTable = new AlignTable();
@@ -969,6 +1030,8 @@ class EnemyEditorGui extends Gui {
 	private AlignTable mWeaponTable = new AlignTable();
 	/** Container for all visual options */
 	private AlignTable mVisualTable = new AlignTable();
+	/** Container for all general options, such as name description. */
+	private AlignTable mOptionTable = new AlignTable();
 	/** Container for the different movement variables */
 	private AlignTable mMovementTypeTable = new AlignTable();
 	/** Table for Path movement */
@@ -983,6 +1046,8 @@ class EnemyEditorGui extends Gui {
 	private HideListener mVisualHider = new HideListener(true);
 	/** Hides movement options */
 	private HideListener mMovementHider = new HideListener(true);
+	/** Hides options options :D:D:D */
+	private HideListener mOptionHider = new HideListener(true);
 
 	/** All widgets that needs updating when an actor is changed */
 	private InnerWidgets mWidgets = new InnerWidgets();
@@ -995,6 +1060,7 @@ class EnemyEditorGui extends Gui {
 		MovementWidgets movement = new MovementWidgets();
 		WeaponWidgets weapon = new WeaponWidgets();
 		VisualWidgets visual = new VisualWidgets();
+		OptionWidgets option = new OptionWidgets();
 
 		/**
 		 * Movement widget
@@ -1061,6 +1127,14 @@ class EnemyEditorGui extends Gui {
 			Slider shapeTriangleHeight = null;
 			Slider shapeRectangleWidth = null;
 			Slider shapeRectangleHeight = null;
+		}
+
+		/**
+		 * General options
+		 */
+		static class OptionWidgets {
+			TextField name = null;
+			TextField description = null;
 		}
 	}
 
