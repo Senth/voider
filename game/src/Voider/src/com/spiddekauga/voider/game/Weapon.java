@@ -2,16 +2,18 @@ package com.spiddekauga.voider.game;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Disposable;
+import com.badlogic.gdx.utils.OrderedMap;
 import com.badlogic.gdx.utils.Pools;
+import com.spiddekauga.utils.Json;
+import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.actors.BulletActor;
 import com.spiddekauga.voider.scene.SceneSwitcher;
-
 /**
  * Weapon that hadles the shooting and cooldown.
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class Weapon implements Disposable {
+public class Weapon implements Disposable, Json.Serializable {
 	/**
 	 * Creates an invalid weapon. setWeaponDef needs to be called one can shoot with
 	 * the weapon.
@@ -24,9 +26,17 @@ public class Weapon implements Disposable {
 	 * Sets the weapon definition of the weapon. This resets the cooldown of the weapon
 	 * @param weaponDef new weapon definition
 	 */
-	public void setWeaponDef(WeaponDef weaponDef) {
+	public void setWeaponDefResetCd(WeaponDef weaponDef) {
 		mDef = weaponDef;
 		mCooldown = 0;
+	}
+
+	/**
+	 * Sets the weapon definiotn of the weapon without resetting the cooldown
+	 * @param weaponDef weapon definition
+	 */
+	public void setWeaponDef(WeaponDef weaponDef) {
+		mDef = weaponDef;
 	}
 
 	/**
@@ -99,6 +109,17 @@ public class Weapon implements Disposable {
 	 */
 	public WeaponDef getDef() {
 		return mDef;
+	}
+
+	@Override
+	public void write(Json json) {
+		json.writeValue("REVISION", Config.REVISION);
+		json.writeValue("mCooldown", mCooldown);
+	}
+
+	@Override
+	public void read(Json json, OrderedMap<String, Object> jsonData) {
+		mCooldown = json.readValue("mCooldown", float.class, jsonData);
 	}
 
 	/** Weapon definition */

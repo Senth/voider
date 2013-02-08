@@ -1,5 +1,7 @@
 package com.spiddekauga.voider.game.actors;
 
+import java.util.UUID;
+
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.OrderedMap;
 import com.badlogic.gdx.utils.Pools;
@@ -12,6 +14,7 @@ import com.spiddekauga.voider.game.Path;
 import com.spiddekauga.voider.game.Path.PathTypes;
 import com.spiddekauga.voider.game.Weapon;
 import com.spiddekauga.voider.game.actors.EnemyActorDef.AimTypes;
+import com.spiddekauga.voider.game.actors.EnemyActorDef.MovementTypes;
 import com.spiddekauga.voider.utils.Geometry;
 
 /**
@@ -100,19 +103,87 @@ public class EnemyActor extends Actor {
 	 * Resets the weapon
 	 */
 	public void resetWeapon() {
-		mWeapon.setWeaponDef(getDef(EnemyActorDef.class).getWeaponDef());
+		mWeapon.setWeaponDefResetCd(getDef(EnemyActorDef.class).getWeaponDef());
 
 		mShootAngle = getDef(EnemyActorDef.class).getAimStartAngle();
 	}
 
 	@Override
 	public void write(Json json) {
-		/** @todo write json */
+		json.writeObjectStart("Actor");
+		super.write(json);
+		json.writeObjectEnd();
+
+		json.writeValue("REVISION", Config.REVISION);
+
+		EnemyActorDef enemyDef = getDef(EnemyActorDef.class);
+
+		if (enemyDef.hasWeapon()) {
+			json.writeValue("mWeapon", mWeapon);
+			json.writeValue("mShootAngle", mShootAngle);
+		}
+
+		if (enemyDef.getMovementType() == MovementTypes.AI) {
+			if (enemyDef.isMovingRandomly()) {
+				json.writeValue("mRandomMoveNext", mRandomMoveNext);
+				json.writeValue("mRandomMoveDirection", mRandomMoveDirection);
+			}
+		} else if (enemyDef.getMovementType() == MovementTypes.PATH) {
+			json.writeValue("mPathId", getPathId());
+
+			if (mPath != null) {
+				json.writeValue("mPathIndexNext", mPathIndexNext);
+
+				switch (mPath.getPathType()) {
+				case ONCE:
+					json.writeValue("mPathOnceReachedEnd", mPathOnceReachedEnd);
+					break;
+
+				case BACK_AND_FORTH:
+					json.writeValue("mPathForward", mPathForward);
+					break;
+
+				case LOOP:
+					// Does nothing
+					break;
+				}
+
+			}
+		}
 	}
 
 	@Override
 	public void read(Json json, OrderedMap<String, Object> jsonData) {
-		/** @todo read json */
+		// Read super class
+		@SuppressWarnings("unchecked")
+		OrderedMap<String, Object> superMap = json.readValue("Actor", OrderedMap.class, jsonData);
+		super.read(json, superMap);
+
+
+		EnemyActorDef enemyDef = getDef(EnemyActorDef.class);
+
+		if (enemyDef.hasWeapon()) {
+			mWeapon = json.readValue("mWeapon", Weapon.class, jsonData);
+			mWeapon.setWeaponDef(enemyDef.getWeaponDef());
+			mShootAngle = json.readValue("mShootAngle", float.class, jsonData);
+		}
+
+		if (enemyDef.getMovementType() == MovementTypes.AI) {
+			if (enemyDef.isMovingRandomly()) {
+				mRandomMoveNext = json.readValue("mRandomMoveNext", int.class, jsonData);
+				mRandomMoveDirection = json.readValue("mRandomMoveDirection", Vector2.class, jsonData);
+			}
+		}
+		else if (enemyDef.getMovementType() == MovementTypes.PATH) {
+			mPathId = json.readValue("mPathId", UUID.class, jsonData);
+
+			if (jsonData.containsKey("mPathOnceReachedEnd")) {
+				mPathOnceReachedEnd = json.readValue("mPathOnceReachedEnd", boolean.class, jsonData);
+			}
+			if (jsonData.containsKey("mPathForward")) {
+				mPathForward = json.readValue("mPathForward", boolean.class, jsonData);
+			}
+		}
 	}
 
 	/**
@@ -126,6 +197,18 @@ public class EnemyActor extends Actor {
 		if (getBody() != null) {
 			getBody().setAngularVelocity(0);
 			getBody().setTransform(getPosition(), getDef().getBodyDef().angle);
+		}
+	}
+
+	/**
+	 * @return path id used for the enemy actor, null if none is used
+	 */
+	public UUID getPathId() {
+		if (mPath != null) {
+			return mPath.getId();
+		}
+		else {
+			return mPathId;
 		}
 	}
 
@@ -560,6 +643,8 @@ public class EnemyActor extends Actor {
 	// PATH MOVEMENT
 	/** Path we're currently following */
 	private Path mPath = null;
+	/** Path id, used when saving/loading enemy actor as it does not save the path */
+	private UUID mPathId = null;
 	/** Index of path we're heading to */
 	private int mPathIndexNext = -1;
 	/** If the enemy is moving in the path direction */

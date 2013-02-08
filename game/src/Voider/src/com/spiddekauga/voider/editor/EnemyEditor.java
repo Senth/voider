@@ -72,7 +72,7 @@ public class EnemyEditor extends WorldScene {
 		mMouseBody = mWorld.createBody(bodyDef);
 		mMouseJointDef.frequencyHz = Config.Game.MouseJoint.FREQUENCY;
 		mMouseJointDef.bodyA = mMouseBody;
-		mMouseJointDef.bodyB = mPlayerActor.getBody(); // TODO REMOVE, set in onActivate instead
+		mMouseJointDef.bodyB = mPlayerActor.getBody();
 		mMouseJointDef.collideConnected = true;
 		mMouseJointDef.maxForce = Config.Game.MouseJoint.FORCE_MAX;
 	}
@@ -108,7 +108,12 @@ public class EnemyEditor extends WorldScene {
 		else if (outcome == Outcomes.DEF_SELECTED) {
 			switch (mSelectionAction) {
 			case BULLET_TYPE:
-
+				try {
+					BulletActorDef bulletDef = ResourceCacheFacade.get(UUID.fromString(message), BulletActorDef.class);
+					setBulletActorDef(bulletDef);
+				} catch (UndefinedResourceTypeException e1) {
+					Gdx.app.error("Enemy editor", e1.toString());
+				}
 				break;
 
 			case LOAD_ENEMY:
@@ -120,6 +125,8 @@ public class EnemyEditor extends WorldScene {
 				}
 				break;
 			}
+
+			mSelectionAction = null;
 		}
 
 		Actor.setEditorActive(true);
