@@ -495,7 +495,16 @@ public class EnemyActor extends Actor {
 
 		// Because we only use 0-180 it could be 0 degrees when we should actually
 		// head the other direction, take this into account!
-		boolean oppositeDirection = Maths.approxCompare(velocityAngleOriginal, targetDirection.angle(), Config.Actor.Enemy.TURN_ANGLE_MIN);
+		boolean oppositeDirection = false;
+		if (velocityAngleOriginal < targetAngleOriginal) {
+			if (Maths.approxCompare(velocityAngleOriginal, targetAngleOriginal - 180, Config.Actor.Enemy.TURN_ANGLE_MIN)) {
+				oppositeDirection = true;
+			}
+		} else {
+			if (Maths.approxCompare(velocityAngleOriginal - 180, targetAngleOriginal, Config.Actor.Enemy.TURN_ANGLE_MIN)) {
+				oppositeDirection = true;
+			}
+		}
 
 		if (!Maths.approxCompare(diffAngle, Config.Actor.Enemy.TURN_ANGLE_MIN) || oppositeDirection) {
 			float angleBefore = velocity.angle();
@@ -538,41 +547,7 @@ public class EnemyActor extends Actor {
 		}
 
 
-		// Rotate till we're at the right angle
-		velocityAngle = getBody().getLinearVelocity().angle();
-		diffAngle = velocityAngle - bodyAngle;
-		if (diffAngle > 180) {
-			counterClockwise = false;
-			diffAngle -= 360;
-		} else if (diffAngle > 0) {
-			counterClockwise = true;
-		} else if (diffAngle < -180) {
-			counterClockwise = true;
-			diffAngle += 360;
-		}
-		// else (diffAngle < 0 && diffAngle >= -180)
-		else {
-			counterClockwise = false;
-		}
-
-		if (!Maths.approxCompare(diffAngle, Config.Actor.Enemy.TURN_ANGLE_MIN)) {
-
-			float rotationSpeed = getDef(EnemyActorDef.class).getTurnSpeed() * getDef(EnemyActorDef.class).getSpeed() * deltaTime;
-			if (!counterClockwise) {
-				rotationSpeed = -rotationSpeed;
-			}
-
-			if (Maths.approxCompare(diffAngle, Config.Actor.Enemy.ROTATION_SLOW_DOWN_ANGLE)) {
-				rotationSpeed *= Config.Actor.Enemy.ROTATION_SLOW_DOWN_RATE;
-			} else if (!Maths.approxCompare(diffAngle, Config.Actor.Enemy.ROTATION_SPEED_UP_ANGLE)) {
-				rotationSpeed *= Config.Actor.Enemy.ROTATION_SPSEED_UP_RATE;
-			}
-
-			getBody().setAngularVelocity(rotationSpeed);
-		} else {
-			getBody().setAngularVelocity(0);
-		}
-
+		getBody().setTransform(getPosition(), (float) Math.toRadians(getBody().getLinearVelocity().angle()));
 
 		Pools.free(velocity);
 	}

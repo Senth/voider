@@ -880,6 +880,7 @@ class EnemyEditorGui extends Gui {
 			@Override
 			protected void onChange(float newValue) {
 				mEnemyEditor.setShapeWidth(newValue);
+				mWidgets.visual.shapeTriangleWidth.setValue(newValue);
 			}
 		};
 
@@ -902,6 +903,7 @@ class EnemyEditorGui extends Gui {
 			@Override
 			protected void onChange(float newValue) {
 				mEnemyEditor.setShapeHeight(newValue);
+				mWidgets.visual.shapeTriangleHeight.setValue(newValue);
 			}
 		};
 
@@ -926,6 +928,7 @@ class EnemyEditorGui extends Gui {
 			@Override
 			protected void onChange(float newValue) {
 				mEnemyEditor.setShapeWidth(newValue);
+				mWidgets.visual.shapeRectangleWidth.setValue(newValue);
 			}
 		};
 
@@ -948,6 +951,7 @@ class EnemyEditorGui extends Gui {
 			@Override
 			protected void onChange(float newValue) {
 				mEnemyEditor.setShapeHeight(newValue);
+				mWidgets.visual.shapeTriangleHeight.setValue(newValue);
 			}
 		};
 

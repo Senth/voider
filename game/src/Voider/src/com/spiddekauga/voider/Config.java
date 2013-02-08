@@ -53,15 +53,7 @@ public class Config {
 			/** How close the enemy should be to a path point before it goes to the next */
 			public final static float PATH_NODE_CLOSE_SQ = 0.5f * 0.5f;
 			/** Minimum angle if we shall turn */
-			public final static float TURN_ANGLE_MIN = 0.1f;
-			/** When the rotation shall be slowed down */
-			public final static float ROTATION_SLOW_DOWN_ANGLE = 3;
-			/** How much the rotation shall slow down */
-			public final static float ROTATION_SLOW_DOWN_RATE = 0.1f;
-			/** When the rotation shall be speeded */
-			public final static float ROTATION_SPEED_UP_ANGLE = 10;
-			/** How much the rotation shall speed up */
-			public final static float ROTATION_SPSEED_UP_RATE = 3;
+			public final static float TURN_ANGLE_MIN = 0.5f;
 		}
 		/**
 		 * Pickups
