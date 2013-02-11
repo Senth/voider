@@ -22,8 +22,25 @@ public abstract class Def extends Resource implements Json.Serializable {
 	 */
 	public Def() {
 		mUniqueId = UUID.randomUUID();
+	}
 
-		/** @TODO Set creator and original creator somehow */
+	/**
+	 * Creates a copy of this definition, automatically resets revision
+	 * creator, unique id.
+	 * @return copy of this definition.
+	 */
+	public Def copy() {
+		Class<?> derivedClass = getClass();
+
+		Json json = new Json();
+		String defString = json.toJson(this);
+		Def copy = (Def) json.fromJson(derivedClass, defString);
+
+		copy.mCreator = User.getNickName();
+		copy.mName = copy.mName + " (copy)";
+		copy.mUniqueId = UUID.randomUUID();
+
+		return copy;
 	}
 
 	/**

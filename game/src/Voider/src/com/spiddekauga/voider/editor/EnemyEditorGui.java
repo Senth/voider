@@ -263,7 +263,24 @@ class EnemyEditorGui extends Gui {
 			@Override
 			public boolean handle(Event event) {
 				if (isButtonPressed(event)) {
-					mEnemyEditor.duplicateEnemy();
+					if (mEnemyEditor.isUnsaved()) {
+						Button yes = new TextButton("Yes", textStyle);
+						Button no = new TextButton("No", textStyle);
+						Button cancel = new TextButton("Cancel", textStyle);
+
+						CommandSequence saveAndDuplicate = new CommandSequence(new CeSave(mEnemyEditor), new CeDuplicate(mEnemyEditor));
+
+						mMsgBox.clear();
+						mMsgBox.setTitle("Load Enemy");
+						mMsgBox.content("Your current enemy is unsaved.\n" +
+								"Do you want to save it before duplicating it?");
+						mMsgBox.button(yes, saveAndDuplicate);
+						mMsgBox.button(no, new CeDuplicate(mEnemyEditor));
+						mMsgBox.button(cancel);
+						mMsgBox.show(getStage());
+					} else {
+						mEnemyEditor.duplicateEnemy();
+					}
 				}
 				return true;
 			}

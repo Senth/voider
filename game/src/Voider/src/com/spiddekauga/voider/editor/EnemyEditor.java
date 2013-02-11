@@ -791,7 +791,9 @@ public class EnemyEditor extends WorldScene {
 	 * Duplicates the current enemy
 	 */
 	void duplicateEnemy() {
-		/** @todo duplicate enemy */
+		mDef = (EnemyActorDef) mDef.copy();
+		setEnemyDef();
+		mGui.resetValues();
 	}
 
 	/** Invalid pointer id */
