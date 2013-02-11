@@ -18,6 +18,7 @@ import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.Cell;
 import com.spiddekauga.utils.scene.ui.Row;
+import com.spiddekauga.voider.editor.BulletEditor;
 import com.spiddekauga.voider.editor.EnemyEditor;
 import com.spiddekauga.voider.editor.LevelEditor;
 import com.spiddekauga.voider.game.GameScene;
@@ -47,7 +48,8 @@ public class VoiderGame implements ApplicationListener {
 		/** @TODO set main menu as start screen */
 
 		//testGame();
-		testEnemyEditor();
+		testBulletEditor();
+		//		testEnemyEditor();
 		//		testEditor();
 		//testStage();
 	}
@@ -141,6 +143,13 @@ public class VoiderGame implements ApplicationListener {
 	 */
 	private void testEnemyEditor() {
 		SceneSwitcher.switchTo(new EnemyEditor());
+	}
+
+	/**
+	 * Testing the bullet editor
+	 */
+	private void testBulletEditor() {
+		SceneSwitcher.switchTo(new BulletEditor());
 	}
 
 	/**

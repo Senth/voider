@@ -220,6 +220,21 @@ class EnemyEditorGui extends Gui {
 			@Override
 			public boolean handle(Event event) {
 				if (isButtonPressed(event)) {
+					Button yes = new TextButton("Yes", textStyle);
+					Button no = new TextButton("No", textStyle);
+					Button cancel = new TextButton("Cancel", textStyle);
+
+					CommandSequence saveAndNew = new CommandSequence(new CeSave(mEnemyEditor), new CeNew(mEnemyEditor));
+
+					mMsgBox.clear();
+					mMsgBox.setTitle("New Enemy");
+					mMsgBox.content("Your current enemy is unsaved.\n" +
+							"Do you want to save it before creating a new enemy?");
+					mMsgBox.button(yes, saveAndNew);
+					mMsgBox.button(no, new CeNew(mEnemyEditor));
+					mMsgBox.button(cancel);
+					mMsgBox.show(getStage());
+
 					mEnemyEditor.saveEnemy();
 				}
 				return true;
