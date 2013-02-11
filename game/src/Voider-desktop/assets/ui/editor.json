@@ -76,12 +76,5 @@ com.badlogic.gdx.scenes.scene2d.ui.TextField$TextFieldStyle: {
 		disabledFontColor: red,
 		cursor: cursor
 	}
-},
-
-com.badlogic.gdx.scenes.scene2d.ui.Window$WindowStyle: {
-	default: {
-		titleFont: default-font,
-		stageBackground: modal-fade
-	}
 }
 }

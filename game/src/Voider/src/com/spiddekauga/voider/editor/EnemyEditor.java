@@ -105,6 +105,8 @@ public class EnemyEditor extends WorldScene {
 			mPathLabels.row();
 
 			scalePathLabels();
+
+			mActorSavedSinceLastEdit = true;
 		}
 		else if (outcome == Outcomes.DEF_SELECTED) {
 			switch (mSelectionAction) {
@@ -122,6 +124,7 @@ public class EnemyEditor extends WorldScene {
 					mDef = ResourceCacheFacade.get(UUID.fromString(message), EnemyActorDef.class);
 					setEnemyDef();
 					mGui.resetValues();
+					mActorSavedSinceLastEdit = true;
 				} catch (UndefinedResourceTypeException e) {
 					Gdx.app.error("EnemyEditor", e.toString());
 				}
@@ -282,14 +285,10 @@ public class EnemyEditor extends WorldScene {
 	 * Creates a new enemy
 	 */
 	void newEnemy() {
-		/** @todo shall we save first */
-		if (!mActorSavedSinceLastEdit) {
-
-		}
-
 		mDef = new EnemyActorDef();
 		setEnemyDef();
 		mGui.resetValues();
+		mActorSavedSinceLastEdit = true;
 	}
 
 	/**
@@ -330,6 +329,13 @@ public class EnemyEditor extends WorldScene {
 	 */
 	boolean isTurning() {
 		return mDef.isTurning();
+	}
+
+	/**
+	 * @return true if the current enemy is unsaved
+	 */
+	boolean isUnsaved() {
+		return !mActorSavedSinceLastEdit;
 	}
 
 	/**
@@ -775,11 +781,6 @@ public class EnemyEditor extends WorldScene {
 	 * Switches scene to load an enemy
 	 */
 	void loadEnemy() {
-		/** @todo ask to save enemy before loading another one */
-		if (!mActorSavedSinceLastEdit) {
-
-		}
-
 		mSelectionAction = SelectionActions.LOAD_ENEMY;
 
 		Scene selectionScene = new SelectDefScene(EnemyActorDef.class, true, true);
@@ -790,11 +791,6 @@ public class EnemyEditor extends WorldScene {
 	 * Duplicates the current enemy
 	 */
 	void duplicateEnemy() {
-		/** @todo ask to save enemy before duplicating it */
-		if (!mActorSavedSinceLastEdit) {
-
-		}
-
 		/** @todo duplicate enemy */
 	}
 
@@ -1024,7 +1020,7 @@ public class EnemyEditor extends WorldScene {
 	/** Current enemy actor definition */
 	private EnemyActorDef mDef = new EnemyActorDef();
 	/** If actor has been saved since edit */
-	private boolean mActorSavedSinceLastEdit = false;
+	private boolean mActorSavedSinceLastEdit = true;
 	/** Display path how once works */
 	private Path mPathOnce = new Path();
 	/** Display path how loop works */

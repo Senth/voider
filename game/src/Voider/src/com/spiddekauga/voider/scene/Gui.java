@@ -5,8 +5,12 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent;
 import com.spiddekauga.utils.scene.ui.AlignTable;
+import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
+import com.spiddekauga.voider.resources.ResourceCacheFacade;
+import com.spiddekauga.voider.resources.ResourceNames;
 
 /**
  * Base class for all GUI containing windows
@@ -54,7 +58,12 @@ public abstract class Gui {
 	/**
 	 * Initializes the GUI
 	 */
-	public abstract void initGui();
+	public void initGui() {
+		Skin skin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
+		mMsgBox = new MsgBoxExecuter(skin);
+		mMsgBox.clear();
+		MsgBoxExecuter.fadeDuration = 0.01f;
+	}
 
 	/**
 	 * Resets the value of the GUI
@@ -76,6 +85,13 @@ public abstract class Gui {
 	 */
 	public Stage getStage() {
 		return mStage;
+	}
+
+	/**
+	 * @return true if a message box is currently shown
+	 */
+	public boolean isMsgBoxActive() {
+		return mMsgBox != null && mMsgBox.getParent() != null;
 	}
 
 	/**
@@ -139,7 +155,8 @@ public abstract class Gui {
 		outerTable.invalidateHierarchy();
 	}
 
-
+	/** Message box that executes the command bound with the button */
+	protected MsgBoxExecuter mMsgBox = null;
 	/** Main table for the layout */
 	protected AlignTable mMainTable = new AlignTable();
 	/** Stage for the GUI */

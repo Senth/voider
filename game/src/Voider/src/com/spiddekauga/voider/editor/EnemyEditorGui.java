@@ -16,6 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
+import com.spiddekauga.utils.CommandSequence;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
@@ -53,6 +54,8 @@ class EnemyEditorGui extends Gui {
 
 	@Override
 	public void initGui() {
+		super.initGui();
+
 		mMainTable.setTableAlign(Horizontal.RIGHT, Vertical.TOP);
 		mMainTable.setRowAlign(Horizontal.LEFT, Vertical.MIDDLE);
 		mMainTable.setCellPaddingDefault(2, 2, 2, 2);
@@ -178,8 +181,8 @@ class EnemyEditorGui extends Gui {
 		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
 
 		TextButtonStyle textToogleStyle = editorSkin.get("toggle", TextButtonStyle.class);
-		TextButtonStyle textStyle = editorSkin.get("default", TextButtonStyle.class);
-
+		final TextButtonStyle textStyle = editorSkin.get("default", TextButtonStyle.class);
+		final LabelStyle labelStyle = editorSkin.get("default", LabelStyle.class);
 
 		// New Enemy
 		Button button = new TextButton("New Enemy", textStyle);
@@ -187,9 +190,24 @@ class EnemyEditorGui extends Gui {
 			@Override
 			public boolean handle(Event event) {
 				if (isButtonPressed(event)) {
-					/** @TODO Check if player want to save old actor */
+					if (mEnemyEditor.isUnsaved()) {
+						Button yes = new TextButton("Yes", textStyle);
+						Button no = new TextButton("No", textStyle);
+						Button cancel = new TextButton("Cancel", textStyle);
 
-					mEnemyEditor.newEnemy();
+						CommandSequence saveAndNew = new CommandSequence(new CeSave(mEnemyEditor), new CeNew(mEnemyEditor));
+
+						mMsgBox.clear();
+						mMsgBox.setTitle("New Enemy");
+						mMsgBox.content("Your current enemy is unsaved.\n" +
+								"Do you want to save it before creating a new enemy?");
+						mMsgBox.button(yes, saveAndNew);
+						mMsgBox.button(no, new CeNew(mEnemyEditor));
+						mMsgBox.button(cancel);
+						mMsgBox.show(getStage());
+					} else {
+						mEnemyEditor.newEnemy();
+					}
 				}
 				return true;
 			}
@@ -215,7 +233,24 @@ class EnemyEditorGui extends Gui {
 			@Override
 			public boolean handle(Event event) {
 				if (isButtonPressed(event)) {
-					mEnemyEditor.loadEnemy();
+					if (mEnemyEditor.isUnsaved()) {
+						Button yes = new TextButton("Yes", textStyle);
+						Button no = new TextButton("No", textStyle);
+						Button cancel = new TextButton("Cancel", textStyle);
+
+						CommandSequence saveAndLoad = new CommandSequence(new CeSave(mEnemyEditor), new CeLoad(mEnemyEditor));
+
+						mMsgBox.clear();
+						mMsgBox.setTitle("Load Enemy");
+						mMsgBox.content("Your current enemy is unsaved.\n" +
+								"Do you want to save it before loading another enemy?");
+						mMsgBox.button(yes, saveAndLoad);
+						mMsgBox.button(no, new CeLoad(mEnemyEditor));
+						mMsgBox.button(cancel);
+						mMsgBox.show(getStage());
+					} else {
+						mEnemyEditor.loadEnemy();
+					}
 				}
 				return true;
 			}
