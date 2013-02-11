@@ -69,7 +69,7 @@ public class DefTest {
 		Def def = new PlayerActorDef();
 		Def dependency1 = new BossActorDef(200, "boss", null);
 		Def dependency2 = new BulletActorDef();
-		def.setComment("testComment");
+		def.setDescription("testComment");
 		try {
 			mfCreator.set(def, "originalCreator");
 			mfOriginalCreator.set(def, "creator");
@@ -87,7 +87,7 @@ public class DefTest {
 
 		assertEquals("UUID equals", def.getId(), testDef.getId());
 		assertEquals("Name", def.getName(), testDef.getName());
-		assertEquals("Comment", def.getComment(), testDef.getComment());
+		assertEquals("Comment", def.getDescription(), testDef.getDescription());
 		assertEquals("Creator", def.getCreator(), testDef.getCreator());
 		assertEquals("Original Creator", def.getOriginalCreator(), testDef.getOriginalCreator());
 
