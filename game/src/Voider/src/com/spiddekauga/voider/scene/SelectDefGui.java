@@ -53,6 +53,8 @@ public class SelectDefGui extends Gui {
 
 	@Override
 	public void initGui() {
+		super.initGui();
+
 		mMainTable.setTableAlign(Horizontal.LEFT, Vertical.TOP);
 		mMainTable.setRowAlign(Horizontal.LEFT, Vertical.MIDDLE);
 		mMainTable.setScalable(false);
@@ -75,7 +77,7 @@ public class SelectDefGui extends Gui {
 		new TextFieldListener(textField, "Filter") {
 			@Override
 			protected void onChange(String newText) {
-				/** @todo set filter */
+				mSelectDefScene.setFilter(newText);
 			}
 		};
 

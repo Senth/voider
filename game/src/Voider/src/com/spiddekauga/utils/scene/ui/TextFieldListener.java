@@ -67,6 +67,7 @@ public class TextFieldListener implements EventListener {
 			if (inputEvent.getType() == InputEvent.Type.keyTyped) {
 				if (!mTextField.getText().equals(mOldText)){
 					onChange(mTextField.getText());
+					mOldText = mTextField.getText();
 				}
 			}
 		}
