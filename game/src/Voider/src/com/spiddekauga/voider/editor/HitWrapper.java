@@ -1,6 +1,6 @@
 package com.spiddekauga.voider.editor;
 
-import com.spiddekauga.voider.game.Actor;
+import com.spiddekauga.voider.game.actors.Actor;
 
 /**
  * Wraps an Actor together with some arbitrary data for handling hits.

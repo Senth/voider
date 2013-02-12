@@ -1,8 +1,8 @@
 package com.spiddekauga.voider.editor.commands;
 
 import com.spiddekauga.voider.editor.LevelEditor;
-import com.spiddekauga.voider.game.Actor;
 import com.spiddekauga.voider.game.Level;
+import com.spiddekauga.voider.game.actors.Actor;
 
 /**
  * Creates a new actor and adds it to the level

@@ -10,7 +10,7 @@ import com.spiddekauga.voider.game.Collectibles;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class PlayerActor extends com.spiddekauga.voider.game.Actor {
+public class PlayerActor extends com.spiddekauga.voider.game.actors.Actor {
 	/**
 	 * Creates a default player
 	 */

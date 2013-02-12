@@ -3,8 +3,8 @@ package com.spiddekauga.voider.editor.commands;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Pools;
 import com.spiddekauga.voider.editor.LevelEditor;
-import com.spiddekauga.voider.game.Actor;
 import com.spiddekauga.voider.game.Level;
+import com.spiddekauga.voider.game.actors.Actor;
 
 /**
  * Executes a move command on the actor.

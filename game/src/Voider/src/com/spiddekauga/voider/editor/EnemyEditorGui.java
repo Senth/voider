@@ -16,7 +16,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
-import com.spiddekauga.utils.CommandSequence;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
@@ -25,31 +24,29 @@ import com.spiddekauga.utils.scene.ui.CheckedListener;
 import com.spiddekauga.utils.scene.ui.HideListener;
 import com.spiddekauga.utils.scene.ui.Row;
 import com.spiddekauga.utils.scene.ui.SliderListener;
-import com.spiddekauga.utils.scene.ui.TextFieldListener;
-import com.spiddekauga.voider.Config.Editor;
 import com.spiddekauga.voider.Config.Editor.Enemy;
 import com.spiddekauga.voider.Config.Editor.Enemy.Movement;
-import com.spiddekauga.voider.Config.Editor.Enemy.Visual;
 import com.spiddekauga.voider.Config.Editor.Weapon;
+import com.spiddekauga.voider.game.actors.ActorShapeTypes;
 import com.spiddekauga.voider.game.actors.EnemyActorDef.AimTypes;
 import com.spiddekauga.voider.game.actors.EnemyActorDef.MovementTypes;
-import com.spiddekauga.voider.game.actors.EnemyActorDef.ShapeTypes;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceNames;
-import com.spiddekauga.voider.scene.Gui;
+import com.spiddekauga.voider.scene.ActorGui;
 
 /**
  * GUI for the enemy editor
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-class EnemyEditorGui extends Gui {
+public class EnemyEditorGui extends ActorGui {
 	/**
 	 * Takes an enemy editor that will be bound to this GUI
 	 * @param enemyEditor the scene that will be bound to this GUI
 	 */
 	public void setEnemyEditor(EnemyEditor enemyEditor) {
 		mEnemyEditor = enemyEditor;
+		setActorEditor(mEnemyEditor);
 	}
 
 	@Override
@@ -69,8 +66,9 @@ class EnemyEditorGui extends Gui {
 
 		initMovement();
 		initWeapon();
-		initVisual();
+		initVisual(ActorShapeTypes.CIRCLE, ActorShapeTypes.RECTANGLE, ActorShapeTypes.TRIANGLE);
 		initOptions();
+		initFileMenu("enemy");
 		initMenu();
 
 		resetValues();
@@ -88,6 +86,8 @@ class EnemyEditorGui extends Gui {
 
 	@Override
 	public void resetValues() {
+		super.resetValues();
+
 		// Movement
 		switch (mEnemyEditor.getMovementType()) {
 		case PATH:
@@ -142,36 +142,6 @@ class EnemyEditorGui extends Gui {
 			mWidgets.weapon.aimRotate.setChecked(true);
 			break;
 		}
-
-
-		// Visuals
-		mWidgets.visual.startAngle.setValue(mEnemyEditor.getStartingAngle());
-
-		// Shape
-		mWidgets.visual.shapeCircleRadius.setValue(mEnemyEditor.getShapeRadius());
-		mWidgets.visual.shapeRectangleWidth.setValue(mEnemyEditor.getShapeWidth());
-		mWidgets.visual.shapeRectangleHeight.setValue(mEnemyEditor.getShapeHeight());
-		mWidgets.visual.shapeTriangleWidth.setValue(mEnemyEditor.getShapeWidth());
-		mWidgets.visual.shapeTriangleHeight.setValue(mEnemyEditor.getShapeHeight());
-		switch (mEnemyEditor.getShapeType()) {
-		case CIRCLE:
-			mWidgets.visual.shapeCircle.setChecked(true);
-			break;
-
-		case RECTANGLE:
-			mWidgets.visual.shapeRectangle.setChecked(true);
-			break;
-
-		case TRIANGLE:
-			mWidgets.visual.shapeTriangle.setChecked(true);
-			break;
-		}
-
-
-		// Options
-		mWidgets.option.name.setText(mEnemyEditor.getName());
-		mWidgets.option.description.setText(mEnemyEditor.getDescription());
-		mWidgets.option.description.setTextFieldListener(null);
 	}
 
 	/**
@@ -180,161 +150,41 @@ class EnemyEditorGui extends Gui {
 	private void initMenu() {
 		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
 
-		TextButtonStyle textToogleStyle = editorSkin.get("toggle", TextButtonStyle.class);
-		final TextButtonStyle textStyle = editorSkin.get("default", TextButtonStyle.class);
-		final LabelStyle labelStyle = editorSkin.get("default", LabelStyle.class);
-
-		// New Enemy
-		Button button = new TextButton("New Enemy", textStyle);
-		button.addListener(new EventListener() {
-			@Override
-			public boolean handle(Event event) {
-				if (isButtonPressed(event)) {
-					if (mEnemyEditor.isUnsaved()) {
-						Button yes = new TextButton("Yes", textStyle);
-						Button no = new TextButton("No", textStyle);
-						Button cancel = new TextButton("Cancel", textStyle);
-
-						CommandSequence saveAndNew = new CommandSequence(new CeSave(mEnemyEditor), new CeNew(mEnemyEditor));
-
-						mMsgBox.clear();
-						mMsgBox.setTitle("New Enemy");
-						mMsgBox.content("Your current enemy is unsaved.\n" +
-								"Do you want to save it before creating a new enemy?");
-						mMsgBox.button(yes, saveAndNew);
-						mMsgBox.button(no, new CeNew(mEnemyEditor));
-						mMsgBox.button(cancel);
-						mMsgBox.show(getStage());
-					} else {
-						mEnemyEditor.newEnemy();
-					}
-				}
-				return true;
-			}
-		});
-		mMainTable.add(button);
-
-		// Save
-		button = new TextButton("Save", textStyle);
-		button.addListener(new EventListener() {
-			@Override
-			public boolean handle(Event event) {
-				if (isButtonPressed(event)) {
-					Button yes = new TextButton("Yes", textStyle);
-					Button no = new TextButton("No", textStyle);
-					Button cancel = new TextButton("Cancel", textStyle);
-
-					CommandSequence saveAndNew = new CommandSequence(new CeSave(mEnemyEditor), new CeNew(mEnemyEditor));
-
-					mMsgBox.clear();
-					mMsgBox.setTitle("New Enemy");
-					mMsgBox.content("Your current enemy is unsaved.\n" +
-							"Do you want to save it before creating a new enemy?");
-					mMsgBox.button(yes, saveAndNew);
-					mMsgBox.button(no, new CeNew(mEnemyEditor));
-					mMsgBox.button(cancel);
-					mMsgBox.show(getStage());
-
-					mEnemyEditor.saveEnemy();
-				}
-				return true;
-			}
-		});
-		mMainTable.add(button);
-
-		// Load
-		button = new TextButton("Load", textStyle);
-		button.addListener(new EventListener() {
-			@Override
-			public boolean handle(Event event) {
-				if (isButtonPressed(event)) {
-					if (mEnemyEditor.isUnsaved()) {
-						Button yes = new TextButton("Yes", textStyle);
-						Button no = new TextButton("No", textStyle);
-						Button cancel = new TextButton("Cancel", textStyle);
-
-						CommandSequence saveAndLoad = new CommandSequence(new CeSave(mEnemyEditor), new CeLoad(mEnemyEditor));
-
-						mMsgBox.clear();
-						mMsgBox.setTitle("Load Enemy");
-						mMsgBox.content("Your current enemy is unsaved.\n" +
-								"Do you want to save it before loading another enemy?");
-						mMsgBox.button(yes, saveAndLoad);
-						mMsgBox.button(no, new CeLoad(mEnemyEditor));
-						mMsgBox.button(cancel);
-						mMsgBox.show(getStage());
-					} else {
-						mEnemyEditor.loadEnemy();
-					}
-				}
-				return true;
-			}
-		});
-		mMainTable.add(button);
-
-		// Duplicate
-		button = new TextButton("Duplicate", textStyle);
-		button.addListener(new EventListener() {
-			@Override
-			public boolean handle(Event event) {
-				if (isButtonPressed(event)) {
-					if (mEnemyEditor.isUnsaved()) {
-						Button yes = new TextButton("Yes", textStyle);
-						Button no = new TextButton("No", textStyle);
-						Button cancel = new TextButton("Cancel", textStyle);
-
-						CommandSequence saveAndDuplicate = new CommandSequence(new CeSave(mEnemyEditor), new CeDuplicate(mEnemyEditor));
-
-						mMsgBox.clear();
-						mMsgBox.setTitle("Load Enemy");
-						mMsgBox.content("Your current enemy is unsaved.\n" +
-								"Do you want to save it before duplicating it?");
-						mMsgBox.button(yes, saveAndDuplicate);
-						mMsgBox.button(no, new CeDuplicate(mEnemyEditor));
-						mMsgBox.button(cancel);
-						mMsgBox.show(getStage());
-					} else {
-						mEnemyEditor.duplicateEnemy();
-					}
-				}
-				return true;
-			}
-		});
-		mMainTable.add(button);
+		TextButtonStyle textToggleStyle = editorSkin.get("toggle", TextButtonStyle.class);
 
 
 		// --- Active options ---
-		Row row = mMainTable.row();
-		row.setAlign(Horizontal.CENTER, Vertical.BOTTOM);
+		mMainTable.row().setAlign(Horizontal.CENTER, Vertical.BOTTOM);
 		ButtonGroup buttonGroup = new ButtonGroup();
 
 		// Movement
-		button = new TextButton("Movement", textToogleStyle);
+		Button button  = new TextButton("Movement", textToggleStyle);
 		buttonGroup.add(button);
 		mMainTable.add(button);
 		mMovementHider.addToggleActor(mMovementTable);
 		mMovementHider.setButton(button);
 
 		// Weapons
-		button = new TextButton("Weapons", textToogleStyle);
+		button = new TextButton("Weapons", textToggleStyle);
 		buttonGroup.add(button);
 		mMainTable.add(button);
 		mWeaponHider.addToggleActor(mWeaponTable);
 		mWeaponHider.setButton(button);
 
 		// Visuals
-		button = new TextButton("Visuals", textToogleStyle);
+		button = new TextButton("Visuals", textToggleStyle);
 		buttonGroup.add(button);
 		mMainTable.add(button);
 		mVisualHider.setButton(button);
 		mVisualHider.addToggleActor(mVisualTable);
 
 		// Options
-		button = new TextButton("Options", textToogleStyle);
+		button = new TextButton("Options", textToggleStyle);
 		buttonGroup.add(button);
 		mMainTable.add(button);
 		mOptionHider.setButton(button);
 		mOptionHider.addToggleActor(mOptionTable);
+
 
 		mMainTable.row().setFillHeight(true).setAlign(Horizontal.LEFT, Vertical.TOP);
 		mMainTable.add(mWeaponTable);
@@ -359,17 +209,13 @@ class EnemyEditorGui extends Gui {
 		row.setScalable(false);
 		ButtonGroup buttonGroup = new ButtonGroup();
 		mWidgets.movement.pathBox = new CheckBox("Path", checkBoxStyle);
-		mWidgets.movement.pathBox.addListener(new EventListener() {
+		new CheckedListener(mWidgets.movement.pathBox) {
 			@Override
-			public boolean handle(Event event) {
-				if (isButtonChecked(event)) {
-					addInnerTable(mPathTable, mMovementTypeTable);
-					mEnemyEditor.setMovementType(MovementTypes.PATH);
-				}
-
-				return true;
+			protected void onChange(boolean checked) {
+				addInnerTable(mPathTable, mMovementTypeTable);
+				mEnemyEditor.setMovementType(MovementTypes.PATH);
 			}
-		});
+		};
 		buttonGroup.add(mWidgets.movement.pathBox);
 		Cell cell = mMovementTable.add(mWidgets.movement.pathBox);
 		cell.setPadRight(10);
@@ -377,16 +223,13 @@ class EnemyEditorGui extends Gui {
 
 		// Stationary
 		mWidgets.movement.stationaryBox = new CheckBox("Stationary", checkBoxStyle);
-		mWidgets.movement.stationaryBox.addListener(new EventListener() {
+		new CheckedListener(mWidgets.movement.stationaryBox) {
 			@Override
-			public boolean handle(Event event) {
-				if (isButtonChecked(event)) {
-					addInnerTable(null, mMovementTypeTable);
-					mEnemyEditor.setMovementType(MovementTypes.STATIONARY);
-				}
-				return true;
+			protected void onChange(boolean checked) {
+				addInnerTable(null, mMovementTypeTable);
+				mEnemyEditor.setMovementType(MovementTypes.STATIONARY);
 			}
-		});
+		};
 		buttonGroup.add(mWidgets.movement.stationaryBox);
 		cell = mMovementTable.add(mWidgets.movement.stationaryBox);
 		cell.setPadRight(10);
@@ -394,19 +237,16 @@ class EnemyEditorGui extends Gui {
 
 		// AI
 		mWidgets.movement.aiBox = new CheckBox("AI", checkBoxStyle);
-		mWidgets.movement.aiBox.addListener(new EventListener() {
+		new CheckedListener(mWidgets.movement.aiBox) {
 			@Override
-			public boolean handle(Event event) {
-				if (isButtonChecked(event)) {
-					addInnerTable(mPathTable, mMovementTypeTable);
-					mMovementTypeTable.row();
-					mMovementTypeTable.add(mAiTable);
-					mAiTable.invalidate();
-					mEnemyEditor.setMovementType(MovementTypes.AI);
-				}
-				return true;
+			protected void onChange(boolean checked) {
+				addInnerTable(mPathTable, mMovementTypeTable);
+				mMovementTypeTable.row();
+				mMovementTypeTable.add(mAiTable);
+				mAiTable.invalidate();
+				mEnemyEditor.setMovementType(MovementTypes.AI);
 			}
-		});
+		};
 		buttonGroup.add(mWidgets.movement.aiBox);
 		mMovementTable.add(mWidgets.movement.aiBox);
 		mMovementTable.row();
@@ -444,7 +284,9 @@ class EnemyEditorGui extends Gui {
 				if (mButton instanceof TextButton) {
 					((TextButton) mButton).setText("Turning speed ON");
 				}
-				mEnemyEditor.setTurning(true);
+				if (!mEnemyEditor.isTurning()) {
+					mEnemyEditor.setTurning(true);
+				}
 			}
 
 			@Override
@@ -452,7 +294,9 @@ class EnemyEditorGui extends Gui {
 				if (mButton instanceof TextButton) {
 					((TextButton) mButton).setText("Turning speed OFF");
 				}
-				mEnemyEditor.setTurning(false);
+				if (mEnemyEditor.isTurning()) {
+					mEnemyEditor.setTurning(false);
+				}
 			}
 		};
 
@@ -851,254 +695,11 @@ class EnemyEditorGui extends Gui {
 		mWeaponHider.addChild(weaponInnerHider);
 	}
 
-	/**
-	 * Initializes the visual GUI parts
-	 */
-	private void initVisual() {
-		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
-		LabelStyle labelStyle = editorSkin.get("default", LabelStyle.class);
-		SliderStyle sliderStyle = editorSkin.get("default", SliderStyle.class);
-		TextFieldStyle textFieldStyle = editorSkin.get("default", TextFieldStyle.class);
-		TextButtonStyle toggleStyle = editorSkin.get("toggle", TextButtonStyle.class);
-
-		mVisualTable.setScalable(false);
-
-
-		// Starting angle
-		Label label = new Label("Starting angle", labelStyle);
-		mVisualTable.add(label);
-
-		mVisualTable.row();
-		Slider slider = new Slider(0, 360, 1, false, sliderStyle);
-		mWidgets.visual.startAngle = slider;
-		mVisualTable.add(slider);
-		TextField textField = new TextField("", textFieldStyle);
-		textField.setWidth(Enemy.TEXT_FIELD_NUMBER_WIDTH);
-		mVisualTable.add(textField);
-
-		new SliderListener(slider, textField) {
-			@Override
-			protected void onChange(float newValue) {
-				mEnemyEditor.setStartingAngle(newValue);
-			}
-		};
-
-
-		// Different shapes
-		mVisualTable.row();
-		Button button = new TextButton("Circle", toggleStyle);
-		mWidgets.visual.shapeCircle = button;
-		mVisualTable.add(button);
-		ButtonGroup buttonGroup = new ButtonGroup();
-		buttonGroup.add(button);
-		HideListener circleHider = new HideListener(button, true) {
-			@Override
-			protected void onShow() {
-				mEnemyEditor.setShapeType(ShapeTypes.CIRCLE);
-			}
-		};
-
-		button = new TextButton("Rect", toggleStyle);
-		mWidgets.visual.shapeRectangle = button;
-		mVisualTable.add(button);
-		buttonGroup.add(button);
-		HideListener rectangleHider = new HideListener(button, true) {
-			@Override
-			protected void onShow() {
-				mEnemyEditor.setShapeType(ShapeTypes.RECTANGLE);
-			}
-		};
-
-		button = new TextButton("Triangle", toggleStyle);
-		mWidgets.visual.shapeTriangle = button;
-		mVisualTable.add(button);
-		buttonGroup.add(button);
-		HideListener triangleHider = new HideListener(button, true) {
-			@Override
-			protected void onShow() {
-				mEnemyEditor.setShapeType(ShapeTypes.TRIANGLE);
-			}
-		};
-
-
-		// Circle
-		mVisualTable.row();
-		label = new Label("Radius", labelStyle);
-		Cell cell = mVisualTable.add(label);
-		cell.setPadRight(Enemy.LABEL_PADDING_BEFORE_SLIDER);
-		circleHider.addToggleActor(label);
-
-		slider = new Slider(Visual.RADIUS_MIN, Visual.RADIUS_MAX, Visual.RADIUS_STEP_SIZE, false, sliderStyle);
-		mWidgets.visual.shapeCircleRadius = slider;
-		mVisualTable.add(slider);
-		circleHider.addToggleActor(slider);
-
-		textField = new TextField("", textFieldStyle);
-		mVisualTable.add(textField);
-		textField.setWidth(Editor.Enemy.TEXT_FIELD_NUMBER_WIDTH);
-		circleHider.addToggleActor(textField);
-		new SliderListener(slider, textField) {
-			@Override
-			protected void onChange(float newValue) {
-				mEnemyEditor.setShapeRadius(newValue);
-			}
-		};
-
-
-		// Rectangle
-		mVisualTable.row();
-		label = new Label("Width", labelStyle);
-		cell = mVisualTable.add(label);
-		cell.setPadRight(Enemy.LABEL_PADDING_BEFORE_SLIDER);
-		rectangleHider.addToggleActor(label);
-
-		slider = new Slider(Visual.SIZE_MIN, Visual.SIZE_MAX, Visual.SIZE_STEP_SIZE, false, sliderStyle);
-		mWidgets.visual.shapeRectangleWidth = slider;
-		mVisualTable.add(slider);
-		rectangleHider.addToggleActor(slider);
-
-		textField = new TextField("", textFieldStyle);
-		mVisualTable.add(textField);
-		textField.setWidth(Editor.Enemy.TEXT_FIELD_NUMBER_WIDTH);
-		rectangleHider.addToggleActor(textField);
-		new SliderListener(slider, textField) {
-			@Override
-			protected void onChange(float newValue) {
-				mEnemyEditor.setShapeWidth(newValue);
-				mWidgets.visual.shapeTriangleWidth.setValue(newValue);
-			}
-		};
-
-		mVisualTable.row();
-		label = new Label("Height", labelStyle);
-		cell = mVisualTable.add(label);
-		cell.setPadRight(Enemy.LABEL_PADDING_BEFORE_SLIDER);
-		rectangleHider.addToggleActor(label);
-
-		slider = new Slider(Visual.SIZE_MIN, Visual.SIZE_MAX, Visual.SIZE_STEP_SIZE, false, sliderStyle);
-		mWidgets.visual.shapeRectangleHeight = slider;
-		mVisualTable.add(slider);
-		rectangleHider.addToggleActor(slider);
-
-		textField = new TextField("", textFieldStyle);
-		mVisualTable.add(textField);
-		textField.setWidth(Editor.Enemy.TEXT_FIELD_NUMBER_WIDTH);
-		rectangleHider.addToggleActor(textField);
-		new SliderListener(slider, textField) {
-			@Override
-			protected void onChange(float newValue) {
-				mEnemyEditor.setShapeHeight(newValue);
-				mWidgets.visual.shapeTriangleHeight.setValue(newValue);
-			}
-		};
-
-
-		// Triangle
-		mVisualTable.row();
-		label = new Label("Width", labelStyle);
-		cell = mVisualTable.add(label);
-		cell.setPadRight(Enemy.LABEL_PADDING_BEFORE_SLIDER);
-		triangleHider.addToggleActor(label);
-
-		slider = new Slider(Visual.SIZE_MIN, Visual.SIZE_MAX, Visual.SIZE_STEP_SIZE, false, sliderStyle);
-		mWidgets.visual.shapeTriangleWidth = slider;
-		mVisualTable.add(slider);
-		triangleHider.addToggleActor(slider);
-
-		textField = new TextField("", textFieldStyle);
-		mVisualTable.add(textField);
-		textField.setWidth(Editor.Enemy.TEXT_FIELD_NUMBER_WIDTH);
-		triangleHider.addToggleActor(textField);
-		new SliderListener(slider, textField) {
-			@Override
-			protected void onChange(float newValue) {
-				mEnemyEditor.setShapeWidth(newValue);
-				mWidgets.visual.shapeRectangleWidth.setValue(newValue);
-			}
-		};
-
-		mVisualTable.row();
-		label = new Label("Height", labelStyle);
-		cell = mVisualTable.add(label);
-		cell.setPadRight(Enemy.LABEL_PADDING_BEFORE_SLIDER);
-		triangleHider.addToggleActor(label);
-
-		slider = new Slider(Visual.SIZE_MIN, Visual.SIZE_MAX, Visual.SIZE_STEP_SIZE, false, sliderStyle);
-		mWidgets.visual.shapeTriangleHeight = slider;
-		mVisualTable.add(slider);
-		triangleHider.addToggleActor(slider);
-
-		textField = new TextField("", textFieldStyle);
-		mVisualTable.add(textField);
-		textField.setWidth(Editor.Enemy.TEXT_FIELD_NUMBER_WIDTH);
-		triangleHider.addToggleActor(textField);
-		new SliderListener(slider, textField) {
-			@Override
-			protected void onChange(float newValue) {
-				mEnemyEditor.setShapeHeight(newValue);
-				mWidgets.visual.shapeTriangleHeight.setValue(newValue);
-			}
-		};
-
-
-
-		circleHider.addChild(mVisualHider);
-		rectangleHider.addChild(mVisualHider);
-		triangleHider.addChild(mVisualHider);
-	}
-
-	/**
-	 * Initializes GUI for options
-	 */
-	private void initOptions() {
-		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
-		LabelStyle labelStyle = editorSkin.get("default", LabelStyle.class);
-		TextFieldStyle textFieldStyle = editorSkin.get("default", TextFieldStyle.class);
-
-		mOptionTable.setScalable(false);
-		mOptionTable.setTableAlign(Horizontal.LEFT, Vertical.TOP);
-		mOptionTable.setName("optiontable");
-		mOptionTable.setKeepSize(true);
-
-		Label label = new Label("Name", labelStyle);
-		mOptionTable.add(label);
-
-		mOptionTable.row().setFillWidth(true);
-		TextField textField = new TextField("", textFieldStyle);
-		mOptionTable.add(textField).setFillWidth(true);
-		mWidgets.option.name = textField;
-		new TextFieldListener(textField, "Name") {
-			@Override
-			protected void onChange(String newText) {
-				mEnemyEditor.setName(newText);
-			}
-		};
-
-		mOptionTable.row();
-		label = new Label("Description", labelStyle);
-		mOptionTable.add(label);
-
-		mOptionTable.row().setFillWidth(true).setFillHeight(true).setAlign(Horizontal.LEFT, Vertical.TOP);
-		textField = new TextField("shit", textFieldStyle);
-		mOptionTable.add(textField).setFillWidth(true).setFillHeight(true);
-		mWidgets.option.description = textField;
-		new TextFieldListener(textField, "Write your description here...") {
-			@Override
-			protected void onChange(String newText) {
-				mEnemyEditor.setDescription(newText);
-			}
-		};
-	}
-
 	// Tables
 	/** Container for all movement options */
 	private AlignTable mMovementTable = new AlignTable();
 	/** Container for all weapon options */
 	private AlignTable mWeaponTable = new AlignTable();
-	/** Container for all visual options */
-	private AlignTable mVisualTable = new AlignTable();
-	/** Container for all general options, such as name description. */
-	private AlignTable mOptionTable = new AlignTable();
 	/** Container for the different movement variables */
 	private AlignTable mMovementTypeTable = new AlignTable();
 	/** Table for Path movement */
@@ -1109,15 +710,14 @@ class EnemyEditorGui extends Gui {
 	// Hiders
 	/** Hides weapon options */
 	private HideListener mWeaponHider = new HideListener(true);
-	/** Hides visual options */
-	private HideListener mVisualHider = new HideListener(true);
 	/** Hides movement options */
 	private HideListener mMovementHider = new HideListener(true);
-	/** Hides options options :D:D:D */
-	private HideListener mOptionHider = new HideListener(true);
+
 
 	/** All widgets that needs updating when an actor is changed */
 	private InnerWidgets mWidgets = new InnerWidgets();
+	/** The actual enemy editor bound to this gui */
+	private EnemyEditor mEnemyEditor = null;
 
 	/**
 	 * All the widgets which state can be changed and thus reset
@@ -1126,12 +726,7 @@ class EnemyEditorGui extends Gui {
 	private static class InnerWidgets {
 		MovementWidgets movement = new MovementWidgets();
 		WeaponWidgets weapon = new WeaponWidgets();
-		VisualWidgets visual = new VisualWidgets();
-		OptionWidgets option = new OptionWidgets();
 
-		/**
-		 * Movement widget
-		 */
 		static class MovementWidgets {
 			// Movement type
 			CheckBox pathBox = null;
@@ -1153,9 +748,6 @@ class EnemyEditorGui extends Gui {
 		}
 
 
-		/**
-		 * Weapon widgets
-		 */
 		static class WeaponWidgets {
 			Button toggleButton = null;
 
@@ -1177,34 +769,5 @@ class EnemyEditorGui extends Gui {
 			Slider aimRotateStartAngle = null;
 			Slider aimRotateSpeed = null;
 		}
-
-		/**
-		 * Visual widgets
-		 */
-		static class VisualWidgets {
-			Slider startAngle = null;
-
-			// Shapes
-			Button shapeCircle = null;
-			Button shapeTriangle = null;
-			Button shapeRectangle = null;
-
-			Slider shapeCircleRadius = null;
-			Slider shapeTriangleWidth = null;
-			Slider shapeTriangleHeight = null;
-			Slider shapeRectangleWidth = null;
-			Slider shapeRectangleHeight = null;
-		}
-
-		/**
-		 * General options
-		 */
-		static class OptionWidgets {
-			TextField name = null;
-			TextField description = null;
-		}
 	}
-
-	/** The actual enemy editor bound to this gui */
-	private EnemyEditor mEnemyEditor = null;
 }

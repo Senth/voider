@@ -3,7 +3,6 @@ package com.spiddekauga.voider.game.actors;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.spiddekauga.voider.game.ActorDef;
 
 /**
  * Player actor definition, does nothing more than specify

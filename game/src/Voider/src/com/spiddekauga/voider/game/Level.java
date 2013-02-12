@@ -13,6 +13,7 @@ import com.badlogic.gdx.utils.OrderedMap;
 import com.badlogic.gdx.utils.Pools;
 import com.spiddekauga.utils.Json;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.PlayerActor;
 import com.spiddekauga.voider.resources.Resource;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;

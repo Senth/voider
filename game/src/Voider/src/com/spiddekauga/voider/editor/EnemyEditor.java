@@ -19,15 +19,15 @@ import com.badlogic.gdx.utils.Pools;
 import com.badlogic.gdx.utils.SnapshotArray;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Editor.Enemy;
-import com.spiddekauga.voider.game.Actor;
 import com.spiddekauga.voider.game.Path;
 import com.spiddekauga.voider.game.Path.PathTypes;
+import com.spiddekauga.voider.game.actors.Actor;
+import com.spiddekauga.voider.game.actors.ActorShapeTypes;
 import com.spiddekauga.voider.game.actors.BulletActorDef;
 import com.spiddekauga.voider.game.actors.EnemyActor;
 import com.spiddekauga.voider.game.actors.EnemyActorDef;
 import com.spiddekauga.voider.game.actors.EnemyActorDef.AimTypes;
 import com.spiddekauga.voider.game.actors.EnemyActorDef.MovementTypes;
-import com.spiddekauga.voider.game.actors.EnemyActorDef.ShapeTypes;
 import com.spiddekauga.voider.game.actors.PlayerActor;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceNames;
@@ -43,7 +43,7 @@ import com.spiddekauga.voider.scene.WorldScene;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class EnemyEditor extends WorldScene {
+public class EnemyEditor extends WorldScene implements IActorEditor {
 	/**
 	 * Creates the enemy editor
 	 */
@@ -115,7 +115,7 @@ public class EnemyEditor extends WorldScene {
 					BulletActorDef bulletDef = ResourceCacheFacade.get(UUID.fromString(message), BulletActorDef.class);
 					setBulletActorDef(bulletDef);
 				} catch (UndefinedResourceTypeException e1) {
-					Gdx.app.error("Enemy editor", e1.toString());
+					Gdx.app.error("EnemyEditor", e1.toString());
 				}
 				break;
 
@@ -276,7 +276,7 @@ public class EnemyEditor extends WorldScene {
 	/**
 	 * Saves the current enemy actor
 	 */
-	void saveEnemy() {
+	public void saveActor() {
 		ResourceSaver.save(mDef);
 		mActorSavedSinceLastEdit = true;
 	}
@@ -284,7 +284,7 @@ public class EnemyEditor extends WorldScene {
 	/**
 	 * Creates a new enemy
 	 */
-	void newEnemy() {
+	public void newActor() {
 		mDef = new EnemyActorDef();
 		setEnemyDef();
 		mGui.resetValues();
@@ -334,7 +334,7 @@ public class EnemyEditor extends WorldScene {
 	/**
 	 * @return true if the current enemy is unsaved
 	 */
-	boolean isUnsaved() {
+	public boolean isUnsaved() {
 		return !mActorSavedSinceLastEdit;
 	}
 
@@ -423,36 +423,16 @@ public class EnemyEditor extends WorldScene {
 		return mDef.getTurnSpeed();
 	}
 
-	/**
-	 * Sets the starting angle of the enemy
-	 * @param angle starting angle of the enemy
-	 */
-	void setStartingAngle(float angle) {
-		mDef.getBodyDef().angle = angle;
+	@Override
+	public void setStartingAngle(float angle) {
+		mDef.setStartAngle(angle);
 		mActorSavedSinceLastEdit = false;
 	}
 
-	/**
-	 * @return starting angle of the enemy
-	 */
-	float getStartingAngle() {
-		return mDef.getBodyDef().angle;
+	@Override
+	public float getStartingAngle() {
+		return mDef.getStartAngle();
 	}
-
-	//	/**
-	//	 * Sets if the enemy shall stay on the screen after it has entered it
-	//	 * @param stayOnScreen true if enemy shall stay on screen
-	//	 */
-	//	void setStayOnScreen(boolean stayOnScreen) {
-	//		mDef.setStayOnScreen(stayOnScreen);
-	//	}
-	//
-	//	/**
-	//	 * @return true if the enemy shall stay on the screen
-	//	 */
-	//	boolean shallStayOnScreen() {
-	//		return mDef.shallStayOnScreen();
-	//	}
 
 	/**
 	 * Sets if the enemy shall move randomly using the random spread set through
@@ -679,108 +659,67 @@ public class EnemyEditor extends WorldScene {
 		SceneSwitcher.switchTo(selectionScene);
 	}
 
-	/**
-	 * Sets the shape of the enemy
-	 * @param shapeType new shape type of the enemy
-	 */
-	void setShapeType(ShapeTypes shapeType) {
+	public void setShapeType(ActorShapeTypes shapeType) {
 		mDef.setShapeType(shapeType);
 
 		resetBodyShapes();
 	}
 
-	/**
-	 * @return current shape type of the enemy
-	 */
-	ShapeTypes getShapeType() {
+	public ActorShapeTypes getShapeType() {
 		return mDef.getShapeType();
 	}
 
-	/**
-	 * Sets the circle radius of a shape
-	 * @param radius new radius of the shape
-	 */
-	void setShapeRadius(float radius) {
+	public void setShapeRadius(float radius) {
 		mDef.setShapeRadius(radius);
 
 		resetBodyShapes();
 	}
 
-	/**
-	 * @return current circle radius of the shape
-	 */
-	float getShapeRadius() {
+	public float getShapeRadius() {
 		return mDef.getShapeRadius();
 	}
 
-	/**
-	 * Sets the width of the shape
-	 * @param width new width of the shape
-	 */
-	void setShapeWidth(float width) {
+	public void setShapeWidth(float width) {
 		mDef.setShapeWidth(width);
 
 		resetBodyShapes();
 	}
 
-	/**
-	 * @return current shape width
-	 */
-	float getShapeWidth() {
+	public float getShapeWidth() {
 		return mDef.getShapeWidth();
 	}
 
-	/**
-	 * Sets the height of the shape
-	 * @param height new height of the shape
-	 */
-	void setShapeHeight(float height) {
+	public void setShapeHeight(float height) {
 		mDef.setShapeHeight(height);
 
 		resetBodyShapes();
 	}
 
-	/**
-	 * @return current shape height
-	 */
-	float getShapeHeight() {
+	public float getShapeHeight() {
 		return mDef.getShapeHeight();
 	}
 
-	/**
-	 * Sets the name of the actor
-	 * @param name new name of the actor
-	 */
-	void setName(String name) {
+	public void setName(String name) {
 		mDef.setName(name);
 	}
 
-	/**
-	 * @return name of the actor
-	 */
-	String getName() {
+	@Override
+	public String getName() {
 		return mDef.getName();
 	}
 
-	/**
-	 * Sets the description of the actor
-	 * @param description description text of the actor
-	 */
-	void setDescription(String description) {
+	public void setDescription(String description) {
 		mDef.setDescription(description);
 	}
 
-	/**
-	 * @return description of the actor
-	 */
-	String getDescription() {
+	public String getDescription() {
 		return mDef.getDescription();
 	}
 
 	/**
 	 * Switches scene to load an enemy
 	 */
-	void loadEnemy() {
+	public void loadActor() {
 		mSelectionAction = SelectionActions.LOAD_ENEMY;
 
 		Scene selectionScene = new SelectDefScene(EnemyActorDef.class, true, true);
@@ -790,10 +729,11 @@ public class EnemyEditor extends WorldScene {
 	/**
 	 * Duplicates the current enemy
 	 */
-	void duplicateEnemy() {
+	public void duplicateActor() {
 		mDef = (EnemyActorDef) mDef.copy();
 		setEnemyDef();
 		mGui.resetValues();
+		mActorSavedSinceLastEdit = false;
 	}
 
 	/** Invalid pointer id */

@@ -1,4 +1,4 @@
-package com.spiddekauga.voider.game;
+package com.spiddekauga.voider.game.actors;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -19,8 +19,8 @@ import com.badlogic.gdx.utils.Pool.Poolable;
 import com.badlogic.gdx.utils.Pools;
 import com.spiddekauga.utils.Json;
 import com.spiddekauga.voider.Config;
-import com.spiddekauga.voider.game.actors.PlayerActor;
-import com.spiddekauga.voider.game.actors.StaticTerrainActorDef;
+import com.spiddekauga.voider.game.ITriggerListener;
+import com.spiddekauga.voider.game.TriggerAction;
 import com.spiddekauga.voider.resources.Resource;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.UndefinedResourceTypeException;
@@ -391,7 +391,7 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 	 * handle the def. This is true for terrain actors, as there is only one actor
 	 * per definition, defaults to false.
 	 */
-	protected boolean savesDef() {
+	public boolean savesDef() {
 		return false;
 	}
 

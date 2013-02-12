@@ -18,7 +18,6 @@ import com.badlogic.gdx.utils.Pools;
 import com.spiddekauga.utils.Json;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.editor.HitWrapper;
-import com.spiddekauga.voider.game.Actor;
 import com.spiddekauga.voider.game.TriggerAction;
 import com.spiddekauga.voider.utils.Geometry;
 
@@ -402,7 +401,7 @@ public class StaticTerrainActor extends Actor {
 	}
 
 	@Override
-	protected boolean savesDef() {
+	public boolean savesDef() {
 		return true;
 	}
 

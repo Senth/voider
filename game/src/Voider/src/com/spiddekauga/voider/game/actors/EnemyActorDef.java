@@ -1,20 +1,12 @@
 package com.spiddekauga.voider.game.actors;
 
-import java.util.List;
-
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
-import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.utils.OrderedMap;
-import com.badlogic.gdx.utils.Pools;
 import com.spiddekauga.utils.Json;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Editor.Enemy;
 import com.spiddekauga.voider.Config.Editor.Enemy.Visual;
-import com.spiddekauga.voider.game.ActorDef;
 import com.spiddekauga.voider.game.WeaponDef;
 
 /**
@@ -28,6 +20,8 @@ public class EnemyActorDef extends ActorDef {
 	 * Private default constructor used for json
 	 */
 	public EnemyActorDef() {
+		super(ActorTypes.ENEMY);
+
 		getBodyDef().type = BodyType.KinematicBody;
 		getBodyDef().fixedRotation = true;
 
@@ -272,184 +266,7 @@ public class EnemyActorDef extends ActorDef {
 		return mAimRotateVars.rotateSpeed;
 	}
 
-	/**
-	 * Sets the shape type of the enemy. This will clear the existing fixture shape
-	 * for the enemy and created another one with default values.
-	 * @param shapeType type of shape the enemy has
-	 */
-	public void setShapeType(ShapeTypes shapeType) {
-		mVisualVars.shapeType = shapeType;
 
-		FixtureDef fixtureDef = getFirstFixtureDef();
-
-
-		// Should only have one fixture def...
-		if (fixtureDef != null) {
-			// Remove the old shape if one exists
-			if (fixtureDef.shape != null) {
-				fixtureDef.shape.dispose();
-			}
-
-			// Create the new shape
-			switch (shapeType) {
-			case CIRCLE: {
-				CircleShape circleShape = new CircleShape();
-				circleShape.setRadius(mVisualVars.shapeCircleRadius);
-				fixtureDef.shape = circleShape;
-				break;
-			}
-
-			case RECTANGLE: {
-				PolygonShape rectangleShape = new PolygonShape();
-				rectangleShape.setAsBox(mVisualVars.shapeWidth * 0.5f, mVisualVars.shapeHeight * 0.5f);
-				fixtureDef.shape = rectangleShape;
-				break;
-			}
-
-			case TRIANGLE: {
-				PolygonShape triangleShape = new PolygonShape();
-
-				Vector2[] vertices = createTriangle(mVisualVars.shapeWidth, mVisualVars.shapeHeight);
-
-				triangleShape.set(vertices);
-				fixtureDef.shape = triangleShape;
-
-				for (Vector2 vertex : vertices) {
-					Pools.free(vertex);
-				}
-
-				break;
-			}
-			}
-
-		} else {
-			Gdx.app.error("EnemyActorDef", "FixtureDef null at setShapeType()");
-		}
-	}
-
-	/**
-	 * Sets the shape radius (only applicable for circle)
-	 * @param radius new radius value
-	 */
-	public void setShapeRadius(float radius) {
-		mVisualVars.shapeCircleRadius = radius;
-
-		// Update fixture if circle
-		if (mVisualVars.shapeType == ShapeTypes.CIRCLE) {
-			FixtureDef fixtureDef = getFirstFixtureDef();
-
-			if (fixtureDef != null) {
-				if (fixtureDef.shape instanceof CircleShape) {
-					fixtureDef.shape.setRadius(radius);
-				} else {
-					Gdx.app.error("EnemyActorDef", "FixtureDef shape is not a circle!");
-				}
-			} else {
-				Gdx.app.error("EnemyActorDef", "FixtureDef null at setShapeRadius()");
-			}
-
-		}
-	}
-
-	/**
-	 * @return shape radius of the circle
-	 */
-	public float getShapeRadius() {
-		return mVisualVars.shapeCircleRadius;
-	}
-
-	/**
-	 * Sets the shape width (only applicable for rectangle/triangle)
-	 * @param width new width of the rectangle/triangle
-	 */
-	public void setShapeWidth(float width) {
-		mVisualVars.shapeWidth = width;
-
-		// Update fixture if rectangle/triangle
-		if (mVisualVars.shapeType == ShapeTypes.RECTANGLE || mVisualVars.shapeType == ShapeTypes.TRIANGLE) {
-			FixtureDef fixtureDef = getFirstFixtureDef();
-
-			if (fixtureDef != null) {
-				if (fixtureDef.shape instanceof PolygonShape) {
-					// RECTANGLE
-					if (mVisualVars.shapeType == ShapeTypes.RECTANGLE) {
-						((PolygonShape)fixtureDef.shape).setAsBox(mVisualVars.shapeWidth * 0.5f, mVisualVars.shapeHeight * 0.5f);
-					}
-					// TRIANGLE
-					else if (mVisualVars.shapeType == ShapeTypes.TRIANGLE) {
-						Vector2[] vertices = createTriangle(mVisualVars.shapeWidth, mVisualVars.shapeHeight);
-
-						((PolygonShape)fixtureDef.shape).set(vertices);
-
-						for (Vector2 vertex : vertices) {
-							Pools.free(vertex);
-						}
-					}
-				} else {
-					Gdx.app.error("EnemyActorDef", "FixtureDef shape is not a polygon!");
-				}
-			} else {
-				Gdx.app.error("EnemyActorDef", "FixtureDef null at setShapeWidth()");
-			}
-		}
-	}
-
-	/**
-	 * @return shape width of rectangle/triangle
-	 */
-	public float getShapeWidth() {
-		return mVisualVars.shapeWidth;
-	}
-
-	/**
-	 * Sets the shape height (only applicable for rectangle/triangle)
-	 * @param height new height of the rectangle/triangle
-	 */
-	public void setShapeHeight(float height) {
-		mVisualVars.shapeHeight = height;
-
-		// Update fixture if rectangle/triangle
-		if (mVisualVars.shapeType == ShapeTypes.RECTANGLE || mVisualVars.shapeType == ShapeTypes.TRIANGLE) {
-			FixtureDef fixtureDef = getFirstFixtureDef();
-
-			if (fixtureDef != null) {
-				if (fixtureDef.shape instanceof PolygonShape) {
-					// RECTANGLE
-					if (mVisualVars.shapeType == ShapeTypes.RECTANGLE) {
-						((PolygonShape)fixtureDef.shape).setAsBox(mVisualVars.shapeWidth * 0.5f, mVisualVars.shapeHeight * 0.5f);
-					}
-					// TRIANGLE
-					else if (mVisualVars.shapeType == ShapeTypes.TRIANGLE) {
-						Vector2[] vertices = createTriangle(mVisualVars.shapeWidth, mVisualVars.shapeHeight);
-
-						((PolygonShape)fixtureDef.shape).set(vertices);
-
-						for (Vector2 vertex : vertices) {
-							Pools.free(vertex);
-						}
-					}
-				} else {
-					Gdx.app.error("EnemyActorDef", "FixtureDef shape is not a polygon!");
-				}
-			} else {
-				Gdx.app.error("EnemyActorDef", "FixtureDef null at setShapeWidth()");
-			}
-		}
-	}
-
-	/**
-	 * @return shape height of rectangle/triangle
-	 */
-	public float getShapeHeight() {
-		return mVisualVars.shapeHeight;
-	}
-
-	/**
-	 * @return current shape type of the enemy
-	 */
-	public ShapeTypes getShapeType() {
-		return mVisualVars.shapeType;
-	}
 
 	@Override
 	public void write(Json json) {
@@ -462,7 +279,6 @@ public class EnemyActorDef extends ActorDef {
 
 		json.writeValue("mHasWeapon", mHasWeapon);
 		json.writeValue("mMovementType", mMovementType);
-		json.writeValue("mVisualVars", mVisualVars);
 
 
 		// Conditional variables to write
@@ -482,16 +298,15 @@ public class EnemyActorDef extends ActorDef {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void read(Json json, OrderedMap<String, Object> jsonData) {
+		@SuppressWarnings("unchecked")
 		OrderedMap<String, Object> superMap = json.readValue("ActorDef", OrderedMap.class, jsonData);
 		super.read(json, superMap);
 
 
 		mHasWeapon = json.readValue("mHasWeapon", boolean.class, jsonData);
 		mMovementType = json.readValue("mMovementType", MovementTypes.class, jsonData);
-		mVisualVars = json.readValue("mVisualVars", VisualVars.class, jsonData);
 
 
 		// Conditional variables to read
@@ -537,68 +352,6 @@ public class EnemyActorDef extends ActorDef {
 		ROTATE
 	}
 
-	/**
-	 * What kind of shape the enemy is
-	 */
-	public enum ShapeTypes {
-		/** Circle */
-		CIRCLE,
-		/** Rectangle */
-		RECTANGLE,
-		/** Triangle */
-		TRIANGLE,
-		/** @todo implement custon shape type */
-	}
-
-	/**
-	 * Creates vertices for the triangle shape.
-	 * @param width width of the triangle (i.e. how long it shall be)
-	 * @param height height of the triangle
-	 * @return 3 vertices used for the triangle shape. Don't forget to free these triangles
-	 * using Pools.free(vertices)
-	 */
-	private Vector2[] createTriangle(float width, float height) {
-		Vector2[] vertices = new Vector2[3];
-
-		for (int i = 0; i < vertices.length; ++i) {
-			vertices[i] = Pools.obtain(Vector2.class);
-		}
-
-		// It will look something like this:
-		// | \
-		// |   >
-		// | /
-
-		// Lower left corner
-		vertices[0].x = - width * 0.5f;
-		vertices[0].y = - height * 0.5f;
-
-		// Middle right corner
-		vertices[1].x = width * 0.5f;
-		vertices[1].y = 0;
-
-		// Upper left corner
-		vertices[2].x = vertices[0].x;
-		vertices[2].y = - vertices[0].y;
-
-		return vertices;
-	}
-
-	/**
-	 * Gets the first fixture definition. Prints an error if there are more or less fixtures than 1
-	 * @return first fixture definition, null if none is found
-	 */
-	private FixtureDef getFirstFixtureDef() {
-		List<FixtureDef> fixtureDefs = getFixtureDefs();
-		if (fixtureDefs.size() == 1) {
-			return fixtureDefs.get(0);
-		} else {
-			Gdx.app.error("EnemyActorDef", "Too few/many fixture definitions! " + fixtureDefs.size());
-			return null;
-		}
-	}
-
-
 	/** If the enemy has a weapon */
 	private boolean mHasWeapon = false;
 	/** Weapon of the enemy */
@@ -613,22 +366,6 @@ public class EnemyActorDef extends ActorDef {
 	private MovementVars mMovementVars = new MovementVars();
 	/** AI movement variables */
 	private AiMovementVars mAiMovementVars = new AiMovementVars();
-	/** Visual variables */
-	private VisualVars mVisualVars = new VisualVars();
-
-	/**
-	 * Class for all shape variables
-	 */
-	private static class VisualVars {
-		/** Current shape of the enemy */
-		ShapeTypes shapeType = Visual.SHAPE_DEFAULT;
-		/** radius of circle */
-		float shapeCircleRadius = Visual.RADIUS_DEFAULT;
-		/** width of rectangle/triangle */
-		float shapeWidth = Visual.SIZE_DEFAULT;
-		/** height of rectangle/triangle */
-		float shapeHeight = Visual.SIZE_DEFAULT;
-	}
 
 	/**
 	 * Class for all movement variables (both AI and path)
@@ -652,8 +389,6 @@ public class EnemyActorDef extends ActorDef {
 		float playerDistanceMax = Enemy.Movement.AI_DISTANCE_MAX_DEFAULT;
 		/** Maximum distance from the player, squared */
 		float playerDistanceMaxSq = playerDistanceMax * playerDistanceMax;
-		//		/** If the enemy shall stay on the screen */
-		//		boolean stayOnScreen = Enemy.Movement.STAY_ON_SCREEN_DEFAULT;
 		/** If the enemy shall move randomly when inside the preferred space */
 		boolean randomMove = Enemy.Movement.RANDOM_MOVEMENT_DEFAULT;
 		/** Minimum time until next random move */

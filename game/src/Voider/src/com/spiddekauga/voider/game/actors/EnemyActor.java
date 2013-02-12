@@ -8,8 +8,6 @@ import com.badlogic.gdx.utils.Pools;
 import com.spiddekauga.utils.Json;
 import com.spiddekauga.utils.Maths;
 import com.spiddekauga.voider.Config;
-import com.spiddekauga.voider.game.Actor;
-import com.spiddekauga.voider.game.ActorDef;
 import com.spiddekauga.voider.game.Path;
 import com.spiddekauga.voider.game.Path.PathTypes;
 import com.spiddekauga.voider.game.Weapon;

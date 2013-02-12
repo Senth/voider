@@ -16,8 +16,8 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Pools;
 import com.spiddekauga.voider.Config;
-import com.spiddekauga.voider.game.Actor;
 import com.spiddekauga.voider.game.BulletDestroyer;
+import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.ActorFilterCategories;
 
 /**

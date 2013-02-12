@@ -2,7 +2,6 @@ package com.spiddekauga.voider.game.actors;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Pools;
-import com.spiddekauga.voider.game.Actor;
 
 /**
  * Bullet actor, contains necessary information about the bullet.
@@ -42,7 +41,7 @@ public class BulletActor extends Actor {
 
 		// Position and rotate the bullet to face the shooting direction
 		double angle = velocity.angle();
-		angle = Math.toRadians(angle);
+		angle = Math.toRadians(angle) + getDef().getBodyDef().angle;
 		getBody().setTransform(position, (float) angle);
 		getBody().setLinearVelocity(velocity);
 

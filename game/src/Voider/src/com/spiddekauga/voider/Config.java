@@ -8,7 +8,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.Shape;
-import com.spiddekauga.voider.game.actors.EnemyActorDef.ShapeTypes;
+import com.spiddekauga.voider.game.actors.ActorShapeTypes;
 
 /**
  * Game configuration
@@ -137,6 +137,35 @@ public class Config {
 		}
 
 		/**
+		 * Bullet editor options
+		 */
+		public static class Bullet {
+			/**
+			 * Visuals
+			 */
+			public static class Visual {
+				/** Minimum radius for the enemy (when it's a circle) */
+				public final static float RADIUS_MIN = 0.2f;
+				/** Maximum radius for the enemy (when it's a circle) */
+				public final static float RADIUS_MAX = 6f;
+				/** Default radius of the enemy (when it's a circle) */
+				public final static float RADIUS_DEFAULT = 0.4f;
+				/** Step size for radius */
+				public final static float RADIUS_STEP_SIZE = 0.1f;
+				/** Minimum width/height for the enemy (when it's a rectangle/triangle */
+				public final static float SIZE_MIN = RADIUS_MIN * 2;
+				/** Maximum width/height for the enemy (when it's a rectangle/triangle */
+				public final static float SIZE_MAX = RADIUS_MAX * 2;
+				/** Default width/height for the enemy (when it's a rectangle/triangle */
+				public final static float SIZE_DEFAULT = RADIUS_DEFAULT * 2;
+				/** Step size for the enemy width/height */
+				public final static float SIZE_STEP_SIZE = RADIUS_STEP_SIZE;
+				/** Default shape type of the enemy */
+				public final static ActorShapeTypes SHAPE_DEFAULT = ActorShapeTypes.LINE;
+			}
+		}
+
+		/**
 		 * Enemy editor options
 		 */
 		public static class Enemy {
@@ -211,7 +240,7 @@ public class Config {
 				/** Step size for the enemy width/height */
 				public final static float SIZE_STEP_SIZE = RADIUS_STEP_SIZE;
 				/** Default shape type of the enemy */
-				public final static ShapeTypes SHAPE_DEFAULT = ShapeTypes.CIRCLE;
+				public final static ActorShapeTypes SHAPE_DEFAULT = ActorShapeTypes.CIRCLE;
 			}
 
 			/**
@@ -259,7 +288,7 @@ public class Config {
 			/** Maximum cooldown, used for random effect */
 			public final static float COOLDOWN_MAX = 10;
 			/** Default minimum cooldown */
-			public final static float COOLDOWN_MIN_DEFAULT = 2;
+			public final static float COOLDOWN_MIN_DEFAULT = 1;
 			/** Default maximum cooldown */
 			public final static float COOLDOWN_MAX_DEFAULT = COOLDOWN_MIN_DEFAULT;
 			/** Step size of cooldown */

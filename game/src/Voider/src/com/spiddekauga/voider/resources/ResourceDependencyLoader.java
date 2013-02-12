@@ -7,7 +7,7 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.resolvers.ExternalFileHandleResolver;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.GdxRuntimeException;
-import com.spiddekauga.voider.game.ActorDef;
+import com.spiddekauga.voider.game.actors.ActorDef;
 
 /**
  * Makes sure that all dependencies to the specified resource is loaded
