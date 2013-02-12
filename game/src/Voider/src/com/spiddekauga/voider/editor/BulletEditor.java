@@ -6,6 +6,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.spiddekauga.voider.game.Weapon;
 import com.spiddekauga.voider.game.WeaponDef;
+import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.ActorShapeTypes;
 import com.spiddekauga.voider.game.actors.BulletActorDef;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
@@ -38,6 +39,9 @@ public class BulletEditor extends WorldScene implements IActorEditor {
 
 	@Override
 	public void onActivate(Outcomes outcome, String message) {
+		Actor.setEditorActive(true);
+		Actor.setWorld(mWorld);
+
 		if (outcome == Outcomes.LOADING_SUCCEEDED) {
 			mGui.initGui();
 		} else if (outcome == Outcomes.DEF_SELECTED) {
@@ -102,6 +106,19 @@ public class BulletEditor extends WorldScene implements IActorEditor {
 	@Override
 	public void saveActor() {
 		ResourceSaver.save(mDef);
+
+		// Load the saved actor and use it instead
+		if (!ResourceCacheFacade.isLoaded(mDef.getId(), mDef.getClass())) {
+			try {
+				ResourceCacheFacade.load(mDef.getId(), mDef.getClass(), true);
+				ResourceCacheFacade.finishLoading();
+
+				mDef = ResourceCacheFacade.get(mDef.getId(), mDef.getClass());
+			} catch (Exception e) {
+				Gdx.app.error("BulletEditor", "Loading of saved actor failed! " + e.toString());
+			}
+		}
+
 		mUnsaved = false;
 	}
 

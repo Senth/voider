@@ -80,6 +80,9 @@ public class EnemyEditor extends WorldScene implements IActorEditor {
 
 	@Override
 	public void onActivate(Outcomes outcome, String message) {
+		Actor.setEditorActive(true);
+		Actor.setWorld(mWorld);
+
 		if (outcome == Outcomes.LOADING_SUCCEEDED) {
 			mGui.initGui();
 
@@ -207,6 +210,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor {
 		ResourceCacheFacade.load(ResourceNames.EDITOR_BUTTONS);
 		try {
 			ResourceCacheFacade.loadAllOf(EnemyActorDef.class, true);
+			ResourceCacheFacade.loadAllOf(BulletActorDef.class, true);
 		} catch (UndefinedResourceTypeException e) {
 			Gdx.app.error("EnemyEditor", "UndefinedResourceTypeException: " + e);
 		}
@@ -217,6 +221,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor {
 		ResourceCacheFacade.load(ResourceNames.EDITOR_BUTTONS);
 		try {
 			ResourceCacheFacade.unloadAllOf(EnemyActorDef.class, true);
+			ResourceCacheFacade.unloadAllOf(BulletActorDef.class, true);
 		} catch (UndefinedResourceTypeException e) {
 			Gdx.app.error("EnemyEditor", "UndefinedResourceTypeException: " + e);
 		}
@@ -278,6 +283,19 @@ public class EnemyEditor extends WorldScene implements IActorEditor {
 	 */
 	public void saveActor() {
 		ResourceSaver.save(mDef);
+
+		// Load the saved actor and use it instead
+		if (!ResourceCacheFacade.isLoaded(mDef.getId(), mDef.getClass())) {
+			try {
+				ResourceCacheFacade.load(mDef.getId(), mDef.getClass(), true);
+				ResourceCacheFacade.finishLoading();
+
+				mDef = ResourceCacheFacade.get(mDef.getId(), mDef.getClass());
+			} catch (Exception e) {
+				Gdx.app.error("EnemyEditor", "Loading of saved actor failed! " + e.toString());
+			}
+		}
+
 		mActorSavedSinceLastEdit = true;
 	}
 
@@ -486,23 +504,6 @@ public class EnemyEditor extends WorldScene implements IActorEditor {
 	 */
 	float getRandomTimeMax() {
 		return mDef.getRandomTimeMax();
-	}
-
-	/**
-	 * Sets the bullet actor definition. I.e. what bullets it shall shoot
-	 * @param bulletActorDef the bullet definition, set to null to deactivate shooting
-	 */
-	void setBulletActorDef(BulletActorDef bulletActorDef) {
-		if (mDef.getWeaponDef().getBulletActorDef() != null) {
-			mDef.removeDependency(mDef.getWeaponDef().getBulletActorDef().getId());
-		}
-
-		mDef.getWeaponDef().setBulletActorDef(bulletActorDef);
-
-		if (bulletActorDef != null) {
-			mDef.addDependency(bulletActorDef);
-		}
-		mActorSavedSinceLastEdit = false;
 	}
 
 	/**
@@ -936,6 +937,23 @@ public class EnemyEditor extends WorldScene implements IActorEditor {
 		mEnemyPathBackAndForth.reloadFixtures();
 		mEnemyPathLoop.reloadFixtures();
 		mEnemyPathOnce.reloadFixtures();
+	}
+
+	/**
+	 * Sets the bullet actor definition. I.e. what bullets it shall shoot
+	 * @param bulletActorDef the bullet definition, set to null to deactivate shooting
+	 */
+	private void setBulletActorDef(BulletActorDef bulletActorDef) {
+		if (mDef.getWeaponDef().getBulletActorDef() != null) {
+			mDef.removeDependency(mDef.getWeaponDef().getBulletActorDef().getId());
+		}
+
+		mDef.getWeaponDef().setBulletActorDef(bulletActorDef);
+
+		if (bulletActorDef != null) {
+			mDef.addDependency(bulletActorDef);
+		}
+		mActorSavedSinceLastEdit = false;
 	}
 
 	/**

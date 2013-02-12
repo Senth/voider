@@ -96,7 +96,7 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 	public void setDef(ActorDef def) {
 		if (def != null) {
 			// Change fixtures as we have a new def now
-			clearFixturesDefs();
+			destroyFixtures();
 
 			mDef = def;
 			mLife = mDef.getMaxLife();

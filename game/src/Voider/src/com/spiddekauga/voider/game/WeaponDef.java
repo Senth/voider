@@ -89,7 +89,7 @@ public class WeaponDef {
 	}
 
 	/** Type and visuals of the bullet. @todo remove default bullet actor def*/
-	private BulletActorDef mBulletActorDef = new BulletActorDef();
+	private BulletActorDef mBulletActorDef;
 	/** Bullet speed */
 	private float mBulletSpeed = Editor.Weapon.BULLET_SPEED_DEFAULT;
 	/** Damage when bullet hits */

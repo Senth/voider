@@ -308,7 +308,7 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 				else if (fixtureDef.shape instanceof EdgeShape) {
 					// LINE
 					if (mVisualVars.shapeType == ActorShapeTypes.LINE) {
-						((EdgeShape)fixtureDef.shape).set(0, 0, -mVisualVars.shapeWidth, 0);
+						((EdgeShape)fixtureDef.shape).set(0, 0, mVisualVars.shapeWidth, 0);
 					}
 				}
 				else {

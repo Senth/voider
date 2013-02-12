@@ -52,11 +52,11 @@ class VisualVars implements Json.Serializable {
 
 	@Override
 	public void read(Json json, OrderedMap<String, Object> jsonData) {
-		shapeType = json.readValue("shapeType", ActorShapeTypes.class, jsonData);
 		mActorType = json.readValue("mActorType", ActorTypes.class, jsonData);
 
 		setDefaultValues();
 
+		shapeType = json.readValue("shapeType", ActorShapeTypes.class, jsonData);
 
 		switch (shapeType) {
 		case LINE:

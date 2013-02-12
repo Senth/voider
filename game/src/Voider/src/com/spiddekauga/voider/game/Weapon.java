@@ -70,23 +70,25 @@ public class Weapon implements Disposable, Json.Serializable {
 	 * @param direction direction of the bullet
 	 */
 	public void shoot(Vector2 direction) {
-		BulletActor bullet = BulletPools.bullet.obtain();
-		bullet.setDef(getDef().getBulletActorDef());
-		bullet.shoot(mPosition, direction, getDef().getBulletSpeed(), getDef().getDamage(), false);
+		if (getDef().getBulletActorDef() != null) {
+			BulletActor bullet = BulletPools.bullet.obtain();
+			bullet.setDef(getDef().getBulletActorDef());
+			bullet.shoot(mPosition, direction, getDef().getBulletSpeed(), getDef().getDamage(), false);
 
-		// Add to bullet destroyer
-		SceneSwitcher.getBulletDestroyer().add(bullet);
+			// Add to bullet destroyer
+			SceneSwitcher.getBulletDestroyer().add(bullet);
 
-		// Cooldown
-		// Random cooldown
-		if (getDef().getCooldownMin() != getDef().getCooldownMax()) {
-			mCooldown = (float) Math.random();
-			mCooldown *= getDef().getCooldownMax() - getDef().getCooldownMin();
-			mCooldown += getDef().getCooldownMin();
-		}
-		// Else always same cooldown
-		else {
-			mCooldown = getDef().getCooldownMax();
+			// Cooldown
+			// Random cooldown
+			if (getDef().getCooldownMin() != getDef().getCooldownMax()) {
+				mCooldown = (float) Math.random();
+				mCooldown *= getDef().getCooldownMax() - getDef().getCooldownMin();
+				mCooldown += getDef().getCooldownMin();
+			}
+			// Else always same cooldown
+			else {
+				mCooldown = getDef().getCooldownMax();
+			}
 		}
 	}
 

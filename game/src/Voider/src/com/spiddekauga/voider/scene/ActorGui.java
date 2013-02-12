@@ -1,5 +1,6 @@
 package com.spiddekauga.voider.scene;
 
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
@@ -13,6 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
+import com.spiddekauga.utils.Command;
 import com.spiddekauga.utils.CommandSequence;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
@@ -163,15 +165,19 @@ public abstract class ActorGui extends Gui {
 						Button no = new TextButton("No", textStyle);
 						Button cancel = new TextButton("Cancel", textStyle);
 
-						CommandSequence saveAndNew = new CommandSequence(new AeSave(mActorEditor), new AeNew(mActorEditor));
+						Command save = new AeSave(mActorEditor);
+						Command newCommand = new AeNew(mActorEditor);
+						Command saveAndNew = new CommandSequence(save, newCommand);
 
 						mMsgBox.clear();
 						mMsgBox.setTitle("New Enemy");
 						mMsgBox.content("Your current " + actorName + " is unsaved.\n" +
 								"Do you want to save it before creating a new " + actorName + "?");
 						mMsgBox.button(yes, saveAndNew);
-						mMsgBox.button(no, new AeNew(mActorEditor));
+						mMsgBox.button(no, newCommand);
 						mMsgBox.button(cancel);
+						mMsgBox.key(Keys.BACK, null);
+						mMsgBox.key(Keys.ESCAPE, null);
 						mMsgBox.show(getStage());
 					} else {
 						mActorEditor.newActor();
@@ -215,6 +221,8 @@ public abstract class ActorGui extends Gui {
 						mMsgBox.button(yes, saveAndLoad);
 						mMsgBox.button(no, new AeLoad(mActorEditor));
 						mMsgBox.button(cancel);
+						mMsgBox.key(Keys.BACK, null);
+						mMsgBox.key(Keys.ESCAPE, null);
 						mMsgBox.show(getStage());
 					} else {
 						mActorEditor.loadActor();
@@ -245,6 +253,8 @@ public abstract class ActorGui extends Gui {
 						mMsgBox.button(yes, saveAndDuplicate);
 						mMsgBox.button(no, new AeDuplicate(mActorEditor));
 						mMsgBox.button(cancel);
+						mMsgBox.key(Keys.BACK, null);
+						mMsgBox.key(Keys.ESCAPE, null);
 						mMsgBox.show(getStage());
 					} else {
 						mActorEditor.duplicateActor();

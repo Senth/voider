@@ -451,8 +451,6 @@ public class EnemyEditorGui extends ActorGui {
 			@Override
 			protected void onChange(boolean checked) {
 				if (checked) {
-					/** @TODO select weapon type */
-
 					if (mButton instanceof TextButton) {
 						((TextButton) mButton).setText("Weapons ON");
 					}
@@ -498,7 +496,7 @@ public class EnemyEditorGui extends ActorGui {
 			@Override
 			public boolean handle(Event event) {
 				if (isButtonPressed(event)) {
-					/** @TODO select weapon type */
+					mEnemyEditor.selectBulletType();
 				}
 				return true;
 			}
