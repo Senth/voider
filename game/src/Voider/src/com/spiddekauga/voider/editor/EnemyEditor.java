@@ -996,4 +996,16 @@ public class EnemyEditor extends WorldScene implements IActorEditor {
 
 	/** Table for path lables, these are added directly to the stage */
 	private Table mPathLabels = new Table();
+
+	@Override
+	public void onActorAdded(Actor actor) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void onActorRemoved(Actor actor) {
+		// TODO Auto-generated method stub
+
+	}
 }

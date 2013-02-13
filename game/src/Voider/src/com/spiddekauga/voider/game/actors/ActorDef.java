@@ -1,9 +1,11 @@
 package com.spiddekauga.voider.game.actors;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.math.EarClippingTriangulator;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
@@ -13,10 +15,12 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.OrderedMap;
 import com.badlogic.gdx.utils.Pools;
+import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.utils.Json;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.Collectibles;
 import com.spiddekauga.voider.resources.Def;
+import com.spiddekauga.voider.utils.Geometry;
 
 /**
  * Definition of the actor. This include common attribute for a common type of actor.
@@ -67,6 +71,7 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	 */
 	public void setStartAngle(float angle) {
 		getBodyDef().angle = (float)Math.toRadians(angle);
+		mLastChangeTime = GameTime.getTotalGlobalTimeElapsed();
 	}
 
 	/**
@@ -119,6 +124,7 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	 */
 	public void addFixtureDef(FixtureDef fixtureDef) {
 		mFixtureDefs.add(fixtureDef);
+		mLastChangeTime = GameTime.getTotalGlobalTimeElapsed();
 	}
 
 	/**
@@ -136,6 +142,7 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 		for (FixtureDef fixtureDef : mFixtureDefs) {
 			if (fixtureDef.shape != null) {
 				fixtureDef.shape.dispose();
+				fixtureDef.shape = null;
 			}
 		}
 
@@ -179,6 +186,10 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	@Override
 	public void dispose() {
 		clearFixtures();
+
+		for (Vector2 corner : mVisualVars.corners) {
+			Pools.free(corner);
+		}
 	}
 
 	/**
@@ -189,14 +200,21 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	public void setShapeType(ActorShapeTypes shapeType) {
 		mVisualVars.shapeType = shapeType;
 
+		// Too many fixtures
+		if (mFixtureDefs.size() > 1) {
+			// Save first fixture def
+			FixtureDef fixtureDef = mFixtureDefs.get(0);
+			clearFixtures();
+			addFixtureDef(fixtureDef);
+		}
+
 		FixtureDef fixtureDef = getFirstFixtureDef();
 
-
-		// Should only have one fixture def...
 		if (fixtureDef != null) {
 			// Remove the old shape if one exists
 			if (fixtureDef.shape != null) {
 				fixtureDef.shape.dispose();
+				fixtureDef.shape = null;
 			}
 
 			// Create the new shape
@@ -237,13 +255,21 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 				break;
 
 			case CUSTOM:
-				/** @todo implement custom actor shape */
+				if (mVisualVars.corners.isEmpty()) {
+					mVisualVars.corners.add(Pools.obtain(Vector2.class).set(0,0));
+				}
+				try {
+					fixCustomShapeFixtures();
+				} catch (PolygonCornerTooCloseException e) {
+					Gdx.app.error("ActorDef", "Could not set custom shape when changing shapes");
+				}
 				break;
 			}
 
 		} else {
 			Gdx.app.error("EnemyActorDef", "FixtureDef null at setShapeType()");
 		}
+		mLastChangeTime = GameTime.getTotalGlobalTimeElapsed();
 	}
 
 	/**
@@ -268,6 +294,7 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 			}
 
 		}
+		mLastChangeTime = GameTime.getTotalGlobalTimeElapsed();
 	}
 
 	/**
@@ -318,6 +345,7 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 				Gdx.app.error("EnemyActorDef", "FixtureDef null at setShapeWidth()");
 			}
 		}
+		mLastChangeTime = GameTime.getTotalGlobalTimeElapsed();
 	}
 
 	/**
@@ -361,6 +389,7 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 				Gdx.app.error("EnemyActorDef", "FixtureDef null at setShapeWidth()");
 			}
 		}
+		mLastChangeTime = GameTime.getTotalGlobalTimeElapsed();
 	}
 
 	/**
@@ -375,6 +404,367 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	 */
 	public ActorShapeTypes getShapeType() {
 		return mVisualVars.shapeType;
+	}
+
+	/**
+	 * Add another corner position to the back of the array
+	 * @param corner a new corner that will be placed at the back
+	 * @throws PolygonComplexException thrown when the adding corner would make the
+	 * polygon an complex polygon, i.e. intersect itself.
+	 * @throws PolygonCornerTooCloseException thrown when a corner is too close to
+	 * another corner inside the polygon.
+	 */
+	public void addCorner(Vector2 corner) throws PolygonComplexException, PolygonCornerTooCloseException {
+		addCorner(corner, mVisualVars.corners.size());
+	}
+
+	/**
+	 * Add a corner in the specified index
+	 * @param corner position of the corner to add
+	 * @param index where in the list the corner will be added
+	 * @throws PolygonComplexException thrown when the adding corner would make the
+	 * polygon an complex polygon, i.e. intersect itself.
+	 * @throws PolygonCornerTooCloseException thrown when a corner is too close to
+	 * another corner inside the polygon.
+	 */
+	public void addCorner(Vector2 corner, int index) throws PolygonComplexException, PolygonCornerTooCloseException{
+		mVisualVars.corners.add(index, corner.cpy());
+
+		// Make sure no intersection exist
+		if (intersectionExists(index)) {
+			mVisualVars.corners.remove(index);
+			throw new PolygonComplexException();
+		}
+
+		try {
+			fixCustomShapeFixtures();
+		} catch (PolygonCornerTooCloseException e) {
+			mVisualVars.corners.remove(index);
+
+			// Reset to old fixtures
+			try {
+				fixCustomShapeFixtures();
+			} catch (PolygonCornerTooCloseException e1) {
+				Gdx.app.error("ActorDef", "Could not fix custom shape fixtures!");
+			}
+
+			throw e;
+		}
+		mLastChangeTime = GameTime.getTotalGlobalTimeElapsed();
+	}
+
+	/**
+	 * Removes a corner with the specific id. Cannot remove the last corner so that
+	 * the actor has no corners.
+	 * @param index the corner to remove
+	 * @return position of the corner we removed, null if none was removed
+	 */
+	public Vector2 removeCorner(int index) {
+		Vector2 removedPosition = null;
+		if (mVisualVars.corners.size() > 1) {
+			if (index >= 0 && index < mVisualVars.corners.size()) {
+				removedPosition = mVisualVars.corners.remove(index);
+
+				try {
+					fixCustomShapeFixtures();
+				} catch (PolygonCornerTooCloseException e) {
+					Gdx.app.error("ActorDef", "Failed to remove corner, exception, should never happen");
+				}
+			}
+		}
+		mLastChangeTime = GameTime.getTotalGlobalTimeElapsed();
+
+		return removedPosition;
+	}
+
+	/**
+	 * Moves a corner, identifying the corner from index
+	 * @param index index of the corner to move
+	 * @param newPos new position of the corner
+	 * @throws PolygonComplexException thrown when the adding corner would make the
+	 * polygon an complex polygon, i.e. intersect itself.
+	 * @throws PolygonCornerTooCloseException thrown when a corner is too close to
+	 * another corner inside the polygon.
+	 */
+	public void moveCorner(int index, Vector2 newPos) throws PolygonComplexException, PolygonCornerTooCloseException {
+		Vector2 oldPos = Pools.obtain(Vector2.class);
+		oldPos.set(mVisualVars.corners.get(index));
+		mVisualVars.corners.get(index).set(newPos);
+
+		if (intersectionExists(index)) {
+			mVisualVars.corners.get(index).set(oldPos);
+			Pools.free(oldPos);
+			throw new PolygonComplexException();
+		}
+
+		try {
+			fixCustomShapeFixtures();
+		} catch (PolygonCornerTooCloseException e) {
+			mVisualVars.corners.get(index).set(oldPos);
+			Pools.free(oldPos);
+			throw e;
+		}
+
+		Pools.free(oldPos);
+
+		mLastChangeTime = GameTime.getTotalGlobalTimeElapsed();
+	}
+
+	/**
+	 * @return number of corners in this actor. Only applicable if actor is set as custom shape
+	 */
+	public int getCornerCount() {
+		return mVisualVars.corners.size();
+	}
+
+
+	@Override
+	public void write(Json json) {
+		json.writeValue("REVISION", Config.REVISION);
+
+		json.writeObjectStart("Def");
+		super.write(json);
+		json.writeObjectEnd();
+
+		// Write ActorDef's variables first
+		json.writeValue("mMaxLife", mMaxLife);
+		json.writeValue("mBodyDef", mBodyDef);
+		json.writeValue("mFixtureDefs", mFixtureDefs);
+		json.writeValue("mCollisionDamage", mCollisionDamage);
+		json.writeValue("mVisualVars", mVisualVars);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public void read(Json json, OrderedMap<String, Object> jsonData) {
+		// Superclass
+		OrderedMap<String, Object> superMap = json.readValue("Def", OrderedMap.class, jsonData);
+		if (superMap != null) {
+			super.read(json, superMap);
+		}
+
+
+		// Our variables
+		mMaxLife = json.readValue("mMaxLife", float.class, jsonData);
+		mBodyDef = json.readValue("mBodyDef", BodyDef.class, jsonData);
+		mFixtureDefs = json.readValue("mFixtureDefs", ArrayList.class, jsonData);
+		mCollisionDamage = json.readValue("mCollisionDamage", float.class, jsonData);
+		mVisualVars = json.readValue("mVisualVars", VisualVars.class, jsonData);
+	}
+
+	/**
+	 * Exception class for when trying to create a new, or move an existing corner
+	 * and this makes the polygon complex, i.e. it intersects with itself.
+	 */
+	public class PolygonComplexException extends Exception {
+		/** for serialization */
+		private static final long serialVersionUID = -2564535357356811708L;
+	}
+
+	/**
+	 * Exception class for when a triangle of the polygon would make too
+	 * small area.
+	 */
+	public class PolygonCornerTooCloseException extends Exception {
+		/** For serialization */
+		private static final long serialVersionUID = 5402912928691451496L;
+	}
+
+	/**
+	 * @param index the index we want to get the corner from
+	 * @return corner position of the specified index
+	 */
+	public Vector2 getCornerPosition(int index) {
+		return mVisualVars.corners.get(index);
+	}
+
+	/**
+	 * @return all the corners of the actor
+	 */
+	ArrayList<Vector2> getCorners() {
+		return mVisualVars.corners;
+	}
+
+	/**
+	 * @return time when this definition was last changed. In global time.
+	 */
+	float getLastChangeTime() {
+		return mLastChangeTime;
+	}
+
+	/**
+	 * Readjusts/fixes the fixtures for the custom shape
+	 * @throws PolygonCornerTooCloseException thrown when a resulting triangle polygon
+	 * would become too small. NOTE: When this exception is thrown all fixtures
+	 * have been removed and some might have been added. Fix the faulty corner
+	 * and call #fixCustomShapeFixtures() again to fix this.
+	 */
+	private void fixCustomShapeFixtures() throws PolygonCornerTooCloseException {
+		// Save fixture properties
+		FixtureDef savedFixtureProperties = mFixtureDefs.get(0);
+
+
+		// Destroy previous fixture
+		clearFixtures();
+
+
+		// Create the new fixture
+		// Polygon
+		if (mVisualVars.corners.size() >= 3) {
+			List<Vector2> triangles = null;
+			if (mVisualVars.corners.size() == 3) {
+				triangles = new ArrayList<Vector2>(mVisualVars.corners);
+				Geometry.makePolygonCounterClockwise(triangles);
+			} else {
+				triangles = mEarClippingTriangulator.computeTriangles(mVisualVars.corners);
+				// Always reverse, triangles should always be clockwise, whereas box2d needs
+				// counter clockwise...
+				Collections.reverse(triangles);
+			}
+
+			int cTriangles = triangles.size() / 3;
+			Vector2[] triangleVertices = new Vector2[3];
+			for (int i = 0; i < triangleVertices.length; ++i) {
+				triangleVertices[i] = Pools.obtain(Vector2.class);
+			}
+			Vector2 lengthTest = Pools.obtain(Vector2.class);
+
+			// Add the fixtures
+			boolean cornerTooClose = false;
+			for (int triangle = 0; triangle < cTriangles; ++triangle) {
+				for (int vertex = 0; vertex < triangleVertices.length; ++vertex) {
+					int offset = triangle * 3;
+					triangleVertices[vertex].set(triangles.get(offset + vertex));
+				}
+
+
+				// Check so that the length between two corners isn't too small
+				// 0 - 1
+				lengthTest.set(triangleVertices[0]).sub(triangleVertices[1]);
+				if (lengthTest.len2() <= Config.Graphics.EDGE_LENGTH_MIN) {
+					cornerTooClose = true;
+					break;
+				}
+				// 0 - 2
+				lengthTest.set(triangleVertices[0]).sub(triangleVertices[2]);
+				if (lengthTest.len2() <= Config.Graphics.EDGE_LENGTH_MIN) {
+					cornerTooClose = true;
+					break;
+				}
+				// 1 - 2
+				lengthTest.set(triangleVertices[1]).sub(triangleVertices[2]);
+				if (lengthTest.len2() <= Config.Graphics.EDGE_LENGTH_MIN) {
+					cornerTooClose = true;
+					break;
+				}
+
+
+				PolygonShape polygonShape = new PolygonShape();
+				polygonShape.set(triangleVertices);
+				savedFixtureProperties.shape = polygonShape;
+				addFixtureDef(savedFixtureProperties);
+			}
+
+			// Free stuff
+			for (int i = 0; i < triangleVertices.length; ++i) {
+				Pools.free(triangleVertices[i]);
+			}
+			Pools.free(lengthTest);
+
+			if (cornerTooClose) {
+				throw new PolygonCornerTooCloseException();
+			}
+		}
+		// Circle
+		else if (mVisualVars.corners.size() >= 1) {
+			CircleShape circle = new CircleShape();
+			circle.setPosition(mVisualVars.corners.get(0));
+
+			// One corner, use standard size
+			if (mVisualVars.corners.size() == 1) {
+				circle.setRadius(Config.Actor.Terrain.DEFAULT_CIRCLE_RADIUS);
+			}
+			// Else two corners, determine radius of circle
+			else {
+				Vector2 lengthVector = Pools.obtain(Vector2.class);
+				lengthVector.set(mVisualVars.corners.get(0)).sub(mVisualVars.corners.get(1));
+				circle.setRadius(lengthVector.len());
+				Pools.free(lengthVector);
+			}
+
+			savedFixtureProperties.shape = circle;
+			addFixtureDef(savedFixtureProperties);
+		}
+	}
+
+	/**
+	 * Checks if a line, that starts/ends from the specified index, intersects
+	 * with any other line from the polygon.
+	 * @param index the corner to check the lines from
+	 * @return true if there is an intersection
+	 */
+	private boolean intersectionExists(int index) {
+		if (mVisualVars.corners.size() < 3 || index < 0 || index >= mVisualVars.corners.size()) {
+			return false;
+		}
+
+
+		// Get the two lines
+		// First vertex is between before
+		Vector2 vertexBefore = null;
+
+		// If index is 0, get the last corner instead
+		if (index == 0) {
+			vertexBefore = mVisualVars.corners.get(mVisualVars.corners.size() - 1);
+		} else {
+			vertexBefore = mVisualVars.corners.get(index - 1);
+		}
+
+		// Vertex of index
+		Vector2 vertexIndex = mVisualVars.corners.get(index);
+
+		// Vertex after index
+		Vector2 vertexAfter = null;
+
+		// If index is the last, wrap and use first
+		if (index == mVisualVars.corners.size() - 1) {
+			vertexAfter = mVisualVars.corners.get(0);
+		} else {
+			vertexAfter = mVisualVars.corners.get(index + 1);
+		}
+
+
+		boolean intersects = false;
+		// Using shape because the chain is looped, i.e. first and last is the same vertex
+		for (int i = 0; i < mVisualVars.corners.size(); ++i) {
+			// Skip checking index before and the current index, these are the lines
+			// we are checking with... If index is 0 we need to wrap it
+			if (i == index || i == index - 1 || (index == 0 && i == mVisualVars.corners.size() - 1)) {
+				continue;
+			}
+
+
+			/** @TODO can be optimized if necessary. Swap instead of getting
+			 * new vertexes all the time. */
+			Vector2 lineA = mVisualVars.corners.get(i);
+			Vector2 lineB = mVisualVars.corners.get(Geometry.computeNextIndex(mVisualVars.corners, i));
+
+
+			// Check with first line
+			if (Geometry.linesIntersectNoCorners(vertexBefore, vertexIndex, lineA, lineB)) {
+				intersects = true;
+				break;
+			}
+
+			// Check second line
+			if (Geometry.linesIntersectNoCorners(vertexIndex, vertexAfter, lineA, lineB)) {
+				intersects = true;
+				break;
+			}
+		}
+
+
+		return intersects;
 	}
 
 	/**
@@ -425,6 +815,8 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 		}
 	}
 
+	/** Time when the definition was changed last time */
+	private float mLastChangeTime = 0;
 	/** Defines the mass, shape, etc. */
 	private ArrayList<FixtureDef> mFixtureDefs = new ArrayList<FixtureDef>();
 	/** Maximum life of the actor, usually starting amount of life */
@@ -435,38 +827,6 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	private float mCollisionDamage = 0;
 	/** Visual variables */
 	private VisualVars mVisualVars = null;
-
-	@Override
-	public void write(Json json) {
-		json.writeValue("REVISION", Config.REVISION);
-
-		json.writeObjectStart("Def");
-		super.write(json);
-		json.writeObjectEnd();
-
-		// Write ActorDef's variables first
-		json.writeValue("mMaxLife", mMaxLife);
-		json.writeValue("mBodyDef", mBodyDef);
-		json.writeValue("mFixtureDefs", mFixtureDefs);
-		json.writeValue("mCollisionDamage", mCollisionDamage);
-		json.writeValue("mVisualVars", mVisualVars);
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public void read(Json json, OrderedMap<String, Object> jsonData) {
-		// Superclass
-		OrderedMap<String, Object> superMap = json.readValue("Def", OrderedMap.class, jsonData);
-		if (superMap != null) {
-			super.read(json, superMap);
-		}
-
-
-		// Our variables
-		mMaxLife = json.readValue("mMaxLife", float.class, jsonData);
-		mBodyDef = json.readValue("mBodyDef", BodyDef.class, jsonData);
-		mFixtureDefs = json.readValue("mFixtureDefs", ArrayList.class, jsonData);
-		mCollisionDamage = json.readValue("mCollisionDamage", float.class, jsonData);
-		mVisualVars = json.readValue("mVisualVars", VisualVars.class, jsonData);
-	}
+	/** Ear clipping triangulator for custom shapes */
+	private static EarClippingTriangulator mEarClippingTriangulator = new EarClippingTriangulator();
 }

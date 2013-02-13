@@ -1,6 +1,9 @@
 package com.spiddekauga.voider.game.actors;
 
+import java.util.ArrayList;
+
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.OrderedMap;
 import com.spiddekauga.utils.Json;
 import com.spiddekauga.voider.Config;
@@ -45,11 +48,12 @@ class VisualVars implements Json.Serializable {
 			break;
 
 		case CUSTOM:
-			/** @todo implement jsonWrite for custom shape */
+			json.writeValue("corners", corners);
 			break;
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void read(Json json, OrderedMap<String, Object> jsonData) {
 		mActorType = json.readValue("mActorType", ActorTypes.class, jsonData);
@@ -74,7 +78,7 @@ class VisualVars implements Json.Serializable {
 			break;
 
 		case CUSTOM:
-			/** @todo implement jsonRead for custom shape */
+			corners = json.readValue("corners", ArrayList.class, jsonData);
 			break;
 		}
 	}
@@ -124,6 +128,9 @@ class VisualVars implements Json.Serializable {
 	float shapeWidth;
 	/** height of rectangle/triangle */
 	float shapeHeight;
+	/** Corners of polygon, used for custom shapes */
+	ArrayList<Vector2> corners = new ArrayList<Vector2>();
+
 
 	/** Actor type, used for setting default values */
 	private ActorTypes mActorType = null;

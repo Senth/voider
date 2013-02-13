@@ -17,8 +17,10 @@ import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.OrderedMap;
 import com.badlogic.gdx.utils.Pool.Poolable;
 import com.badlogic.gdx.utils.Pools;
+import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.utils.Json;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.editor.HitWrapper;
 import com.spiddekauga.voider.game.ITriggerListener;
 import com.spiddekauga.voider.game.TriggerAction;
 import com.spiddekauga.voider.resources.Resource;
@@ -49,6 +51,11 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 	public void update(float deltaTime) {
 		// Update position
 		if (mBody != null) {
+			// Do we need to reload the fixtures?
+			if (mFixtureCreateTime < getDef().getLastChangeTime()) {
+				reloadFixtures();
+			}
+
 			mPosition.set(mBody.getPosition());
 		}
 
@@ -327,6 +334,8 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 				}
 			}
 			mBody.setUserData(this);
+
+			mFixtureCreateTime = GameTime.getTotalGlobalTimeElapsed();
 		}
 	}
 
@@ -375,6 +384,7 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 	 * Reload fixtures. This destroys all the existing fixtures and creates
 	 * new fixtures from the actor definition. Does nothing if the actor
 	 * doesn't have a body.
+	 * This also resets the body corners if we have any
 	 */
 	public void reloadFixtures() {
 		if (mBody != null) {
@@ -383,6 +393,14 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 			for (FixtureDef fixtureDef : mDef.getFixtureDefs()) {
 				mBody.createFixture(fixtureDef);
 			}
+
+			// Do we have body corners? Reset those in that case
+			if (!mCorners.isEmpty()) {
+				destroyBodyCorners();
+				createBodyCorners();
+			}
+
+			mFixtureCreateTime = GameTime.getTotalGlobalTimeElapsed();
 		}
 	}
 
@@ -393,6 +411,47 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 	 */
 	public boolean savesDef() {
 		return false;
+	}
+
+	/**
+	 * Checks what index the specified position has. Only applicable if actor is using a custom
+	 * shape and in an editor
+	 * @param position the position of a corner
+	 * @return corner index if a corner was found at position, -1 if none was found
+	 */
+	public int getCornerIndex(Vector2 position) {
+		for (int i = 0; i < mCorners.size(); ++i) {
+			if (mCorners.get(i).getPosition().equals(position)) {
+				return i;
+			}
+		}
+
+		return -1;
+	}
+
+	/**
+	 * Creates body corners for the actor. Only applicable if actor is using a custom shape
+	 * and in an editor.
+	 */
+	public void createBodyCorners() {
+		if (mDef.getShapeType() == ActorShapeTypes.CUSTOM && mEditorActive) {
+			Vector2 worldPos = Pools.obtain(Vector2.class);
+			for (Vector2 localPos : mDef.getCorners()) {
+				worldPos.set(localPos).add(mPosition);
+				createBodyCorner(worldPos);
+			}
+			Pools.free(worldPos);
+		}
+	}
+
+	/**
+	 * Destroys all body corners
+	 */
+	public void destroyBodyCorners() {
+		for (Body body : mCorners) {
+			body.getWorld().destroyBody(body);
+		}
+		mCorners.clear();
 	}
 
 	/**
@@ -409,6 +468,8 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 	protected void addFixture(FixtureDef fixtureDef) {
 		mDef.addFixtureDef(fixtureDef);
 		mBody.createFixture(fixtureDef);
+
+		mFixtureCreateTime = GameTime.getTotalGlobalTimeElapsed();
 	}
 
 	/**
@@ -441,8 +502,8 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 	protected abstract short getFilterCategory();
 
 	/**
-	 * @return the mask bit used for determening who the actor
-	 * should collide with
+	 * @return the mask bit used for determining who the actor
+	 * can collide with
 	 */
 	protected abstract short getFilterCollidingCategories();
 
@@ -457,8 +518,21 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 		}
 	}
 
+	/**
+	 * Creates a body for the specific point at the specific index
+	 * @param corner the corner to create a body for
+	 */
+	private void createBodyCorner(Vector2 corner) {
+		Body body = mWorld.createBody(new BodyDef());
+		body.createFixture(Config.Editor.getPickingShape(), 0f);
+		body.setTransform(corner, 0f);
+		HitWrapper hitWrapper = new HitWrapper(this, true);
+		body.setUserData(hitWrapper);
+		mCorners.add(body);
+	}
+
 	/** Current life */
-	protected float mLife = 0.0f;
+	protected float mLife = 0;
 
 	/** Physical body */
 	private Body mBody = null;
@@ -472,6 +546,10 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 	private ArrayList<ActorDef> mCollidingActors = new ArrayList<ActorDef>();
 	/** True if the actor has been disposed of and is invalid to use */
 	private boolean mDisposed = false;
+	/** World corners of the actor, only used for custom shape and in an editor */
+	private ArrayList<Body> mCorners = new ArrayList<Body>();
+	/** Global time when we last created the fixtures */
+	private float mFixtureCreateTime = 0;
 
 	/** The world used for creating bodies */
 	protected static World mWorld = null;

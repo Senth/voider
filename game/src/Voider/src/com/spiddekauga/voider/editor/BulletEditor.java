@@ -4,18 +4,23 @@ import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
+import com.spiddekauga.utils.Invoker;
+import com.spiddekauga.voider.editor.commands.CActorSelect;
 import com.spiddekauga.voider.game.Weapon;
 import com.spiddekauga.voider.game.WeaponDef;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.ActorShapeTypes;
+import com.spiddekauga.voider.game.actors.BulletActor;
 import com.spiddekauga.voider.game.actors.BulletActorDef;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceNames;
 import com.spiddekauga.voider.resources.ResourceSaver;
 import com.spiddekauga.voider.resources.UndefinedResourceTypeException;
+import com.spiddekauga.voider.scene.DrawActorTool;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.scene.SelectDefScene;
+import com.spiddekauga.voider.scene.TouchTool;
 import com.spiddekauga.voider.scene.WorldScene;
 
 /**
@@ -35,6 +40,8 @@ public class BulletEditor extends WorldScene implements IActorEditor {
 		mWeapon.setWeaponDef(new WeaponDef());
 		mWeapon.getDef().setBulletActorDef(mDef);
 		mWeapon.setPosition(new Vector2());
+
+		mDrawActorTool = new DrawActorTool(mCamera, mWorld, mInvoker, BulletActor.class, this, mDef);
 	}
 
 	@Override
@@ -49,10 +56,10 @@ public class BulletEditor extends WorldScene implements IActorEditor {
 			case LOAD_BULLET:
 				try {
 					BulletActorDef bulletDef = ResourceCacheFacade.get(UUID.fromString(message), BulletActorDef.class);
-					mDef = bulletDef;
-					mWeapon.getDef().setBulletActorDef(mDef);
+					setDef(bulletDef);
 					mGui.resetValues();
 					mUnsaved = false;
+					mInvoker.dispose();
 				} catch (UndefinedResourceTypeException e) {
 					Gdx.app.error("BulletEditor", e.toString());
 				}
@@ -97,10 +104,11 @@ public class BulletEditor extends WorldScene implements IActorEditor {
 
 	@Override
 	public void newActor() {
-		mDef = new BulletActorDef();
-		mWeapon.getDef().setBulletActorDef(mDef);
+		BulletActorDef newDef = new BulletActorDef();
+		setDef(newDef);
 		mGui.resetValues();
 		mUnsaved = false;
+		mInvoker.dispose();
 	}
 
 	@Override
@@ -136,6 +144,7 @@ public class BulletEditor extends WorldScene implements IActorEditor {
 		mWeapon.getDef().setBulletActorDef(mDef);
 		mGui.resetValues();
 		mUnsaved = true;
+		mInvoker.dispose();
 	}
 
 	public boolean isUnsaved() {
@@ -179,6 +188,15 @@ public class BulletEditor extends WorldScene implements IActorEditor {
 	public void setShapeType(ActorShapeTypes shapeType) {
 		mDef.setShapeType(shapeType);
 		mUnsaved = true;
+
+		if (shapeType == ActorShapeTypes.CUSTOM) {
+			mActiveTouchTool = mDrawActorTool;
+			mInputMultiplexer.addProcessor(mActiveTouchTool);
+		} else if (mActiveTouchTool == mDrawActorTool) {
+			mActiveTouchTool = null;
+			mInputMultiplexer.removeProcessor(mDrawActorTool);
+			mInvoker.execute(new CActorSelect(mDrawActorTool, null));
+		}
 	}
 
 	@Override
@@ -217,6 +235,16 @@ public class BulletEditor extends WorldScene implements IActorEditor {
 	@Override
 	public float getShapeHeight() {
 		return mDef.getShapeHeight();
+	}
+
+	@Override
+	public void onActorAdded(Actor actor) {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void onActorRemoved(Actor actor) {
+		// TODO Auto-generated method stub
 	}
 
 	/**
@@ -268,11 +296,28 @@ public class BulletEditor extends WorldScene implements IActorEditor {
 	}
 
 	/**
+	 * @return invoker of the editor
+	 */
+	Invoker getInvoker() {
+		return mInvoker;
+	}
+
+	/**
 	 * Enumeration for what we're currently selecting from a selection scene
 	 */
 	enum SelectionActions {
 		/** Loading another bullet */
 		LOAD_BULLET
+	}
+
+	/**
+	 * Sets a new definition for the bullet
+	 * @param def the new definition to use
+	 */
+	private void setDef(BulletActorDef def) {
+		mDef = def;
+		mDrawActorTool.setActorDef(def);
+		mWeapon.getDef().setBulletActorDef(def);
 	}
 
 	/** Current weapon that fires the bullets */
@@ -285,4 +330,10 @@ public class BulletEditor extends WorldScene implements IActorEditor {
 	private SelectionActions mSelectionAction = null;
 	/** Shoot direction */
 	private Vector2 mShootDirection = new Vector2(-1, 0);
+	/** Invoker for the bullet editor */
+	private Invoker mInvoker = new Invoker();
+	/** Active touch tool */
+	private TouchTool mActiveTouchTool = null;
+	/** Current draw actor tool */
+	private DrawActorTool mDrawActorTool;
 }

@@ -1,5 +1,6 @@
 package com.spiddekauga.voider.editor;
 
+import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.ActorShapeTypes;
 
 /**
@@ -9,6 +10,20 @@ import com.spiddekauga.voider.game.actors.ActorShapeTypes;
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
 public interface IActorEditor {
+	// ------------- DrawActorTool ------------
+	/**
+	 * Called when an actor is added (not same as #newActor())
+	 * @param actor the actor that was created
+	 */
+	void onActorAdded(Actor actor);
+
+	/**
+	 * Called when an actor is removed
+	 * @param actor the actor that was removed
+	 */
+	void onActorRemoved(Actor actor);
+
+	// ------------- File Menu ----------------
 	/**
 	 * Creates a new actor in the current editor
 	 */

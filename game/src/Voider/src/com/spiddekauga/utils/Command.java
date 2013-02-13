@@ -25,4 +25,21 @@ public abstract class Command implements Disposable {
 	public void dispose() {
 		// Does nothing
 	}
+
+	/**
+	 * Sets the command as chained
+	 */
+	void setAsChanied() {
+		mChained = true;
+	}
+
+	/**
+	 * @return true if this command is chained
+	 */
+	boolean isChained() {
+		return mChained;
+	}
+
+	/** True if the command shall be chanied, just as SequenceCommand */
+	private boolean mChained = false;
 }

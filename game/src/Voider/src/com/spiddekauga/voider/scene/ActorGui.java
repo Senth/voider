@@ -16,6 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
 import com.spiddekauga.utils.Command;
 import com.spiddekauga.utils.CommandSequence;
+import com.spiddekauga.utils.Invoker;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
@@ -151,7 +152,6 @@ public abstract class ActorGui extends Gui {
 	protected void initFileMenu(final String actorName) {
 		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
 
-		TextButtonStyle textToggleStyle = editorSkin.get("toggle", TextButtonStyle.class);
 		final TextButtonStyle textStyle = editorSkin.get("default", TextButtonStyle.class);
 
 		// New Enemy
@@ -642,9 +642,13 @@ public abstract class ActorGui extends Gui {
 	protected AlignTable mOptionTable = new AlignTable();
 
 	// Hiders
+	/** Hides visual table */
 	protected HideListener mVisualHider = new HideListener(true);
 	/** Hides options options :D:D:D */
 	protected HideListener mOptionHider = new HideListener(true);
+
+	/** Invoker that handles all commands */
+	protected Invoker mInvoker = null;
 
 	/** All widget variables */
 	private InnerWidgets mWidgets = new InnerWidgets();
