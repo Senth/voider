@@ -45,7 +45,9 @@ public class Invoker implements Disposable {
 	public boolean execute(Command command, boolean chained) {
 		boolean success = command.execute();
 		if (success) {
-			command.setAsChanied();
+			if (chained) {
+				command.setAsChanied();
+			}
 			mUndoCommands.push(command);
 			disposeRedo();
 

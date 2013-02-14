@@ -51,12 +51,18 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 	public void update(float deltaTime) {
 		// Update position
 		if (mBody != null) {
-			// Do we need to reload the fixtures?
-			if (mFixtureCreateTime < getDef().getLastChangeTime()) {
-				reloadFixtures();
-			}
-
 			mPosition.set(mBody.getPosition());
+
+			if (mEditorActive) {
+				// Do we need to reload the body?
+				if (mBodyUpdateTime <= getDef().getBodyChangeTime()) {
+					reloadBody();
+				}
+				// Do we need to reload the fixtures?
+				else if (mFixtureCreateTime <= getDef().getFixtureChangeTime()) {
+					reloadFixtures();
+				}
+			}
 		}
 
 		// Decrease life if colliding with something...
@@ -326,6 +332,9 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 	 */
 	public void createBody(BodyDef bodyDef) {
 		if (mWorld != null && mBody == null) {
+			if (mSkipRotate) {
+				bodyDef.angularVelocity = 0;
+			}
 			mBody = mWorld.createBody(bodyDef);
 			for (FixtureDef fixtureDef : mDef.getFixtureDefs()) {
 				if (fixtureDef != null && fixtureDef.shape != null) {
@@ -336,6 +345,7 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 			mBody.setUserData(this);
 
 			mFixtureCreateTime = GameTime.getTotalGlobalTimeElapsed();
+			mBodyUpdateTime = mFixtureCreateTime;
 		}
 	}
 
@@ -395,7 +405,7 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 			}
 
 			// Do we have body corners? Reset those in that case
-			if (mCreateBodyCorners) {
+			if (mHasBodyCorners) {
 				destroyBodyCorners();
 				createBodyCorners();
 			}
@@ -434,7 +444,7 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 	 * and in an editor.
 	 */
 	public void createBodyCorners() {
-		mCreateBodyCorners = true;
+		mHasBodyCorners = true;
 		if (mDef.getShapeType() == ActorShapeTypes.CUSTOM && mEditorActive) {
 			Vector2 worldPos = Pools.obtain(Vector2.class);
 			for (Vector2 localPos : mDef.getCorners()) {
@@ -449,7 +459,7 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 	 * Destroys all body corners
 	 */
 	public void destroyBodyCorners() {
-		mCreateBodyCorners = false;
+		mHasBodyCorners = false;
 		for (Body body : mCorners) {
 			body.getWorld().destroyBody(body);
 		}
@@ -457,7 +467,38 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 	}
 
 	/**
-	 * Protected constructor, used for JSON
+	 * Sets if the actor shall rotate on its own
+	 * @param skipRotating set to true to skip making the actor rotate by its own
+	 */
+	public void setSkipRotating(boolean skipRotating) {
+		mSkipRotate = skipRotating;
+
+		if (mBody != null) {
+			if (mSkipRotate) {
+				mBody.setAngularVelocity(0);
+			} else {
+				mBody.setAngularVelocity(mDef.getRotationSpeed());
+			}
+		}
+	}
+
+	/**
+	 * @return true if the actor is currently skipping rotation
+	 */
+	public boolean isSkippingRotation() {
+		return mSkipRotate;
+	}
+
+
+	/**
+	 * @return true if it currently is drawing body corners
+	 */
+	public boolean hasBodyCorners() {
+		return mHasBodyCorners;
+	}
+
+	/**
+	 * Protected constructor
 	 */
 	protected Actor() {
 		mUniqueId = UUID.randomUUID();
@@ -521,6 +562,17 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 	}
 
 	/**
+	 * Sets the angular dampening on the current body
+	 */
+	private void reloadBody() {
+		if (!mSkipRotate) {
+			mBody.setAngularVelocity(mDef.getRotationSpeed());
+		}
+
+		mBodyUpdateTime = GameTime.getTotalGlobalTimeElapsed();
+	}
+
+	/**
 	 * Creates a body for the specific point at the specific index
 	 * @param corner the corner to create a body for
 	 */
@@ -552,8 +604,12 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 	private ArrayList<Body> mCorners = new ArrayList<Body>();
 	/** Global time when we last created the fixtures */
 	private float mFixtureCreateTime = 0;
+	/** Global time when we last created the fixtures */
+	private float mBodyUpdateTime = 0;
 	/** True if the actor shall create body corners */
-	private boolean mCreateBodyCorners = false;
+	private boolean mHasBodyCorners = false;
+	/** True if the actor shall skip rotating */
+	private boolean mSkipRotate = false;
 
 	/** The world used for creating bodies */
 	protected static World mWorld = null;

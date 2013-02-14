@@ -12,13 +12,13 @@ import com.spiddekauga.voider.game.actors.ActorDef.PolygonCornerTooCloseExceptio
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class CActorRemoveCorner extends Command {
+public class CActorCornerRemove extends Command {
 	/**
 	 * Removes a corner from the specified terrain actor
 	 * @param actor the actor to remove the corner from
 	 * @param index of the corner we want to remove
 	 */
-	public CActorRemoveCorner(ActorDef actor, int index) {
+	public CActorCornerRemove(ActorDef actor, int index) {
 		mActor = actor;
 		mIndex = index;
 	}

@@ -1,5 +1,6 @@
 package com.spiddekauga.voider.scene;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
@@ -16,10 +17,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
 import com.spiddekauga.utils.Command;
 import com.spiddekauga.utils.CommandSequence;
-import com.spiddekauga.utils.Invoker;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
+import com.spiddekauga.utils.scene.ui.CheckedListener;
 import com.spiddekauga.utils.scene.ui.HideListener;
 import com.spiddekauga.utils.scene.ui.SliderListener;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
@@ -36,6 +37,7 @@ import com.spiddekauga.voider.editor.commands.AeSave;
 import com.spiddekauga.voider.game.actors.ActorShapeTypes;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceNames;
+import com.spiddekauga.voider.scene.DrawActorTool.States;
 
 /**
  * Has some common methods for gui
@@ -48,6 +50,7 @@ public abstract class ActorGui extends Gui {
 	public void resetValues() {
 		// Visuals
 		mWidgets.visual.startAngle.setValue(mActorEditor.getStartingAngle());
+		mWidgets.visual.rotationSpeed.setValue(mActorEditor.getRotationSpeed());
 
 		// Shape
 		if (mWidgets.visual.shapeCircleRadius != null) {
@@ -85,6 +88,26 @@ public abstract class ActorGui extends Gui {
 		case CUSTOM:
 			mWidgets.visual.shapeCustom.setChecked(true);
 			break;
+		}
+
+		// Custom shape
+		if (mWidgets.visual.shapeCustom != null) {
+			switch (mActorEditor.getDrawActorToolState()) {
+			case ADD_CORNER:
+				mWidgets.visual.customShapeAddMove.setChecked(true);
+				break;
+
+			case REMOVE:
+				mWidgets.visual.customShapeRemove.setChecked(true);
+				break;
+
+			case SET_CENTER:
+				mWidgets.visual.customShapeSetCenter.setChecked(true);
+				break;
+
+			default:
+				Gdx.app.error("ActorGui", "Invalid draw actor tool state! " + mActorEditor.getDrawActorToolState());
+			}
 		}
 
 
@@ -264,6 +287,33 @@ public abstract class ActorGui extends Gui {
 			}
 		});
 		mMainTable.add(button);
+
+		// Undo/Redo
+		if (mActorEditor.hasUndo()) {
+			button = new TextButton("Undo", textStyle);
+			button.addListener(new EventListener() {
+				@Override
+				public boolean handle(Event event) {
+					if (isButtonPressed(event)) {
+						mActorEditor.undo();
+					}
+					return true;
+				}
+			});
+			mMainTable.add(button);
+
+			button = new TextButton("Redo", textStyle);
+			button.addListener(new EventListener() {
+				@Override
+				public boolean handle(Event event) {
+					if (isButtonPressed(event)) {
+						mActorEditor.redo();
+					}
+					return true;
+				}
+			});
+			mMainTable.add(button);
+		}
 	}
 
 	/**
@@ -296,6 +346,27 @@ public abstract class ActorGui extends Gui {
 			@Override
 			protected void onChange(float newValue) {
 				mActorEditor.setStartingAngle(newValue);
+			}
+		};
+
+
+		// Rotation speed
+		mVisualTable.row();
+		label = new Label("Rotation speed", labelStyle);
+		mVisualTable.add(label);
+
+		mVisualTable.row();
+		slider = new Slider(Editor.Actor.Visual.ROTATE_SPEED_MIN, Editor.Actor.Visual.ROTATE_SPEED_MAX, Editor.Actor.Visual.ROTATE_SPEED_STEP_SIZE, false, sliderStyle);
+		mWidgets.visual.rotationSpeed = slider;
+		mVisualTable.add(slider);
+		textField = new TextField("", textFieldStyle);
+		textField.setWidth(Enemy.TEXT_FIELD_NUMBER_WIDTH);
+		mVisualTable.add(textField);
+
+		new SliderListener(slider, textField) {
+			@Override
+			protected void onChange(float newValue) {
+				mActorEditor.setRotationSpeed(newValue);
 			}
 		};
 
@@ -563,6 +634,53 @@ public abstract class ActorGui extends Gui {
 			};
 		}
 
+		// Custom
+		if (containsShape(ActorShapeTypes.CUSTOM, actorShapeTypes)) {
+			mVisualTable.row();
+			buttonGroup = new ButtonGroup();
+			Button button = new TextButton("Add/Move", toggleStyle);
+			mWidgets.visual.customShapeAddMove = button;
+			buttonGroup.add(button);
+			customHider.addToggleActor(button);
+			new CheckedListener(button) {
+				@Override
+				protected void onChange(boolean checked) {
+					if (checked) {
+						mActorEditor.setDrawActorToolState(States.ADD_CORNER);
+					}
+				}
+			};
+			mVisualTable.add(button);
+
+			button = new TextButton("Remove", toggleStyle);
+			mWidgets.visual.customShapeRemove = button;
+			buttonGroup.add(button);
+			customHider.addToggleActor(button);
+			new CheckedListener(button) {
+				@Override
+				protected void onChange(boolean checked) {
+					if (checked) {
+						mActorEditor.setDrawActorToolState(States.REMOVE);
+					}
+				}
+			};
+			mVisualTable.add(button);
+
+			button = new TextButton("Set center", toggleStyle);
+			mWidgets.visual.customShapeSetCenter = button;
+			buttonGroup.add(button);
+			customHider.addToggleActor(button);
+			new CheckedListener(button) {
+				@Override
+				protected void onChange(boolean checked) {
+					if (checked) {
+						mActorEditor.setDrawActorToolState(States.SET_CENTER);
+					}
+				}
+			};
+			mVisualTable.add(button);
+		}
+
 
 		if (circleHider != null) {
 			mVisualHider.addChild(circleHider);
@@ -594,6 +712,7 @@ public abstract class ActorGui extends Gui {
 		 */
 		static class VisualWidgets {
 			Slider startAngle = null;
+			Slider rotationSpeed = null;
 
 			// Shapes
 			Button shapeCircle = null;
@@ -608,6 +727,11 @@ public abstract class ActorGui extends Gui {
 			Slider shapeRectangleWidth = null;
 			Slider shapeRectangleHeight = null;
 			Slider shapeLineLength = null;
+
+			// Custom shape
+			Button customShapeAddMove = null;
+			Button customShapeRemove = null;
+			Button customShapeSetCenter = null;
 		}
 
 		/**
@@ -646,9 +770,6 @@ public abstract class ActorGui extends Gui {
 	protected HideListener mVisualHider = new HideListener(true);
 	/** Hides options options :D:D:D */
 	protected HideListener mOptionHider = new HideListener(true);
-
-	/** Invoker that handles all commands */
-	protected Invoker mInvoker = null;
 
 	/** All widget variables */
 	private InnerWidgets mWidgets = new InnerWidgets();

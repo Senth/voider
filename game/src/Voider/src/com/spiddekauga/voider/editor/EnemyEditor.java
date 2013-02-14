@@ -33,6 +33,7 @@ import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceNames;
 import com.spiddekauga.voider.resources.ResourceSaver;
 import com.spiddekauga.voider.resources.UndefinedResourceTypeException;
+import com.spiddekauga.voider.scene.DrawActorTool;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.scene.SelectDefScene;
@@ -43,7 +44,7 @@ import com.spiddekauga.voider.scene.WorldScene;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class EnemyEditor extends WorldScene implements IActorEditor {
+public class EnemyEditor extends WorldScene implements IActorEditor, IActorDrawEditor {
 	/**
 	 * Creates the enemy editor
 	 */
@@ -349,11 +350,24 @@ public class EnemyEditor extends WorldScene implements IActorEditor {
 		return mDef.isTurning();
 	}
 
-	/**
-	 * @return true if the current enemy is unsaved
-	 */
+	@Override
 	public boolean isUnsaved() {
 		return !mActorSavedSinceLastEdit;
+	}
+
+	@Override
+	public boolean hasUndo() {
+		return false;
+	}
+
+	@Override
+	public void undo() {
+
+	}
+
+	@Override
+	public void redo() {
+
 	}
 
 	/**
@@ -445,6 +459,27 @@ public class EnemyEditor extends WorldScene implements IActorEditor {
 	public void setStartingAngle(float angle) {
 		mDef.setStartAngle(angle);
 		mActorSavedSinceLastEdit = false;
+	}
+
+	@Override
+	public void setRotationSpeed(float rotationSpeed) {
+		mDef.setRotationSpeed(rotationSpeed);
+		mActorSavedSinceLastEdit = false;
+	}
+
+	@Override
+	public float getRotationSpeed() {
+		return mDef.getRotationSpeed();
+	}
+
+	@Override
+	public void setDrawActorToolState(DrawActorTool.States state) {
+		// Does nothing
+	}
+
+	@Override
+	public DrawActorTool.States getDrawActorToolState() {
+		return null;
 	}
 
 	@Override

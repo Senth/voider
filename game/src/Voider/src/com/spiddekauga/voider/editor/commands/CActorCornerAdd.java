@@ -10,13 +10,13 @@ import com.spiddekauga.voider.game.actors.ActorDef;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class CActorAddCorner extends Command {
+public class CActorCornerAdd extends Command {
 	/**
 	 * Constructs the command where the corner should be added
 	 * @param actorDef the actor definition to add the corner to
 	 * @param cornerPos the corner position
 	 */
-	public CActorAddCorner(ActorDef actorDef, Vector2 cornerPos) {
+	public CActorCornerAdd(ActorDef actorDef, Vector2 cornerPos) {
 		mActorDef = actorDef;
 		mCornerPos = Pools.obtain(Vector2.class);
 		mCornerPos.set(cornerPos);

@@ -82,7 +82,6 @@ public class BulletEditorGui extends ActorGui {
 	public void setBulletEditor(BulletEditor bulletEditor) {
 		mBulletEditor = bulletEditor;
 
-		mInvoker = bulletEditor.getInvoker();
 		setActorEditor(mBulletEditor);
 	}
 

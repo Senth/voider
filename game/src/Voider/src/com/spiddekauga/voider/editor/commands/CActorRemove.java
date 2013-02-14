@@ -1,7 +1,7 @@
 package com.spiddekauga.voider.editor.commands;
 
 import com.spiddekauga.utils.Command;
-import com.spiddekauga.voider.editor.IActorEditor;
+import com.spiddekauga.voider.editor.IActorDrawEditor;
 import com.spiddekauga.voider.game.actors.Actor;
 
 /**
@@ -16,7 +16,7 @@ public class CActorRemove extends Command {
 	 * @param actor the actor to remove
 	 * @param editor the editor to remove the actor from
 	 */
-	public CActorRemove(Actor actor, IActorEditor editor) {
+	public CActorRemove(Actor actor, IActorDrawEditor editor) {
 		mActor = actor;
 		mEditor = editor;
 	}
@@ -24,6 +24,10 @@ public class CActorRemove extends Command {
 	@Override
 	public boolean execute() {
 		mEditor.onActorRemoved(mActor);
+		mUsesBodyCorners = mActor.hasBodyCorners();
+		if (mUsesBodyCorners) {
+			mActor.destroyBodyCorners();
+		}
 		mActor.destroyBody();
 		return true;
 	}
@@ -31,12 +35,17 @@ public class CActorRemove extends Command {
 	@Override
 	public boolean undo() {
 		mActor.createBody();
+		if (mUsesBodyCorners) {
+			mActor.createBodyCorners();
+		}
 		mEditor.onActorAdded(mActor);
 		return true;
 	}
 
+	/** True if we shall create the body corners on undo */
+	private boolean mUsesBodyCorners = false;
 	/** The actor to remove */
 	private Actor mActor;
 	/** The editor to remove the actor from */
-	private IActorEditor mEditor;
+	private IActorDrawEditor mEditor;
 }

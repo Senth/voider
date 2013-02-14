@@ -95,6 +95,7 @@ class VisualVars implements Json.Serializable {
 	 * Sets the default values of the visual vars depending on the current actor type
 	 */
 	private void setDefaultValues() {
+		// Type specific settings
 		switch (mActorType) {
 		case ENEMY:
 			shapeType = Enemy.Visual.SHAPE_DEFAULT;

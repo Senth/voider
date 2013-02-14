@@ -3,6 +3,7 @@ package com.spiddekauga.voider.editor;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.math.Vector2;
 import com.spiddekauga.utils.Invoker;
 import com.spiddekauga.voider.game.Weapon;
@@ -27,7 +28,7 @@ import com.spiddekauga.voider.scene.WorldScene;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class BulletEditor extends WorldScene implements IActorEditor {
+public class BulletEditor extends WorldScene implements IActorEditor, IActorDrawEditor {
 	/**
 	 * Creates a bullet editor.
 	 */
@@ -78,12 +79,32 @@ public class BulletEditor extends WorldScene implements IActorEditor {
 		if (mBulletActor != null && mDef.getShapeType() == ActorShapeTypes.CUSTOM) {
 			mBulletActor.update(Gdx.graphics.getDeltaTime());
 		}
-
 	}
 
 	@Override
 	public boolean hasResources() {
 		return true;
+	}
+
+	/**
+	 * Only for PC users...
+	 */
+	@Override
+	public boolean keyDown(int keycode) {
+		// Redo - Ctrl + Shift + Z || Ctrl + Y
+		if ((keycode == Keys.Z && (Gdx.input.isKeyPressed(Keys.CONTROL_LEFT) || Gdx.input.isKeyPressed(Keys.CONTROL_RIGHT)) && (Gdx.input.isKeyPressed(Keys.SHIFT_LEFT) || Gdx.input.isKeyPressed(Keys.SHIFT_RIGHT))) ||
+				(keycode == Keys.Y && (Gdx.input.isKeyPressed(Keys.CONTROL_LEFT) || Gdx.input.isKeyPressed(Keys.CONTROL_RIGHT)))) {
+			mInvoker.redo();
+			return true;
+		}
+
+		// Undo - Ctrl + Z
+		if (keycode == Keys.Z && (Gdx.input.isKeyPressed(Keys.CONTROL_LEFT) || Gdx.input.isKeyPressed(Keys.CONTROL_RIGHT))) {
+			mInvoker.undo();
+			return true;
+		}
+
+		return false;
 	}
 
 	@Override
@@ -151,8 +172,24 @@ public class BulletEditor extends WorldScene implements IActorEditor {
 		mInvoker.dispose();
 	}
 
+	@Override
 	public boolean isUnsaved() {
 		return mUnsaved;
+	}
+
+	@Override
+	public boolean hasUndo() {
+		return true;
+	}
+
+	@Override
+	public void undo() {
+		mInvoker.undo();
+	}
+
+	@Override
+	public void redo() {
+		mInvoker.redo();
 	}
 
 	@Override
@@ -186,6 +223,17 @@ public class BulletEditor extends WorldScene implements IActorEditor {
 	@Override
 	public float getStartingAngle() {
 		return mDef.getStartAngle();
+	}
+
+	@Override
+	public void setRotationSpeed(float rotationSpeed) {
+		mDef.setRotationSpeed((float) Math.toRadians(rotationSpeed));
+		mUnsaved = true;
+	}
+
+	@Override
+	public float getRotationSpeed() {
+		return (float) Math.toDegrees(mDef.getRotationSpeed());
 	}
 
 	@Override
@@ -249,13 +297,23 @@ public class BulletEditor extends WorldScene implements IActorEditor {
 	}
 
 	@Override
+	public void setDrawActorToolState(DrawActorTool.States state) {
+		mDrawActorTool.setState(state);
+	}
+
+	@Override
+	public DrawActorTool.States getDrawActorToolState() {
+		return mDrawActorTool.getState();
+	}
+
+	@Override
 	public void onActorAdded(Actor actor) {
 		mBulletActor = (BulletActor) actor;
 	}
 
 	@Override
 	public void onActorRemoved(Actor actor) {
-		// TODO Auto-generated method stub
+		mBulletActor = null;
 	}
 
 	/**

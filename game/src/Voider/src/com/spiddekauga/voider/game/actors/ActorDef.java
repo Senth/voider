@@ -71,7 +71,7 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	 */
 	public void setStartAngle(float angle) {
 		getBodyDef().angle = (float)Math.toRadians(angle);
-		mLastChangeTime = GameTime.getTotalGlobalTimeElapsed();
+		mBodyChangeTime = GameTime.getTotalGlobalTimeElapsed();
 	}
 
 	/**
@@ -124,7 +124,7 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	 */
 	public void addFixtureDef(FixtureDef fixtureDef) {
 		mFixtureDefs.add(fixtureDef);
-		mLastChangeTime = GameTime.getTotalGlobalTimeElapsed();
+		mFixtureChangeTime = GameTime.getTotalGlobalTimeElapsed();
 	}
 
 	/**
@@ -173,11 +173,13 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 		copy.active = mBodyDef.active;
 		copy.allowSleep = mBodyDef.allowSleep;
 		copy.angularDamping = mBodyDef.angularDamping;
+		copy.angularVelocity = mBodyDef.angularVelocity;
 		copy.awake = mBodyDef.awake;
 		copy.bullet = mBodyDef.bullet;
 		copy.fixedRotation = mBodyDef.fixedRotation;
 		copy.gravityScale = mBodyDef.gravityScale;
 		copy.linearDamping = mBodyDef.linearDamping;
+		copy.linearVelocity.set(mBodyDef.linearVelocity);
 		copy.position.set(mBodyDef.position);
 		copy.type = mBodyDef.type;
 		return copy;
@@ -254,7 +256,7 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 
 			case LINE:
 				EdgeShape edgeShape = new EdgeShape();
-				edgeShape.set(0, 0, -mVisualVars.shapeWidth, 0);
+				edgeShape.set(-mVisualVars.shapeWidth * 0.5f, 0, mVisualVars.shapeWidth * 0.5f, 0);
 				fixtureDef.shape = edgeShape;
 				break;
 
@@ -270,7 +272,7 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 		} else {
 			Gdx.app.error("EnemyActorDef", "FixtureDef null at setShapeType()");
 		}
-		mLastChangeTime = GameTime.getTotalGlobalTimeElapsed();
+		mFixtureChangeTime = GameTime.getTotalGlobalTimeElapsed();
 	}
 
 	/**
@@ -295,7 +297,7 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 			}
 
 		}
-		mLastChangeTime = GameTime.getTotalGlobalTimeElapsed();
+		mFixtureChangeTime = GameTime.getTotalGlobalTimeElapsed();
 	}
 
 	/**
@@ -336,7 +338,7 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 				else if (fixtureDef.shape instanceof EdgeShape) {
 					// LINE
 					if (mVisualVars.shapeType == ActorShapeTypes.LINE) {
-						((EdgeShape)fixtureDef.shape).set(0, 0, mVisualVars.shapeWidth, 0);
+						((EdgeShape)fixtureDef.shape).set(-mVisualVars.shapeWidth * 0.5f , 0, mVisualVars.shapeWidth * 0.5f, 0);
 					}
 				}
 				else {
@@ -346,7 +348,7 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 				Gdx.app.error("EnemyActorDef", "FixtureDef null at setShapeWidth()");
 			}
 		}
-		mLastChangeTime = GameTime.getTotalGlobalTimeElapsed();
+		mFixtureChangeTime = GameTime.getTotalGlobalTimeElapsed();
 	}
 
 	/**
@@ -390,7 +392,7 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 				Gdx.app.error("EnemyActorDef", "FixtureDef null at setShapeWidth()");
 			}
 		}
-		mLastChangeTime = GameTime.getTotalGlobalTimeElapsed();
+		mFixtureChangeTime = GameTime.getTotalGlobalTimeElapsed();
 	}
 
 	/**
@@ -406,6 +408,24 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	public ActorShapeTypes getShapeType() {
 		return mVisualVars.shapeType;
 	}
+
+	/**
+	 * Sets the rotation speed of the actor. This might not work for
+	 * some actors that rotate the actor on their own...
+	 * @param rotationSpeed new rotation speed of the actor.
+	 */
+	public void setRotationSpeed(float rotationSpeed) {
+		getBodyDef().angularVelocity = rotationSpeed;
+		mBodyChangeTime = GameTime.getTotalGlobalTimeElapsed();
+	}
+
+	/**
+	 * @return rotation speed of the actor
+	 */
+	public float getRotationSpeed() {
+		return getBodyDef().angularVelocity;
+	}
+
 
 	/**
 	 * Add another corner position to the back of the array
@@ -451,7 +471,7 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 
 			throw e;
 		}
-		mLastChangeTime = GameTime.getTotalGlobalTimeElapsed();
+		mFixtureChangeTime = GameTime.getTotalGlobalTimeElapsed();
 	}
 
 	/**
@@ -470,7 +490,7 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 				Gdx.app.error("ActorDef", "Failed to remove corner, exception, should never happen");
 			}
 		}
-		mLastChangeTime = GameTime.getTotalGlobalTimeElapsed();
+		mFixtureChangeTime = GameTime.getTotalGlobalTimeElapsed();
 
 		return removedPosition;
 	}
@@ -505,7 +525,7 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 
 		Pools.free(oldPos);
 
-		mLastChangeTime = GameTime.getTotalGlobalTimeElapsed();
+		mFixtureChangeTime = GameTime.getTotalGlobalTimeElapsed();
 	}
 
 	/**
@@ -513,6 +533,13 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	 */
 	public int getCornerCount() {
 		return mVisualVars.corners.size();
+	}
+
+	/**
+	 * @return all the corners of the actor
+	 */
+	public ArrayList<Vector2> getCorners() {
+		return mVisualVars.corners;
 	}
 
 
@@ -582,17 +609,17 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	protected abstract FixtureDef getDefaultFixtureDef();
 
 	/**
-	 * @return all the corners of the actor
+	 * @return when this definition was changed that affects the fixtures. In global time.
 	 */
-	ArrayList<Vector2> getCorners() {
-		return mVisualVars.corners;
+	float getFixtureChangeTime() {
+		return mFixtureChangeTime;
 	}
 
 	/**
-	 * @return time when this definition was last changed. In global time.
+	 * @return when this definition was changed that affects the body.
 	 */
-	float getLastChangeTime() {
-		return mLastChangeTime;
+	float getBodyChangeTime() {
+		return mBodyChangeTime;
 	}
 
 	/**
@@ -808,6 +835,18 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 		vertices[2].x = vertices[0].x;
 		vertices[2].y = - vertices[0].y;
 
+
+		// Set the center...
+		Vector2 center = Pools.obtain(Vector2.class);
+		center.set(vertices[0]).add(vertices[1]).add(vertices[2]).div(3);
+
+		// Offset all vertices with negative center
+		for (Vector2 vertex : vertices) {
+			vertex.sub(center);
+		}
+
+		Pools.free(center);
+
 		return vertices;
 	}
 
@@ -847,8 +886,10 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 		fixtureDefCopy.shape = fixtureDefOriginal.shape;
 	}
 
-	/** Time when the definition was changed last time */
-	private float mLastChangeTime = 0;
+	/** Time when the fixture was changed last time */
+	private float mFixtureChangeTime = 0;
+	/** When the body was changed last time */
+	private float mBodyChangeTime = 0;
 	/** Defines the mass, shape, etc. */
 	private ArrayList<FixtureDef> mFixtureDefs = new ArrayList<FixtureDef>();
 	/** Maximum life of the actor, usually starting amount of life */

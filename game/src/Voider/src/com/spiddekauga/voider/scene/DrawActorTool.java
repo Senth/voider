@@ -13,13 +13,14 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Pools;
 import com.spiddekauga.utils.Invoker;
 import com.spiddekauga.voider.editor.HitWrapper;
-import com.spiddekauga.voider.editor.IActorEditor;
+import com.spiddekauga.voider.editor.IActorDrawEditor;
 import com.spiddekauga.voider.editor.commands.CActorAdd;
-import com.spiddekauga.voider.editor.commands.CActorAddCorner;
+import com.spiddekauga.voider.editor.commands.CActorCornerAdd;
+import com.spiddekauga.voider.editor.commands.CActorCornerMove;
+import com.spiddekauga.voider.editor.commands.CActorCornerRemove;
+import com.spiddekauga.voider.editor.commands.CActorCornerRemoveAll;
 import com.spiddekauga.voider.editor.commands.CActorMove;
-import com.spiddekauga.voider.editor.commands.CActorMoveCorner;
 import com.spiddekauga.voider.editor.commands.CActorRemove;
-import com.spiddekauga.voider.editor.commands.CActorRemoveCorner;
 import com.spiddekauga.voider.editor.commands.CActorSelect;
 import com.spiddekauga.voider.editor.commands.CActorSelect.IActorSelect;
 import com.spiddekauga.voider.game.actors.Actor;
@@ -41,7 +42,7 @@ public class DrawActorTool extends TouchTool implements IActorSelect {
 	 * @param actorType the actor type to create/use
 	 * @param actorEditor editor for the actor, will call some methods in here
 	 */
-	public DrawActorTool(Camera camera, World world, Invoker invoker, Class<?> actorType, IActorEditor actorEditor) {
+	public DrawActorTool(Camera camera, World world, Invoker invoker, Class<?> actorType, IActorDrawEditor actorEditor) {
 		super(camera, world);
 		mInvoker = invoker;
 		mActorEditor = actorEditor;
@@ -59,7 +60,7 @@ public class DrawActorTool extends TouchTool implements IActorSelect {
 	 * @param actorEditor editor for the actor, will call some methods in here
 	 * @param actorDef the actor definition to use for the only actor
 	 */
-	public DrawActorTool(Camera camera, World world, Invoker invoker, Class<?> actorType, IActorEditor actorEditor, ActorDef actorDef) {
+	public DrawActorTool(Camera camera, World world, Invoker invoker, Class<?> actorType, IActorDrawEditor actorEditor, ActorDef actorDef) {
 		super(camera, world);
 		mInvoker = invoker;
 		mActorEditor = actorEditor;
@@ -89,6 +90,13 @@ public class DrawActorTool extends TouchTool implements IActorSelect {
 	}
 
 	/**
+	 * @return current state of the draw actor tool
+	 */
+	public States getState() {
+		return mState;
+	}
+
+	/**
 	 * All the states the tool can be in
 	 */
 	public enum States {
@@ -97,7 +105,9 @@ public class DrawActorTool extends TouchTool implements IActorSelect {
 		/** Removes either corners the whole actor */
 		REMOVE,
 		/** Moves the whole actor, corners can be moved in ADD_CORNER state */
-		MOVE
+		MOVE,
+		/** Sets the center of the actor */
+		SET_CENTER,
 	}
 
 	@Override
@@ -196,12 +206,20 @@ public class DrawActorTool extends TouchTool implements IActorSelect {
 					// Only do something if we didn't hit the actor the first time
 					if (!mChangedActorSinceUp) {
 						mInvoker.execute(new CActorRemove(mActor, mActorEditor));
-						mInvoker.execute(new CActorSelect(this, mActor), true);
+						mInvoker.execute(new CActorCornerRemoveAll(mActor.getDef()), true);
+						mInvoker.execute(new CActorSelect(this, null), true);
 					}
 				}
 				// Else hit a corner, delete it
 				else {
-					mInvoker.execute(new CActorRemoveCorner(mActor.getDef(), mCornerIndexCurrent));
+					mCornerIndexCurrent = mActor.getCornerIndex(mHitBody.getPosition());
+					mInvoker.execute(new CActorCornerRemove(mActor.getDef(), mCornerIndexCurrent));
+
+					// Was it the last corner? Remove actor too then
+					if (mActor.getDef().getCornerCount() == 0) {
+						mInvoker.execute(new CActorRemove(mActor, mActorEditor), true);
+						mInvoker.execute(new CActorSelect(this, null), true);
+					}
 				}
 			}
 			break;
@@ -257,7 +275,7 @@ public class DrawActorTool extends TouchTool implements IActorSelect {
 					newPos.set(mActor.getDef().getCornerPosition(mCornerIndexCurrent));
 					try {
 						mActor.getDef().moveCorner(mCornerIndexCurrent, mDragOrigin);
-						mInvoker.execute(new CActorMoveCorner(mActor.getDef(), mCornerIndexCurrent, newPos));
+						mInvoker.execute(new CActorCornerMove(mActor.getDef(), mCornerIndexCurrent, newPos));
 					} catch (Exception e) {
 						// Does nothing
 					}
@@ -299,6 +317,7 @@ public class DrawActorTool extends TouchTool implements IActorSelect {
 		try {
 			Constructor<?> constructor = mActorType.getConstructor();
 			Actor actor = (Actor) constructor.newInstance();
+			actor.setSkipRotating(true);
 
 			if (mOnlyOneActor) {
 				actor.setDef(mActorDef);
@@ -369,7 +388,7 @@ public class DrawActorTool extends TouchTool implements IActorSelect {
 		// Set the command as chained if no corner exist in the actor
 		boolean chained = mActor.getDef().getCornerCount() == 0;
 
-		mInvoker.execute(new CActorAddCorner(mActor.getDef(), cornerPos), chained);
+		mInvoker.execute(new CActorCornerAdd(mActor.getDef(), cornerPos), chained);
 	}
 
 	/**
@@ -429,7 +448,7 @@ public class DrawActorTool extends TouchTool implements IActorSelect {
 	/** True if the current corner was added during the down() event */
 	private boolean mCornerAddedNow = false;
 	/** The actor editor */
-	private IActorEditor mActorEditor;
+	private IActorDrawEditor mActorEditor;
 	/** The actor type that will be created */
 	private Class<?> mActorType;
 	/** If only one actor shall be able to be created simultaneously */

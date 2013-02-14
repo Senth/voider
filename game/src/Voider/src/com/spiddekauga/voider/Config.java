@@ -149,6 +149,25 @@ public class Config {
 		}
 
 		/**
+		 * General editor options
+		 */
+		public static class Actor {
+			/**
+			 * Visual options
+			 */
+			public class Visual {
+				/** Minimum rotate speed of the weapon */
+				public final static float ROTATE_SPEED_MIN = -720;
+				/** Maximum rotate speed of the weapon */
+				public final static float ROTATE_SPEED_MAX = 720;
+				/** Default rotate speed of the weapon */
+				public final static float ROTATE_SPEED_DEFAULT = 0;
+				/** Step size of rotate speed */
+				public final static float ROTATE_SPEED_STEP_SIZE = 1;
+			}
+		}
+
+		/**
 		 * Bullet editor options
 		 */
 		public static class Bullet {

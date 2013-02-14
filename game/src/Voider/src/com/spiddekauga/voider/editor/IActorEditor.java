@@ -1,7 +1,7 @@
 package com.spiddekauga.voider.editor;
 
-import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.ActorShapeTypes;
+import com.spiddekauga.voider.scene.DrawActorTool;
 
 /**
  * Interface for actor editors. This interface have some common
@@ -10,19 +10,6 @@ import com.spiddekauga.voider.game.actors.ActorShapeTypes;
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
 public interface IActorEditor {
-	// ------------- DrawActorTool ------------
-	/**
-	 * Called when an actor is added (not same as #newActor())
-	 * @param actor the actor that was created
-	 */
-	void onActorAdded(Actor actor);
-
-	/**
-	 * Called when an actor is removed
-	 * @param actor the actor that was removed
-	 */
-	void onActorRemoved(Actor actor);
-
 	// ------------- File Menu ----------------
 	/**
 	 * Creates a new actor in the current editor
@@ -49,6 +36,21 @@ public interface IActorEditor {
 	 */
 	boolean isUnsaved();
 
+	/**
+	 * @return true if the editor has the ability to undo
+	 */
+	boolean hasUndo();
+
+	/**
+	 * undoes the previous command
+	 */
+	void undo();
+
+	/**
+	 * Redoes the undone command
+	 */
+	void redo();
+
 	// ------------ Definition -----------------
 	/**
 	 * @return name of the actor
@@ -74,26 +76,36 @@ public interface IActorEditor {
 
 	// --------------- Visuals ----------------
 	/**
-	 * Sets the starting angle of the enemy
-	 * @param angle starting angle of the enemy
+	 * Sets the starting angle of the actor
+	 * @param angle starting angle of the actor
 	 */
 	void setStartingAngle(float angle);
 
 	/**
-	 * @return starting angle of the enemy
+	 * @return starting angle of the actor
 	 */
 	float getStartingAngle();
 
+	/**
+	 * Sets the rotation speed of the actor
+	 * @param rotationSpeed the new rotation speed of the actor
+	 */
+	void setRotationSpeed(float rotationSpeed);
+
+	/**
+	 * @return rotation speed of the actor
+	 */
+	float getRotationSpeed();
 
 	// --------------- Shape ------------------
 	/**
 	 * Sets the shape of the enemy
-	 * @param shapeType new shape type of the enemy
+	 * @param shapeType new shape type of the actor
 	 */
 	void setShapeType(ActorShapeTypes shapeType);
 
 	/**
-	 * @return current shape type of the enemy
+	 * @return current shape type of the actor
 	 */
 	ActorShapeTypes getShapeType();
 
@@ -129,4 +141,16 @@ public interface IActorEditor {
 	 * @return current shape height
 	 */
 	float getShapeHeight();
+
+	// --------------- Custom Tool ----------------
+	/**
+	 * Sets the DrawActorTool state
+	 * @param state new state of the DrawActorTool
+	 */
+	void setDrawActorToolState(DrawActorTool.States state);
+
+	/**
+	 * @return current state of the draw actor tool
+	 */
+	DrawActorTool.States getDrawActorToolState();
 }

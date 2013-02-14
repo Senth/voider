@@ -13,14 +13,14 @@ import com.spiddekauga.voider.game.actors.ActorDef.PolygonCornerTooCloseExceptio
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class CActorMoveCorner extends Command {
+public class CActorCornerMove extends Command {
 	/**
 	 * Moves a corner in the specified actor definition
 	 * @param actorDef the actor definition which corner to move
 	 * @param index corner's index to move
 	 * @param newPos the new position of the corner
 	 */
-	public CActorMoveCorner(ActorDef actorDef, int index, Vector2 newPos) {
+	public CActorCornerMove(ActorDef actorDef, int index, Vector2 newPos) {
 		mActorDef = actorDef;
 		mIndex = index;
 		mDiffMovement = Pools.obtain(Vector2.class);
