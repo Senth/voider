@@ -126,11 +126,11 @@ public abstract class TouchTool extends InputAdapter {
 	protected Vector2 mTouchOrigin = new Vector2();
 	/** Current body that was hit */
 	protected Body mHitBody = null;
+	/** World used for picking */
+	protected World mWorld;
 
 	/** Camera of the tool, used to get world coordinates of the click */
 	private Camera mCamera;
-	/** World used for picking */
-	private World mWorld;
 
 	// Temp variables
 	/** All bodies that were hit during the pick */

@@ -244,15 +244,9 @@ public class BulletEditor extends WorldScene implements IActorEditor, IActorDraw
 		if (shapeType == ActorShapeTypes.CUSTOM) {
 			mActiveTouchTool = mDrawActorTool;
 			mInputMultiplexer.addProcessor(mActiveTouchTool);
-			if (mBulletActor != null) {
-				mBulletActor.createBody();
-				mBulletActor.createBodyCorners();
-			}
+			mDrawActorTool.activate();
 		} else if (mActiveTouchTool == mDrawActorTool) {
-			if (mBulletActor != null) {
-				mBulletActor.destroyBody();
-				mBulletActor.destroyBodyCorners();
-			}
+			mDrawActorTool.deactivate();
 			mActiveTouchTool = null;
 			mInputMultiplexer.removeProcessor(mDrawActorTool);
 		}

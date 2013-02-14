@@ -82,11 +82,66 @@ public class DrawActorTool extends TouchTool implements IActorSelect {
 	}
 
 	/**
+	 * Activates the tool. I.e. it will recreate any temporary bodies that were
+	 * destroyed.
+	 */
+	public void activate() {
+		if (mActor != null) {
+			mActor.createBody();
+
+			switch (mState) {
+			case ADD_CORNER:
+			case REMOVE:
+				mActor.createBodyCorners();
+				break;
+
+			case MOVE:
+				// Does nothing
+				break;
+
+			case SET_CENTER:
+				mActor.createBodyCenter();
+				break;
+			}
+		}
+	}
+
+	/**
+	 * Deactivates the tool. I.e. it will remove the temporary bodies that has
+	 * been created.
+	 */
+	public void deactivate() {
+		if (mActor != null) {
+			mActor.destroyBody();
+
+			switch (mState) {
+			case ADD_CORNER:
+			case REMOVE:
+				mActor.destroyBodyCorners();
+				break;
+
+			case MOVE:
+				// Does nothing
+				break;
+
+			case SET_CENTER:
+				mActor.destroyBodyCenter();
+				break;
+			}
+		}
+	}
+
+	/**
 	 * Sets the state of the tool
 	 * @param state which state the tool is actively in
 	 */
 	public void setState(States state) {
+		// Delete old state values
+		deactivate();
+
 		mState = state;
+
+		activate();
 	}
 
 	/**
@@ -112,15 +167,11 @@ public class DrawActorTool extends TouchTool implements IActorSelect {
 
 	@Override
 	public void setSelectedActor(Actor actor) {
-		if (mActor != null) {
-			mActor.destroyBodyCorners();
-		}
+		deactivate();
 
 		mActor = actor;
 
-		if (mActor != null) {
-			mActor.createBodyCorners();
-		}
+		activate();
 	}
 
 	@Override
@@ -223,6 +274,21 @@ public class DrawActorTool extends TouchTool implements IActorSelect {
 				}
 			}
 			break;
+
+
+		case SET_CENTER:
+			if (mActor != null) {
+				mDragOrigin.set(mActor.getPosition());
+				mCenterOffsetOrigin.set(mActor.getDef().getCenterOffset());
+				Vector2 centerOffset = Pools.obtain(Vector2.class);
+				centerOffset.set(mDragOrigin).sub(mTouchCurrent);
+				centerOffset.add(mActor.getDef().getCenterOffset());
+				mActor.getDef().setCenterOffset(centerOffset);
+				mActor.destroyBody();
+				mActor.setPosition(mTouchOrigin);
+				mActor.createBody();
+			}
+			break;
 		}
 	}
 
@@ -233,7 +299,7 @@ public class DrawActorTool extends TouchTool implements IActorSelect {
 			if (mCornerIndexCurrent != -1) {
 				try {
 					Vector2 newCornerPos = Pools.obtain(Vector2.class);
-					newCornerPos.set(mTouchCurrent).sub(mActor.getPosition());
+					newCornerPos.set(mTouchCurrent).sub(mActor.getPosition()).sub(mActor.getDef().getCenterOffset());
 					mActor.getDef().moveCorner(mCornerIndexCurrent, newCornerPos);
 					Pools.free(newCornerPos);
 				} catch (Exception e) {
@@ -254,6 +320,19 @@ public class DrawActorTool extends TouchTool implements IActorSelect {
 
 		case REMOVE:
 			// Does nothing
+			break;
+
+
+		case SET_CENTER:
+			if (mActor != null) {
+				Vector2 centerOffset = Pools.obtain(Vector2.class);
+				centerOffset.set(mDragOrigin).sub(mTouchCurrent);
+				centerOffset.add(mCenterOffsetOrigin);
+				mActor.getDef().setCenterOffset(centerOffset);
+				mActor.destroyBody();
+				mActor.setPosition(mTouchCurrent);
+				mActor.createBody();
+			}
 			break;
 		}
 	}
@@ -304,6 +383,11 @@ public class DrawActorTool extends TouchTool implements IActorSelect {
 
 
 		case REMOVE:
+			// Does nothing
+			break;
+
+
+		case SET_CENTER:
 			// Does nothing
 			break;
 		}
@@ -439,6 +523,8 @@ public class DrawActorTool extends TouchTool implements IActorSelect {
 
 	/** Origin of the drag */
 	private Vector2 mDragOrigin = new Vector2();
+	/** Origin of center offset */
+	private Vector2 mCenterOffsetOrigin = new Vector2();
 	/** Current corner index */
 	private int mCornerIndexCurrent = -1;
 	/** Last corner index */

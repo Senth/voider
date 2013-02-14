@@ -31,6 +31,7 @@ class VisualVars implements Json.Serializable {
 
 		json.writeValue("shapeType", shapeType);
 		json.writeValue("mActorType", mActorType);
+		json.writeValue("centerOffset", centerOffset);
 
 		switch (shapeType) {
 		case LINE:
@@ -61,6 +62,7 @@ class VisualVars implements Json.Serializable {
 		setDefaultValues();
 
 		shapeType = json.readValue("shapeType", ActorShapeTypes.class, jsonData);
+		centerOffset = json.readValue("centerOffset", Vector2.class, jsonData);
 
 		switch (shapeType) {
 		case LINE:
@@ -129,6 +131,8 @@ class VisualVars implements Json.Serializable {
 	float shapeWidth;
 	/** height of rectangle/triangle */
 	float shapeHeight;
+	/** Center offset for fixtures */
+	Vector2 centerOffset = new Vector2();
 	/** Corners of polygon, used for custom shapes */
 	ArrayList<Vector2> corners = new ArrayList<Vector2>();
 

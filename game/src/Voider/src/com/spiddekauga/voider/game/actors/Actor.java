@@ -20,6 +20,7 @@ import com.badlogic.gdx.utils.Pools;
 import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.utils.Json;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.Config.Editor;
 import com.spiddekauga.voider.editor.HitWrapper;
 import com.spiddekauga.voider.game.ITriggerListener;
 import com.spiddekauga.voider.game.TriggerAction;
@@ -410,6 +411,11 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 				createBodyCorners();
 			}
 
+			if (mHasBodyCenter) {
+				destroyBodyCenter();
+				createBodyCenter();
+			}
+
 			mFixtureCreateTime = GameTime.getTotalGlobalTimeElapsed();
 		}
 	}
@@ -440,15 +446,49 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 	}
 
 	/**
+	 * Creates a center picking body to move the center of the actor
+	 */
+	public void createBodyCenter() {
+		if (mEditorActive) {
+			mHasBodyCenter = true;
+			if (mBody != null && mCenterBody == null) {
+				mCenterBody = mWorld.createBody(new BodyDef());
+				mCenterBody.createFixture(Editor.getPickingFixture());
+				mCenterBody.setTransform(mPosition, 0);
+				HitWrapper hitWrapper = new HitWrapper(this, "center");
+				mCenterBody.setUserData(hitWrapper);
+			}
+		}
+	}
+
+	/**
+	 * Destroys the center body
+	 */
+	public void destroyBodyCenter() {
+		mHasBodyCenter = false;
+		if (mCenterBody != null) {
+			mCenterBody.getWorld().destroyBody(mCenterBody);
+			mCenterBody = null;
+		}
+	}
+
+	/**
+	 * @return true if the actor has a body center
+	 */
+	public boolean hasBodyCenter() {
+		return mHasBodyCenter;
+	}
+
+	/**
 	 * Creates body corners for the actor. Only applicable if actor is using a custom shape
 	 * and in an editor.
 	 */
 	public void createBodyCorners() {
-		mHasBodyCorners = true;
 		if (mDef.getShapeType() == ActorShapeTypes.CUSTOM && mEditorActive) {
+			mHasBodyCorners = true;
 			Vector2 worldPos = Pools.obtain(Vector2.class);
 			for (Vector2 localPos : mDef.getCorners()) {
-				worldPos.set(localPos).add(mPosition);
+				worldPos.set(localPos).add(mPosition).add(getDef().getCenterOffset());
 				createBodyCorner(worldPos);
 			}
 			Pools.free(worldPos);
@@ -579,8 +619,8 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 	private void createBodyCorner(Vector2 corner) {
 		Body body = mWorld.createBody(new BodyDef());
 		body.createFixture(Config.Editor.getPickingFixture());
-		body.setTransform(corner, 0f);
-		HitWrapper hitWrapper = new HitWrapper(this, true);
+		body.setTransform(corner, 0);
+		HitWrapper hitWrapper = new HitWrapper(this, "corner");
 		body.setUserData(hitWrapper);
 		mCorners.add(body);
 	}
@@ -602,6 +642,10 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 	private boolean mDisposed = false;
 	/** World corners of the actor, only used for custom shape and in an editor */
 	private ArrayList<Body> mCorners = new ArrayList<Body>();
+	/** Center body, this represents the center of the actor */
+	private Body mCenterBody = null;
+	/** True if the actor has a center body */
+	private boolean mHasBodyCenter = false;
 	/** Global time when we last created the fixtures */
 	private float mFixtureCreateTime = 0;
 	/** Global time when we last created the fixtures */

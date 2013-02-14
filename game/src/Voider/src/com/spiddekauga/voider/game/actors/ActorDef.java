@@ -225,39 +225,23 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 
 			// Create the new shape
 			switch (shapeType) {
-			case CIRCLE: {
-				CircleShape circleShape = new CircleShape();
-				circleShape.setRadius(mVisualVars.shapeCircleRadius);
-				fixtureDef.shape = circleShape;
+			case CIRCLE:
+				fixtureDef.shape = createCircleShape();
 				break;
-			}
 
-			case RECTANGLE: {
-				PolygonShape rectangleShape = new PolygonShape();
-				rectangleShape.setAsBox(mVisualVars.shapeWidth * 0.5f, mVisualVars.shapeHeight * 0.5f);
-				fixtureDef.shape = rectangleShape;
+
+			case RECTANGLE:
+				fixtureDef.shape = createRectangleShape();
 				break;
-			}
 
-			case TRIANGLE: {
-				PolygonShape triangleShape = new PolygonShape();
 
-				Vector2[] vertices = createTriangle(mVisualVars.shapeWidth, mVisualVars.shapeHeight);
-
-				triangleShape.set(vertices);
-				fixtureDef.shape = triangleShape;
-
-				for (Vector2 vertex : vertices) {
-					Pools.free(vertex);
-				}
-
+			case TRIANGLE:
+				fixtureDef.shape = createTriangleShape();
 				break;
-			}
+
 
 			case LINE:
-				EdgeShape edgeShape = new EdgeShape();
-				edgeShape.set(-mVisualVars.shapeWidth * 0.5f, 0, mVisualVars.shapeWidth * 0.5f, 0);
-				fixtureDef.shape = edgeShape;
+				fixtureDef.shape = createLineShape();
 				break;
 
 			case CUSTOM:
@@ -272,6 +256,7 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 		} else {
 			Gdx.app.error("EnemyActorDef", "FixtureDef null at setShapeType()");
 		}
+
 		mFixtureChangeTime = GameTime.getTotalGlobalTimeElapsed();
 	}
 
@@ -287,13 +272,8 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 			FixtureDef fixtureDef = getFirstFixtureDef();
 
 			if (fixtureDef != null) {
-				if (fixtureDef.shape instanceof CircleShape) {
-					fixtureDef.shape.setRadius(radius);
-				} else {
-					Gdx.app.error("EnemyActorDef", "FixtureDef shape is not a circle!");
-				}
-			} else {
-				Gdx.app.error("EnemyActorDef", "FixtureDef null at setShapeRadius()");
+				fixtureDef.shape.dispose();
+				fixtureDef.shape = createCircleShape();
 			}
 
 		}
@@ -315,39 +295,22 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 		mVisualVars.shapeWidth = width;
 
 		// Update fixture if rectangle/triangle
-		if (mVisualVars.shapeType == ActorShapeTypes.RECTANGLE || mVisualVars.shapeType == ActorShapeTypes.TRIANGLE || mVisualVars.shapeType == ActorShapeTypes.LINE) {
+		if (mVisualVars.shapeType == ActorShapeTypes.RECTANGLE) {
 			FixtureDef fixtureDef = getFirstFixtureDef();
 
 			if (fixtureDef != null) {
-				if (fixtureDef.shape instanceof PolygonShape) {
-					// RECTANGLE
-					if (mVisualVars.shapeType == ActorShapeTypes.RECTANGLE) {
-						((PolygonShape)fixtureDef.shape).setAsBox(mVisualVars.shapeWidth * 0.5f, mVisualVars.shapeHeight * 0.5f);
-					}
-					// TRIANGLE
-					else if (mVisualVars.shapeType == ActorShapeTypes.TRIANGLE) {
-						Vector2[] vertices = createTriangle(mVisualVars.shapeWidth, mVisualVars.shapeHeight);
+				fixtureDef.shape.dispose();
+				fixtureDef.shape = createRectangleShape();
+			}
+		} else if (mVisualVars.shapeType == ActorShapeTypes.TRIANGLE) {
+			FixtureDef fixtureDef = getFirstFixtureDef();
 
-						((PolygonShape)fixtureDef.shape).set(vertices);
-
-						for (Vector2 vertex : vertices) {
-							Pools.free(vertex);
-						}
-					}
-				}
-				else if (fixtureDef.shape instanceof EdgeShape) {
-					// LINE
-					if (mVisualVars.shapeType == ActorShapeTypes.LINE) {
-						((EdgeShape)fixtureDef.shape).set(-mVisualVars.shapeWidth * 0.5f , 0, mVisualVars.shapeWidth * 0.5f, 0);
-					}
-				}
-				else {
-					Gdx.app.error("EnemyActorDef", "FixtureDef shape is neither a polygon nor a line!");
-				}
-			} else {
-				Gdx.app.error("EnemyActorDef", "FixtureDef null at setShapeWidth()");
+			if (fixtureDef != null) {
+				fixtureDef.shape.dispose();
+				fixtureDef.shape = createTriangleShape();
 			}
 		}
+
 		mFixtureChangeTime = GameTime.getTotalGlobalTimeElapsed();
 	}
 
@@ -366,32 +329,22 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 		mVisualVars.shapeHeight = height;
 
 		// Update fixture if rectangle/triangle
-		if (mVisualVars.shapeType == ActorShapeTypes.RECTANGLE || mVisualVars.shapeType == ActorShapeTypes.TRIANGLE) {
+		if (mVisualVars.shapeType == ActorShapeTypes.RECTANGLE) {
 			FixtureDef fixtureDef = getFirstFixtureDef();
 
 			if (fixtureDef != null) {
-				if (fixtureDef.shape instanceof PolygonShape) {
-					// RECTANGLE
-					if (mVisualVars.shapeType == ActorShapeTypes.RECTANGLE) {
-						((PolygonShape)fixtureDef.shape).setAsBox(mVisualVars.shapeWidth * 0.5f, mVisualVars.shapeHeight * 0.5f);
-					}
-					// TRIANGLE
-					else if (mVisualVars.shapeType == ActorShapeTypes.TRIANGLE) {
-						Vector2[] vertices = createTriangle(mVisualVars.shapeWidth, mVisualVars.shapeHeight);
+				fixtureDef.shape.dispose();
+				fixtureDef.shape = createRectangleShape();
+			}
+		} else if (mVisualVars.shapeType == ActorShapeTypes.TRIANGLE) {
+			FixtureDef fixtureDef = getFirstFixtureDef();
 
-						((PolygonShape)fixtureDef.shape).set(vertices);
-
-						for (Vector2 vertex : vertices) {
-							Pools.free(vertex);
-						}
-					}
-				} else {
-					Gdx.app.error("EnemyActorDef", "FixtureDef shape is not a polygon!");
-				}
-			} else {
-				Gdx.app.error("EnemyActorDef", "FixtureDef null at setShapeWidth()");
+			if (fixtureDef != null) {
+				fixtureDef.shape.dispose();
+				fixtureDef.shape = createTriangleShape();
 			}
 		}
+
 		mFixtureChangeTime = GameTime.getTotalGlobalTimeElapsed();
 	}
 
@@ -542,6 +495,23 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 		return mVisualVars.corners;
 	}
 
+	/**
+	 * Sets the center offset for the fixtures
+	 * @param centerOffset center offset position for fixtures
+	 */
+	public void setCenterOffset(Vector2 centerOffset) {
+		mVisualVars.centerOffset.set(centerOffset);
+
+		// Create new fixtures on the right place
+		setShapeType(mVisualVars.shapeType);
+	}
+
+	/**
+	 * @return center offset for the fixtures
+	 */
+	public Vector2 getCenterOffset() {
+		return mVisualVars.centerOffset;
+	}
 
 	@Override
 	public void write(Json json) {
@@ -667,9 +637,10 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 			// Add the fixtures
 			boolean cornerTooClose = false;
 			for (int triangle = 0; triangle < cTriangles; ++triangle) {
+				int offset = triangle * 3;
 				for (int vertex = 0; vertex < triangleVertices.length; ++vertex) {
-					int offset = triangle * 3;
 					triangleVertices[vertex].set(triangles.get(offset + vertex));
+					triangleVertices[vertex].add(mVisualVars.centerOffset);
 				}
 
 
@@ -715,7 +686,11 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 		// Circle
 		else if (mVisualVars.corners.size() >= 1) {
 			CircleShape circle = new CircleShape();
-			circle.setPosition(mVisualVars.corners.get(0));
+
+			Vector2 offsetPosition = Pools.obtain(Vector2.class);
+			offsetPosition.set(mVisualVars.corners.get(0)).add(mVisualVars.centerOffset);
+			circle.setPosition(offsetPosition);
+			Pools.free(offsetPosition);
 
 			// One corner, use standard size
 			if (mVisualVars.corners.size() == 1) {
@@ -805,13 +780,31 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	}
 
 	/**
-	 * Creates vertices for the triangle shape.
-	 * @param width width of the triangle (i.e. how long it shall be)
-	 * @param height height of the triangle
-	 * @return 3 vertices used for the triangle shape. Don't forget to free these triangles
-	 * using Pools.free(vertices)
+	 * Creates a circle from the visual variables
+	 * @return circle shape for fixture
 	 */
-	private Vector2[] createTriangle(float width, float height) {
+	private CircleShape createCircleShape() {
+		CircleShape circleShape = new CircleShape();
+		circleShape.setRadius(mVisualVars.shapeCircleRadius);
+		circleShape.setPosition(mVisualVars.centerOffset);
+		return circleShape;
+	}
+
+	/**
+	 * Creates a rectangle shape from the visual variables
+	 * @return rectangle shape for fixture
+	 */
+	private PolygonShape createRectangleShape() {
+		PolygonShape rectangleShape = new PolygonShape();
+		rectangleShape.setAsBox(mVisualVars.shapeWidth * 0.5f, mVisualVars.shapeHeight * 0.5f, mVisualVars.centerOffset, 0);
+		return rectangleShape;
+	}
+
+	/**
+	 * Creates a triangle shape from the visual variables
+	 * @return triangle polygon used for fixture
+	 */
+	private PolygonShape createTriangleShape() {
 		Vector2[] vertices = new Vector2[3];
 
 		for (int i = 0; i < vertices.length; ++i) {
@@ -824,11 +817,11 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 		// | /
 
 		// Lower left corner
-		vertices[0].x = - width * 0.5f;
-		vertices[0].y = - height * 0.5f;
+		vertices[0].x = - mVisualVars.shapeWidth * 0.5f;
+		vertices[0].y = - mVisualVars.shapeHeight * 0.5f;
 
 		// Middle right corner
-		vertices[1].x = width * 0.5f;
+		vertices[1].x = mVisualVars.shapeWidth * 0.5f;
 		vertices[1].y = 0;
 
 		// Upper left corner
@@ -843,11 +836,29 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 		// Offset all vertices with negative center
 		for (Vector2 vertex : vertices) {
 			vertex.sub(center);
+			vertex.add(mVisualVars.centerOffset);
 		}
 
-		Pools.free(center);
 
-		return vertices;
+		PolygonShape polygonShape = new PolygonShape();
+		polygonShape.set(vertices);
+
+		Pools.free(center);
+		for (Vector2 vertex : vertices) {
+			Pools.free(vertex);
+		}
+
+		return polygonShape;
+	}
+
+	/**
+	 * Creates a line shape from the visual variables
+	 * @return line shape for fixture
+	 */
+	private EdgeShape createLineShape() {
+		EdgeShape edgeShape = new EdgeShape();
+		edgeShape.set(-mVisualVars.shapeWidth * 0.5f, 0, mVisualVars.shapeWidth * 0.5f, 0);
+		return edgeShape;
 	}
 
 	/**
