@@ -19,7 +19,7 @@ import org.junit.Test;
 import com.badlogic.gdx.backends.lwjgl.LwjglNativesLoader;
 import com.spiddekauga.utils.Json;
 import com.spiddekauga.voider.Config;
-import com.spiddekauga.voider.game.ActorDef;
+import com.spiddekauga.voider.game.actors.ActorDef;
 import com.spiddekauga.voider.game.actors.PlayerActorDef;
 
 /**

@@ -8,6 +8,7 @@ import org.junit.Test;
 import com.badlogic.gdx.backends.lwjgl.LwjglNativesLoader;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.spiddekauga.utils.Json;
+import com.spiddekauga.voider.game.actors.ActorDef;
 import com.spiddekauga.voider.game.actors.PlayerActorDef;
 
 /**
@@ -26,7 +27,7 @@ public class ActorDefTest {
 	}
 
 	/**
-	 * Test method for {@link com.spiddekauga.voider.game.ActorDef#write(com.spiddekauga.utils.Json)}.
+	 * Test method for {@link com.spiddekauga.voider.game.actors.ActorDef#write(com.spiddekauga.utils.Json)}.
 	 */
 	@Test
 	public void writeRead() {

@@ -16,6 +16,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.spiddekauga.utils.Json;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.PlayerActor;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceDependencyLoaderTest;

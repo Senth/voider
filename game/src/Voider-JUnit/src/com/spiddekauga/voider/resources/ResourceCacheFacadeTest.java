@@ -15,9 +15,9 @@ import com.badlogic.gdx.backends.lwjgl.LwjglFiles;
 import com.badlogic.gdx.backends.lwjgl.LwjglNativesLoader;
 import com.badlogic.gdx.files.FileHandle;
 import com.spiddekauga.voider.Config;
-import com.spiddekauga.voider.game.ActorDef;
 import com.spiddekauga.voider.game.Level;
 import com.spiddekauga.voider.game.LevelDef;
+import com.spiddekauga.voider.game.actors.ActorDef;
 import com.spiddekauga.voider.game.actors.PlayerActorDef;
 
 /**

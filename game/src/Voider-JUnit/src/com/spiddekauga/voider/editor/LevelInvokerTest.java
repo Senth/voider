@@ -12,9 +12,9 @@ import com.badlogic.gdx.backends.lwjgl.LwjglNativesLoader;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.spiddekauga.voider.Config;
-import com.spiddekauga.voider.game.Actor;
 import com.spiddekauga.voider.game.Level;
 import com.spiddekauga.voider.game.LevelDef;
+import com.spiddekauga.voider.game.actors.Actor;
 
 /**
  * Tests that the level invoker works correctly with execute/undo/redo
