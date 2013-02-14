@@ -7,7 +7,9 @@ import java.util.Arrays;
 import javax.crypto.spec.SecretKeySpec;
 
 import com.badlogic.gdx.physics.box2d.CircleShape;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.Shape;
+import com.spiddekauga.voider.game.actors.ActorFilterCategories;
 import com.spiddekauga.voider.game.actors.ActorShapeTypes;
 
 /**
@@ -129,11 +131,21 @@ public class Config {
 		}
 
 		/**
+		 * @return picking fixture
+		 */
+		public static FixtureDef getPickingFixture() {
+			return PICKING_CIRCLE_FIXTURE;
+		}
+
+		/**
 		 * Initialization of the editor configuration
 		 */
 		public static void init() {
 			PICKING_CIRCLE_SHAPE = new CircleShape();
 			PICKING_CIRCLE_SHAPE.setRadius(PICKING_CIRCLE_RADIUS);
+			PICKING_CIRCLE_FIXTURE = new FixtureDef();
+			PICKING_CIRCLE_FIXTURE.filter.categoryBits = ActorFilterCategories.NONE;
+			PICKING_CIRCLE_FIXTURE.shape = PICKING_CIRCLE_SHAPE;
 		}
 
 		/**
@@ -308,8 +320,10 @@ public class Config {
 
 		/** Radius of all picking circles */
 		private final static float PICKING_CIRCLE_RADIUS = 1.0f;
-		/** Picking shape of the */
+		/** Picking shape */
 		private static Shape PICKING_CIRCLE_SHAPE = null;
+		/** Picking fixture */
+		private static FixtureDef PICKING_CIRCLE_FIXTURE = null;
 	}
 
 	/**

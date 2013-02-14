@@ -6,6 +6,7 @@ import com.badlogic.gdx.utils.OrderedMap;
 import com.spiddekauga.utils.Json;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.Collectibles;
+import com.sun.xml.internal.bind.annotation.OverrideAnnotationOf;
 /**
  * Pickup actor definition, does nothing more than specify that the actor
  * is a pickup object
@@ -13,18 +14,6 @@ import com.spiddekauga.voider.game.Collectibles;
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
 public class PickupActorDef extends ActorDef {
-	/**
-	 * Default constructor
-	 */
-	public PickupActorDef() {
-		// Create spherical fixture
-		CircleShape circle = new CircleShape();
-		circle.setRadius(Config.Actor.Pickup.RADIUS);
-		FixtureDef fixtureDef = new FixtureDef();
-		fixtureDef.shape = circle;
-		addFixtureDef(fixtureDef);
-	}
-
 	/**
 	 * Sets the collectible of the pickup
 	 * @param collectible the collectible this pickup has
@@ -64,6 +53,15 @@ public class PickupActorDef extends ActorDef {
 		}
 
 		mCollectible = json.readValue("mCollectible", Collectibles.class, jsonData);
+	}
+
+	@Override
+	protected FixtureDef getDefaultFixtureDef() {
+		CircleShape circle = new CircleShape();
+		circle.setRadius(Config.Actor.Pickup.RADIUS);
+		FixtureDef fixtureDef = new FixtureDef();
+		fixtureDef.shape = circle;
+		return fixtureDef;
 	}
 
 	/** Collectible inside the pickup */

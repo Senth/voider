@@ -207,6 +207,10 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 			clearFixtures();
 			addFixtureDef(fixtureDef);
 		}
+		// Too few
+		else if (mFixtureDefs.size() == 0) {
+			addFixtureDef(getDefaultFixtureDef());
+		}
 
 		FixtureDef fixtureDef = getFirstFixtureDef();
 
@@ -255,9 +259,6 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 				break;
 
 			case CUSTOM:
-				if (mVisualVars.corners.isEmpty()) {
-					mVisualVars.corners.add(Pools.obtain(Vector2.class).set(0,0));
-				}
 				try {
 					fixCustomShapeFixtures();
 				} catch (PolygonCornerTooCloseException e) {
@@ -454,22 +455,19 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	}
 
 	/**
-	 * Removes a corner with the specific id. Cannot remove the last corner so that
-	 * the actor has no corners.
+	 * Removes a corner with the specific id.
 	 * @param index the corner to remove
 	 * @return position of the corner we removed, null if none was removed
 	 */
 	public Vector2 removeCorner(int index) {
 		Vector2 removedPosition = null;
-		if (mVisualVars.corners.size() > 1) {
-			if (index >= 0 && index < mVisualVars.corners.size()) {
-				removedPosition = mVisualVars.corners.remove(index);
+		if (index >= 0 && index < mVisualVars.corners.size()) {
+			removedPosition = mVisualVars.corners.remove(index);
 
-				try {
-					fixCustomShapeFixtures();
-				} catch (PolygonCornerTooCloseException e) {
-					Gdx.app.error("ActorDef", "Failed to remove corner, exception, should never happen");
-				}
+			try {
+				fixCustomShapeFixtures();
+			} catch (PolygonCornerTooCloseException e) {
+				Gdx.app.error("ActorDef", "Failed to remove corner, exception, should never happen");
 			}
 		}
 		mLastChangeTime = GameTime.getTotalGlobalTimeElapsed();
@@ -579,6 +577,11 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	}
 
 	/**
+	 * @return default fixture definition.
+	 */
+	protected abstract FixtureDef getDefaultFixtureDef();
+
+	/**
 	 * @return all the corners of the actor
 	 */
 	ArrayList<Vector2> getCorners() {
@@ -601,7 +604,12 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	 */
 	private void fixCustomShapeFixtures() throws PolygonCornerTooCloseException {
 		// Save fixture properties
-		FixtureDef savedFixtureProperties = mFixtureDefs.get(0);
+		FixtureDef savedFixtureProperties = null;
+		if (mFixtureDefs.size() >= 1) {
+			savedFixtureProperties = mFixtureDefs.get(0);
+		} else {
+			savedFixtureProperties = getDefaultFixtureDef();
+		}
 
 
 		// Destroy previous fixture
@@ -659,10 +667,12 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 				}
 
 
+				FixtureDef fixtureDef = new FixtureDef();
+				copyFixtureDef(savedFixtureProperties, fixtureDef);
 				PolygonShape polygonShape = new PolygonShape();
 				polygonShape.set(triangleVertices);
-				savedFixtureProperties.shape = polygonShape;
-				addFixtureDef(savedFixtureProperties);
+				fixtureDef.shape = polygonShape;
+				addFixtureDef(fixtureDef);
 			}
 
 			// Free stuff
@@ -813,6 +823,28 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 			Gdx.app.error("EnemyActorDef", "Too few/many fixture definitions! " + fixtureDefs.size());
 			return null;
 		}
+	}
+
+	/**
+	 * Sets the fixture def to the default values
+	 * @param fixtureDef the fixture def to copy values from the default fixture def
+	 */
+	private void setDefaultFixtureValues(FixtureDef fixtureDef) {
+		copyFixtureDef(getDefaultFixtureDef(), fixtureDef);
+	}
+
+	/**
+	 * Copies the values from another fixture def to the specified
+	 * @param fixtureDefOriginal the original fixture def to copy value FROM
+	 * @param fixtureDefCopy the duplicate to copy value TO
+	 */
+	private void copyFixtureDef(FixtureDef fixtureDefOriginal, FixtureDef fixtureDefCopy) {
+		fixtureDefCopy.density = fixtureDefOriginal.density;
+		// Always skip filter, this will be set in actor...
+		fixtureDefCopy.friction = fixtureDefOriginal.friction;
+		fixtureDefCopy.isSensor = fixtureDefOriginal.isSensor;
+		fixtureDefCopy.restitution = fixtureDefOriginal.restitution;
+		fixtureDefCopy.shape = fixtureDefOriginal.shape;
 	}
 
 	/** Time when the definition was changed last time */

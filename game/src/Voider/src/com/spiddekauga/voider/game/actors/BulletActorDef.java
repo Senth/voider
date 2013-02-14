@@ -22,12 +22,6 @@ public class BulletActorDef extends ActorDef {
 
 		getBodyDef().type = BodyType.KinematicBody;
 
-		FixtureDef fixtureDef = new FixtureDef();
-		fixtureDef.friction = 0.0f;
-		fixtureDef.restitution = 0.1f;
-		fixtureDef.density = 0.001f;
-		addFixtureDef(fixtureDef);
-
 		setShapeType(Bullet.Visual.SHAPE_DEFAULT);
 	}
 
@@ -45,5 +39,14 @@ public class BulletActorDef extends ActorDef {
 		@SuppressWarnings("unchecked")
 		OrderedMap<String, Object> superMap = json.readValue("ActorDef", OrderedMap.class, jsonData);
 		super.read(json, superMap);
+	}
+
+	@Override
+	protected FixtureDef getDefaultFixtureDef() {
+		FixtureDef fixtureDef = new FixtureDef();
+		fixtureDef.friction = 0.0f;
+		fixtureDef.restitution = 0.1f;
+		fixtureDef.density = 0.001f;
+		return fixtureDef;
 	}
 }

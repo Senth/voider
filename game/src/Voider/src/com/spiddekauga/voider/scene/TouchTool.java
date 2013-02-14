@@ -82,10 +82,9 @@ public abstract class TouchTool extends InputAdapter {
 	 */
 	protected void testPick() {
 		mHitBodies.clear();
-		mHitBody = null;
 		float testSize = 0.0001f;
 		mWorld.QueryAABB(getCallback(), mTouchCurrent.x - testSize, mTouchCurrent.y - testSize, mTouchCurrent.x + testSize, mTouchCurrent.y + testSize);
-		filterPick(mHitBodies);
+		mHitBody = filterPick(mHitBodies);
 	}
 
 	/**

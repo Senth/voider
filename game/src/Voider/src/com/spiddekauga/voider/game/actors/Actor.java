@@ -395,7 +395,7 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 			}
 
 			// Do we have body corners? Reset those in that case
-			if (!mCorners.isEmpty()) {
+			if (mCreateBodyCorners) {
 				destroyBodyCorners();
 				createBodyCorners();
 			}
@@ -434,6 +434,7 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 	 * and in an editor.
 	 */
 	public void createBodyCorners() {
+		mCreateBodyCorners = true;
 		if (mDef.getShapeType() == ActorShapeTypes.CUSTOM && mEditorActive) {
 			Vector2 worldPos = Pools.obtain(Vector2.class);
 			for (Vector2 localPos : mDef.getCorners()) {
@@ -448,6 +449,7 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 	 * Destroys all body corners
 	 */
 	public void destroyBodyCorners() {
+		mCreateBodyCorners = false;
 		for (Body body : mCorners) {
 			body.getWorld().destroyBody(body);
 		}
@@ -524,7 +526,7 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 	 */
 	private void createBodyCorner(Vector2 corner) {
 		Body body = mWorld.createBody(new BodyDef());
-		body.createFixture(Config.Editor.getPickingShape(), 0f);
+		body.createFixture(Config.Editor.getPickingFixture());
 		body.setTransform(corner, 0f);
 		HitWrapper hitWrapper = new HitWrapper(this, true);
 		body.setUserData(hitWrapper);
@@ -550,6 +552,8 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 	private ArrayList<Body> mCorners = new ArrayList<Body>();
 	/** Global time when we last created the fixtures */
 	private float mFixtureCreateTime = 0;
+	/** True if the actor shall create body corners */
+	private boolean mCreateBodyCorners = false;
 
 	/** The world used for creating bodies */
 	protected static World mWorld = null;

@@ -31,6 +31,16 @@ public class BulletDestroyer implements Disposable {
 	}
 
 	/**
+	 * Updates the bullets
+	 * @param deltaTime elapsed time since last frame
+	 */
+	public void update(float deltaTime) {
+		for (TimeBullet timeBullet : mBullets) {
+			timeBullet.bulletActor.update(deltaTime);
+		}
+	}
+
+	/**
 	 * Removes out of bounds/screen bullets. This function does not remove
 	 * all bullets, as it only checks a bullet every x seconds. Defined
 	 * in Config.Actor.Bullet.CHECK_OUT_OF_BOUNDS_TIME.

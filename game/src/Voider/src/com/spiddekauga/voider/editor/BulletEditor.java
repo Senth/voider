@@ -5,7 +5,6 @@ import java.util.UUID;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.spiddekauga.utils.Invoker;
-import com.spiddekauga.voider.editor.commands.CActorSelect;
 import com.spiddekauga.voider.game.Weapon;
 import com.spiddekauga.voider.game.WeaponDef;
 import com.spiddekauga.voider.game.actors.Actor;
@@ -75,6 +74,11 @@ public class BulletEditor extends WorldScene implements IActorEditor {
 		if (mWeapon.canShoot()) {
 			mWeapon.shoot(mShootDirection);
 		}
+
+		if (mBulletActor != null && mDef.getShapeType() == ActorShapeTypes.CUSTOM) {
+			mBulletActor.update(Gdx.graphics.getDeltaTime());
+		}
+
 	}
 
 	@Override
@@ -192,10 +196,17 @@ public class BulletEditor extends WorldScene implements IActorEditor {
 		if (shapeType == ActorShapeTypes.CUSTOM) {
 			mActiveTouchTool = mDrawActorTool;
 			mInputMultiplexer.addProcessor(mActiveTouchTool);
+			if (mBulletActor != null) {
+				mBulletActor.createBody();
+				mBulletActor.createBodyCorners();
+			}
 		} else if (mActiveTouchTool == mDrawActorTool) {
+			if (mBulletActor != null) {
+				mBulletActor.destroyBody();
+				mBulletActor.destroyBodyCorners();
+			}
 			mActiveTouchTool = null;
 			mInputMultiplexer.removeProcessor(mDrawActorTool);
-			mInvoker.execute(new CActorSelect(mDrawActorTool, null));
 		}
 	}
 
@@ -239,7 +250,7 @@ public class BulletEditor extends WorldScene implements IActorEditor {
 
 	@Override
 	public void onActorAdded(Actor actor) {
-		// TODO Auto-generated method stub
+		mBulletActor = (BulletActor) actor;
 	}
 
 	@Override
@@ -336,4 +347,6 @@ public class BulletEditor extends WorldScene implements IActorEditor {
 	private TouchTool mActiveTouchTool = null;
 	/** Current draw actor tool */
 	private DrawActorTool mDrawActorTool;
+	/** Current bullet actor (when drawing) */
+	private BulletActor mBulletActor = null;
 }

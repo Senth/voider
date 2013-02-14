@@ -122,8 +122,9 @@ public class DrawActorTool extends TouchTool implements IActorSelect {
 	protected void down() {
 		switch (mState) {
 		case ADD_CORNER:
-			// Double click inside current actor finishes/closes it
-			if (mDoubleClick && hitSelectedActor()) {
+			// Double click inside current actor finishes/closes it, but only if we can have more than
+			// one actor
+			if (mDoubleClick && hitSelectedActor() && !mOnlyOneActor) {
 				// Remove the last corner if we accidentally added one when double clicking
 				if (mCornerIndexLast != -1) {
 					mInvoker.undo(false);

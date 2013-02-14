@@ -19,6 +19,10 @@ public class PlayerActorDef extends ActorDef {
 		setMaxLife(100f);
 		getBodyDef().type = BodyType.DynamicBody;
 		getBodyDef().fixedRotation = true;
+	}
+
+	@Override
+	protected FixtureDef getDefaultFixtureDef() {
 		FixtureDef fixtureDef = new FixtureDef();
 		CircleShape circleShape = new CircleShape();
 		circleShape.setRadius(1.0f);
@@ -26,6 +30,6 @@ public class PlayerActorDef extends ActorDef {
 		fixtureDef.restitution = 0.1f;
 		fixtureDef.density = 0.001f;
 		fixtureDef.shape = circleShape;
-		addFixtureDef(fixtureDef);
+		return fixtureDef;
 	}
 }

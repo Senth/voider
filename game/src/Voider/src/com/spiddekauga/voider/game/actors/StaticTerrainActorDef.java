@@ -17,4 +17,9 @@ public class StaticTerrainActorDef extends ActorDef {
 		super(-1, "StaticTerrain", new FixtureDef());
 		setCollisionDamage(20);
 	}
+
+	@Override
+	protected FixtureDef getDefaultFixtureDef() {
+		return new FixtureDef();
+	}
 }

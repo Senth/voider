@@ -6,7 +6,6 @@ import com.badlogic.gdx.utils.OrderedMap;
 import com.spiddekauga.utils.Json;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Editor.Enemy;
-import com.spiddekauga.voider.Config.Editor.Enemy.Visual;
 import com.spiddekauga.voider.game.WeaponDef;
 
 /**
@@ -25,14 +24,7 @@ public class EnemyActorDef extends ActorDef {
 		getBodyDef().type = BodyType.KinematicBody;
 		getBodyDef().fixedRotation = true;
 
-		// Create default fixture
-		FixtureDef fixtureDef = new FixtureDef();
-		fixtureDef.friction = 0.0f;
-		fixtureDef.restitution = 0.1f;
-		fixtureDef.density = 0.001f;
-		addFixtureDef(fixtureDef);
-
-		setShapeType(Visual.SHAPE_DEFAULT);
+		setShapeType(Enemy.Visual.SHAPE_DEFAULT);
 	}
 
 	/**
@@ -350,6 +342,15 @@ public class EnemyActorDef extends ActorDef {
 		MOVE_DIRECTION,
 		/** Rotates */
 		ROTATE
+	}
+
+	@Override
+	protected FixtureDef getDefaultFixtureDef() {
+		FixtureDef fixtureDef = new FixtureDef();
+		fixtureDef.friction = 0.0f;
+		fixtureDef.restitution = 0.1f;
+		fixtureDef.density = 0.001f;
+		return fixtureDef;
 	}
 
 	/** If the enemy has a weapon */

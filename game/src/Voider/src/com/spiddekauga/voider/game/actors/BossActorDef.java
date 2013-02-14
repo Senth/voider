@@ -28,7 +28,11 @@ public class BossActorDef extends ActorDef {
 	/**
 	 * Empty constructor that does nothing. Used for JSON.
 	 */
-	@SuppressWarnings("unused")
-	private BossActorDef() {
+	protected BossActorDef() {
+	}
+
+	@Override
+	protected FixtureDef getDefaultFixtureDef() {
+		return new FixtureDef();
 	}
 }

@@ -52,6 +52,7 @@ public abstract class WorldScene extends Scene {
 
 		screenToWorldCoord(mCamera, 0, Gdx.graphics.getHeight(), minScreenPos, false);
 		screenToWorldCoord(mCamera, Gdx.graphics.getWidth(), 0, maxScreenPos, false);
+		mBulletDestroyer.update(Gdx.graphics.getDeltaTime());
 		mBulletDestroyer.removeOutOfBondsBullets(minScreenPos, maxScreenPos);
 
 		Pools.free(minScreenPos);
