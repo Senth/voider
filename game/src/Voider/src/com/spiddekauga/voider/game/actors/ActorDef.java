@@ -70,7 +70,8 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	 * @param angle the starting angle
 	 */
 	public void setStartAngle(float angle) {
-		getBodyDef().angle = (float)Math.toRadians(angle);
+		getBodyDef().angle = angle;
+
 		mBodyChangeTime = GameTime.getTotalGlobalTimeElapsed();
 	}
 
@@ -78,7 +79,7 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	 * @return starting angle of the actor (in degrees)
 	 */
 	public float getStartAngle() {
-		return (float) Math.toDegrees(getBodyDef().angle);
+		return getBodyDef().angle;
 	}
 
 	/**
@@ -507,6 +508,53 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	}
 
 	/**
+	 * Center the offset. This will set the offset to the middle of
+	 * the fixture(s). It will NOT set the center to (0,0) (only if the actual
+	 * center of the fixtures are there.
+	 */
+	public void resetCenter() {
+		switch (mVisualVars.shapeType) {
+		case CIRCLE:
+			/** @todo implement reset center for circle */
+			break;
+
+		case RECTANGLE:
+			/** @todo implement reset center for rectangle */
+			break;
+
+		case TRIANGLE:
+			/** @todo implement reset center for triangle */
+			break;
+
+		case LINE:
+			/** @todo implement reset center for line */
+			break;
+
+		case CUSTOM:
+			// Polygon, calculate center
+			if (mVisualVars.corners.size() >= 3) {
+				Vector2 center = Pools.obtain(Vector2.class);
+
+				center.set(0,0);
+
+				for (Vector2 vertex : mVisualVars.corners) {
+					center.add(vertex);
+				}
+
+				center.div(mVisualVars.corners.size());
+				setCenterOffset(center);
+
+				Pools.free(center);
+			}
+			// Circle, first corner is center
+			else if (mVisualVars.corners.size() >= 1) {
+				setCenterOffset(mVisualVars.corners.get(0));
+			}
+			break;
+		}
+	}
+
+	/**
 	 * @return center offset for the fixtures
 	 */
 	public Vector2 getCenterOffset() {
@@ -786,7 +834,8 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	private CircleShape createCircleShape() {
 		CircleShape circleShape = new CircleShape();
 		circleShape.setRadius(mVisualVars.shapeCircleRadius);
-		circleShape.setPosition(mVisualVars.centerOffset);
+		/** @todo use center for all shapes */
+		//		circleShape.setPosition(mVisualVars.centerOffset);
 		return circleShape;
 	}
 
@@ -796,7 +845,9 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	 */
 	private PolygonShape createRectangleShape() {
 		PolygonShape rectangleShape = new PolygonShape();
-		rectangleShape.setAsBox(mVisualVars.shapeWidth * 0.5f, mVisualVars.shapeHeight * 0.5f, mVisualVars.centerOffset, 0);
+		/** @todo use center for all shapes */
+		//		rectangleShape.setAsBox(mVisualVars.shapeWidth * 0.5f, mVisualVars.shapeHeight * 0.5f, mVisualVars.centerOffset, 0);
+		rectangleShape.setAsBox(mVisualVars.shapeWidth * 0.5f, mVisualVars.shapeHeight * 0.5f);
 		return rectangleShape;
 	}
 
@@ -836,7 +887,8 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 		// Offset all vertices with negative center
 		for (Vector2 vertex : vertices) {
 			vertex.sub(center);
-			vertex.add(mVisualVars.centerOffset);
+			/** @todo use center for all shapes */
+			//			vertex.add(mVisualVars.centerOffset);
 		}
 
 
@@ -857,6 +909,8 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	 */
 	private EdgeShape createLineShape() {
 		EdgeShape edgeShape = new EdgeShape();
+		/** @todo use center for all shapes */
+		//		edgeShape.set(-mVisualVars.shapeWidth * 0.5f + mVisualVars.centerOffset.x, mVisualVars.centerOffset.y, mVisualVars.shapeWidth * 0.5f + mVisualVars.centerOffset.x, mVisualVars.centerOffset.y);
 		edgeShape.set(-mVisualVars.shapeWidth * 0.5f, 0, mVisualVars.shapeWidth * 0.5f, 0);
 		return edgeShape;
 	}

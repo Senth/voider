@@ -5,6 +5,7 @@ import java.util.UUID;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Pools;
 import com.spiddekauga.utils.Invoker;
 import com.spiddekauga.voider.game.Weapon;
 import com.spiddekauga.voider.game.WeaponDef;
@@ -39,7 +40,10 @@ public class BulletEditor extends WorldScene implements IActorEditor, IActorDraw
 
 		mWeapon.setWeaponDef(new WeaponDef());
 		mWeapon.getDef().setBulletActorDef(mDef);
-		mWeapon.setPosition(new Vector2());
+		Vector2 weaponPos = Pools.obtain(Vector2.class);
+		screenToWorldCoord(mCamera, Gdx.graphics.getWidth() * 0.1f, Gdx.graphics.getHeight() * 0.5f, weaponPos, true);
+		mWeapon.setPosition(weaponPos);
+		Pools.free(weaponPos);
 
 		mDrawActorTool = new DrawActorTool(mCamera, mWorld, mInvoker, BulletActor.class, this, mDef);
 	}
@@ -216,13 +220,13 @@ public class BulletEditor extends WorldScene implements IActorEditor, IActorDraw
 
 	@Override
 	public void setStartingAngle(float angle) {
-		mDef.setStartAngle(angle);
+		mDef.setStartAngle((float)Math.toRadians(angle));
 		mUnsaved = true;
 	}
 
 	@Override
 	public float getStartingAngle() {
-		return mDef.getStartAngle();
+		return (float)Math.toDegrees(mDef.getStartAngle());
 	}
 
 	@Override
@@ -392,7 +396,7 @@ public class BulletEditor extends WorldScene implements IActorEditor, IActorDraw
 	/** Current selection scene */
 	private SelectionActions mSelectionAction = null;
 	/** Shoot direction */
-	private Vector2 mShootDirection = new Vector2(-1, 0);
+	private Vector2 mShootDirection = new Vector2(1, 0);
 	/** Invoker for the bullet editor */
 	private Invoker mInvoker = new Invoker();
 	/** Active touch tool */

@@ -335,6 +335,7 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 		if (mWorld != null && mBody == null) {
 			if (mSkipRotate) {
 				bodyDef.angularVelocity = 0;
+				bodyDef.angle = 0;
 			}
 			mBody = mWorld.createBody(bodyDef);
 			for (FixtureDef fixtureDef : mDef.getFixtureDefs()) {
@@ -607,6 +608,7 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 	private void reloadBody() {
 		if (!mSkipRotate) {
 			mBody.setAngularVelocity(mDef.getRotationSpeed());
+			//			mBody.setTransform(mPosition, mDef.getStartAngle());
 		}
 
 		mBodyUpdateTime = GameTime.getTotalGlobalTimeElapsed();
