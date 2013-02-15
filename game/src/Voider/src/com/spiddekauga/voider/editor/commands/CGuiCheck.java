@@ -3,10 +3,9 @@ package com.spiddekauga.voider.editor.commands;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
-import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
 import com.spiddekauga.utils.Command;
+import com.spiddekauga.voider.Config;
 
 /**
  * A command that checks a GUI element. Undo will uncheck it, and if
@@ -25,48 +24,58 @@ public class CGuiCheck extends Command {
 		mButton = button;
 		mCheck = check;
 
-		if (mfButtonGroup == null) {
-			try {
-				mfButtonGroup = Button.class.getField("buttonGroup");
-				mfButtonGroup.setAccessible(true);
-			} catch (Exception e) {
-				Gdx.app.error("CGuiCheck", e.toString());
-			}
-		}
+		//		if (mfButtonGroup == null) {
+		//			try {
+		//				mfButtonGroup = Button.class.getDeclaredField("buttonGroup");
+		//				mfButtonGroup.setAccessible(true);
+		//			} catch (Exception e) {
+		//				Gdx.app.error("CGuiCheck", e.toString());
+		//			}
+		//		}
 	}
 
 	@Override
 	public boolean execute() {
-		try {
-			ButtonGroup buttonGroup = (ButtonGroup) mfButtonGroup.get(mButton);
+		//		try {
+		//			ButtonGroup buttonGroup = (ButtonGroup) mfButtonGroup.get(mButton);
+		//
+		//			// Has a button group, remember other checked buttons
+		//			if (buttonGroup != null && mCheck) {
+		//				for (Button button : buttonGroup.getButtons()) {
+		//					if (button.isChecked()) {
+		//						mGroupButtons.add(button);
+		//					}
+		//				}
+		//			}
+		//
+		//		} catch (Exception e) {
+		//			Gdx.app.error("CGuiCheck", e.toString());
+		//			return false;
+		//		}
 
-			// Has a button group, remember other checked buttons
-			if (buttonGroup != null && mCheck) {
-				for (Button button : buttonGroup.getButtons()) {
-					if (button.isChecked()) {
-						mGroupButtons.add(button);
-					}
-				}
-			}
-
-		} catch (Exception e) {
-			Gdx.app.error("CGuiCheck", e.toString());
-			return false;
-		}
-
+		// Set temporary name, this will make sure the event doesn't fire
+		// another CGuiCheck command.
+		String oldName = mButton.getName();
+		mButton.setName(Config.Editor.GUI_INVOKER_TEMP_NAME);
 		mButton.setChecked(mCheck);
+		mButton.setName(oldName);
 
 		return true;
 	}
 
 	@Override
 	public boolean undo() {
-		mButton.setChecked(!mCheck);
-
 		// Return state of the old buttons
-		for (Button button : mGroupButtons) {
-			button.setChecked(true);
-		}
+		//		for (Button button : mGroupButtons) {
+		//			button.setChecked(true);
+		//		}
+
+		// Set temporary name, this will make sure the event doesn't fire
+		// another CGuiCheck command.
+		String oldName = mButton.getName();
+		mButton.setName(Config.Editor.GUI_INVOKER_TEMP_NAME);
+		mButton.setChecked(!mCheck);
+		mButton.setName(oldName);
 
 		return true;
 	}

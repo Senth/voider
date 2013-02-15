@@ -17,6 +17,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
 import com.spiddekauga.utils.Command;
 import com.spiddekauga.utils.CommandSequence;
+import com.spiddekauga.utils.Invoker;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
@@ -34,6 +35,7 @@ import com.spiddekauga.voider.editor.commands.AeDuplicate;
 import com.spiddekauga.voider.editor.commands.AeLoad;
 import com.spiddekauga.voider.editor.commands.AeNew;
 import com.spiddekauga.voider.editor.commands.AeSave;
+import com.spiddekauga.voider.editor.commands.CActorEditorCenterReset;
 import com.spiddekauga.voider.game.actors.ActorShapeTypes;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceNames;
@@ -123,6 +125,8 @@ public abstract class ActorGui extends Gui {
 	 */
 	protected void setActorEditor(IActorEditor actorEditor) {
 		mActorEditor = actorEditor;
+
+		mInvoker = mActorEditor.getInvoker();
 	}
 
 	/**
@@ -326,6 +330,7 @@ public abstract class ActorGui extends Gui {
 		SliderStyle sliderStyle = editorSkin.get("default", SliderStyle.class);
 		TextFieldStyle textFieldStyle = editorSkin.get("default", TextFieldStyle.class);
 		TextButtonStyle toggleStyle = editorSkin.get("toggle", TextButtonStyle.class);
+		TextButtonStyle textButtonStyle = editorSkin.get("default", TextButtonStyle.class);
 
 		mVisualTable.setScalable(false);
 
@@ -638,7 +643,10 @@ public abstract class ActorGui extends Gui {
 		if (containsShape(ActorShapeTypes.CUSTOM, actorShapeTypes)) {
 			mVisualTable.row();
 			buttonGroup = new ButtonGroup();
+
+			// Add/Move
 			Button button = new TextButton("Add/Move", toggleStyle);
+			button.setName("add/move");
 			mWidgets.visual.customShapeAddMove = button;
 			buttonGroup.add(button);
 			customHider.addToggleActor(button);
@@ -652,7 +660,9 @@ public abstract class ActorGui extends Gui {
 			};
 			mVisualTable.add(button);
 
+			// Remove
 			button = new TextButton("Remove", toggleStyle);
+			button.setName("remove");
 			mWidgets.visual.customShapeRemove = button;
 			buttonGroup.add(button);
 			customHider.addToggleActor(button);
@@ -666,10 +676,14 @@ public abstract class ActorGui extends Gui {
 			};
 			mVisualTable.add(button);
 
+			// Set center
 			button = new TextButton("Set center", toggleStyle);
+			button.setName("set center");
 			mWidgets.visual.customShapeSetCenter = button;
+			HideListener setCenterHider = new HideListener(button, true);
 			buttonGroup.add(button);
 			customHider.addToggleActor(button);
+			customHider.addChild(setCenterHider);
 			new CheckedListener(button) {
 				@Override
 				protected void onChange(boolean checked) {
@@ -678,6 +692,21 @@ public abstract class ActorGui extends Gui {
 					}
 				}
 			};
+			mVisualTable.add(button);
+
+
+			mVisualTable.row(Horizontal.RIGHT, Vertical.TOP);
+			button = new TextButton("Reset center", textButtonStyle);
+			setCenterHider.addToggleActor(button);
+			button.addListener(new EventListener() {
+				@Override
+				public boolean handle(Event event) {
+					if (isButtonPressed(event)) {
+						mInvoker.execute(new CActorEditorCenterReset(mActorEditor));
+					}
+					return true;
+				}
+			});
 			mVisualTable.add(button);
 		}
 
@@ -770,6 +799,8 @@ public abstract class ActorGui extends Gui {
 	protected HideListener mVisualHider = new HideListener(true);
 	/** Hides options options :D:D:D */
 	protected HideListener mOptionHider = new HideListener(true);
+	/** Invoker */
+	protected Invoker mInvoker = null;
 
 	/** All widget variables */
 	private InnerWidgets mWidgets = new InnerWidgets();

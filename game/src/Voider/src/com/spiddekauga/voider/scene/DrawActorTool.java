@@ -15,6 +15,7 @@ import com.spiddekauga.utils.Invoker;
 import com.spiddekauga.voider.editor.HitWrapper;
 import com.spiddekauga.voider.editor.IActorDrawEditor;
 import com.spiddekauga.voider.editor.commands.CActorAdd;
+import com.spiddekauga.voider.editor.commands.CActorCenterMove;
 import com.spiddekauga.voider.editor.commands.CActorCornerAdd;
 import com.spiddekauga.voider.editor.commands.CActorCornerMove;
 import com.spiddekauga.voider.editor.commands.CActorCornerRemove;
@@ -204,6 +205,17 @@ public class DrawActorTool extends TouchTool implements IActorSelect {
 						createTempCorner();
 					}
 				}
+				// Hit another actor
+				else if (mHitBody.getUserData() instanceof Actor) {
+					// We can only hit our actor, create a temp corner
+					if (mOnlyOneActor) {
+						createTempCorner();
+					}
+					// Select the other actor if we can create multiple actors
+					else {
+						mInvoker.execute(new CActorSelect(this, (Actor)mHitBody.getUserData()));
+					}
+				}
 				// Else hit a corner, start moving it
 				else {
 					mCornerIndexCurrent = mActor.getCornerIndex(mHitBody.getPosition());
@@ -287,6 +299,7 @@ public class DrawActorTool extends TouchTool implements IActorSelect {
 				mActor.destroyBody();
 				mActor.setPosition(mTouchOrigin);
 				mActor.createBody();
+				Pools.free(centerOffset);
 			}
 			break;
 		}
@@ -332,6 +345,7 @@ public class DrawActorTool extends TouchTool implements IActorSelect {
 				mActor.destroyBody();
 				mActor.setPosition(mTouchCurrent);
 				mActor.createBody();
+				Pools.free(centerOffset);
 			}
 			break;
 		}
@@ -388,7 +402,18 @@ public class DrawActorTool extends TouchTool implements IActorSelect {
 
 
 		case SET_CENTER:
-			// Does nothing
+			if (mActor != null) {
+				Vector2 centerOffset = Pools.obtain(Vector2.class);
+				centerOffset.set(mDragOrigin).sub(mTouchCurrent);
+				centerOffset.add(mCenterOffsetOrigin);
+
+				mActor.destroyBody();
+				mActor.setPosition(mDragOrigin);
+
+				mInvoker.execute(new CActorCenterMove(mActor.getDef(), centerOffset, mCenterOffsetOrigin, mActor));
+
+				Pools.free(centerOffset);
+			}
 			break;
 		}
 	}
@@ -444,7 +469,7 @@ public class DrawActorTool extends TouchTool implements IActorSelect {
 	private void createTempCorner() {
 		Vector2 localPos = Pools.obtain(Vector2.class);
 
-		localPos.set(mTouchOrigin).sub(mActor.getPosition());
+		localPos.set(mTouchOrigin).sub(mActor.getPosition()).sub(mActor.getDef().getCenterOffset());
 
 		try {
 			mActor.getDef().addCorner(localPos);

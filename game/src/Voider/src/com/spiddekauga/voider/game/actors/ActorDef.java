@@ -512,7 +512,7 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	 * the fixture(s). It will NOT set the center to (0,0) (only if the actual
 	 * center of the fixtures are there.
 	 */
-	public void resetCenter() {
+	public void resetCenterOffset() {
 		switch (mVisualVars.shapeType) {
 		case CIRCLE:
 			/** @todo implement reset center for circle */
@@ -538,7 +538,7 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 				center.set(0,0);
 
 				for (Vector2 vertex : mVisualVars.corners) {
-					center.add(vertex);
+					center.sub(vertex);
 				}
 
 				center.div(mVisualVars.corners.size());

@@ -336,6 +336,8 @@ public class Config {
 
 		/** Select definition scene, maximum width of definition */
 		public static float SELECT_DEF_WIDTH_MAX = 200;
+		/** Temporary GUI name when using an invoker */
+		public static String GUI_INVOKER_TEMP_NAME = "invoker";
 
 		/** Radius of all picking circles */
 		private final static float PICKING_CIRCLE_RADIUS = 1.0f;
@@ -343,6 +345,7 @@ public class Config {
 		private static Shape PICKING_CIRCLE_SHAPE = null;
 		/** Picking fixture */
 		private static FixtureDef PICKING_CIRCLE_FIXTURE = null;
+
 	}
 
 	/**

@@ -295,6 +295,55 @@ public class BulletEditor extends WorldScene implements IActorEditor, IActorDraw
 	}
 
 	@Override
+	public void resetCenterOffset() {
+		// Save diff offset and move the actor in the opposite direction...
+		Vector2 diffOffset = null;
+		if (mBulletActor != null) {
+			mBulletActor.destroyBody();
+
+			diffOffset = Pools.obtain(Vector2.class);
+			diffOffset.set(mDef.getCenterOffset());
+		}
+
+		mDef.resetCenterOffset();
+
+		if (mBulletActor != null) {
+			diffOffset.sub(mDef.getCenterOffset());
+			diffOffset.add(mBulletActor.getPosition());
+			mBulletActor.setPosition(diffOffset);
+			mBulletActor.createBody();
+			Pools.free(diffOffset);
+		}
+	}
+
+	@Override
+	public void setCenterOffset(Vector2 newCenter) {
+		// Save diff offset and move the actor in the opposite direction...
+		Vector2 diffOffset = null;
+		if (mBulletActor != null) {
+			mBulletActor.destroyBody();
+
+			diffOffset = Pools.obtain(Vector2.class);
+			diffOffset.set(mDef.getCenterOffset());
+		}
+
+		mDef.setCenterOffset(newCenter);
+
+		if (mBulletActor != null) {
+			diffOffset.sub(mDef.getCenterOffset());
+			diffOffset.add(mBulletActor.getPosition());
+			mBulletActor.setPosition(diffOffset);
+			mBulletActor.createBody();
+			Pools.free(diffOffset);
+		}
+	}
+
+	@Override
+	public Vector2 getCenterOffset() {
+		return mDef.getCenterOffset();
+	}
+
+	@Override
 	public void setDrawActorToolState(DrawActorTool.States state) {
 		mDrawActorTool.setState(state);
 	}
@@ -365,7 +414,7 @@ public class BulletEditor extends WorldScene implements IActorEditor, IActorDraw
 	/**
 	 * @return invoker of the editor
 	 */
-	Invoker getInvoker() {
+	public Invoker getInvoker() {
 		return mInvoker;
 	}
 

@@ -17,6 +17,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Pools;
 import com.badlogic.gdx.utils.SnapshotArray;
+import com.spiddekauga.utils.Invoker;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Editor.Enemy;
 import com.spiddekauga.voider.game.Path;
@@ -362,12 +363,17 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IActorDrawE
 
 	@Override
 	public void undo() {
-
+		mInvoker.undo();
 	}
 
 	@Override
 	public void redo() {
+		mInvoker.redo();
+	}
 
+	@Override
+	public Invoker getInvoker() {
+		return mInvoker;
 	}
 
 	/**
@@ -695,46 +701,104 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IActorDrawE
 		SceneSwitcher.switchTo(selectionScene);
 	}
 
+	@Override
 	public void setShapeType(ActorShapeTypes shapeType) {
 		mDef.setShapeType(shapeType);
 
 		resetBodyShapes();
 	}
 
+	@Override
 	public ActorShapeTypes getShapeType() {
 		return mDef.getShapeType();
 	}
 
+	@Override
 	public void setShapeRadius(float radius) {
 		mDef.setShapeRadius(radius);
 
 		resetBodyShapes();
 	}
 
+	@Override
 	public float getShapeRadius() {
 		return mDef.getShapeRadius();
 	}
 
+	@Override
 	public void setShapeWidth(float width) {
 		mDef.setShapeWidth(width);
 
 		resetBodyShapes();
 	}
 
+	@Override
 	public float getShapeWidth() {
 		return mDef.getShapeWidth();
 	}
 
+	@Override
 	public void setShapeHeight(float height) {
 		mDef.setShapeHeight(height);
 
 		resetBodyShapes();
 	}
 
+	@Override
 	public float getShapeHeight() {
 		return mDef.getShapeHeight();
 	}
 
+	@Override
+	public void resetCenterOffset() {
+		// Save diff offset and move the actor in the opposite direction...
+		//		Vector2 diffOffset = null;
+		//		if (mBulletActor != null) {
+		//			mBulletActor.destroyBody();
+		//
+		//			diffOffset = Pools.obtain(Vector2.class);
+		//			diffOffset.set(mDef.getCenterOffset());
+		//		}
+
+		mDef.resetCenterOffset();
+
+		//		if (mBulletActor != null) {
+		//			diffOffset.sub(mDef.getCenterOffset());
+		//			diffOffset.add(mBulletActor.getPosition());
+		//			mBulletActor.setPosition(diffOffset);
+		//			mBulletActor.createBody();
+		//			Pools.free(diffOffset);
+		//		}
+	}
+
+	@Override
+	public void setCenterOffset(Vector2 newCenter) {
+		// Save diff offset and move the actor in the opposite direction...
+		//		Vector2 diffOffset = null;
+		//		if (mBulletActor != null) {
+		//			mBulletActor.destroyBody();
+		//
+		//			diffOffset = Pools.obtain(Vector2.class);
+		//			diffOffset.set(mDef.getCenterOffset());
+		//		}
+
+		mDef.setCenterOffset(newCenter);
+
+		//		if (mBulletActor != null) {
+		//			diffOffset.sub(mDef.getCenterOffset());
+		//			diffOffset.add(mBulletActor.getPosition());
+		//			mBulletActor.setPosition(diffOffset);
+		//			mBulletActor.createBody();
+		//			Pools.free(diffOffset);
+		//		}
+	}
+
+	@Override
+	public Vector2 getCenterOffset() {
+		return mDef.getCenterOffset();
+	}
+
+	@Override
 	public void setName(String name) {
 		mDef.setName(name);
 	}
@@ -744,10 +808,12 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IActorDrawE
 		return mDef.getName();
 	}
 
+	@Override
 	public void setDescription(String description) {
 		mDef.setDescription(description);
 	}
 
+	@Override
 	public String getDescription() {
 		return mDef.getDescription();
 	}
@@ -755,6 +821,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IActorDrawE
 	/**
 	 * Switches scene to load an enemy
 	 */
+	@Override
 	public void loadActor() {
 		mSelectionAction = SelectionActions.LOAD_ENEMY;
 
@@ -765,6 +832,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IActorDrawE
 	/**
 	 * Duplicates the current enemy
 	 */
+	@Override
 	public void duplicateActor() {
 		mDef = (EnemyActorDef) mDef.copy();
 		setEnemyDef();
@@ -1028,6 +1096,8 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IActorDrawE
 	private Field mfEnemyOnceReachEnd = null;
 	/** Player actor, for the enemies to work properly */
 	private PlayerActor mPlayerActor = null;
+	/** Invoker */
+	private Invoker mInvoker = new Invoker();
 
 	/** Table for path lables, these are added directly to the stage */
 	private Table mPathLabels = new Table();

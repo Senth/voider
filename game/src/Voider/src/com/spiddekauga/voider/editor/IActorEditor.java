@@ -1,5 +1,7 @@
 package com.spiddekauga.voider.editor;
 
+import com.badlogic.gdx.math.Vector2;
+import com.spiddekauga.utils.Invoker;
 import com.spiddekauga.voider.game.actors.ActorShapeTypes;
 import com.spiddekauga.voider.scene.DrawActorTool;
 
@@ -10,6 +12,11 @@ import com.spiddekauga.voider.scene.DrawActorTool;
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
 public interface IActorEditor {
+	/**
+	 * @return Invoker for undo/redo
+	 */
+	Invoker getInvoker();
+
 	// ------------- File Menu ----------------
 	/**
 	 * Creates a new actor in the current editor
@@ -141,6 +148,22 @@ public interface IActorEditor {
 	 * @return current shape height
 	 */
 	float getShapeHeight();
+
+	/**
+	 * Resets the center offset of the actor
+	 */
+	void resetCenterOffset();
+
+	/**
+	 * Sets the center offset of the actor
+	 * @param newCenter new center position offset
+	 */
+	void setCenterOffset(Vector2 newCenter);
+
+	/**
+	 * @return center offset of the actor
+	 */
+	Vector2 getCenterOffset();
 
 	// --------------- Custom Tool ----------------
 	/**
