@@ -1239,7 +1239,7 @@ public class Json {
 			throw new SerializationException("Unable to convert value to required type: " + jsonData + " (" + type.getName() + ")");
 		}
 
-		return null;
+		return (T) jsonData;
 	}
 
 	private FixtureDef readFixtureDef(OrderedMap<String, Object> jsonData) {

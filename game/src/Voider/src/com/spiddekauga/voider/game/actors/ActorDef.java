@@ -191,10 +191,6 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	@Override
 	public void dispose() {
 		clearFixtures();
-
-		for (Vector2 corner : mVisualVars.corners) {
-			Pools.free(corner);
-		}
 	}
 
 	/**
@@ -311,6 +307,13 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 			if (fixtureDef != null) {
 				fixtureDef.shape.dispose();
 				fixtureDef.shape = createTriangleShape();
+			}
+		} else if (mVisualVars.shapeType == ActorShapeTypes.LINE) {
+			FixtureDef fixtureDef = getFirstFixtureDef();
+
+			if (fixtureDef != null) {
+				fixtureDef.shape.dispose();
+				fixtureDef.shape = createLineShape();
 			}
 		}
 

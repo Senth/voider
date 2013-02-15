@@ -28,6 +28,7 @@ import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.ActorDef;
 import com.spiddekauga.voider.game.actors.ActorDef.PolygonComplexException;
 import com.spiddekauga.voider.game.actors.ActorDef.PolygonCornerTooCloseException;
+import com.spiddekauga.voider.game.actors.BulletActor;
 
 /**
  * Abstract class that can draw actors
@@ -78,8 +79,20 @@ public class DrawActorTool extends TouchTool implements IActorSelect {
 	public void setActorDef(ActorDef actorDef) {
 		mActorDef = actorDef;
 		mOnlyOneActor = true;
-		mActor = null;
 		mHitBody = null;
+
+		deactivate();
+
+		if (actorDef.getCornerCount() > 0) {
+			if (mActor == null) {
+				mActor = new BulletActor();
+				mActorEditor.onActorAdded(mActor);
+			}
+			mActor.setDef(actorDef);
+		} else {
+			mActorEditor.onActorRemoved(mActor);
+			mActor = null;
+		}
 	}
 
 	/**
