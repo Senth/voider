@@ -29,6 +29,7 @@ public class BossActorDef extends ActorDef {
 	 * Empty constructor that does nothing. Used for JSON.
 	 */
 	protected BossActorDef() {
+		super(ActorTypes.BOSS);
 	}
 
 	@Override

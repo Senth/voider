@@ -24,6 +24,7 @@ import com.spiddekauga.utils.scene.ui.CheckedListener;
 import com.spiddekauga.utils.scene.ui.HideListener;
 import com.spiddekauga.utils.scene.ui.Row;
 import com.spiddekauga.utils.scene.ui.SliderListener;
+import com.spiddekauga.voider.Config.Editor;
 import com.spiddekauga.voider.Config.Editor.Enemy;
 import com.spiddekauga.voider.Config.Editor.Enemy.Movement;
 import com.spiddekauga.voider.Config.Editor.Weapon;
@@ -62,12 +63,14 @@ public class EnemyEditorGui extends ActorGui {
 		mPathTable.setPreferences(mPathTable);
 		mVisualTable.setPreferences(mMainTable);
 		mOptionTable.setPreferences(mMainTable);
+		mCollisionTable.setPreferences(mMainTable);
 
 
 		initMovement();
 		initWeapon();
 		initVisual(ActorShapeTypes.CIRCLE, ActorShapeTypes.RECTANGLE, ActorShapeTypes.TRIANGLE);
 		initOptions();
+		initCollision();
 		initFileMenu("enemy");
 		initMenu();
 
@@ -80,6 +83,7 @@ public class EnemyEditorGui extends ActorGui {
 		mAiTable.setTransform(true);
 		mVisualTable.setTransform(true);
 		mOptionTable.setTransform(true);
+		mCollisionTable.setTransform(true);
 		mMainTable.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		mMainTable.invalidate();
 	}
@@ -116,9 +120,10 @@ public class EnemyEditorGui extends ActorGui {
 
 
 		// Weapons
+		mWidgets.weapon.bulletName.setText(mEnemyEditor.getBulletName());
 		mWidgets.weapon.toggleButton.setChecked(mEnemyEditor.hasWeapon());
 		mWidgets.weapon.bulletSpeed.setValue(mEnemyEditor.getBulletSpeed());
-		mWidgets.weapon.damage.setValue(mEnemyEditor.getDamage());
+		mWidgets.weapon.damage.setValue(mEnemyEditor.getWeaponDamage());
 		mWidgets.weapon.cooldownMax.setValue(mEnemyEditor.getCooldownMax());
 		mWidgets.weapon.cooldownMin.setValue(mEnemyEditor.getCooldownMin());
 
@@ -185,12 +190,20 @@ public class EnemyEditorGui extends ActorGui {
 		mOptionHider.setButton(button);
 		mOptionHider.addToggleActor(mOptionTable);
 
+		// Collision
+		button = new TextButton("Collision", textToggleStyle);
+		buttonGroup.add(button);
+		mMainTable.add(button);
+		mCollisionHider.setButton(button);
+		mCollisionHider.addToggleActor(mCollisionTable);
+
 
 		mMainTable.row().setFillHeight(true).setAlign(Horizontal.LEFT, Vertical.TOP);
 		mMainTable.add(mWeaponTable);
 		mMainTable.add(mVisualTable);
 		mMainTable.add(mMovementTable);
 		mMainTable.add(mOptionTable).setFillWidth(true).setFillHeight(true);
+		mMainTable.add(mCollisionTable);
 	}
 
 	/**
@@ -264,7 +277,7 @@ public class EnemyEditorGui extends ActorGui {
 		mWidgets.movement.speedSlider = new Slider(Enemy.Movement.MOVE_SPEED_MIN, Enemy.Movement.MOVE_SPEED_MAX, Enemy.Movement.MOVE_SPEED_STEP_SIZE, false, sliderStyle);
 		mPathTable.add(mWidgets.movement.speedSlider );
 		TextField textField = new TextField("", textFieldStyle);
-		textField.setWidth(Enemy.TEXT_FIELD_NUMBER_WIDTH);
+		textField.setWidth(Editor.TEXT_FIELD_NUMBER_WIDTH);
 		mPathTable.add(textField);
 		new SliderListener(mWidgets.movement.speedSlider, textField) {
 			@Override
@@ -305,7 +318,7 @@ public class EnemyEditorGui extends ActorGui {
 		mWidgets.movement.turnSpeedSlider = new Slider(Movement.TURN_SPEED_MIN, Movement.TURN_SPEED_MAX, Enemy.Movement.TURN_SPEED_STEP_SIZE, false, sliderStyle);
 		mPathTable.add(mWidgets.movement.turnSpeedSlider);
 		textField = new TextField("", textFieldStyle);
-		textField.setWidth(Enemy.TEXT_FIELD_NUMBER_WIDTH);
+		textField.setWidth(Editor.TEXT_FIELD_NUMBER_WIDTH);
 		mPathTable.add(textField);
 		new SliderListener(mWidgets.movement.turnSpeedSlider, textField) {
 			@Override
@@ -327,11 +340,11 @@ public class EnemyEditorGui extends ActorGui {
 		label = new Label("Min", labelStyle);
 		mAiTable.row();
 		cell = mAiTable.add(label);
-		cell.setPadRight(Enemy.LABEL_PADDING_BEFORE_SLIDER);
+		cell.setPadRight(Editor.LABEL_PADDING_BEFORE_SLIDER);
 		mWidgets.movement.aiDistanceMin = new Slider(Enemy.Movement.AI_DISTANCE_MIN, Enemy.Movement.AI_DISTANCE_MAX, Enemy.Movement.AI_DISTANCE_STEP_SIZE, false, sliderStyle);
 		mAiTable.add(mWidgets.movement.aiDistanceMin);
 		textField = new TextField("", textFieldStyle);
-		textField.setWidth(Enemy.TEXT_FIELD_NUMBER_WIDTH);
+		textField.setWidth(Editor.TEXT_FIELD_NUMBER_WIDTH);
 		mAiTable.add(textField);
 		SliderListener sliderMinListener = new SliderListener(mWidgets.movement.aiDistanceMin, textField) {
 			@Override
@@ -344,11 +357,11 @@ public class EnemyEditorGui extends ActorGui {
 		label = new Label("Max", labelStyle);
 		mAiTable.row();
 		cell = mAiTable.add(label);
-		cell.setPadRight(Enemy.LABEL_PADDING_BEFORE_SLIDER);
+		cell.setPadRight(Editor.LABEL_PADDING_BEFORE_SLIDER);
 		mWidgets.movement.aiDistanceMax = new Slider(Enemy.Movement.AI_DISTANCE_MIN, Enemy.Movement.AI_DISTANCE_MAX, Enemy.Movement.AI_DISTANCE_STEP_SIZE, false, sliderStyle);
 		mAiTable.add(mWidgets.movement.aiDistanceMax);
 		textField = new TextField("", textFieldStyle);
-		textField.setWidth(Enemy.TEXT_FIELD_NUMBER_WIDTH);
+		textField.setWidth(Editor.TEXT_FIELD_NUMBER_WIDTH);
 		mAiTable.add(textField);
 		SliderListener sliderMaxListener = new SliderListener(mWidgets.movement.aiDistanceMax, textField) {
 			@Override
@@ -388,12 +401,12 @@ public class EnemyEditorGui extends ActorGui {
 		label = new Label("Min", labelStyle);
 		mAiTable.row();
 		cell = mAiTable.add(label);
-		cell.setPadRight(Enemy.LABEL_PADDING_BEFORE_SLIDER);
+		cell.setPadRight(Editor.LABEL_PADDING_BEFORE_SLIDER);
 
 		mWidgets.movement.aiRandomTimeMin = new Slider(Enemy.Movement.RANDOM_MOVEMENT_TIME_MIN, Enemy.Movement.RANDOM_MOVEMENT_TIME_MAX, Enemy.Movement.RANDOM_MOVEMENT_TIME_STEP_SIZE, false, sliderStyle);
 		mAiTable.add(mWidgets.movement.aiRandomTimeMin);
 		textField = new TextField("", textFieldStyle);
-		textField.setWidth(Enemy.TEXT_FIELD_NUMBER_WIDTH);
+		textField.setWidth(Editor.TEXT_FIELD_NUMBER_WIDTH);
 		mAiTable.add(textField);
 		sliderMinListener = new SliderListener(mWidgets.movement.aiRandomTimeMin, textField) {
 			@Override
@@ -409,12 +422,12 @@ public class EnemyEditorGui extends ActorGui {
 		label = new Label("Max", labelStyle);
 		mAiTable.row();
 		cell = mAiTable.add(label);
-		cell.setPadRight(Enemy.LABEL_PADDING_BEFORE_SLIDER);
+		cell.setPadRight(Editor.LABEL_PADDING_BEFORE_SLIDER);
 
 		mWidgets.movement.aiRandomTimeMax = new Slider(Enemy.Movement.RANDOM_MOVEMENT_TIME_MIN, Enemy.Movement.RANDOM_MOVEMENT_TIME_MAX, Enemy.Movement.RANDOM_MOVEMENT_TIME_STEP_SIZE, false, sliderStyle);
 		mAiTable.add(mWidgets.movement.aiRandomTimeMax);
 		textField = new TextField("", textFieldStyle);
-		textField.setWidth(Enemy.TEXT_FIELD_NUMBER_WIDTH);
+		textField.setWidth(Editor.TEXT_FIELD_NUMBER_WIDTH);
 		mAiTable.add(textField);
 		sliderMaxListener = new SliderListener(mWidgets.movement.aiRandomTimeMax, textField) {
 			@Override
@@ -502,18 +515,20 @@ public class EnemyEditorGui extends ActorGui {
 			}
 		});
 
-		/** @TODO set weapon name */
+		Label label = new Label("", labelStyle);
+		mWidgets.weapon.bulletName = label;
+		bulletTable.add(label);
 
 		// Speed
 		bulletTable.row();
-		Label label = new Label("Speed", labelStyle);
+		label = new Label("Speed", labelStyle);
 		Cell cell = bulletTable.add(label);
-		cell.setPadRight(Enemy.LABEL_PADDING_BEFORE_SLIDER);
+		cell.setPadRight(Editor.LABEL_PADDING_BEFORE_SLIDER);
 		Slider slider = new Slider(Weapon.BULLET_SPEED_MIN, Weapon.BULLET_SPEED_MAX, Weapon.BULLET_SPEED_STEP_SIZE, false, sliderStyle);
 		mWidgets.weapon.bulletSpeed = slider;
 		bulletTable.add(slider);
 		TextField textField = new TextField("", textFieldStyle);
-		textField.setWidth(Enemy.TEXT_FIELD_NUMBER_WIDTH);
+		textField.setWidth(Editor.TEXT_FIELD_NUMBER_WIDTH);
 		bulletTable.add(textField);
 		new SliderListener(slider, textField) {
 			@Override
@@ -526,17 +541,17 @@ public class EnemyEditorGui extends ActorGui {
 		bulletTable.row();
 		label = new Label("Damage", labelStyle);
 		cell = bulletTable.add(label);
-		cell.setPadRight(Enemy.LABEL_PADDING_BEFORE_SLIDER);
+		cell.setPadRight(Editor.LABEL_PADDING_BEFORE_SLIDER);
 		slider = new Slider(Weapon.DAMAGE_MIN, Weapon.DAMAGE_MAX, Weapon.DAMAGE_STEP_SIZE, false, sliderStyle);
 		mWidgets.weapon.damage = slider;
 		bulletTable.add(slider);
 		textField = new TextField("", textFieldStyle);
-		textField.setWidth(Enemy.TEXT_FIELD_NUMBER_WIDTH);
+		textField.setWidth(Editor.TEXT_FIELD_NUMBER_WIDTH);
 		bulletTable.add(textField);
 		new SliderListener(slider, textField) {
 			@Override
 			protected void onChange(float newValue) {
-				mEnemyEditor.setBulletSpeed(newValue);
+				mEnemyEditor.setWeaponDamage(newValue);
 			}
 		};
 
@@ -547,13 +562,13 @@ public class EnemyEditorGui extends ActorGui {
 		label = new Label("Min", labelStyle);
 		bulletTable.row();
 		cell = bulletTable.add(label);
-		cell.setPadRight(Enemy.LABEL_PADDING_BEFORE_SLIDER);
+		cell.setPadRight(Editor.LABEL_PADDING_BEFORE_SLIDER);
 
 		Slider sliderMin = new Slider(Weapon.COOLDOWN_MIN, Weapon.COOLDOWN_MAX, Weapon.COOLDOWN_STEP_SIZE, false, sliderStyle);
 		mWidgets.weapon.cooldownMin = sliderMin;
 		bulletTable.add(sliderMin);
 		textField = new TextField("", textFieldStyle);
-		textField.setWidth(Enemy.TEXT_FIELD_NUMBER_WIDTH);
+		textField.setWidth(Editor.TEXT_FIELD_NUMBER_WIDTH);
 		bulletTable.add(textField);
 		SliderListener sliderMinListener = new SliderListener(sliderMin, textField) {
 			@Override
@@ -566,13 +581,13 @@ public class EnemyEditorGui extends ActorGui {
 		label = new Label("Max", labelStyle);
 		bulletTable.row();
 		cell = bulletTable.add(label);
-		cell.setPadRight(Enemy.LABEL_PADDING_BEFORE_SLIDER);
+		cell.setPadRight(Editor.LABEL_PADDING_BEFORE_SLIDER);
 
 		Slider sliderMax = new Slider(Weapon.COOLDOWN_MIN, Weapon.COOLDOWN_MAX, Weapon.COOLDOWN_STEP_SIZE, false, sliderStyle);
 		mWidgets.weapon.cooldownMax = sliderMax;
 		bulletTable.add(sliderMax);
 		textField = new TextField("", textFieldStyle);
-		textField.setWidth(Enemy.TEXT_FIELD_NUMBER_WIDTH);
+		textField.setWidth(Editor.TEXT_FIELD_NUMBER_WIDTH);
 		bulletTable.add(textField);
 		SliderListener sliderMaxListener = new SliderListener(sliderMax, textField) {
 			@Override
@@ -662,7 +677,7 @@ public class EnemyEditorGui extends ActorGui {
 		mWidgets.weapon.aimRotateStartAngle = slider;
 		rotateTable.add(slider);
 		textField = new TextField("", textFieldStyle);
-		textField.setWidth(Enemy.TEXT_FIELD_NUMBER_WIDTH);
+		textField.setWidth(Editor.TEXT_FIELD_NUMBER_WIDTH);
 		rotateTable.add(textField);
 		new SliderListener(slider, textField) {
 			@Override
@@ -679,7 +694,7 @@ public class EnemyEditorGui extends ActorGui {
 		mWidgets.weapon.aimRotateSpeed = slider;
 		rotateTable.add(slider);
 		textField = new TextField("", textFieldStyle);
-		textField.setWidth(Enemy.TEXT_FIELD_NUMBER_WIDTH);
+		textField.setWidth(Editor.TEXT_FIELD_NUMBER_WIDTH);
 		rotateTable.add(textField);
 		new SliderListener(slider, textField) {
 			@Override
@@ -751,6 +766,7 @@ public class EnemyEditorGui extends ActorGui {
 
 
 			// Bullet
+			Label bulletName = null;
 			Slider bulletSpeed = null;
 			Slider damage = null;
 			Slider cooldownMin = null;

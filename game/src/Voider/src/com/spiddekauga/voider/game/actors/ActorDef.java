@@ -61,7 +61,7 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	/**
 	 * Default constructor
 	 */
-	public ActorDef() {
+	private ActorDef() {
 		// Does nothing
 	}
 
@@ -84,6 +84,8 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 
 	/**
 	 * Sets the collision damage of the actor
+	 * If the actor is set to be destroyed on collision ({@link #setDestroyOnCollide(boolean)})
+	 * it will decrease the full collisionDamage from the other actor and not per second.
 	 * @param collisionDamage damage (per second) this actor will make to another when
 	 * colliding actor.
 	 * @return this for chaining commands
@@ -561,6 +563,24 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 		return mVisualVars.centerOffset;
 	}
 
+	/**
+	 * Sets whether this actor shall be destroyed on collision.
+	 * If this actor has any collision damage set to it, it will decrease the
+	 * other actors health with the whole amount instead of per second if this
+	 * is set to true.
+	 * @param destroyOnCollision set to true to destroy the actor on collision
+	 */
+	public void setDestroyOnCollide(boolean destroyOnCollision) {
+		mDestroyOnCollide = destroyOnCollision;
+	}
+
+	/**
+	 * @return true if this actor shall be destroyed on collision
+	 */
+	public boolean shallDestroyOnCollide() {
+		return mDestroyOnCollide;
+	}
+
 	@Override
 	public void write(Json json) {
 		json.writeValue("REVISION", Config.REVISION);
@@ -574,6 +594,7 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 		json.writeValue("mBodyDef", mBodyDef);
 		json.writeValue("mFixtureDefs", mFixtureDefs);
 		json.writeValue("mCollisionDamage", mCollisionDamage);
+		json.writeValue("mDestroyOnCollide", mDestroyOnCollide);
 		json.writeValue("mVisualVars", mVisualVars);
 	}
 
@@ -592,6 +613,7 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 		mBodyDef = json.readValue("mBodyDef", BodyDef.class, jsonData);
 		mFixtureDefs = json.readValue("mFixtureDefs", ArrayList.class, jsonData);
 		mCollisionDamage = json.readValue("mCollisionDamage", float.class, jsonData);
+		mDestroyOnCollide = json.readValue("mDestroyOnCollide", boolean.class, jsonData);
 		mVisualVars = json.readValue("mVisualVars", VisualVars.class, jsonData);
 	}
 
@@ -963,6 +985,8 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	private BodyDef mBodyDef = new BodyDef();
 	/** Collision damage (per second) */
 	private float mCollisionDamage = 0;
+	/** If this actor shall be destroy on collision */
+	private boolean mDestroyOnCollide = false;
 	/** Visual variables */
 	private VisualVars mVisualVars = null;
 	/** Ear clipping triangulator for custom shapes */

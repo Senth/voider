@@ -353,6 +353,40 @@ public class BulletEditor extends WorldScene implements IActorEditor, IActorDraw
 		return mDrawActorTool.getState();
 	}
 
+	/**
+	 * Sets colliding damage of the enemy
+	 * @param damage how much damage the enemy will inflict on a collision
+	 */
+	@Override
+	public void setCollisionDamage(float damage) {
+		mDef.setCollisionDamage(damage);
+	}
+
+	/**
+	 * @return collision damage with the enemy
+	 */
+	@Override
+	public float getCollisionDamage() {
+		return mDef.getCollisionDamage();
+	}
+
+	/**
+	 * Sets whether this actor shall be destroyed on collision
+	 * @param destroyOnCollision set to true to destroy the enemy on collision
+	 */
+	@Override
+	public void setDestroyOnCollide(boolean destroyOnCollision) {
+		mDef.setDestroyOnCollide(destroyOnCollision);
+	}
+
+	/**
+	 * @return true if this enemy shall be destroyed on collision
+	 */
+	@Override
+	public boolean shallDestroyOnCollide() {
+		return mDef.shallDestroyOnCollide();
+	}
+
 	@Override
 	public void onActorAdded(Actor actor) {
 		mBulletActor = (BulletActor) actor;

@@ -119,6 +119,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IActorDrawE
 				try {
 					BulletActorDef bulletDef = ResourceCacheFacade.get(UUID.fromString(message), BulletActorDef.class);
 					setBulletActorDef(bulletDef);
+					mGui.resetValues();
 				} catch (UndefinedResourceTypeException e1) {
 					Gdx.app.error("EnemyEditor", e1.toString());
 				}
@@ -590,7 +591,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IActorDrawE
 	 * Sets the weapon damage
 	 * @param damage how much damage the bullets will take when they hit something
 	 */
-	void setDamage(float damage) {
+	void setWeaponDamage(float damage) {
 		mDef.getWeaponDef().setDamage(damage);
 		mActorSavedSinceLastEdit = false;
 	}
@@ -598,7 +599,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IActorDrawE
 	/**
 	 * @return weapon damage
 	 */
-	float getDamage() {
+	float getWeaponDamage() {
 		return mDef.getWeaponDef().getDamage();
 	}
 
@@ -839,6 +840,53 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IActorDrawE
 		mGui.resetValues();
 		mActorSavedSinceLastEdit = false;
 	}
+
+	/**
+	 * @return name of the bullet actor definition the enemies use, "" if they aren't
+	 * using weapons or has no bullet actor definition set.
+	 */
+	String getBulletName() {
+		if (mDef.getWeaponDef() != null && mDef.getWeaponDef().getBulletActorDef() != null) {
+			return mDef.getWeaponDef().getBulletActorDef().getName();
+		} else {
+			return "";
+		}
+	}
+
+	/**
+	 * Sets colliding damage of the enemy
+	 * @param damage how much damage the enemy will inflict on a collision
+	 */
+	@Override
+	public void setCollisionDamage(float damage) {
+		mDef.setCollisionDamage(damage);
+	}
+
+	/**
+	 * @return collision damage with the enemy
+	 */
+	@Override
+	public float getCollisionDamage() {
+		return mDef.getCollisionDamage();
+	}
+
+	/**
+	 * Sets whether this actor shall be destroyed on collision
+	 * @param destroyOnCollision set to true to destroy the enemy on collision
+	 */
+	@Override
+	public void setDestroyOnCollide(boolean destroyOnCollision) {
+		mDef.setDestroyOnCollide(destroyOnCollision);
+	}
+
+	/**
+	 * @return true if this enemy shall be destroyed on collision
+	 */
+	@Override
+	public boolean shallDestroyOnCollide() {
+		return mDef.shallDestroyOnCollide();
+	}
+
 
 	/** Invalid pointer id */
 	private static final int INVALID_POINTER = -1;

@@ -6,7 +6,6 @@ import com.badlogic.gdx.utils.OrderedMap;
 import com.spiddekauga.utils.Json;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.Collectibles;
-import com.sun.xml.internal.bind.annotation.OverrideAnnotationOf;
 /**
  * Pickup actor definition, does nothing more than specify that the actor
  * is a pickup object
@@ -14,6 +13,13 @@ import com.sun.xml.internal.bind.annotation.OverrideAnnotationOf;
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
 public class PickupActorDef extends ActorDef {
+	/**
+	 * Default constructor
+	 */
+	public PickupActorDef() {
+		super(ActorTypes.PICKUP);
+	}
+
 	/**
 	 * Sets the collectible of the pickup
 	 * @param collectible the collectible this pickup has

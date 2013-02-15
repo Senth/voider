@@ -15,10 +15,13 @@ public class PlayerActorDef extends ActorDef {
 	 * Default constructor
 	 */
 	public PlayerActorDef() {
+		super(ActorTypes.PLAYER);
 		setName("Default");
 		setMaxLife(100f);
 		getBodyDef().type = BodyType.DynamicBody;
 		getBodyDef().fixedRotation = true;
+
+		setShapeType(ActorShapeTypes.CIRCLE);
 	}
 
 	@Override

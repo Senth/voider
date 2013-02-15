@@ -176,4 +176,27 @@ public interface IActorEditor {
 	 * @return current state of the draw actor tool
 	 */
 	DrawActorTool.States getDrawActorToolState();
+
+	// --------------- Collision -----------------
+	/**
+	 * Sets colliding damage of the enemy
+	 * @param damage how much damage the enemy will inflict on a collision
+	 */
+	void setCollisionDamage(float damage);
+
+	/**
+	 * @return collision damage with the enemy
+	 */
+	float getCollisionDamage();
+
+	/**
+	 * Sets whether this actor shall be destroyed on collision
+	 * @param destroyOnCollision set to true to destroy the enemy on collision
+	 */
+	void setDestroyOnCollide(boolean destroyOnCollision);
+
+	/**
+	 * @return true if this enemy shall be destroyed on collision
+	 */
+	boolean shallDestroyOnCollide();
 }

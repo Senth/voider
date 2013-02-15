@@ -6,6 +6,8 @@ import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
+import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
+import com.badlogic.gdx.scenes.scene2d.ui.CheckBox.CheckBoxStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -117,6 +119,14 @@ public abstract class ActorGui extends Gui {
 		mWidgets.option.name.setText(mActorEditor.getName());
 		mWidgets.option.description.setText(mActorEditor.getDescription());
 		mWidgets.option.description.setTextFieldListener(null);
+
+
+		// Collision
+		// If one variable has been initialized, all has...
+		if (mWidgets.collision.damage != null) {
+			mWidgets.collision.damage.setValue(mActorEditor.getCollisionDamage());
+			mWidgets.collision.destroyOnCollide.setChecked(mActorEditor.shallDestroyOnCollide());
+		}
 	}
 
 	/**
@@ -344,7 +354,7 @@ public abstract class ActorGui extends Gui {
 		mWidgets.visual.startAngle = slider;
 		mVisualTable.add(slider);
 		TextField textField = new TextField("", textFieldStyle);
-		textField.setWidth(Enemy.TEXT_FIELD_NUMBER_WIDTH);
+		textField.setWidth(Editor.TEXT_FIELD_NUMBER_WIDTH);
 		mVisualTable.add(textField);
 
 		new SliderListener(slider, textField) {
@@ -365,7 +375,7 @@ public abstract class ActorGui extends Gui {
 		mWidgets.visual.rotationSpeed = slider;
 		mVisualTable.add(slider);
 		textField = new TextField("", textFieldStyle);
-		textField.setWidth(Enemy.TEXT_FIELD_NUMBER_WIDTH);
+		textField.setWidth(Editor.TEXT_FIELD_NUMBER_WIDTH);
 		mVisualTable.add(textField);
 
 		new SliderListener(slider, textField) {
@@ -454,7 +464,7 @@ public abstract class ActorGui extends Gui {
 		if (containsShape(ActorShapeTypes.CIRCLE, actorShapeTypes)) {
 			mVisualTable.row();
 			label = new Label("Radius", labelStyle);
-			mVisualTable.add(label).setPadRight(Enemy.LABEL_PADDING_BEFORE_SLIDER);
+			mVisualTable.add(label).setPadRight(Editor.LABEL_PADDING_BEFORE_SLIDER);
 			circleHider.addToggleActor(label);
 
 			// Enemy
@@ -469,7 +479,7 @@ public abstract class ActorGui extends Gui {
 
 			textField = new TextField("", textFieldStyle);
 			mVisualTable.add(textField);
-			textField.setWidth(Editor.Enemy.TEXT_FIELD_NUMBER_WIDTH);
+			textField.setWidth(Editor.TEXT_FIELD_NUMBER_WIDTH);
 			circleHider.addToggleActor(textField);
 			new SliderListener(slider, textField) {
 				@Override
@@ -484,7 +494,7 @@ public abstract class ActorGui extends Gui {
 		if (containsShape(ActorShapeTypes.RECTANGLE, actorShapeTypes)) {
 			mVisualTable.row();
 			label = new Label("Width", labelStyle);
-			mVisualTable.add(label).setPadRight(Enemy.LABEL_PADDING_BEFORE_SLIDER);
+			mVisualTable.add(label).setPadRight(Editor.LABEL_PADDING_BEFORE_SLIDER);
 			rectangleHider.addToggleActor(label);
 
 			if (this instanceof EnemyEditorGui) {
@@ -498,7 +508,7 @@ public abstract class ActorGui extends Gui {
 
 			textField = new TextField("", textFieldStyle);
 			mVisualTable.add(textField);
-			textField.setWidth(Editor.Enemy.TEXT_FIELD_NUMBER_WIDTH);
+			textField.setWidth(Editor.TEXT_FIELD_NUMBER_WIDTH);
 			rectangleHider.addToggleActor(textField);
 			new SliderListener(slider, textField) {
 				@Override
@@ -515,7 +525,7 @@ public abstract class ActorGui extends Gui {
 
 			mVisualTable.row();
 			label = new Label("Height", labelStyle);
-			mVisualTable.add(label).setPadRight(Enemy.LABEL_PADDING_BEFORE_SLIDER);
+			mVisualTable.add(label).setPadRight(Editor.LABEL_PADDING_BEFORE_SLIDER);
 			rectangleHider.addToggleActor(label);
 
 			if (this instanceof EnemyEditorGui) {
@@ -529,7 +539,7 @@ public abstract class ActorGui extends Gui {
 
 			textField = new TextField("", textFieldStyle);
 			mVisualTable.add(textField);
-			textField.setWidth(Editor.Enemy.TEXT_FIELD_NUMBER_WIDTH);
+			textField.setWidth(Editor.TEXT_FIELD_NUMBER_WIDTH);
 			rectangleHider.addToggleActor(textField);
 			new SliderListener(slider, textField) {
 				@Override
@@ -547,7 +557,7 @@ public abstract class ActorGui extends Gui {
 		if (containsShape(ActorShapeTypes.TRIANGLE, actorShapeTypes)) {
 			mVisualTable.row();
 			label = new Label("Width", labelStyle);
-			mVisualTable.add(label).setPadRight(Enemy.LABEL_PADDING_BEFORE_SLIDER);
+			mVisualTable.add(label).setPadRight(Editor.LABEL_PADDING_BEFORE_SLIDER);
 			triangleHider.addToggleActor(label);
 
 			if (this instanceof EnemyEditorGui) {
@@ -561,7 +571,7 @@ public abstract class ActorGui extends Gui {
 
 			textField = new TextField("", textFieldStyle);
 			mVisualTable.add(textField);
-			textField.setWidth(Editor.Enemy.TEXT_FIELD_NUMBER_WIDTH);
+			textField.setWidth(Editor.TEXT_FIELD_NUMBER_WIDTH);
 			triangleHider.addToggleActor(textField);
 			new SliderListener(slider, textField) {
 				@Override
@@ -583,7 +593,7 @@ public abstract class ActorGui extends Gui {
 			}
 			mVisualTable.row();
 			label = new Label("Height", labelStyle);
-			mVisualTable.add(label).setPadRight(Enemy.LABEL_PADDING_BEFORE_SLIDER);
+			mVisualTable.add(label).setPadRight(Editor.LABEL_PADDING_BEFORE_SLIDER);
 			triangleHider.addToggleActor(label);
 
 			mWidgets.visual.shapeTriangleHeight = slider;
@@ -592,7 +602,7 @@ public abstract class ActorGui extends Gui {
 
 			textField = new TextField("", textFieldStyle);
 			mVisualTable.add(textField);
-			textField.setWidth(Editor.Enemy.TEXT_FIELD_NUMBER_WIDTH);
+			textField.setWidth(Editor.TEXT_FIELD_NUMBER_WIDTH);
 			triangleHider.addToggleActor(textField);
 			new SliderListener(slider, textField) {
 				@Override
@@ -609,7 +619,7 @@ public abstract class ActorGui extends Gui {
 		if (containsShape(ActorShapeTypes.LINE, actorShapeTypes)) {
 			mVisualTable.row();
 			label = new Label("Width", labelStyle);
-			mVisualTable.add(label).setPadRight(Enemy.LABEL_PADDING_BEFORE_SLIDER);
+			mVisualTable.add(label).setPadRight(Editor.LABEL_PADDING_BEFORE_SLIDER);
 			lineHider.addToggleActor(label);
 
 			if (this instanceof EnemyEditorGui) {
@@ -623,7 +633,7 @@ public abstract class ActorGui extends Gui {
 
 			textField = new TextField("", textFieldStyle);
 			mVisualTable.add(textField);
-			textField.setWidth(Editor.Enemy.TEXT_FIELD_NUMBER_WIDTH);
+			textField.setWidth(Editor.TEXT_FIELD_NUMBER_WIDTH);
 			lineHider.addToggleActor(textField);
 			new SliderListener(slider, textField) {
 				@Override
@@ -729,12 +739,54 @@ public abstract class ActorGui extends Gui {
 	}
 
 	/**
+	 * Initializes collision options, this is optional
+	 */
+	protected void initCollision() {
+		Skin skin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
+		LabelStyle labelStyle = skin.get("default", LabelStyle.class);
+		SliderStyle sliderStyle = skin.get("default", SliderStyle.class);
+		TextFieldStyle textFieldStyle = skin.get("default", TextFieldStyle.class);
+		CheckBoxStyle checkBoxStyle = skin.get("default", CheckBoxStyle.class);
+
+		// Collision damage
+		Label label = new Label("Collision Damage", labelStyle);
+		mCollisionTable.add(label);
+
+		mCollisionTable.row();
+		Slider slider = new Slider(Editor.Actor.Collision.DAMAGE_MIN, Editor.Actor.Collision.DAMAGE_MAX, Editor.Actor.Collision.DAMAGE_STEP_SIZE, false, sliderStyle);
+		mWidgets.collision.damage = slider;
+		mCollisionTable.add(slider);
+		TextField textField = new TextField("", textFieldStyle);
+		textField.setWidth(Editor.TEXT_FIELD_NUMBER_WIDTH);
+		mCollisionTable.add(textField);
+		new SliderListener(slider, textField) {
+			@Override
+			protected void onChange(float newValue) {
+				mActorEditor.setCollisionDamage(newValue);
+			}
+		};
+
+		// Collision destroy
+		mCollisionTable.row();
+		Button button = new CheckBox("Destroy on collide", checkBoxStyle);
+		mWidgets.collision.destroyOnCollide = button;
+		mCollisionTable.add(button);
+		new CheckedListener(button) {
+			@Override
+			protected void onChange(boolean checked) {
+				mActorEditor.setDestroyOnCollide(checked);
+			}
+		};
+	}
+
+	/**
 	 * All the widgets which state can be changed and thus reset
 	 */
 	@SuppressWarnings("javadoc")
 	private static class InnerWidgets {
 		VisualWidgets visual = new VisualWidgets();
 		OptionWidgets option = new OptionWidgets();
+		CollisionWidgets collision = new CollisionWidgets();
 
 		/**
 		 * Visual widgets
@@ -770,6 +822,14 @@ public abstract class ActorGui extends Gui {
 			TextField name = null;
 			TextField description = null;
 		}
+
+		/**
+		 * Collision options
+		 */
+		static class CollisionWidgets {
+			Slider damage = null;
+			Button destroyOnCollide = null;
+		}
 	}
 
 	/**
@@ -793,12 +853,16 @@ public abstract class ActorGui extends Gui {
 	protected AlignTable mVisualTable = new AlignTable();
 	/** Container for all general options, such as name description. */
 	protected AlignTable mOptionTable = new AlignTable();
+	/** Container for all collision options */
+	protected AlignTable mCollisionTable = new AlignTable();
 
 	// Hiders
 	/** Hides visual table */
 	protected HideListener mVisualHider = new HideListener(true);
 	/** Hides options options :D:D:D */
 	protected HideListener mOptionHider = new HideListener(true);
+	/** Hides collision options */
+	protected HideListener mCollisionHider = new HideListener(true);
 	/** Invoker */
 	protected Invoker mInvoker = null;
 

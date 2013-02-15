@@ -17,7 +17,7 @@ import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.HideListener;
 import com.spiddekauga.utils.scene.ui.SliderListener;
-import com.spiddekauga.voider.Config.Editor.Enemy;
+import com.spiddekauga.voider.Config.Editor;
 import com.spiddekauga.voider.Config.Editor.Weapon;
 import com.spiddekauga.voider.game.actors.ActorShapeTypes;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
@@ -155,12 +155,12 @@ public class BulletEditorGui extends ActorGui {
 		// Speed
 		mWeaponTable.row();
 		label = new Label("Speed", labelStyle);
-		mWeaponTable.add(label).setPadRight(Enemy.LABEL_PADDING_BEFORE_SLIDER);
+		mWeaponTable.add(label).setPadRight(Editor.LABEL_PADDING_BEFORE_SLIDER);
 		Slider slider = new Slider(Weapon.BULLET_SPEED_MIN, Weapon.BULLET_SPEED_MAX, Weapon.BULLET_SPEED_STEP_SIZE, false, sliderStyle);
 		mWidgets.weapon.bulletSpeed = slider;
 		mWeaponTable.add(slider);
 		TextField textField = new TextField("", textFieldStyle);
-		textField.setWidth(Enemy.TEXT_FIELD_NUMBER_WIDTH);
+		textField.setWidth(Editor.TEXT_FIELD_NUMBER_WIDTH);
 		mWeaponTable.add(textField);
 		new SliderListener(slider, textField) {
 			@Override
@@ -175,13 +175,13 @@ public class BulletEditorGui extends ActorGui {
 		mWeaponTable.add(label);
 		label = new Label("Min", labelStyle);
 		mWeaponTable.row();
-		mWeaponTable.add(label).setPadRight(Enemy.LABEL_PADDING_BEFORE_SLIDER);
+		mWeaponTable.add(label).setPadRight(Editor.LABEL_PADDING_BEFORE_SLIDER);
 
 		Slider sliderMin = new Slider(Weapon.COOLDOWN_MIN, Weapon.COOLDOWN_MAX, Weapon.COOLDOWN_STEP_SIZE, false, sliderStyle);
 		mWidgets.weapon.cooldownMin = sliderMin;
 		mWeaponTable.add(sliderMin);
 		textField = new TextField("", textFieldStyle);
-		textField.setWidth(Enemy.TEXT_FIELD_NUMBER_WIDTH);
+		textField.setWidth(Editor.TEXT_FIELD_NUMBER_WIDTH);
 		mWeaponTable.add(textField);
 		SliderListener sliderMinListener = new SliderListener(sliderMin, textField) {
 			@Override
@@ -193,13 +193,13 @@ public class BulletEditorGui extends ActorGui {
 
 		label = new Label("Max", labelStyle);
 		mWeaponTable.row();
-		mWeaponTable.add(label).setPadRight(Enemy.LABEL_PADDING_BEFORE_SLIDER);
+		mWeaponTable.add(label).setPadRight(Editor.LABEL_PADDING_BEFORE_SLIDER);
 
 		Slider sliderMax = new Slider(Weapon.COOLDOWN_MIN, Weapon.COOLDOWN_MAX, Weapon.COOLDOWN_STEP_SIZE, false, sliderStyle);
 		mWidgets.weapon.cooldownMax = sliderMax;
 		mWeaponTable.add(sliderMax);
 		textField = new TextField("", textFieldStyle);
-		textField.setWidth(Enemy.TEXT_FIELD_NUMBER_WIDTH);
+		textField.setWidth(Editor.TEXT_FIELD_NUMBER_WIDTH);
 		mWeaponTable.add(textField);
 		SliderListener sliderMaxListener = new SliderListener(sliderMax, textField) {
 			@Override

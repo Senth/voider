@@ -165,6 +165,20 @@ public class Config {
 				/** Step size of rotate speed */
 				public final static float ROTATE_SPEED_STEP_SIZE = 1;
 			}
+
+			/**
+			 * Collision options
+			 */
+			public class Collision {
+				/** Minimum collision damage */
+				public final static float DAMAGE_MIN = 0;
+				/** Maximum collision damage */
+				public final static float DAMAGE_MAX = 100;
+				/** Default collision damage */
+				public final static float DAMAGE_DEFAULT = 0;
+				/** Step size of collision damage */
+				public final static float DAMAGE_STEP_SIZE = 1;
+			}
 		}
 
 		/**
@@ -295,11 +309,6 @@ public class Config {
 				/** Step size of starting angle */
 				public final static float START_ANGLE_STEP_SIZE = 1;
 			}
-
-			/** Label padding in front of a slider */
-			public final static float LABEL_PADDING_BEFORE_SLIDER = 8;
-			/** Text field size for numbers */
-			public final static float TEXT_FIELD_NUMBER_WIDTH = 70;
 		}
 
 		/**
@@ -338,6 +347,10 @@ public class Config {
 		public static float SELECT_DEF_WIDTH_MAX = 200;
 		/** Temporary GUI name when using an invoker */
 		public static String GUI_INVOKER_TEMP_NAME = "invoker";
+		/** Text field size for numbers */
+		public final static float TEXT_FIELD_NUMBER_WIDTH = 70;
+		/** Label padding in front of a slider */
+		public final static float LABEL_PADDING_BEFORE_SLIDER = 8;
 
 		/** Radius of all picking circles */
 		private final static float PICKING_CIRCLE_RADIUS = 1.0f;
