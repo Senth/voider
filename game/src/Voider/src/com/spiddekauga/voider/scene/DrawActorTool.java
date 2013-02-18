@@ -1,19 +1,11 @@
 package com.spiddekauga.voider.scene;
 
-import java.lang.reflect.Constructor;
-import java.util.ArrayList;
-
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.Fixture;
-import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Pools;
 import com.spiddekauga.utils.Invoker;
-import com.spiddekauga.voider.editor.HitWrapper;
-import com.spiddekauga.voider.editor.IActorDrawEditor;
+import com.spiddekauga.voider.editor.IActorChangeEditor;
 import com.spiddekauga.voider.editor.commands.CActorAdd;
 import com.spiddekauga.voider.editor.commands.CActorCenterMove;
 import com.spiddekauga.voider.editor.commands.CActorCornerAdd;
@@ -35,21 +27,20 @@ import com.spiddekauga.voider.game.actors.BulletActor;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class DrawActorTool extends TouchTool implements IActorSelect {
+public class DrawActorTool extends ActorTool implements IActorSelect {
 	/**
 	 * Creates a draw actor tool.
 	 * @param camera used for determining where the pointer is in the world
 	 * @param world used for picking
-	 * @param invoker used for undoing/redoing some commands
 	 * @param actorType the actor type to create/use
+	 * @param invoker used for undoing/redoing some commands
 	 * @param actorEditor editor for the actor, will call some methods in here
 	 */
-	public DrawActorTool(Camera camera, World world, Invoker invoker, Class<?> actorType, IActorDrawEditor actorEditor) {
-		super(camera, world);
+	public DrawActorTool(Camera camera, World world, Class<?> actorType, Invoker invoker, IActorChangeEditor actorEditor) {
+		super(camera, world, actorType);
 		mInvoker = invoker;
 		mActorEditor = actorEditor;
 		mOnlyOneActor = false;
-		mActorType = actorType;
 	}
 
 	/**
@@ -57,17 +48,16 @@ public class DrawActorTool extends TouchTool implements IActorSelect {
 	 * actor definition.
 	 * @param camera used for determining where the pointer is in the world
 	 * @param world used for picking
-	 * @param invoker used for undoing/redoing some commands
 	 * @param actorType the actor type to create/use
+	 * @param invoker used for undoing/redoing some commands
 	 * @param actorEditor editor for the actor, will call some methods in here
 	 * @param actorDef the actor definition to use for the only actor
 	 */
-	public DrawActorTool(Camera camera, World world, Invoker invoker, Class<?> actorType, IActorDrawEditor actorEditor, ActorDef actorDef) {
-		super(camera, world);
+	public DrawActorTool(Camera camera, World world, Class<?> actorType, Invoker invoker, IActorChangeEditor actorEditor, ActorDef actorDef) {
+		super(camera, world, actorType);
 		mInvoker = invoker;
 		mActorEditor = actorEditor;
 		mOnlyOneActor = true;
-		mActorType = actorType;
 		mActorDef = actorDef;
 	}
 
@@ -93,6 +83,20 @@ public class DrawActorTool extends TouchTool implements IActorSelect {
 			mActorEditor.onActorRemoved(mActor);
 			mActor = null;
 		}
+	}
+
+	/**
+	 * Clears the tool. This will remove any selected actor.
+	 * @note the actor definition will remain if it has been set
+	 */
+	@Override
+	public void clear() {
+		if (mActor != null) {
+			mActor.destroyBodyCenter();
+			mActor.destroyBodyCorners();
+		}
+
+		mActor = null;
 	}
 
 	/**
@@ -208,7 +212,7 @@ public class DrawActorTool extends TouchTool implements IActorSelect {
 				if (mCornerIndexLast != -1) {
 					mInvoker.undo(false);
 				}
-				mInvoker.execute(new CActorSelect(this, null));
+				mInvoker.execute(new CActorSelect(null, this));
 				return;
 			}
 
@@ -231,7 +235,7 @@ public class DrawActorTool extends TouchTool implements IActorSelect {
 					}
 					// Select the other actor if we can create multiple actors
 					else {
-						mInvoker.execute(new CActorSelect(this, (Actor)mHitBody.getUserData()));
+						mInvoker.execute(new CActorSelect((Actor)mHitBody.getUserData(), this));
 					}
 				}
 				// Else hit a corner, start moving it
@@ -246,9 +250,12 @@ public class DrawActorTool extends TouchTool implements IActorSelect {
 				// No actor, create a new actor
 				if (mActor == null /** @todo !mLevel.containsActor(mActor) */) {
 					Actor actor = newActor();
+					if (mOnlyOneActor) {
+						actor.setDef(mActorDef);
+					}
 					actor.setPosition(mTouchOrigin);
 					mInvoker.execute(new CActorAdd(actor, mActorEditor));
-					mInvoker.execute(new CActorSelect(this, actor), true);
+					mInvoker.execute(new CActorSelect(actor, this), true);
 				}
 
 				if (mActor != null) {
@@ -265,12 +272,12 @@ public class DrawActorTool extends TouchTool implements IActorSelect {
 			if (mHitBody != null && mHitBody.getUserData() instanceof Actor) {
 				// Select the actor
 				if (mActor != mHitBody.getUserData()) {
-					mInvoker.execute(new CActorSelect(this, (Actor) mHitBody.getUserData()));
+					mInvoker.execute(new CActorSelect((Actor) mHitBody.getUserData(), null));
 				}
 				mDragOrigin.set(mHitBody.getPosition());
 			} else {
 				if (mActor != null) {
-					mInvoker.execute(new CActorSelect(this, null));
+					mInvoker.execute(new CActorSelect(null, this));
 				}
 			}
 			break;
@@ -287,19 +294,19 @@ public class DrawActorTool extends TouchTool implements IActorSelect {
 					// Only do something if we didn't hit the actor the first time
 					if (!mChangedActorSinceUp) {
 						mInvoker.execute(new CActorRemove(mActor, mActorEditor));
-						mInvoker.execute(new CActorCornerRemoveAll(mActor.getDef()), true);
-						mInvoker.execute(new CActorSelect(this, null), true);
+						mInvoker.execute(new CActorCornerRemoveAll(mActor.getDef(), mActorEditor), true);
+						mInvoker.execute(new CActorSelect(null, this), true);
 					}
 				}
 				// Else hit a corner, delete it
 				else {
 					mCornerIndexCurrent = mActor.getCornerIndex(mHitBody.getPosition());
-					mInvoker.execute(new CActorCornerRemove(mActor.getDef(), mCornerIndexCurrent));
+					mInvoker.execute(new CActorCornerRemove(mActor.getDef(), mCornerIndexCurrent, mActorEditor));
 
 					// Was it the last corner? Remove actor too then
 					if (mActor.getDef().getCornerCount() == 0) {
 						mInvoker.execute(new CActorRemove(mActor, mActorEditor), true);
-						mInvoker.execute(new CActorSelect(this, null), true);
+						mInvoker.execute(new CActorSelect(null, this), true);
 					}
 				}
 			}
@@ -386,7 +393,7 @@ public class DrawActorTool extends TouchTool implements IActorSelect {
 					newPos.set(mActor.getDef().getCornerPosition(mCornerIndexCurrent));
 					try {
 						mActor.getDef().moveCorner(mCornerIndexCurrent, mDragOrigin);
-						mInvoker.execute(new CActorCornerMove(mActor.getDef(), mCornerIndexCurrent, newPos));
+						mInvoker.execute(new CActorCornerMove(mActor.getDef(), mCornerIndexCurrent, newPos, mActorEditor));
 					} catch (Exception e) {
 						// Does nothing
 					}
@@ -408,7 +415,7 @@ public class DrawActorTool extends TouchTool implements IActorSelect {
 				mActor.setPosition(mDragOrigin);
 
 				Vector2 newPos = getNewMovePosition();
-				mInvoker.execute(new CActorMove(mActor, newPos), mChangedActorSinceUp);
+				mInvoker.execute(new CActorMove(mActor, newPos, mActorEditor), mChangedActorSinceUp);
 				Pools.free(newPos);
 			}
 			break;
@@ -428,49 +435,11 @@ public class DrawActorTool extends TouchTool implements IActorSelect {
 				mActor.destroyBody();
 				mActor.setPosition(mDragOrigin);
 
-				mInvoker.execute(new CActorCenterMove(mActor.getDef(), centerOffset, mCenterOffsetOrigin, mActor));
+				mInvoker.execute(new CActorCenterMove(mActor.getDef(), centerOffset, mCenterOffsetOrigin, mActorEditor, mActor));
 
 				Pools.free(centerOffset);
 			}
 			break;
-		}
-	}
-
-	/**
-	 * Called when a new actor shall be created.
-	 * @return new actor to be used
-	 */
-	protected Actor newActor() {
-		try {
-			Constructor<?> constructor = mActorType.getConstructor();
-			Actor actor = (Actor) constructor.newInstance();
-			actor.setSkipRotating(true);
-
-			if (mOnlyOneActor) {
-				actor.setDef(mActorDef);
-			}
-			return actor;
-
-		} catch (Exception e) {
-			Gdx.app.error("DrawActorTool", e.toString());
-		}
-
-		return null;
-	}
-
-	@Override
-	protected QueryCallback getCallback() {
-		return mCallback;
-	}
-
-	@Override
-	protected Body filterPick(ArrayList<Body> hitBodies) {
-		// Because the query only will return one body, set the hit body
-		// as the first from hit bodies
-		if (!hitBodies.isEmpty()) {
-			return hitBodies.get(0);
-		} else {
-			return null;
 		}
 	}
 
@@ -515,7 +484,7 @@ public class DrawActorTool extends TouchTool implements IActorSelect {
 		// Set the command as chained if no corner exist in the actor
 		boolean chained = mActor.getDef().getCornerCount() == 0;
 
-		mInvoker.execute(new CActorCornerAdd(mActor.getDef(), cornerPos), chained);
+		mInvoker.execute(new CActorCornerAdd(mActor.getDef(), cornerPos, mActorEditor), chained);
 	}
 
 	/**
@@ -533,29 +502,6 @@ public class DrawActorTool extends TouchTool implements IActorSelect {
 		return newPosition;
 	}
 
-	/** Picking for current actor type */
-	private QueryCallback mCallback = new QueryCallback() {
-		@Override
-		public boolean reportFixture(Fixture fixture) {
-			if (fixture.testPoint(mTouchCurrent)) {
-				Body body = fixture.getBody();
-				// Hit a corner
-				if (body.getUserData() instanceof HitWrapper) {
-					HitWrapper hitWrapper = (HitWrapper) body.getUserData();
-					if (hitWrapper.actor != null && hitWrapper.actor.getClass() == mActorType) {
-						mHitBodies.clear();
-						mHitBodies.add(fixture.getBody());
-						return false;
-					}
-				}
-				// Hit an actor
-				else if (body.getUserData() != null && body.getUserData().getClass() == mActorType) {
-					mHitBodies.add(body);
-				}
-			}
-			return true;
-		}
-	};
 
 	/** Invoker used for undoing/redoing commands */
 	protected Invoker mInvoker = null;
@@ -577,9 +523,8 @@ public class DrawActorTool extends TouchTool implements IActorSelect {
 	/** True if the current corner was added during the down() event */
 	private boolean mCornerAddedNow = false;
 	/** The actor editor */
-	private IActorDrawEditor mActorEditor;
-	/** The actor type that will be created */
-	private Class<?> mActorType;
+	private IActorChangeEditor mActorEditor;
+
 	/** If only one actor shall be able to be created simultaneously */
 	private boolean mOnlyOneActor;
 	/** Actor definition, only set if only one actor */

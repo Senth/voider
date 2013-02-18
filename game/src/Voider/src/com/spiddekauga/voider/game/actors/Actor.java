@@ -285,6 +285,16 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 		if (mBody != null) {
 			mBody.setTransform(mPosition, mBody.getAngle());
 		}
+
+		if (mHasBodyCenter) {
+			destroyBodyCenter();
+			createBodyCenter();
+		}
+
+		if (mHasBodyCorners) {
+			destroyBodyCorners();
+			createBodyCorners();
+		}
 	}
 
 	/**

@@ -35,7 +35,9 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	 * @param maxLife maximum life of the actor, also starting amount of life
 	 * @param name name of the actor
 	 * @param fixtureDef physical representation of the object
+	 * @deprecated will be removed soon
 	 */
+	@Deprecated
 	public ActorDef(
 			float maxLife,
 			String name,
@@ -56,10 +58,12 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	 */
 	protected ActorDef(ActorTypes actorType) {
 		mVisualVars = new VisualVars(actorType);
+
+		createFixtureDef();
 	}
 
 	/**
-	 * Default constructor
+	 * Default constructor for JSON
 	 */
 	private ActorDef() {
 		// Does nothing
@@ -595,7 +599,7 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 		// Write ActorDef's variables first
 		json.writeValue("mMaxLife", mMaxLife);
 		json.writeValue("mBodyDef", mBodyDef);
-		json.writeValue("mFixtureDefs", mFixtureDefs);
+		//		json.writeValue("mFixtureDefs", mFixtureDefs);
 		json.writeValue("mCollisionDamage", mCollisionDamage);
 		json.writeValue("mDestroyOnCollide", mDestroyOnCollide);
 		json.writeValue("mVisualVars", mVisualVars);
@@ -614,10 +618,12 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 		// Our variables
 		mMaxLife = json.readValue("mMaxLife", float.class, jsonData);
 		mBodyDef = json.readValue("mBodyDef", BodyDef.class, jsonData);
-		mFixtureDefs = json.readValue("mFixtureDefs", ArrayList.class, jsonData);
+		//		mFixtureDefs = json.readValue("mFixtureDefs", ArrayList.class, jsonData);
 		mCollisionDamage = json.readValue("mCollisionDamage", float.class, jsonData);
 		mDestroyOnCollide = json.readValue("mDestroyOnCollide", boolean.class, jsonData);
 		mVisualVars = json.readValue("mVisualVars", VisualVars.class, jsonData);
+
+		createFixtureDef();
 	}
 
 	/**
@@ -663,6 +669,13 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	 */
 	float getBodyChangeTime() {
 		return mBodyChangeTime;
+	}
+
+	/**
+	 * Creates the fixture definition
+	 */
+	protected void createFixtureDef() {
+		setShapeType(mVisualVars.shapeType);
 	}
 
 	/**

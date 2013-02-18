@@ -1,24 +1,21 @@
 package com.spiddekauga.voider.editor;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.Fixture;
-import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.utils.Pools;
 import com.spiddekauga.utils.Invoker;
 import com.spiddekauga.utils.Scroller;
 import com.spiddekauga.utils.Scroller.ScrollAxis;
 import com.spiddekauga.voider.Config;
-import com.spiddekauga.voider.game.Collectibles;
 import com.spiddekauga.voider.game.GameScene;
 import com.spiddekauga.voider.game.Level;
 import com.spiddekauga.voider.game.LevelDef;
 import com.spiddekauga.voider.game.actors.Actor;
+import com.spiddekauga.voider.game.actors.ActorDef;
+import com.spiddekauga.voider.game.actors.EnemyActorDef;
 import com.spiddekauga.voider.game.actors.PickupActor;
 import com.spiddekauga.voider.game.actors.PickupActorDef;
 import com.spiddekauga.voider.game.actors.StaticTerrainActor;
@@ -26,9 +23,13 @@ import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceNames;
 import com.spiddekauga.voider.resources.ResourceSaver;
 import com.spiddekauga.voider.resources.UndefinedResourceTypeException;
+import com.spiddekauga.voider.scene.ActorTool;
+import com.spiddekauga.voider.scene.AddActorTool;
 import com.spiddekauga.voider.scene.DrawActorTool;
 import com.spiddekauga.voider.scene.LoadingScene;
+import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
+import com.spiddekauga.voider.scene.SelectDefScene;
 import com.spiddekauga.voider.scene.TouchTool;
 import com.spiddekauga.voider.scene.WorldScene;
 
@@ -36,10 +37,8 @@ import com.spiddekauga.voider.scene.WorldScene;
  * The level editor scene
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
- * 
- * @TODO unload level
  */
-public class LevelEditor extends WorldScene implements IActorDrawEditor {
+public class LevelEditor extends WorldScene implements IActorChangeEditor, IEditor {
 	/**
 	 * Constructor for the level editor
 	 */
@@ -51,10 +50,11 @@ public class LevelEditor extends WorldScene implements IActorDrawEditor {
 
 		mScroller = new Scroller(50, 2000, 10, 200, ScrollAxis.X);
 
-		// Init all tools
-		DrawActorTool drawActorTool = new DrawActorTool(mCamera, mWorld, mInvoker, StaticTerrainActor.class, this);
+		// Initialize all tools
+		DrawActorTool drawActorTool = new DrawActorTool(mCamera, mWorld, StaticTerrainActor.class, mInvoker, this);
 		mTouchTools[Tools.STATIC_TERRAIN.ordinal()] = drawActorTool;
-		mTouchTools[Tools.PICKUP.ordinal()] = null;
+		AddActorTool addActorTool = new AddActorTool(mCamera, mWorld, PickupActor.class, mInvoker, this);
+		mTouchTools[Tools.PICKUP.ordinal()] = addActorTool;
 
 		switchTool(Tools.STATIC_TERRAIN);
 	}
@@ -101,23 +101,10 @@ public class LevelEditor extends WorldScene implements IActorDrawEditor {
 	 * @param level level to play
 	 */
 	public void setLevel(Level level) {
+		/** @todo unload level */
+
 		mLevel = level;
 		mInvoker.dispose();
-	}
-
-	/**
-	 * Sets the currently selected actor
-	 * @param actor the new selected actor
-	 */
-	public void setSelectedActor(Actor actor) {
-		mSelectedActor = actor;
-	}
-
-	/**
-	 * @return the currently selected actor
-	 */
-	public Actor getSelectedActor() {
-		return mSelectedActor;
 	}
 
 	// --------------------------------
@@ -137,31 +124,88 @@ public class LevelEditor extends WorldScene implements IActorDrawEditor {
 	@Override
 	public void loadResources() {
 		ResourceCacheFacade.load(ResourceNames.EDITOR_BUTTONS);
+		try {
+			ResourceCacheFacade.loadAllOf(EnemyActorDef.class, true);
+			ResourceCacheFacade.loadAllOf(PickupActorDef.class, true);
+		} catch (UndefinedResourceTypeException e) {
+			Gdx.app.error("LevelEditor", e.toString());
+		}
 	}
 
 	@Override
 	public void unloadResources() {
 		ResourceCacheFacade.unload(ResourceNames.EDITOR_BUTTONS);
+
+		try {
+			ResourceCacheFacade.unloadAllOf(EnemyActorDef.class, true);
+			ResourceCacheFacade.unloadAllOf(PickupActorDef.class, true);
+		} catch (UndefinedResourceTypeException e) {
+			Gdx.app.error("LevelEditor", e.toString());
+		}
 	}
 
 	@Override
 	public void onActivate(Outcomes outcome, String message) {
+		Actor.setEditorActive(true);
+		Actor.setWorld(mWorld);
+
 		// Check so that all resources have been loaded
 		if (outcome == Outcomes.LOADING_SUCCEEDED) {
 			if (!mGui.isInitialized()) {
 				mGui.initGui();
 			}
+
+			// Loading a level
+			if (mLoadingLevel != null) {
+				Level loadedLevel;
+				try {
+					loadedLevel = ResourceCacheFacade.get(mLoadingLevel.getLevelId(), Level.class);
+					setLevel(loadedLevel);
+				} catch (UndefinedResourceTypeException e) {
+					Gdx.app.error("LevelEditor", e.toString());
+				}
+
+			}
 		}
-		// Changed back to level editor from testing game, reset world etc
-		else if (outcome == Outcomes.LEVEL_QUIT) {
-			Actor.setEditorActive(true);
-			Actor.setWorld(mWorld);
+		else if (outcome == Outcomes.LOADING_FAILED_CORRUPT_FILE) {
+			// TODO
+			mLoadingLevel = null;
+		}
+		else if (outcome == Outcomes.LOADING_FAILED_MISSING_FILE) {
+			// TODO
+			mLoadingLevel = null;
+		}
+		else if (outcome == Outcomes.LOADING_FAILED_UNDEFINED_TYPE) {
+			// TODO
+			mLoadingLevel = null;
+		}
+		else if (outcome == Outcomes.DEF_SELECTED) {
+			switch (mSelectionAction) {
+			case LEVEL_LOAD:
+				try {
+					mLoadingLevel = ResourceCacheFacade.get(UUID.fromString(message), LevelDef.class);
+
+					// Load the actual level
+					ResourceCacheFacade.load(mLoadingLevel.getLevelId(), Level.class, false);
+					Scene scene = getLoadingScene();
+					SceneSwitcher.switchTo(scene);
+				} catch (Exception e) {
+					Gdx.app.error("LevelEditor", e.toString());
+				}
+				break;
+
+			case PICKUP:
+				try {
+					PickupActorDef pickupActorDef = ResourceCacheFacade.get(UUID.fromString(message), PickupActorDef.class);
+					((ActorTool)mTouchTools[Tools.PICKUP.ordinal()]).setNewActorDef(pickupActorDef);
+				} catch (Exception e) {
+					Gdx.app.error("LevelEditor", e.toString());
+				}
+				break;
+			}
 		}
 	}
 
-	// --------------------------------
-	//		INPUT EVENTS (not gui)
-	// --------------------------------
 	@Override
 	public boolean touchDown(int x, int y, int pointer, int button) {
 		// Scroll -> When press middle mouse or two fingers
@@ -204,6 +248,11 @@ public class LevelEditor extends WorldScene implements IActorDrawEditor {
 	@Override
 	public void onActorRemoved(Actor actor) {
 		mLevel.removeActor(actor.getId());
+	}
+
+	@Override
+	public void onActorChanged(Actor actor) {
+		mUnsaved = true;
 	}
 
 	/**
@@ -279,57 +328,56 @@ public class LevelEditor extends WorldScene implements IActorDrawEditor {
 		SceneSwitcher.switchTo(testGame);
 	}
 
-	/**
-	 * Saves the current level
-	 */
-	void save() {
+	@Override
+	public void saveDef() {
 		ResourceSaver.save(mLevel.getDef());
 		ResourceSaver.save(mLevel);
+		mUnsaved = false;
 	}
 
-	/**
-	 * Loads a level
-	 */
-	void load() {
-		// Load all level defs
-		try {
-			ResourceCacheFacade.loadAllOf(LevelDef.class, true);
-			ResourceCacheFacade.finishLoading();
+	@Override
+	public void loadDef() {
+		mSelectionAction = SelectionActions.LEVEL_LOAD;
 
-			List<LevelDef> levelDefs = ResourceCacheFacade.get(LevelDef.class);
-
-			// Load first
-			if (levelDefs.size() > 0) {
-				ResourceCacheFacade.load(levelDefs.get(0).getLevelId(), Level.class, false);
-				ResourceCacheFacade.finishLoading();
-				Level loadedLevel = ResourceCacheFacade.get(levelDefs.get(0).getLevelId(), Level.class);
-				if (loadedLevel != null) {
-					mLevel.dispose();
-					setLevel(loadedLevel);
-				}
-			}
-
-		} catch (UndefinedResourceTypeException e) {
-			e.printStackTrace();
-		}
+		Scene scene = new SelectDefScene(LevelDef.class, true, true);
+		SceneSwitcher.switchTo(scene);
 	}
 
-	/**
-	 * Creates a new empty level
-	 */
-	void newLevel() {
+	@Override
+	public void newDef() {
 		mLevel.dispose();
 		LevelDef levelDef = new LevelDef();
 		Level level = new Level(levelDef);
 		setLevel(level);
+
+		clearTools();
+
+		mUnsaved = false;
+	}
+
+	@Override
+	public void duplicateDef() {
+		Level level = mLevel.copy();
+
+		setLevel(level);
+
+		mGui.resetValues();
+		mUnsaved = true;
+		mInvoker.dispose();
+	}
+
+	@Override
+	public boolean isUnsaved() {
+		return mUnsaved;
 	}
 
 	/**
 	 * Sets the current active pickup tool
-	 * @param pickupTool the new active pickup tool
+	 * @param state current active pickup tool
 	 */
-	void setPickupTool(PickupTools pickupTool) {
-		mPickupTool.setTool(pickupTool);
+	void setPickupState(AddActorTool.States state) {
+		AddActorTool addActorTool = (AddActorTool) mTouchTools[Tools.PICKUP.ordinal()];
+		addActorTool.setState(state);
 	}
 
 	/**
@@ -348,299 +396,68 @@ public class LevelEditor extends WorldScene implements IActorDrawEditor {
 		return ((DrawActorTool)mTouchTools[Tools.STATIC_TERRAIN.ordinal()]).getState();
 	}
 
-	/** Level we're currently editing */
-	private Level mLevel = null;
-	/** Currently selected actor */
-	private Actor mSelectedActor = null;
-	/** Invoker for the level editor */
-	private Invoker mInvoker = new Invoker();
+	/**
+	 * Select pickup
+	 */
+	void selectPickup() {
+		mSelectionAction = SelectionActions.PICKUP;
 
-	// Event stuff
-	/** Scrolling for nice scrolling */
-	private Scroller mScroller;
+		Scene scene = new SelectDefScene(PickupActorDef.class, false, false);
+		SceneSwitcher.switchTo(scene);
+	}
 
-	// -------------------------------------
-	//				Tools
-	// -------------------------------------
-	/** Current selected tool */
-	private Tools mToolType = Tools.STATIC_TERRAIN;
-	/** All the available tools */
-	private TouchTool[] mTouchTools = new TouchTool[Tools.values().length];
+	/**
+	 * @return currently selected pickup
+	 */
+	ActorDef getSelectedPickup() {
+		return ((ActorTool) mTouchTools[Tools.PICKUP.ordinal()]).getNewActorDef();
+	}
 
-
-	// Temporary variables for touch detection
-	/** Original point when pressing */
-	private Vector2 mTouchOrigin = new Vector2();
-	/** Current point when pressing */
-	private Vector2 mTouchCurrent = new Vector2();
-	/** Starting position for the camera scroll */
-	private Vector2 mScrollCameraOrigin = new Vector2();
-	/** Body that was hit (and prioritized) */
-	private Body mHitBody = null;
-	/** Bodies that were hit and selected for filtering, before mHitBody is set */
-	private LinkedList<Body> mHitBodies = new LinkedList<Body>();
-
-	// -------------------------------------
-	//				TOOLS
-	// -------------------------------------
 	/**
 	 * All the main tool buttons
 	 */
 	enum Tools {
-		/** Pickup tool @TODO change style*/
-		PICKUP("toggle"),
-		/** Terrain tool @TODO change style */
-		STATIC_TERRAIN("toggle");
-
-		/**
-		 * @return style of the tool
-		 */
-		public String getStyleName() {
-			return mStyleName;
-		}
-
-		/**
-		 * Constructor for terrain tool, binds the tool with a style
-		 * @param style the style bound to the tool
-		 */
-		private Tools(String style) {
-			mStyleName = style;
-		}
-
-		/** Name of the style the tool shall use */
-		private String mStyleName;
-	}
-
-
-
-	/**
-	 * Pickup tools
-	 */
-	enum PickupTools {
-		/** Add/create health 25 @TODO change style */
-		ADD_HEALTH_25("toggle"),
-		/** Add/Create health 50 @TODO change style */
-		ADD_HEALTH_50("toggle"),
-		/** Moves a pickup @TODO change style */
-		MOVE("toggle"),
-		/** Remove a pickup @TODO change style */
-		REMOVE("toggle");
-
-		/**
-		 * @return style of the tool
-		 */
-		public String getStyleName() {
-			return mStyleName;
-		}
-
-		/**
-		 * Constructor for terrain tool, binds the tool with a style
-		 * @param style the style bound to the tool
-		 */
-		private PickupTools(String style) {
-			mStyleName = style;
-		}
-
-		/** Name of the style the tool shall use */
-		private String mStyleName;
-	}
-
-
-
-	/** Tool for pickups */
-	private PickupTool mPickupTool = new PickupTool();
-
-	/**
-	 * Common interface for all event handlers
-	 */
-	private abstract class Tool {
-		/**
-		 * Handles touch down events
-		 */
-		public abstract void down();
-
-		/**
-		 * Handles touch dragged events
-		 */
-		public abstract void dragged();
-
-		/**
-		 * Handles touch up events
-		 */
-		public abstract void up();
-
-		/**
-		 * Filter picks
-		 */
-		public abstract void filterPicks();
-
-		/**
-		 * Sets the actor. This allows the class to filter which actors
-		 * should be set and which should not be set...
-		 */
-		public abstract void setActor();
+		/** Add/Move/Remove pickups */
+		PICKUP,
+		/** Draws the terrain */
+		STATIC_TERRAIN;
 	}
 
 	/**
-	 * Handles all pickup things in the editor
-	 * 
-	 * @author Matteus Magnusson <senth.wallace@gmail.com>
+	 * Clears all the tools
 	 */
-	private class PickupTool extends Tool {
-		@Override
-		public void down() {
-			Collectibles collectibleToAdd = null;
-			switch (mTool) {
-			case ADD_HEALTH_25:
-				collectibleToAdd = Collectibles.HEALTH_25;
-				break;
-
-
-			case ADD_HEALTH_50:
-				collectibleToAdd = Collectibles.HEALTH_50;
-				break;
-
-
-			case MOVE:
-				//				testPick(mCallback);
-				if (mHitBody != null && mSelectedActor != null) {
-					mMoving = true;
-					mDragOrigin.set(mHitBody.getPosition());
-				}
-				break;
-
-
-			case REMOVE:
-				//				testPick(mCallback);
-				if (mHitBody != null && mSelectedActor != null) {
-					//					mLevelInvoker.execute(new ClActorRemove(mSelectedActor, true));
-					//					mLevelInvoker.execute(new ClActorSelect(null, true));
-				}
-				break;
-			}
-
-
-			// Add a new pickup at the specific location
-			if (collectibleToAdd != null) {
-				PickupActorDef pickupActorDef = new PickupActorDef();
-				pickupActorDef.setCollectible(collectibleToAdd);
-				mActorAdding = new PickupActor();
-				mActorAdding.setDef(pickupActorDef);
-				mActorAdding.setPosition(mTouchOrigin);
-
-				// Add temporary actor
-				mLevel.addActor(mActorAdding);
-			}
+	private void clearTools() {
+		for (TouchTool touchTool : mTouchTools) {
+			touchTool.clear();
 		}
-
-		@Override
-		public void dragged() {
-
-			switch (mTool) {
-			case ADD_HEALTH_25:
-			case ADD_HEALTH_50:
-				mActorAdding.setPosition(mTouchCurrent);
-				break;
-
-			case MOVE:
-				if (mMoving) {
-					mSelectedActor.setPosition(mTouchCurrent);
-				}
-				break;
-
-
-			case REMOVE:
-				// Does nothing
-				break;
-			}
-		}
-
-		@Override
-		public void up() {
-			boolean addActor = false;
-
-			switch (mTool) {
-			case ADD_HEALTH_25:
-			case ADD_HEALTH_50:
-				addActor = true;
-
-			case MOVE:
-				if (mMoving) {
-					// Reset position of the selected actor
-					mSelectedActor.setPosition(mDragOrigin);
-
-					// Move actor through command
-					//					mLevelInvoker.execute(new ClActorMove(mSelectedActor, mTouchCurrent, true));
-				}
-				break;
-
-
-			case REMOVE:
-				// Does nothing
-				break;
-			}
-
-			if (addActor) {
-				mLevel.removeActor(mActorAdding.getId());
-				//				mLevelInvoker.execute(new ClActorAdd(mActorAdding));
-				//				mLevelInvoker.execute(new ClActorSelect(mActorAdding, true));
-			}
-		}
-
-		@Override
-		public void filterPicks() {
-			Actor newActor = mSelectedActor;
-			Actor oldActor = mSelectedActor;
-			for (Body body : mHitBodies) {
-				if (body.getUserData() instanceof PickupActor) {
-					mHitBody = body;
-					newActor = (Actor) mHitBody.getUserData();
-					break;
-				}
-			}
-
-			if (newActor != oldActor) {
-				//				mLevelInvoker.execute(new ClActorSelect(newActor, false));
-			}
-		}
-
-		@Override
-		public void setActor() {
-			// Does nothing
-		}
-
-		/**
-		 * Sets the current active pickup tool
-		 * @param tool new active pickup tool
-		 */
-		public void setTool(PickupTools tool) {
-			mTool = tool;
-		}
-
-		/** Picking for static terrains */
-		private QueryCallback mCallback = new QueryCallback() {
-			@Override
-			public boolean reportFixture(Fixture fixture) {
-				if (fixture.testPoint(mTouchCurrent)) {
-					// Hit a terrain actor directly
-					if (fixture.getBody().getUserData() instanceof PickupActor) {
-						mHitBodies.add(fixture.getBody());
-					}
-				}
-				return true;
-			}
-		};
-
-		/** Current tool for pickup */
-		private PickupTools mTool = PickupTools.ADD_HEALTH_25;
-		/** Actor we're currently adding */
-		private PickupActor mActorAdding = null;
-		/** Original position of a dragging actor */
-		private Vector2 mDragOrigin = new Vector2();
-		/** True if we're moving an actor */
-		private boolean mMoving = false;
 	}
 
+	/**
+	 * All definition selection actions
+	 */
+	private enum SelectionActions {
+		/** Selects a pickup */
+		PICKUP,
+		/** Loads a level */
+		LEVEL_LOAD,
+	}
 
-
+	/** Level we're currently editing */
+	private Level mLevel = null;
+	/** Invoker for the level editor */
+	private Invoker mInvoker = new Invoker();
+	/** Scrolling for nice scrolling */
+	private Scroller mScroller;
+	/** Starting position for the camera scroll */
+	private Vector2 mScrollCameraOrigin = new Vector2();
+	/** Which definition we're currently selecting */
+	private SelectionActions mSelectionAction = null;
+	/** Currently loading level */
+	private LevelDef mLoadingLevel = null;
+	/** Current selected tool */
+	private Tools mToolType = Tools.STATIC_TERRAIN;
+	/** All the available tools */
+	private TouchTool[] mTouchTools = new TouchTool[Tools.values().length];
+	/** Is unsaved since last edit */
+	private boolean mUnsaved = false;
 }

@@ -2,7 +2,7 @@ package com.spiddekauga.voider.editor.commands;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Pools;
-import com.spiddekauga.utils.Command;
+import com.spiddekauga.voider.editor.IActorChangeEditor;
 import com.spiddekauga.voider.game.actors.ActorDef;
 
 /**
@@ -10,13 +10,15 @@ import com.spiddekauga.voider.game.actors.ActorDef;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class CActorCornerAdd extends Command {
+public class CActorCornerAdd extends CActorChange {
 	/**
 	 * Constructs the command where the corner should be added
 	 * @param actorDef the actor definition to add the corner to
 	 * @param cornerPos the corner position
+	 * @param actorEditor editor to send onActorChange(Actor) event to
 	 */
-	public CActorCornerAdd(ActorDef actorDef, Vector2 cornerPos) {
+	public CActorCornerAdd(ActorDef actorDef, Vector2 cornerPos, IActorChangeEditor actorEditor) {
+		super(null, actorEditor);
 		mActorDef = actorDef;
 		mCornerPos = Pools.obtain(Vector2.class);
 		mCornerPos.set(cornerPos);
@@ -30,12 +32,18 @@ public class CActorCornerAdd extends Command {
 		} catch (Exception e) {
 			return false;
 		}
+
+		sendOnChange();
+
 		return true;
 	}
 
 	@Override
 	public boolean undo() {
 		mActorDef.removeCorner(mAddedCornerIndex);
+
+		sendOnChange();
+
 		return true;
 	}
 

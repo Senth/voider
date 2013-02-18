@@ -33,11 +33,11 @@ import com.spiddekauga.voider.Config.Editor.Enemy;
 import com.spiddekauga.voider.editor.BulletEditorGui;
 import com.spiddekauga.voider.editor.EnemyEditorGui;
 import com.spiddekauga.voider.editor.IActorEditor;
-import com.spiddekauga.voider.editor.commands.AeDuplicate;
-import com.spiddekauga.voider.editor.commands.AeLoad;
-import com.spiddekauga.voider.editor.commands.AeNew;
-import com.spiddekauga.voider.editor.commands.AeSave;
 import com.spiddekauga.voider.editor.commands.CActorEditorCenterReset;
+import com.spiddekauga.voider.editor.commands.CEditorDuplicate;
+import com.spiddekauga.voider.editor.commands.CEditorLoad;
+import com.spiddekauga.voider.editor.commands.CEditorNew;
+import com.spiddekauga.voider.editor.commands.CEditorSave;
 import com.spiddekauga.voider.game.actors.ActorShapeTypes;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceNames;
@@ -198,12 +198,12 @@ public abstract class ActorGui extends Gui {
 			public boolean handle(Event event) {
 				if (isButtonPressed(event)) {
 					if (mActorEditor.isUnsaved()) {
-						Button yes = new TextButton("Yes", textStyle);
-						Button no = new TextButton("No", textStyle);
+						Button yes = new TextButton("Save first", textStyle);
+						Button no = new TextButton("Discard current", textStyle);
 						Button cancel = new TextButton("Cancel", textStyle);
 
-						Command save = new AeSave(mActorEditor);
-						Command newCommand = new AeNew(mActorEditor);
+						Command save = new CEditorSave(mActorEditor);
+						Command newCommand = new CEditorNew(mActorEditor);
 						Command saveAndNew = new CommandSequence(save, newCommand);
 
 						mMsgBox.clear();
@@ -217,7 +217,7 @@ public abstract class ActorGui extends Gui {
 						mMsgBox.key(Keys.ESCAPE, null);
 						mMsgBox.show(getStage());
 					} else {
-						mActorEditor.newActor();
+						mActorEditor.newDef();
 					}
 				}
 				return true;
@@ -231,7 +231,7 @@ public abstract class ActorGui extends Gui {
 			@Override
 			public boolean handle(Event event) {
 				if (isButtonPressed(event)) {
-					mActorEditor.saveActor();
+					mActorEditor.saveDef();
 				}
 				return true;
 			}
@@ -245,24 +245,24 @@ public abstract class ActorGui extends Gui {
 			public boolean handle(Event event) {
 				if (isButtonPressed(event)) {
 					if (mActorEditor.isUnsaved()) {
-						Button yes = new TextButton("Yes", textStyle);
-						Button no = new TextButton("No", textStyle);
+						Button yes = new TextButton("Save first", textStyle);
+						Button no = new TextButton("Load anyway", textStyle);
 						Button cancel = new TextButton("Cancel", textStyle);
 
-						CommandSequence saveAndLoad = new CommandSequence(new AeSave(mActorEditor), new AeLoad(mActorEditor));
+						CommandSequence saveAndLoad = new CommandSequence(new CEditorSave(mActorEditor), new CEditorLoad(mActorEditor));
 
 						mMsgBox.clear();
 						mMsgBox.setTitle("Load Enemy");
 						mMsgBox.content("Your current " + actorName + " is unsaved.\n" +
 								"Do you want to save it before loading another " + actorName + "?");
 						mMsgBox.button(yes, saveAndLoad);
-						mMsgBox.button(no, new AeLoad(mActorEditor));
+						mMsgBox.button(no, new CEditorLoad(mActorEditor));
 						mMsgBox.button(cancel);
 						mMsgBox.key(Keys.BACK, null);
 						mMsgBox.key(Keys.ESCAPE, null);
 						mMsgBox.show(getStage());
 					} else {
-						mActorEditor.loadActor();
+						mActorEditor.loadDef();
 					}
 				}
 				return true;
@@ -277,24 +277,24 @@ public abstract class ActorGui extends Gui {
 			public boolean handle(Event event) {
 				if (isButtonPressed(event)) {
 					if (mActorEditor.isUnsaved()) {
-						Button yes = new TextButton("Yes", textStyle);
-						Button no = new TextButton("No", textStyle);
+						Button yes = new TextButton("Save first", textStyle);
+						Button no = new TextButton("Duplicate anyway", textStyle);
 						Button cancel = new TextButton("Cancel", textStyle);
 
-						CommandSequence saveAndDuplicate = new CommandSequence(new AeSave(mActorEditor), new AeDuplicate(mActorEditor));
+						CommandSequence saveAndDuplicate = new CommandSequence(new CEditorSave(mActorEditor), new CEditorDuplicate(mActorEditor));
 
 						mMsgBox.clear();
 						mMsgBox.setTitle("Load Enemy");
 						mMsgBox.content("Your current " + actorName + " is unsaved.\n" +
 								"Do you want to save it before duplicating it?");
 						mMsgBox.button(yes, saveAndDuplicate);
-						mMsgBox.button(no, new AeDuplicate(mActorEditor));
+						mMsgBox.button(no, new CEditorDuplicate(mActorEditor));
 						mMsgBox.button(cancel);
 						mMsgBox.key(Keys.BACK, null);
 						mMsgBox.key(Keys.ESCAPE, null);
 						mMsgBox.show(getStage());
 					} else {
-						mActorEditor.duplicateActor();
+						mActorEditor.duplicateDef();
 					}
 				}
 				return true;

@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import com.badlogic.gdx.utils.OrderedMap;
 import com.spiddekauga.utils.Json;
+import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.ResourceNames;
 
@@ -18,6 +19,14 @@ public class LevelDef extends Def {
 	 */
 	public LevelDef() {
 		mLevelId = UUID.randomUUID();
+	}
+
+	@Override
+	public Def copy() {
+		LevelDef def = (LevelDef) super.copy();
+		def.mLevelId = UUID.randomUUID();
+		def.mCampaignId = null;
+		return def;
 	}
 
 	/**
@@ -231,7 +240,7 @@ public class LevelDef extends Def {
 
 	@Override
 	public void write(Json json) {
-		json.writeValue("VERSION", VERSION);
+		json.writeValue("REVISION", Config.REVISION);
 
 		json.writeObjectStart("Def");
 		super.write(json);
@@ -245,26 +254,13 @@ public class LevelDef extends Def {
 		json.writeValue("mEndXCoord", mEndXCoord);
 		json.writeValue("mSpeed", mSpeed);
 		json.writeValue("mLevelId", mLevelId.toString());
-
-		if (mCampaignId != null) {
-			json.writeValue("mCampaignId", mCampaignId.toString());
-		} else {
-			json.writeValue("mCampaignId", (String)null);
-		}
-
-		if (mThemeId != null) {
-			json.writeValue("mThemeId", mThemeId.toString());
-		} else {
-			json.writeValue("mThemeId", (String)null);
-		}
+		json.writeValue("mCampaignId", mCampaignId);
+		json.writeValue("mThemeId", mThemeId);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public void read(Json json, OrderedMap<String, Object> jsonData) {
-		@SuppressWarnings("unused")
-		long version = json.readValue("VERSION", long.class, jsonData);
-
 		// Superclass
 		OrderedMap<String, Object> defMap = json.readValue("Def", OrderedMap.class, jsonData);
 		if (defMap != null) {
@@ -282,18 +278,9 @@ public class LevelDef extends Def {
 
 
 		// UUIDs
-		String stringUuid = json.readValue("mCampaignId", String.class, jsonData);
-		if (stringUuid != null) {
-			mCampaignId = UUID.fromString(stringUuid);
-		}
-		stringUuid = json.readValue("mThemeId", String.class, jsonData);
-		if (stringUuid != null) {
-			mThemeId = UUID.fromString(stringUuid);
-		}
-		stringUuid = json.readValue("mLevelId", String.class, jsonData);
-		if (stringUuid != null) {
-			mLevelId = UUID.fromString(stringUuid);
-		}
+		mCampaignId = json.readValue("mCampaignId", UUID.class, jsonData);
+		mThemeId = json.readValue("mThemeId", UUID.class, jsonData);
+		mLevelId = json.readValue("mLevelId", UUID.class, jsonData);
 
 		// Version
 		String stringVersion = json.readValue("mVersion", String.class, jsonData);
@@ -328,8 +315,4 @@ public class LevelDef extends Def {
 	private int mVersionSecond = 0;
 	/** Third small version (13 in 1.0.13) */
 	private int mVersionThird = 0;
-
-	/** The version of this level definition structure */
-	private static final long VERSION = 1;
-
 }

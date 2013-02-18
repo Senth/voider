@@ -3,7 +3,7 @@ package com.spiddekauga.voider.editor.commands;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Pools;
-import com.spiddekauga.utils.Command;
+import com.spiddekauga.voider.editor.IActorChangeEditor;
 import com.spiddekauga.voider.game.actors.ActorDef;
 import com.spiddekauga.voider.game.actors.ActorDef.PolygonComplexException;
 import com.spiddekauga.voider.game.actors.ActorDef.PolygonCornerTooCloseException;
@@ -13,14 +13,16 @@ import com.spiddekauga.voider.game.actors.ActorDef.PolygonCornerTooCloseExceptio
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class CActorCornerMove extends Command {
+public class CActorCornerMove extends CActorChange {
 	/**
 	 * Moves a corner in the specified actor definition
 	 * @param actorDef the actor definition which corner to move
 	 * @param index corner's index to move
 	 * @param newPos the new position of the corner
+	 * @param actorEditor editor to send onActorChange(Actor) to
 	 */
-	public CActorCornerMove(ActorDef actorDef, int index, Vector2 newPos) {
+	public CActorCornerMove(ActorDef actorDef, int index, Vector2 newPos, IActorChangeEditor actorEditor) {
+		super(null, actorEditor);
 		mActorDef = actorDef;
 		mIndex = index;
 		mDiffMovement = Pools.obtain(Vector2.class);
@@ -36,6 +38,7 @@ public class CActorCornerMove extends Command {
 		boolean moveSuccess = true;
 		try {
 			mActorDef.moveCorner(mIndex, newPos);
+			sendOnChange();
 		} catch (PolygonComplexException e) {
 			moveSuccess = false;
 			Gdx.app.error("ClTerrainActorMoveCorner", "Complex polygon");
@@ -56,6 +59,7 @@ public class CActorCornerMove extends Command {
 		boolean moveSuccess = true;
 		try {
 			mActorDef.moveCorner(mIndex, newPos);
+			sendOnChange();
 		} catch (PolygonComplexException e) {
 			moveSuccess = false;
 			Gdx.app.error("ClTerrainActorMoveCorner", "Complex polygon");

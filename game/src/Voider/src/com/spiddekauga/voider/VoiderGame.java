@@ -22,9 +22,11 @@ import com.spiddekauga.utils.scene.ui.Row;
 import com.spiddekauga.voider.editor.BulletEditor;
 import com.spiddekauga.voider.editor.EnemyEditor;
 import com.spiddekauga.voider.editor.LevelEditor;
+import com.spiddekauga.voider.game.Collectibles;
 import com.spiddekauga.voider.game.GameScene;
 import com.spiddekauga.voider.game.Level;
 import com.spiddekauga.voider.game.LevelDef;
+import com.spiddekauga.voider.game.actors.PickupActorDef;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceNames;
 import com.spiddekauga.voider.resources.ResourceSaver;
@@ -52,6 +54,7 @@ public class VoiderGame implements ApplicationListener {
 		//		testBulletEditor();
 		//		testEnemyEditor();
 		testEditor();
+		//		testSavePickups();
 		//testStage();
 	}
 
@@ -125,6 +128,21 @@ public class VoiderGame implements ApplicationListener {
 		table.setTransform(true);
 		table.invalidate();
 		Gdx.input.setInputProcessor(mStage);
+	}
+
+	/**
+	 * Testing to save pickups
+	 */
+	private void testSavePickups() {
+		PickupActorDef def = new PickupActorDef();
+		def.setCollectible(Collectibles.HEALTH_25);
+		def.setName("+25 Health");
+		ResourceSaver.save(def);
+
+		def = new PickupActorDef();
+		def.setCollectible(Collectibles.HEALTH_50);
+		def.setName("+50 Health");
+		ResourceSaver.save(def);
 	}
 
 	/**

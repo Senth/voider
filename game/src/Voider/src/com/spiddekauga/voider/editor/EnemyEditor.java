@@ -45,7 +45,7 @@ import com.spiddekauga.voider.scene.WorldScene;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class EnemyEditor extends WorldScene implements IActorEditor, IActorDrawEditor {
+public class EnemyEditor extends WorldScene implements IActorEditor, IActorChangeEditor {
 	/**
 	 * Creates the enemy editor
 	 */
@@ -284,7 +284,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IActorDrawE
 	/**
 	 * Saves the current enemy actor
 	 */
-	public void saveActor() {
+	public void saveDef() {
 		ResourceSaver.save(mDef);
 
 		// Load the saved actor and use it instead
@@ -305,7 +305,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IActorDrawE
 	/**
 	 * Creates a new enemy
 	 */
-	public void newActor() {
+	public void newDef() {
 		mDef = new EnemyActorDef();
 		setEnemyDef();
 		mGui.resetValues();
@@ -823,7 +823,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IActorDrawE
 	 * Switches scene to load an enemy
 	 */
 	@Override
-	public void loadActor() {
+	public void loadDef() {
 		mSelectionAction = SelectionActions.LOAD_ENEMY;
 
 		Scene selectionScene = new SelectDefScene(EnemyActorDef.class, true, true);
@@ -834,11 +834,26 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IActorDrawE
 	 * Duplicates the current enemy
 	 */
 	@Override
-	public void duplicateActor() {
+	public void duplicateDef() {
 		mDef = (EnemyActorDef) mDef.copy();
 		setEnemyDef();
 		mGui.resetValues();
 		mActorSavedSinceLastEdit = false;
+	}
+
+	@Override
+	public void onActorAdded(Actor actor) {
+
+	}
+
+	@Override
+	public void onActorRemoved(Actor actor) {
+
+	}
+
+	@Override
+	public void onActorChanged(Actor actor) {
+
 	}
 
 	/**
@@ -1149,16 +1164,4 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IActorDrawE
 
 	/** Table for path lables, these are added directly to the stage */
 	private Table mPathLabels = new Table();
-
-	@Override
-	public void onActorAdded(Actor actor) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void onActorRemoved(Actor actor) {
-		// TODO Auto-generated method stub
-
-	}
 }

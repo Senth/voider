@@ -1,26 +1,26 @@
 package com.spiddekauga.voider.editor.commands;
 
 import com.spiddekauga.utils.Command;
-import com.spiddekauga.voider.editor.IActorEditor;
+import com.spiddekauga.voider.editor.IEditor;
 
 /**
  * Saves the current actor
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class AeSave extends Command {
+public class CEditorSave extends Command {
 
 	/**
 	 * Creates a save command for the current editor
 	 * @param editor the active editor which we want to call save on.
 	 */
-	public AeSave(IActorEditor editor) {
+	public CEditorSave(IEditor editor) {
 		mEditor = editor;
 	}
 
 	@Override
 	public boolean execute() {
-		mEditor.saveActor();
+		mEditor.saveDef();
 		return true;
 	}
 
@@ -31,5 +31,5 @@ public class AeSave extends Command {
 	}
 
 	/** Enemy editor to invoke the save on */
-	IActorEditor mEditor;
+	IEditor mEditor;
 }

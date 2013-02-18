@@ -11,10 +11,10 @@ import com.spiddekauga.voider.game.actors.Actor;
 public class CActorSelect extends Command {
 	/**
 	 * Creates a command that will select an actor in the specified tool
-	 * @param tool the tool to select the actor in
 	 * @param actor the actor to select, if null it deselects any actor
+	 * @param tool the tool to select the actor in
 	 */
-	public CActorSelect(IActorSelect tool, Actor actor) {
+	public CActorSelect(Actor actor, IActorSelect tool) {
 		mTool = tool;
 		mActor = actor;
 	}

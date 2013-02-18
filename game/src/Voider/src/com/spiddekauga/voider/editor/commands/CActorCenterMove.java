@@ -2,7 +2,7 @@ package com.spiddekauga.voider.editor.commands;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Pools;
-import com.spiddekauga.utils.Command;
+import com.spiddekauga.voider.editor.IActorChangeEditor;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.ActorDef;
 
@@ -13,7 +13,7 @@ import com.spiddekauga.voider.game.actors.ActorDef;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class CActorCenterMove extends Command {
+public class CActorCenterMove extends CActorChange {
 	/**
 	 * Creates a command that will move the center of the actor definition.
 	 * It will also update the actors position. Note that the actors position
@@ -21,23 +21,26 @@ public class CActorCenterMove extends Command {
 	 * @param actorDef the actor definition which center to move
 	 * @param newCenter the new center position
 	 * @param oldCenter old center position, used for restoring using undo
+	 * @param actorEditor the actor editor to send a onActorChange() event to
 	 * @param actor optional actor to update the position, set to null to skip
 	 */
-	public CActorCenterMove(ActorDef actorDef, Vector2 newCenter, Vector2 oldCenter, Actor actor) {
+	public CActorCenterMove(ActorDef actorDef, Vector2 newCenter, Vector2 oldCenter, IActorChangeEditor actorEditor, Actor actor) {
+		super(actor, actorEditor);
 		mActorDef = actorDef;
 		mCenterNew.set(newCenter);
 		mCenterOld.set(oldCenter);
-		mActor = actor;
 	}
 
 	/**
 	 * Creates a command that will move the center of the actor definition
+
 	 * @param actorDef the actor definition which center to move
 	 * @param newCenter the new center position
 	 * @param oldCenter old center position, used for restoring using undo
+	 * @param actorEditor the actor editor to send a onActorChange() event to
 	 */
-	public CActorCenterMove(ActorDef actorDef, Vector2 newCenter, Vector2 oldCenter) {
-		this(actorDef, newCenter, oldCenter, null);
+	public CActorCenterMove(ActorDef actorDef, Vector2 newCenter, Vector2 oldCenter, IActorChangeEditor actorEditor) {
+		this(actorDef, newCenter, oldCenter, actorEditor, null);
 	}
 
 
@@ -54,6 +57,8 @@ public class CActorCenterMove extends Command {
 			mActor.createBody();
 			Pools.free(newActorPos);
 		}
+
+		sendOnChange();
 
 		return true;
 	}
@@ -72,6 +77,8 @@ public class CActorCenterMove extends Command {
 			Pools.free(newActorPos);
 		}
 
+		sendOnChange();
+
 		return true;
 	}
 
@@ -85,8 +92,6 @@ public class CActorCenterMove extends Command {
 
 	/** Actor definition which center to move */
 	private ActorDef mActorDef;
-	/** Actor to move in the oppositie direction if not null */
-	private Actor mActor;
 	/** New center position offset to use at execute */
 	private Vector2 mCenterNew = Pools.obtain(Vector2.class);
 	/** Old center position to restore to at undo */

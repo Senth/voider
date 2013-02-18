@@ -29,7 +29,7 @@ import com.spiddekauga.voider.scene.WorldScene;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class BulletEditor extends WorldScene implements IActorEditor, IActorDrawEditor {
+public class BulletEditor extends WorldScene implements IActorEditor, IActorChangeEditor {
 	/**
 	 * Creates a bullet editor.
 	 */
@@ -45,7 +45,7 @@ public class BulletEditor extends WorldScene implements IActorEditor, IActorDraw
 		mWeapon.setPosition(weaponPos);
 		Pools.free(weaponPos);
 
-		mDrawActorTool = new DrawActorTool(mCamera, mWorld, mInvoker, BulletActor.class, this, mDef);
+		mDrawActorTool = new DrawActorTool(mCamera, mWorld, BulletActor.class, mInvoker, this, mDef);
 	}
 
 	@Override
@@ -132,7 +132,7 @@ public class BulletEditor extends WorldScene implements IActorEditor, IActorDraw
 	}
 
 	@Override
-	public void newActor() {
+	public void newDef() {
 		BulletActorDef newDef = new BulletActorDef();
 		setDef(newDef);
 		mGui.resetValues();
@@ -141,7 +141,7 @@ public class BulletEditor extends WorldScene implements IActorEditor, IActorDraw
 	}
 
 	@Override
-	public void saveActor() {
+	public void saveDef() {
 		ResourceSaver.save(mDef);
 
 		// Load the saved actor and use it instead
@@ -160,7 +160,7 @@ public class BulletEditor extends WorldScene implements IActorEditor, IActorDraw
 	}
 
 	@Override
-	public void loadActor() {
+	public void loadDef() {
 		mSelectionAction = SelectionActions.LOAD_BULLET;
 
 		Scene selectionScene = new SelectDefScene(BulletActorDef.class, true, true);
@@ -168,7 +168,7 @@ public class BulletEditor extends WorldScene implements IActorEditor, IActorDraw
 	}
 
 	@Override
-	public void duplicateActor() {
+	public void duplicateDef() {
 		mDef = (BulletActorDef) mDef.copy();
 		mWeapon.getDef().setBulletActorDef(mDef);
 		mGui.resetValues();
@@ -390,11 +390,18 @@ public class BulletEditor extends WorldScene implements IActorEditor, IActorDraw
 	@Override
 	public void onActorAdded(Actor actor) {
 		mBulletActor = (BulletActor) actor;
+		mUnsaved = true;
 	}
 
 	@Override
 	public void onActorRemoved(Actor actor) {
 		mBulletActor = null;
+		mUnsaved = true;
+	}
+
+	@Override
+	public void onActorChanged(Actor actor) {
+		mUnsaved = true;
 	}
 
 	/**

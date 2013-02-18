@@ -93,7 +93,13 @@ public class Level extends Resource implements ITriggerListener, Json.Serializab
 	public Level copy() {
 		Json json = new Json();
 		String jsonString = json.toJson(this);
-		return json.fromJson(Level.class, jsonString);
+		Level level = json.fromJson(Level.class, jsonString);
+
+		// Create a copy of the level definition too
+		LevelDef levelDef = (LevelDef) mLevelDef.copy();
+		level.mUniqueId = levelDef.getLevelId();
+
+		return level;
 	}
 
 	/**

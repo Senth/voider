@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.OrderedMap;
 import com.spiddekauga.utils.Json;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.Config.Actor.Pickup;
 import com.spiddekauga.voider.Config.Editor.Bullet;
 import com.spiddekauga.voider.Config.Editor.Enemy;
 
@@ -120,12 +121,19 @@ class VisualVars implements Json.Serializable {
 			shapeHeight = 0;
 			break;
 
+		case PICKUP:
+			shapeType = ActorShapeTypes.CIRCLE;
+			shapeCircleRadius = Pickup.RADIUS;
+			shapeHeight = 0;
+			shapeWidth = 0;
+			break;
+
 		default:
 			Gdx.app.error("VisualVars", "Unknown actor type");
 			shapeType = ActorShapeTypes.CIRCLE;
 			shapeCircleRadius = 1;
-			shapeHeight = 0;
-			shapeWidth = 0;
+			shapeHeight = 1;
+			shapeWidth = 1;
 			break;
 		}
 	}

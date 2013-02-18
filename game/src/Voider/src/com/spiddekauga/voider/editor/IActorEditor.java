@@ -11,37 +11,13 @@ import com.spiddekauga.voider.scene.DrawActorTool;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public interface IActorEditor {
+public interface IActorEditor extends IEditor {
 	/**
 	 * @return Invoker for undo/redo
 	 */
 	Invoker getInvoker();
 
 	// ------------- File Menu ----------------
-	/**
-	 * Creates a new actor in the current editor
-	 */
-	void newActor();
-
-	/**
-	 * Saves the current actor
-	 */
-	void saveActor();
-
-	/**
-	 * Loads another actor
-	 */
-	void loadActor();
-
-	/**
-	 * Duplicates the current actor
-	 */
-	void duplicateActor();
-
-	/**
-	 * @return true if the bullet is unsaved
-	 */
-	boolean isUnsaved();
 
 	/**
 	 * @return true if the editor has the ability to undo

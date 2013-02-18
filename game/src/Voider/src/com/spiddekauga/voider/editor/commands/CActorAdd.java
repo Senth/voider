@@ -1,7 +1,7 @@
 package com.spiddekauga.voider.editor.commands;
 
 import com.spiddekauga.utils.Command;
-import com.spiddekauga.voider.editor.IActorDrawEditor;
+import com.spiddekauga.voider.editor.IActorChangeEditor;
 import com.spiddekauga.voider.game.actors.Actor;
 
 /**
@@ -16,7 +16,7 @@ public class CActorAdd extends Command {
 	 * @param actor the actor to add
 	 * @param editor the editor to add the actor to
 	 */
-	public CActorAdd(Actor actor, IActorDrawEditor editor) {
+	public CActorAdd(Actor actor, IActorChangeEditor editor) {
 		mActor = actor;
 		mEditor = editor;
 	}
@@ -38,5 +38,5 @@ public class CActorAdd extends Command {
 	/** The actor to add */
 	private Actor mActor;
 	/** The editor to add the actor to */
-	private IActorDrawEditor mEditor;
+	private IActorChangeEditor mEditor;
 }

@@ -1,7 +1,7 @@
 package com.spiddekauga.voider.editor.commands;
 
 import com.spiddekauga.utils.Command;
-import com.spiddekauga.voider.editor.IActorDrawEditor;
+import com.spiddekauga.voider.editor.IActorChangeEditor;
 import com.spiddekauga.voider.game.actors.Actor;
 
 /**
@@ -16,7 +16,7 @@ public class CActorRemove extends Command {
 	 * @param actor the actor to remove
 	 * @param editor the editor to remove the actor from
 	 */
-	public CActorRemove(Actor actor, IActorDrawEditor editor) {
+	public CActorRemove(Actor actor, IActorChangeEditor editor) {
 		mActor = actor;
 		mEditor = editor;
 	}
@@ -47,5 +47,5 @@ public class CActorRemove extends Command {
 	/** The actor to remove */
 	private Actor mActor;
 	/** The editor to remove the actor from */
-	private IActorDrawEditor mEditor;
+	private IActorChangeEditor mEditor;
 }

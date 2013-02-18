@@ -1,25 +1,25 @@
 package com.spiddekauga.voider.editor.commands;
 
 import com.spiddekauga.utils.Command;
-import com.spiddekauga.voider.editor.IActorEditor;
+import com.spiddekauga.voider.editor.IEditor;
 
 /**
  * Opens up the load actor screen for the current editor
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class AeLoad extends Command {
+public class CEditorLoad extends Command {
 	/**
 	 * Creates a load actor command, which opens up a select screen
 	 * @param editor the editor to load the actor to
 	 */
-	public AeLoad(IActorEditor editor) {
+	public CEditorLoad(IEditor editor) {
 		mEditor = editor;
 	}
 
 	@Override
 	public boolean execute() {
-		mEditor.loadActor();
+		mEditor.loadDef();
 		return true;
 	}
 
@@ -30,5 +30,5 @@ public class AeLoad extends Command {
 	}
 
 	/** Editor to invoke the load on */
-	IActorEditor mEditor;
+	IEditor mEditor;
 }

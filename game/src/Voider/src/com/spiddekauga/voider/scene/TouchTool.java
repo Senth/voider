@@ -77,6 +77,13 @@ public abstract class TouchTool extends InputAdapter {
 	}
 
 	/**
+	 * Clears the current tool to the initial state
+	 */
+	public void clear() {
+		// Does nothing
+	}
+
+	/**
 	 * Tests to pick an actor from the current touch. The hit body is
 	 * set to mHitBody
 	 */
