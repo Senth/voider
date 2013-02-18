@@ -14,10 +14,10 @@ import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.CheckedListener;
 import com.spiddekauga.voider.editor.LevelEditor.PickupTools;
-import com.spiddekauga.voider.editor.LevelEditor.StaticTerrainTools;
 import com.spiddekauga.voider.editor.LevelEditor.Tools;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceNames;
+import com.spiddekauga.voider.scene.DrawActorTool;
 import com.spiddekauga.voider.scene.Gui;
 
 /**
@@ -229,8 +229,8 @@ class LevelEditorGui extends Gui {
 		mStaticTerrainTable.setRowAlign(Horizontal.RIGHT, Vertical.TOP);
 
 		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
-		TextButtonStyle textStyle = editorSkin.get(StaticTerrainTools.MOVE.getStyleName(), TextButtonStyle.class);
-		ImageButtonStyle imageStyle = editorSkin.get(StaticTerrainTools.ADD.getStyleName(), ImageButtonStyle.class);
+		TextButtonStyle textStyle = editorSkin.get("toggle", TextButtonStyle.class);
+		ImageButtonStyle imageStyle = editorSkin.get("add", ImageButtonStyle.class);
 
 		ButtonGroup toggleGroup = new ButtonGroup();
 		Button button = new ImageButton(imageStyle);
@@ -238,7 +238,7 @@ class LevelEditorGui extends Gui {
 			@Override
 			public void onChange(boolean checked) {
 				if (checked) {
-					mLevelEditor.setStaticTerrainTool(StaticTerrainTools.ADD);
+					mLevelEditor.setStaticTerrainState(DrawActorTool.States.ADD_CORNER);
 				}
 			}
 		};
@@ -251,7 +251,7 @@ class LevelEditorGui extends Gui {
 			@Override
 			public void onChange(boolean checked) {
 				if (checked) {
-					mLevelEditor.setStaticTerrainTool(StaticTerrainTools.REMOVE);
+					mLevelEditor.setStaticTerrainState(DrawActorTool.States.REMOVE);
 				}
 			}
 		};
@@ -264,7 +264,7 @@ class LevelEditorGui extends Gui {
 			@Override
 			public void onChange(boolean checked) {
 				if (checked) {
-					mLevelEditor.setStaticTerrainTool(StaticTerrainTools.MOVE);
+					mLevelEditor.setStaticTerrainState(DrawActorTool.States.MOVE);
 				}
 			}
 		};

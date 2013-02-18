@@ -113,6 +113,13 @@ class VisualVars implements Json.Serializable {
 			shapeHeight = Bullet.Visual.SIZE_DEFAULT;
 			break;
 
+		case STATIC_TERRAIN:
+			shapeType = ActorShapeTypes.CUSTOM;
+			shapeCircleRadius = 0;
+			shapeWidth = 0;
+			shapeHeight = 0;
+			break;
+
 		default:
 			Gdx.app.error("VisualVars", "Unknown actor type");
 			shapeType = ActorShapeTypes.CIRCLE;

@@ -63,6 +63,14 @@ public abstract class Gui {
 		mMsgBox = new MsgBoxExecuter(skin);
 		mMsgBox.clear();
 		MsgBoxExecuter.fadeDuration = 0.01f;
+		mInitialized = true;
+	}
+
+	/**
+	 * @return true if the GUI has been initialized
+	 */
+	public boolean isInitialized() {
+		return mInitialized;
 	}
 
 	/**
@@ -159,6 +167,8 @@ public abstract class Gui {
 	protected MsgBoxExecuter mMsgBox = null;
 	/** Main table for the layout */
 	protected AlignTable mMainTable = new AlignTable();
+	/** True if the GUI has been initialized */
+	protected boolean mInitialized = false;
 	/** Stage for the GUI */
 	private Stage mStage = new Stage();
 }

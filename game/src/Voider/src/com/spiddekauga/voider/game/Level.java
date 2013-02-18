@@ -77,6 +77,12 @@ public class Level extends Resource implements ITriggerListener, Json.Serializab
 
 			// Update triggers
 			mTriggerInformation.update();
+		} else {
+			for (Actor actor : mActors) {
+				if (!actor.isDisposed()) {
+					actor.editorUpdate();
+				}
+			}
 		}
 	}
 

@@ -101,7 +101,9 @@ public class DrawActorTool extends TouchTool implements IActorSelect {
 	 */
 	public void activate() {
 		if (mActor != null) {
-			mActor.createBody();
+			if (mOnlyOneActor) {
+				mActor.createBody();
+			}
 
 			switch (mState) {
 			case ADD_CORNER:
@@ -126,7 +128,9 @@ public class DrawActorTool extends TouchTool implements IActorSelect {
 	 */
 	public void deactivate() {
 		if (mActor != null) {
-			mActor.destroyBody();
+			if (mOnlyOneActor) {
+				mActor.destroyBody();
+			}
 
 			switch (mState) {
 			case ADD_CORNER:
@@ -205,6 +209,7 @@ public class DrawActorTool extends TouchTool implements IActorSelect {
 					mInvoker.undo(false);
 				}
 				mInvoker.execute(new CActorSelect(this, null));
+				return;
 			}
 
 			// Test if we hit a body or corner

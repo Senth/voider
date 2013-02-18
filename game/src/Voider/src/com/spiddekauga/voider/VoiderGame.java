@@ -49,9 +49,9 @@ public class VoiderGame implements ApplicationListener {
 		/** @TODO set main menu as start screen */
 
 		//testGame();
-		testBulletEditor();
+		//		testBulletEditor();
 		//		testEnemyEditor();
-		//		testEditor();
+		testEditor();
 		//testStage();
 	}
 

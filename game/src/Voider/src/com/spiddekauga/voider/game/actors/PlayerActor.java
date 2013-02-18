@@ -1,5 +1,8 @@
 package com.spiddekauga.voider.game.actors;
 
+import com.badlogic.gdx.utils.OrderedMap;
+import com.spiddekauga.utils.Json;
+import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.Collectibles;
 
 
@@ -34,6 +37,22 @@ public class PlayerActor extends com.spiddekauga.voider.game.actors.Actor {
 		}
 	}
 
+	@Override
+	public void write(Json json) {
+		json.writeObjectStart("Actor");
+		super.write(json);
+		json.writeObjectEnd();
+
+		json.writeValue("REVISION", Config.REVISION);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public void read(Json json, OrderedMap<String, Object> jsonData) {
+		OrderedMap<String, Object> actorMap = json.readValue("Actor", OrderedMap.class, jsonData);
+		super.read(json, actorMap);
+	}
+
 	/**
 	 * @return player filter category
 	 */
@@ -50,10 +69,4 @@ public class PlayerActor extends com.spiddekauga.voider.game.actors.Actor {
 	protected short getFilterCollidingCategories() {
 		return (short) (ActorFilterCategories.ENEMY | ActorFilterCategories.PICKUP | ActorFilterCategories.STATIC_TERRAIN | ActorFilterCategories.SCREEN_BORDER);
 	}
-
-	//	/** Last known position, used to calculate direction */
-	//	private LinkedList<TimePos> mPositionRecent = new LinkedList<TimePos>();
-	//
-	//	/** Poolable object */
-	//	private static Pool<TimePos> mTimePosPool = Pools.get(TimePos.class);
 }

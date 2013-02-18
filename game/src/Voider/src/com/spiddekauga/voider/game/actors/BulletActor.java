@@ -1,7 +1,10 @@
 package com.spiddekauga.voider.game.actors;
 
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.OrderedMap;
 import com.badlogic.gdx.utils.Pools;
+import com.spiddekauga.utils.Json;
+import com.spiddekauga.voider.Config;
 
 /**
  * Bullet actor, contains necessary information about the bullet.
@@ -53,6 +56,22 @@ public class BulletActor extends Actor {
 	 */
 	public float getHitDamage() {
 		return mDamage;
+	}
+
+	@Override
+	public void write(Json json) {
+		json.writeObjectStart("Actor");
+		super.write(json);
+		json.writeObjectEnd();
+
+		json.writeValue("REVISION", Config.REVISION);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public void read(Json json, OrderedMap<String, Object> jsonData) {
+		OrderedMap<String, Object> actorMap = json.readValue("Actor", OrderedMap.class, jsonData);
+		super.read(json, actorMap);
 	}
 
 	@Override

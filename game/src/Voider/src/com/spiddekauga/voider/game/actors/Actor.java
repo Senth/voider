@@ -46,7 +46,7 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 	}
 
 	/**
-	 * Updates the actor
+	 * Updates the actor. This automatically calls #editorUpdate()
 	 * @param deltaTime seconds elapsed since last call
 	 */
 	public void update(float deltaTime) {
@@ -54,16 +54,7 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 		if (mBody != null) {
 			mPosition.set(mBody.getPosition());
 
-			if (mEditorActive) {
-				// Do we need to reload the body?
-				if (mBodyUpdateTime <= getDef().getBodyChangeTime()) {
-					reloadBody();
-				}
-				// Do we need to reload the fixtures?
-				else if (mFixtureCreateTime <= getDef().getFixtureChangeTime()) {
-					reloadFixtures();
-				}
-			}
+			editorUpdate();
 		}
 
 		// Decrease life if colliding with something...
@@ -74,6 +65,23 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 		}
 
 		// Do something if life is 0?
+	}
+
+	/**
+	 * Updates the actor's body positio, fixture sizes, fixture shapes etc. if they
+	 * have been changed since the actor was created.
+	 */
+	public void editorUpdate() {
+		if (mEditorActive) {
+			// Do we need to reload the body?
+			if (mBodyUpdateTime <= getDef().getBodyChangeTime()) {
+				reloadBody();
+			}
+			// Do we need to reload the fixtures?
+			else if (mFixtureCreateTime <= getDef().getFixtureChangeTime()) {
+				reloadFixtures();
+			}
+		}
 	}
 
 	@Override
