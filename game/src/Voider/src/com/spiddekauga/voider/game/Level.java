@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.utils.Disposable;
+import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.OrderedMap;
 import com.badlogic.gdx.utils.Pools;
@@ -98,6 +99,7 @@ public class Level extends Resource implements ITriggerListener, Json.Serializab
 		// Create a copy of the level definition too
 		LevelDef levelDef = (LevelDef) mLevelDef.copy();
 		level.mUniqueId = levelDef.getLevelId();
+		level.mLevelDef = levelDef;
 
 		return level;
 	}
@@ -222,25 +224,6 @@ public class Level extends Resource implements ITriggerListener, Json.Serializab
 		return mLevelDef;
 	}
 
-	/** All actors in the level */
-	private ArrayList<Actor> mActors = null;
-	/** All trigger information in the level, needed for duplication saving/loading and binding */
-	private TriggerContainer mTriggerInformation = null;
-	/** Current x coordinate (of the screen's left edge) */
-	private float mXCoord = 0.0f;
-	/** Level definition for this level */
-	private LevelDef mLevelDef = null;
-	/** Current speed of the level */
-	private float mSpeed;
-	/** If the level has been completed */
-	private boolean mCompletedLevel;
-	/** The player actor */
-	private PlayerActor mPlayerActor = null;
-
-
-	/* (non-Javadoc)
-	 * @see com.badlogic.gdx.utils.Json.Serializable#write(com.badlogic.gdx.utils.Json)
-	 */
 	@Override
 	public void write(Json json) {
 		super.write(json);
@@ -254,17 +237,10 @@ public class Level extends Resource implements ITriggerListener, Json.Serializab
 		json.writeValue("mTriggerInformation", mTriggerInformation);
 	}
 
-
-	/* (non-Javadoc)
-	 * @see com.badlogic.gdx.utils.Json.Serializable#read(com.badlogic.gdx.utils.Json, com.badlogic.gdx.utils.OrderedMap)
-	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	public void read(Json json, OrderedMap<String, Object> jsonData) {
 		super.read(json, jsonData);
-
-		@SuppressWarnings("unused")
-		int version = json.readValue("VERSION", int.class, jsonData);
 
 		mXCoord = json.readValue("mXCoord", float.class, jsonData);
 		mSpeed = json.readValue("mSpeed", float.class, jsonData);
@@ -279,6 +255,9 @@ public class Level extends Resource implements ITriggerListener, Json.Serializab
 			mLevelDef = ResourceCacheFacade.get(levelDefId, LevelDef.class);
 		} catch (UndefinedResourceTypeException e) {
 			Gdx.app.error("Level", "Could not get level def when loading level");
+		} catch (GdxRuntimeException e) {
+			// The level was just copied without having been saved first...
+			// The copy will set level def.
 		}
 
 
@@ -325,4 +304,19 @@ public class Level extends Resource implements ITriggerListener, Json.Serializab
 			Pools.free(playerPosition);
 		}
 	}
+
+	/** All actors in the level */
+	private ArrayList<Actor> mActors = null;
+	/** All trigger information in the level, needed for duplication saving/loading and binding */
+	private TriggerContainer mTriggerInformation = null;
+	/** Current x coordinate (of the screen's left edge) */
+	private float mXCoord = 0.0f;
+	/** Level definition for this level */
+	private LevelDef mLevelDef = null;
+	/** Current speed of the level */
+	private float mSpeed;
+	/** If the level has been completed */
+	private boolean mCompletedLevel;
+	/** The player actor */
+	private PlayerActor mPlayerActor = null;
 }

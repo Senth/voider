@@ -253,7 +253,7 @@ public class LevelDef extends Def {
 		json.writeValue("mVersion", getVersionString());
 		json.writeValue("mEndXCoord", mEndXCoord);
 		json.writeValue("mSpeed", mSpeed);
-		json.writeValue("mLevelId", mLevelId.toString());
+		json.writeValue("mLevelId", mLevelId);
 		json.writeValue("mCampaignId", mCampaignId);
 		json.writeValue("mThemeId", mThemeId);
 	}
