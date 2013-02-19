@@ -47,19 +47,16 @@ class LevelEditorGui extends Gui {
 
 		mMainTable.setTableAlign(Horizontal.RIGHT, Vertical.TOP);
 		mMainTable.setRowAlign(Horizontal.RIGHT, Vertical.TOP);
-		mMenuTable.setTableAlign(Horizontal.RIGHT, Vertical.TOP);
-		mMenuTable.setRowAlign(Horizontal.RIGHT, Vertical.TOP);
-		mPickupTable.setTableAlign(Horizontal.RIGHT, Vertical.TOP);
-		mPickupTable.setRowAlign(Horizontal.RIGHT, Vertical.TOP);
-		mStaticTerrainTable.setTableAlign(Horizontal.RIGHT, Vertical.TOP);
-		mStaticTerrainTable.setRowAlign(Horizontal.RIGHT, Vertical.TOP);
+		mMenuTable.setPreferences(mMainTable);
+		mPickupTable.setPreferences(mMainTable);
+		mStaticTerrainTable.setPreferences(mMainTable);
+		mEnemyTable.setPreferences(mMainTable);
 
 		initPickup();
 		initStaticTerrain();
 		initMenu();
+		initEnemy();
 
-		mMenuTable.setTransform(true);
-		mMenuTable.invalidate();
 		mMainTable.setTransform(true);
 		mMainTable.invalidate();
 
@@ -71,42 +68,13 @@ class LevelEditorGui extends Gui {
 	 */
 	private void initMenu() {
 		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
-
 		TextButtonStyle textToogleStyle = editorSkin.get("toggle", TextButtonStyle.class);
 		final TextButtonStyle textStyle = editorSkin.get("default", TextButtonStyle.class);
 
-		mMenuTable = new AlignTable();
-		mMenuTable.setRowAlign(Horizontal.RIGHT, Vertical.TOP);
 		ButtonGroup toggleGroup = new ButtonGroup();
-		Button button = new TextButton("Static Terrain", textToogleStyle);
-		new CheckedListener(button) {
-			@Override
-			public void onChange(boolean checked) {
-				if (checked) {
-					mLevelEditor.switchTool(Tools.STATIC_TERRAIN);
-					switchTool(mStaticTerrainTable);
-				}
-			}
-		};
-		toggleGroup.add(button);
-		mMenuTable.add(button);
 
 		mMenuTable.row();
-		button = new TextButton("Pickup", textToogleStyle);
-		new CheckedListener(button) {
-			@Override
-			public void onChange(boolean checked) {
-				if (checked) {
-					mLevelEditor.switchTool(Tools.PICKUP);
-					switchTool(mPickupTable);
-				}
-			}
-		};
-		toggleGroup.add(button);
-		mMenuTable.add(button);
-
-		mMenuTable.row();
-		button = new TextButton("New", textStyle);
+		Button button = new TextButton("New", textStyle);
 		button.addListener(new EventListener() {
 			@Override
 			public boolean handle(Event event) {
@@ -233,6 +201,46 @@ class LevelEditorGui extends Gui {
 		});
 		mMenuTable.add(button);
 
+		mMenuTable.row();
+		button = new TextButton("Static Terrain", textToogleStyle);
+		new CheckedListener(button) {
+			@Override
+			public void onChange(boolean checked) {
+				if (checked) {
+					mLevelEditor.switchTool(Tools.STATIC_TERRAIN);
+					switchTool(mStaticTerrainTable);
+				}
+			}
+		};
+		toggleGroup.add(button);
+		mMenuTable.add(button);
+
+		mMenuTable.row();
+		button = new TextButton("Pickup", textToogleStyle);
+		new CheckedListener(button) {
+			@Override
+			public void onChange(boolean checked) {
+				if (checked) {
+					mLevelEditor.switchTool(Tools.PICKUP);
+					switchTool(mPickupTable);
+				}
+			}
+		};
+		toggleGroup.add(button);
+		mMenuTable.add(button);
+
+		mMenuTable.row();
+		button = new TextButton("Enemy", textToogleStyle);
+		new CheckedListener(button) {
+			@Override
+			protected void onChange(boolean checked) {
+				mLevelEditor.switchTool(Tools.ENEMY);
+				switchTool(mEnemyTable);
+			}
+		};
+		toggleGroup.add(button);
+		mMenuTable.add(button);
+
 		mMainTable.add(mMenuTable);
 		mMainTable.setTransform(true);
 
@@ -240,12 +248,126 @@ class LevelEditorGui extends Gui {
 	}
 
 	/**
+	 * Initializes Enemy tool GUI
+	 */
+	private void initEnemy() {
+		Skin skin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
+		TextButtonStyle textStyle = skin.get("default", TextButtonStyle.class);
+		TextButtonStyle toggleStyle = skin.get("toggle", TextButtonStyle.class);
+
+		mEnemyTable.row();
+		ButtonGroup buttonGroup = new ButtonGroup();
+		Button button = new TextButton("Enemy", toggleStyle);
+		buttonGroup.add(button);
+		mEnemyTable.add(button);
+		new CheckedListener(button) {
+			@Override
+			protected void onChange(boolean checked) {
+				// TODO set tool as enemy
+				mLevelEditor.switchTool(null);
+			}
+		};
+		HideListener enemyHider = new HideListener(button, true);
+
+		mEnemyTable.row();
+		button = new TextButton("Path", toggleStyle);
+		buttonGroup.add(button);
+		mEnemyTable.add(button);
+		new CheckedListener(button) {
+			@Override
+			protected void onChange(boolean checked) {
+				// TODO set tool as path
+				mLevelEditor.switchTool(null);
+			}
+		};
+		HideListener pathHider = new HideListener(button, true);
+
+		mEnemyTable.row();
+		button = new TextButton("Trigger", toggleStyle);
+		buttonGroup.add(button);
+		mEnemyTable.add(button);
+		new CheckedListener(button) {
+			@Override
+			protected void onChange(boolean checked) {
+				mLevelEditor.switchTool(null);
+			}
+		};
+		HideListener triggerHider = new HideListener(button, true);
+
+
+		// Enemy
+		mEnemyTable.row();
+		buttonGroup = new ButtonGroup();
+		button = new TextButton("Select", toggleStyle);
+		enemyHider.addToggleActor(button);
+		buttonGroup.add(button);
+		mEnemyTable.add(button);
+		new CheckedListener(button) {
+			@Override
+			protected void onChange(boolean checked) {
+				// TODO
+			}
+		};
+
+		mEnemyTable.row();
+		button = new TextButton("Add", toggleStyle);
+		enemyHider.addToggleActor(button);
+		buttonGroup.add(button);
+		mEnemyTable.add(button);
+		new CheckedListener(button) {
+			@Override
+			protected void onChange(boolean checked) {
+				// TODO
+			}
+		};
+		HideListener enemyAddHider = new HideListener(button, true);
+		enemyHider.addChild(enemyAddHider);
+
+
+		mEnemyTable.row();
+		button = new TextButton("Remove", toggleStyle);
+		enemyHider.addToggleActor(button);
+		buttonGroup.add(button);
+		mEnemyTable.add(button);
+		new CheckedListener(button) {
+			@Override
+			protected void onChange(boolean checked) {
+				// TODO
+			}
+		};
+
+		mEnemyTable.row();
+		button = new TextButton("Move", toggleStyle);
+		enemyHider.addToggleActor(button);
+		buttonGroup.add(button);
+		mEnemyTable.add(button);
+		new CheckedListener(button) {
+			@Override
+			protected void onChange(boolean checked) {
+				// TODO
+			}
+		};
+
+		// Select type
+		mEnemyTable.row();
+		button = new TextButton("Select type", textStyle);
+		enemyAddHider.addToggleActor(button);
+		mEnemyTable.add(button);
+		button.addListener(new EventListener() {
+			@Override
+			public boolean handle(Event event) {
+				if (isButtonPressed(event)) {
+					mLevelEditor.selectEnemy();
+				}
+				return true;
+			}
+		});
+	}
+
+	/**
 	 * Initializes Pickup tool GUI
 	 */
 	private void initPickup() {
-		mPickupTable.setName(Tools.PICKUP.toString() + "-table");
-		mPickupTable.setRowAlign(Horizontal.RIGHT, Vertical.BOTTOM);
-
 		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
 		TextButtonStyle toggleStyle = editorSkin.get("toggle", TextButtonStyle.class);
 		TextButtonStyle textStyle = editorSkin.get("default", TextButtonStyle.class);
@@ -314,9 +436,6 @@ class LevelEditorGui extends Gui {
 	 * Initializes the static terrain
 	 */
 	private void initStaticTerrain() {
-		mStaticTerrainTable.setName(Tools.STATIC_TERRAIN.toString() + "-table");
-		mStaticTerrainTable.setRowAlign(Horizontal.RIGHT, Vertical.TOP);
-
 		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
 		TextButtonStyle textStyle = editorSkin.get("toggle", TextButtonStyle.class);
 		ImageButtonStyle imageStyle = editorSkin.get("add", ImageButtonStyle.class);
@@ -384,6 +503,8 @@ class LevelEditorGui extends Gui {
 	private AlignTable mPickupTable = new AlignTable();
 	/** Static terrain table */
 	private AlignTable mStaticTerrainTable = new AlignTable();
+	/** Enemy table */
+	private AlignTable mEnemyTable = new AlignTable();
 
 	/** Level editor the GUI will act on */
 	private LevelEditor mLevelEditor = null;

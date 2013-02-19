@@ -51,10 +51,10 @@ public class LevelEditor extends WorldScene implements IActorChangeEditor, IEdit
 		mScroller = new Scroller(50, 2000, 10, 200, ScrollAxis.X);
 
 		// Initialize all tools
-		DrawActorTool drawActorTool = new DrawActorTool(mCamera, mWorld, StaticTerrainActor.class, mInvoker, this);
-		mTouchTools[Tools.STATIC_TERRAIN.ordinal()] = drawActorTool;
-		AddActorTool addActorTool = new AddActorTool(mCamera, mWorld, PickupActor.class, mInvoker, this);
-		mTouchTools[Tools.PICKUP.ordinal()] = addActorTool;
+		DrawActorTool terrainTool = new DrawActorTool(mCamera, mWorld, StaticTerrainActor.class, mInvoker, this);
+		mTouchTools[Tools.STATIC_TERRAIN.ordinal()] = terrainTool ;
+		AddActorTool pickupTool = new AddActorTool(mCamera, mWorld, PickupActor.class, mInvoker, true, this);
+		mTouchTools[Tools.PICKUP.ordinal()] = pickupTool;
 
 		switchTool(Tools.STATIC_TERRAIN);
 	}
@@ -181,7 +181,7 @@ public class LevelEditor extends WorldScene implements IActorChangeEditor, IEdit
 		}
 		else if (outcome == Outcomes.DEF_SELECTED) {
 			switch (mSelectionAction) {
-			case LEVEL_LOAD:
+			case LEVEL:
 				try {
 					mLoadingLevel = ResourceCacheFacade.get(UUID.fromString(message), LevelDef.class);
 
@@ -198,6 +198,15 @@ public class LevelEditor extends WorldScene implements IActorChangeEditor, IEdit
 				try {
 					PickupActorDef pickupActorDef = ResourceCacheFacade.get(UUID.fromString(message), PickupActorDef.class);
 					((ActorTool)mTouchTools[Tools.PICKUP.ordinal()]).setNewActorDef(pickupActorDef);
+				} catch (Exception e) {
+					Gdx.app.error("LevelEditor", e.toString());
+				}
+				break;
+
+			case ENEMY:
+				try {
+					EnemyActorDef enemyActorDef = ResourceCacheFacade.get(UUID.fromString(message), EnemyActorDef.class);
+					((ActorTool)mTouchTools[Tools.ENEMY.ordinal()]).setNewActorDef(enemyActorDef);
 				} catch (Exception e) {
 					Gdx.app.error("LevelEditor", e.toString());
 				}
@@ -282,37 +291,41 @@ public class LevelEditor extends WorldScene implements IActorChangeEditor, IEdit
 	 */
 	void switchTool(Tools tool) {
 		// Remove old tool
-		switch (mToolType) {
-		case PICKUP:
-			mInputMultiplexer.removeProcessor(mTouchTools[Tools.PICKUP.ordinal()]);
-			break;
+		if (mToolType != null) {
+			switch (mToolType) {
+			case PICKUP:
+				mInputMultiplexer.removeProcessor(mTouchTools[Tools.PICKUP.ordinal()]);
+				break;
 
-		case STATIC_TERRAIN:
-			mInputMultiplexer.removeProcessor(mTouchTools[Tools.STATIC_TERRAIN.ordinal()]);
-			((DrawActorTool)mTouchTools[Tools.STATIC_TERRAIN.ordinal()]).deactivate();
-			break;
+			case STATIC_TERRAIN:
+				mInputMultiplexer.removeProcessor(mTouchTools[Tools.STATIC_TERRAIN.ordinal()]);
+				((DrawActorTool)mTouchTools[Tools.STATIC_TERRAIN.ordinal()]).deactivate();
+				break;
 
-		default:
-			break;
+			default:
+				break;
+			}
 		}
 
 		// Set current tool
 		mToolType = tool;
 
 		// add new tool
-		switch (mToolType) {
-		case PICKUP:
-			mInputMultiplexer.addProcessor(mTouchTools[Tools.PICKUP.ordinal()]);
-			break;
+		if (mToolType != null) {
+			switch (mToolType) {
+			case PICKUP:
+				mInputMultiplexer.addProcessor(mTouchTools[Tools.PICKUP.ordinal()]);
+				break;
 
-		case STATIC_TERRAIN:
-			mInputMultiplexer.addProcessor(mTouchTools[Tools.STATIC_TERRAIN.ordinal()]);
-			((DrawActorTool)mTouchTools[Tools.STATIC_TERRAIN.ordinal()]).activate();
-			break;
+			case STATIC_TERRAIN:
+				mInputMultiplexer.addProcessor(mTouchTools[Tools.STATIC_TERRAIN.ordinal()]);
+				((DrawActorTool)mTouchTools[Tools.STATIC_TERRAIN.ordinal()]).activate();
+				break;
 
-		default:
-			Gdx.app.error("LevelEditor", "Switched to an unknown tool!");
-			break;
+			default:
+				Gdx.app.error("LevelEditor", "Switched to an unknown tool!");
+				break;
+			}
 		}
 	}
 
@@ -337,7 +350,7 @@ public class LevelEditor extends WorldScene implements IActorChangeEditor, IEdit
 
 	@Override
 	public void loadDef() {
-		mSelectionAction = SelectionActions.LEVEL_LOAD;
+		mSelectionAction = SelectionActions.LEVEL;
 
 		Scene scene = new SelectDefScene(LevelDef.class, true, true);
 		SceneSwitcher.switchTo(scene);
@@ -407,6 +420,16 @@ public class LevelEditor extends WorldScene implements IActorChangeEditor, IEdit
 	}
 
 	/**
+	 * Select enemy
+	 */
+	void selectEnemy() {
+		mSelectionAction = SelectionActions.ENEMY;
+
+		Scene scene = new SelectDefScene(EnemyActorDef.class, false, true);
+		SceneSwitcher.switchTo(scene);
+	}
+
+	/**
 	 * @return currently selected pickup
 	 */
 	ActorDef getSelectedPickup() {
@@ -417,10 +440,14 @@ public class LevelEditor extends WorldScene implements IActorChangeEditor, IEdit
 	 * All the main tool buttons
 	 */
 	enum Tools {
+		/** Add enemies */
+		ENEMY,
 		/** Add/Move/Remove pickups */
 		PICKUP,
 		/** Draws the terrain */
-		STATIC_TERRAIN;
+		STATIC_TERRAIN,
+		/** Draw paths */
+		PATH
 	}
 
 	/**
@@ -436,10 +463,12 @@ public class LevelEditor extends WorldScene implements IActorChangeEditor, IEdit
 	 * All definition selection actions
 	 */
 	private enum SelectionActions {
+		/** Select an enemy */
+		ENEMY,
+		/** Loads a level */
+		LEVEL,
 		/** Selects a pickup */
 		PICKUP,
-		/** Loads a level */
-		LEVEL_LOAD,
 	}
 
 	/** Level we're currently editing */

@@ -1,5 +1,8 @@
 package com.spiddekauga.voider.scene;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
@@ -15,7 +18,6 @@ import com.spiddekauga.voider.editor.commands.CActorCornerRemoveAll;
 import com.spiddekauga.voider.editor.commands.CActorMove;
 import com.spiddekauga.voider.editor.commands.CActorRemove;
 import com.spiddekauga.voider.editor.commands.CActorSelect;
-import com.spiddekauga.voider.editor.commands.CActorSelect.IActorSelect;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.ActorDef;
 import com.spiddekauga.voider.game.actors.ActorDef.PolygonComplexException;
@@ -27,7 +29,7 @@ import com.spiddekauga.voider.game.actors.BulletActor;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class DrawActorTool extends ActorTool implements IActorSelect {
+public class DrawActorTool extends ActorTool implements ISelectTool {
 	/**
 	 * Creates a draw actor tool.
 	 * @param camera used for determining where the pointer is in the world
@@ -188,10 +190,14 @@ public class DrawActorTool extends ActorTool implements IActorSelect {
 	}
 
 	@Override
-	public void setSelectedActor(Actor actor) {
+	public void setSelectedActor(Actor selectedActor) {
 		deactivate();
 
-		mActor = actor;
+		for (ISelectListener listener : mSelectListeners) {
+			listener.onActorSelect(mActor, selectedActor);
+		}
+
+		mActor = selectedActor;
 
 		activate();
 	}
@@ -199,6 +205,26 @@ public class DrawActorTool extends ActorTool implements IActorSelect {
 	@Override
 	public Actor getSelectedActor() {
 		return mActor;
+	}
+
+	@Override
+	public void addListener(ISelectListener listener) {
+		mSelectListeners.add(listener);
+	}
+
+	@Override
+	public void addListeners(List<ISelectListener> listeners) {
+		mSelectListeners.addAll(listeners);
+	}
+
+	@Override
+	public void removeListener(ISelectListener listener) {
+		mSelectListeners.remove(listener);
+	}
+
+	@Override
+	public void removeListeners(List<ISelectListener> listeners) {
+		mSelectListeners.removeAll(listeners);
 	}
 
 	@Override
@@ -524,6 +550,8 @@ public class DrawActorTool extends ActorTool implements IActorSelect {
 	private boolean mCornerAddedNow = false;
 	/** The actor editor */
 	private IActorChangeEditor mActorEditor;
+	/** All select listeners */
+	private ArrayList<ISelectListener> mSelectListeners = new ArrayList<ISelectListener>();
 
 	/** If only one actor shall be able to be created simultaneously */
 	private boolean mOnlyOneActor;

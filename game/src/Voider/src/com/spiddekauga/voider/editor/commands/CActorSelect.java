@@ -2,6 +2,7 @@ package com.spiddekauga.voider.editor.commands;
 
 import com.spiddekauga.utils.Command;
 import com.spiddekauga.voider.game.actors.Actor;
+import com.spiddekauga.voider.scene.ISelectTool;
 
 /**
  * Selects an actor in the specified select tool
@@ -14,7 +15,7 @@ public class CActorSelect extends Command {
 	 * @param actor the actor to select, if null it deselects any actor
 	 * @param tool the tool to select the actor in
 	 */
-	public CActorSelect(Actor actor, IActorSelect tool) {
+	public CActorSelect(Actor actor, ISelectTool tool) {
 		mTool = tool;
 		mActor = actor;
 	}
@@ -40,26 +41,10 @@ public class CActorSelect extends Command {
 		}
 	}
 
-	/**
-	 * Interface for selecting an actor
-	 */
-	public interface IActorSelect {
-		/**
-		 * Selects the selected actor
-		 * @actor the actor to select, if null deselects any actor
-		 */
-		void setSelectedActor(Actor actor);
-
-		/**
-		 * @return current selected actor
-		 */
-		Actor getSelectedActor();
-	}
-
 	/** The actor to select */
 	public Actor mActor;
 	/** Old selected actor */
 	public Actor mOldActor = null;
 	/** The tool to selelct the actor in */
-	public IActorSelect mTool;
+	public ISelectTool mTool;
 }
