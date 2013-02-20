@@ -47,6 +47,7 @@ class DefItem implements Json.Serializable {
 				Gdx.app.error("UndefinedResourceType", e.toString());
 			}
 		}
+		count = 1;
 	}
 
 	/**
@@ -61,6 +62,8 @@ class DefItem implements Json.Serializable {
 		return resourceId.hashCode();
 	}
 
+	/** Number of references */
+	int count = 0;
 	/** Unique id */
 	UUID resourceId = null;
 	/** Resource Type */
@@ -68,9 +71,6 @@ class DefItem implements Json.Serializable {
 	/** The full file path to this resource */
 	String fullName = null;
 
-	/* (non-Javadoc)
-	 * @see com.badlogic.gdx.utils.Json.Serializable#write(com.badlogic.gdx.utils.Json)
-	 */
 	@Override
 	public void write(Json json) {
 		json.writeValue("resourceId", resourceId.toString());
@@ -79,9 +79,6 @@ class DefItem implements Json.Serializable {
 		// We don't write the fullName, it's derived when reading the file again
 	}
 
-	/* (non-Javadoc)
-	 * @see com.badlogic.gdx.utils.Json.Serializable#read(com.badlogic.gdx.utils.Json, com.badlogic.gdx.utils.OrderedMap)
-	 */
 	@Override
 	public void read(Json json, OrderedMap<String, Object> jsonData) {
 		resourceId = UUID.fromString(json.readValue("resourceId", String.class, jsonData));

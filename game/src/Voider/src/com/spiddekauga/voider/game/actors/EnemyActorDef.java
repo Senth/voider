@@ -4,7 +4,6 @@ import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.utils.OrderedMap;
 import com.spiddekauga.utils.Json;
-import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Editor.Enemy;
 import com.spiddekauga.voider.game.WeaponDef;
 
@@ -262,11 +261,7 @@ public class EnemyActorDef extends ActorDef {
 
 	@Override
 	public void write(Json json) {
-		json.writeValue("REVISION", Config.REVISION);
-
-		json.writeObjectStart("ActorDef");
 		super.write(json);
-		json.writeObjectEnd();
 
 
 		json.writeValue("mHasWeapon", mHasWeapon);
@@ -292,9 +287,7 @@ public class EnemyActorDef extends ActorDef {
 
 	@Override
 	public void read(Json json, OrderedMap<String, Object> jsonData) {
-		@SuppressWarnings("unchecked")
-		OrderedMap<String, Object> superMap = json.readValue("ActorDef", OrderedMap.class, jsonData);
-		super.read(json, superMap);
+		super.read(json, jsonData);
 
 
 		mHasWeapon = json.readValue("mHasWeapon", boolean.class, jsonData);

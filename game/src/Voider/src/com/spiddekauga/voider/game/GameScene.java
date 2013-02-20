@@ -1,5 +1,6 @@
 package com.spiddekauga.voider.game;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -11,6 +12,8 @@ import com.badlogic.gdx.physics.box2d.joints.MouseJointDef;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.PlayerActor;
+import com.spiddekauga.voider.resources.ResourceCacheFacade;
+import com.spiddekauga.voider.resources.UndefinedResourceTypeException;
 import com.spiddekauga.voider.scene.WorldScene;
 /**
  * The main game. Starts with a level and could either be in regular or
@@ -61,11 +64,29 @@ public class GameScene extends WorldScene {
 		createBorder();
 	}
 
+	/**
+	 * Sets the level to load
+	 * @param levelDef definition with all the information
+	 */
+	public void setLevelToLoad(LevelDef levelDef) {
+		mLevelToLoad = levelDef;
+	}
+
+
 	@Override
 	public void onActivate(Outcomes outcome, String message) {
 		/** @TODO loading done */
 		if (outcome == Outcomes.LOADING_SUCCEEDED) {
 			mGui.initGui();
+
+			if (mLevelToLoad != null) {
+				try {
+					mLevel = ResourceCacheFacade.get(mLevelToLoad.getLevelId(), Level.class);
+					mLevel.bindTriggers();
+				} catch (UndefinedResourceTypeException e) {
+					Gdx.app.error("GameScene", e.toString());
+				}
+			}
 		}
 
 		/** @TODO game completed, aborted? */
@@ -121,6 +142,25 @@ public class GameScene extends WorldScene {
 	@Override
 	public boolean hasResources() {
 		return true;
+	}
+
+	@Override
+	public void loadResources() {
+		if (mLevelToLoad != null) {
+			try {
+				ResourceCacheFacade.load(mLevelToLoad.getLevelId(), Level.class, mLevelToLoad);
+			} catch (UndefinedResourceTypeException e) {
+				Gdx.app.error("GameScene", e.toString());
+			}
+		}
+	}
+
+	@Override
+	public void unloadResources() {
+		if (mLevelToLoad != null) {
+			ResourceCacheFacade.unload(mLevel);
+			ResourceCacheFacade.unload(mLevelToLoad, true);
+		}
 	}
 
 
@@ -189,6 +229,8 @@ public class GameScene extends WorldScene {
 
 	/** Invalid pointer id */
 	private static final int INVALID_POINTER = -1;
+	/** Level to load */
+	private LevelDef mLevelToLoad = null;
 	/** The current level used in the game */
 	private Level mLevel = null;
 	/** If we're just testing */

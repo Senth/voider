@@ -11,6 +11,7 @@ import java.util.UUID;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.badlogic.gdx.utils.ObjectMap;
 import com.spiddekauga.utils.Json;
 import com.spiddekauga.voider.game.actors.BossActorDef;
 import com.spiddekauga.voider.game.actors.BulletActorDef;
@@ -93,9 +94,9 @@ public class DefTest {
 
 
 		// Def dependencies
-		assertEquals("Dep def size", def.getExternalDependencies().size(), testDef.getExternalDependencies().size());
-		for (DefItem item : def.getExternalDependencies()) {
-			assertTrue("Dep def item", testDef.getExternalDependencies().contains(item));
+		assertEquals("Dep def size", def.getExternalDependencies().size, testDef.getExternalDependencies().size);
+		for (ObjectMap.Entry<UUID, DefItem> entry : def.getExternalDependencies().entries()) {
+			assertTrue("Dep def item", testDef.getExternalDependencies().containsKey(entry.key));
 		}
 
 		// ResourceNames dependencies
@@ -117,14 +118,14 @@ public class DefTest {
 		def.addDependency(dependency2);
 
 		assertNotNull("def dependencies not null", def.getExternalDependencies());
-		assertEquals("def dependencies size", def.getExternalDependencies().size(), 2);
+		assertEquals("def dependencies size", def.getExternalDependencies().size, 2);
 		assertNotNull("res dependencies not null", def.getInternalDependencies());
 		assertEquals("res dependencies", def.getInternalDependencies().size(), 0);
 
 
 		// Test to add the same dependency again, should remain the same
 		def.addDependency(dependency1);
-		assertEquals("def dependencies added twite", def.getExternalDependencies().size(), 2);
+		assertEquals("def dependencies added twite", def.getExternalDependencies().size, 2);
 	}
 
 	/**
@@ -138,7 +139,7 @@ public class DefTest {
 		def.addDependency(ResourceNames.SOUND_TEST);
 
 		assertNotNull("def dependencies null", def.getExternalDependencies());
-		assertEquals("def dependencies", def.getExternalDependencies().size(), 0);
+		assertEquals("def dependencies", def.getExternalDependencies().size, 0);
 		assertNotNull("res dependencies not null", def.getInternalDependencies());
 		assertEquals("res dependencies size", def.getInternalDependencies().size(), 3);
 
@@ -161,22 +162,22 @@ public class DefTest {
 		def.removeDependency(dependency1.getId());
 
 		assertNotNull("def dependencies not null", def.getExternalDependencies());
-		assertEquals("def dependencies size", def.getExternalDependencies().size(), 1);
+		assertEquals("def dependencies size", def.getExternalDependencies().size, 1);
 		assertNotNull("res dependencies not null", def.getInternalDependencies());
 		assertEquals("res dependencies", def.getInternalDependencies().size(), 0);
 
 		// Test to remove a dependency that doesn't exist
 		def.removeDependency(UUID.randomUUID());
-		assertEquals("def dependencies size removed unknown", def.getExternalDependencies().size(), 1);
+		assertEquals("def dependencies size removed unknown", def.getExternalDependencies().size, 1);
 
 		// Remove the last dependency
 		def.removeDependency(dependency2.getId());
 		assertNotNull("def not null after all removed", def.getExternalDependencies());
-		assertEquals("def dependencies size all removed", def.getExternalDependencies().size(), 0);
+		assertEquals("def dependencies size all removed", def.getExternalDependencies().size, 0);
 
 		// Readd a dependency
 		def.addDependency(dependency1);
-		assertEquals("def dependencies size readded one", def.getExternalDependencies().size(), 1);
+		assertEquals("def dependencies size readded one", def.getExternalDependencies().size, 1);
 	}
 
 	/**
@@ -190,7 +191,7 @@ public class DefTest {
 		def.removeDependency(ResourceNames.PARTICLE_TEST);
 
 		assertNotNull("def dependencies null", def.getExternalDependencies());
-		assertEquals("def dependencies", def.getExternalDependencies().size(), 0);
+		assertEquals("def dependencies", def.getExternalDependencies().size, 0);
 		assertNotNull("res dependencies not null", def.getInternalDependencies());
 		assertEquals("res dependencies size", def.getInternalDependencies().size(), 1);
 

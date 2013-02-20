@@ -590,11 +590,7 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 
 	@Override
 	public void write(Json json) {
-		json.writeValue("REVISION", Config.REVISION);
-
-		json.writeObjectStart("Def");
 		super.write(json);
-		json.writeObjectEnd();
 
 		// Write ActorDef's variables first
 		json.writeValue("mMaxLife", mMaxLife);
@@ -605,14 +601,9 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 		json.writeValue("mVisualVars", mVisualVars);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void read(Json json, OrderedMap<String, Object> jsonData) {
-		// Superclass
-		OrderedMap<String, Object> superMap = json.readValue("Def", OrderedMap.class, jsonData);
-		if (superMap != null) {
-			super.read(json, superMap);
-		}
+		super.read(json, jsonData);
 
 
 		// Our variables

@@ -220,6 +220,19 @@ public class ResourceCacheFacade {
 	}
 
 	/**
+	 * Unloads a resource
+	 * @param resource the resource to unload
+	 */
+	public static void unload(Resource resource) {
+		try {
+			final String fullName = ResourceNames.getDirPath(resource.getClass()) + resource.getId().toString();
+			mAssetManager.unload(fullName);
+		} catch (UndefinedResourceTypeException e) {
+			Gdx.app.error("Unknown resource type", "Should never happen when unloading");
+		}
+	}
+
+	/**
 	 * Unloads a regular resource
 	 * @param resourceName the name of the resource
 	 */

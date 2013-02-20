@@ -18,6 +18,8 @@
  */
 package com.spiddekauga.voider.game;
 
+import java.util.ArrayList;
+
 import com.spiddekauga.voider.resources.IResource;
 
 /**
@@ -32,4 +34,9 @@ public interface ITriggerListener extends IResource {
 	 * associated with).
 	 */
 	public void onTriggered(TriggerAction action);
+
+	/**
+	 * @return all trigger information necessary for binding triggers
+	 */
+	public ArrayList<TriggerInfo> getTriggerInfos();
 }

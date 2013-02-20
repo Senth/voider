@@ -4,7 +4,6 @@ import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.utils.OrderedMap;
 import com.spiddekauga.utils.Json;
-import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Actor.Pickup;
 import com.spiddekauga.voider.game.Collectibles;
 /**
@@ -42,22 +41,15 @@ public class PickupActorDef extends ActorDef {
 
 	@Override
 	public void write(Json json) {
-		json.writeObjectStart("ActorDef");
 		super.write(json);
-		json.writeObjectEnd();
 
-		json.writeValue("REVISION", Config.REVISION);
 		json.writeValue("mCollectible", mCollectible);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public void read(Json json, OrderedMap<String, Object> jsonData) {
-		// Superclass
-		OrderedMap<String, Object> superMap = json.readValue("ActorDef", OrderedMap.class, jsonData);
-		if (superMap != null) {
-			super.read(json, superMap);
-		}
+		super.read(json, jsonData);
 
 		mCollectible = json.readValue("mCollectible", Collectibles.class, jsonData);
 	}

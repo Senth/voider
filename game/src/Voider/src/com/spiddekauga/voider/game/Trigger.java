@@ -1,8 +1,8 @@
 package com.spiddekauga.voider.game;
 
+import java.util.ArrayList;
 import java.util.UUID;
 
-import com.badlogic.gdx.utils.Array;
 import com.spiddekauga.voider.resources.Resource;
 
 /**
@@ -43,13 +43,28 @@ public abstract class Trigger extends Resource {
 	protected abstract boolean isTriggered();
 
 	/**
-	 * Sets the listener array
-	 * @param listeners array of listeners
+	 * Adds a listener to the trigger
+	 * @param listener the listener to add
+	 * @param delay how many seconds after the trigger has been trigger the actual
+	 * #onTriggered(Actions) is called.
+	 * @param action the action to take when triggered
 	 */
-	void setListeners(Array<TriggerListenerInfo> listeners) {
-		mListeners = listeners;
+	void addListener(ITriggerListener listener, float delay, TriggerAction.Actions action) {
+		TriggerListenerInfo triggerListenerInfo = new TriggerListenerInfo();
+		triggerListenerInfo.listener = listener;
+		triggerListenerInfo.delay = delay;
+		triggerListenerInfo.action = action;
+
+		mListeners.add(triggerListenerInfo);
+	}
+
+	/**
+	 * Removes/Clears all the listeners
+	 */
+	void clearListeners() {
+		mListeners.clear();
 	}
 
 	/** Listener information about the trigger */
-	Array<TriggerListenerInfo> mListeners = null;
+	ArrayList<TriggerListenerInfo> mListeners = new ArrayList<TriggerListenerInfo>();
 }

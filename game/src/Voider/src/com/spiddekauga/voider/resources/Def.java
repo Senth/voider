@@ -4,10 +4,11 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.ObjectMap.Entry;
 import com.badlogic.gdx.utils.OrderedMap;
 import com.spiddekauga.utils.Json;
-import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.User;
 
 /**
@@ -16,6 +17,7 @@ import com.spiddekauga.voider.User;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
+@SuppressWarnings("unchecked")
 public abstract class Def extends Resource implements Json.Serializable {
 	/**
 	 * Default constructor for the resource.
@@ -29,7 +31,8 @@ public abstract class Def extends Resource implements Json.Serializable {
 	 * creator, unique id.
 	 * @return copy of this definition.
 	 */
-	public Def copy() {
+	@Override
+	public <ResourceType> ResourceType copy() {
 		Class<?> derivedClass = getClass();
 
 		Json json = new Json();
@@ -40,14 +43,14 @@ public abstract class Def extends Resource implements Json.Serializable {
 		copy.mName = copy.mName + " (copy)";
 		copy.mUniqueId = UUID.randomUUID();
 
-		return copy;
+		return (ResourceType) copy;
 	}
 
 	/**
 	 * @return number of external dependencies
 	 */
 	public int getExternalDependenciesCount() {
-		return mExternalDependencies.size();
+		return mExternalDependencies.size;
 	}
 
 	/**
@@ -109,7 +112,6 @@ public abstract class Def extends Resource implements Json.Serializable {
 	public void write(Json json) {
 		super.write(json);
 
-		json.writeValue("REVISION", Config.REVISION);
 		json.writeValue("mName", mName);
 		json.writeValue("mDescription", mDescription);
 		json.writeValue("mCreator", mCreator);
@@ -125,16 +127,10 @@ public abstract class Def extends Resource implements Json.Serializable {
 			json.writeObjectEnd();
 		}
 
-		if (mExternalDependencies.isEmpty()) {
-			json.writeValue("mExternalDependencies", (Set<?>) null);
+		if (mExternalDependencies.size == 0) {
+			json.writeValue("mExternalDependencies", (Object) null);
 		} else {
-			json.writeObjectStart("mExternalDependencies");
-			int i= 0;
-			for (DefItem item : mExternalDependencies) {
-				json.writeValue(Integer.toString(i), item);
-				++i;
-			}
-			json.writeObjectEnd();
+			json.writeValue("mExternalDependencies", mExternalDependencies);
 		}
 	}
 
@@ -159,12 +155,9 @@ public abstract class Def extends Resource implements Json.Serializable {
 			}
 		}
 
-		OrderedMap<?,?> externalMap = json.readValue("mExternalDependencies", OrderedMap.class, jsonData);
-		if (externalMap != null) {
-			for (int i = 0; i < externalMap.size; ++i) {
-				DefItem def = json.readValue(Integer.toString(i), DefItem.class, externalMap);
-				mExternalDependencies.add(def);
-			}
+		ObjectMap<UUID, DefItem> externalDependencies = json.readValue("externalDependencies", ObjectMap.class, jsonData);
+		if (externalDependencies != null) {
+			mExternalDependencies = externalDependencies;
 		}
 	}
 
@@ -174,7 +167,7 @@ public abstract class Def extends Resource implements Json.Serializable {
 	 * @see #addDependency(ResourceNames)
 	 */
 	public void addDependency(Def dependency) {
-		mExternalDependencies.add(new DefItem(dependency.getId(), dependency.getClass()));
+		addDependency(dependency.getId(), dependency.getClass());
 	}
 
 	/**
@@ -183,7 +176,14 @@ public abstract class Def extends Resource implements Json.Serializable {
 	 * @param type the type of dependency
 	 */
 	public void addDependency(UUID uuid, Class<?> type) {
-		mExternalDependencies.add(new DefItem(uuid, type));
+		// Increment value of old one if one exist...
+		DefItem oldDefItem = mExternalDependencies.get(uuid);
+
+		if (oldDefItem != null) {
+			oldDefItem.count++;
+		} else {
+			mExternalDependencies.put(uuid, new DefItem(uuid, type));
+		}
 	}
 
 	/**
@@ -200,7 +200,17 @@ public abstract class Def extends Resource implements Json.Serializable {
 	 * @param dependency the id of the dependency to remove
 	 */
 	public void removeDependency(UUID dependency) {
-		mExternalDependencies.remove(new DefItem(dependency, null));
+		// Decrement the value, remove if only one was left...
+
+		DefItem oldDefItem = mExternalDependencies.get(dependency);
+		if (oldDefItem != null) {
+			oldDefItem.count--;
+			if (oldDefItem.count == 0) {
+				mExternalDependencies.remove(dependency);
+			}
+		} else {
+			Gdx.app.error("Def", "No dependency found to remove for the current definition");
+		}
 	}
 
 	/**
@@ -214,7 +224,7 @@ public abstract class Def extends Resource implements Json.Serializable {
 	/**
 	 * @return all external dependencies
 	 */
-	Set<DefItem> getExternalDependencies() {
+	ObjectMap<UUID, DefItem> getExternalDependencies() {
 		return mExternalDependencies;
 	}
 
@@ -226,7 +236,7 @@ public abstract class Def extends Resource implements Json.Serializable {
 	}
 
 	/** Dependencies for the resource */
-	private Set<DefItem> mExternalDependencies = new HashSet<DefItem>();
+	private ObjectMap<UUID, DefItem> mExternalDependencies = new ObjectMap<UUID, DefItem>();
 	/** Internal dependencies, such as textures, sound, particle effects */
 	private Set<ResourceNames> mInternalDependencies = new HashSet<ResourceNames>();
 	/** Name of the definition */

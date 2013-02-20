@@ -22,8 +22,6 @@ import com.spiddekauga.utils.Json;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Editor;
 import com.spiddekauga.voider.editor.HitWrapper;
-import com.spiddekauga.voider.game.ITriggerListener;
-import com.spiddekauga.voider.game.TriggerAction;
 import com.spiddekauga.voider.resources.Resource;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.UndefinedResourceTypeException;
@@ -33,7 +31,7 @@ import com.spiddekauga.voider.resources.UndefinedResourceTypeException;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public abstract class Actor extends Resource implements ITriggerListener, Json.Serializable, Disposable, Poolable {
+public abstract class Actor extends Resource implements Json.Serializable, Disposable, Poolable {
 	/**
 	 * Sets the texture of the actor including the actor definition.
 	 * Automatically creates a body for the actor.
@@ -82,11 +80,6 @@ public abstract class Actor extends Resource implements ITriggerListener, Json.S
 				reloadFixtures();
 			}
 		}
-	}
-
-	@Override
-	public void onTriggered(TriggerAction action) {
-		/** @TODO implement trigger responses */
 	}
 
 	/**

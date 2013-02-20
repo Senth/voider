@@ -15,9 +15,8 @@ import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.OrderedMap;
 import com.badlogic.gdx.utils.Pools;
 import com.spiddekauga.utils.Json;
-import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.actors.ActorFilterCategories;
-import com.spiddekauga.voider.resources.IResource;
+import com.spiddekauga.voider.resources.Resource;
 
 
 /**
@@ -25,7 +24,13 @@ import com.spiddekauga.voider.resources.IResource;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class Path implements IResource, Json.Serializable, Disposable {
+public class Path extends Resource implements Json.Serializable, Disposable {
+	/**
+	 * Default constructor, sets the unique id of the path
+	 */
+	public Path() {
+		mUniqueId = UUID.randomUUID();
+	}
 
 	/**
 	 * Adds a path node to the back
@@ -161,18 +166,17 @@ public class Path implements IResource, Json.Serializable, Disposable {
 
 	@Override
 	public void write(Json json) {
-		json.writeValue("REVISION", Config.REVISION);
+		super.write(json);
 		json.writeValue("mNodes", mNodes);
 		json.writeValue("mPathType", mPathType);
-		json.writeValue("mUniqueId", mUniqueId);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public void read(Json json, OrderedMap<String, Object> jsonData) {
+		super.read(json, jsonData);
 		mNodes = json.readValue("mNodes", ArrayList.class, jsonData);
 		mPathType = json.readValue("mPathType", PathTypes.class, jsonData);
-		mUniqueId = json.readValue("mUniqueId", UUID.class, jsonData);
 	}
 
 	@Override
@@ -257,8 +261,6 @@ public class Path implements IResource, Json.Serializable, Disposable {
 	/** What type of path type the enemy uses, only applicable if movement type
 	 * is set to path */
 	private PathTypes mPathType = PathTypes.ONCE;
-	/** Unique id for the path */
-	private UUID mUniqueId = UUID.randomUUID();
 	/** World the path is bound to */
 	private World mWorld = null;
 	/** Body of the path */

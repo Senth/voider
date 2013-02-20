@@ -1,18 +1,24 @@
 package com.spiddekauga.voider.game.actors;
 
+import java.util.ArrayList;
 import java.util.UUID;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.OrderedMap;
 import com.badlogic.gdx.utils.Pools;
 import com.spiddekauga.utils.Json;
 import com.spiddekauga.utils.Maths;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.game.ITriggerListener;
 import com.spiddekauga.voider.game.Path;
 import com.spiddekauga.voider.game.Path.PathTypes;
+import com.spiddekauga.voider.game.TriggerAction;
+import com.spiddekauga.voider.game.TriggerInfo;
 import com.spiddekauga.voider.game.Weapon;
 import com.spiddekauga.voider.game.actors.EnemyActorDef.AimTypes;
 import com.spiddekauga.voider.game.actors.EnemyActorDef.MovementTypes;
+import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.utils.Geometry;
 
 /**
@@ -20,7 +26,7 @@ import com.spiddekauga.voider.utils.Geometry;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class EnemyActor extends Actor {
+public class EnemyActor extends Actor implements ITriggerListener {
 	/**
 	 * Default constructor
 	 */
@@ -83,6 +89,22 @@ public class EnemyActor extends Actor {
 	}
 
 	/**
+	 * Adds a trigger to the enemy actor
+	 * @param triggerInfo trigger information
+	 */
+	public void addTrigger(TriggerInfo triggerInfo) {
+		mTriggerInfos.add(triggerInfo);
+	}
+
+	/**
+	 * Removes the specified trigger from this enemy
+	 * @param triggerInfo trigger information
+	 */
+	public void removeTrigger(TriggerInfo triggerInfo) {
+		mTriggerInfos.remove(triggerInfo);
+	}
+
+	/**
 	 * Sets the speed of the actor, although not the definition, so this is
 	 * just a temporary speed
 	 * @param speed new temporary speed.
@@ -107,11 +129,7 @@ public class EnemyActor extends Actor {
 
 	@Override
 	public void write(Json json) {
-		json.writeObjectStart("Actor");
 		super.write(json);
-		json.writeObjectEnd();
-
-		json.writeValue("REVISION", Config.REVISION);
 
 		EnemyActorDef enemyDef = getDef(EnemyActorDef.class);
 
@@ -151,11 +169,7 @@ public class EnemyActor extends Actor {
 
 	@Override
 	public void read(Json json, OrderedMap<String, Object> jsonData) {
-		// Read super class
-		@SuppressWarnings("unchecked")
-		OrderedMap<String, Object> superMap = json.readValue("Actor", OrderedMap.class, jsonData);
-		super.read(json, superMap);
-
+		super.read(json, jsonData);
 
 		EnemyActorDef enemyDef = getDef(EnemyActorDef.class);
 
@@ -210,6 +224,68 @@ public class EnemyActor extends Actor {
 	}
 
 	/**
+	 * @return the enemy group
+	 */
+	public EnemyGroup getEnemyGroup() {
+		return mGroup;
+	}
+
+	/**
+	 * @return the enemy group id
+	 */
+	public UUID getEnemyGroupId() {
+		return mGroupId;
+	}
+
+	@Override
+	public ArrayList<UUID> getReferences() {
+		ArrayList<UUID> references = new ArrayList<UUID>();
+
+		if (mPathId != null) {
+			references.add(mPathId);
+		}
+		if (mGroupId != null) {
+			references.add(mGroupId);
+		}
+
+		return references;
+	}
+
+	@Override
+	public void bindReference(IResource resource) {
+		if (resource.equals(mPathId)) {
+			mPath = (Path) resource;
+		} else if (resource.equals(mGroupId)) {
+			mGroup = (EnemyGroup) resource;
+		} else {
+			Gdx.app.error("EnemyActor", "Couldn't find any resource to bind for " + resource.getId());
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public <ResourceType> ResourceType copy() {
+		EnemyActor copy = super.copy();
+
+		// Set variables that aren't copied by default
+		copy.mPath = mPath;
+		copy.mGroup = mGroup;
+
+		return (ResourceType) copy;
+	}
+
+	@Override
+	public void onTriggered(TriggerAction action) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public ArrayList<TriggerInfo> getTriggerInfos() {
+		return mTriggerInfos;
+	}
+
+	/**
 	 * @return enemy filter category
 	 */
 	@Override
@@ -224,6 +300,21 @@ public class EnemyActor extends Actor {
 	@Override
 	protected short getFilterCollidingCategories() {
 		return ActorFilterCategories.PLAYER;
+	}
+
+	/**
+	 * Sets the group of this enemy
+	 * @param enemyGroup the enemy group, set as null to "remove" it from
+	 * any group
+	 */
+	void setEnemyGroup(EnemyGroup enemyGroup) {
+		mGroup = enemyGroup;
+
+		if (mGroup != null) {
+			mGroupId = mGroup.getId();
+		} else {
+			mGroupId = null;
+		}
 	}
 
 	/**
@@ -599,11 +690,18 @@ public class EnemyActor extends Actor {
 	}
 
 
+	/** Trigger informations */
+	private ArrayList<TriggerInfo> mTriggerInfos = new ArrayList<TriggerInfo>();
 	/** Enemy weapon */
 	private Weapon mWeapon = new Weapon();
 	/** Shooting angle (used when rotating) */
 	private float mShootAngle = 0;
 
+	// Group
+	/** Group id, used for binding the group after loading the enemy */
+	private UUID mGroupId = null;
+	/** Group of the enemy, null if the enemy doesn't belong to a group */
+	private EnemyGroup mGroup = null;
 
 	// AI MOVEMENT
 	/** Next random move time */

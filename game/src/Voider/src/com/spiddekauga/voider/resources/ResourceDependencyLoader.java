@@ -7,6 +7,7 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.resolvers.ExternalFileHandleResolver;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.GdxRuntimeException;
+import com.badlogic.gdx.utils.ObjectMap;
 import com.spiddekauga.voider.game.actors.ActorDef;
 
 /**
@@ -59,7 +60,8 @@ class ResourceDependencyLoader {
 		}
 
 		// External
-		for (DefItem dependency : def.getExternalDependencies()) {
+		for (ObjectMap.Entry<UUID, DefItem> entry : def.getExternalDependencies().entries()) {
+			DefItem dependency = entry.value;
 			Def externalDef = (Def) mAssetManager.get(dependency.fullName, dependency.resourceType);
 			unload(externalDef);
 			// DO NOT USE externalDef AFTER THIS TIME, IT HAS BEEN UNLOADED!
@@ -102,7 +104,8 @@ class ResourceDependencyLoader {
 
 				// Load dependencies
 				// External
-				for (DefItem dependency : def.getExternalDependencies()) {
+				for (ObjectMap.Entry<UUID, DefItem> entry : def.getExternalDependencies().entries()) {
+					DefItem dependency = entry.value;
 					try {
 						load(dependency.resourceId, dependency.resourceType);
 					} catch (UndefinedResourceTypeException e) {
