@@ -90,6 +90,8 @@ public class AddActorTool extends ActorTool implements ISelectTool {
 		mSelectedSinceUp = true;
 
 		activate();
+
+		mEditor.onActorSelected(mSelectedActor);
 	}
 
 	/**

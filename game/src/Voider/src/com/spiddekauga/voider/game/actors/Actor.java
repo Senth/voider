@@ -70,7 +70,7 @@ public abstract class Actor extends Resource implements Json.Serializable, Dispo
 	 * have been changed since the actor was created.
 	 */
 	public void editorUpdate() {
-		if (mEditorActive) {
+		if (mEditorActive && mBody != null) {
 			// Do we need to reload the body?
 			if (mBodyUpdateTime <= getDef().getBodyChangeTime()) {
 				reloadBody();
@@ -249,13 +249,6 @@ public abstract class Actor extends Resource implements Json.Serializable, Dispo
 			// Set position
 			bodyDef.position.set(mPosition);
 		}
-
-		if (mWorld != null) {
-			createBody(bodyDef);
-		} else {
-			Gdx.app.error("JsonRead", "World was null when creating body");
-			throw new GdxRuntimeException("World was null when creating body from json");
-		}
 	}
 
 	/**
@@ -389,14 +382,6 @@ public abstract class Actor extends Resource implements Json.Serializable, Dispo
 		if (mBody != null) {
 			destroyBody();
 		}
-		mDisposed = true;
-	}
-
-	/**
-	 * @return true if the actor has been disposed. I.e. it shall not be used anymore.
-	 */
-	public boolean isDisposed() {
-		return mDisposed;
 	}
 
 	@Override
@@ -404,7 +389,6 @@ public abstract class Actor extends Resource implements Json.Serializable, Dispo
 		if (mBody != null) {
 			destroyBody();
 		}
-		mDisposed = false;
 		mBody = null;
 		mDef = null;
 		mPosition.set(0,0);
@@ -663,8 +647,6 @@ public abstract class Actor extends Resource implements Json.Serializable, Dispo
 	private Vector2 mPosition = Pools.obtain(Vector2.class).set(0, 0);
 	/** Current actors we're colliding with */
 	private ArrayList<ActorDef> mCollidingActors = new ArrayList<ActorDef>();
-	/** True if the actor has been disposed of and is invalid to use */
-	private boolean mDisposed = false;
 	/** World corners of the actor, only used for custom shape and in an editor */
 	private ArrayList<Body> mCorners = new ArrayList<Body>();
 	/** Center body, this represents the center of the actor */

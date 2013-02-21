@@ -351,6 +351,7 @@ public class EnemyActor extends Actor implements ITriggerListener {
 		if (mGroup != null) {
 			mGroupId = mGroup.getId();
 		} else {
+			mGroupLeader = false;
 			mGroupId = null;
 		}
 	}

@@ -7,9 +7,15 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Slider;
+import com.badlogic.gdx.scenes.scene2d.ui.Slider.SliderStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
 import com.spiddekauga.utils.Command;
 import com.spiddekauga.utils.CommandSequence;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
@@ -17,6 +23,11 @@ import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.CheckedListener;
 import com.spiddekauga.utils.scene.ui.HideListener;
+import com.spiddekauga.utils.scene.ui.HideManual;
+import com.spiddekauga.utils.scene.ui.HideSliderValue;
+import com.spiddekauga.utils.scene.ui.SliderListener;
+import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.Config.Editor.Level;
 import com.spiddekauga.voider.editor.LevelEditor.Tools;
 import com.spiddekauga.voider.editor.commands.CEditorLoad;
 import com.spiddekauga.voider.editor.commands.CEditorNew;
@@ -109,6 +120,13 @@ class LevelEditorGui extends Gui {
 			break;
 		}
 
+		// Enemy options
+		if (mLevelEditor.isEnemySelected()) {
+			mEnemyOptionsHider.show();
+		} else {
+			mEnemyOptionsHider.hide();
+		}
+
 
 		// Pickup
 		switch (mLevelEditor.getPickupState()) {
@@ -146,6 +164,32 @@ class LevelEditorGui extends Gui {
 		case SET_CENTER:
 			// Does nothing
 			break;
+		}
+	}
+
+	/**
+	 * Shows the enemy options
+	 */
+	void showEnemyOptions() {
+		mEnemyOptionsHider.show();
+	}
+
+	/**
+	 * Hides the enemy options
+	 */
+	void hideEnemyOptions() {
+		mEnemyOptionsHider.hide();
+	}
+
+	/**
+	 * Set slider values for enemy count and delay
+	 * @param cEnemies number of enemies
+	 * @param delay the delay between enemies, if none is available set it to negative
+	 */
+	void setEnemyOptions(int cEnemies, float delay) {
+		mWidgets.enemy.cEnemies.setValue(cEnemies);
+		if (delay >= 0) {
+			mWidgets.enemy.delay.setValue(delay);
 		}
 	}
 
@@ -343,6 +387,9 @@ class LevelEditorGui extends Gui {
 		Skin skin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
 		TextButtonStyle textStyle = skin.get("default", TextButtonStyle.class);
 		TextButtonStyle toggleStyle = skin.get("toggle", TextButtonStyle.class);
+		SliderStyle sliderStyle = skin.get("default", SliderStyle.class);
+		TextFieldStyle textFieldStyle = skin.get("default", TextFieldStyle.class);
+		LabelStyle labelStyle = skin.get("default", LabelStyle.class);
 
 		mEnemyTable.row();
 		ButtonGroup buttonGroup = new ButtonGroup();
@@ -466,6 +513,54 @@ class LevelEditorGui extends Gui {
 				return true;
 			}
 		});
+
+
+		// Enemy options when an enemy is selected
+		// # Enemies
+		mEnemyTable.row();
+		Label label = new Label("# Enemies", labelStyle);
+		mEnemyOptionsHider.addToggleActor(label);
+		mEnemyTable.add(label);
+
+		mEnemyTable.row();
+		Slider slider = new Slider(Level.Enemy.ENEMIES_MIN, Level.Enemy.ENEMIES_MAX, Level.Enemy.ENEMIES_STEP_SIZE, false, sliderStyle);
+		mEnemyOptionsHider.addToggleActor(slider);
+		mWidgets.enemy.cEnemies = slider;
+		mEnemyTable.add(slider);
+		TextField textField = new TextField("", textFieldStyle);
+		mEnemyOptionsHider.addToggleActor(textField);
+		textField.setWidth(Config.Editor.TEXT_FIELD_NUMBER_WIDTH);
+		mEnemyTable.add(textField);
+		new SliderListener(slider, textField) {
+			@Override
+			protected void onChange(float newValue) {
+				mLevelEditor.setEnemyCount((int) (newValue + 0.5f));
+			}
+		};
+		HideSliderValue delayHider = new HideSliderValue(slider, 2, Float.MAX_VALUE);
+		mEnemyOptionsHider.addChild(delayHider);
+
+		// Delay
+		mEnemyTable.row();
+		label = new Label("Spawn delay between enemies", labelStyle);
+		delayHider.addToggleActor(label);
+		mEnemyTable.add(label);
+
+		mEnemyTable.row();
+		slider = new Slider(Level.Enemy.DELAY_MIN, Level.Enemy.DELAY_MAX, Level.Enemy.DELAY_STEP_SIZE, false, sliderStyle);
+		delayHider.addToggleActor(slider);
+		mWidgets.enemy.delay = slider;
+		mEnemyTable.add(slider);
+		textField = new TextField("", textFieldStyle);
+		delayHider.addToggleActor(textField);
+		textField.setWidth(Config.Editor.TEXT_FIELD_NUMBER_WIDTH);
+		mEnemyTable.add(textField);
+		new SliderListener(slider, textField) {
+			@Override
+			protected void onChange(float newValue) {
+				// TODO enemy delay
+			}
+		};
 	}
 
 	/**
@@ -616,11 +711,13 @@ class LevelEditorGui extends Gui {
 	/** Enemy table */
 	private AlignTable mEnemyTable = new AlignTable();
 
+	/** Hiders */
+	private HideManual mEnemyOptionsHider = new HideManual();
+
 	/** Level editor the GUI will act on */
 	private LevelEditor mLevelEditor = null;
 	/** Inner widgets */
 	private InnerWidgets mWidgets = new InnerWidgets();
-
 
 	/**
 	 * Container for inner widgets
@@ -650,6 +747,9 @@ class LevelEditorGui extends Gui {
 			Button add = null;
 			Button remove = null;
 			Button move = null;
+
+			Slider cEnemies = null;
+			Slider delay = null;
 		}
 
 		static class PickupWidgets {

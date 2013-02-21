@@ -1,5 +1,6 @@
 package com.spiddekauga.voider.editor;
 
+import java.util.ArrayList;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
@@ -15,7 +16,9 @@ import com.spiddekauga.voider.game.Level;
 import com.spiddekauga.voider.game.LevelDef;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.ActorDef;
+import com.spiddekauga.voider.game.actors.EnemyActor;
 import com.spiddekauga.voider.game.actors.EnemyActorDef;
+import com.spiddekauga.voider.game.actors.EnemyGroup;
 import com.spiddekauga.voider.game.actors.PickupActor;
 import com.spiddekauga.voider.game.actors.PickupActorDef;
 import com.spiddekauga.voider.game.actors.StaticTerrainActor;
@@ -104,7 +107,11 @@ public class LevelEditor extends WorldScene implements IActorChangeEditor, IEdit
 	 * @param level level to play
 	 */
 	public void setLevel(Level level) {
-		/** @todo unload level */
+		if (mLevel != null) {
+			if (ResourceCacheFacade.isLoaded(mLevel.getId(), Level.class)) {
+				ResourceCacheFacade.unload(mLevel, mLevel.getDef());
+			}
+		}
 
 		mLevel = level;
 		mInvoker.dispose();
@@ -219,6 +226,11 @@ public class LevelEditor extends WorldScene implements IActorChangeEditor, IEdit
 	}
 
 	@Override
+	public void onDisposed() {
+		setLevel(null);
+	}
+
+	@Override
 	public boolean touchDown(int x, int y, int pointer, int button) {
 		// Scroll -> When press middle mouse or two fingers
 		if (button == 2 || (Gdx.app.getInput().isTouched(0) && Gdx.app.getInput().isTouched(1))) {
@@ -257,16 +269,48 @@ public class LevelEditor extends WorldScene implements IActorChangeEditor, IEdit
 	@Override
 	public void onActorAdded(Actor actor) {
 		mLevel.addActor(actor);
+		mUnsaved = true;
 	}
 
 	@Override
 	public void onActorRemoved(Actor actor) {
 		mLevel.removeActor(actor.getId());
+		mUnsaved = true;
 	}
 
 	@Override
 	public void onActorChanged(Actor actor) {
 		mUnsaved = true;
+	}
+
+	@Override
+	public void onActorSelected(Actor actor) {
+		if (actor instanceof EnemyActor) {
+			((LevelEditorGui)mGui).showEnemyOptions();
+
+			EnemyActor selectedEnemy = (EnemyActor) ((AddEnemyTool)mTouchTools[Tools.ENEMY.ordinal()]).getSelectedActor();
+			EnemyGroup enemyGroup = selectedEnemy.getEnemyGroup();
+
+			if (enemyGroup != null) {
+				((LevelEditorGui)mGui).setEnemyOptions(enemyGroup.getEnemyCount(), enemyGroup.getSpawnTriggerDelay());
+			} else {
+				((LevelEditorGui)mGui).setEnemyOptions(1, -1);
+			}
+
+		} else {
+			((LevelEditorGui)mGui).hideEnemyOptions();
+		}
+	}
+
+	/**
+	 * @return true if an enemy is currently selected
+	 */
+	boolean isEnemySelected() {
+		if (mToolType == Tools.ENEMY) {
+			return ((AddActorTool)mTouchTools[Tools.ENEMY.ordinal()]).getSelectedActor() != null;
+		}
+
+		return false;
 	}
 
 	/**
@@ -364,6 +408,80 @@ public class LevelEditor extends WorldScene implements IActorChangeEditor, IEdit
 	@Override
 	public boolean isUnsaved() {
 		return mUnsaved;
+	}
+
+	/**
+	 * Sets the number of enemies in one group
+	 * @param cEnemies number of enemies in the group
+	 */
+	void setEnemyCount(int cEnemies) {
+		EnemyActor selectedEnemy = (EnemyActor) ((AddEnemyTool)mTouchTools[Tools.ENEMY.ordinal()]).getSelectedActor();
+
+		if (selectedEnemy != null) {
+			EnemyGroup enemyGroup = selectedEnemy.getEnemyGroup();
+
+			// We have an enemy group
+			if (enemyGroup != null) {
+				// Just change amount of enemies
+				if (cEnemies > 1) {
+					ArrayList<EnemyActor> addedEnemies = new ArrayList<EnemyActor>();
+					ArrayList<EnemyActor> removedEnemies = new ArrayList<EnemyActor>();
+
+					enemyGroup.setEnemyCount(cEnemies, addedEnemies, removedEnemies);
+
+					for (EnemyActor addedEnemy : addedEnemies) {
+						mLevel.addActor(addedEnemy);
+					}
+
+					for (EnemyActor removedEnemy : removedEnemies) {
+						mLevel.removeActor(removedEnemy.getId());
+					}
+				}
+				// Delete enemy group
+				else {
+					// Remove all excess enemies
+					ArrayList<EnemyActor> removedEnemies = enemyGroup.clear();
+
+					for (EnemyActor enemyActor : removedEnemies) {
+						mLevel.removeActor(enemyActor.getId());
+					}
+
+					mLevel.removeEnemyGroup(enemyGroup.getId());
+				}
+
+			}
+			// No enemy group, do we create one?
+			else if (cEnemies > 1) {
+				enemyGroup = new EnemyGroup();
+				mLevel.addEnemyGroup(enemyGroup);
+
+				enemyGroup.setOriginalEnemy(selectedEnemy);
+
+				ArrayList<EnemyActor> addedEnemies = new ArrayList<EnemyActor>();
+				enemyGroup.setEnemyCount(cEnemies, addedEnemies, null);
+
+				for (EnemyActor addedEnemy : addedEnemies) {
+					mLevel.addActor(addedEnemy);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Sets the spawn delay between actors in the same group.
+	 * @param delay seconds of delay between actors are activated.
+	 */
+	void setEnemySpawnDelay(float delay) {
+		EnemyActor selectedEnemy = (EnemyActor) ((AddEnemyTool)mTouchTools[Tools.ENEMY.ordinal()]).getSelectedActor();
+
+		if (selectedEnemy != null) {
+			EnemyGroup enemyGroup = selectedEnemy.getEnemyGroup();
+
+			// We have an enemy group
+			if (enemyGroup != null) {
+				enemyGroup.setSpawnTriggerDelay(delay);
+			}
+		}
 	}
 
 	/**

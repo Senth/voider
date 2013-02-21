@@ -25,4 +25,10 @@ public interface IActorChangeEditor {
 	 * @param actor the actor that was changed
 	 */
 	void onActorChanged(Actor actor);
+
+	/**
+	 * Called whenever an actor has been selected/deselected
+	 * @param actor the actor that was selected
+	 */
+	void onActorSelected(Actor actor);
 }

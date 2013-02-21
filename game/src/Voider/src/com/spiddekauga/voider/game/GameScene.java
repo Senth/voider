@@ -113,6 +113,10 @@ public class GameScene extends WorldScene {
 		if (!mTesting) {
 			/** @TODO save the game */
 		}
+
+		if (mLevel != null) {
+			mLevel.dispose();
+		}
 	}
 
 	@Override
@@ -171,7 +175,7 @@ public class GameScene extends WorldScene {
 	@Override
 	public void unloadResources() {
 		if (mLevelToLoad != null) {
-			ResourceCacheFacade.unload(mLevel);
+			ResourceCacheFacade.unload(mLevel, mLevel.getDef());
 			ResourceCacheFacade.unload(mLevelToLoad, true);
 		}
 	}

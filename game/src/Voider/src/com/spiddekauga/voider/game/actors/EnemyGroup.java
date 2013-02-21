@@ -65,6 +65,7 @@ public class EnemyGroup extends Resource {
 		// Remove
 		while (cEnemies < mEnemies.size()) {
 			EnemyActor removedEnemy = mEnemies.remove(cEnemies);
+			removedEnemy.setEnemyGroup(null);
 			mEnemyIds.remove(cEnemies);
 
 			if (removedEnemies != null) {
@@ -93,6 +94,34 @@ public class EnemyGroup extends Resource {
 		}
 	}
 
+	/**
+	 * @return number of enemies in the group (including the leader)
+	 */
+	public int getEnemyCount() {
+		return mEnemies.size();
+	}
+
+	/**
+	 * Clears all enemies. This will remove them from the group. Although the leader
+	 * isn't in the returned array it is too removed from the group.
+	 * @return all enemies that were removed from the group, except the group leader
+	 */
+	public ArrayList<EnemyActor> clear() {
+		ArrayList<EnemyActor> removedEnemies = new ArrayList<EnemyActor>();
+
+		for (EnemyActor enemyActor : mEnemies) {
+			enemyActor.setEnemyGroup(null);
+		}
+
+		removedEnemies.addAll(mEnemies);
+		removedEnemies.remove(0);
+
+		mEnemies.clear();
+		mEnemyIds.clear();
+
+		return removedEnemies;
+	}
+
 	@Override
 	public ArrayList<UUID> getReferences() {
 		return mEnemyIds;
@@ -113,8 +142,15 @@ public class EnemyGroup extends Resource {
 	 * Sets the duplicate trigger delay of the selected actor.
 	 * @param delay seconds delay between each actor.
 	 */
-	public void setDuplicateTriggerDelay(float delay) {
+	public void setSpawnTriggerDelay(float delay) {
 		mTriggerDelay = delay;
+	}
+
+	/**
+	 * @return enemy spawn delay between the enemies
+	 */
+	public float getSpawnTriggerDelay() {
+		return mTriggerDelay;
 	}
 
 	/**
@@ -280,5 +316,5 @@ public class EnemyGroup extends Resource {
 	/** All enemy references */
 	private ArrayList<UUID> mEnemyIds = new ArrayList<UUID>();
 	/** Trigger delay between enemies, in seconds */
-	private float mTriggerDelay = 0;
+	private float mTriggerDelay = Config.Editor.Level.Enemy.DELAY_DEFAULT;
 }

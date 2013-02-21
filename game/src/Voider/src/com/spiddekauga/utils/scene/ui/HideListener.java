@@ -1,19 +1,15 @@
 package com.spiddekauga.utils.scene.ui;
 
-import java.util.ArrayList;
-
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
-import com.badlogic.gdx.scenes.scene2d.utils.Layout;
 
 /**
  * Hides specified GUI elements when a button is enabled/disabled
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class HideListener implements EventListener {
+public class HideListener extends GuiHider implements EventListener {
 	/**
 	 * Creates a hide listener, listens to the specified button if it's enabled
 	 * or not. Calls onHide() after the actors get hidden, and onShow() after
@@ -55,28 +51,6 @@ public class HideListener implements EventListener {
 		}
 	}
 
-	/**
-	 * Adds a child hide listener. This allows child hide listeners
-	 * to remain hidden when this listener is shown.
-	 * @param child hide listener, its button shall be either a toggle actor
-	 * in this class or a child of ones toggle actor.
-	 */
-	public void addChild(HideListener child) {
-		mChildren.add(child);
-	}
-
-	/**
-	 * Adds an actor to show/hide when the button is checked/unchecked
-	 * (depending on how the listener was created (showWhenChecked)).
-	 * @param toggleActor the actor to show/hide
-	 */
-	public void addToggleActor(Actor toggleActor) {
-		mToggles.add(toggleActor);
-		if (mButton != null) {
-			toggleActor.setVisible(shallShowActors());
-		}
-	}
-
 	@Override
 	public final boolean handle(Event event) {
 		if (mButton.isChecked() != mCheckedLast) {
@@ -86,71 +60,13 @@ public class HideListener implements EventListener {
 		return true;
 	}
 
-	/**
-	 * Called after objects are hidden
-	 */
-	protected void onHide() {
-		// Does nothing
-	}
-
-	/**
-	 * Called after objects are shown
-	 */
-	protected void onShow() {
-		// Does nothing
-	}
-
-	/**
-	 * Updates all toggle actors
-	 */
-	private void updateToggleActors() {
-		if (shallShowActors()) {
-			for (Actor toggleActor : mToggles) {
-				toggleActor.setVisible(true);
-
-				if (toggleActor instanceof Layout) {
-					((Layout) toggleActor).invalidateHierarchy();
-				}
-			}
-
-			// Shall children remain hidden?
-			for (HideListener hideListener : mChildren) {
-				hideListener.updateToggleActors();
-			}
-
-			onShow();
-		} else {
-			hideAll();
-			onHide();
-		}
-	}
-
-	/**
-	 * Hides all actors including childrens' actors
-	 */
-	private void hideAll() {
-		for (Actor toggleActor : mToggles) {
-			toggleActor.setVisible(false);
-		}
-
-		for (HideListener hideListener : mChildren) {
-			hideListener.hideAll();
-		}
-	}
-
-	/**
-	 * @return true if the actors should be shown
-	 */
-	private boolean shallShowActors() {
-		return (mButton.isChecked() && mShowWhenChecked) || (!mButton.isChecked() && !mShowWhenChecked);
+	@Override
+	protected boolean shallShowActors() {
+		return mButton != null && ((mButton.isChecked() && mShowWhenChecked) || (!mButton.isChecked() && !mShowWhenChecked));
 	}
 
 	/** Button to listen for */
 	protected Button mButton = null;
-	/** List of actors to activate/deactivate */
-	protected ArrayList<Actor> mToggles = new ArrayList<Actor>();
-	/** Children */
-	private ArrayList<HideListener> mChildren = new ArrayList<HideListener>();
 	/** Shows the actors when the button is checked */
 	private boolean mShowWhenChecked;
 	/** Last state */

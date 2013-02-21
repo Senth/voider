@@ -404,6 +404,11 @@ public class BulletEditor extends WorldScene implements IActorEditor, IActorChan
 		mUnsaved = true;
 	}
 
+	@Override
+	public void onActorSelected(Actor actor) {
+		// Does nothing
+	}
+
 	/**
 	 * Sets the minimum cooldown of the weapon
 	 * @param time new cooldown of the weapon

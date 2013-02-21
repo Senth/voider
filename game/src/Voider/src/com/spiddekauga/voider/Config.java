@@ -312,6 +312,31 @@ public class Config {
 		}
 
 		/**
+		 * Level editor
+		 */
+		public static class Level {
+			/**
+			 * Enemy options
+			 */
+			public static class Enemy {
+				/** Minimum number of enemies */
+				public final static float ENEMIES_MIN = 1;
+				/** Maximum number of enemies */
+				public final static float ENEMIES_MAX = 20;
+				/** Enemies step size */
+				public final static float ENEMIES_STEP_SIZE = 1;
+				/** Minimum delay between enemy spawns */
+				public final static float DELAY_MIN = 0;
+				/** Maximum delay between enemy spawns */
+				public final static float DELAY_MAX = 10;
+				/** Default delay time between enemy spawns */
+				public final static float DELAY_DEFAULT = 2;
+				/** Stepz size of enemy delay time */
+				public final static float DELAY_STEP_SIZE = 0.1f;
+			}
+		}
+
+		/**
 		 * Weapon specifics
 		 */
 		public static class Weapon {

@@ -843,17 +843,22 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IActorChang
 
 	@Override
 	public void onActorAdded(Actor actor) {
-
+		// Does nothing
 	}
 
 	@Override
 	public void onActorRemoved(Actor actor) {
-
+		// Does nothing
 	}
 
 	@Override
 	public void onActorChanged(Actor actor) {
+		// Does nothing
+	}
 
+	@Override
+	public void onActorSelected(Actor actor) {
+		// Does nothing
 	}
 
 	/**

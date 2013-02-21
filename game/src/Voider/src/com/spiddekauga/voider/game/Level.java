@@ -100,9 +100,7 @@ public class Level extends Resource implements ITriggerListener, Json.Serializab
 
 			// Update actors
 			for (Actor actor : mActors) {
-				if (!actor.isDisposed()) {
-					actor.update(Gdx.graphics.getDeltaTime());
-				}
+				actor.update(Gdx.graphics.getDeltaTime());
 			}
 			mPlayerActor.update(Gdx.graphics.getDeltaTime());
 
@@ -110,9 +108,7 @@ public class Level extends Resource implements ITriggerListener, Json.Serializab
 			//			mTriggerInformation.update();
 		} else {
 			for (Actor actor : mActors) {
-				if (!actor.isDisposed()) {
-					actor.editorUpdate();
-				}
+				actor.editorUpdate();
 			}
 		}
 	}
@@ -176,7 +172,7 @@ public class Level extends Resource implements ITriggerListener, Json.Serializab
 	 */
 	public void render(SpriteBatch spriteBatch) {
 		for (Actor actor : mActors) {
-			if (!actor.isDisposed()) {
+			if (actor.getBody() != null) {
 				actor.render(spriteBatch);
 			}
 		}
@@ -189,7 +185,7 @@ public class Level extends Resource implements ITriggerListener, Json.Serializab
 	 */
 	public void renderEditor(SpriteBatch spriteBatch) {
 		for (Actor actor : mActors) {
-			if (!actor.isDisposed()) {
+			if (actor.getBody() != null) {
 				actor.renderEditor(spriteBatch);
 			}
 		}
@@ -202,7 +198,7 @@ public class Level extends Resource implements ITriggerListener, Json.Serializab
 	public void addActor(Actor actor) {
 		mActors.add(actor);
 		mResourceBinder.addResource(actor);
-		actor.createBody();
+		//		actor.createBody();
 
 		// Add to dependency, if it doesn't load its own def
 		if (!actor.savesDef()) {
@@ -254,7 +250,7 @@ public class Level extends Resource implements ITriggerListener, Json.Serializab
 
 			// Remove dependency
 			if (!actor.savesDef()) {
-				mLevelDef.removeDependency(actorId);
+				mLevelDef.removeDependency(actor.getDef().getId());
 			}
 		} else {
 			Gdx.app.error("Level", "Could not find the actor to remove");
@@ -266,10 +262,7 @@ public class Level extends Resource implements ITriggerListener, Json.Serializab
 	@Override
 	public void dispose() {
 		for (Actor actor : mActors) {
-			// Don't dispose actor twice...
-			if (!actor.isDisposed()) {
-				actor.dispose();
-			}
+			actor.dispose();
 		}
 	}
 
