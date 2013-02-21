@@ -1,5 +1,6 @@
 package com.spiddekauga.voider.game.actors;
 
+import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.utils.OrderedMap;
@@ -18,6 +19,8 @@ public class PickupActorDef extends ActorDef {
 	 */
 	public PickupActorDef() {
 		super(ActorTypes.PICKUP);
+
+		getBodyDef().type = BodyType.StaticBody;
 	}
 
 	/**

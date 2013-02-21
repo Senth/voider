@@ -627,7 +627,11 @@ public abstract class Actor extends Resource implements Json.Serializable, Dispo
 	private void reloadBody() {
 		if (!mSkipRotate) {
 			mBody.setAngularVelocity(mDef.getRotationSpeed());
-			//			mBody.setTransform(mPosition, mDef.getStartAngle());
+			// Only set starting angle if we're not rotating
+			if (mDef.getRotationSpeed() == 0) {
+				mBody.setTransform(mPosition, mDef.getStartAngle());
+			}
+			mBody.setType(mDef.getBodyDef().type);
 		}
 
 		mBodyUpdateTime = GameTime.getTotalGlobalTimeElapsed();

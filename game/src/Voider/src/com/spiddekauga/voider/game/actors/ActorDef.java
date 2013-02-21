@@ -981,9 +981,9 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	}
 
 	/** Time when the fixture was changed last time */
-	private float mFixtureChangeTime = 0;
+	protected float mFixtureChangeTime = 0;
 	/** When the body was changed last time */
-	private float mBodyChangeTime = 0;
+	protected float mBodyChangeTime = 0;
 	/** Defines the mass, shape, etc. */
 	private ArrayList<FixtureDef> mFixtureDefs = new ArrayList<FixtureDef>();
 	/** Maximum life of the actor, usually starting amount of life */

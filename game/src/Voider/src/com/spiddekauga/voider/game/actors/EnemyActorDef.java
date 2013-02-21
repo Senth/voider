@@ -3,6 +3,7 @@ package com.spiddekauga.voider.game.actors;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.utils.OrderedMap;
+import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.utils.Json;
 import com.spiddekauga.voider.Config.Editor.Enemy;
 import com.spiddekauga.voider.game.WeaponDef;
@@ -32,6 +33,19 @@ public class EnemyActorDef extends ActorDef {
 	 */
 	public void setMovementType(MovementTypes movementType) {
 		mMovementType = movementType;
+
+		switch (mMovementType) {
+		case PATH:
+		case AI:
+			getBodyDef().type = BodyType.KinematicBody;
+			break;
+
+		case STATIONARY:
+			getBodyDef().type = BodyType.StaticBody;
+			break;
+		}
+
+		mBodyChangeTime = GameTime.getTotalGlobalTimeElapsed();
 	}
 
 	/**
