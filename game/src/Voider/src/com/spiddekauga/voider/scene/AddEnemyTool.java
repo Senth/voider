@@ -1,13 +1,17 @@
 package com.spiddekauga.voider.scene;
 
-import java.util.ArrayList;
-
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.Pools;
 import com.spiddekauga.utils.Invoker;
-import com.spiddekauga.voider.editor.IActorChangeEditor;
+import com.spiddekauga.voider.editor.LevelEditor;
+import com.spiddekauga.voider.editor.commands.CActorMove;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.EnemyActor;
+import com.spiddekauga.voider.game.actors.EnemyActorDef;
+import com.spiddekauga.voider.game.actors.EnemyActorDef.MovementTypes;
+import com.spiddekauga.voider.game.actors.EnemyGroup;
 
 /**
  * Tool for adding enemies. This also has the ability to create a stack
@@ -27,69 +31,76 @@ public class AddEnemyTool extends AddActorTool {
 	 * @param invoker used for undo/redo actions
 	 * @param editor will be called when actors are added/removed
 	 */
-	public AddEnemyTool(Camera camera, World world, Invoker invoker, IActorChangeEditor editor) {
+	public AddEnemyTool(Camera camera, World world, Invoker invoker, LevelEditor editor) {
 		super(camera, world, EnemyActor.class, invoker, true, editor);
-		// TODO Auto-generated constructor stub
+		mLevelEditor = editor;
 	}
 
-	/**
-	 * Sets the number of duplicates of the currently selected actor
-	 * @param cActors number of duplicates of the currently selected actor
-	 */
-	public void setDuplicatesOfSelected(int cActors) {
-
-	}
-
-	/**
-	 * @return number of duplicates of the currently selected actor
-	 */
-	public int getDuplicatesOfSelected() {
-		return mDuplicates.size();
-	}
-
-	/**
-	 * Sets the duplicate trigger delay of the selected actor.
-	 * @param float seconds delay between each actor.
-	 */
-	public void setDuplicateTriggerDelay(int delay) {
-
-	}
-
-	/**
-	 * @return seconds of duplicate trigger delay between each actors. -1
-	 * if no enemy is selected, or only one duplicate exist.
-	 */
-	public int getDuplicateTriggerDelay() {
-		if (mDuplicates.size() > 1) {
-			// TODO get the delay of the group
-			return -1;
-		} else {
-			return -1;
-		}
-	}
 
 	@Override
 	public void setSelectedActor(Actor selectedActor) {
 		super.setSelectedActor(selectedActor);
 
-		// TODO get the other actors in the group
-	}
-
-	@Override
-	protected void down() {
-		// TODO
+		if (selectedActor instanceof EnemyActor) {
+			mEnemyGroup = ((EnemyActor) selectedActor).getEnemyGroup();
+		}
 	}
 
 	@Override
 	protected void dragged() {
-		// TODO
+		switch (mState) {
+		case ADD:
+		case MOVE:
+			if (mMovingActor != null) {
+				if (mMovingActor.getDef(EnemyActorDef.class).getMovementType() == MovementTypes.PATH) {
+					/** @todo snap to nearby path if one exist */
+				} else {
+					Vector2 newPosition = getNewMovePosition();
+					mMovingActor.setPosition(newPosition);
+					Pools.free(newPosition);
+				}
+			}
+			break;
+
+		case SELECT:
+		case REMOVE:
+			// Does nothing
+			break;
+		}
 	}
 
 	@Override
 	protected void up() {
-		// TODO
+		boolean chained = false;
+		switch (mState) {
+		case ADD:
+			chained = true;
+		case MOVE:
+			if (mMovingActor != null) {
+				// Reset actor to old position
+				mMovingActor.setPosition(mActorOrigin);
+
+				if (mSelectedSinceUp) {
+					chained = true;
+				}
+
+				if (mMovingActor.getDef(EnemyActorDef.class).getMovementType() == MovementTypes.PATH) {
+					/** @todo snap to nearby path if one exist */
+				} else {
+					Vector2 newPosition = getNewMovePosition();
+					mInvoker.execute(new CActorMove(mMovingActor, newPosition, mEditor), chained);
+					Pools.free(newPosition);
+				}
+				mMovingActor = null;
+			}
+
+		default:
+			break;
+		}
 	}
 
-	/** TODO change to enemy group All the duplicates (including original actor) */
-	protected ArrayList<EnemyActor> mDuplicates = new ArrayList<EnemyActor>();
+	/** Current enemy group */
+	protected EnemyGroup mEnemyGroup = null;
+	/** Level editor */
+	protected LevelEditor mLevelEditor;
 }

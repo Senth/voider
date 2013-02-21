@@ -25,6 +25,7 @@ import com.spiddekauga.voider.resources.ResourceSaver;
 import com.spiddekauga.voider.resources.UndefinedResourceTypeException;
 import com.spiddekauga.voider.scene.ActorTool;
 import com.spiddekauga.voider.scene.AddActorTool;
+import com.spiddekauga.voider.scene.AddEnemyTool;
 import com.spiddekauga.voider.scene.DrawActorTool;
 import com.spiddekauga.voider.scene.LoadingScene;
 import com.spiddekauga.voider.scene.Scene;
@@ -55,6 +56,8 @@ public class LevelEditor extends WorldScene implements IActorChangeEditor, IEdit
 		mTouchTools[Tools.STATIC_TERRAIN.ordinal()] = terrainTool ;
 		AddActorTool pickupTool = new AddActorTool(mCamera, mWorld, PickupActor.class, mInvoker, true, this);
 		mTouchTools[Tools.PICKUP.ordinal()] = pickupTool;
+		AddEnemyTool enemyTool = new AddEnemyTool(mCamera, mWorld, mInvoker, this);
+		mTouchTools[Tools.ENEMY.ordinal()] = enemyTool;
 
 		switchTool(Tools.STATIC_TERRAIN);
 	}
@@ -153,6 +156,7 @@ public class LevelEditor extends WorldScene implements IActorChangeEditor, IEdit
 		if (outcome == Outcomes.LOADING_SUCCEEDED) {
 			if (!mGui.isInitialized()) {
 				mGui.initGui();
+				mGui.resetValues();
 			}
 
 			// Loading a level
@@ -292,19 +296,8 @@ public class LevelEditor extends WorldScene implements IActorChangeEditor, IEdit
 	void switchTool(Tools tool) {
 		// Remove old tool
 		if (mToolType != null) {
-			switch (mToolType) {
-			case PICKUP:
-				mInputMultiplexer.removeProcessor(mTouchTools[Tools.PICKUP.ordinal()]);
-				break;
-
-			case STATIC_TERRAIN:
-				mInputMultiplexer.removeProcessor(mTouchTools[Tools.STATIC_TERRAIN.ordinal()]);
-				((DrawActorTool)mTouchTools[Tools.STATIC_TERRAIN.ordinal()]).deactivate();
-				break;
-
-			default:
-				break;
-			}
+			mInputMultiplexer.removeProcessor(mTouchTools[mToolType.ordinal()]);
+			mTouchTools[mToolType.ordinal()].deactivate();
 		}
 
 		// Set current tool
@@ -312,20 +305,8 @@ public class LevelEditor extends WorldScene implements IActorChangeEditor, IEdit
 
 		// add new tool
 		if (mToolType != null) {
-			switch (mToolType) {
-			case PICKUP:
-				mInputMultiplexer.addProcessor(mTouchTools[Tools.PICKUP.ordinal()]);
-				break;
-
-			case STATIC_TERRAIN:
-				mInputMultiplexer.addProcessor(mTouchTools[Tools.STATIC_TERRAIN.ordinal()]);
-				((DrawActorTool)mTouchTools[Tools.STATIC_TERRAIN.ordinal()]).activate();
-				break;
-
-			default:
-				Gdx.app.error("LevelEditor", "Switched to an unknown tool!");
-				break;
-			}
+			mInputMultiplexer.addProcessor(mTouchTools[mToolType.ordinal()]);
+			mTouchTools[mToolType.ordinal()].activate();
 		}
 	}
 
@@ -394,6 +375,13 @@ public class LevelEditor extends WorldScene implements IActorChangeEditor, IEdit
 	}
 
 	/**
+	 * @return current active pickup tool state
+	 */
+	AddActorTool.States getPickupState() {
+		return ((AddActorTool)mTouchTools[Tools.PICKUP.ordinal()]).getState();
+	}
+
+	/**
 	 * Sets the current active static terrain tool
 	 * @param state current active static terrain tool
 	 */
@@ -403,10 +391,26 @@ public class LevelEditor extends WorldScene implements IActorChangeEditor, IEdit
 	}
 
 	/**
-	 * @return current active static terrain tool
+	 * @return current active static terrain tool state
 	 */
 	DrawActorTool.States getStaticTerrainState() {
 		return ((DrawActorTool)mTouchTools[Tools.STATIC_TERRAIN.ordinal()]).getState();
+	}
+
+	/**
+	 * Sets the active enemy tool state
+	 * @param state current active enemy tool state
+	 */
+	void setEnemyState(AddActorTool.States state) {
+		AddEnemyTool addEnemyTool = (AddEnemyTool) mTouchTools[Tools.ENEMY.ordinal()];
+		addEnemyTool.setState(state);
+	}
+
+	/**
+	 * @return current active enemy tool state
+	 */
+	AddActorTool.States getEnemyState() {
+		return ((AddActorTool)mTouchTools[Tools.ENEMY.ordinal()]).getState();
 	}
 
 	/**
@@ -427,6 +431,13 @@ public class LevelEditor extends WorldScene implements IActorChangeEditor, IEdit
 
 		Scene scene = new SelectDefScene(EnemyActorDef.class, false, true);
 		SceneSwitcher.switchTo(scene);
+	}
+
+	/**
+	 * @return the current active tool of the level editor
+	 */
+	Tools getSelectedTool() {
+		return mToolType;
 	}
 
 	/**

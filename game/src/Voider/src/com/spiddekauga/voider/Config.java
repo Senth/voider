@@ -415,6 +415,8 @@ public class Config {
 	/** Revision of the game, as in code. This allows files of older revisions
 	 * to be loaded into new revisions */
 	public final static int REVISION = 1;
+	/** If debugging tests shall be activate */
+	public final static boolean DEBUG_TESTS = true;
 
 	/**
 	 * Private constructor so that no instance can be created

@@ -60,6 +60,7 @@ public class GameScene extends WorldScene {
 	public void setLevel(Level level) {
 		mLevel = level;
 		mLevel.setPlayer(mPlayerActor);
+		mLevel.bindTriggers();
 
 		createBorder();
 	}
@@ -75,14 +76,18 @@ public class GameScene extends WorldScene {
 
 	@Override
 	public void onActivate(Outcomes outcome, String message) {
+		Actor.setEditorActive(false);
+		Actor.setPlayerActor(mPlayerActor);
+		Actor.setWorld(mWorld);
+
 		/** @TODO loading done */
 		if (outcome == Outcomes.LOADING_SUCCEEDED) {
 			mGui.initGui();
 
 			if (mLevelToLoad != null) {
 				try {
-					mLevel = ResourceCacheFacade.get(mLevelToLoad.getLevelId(), Level.class);
-					mLevel.bindTriggers();
+					Level level = ResourceCacheFacade.get(mLevelToLoad.getLevelId(), Level.class);
+					setLevel(level);
 				} catch (UndefinedResourceTypeException e) {
 					Gdx.app.error("GameScene", e.toString());
 				}

@@ -31,10 +31,7 @@ public class EnemyActor extends Actor implements ITriggerListener {
 	 * Default constructor
 	 */
 	public EnemyActor() {
-		super(new EnemyActorDef());
-
-		// Set weapon
-		resetWeapon();
+		// Does nothing
 	}
 
 	@Override
@@ -94,6 +91,10 @@ public class EnemyActor extends Actor implements ITriggerListener {
 	 */
 	public void addTrigger(TriggerInfo triggerInfo) {
 		mTriggerInfos.add(triggerInfo);
+
+		if (mGroupLeader && mGroup != null) {
+			mGroup.addTrigger(triggerInfo);
+		}
 	}
 
 	/**
@@ -102,6 +103,10 @@ public class EnemyActor extends Actor implements ITriggerListener {
 	 */
 	public void removeTrigger(TriggerInfo triggerInfo) {
 		mTriggerInfos.remove(triggerInfo);
+
+		if (mGroupLeader && mGroup != null) {
+			mGroup.removeTrigger(triggerInfo);
+		}
 	}
 
 	/**
@@ -115,6 +120,16 @@ public class EnemyActor extends Actor implements ITriggerListener {
 			velocity.nor();
 			velocity.mul(speed);
 			getBody().setLinearVelocity(velocity);
+		}
+	}
+
+	@Override
+	public void setPosition(Vector2 position) {
+		super.setPosition(position);
+
+		// Set position of other actors in the group
+		if (mGroupLeader && mGroup != null) {
+
 		}
 	}
 
@@ -136,6 +151,11 @@ public class EnemyActor extends Actor implements ITriggerListener {
 		if (enemyDef.hasWeapon()) {
 			json.writeValue("mWeapon", mWeapon);
 			json.writeValue("mShootAngle", mShootAngle);
+		}
+
+		json.writeValue("mGroupId", mGroupId);
+		if (mGroupId != null) {
+			json.writeValue("mGroupLeader", mGroupLeader);
 		}
 
 		if (enemyDef.getMovementType() == MovementTypes.AI) {
@@ -237,6 +257,21 @@ public class EnemyActor extends Actor implements ITriggerListener {
 		return mGroupId;
 	}
 
+	/**
+	 * Sets if the enemy is a group leader or not
+	 * @param leader set to true to make this a leader
+	 */
+	public void setGroupLeader(boolean leader) {
+		mGroupLeader = leader;
+	}
+
+	/**
+	 * @return true if the enemy is a group leader
+	 */
+	public boolean isGroupLeader() {
+		return mGroupLeader;
+	}
+
 	@Override
 	public ArrayList<UUID> getReferences() {
 		ArrayList<UUID> references = new ArrayList<UUID>();
@@ -270,6 +305,9 @@ public class EnemyActor extends Actor implements ITriggerListener {
 		// Set variables that aren't copied by default
 		copy.mPath = mPath;
 		copy.mGroup = mGroup;
+
+		// Always make copy not a group leader
+		copy.mGroupLeader = false;
 
 		return (ResourceType) copy;
 	}
@@ -702,6 +740,8 @@ public class EnemyActor extends Actor implements ITriggerListener {
 	private UUID mGroupId = null;
 	/** Group of the enemy, null if the enemy doesn't belong to a group */
 	private EnemyGroup mGroup = null;
+	/** If this enemy is the first in the group */
+	private boolean mGroupLeader = false;
 
 	// AI MOVEMENT
 	/** Next random move time */

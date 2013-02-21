@@ -24,6 +24,7 @@ import com.spiddekauga.voider.editor.commands.CEditorSave;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceNames;
 import com.spiddekauga.voider.scene.AddActorTool;
+import com.spiddekauga.voider.scene.AddActorTool.States;
 import com.spiddekauga.voider.scene.DrawActorTool;
 import com.spiddekauga.voider.scene.Gui;
 
@@ -61,6 +62,91 @@ class LevelEditorGui extends Gui {
 		mMainTable.invalidate();
 
 		switchTool(mStaticTerrainTable);
+	}
+
+	@Override
+	public void resetValues() {
+		// Main menu
+		switch (mLevelEditor.getSelectedTool()) {
+		case ENEMY:
+			mWidgets.menu.enemy.setChecked(true);
+			mWidgets.enemyMenu.enemy.setChecked(true);
+			break;
+
+		case PATH:
+			mWidgets.menu.enemy.setChecked(true);
+			mWidgets.enemyMenu.path.setChecked(true);
+			break;
+
+			// TODO add trigger
+
+		case PICKUP:
+			mWidgets.menu.pickup.setChecked(true);
+			break;
+
+		case STATIC_TERRAIN:
+			mWidgets.menu.terrain.setChecked(true);
+			break;
+		}
+
+
+		// Enemy
+		switch (mLevelEditor.getEnemyState()) {
+		case ADD:
+			mWidgets.enemy.add.setChecked(true);
+			break;
+
+		case SELECT:
+			mWidgets.enemy.select.setChecked(true);
+			break;
+
+		case MOVE:
+			mWidgets.enemy.move.setChecked(true);
+			break;
+
+		case REMOVE:
+			mWidgets.enemy.remove.setChecked(true);
+			break;
+		}
+
+
+		// Pickup
+		switch (mLevelEditor.getPickupState()) {
+		case ADD:
+			mWidgets.pickup.add.setChecked(true);
+			break;
+
+		case SELECT:
+			// Does nothing
+			break;
+
+		case MOVE:
+			mWidgets.pickup.move.setChecked(true);
+			break;
+
+		case REMOVE:
+			mWidgets.pickup.remove.setChecked(true);
+			break;
+		}
+
+		// Terrain
+		switch (mLevelEditor.getStaticTerrainState()) {
+		case ADD_CORNER:
+			mWidgets.terrain.add.setChecked(true);
+			break;
+
+		case MOVE:
+			mWidgets.terrain.move.setChecked(true);
+			break;
+
+		case REMOVE:
+			mWidgets.terrain.remove.setChecked(true);
+			break;
+
+		case SET_CENTER:
+			// Does nothing
+			break;
+		}
 	}
 
 	/**
@@ -203,6 +289,7 @@ class LevelEditorGui extends Gui {
 
 		mMenuTable.row();
 		button = new TextButton("Static Terrain", textToogleStyle);
+		mWidgets.menu.terrain = button;
 		new CheckedListener(button) {
 			@Override
 			public void onChange(boolean checked) {
@@ -217,6 +304,7 @@ class LevelEditorGui extends Gui {
 
 		mMenuTable.row();
 		button = new TextButton("Pickup", textToogleStyle);
+		mWidgets.menu.pickup = button;
 		new CheckedListener(button) {
 			@Override
 			public void onChange(boolean checked) {
@@ -231,6 +319,7 @@ class LevelEditorGui extends Gui {
 
 		mMenuTable.row();
 		button = new TextButton("Enemy", textToogleStyle);
+		mWidgets.menu.enemy = button;
 		new CheckedListener(button) {
 			@Override
 			protected void onChange(boolean checked) {
@@ -258,19 +347,21 @@ class LevelEditorGui extends Gui {
 		mEnemyTable.row();
 		ButtonGroup buttonGroup = new ButtonGroup();
 		Button button = new TextButton("Enemy", toggleStyle);
+		mWidgets.enemyMenu.enemy = button;
 		buttonGroup.add(button);
 		mEnemyTable.add(button);
 		new CheckedListener(button) {
 			@Override
 			protected void onChange(boolean checked) {
 				// TODO set tool as enemy
-				mLevelEditor.switchTool(null);
+				mLevelEditor.switchTool(Tools.ENEMY);
 			}
 		};
 		HideListener enemyHider = new HideListener(button, true);
 
 		mEnemyTable.row();
 		button = new TextButton("Path", toggleStyle);
+		mWidgets.enemyMenu.path = button;
 		buttonGroup.add(button);
 		mEnemyTable.add(button);
 		new CheckedListener(button) {
@@ -284,6 +375,7 @@ class LevelEditorGui extends Gui {
 
 		mEnemyTable.row();
 		button = new TextButton("Trigger", toggleStyle);
+		mWidgets.enemyMenu.trigger = button;
 		buttonGroup.add(button);
 		mEnemyTable.add(button);
 		new CheckedListener(button) {
@@ -299,25 +391,31 @@ class LevelEditorGui extends Gui {
 		mEnemyTable.row();
 		buttonGroup = new ButtonGroup();
 		button = new TextButton("Select", toggleStyle);
+		mWidgets.enemy.select = button;
 		enemyHider.addToggleActor(button);
 		buttonGroup.add(button);
 		mEnemyTable.add(button);
 		new CheckedListener(button) {
 			@Override
 			protected void onChange(boolean checked) {
-				// TODO
+				if (checked) {
+					mLevelEditor.setEnemyState(States.SELECT);
+				}
 			}
 		};
 
 		mEnemyTable.row();
 		button = new TextButton("Add", toggleStyle);
+		mWidgets.enemy.add = button;
 		enemyHider.addToggleActor(button);
 		buttonGroup.add(button);
 		mEnemyTable.add(button);
 		new CheckedListener(button) {
 			@Override
 			protected void onChange(boolean checked) {
-				// TODO
+				if (checked) {
+					mLevelEditor.setEnemyState(States.ADD);
+				}
 			}
 		};
 		HideListener enemyAddHider = new HideListener(button, true);
@@ -326,25 +424,31 @@ class LevelEditorGui extends Gui {
 
 		mEnemyTable.row();
 		button = new TextButton("Remove", toggleStyle);
+		mWidgets.enemy.remove = button;
 		enemyHider.addToggleActor(button);
 		buttonGroup.add(button);
 		mEnemyTable.add(button);
 		new CheckedListener(button) {
 			@Override
 			protected void onChange(boolean checked) {
-				// TODO
+				if (checked) {
+					mLevelEditor.setEnemyState(States.REMOVE);
+				}
 			}
 		};
 
 		mEnemyTable.row();
 		button = new TextButton("Move", toggleStyle);
+		mWidgets.enemy.move = button;
 		enemyHider.addToggleActor(button);
 		buttonGroup.add(button);
 		mEnemyTable.add(button);
 		new CheckedListener(button) {
 			@Override
 			protected void onChange(boolean checked) {
-				// TODO
+				if (checked) {
+					mLevelEditor.setEnemyState(States.MOVE);
+				}
 			}
 		};
 
@@ -375,6 +479,7 @@ class LevelEditorGui extends Gui {
 
 		ButtonGroup toggleGroup = new ButtonGroup();
 		Button button = new ImageButton(addStyle);
+		mWidgets.pickup.add = button;
 		new CheckedListener(button) {
 			@Override
 			public void onChange(boolean checked) {
@@ -389,6 +494,7 @@ class LevelEditorGui extends Gui {
 
 		mPickupTable.row();
 		button = new TextButton("Remove", toggleStyle);
+		mWidgets.pickup.remove = button;
 		new CheckedListener(button) {
 			@Override
 			public void onChange(boolean checked) {
@@ -402,6 +508,7 @@ class LevelEditorGui extends Gui {
 
 		mPickupTable.row();
 		button = new TextButton("Move", toggleStyle);
+		mWidgets.pickup.move = button;
 		new CheckedListener(button) {
 			@Override
 			public void onChange(boolean checked) {
@@ -442,6 +549,7 @@ class LevelEditorGui extends Gui {
 
 		ButtonGroup toggleGroup = new ButtonGroup();
 		Button button = new ImageButton(imageStyle);
+		mWidgets.terrain.add = button;
 		new CheckedListener(button) {
 			@Override
 			public void onChange(boolean checked) {
@@ -455,6 +563,7 @@ class LevelEditorGui extends Gui {
 		mStaticTerrainTable.row();
 
 		button = new TextButton("Remove", textStyle);
+		mWidgets.terrain.remove = button;
 		new CheckedListener(button) {
 			@Override
 			public void onChange(boolean checked) {
@@ -468,6 +577,7 @@ class LevelEditorGui extends Gui {
 		mStaticTerrainTable.row();
 
 		button = new TextButton("Move", textStyle);
+		mWidgets.terrain.move = button;
 		new CheckedListener(button) {
 			@Override
 			public void onChange(boolean checked) {
@@ -508,4 +618,50 @@ class LevelEditorGui extends Gui {
 
 	/** Level editor the GUI will act on */
 	private LevelEditor mLevelEditor = null;
+	/** Inner widgets */
+	private InnerWidgets mWidgets = new InnerWidgets();
+
+
+	/**
+	 * Container for inner widgets
+	 */
+	@SuppressWarnings("javadoc")
+	private static class InnerWidgets {
+		MenuWidgets menu = new MenuWidgets();
+		EnemyMenuWidget enemyMenu = new EnemyMenuWidget();
+		EnemyWidgets enemy = new EnemyWidgets();
+		PickupWidgets pickup = new PickupWidgets();
+		TerrainWidgets terrain = new TerrainWidgets();
+
+		static class MenuWidgets {
+			Button enemy = null;
+			Button pickup = null;
+			Button terrain = null;
+		}
+
+		static class EnemyMenuWidget {
+			Button enemy = null;
+			Button path = null;
+			Button trigger = null;
+		}
+
+		static class EnemyWidgets {
+			Button select = null;
+			Button add = null;
+			Button remove = null;
+			Button move = null;
+		}
+
+		static class PickupWidgets {
+			Button add = null;
+			Button remove = null;
+			Button move = null;
+		}
+
+		static class TerrainWidgets {
+			Button add = null;
+			Button remove = null;
+			Button move = null;
+		}
+	}
 }

@@ -105,8 +105,11 @@ public class DrawActorTool extends ActorTool implements ISelectTool {
 	 * Activates the tool. I.e. it will recreate any temporary bodies that were
 	 * destroyed.
 	 */
+	@Override
 	public void activate() {
 		if (mActor != null) {
+			/** @todo set actor to be draw differently */
+
 			if (mOnlyOneActor) {
 				mActor.createBody();
 			}
@@ -132,8 +135,11 @@ public class DrawActorTool extends ActorTool implements ISelectTool {
 	 * Deactivates the tool. I.e. it will remove the temporary bodies that has
 	 * been created.
 	 */
+	@Override
 	public void deactivate() {
 		if (mActor != null) {
+			/** @todo set actor to be draw differently */
+
 			if (mOnlyOneActor) {
 				mActor.destroyBody();
 			}

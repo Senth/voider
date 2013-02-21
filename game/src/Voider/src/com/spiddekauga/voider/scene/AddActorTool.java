@@ -80,7 +80,7 @@ public class AddActorTool extends ActorTool implements ISelectTool {
 
 	@Override
 	public void setSelectedActor(Actor selectedActor) {
-		/** @todo set actor as deselected */
+		deactivate();
 
 		for (ISelectListener selectListener : mSelectListeners) {
 			selectListener.onActorSelect(mSelectedActor, selectedActor);
@@ -89,7 +89,23 @@ public class AddActorTool extends ActorTool implements ISelectTool {
 		mSelectedActor = selectedActor;
 		mSelectedSinceUp = true;
 
-		/** @todo set actor as selected */
+		activate();
+	}
+
+	/**
+	 * Deactivates the tool, i.e. it will make any selected actor unselected
+	 */
+	@Override
+	public void deactivate() {
+		/** @todo set actor as deselected, will draw differently */
+	}
+
+	/**
+	 * Activates the tool i.e. it will make any selected actor selected
+	 */
+	@Override
+	public void activate() {
+		/** @todo set actor as selected, will draw differently */
 	}
 
 	@Override
@@ -132,11 +148,14 @@ public class AddActorTool extends ActorTool implements ISelectTool {
 
 			if (addActor) {
 				Actor actor = newActor();
-				actor.setPosition(mTouchOrigin);
-				mInvoker.execute(new CActorAdd(actor, mEditor), mSelectedSinceUp);
-				mMovingActor = actor;
-				mActorOrigin.set(mTouchOrigin);
-				mInvoker.execute(new CActorSelect(actor, this), true);
+				// If didn't create actor definition itself, skip...
+				if (actor.getDef() != null) {
+					actor.setPosition(mTouchOrigin);
+					mInvoker.execute(new CActorAdd(actor, mEditor), mSelectedSinceUp);
+					mMovingActor = actor;
+					mActorOrigin.set(mTouchOrigin);
+					mInvoker.execute(new CActorSelect(actor, this), true);
+				}
 			}
 			break;
 
@@ -227,7 +246,7 @@ public class AddActorTool extends ActorTool implements ISelectTool {
 	 * @return new position to move the actor to. Don't forget to free
 	 * this position using Pools.free(newPos)
 	 */
-	private Vector2 getNewMovePosition() {
+	protected Vector2 getNewMovePosition() {
 		// Get diff movement
 		Vector2 newPosition = Pools.obtain(Vector2.class);
 		newPosition.set(mTouchCurrent).sub(mTouchOrigin);
@@ -242,7 +261,7 @@ public class AddActorTool extends ActorTool implements ISelectTool {
 	 * Selects the currently picked actor if one exist
 	 * @param chained set to true if the command shall be chained
 	 */
-	private void selectActor(boolean chained) {
+	protected void selectActor(boolean chained) {
 		Actor actorToSelect = null;
 		if (mHitBody != null) {
 			if (mHitBody.getUserData() instanceof Actor) {
@@ -272,9 +291,9 @@ public class AddActorTool extends ActorTool implements ISelectTool {
 	protected boolean mSelectedSinceUp = false;
 	/** Selected actor */
 	protected Actor mSelectedActor = null;
-
 	/** Current state of the tool */
-	private States mState = States.ADD;
+	protected States mState = States.ADD;
+
 	/** Select listeners */
 	private ArrayList<ISelectListener> mSelectListeners = new ArrayList<ISelectListener>();
 }

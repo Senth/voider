@@ -77,6 +77,23 @@ public abstract class TouchTool extends InputAdapter {
 	}
 
 	/**
+	 * Activates the tool. This method does nothing by itself except when
+	 * overridden. Usually this will make selected actors add extra corners and/or
+	 * draw them differently
+	 */
+	public void activate() {
+		// Does nothing
+	}
+
+	/**
+	 * Deactivates the tool. This method does nothing by itself except when overridden.
+	 * Usually this will make selected actors to be drawn regularly again
+	 */
+	public void deactivate() {
+		// Does nothing
+	}
+
+	/**
 	 * Clears the current tool to the initial state
 	 */
 	public void clear() {

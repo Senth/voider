@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.OrderedMap;
 import com.spiddekauga.utils.Collections;
 import com.spiddekauga.utils.Json;
+import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.TriggerAction.Actions;
 import com.spiddekauga.voider.game.TriggerInfo;
 import com.spiddekauga.voider.resources.IResource;
@@ -40,6 +42,7 @@ public class EnemyGroup extends Resource {
 			mEnemyIds.add(enemyActor.getId());
 
 			enemyActor.setEnemyGroup(this);
+			enemyActor.setGroupLeader(true);
 		} else {
 			Gdx.app.error("EnemyGroup",	"Group is not empty when setOriginalEnemy() was called");
 		}
@@ -145,18 +148,95 @@ public class EnemyGroup extends Resource {
 	}
 
 	/**
-	 * Updates the trigger information in the other actors (depending on the first actor)
+	 * Updates the specified TriggerInfo in the enemies, but not the leader
+	 * @param leaderTrigger trigger of the leader which values to copy from
 	 */
-	void updateTriggerInfos() {
-		TriggerInfo originalTrigger = getTriggerActivate(mEnemies.get(0));
+	void updateTrigger(TriggerInfo leaderTrigger) {
+		for (int i = 1; i < mEnemies.size(); ++i) {
+			TriggerInfo enemyTrigger = getTriggerInfoFromEnemy(mEnemies.get(i), leaderTrigger);
 
-		// Update the other enemy triggers, create if must
-		if (originalTrigger != null) {
+			// If action is to activate, this is a special case where the delay is
+			// multiplied by the group delay
+			enemyTrigger.action = leaderTrigger.action;
+			enemyTrigger.triggerId = leaderTrigger.triggerId;
 
+			if (leaderTrigger.action == Actions.ACTOR_ACTIVATE) {
+				enemyTrigger.delay = leaderTrigger.delay + mTriggerDelay * i;
+			} else {
+				enemyTrigger.action = leaderTrigger.action;
+			}
 		}
-		// None exist, remove the other ones
-		else {
 
+		if (Config.DEBUG_TESTS) {
+			int leaderSize = mEnemies.get(0).getTriggerInfos().size();
+
+			for (int i = 1; i < mEnemies.size(); ++i) {
+				if (mEnemies.get(i).getTriggerInfos().size() != leaderSize) {
+					Gdx.app.error("EnemyGroup", "Not the same amount of triggers in the group!");
+				}
+			}
+		}
+	}
+
+	/**
+	 * Sets the position of the other enemies, not the leader
+	 * @param leaderPosition position of the leader
+	 */
+	void setPosition(Vector2 leaderPosition) {
+		for (int i = 1; i < mEnemies.size(); ++i) {
+			mEnemies.get(i).setPosition(leaderPosition);
+		}
+	}
+
+	/**
+	 * Adds another Trigger to the other enemies, not the leader
+	 * @param leaderTrigger trigger of the leader to add in the other enemies
+	 */
+	void addTrigger(TriggerInfo leaderTrigger) {
+		for (int i = 1; i < mEnemies.size(); ++i) {
+			TriggerInfo copyTriggerInfo = new TriggerInfo();
+			copyTriggerInfo.action = leaderTrigger.action;
+			copyTriggerInfo.triggerId = leaderTrigger.triggerId;
+
+			if (leaderTrigger.action == Actions.ACTOR_ACTIVATE) {
+				copyTriggerInfo.delay = leaderTrigger.delay + mTriggerDelay * i;
+			} else {
+				copyTriggerInfo.delay = leaderTrigger.delay;
+			}
+
+			mEnemies.get(i).addTrigger(copyTriggerInfo);
+		}
+
+		if (Config.DEBUG_TESTS) {
+			int leaderSize = mEnemies.get(0).getTriggerInfos().size();
+
+			for (int i = 1; i < mEnemies.size(); ++i) {
+				if (mEnemies.get(i).getTriggerInfos().size() != leaderSize) {
+					Gdx.app.error("EnemyGroup", "Not the same amount of triggers in the group!");
+				}
+			}
+		}
+	}
+
+	/**
+	 * Removes a Trigger from the other enemies, not the leader
+	 * @param leaderTrigger trigger of the leader to remove in the other enemies
+	 */
+	void removeTrigger(TriggerInfo leaderTrigger) {
+		for (int i = 1; i < mEnemies.size(); ++i) {
+			TriggerInfo enemyTrigger = getTriggerInfoFromEnemy(mEnemies.get(i), leaderTrigger);
+			mEnemies.get(i).removeTrigger(enemyTrigger);
+		}
+
+
+		if (Config.DEBUG_TESTS) {
+			int leaderSize = mEnemies.get(0).getTriggerInfos().size();
+
+			for (int i = 1; i < mEnemies.size(); ++i) {
+				if (mEnemies.get(i).getTriggerInfos().size() != leaderSize) {
+					Gdx.app.error("EnemyGroup", "Not the same amount of triggers in the group!");
+				}
+			}
 		}
 	}
 
@@ -175,6 +255,25 @@ public class EnemyGroup extends Resource {
 
 		return null;
 	}
+
+	/**
+	 * Gets the specified enemy's trigger for the specified trigger info.
+	 * I.e. this will check in all the enmeny triggers until it finds the specified
+	 * trigger.
+	 * @param enemy the enemy to find the TriggerInfo in.
+	 * @param searchTriggerInfo the trigger info to search for in the specified enemy
+	 * @return TriggerInfo that have the same triggerId and action as the specified trigger.
+	 * Null if the trigger info wasn't found inside the enemy.
+	 */
+	private TriggerInfo getTriggerInfoFromEnemy(EnemyActor enemy, TriggerInfo searchTriggerInfo) {
+		for (TriggerInfo enemyTriggerInfo : enemy.getTriggerInfos()) {
+			if (enemyTriggerInfo.sameTriggerAndAction(searchTriggerInfo)) {
+				return enemyTriggerInfo;
+			}
+		}
+		return null;
+	}
+
 
 	/** All the enemies */
 	private ArrayList<EnemyActor> mEnemies = new ArrayList<EnemyActor>();
