@@ -322,6 +322,14 @@ public abstract class Actor extends Resource implements Json.Serializable, Dispo
 	}
 
 	/**
+	 * Sets the level speed
+	 * @param levelSpeed current speed of the level
+	 */
+	public static void setLevelSpeed(float levelSpeed) {
+		mLevelSpeed = levelSpeed;
+	}
+
+	/**
 	 * @return the body of the actor
 	 */
 	public Body getBody() {
@@ -674,4 +682,6 @@ public abstract class Actor extends Resource implements Json.Serializable, Dispo
 	protected static boolean mEditorActive = false;
 	/** The player of this game, for derived actor to have easy access */
 	protected static PlayerActor mPlayerActor = null;
+	/** Current level speed */
+	protected static float mLevelSpeed = 0;
 }

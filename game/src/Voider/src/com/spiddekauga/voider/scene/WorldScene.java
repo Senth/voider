@@ -87,7 +87,15 @@ public abstract class WorldScene extends Scene {
 		// Decrease scale of width depending on height scaled
 		float heightScale = Config.Graphics.HEIGHT / Gdx.graphics.getHeight();
 		width *= heightScale;
-		mCamera = new OrthographicCamera(width , Config.Graphics.HEIGHT * Config.Graphics.WORLD_SCALE);
+		float height = Config.Graphics.HEIGHT * Config.Graphics.WORLD_SCALE;
+
+		if (mCamera != null) {
+			mCamera.viewportHeight = height;
+			mCamera.viewportWidth = width;
+			mCamera.update();
+		} else {
+			mCamera = new OrthographicCamera(width , height);
+		}
 	}
 
 	/**

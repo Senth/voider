@@ -63,6 +63,8 @@ public class GameScene extends WorldScene {
 		mLevel.bindTriggers();
 
 		createBorder();
+
+		Actor.setLevelSpeed(mLevel.getSpeed());
 	}
 
 	/**
@@ -95,6 +97,12 @@ public class GameScene extends WorldScene {
 		}
 
 		/** @TODO game completed, aborted? */
+	}
+
+	@Override
+	public void onDeactivate() {
+		// Always reset level speed, only game scene uses it
+		Actor.setLevelSpeed(0);
 	}
 
 	/**

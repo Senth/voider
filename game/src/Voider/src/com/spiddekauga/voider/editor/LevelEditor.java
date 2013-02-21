@@ -168,7 +168,6 @@ public class LevelEditor extends WorldScene implements IActorChangeEditor, IEdit
 				} catch (UndefinedResourceTypeException e) {
 					Gdx.app.error("LevelEditor", e.toString());
 				}
-
 			}
 		}
 		else if (outcome == Outcomes.LOADING_FAILED_CORRUPT_FILE) {
@@ -225,6 +224,8 @@ public class LevelEditor extends WorldScene implements IActorChangeEditor, IEdit
 		if (button == 2 || (Gdx.app.getInput().isTouched(0) && Gdx.app.getInput().isTouched(1))) {
 			mScroller.touchDown(x, y);
 			mScrollCameraOrigin.set(mCamera.position.x, mCamera.position.y);
+			return true;
+		} else if (mScroller.isScrolling()) {
 			return true;
 		}
 

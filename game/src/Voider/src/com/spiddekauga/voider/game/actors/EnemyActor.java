@@ -513,7 +513,7 @@ public class EnemyActor extends Actor implements ITriggerListener {
 			if (getDef(EnemyActorDef.class).isMovingRandomly()) {
 				calculateRandomMove(deltaTime);
 			} else {
-				getBody().setLinearVelocity(0, 0);
+				getBody().setLinearVelocity(mLevelSpeed, 0);
 				getBody().setAngularVelocity(0);
 				resetRandomMove();
 			}
@@ -574,6 +574,12 @@ public class EnemyActor extends Actor implements ITriggerListener {
 		Vector2 velocity = Pools.obtain(Vector2.class);
 		velocity.set(targetDirection);
 		velocity.nor().mul(getDef(EnemyActorDef.class).getSpeed());
+
+		// Increase with level speed if AI movement
+		if (getDef(EnemyActorDef.class).getMovementType() == MovementTypes.AI) {
+			velocity.x += mLevelSpeed;
+		}
+
 		getBody().setLinearVelocity(velocity);
 		Pools.free(velocity);
 	}
@@ -586,6 +592,12 @@ public class EnemyActor extends Actor implements ITriggerListener {
 	private void moveToTargetTurning(Vector2 targetDirection, float deltaTime) {
 		Vector2 velocity = Pools.obtain(Vector2.class);
 		velocity.set(getBody().getLinearVelocity());
+
+		// Decrease with level speed if AI movement
+		if (getDef(EnemyActorDef.class).getMovementType() == MovementTypes.AI) {
+			velocity.x -= mLevelSpeed;
+		}
+
 		boolean noVelocity = velocity.len2() == 0;
 
 		// Calculate angle between the vectors
@@ -668,6 +680,11 @@ public class EnemyActor extends Actor implements ITriggerListener {
 			if (turnedTooMuch) {
 				velocity.set(targetDirection);
 				velocity.nor().mul(getDef(EnemyActorDef.class).getSpeed());
+			}
+
+			// Increase with level speed if AI movement
+			if (getDef(EnemyActorDef.class).getMovementType() == MovementTypes.AI) {
+				velocity.x += mLevelSpeed;
 			}
 
 			getBody().setLinearVelocity(velocity);
