@@ -513,7 +513,6 @@ public class LevelEditor extends WorldScene implements IActorChangeEditor, IEdit
 
 					mLevel.removeEnemyGroup(enemyGroup.getId());
 				}
-
 			}
 			// No enemy group, do we create one?
 			else if (cEnemies > 1) {
@@ -528,8 +527,34 @@ public class LevelEditor extends WorldScene implements IActorChangeEditor, IEdit
 				for (EnemyActor addedEnemy : addedEnemies) {
 					mLevel.addActor(addedEnemy);
 				}
+
+				// Set GUI delay value
+				((LevelEditorGui)mGui).setEnemyOptions(enemyGroup.getEnemyCount(), enemyGroup.getSpawnTriggerDelay());
 			}
 		}
+	}
+
+	/**
+	 * @return number of enemies in a group
+	 */
+	int getEnemyCount() {
+		EnemyActor selectedEnemy = (EnemyActor) ((AddEnemyTool)mTouchTools[Tools.ENEMY.ordinal()]).getSelectedActor();
+
+		int cEnemies = 0;
+
+		if (selectedEnemy != null) {
+			EnemyGroup enemyGroup = selectedEnemy.getEnemyGroup();
+
+			if (enemyGroup != null) {
+				cEnemies = enemyGroup.getEnemyCount();
+			}
+			// No group, that means we only have one enemy
+			else {
+				cEnemies = 1;
+			}
+		}
+
+		return cEnemies;
 	}
 
 	/**
@@ -547,6 +572,31 @@ public class LevelEditor extends WorldScene implements IActorChangeEditor, IEdit
 				enemyGroup.setSpawnTriggerDelay(delay);
 			}
 		}
+	}
+
+	/**
+	 * @return spawn delay between actors in the same group, negative value if no group exist
+	 */
+	float getEnemySpawnDelay() {
+		EnemyActor selectedEnemy = (EnemyActor) ((AddEnemyTool)mTouchTools[Tools.ENEMY.ordinal()]).getSelectedActor();
+
+		if (selectedEnemy != null) {
+			EnemyGroup enemyGroup = selectedEnemy.getEnemyGroup();
+
+			// We have an enemy group
+			if (enemyGroup != null) {
+				return enemyGroup.getSpawnTriggerDelay();
+			}
+		}
+
+		return -1;
+	}
+
+	/**
+	 * @return invoker of the level editor
+	 */
+	Invoker getInvoker() {
+		return mInvoker;
 	}
 
 	/**

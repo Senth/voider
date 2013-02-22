@@ -37,21 +37,36 @@ public class Invoker implements Disposable {
 	 * stack if it was successful. Can set the commandn as chained. Chained
 	 * commands will also execute the previous command on an undo(), and if there
 	 * exist a chained command directly after a redo() that will also be redone until
-	 * the next redo isn't a chained command.
+	 * the next redo isn't a chained command. If this command is an instance of
+	 * #ICommandStackable and is the same type of command as the last executed command
+	 * it will combine these two.
 	 * @param command the command to execute
 	 * @param chained true if the command shall be chained
 	 * @return true if the command was executed successfully
 	 */
 	public boolean execute(Command command, boolean chained) {
-		boolean success = command.execute();
-		if (success) {
-			if (chained) {
-				command.setAsChanied();
+		// Same command type and combinable?
+		boolean combined = false;
+		if (command instanceof ICommandCombinable && !mUndoCommands.isEmpty()) {
+			Command lastCommand = mUndoCommands.getFirst();
+			if (command.getClass() == lastCommand.getClass()) {
+				combined = ((ICommandCombinable)lastCommand).combine((ICommandCombinable) command);
 			}
-			mUndoCommands.push(command);
-			disposeRedo();
+		}
 
-			/** @TODO maybe set a limit on 100 undo commands? */
+		boolean success = combined;
+
+		if (!combined) {
+			success = command.execute();
+			if (success) {
+				if (chained) {
+					command.setAsChanied();
+				}
+				mUndoCommands.push(command);
+				disposeRedo();
+
+				/** @TODO maybe set a limit on 100 undo commands? */
+			}
 		}
 
 		return success;

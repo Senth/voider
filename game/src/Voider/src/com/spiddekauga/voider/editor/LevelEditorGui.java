@@ -18,6 +18,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
 import com.spiddekauga.utils.Command;
 import com.spiddekauga.utils.CommandSequence;
+import com.spiddekauga.utils.Invoker;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
@@ -32,6 +33,7 @@ import com.spiddekauga.voider.editor.LevelEditor.Tools;
 import com.spiddekauga.voider.editor.commands.CEditorLoad;
 import com.spiddekauga.voider.editor.commands.CEditorNew;
 import com.spiddekauga.voider.editor.commands.CEditorSave;
+import com.spiddekauga.voider.editor.commands.CGuiSlider;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceNames;
 import com.spiddekauga.voider.scene.AddActorTool;
@@ -51,6 +53,7 @@ class LevelEditorGui extends Gui {
 	 */
 	public void setLevelEditor(LevelEditor levelEditor) {
 		mLevelEditor = levelEditor;
+		mInvoker = mLevelEditor.getInvoker();
 	}
 
 	@Override
@@ -400,7 +403,6 @@ class LevelEditorGui extends Gui {
 		new CheckedListener(button) {
 			@Override
 			protected void onChange(boolean checked) {
-				// TODO set tool as enemy
 				mLevelEditor.switchTool(Tools.ENEMY);
 			}
 		};
@@ -534,6 +536,7 @@ class LevelEditorGui extends Gui {
 		new SliderListener(slider, textField) {
 			@Override
 			protected void onChange(float newValue) {
+				mInvoker.execute(new CGuiSlider(mSlider, newValue, mLevelEditor.getEnemyCount()));
 				mLevelEditor.setEnemyCount((int) (newValue + 0.5f));
 			}
 		};
@@ -558,7 +561,8 @@ class LevelEditorGui extends Gui {
 		new SliderListener(slider, textField) {
 			@Override
 			protected void onChange(float newValue) {
-				// TODO enemy delay
+				mInvoker.execute(new CGuiSlider(mSlider, newValue, mLevelEditor.getEnemySpawnDelay()));
+				mLevelEditor.setEnemySpawnDelay(newValue);
 			}
 		};
 	}
@@ -716,6 +720,8 @@ class LevelEditorGui extends Gui {
 
 	/** Level editor the GUI will act on */
 	private LevelEditor mLevelEditor = null;
+	/** Invoker for level editor */
+	private Invoker mInvoker = null;
 	/** Inner widgets */
 	private InnerWidgets mWidgets = new InnerWidgets();
 
