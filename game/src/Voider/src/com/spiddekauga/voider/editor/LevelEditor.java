@@ -234,7 +234,9 @@ public class LevelEditor extends WorldScene implements IActorChangeEditor, IEdit
 					((ActorTool)mTouchTools[Tools.PICKUP.ordinal()]).setNewActorDef(pickupActorDef);
 
 					// Unload old dependencies
-					ResourceCacheFacade.unload(oldPickupActorDef, true);
+					if (oldPickupActorDef != null) {
+						ResourceCacheFacade.unload(oldPickupActorDef, true);
+					}
 				} catch (Exception e) {
 					Gdx.app.error("LevelEditor", e.toString());
 				}
@@ -253,7 +255,9 @@ public class LevelEditor extends WorldScene implements IActorChangeEditor, IEdit
 					((ActorTool)mTouchTools[Tools.ENEMY.ordinal()]).setNewActorDef(enemyActorDef);
 
 					// Unload old dependencies
-					ResourceCacheFacade.unload(oldEnemyActorDef, true);
+					if (oldEnemyActorDef != null) {
+						ResourceCacheFacade.unload(oldEnemyActorDef, true);
+					}
 				} catch (Exception e) {
 					Gdx.app.error("LevelEditor", e.toString());
 				}

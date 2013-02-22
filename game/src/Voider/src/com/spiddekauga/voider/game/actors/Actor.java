@@ -61,8 +61,6 @@ public abstract class Actor extends Resource implements Json.Serializable, Dispo
 				mLife -= collidingActor.getCollisionDamage() * deltaTime;
 			}
 		}
-
-		// Do something if life is 0?
 	}
 
 	/**
@@ -533,6 +531,19 @@ public abstract class Actor extends Resource implements Json.Serializable, Dispo
 		return mSkipRotate;
 	}
 
+	/**
+	 * Kills the actor. #isDead() will now return true
+	 */
+	public void kill() {
+		mDead = true;
+	}
+
+	/**
+	 * @return true if the actor is dead (i.e. has been destroyed)
+	 */
+	public boolean isDead() {
+		return mDead;
+	}
 
 	/**
 	 * @return true if it currently is drawing body corners
@@ -661,6 +672,8 @@ public abstract class Actor extends Resource implements Json.Serializable, Dispo
 	private boolean mHasBodyCorners = false;
 	/** True if the actor shall skip rotating */
 	private boolean mSkipRotate = false;
+	/** True if the actor is dead, i.e. it shall be removed */
+	private boolean mDead = false;
 
 	/** The world used for creating bodies */
 	protected static World mWorld = null;
