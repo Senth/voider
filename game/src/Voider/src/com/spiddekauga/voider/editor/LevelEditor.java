@@ -103,7 +103,7 @@ public class LevelEditor extends WorldScene implements IActorChangeEditor, IEdit
 	}
 
 	/**
-	 * Sets the level that shall be played
+	 * Sets the level that shall be played and resets tools, invoker, etc.
 	 * @param level level to play
 	 */
 	public void setLevel(Level level) {
@@ -115,6 +115,10 @@ public class LevelEditor extends WorldScene implements IActorChangeEditor, IEdit
 
 		mLevel = level;
 		mInvoker.dispose();
+
+		clearTools();
+
+		createActorBodies();
 	}
 
 	// --------------------------------
@@ -135,8 +139,9 @@ public class LevelEditor extends WorldScene implements IActorChangeEditor, IEdit
 	public void loadResources() {
 		ResourceCacheFacade.load(ResourceNames.EDITOR_BUTTONS);
 		try {
-			ResourceCacheFacade.loadAllOf(EnemyActorDef.class, true);
-			ResourceCacheFacade.loadAllOf(PickupActorDef.class, true);
+			ResourceCacheFacade.loadAllOf(EnemyActorDef.class, false);
+			ResourceCacheFacade.loadAllOf(PickupActorDef.class, false);
+			ResourceCacheFacade.loadAllOf(LevelDef.class, false);
 		} catch (UndefinedResourceTypeException e) {
 			Gdx.app.error("LevelEditor", e.toString());
 		}
@@ -147,8 +152,9 @@ public class LevelEditor extends WorldScene implements IActorChangeEditor, IEdit
 		ResourceCacheFacade.unload(ResourceNames.EDITOR_BUTTONS);
 
 		try {
-			ResourceCacheFacade.unloadAllOf(EnemyActorDef.class, true);
-			ResourceCacheFacade.unloadAllOf(PickupActorDef.class, true);
+			ResourceCacheFacade.unloadAllOf(EnemyActorDef.class, false);
+			ResourceCacheFacade.unloadAllOf(PickupActorDef.class, false);
+			ResourceCacheFacade.unloadAllOf(LevelDef.class, false);
 		} catch (UndefinedResourceTypeException e) {
 			Gdx.app.error("LevelEditor", e.toString());
 		}
@@ -195,10 +201,21 @@ public class LevelEditor extends WorldScene implements IActorChangeEditor, IEdit
 				try {
 					mLoadingLevel = ResourceCacheFacade.get(UUID.fromString(message), LevelDef.class);
 
-					// Load the actual level
-					ResourceCacheFacade.load(mLoadingLevel.getLevelId(), Level.class, false);
-					Scene scene = getLoadingScene();
-					SceneSwitcher.switchTo(scene);
+					// Only load level if it's not the current level we selected
+					if (!mLoadingLevel.equals(mLevel.getDef())) {
+						ResourceCacheFacade.load(mLoadingLevel.getLevelId(), Level.class, false);
+						Scene scene = getLoadingScene();
+						if (scene != null) {
+							SceneSwitcher.switchTo(scene);
+						} else {
+							/** @todo remove after we have a loading scene */
+							ResourceCacheFacade.finishLoading();
+							Level loadedLevel = ResourceCacheFacade.get(mLoadingLevel.getLevelId(), Level.class);
+							setLevel(loadedLevel);
+						}
+					} else {
+						mLoadingLevel = null;
+					}
 				} catch (Exception e) {
 					Gdx.app.error("LevelEditor", e.toString());
 				}
@@ -207,7 +224,17 @@ public class LevelEditor extends WorldScene implements IActorChangeEditor, IEdit
 			case PICKUP:
 				try {
 					PickupActorDef pickupActorDef = ResourceCacheFacade.get(UUID.fromString(message), PickupActorDef.class);
+
+					// Load dependencies
+					ResourceCacheFacade.load(pickupActorDef, true);
+					ResourceCacheFacade.finishLoading();
+
+					// Update def
+					PickupActorDef oldPickupActorDef = (PickupActorDef) ((ActorTool)mTouchTools[Tools.PICKUP.ordinal()]).getNewActorDef();
 					((ActorTool)mTouchTools[Tools.PICKUP.ordinal()]).setNewActorDef(pickupActorDef);
+
+					// Unload old dependencies
+					ResourceCacheFacade.unload(oldPickupActorDef, true);
 				} catch (Exception e) {
 					Gdx.app.error("LevelEditor", e.toString());
 				}
@@ -216,7 +243,17 @@ public class LevelEditor extends WorldScene implements IActorChangeEditor, IEdit
 			case ENEMY:
 				try {
 					EnemyActorDef enemyActorDef = ResourceCacheFacade.get(UUID.fromString(message), EnemyActorDef.class);
+
+					// Load dependencies
+					ResourceCacheFacade.load(enemyActorDef, true);
+					ResourceCacheFacade.finishLoading();
+
+					// Update def
+					EnemyActorDef oldEnemyActorDef = (EnemyActorDef) ((ActorTool)mTouchTools[Tools.PICKUP.ordinal()]).getNewActorDef();
 					((ActorTool)mTouchTools[Tools.ENEMY.ordinal()]).setNewActorDef(enemyActorDef);
+
+					// Unload old dependencies
+					ResourceCacheFacade.unload(oldEnemyActorDef, true);
 				} catch (Exception e) {
 					Gdx.app.error("LevelEditor", e.toString());
 				}
@@ -227,6 +264,17 @@ public class LevelEditor extends WorldScene implements IActorChangeEditor, IEdit
 
 	@Override
 	public void onDisposed() {
+		// Unload old dependencies for tools
+		for (TouchTool touchTool : mTouchTools) {
+			if (touchTool instanceof ActorTool) {
+				ActorDef actorDef = ((ActorTool) touchTool).getNewActorDef();
+				if (actorDef != null) {
+					ResourceCacheFacade.unload(actorDef, true);
+				}
+			}
+		}
+
+
 		setLevel(null);
 	}
 
@@ -371,6 +419,23 @@ public class LevelEditor extends WorldScene implements IActorChangeEditor, IEdit
 	public void saveDef() {
 		ResourceSaver.save(mLevel.getDef());
 		ResourceSaver.save(mLevel);
+
+		// Load the saved actor and use it instead
+		if (!ResourceCacheFacade.isLoaded(mLevel.getDef().getId(), LevelDef.class)) {
+			try {
+				ResourceCacheFacade.load(mLevel.getDef().getId(), LevelDef.class, false);
+				ResourceCacheFacade.finishLoading();
+				//
+				//				Level level = ResourceCacheFacade.get(mLevel.getId(), Level.class);
+				//				mLevel.dispose();
+				//				mLevel = level;
+				//
+				//				createActorBodies();
+			} catch (Exception e) {
+				Gdx.app.error("LevelEditor", "Loading of saved level failed! " + e.toString());
+			}
+		}
+
 		mUnsaved = false;
 	}
 
@@ -581,11 +646,39 @@ public class LevelEditor extends WorldScene implements IActorChangeEditor, IEdit
 	}
 
 	/**
+	 * Creates actor bodies for the current level
+	 */
+	private void createActorBodies() {
+		if (mLevel != null) {
+			if (ResourceCacheFacade.isLoaded(mLevel.getId(), Level.class)) {
+				ArrayList<Actor> actors = mLevel.getActors();
+
+				for (Actor actor : actors) {
+					// Don't create bodies for enemy actors in a group and where
+					// they aren't the leader.
+					boolean createBody = true;
+					if (actor instanceof EnemyActor) {
+						if (((EnemyActor) actor).getEnemyGroup() != null && !((EnemyActor)actor).isGroupLeader()) {
+							createBody = false;
+						}
+					}
+
+					if (createBody) {
+						actor.createBody();
+					}
+				}
+			}
+		}
+	}
+
+	/**
 	 * Clears all the tools
 	 */
 	private void clearTools() {
 		for (TouchTool touchTool : mTouchTools) {
-			touchTool.clear();
+			if (touchTool != null) {
+				touchTool.clear();
+			}
 		}
 	}
 

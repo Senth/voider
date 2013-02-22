@@ -68,7 +68,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IActorChang
 
 		createBorder();
 
-		mDef.setMovementType(null);
+		mDef.setMovementType(MovementTypes.PATH);
 
 		// Create mouse joint
 		BodyDef bodyDef = new BodyDef();

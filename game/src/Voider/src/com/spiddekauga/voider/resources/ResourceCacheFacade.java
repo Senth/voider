@@ -349,6 +349,11 @@ public class ResourceCacheFacade {
 				if (!mAssetManager.update()) {
 					fullyLoaded = false;
 				}
+				else if (!mLoadQueue.isEmpty()) {
+					fullyLoaded = false;
+					DefItem toLoad = mLoadQueue.removeFirst();
+					mAssetManager.load(toLoad.fullName, toLoad.resourceType);
+				}
 			} catch (UndefinedResourceTypeException e) {
 				mLoadQueue.clear();
 				throw e;

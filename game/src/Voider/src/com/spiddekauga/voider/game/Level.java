@@ -259,6 +259,13 @@ public class Level extends Resource implements ITriggerListener, Json.Serializab
 		mResourceBinder.removeResource(actorId);
 	}
 
+	/**
+	 * @return all actors in the level
+	 */
+	public ArrayList<Actor> getActors() {
+		return mActors;
+	}
+
 	@Override
 	public void dispose() {
 		for (Actor actor : mActors) {
