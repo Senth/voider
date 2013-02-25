@@ -22,6 +22,8 @@ import com.spiddekauga.utils.Json;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Editor;
 import com.spiddekauga.voider.editor.HitWrapper;
+import com.spiddekauga.voider.game.IResourceBody;
+import com.spiddekauga.voider.game.IResourcePosition;
 import com.spiddekauga.voider.resources.Resource;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.UndefinedResourceTypeException;
@@ -31,7 +33,7 @@ import com.spiddekauga.voider.resources.UndefinedResourceTypeException;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public abstract class Actor extends Resource implements Json.Serializable, Disposable, Poolable {
+public abstract class Actor extends Resource implements Json.Serializable, Disposable, Poolable, IResourceBody, IResourcePosition {
 	/**
 	 * Sets the texture of the actor including the actor definition.
 	 * Automatically creates a body for the actor.
@@ -249,10 +251,7 @@ public abstract class Actor extends Resource implements Json.Serializable, Dispo
 		}
 	}
 
-	/**
-	 * Sets the position of the actor
-	 * @param position the new position
-	 */
+	@Override
 	public void setPosition(Vector2 position) {
 		setPosition(position.x, position.y);
 	}
@@ -281,9 +280,7 @@ public abstract class Actor extends Resource implements Json.Serializable, Dispo
 		}
 	}
 
-	/**
-	 * @return current position of the actor
-	 */
+	@Override
 	public Vector2 getPosition() {
 		return mPosition;
 	}
@@ -297,11 +294,25 @@ public abstract class Actor extends Resource implements Json.Serializable, Dispo
 	}
 
 	/**
+	 * @return current world
+	 */
+	public static World getWorld() {
+		return mWorld;
+	}
+
+	/**
 	 * Sets if the editor will be active for all the actors
 	 * @param editorActive true if the editor will be active
 	 */
 	public static void setEditorActive(boolean editorActive) {
 		mEditorActive = editorActive;
+	}
+
+	/**
+	 * @return true if the editor is active
+	 */
+	public static boolean isEditorActive() {
+		return mEditorActive;
 	}
 
 	/**
@@ -327,10 +338,7 @@ public abstract class Actor extends Resource implements Json.Serializable, Dispo
 		return mBody;
 	}
 
-	/**
-	 * Creates a new body out of the fixture and body definition. This body will however not have
-	 * any angle, velocity set to it. Position is however set
-	 */
+	@Override
 	public void createBody(){
 		BodyDef bodyDef = mDef.getBodyDefCopy();
 		bodyDef.position.set(mPosition);
@@ -361,9 +369,7 @@ public abstract class Actor extends Resource implements Json.Serializable, Dispo
 		}
 	}
 
-	/**
-	 * Destroys the body of the actor. This will remove it from the world
-	 */
+	@Override
 	public void destroyBody() {
 		if (mBody != null) {
 			mBody.getWorld().destroyBody(mBody);

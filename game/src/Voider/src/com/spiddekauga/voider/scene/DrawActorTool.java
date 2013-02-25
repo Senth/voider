@@ -8,21 +8,23 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Pools;
 import com.spiddekauga.utils.Invoker;
-import com.spiddekauga.voider.editor.IActorChangeEditor;
-import com.spiddekauga.voider.editor.commands.CActorAdd;
+import com.spiddekauga.voider.editor.HitWrapper;
+import com.spiddekauga.voider.editor.IResourceChangeEditor;
 import com.spiddekauga.voider.editor.commands.CActorCenterMove;
-import com.spiddekauga.voider.editor.commands.CActorCornerAdd;
-import com.spiddekauga.voider.editor.commands.CActorCornerMove;
-import com.spiddekauga.voider.editor.commands.CActorCornerRemove;
-import com.spiddekauga.voider.editor.commands.CActorCornerRemoveAll;
-import com.spiddekauga.voider.editor.commands.CActorMove;
-import com.spiddekauga.voider.editor.commands.CActorRemove;
-import com.spiddekauga.voider.editor.commands.CActorSelect;
+import com.spiddekauga.voider.editor.commands.CResourceAdd;
+import com.spiddekauga.voider.editor.commands.CResourceCornerAdd;
+import com.spiddekauga.voider.editor.commands.CResourceCornerMove;
+import com.spiddekauga.voider.editor.commands.CResourceCornerRemove;
+import com.spiddekauga.voider.editor.commands.CResourceCornerRemoveAll;
+import com.spiddekauga.voider.editor.commands.CResourceMove;
+import com.spiddekauga.voider.editor.commands.CResourceRemove;
+import com.spiddekauga.voider.editor.commands.CResourceSelect;
+import com.spiddekauga.voider.game.IResourceCorner.PolygonComplexException;
+import com.spiddekauga.voider.game.IResourceCorner.PolygonCornerTooCloseException;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.ActorDef;
-import com.spiddekauga.voider.game.actors.ActorDef.PolygonComplexException;
-import com.spiddekauga.voider.game.actors.ActorDef.PolygonCornerTooCloseException;
 import com.spiddekauga.voider.game.actors.BulletActor;
+import com.spiddekauga.voider.resources.IResource;
 
 /**
  * Abstract class that can draw actors
@@ -38,7 +40,7 @@ public class DrawActorTool extends ActorTool implements ISelectTool {
 	 * @param invoker used for undoing/redoing some commands
 	 * @param actorEditor editor for the actor, will call some methods in here
 	 */
-	public DrawActorTool(Camera camera, World world, Class<?> actorType, Invoker invoker, IActorChangeEditor actorEditor) {
+	public DrawActorTool(Camera camera, World world, Class<?> actorType, Invoker invoker, IResourceChangeEditor actorEditor) {
 		super(camera, world, actorType);
 		mInvoker = invoker;
 		mActorEditor = actorEditor;
@@ -55,7 +57,7 @@ public class DrawActorTool extends ActorTool implements ISelectTool {
 	 * @param actorEditor editor for the actor, will call some methods in here
 	 * @param actorDef the actor definition to use for the only actor
 	 */
-	public DrawActorTool(Camera camera, World world, Class<?> actorType, Invoker invoker, IActorChangeEditor actorEditor, ActorDef actorDef) {
+	public DrawActorTool(Camera camera, World world, Class<?> actorType, Invoker invoker, IResourceChangeEditor actorEditor, ActorDef actorDef) {
 		super(camera, world, actorType);
 		mInvoker = invoker;
 		mActorEditor = actorEditor;
@@ -78,11 +80,11 @@ public class DrawActorTool extends ActorTool implements ISelectTool {
 		if (actorDef.getCornerCount() > 0) {
 			if (mActor == null) {
 				mActor = new BulletActor();
-				mActorEditor.onActorAdded(mActor);
+				mActorEditor.onResourceAdded(mActor);
 			}
 			mActor.setDef(actorDef);
 		} else {
-			mActorEditor.onActorRemoved(mActor);
+			mActorEditor.onResourceRemoved(mActor);
 			mActor = null;
 		}
 	}
@@ -196,20 +198,20 @@ public class DrawActorTool extends ActorTool implements ISelectTool {
 	}
 
 	@Override
-	public void setSelectedActor(Actor selectedActor) {
+	public void setSelectedResource(IResource selectedActor) {
 		deactivate();
 
 		for (ISelectListener listener : mSelectListeners) {
-			listener.onActorSelect(mActor, selectedActor);
+			listener.onResourceSelect(mActor, selectedActor);
 		}
 
-		mActor = selectedActor;
+		mActor = (Actor) selectedActor;
 
 		activate();
 	}
 
 	@Override
-	public Actor getSelectedActor() {
+	public Actor getSelectedResource() {
 		return mActor;
 	}
 
@@ -244,7 +246,7 @@ public class DrawActorTool extends ActorTool implements ISelectTool {
 				if (mCornerIndexLast != -1) {
 					mInvoker.undo(false);
 				}
-				mInvoker.execute(new CActorSelect(null, this));
+				mInvoker.execute(new CResourceSelect(null, this));
 				return;
 			}
 
@@ -267,7 +269,7 @@ public class DrawActorTool extends ActorTool implements ISelectTool {
 					}
 					// Select the other actor if we can create multiple actors
 					else {
-						mInvoker.execute(new CActorSelect((Actor)mHitBody.getUserData(), this));
+						mInvoker.execute(new CResourceSelect((Actor)mHitBody.getUserData(), this));
 					}
 				}
 				// Else hit a corner, start moving it
@@ -286,8 +288,8 @@ public class DrawActorTool extends ActorTool implements ISelectTool {
 						actor.setDef(mActorDef);
 					}
 					actor.setPosition(mTouchOrigin);
-					mInvoker.execute(new CActorAdd(actor, mActorEditor));
-					mInvoker.execute(new CActorSelect(actor, this), true);
+					mInvoker.execute(new CResourceAdd(actor, mActorEditor));
+					mInvoker.execute(new CResourceSelect(actor, this), true);
 				}
 
 				if (mActor != null) {
@@ -304,12 +306,12 @@ public class DrawActorTool extends ActorTool implements ISelectTool {
 			if (mHitBody != null && mHitBody.getUserData() instanceof Actor) {
 				// Select the actor
 				if (mActor != mHitBody.getUserData()) {
-					mInvoker.execute(new CActorSelect((Actor) mHitBody.getUserData(), null));
+					mInvoker.execute(new CResourceSelect((Actor) mHitBody.getUserData(), this));
 				}
 				mDragOrigin.set(mHitBody.getPosition());
 			} else {
 				if (mActor != null) {
-					mInvoker.execute(new CActorSelect(null, this));
+					mInvoker.execute(new CResourceSelect(null, this));
 				}
 			}
 			break;
@@ -325,22 +327,27 @@ public class DrawActorTool extends ActorTool implements ISelectTool {
 				if (mHitBody.getUserData() == mActor) {
 					// Only do something if we didn't hit the actor the first time
 					if (!mChangedActorSinceUp) {
-						mInvoker.execute(new CActorRemove(mActor, mActorEditor));
-						mInvoker.execute(new CActorCornerRemoveAll(mActor.getDef(), mActorEditor), true);
-						mInvoker.execute(new CActorSelect(null, this), true);
+						mInvoker.execute(new CResourceRemove(mActor, mActorEditor));
+						mInvoker.execute(new CResourceCornerRemoveAll(mActor.getDef(), mActorEditor), true);
+						mInvoker.execute(new CResourceSelect(null, this), true);
 					}
 				}
 				// Else hit a corner, delete it
-				else {
+				else if (mHitBody.getUserData() instanceof HitWrapper){
 					mCornerIndexCurrent = mActor.getCornerIndex(mHitBody.getPosition());
-					mInvoker.execute(new CActorCornerRemove(mActor.getDef(), mCornerIndexCurrent, mActorEditor));
+					mInvoker.execute(new CResourceCornerRemove(mActor.getDef(), mCornerIndexCurrent, mActorEditor));
 
 					// Was it the last corner? Remove actor too then
 					if (mActor.getDef().getCornerCount() == 0) {
-						mInvoker.execute(new CActorRemove(mActor, mActorEditor), true);
-						mInvoker.execute(new CActorSelect(null, this), true);
+						mInvoker.execute(new CResourceRemove(mActor, mActorEditor), true);
+						mInvoker.execute(new CResourceSelect(null, this), true);
 					}
 				}
+				// Hit another actor
+				else if (mHitBody.getUserData() instanceof Actor) {
+					mInvoker.execute(new CResourceSelect((Actor)mHitBody.getUserData(), this));
+				}
+
 			}
 			break;
 
@@ -425,7 +432,7 @@ public class DrawActorTool extends ActorTool implements ISelectTool {
 					newPos.set(mActor.getDef().getCornerPosition(mCornerIndexCurrent));
 					try {
 						mActor.getDef().moveCorner(mCornerIndexCurrent, mDragOrigin);
-						mInvoker.execute(new CActorCornerMove(mActor.getDef(), mCornerIndexCurrent, newPos, mActorEditor));
+						mInvoker.execute(new CResourceCornerMove(mActor.getDef(), mCornerIndexCurrent, newPos, mActorEditor));
 					} catch (Exception e) {
 						// Does nothing
 					}
@@ -447,7 +454,7 @@ public class DrawActorTool extends ActorTool implements ISelectTool {
 				mActor.setPosition(mDragOrigin);
 
 				Vector2 newPos = getNewMovePosition();
-				mInvoker.execute(new CActorMove(mActor, newPos, mActorEditor), mChangedActorSinceUp);
+				mInvoker.execute(new CResourceMove(mActor, newPos, mActorEditor), mChangedActorSinceUp);
 				Pools.free(newPos);
 			}
 			break;
@@ -516,7 +523,7 @@ public class DrawActorTool extends ActorTool implements ISelectTool {
 		// Set the command as chained if no corner exist in the actor
 		boolean chained = mActor.getDef().getCornerCount() == 0;
 
-		mInvoker.execute(new CActorCornerAdd(mActor.getDef(), cornerPos, mActorEditor), chained);
+		mInvoker.execute(new CResourceCornerAdd(mActor.getDef(), cornerPos, mActorEditor), chained);
 	}
 
 	/**
@@ -555,7 +562,7 @@ public class DrawActorTool extends ActorTool implements ISelectTool {
 	/** True if the current corner was added during the down() event */
 	private boolean mCornerAddedNow = false;
 	/** The actor editor */
-	private IActorChangeEditor mActorEditor;
+	private IResourceChangeEditor mActorEditor;
 	/** All select listeners */
 	private ArrayList<ISelectListener> mSelectListeners = new ArrayList<ISelectListener>();
 

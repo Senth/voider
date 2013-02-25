@@ -2,7 +2,7 @@ package com.spiddekauga.voider.editor.commands;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Pools;
-import com.spiddekauga.voider.editor.IActorChangeEditor;
+import com.spiddekauga.voider.editor.IResourceChangeEditor;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.ActorDef;
 
@@ -13,7 +13,7 @@ import com.spiddekauga.voider.game.actors.ActorDef;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class CActorCenterMove extends CActorChange {
+public class CActorCenterMove extends CResourceChange {
 	/**
 	 * Creates a command that will move the center of the actor definition.
 	 * It will also update the actors position. Note that the actors position
@@ -24,8 +24,9 @@ public class CActorCenterMove extends CActorChange {
 	 * @param actorEditor the actor editor to send a onActorChange() event to
 	 * @param actor optional actor to update the position, set to null to skip
 	 */
-	public CActorCenterMove(ActorDef actorDef, Vector2 newCenter, Vector2 oldCenter, IActorChangeEditor actorEditor, Actor actor) {
+	public CActorCenterMove(ActorDef actorDef, Vector2 newCenter, Vector2 oldCenter, IResourceChangeEditor actorEditor, Actor actor) {
 		super(actor, actorEditor);
+		mActor = actor;
 		mActorDef = actorDef;
 		mCenterNew.set(newCenter);
 		mCenterOld.set(oldCenter);
@@ -39,7 +40,7 @@ public class CActorCenterMove extends CActorChange {
 	 * @param oldCenter old center position, used for restoring using undo
 	 * @param actorEditor the actor editor to send a onActorChange() event to
 	 */
-	public CActorCenterMove(ActorDef actorDef, Vector2 newCenter, Vector2 oldCenter, IActorChangeEditor actorEditor) {
+	public CActorCenterMove(ActorDef actorDef, Vector2 newCenter, Vector2 oldCenter, IResourceChangeEditor actorEditor) {
 		this(actorDef, newCenter, oldCenter, actorEditor, null);
 	}
 
@@ -90,6 +91,8 @@ public class CActorCenterMove extends CActorChange {
 		mCenterOld = null;
 	}
 
+	/** Actor which uses the actor def */
+	private Actor mActor;
 	/** Actor definition which center to move */
 	private ActorDef mActorDef;
 	/** New center position offset to use at execute */

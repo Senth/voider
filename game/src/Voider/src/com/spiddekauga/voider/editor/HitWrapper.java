@@ -1,9 +1,9 @@
 package com.spiddekauga.voider.editor;
 
-import com.spiddekauga.voider.game.actors.Actor;
+import com.spiddekauga.voider.resources.IResource;
 
 /**
- * Wraps an Actor together with some arbitrary data for handling hits.
+ * Wraps a resource together with some arbitrary data for handling hits.
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
@@ -12,8 +12,8 @@ public class HitWrapper {
 	 * Constructor with an actor
 	 * @param actor the actor that should be wrapped
 	 */
-	public HitWrapper(Actor actor) {
-		this.actor = actor;
+	public HitWrapper(IResource actor) {
+		this.resource = actor;
 	}
 
 	/**
@@ -21,14 +21,14 @@ public class HitWrapper {
 	 * @param actor the actor that should be wrapped
 	 * @param data the data to wrap with this actor
 	 */
-	public HitWrapper(Actor actor, Object data) {
-		this.actor = actor;
+	public HitWrapper(IResource actor, Object data) {
+		this.resource = actor;
 		this.data = data;
 	}
 
 
-	/** Actor together with hit */
-	public Actor actor;
+	/** IResource together with hit */
+	public IResource resource;
 	/** Arbitrary data */
 	public Object data = null;
 }

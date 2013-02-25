@@ -437,17 +437,17 @@ public class EnemyActor extends Actor implements ITriggerListener {
 	 * @param deltaTime time elapsed since last frame
 	 */
 	private void updatePathMovement(float deltaTime) {
-		if (mPath == null || mPath.getNodeCount() < 2 || mPathOnceReachedEnd) {
+		if (mPath == null || mPath.getCornerCount() < 2 || mPathOnceReachedEnd) {
 			return;
 		}
 
 		// Special case, not initialized. Set position to first position
 		if (mPathIndexNext == -1) {
 			mPathIndexNext = 1;
-			setPosition(mPath.getNodeAt(0));
+			setPosition(mPath.getCornerPosition(0));
 
 			Vector2 velocity = Pools.obtain(Vector2.class);
-			velocity.set(mPath.getNodeAt(mPathIndexNext)).sub(getPosition());
+			velocity.set(mPath.getCornerPosition(mPathIndexNext)).sub(getPosition());
 			velocity.nor().mul(getDef(EnemyActorDef.class).getSpeed());
 			getBody().setLinearVelocity(velocity);
 
@@ -463,7 +463,7 @@ public class EnemyActor extends Actor implements ITriggerListener {
 		if (isCloseToNextIndex()) {
 			// Special case for ONCE and last index
 			// Just continue straight forward, i.e do nothing
-			if (mPath.getPathType() == PathTypes.ONCE && mPathIndexNext == mPath.getNodeCount() - 1) {
+			if (mPath.getPathType() == PathTypes.ONCE && mPathIndexNext == mPath.getCornerCount() - 1) {
 				mPathOnceReachedEnd = true;
 				return;
 			}
@@ -473,7 +473,7 @@ public class EnemyActor extends Actor implements ITriggerListener {
 			// No turning, change direction directly
 			if (!getDef(EnemyActorDef.class).isTurning()) {
 				Vector2 velocity = Pools.obtain(Vector2.class);
-				velocity.set(mPath.getNodeAt(mPathIndexNext)).sub(getPosition());
+				velocity.set(mPath.getCornerPosition(mPathIndexNext)).sub(getPosition());
 				velocity.nor().mul(getDef(EnemyActorDef.class).getSpeed());
 				getBody().setLinearVelocity(velocity);
 				Pools.free(velocity);
@@ -483,7 +483,7 @@ public class EnemyActor extends Actor implements ITriggerListener {
 
 		if (getDef(EnemyActorDef.class).isTurning()) {
 			Vector2 target = Pools.obtain(Vector2.class);
-			target.set(mPath.getNodeAt(mPathIndexNext)).sub(getPosition());
+			target.set(mPath.getCornerPosition(mPathIndexNext)).sub(getPosition());
 			moveToTarget(target, deltaTime);
 		}
 	}
@@ -705,7 +705,7 @@ public class EnemyActor extends Actor implements ITriggerListener {
 	private void calculateNextPathIndex() {
 		if (mPathForward) {
 			// We were at last, do path specific actions
-			if (mPath.getNodeCount() - 1 == mPathIndexNext) {
+			if (mPath.getCornerCount() - 1 == mPathIndexNext) {
 				switch (mPath.getPathType()) {
 				case ONCE:
 					// Do nothing...
@@ -739,7 +739,7 @@ public class EnemyActor extends Actor implements ITriggerListener {
 	 */
 	private boolean isCloseToNextIndex() {
 		Vector2 diff = Pools.obtain(Vector2.class);
-		diff.set(mPath.getNodeAt(mPathIndexNext)).sub(getPosition());
+		diff.set(mPath.getCornerPosition(mPathIndexNext)).sub(getPosition());
 		float distanceSq = diff.len2();
 		Pools.free(diff);
 		return distanceSq <= Config.Actor.Enemy.PATH_NODE_CLOSE_SQ;

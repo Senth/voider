@@ -40,6 +40,7 @@ import com.spiddekauga.voider.scene.AddActorTool;
 import com.spiddekauga.voider.scene.AddActorTool.States;
 import com.spiddekauga.voider.scene.DrawActorTool;
 import com.spiddekauga.voider.scene.Gui;
+import com.spiddekauga.voider.scene.PathTool;
 
 /**
  * GUI for the level editor
@@ -417,7 +418,7 @@ class LevelEditorGui extends Gui {
 			@Override
 			protected void onChange(boolean checked) {
 				// TODO set tool as path
-				mLevelEditor.switchTool(null);
+				mLevelEditor.switchTool(Tools.PATH);
 			}
 		};
 		HideListener pathHider = new HideListener(button, true);
@@ -436,7 +437,7 @@ class LevelEditorGui extends Gui {
 		HideListener triggerHider = new HideListener(button, true);
 
 
-		// Enemy
+		// ---- Enemy ----
 		mEnemyTable.row();
 		buttonGroup = new ButtonGroup();
 		button = new TextButton("Select", toggleStyle);
@@ -563,6 +564,65 @@ class LevelEditorGui extends Gui {
 			protected void onChange(float newValue) {
 				mInvoker.execute(new CGuiSlider(mSlider, newValue, mLevelEditor.getEnemySpawnDelay()));
 				mLevelEditor.setEnemySpawnDelay(newValue);
+			}
+		};
+
+
+		// ---- PATH -----
+		mEnemyTable.row();
+		buttonGroup = new ButtonGroup();
+		button = new TextButton("Select", toggleStyle);
+		buttonGroup.add(button);
+		mEnemyTable.add(button);
+		pathHider.addToggleActor(button);
+		new CheckedListener(button) {
+			@Override
+			protected void onChange(boolean checked) {
+				if (checked) {
+					mLevelEditor.setPathState(null);
+				}
+			}
+		};
+
+		mEnemyTable.row();
+		button = new TextButton("Add", toggleStyle);
+		buttonGroup.add(button);
+		mEnemyTable.add(button);
+		pathHider.addToggleActor(button);
+		new CheckedListener(button) {
+			@Override
+			protected void onChange(boolean checked) {
+				if (checked) {
+					mLevelEditor.setPathState(PathTool.States.ADD_CORNER);
+				}
+			}
+		};
+
+		mEnemyTable.row();
+		button = new TextButton("Remove", toggleStyle);
+		buttonGroup.add(button);
+		mEnemyTable.add(button);
+		pathHider.addToggleActor(button);
+		new CheckedListener(button) {
+			@Override
+			protected void onChange(boolean checked) {
+				if (checked) {
+					mLevelEditor.setPathState(PathTool.States.REMOVE);
+				}
+			}
+		};
+
+		mEnemyTable.row();
+		button = new TextButton("Move", toggleStyle);
+		buttonGroup.add(button);
+		mEnemyTable.add(button);
+		pathHider.addToggleActor(button);
+		new CheckedListener(button) {
+			@Override
+			protected void onChange(boolean checked) {
+				if (checked) {
+					mLevelEditor.setPathState(PathTool.States.MOVE);
+				}
 			}
 		};
 	}

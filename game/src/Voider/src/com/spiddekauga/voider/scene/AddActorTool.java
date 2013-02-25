@@ -9,12 +9,13 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Pools;
 import com.spiddekauga.utils.Invoker;
 import com.spiddekauga.voider.editor.HitWrapper;
-import com.spiddekauga.voider.editor.IActorChangeEditor;
-import com.spiddekauga.voider.editor.commands.CActorAdd;
-import com.spiddekauga.voider.editor.commands.CActorMove;
-import com.spiddekauga.voider.editor.commands.CActorRemove;
-import com.spiddekauga.voider.editor.commands.CActorSelect;
+import com.spiddekauga.voider.editor.IResourceChangeEditor;
+import com.spiddekauga.voider.editor.commands.CResourceAdd;
+import com.spiddekauga.voider.editor.commands.CResourceMove;
+import com.spiddekauga.voider.editor.commands.CResourceRemove;
+import com.spiddekauga.voider.editor.commands.CResourceSelect;
 import com.spiddekauga.voider.game.actors.Actor;
+import com.spiddekauga.voider.resources.IResource;
 
 /**
  * Tool for adding and removing actors
@@ -34,7 +35,7 @@ public class AddActorTool extends ActorTool implements ISelectTool {
 	 * to select actors, otherwise only the select state will be able to select actors
 	 * @param editor will be called when actors are added/removed.
 	 */
-	public AddActorTool(Camera camera, World world, Class<?> actorType, Invoker invoker, boolean addMoveSelects, IActorChangeEditor editor) {
+	public AddActorTool(Camera camera, World world, Class<?> actorType, Invoker invoker, boolean addMoveSelects, IResourceChangeEditor editor) {
 		super(camera, world, actorType);
 		mInvoker = invoker;
 		mEditor = editor;
@@ -79,19 +80,21 @@ public class AddActorTool extends ActorTool implements ISelectTool {
 	}
 
 	@Override
-	public void setSelectedActor(Actor selectedActor) {
-		deactivate();
+	public void setSelectedResource(IResource selectedResource) {
+		if (selectedResource instanceof Actor) {
+			deactivate();
 
-		for (ISelectListener selectListener : mSelectListeners) {
-			selectListener.onActorSelect(mSelectedActor, selectedActor);
+			for (ISelectListener selectListener : mSelectListeners) {
+				selectListener.onResourceSelect(mSelectedActor, selectedResource);
+			}
+
+			mSelectedActor = (Actor) selectedResource;
+			mSelectedSinceUp = true;
+
+			activate();
+
+			mEditor.onResourceSelected(mSelectedActor);
 		}
-
-		mSelectedActor = selectedActor;
-		mSelectedSinceUp = true;
-
-		activate();
-
-		mEditor.onActorSelected(mSelectedActor);
 	}
 
 	/**
@@ -111,7 +114,7 @@ public class AddActorTool extends ActorTool implements ISelectTool {
 	}
 
 	@Override
-	public Actor getSelectedActor() {
+	public Actor getSelectedResource() {
 		return mSelectedActor;
 	}
 
@@ -153,10 +156,10 @@ public class AddActorTool extends ActorTool implements ISelectTool {
 				// If didn't create actor definition itself, skip...
 				if (actor.getDef() != null) {
 					actor.setPosition(mTouchOrigin);
-					mInvoker.execute(new CActorAdd(actor, mEditor), mSelectedSinceUp);
+					mInvoker.execute(new CResourceAdd(actor, mEditor), mSelectedSinceUp);
 					mMovingActor = actor;
 					mActorOrigin.set(mTouchOrigin);
-					mInvoker.execute(new CActorSelect(actor, this), true);
+					mInvoker.execute(new CResourceSelect(actor, this), true);
 				}
 			}
 			break;
@@ -166,7 +169,7 @@ public class AddActorTool extends ActorTool implements ISelectTool {
 
 			if (mHitBody != null) {
 				if (mHitBody.getUserData() instanceof Actor) {
-					mInvoker.execute(new CActorRemove((Actor)mHitBody.getUserData(), mEditor));
+					mInvoker.execute(new CResourceRemove((Actor)mHitBody.getUserData(), mEditor));
 				}
 			}
 			break;
@@ -229,7 +232,7 @@ public class AddActorTool extends ActorTool implements ISelectTool {
 
 				// Set new position through command
 				Vector2 newPosition = getNewMovePosition();
-				mInvoker.execute(new CActorMove(mMovingActor, newPosition, mEditor), chained);
+				mInvoker.execute(new CResourceMove(mMovingActor, newPosition, mEditor), chained);
 				Pools.free(newPosition);
 				mMovingActor = null;
 			}
@@ -270,19 +273,19 @@ public class AddActorTool extends ActorTool implements ISelectTool {
 				actorToSelect = (Actor) mHitBody.getUserData();
 			}
 			else if (mHitBody.getUserData() instanceof HitWrapper) {
-				actorToSelect = ((HitWrapper)mHitBody.getUserData()).actor;
+				actorToSelect = (Actor) ((HitWrapper)mHitBody.getUserData()).resource;
 			}
 		}
 
 		if (actorToSelect != mSelectedActor) {
-			mInvoker.execute(new CActorSelect(actorToSelect, this), chained);
+			mInvoker.execute(new CResourceSelect(actorToSelect, this), chained);
 		}
 	}
 
 	/** Invoker for undo/redo */
 	protected Invoker mInvoker;
 	/** Editor to add/remove the actors from */
-	protected IActorChangeEditor mEditor;
+	protected IResourceChangeEditor mEditor;
 	/** The actor we're currently moving */
 	protected Actor mMovingActor = null;
 	/** Original position of the actor */

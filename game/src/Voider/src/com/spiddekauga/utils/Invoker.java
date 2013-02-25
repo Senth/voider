@@ -66,6 +66,8 @@ public class Invoker implements Disposable {
 				disposeRedo();
 
 				/** @TODO maybe set a limit on 100 undo commands? */
+			} else {
+				command.dispose();
 			}
 		}
 

@@ -2,29 +2,30 @@ package com.spiddekauga.voider.editor.commands;
 
 import com.spiddekauga.utils.Command;
 import com.spiddekauga.voider.game.actors.Actor;
+import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.scene.ISelectTool;
 
 /**
- * Selects an actor in the specified select tool
+ * Selects a resource in the specified select tool
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class CActorSelect extends Command {
+public class CResourceSelect extends Command {
 	/**
 	 * Creates a command that will select an actor in the specified tool
-	 * @param actor the actor to select, if null it deselects any actor
+	 * @param resource the resource to select, if null it deselects any resource
 	 * @param tool the tool to select the actor in
 	 */
-	public CActorSelect(Actor actor, ISelectTool tool) {
+	public CResourceSelect(IResource resource, ISelectTool tool) {
 		mTool = tool;
-		mActor = actor;
+		mResource = resource;
 	}
 
 	@Override
 	public boolean execute() {
 		if (mTool != null) {
-			mOldActor = mTool.getSelectedActor();
-			mTool.setSelectedActor(mActor);
+			mOldResource = mTool.getSelectedResource();
+			mTool.setSelectedResource(mResource);
 			return true;
 		} else {
 			return false;
@@ -34,7 +35,7 @@ public class CActorSelect extends Command {
 	@Override
 	public boolean undo() {
 		if (mTool != null) {
-			mTool.setSelectedActor(mOldActor);
+			mTool.setSelectedResource(mOldResource);
 			return true;
 		} else {
 			return false;
@@ -42,9 +43,9 @@ public class CActorSelect extends Command {
 	}
 
 	/** The actor to select */
-	public Actor mActor;
+	public IResource mResource;
 	/** Old selected actor */
-	public Actor mOldActor = null;
+	public IResource mOldResource = null;
 	/** The tool to selelct the actor in */
 	public ISelectTool mTool;
 }

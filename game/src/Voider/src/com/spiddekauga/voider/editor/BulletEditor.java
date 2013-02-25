@@ -13,6 +13,7 @@ import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.ActorShapeTypes;
 import com.spiddekauga.voider.game.actors.BulletActor;
 import com.spiddekauga.voider.game.actors.BulletActorDef;
+import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceNames;
 import com.spiddekauga.voider.resources.ResourceSaver;
@@ -29,7 +30,7 @@ import com.spiddekauga.voider.scene.WorldScene;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class BulletEditor extends WorldScene implements IActorEditor, IActorChangeEditor {
+public class BulletEditor extends WorldScene implements IActorEditor, IResourceChangeEditor {
 	/**
 	 * Creates a bullet editor.
 	 */
@@ -388,24 +389,24 @@ public class BulletEditor extends WorldScene implements IActorEditor, IActorChan
 	}
 
 	@Override
-	public void onActorAdded(Actor actor) {
-		mBulletActor = (BulletActor) actor;
+	public void onResourceAdded(IResource resource) {
+		mBulletActor = (BulletActor) resource;
 		mUnsaved = true;
 	}
 
 	@Override
-	public void onActorRemoved(Actor actor) {
+	public void onResourceRemoved(IResource resource) {
 		mBulletActor = null;
 		mUnsaved = true;
 	}
 
 	@Override
-	public void onActorChanged(Actor actor) {
+	public void onResourceChanged(IResource resource) {
 		mUnsaved = true;
 	}
 
 	@Override
-	public void onActorSelected(Actor actor) {
+	public void onResourceSelected(IResource resource) {
 		// Does nothing
 	}
 

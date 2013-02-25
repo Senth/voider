@@ -1,6 +1,6 @@
 package com.spiddekauga.voider.scene;
 
-import com.spiddekauga.voider.game.actors.Actor;
+import com.spiddekauga.voider.resources.IResource;
 
 /**
  * Interface for listening to when a tool selects/deselects an actor
@@ -10,9 +10,9 @@ import com.spiddekauga.voider.game.actors.Actor;
 public interface ISelectListener {
 	/**
 	 * Called when an actor is selected
-	 * @param deselectedActor the previous selected actor that will be deselected.
+	 * @param deselectedResource the previous selected resource that will be deselected.
 	 * null if no actor was previously selected
-	 * @param selectedActor the selected actor, null if an actor was deselected
+	 * @param selectedResource the selected resource, null if an actor was deselected
 	 */
-	void onActorSelect(Actor deselectedActor, Actor selectedActor);
+	void onResourceSelect(IResource deselectedResource, IResource selectedResource);
 }

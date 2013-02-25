@@ -19,6 +19,7 @@ import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.utils.Json;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.Collectibles;
+import com.spiddekauga.voider.game.IResourceCorner;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.utils.Geometry;
 
@@ -29,7 +30,7 @@ import com.spiddekauga.voider.utils.Geometry;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public abstract class ActorDef extends Def implements Json.Serializable, Disposable {
+public abstract class ActorDef extends Def implements Json.Serializable, Disposable, IResourceCorner {
 	/**
 	 * Constructor that sets all variables
 	 * @param maxLife maximum life of the actor, also starting amount of life
@@ -65,6 +66,7 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	/**
 	 * Default constructor for JSON
 	 */
+	@SuppressWarnings("unused")
 	private ActorDef() {
 		// Does nothing
 	}
@@ -195,6 +197,7 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	@Override
 	public void dispose() {
 		clearFixtures();
+		//		Pools.free(mAabbBox);
 	}
 
 	/**
@@ -389,28 +392,12 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 		return getBodyDef().angularVelocity;
 	}
 
-
-	/**
-	 * Add another corner position to the back of the array
-	 * @param corner a new corner that will be placed at the back
-	 * @throws PolygonComplexException thrown when the adding corner would make the
-	 * polygon an complex polygon, i.e. intersect itself.
-	 * @throws PolygonCornerTooCloseException thrown when a corner is too close to
-	 * another corner inside the polygon.
-	 */
+	@Override
 	public void addCorner(Vector2 corner) throws PolygonComplexException, PolygonCornerTooCloseException {
 		addCorner(corner, mVisualVars.corners.size());
 	}
 
-	/**
-	 * Add a corner in the specified index
-	 * @param corner position of the corner to add
-	 * @param index where in the list the corner will be added
-	 * @throws PolygonComplexException thrown when the adding corner would make the
-	 * polygon an complex polygon, i.e. intersect itself.
-	 * @throws PolygonCornerTooCloseException thrown when a corner is too close to
-	 * another corner inside the polygon.
-	 */
+	@Override
 	public void addCorner(Vector2 corner, int index) throws PolygonComplexException, PolygonCornerTooCloseException{
 		mVisualVars.corners.add(index, corner.cpy());
 
@@ -437,11 +424,7 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 		mFixtureChangeTime = GameTime.getTotalGlobalTimeElapsed();
 	}
 
-	/**
-	 * Removes a corner with the specific id.
-	 * @param index the corner to remove
-	 * @return position of the corner we removed, null if none was removed
-	 */
+	@Override
 	public Vector2 removeCorner(int index) {
 		Vector2 removedPosition = null;
 		if (index >= 0 && index < mVisualVars.corners.size()) {
@@ -458,15 +441,7 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 		return removedPosition;
 	}
 
-	/**
-	 * Moves a corner, identifying the corner from index
-	 * @param index index of the corner to move
-	 * @param newPos new position of the corner
-	 * @throws PolygonComplexException thrown when the adding corner would make the
-	 * polygon an complex polygon, i.e. intersect itself.
-	 * @throws PolygonCornerTooCloseException thrown when a corner is too close to
-	 * another corner inside the polygon.
-	 */
+	@Override
 	public void moveCorner(int index, Vector2 newPos) throws PolygonComplexException, PolygonCornerTooCloseException {
 		Vector2 oldPos = Pools.obtain(Vector2.class);
 		oldPos.set(mVisualVars.corners.get(index));
@@ -491,9 +466,7 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 		mFixtureChangeTime = GameTime.getTotalGlobalTimeElapsed();
 	}
 
-	/**
-	 * @return number of corners in this actor. Only applicable if actor is set as custom shape
-	 */
+	@Override
 	public int getCornerCount() {
 		return mVisualVars.corners.size();
 	}
@@ -617,28 +590,7 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 		createFixtureDef();
 	}
 
-	/**
-	 * Exception class for when trying to create a new, or move an existing corner
-	 * and this makes the polygon complex, i.e. it intersects with itself.
-	 */
-	public class PolygonComplexException extends Exception {
-		/** for serialization */
-		private static final long serialVersionUID = -2564535357356811708L;
-	}
-
-	/**
-	 * Exception class for when a triangle of the polygon would make too
-	 * small area.
-	 */
-	public class PolygonCornerTooCloseException extends Exception {
-		/** For serialization */
-		private static final long serialVersionUID = 5402912928691451496L;
-	}
-
-	/**
-	 * @param index the index we want to get the corner from
-	 * @return corner position of the specified index
-	 */
+	@Override
 	public Vector2 getCornerPosition(int index) {
 		return mVisualVars.corners.get(index);
 	}
@@ -704,6 +656,11 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 				Collections.reverse(triangles);
 			}
 
+			// Add center offset
+			for (Vector2 vertex : triangles) {
+				vertex.add(mVisualVars.centerOffset);
+			}
+
 			int cTriangles = triangles.size() / 3;
 			Vector2[] triangleVertices = new Vector2[3];
 			for (int i = 0; i < triangleVertices.length; ++i) {
@@ -717,7 +674,7 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 				int offset = triangle * 3;
 				for (int vertex = 0; vertex < triangleVertices.length; ++vertex) {
 					triangleVertices[vertex].set(triangles.get(offset + vertex));
-					triangleVertices[vertex].add(mVisualVars.centerOffset);
+					//					triangleVertices[vertex].add(mVisualVars.centerOffset);
 				}
 
 
@@ -749,6 +706,11 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 				fixtureDef.shape = polygonShape;
 				addFixtureDef(fixtureDef);
 			}
+
+
+			// Set AABB box
+			//			mAabbBox.setFromPolygon(triangles);
+
 
 			// Free stuff
 			for (int i = 0; i < triangleVertices.length; ++i) {
@@ -783,6 +745,10 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 
 			savedFixtureProperties.shape = circle;
 			addFixtureDef(savedFixtureProperties);
+
+
+			// Set AABB box
+			//			mAabbBox.setFromCircle(circle.getPosition(), circle.getRadius());
 		}
 	}
 
@@ -865,6 +831,10 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 		circleShape.setRadius(mVisualVars.shapeCircleRadius);
 		/** @todo use center for all shapes */
 		//		circleShape.setPosition(mVisualVars.centerOffset);
+
+		// Set AABB box
+		//		mAabbBox.setFromCircle(circleShape.getPosition(), circleShape.getRadius());
+
 		return circleShape;
 	}
 
@@ -874,9 +844,19 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	 */
 	private PolygonShape createRectangleShape() {
 		PolygonShape rectangleShape = new PolygonShape();
+
+		float halfWidth = mVisualVars.shapeWidth * 0.5f;
+		float halfHeight = mVisualVars.shapeHeight * 0.5f;
+
 		/** @todo use center for all shapes */
-		//		rectangleShape.setAsBox(mVisualVars.shapeWidth * 0.5f, mVisualVars.shapeHeight * 0.5f, mVisualVars.centerOffset, 0);
-		rectangleShape.setAsBox(mVisualVars.shapeWidth * 0.5f, mVisualVars.shapeHeight * 0.5f);
+		//		rectangleShape.setAsBox(halfWidth, halfHeight, mVisualVars.centerOffset, 0);
+		rectangleShape.setAsBox(halfWidth, halfHeight);
+
+		// Set AABB box
+		/** @todo use center for AABB box */
+		//		mAabbBox.setFromBox(mVisualVars.centerOffset, halfWidth, halfHeight);
+		//		mAabbBox.setFromBox(new Vector2(), halfWidth, halfHeight);
+
 		return rectangleShape;
 	}
 
@@ -921,6 +901,10 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 		}
 
 
+		// Set AABB box
+		//		mAabbBox.setFromPolygon(vertices);
+
+
 		PolygonShape polygonShape = new PolygonShape();
 		polygonShape.set(vertices);
 
@@ -938,9 +922,20 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	 */
 	private EdgeShape createLineShape() {
 		EdgeShape edgeShape = new EdgeShape();
+
+		//		Vector2 pointA = Pools.obtain(Vector2.class);
+		//		Vector2 pointB = Pools.obtain(Vector2.class);
+
+		//		pointA.set(-mVisualVars.shapeWidth * 0.5f, 0);
+		//		pointB.set(mVisualVars.shapeWidth * 0.5f, 0);
+
 		/** @todo use center for all shapes */
 		//		edgeShape.set(-mVisualVars.shapeWidth * 0.5f + mVisualVars.centerOffset.x, mVisualVars.centerOffset.y, mVisualVars.shapeWidth * 0.5f + mVisualVars.centerOffset.x, mVisualVars.centerOffset.y);
 		edgeShape.set(-mVisualVars.shapeWidth * 0.5f, 0, mVisualVars.shapeWidth * 0.5f, 0);
+
+		//		Pools.free(pointA);
+		//		Pools.free(pointB);
+
 		return edgeShape;
 	}
 
@@ -984,6 +979,8 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	protected float mFixtureChangeTime = 0;
 	/** When the body was changed last time */
 	protected float mBodyChangeTime = 0;
+	/** AABB box for all fixtures */
+	//	private AabbBox mAabbBox = Pools.obtain(AabbBox.class);
 	/** Defines the mass, shape, etc. */
 	private ArrayList<FixtureDef> mFixtureDefs = new ArrayList<FixtureDef>();
 	/** Maximum life of the actor, usually starting amount of life */

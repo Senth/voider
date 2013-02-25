@@ -11,9 +11,11 @@ import com.spiddekauga.utils.Invoker;
 import com.spiddekauga.utils.Scroller;
 import com.spiddekauga.utils.Scroller.ScrollAxis;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.editor.commands.CCameraMove;
 import com.spiddekauga.voider.game.GameScene;
 import com.spiddekauga.voider.game.Level;
 import com.spiddekauga.voider.game.LevelDef;
+import com.spiddekauga.voider.game.Path;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.ActorDef;
 import com.spiddekauga.voider.game.actors.EnemyActor;
@@ -22,6 +24,7 @@ import com.spiddekauga.voider.game.actors.EnemyGroup;
 import com.spiddekauga.voider.game.actors.PickupActor;
 import com.spiddekauga.voider.game.actors.PickupActorDef;
 import com.spiddekauga.voider.game.actors.StaticTerrainActor;
+import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceNames;
 import com.spiddekauga.voider.resources.ResourceSaver;
@@ -31,6 +34,7 @@ import com.spiddekauga.voider.scene.AddActorTool;
 import com.spiddekauga.voider.scene.AddEnemyTool;
 import com.spiddekauga.voider.scene.DrawActorTool;
 import com.spiddekauga.voider.scene.LoadingScene;
+import com.spiddekauga.voider.scene.PathTool;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.scene.SelectDefScene;
@@ -42,7 +46,7 @@ import com.spiddekauga.voider.scene.WorldScene;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class LevelEditor extends WorldScene implements IActorChangeEditor, IEditor {
+public class LevelEditor extends WorldScene implements IResourceChangeEditor, IEditor {
 	/**
 	 * Constructor for the level editor
 	 */
@@ -61,6 +65,8 @@ public class LevelEditor extends WorldScene implements IActorChangeEditor, IEdit
 		mTouchTools[Tools.PICKUP.ordinal()] = pickupTool;
 		AddEnemyTool enemyTool = new AddEnemyTool(mCamera, mWorld, mInvoker, this);
 		mTouchTools[Tools.ENEMY.ordinal()] = enemyTool;
+		PathTool pathTool = new PathTool(mCamera, mWorld, mInvoker, this);
+		mTouchTools[Tools.PATH.ordinal()] = pathTool;
 
 		switchTool(Tools.STATIC_TERRAIN);
 	}
@@ -74,21 +80,23 @@ public class LevelEditor extends WorldScene implements IActorChangeEditor, IEdit
 		if (mScroller.isScrolling()) {
 			mScroller.update(Gdx.graphics.getDeltaTime());
 
-			// Update the camera
-			Vector2 scrollCameraOrigin = Pools.obtain(Vector2.class);
-			screenToWorldCoord(mCamera, mScroller.getOriginScroll(), scrollCameraOrigin, false);
-			Vector2 scrollCameraCurrent = Pools.obtain(Vector2.class);
-			screenToWorldCoord(mCamera, mScroller.getCurrentScroll(), scrollCameraCurrent, false);
-
 			Vector2 diffScroll = Pools.obtain(Vector2.class);
-			diffScroll.set(scrollCameraCurrent).sub(scrollCameraOrigin);
+			diffScroll.set(mScroller.getCurrentScroll()).sub(mScroller.getOriginScroll());
+			diffScroll.mul(Config.Graphics.WORLD_SCALE);
 
 			mCamera.position.x = diffScroll.x + mScrollCameraOrigin.x;
 			mCamera.update();
 
-			Pools.free(scrollCameraCurrent);
-			Pools.free(scrollCameraOrigin);
 			Pools.free(diffScroll);
+		} else if (!mCreatedScrollCommand) {
+			Vector2 scrollCameraCurrent = Pools.obtain(Vector2.class);
+			scrollCameraCurrent.set(mCamera.position.x, mCamera.position.y);
+
+			mInvoker.execute(new CCameraMove(mCamera, scrollCameraCurrent, mScrollCameraOrigin));
+
+			mCreatedScrollCommand = true;
+
+			Pools.free(scrollCameraCurrent);
 		}
 	}
 
@@ -286,8 +294,17 @@ public class LevelEditor extends WorldScene implements IActorChangeEditor, IEdit
 	public boolean touchDown(int x, int y, int pointer, int button) {
 		// Scroll -> When press middle mouse or two fingers
 		if (button == 2 || (Gdx.app.getInput().isTouched(0) && Gdx.app.getInput().isTouched(1))) {
+			// If we're already scrolling create scroll command
+			if (mScroller.isScrolling()) {
+				Vector2 scrollCameraCurrent = Pools.obtain(Vector2.class);
+				scrollCameraCurrent.set(mCamera.position.x, mCamera.position.y);
+				mInvoker.execute(new CCameraMove(mCamera, scrollCameraCurrent, mScrollCameraOrigin));
+				Pools.free(scrollCameraCurrent);
+			}
+
 			mScroller.touchDown(x, y);
 			mScrollCameraOrigin.set(mCamera.position.x, mCamera.position.y);
+			mCreatedScrollCommand = false;
 			return true;
 		} else if (mScroller.isScrolling()) {
 			return true;
@@ -319,28 +336,36 @@ public class LevelEditor extends WorldScene implements IActorChangeEditor, IEdit
 	}
 
 	@Override
-	public void onActorAdded(Actor actor) {
-		mLevel.addActor(actor);
+	public void onResourceAdded(IResource resource) {
+		if (resource instanceof Actor) {
+			mLevel.addActor((Actor) resource);
+		} else if (resource instanceof Path) {
+			mLevel.addPath((Path) resource);
+		}
 		mUnsaved = true;
 	}
 
 	@Override
-	public void onActorRemoved(Actor actor) {
-		mLevel.removeActor(actor.getId());
+	public void onResourceRemoved(IResource resource) {
+		if (resource instanceof Actor) {
+			mLevel.removeActor(resource.getId());
+		} else if (resource instanceof Path) {
+			mLevel.removePath(resource.getId());
+		}
 		mUnsaved = true;
 	}
 
 	@Override
-	public void onActorChanged(Actor actor) {
+	public void onResourceChanged(IResource resource) {
 		mUnsaved = true;
 	}
 
 	@Override
-	public void onActorSelected(Actor actor) {
-		if (actor instanceof EnemyActor) {
+	public void onResourceSelected(IResource resource) {
+		if (resource instanceof EnemyActor) {
 			((LevelEditorGui)mGui).showEnemyOptions();
 
-			EnemyActor selectedEnemy = (EnemyActor) ((AddEnemyTool)mTouchTools[Tools.ENEMY.ordinal()]).getSelectedActor();
+			EnemyActor selectedEnemy = (EnemyActor) ((AddEnemyTool)mTouchTools[Tools.ENEMY.ordinal()]).getSelectedResource();
 			EnemyGroup enemyGroup = selectedEnemy.getEnemyGroup();
 
 			if (enemyGroup != null) {
@@ -359,7 +384,7 @@ public class LevelEditor extends WorldScene implements IActorChangeEditor, IEdit
 	 */
 	boolean isEnemySelected() {
 		if (mToolType == Tools.ENEMY) {
-			return ((AddActorTool)mTouchTools[Tools.ENEMY.ordinal()]).getSelectedActor() != null;
+			return ((AddActorTool)mTouchTools[Tools.ENEMY.ordinal()]).getSelectedResource() != null;
 		}
 
 		return false;
@@ -484,7 +509,7 @@ public class LevelEditor extends WorldScene implements IActorChangeEditor, IEdit
 	 * @param cEnemies number of enemies in the group
 	 */
 	void setEnemyCount(int cEnemies) {
-		EnemyActor selectedEnemy = (EnemyActor) ((AddEnemyTool)mTouchTools[Tools.ENEMY.ordinal()]).getSelectedActor();
+		EnemyActor selectedEnemy = (EnemyActor) ((AddEnemyTool)mTouchTools[Tools.ENEMY.ordinal()]).getSelectedResource();
 
 		if (selectedEnemy != null) {
 			EnemyGroup enemyGroup = selectedEnemy.getEnemyGroup();
@@ -542,7 +567,7 @@ public class LevelEditor extends WorldScene implements IActorChangeEditor, IEdit
 	 * @return number of enemies in a group
 	 */
 	int getEnemyCount() {
-		EnemyActor selectedEnemy = (EnemyActor) ((AddEnemyTool)mTouchTools[Tools.ENEMY.ordinal()]).getSelectedActor();
+		EnemyActor selectedEnemy = (EnemyActor) ((AddEnemyTool)mTouchTools[Tools.ENEMY.ordinal()]).getSelectedResource();
 
 		int cEnemies = 0;
 
@@ -566,7 +591,7 @@ public class LevelEditor extends WorldScene implements IActorChangeEditor, IEdit
 	 * @param delay seconds of delay between actors are activated.
 	 */
 	void setEnemySpawnDelay(float delay) {
-		EnemyActor selectedEnemy = (EnemyActor) ((AddEnemyTool)mTouchTools[Tools.ENEMY.ordinal()]).getSelectedActor();
+		EnemyActor selectedEnemy = (EnemyActor) ((AddEnemyTool)mTouchTools[Tools.ENEMY.ordinal()]).getSelectedResource();
 
 		if (selectedEnemy != null) {
 			EnemyGroup enemyGroup = selectedEnemy.getEnemyGroup();
@@ -582,7 +607,7 @@ public class LevelEditor extends WorldScene implements IActorChangeEditor, IEdit
 	 * @return spawn delay between actors in the same group, negative value if no group exist
 	 */
 	float getEnemySpawnDelay() {
-		EnemyActor selectedEnemy = (EnemyActor) ((AddEnemyTool)mTouchTools[Tools.ENEMY.ordinal()]).getSelectedActor();
+		EnemyActor selectedEnemy = (EnemyActor) ((AddEnemyTool)mTouchTools[Tools.ENEMY.ordinal()]).getSelectedResource();
 
 		if (selectedEnemy != null) {
 			EnemyGroup enemyGroup = selectedEnemy.getEnemyGroup();
@@ -649,6 +674,22 @@ public class LevelEditor extends WorldScene implements IActorChangeEditor, IEdit
 	 */
 	AddActorTool.States getEnemyState() {
 		return ((AddActorTool)mTouchTools[Tools.ENEMY.ordinal()]).getState();
+	}
+
+	/**
+	 * Sets the active path tool state
+	 * @param state new active path tool state
+	 */
+	void setPathState(PathTool.States state) {
+		PathTool pathTool = (PathTool) mTouchTools[Tools.PATH.ordinal()];
+		pathTool.setState(state);
+	}
+
+	/**
+	 * @return current path tool state
+	 */
+	PathTool.States getPathState() {
+		return ((PathTool)mTouchTools[Tools.PATH.ordinal()]).getState();
 	}
 
 	/**
@@ -748,6 +789,8 @@ public class LevelEditor extends WorldScene implements IActorChangeEditor, IEdit
 		PICKUP,
 	}
 
+	/** Created scroll command for the last scroll */
+	private boolean mCreatedScrollCommand = true;
 	/** Level we're currently editing */
 	private Level mLevel = null;
 	/** Invoker for the level editor */

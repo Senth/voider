@@ -3,6 +3,7 @@ package com.spiddekauga.voider.game;
 import java.util.ArrayList;
 import java.util.UUID;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -15,6 +16,8 @@ import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.OrderedMap;
 import com.badlogic.gdx.utils.Pools;
 import com.spiddekauga.utils.Json;
+import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.editor.HitWrapper;
 import com.spiddekauga.voider.game.actors.ActorFilterCategories;
 import com.spiddekauga.voider.resources.Resource;
 
@@ -24,7 +27,7 @@ import com.spiddekauga.voider.resources.Resource;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class Path extends Resource implements Json.Serializable, Disposable {
+public class Path extends Resource implements Json.Serializable, Disposable, IResourceCorner, IResourceBody, IResourcePosition {
 	/**
 	 * Default constructor, sets the unique id of the path
 	 */
@@ -32,31 +35,91 @@ public class Path extends Resource implements Json.Serializable, Disposable {
 		mUniqueId = UUID.randomUUID();
 	}
 
-	/**
-	 * Adds a path node to the back
-	 * @param nodePos the position of the node
-	 */
-	public void addNodeToBack(Vector2 nodePos) {
-		mNodes.add(Pools.obtain(Vector2.class).set(nodePos));
+	@Override
+	public void addCorner(Vector2 corner) throws PolygonComplexException, PolygonCornerTooCloseException {
+		addCorner(corner, mCorners.size());
+	}
+
+	@Override
+	public void addCorner(Vector2 corner, int index) throws PolygonComplexException, PolygonCornerTooCloseException {
+		mCorners.add(index, corner.cpy());
 
 		if (mWorld != null) {
+			createFixture();
+			resetBodyFixture();
+
+			if (mSelected) {
+				createBodyCorner(corner, index);
+			}
+		}
+	}
+
+	/**
+	 * This actually moves the position
+	 */
+	@Override
+	public void setPosition(Vector2 position) {
+		Vector2 diff = getPosition();
+
+		diff.sub(position);
+
+		// Move all corners
+		for (Vector2 corner : mCorners) {
+			corner.sub(diff);
+		}
+
+		Pools.free(diff);
+	}
+
+	/**
+	 * Calculates the center position of all corners. This is calculated everytime this
+	 * method is called.
+	 * @return center position of all corner. Don't forget to run Pools.free(position) this
+	 * return value
+	 */
+	@Override
+	public Vector2 getPosition() {
+		Vector2 center = Pools.obtain(Vector2.class);
+		center.set(0, 0);
+
+		for (Vector2 corner : mCorners) {
+			center.add(corner);
+		}
+
+		if (!mCorners.isEmpty()) {
+			center.div(mCorners.size());
+		}
+
+		return center;
+	}
+
+	@Override
+	public Vector2 removeCorner(int index) {
+		Vector2 removedCorner = null;
+
+		if (index >= 0 && index < mCorners.size()) {
+			removedCorner = mCorners.remove(index);
+			destroyBodyCorners(index);
+			createFixture();
+			resetBodyFixture();
+		}
+
+		return removedCorner;
+	}
+
+	@Override
+	public void moveCorner(int index, Vector2 newPos) throws PolygonComplexException, PolygonCornerTooCloseException {
+		if (index >= 0 && index < mCorners.size()) {
+			mCorners.get(index).set(newPos);
+			resetBodyCorners();
 			createFixture();
 			resetBodyFixture();
 		}
 	}
 
-	/**
-	 * Removes the node at the back if one exists
-	 */
-	public void removeNodeFromBack() {
-		if (!mNodes.isEmpty()) {
-			mNodes.remove(mNodes.size() - 1);
-		}
-
-		if (mWorld != null) {
-			createFixture();
-			resetBodyFixture();
-		}
+	@Override
+	public int getCornerCount() {
+		return mCorners.size();
 	}
 
 	/**
@@ -85,53 +148,14 @@ public class Path extends Resource implements Json.Serializable, Disposable {
 		}
 	}
 
-	/**
-	 * @return number of nodes in the path
-	 */
-	public int getNodeCount() {
-		return mNodes.size();
+	@Override
+	public Vector2 getCornerPosition(int index) {
+		return mCorners.get(index);
 	}
 
-	/**
-	 * @param index index of the node we want to get
-	 * @return node at the specified index
-	 */
-	public Vector2 getNodeAt(int index) {
-		return mNodes.get(index);
-	}
-
-	/**
-	 * @return all nodes of the path. These node are used by reference, thus
-	 * the returned array will be invalid after a #clearNodes() call.
-	 * @see #getNodesCopy() if you want to save the nodes after a #clearNodes() call
-	 */
-	public ArrayList<Vector2> getNodes() {
-		return mNodes;
-	}
-
-	/**
-	 * @return a copy of all nodes of the path. This is necessary if you want to save
-	 * the array after a #clearNodes() call. The Vectors are allocated through Pools, thus
-	 * they should be freed to the same pool when discarding them.
-	 * @see #getNodes() if you just want a temporary list
-	 */
-	public ArrayList<Vector2> getNodesCopy() {
-		ArrayList<Vector2> copyList = new ArrayList<Vector2>();
-		for (Vector2 node : mNodes) {
-			copyList.add(Pools.obtain(Vector2.class).set(node));
-		}
-		return copyList;
-	}
-
-	/**
-	 * Removes and frees all nodes from the path. Any returned array from #getNodes()
-	 * gets invalidated.
-	 */
-	public void clearNodes() {
-		for (Vector2 node : mNodes) {
-			Pools.free(node);
-		}
-		mNodes.clear();
+	@Override
+	public ArrayList<Vector2> getCorners() {
+		return mCorners;
 	}
 
 	/**
@@ -156,18 +180,52 @@ public class Path extends Resource implements Json.Serializable, Disposable {
 	 * @param spriteBatch the batch to use for rendering
 	 */
 	public void render(SpriteBatch spriteBatch) {
-
+		/** @todo render path */
 	}
 
 	@Override
-	public UUID getId() {
-		return mUniqueId;
+	public void createBody() {
+		if (mWorld != null) {
+			// Destroy old body
+			if (mBody != null) {
+				mBody.getWorld().destroyBody(mBody);
+			}
+
+			mBody = mWorld.createBody(new BodyDef());
+			mBody.setUserData(this);
+			if (mFixtureDef != null) {
+				mBody.createFixture(mFixtureDef);
+			}
+		}
+	}
+
+	@Override
+	public void destroyBody() {
+		if (mBody != null) {
+			mBody.getWorld().destroyBody(mBody);
+			mBody = null;
+		}
+	}
+
+	/**
+	 * Checks what index the specified position has.
+	 * @param position the position of a corner
+	 * @return corner index if a corner was found at position, -1 if none was found.
+	 */
+	public int getCornerIndex(Vector2 position) {
+		for (int i = 0; i < mCorners.size(); ++i) {
+			if (mCorners.get(i).equals(position)) {
+				return i;
+			}
+		}
+
+		return -1;
 	}
 
 	@Override
 	public void write(Json json) {
 		super.write(json);
-		json.writeValue("mNodes", mNodes);
+		json.writeValue("mCorners", mCorners);
 		json.writeValue("mPathType", mPathType);
 	}
 
@@ -175,7 +233,7 @@ public class Path extends Resource implements Json.Serializable, Disposable {
 	@Override
 	public void read(Json json, OrderedMap<String, Object> jsonData) {
 		super.read(json, jsonData);
-		mNodes = json.readValue("mNodes", ArrayList.class, jsonData);
+		mCorners = json.readValue("mCorners", ArrayList.class, jsonData);
 		mPathType = json.readValue("mPathType", PathTypes.class, jsonData);
 	}
 
@@ -186,6 +244,32 @@ public class Path extends Resource implements Json.Serializable, Disposable {
 			mFixtureDef.shape = null;
 		}
 	}
+
+	/**
+	 * Set the path as selected, this will render the path differently
+	 * @param selected set to true if the path shall be set as selected
+	 */
+	public void setSelected(boolean selected) {
+		mSelected = selected;
+
+		if (mSelected) {
+			if (mWorld != null && mBodyCorners.isEmpty()) {
+				createBodyCorners();
+			}
+		} else {
+			if (!mBodyCorners.isEmpty()) {
+				destroyBodyCorners();
+			}
+		}
+	}
+
+	/**
+	 * @return true if this path is selected
+	 */
+	public boolean isSelected() {
+		return mSelected;
+	}
+
 
 	/**
 	 * Different path types, i.e. how the enemy shall follow a path
@@ -206,7 +290,7 @@ public class Path extends Resource implements Json.Serializable, Disposable {
 	 * Creates the fixtures for the path
 	 */
 	private void createFixture() {
-		if (mNodes.size() >= 2) {
+		if (mCorners.size() >= 2) {
 			if (mFixtureDef == null) {
 				mFixtureDef = new FixtureDef();
 				mFixtureDef.filter.categoryBits = ActorFilterCategories.NONE;
@@ -220,9 +304,37 @@ public class Path extends Resource implements Json.Serializable, Disposable {
 
 			// Create shape
 			ChainShape chainShape = new ChainShape();
-			Vector2[] tempArray = new Vector2[mNodes.size()];
-			chainShape.createChain(mNodes.toArray(tempArray));
+			Vector2[] tempArray = new Vector2[mCorners.size()];
+			chainShape.createChain(mCorners.toArray(tempArray));
 			mFixtureDef.shape = chainShape;
+		} else if (mCorners.size() >= 1) {
+			if (mFixtureDef == null) {
+				mFixtureDef = new FixtureDef();
+				mFixtureDef.filter.categoryBits = ActorFilterCategories.NONE;
+				mFixtureDef.filter.groupIndex = ActorFilterCategories.NONE;
+			} else {
+				if (mFixtureDef.shape != null) {
+					mFixtureDef.shape.dispose();
+					mFixtureDef.shape = null;
+				}
+			}
+
+			ChainShape chainShape = new ChainShape();
+			Vector2[] tempArray = new Vector2[2];
+
+			for (int i = 0; i < tempArray.length; ++i) {
+				tempArray[i] = Pools.obtain(Vector2.class);
+			}
+
+			tempArray[0].set(mCorners.get(0));
+			tempArray[1].set(mCorners.get(0)).sub(1,0);
+
+			chainShape.createChain(tempArray);
+			mFixtureDef.shape = chainShape;
+
+			for (Vector2 tempPosition : tempArray) {
+				Pools.free(tempPosition);
+			}
 		}
 	}
 
@@ -242,22 +354,78 @@ public class Path extends Resource implements Json.Serializable, Disposable {
 	}
 
 	/**
-	 * Creates the body for the world, so the player can click on it
+	 * Creates all the body corners
 	 */
-	private void createBody() {
-		// Destroy old body
-		if (mBody != null) {
-			mBody.getWorld().destroyBody(mBody);
+	private void createBodyCorners() {
+		if (!mBodyCorners.isEmpty()) {
+			Gdx.app.error("Path", "Shall only create body corners if empty!");
 		}
 
-		mBody = mWorld.createBody(new BodyDef());
-		if (mFixtureDef != null) {
-			mBody.createFixture(mFixtureDef);
+		for (Vector2 corner : mCorners) {
+			createBodyCorner(corner);
 		}
 	}
 
+	/**
+	 * Destroys all body corners
+	 */
+	private void destroyBodyCorners() {
+		while (!mBodyCorners.isEmpty()) {
+			destroyBodyCorners(0);
+		}
+	}
+
+	/**
+	 * Creates a new body corner at the back
+	 * @param position corner position to create the body in
+	 */
+	private void createBodyCorner(Vector2 position) {
+		createBodyCorner(position, mBodyCorners.size());
+	}
+
+	/**
+	 * Creates a new body corner in the specified position
+	 * @param position corner position to create the body in
+	 * @param index the index to create the corner in
+	 */
+	private void createBodyCorner(Vector2 position, int index) {
+		Body cornerBody = mWorld.createBody(new BodyDef());
+		cornerBody.setTransform(position, 0);
+		cornerBody.createFixture(Config.Editor.getPickingFixture());
+		HitWrapper hitWrapper = new HitWrapper(this);
+		cornerBody.setUserData(hitWrapper);
+
+		mBodyCorners.add(index, cornerBody);
+	}
+
+	/**
+	 * Destroys the specified body corner and removes it from the list
+	 * @param index the body corner to destroy
+	 */
+	private void destroyBodyCorners(int index) {
+		if (index >= 0 && index < mBodyCorners.size()) {
+			Body removedBody = mBodyCorners.remove(index);
+
+			removedBody.getWorld().destroyBody(removedBody);
+		}
+	}
+
+	/**
+	 * Resets the position of all body corners
+	 */
+	private void resetBodyCorners() {
+		for (int i = 0; i < mBodyCorners.size(); ++i) {
+			Body body = mBodyCorners.get(i);
+			body.setTransform(mCorners.get(i), 0);
+		}
+	}
+
+	/** If this path is selected */
+	private boolean mSelected = false;
 	/** All path nodes */
-	private ArrayList<Vector2> mNodes = new ArrayList<Vector2>();
+	private ArrayList<Vector2> mCorners = new ArrayList<Vector2>();
+	/** Corner bodies, for picking */
+	private ArrayList<Body> mBodyCorners = new ArrayList<Body>();
 	/** What type of path type the enemy uses, only applicable if movement type
 	 * is set to path */
 	private PathTypes mPathType = PathTypes.ONCE;

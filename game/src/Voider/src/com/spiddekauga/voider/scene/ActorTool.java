@@ -98,7 +98,7 @@ public abstract class ActorTool extends TouchTool {
 				// Hit a corner
 				if (body.getUserData() instanceof HitWrapper) {
 					HitWrapper hitWrapper = (HitWrapper) body.getUserData();
-					if (hitWrapper.actor != null && hitWrapper.actor.getClass() == mActorType) {
+					if (hitWrapper.resource != null && hitWrapper.resource.getClass() == mActorType) {
 						mHitBodies.clear();
 						mHitBodies.add(fixture.getBody());
 						return false;

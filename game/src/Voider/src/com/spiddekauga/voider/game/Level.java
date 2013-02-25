@@ -37,7 +37,7 @@ public class Level extends Resource implements ITriggerListener, Json.Serializab
 		mLevelDef = levelDef;
 		mUniqueId = levelDef.getLevelId();
 		mActors = new ArrayList<Actor>();
-		//		mTriggerInformation = new TriggerContainer();
+		mPaths = new ArrayList<Path>();
 		mSpeed = mLevelDef.getBaseSpeed();
 		mCompletedLevel = false;
 	}
@@ -204,32 +204,6 @@ public class Level extends Resource implements ITriggerListener, Json.Serializab
 		if (!actor.savesDef()) {
 			mLevelDef.addDependency(actor.getDef());
 		}
-
-	}
-
-	/**
-	 * Checks if the actor exists inside this level
-	 * @param actor the actor check if it exist
-	 * @return true if this level contains the specified actor
-	 */
-	public boolean containsActor(Actor actor) {
-		return mActors.contains(actor);
-	}
-
-	/**
-	 * Adds an enemy group to the level
-	 * @param enemyGroup the enemy group to add
-	 */
-	public void addEnemyGroup(EnemyGroup enemyGroup) {
-		mResourceBinder.addResource(enemyGroup);
-	}
-
-	/**
-	 * Removes an enemy group from the level
-	 * @param enemyGroupId the enemy group to remove
-	 */
-	public void removeEnemyGroup(UUID enemyGroupId) {
-		mResourceBinder.removeResource(enemyGroupId);
 	}
 
 	/**
@@ -260,6 +234,66 @@ public class Level extends Resource implements ITriggerListener, Json.Serializab
 	}
 
 	/**
+	 * Adds a path to the level
+	 * @param path the path to add to the level
+	 */
+	public void addPath(Path path) {
+		mResourceBinder.addResource(path);
+
+		if (Actor.isEditorActive()) {
+			mPaths.add(path);
+		}
+	}
+
+	/**
+	 * Removes a path from the level
+	 * @param pathId the path id to remove
+	 */
+	public void removePath(UUID pathId) {
+		mResourceBinder.removeResource(pathId);
+
+		for (int i = 0; i < mPaths.size(); ++i) {
+			if (mPaths.get(i).equals(pathId)) {
+				mPaths.remove(i);
+				break;
+			}
+		}
+	}
+
+	/**
+	 * Returns all paths, only applicable if an editor is active
+	 * @return all paths, null or empty if no editor is active
+	 */
+	public ArrayList<Path> getPaths() {
+		return mPaths;
+	}
+
+	/**
+	 * Checks if the actor exists inside this level
+	 * @param actor the actor check if it exist
+	 * @return true if this level contains the specified actor
+	 */
+	public boolean containsActor(Actor actor) {
+		return mActors.contains(actor);
+	}
+
+	/**
+	 * Adds an enemy group to the level
+	 * @param enemyGroup the enemy group to add
+	 */
+	public void addEnemyGroup(EnemyGroup enemyGroup) {
+		mResourceBinder.addResource(enemyGroup);
+	}
+
+	/**
+	 * Removes an enemy group from the level
+	 * @param enemyGroupId the enemy group to remove
+	 */
+	public void removeEnemyGroup(UUID enemyGroupId) {
+		mResourceBinder.removeResource(enemyGroupId);
+	}
+
+	/**
 	 * @return all actors in the level
 	 */
 	public ArrayList<Actor> getActors() {
@@ -285,12 +319,10 @@ public class Level extends Resource implements ITriggerListener, Json.Serializab
 		super.write(json);
 
 		json.writeValue("mResourceBinder", mResourceBinder);
-		//		json.writeValue("mActors", mActors);
 		json.writeValue("mLevelDefId", mLevelDef.getId());
 		json.writeValue("mXCoord", mXCoord);
 		json.writeValue("mSpeed", mSpeed);
 		json.writeValue("mCompletedLevel", mCompletedLevel);
-		//		json.writeValue("mTriggerInformation", mTriggerInformation);
 	}
 
 	@Override
@@ -306,6 +338,10 @@ public class Level extends Resource implements ITriggerListener, Json.Serializab
 		ArrayList<Trigger> triggers = mResourceBinder.getResources(Trigger.class);
 		for (Trigger trigger : triggers) {
 			mTriggers.put(trigger.getId(), trigger);
+		}
+
+		if (Actor.isEditorActive()) {
+			mPaths = mResourceBinder.getResources(Path.class);
 		}
 
 		// Get the actual LevelDef
@@ -363,8 +399,8 @@ public class Level extends Resource implements ITriggerListener, Json.Serializab
 	private ResourceBinder mResourceBinder = new ResourceBinder();
 	/** All actors in the level */
 	private ArrayList<Actor> mActors = null;
-	//	/** All trigger information in the level, needed for duplication saving/loading and binding */
-	//	private TriggerContainer mTriggerInformation = null;
+	/** All paths, only used when editor is active */
+	private ArrayList<Path> mPaths = null;
 	/** All triggers */
 	private ObjectMap<UUID, Trigger> mTriggers = new ObjectMap<UUID, Trigger>();
 	/** Current x coordinate (of the screen's left edge) */

@@ -30,6 +30,7 @@ import com.spiddekauga.voider.game.actors.EnemyActorDef;
 import com.spiddekauga.voider.game.actors.EnemyActorDef.AimTypes;
 import com.spiddekauga.voider.game.actors.EnemyActorDef.MovementTypes;
 import com.spiddekauga.voider.game.actors.PlayerActor;
+import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceNames;
 import com.spiddekauga.voider.resources.ResourceSaver;
@@ -45,7 +46,7 @@ import com.spiddekauga.voider.scene.WorldScene;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class EnemyEditor extends WorldScene implements IActorEditor, IActorChangeEditor {
+public class EnemyEditor extends WorldScene implements IActorEditor, IResourceChangeEditor {
 	/**
 	 * Creates the enemy editor
 	 */
@@ -842,22 +843,22 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IActorChang
 	}
 
 	@Override
-	public void onActorAdded(Actor actor) {
+	public void onResourceAdded(IResource resource) {
 		// Does nothing
 	}
 
 	@Override
-	public void onActorRemoved(Actor actor) {
+	public void onResourceRemoved(IResource resource) {
 		// Does nothing
 	}
 
 	@Override
-	public void onActorChanged(Actor actor) {
+	public void onResourceChanged(IResource resource) {
 		// Does nothing
 	}
 
 	@Override
-	public void onActorSelected(Actor actor) {
+	public void onResourceSelected(IResource resource) {
 		// Does nothing
 	}
 
@@ -977,7 +978,11 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IActorChang
 		mEnemyPathBackAndForth.resetPathMovement();
 		for (int i = 0; i < nodes.length; ++i) {
 			screenToWorldCoord(mCamera, screenPos[i], nodes[i], true);
-			mPathBackAndForth.addNodeToBack(nodes[i]);
+			try {
+				mPathBackAndForth.addCorner(nodes[i]);
+			} catch (Exception e) {
+				// Does nothing...
+			}
 		}
 
 		// LOOP
@@ -988,7 +993,11 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IActorChang
 		for (int i = 0; i < nodes.length; ++i) {
 			screenPos[i].y += heightOffset;
 			screenToWorldCoord(mCamera, screenPos[i], nodes[i], true);
-			mPathLoop.addNodeToBack(nodes[i]);
+			try {
+				mPathLoop.addCorner(nodes[i]);
+			} catch (Exception e) {
+				// Does nothing
+			}
 		}
 
 		// ONCE
@@ -999,7 +1008,11 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IActorChang
 		for (int i = 0; i < nodes.length; ++i) {
 			screenPos[i].y += heightOffset;
 			screenToWorldCoord(mCamera, screenPos[i], nodes[i], true);
-			mPathOnce.addNodeToBack(nodes[i]);
+			try {
+				mPathOnce.addCorner(nodes[i]);
+			} catch (Exception e) {
+				// Does nothing
+			}
 		}
 
 		// Free stuff

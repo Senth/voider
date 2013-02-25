@@ -6,12 +6,12 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Pools;
 import com.spiddekauga.utils.Invoker;
 import com.spiddekauga.voider.editor.LevelEditor;
-import com.spiddekauga.voider.editor.commands.CActorMove;
-import com.spiddekauga.voider.game.actors.Actor;
+import com.spiddekauga.voider.editor.commands.CResourceMove;
 import com.spiddekauga.voider.game.actors.EnemyActor;
 import com.spiddekauga.voider.game.actors.EnemyActorDef;
 import com.spiddekauga.voider.game.actors.EnemyActorDef.MovementTypes;
 import com.spiddekauga.voider.game.actors.EnemyGroup;
+import com.spiddekauga.voider.resources.IResource;
 
 /**
  * Tool for adding enemies. This also has the ability to create a stack
@@ -38,11 +38,11 @@ public class AddEnemyTool extends AddActorTool {
 
 
 	@Override
-	public void setSelectedActor(Actor selectedActor) {
-		super.setSelectedActor(selectedActor);
+	public void setSelectedResource(IResource selectedResource) {
+		super.setSelectedResource(selectedResource);
 
-		if (selectedActor instanceof EnemyActor) {
-			mEnemyGroup = ((EnemyActor) selectedActor).getEnemyGroup();
+		if (selectedResource instanceof EnemyActor) {
+			mEnemyGroup = ((EnemyActor) selectedResource).getEnemyGroup();
 		}
 	}
 
@@ -88,7 +88,7 @@ public class AddEnemyTool extends AddActorTool {
 					/** @todo snap to nearby path if one exist */
 				} else {
 					Vector2 newPosition = getNewMovePosition();
-					mInvoker.execute(new CActorMove(mMovingActor, newPosition, mEditor), chained);
+					mInvoker.execute(new CResourceMove(mMovingActor, newPosition, mEditor), chained);
 					Pools.free(newPosition);
 				}
 				mMovingActor = null;

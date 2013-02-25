@@ -101,13 +101,21 @@ public abstract class TouchTool extends InputAdapter {
 	}
 
 	/**
-	 * Tests to pick an actor from the current touch. The hit body is
-	 * set to mHitBody
+	 * Tests to pick a body from the current touch. The hit body is
+	 * set to mHitBody. Uses the default pick size
 	 */
 	protected void testPick() {
+		testPick(Config.PICK_SIZE_DEFAULT);
+	}
+
+	/**
+	 * Tests to pick a body from the current touch. The hit body will be
+	 * set to mHitBody
+	 * @param halfSize how far the touch shall test
+	 */
+	protected void testPick(float halfSize) {
 		mHitBodies.clear();
-		float testSize = 0.0001f;
-		mWorld.QueryAABB(getCallback(), mTouchCurrent.x - testSize, mTouchCurrent.y - testSize, mTouchCurrent.x + testSize, mTouchCurrent.y + testSize);
+		mWorld.QueryAABB(getCallback(), mTouchCurrent.x - halfSize, mTouchCurrent.y - halfSize, mTouchCurrent.x + halfSize, mTouchCurrent.y + halfSize);
 		mHitBody = filterPick(mHitBodies);
 	}
 

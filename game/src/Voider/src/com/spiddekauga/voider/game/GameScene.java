@@ -1,5 +1,7 @@
 package com.spiddekauga.voider.game;
 
+import java.util.ArrayList;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.math.Vector2;
@@ -61,6 +63,11 @@ public class GameScene extends WorldScene {
 		mLevel = level;
 		mLevel.setPlayer(mPlayerActor);
 		mLevel.bindTriggers();
+
+		ArrayList<Actor> actors = mLevel.getActors();
+		for (Actor actor : actors) {
+			actor.createBody();
+		}
 
 		createBorder();
 

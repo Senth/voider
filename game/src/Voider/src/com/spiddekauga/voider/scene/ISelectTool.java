@@ -2,10 +2,10 @@ package com.spiddekauga.voider.scene;
 
 import java.util.List;
 
-import com.spiddekauga.voider.game.actors.Actor;
+import com.spiddekauga.voider.resources.IResource;
 
 /**
- * Tool that can select an actor, and thus add select listeners.
+ * Tool that can select a resource, and thus add select listeners.
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
@@ -38,12 +38,12 @@ public interface ISelectTool {
 
 	/**
 	 * Selects the specified actor
-	 * @param selectedActor the new actor to select
+	 * @param selectedResource the new resource to select
 	 */
-	void setSelectedActor(Actor selectedActor);
+	void setSelectedResource(IResource selectedResource);
 
 	/**
-	 * @return the selected actor
+	 * @return the selected resource
 	 */
-	Actor getSelectedActor();
+	IResource getSelectedResource();
 }

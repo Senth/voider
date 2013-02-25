@@ -442,6 +442,10 @@ public class Config {
 	public final static int REVISION = 1;
 	/** If debugging tests shall be activate */
 	public final static boolean DEBUG_TESTS = true;
+	/** Default pick size */
+	public final static float PICK_SIZE_DEFAULT = 0.0001f;
+	/** Path pick size */
+	public final static float PICK_PATH_SIZE = 0.5f;
 
 	/**
 	 * Private constructor so that no instance can be created
