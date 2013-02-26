@@ -194,6 +194,13 @@ public class Scroller {
 	}
 
 	/**
+	 * Stops the scroller if it is active
+	 */
+	public void stop() {
+		mScrollByEmulate = false;
+	}
+
+	/**
 	 * Enumeration for which axis to use the scroller for
 	 */
 	public enum ScrollAxis {

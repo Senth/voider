@@ -47,9 +47,11 @@ public class AddActorTool extends ActorTool implements ISelectTool {
 	 * @param state new state
 	 */
 	public void setState(States state) {
+		deactivate();
+
 		mState = state;
 
-		// TODO deselect actor?
+		activate();
 	}
 
 	/**
@@ -84,16 +86,16 @@ public class AddActorTool extends ActorTool implements ISelectTool {
 		if (selectedResource instanceof Actor) {
 			deactivate();
 
+			Actor oldSelected = mSelectedActor;
+			mSelectedActor = (Actor) selectedResource;
+
 			for (ISelectListener selectListener : mSelectListeners) {
-				selectListener.onResourceSelect(mSelectedActor, selectedResource);
+				selectListener.onResourceSelected(oldSelected, mSelectedActor);
 			}
 
-			mSelectedActor = (Actor) selectedResource;
 			mSelectedSinceUp = true;
 
 			activate();
-
-			mEditor.onResourceSelected(mSelectedActor);
 		}
 	}
 

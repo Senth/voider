@@ -1,6 +1,7 @@
 package com.spiddekauga.voider.editor;
 
 import com.spiddekauga.voider.resources.IResource;
+import com.spiddekauga.voider.scene.ISelectListener;
 
 
 /**
@@ -8,7 +9,7 @@ import com.spiddekauga.voider.resources.IResource;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public interface IResourceChangeEditor {
+public interface IResourceChangeEditor extends ISelectListener {
 	/**
 	 * Called when an resource is added
 	 * @param resource the resource that was created
@@ -26,10 +27,4 @@ public interface IResourceChangeEditor {
 	 * @param resource the resource that was changed
 	 */
 	void onResourceChanged(IResource resource);
-
-	/**
-	 * Called whenever an resource has been selected/deselected
-	 * @param resource the resource that was selected
-	 */
-	void onResourceSelected(IResource resource);
 }

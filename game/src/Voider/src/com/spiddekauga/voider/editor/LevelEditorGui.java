@@ -34,6 +34,7 @@ import com.spiddekauga.voider.editor.commands.CEditorLoad;
 import com.spiddekauga.voider.editor.commands.CEditorNew;
 import com.spiddekauga.voider.editor.commands.CEditorSave;
 import com.spiddekauga.voider.editor.commands.CGuiSlider;
+import com.spiddekauga.voider.game.Path.PathTypes;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceNames;
 import com.spiddekauga.voider.scene.AddActorTool;
@@ -72,6 +73,7 @@ class LevelEditorGui extends Gui {
 		initStaticTerrain();
 		initMenu();
 		initEnemy();
+		initPath();
 
 		mMainTable.setTransform(true);
 		mMainTable.invalidate();
@@ -126,9 +128,36 @@ class LevelEditorGui extends Gui {
 
 		// Enemy options
 		if (mLevelEditor.isEnemySelected()) {
-			mEnemyOptionsHider.show();
+			mHiders.enemyOptions.show();
 		} else {
-			mEnemyOptionsHider.hide();
+			mHiders.enemyOptions.hide();
+		}
+
+
+		// Path
+		switch (mLevelEditor.getPathState()) {
+		case ADD_CORNER:
+			mWidgets.path.add.setChecked(true);
+			break;
+
+		case SELECT:
+			mWidgets.path.select.setChecked(true);
+			break;
+
+		case MOVE:
+			mWidgets.path.move.setChecked(true);
+			break;
+
+		case REMOVE:
+			mWidgets.path.remove.setChecked(true);
+			break;
+		}
+
+		// Path options
+		if (mLevelEditor.isPathSelected()) {
+			mHiders.pathOptions.show();
+		} else {
+			mHiders.pathOptions.hide();
 		}
 
 
@@ -175,14 +204,14 @@ class LevelEditorGui extends Gui {
 	 * Shows the enemy options
 	 */
 	void showEnemyOptions() {
-		mEnemyOptionsHider.show();
+		mHiders.enemyOptions.show();
 	}
 
 	/**
 	 * Hides the enemy options
 	 */
 	void hideEnemyOptions() {
-		mEnemyOptionsHider.hide();
+		mHiders.enemyOptions.hide();
 	}
 
 	/**
@@ -194,6 +223,40 @@ class LevelEditorGui extends Gui {
 		mWidgets.enemy.cEnemies.setValue(cEnemies);
 		if (delay >= 0) {
 			mWidgets.enemy.delay.setValue(delay);
+		}
+	}
+
+	/**
+	 * Shows the path options
+	 */
+	void showPathOptions() {
+		mHiders.pathOptions.show();
+	}
+
+	/**
+	 * Hides the path options
+	 */
+	void hidePathOptions() {
+		mHiders.pathOptions.hide();
+	}
+
+	/**
+	 * Set the path type
+	 * @param pathType the path type to be set in GUI buttons
+	 */
+	void setPathType(PathTypes pathType) {
+		switch (pathType) {
+		case ONCE:
+			mWidgets.path.once.setChecked(true);
+			break;
+
+		case LOOP:
+			mWidgets.path.loop.setChecked(true);
+			break;
+
+		case BACK_AND_FORTH:
+			mWidgets.path.backAndForth.setChecked(true);
+			break;
 		}
 	}
 
@@ -417,11 +480,10 @@ class LevelEditorGui extends Gui {
 		new CheckedListener(button) {
 			@Override
 			protected void onChange(boolean checked) {
-				// TODO set tool as path
 				mLevelEditor.switchTool(Tools.PATH);
 			}
 		};
-		HideListener pathHider = new HideListener(button, true);
+		mHiders.path.setButton(button);
 
 		mEnemyTable.row();
 		button = new TextButton("Trigger", toggleStyle);
@@ -431,6 +493,7 @@ class LevelEditorGui extends Gui {
 		new CheckedListener(button) {
 			@Override
 			protected void onChange(boolean checked) {
+				// TODO set tool as trigger
 				mLevelEditor.switchTool(null);
 			}
 		};
@@ -522,16 +585,16 @@ class LevelEditorGui extends Gui {
 		// # Enemies
 		mEnemyTable.row();
 		Label label = new Label("# Enemies", labelStyle);
-		mEnemyOptionsHider.addToggleActor(label);
+		mHiders.enemyOptions.addToggleActor(label);
 		mEnemyTable.add(label);
 
 		mEnemyTable.row();
 		Slider slider = new Slider(Level.Enemy.ENEMIES_MIN, Level.Enemy.ENEMIES_MAX, Level.Enemy.ENEMIES_STEP_SIZE, false, sliderStyle);
-		mEnemyOptionsHider.addToggleActor(slider);
+		mHiders.enemyOptions.addToggleActor(slider);
 		mWidgets.enemy.cEnemies = slider;
 		mEnemyTable.add(slider);
 		TextField textField = new TextField("", textFieldStyle);
-		mEnemyOptionsHider.addToggleActor(textField);
+		mHiders.enemyOptions.addToggleActor(textField);
 		textField.setWidth(Config.Editor.TEXT_FIELD_NUMBER_WIDTH);
 		mEnemyTable.add(textField);
 		new SliderListener(slider, textField) {
@@ -542,7 +605,7 @@ class LevelEditorGui extends Gui {
 			}
 		};
 		HideSliderValue delayHider = new HideSliderValue(slider, 2, Float.MAX_VALUE);
-		mEnemyOptionsHider.addChild(delayHider);
+		mHiders.enemyOptions.addChild(delayHider);
 
 		// Delay
 		mEnemyTable.row();
@@ -566,29 +629,38 @@ class LevelEditorGui extends Gui {
 				mLevelEditor.setEnemySpawnDelay(newValue);
 			}
 		};
+	}
 
+	/**
+	 * Initializes path tool GUI
+	 */
+	private void initPath() {
+		Skin skin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
+		TextButtonStyle toggleStyle = skin.get("toggle", TextButtonStyle.class);
 
 		// ---- PATH -----
 		mEnemyTable.row();
-		buttonGroup = new ButtonGroup();
-		button = new TextButton("Select", toggleStyle);
+		ButtonGroup buttonGroup = new ButtonGroup();
+		Button button = new TextButton("Select", toggleStyle);
+		mWidgets.path.select = button;
 		buttonGroup.add(button);
 		mEnemyTable.add(button);
-		pathHider.addToggleActor(button);
+		mHiders.path.addToggleActor(button);
 		new CheckedListener(button) {
 			@Override
 			protected void onChange(boolean checked) {
 				if (checked) {
-					mLevelEditor.setPathState(null);
+					mLevelEditor.setPathState(PathTool.States.SELECT);
 				}
 			}
 		};
 
 		mEnemyTable.row();
 		button = new TextButton("Add", toggleStyle);
+		mWidgets.path.add = button;
 		buttonGroup.add(button);
 		mEnemyTable.add(button);
-		pathHider.addToggleActor(button);
+		mHiders.path.addToggleActor(button);
 		new CheckedListener(button) {
 			@Override
 			protected void onChange(boolean checked) {
@@ -600,9 +672,10 @@ class LevelEditorGui extends Gui {
 
 		mEnemyTable.row();
 		button = new TextButton("Remove", toggleStyle);
+		mWidgets.path.remove = button;
 		buttonGroup.add(button);
 		mEnemyTable.add(button);
-		pathHider.addToggleActor(button);
+		mHiders.path.addToggleActor(button);
 		new CheckedListener(button) {
 			@Override
 			protected void onChange(boolean checked) {
@@ -614,14 +687,61 @@ class LevelEditorGui extends Gui {
 
 		mEnemyTable.row();
 		button = new TextButton("Move", toggleStyle);
+		mWidgets.path.move = button;
 		buttonGroup.add(button);
 		mEnemyTable.add(button);
-		pathHider.addToggleActor(button);
+		mHiders.path.addToggleActor(button);
 		new CheckedListener(button) {
 			@Override
 			protected void onChange(boolean checked) {
 				if (checked) {
 					mLevelEditor.setPathState(PathTool.States.MOVE);
+				}
+			}
+		};
+
+
+		// Path options
+		mEnemyTable.row();
+		buttonGroup = new ButtonGroup();
+		button = new TextButton("Once", toggleStyle);
+		mWidgets.path.once = button;
+		mEnemyTable.add(button);
+		buttonGroup.add(button);
+		mHiders.pathOptions.addToggleActor(button);
+		new CheckedListener(button) {
+			@Override
+			protected void onChange(boolean checked) {
+				if (checked) {
+					mLevelEditor.setPathType(PathTypes.ONCE);
+				}
+			}
+		};
+
+		button = new TextButton("Loop", toggleStyle);
+		mWidgets.path.loop = button;
+		mEnemyTable.add(button);
+		buttonGroup.add(button);
+		mHiders.pathOptions.addToggleActor(button);
+		new CheckedListener(button) {
+			@Override
+			protected void onChange(boolean checked) {
+				if (checked) {
+					mLevelEditor.setPathType(PathTypes.LOOP);
+				}
+			}
+		};
+
+		button = new TextButton("Back & Forth", toggleStyle);
+		mWidgets.path.backAndForth = button;
+		mEnemyTable.add(button);
+		buttonGroup.add(button);
+		mHiders.pathOptions.addToggleActor(button);
+		new CheckedListener(button) {
+			@Override
+			protected void onChange(boolean checked) {
+				if (checked) {
+					mLevelEditor.setPathType(PathTypes.BACK_AND_FORTH);
 				}
 			}
 		};
@@ -774,16 +894,26 @@ class LevelEditorGui extends Gui {
 	private AlignTable mStaticTerrainTable = new AlignTable();
 	/** Enemy table */
 	private AlignTable mEnemyTable = new AlignTable();
-
-	/** Hiders */
-	private HideManual mEnemyOptionsHider = new HideManual();
-
 	/** Level editor the GUI will act on */
 	private LevelEditor mLevelEditor = null;
 	/** Invoker for level editor */
 	private Invoker mInvoker = null;
 	/** Inner widgets */
 	private InnerWidgets mWidgets = new InnerWidgets();
+	/** All hiders  */
+	private Hiders mHiders = new Hiders();
+
+	/**
+	 * Container for all hiders
+	 */
+	private static class Hiders {
+		/** Hides enemy options */
+		HideManual enemyOptions = new HideManual();
+		/** Hides the path */
+		HideListener path = new HideListener(true);
+		/** Hides path options */
+		HideManual pathOptions = new HideManual();
+	}
 
 	/**
 	 * Container for inner widgets
@@ -793,6 +923,7 @@ class LevelEditorGui extends Gui {
 		MenuWidgets menu = new MenuWidgets();
 		EnemyMenuWidget enemyMenu = new EnemyMenuWidget();
 		EnemyWidgets enemy = new EnemyWidgets();
+		PathWidgets path = new PathWidgets();
 		PickupWidgets pickup = new PickupWidgets();
 		TerrainWidgets terrain = new TerrainWidgets();
 
@@ -816,6 +947,17 @@ class LevelEditorGui extends Gui {
 
 			Slider cEnemies = null;
 			Slider delay = null;
+		}
+
+		static class PathWidgets {
+			Button select = null;
+			Button add = null;
+			Button remove = null;
+			Button move = null;
+
+			Button once = null;
+			Button loop = null;
+			Button backAndForth = null;
 		}
 
 		static class PickupWidgets {

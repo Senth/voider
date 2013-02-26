@@ -31,8 +31,8 @@ public abstract class WorldScene extends Scene {
 	 */
 	public WorldScene(Gui gui) {
 		super(gui);
-		mWorld = new World(new Vector2(), true);
 		fixCamera();
+		mWorld = new World(new Vector2(), true);
 		Actor.setWorld(mWorld);
 	}
 

@@ -14,5 +14,5 @@ public interface ISelectListener {
 	 * null if no actor was previously selected
 	 * @param selectedResource the selected resource, null if an actor was deselected
 	 */
-	void onResourceSelect(IResource deselectedResource, IResource selectedResource);
+	void onResourceSelected(IResource deselectedResource, IResource selectedResource);
 }

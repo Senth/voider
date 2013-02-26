@@ -19,6 +19,7 @@ import com.spiddekauga.voider.editor.commands.CResourceCornerAdd;
 import com.spiddekauga.voider.editor.commands.CResourceCornerMove;
 import com.spiddekauga.voider.editor.commands.CResourceCornerRemove;
 import com.spiddekauga.voider.editor.commands.CResourceCornerRemoveAll;
+import com.spiddekauga.voider.editor.commands.CResourceMove;
 import com.spiddekauga.voider.editor.commands.CResourceRemove;
 import com.spiddekauga.voider.editor.commands.CResourceSelect;
 import com.spiddekauga.voider.game.IResourceCorner.PolygonComplexException;
@@ -69,12 +70,14 @@ public class PathTool extends TouchTool implements ISelectTool {
 	public void setSelectedResource(IResource selectedResource) {
 		deactivate();
 
+		Path oldSelected = mSelectedPath;
+		mSelectedPath = (Path) selectedResource;
+
 		for (ISelectListener selectListener : mSelectListeners) {
-			selectListener.onResourceSelect(mSelectedPath, selectedResource);
+			selectListener.onResourceSelected(oldSelected, mSelectedPath);
 		}
 
 		mChangedSelectedSinceUp = true;
-		mSelectedPath = (Path) selectedResource;
 
 		activate();
 	}
@@ -87,13 +90,16 @@ public class PathTool extends TouchTool implements ISelectTool {
 	@Override
 	public void activate() {
 		if (mSelectedPath != null) {
+			mSelectedPath.setSelected(true);
+
 			switch (mState) {
 			case ADD_CORNER:
 			case REMOVE:
-				mSelectedPath.setSelected(true);
+				mSelectedPath.createBodyCorners();
 				break;
 
 			case MOVE:
+			case SELECT:
 				// Does nothing;
 				break;
 			}
@@ -104,7 +110,25 @@ public class PathTool extends TouchTool implements ISelectTool {
 	public void deactivate() {
 		if (mSelectedPath != null) {
 			mSelectedPath.setSelected(false);
+
+			switch (mState) {
+			case ADD_CORNER:
+			case REMOVE:
+				mSelectedPath.destroyBodyCorners();
+				break;
+
+			case MOVE:
+			case SELECT:
+				// Does nothing
+			}
 		}
+	}
+
+	@Override
+	public void clear() {
+		deactivate();
+
+		mSelectedPath = null;
 	}
 
 	/**
@@ -135,7 +159,9 @@ public class PathTool extends TouchTool implements ISelectTool {
 		/** Moves the entire path */
 		MOVE,
 		/** Removes a corner or the entire path */
-		REMOVE
+		REMOVE,
+		/** Selects a path */
+		SELECT
 	}
 
 	@Override
@@ -200,7 +226,7 @@ public class PathTool extends TouchTool implements ISelectTool {
 				if (mSelectedPath != mHitBody.getUserData()) {
 					mInvoker.execute(new CResourceSelect((IResource)mHitBody.getUserData(), this));
 				}
-				mDragOrigin.set(mHitBody.getPosition());
+				mDragOrigin.set(((Path)mHitBody.getUserData()).getPosition());
 			} else {
 				if (mSelectedPath != null) {
 					mInvoker.execute(new CResourceSelect(null, this));
@@ -222,15 +248,34 @@ public class PathTool extends TouchTool implements ISelectTool {
 					}
 				}
 				// Hit a corner -> Delete it
-				else {
+				else if (mHitBody.getUserData() instanceof HitWrapper) {
 					mCornerIndexCurrent = mSelectedPath.getCornerIndex(mHitBody.getPosition());
 					mInvoker.execute(new CResourceCornerRemove(mSelectedPath, mCornerIndexCurrent, mLevelEditor));
 
 					// Was it the last corner? Remove path too then
 					if (mSelectedPath.getCornerCount() == 0) {
 						mInvoker.execute(new CResourceRemove(mSelectedPath, mLevelEditor), true);
-						mInvoker.execute(new CResourceSelect(null, this));
+						mInvoker.execute(new CResourceSelect(null, this), true);
 					}
+				}
+				// Hit another path
+				else if (mHitBody.getUserData() instanceof Path) {
+					mInvoker.execute(new CResourceSelect((IResource) mHitBody.getUserData(), this));
+				}
+			}
+			break;
+
+
+		case SELECT:
+			testPickPath();
+
+			if (mHitBody != null && mHitBody.getUserData() instanceof Path) {
+				if (mHitBody.getUserData() != mSelectedPath) {
+					mInvoker.execute(new CResourceSelect((Path)mHitBody.getUserData(), this));
+				}
+			} else {
+				if (mSelectedPath != null) {
+					mInvoker.execute(new CResourceSelect(null, this));
 				}
 			}
 			break;
@@ -256,15 +301,15 @@ public class PathTool extends TouchTool implements ISelectTool {
 
 		case MOVE:
 			if (mSelectedPath != null) {
-				// TODO
-				//				Vector2 newPosition = getNewMovePosition();
-				//				mSelectedPath.setPosition(newPosition);
-				//				Pools.free(newPosition);
+				Vector2 newPosition = getNewMovePosition();
+				mSelectedPath.setPosition(newPosition);
+				Pools.free(newPosition);
 			}
 			break;
 
 
 		case REMOVE:
+		case SELECT:
 			// Does nothing
 			break;
 		}
@@ -303,20 +348,20 @@ public class PathTool extends TouchTool implements ISelectTool {
 
 
 		case MOVE:
-			// TODO
-			//			// Set the new position of the actor
-			//			if (mSelectedPath != null) {
-			//				// Reset actor to original position
-			//				mSelectedPath.setPosition(mDragOrigin);
-			//
-			//				Vector2 newPos = getNewMovePosition();
-			//				mInvoker.execute(new CResourceMove(mSelectedPath, newPos, mLevelEditor), mChangedSelectedSinceUp);
-			//				Pools.free(newPos);
-			//			}
+			// Set the new position of the actor
+			if (mSelectedPath != null) {
+				// Reset path to original position
+				mSelectedPath.setPosition(mDragOrigin);
+
+				Vector2 newPos = getNewMovePosition();
+				mInvoker.execute(new CResourceMove(mSelectedPath, newPos, mLevelEditor), mChangedSelectedSinceUp);
+				Pools.free(newPos);
+			}
 			break;
 
 
 		case REMOVE:
+		case SELECT:
 			// Does nothing
 			break;
 		}
@@ -379,6 +424,18 @@ public class PathTool extends TouchTool implements ISelectTool {
 		boolean chained = mSelectedPath.getCornerCount() == 0;
 
 		mInvoker.execute(new CResourceCornerAdd(mSelectedPath, cornerPos, mLevelEditor), chained);
+	}
+
+	/**
+	 * @return new position to move the path to. Don't forget to free this position
+	 * using Pools.free(newPos).
+	 */
+	private Vector2 getNewMovePosition() {
+		Vector2 newPosition = Pools.obtain(Vector2.class);
+		newPosition.set(mTouchCurrent).sub(mTouchOrigin);
+		newPosition.add(mDragOrigin);
+
+		return newPosition;
 	}
 
 	/**

@@ -858,7 +858,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	}
 
 	@Override
-	public void onResourceSelected(IResource resource) {
+	public void onResourceSelected(IResource deselectedResource, IResource selectedResource) {
 		// Does nothing
 	}
 

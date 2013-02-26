@@ -68,6 +68,10 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 			corner.sub(diff);
 		}
 
+		resetBodyCorners();
+		createFixture();
+		resetBodyFixture();
+
 		Pools.free(diff);
 	}
 
@@ -246,21 +250,33 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 	}
 
 	/**
+	 * Creates all the body corners
+	 */
+	public void createBodyCorners() {
+		if (!mBodyCorners.isEmpty()) {
+			Gdx.app.error("Path", "Shall only create body corners if empty!");
+		}
+
+		for (Vector2 corner : mCorners) {
+			createBodyCorner(corner);
+		}
+	}
+
+	/**
+	 * Destroys all body corners
+	 */
+	public void destroyBodyCorners() {
+		while (!mBodyCorners.isEmpty()) {
+			destroyBodyCorners(0);
+		}
+	}
+
+	/**
 	 * Set the path as selected, this will render the path differently
 	 * @param selected set to true if the path shall be set as selected
 	 */
 	public void setSelected(boolean selected) {
 		mSelected = selected;
-
-		if (mSelected) {
-			if (mWorld != null && mBodyCorners.isEmpty()) {
-				createBodyCorners();
-			}
-		} else {
-			if (!mBodyCorners.isEmpty()) {
-				destroyBodyCorners();
-			}
-		}
 	}
 
 	/**
@@ -350,28 +366,6 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 			}
 
 			mBody.createFixture(mFixtureDef);
-		}
-	}
-
-	/**
-	 * Creates all the body corners
-	 */
-	private void createBodyCorners() {
-		if (!mBodyCorners.isEmpty()) {
-			Gdx.app.error("Path", "Shall only create body corners if empty!");
-		}
-
-		for (Vector2 corner : mCorners) {
-			createBodyCorner(corner);
-		}
-	}
-
-	/**
-	 * Destroys all body corners
-	 */
-	private void destroyBodyCorners() {
-		while (!mBodyCorners.isEmpty()) {
-			destroyBodyCorners(0);
 		}
 	}
 

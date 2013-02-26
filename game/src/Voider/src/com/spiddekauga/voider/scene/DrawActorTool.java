@@ -201,11 +201,12 @@ public class DrawActorTool extends ActorTool implements ISelectTool {
 	public void setSelectedResource(IResource selectedActor) {
 		deactivate();
 
-		for (ISelectListener listener : mSelectListeners) {
-			listener.onResourceSelect(mActor, selectedActor);
-		}
-
+		Actor oldSelected = mActor;
 		mActor = (Actor) selectedActor;
+
+		for (ISelectListener listener : mSelectListeners) {
+			listener.onResourceSelected(oldSelected, mActor);
+		}
 
 		activate();
 	}

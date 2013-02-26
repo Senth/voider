@@ -406,7 +406,7 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 	}
 
 	@Override
-	public void onResourceSelected(IResource resource) {
+	public void onResourceSelected(IResource deselectedResource, IResource selectedResource) {
 		// Does nothing
 	}
 

@@ -302,8 +302,8 @@ public class Level extends Resource implements ITriggerListener, Json.Serializab
 
 	@Override
 	public void dispose() {
-		for (Actor actor : mActors) {
-			actor.dispose();
+		for (IResourceBody resourceBody : mResourceBinder.getResources(IResourceBody.class)) {
+			resourceBody.destroyBody();
 		}
 	}
 

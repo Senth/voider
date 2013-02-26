@@ -16,6 +16,7 @@ import com.spiddekauga.voider.game.GameScene;
 import com.spiddekauga.voider.game.Level;
 import com.spiddekauga.voider.game.LevelDef;
 import com.spiddekauga.voider.game.Path;
+import com.spiddekauga.voider.game.Path.PathTypes;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.ActorDef;
 import com.spiddekauga.voider.game.actors.EnemyActor;
@@ -60,12 +61,14 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 
 		// Initialize all tools
 		DrawActorTool terrainTool = new DrawActorTool(mCamera, mWorld, StaticTerrainActor.class, mInvoker, this);
-		mTouchTools[Tools.STATIC_TERRAIN.ordinal()] = terrainTool ;
+		mTouchTools[Tools.STATIC_TERRAIN.ordinal()] = terrainTool;
 		AddActorTool pickupTool = new AddActorTool(mCamera, mWorld, PickupActor.class, mInvoker, true, this);
 		mTouchTools[Tools.PICKUP.ordinal()] = pickupTool;
 		AddEnemyTool enemyTool = new AddEnemyTool(mCamera, mWorld, mInvoker, this);
+		enemyTool.addListener(this);
 		mTouchTools[Tools.ENEMY.ordinal()] = enemyTool;
 		PathTool pathTool = new PathTool(mCamera, mWorld, mInvoker, this);
+		pathTool.addListener(this);
 		mTouchTools[Tools.PATH.ordinal()] = pathTool;
 
 		switchTool(Tools.STATIC_TERRAIN);
@@ -118,15 +121,24 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 		if (mLevel != null) {
 			if (ResourceCacheFacade.isLoaded(mLevel.getId(), Level.class)) {
 				ResourceCacheFacade.unload(mLevel, mLevel.getDef());
+			} else {
+				mLevel.dispose();
 			}
 		}
 
 		mLevel = level;
-		mInvoker.dispose();
 
 		clearTools();
 
+		// Reset camera position
+		mCamera.position.x = 0;
+		mCamera.update();
+		mScroller.stop();
+
 		createActorBodies();
+		createPathBodies();
+
+		mInvoker.dispose();
 	}
 
 	// --------------------------------
@@ -361,11 +373,12 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 	}
 
 	@Override
-	public void onResourceSelected(IResource resource) {
-		if (resource instanceof EnemyActor) {
+	public void onResourceSelected(IResource deselectedResource, IResource selectedResource) {
+		// Enemy
+		if (selectedResource instanceof EnemyActor) {
 			((LevelEditorGui)mGui).showEnemyOptions();
 
-			EnemyActor selectedEnemy = (EnemyActor) ((AddEnemyTool)mTouchTools[Tools.ENEMY.ordinal()]).getSelectedResource();
+			EnemyActor selectedEnemy = (EnemyActor) selectedResource;
 			EnemyGroup enemyGroup = selectedEnemy.getEnemyGroup();
 
 			if (enemyGroup != null) {
@@ -373,9 +386,20 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 			} else {
 				((LevelEditorGui)mGui).setEnemyOptions(1, -1);
 			}
-
 		} else {
 			((LevelEditorGui)mGui).hideEnemyOptions();
+		}
+
+		// Path
+		if (selectedResource instanceof Path) {
+			Path selectedPath = (Path) selectedResource;
+
+			if (selectedPath != null) {
+				((LevelEditorGui)mGui).showPathOptions();
+				((LevelEditorGui)mGui).setPathType(selectedPath.getPathType());
+			}
+		} else {
+			((LevelEditorGui)mGui).hidePathOptions();
 		}
 	}
 
@@ -622,6 +646,42 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 	}
 
 	/**
+	 * Sets the path type of the selected path
+	 * @param pathType type of the path
+	 */
+	void setPathType(Path.PathTypes pathType) {
+		Path selectedPath = (Path) ((PathTool)mTouchTools[Tools.PATH.ordinal()]).getSelectedResource();
+
+		if (selectedPath != null) {
+			selectedPath.setPathType(pathType);
+		}
+	}
+
+	/**
+	 * @return current path type, null if no path has been selected
+	 */
+	PathTypes getPathType() {
+		Path selectedPath = (Path) ((PathTool)mTouchTools[Tools.PATH.ordinal()]).getSelectedResource();
+
+		if (selectedPath != null) {
+			return selectedPath.getPathType();
+		} else {
+			return null;
+		}
+	}
+
+	/**
+	 * @return true if a path is selected
+	 */
+	boolean isPathSelected() {
+		if (mToolType == Tools.PATH) {
+			return ((Path) ((PathTool)mTouchTools[Tools.PATH.ordinal()]).getSelectedResource()) != null;
+		} else {
+			return false;
+		}
+	}
+
+	/**
 	 * @return invoker of the level editor
 	 */
 	Invoker getInvoker() {
@@ -745,6 +805,7 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 	 */
 	private void createActorBodies() {
 		if (mLevel != null) {
+			// Only necessary if we loaded the level
 			if (ResourceCacheFacade.isLoaded(mLevel.getId(), Level.class)) {
 				ArrayList<Actor> actors = mLevel.getActors();
 
@@ -761,6 +822,22 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 					if (createBody) {
 						actor.createBody();
 					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * Creates all path bodies
+	 */
+	private void createPathBodies() {
+		if (mLevel != null) {
+			// Only necessary if we loaded the level
+			if (ResourceCacheFacade.isLoaded(mLevel.getId(), Level.class)) {
+				ArrayList<Path> paths = mLevel.getPaths();
+
+				for (Path path : paths) {
+					path.setWorld(mWorld);
 				}
 			}
 		}

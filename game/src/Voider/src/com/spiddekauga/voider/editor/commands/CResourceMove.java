@@ -19,7 +19,6 @@ public class CResourceMove extends CResourceChange {
 	 */
 	public CResourceMove(IResourcePosition resource, Vector2 newPosition, IResourceChangeEditor resourceEditor) {
 		super(resource, resourceEditor);
-		mResource = resource;
 		mDiffMovement = Pools.obtain(Vector2.class);
 		mDiffMovement.set(newPosition);
 		mDiffMovement.sub(resource.getPosition());
