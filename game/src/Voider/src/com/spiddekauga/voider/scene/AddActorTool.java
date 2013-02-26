@@ -83,20 +83,18 @@ public class AddActorTool extends ActorTool implements ISelectTool {
 
 	@Override
 	public void setSelectedResource(IResource selectedResource) {
-		if (selectedResource instanceof Actor) {
-			deactivate();
+		deactivate();
 
-			Actor oldSelected = mSelectedActor;
-			mSelectedActor = (Actor) selectedResource;
+		Actor oldSelected = mSelectedActor;
+		mSelectedActor = (Actor) selectedResource;
 
-			for (ISelectListener selectListener : mSelectListeners) {
-				selectListener.onResourceSelected(oldSelected, mSelectedActor);
-			}
-
-			mSelectedSinceUp = true;
-
-			activate();
+		for (ISelectListener selectListener : mSelectListeners) {
+			selectListener.onResourceSelected(oldSelected, mSelectedActor);
 		}
+
+		mSelectedSinceUp = true;
+
+		activate();
 	}
 
 	/**

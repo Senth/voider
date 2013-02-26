@@ -386,7 +386,7 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 			} else {
 				((LevelEditorGui)mGui).setEnemyOptions(1, -1);
 			}
-		} else {
+		} else if (deselectedResource instanceof EnemyActor) {
 			((LevelEditorGui)mGui).hideEnemyOptions();
 		}
 
@@ -398,7 +398,7 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 				((LevelEditorGui)mGui).showPathOptions();
 				((LevelEditorGui)mGui).setPathType(selectedPath.getPathType());
 			}
-		} else {
+		} else if (deselectedResource instanceof Path) {
 			((LevelEditorGui)mGui).hidePathOptions();
 		}
 	}
@@ -751,6 +751,14 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 	PathTool.States getPathState() {
 		return ((PathTool)mTouchTools[Tools.PATH.ordinal()]).getState();
 	}
+
+	/**
+	 * @return all paths in the current level
+	 */
+	public ArrayList<Path> getPaths() {
+		return mLevel.getPaths();
+	}
+
 
 	/**
 	 * Select pickup

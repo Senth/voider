@@ -11,7 +11,7 @@ import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Pools;
 import com.spiddekauga.utils.Invoker;
-import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.Config.Editor;
 import com.spiddekauga.voider.editor.HitWrapper;
 import com.spiddekauga.voider.editor.LevelEditor;
 import com.spiddekauga.voider.editor.commands.CResourceAdd;
@@ -446,7 +446,7 @@ public class PathTool extends TouchTool implements ISelectTool {
 
 		if (mHitBody == null) {
 			mOnlyFindPath = true;
-			testPick(Config.PICK_PATH_SIZE);
+			testPick(Editor.PICK_PATH_SIZE);
 			mOnlyFindPath = false;
 		}
 	}

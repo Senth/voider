@@ -27,6 +27,11 @@ public class CResourceMove extends CResourceChange {
 
 	@Override
 	public boolean execute() {
+		// Skip if we don't move...
+		if (mDiffMovement.x == 0 && mDiffMovement.y == 0) {
+			return false;
+		}
+
 		Vector2 newPos = Pools.obtain(Vector2.class);
 		newPos.set(((IResourcePosition) mResource).getPosition()).add(mDiffMovement);
 		((IResourcePosition) mResource).setPosition(newPos);

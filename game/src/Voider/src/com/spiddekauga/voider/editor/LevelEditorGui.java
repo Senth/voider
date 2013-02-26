@@ -470,7 +470,7 @@ class LevelEditorGui extends Gui {
 				mLevelEditor.switchTool(Tools.ENEMY);
 			}
 		};
-		HideListener enemyHider = new HideListener(button, true);
+		mHiders.enemy.setButton(button);
 
 		mEnemyTable.row();
 		button = new TextButton("Path", toggleStyle);
@@ -505,7 +505,7 @@ class LevelEditorGui extends Gui {
 		buttonGroup = new ButtonGroup();
 		button = new TextButton("Select", toggleStyle);
 		mWidgets.enemy.select = button;
-		enemyHider.addToggleActor(button);
+		mHiders.enemy.addToggleActor(button);
 		buttonGroup.add(button);
 		mEnemyTable.add(button);
 		new CheckedListener(button) {
@@ -520,7 +520,7 @@ class LevelEditorGui extends Gui {
 		mEnemyTable.row();
 		button = new TextButton("Add", toggleStyle);
 		mWidgets.enemy.add = button;
-		enemyHider.addToggleActor(button);
+		mHiders.enemy.addToggleActor(button);
 		buttonGroup.add(button);
 		mEnemyTable.add(button);
 		new CheckedListener(button) {
@@ -532,13 +532,13 @@ class LevelEditorGui extends Gui {
 			}
 		};
 		HideListener enemyAddHider = new HideListener(button, true);
-		enemyHider.addChild(enemyAddHider);
+		mHiders.enemy.addChild(enemyAddHider);
 
 
 		mEnemyTable.row();
 		button = new TextButton("Remove", toggleStyle);
 		mWidgets.enemy.remove = button;
-		enemyHider.addToggleActor(button);
+		mHiders.enemy.addToggleActor(button);
 		buttonGroup.add(button);
 		mEnemyTable.add(button);
 		new CheckedListener(button) {
@@ -553,7 +553,7 @@ class LevelEditorGui extends Gui {
 		mEnemyTable.row();
 		button = new TextButton("Move", toggleStyle);
 		mWidgets.enemy.move = button;
-		enemyHider.addToggleActor(button);
+		mHiders.enemy.addToggleActor(button);
 		buttonGroup.add(button);
 		mEnemyTable.add(button);
 		new CheckedListener(button) {
@@ -907,6 +907,16 @@ class LevelEditorGui extends Gui {
 	 * Container for all hiders
 	 */
 	private static class Hiders {
+		/**
+		 * Sets correct children etc.
+		 */
+		public Hiders() {
+			enemy.addChild(enemyOptions);
+			path.addChild(pathOptions);
+		}
+
+		/** Enemy hider */
+		HideListener enemy = new HideListener(true);
 		/** Hides enemy options */
 		HideManual enemyOptions = new HideManual();
 		/** Hides the path */

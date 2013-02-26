@@ -5,8 +5,11 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Pools;
 import com.spiddekauga.utils.Invoker;
+import com.spiddekauga.voider.Config.Editor;
 import com.spiddekauga.voider.editor.LevelEditor;
+import com.spiddekauga.voider.editor.commands.CEnemySetPath;
 import com.spiddekauga.voider.editor.commands.CResourceMove;
+import com.spiddekauga.voider.game.Path;
 import com.spiddekauga.voider.game.actors.EnemyActor;
 import com.spiddekauga.voider.game.actors.EnemyActorDef;
 import com.spiddekauga.voider.game.actors.EnemyActorDef.MovementTypes;
@@ -53,12 +56,13 @@ public class AddEnemyTool extends AddActorTool {
 		case MOVE:
 			if (mMovingActor != null) {
 				if (mMovingActor.getDef(EnemyActorDef.class).getMovementType() == MovementTypes.PATH) {
-					/** @todo snap to nearby path if one exist */
+					setSnapPosition(false, false);
 				} else {
 					Vector2 newPosition = getNewMovePosition();
 					mMovingActor.setPosition(newPosition);
 					Pools.free(newPosition);
 				}
+
 			}
 			break;
 
@@ -85,18 +89,93 @@ public class AddEnemyTool extends AddActorTool {
 				}
 
 				if (mMovingActor.getDef(EnemyActorDef.class).getMovementType() == MovementTypes.PATH) {
-					/** @todo snap to nearby path if one exist */
+					setSnapPosition(true, chained);
 				} else {
 					Vector2 newPosition = getNewMovePosition();
-					mInvoker.execute(new CResourceMove(mMovingActor, newPosition, mEditor), chained);
+					mMovingActor.setPosition(newPosition);
 					Pools.free(newPosition);
 				}
+
 				mMovingActor = null;
 			}
 
-		default:
+		case REMOVE:
+		case SELECT:
+			// Does nothing
 			break;
 		}
+	}
+
+	/**
+	 * Snaps the selected enemy position to a close path if one exist.
+	 * @param useCommand set to true to use a command for this
+	 * @param chained set to true if the command shall be chained
+	 */
+	protected void setSnapPosition(boolean useCommand, boolean chained) {
+		Vector2 snappedPosition = getNewMovePosition();
+		boolean usesPath = false;
+
+		// Is the position close to a path?
+		Path closestPath = getClosestPath(snappedPosition);
+		if (closestPath != null) {
+			Vector2 diffVector = Pools.obtain(Vector2.class);
+			diffVector.set(snappedPosition).sub(closestPath.getCornerPosition(0));
+
+			if (diffVector.len2() <= Editor.Level.ENEMY_SNAP_PATH_DISTANCE_SQ) {
+				snappedPosition.set(closestPath.getCornerPosition(0));
+				usesPath = true;
+			}
+
+			Pools.free(diffVector);
+		}
+
+		if (!usesPath) {
+			closestPath = null;
+		}
+
+		if (useCommand) {
+			// Only change if not same path as before
+			if (closestPath != ((EnemyActor)mSelectedActor).getPath() || closestPath == null || ((EnemyActor)mSelectedActor).getPath() == null) {
+				mInvoker.execute(new CResourceMove(mSelectedActor, snappedPosition, mLevelEditor), chained);
+
+				// Changed paths
+				if (closestPath != null || ((EnemyActor)mSelectedActor).getPath() != null) {
+					mInvoker.execute(new CEnemySetPath((EnemyActor) mSelectedActor, closestPath, mLevelEditor), true);
+				}
+			}
+		} else {
+			mSelectedActor.setPosition(snappedPosition);
+		}
+
+		Pools.free(snappedPosition);
+	}
+
+	/**
+	 * Calculates the closest path to the specified position
+	 * @param position the position to search from
+	 * @return closest path, null if none exist
+	 */
+	private Path getClosestPath(Vector2 position) {
+		Path closestPath = null;
+		float closestDistance = Float.POSITIVE_INFINITY;
+		Vector2 diffVector = Pools.obtain(Vector2.class);
+
+		for (Path path : mLevelEditor.getPaths()) {
+			if (path.getCornerCount() >= 2) {
+				diffVector.set(path.getCornerPosition(0));
+				diffVector.sub(position);
+
+				float diffDistance = diffVector.len2();
+				if (diffDistance < closestDistance) {
+					closestDistance = diffDistance;
+					closestPath = path;
+				}
+			}
+		}
+
+		Pools.free(diffVector);
+
+		return closestPath;
 	}
 
 	/** Current enemy group */

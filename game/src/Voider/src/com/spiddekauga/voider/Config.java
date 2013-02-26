@@ -334,6 +334,11 @@ public class Config {
 				/** Stepz size of enemy delay time */
 				public final static float DELAY_STEP_SIZE = 0.1f;
 			}
+
+			/** Enemy snap distance to a path */
+			public final static float ENEMY_SNAP_PATH_DISTANCE = 2;
+			/** Enemy snap distance squared */
+			public final static float ENEMY_SNAP_PATH_DISTANCE_SQ = ENEMY_SNAP_PATH_DISTANCE * ENEMY_SNAP_PATH_DISTANCE;
 		}
 
 		/**
@@ -383,6 +388,10 @@ public class Config {
 		private static Shape PICKING_CIRCLE_SHAPE = null;
 		/** Picking fixture */
 		private static FixtureDef PICKING_CIRCLE_FIXTURE = null;
+		/** Default pick size */
+		public final static float PICK_SIZE_DEFAULT = 0.0001f;
+		/** Path pick size */
+		public final static float PICK_PATH_SIZE = 0.5f;
 
 	}
 
@@ -442,11 +451,6 @@ public class Config {
 	public final static int REVISION = 1;
 	/** If debugging tests shall be activate */
 	public final static boolean DEBUG_TESTS = true;
-	/** Default pick size */
-	public final static float PICK_SIZE_DEFAULT = 0.0001f;
-	/** Path pick size */
-	public final static float PICK_PATH_SIZE = 0.5f;
-
 	/**
 	 * Private constructor so that no instance can be created
 	 */

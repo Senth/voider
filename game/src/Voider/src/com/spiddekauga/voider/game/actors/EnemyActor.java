@@ -76,6 +76,12 @@ public class EnemyActor extends Actor implements ITriggerListener {
 	 */
 	public void setPath(Path path) {
 		mPath = path;
+
+		if (path != null) {
+			mPathId = path.getId();
+		} else {
+			mPathId = null;
+		}
 	}
 
 	/**

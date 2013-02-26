@@ -9,6 +9,7 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.World;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.Config.Editor;
 
 /**
  * Abstract tool for handling touch events
@@ -105,7 +106,7 @@ public abstract class TouchTool extends InputAdapter {
 	 * set to mHitBody. Uses the default pick size
 	 */
 	protected void testPick() {
-		testPick(Config.PICK_SIZE_DEFAULT);
+		testPick(Editor.PICK_SIZE_DEFAULT);
 	}
 
 	/**
