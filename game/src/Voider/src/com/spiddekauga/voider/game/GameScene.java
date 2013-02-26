@@ -69,6 +69,8 @@ public class GameScene extends WorldScene {
 			actor.createBody();
 		}
 
+		mCamera.position.x = mLevel.getXCoord() + mCamera.viewportWidth * 0.5f;
+		mCamera.update();
 		createBorder();
 
 		Actor.setLevelSpeed(mLevel.getSpeed());
@@ -141,7 +143,6 @@ public class GameScene extends WorldScene {
 		super.update();
 		mLevel.update(true);
 
-		/** @TODO Move the camera relative to the level */
 		mCamera.position.x = mLevel.getXCoord() + mCamera.viewportWidth * 0.5f;
 		mCamera.update();
 

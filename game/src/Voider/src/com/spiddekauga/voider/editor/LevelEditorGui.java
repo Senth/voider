@@ -129,6 +129,8 @@ class LevelEditorGui extends Gui {
 		// Enemy options
 		if (mLevelEditor.isEnemySelected()) {
 			mHiders.enemyOptions.show();
+			mWidgets.enemy.cEnemies.setValue(mLevelEditor.getEnemyCount());
+			mWidgets.enemy.delay.setValue(mLevelEditor.getEnemySpawnDelay());
 		} else {
 			mHiders.enemyOptions.hide();
 		}
@@ -156,6 +158,7 @@ class LevelEditorGui extends Gui {
 		// Path options
 		if (mLevelEditor.isPathSelected()) {
 			mHiders.pathOptions.show();
+			setPathType(mLevelEditor.getPathType());
 		} else {
 			mHiders.pathOptions.hide();
 		}
@@ -201,20 +204,6 @@ class LevelEditorGui extends Gui {
 	}
 
 	/**
-	 * Shows the enemy options
-	 */
-	void showEnemyOptions() {
-		mHiders.enemyOptions.show();
-	}
-
-	/**
-	 * Hides the enemy options
-	 */
-	void hideEnemyOptions() {
-		mHiders.enemyOptions.hide();
-	}
-
-	/**
 	 * Set slider values for enemy count and delay
 	 * @param cEnemies number of enemies
 	 * @param delay the delay between enemies, if none is available set it to negative
@@ -227,24 +216,10 @@ class LevelEditorGui extends Gui {
 	}
 
 	/**
-	 * Shows the path options
-	 */
-	void showPathOptions() {
-		mHiders.pathOptions.show();
-	}
-
-	/**
-	 * Hides the path options
-	 */
-	void hidePathOptions() {
-		mHiders.pathOptions.hide();
-	}
-
-	/**
 	 * Set the path type
 	 * @param pathType the path type to be set in GUI buttons
 	 */
-	void setPathType(PathTypes pathType) {
+	private void setPathType(PathTypes pathType) {
 		switch (pathType) {
 		case ONCE:
 			mWidgets.path.once.setChecked(true);
@@ -399,8 +374,10 @@ class LevelEditorGui extends Gui {
 		mMenuTable.add(button);
 
 		mMenuTable.row();
+		GuiCheckCommandCreator menuChecker = new GuiCheckCommandCreator(mInvoker);
 		button = new TextButton("Static Terrain", textToogleStyle);
 		mWidgets.menu.terrain = button;
+		button.addListener(menuChecker);
 		new CheckedListener(button) {
 			@Override
 			public void onChange(boolean checked) {
@@ -416,6 +393,7 @@ class LevelEditorGui extends Gui {
 		mMenuTable.row();
 		button = new TextButton("Pickup", textToogleStyle);
 		mWidgets.menu.pickup = button;
+		button.addListener(menuChecker);
 		new CheckedListener(button) {
 			@Override
 			public void onChange(boolean checked) {
@@ -431,6 +409,7 @@ class LevelEditorGui extends Gui {
 		mMenuTable.row();
 		button = new TextButton("Enemy", textToogleStyle);
 		mWidgets.menu.enemy = button;
+		button.addListener(menuChecker);
 		new CheckedListener(button) {
 			@Override
 			protected void onChange(boolean checked) {
@@ -459,11 +438,13 @@ class LevelEditorGui extends Gui {
 		LabelStyle labelStyle = skin.get("default", LabelStyle.class);
 
 		mEnemyTable.row();
+		GuiCheckCommandCreator enemyOuterMenu = new GuiCheckCommandCreator(mInvoker);
 		ButtonGroup buttonGroup = new ButtonGroup();
 		Button button = new TextButton("Enemy", toggleStyle);
 		mWidgets.enemyMenu.enemy = button;
 		buttonGroup.add(button);
 		mEnemyTable.add(button);
+		button.addListener(enemyOuterMenu);
 		new CheckedListener(button) {
 			@Override
 			protected void onChange(boolean checked) {
@@ -477,6 +458,7 @@ class LevelEditorGui extends Gui {
 		mWidgets.enemyMenu.path = button;
 		buttonGroup.add(button);
 		mEnemyTable.add(button);
+		button.addListener(enemyOuterMenu);
 		new CheckedListener(button) {
 			@Override
 			protected void onChange(boolean checked) {
@@ -490,6 +472,7 @@ class LevelEditorGui extends Gui {
 		mWidgets.enemyMenu.trigger = button;
 		buttonGroup.add(button);
 		mEnemyTable.add(button);
+		button.addListener(enemyOuterMenu);
 		new CheckedListener(button) {
 			@Override
 			protected void onChange(boolean checked) {
@@ -502,12 +485,14 @@ class LevelEditorGui extends Gui {
 
 		// ---- Enemy ----
 		mEnemyTable.row();
+		GuiCheckCommandCreator enemyInnerMenu = new GuiCheckCommandCreator(mInvoker);
 		buttonGroup = new ButtonGroup();
 		button = new TextButton("Select", toggleStyle);
 		mWidgets.enemy.select = button;
 		mHiders.enemy.addToggleActor(button);
 		buttonGroup.add(button);
 		mEnemyTable.add(button);
+		button.addListener(enemyInnerMenu);
 		new CheckedListener(button) {
 			@Override
 			protected void onChange(boolean checked) {
@@ -523,6 +508,7 @@ class LevelEditorGui extends Gui {
 		mHiders.enemy.addToggleActor(button);
 		buttonGroup.add(button);
 		mEnemyTable.add(button);
+		button.addListener(enemyInnerMenu);
 		new CheckedListener(button) {
 			@Override
 			protected void onChange(boolean checked) {
@@ -541,6 +527,7 @@ class LevelEditorGui extends Gui {
 		mHiders.enemy.addToggleActor(button);
 		buttonGroup.add(button);
 		mEnemyTable.add(button);
+		button.addListener(enemyInnerMenu);
 		new CheckedListener(button) {
 			@Override
 			protected void onChange(boolean checked) {
@@ -556,6 +543,7 @@ class LevelEditorGui extends Gui {
 		mHiders.enemy.addToggleActor(button);
 		buttonGroup.add(button);
 		mEnemyTable.add(button);
+		button.addListener(enemyInnerMenu);
 		new CheckedListener(button) {
 			@Override
 			protected void onChange(boolean checked) {
@@ -597,7 +585,7 @@ class LevelEditorGui extends Gui {
 		mHiders.enemyOptions.addToggleActor(textField);
 		textField.setWidth(Config.Editor.TEXT_FIELD_NUMBER_WIDTH);
 		mEnemyTable.add(textField);
-		new SliderListener(slider, textField) {
+		new SliderListener(slider, textField, mInvoker) {
 			@Override
 			protected void onChange(float newValue) {
 				mInvoker.execute(new CGuiSlider(mSlider, newValue, mLevelEditor.getEnemyCount()));
@@ -622,7 +610,7 @@ class LevelEditorGui extends Gui {
 		delayHider.addToggleActor(textField);
 		textField.setWidth(Config.Editor.TEXT_FIELD_NUMBER_WIDTH);
 		mEnemyTable.add(textField);
-		new SliderListener(slider, textField) {
+		new SliderListener(slider, textField, mInvoker) {
 			@Override
 			protected void onChange(float newValue) {
 				mInvoker.execute(new CGuiSlider(mSlider, newValue, mLevelEditor.getEnemySpawnDelay()));
@@ -640,12 +628,14 @@ class LevelEditorGui extends Gui {
 
 		// ---- PATH -----
 		mEnemyTable.row();
+		GuiCheckCommandCreator pathMenu = new GuiCheckCommandCreator(mInvoker);
 		ButtonGroup buttonGroup = new ButtonGroup();
 		Button button = new TextButton("Select", toggleStyle);
 		mWidgets.path.select = button;
 		buttonGroup.add(button);
 		mEnemyTable.add(button);
 		mHiders.path.addToggleActor(button);
+		button.addListener(pathMenu);
 		new CheckedListener(button) {
 			@Override
 			protected void onChange(boolean checked) {
@@ -661,6 +651,7 @@ class LevelEditorGui extends Gui {
 		buttonGroup.add(button);
 		mEnemyTable.add(button);
 		mHiders.path.addToggleActor(button);
+		button.addListener(pathMenu);
 		new CheckedListener(button) {
 			@Override
 			protected void onChange(boolean checked) {
@@ -676,6 +667,7 @@ class LevelEditorGui extends Gui {
 		buttonGroup.add(button);
 		mEnemyTable.add(button);
 		mHiders.path.addToggleActor(button);
+		button.addListener(pathMenu);
 		new CheckedListener(button) {
 			@Override
 			protected void onChange(boolean checked) {
@@ -691,6 +683,7 @@ class LevelEditorGui extends Gui {
 		buttonGroup.add(button);
 		mEnemyTable.add(button);
 		mHiders.path.addToggleActor(button);
+		button.addListener(pathMenu);
 		new CheckedListener(button) {
 			@Override
 			protected void onChange(boolean checked) {

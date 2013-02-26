@@ -21,12 +21,13 @@ public class LevelDef extends Def {
 		mLevelId = UUID.randomUUID();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public Def copy() {
+	public <ResourceType> ResourceType copy() {
 		LevelDef def = (LevelDef) super.copy();
 		def.mLevelId = UUID.randomUUID();
 		def.mCampaignId = null;
-		return def;
+		return (ResourceType) def;
 	}
 
 	/**

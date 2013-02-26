@@ -19,6 +19,7 @@ import com.spiddekauga.utils.Json;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.editor.HitWrapper;
 import com.spiddekauga.voider.game.actors.ActorFilterCategories;
+import com.spiddekauga.voider.game.actors.EnemyActor;
 import com.spiddekauga.voider.resources.Resource;
 
 
@@ -52,6 +53,10 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 				createBodyCorner(corner, index);
 			}
 		}
+
+		if (index == 0) {
+			updateEnemyPositions();
+		}
 	}
 
 	/**
@@ -71,6 +76,8 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 		resetBodyCorners();
 		createFixture();
 		resetBodyFixture();
+
+		updateEnemyPositions();
 
 		Pools.free(diff);
 	}
@@ -106,6 +113,10 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 			destroyBodyCorners(index);
 			createFixture();
 			resetBodyFixture();
+
+			if (index == 0) {
+				updateEnemyPositions();
+			}
 		}
 
 		return removedCorner;
@@ -118,6 +129,10 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 			resetBodyCorners();
 			createFixture();
 			resetBodyFixture();
+
+			if (index == 0) {
+				updateEnemyPositions();
+			}
 		}
 	}
 
@@ -286,6 +301,28 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 		return mSelected;
 	}
 
+	/**
+	 * Adds an enemy to the path
+	 * @param enemy enemy that uses this path
+	 */
+	public void addEnemy(EnemyActor enemy) {
+		mEnemies.add(enemy);
+	}
+
+	/**
+	 * Removes an enemy from the path
+	 * @param enemy enemy that uses this path
+	 */
+	public void removeEnemy(EnemyActor enemy) {
+		mEnemies.remove(enemy);
+	}
+
+	/**
+	 * @return all enemies that uses this path
+	 */
+	public ArrayList<EnemyActor> getEnemies() {
+		return mEnemies;
+	}
 
 	/**
 	 * Different path types, i.e. how the enemy shall follow a path
@@ -414,6 +451,18 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 		}
 	}
 
+	/**
+	 * Updates the enemies position to the first body corner's position
+	 */
+	private void updateEnemyPositions() {
+		if (mCorners.size() > 0) {
+			Vector2 firstCorner = mCorners.get(0);
+			for (EnemyActor enemy : mEnemies) {
+				enemy.setPosition(firstCorner);
+			}
+		}
+	}
+
 	/** If this path is selected */
 	private boolean mSelected = false;
 	/** All path nodes */
@@ -429,4 +478,6 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 	private Body mBody = null;
 	/** Fixtures for the path */
 	private FixtureDef mFixtureDef = null;
+	/** Enemies bound to this path */
+	private ArrayList<EnemyActor> mEnemies = new ArrayList<EnemyActor>();
 }

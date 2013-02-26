@@ -12,7 +12,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldFilter;
 import com.badlogic.gdx.scenes.scene2d.utils.FocusListener.FocusEvent;
+import com.spiddekauga.utils.Invoker;
 import com.spiddekauga.utils.Maths;
+import com.spiddekauga.voider.Config.Editor;
+import com.spiddekauga.voider.editor.commands.CGuiSlider;
 
 /**
  * Listener that binds a slider with a textfield.
@@ -24,21 +27,15 @@ public abstract class SliderListener implements EventListener {
 	/**
 	 * Constructor which sets the slider and text field.
 	 * @param slider slider to bind with textField
-	 * @param textField textField to bind with slider
+	 * @param textField textField to bind with slider, set to null to skip
+	 * @param invoker used for undoing commands, set to null to skip
 	 */
-	public SliderListener(Slider slider, TextField textField) {
+	public SliderListener(Slider slider, TextField textField, Invoker invoker) {
 		mSlider = slider;
+		mInvoker = invoker;
 		mTextField = textField;
-		mTextField.setText(Float.toString(mSlider.getValue()));
-		mOldValue = slider.getValue();
-		mOldText = mTextField.getText();
 
-		mTextField.setTextFieldFilter(new TextFieldFilter() {
-			@Override
-			public boolean acceptChar(TextField textField, char key) {
-				return Character.isDigit(key) || key == '.' || key == '-';
-			}
-		});
+		mOldValue = slider.getValue();
 
 		// Calculate precision
 		float stepSize = mSlider.getStepSize();
@@ -48,7 +45,20 @@ public abstract class SliderListener implements EventListener {
 		}
 
 		mSlider.addListener(this);
-		mTextField.addListener(this);
+
+		if(mTextField != null) {
+			mTextField.setText(Float.toString(mSlider.getValue()));
+			mOldText = mTextField.getText();
+
+			mTextField.setTextFieldFilter(new TextFieldFilter() {
+				@Override
+				public boolean acceptChar(TextField textField, char key) {
+					return Character.isDigit(key) || key == '.' || key == '-';
+				}
+			});
+
+			mTextField.addListener(this);
+		}
 	}
 
 	/**
@@ -143,6 +153,13 @@ public abstract class SliderListener implements EventListener {
 			if (mGreaterSlider != null && mGreaterSlider.getValue() < mSlider.getValue()) {
 				mGreaterSlider.setValue(mSlider.getValue());
 			}
+
+			// Execute slider command if not an invoker changed the slider's value
+			if (mInvoker != null) {
+				if (mSlider.getName() == null || !mSlider.getName().equals(Editor.GUI_INVOKER_TEMP_NAME)) {
+					mInvoker.execute(new CGuiSlider(mSlider, mSlider.getValue(), mOldValue));
+				}
+			}
 		}
 
 
@@ -213,4 +230,6 @@ public abstract class SliderListener implements EventListener {
 	private float mOldValue = 0;
 	/** Precision of the slider */
 	private int mPrecision = 0;
+	/** Invoker used for undo */
+	private Invoker mInvoker = null;
 }

@@ -374,33 +374,7 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 
 	@Override
 	public void onResourceSelected(IResource deselectedResource, IResource selectedResource) {
-		// Enemy
-		if (selectedResource instanceof EnemyActor) {
-			((LevelEditorGui)mGui).showEnemyOptions();
-
-			EnemyActor selectedEnemy = (EnemyActor) selectedResource;
-			EnemyGroup enemyGroup = selectedEnemy.getEnemyGroup();
-
-			if (enemyGroup != null) {
-				((LevelEditorGui)mGui).setEnemyOptions(enemyGroup.getEnemyCount(), enemyGroup.getSpawnTriggerDelay());
-			} else {
-				((LevelEditorGui)mGui).setEnemyOptions(1, -1);
-			}
-		} else if (deselectedResource instanceof EnemyActor) {
-			((LevelEditorGui)mGui).hideEnemyOptions();
-		}
-
-		// Path
-		if (selectedResource instanceof Path) {
-			Path selectedPath = (Path) selectedResource;
-
-			if (selectedPath != null) {
-				((LevelEditorGui)mGui).showPathOptions();
-				((LevelEditorGui)mGui).setPathType(selectedPath.getPathType());
-			}
-		} else if (deselectedResource instanceof Path) {
-			((LevelEditorGui)mGui).hidePathOptions();
-		}
+		mGui.resetValues();
 	}
 
 	/**
@@ -478,12 +452,6 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 			try {
 				ResourceCacheFacade.load(mLevel.getDef().getId(), LevelDef.class, false);
 				ResourceCacheFacade.finishLoading();
-				//
-				//				Level level = ResourceCacheFacade.get(mLevel.getId(), Level.class);
-				//				mLevel.dispose();
-				//				mLevel = level;
-				//
-				//				createActorBodies();
 			} catch (Exception e) {
 				Gdx.app.error("LevelEditor", "Loading of saved level failed! " + e.toString());
 			}

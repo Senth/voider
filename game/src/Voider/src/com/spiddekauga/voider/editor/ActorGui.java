@@ -1,4 +1,4 @@
-package com.spiddekauga.voider.scene;
+package com.spiddekauga.voider.editor;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
@@ -30,9 +30,6 @@ import com.spiddekauga.utils.scene.ui.TextFieldListener;
 import com.spiddekauga.voider.Config.Editor;
 import com.spiddekauga.voider.Config.Editor.Bullet;
 import com.spiddekauga.voider.Config.Editor.Enemy;
-import com.spiddekauga.voider.editor.BulletEditorGui;
-import com.spiddekauga.voider.editor.EnemyEditorGui;
-import com.spiddekauga.voider.editor.IActorEditor;
 import com.spiddekauga.voider.editor.commands.CActorEditorCenterReset;
 import com.spiddekauga.voider.editor.commands.CEditorDuplicate;
 import com.spiddekauga.voider.editor.commands.CEditorLoad;
@@ -42,6 +39,7 @@ import com.spiddekauga.voider.game.actors.ActorShapeTypes;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceNames;
 import com.spiddekauga.voider.scene.DrawActorTool.States;
+import com.spiddekauga.voider.scene.Gui;
 
 /**
  * Has some common methods for gui
@@ -357,7 +355,7 @@ public abstract class ActorGui extends Gui {
 		textField.setWidth(Editor.TEXT_FIELD_NUMBER_WIDTH);
 		mVisualTable.add(textField);
 
-		new SliderListener(slider, textField) {
+		new SliderListener(slider, textField, mInvoker) {
 			@Override
 			protected void onChange(float newValue) {
 				mActorEditor.setStartingAngle(newValue);
@@ -378,7 +376,7 @@ public abstract class ActorGui extends Gui {
 		textField.setWidth(Editor.TEXT_FIELD_NUMBER_WIDTH);
 		mVisualTable.add(textField);
 
-		new SliderListener(slider, textField) {
+		new SliderListener(slider, textField, mInvoker) {
 			@Override
 			protected void onChange(float newValue) {
 				mActorEditor.setRotationSpeed(newValue);
@@ -387,6 +385,7 @@ public abstract class ActorGui extends Gui {
 
 
 		// Different shapes
+		GuiCheckCommandCreator shapeChecker = new GuiCheckCommandCreator(mInvoker);
 		mVisualTable.row();
 		ButtonGroup buttonGroup = new ButtonGroup();
 		HideListener circleHider = null;
@@ -394,6 +393,7 @@ public abstract class ActorGui extends Gui {
 			Button button = new TextButton("Circle", toggleStyle);
 			mWidgets.visual.shapeCircle = button;
 			mVisualTable.add(button);
+			button.addListener(shapeChecker);
 			buttonGroup.add(button);
 			circleHider = new HideListener(button, true) {
 				@Override
@@ -408,6 +408,7 @@ public abstract class ActorGui extends Gui {
 			Button button = new TextButton("Rect", toggleStyle);
 			mWidgets.visual.shapeRectangle = button;
 			mVisualTable.add(button);
+			button.addListener(shapeChecker);
 			buttonGroup.add(button);
 			rectangleHider = new HideListener(button, true) {
 				@Override
@@ -422,6 +423,7 @@ public abstract class ActorGui extends Gui {
 			Button button = new TextButton("Triangle", toggleStyle);
 			mWidgets.visual.shapeTriangle = button;
 			mVisualTable.add(button);
+			button.addListener(shapeChecker);
 			buttonGroup.add(button);
 			triangleHider = new HideListener(button, true) {
 				@Override
@@ -436,6 +438,7 @@ public abstract class ActorGui extends Gui {
 			Button button = new TextButton("Line", toggleStyle);
 			mWidgets.visual.shapeLine = button;
 			mVisualTable.add(button);
+			button.addListener(shapeChecker);
 			buttonGroup.add(button);
 			lineHider = new HideListener(button, true) {
 				@Override
@@ -450,6 +453,7 @@ public abstract class ActorGui extends Gui {
 			Button button = new TextButton("Draw", toggleStyle);
 			mWidgets.visual.shapeCustom = button;
 			mVisualTable.add(button);
+			button.addListener(shapeChecker);
 			buttonGroup.add(button);
 			customHider = new HideListener(button, true) {
 				@Override
@@ -481,7 +485,7 @@ public abstract class ActorGui extends Gui {
 			mVisualTable.add(textField);
 			textField.setWidth(Editor.TEXT_FIELD_NUMBER_WIDTH);
 			circleHider.addToggleActor(textField);
-			new SliderListener(slider, textField) {
+			new SliderListener(slider, textField, mInvoker) {
 				@Override
 				protected void onChange(float newValue) {
 					mActorEditor.setShapeRadius(newValue);
@@ -510,7 +514,7 @@ public abstract class ActorGui extends Gui {
 			mVisualTable.add(textField);
 			textField.setWidth(Editor.TEXT_FIELD_NUMBER_WIDTH);
 			rectangleHider.addToggleActor(textField);
-			new SliderListener(slider, textField) {
+			new SliderListener(slider, textField, mInvoker) {
 				@Override
 				protected void onChange(float newValue) {
 					mActorEditor.setShapeWidth(newValue);
@@ -541,7 +545,7 @@ public abstract class ActorGui extends Gui {
 			mVisualTable.add(textField);
 			textField.setWidth(Editor.TEXT_FIELD_NUMBER_WIDTH);
 			rectangleHider.addToggleActor(textField);
-			new SliderListener(slider, textField) {
+			new SliderListener(slider, textField, mInvoker) {
 				@Override
 				protected void onChange(float newValue) {
 					mActorEditor.setShapeHeight(newValue);
@@ -573,7 +577,7 @@ public abstract class ActorGui extends Gui {
 			mVisualTable.add(textField);
 			textField.setWidth(Editor.TEXT_FIELD_NUMBER_WIDTH);
 			triangleHider.addToggleActor(textField);
-			new SliderListener(slider, textField) {
+			new SliderListener(slider, textField, mInvoker) {
 				@Override
 				protected void onChange(float newValue) {
 					mActorEditor.setShapeWidth(newValue);
@@ -604,7 +608,7 @@ public abstract class ActorGui extends Gui {
 			mVisualTable.add(textField);
 			textField.setWidth(Editor.TEXT_FIELD_NUMBER_WIDTH);
 			triangleHider.addToggleActor(textField);
-			new SliderListener(slider, textField) {
+			new SliderListener(slider, textField, mInvoker) {
 				@Override
 				protected void onChange(float newValue) {
 					mActorEditor.setShapeHeight(newValue);
@@ -635,7 +639,7 @@ public abstract class ActorGui extends Gui {
 			mVisualTable.add(textField);
 			textField.setWidth(Editor.TEXT_FIELD_NUMBER_WIDTH);
 			lineHider.addToggleActor(textField);
-			new SliderListener(slider, textField) {
+			new SliderListener(slider, textField, mInvoker) {
 				@Override
 				protected void onChange(float newValue) {
 					mActorEditor.setShapeWidth(newValue);
@@ -655,7 +659,9 @@ public abstract class ActorGui extends Gui {
 			buttonGroup = new ButtonGroup();
 
 			// Add/Move
+			GuiCheckCommandCreator shapeCustomChecker = new GuiCheckCommandCreator(mInvoker);
 			Button button = new TextButton("Add/Move", toggleStyle);
+			button.addListener(shapeCustomChecker);
 			button.setName("add/move");
 			mWidgets.visual.customShapeAddMove = button;
 			buttonGroup.add(button);
@@ -672,6 +678,7 @@ public abstract class ActorGui extends Gui {
 
 			// Remove
 			button = new TextButton("Remove", toggleStyle);
+			button.addListener(shapeCustomChecker);
 			button.setName("remove");
 			mWidgets.visual.customShapeRemove = button;
 			buttonGroup.add(button);
@@ -688,6 +695,7 @@ public abstract class ActorGui extends Gui {
 
 			// Set center
 			button = new TextButton("Set center", toggleStyle);
+			button.addListener(shapeCustomChecker);
 			button.setName("set center");
 			mWidgets.visual.customShapeSetCenter = button;
 			HideListener setCenterHider = new HideListener(button, true);
@@ -759,7 +767,7 @@ public abstract class ActorGui extends Gui {
 		TextField textField = new TextField("", textFieldStyle);
 		textField.setWidth(Editor.TEXT_FIELD_NUMBER_WIDTH);
 		mCollisionTable.add(textField);
-		new SliderListener(slider, textField) {
+		new SliderListener(slider, textField, mInvoker) {
 			@Override
 			protected void onChange(float newValue) {
 				mActorEditor.setCollisionDamage(newValue);

@@ -16,74 +16,65 @@ import com.spiddekauga.voider.Config;
  */
 public class CGuiCheck extends Command {
 	/**
-	 * Creates a command that checks a GUI elements
+	 * Creates a command that checks/unchecks a button.
 	 * @param button the button to check/uncheck
 	 * @param check set to true if it shall check the button, false to uncheck it
+	 *
 	 */
 	public CGuiCheck(Button button, boolean check) {
-		mButton = button;
+		mCheckOnExecute = button;
 		mCheck = check;
+	}
 
-		//		if (mfButtonGroup == null) {
-		//			try {
-		//				mfButtonGroup = Button.class.getDeclaredField("buttonGroup");
-		//				mfButtonGroup.setAccessible(true);
-		//			} catch (Exception e) {
-		//				Gdx.app.error("CGuiCheck", e.toString());
-		//			}
-		//		}
+	/**
+	 * Creates a command that checks a button and checks another
+	 * button on undo. This works if both buttons belongs to the same group
+	 * @param checkOnExecute the button to check now
+	 * @param checkOnUndo the button to check on undo
+	 * @See {@link #CGuiCheck(Button, boolean)} if you just want to check/uncheck one button
+	 */
+	public CGuiCheck(Button checkOnExecute, Button checkOnUndo) {
+		mCheckOnExecute = checkOnExecute;
+		mCheckOnUndo = checkOnUndo;
 	}
 
 	@Override
 	public boolean execute() {
-		//		try {
-		//			ButtonGroup buttonGroup = (ButtonGroup) mfButtonGroup.get(mButton);
-		//
-		//			// Has a button group, remember other checked buttons
-		//			if (buttonGroup != null && mCheck) {
-		//				for (Button button : buttonGroup.getButtons()) {
-		//					if (button.isChecked()) {
-		//						mGroupButtons.add(button);
-		//					}
-		//				}
-		//			}
-		//
-		//		} catch (Exception e) {
-		//			Gdx.app.error("CGuiCheck", e.toString());
-		//			return false;
-		//		}
-
 		// Set temporary name, this will make sure the event doesn't fire
 		// another CGuiCheck command.
-		String oldName = mButton.getName();
-		mButton.setName(Config.Editor.GUI_INVOKER_TEMP_NAME);
-		mButton.setChecked(mCheck);
-		mButton.setName(oldName);
+		String oldName = mCheckOnExecute.getName();
+		mCheckOnExecute.setName(Config.Editor.GUI_INVOKER_TEMP_NAME);
+		mCheckOnExecute.setChecked(mCheck);
+		mCheckOnExecute.setName(oldName);
 
 		return true;
 	}
 
 	@Override
 	public boolean undo() {
-		// Return state of the old buttons
-		//		for (Button button : mGroupButtons) {
-		//			button.setChecked(true);
-		//		}
-
 		// Set temporary name, this will make sure the event doesn't fire
 		// another CGuiCheck command.
-		String oldName = mButton.getName();
-		mButton.setName(Config.Editor.GUI_INVOKER_TEMP_NAME);
-		mButton.setChecked(!mCheck);
-		mButton.setName(oldName);
+		if (mCheckOnUndo != null) {
+			String oldName = mCheckOnUndo.getName();
+			mCheckOnUndo.setName(Config.Editor.GUI_INVOKER_TEMP_NAME);
+			mCheckOnUndo.setChecked(true);
+			mCheckOnUndo.setName(oldName);
+		} else {
+			String oldName = mCheckOnExecute.getName();
+			mCheckOnExecute.setName(Config.Editor.GUI_INVOKER_TEMP_NAME);
+			mCheckOnExecute.setChecked(!mCheck);
+			mCheckOnExecute.setName(oldName);
+		}
 
 		return true;
 	}
 
 	/** If the button should be checked/unchecked */
-	private boolean mCheck;
-	/** Button to check/uncheck */
-	private Button mButton;
+	private boolean mCheck = true;
+	/** Button to check/uncheck, or check on execute */
+	private Button mCheckOnExecute;
+	/** Button to check on undo */
+	private Button mCheckOnUndo = null;
 	/** Field for reflection to get the button group */
 	private static Field mfButtonGroup = null;
 	/** Buttons from the button group that were checked/unchecked */

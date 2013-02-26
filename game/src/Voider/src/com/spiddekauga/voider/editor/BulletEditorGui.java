@@ -22,7 +22,6 @@ import com.spiddekauga.voider.Config.Editor.Weapon;
 import com.spiddekauga.voider.game.actors.ActorShapeTypes;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceNames;
-import com.spiddekauga.voider.scene.ActorGui;
 
 /**
  * GUI for the bullet editor
@@ -98,7 +97,9 @@ public class BulletEditorGui extends ActorGui {
 		ButtonGroup buttonGroup = new ButtonGroup();
 
 		// Visual
+		GuiCheckCommandCreator menuChecker = new GuiCheckCommandCreator(mInvoker);
 		Button button = new TextButton("Visual", textToggleStyle);
+		button.addListener(menuChecker);
 		buttonGroup.add(button);
 		mMainTable.add(button);
 		mVisualHider.addToggleActor(mVisualTable);
@@ -106,6 +107,7 @@ public class BulletEditorGui extends ActorGui {
 
 		// Weapon
 		button = new TextButton("Weapons", textToggleStyle);
+		button.addListener(menuChecker);
 		buttonGroup.add(button);
 		mMainTable.add(button);
 		mWeaponHider.addToggleActor(mWeaponTable);
@@ -113,6 +115,7 @@ public class BulletEditorGui extends ActorGui {
 
 		// Options
 		button = new TextButton("Options", textToggleStyle);
+		button.addListener(menuChecker);
 		buttonGroup.add(button);
 		mMainTable.add(button);
 		mOptionHider.setButton(button);
@@ -162,7 +165,7 @@ public class BulletEditorGui extends ActorGui {
 		TextField textField = new TextField("", textFieldStyle);
 		textField.setWidth(Editor.TEXT_FIELD_NUMBER_WIDTH);
 		mWeaponTable.add(textField);
-		new SliderListener(slider, textField) {
+		new SliderListener(slider, textField, mInvoker) {
 			@Override
 			protected void onChange(float newValue) {
 				mBulletEditor.setBulletSpeed(newValue);
@@ -183,7 +186,7 @@ public class BulletEditorGui extends ActorGui {
 		textField = new TextField("", textFieldStyle);
 		textField.setWidth(Editor.TEXT_FIELD_NUMBER_WIDTH);
 		mWeaponTable.add(textField);
-		SliderListener sliderMinListener = new SliderListener(sliderMin, textField) {
+		SliderListener sliderMinListener = new SliderListener(sliderMin, textField, mInvoker) {
 			@Override
 			protected void onChange(float newValue) {
 				mBulletEditor.setCooldownMin(newValue);
@@ -201,7 +204,7 @@ public class BulletEditorGui extends ActorGui {
 		textField = new TextField("", textFieldStyle);
 		textField.setWidth(Editor.TEXT_FIELD_NUMBER_WIDTH);
 		mWeaponTable.add(textField);
-		SliderListener sliderMaxListener = new SliderListener(sliderMax, textField) {
+		SliderListener sliderMaxListener = new SliderListener(sliderMax, textField, mInvoker) {
 			@Override
 			protected void onChange(float newValue) {
 				mBulletEditor.setCooldownMax(newValue);

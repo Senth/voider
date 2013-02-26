@@ -14,6 +14,7 @@ import com.spiddekauga.utils.Invoker;
 import com.spiddekauga.voider.Config.Editor;
 import com.spiddekauga.voider.editor.HitWrapper;
 import com.spiddekauga.voider.editor.LevelEditor;
+import com.spiddekauga.voider.editor.commands.CEnemySetPath;
 import com.spiddekauga.voider.editor.commands.CResourceAdd;
 import com.spiddekauga.voider.editor.commands.CResourceCornerAdd;
 import com.spiddekauga.voider.editor.commands.CResourceCornerMove;
@@ -25,6 +26,7 @@ import com.spiddekauga.voider.editor.commands.CResourceSelect;
 import com.spiddekauga.voider.game.IResourceCorner.PolygonComplexException;
 import com.spiddekauga.voider.game.IResourceCorner.PolygonCornerTooCloseException;
 import com.spiddekauga.voider.game.Path;
+import com.spiddekauga.voider.game.actors.EnemyActor;
 import com.spiddekauga.voider.resources.IResource;
 
 /**
@@ -240,11 +242,11 @@ public class PathTool extends TouchTool implements ISelectTool {
 
 			// If we hit the path (no corners) when it was selected -> delete it
 			if (mHitBody != null) {
+				boolean removePath = false;
+
 				if (mHitBody.getUserData() == mSelectedPath) {
 					if (!mChangedSelectedSinceUp) {
-						mInvoker.execute(new CResourceRemove(mSelectedPath, mLevelEditor));
-						mInvoker.execute(new CResourceCornerRemoveAll(mSelectedPath, mLevelEditor), true);
-						mInvoker.execute(new CResourceSelect(null, this), true);
+						removePath = true;
 					}
 				}
 				// Hit a corner -> Delete it
@@ -254,13 +256,25 @@ public class PathTool extends TouchTool implements ISelectTool {
 
 					// Was it the last corner? Remove path too then
 					if (mSelectedPath.getCornerCount() == 0) {
-						mInvoker.execute(new CResourceRemove(mSelectedPath, mLevelEditor), true);
-						mInvoker.execute(new CResourceSelect(null, this), true);
+						removePath = true;
 					}
 				}
 				// Hit another path
 				else if (mHitBody.getUserData() instanceof Path) {
 					mInvoker.execute(new CResourceSelect((IResource) mHitBody.getUserData(), this));
+				}
+
+				if (removePath) {
+					mInvoker.execute(new CResourceRemove(mSelectedPath, mLevelEditor));
+
+					// Remove path from all enemies bound to this path
+					ArrayList<EnemyActor> enemyCopy = new ArrayList<EnemyActor>(mSelectedPath.getEnemies());
+					for (EnemyActor enemy : enemyCopy) {
+						mInvoker.execute(new CEnemySetPath(enemy, null, mLevelEditor), true);
+					}
+
+					mInvoker.execute(new CResourceCornerRemoveAll(mSelectedPath, mLevelEditor), true);
+					mInvoker.execute(new CResourceSelect(null, this), true);
 				}
 			}
 			break;

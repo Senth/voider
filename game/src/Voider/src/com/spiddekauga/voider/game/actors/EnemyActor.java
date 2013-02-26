@@ -75,10 +75,16 @@ public class EnemyActor extends Actor implements ITriggerListener {
 	 * @param path the path we're following
 	 */
 	public void setPath(Path path) {
+		// Remove enemy from old path
+		if (mPath != null) {
+			mPath.removeEnemy(this);
+		}
+
 		mPath = path;
 
 		if (path != null) {
 			mPathId = path.getId();
+			mPath.addEnemy(this);
 		} else {
 			mPathId = null;
 		}
@@ -295,7 +301,7 @@ public class EnemyActor extends Actor implements ITriggerListener {
 	@Override
 	public void bindReference(IResource resource) {
 		if (resource.equals(mPathId)) {
-			mPath = (Path) resource;
+			setPath((Path) resource);
 		} else if (resource.equals(mGroupId)) {
 			mGroup = (EnemyGroup) resource;
 		} else {

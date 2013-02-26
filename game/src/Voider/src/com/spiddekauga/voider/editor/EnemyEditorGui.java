@@ -24,16 +24,17 @@ import com.spiddekauga.utils.scene.ui.CheckedListener;
 import com.spiddekauga.utils.scene.ui.HideListener;
 import com.spiddekauga.utils.scene.ui.Row;
 import com.spiddekauga.utils.scene.ui.SliderListener;
+import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Editor;
 import com.spiddekauga.voider.Config.Editor.Enemy;
 import com.spiddekauga.voider.Config.Editor.Enemy.Movement;
 import com.spiddekauga.voider.Config.Editor.Weapon;
+import com.spiddekauga.voider.editor.commands.CGuiCheck;
 import com.spiddekauga.voider.game.actors.ActorShapeTypes;
 import com.spiddekauga.voider.game.actors.EnemyActorDef.AimTypes;
 import com.spiddekauga.voider.game.actors.EnemyActorDef.MovementTypes;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceNames;
-import com.spiddekauga.voider.scene.ActorGui;
 
 /**
  * GUI for the enemy editor
@@ -163,7 +164,9 @@ public class EnemyEditorGui extends ActorGui {
 		ButtonGroup buttonGroup = new ButtonGroup();
 
 		// Movement
+		GuiCheckCommandCreator menuChecker = new GuiCheckCommandCreator(mInvoker);
 		Button button  = new TextButton("Movement", textToggleStyle);
+		button.addListener(menuChecker);
 		buttonGroup.add(button);
 		mMainTable.add(button);
 		mMovementHider.addToggleActor(mMovementTable);
@@ -171,6 +174,7 @@ public class EnemyEditorGui extends ActorGui {
 
 		// Weapons
 		button = new TextButton("Weapons", textToggleStyle);
+		button.addListener(menuChecker);
 		buttonGroup.add(button);
 		mMainTable.add(button);
 		mWeaponHider.addToggleActor(mWeaponTable);
@@ -178,6 +182,7 @@ public class EnemyEditorGui extends ActorGui {
 
 		// Visuals
 		button = new TextButton("Visuals", textToggleStyle);
+		button.addListener(menuChecker);
 		buttonGroup.add(button);
 		mMainTable.add(button);
 		mVisualHider.setButton(button);
@@ -185,6 +190,7 @@ public class EnemyEditorGui extends ActorGui {
 
 		// Options
 		button = new TextButton("Options", textToggleStyle);
+		button.addListener(menuChecker);
 		buttonGroup.add(button);
 		mMainTable.add(button);
 		mOptionHider.setButton(button);
@@ -192,6 +198,7 @@ public class EnemyEditorGui extends ActorGui {
 
 		// Collision
 		button = new TextButton("Collision", textToggleStyle);
+		button.addListener(menuChecker);
 		buttonGroup.add(button);
 		mMainTable.add(button);
 		mCollisionHider.setButton(button);
@@ -219,38 +226,45 @@ public class EnemyEditorGui extends ActorGui {
 
 		// Path
 		Row row = mMovementTable.row();
+		GuiCheckCommandCreator movementChecker = new GuiCheckCommandCreator(mInvoker);
 		row.setScalable(false);
 		ButtonGroup buttonGroup = new ButtonGroup();
-		mWidgets.movement.pathBox = new CheckBox("Path", checkBoxStyle);
-		new CheckedListener(mWidgets.movement.pathBox) {
+		CheckBox checkBox = new CheckBox("Path", checkBoxStyle);
+		checkBox.addListener(movementChecker);
+		mWidgets.movement.pathBox = checkBox;
+		new CheckedListener(checkBox) {
 			@Override
 			protected void onChange(boolean checked) {
 				addInnerTable(mPathTable, mMovementTypeTable);
 				mEnemyEditor.setMovementType(MovementTypes.PATH);
 			}
 		};
-		buttonGroup.add(mWidgets.movement.pathBox);
-		Cell cell = mMovementTable.add(mWidgets.movement.pathBox);
+		buttonGroup.add(checkBox);
+		Cell cell = mMovementTable.add(checkBox);
 		cell.setPadRight(10);
 
 
 		// Stationary
-		mWidgets.movement.stationaryBox = new CheckBox("Stationary", checkBoxStyle);
-		new CheckedListener(mWidgets.movement.stationaryBox) {
+		checkBox = new CheckBox("Stationary", checkBoxStyle);
+		checkBox.addListener(movementChecker);
+		mWidgets.movement.stationaryBox = checkBox;
+		new CheckedListener(checkBox) {
 			@Override
 			protected void onChange(boolean checked) {
 				addInnerTable(null, mMovementTypeTable);
 				mEnemyEditor.setMovementType(MovementTypes.STATIONARY);
 			}
 		};
-		buttonGroup.add(mWidgets.movement.stationaryBox);
-		cell = mMovementTable.add(mWidgets.movement.stationaryBox);
+		buttonGroup.add(checkBox);
+		cell = mMovementTable.add(checkBox);
 		cell.setPadRight(10);
 
 
 		// AI
-		mWidgets.movement.aiBox = new CheckBox("AI", checkBoxStyle);
-		new CheckedListener(mWidgets.movement.aiBox) {
+		checkBox = new CheckBox("AI", checkBoxStyle);
+		checkBox.addListener(movementChecker);
+		mWidgets.movement.aiBox = checkBox;
+		new CheckedListener(checkBox) {
 			@Override
 			protected void onChange(boolean checked) {
 				addInnerTable(mPathTable, mMovementTypeTable);
@@ -260,8 +274,8 @@ public class EnemyEditorGui extends ActorGui {
 				mEnemyEditor.setMovementType(MovementTypes.AI);
 			}
 		};
-		buttonGroup.add(mWidgets.movement.aiBox);
-		mMovementTable.add(mWidgets.movement.aiBox);
+		buttonGroup.add(checkBox);
+		mMovementTable.add(checkBox);
 		mMovementTable.row();
 		mMovementTable.add(mMovementTypeTable);
 
@@ -274,12 +288,13 @@ public class EnemyEditorGui extends ActorGui {
 		mPathTable.add(label);
 		row = mPathTable.row();
 		row.setScalable(false);
-		mWidgets.movement.speedSlider = new Slider(Enemy.Movement.MOVE_SPEED_MIN, Enemy.Movement.MOVE_SPEED_MAX, Enemy.Movement.MOVE_SPEED_STEP_SIZE, false, sliderStyle);
-		mPathTable.add(mWidgets.movement.speedSlider );
+		Slider slider = new Slider(Enemy.Movement.MOVE_SPEED_MIN, Enemy.Movement.MOVE_SPEED_MAX, Enemy.Movement.MOVE_SPEED_STEP_SIZE, false, sliderStyle);
+		mWidgets.movement.speedSlider = slider;
+		mPathTable.add(slider);
 		TextField textField = new TextField("", textFieldStyle);
 		textField.setWidth(Editor.TEXT_FIELD_NUMBER_WIDTH);
 		mPathTable.add(textField);
-		new SliderListener(mWidgets.movement.speedSlider, textField) {
+		new SliderListener(slider, textField, mInvoker) {
 			@Override
 			protected void onChange(float newValue) {
 				mEnemyEditor.setSpeed(newValue);
@@ -289,9 +304,10 @@ public class EnemyEditorGui extends ActorGui {
 		// Turning
 		row = mPathTable.row();
 		row.setScalable(false);
-		mWidgets.movement.turnSpeedToggleButton = new TextButton("Turning speed OFF", textToogleStyle);
-		mPathTable.add(mWidgets.movement.turnSpeedToggleButton);
-		HideListener hideListener = new HideListener(mWidgets.movement.turnSpeedToggleButton, true) {
+		TextButton textButton = new TextButton("Turning speed OFF", textToogleStyle);
+		mWidgets.movement.turnSpeedToggleButton = textButton;
+		mPathTable.add(textButton);
+		HideListener hideListener = new HideListener(textButton, true) {
 			@Override
 			protected void onShow() {
 				if (mButton instanceof TextButton) {
@@ -299,6 +315,11 @@ public class EnemyEditorGui extends ActorGui {
 				}
 				if (!mEnemyEditor.isTurning()) {
 					mEnemyEditor.setTurning(true);
+				}
+
+				// Send command for undo
+				if (mButton.getName() == null || !mButton.getName().equals(Config.Editor.GUI_INVOKER_TEMP_NAME)) {
+					mInvoker.execute(new CGuiCheck(mButton, true));
 				}
 			}
 
@@ -310,24 +331,30 @@ public class EnemyEditorGui extends ActorGui {
 				if (mEnemyEditor.isTurning()) {
 					mEnemyEditor.setTurning(false);
 				}
+
+				// Send command for undo
+				if (mButton.getName() == null || !mButton.getName().equals(Config.Editor.GUI_INVOKER_TEMP_NAME)) {
+					mInvoker.execute(new CGuiCheck(mButton, false));
+				}
 			}
 		};
 
 		row = mPathTable.row();
 		row.setScalable(false);
-		mWidgets.movement.turnSpeedSlider = new Slider(Movement.TURN_SPEED_MIN, Movement.TURN_SPEED_MAX, Enemy.Movement.TURN_SPEED_STEP_SIZE, false, sliderStyle);
+		slider = new Slider(Movement.TURN_SPEED_MIN, Movement.TURN_SPEED_MAX, Enemy.Movement.TURN_SPEED_STEP_SIZE, false, sliderStyle);
+		mWidgets.movement.turnSpeedSlider = slider;
 		mPathTable.add(mWidgets.movement.turnSpeedSlider);
 		textField = new TextField("", textFieldStyle);
 		textField.setWidth(Editor.TEXT_FIELD_NUMBER_WIDTH);
 		mPathTable.add(textField);
-		new SliderListener(mWidgets.movement.turnSpeedSlider, textField) {
+		new SliderListener(slider, textField, mInvoker) {
 			@Override
 			protected void onChange(float newValue) {
 				mEnemyEditor.setTurnSpeed(newValue);
 			}
 		};
 		mMovementHider.addChild(hideListener);
-		hideListener.addToggleActor(mWidgets.movement.turnSpeedSlider);
+		hideListener.addToggleActor(slider);
 		hideListener.addToggleActor(textField);
 
 
@@ -346,7 +373,7 @@ public class EnemyEditorGui extends ActorGui {
 		textField = new TextField("", textFieldStyle);
 		textField.setWidth(Editor.TEXT_FIELD_NUMBER_WIDTH);
 		mAiTable.add(textField);
-		SliderListener sliderMinListener = new SliderListener(mWidgets.movement.aiDistanceMin, textField) {
+		SliderListener sliderMinListener = new SliderListener(mWidgets.movement.aiDistanceMin, textField, mInvoker) {
 			@Override
 			protected void onChange(float newValue) {
 				mEnemyEditor.setPlayerDistanceMin(newValue);
@@ -363,7 +390,7 @@ public class EnemyEditorGui extends ActorGui {
 		textField = new TextField("", textFieldStyle);
 		textField.setWidth(Editor.TEXT_FIELD_NUMBER_WIDTH);
 		mAiTable.add(textField);
-		SliderListener sliderMaxListener = new SliderListener(mWidgets.movement.aiDistanceMax, textField) {
+		SliderListener sliderMaxListener = new SliderListener(mWidgets.movement.aiDistanceMax, textField, mInvoker) {
 			@Override
 			protected void onChange(float newValue) {
 				mEnemyEditor.setPlayerDistanceMax(newValue);
@@ -373,17 +400,23 @@ public class EnemyEditorGui extends ActorGui {
 		sliderMinListener.setGreaterSlider(mWidgets.movement.aiDistanceMax);
 		sliderMaxListener.setLesserSlider(mWidgets.movement.aiDistanceMin);
 
-
+		// Random movement
 		mAiTable.row();
-		mWidgets.movement.aiRandomMovementToggleButton = new TextButton("Random Movement OFF", textToogleStyle);
-		mAiTable.add(mWidgets.movement.aiRandomMovementToggleButton);
-		hideListener = new HideListener(mWidgets.movement.aiRandomMovementToggleButton, true) {
+		Button button = new TextButton("Random Movement OFF", textToogleStyle);
+		mWidgets.movement.aiRandomMovementToggleButton = button;
+		mAiTable.add(button);
+		hideListener = new HideListener(button, true) {
 			@Override
 			protected void onShow() {
 				mEnemyEditor.setMoveRandomly(true);
 
 				if (mButton instanceof TextButton) {
 					((TextButton) mButton).setText("Random Movement ON");
+				}
+
+				// Send command for undo
+				if (mButton.getName() == null || !mButton.getName().equals(Config.Editor.GUI_INVOKER_TEMP_NAME)) {
+					mInvoker.execute(new CGuiCheck(mButton, true));
 				}
 			}
 
@@ -393,6 +426,11 @@ public class EnemyEditorGui extends ActorGui {
 
 				if (mButton instanceof TextButton) {
 					((TextButton) mButton).setText("Random Movement OFF");
+				}
+
+				// Send command for undo
+				if (mButton.getName() == null || !mButton.getName().equals(Config.Editor.GUI_INVOKER_TEMP_NAME)) {
+					mInvoker.execute(new CGuiCheck(mButton, false));
 				}
 			}
 		};
@@ -408,7 +446,7 @@ public class EnemyEditorGui extends ActorGui {
 		textField = new TextField("", textFieldStyle);
 		textField.setWidth(Editor.TEXT_FIELD_NUMBER_WIDTH);
 		mAiTable.add(textField);
-		sliderMinListener = new SliderListener(mWidgets.movement.aiRandomTimeMin, textField) {
+		sliderMinListener = new SliderListener(mWidgets.movement.aiRandomTimeMin, textField, mInvoker) {
 			@Override
 			protected void onChange(float newValue) {
 				mEnemyEditor.setRandomTimeMin(newValue);
@@ -429,7 +467,7 @@ public class EnemyEditorGui extends ActorGui {
 		textField = new TextField("", textFieldStyle);
 		textField.setWidth(Editor.TEXT_FIELD_NUMBER_WIDTH);
 		mAiTable.add(textField);
-		sliderMaxListener = new SliderListener(mWidgets.movement.aiRandomTimeMax, textField) {
+		sliderMaxListener = new SliderListener(mWidgets.movement.aiRandomTimeMax, textField, mInvoker) {
 			@Override
 			protected void onChange(float newValue) {
 				mEnemyEditor.setRandomTimeMax(newValue);
@@ -480,8 +518,10 @@ public class EnemyEditorGui extends ActorGui {
 
 		// TYPES
 		mWeaponTable.row();
+		GuiCheckCommandCreator weaponMenuChecker = new GuiCheckCommandCreator(mInvoker);
 		ButtonGroup buttonGroup = new ButtonGroup();
 		button = new TextButton("Bullet", toggleButtonStyle);
+		button.addListener(weaponMenuChecker);
 		buttonGroup.add(button);
 		mWeaponTable.add(button);
 		weaponInnerHider.addToggleActor(button);
@@ -489,6 +529,7 @@ public class EnemyEditorGui extends ActorGui {
 		weaponInnerHider.addChild(bulletHider);
 
 		button = new TextButton("Aim", toggleButtonStyle);
+		button.addListener(weaponMenuChecker);
 		buttonGroup.add(button);
 		mWeaponTable.add(button);
 		weaponInnerHider.addToggleActor(button);
@@ -530,7 +571,7 @@ public class EnemyEditorGui extends ActorGui {
 		TextField textField = new TextField("", textFieldStyle);
 		textField.setWidth(Editor.TEXT_FIELD_NUMBER_WIDTH);
 		bulletTable.add(textField);
-		new SliderListener(slider, textField) {
+		new SliderListener(slider, textField, mInvoker) {
 			@Override
 			protected void onChange(float newValue) {
 				mEnemyEditor.setBulletSpeed(newValue);
@@ -548,7 +589,7 @@ public class EnemyEditorGui extends ActorGui {
 		textField = new TextField("", textFieldStyle);
 		textField.setWidth(Editor.TEXT_FIELD_NUMBER_WIDTH);
 		bulletTable.add(textField);
-		new SliderListener(slider, textField) {
+		new SliderListener(slider, textField, mInvoker) {
 			@Override
 			protected void onChange(float newValue) {
 				mEnemyEditor.setWeaponDamage(newValue);
@@ -570,7 +611,7 @@ public class EnemyEditorGui extends ActorGui {
 		textField = new TextField("", textFieldStyle);
 		textField.setWidth(Editor.TEXT_FIELD_NUMBER_WIDTH);
 		bulletTable.add(textField);
-		SliderListener sliderMinListener = new SliderListener(sliderMin, textField) {
+		SliderListener sliderMinListener = new SliderListener(sliderMin, textField, mInvoker) {
 			@Override
 			protected void onChange(float newValue) {
 				mEnemyEditor.setCooldownMin(newValue);
@@ -589,7 +630,7 @@ public class EnemyEditorGui extends ActorGui {
 		textField = new TextField("", textFieldStyle);
 		textField.setWidth(Editor.TEXT_FIELD_NUMBER_WIDTH);
 		bulletTable.add(textField);
-		SliderListener sliderMaxListener = new SliderListener(sliderMax, textField) {
+		SliderListener sliderMaxListener = new SliderListener(sliderMax, textField, mInvoker) {
 			@Override
 			protected void onChange(float newValue) {
 				mEnemyEditor.setCooldownMax(newValue);
@@ -603,7 +644,9 @@ public class EnemyEditorGui extends ActorGui {
 		// -- Aim --
 		// Aim on what?
 		mWeaponTable.row();
+		GuiCheckCommandCreator aimChecker = new GuiCheckCommandCreator(mInvoker);
 		button = new TextButton("On Player", toggleButtonStyle);
+		button.addListener(aimChecker);
 		mWidgets.weapon.aimOnPlayer = button;
 		mWeaponTable.add(button);
 		aimHider.addToggleActor(button);
@@ -619,6 +662,7 @@ public class EnemyEditorGui extends ActorGui {
 		};
 
 		button = new TextButton("Move Dir", toggleButtonStyle);
+		button.addListener(aimChecker);
 		mWidgets.weapon.aimMoveDirection = button;
 		mWeaponTable.add(button);
 		aimHider.addToggleActor(button);
@@ -634,6 +678,7 @@ public class EnemyEditorGui extends ActorGui {
 
 		mWeaponTable.row();
 		button = new TextButton("In front of Player", toggleButtonStyle);
+		button.addListener(aimChecker);
 		mWidgets.weapon.aimInFrontOfPlayer = button;
 		mWeaponTable.add(button);
 		aimHider.addToggleActor(button);
@@ -648,6 +693,7 @@ public class EnemyEditorGui extends ActorGui {
 		};
 
 		button = new TextButton("Rotate", toggleButtonStyle);
+		button.addListener(aimChecker);
 		mWidgets.weapon.aimRotate = button;
 		mWeaponTable.add(button);
 		buttonGroup.add(button);
@@ -679,7 +725,7 @@ public class EnemyEditorGui extends ActorGui {
 		textField = new TextField("", textFieldStyle);
 		textField.setWidth(Editor.TEXT_FIELD_NUMBER_WIDTH);
 		rotateTable.add(textField);
-		new SliderListener(slider, textField) {
+		new SliderListener(slider, textField, mInvoker) {
 			@Override
 			protected void onChange(float newValue) {
 				mEnemyEditor.setAimStartAngle(newValue);
@@ -696,7 +742,7 @@ public class EnemyEditorGui extends ActorGui {
 		textField = new TextField("", textFieldStyle);
 		textField.setWidth(Editor.TEXT_FIELD_NUMBER_WIDTH);
 		rotateTable.add(textField);
-		new SliderListener(slider, textField) {
+		new SliderListener(slider, textField, mInvoker) {
 			@Override
 			protected void onChange(float newValue) {
 				mEnemyEditor.setAimRotateSpeed(newValue);

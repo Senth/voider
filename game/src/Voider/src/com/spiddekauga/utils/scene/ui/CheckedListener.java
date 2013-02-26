@@ -19,8 +19,6 @@ public abstract class CheckedListener implements EventListener {
 		mButton = button;
 		mButton.addListener(this);
 		mCheckedLast = mButton.isChecked();
-
-		//		onChange(mCheckedLast);
 	}
 
 	@Override
