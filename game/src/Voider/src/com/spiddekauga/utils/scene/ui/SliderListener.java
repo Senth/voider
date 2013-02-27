@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldFilter;
 import com.badlogic.gdx.scenes.scene2d.utils.FocusListener.FocusEvent;
+import com.spiddekauga.utils.CDelimiter;
 import com.spiddekauga.utils.Invoker;
 import com.spiddekauga.utils.Maths;
 import com.spiddekauga.voider.Config.Editor;
@@ -83,6 +84,14 @@ public abstract class SliderListener implements EventListener {
 					inputEvent.getType() == Type.exit) {
 				return true;
 			}
+
+			// Add delimiter when pressing up to avoid combining all
+			// changes at the same time
+			if (mInvoker != null) {
+				if (inputEvent.getType() == Type.touchUp) {
+					mInvoker.execute(new CDelimiter());
+				}
+			}
 		}
 
 
@@ -144,15 +153,6 @@ public abstract class SliderListener implements EventListener {
 
 		if (mOldValue != mSlider.getValue()) {
 			onChange(mSlider.getValue());
-			mOldValue = mSlider.getValue();
-
-			if (mLesserSlider != null && mLesserSlider.getValue() > mSlider.getValue()) {
-				mLesserSlider.setValue(mSlider.getValue());
-			}
-
-			if (mGreaterSlider != null && mGreaterSlider.getValue() < mSlider.getValue()) {
-				mGreaterSlider.setValue(mSlider.getValue());
-			}
 
 			// Execute slider command if not an invoker changed the slider's value
 			if (mInvoker != null) {
@@ -160,6 +160,25 @@ public abstract class SliderListener implements EventListener {
 					mInvoker.execute(new CGuiSlider(mSlider, mSlider.getValue(), mOldValue));
 				}
 			}
+
+			if (mLesserSlider != null && mLesserSlider.getValue() > mSlider.getValue()) {
+				if (mInvoker != null) {
+					mInvoker.execute(new CGuiSlider(mLesserSlider, mSlider.getValue(), mLesserSlider.getValue()), true);
+				} else {
+					mLesserSlider.setValue(mSlider.getValue());
+				}
+			}
+
+			if (mGreaterSlider != null && mGreaterSlider.getValue() < mSlider.getValue()) {
+				if (mInvoker != null) {
+					mInvoker.execute(new CGuiSlider(mGreaterSlider, mSlider.getValue(), mGreaterSlider.getValue()), true);
+				}
+				else {
+					mGreaterSlider.setValue(mSlider.getValue());
+				}
+			}
+
+			mOldValue = mSlider.getValue();
 		}
 
 

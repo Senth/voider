@@ -10,14 +10,12 @@ import com.badlogic.gdx.utils.Pools;
 import com.spiddekauga.utils.Json;
 import com.spiddekauga.utils.Maths;
 import com.spiddekauga.voider.Config;
-import com.spiddekauga.voider.game.ITriggerListener;
 import com.spiddekauga.voider.game.Path;
 import com.spiddekauga.voider.game.Path.PathTypes;
-import com.spiddekauga.voider.game.TriggerAction;
-import com.spiddekauga.voider.game.TriggerInfo;
 import com.spiddekauga.voider.game.Weapon;
 import com.spiddekauga.voider.game.actors.EnemyActorDef.AimTypes;
 import com.spiddekauga.voider.game.actors.EnemyActorDef.MovementTypes;
+import com.spiddekauga.voider.game.triggers.TriggerInfo;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.utils.Geometry;
 
@@ -26,12 +24,14 @@ import com.spiddekauga.voider.utils.Geometry;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class EnemyActor extends Actor implements ITriggerListener {
+public class EnemyActor extends Actor {
 	/**
 	 * Default constructor
 	 */
 	public EnemyActor() {
-		// Does nothing
+		if (!mEditorActive) {
+			deactivate();
+		}
 	}
 
 	@Override
@@ -46,27 +46,30 @@ public class EnemyActor extends Actor implements ITriggerListener {
 	public void update(float deltaTime) {
 		super.update(deltaTime);
 
-		// Update movement
-		EnemyActorDef def = getDef(EnemyActorDef.class);
-		if (def != null && def.getMovementType() != null && getBody() != null) {
-			switch (def.getMovementType()) {
-			case PATH:
-				updatePathMovement(deltaTime);
-				break;
+		if (isActive()) {
+			// Update movement
+			EnemyActorDef def = getDef(EnemyActorDef.class);
+			if (def != null && def.getMovementType() != null && getBody() != null) {
+				switch (def.getMovementType()) {
+				case PATH:
+					updatePathMovement(deltaTime);
+					break;
 
-			case AI:
-				updateAiMovement(deltaTime);
-				break;
+				case AI:
+					updateAiMovement(deltaTime);
+					break;
 
-			case STATIONARY:
-				// Does nothing
-				break;
+				case STATIONARY:
+					// Does nothing
+					break;
+				}
 			}
-		}
 
-		// Update weapon
-		if (def.hasWeapon()) {
-			updateWeapon(deltaTime);
+			// Update weapon
+			if (def.hasWeapon()) {
+				updateWeapon(deltaTime);
+			}
+
 		}
 	}
 
@@ -98,30 +101,6 @@ public class EnemyActor extends Actor implements ITriggerListener {
 	}
 
 	/**
-	 * Adds a trigger to the enemy actor
-	 * @param triggerInfo trigger information
-	 */
-	public void addTrigger(TriggerInfo triggerInfo) {
-		mTriggerInfos.add(triggerInfo);
-
-		if (mGroupLeader && mGroup != null) {
-			mGroup.addTrigger(triggerInfo);
-		}
-	}
-
-	/**
-	 * Removes the specified trigger from this enemy
-	 * @param triggerInfo trigger information
-	 */
-	public void removeTrigger(TriggerInfo triggerInfo) {
-		mTriggerInfos.remove(triggerInfo);
-
-		if (mGroupLeader && mGroup != null) {
-			mGroup.removeTrigger(triggerInfo);
-		}
-	}
-
-	/**
 	 * Sets the speed of the actor, although not the definition, so this is
 	 * just a temporary speed
 	 * @param speed new temporary speed.
@@ -142,6 +121,32 @@ public class EnemyActor extends Actor implements ITriggerListener {
 		// Set position of other actors in the group
 		if (mGroupLeader && mGroup != null) {
 
+		}
+	}
+
+	/**
+	 * Adds a trigger to the enemy actor
+	 * @param triggerInfo trigger information
+	 */
+	@Override
+	public void addTrigger(TriggerInfo triggerInfo) {
+		super.addTrigger(triggerInfo);
+
+		if (mGroupLeader && mGroup != null) {
+			mGroup.addTrigger(triggerInfo);
+		}
+	}
+
+	/**
+	 * Removes the specified trigger from this enemy
+	 * @param triggerInfo trigger information
+	 */
+	@Override
+	public void removeTrigger(TriggerInfo triggerInfo) {
+		super.removeTrigger(triggerInfo);
+
+		if (mGroupLeader && mGroup != null) {
+			mGroup.removeTrigger(triggerInfo);
 		}
 	}
 
@@ -285,17 +290,13 @@ public class EnemyActor extends Actor implements ITriggerListener {
 	}
 
 	@Override
-	public ArrayList<UUID> getReferences() {
-		ArrayList<UUID> references = new ArrayList<UUID>();
-
+	public void getReferences(ArrayList<UUID> references) {
 		if (mPathId != null) {
 			references.add(mPathId);
 		}
 		if (mGroupId != null) {
 			references.add(mGroupId);
 		}
-
-		return references;
 	}
 
 	@Override
@@ -322,17 +323,6 @@ public class EnemyActor extends Actor implements ITriggerListener {
 		copy.mGroupLeader = false;
 
 		return (ResourceType) copy;
-	}
-
-	@Override
-	public void onTriggered(TriggerAction action) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public ArrayList<TriggerInfo> getTriggerInfos() {
-		return mTriggerInfos;
 	}
 
 	/**
@@ -757,9 +747,6 @@ public class EnemyActor extends Actor implements ITriggerListener {
 		return distanceSq <= Config.Actor.Enemy.PATH_NODE_CLOSE_SQ;
 	}
 
-
-	/** Trigger informations */
-	private ArrayList<TriggerInfo> mTriggerInfos = new ArrayList<TriggerInfo>();
 	/** Enemy weapon */
 	private Weapon mWeapon = new Weapon();
 	/** Shooting angle (used when rotating) */

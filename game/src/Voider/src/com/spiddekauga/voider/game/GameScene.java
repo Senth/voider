@@ -11,6 +11,7 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.joints.MouseJoint;
 import com.badlogic.gdx.physics.box2d.joints.MouseJointDef;
+import com.badlogic.gdx.utils.Pools;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.PlayerActor;
@@ -69,9 +70,9 @@ public class GameScene extends WorldScene {
 			actor.createBody();
 		}
 
-		mCamera.position.x = mLevel.getXCoord() + mCamera.viewportWidth * 0.5f;
-		mCamera.update();
+		updateCameraPosition();
 		createBorder();
+		resetPlayerPosition();
 
 		Actor.setLevelSpeed(mLevel.getSpeed());
 	}
@@ -84,6 +85,12 @@ public class GameScene extends WorldScene {
 		mLevelToLoad = levelDef;
 	}
 
+	@Override
+	public void onResize(int width, int height) {
+		super.onResize(width, height);
+		updateCameraPosition();
+		createBorder();
+	}
 
 	@Override
 	public void onActivate(Outcomes outcome, String message) {
@@ -142,9 +149,7 @@ public class GameScene extends WorldScene {
 		}
 		super.update();
 		mLevel.update(true);
-
-		mCamera.position.x = mLevel.getXCoord() + mCamera.viewportWidth * 0.5f;
-		mCamera.update();
+		updateCameraPosition();
 
 		// Is the player dead?
 		if (mPlayerActor.getLife() <= 0 && !mTesting) {
@@ -251,6 +256,34 @@ public class GameScene extends WorldScene {
 		return false;
 	}
 
+	/**
+	 * Updates the camera's position depending on where on the level location
+	 */
+	private void updateCameraPosition() {
+		mCamera.position.x = mLevel.getXCoord() - mCamera.viewportWidth * 0.5f;
+		mCamera.update();
+	}
+
+	/**
+	 * Resets the player position
+	 */
+	private void resetPlayerPosition() {
+		if (mPlayerActor != null && mPlayerActor.getBody() != null) {
+			Vector2 playerPosition = Pools.obtain(Vector2.class);
+			playerPosition.set(mCamera.position.x - mCamera.viewportWidth * 0.5f, 0);
+
+			// Get radius of player and offset it with the width
+			ArrayList<Fixture> playerFixtures = mPlayerActor.getBody().getFixtureList();
+
+			if (playerFixtures.size() > 0) {
+				float radius = playerFixtures.get(0).getShape().getRadius();
+				playerPosition.x += radius * 2;
+
+				mPlayerActor.getBody().setTransform(playerPosition, 0.0f);
+			}
+			Pools.free(playerPosition);
+		}
+	}
 
 	/** Invalid pointer id */
 	private static final int INVALID_POINTER = -1;

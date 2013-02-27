@@ -5,17 +5,17 @@ import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.OrderedMap;
-import com.badlogic.gdx.utils.Pools;
 import com.spiddekauga.utils.Json;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.EnemyGroup;
 import com.spiddekauga.voider.game.actors.PlayerActor;
+import com.spiddekauga.voider.game.triggers.Trigger;
+import com.spiddekauga.voider.game.triggers.TriggerAction;
+import com.spiddekauga.voider.game.triggers.TriggerInfo;
 import com.spiddekauga.voider.resources.Resource;
 import com.spiddekauga.voider.resources.ResourceBinder;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
@@ -137,8 +137,6 @@ public class Level extends Resource implements ITriggerListener, Json.Serializab
 	 */
 	public void setPlayer(PlayerActor playerActor) {
 		mPlayerActor = playerActor;
-
-		resetPlayerPosition();
 	}
 
 	/**
@@ -148,8 +146,6 @@ public class Level extends Resource implements ITriggerListener, Json.Serializab
 	 */
 	public void setXCoord(float x) {
 		mXCoord = x;
-
-		resetPlayerPosition();
 	}
 
 	/**
@@ -372,27 +368,6 @@ public class Level extends Resource implements ITriggerListener, Json.Serializab
 	 */
 	protected Level() {
 		// Does nothing
-	}
-
-	/**
-	 * Resets the player position
-	 */
-	private void resetPlayerPosition() {
-		if (mPlayerActor != null && mPlayerActor.getBody() != null) {
-			Vector2 playerPosition = Pools.obtain(Vector2.class);
-			playerPosition.set(mXCoord, 0);
-
-			// Get radius of player and offset it with the width
-			ArrayList<Fixture> playerFixtures = mPlayerActor.getBody().getFixtureList();
-
-			if (playerFixtures.size() > 0) {
-				float radius = playerFixtures.get(0).getShape().getRadius();
-				playerPosition.x += radius * 2;
-
-				mPlayerActor.getBody().setTransform(playerPosition, 0.0f);
-			}
-			Pools.free(playerPosition);
-		}
 	}
 
 	/** Contains all the resources used in this level */

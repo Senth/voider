@@ -24,16 +24,20 @@ import com.spiddekauga.voider.Config.Editor;
 import com.spiddekauga.voider.editor.HitWrapper;
 import com.spiddekauga.voider.game.IResourceBody;
 import com.spiddekauga.voider.game.IResourcePosition;
+import com.spiddekauga.voider.game.ITriggerListener;
+import com.spiddekauga.voider.game.triggers.TriggerAction;
+import com.spiddekauga.voider.game.triggers.TriggerInfo;
 import com.spiddekauga.voider.resources.Resource;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.UndefinedResourceTypeException;
+import com.spiddekauga.voider.scene.SceneSwitcher;
 
 /**
  * The abstract base class for all actors
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public abstract class Actor extends Resource implements Json.Serializable, Disposable, Poolable, IResourceBody, IResourcePosition {
+public abstract class Actor extends Resource implements Json.Serializable, Disposable, Poolable, IResourceBody, IResourcePosition, ITriggerListener {
 	/**
 	 * Sets the texture of the actor including the actor definition.
 	 * Automatically creates a body for the actor.
@@ -50,17 +54,19 @@ public abstract class Actor extends Resource implements Json.Serializable, Dispo
 	 * @param deltaTime seconds elapsed since last call
 	 */
 	public void update(float deltaTime) {
-		// Update position
-		if (mBody != null) {
-			mPosition.set(mBody.getPosition());
+		if (mActive) {
+			// Update position
+			if (mBody != null) {
+				mPosition.set(mBody.getPosition());
 
-			editorUpdate();
-		}
+				editorUpdate();
+			}
 
-		// Decrease life if colliding with something...
-		if (mDef.getMaxLife() > 0 && mLife > 0) {
-			for (ActorDef collidingActor : mCollidingActors) {
-				mLife -= collidingActor.getCollisionDamage() * deltaTime;
+			// Decrease life if colliding with something...
+			if (mDef.getMaxLife() > 0 && mLife > 0) {
+				for (ActorDef collidingActor : mCollidingActors) {
+					mLife -= collidingActor.getCollisionDamage() * deltaTime;
+				}
 			}
 		}
 	}
@@ -80,6 +86,33 @@ public abstract class Actor extends Resource implements Json.Serializable, Dispo
 				reloadFixtures();
 			}
 		}
+	}
+
+	@Override
+	public void onTriggered(TriggerAction action) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public ArrayList<TriggerInfo> getTriggerInfos() {
+		return mTriggerInfos;
+	}
+
+	/**
+	 * Adds a trigger to the enemy actor
+	 * @param triggerInfo trigger information
+	 */
+	public void addTrigger(TriggerInfo triggerInfo) {
+		mTriggerInfos.add(triggerInfo);
+	}
+
+	/**
+	 * Removes the specified trigger from this enemy
+	 * @param triggerInfo trigger information
+	 */
+	public void removeTrigger(TriggerInfo triggerInfo) {
+		mTriggerInfos.remove(triggerInfo);
 	}
 
 	/**
@@ -545,10 +578,42 @@ public abstract class Actor extends Resource implements Json.Serializable, Dispo
 	}
 
 	/**
+	 * @return activation time of the actor, negative value if the actor is
+	 * inactive.
+	 */
+	public float getActivationTime() {
+		return mActivationTime;
+	}
+
+	/**
 	 * @return true if the actor is dead (i.e. has been destroyed)
 	 */
 	public boolean isDead() {
 		return mDead;
+	}
+
+	/**
+	 * Activates the actor.
+	 */
+	public void activate() {
+		mActive = true;
+		mActivationTime = SceneSwitcher.getGameTime().getTotalTimeElapsed();
+	}
+
+	/**
+	 * Deactivates the actor. This resets the activation time to a negative
+	 * value.
+	 */
+	public void deactivate() {
+		mActivationTime = -1;
+		mActive = false;
+	}
+
+	/**
+	 * @return true if the actor is activated
+	 */
+	public boolean isActive() {
+		return mActive;
 	}
 
 	/**
@@ -680,6 +745,12 @@ public abstract class Actor extends Resource implements Json.Serializable, Dispo
 	private boolean mSkipRotate = false;
 	/** True if the actor is dead, i.e. it shall be removed */
 	private boolean mDead = false;
+	/** True if the actor is active */
+	private boolean mActive = true;
+	/** Activation time of the actor, local time for the scene */
+	private float mActivationTime = mActive ? 0 : -1;
+	/** Trigger informations */
+	private ArrayList<TriggerInfo> mTriggerInfos = new ArrayList<TriggerInfo>();
 
 	/** The world used for creating bodies */
 	protected static World mWorld = null;

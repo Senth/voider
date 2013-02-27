@@ -1,5 +1,6 @@
 package com.spiddekauga.utils;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 
 import com.badlogic.gdx.utils.Disposable;
@@ -48,9 +49,23 @@ public class Invoker implements Disposable {
 		// Same command type and combinable?
 		boolean combined = false;
 		if (command instanceof ICommandCombinable && !mUndoCommands.isEmpty()) {
-			Command lastCommand = mUndoCommands.getFirst();
-			if (command.getClass() == lastCommand.getClass()) {
-				combined = ((ICommandCombinable)lastCommand).combine((ICommandCombinable) command);
+			// Try last command, continue if last command is chained
+			boolean lastChained = true;
+			Iterator<Command> iterator = mUndoCommands.iterator();
+			Command combinedCommand = null;
+			while (iterator.hasNext() && lastChained && !combined) {
+				combinedCommand = iterator.next();
+
+				if (command.getClass() == combinedCommand.getClass()) {
+					combined = ((ICommandCombinable)combinedCommand).combine((ICommandCombinable) command);
+				}
+
+				// Shall we check next?
+				if (combinedCommand.isChained()) {
+					lastChained = true;
+				} else {
+					lastChained = false;
+				}
 			}
 		}
 
@@ -93,6 +108,12 @@ public class Invoker implements Disposable {
 		while (canUndo() && chained) {
 			Command undoCommand = mUndoCommands.pop();
 			chained = undoCommand.isChained();
+
+			// Special case for delimiter. Always treat it as chained
+			if (undoCommand instanceof CDelimiter) {
+				chained = true;
+			}
+
 			undoCommand.undo();
 			if (addToRedoStack) {
 				mRedoCommands.push(undoCommand);
@@ -113,7 +134,12 @@ public class Invoker implements Disposable {
 
 			// Is next redo chained? -> Execute it too
 			if (canRedo()) {
-				chained = mRedoCommands.getFirst().isChained();
+				Command nextRedo = mRedoCommands.getFirst();
+
+				// Special case for delimiter. Always treat it as chained
+				if (nextRedo.isChained() || nextRedo instanceof CDelimiter) {
+					chained = true;
+				}
 			}
 		}
 	}

@@ -9,8 +9,8 @@ import com.badlogic.gdx.utils.OrderedMap;
 import com.spiddekauga.utils.Collections;
 import com.spiddekauga.utils.Json;
 import com.spiddekauga.voider.Config;
-import com.spiddekauga.voider.game.TriggerAction.Actions;
-import com.spiddekauga.voider.game.TriggerInfo;
+import com.spiddekauga.voider.game.triggers.TriggerAction.Actions;
+import com.spiddekauga.voider.game.triggers.TriggerInfo;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.Resource;
 
@@ -123,8 +123,8 @@ public class EnemyGroup extends Resource {
 	}
 
 	@Override
-	public ArrayList<UUID> getReferences() {
-		return mEnemyIds;
+	public void getReferences(ArrayList<UUID> references) {
+		references.addAll(mEnemyIds);
 	}
 
 	@Override

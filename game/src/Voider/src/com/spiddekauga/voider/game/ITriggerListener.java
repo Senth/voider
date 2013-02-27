@@ -20,6 +20,8 @@ package com.spiddekauga.voider.game;
 
 import java.util.ArrayList;
 
+import com.spiddekauga.voider.game.triggers.TriggerAction;
+import com.spiddekauga.voider.game.triggers.TriggerInfo;
 import com.spiddekauga.voider.resources.IResource;
 
 /**

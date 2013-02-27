@@ -104,7 +104,8 @@ public abstract class WorldScene extends Scene {
 	protected void createBorder() {
 		// If body already exists, just delete existing fixtures
 		if (mBorderBody != null) {
-			ArrayList<Fixture> fixtures = mBorderBody.getFixtureList();
+			ArrayList<Fixture> fixtures = new ArrayList<Fixture>();
+			fixtures.addAll(mBorderBody.getFixtureList());
 			for (Fixture fixture : fixtures) {
 				mBorderBody.destroyFixture(fixture);
 			}

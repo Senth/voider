@@ -128,8 +128,15 @@ class VisualVars implements Json.Serializable {
 			shapeWidth = 0;
 			break;
 
+		case PLAYER:
+			shapeType = ActorShapeTypes.CIRCLE;
+			shapeCircleRadius = 1;
+			shapeHeight = 0;
+			shapeWidth = 0;
+			break;
+
 		default:
-			Gdx.app.error("VisualVars", "Unknown actor type");
+			Gdx.app.error("VisualVars", "Unknown actor type: " + mActorType);
 			shapeType = ActorShapeTypes.CIRCLE;
 			shapeCircleRadius = 1;
 			shapeHeight = 1;

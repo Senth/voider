@@ -73,19 +73,19 @@ public class ResourceBinder implements Json.Serializable {
 	 * Binds all the resources
 	 */
 	private void bindResources() {
+		ArrayList<UUID> dependencies = new ArrayList<UUID>();
 		for (ObjectMap.Entry<UUID, IResource> entry : mResources.entries()) {
 			IResource resource = entry.value;
 
-			ArrayList<UUID> dependencies = resource.getReferences();
-			if (dependencies != null) {
-				for (UUID dependencyId : dependencies) {
-					IResource foundDependency = mResources.get(dependencyId);
+			dependencies.clear();
+			resource.getReferences(dependencies);
+			for (UUID dependencyId : dependencies) {
+				IResource foundDependency = mResources.get(dependencyId);
 
-					if (foundDependency != null) {
-						resource.bindReference(foundDependency);
-					} else {
-						Gdx.app.error("ResourceBinder", "Could not find resource for " + resource.getId() + ", dependency: " + dependencyId);
-					}
+				if (foundDependency != null) {
+					resource.bindReference(foundDependency);
+				} else {
+					Gdx.app.error("ResourceBinder", "Could not find resource for " + resource.getId() + ", dependency: " + dependencyId);
 				}
 			}
 		}

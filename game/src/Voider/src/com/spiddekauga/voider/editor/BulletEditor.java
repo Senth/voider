@@ -56,6 +56,8 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 
 		if (outcome == Outcomes.LOADING_SUCCEEDED) {
 			mGui.initGui();
+			mGui.resetValues();
+			mInvoker.dispose();
 		} else if (outcome == Outcomes.DEF_SELECTED) {
 			switch (mSelectionAction) {
 			case LOAD_BULLET:
@@ -99,13 +101,13 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 		// Redo - Ctrl + Shift + Z || Ctrl + Y
 		if ((keycode == Keys.Z && (Gdx.input.isKeyPressed(Keys.CONTROL_LEFT) || Gdx.input.isKeyPressed(Keys.CONTROL_RIGHT)) && (Gdx.input.isKeyPressed(Keys.SHIFT_LEFT) || Gdx.input.isKeyPressed(Keys.SHIFT_RIGHT))) ||
 				(keycode == Keys.Y && (Gdx.input.isKeyPressed(Keys.CONTROL_LEFT) || Gdx.input.isKeyPressed(Keys.CONTROL_RIGHT)))) {
-			mInvoker.redo();
+			redo();
 			return true;
 		}
 
 		// Undo - Ctrl + Z
 		if (keycode == Keys.Z && (Gdx.input.isKeyPressed(Keys.CONTROL_LEFT) || Gdx.input.isKeyPressed(Keys.CONTROL_RIGHT))) {
-			mInvoker.undo();
+			undo();
 			return true;
 		}
 

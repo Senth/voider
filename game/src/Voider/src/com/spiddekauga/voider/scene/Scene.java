@@ -54,6 +54,20 @@ public abstract class Scene extends InputAdapter {
 	}
 
 	/**
+	 * @return screen width
+	 */
+	public float getScreenWidth() {
+		return mGui.getStage().getCamera().viewportWidth;
+	}
+
+	/**
+	 * @return screen height
+	 */
+	public float getScreenHeight() {
+		return mGui.getStage().getCamera().viewportHeight;
+	}
+
+	/**
 	 * Updates the scene
 	 */
 	public abstract void update();

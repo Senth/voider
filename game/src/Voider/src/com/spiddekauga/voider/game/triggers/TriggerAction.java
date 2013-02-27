@@ -1,4 +1,4 @@
-package com.spiddekauga.voider.game;
+package com.spiddekauga.voider.game.triggers;
 
 /**
  * Wrapper for trigger actions sent to the listener

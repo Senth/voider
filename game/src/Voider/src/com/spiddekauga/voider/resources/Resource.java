@@ -54,8 +54,8 @@ public abstract class Resource implements IResource, Json.Serializable {
 	}
 
 	@Override
-	public ArrayList<UUID> getReferences() {
-		return null;
+	public void getReferences(ArrayList<UUID> references) {
+		// Does nothing here
 	}
 
 	@Override

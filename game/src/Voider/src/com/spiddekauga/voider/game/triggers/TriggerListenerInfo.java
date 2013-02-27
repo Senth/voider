@@ -1,4 +1,6 @@
-package com.spiddekauga.voider.game;
+package com.spiddekauga.voider.game.triggers;
+
+import com.spiddekauga.voider.game.ITriggerListener;
 
 
 /**

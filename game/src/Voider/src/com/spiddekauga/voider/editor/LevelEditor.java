@@ -40,6 +40,7 @@ import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.scene.SelectDefScene;
 import com.spiddekauga.voider.scene.TouchTool;
+import com.spiddekauga.voider.scene.TriggerTool;
 import com.spiddekauga.voider.scene.WorldScene;
 
 /**
@@ -70,6 +71,9 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 		PathTool pathTool = new PathTool(mCamera, mWorld, mInvoker, this);
 		pathTool.addListener(this);
 		mTouchTools[Tools.PATH.ordinal()] = pathTool;
+		TriggerTool triggerTool = new TriggerTool(mCamera, mWorld, mInvoker, this);
+		triggerTool.addListener(this);
+		mTouchTools[Tools.TRIGGER.ordinal()] = triggerTool;
 
 		switchTool(Tools.STATIC_TERRAIN);
 	}
@@ -131,7 +135,7 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 		clearTools();
 
 		// Reset camera position
-		mCamera.position.x = 0;
+		mCamera.position.x = -mCamera.viewportWidth * 0.5f;
 		mCamera.update();
 		mScroller.stop();
 
@@ -190,6 +194,7 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 			if (!mGui.isInitialized()) {
 				mGui.initGui();
 				mGui.resetValues();
+				mInvoker.dispose();
 			}
 
 			// Loading a level
@@ -436,7 +441,7 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 	void runFromHere() {
 		GameScene testGame = new GameScene(true);
 		Level copyLevel = mLevel.copy();
-		copyLevel.setXCoord(mCamera.position.x - mCamera.viewportWidth * 0.5f);
+		copyLevel.setXCoord(mCamera.position.x + mCamera.viewportWidth * 0.5f);
 		testGame.setLevel(copyLevel);
 
 		SceneSwitcher.switchTo(testGame);
@@ -721,6 +726,22 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 	}
 
 	/**
+	 * Sets the active trigger tool state
+	 * @param state new active trigger tool state
+	 */
+	void setTriggerState(TriggerTool.States state) {
+		TriggerTool triggerTool = (TriggerTool) mTouchTools[Tools.TRIGGER.ordinal()];
+		triggerTool.setState(state);
+	}
+
+	/**
+	 * @return current state of the trigger tool
+	 */
+	TriggerTool.States getTriggerState() {
+		return ((TriggerTool)mTouchTools[Tools.TRIGGER.ordinal()]).getState();
+	}
+
+	/**
 	 * @return all paths in the current level
 	 */
 	public ArrayList<Path> getPaths() {
@@ -773,7 +794,9 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 		/** Draws the terrain */
 		STATIC_TERRAIN,
 		/** Draw paths */
-		PATH
+		PATH,
+		/** Add/remove triggers */
+		TRIGGER,
 	}
 
 	/**

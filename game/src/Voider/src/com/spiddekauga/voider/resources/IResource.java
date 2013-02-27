@@ -16,9 +16,10 @@ public interface IResource {
 	public UUID getId();
 
 	/**
-	 * @return All references this resource uses
+	 * Returns all references this resource uses
+	 * @param references all resources this resource uses
 	 */
-	public ArrayList<UUID> getReferences();
+	public void getReferences(ArrayList<UUID> references);
 
 	/**
 	 * Binds the specific reference to this resource

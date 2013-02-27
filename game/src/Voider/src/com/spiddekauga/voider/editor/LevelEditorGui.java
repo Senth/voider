@@ -42,6 +42,7 @@ import com.spiddekauga.voider.scene.AddActorTool.States;
 import com.spiddekauga.voider.scene.DrawActorTool;
 import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.scene.PathTool;
+import com.spiddekauga.voider.scene.TriggerTool;
 
 /**
  * GUI for the level editor
@@ -74,6 +75,7 @@ class LevelEditorGui extends Gui {
 		initMenu();
 		initEnemy();
 		initPath();
+		initTrigger();
 
 		mMainTable.setTransform(true);
 		mMainTable.invalidate();
@@ -95,7 +97,10 @@ class LevelEditorGui extends Gui {
 			mWidgets.enemyMenu.path.setChecked(true);
 			break;
 
-			// TODO add trigger
+		case TRIGGER:
+			mWidgets.menu.enemy.setChecked(true);
+			mWidgets.enemyMenu.trigger.setChecked(true);
+			break;
 
 		case PICKUP:
 			mWidgets.menu.pickup.setChecked(true);
@@ -183,6 +188,7 @@ class LevelEditorGui extends Gui {
 			break;
 		}
 
+
 		// Terrain
 		switch (mLevelEditor.getStaticTerrainState()) {
 		case ADD_CORNER:
@@ -201,6 +207,28 @@ class LevelEditorGui extends Gui {
 			// Does nothing
 			break;
 		}
+
+
+		// Trigger
+		switch (mLevelEditor.getTriggerState()) {
+		case ADD:
+			mWidgets.trigger.add.setChecked(true);
+			break;
+
+		case MOVE:
+			mWidgets.trigger.move.setChecked(true);
+			break;
+
+		case REMOVE:
+			mWidgets.trigger.remove.setChecked(true);
+			break;
+
+		case SELECT:
+			mWidgets.trigger.select.setChecked(true);
+			break;
+		}
+
+		// TODO Trigger options
 	}
 
 	/**
@@ -476,11 +504,10 @@ class LevelEditorGui extends Gui {
 		new CheckedListener(button) {
 			@Override
 			protected void onChange(boolean checked) {
-				// TODO set tool as trigger
-				mLevelEditor.switchTool(null);
+				mLevelEditor.switchTool(Tools.TRIGGER);
 			}
 		};
-		HideListener triggerHider = new HideListener(button, true);
+		mHiders.trigger.setButton(button);
 
 
 		// ---- Enemy ----
@@ -867,6 +894,81 @@ class LevelEditorGui extends Gui {
 	}
 
 	/**
+	 * Initializes GUI for the trigger tool
+	 */
+	private void initTrigger() {
+		Skin skin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
+		TextButtonStyle toggleStyle = skin.get("toggle", TextButtonStyle.class);
+
+		// ---- PATH -----
+		mEnemyTable.row();
+		GuiCheckCommandCreator triggerMenu = new GuiCheckCommandCreator(mInvoker);
+		ButtonGroup buttonGroup = new ButtonGroup();
+		Button button = new TextButton("Select", toggleStyle);
+		mWidgets.trigger.select = button;
+		buttonGroup.add(button);
+		mEnemyTable.add(button);
+		mHiders.trigger.addToggleActor(button);
+		button.addListener(triggerMenu);
+		new CheckedListener(button) {
+			@Override
+			protected void onChange(boolean checked) {
+				if (checked) {
+					mLevelEditor.setTriggerState(TriggerTool.States.SELECT);
+				}
+			}
+		};
+
+		mEnemyTable.row();
+		button = new TextButton("Add", toggleStyle);
+		mWidgets.trigger.add = button;
+		buttonGroup.add(button);
+		mEnemyTable.add(button);
+		mHiders.trigger.addToggleActor(button);
+		button.addListener(triggerMenu);
+		new CheckedListener(button) {
+			@Override
+			protected void onChange(boolean checked) {
+				if (checked) {
+					mLevelEditor.setTriggerState(TriggerTool.States.ADD);
+				}
+			}
+		};
+
+		mEnemyTable.row();
+		button = new TextButton("Remove", toggleStyle);
+		mWidgets.trigger.remove = button;
+		buttonGroup.add(button);
+		mEnemyTable.add(button);
+		mHiders.trigger.addToggleActor(button);
+		button.addListener(triggerMenu);
+		new CheckedListener(button) {
+			@Override
+			protected void onChange(boolean checked) {
+				if (checked) {
+					mLevelEditor.setTriggerState(TriggerTool.States.REMOVE);
+				}
+			}
+		};
+
+		mEnemyTable.row();
+		button = new TextButton("Move", toggleStyle);
+		mWidgets.trigger.move = button;
+		buttonGroup.add(button);
+		mEnemyTable.add(button);
+		mHiders.trigger.addToggleActor(button);
+		button.addListener(triggerMenu);
+		new CheckedListener(button) {
+			@Override
+			protected void onChange(boolean checked) {
+				if (checked) {
+					mLevelEditor.setTriggerState(TriggerTool.States.MOVE);
+				}
+			}
+		};
+	}
+
+	/**
 	 * Switches the GUI to the selected tool
 	 * @param toolTable the tool's table we want to activate
 	 */
@@ -906,6 +1008,8 @@ class LevelEditorGui extends Gui {
 		public Hiders() {
 			enemy.addChild(enemyOptions);
 			path.addChild(pathOptions);
+			trigger.addChild(triggerActorActivate);
+			trigger.addChild(triggerScreenAt);
 		}
 
 		/** Enemy hider */
@@ -916,6 +1020,12 @@ class LevelEditorGui extends Gui {
 		HideListener path = new HideListener(true);
 		/** Hides path options */
 		HideManual pathOptions = new HideManual();
+		/** Trigger hider */
+		HideListener trigger = new HideListener(true);
+		/** Hides trigger screen at options */
+		HideManual triggerScreenAt = new HideManual();
+		/** Hides trigger actor activate options */
+		HideManual triggerActorActivate = new HideManual();
 	}
 
 	/**
@@ -929,6 +1039,7 @@ class LevelEditorGui extends Gui {
 		PathWidgets path = new PathWidgets();
 		PickupWidgets pickup = new PickupWidgets();
 		TerrainWidgets terrain = new TerrainWidgets();
+		TriggerWidgets trigger = new TriggerWidgets();
 
 		static class MenuWidgets {
 			Button enemy = null;
@@ -961,6 +1072,15 @@ class LevelEditorGui extends Gui {
 			Button once = null;
 			Button loop = null;
 			Button backAndForth = null;
+		}
+
+		static class TriggerWidgets {
+			Button select = null;
+			Button add = null;
+			Button remove = null;
+			Button move = null;
+
+			TextField delay = null;
 		}
 
 		static class PickupWidgets {
