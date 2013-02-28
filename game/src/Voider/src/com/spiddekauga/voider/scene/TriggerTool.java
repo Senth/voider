@@ -17,9 +17,11 @@ import com.spiddekauga.voider.editor.commands.CResourceMove;
 import com.spiddekauga.voider.editor.commands.CResourceRemove;
 import com.spiddekauga.voider.editor.commands.CResourceSelect;
 import com.spiddekauga.voider.game.IResourcePosition;
+import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.EnemyActor;
+import com.spiddekauga.voider.game.triggers.TActorActivated;
+import com.spiddekauga.voider.game.triggers.TScreenAt;
 import com.spiddekauga.voider.game.triggers.Trigger;
-import com.spiddekauga.voider.game.triggers.TriggerScreenAt;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.utils.Vector2Pool;
 
@@ -140,11 +142,13 @@ public class TriggerTool extends TouchTool implements ISelectTool {
 			}
 			// Create TriggerActorActivated
 			else if (hitObject instanceof EnemyActor) {
-				// TODO
+				TActorActivated newTrigger = new TActorActivated((Actor) hitObject);
+				mInvoker.execute(new CResourceAdd(newTrigger, mLevelEditor));
+				mInvoker.execute(new CResourceSelect(newTrigger, this), true);
 			}
 			// Create TriggerScreenAt
 			else {
-				TriggerScreenAt newTrigger = new TriggerScreenAt(mLevelEditor.getLevel(), mTouchCurrent.x);
+				TScreenAt newTrigger = new TScreenAt(mLevelEditor.getLevel(), mTouchCurrent.x);
 				mInvoker.execute(new CResourceAdd(newTrigger, mLevelEditor));
 				mInvoker.execute(new CResourceSelect(newTrigger, this), true);
 

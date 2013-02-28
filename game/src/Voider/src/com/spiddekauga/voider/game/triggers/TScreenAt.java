@@ -26,12 +26,12 @@ import com.spiddekauga.voider.utils.Vector2Pool;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class TriggerScreenAt extends Trigger implements IResourceBody, IResourcePosition, Disposable {
+public class TScreenAt extends Trigger implements IResourceBody, IResourcePosition, Disposable {
 	/**
 	 * @param level checks this level for the x coordinate
 	 * @param xCoord the x-coordinate we want the level to be at or beyond.
 	 */
-	public TriggerScreenAt(Level level, float xCoord) {
+	public TScreenAt(Level level, float xCoord) {
 		mLevel = level;
 		mLevelId = level.getId();
 		mPosition.x = xCoord;

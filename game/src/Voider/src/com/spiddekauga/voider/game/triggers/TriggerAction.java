@@ -27,6 +27,8 @@ public class TriggerAction {
 	 * All the reasons for why a trigger is triggered
 	 */
 	public enum Reasons {
+		/** When an actor is active or activated */
+		ACTOR_ACTIVATED,
 		/** When an actor dies */
 		ACTOR_DIED,
 		/** When the screen passed X-coordinate on the level */
