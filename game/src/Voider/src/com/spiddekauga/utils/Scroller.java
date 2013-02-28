@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Pool;
 import com.badlogic.gdx.utils.Pools;
 import com.spiddekauga.voider.scene.SceneSwitcher;
+import com.spiddekauga.voider.utils.Vector2Pool;
 
 /**
  * A virtual scroller, this scroller both scrolls and emulates scrolls when
@@ -111,10 +112,10 @@ public class Scroller {
 			break;
 
 		case ALL: {
-			Vector2 velocity = Pools.obtain(Vector2.class);
+			Vector2 velocity = Vector2Pool.obtain();
 			velocity.set(mScrollCurrent).sub(mRecentPointerLocation.getLast().position);
 			distance = velocity.len();
-			Pools.free(velocity);
+			Vector2Pool.free(velocity);
 			break;
 		}
 		}
@@ -178,13 +179,13 @@ public class Scroller {
 			mSpeed -= mFriction * deltaTime;
 
 			if (mSpeed > mStopSpeed) {
-				Vector2 velocity = Pools.obtain(Vector2.class);
+				Vector2 velocity = Vector2Pool.obtain();
 				velocity.set(mDirection);
 				velocity.mul(mSpeed * deltaTime);
 
 				mScrollCurrent.add(velocity);
 
-				Pools.free(velocity);
+				Vector2Pool.free(velocity);
 			}
 			// Too low speed to continue
 			else {

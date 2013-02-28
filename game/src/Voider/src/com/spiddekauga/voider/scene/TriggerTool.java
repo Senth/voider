@@ -4,15 +4,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.World;
 import com.spiddekauga.utils.Invoker;
+import com.spiddekauga.voider.Config.Editor;
 import com.spiddekauga.voider.editor.LevelEditor;
+import com.spiddekauga.voider.editor.commands.CResourceAdd;
+import com.spiddekauga.voider.editor.commands.CResourceMove;
+import com.spiddekauga.voider.editor.commands.CResourceRemove;
+import com.spiddekauga.voider.editor.commands.CResourceSelect;
+import com.spiddekauga.voider.game.IResourcePosition;
 import com.spiddekauga.voider.game.actors.EnemyActor;
 import com.spiddekauga.voider.game.triggers.Trigger;
+import com.spiddekauga.voider.game.triggers.TriggerScreenAt;
 import com.spiddekauga.voider.resources.IResource;
+import com.spiddekauga.voider.utils.Vector2Pool;
 
 /**
  * Tool for adding/removing/changing triggers
@@ -111,17 +120,121 @@ public class TriggerTool extends TouchTool implements ISelectTool {
 
 	@Override
 	protected void down() {
-		// TODO Auto-generated method stub
+		testPick(Editor.PICK_TRIGGER_SIZE);
+		Object hitObject = null;
+		if (mHitBody != null) {
+			hitObject = mHitBody.getUserData();
+		}
+
+		switch (mState) {
+		case ADD:
+			// Just select the trigger
+			if (hitObject instanceof Trigger) {
+				if (hitObject != mSelectedTrigger) {
+					mInvoker.execute(new CResourceSelect((IResource) hitObject, this));
+				}
+
+				if (hitObject instanceof IResourcePosition) {
+					mDragOrigin.set(((IResourcePosition) hitObject).getPosition());
+				}
+			}
+			// Create TriggerActorActivated
+			else if (hitObject instanceof EnemyActor) {
+				// TODO
+			}
+			// Create TriggerScreenAt
+			else {
+				TriggerScreenAt newTrigger = new TriggerScreenAt(mLevelEditor.getLevel(), mTouchCurrent.x);
+				mInvoker.execute(new CResourceAdd(newTrigger, mLevelEditor));
+				mInvoker.execute(new CResourceSelect(newTrigger, this), true);
+
+				mDragOrigin.set(mTouchOrigin);
+			}
+			break;
+
+		case MOVE:
+		case SELECT:
+			if (hitObject instanceof Trigger) {
+				if (hitObject != mSelectedTrigger) {
+					mInvoker.execute(new CResourceSelect((IResource) hitObject, this));
+				}
+
+				if (hitObject instanceof IResourcePosition) {
+					mDragOrigin.set(((IResourcePosition) hitObject).getPosition());
+				}
+
+			} else {
+				if (mSelectedTrigger != null) {
+					mInvoker.execute(new CResourceSelect(null, this));
+				}
+			}
+			break;
+
+
+		case REMOVE:
+			if (hitObject instanceof Trigger) {
+				// Hit same twice, remove it
+				if (hitObject == mSelectedTrigger) {
+					mInvoker.execute(new CResourceSelect(null, this));
+					mInvoker.execute(new CResourceRemove(mSelectedTrigger, mLevelEditor), true);
+				} else {
+					mInvoker.execute(new CResourceSelect((IResource) hitObject, this));
+				}
+			} else {
+				if (mSelectedTrigger != null) {
+					mInvoker.execute(new CResourceSelect(null, this));
+				}
+			}
+			break;
+		}
 	}
 
 	@Override
 	protected void dragged() {
-		// TODO Auto-generated method stub
+		switch (mState) {
+		case ADD:
+		case MOVE:
+			// Can only move triggers that have positions
+			if (mSelectedTrigger instanceof IResourcePosition) {
+				Vector2 newPosition = getNewMovePosition();
+				((IResourcePosition) mSelectedTrigger).setPosition(newPosition);
+				Vector2Pool.free(newPosition);
+			}
+			break;
+
+
+		case SELECT:
+		case REMOVE:
+			// Does nothing
+			break;
+		}
 	}
 
 	@Override
 	protected void up() {
-		// TODO Auto-generated method stub
+		switch (mState) {
+		case ADD:
+		case MOVE:
+			if (mSelectedTrigger instanceof IResourcePosition) {
+				// Reset trigger to original position
+				((IResourcePosition) mSelectedTrigger).setPosition(mDragOrigin);
+
+				// Move the trigger using a command
+				Vector2 newPosition = getNewMovePosition();
+				mInvoker.execute(new CResourceMove((IResourcePosition) mSelectedTrigger, newPosition, mLevelEditor));
+				Vector2Pool.free(newPosition);
+
+			}
+			break;
+
+
+		case SELECT:
+		case REMOVE:
+			// Does nothing
+			break;
+		}
+
+		mChangedSinceUp = false;
 	}
 
 	@Override
@@ -152,6 +265,19 @@ public class TriggerTool extends TouchTool implements ISelectTool {
 		// TODO
 	}
 
+	/**
+	 * @return new position to move the path to. Don't forget to free this position
+	 * using Pools.free(newPos).
+	 */
+	private Vector2 getNewMovePosition() {
+		Vector2 newPosition = Vector2Pool.obtain();
+		newPosition.set(mTouchCurrent).sub(mTouchOrigin);
+		newPosition.add(mDragOrigin);
+
+		return newPosition;
+	}
+
+
 	/** Callback for only picking correct shapes */
 	private QueryCallback mCallback = new QueryCallback() {
 		@Override
@@ -171,6 +297,8 @@ public class TriggerTool extends TouchTool implements ISelectTool {
 		}
 	};
 
+	/** Original position of the currently dragging body */
+	private Vector2 mDragOrigin = new Vector2();
 	/** Changed trigger since up */
 	private boolean mChangedSinceUp = false;
 	/** Selection listeners */

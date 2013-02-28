@@ -11,11 +11,11 @@ import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.OrderedMap;
 import com.spiddekauga.utils.Json;
 import com.spiddekauga.voider.game.actors.Actor;
-import com.spiddekauga.voider.game.actors.EnemyGroup;
 import com.spiddekauga.voider.game.actors.PlayerActor;
 import com.spiddekauga.voider.game.triggers.Trigger;
 import com.spiddekauga.voider.game.triggers.TriggerAction;
 import com.spiddekauga.voider.game.triggers.TriggerInfo;
+import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.Resource;
 import com.spiddekauga.voider.resources.ResourceBinder;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
@@ -188,10 +188,38 @@ public class Level extends Resource implements ITriggerListener, Json.Serializab
 	}
 
 	/**
+	 * Adds a resource to the level
+	 * @param resource the resource to add to the level
+	 */
+	public void addResource(IResource resource) {
+		mResourceBinder.addResource(resource);
+
+		if (resource instanceof Actor) {
+			addActor((Actor) resource);
+		} else if (resource instanceof Path) {
+			mPaths.add((Path) resource);
+		}
+	}
+
+	/**
+	 * Removes a resource from the level
+	 * @param resourceId id of the resource
+	 */
+	public void removeResource(UUID resourceId) {
+		IResource removedResource = mResourceBinder.removeResource(resourceId);
+
+		if (removedResource instanceof Actor) {
+			removeActor(resourceId);
+		} else if (removedResource instanceof Path) {
+			mPaths.remove(removedResource);
+		}
+	}
+
+	/**
 	 * Adds an actor to the level
 	 * @param actor the actor to add to the level
 	 */
-	public void addActor(Actor actor) {
+	private void addActor(Actor actor) {
 		mActors.add(actor);
 		mResourceBinder.addResource(actor);
 		//		actor.createBody();
@@ -206,7 +234,7 @@ public class Level extends Resource implements ITriggerListener, Json.Serializab
 	 * Removes an actor from the level
 	 * @param actorId the actor to remove
 	 */
-	public void removeActor(UUID actorId) {
+	private void removeActor(UUID actorId) {
 		Actor actor = null;
 		for (int i = 0; i < mActors.size(); ++i) {
 			if (mActors.get(i).equals(actorId)) {
@@ -230,33 +258,6 @@ public class Level extends Resource implements ITriggerListener, Json.Serializab
 	}
 
 	/**
-	 * Adds a path to the level
-	 * @param path the path to add to the level
-	 */
-	public void addPath(Path path) {
-		mResourceBinder.addResource(path);
-
-		if (Actor.isEditorActive()) {
-			mPaths.add(path);
-		}
-	}
-
-	/**
-	 * Removes a path from the level
-	 * @param pathId the path id to remove
-	 */
-	public void removePath(UUID pathId) {
-		mResourceBinder.removeResource(pathId);
-
-		for (int i = 0; i < mPaths.size(); ++i) {
-			if (mPaths.get(i).equals(pathId)) {
-				mPaths.remove(i);
-				break;
-			}
-		}
-	}
-
-	/**
 	 * Returns all paths, only applicable if an editor is active
 	 * @return all paths, null or empty if no editor is active
 	 */
@@ -274,22 +275,6 @@ public class Level extends Resource implements ITriggerListener, Json.Serializab
 	}
 
 	/**
-	 * Adds an enemy group to the level
-	 * @param enemyGroup the enemy group to add
-	 */
-	public void addEnemyGroup(EnemyGroup enemyGroup) {
-		mResourceBinder.addResource(enemyGroup);
-	}
-
-	/**
-	 * Removes an enemy group from the level
-	 * @param enemyGroupId the enemy group to remove
-	 */
-	public void removeEnemyGroup(UUID enemyGroupId) {
-		mResourceBinder.removeResource(enemyGroupId);
-	}
-
-	/**
 	 * @return all actors in the level
 	 */
 	public ArrayList<Actor> getActors() {
@@ -298,8 +283,8 @@ public class Level extends Resource implements ITriggerListener, Json.Serializab
 
 	@Override
 	public void dispose() {
-		for (IResourceBody resourceBody : mResourceBinder.getResources(IResourceBody.class)) {
-			resourceBody.destroyBody();
+		for (Disposable disposable : mResourceBinder.getResources(Disposable.class)) {
+			disposable.dispose();
 		}
 	}
 

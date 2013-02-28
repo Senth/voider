@@ -6,7 +6,6 @@ import java.util.List;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.utils.Pools;
 import com.spiddekauga.utils.Invoker;
 import com.spiddekauga.voider.editor.HitWrapper;
 import com.spiddekauga.voider.editor.IResourceChangeEditor;
@@ -16,6 +15,7 @@ import com.spiddekauga.voider.editor.commands.CResourceRemove;
 import com.spiddekauga.voider.editor.commands.CResourceSelect;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.resources.IResource;
+import com.spiddekauga.voider.utils.Vector2Pool;
 
 /**
  * Tool for adding and removing actors
@@ -204,7 +204,7 @@ public class AddActorTool extends ActorTool implements ISelectTool {
 			if (mMovingActor != null) {
 				Vector2 newPosition = getNewMovePosition();
 				mMovingActor.setPosition(newPosition);
-				Pools.free(newPosition);
+				Vector2Pool.free(newPosition);
 			}
 			break;
 
@@ -233,7 +233,7 @@ public class AddActorTool extends ActorTool implements ISelectTool {
 				// Set new position through command
 				Vector2 newPosition = getNewMovePosition();
 				mInvoker.execute(new CResourceMove(mMovingActor, newPosition, mEditor), chained);
-				Pools.free(newPosition);
+				Vector2Pool.free(newPosition);
 				mMovingActor = null;
 			}
 			break;
@@ -253,7 +253,7 @@ public class AddActorTool extends ActorTool implements ISelectTool {
 	 */
 	protected Vector2 getNewMovePosition() {
 		// Get diff movement
-		Vector2 newPosition = Pools.obtain(Vector2.class);
+		Vector2 newPosition = Vector2Pool.obtain();
 		newPosition.set(mTouchCurrent).sub(mTouchOrigin);
 
 		// Add original position

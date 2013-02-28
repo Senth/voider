@@ -1,8 +1,5 @@
 package com.spiddekauga.utils.scene.ui;
 
-import javax.swing.GroupLayout.Alignment;
-
-
 /**
  * Alignment for UI
  * 

@@ -1,10 +1,10 @@
 package com.spiddekauga.voider.editor.commands;
 
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.Pools;
 import com.spiddekauga.voider.editor.IResourceChangeEditor;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.ActorDef;
+import com.spiddekauga.voider.utils.Vector2Pool;
 
 /**
  * Moves the center offset to the specified position. This command
@@ -50,13 +50,13 @@ public class CActorCenterMove extends CResourceChange {
 		mActorDef.setCenterOffset(mCenterNew);
 
 		if (mActor != null) {
-			Vector2 newActorPos = Pools.obtain(Vector2.class);
+			Vector2 newActorPos = Vector2Pool.obtain();
 			newActorPos.set(mCenterOld).sub(mCenterNew);
 			newActorPos.add(mActor.getPosition());
 			mActor.destroyBody();
 			mActor.setPosition(newActorPos);
 			mActor.createBody();
-			Pools.free(newActorPos);
+			Vector2Pool.free(newActorPos);
 		}
 
 		sendOnChange();
@@ -69,13 +69,13 @@ public class CActorCenterMove extends CResourceChange {
 		mActorDef.setCenterOffset(mCenterOld);
 
 		if (mActor != null) {
-			Vector2 newActorPos = Pools.obtain(Vector2.class);
+			Vector2 newActorPos = Vector2Pool.obtain();
 			newActorPos.set(mCenterNew).sub(mCenterOld);
 			newActorPos.add(mActor.getPosition());
 			mActor.destroyBody();
 			mActor.setPosition(newActorPos);
 			mActor.createBody();
-			Pools.free(newActorPos);
+			Vector2Pool.free(newActorPos);
 		}
 
 		sendOnChange();
@@ -85,8 +85,8 @@ public class CActorCenterMove extends CResourceChange {
 
 	@Override
 	public void dispose() {
-		Pools.free(mCenterNew);
-		Pools.free(mCenterOld);
+		Vector2Pool.free(mCenterNew);
+		Vector2Pool.free(mCenterOld);
 		mCenterNew = null;
 		mCenterOld = null;
 	}
@@ -96,7 +96,7 @@ public class CActorCenterMove extends CResourceChange {
 	/** Actor definition which center to move */
 	private ActorDef mActorDef;
 	/** New center position offset to use at execute */
-	private Vector2 mCenterNew = Pools.obtain(Vector2.class);
+	private Vector2 mCenterNew = Vector2Pool.obtain();
 	/** Old center position to restore to at undo */
-	private Vector2 mCenterOld = Pools.obtain(Vector2.class);
+	private Vector2 mCenterOld = Vector2Pool.obtain();
 }

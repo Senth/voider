@@ -1,8 +1,5 @@
 package com.spiddekauga.voider.editor.commands;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.spiddekauga.utils.Command;
 import com.spiddekauga.voider.Config;
@@ -75,8 +72,4 @@ public class CGuiCheck extends Command {
 	private Button mCheckOnExecute;
 	/** Button to check on undo */
 	private Button mCheckOnUndo = null;
-	/** Field for reflection to get the button group */
-	private static Field mfButtonGroup = null;
-	/** Buttons from the button group that were checked/unchecked */
-	private ArrayList<Button> mGroupButtons = new ArrayList<Button>();
 }

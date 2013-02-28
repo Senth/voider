@@ -49,7 +49,6 @@ public class PickupActorDef extends ActorDef {
 		json.writeValue("mCollectible", mCollectible);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void read(Json json, OrderedMap<String, Object> jsonData) {
 		super.read(json, jsonData);

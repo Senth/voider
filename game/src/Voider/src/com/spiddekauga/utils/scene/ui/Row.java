@@ -7,6 +7,7 @@ import com.badlogic.gdx.utils.Pool.Poolable;
 import com.badlogic.gdx.utils.Pools;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
+import com.spiddekauga.voider.utils.Vector2Pool;
 
 /**
  * Wrapper for a row
@@ -371,7 +372,7 @@ public class Row implements Poolable {
 	 * @param size available size for this row
 	 */
 	void layout(Vector2 startPos, Vector2 size) {
-		Vector2 offset = Pools.obtain(Vector2.class);
+		Vector2 offset = Vector2Pool.obtain();
 		offset.set(startPos);
 		offset.x += getPadLeft();
 
@@ -409,7 +410,7 @@ public class Row implements Poolable {
 			offset.y = startPos.y + (size.y - mHeight + getPadBottom() - getPadTop()) * 0.5f;
 		}
 
-		Vector2 cellSize = Pools.obtain(Vector2.class);
+		Vector2 cellSize = Vector2Pool.obtain();
 		if (mEqualSize) {
 			cellSize.y = mHeight;
 			cellSize.x = mWidth / mCells.size();
@@ -437,8 +438,8 @@ public class Row implements Poolable {
 			}
 
 		}
-		Pools.free(cellSize);
-		Pools.free(offset);
+		Vector2Pool.free(cellSize);
+		Vector2Pool.free(offset);
 	}
 
 	/**

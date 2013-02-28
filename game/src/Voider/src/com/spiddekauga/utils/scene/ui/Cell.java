@@ -6,9 +6,9 @@ import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.utils.Layout;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.Pool.Poolable;
-import com.badlogic.gdx.utils.Pools;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
+import com.spiddekauga.voider.utils.Vector2Pool;
 
 /**
  * Wrapper for a cell.
@@ -362,7 +362,7 @@ public class Cell implements Poolable {
 	 * @param size available size for the cell
 	 */
 	void layout(Vector2 startPos, Vector2 size) {
-		Vector2 offset = Pools.obtain(Vector2.class);
+		Vector2 offset = Vector2Pool.obtain();
 		offset.set(startPos);
 		offset.x += getPadLeft();
 
@@ -408,7 +408,7 @@ public class Cell implements Poolable {
 		}
 
 
-		Pools.free(offset);
+		Vector2Pool.free(offset);
 	}
 
 	/**

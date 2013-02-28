@@ -51,8 +51,8 @@ import com.badlogic.gdx.utils.JsonWriter.OutputType;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.ObjectMap.Entry;
 import com.badlogic.gdx.utils.OrderedMap;
-import com.badlogic.gdx.utils.Pools;
 import com.badlogic.gdx.utils.SerializationException;
+import com.spiddekauga.voider.utils.Vector2Pool;
 
 /**
  * Reads/writes Java objects to/from JSON, automatically.
@@ -659,12 +659,12 @@ public class Json {
 			if (polygon.getVertexCount() >= 3) {
 				Vector2[] vertices = new Vector2[polygon.getVertexCount()];
 				for (int i = 0; i < polygon.getVertexCount(); ++i) {
-					vertices[i] = Pools.obtain(Vector2.class);
+					vertices[i] = Vector2Pool.obtain();
 					polygon.getVertex(i, vertices[i]);
 				}
 				writeValue("vertices", vertices);
 				for (Vector2 vertex : vertices) {
-					Pools.free(vertex);
+					Vector2Pool.free(vertex);
 				}
 			} else {
 				writeValue("vertices", (Object)null);
@@ -674,20 +674,20 @@ public class Json {
 
 		case Edge:
 			EdgeShape edge = (EdgeShape)shape;
-			Vector2 tempVector = Pools.obtain(Vector2.class);
+			Vector2 tempVector = Vector2Pool.obtain();
 			edge.getVertex1(tempVector);
 			writeValue("vertex1", tempVector);
 			edge.getVertex2(tempVector);
 			writeValue("vertex2", tempVector);
-			Pools.free(tempVector);
+			Vector2Pool.free(tempVector);
 			break;
 
 		case Chain: {
 			ChainShape chainShape = (ChainShape)shape;
 			if (chainShape.getVertexCount() >= 3) {
 				// If first and same vertex is the same, it's a loop
-				Vector2 firstVertex = Pools.obtain(Vector2.class);
-				Vector2 lastVertex = Pools.obtain(Vector2.class);
+				Vector2 firstVertex = Vector2Pool.obtain();
+				Vector2 lastVertex = Vector2Pool.obtain();
 				chainShape.getVertex(0, firstVertex);
 				chainShape.getVertex(chainShape.getVertexCount() - 1, lastVertex);
 
@@ -702,12 +702,12 @@ public class Json {
 
 				Vector2[] vertices = new Vector2[cVertices];
 				for (int i = 0; i < cVertices; ++i) {
-					vertices[i] = Pools.obtain(Vector2.class);
+					vertices[i] = Vector2Pool.obtain();
 					chainShape.getVertex(i, vertices[i]);
 				}
 				writeValue("vertices", vertices);
 				for (Vector2 vertex : vertices) {
-					Pools.free(vertex);
+					Vector2Pool.free(vertex);
 				}
 			} else {
 				writeValue("vertices", (Object)null);

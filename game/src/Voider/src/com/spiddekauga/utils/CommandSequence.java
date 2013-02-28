@@ -37,5 +37,6 @@ public class CommandSequence extends Command {
 		return true;
 	}
 
+	/** All commands that shall be run in sequence */
 	Command[] mCommands;
 }

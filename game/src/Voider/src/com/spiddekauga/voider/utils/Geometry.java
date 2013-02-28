@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.List;
 
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.Pools;
 
 /**
  * Various geometry help functions
@@ -155,20 +154,20 @@ public class Geometry {
 	 * @param targetVelocity current velocity of the target
 	 * @return velocity of the object needed to intercept the object. Returns Vector2(NaN,NaN)
 	 * if the object cannot intercept the target (because of speed).
-	 * Be sure to free the returning variable using Pools.free(velocity);
+	 * Be sure to free the returning variable using Vector2Pool.free(velocity);
 	 */
 	public static Vector2 interceptTarget(Vector2 objectPosition, float objectSpeed, Vector2 targetPosition, Vector2 targetVelocity) {
-		Vector2 distanceVector = Pools.obtain(Vector2.class);
+		Vector2 distanceVector = Vector2Pool.obtain();
 		distanceVector.set(targetPosition).sub(objectPosition);
 		float e = distanceVector.dot(distanceVector);
 		float f = 2 * targetVelocity.dot(distanceVector);
 		float g = (objectSpeed * objectSpeed) - targetVelocity.dot(targetVelocity);
 		float t = (float) ((f + Math.sqrt((f * f) + 4 * g * e )) / (g * 2));
 
-		Vector2 objectVelocity = Pools.obtain(Vector2.class);
+		Vector2 objectVelocity = Vector2Pool.obtain();
 		objectVelocity.set(distanceVector).div(t).add(targetVelocity);
 
-		Pools.free(distanceVector);
+		Vector2Pool.free(distanceVector);
 
 		return objectVelocity;
 	}

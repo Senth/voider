@@ -28,9 +28,10 @@ public class ResourceBinder implements Json.Serializable {
 	/**
 	 * Removes the specified resource
 	 * @param resourceId the resource to remove
+	 * @return resource that was removed
 	 */
-	public void removeResource(UUID resourceId) {
-		mResources.remove(resourceId);
+	public IResource removeResource(UUID resourceId) {
+		return mResources.remove(resourceId);
 	}
 
 	/**

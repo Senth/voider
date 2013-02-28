@@ -14,11 +14,11 @@ import com.badlogic.gdx.physics.box2d.ChainShape;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.utils.Pools;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.BulletDestroyer;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.ActorFilterCategories;
+import com.spiddekauga.voider.utils.Vector2Pool;
 
 /**
  * Common class for all world scenes
@@ -47,16 +47,16 @@ public abstract class WorldScene extends Scene {
 		mWorld.step(1/60f, 6, 2);
 
 		// Remove unwanted bullets
-		Vector2 minScreenPos = Pools.obtain(Vector2.class);
-		Vector2 maxScreenPos = Pools.obtain(Vector2.class);
+		Vector2 minScreenPos = Vector2Pool.obtain();
+		Vector2 maxScreenPos = Vector2Pool.obtain();
 
 		screenToWorldCoord(mCamera, 0, Gdx.graphics.getHeight(), minScreenPos, false);
 		screenToWorldCoord(mCamera, Gdx.graphics.getWidth(), 0, maxScreenPos, false);
 		mBulletDestroyer.update(Gdx.graphics.getDeltaTime());
 		mBulletDestroyer.removeOutOfBondsBullets(minScreenPos, maxScreenPos);
 
-		Pools.free(minScreenPos);
-		Pools.free(maxScreenPos);
+		Vector2Pool.free(minScreenPos);
+		Vector2Pool.free(maxScreenPos);
 	}
 
 	@Override
@@ -77,6 +77,26 @@ public abstract class WorldScene extends Scene {
 		mBulletDestroyer.dispose();
 
 		super.onDisposed();
+	}
+
+	/**
+	 * Return screen width in world coordinates, but only if this scene
+	 * is a world scene.
+	 * @return screen width in world coordinates, if scene is not a world it return 0.
+	 */
+	@Override
+	public float getWorldWidth() {
+		return mCamera.viewportWidth;
+	}
+
+	/**
+	 * Return screen height in world coordinates, but only if this scene is
+	 * a world scene.
+	 * @return screen height in world coordinates, if scene is not a world it return 0.
+	 */
+	@Override
+	public float getWorldHeight() {
+		return mCamera.viewportHeight;
 	}
 
 	/**
@@ -121,7 +141,7 @@ public abstract class WorldScene extends Scene {
 		// Get world coordinates for the screen's corners
 		Vector2[] corners = new Vector2[4];
 		for (int i = 0; i < corners.length; ++i) {
-			corners[i] = Pools.obtain(Vector2.class);
+			corners[i] = Vector2Pool.obtain();
 		}
 		screenToWorldCoord(mCamera, 0, 0, corners[0], false);
 		screenToWorldCoord(mCamera, Gdx.graphics.getWidth(), 0, corners[1], false);
@@ -141,7 +161,7 @@ public abstract class WorldScene extends Scene {
 
 		// Free stuff
 		for (int i = 0; i < corners.length; ++i) {
-			Pools.free(corners[i]);
+			Vector2Pool.free(corners[i]);
 		}
 		shape.dispose();
 	}

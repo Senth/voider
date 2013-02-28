@@ -14,13 +14,13 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.OrderedMap;
-import com.badlogic.gdx.utils.Pools;
 import com.spiddekauga.utils.Json;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.editor.HitWrapper;
 import com.spiddekauga.voider.game.actors.ActorFilterCategories;
 import com.spiddekauga.voider.game.actors.EnemyActor;
 import com.spiddekauga.voider.resources.Resource;
+import com.spiddekauga.voider.utils.Vector2Pool;
 
 
 /**
@@ -79,7 +79,7 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 
 		updateEnemyPositions();
 
-		Pools.free(diff);
+		Vector2Pool.free(diff);
 	}
 
 	/**
@@ -90,7 +90,7 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 	 */
 	@Override
 	public Vector2 getPosition() {
-		Vector2 center = Pools.obtain(Vector2.class);
+		Vector2 center = Vector2Pool.obtain();
 		center.set(0, 0);
 
 		for (Vector2 corner : mCorners) {
@@ -376,7 +376,7 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 			Vector2[] tempArray = new Vector2[2];
 
 			for (int i = 0; i < tempArray.length; ++i) {
-				tempArray[i] = Pools.obtain(Vector2.class);
+				tempArray[i] = Vector2Pool.obtain();
 			}
 
 			tempArray[0].set(mCorners.get(0));
@@ -386,7 +386,7 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 			mFixtureDef.shape = chainShape;
 
 			for (Vector2 tempPosition : tempArray) {
-				Pools.free(tempPosition);
+				Vector2Pool.free(tempPosition);
 			}
 		}
 	}

@@ -14,7 +14,6 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.OrderedMap;
-import com.badlogic.gdx.utils.Pools;
 import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.utils.Json;
 import com.spiddekauga.voider.Config;
@@ -22,6 +21,7 @@ import com.spiddekauga.voider.game.Collectibles;
 import com.spiddekauga.voider.game.IResourceCorner;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.utils.Geometry;
+import com.spiddekauga.voider.utils.Vector2Pool;
 
 /**
  * Definition of the actor. This include common attribute for a common type of actor.
@@ -197,7 +197,7 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	@Override
 	public void dispose() {
 		clearFixtures();
-		//		Pools.free(mAabbBox);
+		//		Vector2Pool.free(mAabbBox);
 	}
 
 	/**
@@ -443,13 +443,13 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 
 	@Override
 	public void moveCorner(int index, Vector2 newPos) throws PolygonComplexException, PolygonCornerTooCloseException {
-		Vector2 oldPos = Pools.obtain(Vector2.class);
+		Vector2 oldPos = Vector2Pool.obtain();
 		oldPos.set(mVisualVars.corners.get(index));
 		mVisualVars.corners.get(index).set(newPos);
 
 		if (intersectionExists(index)) {
 			mVisualVars.corners.get(index).set(oldPos);
-			Pools.free(oldPos);
+			Vector2Pool.free(oldPos);
 			throw new PolygonComplexException();
 		}
 
@@ -457,11 +457,11 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 			fixCustomShapeFixtures();
 		} catch (PolygonCornerTooCloseException e) {
 			mVisualVars.corners.get(index).set(oldPos);
-			Pools.free(oldPos);
+			Vector2Pool.free(oldPos);
 			throw e;
 		}
 
-		Pools.free(oldPos);
+		Vector2Pool.free(oldPos);
 
 		mFixtureChangeTime = GameTime.getTotalGlobalTimeElapsed();
 	}
@@ -515,7 +515,7 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 		case CUSTOM:
 			// Polygon, calculate center
 			if (mVisualVars.corners.size() >= 3) {
-				Vector2 center = Pools.obtain(Vector2.class);
+				Vector2 center = Vector2Pool.obtain();
 
 				center.set(0,0);
 
@@ -526,7 +526,7 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 				center.div(mVisualVars.corners.size());
 				setCenterOffset(center);
 
-				Pools.free(center);
+				Vector2Pool.free(center);
 			}
 			// Circle, first corner is center
 			else if (mVisualVars.corners.size() >= 1) {
@@ -664,9 +664,9 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 			int cTriangles = triangles.size() / 3;
 			Vector2[] triangleVertices = new Vector2[3];
 			for (int i = 0; i < triangleVertices.length; ++i) {
-				triangleVertices[i] = Pools.obtain(Vector2.class);
+				triangleVertices[i] = Vector2Pool.obtain();
 			}
-			Vector2 lengthTest = Pools.obtain(Vector2.class);
+			Vector2 lengthTest = Vector2Pool.obtain();
 
 			// Add the fixtures
 			boolean cornerTooClose = false;
@@ -714,9 +714,9 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 
 			// Free stuff
 			for (int i = 0; i < triangleVertices.length; ++i) {
-				Pools.free(triangleVertices[i]);
+				Vector2Pool.free(triangleVertices[i]);
 			}
-			Pools.free(lengthTest);
+			Vector2Pool.free(lengthTest);
 
 			if (cornerTooClose) {
 				throw new PolygonCornerTooCloseException();
@@ -726,10 +726,10 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 		else if (mVisualVars.corners.size() >= 1) {
 			CircleShape circle = new CircleShape();
 
-			Vector2 offsetPosition = Pools.obtain(Vector2.class);
+			Vector2 offsetPosition = Vector2Pool.obtain();
 			offsetPosition.set(mVisualVars.corners.get(0)).add(mVisualVars.centerOffset);
 			circle.setPosition(offsetPosition);
-			Pools.free(offsetPosition);
+			Vector2Pool.free(offsetPosition);
 
 			// One corner, use standard size
 			if (mVisualVars.corners.size() == 1) {
@@ -737,10 +737,10 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 			}
 			// Else two corners, determine radius of circle
 			else {
-				Vector2 lengthVector = Pools.obtain(Vector2.class);
+				Vector2 lengthVector = Vector2Pool.obtain();
 				lengthVector.set(mVisualVars.corners.get(0)).sub(mVisualVars.corners.get(1));
 				circle.setRadius(lengthVector.len());
-				Pools.free(lengthVector);
+				Vector2Pool.free(lengthVector);
 			}
 
 			savedFixtureProperties.shape = circle;
@@ -868,7 +868,7 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 		Vector2[] vertices = new Vector2[3];
 
 		for (int i = 0; i < vertices.length; ++i) {
-			vertices[i] = Pools.obtain(Vector2.class);
+			vertices[i] = Vector2Pool.obtain();
 		}
 
 		// It will look something like this:
@@ -890,7 +890,7 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 
 
 		// Set the center...
-		Vector2 center = Pools.obtain(Vector2.class);
+		Vector2 center = Vector2Pool.obtain();
 		center.set(vertices[0]).add(vertices[1]).add(vertices[2]).div(3);
 
 		// Offset all vertices with negative center
@@ -908,9 +908,9 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 		PolygonShape polygonShape = new PolygonShape();
 		polygonShape.set(vertices);
 
-		Pools.free(center);
+		Vector2Pool.free(center);
 		for (Vector2 vertex : vertices) {
-			Pools.free(vertex);
+			Vector2Pool.free(vertex);
 		}
 
 		return polygonShape;
@@ -923,8 +923,8 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	private EdgeShape createLineShape() {
 		EdgeShape edgeShape = new EdgeShape();
 
-		//		Vector2 pointA = Pools.obtain(Vector2.class);
-		//		Vector2 pointB = Pools.obtain(Vector2.class);
+		//		Vector2 pointA = Vector2Pool.obtain();
+		//		Vector2 pointB = Vector2Pool.obtain();
 
 		//		pointA.set(-mVisualVars.shapeWidth * 0.5f, 0);
 		//		pointB.set(mVisualVars.shapeWidth * 0.5f, 0);
@@ -933,8 +933,8 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 		//		edgeShape.set(-mVisualVars.shapeWidth * 0.5f + mVisualVars.centerOffset.x, mVisualVars.centerOffset.y, mVisualVars.shapeWidth * 0.5f + mVisualVars.centerOffset.x, mVisualVars.centerOffset.y);
 		edgeShape.set(-mVisualVars.shapeWidth * 0.5f, 0, mVisualVars.shapeWidth * 0.5f, 0);
 
-		//		Pools.free(pointA);
-		//		Pools.free(pointB);
+		//		Vector2Pool.free(pointA);
+		//		Vector2Pool.free(pointB);
 
 		return edgeShape;
 	}

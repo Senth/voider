@@ -6,7 +6,6 @@ import java.util.UUID;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.Pools;
 import com.spiddekauga.utils.Invoker;
 import com.spiddekauga.utils.Scroller;
 import com.spiddekauga.utils.Scroller.ScrollAxis;
@@ -42,6 +41,7 @@ import com.spiddekauga.voider.scene.SelectDefScene;
 import com.spiddekauga.voider.scene.TouchTool;
 import com.spiddekauga.voider.scene.TriggerTool;
 import com.spiddekauga.voider.scene.WorldScene;
+import com.spiddekauga.voider.utils.Vector2Pool;
 
 /**
  * The level editor scene
@@ -87,23 +87,23 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 		if (mScroller.isScrolling()) {
 			mScroller.update(Gdx.graphics.getDeltaTime());
 
-			Vector2 diffScroll = Pools.obtain(Vector2.class);
+			Vector2 diffScroll = Vector2Pool.obtain();
 			diffScroll.set(mScroller.getCurrentScroll()).sub(mScroller.getOriginScroll());
 			diffScroll.mul(Config.Graphics.WORLD_SCALE);
 
 			mCamera.position.x = diffScroll.x + mScrollCameraOrigin.x;
 			mCamera.update();
 
-			Pools.free(diffScroll);
+			Vector2Pool.free(diffScroll);
 		} else if (!mCreatedScrollCommand) {
-			Vector2 scrollCameraCurrent = Pools.obtain(Vector2.class);
+			Vector2 scrollCameraCurrent = Vector2Pool.obtain();
 			scrollCameraCurrent.set(mCamera.position.x, mCamera.position.y);
 
 			mInvoker.execute(new CCameraMove(mCamera, scrollCameraCurrent, mScrollCameraOrigin));
 
 			mCreatedScrollCommand = true;
 
-			Pools.free(scrollCameraCurrent);
+			Vector2Pool.free(scrollCameraCurrent);
 		}
 	}
 
@@ -313,10 +313,10 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 		if (button == 2 || (Gdx.app.getInput().isTouched(0) && Gdx.app.getInput().isTouched(1))) {
 			// If we're already scrolling create scroll command
 			if (mScroller.isScrolling()) {
-				Vector2 scrollCameraCurrent = Pools.obtain(Vector2.class);
+				Vector2 scrollCameraCurrent = Vector2Pool.obtain();
 				scrollCameraCurrent.set(mCamera.position.x, mCamera.position.y);
 				mInvoker.execute(new CCameraMove(mCamera, scrollCameraCurrent, mScrollCameraOrigin));
-				Pools.free(scrollCameraCurrent);
+				Vector2Pool.free(scrollCameraCurrent);
 			}
 
 			mScroller.touchDown(x, y);
@@ -354,21 +354,13 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 
 	@Override
 	public void onResourceAdded(IResource resource) {
-		if (resource instanceof Actor) {
-			mLevel.addActor((Actor) resource);
-		} else if (resource instanceof Path) {
-			mLevel.addPath((Path) resource);
-		}
+		mLevel.addResource(resource);
 		mUnsaved = true;
 	}
 
 	@Override
 	public void onResourceRemoved(IResource resource) {
-		if (resource instanceof Actor) {
-			mLevel.removeActor(resource.getId());
-		} else if (resource instanceof Path) {
-			mLevel.removePath(resource.getId());
-		}
+		mLevel.removeResource(resource.getId());
 		mUnsaved = true;
 	}
 
@@ -521,11 +513,11 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 					enemyGroup.setEnemyCount(cEnemies, addedEnemies, removedEnemies);
 
 					for (EnemyActor addedEnemy : addedEnemies) {
-						mLevel.addActor(addedEnemy);
+						mLevel.addResource(addedEnemy);
 					}
 
 					for (EnemyActor removedEnemy : removedEnemies) {
-						mLevel.removeActor(removedEnemy.getId());
+						mLevel.removeResource(removedEnemy.getId());
 					}
 				}
 				// Delete enemy group
@@ -534,16 +526,16 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 					ArrayList<EnemyActor> removedEnemies = enemyGroup.clear();
 
 					for (EnemyActor enemyActor : removedEnemies) {
-						mLevel.removeActor(enemyActor.getId());
+						mLevel.removeResource(enemyActor.getId());
 					}
 
-					mLevel.removeEnemyGroup(enemyGroup.getId());
+					mLevel.removeResource(enemyGroup.getId());
 				}
 			}
 			// No enemy group, do we create one?
 			else if (cEnemies > 1) {
 				enemyGroup = new EnemyGroup();
-				mLevel.addEnemyGroup(enemyGroup);
+				mLevel.addResource(enemyGroup);
 
 				enemyGroup.setOriginalEnemy(selectedEnemy);
 
@@ -551,7 +543,7 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 				enemyGroup.setEnemyCount(cEnemies, addedEnemies, null);
 
 				for (EnemyActor addedEnemy : addedEnemies) {
-					mLevel.addActor(addedEnemy);
+					mLevel.addResource(addedEnemy);
 				}
 
 				// Set GUI delay value
@@ -767,6 +759,13 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 
 		Scene scene = new SelectDefScene(EnemyActorDef.class, false, true);
 		SceneSwitcher.switchTo(scene);
+	}
+
+	/**
+	 * @return current level
+	 */
+	public Level getLevel() {
+		return mLevel;
 	}
 
 	/**

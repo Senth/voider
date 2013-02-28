@@ -11,6 +11,7 @@ import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.Pools;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
+import com.spiddekauga.voider.utils.Vector2Pool;
 
 /**
  * Table that allows for aligning inside the widgets.
@@ -343,7 +344,7 @@ public class AlignTable extends WidgetGroup implements Disposable {
 			}
 		}
 
-		Vector2 offset = Pools.obtain(Vector2.class);
+		Vector2 offset = Vector2Pool.obtain();
 		// Horizontal offset
 		// If fill row, the x offset will always be 0
 		if (rowFillWidth) {
@@ -378,7 +379,7 @@ public class AlignTable extends WidgetGroup implements Disposable {
 
 
 		// Layout the rows
-		Vector2 rowSize = Pools.obtain(Vector2.class);
+		Vector2 rowSize = Vector2Pool.obtain();
 		if (rowFillWidth) {
 			rowSize.x = getWidth();
 		} else {
@@ -400,8 +401,8 @@ public class AlignTable extends WidgetGroup implements Disposable {
 			offset.y += rowSize.y;
 		}
 
-		Pools.free(rowSize);
-		Pools.free(offset);
+		Vector2Pool.free(rowSize);
+		Vector2Pool.free(offset);
 	}
 
 	@Override

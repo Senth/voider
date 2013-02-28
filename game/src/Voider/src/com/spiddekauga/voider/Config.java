@@ -392,7 +392,8 @@ public class Config {
 		public final static float PICK_SIZE_DEFAULT = 0.0001f;
 		/** Path pick size */
 		public final static float PICK_PATH_SIZE = 0.5f;
-
+		/** Trigger pick size */
+		public final static float PICK_TRIGGER_SIZE = PICK_PATH_SIZE;
 	}
 
 	/**

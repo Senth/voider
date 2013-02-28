@@ -5,7 +5,6 @@ import java.util.UUID;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.Pools;
 import com.spiddekauga.utils.Invoker;
 import com.spiddekauga.voider.game.Weapon;
 import com.spiddekauga.voider.game.WeaponDef;
@@ -24,6 +23,7 @@ import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.scene.SelectDefScene;
 import com.spiddekauga.voider.scene.TouchTool;
 import com.spiddekauga.voider.scene.WorldScene;
+import com.spiddekauga.voider.utils.Vector2Pool;
 
 /**
  * Creates bullets for the enemies and player to use.
@@ -41,10 +41,10 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 
 		mWeapon.setWeaponDef(new WeaponDef());
 		mWeapon.getDef().setBulletActorDef(mDef);
-		Vector2 weaponPos = Pools.obtain(Vector2.class);
+		Vector2 weaponPos = Vector2Pool.obtain();
 		screenToWorldCoord(mCamera, Gdx.graphics.getWidth() * 0.1f, Gdx.graphics.getHeight() * 0.5f, weaponPos, true);
 		mWeapon.setPosition(weaponPos);
-		Pools.free(weaponPos);
+		Vector2Pool.free(weaponPos);
 
 		mDrawActorTool = new DrawActorTool(mCamera, mWorld, BulletActor.class, mInvoker, this, mDef);
 	}
@@ -304,7 +304,7 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 		if (mBulletActor != null) {
 			mBulletActor.destroyBody();
 
-			diffOffset = Pools.obtain(Vector2.class);
+			diffOffset = Vector2Pool.obtain();
 			diffOffset.set(mDef.getCenterOffset());
 		}
 
@@ -315,7 +315,7 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 			diffOffset.add(mBulletActor.getPosition());
 			mBulletActor.setPosition(diffOffset);
 			mBulletActor.createBody();
-			Pools.free(diffOffset);
+			Vector2Pool.free(diffOffset);
 		}
 	}
 
@@ -326,7 +326,7 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 		if (mBulletActor != null) {
 			mBulletActor.destroyBody();
 
-			diffOffset = Pools.obtain(Vector2.class);
+			diffOffset = Vector2Pool.obtain();
 			diffOffset.set(mDef.getCenterOffset());
 		}
 
@@ -337,7 +337,7 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 			diffOffset.add(mBulletActor.getPosition());
 			mBulletActor.setPosition(diffOffset);
 			mBulletActor.createBody();
-			Pools.free(diffOffset);
+			Vector2Pool.free(diffOffset);
 		}
 	}
 

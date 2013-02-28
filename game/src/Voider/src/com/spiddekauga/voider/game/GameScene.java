@@ -11,13 +11,13 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.joints.MouseJoint;
 import com.badlogic.gdx.physics.box2d.joints.MouseJointDef;
-import com.badlogic.gdx.utils.Pools;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.PlayerActor;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.UndefinedResourceTypeException;
 import com.spiddekauga.voider.scene.WorldScene;
+import com.spiddekauga.voider.utils.Vector2Pool;
 /**
  * The main game. Starts with a level and could either be in regular or
  * testing mode. Testing mode will set the player to unlimited lives.
@@ -269,7 +269,7 @@ public class GameScene extends WorldScene {
 	 */
 	private void resetPlayerPosition() {
 		if (mPlayerActor != null && mPlayerActor.getBody() != null) {
-			Vector2 playerPosition = Pools.obtain(Vector2.class);
+			Vector2 playerPosition = Vector2Pool.obtain();
 			playerPosition.set(mCamera.position.x - mCamera.viewportWidth * 0.5f, 0);
 
 			// Get radius of player and offset it with the width
@@ -281,7 +281,7 @@ public class GameScene extends WorldScene {
 
 				mPlayerActor.getBody().setTransform(playerPosition, 0.0f);
 			}
-			Pools.free(playerPosition);
+			Vector2Pool.free(playerPosition);
 		}
 	}
 

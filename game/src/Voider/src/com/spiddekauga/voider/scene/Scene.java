@@ -53,18 +53,23 @@ public abstract class Scene extends InputAdapter {
 		mGui.resize(width, height);
 	}
 
+
 	/**
-	 * @return screen width
+	 * Return screen width in world coordinates, but only if this scene
+	 * is a world scene.
+	 * @return screen width in world coordinates, if scene is not a world it return 0.
 	 */
-	public float getScreenWidth() {
-		return mGui.getStage().getCamera().viewportWidth;
+	public float getWorldWidth() {
+		return 0;
 	}
 
 	/**
-	 * @return screen height
+	 * Return screen height in world coordinates, but only if this scene is
+	 * a world scene.
+	 * @return screen height in world coordinates, if scene is not a world it return 0.
 	 */
-	public float getScreenHeight() {
-		return mGui.getStage().getCamera().viewportHeight;
+	public float getWorldHeight() {
+		return 0;
 	}
 
 	/**

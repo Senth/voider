@@ -31,6 +31,7 @@ import com.spiddekauga.voider.resources.Resource;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.UndefinedResourceTypeException;
 import com.spiddekauga.voider.scene.SceneSwitcher;
+import com.spiddekauga.voider.utils.Vector2Pool;
 
 /**
  * The abstract base class for all actors
@@ -527,12 +528,12 @@ public abstract class Actor extends Resource implements Json.Serializable, Dispo
 	public void createBodyCorners() {
 		if (mDef.getShapeType() == ActorShapeTypes.CUSTOM && mEditorActive) {
 			mHasBodyCorners = true;
-			Vector2 worldPos = Pools.obtain(Vector2.class);
+			Vector2 worldPos = Vector2Pool.obtain();
 			for (Vector2 localPos : mDef.getCorners()) {
 				worldPos.set(localPos).add(mPosition).add(getDef().getCenterOffset());
 				createBodyCorner(worldPos);
 			}
-			Pools.free(worldPos);
+			Vector2Pool.free(worldPos);
 		}
 	}
 

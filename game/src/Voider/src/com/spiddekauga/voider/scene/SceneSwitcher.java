@@ -85,6 +85,32 @@ public class SceneSwitcher {
 	}
 
 	/**
+	 * Return screen width in world coordinates, but only if the current scene
+	 * is a world scene.
+	 * @return screen width in world coordinates, if scene is not a world it return 0.
+	 */
+	public static float getWorldWidth() {
+		if (mScenes.isEmpty()) {
+			return 0;
+		} else {
+			return mScenes.peek().getWorldWidth();
+		}
+	}
+
+	/**
+	 * Return screen height in world coordinates, but only if the current scene is
+	 * a world scene.
+	 * @return screen height in world coordinates, if scene is not a world it return 0.
+	 */
+	public static float getWorldHeight() {
+		if (mScenes.isEmpty()) {
+			return 0;
+		} else {
+			return mScenes.peek().getWorldHeight();
+		}
+	}
+
+	/**
 	 * Updates (and renders) the scene switcher and the current scene.
 	 */
 	public static void update() {

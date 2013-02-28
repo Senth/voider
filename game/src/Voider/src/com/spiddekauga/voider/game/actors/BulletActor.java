@@ -2,8 +2,8 @@ package com.spiddekauga.voider.game.actors;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.OrderedMap;
-import com.badlogic.gdx.utils.Pools;
 import com.spiddekauga.utils.Json;
+import com.spiddekauga.voider.utils.Vector2Pool;
 
 /**
  * Bullet actor, contains necessary information about the bullet.
@@ -22,10 +22,10 @@ public class BulletActor extends Actor {
 	 * @see #shoot(Vector2,Vector2,float,boolean) to use a velocity of the bullet directly
 	 */
 	public void shoot(Vector2 position, Vector2 direction, float speed, float hitDamage, boolean shotByPlayer) {
-		Vector2 velocity = Pools.obtain(Vector2.class);
+		Vector2 velocity = Vector2Pool.obtain();
 		velocity.set(direction).nor().mul(speed);
-
 		shoot(position, velocity, hitDamage, shotByPlayer);
+		Vector2Pool.free(velocity);
 	}
 
 	/**

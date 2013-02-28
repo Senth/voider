@@ -3,11 +3,11 @@ package com.spiddekauga.voider.game;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.OrderedMap;
-import com.badlogic.gdx.utils.Pools;
 import com.spiddekauga.utils.Json;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.actors.BulletActor;
 import com.spiddekauga.voider.scene.SceneSwitcher;
+import com.spiddekauga.voider.utils.Vector2Pool;
 /**
  * Weapon that hadles the shooting and cooldown.
  * 
@@ -103,7 +103,7 @@ public class Weapon implements Disposable, Json.Serializable {
 
 	@Override
 	public void dispose() {
-		Pools.free(mPosition);
+		Vector2Pool.free(mPosition);
 	}
 
 	/**
@@ -129,5 +129,5 @@ public class Weapon implements Disposable, Json.Serializable {
 	/** Current cooldown timer */
 	private float mCooldown = 0;
 	/** Position of the weapon */
-	private Vector2 mPosition = Pools.obtain(Vector2.class);
+	private Vector2 mPosition = Vector2Pool.obtain();
 }
