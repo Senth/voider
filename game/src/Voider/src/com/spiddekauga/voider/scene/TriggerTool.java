@@ -175,8 +175,8 @@ public class TriggerTool extends TouchTool implements ISelectTool {
 			if (hitObject instanceof Trigger) {
 				// Hit same twice, remove it
 				if (hitObject == mSelectedTrigger) {
-					mInvoker.execute(new CResourceSelect(null, this));
-					mInvoker.execute(new CResourceRemove(mSelectedTrigger, mLevelEditor), true);
+					mInvoker.execute(new CResourceRemove(mSelectedTrigger, mLevelEditor));
+					mInvoker.execute(new CResourceSelect(null, this), true);
 				} else {
 					mInvoker.execute(new CResourceSelect((IResource) hitObject, this));
 				}
