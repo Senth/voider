@@ -56,6 +56,14 @@ public abstract class Trigger extends Resource {
 		}
 	}
 
+	@Override
+	public void getReferences(ArrayList<UUID> references) {
+		super.getReferences(references);
+		for (TriggerListenerInfo triggerListenerInfo : mListeners) {
+			references.add(triggerListenerInfo.listener.getId());
+		}
+	}
+
 	/**
 	 * Checks if the trigger has triggered all listeners. You can safetly remove
 	 * the trigger now
@@ -98,7 +106,25 @@ public abstract class Trigger extends Resource {
 	}
 
 	/**
-	 * Removes/Clears all the listeners
+	 * Removes a listener from the trigger
+	 * @param listenerId the listener id to remove
+	 */
+	public void removeListener(UUID listenerId) {
+		Iterator<TriggerListenerInfo> iterator = mListeners.iterator();
+
+		while (iterator.hasNext()) {
+			TriggerListenerInfo triggerListenerInfo = iterator.next();
+
+			if (triggerListenerInfo.listener.getId().equals(listenerId)) {
+				iterator.remove();
+				break;
+			}
+		}
+	}
+
+	/**
+	 * Removes/Clears all the listeners. This will also remove the trigger from
+	 * the listener
 	 */
 	public void clearListeners() {
 		mListeners.clear();

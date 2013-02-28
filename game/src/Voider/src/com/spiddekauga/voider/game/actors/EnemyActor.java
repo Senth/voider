@@ -3,7 +3,6 @@ package com.spiddekauga.voider.game.actors;
 import java.util.ArrayList;
 import java.util.UUID;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.OrderedMap;
 import com.spiddekauga.utils.Json;
@@ -291,6 +290,7 @@ public class EnemyActor extends Actor {
 
 	@Override
 	public void getReferences(ArrayList<UUID> references) {
+		super.getReferences(references);
 		if (mPathId != null) {
 			references.add(mPathId);
 		}
@@ -300,14 +300,45 @@ public class EnemyActor extends Actor {
 	}
 
 	@Override
-	public void bindReference(IResource resource) {
+	public boolean bindReference(IResource resource) {
+		boolean success = super.bindReference(resource);
+
 		if (resource.equals(mPathId)) {
 			setPath((Path) resource);
+			success = true;
 		} else if (resource.equals(mGroupId)) {
 			mGroup = (EnemyGroup) resource;
-		} else {
-			Gdx.app.error("EnemyActor", "Couldn't find any resource to bind for " + resource.getId());
+			success = true;
 		}
+
+		return success;
+	}
+
+	@Override
+	public boolean addBoundResource(IResource boundResource) {
+		boolean success = super.addBoundResource(boundResource);
+
+		if (boundResource instanceof Path) {
+			setPath((Path) boundResource);
+		}
+		// Enemy group is always in charge of binding/unbinding all
+
+		return success;
+	}
+
+	@Override
+	public boolean removeBoundResource(IResource boundResource) {
+		boolean success = super.removeBoundResource(boundResource);
+
+		if (boundResource instanceof Path) {
+			if (boundResource == mPath) {
+				setPath(null);
+				success = true;
+			}
+		}
+		// Enemy group is always in charge of binding/unbinding all
+
+		return success;
 	}
 
 	@SuppressWarnings("unchecked")

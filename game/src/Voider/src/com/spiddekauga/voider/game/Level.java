@@ -221,8 +221,6 @@ public class Level extends Resource implements ITriggerListener, Json.Serializab
 	 */
 	private void addActor(Actor actor) {
 		mActors.add(actor);
-		mResourceBinder.addResource(actor);
-		//		actor.createBody();
 
 		// Add to dependency, if it doesn't load its own def
 		if (!actor.savesDef()) {
@@ -253,8 +251,6 @@ public class Level extends Resource implements ITriggerListener, Json.Serializab
 		} else {
 			Gdx.app.error("Level", "Could not find the actor to remove");
 		}
-
-		mResourceBinder.removeResource(actorId);
 	}
 
 	/**

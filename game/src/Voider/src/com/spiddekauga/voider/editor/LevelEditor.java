@@ -145,6 +145,11 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 		mInvoker.dispose();
 	}
 
+	@Override
+	public Invoker getInvoker() {
+		return mInvoker;
+	}
+
 	// --------------------------------
 	//		Resource loading etc.
 	// --------------------------------
@@ -644,13 +649,6 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 		} else {
 			return false;
 		}
-	}
-
-	/**
-	 * @return invoker of the level editor
-	 */
-	Invoker getInvoker() {
-		return mInvoker;
 	}
 
 	/**

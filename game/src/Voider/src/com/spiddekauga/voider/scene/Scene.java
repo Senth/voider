@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.spiddekauga.utils.GameTime;
+import com.spiddekauga.utils.Invoker;
 import com.spiddekauga.voider.game.BulletDestroyer;
 
 /**
@@ -70,6 +71,13 @@ public abstract class Scene extends InputAdapter {
 	 */
 	public float getWorldHeight() {
 		return 0;
+	}
+
+	/**
+	 * @return scene's invoker if the scene uses one, null otherwise.
+	 */
+	public Invoker getInvoker() {
+		return null;
 	}
 
 	/**

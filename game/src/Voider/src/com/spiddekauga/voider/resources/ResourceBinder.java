@@ -6,8 +6,11 @@ import java.util.UUID;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.OrderedMap;
+import com.spiddekauga.utils.Invoker;
 import com.spiddekauga.utils.Json;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.editor.commands.CResourceBoundRemove;
+import com.spiddekauga.voider.scene.SceneSwitcher;
 
 /**
  * Contains all the resources. Used for example in levels to later bind all
@@ -31,7 +34,31 @@ public class ResourceBinder implements Json.Serializable {
 	 * @return resource that was removed
 	 */
 	public IResource removeResource(UUID resourceId) {
-		return mResources.remove(resourceId);
+		IResource removedResource = mResources.remove(resourceId);
+
+		// Find all other resources that uses the removed resource
+		// Unbind/Remove the removed resource from those
+		if (removedResource != null) {
+			Invoker invoker = SceneSwitcher.getInvoker();
+			for (ObjectMap.Entry<UUID, IResource> entry : mResources.entries()) {
+				IResource resource = entry.value;
+
+				if (isResourceBoundIn(resource, resourceId)) {
+					if (invoker != null) {
+						invoker.execute(new CResourceBoundRemove(resource, removedResource), true);
+					} else {
+						boolean success = resource.removeBoundResource(removedResource);
+
+						if (!success) {
+							Gdx.app.error("ResourceBinder", "Failed to remove bound resource: " + removedResource.toString() + ", from: " + resource.toString());
+						}
+					}
+				}
+			}
+		}
+
+
+		return removedResource;
 	}
 
 	/**
@@ -74,17 +101,20 @@ public class ResourceBinder implements Json.Serializable {
 	 * Binds all the resources
 	 */
 	private void bindResources() {
-		ArrayList<UUID> dependencies = new ArrayList<UUID>();
 		for (ObjectMap.Entry<UUID, IResource> entry : mResources.entries()) {
 			IResource resource = entry.value;
 
-			dependencies.clear();
-			resource.getReferences(dependencies);
-			for (UUID dependencyId : dependencies) {
+			mDependencies.clear();
+			resource.getReferences(mDependencies);
+			for (UUID dependencyId : mDependencies) {
 				IResource foundDependency = mResources.get(dependencyId);
 
 				if (foundDependency != null) {
-					resource.bindReference(foundDependency);
+					boolean success = resource.bindReference(foundDependency);
+
+					if (!success) {
+						Gdx.app.error("ResourceBinder", "Failed to bind this reference: " + foundDependency.toString() + " to: " + resource.toString());
+					}
 				} else {
 					Gdx.app.error("ResourceBinder", "Could not find resource for " + resource.getId() + ", dependency: " + dependencyId);
 				}
@@ -92,6 +122,21 @@ public class ResourceBinder implements Json.Serializable {
 		}
 	}
 
+	/**
+	 * Checks if a resource is bound for the selected resource
+	 * @param insideThis the resource to check if boundResourceId is in
+	 * @param boundResourceId the resource to check if resourceToCheckIn uses.
+	 * @return true if resourceToCheckIn uses boundResourceId
+	 */
+	private boolean isResourceBoundIn(IResource insideThis, UUID boundResourceId) {
+		mDependencies.clear();
+		insideThis.getReferences(mDependencies);
+
+		return mDependencies.contains(boundResourceId);
+	}
+
 	/** All the resources */
 	private ObjectMap<UUID, IResource> mResources = new ObjectMap<UUID, IResource>();
+	/** Temporary array for getting dependencies */
+	private static ArrayList<UUID> mDependencies = new ArrayList<UUID>();
 }

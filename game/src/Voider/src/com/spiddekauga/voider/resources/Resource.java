@@ -59,8 +59,21 @@ public abstract class Resource implements IResource, Json.Serializable {
 	}
 
 	@Override
-	public void bindReference(IResource resource) {
+	public boolean bindReference(IResource resource) {
 		// Does nothing here
+		return false;
+	}
+
+	@Override
+	public boolean addBoundResource(IResource boundResource)  {
+		// Does nothing here
+		return false;
+	}
+
+	@Override
+	public boolean removeBoundResource(IResource boundResource) {
+		// Does nothing here
+		return false;
 	}
 
 	@Override

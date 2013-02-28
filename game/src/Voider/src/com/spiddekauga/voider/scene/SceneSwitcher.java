@@ -4,6 +4,7 @@ import java.util.LinkedList;
 
 import com.badlogic.gdx.Gdx;
 import com.spiddekauga.utils.GameTime;
+import com.spiddekauga.utils.Invoker;
 import com.spiddekauga.voider.game.BulletDestroyer;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceCorruptException;
@@ -107,6 +108,18 @@ public class SceneSwitcher {
 			return 0;
 		} else {
 			return mScenes.peek().getWorldHeight();
+		}
+	}
+
+	/**
+	 * @return invoker of the current scene, null if the scene doesn't have an invoker or if
+	 * no scene exists
+	 */
+	public static Invoker getInvoker() {
+		if (mScenes.isEmpty()) {
+			return null;
+		} else {
+			return mScenes.peek().getInvoker();
 		}
 	}
 

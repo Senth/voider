@@ -71,14 +71,20 @@ public class TScreenAt extends Trigger implements IResourceBody, IResourcePositi
 
 	@Override
 	public void getReferences(ArrayList<UUID> references) {
+		super.getReferences(references);
 		references.add(mLevelId);
 	}
 
 	@Override
-	public void bindReference(IResource resource) {
+	public boolean bindReference(IResource resource) {
+		boolean success = bindReference(resource);
+
 		if (resource instanceof Level) {
 			mLevel = (Level) resource;
+			success = true;
 		}
+
+		return success;
 	}
 
 	@Override

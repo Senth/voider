@@ -460,9 +460,7 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 		return mWeapon.getDef().getBulletSpeed();
 	}
 
-	/**
-	 * @return invoker of the editor
-	 */
+	@Override
 	public Invoker getInvoker() {
 		return mInvoker;
 	}

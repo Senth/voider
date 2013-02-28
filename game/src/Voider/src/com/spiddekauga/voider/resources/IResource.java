@@ -24,6 +24,21 @@ public interface IResource {
 	/**
 	 * Binds the specific reference to this resource
 	 * @param resource the resource this class uses which needs to be bound to this resource
+	 * @return true if the resource was bound
 	 */
-	public void bindReference(IResource resource);
+	public boolean bindReference(IResource resource);
+
+	/**
+	 * Removes a bound resource
+	 * @param boundResource the resource to remove
+	 * @return true if the resource was removed successfully
+	 */
+	public boolean removeBoundResource(IResource boundResource);
+
+	/**
+	 * Adds a resource to be bound
+	 * @param boundResource the resource to add and bind
+	 * @return true if the resource was added successfully
+	 */
+	public boolean addBoundResource(IResource boundResource);
 }

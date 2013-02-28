@@ -124,18 +124,22 @@ public class EnemyGroup extends Resource {
 
 	@Override
 	public void getReferences(ArrayList<UUID> references) {
+		super.getReferences(references);
 		references.addAll(mEnemyIds);
 	}
 
 	@Override
-	public void bindReference(IResource resource) {
+	public boolean bindReference(IResource resource) {
+		boolean success = bindReference(resource);
+
 		int foundIndex = Collections.linearSearch(mEnemyIds, resource.getId());
 
 		if (foundIndex != -1) {
 			mEnemies.set(foundIndex, (EnemyActor) resource);
-		} else {
-			Gdx.app.error("EnemyGroup", "Could not find the enemy to bind to this group");
+			success = true;
 		}
+
+		return success;
 	}
 
 	/**
