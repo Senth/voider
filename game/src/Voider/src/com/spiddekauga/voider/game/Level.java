@@ -13,8 +13,6 @@ import com.spiddekauga.utils.Json;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.PlayerActor;
 import com.spiddekauga.voider.game.triggers.Trigger;
-import com.spiddekauga.voider.game.triggers.TriggerAction;
-import com.spiddekauga.voider.game.triggers.TriggerInfo;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.Resource;
 import com.spiddekauga.voider.resources.ResourceBinder;
@@ -27,7 +25,7 @@ import com.spiddekauga.voider.resources.UndefinedResourceTypeException;
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
 @SuppressWarnings("unchecked")
-public class Level extends Resource implements ITriggerListener, Json.Serializable, Disposable {
+public class Level extends Resource implements Disposable {
 	/**
 	 * Constructor which creates an new empty level with the bound
 	 * level definition
@@ -40,6 +38,8 @@ public class Level extends Resource implements ITriggerListener, Json.Serializab
 		mPaths = new ArrayList<Path>();
 		mSpeed = mLevelDef.getBaseSpeed();
 		mCompletedLevel = false;
+
+		mResourceBinder.addResource(this);
 	}
 
 	/**
@@ -53,19 +53,19 @@ public class Level extends Resource implements ITriggerListener, Json.Serializab
 	 * Binds all the triggers
 	 */
 	public void bindTriggers() {
-		ArrayList<ITriggerListener> triggerListeners = mResourceBinder.getResources(ITriggerListener.class);
-
-		for (ITriggerListener triggerListener : triggerListeners) {
-			for (TriggerInfo triggerInfo : triggerListener.getTriggerInfos()) {
-				Trigger trigger = mTriggers.get(triggerInfo.triggerId);
-
-				if (trigger != null) {
-					trigger.addListener(triggerListener, triggerInfo.delay, triggerInfo.action);
-				} else {
-					Gdx.app.error("Level", "Could not find trigger to bind with!");
-				}
-			}
-		}
+		//		ArrayList<ITriggerListener> triggerListeners = mResourceBinder.getResources(ITriggerListener.class);
+		//
+		//		for (ITriggerListener triggerListener : triggerListeners) {
+		//			for (TriggerInfo triggerInfo : triggerListener.getTriggerInfos()) {
+		//				Trigger trigger = mTriggers.get(triggerInfo.triggerId);
+		//
+		//				if (trigger != null) {
+		//					trigger.addListener(triggerInfo);
+		//				} else {
+		//					Gdx.app.error("Level", "Could not find trigger to bind with!");
+		//				}
+		//			}
+		//		}
 	}
 
 	/**
@@ -86,7 +86,8 @@ public class Level extends Resource implements ITriggerListener, Json.Serializab
 	public void update(boolean run) {
 		// Make the map move forward
 		if (run) {
-			mXCoord += mSpeed * Gdx.graphics.getDeltaTime();
+			float deltaTime = Gdx.graphics.getDeltaTime();
+			mXCoord += mSpeed * deltaTime;
 
 			if (mPlayerActor != null && mPlayerActor.getBody() != null) {
 				mPlayerActor.getBody().setLinearVelocity(mSpeed, 0.0f);
@@ -98,14 +99,17 @@ public class Level extends Resource implements ITriggerListener, Json.Serializab
 				}
 			}
 
-			// Update actors
-			for (Actor actor : mActors) {
-				actor.update(Gdx.graphics.getDeltaTime());
-			}
+
 			mPlayerActor.update(Gdx.graphics.getDeltaTime());
 
-			// Update triggers
-			//			mTriggerInformation.update();
+			// Update resources
+			if (mResourceUpdates == null) {
+				mResourceUpdates = mResourceBinder.getResources(IResourceUpdate.class);
+			}
+			for (IResourceUpdate resourceUpdate : mResourceUpdates) {
+				resourceUpdate.update(deltaTime);
+			}
+
 		} else {
 			for (Actor actor : mActors) {
 				actor.editorUpdate();
@@ -129,6 +133,19 @@ public class Level extends Resource implements ITriggerListener, Json.Serializab
 		level.mLevelDef = levelDef;
 
 		return (ResourceType) level;
+	}
+
+	/**
+	 * @return a copy of this level without changing the ID of it
+	 */
+	public Level copyKeepId() {
+		Json json = new Json();
+		String jsonString = json.toJson(this);
+		Level level = json.fromJson(Level.class, jsonString);
+
+		level.mLevelDef = mLevelDef;
+
+		return level;
 	}
 
 	/**
@@ -279,6 +296,8 @@ public class Level extends Resource implements ITriggerListener, Json.Serializab
 
 	@Override
 	public void dispose() {
+		mResourceBinder.removeResource(getId());
+
 		for (Disposable disposable : mResourceBinder.getResources(Disposable.class)) {
 			disposable.dispose();
 		}
@@ -295,6 +314,9 @@ public class Level extends Resource implements ITriggerListener, Json.Serializab
 	public void write(Json json) {
 		super.write(json);
 
+		// Remove level from resource binder, so we don't save the level inifinitely
+		mResourceBinder.removeResource(getId());
+
 		json.writeValue("mResourceBinder", mResourceBinder);
 		json.writeValue("mLevelDefId", mLevelDef.getId());
 		json.writeValue("mXCoord", mXCoord);
@@ -307,6 +329,9 @@ public class Level extends Resource implements ITriggerListener, Json.Serializab
 		super.read(json, jsonData);
 
 		mResourceBinder = json.readValue("mResourceBinder", ResourceBinder.class, jsonData);
+		mResourceBinder.addResource(this);
+		mResourceBinder.bindResources();
+
 		mXCoord = json.readValue("mXCoord", float.class, jsonData);
 		mSpeed = json.readValue("mSpeed", float.class, jsonData);
 		mCompletedLevel = json.readValue("mCompletedLevel", boolean.class, jsonData);
@@ -333,17 +358,6 @@ public class Level extends Resource implements ITriggerListener, Json.Serializab
 		}
 	}
 
-	@Override
-	public void onTriggered(TriggerAction action) {
-		/** @TODO Auto-generated method stub */
-	}
-
-	@Override
-	public ArrayList<TriggerInfo> getTriggerInfos() {
-		/** @todo return trigger informations */
-		return null;
-	}
-
 	/**
 	 * Default constructor, used when loading levels.
 	 */
@@ -357,6 +371,8 @@ public class Level extends Resource implements ITriggerListener, Json.Serializab
 	private ArrayList<Actor> mActors = null;
 	/** All paths, only used when editor is active */
 	private ArrayList<Path> mPaths = null;
+	/** All resources that needs updating */
+	private ArrayList<IResourceUpdate> mResourceUpdates = null;
 	/** All triggers */
 	private ObjectMap<UUID, Trigger> mTriggers = new ObjectMap<UUID, Trigger>();
 	/** Current x coordinate (of the screen's left edge) */

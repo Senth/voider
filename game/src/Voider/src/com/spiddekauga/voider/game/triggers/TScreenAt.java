@@ -77,7 +77,7 @@ public class TScreenAt extends Trigger implements IResourceBody, IResourcePositi
 
 	@Override
 	public boolean bindReference(IResource resource) {
-		boolean success = bindReference(resource);
+		boolean success = super.bindReference(resource);
 
 		if (resource instanceof Level) {
 			mLevel = (Level) resource;
@@ -136,6 +136,13 @@ public class TScreenAt extends Trigger implements IResourceBody, IResourcePositi
 	@Override
 	public void dispose() {
 		Vector2Pool.free(mPosition);
+	}
+
+	/**
+	 * Constructor for JSON
+	 */
+	protected TScreenAt() {
+		// Does nothing
 	}
 
 	/** Body of the trigger */

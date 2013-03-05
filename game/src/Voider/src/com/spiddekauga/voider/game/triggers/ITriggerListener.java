@@ -16,12 +16,10 @@
  * General Public License for more details at
  * http://www.gnu.org/copyleft/gpl.html
  */
-package com.spiddekauga.voider.game;
+package com.spiddekauga.voider.game.triggers;
 
 import java.util.ArrayList;
 
-import com.spiddekauga.voider.game.triggers.TriggerAction;
-import com.spiddekauga.voider.game.triggers.TriggerInfo;
 import com.spiddekauga.voider.resources.IResource;
 
 /**
@@ -41,4 +39,16 @@ public interface ITriggerListener extends IResource {
 	 * @return all trigger information necessary for binding triggers
 	 */
 	public ArrayList<TriggerInfo> getTriggerInfos();
+
+	/**
+	 * Adds a trigger to the resource
+	 * @param triggerInfo trigger information
+	 */
+	public void addTrigger(TriggerInfo triggerInfo);
+
+	/**
+	 * Removes the specified trigger from this resource
+	 * @param triggerInfo trigger information
+	 */
+	public void removeTrigger(TriggerInfo triggerInfo);
 }

@@ -320,5 +320,5 @@ public class EnemyGroup extends Resource {
 	/** All enemy references */
 	private ArrayList<UUID> mEnemyIds = new ArrayList<UUID>();
 	/** Trigger delay between enemies, in seconds */
-	private float mTriggerDelay = Config.Editor.Level.Enemy.DELAY_DEFAULT;
+	private float mTriggerDelay = Config.Editor.Level.Enemy.DELAY_BETWEEN_DEFAULT;
 }

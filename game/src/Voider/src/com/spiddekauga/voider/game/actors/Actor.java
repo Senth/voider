@@ -1,6 +1,7 @@
 package com.spiddekauga.voider.game.actors;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
@@ -24,9 +25,13 @@ import com.spiddekauga.voider.Config.Editor;
 import com.spiddekauga.voider.editor.HitWrapper;
 import com.spiddekauga.voider.game.IResourceBody;
 import com.spiddekauga.voider.game.IResourcePosition;
-import com.spiddekauga.voider.game.ITriggerListener;
+import com.spiddekauga.voider.game.IResourceUpdate;
+import com.spiddekauga.voider.game.triggers.ITriggerListener;
+import com.spiddekauga.voider.game.triggers.Trigger;
 import com.spiddekauga.voider.game.triggers.TriggerAction;
+import com.spiddekauga.voider.game.triggers.TriggerAction.Actions;
 import com.spiddekauga.voider.game.triggers.TriggerInfo;
+import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.Resource;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.UndefinedResourceTypeException;
@@ -38,7 +43,7 @@ import com.spiddekauga.voider.utils.Vector2Pool;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public abstract class Actor extends Resource implements Json.Serializable, Disposable, Poolable, IResourceBody, IResourcePosition, ITriggerListener {
+public abstract class Actor extends Resource implements IResourceUpdate, Json.Serializable, Disposable, Poolable, IResourceBody, IResourcePosition, ITriggerListener {
 	/**
 	 * Sets the texture of the actor including the actor definition.
 	 * Automatically creates a body for the actor.
@@ -54,6 +59,7 @@ public abstract class Actor extends Resource implements Json.Serializable, Dispo
 	 * Updates the actor. This automatically calls #editorUpdate()
 	 * @param deltaTime seconds elapsed since last call
 	 */
+	@Override
 	public void update(float deltaTime) {
 		if (mActive) {
 			// Update position
@@ -91,7 +97,11 @@ public abstract class Actor extends Resource implements Json.Serializable, Dispo
 
 	@Override
 	public void onTriggered(TriggerAction action) {
-		// TODO Auto-generated method stub
+		if (action.action == Actions.ACTOR_ACTIVATE) {
+			activate();
+		} else if (action.action == Actions.ACTOR_DEACTIVATE) {
+			deactivate();
+		}
 
 	}
 
@@ -101,19 +111,102 @@ public abstract class Actor extends Resource implements Json.Serializable, Dispo
 	}
 
 	/**
-	 * Adds a trigger to the enemy actor
+	 * Adds a trigger to the actor
 	 * @param triggerInfo trigger information
 	 */
 	public void addTrigger(TriggerInfo triggerInfo) {
+		triggerInfo.listener = this;
 		mTriggerInfos.add(triggerInfo);
 	}
 
 	/**
-	 * Removes the specified trigger from this enemy
+	 * Removes the specified trigger from this actor
 	 * @param triggerInfo trigger information
 	 */
 	public void removeTrigger(TriggerInfo triggerInfo) {
 		mTriggerInfos.remove(triggerInfo);
+	}
+
+
+	@Override
+	public void getReferences(ArrayList<UUID> references) {
+		super.getReferences(references);
+
+		for (TriggerInfo triggerInfo : mTriggerInfos) {
+			references.add(triggerInfo.triggerId);
+		}
+	}
+
+	@Override
+	public boolean bindReference(IResource resource) {
+		boolean success = super.bindReference(resource);
+
+		for (TriggerInfo triggerInfo : mTriggerInfos) {
+			if (resource.equals(triggerInfo.triggerId)) {
+				Trigger trigger = (Trigger) resource;
+				triggerInfo.trigger = trigger;
+				trigger.addListener(triggerInfo);
+				success = true;
+				break;
+			}
+		}
+
+		return success;
+	}
+
+	@Override
+	public boolean addBoundResource(IResource boundResource) {
+		boolean success = super.addBoundResource(boundResource);
+
+		// Find all listeners for this actor. Then check for trigger info
+		// that isn't in this actors trigger list; that should be the added
+		// trigger
+		if (boundResource instanceof Trigger) {
+			ArrayList<TriggerInfo> thisListeners = new ArrayList<TriggerInfo>();
+
+			// Find all listeners for this actor
+			for (TriggerInfo triggerInfo : ((Trigger) boundResource).getListeners()) {
+				if (triggerInfo.listener == this) {
+					thisListeners.add(triggerInfo);
+				}
+			}
+
+			// Is a trigger info missing?
+			boolean foundMissing = false;
+			for (TriggerInfo fromTrigger : thisListeners) {
+				if (!mTriggerInfos.contains(fromTrigger)) {
+					mTriggerInfos.add(fromTrigger);
+					foundMissing = true;
+				}
+			}
+
+			if (foundMissing) {
+				success = true;
+			} else {
+				Gdx.app.error("Actor", "Didn't find the missing trigger when readding it");
+			}
+		}
+
+		return success;
+	}
+
+	@Override
+	public boolean removeBoundResource(IResource boundResource) {
+		boolean success = super.removeBoundResource(boundResource);
+
+		// Find and remove the trigger
+		if (boundResource instanceof Trigger) {
+			Iterator<TriggerInfo> iterator = mTriggerInfos.iterator();
+			while (iterator.hasNext()) {
+				TriggerInfo triggerInfo = iterator.next();
+				if (triggerInfo.trigger == boundResource) {
+					iterator.remove();
+					success = true;
+				}
+			}
+		}
+
+		return success;
 	}
 
 	/**
@@ -210,6 +303,7 @@ public abstract class Actor extends Resource implements Json.Serializable, Dispo
 		json.writeValue("REVISION", Config.REVISION);
 		json.writeValue("mLife", mLife);
 		json.writeValue("mPosition", mPosition);
+		json.writeValue("mTriggerInfos", mTriggerInfos);
 
 
 		if (savesDef()) {
@@ -234,12 +328,19 @@ public abstract class Actor extends Resource implements Json.Serializable, Dispo
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void read(Json json, OrderedMap<String, Object> jsonData) {
 		super.read(json, jsonData);
 
 		mLife = json.readValue("mLife", float.class, jsonData);
 		mPosition = json.readValue("mPosition", Vector2.class, jsonData);
+		mTriggerInfos = json.readValue("mTriggerInfos", ArrayList.class, jsonData);
+
+		// Set trigger listener to this
+		for (TriggerInfo triggerInfo : mTriggerInfos) {
+			triggerInfo.listener = this;
+		}
 
 
 		// Definition

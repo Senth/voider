@@ -326,13 +326,29 @@ public class Config {
 				/** Enemies step size */
 				public final static float ENEMIES_STEP_SIZE = 1;
 				/** Minimum delay between enemy spawns */
-				public final static float DELAY_MIN = 0;
+				public final static float DELAY_BETWEEN_MIN = 0;
 				/** Maximum delay between enemy spawns */
-				public final static float DELAY_MAX = 10;
+				public final static float DELAY_BETWEEN_MAX = 10;
 				/** Default delay time between enemy spawns */
-				public final static float DELAY_DEFAULT = 2;
+				public final static float DELAY_BETWEEN_DEFAULT = 2;
 				/** Stepz size of enemy delay time */
-				public final static float DELAY_STEP_SIZE = 0.1f;
+				public final static float DELAY_BETWEEN_STEP_SIZE = 0.1f;
+				/** Minimum start trigger delay */
+				public final static float TRIGGER_ACTIVATE_DELAY_MIN = 0;
+				/** Maximum start trigger delay */
+				public final static float TRIGGER_ACTIVATE_DELAY_MAX = 30;
+				/** Default trigger delay */
+				public final static float TRIGGER_ACTIVATE_DELAY_DEFAULT = 0;
+				/** Step sizeof trigger delay */
+				public final static float TRIGGER_ACTIVATE_DELAY_STEP_SIZE = 0.1f;
+				/** Minimum deactivation trigger delay */
+				public final static float TRIGGER_DEACTIVATE_DELAY_MIN = 0;
+				/** Maximum deactivation trigger delay */
+				public final static float TRIGGER_DEACTIVATE_DELAY_MAX = 300;
+				/** Default deactivation trigger delay */
+				public final static float TRIGGER_DEACTIVATE_DELAY_DEFAULT = 0;
+				/** Step size of deactivation trigger delay */
+				public final static float TRIGGER_DEACTIVATE_DELAY_STEP_SIZE = 1;
 			}
 
 			/** Enemy snap distance to a path */

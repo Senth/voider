@@ -2,17 +2,24 @@ package com.spiddekauga.voider.scene;
 
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.World;
 import com.spiddekauga.utils.Invoker;
 import com.spiddekauga.voider.Config.Editor;
 import com.spiddekauga.voider.editor.LevelEditor;
 import com.spiddekauga.voider.editor.commands.CEnemySetPath;
 import com.spiddekauga.voider.editor.commands.CResourceMove;
+import com.spiddekauga.voider.editor.commands.CResourceSelect;
+import com.spiddekauga.voider.editor.commands.CTriggerSet;
 import com.spiddekauga.voider.game.Path;
 import com.spiddekauga.voider.game.actors.EnemyActor;
 import com.spiddekauga.voider.game.actors.EnemyActorDef;
 import com.spiddekauga.voider.game.actors.EnemyActorDef.MovementTypes;
 import com.spiddekauga.voider.game.actors.EnemyGroup;
+import com.spiddekauga.voider.game.triggers.Trigger;
+import com.spiddekauga.voider.game.triggers.TriggerAction.Actions;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.utils.Vector2Pool;
 
@@ -39,6 +46,23 @@ public class AddEnemyTool extends AddActorTool {
 		mLevelEditor = editor;
 	}
 
+	/**
+	 * States of add enemy tool, appends SET_ACTIVATE_TRIGGER and SET_DEACTIVATE_TRIGGER
+	 */
+	public enum States{
+		/** Creates a new actor when pressed */
+		ADD,
+		/** Removes the actor that was hit */
+		REMOVE,
+		/** Moves the actor that was hit */
+		MOVE,
+		/** Selects an actor */
+		SELECT,
+		/** Selects an activate trigger */
+		SET_ACTIVATE_TRIGGER,
+		/** Selects an deactivate trigger */
+		SET_DEACTIVATE_TRIGGER
+	}
 
 	@Override
 	public void setSelectedResource(IResource selectedResource) {
@@ -46,6 +70,112 @@ public class AddEnemyTool extends AddActorTool {
 
 		if (selectedResource instanceof EnemyActor) {
 			mEnemyGroup = ((EnemyActor) selectedResource).getEnemyGroup();
+		}
+	}
+
+	/**
+	 * Sets the enemy state, not to be confused with {@link #setState(com.spiddekauga.voider.scene.AddActorTool.States)}
+	 * Always use this instead of {@link #setState(com.spiddekauga.voider.scene.AddActorTool.States)}.
+	 * @param state new state of the tool
+	 */
+	public void setEnemyState(States state) {
+		deactivate();
+
+		mState = state;
+		// Set super state
+		switch (mState) {
+		case ADD:
+			setState(AddActorTool.States.ADD);
+			break;
+
+		case REMOVE:
+			setState(AddActorTool.States.REMOVE);
+			break;
+
+		case MOVE:
+			setState(AddActorTool.States.MOVE);
+			break;
+
+		case SELECT:
+			setState(AddActorTool.States.SELECT);
+			break;
+
+		default:
+			// Does nothing
+			break;
+		}
+
+		activate();
+	}
+
+	/**
+	 * Returns current enemy state, not to be confused with #
+	 * @return current enemy state.
+	 */
+	public States getEnemyState() {
+		return mState;
+	}
+
+	@Override
+	public void deactivate() {
+		/** @todo set triggers as deselected, will draw differently */
+	}
+
+	@Override
+	public void activate() {
+		/** @todo set triggers as selected, will draw differently */
+	}
+
+	@Override
+	protected void down() {
+		switch (mState) {
+		case ADD:
+		case MOVE:
+		case SELECT:
+		case REMOVE:
+			super.down();
+			break;
+
+		case SET_ACTIVATE_TRIGGER:
+		case SET_DEACTIVATE_TRIGGER:
+			testPick(Editor.PICK_TRIGGER_SIZE);
+
+			if (mHitBody != null) {
+				Object hitObject = mHitBody.getUserData();
+
+				// Hit enemy
+				if (hitObject instanceof EnemyActor) {
+					mInvoker.execute(new CResourceSelect((IResource) hitObject, this));
+				}
+				// Hit trigger
+				else if (hitObject instanceof Trigger) {
+					// Only select trigger if we have an enemy selected
+					if (mSelectedActor != null) {
+						Actions action = null;
+						if (mState == States.SET_ACTIVATE_TRIGGER) {
+							action = Actions.ACTOR_ACTIVATE;
+						} else if (mState == States.SET_DEACTIVATE_TRIGGER) {
+							action = Actions.ACTOR_DEACTIVATE;
+						}
+
+						mInvoker.execute(new CTriggerSet(mSelectedActor, action, (Trigger) hitObject));
+					}
+				}
+			}
+			// Deselect trigger otherwise
+			else {
+				if (mSelectedActor != null) {
+					Actions action = null;
+					if (mState == States.SET_ACTIVATE_TRIGGER) {
+						action = Actions.ACTOR_ACTIVATE;
+					} else if (mState == States.SET_DEACTIVATE_TRIGGER) {
+						action = Actions.ACTOR_DEACTIVATE;
+					}
+
+					mInvoker.execute(new CTriggerSet(mSelectedActor, action, null));
+				}
+			}
+			break;
 		}
 	}
 
@@ -68,6 +198,8 @@ public class AddEnemyTool extends AddActorTool {
 
 		case SELECT:
 		case REMOVE:
+		case SET_ACTIVATE_TRIGGER:
+		case SET_DEACTIVATE_TRIGGER:
 			// Does nothing
 			break;
 		}
@@ -101,6 +233,8 @@ public class AddEnemyTool extends AddActorTool {
 
 		case REMOVE:
 		case SELECT:
+		case SET_ACTIVATE_TRIGGER:
+		case SET_DEACTIVATE_TRIGGER:
 			// Does nothing
 			break;
 		}
@@ -178,6 +312,46 @@ public class AddEnemyTool extends AddActorTool {
 		return closestPath;
 	}
 
+	@Override
+	protected QueryCallback getCallback() {
+		switch (mState) {
+		case ADD:
+		case MOVE:
+		case SELECT:
+		case REMOVE:
+			return super.getCallback();
+
+
+		case SET_ACTIVATE_TRIGGER:
+		case SET_DEACTIVATE_TRIGGER:
+			return mTriggerCallback;
+		}
+
+		return null;
+	}
+
+	/** Picking for triggers and enemy actors */
+	private QueryCallback mTriggerCallback = new QueryCallback() {
+		@Override
+		public boolean reportFixture(Fixture fixture) {
+			Body body = fixture.getBody();
+			// Hit an trigger
+			if (body.getUserData() instanceof Trigger) {
+				mHitBodies.clear();
+				mHitBodies.add(body);
+				return false;
+			}
+			// Hit an enemy
+			else if (body.getUserData() instanceof EnemyActor) {
+				mHitBodies.add(body);
+			}
+
+			return true;
+		}
+	};
+
+	/** Current state of the tool */
+	protected States mState = States.ADD;
 	/** Current enemy group */
 	protected EnemyGroup mEnemyGroup = null;
 	/** Level editor */

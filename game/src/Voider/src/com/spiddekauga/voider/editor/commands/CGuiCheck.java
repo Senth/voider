@@ -40,11 +40,14 @@ public class CGuiCheck extends Command {
 		// Set temporary name, this will make sure the event doesn't fire
 		// another CGuiCheck command.
 		String oldName = mCheckOnExecute.getName();
-		mCheckOnExecute.setName(Config.Editor.GUI_INVOKER_TEMP_NAME);
-		mCheckOnExecute.setChecked(mCheck);
-		mCheckOnExecute.setName(oldName);
-
-		return true;
+		if (!Config.Editor.GUI_INVOKER_TEMP_NAME.equals(oldName)) {
+			mCheckOnExecute.setName(Config.Editor.GUI_INVOKER_TEMP_NAME);
+			mCheckOnExecute.setChecked(mCheck);
+			mCheckOnExecute.setName(oldName);
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	@Override

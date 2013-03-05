@@ -33,12 +33,13 @@ import com.spiddekauga.voider.editor.LevelEditor.Tools;
 import com.spiddekauga.voider.editor.commands.CEditorLoad;
 import com.spiddekauga.voider.editor.commands.CEditorNew;
 import com.spiddekauga.voider.editor.commands.CEditorSave;
+import com.spiddekauga.voider.editor.commands.CGuiCheck;
 import com.spiddekauga.voider.editor.commands.CGuiSlider;
 import com.spiddekauga.voider.game.Path.PathTypes;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceNames;
 import com.spiddekauga.voider.scene.AddActorTool;
-import com.spiddekauga.voider.scene.AddActorTool.States;
+import com.spiddekauga.voider.scene.AddEnemyTool;
 import com.spiddekauga.voider.scene.DrawActorTool;
 import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.scene.PathTool;
@@ -132,13 +133,7 @@ class LevelEditorGui extends Gui {
 		}
 
 		// Enemy options
-		if (mLevelEditor.isEnemySelected()) {
-			mHiders.enemyOptions.show();
-			mWidgets.enemy.cEnemies.setValue(mLevelEditor.getEnemyCount());
-			mWidgets.enemy.delay.setValue(mLevelEditor.getEnemySpawnDelay());
-		} else {
-			mHiders.enemyOptions.hide();
-		}
+		resetEnemyOptions();
 
 
 		// Path
@@ -239,7 +234,58 @@ class LevelEditorGui extends Gui {
 	void setEnemyOptions(int cEnemies, float delay) {
 		mWidgets.enemy.cEnemies.setValue(cEnemies);
 		if (delay >= 0) {
-			mWidgets.enemy.delay.setValue(delay);
+			mWidgets.enemy.betweenDelay.setValue(delay);
+		}
+	}
+
+	/**
+	 * Resets enemy option values
+	 */
+	void resetEnemyOptions() {
+		if (mLevelEditor.isEnemySelected()) {
+			mHiders.enemyOptions.show();
+		} else {
+			mHiders.enemyOptions.hide();
+			return;
+		}
+
+		if (mWidgets.enemy.cEnemies.getValue() != mLevelEditor.getEnemyCount()) {
+			mInvoker.execute(new CGuiSlider(mWidgets.enemy.cEnemies, mLevelEditor.getEnemyCount(), mWidgets.enemy.cEnemies.getValue()), true);
+		}
+
+		if (mLevelEditor.getEnemySpawnDelay() >= 0 &&  mLevelEditor.getEnemySpawnDelay() != mWidgets.enemy.betweenDelay.getValue()) {
+			mInvoker.execute(new CGuiSlider(mWidgets.enemy.betweenDelay, mLevelEditor.getEnemySpawnDelay(), mWidgets.enemy.betweenDelay.getValue()), true);
+		}
+
+		// Has activate trigger -> Show trigger delay
+		if (mLevelEditor.hasSelectedEnemyActivateTrigger()) {
+			mHiders.enemyActivateDelay.show();
+
+			float activateDelay = mLevelEditor.getSelectedEnemyActivateTriggerDelay();
+			if (activateDelay >= 0 && activateDelay != mWidgets.enemy.activateDelay.getValue()) {
+				mInvoker.execute(new CGuiSlider(mWidgets.enemy.activateDelay, activateDelay, mWidgets.enemy.activateDelay.getValue()));
+			}
+		} else {
+			mHiders.enemyActivateDelay.hide();
+		}
+
+		// Can have deactivate trigger -> Show button
+		if (mLevelEditor.canSelectedEnemyUseDeactivateTrigger()) {
+			mHiders.enemyDeactive.show();
+
+			// Has deactivate trigger -> Show trigger delay
+			if (mLevelEditor.hasSelectedEnemyDeactivateTrigger()) {
+				mHiders.enemyDeactivateDelay.show();
+
+				float deactivateDelay = mLevelEditor.getSelectedEnemyDeactivateTriggerDelay();
+				if (deactivateDelay >= 0 && deactivateDelay!= mWidgets.enemy.deactivateDelay.getValue()) {
+					mInvoker.execute(new CGuiSlider(mWidgets.enemy.deactivateDelay, deactivateDelay, mWidgets.enemy.deactivateDelay.getValue()));
+				}
+			} else {
+				mHiders.enemyDeactivateDelay.hide();
+			}
+		} else {
+			mHiders.enemyDeactive.hide();
 		}
 	}
 
@@ -524,7 +570,7 @@ class LevelEditorGui extends Gui {
 			@Override
 			protected void onChange(boolean checked) {
 				if (checked) {
-					mLevelEditor.setEnemyState(States.SELECT);
+					mLevelEditor.setEnemyState(AddEnemyTool.States.SELECT);
 				}
 			}
 		};
@@ -540,7 +586,7 @@ class LevelEditorGui extends Gui {
 			@Override
 			protected void onChange(boolean checked) {
 				if (checked) {
-					mLevelEditor.setEnemyState(States.ADD);
+					mLevelEditor.setEnemyState(AddEnemyTool.States.ADD);
 				}
 			}
 		};
@@ -559,7 +605,7 @@ class LevelEditorGui extends Gui {
 			@Override
 			protected void onChange(boolean checked) {
 				if (checked) {
-					mLevelEditor.setEnemyState(States.REMOVE);
+					mLevelEditor.setEnemyState(AddEnemyTool.States.REMOVE);
 				}
 			}
 		};
@@ -575,7 +621,7 @@ class LevelEditorGui extends Gui {
 			@Override
 			protected void onChange(boolean checked) {
 				if (checked) {
-					mLevelEditor.setEnemyState(States.MOVE);
+					mLevelEditor.setEnemyState(AddEnemyTool.States.MOVE);
 				}
 			}
 		};
@@ -629,9 +675,9 @@ class LevelEditorGui extends Gui {
 		mEnemyTable.add(label);
 
 		mEnemyTable.row();
-		slider = new Slider(Level.Enemy.DELAY_MIN, Level.Enemy.DELAY_MAX, Level.Enemy.DELAY_STEP_SIZE, false, sliderStyle);
+		slider = new Slider(Level.Enemy.DELAY_BETWEEN_MIN, Level.Enemy.DELAY_BETWEEN_MAX, Level.Enemy.DELAY_BETWEEN_STEP_SIZE, false, sliderStyle);
 		delayHider.addToggleActor(slider);
-		mWidgets.enemy.delay = slider;
+		mWidgets.enemy.betweenDelay = slider;
 		mEnemyTable.add(slider);
 		textField = new TextField("", textFieldStyle);
 		delayHider.addToggleActor(textField);
@@ -642,6 +688,89 @@ class LevelEditorGui extends Gui {
 			protected void onChange(float newValue) {
 				mInvoker.execute(new CGuiSlider(mSlider, newValue, mLevelEditor.getEnemySpawnDelay()));
 				mLevelEditor.setEnemySpawnDelay(newValue);
+			}
+		};
+
+		// Activate trigger
+		buttonGroup = new ButtonGroup();
+		buttonGroup.setMinCheckCount(0);
+		buttonGroup.setMaxCheckCount(1);
+		mEnemyTable.row();
+		button = new TextButton("Set activation trigger", toggleStyle);
+		buttonGroup.add(button);
+		mHiders.enemyOptions.addToggleActor(button);
+		mWidgets.enemy.activateTrigger = button;
+		mEnemyTable.add(button);
+		new CheckedListener(button) {
+			@Override
+			protected void onChange(boolean checked) {
+				mInvoker.execute(new CGuiCheck(mButton, checked));
+
+				if (checked) {
+					mLevelEditor.setEnemyState(AddEnemyTool.States.SET_ACTIVATE_TRIGGER);
+				} else {
+					mLevelEditor.resetEnemyState();
+				}
+			}
+		};
+
+		mEnemyTable.row();
+		label = new Label("Activate delay", labelStyle);
+		mHiders.enemyActivateDelay.addToggleActor(label);
+
+		mEnemyTable.row();
+		slider = new Slider(Level.Enemy.TRIGGER_ACTIVATE_DELAY_MIN, Level.Enemy.TRIGGER_ACTIVATE_DELAY_MAX, Level.Enemy.TRIGGER_ACTIVATE_DELAY_STEP_SIZE, false, sliderStyle);
+		mHiders.enemyActivateDelay.addToggleActor(slider);
+		mWidgets.enemy.activateDelay = slider;
+		mEnemyTable.add(slider);
+		textField = new TextField("", textFieldStyle);
+		mHiders.enemyActivateDelay.addToggleActor(textField);
+		textField.setWidth(Config.Editor.TEXT_FIELD_NUMBER_WIDTH);
+		mEnemyTable.add(textField);
+		new SliderListener(slider, textField, mInvoker) {
+			@Override
+			protected void onChange(float newValue) {
+				mLevelEditor.setSelectedEnemyActivateTriggerDelay(newValue);
+			}
+		};
+
+		// Deactivate trigger
+		mEnemyTable.row();
+		button = new TextButton("Set deactivate trigger", toggleStyle);
+		buttonGroup.add(button);
+		mHiders.enemyDeactive.addToggleActor(button);
+		mWidgets.enemy.deactivateTrigger = button;
+		mEnemyTable.add(button);
+		new CheckedListener(button) {
+			@Override
+			protected void onChange(boolean checked) {
+				mInvoker.execute(new CGuiCheck(mButton, checked));
+
+				if (checked) {
+					mLevelEditor.setEnemyState(AddEnemyTool.States.SET_DEACTIVATE_TRIGGER);
+				} else {
+					mLevelEditor.resetEnemyState();
+				}
+			}
+		};
+
+		mEnemyTable.row();
+		label = new Label("Deactivation delay", labelStyle);
+		mHiders.enemyActivateDelay.addToggleActor(label);
+
+		mEnemyTable.row();
+		slider = new Slider(Level.Enemy.TRIGGER_DEACTIVATE_DELAY_MIN, Level.Enemy.TRIGGER_DEACTIVATE_DELAY_MAX, Level.Enemy.TRIGGER_DEACTIVATE_DELAY_STEP_SIZE, false, sliderStyle);
+		mHiders.enemyActivateDelay.addToggleActor(slider);
+		mWidgets.enemy.deactivateDelay = slider;
+		mEnemyTable.add(slider);
+		textField = new TextField("", textFieldStyle);
+		mHiders.enemyActivateDelay.addToggleActor(textField);
+		textField.setWidth(Config.Editor.TEXT_FIELD_NUMBER_WIDTH);
+		mEnemyTable.add(textField);
+		new SliderListener(slider, textField, mInvoker) {
+			@Override
+			protected void onChange(float newValue) {
+				mLevelEditor.setSelectedEnemyDeactivateTriggerDelay(newValue);
 			}
 		};
 	}
@@ -1007,6 +1136,9 @@ class LevelEditorGui extends Gui {
 		 */
 		public Hiders() {
 			enemy.addChild(enemyOptions);
+			enemyOptions.addChild(enemyActivateDelay);
+			enemyOptions.addChild(enemyDeactive);
+			enemyDeactive.addChild(enemyDeactivateDelay);
 			path.addChild(pathOptions);
 			trigger.addChild(triggerActorActivate);
 			trigger.addChild(triggerScreenAt);
@@ -1016,6 +1148,12 @@ class LevelEditorGui extends Gui {
 		HideListener enemy = new HideListener(true);
 		/** Hides enemy options */
 		HideManual enemyOptions = new HideManual();
+		/** Hides trigger delay for trigger */
+		HideManual enemyActivateDelay = new HideManual();
+		/** Hides trigger deactivate delay */
+		HideManual enemyDeactivateDelay = new HideManual();
+		/** Hides trigger deactivate, only AI will see this */
+		HideManual enemyDeactive = new HideManual();
 		/** Hides the path */
 		HideListener path = new HideListener(true);
 		/** Hides path options */
@@ -1060,7 +1198,11 @@ class LevelEditorGui extends Gui {
 			Button move = null;
 
 			Slider cEnemies = null;
-			Slider delay = null;
+			Slider betweenDelay = null;
+			Slider activateDelay = null;
+			Slider deactivateDelay = null;
+			Button activateTrigger = null;
+			Button deactivateTrigger = null;
 		}
 
 		static class PathWidgets {

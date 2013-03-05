@@ -19,8 +19,8 @@ public class TriggerAction {
 	public enum Actions {
 		/** Activates an actor */
 		ACTOR_ACTIVATE,
-		/** Creates an actor */
-		ACTOR_CREATE,
+		/** Deactivates an actor */
+		ACTOR_DEACTIVATE,
 	}
 
 	/**

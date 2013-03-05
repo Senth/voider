@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.UUID;
 
-import com.spiddekauga.voider.game.ITriggerListener;
+import com.badlogic.gdx.utils.OrderedMap;
+import com.spiddekauga.utils.Json;
+import com.spiddekauga.voider.game.IResourceUpdate;
 import com.spiddekauga.voider.resources.Resource;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 
@@ -13,7 +15,7 @@ import com.spiddekauga.voider.scene.SceneSwitcher;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public abstract class Trigger extends Resource {
+public abstract class Trigger extends Resource implements IResourceUpdate {
 	/**
 	 * Default constructor for the trigger. Creates a new unique id
 	 */
@@ -21,11 +23,8 @@ public abstract class Trigger extends Resource {
 		mUniqueId = UUID.randomUUID();
 	}
 
-	/**
-	 * Updates the trigger, i.e. checks if it shall send a trigger event
-	 * to the listeners
-	 */
-	public void update() {
+	@Override
+	public void update(float deltaTime) {
 		float totalTimeElapsed = SceneSwitcher.getGameTime().getTotalTimeElapsed();
 
 		if (!mTriggered) {
@@ -39,9 +38,9 @@ public abstract class Trigger extends Resource {
 			float timeSinceTriggered = totalTimeElapsed - mTriggeredTime;
 
 			// Trigger and remove all triggers which delays have run out
-			Iterator<TriggerListenerInfo> iterator = mListeners.iterator();
+			Iterator<TriggerInfo> iterator = mListeners.iterator();
 			while (iterator.hasNext()) {
-				TriggerListenerInfo triggerListenerInfo = iterator.next();
+				TriggerInfo triggerListenerInfo = iterator.next();
 
 				if (timeSinceTriggered >= triggerListenerInfo.delay) {
 					TriggerAction triggerAction = new TriggerAction();
@@ -56,13 +55,13 @@ public abstract class Trigger extends Resource {
 		}
 	}
 
-	@Override
-	public void getReferences(ArrayList<UUID> references) {
-		super.getReferences(references);
-		for (TriggerListenerInfo triggerListenerInfo : mListeners) {
-			references.add(triggerListenerInfo.listener.getId());
-		}
-	}
+	//	@Override
+	//	public void getReferences(ArrayList<UUID> references) {
+	//		super.getReferences(references);
+	//		for (TriggerInfo triggerListenerInfo : mListeners) {
+	//			references.add(triggerListenerInfo.listener.getId());
+	//		}
+	//	}
 
 	/**
 	 * Checks if the trigger has triggered all listeners. You can safetly remove
@@ -91,18 +90,10 @@ public abstract class Trigger extends Resource {
 
 	/**
 	 * Adds a listener to the trigger
-	 * @param listener the listener to add
-	 * @param delay how many seconds after the trigger has been trigger the actual
-	 * #onTriggered(Actions) is called.
-	 * @param action the action to take when triggered
+	 * @param triggerInfo all the necessary trigger information
 	 */
-	public void addListener(ITriggerListener listener, float delay, TriggerAction.Actions action) {
-		TriggerListenerInfo triggerListenerInfo = new TriggerListenerInfo();
-		triggerListenerInfo.listener = listener;
-		triggerListenerInfo.delay = delay;
-		triggerListenerInfo.action = action;
-
-		mListeners.add(triggerListenerInfo);
+	public void addListener(TriggerInfo triggerInfo) {
+		mListeners.add(triggerInfo);
 	}
 
 	/**
@@ -110,16 +101,39 @@ public abstract class Trigger extends Resource {
 	 * @param listenerId the listener id to remove
 	 */
 	public void removeListener(UUID listenerId) {
-		Iterator<TriggerListenerInfo> iterator = mListeners.iterator();
+		Iterator<TriggerInfo> iterator = mListeners.iterator();
 
 		while (iterator.hasNext()) {
-			TriggerListenerInfo triggerListenerInfo = iterator.next();
+			TriggerInfo triggerListenerInfo = iterator.next();
 
 			if (triggerListenerInfo.listener.getId().equals(listenerId)) {
 				iterator.remove();
 				break;
 			}
 		}
+	}
+
+	/**
+	 * @return all trigger listeners
+	 */
+	public ArrayList<TriggerInfo> getListeners() {
+		return mListeners;
+	}
+
+	@Override
+	public void write(Json json) {
+		super.write(json);
+
+		json.writeValue("mTriggered", mTriggered);
+		json.writeValue("mTriggeredTime", mTriggeredTime);
+	}
+
+	@Override
+	public void read(Json json, OrderedMap<String, Object> jsonData) {
+		super.read(json, jsonData);
+
+		mTriggered = json.readValue("mTriggered", boolean.class, jsonData);
+		mTriggeredTime = json.readValue("mTriggeredTime", float.class, jsonData);
 	}
 
 	/**
@@ -135,5 +149,5 @@ public abstract class Trigger extends Resource {
 	/** Triggered time */
 	private float mTriggeredTime = -1;
 	/** Listener information about the trigger */
-	private ArrayList<TriggerListenerInfo> mListeners = new ArrayList<TriggerListenerInfo>();
+	private ArrayList<TriggerInfo> mListeners = new ArrayList<TriggerInfo>();
 }

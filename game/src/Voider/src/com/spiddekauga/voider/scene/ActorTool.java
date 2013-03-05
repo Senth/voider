@@ -93,21 +93,19 @@ public abstract class ActorTool extends TouchTool {
 	private QueryCallback mCallback = new QueryCallback() {
 		@Override
 		public boolean reportFixture(Fixture fixture) {
-			if (fixture.testPoint(mTouchCurrent)) {
-				Body body = fixture.getBody();
-				// Hit a corner
-				if (body.getUserData() instanceof HitWrapper) {
-					HitWrapper hitWrapper = (HitWrapper) body.getUserData();
-					if (hitWrapper.resource != null && hitWrapper.resource.getClass() == mActorType) {
-						mHitBodies.clear();
-						mHitBodies.add(fixture.getBody());
-						return false;
-					}
+			Body body = fixture.getBody();
+			// Hit a corner
+			if (body.getUserData() instanceof HitWrapper) {
+				HitWrapper hitWrapper = (HitWrapper) body.getUserData();
+				if (hitWrapper.resource != null && hitWrapper.resource.getClass() == mActorType) {
+					mHitBodies.clear();
+					mHitBodies.add(fixture.getBody());
+					return false;
 				}
-				// Hit an actor
-				else if (body.getUserData() != null && body.getUserData().getClass() == mActorType) {
-					mHitBodies.add(body);
-				}
+			}
+			// Hit an actor
+			else if (body.getUserData() != null && body.getUserData().getClass() == mActorType) {
+				mHitBodies.add(body);
 			}
 			return true;
 		}

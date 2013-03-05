@@ -20,10 +20,13 @@ import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.ActorDef;
 import com.spiddekauga.voider.game.actors.EnemyActor;
 import com.spiddekauga.voider.game.actors.EnemyActorDef;
+import com.spiddekauga.voider.game.actors.EnemyActorDef.MovementTypes;
 import com.spiddekauga.voider.game.actors.EnemyGroup;
 import com.spiddekauga.voider.game.actors.PickupActor;
 import com.spiddekauga.voider.game.actors.PickupActorDef;
 import com.spiddekauga.voider.game.actors.StaticTerrainActor;
+import com.spiddekauga.voider.game.triggers.TriggerAction.Actions;
+import com.spiddekauga.voider.game.triggers.TriggerInfo;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceNames;
@@ -437,7 +440,7 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 	 */
 	void runFromHere() {
 		GameScene testGame = new GameScene(true);
-		Level copyLevel = mLevel.copy();
+		Level copyLevel = mLevel.copyKeepId();
 		copyLevel.setXCoord(mCamera.position.x + mCamera.viewportWidth * 0.5f);
 		testGame.setLevel(copyLevel);
 
@@ -687,16 +690,41 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 	 * Sets the active enemy tool state
 	 * @param state current active enemy tool state
 	 */
-	void setEnemyState(AddActorTool.States state) {
+	void setEnemyState(AddEnemyTool.States state) {
 		AddEnemyTool addEnemyTool = (AddEnemyTool) mTouchTools[Tools.ENEMY.ordinal()];
-		addEnemyTool.setState(state);
+		addEnemyTool.setEnemyState(state);
+	}
+
+	/**
+	 * Resets the enemy state to the active add actor state.
+	 */
+	void resetEnemyState() {
+		AddEnemyTool addEnemyTool = (AddEnemyTool) mTouchTools[Tools.ENEMY.ordinal()];
+
+		switch (addEnemyTool.getState()) {
+		case ADD:
+			addEnemyTool.setEnemyState(AddEnemyTool.States.ADD);
+			break;
+
+		case REMOVE:
+			addEnemyTool.setEnemyState(AddEnemyTool.States.REMOVE);
+			break;
+
+		case MOVE:
+			addEnemyTool.setEnemyState(AddEnemyTool.States.MOVE);
+			break;
+
+		case SELECT:
+			addEnemyTool.setEnemyState(AddEnemyTool.States.SELECT);
+			break;
+		}
 	}
 
 	/**
 	 * @return current active enemy tool state
 	 */
-	AddActorTool.States getEnemyState() {
-		return ((AddActorTool)mTouchTools[Tools.ENEMY.ordinal()]).getState();
+	AddEnemyTool.States getEnemyState() {
+		return ((AddEnemyTool)mTouchTools[Tools.ENEMY.ordinal()]).getEnemyState();
 	}
 
 	/**
@@ -757,6 +785,130 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 
 		Scene scene = new SelectDefScene(EnemyActorDef.class, false, true);
 		SceneSwitcher.switchTo(scene);
+	}
+
+	/**
+	 * @return true if the selected enemy has an activation trigger, false if not or
+	 * if no enemy is selected
+	 */
+	boolean hasSelectedEnemyActivateTrigger() {
+		EnemyActor enemy =  (EnemyActor) ((AddEnemyTool)mTouchTools[Tools.ENEMY.ordinal()]).getSelectedResource();
+
+		if (enemy != null) {
+			ArrayList<TriggerInfo> triggers = enemy.getTriggerInfos();
+			for (TriggerInfo trigger : triggers) {
+				if (trigger.action == Actions.ACTOR_ACTIVATE) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * @return delay of the activation trigger, negative if no activation trigger has
+	 * been set.
+	 */
+	float getSelectedEnemyActivateTriggerDelay() {
+		EnemyActor enemy =  (EnemyActor) ((AddEnemyTool)mTouchTools[Tools.ENEMY.ordinal()]).getSelectedResource();
+
+		if (enemy != null) {
+			ArrayList<TriggerInfo> triggers = enemy.getTriggerInfos();
+			for (TriggerInfo trigger : triggers) {
+				if (trigger.action == Actions.ACTOR_ACTIVATE) {
+					return trigger.delay;
+				}
+			}
+		}
+
+		return -1;
+	}
+
+	/**
+	 * Sets the delay of the activation trigger
+	 * @param delay seconds of delay
+	 */
+	void setSelectedEnemyActivateTriggerDelay(float delay) {
+		EnemyActor enemy =  (EnemyActor) ((AddEnemyTool)mTouchTools[Tools.ENEMY.ordinal()]).getSelectedResource();
+
+		if (enemy != null) {
+			ArrayList<TriggerInfo> triggers = enemy.getTriggerInfos();
+			for (TriggerInfo trigger : triggers) {
+				if (trigger.action == Actions.ACTOR_ACTIVATE) {
+					trigger.delay = delay;
+				}
+			}
+		}
+	}
+
+	/**
+	 * @return true if the selected enemy has an deactivation trigger, false if not or
+	 * if no enemy is selected
+	 */
+	boolean hasSelectedEnemyDeactivateTrigger() {
+		EnemyActor enemy =  (EnemyActor) ((AddEnemyTool)mTouchTools[Tools.ENEMY.ordinal()]).getSelectedResource();
+
+		if (enemy != null) {
+			ArrayList<TriggerInfo> triggers = enemy.getTriggerInfos();
+			for (TriggerInfo trigger : triggers) {
+				if (trigger.action == Actions.ACTOR_DEACTIVATE) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * @return true if the selected enemy can set a deactivation trigger
+	 */
+	boolean canSelectedEnemyUseDeactivateTrigger() {
+		EnemyActor enemy =  (EnemyActor) ((AddEnemyTool)mTouchTools[Tools.ENEMY.ordinal()]).getSelectedResource();
+
+		// Only AI can set a deactivation trigger. The rest deactivates automatically
+		if (enemy.getDef(EnemyActorDef.class).getMovementType() == MovementTypes.AI) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * @return delay of the deactivation trigger, negative if no deactivation trigger has
+	 * been set.
+	 */
+	float getSelectedEnemyDeactivateTriggerDelay() {
+		EnemyActor enemy =  (EnemyActor) ((AddEnemyTool)mTouchTools[Tools.ENEMY.ordinal()]).getSelectedResource();
+
+		if (enemy != null) {
+			ArrayList<TriggerInfo> triggers = enemy.getTriggerInfos();
+			for (TriggerInfo trigger : triggers) {
+				if (trigger.action == Actions.ACTOR_DEACTIVATE) {
+					return trigger.delay;
+				}
+			}
+		}
+
+		return -1;
+	}
+
+	/**
+	 * Sets the delay of the deactivate trigger
+	 * @param delay seconds of delay
+	 */
+	void setSelectedEnemyDeactivateTriggerDelay(float delay) {
+		EnemyActor enemy =  (EnemyActor) ((AddEnemyTool)mTouchTools[Tools.ENEMY.ordinal()]).getSelectedResource();
+
+		if (enemy != null) {
+			ArrayList<TriggerInfo> triggers = enemy.getTriggerInfos();
+			for (TriggerInfo trigger : triggers) {
+				if (trigger.action == Actions.ACTOR_DEACTIVATE) {
+					trigger.delay = delay;
+				}
+			}
+		}
 	}
 
 	/**

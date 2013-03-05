@@ -57,7 +57,6 @@ public class ResourceBinder implements Json.Serializable {
 			}
 		}
 
-
 		return removedResource;
 	}
 
@@ -93,14 +92,12 @@ public class ResourceBinder implements Json.Serializable {
 	@Override
 	public void read(Json json, OrderedMap<String, Object> jsonData) {
 		mResources = json.readValue("mResources", ObjectMap.class, jsonData);
-
-		bindResources();
 	}
 
 	/**
 	 * Binds all the resources
 	 */
-	private void bindResources() {
+	public void bindResources() {
 		for (ObjectMap.Entry<UUID, IResource> entry : mResources.entries()) {
 			IResource resource = entry.value;
 
@@ -116,7 +113,7 @@ public class ResourceBinder implements Json.Serializable {
 						Gdx.app.error("ResourceBinder", "Failed to bind this reference: " + foundDependency.toString() + " to: " + resource.toString());
 					}
 				} else {
-					Gdx.app.error("ResourceBinder", "Could not find resource for " + resource.getId() + ", dependency: " + dependencyId);
+					Gdx.app.error("ResourceBinder", "Could not find resource for " + resource.toString() + ", dependency: " + dependencyId);
 				}
 			}
 		}
