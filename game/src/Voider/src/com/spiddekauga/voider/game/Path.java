@@ -265,6 +265,10 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 			mFixtureDef.shape.dispose();
 			mFixtureDef.shape = null;
 		}
+		if (mBody != null) {
+			destroyBody();
+			destroyBodyCorners();
+		}
 	}
 
 	/**

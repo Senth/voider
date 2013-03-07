@@ -7,6 +7,7 @@ import java.util.UUID;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.OrderedMap;
 import com.spiddekauga.utils.Json;
 import com.spiddekauga.voider.game.actors.Actor;
@@ -20,7 +21,7 @@ import com.spiddekauga.voider.resources.IResourceChangeListener;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class TActorActivated extends Trigger implements IResourceBody, IResourceChangeListener {
+public class TActorActivated extends Trigger implements Disposable, IResourceBody, IResourceChangeListener {
 	/**
 	 * Triggers when the actor is active (or activated)
 	 * @param actor the actor that shall be activate
@@ -119,7 +120,7 @@ public class TActorActivated extends Trigger implements IResourceBody, IResource
 	public boolean removeBoundResource(IResource boundResource) {
 		boolean success = super.removeBoundResource(boundResource);
 
-		if (boundResource == mActor) {
+		if (boundResource.getId().equals(mActorId)) {
 			mActor = null;
 			mActorId = null;
 
@@ -136,6 +137,11 @@ public class TActorActivated extends Trigger implements IResourceBody, IResource
 		if (resource == mActor && type == EventTypes.POSITION && mBody != null) {
 			mBody.setTransform(mActor.getPosition(), mActor.getBody().getAngle());
 		}
+	}
+
+	@Override
+	public void dispose() {
+		destroyBody();
 	}
 
 	/**

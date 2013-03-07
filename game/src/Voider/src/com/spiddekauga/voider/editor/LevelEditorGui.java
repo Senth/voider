@@ -428,7 +428,7 @@ class LevelEditorGui extends Gui {
 						mMsgBox.key(Keys.ESCAPE, null);
 						mMsgBox.show(getStage());
 					} else {
-						mLevelEditor.newDef();
+						mLevelEditor.duplicateDef();
 					}
 				}
 				return true;

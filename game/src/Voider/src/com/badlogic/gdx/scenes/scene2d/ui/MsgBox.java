@@ -46,8 +46,8 @@ public class MsgBox extends Dialog {
 		setMovable(false);
 		setModal(true);
 		setKeepWithinStage(true);
-		contentTable.clear();
-		buttonTable.clear();
+		contentTable.clearChildren();
+		buttonTable.clearChildren();
 	}
 
 	/**

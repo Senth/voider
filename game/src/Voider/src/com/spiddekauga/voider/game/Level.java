@@ -113,6 +113,10 @@ public class Level extends Resource implements Disposable {
 		level.mUniqueId = levelDef.getLevelId();
 		level.mLevelDef = levelDef;
 
+		// Change references to the new level id
+		level.addResource(this);
+		level.updateLevelReferences(mUniqueId);
+
 		return (ResourceType) level;
 	}
 
@@ -169,6 +173,13 @@ public class Level extends Resource implements Disposable {
 	 */
 	public float getSpeed() {
 		return mSpeed;
+	}
+
+	/**
+	 * Binds all resources, call this after the level has been loaded
+	 */
+	public void bindResources() {
+		mResourceBinder.bindResources();
 	}
 
 	/**
@@ -243,6 +254,7 @@ public class Level extends Resource implements Disposable {
 
 	@Override
 	public void dispose() {
+		// Remove this level first...
 		mResourceBinder.removeResource(getId());
 
 		for (Disposable disposable : mResourceBinder.getResources(Disposable.class)) {
@@ -276,8 +288,6 @@ public class Level extends Resource implements Disposable {
 		super.read(json, jsonData);
 
 		mResourceBinder = json.readValue("mResourceBinder", ResourceBinder.class, jsonData);
-		mResourceBinder.addResource(this);
-		mResourceBinder.bindResources();
 
 		mXCoord = json.readValue("mXCoord", float.class, jsonData);
 		mSpeed = json.readValue("mSpeed", float.class, jsonData);
@@ -305,6 +315,14 @@ public class Level extends Resource implements Disposable {
 	 */
 	protected Level() {
 		// Does nothing
+	}
+
+	/**
+	 * Updates the level references of other resources to the new level id
+	 * @param oldId old level id
+	 */
+	private void updateLevelReferences(UUID oldId) {
+		mResourceBinder.replaceResource(oldId, this);
 	}
 
 	/** Contains all the resources used in this level */

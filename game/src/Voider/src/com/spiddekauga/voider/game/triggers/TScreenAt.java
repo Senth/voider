@@ -88,6 +88,32 @@ public class TScreenAt extends Trigger implements IResourceBody, IResourcePositi
 	}
 
 	@Override
+	public boolean addBoundResource(IResource boundResource) {
+		boolean success = super.addBoundResource(boundResource);
+
+		if (boundResource instanceof Level) {
+			mLevel = (Level) boundResource;
+			mLevelId = mLevel.getId();
+			success = true;
+		}
+
+		return success;
+	}
+
+	@Override
+	public boolean removeBoundResource(IResource boundResource) {
+		boolean success = super.removeBoundResource(boundResource);
+
+		if (boundResource.getId().equals(mLevelId)) {
+			mLevel = null;
+			mLevelId = null;
+			success = true;
+		}
+
+		return success;
+	}
+
+	@Override
 	public void createBody() {
 		if (mBody == null) {
 			FixtureDef fixtureDef = new FixtureDef();
@@ -136,6 +162,7 @@ public class TScreenAt extends Trigger implements IResourceBody, IResourcePositi
 	@Override
 	public void dispose() {
 		Vector2Pool.free(mPosition);
+		destroyBody();
 	}
 
 	/**

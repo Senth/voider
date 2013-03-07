@@ -135,6 +135,8 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 		}
 
 		mLevel = level;
+		mLevel.addResource(mLevel);
+		mLevel.bindResources();
 
 		clearTools();
 
@@ -967,70 +969,24 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 	 */
 	private void createResourceBodies() {
 		if (mLevel != null) {
-			// Only necessary if we loaded the level
-			if (ResourceCacheFacade.isLoaded(mLevel.getId(), Level.class)) {
-				ArrayList<IResourceBody> resources = mLevel.getResources(IResourceBody.class);
+			ArrayList<IResourceBody> resources = mLevel.getResources(IResourceBody.class);
 
-				// Create all bodies except enemy actors in a group, only create the leader then.
-				for (IResourceBody resourceBody : resources) {
-					if (resourceBody instanceof EnemyActor) {
-						if (((EnemyActor) resourceBody).getEnemyGroup() == null || ((EnemyActor)resourceBody).isGroupLeader()) {
-							resourceBody.createBody();
-						}
-					}
-					else if (resourceBody instanceof Path) {
-						((Path) resourceBody).setWorld(mWorld);
-					}
-					else {
+			// Create all bodies except enemies in a group, only create the leader then.
+			for (IResourceBody resourceBody : resources) {
+				if (resourceBody instanceof EnemyActor) {
+					if (((EnemyActor) resourceBody).getEnemyGroup() == null || ((EnemyActor)resourceBody).isGroupLeader()) {
 						resourceBody.createBody();
 					}
+				}
+				else if (resourceBody instanceof Path) {
+					((Path) resourceBody).setWorld(mWorld);
+				}
+				else {
+					resourceBody.createBody();
 				}
 			}
 		}
 	}
-
-	//	/**
-	//	 * Creates actor bodies for the current level
-	//	 */
-	//	private void createActorBodies() {
-	//		if (mLevel != null) {
-	//			// Only necessary if we loaded the level
-	//			if (ResourceCacheFacade.isLoaded(mLevel.getId(), Level.class)) {
-	//				ArrayList<Actor> actors = mLevel.getActors();
-	//
-	//				for (Actor actor : actors) {
-	//					// Don't create bodies for enemy actors in a group and where
-	//					// they aren't the leader.
-	//					boolean createBody = true;
-	//					if (actor instanceof EnemyActor) {
-	//						if (((EnemyActor) actor).getEnemyGroup() != null && !((EnemyActor)actor).isGroupLeader()) {
-	//							createBody = false;
-	//						}
-	//					}
-	//
-	//					if (createBody) {
-	//						actor.createBody();
-	//					}
-	//				}
-	//			}
-	//		}
-	//	}
-	//
-	//	/**
-	//	 * Creates all path bodies
-	//	 */
-	//	private void createPathBodies() {
-	//		if (mLevel != null) {
-	//			// Only necessary if we loaded the level
-	//			if (ResourceCacheFacade.isLoaded(mLevel.getId(), Level.class)) {
-	//				ArrayList<Path> paths = mLevel.getPaths();
-	//
-	//				for (Path path : paths) {
-	//					path.setWorld(mWorld);
-	//				}
-	//			}
-	//		}
-	//	}
 
 	/**
 	 * Clears all the tools

@@ -10,6 +10,7 @@ import com.spiddekauga.utils.Invoker;
 import com.spiddekauga.utils.Json;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.editor.commands.CResourceBoundRemove;
+import com.spiddekauga.voider.game.Level;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 
 /**
@@ -36,21 +37,25 @@ public class ResourceBinder implements Json.Serializable {
 	public IResource removeResource(UUID resourceId) {
 		IResource removedResource = mResources.remove(resourceId);
 
-		// Find all other resources that uses the removed resource
-		// Unbind/Remove the removed resource from those
-		if (removedResource != null) {
-			Invoker invoker = SceneSwitcher.getInvoker();
-			for (ObjectMap.Entry<UUID, IResource> entry : mResources.entries()) {
-				IResource resource = entry.value;
+		// Skip removing bound resource for level
+		if (!(removedResource instanceof Level)) {
 
-				if (isResourceBoundIn(resource, resourceId)) {
-					if (invoker != null) {
-						invoker.execute(new CResourceBoundRemove(resource, removedResource), true);
-					} else {
-						boolean success = resource.removeBoundResource(removedResource);
+			// Find all other resources that uses the removed resource
+			// Unbind/Remove the removed resource from those
+			if (removedResource != null) {
+				Invoker invoker = SceneSwitcher.getInvoker();
+				for (ObjectMap.Entry<UUID, IResource> entry : mResources.entries()) {
+					IResource resource = entry.value;
 
-						if (!success) {
-							Gdx.app.error("ResourceBinder", "Failed to remove bound resource: " + removedResource.toString() + ", from: " + resource.toString());
+					if (isResourceBoundIn(resource, resourceId)) {
+						if (invoker != null) {
+							invoker.execute(new CResourceBoundRemove(resource, removedResource), true);
+						} else {
+							boolean success = resource.removeBoundResource(removedResource);
+
+							if (!success) {
+								Gdx.app.error("ResourceBinder", "Failed to remove bound resource: " + removedResource.toString() + ", from: " + resource.toString());
+							}
 						}
 					}
 				}
@@ -116,6 +121,41 @@ public class ResourceBinder implements Json.Serializable {
 					Gdx.app.error("ResourceBinder", "Could not find resource for " + resource.toString() + ", dependency: " + dependencyId);
 				}
 			}
+		}
+	}
+
+	/**
+	 * Replaces the specified resource with another one. This will update all
+	 * resources that uses the old resource to use the new resource instead.
+	 * @param oldId old resource id to be replaced
+	 * @param newResource the new resource that replaces the old resource
+	 */
+	public void replaceResource(UUID oldId, IResource newResource) {
+		// Remove and add resource
+		IResource removedResource = mResources.remove(oldId);
+		mResources.put(newResource.getId(), newResource);
+
+		// Find dependencies of the old, and replace them to use the new one
+		if (removedResource != null) {
+			for (ObjectMap.Entry<UUID, IResource> entry : mResources.entries()) {
+				IResource resource = entry.value;
+
+				if (isResourceBoundIn(resource, oldId)) {
+					boolean removedSuccess = resource.removeBoundResource(removedResource);
+
+					if (removedSuccess) {
+						boolean addedSuccess = resource.addBoundResource(newResource);
+
+						if (!addedSuccess) {
+							Gdx.app.error("ResourceBinder", "Failed to replace resource, could not add the resource " + newResource.toString());
+						}
+					} else {
+						Gdx.app.error("ResourceBinder", "Failed to replace resource, could not remove bound resource " + newResource.toString());
+					}
+				}
+			}
+		} else {
+			Gdx.app.error("ResourceBinder", "Failed to replace resource, did not find resource to replace");
 		}
 	}
 
