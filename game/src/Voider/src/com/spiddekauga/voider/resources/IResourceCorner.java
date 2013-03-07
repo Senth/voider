@@ -1,9 +1,8 @@
-package com.spiddekauga.voider.game;
+package com.spiddekauga.voider.resources;
 
 import java.util.ArrayList;
 
 import com.badlogic.gdx.math.Vector2;
-import com.spiddekauga.voider.resources.IResource;
 
 /**
  * Common interface for resources with corners (custom vertices)

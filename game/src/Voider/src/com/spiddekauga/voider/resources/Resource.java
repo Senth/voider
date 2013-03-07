@@ -77,6 +77,33 @@ public abstract class Resource implements IResource, Json.Serializable {
 	}
 
 	@Override
+	public void addChangeListener(IResourceChangeListener listener) {
+		if (mListeners == null) {
+			mListeners = new ArrayList<IResourceChangeListener>();
+		}
+		mListeners.add(listener);
+	}
+
+	@Override
+	public void removeChangeListener(IResourceChangeListener listener) {
+		if (mListeners != null) {
+			mListeners.remove(listener);
+		}
+	}
+
+	/**
+	 * Sends an change event to the listeners
+	 * @param type what was changed?
+	 */
+	protected void sendChangeEvent(IResourceChangeListener.EventTypes type) {
+		if (mListeners != null) {
+			for (IResourceChangeListener listener : mListeners) {
+				listener.onResourceChanged(this, type);
+			}
+		}
+	}
+
+	@Override
 	public void write(Json json) {
 		json.writeValue("REVISION", Config.REVISION);
 		json.writeValue("mUniqueId", mUniqueId);
@@ -89,4 +116,6 @@ public abstract class Resource implements IResource, Json.Serializable {
 
 	/** Unique id of the resource */
 	protected UUID mUniqueId = null;
+	/** Listeners of the resource */
+	private ArrayList<IResourceChangeListener> mListeners = null;
 }

@@ -130,7 +130,7 @@ public class EnemyGroup extends Resource {
 
 	@Override
 	public boolean bindReference(IResource resource) {
-		boolean success = bindReference(resource);
+		boolean success = super.bindReference(resource);
 
 		int foundIndex = Collections.linearSearch(mEnemyIds, resource.getId());
 

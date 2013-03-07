@@ -19,6 +19,9 @@ import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.editor.HitWrapper;
 import com.spiddekauga.voider.game.actors.ActorFilterCategories;
 import com.spiddekauga.voider.game.actors.EnemyActor;
+import com.spiddekauga.voider.resources.IResourceBody;
+import com.spiddekauga.voider.resources.IResourceCorner;
+import com.spiddekauga.voider.resources.IResourcePosition;
 import com.spiddekauga.voider.resources.Resource;
 import com.spiddekauga.voider.utils.Vector2Pool;
 

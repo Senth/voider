@@ -23,15 +23,17 @@ import com.spiddekauga.utils.Json;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Editor;
 import com.spiddekauga.voider.editor.HitWrapper;
-import com.spiddekauga.voider.game.IResourceBody;
-import com.spiddekauga.voider.game.IResourcePosition;
-import com.spiddekauga.voider.game.IResourceUpdate;
 import com.spiddekauga.voider.game.triggers.ITriggerListener;
 import com.spiddekauga.voider.game.triggers.Trigger;
 import com.spiddekauga.voider.game.triggers.TriggerAction;
 import com.spiddekauga.voider.game.triggers.TriggerAction.Actions;
 import com.spiddekauga.voider.game.triggers.TriggerInfo;
 import com.spiddekauga.voider.resources.IResource;
+import com.spiddekauga.voider.resources.IResourceBody;
+import com.spiddekauga.voider.resources.IResourceChangeListener.EventTypes;
+import com.spiddekauga.voider.resources.IResourceEditorUpdate;
+import com.spiddekauga.voider.resources.IResourcePosition;
+import com.spiddekauga.voider.resources.IResourceUpdate;
 import com.spiddekauga.voider.resources.Resource;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.UndefinedResourceTypeException;
@@ -43,7 +45,7 @@ import com.spiddekauga.voider.utils.Vector2Pool;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public abstract class Actor extends Resource implements IResourceUpdate, Json.Serializable, Disposable, Poolable, IResourceBody, IResourcePosition, ITriggerListener {
+public abstract class Actor extends Resource implements IResourceUpdate, Json.Serializable, Disposable, Poolable, IResourceBody, IResourcePosition, ITriggerListener, IResourceEditorUpdate {
 	/**
 	 * Sets the texture of the actor including the actor definition.
 	 * Automatically creates a body for the actor.
@@ -82,6 +84,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	 * Updates the actor's body positio, fixture sizes, fixture shapes etc. if they
 	 * have been changed since the actor was created.
 	 */
+	@Override
 	public void editorUpdate() {
 		if (mEditorActive && mBody != null) {
 			// Do we need to reload the body?
@@ -147,7 +150,6 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 				triggerInfo.trigger = trigger;
 				trigger.addListener(triggerInfo);
 				success = true;
-				break;
 			}
 		}
 
@@ -388,16 +390,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 
 	@Override
 	public void setPosition(Vector2 position) {
-		setPosition(position.x, position.y);
-	}
-
-	/**
-	 * Sets the position of the actor
-	 * @param x x-coordinate of new position
-	 * @param y y-coordinate of new position
-	 */
-	public void setPosition(float x, float y) {
-		mPosition.set(x, y);
+		mPosition.set(position);
 
 		// Change body if exist
 		if (mBody != null) {
@@ -413,6 +406,8 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 			destroyBodyCorners();
 			createBodyCorners();
 		}
+
+		sendChangeEvent(EventTypes.POSITION);
 	}
 
 	@Override

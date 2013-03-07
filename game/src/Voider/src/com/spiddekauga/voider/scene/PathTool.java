@@ -22,11 +22,11 @@ import com.spiddekauga.voider.editor.commands.CResourceCornerRemoveAll;
 import com.spiddekauga.voider.editor.commands.CResourceMove;
 import com.spiddekauga.voider.editor.commands.CResourceRemove;
 import com.spiddekauga.voider.editor.commands.CResourceSelect;
-import com.spiddekauga.voider.game.IResourceCorner.PolygonComplexException;
-import com.spiddekauga.voider.game.IResourceCorner.PolygonCornerTooCloseException;
 import com.spiddekauga.voider.game.Path;
 import com.spiddekauga.voider.game.actors.EnemyActor;
 import com.spiddekauga.voider.resources.IResource;
+import com.spiddekauga.voider.resources.IResourceCorner.PolygonComplexException;
+import com.spiddekauga.voider.resources.IResourceCorner.PolygonCornerTooCloseException;
 import com.spiddekauga.voider.utils.Vector2Pool;
 
 /**

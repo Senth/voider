@@ -81,6 +81,10 @@ public abstract class GuiHider {
 	protected void hideAll() {
 		for (Actor toggleActor : mToggles) {
 			toggleActor.setVisible(false);
+
+			if (toggleActor instanceof Layout) {
+				((Layout) toggleActor).invalidateHierarchy();
+			}
 		}
 
 		for (GuiHider hideListener : mChildren) {

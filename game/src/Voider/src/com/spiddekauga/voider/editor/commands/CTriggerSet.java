@@ -2,7 +2,7 @@ package com.spiddekauga.voider.editor.commands;
 
 import java.util.ArrayList;
 
-import com.spiddekauga.utils.Command;
+import com.spiddekauga.voider.editor.IResourceChangeEditor;
 import com.spiddekauga.voider.game.triggers.ITriggerListener;
 import com.spiddekauga.voider.game.triggers.Trigger;
 import com.spiddekauga.voider.game.triggers.TriggerAction;
@@ -13,7 +13,7 @@ import com.spiddekauga.voider.game.triggers.TriggerInfo;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class CTriggerSet extends Command {
+public class CTriggerSet extends CResourceChange {
 	/**
 	 * Creates a command that will set, add, or remove the specified trigger
 	 * for the listener.
@@ -22,8 +22,10 @@ public class CTriggerSet extends Command {
 	 * an action of the specified type it will create the trigger.
 	 * @param trigger the trigger to bind, if null it will remove any trigger
 	 * with the specified action.
+	 * @param editor the editor to recieve the onChanged event
 	 */
-	public CTriggerSet(ITriggerListener listener, TriggerAction.Actions action, Trigger trigger) {
+	public CTriggerSet(ITriggerListener listener, TriggerAction.Actions action, Trigger trigger, IResourceChangeEditor editor) {
+		super(listener, editor);
 		mNewTrigger = trigger;
 		mListener = listener;
 
@@ -77,6 +79,9 @@ public class CTriggerSet extends Command {
 				return false;
 			}
 		}
+
+		sendOnChange();
+
 		return true;
 	}
 
@@ -108,6 +113,9 @@ public class CTriggerSet extends Command {
 				return false;
 			}
 		}
+
+		sendOnChange();
+
 		return true;
 	}
 

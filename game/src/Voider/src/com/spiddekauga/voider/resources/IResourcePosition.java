@@ -1,7 +1,6 @@
-package com.spiddekauga.voider.game;
+package com.spiddekauga.voider.resources;
 
 import com.badlogic.gdx.math.Vector2;
-import com.spiddekauga.voider.resources.IResource;
 
 /**
  * If the resource has a position

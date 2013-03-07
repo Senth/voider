@@ -1109,7 +1109,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	 * Creates the enemy actor and resets its position
 	 */
 	private void createEnemyActor() {
-		mEnemyActor.setPosition(0, 0);
+		mEnemyActor.setPosition(new Vector2());
 		mEnemyActor.createBody();
 	}
 

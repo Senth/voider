@@ -14,6 +14,8 @@ import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.PlayerActor;
 import com.spiddekauga.voider.game.triggers.Trigger;
 import com.spiddekauga.voider.resources.IResource;
+import com.spiddekauga.voider.resources.IResourceEditorUpdate;
+import com.spiddekauga.voider.resources.IResourceUpdate;
 import com.spiddekauga.voider.resources.Resource;
 import com.spiddekauga.voider.resources.ResourceBinder;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
@@ -34,8 +36,6 @@ public class Level extends Resource implements Disposable {
 	public Level(LevelDef levelDef) {
 		mLevelDef = levelDef;
 		mUniqueId = levelDef.getLevelId();
-		mActors = new ArrayList<Actor>();
-		mPaths = new ArrayList<Path>();
 		mSpeed = mLevelDef.getBaseSpeed();
 		mCompletedLevel = false;
 
@@ -47,25 +47,6 @@ public class Level extends Resource implements Disposable {
 	 */
 	public boolean hasCompletedLevel() {
 		return mCompletedLevel;
-	}
-
-	/**
-	 * Binds all the triggers
-	 */
-	public void bindTriggers() {
-		//		ArrayList<ITriggerListener> triggerListeners = mResourceBinder.getResources(ITriggerListener.class);
-		//
-		//		for (ITriggerListener triggerListener : triggerListeners) {
-		//			for (TriggerInfo triggerInfo : triggerListener.getTriggerInfos()) {
-		//				Trigger trigger = mTriggers.get(triggerInfo.triggerId);
-		//
-		//				if (trigger != null) {
-		//					trigger.addListener(triggerInfo);
-		//				} else {
-		//					Gdx.app.error("Level", "Could not find trigger to bind with!");
-		//				}
-		//			}
-		//		}
 	}
 
 	/**
@@ -111,8 +92,8 @@ public class Level extends Resource implements Disposable {
 			}
 
 		} else {
-			for (Actor actor : mActors) {
-				actor.editorUpdate();
+			for (IResourceEditorUpdate resource : mResourceBinder.getResources(IResourceEditorUpdate.class)) {
+				resource.editorUpdate();
 			}
 		}
 	}
@@ -146,6 +127,17 @@ public class Level extends Resource implements Disposable {
 		level.mLevelDef = mLevelDef;
 
 		return level;
+	}
+
+	/**
+	 * To easily get all the resources of a specific type after they have
+	 * been read.
+	 * @param <ResourceType> type of resources to return
+	 * @param resourceType the resource type (including derived) to return
+	 * @return a list of resources that are instances of the specified type.
+	 */
+	public <ResourceType> ArrayList<ResourceType> getResources(Class<ResourceType> resourceType) {
+		return mResourceBinder.getResources(resourceType);
 	}
 
 	/**
@@ -184,11 +176,8 @@ public class Level extends Resource implements Disposable {
 	 * @param spriteBatch the SpriteBatch to use for rendering
 	 */
 	public void render(SpriteBatch spriteBatch) {
-		for (Actor actor : mActors) {
-			if (actor.getBody() != null) {
-				actor.render(spriteBatch);
-			}
-		}
+		// TODO IResourceRender for rendering resources
+
 		mPlayerActor.render(spriteBatch);
 	}
 
@@ -197,11 +186,7 @@ public class Level extends Resource implements Disposable {
 	 * @param spriteBatch the SpriteBatch to use for rendering
 	 */
 	public void renderEditor(SpriteBatch spriteBatch) {
-		for (Actor actor : mActors) {
-			if (actor.getBody() != null) {
-				actor.renderEditor(spriteBatch);
-			}
-		}
+		// TODO IResourceEditorRender for rendering resources in the editor
 	}
 
 	/**
@@ -213,8 +198,6 @@ public class Level extends Resource implements Disposable {
 
 		if (resource instanceof Actor) {
 			addActor((Actor) resource);
-		} else if (resource instanceof Path) {
-			mPaths.add((Path) resource);
 		}
 	}
 
@@ -226,9 +209,7 @@ public class Level extends Resource implements Disposable {
 		IResource removedResource = mResourceBinder.removeResource(resourceId);
 
 		if (removedResource instanceof Actor) {
-			removeActor(resourceId);
-		} else if (removedResource instanceof Path) {
-			mPaths.remove(removedResource);
+			removeActor((Actor) removedResource);
 		}
 	}
 
@@ -237,8 +218,6 @@ public class Level extends Resource implements Disposable {
 	 * @param actor the actor to add to the level
 	 */
 	private void addActor(Actor actor) {
-		mActors.add(actor);
-
 		// Add to dependency, if it doesn't load its own def
 		if (!actor.savesDef()) {
 			mLevelDef.addDependency(actor.getDef());
@@ -247,17 +226,9 @@ public class Level extends Resource implements Disposable {
 
 	/**
 	 * Removes an actor from the level
-	 * @param actorId the actor to remove
+	 * @param actor the actor to remove
 	 */
-	private void removeActor(UUID actorId) {
-		Actor actor = null;
-		for (int i = 0; i < mActors.size(); ++i) {
-			if (mActors.get(i).equals(actorId)) {
-				actor = mActors.remove(i);
-				break;
-			}
-		}
-
+	private void removeActor(Actor actor) {
 		if (actor != null) {
 			actor.destroyBody();
 
@@ -268,30 +239,6 @@ public class Level extends Resource implements Disposable {
 		} else {
 			Gdx.app.error("Level", "Could not find the actor to remove");
 		}
-	}
-
-	/**
-	 * Returns all paths, only applicable if an editor is active
-	 * @return all paths, null or empty if no editor is active
-	 */
-	public ArrayList<Path> getPaths() {
-		return mPaths;
-	}
-
-	/**
-	 * Checks if the actor exists inside this level
-	 * @param actor the actor check if it exist
-	 * @return true if this level contains the specified actor
-	 */
-	public boolean containsActor(Actor actor) {
-		return mActors.contains(actor);
-	}
-
-	/**
-	 * @return all actors in the level
-	 */
-	public ArrayList<Actor> getActors() {
-		return mActors;
 	}
 
 	@Override
@@ -336,14 +283,9 @@ public class Level extends Resource implements Disposable {
 		mSpeed = json.readValue("mSpeed", float.class, jsonData);
 		mCompletedLevel = json.readValue("mCompletedLevel", boolean.class, jsonData);
 
-		mActors = mResourceBinder.getResources(Actor.class);
 		ArrayList<Trigger> triggers = mResourceBinder.getResources(Trigger.class);
 		for (Trigger trigger : triggers) {
 			mTriggers.put(trigger.getId(), trigger);
-		}
-
-		if (Actor.isEditorActive()) {
-			mPaths = mResourceBinder.getResources(Path.class);
 		}
 
 		// Get the actual LevelDef
@@ -367,10 +309,6 @@ public class Level extends Resource implements Disposable {
 
 	/** Contains all the resources used in this level */
 	private ResourceBinder mResourceBinder = new ResourceBinder();
-	/** All actors in the level */
-	private ArrayList<Actor> mActors = null;
-	/** All paths, only used when editor is active */
-	private ArrayList<Path> mPaths = null;
 	/** All resources that needs updating */
 	private ArrayList<IResourceUpdate> mResourceUpdates = null;
 	/** All triggers */

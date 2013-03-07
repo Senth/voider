@@ -2,7 +2,7 @@ package com.spiddekauga.voider.editor.commands;
 
 import com.badlogic.gdx.math.Vector2;
 import com.spiddekauga.voider.editor.IResourceChangeEditor;
-import com.spiddekauga.voider.game.IResourceCorner;
+import com.spiddekauga.voider.resources.IResourceCorner;
 import com.spiddekauga.voider.utils.Vector2Pool;
 
 /**

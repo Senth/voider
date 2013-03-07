@@ -28,6 +28,7 @@ import com.spiddekauga.voider.game.actors.StaticTerrainActor;
 import com.spiddekauga.voider.game.triggers.TriggerAction.Actions;
 import com.spiddekauga.voider.game.triggers.TriggerInfo;
 import com.spiddekauga.voider.resources.IResource;
+import com.spiddekauga.voider.resources.IResourceBody;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceNames;
 import com.spiddekauga.voider.resources.ResourceSaver;
@@ -142,8 +143,7 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 		mCamera.update();
 		mScroller.stop();
 
-		createActorBodies();
-		createPathBodies();
+		createResourceBodies();
 
 		mInvoker.dispose();
 	}
@@ -375,6 +375,10 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 	@Override
 	public void onResourceChanged(IResource resource) {
 		mUnsaved = true;
+
+		if (resource instanceof EnemyActor) {
+			((LevelEditorGui)mGui).resetEnemyOptions();
+		}
 	}
 
 	@Override
@@ -432,6 +436,17 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 		if (mToolType != null) {
 			mInputMultiplexer.addProcessor(mTouchTools[mToolType.ordinal()]);
 			mTouchTools[mToolType.ordinal()].activate();
+
+			switch (mToolType) {
+			case ENEMY:
+				((LevelEditorGui)mGui).resetEnemyOptions();
+				break;
+
+
+			default:
+				// Does nothing
+				break;
+			}
 		}
 	}
 
@@ -555,7 +570,7 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 				}
 
 				// Set GUI delay value
-				((LevelEditorGui)mGui).setEnemyOptions(enemyGroup.getEnemyCount(), enemyGroup.getSpawnTriggerDelay());
+				((LevelEditorGui)mGui).resetEnemyOptions();
 			}
 		}
 	}
@@ -763,9 +778,8 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 	 * @return all paths in the current level
 	 */
 	public ArrayList<Path> getPaths() {
-		return mLevel.getPaths();
+		return mLevel.getResources(Path.class);
 	}
-
 
 	/**
 	 * Select pickup
@@ -949,47 +963,74 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 	}
 
 	/**
-	 * Creates actor bodies for the current level
+	 * Creates all the resource bodies for the current level
 	 */
-	private void createActorBodies() {
+	private void createResourceBodies() {
 		if (mLevel != null) {
 			// Only necessary if we loaded the level
 			if (ResourceCacheFacade.isLoaded(mLevel.getId(), Level.class)) {
-				ArrayList<Actor> actors = mLevel.getActors();
+				ArrayList<IResourceBody> resources = mLevel.getResources(IResourceBody.class);
 
-				for (Actor actor : actors) {
-					// Don't create bodies for enemy actors in a group and where
-					// they aren't the leader.
-					boolean createBody = true;
-					if (actor instanceof EnemyActor) {
-						if (((EnemyActor) actor).getEnemyGroup() != null && !((EnemyActor)actor).isGroupLeader()) {
-							createBody = false;
+				// Create all bodies except enemy actors in a group, only create the leader then.
+				for (IResourceBody resourceBody : resources) {
+					if (resourceBody instanceof EnemyActor) {
+						if (((EnemyActor) resourceBody).getEnemyGroup() == null || ((EnemyActor)resourceBody).isGroupLeader()) {
+							resourceBody.createBody();
 						}
 					}
-
-					if (createBody) {
-						actor.createBody();
+					else if (resourceBody instanceof Path) {
+						((Path) resourceBody).setWorld(mWorld);
+					}
+					else {
+						resourceBody.createBody();
 					}
 				}
 			}
 		}
 	}
 
-	/**
-	 * Creates all path bodies
-	 */
-	private void createPathBodies() {
-		if (mLevel != null) {
-			// Only necessary if we loaded the level
-			if (ResourceCacheFacade.isLoaded(mLevel.getId(), Level.class)) {
-				ArrayList<Path> paths = mLevel.getPaths();
-
-				for (Path path : paths) {
-					path.setWorld(mWorld);
-				}
-			}
-		}
-	}
+	//	/**
+	//	 * Creates actor bodies for the current level
+	//	 */
+	//	private void createActorBodies() {
+	//		if (mLevel != null) {
+	//			// Only necessary if we loaded the level
+	//			if (ResourceCacheFacade.isLoaded(mLevel.getId(), Level.class)) {
+	//				ArrayList<Actor> actors = mLevel.getActors();
+	//
+	//				for (Actor actor : actors) {
+	//					// Don't create bodies for enemy actors in a group and where
+	//					// they aren't the leader.
+	//					boolean createBody = true;
+	//					if (actor instanceof EnemyActor) {
+	//						if (((EnemyActor) actor).getEnemyGroup() != null && !((EnemyActor)actor).isGroupLeader()) {
+	//							createBody = false;
+	//						}
+	//					}
+	//
+	//					if (createBody) {
+	//						actor.createBody();
+	//					}
+	//				}
+	//			}
+	//		}
+	//	}
+	//
+	//	/**
+	//	 * Creates all path bodies
+	//	 */
+	//	private void createPathBodies() {
+	//		if (mLevel != null) {
+	//			// Only necessary if we loaded the level
+	//			if (ResourceCacheFacade.isLoaded(mLevel.getId(), Level.class)) {
+	//				ArrayList<Path> paths = mLevel.getPaths();
+	//
+	//				for (Path path : paths) {
+	//					path.setWorld(mWorld);
+	//				}
+	//			}
+	//		}
+	//	}
 
 	/**
 	 * Clears all the tools

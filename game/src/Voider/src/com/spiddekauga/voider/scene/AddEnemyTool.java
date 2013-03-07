@@ -158,7 +158,7 @@ public class AddEnemyTool extends AddActorTool {
 							action = Actions.ACTOR_DEACTIVATE;
 						}
 
-						mInvoker.execute(new CTriggerSet(mSelectedActor, action, (Trigger) hitObject));
+						mInvoker.execute(new CTriggerSet(mSelectedActor, action, (Trigger) hitObject, mLevelEditor));
 					}
 				}
 			}
@@ -172,7 +172,7 @@ public class AddEnemyTool extends AddActorTool {
 						action = Actions.ACTOR_DEACTIVATE;
 					}
 
-					mInvoker.execute(new CTriggerSet(mSelectedActor, action, null));
+					mInvoker.execute(new CTriggerSet(mSelectedActor, action, null, mLevelEditor));
 				}
 			}
 			break;
@@ -224,7 +224,7 @@ public class AddEnemyTool extends AddActorTool {
 					setSnapPosition(true, chained);
 				} else {
 					Vector2 newPosition = getNewMovePosition();
-					mMovingActor.setPosition(newPosition);
+					mInvoker.execute(new CResourceMove(mMovingActor, newPosition, mLevelEditor), chained);
 					Vector2Pool.free(newPosition);
 				}
 

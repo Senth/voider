@@ -1,6 +1,5 @@
-package com.spiddekauga.voider.game;
+package com.spiddekauga.voider.resources;
 
-import com.spiddekauga.voider.resources.IResource;
 
 /**
  * A Resource that has a body

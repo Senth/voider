@@ -1,4 +1,4 @@
-package com.spiddekauga.voider.game;
+package com.spiddekauga.voider.resources;
 
 /**
  * A resource that needs updating

@@ -9,17 +9,18 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.utils.OrderedMap;
 import com.spiddekauga.utils.Json;
-import com.spiddekauga.voider.game.IResourceBody;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.triggers.TriggerAction.Reasons;
 import com.spiddekauga.voider.resources.IResource;
+import com.spiddekauga.voider.resources.IResourceBody;
+import com.spiddekauga.voider.resources.IResourceChangeListener;
 
 /**
  * Triggered when an actor is activated, or otherwise active
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class TActorActivated extends Trigger implements IResourceBody {
+public class TActorActivated extends Trigger implements IResourceBody, IResourceChangeListener {
 	/**
 	 * Triggers when the actor is active (or activated)
 	 * @param actor the actor that shall be activate
@@ -27,6 +28,7 @@ public class TActorActivated extends Trigger implements IResourceBody {
 	public TActorActivated(Actor actor) {
 		mActor = actor;
 		mActorId = actor.getId();
+		setActorListener();
 	}
 
 	@Override
@@ -93,6 +95,7 @@ public class TActorActivated extends Trigger implements IResourceBody {
 		if (resource.equals(mActorId)) {
 			mActor = (Actor) resource;
 			success = true;
+			setActorListener();
 		}
 
 		return success;
@@ -105,6 +108,8 @@ public class TActorActivated extends Trigger implements IResourceBody {
 		if (boundResource instanceof Actor) {
 			mActor = (Actor)boundResource;
 			mActorId = mActor.getId();
+
+			setActorListener();
 		}
 
 		return success;
@@ -117,9 +122,20 @@ public class TActorActivated extends Trigger implements IResourceBody {
 		if (boundResource == mActor) {
 			mActor = null;
 			mActorId = null;
+
+			if (Actor.isEditorActive()) {
+				boundResource.removeChangeListener(this);
+			}
 		}
 
 		return success;
+	}
+
+	@Override
+	public void onResourceChanged(IResource resource, EventTypes type) {
+		if (resource == mActor && type == EventTypes.POSITION && mBody != null) {
+			mBody.setTransform(mActor.getPosition(), mActor.getBody().getAngle());
+		}
 	}
 
 	/**
@@ -127,6 +143,15 @@ public class TActorActivated extends Trigger implements IResourceBody {
 	 */
 	protected TActorActivated() {
 		// Does nothing
+	}
+
+	/**
+	 * Adds the listener if the editor is active
+	 */
+	private void setActorListener() {
+		if (Actor.isEditorActive()) {
+			mActor.addChangeListener(this);
+		}
 	}
 
 	/** Actor to check if it has been activated */

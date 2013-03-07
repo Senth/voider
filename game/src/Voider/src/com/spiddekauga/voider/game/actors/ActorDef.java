@@ -18,8 +18,8 @@ import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.utils.Json;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.Collectibles;
-import com.spiddekauga.voider.game.IResourceCorner;
 import com.spiddekauga.voider.resources.Def;
+import com.spiddekauga.voider.resources.IResourceCorner;
 import com.spiddekauga.voider.utils.Geometry;
 import com.spiddekauga.voider.utils.Vector2Pool;
 

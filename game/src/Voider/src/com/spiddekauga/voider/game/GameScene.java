@@ -63,9 +63,8 @@ public class GameScene extends WorldScene {
 	public void setLevel(Level level) {
 		mLevel = level;
 		mLevel.setPlayer(mPlayerActor);
-		mLevel.bindTriggers();
 
-		ArrayList<Actor> actors = mLevel.getActors();
+		ArrayList<Actor> actors = mLevel.getResources(Actor.class);
 		for (Actor actor : actors) {
 			actor.createBody();
 		}

@@ -2,8 +2,8 @@ package com.spiddekauga.voider.editor.commands;
 
 import com.spiddekauga.utils.Command;
 import com.spiddekauga.voider.editor.IResourceChangeEditor;
-import com.spiddekauga.voider.game.IResourceBody;
 import com.spiddekauga.voider.resources.IResource;
+import com.spiddekauga.voider.resources.IResourceBody;
 
 /**
  * Removes an resource from the specified resource editor

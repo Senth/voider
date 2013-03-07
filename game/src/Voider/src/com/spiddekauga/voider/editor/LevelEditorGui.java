@@ -227,18 +227,6 @@ class LevelEditorGui extends Gui {
 	}
 
 	/**
-	 * Set slider values for enemy count and delay
-	 * @param cEnemies number of enemies
-	 * @param delay the delay between enemies, if none is available set it to negative
-	 */
-	void setEnemyOptions(int cEnemies, float delay) {
-		mWidgets.enemy.cEnemies.setValue(cEnemies);
-		if (delay >= 0) {
-			mWidgets.enemy.betweenDelay.setValue(delay);
-		}
-	}
-
-	/**
 	 * Resets enemy option values
 	 */
 	void resetEnemyOptions() {
@@ -246,6 +234,13 @@ class LevelEditorGui extends Gui {
 			mHiders.enemyOptions.show();
 		} else {
 			mHiders.enemyOptions.hide();
+
+			// Current state is set active/deactive trigger, change to select instead
+			if (mLevelEditor.getEnemyState() == AddEnemyTool.States.SET_ACTIVATE_TRIGGER ||
+					mLevelEditor.getEnemyState() == AddEnemyTool.States.SET_DEACTIVATE_TRIGGER) {
+				mLevelEditor.setEnemyState(AddEnemyTool.States.SELECT);
+			}
+
 			return;
 		}
 
@@ -256,6 +251,7 @@ class LevelEditorGui extends Gui {
 		if (mLevelEditor.getEnemySpawnDelay() >= 0 &&  mLevelEditor.getEnemySpawnDelay() != mWidgets.enemy.betweenDelay.getValue()) {
 			mInvoker.execute(new CGuiSlider(mWidgets.enemy.betweenDelay, mLevelEditor.getEnemySpawnDelay(), mWidgets.enemy.betweenDelay.getValue()), true);
 		}
+
 
 		// Has activate trigger -> Show trigger delay
 		if (mLevelEditor.hasSelectedEnemyActivateTrigger()) {
@@ -268,6 +264,7 @@ class LevelEditorGui extends Gui {
 		} else {
 			mHiders.enemyActivateDelay.hide();
 		}
+
 
 		// Can have deactivate trigger -> Show button
 		if (mLevelEditor.canSelectedEnemyUseDeactivateTrigger()) {
@@ -286,6 +283,11 @@ class LevelEditorGui extends Gui {
 			}
 		} else {
 			mHiders.enemyDeactive.hide();
+
+			// Current state is deactivate, change to select instead
+			if (mLevelEditor.getEnemyState() == AddEnemyTool.States.SET_DEACTIVATE_TRIGGER) {
+				mLevelEditor.setEnemyState(AddEnemyTool.States.SELECT);
+			}
 		}
 	}
 
@@ -559,11 +561,11 @@ class LevelEditorGui extends Gui {
 		// ---- Enemy ----
 		mEnemyTable.row();
 		GuiCheckCommandCreator enemyInnerMenu = new GuiCheckCommandCreator(mInvoker);
-		buttonGroup = new ButtonGroup();
+		ButtonGroup menuGroup = new ButtonGroup();
 		button = new TextButton("Select", toggleStyle);
 		mWidgets.enemy.select = button;
 		mHiders.enemy.addToggleActor(button);
-		buttonGroup.add(button);
+		menuGroup.add(button);
 		mEnemyTable.add(button);
 		button.addListener(enemyInnerMenu);
 		new CheckedListener(button) {
@@ -579,7 +581,7 @@ class LevelEditorGui extends Gui {
 		button = new TextButton("Add", toggleStyle);
 		mWidgets.enemy.add = button;
 		mHiders.enemy.addToggleActor(button);
-		buttonGroup.add(button);
+		menuGroup.add(button);
 		mEnemyTable.add(button);
 		button.addListener(enemyInnerMenu);
 		new CheckedListener(button) {
@@ -598,7 +600,7 @@ class LevelEditorGui extends Gui {
 		button = new TextButton("Remove", toggleStyle);
 		mWidgets.enemy.remove = button;
 		mHiders.enemy.addToggleActor(button);
-		buttonGroup.add(button);
+		menuGroup.add(button);
 		mEnemyTable.add(button);
 		button.addListener(enemyInnerMenu);
 		new CheckedListener(button) {
@@ -614,7 +616,7 @@ class LevelEditorGui extends Gui {
 		button = new TextButton("Move", toggleStyle);
 		mWidgets.enemy.move = button;
 		mHiders.enemy.addToggleActor(button);
-		buttonGroup.add(button);
+		menuGroup.add(button);
 		mEnemyTable.add(button);
 		button.addListener(enemyInnerMenu);
 		new CheckedListener(button) {
@@ -692,24 +694,18 @@ class LevelEditorGui extends Gui {
 		};
 
 		// Activate trigger
-		buttonGroup = new ButtonGroup();
-		buttonGroup.setMinCheckCount(0);
-		buttonGroup.setMaxCheckCount(1);
 		mEnemyTable.row();
 		button = new TextButton("Set activation trigger", toggleStyle);
-		buttonGroup.add(button);
+		menuGroup.add(button);
 		mHiders.enemyOptions.addToggleActor(button);
 		mWidgets.enemy.activateTrigger = button;
 		mEnemyTable.add(button);
 		new CheckedListener(button) {
 			@Override
 			protected void onChange(boolean checked) {
-				mInvoker.execute(new CGuiCheck(mButton, checked));
-
 				if (checked) {
 					mLevelEditor.setEnemyState(AddEnemyTool.States.SET_ACTIVATE_TRIGGER);
-				} else {
-					mLevelEditor.resetEnemyState();
+					mInvoker.execute(new CGuiCheck(mButton, true));
 				}
 			}
 		};
@@ -737,34 +733,31 @@ class LevelEditorGui extends Gui {
 		// Deactivate trigger
 		mEnemyTable.row();
 		button = new TextButton("Set deactivate trigger", toggleStyle);
-		buttonGroup.add(button);
+		menuGroup.add(button);
 		mHiders.enemyDeactive.addToggleActor(button);
 		mWidgets.enemy.deactivateTrigger = button;
 		mEnemyTable.add(button);
 		new CheckedListener(button) {
 			@Override
 			protected void onChange(boolean checked) {
-				mInvoker.execute(new CGuiCheck(mButton, checked));
-
 				if (checked) {
+					mInvoker.execute(new CGuiCheck(mButton, true));
 					mLevelEditor.setEnemyState(AddEnemyTool.States.SET_DEACTIVATE_TRIGGER);
-				} else {
-					mLevelEditor.resetEnemyState();
 				}
 			}
 		};
 
 		mEnemyTable.row();
 		label = new Label("Deactivation delay", labelStyle);
-		mHiders.enemyActivateDelay.addToggleActor(label);
+		mHiders.enemyDeactivateDelay.addToggleActor(label);
 
 		mEnemyTable.row();
 		slider = new Slider(Level.Enemy.TRIGGER_DEACTIVATE_DELAY_MIN, Level.Enemy.TRIGGER_DEACTIVATE_DELAY_MAX, Level.Enemy.TRIGGER_DEACTIVATE_DELAY_STEP_SIZE, false, sliderStyle);
-		mHiders.enemyActivateDelay.addToggleActor(slider);
+		mHiders.enemyDeactivateDelay.addToggleActor(slider);
 		mWidgets.enemy.deactivateDelay = slider;
 		mEnemyTable.add(slider);
 		textField = new TextField("", textFieldStyle);
-		mHiders.enemyActivateDelay.addToggleActor(textField);
+		mHiders.enemyDeactivateDelay.addToggleActor(textField);
 		textField.setWidth(Config.Editor.TEXT_FIELD_NUMBER_WIDTH);
 		mEnemyTable.add(textField);
 		new SliderListener(slider, textField, mInvoker) {

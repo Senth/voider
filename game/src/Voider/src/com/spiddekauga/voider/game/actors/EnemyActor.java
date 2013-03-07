@@ -119,7 +119,7 @@ public class EnemyActor extends Actor {
 
 		// Set position of other actors in the group
 		if (mGroupLeader && mGroup != null) {
-
+			mGroup.setPosition(position);
 		}
 	}
 

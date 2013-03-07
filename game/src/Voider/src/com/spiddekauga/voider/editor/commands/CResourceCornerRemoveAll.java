@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.spiddekauga.voider.editor.IResourceChangeEditor;
-import com.spiddekauga.voider.game.IResourceCorner;
+import com.spiddekauga.voider.resources.IResourceCorner;
 
 /**
  * Removes all the corners from the specified resource

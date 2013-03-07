@@ -6,7 +6,7 @@ import java.util.UUID;
 
 import com.badlogic.gdx.utils.OrderedMap;
 import com.spiddekauga.utils.Json;
-import com.spiddekauga.voider.game.IResourceUpdate;
+import com.spiddekauga.voider.resources.IResourceUpdate;
 import com.spiddekauga.voider.resources.Resource;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 
@@ -54,14 +54,6 @@ public abstract class Trigger extends Resource implements IResourceUpdate {
 			}
 		}
 	}
-
-	//	@Override
-	//	public void getReferences(ArrayList<UUID> references) {
-	//		super.getReferences(references);
-	//		for (TriggerInfo triggerListenerInfo : mListeners) {
-	//			references.add(triggerListenerInfo.listener.getId());
-	//		}
-	//	}
 
 	/**
 	 * Checks if the trigger has triggered all listeners. You can safetly remove
