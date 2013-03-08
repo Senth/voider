@@ -1,17 +1,13 @@
 package com.spiddekauga.voider.editor.commands;
 
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
-import com.spiddekauga.utils.Command;
-import com.spiddekauga.voider.Config;
 
 /**
- * A command that checks a GUI element. Undo will uncheck it, and if
- * it belongs to a group it will check the other actor that was
- * unchecked by this command
+ * A command that checks a GUI element. Undo will uncheck it.
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class CGuiCheck extends Command {
+public class CGuiCheck extends CGui {
 	/**
 	 * Creates a command that checks/unchecks a button.
 	 * @param button the button to check/uncheck
@@ -39,11 +35,10 @@ public class CGuiCheck extends Command {
 	public boolean execute() {
 		// Set temporary name, this will make sure the event doesn't fire
 		// another CGuiCheck command.
-		String oldName = mCheckOnExecute.getName();
-		if (!Config.Editor.GUI_INVOKER_TEMP_NAME.equals(oldName)) {
-			mCheckOnExecute.setName(Config.Editor.GUI_INVOKER_TEMP_NAME);
+		boolean success = setTemporaryName(mCheckOnExecute);
+		if (success) {
 			mCheckOnExecute.setChecked(mCheck);
-			mCheckOnExecute.setName(oldName);
+			setOriginalName(mCheckOnExecute);
 			return true;
 		} else {
 			return false;
@@ -54,17 +49,17 @@ public class CGuiCheck extends Command {
 	public boolean undo() {
 		// Set temporary name, this will make sure the event doesn't fire
 		// another CGuiCheck command.
+		Button buttonToCheck = null;
 		if (mCheckOnUndo != null) {
-			String oldName = mCheckOnUndo.getName();
-			mCheckOnUndo.setName(Config.Editor.GUI_INVOKER_TEMP_NAME);
-			mCheckOnUndo.setChecked(true);
-			mCheckOnUndo.setName(oldName);
+			buttonToCheck = mCheckOnUndo;
+
 		} else {
-			String oldName = mCheckOnExecute.getName();
-			mCheckOnExecute.setName(Config.Editor.GUI_INVOKER_TEMP_NAME);
-			mCheckOnExecute.setChecked(!mCheck);
-			mCheckOnExecute.setName(oldName);
+			buttonToCheck = mCheckOnExecute;
 		}
+
+		setTemporaryName(buttonToCheck);
+		buttonToCheck.setChecked(true);
+		setOriginalName(buttonToCheck);
 
 		return true;
 	}

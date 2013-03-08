@@ -391,8 +391,6 @@ public class Config {
 
 		/** Select definition scene, maximum width of definition */
 		public static float SELECT_DEF_WIDTH_MAX = 200;
-		/** Temporary GUI name when using an invoker */
-		public static String GUI_INVOKER_TEMP_NAME = "invoker";
 		/** Text field size for numbers */
 		public final static float TEXT_FIELD_NUMBER_WIDTH = 70;
 		/** Label padding in front of a slider */
@@ -453,6 +451,16 @@ public class Config {
 		public final static float HEIGHT = 480;
 		/** World scaling factor */
 		public final static float WORLD_SCALE = 0.1f;
+	}
+
+	/**
+	 * Some GUI options
+	 */
+	public static class Gui {
+		/** Temporary GUI name when using an invoker */
+		public static String GUI_INVOKER_TEMP_NAME = "invoker";
+		/** Seconds before text field commands aren't combinable */
+		public static float TEXT_FIELD_COMBINABLE_WITHIN = 1;
 	}
 
 	/**

@@ -157,7 +157,7 @@ public abstract class ActorGui extends Gui {
 		TextField textField = new TextField("", textFieldStyle);
 		mOptionTable.add(textField).setFillWidth(true);
 		mWidgets.option.name = textField;
-		new TextFieldListener(textField, "Name") {
+		new TextFieldListener(textField, "Name", mInvoker) {
 			@Override
 			protected void onChange(String newText) {
 				mActorEditor.setName(newText);
@@ -172,7 +172,7 @@ public abstract class ActorGui extends Gui {
 		textField = new TextField("shit", textFieldStyle);
 		mOptionTable.add(textField).setFillWidth(true).setFillHeight(true);
 		mWidgets.option.description = textField;
-		new TextFieldListener(textField, "Write your description here...") {
+		new TextFieldListener(textField, "Write your description here...", mInvoker) {
 			@Override
 			protected void onChange(String newText) {
 				mActorEditor.setDescription(newText);

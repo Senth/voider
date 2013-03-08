@@ -1,7 +1,6 @@
 package com.spiddekauga.voider.editor.commands;
 
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
-import com.spiddekauga.utils.Command;
 import com.spiddekauga.utils.ICommandCombinable;
 
 /**
@@ -9,7 +8,7 @@ import com.spiddekauga.utils.ICommandCombinable;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class CGuiSlider extends Command implements ICommandCombinable {
+public class CGuiSlider extends CGui implements ICommandCombinable {
 	/**
 	 * Creates a slider command that will change the value of the slider
 	 * @param slider the slider to change the value of
@@ -41,13 +40,10 @@ public class CGuiSlider extends Command implements ICommandCombinable {
 
 	@Override
 	public boolean execute() {
-		if (mSlider.getName() == null || !mSlider.getName().equals(TEMP_NAME)) {
-			mName = mSlider.getName();
-			mSlider.setName(TEMP_NAME);
-
+		boolean success = setTemporaryName(mSlider);
+		if (success) {
 			mSlider.setValue(mNewValue);
-
-			mSlider.setName(mName);
+			setOriginalName(mSlider);
 			return true;
 		} else {
 			return false;
@@ -56,22 +52,16 @@ public class CGuiSlider extends Command implements ICommandCombinable {
 
 	@Override
 	public boolean undo() {
-		mName = mSlider.getName();
-		mSlider.setName(TEMP_NAME);
+		setTemporaryName(mSlider);
 		mSlider.setValue(mOldValue);
-		mSlider.setName(mName);
+		setOriginalName(mSlider);
 		return true;
 	}
 
-	/** Old slider name */
-	private String mName = null;
 	/** Slider to change the value on */
 	private Slider mSlider;
 	/** New value of the slider (on execute) */
 	private float mNewValue;
 	/** Old value of the slider (on undo) */
 	private float mOldValue;
-
-	/** Temporary slider name to avoid executing again */
-	private static final String TEMP_NAME = "C_GUI_SLIDER";
 }

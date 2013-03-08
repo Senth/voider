@@ -3,9 +3,9 @@ package com.spiddekauga.voider.editor;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.math.Vector2;
 import com.spiddekauga.utils.Invoker;
+import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.voider.game.Weapon;
 import com.spiddekauga.voider.game.WeaponDef;
 import com.spiddekauga.voider.game.actors.Actor;
@@ -98,15 +98,11 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 	 */
 	@Override
 	public boolean keyDown(int keycode) {
-		// Redo - Ctrl + Shift + Z || Ctrl + Y
-		if ((keycode == Keys.Z && (Gdx.input.isKeyPressed(Keys.CONTROL_LEFT) || Gdx.input.isKeyPressed(Keys.CONTROL_RIGHT)) && (Gdx.input.isKeyPressed(Keys.SHIFT_LEFT) || Gdx.input.isKeyPressed(Keys.SHIFT_RIGHT))) ||
-				(keycode == Keys.Y && (Gdx.input.isKeyPressed(Keys.CONTROL_LEFT) || Gdx.input.isKeyPressed(Keys.CONTROL_RIGHT)))) {
+		if (KeyHelper.isRedoPressed(keycode)) {
 			redo();
 			return true;
 		}
-
-		// Undo - Ctrl + Z
-		if (keycode == Keys.Z && (Gdx.input.isKeyPressed(Keys.CONTROL_LEFT) || Gdx.input.isKeyPressed(Keys.CONTROL_RIGHT))) {
+		else if (KeyHelper.isUndoPressed(keycode)) {
 			undo();
 			return true;
 		}

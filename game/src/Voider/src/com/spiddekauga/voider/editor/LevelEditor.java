@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.math.Vector2;
 import com.spiddekauga.utils.Invoker;
+import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.utils.Scroller;
 import com.spiddekauga.utils.Scroller.ScrollAxis;
 import com.spiddekauga.voider.Config;
@@ -404,15 +404,11 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 	 */
 	@Override
 	public boolean keyDown(int keycode) {
-		// Redo - Ctrl + Shift + Z || Ctrl + Y
-		if ((keycode == Keys.Z && (Gdx.input.isKeyPressed(Keys.CONTROL_LEFT) || Gdx.input.isKeyPressed(Keys.CONTROL_RIGHT)) && (Gdx.input.isKeyPressed(Keys.SHIFT_LEFT) || Gdx.input.isKeyPressed(Keys.SHIFT_RIGHT))) ||
-				(keycode == Keys.Y && (Gdx.input.isKeyPressed(Keys.CONTROL_LEFT) || Gdx.input.isKeyPressed(Keys.CONTROL_RIGHT)))) {
+		if (KeyHelper.isRedoPressed(keycode)) {
 			mInvoker.redo();
 			return true;
 		}
-
-		// Undo - Ctrl + Z
-		if (keycode == Keys.Z && (Gdx.input.isKeyPressed(Keys.CONTROL_LEFT) || Gdx.input.isKeyPressed(Keys.CONTROL_RIGHT))) {
+		else if (KeyHelper.isUndoPressed(keycode)) {
 			mInvoker.undo();
 			return true;
 		}

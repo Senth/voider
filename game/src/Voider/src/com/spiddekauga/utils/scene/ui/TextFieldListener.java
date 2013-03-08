@@ -1,5 +1,6 @@
 package com.spiddekauga.utils.scene.ui;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
@@ -7,6 +8,10 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.FocusListener.FocusEvent;
 import com.badlogic.gdx.scenes.scene2d.utils.FocusListener.FocusEvent.Type;
+import com.spiddekauga.utils.Invoker;
+import com.spiddekauga.utils.KeyHelper;
+import com.spiddekauga.voider.Config.Gui;
+import com.spiddekauga.voider.editor.commands.CGuiTextField;
 
 /**
  * Listens to a text field. When a value has been changed #onChange() is called
@@ -20,12 +25,14 @@ public class TextFieldListener implements EventListener {
 	 * @param textField the text field to listen to.
 	 * @param defaultText if not set as null it will display this text in the text field
 	 * whenever the field is empty and not focused.
+	 * @param invoker used for undoing commands, set to null to skip
 	 */
-	public TextFieldListener(TextField textField, String defaultText) {
+	public TextFieldListener(TextField textField, String defaultText, Invoker invoker) {
 		mTextField = textField;
 		mDefaultText = defaultText;
+		mInvoker = invoker;
 
-		mOldText = mTextField.getText();
+		mPrevKeystrokeText = mTextField.getText();
 
 		if (mDefaultText != null && isTextFieldEmpty()) {
 			mTextField.setText(mDefaultText);
@@ -63,11 +70,50 @@ public class TextFieldListener implements EventListener {
 						inputEvent.getKeyCode() == Keys.BACK) {
 					mTextField.getStage().setKeyboardFocus(null);
 				}
+				// Erase previous word
+				else if (inputEvent.getKeyCode() == Keys.BACKSPACE) {
+					if (Gdx.input.isKeyPressed(Keys.CONTROL_LEFT) || Gdx.input.isKeyPressed(Keys.CONTROL_RIGHT)) {
+						String text = mTextField.getText();
+						int removedCharacters = text.length();
+						text = text.trim();
+
+						int index = text.lastIndexOf(' ');
+
+						if (index != -1) {
+							text = text.substring(0, index + 2);
+							removedCharacters -= index + 2;
+						} else {
+							text = "";
+						}
+
+						int cursorPosition = mTextField.getCursorPosition();
+						mTextField.setText(text);
+						mTextField.setCursorPosition(cursorPosition - removedCharacters);
+					}
+				}
+				// Redo
+				else if (KeyHelper.isRedoPressed(inputEvent.getKeyCode())) {
+					if (mInvoker != null) {
+						mInvoker.redo();
+					}
+				}
+				// Undo
+				else if (KeyHelper.isUndoPressed(inputEvent.getKeyCode())) {
+					if (mInvoker != null) {
+						mInvoker.undo();
+					}
+				}
+
+				// This needs to be here as there is no ChangeEvent in TextField
+				// Thus if the text is change manually through setText(...) this
+				// will catch that change.
+				mPrevKeystrokeText = mTextField.getText();
 			}
-			if (inputEvent.getType() == InputEvent.Type.keyTyped) {
-				if (!mTextField.getText().equals(mOldText)){
+			else if (inputEvent.getType() == InputEvent.Type.keyTyped) {
+				if (!mTextField.getText().equals(mPrevKeystrokeText)){
 					onChange(mTextField.getText());
-					mOldText = mTextField.getText();
+					sendCommand();
+					mPrevKeystrokeText = mTextField.getText();
 				}
 			}
 		}
@@ -108,11 +154,26 @@ public class TextFieldListener implements EventListener {
 		return mTextField.getText().equals(mDefaultText);
 	}
 
+	/**
+	 * Sends an invoker command so the field can be undone
+	 */
+	private void sendCommand() {
+		if (mInvoker != null) {
+			// Execute text field command if it wasn't a command that changed the
+			// text in the first place
+			if (!Gui.GUI_INVOKER_TEMP_NAME.equals(mTextField.getName())) {
+				mInvoker.execute(new CGuiTextField(mTextField, mPrevKeystrokeText, mTextField.getText()));
+			}
+		}
+	}
+
 	/** Text field of the text field listener */
-	protected TextField mTextField = null;
+	protected TextField mTextField;
 
 	/** Default text for the text field when it's empty */
-	private String mDefaultText = null;
-	/** Old text */
-	private String mOldText;
+	private String mDefaultText;
+	/** Old text before previous keystroke */
+	private String mPrevKeystrokeText;
+	/** Used for undoing commands */
+	private Invoker mInvoker;
 }

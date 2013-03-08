@@ -5,7 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.spiddekauga.utils.Invoker;
-import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.Config.Gui;
 import com.spiddekauga.voider.editor.commands.CGuiCheck;
 
 /**
@@ -52,7 +52,7 @@ public class GuiCheckCommandCreator implements EventListener {
 		mCheckedLast = checkedButton;
 		if (oldChecked != null) {
 			// Don't send a command if the invoker checked the button
-			if (checkedButton.getName() == null || !checkedButton.getName().equals(Config.Editor.GUI_INVOKER_TEMP_NAME)) {
+			if (checkedButton.getName() == null || !checkedButton.getName().equals(Gui.GUI_INVOKER_TEMP_NAME)) {
 				mInvoker.execute(new CGuiCheck(mCheckedLast, oldChecked));
 			}
 		}

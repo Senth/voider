@@ -74,7 +74,7 @@ public class SelectDefGui extends Gui {
 		row.setFillWidth(true);
 		Cell cell = mMainTable.add(textField);
 		cell.setFillWidth(true);
-		new TextFieldListener(textField, "Filter") {
+		new TextFieldListener(textField, "Filter", null) {
 			@Override
 			protected void onChange(String newText) {
 				mSelectDefScene.setFilter(newText);

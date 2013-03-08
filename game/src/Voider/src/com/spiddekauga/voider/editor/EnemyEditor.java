@@ -58,6 +58,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 		setEnemyDef();
 		createExamplePaths();
 
+
 		((EnemyEditorGui)mGui).setEnemyEditor(this);
 
 		try {
@@ -113,6 +114,11 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 			scalePathLabels();
 
 			mActorSavedSinceLastEdit = true;
+
+			mEnemyActor.activate();
+			mEnemyPathBackAndForth.activate();
+			mEnemyPathLoop.activate();
+			mEnemyPathOnce.activate();
 		}
 		else if (outcome == Outcomes.DEF_SELECTED) {
 			switch (mSelectionAction) {
@@ -148,18 +154,19 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	@Override
 	public void update() {
 		super.update();
-		mPlayerActor.update(Gdx.graphics.getDeltaTime());
+		float deltaTime = Gdx.graphics.getDeltaTime();
+		mPlayerActor.update(deltaTime);
 
 		switch (mDef.getMovementType()) {
 		case AI:
 		case STATIONARY:
-			mEnemyActor.update(Gdx.graphics.getDeltaTime());
+			mEnemyActor.update(deltaTime);
 			break;
 
 		case PATH:
-			mEnemyPathLoop.update(Gdx.graphics.getDeltaTime());
-			mEnemyPathOnce.update(Gdx.graphics.getDeltaTime());
-			mEnemyPathBackAndForth.update(Gdx.graphics.getDeltaTime());
+			mEnemyPathLoop.update(deltaTime);
+			mEnemyPathOnce.update(deltaTime);
+			mEnemyPathBackAndForth.update(deltaTime);
 
 			// Reset Once enemy ever 4 seconds
 			if (mfEnemyOnceReachEnd != null) {

@@ -24,11 +24,11 @@ import com.spiddekauga.utils.scene.ui.CheckedListener;
 import com.spiddekauga.utils.scene.ui.HideListener;
 import com.spiddekauga.utils.scene.ui.Row;
 import com.spiddekauga.utils.scene.ui.SliderListener;
-import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Editor;
 import com.spiddekauga.voider.Config.Editor.Enemy;
 import com.spiddekauga.voider.Config.Editor.Enemy.Movement;
 import com.spiddekauga.voider.Config.Editor.Weapon;
+import com.spiddekauga.voider.Config.Gui;
 import com.spiddekauga.voider.editor.commands.CGuiCheck;
 import com.spiddekauga.voider.game.actors.ActorShapeTypes;
 import com.spiddekauga.voider.game.actors.EnemyActorDef.AimTypes;
@@ -318,7 +318,7 @@ public class EnemyEditorGui extends ActorGui {
 				}
 
 				// Send command for undo
-				if (mButton.getName() == null || !mButton.getName().equals(Config.Editor.GUI_INVOKER_TEMP_NAME)) {
+				if (mButton.getName() == null || !mButton.getName().equals(Gui.GUI_INVOKER_TEMP_NAME)) {
 					mInvoker.execute(new CGuiCheck(mButton, true));
 				}
 			}
@@ -333,7 +333,7 @@ public class EnemyEditorGui extends ActorGui {
 				}
 
 				// Send command for undo
-				if (mButton.getName() == null || !mButton.getName().equals(Config.Editor.GUI_INVOKER_TEMP_NAME)) {
+				if (mButton.getName() == null || !mButton.getName().equals(Gui.GUI_INVOKER_TEMP_NAME)) {
 					mInvoker.execute(new CGuiCheck(mButton, false));
 				}
 			}
@@ -415,7 +415,7 @@ public class EnemyEditorGui extends ActorGui {
 				}
 
 				// Send command for undo
-				if (mButton.getName() == null || !mButton.getName().equals(Config.Editor.GUI_INVOKER_TEMP_NAME)) {
+				if (mButton.getName() == null || !mButton.getName().equals(Gui.GUI_INVOKER_TEMP_NAME)) {
 					mInvoker.execute(new CGuiCheck(mButton, true));
 				}
 			}
@@ -429,7 +429,7 @@ public class EnemyEditorGui extends ActorGui {
 				}
 
 				// Send command for undo
-				if (mButton.getName() == null || !mButton.getName().equals(Config.Editor.GUI_INVOKER_TEMP_NAME)) {
+				if (mButton.getName() == null || !mButton.getName().equals(Gui.GUI_INVOKER_TEMP_NAME)) {
 					mInvoker.execute(new CGuiCheck(mButton, false));
 				}
 			}

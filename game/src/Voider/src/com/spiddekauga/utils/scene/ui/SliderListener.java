@@ -14,8 +14,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldFilter;
 import com.badlogic.gdx.scenes.scene2d.utils.FocusListener.FocusEvent;
 import com.spiddekauga.utils.CDelimiter;
 import com.spiddekauga.utils.Invoker;
+import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.utils.Maths;
-import com.spiddekauga.voider.Config.Editor;
+import com.spiddekauga.voider.Config.Gui;
 import com.spiddekauga.voider.editor.commands.CGuiSlider;
 
 /**
@@ -116,10 +117,29 @@ public abstract class SliderListener implements EventListener {
 				// Enter was pressed
 				else if (event instanceof InputEvent) {
 					InputEvent inputEvent = (InputEvent)event;
-					if (inputEvent.getType() == Type.keyDown && inputEvent.getKeyCode() == Input.Keys.ENTER) {
-						setTextFieldFromSlider();
-						return true;
+					if (inputEvent.getType() == Type.keyDown) {
+						// ESC, BACK, ENTER -> Unfocus
+						if (inputEvent.getKeyCode() == Input.Keys.ENTER ||
+								inputEvent.getKeyCode() == Input.Keys.ESCAPE ||
+								inputEvent.getKeyCode() == Input.Keys.BACK) {
+							setTextFieldFromSlider();
+							mTextField.getStage().setKeyboardFocus(null);
+							return true;
+						}
+						// Redo
+						else if (KeyHelper.isRedoPressed(inputEvent.getKeyCode())) {
+							if (mInvoker != null) {
+								mInvoker.redo();
+							}
+						}
+						// Undo
+						else if (KeyHelper.isUndoPressed(inputEvent.getKeyCode())) {
+							if (mInvoker != null) {
+								mInvoker.undo();
+							}
+						}
 					}
+
 				}
 				// Skip if text wasn't changed
 				else if (mOldText.equals(mTextField.getText())) {
@@ -156,7 +176,7 @@ public abstract class SliderListener implements EventListener {
 
 			// Execute slider command if not an invoker changed the slider's value
 			if (mInvoker != null) {
-				if (mSlider.getName() == null || !mSlider.getName().equals(Editor.GUI_INVOKER_TEMP_NAME)) {
+				if (!Gui.GUI_INVOKER_TEMP_NAME.equals(mSlider.getName())) {
 					mInvoker.execute(new CGuiSlider(mSlider, mSlider.getValue(), mOldValue));
 				}
 			}
@@ -172,8 +192,7 @@ public abstract class SliderListener implements EventListener {
 			if (mGreaterSlider != null && mGreaterSlider.getValue() < mSlider.getValue()) {
 				if (mInvoker != null) {
 					mInvoker.execute(new CGuiSlider(mGreaterSlider, mSlider.getValue(), mGreaterSlider.getValue()), true);
-				}
-				else {
+				} else {
 					mGreaterSlider.setValue(mSlider.getValue());
 				}
 			}

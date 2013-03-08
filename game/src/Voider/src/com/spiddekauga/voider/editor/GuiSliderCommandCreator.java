@@ -6,7 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent;
 import com.spiddekauga.utils.Invoker;
-import com.spiddekauga.voider.Config.Editor;
+import com.spiddekauga.voider.Config.Gui;
 
 /**
  * Listens to a slider and creates appropriate #CGuiSlider commands
@@ -47,7 +47,7 @@ public class GuiSliderCommandCreator implements EventListener {
 	 */
 	private void sendCommand(Slider slider) {
 		// Only create the command if it wasn't sent by an invoker
-		if (slider.getName() == null || !slider.getName().equals(Editor.GUI_INVOKER_TEMP_NAME)) {
+		if (slider.getName() == null || !slider.getName().equals(Gui.GUI_INVOKER_TEMP_NAME)) {
 		}
 	}
 
