@@ -321,7 +321,6 @@ class LevelEditorGui extends Gui {
 
 		ButtonGroup toggleGroup = new ButtonGroup();
 
-		mMenuTable.row();
 		Button button = new TextButton("New", textStyle);
 		button.addListener(new EventListener() {
 			@Override
@@ -355,7 +354,6 @@ class LevelEditorGui extends Gui {
 		});
 		mMenuTable.add(button);
 
-		mMenuTable.row();
 		button = new TextButton("Save", textStyle);
 		button.addListener(new EventListener() {
 			@Override
@@ -368,7 +366,6 @@ class LevelEditorGui extends Gui {
 		});
 		mMenuTable.add(button);
 
-		mMenuTable.row();
 		button = new TextButton("Load", textStyle);
 		button.addListener(new EventListener() {
 			@Override
@@ -402,7 +399,6 @@ class LevelEditorGui extends Gui {
 		});
 		mMenuTable.add(button);
 
-		mMenuTable.row();
 		button = new TextButton("Duplicate", textStyle);
 		button.addListener(new EventListener() {
 			@Override
@@ -436,7 +432,6 @@ class LevelEditorGui extends Gui {
 		});
 		mMenuTable.add(button);
 
-		mMenuTable.row();
 		button = new TextButton("Run", textStyle);
 		button.addListener(new EventListener() {
 			@Override
@@ -449,7 +444,6 @@ class LevelEditorGui extends Gui {
 		});
 		mMenuTable.add(button);
 
-		mMenuTable.row();
 		GuiCheckCommandCreator menuChecker = new GuiCheckCommandCreator(mInvoker);
 		button = new TextButton("Static Terrain", textToogleStyle);
 		mWidgets.menu.terrain = button;
@@ -466,7 +460,6 @@ class LevelEditorGui extends Gui {
 		toggleGroup.add(button);
 		mMenuTable.add(button);
 
-		mMenuTable.row();
 		button = new TextButton("Pickup", textToogleStyle);
 		mWidgets.menu.pickup = button;
 		button.addListener(menuChecker);
@@ -482,7 +475,6 @@ class LevelEditorGui extends Gui {
 		toggleGroup.add(button);
 		mMenuTable.add(button);
 
-		mMenuTable.row();
 		button = new TextButton("Enemy", textToogleStyle);
 		mWidgets.menu.enemy = button;
 		button.addListener(menuChecker);
@@ -529,7 +521,6 @@ class LevelEditorGui extends Gui {
 		};
 		mHiders.enemy.setButton(button);
 
-		mEnemyTable.row();
 		button = new TextButton("Path", toggleStyle);
 		mWidgets.enemyMenu.path = button;
 		buttonGroup.add(button);
@@ -543,7 +534,6 @@ class LevelEditorGui extends Gui {
 		};
 		mHiders.path.setButton(button);
 
-		mEnemyTable.row();
 		button = new TextButton("Trigger", toggleStyle);
 		mWidgets.enemyMenu.trigger = button;
 		buttonGroup.add(button);
@@ -577,7 +567,6 @@ class LevelEditorGui extends Gui {
 			}
 		};
 
-		mEnemyTable.row();
 		button = new TextButton("Add", toggleStyle);
 		mWidgets.enemy.add = button;
 		mHiders.enemy.addToggleActor(button);
@@ -596,7 +585,6 @@ class LevelEditorGui extends Gui {
 		mHiders.enemy.addChild(enemyAddHider);
 
 
-		mEnemyTable.row();
 		button = new TextButton("Remove", toggleStyle);
 		mWidgets.enemy.remove = button;
 		mHiders.enemy.addToggleActor(button);
@@ -612,7 +600,6 @@ class LevelEditorGui extends Gui {
 			}
 		};
 
-		mEnemyTable.row();
 		button = new TextButton("Move", toggleStyle);
 		mWidgets.enemy.move = button;
 		mHiders.enemy.addToggleActor(button);
@@ -794,7 +781,6 @@ class LevelEditorGui extends Gui {
 			}
 		};
 
-		mEnemyTable.row();
 		button = new TextButton("Add", toggleStyle);
 		mWidgets.path.add = button;
 		buttonGroup.add(button);
@@ -810,7 +796,6 @@ class LevelEditorGui extends Gui {
 			}
 		};
 
-		mEnemyTable.row();
 		button = new TextButton("Remove", toggleStyle);
 		mWidgets.path.remove = button;
 		buttonGroup.add(button);
@@ -826,7 +811,6 @@ class LevelEditorGui extends Gui {
 			}
 		};
 
-		mEnemyTable.row();
 		button = new TextButton("Move", toggleStyle);
 		mWidgets.path.move = button;
 		buttonGroup.add(button);
@@ -913,7 +897,6 @@ class LevelEditorGui extends Gui {
 		toggleGroup.add(button);
 		mPickupTable.add(button);
 
-		mPickupTable.row();
 		button = new TextButton("Remove", toggleStyle);
 		mWidgets.pickup.remove = button;
 		new CheckedListener(button) {
@@ -927,7 +910,6 @@ class LevelEditorGui extends Gui {
 		toggleGroup.add(button);
 		mPickupTable.add(button);
 
-		mPickupTable.row();
 		button = new TextButton("Move", toggleStyle);
 		mWidgets.pickup.move = button;
 		new CheckedListener(button) {
@@ -981,7 +963,6 @@ class LevelEditorGui extends Gui {
 		};
 		toggleGroup.add(button);
 		mStaticTerrainTable.add(button);
-		mStaticTerrainTable.row();
 
 		button = new TextButton("Remove", textStyle);
 		mWidgets.terrain.remove = button;
@@ -995,7 +976,6 @@ class LevelEditorGui extends Gui {
 		};
 		toggleGroup.add(button);
 		mStaticTerrainTable.add(button);
-		mStaticTerrainTable.row();
 
 		button = new TextButton("Move", textStyle);
 		mWidgets.terrain.move = button;
@@ -1022,7 +1002,7 @@ class LevelEditorGui extends Gui {
 		Skin skin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
 		TextButtonStyle toggleStyle = skin.get("toggle", TextButtonStyle.class);
 
-		// ---- PATH -----
+		// ---- Trigger -----
 		mEnemyTable.row();
 		GuiCheckCommandCreator triggerMenu = new GuiCheckCommandCreator(mInvoker);
 		ButtonGroup buttonGroup = new ButtonGroup();
@@ -1041,7 +1021,6 @@ class LevelEditorGui extends Gui {
 			}
 		};
 
-		mEnemyTable.row();
 		button = new TextButton("Add", toggleStyle);
 		mWidgets.trigger.add = button;
 		buttonGroup.add(button);
@@ -1057,7 +1036,6 @@ class LevelEditorGui extends Gui {
 			}
 		};
 
-		mEnemyTable.row();
 		button = new TextButton("Remove", toggleStyle);
 		mWidgets.trigger.remove = button;
 		buttonGroup.add(button);
@@ -1073,7 +1051,6 @@ class LevelEditorGui extends Gui {
 			}
 		};
 
-		mEnemyTable.row();
 		button = new TextButton("Move", toggleStyle);
 		mWidgets.trigger.move = button;
 		buttonGroup.add(button);
@@ -1097,8 +1074,9 @@ class LevelEditorGui extends Gui {
 	private void switchTool(AlignTable toolTable) {
 		mMainTable.clear();
 		toolTable.invalidate();
-		mMainTable.add(toolTable);
 		mMainTable.add(mMenuTable);
+		mMainTable.row();
+		mMainTable.add(toolTable);
 		mMainTable.invalidate();
 	}
 
