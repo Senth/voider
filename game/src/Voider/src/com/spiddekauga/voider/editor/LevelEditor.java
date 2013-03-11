@@ -348,7 +348,7 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 	@Override
 	public boolean touchDragged(int x, int y, int pointer) {
 		// Scrolling, move the map
-		if (mScroller.isScrolling() && pointer == 0) {
+		if (mScroller.isScrollingByHand() && pointer == 0) {
 			mScroller.touchDragged(x, y);
 			return true;
 		}
@@ -359,7 +359,7 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 	public boolean touchUp(int x, int y, int pointer, int button) {
 
 		// Not scrolling any more
-		if (mScroller.isScrolling() && (button == 2 || !Gdx.app.getInput().isTouched(0) || !Gdx.app.getInput().isTouched(1))) {
+		if (mScroller.isScrollingByHand() && (button == 2 || !Gdx.app.getInput().isTouched(0) || !Gdx.app.getInput().isTouched(1))) {
 			mScroller.touchUp(x, y);
 			return true;
 		}

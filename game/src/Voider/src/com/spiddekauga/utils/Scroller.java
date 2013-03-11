@@ -163,10 +163,24 @@ public class Scroller {
 	}
 
 	/**
-	 * @return true if were either scrolling by hand or emulating a scroll
+	 * @return true if we're either scrolling by hand or emulating a scroll
 	 */
 	public boolean isScrolling() {
 		return mScrollByHand || mScrollByEmulate;
+	}
+
+	/**
+	 * @return true if we're scrolling by hand
+	 */
+	public boolean isScrollingByHand() {
+		return mScrollByHand;
+	}
+
+	/**
+	 * @return true if we're emulating scroll
+	 */
+	public boolean isScrollingEmulated() {
+		return mScrollByEmulate;
 	}
 
 	/**
