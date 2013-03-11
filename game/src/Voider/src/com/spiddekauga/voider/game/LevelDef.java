@@ -302,12 +302,12 @@ public class LevelDef extends Def {
 	/** Campaign id the level belongs to, null if it doesn't belong to any */
 	private UUID mCampaignId = null;
 	/** Story before the level, set to null to not show */
-	private String mStoryBefore = null;
+	private String mStoryBefore = "";
 	/** Story after the level, set to null to not show */
-	private String mStoryAfter = null;
+	private String mStoryAfter = "";
 	/** Base speed of the level, the actual level speed may vary as it can
 	 * be changed by triggers */
-	private float mSpeed = 1.0f;
+	private float mSpeed = Config.Editor.Level.LEVEL_SPEED_DEFAULT;
 	/** End of the map (left screen edge) */
 	private float mEndXCoord = 100.0f;
 	/** The revision of the map, this increases after each save */

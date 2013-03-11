@@ -135,10 +135,28 @@ class LevelEditorGui extends Gui {
 		case REMOVE:
 			mWidgets.enemy.remove.setChecked(true);
 			break;
+
+		case SET_ACTIVATE_TRIGGER:
+			mWidgets.enemy.activateTrigger.setChecked(true);
+			break;
+
+		case SET_DEACTIVATE_TRIGGER:
+			mWidgets.enemy.deactivateTrigger.setChecked(true);
+			break;
 		}
 
 		// Enemy options
 		resetEnemyOptions();
+
+
+		// General options
+		mWidgets.option.description.setText(mLevelEditor.getLevelDescription());
+		mWidgets.option.name.setText(mLevelEditor.getLevelName());
+		mWidgets.option.revision.setText(mLevelEditor.getLevelRevision());
+		mWidgets.option.version.setText(mLevelEditor.getLevelVersion());
+		mWidgets.option.storyBefore.setText(mLevelEditor.getStoryBefore());
+		mWidgets.option.storyAfter.setText(mLevelEditor.getStoryAfter());
+		mWidgets.option.speed.setValue(mLevelEditor.getLevelStartingSpeed());
 
 
 		// Path
@@ -227,8 +245,6 @@ class LevelEditorGui extends Gui {
 			mWidgets.trigger.select.setChecked(true);
 			break;
 		}
-
-		// TODO Trigger options
 	}
 
 	/**
@@ -561,11 +577,11 @@ class LevelEditorGui extends Gui {
 
 		TextField textField = new TextField("", textFieldStyle);
 		left.add(textField).setFillWidth(true);
-		// TODO set name widget
+		mWidgets.option.name = textField;
 		new TextFieldListener(textField, "Name", mInvoker) {
 			@Override
 			protected void onChange(String newText) {
-				/** @todo set name of level */
+				mLevelEditor.setLevelName(newText);
 			}
 		};
 
@@ -576,11 +592,11 @@ class LevelEditorGui extends Gui {
 		left.row().setFillWidth(true).setFillHeight(true);
 		textField = new TextField("", textFieldStyle);
 		left.add(textField).setFillHeight(true).setFillWidth(true);
-		// TODO set description widget
+		mWidgets.option.description = textField;
 		new TextFieldListener(textField, "Set your description...", mInvoker) {
 			@Override
 			protected void onChange(String newText) {
-				/** @todo set description of level */
+				mLevelEditor.setLevelDescription(newText);
 			}
 		};
 
@@ -592,14 +608,14 @@ class LevelEditorGui extends Gui {
 
 		Slider slider = new Slider(Editor.Level.LEVEL_SPEED_MIN, Editor.Level.LEVEL_SPEED_MAX, Editor.Level.LEVEL_SPEED_STEP_SIZE, false, sliderStyle);
 		left.add(slider).setFillWidth(true);
-		// TODO set slider widget
+		mWidgets.option.speed = slider;
 
 		textField = new TextField("", textFieldStyle);
 		left.add(textField).setWidth(Editor.TEXT_FIELD_NUMBER_WIDTH);
 		new SliderListener(slider, textField, mInvoker) {
 			@Override
 			protected void onChange(float newValue) {
-				/** @todo change level speed */
+				mLevelEditor.setLevelStartingSpeed(newValue);
 			}
 		};
 
@@ -610,7 +626,7 @@ class LevelEditorGui extends Gui {
 
 		label = new Label("1337", labelStyle);
 		left.add(label);
-		// TODO set revision widget
+		mWidgets.option.revision = label;
 
 
 		left.row();
@@ -619,7 +635,7 @@ class LevelEditorGui extends Gui {
 
 		label = new Label("1.3.37", labelStyle);
 		left.add(label);
-		// TODO set version widget
+		mWidgets.option.version = label;
 
 
 		// RIGHT
@@ -630,11 +646,11 @@ class LevelEditorGui extends Gui {
 		right.row().setFillWidth(true).setFillHeight(true);
 		textField = new TextField("", textFieldStyle);
 		right.add(textField).setFillWidth(true).setFillHeight(true);
-		// TODO set story before widget
+		mWidgets.option.storyBefore = textField;
 		new TextFieldListener(textField, "Write the story that will be displayed before the level (optional)", mInvoker) {
 			@Override
 			protected void onChange(String newText) {
-				/** @todo set story before */
+				mLevelEditor.setStoryBefore(newText);
 			}
 		};
 
@@ -646,11 +662,11 @@ class LevelEditorGui extends Gui {
 		right.row().setFillWidth(true).setFillHeight(true);
 		textField = new TextField("", textFieldStyle);
 		right.add(textField).setFillWidth(true).setFillHeight(true);
-		// TODO set story before widget
+		mWidgets.option.storyAfter = textField;
 		new TextFieldListener(textField, "Write the story that will be displayed when the level is completed (optional)", mInvoker) {
 			@Override
 			protected void onChange(String newText) {
-				/** @todo set story before */
+				mLevelEditor.setStoryAfter(newText);
 			}
 		};
 
@@ -1316,6 +1332,7 @@ class LevelEditorGui extends Gui {
 		PickupWidgets pickup = new PickupWidgets();
 		TerrainWidgets terrain = new TerrainWidgets();
 		TriggerWidgets trigger = new TriggerWidgets();
+		OptionWidgets option = new OptionWidgets();
 
 		static class MenuWidgets {
 			Button enemy = null;
@@ -1334,13 +1351,23 @@ class LevelEditorGui extends Gui {
 			Button add = null;
 			Button remove = null;
 			Button move = null;
+			Button activateTrigger = null;
+			Button deactivateTrigger = null;
 
 			Slider cEnemies = null;
 			Slider betweenDelay = null;
 			Slider activateDelay = null;
 			Slider deactivateDelay = null;
-			Button activateTrigger = null;
-			Button deactivateTrigger = null;
+		}
+
+		static class OptionWidgets {
+			TextField name = null;
+			TextField description = null;
+			Slider speed = null;
+			Label revision = null;
+			Label version = null;
+			TextField storyBefore = null;
+			TextField storyAfter = null;
 		}
 
 		static class PathWidgets {
@@ -1354,15 +1381,6 @@ class LevelEditorGui extends Gui {
 			Button backAndForth = null;
 		}
 
-		static class TriggerWidgets {
-			Button select = null;
-			Button add = null;
-			Button remove = null;
-			Button move = null;
-
-			TextField delay = null;
-		}
-
 		static class PickupWidgets {
 			Button add = null;
 			Button remove = null;
@@ -1370,6 +1388,13 @@ class LevelEditorGui extends Gui {
 		}
 
 		static class TerrainWidgets {
+			Button add = null;
+			Button remove = null;
+			Button move = null;
+		}
+
+		static class TriggerWidgets {
+			Button select = null;
 			Button add = null;
 			Button remove = null;
 			Button move = null;

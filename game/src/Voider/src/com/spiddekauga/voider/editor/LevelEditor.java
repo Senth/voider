@@ -205,6 +205,7 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 				mGui.initGui();
 				mGui.resetValues();
 				mInvoker.dispose();
+				mUnsaved = false;
 			}
 
 			// Loading a level
@@ -213,6 +214,8 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 				try {
 					loadedLevel = ResourceCacheFacade.get(mLoadingLevel.getLevelId(), Level.class);
 					setLevel(loadedLevel);
+					mGui.resetValues();
+					mUnsaved = false;
 				} catch (UndefinedResourceTypeException e) {
 					Gdx.app.error("LevelEditor", e.toString());
 				}
@@ -247,6 +250,8 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 							ResourceCacheFacade.finishLoading();
 							Level loadedLevel = ResourceCacheFacade.get(mLoadingLevel.getLevelId(), Level.class);
 							setLevel(loadedLevel);
+							mUnsaved = false;
+							mGui.resetValues();
 						}
 					} else {
 						mLoadingLevel = null;
@@ -527,6 +532,141 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 	public boolean isUnsaved() {
 		return mUnsaved;
 	}
+
+	/**
+	 * Sets the starting speed of the current level
+	 * @param speed starting speed of the current level
+	 */
+	void setLevelStartingSpeed(float speed) {
+		if (mLevel != null) {
+			mLevel.setSpeed(speed);
+			mUnsaved = true;
+		}
+	}
+
+	/**
+	 * @return starting speed of the level, negative if no level is available
+	 */
+	float getLevelStartingSpeed() {
+		if (mLevel != null) {
+			return mLevel.getSpeed();
+		} else {
+			return -1;
+		}
+	}
+
+	/**
+	 * @return current revision of the level, empty string if no level is available
+	 */
+	String getLevelRevision() {
+		if (mLevel != null) {
+			return String.valueOf(mLevel.getDef().getRevision());
+		} else {
+			return "";
+		}
+	}
+
+	/**
+	 * @return version of the level, empty string if no level is available
+	 */
+	String getLevelVersion() {
+		if (mLevel != null) {
+			return mLevel.getDef().getVersionString();
+		} else {
+			return "";
+		}
+	}
+
+	/**
+	 * Sets the name of the level
+	 * @param name name of the level
+	 */
+	void setLevelName(String name) {
+		if (mLevel != null) {
+			mLevel.getDef().setName(name);
+			mUnsaved = true;
+		}
+	}
+
+	/**
+	 * @return name of the level, empty string if no level is available
+	 */
+	String getLevelName() {
+		if (mLevel != null) {
+			return mLevel.getDef().getName();
+		} else {
+			return "";
+		}
+	}
+
+	/**
+	 * Sets the description of the level
+	 * @param description text description of the level
+	 */
+	void setLevelDescription(String description) {
+		if (mLevel != null) {
+			mLevel.getDef().setDescription(description);
+			mUnsaved = true;
+		}
+	}
+
+	/**
+	 * @return description of the level, empty string if no level is available
+	 */
+	String getLevelDescription() {
+		if (mLevel != null) {
+			return mLevel.getDef().getDescription();
+		} else {
+			return "";
+		}
+	}
+
+	/**
+	 * Sets the story before the level
+	 * @param storyText the story that will be displayed before the level
+	 */
+	void setStoryBefore(String storyText) {
+		if (mLevel != null) {
+			mLevel.getDef().setStoryBefore(storyText);
+			mUnsaved = true;
+		}
+	}
+
+	/**
+	 * @return story that will be displayed before the level, empty string if no
+	 * level is available
+	 */
+	String getStoryBefore() {
+		if (mLevel != null) {
+			return mLevel.getDef().getStoryBefore();
+		} else {
+			return "";
+		}
+	}
+
+	/**
+	 * Sets the story after completing the level
+	 * @param storyText the story that will be displayed after the level
+	 */
+	void setStoryAfter(String storyText) {
+		if (mLevel != null) {
+			mLevel.getDef().setStoryAfter(storyText);
+			mUnsaved = true;
+		}
+	}
+
+	/**
+	 * @return story that will be displayed after completing the level, empty string if no
+	 * level is available
+	 */
+	String getStoryAfter() {
+		if (mLevel != null) {
+			return mLevel.getDef().getStoryAfter();
+		} else {
+			return "";
+		}
+	}
+
 
 	/**
 	 * Sets the number of enemies in one group

@@ -169,6 +169,14 @@ public class Level extends Resource implements Disposable {
 	}
 
 	/**
+	 * Sets the speed of the level
+	 * @param speed new speed of the level
+	 */
+	public void setSpeed(float speed) {
+		mSpeed = speed;
+	}
+
+	/**
 	 * @return current speed of the level
 	 */
 	public float getSpeed() {
