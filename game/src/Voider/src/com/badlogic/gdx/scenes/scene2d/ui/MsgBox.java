@@ -4,6 +4,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
+import com.spiddekauga.utils.scene.ui.AlignTable;
 
 /**
  * Message box wrapper for dialog. This allows other content than just text.
@@ -57,6 +58,9 @@ public class MsgBox extends Dialog {
 	 */
 	public MsgBox content(Actor actor) {
 		contentTable.add(actor);
+		if (actor instanceof AlignTable) {
+			((AlignTable) actor).layout();
+		}
 		return this;
 	}
 

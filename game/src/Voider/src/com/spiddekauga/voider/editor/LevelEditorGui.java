@@ -1,5 +1,6 @@
 package com.spiddekauga.voider.editor;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
@@ -27,7 +28,9 @@ import com.spiddekauga.utils.scene.ui.HideListener;
 import com.spiddekauga.utils.scene.ui.HideManual;
 import com.spiddekauga.utils.scene.ui.HideSliderValue;
 import com.spiddekauga.utils.scene.ui.SliderListener;
+import com.spiddekauga.utils.scene.ui.TextFieldListener;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.Config.Editor;
 import com.spiddekauga.voider.Config.Editor.Level;
 import com.spiddekauga.voider.editor.LevelEditor.Tools;
 import com.spiddekauga.voider.editor.commands.CEditorLoad;
@@ -70,7 +73,9 @@ class LevelEditorGui extends Gui {
 		mPickupTable.setPreferences(mMainTable);
 		mStaticTerrainTable.setPreferences(mMainTable);
 		mEnemyTable.setPreferences(mMainTable);
+		mOptionTable.setPreferences(mMainTable);
 
+		initOptions();
 		initPickup();
 		initStaticTerrain();
 		initMenu();
@@ -488,10 +493,170 @@ class LevelEditorGui extends Gui {
 		toggleGroup.add(button);
 		mMenuTable.add(button);
 
+		button = new TextButton("Options", textStyle);
+		button.addListener(new EventListener() {
+			@Override
+			public boolean handle(Event event) {
+				if (isButtonPressed(event)) {
+					Button ok = new TextButton("OK", textStyle);
+
+					AlignTable test = new AlignTable();
+					Skin editorSkin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
+					LabelStyle labelStyle = editorSkin.get(LabelStyle.class);
+					Label label = new Label("Test label", labelStyle);
+					test.add(label);
+					test.invalidate();
+
+					mMsgBox.clear();
+					mMsgBox.setTitle("Level options");
+					mMsgBox.content(mOptionTable);
+					mMsgBox.button(ok);
+					mMsgBox.key(Keys.BACK, null);
+					mMsgBox.key(Keys.ESCAPE, null);
+					mMsgBox.show(getStage());
+				}
+
+				return false;
+			}
+		});
+		mMenuTable.add(button);
+
 		mMainTable.add(mMenuTable);
 		mMainTable.setTransform(true);
 
 		mMainTable.invalidate();
+	}
+
+	/**
+	 * Initializes options content for message box
+	 */
+	private void initOptions() {
+		Skin skin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
+		SliderStyle sliderStyle = skin.get("default", SliderStyle.class);
+		TextFieldStyle textFieldStyle = skin.get("default", TextFieldStyle.class);
+		LabelStyle labelStyle = skin.get("default", LabelStyle.class);
+
+		AlignTable left = new AlignTable();
+		AlignTable right = new AlignTable();
+		mOptionTable.setRowAlign(Horizontal.LEFT, Vertical.TOP);
+		left.setPreferences(mOptionTable);
+		right.setPreferences(mOptionTable);
+
+		float halfWidth = Gdx.graphics.getWidth() * Config.Editor.Level.OPTIONS_WIDTH * 0.5f;
+		float height = Gdx.graphics.getHeight() * Config.Editor.Level.OPTIONS_HEIGHT;
+
+		mOptionTable.row().setPadTop(10);
+		mOptionTable.add(left);
+		mOptionTable.add(right);
+
+		left.setSize(halfWidth, height);
+		right.setSize(halfWidth, height);
+		left.setKeepSize(true);
+		right.setKeepSize(true);
+
+		// Left side
+		left.row().setFillWidth(true);
+		Label label = new Label("Name", labelStyle);
+		left.add(label).setPadRight(Editor.LABEL_PADDING_BEFORE_SLIDER);
+
+		TextField textField = new TextField("", textFieldStyle);
+		left.add(textField).setFillWidth(true);
+		// TODO set name widget
+		new TextFieldListener(textField, "Name", mInvoker) {
+			@Override
+			protected void onChange(String newText) {
+				/** @todo set name of level */
+			}
+		};
+
+		left.row();
+		label = new Label("Description", labelStyle);
+		left.add(label);
+
+		left.row().setFillWidth(true).setFillHeight(true);
+		textField = new TextField("", textFieldStyle);
+		left.add(textField).setFillHeight(true).setFillWidth(true);
+		// TODO set description widget
+		new TextFieldListener(textField, "Set your description...", mInvoker) {
+			@Override
+			protected void onChange(String newText) {
+				/** @todo set description of level */
+			}
+		};
+
+
+
+		left.row().setFillWidth(true);
+		label = new Label("Level Speed", labelStyle);
+		left.add(label).setPadRight(Editor.LABEL_PADDING_BEFORE_SLIDER);
+
+		Slider slider = new Slider(Editor.Level.LEVEL_SPEED_MIN, Editor.Level.LEVEL_SPEED_MAX, Editor.Level.LEVEL_SPEED_STEP_SIZE, false, sliderStyle);
+		left.add(slider).setFillWidth(true);
+		// TODO set slider widget
+
+		textField = new TextField("", textFieldStyle);
+		left.add(textField).setWidth(Editor.TEXT_FIELD_NUMBER_WIDTH);
+		new SliderListener(slider, textField, mInvoker) {
+			@Override
+			protected void onChange(float newValue) {
+				/** @todo change level speed */
+			}
+		};
+
+
+		left.row();
+		label = new Label("Revision:", labelStyle);
+		left.add(label).setPadRight(Editor.LABEL_PADDING_BEFORE_SLIDER);
+
+		label = new Label("1337", labelStyle);
+		left.add(label);
+		// TODO set revision widget
+
+
+		left.row();
+		label = new Label("Current version:", labelStyle);
+		left.add(label).setPadRight(Editor.LABEL_PADDING_BEFORE_SLIDER);
+
+		label = new Label("1.3.37", labelStyle);
+		left.add(label);
+		// TODO set version widget
+
+
+		// RIGHT
+		right.row();
+		label = new Label("Story before level", labelStyle);
+		right.add(label);
+
+		right.row().setFillWidth(true).setFillHeight(true);
+		textField = new TextField("", textFieldStyle);
+		right.add(textField).setFillWidth(true).setFillHeight(true);
+		// TODO set story before widget
+		new TextFieldListener(textField, "Write the story that will be displayed before the level (optional)", mInvoker) {
+			@Override
+			protected void onChange(String newText) {
+				/** @todo set story before */
+			}
+		};
+
+
+		right.row();
+		label = new Label("Afterstory", labelStyle);
+		right.add(label);
+
+		right.row().setFillWidth(true).setFillHeight(true);
+		textField = new TextField("", textFieldStyle);
+		right.add(textField).setFillWidth(true).setFillHeight(true);
+		// TODO set story before widget
+		new TextFieldListener(textField, "Write the story that will be displayed when the level is completed (optional)", mInvoker) {
+			@Override
+			protected void onChange(String newText) {
+				/** @todo set story before */
+			}
+		};
+
+		mOptionTable.setTransform(true);
+		mOptionTable.layout();
+		mOptionTable.setKeepSize(true);
 	}
 
 	/**
@@ -1089,6 +1254,8 @@ class LevelEditorGui extends Gui {
 	private AlignTable mStaticTerrainTable = new AlignTable();
 	/** Enemy table */
 	private AlignTable mEnemyTable = new AlignTable();
+	/** Options table */
+	private AlignTable mOptionTable = new AlignTable();
 	/** Level editor the GUI will act on */
 	private LevelEditor mLevelEditor = null;
 	/** Invoker for level editor */

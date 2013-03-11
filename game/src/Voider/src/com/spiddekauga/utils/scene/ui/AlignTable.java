@@ -251,12 +251,20 @@ public class AlignTable extends WidgetGroup implements Disposable {
 
 	@Override
 	public float getPrefHeight() {
-		return mPrefHeight;
+		if (mKeepSize) {
+			return getHeight();
+		} else {
+			return mPrefHeight;
+		}
 	}
 
 	@Override
 	public float getPrefWidth() {
-		return mPrefWidth;
+		if (mKeepSize) {
+			return getWidth();
+		} else {
+			return mPrefWidth;
+		}
 	}
 
 	/**
@@ -328,7 +336,7 @@ public class AlignTable extends WidgetGroup implements Disposable {
 
 		float rowHeight = 0;
 		float rowWidth = 0;
-		boolean rowFillHeight = false;
+		int cRowFillHeight = 0;
 		boolean rowFillWidth = false;
 		for (Row row : mRows) {
 			rowHeight += row.getHeight();
@@ -337,7 +345,7 @@ public class AlignTable extends WidgetGroup implements Disposable {
 			}
 
 			if (row.shallFillHeight()) {
-				rowFillHeight = true;
+				cRowFillHeight++;
 			}
 			if (row.shallfillWidth()) {
 				rowFillWidth = true;
@@ -363,7 +371,7 @@ public class AlignTable extends WidgetGroup implements Disposable {
 
 		// Vertical
 		// If fill height, the y offset will always be 0
-		if (rowFillHeight) {
+		if (cRowFillHeight > 0) {
 			offset.y = 0;
 		}
 		// Calculate offset depending on alignment
@@ -383,7 +391,7 @@ public class AlignTable extends WidgetGroup implements Disposable {
 		if (rowFillWidth) {
 			rowSize.x = getWidth();
 		} else {
-			rowSize.x = rowWidth < getPrefWidth() ? rowWidth : getPrefWidth();
+			rowSize.x = rowWidth < mPrefWidth ? rowWidth : mPrefWidth;
 		}
 		for (int i = mRows.size() - 1; i >= 0; --i) {
 			Row row = mRows.get(i);
@@ -391,7 +399,8 @@ public class AlignTable extends WidgetGroup implements Disposable {
 
 			// If row shall fill height, give it the extra height
 			if (row.shallFillHeight()) {
-				float fillHeight = getHeight() - getPrefHeight();
+				float fillHeight = getHeight() - mPrefHeight;
+				fillHeight /= cRowFillHeight;
 				rowSize.y = row.getPrefHeight() + fillHeight;
 			} else {
 				rowSize.y = row.getHeight();

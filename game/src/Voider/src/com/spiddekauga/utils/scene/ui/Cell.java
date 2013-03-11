@@ -114,7 +114,6 @@ public class Cell implements Poolable {
 		return this;
 	}
 
-
 	/**
 	 * Sets the padding to the left of the cell
 	 * @param padLeft how much padding should be to the left of the cell
@@ -213,6 +212,84 @@ public class Cell implements Poolable {
 	 */
 	public float getPadBottom() {
 		return mDynamicPadding ? mScaledPadding.bottom : mPadding.bottom;
+	}
+
+	/**
+	 * Sets the size of the cell.
+	 * @note That this will change the preferred size of the cell. Use #resetSize() to reset
+	 * the size to the actual preferred size
+	 * @param width new fixed width of the cell
+	 * @param height new fixed height of the cell
+	 * @return this cell for chaining
+	 * @see #setWidth(float)
+	 * @see #setHeight(float)
+	 * @see #resetSize()
+	 */
+	public Cell setSize(int width, int height) {
+		mActor.setSize(width, height);
+		mFixedSize = true;
+		return this;
+	}
+
+	/**
+	 * Sets the width of the cell. Don't use this together with scaling!
+	 * Does not change the preferred width.
+	 * @note That this will change the preferred size of the cell. Use #resetSize() to reset
+	 * the size to the actual preferred size
+	 * @param width new width of the cell.
+	 * @return this cell for chaining.
+	 * @see #setSize(int, int)
+	 * @see #setHeight(float)
+	 * @see #resetSize()
+	 */
+	public Cell setWidth(float width) {
+		if (mActor != null) {
+			mActor.setWidth(width);
+			mFixedSize = true;
+		}
+		return this;
+	}
+
+	/**
+	 * Sets the height of the cell. Don't use this together with scaling!
+	 * Does not change the preferred height.
+	 * @note That this will change the preferred size of the cell. Use #resetSize() to reset
+	 * the size to the actual preferred size
+	 * @param height new height of the cell.
+	 * @return this cell for chaining
+	 * @see #setSize(int, int)
+	 * @see #setWidth(float)
+	 * @see #resetSize()
+	 */
+	public Cell setHeight(float height) {
+		if (mActor != null) {
+			mActor.setHeight(height);
+			mFixedSize = true;
+		}
+		return this;
+	}
+
+	/**
+	 * Resets the size of the cell to the original preferred size
+	 * @return this cell for chaining
+	 * @see #setSize(int, int)
+	 * @see #setWidth(float)
+	 * @see #setHeight(float)
+	 */
+	public Cell resetSize() {
+		mFixedSize = false;
+		if (mActor instanceof Layout) {
+			mActor.setSize(((Layout) mActor).getPrefWidth(), ((Layout) mActor).getPrefHeight());
+		}
+		return this;
+	}
+
+	/**
+	 * @return true if this cell is of fixed size. I.e. it has changed
+	 * its size externally.
+	 */
+	boolean isFixedSize() {
+		return mFixedSize;
 	}
 
 	/**
@@ -339,7 +416,11 @@ public class Cell implements Poolable {
 	 */
 	float getPrefWidth() {
 		if (mActor instanceof Layout) {
-			return ((Layout)mActor).getPrefWidth() + mPadding.left + mPadding.right;
+			if (mFixedSize) {
+				return mActor.getWidth() + mPadding.left + mPadding.right;
+			} else {
+				return ((Layout)mActor).getPrefWidth() + mPadding.left + mPadding.right;
+			}
 		} else {
 			return mPadding.left + mPadding.right;
 		}
@@ -350,7 +431,12 @@ public class Cell implements Poolable {
 	 */
 	float getPrefHeight() {
 		if (mActor instanceof Layout) {
-			return ((Layout)mActor).getPrefHeight() + mPadding.top + mPadding.bottom;
+			if (mFixedSize) {
+				return mActor.getHeight() + mPadding.top + mPadding.bottom;
+			}
+			else {
+				return ((Layout)mActor).getPrefHeight() + mPadding.top + mPadding.bottom;
+			}
 		} else {
 			return mPadding.top + mPadding.bottom;
 		}
@@ -367,13 +453,17 @@ public class Cell implements Poolable {
 		offset.x += getPadLeft();
 
 		if (mFillWidth) {
-			setWidth(size.x - getPadLeft() - getPadRight());
+			if (mActor != null) {
+				mActor.setWidth(size.x - getPadLeft() - getPadRight());
+			}
 			if (mActor instanceof Layout) {
 				((Layout) mActor).invalidate();
 			}
 		}
 		if (mFillHeight) {
-			setHeight(size.y - getPadTop() - getPadBottom());
+			if (mActor != null) {
+				mActor.setHeight(size.y - getPadTop() - getPadBottom());
+			}
 			if (mActor instanceof Layout) {
 				((Layout) mActor).invalidate();
 			}
@@ -414,7 +504,7 @@ public class Cell implements Poolable {
 	/**
 	 * @return width of the cell
 	 */
-	float getWidth() {
+	public float getWidth() {
 		if (mActor != null) {
 			return mActor.getWidth() + getPadLeft() + getPadRight();
 		} else {
@@ -425,7 +515,7 @@ public class Cell implements Poolable {
 	/**
 	 * @return height of the cell
 	 */
-	float getHeight() {
+	public float getHeight() {
 		if (mActor != null) {
 			return mActor.getHeight() + getPadTop() + getPadBottom();
 		} else {
@@ -449,28 +539,6 @@ public class Cell implements Poolable {
 		}
 		if (mActor instanceof AlignTable) {
 			mScalable = ((AlignTable) mActor).isScalable();
-		}
-	}
-
-	/**
-	 * Sets the width of the cell. Don't use this together with scaling!
-	 * Does not change the preferred width.
-	 * @param width new width of the cell.
-	 */
-	void setWidth(float width) {
-		if (mActor != null) {
-			mActor.setWidth(width);
-		}
-	}
-
-	/**
-	 * Sets the height of the cell. Don't use this together with scaling!
-	 * Does not change the preferred height.
-	 * @param height new height of the cell.
-	 */
-	void setHeight(float height) {
-		if (mActor != null) {
-			mActor.setHeight(height);
 		}
 	}
 
@@ -548,6 +616,8 @@ public class Cell implements Poolable {
 	private boolean mFillHeight = false;
 	/** Old height before filling the height */
 	private float mHeightBeforeFill = 0;
+	/** If the cell uses fixed size */
+	private boolean mFixedSize = false;
 
 	// Padding
 	/** If the padding can be scaled */
