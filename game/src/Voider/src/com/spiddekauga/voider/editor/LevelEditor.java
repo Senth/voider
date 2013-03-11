@@ -417,6 +417,20 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 	}
 
 	/**
+	 * @return true if the enemy has options
+	 */
+	boolean hasEnemyOptions() {
+		if (mToolType == Tools.ENEMY) {
+			EnemyActor enemy = (EnemyActor) ((AddActorTool)mTouchTools[Tools.ENEMY.ordinal()]).getSelectedResource();
+			if (enemy != null) {
+				return enemy.getDef(EnemyActorDef.class).getMovementType() != EnemyActorDef.MovementTypes.STATIONARY;
+			}
+		}
+
+		return false;
+	}
+
+	/**
 	 * Switches the tool to the selected tool
 	 * @param tool the new tool type
 	 */

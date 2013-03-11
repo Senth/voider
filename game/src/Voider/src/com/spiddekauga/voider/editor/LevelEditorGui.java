@@ -230,7 +230,7 @@ class LevelEditorGui extends Gui {
 	 * Resets enemy option values
 	 */
 	void resetEnemyOptions() {
-		if (mLevelEditor.isEnemySelected()) {
+		if (mLevelEditor.hasEnemyOptions()) {
 			mHiders.enemyOptions.show();
 		} else {
 			mHiders.enemyOptions.hide();
