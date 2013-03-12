@@ -25,6 +25,7 @@ import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.CheckedListener;
 import com.spiddekauga.utils.scene.ui.HideListener;
+import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
 import com.spiddekauga.utils.scene.ui.SliderListener;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
 import com.spiddekauga.voider.Config.Editor;
@@ -39,14 +40,15 @@ import com.spiddekauga.voider.game.actors.ActorShapeTypes;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceNames;
 import com.spiddekauga.voider.scene.DrawActorTool.States;
-import com.spiddekauga.voider.scene.Gui;
+import com.spiddekauga.voider.utils.Messages;
+import com.spiddekauga.voider.utils.Messages.UnsavedActions;
 
 /**
  * Has some common methods for gui
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public abstract class ActorGui extends Gui {
+public abstract class ActorGui extends EditorGui {
 
 	@Override
 	public void resetValues() {
@@ -204,16 +206,17 @@ public abstract class ActorGui extends Gui {
 						Command newCommand = new CEditorNew(mActorEditor);
 						Command saveAndNew = new CommandSequence(save, newCommand);
 
-						mMsgBox.clear();
-						mMsgBox.setTitle("New Enemy");
-						mMsgBox.content("Your current " + actorName + " is unsaved.\n" +
-								"Do you want to save it before creating a new " + actorName + "?");
-						mMsgBox.button(yes, saveAndNew);
-						mMsgBox.button(no, newCommand);
-						mMsgBox.button(cancel);
-						mMsgBox.key(Keys.BACK, null);
-						mMsgBox.key(Keys.ESCAPE, null);
-						mMsgBox.show(getStage());
+						MsgBoxExecuter msgBox = getFreeMsgBox();
+
+						msgBox.clear();
+						msgBox.setTitle("New Enemy");
+						msgBox.content(Messages.getUnsavedMessage(actorName, UnsavedActions.NEW));
+						msgBox.button(yes, saveAndNew);
+						msgBox.button(no, newCommand);
+						msgBox.button(cancel);
+						msgBox.key(Keys.BACK, null);
+						msgBox.key(Keys.ESCAPE, null);
+						showMsgBox(msgBox);
 					} else {
 						mActorEditor.newDef();
 					}
@@ -249,16 +252,17 @@ public abstract class ActorGui extends Gui {
 
 						CommandSequence saveAndLoad = new CommandSequence(new CEditorSave(mActorEditor), new CEditorLoad(mActorEditor));
 
-						mMsgBox.clear();
-						mMsgBox.setTitle("Load Enemy");
-						mMsgBox.content("Your current " + actorName + " is unsaved.\n" +
-								"Do you want to save it before loading another " + actorName + "?");
-						mMsgBox.button(yes, saveAndLoad);
-						mMsgBox.button(no, new CEditorLoad(mActorEditor));
-						mMsgBox.button(cancel);
-						mMsgBox.key(Keys.BACK, null);
-						mMsgBox.key(Keys.ESCAPE, null);
-						mMsgBox.show(getStage());
+						MsgBoxExecuter msgBox = getFreeMsgBox();
+
+						msgBox.clear();
+						msgBox.setTitle("Load Enemy");
+						msgBox.content(Messages.getUnsavedMessage(actorName, UnsavedActions.LOAD));
+						msgBox.button(yes, saveAndLoad);
+						msgBox.button(no, new CEditorLoad(mActorEditor));
+						msgBox.button(cancel);
+						msgBox.key(Keys.BACK, null);
+						msgBox.key(Keys.ESCAPE, null);
+						showMsgBox(msgBox);
 					} else {
 						mActorEditor.loadDef();
 					}
@@ -281,16 +285,17 @@ public abstract class ActorGui extends Gui {
 
 						CommandSequence saveAndDuplicate = new CommandSequence(new CEditorSave(mActorEditor), new CEditorDuplicate(mActorEditor));
 
-						mMsgBox.clear();
-						mMsgBox.setTitle("Load Enemy");
-						mMsgBox.content("Your current " + actorName + " is unsaved.\n" +
-								"Do you want to save it before duplicating it?");
-						mMsgBox.button(yes, saveAndDuplicate);
-						mMsgBox.button(no, new CEditorDuplicate(mActorEditor));
-						mMsgBox.button(cancel);
-						mMsgBox.key(Keys.BACK, null);
-						mMsgBox.key(Keys.ESCAPE, null);
-						mMsgBox.show(getStage());
+						MsgBoxExecuter msgBox = getFreeMsgBox();
+
+						msgBox.clear();
+						msgBox.setTitle("Duplicate Enemy");
+						msgBox.content(Messages.getUnsavedMessage(actorName, UnsavedActions.DUPLICATE));
+						msgBox.button(yes, saveAndDuplicate);
+						msgBox.button(no, new CEditorDuplicate(mActorEditor));
+						msgBox.button(cancel);
+						msgBox.key(Keys.BACK, null);
+						msgBox.key(Keys.ESCAPE, null);
+						showMsgBox(msgBox);
 					} else {
 						mActorEditor.duplicateDef();
 					}

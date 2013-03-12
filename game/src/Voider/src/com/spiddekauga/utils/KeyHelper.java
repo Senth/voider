@@ -10,6 +10,15 @@ import com.badlogic.gdx.Input.Keys;
  */
 public class KeyHelper {
 	/**
+	 * Checks if back/Escape is pressed
+	 * @param keycode the key to check
+	 * @return true if the back or escape key is pressed
+	 */
+	public static boolean isBackPressed(int keycode) {
+		return keycode == Keys.BACK || keycode == Keys.ESCAPE;
+	}
+
+	/**
 	 * Checks if an undo button has been pressed. As of now this will
 	 * return true if Ctrl+Z.
 	 * @param keycode the key to check

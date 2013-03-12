@@ -27,7 +27,7 @@ public class CEditorDuplicate extends Command {
 	@Override
 	public boolean undo() {
 		// Cannot undo duplicate
-		return true;
+		return false;
 	}
 
 	/** Editor to duplicate the enemy in */

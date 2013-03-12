@@ -73,6 +73,7 @@ public class EnemyEditorGui extends ActorGui {
 		initOptions();
 		initCollision();
 		initFileMenu("enemy");
+		initMainMenu(mEnemyEditor, "enemy");
 		initMenu();
 
 		resetValues();

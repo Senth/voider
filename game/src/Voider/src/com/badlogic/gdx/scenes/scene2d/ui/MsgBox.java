@@ -4,6 +4,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
+import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.spiddekauga.utils.scene.ui.AlignTable;
 
 /**
@@ -47,6 +48,8 @@ public class MsgBox extends Dialog {
 		setMovable(false);
 		setModal(true);
 		setKeepWithinStage(true);
+		setTitle("");
+		setTitleAlignment(Align.center);
 		contentTable.clearChildren();
 		buttonTable.clearChildren();
 	}
@@ -112,6 +115,16 @@ public class MsgBox extends Dialog {
 		return this;
 	}
 
+	/**
+	 * Adds a new row to the button table
+	 * @return this message box for chaining
+	 */
+	public MsgBox buttonRow() {
+		buttonTable.row();
+		return this;
+	}
+
+
 	/** Adds a text button to the button table. Null will be passed to {@link #result(Object)} if this button is clicked. The dialog
 	 * must have been constructed with a skin to use this method. */
 	@Override
@@ -152,6 +165,34 @@ public class MsgBox extends Dialog {
 	@Override
 	public MsgBox show (Stage stage) {
 		super.show(stage);
+		mHiding = false;
 		return this;
 	}
+
+	@Override
+	public void hide() {
+		super.hide();
+		mHiding = true;
+	}
+
+	/**
+	 * @return true if the message box is hidden
+	 */
+	public boolean isHidden() {
+		return mHiding && !isHideInProgress();
+	}
+
+	/**
+	 * @return true if hiding is in progress
+	 */
+	public boolean isHideInProgress() {
+		if (mHiding) {
+			return getStage() != null;
+		} else {
+			return false;
+		}
+	}
+
+	/** If the message box is hiding */
+	protected boolean mHiding = false;
 }

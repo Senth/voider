@@ -473,6 +473,8 @@ public class Config {
 		public static String GUI_INVOKER_TEMP_NAME = "invoker";
 		/** Seconds before text field commands aren't combinable */
 		public static float TEXT_FIELD_COMBINABLE_WITHIN = 1;
+		/** Separator padding */
+		public static float SEPARATE_PADDING = 5;
 	}
 
 	/**

@@ -17,6 +17,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.SnapshotArray;
 import com.spiddekauga.utils.Invoker;
+import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Editor.Enemy;
 import com.spiddekauga.voider.game.Path;
@@ -145,6 +146,8 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 			}
 
 			mSelectionAction = null;
+		} else if (outcome == Outcomes.NOT_APPLICAPLE) {
+			mGui.hideMsgBoxes();
 		}
 
 		Actor.setEditorActive(true);
@@ -284,6 +287,26 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 			mMouseJoint = null;
 
 			return true;
+		}
+
+		return false;
+	}
+
+	@Override
+	public boolean keyDown(int keycode) {
+		// Redo
+		if (KeyHelper.isRedoPressed(keycode)) {
+			mInvoker.redo();
+			return true;
+		}
+		// Undo
+		else if (KeyHelper.isUndoPressed(keycode)) {
+			mInvoker.undo();
+			return true;
+		}
+		// Main menu
+		else if (KeyHelper.isBackPressed(keycode)) {
+			((EditorGui)mGui).showMainMenu();
 		}
 
 		return false;

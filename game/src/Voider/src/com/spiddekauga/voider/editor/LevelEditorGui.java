@@ -27,6 +27,7 @@ import com.spiddekauga.utils.scene.ui.CheckedListener;
 import com.spiddekauga.utils.scene.ui.HideListener;
 import com.spiddekauga.utils.scene.ui.HideManual;
 import com.spiddekauga.utils.scene.ui.HideSliderValue;
+import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
 import com.spiddekauga.utils.scene.ui.SliderListener;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
 import com.spiddekauga.voider.Config;
@@ -44,16 +45,17 @@ import com.spiddekauga.voider.resources.ResourceNames;
 import com.spiddekauga.voider.scene.AddActorTool;
 import com.spiddekauga.voider.scene.AddEnemyTool;
 import com.spiddekauga.voider.scene.DrawActorTool;
-import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.scene.PathTool;
 import com.spiddekauga.voider.scene.TriggerTool;
+import com.spiddekauga.voider.utils.Messages;
+import com.spiddekauga.voider.utils.Messages.UnsavedActions;
 
 /**
  * GUI for the level editor
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-class LevelEditorGui extends Gui {
+class LevelEditorGui extends EditorGui {
 	/**
 	 * Sets the level editor this GUI will act on.
 	 * @param levelEditor the scene this GUI will act on
@@ -74,7 +76,9 @@ class LevelEditorGui extends Gui {
 		mStaticTerrainTable.setPreferences(mMainTable);
 		mEnemyTable.setPreferences(mMainTable);
 		mOptionTable.setPreferences(mMainTable);
+		mMainMenuTable.setPreferences(mMainTable);
 
+		initMainMenu(mLevelEditor, "level");
 		initOptions();
 		initPickup();
 		initStaticTerrain();
@@ -332,8 +336,10 @@ class LevelEditorGui extends Gui {
 		}
 	}
 
+
+
 	/**
-	 * Initializes the main menu
+	 * Initializes the top menu
 	 */
 	private void initMenu() {
 		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
@@ -356,16 +362,17 @@ class LevelEditorGui extends Gui {
 						Command newCommand = new CEditorNew(mLevelEditor);
 						Command saveAndNew = new CommandSequence(save, newCommand);
 
-						mMsgBox.clear();
-						mMsgBox.setTitle("New Enemy");
-						mMsgBox.content("Your current level is unsaved.\n" +
-								"Do you want to save it before creating a new level?");
-						mMsgBox.button(yes, saveAndNew);
-						mMsgBox.button(no, newCommand);
-						mMsgBox.button(cancel);
-						mMsgBox.key(Keys.BACK, null);
-						mMsgBox.key(Keys.ESCAPE, null);
-						mMsgBox.show(getStage());
+						MsgBoxExecuter msgBox = getFreeMsgBox();
+
+						msgBox.clear();
+						msgBox.setTitle("New Enemy");
+						msgBox.content(Messages.getUnsavedMessage("level", UnsavedActions.NEW));
+						msgBox.button(yes, saveAndNew);
+						msgBox.button(no, newCommand);
+						msgBox.button(cancel);
+						msgBox.key(Keys.BACK, null);
+						msgBox.key(Keys.ESCAPE, null);
+						showMsgBox(msgBox);
 					} else {
 						mLevelEditor.newDef();
 					}
@@ -401,16 +408,17 @@ class LevelEditorGui extends Gui {
 						Command load = new CEditorLoad(mLevelEditor);
 						Command saveAndLoad = new CommandSequence(save, load);
 
-						mMsgBox.clear();
-						mMsgBox.setTitle("New Enemy");
-						mMsgBox.content("Your current level is unsaved.\n" +
-								"Do you want to save it before loading another level?");
-						mMsgBox.button(yes, saveAndLoad);
-						mMsgBox.button(no, load);
-						mMsgBox.button(cancel);
-						mMsgBox.key(Keys.BACK, null);
-						mMsgBox.key(Keys.ESCAPE, null);
-						mMsgBox.show(getStage());
+						MsgBoxExecuter msgBox = getFreeMsgBox();
+
+						msgBox.clear();
+						msgBox.setTitle("Load Enemy");
+						msgBox.content(Messages.getUnsavedMessage("level", UnsavedActions.LOAD));
+						msgBox.button(yes, saveAndLoad);
+						msgBox.button(no, load);
+						msgBox.button(cancel);
+						msgBox.key(Keys.BACK, null);
+						msgBox.key(Keys.ESCAPE, null);
+						showMsgBox(msgBox);
 					} else {
 						mLevelEditor.loadDef();
 					}
@@ -434,16 +442,17 @@ class LevelEditorGui extends Gui {
 						Command newCommand = new CEditorNew(mLevelEditor);
 						Command saveAndNew = new CommandSequence(save, newCommand);
 
-						mMsgBox.clear();
-						mMsgBox.setTitle("New Enemy");
-						mMsgBox.content("Your current level is unsaved.\n" +
-								"Do you want to save it before duplicating it?");
-						mMsgBox.button(yes, saveAndNew);
-						mMsgBox.button(no, newCommand);
-						mMsgBox.button(cancel);
-						mMsgBox.key(Keys.BACK, null);
-						mMsgBox.key(Keys.ESCAPE, null);
-						mMsgBox.show(getStage());
+						MsgBoxExecuter msgBox = getFreeMsgBox();
+
+						msgBox.clear();
+						msgBox.setTitle("Duplicate Enemy");
+						msgBox.content(Messages.getUnsavedMessage("level", UnsavedActions.DUPLICATE));
+						msgBox.button(yes, saveAndNew);
+						msgBox.button(no, newCommand);
+						msgBox.button(cancel);
+						msgBox.key(Keys.BACK, null);
+						msgBox.key(Keys.ESCAPE, null);
+						showMsgBox(msgBox);
 					} else {
 						mLevelEditor.duplicateDef();
 					}
@@ -523,13 +532,15 @@ class LevelEditorGui extends Gui {
 					test.add(label);
 					test.invalidate();
 
-					mMsgBox.clear();
-					mMsgBox.setTitle("Level options");
-					mMsgBox.content(mOptionTable);
-					mMsgBox.button(ok);
-					mMsgBox.key(Keys.BACK, null);
-					mMsgBox.key(Keys.ESCAPE, null);
-					mMsgBox.show(getStage());
+					MsgBoxExecuter msgBox = getFreeMsgBox();
+
+					msgBox.clear();
+					msgBox.setTitle("Level options");
+					msgBox.content(mOptionTable);
+					msgBox.button(ok);
+					msgBox.key(Keys.BACK, null);
+					msgBox.key(Keys.ESCAPE, null);
+					showMsgBox(msgBox);
 				}
 
 				return false;
@@ -1260,7 +1271,6 @@ class LevelEditorGui extends Gui {
 		mMainTable.add(toolTable);
 		mMainTable.invalidate();
 	}
-
 
 	/** Wrapper for what tool is currently active */
 	private AlignTable mMenuTable = new AlignTable();

@@ -39,6 +39,7 @@ public abstract class Scene extends InputAdapter {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
 		render();
+		mGui.update();
 		if (!mGui.isMsgBoxActive()) {
 			mGameTime.update(Gdx.graphics.getDeltaTime());
 			update();

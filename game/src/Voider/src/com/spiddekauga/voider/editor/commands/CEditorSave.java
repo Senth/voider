@@ -27,7 +27,7 @@ public class CEditorSave extends Command {
 	@Override
 	public boolean undo() {
 		// Cannot undo a save...
-		return true;
+		return false;
 	}
 
 	/** Enemy editor to invoke the save on */

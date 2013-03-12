@@ -28,7 +28,7 @@ public class CEditorNew extends Command {
 	@Override
 	public boolean undo() {
 		// Cannot undo new enemy
-		return true;
+		return false;
 	}
 
 	/** Editor to create a new actor in */

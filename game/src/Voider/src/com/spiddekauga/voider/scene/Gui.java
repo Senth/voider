@@ -1,5 +1,8 @@
 package com.spiddekauga.voider.scene;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Event;
@@ -7,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent;
+import com.spiddekauga.utils.Collections;
 import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
@@ -56,12 +60,113 @@ public abstract class Gui {
 	}
 
 	/**
+	 * Updates the GUI
+	 */
+	public void update() {
+		// Remove active message box if it has been hidden
+		if (!mActiveMsgBoxes.isEmpty()) {
+			MsgBoxExecuter activeMsgBox = mActiveMsgBoxes.get(mActiveMsgBoxes.size()-1);
+
+			// Has queue, waiting for active message box to be hidden
+			if (mQueuedMsgBox != null) {
+				if (activeMsgBox.isHidden()) {
+					mActiveMsgBoxes.add(mQueuedMsgBox);
+					mQueuedMsgBox.show(mStage);
+					mQueuedMsgBox = null;
+				}
+			}
+			// Else if the active message box becomes hidden. Show the previous one
+			else if (activeMsgBox.isHidden()) {
+				mActiveMsgBoxes.remove(mActiveMsgBoxes.size()-1);
+				mInactiveMsgBoxes.add(activeMsgBox);
+
+				// Show the previous message box if one exists
+				if (!mActiveMsgBoxes.isEmpty()) {
+					mActiveMsgBoxes.get(mActiveMsgBoxes.size()-1).show(mStage);
+				}
+			}
+		}
+	}
+
+	/**
+	 * @return free message box
+	 */
+	protected MsgBoxExecuter getFreeMsgBox() {
+		MsgBoxExecuter msgBox = null;
+
+		// Find a free existing one
+		for (int i = mInactiveMsgBoxes.size() - 1; i >= 0; i--) {
+			if (!mInactiveMsgBoxes.get(i).hasParent()) {
+				msgBox = mInactiveMsgBoxes.get(i);
+				break;
+			}
+		}
+
+		// No free found, create new
+		if (msgBox == null) {
+			Skin skin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
+			msgBox = new MsgBoxExecuter(skin);
+			mInactiveMsgBoxes.add(msgBox);
+		}
+
+		msgBox.clear();
+		return msgBox;
+	}
+
+	/**
+	 * Hides all active message boxes
+	 */
+	public void hideMsgBoxes() {
+		if (mActiveMsgBoxes.size() >= 2) {
+			// Remove all already hidden once, start hiding shown
+			Iterator<MsgBoxExecuter> msgBoxIt = mActiveMsgBoxes.iterator();
+			while (msgBoxIt.hasNext()) {
+				MsgBoxExecuter msgBox = msgBoxIt.next();
+
+				if (msgBox.isHidden()) {
+					msgBoxIt.remove();
+					mInactiveMsgBoxes.add(msgBox);
+				} else {
+					msgBox.hide();
+				}
+			}
+		} else if (mActiveMsgBoxes.size() == 1) {
+			MsgBoxExecuter msgBox = mActiveMsgBoxes.remove(0);
+			mInactiveMsgBoxes.add(msgBox);
+			msgBox.hide();
+		}
+	}
+
+	/**
+	 * Shows the specified message box.
+	 * This will hide any active message box, remove the specified message box from the
+	 * inactive list, and then show the specified active box (once the currently active box
+	 * has been fully hidden).
+	 * @param msgBox the message box to show
+	 */
+	protected void showMsgBox(MsgBoxExecuter msgBox) {
+		// No active message box, add directly
+		if (mActiveMsgBoxes.isEmpty()) {
+			int index = Collections.linearSearch(mInactiveMsgBoxes, msgBox);
+			if (index != -1) {
+				mInactiveMsgBoxes.remove(index);
+				mActiveMsgBoxes.add(msgBox);
+				msgBox.show(mStage);
+			} else {
+				Gdx.app.error("Gui", "Could not find the message box in inactive message boxes!");
+			}
+		}
+		// Hide the active message box, and queue the specified one.
+		else {
+			mActiveMsgBoxes.get(mActiveMsgBoxes.size() - 1).hide();
+			mQueuedMsgBox = msgBox;
+		}
+	}
+
+	/**
 	 * Initializes the GUI
 	 */
 	public void initGui() {
-		Skin skin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
-		mMsgBox = new MsgBoxExecuter(skin);
-		mMsgBox.clear();
 		MsgBoxExecuter.fadeDuration = 0.01f;
 		mInitialized = true;
 	}
@@ -99,7 +204,7 @@ public abstract class Gui {
 	 * @return true if a message box is currently shown
 	 */
 	public boolean isMsgBoxActive() {
-		return mMsgBox != null && mMsgBox.getParent() != null;
+		return !mActiveMsgBoxes.isEmpty();
 	}
 
 	/**
@@ -163,12 +268,16 @@ public abstract class Gui {
 		outerTable.invalidateHierarchy();
 	}
 
-	/** Message box that executes the command bound with the button */
-	protected MsgBoxExecuter mMsgBox = null;
 	/** Main table for the layout */
 	protected AlignTable mMainTable = new AlignTable();
 	/** True if the GUI has been initialized */
 	protected boolean mInitialized = false;
 	/** Stage for the GUI */
 	private Stage mStage = new Stage();
+	/** Active message boxes */
+	private ArrayList<MsgBoxExecuter> mActiveMsgBoxes = new ArrayList<MsgBoxExecuter>();
+	/** Inactive/free message boxes */
+	private ArrayList<MsgBoxExecuter> mInactiveMsgBoxes = new ArrayList<MsgBoxExecuter>();
+	/** Queued messages box, will be displayed once the active message box has been hidden */
+	private MsgBoxExecuter mQueuedMsgBox = null;
 }

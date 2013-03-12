@@ -215,6 +215,7 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 					loadedLevel = ResourceCacheFacade.get(mLoadingLevel.getLevelId(), Level.class);
 					setLevel(loadedLevel);
 					mGui.resetValues();
+					mGui.hideMsgBoxes();
 					mUnsaved = false;
 				} catch (UndefinedResourceTypeException e) {
 					Gdx.app.error("LevelEditor", e.toString());
@@ -222,18 +223,20 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 			}
 		}
 		else if (outcome == Outcomes.LOADING_FAILED_CORRUPT_FILE) {
-			// TODO
+			/** @todo loading failed, load backup? */
 			mLoadingLevel = null;
 		}
 		else if (outcome == Outcomes.LOADING_FAILED_MISSING_FILE) {
-			// TODO
+			/** @todo loading failed, missing file */
 			mLoadingLevel = null;
 		}
 		else if (outcome == Outcomes.LOADING_FAILED_UNDEFINED_TYPE) {
-			// TODO
+			/** @todo loalding failed, undefined type */
 			mLoadingLevel = null;
 		}
 		else if (outcome == Outcomes.DEF_SELECTED) {
+			mGui.hideMsgBoxes();
+
 			switch (mSelectionAction) {
 			case LEVEL:
 				try {
@@ -252,6 +255,7 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 							setLevel(loadedLevel);
 							mUnsaved = false;
 							mGui.resetValues();
+							mGui.hideMsgBoxes();
 						}
 					} else {
 						mLoadingLevel = null;
@@ -303,6 +307,12 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 					Gdx.app.error("LevelEditor", e.toString());
 				}
 				break;
+			}
+		} else if (outcome == Outcomes.NOT_APPLICAPLE) {
+			mGui.hideMsgBoxes();
+
+			if (mLevel == null) {
+				newDef();
 			}
 		}
 	}
@@ -405,18 +415,21 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 		return false;
 	}
 
-	/**
-	 * Only for PC users...
-	 */
 	@Override
 	public boolean keyDown(int keycode) {
+		// Redo
 		if (KeyHelper.isRedoPressed(keycode)) {
 			mInvoker.redo();
 			return true;
 		}
+		// Undo
 		else if (KeyHelper.isUndoPressed(keycode)) {
 			mInvoker.undo();
 			return true;
+		}
+		// Main menu
+		else if (KeyHelper.isBackPressed(keycode)) {
+			((EditorGui)mGui).showMainMenu();
 		}
 
 		return false;
@@ -508,7 +521,10 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 
 	@Override
 	public void newDef() {
-		mLevel.dispose();
+		if (mLevel != null) {
+			mLevel.dispose();
+		}
+
 		LevelDef levelDef = new LevelDef();
 		Level level = new Level(levelDef);
 		setLevel(level);

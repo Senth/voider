@@ -26,7 +26,7 @@ public class CEditorLoad extends Command {
 	@Override
 	public boolean undo() {
 		// Cannot undo open loading screen...
-		return true;
+		return false;
 	}
 
 	/** Editor to invoke the load on */

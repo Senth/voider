@@ -1,5 +1,6 @@
 package com.spiddekauga.voider.scene;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 
 import com.badlogic.gdx.Gdx;
@@ -24,18 +25,7 @@ public class SceneSwitcher {
 	 * @param scene the scene to switch to.
 	 */
 	public static void switchTo(Scene scene) {
-		// Deactivate current scene
-		if (!mScenes.isEmpty()) {
-			Scene previouScene = mScenes.getFirst();
-			previouScene.onDeactivate();
-			Gdx.input.setInputProcessor(null);
-
-			// Should we unload resources?
-			if (previouScene.hasResources() && previouScene.unloadResourcesOnDeactivate()) {
-				mSceneNeedsUnloading = previouScene;
-			}
-		}
-
+		deactivateCurrentScene();
 
 		mScenes.push(scene);
 		// Do we need to load resources for the scene?
@@ -47,6 +37,44 @@ public class SceneSwitcher {
 			scene.onActivate(Outcomes.NOT_APPLICAPLE, null);
 			Gdx.input.setInputProcessor(scene.getInputMultiplexer());
 		}
+	}
+
+	/**
+	 * Tries to switch to a scene that already exists. If a scene of the specified
+	 * type exist it will move that scene to the top of the stack.
+	 * @param sceneType the type of scene to switch to
+	 * @return true if found the scene of the specified type and switched to it,
+	 * false if no scene of the specified type was found.
+	 */
+	public static boolean switchTo(Class<? extends Scene> sceneType) {
+		Scene foundScene = null;
+		Iterator<Scene> sceneIt = mScenes.iterator();
+
+		while (sceneIt.hasNext() && foundScene == null) {
+			Scene currentScene = sceneIt.next();
+
+			if (currentScene.getClass() == sceneType) {
+				foundScene = currentScene;
+				sceneIt.remove();
+			}
+		}
+
+		if (foundScene != null) {
+			deactivateCurrentScene();
+
+			mScenes.push(foundScene);
+			// Does the current scene need loading resources?
+			if (foundScene.hasResources() && foundScene.unloadResourcesOnDeactivate()) {
+				loadActiveSceneResources();
+			} else {
+				foundScene.onActivate(Outcomes.NOT_APPLICAPLE, null);
+				Gdx.input.setInputProcessor(foundScene.getInputMultiplexer());
+			}
+
+			return true;
+		}
+
+		return false;
 	}
 
 	/**
@@ -224,6 +252,21 @@ public class SceneSwitcher {
 		}
 	}
 
+	/**
+	 * Deactivates the current scene
+	 */
+	private static void deactivateCurrentScene() {
+		if (!mScenes.isEmpty()) {
+			Scene previouScene = mScenes.getFirst();
+			previouScene.onDeactivate();
+			Gdx.input.setInputProcessor(null);
+
+			// Should we unload resources?
+			if (previouScene.hasResources() && previouScene.unloadResourcesOnDeactivate()) {
+				mSceneNeedsUnloading = previouScene;
+			}
+		}
+	}
 
 	/**
 	 * Private constructor to ensure no instance is created

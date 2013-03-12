@@ -58,6 +58,7 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 			mGui.initGui();
 			mGui.resetValues();
 			mInvoker.dispose();
+			mUnsaved = false;
 		} else if (outcome == Outcomes.DEF_SELECTED) {
 			switch (mSelectionAction) {
 			case LOAD_BULLET:
@@ -71,6 +72,8 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 					Gdx.app.error("BulletEditor", e.toString());
 				}
 			}
+		} else if (outcome == Outcomes.NOT_APPLICAPLE) {
+			mGui.hideMsgBoxes();
 		}
 	}
 
@@ -93,18 +96,21 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 		return true;
 	}
 
-	/**
-	 * Only for PC users...
-	 */
 	@Override
 	public boolean keyDown(int keycode) {
+		// Redo
 		if (KeyHelper.isRedoPressed(keycode)) {
-			redo();
+			mInvoker.redo();
 			return true;
 		}
+		// Undo
 		else if (KeyHelper.isUndoPressed(keycode)) {
-			undo();
+			mInvoker.undo();
 			return true;
+		}
+		// Main menu
+		else if (KeyHelper.isBackPressed(keycode)) {
+			((EditorGui)mGui).showMainMenu();
 		}
 
 		return false;
