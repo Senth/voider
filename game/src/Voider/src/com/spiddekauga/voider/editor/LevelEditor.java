@@ -258,6 +258,7 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 					}
 				} catch (Exception e) {
 					Gdx.app.error("LevelEditor", e.toString());
+					e.printStackTrace();
 				}
 				break;
 

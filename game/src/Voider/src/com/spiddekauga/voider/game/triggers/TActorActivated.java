@@ -43,7 +43,7 @@ public class TActorActivated extends Trigger implements Disposable, IResourceBod
 				mBody.createFixture(fixtureDef);
 			}
 
-			mBody.setTransform(mActor.getPosition(), mActor.getBody().getAngle());
+			mBody.setTransform(mActor.getPosition(), mActor.getDef().getBodyDef().angle);
 			mBody.setUserData(this);
 		}
 	}
