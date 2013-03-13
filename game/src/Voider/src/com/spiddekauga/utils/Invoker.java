@@ -139,6 +139,8 @@ public class Invoker implements Disposable {
 				// Special case for delimiter. Always treat it as chained
 				if (nextRedo.isChained() || nextRedo instanceof CDelimiter) {
 					chained = true;
+				} else {
+					chained = false;
 				}
 			}
 		}

@@ -20,6 +20,7 @@ import com.spiddekauga.utils.Invoker;
 import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Editor.Enemy;
+import com.spiddekauga.voider.editor.commands.CEnemyBulletDefSelect;
 import com.spiddekauga.voider.game.Path;
 import com.spiddekauga.voider.game.Path.PathTypes;
 import com.spiddekauga.voider.game.actors.Actor;
@@ -124,13 +125,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 		else if (outcome == Outcomes.DEF_SELECTED) {
 			switch (mSelectionAction) {
 			case BULLET_TYPE:
-				try {
-					BulletActorDef bulletDef = ResourceCacheFacade.get(UUID.fromString(message), BulletActorDef.class);
-					setBulletActorDef(bulletDef);
-					mGui.resetValues();
-				} catch (UndefinedResourceTypeException e1) {
-					Gdx.app.error("EnemyEditor", e1.toString());
-				}
+				mInvoker.execute(new CEnemyBulletDefSelect(UUID.fromString(message), this));
 				break;
 
 			case LOAD_ENEMY:
@@ -152,6 +147,53 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 
 		Actor.setEditorActive(true);
 		Actor.setPlayerActor(mPlayerActor);
+	}
+
+	/**
+	 * Sets the selected bullet definition. This will make the enemies use this bullet.
+	 * @param bulletId id of the bullet definition to select
+	 * @return true if bullet was selected successfully, false if unsuccessful
+	 */
+	public boolean selectBulletDef(UUID bulletId) {
+		try {
+			BulletActorDef oldBulletDef = mDef.getWeaponDef().getBulletActorDef();
+
+			if (bulletId != null) {
+				BulletActorDef bulletActorDef = ResourceCacheFacade.get(bulletId, BulletActorDef.class);
+
+				ResourceCacheFacade.load(bulletActorDef, true);
+				ResourceCacheFacade.finishLoading();
+
+				setBulletActorDef(bulletActorDef);
+			} else {
+				setBulletActorDef(null);
+			}
+
+			if (oldBulletDef != null) {
+				ResourceCacheFacade.unload(oldBulletDef, true);
+			}
+
+			mGui.resetValues();
+		} catch (Exception e) {
+			Gdx.app.error("EnemyEditor", e.toString());
+			e.printStackTrace();
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * @return selected bullet definition, null if none are selected, or if no weapon is available
+	 */
+	public BulletActorDef getSelectedBulletDef() {
+		BulletActorDef selectedBulletDef = null;
+
+		if (mDef.getWeaponDef() != null) {
+			selectedBulletDef = mDef.getWeaponDef().getBulletActorDef();
+		}
+
+		return selectedBulletDef;
 	}
 
 	@Override

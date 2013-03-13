@@ -37,7 +37,6 @@ import com.spiddekauga.voider.editor.LevelEditor.Tools;
 import com.spiddekauga.voider.editor.commands.CEditorLoad;
 import com.spiddekauga.voider.editor.commands.CEditorNew;
 import com.spiddekauga.voider.editor.commands.CEditorSave;
-import com.spiddekauga.voider.editor.commands.CGuiCheck;
 import com.spiddekauga.voider.editor.commands.CGuiSlider;
 import com.spiddekauga.voider.game.Path.PathTypes;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
@@ -879,12 +878,12 @@ class LevelEditorGui extends EditorGui {
 		mHiders.enemyOptions.addToggleActor(button);
 		mWidgets.enemy.activateTrigger = button;
 		mEnemyTable.add(button);
+		button.addListener(enemyInnerMenu);
 		new CheckedListener(button) {
 			@Override
 			protected void onChange(boolean checked) {
 				if (checked) {
 					mLevelEditor.setEnemyState(AddEnemyTool.States.SET_ACTIVATE_TRIGGER);
-					mInvoker.execute(new CGuiCheck(mButton, true));
 				}
 			}
 		};
@@ -916,11 +915,11 @@ class LevelEditorGui extends EditorGui {
 		mHiders.enemyDeactive.addToggleActor(button);
 		mWidgets.enemy.deactivateTrigger = button;
 		mEnemyTable.add(button);
+		button.addListener(enemyInnerMenu);
 		new CheckedListener(button) {
 			@Override
 			protected void onChange(boolean checked) {
 				if (checked) {
-					mInvoker.execute(new CGuiCheck(mButton, true));
 					mLevelEditor.setEnemyState(AddEnemyTool.States.SET_DEACTIVATE_TRIGGER);
 				}
 			}

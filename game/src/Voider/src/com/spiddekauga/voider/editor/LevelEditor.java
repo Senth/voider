@@ -11,6 +11,8 @@ import com.spiddekauga.utils.Scroller;
 import com.spiddekauga.utils.Scroller.ScrollAxis;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.editor.commands.CCameraMove;
+import com.spiddekauga.voider.editor.commands.CLevelEnemyDefSelect;
+import com.spiddekauga.voider.editor.commands.CLevelPickupDefSelect;
 import com.spiddekauga.voider.game.GameScene;
 import com.spiddekauga.voider.game.Level;
 import com.spiddekauga.voider.game.LevelDef;
@@ -267,45 +269,11 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 				break;
 
 			case PICKUP:
-				try {
-					PickupActorDef pickupActorDef = ResourceCacheFacade.get(UUID.fromString(message), PickupActorDef.class);
-
-					// Load dependencies
-					ResourceCacheFacade.load(pickupActorDef, true);
-					ResourceCacheFacade.finishLoading();
-
-					// Update def
-					PickupActorDef oldPickupActorDef = (PickupActorDef) ((ActorTool)mTouchTools[Tools.PICKUP.ordinal()]).getNewActorDef();
-					((ActorTool)mTouchTools[Tools.PICKUP.ordinal()]).setNewActorDef(pickupActorDef);
-
-					// Unload old dependencies
-					if (oldPickupActorDef != null) {
-						ResourceCacheFacade.unload(oldPickupActorDef, true);
-					}
-				} catch (Exception e) {
-					Gdx.app.error("LevelEditor", e.toString());
-				}
+				mInvoker.execute(new CLevelPickupDefSelect(UUID.fromString(message), this));
 				break;
 
 			case ENEMY:
-				try {
-					EnemyActorDef enemyActorDef = ResourceCacheFacade.get(UUID.fromString(message), EnemyActorDef.class);
-
-					// Load dependencies
-					ResourceCacheFacade.load(enemyActorDef, true);
-					ResourceCacheFacade.finishLoading();
-
-					// Update def
-					EnemyActorDef oldEnemyActorDef = (EnemyActorDef) ((ActorTool)mTouchTools[Tools.PICKUP.ordinal()]).getNewActorDef();
-					((ActorTool)mTouchTools[Tools.ENEMY.ordinal()]).setNewActorDef(enemyActorDef);
-
-					// Unload old dependencies
-					if (oldEnemyActorDef != null) {
-						ResourceCacheFacade.unload(oldEnemyActorDef, true);
-					}
-				} catch (Exception e) {
-					Gdx.app.error("LevelEditor", e.toString());
-				}
+				mInvoker.execute(new CLevelEnemyDefSelect(UUID.fromString(message), this));
 				break;
 			}
 		} else if (outcome == Outcomes.NOT_APPLICAPLE) {
@@ -315,6 +283,76 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 				newDef();
 			}
 		}
+	}
+
+	/**
+	 * Selects the specified enemy definition. This enemy will be used when adding new enemies.
+	 * @param enemyId the enemy id to select
+	 * @return true if enemy was selected successfully, false if unsuccessful
+	 */
+	public boolean selectEnemyDef(UUID enemyId) {
+		try {
+			EnemyActorDef oldEnemyActorDef = (EnemyActorDef) ((ActorTool)mTouchTools[Tools.PICKUP.ordinal()]).getNewActorDef();
+
+			if (enemyId != null) {
+				EnemyActorDef enemyActorDef = ResourceCacheFacade.get(enemyId, EnemyActorDef.class);
+
+				// Load dependencies
+				ResourceCacheFacade.load(enemyActorDef, true);
+				ResourceCacheFacade.finishLoading();
+
+				// Update def
+				((ActorTool)mTouchTools[Tools.ENEMY.ordinal()]).setNewActorDef(enemyActorDef);
+			} else {
+				((ActorTool)mTouchTools[Tools.ENEMY.ordinal()]).setNewActorDef(null);
+			}
+
+			// Unload old dependencies
+			if (oldEnemyActorDef != null) {
+				ResourceCacheFacade.unload(oldEnemyActorDef, true);
+			}
+		} catch (Exception e) {
+			Gdx.app.error("LevelEditor", e.toString());
+			e.printStackTrace();
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Selects the specified pickup definition. This pickup will be used when adding new pickups
+	 * @param pickupId the pickup id to select
+	 * @return true if the pickup was selected successfully, false if unsuccessful
+	 */
+	public boolean selectPickupDef(UUID pickupId) {
+		try {
+			PickupActorDef oldPickupActorDef = (PickupActorDef) ((ActorTool)mTouchTools[Tools.PICKUP.ordinal()]).getNewActorDef();
+
+			if (pickupId != null) {
+				PickupActorDef pickupActorDef = ResourceCacheFacade.get(pickupId, PickupActorDef.class);
+
+				// Load dependencies
+				ResourceCacheFacade.load(pickupActorDef, true);
+				ResourceCacheFacade.finishLoading();
+
+				// Update def
+				((ActorTool)mTouchTools[Tools.PICKUP.ordinal()]).setNewActorDef(pickupActorDef);
+			} else {
+				((ActorTool)mTouchTools[Tools.PICKUP.ordinal()]).setNewActorDef(null);
+			}
+
+			// Unload old dependencies
+			if (oldPickupActorDef != null) {
+				ResourceCacheFacade.unload(oldPickupActorDef, true);
+			}
+		} catch (Exception e) {
+			Gdx.app.error("LevelEditor", e.toString());
+			e.printStackTrace();
+			return false;
+		}
+
+		return true;
 	}
 
 	@Override
@@ -1109,10 +1147,17 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 	}
 
 	/**
-	 * @return currently selected pickup
+	 * @return currently selected pickup definition
 	 */
-	ActorDef getSelectedPickup() {
+	public ActorDef getSelectedPickupDef() {
 		return ((ActorTool) mTouchTools[Tools.PICKUP.ordinal()]).getNewActorDef();
+	}
+
+	/**
+	 * @return currently selected enemy definition
+	 */
+	public ActorDef getSelectedEnemyDef() {
+		return ((ActorTool) mTouchTools[Tools.ENEMY.ordinal()]).getNewActorDef();
 	}
 
 	/**
