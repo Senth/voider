@@ -80,6 +80,9 @@ com.badlogic.gdx.scenes.scene2d.ui.TextField$TextFieldStyle: {
 
 com.badlogic.gdx.scenes.scene2d.ui.Window$WindowStyle: {
 	default: {
+		titleFont: default-font
+	},
+	modal: {
 		titleFont: default-font,
 		stageBackground: modal-fade
 	}

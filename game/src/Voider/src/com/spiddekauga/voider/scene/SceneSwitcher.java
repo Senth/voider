@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.utils.Invoker;
 import com.spiddekauga.voider.game.BulletDestroyer;
@@ -148,6 +149,28 @@ public class SceneSwitcher {
 			return null;
 		} else {
 			return mScenes.peek().getInvoker();
+		}
+	}
+
+	/**
+	 * @return GUI of the current scene, null if no scene exists
+	 */
+	public static Gui getGui() {
+		if (mScenes.isEmpty()) {
+			return null;
+		} else {
+			return mScenes.peek().mGui;
+		}
+	}
+
+	/**
+	 * @return Stage of the current scene, null if no scene exists
+	 */
+	public static Stage getStage() {
+		if (mScenes.isEmpty()) {
+			return null;
+		} else {
+			return mScenes.peek().mGui.getStage();
 		}
 	}
 

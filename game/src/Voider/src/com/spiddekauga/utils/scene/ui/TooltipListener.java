@@ -1,0 +1,222 @@
+package com.spiddekauga.utils.scene.ui;
+
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.Timer;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.math.Interpolation;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Event;
+import com.badlogic.gdx.scenes.scene2d.EventListener;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputEvent.Type;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.MsgBox;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.Window;
+import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.resources.ResourceCacheFacade;
+import com.spiddekauga.voider.resources.ResourceNames;
+import com.spiddekauga.voider.scene.SceneSwitcher;
+import com.spiddekauga.voider.utils.Vector2Pool;
+
+/**
+ * Listens to a GUI actor to display a tooltip for it.
+ * 
+ * @author Matteus Magnusson <senth.wallace@gmail.com>
+ */
+public class TooltipListener implements EventListener, ActionListener {
+	/**
+	 * Creates a tooltip listener that will listen to the specified
+	 * actor. This will automatically add itself as a listener to
+	 * the actor.
+	 * @param actor the GUI actor to listen to
+	 * @param title the title of the tooltip window
+	 * @param message the message in the tooltip
+	 */
+	public TooltipListener(Actor actor, String title, String message) {
+		mMessage = message;
+		mActor = actor;
+		mTitle = title;
+		mActor.addListener(this);
+
+
+		mTimer = new Timer(0, this);
+		mTimer.setRepeats(false);
+
+
+		if (mWindow == null) {
+			Skin editorSkin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
+			TextButtonStyle buttonStyle = editorSkin.get("default", TextButtonStyle.class);
+
+			mWindow = new Window("", editorSkin);
+			mWindow.setModal(false);
+			mWindow.addListener(this);
+
+			mMsgBox = new MsgBox(editorSkin);
+			Button okButton = new TextButton("OK", buttonStyle);
+			mMsgBox.button(okButton);
+			mMsgBox.addListener(this);
+		}
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		if (e.getActionCommand().equals(SHOW_WINDOW)) {
+			Stage stage = SceneSwitcher.getStage();
+			if (stage != null) {
+				stage.addActor(mWindow);
+				mWindow.clearChildren();
+				mWindow.setTitle(mTitle);
+				mWindow.add(mMessage);
+				mWindow.pack();
+				mWindow.addAction(Actions.fadeIn(Config.Gui.TOOLTIP_HOVER_FADE_DURATION, Interpolation.fade));
+				updateWindowPosition();
+			} else {
+				Gdx.app.error("TooltipListener", "Stage is not when showing window!");
+			}
+		} else if (e.getActionCommand().equals(SHOW_MSG_BOX)) {
+
+		} else {
+			Gdx.app.error("TooltipListener", "Unknown action command: " + e.getActionCommand());
+		}
+	}
+
+	@Override
+	public boolean handle(Event event) {
+		if (event instanceof InputEvent) {
+			if (((InputEvent) event).getType() == Type.enter) {
+				if (event.getTarget() == mActor) {
+					handleHoverEnter();
+				}
+			} else if (((InputEvent) event).getType() == Type.exit) {
+				// Only do something if the cursor is outside the actor
+				if (!isCursorInsideActor()) {
+					handleHoverExit();
+				}
+			} else if (((InputEvent) event).getType() == Type.mouseMoved) {
+				if (event.getTarget() != mActor && mWindow.getTitle().equals(mTitle)) {
+					if (!isCursorInsideActor()) {
+						handleHoverExit();
+					}
+				}
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Handles hover event
+	 */
+	private void handleHoverEnter() {
+		if (!mTimer.isRunning()) {
+			mTimer.setDelay(Config.Gui.TOOLTIP_HOVER_SHOW);
+			mTimer.setActionCommand(SHOW_WINDOW);
+			mTimer.start();
+		}
+	}
+
+	/**
+	 * Handles when the cursor moves out from the actor
+	 */
+	private void handleHoverExit() {
+		// Fade out window, then remove it from stage if it is shown.
+		if (mWindow.getStage() != null) {
+			mWindow.addAction(Actions.sequence(Actions.fadeOut(Config.Gui.TOOLTIP_HOVER_FADE_DURATION, Interpolation.fade), Actions.removeActor()));
+		}
+
+		mTimer.stop();
+	}
+
+	/**
+	 * Updates the window position to the current cursor position. The position
+	 * will be one of the corners of the window. The ordering is as follows
+	 * \li Lower right corner
+	 * \li Lower left corner
+	 * \li Upper right corner
+	 * \li Upper left corner
+	 * If the window would be outside of the screen, it will chose a position with
+	 * a lower priority until it finds one where the whole window is inside the screen.
+	 */
+	private static void updateWindowPosition() {
+		if (mWindow.getStage() != null) {
+			int windowWidth = (int) mWindow.getWidth();
+			int windowHeight = (int) mWindow.getHeight();
+			int screenWidth = Gdx.graphics.getWidth();
+			int screenHeight = Gdx.graphics.getHeight();
+
+			int cursorX = Gdx.input.getX();
+			int cursorY = Gdx.input.getY();
+
+			// Lower right corner
+			if (cursorX - windowWidth >= 0 && cursorY - windowHeight >= 0) {
+				mWindow.setPosition(cursorX - windowWidth, screenHeight - cursorY);
+			}
+			// Lower left corner
+			else if (cursorX + windowWidth <= screenWidth && cursorY - windowHeight >= 0) {
+				mWindow.setPosition(cursorX + windowWidth, screenHeight - cursorY);
+			}
+			// Upper right corner
+			else if (cursorX - windowWidth >= 0 && cursorY + windowHeight <= screenHeight) {
+				mWindow.setPosition(cursorX - windowWidth, screenHeight - (cursorY + windowHeight));
+			}
+			// Upper left corner
+			else if (cursorX + windowWidth <= screenWidth && cursorY + windowHeight <= screenHeight) {
+				mWindow.setPosition(cursorX + windowWidth, screenHeight - (cursorY + windowHeight));
+			}
+		}
+	}
+
+	/**
+	 * @return true if the cursor is inside the current actor
+	 */
+	private boolean isCursorInsideActor() {
+		int cursorX = Gdx.input.getX();
+		int cursorY = Gdx.graphics.getHeight() - Gdx.input.getY();
+
+		Vector2 min = Vector2Pool.obtain();
+		min.set(mActor.getX(), mActor.getY());
+		mActor.localToStageCoordinates(min);
+
+
+		int minX = (int) min.x;
+		int minY = (int) min.y;
+		int maxX = (int) (min.x + mActor.getWidth());
+		int maxY = (int) (min.y + mActor.getHeight());
+
+		if (cursorX < minX || cursorX > maxX || cursorY < minY || cursorY > maxY) {
+			return false;
+		}
+
+		return true;
+	}
+
+	/** Title of the window */
+	private String mTitle;
+	/** Message to display in the tooltip */
+	private String mMessage;
+	/** GUI Actor we're listening to */
+	private Actor mActor;
+	/** Timer for activating the window */
+	private Timer mTimer;
+
+	/** Window for all tooltip listeners (as only one tooltip can be
+	 * displayed at the same time this is static */
+	private static Window mWindow = null;
+	/** Message box for mobile devices */
+	private static MsgBox mMsgBox = null;
+
+	/** Hover command name */
+	private static String SHOW_WINDOW = "SHOW_WINDOW";
+	/** Press command name */
+	private static String SHOW_MSG_BOX = "SHOW_MSG_BOX";
+}

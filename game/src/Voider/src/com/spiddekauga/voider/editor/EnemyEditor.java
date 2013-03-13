@@ -141,7 +141,8 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 			}
 
 			mSelectionAction = null;
-		} else if (outcome == Outcomes.NOT_APPLICAPLE) {
+		}
+		else if (outcome == Outcomes.NOT_APPLICAPLE) {
 			mGui.hideMsgBoxes();
 		}
 

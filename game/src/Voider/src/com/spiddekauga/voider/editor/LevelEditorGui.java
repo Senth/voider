@@ -17,8 +17,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
-import com.spiddekauga.utils.Command;
-import com.spiddekauga.utils.CommandSequence;
 import com.spiddekauga.utils.Invoker;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
@@ -30,13 +28,11 @@ import com.spiddekauga.utils.scene.ui.HideSliderValue;
 import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
 import com.spiddekauga.utils.scene.ui.SliderListener;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
+import com.spiddekauga.utils.scene.ui.TooltipListener;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Editor;
 import com.spiddekauga.voider.Config.Editor.Level;
 import com.spiddekauga.voider.editor.LevelEditor.Tools;
-import com.spiddekauga.voider.editor.commands.CEditorLoad;
-import com.spiddekauga.voider.editor.commands.CEditorNew;
-import com.spiddekauga.voider.editor.commands.CEditorSave;
 import com.spiddekauga.voider.editor.commands.CGuiSlider;
 import com.spiddekauga.voider.game.Path.PathTypes;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
@@ -46,8 +42,6 @@ import com.spiddekauga.voider.scene.AddEnemyTool;
 import com.spiddekauga.voider.scene.DrawActorTool;
 import com.spiddekauga.voider.scene.PathTool;
 import com.spiddekauga.voider.scene.TriggerTool;
-import com.spiddekauga.voider.utils.Messages;
-import com.spiddekauga.voider.utils.Messages.UnsavedActions;
 
 /**
  * GUI for the level editor
@@ -347,41 +341,42 @@ class LevelEditorGui extends EditorGui {
 
 		ButtonGroup toggleGroup = new ButtonGroup();
 
-		Button button = new TextButton("New", textStyle);
-		button.addListener(new EventListener() {
-			@Override
-			public boolean handle(Event event) {
-				if (isButtonPressed(event)) {
-					if (mLevelEditor.isUnsaved()) {
-						Button yes = new TextButton("Save first", textStyle);
-						Button no = new TextButton("Discard current", textStyle);
-						Button cancel = new TextButton("Cancel", textStyle);
+		//		Button button = new TextButton("New", textStyle);
+		//		button.addListener(new EventListener() {
+		//			@Override
+		//			public boolean handle(Event event) {
+		//				if (isButtonPressed(event)) {
+		//					if (mLevelEditor.isUnsaved()) {
+		//						Button yes = new TextButton("Save first", textStyle);
+		//						Button no = new TextButton("Discard current", textStyle);
+		//						Button cancel = new TextButton("Cancel", textStyle);
+		//
+		//						Command save = new CEditorSave(mLevelEditor);
+		//						Command newCommand = new CEditorNew(mLevelEditor);
+		//						Command saveAndNew = new CommandSequence(save, newCommand);
+		//
+		//						MsgBoxExecuter msgBox = getFreeMsgBox();
+		//
+		//						msgBox.clear();
+		//						msgBox.setTitle("New Enemy");
+		//						msgBox.content(Messages.getUnsavedMessage("level", UnsavedActions.NEW));
+		//						msgBox.button(yes, saveAndNew);
+		//						msgBox.button(no, newCommand);
+		//						msgBox.button(cancel);
+		//						msgBox.key(Keys.BACK, null);
+		//						msgBox.key(Keys.ESCAPE, null);
+		//						showMsgBox(msgBox);
+		//					} else {
+		//						mLevelEditor.newDef();
+		//					}
+		//				}
+		//				return true;
+		//			}
+		//		});
+		//		mMenuTable.add(button);
 
-						Command save = new CEditorSave(mLevelEditor);
-						Command newCommand = new CEditorNew(mLevelEditor);
-						Command saveAndNew = new CommandSequence(save, newCommand);
-
-						MsgBoxExecuter msgBox = getFreeMsgBox();
-
-						msgBox.clear();
-						msgBox.setTitle("New Enemy");
-						msgBox.content(Messages.getUnsavedMessage("level", UnsavedActions.NEW));
-						msgBox.button(yes, saveAndNew);
-						msgBox.button(no, newCommand);
-						msgBox.button(cancel);
-						msgBox.key(Keys.BACK, null);
-						msgBox.key(Keys.ESCAPE, null);
-						showMsgBox(msgBox);
-					} else {
-						mLevelEditor.newDef();
-					}
-				}
-				return true;
-			}
-		});
-		mMenuTable.add(button);
-
-		button = new TextButton("Save", textStyle);
+		Button button  = new TextButton("Save", textStyle);
+		new TooltipListener(button, "title", "test");
 		button.addListener(new EventListener() {
 			@Override
 			public boolean handle(Event event) {
@@ -393,73 +388,73 @@ class LevelEditorGui extends EditorGui {
 		});
 		mMenuTable.add(button);
 
-		button = new TextButton("Load", textStyle);
-		button.addListener(new EventListener() {
-			@Override
-			public boolean handle(Event event) {
-				if (isButtonPressed(event)) {
-					if (mLevelEditor.isUnsaved()) {
-						Button yes = new TextButton("Save first", textStyle);
-						Button no = new TextButton("Load anyway", textStyle);
-						Button cancel = new TextButton("Cancel", textStyle);
+		//		button = new TextButton("Load", textStyle);
+		//		button.addListener(new EventListener() {
+		//			@Override
+		//			public boolean handle(Event event) {
+		//				if (isButtonPressed(event)) {
+		//					if (mLevelEditor.isUnsaved()) {
+		//						Button yes = new TextButton("Save first", textStyle);
+		//						Button no = new TextButton("Load anyway", textStyle);
+		//						Button cancel = new TextButton("Cancel", textStyle);
+		//
+		//						Command save = new CEditorSave(mLevelEditor);
+		//						Command load = new CEditorLoad(mLevelEditor);
+		//						Command saveAndLoad = new CommandSequence(save, load);
+		//
+		//						MsgBoxExecuter msgBox = getFreeMsgBox();
+		//
+		//						msgBox.clear();
+		//						msgBox.setTitle("Load Enemy");
+		//						msgBox.content(Messages.getUnsavedMessage("level", UnsavedActions.LOAD));
+		//						msgBox.button(yes, saveAndLoad);
+		//						msgBox.button(no, load);
+		//						msgBox.button(cancel);
+		//						msgBox.key(Keys.BACK, null);
+		//						msgBox.key(Keys.ESCAPE, null);
+		//						showMsgBox(msgBox);
+		//					} else {
+		//						mLevelEditor.loadDef();
+		//					}
+		//				}
+		//				return true;
+		//			}
+		//		});
+		//		mMenuTable.add(button);
 
-						Command save = new CEditorSave(mLevelEditor);
-						Command load = new CEditorLoad(mLevelEditor);
-						Command saveAndLoad = new CommandSequence(save, load);
-
-						MsgBoxExecuter msgBox = getFreeMsgBox();
-
-						msgBox.clear();
-						msgBox.setTitle("Load Enemy");
-						msgBox.content(Messages.getUnsavedMessage("level", UnsavedActions.LOAD));
-						msgBox.button(yes, saveAndLoad);
-						msgBox.button(no, load);
-						msgBox.button(cancel);
-						msgBox.key(Keys.BACK, null);
-						msgBox.key(Keys.ESCAPE, null);
-						showMsgBox(msgBox);
-					} else {
-						mLevelEditor.loadDef();
-					}
-				}
-				return true;
-			}
-		});
-		mMenuTable.add(button);
-
-		button = new TextButton("Duplicate", textStyle);
-		button.addListener(new EventListener() {
-			@Override
-			public boolean handle(Event event) {
-				if (isButtonPressed(event)) {
-					if (mLevelEditor.isUnsaved()) {
-						Button yes = new TextButton("Save first", textStyle);
-						Button no = new TextButton("Duplicate anyway", textStyle);
-						Button cancel = new TextButton("Cancel", textStyle);
-
-						Command save = new CEditorSave(mLevelEditor);
-						Command newCommand = new CEditorNew(mLevelEditor);
-						Command saveAndNew = new CommandSequence(save, newCommand);
-
-						MsgBoxExecuter msgBox = getFreeMsgBox();
-
-						msgBox.clear();
-						msgBox.setTitle("Duplicate Enemy");
-						msgBox.content(Messages.getUnsavedMessage("level", UnsavedActions.DUPLICATE));
-						msgBox.button(yes, saveAndNew);
-						msgBox.button(no, newCommand);
-						msgBox.button(cancel);
-						msgBox.key(Keys.BACK, null);
-						msgBox.key(Keys.ESCAPE, null);
-						showMsgBox(msgBox);
-					} else {
-						mLevelEditor.duplicateDef();
-					}
-				}
-				return true;
-			}
-		});
-		mMenuTable.add(button);
+		//		button = new TextButton("Duplicate", textStyle);
+		//		button.addListener(new EventListener() {
+		//			@Override
+		//			public boolean handle(Event event) {
+		//				if (isButtonPressed(event)) {
+		//					if (mLevelEditor.isUnsaved()) {
+		//						Button yes = new TextButton("Save first", textStyle);
+		//						Button no = new TextButton("Duplicate anyway", textStyle);
+		//						Button cancel = new TextButton("Cancel", textStyle);
+		//
+		//						Command save = new CEditorSave(mLevelEditor);
+		//						Command newCommand = new CEditorNew(mLevelEditor);
+		//						Command saveAndNew = new CommandSequence(save, newCommand);
+		//
+		//						MsgBoxExecuter msgBox = getFreeMsgBox();
+		//
+		//						msgBox.clear();
+		//						msgBox.setTitle("Duplicate Enemy");
+		//						msgBox.content(Messages.getUnsavedMessage("level", UnsavedActions.DUPLICATE));
+		//						msgBox.button(yes, saveAndNew);
+		//						msgBox.button(no, newCommand);
+		//						msgBox.button(cancel);
+		//						msgBox.key(Keys.BACK, null);
+		//						msgBox.key(Keys.ESCAPE, null);
+		//						showMsgBox(msgBox);
+		//					} else {
+		//						mLevelEditor.duplicateDef();
+		//					}
+		//				}
+		//				return true;
+		//			}
+		//		});
+		//		mMenuTable.add(button);
 
 		button = new TextButton("Run", textStyle);
 		button.addListener(new EventListener() {
