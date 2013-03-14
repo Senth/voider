@@ -376,7 +376,6 @@ class LevelEditorGui extends EditorGui {
 		//		mMenuTable.add(button);
 
 		Button button  = new TextButton("Save", textStyle);
-		new TooltipListener(button, "title", "test");
 		button.addListener(new EventListener() {
 			@Override
 			public boolean handle(Event event) {
@@ -1138,6 +1137,7 @@ class LevelEditorGui extends EditorGui {
 
 		ButtonGroup toggleGroup = new ButtonGroup();
 		Button button = new ImageButton(imageStyle);
+		new TooltipListener(button, "title", "test");
 		mWidgets.terrain.add = button;
 		new CheckedListener(button) {
 			@Override

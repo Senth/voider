@@ -475,10 +475,10 @@ public class Config {
 		public static float TEXT_FIELD_COMBINABLE_WITHIN = 1;
 		/** Separator padding */
 		public static float SEPARATE_PADDING = 5;
-		/** Milliseconds before tooltip is shown when hovering over */
-		public static int TOOLTIP_HOVER_SHOW = 500;
-		/** Milliseconds before tooltip is shown when pressing */
-		public static int TOOLTIP_PRESS_SHOW = 1000;
+		/** Seconds before tooltip is shown when hovering over */
+		public static float TOOLTIP_HOVER_SHOW = 0.5f;
+		/** Seconds before tooltip is shown when pressing */
+		public static float TOOLTIP_PRESS_SHOW = 1;
 		/** fade duration of the tooltip when hovering */
 		public static float TOOLTIP_HOVER_FADE_DURATION = 0.3f;
 	}

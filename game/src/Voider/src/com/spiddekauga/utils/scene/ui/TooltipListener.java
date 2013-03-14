@@ -1,11 +1,6 @@
 package com.spiddekauga.utils.scene.ui;
 
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import javax.swing.Timer;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
@@ -22,6 +17,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
+import com.badlogic.gdx.utils.Timer;
+import com.badlogic.gdx.utils.Timer.Task;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceNames;
@@ -33,7 +30,7 @@ import com.spiddekauga.voider.utils.Vector2Pool;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class TooltipListener implements EventListener, ActionListener {
+public class TooltipListener implements EventListener {
 	/**
 	 * Creates a tooltip listener that will listen to the specified
 	 * actor. This will automatically add itself as a listener to
@@ -47,11 +44,6 @@ public class TooltipListener implements EventListener, ActionListener {
 		mActor = actor;
 		mTitle = title;
 		mActor.addListener(this);
-
-
-		mTimer = new Timer(0, this);
-		mTimer.setRepeats(false);
-
 
 		if (mWindow == null) {
 			Skin editorSkin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
@@ -69,44 +61,32 @@ public class TooltipListener implements EventListener, ActionListener {
 	}
 
 	@Override
-	public void actionPerformed(ActionEvent e) {
-		if (e.getActionCommand().equals(SHOW_WINDOW)) {
-			Stage stage = SceneSwitcher.getStage();
-			if (stage != null) {
-				stage.addActor(mWindow);
-				mWindow.clearChildren();
-				mWindow.setTitle(mTitle);
-				mWindow.add(mMessage);
-				mWindow.pack();
-				mWindow.addAction(Actions.fadeIn(Config.Gui.TOOLTIP_HOVER_FADE_DURATION, Interpolation.fade));
-				updateWindowPosition();
-			} else {
-				Gdx.app.error("TooltipListener", "Stage is not when showing window!");
-			}
-		} else if (e.getActionCommand().equals(SHOW_MSG_BOX)) {
-
-		} else {
-			Gdx.app.error("TooltipListener", "Unknown action command: " + e.getActionCommand());
-		}
-	}
-
-	@Override
 	public boolean handle(Event event) {
 		if (event instanceof InputEvent) {
 			if (((InputEvent) event).getType() == Type.enter) {
-				if (event.getTarget() == mActor) {
-					handleHoverEnter();
+				if (mActor.isAscendantOf(event.getTarget())) {
+					scheduleShowWindowTask();
 				}
 			} else if (((InputEvent) event).getType() == Type.exit) {
 				// Only do something if the cursor is outside the actor
 				if (!isCursorInsideActor()) {
 					handleHoverExit();
 				}
+
 			} else if (((InputEvent) event).getType() == Type.mouseMoved) {
-				if (event.getTarget() != mActor && mWindow.getTitle().equals(mTitle)) {
+				// Update position if just moved
+				if (isWindowDisplayingThis()) {
+					updateWindowPosition();
+
+					// Remove window, we're outside of the actor
 					if (!isCursorInsideActor()) {
 						handleHoverExit();
 					}
+				}
+				// Reset shown window
+				else if (mShowWindowTask != null) {
+					cancelWindowTask();
+					scheduleShowWindowTask();
 				}
 			}
 		}
@@ -115,13 +95,22 @@ public class TooltipListener implements EventListener, ActionListener {
 	}
 
 	/**
-	 * Handles hover event
+	 * Creates and schedules a new show window task
 	 */
-	private void handleHoverEnter() {
-		if (!mTimer.isRunning()) {
-			mTimer.setDelay(Config.Gui.TOOLTIP_HOVER_SHOW);
-			mTimer.setActionCommand(SHOW_WINDOW);
-			mTimer.start();
+	private void scheduleShowWindowTask() {
+		if (mShowWindowTask == null) {
+			mShowWindowTask = new ShowWindowTask();
+			Timer.schedule(mShowWindowTask, Config.Gui.TOOLTIP_HOVER_SHOW);
+		}
+	}
+
+	/**
+	 * Cancels the window task and sets it to null
+	 */
+	private void cancelWindowTask() {
+		if (mShowWindowTask != null) {
+			mShowWindowTask.cancel();
+			mShowWindowTask = null;
 		}
 	}
 
@@ -134,7 +123,7 @@ public class TooltipListener implements EventListener, ActionListener {
 			mWindow.addAction(Actions.sequence(Actions.fadeOut(Config.Gui.TOOLTIP_HOVER_FADE_DURATION, Interpolation.fade), Actions.removeActor()));
 		}
 
-		mTimer.stop();
+		cancelWindowTask();
 	}
 
 	/**
@@ -193,11 +182,73 @@ public class TooltipListener implements EventListener, ActionListener {
 		int maxX = (int) (min.x + mActor.getWidth());
 		int maxY = (int) (min.y + mActor.getHeight());
 
-		if (cursorX < minX || cursorX > maxX || cursorY < minY || cursorY > maxY) {
+		if (cursorX <= minX || cursorX >= maxX || cursorY <= minY || cursorY >= maxY) {
 			return false;
 		}
 
 		return true;
+	}
+
+	/**
+	 * Shows the window
+	 */
+	private void showWindow() {
+		Stage stage = SceneSwitcher.getStage();
+		if (stage != null) {
+			stage.addActor(mWindow);
+			mWindow.clearActions();
+			mWindow.clearChildren();
+			mWindow.setTitle(mTitle);
+			mWindow.add(mMessage);
+			mWindow.pack();
+			mWindow.addAction(Actions.fadeIn(Config.Gui.TOOLTIP_HOVER_FADE_DURATION, Interpolation.fade));
+			updateWindowPosition();
+		} else {
+			Gdx.app.error("TooltipListener", "Stage is not when showing window!");
+		}
+	}
+
+	/**
+	 * Shows the message box
+	 */
+	private void showMsgBox() {
+		// TODO show msg box
+	}
+
+	/**
+	 * Timer task that shows the window
+	 */
+	private class ShowWindowTask extends Task {
+		@Override
+		public void run() {
+			showWindow();
+			mShowWindowTask = null;
+		}
+	}
+
+	/**
+	 * Timer task that shows the message box
+	 */
+	private class ShowMsgBoxTask extends Task {
+		@Override
+		public void run() {
+			showMsgBox();
+			mShowMsgBoxTask = null;
+		}
+	}
+
+	/**
+	 * @return true if the window is currently shown
+	 */
+	private boolean isWindowShown() {
+		return mWindow.getStage() != null;
+	}
+
+	/**
+	 * @return true if the window is currently displaying this tooltip
+	 */
+	private boolean isWindowDisplayingThis() {
+		return isWindowShown() && mWindow.getTitle().equals(mTitle);
 	}
 
 	/** Title of the window */
@@ -206,8 +257,10 @@ public class TooltipListener implements EventListener, ActionListener {
 	private String mMessage;
 	/** GUI Actor we're listening to */
 	private Actor mActor;
-	/** Timer for activating the window */
-	private Timer mTimer;
+	/** Task that shows the window */
+	private Task mShowWindowTask = null;
+	/** Task that show the message box */
+	private Task mShowMsgBoxTask = null;
 
 	/** Window for all tooltip listeners (as only one tooltip can be
 	 * displayed at the same time this is static */
