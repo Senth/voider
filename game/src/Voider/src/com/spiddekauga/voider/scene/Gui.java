@@ -91,7 +91,7 @@ public abstract class Gui {
 	/**
 	 * @return free message box
 	 */
-	protected MsgBoxExecuter getFreeMsgBox() {
+	public MsgBoxExecuter getFreeMsgBox() {
 		MsgBoxExecuter msgBox = null;
 
 		// Find a free existing one
@@ -144,7 +144,7 @@ public abstract class Gui {
 	 * has been fully hidden).
 	 * @param msgBox the message box to show
 	 */
-	protected void showMsgBox(MsgBoxExecuter msgBox) {
+	public void showMsgBox(MsgBoxExecuter msgBox) {
 		// No active message box, add directly
 		if (mActiveMsgBoxes.isEmpty()) {
 			int index = Collections.linearSearch(mInactiveMsgBoxes, msgBox);

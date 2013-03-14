@@ -12,7 +12,6 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent.Type;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
-import com.badlogic.gdx.scenes.scene2d.ui.MsgBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
@@ -22,6 +21,7 @@ import com.badlogic.gdx.utils.Timer.Task;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceNames;
+import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.utils.Vector2Pool;
 
@@ -47,22 +47,17 @@ public class TooltipListener implements EventListener {
 
 		if (mWindow == null) {
 			Skin editorSkin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
-			TextButtonStyle buttonStyle = editorSkin.get("default", TextButtonStyle.class);
 
 			mWindow = new Window("", editorSkin);
 			mWindow.setModal(false);
 			mWindow.addListener(this);
-
-			mMsgBox = new MsgBox(editorSkin);
-			Button okButton = new TextButton("OK", buttonStyle);
-			mMsgBox.button(okButton);
-			mMsgBox.addListener(this);
 		}
 	}
 
 	@Override
 	public boolean handle(Event event) {
 		if (event instanceof InputEvent) {
+			//			 WINDOW (Hover events)
 			if (((InputEvent) event).getType() == Type.enter) {
 				if (mActor.isAscendantOf(event.getTarget())) {
 					scheduleShowWindowTask();
@@ -85,9 +80,20 @@ public class TooltipListener implements EventListener {
 				}
 				// Reset shown window
 				else if (mShowWindowTask != null) {
-					cancelWindowTask();
+					cancelShowWindowTask();
 					scheduleShowWindowTask();
 				}
+			}
+
+			// MSG BOX (Press events)
+			else if (((InputEvent) event).getType() == Type.touchDown) {
+				// Always skip if window is shown
+				if (!isWindowShown()) {
+					scheduleShowMsgBoxTask();
+				}
+			}
+			else if (((InputEvent) event).getType() == Type.touchUp) {
+				cancelShowMsgBoxTask();
 			}
 		}
 
@@ -107,10 +113,30 @@ public class TooltipListener implements EventListener {
 	/**
 	 * Cancels the window task and sets it to null
 	 */
-	private void cancelWindowTask() {
+	private void cancelShowWindowTask() {
 		if (mShowWindowTask != null) {
 			mShowWindowTask.cancel();
 			mShowWindowTask = null;
+		}
+	}
+
+	/**
+	 * Creates and schedules a new show msg box task
+	 */
+	private void scheduleShowMsgBoxTask() {
+		if (mShowMsgBoxTask == null) {
+			mShowMsgBoxTask = new ShowMsgBoxTask();
+			Timer.schedule(mShowMsgBoxTask, Config.Gui.TOOLTIP_PRESS_SHOW);
+		}
+	}
+
+	/**
+	 * Cancels the show msg box task and sets it to null
+	 */
+	private void cancelShowMsgBoxTask() {
+		if (mShowMsgBoxTask != null) {
+			mShowMsgBoxTask.cancel();
+			mShowMsgBoxTask = null;
 		}
 	}
 
@@ -123,7 +149,7 @@ public class TooltipListener implements EventListener {
 			mWindow.addAction(Actions.sequence(Actions.fadeOut(Config.Gui.TOOLTIP_HOVER_FADE_DURATION, Interpolation.fade), Actions.removeActor()));
 		}
 
-		cancelWindowTask();
+		cancelShowWindowTask();
 	}
 
 	/**
@@ -212,7 +238,32 @@ public class TooltipListener implements EventListener {
 	 * Shows the message box
 	 */
 	private void showMsgBox() {
-		// TODO show msg box
+		Gui gui = SceneSwitcher.getGui();
+		if (gui != null) {
+			Skin editorSkin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
+			TextButtonStyle buttonStyle = editorSkin.get("default", TextButtonStyle.class);
+
+			mMsgBox = SceneSwitcher.getGui().getFreeMsgBox();
+			Button okButton = new TextButton("OK", buttonStyle);
+			mMsgBox.button(okButton);
+			mMsgBox.setTitle(mTitle);
+			mMsgBox.content(mMessage);
+			gui.showMsgBox(mMsgBox);
+		}
+	}
+
+	/**
+	 * @return true if the window is currently shown
+	 */
+	private boolean isWindowShown() {
+		return mWindow.getStage() != null;
+	}
+
+	/**
+	 * @return true if the window is currently displaying this tooltip
+	 */
+	private boolean isWindowDisplayingThis() {
+		return isWindowShown() && mWindow.getTitle().equals(mTitle);
 	}
 
 	/**
@@ -237,20 +288,6 @@ public class TooltipListener implements EventListener {
 		}
 	}
 
-	/**
-	 * @return true if the window is currently shown
-	 */
-	private boolean isWindowShown() {
-		return mWindow.getStage() != null;
-	}
-
-	/**
-	 * @return true if the window is currently displaying this tooltip
-	 */
-	private boolean isWindowDisplayingThis() {
-		return isWindowShown() && mWindow.getTitle().equals(mTitle);
-	}
-
 	/** Title of the window */
 	private String mTitle;
 	/** Message to display in the tooltip */
@@ -266,10 +303,5 @@ public class TooltipListener implements EventListener {
 	 * displayed at the same time this is static */
 	private static Window mWindow = null;
 	/** Message box for mobile devices */
-	private static MsgBox mMsgBox = null;
-
-	/** Hover command name */
-	private static String SHOW_WINDOW = "SHOW_WINDOW";
-	/** Press command name */
-	private static String SHOW_MSG_BOX = "SHOW_MSG_BOX";
+	private static MsgBoxExecuter mMsgBox = null;
 }

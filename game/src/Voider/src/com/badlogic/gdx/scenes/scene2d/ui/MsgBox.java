@@ -52,6 +52,14 @@ public class MsgBox extends Dialog {
 		setTitleAlignment(Align.center);
 		contentTable.clearChildren();
 		buttonTable.clearChildren();
+		clearActions();
+	}
+
+	/**
+	 * Clears the content
+	 */
+	public void clearContent() {
+		contentTable.clearChildren();
 	}
 
 	/**
