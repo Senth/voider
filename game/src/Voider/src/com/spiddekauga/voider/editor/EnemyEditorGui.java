@@ -1,8 +1,6 @@
 package com.spiddekauga.voider.editor;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.scenes.scene2d.Event;
-import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
@@ -19,8 +17,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
+import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.utils.scene.ui.Cell;
-import com.spiddekauga.utils.scene.ui.CheckedListener;
 import com.spiddekauga.utils.scene.ui.HideListener;
 import com.spiddekauga.utils.scene.ui.Row;
 import com.spiddekauga.utils.scene.ui.SliderListener;
@@ -233,9 +231,9 @@ public class EnemyEditorGui extends ActorGui {
 		CheckBox checkBox = new CheckBox("Path", checkBoxStyle);
 		checkBox.addListener(movementChecker);
 		mWidgets.movement.pathBox = checkBox;
-		new CheckedListener(checkBox) {
+		new ButtonListener(checkBox) {
 			@Override
-			protected void onChange(boolean checked) {
+			protected void onChecked(boolean checked) {
 				addInnerTable(mPathTable, mMovementTypeTable);
 				mEnemyEditor.setMovementType(MovementTypes.PATH);
 			}
@@ -249,9 +247,9 @@ public class EnemyEditorGui extends ActorGui {
 		checkBox = new CheckBox("Stationary", checkBoxStyle);
 		checkBox.addListener(movementChecker);
 		mWidgets.movement.stationaryBox = checkBox;
-		new CheckedListener(checkBox) {
+		new ButtonListener(checkBox) {
 			@Override
-			protected void onChange(boolean checked) {
+			protected void onChecked(boolean checked) {
 				addInnerTable(null, mMovementTypeTable);
 				mEnemyEditor.setMovementType(MovementTypes.STATIONARY);
 			}
@@ -265,9 +263,9 @@ public class EnemyEditorGui extends ActorGui {
 		checkBox = new CheckBox("AI", checkBoxStyle);
 		checkBox.addListener(movementChecker);
 		mWidgets.movement.aiBox = checkBox;
-		new CheckedListener(checkBox) {
+		new ButtonListener(checkBox) {
 			@Override
-			protected void onChange(boolean checked) {
+			protected void onChecked(boolean checked) {
 				addInnerTable(mPathTable, mMovementTypeTable);
 				mMovementTypeTable.row();
 				mMovementTypeTable.add(mAiTable);
@@ -499,9 +497,9 @@ public class EnemyEditorGui extends ActorGui {
 		Button button = new TextButton("Weapons OFF", toggleButtonStyle);
 		mWidgets.weapon.toggleButton = button;
 		mWeaponTable.add(button);
-		new CheckedListener(button) {
+		new ButtonListener(button) {
 			@Override
-			protected void onChange(boolean checked) {
+			protected void onChecked(boolean checked) {
 				if (checked) {
 					if (mButton instanceof TextButton) {
 						((TextButton) mButton).setText("Weapons ON");
@@ -547,15 +545,12 @@ public class EnemyEditorGui extends ActorGui {
 		// Select type
 		button = new TextButton("Select bullet type", textButtonStyle);
 		bulletTable.add(button);
-		button.addListener(new EventListener() {
+		new ButtonListener(button) {
 			@Override
-			public boolean handle(Event event) {
-				if (isButtonPressed(event)) {
-					mEnemyEditor.selectBulletType();
-				}
-				return true;
+			protected void onPressed() {
+				mEnemyEditor.selectBulletType();
 			}
-		});
+		};
 
 		Label label = new Label("", labelStyle);
 		mWidgets.weapon.bulletName = label;
@@ -653,9 +648,9 @@ public class EnemyEditorGui extends ActorGui {
 		aimHider.addToggleActor(button);
 		buttonGroup = new ButtonGroup();
 		buttonGroup.add(button);
-		new CheckedListener(button) {
+		new ButtonListener(button) {
 			@Override
-			protected void onChange(boolean checked) {
+			protected void onChecked(boolean checked) {
 				if (checked) {
 					mEnemyEditor.setAimType(AimTypes.ON_PLAYER);
 				}
@@ -668,9 +663,9 @@ public class EnemyEditorGui extends ActorGui {
 		mWeaponTable.add(button);
 		aimHider.addToggleActor(button);
 		buttonGroup.add(button);
-		new CheckedListener(button) {
+		new ButtonListener(button) {
 			@Override
-			protected void onChange(boolean checked) {
+			protected void onChecked(boolean checked) {
 				if (checked) {
 					mEnemyEditor.setAimType(AimTypes.MOVE_DIRECTION);
 				}
@@ -684,9 +679,9 @@ public class EnemyEditorGui extends ActorGui {
 		mWeaponTable.add(button);
 		aimHider.addToggleActor(button);
 		buttonGroup.add(button);
-		new CheckedListener(button) {
+		new ButtonListener(button) {
 			@Override
-			protected void onChange(boolean checked) {
+			protected void onChecked(boolean checked) {
 				if (checked) {
 					mEnemyEditor.setAimType(AimTypes.IN_FRONT_OF_PLAYER);
 				}

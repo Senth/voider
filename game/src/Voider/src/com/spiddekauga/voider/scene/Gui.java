@@ -9,7 +9,6 @@ import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent;
 import com.spiddekauga.utils.Collections;
 import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
@@ -221,34 +220,6 @@ public abstract class Gui {
 			}
 		}
 		return null;
-	}
-
-	/**
-	 * Checks if a button is checked
-	 * @param event checks if the target inside the event is a button and it's checked
-	 * @return true if the button is checked, false if the target isn't a button or the
-	 * button isn't checked.
-	 */
-	protected static boolean isButtonChecked(Event event) {
-		if (event instanceof ChangeEvent) {
-			if (event.getTarget() instanceof Button) {
-				return ((Button)event.getTarget()).isChecked();
-			}
-		}
-		return false;
-	}
-
-	/**
-	 * Checks if a button is pressed
-	 * @param event checks if the target inside the event is a button and it's pressed
-	 * @return true if the button is pressed, false if the target isn't a button or the
-	 * button isn't checked.
-	 */
-	protected static boolean isButtonPressed(Event event) {
-		if (event.getTarget() instanceof Button) {
-			return ((Button)event.getTarget()).isPressed();
-		}
-		return false;
 	}
 
 	/**

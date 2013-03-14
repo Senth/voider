@@ -45,6 +45,8 @@ public class TooltipListener implements EventListener {
 		mTitle = title;
 		mActor.addListener(this);
 
+		mGui = SceneSwitcher.getGui();
+
 		if (mWindow == null) {
 			Skin editorSkin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
 
@@ -54,46 +56,59 @@ public class TooltipListener implements EventListener {
 		}
 	}
 
+	/**
+	 * @return true if the message box tooltip is currently active
+	 */
+	public boolean isMsgBoxActive() {
+		return !(mMsgBox == null || mMsgBox.isHidden());
+	}
+
 	@Override
 	public boolean handle(Event event) {
 		if (event instanceof InputEvent) {
-			//			 WINDOW (Hover events)
-			if (((InputEvent) event).getType() == Type.enter) {
-				if (mActor.isAscendantOf(event.getTarget())) {
-					scheduleShowWindowTask();
-				}
-			} else if (((InputEvent) event).getType() == Type.exit) {
-				// Only do something if the cursor is outside the actor
-				if (!isCursorInsideActor()) {
-					handleHoverExit();
-				}
-
-			} else if (((InputEvent) event).getType() == Type.mouseMoved) {
-				// Update position if just moved
-				if (isWindowDisplayingThis()) {
-					updateWindowPosition();
-
-					// Remove window, we're outside of the actor
-					if (!isCursorInsideActor()) {
-						handleHoverExit();
-					}
-				}
-				// Reset shown window
-				else if (mShowWindowTask != null) {
-					cancelShowWindowTask();
-					scheduleShowWindowTask();
-				}
-			}
+			// WINDOW (Hover events)
+			//			if (((InputEvent) event).getType() == Type.enter) {
+			//				if (mActor.isAscendantOf(event.getTarget())) {
+			//					scheduleShowWindowTask();
+			//					return true;
+			//				}
+			//			} else if (((InputEvent) event).getType() == Type.exit) {
+			//				// Only do something if the cursor is outside the actor
+			//				if (!isCursorInsideActor()) {
+			//					handleHoverExit();
+			//					return true;
+			//				}
+			//
+			//			} else if (((InputEvent) event).getType() == Type.mouseMoved) {
+			//				// Update position if just moved
+			//				if (isWindowDisplayingThis()) {
+			//					updateWindowPosition();
+			//
+			//					// Remove window, we're outside of the actor
+			//					if (!isCursorInsideActor()) {
+			//						handleHoverExit();
+			//					}
+			//					return true;
+			//				}
+			//				// Reset shown window
+			//				else if (mShowWindowTask != null) {
+			//					cancelShowWindowTask();
+			//					scheduleShowWindowTask();
+			//					return true;
+			//				}
+			//			}
 
 			// MSG BOX (Press events)
-			else if (((InputEvent) event).getType() == Type.touchDown) {
+			if (((InputEvent) event).getType() == Type.touchDown) {
 				// Always skip if window is shown
 				if (!isWindowShown()) {
 					scheduleShowMsgBoxTask();
 				}
+				return true;
 			}
 			else if (((InputEvent) event).getType() == Type.touchUp) {
 				cancelShowMsgBoxTask();
+				return true;
 			}
 		}
 
@@ -238,18 +253,15 @@ public class TooltipListener implements EventListener {
 	 * Shows the message box
 	 */
 	private void showMsgBox() {
-		Gui gui = SceneSwitcher.getGui();
-		if (gui != null) {
-			Skin editorSkin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
-			TextButtonStyle buttonStyle = editorSkin.get("default", TextButtonStyle.class);
+		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
+		TextButtonStyle buttonStyle = editorSkin.get("default", TextButtonStyle.class);
 
-			mMsgBox = SceneSwitcher.getGui().getFreeMsgBox();
-			Button okButton = new TextButton("OK", buttonStyle);
-			mMsgBox.button(okButton);
-			mMsgBox.setTitle(mTitle);
-			mMsgBox.content(mMessage);
-			gui.showMsgBox(mMsgBox);
-		}
+		mMsgBox = mGui.getFreeMsgBox();
+		Button okButton = new TextButton("OK", buttonStyle);
+		mMsgBox.button(okButton);
+		mMsgBox.setTitle(mTitle);
+		mMsgBox.content(mMessage);
+		mGui.showMsgBox(mMsgBox);
 	}
 
 	/**
@@ -298,10 +310,12 @@ public class TooltipListener implements EventListener {
 	private Task mShowWindowTask = null;
 	/** Task that show the message box */
 	private Task mShowMsgBoxTask = null;
+	/** Gui for the current scene */
+	private Gui mGui;
+	/** Message box for mobile devices */
+	private MsgBoxExecuter mMsgBox = null;
 
 	/** Window for all tooltip listeners (as only one tooltip can be
 	 * displayed at the same time this is static */
 	private static Window mWindow = null;
-	/** Message box for mobile devices */
-	private static MsgBoxExecuter mMsgBox = null;
 }

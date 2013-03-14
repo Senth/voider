@@ -2,8 +2,6 @@ package com.spiddekauga.voider.editor;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
-import com.badlogic.gdx.scenes.scene2d.Event;
-import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
@@ -21,7 +19,7 @@ import com.spiddekauga.utils.Invoker;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
-import com.spiddekauga.utils.scene.ui.CheckedListener;
+import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.utils.scene.ui.HideListener;
 import com.spiddekauga.utils.scene.ui.HideManual;
 import com.spiddekauga.utils.scene.ui.HideSliderValue;
@@ -376,15 +374,12 @@ class LevelEditorGui extends EditorGui {
 		//		mMenuTable.add(button);
 
 		Button button  = new TextButton("Save", textStyle);
-		button.addListener(new EventListener() {
+		new ButtonListener(button) {
 			@Override
-			public boolean handle(Event event) {
-				if (isButtonPressed(event)) {
-					mLevelEditor.saveDef();
-				}
-				return true;
+			protected void onPressed() {
+				mLevelEditor.saveDef();
 			}
-		});
+		};
 		mMenuTable.add(button);
 
 		//		button = new TextButton("Load", textStyle);
@@ -456,24 +451,22 @@ class LevelEditorGui extends EditorGui {
 		//		mMenuTable.add(button);
 
 		button = new TextButton("Run", textStyle);
-		button.addListener(new EventListener() {
+		TooltipListener tooltipListener = new TooltipListener(button, "title", "test");
+		new ButtonListener(button, tooltipListener) {
 			@Override
-			public boolean handle(Event event) {
-				if (isButtonPressed(event)) {
-					mLevelEditor.runFromHere();
-				}
-				return true;
+			protected void onPressed() {
+				mLevelEditor.runFromHere();
 			}
-		});
+		};
 		mMenuTable.add(button);
 
 		GuiCheckCommandCreator menuChecker = new GuiCheckCommandCreator(mInvoker);
 		button = new TextButton("Static Terrain", textToogleStyle);
 		mWidgets.menu.terrain = button;
 		button.addListener(menuChecker);
-		new CheckedListener(button) {
+		new ButtonListener(button) {
 			@Override
-			public void onChange(boolean checked) {
+			public void onChecked(boolean checked) {
 				if (checked) {
 					mLevelEditor.switchTool(Tools.STATIC_TERRAIN);
 					switchTool(mStaticTerrainTable);
@@ -486,9 +479,9 @@ class LevelEditorGui extends EditorGui {
 		button = new TextButton("Pickup", textToogleStyle);
 		mWidgets.menu.pickup = button;
 		button.addListener(menuChecker);
-		new CheckedListener(button) {
+		new ButtonListener(button) {
 			@Override
-			public void onChange(boolean checked) {
+			public void onChecked(boolean checked) {
 				if (checked) {
 					mLevelEditor.switchTool(Tools.PICKUP);
 					switchTool(mPickupTable);
@@ -501,9 +494,9 @@ class LevelEditorGui extends EditorGui {
 		button = new TextButton("Enemy", textToogleStyle);
 		mWidgets.menu.enemy = button;
 		button.addListener(menuChecker);
-		new CheckedListener(button) {
+		new ButtonListener(button) {
 			@Override
-			protected void onChange(boolean checked) {
+			protected void onChecked(boolean checked) {
 				mLevelEditor.switchTool(Tools.ENEMY);
 				switchTool(mEnemyTable);
 			}
@@ -512,33 +505,29 @@ class LevelEditorGui extends EditorGui {
 		mMenuTable.add(button);
 
 		button = new TextButton("Options", textStyle);
-		button.addListener(new EventListener() {
+		new ButtonListener(button) {
 			@Override
-			public boolean handle(Event event) {
-				if (isButtonPressed(event)) {
-					Button ok = new TextButton("OK", textStyle);
+			protected void onPressed() {
+				Button ok = new TextButton("OK", textStyle);
 
-					AlignTable test = new AlignTable();
-					Skin editorSkin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
-					LabelStyle labelStyle = editorSkin.get(LabelStyle.class);
-					Label label = new Label("Test label", labelStyle);
-					test.add(label);
-					test.invalidate();
+				AlignTable test = new AlignTable();
+				Skin editorSkin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
+				LabelStyle labelStyle = editorSkin.get(LabelStyle.class);
+				Label label = new Label("Test label", labelStyle);
+				test.add(label);
+				test.invalidate();
 
-					MsgBoxExecuter msgBox = getFreeMsgBox();
+				MsgBoxExecuter msgBox = getFreeMsgBox();
 
-					msgBox.clear();
-					msgBox.setTitle("Level options");
-					msgBox.content(mOptionTable);
-					msgBox.button(ok);
-					msgBox.key(Keys.BACK, null);
-					msgBox.key(Keys.ESCAPE, null);
-					showMsgBox(msgBox);
-				}
-
-				return false;
+				msgBox.clear();
+				msgBox.setTitle("Level options");
+				msgBox.content(mOptionTable);
+				msgBox.button(ok);
+				msgBox.key(Keys.BACK, null);
+				msgBox.key(Keys.ESCAPE, null);
+				showMsgBox(msgBox);
 			}
-		});
+		};
 		mMenuTable.add(button);
 
 		mMainTable.add(mMenuTable);
@@ -698,9 +687,9 @@ class LevelEditorGui extends EditorGui {
 		buttonGroup.add(button);
 		mEnemyTable.add(button);
 		button.addListener(enemyOuterMenu);
-		new CheckedListener(button) {
+		new ButtonListener(button) {
 			@Override
-			protected void onChange(boolean checked) {
+			protected void onChecked(boolean checked) {
 				mLevelEditor.switchTool(Tools.ENEMY);
 			}
 		};
@@ -711,9 +700,9 @@ class LevelEditorGui extends EditorGui {
 		buttonGroup.add(button);
 		mEnemyTable.add(button);
 		button.addListener(enemyOuterMenu);
-		new CheckedListener(button) {
+		new ButtonListener(button) {
 			@Override
-			protected void onChange(boolean checked) {
+			protected void onChecked(boolean checked) {
 				mLevelEditor.switchTool(Tools.PATH);
 			}
 		};
@@ -724,9 +713,9 @@ class LevelEditorGui extends EditorGui {
 		buttonGroup.add(button);
 		mEnemyTable.add(button);
 		button.addListener(enemyOuterMenu);
-		new CheckedListener(button) {
+		new ButtonListener(button) {
 			@Override
-			protected void onChange(boolean checked) {
+			protected void onChecked(boolean checked) {
 				mLevelEditor.switchTool(Tools.TRIGGER);
 			}
 		};
@@ -743,9 +732,9 @@ class LevelEditorGui extends EditorGui {
 		menuGroup.add(button);
 		mEnemyTable.add(button);
 		button.addListener(enemyInnerMenu);
-		new CheckedListener(button) {
+		new ButtonListener(button) {
 			@Override
-			protected void onChange(boolean checked) {
+			protected void onChecked(boolean checked) {
 				if (checked) {
 					mLevelEditor.setEnemyState(AddEnemyTool.States.SELECT);
 				}
@@ -758,9 +747,9 @@ class LevelEditorGui extends EditorGui {
 		menuGroup.add(button);
 		mEnemyTable.add(button);
 		button.addListener(enemyInnerMenu);
-		new CheckedListener(button) {
+		new ButtonListener(button) {
 			@Override
-			protected void onChange(boolean checked) {
+			protected void onChecked(boolean checked) {
 				if (checked) {
 					mLevelEditor.setEnemyState(AddEnemyTool.States.ADD);
 				}
@@ -776,9 +765,9 @@ class LevelEditorGui extends EditorGui {
 		menuGroup.add(button);
 		mEnemyTable.add(button);
 		button.addListener(enemyInnerMenu);
-		new CheckedListener(button) {
+		new ButtonListener(button) {
 			@Override
-			protected void onChange(boolean checked) {
+			protected void onChecked(boolean checked) {
 				if (checked) {
 					mLevelEditor.setEnemyState(AddEnemyTool.States.REMOVE);
 				}
@@ -791,9 +780,9 @@ class LevelEditorGui extends EditorGui {
 		menuGroup.add(button);
 		mEnemyTable.add(button);
 		button.addListener(enemyInnerMenu);
-		new CheckedListener(button) {
+		new ButtonListener(button) {
 			@Override
-			protected void onChange(boolean checked) {
+			protected void onChecked(boolean checked) {
 				if (checked) {
 					mLevelEditor.setEnemyState(AddEnemyTool.States.MOVE);
 				}
@@ -805,15 +794,12 @@ class LevelEditorGui extends EditorGui {
 		button = new TextButton("Select type", textStyle);
 		enemyAddHider.addToggleActor(button);
 		mEnemyTable.add(button);
-		button.addListener(new EventListener() {
+		new ButtonListener(button) {
 			@Override
-			public boolean handle(Event event) {
-				if (isButtonPressed(event)) {
-					mLevelEditor.selectEnemy();
-				}
-				return true;
+			protected void onPressed() {
+				mLevelEditor.selectEnemy();
 			}
-		});
+		};
 
 
 		// Enemy options when an enemy is selected
@@ -873,9 +859,9 @@ class LevelEditorGui extends EditorGui {
 		mWidgets.enemy.activateTrigger = button;
 		mEnemyTable.add(button);
 		button.addListener(enemyInnerMenu);
-		new CheckedListener(button) {
+		new ButtonListener(button) {
 			@Override
-			protected void onChange(boolean checked) {
+			protected void onChecked(boolean checked) {
 				if (checked) {
 					mLevelEditor.setEnemyState(AddEnemyTool.States.SET_ACTIVATE_TRIGGER);
 				}
@@ -910,9 +896,9 @@ class LevelEditorGui extends EditorGui {
 		mWidgets.enemy.deactivateTrigger = button;
 		mEnemyTable.add(button);
 		button.addListener(enemyInnerMenu);
-		new CheckedListener(button) {
+		new ButtonListener(button) {
 			@Override
-			protected void onChange(boolean checked) {
+			protected void onChecked(boolean checked) {
 				if (checked) {
 					mLevelEditor.setEnemyState(AddEnemyTool.States.SET_DEACTIVATE_TRIGGER);
 				}
@@ -957,9 +943,9 @@ class LevelEditorGui extends EditorGui {
 		mEnemyTable.add(button);
 		mHiders.path.addToggleActor(button);
 		button.addListener(pathMenu);
-		new CheckedListener(button) {
+		new ButtonListener(button) {
 			@Override
-			protected void onChange(boolean checked) {
+			protected void onChecked(boolean checked) {
 				if (checked) {
 					mLevelEditor.setPathState(PathTool.States.SELECT);
 				}
@@ -972,9 +958,9 @@ class LevelEditorGui extends EditorGui {
 		mEnemyTable.add(button);
 		mHiders.path.addToggleActor(button);
 		button.addListener(pathMenu);
-		new CheckedListener(button) {
+		new ButtonListener(button) {
 			@Override
-			protected void onChange(boolean checked) {
+			protected void onChecked(boolean checked) {
 				if (checked) {
 					mLevelEditor.setPathState(PathTool.States.ADD_CORNER);
 				}
@@ -987,9 +973,9 @@ class LevelEditorGui extends EditorGui {
 		mEnemyTable.add(button);
 		mHiders.path.addToggleActor(button);
 		button.addListener(pathMenu);
-		new CheckedListener(button) {
+		new ButtonListener(button) {
 			@Override
-			protected void onChange(boolean checked) {
+			protected void onChecked(boolean checked) {
 				if (checked) {
 					mLevelEditor.setPathState(PathTool.States.REMOVE);
 				}
@@ -1002,9 +988,9 @@ class LevelEditorGui extends EditorGui {
 		mEnemyTable.add(button);
 		mHiders.path.addToggleActor(button);
 		button.addListener(pathMenu);
-		new CheckedListener(button) {
+		new ButtonListener(button) {
 			@Override
-			protected void onChange(boolean checked) {
+			protected void onChecked(boolean checked) {
 				if (checked) {
 					mLevelEditor.setPathState(PathTool.States.MOVE);
 				}
@@ -1020,9 +1006,9 @@ class LevelEditorGui extends EditorGui {
 		mEnemyTable.add(button);
 		buttonGroup.add(button);
 		mHiders.pathOptions.addToggleActor(button);
-		new CheckedListener(button) {
+		new ButtonListener(button) {
 			@Override
-			protected void onChange(boolean checked) {
+			protected void onChecked(boolean checked) {
 				if (checked) {
 					mLevelEditor.setPathType(PathTypes.ONCE);
 				}
@@ -1034,9 +1020,9 @@ class LevelEditorGui extends EditorGui {
 		mEnemyTable.add(button);
 		buttonGroup.add(button);
 		mHiders.pathOptions.addToggleActor(button);
-		new CheckedListener(button) {
+		new ButtonListener(button) {
 			@Override
-			protected void onChange(boolean checked) {
+			protected void onChecked(boolean checked) {
 				if (checked) {
 					mLevelEditor.setPathType(PathTypes.LOOP);
 				}
@@ -1048,9 +1034,9 @@ class LevelEditorGui extends EditorGui {
 		mEnemyTable.add(button);
 		buttonGroup.add(button);
 		mHiders.pathOptions.addToggleActor(button);
-		new CheckedListener(button) {
+		new ButtonListener(button) {
 			@Override
-			protected void onChange(boolean checked) {
+			protected void onChecked(boolean checked) {
 				if (checked) {
 					mLevelEditor.setPathType(PathTypes.BACK_AND_FORTH);
 				}
@@ -1070,9 +1056,9 @@ class LevelEditorGui extends EditorGui {
 		ButtonGroup toggleGroup = new ButtonGroup();
 		Button button = new ImageButton(addStyle);
 		mWidgets.pickup.add = button;
-		new CheckedListener(button) {
+		new ButtonListener(button) {
 			@Override
-			public void onChange(boolean checked) {
+			public void onChecked(boolean checked) {
 				if (checked) {
 					mLevelEditor.setPickupState(AddActorTool.States.ADD);
 				}
@@ -1084,9 +1070,9 @@ class LevelEditorGui extends EditorGui {
 
 		button = new TextButton("Remove", toggleStyle);
 		mWidgets.pickup.remove = button;
-		new CheckedListener(button) {
+		new ButtonListener(button) {
 			@Override
-			public void onChange(boolean checked) {
+			public void onChecked(boolean checked) {
 				if (checked) {
 					mLevelEditor.setPickupState(AddActorTool.States.REMOVE);
 				}
@@ -1097,9 +1083,9 @@ class LevelEditorGui extends EditorGui {
 
 		button = new TextButton("Move", toggleStyle);
 		mWidgets.pickup.move = button;
-		new CheckedListener(button) {
+		new ButtonListener(button) {
 			@Override
-			public void onChange(boolean checked) {
+			public void onChecked(boolean checked) {
 				if (checked) {
 					mLevelEditor.setPickupState(AddActorTool.States.MOVE);
 				}
@@ -1110,15 +1096,12 @@ class LevelEditorGui extends EditorGui {
 
 		mPickupTable.row();
 		button = new TextButton("Select type", textStyle);
-		button.addListener(new EventListener() {
+		new ButtonListener(button) {
 			@Override
-			public boolean handle(Event event) {
-				if (isButtonPressed(event)) {
-					mLevelEditor.selectPickup();
-				}
-				return true;
+			protected void onPressed() {
+				mLevelEditor.selectPickup();
 			}
-		});
+		};
 		addHider.addToggleActor(button);
 		mPickupTable.add(button);
 
@@ -1139,9 +1122,9 @@ class LevelEditorGui extends EditorGui {
 		Button button = new ImageButton(imageStyle);
 		new TooltipListener(button, "title", "test");
 		mWidgets.terrain.add = button;
-		new CheckedListener(button) {
+		new ButtonListener(button) {
 			@Override
-			public void onChange(boolean checked) {
+			public void onChecked(boolean checked) {
 				if (checked) {
 					mLevelEditor.setStaticTerrainState(DrawActorTool.States.ADD_CORNER);
 				}
@@ -1152,9 +1135,9 @@ class LevelEditorGui extends EditorGui {
 
 		button = new TextButton("Remove", textStyle);
 		mWidgets.terrain.remove = button;
-		new CheckedListener(button) {
+		new ButtonListener(button) {
 			@Override
-			public void onChange(boolean checked) {
+			public void onChecked(boolean checked) {
 				if (checked) {
 					mLevelEditor.setStaticTerrainState(DrawActorTool.States.REMOVE);
 				}
@@ -1165,9 +1148,9 @@ class LevelEditorGui extends EditorGui {
 
 		button = new TextButton("Move", textStyle);
 		mWidgets.terrain.move = button;
-		new CheckedListener(button) {
+		new ButtonListener(button) {
 			@Override
-			public void onChange(boolean checked) {
+			public void onChecked(boolean checked) {
 				if (checked) {
 					mLevelEditor.setStaticTerrainState(DrawActorTool.States.MOVE);
 				}
@@ -1198,9 +1181,9 @@ class LevelEditorGui extends EditorGui {
 		mEnemyTable.add(button);
 		mHiders.trigger.addToggleActor(button);
 		button.addListener(triggerMenu);
-		new CheckedListener(button) {
+		new ButtonListener(button) {
 			@Override
-			protected void onChange(boolean checked) {
+			protected void onChecked(boolean checked) {
 				if (checked) {
 					mLevelEditor.setTriggerState(TriggerTool.States.SELECT);
 				}
@@ -1213,9 +1196,9 @@ class LevelEditorGui extends EditorGui {
 		mEnemyTable.add(button);
 		mHiders.trigger.addToggleActor(button);
 		button.addListener(triggerMenu);
-		new CheckedListener(button) {
+		new ButtonListener(button) {
 			@Override
-			protected void onChange(boolean checked) {
+			protected void onChecked(boolean checked) {
 				if (checked) {
 					mLevelEditor.setTriggerState(TriggerTool.States.ADD);
 				}
@@ -1228,9 +1211,9 @@ class LevelEditorGui extends EditorGui {
 		mEnemyTable.add(button);
 		mHiders.trigger.addToggleActor(button);
 		button.addListener(triggerMenu);
-		new CheckedListener(button) {
+		new ButtonListener(button) {
 			@Override
-			protected void onChange(boolean checked) {
+			protected void onChecked(boolean checked) {
 				if (checked) {
 					mLevelEditor.setTriggerState(TriggerTool.States.REMOVE);
 				}
@@ -1243,9 +1226,9 @@ class LevelEditorGui extends EditorGui {
 		mEnemyTable.add(button);
 		mHiders.trigger.addToggleActor(button);
 		button.addListener(triggerMenu);
-		new CheckedListener(button) {
+		new ButtonListener(button) {
 			@Override
-			protected void onChange(boolean checked) {
+			protected void onChecked(boolean checked) {
 				if (checked) {
 					mLevelEditor.setTriggerState(TriggerTool.States.MOVE);
 				}

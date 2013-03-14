@@ -17,7 +17,7 @@ import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.Cell;
-import com.spiddekauga.utils.scene.ui.CheckedListener;
+import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.utils.scene.ui.Row;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
 import com.spiddekauga.voider.Config;
@@ -84,9 +84,9 @@ public class SelectDefGui extends Gui {
 		if (mShowMineOnlyCheckbox) {
 			CheckBox checkBox = new CheckBox("Only mine", checkBoxStyle);
 			checkBox.setChecked(mSelectDefScene.shallShowMineOnly());
-			new CheckedListener(checkBox) {
+			new ButtonListener(checkBox) {
 				@Override
-				protected void onChange(boolean checked) {
+				protected void onChecked(boolean checked) {
 					mSelectDefScene.setShowMineOnly(checked);
 				}
 			};

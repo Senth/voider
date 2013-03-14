@@ -2,8 +2,6 @@ package com.spiddekauga.voider.editor;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
-import com.badlogic.gdx.scenes.scene2d.Event;
-import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
@@ -23,7 +21,7 @@ import com.spiddekauga.utils.Invoker;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
-import com.spiddekauga.utils.scene.ui.CheckedListener;
+import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.utils.scene.ui.HideListener;
 import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
 import com.spiddekauga.utils.scene.ui.SliderListener;
@@ -193,142 +191,124 @@ public abstract class ActorGui extends EditorGui {
 
 		// New Enemy
 		Button button = new TextButton("New", textStyle);
-		button.addListener(new EventListener() {
+		new ButtonListener(button) {
 			@Override
-			public boolean handle(Event event) {
-				if (isButtonPressed(event)) {
-					if (mActorEditor.isUnsaved()) {
-						Button yes = new TextButton("Save first", textStyle);
-						Button no = new TextButton("Discard current", textStyle);
-						Button cancel = new TextButton("Cancel", textStyle);
+			protected void onPressed() {
+				if (mActorEditor.isUnsaved()) {
+					Button yes = new TextButton("Save first", textStyle);
+					Button no = new TextButton("Discard current", textStyle);
+					Button cancel = new TextButton("Cancel", textStyle);
 
-						Command save = new CEditorSave(mActorEditor);
-						Command newCommand = new CEditorNew(mActorEditor);
-						Command saveAndNew = new CommandSequence(save, newCommand);
+					Command save = new CEditorSave(mActorEditor);
+					Command newCommand = new CEditorNew(mActorEditor);
+					Command saveAndNew = new CommandSequence(save, newCommand);
 
-						MsgBoxExecuter msgBox = getFreeMsgBox();
+					MsgBoxExecuter msgBox = getFreeMsgBox();
 
-						msgBox.clear();
-						msgBox.setTitle("New Enemy");
-						msgBox.content(Messages.getUnsavedMessage(actorName, UnsavedActions.NEW));
-						msgBox.button(yes, saveAndNew);
-						msgBox.button(no, newCommand);
-						msgBox.button(cancel);
-						msgBox.key(Keys.BACK, null);
-						msgBox.key(Keys.ESCAPE, null);
-						showMsgBox(msgBox);
-					} else {
-						mActorEditor.newDef();
-					}
+					msgBox.clear();
+					msgBox.setTitle("New Enemy");
+					msgBox.content(Messages.getUnsavedMessage(actorName, UnsavedActions.NEW));
+					msgBox.button(yes, saveAndNew);
+					msgBox.button(no, newCommand);
+					msgBox.button(cancel);
+					msgBox.key(Keys.BACK, null);
+					msgBox.key(Keys.ESCAPE, null);
+					showMsgBox(msgBox);
+				} else {
+					mActorEditor.newDef();
 				}
-				return true;
 			}
-		});
+		};
 		mMainTable.add(button);
 
 		// Save
 		button = new TextButton("Save", textStyle);
-		button.addListener(new EventListener() {
+		new ButtonListener(button) {
 			@Override
-			public boolean handle(Event event) {
-				if (isButtonPressed(event)) {
-					mActorEditor.saveDef();
-				}
-				return true;
+			protected void onPressed() {
+				mActorEditor.saveDef();
 			}
-		});
+		};
 		mMainTable.add(button);
 
 		// Load
 		button = new TextButton("Load", textStyle);
-		button.addListener(new EventListener() {
+		new ButtonListener(button) {
 			@Override
-			public boolean handle(Event event) {
-				if (isButtonPressed(event)) {
-					if (mActorEditor.isUnsaved()) {
-						Button yes = new TextButton("Save first", textStyle);
-						Button no = new TextButton("Load anyway", textStyle);
-						Button cancel = new TextButton("Cancel", textStyle);
+			protected void onPressed() {
+				if (mActorEditor.isUnsaved()) {
+					Button yes = new TextButton("Save first", textStyle);
+					Button no = new TextButton("Load anyway", textStyle);
+					Button cancel = new TextButton("Cancel", textStyle);
 
-						CommandSequence saveAndLoad = new CommandSequence(new CEditorSave(mActorEditor), new CEditorLoad(mActorEditor));
+					CommandSequence saveAndLoad = new CommandSequence(new CEditorSave(mActorEditor), new CEditorLoad(mActorEditor));
 
-						MsgBoxExecuter msgBox = getFreeMsgBox();
+					MsgBoxExecuter msgBox = getFreeMsgBox();
 
-						msgBox.clear();
-						msgBox.setTitle("Load Enemy");
-						msgBox.content(Messages.getUnsavedMessage(actorName, UnsavedActions.LOAD));
-						msgBox.button(yes, saveAndLoad);
-						msgBox.button(no, new CEditorLoad(mActorEditor));
-						msgBox.button(cancel);
-						msgBox.key(Keys.BACK, null);
-						msgBox.key(Keys.ESCAPE, null);
-						showMsgBox(msgBox);
-					} else {
-						mActorEditor.loadDef();
-					}
+					msgBox.clear();
+					msgBox.setTitle("Load Enemy");
+					msgBox.content(Messages.getUnsavedMessage(actorName, UnsavedActions.LOAD));
+					msgBox.button(yes, saveAndLoad);
+					msgBox.button(no, new CEditorLoad(mActorEditor));
+					msgBox.button(cancel);
+					msgBox.key(Keys.BACK, null);
+					msgBox.key(Keys.ESCAPE, null);
+					showMsgBox(msgBox);
+				} else {
+					mActorEditor.loadDef();
 				}
-				return true;
 			}
-		});
+		};
 		mMainTable.add(button);
 
 		// Duplicate
 		button = new TextButton("Duplicate", textStyle);
-		button.addListener(new EventListener() {
+		new ButtonListener(button) {
 			@Override
-			public boolean handle(Event event) {
-				if (isButtonPressed(event)) {
-					if (mActorEditor.isUnsaved()) {
-						Button yes = new TextButton("Save first", textStyle);
-						Button no = new TextButton("Duplicate anyway", textStyle);
-						Button cancel = new TextButton("Cancel", textStyle);
+			protected void onPressed() {
+				if (mActorEditor.isUnsaved()) {
+					Button yes = new TextButton("Save first", textStyle);
+					Button no = new TextButton("Duplicate anyway", textStyle);
+					Button cancel = new TextButton("Cancel", textStyle);
 
-						CommandSequence saveAndDuplicate = new CommandSequence(new CEditorSave(mActorEditor), new CEditorDuplicate(mActorEditor));
+					CommandSequence saveAndDuplicate = new CommandSequence(new CEditorSave(mActorEditor), new CEditorDuplicate(mActorEditor));
 
-						MsgBoxExecuter msgBox = getFreeMsgBox();
+					MsgBoxExecuter msgBox = getFreeMsgBox();
 
-						msgBox.clear();
-						msgBox.setTitle("Duplicate Enemy");
-						msgBox.content(Messages.getUnsavedMessage(actorName, UnsavedActions.DUPLICATE));
-						msgBox.button(yes, saveAndDuplicate);
-						msgBox.button(no, new CEditorDuplicate(mActorEditor));
-						msgBox.button(cancel);
-						msgBox.key(Keys.BACK, null);
-						msgBox.key(Keys.ESCAPE, null);
-						showMsgBox(msgBox);
-					} else {
-						mActorEditor.duplicateDef();
-					}
+					msgBox.clear();
+					msgBox.setTitle("Duplicate Enemy");
+					msgBox.content(Messages.getUnsavedMessage(actorName, UnsavedActions.DUPLICATE));
+					msgBox.button(yes, saveAndDuplicate);
+					msgBox.button(no, new CEditorDuplicate(mActorEditor));
+					msgBox.button(cancel);
+					msgBox.key(Keys.BACK, null);
+					msgBox.key(Keys.ESCAPE, null);
+					showMsgBox(msgBox);
+				} else {
+					mActorEditor.duplicateDef();
 				}
-				return true;
 			}
-		});
+		};
 		mMainTable.add(button);
 
 		// Undo/Redo
 		if (mActorEditor.hasUndo()) {
 			button = new TextButton("Undo", textStyle);
-			button.addListener(new EventListener() {
+			new ButtonListener(button) {
 				@Override
-				public boolean handle(Event event) {
-					if (isButtonPressed(event)) {
-						mActorEditor.undo();
-					}
-					return true;
+				protected void onPressed() {
+					mActorEditor.undo();
 				}
-			});
+			};
 			mMainTable.add(button);
 
 			button = new TextButton("Redo", textStyle);
-			button.addListener(new EventListener() {
+			new ButtonListener(button) {
 				@Override
-				public boolean handle(Event event) {
-					if (isButtonPressed(event)) {
-						mActorEditor.redo();
-					}
-					return true;
+				protected void onPressed() {
+					mActorEditor.redo();
 				}
-			});
+			};
 			mMainTable.add(button);
 		}
 	}
@@ -612,9 +592,9 @@ public abstract class ActorGui extends EditorGui {
 			mWidgets.visual.customShapeAddMove = button;
 			buttonGroup.add(button);
 			customHider.addToggleActor(button);
-			new CheckedListener(button) {
+			new ButtonListener(button) {
 				@Override
-				protected void onChange(boolean checked) {
+				protected void onChecked(boolean checked) {
 					if (checked) {
 						mActorEditor.setDrawActorToolState(States.ADD_CORNER);
 					}
@@ -629,9 +609,9 @@ public abstract class ActorGui extends EditorGui {
 			mWidgets.visual.customShapeRemove = button;
 			buttonGroup.add(button);
 			customHider.addToggleActor(button);
-			new CheckedListener(button) {
+			new ButtonListener(button) {
 				@Override
-				protected void onChange(boolean checked) {
+				protected void onChecked(boolean checked) {
 					if (checked) {
 						mActorEditor.setDrawActorToolState(States.REMOVE);
 					}
@@ -648,9 +628,9 @@ public abstract class ActorGui extends EditorGui {
 			buttonGroup.add(button);
 			customHider.addToggleActor(button);
 			customHider.addChild(setCenterHider);
-			new CheckedListener(button) {
+			new ButtonListener(button) {
 				@Override
-				protected void onChange(boolean checked) {
+				protected void onChecked(boolean checked) {
 					if (checked) {
 						mActorEditor.setDrawActorToolState(States.SET_CENTER);
 					}
@@ -662,15 +642,12 @@ public abstract class ActorGui extends EditorGui {
 			mVisualTable.row(Horizontal.RIGHT, Vertical.TOP);
 			button = new TextButton("Reset center", textButtonStyle);
 			setCenterHider.addToggleActor(button);
-			button.addListener(new EventListener() {
+			new ButtonListener(button) {
 				@Override
-				public boolean handle(Event event) {
-					if (isButtonPressed(event)) {
-						mInvoker.execute(new CActorEditorCenterReset(mActorEditor));
-					}
-					return true;
+				protected void onPressed() {
+					mInvoker.execute(new CActorEditorCenterReset(mActorEditor));
 				}
-			});
+			};
 			mVisualTable.add(button);
 		}
 
@@ -725,9 +702,9 @@ public abstract class ActorGui extends EditorGui {
 		Button button = new CheckBox("Destroy on collide", checkBoxStyle);
 		mWidgets.collision.destroyOnCollide = button;
 		mCollisionTable.add(button);
-		new CheckedListener(button) {
+		new ButtonListener(button) {
 			@Override
-			protected void onChange(boolean checked) {
+			protected void onChecked(boolean checked) {
 				mActorEditor.setDestroyOnCollide(checked);
 			}
 		};
