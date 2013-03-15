@@ -67,39 +67,39 @@ public class TooltipListener implements EventListener {
 	public boolean handle(Event event) {
 		if (event instanceof InputEvent) {
 			// WINDOW (Hover events)
-			//			if (((InputEvent) event).getType() == Type.enter) {
-			//				if (mActor.isAscendantOf(event.getTarget())) {
-			//					scheduleShowWindowTask();
-			//					return true;
-			//				}
-			//			} else if (((InputEvent) event).getType() == Type.exit) {
-			//				// Only do something if the cursor is outside the actor
-			//				if (!isCursorInsideActor()) {
-			//					handleHoverExit();
-			//					return true;
-			//				}
-			//
-			//			} else if (((InputEvent) event).getType() == Type.mouseMoved) {
-			//				// Update position if just moved
-			//				if (isWindowDisplayingThis()) {
-			//					updateWindowPosition();
-			//
-			//					// Remove window, we're outside of the actor
-			//					if (!isCursorInsideActor()) {
-			//						handleHoverExit();
-			//					}
-			//					return true;
-			//				}
-			//				// Reset shown window
-			//				else if (mShowWindowTask != null) {
-			//					cancelShowWindowTask();
-			//					scheduleShowWindowTask();
-			//					return true;
-			//				}
-			//			}
+			if (((InputEvent) event).getType() == Type.enter) {
+				if (mActor.isAscendantOf(event.getTarget())) {
+					scheduleShowWindowTask();
+					return true;
+				}
+			} else if (((InputEvent) event).getType() == Type.exit) {
+				// Only do something if the cursor is outside the actor
+				if (!isCursorInsideActor()) {
+					handleHoverExit();
+					return true;
+				}
+
+			} else if (((InputEvent) event).getType() == Type.mouseMoved) {
+				// Update position if just moved
+				if (isWindowDisplayingThis()) {
+					updateWindowPosition();
+
+					// Remove window, we're outside of the actor
+					if (!isCursorInsideActor()) {
+						handleHoverExit();
+					}
+					return true;
+				}
+				// Reset shown window
+				else if (mShowWindowTask != null) {
+					cancelShowWindowTask();
+					scheduleShowWindowTask();
+					return true;
+				}
+			}
 
 			// MSG BOX (Press events)
-			if (((InputEvent) event).getType() == Type.touchDown) {
+			else if (((InputEvent) event).getType() == Type.touchDown) {
 				// Always skip if window is shown
 				if (!isWindowShown()) {
 					scheduleShowMsgBoxTask();

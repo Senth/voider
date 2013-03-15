@@ -26,6 +26,7 @@ import com.spiddekauga.utils.scene.ui.HideListener;
 import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
 import com.spiddekauga.utils.scene.ui.SliderListener;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
+import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Editor;
 import com.spiddekauga.voider.Config.Editor.Bullet;
 import com.spiddekauga.voider.Config.Editor.Enemy;
@@ -155,6 +156,7 @@ public abstract class ActorGui extends EditorGui {
 
 		mOptionTable.row().setFillWidth(true);
 		TextField textField = new TextField("", textFieldStyle);
+		textField.setMaxLength(Config.Editor.NAME_LENGTH_MAX);
 		mOptionTable.add(textField).setFillWidth(true);
 		mWidgets.option.name = textField;
 		new TextFieldListener(textField, "Name", mInvoker) {
@@ -169,7 +171,8 @@ public abstract class ActorGui extends EditorGui {
 		mOptionTable.add(label);
 
 		mOptionTable.row().setFillWidth(true).setFillHeight(true).setAlign(Horizontal.LEFT, Vertical.TOP);
-		textField = new TextField("shit", textFieldStyle);
+		textField = new TextField("", textFieldStyle);
+		textField.setMaxLength(Config.Editor.DESCRIPTION_LENGTH_MAX);
 		mOptionTable.add(textField).setFillWidth(true).setFillHeight(true);
 		mWidgets.option.description = textField;
 		new TextFieldListener(textField, "Write your description here...", mInvoker) {

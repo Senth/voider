@@ -40,6 +40,7 @@ import com.spiddekauga.voider.scene.AddEnemyTool;
 import com.spiddekauga.voider.scene.DrawActorTool;
 import com.spiddekauga.voider.scene.PathTool;
 import com.spiddekauga.voider.scene.TriggerTool;
+import com.spiddekauga.voider.utils.Messages;
 
 /**
  * GUI for the level editor
@@ -62,10 +63,14 @@ class LevelEditorGui extends EditorGui {
 
 		mMainTable.setTableAlign(Horizontal.RIGHT, Vertical.TOP);
 		mMainTable.setRowAlign(Horizontal.RIGHT, Vertical.TOP);
+		mMainTable.setCellPaddingDefault(1, 1, 1, 1);
 		mMenuTable.setPreferences(mMainTable);
 		mPickupTable.setPreferences(mMainTable);
+		mPickupTable.setRowAlign(Horizontal.RIGHT, Vertical.MIDDLE);
 		mStaticTerrainTable.setPreferences(mMainTable);
+		mStaticTerrainTable.setRowAlign(Horizontal.RIGHT, Vertical.MIDDLE);
 		mEnemyTable.setPreferences(mMainTable);
+		mEnemyTable.setRowAlign(Horizontal.RIGHT, Vertical.MIDDLE);
 		mOptionTable.setPreferences(mMainTable);
 		mMainMenuTable.setPreferences(mMainTable);
 
@@ -201,6 +206,13 @@ class LevelEditorGui extends EditorGui {
 			break;
 		}
 
+		String pickupName = mLevelEditor.getSelectedPickupName();
+		if (pickupName == null) {
+			pickupName = Messages.getNoDefSelected("pickup");
+		}
+		mWidgets.pickup.name.setText(pickupName);
+		mWidgets.pickup.name.setSize(mWidgets.pickup.name.getPrefWidth(), mWidgets.pickup.name.getPrefHeight());
+
 
 		// Terrain
 		switch (mLevelEditor.getStaticTerrainState()) {
@@ -246,6 +258,14 @@ class LevelEditorGui extends EditorGui {
 	 * Resets enemy option values
 	 */
 	void resetEnemyOptions() {
+		String enemyName = mLevelEditor.getSelectedEnemyName();
+		if (enemyName == null) {
+			enemyName = Messages.getNoDefSelected("enemy");
+		}
+		mWidgets.enemy.name.setText(enemyName);
+		mWidgets.enemy.name.setSize(mWidgets.enemy.name.getPrefWidth(), mWidgets.enemy.name.getPrefHeight());
+
+
 		if (mLevelEditor.hasEnemyOptions()) {
 			mHiders.enemyOptions.show();
 		} else {
@@ -569,6 +589,7 @@ class LevelEditorGui extends EditorGui {
 		left.add(label).setPadRight(Editor.LABEL_PADDING_BEFORE_SLIDER);
 
 		TextField textField = new TextField("", textFieldStyle);
+		textField.setMaxLength(Config.Editor.NAME_LENGTH_MAX);
 		left.add(textField).setFillWidth(true);
 		mWidgets.option.name = textField;
 		new TextFieldListener(textField, "Name", mInvoker) {
@@ -584,6 +605,7 @@ class LevelEditorGui extends EditorGui {
 
 		left.row().setFillWidth(true).setFillHeight(true);
 		textField = new TextField("", textFieldStyle);
+		textField.setMaxLength(Config.Editor.DESCRIPTION_LENGTH_MAX);
 		left.add(textField).setFillHeight(true).setFillWidth(true);
 		mWidgets.option.description = textField;
 		new TextFieldListener(textField, "Set your description...", mInvoker) {
@@ -638,6 +660,7 @@ class LevelEditorGui extends EditorGui {
 
 		right.row().setFillWidth(true).setFillHeight(true);
 		textField = new TextField("", textFieldStyle);
+		textField.setMaxLength(Config.Editor.STORY_LENGTH_MAX);
 		right.add(textField).setFillWidth(true).setFillHeight(true);
 		mWidgets.option.storyBefore = textField;
 		new TextFieldListener(textField, "Write the story that will be displayed before the level (optional)", mInvoker) {
@@ -654,6 +677,7 @@ class LevelEditorGui extends EditorGui {
 
 		right.row().setFillWidth(true).setFillHeight(true);
 		textField = new TextField("", textFieldStyle);
+		textField.setMaxLength(Config.Editor.STORY_LENGTH_MAX);
 		right.add(textField).setFillWidth(true).setFillHeight(true);
 		mWidgets.option.storyAfter = textField;
 		new TextFieldListener(textField, "Write the story that will be displayed when the level is completed (optional)", mInvoker) {
@@ -791,6 +815,11 @@ class LevelEditorGui extends EditorGui {
 
 		// Select type
 		mEnemyTable.row();
+		Label label = new Label("", labelStyle);
+		enemyAddHider.addToggleActor(label);
+		mWidgets.enemy.name = label;
+		mEnemyTable.add(label).setAlign(Horizontal.RIGHT, Vertical.MIDDLE);
+
 		button = new TextButton("Select type", textStyle);
 		enemyAddHider.addToggleActor(button);
 		mEnemyTable.add(button);
@@ -805,7 +834,7 @@ class LevelEditorGui extends EditorGui {
 		// Enemy options when an enemy is selected
 		// # Enemies
 		mEnemyTable.row();
-		Label label = new Label("# Enemies", labelStyle);
+		label = new Label("# Enemies", labelStyle);
 		mHiders.enemyOptions.addToggleActor(label);
 		mEnemyTable.add(label);
 
@@ -1052,6 +1081,7 @@ class LevelEditorGui extends EditorGui {
 		TextButtonStyle toggleStyle = editorSkin.get("toggle", TextButtonStyle.class);
 		TextButtonStyle textStyle = editorSkin.get("default", TextButtonStyle.class);
 		ImageButtonStyle addStyle = editorSkin.get("add", ImageButtonStyle.class);
+		LabelStyle labelStyle = editorSkin.get("default", LabelStyle.class);
 
 		ButtonGroup toggleGroup = new ButtonGroup();
 		Button button = new ImageButton(addStyle);
@@ -1095,6 +1125,11 @@ class LevelEditorGui extends EditorGui {
 		mPickupTable.add(button);
 
 		mPickupTable.row();
+		Label label = new Label("", labelStyle);
+		addHider.addToggleActor(label);
+		mWidgets.pickup.name = label;
+		mPickupTable.add(label);
+
 		button = new TextButton("Select type", textStyle);
 		new ButtonListener(button) {
 			@Override
@@ -1345,6 +1380,7 @@ class LevelEditorGui extends EditorGui {
 			Slider betweenDelay = null;
 			Slider activateDelay = null;
 			Slider deactivateDelay = null;
+			Label name = null;
 		}
 
 		static class OptionWidgets {
@@ -1372,6 +1408,8 @@ class LevelEditorGui extends EditorGui {
 			Button add = null;
 			Button remove = null;
 			Button move = null;
+
+			Label name =  null;
 		}
 
 		static class TerrainWidgets {

@@ -307,6 +307,8 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 				((ActorTool)mTouchTools[Tools.ENEMY.ordinal()]).setNewActorDef(null);
 			}
 
+			mGui.resetValues();
+
 			// Unload old dependencies
 			if (oldEnemyActorDef != null) {
 				ResourceCacheFacade.unload(oldEnemyActorDef, true);
@@ -341,6 +343,7 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 			} else {
 				((ActorTool)mTouchTools[Tools.PICKUP.ordinal()]).setNewActorDef(null);
 			}
+			mGui.resetValues();
 
 			// Unload old dependencies
 			if (oldPickupActorDef != null) {
@@ -722,6 +725,31 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 		}
 	}
 
+	/**
+	 * @return selected enemy name, null if none is selected
+	 */
+	String getSelectedEnemyName() {
+		ActorDef actorDef = ((AddActorTool)mTouchTools[Tools.ENEMY.ordinal()]).getNewActorDef();
+
+		if (actorDef != null) {
+			return actorDef.getName();
+		} else {
+			return null;
+		}
+	}
+
+	/**
+	 * @return selected pickup name, null if none is selected
+	 */
+	String getSelectedPickupName() {
+		ActorDef actorDef = ((AddActorTool)mTouchTools[Tools.PICKUP.ordinal()]).getNewActorDef();
+
+		if (actorDef != null) {
+			return actorDef.getName();
+		} else {
+			return null;
+		}
+	}
 
 	/**
 	 * Sets the number of enemies in one group

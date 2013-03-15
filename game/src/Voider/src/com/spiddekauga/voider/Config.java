@@ -420,6 +420,13 @@ public class Config {
 		public final static float PICK_PATH_SIZE = 0.5f;
 		/** Trigger pick size */
 		public final static float PICK_TRIGGER_SIZE = PICK_PATH_SIZE;
+
+		/** Maximum name length */
+		public final static int NAME_LENGTH_MAX = 16;
+		/** Maximum length of description */
+		public final static int DESCRIPTION_LENGTH_MAX = 256;
+		/** Maximum length of story  */
+		public final static int STORY_LENGTH_MAX = 512;
 	}
 
 	/**

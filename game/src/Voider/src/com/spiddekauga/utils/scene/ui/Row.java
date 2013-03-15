@@ -386,7 +386,7 @@ public class Row implements Poolable {
 		// Check if there's a cell that wants to fill the width
 		boolean cellFillWidth = false;
 		for (Cell cell : mCells) {
-			if (cell.shallfillWidth()) {
+			if (cell.isVisible() && cell.shallfillWidth()) {
 				cellFillWidth = true;
 				break;
 			}

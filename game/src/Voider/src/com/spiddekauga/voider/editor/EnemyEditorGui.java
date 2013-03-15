@@ -54,9 +54,10 @@ public class EnemyEditorGui extends ActorGui {
 		super.initGui();
 
 		mMainTable.setTableAlign(Horizontal.RIGHT, Vertical.TOP);
-		mMainTable.setRowAlign(Horizontal.LEFT, Vertical.MIDDLE);
-		mMainTable.setCellPaddingDefault(2, 2, 2, 2);
+		mMainTable.setRowAlign(Horizontal.RIGHT, Vertical.MIDDLE);
+		mMainTable.setCellPaddingDefault(1,1,1,1);
 		mMovementTable.setPreferences(mMainTable);
+		mMovementTable.setName("temp");
 		mWeaponTable.setPreferences(mMainTable);
 		mAiTable.setPreferences(mMainTable);
 		mPathTable.setPreferences(mPathTable);
@@ -120,12 +121,13 @@ public class EnemyEditorGui extends ActorGui {
 
 
 		// Weapons
-		mWidgets.weapon.bulletName.setText(mEnemyEditor.getBulletName());
 		mWidgets.weapon.toggleButton.setChecked(mEnemyEditor.hasWeapon());
 		mWidgets.weapon.bulletSpeed.setValue(mEnemyEditor.getBulletSpeed());
 		mWidgets.weapon.damage.setValue(mEnemyEditor.getWeaponDamage());
 		mWidgets.weapon.cooldownMax.setValue(mEnemyEditor.getCooldownMax());
 		mWidgets.weapon.cooldownMin.setValue(mEnemyEditor.getCooldownMin());
+		mWidgets.weapon.bulletName.setText(mEnemyEditor.getBulletName());
+		mWidgets.weapon.bulletName.setSize(mWidgets.weapon.bulletName.getPrefWidth(), mWidgets.weapon.bulletName.getPrefHeight());
 
 		// Aim
 		mWidgets.weapon.aimRotateSpeed.setValue(mEnemyEditor.getAimRotateSpeed());
@@ -159,7 +161,7 @@ public class EnemyEditorGui extends ActorGui {
 
 
 		// --- Active options ---
-		mMainTable.row().setAlign(Horizontal.CENTER, Vertical.BOTTOM);
+		mMainTable.row().setAlign(Horizontal.RIGHT, Vertical.BOTTOM);
 		ButtonGroup buttonGroup = new ButtonGroup();
 
 		// Movement
@@ -204,7 +206,7 @@ public class EnemyEditorGui extends ActorGui {
 		mCollisionHider.addToggleActor(mCollisionTable);
 
 
-		mMainTable.row().setFillHeight(true).setAlign(Horizontal.LEFT, Vertical.TOP);
+		mMainTable.row().setFillHeight(true).setAlign(Horizontal.RIGHT, Vertical.TOP);
 		mMainTable.add(mWeaponTable);
 		mMainTable.add(mVisualTable);
 		mMainTable.add(mMovementTable);
@@ -226,7 +228,6 @@ public class EnemyEditorGui extends ActorGui {
 		// Path
 		Row row = mMovementTable.row();
 		GuiCheckCommandCreator movementChecker = new GuiCheckCommandCreator(mInvoker);
-		row.setScalable(false);
 		ButtonGroup buttonGroup = new ButtonGroup();
 		CheckBox checkBox = new CheckBox("Path", checkBoxStyle);
 		checkBox.addListener(movementChecker);
@@ -281,12 +282,10 @@ public class EnemyEditorGui extends ActorGui {
 
 		// --- MOVEMENT path/AI ---
 		// Movement Speed
-		row = mMovementTable.row();
-		row.setScalable(false);
+		mMovementTable.row().setScalable(false);
 		Label label = new Label("Movement speed", labelStyle);
 		mPathTable.add(label);
-		row = mPathTable.row();
-		row.setScalable(false);
+		mPathTable.row().setScalable(false);
 		Slider slider = new Slider(Enemy.Movement.MOVE_SPEED_MIN, Enemy.Movement.MOVE_SPEED_MAX, Enemy.Movement.MOVE_SPEED_STEP_SIZE, false, sliderStyle);
 		mWidgets.movement.speedSlider = slider;
 		mPathTable.add(slider);
@@ -301,8 +300,7 @@ public class EnemyEditorGui extends ActorGui {
 		};
 
 		// Turning
-		row = mPathTable.row();
-		row.setScalable(false);
+		mPathTable.row().setScalable(false);
 		TextButton textButton = new TextButton("Turning speed OFF", textToogleStyle);
 		mWidgets.movement.turnSpeedToggleButton = textButton;
 		mPathTable.add(textButton);
@@ -338,8 +336,7 @@ public class EnemyEditorGui extends ActorGui {
 			}
 		};
 
-		row = mPathTable.row();
-		row.setScalable(false);
+		mPathTable.row().setScalable(false);
 		slider = new Slider(Movement.TURN_SPEED_MIN, Movement.TURN_SPEED_MAX, Enemy.Movement.TURN_SPEED_STEP_SIZE, false, sliderStyle);
 		mWidgets.movement.turnSpeedSlider = slider;
 		mPathTable.add(mWidgets.movement.turnSpeedSlider);
@@ -363,8 +360,8 @@ public class EnemyEditorGui extends ActorGui {
 		label = new Label("Distance", labelStyle);
 		mAiTable.add(label);
 
-		label = new Label("Min", labelStyle);
 		mAiTable.row();
+		label = new Label("Min", labelStyle);
 		cell = mAiTable.add(label);
 		cell.setPadRight(Editor.LABEL_PADDING_BEFORE_SLIDER);
 		mWidgets.movement.aiDistanceMin = new Slider(Enemy.Movement.AI_DISTANCE_MIN, Enemy.Movement.AI_DISTANCE_MAX, Enemy.Movement.AI_DISTANCE_STEP_SIZE, false, sliderStyle);
@@ -381,7 +378,6 @@ public class EnemyEditorGui extends ActorGui {
 
 		mAiTable.row();
 		label = new Label("Max", labelStyle);
-		mAiTable.row();
 		cell = mAiTable.add(label);
 		cell.setPadRight(Editor.LABEL_PADDING_BEFORE_SLIDER);
 		mWidgets.movement.aiDistanceMax = new Slider(Enemy.Movement.AI_DISTANCE_MIN, Enemy.Movement.AI_DISTANCE_MAX, Enemy.Movement.AI_DISTANCE_STEP_SIZE, false, sliderStyle);
@@ -504,13 +500,13 @@ public class EnemyEditorGui extends ActorGui {
 					if (mButton instanceof TextButton) {
 						((TextButton) mButton).setText("Weapons ON");
 					}
-					mEnemyEditor.setUseWeapon(true);
 				} else {
-					mEnemyEditor.setUseWeapon(false);
 					if (mButton instanceof TextButton) {
 						((TextButton) mButton).setText("Weapons OFF");
 					}
 				}
+
+				mEnemyEditor.setUseWeapon(checked);
 			}
 		};
 		HideListener weaponInnerHider = new HideListener(button, true);
