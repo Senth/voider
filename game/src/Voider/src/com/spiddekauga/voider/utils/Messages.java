@@ -1,6 +1,7 @@
 package com.spiddekauga.voider.utils;
 
 
+
 /**
  * Class containing all messages for voider, including help function
  * for retrieving messages
@@ -151,7 +152,8 @@ public class Messages {
 						"NOTE: Enemies that follow a path but aren't bound to one will be stationary, but" +
 						"still need a trigger to activate.\n" +
 						"Path and AI enemies have additional options, see their tooltip for how they work.";
-				public final static String REMOVE = "Removes an enemy.";
+				public final static String REMOVE = "Removes an enemy. If a \"on activate\" trigger is bound to " +
+						"this enemy, that trigger will also be removed.";
 				public final static String MOVE = "Moves an enemy. Enemies that follow a path will snap to " +
 						"the beginning of a path (marked as green).";
 				public final static String SELECT_NAME = "Enemy name of new enemies that will be added.";
@@ -180,6 +182,55 @@ public class Messages {
 						"You want the AI enemy to only be active for 10 seconds. You can then select its own activation " +
 						"trigger (if one has been created). This trigger will be shot once the enemy is activated, but " +
 						"you want to delay the deactivation by 10 seconds, you then set this value to 10.";
+			}
+
+			public static class Path {
+				public final static String SELECT = "Selects a path you want to change.";
+				public final static String ADD = "Either adds new corners to a path, or " +
+						"creates a new path.\n\n" +
+						"Usage:\n" +
+						"Click/Touch somewhere to continue drawing on the path.\n" +
+						"Click/Touch on a corner to move it\n" +
+						"Double click on a path to finish it (to be able to start a new path)\n" +
+						"Click on another path to select it.";
+				public final static String REMOVE = "Click on a path to select it, once a path " +
+						"is selected you can click on it to remove it or a corner to just remove " +
+						"that corner.";
+				public final static String MOVE = "Moves an entire path.";
+				public final static String ONCE = "The enemy will follow this path once. When it reaches the end " +
+						"it will continue moving in its current direction.";
+				public final static String LOOP = "Once the enemy reaches the end it will move directly to the " +
+						"beginning of the path follow it again. It will do this forever.";
+				public final static String BACK_AND_FORTH = "Once the enemy reaches the end it will follow " +
+						"the path backwards to the start, then follow it forward again.";
+			}
+
+			public static class Trigger {
+				public final static String ADD = "Can either create a new trigger, or move an " +
+						"existing one. When clicking on an enemy it will create a \"on activate\" " +
+						"trigger, this trigger will be shot when the enemy activates; a click on " +
+						"the screen will create a \"on screen\" trigger, this will activate once " +
+						"the trigger comes on screen. Note that triggers are not displayed when " +
+						"playing the game.";
+				public final static String REMOVE = "Click/Touch to remove a trigger.";
+				public final static String MOVE =  "Moves an \"on screen\" trigger. \"on activate\" " +
+						"triggers are always bound to an enemy and will thus move when moving an enemy.";
+			}
+
+			public static class Option {
+				public final static String NAME = "Name of the level.";
+				public final static String DESCRIPTION = "Write a short description of the level. For others " +
+						"to know somewhat what the level is about. Is it hard, many labyrinths?";
+				public final static String LEVEL_SPEED = "Initial speed of the level. In the future you will " +
+						"be able to change the game-speed in game.";
+				public final static String REVISION = "This count is increased with every save. In the future " +
+						"you will be able to restore to old revisions; useful when you accidentally broke the " +
+						"level and have saved it.";
+				public final static String VERSION = "Used when publishing the level. Not available at the moment.";
+				public final static String STORY_BEFORE = "This story will be displayed in the loading screen for " +
+						"the level. If left empty no story will be displayed.";
+				public final static String STORY_AFTER = "This story will be displayed if the player clears the map. " +
+						"If the player dies, s/he will never see this story.";
 			}
 		}
 	}

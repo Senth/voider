@@ -234,7 +234,7 @@ public class TooltipListener implements EventListener {
 	 * Shows the window
 	 */
 	private void showWindow() {
-		Stage stage = SceneSwitcher.getStage();
+		Stage stage = mGui.getStage();
 		if (stage != null) {
 			stage.addActor(mWindow);
 			mWindow.clearActions();
