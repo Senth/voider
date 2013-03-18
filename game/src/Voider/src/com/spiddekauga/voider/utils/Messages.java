@@ -102,15 +102,15 @@ public class Messages {
 
 			public static class Terrain {
 				public final static String ADD = "Adds corners to the terrain, you are also able to" +
-						"select other terrains with it.\n\n" +
-						"Usage:\n" +
-						"When no Terrain is selected it will add a new Terrain and a corner.\n" +
-						"When a Terrain is selected it add a new corner.\n" +
-						"Click/touch on a corner to move it.\n" +
-						"Click/touch on another terrain to select it\n" +
+						"select other terrains with it." +
+						"Usage:" +
+						"When no Terrain is selected it will add a new Terrain and a corner." +
+						"When a Terrain is selected it add a new corner." +
+						"Click/touch on a corner to move it." +
+						"Click/touch on another terrain to select it" +
 						"Double click on the terrain to \"finish\" and deselect it, " +
-						"now you are able to start a new Terrain\n" +
-						"Edges of the same Terrain is not allowed to intersect.\n" +
+						"now you are able to start a new Terrain" +
+						"Edges of the same Terrain is not allowed to intersect." +
 						"Corners cannot be added between other corners at the moment.";
 				public final static String REMOVE = "Removes either corners or the whole terrain" +
 						"\n\n" +

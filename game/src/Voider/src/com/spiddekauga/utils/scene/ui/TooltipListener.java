@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent.Type;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
@@ -53,6 +54,8 @@ public class TooltipListener implements EventListener {
 			mWindow = new Window("", editorSkin);
 			mWindow.setModal(false);
 			mWindow.addListener(this);
+			mLabel = new Label("", editorSkin);
+			mWindow.add(mLabel);
 		}
 	}
 
@@ -100,8 +103,8 @@ public class TooltipListener implements EventListener {
 
 			// MSG BOX (Press events)
 			else if (((InputEvent) event).getType() == Type.touchDown) {
-				// Always skip if window is shown
-				if (!isWindowShown()) {
+				// Always skip if window is shown or scheduled to be shown
+				if (!isWindowShown() || mShowWindowTask == null) {
 					scheduleShowMsgBoxTask();
 				}
 				return true;
@@ -122,6 +125,9 @@ public class TooltipListener implements EventListener {
 		if (mShowWindowTask == null) {
 			mShowWindowTask = new ShowWindowTask();
 			Timer.schedule(mShowWindowTask, Config.Gui.TOOLTIP_HOVER_SHOW);
+
+			// Remove show message box if it has been scheduled
+			cancelShowMsgBoxTask();
 		}
 	}
 
@@ -238,12 +244,14 @@ public class TooltipListener implements EventListener {
 		if (stage != null) {
 			stage.addActor(mWindow);
 			mWindow.clearActions();
-			mWindow.clearChildren();
 			mWindow.setTitle(mTitle);
-			mWindow.add(mMessage);
+			mLabel.setText(mMessage);
+			setWrapWidth();
 			mWindow.pack();
+
 			mWindow.addAction(Actions.fadeIn(Config.Gui.TOOLTIP_HOVER_FADE_DURATION, Interpolation.fade));
 			updateWindowPosition();
+			cancelShowMsgBoxTask();
 		} else {
 			Gdx.app.error("TooltipListener", "Stage is not when showing window!");
 		}
@@ -260,8 +268,26 @@ public class TooltipListener implements EventListener {
 		Button okButton = new TextButton("OK", buttonStyle);
 		mMsgBox.button(okButton);
 		mMsgBox.setTitle(mTitle);
-		mMsgBox.content(mMessage);
+		mLabel.setText(mMessage);
+		mMsgBox.content(mLabel);
 		mGui.showMsgBox(mMsgBox);
+	}
+
+	/**
+	 * Sets the wrap width of the current message
+	 */
+	private void setWrapWidth() {
+		int prefWidth = (int) mLabel.getPrefWidth();
+		int prefHeight = (int) mLabel.getPrefHeight();
+
+		int diffPref = prefWidth - prefHeight;
+		diffPref /= 2;
+
+		int wrapWidth = prefWidth - diffPref;
+
+		mLabel.setWidth(prefWidth - diffPref);
+		mLabel.setWrap(true);
+		mLabel.invalidateHierarchy();
 	}
 
 	/**
@@ -318,4 +344,6 @@ public class TooltipListener implements EventListener {
 	/** Window for all tooltip listeners (as only one tooltip can be
 	 * displayed at the same time this is static */
 	private static Window mWindow = null;
+	/** Label inside the window */
+	private static Label mLabel = null;
 }
