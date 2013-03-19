@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Vector2;
 import com.spiddekauga.utils.Invoker;
 import com.spiddekauga.utils.KeyHelper;
@@ -87,7 +89,7 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 	@Override
 	public void update() {
 		super.update();
-		mLevel.update(false);
+		mLevel.update();
 
 		// Scrolling
 		if (mScroller.isScrolling()) {
@@ -117,10 +119,16 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 	public void render() {
 		super.render();
 
-		if (!Config.Graphics.USE_DEBUG_RENDERER) {
-			mLevel.render(mSpriteBatch);
-			mLevel.renderEditor(mSpriteBatch);
+		//		if (!Config.Graphics.USE_DEBUG_RENDERER) {
+		ShaderProgram defaultShader = ResourceCacheFacade.get(ResourceNames.SHADER_DEFAULT);
+		if (defaultShader != null) {
+			mShapeRenderer.setShader(defaultShader);
 		}
+		mShapeRenderer.begin(ShapeType.Filled);
+		mLevel.render(mShapeRenderer);
+		mLevel.renderEditor(mShapeRenderer);
+		mShapeRenderer.end();
+		//		}
 	}
 
 	/**
@@ -174,6 +182,7 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 	@Override
 	public void loadResources() {
 		ResourceCacheFacade.load(ResourceNames.EDITOR_BUTTONS);
+		ResourceCacheFacade.load(ResourceNames.SHADER_DEFAULT);
 		try {
 			ResourceCacheFacade.loadAllOf(EnemyActorDef.class, false);
 			ResourceCacheFacade.loadAllOf(PickupActorDef.class, false);
@@ -186,7 +195,7 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 	@Override
 	public void unloadResources() {
 		ResourceCacheFacade.unload(ResourceNames.EDITOR_BUTTONS);
-
+		ResourceCacheFacade.unload(ResourceNames.SHADER_DEFAULT);
 		try {
 			ResourceCacheFacade.unloadAllOf(EnemyActorDef.class, false);
 			ResourceCacheFacade.unloadAllOf(PickupActorDef.class, false);

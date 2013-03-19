@@ -153,6 +153,11 @@ class VisualVars implements Json.Serializable {
 	float shapeWidth;
 	/** height of rectangle/triangle */
 	float shapeHeight;
+	/** Number of circle segments */
+	int cCircleSegments = 3;
+	/** Circle vertices, as a circle is used from
+	/** custom circle radius, only applicable when using custom shapes, automatically calculated */
+	float customRadius = 0;
 	/** Center offset for fixtures */
 	Vector2 centerOffset = new Vector2();
 	/** Corners of polygon, used for custom shapes */

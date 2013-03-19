@@ -6,6 +6,7 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRendererEx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.spiddekauga.utils.GameTime;
@@ -331,8 +332,8 @@ public abstract class Scene extends InputAdapter {
 		worldCoordinate.y = mTestPoint.y;
 	}
 
-	/** Sprite Batch used for rendering stuff */
-	protected SpriteBatch mSpriteBatch = new SpriteBatch();
+	/** Shape Renderer used for rendering stuff */
+	protected ShapeRendererEx mShapeRenderer = new ShapeRendererEx();
 	/** Input multiplexer */
 	protected InputMultiplexer mInputMultiplexer = new InputMultiplexer();
 	/** GUI for the scene */

@@ -5,8 +5,8 @@ import java.util.Iterator;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.glutils.ShapeRendererEx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -31,8 +31,10 @@ import com.spiddekauga.voider.game.triggers.TriggerInfo;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourceBody;
 import com.spiddekauga.voider.resources.IResourceChangeListener.EventTypes;
+import com.spiddekauga.voider.resources.IResourceEditorRender;
 import com.spiddekauga.voider.resources.IResourceEditorUpdate;
 import com.spiddekauga.voider.resources.IResourcePosition;
+import com.spiddekauga.voider.resources.IResourceRender;
 import com.spiddekauga.voider.resources.IResourceUpdate;
 import com.spiddekauga.voider.resources.Resource;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
@@ -45,7 +47,7 @@ import com.spiddekauga.voider.utils.Vector2Pool;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public abstract class Actor extends Resource implements IResourceUpdate, Json.Serializable, Disposable, Poolable, IResourceBody, IResourcePosition, ITriggerListener, IResourceEditorUpdate {
+public abstract class Actor extends Resource implements IResourceUpdate, Json.Serializable, Disposable, Poolable, IResourceBody, IResourcePosition, ITriggerListener, IResourceEditorUpdate, IResourceRender, IResourceEditorRender {
 	/**
 	 * Sets the texture of the actor including the actor definition.
 	 * Automatically creates a body for the actor.
@@ -255,20 +257,78 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 
 	/**
 	 * Renders the actor
-	 * @param spriteBatch the current sprite batch for the scene
+	 * @param shapeRenderer the current sprite batch for the scene
 	 */
-	@SuppressWarnings("unused")
-	public void render(SpriteBatch spriteBatch) {
-		if (mSprite != null && !Config.Graphics.USE_DEBUG_RENDERER) {
-			mSprite.draw(spriteBatch);
+	public void render(ShapeRendererEx shapeRenderer) {
+		switch (mDef.getShapeType()) {
+		case CIRCLE:
+			// Update shape offset
+			shapeRenderer.circle(mPosition.x, mPosition.y, mDef.getShapeRadius());
+			break;
+
+
+		case LINE:
+			// TODO
+			break;
+
+
+		case RECTANGLE:
+			// TODO
+			break;
+
+
+		case TRIANGLE:
+			// TODO
+			break;
+
+
+		case CUSTOM: {
+			// Polygon
+			if (mDef.getCornerCount() >= 3) {
+				ArrayList<Vector2> corners = mDef.getCorners();
+
+				float vertices[] = new float[corners.size() * 2];
+
+				for (int i = 0; i < corners.size(); ++i) {
+					int vertexOffset = i * 2;
+					vertices[vertexOffset] = corners.get(i).x;
+					vertices[vertexOffset+1] = corners.get(i).y;
+				}
+
+				//			shapeRenderer.polygon(vertices);
+			}
+			// Circle
+			else if (mDef.getCornerCount() >= 1) {
+				float radius = Config.Actor.Terrain.DEFAULT_CIRCLE_RADIUS;
+				ArrayList<Vector2> corners = mDef.getCorners();
+
+				if (mDef.getCornerCount() == 2) {
+					radius = mDef.getCustomRadius();
+				}
+
+				if (radius > 0) {
+					Vector2 offsetPosition = Vector2Pool.obtain();
+					offsetPosition.set(mPosition);
+					offsetPosition.add(corners.get(0));
+					Color color = new Color(1, 1, 0, 1);
+					shapeRenderer.circle(offsetPosition.x, offsetPosition.y, radius, mDef.getCircleSegmentCount());
+
+					// TODO decrease border color
+					color.sub(-0.1f, -0.1f, -0.1f, 1);
+
+					Vector2Pool.free(offsetPosition);
+				}
+			}
+			break;
+		}
 		}
 	}
 
 	/**
 	 * Renders additional information when using an editor
-	 * @param spriteBatch the current sprite batch for the scene
+	 * @param shapeRenderer the current sprite batch for the scene
 	 */
-	public void renderEditor(SpriteBatch spriteBatch) {
+	public void renderEditor(ShapeRendererEx shapeRenderer) {
 		// Does nothing
 	}
 
@@ -667,12 +727,12 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 		return mSkipRotate;
 	}
 
-	/**
-	 * Kills the actor. #isDead() will now return true
-	 */
-	public void kill() {
-		mDead = true;
-	}
+	//	/**
+	//	 * Kills the actor. #isDead() will now return true
+	//	 */
+	//	public void kill() {
+	//		mDead = true;
+	//	}
 
 	/**
 	 * @return activation time of the actor, negative value if the actor is
@@ -682,12 +742,12 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 		return mActivationTime;
 	}
 
-	/**
-	 * @return true if the actor is dead (i.e. has been destroyed)
-	 */
-	public boolean isDead() {
-		return mDead;
-	}
+	//	/**
+	//	 * @return true if the actor is dead (i.e. has been destroyed)
+	//	 */
+	//	public boolean isDead() {
+	//		return mDead;
+	//	}
 
 	/**
 	 * Activates the actor.
@@ -818,8 +878,6 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 
 	/** Physical body */
 	private Body mBody = null;
-	/** Sprite, i.e. the graphical representation */
-	private Sprite mSprite = null;
 	/** The belonging definition of this actor */
 	private ActorDef mDef = null;
 	/** Body position, remember even when we don't have a body */
@@ -840,8 +898,8 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	private boolean mHasBodyCorners = false;
 	/** True if the actor shall skip rotating */
 	private boolean mSkipRotate = false;
-	/** True if the actor is dead, i.e. it shall be removed */
-	private boolean mDead = false;
+	//	/** True if the actor is dead, i.e. it shall be removed */
+	//	private boolean mDead = false;
 	/** True if the actor is active */
 	private boolean mActive = true;
 	/** Activation time of the actor, local time for the scene */

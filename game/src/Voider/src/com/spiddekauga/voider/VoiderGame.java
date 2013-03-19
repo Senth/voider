@@ -3,6 +3,7 @@ package com.spiddekauga.voider;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL10;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
@@ -46,6 +47,8 @@ public class VoiderGame implements ApplicationListener {
 		Config.init();
 		ResourceSaver.init();
 		ResourceCacheFacade.init();
+
+		ShaderProgram.pedantic = false;
 
 
 		/** @TODO set main menu as start screen */

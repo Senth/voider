@@ -65,6 +65,7 @@ public class GameScene extends WorldScene {
 		mLevel.setPlayer(mPlayerActor);
 		mLevel.addResource(mLevel);
 		mLevel.bindResources();
+		mLevel.run();
 
 		ArrayList<Actor> actors = mLevel.getResources(Actor.class);
 		for (Actor actor : actors) {
@@ -149,7 +150,7 @@ public class GameScene extends WorldScene {
 			mMouseJoint.setTarget(mCursorWorld);
 		}
 		super.update();
-		mLevel.update(true);
+		mLevel.update();
 		updateCameraPosition();
 
 		// Is the player dead?
@@ -163,7 +164,7 @@ public class GameScene extends WorldScene {
 		super.render();
 
 		if (!Config.Graphics.USE_DEBUG_RENDERER) {
-			mLevel.render(mSpriteBatch);
+			mLevel.render(mShapeRenderer);
 		}
 	}
 

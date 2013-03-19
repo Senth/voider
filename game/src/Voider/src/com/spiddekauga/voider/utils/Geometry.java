@@ -148,7 +148,7 @@ public class Geometry {
 
 	/**
 	 * Computes intercept direction of the target.
-	 * @param objectPosition starting position of the object that shall intercetp
+	 * @param objectPosition starting position of the object that shall be intercepted
 	 * @param objectSpeed object speed
 	 * @param targetPosition current position of the target
 	 * @param targetVelocity current velocity of the target

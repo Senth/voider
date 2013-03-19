@@ -40,6 +40,7 @@ public abstract class WorldScene extends Scene {
 	public void onResize(int width, int height) {
 		super.onResize(width, height);
 		fixCamera();
+		mShapeRenderer.setProjectionMatrix(mCamera.combined);
 	}
 
 	@Override

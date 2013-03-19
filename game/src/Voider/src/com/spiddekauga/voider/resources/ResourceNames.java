@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.Level;
@@ -28,6 +29,8 @@ import com.spiddekauga.voider.game.actors.StaticTerrainActorDef;
 public enum ResourceNames {
 	/** Editor button */
 	EDITOR_BUTTONS("editor.json", Skin.class),
+	/** Default vertex shader */
+	SHADER_DEFAULT("default", ShaderProgram.class),
 
 	// TESTS
 	/** Texture player */
@@ -96,6 +99,8 @@ public enum ResourceNames {
 			return UI_PATH;
 		} else if (type == Sound.class) {
 			return SOUND_PATH;
+		} else if (type == ShaderProgram.class) {
+			return SHADER_PATH;
 		} else {
 			throw new UndefinedResourceTypeException(type);
 		}
@@ -124,6 +129,8 @@ public enum ResourceNames {
 	private static final String TEXTURE_PATH = "gfx/";
 	/** Directory for all UI */
 	private static final String UI_PATH = "ui/";
+	/** Directory for all shaders */
+	private static final String SHADER_PATH = "shaders/";
 	/** Directory for all actor definitions */
 	private static String ACTOR_DEF_PATH = Config.File.STORAGE + "actors/";
 	/** Directory for all boss actor definitions */
