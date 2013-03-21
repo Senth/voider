@@ -5,8 +5,6 @@ import java.util.Iterator;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.graphics.glutils.ShapeRendererEx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -41,7 +39,6 @@ import com.spiddekauga.voider.resources.Resource;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.UndefinedResourceTypeException;
 import com.spiddekauga.voider.scene.SceneSwitcher;
-import com.spiddekauga.voider.utils.Geometry;
 import com.spiddekauga.voider.utils.Vector2Pool;
 
 /**
@@ -262,80 +259,34 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	 * @param shapeRenderer the current sprite batch for the scene
 	 */
 	public void render(ShapeRendererEx shapeRenderer) {
-		switch (mDef.getShapeType()) {
-		case CIRCLE:
-			// Update shape offset
-			shapeRenderer.circle(mPosition.x, mPosition.y, mDef.getShapeRadius());
-			break;
+		// Render triangles of the shape
+		shapeRenderer.setColor(mDef.getColor());
 
+		Vector2 offsetPosition = Vector2Pool.obtain();
+		offsetPosition.set(mPosition);
+		offsetPosition.add(mDef.getCenterOffset());
 
-		case LINE:
-			// TODO
-			break;
-
-
-		case RECTANGLE:
-			// TODO
-			break;
-
-
-		case TRIANGLE:
-			// TODO
-			break;
-
-
-		case CUSTOM: {
-			// Polygon
-			if (mDef.getCornerCount() >= 3) {
-				ArrayList<Vector2> corners = mDef.getCorners();
-
-				float vertices[] = new float[corners.size() * 2];
-
-				for (int i = 0; i < corners.size(); ++i) {
-					int vertexOffset = i * 2;
-					vertices[vertexOffset] = corners.get(i).x;
-					vertices[vertexOffset+1] = corners.get(i).y;
-				}
-
-				//			shapeRenderer.polygon(vertices);
-			}
-			// Circle
-			else if (mDef.getCornerCount() >= 1) {
-				float radius = Config.Actor.Terrain.DEFAULT_CIRCLE_RADIUS;
-				ArrayList<Vector2> corners = mDef.getCorners();
-
-				if (mDef.getCornerCount() == 2) {
-					radius = mDef.getCustomRadius();
-				}
-
-				if (radius > 0) {
-					Vector2 offsetPosition = Vector2Pool.obtain();
-					offsetPosition.set(mPosition);
-					offsetPosition.add(corners.get(0));
-					Color color = new Color(1, 1, 0, 1);
-					//					shapeRenderer.circle(offsetPosition.x, offsetPosition.y, radius, mDef.getCircleSegmentCount());
-
-					// Decrease border color
-					color.sub(-0.1f, -0.1f, -0.1f, 1);
-
-					// TODO remove, temporary circle
-					shapeRenderer.end();
-					shapeRenderer.begin(ShapeType.Point);
-					ArrayList<Vector2> circlePoints = Geometry.createCircle(radius);
-
-					for (Vector2 vertex : circlePoints) {
-						shapeRenderer.point(vertex.x + offsetPosition.x, vertex.y + offsetPosition.y, 0);
-					}
-
-					shapeRenderer.end();
-					shapeRenderer.begin(ShapeType.Filled);
-
-					Vector2Pool.free(offsetPosition);
-				}
-			}
-			break;
+		if (mDef.getShapeType() == ActorShapeTypes.CUSTOM && mDef.getCornerCount() == 2) {
+			offsetPosition.add(mDef.getCorners().get(0));
 		}
+
+		ArrayList<Vector2> vertices = mDef.getTriangleVertices();
+		Vector2[] localVertices = new Vector2[3];
+		for (int i = 0; i < localVertices.length; ++i) {
+			localVertices[i] = Vector2Pool.obtain();
 		}
+		for (int triangle = 0; triangle < vertices.size(); triangle += 3) {
+			for (int localIndex = 0; localIndex < localVertices.length; ++localIndex) {
+				localVertices[localIndex].set(vertices.get(triangle + localIndex)).add(offsetPosition);
+			}
+			shapeRenderer.triangle(localVertices[0], localVertices[1], localVertices[2]);
+		}
+		for (Vector2 vertex : localVertices) {
+			Vector2Pool.free(vertex);
+		}
+
+
+		Vector2Pool.free(offsetPosition);
 	}
 
 	/**

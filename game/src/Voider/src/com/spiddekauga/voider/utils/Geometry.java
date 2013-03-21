@@ -175,15 +175,6 @@ public class Geometry {
 	}
 
 	/**
-	 * Creates a triangle strip of a polygon. All vertices are created from the Vector2Pool
-	 * @param polygon vertices of the polygon
-	 * @param triangleStrip array to contain all the polygon strip vertices
-	 */
-	public static void createTriangleStrip(ArrayList<Vector2> polygon, ArrayList<Vector2> triangleStrip) {
-
-	}
-
-	/**
 	 * Creates a circle, or rather returns vertices that can be created as a circle.
 	 * @param radius the radius of the circle
 	 * @return array with the vertices of the circle, all vertices are created from Vector2Pool

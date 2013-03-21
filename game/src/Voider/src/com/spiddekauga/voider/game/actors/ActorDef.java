@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.EarClippingTriangulator;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -167,6 +168,30 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	}
 
 	/**
+	 * Set the color of the actor
+	 * @param color new color
+	 */
+	public void setColor(Color color) {
+		mVisualVars.color.set(color);
+
+		resetBorderColor();
+	}
+
+	/**
+	 * @return color of the actor
+	 */
+	public Color getColor() {
+		return mVisualVars.color;
+	}
+
+	/**
+	 * @return border color
+	 */
+	public Color getBorderColor() {
+		return mVisualVars.borderColor;
+	}
+
+	/**
 	 * @return body definition of the actor
 	 */
 	public final BodyDef getBodyDef() {
@@ -197,7 +222,7 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	@Override
 	public void dispose() {
 		clearFixtures();
-		//		Vector2Pool.free(mAabbBox);
+		mVisualVars.dispose();
 	}
 
 	/**
@@ -206,6 +231,8 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	 * @param shapeType type of shape the enemy has
 	 */
 	public void setShapeType(ActorShapeTypes shapeType) {
+		mVisualVars.clearVertices();
+
 		mVisualVars.shapeType = shapeType;
 
 		// Too many fixtures
@@ -568,10 +595,10 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 		// Write ActorDef's variables first
 		json.writeValue("mMaxLife", mMaxLife);
 		json.writeValue("mBodyDef", mBodyDef);
-		//		json.writeValue("mFixtureDefs", mFixtureDefs);
 		json.writeValue("mCollisionDamage", mCollisionDamage);
 		json.writeValue("mDestroyOnCollide", mDestroyOnCollide);
 		json.writeValue("mVisualVars", mVisualVars);
+
 	}
 
 	@Override
@@ -582,10 +609,11 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 		// Our variables
 		mMaxLife = json.readValue("mMaxLife", float.class, jsonData);
 		mBodyDef = json.readValue("mBodyDef", BodyDef.class, jsonData);
-		//		mFixtureDefs = json.readValue("mFixtureDefs", ArrayList.class, jsonData);
 		mCollisionDamage = json.readValue("mCollisionDamage", float.class, jsonData);
 		mDestroyOnCollide = json.readValue("mDestroyOnCollide", boolean.class, jsonData);
 		mVisualVars = json.readValue("mVisualVars", VisualVars.class, jsonData);
+
+		resetBorderColor();
 
 		createFixtureDef();
 	}
@@ -615,13 +643,6 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	}
 
 	/**
-	 * @return radius of a custom shape
-	 */
-	float getCustomRadius() {
-		return mVisualVars.customRadius;
-	}
-
-	/**
 	 * Creates the fixture definition
 	 */
 	protected void createFixtureDef() {
@@ -645,7 +666,7 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 		}
 
 
-		// Destroy previous fixture
+		// Destroy previous fixtures
 		clearFixtures();
 
 
@@ -658,10 +679,11 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 				Geometry.makePolygonCounterClockwise(triangles);
 			} else {
 				triangles = mEarClippingTriangulator.computeTriangles(mVisualVars.corners);
-				// Always reverse, triangles should always be clockwise, whereas box2d needs
+				// Always reverse, triangles are always clockwise, whereas box2d needs
 				// counter clockwise...
 				Collections.reverse(triangles);
 			}
+			mVisualVars.vertices = (ArrayList<Vector2>) triangles;
 
 			// Add center offset
 			for (Vector2 vertex : triangles) {
@@ -738,17 +760,19 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 			circle.setPosition(offsetPosition);
 			Vector2Pool.free(offsetPosition);
 
+			float radius = 0;
+
 			// One corner, use standard size
 			if (mVisualVars.corners.size() == 1) {
 				circle.setRadius(Config.Actor.Terrain.DEFAULT_CIRCLE_RADIUS);
+				radius = Config.Actor.Terrain.DEFAULT_CIRCLE_RADIUS;
 			}
 			// Else two corners, determine radius of circle
 			else {
 				Vector2 lengthVector = Vector2Pool.obtain();
 				lengthVector.set(mVisualVars.corners.get(0)).sub(mVisualVars.corners.get(1));
-				float radius = lengthVector.len();
+				radius = lengthVector.len();
 				circle.setRadius(radius);
-				mVisualVars.customRadius = radius;
 				Vector2Pool.free(lengthVector);
 			}
 
@@ -758,7 +782,19 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 
 			// Set AABB box
 			//			mAabbBox.setFromCircle(circle.getPosition(), circle.getRadius());
+
+			// Create vertices for the circle
+			ArrayList<Vector2> circleVertices = Geometry.createCircle(radius);
+			mVisualVars.vertices =(ArrayList<Vector2>) mEarClippingTriangulator.computeTriangles(circleVertices);
+			Collections.reverse(circleVertices);
 		}
+	}
+
+	/**
+	 * @return triangle vertices for the current shape. These are grouped together in groups of three.
+	 */
+	ArrayList<Vector2> getTriangleVertices() {
+		return mVisualVars.vertices;
 	}
 
 	/**
@@ -844,6 +880,15 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 		// Set AABB box
 		//		mAabbBox.setFromCircle(circleShape.getPosition(), circleShape.getRadius());
 
+
+		// Create vertices for the circle
+		ArrayList<Vector2> circleVertices = Geometry.createCircle(mVisualVars.shapeCircleRadius);
+		mVisualVars.vertices =(ArrayList<Vector2>) mEarClippingTriangulator.computeTriangles(circleVertices);
+		Collections.reverse(circleVertices);
+
+		/** @todo create border for circle */
+
+
 		return circleShape;
 	}
 
@@ -865,6 +910,28 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 		/** @todo use center for AABB box */
 		//		mAabbBox.setFromBox(mVisualVars.centerOffset, halfWidth, halfHeight);
 		//		mAabbBox.setFromBox(new Vector2(), halfWidth, halfHeight);
+
+		// Create triangle vertices for the rectangle
+		if (rectangleShape.getVertexCount() == 4) {
+			// First triangle
+			Vector2 vertex = Vector2Pool.obtain();
+			rectangleShape.getVertex(0, vertex);
+			mVisualVars.vertices.add(vertex);
+			rectangleShape.getVertex(1, vertex);
+			mVisualVars.vertices.add(vertex);
+			rectangleShape.getVertex(2, vertex);
+			mVisualVars.vertices.add(vertex);
+
+			// Second triangle
+			mVisualVars.vertices.add(vertex);
+			rectangleShape.getVertex(3, vertex);
+			mVisualVars.vertices.add(vertex);
+			mVisualVars.vertices.add(mVisualVars.vertices.get(0));
+		} else {
+			Gdx.app.error("ActorDef", "Vertex count is not 4 in rectangle!");
+		}
+
+		/** @todo create border for rectangle */
 
 		return rectangleShape;
 	}
@@ -918,9 +985,12 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 		polygonShape.set(vertices);
 
 		Vector2Pool.free(center);
+
 		for (Vector2 vertex : vertices) {
-			Vector2Pool.free(vertex);
+			mVisualVars.vertices.add(vertex);
 		}
+
+		/** @todo create border for triangle */
 
 		return polygonShape;
 	}
@@ -944,6 +1014,10 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 
 		//		Vector2Pool.free(pointA);
 		//		Vector2Pool.free(pointB);
+
+
+
+		/** @todo create border for line */
 
 		return edgeShape;
 	}
@@ -984,6 +1058,14 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 		fixtureDefCopy.shape = fixtureDefOriginal.shape;
 	}
 
+	/**
+	 * Resets the border color
+	 */
+	private void resetBorderColor() {
+		mVisualVars.borderColor.set(mVisualVars.color);
+		mVisualVars.borderColor.sub(0.1f, 0.1f, 0.1f, 0);
+	}
+
 	/** Time when the fixture was changed last time */
 	protected float mFixtureChangeTime = 0;
 	/** When the body was changed last time */
@@ -996,6 +1078,7 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	private float mMaxLife = 0;
 	/** The body definition of the actor */
 	private BodyDef mBodyDef = new BodyDef();
+
 	/** Collision damage (per second) */
 	private float mCollisionDamage = 0;
 	/** If this actor shall be destroy on collision */

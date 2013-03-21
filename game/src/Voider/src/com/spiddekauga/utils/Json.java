@@ -1074,6 +1074,7 @@ public class Json {
 				return (T) readShape(jsonMap);
 			}
 
+
 			Object object;
 			if (type != null) {
 				Serializer<?> serializer = classToSerializer.get(type);
@@ -1081,7 +1082,11 @@ public class Json {
 					return (T)serializer.read(this, jsonMap, type);
 				}
 
-				object = newInstance(type);
+				if (type == Vector2.class) {
+					object = Vector2Pool.obtain();
+				} else {
+					object = newInstance(type);
+				}
 
 				if (object instanceof Serializable) {
 					((Serializable)object).read(this, jsonMap);

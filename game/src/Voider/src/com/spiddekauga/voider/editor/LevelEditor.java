@@ -124,6 +124,7 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 		if (defaultShader != null) {
 			mShapeRenderer.setShader(defaultShader);
 		}
+		mShapeRenderer.setProjectionMatrix(mCamera.combined);
 		mShapeRenderer.begin(ShapeType.Filled);
 		mLevel.render(mShapeRenderer);
 		mLevel.renderEditor(mShapeRenderer);
