@@ -1,8 +1,10 @@
 package com.spiddekauga.voider.utils;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 
 /**
@@ -170,5 +172,50 @@ public class Geometry {
 		Vector2Pool.free(distanceVector);
 
 		return objectVelocity;
+	}
+
+	/**
+	 * Creates a triangle strip of a polygon. All vertices are created from the Vector2Pool
+	 * @param polygon vertices of the polygon
+	 * @param triangleStrip array to contain all the polygon strip vertices
+	 */
+	public static void createTriangleStrip(ArrayList<Vector2> polygon, ArrayList<Vector2> triangleStrip) {
+
+	}
+
+	/**
+	 * Creates a circle, or rather returns vertices that can be created as a circle.
+	 * @param radius the radius of the circle
+	 * @return array with the vertices of the circle, all vertices are created from Vector2Pool
+	 */
+	public static ArrayList<Vector2> createCircle(float radius) {
+		ArrayList<Vector2> polygon = new ArrayList<Vector2>();
+
+		int segments = calculateCircleSegments(radius);
+
+		float angle = 2 * 3.1415926f / segments;
+		float cos = MathUtils.cos(angle);
+		float sin = MathUtils.sin(angle);
+		float cx = radius, cy = 0;
+		for (int i = 0; i < segments; i++) {
+			Vector2 vertex = Vector2Pool.obtain();
+			vertex.set(cx, cy);
+			polygon.add(vertex);
+
+			float temp = cx;
+			cx = cos * cx - sin * cy;
+			cy = sin * temp + cos * cy;
+		}
+
+		return polygon;
+	}
+
+	/**
+	 * Calculates the number of segments a circle needs to be smooth.
+	 * @param radius the radius of the circle
+	 * @return number of segments of the circle
+	 */
+	public static int calculateCircleSegments(float radius) {
+		return (int)(10 * (float)Math.cbrt(radius));
 	}
 }

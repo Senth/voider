@@ -153,8 +153,6 @@ class VisualVars implements Json.Serializable {
 	float shapeWidth;
 	/** height of rectangle/triangle */
 	float shapeHeight;
-	/** Number of circle segments */
-	int cCircleSegments = 3;
 	/** Circle vertices, as a circle is used from
 	/** custom circle radius, only applicable when using custom shapes, automatically calculated */
 	float customRadius = 0;
@@ -162,7 +160,10 @@ class VisualVars implements Json.Serializable {
 	Vector2 centerOffset = new Vector2();
 	/** Corners of polygon, used for custom shapes */
 	ArrayList<Vector2> corners = new ArrayList<Vector2>();
-
+	/** Vertices, these are created automatically once so that they don't have to be recalculated
+	 * every frame. Note that these vertices are created for a triangle strip, thus some vertices
+	 * might be duplicates */
+	ArrayList<Vector2> vertices = new ArrayList<Vector2>();
 
 	/** Actor type, used for setting default values */
 	private ActorTypes mActorType = null;

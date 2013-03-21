@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.graphics.glutils.ShapeRendererEx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -40,6 +41,7 @@ import com.spiddekauga.voider.resources.Resource;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.UndefinedResourceTypeException;
 import com.spiddekauga.voider.scene.SceneSwitcher;
+import com.spiddekauga.voider.utils.Geometry;
 import com.spiddekauga.voider.utils.Vector2Pool;
 
 /**
@@ -311,10 +313,22 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 					offsetPosition.set(mPosition);
 					offsetPosition.add(corners.get(0));
 					Color color = new Color(1, 1, 0, 1);
-					shapeRenderer.circle(offsetPosition.x, offsetPosition.y, radius, mDef.getCircleSegmentCount());
+					//					shapeRenderer.circle(offsetPosition.x, offsetPosition.y, radius, mDef.getCircleSegmentCount());
 
-					// TODO decrease border color
+					// Decrease border color
 					color.sub(-0.1f, -0.1f, -0.1f, 1);
+
+					// TODO remove, temporary circle
+					shapeRenderer.end();
+					shapeRenderer.begin(ShapeType.Point);
+					ArrayList<Vector2> circlePoints = Geometry.createCircle(radius);
+
+					for (Vector2 vertex : circlePoints) {
+						shapeRenderer.point(vertex.x + offsetPosition.x, vertex.y + offsetPosition.y, 0);
+					}
+
+					shapeRenderer.end();
+					shapeRenderer.begin(ShapeType.Filled);
 
 					Vector2Pool.free(offsetPosition);
 				}

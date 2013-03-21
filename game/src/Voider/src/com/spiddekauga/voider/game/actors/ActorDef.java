@@ -615,13 +615,6 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	}
 
 	/**
-	 * @return number circle segments
-	 */
-	int getCircleSegmentCount() {
-		return mVisualVars.cCircleSegments;
-	}
-
-	/**
 	 * @return radius of a custom shape
 	 */
 	float getCustomRadius() {
@@ -748,7 +741,6 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 			// One corner, use standard size
 			if (mVisualVars.corners.size() == 1) {
 				circle.setRadius(Config.Actor.Terrain.DEFAULT_CIRCLE_RADIUS);
-				calculateCircleSegments(Config.Actor.Terrain.DEFAULT_CIRCLE_RADIUS);
 			}
 			// Else two corners, determine radius of circle
 			else {
@@ -757,7 +749,6 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 				float radius = lengthVector.len();
 				circle.setRadius(radius);
 				mVisualVars.customRadius = radius;
-				calculateCircleSegments(radius);
 				Vector2Pool.free(lengthVector);
 			}
 
@@ -852,8 +843,6 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 
 		// Set AABB box
 		//		mAabbBox.setFromCircle(circleShape.getPosition(), circleShape.getRadius());
-
-		calculateCircleSegments(mVisualVars.shapeCircleRadius);
 
 		return circleShape;
 	}
@@ -993,15 +982,6 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 		fixtureDefCopy.isSensor = fixtureDefOriginal.isSensor;
 		fixtureDefCopy.restitution = fixtureDefOriginal.restitution;
 		fixtureDefCopy.shape = fixtureDefOriginal.shape;
-	}
-
-	/**
-	 * Calculates the number of circle segments depending on the circle radius.
-	 * This will set the circle segments in visual variables
-	 * @param radius radius of the circle
-	 */
-	private void calculateCircleSegments(float radius) {
-		mVisualVars.cCircleSegments = (int)(12 * (float)Math.cbrt(radius));
 	}
 
 	/** Time when the fixture was changed last time */
