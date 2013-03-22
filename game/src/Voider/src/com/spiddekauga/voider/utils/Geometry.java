@@ -24,6 +24,7 @@ public class Geometry {
 	 * @return true if the lines intersect within the lines' range.
 	 * 
 	 * @see #linesIntersect(Vector2,Vector2,Vector2,Vector2)
+	 * @see #getLineLineIntersection(Vector2, Vector2, Vector2, Vector2) to get the line intersection
 	 */
 	public static boolean linesIntersectNoCorners(Vector2 line1a, Vector2 line1b, Vector2 line2a, Vector2 line2b) {
 		if (line1a.equals(line2a) || line1a.equals(line2b) ||
@@ -47,6 +48,7 @@ public class Geometry {
 	 * @author CommanderKeith on http://Java-Gaming.org
 	 * 
 	 * @see #linesIntersectNoCorners(Vector2,Vector2,Vector2,Vector2)
+	 * @see #getLineLineIntersection(Vector2, Vector2, Vector2, Vector2) to get the point of intersection
 	 */
 	public static boolean linesIntersect(Vector2 line1a, Vector2 line1b, Vector2 line2a, Vector2 line2b) {
 		// Return false if either of the lines have zero length
@@ -55,15 +57,15 @@ public class Geometry {
 			return false;
 		}
 		// Fastest method, based on Franklin Antonio's "Faster Line Segment Intersection" topic "in Graphics Gems III" book (http://www.graphicsgems.org/)
-		double ax = line1b.x-line1a.x;
-		double ay = line1b.y-line1a.y;
-		double bx = line2a.x-line2b.x;
-		double by = line2a.y-line2b.y;
-		double cx = line1a.x-line2a.x;
-		double cy = line1a.y-line2a.y;
+		float ax = line1b.x-line1a.x;
+		float ay = line1b.y-line1a.y;
+		float bx = line2a.x-line2b.x;
+		float by = line2a.y-line2b.y;
+		float cx = line1a.x-line2a.x;
+		float cy = line1a.y-line2a.y;
 
-		double alphaNumerator = by*cx - bx*cy;
-		double commonDenominator = ay*bx - ax*by;
+		float alphaNumerator = by*cx - bx*cy;
+		float commonDenominator = ay*bx - ax*by;
 		if (commonDenominator > 0){
 			if (alphaNumerator < 0 || alphaNumerator > commonDenominator){
 				return false;
@@ -73,7 +75,7 @@ public class Geometry {
 				return false;
 			}
 		}
-		double betaNumerator = ax*cy - ay*cx;
+		float betaNumerator = ax*cy - ay*cx;
 		if (commonDenominator > 0){
 			if (betaNumerator < 0 || betaNumerator > commonDenominator){
 				return false;
@@ -87,8 +89,8 @@ public class Geometry {
 			// This code wasn't in Franklin Antonio's method. It was added by Keith Woodward.
 			// The lines are parallel.
 			// Check if they're collinear.
-			double y3LessY1 = line2a.y-line1a.y;
-			double collinearityTestForP3 = line1a.x*(line1b.y-line2a.y) + line1b.x*(y3LessY1) + line2a.x*(line1a.y-line1b.y);   // see http://mathworld.wolfram.com/Collinear.html
+			float y3LessY1 = line2a.y-line1a.y;
+			float collinearityTestForP3 = line1a.x*(line1b.y-line2a.y) + line1b.x*(y3LessY1) + line2a.x*(line1a.y-line1b.y);   // see http://mathworld.wolfram.com/Collinear.html
 			// If p3 is collinear with p1 and p2 then p4 will also be collinear, since p1-p2 is parallel with p3-p4
 			if (collinearityTestForP3 == 0){
 				// The lines are collinear. Now check if they overlap.
@@ -105,6 +107,67 @@ public class Geometry {
 			return false;
 		}
 		return true;
+	}
+
+	/**
+	 * Calculates the point of intersection between two lines. Note that the lines
+	 * are treated as infinite, so the lines don't have to intersect.
+	 * @param line1Start starting position of line 1
+	 * @param line1End end position of line 1
+	 * @param line2Start starting position of line 2
+	 * @param line2End end position of line 2
+	 * @return point of intersection, null if lines are parallel.
+	 * 
+	 * @author CommanderKeith on http://Java-Gaming.org
+	 *
+	 * @see #linesIntersect(Vector2, Vector2, Vector2, Vector2) if the point is actually inside the lines
+	 * @see #linesIntersectNoCorners(Vector2, Vector2, Vector2, Vector2)
+	 */
+	public static Vector2 getLineLineIntersection(Vector2 line1Start, Vector2 line1End, Vector2 line2Start, Vector2 line2End) {
+		float det1And2 = det(line1Start, line1End);
+		float det3And4 = det(line2Start, line2End);
+		float x1LessX2 = line1Start.x - line1End.x;
+		float y1LessY2 = line1Start.y - line1End.y;
+		float x3LessX4 = line2Start.x - line2End.x;
+		float y3LessY4 = line2Start.y - line2End.y;
+		float det1Less2And3Less4 = det(x1LessX2, y1LessY2, x3LessX4, y3LessY4);
+		if (det1Less2And3Less4 == 0){
+			// the denominator is zero so the lines are parallel and there's either no solution (or multiple solutions if the lines overlap) so return null.
+			return null;
+		}
+		float x = (det(det1And2, x1LessX2, det3And4, x3LessX4) / det1Less2And3Less4);
+		float y = (det(det1And2, y1LessY2, det3And4, y3LessY4) / det1Less2And3Less4);
+		return Vector2Pool.obtain().set(x, y);
+	}
+
+	/**
+	 * Calculates the determinant between two vectors
+	 * @param vectorA first vector
+	 * @param vectorB second vector
+	 * @return determinant between two vectors
+	 * 
+	 * @author CommanderKeith on http://Java-Gaming.org
+	 * 
+	 * @see #det(float, float, float, float)
+	 */
+	protected static float det(Vector2 vectorA, Vector2 vectorB) {
+		return det(vectorA.x, vectorA.y, vectorB.x, vectorB.y);
+	}
+
+	/**
+	 * Calculates the determinant between two vectors
+	 * @param x1 x value of vector 1
+	 * @param y1 y value of vector 1
+	 * @param x2 x value of vector 2
+	 * @param y2 y value of vector 2
+	 * @return determinant between two vectors
+	 * 
+	 * @author CommanderKeith on http://Java-Gaming.org
+	 * 
+	 * @see #det(Vector2, Vector2)
+	 */
+	protected static float det(float x1, float y1, float x2, float y2) {
+		return x1 * y2 - y1 * x2;
 	}
 
 	/**
@@ -139,13 +202,23 @@ public class Geometry {
 	}
 
 	/**
-	 * Computes the next index of a polygon, i.e. it wraps the index from back to front if needed.
-	 * @param vertices list of vertices for teh polygon
-	 * @param index the index of the vertex
-	 * @return next index for the index
+	 * Computes the next index of an array, i.e. it wraps the index from back to front if needed.
+	 * @param array the array to wrap
+	 * @param index calculates the next index of this
+	 * @return next index
 	 */
-	public static int computeNextIndex(final List<Vector2> vertices, final int index) {
-		return index == vertices.size() - 1 ? 0 : index + 1;
+	public static int computeNextIndex(final List<?> array, final int index) {
+		return index == array.size() - 1 ? 0 : index + 1;
+	}
+
+	/**
+	 * Computes the previous index of an array, i.e. it wraps the index from the front to back if needed.
+	 * @param array the array to wrap
+	 * @param index calculates the previous index of this
+	 * @return previous index
+	 */
+	public static int computePreviousIndex(final List<?> array, final int index) {
+		return index == 0 ? array.size() - 1 : index - 1;
 	}
 
 	/**
@@ -208,5 +281,30 @@ public class Geometry {
 	 */
 	public static int calculateCircleSegments(float radius) {
 		return (int)(10 * (float)Math.cbrt(radius));
+	}
+
+	/**
+	 * Calculates the direction between two points. Creates a new Vector2
+	 * @param fromPoint from this point
+	 * @param toPoint to this point
+	 * @return normalized direction from lineA to lineB
+	 */
+	public static Vector2 getDirection(Vector2 fromPoint, Vector2 toPoint) {
+		Vector2 direction = Vector2Pool.obtain();
+		direction.set(toPoint).sub(fromPoint).nor();
+		return direction;
+	}
+
+	/**
+	 * Calculates the direction between two points. Reuses an old Vector2 instead
+	 * of creating a new one.
+	 * @param fromPoint from this point
+	 * @param toPoint to this point
+	 * @param direction sets the direction to this
+	 * 
+	 * @see #getDirection(Vector2, Vector2) instead creates a new Vector2 instead of reusing it
+	 */
+	public static void getDirection(Vector2 fromPoint, Vector2 toPoint, Vector2 direction) {
+		direction.set(toPoint).sub(fromPoint).nor();
 	}
 }

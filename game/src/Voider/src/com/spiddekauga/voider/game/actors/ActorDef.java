@@ -62,6 +62,9 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 		mVisualVars = new VisualVars(actorType);
 
 		createFixtureDef();
+
+		/** @todo remove default color */
+		setColor(new Color(1, 1, 0, 1));
 	}
 
 	/**
@@ -669,6 +672,8 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 		// Destroy previous fixtures
 		clearFixtures();
 
+		mVisualVars.clearVertices();
+
 
 		// Create the new fixture
 		// Polygon
@@ -683,7 +688,6 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 				// counter clockwise...
 				Collections.reverse(triangles);
 			}
-			mVisualVars.vertices = (ArrayList<Vector2>) triangles;
 
 			// Add center offset
 			for (Vector2 vertex : triangles) {
@@ -750,6 +754,9 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 			if (cornerTooClose) {
 				throw new PolygonCornerTooCloseException();
 			}
+
+			mVisualVars.vertices = (ArrayList<Vector2>) triangles;
+			createBorder(mVisualVars.corners);
 		}
 		// Circle
 		else if (mVisualVars.corners.size() >= 1) {
@@ -787,14 +794,23 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 			ArrayList<Vector2> circleVertices = Geometry.createCircle(radius);
 			mVisualVars.vertices =(ArrayList<Vector2>) mEarClippingTriangulator.computeTriangles(circleVertices);
 			Collections.reverse(circleVertices);
+
+			createBorder(circleVertices);
 		}
 	}
 
 	/**
-	 * @return triangle vertices for the current shape. These are grouped together in groups of three.
+	 * @return triangle vertices for the current shape. Grouped together in groups of three to form a triangle.
 	 */
 	ArrayList<Vector2> getTriangleVertices() {
 		return mVisualVars.vertices;
+	}
+
+	/**
+	 * @return border triangle vertices. Grouped together in groups of three vertices to form a triangle.
+	 */
+	ArrayList<Vector2> getTriangleBorderVertices() {
+		return mVisualVars.borderVertices;
 	}
 
 	/**
@@ -886,7 +902,7 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 		mVisualVars.vertices =(ArrayList<Vector2>) mEarClippingTriangulator.computeTriangles(circleVertices);
 		Collections.reverse(circleVertices);
 
-		/** @todo create border for circle */
+		createBorder(circleVertices);
 
 
 		return circleShape;
@@ -986,11 +1002,11 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 
 		Vector2Pool.free(center);
 
+		// Set vertices and create border
 		for (Vector2 vertex : vertices) {
 			mVisualVars.vertices.add(vertex);
 		}
-
-		/** @todo create border for triangle */
+		createBorder(mVisualVars.vertices);
 
 		return polygonShape;
 	}
@@ -1063,7 +1079,134 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	 */
 	private void resetBorderColor() {
 		mVisualVars.borderColor.set(mVisualVars.color);
-		mVisualVars.borderColor.sub(0.1f, 0.1f, 0.1f, 0);
+		mVisualVars.borderColor.mul(0.75f, 0.75f, 0.75f, 1);
+	}
+
+	/**
+	 * Creates the border for the actor
+	 * @param corners vertices for all the corners
+	 */
+	private void createBorder(ArrayList<Vector2> corners) {
+		ArrayList<Vector2> borderCorners = createdBorderCorners(corners);
+
+		createBorderVertices(corners, borderCorners);
+	}
+
+	/**
+	 * Creates the border vertices for the corner
+	 * @param corners vertices for all the corners
+	 * @return border corner vertices
+	 */
+	private ArrayList<Vector2> createdBorderCorners(ArrayList<Vector2> corners) {
+		boolean clockwise = !Geometry.isPolygonCounterClockwise(corners);
+
+		Vector2 directionBefore = Vector2Pool.obtain();
+		Vector2 directionAfter = Vector2Pool.obtain();
+
+		Vector2 borderBefore1 = Vector2Pool.obtain();
+		Vector2 borderBefore2 = Vector2Pool.obtain();
+		Vector2 borderAfter1 = Vector2Pool.obtain();
+		Vector2 borderAfter2 = Vector2Pool.obtain();
+
+		ArrayList<Vector2> borderCorners = new ArrayList<Vector2>();
+		for (int i = 0; i < corners.size(); ++i) {
+			// Get direction of lines that uses this vertex (i.e. that has it
+			// as its end (line before) or start (line after) position.
+			int indexBefore = Geometry.computePreviousIndex(corners, i);
+			int indexAfter = Geometry.computeNextIndex(corners, i);
+			Geometry.getDirection(corners.get(indexBefore), corners.get(i), directionBefore);
+			Geometry.getDirection(corners.get(i), corners.get(indexAfter), directionAfter);
+
+			// Rotate direction to point inwards into the polygon
+			if (clockwise) {
+				directionBefore.rotate(-90);
+				directionAfter.rotate(-90);
+			} else {
+				directionBefore.rotate(90);
+				directionAfter.rotate(90);
+			}
+
+			// Border width
+			directionBefore.mul(Config.Actor.BORDER_WIDTH);
+			directionAfter.mul(Config.Actor.BORDER_WIDTH);
+
+			// Calculate temporary border points
+			borderBefore1.set(corners.get(indexBefore)).add(directionBefore);
+			borderBefore2.set(corners.get(i)).add(directionBefore);
+			borderAfter1.set(corners.get(i)).add(directionAfter);
+			borderAfter2.set(corners.get(indexAfter)).add(directionAfter);
+
+			// Get intersection point add it as a corner
+			Vector2 borderCorner = Geometry.getLineLineIntersection(borderBefore1, borderBefore2, borderAfter1, borderAfter2);
+			if (borderCorner != null) {
+				borderCorners.add(borderCorner);
+			} else {
+				Gdx.app.error("ActorDef", "No intersection for the border corner!");
+			}
+		}
+
+		Vector2Pool.free(directionBefore);
+		Vector2Pool.free(directionAfter);
+
+		Vector2Pool.free(borderBefore1);
+		Vector2Pool.free(borderBefore2);
+		Vector2Pool.free(borderAfter1);
+		Vector2Pool.free(borderAfter2);
+
+		return borderCorners;
+	}
+
+	/**
+	 * Creates border vertices that will be in pair of triangles to be easily
+	 * rendered.
+	 * @param corners the regular corners of the actor
+	 * @param borderCorners the border corners of the actor
+	 */
+	private void createBorderVertices(ArrayList<Vector2> corners, ArrayList<Vector2> borderCorners) {
+		if (corners.size() != borderCorners.size()) {
+			Gdx.app.error("ActorDef", "Not same amount of border corners as there are corners!");
+			return;
+		}
+
+		// Create the two triangle in front of the index
+		// For example if we're at index 1 we will create the triangles
+		// 1 - 2 - 2' AND 1 - 2' - 1'
+		// 0' 1' 2' 3' = borders corners
+		// ——————————
+		// | /| /| /|
+		// |/ |/ |/ |
+		// ——————————
+		// 0  1  2  3 = corners
+
+		if (Geometry.isPolygonCounterClockwise(corners)) {
+			for (int i = 0; i < corners.size(); ++i) {
+				int nextIndex = Geometry.computeNextIndex(corners, i);
+
+				// First triangle
+				mVisualVars.borderVertices.add(corners.get(i));
+				mVisualVars.borderVertices.add(corners.get(nextIndex));
+				mVisualVars.borderVertices.add(borderCorners.get(nextIndex));
+
+				// Second triangle
+				mVisualVars.borderVertices.add(corners.get(i));
+				mVisualVars.borderVertices.add(borderCorners.get(nextIndex));
+				mVisualVars.borderVertices.add(borderCorners.get(i));
+			}
+		} else {
+			for (int i = 0; i < corners.size(); ++i) {
+				int nextIndex = Geometry.computeNextIndex(corners, i);
+
+				// First triangle
+				mVisualVars.borderVertices.add(corners.get(i));
+				mVisualVars.borderVertices.add(borderCorners.get(nextIndex));
+				mVisualVars.borderVertices.add(corners.get(nextIndex));
+
+				// Second triangle
+				mVisualVars.borderVertices.add(corners.get(i));
+				mVisualVars.borderVertices.add(borderCorners.get(i));
+				mVisualVars.borderVertices.add(borderCorners.get(nextIndex));
+			}
+		}
 	}
 
 	/** Time when the fixture was changed last time */

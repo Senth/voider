@@ -78,6 +78,9 @@ public class Config {
 			/** Default size of terrain circle */
 			public final static float DEFAULT_CIRCLE_RADIUS = 2.0f;
 		}
+
+		/** Border width of all actors */
+		public final static float BORDER_WIDTH = 0.75f;
 	}
 
 

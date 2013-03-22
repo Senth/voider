@@ -68,6 +68,7 @@ public abstract class ActorTool extends TouchTool {
 
 		} catch (Exception e) {
 			Gdx.app.error("DrawActorTool", e.toString());
+			e.printStackTrace();
 		}
 
 		return null;

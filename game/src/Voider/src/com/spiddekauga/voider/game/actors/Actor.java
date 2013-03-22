@@ -259,33 +259,49 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	 * @param shapeRenderer the current sprite batch for the scene
 	 */
 	public void render(ShapeRendererEx shapeRenderer) {
-		// Render triangles of the shape
-		shapeRenderer.setColor(mDef.getColor());
-
 		Vector2 offsetPosition = Vector2Pool.obtain();
 		offsetPosition.set(mPosition);
 		offsetPosition.add(mDef.getCenterOffset());
 
-		if (mDef.getShapeType() == ActorShapeTypes.CUSTOM && mDef.getCornerCount() == 2) {
+		if (mDef.getShapeType() == ActorShapeTypes.CUSTOM && (mDef.getCornerCount() >= 1 || mDef.getCornerCount() <= 2)) {
 			offsetPosition.add(mDef.getCorners().get(0));
 		}
 
-		ArrayList<Vector2> vertices = mDef.getTriangleVertices();
 		Vector2[] localVertices = new Vector2[3];
 		for (int i = 0; i < localVertices.length; ++i) {
 			localVertices[i] = Vector2Pool.obtain();
 		}
+
+		// Shape
+		shapeRenderer.setColor(mDef.getColor());
+
+		ArrayList<Vector2> vertices = mDef.getTriangleVertices();
+
 		for (int triangle = 0; triangle < vertices.size(); triangle += 3) {
 			for (int localIndex = 0; localIndex < localVertices.length; ++localIndex) {
 				localVertices[localIndex].set(vertices.get(triangle + localIndex)).add(offsetPosition);
 			}
 			shapeRenderer.triangle(localVertices[0], localVertices[1], localVertices[2]);
 		}
-		for (Vector2 vertex : localVertices) {
-			Vector2Pool.free(vertex);
+
+
+
+		// Border
+		shapeRenderer.setColor(mDef.getBorderColor());
+
+		vertices = mDef.getTriangleBorderVertices();
+
+		for (int triangle = 0; triangle < vertices.size(); triangle += 3) {
+			for (int localIndex = 0; localIndex < localVertices.length; ++localIndex) {
+				localVertices[localIndex].set(vertices.get(triangle + localIndex)).add(offsetPosition);
+			}
+			shapeRenderer.triangle(localVertices[0], localVertices[1], localVertices[2]);
 		}
 
 
+		for (Vector2 vertex : localVertices) {
+			Vector2Pool.free(vertex);
+		}
 		Vector2Pool.free(offsetPosition);
 	}
 

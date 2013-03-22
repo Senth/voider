@@ -25,7 +25,7 @@ class VisualVars implements Json.Serializable, Disposable {
 	 * @param actorType the default values depends on which actor type is set
 	 */
 	VisualVars(ActorTypes actorType) {
-		actorType = actorType;
+		mActorType = actorType;
 		setDefaultValues();
 	}
 
@@ -152,12 +152,8 @@ class VisualVars implements Json.Serializable, Disposable {
 
 	@Override
 	public void dispose() {
-		// Don't free corners if above or at 3 corners. These will be freed in clear
-		// vertices...
-		if (corners.size() <= 2) {
-			for (Vector2 corner : corners) {
-				Vector2Pool.free(corner);
-			}
+		for (Vector2 corner : corners) {
+			Vector2Pool.free(corner);
 		}
 		corners.clear();
 
@@ -168,20 +164,37 @@ class VisualVars implements Json.Serializable, Disposable {
 	 * Clears (and possibly frees) the vertices of the shape.
 	 */
 	void clearVertices() {
-		// Because the vertices contains duplicates, we save the ones that have been
-		// freed, so we don't free them twice.
-		ArrayList<Vector2> freedVertices = new ArrayList<Vector2>();
-		for (Vector2 vertex : vertices) {
-			if (!freedVertices.contains(vertex)) {
-				Vector2Pool.free(vertex);
-				freedVertices.add(vertex);
+		// Remove border corner indexes first. These should include all
+		// regular vertices, so no need to free them later
+		if (!borderVertices.isEmpty()) {
+			// Because the vertices contains duplicates, we save the ones that have been
+			// freed, so we don't free them twice. Never remove corners though
+			ArrayList<Vector2> freedVertices = new ArrayList<Vector2>();
+			freedVertices.addAll(corners);
+			for (Vector2 vertex : borderVertices) {
+				if (!freedVertices.contains(vertex)) {
+					Vector2Pool.free(vertex);
+					freedVertices.add(vertex);
+				}
+			}
+			borderVertices.clear();
+		} else {
+			// Because the vertices contains duplicates, we save the ones that have been
+			// freed, so we don't free them twice. Never remove corners though
+			ArrayList<Vector2> freedVertices = new ArrayList<Vector2>();
+			freedVertices.addAll(corners);
+			for (Vector2 vertex : vertices) {
+				if (!freedVertices.contains(vertex)) {
+					Vector2Pool.free(vertex);
+					freedVertices.add(vertex);
+				}
 			}
 		}
 		vertices.clear();
 	}
 
 	/** Color of the actor */
-	Color color = new Color(1, 1, 0, 1);
+	Color color = new Color();
 	/** Border color, automatically set */
 	Color borderColor = new Color();
 	/** Current shape of the enemy */
@@ -196,10 +209,12 @@ class VisualVars implements Json.Serializable, Disposable {
 	Vector2 centerOffset = new Vector2();
 	/** Corners of polygon, used for custom shapes */
 	ArrayList<Vector2> corners = new ArrayList<Vector2>();
-	/** Triangle vertices. Circles and custom shapes are turned into a set of triangles.
+	/** Triangle vertices.
 	 * It is made this way to easily render the target. No optimization has been done to reduce
 	 * the number of vertices. E.g. almost like a triangle strip. */
 	ArrayList<Vector2> vertices = new ArrayList<Vector2>();
+	/** Triangle border vertices. */
+	ArrayList<Vector2> borderVertices = new ArrayList<Vector2>();
 
 	/** Actor type, used for setting default values */
 	private ActorTypes mActorType = null;
