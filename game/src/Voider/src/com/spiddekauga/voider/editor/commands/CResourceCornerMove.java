@@ -41,10 +41,10 @@ public class CResourceCornerMove extends CResourceChange {
 			sendOnChange();
 		} catch (PolygonComplexException e) {
 			moveSuccess = false;
-			Gdx.app.error("ClTerrainActorMoveCorner", "Complex polygon");
+			Gdx.app.error("CResourceCornerMove", "Complex polygon");
 		} catch (PolygonCornerTooCloseException e) {
 			moveSuccess = false;
-			Gdx.app.error("ClTerrainActorMoveCorner", "Corner too close");
+			Gdx.app.error("CResourceCornerMove", "Corner too close");
 		}
 		Vector2Pool.free(newPos);
 
@@ -62,10 +62,10 @@ public class CResourceCornerMove extends CResourceChange {
 			sendOnChange();
 		} catch (PolygonComplexException e) {
 			moveSuccess = false;
-			Gdx.app.error("ClTerrainActorMoveCorner", "Complex polygon");
+			Gdx.app.error("CResourceCornerMove", "Complex polygon");
 		} catch (PolygonCornerTooCloseException e) {
 			moveSuccess = false;
-			Gdx.app.error("ClTerrainActorMoveCorner", "Corner too close");
+			Gdx.app.error("CResourceCornerMove", "Corner too close");
 		}
 		Vector2Pool.free(newPos);
 		return moveSuccess;

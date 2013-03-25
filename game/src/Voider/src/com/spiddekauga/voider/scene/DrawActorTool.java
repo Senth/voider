@@ -276,7 +276,7 @@ public class DrawActorTool extends ActorTool implements ISelectTool {
 				// Else hit a corner, start moving it
 				else {
 					mCornerIndexCurrent = mActor.getCornerIndex(mHitBody.getPosition());
-					mDragOrigin.set(mHitBody.getPosition());
+					mDragOrigin.set(mActor.getDef().getCornerPosition(mCornerIndexCurrent));
 					mCornerAddedNow = false;
 				}
 			}
