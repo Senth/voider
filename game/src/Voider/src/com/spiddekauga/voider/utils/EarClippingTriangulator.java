@@ -43,7 +43,7 @@ public final class EarClippingTriangulator {
 	 * 
 	 * @param polygon the polygon
 	 * @return the triangles */
-	public List<Vector2> computeTriangles (final List<Vector2> polygon) {
+	public ArrayList<Vector2> computeTriangles (final List<Vector2> polygon) {
 		// TODO Check if LinkedList performs better
 		final ArrayList<Vector2> triangles = new ArrayList<Vector2>();
 		final ArrayList<Vector2> vertices = new ArrayList<Vector2>(polygon.size());

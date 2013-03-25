@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRendererEx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -21,6 +22,7 @@ import com.spiddekauga.voider.game.actors.ActorFilterCategories;
 import com.spiddekauga.voider.game.actors.EnemyActor;
 import com.spiddekauga.voider.resources.IResourceBody;
 import com.spiddekauga.voider.resources.IResourceCorner;
+import com.spiddekauga.voider.resources.IResourceEditorRender;
 import com.spiddekauga.voider.resources.IResourcePosition;
 import com.spiddekauga.voider.resources.Resource;
 import com.spiddekauga.voider.utils.Vector2Pool;
@@ -31,7 +33,7 @@ import com.spiddekauga.voider.utils.Vector2Pool;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class Path extends Resource implements Json.Serializable, Disposable, IResourceCorner, IResourceBody, IResourcePosition {
+public class Path extends Resource implements Json.Serializable, Disposable, IResourceCorner, IResourceBody, IResourcePosition, IResourceEditorRender {
 	/**
 	 * Default constructor, sets the unique id of the path
 	 */
@@ -306,6 +308,13 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 	 */
 	public boolean isSelected() {
 		return mSelected;
+	}
+
+	@Override
+	public void renderEditor(ShapeRendererEx shapeRenderer) {
+		if (mSelected) {
+
+		}
 	}
 
 	/**

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Vector2;
@@ -126,6 +127,8 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 		}
 		mShapeRenderer.setProjectionMatrix(mCamera.combined);
 		mShapeRenderer.begin(ShapeType.Filled);
+		Gdx.gl.glEnable(GL20.GL_BLEND);
+		Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 		mLevel.render(mShapeRenderer);
 		mLevel.renderEditor(mShapeRenderer);
 		mShapeRenderer.end();

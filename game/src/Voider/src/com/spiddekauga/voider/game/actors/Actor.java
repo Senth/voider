@@ -261,47 +261,22 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	public void render(ShapeRendererEx shapeRenderer) {
 		Vector2 offsetPosition = Vector2Pool.obtain();
 		offsetPosition.set(mPosition);
-		offsetPosition.sub(mDef.getCenterOffset());
+		offsetPosition.add(mDef.getCenterOffset());
 
 		if (mDef.getShapeType() == ActorShapeTypes.CUSTOM && mDef.getCornerCount() >= 1 && mDef.getCornerCount() <= 2) {
 			offsetPosition.add(mDef.getCorners().get(0));
 		}
 
-		Vector2[] localVertices = new Vector2[3];
-		for (int i = 0; i < localVertices.length; ++i) {
-			localVertices[i] = Vector2Pool.obtain();
-		}
-
 		// Shape
 		shapeRenderer.setColor(mDef.getColor());
-
 		ArrayList<Vector2> vertices = mDef.getTriangleVertices();
-
-		for (int triangle = 0; triangle < vertices.size(); triangle += 3) {
-			for (int localIndex = 0; localIndex < localVertices.length; ++localIndex) {
-				localVertices[localIndex].set(vertices.get(triangle + localIndex)).add(offsetPosition);
-			}
-			shapeRenderer.triangle(localVertices[0], localVertices[1], localVertices[2]);
-		}
-
-
+		shapeRenderer.triangles(vertices, offsetPosition);
 
 		// Border
 		shapeRenderer.setColor(mDef.getBorderColor());
-
 		vertices = mDef.getTriangleBorderVertices();
+		shapeRenderer.triangles(vertices, offsetPosition);
 
-		for (int triangle = 0; triangle < vertices.size(); triangle += 3) {
-			for (int localIndex = 0; localIndex < localVertices.length; ++localIndex) {
-				localVertices[localIndex].set(vertices.get(triangle + localIndex)).add(offsetPosition);
-			}
-			shapeRenderer.triangle(localVertices[0], localVertices[1], localVertices[2]);
-		}
-
-
-		for (Vector2 vertex : localVertices) {
-			Vector2Pool.free(vertex);
-		}
 		Vector2Pool.free(offsetPosition);
 	}
 
@@ -310,7 +285,44 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	 * @param shapeRenderer the current sprite batch for the scene
 	 */
 	public void renderEditor(ShapeRendererEx shapeRenderer) {
-		// Does nothing
+		if (mSelected) {
+			Vector2 offsetPosition = Vector2Pool.obtain();
+			offsetPosition.set(mPosition);
+			offsetPosition.add(mDef.getCenterOffset());
+
+			if (mDef.getShapeType() == ActorShapeTypes.CUSTOM && mDef.getCornerCount() >= 1 && mDef.getCornerCount() <= 2) {
+				offsetPosition.add(mDef.getCorners().get(0));
+			}
+
+			// Draw gray overlay
+			shapeRenderer.setColor(Config.Editor.SELECTED_COLOR);
+			ArrayList<Vector2> vertices = mDef.getTriangleVertices();
+			shapeRenderer.triangles(vertices, offsetPosition);
+
+			if (mDef.getShapeType() == ActorShapeTypes.CUSTOM && mDef.getCornerCount() >= 1 && mDef.getCornerCount() <= 2) {
+				offsetPosition.sub(mDef.getCorners().get(0));
+			}
+
+			// Draw corners?
+			if (mHasBodyCorners) {
+				shapeRenderer.setColor(Config.Editor.CORNER_COLOR);
+				Vector2 cornerOffset = Vector2Pool.obtain();
+				for (Vector2 corner : mDef.getCorners()) {
+					cornerOffset.set(offsetPosition).add(corner);
+					shapeRenderer.triangles(Config.Editor.PICKING_VERTICES, cornerOffset);
+				}
+				Vector2Pool.free(cornerOffset);
+			}
+
+
+			// Draw center body?
+			if (mHasBodyCenter) {
+				shapeRenderer.setColor(Config.Editor.CENTER_OFFSET_COLOR);
+				shapeRenderer.triangle(Config.Editor.PICKING_VERTICES);
+			}
+
+			Vector2Pool.free(offsetPosition);
+		}
 	}
 
 	/**
@@ -708,12 +720,21 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 		return mSkipRotate;
 	}
 
-	//	/**
-	//	 * Kills the actor. #isDead() will now return true
-	//	 */
-	//	public void kill() {
-	//		mDead = true;
-	//	}
+	/**
+	 * Sets if the actor is currently selected. This will make it draw differently
+	 * when in the editor.
+	 * @param selected true if the actor is selected
+	 */
+	public void setSelected(boolean selected) {
+		mSelected = selected;
+	}
+
+	/**
+	 * @return true if the actor is currently selected
+	 */
+	public boolean isSelected() {
+		return mSelected;
+	}
 
 	/**
 	 * @return activation time of the actor, negative value if the actor is
@@ -722,13 +743,6 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	public float getActivationTime() {
 		return mActivationTime;
 	}
-
-	//	/**
-	//	 * @return true if the actor is dead (i.e. has been destroyed)
-	//	 */
-	//	public boolean isDead() {
-	//		return mDead;
-	//	}
 
 	/**
 	 * Activates the actor.
@@ -879,14 +893,14 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	private boolean mHasBodyCorners = false;
 	/** True if the actor shall skip rotating */
 	private boolean mSkipRotate = false;
-	//	/** True if the actor is dead, i.e. it shall be removed */
-	//	private boolean mDead = false;
 	/** True if the actor is active */
 	private boolean mActive = true;
 	/** Activation time of the actor, local time for the scene */
 	private float mActivationTime = mActive ? 0 : -1;
 	/** Trigger informations */
 	private ArrayList<TriggerInfo> mTriggerInfos = new ArrayList<TriggerInfo>();
+	/** True if the actor is selected, only applicable in editor */
+	private boolean mSelected = false;
 
 	/** The world used for creating bodies */
 	protected static World mWorld = null;

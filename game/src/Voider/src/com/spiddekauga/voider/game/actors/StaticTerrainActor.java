@@ -1,6 +1,5 @@
 package com.spiddekauga.voider.game.actors;
 
-import com.badlogic.gdx.graphics.glutils.ShapeRendererEx;
 
 /**
  * Static terrain actor. This terrain will not move, and cannot be destroyed.
@@ -14,11 +13,6 @@ public class StaticTerrainActor extends Actor {
 	 */
 	public StaticTerrainActor() {
 		super(new StaticTerrainActorDef());
-	}
-
-	@Override
-	public void renderEditor(ShapeRendererEx shapeRenderer) {
-		/** @TODO render the corners */
 	}
 
 	@Override

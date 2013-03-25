@@ -2,15 +2,20 @@ package com.spiddekauga.voider;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import javax.crypto.spec.SecretKeySpec;
 
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.Shape;
 import com.spiddekauga.voider.game.actors.ActorFilterCategories;
 import com.spiddekauga.voider.game.actors.ActorShapeTypes;
+import com.spiddekauga.voider.utils.EarClippingTriangulator;
+import com.spiddekauga.voider.utils.Geometry;
 
 /**
  * Game configuration
@@ -149,6 +154,9 @@ public class Config {
 			PICKING_CIRCLE_FIXTURE = new FixtureDef();
 			PICKING_CIRCLE_FIXTURE.filter.categoryBits = ActorFilterCategories.NONE;
 			PICKING_CIRCLE_FIXTURE.shape = PICKING_CIRCLE_SHAPE;
+			ArrayList<Vector2> circles = Geometry.createCircle(PICKING_CIRCLE_RADIUS);
+			EarClippingTriangulator earClippingTriangulator = new EarClippingTriangulator();
+			PICKING_VERTICES = earClippingTriangulator.computeTriangles(circles);
 		}
 
 		/**
@@ -410,26 +418,33 @@ public class Config {
 		public final static float TEXT_FIELD_NUMBER_WIDTH = 70;
 		/** Label padding in front of a slider */
 		public final static float LABEL_PADDING_BEFORE_SLIDER = 8;
-
-		/** Radius of all picking circles */
-		private final static float PICKING_CIRCLE_RADIUS = 1.0f;
-		/** Picking shape */
-		private static Shape PICKING_CIRCLE_SHAPE = null;
-		/** Picking fixture */
-		private static FixtureDef PICKING_CIRCLE_FIXTURE = null;
-		/** Default pick size */
-		public final static float PICK_SIZE_DEFAULT = 0.0001f;
-		/** Path pick size */
-		public final static float PICK_PATH_SIZE = 0.5f;
-		/** Trigger pick size */
-		public final static float PICK_TRIGGER_SIZE = PICK_PATH_SIZE;
-
 		/** Maximum name length */
 		public final static int NAME_LENGTH_MAX = 16;
 		/** Maximum length of description */
 		public final static int DESCRIPTION_LENGTH_MAX = 256;
 		/** Maximum length of story  */
 		public final static int STORY_LENGTH_MAX = 512;
+
+		/** Corner pick color */
+		public final static Color CORNER_COLOR = new Color(0.75f, 0, 0, 1);
+		/** Center offset pick color */
+		public final static Color CENTER_OFFSET_COLOR = new Color(0, 0.75f, 0, 1);
+		/** Selected color overlay */
+		public final static Color SELECTED_COLOR = new Color(1, 1, 1, 0.45f);
+		/** Default pick size */
+		public final static float PICK_SIZE_DEFAULT = 0.0001f;
+		/** Path pick size */
+		public final static float PICK_PATH_SIZE = 0.5f;
+		/** Trigger pick size */
+		public final static float PICK_TRIGGER_SIZE = PICK_PATH_SIZE;
+		/** Radius of all picking circles */
+		private final static float PICKING_CIRCLE_RADIUS = 1.0f;
+		/** Picking shape */
+		private static Shape PICKING_CIRCLE_SHAPE = null;
+		/** Picking fixture */
+		private static FixtureDef PICKING_CIRCLE_FIXTURE = null;
+		/** Picking vertices */
+		public static ArrayList<Vector2> PICKING_VERTICES = null;
 	}
 
 	/**

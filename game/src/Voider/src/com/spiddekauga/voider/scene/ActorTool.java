@@ -2,6 +2,7 @@ package com.spiddekauga.voider.scene;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
+import java.util.List;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
@@ -12,13 +13,14 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.spiddekauga.voider.editor.HitWrapper;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.ActorDef;
+import com.spiddekauga.voider.resources.IResource;
 
 /**
  * Common class for all tools which can create actors
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public abstract class ActorTool extends TouchTool {
+public abstract class ActorTool extends TouchTool implements ISelectTool {
 	/**
 	 * Creates an actor tool.
 	 * @param camera used for determining where the pointer is in the world
@@ -38,6 +40,65 @@ public abstract class ActorTool extends TouchTool {
 	 */
 	public void setNewActorDef(ActorDef actorDef) {
 		mActorDef = actorDef;
+	}
+
+	@Override
+	public void addListener(ISelectListener listener) {
+		mSelectListeners.add(listener);
+	}
+
+	@Override
+	public void addListeners(List<ISelectListener> listeners) {
+		mSelectListeners.addAll(listeners);
+	}
+
+	@Override
+	public void removeListener(ISelectListener listener) {
+		mSelectListeners.remove(listener);
+	}
+
+	@Override
+	public void removeListeners(List<ISelectListener> listeners) {
+		mSelectListeners.removeAll(listeners);
+	}
+
+	@Override
+	public void setSelectedResource(IResource selectedResource) {
+		deactivate();
+
+		Actor oldSelected = mSelectedActor;
+		mSelectedActor = (Actor) selectedResource;
+
+		for (ISelectListener selectListener : mSelectListeners) {
+			selectListener.onResourceSelected(oldSelected, mSelectedActor);
+		}
+
+		activate();
+	}
+
+	@Override
+	public Actor getSelectedResource() {
+		return mSelectedActor;
+	}
+
+	/**
+	 * Deactivates the tool, i.e. it will make any selected actor unselected
+	 */
+	@Override
+	public void deactivate() {
+		if (mSelectedActor != null) {
+			mSelectedActor.setSelected(false);
+		}
+	}
+
+	/**
+	 * Activates the tool i.e. it will make any selected actor selected
+	 */
+	@Override
+	public void activate() {
+		if (mSelectedActor != null) {
+			mSelectedActor.setSelected(true);
+		}
 	}
 
 	/**
@@ -89,6 +150,11 @@ public abstract class ActorTool extends TouchTool {
 	protected QueryCallback getCallback() {
 		return mCallback;
 	}
+
+	/** Selected actor */
+	protected Actor mSelectedActor = null;
+	/** Select listeners */
+	private ArrayList<ISelectListener> mSelectListeners = new ArrayList<ISelectListener>();
 
 	/** Picking for current actor type */
 	private QueryCallback mCallback = new QueryCallback() {

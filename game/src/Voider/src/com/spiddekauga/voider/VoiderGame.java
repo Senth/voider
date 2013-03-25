@@ -50,7 +50,6 @@ public class VoiderGame implements ApplicationListener {
 
 		ShaderProgram.pedantic = false;
 
-
 		/** @TODO set main menu as start screen */
 
 		//testGame();

@@ -5,7 +5,6 @@ import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRendererEx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -32,12 +31,15 @@ public abstract class Scene extends InputAdapter {
 	}
 
 	/**
-	 * Runs the scene. Don't Override this method as this method clears the screen,
-	 * renders it, and updates the scene elements.
+	 * Runs the scene. Clears the screen, renders it, and updates the scene elements.
 	 */
 	public final void run() {
-		Gdx.gl.glClearColor(0, 0, 0, 1);
+		Gdx.gl.glClearColor(0, 0, 0, 0);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		Gdx.gl.glEnable(GL20.GL_BLEND);
+		Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+		//		Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
+
 
 		render();
 		mGui.update();

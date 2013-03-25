@@ -118,12 +118,12 @@ public class AddEnemyTool extends AddActorTool {
 
 	@Override
 	public void deactivate() {
-		/** @todo set triggers as deselected, will draw differently */
+		super.deactivate();
 	}
 
 	@Override
 	public void activate() {
-		/** @todo set triggers as selected, will draw differently */
+		super.activate();
 	}
 
 	@Override
