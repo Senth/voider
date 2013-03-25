@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 
@@ -272,6 +273,144 @@ public class Geometry {
 		}
 
 		return polygon;
+	}
+
+	/**
+	 * Creates a polygon line, i.e. a line made out of triangles
+	 * @param corners all the positions of the line
+	 * @param width width of the line
+	 * @return list with all the vertices for the line. These have been created with
+	 * Vector2Pool, make sure to free them afterwards :)
+	 */
+	public static ArrayList<Vector2> createLinePolygon(ArrayList<Vector2> corners, float width) {
+		ArrayList<Vector2> vertices = new ArrayList<Vector2>();
+
+		// Do nothing if only one or zero corners. Cannot draw a line from this...
+		if (corners.size() < 2) {
+			return vertices;
+		}
+
+		Vector2 directionBefore = Vector2Pool.obtain();
+		Vector2 directionAfter = Vector2Pool.obtain();
+
+		Vector2 borderAboveBefore1 = Vector2Pool.obtain();
+		Vector2 borderAboveBefore2 = Vector2Pool.obtain();
+		Vector2 borderAboveAfter1 = Vector2Pool.obtain();
+		Vector2 borderAboveAfter2 = Vector2Pool.obtain();
+		Vector2 borderBelowBefore1 = Vector2Pool.obtain();
+		Vector2 borderBelowBefore2 = Vector2Pool.obtain();
+		Vector2 borderBelowAfter1 = Vector2Pool.obtain();
+		Vector2 borderBelowAfter2 = Vector2Pool.obtain();
+
+		for (int i = 0; i < corners.size(); ++i) {
+			int nextIndex = computeNextIndex(corners, i);
+			int prevIndex = computePreviousIndex(corners, i);
+
+			// First position only takes into account the forward direction
+			if (i == 0) {
+				directionAfter.set(corners.get(nextIndex)).sub(corners.get(i));
+				directionAfter.rotate(90).nor().mul(width * 0.5f);
+
+				borderAboveAfter1.set(corners.get(i)).add(directionAfter);
+				borderBelowAfter1.set(corners.get(i)).sub(directionAfter);
+				vertices.add(Vector2Pool.obtain().set(borderAboveAfter1));
+				vertices.add(Vector2Pool.obtain().set(borderBelowAfter1));
+			}
+			// Last position only takes into account the previous direction
+			else if (i == corners.size() - 1) {
+				directionBefore.set(corners.get(i)).sub(corners.get(prevIndex));
+				directionBefore.rotate(90).nor().mul(width * 0.5f);
+
+				borderAboveBefore2.set(corners.get(i)).add(directionBefore);
+				borderBelowBefore2.set(corners.get(i)).sub(directionBefore);
+				vertices.add(Vector2Pool.obtain().set(borderAboveBefore2));
+				vertices.add(Vector2Pool.obtain().set(borderBelowBefore2));
+			}
+			// The rest uses both forward and backward directions to calculate
+			// the intersection of these
+			else {
+				// Before lines
+				directionBefore.set(corners.get(i)).sub(corners.get(prevIndex));
+				directionBefore.rotate(90).nor().mul(width * 0.5f);
+
+				borderAboveBefore1.set(corners.get(prevIndex)).add(directionBefore);
+				borderAboveBefore2.set(corners.get(i)).add(directionBefore);
+				borderBelowBefore1.set(corners.get(prevIndex)).sub(directionBefore);
+				borderBelowBefore2.set(corners.get(i)).sub(directionBefore);
+
+				// After lines
+				directionAfter.set(corners.get(nextIndex)).sub(corners.get(i));
+				directionAfter.rotate(90).nor().mul(width * 0.5f);
+
+				borderAboveAfter1.set(corners.get(i)).add(directionAfter);
+				borderAboveAfter2.set(corners.get(nextIndex)).add(directionAfter);
+				borderBelowAfter1.set(corners.get(i)).sub(directionAfter);
+				borderBelowAfter2.set(corners.get(nextIndex)).add(directionAfter);
+
+				// Calculate intersection lines
+				Vector2 aboveIntersection = getLineLineIntersection(borderAboveBefore1, borderAboveBefore2, borderAboveAfter1, borderAboveAfter2);
+				Vector2 belowIntersection = getLineLineIntersection(borderBelowBefore1, borderBelowBefore2, borderBelowAfter1, borderBelowAfter2);
+
+				if (aboveIntersection != null && belowIntersection != null) {
+					vertices.add(aboveIntersection);
+					vertices.add(belowIntersection);
+				} else {
+					Gdx.app.error("Geometry", "No intersection for line when creating polygon line!");
+					return null;
+				}
+			}
+		}
+
+		ArrayList<Vector2> triangles = new ArrayList<Vector2>();
+
+		// Create triangles from the positions
+		if (Geometry.isPolygonCounterClockwise(corners)) {
+			for (int i = 0; i < vertices.size() - 2; ++i) {
+				// Even - counter clockwise use correct order
+				if ((i & 1) == 0) {
+					triangles.add(vertices.get(i));
+					triangles.add(vertices.get(i+1));
+					triangles.add(vertices.get(i+2));
+				}
+				// Odd - clockwise, use different order
+				else {
+					triangles.add(vertices.get(i));
+					triangles.add(vertices.get(i+2));
+					triangles.add(vertices.get(i+1));
+				}
+			}
+		} else {
+			for (int i = 0; i < vertices.size() - 2; ++i) {
+				// Even - clockwise, use different order
+				if ((i & 1) == 0) {
+					triangles.add(vertices.get(i));
+					triangles.add(vertices.get(i+2));
+					triangles.add(vertices.get(i+1));
+				}
+				// Odd - counter clockwise use correct order
+				else {
+					triangles.add(vertices.get(i));
+					triangles.add(vertices.get(i+1));
+					triangles.add(vertices.get(i+2));
+				}
+			}
+		}
+
+
+
+		Vector2Pool.free(directionBefore);
+		Vector2Pool.free(directionAfter);
+
+		Vector2Pool.free(borderAboveBefore1);
+		Vector2Pool.free(borderAboveBefore2);
+		Vector2Pool.free(borderAboveAfter1);
+		Vector2Pool.free(borderAboveAfter2);
+		Vector2Pool.free(borderBelowBefore1);
+		Vector2Pool.free(borderBelowBefore2);
+		Vector2Pool.free(borderBelowAfter1);
+		Vector2Pool.free(borderBelowAfter2);
+
+		return triangles;
 	}
 
 	/**

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRendererEx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -25,6 +24,7 @@ import com.spiddekauga.voider.resources.IResourceCorner;
 import com.spiddekauga.voider.resources.IResourceEditorRender;
 import com.spiddekauga.voider.resources.IResourcePosition;
 import com.spiddekauga.voider.resources.Resource;
+import com.spiddekauga.voider.utils.Geometry;
 import com.spiddekauga.voider.utils.Vector2Pool;
 
 
@@ -62,6 +62,8 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 		if (index == 0) {
 			updateEnemyPositions();
 		}
+
+		createVertices();
 	}
 
 	/**
@@ -83,6 +85,8 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 		resetBodyFixture();
 
 		updateEnemyPositions();
+
+		createVertices();
 
 		Vector2Pool.free(diff);
 	}
@@ -124,6 +128,8 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 			}
 		}
 
+		createVertices();
+
 		return removedCorner;
 	}
 
@@ -139,6 +145,8 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 				updateEnemyPositions();
 			}
 		}
+
+		createVertices();
 	}
 
 	@Override
@@ -199,14 +207,6 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 		return mPathType;
 	}
 
-	/**
-	 * Renders the path
-	 * @param spriteBatch the batch to use for rendering
-	 */
-	public void render(SpriteBatch spriteBatch) {
-		/** @todo render path */
-	}
-
 	@Override
 	public void createBody() {
 		if (mWorld != null) {
@@ -220,6 +220,8 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 			if (mFixtureDef != null) {
 				mBody.createFixture(mFixtureDef);
 			}
+
+			createVertices();
 		}
 	}
 
@@ -312,8 +314,15 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 
 	@Override
 	public void renderEditor(ShapeRendererEx shapeRenderer) {
-		if (mSelected) {
+		if (mVertices != null) {
+			shapeRenderer.setColor(Config.Editor.Level.Path.START_COLOR);
+			shapeRenderer.triangles(mVertices);
+		}
 
+
+		if (mSelected) {
+			shapeRenderer.setColor(Config.Editor.SELECTED_COLOR);
+			shapeRenderer.triangles(mVertices);
 		}
 	}
 
@@ -479,6 +488,26 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 		}
 	}
 
+	/**
+	 * Recreates the path vertices for drawing
+	 */
+	private void createVertices() {
+		// Dispose of old path
+		if (mVertices != null) {
+			ArrayList<Vector2> removedVertices = new ArrayList<Vector2>();
+			for (Vector2 vertex : mVertices) {
+				if (!removedVertices.contains(vertex)) {
+					removedVertices.add(vertex);
+					Vector2Pool.free(vertex);
+				}
+			}
+		}
+
+		mVertices = Geometry.createLinePolygon(mCorners, Config.Editor.Level.Path.WIDTH);
+	}
+
+	/** Path vertices for drawing in editor */
+	private ArrayList<Vector2> mVertices = null;
 	/** If this path is selected */
 	private boolean mSelected = false;
 	/** All path nodes */

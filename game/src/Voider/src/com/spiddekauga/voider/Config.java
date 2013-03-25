@@ -362,6 +362,18 @@ public class Config {
 				public final static float TRIGGER_DEACTIVATE_DELAY_STEP_SIZE = 1;
 			}
 
+			/**
+			 * Path options
+			 */
+			public static class Path {
+				/** Width of displayed path for enemies */
+				public final static float WIDTH = 0.5f;
+				/** Start color of the path */
+				public final static Color START_COLOR = new Color(0, 0.6f, 0, 1);
+				/** End color of the path */
+				public final static Color END_COLOR = new Color(0.6f, 0, 0, 1);
+			}
+
 			/** Enemy snap distance to a path */
 			public final static float ENEMY_SNAP_PATH_DISTANCE = 2;
 			/** Enemy snap distance squared */
