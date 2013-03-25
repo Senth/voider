@@ -307,4 +307,66 @@ public class Geometry {
 	public static void getDirection(Vector2 fromPoint, Vector2 toPoint, Vector2 direction) {
 		direction.set(toPoint).sub(fromPoint).nor();
 	}
+
+	/**
+	 * Checks whether the specified point is within the triangle. Uses Barycentric coordinates.
+	 * @param point the point to test whether it inside the triangle or not
+	 * @param triangle three vertices that makes triangle
+	 * @param triangleStartIndex starting index of the triangle this can be used when the triangle already
+	 * is within another larger list.
+	 * @return true if the point is inside the triangle
+	 * @author andreasdr http://stackoverflow.com/questions/2049582/how-to-determine-a-point-in-a-triangle
+	 */
+	public static boolean isPointWithinTriangle(final Vector2 point, final ArrayList<Vector2> triangle, int triangleStartIndex) {
+		int index0 = triangleStartIndex;
+		int index1 = triangleStartIndex + 1;
+		int index2 = triangleStartIndex + 2;
+
+		// s = p0y*p2x - p0x*p2y + (p2y - p0y)*px + (p0x - p2x)*py;
+		// t = p0x*p1y - p0y*p1x + (p0y - p1y)*px + (p1x - p0x)*py;
+		float s = triangle.get(index0).y * triangle.get(index2).x - triangle.get(index0).x * triangle.get(index2).y +
+				(triangle.get(index2).y - triangle.get(index0).y) * point.x +
+				(triangle.get(index0).x - triangle.get(index2).x) * point.y;
+
+		// Fast return
+		if (s < 0) {
+			return false;
+		}
+
+		float t = triangle.get(index0).x * triangle.get(index1).y - triangle.get(index0).y * triangle.get(index1).x +
+				(triangle.get(index0).y - triangle.get(index1).y) * point.x +
+				(triangle.get(index1).x - triangle.get(index0).x) * point.y;
+
+		// Fast return
+		if (t < 0) {
+			return false;
+		}
+
+		// Calculate the area
+		// A = 1/2*(-p1y*p2x + p0y*(p2x - p1x) + p0x*(p1y - p2y) + p1x*p2y);
+		float area = 0.5f * (-triangle.get(index1).y * triangle.get(index2).x +
+				triangle.get(index0).y * (triangle.get(index2).x - triangle.get(index1).x) +
+				triangle.get(index0).x * (triangle.get(index1).y - triangle.get(index2).y) +
+				triangle.get(index1).x * triangle.get(index2).y);
+
+		if (area < 0) {
+			area = -area;
+		}
+
+		// Check for 1 - s - t > 0. But as area is not included in s and t, we check against
+		// s' + t' < 2*area
+		return s + t < 2 * area;
+	}
+
+	/**
+	 * Checks whether the specified point is within the triangle. Uses Barycentric coordinates.
+	 * @param point the point to test whether it inside the triangle or not
+	 * @param triangle three vertices that makes triangle
+	 * @return true if the point is inside the triangle
+	 * @author andreasdr http://stackoverflow.com/questions/2049582/how-to-determine-a-point-in-a-triangle
+	 */
+	public static boolean isPointWithinTriangle(final Vector2 point, final ArrayList<Vector2> triangle) {
+		return isPointWithinTriangle(point, triangle, 0);
+	}
+
 }

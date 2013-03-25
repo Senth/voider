@@ -2,11 +2,11 @@ package com.spiddekauga.voider.game.actors;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.math.EarClippingTriangulator;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
@@ -21,6 +21,7 @@ import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.Collectibles;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.IResourceCorner;
+import com.spiddekauga.voider.utils.EarClippingTriangulator;
 import com.spiddekauga.voider.utils.Geometry;
 import com.spiddekauga.voider.utils.Vector2Pool;
 
@@ -458,6 +459,8 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	public Vector2 removeCorner(int index) {
 		Vector2 removedPosition = null;
 		if (index >= 0 && index < mVisualVars.corners.size()) {
+			mVisualVars.clearVertices();
+
 			removedPosition = mVisualVars.corners.remove(index);
 
 			try {
@@ -793,7 +796,7 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 			// Create vertices for the circle
 			ArrayList<Vector2> circleVertices = Geometry.createCircle(radius);
 			mVisualVars.vertices =(ArrayList<Vector2>) mEarClippingTriangulator.computeTriangles(circleVertices);
-			Collections.reverse(circleVertices);
+			Collections.reverse(mVisualVars.vertices);
 
 			createBorder(circleVertices);
 		}
@@ -1089,7 +1092,29 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	private void createBorder(ArrayList<Vector2> corners) {
 		ArrayList<Vector2> borderCorners = createdBorderCorners(corners);
 
-		createBorderVertices(corners, borderCorners);
+		boolean allBordersInsidePolygon = true;
+		Iterator<Vector2> borderVertexIt = borderCorners.iterator();
+		while (borderVertexIt.hasNext() && allBordersInsidePolygon) {
+			Vector2 borderVertex = borderVertexIt.next();
+			boolean withinTriangle = false;
+			for (int i = 0; i < mVisualVars.vertices.size(); i += 3) {
+				if (Geometry.isPointWithinTriangle(borderVertex, mVisualVars.vertices, i)) {
+					withinTriangle = true;
+					break;
+				}
+			}
+
+			if (!withinTriangle) {
+				allBordersInsidePolygon = false;
+			}
+		}
+
+
+		if (allBordersInsidePolygon) {
+			createBorderVertices(corners, borderCorners);
+		} else {
+			Vector2Pool.free(borderCorners);
+		}
 	}
 
 	/**

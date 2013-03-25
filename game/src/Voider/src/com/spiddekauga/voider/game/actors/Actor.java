@@ -261,9 +261,9 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	public void render(ShapeRendererEx shapeRenderer) {
 		Vector2 offsetPosition = Vector2Pool.obtain();
 		offsetPosition.set(mPosition);
-		offsetPosition.add(mDef.getCenterOffset());
+		offsetPosition.sub(mDef.getCenterOffset());
 
-		if (mDef.getShapeType() == ActorShapeTypes.CUSTOM && (mDef.getCornerCount() >= 1 || mDef.getCornerCount() <= 2)) {
+		if (mDef.getShapeType() == ActorShapeTypes.CUSTOM && mDef.getCornerCount() >= 1 && mDef.getCornerCount() <= 2) {
 			offsetPosition.add(mDef.getCorners().get(0));
 		}
 

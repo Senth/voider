@@ -1,5 +1,7 @@
 package com.spiddekauga.voider.utils;
 
+import java.util.List;
+
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Pool;
 import com.badlogic.gdx.utils.Pools;
@@ -26,6 +28,16 @@ public class Vector2Pool {
 	 */
 	public static void free(Vector2 vector) {
 		mPool.free(vector);
+	}
+
+	/**
+	 * Frees all vectors in the list
+	 * @param list list with vectors to free
+	 */
+	public static void free(List<Vector2> list) {
+		for (Vector2 vector : list) {
+			free(vector);
+		}
 	}
 
 	/** Pool for vector 2 */
