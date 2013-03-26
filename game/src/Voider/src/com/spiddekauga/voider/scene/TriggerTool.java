@@ -65,11 +65,17 @@ public class TriggerTool extends TouchTool implements ISelectTool {
 	 * @param state new state of the trigger tool
 	 */
 	public void setState(States state) {
-		disableSelectedDrawing();
-
 		mState = state;
+	}
 
+	@Override
+	public void activate() {
 		enableSelectedDrawing();
+	}
+
+	@Override
+	public void deactivate() {
+		disableSelectedDrawing();
 	}
 
 	/**

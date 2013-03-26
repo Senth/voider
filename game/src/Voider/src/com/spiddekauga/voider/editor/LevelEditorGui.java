@@ -520,8 +520,19 @@ class LevelEditorGui extends EditorGui {
 		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onChecked(boolean checked) {
-				mLevelEditor.switchTool(Tools.ENEMY);
-				switchTool(mEnemyTable);
+				if (checked) {
+					switchTool(mEnemyTable);
+
+					// Which is currently active from the enemy table?
+					if (mWidgets.enemyMenu.enemy.isChecked()) {
+						mLevelEditor.switchTool(Tools.ENEMY);
+						resetEnemyOptions();
+					} else if (mWidgets.enemyMenu.path.isChecked()) {
+						mLevelEditor.switchTool(Tools.PATH);
+					} else if (mWidgets.enemyMenu.trigger.isChecked()) {
+						mLevelEditor.switchTool(Tools.TRIGGER);
+					}
+				}
 			}
 		};
 		toggleGroup.add(button);

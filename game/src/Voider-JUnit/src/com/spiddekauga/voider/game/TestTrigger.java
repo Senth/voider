@@ -1,6 +1,8 @@
 package com.spiddekauga.voider.game;
 
-import com.spiddekauga.voider.game.TriggerAction.Reasons;
+import com.badlogic.gdx.graphics.glutils.ShapeRendererEx;
+import com.spiddekauga.voider.game.triggers.Trigger;
+import com.spiddekauga.voider.game.triggers.TriggerAction.Reasons;
 
 /**
  * Test trigger that essentially does nothing
@@ -22,5 +24,11 @@ public class TestTrigger extends Trigger {
 	protected Object getCauseObject() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public void renderEditor(ShapeRendererEx shapeRenderer) {
+		// TODO Auto-generated method stub
+
 	}
 }
