@@ -319,10 +319,20 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 			shapeRenderer.triangles(mVertices);
 		}
 
-
 		if (mSelected) {
 			shapeRenderer.setColor(Config.Editor.SELECTED_COLOR);
 			shapeRenderer.triangles(mVertices);
+
+
+			// Render corners
+			if (!mBodyCorners.isEmpty()) {
+				shapeRenderer.setColor(Config.Editor.CORNER_COLOR);
+				Vector2 cornerOffset = Vector2Pool.obtain();
+				for (Vector2 corner : mCorners) {
+					cornerOffset.set(corner);
+					shapeRenderer.triangles(Config.Editor.PICKING_VERTICES, cornerOffset);
+				}
+			}
 		}
 	}
 
