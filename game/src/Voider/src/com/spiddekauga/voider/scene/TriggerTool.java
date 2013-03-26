@@ -259,14 +259,18 @@ public class TriggerTool extends TouchTool implements ISelectTool {
 	 * Disables the special drawing on the selected trigger.
 	 */
 	protected void disableSelectedDrawing() {
-		// TODO
+		if (mSelectedTrigger != null) {
+			mSelectedTrigger.setSelected(false);
+		}
 	}
 
 	/**
 	 * Enables the special drawing on the selected trigger.
 	 */
 	protected void enableSelectedDrawing() {
-		// TODO
+		if (mSelectedTrigger != null) {
+			mSelectedTrigger.setSelected(true);
+		}
 	}
 
 	/**

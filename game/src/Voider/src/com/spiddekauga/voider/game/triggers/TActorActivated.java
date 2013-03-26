@@ -4,17 +4,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import com.badlogic.gdx.graphics.glutils.ShapeRendererEx;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.OrderedMap;
 import com.spiddekauga.utils.Json;
+import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.triggers.TriggerAction.Reasons;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourceBody;
 import com.spiddekauga.voider.resources.IResourceChangeListener;
+import com.spiddekauga.voider.utils.Geometry;
+import com.spiddekauga.voider.utils.Vector2Pool;
 
 /**
  * Triggered when an actor is activated, or otherwise active
@@ -45,6 +50,8 @@ public class TActorActivated extends Trigger implements Disposable, IResourceBod
 
 			mBody.setTransform(mActor.getPosition(), mActor.getDef().getBodyDef().angle);
 			mBody.setUserData(this);
+
+			createVertices();
 		}
 	}
 
@@ -52,6 +59,24 @@ public class TActorActivated extends Trigger implements Disposable, IResourceBod
 	public void destroyBody() {
 		if (mBody != null) {
 			mBody.getWorld().destroyBody(mBody);
+		}
+		destroyVertices();
+	}
+
+	@Override
+	public void renderEditor(ShapeRendererEx shapeRenderer) {
+		if (mVertices != null && mActor != null) {
+			shapeRenderer.setColor(Config.Editor.Level.Trigger.COLOR);
+			Vector2 offsetPosition = Vector2Pool.obtain();
+			offsetPosition.set(mActor.getPosition()).add(mActor.getDef().getCenterOffset());
+			shapeRenderer.triangles(mVertices, offsetPosition);
+
+			if (isSelected()) {
+				shapeRenderer.setColor(Config.Editor.SELECTED_COLOR);
+				shapeRenderer.triangles(mVertices, offsetPosition);
+			}
+
+			Vector2Pool.free(offsetPosition);
 		}
 	}
 
@@ -160,6 +185,38 @@ public class TActorActivated extends Trigger implements Disposable, IResourceBod
 		}
 	}
 
+	/**
+	 * Creates visual representation of the trigger
+	 */
+	private void createVertices() {
+		destroyVertices();
+
+		ArrayList<Vector2> polygon = new ArrayList<Vector2>();
+		ArrayList<Vector2> actorShape = mActor.getDef().getPolygonShape();
+		if (actorShape != null) {
+			// Copy polygon from actor, so we don't free the actor's vectors when freeing
+			// this trigger
+			for (Vector2 vertex : actorShape) {
+				polygon.add(Vector2Pool.obtain().set(vertex));
+			}
+			ArrayList<Vector2> borderCorners = Geometry.createdBorderCorners(polygon, false, Config.Editor.Level.Trigger.ENEMY_WIDTH);
+
+			mVertices = Geometry.createBorderVertices(polygon, borderCorners);
+		}
+	}
+
+	/**
+	 * Destroys the visual representation of the trigger
+	 */
+	private void destroyVertices() {
+		if (mVertices != null) {
+			Vector2Pool.freeDuplicates(mVertices);
+			mVertices = null;
+		}
+	}
+
+	/** Vertices for drawing the trigger */
+	private ArrayList<Vector2> mVertices = null;
 	/** Actor to check if it has been activated */
 	private Actor mActor = null;
 	/**	Actor id */

@@ -374,6 +374,18 @@ public class Config {
 				public final static Color END_COLOR = new Color(0.6f, 0, 0, 1);
 			}
 
+			/**
+			 * Trigger options
+			 */
+			public static class Trigger {
+				/** Color of the trigger */
+				public final static Color COLOR = new Color(0, 0, 0.6f, 1);
+				/** Width of screen at */
+				public final static float SCREEN_AT_WIDTH = 0.2f;
+				/** Width of trigger on enemies */
+				public final static float ENEMY_WIDTH = 0.4f;
+			}
+
 			/** Enemy snap distance to a path */
 			public final static float ENEMY_SNAP_PATH_DISTANCE = 2;
 			/** Enemy snap distance squared */

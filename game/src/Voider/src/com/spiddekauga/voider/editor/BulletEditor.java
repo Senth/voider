@@ -78,7 +78,7 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 	}
 
 	@Override
-	public void update() {
+	protected void update() {
 		super.update();
 		mWeapon.update(Gdx.graphics.getDeltaTime());
 

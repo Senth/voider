@@ -508,4 +508,130 @@ public class Geometry {
 		return isPointWithinTriangle(point, triangle, 0);
 	}
 
+	/**
+	 * Creates the border vertices for the corner
+	 * @param corners vertices for all the corners
+	 * @param inward set this to true if the border shall be inward, false if outwards
+	 * @param width the border width
+	 * @return border corner vertices
+	 */
+	public static ArrayList<Vector2> createdBorderCorners(ArrayList<Vector2> corners, boolean inward, float width) {
+		boolean clockwise = !Geometry.isPolygonCounterClockwise(corners);
+		if (!inward) {
+			clockwise = !clockwise;
+		}
+
+		Vector2 directionBefore = Vector2Pool.obtain();
+		Vector2 directionAfter = Vector2Pool.obtain();
+
+		Vector2 borderBefore1 = Vector2Pool.obtain();
+		Vector2 borderBefore2 = Vector2Pool.obtain();
+		Vector2 borderAfter1 = Vector2Pool.obtain();
+		Vector2 borderAfter2 = Vector2Pool.obtain();
+
+		ArrayList<Vector2> borderCorners = new ArrayList<Vector2>();
+		for (int i = 0; i < corners.size(); ++i) {
+			// Get direction of lines that uses this vertex (i.e. that has it
+			// as its end (line before) or start (line after) position.
+			int indexBefore = Geometry.computePreviousIndex(corners, i);
+			int indexAfter = Geometry.computeNextIndex(corners, i);
+			Geometry.getDirection(corners.get(indexBefore), corners.get(i), directionBefore);
+			Geometry.getDirection(corners.get(i), corners.get(indexAfter), directionAfter);
+
+			// Rotate direction to point inwards into the polygon
+			if (clockwise) {
+				directionBefore.rotate(-90);
+				directionAfter.rotate(-90);
+			} else {
+				directionBefore.rotate(90);
+				directionAfter.rotate(90);
+			}
+
+			// Border width
+			directionBefore.mul(width);
+			directionAfter.mul(width);
+
+			// Calculate temporary border points
+			borderBefore1.set(corners.get(indexBefore)).add(directionBefore);
+			borderBefore2.set(corners.get(i)).add(directionBefore);
+			borderAfter1.set(corners.get(i)).add(directionAfter);
+			borderAfter2.set(corners.get(indexAfter)).add(directionAfter);
+
+			// Get intersection point add it as a corner
+			Vector2 borderCorner = Geometry.getLineLineIntersection(borderBefore1, borderBefore2, borderAfter1, borderAfter2);
+			if (borderCorner != null) {
+				borderCorners.add(borderCorner);
+			} else {
+				Gdx.app.error("ActorDef", "No intersection for the border corner!");
+			}
+		}
+
+		Vector2Pool.free(directionBefore);
+		Vector2Pool.free(directionAfter);
+
+		Vector2Pool.free(borderBefore1);
+		Vector2Pool.free(borderBefore2);
+		Vector2Pool.free(borderAfter1);
+		Vector2Pool.free(borderAfter2);
+
+		return borderCorners;
+	}
+
+	/**
+	 * Creates border vertices that will be in pair of triangles to be easily
+	 * rendered.
+	 * @param corners the regular corners of the actor
+	 * @param borderCorners the border corners of the actor
+	 * @return vector with all border vertices, null if corner size and border corner size isn't the same
+	 */
+	public static ArrayList<Vector2> createBorderVertices(ArrayList<Vector2> corners, ArrayList<Vector2> borderCorners) {
+		if (corners.size() != borderCorners.size()) {
+			Gdx.app.error("Geometry", "Not same amount of border corners as there are corners!");
+			return null;
+		}
+
+		ArrayList<Vector2> vertices = new ArrayList<Vector2>();
+
+		// Create the two triangle in front of the index
+		// For example if we're at index 1 we will create the triangles
+		// 1 - 2 - 2' AND 1 - 2' - 1'
+		// 0' 1' 2' 3' = borders corners
+		// ——————————
+		// | /| /| /|
+		// |/ |/ |/ |
+		// ——————————
+		// 0  1  2  3 = corners
+
+		if (Geometry.isPolygonCounterClockwise(corners)) {
+			for (int i = 0; i < corners.size(); ++i) {
+				int nextIndex = Geometry.computeNextIndex(corners, i);
+
+				// First triangle
+				vertices.add(corners.get(i));
+				vertices.add(corners.get(nextIndex));
+				vertices.add(borderCorners.get(nextIndex));
+
+				// Second triangle
+				vertices.add(corners.get(i));
+				vertices.add(borderCorners.get(nextIndex));
+				vertices.add(borderCorners.get(i));
+			}
+		} else {
+			for (int i = 0; i < corners.size(); ++i) {
+				int nextIndex = Geometry.computeNextIndex(corners, i);
+
+				// First triangle
+				vertices.add(corners.get(i));
+				vertices.add(borderCorners.get(nextIndex));
+				vertices.add(corners.get(nextIndex));
+
+				// Second triangle
+				vertices.add(corners.get(i));
+				vertices.add(borderCorners.get(i));
+				vertices.add(borderCorners.get(nextIndex));
+			}
+		}
+
+		return vertices;
+	}
 }

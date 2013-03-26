@@ -138,7 +138,7 @@ public class GameScene extends WorldScene {
 	}
 
 	@Override
-	public void update() {
+	protected void update() {
 		// Make sure border maintains same speed as level
 		if (mBorderBody != null) {
 			mBorderBody.setLinearVelocity(mLevel.getSpeed(), 0.0f);
@@ -160,7 +160,7 @@ public class GameScene extends WorldScene {
 	}
 
 	@Override
-	public void render() {
+	protected void render() {
 		super.render();
 
 		if (!Config.Graphics.USE_DEBUG_RENDERER) {

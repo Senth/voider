@@ -1,5 +1,6 @@
 package com.spiddekauga.voider.utils;
 
+import java.util.HashSet;
 import java.util.List;
 
 import com.badlogic.gdx.math.Vector2;
@@ -37,6 +38,21 @@ public class Vector2Pool {
 	public static void free(List<Vector2> list) {
 		for (Vector2 vector : list) {
 			free(vector);
+		}
+	}
+
+	/**
+	 * Frees all vectors in the list. This list can contain duplicates
+	 * as this method ensure that each vector is only freed once.
+	 * @param list list with vectors to free, can contain duplicates.
+	 */
+	public static void freeDuplicates(List<Vector2> list) {
+		HashSet<Vector2> freedVectors = new HashSet<Vector2>();
+		for (Vector2 vector : list) {
+			if (!freedVectors.contains(vector)) {
+				free(vector);
+				freedVectors.add(vector);
+			}
 		}
 	}
 

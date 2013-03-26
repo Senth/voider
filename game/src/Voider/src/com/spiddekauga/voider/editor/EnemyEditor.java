@@ -198,7 +198,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	}
 
 	@Override
-	public void update() {
+	protected void update() {
 		super.update();
 		float deltaTime = Gdx.graphics.getDeltaTime();
 		mPlayerActor.update(deltaTime);
@@ -253,7 +253,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	}
 
 	@Override
-	public void render() {
+	protected void render() {
 		super.render();
 	}
 

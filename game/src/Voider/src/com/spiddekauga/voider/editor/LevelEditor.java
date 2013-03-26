@@ -88,7 +88,7 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 	}
 
 	@Override
-	public void update() {
+	protected void update() {
 		super.update();
 		mLevel.update();
 
@@ -117,7 +117,7 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 	}
 
 	@Override
-	public void render() {
+	protected void render() {
 		super.render();
 
 		//		if (!Config.Graphics.USE_DEBUG_RENDERER) {

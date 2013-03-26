@@ -209,9 +209,12 @@ class VisualVars implements Json.Serializable, Disposable {
 	Vector2 centerOffset = new Vector2();
 	/** Corners of polygon, used for custom shapes */
 	ArrayList<Vector2> corners = new ArrayList<Vector2>();
+	/** Array list of the polygon figure, this contains the vertices but not
+	 * in triangles. */
+	ArrayList<Vector2> polygon = null;
 	/** Triangle vertices.
 	 * It is made this way to easily render the target. No optimization has been done to reduce
-	 * the number of vertices. E.g. almost like a triangle strip. */
+	 * the number of vertices. */
 	ArrayList<Vector2> vertices = new ArrayList<Vector2>();
 	/** Triangle border vertices. */
 	ArrayList<Vector2> borderVertices = new ArrayList<Vector2>();

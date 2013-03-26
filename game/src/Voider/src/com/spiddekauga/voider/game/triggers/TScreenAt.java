@@ -3,6 +3,7 @@ package com.spiddekauga.voider.game.triggers;
 import java.util.ArrayList;
 import java.util.UUID;
 
+import com.badlogic.gdx.graphics.glutils.ShapeRendererEx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -11,6 +12,7 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.OrderedMap;
 import com.spiddekauga.utils.Json;
+import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.Level;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.ActorFilterCategories;
@@ -19,6 +21,7 @@ import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourceBody;
 import com.spiddekauga.voider.resources.IResourcePosition;
 import com.spiddekauga.voider.scene.SceneSwitcher;
+import com.spiddekauga.voider.utils.Geometry;
 import com.spiddekauga.voider.utils.Vector2Pool;
 /**
  * Triggers when the right side of the screen is at or beyond a specific position.
@@ -41,6 +44,19 @@ public class TScreenAt extends Trigger implements IResourceBody, IResourcePositi
 	@Override
 	protected Reasons getReason() {
 		return Reasons.SCREEN_AT;
+	}
+
+	@Override
+	public void renderEditor(ShapeRendererEx shapeRenderer) {
+		if (mVertices != null) {
+			shapeRenderer.setColor(Config.Editor.Level.Trigger.COLOR);
+			shapeRenderer.triangles(mVertices);
+
+			if (isSelected()) {
+				shapeRenderer.setColor(Config.Editor.SELECTED_COLOR);
+				shapeRenderer.triangles(mVertices);
+			}
+		}
 	}
 
 	@Override
@@ -131,6 +147,8 @@ public class TScreenAt extends Trigger implements IResourceBody, IResourcePositi
 			mBody.setUserData(this);
 
 			edgeShape.dispose();
+
+			createVertices();
 		}
 	}
 
@@ -139,6 +157,10 @@ public class TScreenAt extends Trigger implements IResourceBody, IResourcePositi
 		if (mBody != null) {
 			mBody.getWorld().destroyBody(mBody);
 			mBody = null;
+		}
+
+		if (mVertices != null) {
+			Vector2Pool.freeDuplicates(mVertices);
 		}
 	}
 
@@ -152,6 +174,8 @@ public class TScreenAt extends Trigger implements IResourceBody, IResourcePositi
 		if (mBody != null) {
 			mBody.setTransform(mPosition, 0);
 		}
+
+		createVertices();
 	}
 
 	@Override
@@ -163,6 +187,7 @@ public class TScreenAt extends Trigger implements IResourceBody, IResourcePositi
 	public void dispose() {
 		Vector2Pool.free(mPosition);
 		destroyBody();
+		destroyVertices();
 	}
 
 	/**
@@ -172,6 +197,41 @@ public class TScreenAt extends Trigger implements IResourceBody, IResourcePositi
 		// Does nothing
 	}
 
+	/**
+	 * Creates the vertices for the graphical version of the trigger
+	 */
+	private void createVertices() {
+		destroyVertices();
+
+		float halfHeight = SceneSwitcher.getWorldHeight() * 0.5f;
+
+		// Create vertices for the body
+		Vector2 upperVertex = Vector2Pool.obtain();
+		Vector2 lowerVertex = Vector2Pool.obtain();
+		upperVertex.set(0, -halfHeight).add(mPosition);
+		lowerVertex.set(0, halfHeight).add(mPosition);
+
+		ArrayList<Vector2> line = new ArrayList<Vector2>();
+		line.add(upperVertex);
+		line.add(lowerVertex);
+
+		mVertices = Geometry.createLinePolygon(line, Config.Editor.Level.Trigger.SCREEN_AT_WIDTH);
+
+		Vector2Pool.free(line);
+	}
+
+	/**
+	 * Destroys the graphical version of the trigger
+	 */
+	private void destroyVertices() {
+		if (mVertices != null) {
+			Vector2Pool.freeDuplicates(mVertices);
+			mVertices = null;
+		}
+	}
+
+	/** Vertices for the trigger */
+	private ArrayList<Vector2> mVertices = null;
 	/** Body of the trigger */
 	private Body mBody = null;
 	/** Level to check for the x-coordinate */

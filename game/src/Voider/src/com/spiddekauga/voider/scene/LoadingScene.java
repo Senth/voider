@@ -20,7 +20,7 @@ public abstract class LoadingScene extends Scene {
 	}
 
 	@Override
-	public void update() {
+	protected void update() {
 		try {
 			ResourceCacheFacade.update();
 		} catch (UndefinedResourceTypeException e) {

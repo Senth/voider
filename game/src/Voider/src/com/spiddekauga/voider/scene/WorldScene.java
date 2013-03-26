@@ -44,7 +44,7 @@ public abstract class WorldScene extends Scene {
 	}
 
 	@Override
-	public void update() {
+	protected void update() {
 		mWorld.step(1/60f, 6, 2);
 
 		// Remove unwanted bullets
@@ -61,7 +61,7 @@ public abstract class WorldScene extends Scene {
 	}
 
 	@Override
-	public void render() {
+	protected void render() {
 		super.render();
 		if (Config.Graphics.USE_DEBUG_RENDERER) {
 			mDebugRenderer.render(mWorld, mCamera.combined);

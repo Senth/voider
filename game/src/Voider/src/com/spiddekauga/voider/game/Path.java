@@ -48,7 +48,7 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 
 	@Override
 	public void addCorner(Vector2 corner, int index) throws PolygonComplexException, PolygonCornerTooCloseException {
-		mCorners.add(index, corner.cpy());
+		mCorners.add(index, Vector2Pool.obtain().set(corner));
 
 		if (mWorld != null) {
 			createFixture();
@@ -230,6 +230,8 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 		if (mBody != null) {
 			mBody.getWorld().destroyBody(mBody);
 			mBody = null;
+
+			destroyVertices();
 		}
 	}
 
@@ -273,6 +275,8 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 			destroyBody();
 			destroyBodyCorners();
 		}
+		destroyVertices();
+		Vector2Pool.free(mCorners);
 	}
 
 	/**
@@ -504,16 +508,20 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 	private void createVertices() {
 		// Dispose of old path
 		if (mVertices != null) {
-			ArrayList<Vector2> removedVertices = new ArrayList<Vector2>();
-			for (Vector2 vertex : mVertices) {
-				if (!removedVertices.contains(vertex)) {
-					removedVertices.add(vertex);
-					Vector2Pool.free(vertex);
-				}
-			}
+			destroyVertices();
 		}
 
 		mVertices = Geometry.createLinePolygon(mCorners, Config.Editor.Level.Path.WIDTH);
+	}
+
+	/**
+	 * Destroys all the vertices
+	 */
+	private void destroyVertices() {
+		if (mVertices != null) {
+			Vector2Pool.freeDuplicates(mVertices);
+			mVertices = null;
+		}
 	}
 
 	/** Path vertices for drawing in editor */

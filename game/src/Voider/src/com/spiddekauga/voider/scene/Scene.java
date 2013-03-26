@@ -42,6 +42,7 @@ public abstract class Scene extends InputAdapter {
 
 
 		render();
+		mGui.render();
 		mGui.update();
 		if (!mGui.isMsgBoxActive()) {
 			mGameTime.update(Gdx.graphics.getDeltaTime());
@@ -87,7 +88,7 @@ public abstract class Scene extends InputAdapter {
 	/**
 	 * Updates the scene
 	 */
-	public abstract void update();
+	protected abstract void update();
 
 	/**
 	 * Checks whether the derived class has any resources that needs to be loaded.
@@ -170,8 +171,8 @@ public abstract class Scene extends InputAdapter {
 	/**
 	 * Renders the scene
 	 */
-	public void render() {
-		mGui.render();
+	protected void render() {
+		// Does nothing
 	}
 
 	/**

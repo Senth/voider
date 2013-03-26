@@ -795,7 +795,7 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 
 			// Create vertices for the circle
 			ArrayList<Vector2> circleVertices = Geometry.createCircle(radius);
-			mVisualVars.vertices =(ArrayList<Vector2>) mEarClippingTriangulator.computeTriangles(circleVertices);
+			mVisualVars.vertices =mEarClippingTriangulator.computeTriangles(circleVertices);
 			Collections.reverse(mVisualVars.vertices);
 
 			createBorder(circleVertices);
@@ -902,8 +902,10 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 
 		// Create vertices for the circle
 		ArrayList<Vector2> circleVertices = Geometry.createCircle(mVisualVars.shapeCircleRadius);
-		mVisualVars.vertices =(ArrayList<Vector2>) mEarClippingTriangulator.computeTriangles(circleVertices);
+		mVisualVars.vertices =mEarClippingTriangulator.computeTriangles(circleVertices);
 		Collections.reverse(circleVertices);
+
+		mVisualVars.polygon = circleVertices;
 
 		createBorder(circleVertices);
 
@@ -926,26 +928,35 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 		rectangleShape.setAsBox(halfWidth, halfHeight);
 
 		// Set AABB box
-		/** @todo use center for AABB box */
 		//		mAabbBox.setFromBox(mVisualVars.centerOffset, halfWidth, halfHeight);
 		//		mAabbBox.setFromBox(new Vector2(), halfWidth, halfHeight);
 
-		// Create triangle vertices for the rectangle
+		// Create triangle vertices and polygon for the rectangle
 		if (rectangleShape.getVertexCount() == 4) {
+			mVisualVars.polygon = new ArrayList<Vector2>();
+
 			// First triangle
 			Vector2 vertex = Vector2Pool.obtain();
 			rectangleShape.getVertex(0, vertex);
 			mVisualVars.vertices.add(vertex);
+			mVisualVars.polygon.add(vertex);
+			vertex = Vector2Pool.obtain();
 			rectangleShape.getVertex(1, vertex);
 			mVisualVars.vertices.add(vertex);
+			mVisualVars.polygon.add(vertex);
+			vertex = Vector2Pool.obtain();
 			rectangleShape.getVertex(2, vertex);
 			mVisualVars.vertices.add(vertex);
+			mVisualVars.polygon.add(vertex);
 
 			// Second triangle
 			mVisualVars.vertices.add(vertex);
+			vertex = Vector2Pool.obtain();
 			rectangleShape.getVertex(3, vertex);
 			mVisualVars.vertices.add(vertex);
+			mVisualVars.polygon.add(vertex);
 			mVisualVars.vertices.add(mVisualVars.vertices.get(0));
+
 		} else {
 			Gdx.app.error("ActorDef", "Vertex count is not 4 in rectangle!");
 		}
@@ -1006,10 +1017,13 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 		Vector2Pool.free(center);
 
 		// Set vertices and create border
+		mVisualVars.polygon = new ArrayList<Vector2>();
 		for (Vector2 vertex : vertices) {
 			mVisualVars.vertices.add(vertex);
+			mVisualVars.polygon.add(vertex);
 		}
 		createBorder(mVisualVars.vertices);
+
 
 		return polygonShape;
 	}
@@ -1036,7 +1050,7 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 
 
 
-		/** @todo create border for line */
+		/** @todo create polygon ? */
 
 		return edgeShape;
 	}
@@ -1086,11 +1100,18 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	}
 
 	/**
+	 * @return polygon shape of the actor.
+	 */
+	public ArrayList<Vector2> getPolygonShape() {
+		return mVisualVars.polygon;
+	}
+
+	/**
 	 * Creates the border for the actor
 	 * @param corners vertices for all the corners
 	 */
 	private void createBorder(ArrayList<Vector2> corners) {
-		ArrayList<Vector2> borderCorners = createdBorderCorners(corners);
+		ArrayList<Vector2> borderCorners = Geometry.createdBorderCorners(corners, true, Config.Actor.BORDER_WIDTH);
 
 		boolean allBordersInsidePolygon = true;
 		Iterator<Vector2> borderVertexIt = borderCorners.iterator();
@@ -1111,126 +1132,9 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 
 
 		if (allBordersInsidePolygon) {
-			createBorderVertices(corners, borderCorners);
+			mVisualVars.borderVertices = Geometry.createBorderVertices(corners, borderCorners);
 		} else {
 			Vector2Pool.free(borderCorners);
-		}
-	}
-
-	/**
-	 * Creates the border vertices for the corner
-	 * @param corners vertices for all the corners
-	 * @return border corner vertices
-	 */
-	private ArrayList<Vector2> createdBorderCorners(ArrayList<Vector2> corners) {
-		boolean clockwise = !Geometry.isPolygonCounterClockwise(corners);
-
-		Vector2 directionBefore = Vector2Pool.obtain();
-		Vector2 directionAfter = Vector2Pool.obtain();
-
-		Vector2 borderBefore1 = Vector2Pool.obtain();
-		Vector2 borderBefore2 = Vector2Pool.obtain();
-		Vector2 borderAfter1 = Vector2Pool.obtain();
-		Vector2 borderAfter2 = Vector2Pool.obtain();
-
-		ArrayList<Vector2> borderCorners = new ArrayList<Vector2>();
-		for (int i = 0; i < corners.size(); ++i) {
-			// Get direction of lines that uses this vertex (i.e. that has it
-			// as its end (line before) or start (line after) position.
-			int indexBefore = Geometry.computePreviousIndex(corners, i);
-			int indexAfter = Geometry.computeNextIndex(corners, i);
-			Geometry.getDirection(corners.get(indexBefore), corners.get(i), directionBefore);
-			Geometry.getDirection(corners.get(i), corners.get(indexAfter), directionAfter);
-
-			// Rotate direction to point inwards into the polygon
-			if (clockwise) {
-				directionBefore.rotate(-90);
-				directionAfter.rotate(-90);
-			} else {
-				directionBefore.rotate(90);
-				directionAfter.rotate(90);
-			}
-
-			// Border width
-			directionBefore.mul(Config.Actor.BORDER_WIDTH);
-			directionAfter.mul(Config.Actor.BORDER_WIDTH);
-
-			// Calculate temporary border points
-			borderBefore1.set(corners.get(indexBefore)).add(directionBefore);
-			borderBefore2.set(corners.get(i)).add(directionBefore);
-			borderAfter1.set(corners.get(i)).add(directionAfter);
-			borderAfter2.set(corners.get(indexAfter)).add(directionAfter);
-
-			// Get intersection point add it as a corner
-			Vector2 borderCorner = Geometry.getLineLineIntersection(borderBefore1, borderBefore2, borderAfter1, borderAfter2);
-			if (borderCorner != null) {
-				borderCorners.add(borderCorner);
-			} else {
-				Gdx.app.error("ActorDef", "No intersection for the border corner!");
-			}
-		}
-
-		Vector2Pool.free(directionBefore);
-		Vector2Pool.free(directionAfter);
-
-		Vector2Pool.free(borderBefore1);
-		Vector2Pool.free(borderBefore2);
-		Vector2Pool.free(borderAfter1);
-		Vector2Pool.free(borderAfter2);
-
-		return borderCorners;
-	}
-
-	/**
-	 * Creates border vertices that will be in pair of triangles to be easily
-	 * rendered.
-	 * @param corners the regular corners of the actor
-	 * @param borderCorners the border corners of the actor
-	 */
-	private void createBorderVertices(ArrayList<Vector2> corners, ArrayList<Vector2> borderCorners) {
-		if (corners.size() != borderCorners.size()) {
-			Gdx.app.error("ActorDef", "Not same amount of border corners as there are corners!");
-			return;
-		}
-
-		// Create the two triangle in front of the index
-		// For example if we're at index 1 we will create the triangles
-		// 1 - 2 - 2' AND 1 - 2' - 1'
-		// 0' 1' 2' 3' = borders corners
-		// ——————————
-		// | /| /| /|
-		// |/ |/ |/ |
-		// ——————————
-		// 0  1  2  3 = corners
-
-		if (Geometry.isPolygonCounterClockwise(corners)) {
-			for (int i = 0; i < corners.size(); ++i) {
-				int nextIndex = Geometry.computeNextIndex(corners, i);
-
-				// First triangle
-				mVisualVars.borderVertices.add(corners.get(i));
-				mVisualVars.borderVertices.add(corners.get(nextIndex));
-				mVisualVars.borderVertices.add(borderCorners.get(nextIndex));
-
-				// Second triangle
-				mVisualVars.borderVertices.add(corners.get(i));
-				mVisualVars.borderVertices.add(borderCorners.get(nextIndex));
-				mVisualVars.borderVertices.add(borderCorners.get(i));
-			}
-		} else {
-			for (int i = 0; i < corners.size(); ++i) {
-				int nextIndex = Geometry.computeNextIndex(corners, i);
-
-				// First triangle
-				mVisualVars.borderVertices.add(corners.get(i));
-				mVisualVars.borderVertices.add(borderCorners.get(nextIndex));
-				mVisualVars.borderVertices.add(corners.get(nextIndex));
-
-				// Second triangle
-				mVisualVars.borderVertices.add(corners.get(i));
-				mVisualVars.borderVertices.add(borderCorners.get(i));
-				mVisualVars.borderVertices.add(borderCorners.get(nextIndex));
-			}
 		}
 	}
 
