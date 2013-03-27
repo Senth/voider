@@ -1,5 +1,6 @@
 package com.badlogic.gdx.scenes.scene2d.ui;
 
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
@@ -181,6 +182,17 @@ public class MsgBox extends Dialog {
 	public void hide() {
 		super.hide();
 		mHiding = true;
+	}
+
+	/**
+	 * Add cancel button and keys.
+	 * @return this message box for chaining
+	 */
+	public MsgBox addCancelButtonAndKeys() {
+		button("Cancel");
+		key(Keys.BACK, null);
+		key(Keys.ESCAPE, null);
+		return this;
 	}
 
 	/**

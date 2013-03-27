@@ -526,9 +526,10 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 
 	/**
 	 * Tests to run a game from the current location
+	 * @param invulnerable makes the player invulnerable
 	 */
-	void runFromHere() {
-		GameScene testGame = new GameScene(true);
+	public void runFromHere(boolean invulnerable) {
+		GameScene testGame = new GameScene(invulnerable);
 		Level copyLevel = mLevel.copyKeepId();
 		copyLevel.setXCoord(mCamera.position.x + mCamera.viewportWidth * 0.5f);
 		testGame.setLevel(copyLevel);

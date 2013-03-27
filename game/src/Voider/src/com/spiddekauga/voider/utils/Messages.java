@@ -14,6 +14,7 @@ public class Messages {
 	 * Print this string when no definition is selected
 	 * @param defTypeName name of the definition, this will be inserted into
 	 * the message
+	 * @return text when no definition has been selected.
 	 */
 	public static String getNoDefSelected(String defTypeName) {
 		return "(no " + defTypeName + " selected)";
@@ -77,7 +78,19 @@ public class Messages {
 	}
 
 	/**
-	 * Class for all tooltip messages
+	 * Messages for level editor
+	 */
+	public static class Level {
+		/** Title of message box when player is asked to select if s/he shall be invulnerable */
+		public final static String RUN_INVULNERABLE_TITLE = "Test run the level";
+		/** Message when the player is asked to select if s/he shall be invulnerable when testing the level.*/
+		public final static String RUN_INVULNERABLE_CONTENT = "Do you want to be invulnerable when " +
+				"you're testing the level?\n\n" +
+				"Hit Escape or back when you want to stop the test.";
+	}
+
+	/**
+	 * Tooltip messages
 	 */
 	@SuppressWarnings("javadoc")
 	public static class Tooltip {

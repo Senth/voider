@@ -27,15 +27,15 @@ import com.spiddekauga.voider.utils.Vector2Pool;
 public class GameScene extends WorldScene {
 	/**
 	 * Initializes the game scene.
-	 * @param testing if we're just testing the level, i.e. unlimited lives
+	 * @param invulnerable if we're just testing the level, i.e. cannot die
 	 * but still has health. Scoring will still be used (player could be testing
 	 * scoring).
 	 */
-	public GameScene(boolean testing) {
+	public GameScene(boolean invulnerable) {
 		super(new GameSceneGui());
 		((GameSceneGui)mGui).setGameScene(this);
 
-		mTesting = testing;
+		mInvulnerable = invulnerable;
 
 		Actor.setEditorActive(false);
 		mWorld.setContactListener(mCollisionResolver);
@@ -128,7 +128,7 @@ public class GameScene extends WorldScene {
 	 */
 	@Override
 	public void onDisposed() {
-		if (!mTesting) {
+		if (!mInvulnerable) {
 			/** @TODO save the game */
 		}
 
@@ -154,7 +154,7 @@ public class GameScene extends WorldScene {
 		updateCameraPosition();
 
 		// Is the player dead?
-		if (mPlayerActor.getLife() <= 0 && !mTesting) {
+		if (mPlayerActor.getLife() <= 0 && !mInvulnerable) {
 			setOutcome(Outcomes.LEVEL_PLAYER_DIED);
 		}
 	}
@@ -251,7 +251,7 @@ public class GameScene extends WorldScene {
 	@Override
 	public boolean keyDown(int keycode) {
 		// Set level as complete if we want to go back while testing
-		if (mTesting && (keycode == Keys.ESCAPE || keycode == Keys.BACK)) {
+		if (mInvulnerable && (keycode == Keys.ESCAPE || keycode == Keys.BACK)) {
 			setOutcome(Outcomes.LEVEL_QUIT);
 		}
 
@@ -293,8 +293,8 @@ public class GameScene extends WorldScene {
 	private LevelDef mLevelToLoad = null;
 	/** The current level used in the game */
 	private Level mLevel = null;
-	/** If we're just testing */
-	private boolean mTesting;
+	/** Makes the player invulnerable, useful for testing */
+	private boolean mInvulnerable;
 	/** Player ship actor, plays the game */
 	private PlayerActor mPlayerActor;
 	/** Current pointer that moves the player */

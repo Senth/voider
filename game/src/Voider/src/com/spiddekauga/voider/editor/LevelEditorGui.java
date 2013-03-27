@@ -32,6 +32,7 @@ import com.spiddekauga.voider.Config.Editor;
 import com.spiddekauga.voider.Config.Editor.Level;
 import com.spiddekauga.voider.editor.LevelEditor.Tools;
 import com.spiddekauga.voider.editor.commands.CGuiSlider;
+import com.spiddekauga.voider.editor.commands.CLevelRun;
 import com.spiddekauga.voider.game.Path.PathTypes;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceNames;
@@ -359,40 +360,6 @@ class LevelEditorGui extends EditorGui {
 
 		ButtonGroup toggleGroup = new ButtonGroup();
 
-		//		Button button = new TextButton("New", textStyle);
-		//		button.addListener(new EventListener() {
-		//			@Override
-		//			public boolean handle(Event event) {
-		//				if (isButtonPressed(event)) {
-		//					if (mLevelEditor.isUnsaved()) {
-		//						Button yes = new TextButton("Save first", textStyle);
-		//						Button no = new TextButton("Discard current", textStyle);
-		//						Button cancel = new TextButton("Cancel", textStyle);
-		//
-		//						Command save = new CEditorSave(mLevelEditor);
-		//						Command newCommand = new CEditorNew(mLevelEditor);
-		//						Command saveAndNew = new CommandSequence(save, newCommand);
-		//
-		//						MsgBoxExecuter msgBox = getFreeMsgBox();
-		//
-		//						msgBox.clear();
-		//						msgBox.setTitle("New Enemy");
-		//						msgBox.content(Messages.getUnsavedMessage("level", UnsavedActions.NEW));
-		//						msgBox.button(yes, saveAndNew);
-		//						msgBox.button(no, newCommand);
-		//						msgBox.button(cancel);
-		//						msgBox.key(Keys.BACK, null);
-		//						msgBox.key(Keys.ESCAPE, null);
-		//						showMsgBox(msgBox);
-		//					} else {
-		//						mLevelEditor.newDef();
-		//					}
-		//				}
-		//				return true;
-		//			}
-		//		});
-		//		mMenuTable.add(button);
-
 		Button button  = new TextButton("Save", textStyle);
 		new ButtonListener(button) {
 			@Override
@@ -475,7 +442,14 @@ class LevelEditorGui extends EditorGui {
 		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onPressed() {
-				mLevelEditor.runFromHere();
+				MsgBoxExecuter msgBox = getFreeMsgBox();
+
+				msgBox.setTitle(Messages.Level.RUN_INVULNERABLE_TITLE);
+				msgBox.content(Messages.Level.RUN_INVULNERABLE_CONTENT);
+				msgBox.button("Can die", new CLevelRun(false, mLevelEditor));
+				msgBox.button("Invulnerable", new CLevelRun(true, mLevelEditor));
+				msgBox.addCancelButtonAndKeys();
+				showMsgBox(msgBox);
 			}
 		};
 		mMenuTable.add(button);
