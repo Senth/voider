@@ -52,7 +52,7 @@ import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.ObjectMap.Entry;
 import com.badlogic.gdx.utils.OrderedMap;
 import com.badlogic.gdx.utils.SerializationException;
-import com.spiddekauga.voider.utils.Vector2Pool;
+import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Reads/writes Java objects to/from JSON, automatically.
@@ -659,12 +659,12 @@ public class Json {
 			if (polygon.getVertexCount() >= 3) {
 				Vector2[] vertices = new Vector2[polygon.getVertexCount()];
 				for (int i = 0; i < polygon.getVertexCount(); ++i) {
-					vertices[i] = Vector2Pool.obtain();
+					vertices[i] = Pools.vector2.obtain();
 					polygon.getVertex(i, vertices[i]);
 				}
 				writeValue("vertices", vertices);
 				for (Vector2 vertex : vertices) {
-					Vector2Pool.free(vertex);
+					Pools.vector2.free(vertex);
 				}
 			} else {
 				writeValue("vertices", (Object)null);
@@ -674,20 +674,20 @@ public class Json {
 
 		case Edge:
 			EdgeShape edge = (EdgeShape)shape;
-			Vector2 tempVector = Vector2Pool.obtain();
+			Vector2 tempVector = Pools.vector2.obtain();
 			edge.getVertex1(tempVector);
 			writeValue("vertex1", tempVector);
 			edge.getVertex2(tempVector);
 			writeValue("vertex2", tempVector);
-			Vector2Pool.free(tempVector);
+			Pools.vector2.free(tempVector);
 			break;
 
 		case Chain: {
 			ChainShape chainShape = (ChainShape)shape;
 			if (chainShape.getVertexCount() >= 3) {
 				// If first and same vertex is the same, it's a loop
-				Vector2 firstVertex = Vector2Pool.obtain();
-				Vector2 lastVertex = Vector2Pool.obtain();
+				Vector2 firstVertex = Pools.vector2.obtain();
+				Vector2 lastVertex = Pools.vector2.obtain();
 				chainShape.getVertex(0, firstVertex);
 				chainShape.getVertex(chainShape.getVertexCount() - 1, lastVertex);
 
@@ -702,12 +702,12 @@ public class Json {
 
 				Vector2[] vertices = new Vector2[cVertices];
 				for (int i = 0; i < cVertices; ++i) {
-					vertices[i] = Vector2Pool.obtain();
+					vertices[i] = Pools.vector2.obtain();
 					chainShape.getVertex(i, vertices[i]);
 				}
 				writeValue("vertices", vertices);
 				for (Vector2 vertex : vertices) {
-					Vector2Pool.free(vertex);
+					Pools.vector2.free(vertex);
 				}
 			} else {
 				writeValue("vertices", (Object)null);
@@ -1083,7 +1083,7 @@ public class Json {
 				}
 
 				if (type == Vector2.class) {
-					object = Vector2Pool.obtain();
+					object = Pools.vector2.obtain();
 				} else {
 					object = newInstance(type);
 				}

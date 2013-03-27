@@ -24,7 +24,7 @@ import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceNames;
 import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.scene.SceneSwitcher;
-import com.spiddekauga.voider.utils.Vector2Pool;
+import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Listens to a GUI actor to display a tooltip for it.
@@ -220,7 +220,7 @@ public class TooltipListener implements EventListener {
 		int cursorX = Gdx.input.getX();
 		int cursorY = Gdx.graphics.getHeight() - Gdx.input.getY();
 
-		Vector2 min = Vector2Pool.obtain().set(0, 0);
+		Vector2 min = Pools.vector2.obtain().set(0, 0);
 		mActor.localToStageCoordinates(min);
 
 		int width = (int)mActor.getWidth();
@@ -288,8 +288,8 @@ public class TooltipListener implements EventListener {
 		//
 		//		int wrapWidth = prefWidth - diffPref;
 		//
-		//		mLabel.setWidth(prefWidth - diffPref);
-		//		mLabel.setWrap(true);
+		mLabel.setWidth(200);
+		mLabel.setWrap(true);
 		//		mLabel.invalidateHierarchy();
 	}
 

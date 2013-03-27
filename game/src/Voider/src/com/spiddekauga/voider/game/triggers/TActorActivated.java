@@ -19,7 +19,7 @@ import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourceBody;
 import com.spiddekauga.voider.resources.IResourceChangeListener;
 import com.spiddekauga.voider.utils.Geometry;
-import com.spiddekauga.voider.utils.Vector2Pool;
+import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Triggered when an actor is activated, or otherwise active
@@ -67,7 +67,7 @@ public class TActorActivated extends Trigger implements Disposable, IResourceBod
 	public void renderEditor(ShapeRendererEx shapeRenderer) {
 		if (mVertices != null && mActor != null) {
 			shapeRenderer.setColor(Config.Editor.Level.Trigger.COLOR);
-			Vector2 offsetPosition = Vector2Pool.obtain();
+			Vector2 offsetPosition = Pools.vector2.obtain();
 			offsetPosition.set(mActor.getPosition()).add(mActor.getDef().getCenterOffset());
 			shapeRenderer.triangles(mVertices, offsetPosition);
 
@@ -76,7 +76,7 @@ public class TActorActivated extends Trigger implements Disposable, IResourceBod
 				shapeRenderer.triangles(mVertices, offsetPosition);
 			}
 
-			Vector2Pool.free(offsetPosition);
+			Pools.vector2.free(offsetPosition);
 		}
 	}
 
@@ -197,7 +197,7 @@ public class TActorActivated extends Trigger implements Disposable, IResourceBod
 			// Copy polygon from actor, so we don't free the actor's vectors when freeing
 			// this trigger
 			for (Vector2 vertex : actorShape) {
-				polygon.add(Vector2Pool.obtain().set(vertex));
+				polygon.add(Pools.vector2.obtain().set(vertex));
 			}
 			ArrayList<Vector2> borderCorners = Geometry.createdBorderCorners(polygon, false, Config.Editor.Level.Trigger.ENEMY_WIDTH);
 
@@ -210,7 +210,7 @@ public class TActorActivated extends Trigger implements Disposable, IResourceBod
 	 */
 	private void destroyVertices() {
 		if (mVertices != null) {
-			Vector2Pool.freeDuplicates(mVertices);
+			Pools.vector2.freeDuplicates(mVertices);
 			mVertices = null;
 		}
 	}

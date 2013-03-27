@@ -12,7 +12,7 @@ import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Actor.Pickup;
 import com.spiddekauga.voider.Config.Editor.Bullet;
 import com.spiddekauga.voider.Config.Editor.Enemy;
-import com.spiddekauga.voider.utils.Vector2Pool;
+import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Class for all shape variables
@@ -153,7 +153,7 @@ class VisualVars implements Json.Serializable, Disposable {
 	@Override
 	public void dispose() {
 		for (Vector2 corner : corners) {
-			Vector2Pool.free(corner);
+			Pools.vector2.free(corner);
 		}
 		corners.clear();
 
@@ -173,7 +173,7 @@ class VisualVars implements Json.Serializable, Disposable {
 			freedVertices.addAll(corners);
 			for (Vector2 vertex : borderVertices) {
 				if (!freedVertices.contains(vertex)) {
-					Vector2Pool.free(vertex);
+					Pools.vector2.free(vertex);
 					freedVertices.add(vertex);
 				}
 			}
@@ -185,7 +185,7 @@ class VisualVars implements Json.Serializable, Disposable {
 			freedVertices.addAll(corners);
 			for (Vector2 vertex : vertices) {
 				if (!freedVertices.contains(vertex)) {
-					Vector2Pool.free(vertex);
+					Pools.vector2.free(vertex);
 					freedVertices.add(vertex);
 				}
 			}

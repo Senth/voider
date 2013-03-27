@@ -20,7 +20,7 @@ import com.spiddekauga.voider.game.actors.ActorDef;
 import com.spiddekauga.voider.game.actors.BulletActor;
 import com.spiddekauga.voider.resources.IResourceCorner.PolygonComplexException;
 import com.spiddekauga.voider.resources.IResourceCorner.PolygonCornerTooCloseException;
-import com.spiddekauga.voider.utils.Vector2Pool;
+import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Abstract class that can draw actors
@@ -316,14 +316,14 @@ public class DrawActorTool extends ActorTool {
 			if (mSelectedActor != null) {
 				mDragOrigin.set(mSelectedActor.getPosition());
 				mCenterOffsetOrigin.set(mSelectedActor.getDef().getCenterOffset());
-				Vector2 centerOffset = Vector2Pool.obtain();
+				Vector2 centerOffset = Pools.vector2.obtain();
 				centerOffset.set(mDragOrigin).sub(mTouchCurrent);
 				centerOffset.add(mSelectedActor.getDef().getCenterOffset());
 				mSelectedActor.getDef().setCenterOffset(centerOffset);
 				mSelectedActor.destroyBody();
 				mSelectedActor.setPosition(mTouchOrigin);
 				mSelectedActor.createBody();
-				Vector2Pool.free(centerOffset);
+				Pools.vector2.free(centerOffset);
 			}
 			break;
 		}
@@ -335,10 +335,10 @@ public class DrawActorTool extends ActorTool {
 		case ADD_CORNER:
 			if (mCornerIndexCurrent != -1) {
 				try {
-					Vector2 newCornerPos = Vector2Pool.obtain();
+					Vector2 newCornerPos = Pools.vector2.obtain();
 					newCornerPos.set(mTouchCurrent).sub(mSelectedActor.getPosition()).sub(mSelectedActor.getDef().getCenterOffset());
 					mSelectedActor.getDef().moveCorner(mCornerIndexCurrent, newCornerPos);
-					Vector2Pool.free(newCornerPos);
+					Pools.vector2.free(newCornerPos);
 				} catch (Exception e) {
 					// Does nothing
 				}
@@ -350,7 +350,7 @@ public class DrawActorTool extends ActorTool {
 			if (mSelectedActor != null) {
 				Vector2 newPosition = getNewMovePosition();
 				mSelectedActor.setPosition(newPosition);
-				Vector2Pool.free(newPosition);
+				Pools.vector2.free(newPosition);
 			}
 			break;
 
@@ -362,14 +362,14 @@ public class DrawActorTool extends ActorTool {
 
 		case SET_CENTER:
 			if (mSelectedActor != null) {
-				Vector2 centerOffset = Vector2Pool.obtain();
+				Vector2 centerOffset = Pools.vector2.obtain();
 				centerOffset.set(mDragOrigin).sub(mTouchCurrent);
 				centerOffset.add(mCenterOffsetOrigin);
 				mSelectedActor.getDef().setCenterOffset(centerOffset);
 				mSelectedActor.destroyBody();
 				mSelectedActor.setPosition(mTouchCurrent);
 				mSelectedActor.createBody();
-				Vector2Pool.free(centerOffset);
+				Pools.vector2.free(centerOffset);
 			}
 			break;
 		}
@@ -387,7 +387,7 @@ public class DrawActorTool extends ActorTool {
 				// Move corner
 				else {
 					// Reset to original position
-					Vector2 newPos = Vector2Pool.obtain();
+					Vector2 newPos = Pools.vector2.obtain();
 
 					newPos.set(mSelectedActor.getDef().getCornerPosition(mCornerIndexCurrent));
 					try {
@@ -397,7 +397,7 @@ public class DrawActorTool extends ActorTool {
 						// Does nothing
 					}
 
-					Vector2Pool.free(newPos);
+					Pools.vector2.free(newPos);
 				}
 			}
 
@@ -415,7 +415,7 @@ public class DrawActorTool extends ActorTool {
 
 				Vector2 newPos = getNewMovePosition();
 				mInvoker.execute(new CResourceMove(mSelectedActor, newPos, mActorEditor), mChangedActorSinceUp);
-				Vector2Pool.free(newPos);
+				Pools.vector2.free(newPos);
 			}
 			break;
 
@@ -427,7 +427,7 @@ public class DrawActorTool extends ActorTool {
 
 		case SET_CENTER:
 			if (mSelectedActor != null) {
-				Vector2 centerOffset = Vector2Pool.obtain();
+				Vector2 centerOffset = Pools.vector2.obtain();
 				centerOffset.set(mDragOrigin).sub(mTouchCurrent);
 				centerOffset.add(mCenterOffsetOrigin);
 
@@ -436,7 +436,7 @@ public class DrawActorTool extends ActorTool {
 
 				mInvoker.execute(new CActorCenterMove(mSelectedActor.getDef(), centerOffset, mCenterOffsetOrigin, mActorEditor, mSelectedActor));
 
-				Vector2Pool.free(centerOffset);
+				Pools.vector2.free(centerOffset);
 			}
 			break;
 		}
@@ -453,7 +453,7 @@ public class DrawActorTool extends ActorTool {
 	 * Creates a temporary corner
 	 */
 	private void createTempCorner() {
-		Vector2 localPos = Vector2Pool.obtain();
+		Vector2 localPos = Pools.vector2.obtain();
 
 		localPos.set(mTouchOrigin).sub(mSelectedActor.getPosition()).sub(mSelectedActor.getDef().getCenterOffset());
 
@@ -469,7 +469,7 @@ public class DrawActorTool extends ActorTool {
 			/** @TODO print error message on screen */
 		}
 
-		Vector2Pool.free(localPos);
+		Pools.vector2.free(localPos);
 	}
 
 	/**
@@ -492,7 +492,7 @@ public class DrawActorTool extends ActorTool {
 	 */
 	private Vector2 getNewMovePosition() {
 		// Get diff movement
-		Vector2 newPosition = Vector2Pool.obtain();
+		Vector2 newPosition = Pools.vector2.obtain();
 		newPosition.set(mTouchCurrent).sub(mTouchOrigin);
 
 		// Add original position

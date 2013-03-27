@@ -3,7 +3,7 @@ package com.spiddekauga.voider.editor.commands;
 import com.badlogic.gdx.math.Vector2;
 import com.spiddekauga.voider.editor.IResourceChangeEditor;
 import com.spiddekauga.voider.resources.IResourcePosition;
-import com.spiddekauga.voider.utils.Vector2Pool;
+import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Executes a move command on the resource.
@@ -19,7 +19,7 @@ public class CResourceMove extends CResourceChange {
 	 */
 	public CResourceMove(IResourcePosition resource, Vector2 newPosition, IResourceChangeEditor resourceEditor) {
 		super(resource, resourceEditor);
-		mDiffMovement = Vector2Pool.obtain();
+		mDiffMovement = Pools.vector2.obtain();
 		mDiffMovement.set(newPosition);
 		mDiffMovement.sub(resource.getPosition());
 
@@ -32,10 +32,10 @@ public class CResourceMove extends CResourceChange {
 			return false;
 		}
 
-		Vector2 newPos = Vector2Pool.obtain();
+		Vector2 newPos = Pools.vector2.obtain();
 		newPos.set(((IResourcePosition) mResource).getPosition()).add(mDiffMovement);
 		((IResourcePosition) mResource).setPosition(newPos);
-		Vector2Pool.free(newPos);
+		Pools.vector2.free(newPos);
 		sendOnChange();
 
 		return true;
@@ -43,10 +43,10 @@ public class CResourceMove extends CResourceChange {
 
 	@Override
 	public boolean undo() {
-		Vector2 newPos = Vector2Pool.obtain();
+		Vector2 newPos = Pools.vector2.obtain();
 		newPos.set(((IResourcePosition) mResource).getPosition()).sub(mDiffMovement);
 		((IResourcePosition) mResource).setPosition(newPos);
-		Vector2Pool.free(newPos);
+		Pools.vector2.free(newPos);
 		sendOnChange();
 
 		return true;
@@ -55,7 +55,7 @@ public class CResourceMove extends CResourceChange {
 	@Override
 	public void dispose() {
 		if (mDiffMovement != null) {
-			Vector2Pool.free(mDiffMovement);
+			Pools.vector2.free(mDiffMovement);
 		}
 	}
 

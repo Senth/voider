@@ -23,7 +23,7 @@ import com.spiddekauga.voider.game.triggers.TScreenAt;
 import com.spiddekauga.voider.game.triggers.Trigger;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourcePosition;
-import com.spiddekauga.voider.utils.Vector2Pool;
+import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Tool for adding/removing/changing triggers
@@ -208,7 +208,7 @@ public class TriggerTool extends TouchTool implements ISelectTool {
 			if (mSelectedTrigger instanceof IResourcePosition) {
 				Vector2 newPosition = getNewMovePosition();
 				((IResourcePosition) mSelectedTrigger).setPosition(newPosition);
-				Vector2Pool.free(newPosition);
+				Pools.vector2.free(newPosition);
 			}
 			break;
 
@@ -232,7 +232,7 @@ public class TriggerTool extends TouchTool implements ISelectTool {
 				// Move the trigger using a command
 				Vector2 newPosition = getNewMovePosition();
 				mInvoker.execute(new CResourceMove((IResourcePosition) mSelectedTrigger, newPosition, mLevelEditor));
-				Vector2Pool.free(newPosition);
+				Pools.vector2.free(newPosition);
 
 			}
 			break;
@@ -284,7 +284,7 @@ public class TriggerTool extends TouchTool implements ISelectTool {
 	 * using Pools.free(newPos).
 	 */
 	private Vector2 getNewMovePosition() {
-		Vector2 newPosition = Vector2Pool.obtain();
+		Vector2 newPosition = Pools.vector2.obtain();
 		newPosition.set(mTouchCurrent).sub(mTouchOrigin);
 		newPosition.add(mDragOrigin);
 

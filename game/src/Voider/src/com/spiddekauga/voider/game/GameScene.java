@@ -17,7 +17,7 @@ import com.spiddekauga.voider.game.actors.PlayerActor;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.UndefinedResourceTypeException;
 import com.spiddekauga.voider.scene.WorldScene;
-import com.spiddekauga.voider.utils.Vector2Pool;
+import com.spiddekauga.voider.utils.Pools;
 /**
  * The main game. Starts with a level and could either be in regular or
  * testing mode. Testing mode will set the player to unlimited lives.
@@ -271,7 +271,7 @@ public class GameScene extends WorldScene {
 	 */
 	private void resetPlayerPosition() {
 		if (mPlayerActor != null && mPlayerActor.getBody() != null) {
-			Vector2 playerPosition = Vector2Pool.obtain();
+			Vector2 playerPosition = Pools.vector2.obtain();
 			playerPosition.set(mCamera.position.x - mCamera.viewportWidth * 0.5f, 0);
 
 			// Get radius of player and offset it with the width
@@ -283,7 +283,7 @@ public class GameScene extends WorldScene {
 
 				mPlayerActor.getBody().setTransform(playerPosition, 0.0f);
 			}
-			Vector2Pool.free(playerPosition);
+			Pools.vector2.free(playerPosition);
 		}
 	}
 

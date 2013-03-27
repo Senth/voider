@@ -3,7 +3,8 @@ package com.badlogic.gdx.graphics.glutils;
 import java.util.ArrayList;
 
 import com.badlogic.gdx.math.Vector2;
-import com.spiddekauga.voider.utils.Vector2Pool;
+import com.spiddekauga.voider.utils.Pools;
+import com.spiddekauga.voider.utils.Pools;
 
 /**
  * A more advanced shape renderer which allows custom shaders and lines
@@ -104,7 +105,7 @@ public class ShapeRendererEx extends ShapeRenderer {
 	public void triangles(ArrayList<Vector2> triangles, Vector2 positionOffset) {
 		Vector2[] localVertices = new Vector2[3];
 		for (int i = 0; i < localVertices.length; ++i) {
-			localVertices[i] = Vector2Pool.obtain();
+			localVertices[i] = Pools.vector2.obtain();
 		}
 
 		for (int triangleIndex = 0; triangleIndex < triangles.size() - 2; triangleIndex += 3) {
@@ -115,7 +116,7 @@ public class ShapeRendererEx extends ShapeRenderer {
 		}
 
 		for (Vector2 vertex : localVertices) {
-			Vector2Pool.free(vertex);
+			Pools.vector2.free(vertex);
 		}
 	}
 }

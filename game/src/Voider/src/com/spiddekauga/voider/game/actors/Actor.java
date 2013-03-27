@@ -16,7 +16,6 @@ import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.OrderedMap;
 import com.badlogic.gdx.utils.Pool.Poolable;
-import com.badlogic.gdx.utils.Pools;
 import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.utils.Json;
 import com.spiddekauga.voider.Config;
@@ -39,7 +38,7 @@ import com.spiddekauga.voider.resources.Resource;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.UndefinedResourceTypeException;
 import com.spiddekauga.voider.scene.SceneSwitcher;
-import com.spiddekauga.voider.utils.Vector2Pool;
+import com.spiddekauga.voider.utils.Pools;
 
 /**
  * The abstract base class for all actors
@@ -259,7 +258,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	 * @param shapeRenderer the current sprite batch for the scene
 	 */
 	public void render(ShapeRendererEx shapeRenderer) {
-		Vector2 offsetPosition = Vector2Pool.obtain();
+		Vector2 offsetPosition = Pools.vector2.obtain();
 		offsetPosition.set(mPosition);
 		offsetPosition.add(mDef.getCenterOffset());
 
@@ -277,7 +276,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 		vertices = mDef.getTriangleBorderVertices();
 		shapeRenderer.triangles(vertices, offsetPosition);
 
-		Vector2Pool.free(offsetPosition);
+		Pools.vector2.free(offsetPosition);
 	}
 
 	/**
@@ -286,7 +285,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	 */
 	public void renderEditor(ShapeRendererEx shapeRenderer) {
 		if (mSelected) {
-			Vector2 offsetPosition = Vector2Pool.obtain();
+			Vector2 offsetPosition = Pools.vector2.obtain();
 			offsetPosition.set(mPosition);
 			offsetPosition.add(mDef.getCenterOffset());
 
@@ -306,12 +305,12 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 			// Draw corners?
 			if (mHasBodyCorners) {
 				shapeRenderer.setColor(Config.Editor.CORNER_COLOR);
-				Vector2 cornerOffset = Vector2Pool.obtain();
+				Vector2 cornerOffset = Pools.vector2.obtain();
 				for (Vector2 corner : mDef.getCorners()) {
 					cornerOffset.set(offsetPosition).add(corner);
 					shapeRenderer.triangles(Config.Editor.PICKING_VERTICES, cornerOffset);
 				}
-				Vector2Pool.free(cornerOffset);
+				Pools.vector2.free(cornerOffset);
 			}
 
 
@@ -321,7 +320,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 				shapeRenderer.triangle(Config.Editor.PICKING_VERTICES);
 			}
 
-			Vector2Pool.free(offsetPosition);
+			Pools.vector2.free(offsetPosition);
 		}
 	}
 
@@ -686,12 +685,12 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	public void createBodyCorners() {
 		if (mDef.getShapeType() == ActorShapeTypes.CUSTOM && mEditorActive) {
 			mHasBodyCorners = true;
-			Vector2 worldPos = Vector2Pool.obtain();
+			Vector2 worldPos = Pools.vector2.obtain();
 			for (Vector2 localPos : mDef.getCorners()) {
 				worldPos.set(localPos).add(mPosition).add(getDef().getCenterOffset());
 				createBodyCorner(worldPos);
 			}
-			Vector2Pool.free(worldPos);
+			Pools.vector2.free(worldPos);
 		}
 	}
 
@@ -885,7 +884,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	/** The belonging definition of this actor */
 	private ActorDef mDef = null;
 	/** Body position, remember even when we don't have a body */
-	private Vector2 mPosition = Pools.obtain(Vector2.class).set(0, 0);
+	private Vector2 mPosition = Pools.vector2.obtain().set(0, 0);
 	/** Current actors we're colliding with */
 	private ArrayList<ActorDef> mCollidingActors = new ArrayList<ActorDef>();
 	/** World corners of the actor, only used for custom shape and in an editor */

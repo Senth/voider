@@ -23,7 +23,7 @@ import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.scene.SelectDefScene;
 import com.spiddekauga.voider.scene.TouchTool;
 import com.spiddekauga.voider.scene.WorldScene;
-import com.spiddekauga.voider.utils.Vector2Pool;
+import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Creates bullets for the enemies and player to use.
@@ -41,10 +41,10 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 
 		mWeapon.setWeaponDef(new WeaponDef());
 		mWeapon.getDef().setBulletActorDef(mDef);
-		Vector2 weaponPos = Vector2Pool.obtain();
+		Vector2 weaponPos = Pools.vector2.obtain();
 		screenToWorldCoord(mCamera, Gdx.graphics.getWidth() * 0.1f, Gdx.graphics.getHeight() * 0.5f, weaponPos, true);
 		mWeapon.setPosition(weaponPos);
-		Vector2Pool.free(weaponPos);
+		Pools.vector2.free(weaponPos);
 
 		mDrawActorTool = new DrawActorTool(mCamera, mWorld, BulletActor.class, mInvoker, this, mDef);
 	}
@@ -306,7 +306,7 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 		if (mBulletActor != null) {
 			mBulletActor.destroyBody();
 
-			diffOffset = Vector2Pool.obtain();
+			diffOffset = Pools.vector2.obtain();
 			diffOffset.set(mDef.getCenterOffset());
 		}
 
@@ -317,7 +317,7 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 			diffOffset.add(mBulletActor.getPosition());
 			mBulletActor.setPosition(diffOffset);
 			mBulletActor.createBody();
-			Vector2Pool.free(diffOffset);
+			Pools.vector2.free(diffOffset);
 		}
 	}
 
@@ -328,7 +328,7 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 		if (mBulletActor != null) {
 			mBulletActor.destroyBody();
 
-			diffOffset = Vector2Pool.obtain();
+			diffOffset = Pools.vector2.obtain();
 			diffOffset.set(mDef.getCenterOffset());
 		}
 
@@ -339,7 +339,7 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 			diffOffset.add(mBulletActor.getPosition());
 			mBulletActor.setPosition(diffOffset);
 			mBulletActor.createBody();
-			Vector2Pool.free(diffOffset);
+			Pools.vector2.free(diffOffset);
 		}
 	}
 

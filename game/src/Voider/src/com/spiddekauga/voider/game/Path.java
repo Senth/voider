@@ -25,7 +25,7 @@ import com.spiddekauga.voider.resources.IResourceEditorRender;
 import com.spiddekauga.voider.resources.IResourcePosition;
 import com.spiddekauga.voider.resources.Resource;
 import com.spiddekauga.voider.utils.Geometry;
-import com.spiddekauga.voider.utils.Vector2Pool;
+import com.spiddekauga.voider.utils.Pools;
 
 
 /**
@@ -48,7 +48,7 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 
 	@Override
 	public void addCorner(Vector2 corner, int index) throws PolygonComplexException, PolygonCornerTooCloseException {
-		mCorners.add(index, Vector2Pool.obtain().set(corner));
+		mCorners.add(index, Pools.vector2.obtain().set(corner));
 
 		if (mWorld != null) {
 			createFixture();
@@ -88,7 +88,7 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 
 		createVertices();
 
-		Vector2Pool.free(diff);
+		Pools.vector2.free(diff);
 	}
 
 	/**
@@ -99,7 +99,7 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 	 */
 	@Override
 	public Vector2 getPosition() {
-		Vector2 center = Vector2Pool.obtain();
+		Vector2 center = Pools.vector2.obtain();
 		center.set(0, 0);
 
 		for (Vector2 corner : mCorners) {
@@ -276,7 +276,7 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 			destroyBodyCorners();
 		}
 		destroyVertices();
-		Vector2Pool.free(mCorners);
+		Pools.vector2.freeAll(mCorners);
 	}
 
 	/**
@@ -331,7 +331,7 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 			// Render corners
 			if (!mBodyCorners.isEmpty()) {
 				shapeRenderer.setColor(Config.Editor.CORNER_COLOR);
-				Vector2 cornerOffset = Vector2Pool.obtain();
+				Vector2 cornerOffset = Pools.vector2.obtain();
 				for (Vector2 corner : mCorners) {
 					cornerOffset.set(corner);
 					shapeRenderer.triangles(Config.Editor.PICKING_VERTICES, cornerOffset);
@@ -415,7 +415,7 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 			Vector2[] tempArray = new Vector2[2];
 
 			for (int i = 0; i < tempArray.length; ++i) {
-				tempArray[i] = Vector2Pool.obtain();
+				tempArray[i] = Pools.vector2.obtain();
 			}
 
 			tempArray[0].set(mCorners.get(0));
@@ -425,7 +425,7 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 			mFixtureDef.shape = chainShape;
 
 			for (Vector2 tempPosition : tempArray) {
-				Vector2Pool.free(tempPosition);
+				Pools.vector2.free(tempPosition);
 			}
 		}
 	}
@@ -519,7 +519,7 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 	 */
 	private void destroyVertices() {
 		if (mVertices != null) {
-			Vector2Pool.freeDuplicates(mVertices);
+			Pools.vector2.freeDuplicates(mVertices);
 			mVertices = null;
 		}
 	}

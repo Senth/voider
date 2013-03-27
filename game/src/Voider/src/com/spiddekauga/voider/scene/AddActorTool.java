@@ -12,7 +12,7 @@ import com.spiddekauga.voider.editor.commands.CResourceRemove;
 import com.spiddekauga.voider.editor.commands.CResourceSelect;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.resources.IResource;
-import com.spiddekauga.voider.utils.Vector2Pool;
+import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Tool for adding and removing actors
@@ -152,7 +152,7 @@ public class AddActorTool extends ActorTool {
 			if (mMovingActor != null) {
 				Vector2 newPosition = getNewMovePosition();
 				mMovingActor.setPosition(newPosition);
-				Vector2Pool.free(newPosition);
+				Pools.vector2.free(newPosition);
 			}
 			break;
 
@@ -181,7 +181,7 @@ public class AddActorTool extends ActorTool {
 				// Set new position through command
 				Vector2 newPosition = getNewMovePosition();
 				mInvoker.execute(new CResourceMove(mMovingActor, newPosition, mEditor), chained);
-				Vector2Pool.free(newPosition);
+				Pools.vector2.free(newPosition);
 				mMovingActor = null;
 			}
 			break;
@@ -201,7 +201,7 @@ public class AddActorTool extends ActorTool {
 	 */
 	protected Vector2 getNewMovePosition() {
 		// Get diff movement
-		Vector2 newPosition = Vector2Pool.obtain();
+		Vector2 newPosition = Pools.vector2.obtain();
 		newPosition.set(mTouchCurrent).sub(mTouchOrigin);
 
 		// Add original position

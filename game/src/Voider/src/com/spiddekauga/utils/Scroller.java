@@ -4,9 +4,8 @@ import java.util.LinkedList;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Pool;
-import com.badlogic.gdx.utils.Pools;
 import com.spiddekauga.voider.scene.SceneSwitcher;
-import com.spiddekauga.voider.utils.Vector2Pool;
+import com.spiddekauga.voider.utils.Pools;
 
 /**
  * A virtual scroller, this scroller both scrolls and emulates scrolls when
@@ -112,10 +111,10 @@ public class Scroller {
 			break;
 
 		case ALL: {
-			Vector2 velocity = Vector2Pool.obtain();
+			Vector2 velocity = Pools.vector2.obtain();
 			velocity.set(mScrollCurrent).sub(mRecentPointerLocation.getLast().position);
 			distance = velocity.len();
-			Vector2Pool.free(velocity);
+			Pools.vector2.free(velocity);
 			break;
 		}
 		}
@@ -193,13 +192,13 @@ public class Scroller {
 			mSpeed -= mFriction * deltaTime;
 
 			if (mSpeed > mStopSpeed) {
-				Vector2 velocity = Vector2Pool.obtain();
+				Vector2 velocity = Pools.vector2.obtain();
 				velocity.set(mDirection);
 				velocity.mul(mSpeed * deltaTime);
 
 				mScrollCurrent.add(velocity);
 
-				Vector2Pool.free(velocity);
+				Pools.vector2.free(velocity);
 			}
 			// Too low speed to continue
 			else {
@@ -318,7 +317,7 @@ public class Scroller {
 
 	// Static pool
 	/** Pool for pointer time */
-	private final static Pool<PointerTime> mPointerPool = Pools.get(PointerTime.class);
+	private final static Pool<PointerTime> mPointerPool = com.badlogic.gdx.utils.Pools.get(PointerTime.class);
 	/** measure time for the velocity/speed, in seconds */
 	private final float MEASURE_TIME = 0.15f;
 }

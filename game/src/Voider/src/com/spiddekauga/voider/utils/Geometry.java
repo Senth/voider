@@ -138,7 +138,7 @@ public class Geometry {
 		}
 		float x = (det(det1And2, x1LessX2, det3And4, x3LessX4) / det1Less2And3Less4);
 		float y = (det(det1And2, y1LessY2, det3And4, y3LessY4) / det1Less2And3Less4);
-		return Vector2Pool.obtain().set(x, y);
+		return Pools.vector2.obtain().set(x, y);
 	}
 
 	/**
@@ -230,20 +230,20 @@ public class Geometry {
 	 * @param targetVelocity current velocity of the target
 	 * @return velocity of the object needed to intercept the object. Returns Vector2(NaN,NaN)
 	 * if the object cannot intercept the target (because of speed).
-	 * Be sure to free the returning variable using Vector2Pool.free(velocity);
+	 * Be sure to free the returning variable using Pools.vector2.free(velocity);
 	 */
 	public static Vector2 interceptTarget(Vector2 objectPosition, float objectSpeed, Vector2 targetPosition, Vector2 targetVelocity) {
-		Vector2 distanceVector = Vector2Pool.obtain();
+		Vector2 distanceVector = Pools.vector2.obtain();
 		distanceVector.set(targetPosition).sub(objectPosition);
 		float e = distanceVector.dot(distanceVector);
 		float f = 2 * targetVelocity.dot(distanceVector);
 		float g = (objectSpeed * objectSpeed) - targetVelocity.dot(targetVelocity);
 		float t = (float) ((f + Math.sqrt((f * f) + 4 * g * e )) / (g * 2));
 
-		Vector2 objectVelocity = Vector2Pool.obtain();
+		Vector2 objectVelocity = Pools.vector2.obtain();
 		objectVelocity.set(distanceVector).div(t).add(targetVelocity);
 
-		Vector2Pool.free(distanceVector);
+		Pools.vector2.free(distanceVector);
 
 		return objectVelocity;
 	}
@@ -263,7 +263,7 @@ public class Geometry {
 		float sin = MathUtils.sin(angle);
 		float cx = radius, cy = 0;
 		for (int i = 0; i < segments; i++) {
-			Vector2 vertex = Vector2Pool.obtain();
+			Vector2 vertex = Pools.vector2.obtain();
 			vertex.set(cx, cy);
 			polygon.add(vertex);
 
@@ -290,17 +290,17 @@ public class Geometry {
 			return vertices;
 		}
 
-		Vector2 directionBefore = Vector2Pool.obtain();
-		Vector2 directionAfter = Vector2Pool.obtain();
+		Vector2 directionBefore = Pools.vector2.obtain();
+		Vector2 directionAfter = Pools.vector2.obtain();
 
-		Vector2 borderAboveBefore1 = Vector2Pool.obtain();
-		Vector2 borderAboveBefore2 = Vector2Pool.obtain();
-		Vector2 borderAboveAfter1 = Vector2Pool.obtain();
-		Vector2 borderAboveAfter2 = Vector2Pool.obtain();
-		Vector2 borderBelowBefore1 = Vector2Pool.obtain();
-		Vector2 borderBelowBefore2 = Vector2Pool.obtain();
-		Vector2 borderBelowAfter1 = Vector2Pool.obtain();
-		Vector2 borderBelowAfter2 = Vector2Pool.obtain();
+		Vector2 borderAboveBefore1 = Pools.vector2.obtain();
+		Vector2 borderAboveBefore2 = Pools.vector2.obtain();
+		Vector2 borderAboveAfter1 = Pools.vector2.obtain();
+		Vector2 borderAboveAfter2 = Pools.vector2.obtain();
+		Vector2 borderBelowBefore1 = Pools.vector2.obtain();
+		Vector2 borderBelowBefore2 = Pools.vector2.obtain();
+		Vector2 borderBelowAfter1 = Pools.vector2.obtain();
+		Vector2 borderBelowAfter2 = Pools.vector2.obtain();
 
 		for (int i = 0; i < corners.size(); ++i) {
 			int nextIndex = computeNextIndex(corners, i);
@@ -313,8 +313,8 @@ public class Geometry {
 
 				borderAboveAfter1.set(corners.get(i)).add(directionAfter);
 				borderBelowAfter1.set(corners.get(i)).sub(directionAfter);
-				vertices.add(Vector2Pool.obtain().set(borderAboveAfter1));
-				vertices.add(Vector2Pool.obtain().set(borderBelowAfter1));
+				vertices.add(Pools.vector2.obtain().set(borderAboveAfter1));
+				vertices.add(Pools.vector2.obtain().set(borderBelowAfter1));
 			}
 			// Last position only takes into account the previous direction
 			else if (i == corners.size() - 1) {
@@ -323,8 +323,8 @@ public class Geometry {
 
 				borderAboveBefore2.set(corners.get(i)).add(directionBefore);
 				borderBelowBefore2.set(corners.get(i)).sub(directionBefore);
-				vertices.add(Vector2Pool.obtain().set(borderAboveBefore2));
-				vertices.add(Vector2Pool.obtain().set(borderBelowBefore2));
+				vertices.add(Pools.vector2.obtain().set(borderAboveBefore2));
+				vertices.add(Pools.vector2.obtain().set(borderBelowBefore2));
 			}
 			// The rest uses both forward and backward directions to calculate
 			// the intersection of these
@@ -398,17 +398,17 @@ public class Geometry {
 
 
 
-		Vector2Pool.free(directionBefore);
-		Vector2Pool.free(directionAfter);
+		Pools.vector2.free(directionBefore);
+		Pools.vector2.free(directionAfter);
 
-		Vector2Pool.free(borderAboveBefore1);
-		Vector2Pool.free(borderAboveBefore2);
-		Vector2Pool.free(borderAboveAfter1);
-		Vector2Pool.free(borderAboveAfter2);
-		Vector2Pool.free(borderBelowBefore1);
-		Vector2Pool.free(borderBelowBefore2);
-		Vector2Pool.free(borderBelowAfter1);
-		Vector2Pool.free(borderBelowAfter2);
+		Pools.vector2.free(borderAboveBefore1);
+		Pools.vector2.free(borderAboveBefore2);
+		Pools.vector2.free(borderAboveAfter1);
+		Pools.vector2.free(borderAboveAfter2);
+		Pools.vector2.free(borderBelowBefore1);
+		Pools.vector2.free(borderBelowBefore2);
+		Pools.vector2.free(borderBelowAfter1);
+		Pools.vector2.free(borderBelowAfter2);
 
 		return triangles;
 	}
@@ -429,7 +429,7 @@ public class Geometry {
 	 * @return normalized direction from lineA to lineB
 	 */
 	public static Vector2 getDirection(Vector2 fromPoint, Vector2 toPoint) {
-		Vector2 direction = Vector2Pool.obtain();
+		Vector2 direction = Pools.vector2.obtain();
 		direction.set(toPoint).sub(fromPoint).nor();
 		return direction;
 	}
@@ -521,13 +521,13 @@ public class Geometry {
 			clockwise = !clockwise;
 		}
 
-		Vector2 directionBefore = Vector2Pool.obtain();
-		Vector2 directionAfter = Vector2Pool.obtain();
+		Vector2 directionBefore = Pools.vector2.obtain();
+		Vector2 directionAfter = Pools.vector2.obtain();
 
-		Vector2 borderBefore1 = Vector2Pool.obtain();
-		Vector2 borderBefore2 = Vector2Pool.obtain();
-		Vector2 borderAfter1 = Vector2Pool.obtain();
-		Vector2 borderAfter2 = Vector2Pool.obtain();
+		Vector2 borderBefore1 = Pools.vector2.obtain();
+		Vector2 borderBefore2 = Pools.vector2.obtain();
+		Vector2 borderAfter1 = Pools.vector2.obtain();
+		Vector2 borderAfter2 = Pools.vector2.obtain();
 
 		ArrayList<Vector2> borderCorners = new ArrayList<Vector2>();
 		for (int i = 0; i < corners.size(); ++i) {
@@ -566,13 +566,13 @@ public class Geometry {
 			}
 		}
 
-		Vector2Pool.free(directionBefore);
-		Vector2Pool.free(directionAfter);
+		Pools.vector2.free(directionBefore);
+		Pools.vector2.free(directionAfter);
 
-		Vector2Pool.free(borderBefore1);
-		Vector2Pool.free(borderBefore2);
-		Vector2Pool.free(borderAfter1);
-		Vector2Pool.free(borderAfter2);
+		Pools.vector2.free(borderBefore1);
+		Pools.vector2.free(borderBefore2);
+		Pools.vector2.free(borderAfter1);
+		Pools.vector2.free(borderAfter2);
 
 		return borderCorners;
 	}

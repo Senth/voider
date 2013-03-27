@@ -22,7 +22,7 @@ import com.spiddekauga.voider.resources.IResourceBody;
 import com.spiddekauga.voider.resources.IResourcePosition;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.utils.Geometry;
-import com.spiddekauga.voider.utils.Vector2Pool;
+import com.spiddekauga.voider.utils.Pools;
 /**
  * Triggers when the right side of the screen is at or beyond a specific position.
  * Equal to the level's current x-coordinate
@@ -160,7 +160,7 @@ public class TScreenAt extends Trigger implements IResourceBody, IResourcePositi
 		}
 
 		if (mVertices != null) {
-			Vector2Pool.freeDuplicates(mVertices);
+			Pools.vector2.freeDuplicates(mVertices);
 		}
 	}
 
@@ -185,7 +185,7 @@ public class TScreenAt extends Trigger implements IResourceBody, IResourcePositi
 
 	@Override
 	public void dispose() {
-		Vector2Pool.free(mPosition);
+		Pools.vector2.free(mPosition);
 		destroyBody();
 		destroyVertices();
 	}
@@ -206,8 +206,8 @@ public class TScreenAt extends Trigger implements IResourceBody, IResourcePositi
 		float halfHeight = SceneSwitcher.getWorldHeight() * 0.5f;
 
 		// Create vertices for the body
-		Vector2 upperVertex = Vector2Pool.obtain();
-		Vector2 lowerVertex = Vector2Pool.obtain();
+		Vector2 upperVertex = Pools.vector2.obtain();
+		Vector2 lowerVertex = Pools.vector2.obtain();
 		upperVertex.set(0, -halfHeight).add(mPosition);
 		lowerVertex.set(0, halfHeight).add(mPosition);
 
@@ -217,7 +217,7 @@ public class TScreenAt extends Trigger implements IResourceBody, IResourcePositi
 
 		mVertices = Geometry.createLinePolygon(line, Config.Editor.Level.Trigger.SCREEN_AT_WIDTH);
 
-		Vector2Pool.free(line);
+		Pools.vector2.freeAll(line);
 	}
 
 	/**
@@ -225,7 +225,7 @@ public class TScreenAt extends Trigger implements IResourceBody, IResourcePositi
 	 */
 	private void destroyVertices() {
 		if (mVertices != null) {
-			Vector2Pool.freeDuplicates(mVertices);
+			Pools.vector2.freeDuplicates(mVertices);
 			mVertices = null;
 		}
 	}
@@ -239,5 +239,5 @@ public class TScreenAt extends Trigger implements IResourceBody, IResourcePositi
 	/** Level id, used for binding the level */
 	private UUID mLevelId = null;
 	/** Temporary positon, stores x-coord for getting the position */
-	private Vector2 mPosition = Vector2Pool.obtain();
+	private Vector2 mPosition = Pools.vector2.obtain();
 }

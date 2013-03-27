@@ -6,7 +6,7 @@ import com.spiddekauga.voider.editor.IResourceChangeEditor;
 import com.spiddekauga.voider.resources.IResourceCorner;
 import com.spiddekauga.voider.resources.IResourceCorner.PolygonComplexException;
 import com.spiddekauga.voider.resources.IResourceCorner.PolygonCornerTooCloseException;
-import com.spiddekauga.voider.utils.Vector2Pool;
+import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Executes a move command on a terrain corner
@@ -25,14 +25,14 @@ public class CResourceCornerMove extends CResourceChange {
 		super(null, actorEditor);
 		mResourceCorner = resourceCorner;
 		mIndex = index;
-		mDiffMovement = Vector2Pool.obtain();
+		mDiffMovement = Pools.vector2.obtain();
 		mDiffMovement.set(newPos);
 		mDiffMovement.sub(mResourceCorner.getCornerPosition(index));
 	}
 
 	@Override
 	public boolean execute() {
-		Vector2 newPos = Vector2Pool.obtain();
+		Vector2 newPos = Pools.vector2.obtain();
 		newPos.set(mResourceCorner.getCornerPosition(mIndex));
 		newPos.add(mDiffMovement);
 		boolean moveSuccess = true;
@@ -46,14 +46,14 @@ public class CResourceCornerMove extends CResourceChange {
 			moveSuccess = false;
 			Gdx.app.error("CResourceCornerMove", "Corner too close");
 		}
-		Vector2Pool.free(newPos);
+		Pools.vector2.free(newPos);
 
 		return moveSuccess;
 	}
 
 	@Override
 	public boolean undo() {
-		Vector2 newPos = Vector2Pool.obtain();
+		Vector2 newPos = Pools.vector2.obtain();
 		newPos.set(mResourceCorner.getCornerPosition(mIndex));
 		newPos.sub(mDiffMovement);
 		boolean moveSuccess = true;
@@ -67,13 +67,13 @@ public class CResourceCornerMove extends CResourceChange {
 			moveSuccess = false;
 			Gdx.app.error("CResourceCornerMove", "Corner too close");
 		}
-		Vector2Pool.free(newPos);
+		Pools.vector2.free(newPos);
 		return moveSuccess;
 	}
 
 	@Override
 	public void dispose() {
-		Vector2Pool.free(mDiffMovement);
+		Pools.vector2.free(mDiffMovement);
 	}
 
 	/** Difference vector for moving the corner back and forth. */

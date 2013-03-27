@@ -41,7 +41,7 @@ import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.scene.SelectDefScene;
 import com.spiddekauga.voider.scene.WorldScene;
-import com.spiddekauga.voider.utils.Vector2Pool;
+import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Editor for creating and editing enemies
@@ -831,7 +831,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 		//		if (mBulletActor != null) {
 		//			mBulletActor.destroyBody();
 		//
-		//			diffOffset = Vector2Pool.obtain();
+		//			diffOffset = Pools.vector2.obtain();
 		//			diffOffset.set(mDef.getCenterOffset());
 		//		}
 
@@ -842,7 +842,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 		//			diffOffset.add(mBulletActor.getPosition());
 		//			mBulletActor.setPosition(diffOffset);
 		//			mBulletActor.createBody();
-		//			Vector2Pool.free(diffOffset);
+		//			Pools.vector2.free(diffOffset);
 		//		}
 	}
 
@@ -853,7 +853,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 		//		if (mBulletActor != null) {
 		//			mBulletActor.destroyBody();
 		//
-		//			diffOffset = Vector2Pool.obtain();
+		//			diffOffset = Pools.vector2.obtain();
 		//			diffOffset.set(mDef.getCenterOffset());
 		//		}
 
@@ -864,7 +864,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 		//			diffOffset.add(mBulletActor.getPosition());
 		//			mBulletActor.setPosition(diffOffset);
 		//			mBulletActor.createBody();
-		//			Vector2Pool.free(diffOffset);
+		//			Pools.vector2.free(diffOffset);
 		//		}
 	}
 
@@ -1023,8 +1023,8 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 		Vector2[] nodes = new Vector2[4];
 		Vector2[] screenPos = new Vector2[4];
 		for (int i = 0; i < nodes.length; ++i) {
-			screenPos[i] = Vector2Pool.obtain();
-			nodes[i] = Vector2Pool.obtain();
+			screenPos[i] = Pools.vector2.obtain();
+			nodes[i] = Pools.vector2.obtain();
 		}
 		// X-area: From middle of screen to 1/6 of the screen width
 		// Y-area: Height of each path should be 1/5. Offset it with 1/20 so it doesn't touch the borders
@@ -1090,8 +1090,8 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 
 		// Free stuff
 		for (int i = 0; i < nodes.length; ++i) {
-			Vector2Pool.free(nodes[i]);
-			Vector2Pool.free(screenPos[i]);
+			Pools.vector2.free(nodes[i]);
+			Pools.vector2.free(screenPos[i]);
 		}
 	}
 
@@ -1141,7 +1141,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	 * Resets the player position
 	 */
 	private void resetPlayerPosition() {
-		Vector2 playerPosition = Vector2Pool.obtain();
+		Vector2 playerPosition = Pools.vector2.obtain();
 		Scene.screenToWorldCoord(mCamera, Gdx.graphics.getWidth() * 0.1f, Gdx.graphics.getHeight() * 0.5f, playerPosition, true);
 		mPlayerActor.setPosition(playerPosition);
 		mPlayerActor.getBody().setLinearVelocity(0, 0);

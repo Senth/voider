@@ -16,7 +16,7 @@ import com.spiddekauga.voider.game.actors.EnemyActorDef.MovementTypes;
 import com.spiddekauga.voider.game.triggers.TriggerInfo;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.utils.Geometry;
-import com.spiddekauga.voider.utils.Vector2Pool;
+import com.spiddekauga.voider.utils.Pools;
 
 /**
  * An enemy actor, these can generally shoot on the player.
@@ -408,16 +408,16 @@ public class EnemyActor extends Actor {
 				mShootAngle += mWeapon.getCooldownTime() * getDef(EnemyActorDef.class).getAimRotateSpeed();
 			}
 
-			Vector2Pool.free(shootDirection);
+			Pools.vector2.free(shootDirection);
 		}
 	}
 
 	/**
 	 * @return direction which we want to shoot in. Be sure to free this
-	 * vector using Vector2Pool.free(vector);.
+	 * vector using Pools.vector2.free(vector);.
 	 */
 	private Vector2 getShootDirection() {
-		Vector2 shootDirection = Vector2Pool.obtain();
+		Vector2 shootDirection = Pools.vector2.obtain();
 
 		switch (getDef(EnemyActorDef.class).getAimType()) {
 		case ON_PLAYER:
@@ -441,7 +441,7 @@ public class EnemyActor extends Actor {
 			else {
 				Vector2 bulletVelocity = Geometry.interceptTarget(getPosition(), mWeapon.getDef().getBulletSpeed(), mPlayerActor.getPosition(), playerVelocity);
 				shootDirection.set(bulletVelocity);
-				Vector2Pool.free(bulletVelocity);
+				Pools.vector2.free(bulletVelocity);
 
 				// Cannot intercept, target player
 				if (shootDirection.x != shootDirection.x || shootDirection.y != shootDirection.y) {
@@ -479,7 +479,7 @@ public class EnemyActor extends Actor {
 			mPathIndexNext = 1;
 			setPosition(mPath.getCornerPosition(0));
 
-			Vector2 velocity = Vector2Pool.obtain();
+			Vector2 velocity = Pools.vector2.obtain();
 			velocity.set(mPath.getCornerPosition(mPathIndexNext)).sub(getPosition());
 			velocity.nor().mul(getDef(EnemyActorDef.class).getSpeed());
 			getBody().setLinearVelocity(velocity);
@@ -489,7 +489,7 @@ public class EnemyActor extends Actor {
 				getBody().setTransform(getPosition(), (float)Math.toRadians(velocity.angle()));
 			}
 
-			Vector2Pool.free(velocity);
+			Pools.vector2.free(velocity);
 		}
 
 
@@ -505,17 +505,17 @@ public class EnemyActor extends Actor {
 
 			// No turning, change direction directly
 			if (!getDef(EnemyActorDef.class).isTurning()) {
-				Vector2 velocity = Vector2Pool.obtain();
+				Vector2 velocity = Pools.vector2.obtain();
 				velocity.set(mPath.getCornerPosition(mPathIndexNext)).sub(getPosition());
 				velocity.nor().mul(getDef(EnemyActorDef.class).getSpeed());
 				getBody().setLinearVelocity(velocity);
-				Vector2Pool.free(velocity);
+				Pools.vector2.free(velocity);
 			}
 		}
 
 
 		if (getDef(EnemyActorDef.class).isTurning()) {
-			Vector2 target = Vector2Pool.obtain();
+			Vector2 target = Pools.vector2.obtain();
 			target.set(mPath.getCornerPosition(mPathIndexNext)).sub(getPosition());
 			moveToTarget(target, deltaTime);
 		}
@@ -527,7 +527,7 @@ public class EnemyActor extends Actor {
 	 */
 	private void updateAiMovement(float deltaTime) {
 		// Calculate distance to player
-		Vector2 targetDirection = Vector2Pool.obtain();
+		Vector2 targetDirection = Pools.vector2.obtain();
 		targetDirection.set(mPlayerActor.getPosition()).sub(getPosition());
 		float targetDistanceSq = targetDirection.len2();
 
@@ -605,7 +605,7 @@ public class EnemyActor extends Actor {
 	 * @param deltaTime time elapsed since last frame
 	 */
 	private void moveToTargetRegular(Vector2 targetDirection, float deltaTime) {
-		Vector2 velocity = Vector2Pool.obtain();
+		Vector2 velocity = Pools.vector2.obtain();
 		velocity.set(targetDirection);
 		velocity.nor().mul(getDef(EnemyActorDef.class).getSpeed());
 
@@ -615,7 +615,7 @@ public class EnemyActor extends Actor {
 		}
 
 		getBody().setLinearVelocity(velocity);
-		Vector2Pool.free(velocity);
+		Pools.vector2.free(velocity);
 	}
 
 	/**
@@ -624,7 +624,7 @@ public class EnemyActor extends Actor {
 	 * @param deltaTime time elapsed since last frame
 	 */
 	private void moveToTargetTurning(Vector2 targetDirection, float deltaTime) {
-		Vector2 velocity = Vector2Pool.obtain();
+		Vector2 velocity = Pools.vector2.obtain();
 		velocity.set(getBody().getLinearVelocity());
 
 		// Decrease with level speed if AI movement
@@ -727,7 +727,7 @@ public class EnemyActor extends Actor {
 
 		getBody().setTransform(getPosition(), (float) Math.toRadians(getBody().getLinearVelocity().angle()));
 
-		Vector2Pool.free(velocity);
+		Pools.vector2.free(velocity);
 	}
 
 
@@ -771,10 +771,10 @@ public class EnemyActor extends Actor {
 	 * @return true if the enemy is close to the next path index
 	 */
 	private boolean isCloseToNextIndex() {
-		Vector2 diff = Vector2Pool.obtain();
+		Vector2 diff = Pools.vector2.obtain();
 		diff.set(mPath.getCornerPosition(mPathIndexNext)).sub(getPosition());
 		float distanceSq = diff.len2();
-		Vector2Pool.free(diff);
+		Pools.vector2.free(diff);
 		return distanceSq <= Config.Actor.Enemy.PATH_NODE_CLOSE_SQ;
 	}
 

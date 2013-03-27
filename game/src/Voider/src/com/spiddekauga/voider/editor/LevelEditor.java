@@ -50,7 +50,7 @@ import com.spiddekauga.voider.scene.SelectDefScene;
 import com.spiddekauga.voider.scene.TouchTool;
 import com.spiddekauga.voider.scene.TriggerTool;
 import com.spiddekauga.voider.scene.WorldScene;
-import com.spiddekauga.voider.utils.Vector2Pool;
+import com.spiddekauga.voider.utils.Pools;
 
 /**
  * The level editor scene
@@ -96,23 +96,23 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 		if (mScroller.isScrolling()) {
 			mScroller.update(Gdx.graphics.getDeltaTime());
 
-			Vector2 diffScroll = Vector2Pool.obtain();
+			Vector2 diffScroll = Pools.vector2.obtain();
 			diffScroll.set(mScroller.getCurrentScroll()).sub(mScroller.getOriginScroll());
 			diffScroll.mul(Config.Graphics.WORLD_SCALE);
 
 			mCamera.position.x = diffScroll.x + mScrollCameraOrigin.x;
 			mCamera.update();
 
-			Vector2Pool.free(diffScroll);
+			Pools.vector2.free(diffScroll);
 		} else if (!mCreatedScrollCommand) {
-			Vector2 scrollCameraCurrent = Vector2Pool.obtain();
+			Vector2 scrollCameraCurrent = Pools.vector2.obtain();
 			scrollCameraCurrent.set(mCamera.position.x, mCamera.position.y);
 
 			mInvoker.execute(new CCameraMove(mCamera, scrollCameraCurrent, mScrollCameraOrigin));
 
 			mCreatedScrollCommand = true;
 
-			Vector2Pool.free(scrollCameraCurrent);
+			Pools.vector2.free(scrollCameraCurrent);
 		}
 	}
 
@@ -393,10 +393,10 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 		if (button == 2 || (Gdx.app.getInput().isTouched(0) && Gdx.app.getInput().isTouched(1))) {
 			// If we're already scrolling create scroll command
 			if (mScroller.isScrolling()) {
-				Vector2 scrollCameraCurrent = Vector2Pool.obtain();
+				Vector2 scrollCameraCurrent = Pools.vector2.obtain();
 				scrollCameraCurrent.set(mCamera.position.x, mCamera.position.y);
 				mInvoker.execute(new CCameraMove(mCamera, scrollCameraCurrent, mScrollCameraOrigin));
-				Vector2Pool.free(scrollCameraCurrent);
+				Pools.vector2.free(scrollCameraCurrent);
 			}
 
 			mScroller.touchDown(x, y);

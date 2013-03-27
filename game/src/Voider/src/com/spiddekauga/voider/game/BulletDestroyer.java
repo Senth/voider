@@ -7,8 +7,9 @@ import com.badlogic.gdx.utils.Disposable;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.actors.BulletActor;
 import com.spiddekauga.voider.scene.SceneSwitcher;
+import com.spiddekauga.voider.utils.Pools;
 import com.spiddekauga.voider.utils.TimeBullet;
-import com.spiddekauga.voider.utils.Vector2Pool;
+import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Handles alive bullets, and destroys these once they are outside the screen.
@@ -61,7 +62,7 @@ public class BulletDestroyer implements Disposable {
 	public void removeOutOfBondsBullets(Vector2 minPos, Vector2 maxPos) {
 		float elapsedTime = SceneSwitcher.getGameTime().getTotalTimeElapsed();
 
-		Vector2 diffVector = Vector2Pool.obtain();
+		Vector2 diffVector = Pools.vector2.obtain();
 		diffVector.set(maxPos).sub(minPos);
 		minPos.sub(diffVector);
 		maxPos.add(diffVector);
@@ -106,7 +107,7 @@ public class BulletDestroyer implements Disposable {
 			}
 		}
 
-		Vector2Pool.free(diffVector);
+		Pools.vector2.free(diffVector);
 	}
 
 	@Override
