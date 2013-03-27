@@ -17,7 +17,7 @@ public class BulletActorDef extends ActorDef {
 	public BulletActorDef() {
 		super(ActorTypes.BULLET);
 
-		getBodyDef().type = BodyType.KinematicBody;
+		getBodyDef().type = BodyType.DynamicBody;
 
 		setShapeType(Bullet.Visual.SHAPE_DEFAULT);
 	}

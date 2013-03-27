@@ -1,7 +1,6 @@
 package com.spiddekauga.voider.editor;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
@@ -388,6 +387,7 @@ class LevelEditorGui extends EditorGui {
 
 		GuiCheckCommandCreator menuChecker = new GuiCheckCommandCreator(mInvoker);
 		button = new TextButton("Static Terrain", textToogleStyle);
+		button.setName("static");
 		mWidgets.menu.terrain = button;
 		button.addListener(menuChecker);
 		tooltipListener = new TooltipListener(button, "Static Terrain", Messages.Tooltip.Level.Menu.TERRAIN);

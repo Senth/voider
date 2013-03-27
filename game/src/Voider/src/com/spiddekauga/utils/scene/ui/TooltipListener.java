@@ -53,10 +53,11 @@ public class TooltipListener implements EventListener {
 
 			mWindow = new Window("", editorSkin);
 			mWindow.setModal(false);
-			mWindow.addListener(this);
 			mLabel = new Label("", editorSkin);
 			mWindow.add(mLabel);
 		}
+
+		mWindow.addListener(this);
 	}
 
 	/**
@@ -71,13 +72,13 @@ public class TooltipListener implements EventListener {
 		if (event instanceof InputEvent) {
 			// WINDOW (Hover events)
 			if (((InputEvent) event).getType() == Type.enter) {
-				if (mActor.isAscendantOf(event.getTarget())) {
+				if (!isWindowDisplayingThis() && mActor.isAscendantOf(event.getTarget())) {
 					scheduleShowWindowTask();
 					return true;
 				}
 			} else if (((InputEvent) event).getType() == Type.exit) {
 				// Only do something if the cursor is outside the actor
-				if (!isCursorInsideActor()) {
+				if (isWindowDisplayingThis() && !isCursorInsideActor()) {
 					handleHoverExit();
 					return true;
 				}
@@ -219,15 +220,16 @@ public class TooltipListener implements EventListener {
 		int cursorX = Gdx.input.getX();
 		int cursorY = Gdx.graphics.getHeight() - Gdx.input.getY();
 
-		Vector2 min = Vector2Pool.obtain();
-		min.set(mActor.getX(), mActor.getY());
+		Vector2 min = Vector2Pool.obtain().set(0, 0);
 		mActor.localToStageCoordinates(min);
 
+		int width = (int)mActor.getWidth();
+		int height = (int)mActor.getHeight();
 
-		int minX = (int) min.x;
-		int minY = (int) min.y;
-		int maxX = (int) (min.x + mActor.getWidth());
-		int maxY = (int) (min.y + mActor.getHeight());
+		int minX = (int) (min.x);
+		int minY = (int) (min.y);
+		int maxX = minX + width;
+		int maxY = minY + height;
 
 		if (cursorX <= minX || cursorX >= maxX || cursorY <= minY || cursorY >= maxY) {
 			return false;
@@ -277,17 +279,18 @@ public class TooltipListener implements EventListener {
 	 * Sets the wrap width of the current message
 	 */
 	private void setWrapWidth() {
-		int prefWidth = (int) mLabel.getPrefWidth();
-		int prefHeight = (int) mLabel.getPrefHeight();
-
-		int diffPref = prefWidth - prefHeight;
-		diffPref /= 2;
-
-		int wrapWidth = prefWidth - diffPref;
-
-		mLabel.setWidth(prefWidth - diffPref);
-		mLabel.setWrap(true);
-		mLabel.invalidateHierarchy();
+		//		mLabel.setWrap(false);
+		//		int prefWidth = (int) mLabel.getPrefWidth();
+		//		int prefHeight = (int) mLabel.getPrefHeight();
+		//
+		//		int diffPref = prefWidth - prefHeight;
+		//		diffPref /= 2;
+		//
+		//		int wrapWidth = prefWidth - diffPref;
+		//
+		//		mLabel.setWidth(prefWidth - diffPref);
+		//		mLabel.setWrap(true);
+		//		mLabel.invalidateHierarchy();
 	}
 
 	/**
