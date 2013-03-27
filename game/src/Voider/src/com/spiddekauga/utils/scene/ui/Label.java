@@ -36,7 +36,9 @@ import com.spiddekauga.voider.utils.Pools;
  * rotated label causes a SpriteBatch flush when it is drawn, so should be used relatively sparingly.
  * <p>
  * The preferred size of the label is determined by the actual text bounds, unless {@link #setWrap(boolean) word wrap} is enabled.
- * @author Nathan Sweet */
+ * @author Nathan Sweet
+ * @author Matteus Magnusson <senth.wallace@gmail.com> Added doxygen and changed wrap behavior
+ * */
 public class Label extends Widget {
 
 	/**
@@ -278,9 +280,6 @@ public class Label extends Widget {
 
 	@Override
 	public float getPrefWidth () {
-		if (mWrap) {
-			return 0;
-		}
 		if (mSizeInvalid) {
 			computeSize();
 		}
@@ -305,6 +304,9 @@ public class Label extends Widget {
 		return height;
 	}
 
+	/**
+	 * @return bounds of the text
+	 */
 	public TextBounds getTextBounds () {
 		if (mSizeInvalid) {
 			computeSize();
@@ -312,16 +314,21 @@ public class Label extends Widget {
 		return mBounds;
 	}
 
-	/** If false, the text will only wrap where it contains newlines (\n). The preferred size of the label will be the text bounds.
-	 * If true, the text will word wrap using the width of the label. The preferred width of the label will be 0, it is expected
+	/**
+	 * @param wrap If false, the text will only wrap where it contains newlines (\n).
+	 * The preferred size of the label will be the text bounds.
+	 * If true, the text will word wrap using the width of the label.
+	 * The preferred width of the label return its current width, it is expected
 	 * that the something external will set the width of the label. Default is false. */
 	public void setWrap (boolean wrap) {
 		this.mWrap = wrap;
 		invalidateHierarchy();
 	}
 
-	/** @param wrapAlign Aligns each line of text horizontally and all the text vertically.
-	 * @see Align */
+	/**
+	 * @param wrapAlign Aligns each line of text horizontally and all the text vertically.
+	 * @see Align
+	 */
 	public void setAlignment (int wrapAlign) {
 		setAlignment(wrapAlign, wrapAlign);
 	}
@@ -345,31 +352,54 @@ public class Label extends Widget {
 		invalidate();
 	}
 
+	/**
+	 * Sets both x and y scale of the font
+	 * @param fontScale scaling of the font
+	 */
 	public void setFontScale (float fontScale) {
 		this.mFontScaleX = fontScale;
 		this.mFontScaleY = fontScale;
 		invalidateHierarchy();
 	}
 
+	/**
+	 * Sets different font scaling for x and y
+	 * @param fontScaleX scaling of the font
+	 * @param fontScaleY scaling of the font
+	 */
 	public void setFontScale (float fontScaleX, float fontScaleY) {
 		this.mFontScaleX = fontScaleX;
 		this.mFontScaleY = fontScaleY;
 		invalidateHierarchy();
 	}
 
+	/**
+	 * @return current horizontal font scaling
+	 */
 	public float getFontScaleX () {
 		return mFontScaleX;
 	}
 
+	/**
+	 * Sets horizontal font scaling
+	 * @param fontScaleX horizontal scaling
+	 */
 	public void setFontScaleX (float fontScaleX) {
 		this.mFontScaleX = fontScaleX;
 		invalidateHierarchy();
 	}
 
+	/**
+	 * @return current vertical scaling
+	 */
 	public float getFontScaleY () {
 		return mFontScaleY;
 	}
 
+	/**
+	 * Current
+	 * @param fontScaleY
+	 */
 	public void setFontScaleY (float fontScaleY) {
 		this.mFontScaleY = fontScaleY;
 		invalidateHierarchy();
@@ -378,20 +408,33 @@ public class Label extends Widget {
 	/** The style for a label, see {@link Label}.
 	 * @author Nathan Sweet */
 	static public class LabelStyle {
+		/** Font of the label */
 		public BitmapFont font;
-		/** Optional. */
+		/** Color, optional. */
 		public Color fontColor;
-		/** Optional. */
+		/** Background, optional. */
 		public Drawable background;
 
+		/**
+		 * Default constructor
+		 */
 		public LabelStyle () {
 		}
 
+		/**
+		 * Sets a font and a color to the label style
+		 * @param font font to use for the style
+		 * @param fontColor color of the font
+		 */
 		public LabelStyle (BitmapFont font, Color fontColor) {
 			this.font = font;
 			this.fontColor = fontColor;
 		}
 
+		/**
+		 * Copies the style from another label style
+		 * @param style other label style to copy values from
+		 */
 		public LabelStyle (LabelStyle style) {
 			this.font = style.font;
 			if (style.fontColor != null) {

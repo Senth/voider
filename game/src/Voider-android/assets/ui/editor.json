@@ -16,6 +16,12 @@ com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
 	}
 },
 
+com.spiddekauga.utils.scene.ui.Label$LabelStyle: {
+	default: {
+		font: default-font,
+	}
+},
+
 com.badlogic.gdx.scenes.scene2d.ui.Button$ButtonStyle: {
 	default: {
 		down: button-default-down,

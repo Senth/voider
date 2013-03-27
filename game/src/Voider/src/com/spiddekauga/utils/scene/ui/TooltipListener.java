@@ -11,11 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputEvent.Type;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
@@ -263,14 +259,11 @@ public class TooltipListener implements EventListener {
 	 * Shows the message box
 	 */
 	private void showMsgBox() {
-		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
-		TextButtonStyle buttonStyle = editorSkin.get("default", TextButtonStyle.class);
-
 		mMsgBox = mGui.getFreeMsgBox();
-		Button okButton = new TextButton("OK", buttonStyle);
-		mMsgBox.button(okButton);
+		mMsgBox.addCancelButtonAndKeys("OK");
 		mMsgBox.setTitle(mTitle);
 		mLabel.setText(mMessage);
+		setWrapWidth();
 		mMsgBox.content(mLabel);
 		mGui.showMsgBox(mMsgBox);
 	}
@@ -279,18 +272,14 @@ public class TooltipListener implements EventListener {
 	 * Sets the wrap width of the current message
 	 */
 	private void setWrapWidth() {
-		//		mLabel.setWrap(false);
-		//		int prefWidth = (int) mLabel.getPrefWidth();
-		//		int prefHeight = (int) mLabel.getPrefHeight();
-		//
-		//		int diffPref = prefWidth - prefHeight;
-		//		diffPref /= 2;
-		//
-		//		int wrapWidth = prefWidth - diffPref;
-		//
-		mLabel.setWidth(200);
+		mLabel.setWrap(false);
+		int prefWidth = (int) mLabel.getPrefWidth();
+		int prefHeight = (int) mLabel.getPrefHeight();
+
+		int wrapWidth = (int) (Math.sqrt(prefHeight * prefWidth) * 1.5f);
+
+		mLabel.setWidth(wrapWidth);
 		mLabel.setWrap(true);
-		//		mLabel.invalidateHierarchy();
 	}
 
 	/**
