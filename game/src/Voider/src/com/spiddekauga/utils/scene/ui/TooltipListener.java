@@ -101,7 +101,7 @@ public class TooltipListener implements EventListener {
 			// MSG BOX (Press events)
 			else if (((InputEvent) event).getType() == Type.touchDown) {
 				// Always skip if window is shown or scheduled to be shown
-				if (!isWindowShown() || mShowWindowTask == null) {
+				if (!isWindowShown() && mShowWindowTask == null) {
 					scheduleShowMsgBoxTask();
 				}
 				return true;

@@ -120,19 +120,19 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 	protected void render() {
 		super.render();
 
-		//		if (!Config.Graphics.USE_DEBUG_RENDERER) {
-		ShaderProgram defaultShader = ResourceCacheFacade.get(ResourceNames.SHADER_DEFAULT);
-		if (defaultShader != null) {
-			mShapeRenderer.setShader(defaultShader);
+		if (Config.Graphics.USE_RELEASE_RENDERER) {
+			ShaderProgram defaultShader = ResourceCacheFacade.get(ResourceNames.SHADER_DEFAULT);
+			if (defaultShader != null) {
+				mShapeRenderer.setShader(defaultShader);
+			}
+			mShapeRenderer.setProjectionMatrix(mCamera.combined);
+			mShapeRenderer.begin(ShapeType.Filled);
+			Gdx.gl.glEnable(GL20.GL_BLEND);
+			Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+			mLevel.render(mShapeRenderer);
+			mLevel.renderEditor(mShapeRenderer);
+			mShapeRenderer.end();
 		}
-		mShapeRenderer.setProjectionMatrix(mCamera.combined);
-		mShapeRenderer.begin(ShapeType.Filled);
-		Gdx.gl.glEnable(GL20.GL_BLEND);
-		Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-		mLevel.render(mShapeRenderer);
-		mLevel.renderEditor(mShapeRenderer);
-		mShapeRenderer.end();
-		//		}
 	}
 
 	/**

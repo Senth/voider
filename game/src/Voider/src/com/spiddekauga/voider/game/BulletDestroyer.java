@@ -2,6 +2,7 @@ package com.spiddekauga.voider.game;
 
 import java.util.ArrayList;
 
+import com.badlogic.gdx.graphics.glutils.ShapeRendererEx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Disposable;
 import com.spiddekauga.voider.Config;
@@ -9,7 +10,6 @@ import com.spiddekauga.voider.game.actors.BulletActor;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.utils.Pools;
 import com.spiddekauga.voider.utils.TimeBullet;
-import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Handles alive bullets, and destroys these once they are outside the screen.
@@ -38,6 +38,16 @@ public class BulletDestroyer implements Disposable {
 	public void update(float deltaTime) {
 		for (TimeBullet timeBullet : mBullets) {
 			timeBullet.bulletActor.update(deltaTime);
+		}
+	}
+
+	/**
+	 * Renders all the bullets
+	 * @param shapeRenderer shape renderer to be used for rendering
+	 */
+	public void render(ShapeRendererEx shapeRenderer) {
+		for (TimeBullet timeBullet : mBullets) {
+			timeBullet.bulletActor.render(shapeRenderer);
 		}
 	}
 

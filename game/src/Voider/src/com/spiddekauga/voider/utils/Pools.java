@@ -1,6 +1,7 @@
 package com.spiddekauga.voider.utils;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
@@ -20,6 +21,9 @@ public class Pools {
 	/** ArrayList pool */
 	@SuppressWarnings("rawtypes")
 	public static Pool<ArrayList> arrayList = new Pool<ArrayList>(ArrayList.class, 16, 100);
+	/** Hash set */
+	@SuppressWarnings("rawtypes")
+	public static Pool<HashSet> hashSet = new Pool<HashSet>(HashSet.class, 16, 100);
 	/** Cells for tables */
 	public static Pool<Cell> cell = new Pool<Cell>(Cell.class, 16, 250);
 	/** Row for tables */

@@ -3,9 +3,13 @@ package com.spiddekauga.voider.editor;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Vector2;
 import com.spiddekauga.utils.Invoker;
 import com.spiddekauga.utils.KeyHelper;
+import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.Weapon;
 import com.spiddekauga.voider.game.WeaponDef;
 import com.spiddekauga.voider.game.actors.Actor;
@@ -88,6 +92,31 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 
 		if (mBulletActor != null && mDef.getShapeType() == ActorShapeTypes.CUSTOM) {
 			mBulletActor.update(Gdx.graphics.getDeltaTime());
+		}
+	}
+
+	@Override
+	protected void render() {
+		super.render();
+
+		if (Config.Graphics.USE_RELEASE_RENDERER) {
+			ShaderProgram defaultShader = ResourceCacheFacade.get(ResourceNames.SHADER_DEFAULT);
+			if (defaultShader != null) {
+				mShapeRenderer.setShader(defaultShader);
+			}
+			mShapeRenderer.setProjectionMatrix(mCamera.combined);
+			mShapeRenderer.begin(ShapeType.Filled);
+			Gdx.gl.glEnable(GL20.GL_BLEND);
+			Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+
+			mBulletDestroyer.render(mShapeRenderer);
+
+			if (mBulletActor != null) {
+				mBulletActor.render(mShapeRenderer);
+				mBulletActor.renderEditor(mShapeRenderer);
+			}
+
+			mShapeRenderer.end();
 		}
 	}
 

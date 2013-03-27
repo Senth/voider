@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.glutils.ShapeRendererEx;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -38,6 +39,7 @@ import com.spiddekauga.voider.resources.Resource;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.UndefinedResourceTypeException;
 import com.spiddekauga.voider.scene.SceneSwitcher;
+import com.spiddekauga.voider.utils.Geometry;
 import com.spiddekauga.voider.utils.Pools;
 
 /**
@@ -67,8 +69,6 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 			// Update position
 			if (mBody != null) {
 				mPosition.set(mBody.getPosition());
-
-				editorUpdate();
 			}
 
 			// Decrease life if colliding with something...
@@ -81,7 +81,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	}
 
 	/**
-	 * Updates the actor's body positio, fixture sizes, fixture shapes etc. if they
+	 * Updates the actor's body position, fixture sizes, fixture shapes etc. if they
 	 * have been changed since the actor was created.
 	 */
 	@Override
@@ -257,6 +257,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	 * Renders the actor
 	 * @param shapeRenderer the current sprite batch for the scene
 	 */
+	@Override
 	public void render(ShapeRendererEx shapeRenderer) {
 		Vector2 offsetPosition = Pools.vector2.obtain();
 		offsetPosition.set(mPosition);
@@ -266,15 +267,42 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 			offsetPosition.add(mDef.getCorners().get(0));
 		}
 
+		ArrayList<Vector2> verticesRender = null;
+		ArrayList<Vector2> borderVerticesRender = null;
+
+		// Rotation
+		if (mHasRotated || getBody().getAngle() != 0) {
+			float rotation = MathUtils.radiansToDegrees * getBody().getAngle();
+
+			verticesRender = copyVectorArray(mDef.getTriangleVertices());
+			Geometry.rotateVertices(verticesRender, rotation, true);
+
+			borderVerticesRender = copyVectorArray(mDef.getTriangleBorderVertices());
+			Geometry.rotateVertices(borderVerticesRender, rotation, true);
+
+			mHasRotated = true;
+		}
+		// No rotation
+		else {
+			verticesRender = mDef.getTriangleVertices();
+			borderVerticesRender = mDef.getTriangleBorderVertices();
+		}
+
 		// Shape
 		shapeRenderer.setColor(mDef.getColor());
-		ArrayList<Vector2> vertices = mDef.getTriangleVertices();
-		shapeRenderer.triangles(vertices, offsetPosition);
+		shapeRenderer.triangles(verticesRender, offsetPosition);
 
 		// Border
 		shapeRenderer.setColor(mDef.getBorderColor());
-		vertices = mDef.getTriangleBorderVertices();
-		shapeRenderer.triangles(vertices, offsetPosition);
+		shapeRenderer.triangles(borderVerticesRender, offsetPosition);
+
+
+		if (mHasRotated) {
+			//			Pools.vector2.freeDuplicates(verticesRender);
+			Pools.arrayList.free(verticesRender);
+			//			Pools.vector2.freeDuplicates(borderVerticesRender);
+			Pools.arrayList.free(borderVerticesRender);
+		}
 
 		Pools.vector2.free(offsetPosition);
 	}
@@ -283,6 +311,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	 * Renders additional information when using an editor
 	 * @param shapeRenderer the current sprite batch for the scene
 	 */
+	@Override
 	public void renderEditor(ShapeRendererEx shapeRenderer) {
 		if (mSelected) {
 			Vector2 offsetPosition = Pools.vector2.obtain();
@@ -837,6 +866,28 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	protected abstract short getFilterCollidingCategories();
 
 	/**
+	 * Creates a copy of the specified vector2 array
+	 * @param array the array to make a copy of
+	 * @return copied array
+	 */
+	protected static ArrayList<Vector2> copyVectorArray(ArrayList<Vector2> array) {
+		@SuppressWarnings("unchecked")
+		ArrayList<Vector2> verticesCopy = Pools.arrayList.obtain();
+		verticesCopy.clear();
+
+		for (Vector2 vertex : array) {
+			int foundIndex = com.spiddekauga.utils.Collections.linearSearch(verticesCopy, vertex);
+			if (foundIndex != -1) {
+				verticesCopy.add(verticesCopy.get(foundIndex));
+			} else {
+				verticesCopy.add(Pools.vector2.obtain().set(vertex));
+			}
+		}
+
+		return verticesCopy;
+	}
+
+	/**
 	 * Sets the filter information based on derived information
 	 * @param fixtureDef the fixture def to set the collision data for
 	 */
@@ -909,6 +960,8 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	private ArrayList<TriggerInfo> mTriggerInfos = new ArrayList<TriggerInfo>();
 	/** True if the actor is selected, only applicable in editor */
 	private boolean mSelected = false;
+	/** True if the actor has rotated */
+	private boolean mHasRotated = false;
 
 	/** The world used for creating bodies */
 	protected static World mWorld = null;

@@ -2,6 +2,7 @@ package com.spiddekauga.voider.utils;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 
 import com.badlogic.gdx.Gdx;
@@ -633,5 +634,31 @@ public class Geometry {
 		}
 
 		return vertices;
+	}
+
+	/**
+	 * Rotates all vertices
+	 * @param vertices the vertices to rotate
+	 * @param degrees how many degrees to rotate the vertices
+	 * @param containsReferences set to true if the vertices contains references
+	 * thus we don't have to recalculate all vertices
+	 */
+	public static void rotateVertices(ArrayList<Vector2> vertices, float degrees, boolean containsReferences) {
+		if (containsReferences) {
+			@SuppressWarnings("unchecked")
+			HashSet<Vector2> rotatedVertices = Pools.hashSet.obtain();
+			rotatedVertices.clear();
+			for (Vector2 vertex : vertices) {
+				if (!rotatedVertices.contains(vertex)) {
+					vertex.rotate(degrees);
+					rotatedVertices.add(vertex);
+				}
+			}
+			Pools.hashSet.free(rotatedVertices);
+		} else {
+			for (Vector2 vertex : vertices) {
+				vertex.rotate(degrees);
+			}
+		}
 	}
 }

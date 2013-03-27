@@ -4,6 +4,9 @@ import java.lang.reflect.Field;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -21,6 +24,7 @@ import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Editor.Enemy;
 import com.spiddekauga.voider.editor.commands.CEnemyBulletDefSelect;
+import com.spiddekauga.voider.game.CollisionResolver;
 import com.spiddekauga.voider.game.Path;
 import com.spiddekauga.voider.game.Path.PathTypes;
 import com.spiddekauga.voider.game.actors.Actor;
@@ -60,6 +64,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 		setEnemyDef();
 		createExamplePaths();
 
+		mWorld.setContactListener(mCollisionResolver);
 
 		((EnemyEditorGui)mGui).setEnemyEditor(this);
 
@@ -255,6 +260,40 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	@Override
 	protected void render() {
 		super.render();
+
+		if (Config.Graphics.USE_RELEASE_RENDERER) {
+			ShaderProgram defaultShader = ResourceCacheFacade.get(ResourceNames.SHADER_DEFAULT);
+			if (defaultShader != null) {
+				mShapeRenderer.setShader(defaultShader);
+			}
+			mShapeRenderer.setProjectionMatrix(mCamera.combined);
+			mShapeRenderer.begin(ShapeType.Filled);
+			Gdx.gl.glEnable(GL20.GL_BLEND);
+			Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+
+			// Enemies
+			switch (getMovementType()) {
+			case AI:
+			case STATIONARY:
+				mEnemyActor.render(mShapeRenderer);
+				break;
+
+			case PATH:
+				mPathBackAndForth.renderEditor(mShapeRenderer);
+				mPathLoop.renderEditor(mShapeRenderer);
+				mPathOnce.renderEditor(mShapeRenderer);
+				mEnemyPathBackAndForth.render(mShapeRenderer);
+				mEnemyPathLoop.render(mShapeRenderer);
+				mEnemyPathOnce.render(mShapeRenderer);
+				break;
+			}
+
+			mPlayerActor.render(mShapeRenderer);
+
+			mBulletDestroyer.render(mShapeRenderer);
+
+			mShapeRenderer.end();
+		}
 	}
 
 	@Override
@@ -1252,6 +1291,8 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	private PlayerActor mPlayerActor = null;
 	/** Invoker */
 	private Invoker mInvoker = new Invoker();
+	/** Listens for collisions */
+	private CollisionResolver mCollisionResolver = new CollisionResolver();
 
 	/** Table for path lables, these are added directly to the stage */
 	private Table mPathLabels = new Table();

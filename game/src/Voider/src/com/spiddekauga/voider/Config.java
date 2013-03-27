@@ -504,6 +504,8 @@ public class Config {
 	public static class Graphics {
 		/** If we shall use debug_renderer to display graphics instead of sprites (where applicable) */
 		public final static boolean USE_DEBUG_RENDERER = true;
+		/** Renders regular graphics */
+		public final static boolean USE_RELEASE_RENDERER = true;
 		/** Minimum length between two corners in a polygon */
 		public final static float EDGE_LENGTH_MIN = 1.19209289550781250000e-7F * 1.19209289550781250000e-7F;
 		/** Default width of the graphics */

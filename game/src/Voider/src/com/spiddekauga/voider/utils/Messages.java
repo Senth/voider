@@ -246,5 +246,12 @@ public class Messages {
 						"If the player dies, s/he will never see this story.";
 			}
 		}
+		public static class Enemy {
+
+		}
+
+		public static class Bullet {
+
+		}
 	}
 }
