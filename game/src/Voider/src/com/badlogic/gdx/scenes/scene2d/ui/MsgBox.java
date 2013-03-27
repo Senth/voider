@@ -185,11 +185,22 @@ public class MsgBox extends Dialog {
 	}
 
 	/**
-	 * Add cancel button and keys.
+	 * Add cancel button and keys. Text for the cancel button is "Cancel".
 	 * @return this message box for chaining
+	 * @see #addCancelButtonAndKeys(String) for using a custom text for the cancel button
 	 */
 	public MsgBox addCancelButtonAndKeys() {
-		button("Cancel");
+		return addCancelButtonAndKeys("cancel");
+	}
+
+	/**
+	 * Add a cancel button and keys.
+	 * @param buttonText text for the cancel button
+	 * @return this message box for chaining
+	 * @see #addCancelButtonAndKeys()
+	 */
+	public MsgBox addCancelButtonAndKeys(String buttonText) {
+		button(buttonText);
 		key(Keys.BACK, null);
 		key(Keys.ESCAPE, null);
 		return this;

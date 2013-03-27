@@ -48,6 +48,7 @@ public class BulletActor extends Actor {
 		getBody().setLinearVelocity(velocity);
 
 		mDamage = hitDamage;
+		activate();
 	}
 
 	/**

@@ -6,6 +6,7 @@ import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Manifold;
 import com.spiddekauga.voider.game.actors.Actor;
+import com.spiddekauga.voider.game.actors.BulletActor;
 import com.spiddekauga.voider.game.actors.PlayerActor;
 
 /**
@@ -27,8 +28,25 @@ public class CollisionResolver implements ContactListener {
 		if (bodyA.getUserData() instanceof Actor && bodyB.getUserData() instanceof Actor) {
 			Actor actorA = (Actor)bodyA.getUserData();
 			Actor actorB = (Actor)bodyB.getUserData();
-			actorA.addCollidingActor(actorB.getDef());
-			actorB.addCollidingActor(actorA.getDef());
+
+			// If one of the actors is a bullet, destroy the bullet and directly
+			// decrease the life
+			BulletActor bullet = null;
+			Actor actor = null;
+			if (actorA instanceof BulletActor) {
+				bullet = (BulletActor)actorA;
+				actor = actorB;
+			}
+			else if (actorB instanceof BulletActor) {
+				bullet = (BulletActor)actorB;
+				actor = actorA;
+			}
+
+			if (bullet != null) {
+				actor.decreaseLife(bullet.getHitDamage());
+				bullet.deactivate();
+				return;
+			}
 
 
 			// Transfer collectible to player
@@ -49,9 +67,16 @@ public class CollisionResolver implements ContactListener {
 			if (playerActor != null && collectibleActor != null) {
 				playerActor.addCollectible(collectibleActor.getDef().getCollectible());
 				collectibleActor.dispose();
+				return;
 			}
+
+
+			// Have not been handled yet
+			actorA.addCollidingActor(actorB.getDef());
+			actorB.addCollidingActor(actorA.getDef());
 		}
 	}
+
 
 	@Override
 	public void endContact(Contact contact) {
@@ -62,6 +87,18 @@ public class CollisionResolver implements ContactListener {
 		if (bodyA.getUserData() instanceof Actor && bodyB.getUserData() instanceof Actor) {
 			Actor actorA = (Actor)bodyA.getUserData();
 			Actor actorB = (Actor)bodyB.getUserData();
+
+			// Bullet, has been handled differently
+			if (actorA instanceof BulletActor || actorB instanceof BulletActor) {
+				return;
+			}
+
+			// Collectible
+			if ((actorA instanceof PlayerActor && actorB.getDef().getCollectible() != null) ||
+					(actorB instanceof PlayerActor && actorA.getDef().getCollectible() != null)) {
+				return;
+			}
+
 			actorA.removeCollidingActor(actorB.getDef());
 			actorB.removeCollidingActor(actorA.getDef());
 		}

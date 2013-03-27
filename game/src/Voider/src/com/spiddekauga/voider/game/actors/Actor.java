@@ -351,6 +351,14 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 		return mLife;
 	}
 
+	/**
+	 * Decrease the actor's life with the specified amount
+	 * @param amount the amount to to decrease the actor's life with
+	 */
+	public void decreaseLife(float amount) {
+		mLife -= amount;
+	}
+
 	@Override
 	public void write(Json json) {
 		super.write(json);
@@ -569,6 +577,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 		if (mBody != null) {
 			destroyBody();
 		}
+		mActive = false;
 	}
 
 	@Override

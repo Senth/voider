@@ -68,26 +68,32 @@ public class BulletDestroyer implements Disposable {
 
 		for (int i = 0; i < mBullets.size(); ++i) {
 			// Only check out of bounds it some time has elapsed since last check
-			if (mBullets.get(i).time + Config.Actor.Bullet.CHECK_OUT_OF_BOUNDS_TIME <= elapsedTime) {
+			if (!mBullets.get(i).bulletActor.isActive() || mBullets.get(i).time + Config.Actor.Bullet.CHECK_OUT_OF_BOUNDS_TIME <= elapsedTime) {
 				mBullets.get(i).time = elapsedTime;
 
-				// Is the bullet out of bounds
-				Vector2 position = mBullets.get(i).bulletActor.getBody().getPosition();
 				boolean outOfBounds = false;
-				// LEFT
-				if (position.x < minPos.x) {
-					outOfBounds = true;
+				if (mBullets.get(i).bulletActor.isActive()) {
+					// Is the bullet out of bounds
+					Vector2 position = mBullets.get(i).bulletActor.getBody().getPosition();
+					// LEFT
+					if (position.x < minPos.x) {
+						outOfBounds = true;
+					}
+					// RIGHT
+					else if (position.x > maxPos.x) {
+						outOfBounds = true;
+					}
+					// BOTTOM
+					else if (position.y < minPos.y) {
+						outOfBounds = true;
+					}
+					// TOP
+					else if (position.y > maxPos.y) {
+						outOfBounds = true;
+					}
 				}
-				// RIGHT
-				else if (position.x > maxPos.x) {
-					outOfBounds = true;
-				}
-				// BOTTOM
-				else if (position.y < minPos.y) {
-					outOfBounds = true;
-				}
-				// TOP
-				else if (position.y > maxPos.y) {
+				// Bullet has been destroyed, probably by hitting something
+				else {
 					outOfBounds = true;
 				}
 
