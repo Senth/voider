@@ -218,7 +218,7 @@ public class Config {
 				/** Step size for the enemy width/height */
 				public final static float SIZE_STEP_SIZE = RADIUS_STEP_SIZE;
 				/** Default shape type of the enemy */
-				public final static ActorShapeTypes SHAPE_DEFAULT = ActorShapeTypes.LINE;
+				public final static ActorShapeTypes SHAPE_DEFAULT = ActorShapeTypes.RECTANGLE;
 			}
 		}
 
@@ -504,7 +504,7 @@ public class Config {
 	 */
 	public static class Graphics {
 		/** If we shall use debug_renderer to display graphics instead of sprites (where applicable) */
-		public final static boolean USE_DEBUG_RENDERER = false;
+		public final static boolean USE_DEBUG_RENDERER = true;
 		/** Renders regular graphics */
 		public final static boolean USE_RELEASE_RENDERER = true;
 		/** Minimum length between two corners in a polygon */

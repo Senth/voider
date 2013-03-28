@@ -261,9 +261,8 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 			mLife = mDef.getMaxLife();
 
 			if (mBody != null) {
-				for (FixtureDef fixtureDef : mDef.getFixtureDefs()) {
-					mBody.createFixture(fixtureDef);
-				}
+				createFixtures();
+				calculateRotatedVertices(true);
 			}
 		}
 	}
@@ -593,12 +592,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 				bodyDef.fixedRotation = true;
 			}
 			mBody = mWorld.createBody(bodyDef);
-			for (FixtureDef fixtureDef : mDef.getFixtureDefs()) {
-				if (fixtureDef != null && fixtureDef.shape != null) {
-					setFilterCollisionData(fixtureDef);
-					mBody.createFixture(fixtureDef);
-				}
-			}
+			createFixtures();
 			mBody.setUserData(this);
 
 			mFixtureCreateTime = GameTime.getTotalGlobalTimeElapsed();
@@ -961,6 +955,18 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 		}
 
 		return verticesCopy;
+	}
+
+	/**
+	 * Create the fixtures for the actor
+	 */
+	protected void createFixtures() {
+		for (FixtureDef fixtureDef : mDef.getFixtureDefs()) {
+			if (fixtureDef != null && fixtureDef.shape != null) {
+				setFilterCollisionData(fixtureDef);
+				mBody.createFixture(fixtureDef);
+			}
+		}
 	}
 
 	/**

@@ -290,6 +290,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 
 			mPlayerActor.render(mShapeRenderer);
 
+			mBulletDestroyer.update(Gdx.graphics.getDeltaTime());
 			mBulletDestroyer.render(mShapeRenderer);
 
 			mShapeRenderer.end();

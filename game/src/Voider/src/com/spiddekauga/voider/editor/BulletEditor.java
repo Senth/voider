@@ -113,7 +113,7 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 			mBulletDestroyer.update(Gdx.graphics.getDeltaTime());
 			mBulletDestroyer.render(mShapeRenderer);
 
-			if (mBulletActor != null) {
+			if (mBulletActor != null && mActiveTouchTool == mDrawActorTool) {
 				mBulletActor.render(mShapeRenderer);
 				//				mBulletActor.setSelected(false);
 				mBulletActor.renderEditor(mShapeRenderer);
