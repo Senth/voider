@@ -528,48 +528,44 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	 * center of the fixtures are there.
 	 */
 	public void resetCenterOffset() {
+		Vector2 center = Pools.vector2.obtain();
+		center.set(0, 0);
+
 		switch (mVisualVars.shapeType) {
 		case CIRCLE:
 			/** @todo implement reset center for circle */
 			break;
 
+
 		case RECTANGLE:
 			/** @todo implement reset center for rectangle */
 			break;
+
 
 		case TRIANGLE:
 			/** @todo implement reset center for triangle */
 			break;
 
+
 		case LINE:
 			/** @todo implement reset center for line */
 			break;
 
+
 		case CUSTOM:
 			// Polygon, calculate center
 			if (mVisualVars.corners.size() >= 3) {
-				Vector2 center = Pools.vector2.obtain();
-
-				center.set(0,0);
-
 				for (Vector2 vertex : mVisualVars.corners) {
 					center.sub(vertex);
 				}
 
 				center.div(mVisualVars.corners.size());
-				setCenterOffset(center);
-
-				Pools.vector2.free(center);
-			}
-			// Circle, first corner is center
-			else if (mVisualVars.corners.size() >= 1) {
-				Vector2 center = Pools.vector2.obtain();
-				center.set(0,0);
-				setCenterOffset(center);
-				Pools.vector2.free(center);
 			}
 			break;
 		}
+
+		setCenterOffset(center);
+		Pools.vector2.free(center);
 
 		mFixtureChangeTime = GameTime.getTotalGlobalTimeElapsed();
 	}

@@ -387,6 +387,7 @@ public abstract class ActorGui extends EditorGui {
 				@Override
 				protected void onShow() {
 					mActorEditor.setShapeType(ActorShapeTypes.CIRCLE);
+					mActorEditor.resetCenterOffset();
 				}
 			};
 		}
@@ -404,6 +405,7 @@ public abstract class ActorGui extends EditorGui {
 				@Override
 				protected void onShow() {
 					mActorEditor.setShapeType(ActorShapeTypes.RECTANGLE);
+					mActorEditor.resetCenterOffset();
 				}
 			};
 		}
@@ -421,6 +423,7 @@ public abstract class ActorGui extends EditorGui {
 				@Override
 				protected void onShow() {
 					mActorEditor.setShapeType(ActorShapeTypes.TRIANGLE);
+					mActorEditor.resetCenterOffset();
 				}
 			};
 		}
@@ -453,6 +456,7 @@ public abstract class ActorGui extends EditorGui {
 				@Override
 				protected void onShow() {
 					mActorEditor.setShapeType(ActorShapeTypes.CUSTOM);
+					mActorEditor.resetCenterOffset();
 				}
 			};
 		}
