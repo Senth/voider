@@ -6,7 +6,7 @@ import java.util.UUID;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
+import com.badlogic.gdx.graphics.glutils.ShapeRendererEx.ShapeType;
 import com.badlogic.gdx.math.Vector2;
 import com.spiddekauga.utils.Invoker;
 import com.spiddekauga.utils.KeyHelper;

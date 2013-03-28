@@ -71,7 +71,7 @@ public class Weapon implements Disposable, Json.Serializable {
 	 */
 	public void shoot(Vector2 direction) {
 		if (getDef().getBulletActorDef() != null) {
-			BulletActor bullet = BulletPools.bullet.obtain();
+			BulletActor bullet = Pools.bullet.obtain();
 			bullet.setDef(getDef().getBulletActorDef());
 			bullet.shoot(mPosition, direction, getDef().getBulletSpeed(), getDef().getDamage(), false);
 

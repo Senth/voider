@@ -24,7 +24,7 @@ public class BulletDestroyer implements Disposable {
 	 * @param bullet a newly created bullet
 	 */
 	public void add(BulletActor bullet) {
-		TimeBullet timeBullet = BulletPools.timeBullet.obtain();
+		TimeBullet timeBullet = Pools.timeBullet.obtain();
 		timeBullet.bulletActor = bullet;
 		timeBullet.time = SceneSwitcher.getGameTime().getTotalTimeElapsed();
 
@@ -112,7 +112,7 @@ public class BulletDestroyer implements Disposable {
 					TimeBullet removeTimeBullet = mBullets.remove(i);
 					i--;
 
-					freeBullet(removeTimeBullet.bulletActor);
+					freeBullet(removeTimeBullet);
 				}
 			}
 		}
@@ -123,17 +123,18 @@ public class BulletDestroyer implements Disposable {
 	@Override
 	public void dispose() {
 		for (TimeBullet timeBullet : mBullets) {
-			freeBullet(timeBullet.bulletActor);
+			freeBullet(timeBullet);
 		}
 	}
 
 	/**
 	 * Destroys and frees a bullet
-	 * @param bullet the bullet to destroy and free
+	 * @param timeBullet the time bullet to free and destroy
 	 */
-	private void freeBullet(BulletActor bullet) {
-		bullet.destroyBody();
-		BulletPools.bullet.free(bullet);
+	private void freeBullet(TimeBullet timeBullet) {
+		timeBullet.bulletActor.destroyBody();
+		Pools.bullet.free(timeBullet.bulletActor);
+		Pools.timeBullet.free(timeBullet);
 	}
 
 	/** All alive bullets */

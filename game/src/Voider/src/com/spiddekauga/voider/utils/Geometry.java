@@ -661,4 +661,28 @@ public class Geometry {
 			}
 		}
 	}
+
+	/**
+	 * Moves all the vertices. If the array duplicates of same vertex set containReferences to true
+	 * @param vertices all vertices to move
+	 * @param offset the offset to move all vertices with
+	 * @param containsReferences true if the array contains duplicates of the same vertex reference
+	 */
+	public static void moveVertices(ArrayList<Vector2> vertices, Vector2 offset, boolean containsReferences) {
+		if (containsReferences) {
+			@SuppressWarnings("unchecked")
+			HashSet<Vector2> movedVertices = Pools.hashSet.obtain();
+			movedVertices.clear();
+			for (Vector2 vertex : vertices) {
+				if (!movedVertices.contains(vertex)) {
+					vertex.add(offset);
+					movedVertices.add(vertex);
+				}
+			}
+		} else {
+			for (Vector2 vertex : vertices) {
+				vertex.add(offset);
+			}
+		}
+	}
 }

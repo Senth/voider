@@ -14,7 +14,6 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.Shape;
 import com.spiddekauga.voider.game.actors.ActorFilterCategories;
 import com.spiddekauga.voider.game.actors.ActorShapeTypes;
-import com.spiddekauga.voider.utils.EarClippingTriangulator;
 import com.spiddekauga.voider.utils.Geometry;
 
 /**
@@ -153,10 +152,12 @@ public class Config {
 			PICKING_CIRCLE_SHAPE.setRadius(PICKING_CIRCLE_RADIUS);
 			PICKING_CIRCLE_FIXTURE = new FixtureDef();
 			PICKING_CIRCLE_FIXTURE.filter.categoryBits = ActorFilterCategories.NONE;
+			PICKING_CIRCLE_FIXTURE.filter.maskBits = ActorFilterCategories.NONE;
 			PICKING_CIRCLE_FIXTURE.shape = PICKING_CIRCLE_SHAPE;
-			ArrayList<Vector2> circles = Geometry.createCircle(PICKING_CIRCLE_RADIUS);
-			EarClippingTriangulator earClippingTriangulator = new EarClippingTriangulator();
-			PICKING_VERTICES = earClippingTriangulator.computeTriangles(circles);
+			PICKING_VERTICES = Geometry.createCircle(PICKING_CIRCLE_RADIUS);
+			//			ArrayList<Vector2> circles = Geometry.createCircle(PICKING_CIRCLE_RADIUS);
+			//			EarClippingTriangulator earClippingTriangulator = new EarClippingTriangulator();
+			//			PICKING_VERTICES = earClippingTriangulator.computeTriangles(circles);
 		}
 
 		/**
@@ -209,7 +210,7 @@ public class Config {
 				/** Step size for radius */
 				public final static float RADIUS_STEP_SIZE = 0.1f;
 				/** Minimum width/height for the enemy (when it's a rectangle/triangle */
-				public final static float SIZE_MIN = RADIUS_MIN * 2;
+				public final static float SIZE_MIN = 0.1f;
 				/** Maximum width/height for the enemy (when it's a rectangle/triangle */
 				public final static float SIZE_MAX = RADIUS_MAX * 2;
 				/** Default width/height for the enemy (when it's a rectangle/triangle */
@@ -503,7 +504,7 @@ public class Config {
 	 */
 	public static class Graphics {
 		/** If we shall use debug_renderer to display graphics instead of sprites (where applicable) */
-		public final static boolean USE_DEBUG_RENDERER = true;
+		public final static boolean USE_DEBUG_RENDERER = false;
 		/** Renders regular graphics */
 		public final static boolean USE_RELEASE_RENDERER = true;
 		/** Minimum length between two corners in a polygon */

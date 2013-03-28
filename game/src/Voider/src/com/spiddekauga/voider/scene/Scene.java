@@ -36,18 +36,14 @@ public abstract class Scene extends InputAdapter {
 	public final void run() {
 		Gdx.gl.glClearColor(0, 0, 0, 0);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		Gdx.gl.glEnable(GL20.GL_BLEND);
-		Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-		//		Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
 
-
-		render();
-		mGui.render();
-		mGui.update();
 		if (!mGui.isMsgBoxActive()) {
 			mGameTime.update(Gdx.graphics.getDeltaTime());
 			update();
 		}
+		render();
+		mGui.update();
+		mGui.render();
 	}
 
 	/**

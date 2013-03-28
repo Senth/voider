@@ -392,7 +392,7 @@ public class DrawActorTool extends ActorTool {
 					newPos.set(mSelectedActor.getDef().getCornerPosition(mCornerIndexCurrent));
 					try {
 						mSelectedActor.getDef().moveCorner(mCornerIndexCurrent, mDragOrigin);
-						mInvoker.execute(new CResourceCornerMove(mSelectedActor.getDef(), mCornerIndexCurrent, newPos, mActorEditor));
+						mInvoker.execute(new CResourceCornerMove(mSelectedActor.getDef(), mCornerIndexCurrent, newPos, mActorEditor), mCornerAddedNow);
 					} catch (Exception e) {
 						// Does nothing
 					}

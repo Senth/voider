@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.glutils.ShapeRendererEx;
+import com.badlogic.gdx.graphics.glutils.ShapeRendererEx.ShapeType;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -69,6 +70,19 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 			// Update position
 			if (mBody != null) {
 				mPosition.set(mBody.getPosition());
+				calculateRotatedVertices();
+
+				// Rotation
+				if (!mSkipRotate && mDef.getBodyDef().angularVelocity != 0 && mDef.getCenterOffset() != NO_OFFSET) {
+					float newAngle = mBody.getAngle();
+					newAngle += mDef.getBodyDef().angularVelocity * deltaTime;
+					if (newAngle >= MathUtils.PI2) {
+						newAngle -= MathUtils.PI2;
+					} else if (newAngle <= -MathUtils.PI2) {
+						newAngle += MathUtils.PI2;
+					}
+					mBody.setTransform(mPosition, newAngle);
+				}
 			}
 
 			// Decrease life if colliding with something...
@@ -94,6 +108,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 			// Do we need to reload the fixtures?
 			else if (mFixtureCreateTime <= getDef().getFixtureChangeTime()) {
 				reloadFixtures();
+				calculateRotatedVertices(true);
 			}
 		}
 	}
@@ -259,50 +274,24 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	 */
 	@Override
 	public void render(ShapeRendererEx shapeRenderer) {
+		if (mRotatedVertices == null) {
+			return;
+		}
+
 		Vector2 offsetPosition = Pools.vector2.obtain();
 		offsetPosition.set(mPosition);
-		offsetPosition.add(mDef.getCenterOffset());
 
 		if (mDef.getShapeType() == ActorShapeTypes.CUSTOM && mDef.getCornerCount() >= 1 && mDef.getCornerCount() <= 2) {
 			offsetPosition.add(mDef.getCorners().get(0));
 		}
 
-		ArrayList<Vector2> verticesRender = null;
-		ArrayList<Vector2> borderVerticesRender = null;
-
-		// Rotation
-		if (mHasRotated || getBody().getAngle() != 0) {
-			float rotation = MathUtils.radiansToDegrees * getBody().getAngle();
-
-			verticesRender = copyVectorArray(mDef.getTriangleVertices());
-			Geometry.rotateVertices(verticesRender, rotation, true);
-
-			borderVerticesRender = copyVectorArray(mDef.getTriangleBorderVertices());
-			Geometry.rotateVertices(borderVerticesRender, rotation, true);
-
-			mHasRotated = true;
-		}
-		// No rotation
-		else {
-			verticesRender = mDef.getTriangleVertices();
-			borderVerticesRender = mDef.getTriangleBorderVertices();
-		}
-
 		// Shape
 		shapeRenderer.setColor(mDef.getColor());
-		shapeRenderer.triangles(verticesRender, offsetPosition);
+		shapeRenderer.triangles(mRotatedVertices, offsetPosition);
 
 		// Border
 		shapeRenderer.setColor(mDef.getBorderColor());
-		shapeRenderer.triangles(borderVerticesRender, offsetPosition);
-
-
-		if (mHasRotated) {
-			//			Pools.vector2.freeDuplicates(verticesRender);
-			Pools.arrayList.free(verticesRender);
-			//			Pools.vector2.freeDuplicates(borderVerticesRender);
-			Pools.arrayList.free(borderVerticesRender);
-		}
+		shapeRenderer.triangles(mRotatedBorderVertices, offsetPosition);
 
 		Pools.vector2.free(offsetPosition);
 	}
@@ -313,44 +302,71 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	 */
 	@Override
 	public void renderEditor(ShapeRendererEx shapeRenderer) {
-		if (mSelected) {
-			Vector2 offsetPosition = Pools.vector2.obtain();
-			offsetPosition.set(mPosition);
-			offsetPosition.add(mDef.getCenterOffset());
+		if (mRotatedVertices == null) {
+			return;
+		}
 
+		Vector2 offsetPosition = Pools.vector2.obtain();
+		offsetPosition.set(mPosition);
+
+
+		// Draw selected overlay
+		if (mSelected) {
 			if (mDef.getShapeType() == ActorShapeTypes.CUSTOM && mDef.getCornerCount() >= 1 && mDef.getCornerCount() <= 2) {
 				offsetPosition.add(mDef.getCorners().get(0));
 			}
 
-			// Draw gray overlay
+			// Draw selected overlay
 			shapeRenderer.setColor(Config.Editor.SELECTED_COLOR);
-			ArrayList<Vector2> vertices = mDef.getTriangleVertices();
-			shapeRenderer.triangles(vertices, offsetPosition);
+			shapeRenderer.triangles(mRotatedVertices, offsetPosition);
 
 			if (mDef.getShapeType() == ActorShapeTypes.CUSTOM && mDef.getCornerCount() >= 1 && mDef.getCornerCount() <= 2) {
 				offsetPosition.sub(mDef.getCorners().get(0));
 			}
-
-			// Draw corners?
-			if (mHasBodyCorners) {
-				shapeRenderer.setColor(Config.Editor.CORNER_COLOR);
-				Vector2 cornerOffset = Pools.vector2.obtain();
-				for (Vector2 corner : mDef.getCorners()) {
-					cornerOffset.set(offsetPosition).add(corner);
-					shapeRenderer.triangles(Config.Editor.PICKING_VERTICES, cornerOffset);
-				}
-				Pools.vector2.free(cornerOffset);
-			}
-
-
-			// Draw center body?
-			if (mHasBodyCenter) {
-				shapeRenderer.setColor(Config.Editor.CENTER_OFFSET_COLOR);
-				shapeRenderer.triangle(Config.Editor.PICKING_VERTICES);
-			}
-
-			Pools.vector2.free(offsetPosition);
 		}
+
+
+		// Draw corners?
+		if (mHasBodyCorners) {
+			ShapeType oldShapeType = shapeRenderer.getCurrentType();
+			if (oldShapeType != ShapeType.Line) {
+				shapeRenderer.end();
+				shapeRenderer.begin(ShapeType.Line);
+			}
+
+			shapeRenderer.setColor(Config.Editor.CORNER_COLOR);
+			Vector2 cornerOffset = Pools.vector2.obtain();
+			for (Vector2 corner : mDef.getCorners()) {
+				cornerOffset.set(offsetPosition).add(corner).add(mDef.getCenterOffset());
+				shapeRenderer.polyline(Config.Editor.PICKING_VERTICES, true, cornerOffset);
+			}
+			Pools.vector2.free(cornerOffset);
+
+			if (oldShapeType != ShapeType.Line) {
+				shapeRenderer.end();
+				shapeRenderer.begin(oldShapeType);
+			}
+		}
+
+
+		// Draw center body?
+		if (mHasBodyCenter) {
+			ShapeType oldShapeType = shapeRenderer.getCurrentType();
+			if (oldShapeType != ShapeType.Line) {
+				shapeRenderer.end();
+				shapeRenderer.begin(ShapeType.Line);
+			}
+
+			shapeRenderer.setColor(Config.Editor.CENTER_OFFSET_COLOR);
+			shapeRenderer.polyline(Config.Editor.PICKING_VERTICES, true, offsetPosition);
+
+			if (oldShapeType != ShapeType.Line) {
+				shapeRenderer.end();
+				shapeRenderer.begin(oldShapeType);
+			}
+		}
+
+		Pools.vector2.free(offsetPosition);
 	}
 
 	/**
@@ -570,9 +586,11 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	 */
 	public void createBody(BodyDef bodyDef) {
 		if (mWorld != null && mBody == null) {
-			if (mSkipRotate) {
+			if (mSkipRotate || mDef.getCenterOffset() != NO_OFFSET) {
 				bodyDef.angularVelocity = 0;
 				bodyDef.angle = 0;
+			} else {
+				bodyDef.fixedRotation = true;
 			}
 			mBody = mWorld.createBody(bodyDef);
 			for (FixtureDef fixtureDef : mDef.getFixtureDefs()) {
@@ -602,10 +620,9 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	 */
 	@Override
 	public void dispose() {
-		if (mBody != null) {
-			destroyBody();
-		}
 		mActive = false;
+
+		reset();
 	}
 
 	@Override
@@ -617,6 +634,15 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 		mDef = null;
 		mPosition.set(0,0);
 		mCollidingActors.clear();
+
+		if (mRotatedVertices != null) {
+			Pools.vector2.freeDuplicates(mRotatedVertices);
+			Pools.arrayList.free(mRotatedVertices);
+			Pools.vector2.freeDuplicates(mRotatedBorderVertices);
+			Pools.arrayList.free(mRotatedBorderVertices);
+			mRotatedBorderVertices = null;
+			mRotatedVertices = null;
+		}
 	}
 
 	/**
@@ -866,6 +892,56 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	protected abstract short getFilterCollidingCategories();
 
 	/**
+	 * @return rotated vertices for this actor
+	 */
+	protected ArrayList<Vector2> getRotatedVertices() {
+		return mRotatedVertices;
+	}
+
+	/**
+	 * @return rotated border vertices
+	 */
+	protected ArrayList<Vector2> getRotatedBorderVertices() {
+		return mRotatedBorderVertices;
+	}
+
+	/**
+	 * Calculates the rotated vertices (both regular and border)
+	 * @param forceRecalculation this forces recalculation
+	 */
+	protected void calculateRotatedVertices(boolean forceRecalculation) {
+		// Update vertices
+		if (mRotationPrevious != getBody().getAngle() || mRotatedVertices == null || forceRecalculation) {
+			mRotationPrevious = getBody().getAngle();
+
+			if (mRotatedVertices != null) {
+				Pools.vector2.freeDuplicates(mRotatedVertices);
+				Pools.arrayList.free(mRotatedVertices);
+				Pools.vector2.freeDuplicates(mRotatedBorderVertices);
+				Pools.arrayList.free(mRotatedBorderVertices);
+			}
+
+			float rotation = MathUtils.radiansToDegrees * getBody().getAngle();
+
+			mRotatedVertices = copyVectorArray(mDef.getTriangleVertices());
+			Geometry.moveVertices(mRotatedVertices, getDef().getCenterOffset(), true);
+			Geometry.rotateVertices(mRotatedVertices, rotation, true);
+
+			mRotatedBorderVertices = copyVectorArray(mDef.getTriangleBorderVertices());
+			Geometry.moveVertices(mRotatedBorderVertices, getDef().getCenterOffset(), true);
+			Geometry.rotateVertices(mRotatedBorderVertices, rotation, true);
+		}
+	}
+
+	/**
+	 * Calculates the rotated vertices (both regular and border). Calls
+	 * {@link #calculateRotatedVertices(boolean)} with false.
+	 */
+	protected void calculateRotatedVertices() {
+		calculateRotatedVertices(false);
+	}
+
+	/**
 	 * Creates a copy of the specified vector2 array
 	 * @param array the array to make a copy of
 	 * @return copied array
@@ -960,8 +1036,12 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	private ArrayList<TriggerInfo> mTriggerInfos = new ArrayList<TriggerInfo>();
 	/** True if the actor is selected, only applicable in editor */
 	private boolean mSelected = false;
-	/** True if the actor has rotated */
-	private boolean mHasRotated = false;
+	/** Old rotation */
+	private float mRotationPrevious = 0;
+	/** Rotated vertices of the actor */
+	private ArrayList<Vector2> mRotatedVertices = null;
+	/** Rotated border vertices */
+	private ArrayList<Vector2> mRotatedBorderVertices = null;
 
 	/** The world used for creating bodies */
 	protected static World mWorld = null;
@@ -971,4 +1051,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	protected static PlayerActor mPlayerActor = null;
 	/** Current level speed */
 	protected static float mLevelSpeed = 0;
+
+	/** No offset */
+	private final static Vector2 NO_OFFSET = new Vector2();
 }

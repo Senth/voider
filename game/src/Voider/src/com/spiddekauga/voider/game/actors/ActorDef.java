@@ -563,10 +563,15 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 			}
 			// Circle, first corner is center
 			else if (mVisualVars.corners.size() >= 1) {
-				setCenterOffset(mVisualVars.corners.get(0));
+				Vector2 center = Pools.vector2.obtain();
+				center.set(0,0);
+				setCenterOffset(center);
+				Pools.vector2.free(center);
 			}
 			break;
 		}
+
+		mFixtureChangeTime = GameTime.getTotalGlobalTimeElapsed();
 	}
 
 	/**
@@ -692,11 +697,6 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 				Collections.reverse(triangles);
 			}
 
-			// Add center offset
-			for (Vector2 vertex : triangles) {
-				vertex.add(mVisualVars.centerOffset);
-			}
-
 			int cTriangles = triangles.size() / 3;
 			Vector2[] triangleVertices = new Vector2[3];
 			for (int i = 0; i < triangleVertices.length; ++i) {
@@ -710,7 +710,7 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 				int offset = triangle * 3;
 				for (int vertex = 0; vertex < triangleVertices.length; ++vertex) {
 					triangleVertices[vertex].set(triangles.get(offset + vertex));
-					//					triangleVertices[vertex].add(mVisualVars.centerOffset);
+					triangleVertices[vertex].add(mVisualVars.centerOffset);
 				}
 
 
@@ -741,11 +741,18 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 				polygonShape.set(triangleVertices);
 				fixtureDef.shape = polygonShape;
 				addFixtureDef(fixtureDef);
+				//
+				//				for (int vertex = 0; vertex < triangleVertices.length; ++vertex) {
+				//					triangleVertices[vertex].mul(-1);
+				//				}
+				//
+				//				fixtureDef = new FixtureDef();
+				//				copyFixtureDef(savedFixtureProperties, fixtureDef);
+				//				polygonShape = new PolygonShape();
+				//				polygonShape.set(triangleVertices);
+				//				fixtureDef.shape = polygonShape;
+				//				addFixtureDef(fixtureDef);
 			}
-
-
-			// Set AABB box
-			//			mAabbBox.setFromPolygon(triangles);
 
 
 			// Free stuff
@@ -891,6 +898,8 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	 * @return circle shape for fixture
 	 */
 	private CircleShape createCircleShape() {
+		mVisualVars.clearVertices();
+
 		CircleShape circleShape = new CircleShape();
 		circleShape.setRadius(mVisualVars.shapeCircleRadius);
 		/** @todo use center for all shapes */
@@ -902,7 +911,7 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 
 		// Create vertices for the circle
 		ArrayList<Vector2> circleVertices = Geometry.createCircle(mVisualVars.shapeCircleRadius);
-		mVisualVars.vertices =mEarClippingTriangulator.computeTriangles(circleVertices);
+		mVisualVars.vertices = mEarClippingTriangulator.computeTriangles(circleVertices);
 		Collections.reverse(circleVertices);
 
 		mVisualVars.polygon = circleVertices;
@@ -930,6 +939,8 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 		// Set AABB box
 		//		mAabbBox.setFromBox(mVisualVars.centerOffset, halfWidth, halfHeight);
 		//		mAabbBox.setFromBox(new Vector2(), halfWidth, halfHeight);
+
+		mVisualVars.clearVertices();
 
 		// Create triangle vertices and polygon for the rectangle
 		if (rectangleShape.getVertexCount() == 4) {
@@ -1017,6 +1028,7 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 		Pools.vector2.free(center);
 
 		// Set vertices and create border
+		mVisualVars.clearVertices();
 		mVisualVars.polygon = new ArrayList<Vector2>();
 		for (Vector2 vertex : vertices) {
 			mVisualVars.vertices.add(vertex);
@@ -1142,8 +1154,6 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	protected float mFixtureChangeTime = 0;
 	/** When the body was changed last time */
 	protected float mBodyChangeTime = 0;
-	/** AABB box for all fixtures */
-	//	private AabbBox mAabbBox = Pools.obtain(AabbBox.class);
 	/** Defines the mass, shape, etc. */
 	private ArrayList<FixtureDef> mFixtureDefs = new ArrayList<FixtureDef>();
 	/** Maximum life of the actor, usually starting amount of life */

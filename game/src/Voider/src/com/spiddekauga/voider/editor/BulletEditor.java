@@ -5,7 +5,7 @@ import java.util.UUID;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
+import com.badlogic.gdx.graphics.glutils.ShapeRendererEx.ShapeType;
 import com.badlogic.gdx.math.Vector2;
 import com.spiddekauga.utils.Invoker;
 import com.spiddekauga.utils.KeyHelper;
@@ -87,11 +87,12 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 		mWeapon.update(Gdx.graphics.getDeltaTime());
 
 		if (mWeapon.canShoot()) {
-			mWeapon.shoot(mShootDirection);
+			mWeapon.shoot(SHOOT_DIRECTION);
 		}
 
 		if (mBulletActor != null && mDef.getShapeType() == ActorShapeTypes.CUSTOM) {
-			mBulletActor.update(Gdx.graphics.getDeltaTime());
+			//			mBulletActor.update(Gdx.graphics.getDeltaTime());
+			mBulletActor.editorUpdate();
 		}
 	}
 
@@ -109,10 +110,12 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 			Gdx.gl.glEnable(GL20.GL_BLEND);
 			Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
+			mBulletDestroyer.update(Gdx.graphics.getDeltaTime());
 			mBulletDestroyer.render(mShapeRenderer);
 
 			if (mBulletActor != null) {
 				mBulletActor.render(mShapeRenderer);
+				//				mBulletActor.setSelected(false);
 				mBulletActor.renderEditor(mShapeRenderer);
 			}
 
@@ -523,7 +526,7 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 	/** Current selection scene */
 	private SelectionActions mSelectionAction = null;
 	/** Shoot direction */
-	private Vector2 mShootDirection = new Vector2(1, 0);
+	private final static Vector2 SHOOT_DIRECTION = new Vector2(1, 0);
 	/** Invoker for the bullet editor */
 	private Invoker mInvoker = new Invoker();
 	/** Active touch tool */

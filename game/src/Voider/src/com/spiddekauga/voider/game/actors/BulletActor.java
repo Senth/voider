@@ -1,8 +1,5 @@
 package com.spiddekauga.voider.game.actors;
 
-import java.util.ArrayList;
-
-import com.badlogic.gdx.graphics.glutils.ShapeRendererEx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.OrderedMap;
 import com.spiddekauga.utils.Json;
@@ -54,26 +51,22 @@ public class BulletActor extends Actor {
 		activate();
 	}
 
-	/**
-	 * Renders the actor
-	 * @param shapeRenderer the current sprite batch for the scene
-	 */
-	@Override
-	public void render(ShapeRendererEx shapeRenderer) {
-		//		if (getDef().getShapeType() == ActorShapeTypes.CUSTOM && mDef.getCornerCount() >= 1 && mDef.getCornerCount() <= 2) {
-		//			offsetPosition.add(mDef.getCorners().get(0));
-		//		}
-
-		// Shape
-		shapeRenderer.setColor(getDef().getColor());
-		ArrayList<Vector2> vertices = getDef().getTriangleVertices();
-		shapeRenderer.triangles(vertices, getBody().getPosition());
-
-		// Border
-		shapeRenderer.setColor(getDef().getBorderColor());
-		vertices = getDef().getTriangleBorderVertices();
-		shapeRenderer.triangles(vertices, getBody().getPosition());
-	}
+	//	/**
+	//	 * Renders the actor
+	//	 * @param shapeRenderer the current sprite batch for the scene
+	//	 */
+	//	@Override
+	//	public void render(ShapeRendererEx shapeRenderer) {
+	//		calculateRotatedVertices();
+	//
+	//		// Shape
+	//		shapeRenderer.setColor(getDef().getColor());
+	//		shapeRenderer.triangles(getRotatedVertices(), getBody().getPosition());
+	//
+	//		// Border
+	//		shapeRenderer.setColor(getDef().getBorderColor());
+	//		shapeRenderer.triangles(getRotatedBorderVertices(), getBody().getPosition());
+	//	}
 
 	/**
 	 * @return how much damage the bullet will inflict on hit
@@ -117,7 +110,7 @@ public class BulletActor extends Actor {
 	}
 
 	/** True if bullet shot by player, false if shot by enemy */
-	private boolean mShotByPlayer = true;
+	private boolean mShotByPlayer = false;
 	/** Hom much damage the bullet will inflict on hit */
 	private float mDamage = 0;
 }

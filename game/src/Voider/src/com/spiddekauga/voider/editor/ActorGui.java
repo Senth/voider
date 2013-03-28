@@ -427,20 +427,20 @@ public abstract class ActorGui extends EditorGui {
 
 		HideListener lineHider = null;
 		boolean hasLine = false;
-		if (containsShape(ActorShapeTypes.LINE, actorShapeTypes)) {
-			hasLine = true;
-			Button button = new TextButton("Line", toggleStyle);
-			mWidgets.visual.shapeLine = button;
-			mVisualTable.add(button);
-			button.addListener(shapeChecker);
-			buttonGroup.add(button);
-			lineHider = new HideListener(button, true) {
-				@Override
-				protected void onShow() {
-					mActorEditor.setShapeType(ActorShapeTypes.LINE);
-				}
-			};
-		}
+		//		if (containsShape(ActorShapeTypes.LINE, actorShapeTypes)) {
+		//			hasLine = true;
+		//			Button button = new TextButton("Line", toggleStyle);
+		//			mWidgets.visual.shapeLine = button;
+		//			mVisualTable.add(button);
+		//			button.addListener(shapeChecker);
+		//			buttonGroup.add(button);
+		//			lineHider = new HideListener(button, true) {
+		//				@Override
+		//				protected void onShow() {
+		//					mActorEditor.setShapeType(ActorShapeTypes.LINE);
+		//				}
+		//			};
+		//		}
 
 		HideListener customHider = null;
 		if (containsShape(ActorShapeTypes.CUSTOM, actorShapeTypes)) {
