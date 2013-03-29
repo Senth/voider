@@ -203,6 +203,23 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	}
 
 	@Override
+	public void onResize(int width, int height) {
+		super.onResize(width, height);
+		scalePathLabels();
+	}
+
+	@Override
+	public void onDisposed() {
+		mPlayerActor.dispose();
+		mEnemyActor.dispose();
+		mEnemyPathBackAndForth.dispose();
+		mEnemyPathLoop.dispose();
+		mEnemyPathOnce.dispose();
+
+		super.onDisposed();
+	}
+
+	@Override
 	protected void update() {
 		super.update();
 		float deltaTime = Gdx.graphics.getDeltaTime();
@@ -212,12 +229,16 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 		case AI:
 		case STATIONARY:
 			mEnemyActor.update(deltaTime);
+			mEnemyActor.updateEditor();
 			break;
 
 		case PATH:
 			mEnemyPathLoop.update(deltaTime);
+			mEnemyPathLoop.updateEditor();
 			mEnemyPathOnce.update(deltaTime);
+			mEnemyPathOnce.updateEditor();
 			mEnemyPathBackAndForth.update(deltaTime);
+			mEnemyPathBackAndForth.updateEditor();
 
 			// Reset Once enemy ever 4 seconds
 			if (mfEnemyOnceReachEnd != null) {
@@ -238,23 +259,6 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 			}
 			break;
 		}
-	}
-
-	@Override
-	public void onResize(int width, int height) {
-		super.onResize(width, height);
-		scalePathLabels();
-	}
-
-	@Override
-	public void onDisposed() {
-		mPlayerActor.dispose();
-		mEnemyActor.dispose();
-		mEnemyPathBackAndForth.dispose();
-		mEnemyPathLoop.dispose();
-		mEnemyPathOnce.dispose();
-
-		super.onDisposed();
 	}
 
 	@Override
@@ -289,8 +293,6 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 			}
 
 			mPlayerActor.render(mShapeRenderer);
-
-			mBulletDestroyer.update(Gdx.graphics.getDeltaTime());
 			mBulletDestroyer.render(mShapeRenderer);
 
 			mShapeRenderer.end();

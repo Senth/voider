@@ -83,7 +83,7 @@ public class Level extends Resource implements Disposable {
 
 		} else {
 			for (IResourceEditorUpdate resource : mResourceBinder.getResources(IResourceEditorUpdate.class)) {
-				resource.editorUpdate();
+				resource.updateEditor();
 			}
 		}
 	}

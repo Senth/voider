@@ -99,7 +99,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	 * have been changed since the actor was created.
 	 */
 	@Override
-	public void editorUpdate() {
+	public void updateEditor() {
 		if (mEditorActive && mBody != null) {
 			// Do we need to reload the body?
 			if (mBodyUpdateTime <= getDef().getBodyChangeTime()) {

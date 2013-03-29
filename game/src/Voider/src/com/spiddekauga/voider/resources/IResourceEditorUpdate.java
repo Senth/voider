@@ -9,5 +9,5 @@ public interface IResourceEditorUpdate {
 	/**
 	 * Called whenever the editor needs to be updated
 	 */
-	public void editorUpdate();
+	public void updateEditor();
 }

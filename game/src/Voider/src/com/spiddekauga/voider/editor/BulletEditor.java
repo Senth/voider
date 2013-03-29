@@ -92,7 +92,7 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 
 		if (mBulletActor != null && mDef.getShapeType() == ActorShapeTypes.CUSTOM) {
 			//			mBulletActor.update(Gdx.graphics.getDeltaTime());
-			mBulletActor.editorUpdate();
+			mBulletActor.updateEditor();
 		}
 	}
 
