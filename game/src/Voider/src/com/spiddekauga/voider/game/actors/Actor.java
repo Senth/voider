@@ -101,6 +101,8 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	@Override
 	public void updateEditor() {
 		if (mEditorActive && mBody != null) {
+			calculateRotatedVertices();
+
 			// Do we need to reload the body?
 			if (mBodyUpdateTime <= getDef().getBodyChangeTime()) {
 				reloadBody();
