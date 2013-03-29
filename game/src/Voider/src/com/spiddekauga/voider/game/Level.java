@@ -4,17 +4,19 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.OrderedMap;
 import com.spiddekauga.utils.Json;
+import com.spiddekauga.utils.ShapeRendererEx;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.PlayerActor;
 import com.spiddekauga.voider.game.triggers.Trigger;
 import com.spiddekauga.voider.resources.IResource;
+import com.spiddekauga.voider.resources.IResourceEditorRender;
 import com.spiddekauga.voider.resources.IResourceEditorUpdate;
+import com.spiddekauga.voider.resources.IResourceRender;
 import com.spiddekauga.voider.resources.IResourceUpdate;
 import com.spiddekauga.voider.resources.Resource;
 import com.spiddekauga.voider.resources.ResourceBinder;
@@ -50,23 +52,11 @@ public class Level extends Resource implements Disposable {
 	}
 
 	/**
-	 * Unbinds all the triggers
+	 * Updates all the actors in the level. To optimize set is as running
 	 */
-	public void unbindTriggers() {
-		for (ObjectMap.Entry<UUID, Trigger> entry : mTriggers.entries()) {
-			entry.value.clearListeners();
-		}
-	}
-
-	/**
-	 * Updates all the actors in the level.
-	 * This shall always be run, even in the editor
-	 * @param run set this to true if you want to play the level
-	 * as this will make the screen move, the units move etc
-	 */
-	public void update(boolean run) {
+	public void update() {
 		// Make the map move forward
-		if (run) {
+		if (mRunning) {
 			float deltaTime = Gdx.graphics.getDeltaTime();
 			mXCoord += mSpeed * deltaTime;
 
@@ -93,7 +83,7 @@ public class Level extends Resource implements Disposable {
 
 		} else {
 			for (IResourceEditorUpdate resource : mResourceBinder.getResources(IResourceEditorUpdate.class)) {
-				resource.editorUpdate();
+				resource.updateEditor();
 			}
 		}
 	}
@@ -184,6 +174,14 @@ public class Level extends Resource implements Disposable {
 	}
 
 	/**
+	 * Makes the level run, this will optimize the update and render processes.
+	 * Also makes the map move forward
+	 */
+	public void run() {
+		mRunning = true;
+	}
+
+	/**
 	 * Binds all resources, call this after the level has been loaded
 	 */
 	public void bindResources() {
@@ -191,21 +189,37 @@ public class Level extends Resource implements Disposable {
 	}
 
 	/**
-	 * Renders the level
-	 * @param spriteBatch the SpriteBatch to use for rendering
+	 * Renders the level, or rather its actors
+	 * @param shapeRenderer shape renderer used for rendering
 	 */
-	public void render(SpriteBatch spriteBatch) {
+	public void render(ShapeRendererEx shapeRenderer) {
 		// TODO IResourceRender for rendering resources
+		if (mRunning) {
+			if (mResourceRenders == null) {
+				mResourceRenders = mResourceBinder.getResources(IResourceRender.class);
+			}
+			for (IResourceRender resourceRender : mResourceRenders) {
+				resourceRender.render(shapeRenderer);
+			}
+		} else {
+			for (IResourceRender resourceRender : mResourceBinder.getResources(IResourceRender.class)) {
+				resourceRender.render(shapeRenderer);
+			}
+		}
 
-		mPlayerActor.render(spriteBatch);
+		if (mPlayerActor != null) {
+			mPlayerActor.render(shapeRenderer);
+		}
 	}
 
 	/**
-	 * Renders extra information from actors when level editor is active
-	 * @param spriteBatch the SpriteBatch to use for rendering
+	 * Renders the levels resources with editor special rendering
+	 * @param shapeRenderer shape renderer used for rendering
 	 */
-	public void renderEditor(SpriteBatch spriteBatch) {
-		// TODO IResourceEditorRender for rendering resources in the editor
+	public void renderEditor(ShapeRendererEx shapeRenderer) {
+		for (IResourceEditorRender resourceRender : mResourceBinder.getResources(IResourceEditorRender.class)) {
+			resourceRender.renderEditor(shapeRenderer);
+		}
 	}
 
 	/**
@@ -337,6 +351,8 @@ public class Level extends Resource implements Disposable {
 	private ResourceBinder mResourceBinder = new ResourceBinder();
 	/** All resources that needs updating */
 	private ArrayList<IResourceUpdate> mResourceUpdates = null;
+	/** All resources that shall be rendered */
+	private ArrayList<IResourceRender> mResourceRenders = null;
 	/** All triggers */
 	private ObjectMap<UUID, Trigger> mTriggers = new ObjectMap<UUID, Trigger>();
 	/** Current x coordinate (of the screen's left edge) */
@@ -347,6 +363,8 @@ public class Level extends Resource implements Disposable {
 	private float mSpeed;
 	/** If the level has been completed */
 	private boolean mCompletedLevel;
+	/** True if the level is running */
+	private boolean mRunning = false;
 	/** The player actor */
 	private PlayerActor mPlayerActor = null;
 }

@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector2;
 import com.spiddekauga.utils.Command;
 import com.spiddekauga.utils.ICommandCombinable;
-import com.spiddekauga.voider.utils.Vector2Pool;
+import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Command for moving a camera. This can undo and redo a scroll.
@@ -58,14 +58,14 @@ public class CCameraMove extends Command implements ICommandCombinable {
 
 	@Override
 	public void dispose() {
-		Vector2Pool.free(mNewPos);
-		Vector2Pool.free(mOldPos);
+		Pools.vector2.free(mNewPos);
+		Pools.vector2.free(mOldPos);
 	}
 
 	/** The camera to move */
 	private Camera mCamera;
 	/** New position of the camera (execute()) */
-	private Vector2 mNewPos = Vector2Pool.obtain();
+	private Vector2 mNewPos = Pools.vector2.obtain();
 	/** Old position of the camera (undo()) */
-	private Vector2 mOldPos = Vector2Pool.obtain();
+	private Vector2 mOldPos = Pools.vector2.obtain();
 }

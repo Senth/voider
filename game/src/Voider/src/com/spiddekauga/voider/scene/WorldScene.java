@@ -18,7 +18,7 @@ import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.BulletDestroyer;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.ActorFilterCategories;
-import com.spiddekauga.voider.utils.Vector2Pool;
+import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Common class for all world scenes
@@ -40,27 +40,28 @@ public abstract class WorldScene extends Scene {
 	public void onResize(int width, int height) {
 		super.onResize(width, height);
 		fixCamera();
+		mShapeRenderer.setProjectionMatrix(mCamera.combined);
 	}
 
 	@Override
-	public void update() {
+	protected void update() {
 		mWorld.step(1/60f, 6, 2);
 
 		// Remove unwanted bullets
-		Vector2 minScreenPos = Vector2Pool.obtain();
-		Vector2 maxScreenPos = Vector2Pool.obtain();
+		Vector2 minScreenPos = Pools.vector2.obtain();
+		Vector2 maxScreenPos = Pools.vector2.obtain();
 
 		screenToWorldCoord(mCamera, 0, Gdx.graphics.getHeight(), minScreenPos, false);
 		screenToWorldCoord(mCamera, Gdx.graphics.getWidth(), 0, maxScreenPos, false);
 		mBulletDestroyer.update(Gdx.graphics.getDeltaTime());
 		mBulletDestroyer.removeOutOfBondsBullets(minScreenPos, maxScreenPos);
 
-		Vector2Pool.free(minScreenPos);
-		Vector2Pool.free(maxScreenPos);
+		Pools.vector2.free(minScreenPos);
+		Pools.vector2.free(maxScreenPos);
 	}
 
 	@Override
-	public void render() {
+	protected void render() {
 		super.render();
 		if (Config.Graphics.USE_DEBUG_RENDERER) {
 			mDebugRenderer.render(mWorld, mCamera.combined);
@@ -141,7 +142,7 @@ public abstract class WorldScene extends Scene {
 		// Get world coordinates for the screen's corners
 		Vector2[] corners = new Vector2[4];
 		for (int i = 0; i < corners.length; ++i) {
-			corners[i] = Vector2Pool.obtain();
+			corners[i] = Pools.vector2.obtain();
 		}
 		screenToWorldCoord(mCamera, 0, 0, corners[0], false);
 		screenToWorldCoord(mCamera, Gdx.graphics.getWidth(), 0, corners[1], false);
@@ -161,7 +162,7 @@ public abstract class WorldScene extends Scene {
 
 		// Free stuff
 		for (int i = 0; i < corners.length; ++i) {
-			Vector2Pool.free(corners[i]);
+			Pools.vector2.free(corners[i]);
 		}
 		shape.dispose();
 	}

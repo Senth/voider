@@ -4,11 +4,15 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector2;
 import com.spiddekauga.utils.Invoker;
 import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.utils.Scroller;
 import com.spiddekauga.utils.Scroller.ScrollAxis;
+import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.editor.commands.CCameraMove;
 import com.spiddekauga.voider.editor.commands.CLevelEnemyDefSelect;
@@ -47,7 +51,7 @@ import com.spiddekauga.voider.scene.SelectDefScene;
 import com.spiddekauga.voider.scene.TouchTool;
 import com.spiddekauga.voider.scene.TriggerTool;
 import com.spiddekauga.voider.scene.WorldScene;
-import com.spiddekauga.voider.utils.Vector2Pool;
+import com.spiddekauga.voider.utils.Pools;
 
 /**
  * The level editor scene
@@ -85,41 +89,70 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 	}
 
 	@Override
-	public void update() {
+	protected void update() {
 		super.update();
-		mLevel.update(false);
+		mLevel.update();
 
 		// Scrolling
 		if (mScroller.isScrolling()) {
 			mScroller.update(Gdx.graphics.getDeltaTime());
 
-			Vector2 diffScroll = Vector2Pool.obtain();
+			Vector2 diffScroll = Pools.vector2.obtain();
 			diffScroll.set(mScroller.getCurrentScroll()).sub(mScroller.getOriginScroll());
 			diffScroll.mul(Config.Graphics.WORLD_SCALE);
 
 			mCamera.position.x = diffScroll.x + mScrollCameraOrigin.x;
 			mCamera.update();
 
-			Vector2Pool.free(diffScroll);
+			Pools.vector2.free(diffScroll);
 		} else if (!mCreatedScrollCommand) {
-			Vector2 scrollCameraCurrent = Vector2Pool.obtain();
+			Vector2 scrollCameraCurrent = Pools.vector2.obtain();
 			scrollCameraCurrent.set(mCamera.position.x, mCamera.position.y);
 
 			mInvoker.execute(new CCameraMove(mCamera, scrollCameraCurrent, mScrollCameraOrigin));
 
 			mCreatedScrollCommand = true;
 
-			Vector2Pool.free(scrollCameraCurrent);
+			Pools.vector2.free(scrollCameraCurrent);
 		}
 	}
 
 	@Override
-	public void render() {
+	protected void render() {
 		super.render();
 
-		if (!Config.Graphics.USE_DEBUG_RENDERER) {
-			mLevel.render(mSpriteBatch);
-			mLevel.renderEditor(mSpriteBatch);
+		if (Config.Graphics.USE_RELEASE_RENDERER) {
+			ShaderProgram defaultShader = ResourceCacheFacade.get(ResourceNames.SHADER_DEFAULT);
+			if (defaultShader != null) {
+				mShapeRenderer.setShader(defaultShader);
+			}
+			mShapeRenderer.setProjectionMatrix(mCamera.combined);
+			mShapeRenderer.begin(ShapeType.Filled);
+			Gdx.gl.glEnable(GL20.GL_BLEND);
+			Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+			mLevel.render(mShapeRenderer);
+			mLevel.renderEditor(mShapeRenderer);
+
+			renderAboveBelowBorders();
+
+			mShapeRenderer.end();
+		}
+	}
+
+	@Override
+	protected void fixCamera() {
+		float width = Gdx.graphics.getWidth() * Config.Graphics.LEVEL_EDITOR_SCALE;
+		// Decrease scale of width depending on height scaled
+		float heightScale = Config.Graphics.HEIGHT / Gdx.graphics.getHeight();
+		width *= heightScale;
+		float height = Config.Graphics.HEIGHT * Config.Graphics.LEVEL_EDITOR_SCALE;
+
+		if (mCamera != null) {
+			mCamera.viewportHeight = height;
+			mCamera.viewportWidth = width;
+			mCamera.update();
+		} else {
+			mCamera = new OrthographicCamera(width , height);
 		}
 	}
 
@@ -174,6 +207,7 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 	@Override
 	public void loadResources() {
 		ResourceCacheFacade.load(ResourceNames.EDITOR_BUTTONS);
+		ResourceCacheFacade.load(ResourceNames.SHADER_DEFAULT);
 		try {
 			ResourceCacheFacade.loadAllOf(EnemyActorDef.class, false);
 			ResourceCacheFacade.loadAllOf(PickupActorDef.class, false);
@@ -186,7 +220,7 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 	@Override
 	public void unloadResources() {
 		ResourceCacheFacade.unload(ResourceNames.EDITOR_BUTTONS);
-
+		ResourceCacheFacade.unload(ResourceNames.SHADER_DEFAULT);
 		try {
 			ResourceCacheFacade.unloadAllOf(EnemyActorDef.class, false);
 			ResourceCacheFacade.unloadAllOf(PickupActorDef.class, false);
@@ -380,10 +414,10 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 		if (button == 2 || (Gdx.app.getInput().isTouched(0) && Gdx.app.getInput().isTouched(1))) {
 			// If we're already scrolling create scroll command
 			if (mScroller.isScrolling()) {
-				Vector2 scrollCameraCurrent = Vector2Pool.obtain();
+				Vector2 scrollCameraCurrent = Pools.vector2.obtain();
 				scrollCameraCurrent.set(mCamera.position.x, mCamera.position.y);
 				mInvoker.execute(new CCameraMove(mCamera, scrollCameraCurrent, mScrollCameraOrigin));
-				Vector2Pool.free(scrollCameraCurrent);
+				Pools.vector2.free(scrollCameraCurrent);
 			}
 
 			mScroller.touchDown(x, y);
@@ -508,27 +542,20 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 		if (mToolType != null) {
 			mInputMultiplexer.addProcessor(mTouchTools[mToolType.ordinal()]);
 			mTouchTools[mToolType.ordinal()].activate();
-
-			switch (mToolType) {
-			case ENEMY:
-				((LevelEditorGui)mGui).resetEnemyOptions();
-				break;
-
-
-			default:
-				// Does nothing
-				break;
-			}
 		}
 	}
 
 	/**
 	 * Tests to run a game from the current location
+	 * @param invulnerable makes the player invulnerable
 	 */
-	void runFromHere() {
-		GameScene testGame = new GameScene(true);
+	public void runFromHere(boolean invulnerable) {
+		GameScene testGame = new GameScene(invulnerable);
 		Level copyLevel = mLevel.copyKeepId();
-		copyLevel.setXCoord(mCamera.position.x + mCamera.viewportWidth * 0.5f);
+		// Because of scaling decrease the x position
+		float levelScaling = (Config.Graphics.LEVEL_EDITOR_HEIGHT_SCALE - 1) / Config.Graphics.LEVEL_EDITOR_HEIGHT_SCALE;
+		float xPosition = mCamera.position.x + mCamera.viewportWidth * 0.5f - mCamera.viewportWidth * levelScaling;
+		copyLevel.setXCoord(xPosition);
 		testGame.setLevel(copyLevel);
 
 		SceneSwitcher.switchTo(testGame);
@@ -1237,6 +1264,33 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 				touchTool.clear();
 			}
 		}
+	}
+
+	/**
+	 * Renders the above and below borders
+	 */
+	private void renderAboveBelowBorders() {
+		// Calculate how much space is left for the borders
+		float heightAvailable = (Config.Graphics.LEVEL_EDITOR_HEIGHT_SCALE - 1) / Config.Graphics.LEVEL_EDITOR_HEIGHT_SCALE;
+
+		Vector2 minPos = Pools.vector2.obtain();
+		Vector2 maxPos = Pools.vector2.obtain();
+
+		screenToWorldCoord(mCamera, 0, Gdx.graphics.getHeight(), minPos, false);
+		screenToWorldCoord(mCamera, Gdx.graphics.getWidth(), 0, maxPos, false);
+
+		heightAvailable *= maxPos.y - minPos.y;
+		heightAvailable *= 0.5f;
+		float width = maxPos.x - minPos.x;
+
+		mShapeRenderer.setColor(Config.Editor.Level.ABOVE_BELOW_COLOR);
+
+
+		// Draw borders
+		// Upper
+		mShapeRenderer.rect(minPos.x, minPos.y, width, heightAvailable);
+		// Lower
+		mShapeRenderer.rect(minPos.x, maxPos.y - heightAvailable, width, heightAvailable);
 	}
 
 	/**

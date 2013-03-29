@@ -27,7 +27,7 @@ import com.spiddekauga.voider.game.actors.EnemyActor;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourceCorner.PolygonComplexException;
 import com.spiddekauga.voider.resources.IResourceCorner.PolygonCornerTooCloseException;
-import com.spiddekauga.voider.utils.Vector2Pool;
+import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Creates, destroys paths
@@ -302,10 +302,10 @@ public class PathTool extends TouchTool implements ISelectTool {
 		case ADD_CORNER:
 			if (mCornerIndexCurrent != -1) {
 				try {
-					Vector2 newCornerPos = Vector2Pool.obtain();
+					Vector2 newCornerPos = Pools.vector2.obtain();
 					newCornerPos.set(mTouchCurrent);
 					mSelectedPath.moveCorner(mCornerIndexCurrent, newCornerPos);
-					Vector2Pool.free(newCornerPos);
+					Pools.vector2.free(newCornerPos);
 				} catch (Exception e) {
 					// Does nothing
 				}
@@ -317,7 +317,7 @@ public class PathTool extends TouchTool implements ISelectTool {
 			if (mSelectedPath != null) {
 				Vector2 newPosition = getNewMovePosition();
 				mSelectedPath.setPosition(newPosition);
-				Vector2Pool.free(newPosition);
+				Pools.vector2.free(newPosition);
 			}
 			break;
 
@@ -341,7 +341,7 @@ public class PathTool extends TouchTool implements ISelectTool {
 				// Move corner
 				else {
 					// Reset to original position
-					Vector2 newPos = Vector2Pool.obtain();
+					Vector2 newPos = Pools.vector2.obtain();
 
 					newPos.set(mSelectedPath.getCornerPosition(mCornerIndexCurrent));
 					try {
@@ -351,7 +351,7 @@ public class PathTool extends TouchTool implements ISelectTool {
 						// Does nothing
 					}
 
-					Vector2Pool.free(newPos);
+					Pools.vector2.free(newPos);
 				}
 			}
 
@@ -369,7 +369,7 @@ public class PathTool extends TouchTool implements ISelectTool {
 
 				Vector2 newPos = getNewMovePosition();
 				mInvoker.execute(new CResourceMove(mSelectedPath, newPos, mLevelEditor), mChangedSelectedSinceUp);
-				Vector2Pool.free(newPos);
+				Pools.vector2.free(newPos);
 			}
 			break;
 
@@ -408,7 +408,7 @@ public class PathTool extends TouchTool implements ISelectTool {
 	 * Creates a temporary corner for the path
 	 */
 	private void createTempCorner() {
-		Vector2 localPos = Vector2Pool.obtain();
+		Vector2 localPos = Pools.vector2.obtain();
 
 		localPos.set(mTouchOrigin);
 
@@ -423,7 +423,7 @@ public class PathTool extends TouchTool implements ISelectTool {
 			/** @TODO print error message on screen */
 		}
 
-		Vector2Pool.free(localPos);
+		Pools.vector2.free(localPos);
 	}
 
 	/**
@@ -445,7 +445,7 @@ public class PathTool extends TouchTool implements ISelectTool {
 	 * using Pools.free(newPos).
 	 */
 	private Vector2 getNewMovePosition() {
-		Vector2 newPosition = Vector2Pool.obtain();
+		Vector2 newPosition = Pools.vector2.obtain();
 		newPosition.set(mTouchCurrent).sub(mTouchOrigin);
 		newPosition.add(mDragOrigin);
 

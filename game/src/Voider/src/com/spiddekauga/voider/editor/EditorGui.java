@@ -49,7 +49,6 @@ public abstract class EditorGui extends Gui {
 				if (editor.isUnsaved()) {
 					Button yes = new TextButton("Save first", textStyle);
 					Button no = new TextButton("Discard current", textStyle);
-					Button cancel = new TextButton("Cancel", textStyle);
 
 					Command save = new CEditorSave(editor);
 					Command newCommand = new CEditorNew(editor);
@@ -62,9 +61,7 @@ public abstract class EditorGui extends Gui {
 					msgBox.content(Messages.getUnsavedMessage(defTypeName, UnsavedActions.NEW));
 					msgBox.button(yes, saveAndNew);
 					msgBox.button(no, newCommand);
-					msgBox.button(cancel);
-					msgBox.key(Keys.BACK, null);
-					msgBox.key(Keys.ESCAPE, null);
+					msgBox.addCancelButtonAndKeys();
 					showMsgBox(msgBox);
 				} else {
 					editor.newDef();
@@ -93,7 +90,6 @@ public abstract class EditorGui extends Gui {
 				if (editor.isUnsaved()) {
 					Button yes = new TextButton("Save first", textStyle);
 					Button no = new TextButton("Load anyway", textStyle);
-					Button cancel = new TextButton("Cancel", textStyle);
 
 					CommandSequence saveAndLoad = new CommandSequence(new CEditorSave(editor), new CEditorLoad(editor));
 
@@ -104,9 +100,7 @@ public abstract class EditorGui extends Gui {
 					msgBox.content(Messages.getUnsavedMessage(defTypeName, UnsavedActions.LOAD));
 					msgBox.button(yes, saveAndLoad);
 					msgBox.button(no, new CEditorLoad(editor));
-					msgBox.button(cancel);
-					msgBox.key(Keys.BACK, null);
-					msgBox.key(Keys.ESCAPE, null);
+					msgBox.addCancelButtonAndKeys();
 					showMsgBox(msgBox);
 				} else {
 					editor.loadDef();
@@ -124,7 +118,6 @@ public abstract class EditorGui extends Gui {
 				if (editor.isUnsaved()) {
 					Button yes = new TextButton("Save first", textStyle);
 					Button no = new TextButton("Duplicate anyway", textStyle);
-					Button cancel = new TextButton("Cancel", textStyle);
 
 					CommandSequence saveAndDuplicate = new CommandSequence(new CEditorSave(editor), new CEditorDuplicate(editor));
 
@@ -135,9 +128,7 @@ public abstract class EditorGui extends Gui {
 					msgBox.content(Messages.getUnsavedMessage(defTypeName, UnsavedActions.DUPLICATE));
 					msgBox.button(yes, saveAndDuplicate);
 					msgBox.button(no, new CEditorDuplicate(editor));
-					msgBox.button(cancel);
-					msgBox.key(Keys.BACK, null);
-					msgBox.key(Keys.ESCAPE, null);
+					msgBox.addCancelButtonAndKeys();
 					showMsgBox(msgBox);
 				} else {
 					editor.duplicateDef();

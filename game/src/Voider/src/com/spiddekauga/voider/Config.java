@@ -2,15 +2,19 @@ package com.spiddekauga.voider;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import javax.crypto.spec.SecretKeySpec;
 
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.Shape;
 import com.spiddekauga.voider.game.actors.ActorFilterCategories;
 import com.spiddekauga.voider.game.actors.ActorShapeTypes;
+import com.spiddekauga.voider.utils.Geometry;
 
 /**
  * Game configuration
@@ -78,6 +82,9 @@ public class Config {
 			/** Default size of terrain circle */
 			public final static float DEFAULT_CIRCLE_RADIUS = 2.0f;
 		}
+
+		/** Border width of all actors */
+		public final static float BORDER_WIDTH = 0.5f;
 	}
 
 
@@ -145,7 +152,12 @@ public class Config {
 			PICKING_CIRCLE_SHAPE.setRadius(PICKING_CIRCLE_RADIUS);
 			PICKING_CIRCLE_FIXTURE = new FixtureDef();
 			PICKING_CIRCLE_FIXTURE.filter.categoryBits = ActorFilterCategories.NONE;
+			PICKING_CIRCLE_FIXTURE.filter.maskBits = ActorFilterCategories.NONE;
 			PICKING_CIRCLE_FIXTURE.shape = PICKING_CIRCLE_SHAPE;
+			PICKING_VERTICES = Geometry.createCircle(PICKING_CIRCLE_RADIUS);
+			//			ArrayList<Vector2> circles = Geometry.createCircle(PICKING_CIRCLE_RADIUS);
+			//			EarClippingTriangulator earClippingTriangulator = new EarClippingTriangulator();
+			//			PICKING_VERTICES = earClippingTriangulator.computeTriangles(circles);
 		}
 
 		/**
@@ -198,7 +210,7 @@ public class Config {
 				/** Step size for radius */
 				public final static float RADIUS_STEP_SIZE = 0.1f;
 				/** Minimum width/height for the enemy (when it's a rectangle/triangle */
-				public final static float SIZE_MIN = RADIUS_MIN * 2;
+				public final static float SIZE_MIN = 0.1f;
 				/** Maximum width/height for the enemy (when it's a rectangle/triangle */
 				public final static float SIZE_MAX = RADIUS_MAX * 2;
 				/** Default width/height for the enemy (when it's a rectangle/triangle */
@@ -206,7 +218,7 @@ public class Config {
 				/** Step size for the enemy width/height */
 				public final static float SIZE_STEP_SIZE = RADIUS_STEP_SIZE;
 				/** Default shape type of the enemy */
-				public final static ActorShapeTypes SHAPE_DEFAULT = ActorShapeTypes.LINE;
+				public final static ActorShapeTypes SHAPE_DEFAULT = ActorShapeTypes.RECTANGLE;
 			}
 		}
 
@@ -351,6 +363,30 @@ public class Config {
 				public final static float TRIGGER_DEACTIVATE_DELAY_STEP_SIZE = 1;
 			}
 
+			/**
+			 * Path options
+			 */
+			public static class Path {
+				/** Width of displayed path for enemies */
+				public final static float WIDTH = 0.5f;
+				/** Start color of the path */
+				public final static Color START_COLOR = new Color(0, 0.6f, 0, 1);
+				/** End color of the path */
+				public final static Color END_COLOR = new Color(0.6f, 0, 0, 1);
+			}
+
+			/**
+			 * Trigger options
+			 */
+			public static class Trigger {
+				/** Color of the trigger */
+				public final static Color COLOR = new Color(0, 0, 0.6f, 1);
+				/** Width of screen at */
+				public final static float SCREEN_AT_WIDTH = 0.2f;
+				/** Width of trigger on enemies */
+				public final static float ENEMY_WIDTH = 0.4f;
+			}
+
 			/** Enemy snap distance to a path */
 			public final static float ENEMY_SNAP_PATH_DISTANCE = 2;
 			/** Enemy snap distance squared */
@@ -367,6 +403,9 @@ public class Config {
 			public final static float LEVEL_SPEED_DEFAULT = 5;
 			/** Step size of level speeed */
 			public final static float LEVEL_SPEED_STEP_SIZE = 1;
+			/** Color of above and below the actual level, so the player can see
+			 * that this doesn't below to the level. */
+			public final static Color ABOVE_BELOW_COLOR = new Color(1, 1, 1, 0.1f);
 		}
 
 		/**
@@ -407,26 +446,33 @@ public class Config {
 		public final static float TEXT_FIELD_NUMBER_WIDTH = 70;
 		/** Label padding in front of a slider */
 		public final static float LABEL_PADDING_BEFORE_SLIDER = 8;
-
-		/** Radius of all picking circles */
-		private final static float PICKING_CIRCLE_RADIUS = 1.0f;
-		/** Picking shape */
-		private static Shape PICKING_CIRCLE_SHAPE = null;
-		/** Picking fixture */
-		private static FixtureDef PICKING_CIRCLE_FIXTURE = null;
-		/** Default pick size */
-		public final static float PICK_SIZE_DEFAULT = 0.0001f;
-		/** Path pick size */
-		public final static float PICK_PATH_SIZE = 0.5f;
-		/** Trigger pick size */
-		public final static float PICK_TRIGGER_SIZE = PICK_PATH_SIZE;
-
 		/** Maximum name length */
 		public final static int NAME_LENGTH_MAX = 16;
 		/** Maximum length of description */
 		public final static int DESCRIPTION_LENGTH_MAX = 256;
 		/** Maximum length of story  */
 		public final static int STORY_LENGTH_MAX = 512;
+
+		/** Corner pick color */
+		public final static Color CORNER_COLOR = new Color(0.75f, 0, 0, 1);
+		/** Center offset pick color */
+		public final static Color CENTER_OFFSET_COLOR = new Color(0, 0.75f, 0, 1);
+		/** Selected color overlay */
+		public final static Color SELECTED_COLOR = new Color(1, 1, 1, 0.45f);
+		/** Default pick size */
+		public final static float PICK_SIZE_DEFAULT = 0.0001f;
+		/** Path pick size */
+		public final static float PICK_PATH_SIZE = 0.5f;
+		/** Trigger pick size */
+		public final static float PICK_TRIGGER_SIZE = PICK_PATH_SIZE;
+		/** Radius of all picking circles */
+		private final static float PICKING_CIRCLE_RADIUS = 2.0f;
+		/** Picking shape */
+		private static Shape PICKING_CIRCLE_SHAPE = null;
+		/** Picking fixture */
+		private static FixtureDef PICKING_CIRCLE_FIXTURE = null;
+		/** Picking vertices */
+		public static ArrayList<Vector2> PICKING_VERTICES = null;
 	}
 
 	/**
@@ -462,6 +508,8 @@ public class Config {
 	public static class Graphics {
 		/** If we shall use debug_renderer to display graphics instead of sprites (where applicable) */
 		public final static boolean USE_DEBUG_RENDERER = true;
+		/** Renders regular graphics */
+		public final static boolean USE_RELEASE_RENDERER = true;
 		/** Minimum length between two corners in a polygon */
 		public final static float EDGE_LENGTH_MIN = 1.19209289550781250000e-7F * 1.19209289550781250000e-7F;
 		/** Default width of the graphics */
@@ -470,6 +518,13 @@ public class Config {
 		public final static float HEIGHT = 480;
 		/** World scaling factor */
 		public final static float WORLD_SCALE = 0.1f;
+		/** How much bigger of the screen is shown in height from
+		 * the regular scale. E.g. 3 will show the same amount of free
+		 * space above and below the level */
+		public final static float LEVEL_EDITOR_HEIGHT_SCALE = 2;
+		/** Level editor scale, this allows the player to see above and below
+		 * the level */
+		public final static float LEVEL_EDITOR_SCALE = WORLD_SCALE * LEVEL_EDITOR_HEIGHT_SCALE;
 	}
 
 	/**

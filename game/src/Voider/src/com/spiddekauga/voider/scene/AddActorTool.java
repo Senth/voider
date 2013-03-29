@@ -1,8 +1,5 @@
 package com.spiddekauga.voider.scene;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
@@ -15,14 +12,14 @@ import com.spiddekauga.voider.editor.commands.CResourceRemove;
 import com.spiddekauga.voider.editor.commands.CResourceSelect;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.resources.IResource;
-import com.spiddekauga.voider.utils.Vector2Pool;
+import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Tool for adding and removing actors
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class AddActorTool extends ActorTool implements ISelectTool {
+public class AddActorTool extends ActorTool {
 	/**
 	 * Creates an add actor tool for the specified type of actor.
 	 * You still need to set an actor definition via {@link #setNewActorDef(com.spiddekauga.voider.game.actors.ActorDef)}
@@ -61,61 +58,12 @@ public class AddActorTool extends ActorTool implements ISelectTool {
 		return mState;
 	}
 
-	@Override
-	public void addListener(ISelectListener listener) {
-		mSelectListeners.add(listener);
-	}
-
-	@Override
-	public void addListeners(List<ISelectListener> listeners) {
-		mSelectListeners.addAll(listeners);
-	}
-
-	@Override
-	public void removeListener(ISelectListener listener) {
-		mSelectListeners.remove(listener);
-	}
-
-	@Override
-	public void removeListeners(List<ISelectListener> listeners) {
-		mSelectListeners.removeAll(listeners);
-	}
 
 	@Override
 	public void setSelectedResource(IResource selectedResource) {
-		deactivate();
-
-		Actor oldSelected = mSelectedActor;
-		mSelectedActor = (Actor) selectedResource;
-
-		for (ISelectListener selectListener : mSelectListeners) {
-			selectListener.onResourceSelected(oldSelected, mSelectedActor);
-		}
+		super.setSelectedResource(selectedResource);
 
 		mSelectedSinceUp = true;
-
-		activate();
-	}
-
-	/**
-	 * Deactivates the tool, i.e. it will make any selected actor unselected
-	 */
-	@Override
-	public void deactivate() {
-		/** @todo set actor as deselected, will draw differently */
-	}
-
-	/**
-	 * Activates the tool i.e. it will make any selected actor selected
-	 */
-	@Override
-	public void activate() {
-		/** @todo set actor as selected, will draw differently */
-	}
-
-	@Override
-	public Actor getSelectedResource() {
-		return mSelectedActor;
 	}
 
 	/**
@@ -204,7 +152,7 @@ public class AddActorTool extends ActorTool implements ISelectTool {
 			if (mMovingActor != null) {
 				Vector2 newPosition = getNewMovePosition();
 				mMovingActor.setPosition(newPosition);
-				Vector2Pool.free(newPosition);
+				Pools.vector2.free(newPosition);
 			}
 			break;
 
@@ -233,7 +181,7 @@ public class AddActorTool extends ActorTool implements ISelectTool {
 				// Set new position through command
 				Vector2 newPosition = getNewMovePosition();
 				mInvoker.execute(new CResourceMove(mMovingActor, newPosition, mEditor), chained);
-				Vector2Pool.free(newPosition);
+				Pools.vector2.free(newPosition);
 				mMovingActor = null;
 			}
 			break;
@@ -253,7 +201,7 @@ public class AddActorTool extends ActorTool implements ISelectTool {
 	 */
 	protected Vector2 getNewMovePosition() {
 		// Get diff movement
-		Vector2 newPosition = Vector2Pool.obtain();
+		Vector2 newPosition = Pools.vector2.obtain();
 		newPosition.set(mTouchCurrent).sub(mTouchOrigin);
 
 		// Add original position
@@ -294,11 +242,8 @@ public class AddActorTool extends ActorTool implements ISelectTool {
 	protected boolean mAddMoveSelects;
 	/** If another actor has been selected since up was called. */
 	protected boolean mSelectedSinceUp = false;
-	/** Selected actor */
-	protected Actor mSelectedActor = null;
 	/** Current state of the tool */
 	protected States mState = States.ADD;
 
-	/** Select listeners */
-	private ArrayList<ISelectListener> mSelectListeners = new ArrayList<ISelectListener>();
+
 }

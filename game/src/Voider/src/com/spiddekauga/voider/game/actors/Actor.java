@@ -5,8 +5,7 @@ import java.util.Iterator;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -17,9 +16,10 @@ import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.OrderedMap;
 import com.badlogic.gdx.utils.Pool.Poolable;
-import com.badlogic.gdx.utils.Pools;
 import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.utils.Json;
+import com.spiddekauga.utils.ShapeRendererEx;
+import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Editor;
 import com.spiddekauga.voider.editor.HitWrapper;
@@ -31,21 +31,24 @@ import com.spiddekauga.voider.game.triggers.TriggerInfo;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourceBody;
 import com.spiddekauga.voider.resources.IResourceChangeListener.EventTypes;
+import com.spiddekauga.voider.resources.IResourceEditorRender;
 import com.spiddekauga.voider.resources.IResourceEditorUpdate;
 import com.spiddekauga.voider.resources.IResourcePosition;
+import com.spiddekauga.voider.resources.IResourceRender;
 import com.spiddekauga.voider.resources.IResourceUpdate;
 import com.spiddekauga.voider.resources.Resource;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.UndefinedResourceTypeException;
 import com.spiddekauga.voider.scene.SceneSwitcher;
-import com.spiddekauga.voider.utils.Vector2Pool;
+import com.spiddekauga.voider.utils.Geometry;
+import com.spiddekauga.voider.utils.Pools;
 
 /**
  * The abstract base class for all actors
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public abstract class Actor extends Resource implements IResourceUpdate, Json.Serializable, Disposable, Poolable, IResourceBody, IResourcePosition, ITriggerListener, IResourceEditorUpdate {
+public abstract class Actor extends Resource implements IResourceUpdate, Json.Serializable, Disposable, Poolable, IResourceBody, IResourcePosition, ITriggerListener, IResourceEditorUpdate, IResourceRender, IResourceEditorRender {
 	/**
 	 * Sets the texture of the actor including the actor definition.
 	 * Automatically creates a body for the actor.
@@ -67,8 +70,19 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 			// Update position
 			if (mBody != null) {
 				mPosition.set(mBody.getPosition());
+				calculateRotatedVertices();
 
-				editorUpdate();
+				// Rotation
+				if (!mSkipRotate && mDef.getBodyDef().angularVelocity != 0 && mDef.getCenterOffset() != NO_OFFSET) {
+					float newAngle = mBody.getAngle();
+					newAngle += mDef.getBodyDef().angularVelocity * deltaTime;
+					if (newAngle >= MathUtils.PI2) {
+						newAngle -= MathUtils.PI2;
+					} else if (newAngle <= -MathUtils.PI2) {
+						newAngle += MathUtils.PI2;
+					}
+					mBody.setTransform(mPosition, newAngle);
+				}
 			}
 
 			// Decrease life if colliding with something...
@@ -81,12 +95,14 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	}
 
 	/**
-	 * Updates the actor's body positio, fixture sizes, fixture shapes etc. if they
+	 * Updates the actor's body position, fixture sizes, fixture shapes etc. if they
 	 * have been changed since the actor was created.
 	 */
 	@Override
-	public void editorUpdate() {
+	public void updateEditor() {
 		if (mEditorActive && mBody != null) {
+			calculateRotatedVertices();
+
 			// Do we need to reload the body?
 			if (mBodyUpdateTime <= getDef().getBodyChangeTime()) {
 				reloadBody();
@@ -94,6 +110,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 			// Do we need to reload the fixtures?
 			else if (mFixtureCreateTime <= getDef().getFixtureChangeTime()) {
 				reloadFixtures();
+				calculateRotatedVertices(true);
 			}
 		}
 	}
@@ -246,30 +263,111 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 			mLife = mDef.getMaxLife();
 
 			if (mBody != null) {
-				for (FixtureDef fixtureDef : mDef.getFixtureDefs()) {
-					mBody.createFixture(fixtureDef);
-				}
+				createFixtures();
+				calculateRotatedVertices(true);
 			}
 		}
 	}
 
 	/**
 	 * Renders the actor
-	 * @param spriteBatch the current sprite batch for the scene
+	 * @param shapeRenderer the current sprite batch for the scene
 	 */
-	@SuppressWarnings("unused")
-	public void render(SpriteBatch spriteBatch) {
-		if (mSprite != null && !Config.Graphics.USE_DEBUG_RENDERER) {
-			mSprite.draw(spriteBatch);
+	@Override
+	public void render(ShapeRendererEx shapeRenderer) {
+		if (mRotatedVertices == null) {
+			return;
 		}
+
+		Vector2 offsetPosition = Pools.vector2.obtain();
+		offsetPosition.set(mPosition);
+
+		if (mDef.getShapeType() == ActorShapeTypes.CUSTOM && mDef.getCornerCount() >= 1 && mDef.getCornerCount() <= 2) {
+			offsetPosition.add(mDef.getCorners().get(0));
+		}
+
+		// Shape
+		shapeRenderer.setColor(mDef.getColor());
+		shapeRenderer.triangles(mRotatedVertices, offsetPosition);
+
+		// Border
+		shapeRenderer.setColor(mDef.getBorderColor());
+		shapeRenderer.triangles(mRotatedBorderVertices, offsetPosition);
+
+		Pools.vector2.free(offsetPosition);
 	}
 
 	/**
 	 * Renders additional information when using an editor
-	 * @param spriteBatch the current sprite batch for the scene
+	 * @param shapeRenderer the current sprite batch for the scene
 	 */
-	public void renderEditor(SpriteBatch spriteBatch) {
-		// Does nothing
+	@Override
+	public void renderEditor(ShapeRendererEx shapeRenderer) {
+		if (mRotatedVertices == null) {
+			return;
+		}
+
+		Vector2 offsetPosition = Pools.vector2.obtain();
+		offsetPosition.set(mPosition);
+
+
+		// Draw selected overlay
+		if (mSelected) {
+			if (mDef.getShapeType() == ActorShapeTypes.CUSTOM && mDef.getCornerCount() >= 1 && mDef.getCornerCount() <= 2) {
+				offsetPosition.add(mDef.getCorners().get(0));
+			}
+
+			// Draw selected overlay
+			shapeRenderer.setColor(Config.Editor.SELECTED_COLOR);
+			shapeRenderer.triangles(mRotatedVertices, offsetPosition);
+
+			if (mDef.getShapeType() == ActorShapeTypes.CUSTOM && mDef.getCornerCount() >= 1 && mDef.getCornerCount() <= 2) {
+				offsetPosition.sub(mDef.getCorners().get(0));
+			}
+		}
+
+
+		// Draw corners?
+		if (mHasBodyCorners) {
+			ShapeType oldShapeType = shapeRenderer.getCurrentType();
+			if (oldShapeType != ShapeType.Line) {
+				shapeRenderer.end();
+				shapeRenderer.begin(ShapeType.Line);
+			}
+
+			shapeRenderer.setColor(Config.Editor.CORNER_COLOR);
+			Vector2 cornerOffset = Pools.vector2.obtain();
+			for (Vector2 corner : mDef.getCorners()) {
+				cornerOffset.set(offsetPosition).add(corner).add(mDef.getCenterOffset());
+				shapeRenderer.polyline(Config.Editor.PICKING_VERTICES, true, cornerOffset);
+			}
+			Pools.vector2.free(cornerOffset);
+
+			if (oldShapeType != ShapeType.Line) {
+				shapeRenderer.end();
+				shapeRenderer.begin(oldShapeType);
+			}
+		}
+
+
+		// Draw center body?
+		if (mHasBodyCenter) {
+			ShapeType oldShapeType = shapeRenderer.getCurrentType();
+			if (oldShapeType != ShapeType.Line) {
+				shapeRenderer.end();
+				shapeRenderer.begin(ShapeType.Line);
+			}
+
+			shapeRenderer.setColor(Config.Editor.CENTER_OFFSET_COLOR);
+			shapeRenderer.polyline(Config.Editor.PICKING_VERTICES, true, offsetPosition);
+
+			if (oldShapeType != ShapeType.Line) {
+				shapeRenderer.end();
+				shapeRenderer.begin(oldShapeType);
+			}
+		}
+
+		Pools.vector2.free(offsetPosition);
 	}
 
 	/**
@@ -296,6 +394,14 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	 */
 	public float getLife() {
 		return mLife;
+	}
+
+	/**
+	 * Decrease the actor's life with the specified amount
+	 * @param amount the amount to to decrease the actor's life with
+	 */
+	public void decreaseLife(float amount) {
+		mLife -= amount;
 	}
 
 	@Override
@@ -481,17 +587,14 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	 */
 	public void createBody(BodyDef bodyDef) {
 		if (mWorld != null && mBody == null) {
-			if (mSkipRotate) {
+			if (mSkipRotate || mDef.getCenterOffset() != NO_OFFSET) {
 				bodyDef.angularVelocity = 0;
 				bodyDef.angle = 0;
+			} else {
+				bodyDef.fixedRotation = true;
 			}
 			mBody = mWorld.createBody(bodyDef);
-			for (FixtureDef fixtureDef : mDef.getFixtureDefs()) {
-				if (fixtureDef != null && fixtureDef.shape != null) {
-					setFilterCollisionData(fixtureDef);
-					mBody.createFixture(fixtureDef);
-				}
-			}
+			createFixtures();
 			mBody.setUserData(this);
 
 			mFixtureCreateTime = GameTime.getTotalGlobalTimeElapsed();
@@ -513,9 +616,9 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	 */
 	@Override
 	public void dispose() {
-		if (mBody != null) {
-			destroyBody();
-		}
+		mActive = false;
+
+		reset();
 	}
 
 	@Override
@@ -527,6 +630,15 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 		mDef = null;
 		mPosition.set(0,0);
 		mCollidingActors.clear();
+
+		if (mRotatedVertices != null) {
+			Pools.vector2.freeDuplicates(mRotatedVertices);
+			Pools.arrayList.free(mRotatedVertices);
+			Pools.vector2.freeDuplicates(mRotatedBorderVertices);
+			Pools.arrayList.free(mRotatedBorderVertices);
+			mRotatedBorderVertices = null;
+			mRotatedVertices = null;
+		}
 	}
 
 	/**
@@ -624,12 +736,12 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	public void createBodyCorners() {
 		if (mDef.getShapeType() == ActorShapeTypes.CUSTOM && mEditorActive) {
 			mHasBodyCorners = true;
-			Vector2 worldPos = Vector2Pool.obtain();
+			Vector2 worldPos = Pools.vector2.obtain();
 			for (Vector2 localPos : mDef.getCorners()) {
 				worldPos.set(localPos).add(mPosition).add(getDef().getCenterOffset());
 				createBodyCorner(worldPos);
 			}
-			Vector2Pool.free(worldPos);
+			Pools.vector2.free(worldPos);
 		}
 	}
 
@@ -668,10 +780,19 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	}
 
 	/**
-	 * Kills the actor. #isDead() will now return true
+	 * Sets if the actor is currently selected. This will make it draw differently
+	 * when in the editor.
+	 * @param selected true if the actor is selected
 	 */
-	public void kill() {
-		mDead = true;
+	public void setSelected(boolean selected) {
+		mSelected = selected;
+	}
+
+	/**
+	 * @return true if the actor is currently selected
+	 */
+	public boolean isSelected() {
+		return mSelected;
 	}
 
 	/**
@@ -680,13 +801,6 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	 */
 	public float getActivationTime() {
 		return mActivationTime;
-	}
-
-	/**
-	 * @return true if the actor is dead (i.e. has been destroyed)
-	 */
-	public boolean isDead() {
-		return mDead;
 	}
 
 	/**
@@ -774,6 +888,98 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	protected abstract short getFilterCollidingCategories();
 
 	/**
+	 * @return rotated vertices for this actor
+	 */
+	protected ArrayList<Vector2> getRotatedVertices() {
+		return mRotatedVertices;
+	}
+
+	/**
+	 * @return rotated border vertices
+	 */
+	protected ArrayList<Vector2> getRotatedBorderVertices() {
+		return mRotatedBorderVertices;
+	}
+
+	/**
+	 * Calculates the rotated vertices (both regular and border)
+	 * @param forceRecalculation this forces recalculation
+	 */
+	protected void calculateRotatedVertices(boolean forceRecalculation) {
+		// Update vertices
+		if (mRotationPrevious != getBody().getAngle() || mRotatedVertices == null || forceRecalculation) {
+			mRotationPrevious = getBody().getAngle();
+
+			if (mRotatedVertices != null) {
+				Pools.vector2.freeDuplicates(mRotatedVertices);
+				Pools.arrayList.free(mRotatedVertices);
+				Pools.vector2.freeDuplicates(mRotatedBorderVertices);
+				Pools.arrayList.free(mRotatedBorderVertices);
+			}
+
+			float rotation = MathUtils.radiansToDegrees * getBody().getAngle();
+
+			mRotatedVertices = copyVectorArray(mDef.getTriangleVertices());
+			if (mRotatedVertices != null) {
+				Geometry.moveVertices(mRotatedVertices, getDef().getCenterOffset(), true);
+				Geometry.rotateVertices(mRotatedVertices, rotation, true);
+			}
+
+			mRotatedBorderVertices = copyVectorArray(mDef.getTriangleBorderVertices());
+			if (mRotatedBorderVertices != null) {
+				Geometry.moveVertices(mRotatedBorderVertices, getDef().getCenterOffset(), true);
+				Geometry.rotateVertices(mRotatedBorderVertices, rotation, true);
+			}
+		}
+	}
+
+	/**
+	 * Calculates the rotated vertices (both regular and border). Calls
+	 * {@link #calculateRotatedVertices(boolean)} with false.
+	 */
+	protected void calculateRotatedVertices() {
+		calculateRotatedVertices(false);
+	}
+
+	/**
+	 * Creates a copy of the specified vector2 array
+	 * @param array the array to make a copy of
+	 * @return copied array, null if parameter array is null.
+	 */
+	protected static ArrayList<Vector2> copyVectorArray(ArrayList<Vector2> array) {
+		if (array == null) {
+			return null;
+		}
+
+		@SuppressWarnings("unchecked")
+		ArrayList<Vector2> verticesCopy = Pools.arrayList.obtain();
+		verticesCopy.clear();
+
+		for (Vector2 vertex : array) {
+			int foundIndex = com.spiddekauga.utils.Collections.linearSearch(verticesCopy, vertex);
+			if (foundIndex != -1) {
+				verticesCopy.add(verticesCopy.get(foundIndex));
+			} else {
+				verticesCopy.add(Pools.vector2.obtain().set(vertex));
+			}
+		}
+
+		return verticesCopy;
+	}
+
+	/**
+	 * Create the fixtures for the actor
+	 */
+	protected void createFixtures() {
+		for (FixtureDef fixtureDef : mDef.getFixtureDefs()) {
+			if (fixtureDef != null && fixtureDef.shape != null) {
+				setFilterCollisionData(fixtureDef);
+				mBody.createFixture(fixtureDef);
+			}
+		}
+	}
+
+	/**
 	 * Sets the filter information based on derived information
 	 * @param fixtureDef the fixture def to set the collision data for
 	 */
@@ -818,12 +1024,10 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 
 	/** Physical body */
 	private Body mBody = null;
-	/** Sprite, i.e. the graphical representation */
-	private Sprite mSprite = null;
 	/** The belonging definition of this actor */
 	private ActorDef mDef = null;
 	/** Body position, remember even when we don't have a body */
-	private Vector2 mPosition = Pools.obtain(Vector2.class).set(0, 0);
+	private Vector2 mPosition = Pools.vector2.obtain().set(0, 0);
 	/** Current actors we're colliding with */
 	private ArrayList<ActorDef> mCollidingActors = new ArrayList<ActorDef>();
 	/** World corners of the actor, only used for custom shape and in an editor */
@@ -840,14 +1044,20 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	private boolean mHasBodyCorners = false;
 	/** True if the actor shall skip rotating */
 	private boolean mSkipRotate = false;
-	/** True if the actor is dead, i.e. it shall be removed */
-	private boolean mDead = false;
 	/** True if the actor is active */
 	private boolean mActive = true;
 	/** Activation time of the actor, local time for the scene */
 	private float mActivationTime = mActive ? 0 : -1;
 	/** Trigger informations */
 	private ArrayList<TriggerInfo> mTriggerInfos = new ArrayList<TriggerInfo>();
+	/** True if the actor is selected, only applicable in editor */
+	private boolean mSelected = false;
+	/** Old rotation */
+	private float mRotationPrevious = 0;
+	/** Rotated vertices of the actor */
+	private ArrayList<Vector2> mRotatedVertices = null;
+	/** Rotated border vertices */
+	private ArrayList<Vector2> mRotatedBorderVertices = null;
 
 	/** The world used for creating bodies */
 	protected static World mWorld = null;
@@ -857,4 +1067,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	protected static PlayerActor mPlayerActor = null;
 	/** Current level speed */
 	protected static float mLevelSpeed = 0;
+
+	/** No offset */
+	private final static Vector2 NO_OFFSET = new Vector2();
 }

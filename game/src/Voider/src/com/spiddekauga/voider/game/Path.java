@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -15,15 +14,18 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.OrderedMap;
 import com.spiddekauga.utils.Json;
+import com.spiddekauga.utils.ShapeRendererEx;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.editor.HitWrapper;
 import com.spiddekauga.voider.game.actors.ActorFilterCategories;
 import com.spiddekauga.voider.game.actors.EnemyActor;
 import com.spiddekauga.voider.resources.IResourceBody;
 import com.spiddekauga.voider.resources.IResourceCorner;
+import com.spiddekauga.voider.resources.IResourceEditorRender;
 import com.spiddekauga.voider.resources.IResourcePosition;
 import com.spiddekauga.voider.resources.Resource;
-import com.spiddekauga.voider.utils.Vector2Pool;
+import com.spiddekauga.voider.utils.Geometry;
+import com.spiddekauga.voider.utils.Pools;
 
 
 /**
@@ -31,7 +33,7 @@ import com.spiddekauga.voider.utils.Vector2Pool;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class Path extends Resource implements Json.Serializable, Disposable, IResourceCorner, IResourceBody, IResourcePosition {
+public class Path extends Resource implements Json.Serializable, Disposable, IResourceCorner, IResourceBody, IResourcePosition, IResourceEditorRender {
 	/**
 	 * Default constructor, sets the unique id of the path
 	 */
@@ -46,7 +48,7 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 
 	@Override
 	public void addCorner(Vector2 corner, int index) throws PolygonComplexException, PolygonCornerTooCloseException {
-		mCorners.add(index, corner.cpy());
+		mCorners.add(index, Pools.vector2.obtain().set(corner));
 
 		if (mWorld != null) {
 			createFixture();
@@ -60,6 +62,8 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 		if (index == 0) {
 			updateEnemyPositions();
 		}
+
+		createVertices();
 	}
 
 	/**
@@ -82,7 +86,9 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 
 		updateEnemyPositions();
 
-		Vector2Pool.free(diff);
+		createVertices();
+
+		Pools.vector2.free(diff);
 	}
 
 	/**
@@ -93,7 +99,7 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 	 */
 	@Override
 	public Vector2 getPosition() {
-		Vector2 center = Vector2Pool.obtain();
+		Vector2 center = Pools.vector2.obtain();
 		center.set(0, 0);
 
 		for (Vector2 corner : mCorners) {
@@ -122,6 +128,8 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 			}
 		}
 
+		createVertices();
+
 		return removedCorner;
 	}
 
@@ -137,6 +145,8 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 				updateEnemyPositions();
 			}
 		}
+
+		createVertices();
 	}
 
 	@Override
@@ -197,14 +207,6 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 		return mPathType;
 	}
 
-	/**
-	 * Renders the path
-	 * @param spriteBatch the batch to use for rendering
-	 */
-	public void render(SpriteBatch spriteBatch) {
-		/** @todo render path */
-	}
-
 	@Override
 	public void createBody() {
 		if (mWorld != null) {
@@ -218,6 +220,8 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 			if (mFixtureDef != null) {
 				mBody.createFixture(mFixtureDef);
 			}
+
+			createVertices();
 		}
 	}
 
@@ -226,6 +230,8 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 		if (mBody != null) {
 			mBody.getWorld().destroyBody(mBody);
 			mBody = null;
+
+			destroyVertices();
 		}
 	}
 
@@ -269,6 +275,8 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 			destroyBody();
 			destroyBodyCorners();
 		}
+		destroyVertices();
+		Pools.vector2.freeAll(mCorners);
 	}
 
 	/**
@@ -306,6 +314,30 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 	 */
 	public boolean isSelected() {
 		return mSelected;
+	}
+
+	@Override
+	public void renderEditor(ShapeRendererEx shapeRenderer) {
+		if (mVertices != null) {
+			shapeRenderer.setColor(Config.Editor.Level.Path.START_COLOR);
+			shapeRenderer.triangles(mVertices);
+		}
+
+		if (mSelected) {
+			shapeRenderer.setColor(Config.Editor.SELECTED_COLOR);
+			shapeRenderer.triangles(mVertices);
+
+
+			// Render corners
+			if (!mBodyCorners.isEmpty()) {
+				shapeRenderer.setColor(Config.Editor.CORNER_COLOR);
+				Vector2 cornerOffset = Pools.vector2.obtain();
+				for (Vector2 corner : mCorners) {
+					cornerOffset.set(corner);
+					shapeRenderer.triangles(Config.Editor.PICKING_VERTICES, cornerOffset);
+				}
+			}
+		}
 	}
 
 	/**
@@ -383,7 +415,7 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 			Vector2[] tempArray = new Vector2[2];
 
 			for (int i = 0; i < tempArray.length; ++i) {
-				tempArray[i] = Vector2Pool.obtain();
+				tempArray[i] = Pools.vector2.obtain();
 			}
 
 			tempArray[0].set(mCorners.get(0));
@@ -393,7 +425,7 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 			mFixtureDef.shape = chainShape;
 
 			for (Vector2 tempPosition : tempArray) {
-				Vector2Pool.free(tempPosition);
+				Pools.vector2.free(tempPosition);
 			}
 		}
 	}
@@ -470,6 +502,30 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 		}
 	}
 
+	/**
+	 * Recreates the path vertices for drawing
+	 */
+	private void createVertices() {
+		// Dispose of old path
+		if (mVertices != null) {
+			destroyVertices();
+		}
+
+		mVertices = Geometry.createLinePolygon(mCorners, Config.Editor.Level.Path.WIDTH);
+	}
+
+	/**
+	 * Destroys all the vertices
+	 */
+	private void destroyVertices() {
+		if (mVertices != null) {
+			Pools.vector2.freeDuplicates(mVertices);
+			mVertices = null;
+		}
+	}
+
+	/** Path vertices for drawing in editor */
+	private ArrayList<Vector2> mVertices = null;
 	/** If this path is selected */
 	private boolean mSelected = false;
 	/** All path nodes */

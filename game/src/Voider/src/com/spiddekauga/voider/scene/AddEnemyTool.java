@@ -21,7 +21,7 @@ import com.spiddekauga.voider.game.actors.EnemyGroup;
 import com.spiddekauga.voider.game.triggers.Trigger;
 import com.spiddekauga.voider.game.triggers.TriggerAction.Actions;
 import com.spiddekauga.voider.resources.IResource;
-import com.spiddekauga.voider.utils.Vector2Pool;
+import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Tool for adding enemies. This also has the ability to create a stack
@@ -118,12 +118,12 @@ public class AddEnemyTool extends AddActorTool {
 
 	@Override
 	public void deactivate() {
-		/** @todo set triggers as deselected, will draw differently */
+		super.deactivate();
 	}
 
 	@Override
 	public void activate() {
-		/** @todo set triggers as selected, will draw differently */
+		super.activate();
 	}
 
 	@Override
@@ -190,7 +190,7 @@ public class AddEnemyTool extends AddActorTool {
 				} else {
 					Vector2 newPosition = getNewMovePosition();
 					mMovingActor.setPosition(newPosition);
-					Vector2Pool.free(newPosition);
+					Pools.vector2.free(newPosition);
 				}
 
 			}
@@ -225,7 +225,7 @@ public class AddEnemyTool extends AddActorTool {
 				} else {
 					Vector2 newPosition = getNewMovePosition();
 					mInvoker.execute(new CResourceMove(mMovingActor, newPosition, mLevelEditor), chained);
-					Vector2Pool.free(newPosition);
+					Pools.vector2.free(newPosition);
 				}
 
 				mMovingActor = null;
@@ -252,7 +252,7 @@ public class AddEnemyTool extends AddActorTool {
 		// Is the position close to a path?
 		Path closestPath = getClosestPath(snappedPosition);
 		if (closestPath != null) {
-			Vector2 diffVector = Vector2Pool.obtain();
+			Vector2 diffVector = Pools.vector2.obtain();
 			diffVector.set(snappedPosition).sub(closestPath.getCornerPosition(0));
 
 			if (diffVector.len2() <= Editor.Level.ENEMY_SNAP_PATH_DISTANCE_SQ) {
@@ -260,7 +260,7 @@ public class AddEnemyTool extends AddActorTool {
 				usesPath = true;
 			}
 
-			Vector2Pool.free(diffVector);
+			Pools.vector2.free(diffVector);
 		}
 
 		if (!usesPath) {
@@ -281,7 +281,7 @@ public class AddEnemyTool extends AddActorTool {
 			mSelectedActor.setPosition(snappedPosition);
 		}
 
-		Vector2Pool.free(snappedPosition);
+		Pools.vector2.free(snappedPosition);
 	}
 
 	/**
@@ -292,7 +292,7 @@ public class AddEnemyTool extends AddActorTool {
 	private Path getClosestPath(Vector2 position) {
 		Path closestPath = null;
 		float closestDistance = Float.POSITIVE_INFINITY;
-		Vector2 diffVector = Vector2Pool.obtain();
+		Vector2 diffVector = Pools.vector2.obtain();
 
 		for (Path path : mLevelEditor.getPaths()) {
 			if (path.getCornerCount() >= 2) {
@@ -307,7 +307,7 @@ public class AddEnemyTool extends AddActorTool {
 			}
 		}
 
-		Vector2Pool.free(diffVector);
+		Pools.vector2.free(diffVector);
 
 		return closestPath;
 	}

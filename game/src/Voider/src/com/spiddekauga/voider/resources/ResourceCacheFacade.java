@@ -11,6 +11,7 @@ import com.badlogic.gdx.assets.loaders.SkinLoader;
 import com.badlogic.gdx.assets.loaders.resolvers.ExternalFileHandleResolver;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.spiddekauga.voider.game.Level;
@@ -53,6 +54,7 @@ public class ResourceCacheFacade {
 		mAssetManager.setLoader(ThemeDef.class, new JsonLoader<ThemeDef>(new ExternalFileHandleResolver(), ThemeDef.class));
 		mAssetManager.setLoader(LevelDef.class, new JsonLoader<LevelDef>(new ExternalFileHandleResolver(), LevelDef.class));
 		mAssetManager.setLoader(Level.class, new JsonLoader<Level>(new ExternalFileHandleResolver(), Level.class));
+		mAssetManager.setLoader(ShaderProgram.class, new ShaderLoader(new InternalFileHandleResolver()));
 
 		// Existing loaders
 		mAssetManager.setLoader(Skin.class, new SkinLoader(new InternalFileHandleResolver()));

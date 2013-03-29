@@ -7,7 +7,7 @@ import com.spiddekauga.utils.Json;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.actors.BulletActor;
 import com.spiddekauga.voider.scene.SceneSwitcher;
-import com.spiddekauga.voider.utils.Vector2Pool;
+import com.spiddekauga.voider.utils.Pools;
 /**
  * Weapon that hadles the shooting and cooldown.
  * 
@@ -71,7 +71,7 @@ public class Weapon implements Disposable, Json.Serializable {
 	 */
 	public void shoot(Vector2 direction) {
 		if (getDef().getBulletActorDef() != null) {
-			BulletActor bullet = BulletPools.bullet.obtain();
+			BulletActor bullet = Pools.bullet.obtain();
 			bullet.setDef(getDef().getBulletActorDef());
 			bullet.shoot(mPosition, direction, getDef().getBulletSpeed(), getDef().getDamage(), false);
 
@@ -103,7 +103,7 @@ public class Weapon implements Disposable, Json.Serializable {
 
 	@Override
 	public void dispose() {
-		Vector2Pool.free(mPosition);
+		Pools.vector2.free(mPosition);
 	}
 
 	/**
@@ -129,5 +129,5 @@ public class Weapon implements Disposable, Json.Serializable {
 	/** Current cooldown timer */
 	private float mCooldown = 0;
 	/** Position of the weapon */
-	private Vector2 mPosition = Vector2Pool.obtain();
+	private Vector2 mPosition = Pools.vector2.obtain();
 }

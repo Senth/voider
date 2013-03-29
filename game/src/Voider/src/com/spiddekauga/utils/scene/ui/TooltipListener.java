@@ -11,10 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputEvent.Type;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
@@ -23,7 +20,7 @@ import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceNames;
 import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.scene.SceneSwitcher;
-import com.spiddekauga.voider.utils.Vector2Pool;
+import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Listens to a GUI actor to display a tooltip for it.
@@ -52,8 +49,11 @@ public class TooltipListener implements EventListener {
 
 			mWindow = new Window("", editorSkin);
 			mWindow.setModal(false);
-			mWindow.addListener(this);
+			mLabel = new Label("", editorSkin);
+			mWindow.add(mLabel);
 		}
+
+		mWindow.addListener(this);
 	}
 
 	/**
@@ -68,13 +68,13 @@ public class TooltipListener implements EventListener {
 		if (event instanceof InputEvent) {
 			// WINDOW (Hover events)
 			if (((InputEvent) event).getType() == Type.enter) {
-				if (mActor.isAscendantOf(event.getTarget())) {
+				if (!isWindowDisplayingThis() && mActor.isAscendantOf(event.getTarget())) {
 					scheduleShowWindowTask();
 					return true;
 				}
 			} else if (((InputEvent) event).getType() == Type.exit) {
 				// Only do something if the cursor is outside the actor
-				if (!isCursorInsideActor()) {
+				if (isWindowDisplayingThis() && !isCursorInsideActor()) {
 					handleHoverExit();
 					return true;
 				}
@@ -100,8 +100,8 @@ public class TooltipListener implements EventListener {
 
 			// MSG BOX (Press events)
 			else if (((InputEvent) event).getType() == Type.touchDown) {
-				// Always skip if window is shown
-				if (!isWindowShown()) {
+				// Always skip if window is shown or scheduled to be shown
+				if (!isWindowShown() && mShowWindowTask == null) {
 					scheduleShowMsgBoxTask();
 				}
 				return true;
@@ -122,6 +122,9 @@ public class TooltipListener implements EventListener {
 		if (mShowWindowTask == null) {
 			mShowWindowTask = new ShowWindowTask();
 			Timer.schedule(mShowWindowTask, Config.Gui.TOOLTIP_HOVER_SHOW);
+
+			// Remove show message box if it has been scheduled
+			cancelShowMsgBoxTask();
 		}
 	}
 
@@ -213,15 +216,16 @@ public class TooltipListener implements EventListener {
 		int cursorX = Gdx.input.getX();
 		int cursorY = Gdx.graphics.getHeight() - Gdx.input.getY();
 
-		Vector2 min = Vector2Pool.obtain();
-		min.set(mActor.getX(), mActor.getY());
+		Vector2 min = Pools.vector2.obtain().set(0, 0);
 		mActor.localToStageCoordinates(min);
 
+		int width = (int)mActor.getWidth();
+		int height = (int)mActor.getHeight();
 
-		int minX = (int) min.x;
-		int minY = (int) min.y;
-		int maxX = (int) (min.x + mActor.getWidth());
-		int maxY = (int) (min.y + mActor.getHeight());
+		int minX = (int) (min.x);
+		int minY = (int) (min.y);
+		int maxX = minX + width;
+		int maxY = minY + height;
 
 		if (cursorX <= minX || cursorX >= maxX || cursorY <= minY || cursorY >= maxY) {
 			return false;
@@ -234,16 +238,18 @@ public class TooltipListener implements EventListener {
 	 * Shows the window
 	 */
 	private void showWindow() {
-		Stage stage = SceneSwitcher.getStage();
+		Stage stage = mGui.getStage();
 		if (stage != null) {
 			stage.addActor(mWindow);
 			mWindow.clearActions();
-			mWindow.clearChildren();
 			mWindow.setTitle(mTitle);
-			mWindow.add(mMessage);
+			mLabel.setText(mMessage);
+			setWrapWidth();
 			mWindow.pack();
+
 			mWindow.addAction(Actions.fadeIn(Config.Gui.TOOLTIP_HOVER_FADE_DURATION, Interpolation.fade));
 			updateWindowPosition();
+			cancelShowMsgBoxTask();
 		} else {
 			Gdx.app.error("TooltipListener", "Stage is not when showing window!");
 		}
@@ -253,15 +259,27 @@ public class TooltipListener implements EventListener {
 	 * Shows the message box
 	 */
 	private void showMsgBox() {
-		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
-		TextButtonStyle buttonStyle = editorSkin.get("default", TextButtonStyle.class);
-
 		mMsgBox = mGui.getFreeMsgBox();
-		Button okButton = new TextButton("OK", buttonStyle);
-		mMsgBox.button(okButton);
+		mMsgBox.addCancelButtonAndKeys("OK");
 		mMsgBox.setTitle(mTitle);
-		mMsgBox.content(mMessage);
+		mLabel.setText(mMessage);
+		setWrapWidth();
+		mMsgBox.content(mLabel);
 		mGui.showMsgBox(mMsgBox);
+	}
+
+	/**
+	 * Sets the wrap width of the current message
+	 */
+	private void setWrapWidth() {
+		mLabel.setWrap(false);
+		int prefWidth = (int) mLabel.getPrefWidth();
+		int prefHeight = (int) mLabel.getPrefHeight();
+
+		int wrapWidth = (int) (Math.sqrt(prefHeight * prefWidth) * 1.5f);
+
+		mLabel.setWidth(wrapWidth);
+		mLabel.setWrap(true);
 	}
 
 	/**
@@ -318,4 +336,6 @@ public class TooltipListener implements EventListener {
 	/** Window for all tooltip listeners (as only one tooltip can be
 	 * displayed at the same time this is static */
 	private static Window mWindow = null;
+	/** Label inside the window */
+	private static Label mLabel = null;
 }

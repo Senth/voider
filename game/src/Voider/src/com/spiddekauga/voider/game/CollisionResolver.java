@@ -6,6 +6,7 @@ import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Manifold;
 import com.spiddekauga.voider.game.actors.Actor;
+import com.spiddekauga.voider.game.actors.BulletActor;
 import com.spiddekauga.voider.game.actors.PlayerActor;
 
 /**
@@ -27,8 +28,31 @@ public class CollisionResolver implements ContactListener {
 		if (bodyA.getUserData() instanceof Actor && bodyB.getUserData() instanceof Actor) {
 			Actor actorA = (Actor)bodyA.getUserData();
 			Actor actorB = (Actor)bodyB.getUserData();
-			actorA.addCollidingActor(actorB.getDef());
-			actorB.addCollidingActor(actorA.getDef());
+
+			// If one shall be destroyed directly
+			Actor destroyActor = null;
+			Actor actor = null;
+			if (actorA.getDef().shallDestroyOnCollide()) {
+				destroyActor = actorA;
+				actor = actorB;
+			}
+			else if (actorB.getDef().shallDestroyOnCollide()) {
+				destroyActor = actorB;
+				actor = actorA;
+			}
+
+			if (destroyActor != null) {
+				float damage = destroyActor.getDef().getCollisionDamage();
+
+				// Use hit damage from bullet instead
+				if (destroyActor instanceof BulletActor) {
+					damage = ((BulletActor) destroyActor).getHitDamage();
+				}
+
+				actor.decreaseLife(damage);
+				destroyActor.deactivate();
+				return;
+			}
 
 
 			// Transfer collectible to player
@@ -49,9 +73,16 @@ public class CollisionResolver implements ContactListener {
 			if (playerActor != null && collectibleActor != null) {
 				playerActor.addCollectible(collectibleActor.getDef().getCollectible());
 				collectibleActor.dispose();
+				return;
 			}
+
+
+			// Have not been handled yet
+			actorA.addCollidingActor(actorB.getDef());
+			actorB.addCollidingActor(actorA.getDef());
 		}
 	}
+
 
 	@Override
 	public void endContact(Contact contact) {
@@ -62,6 +93,18 @@ public class CollisionResolver implements ContactListener {
 		if (bodyA.getUserData() instanceof Actor && bodyB.getUserData() instanceof Actor) {
 			Actor actorA = (Actor)bodyA.getUserData();
 			Actor actorB = (Actor)bodyB.getUserData();
+
+			// If one shall be destroyed on collide...
+			if (actorA.getDef().shallDestroyOnCollide() || actorB.getDef().shallDestroyOnCollide()) {
+				return;
+			}
+
+			// Collectible
+			if ((actorA instanceof PlayerActor && actorB.getDef().getCollectible() != null) ||
+					(actorB instanceof PlayerActor && actorA.getDef().getCollectible() != null)) {
+				return;
+			}
+
 			actorA.removeCollidingActor(actorB.getDef());
 			actorB.removeCollidingActor(actorA.getDef());
 		}

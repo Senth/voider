@@ -8,10 +8,9 @@ import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup;
 import com.badlogic.gdx.scenes.scene2d.utils.Layout;
 import com.badlogic.gdx.utils.Disposable;
-import com.badlogic.gdx.utils.Pools;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
-import com.spiddekauga.voider.utils.Vector2Pool;
+import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Table that allows for aligning inside the widgets.
@@ -30,7 +29,7 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	@Override
 	public void dispose() {
 		for (Row row : mRows) {
-			Pools.free(row);
+			Pools.row.free(row);
 		}
 		mRows.clear();
 	}
@@ -112,7 +111,7 @@ public class AlignTable extends WidgetGroup implements Disposable {
 			((Layout) actor).invalidate();
 		}
 
-		Cell newCell = Pools.obtain(Cell.class).setActor(actor);
+		Cell newCell = Pools.cell.obtain().setActor(actor);
 		newCell.setPadding(mCellPaddingDefault);
 
 		Row row = mRows.get(mRows.size() -1);
@@ -167,7 +166,7 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	 * @return the created row
 	 */
 	public Row row(Horizontal horizontal, Vertical vertical) {
-		Row row = Pools.obtain(Row.class);
+		Row row = Pools.row.obtain();
 		row.setAlign(horizontal, vertical);
 		row.setPadding(mRowPaddingDefault);
 		mRows.add(row);
@@ -352,7 +351,7 @@ public class AlignTable extends WidgetGroup implements Disposable {
 			}
 		}
 
-		Vector2 offset = Vector2Pool.obtain();
+		Vector2 offset = Pools.vector2.obtain();
 		// Horizontal offset
 		// If fill row, the x offset will always be 0
 		if (rowFillWidth) {
@@ -387,7 +386,7 @@ public class AlignTable extends WidgetGroup implements Disposable {
 
 
 		// Layout the rows
-		Vector2 rowSize = Vector2Pool.obtain();
+		Vector2 rowSize = Pools.vector2.obtain();
 		if (rowFillWidth) {
 			rowSize.x = getWidth();
 		} else {
@@ -410,8 +409,8 @@ public class AlignTable extends WidgetGroup implements Disposable {
 			offset.y += rowSize.y;
 		}
 
-		Vector2Pool.free(rowSize);
-		Vector2Pool.free(offset);
+		Pools.vector2.free(rowSize);
+		Pools.vector2.free(offset);
 	}
 
 	@Override

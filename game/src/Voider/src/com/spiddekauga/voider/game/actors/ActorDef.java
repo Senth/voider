@@ -2,10 +2,11 @@ package com.spiddekauga.voider.game.actors;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.math.EarClippingTriangulator;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
@@ -20,8 +21,9 @@ import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.Collectibles;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.IResourceCorner;
+import com.spiddekauga.voider.utils.EarClippingTriangulator;
 import com.spiddekauga.voider.utils.Geometry;
-import com.spiddekauga.voider.utils.Vector2Pool;
+import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Definition of the actor. This include common attribute for a common type of actor.
@@ -61,6 +63,9 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 		mVisualVars = new VisualVars(actorType);
 
 		createFixtureDef();
+
+		/** @todo remove default color */
+		setColor(new Color(1, 1, 0, 1));
 	}
 
 	/**
@@ -167,6 +172,30 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	}
 
 	/**
+	 * Set the color of the actor
+	 * @param color new color
+	 */
+	public void setColor(Color color) {
+		mVisualVars.color.set(color);
+
+		resetBorderColor();
+	}
+
+	/**
+	 * @return color of the actor
+	 */
+	public Color getColor() {
+		return mVisualVars.color;
+	}
+
+	/**
+	 * @return border color
+	 */
+	public Color getBorderColor() {
+		return mVisualVars.borderColor;
+	}
+
+	/**
 	 * @return body definition of the actor
 	 */
 	public final BodyDef getBodyDef() {
@@ -197,7 +226,7 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	@Override
 	public void dispose() {
 		clearFixtures();
-		//		Vector2Pool.free(mAabbBox);
+		mVisualVars.dispose();
 	}
 
 	/**
@@ -206,6 +235,8 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	 * @param shapeType type of shape the enemy has
 	 */
 	public void setShapeType(ActorShapeTypes shapeType) {
+		mVisualVars.clearVertices();
+
 		mVisualVars.shapeType = shapeType;
 
 		// Too many fixtures
@@ -428,6 +459,8 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	public Vector2 removeCorner(int index) {
 		Vector2 removedPosition = null;
 		if (index >= 0 && index < mVisualVars.corners.size()) {
+			mVisualVars.clearVertices();
+
 			removedPosition = mVisualVars.corners.remove(index);
 
 			try {
@@ -443,13 +476,13 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 
 	@Override
 	public void moveCorner(int index, Vector2 newPos) throws PolygonComplexException, PolygonCornerTooCloseException {
-		Vector2 oldPos = Vector2Pool.obtain();
+		Vector2 oldPos = Pools.vector2.obtain();
 		oldPos.set(mVisualVars.corners.get(index));
 		mVisualVars.corners.get(index).set(newPos);
 
 		if (intersectionExists(index)) {
 			mVisualVars.corners.get(index).set(oldPos);
-			Vector2Pool.free(oldPos);
+			Pools.vector2.free(oldPos);
 			throw new PolygonComplexException();
 		}
 
@@ -457,11 +490,11 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 			fixCustomShapeFixtures();
 		} catch (PolygonCornerTooCloseException e) {
 			mVisualVars.corners.get(index).set(oldPos);
-			Vector2Pool.free(oldPos);
+			Pools.vector2.free(oldPos);
 			throw e;
 		}
 
-		Vector2Pool.free(oldPos);
+		Pools.vector2.free(oldPos);
 
 		mFixtureChangeTime = GameTime.getTotalGlobalTimeElapsed();
 	}
@@ -495,45 +528,46 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	 * center of the fixtures are there.
 	 */
 	public void resetCenterOffset() {
+		Vector2 center = Pools.vector2.obtain();
+		center.set(0, 0);
+
 		switch (mVisualVars.shapeType) {
 		case CIRCLE:
 			/** @todo implement reset center for circle */
 			break;
 
+
 		case RECTANGLE:
 			/** @todo implement reset center for rectangle */
 			break;
+
 
 		case TRIANGLE:
 			/** @todo implement reset center for triangle */
 			break;
 
+
 		case LINE:
 			/** @todo implement reset center for line */
 			break;
 
+
 		case CUSTOM:
 			// Polygon, calculate center
 			if (mVisualVars.corners.size() >= 3) {
-				Vector2 center = Vector2Pool.obtain();
-
-				center.set(0,0);
-
 				for (Vector2 vertex : mVisualVars.corners) {
 					center.sub(vertex);
 				}
 
 				center.div(mVisualVars.corners.size());
-				setCenterOffset(center);
-
-				Vector2Pool.free(center);
-			}
-			// Circle, first corner is center
-			else if (mVisualVars.corners.size() >= 1) {
-				setCenterOffset(mVisualVars.corners.get(0));
 			}
 			break;
 		}
+
+		setCenterOffset(center);
+		Pools.vector2.free(center);
+
+		mFixtureChangeTime = GameTime.getTotalGlobalTimeElapsed();
 	}
 
 	/**
@@ -568,10 +602,10 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 		// Write ActorDef's variables first
 		json.writeValue("mMaxLife", mMaxLife);
 		json.writeValue("mBodyDef", mBodyDef);
-		//		json.writeValue("mFixtureDefs", mFixtureDefs);
 		json.writeValue("mCollisionDamage", mCollisionDamage);
 		json.writeValue("mDestroyOnCollide", mDestroyOnCollide);
 		json.writeValue("mVisualVars", mVisualVars);
+
 	}
 
 	@Override
@@ -582,10 +616,11 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 		// Our variables
 		mMaxLife = json.readValue("mMaxLife", float.class, jsonData);
 		mBodyDef = json.readValue("mBodyDef", BodyDef.class, jsonData);
-		//		mFixtureDefs = json.readValue("mFixtureDefs", ArrayList.class, jsonData);
 		mCollisionDamage = json.readValue("mCollisionDamage", float.class, jsonData);
 		mDestroyOnCollide = json.readValue("mDestroyOnCollide", boolean.class, jsonData);
 		mVisualVars = json.readValue("mVisualVars", VisualVars.class, jsonData);
+
+		resetBorderColor();
 
 		createFixtureDef();
 	}
@@ -638,8 +673,10 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 		}
 
 
-		// Destroy previous fixture
+		// Destroy previous fixtures
 		clearFixtures();
+
+		mVisualVars.clearVertices();
 
 
 		// Create the new fixture
@@ -651,22 +688,17 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 				Geometry.makePolygonCounterClockwise(triangles);
 			} else {
 				triangles = mEarClippingTriangulator.computeTriangles(mVisualVars.corners);
-				// Always reverse, triangles should always be clockwise, whereas box2d needs
+				// Always reverse, triangles are always clockwise, whereas box2d needs
 				// counter clockwise...
 				Collections.reverse(triangles);
-			}
-
-			// Add center offset
-			for (Vector2 vertex : triangles) {
-				vertex.add(mVisualVars.centerOffset);
 			}
 
 			int cTriangles = triangles.size() / 3;
 			Vector2[] triangleVertices = new Vector2[3];
 			for (int i = 0; i < triangleVertices.length; ++i) {
-				triangleVertices[i] = Vector2Pool.obtain();
+				triangleVertices[i] = Pools.vector2.obtain();
 			}
-			Vector2 lengthTest = Vector2Pool.obtain();
+			Vector2 lengthTest = Pools.vector2.obtain();
 
 			// Add the fixtures
 			boolean cornerTooClose = false;
@@ -674,7 +706,7 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 				int offset = triangle * 3;
 				for (int vertex = 0; vertex < triangleVertices.length; ++vertex) {
 					triangleVertices[vertex].set(triangles.get(offset + vertex));
-					//					triangleVertices[vertex].add(mVisualVars.centerOffset);
+					triangleVertices[vertex].add(mVisualVars.centerOffset);
 				}
 
 
@@ -708,39 +740,42 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 			}
 
 
-			// Set AABB box
-			//			mAabbBox.setFromPolygon(triangles);
-
-
 			// Free stuff
 			for (int i = 0; i < triangleVertices.length; ++i) {
-				Vector2Pool.free(triangleVertices[i]);
+				Pools.vector2.free(triangleVertices[i]);
 			}
-			Vector2Pool.free(lengthTest);
+			Pools.vector2.free(lengthTest);
 
 			if (cornerTooClose) {
 				throw new PolygonCornerTooCloseException();
 			}
+
+			mVisualVars.vertices = (ArrayList<Vector2>) triangles;
+			createBorder(mVisualVars.corners);
 		}
 		// Circle
 		else if (mVisualVars.corners.size() >= 1) {
 			CircleShape circle = new CircleShape();
 
-			Vector2 offsetPosition = Vector2Pool.obtain();
+			Vector2 offsetPosition = Pools.vector2.obtain();
 			offsetPosition.set(mVisualVars.corners.get(0)).add(mVisualVars.centerOffset);
 			circle.setPosition(offsetPosition);
-			Vector2Pool.free(offsetPosition);
+			Pools.vector2.free(offsetPosition);
+
+			float radius = 0;
 
 			// One corner, use standard size
 			if (mVisualVars.corners.size() == 1) {
 				circle.setRadius(Config.Actor.Terrain.DEFAULT_CIRCLE_RADIUS);
+				radius = Config.Actor.Terrain.DEFAULT_CIRCLE_RADIUS;
 			}
 			// Else two corners, determine radius of circle
 			else {
-				Vector2 lengthVector = Vector2Pool.obtain();
+				Vector2 lengthVector = Pools.vector2.obtain();
 				lengthVector.set(mVisualVars.corners.get(0)).sub(mVisualVars.corners.get(1));
-				circle.setRadius(lengthVector.len());
-				Vector2Pool.free(lengthVector);
+				radius = lengthVector.len();
+				circle.setRadius(radius);
+				Pools.vector2.free(lengthVector);
 			}
 
 			savedFixtureProperties.shape = circle;
@@ -749,7 +784,28 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 
 			// Set AABB box
 			//			mAabbBox.setFromCircle(circle.getPosition(), circle.getRadius());
+
+			// Create vertices for the circle
+			ArrayList<Vector2> circleVertices = Geometry.createCircle(radius);
+			mVisualVars.vertices =mEarClippingTriangulator.computeTriangles(circleVertices);
+			Collections.reverse(mVisualVars.vertices);
+
+			createBorder(circleVertices);
 		}
+	}
+
+	/**
+	 * @return triangle vertices for the current shape. Grouped together in groups of three to form a triangle.
+	 */
+	ArrayList<Vector2> getTriangleVertices() {
+		return mVisualVars.vertices;
+	}
+
+	/**
+	 * @return border triangle vertices. Grouped together in groups of three vertices to form a triangle.
+	 */
+	ArrayList<Vector2> getTriangleBorderVertices() {
+		return mVisualVars.borderVertices;
 	}
 
 	/**
@@ -827,6 +883,8 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	 * @return circle shape for fixture
 	 */
 	private CircleShape createCircleShape() {
+		mVisualVars.clearVertices();
+
 		CircleShape circleShape = new CircleShape();
 		circleShape.setRadius(mVisualVars.shapeCircleRadius);
 		/** @todo use center for all shapes */
@@ -834,6 +892,17 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 
 		// Set AABB box
 		//		mAabbBox.setFromCircle(circleShape.getPosition(), circleShape.getRadius());
+
+
+		// Create vertices for the circle
+		ArrayList<Vector2> circleVertices = Geometry.createCircle(mVisualVars.shapeCircleRadius);
+		mVisualVars.vertices = mEarClippingTriangulator.computeTriangles(circleVertices);
+		Collections.reverse(circleVertices);
+
+		mVisualVars.polygon = circleVertices;
+
+		createBorder(circleVertices);
+
 
 		return circleShape;
 	}
@@ -853,9 +922,42 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 		rectangleShape.setAsBox(halfWidth, halfHeight);
 
 		// Set AABB box
-		/** @todo use center for AABB box */
 		//		mAabbBox.setFromBox(mVisualVars.centerOffset, halfWidth, halfHeight);
 		//		mAabbBox.setFromBox(new Vector2(), halfWidth, halfHeight);
+
+		mVisualVars.clearVertices();
+
+		// Create triangle vertices and polygon for the rectangle
+		if (rectangleShape.getVertexCount() == 4) {
+			mVisualVars.polygon = new ArrayList<Vector2>();
+
+			// First triangle
+			Vector2 vertex = Pools.vector2.obtain();
+			rectangleShape.getVertex(0, vertex);
+			mVisualVars.vertices.add(vertex);
+			mVisualVars.polygon.add(vertex);
+			vertex = Pools.vector2.obtain();
+			rectangleShape.getVertex(1, vertex);
+			mVisualVars.vertices.add(vertex);
+			mVisualVars.polygon.add(vertex);
+			vertex = Pools.vector2.obtain();
+			rectangleShape.getVertex(2, vertex);
+			mVisualVars.vertices.add(vertex);
+			mVisualVars.polygon.add(vertex);
+
+			// Second triangle
+			mVisualVars.vertices.add(vertex);
+			vertex = Pools.vector2.obtain();
+			rectangleShape.getVertex(3, vertex);
+			mVisualVars.vertices.add(vertex);
+			mVisualVars.polygon.add(vertex);
+			mVisualVars.vertices.add(mVisualVars.vertices.get(0));
+
+		} else {
+			Gdx.app.error("ActorDef", "Vertex count is not 4 in rectangle!");
+		}
+
+		/** @todo create border for rectangle */
 
 		return rectangleShape;
 	}
@@ -868,7 +970,7 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 		Vector2[] vertices = new Vector2[3];
 
 		for (int i = 0; i < vertices.length; ++i) {
-			vertices[i] = Vector2Pool.obtain();
+			vertices[i] = Pools.vector2.obtain();
 		}
 
 		// It will look something like this:
@@ -890,7 +992,7 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 
 
 		// Set the center...
-		Vector2 center = Vector2Pool.obtain();
+		Vector2 center = Pools.vector2.obtain();
 		center.set(vertices[0]).add(vertices[1]).add(vertices[2]).div(3);
 
 		// Offset all vertices with negative center
@@ -908,10 +1010,17 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 		PolygonShape polygonShape = new PolygonShape();
 		polygonShape.set(vertices);
 
-		Vector2Pool.free(center);
+		Pools.vector2.free(center);
+
+		// Set vertices and create border
+		mVisualVars.clearVertices();
+		mVisualVars.polygon = new ArrayList<Vector2>();
 		for (Vector2 vertex : vertices) {
-			Vector2Pool.free(vertex);
+			mVisualVars.vertices.add(vertex);
+			mVisualVars.polygon.add(vertex);
 		}
+		createBorder(mVisualVars.vertices);
+
 
 		return polygonShape;
 	}
@@ -923,8 +1032,8 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	private EdgeShape createLineShape() {
 		EdgeShape edgeShape = new EdgeShape();
 
-		//		Vector2 pointA = Vector2Pool.obtain();
-		//		Vector2 pointB = Vector2Pool.obtain();
+		//		Vector2 pointA = Pools.vector2.obtain();
+		//		Vector2 pointB = Pools.vector2.obtain();
 
 		//		pointA.set(-mVisualVars.shapeWidth * 0.5f, 0);
 		//		pointB.set(mVisualVars.shapeWidth * 0.5f, 0);
@@ -933,8 +1042,12 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 		//		edgeShape.set(-mVisualVars.shapeWidth * 0.5f + mVisualVars.centerOffset.x, mVisualVars.centerOffset.y, mVisualVars.shapeWidth * 0.5f + mVisualVars.centerOffset.x, mVisualVars.centerOffset.y);
 		edgeShape.set(-mVisualVars.shapeWidth * 0.5f, 0, mVisualVars.shapeWidth * 0.5f, 0);
 
-		//		Vector2Pool.free(pointA);
-		//		Vector2Pool.free(pointB);
+		//		Pools.vector2.free(pointA);
+		//		Pools.vector2.free(pointB);
+
+
+
+		/** @todo create polygon ? */
 
 		return edgeShape;
 	}
@@ -975,18 +1088,64 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 		fixtureDefCopy.shape = fixtureDefOriginal.shape;
 	}
 
+	/**
+	 * Resets the border color
+	 */
+	private void resetBorderColor() {
+		mVisualVars.borderColor.set(mVisualVars.color);
+		mVisualVars.borderColor.mul(0.75f, 0.75f, 0.75f, 1);
+	}
+
+	/**
+	 * @return polygon shape of the actor.
+	 */
+	public ArrayList<Vector2> getPolygonShape() {
+		return mVisualVars.polygon;
+	}
+
+	/**
+	 * Creates the border for the actor
+	 * @param corners vertices for all the corners
+	 */
+	private void createBorder(ArrayList<Vector2> corners) {
+		ArrayList<Vector2> borderCorners = Geometry.createdBorderCorners(corners, true, Config.Actor.BORDER_WIDTH);
+
+		boolean allBordersInsidePolygon = true;
+		Iterator<Vector2> borderVertexIt = borderCorners.iterator();
+		while (borderVertexIt.hasNext() && allBordersInsidePolygon) {
+			Vector2 borderVertex = borderVertexIt.next();
+			boolean withinTriangle = false;
+			for (int i = 0; i < mVisualVars.vertices.size(); i += 3) {
+				if (Geometry.isPointWithinTriangle(borderVertex, mVisualVars.vertices, i)) {
+					withinTriangle = true;
+					break;
+				}
+			}
+
+			if (!withinTriangle) {
+				allBordersInsidePolygon = false;
+			}
+		}
+
+
+		if (allBordersInsidePolygon) {
+			mVisualVars.borderVertices = Geometry.createBorderVertices(corners, borderCorners);
+		} else {
+			Pools.vector2.freeAll(borderCorners);
+		}
+	}
+
 	/** Time when the fixture was changed last time */
 	protected float mFixtureChangeTime = 0;
 	/** When the body was changed last time */
 	protected float mBodyChangeTime = 0;
-	/** AABB box for all fixtures */
-	//	private AabbBox mAabbBox = Pools.obtain(AabbBox.class);
 	/** Defines the mass, shape, etc. */
 	private ArrayList<FixtureDef> mFixtureDefs = new ArrayList<FixtureDef>();
 	/** Maximum life of the actor, usually starting amount of life */
 	private float mMaxLife = 0;
 	/** The body definition of the actor */
 	private BodyDef mBodyDef = new BodyDef();
+
 	/** Collision damage (per second) */
 	private float mCollisionDamage = 0;
 	/** If this actor shall be destroy on collision */

@@ -5,11 +5,11 @@ import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.utils.Invoker;
+import com.spiddekauga.utils.ShapeRendererEx;
 import com.spiddekauga.voider.game.BulletDestroyer;
 
 /**
@@ -31,19 +31,19 @@ public abstract class Scene extends InputAdapter {
 	}
 
 	/**
-	 * Runs the scene. Don't Override this method as this method clears the screen,
-	 * renders it, and updates the scene elements.
+	 * Runs the scene. Clears the screen, renders it, and updates the scene elements.
 	 */
 	public final void run() {
-		Gdx.gl.glClearColor(0, 0, 0, 1);
+		Gdx.gl.glClearColor(0, 0, 0, 0);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-		render();
-		mGui.update();
 		if (!mGui.isMsgBoxActive()) {
 			mGameTime.update(Gdx.graphics.getDeltaTime());
 			update();
 		}
+		render();
+		mGui.update();
+		mGui.render();
 	}
 
 	/**
@@ -84,7 +84,7 @@ public abstract class Scene extends InputAdapter {
 	/**
 	 * Updates the scene
 	 */
-	public abstract void update();
+	protected abstract void update();
 
 	/**
 	 * Checks whether the derived class has any resources that needs to be loaded.
@@ -167,8 +167,8 @@ public abstract class Scene extends InputAdapter {
 	/**
 	 * Renders the scene
 	 */
-	public void render() {
-		mGui.render();
+	protected void render() {
+		// Does nothing
 	}
 
 	/**
@@ -331,8 +331,8 @@ public abstract class Scene extends InputAdapter {
 		worldCoordinate.y = mTestPoint.y;
 	}
 
-	/** Sprite Batch used for rendering stuff */
-	protected SpriteBatch mSpriteBatch = new SpriteBatch();
+	/** Shape Renderer used for rendering stuff */
+	protected ShapeRendererEx mShapeRenderer = new ShapeRendererEx();
 	/** Input multiplexer */
 	protected InputMultiplexer mInputMultiplexer = new InputMultiplexer();
 	/** GUI for the scene */

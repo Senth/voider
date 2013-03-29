@@ -4,10 +4,9 @@ import java.util.ArrayList;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Pool.Poolable;
-import com.badlogic.gdx.utils.Pools;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
-import com.spiddekauga.voider.utils.Vector2Pool;
+import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Wrapper for a row
@@ -31,7 +30,7 @@ public class Row implements Poolable {
 		mUseCellAlign = false;
 
 		for (Cell cell : mCells) {
-			Pools.free(cell);
+			Pools.cell.free(cell);
 		}
 		mCells.clear();
 
@@ -372,7 +371,7 @@ public class Row implements Poolable {
 	 * @param size available size for this row
 	 */
 	void layout(Vector2 startPos, Vector2 size) {
-		Vector2 offset = Vector2Pool.obtain();
+		Vector2 offset = Pools.vector2.obtain();
 		offset.set(startPos);
 		offset.x += getPadLeft();
 
@@ -410,7 +409,7 @@ public class Row implements Poolable {
 			offset.y = startPos.y + (size.y - mHeight + getPadBottom() - getPadTop()) * 0.5f;
 		}
 
-		Vector2 cellSize = Vector2Pool.obtain();
+		Vector2 cellSize = Pools.vector2.obtain();
 		if (mEqualSize) {
 			cellSize.y = mHeight;
 			cellSize.x = mWidth / mCells.size();
@@ -438,8 +437,8 @@ public class Row implements Poolable {
 			}
 
 		}
-		Vector2Pool.free(cellSize);
-		Vector2Pool.free(offset);
+		Pools.vector2.free(cellSize);
+		Pools.vector2.free(offset);
 	}
 
 	/**

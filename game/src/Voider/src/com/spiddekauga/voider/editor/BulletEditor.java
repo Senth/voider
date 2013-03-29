@@ -3,9 +3,13 @@ package com.spiddekauga.voider.editor;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector2;
 import com.spiddekauga.utils.Invoker;
 import com.spiddekauga.utils.KeyHelper;
+import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
+import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.Weapon;
 import com.spiddekauga.voider.game.WeaponDef;
 import com.spiddekauga.voider.game.actors.Actor;
@@ -23,7 +27,7 @@ import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.scene.SelectDefScene;
 import com.spiddekauga.voider.scene.TouchTool;
 import com.spiddekauga.voider.scene.WorldScene;
-import com.spiddekauga.voider.utils.Vector2Pool;
+import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Creates bullets for the enemies and player to use.
@@ -41,10 +45,10 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 
 		mWeapon.setWeaponDef(new WeaponDef());
 		mWeapon.getDef().setBulletActorDef(mDef);
-		Vector2 weaponPos = Vector2Pool.obtain();
+		Vector2 weaponPos = Pools.vector2.obtain();
 		screenToWorldCoord(mCamera, Gdx.graphics.getWidth() * 0.1f, Gdx.graphics.getHeight() * 0.5f, weaponPos, true);
 		mWeapon.setPosition(weaponPos);
-		Vector2Pool.free(weaponPos);
+		Pools.vector2.free(weaponPos);
 
 		mDrawActorTool = new DrawActorTool(mCamera, mWorld, BulletActor.class, mInvoker, this, mDef);
 	}
@@ -78,16 +82,44 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 	}
 
 	@Override
-	public void update() {
+	protected void update() {
 		super.update();
 		mWeapon.update(Gdx.graphics.getDeltaTime());
 
 		if (mWeapon.canShoot()) {
-			mWeapon.shoot(mShootDirection);
+			mWeapon.shoot(SHOOT_DIRECTION);
 		}
 
 		if (mBulletActor != null && mDef.getShapeType() == ActorShapeTypes.CUSTOM) {
-			mBulletActor.update(Gdx.graphics.getDeltaTime());
+			//			mBulletActor.update(Gdx.graphics.getDeltaTime());
+			mBulletActor.updateEditor();
+		}
+	}
+
+	@Override
+	protected void render() {
+		super.render();
+
+		if (Config.Graphics.USE_RELEASE_RENDERER) {
+			ShaderProgram defaultShader = ResourceCacheFacade.get(ResourceNames.SHADER_DEFAULT);
+			if (defaultShader != null) {
+				mShapeRenderer.setShader(defaultShader);
+			}
+			mShapeRenderer.setProjectionMatrix(mCamera.combined);
+			mShapeRenderer.begin(ShapeType.Filled);
+			Gdx.gl.glEnable(GL20.GL_BLEND);
+			Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+
+			mBulletDestroyer.update(Gdx.graphics.getDeltaTime());
+			mBulletDestroyer.render(mShapeRenderer);
+
+			if (mBulletActor != null && mActiveTouchTool == mDrawActorTool) {
+				mBulletActor.render(mShapeRenderer);
+				//				mBulletActor.setSelected(false);
+				mBulletActor.renderEditor(mShapeRenderer);
+			}
+
+			mShapeRenderer.end();
 		}
 	}
 
@@ -306,7 +338,7 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 		if (mBulletActor != null) {
 			mBulletActor.destroyBody();
 
-			diffOffset = Vector2Pool.obtain();
+			diffOffset = Pools.vector2.obtain();
 			diffOffset.set(mDef.getCenterOffset());
 		}
 
@@ -317,7 +349,7 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 			diffOffset.add(mBulletActor.getPosition());
 			mBulletActor.setPosition(diffOffset);
 			mBulletActor.createBody();
-			Vector2Pool.free(diffOffset);
+			Pools.vector2.free(diffOffset);
 		}
 	}
 
@@ -328,7 +360,7 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 		if (mBulletActor != null) {
 			mBulletActor.destroyBody();
 
-			diffOffset = Vector2Pool.obtain();
+			diffOffset = Pools.vector2.obtain();
 			diffOffset.set(mDef.getCenterOffset());
 		}
 
@@ -339,7 +371,7 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 			diffOffset.add(mBulletActor.getPosition());
 			mBulletActor.setPosition(diffOffset);
 			mBulletActor.createBody();
-			Vector2Pool.free(diffOffset);
+			Pools.vector2.free(diffOffset);
 		}
 	}
 
@@ -494,7 +526,7 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 	/** Current selection scene */
 	private SelectionActions mSelectionAction = null;
 	/** Shoot direction */
-	private Vector2 mShootDirection = new Vector2(1, 0);
+	private final static Vector2 SHOOT_DIRECTION = new Vector2(1, 0);
 	/** Invoker for the bullet editor */
 	private Invoker mInvoker = new Invoker();
 	/** Active touch tool */

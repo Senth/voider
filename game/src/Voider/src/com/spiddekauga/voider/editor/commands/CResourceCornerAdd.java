@@ -3,7 +3,7 @@ package com.spiddekauga.voider.editor.commands;
 import com.badlogic.gdx.math.Vector2;
 import com.spiddekauga.voider.editor.IResourceChangeEditor;
 import com.spiddekauga.voider.resources.IResourceCorner;
-import com.spiddekauga.voider.utils.Vector2Pool;
+import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Creates a new corner for the specified terrain resource
@@ -20,7 +20,7 @@ public class CResourceCornerAdd extends CResourceChange {
 	public CResourceCornerAdd(IResourceCorner resourceCorner, Vector2 cornerPos, IResourceChangeEditor resourceEditor) {
 		super(null, resourceEditor);
 		mResourceCorner = resourceCorner;
-		mCornerPos = Vector2Pool.obtain();
+		mCornerPos = Pools.vector2.obtain();
 		mCornerPos.set(cornerPos);
 	}
 
@@ -49,7 +49,7 @@ public class CResourceCornerAdd extends CResourceChange {
 
 	@Override
 	public void dispose() {
-		Vector2Pool.free(mCornerPos);
+		Pools.vector2.free(mCornerPos);
 	}
 
 	/** Terrain resource which we want to add a new corner to*/

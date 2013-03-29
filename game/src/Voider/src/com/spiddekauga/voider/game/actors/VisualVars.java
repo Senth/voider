@@ -3,20 +3,23 @@ package com.spiddekauga.voider.game.actors;
 import java.util.ArrayList;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.OrderedMap;
 import com.spiddekauga.utils.Json;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Actor.Pickup;
 import com.spiddekauga.voider.Config.Editor.Bullet;
 import com.spiddekauga.voider.Config.Editor.Enemy;
+import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Class for all shape variables
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-class VisualVars implements Json.Serializable {
+class VisualVars implements Json.Serializable, Disposable {
 	/**
 	 * Sets the appropriate default values
 	 * @param actorType the default values depends on which actor type is set
@@ -33,6 +36,7 @@ class VisualVars implements Json.Serializable {
 		json.writeValue("shapeType", shapeType);
 		json.writeValue("mActorType", mActorType);
 		json.writeValue("centerOffset", centerOffset);
+		json.writeValue("color", color);
 
 		switch (shapeType) {
 		case LINE:
@@ -64,6 +68,7 @@ class VisualVars implements Json.Serializable {
 
 		shapeType = json.readValue("shapeType", ActorShapeTypes.class, jsonData);
 		centerOffset = json.readValue("centerOffset", Vector2.class, jsonData);
+		color = json.readValue("color", Color.class, jsonData);
 
 		switch (shapeType) {
 		case LINE:
@@ -145,6 +150,53 @@ class VisualVars implements Json.Serializable {
 		}
 	}
 
+	@Override
+	public void dispose() {
+		for (Vector2 corner : corners) {
+			Pools.vector2.free(corner);
+		}
+		corners.clear();
+
+		clearVertices();
+	}
+
+	/**
+	 * Clears (and possibly frees) the vertices of the shape.
+	 */
+	void clearVertices() {
+		// Remove border corner indexes first. These should include all
+		// regular vertices, so no need to free them later
+		if (!borderVertices.isEmpty()) {
+			// Because the vertices contains duplicates, we save the ones that have been
+			// freed, so we don't free them twice. Never remove corners though
+			ArrayList<Vector2> freedVertices = new ArrayList<Vector2>();
+			freedVertices.addAll(corners);
+			for (Vector2 vertex : borderVertices) {
+				if (!freedVertices.contains(vertex)) {
+					Pools.vector2.free(vertex);
+					freedVertices.add(vertex);
+				}
+			}
+			borderVertices.clear();
+		} else {
+			// Because the vertices contains duplicates, we save the ones that have been
+			// freed, so we don't free them twice. Never remove corners though
+			ArrayList<Vector2> freedVertices = new ArrayList<Vector2>();
+			freedVertices.addAll(corners);
+			for (Vector2 vertex : vertices) {
+				if (!freedVertices.contains(vertex)) {
+					Pools.vector2.free(vertex);
+					freedVertices.add(vertex);
+				}
+			}
+		}
+		vertices.clear();
+	}
+
+	/** Color of the actor */
+	Color color = new Color();
+	/** Border color, automatically set */
+	Color borderColor = new Color();
 	/** Current shape of the enemy */
 	ActorShapeTypes shapeType;
 	/** radius of circle */
@@ -157,7 +209,15 @@ class VisualVars implements Json.Serializable {
 	Vector2 centerOffset = new Vector2();
 	/** Corners of polygon, used for custom shapes */
 	ArrayList<Vector2> corners = new ArrayList<Vector2>();
-
+	/** Array list of the polygon figure, this contains the vertices but not
+	 * in triangles. */
+	ArrayList<Vector2> polygon = null;
+	/** Triangle vertices.
+	 * It is made this way to easily render the target. No optimization has been done to reduce
+	 * the number of vertices. */
+	ArrayList<Vector2> vertices = new ArrayList<Vector2>();
+	/** Triangle border vertices. */
+	ArrayList<Vector2> borderVertices = new ArrayList<Vector2>();
 
 	/** Actor type, used for setting default values */
 	private ActorTypes mActorType = null;

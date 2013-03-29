@@ -3,7 +3,7 @@ package com.spiddekauga.voider.game.actors;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.OrderedMap;
 import com.spiddekauga.utils.Json;
-import com.spiddekauga.voider.utils.Vector2Pool;
+import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Bullet actor, contains necessary information about the bullet.
@@ -22,10 +22,10 @@ public class BulletActor extends Actor {
 	 * @see #shoot(Vector2,Vector2,float,boolean) to use a velocity of the bullet directly
 	 */
 	public void shoot(Vector2 position, Vector2 direction, float speed, float hitDamage, boolean shotByPlayer) {
-		Vector2 velocity = Vector2Pool.obtain();
+		Vector2 velocity = Pools.vector2.obtain();
 		velocity.set(direction).nor().mul(speed);
 		shoot(position, velocity, hitDamage, shotByPlayer);
-		Vector2Pool.free(velocity);
+		Pools.vector2.free(velocity);
 	}
 
 	/**
@@ -48,7 +48,25 @@ public class BulletActor extends Actor {
 		getBody().setLinearVelocity(velocity);
 
 		mDamage = hitDamage;
+		activate();
 	}
+
+	//	/**
+	//	 * Renders the actor
+	//	 * @param shapeRenderer the current sprite batch for the scene
+	//	 */
+	//	@Override
+	//	public void render(ShapeRendererEx shapeRenderer) {
+	//		calculateRotatedVertices();
+	//
+	//		// Shape
+	//		shapeRenderer.setColor(getDef().getColor());
+	//		shapeRenderer.triangles(getRotatedVertices(), getBody().getPosition());
+	//
+	//		// Border
+	//		shapeRenderer.setColor(getDef().getBorderColor());
+	//		shapeRenderer.triangles(getRotatedBorderVertices(), getBody().getPosition());
+	//	}
 
 	/**
 	 * @return how much damage the bullet will inflict on hit
@@ -92,7 +110,7 @@ public class BulletActor extends Actor {
 	}
 
 	/** True if bullet shot by player, false if shot by enemy */
-	private boolean mShotByPlayer = true;
+	private boolean mShotByPlayer = false;
 	/** Hom much damage the bullet will inflict on hit */
 	private float mDamage = 0;
 }

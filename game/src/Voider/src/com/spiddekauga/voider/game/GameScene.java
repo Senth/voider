@@ -4,6 +4,8 @@ import java.util.ArrayList;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -11,13 +13,15 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.joints.MouseJoint;
 import com.badlogic.gdx.physics.box2d.joints.MouseJointDef;
+import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.PlayerActor;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
+import com.spiddekauga.voider.resources.ResourceNames;
 import com.spiddekauga.voider.resources.UndefinedResourceTypeException;
 import com.spiddekauga.voider.scene.WorldScene;
-import com.spiddekauga.voider.utils.Vector2Pool;
+import com.spiddekauga.voider.utils.Pools;
 /**
  * The main game. Starts with a level and could either be in regular or
  * testing mode. Testing mode will set the player to unlimited lives.
@@ -27,15 +31,15 @@ import com.spiddekauga.voider.utils.Vector2Pool;
 public class GameScene extends WorldScene {
 	/**
 	 * Initializes the game scene.
-	 * @param testing if we're just testing the level, i.e. unlimited lives
+	 * @param invulnerable if we're just testing the level, i.e. cannot die
 	 * but still has health. Scoring will still be used (player could be testing
 	 * scoring).
 	 */
-	public GameScene(boolean testing) {
+	public GameScene(boolean invulnerable) {
 		super(new GameSceneGui());
 		((GameSceneGui)mGui).setGameScene(this);
 
-		mTesting = testing;
+		mInvulnerable = invulnerable;
 
 		Actor.setEditorActive(false);
 		mWorld.setContactListener(mCollisionResolver);
@@ -65,6 +69,7 @@ public class GameScene extends WorldScene {
 		mLevel.setPlayer(mPlayerActor);
 		mLevel.addResource(mLevel);
 		mLevel.bindResources();
+		mLevel.run();
 
 		ArrayList<Actor> actors = mLevel.getResources(Actor.class);
 		for (Actor actor : actors) {
@@ -127,7 +132,7 @@ public class GameScene extends WorldScene {
 	 */
 	@Override
 	public void onDisposed() {
-		if (!mTesting) {
+		if (!mInvulnerable) {
 			/** @TODO save the game */
 		}
 
@@ -137,7 +142,7 @@ public class GameScene extends WorldScene {
 	}
 
 	@Override
-	public void update() {
+	protected void update() {
 		// Make sure border maintains same speed as level
 		if (mBorderBody != null) {
 			mBorderBody.setLinearVelocity(mLevel.getSpeed(), 0.0f);
@@ -149,21 +154,34 @@ public class GameScene extends WorldScene {
 			mMouseJoint.setTarget(mCursorWorld);
 		}
 		super.update();
-		mLevel.update(true);
+		mLevel.update();
 		updateCameraPosition();
 
 		// Is the player dead?
-		if (mPlayerActor.getLife() <= 0 && !mTesting) {
+		if (mPlayerActor.getLife() <= 0 && !mInvulnerable) {
 			setOutcome(Outcomes.LEVEL_PLAYER_DIED);
 		}
 	}
 
 	@Override
-	public void render() {
+	protected void render() {
 		super.render();
 
-		if (!Config.Graphics.USE_DEBUG_RENDERER) {
-			mLevel.render(mSpriteBatch);
+		if (Config.Graphics.USE_RELEASE_RENDERER) {
+			ShaderProgram defaultShader = ResourceCacheFacade.get(ResourceNames.SHADER_DEFAULT);
+			if (defaultShader != null) {
+				mShapeRenderer.setShader(defaultShader);
+			}
+			mShapeRenderer.setProjectionMatrix(mCamera.combined);
+			mShapeRenderer.begin(ShapeType.Filled);
+			Gdx.gl.glEnable(GL20.GL_BLEND);
+			Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+
+			mLevel.render(mShapeRenderer);
+			mBulletDestroyer.render(mShapeRenderer);
+			mPlayerActor.render(mShapeRenderer);
+
+			mShapeRenderer.end();
 		}
 	}
 
@@ -250,7 +268,7 @@ public class GameScene extends WorldScene {
 	@Override
 	public boolean keyDown(int keycode) {
 		// Set level as complete if we want to go back while testing
-		if (mTesting && (keycode == Keys.ESCAPE || keycode == Keys.BACK)) {
+		if (mInvulnerable && (keycode == Keys.ESCAPE || keycode == Keys.BACK)) {
 			setOutcome(Outcomes.LEVEL_QUIT);
 		}
 
@@ -270,7 +288,7 @@ public class GameScene extends WorldScene {
 	 */
 	private void resetPlayerPosition() {
 		if (mPlayerActor != null && mPlayerActor.getBody() != null) {
-			Vector2 playerPosition = Vector2Pool.obtain();
+			Vector2 playerPosition = Pools.vector2.obtain();
 			playerPosition.set(mCamera.position.x - mCamera.viewportWidth * 0.5f, 0);
 
 			// Get radius of player and offset it with the width
@@ -282,7 +300,7 @@ public class GameScene extends WorldScene {
 
 				mPlayerActor.getBody().setTransform(playerPosition, 0.0f);
 			}
-			Vector2Pool.free(playerPosition);
+			Pools.vector2.free(playerPosition);
 		}
 	}
 
@@ -292,8 +310,8 @@ public class GameScene extends WorldScene {
 	private LevelDef mLevelToLoad = null;
 	/** The current level used in the game */
 	private Level mLevel = null;
-	/** If we're just testing */
-	private boolean mTesting;
+	/** Makes the player invulnerable, useful for testing */
+	private boolean mInvulnerable;
 	/** Player ship actor, plays the game */
 	private PlayerActor mPlayerActor;
 	/** Current pointer that moves the player */

@@ -24,8 +24,8 @@ public abstract class ButtonListener implements EventListener {
 	/**
 	 * Creates a button listener for the specified button. Always
 	 * calls onChange. Adds this class to the button automatically as a listener.
-	 * When adding the tooltip listener this will make sure the tooltip isn't active
-	 * when calling the {@link #onPressed()} method.
+	 * When adding the tooltip listener this will make sure the tooltip message box
+	 * isn't active when calling the {@link #onPressed()} method.
 	 * @param button the button to listen to
 	 * @param tooltipListener the GUI to check if the button shall be pressed.
 	 */

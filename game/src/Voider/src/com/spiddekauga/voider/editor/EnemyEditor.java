@@ -4,6 +4,8 @@ import java.lang.reflect.Field;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -18,9 +20,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.SnapshotArray;
 import com.spiddekauga.utils.Invoker;
 import com.spiddekauga.utils.KeyHelper;
+import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Editor.Enemy;
 import com.spiddekauga.voider.editor.commands.CEnemyBulletDefSelect;
+import com.spiddekauga.voider.game.CollisionResolver;
 import com.spiddekauga.voider.game.Path;
 import com.spiddekauga.voider.game.Path.PathTypes;
 import com.spiddekauga.voider.game.actors.Actor;
@@ -41,7 +45,7 @@ import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.scene.SelectDefScene;
 import com.spiddekauga.voider.scene.WorldScene;
-import com.spiddekauga.voider.utils.Vector2Pool;
+import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Editor for creating and editing enemies
@@ -60,6 +64,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 		setEnemyDef();
 		createExamplePaths();
 
+		mWorld.setContactListener(mCollisionResolver);
 
 		((EnemyEditorGui)mGui).setEnemyEditor(this);
 
@@ -198,7 +203,24 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	}
 
 	@Override
-	public void update() {
+	public void onResize(int width, int height) {
+		super.onResize(width, height);
+		scalePathLabels();
+	}
+
+	@Override
+	public void onDisposed() {
+		mPlayerActor.dispose();
+		mEnemyActor.dispose();
+		mEnemyPathBackAndForth.dispose();
+		mEnemyPathLoop.dispose();
+		mEnemyPathOnce.dispose();
+
+		super.onDisposed();
+	}
+
+	@Override
+	protected void update() {
 		super.update();
 		float deltaTime = Gdx.graphics.getDeltaTime();
 		mPlayerActor.update(deltaTime);
@@ -207,12 +229,16 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 		case AI:
 		case STATIONARY:
 			mEnemyActor.update(deltaTime);
+			mEnemyActor.updateEditor();
 			break;
 
 		case PATH:
 			mEnemyPathLoop.update(deltaTime);
+			mEnemyPathLoop.updateEditor();
 			mEnemyPathOnce.update(deltaTime);
+			mEnemyPathOnce.updateEditor();
 			mEnemyPathBackAndForth.update(deltaTime);
+			mEnemyPathBackAndForth.updateEditor();
 
 			// Reset Once enemy ever 4 seconds
 			if (mfEnemyOnceReachEnd != null) {
@@ -236,25 +262,41 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	}
 
 	@Override
-	public void onResize(int width, int height) {
-		super.onResize(width, height);
-		scalePathLabels();
-	}
-
-	@Override
-	public void onDisposed() {
-		mPlayerActor.dispose();
-		mEnemyActor.dispose();
-		mEnemyPathBackAndForth.dispose();
-		mEnemyPathLoop.dispose();
-		mEnemyPathOnce.dispose();
-
-		super.onDisposed();
-	}
-
-	@Override
-	public void render() {
+	protected void render() {
 		super.render();
+
+		if (Config.Graphics.USE_RELEASE_RENDERER) {
+			ShaderProgram defaultShader = ResourceCacheFacade.get(ResourceNames.SHADER_DEFAULT);
+			if (defaultShader != null) {
+				mShapeRenderer.setShader(defaultShader);
+			}
+			mShapeRenderer.setProjectionMatrix(mCamera.combined);
+			mShapeRenderer.begin(ShapeType.Filled);
+			Gdx.gl.glEnable(GL20.GL_BLEND);
+			Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+
+			// Enemies
+			switch (getMovementType()) {
+			case AI:
+			case STATIONARY:
+				mEnemyActor.render(mShapeRenderer);
+				break;
+
+			case PATH:
+				mPathBackAndForth.renderEditor(mShapeRenderer);
+				mPathLoop.renderEditor(mShapeRenderer);
+				mPathOnce.renderEditor(mShapeRenderer);
+				mEnemyPathBackAndForth.render(mShapeRenderer);
+				mEnemyPathLoop.render(mShapeRenderer);
+				mEnemyPathOnce.render(mShapeRenderer);
+				break;
+			}
+
+			mPlayerActor.render(mShapeRenderer);
+			mBulletDestroyer.render(mShapeRenderer);
+
+			mShapeRenderer.end();
+		}
 	}
 
 	@Override
@@ -831,7 +873,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 		//		if (mBulletActor != null) {
 		//			mBulletActor.destroyBody();
 		//
-		//			diffOffset = Vector2Pool.obtain();
+		//			diffOffset = Pools.vector2.obtain();
 		//			diffOffset.set(mDef.getCenterOffset());
 		//		}
 
@@ -842,7 +884,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 		//			diffOffset.add(mBulletActor.getPosition());
 		//			mBulletActor.setPosition(diffOffset);
 		//			mBulletActor.createBody();
-		//			Vector2Pool.free(diffOffset);
+		//			Pools.vector2.free(diffOffset);
 		//		}
 	}
 
@@ -853,7 +895,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 		//		if (mBulletActor != null) {
 		//			mBulletActor.destroyBody();
 		//
-		//			diffOffset = Vector2Pool.obtain();
+		//			diffOffset = Pools.vector2.obtain();
 		//			diffOffset.set(mDef.getCenterOffset());
 		//		}
 
@@ -864,7 +906,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 		//			diffOffset.add(mBulletActor.getPosition());
 		//			mBulletActor.setPosition(diffOffset);
 		//			mBulletActor.createBody();
-		//			Vector2Pool.free(diffOffset);
+		//			Pools.vector2.free(diffOffset);
 		//		}
 	}
 
@@ -1023,8 +1065,8 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 		Vector2[] nodes = new Vector2[4];
 		Vector2[] screenPos = new Vector2[4];
 		for (int i = 0; i < nodes.length; ++i) {
-			screenPos[i] = Vector2Pool.obtain();
-			nodes[i] = Vector2Pool.obtain();
+			screenPos[i] = Pools.vector2.obtain();
+			nodes[i] = Pools.vector2.obtain();
 		}
 		// X-area: From middle of screen to 1/6 of the screen width
 		// Y-area: Height of each path should be 1/5. Offset it with 1/20 so it doesn't touch the borders
@@ -1090,8 +1132,8 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 
 		// Free stuff
 		for (int i = 0; i < nodes.length; ++i) {
-			Vector2Pool.free(nodes[i]);
-			Vector2Pool.free(screenPos[i]);
+			Pools.vector2.free(nodes[i]);
+			Pools.vector2.free(screenPos[i]);
 		}
 	}
 
@@ -1141,7 +1183,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	 * Resets the player position
 	 */
 	private void resetPlayerPosition() {
-		Vector2 playerPosition = Vector2Pool.obtain();
+		Vector2 playerPosition = Pools.vector2.obtain();
 		Scene.screenToWorldCoord(mCamera, Gdx.graphics.getWidth() * 0.1f, Gdx.graphics.getHeight() * 0.5f, playerPosition, true);
 		mPlayerActor.setPosition(playerPosition);
 		mPlayerActor.getBody().setLinearVelocity(0, 0);
@@ -1252,6 +1294,8 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	private PlayerActor mPlayerActor = null;
 	/** Invoker */
 	private Invoker mInvoker = new Invoker();
+	/** Listens for collisions */
+	private CollisionResolver mCollisionResolver = new CollisionResolver();
 
 	/** Table for path lables, these are added directly to the stage */
 	private Table mPathLabels = new Table();
