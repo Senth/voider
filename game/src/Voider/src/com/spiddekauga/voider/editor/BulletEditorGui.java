@@ -17,11 +17,13 @@ import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.HideListener;
 import com.spiddekauga.utils.scene.ui.SliderListener;
+import com.spiddekauga.utils.scene.ui.TooltipListener;
 import com.spiddekauga.voider.Config.Editor;
 import com.spiddekauga.voider.Config.Editor.Weapon;
 import com.spiddekauga.voider.game.actors.ActorShapeTypes;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceNames;
+import com.spiddekauga.voider.utils.Messages;
 
 /**
  * GUI for the bullet editor
@@ -42,15 +44,14 @@ public class BulletEditorGui extends ActorGui {
 		mOptionTable.setPreferences(mMainTable);
 
 
-		initVisual(
+		initVisual("bullet",
 				ActorShapeTypes.CIRCLE,
 				ActorShapeTypes.TRIANGLE,
 				ActorShapeTypes.RECTANGLE,
-				ActorShapeTypes.LINE,
 				ActorShapeTypes.CUSTOM
 				);
 		initWeapon();
-		initOptions();
+		initOptions("bullet");
 		initFileMenu("bullet");
 		initMainMenu(mBulletEditor, "bullet");
 		initMenu();
@@ -105,6 +106,7 @@ public class BulletEditorGui extends ActorGui {
 		mMainTable.add(button);
 		mVisualHider.addToggleActor(mVisualTable);
 		mVisualHider.setButton(button);
+		new TooltipListener(button, "Visuals", Messages.replaceName(Messages.Tooltip.Actor.Menu.VISUALS, "bullet"));
 
 		// Weapon
 		button = new TextButton("Weapons", textToggleStyle);
@@ -121,6 +123,7 @@ public class BulletEditorGui extends ActorGui {
 		mMainTable.add(button);
 		mOptionHider.setButton(button);
 		mOptionHider.addToggleActor(mOptionTable);
+		new TooltipListener(button, "Options", Messages.replaceName(Messages.Tooltip.Actor.Menu.OPTIONS, "bullet"));
 
 
 		mMainTable.row().setFillHeight(true).setAlign(Horizontal.LEFT, Vertical.TOP);

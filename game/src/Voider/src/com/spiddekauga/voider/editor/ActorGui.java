@@ -26,6 +26,7 @@ import com.spiddekauga.utils.scene.ui.HideListener;
 import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
 import com.spiddekauga.utils.scene.ui.SliderListener;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
+import com.spiddekauga.utils.scene.ui.TooltipListener;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Editor;
 import com.spiddekauga.voider.Config.Editor.Bullet;
@@ -140,8 +141,9 @@ public abstract class ActorGui extends EditorGui {
 
 	/**
 	 * Initializes actor options
+	 * @param actorTypeName name of the actor type to be displayed in messages
 	 */
-	protected void initOptions() {
+	protected void initOptions(String actorTypeName) {
 		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
 		LabelStyle labelStyle = editorSkin.get("default", LabelStyle.class);
 		TextFieldStyle textFieldStyle = editorSkin.get("default", TextFieldStyle.class);
@@ -159,6 +161,7 @@ public abstract class ActorGui extends EditorGui {
 		textField.setMaxLength(Config.Editor.NAME_LENGTH_MAX);
 		mOptionTable.add(textField).setFillWidth(true);
 		mWidgets.option.name = textField;
+		new TooltipListener(textField, "Name", Messages.replaceName(Messages.Tooltip.Actor.Option.NAME, actorTypeName));
 		new TextFieldListener(textField, "Name", mInvoker) {
 			@Override
 			protected void onChange(String newText) {
@@ -175,6 +178,7 @@ public abstract class ActorGui extends EditorGui {
 		textField.setMaxLength(Config.Editor.DESCRIPTION_LENGTH_MAX);
 		mOptionTable.add(textField).setFillWidth(true).setFillHeight(true);
 		mWidgets.option.description = textField;
+		new TooltipListener(textField, "Description", Messages.replaceName(Messages.Tooltip.Actor.Option.DESCRIPTION, actorTypeName));
 		new TextFieldListener(textField, "Write your description here...", mInvoker) {
 			@Override
 			protected void onChange(String newText) {
@@ -318,9 +322,10 @@ public abstract class ActorGui extends EditorGui {
 
 	/**
 	 * Initializes visual options
+	 * 	 * @param actorTypeName name of the actor type to be displayed in messages
 	 * @param actorShapeTypes all shapes that shall be initializes
 	 */
-	protected void initVisual(ActorShapeTypes... actorShapeTypes) {
+	protected void initVisual(String actorTypeName, ActorShapeTypes... actorShapeTypes) {
 		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
 		LabelStyle labelStyle = editorSkin.get("default", LabelStyle.class);
 		SliderStyle sliderStyle = editorSkin.get("default", SliderStyle.class);
@@ -334,6 +339,7 @@ public abstract class ActorGui extends EditorGui {
 		// Starting angle
 		Label label = new Label("Starting angle", labelStyle);
 		mVisualTable.add(label);
+		new TooltipListener(label, "Starting angle", Messages.replaceName(Messages.Tooltip.Actor.Visuals.STARTING_ANGLE, actorTypeName));
 
 		mVisualTable.row();
 		Slider slider = new Slider(0, 360, 1, false, sliderStyle);
@@ -342,7 +348,8 @@ public abstract class ActorGui extends EditorGui {
 		TextField textField = new TextField("", textFieldStyle);
 		textField.setWidth(Editor.TEXT_FIELD_NUMBER_WIDTH);
 		mVisualTable.add(textField);
-
+		new TooltipListener(slider, "Starting angle", Messages.replaceName(Messages.Tooltip.Actor.Visuals.STARTING_ANGLE, actorTypeName));
+		new TooltipListener(textField, "Starting angle", Messages.replaceName(Messages.Tooltip.Actor.Visuals.STARTING_ANGLE, actorTypeName));
 		new SliderListener(slider, textField, mInvoker) {
 			@Override
 			protected void onChange(float newValue) {
@@ -354,6 +361,7 @@ public abstract class ActorGui extends EditorGui {
 		// Rotation speed
 		mVisualTable.row();
 		label = new Label("Rotation speed", labelStyle);
+		new TooltipListener(label, "Rotation speed", Messages.replaceName(Messages.Tooltip.Actor.Visuals.ROTATION_SPEED, actorTypeName));
 		mVisualTable.add(label);
 
 		mVisualTable.row();
@@ -363,7 +371,8 @@ public abstract class ActorGui extends EditorGui {
 		textField = new TextField("", textFieldStyle);
 		textField.setWidth(Editor.TEXT_FIELD_NUMBER_WIDTH);
 		mVisualTable.add(textField);
-
+		new TooltipListener(slider, "Rotation speed", Messages.replaceName(Messages.Tooltip.Actor.Visuals.ROTATION_SPEED, actorTypeName));
+		new TooltipListener(textField, "Rotation speed", Messages.replaceName(Messages.Tooltip.Actor.Visuals.ROTATION_SPEED, actorTypeName));
 		new SliderListener(slider, textField, mInvoker) {
 			@Override
 			protected void onChange(float newValue) {
@@ -383,6 +392,7 @@ public abstract class ActorGui extends EditorGui {
 			mVisualTable.add(button);
 			button.addListener(shapeChecker);
 			buttonGroup.add(button);
+			new TooltipListener(button, "Circle", Messages.replaceName(Messages.Tooltip.Actor.Visuals.CIRCLE, actorTypeName));
 			circleHider = new HideListener(button, true) {
 				@Override
 				protected void onShow() {
@@ -401,6 +411,7 @@ public abstract class ActorGui extends EditorGui {
 			mVisualTable.add(button);
 			button.addListener(shapeChecker);
 			buttonGroup.add(button);
+			new TooltipListener(button, "Rectangle", Messages.replaceName(Messages.Tooltip.Actor.Visuals.RECTANGLE, actorTypeName));
 			rectangleHider = new HideListener(button, true) {
 				@Override
 				protected void onShow() {
@@ -419,6 +430,7 @@ public abstract class ActorGui extends EditorGui {
 			mVisualTable.add(button);
 			button.addListener(shapeChecker);
 			buttonGroup.add(button);
+			new TooltipListener(button, "Triangle", Messages.replaceName(Messages.Tooltip.Actor.Visuals.TRIANGLE, actorTypeName));
 			triangleHider = new HideListener(button, true) {
 				@Override
 				protected void onShow() {
@@ -452,6 +464,7 @@ public abstract class ActorGui extends EditorGui {
 			mVisualTable.add(button);
 			button.addListener(shapeChecker);
 			buttonGroup.add(button);
+			new TooltipListener(button, "Draw", Messages.replaceName(Messages.Tooltip.Actor.Visuals.DRAW, actorTypeName));
 			customHider = new HideListener(button, true) {
 				@Override
 				protected void onShow() {
@@ -595,11 +608,11 @@ public abstract class ActorGui extends EditorGui {
 			GuiCheckCommandCreator shapeCustomChecker = new GuiCheckCommandCreator(mInvoker);
 			Button button = new TextButton("Add/Move", toggleStyle);
 			button.addListener(shapeCustomChecker);
-			button.setName("add/move");
 			mWidgets.visual.customShapeAddMove = button;
 			buttonGroup.add(button);
 			customHider.addToggleActor(button);
-			new ButtonListener(button) {
+			TooltipListener tooltipListener = new TooltipListener(button, "Add/Move", Messages.replaceName(Messages.Tooltip.Actor.Visuals.ADD_MOVE, actorTypeName));
+			new ButtonListener(button, tooltipListener) {
 				@Override
 				protected void onChecked(boolean checked) {
 					if (checked) {
@@ -612,11 +625,11 @@ public abstract class ActorGui extends EditorGui {
 			// Remove
 			button = new TextButton("Remove", toggleStyle);
 			button.addListener(shapeCustomChecker);
-			button.setName("remove");
 			mWidgets.visual.customShapeRemove = button;
 			buttonGroup.add(button);
 			customHider.addToggleActor(button);
-			new ButtonListener(button) {
+			tooltipListener = new TooltipListener(button, "Remove", Messages.replaceName(Messages.Tooltip.Actor.Visuals.REMOVE, actorTypeName));
+			new ButtonListener(button, tooltipListener) {
 				@Override
 				protected void onChecked(boolean checked) {
 					if (checked) {
@@ -629,13 +642,13 @@ public abstract class ActorGui extends EditorGui {
 			// Set center
 			button = new TextButton("Set center", toggleStyle);
 			button.addListener(shapeCustomChecker);
-			button.setName("set center");
 			mWidgets.visual.customShapeSetCenter = button;
 			HideListener setCenterHider = new HideListener(button, true);
 			buttonGroup.add(button);
 			customHider.addToggleActor(button);
 			customHider.addChild(setCenterHider);
-			new ButtonListener(button) {
+			tooltipListener = new TooltipListener(button, "Set center", Messages.replaceName(Messages.Tooltip.Actor.Visuals.SET_CENTER, actorTypeName));
+			new ButtonListener(button, tooltipListener) {
 				@Override
 				protected void onChecked(boolean checked) {
 					if (checked) {
@@ -649,7 +662,8 @@ public abstract class ActorGui extends EditorGui {
 			mVisualTable.row(Horizontal.RIGHT, Vertical.TOP);
 			button = new TextButton("Reset center", textButtonStyle);
 			setCenterHider.addToggleActor(button);
-			new ButtonListener(button) {
+			tooltipListener = new TooltipListener(button, "Reset center", Messages.replaceName(Messages.Tooltip.Actor.Visuals.RESET_CENTER, actorTypeName));
+			new ButtonListener(button, tooltipListener) {
 				@Override
 				protected void onPressed() {
 					mInvoker.execute(new CActorEditorCenterReset(mActorEditor));
@@ -678,8 +692,9 @@ public abstract class ActorGui extends EditorGui {
 
 	/**
 	 * Initializes collision options, this is optional
+	 * @param actorTypeName name of the actor type
 	 */
-	protected void initCollision() {
+	protected void initCollision(String actorTypeName) {
 		Skin skin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
 		LabelStyle labelStyle = skin.get("default", LabelStyle.class);
 		SliderStyle sliderStyle = skin.get("default", SliderStyle.class);
@@ -697,6 +712,7 @@ public abstract class ActorGui extends EditorGui {
 		TextField textField = new TextField("", textFieldStyle);
 		textField.setWidth(Editor.TEXT_FIELD_NUMBER_WIDTH);
 		mCollisionTable.add(textField);
+		new TooltipListener(slider, "Collision Damage", Messages.replaceName(Messages.Tooltip.Actor.Collision.DAMAGE, actorTypeName));
 		new SliderListener(slider, textField, mInvoker) {
 			@Override
 			protected void onChange(float newValue) {
@@ -709,7 +725,8 @@ public abstract class ActorGui extends EditorGui {
 		Button button = new CheckBox("Destroy on collide", checkBoxStyle);
 		mWidgets.collision.destroyOnCollide = button;
 		mCollisionTable.add(button);
-		new ButtonListener(button) {
+		TooltipListener tooltipListener = new TooltipListener(button, "Destroy on collide", Messages.replaceName(Messages.Tooltip.Actor.Collision.DESTROY_ON_COLLIDE, actorTypeName));
+		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onChecked(boolean checked) {
 				mActorEditor.setDestroyOnCollide(checked);

@@ -29,22 +29,28 @@ public class CollisionResolver implements ContactListener {
 			Actor actorA = (Actor)bodyA.getUserData();
 			Actor actorB = (Actor)bodyB.getUserData();
 
-			// If one of the actors is a bullet, destroy the bullet and directly
-			// decrease the life
-			BulletActor bullet = null;
+			// If one shall be destroyed directly
+			Actor destroyActor = null;
 			Actor actor = null;
-			if (actorA instanceof BulletActor) {
-				bullet = (BulletActor)actorA;
+			if (actorA.getDef().shallDestroyOnCollide()) {
+				destroyActor = actorA;
 				actor = actorB;
 			}
-			else if (actorB instanceof BulletActor) {
-				bullet = (BulletActor)actorB;
+			else if (actorB.getDef().shallDestroyOnCollide()) {
+				destroyActor = actorB;
 				actor = actorA;
 			}
 
-			if (bullet != null) {
-				actor.decreaseLife(bullet.getHitDamage());
-				bullet.deactivate();
+			if (destroyActor != null) {
+				float damage = destroyActor.getDef().getCollisionDamage();
+
+				// Use hit damage from bullet instead
+				if (destroyActor instanceof BulletActor) {
+					damage = ((BulletActor) destroyActor).getHitDamage();
+				}
+
+				actor.decreaseLife(damage);
+				destroyActor.deactivate();
 				return;
 			}
 
@@ -88,8 +94,8 @@ public class CollisionResolver implements ContactListener {
 			Actor actorA = (Actor)bodyA.getUserData();
 			Actor actorB = (Actor)bodyB.getUserData();
 
-			// Bullet, has been handled differently
-			if (actorA instanceof BulletActor || actorB instanceof BulletActor) {
+			// If one shall be destroyed on collide...
+			if (actorA.getDef().shallDestroyOnCollide() || actorB.getDef().shallDestroyOnCollide()) {
 				return;
 			}
 

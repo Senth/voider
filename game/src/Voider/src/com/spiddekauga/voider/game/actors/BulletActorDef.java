@@ -20,6 +20,8 @@ public class BulletActorDef extends ActorDef {
 		getBodyDef().type = BodyType.DynamicBody;
 
 		setShapeType(Bullet.Visual.SHAPE_DEFAULT);
+
+		setDestroyOnCollide(true);
 	}
 
 	@Override
