@@ -5,13 +5,14 @@ import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
-import com.badlogic.gdx.graphics.glutils.ShapeRendererEx.ShapeType;
 import com.badlogic.gdx.math.Vector2;
 import com.spiddekauga.utils.Invoker;
 import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.utils.Scroller;
 import com.spiddekauga.utils.Scroller.ScrollAxis;
+import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.editor.commands.CCameraMove;
 import com.spiddekauga.voider.editor.commands.CLevelEnemyDefSelect;
@@ -131,7 +132,27 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 			Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 			mLevel.render(mShapeRenderer);
 			mLevel.renderEditor(mShapeRenderer);
+
+			renderAboveBelowBorders();
+
 			mShapeRenderer.end();
+		}
+	}
+
+	@Override
+	protected void fixCamera() {
+		float width = Gdx.graphics.getWidth() * Config.Graphics.LEVEL_EDITOR_SCALE;
+		// Decrease scale of width depending on height scaled
+		float heightScale = Config.Graphics.HEIGHT / Gdx.graphics.getHeight();
+		width *= heightScale;
+		float height = Config.Graphics.HEIGHT * Config.Graphics.LEVEL_EDITOR_SCALE;
+
+		if (mCamera != null) {
+			mCamera.viewportHeight = height;
+			mCamera.viewportWidth = width;
+			mCamera.update();
+		} else {
+			mCamera = new OrthographicCamera(width , height);
 		}
 	}
 
@@ -531,7 +552,10 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 	public void runFromHere(boolean invulnerable) {
 		GameScene testGame = new GameScene(invulnerable);
 		Level copyLevel = mLevel.copyKeepId();
-		copyLevel.setXCoord(mCamera.position.x + mCamera.viewportWidth * 0.5f);
+		// Because of scaling decrease the x position
+		float levelScaling = (Config.Graphics.LEVEL_EDITOR_HEIGHT_SCALE - 1) / Config.Graphics.LEVEL_EDITOR_HEIGHT_SCALE;
+		float xPosition = mCamera.position.x + mCamera.viewportWidth * 0.5f - mCamera.viewportWidth * levelScaling;
+		copyLevel.setXCoord(xPosition);
 		testGame.setLevel(copyLevel);
 
 		SceneSwitcher.switchTo(testGame);
@@ -1240,6 +1264,33 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 				touchTool.clear();
 			}
 		}
+	}
+
+	/**
+	 * Renders the above and below borders
+	 */
+	private void renderAboveBelowBorders() {
+		// Calculate how much space is left for the borders
+		float heightAvailable = (Config.Graphics.LEVEL_EDITOR_HEIGHT_SCALE - 1) / Config.Graphics.LEVEL_EDITOR_HEIGHT_SCALE;
+
+		Vector2 minPos = Pools.vector2.obtain();
+		Vector2 maxPos = Pools.vector2.obtain();
+
+		screenToWorldCoord(mCamera, 0, Gdx.graphics.getHeight(), minPos, false);
+		screenToWorldCoord(mCamera, Gdx.graphics.getWidth(), 0, maxPos, false);
+
+		heightAvailable *= maxPos.y - minPos.y;
+		heightAvailable *= 0.5f;
+		float width = maxPos.x - minPos.x;
+
+		mShapeRenderer.setColor(Config.Editor.Level.ABOVE_BELOW_COLOR);
+
+
+		// Draw borders
+		// Upper
+		mShapeRenderer.rect(minPos.x, minPos.y, width, heightAvailable);
+		// Lower
+		mShapeRenderer.rect(minPos.x, maxPos.y - heightAvailable, width, heightAvailable);
 	}
 
 	/**

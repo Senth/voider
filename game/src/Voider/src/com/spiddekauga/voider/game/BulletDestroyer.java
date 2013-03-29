@@ -2,9 +2,9 @@ package com.spiddekauga.voider.game;
 
 import java.util.ArrayList;
 
-import com.badlogic.gdx.graphics.glutils.ShapeRendererEx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Disposable;
+import com.spiddekauga.utils.ShapeRendererEx;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.actors.BulletActor;
 import com.spiddekauga.voider.scene.SceneSwitcher;

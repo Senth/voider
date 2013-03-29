@@ -5,11 +5,11 @@ import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.glutils.ShapeRendererEx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.utils.Invoker;
+import com.spiddekauga.utils.ShapeRendererEx;
 import com.spiddekauga.voider.game.BulletDestroyer;
 
 /**

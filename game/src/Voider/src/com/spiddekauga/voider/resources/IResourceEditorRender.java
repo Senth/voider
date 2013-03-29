@@ -1,6 +1,6 @@
 package com.spiddekauga.voider.resources;
 
-import com.badlogic.gdx.graphics.glutils.ShapeRendererEx;
+import com.spiddekauga.utils.ShapeRendererEx;
 
 /**
  * A resource that can be rendered when in editor mode

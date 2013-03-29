@@ -737,17 +737,6 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 				polygonShape.set(triangleVertices);
 				fixtureDef.shape = polygonShape;
 				addFixtureDef(fixtureDef);
-				//
-				//				for (int vertex = 0; vertex < triangleVertices.length; ++vertex) {
-				//					triangleVertices[vertex].mul(-1);
-				//				}
-				//
-				//				fixtureDef = new FixtureDef();
-				//				copyFixtureDef(savedFixtureProperties, fixtureDef);
-				//				polygonShape = new PolygonShape();
-				//				polygonShape.set(triangleVertices);
-				//				fixtureDef.shape = polygonShape;
-				//				addFixtureDef(fixtureDef);
 			}
 
 

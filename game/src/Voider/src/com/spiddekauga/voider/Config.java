@@ -84,7 +84,7 @@ public class Config {
 		}
 
 		/** Border width of all actors */
-		public final static float BORDER_WIDTH = 0.75f;
+		public final static float BORDER_WIDTH = 0.5f;
 	}
 
 
@@ -403,6 +403,9 @@ public class Config {
 			public final static float LEVEL_SPEED_DEFAULT = 5;
 			/** Step size of level speeed */
 			public final static float LEVEL_SPEED_STEP_SIZE = 1;
+			/** Color of above and below the actual level, so the player can see
+			 * that this doesn't below to the level. */
+			public final static Color ABOVE_BELOW_COLOR = new Color(1, 1, 1, 0.1f);
 		}
 
 		/**
@@ -463,7 +466,7 @@ public class Config {
 		/** Trigger pick size */
 		public final static float PICK_TRIGGER_SIZE = PICK_PATH_SIZE;
 		/** Radius of all picking circles */
-		private final static float PICKING_CIRCLE_RADIUS = 1.0f;
+		private final static float PICKING_CIRCLE_RADIUS = 2.0f;
 		/** Picking shape */
 		private static Shape PICKING_CIRCLE_SHAPE = null;
 		/** Picking fixture */
@@ -515,6 +518,13 @@ public class Config {
 		public final static float HEIGHT = 480;
 		/** World scaling factor */
 		public final static float WORLD_SCALE = 0.1f;
+		/** How much bigger of the screen is shown in height from
+		 * the regular scale. E.g. 3 will show the same amount of free
+		 * space above and below the level */
+		public final static float LEVEL_EDITOR_HEIGHT_SCALE = 2;
+		/** Level editor scale, this allows the player to see above and below
+		 * the level */
+		public final static float LEVEL_EDITOR_SCALE = WORLD_SCALE * LEVEL_EDITOR_HEIGHT_SCALE;
 	}
 
 	/**

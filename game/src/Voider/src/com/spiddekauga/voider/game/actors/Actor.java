@@ -5,8 +5,6 @@ import java.util.Iterator;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.glutils.ShapeRendererEx;
-import com.badlogic.gdx.graphics.glutils.ShapeRendererEx.ShapeType;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -20,6 +18,8 @@ import com.badlogic.gdx.utils.OrderedMap;
 import com.badlogic.gdx.utils.Pool.Poolable;
 import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.utils.Json;
+import com.spiddekauga.utils.ShapeRendererEx;
+import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Editor;
 import com.spiddekauga.voider.editor.HitWrapper;
@@ -918,12 +918,16 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 			float rotation = MathUtils.radiansToDegrees * getBody().getAngle();
 
 			mRotatedVertices = copyVectorArray(mDef.getTriangleVertices());
-			Geometry.moveVertices(mRotatedVertices, getDef().getCenterOffset(), true);
-			Geometry.rotateVertices(mRotatedVertices, rotation, true);
+			if (mRotatedVertices != null) {
+				Geometry.moveVertices(mRotatedVertices, getDef().getCenterOffset(), true);
+				Geometry.rotateVertices(mRotatedVertices, rotation, true);
+			}
 
 			mRotatedBorderVertices = copyVectorArray(mDef.getTriangleBorderVertices());
-			Geometry.moveVertices(mRotatedBorderVertices, getDef().getCenterOffset(), true);
-			Geometry.rotateVertices(mRotatedBorderVertices, rotation, true);
+			if (mRotatedBorderVertices != null) {
+				Geometry.moveVertices(mRotatedBorderVertices, getDef().getCenterOffset(), true);
+				Geometry.rotateVertices(mRotatedBorderVertices, rotation, true);
+			}
 		}
 	}
 
@@ -938,9 +942,13 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	/**
 	 * Creates a copy of the specified vector2 array
 	 * @param array the array to make a copy of
-	 * @return copied array
+	 * @return copied array, null if parameter array is null.
 	 */
 	protected static ArrayList<Vector2> copyVectorArray(ArrayList<Vector2> array) {
+		if (array == null) {
+			return null;
+		}
+
 		@SuppressWarnings("unchecked")
 		ArrayList<Vector2> verticesCopy = Pools.arrayList.obtain();
 		verticesCopy.clear();

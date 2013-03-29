@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.glutils.ShapeRendererEx;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.OrderedMap;
 import com.spiddekauga.utils.Json;
+import com.spiddekauga.utils.ShapeRendererEx;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.PlayerActor;
 import com.spiddekauga.voider.game.triggers.Trigger;

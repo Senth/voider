@@ -1,4 +1,4 @@
-package com.badlogic.gdx.graphics.glutils;
+package com.spiddekauga.utils;
 
 import java.util.ArrayList;
 
@@ -6,6 +6,10 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL10;
+import com.badlogic.gdx.graphics.glutils.ImmediateModeRenderer;
+import com.badlogic.gdx.graphics.glutils.ImmediateModeRenderer10;
+import com.badlogic.gdx.graphics.glutils.ImmediateModeRenderer20;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
