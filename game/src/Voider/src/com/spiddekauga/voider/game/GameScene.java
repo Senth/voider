@@ -71,10 +71,10 @@ public class GameScene extends WorldScene {
 		mLevel.bindResources();
 		mLevel.run();
 
-		ArrayList<Actor> actors = mLevel.getResources(Actor.class);
-		for (Actor actor : actors) {
-			actor.createBody();
-		}
+		//		ArrayList<Actor> actors = mLevel.getResources(Actor.class);
+		//		for (Actor actor : actors) {
+		//			actor.createBody();
+		//		}
 
 		updateCameraPosition();
 		createBorder();
