@@ -550,7 +550,7 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 	 * @param invulnerable makes the player invulnerable
 	 */
 	public void runFromHere(boolean invulnerable) {
-		GameScene testGame = new GameScene(invulnerable);
+		GameScene testGame = new GameScene(true, invulnerable);
 		Level copyLevel = mLevel.copyKeepId();
 		// Because of scaling decrease the x position
 		float levelScaling = (Config.Graphics.LEVEL_EDITOR_HEIGHT_SCALE - 1) / Config.Graphics.LEVEL_EDITOR_HEIGHT_SCALE;

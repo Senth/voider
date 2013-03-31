@@ -16,6 +16,7 @@ import com.badlogic.gdx.physics.box2d.joints.MouseJointDef;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.actors.Actor;
+import com.spiddekauga.voider.game.actors.EnemyActor;
 import com.spiddekauga.voider.game.actors.PlayerActor;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceNames;
@@ -31,14 +32,15 @@ import com.spiddekauga.voider.utils.Pools;
 public class GameScene extends WorldScene {
 	/**
 	 * Initializes the game scene.
-	 * @param invulnerable if we're just testing the level, i.e. cannot die
-	 * but still has health. Scoring will still be used (player could be testing
-	 * scoring).
+	 * @param testing if we're testing the level. This allows the player to go back using ESC or BACK key
+	 * @param invulnerable set to true to make the player invulnerable while testing.
+	 * Scoring will still be used (player could be testing scoring.
 	 */
-	public GameScene(boolean invulnerable) {
+	public GameScene(boolean testing, boolean invulnerable) {
 		super(new GameSceneGui());
 		((GameSceneGui)mGui).setGameScene(this);
 
+		mTesting = testing;
 		mInvulnerable = invulnerable;
 
 		Actor.setEditorActive(false);
@@ -71,10 +73,13 @@ public class GameScene extends WorldScene {
 		mLevel.bindResources();
 		mLevel.run();
 
-		//		ArrayList<Actor> actors = mLevel.getResources(Actor.class);
-		//		for (Actor actor : actors) {
-		//			actor.createBody();
-		//		}
+		// Create bodies, except for enemies
+		ArrayList<Actor> actors = mLevel.getResources(Actor.class);
+		for (Actor actor : actors) {
+			if (!(actor instanceof EnemyActor)) {
+				actor.createBody();
+			}
+		}
 
 		updateCameraPosition();
 		createBorder();
@@ -268,7 +273,7 @@ public class GameScene extends WorldScene {
 	@Override
 	public boolean keyDown(int keycode) {
 		// Set level as complete if we want to go back while testing
-		if (mInvulnerable && (keycode == Keys.ESCAPE || keycode == Keys.BACK)) {
+		if (mTesting && (keycode == Keys.ESCAPE || keycode == Keys.BACK)) {
 			setOutcome(Outcomes.LEVEL_QUIT);
 		}
 
@@ -310,6 +315,8 @@ public class GameScene extends WorldScene {
 	private LevelDef mLevelToLoad = null;
 	/** The current level used in the game */
 	private Level mLevel = null;
+	/** If we're just testing the level */
+	private boolean mTesting;
 	/** Makes the player invulnerable, useful for testing */
 	private boolean mInvulnerable;
 	/** Player ship actor, plays the game */
