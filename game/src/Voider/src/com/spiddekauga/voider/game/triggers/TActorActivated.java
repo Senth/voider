@@ -91,7 +91,7 @@ public class TActorActivated extends Trigger implements Disposable, IResourceBod
 	}
 
 	@Override
-	protected boolean isTriggered() {
+	public boolean isTriggered() {
 		return mActor.isActive();
 	}
 

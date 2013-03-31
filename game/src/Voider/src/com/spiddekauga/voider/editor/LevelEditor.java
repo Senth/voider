@@ -31,6 +31,7 @@ import com.spiddekauga.voider.game.actors.EnemyGroup;
 import com.spiddekauga.voider.game.actors.PickupActor;
 import com.spiddekauga.voider.game.actors.PickupActorDef;
 import com.spiddekauga.voider.game.actors.StaticTerrainActor;
+import com.spiddekauga.voider.game.triggers.TScreenAt;
 import com.spiddekauga.voider.game.triggers.TriggerAction.Actions;
 import com.spiddekauga.voider.game.triggers.TriggerInfo;
 import com.spiddekauga.voider.resources.IResource;
@@ -556,7 +557,17 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 		float levelScaling = (Config.Graphics.LEVEL_EDITOR_HEIGHT_SCALE - 1) / Config.Graphics.LEVEL_EDITOR_HEIGHT_SCALE;
 		float xPosition = mCamera.position.x + mCamera.viewportWidth * 0.5f - mCamera.viewportWidth * levelScaling;
 		copyLevel.setXCoord(xPosition);
+
+		// Remove screen triggers before the specified coordinate
+		ArrayList<TScreenAt> triggers = copyLevel.getResources(TScreenAt.class);
 		testGame.setLevel(copyLevel);
+
+		// TODO TODO TODO TODO TODO TODO
+		for (TScreenAt trigger : triggers) {
+			if (trigger.isTriggered()) {
+				copyLevel.removeResource(trigger.getId());
+			}
+		}
 
 		SceneSwitcher.switchTo(testGame);
 	}

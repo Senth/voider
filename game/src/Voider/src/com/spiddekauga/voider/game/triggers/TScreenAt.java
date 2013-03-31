@@ -65,7 +65,7 @@ public class TScreenAt extends Trigger implements IResourceBody, IResourcePositi
 	}
 
 	@Override
-	protected boolean isTriggered() {
+	public boolean isTriggered() {
 		return mLevel.getXCoord() >= mPosition.x;
 	}
 
