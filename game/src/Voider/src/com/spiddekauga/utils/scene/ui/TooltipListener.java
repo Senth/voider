@@ -74,7 +74,7 @@ public class TooltipListener implements EventListener {
 				}
 			} else if (((InputEvent) event).getType() == Type.exit) {
 				// Only do something if the cursor is outside the actor
-				if (isWindowDisplayingThis() && !isCursorInsideActor()) {
+				if ((isWindowDisplayingThis() || isWindowScheduled()) && !isCursorInsideActor()) {
 					handleHoverExit();
 					return true;
 				}
@@ -294,6 +294,13 @@ public class TooltipListener implements EventListener {
 	 */
 	private boolean isWindowDisplayingThis() {
 		return isWindowShown() && mWindow.getTitle().equals(mTitle);
+	}
+
+	/**
+	 * @return true if the windows is scheduled to be shown
+	 */
+	private boolean isWindowScheduled() {
+		return mShowWindowTask != null;
 	}
 
 	/**
