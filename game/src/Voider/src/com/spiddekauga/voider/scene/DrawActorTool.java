@@ -75,10 +75,11 @@ public class DrawActorTool extends ActorTool {
 
 		if (actorDef.getCornerCount() > 0) {
 			if (mSelectedActor == null) {
-				mSelectedActor = new BulletActor();
+				mSelectedActor = newActor();
 				mActorEditor.onResourceAdded(mSelectedActor);
 			}
 			mSelectedActor.setDef(actorDef);
+			mSelectedActor.setSkipRotating(true);
 		} else {
 			mActorEditor.onResourceRemoved(mSelectedActor);
 			mSelectedActor = null;

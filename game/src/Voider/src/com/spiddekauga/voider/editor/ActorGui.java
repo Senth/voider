@@ -2,6 +2,7 @@ package com.spiddekauga.voider.editor;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
@@ -396,8 +397,10 @@ public abstract class ActorGui extends EditorGui {
 			circleHider = new HideListener(button, true) {
 				@Override
 				protected void onShow() {
-					mActorEditor.setShapeType(ActorShapeTypes.CIRCLE);
-					mActorEditor.resetCenterOffset();
+					if (mActorEditor.getShapeType() != ActorShapeTypes.CIRCLE) {
+						mActorEditor.setShapeType(ActorShapeTypes.CIRCLE);
+						mActorEditor.resetCenterOffset();
+					}
 				}
 			};
 		}
@@ -415,8 +418,10 @@ public abstract class ActorGui extends EditorGui {
 			rectangleHider = new HideListener(button, true) {
 				@Override
 				protected void onShow() {
-					mActorEditor.setShapeType(ActorShapeTypes.RECTANGLE);
-					mActorEditor.resetCenterOffset();
+					if (mActorEditor.getShapeType() != ActorShapeTypes.RECTANGLE) {
+						mActorEditor.setShapeType(ActorShapeTypes.RECTANGLE);
+						mActorEditor.resetCenterOffset();
+					}
 				}
 			};
 		}
@@ -434,8 +439,10 @@ public abstract class ActorGui extends EditorGui {
 			triangleHider = new HideListener(button, true) {
 				@Override
 				protected void onShow() {
-					mActorEditor.setShapeType(ActorShapeTypes.TRIANGLE);
-					mActorEditor.resetCenterOffset();
+					if (mActorEditor.getShapeType() != ActorShapeTypes.TRIANGLE) {
+						mActorEditor.setShapeType(ActorShapeTypes.TRIANGLE);
+						mActorEditor.resetCenterOffset();
+					}
 				}
 			};
 		}
@@ -468,8 +475,10 @@ public abstract class ActorGui extends EditorGui {
 			customHider = new HideListener(button, true) {
 				@Override
 				protected void onShow() {
-					mActorEditor.setShapeType(ActorShapeTypes.CUSTOM);
-					mActorEditor.resetCenterOffset();
+					if (mActorEditor.getShapeType() != ActorShapeTypes.CUSTOM) {
+						mActorEditor.setShapeType(ActorShapeTypes.CUSTOM);
+						mActorEditor.resetCenterOffset();
+					}
 				}
 			};
 		}

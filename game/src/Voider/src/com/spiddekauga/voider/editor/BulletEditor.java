@@ -335,7 +335,7 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 	public void resetCenterOffset() {
 		// Save diff offset and move the actor in the opposite direction...
 		Vector2 diffOffset = null;
-		if (mBulletActor != null) {
+		if (mBulletActor != null && mDef.getShapeType() == ActorShapeTypes.CUSTOM) {
 			mBulletActor.destroyBody();
 
 			diffOffset = Pools.vector2.obtain();
@@ -344,7 +344,7 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 
 		mDef.resetCenterOffset();
 
-		if (mBulletActor != null) {
+		if (mBulletActor != null && mDef.getShapeType() == ActorShapeTypes.CUSTOM) {
 			diffOffset.sub(mDef.getCenterOffset());
 			diffOffset.add(mBulletActor.getPosition());
 			mBulletActor.setPosition(diffOffset);
@@ -357,7 +357,7 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 	public void setCenterOffset(Vector2 newCenter) {
 		// Save diff offset and move the actor in the opposite direction...
 		Vector2 diffOffset = null;
-		if (mBulletActor != null) {
+		if (mBulletActor != null && mDef.getShapeType() == ActorShapeTypes.CUSTOM) {
 			mBulletActor.destroyBody();
 
 			diffOffset = Pools.vector2.obtain();
@@ -366,7 +366,7 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 
 		mDef.setCenterOffset(newCenter);
 
-		if (mBulletActor != null) {
+		if (mBulletActor != null && mDef.getShapeType() == ActorShapeTypes.CUSTOM) {
 			diffOffset.sub(mDef.getCenterOffset());
 			diffOffset.add(mBulletActor.getPosition());
 			mBulletActor.setPosition(diffOffset);
