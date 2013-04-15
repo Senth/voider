@@ -1,6 +1,6 @@
 package com.spiddekauga.voider.game;
 
-import com.badlogic.gdx.graphics.glutils.ShapeRendererEx;
+import com.spiddekauga.utils.ShapeRendererEx;
 import com.spiddekauga.voider.game.triggers.Trigger;
 import com.spiddekauga.voider.game.triggers.TriggerAction.Reasons;
 
