@@ -275,7 +275,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	 */
 	@Override
 	public void render(ShapeRendererEx shapeRenderer) {
-		if (mRotatedVertices == null) {
+		if (mRotatedVertices == null || mBody == null) {
 			return;
 		}
 
@@ -492,6 +492,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 			// Set position
 			bodyDef.position.set(mPosition);
 		}
+		/** @todo Save body def and use it when creating the body */
 	}
 
 	@Override
@@ -809,6 +810,11 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	public void activate() {
 		mActive = true;
 		mActivationTime = SceneSwitcher.getGameTime().getTotalTimeElapsed();
+
+		// Create body
+		if (mBody == null) {
+			createBody();
+		}
 	}
 
 	/**

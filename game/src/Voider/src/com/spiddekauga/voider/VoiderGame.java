@@ -178,7 +178,7 @@ public class VoiderGame implements ApplicationListener {
 	 */
 	@SuppressWarnings("unused")
 	private void testGame() {
-		GameScene gameScene = new GameScene(false);
+		GameScene gameScene = new GameScene(false, false);
 
 		LevelDef levelDef = new LevelDef();
 		Level level = new Level(levelDef);

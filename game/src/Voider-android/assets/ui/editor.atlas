@@ -61,6 +61,14 @@ slider-knob-before
   orig: 8, 16
   offset: 0, 0
   index: -1
+window-background-default
+  rotate: false
+  xy: 257, 4
+  size: 11, 11
+  split: 5, 5, 5, 5
+  orig: 11, 11
+  offset: 0, 0
+  index: -1
 cursor
   rotate: false
   xy: 405, 111
@@ -70,7 +78,7 @@ cursor
   index: -1
 button-default-down
   rotate: false
-  xy: 257, 6
+  xy: 379, 82
   size: 9, 9
   split: 4, 4, 4, 4
   orig: 9, 9
@@ -78,7 +86,7 @@ button-default-down
   index: -1
 button-default-up
   rotate: false
-  xy: 379, 82
+  xy: 397, 100
   size: 9, 9
   split: 4, 4, 4, 4
   orig: 9, 9
@@ -86,7 +94,7 @@ button-default-up
   index: -1
 textfield
   rotate: false
-  xy: 397, 100
+  xy: 270, 6
   size: 9, 9
   split: 4, 4, 4, 4
   orig: 9, 9
@@ -101,14 +109,14 @@ slider-background
   index: -1
 modal-fade
   rotate: false
-  xy: 412, 126
+  xy: 257, 1
   size: 1, 1
   orig: 1, 1
   offset: 0, 0
   index: -1
 selection
   rotate: false
-  xy: 257, 3
+  xy: 260, 1
   size: 1, 1
   orig: 1, 1
   offset: 0, 0

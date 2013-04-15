@@ -11,7 +11,7 @@ import com.spiddekauga.voider.game.triggers.TriggerAction.Reasons;
  */
 public class TestTrigger extends Trigger {
 	@Override
-	protected boolean isTriggered() {
+	public boolean isTriggered() {
 		return true;
 	}
 

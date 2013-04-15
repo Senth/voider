@@ -79,7 +79,7 @@ public abstract class Trigger extends Resource implements IResourceUpdate, IReso
 	 * Checks if the trigger is triggered
 	 * @return true if the trigger has triggered
 	 */
-	protected abstract boolean isTriggered();
+	public abstract boolean isTriggered();
 
 	/**
 	 * Adds a listener to the trigger
