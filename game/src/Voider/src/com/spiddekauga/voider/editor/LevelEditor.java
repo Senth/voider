@@ -100,7 +100,7 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 
 			Vector2 diffScroll = Pools.vector2.obtain();
 			diffScroll.set(mScroller.getCurrentScroll()).sub(mScroller.getOriginScroll());
-			diffScroll.mul(Config.Graphics.WORLD_SCALE);
+			diffScroll.scl(Config.Graphics.WORLD_SCALE);
 
 			mCamera.position.x = diffScroll.x + mScrollCameraOrigin.x;
 			mCamera.update();
@@ -184,6 +184,8 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 		createResourceBodies();
 
 		mInvoker.dispose();
+
+		Actor.setLevel(mLevel);
 	}
 
 	@Override
@@ -317,6 +319,10 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 			if (mLevel == null) {
 				newDef();
 			}
+		}
+
+		if (mLevel != null) {
+			Actor.setLevel(mLevel);
 		}
 	}
 
@@ -559,15 +565,15 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 		copyLevel.setXCoord(xPosition);
 
 		// Remove screen triggers before the specified coordinate
-		ArrayList<TScreenAt> triggers = copyLevel.getResources(TScreenAt.class);
 		testGame.setLevel(copyLevel);
 
-		// TODO TODO TODO TODO TODO TODO
+		ArrayList<TScreenAt> triggers = copyLevel.getResources(TScreenAt.class);
 		for (TScreenAt trigger : triggers) {
 			if (trigger.isTriggered()) {
 				copyLevel.removeResource(trigger.getId());
 			}
 		}
+
 
 		SceneSwitcher.switchTo(testGame);
 	}
@@ -833,7 +839,7 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 				enemyGroup = new EnemyGroup();
 				mLevel.addResource(enemyGroup);
 
-				enemyGroup.setOriginalEnemy(selectedEnemy);
+				enemyGroup.setLeaderEnemy(selectedEnemy);
 
 				ArrayList<EnemyActor> addedEnemies = new ArrayList<EnemyActor>();
 				enemyGroup.setEnemyCount(cEnemies, addedEnemies, null);

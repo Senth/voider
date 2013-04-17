@@ -72,6 +72,7 @@ public class GameScene extends WorldScene {
 		mLevel.addResource(mLevel);
 		mLevel.bindResources();
 		mLevel.run();
+		mLevel.createDefaultTriggers();
 
 		// Create bodies, except for enemies
 		ArrayList<Actor> actors = mLevel.getResources(Actor.class);
@@ -85,7 +86,7 @@ public class GameScene extends WorldScene {
 		createBorder();
 		resetPlayerPosition();
 
-		Actor.setLevelSpeed(mLevel.getSpeed());
+		Actor.setLevel(mLevel);
 	}
 
 	/**
@@ -124,12 +125,6 @@ public class GameScene extends WorldScene {
 		}
 
 		/** @TODO game completed, aborted? */
-	}
-
-	@Override
-	public void onDeactivate() {
-		// Always reset level speed, only game scene uses it
-		Actor.setLevelSpeed(0);
 	}
 
 	/**

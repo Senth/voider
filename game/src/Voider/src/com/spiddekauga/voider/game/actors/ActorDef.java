@@ -277,10 +277,6 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 				break;
 
 
-			case LINE:
-				fixtureDef.shape = createLineShape();
-				break;
-
 			case CUSTOM:
 				try {
 					fixCustomShapeFixtures();
@@ -293,6 +289,8 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 		} else {
 			Gdx.app.error("EnemyActorDef", "FixtureDef null at setShapeType()");
 		}
+
+		mVisualVars.calculateBoundingRadius();
 
 		mFixtureChangeTime = GameTime.getTotalGlobalTimeElapsed();
 	}
@@ -314,6 +312,9 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 			}
 
 		}
+
+		mVisualVars.calculateBoundingRadius();
+
 		mFixtureChangeTime = GameTime.getTotalGlobalTimeElapsed();
 	}
 
@@ -346,14 +347,9 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 				fixtureDef.shape.dispose();
 				fixtureDef.shape = createTriangleShape();
 			}
-		} else if (mVisualVars.shapeType == ActorShapeTypes.LINE) {
-			FixtureDef fixtureDef = getFirstFixtureDef();
-
-			if (fixtureDef != null) {
-				fixtureDef.shape.dispose();
-				fixtureDef.shape = createLineShape();
-			}
 		}
+
+		mVisualVars.calculateBoundingRadius();
 
 		mFixtureChangeTime = GameTime.getTotalGlobalTimeElapsed();
 	}
@@ -388,6 +384,8 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 				fixtureDef.shape = createTriangleShape();
 			}
 		}
+
+		mVisualVars.calculateBoundingRadius();
 
 		mFixtureChangeTime = GameTime.getTotalGlobalTimeElapsed();
 	}
@@ -544,11 +542,6 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 
 		case TRIANGLE:
 			/** @todo implement reset center for triangle */
-			break;
-
-
-		case LINE:
-			/** @todo implement reset center for line */
 			break;
 
 
@@ -1101,6 +1094,13 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	 */
 	public ArrayList<Vector2> getPolygonShape() {
 		return mVisualVars.polygon;
+	}
+
+	/**
+	 * @return bounding radius of the actor
+	 */
+	public float getBoundingRadius() {
+		return mVisualVars.getBoundingRadius();
 	}
 
 	/**

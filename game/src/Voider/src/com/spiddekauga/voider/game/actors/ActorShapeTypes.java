@@ -12,8 +12,6 @@ public enum ActorShapeTypes {
 	RECTANGLE,
 	/** Triangle */
 	TRIANGLE,
-	/** Line */
-	LINE,
 	/** Custom */
 	CUSTOM
 }

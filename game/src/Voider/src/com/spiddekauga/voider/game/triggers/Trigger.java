@@ -152,6 +152,24 @@ public abstract class Trigger extends Resource implements IResourceUpdate, IReso
 		return mSelected;
 	}
 
+	/**
+	 * Set as hidden. When set as hidden the trigger will neither be drawn nor will the
+	 * player be able to select it.
+	 * @param hidden set to true to hide
+	 */
+	public void setHidden(boolean hidden)  {
+		mHidden = hidden;
+	}
+
+	/**
+	 * @return true if the trigger shall be hidden, i.e. neither be drawn nor selectable.
+	 */
+	public boolean isHidden() {
+		return mHidden;
+	}
+
+	/** Set as a hidden trigger (will not create a body and not be drawn) */
+	private boolean mHidden = false;
 	/** If the trigger is currently selected */
 	private boolean mSelected = false;
 	/** If the trigger has been triggered, this is used to avoid heavy calculations */

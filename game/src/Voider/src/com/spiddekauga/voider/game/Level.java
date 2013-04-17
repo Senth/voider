@@ -11,8 +11,12 @@ import com.badlogic.gdx.utils.OrderedMap;
 import com.spiddekauga.utils.Json;
 import com.spiddekauga.utils.ShapeRendererEx;
 import com.spiddekauga.voider.game.actors.Actor;
+import com.spiddekauga.voider.game.actors.EnemyActor;
+import com.spiddekauga.voider.game.actors.EnemyGroup;
 import com.spiddekauga.voider.game.actors.PlayerActor;
 import com.spiddekauga.voider.game.triggers.Trigger;
+import com.spiddekauga.voider.game.triggers.TriggerAction.Actions;
+import com.spiddekauga.voider.game.triggers.TriggerInfo;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourceEditorRender;
 import com.spiddekauga.voider.resources.IResourceEditorUpdate;
@@ -243,6 +247,30 @@ public class Level extends Resource implements Disposable {
 
 		if (removedResource instanceof Actor) {
 			removeActor((Actor) removedResource);
+		}
+	}
+
+	/**
+	 * Create default triggers for the enemies that doesn't have
+	 * an activate trigger yet—if they are in the group they
+	 * need to be the leader.
+	 */
+	public void createDefaultTriggers() {
+		for (EnemyActor enemy : mResourceBinder.getResources(EnemyActor.class)) {
+			// Check enemy group
+			EnemyGroup enemyGroup = enemy.getEnemyGroup();
+			if (enemyGroup == null || enemy.isGroupLeader()) {
+
+				// Check already have an activate trigger
+				if (TriggerInfo.getTriggerInfoByAction(enemy, Actions.ACTOR_ACTIVATE) == null) {
+					TriggerInfo defaultTrigger = enemy.createDefaultActivateTrigger(this);
+
+					if (defaultTrigger != null) {
+						addResource(defaultTrigger.trigger);
+						enemy.addTrigger(defaultTrigger);
+					}
+				}
+			}
 		}
 	}
 

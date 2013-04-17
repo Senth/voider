@@ -12,6 +12,7 @@ import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Actor.Pickup;
 import com.spiddekauga.voider.Config.Editor.Bullet;
 import com.spiddekauga.voider.Config.Editor.Enemy;
+import com.spiddekauga.voider.utils.Geometry;
 import com.spiddekauga.voider.utils.Pools;
 
 /**
@@ -39,10 +40,6 @@ class VisualVars implements Json.Serializable, Disposable {
 		json.writeValue("color", color);
 
 		switch (shapeType) {
-		case LINE:
-			json.writeValue("shapeWidth", shapeWidth);
-			break;
-
 		case TRIANGLE:
 		case RECTANGLE:
 			json.writeValue("shapeWidth", shapeWidth);
@@ -71,10 +68,6 @@ class VisualVars implements Json.Serializable, Disposable {
 		color = json.readValue("color", Color.class, jsonData);
 
 		switch (shapeType) {
-		case LINE:
-			shapeWidth = json.readValue("shapeWidth", float.class, jsonData);
-			break;
-
 		case TRIANGLE:
 		case RECTANGLE:
 			shapeWidth = json.readValue("shapeWidth", float.class, jsonData);
@@ -89,6 +82,8 @@ class VisualVars implements Json.Serializable, Disposable {
 			corners = json.readValue("corners", ArrayList.class, jsonData);
 			break;
 		}
+
+		calculateBoundingRadius();
 	}
 
 	/**
@@ -148,6 +143,8 @@ class VisualVars implements Json.Serializable, Disposable {
 			shapeWidth = 1;
 			break;
 		}
+
+		calculateBoundingRadius();
 	}
 
 	@Override
@@ -193,6 +190,53 @@ class VisualVars implements Json.Serializable, Disposable {
 		vertices.clear();
 	}
 
+	/**
+	 * @return bounding radius of the actor
+	 */
+	float getBoundingRadius() {
+		return mBoundingRadius;
+	}
+
+	/**
+	 * Calculates the bounding radius
+	 */
+	void calculateBoundingRadius() {
+		switch (shapeType) {
+		case CIRCLE:
+			mBoundingRadius = shapeCircleRadius;
+			if (!centerOffset.equals(Vector2.Zero)) {
+				mBoundingRadius += centerOffset.len();
+			}
+
+			break;
+
+
+		case RECTANGLE:
+		case TRIANGLE:
+		case CUSTOM: {
+			Vector2 farthestAway = null;
+			// Use corners
+			if (shapeType == ActorShapeTypes.CUSTOM) {
+				farthestAway = Geometry.vertexFarthestAway(centerOffset, corners);
+			}
+			// Use vertices
+			else {
+				farthestAway = Geometry.vertexFarthestAway(centerOffset, vertices);
+			}
+
+			if (farthestAway != null) {
+				Vector2 diffVector = Pools.vector2.obtain();
+				diffVector.set(centerOffset).sub(farthestAway);
+				mBoundingRadius = diffVector.len();
+				Pools.vector2.free(diffVector);
+			} else {
+				mBoundingRadius = 0;
+			}
+			break;
+		}
+		}
+	}
+
 	/** Color of the actor */
 	Color color = new Color();
 	/** Border color, automatically set */
@@ -219,6 +263,8 @@ class VisualVars implements Json.Serializable, Disposable {
 	/** Triangle border vertices. */
 	ArrayList<Vector2> borderVertices = new ArrayList<Vector2>();
 
+	/** Radius of the actor, or rather circle bounding box */
+	private float mBoundingRadius = 0;
 	/** Actor type, used for setting default values */
 	private ActorTypes mActorType = null;
 }

@@ -310,7 +310,7 @@ public class Geometry {
 			// First position only takes into account the forward direction
 			if (i == 0) {
 				directionAfter.set(corners.get(nextIndex)).sub(corners.get(i));
-				directionAfter.rotate(90).nor().mul(width * 0.5f);
+				directionAfter.rotate(90).nor().scl(width * 0.5f);
 
 				borderAboveAfter1.set(corners.get(i)).add(directionAfter);
 				borderBelowAfter1.set(corners.get(i)).sub(directionAfter);
@@ -320,7 +320,7 @@ public class Geometry {
 			// Last position only takes into account the previous direction
 			else if (i == corners.size() - 1) {
 				directionBefore.set(corners.get(i)).sub(corners.get(prevIndex));
-				directionBefore.rotate(90).nor().mul(width * 0.5f);
+				directionBefore.rotate(90).nor().scl(width * 0.5f);
 
 				borderAboveBefore2.set(corners.get(i)).add(directionBefore);
 				borderBelowBefore2.set(corners.get(i)).sub(directionBefore);
@@ -332,7 +332,7 @@ public class Geometry {
 			else {
 				// Before lines
 				directionBefore.set(corners.get(i)).sub(corners.get(prevIndex));
-				directionBefore.rotate(90).nor().mul(width * 0.5f);
+				directionBefore.rotate(90).nor().scl(width * 0.5f);
 
 				borderAboveBefore1.set(corners.get(prevIndex)).add(directionBefore);
 				borderAboveBefore2.set(corners.get(i)).add(directionBefore);
@@ -341,7 +341,7 @@ public class Geometry {
 
 				// After lines
 				directionAfter.set(corners.get(nextIndex)).sub(corners.get(i));
-				directionAfter.rotate(90).nor().mul(width * 0.5f);
+				directionAfter.rotate(90).nor().scl(width * 0.5f);
 
 				borderAboveAfter1.set(corners.get(i)).add(directionAfter);
 				borderAboveAfter2.set(corners.get(nextIndex)).add(directionAfter);
@@ -549,8 +549,8 @@ public class Geometry {
 			}
 
 			// Border width
-			directionBefore.mul(width);
-			directionAfter.mul(width);
+			directionBefore.scl(width);
+			directionAfter.scl(width);
 
 			// Calculate temporary border points
 			borderBefore1.set(corners.get(indexBefore)).add(directionBefore);
@@ -684,5 +684,33 @@ public class Geometry {
 				vertex.add(offset);
 			}
 		}
+	}
+
+	/**
+	 * Calculates the vertex farthest away from the specified point
+	 * @param point the point to check the vertices against
+	 * @param vertices the vertices to check
+	 * @return vertex farthest away from the specified point, if vertices are empty
+	 * a null vertex will be returned.
+	 */
+	public static Vector2 vertexFarthestAway(Vector2 point, ArrayList<Vector2> vertices) {
+		Vector2 farthestAway = null;
+		float longestSquareDistance = 0;
+
+		Vector2 diffVector = Pools.vector2.obtain();
+
+		for (Vector2 vertex : vertices) {
+			diffVector.set(point).sub(vertex);
+			float squaredDistance = diffVector.len2();
+
+			if (squaredDistance > longestSquareDistance) {
+				longestSquareDistance = squaredDistance;
+				farthestAway = vertex;
+			}
+		}
+
+		Pools.vector2.free(diffVector);
+
+		return farthestAway;
 	}
 }

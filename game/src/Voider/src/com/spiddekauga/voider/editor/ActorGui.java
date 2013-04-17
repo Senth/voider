@@ -2,7 +2,6 @@ package com.spiddekauga.voider.editor;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
-import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
@@ -84,10 +83,6 @@ public abstract class ActorGui extends EditorGui {
 
 		case TRIANGLE:
 			mWidgets.visual.shapeTriangle.setChecked(true);
-			break;
-
-		case LINE:
-			mWidgets.visual.shapeLine.setChecked(true);
 			break;
 
 		case CUSTOM:
@@ -447,22 +442,6 @@ public abstract class ActorGui extends EditorGui {
 			};
 		}
 
-		HideListener lineHider = null;
-		boolean hasLine = false;
-		//		if (containsShape(ActorShapeTypes.LINE, actorShapeTypes)) {
-		//			hasLine = true;
-		//			Button button = new TextButton("Line", toggleStyle);
-		//			mWidgets.visual.shapeLine = button;
-		//			mVisualTable.add(button);
-		//			button.addListener(shapeChecker);
-		//			buttonGroup.add(button);
-		//			lineHider = new HideListener(button, true) {
-		//				@Override
-		//				protected void onShow() {
-		//					mActorEditor.setShapeType(ActorShapeTypes.LINE);
-		//				}
-		//			};
-		//		}
 
 		HideListener customHider = null;
 		if (containsShape(ActorShapeTypes.CUSTOM, actorShapeTypes)) {
@@ -514,7 +493,7 @@ public abstract class ActorGui extends EditorGui {
 		}
 
 		// Create shape width
-		if (hasTriangle || hasRectangle || hasLine) {
+		if (hasTriangle || hasRectangle) {
 			mVisualTable.row();
 			label = new Label("Width", labelStyle);
 			mVisualTable.add(label).setPadRight(Editor.LABEL_PADDING_BEFORE_SLIDER);
@@ -523,9 +502,6 @@ public abstract class ActorGui extends EditorGui {
 			}
 			if (hasTriangle) {
 				triangleHider.addToggleActor(label);
-			}
-			if (hasLine) {
-				lineHider.addToggleActor(label);
 			}
 
 			if (this instanceof EnemyEditorGui) {
@@ -541,9 +517,6 @@ public abstract class ActorGui extends EditorGui {
 			if (hasTriangle) {
 				triangleHider.addToggleActor(slider);
 			}
-			if (hasLine) {
-				lineHider.addToggleActor(slider);
-			}
 
 			textField = new TextField("", textFieldStyle);
 			mVisualTable.add(textField);
@@ -553,9 +526,6 @@ public abstract class ActorGui extends EditorGui {
 			}
 			if (hasTriangle) {
 				triangleHider.addToggleActor(textField);
-			}
-			if (hasLine) {
-				lineHider.addToggleActor(textField);
 			}
 			new SliderListener(slider, textField, mInvoker) {
 				@Override
@@ -691,9 +661,6 @@ public abstract class ActorGui extends EditorGui {
 		if (triangleHider != null) {
 			mVisualHider.addChild(triangleHider);
 		}
-		if (lineHider != null) {
-			mVisualHider.addChild(lineHider);
-		}
 		if (customHider != null) {
 			mVisualHider.addChild(customHider);
 		}
@@ -763,7 +730,6 @@ public abstract class ActorGui extends EditorGui {
 			Button shapeCircle = null;
 			Button shapeTriangle = null;
 			Button shapeRectangle = null;
-			Button shapeLine = null;
 			Button shapeCustom = null;
 
 			Slider shapeCircleRadius = null;
@@ -771,7 +737,6 @@ public abstract class ActorGui extends EditorGui {
 			Slider shapeTriangleHeight = null;
 			Slider shapeWidth = null;
 			Slider shapeHeight = null;
-			Slider shapeLineLength = null;
 
 			// Custom shape
 			Button customShapeAddMove = null;

@@ -194,7 +194,7 @@ public class Scroller {
 			if (mSpeed > mStopSpeed) {
 				Vector2 velocity = Pools.vector2.obtain();
 				velocity.set(mDirection);
-				velocity.mul(mSpeed * deltaTime);
+				velocity.scl(mSpeed * deltaTime);
 
 				mScrollCurrent.add(velocity);
 

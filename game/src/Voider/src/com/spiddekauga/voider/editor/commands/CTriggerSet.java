@@ -1,7 +1,5 @@
 package com.spiddekauga.voider.editor.commands;
 
-import java.util.ArrayList;
-
 import com.spiddekauga.voider.editor.IResourceChangeEditor;
 import com.spiddekauga.voider.game.triggers.ITriggerListener;
 import com.spiddekauga.voider.game.triggers.Trigger;
@@ -22,22 +20,14 @@ public class CTriggerSet extends CResourceChange {
 	 * an action of the specified type it will create the trigger.
 	 * @param trigger the trigger to bind, if null it will remove any trigger
 	 * with the specified action.
-	 * @param editor the editor to recieve the onChanged event
+	 * @param editor the editor to receive the onChanged event
 	 */
 	public CTriggerSet(ITriggerListener listener, TriggerAction.Actions action, Trigger trigger, IResourceChangeEditor editor) {
 		super(listener, editor);
 		mNewTrigger = trigger;
 		mListener = listener;
 
-		ArrayList<TriggerInfo> existingTriggers = mListener.getTriggerInfos();
-
-		TriggerInfo existingInfo = null;
-		for (TriggerInfo triggerInfo : existingTriggers) {
-			if (triggerInfo.action == action) {
-				existingInfo = triggerInfo;
-				break;
-			}
-		}
+		TriggerInfo existingInfo = TriggerInfo.getTriggerInfoByAction(mListener, action);
 
 		if (existingInfo != null) {
 			mOldTrigger = existingInfo.trigger;
@@ -58,15 +48,13 @@ public class CTriggerSet extends CResourceChange {
 			// Set trigger
 			if (mOldTrigger != null) {
 				mTriggerInfo.setTrigger(mNewTrigger);
-
-				mNewTrigger.addListener(mTriggerInfo);
 				mOldTrigger.removeListener(mListener.getId());
 			}
 			// Add
 			else {
 				mListener.addTrigger(mTriggerInfo);
-				mNewTrigger.addListener(mTriggerInfo);
 			}
+			mNewTrigger.addListener(mTriggerInfo);
 		}
 		// Remove trigger
 		else {
@@ -92,15 +80,13 @@ public class CTriggerSet extends CResourceChange {
 			// Set
 			if (mNewTrigger != null) {
 				mTriggerInfo.setTrigger(mOldTrigger);
-
 				mNewTrigger.removeListener(mListener.getId());
-				mOldTrigger.addListener(mTriggerInfo);
 			}
 			// Add
 			else {
 				mTriggerInfo.setTrigger(mOldTrigger);
-				mOldTrigger.addListener(mTriggerInfo);
 			}
+			mOldTrigger.addListener(mTriggerInfo);
 		}
 		// Remove
 		else {

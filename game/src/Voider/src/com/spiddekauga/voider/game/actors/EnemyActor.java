@@ -8,11 +8,14 @@ import com.badlogic.gdx.utils.OrderedMap;
 import com.spiddekauga.utils.Json;
 import com.spiddekauga.utils.Maths;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.game.Level;
 import com.spiddekauga.voider.game.Path;
 import com.spiddekauga.voider.game.Path.PathTypes;
 import com.spiddekauga.voider.game.Weapon;
 import com.spiddekauga.voider.game.actors.EnemyActorDef.AimTypes;
 import com.spiddekauga.voider.game.actors.EnemyActorDef.MovementTypes;
+import com.spiddekauga.voider.game.triggers.TScreenAt;
+import com.spiddekauga.voider.game.triggers.TriggerAction.Actions;
 import com.spiddekauga.voider.game.triggers.TriggerInfo;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.utils.Geometry;
@@ -108,7 +111,7 @@ public class EnemyActor extends Actor {
 		if (getBody() != null) {
 			Vector2 velocity = getBody().getLinearVelocity();
 			velocity.nor();
-			velocity.mul(speed);
+			velocity.scl(speed);
 			getBody().setLinearVelocity(velocity);
 		}
 	}
@@ -147,6 +150,27 @@ public class EnemyActor extends Actor {
 		if (mGroupLeader && mGroup != null) {
 			mGroup.removeTrigger(triggerInfo);
 		}
+	}
+
+	/**
+	 * Creates the default activate trigger.
+	 * @param level the current active level
+	 * @return trigger info that was created
+	 */
+	public TriggerInfo createDefaultActivateTrigger(Level level) {
+		// Create the trigger
+		TScreenAt trigger = new TScreenAt(level, getPosition().x - getDef().getBoundingRadius());
+		trigger.setHidden(true);
+
+		// Create the trigger information
+		TriggerInfo triggerInfo = new TriggerInfo();
+
+		triggerInfo.action = Actions.ACTOR_ACTIVATE;
+		triggerInfo.delay = 0;
+		triggerInfo.listener = this;
+		triggerInfo.setTrigger(trigger);
+
+		return triggerInfo;
 	}
 
 	/**
@@ -206,6 +230,11 @@ public class EnemyActor extends Actor {
 	@Override
 	public void read(Json json, OrderedMap<String, Object> jsonData) {
 		super.read(json, jsonData);
+
+		mGroupId = json.readValue("mGroupId", UUID.class, jsonData);
+		if (mGroupId != null) {
+			mGroupLeader = json.readValue("mGroupLeader", boolean.class, jsonData);
+		}
 
 		EnemyActorDef enemyDef = getDef(EnemyActorDef.class);
 
@@ -350,7 +379,7 @@ public class EnemyActor extends Actor {
 		copy.mPath = mPath;
 		copy.mGroup = mGroup;
 
-		// Always make copy not a group leader
+		// Always make copy never is a group leader
 		copy.mGroupLeader = false;
 
 		return (ResourceType) copy;
@@ -481,7 +510,7 @@ public class EnemyActor extends Actor {
 
 			Vector2 velocity = Pools.vector2.obtain();
 			velocity.set(mPath.getCornerPosition(mPathIndexNext)).sub(getPosition());
-			velocity.nor().mul(getDef(EnemyActorDef.class).getSpeed());
+			velocity.nor().scl(getDef(EnemyActorDef.class).getSpeed());
 			getBody().setLinearVelocity(velocity);
 
 			// Set angle
@@ -507,7 +536,7 @@ public class EnemyActor extends Actor {
 			if (!getDef(EnemyActorDef.class).isTurning()) {
 				Vector2 velocity = Pools.vector2.obtain();
 				velocity.set(mPath.getCornerPosition(mPathIndexNext)).sub(getPosition());
-				velocity.nor().mul(getDef(EnemyActorDef.class).getSpeed());
+				velocity.nor().scl(getDef(EnemyActorDef.class).getSpeed());
 				getBody().setLinearVelocity(velocity);
 				Pools.vector2.free(velocity);
 			}
@@ -538,7 +567,7 @@ public class EnemyActor extends Actor {
 		}
 		// Enemy too close to player?
 		else if (targetDistanceSq < getDef(EnemyActorDef.class).getPlayerDistanceMinSq()) {
-			targetDirection.mul(-1);
+			targetDirection.scl(-1);
 			moveToTarget(targetDirection, deltaTime);
 			resetRandomMove();
 		}
@@ -547,7 +576,7 @@ public class EnemyActor extends Actor {
 			if (getDef(EnemyActorDef.class).isMovingRandomly()) {
 				calculateRandomMove(deltaTime);
 			} else {
-				getBody().setLinearVelocity(mLevelSpeed, 0);
+				getBody().setLinearVelocity(mLevel.getSpeed(), 0);
 				getBody().setAngularVelocity(0);
 				resetRandomMove();
 			}
@@ -607,11 +636,11 @@ public class EnemyActor extends Actor {
 	private void moveToTargetRegular(Vector2 targetDirection, float deltaTime) {
 		Vector2 velocity = Pools.vector2.obtain();
 		velocity.set(targetDirection);
-		velocity.nor().mul(getDef(EnemyActorDef.class).getSpeed());
+		velocity.nor().scl(getDef(EnemyActorDef.class).getSpeed());
 
 		// Increase with level speed if AI movement
 		if (getDef(EnemyActorDef.class).getMovementType() == MovementTypes.AI) {
-			velocity.x += mLevelSpeed;
+			velocity.x += mLevel.getSpeed();
 		}
 
 		getBody().setLinearVelocity(velocity);
@@ -629,7 +658,7 @@ public class EnemyActor extends Actor {
 
 		// Decrease with level speed if AI movement
 		if (getDef(EnemyActorDef.class).getMovementType() == MovementTypes.AI) {
-			velocity.x -= mLevelSpeed;
+			velocity.x -= mLevel.getSpeed();
 		}
 
 		boolean noVelocity = velocity.len2() == 0;
@@ -691,7 +720,7 @@ public class EnemyActor extends Actor {
 			if (noVelocity) {
 				velocity.x = 1;
 				velocity.setAngle(angleAfter);
-				velocity.mul(getDef(EnemyActorDef.class).getSpeed());
+				velocity.scl(getDef(EnemyActorDef.class).getSpeed());
 			} else {
 				velocity.rotate(rotation);
 			}
@@ -713,12 +742,12 @@ public class EnemyActor extends Actor {
 
 			if (turnedTooMuch) {
 				velocity.set(targetDirection);
-				velocity.nor().mul(getDef(EnemyActorDef.class).getSpeed());
+				velocity.nor().scl(getDef(EnemyActorDef.class).getSpeed());
 			}
 
 			// Increase with level speed if AI movement
 			if (getDef(EnemyActorDef.class).getMovementType() == MovementTypes.AI) {
-				velocity.x += mLevelSpeed;
+				velocity.x += mLevel.getSpeed();
 			}
 
 			getBody().setLinearVelocity(velocity);

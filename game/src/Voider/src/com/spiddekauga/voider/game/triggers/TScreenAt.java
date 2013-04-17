@@ -131,7 +131,7 @@ public class TScreenAt extends Trigger implements IResourceBody, IResourcePositi
 
 	@Override
 	public void createBody() {
-		if (mBody == null) {
+		if (mBody == null && !isHidden()) {
 			FixtureDef fixtureDef = new FixtureDef();
 			fixtureDef.filter.categoryBits = ActorFilterCategories.NONE;
 			fixtureDef.filter.groupIndex = ActorFilterCategories.NONE;
@@ -159,9 +159,7 @@ public class TScreenAt extends Trigger implements IResourceBody, IResourcePositi
 			mBody = null;
 		}
 
-		if (mVertices != null) {
-			Pools.vector2.freeDuplicates(mVertices);
-		}
+		destroyVertices();
 	}
 
 	/**
@@ -187,7 +185,6 @@ public class TScreenAt extends Trigger implements IResourceBody, IResourcePositi
 	public void dispose() {
 		Pools.vector2.free(mPosition);
 		destroyBody();
-		destroyVertices();
 	}
 
 	/**
@@ -201,23 +198,25 @@ public class TScreenAt extends Trigger implements IResourceBody, IResourcePositi
 	 * Creates the vertices for the graphical version of the trigger
 	 */
 	private void createVertices() {
-		destroyVertices();
+		if (!isHidden()) {
+			destroyVertices();
 
-		float halfHeight = SceneSwitcher.getWorldHeight() * 0.5f;
+			float halfHeight = SceneSwitcher.getWorldHeight() * 0.5f;
 
-		// Create vertices for the body
-		Vector2 upperVertex = Pools.vector2.obtain();
-		Vector2 lowerVertex = Pools.vector2.obtain();
-		upperVertex.set(0, -halfHeight).add(mPosition);
-		lowerVertex.set(0, halfHeight).add(mPosition);
+			// Create vertices for the body
+			Vector2 upperVertex = Pools.vector2.obtain();
+			Vector2 lowerVertex = Pools.vector2.obtain();
+			upperVertex.set(0, -halfHeight).add(mPosition);
+			lowerVertex.set(0, halfHeight).add(mPosition);
 
-		ArrayList<Vector2> line = new ArrayList<Vector2>();
-		line.add(upperVertex);
-		line.add(lowerVertex);
+			ArrayList<Vector2> line = new ArrayList<Vector2>();
+			line.add(upperVertex);
+			line.add(lowerVertex);
 
-		mVertices = Geometry.createLinePolygon(line, Config.Editor.Level.Trigger.SCREEN_AT_WIDTH);
+			mVertices = Geometry.createLinePolygon(line, Config.Editor.Level.Trigger.SCREEN_AT_WIDTH);
 
-		Pools.vector2.freeAll(line);
+			Pools.vector2.freeAll(line);
+		}
 	}
 
 	/**

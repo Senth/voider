@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import com.badlogic.gdx.utils.OrderedMap;
 import com.spiddekauga.utils.Json;
+import com.spiddekauga.voider.game.triggers.TriggerAction.Actions;
 
 /**
  * Information for a trigger listener. This contains all the information
@@ -17,7 +18,7 @@ public class TriggerInfo implements Json.Serializable {
 	/** The trigger */
 	public Trigger trigger = null;
 	/** The delay of this listener */
-	public float delay;
+	public float delay = 0;
 	/** The action to take when the trigger is triggered */
 	public TriggerAction.Actions action;
 	/** The listener object */
@@ -53,6 +54,21 @@ public class TriggerInfo implements Json.Serializable {
 		}
 	}
 
+	/**
+	 * @return copy of this object
+	 */
+	public TriggerInfo copy() {
+		TriggerInfo copy = new TriggerInfo();
+
+		copy.action = action;
+		copy.delay = delay;
+		copy.listener = listener;
+		copy.triggerId = triggerId;
+		copy.trigger = trigger;
+
+		return copy;
+	}
+
 	@Override
 	public void write(Json json) {
 		json.writeValue("triggerId", triggerId);
@@ -65,5 +81,43 @@ public class TriggerInfo implements Json.Serializable {
 		action = json.readValue("action", TriggerAction.Actions.class, jsonData);
 		delay = json.readValue("delay", float.class, jsonData);
 		triggerId = json.readValue("triggerId", UUID.class, jsonData);
+	}
+
+	/**
+	 * Gets the specified enemy's trigger for the specified trigger info.
+	 * I.e. this will check in all the enmeny triggers until it finds the specified
+	 * trigger.
+	 * @param listener the enemy to find the TriggerInfo in.
+	 * @param searchTriggerInfo the trigger info to search for in the specified enemy
+	 * @return TriggerInfo that have the same triggerId and action as the specified trigger.
+	 * Null if the trigger info wasn't found inside the enemy.
+	 */
+	public static TriggerInfo getTriggerInfoByDuplicate(ITriggerListener listener, TriggerInfo searchTriggerInfo) {
+		for (TriggerInfo enemyTriggerInfo : listener.getTriggerInfos()) {
+			if (enemyTriggerInfo.sameTriggerAndAction(searchTriggerInfo)) {
+				return enemyTriggerInfo;
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * Gets the specified enemy's trigger for the specified trigger info.
+	 * I.e. this will check in all the enmeny triggers until it finds the trigger info
+	 * with the specified action.
+	 * @param listener the enemy to find the TriggerInfo in.
+	 * @param action the action the trigger contains.
+	 * @return TriggerInfo that have the same triggerId and action as the specified trigger.
+	 * Null if the trigger info wasn't found inside the enemy.
+	 */
+	public static TriggerInfo getTriggerInfoByAction(ITriggerListener listener, Actions action) {
+		for (TriggerInfo enemyTriggerInfo : listener.getTriggerInfos()) {
+			if (enemyTriggerInfo.action == action) {
+				return enemyTriggerInfo;
+			}
+		}
+
+		return null;
 	}
 }

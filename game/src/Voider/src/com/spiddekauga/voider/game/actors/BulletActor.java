@@ -23,7 +23,7 @@ public class BulletActor extends Actor {
 	 */
 	public void shoot(Vector2 position, Vector2 direction, float speed, float hitDamage, boolean shotByPlayer) {
 		Vector2 velocity = Pools.vector2.obtain();
-		velocity.set(direction).nor().mul(speed);
+		velocity.set(direction).nor().scl(speed);
 		shoot(position, velocity, hitDamage, shotByPlayer);
 		Pools.vector2.free(velocity);
 	}

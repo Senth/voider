@@ -23,6 +23,7 @@ import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Editor;
 import com.spiddekauga.voider.editor.HitWrapper;
+import com.spiddekauga.voider.game.Level;
 import com.spiddekauga.voider.game.triggers.ITriggerListener;
 import com.spiddekauga.voider.game.triggers.Trigger;
 import com.spiddekauga.voider.game.triggers.TriggerAction;
@@ -73,7 +74,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 				calculateRotatedVertices();
 
 				// Rotation
-				if (!mSkipRotate && mDef.getBodyDef().angularVelocity != 0 && mDef.getCenterOffset() != NO_OFFSET) {
+				if (!mSkipRotate && mDef.getBodyDef().angularVelocity != 0 && !mDef.getCenterOffset().equals(Vector2.Zero)) {
 					float newAngle = mBody.getAngle();
 					newAngle += mDef.getBodyDef().angularVelocity * deltaTime;
 					if (newAngle >= MathUtils.PI2) {
@@ -136,6 +137,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	 */
 	public void addTrigger(TriggerInfo triggerInfo) {
 		triggerInfo.listener = this;
+		triggerInfo.trigger.addListener(triggerInfo);
 		mTriggerInfos.add(triggerInfo);
 	}
 
@@ -144,6 +146,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	 * @param triggerInfo trigger information
 	 */
 	public void removeTrigger(TriggerInfo triggerInfo) {
+		triggerInfo.trigger.removeListener(getId());
 		mTriggerInfos.remove(triggerInfo);
 	}
 
@@ -171,6 +174,21 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 		}
 
 		return success;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public <ResourceType> ResourceType copy() {
+		Actor copy = super.copy();
+
+		// Bind triggers
+		for (int i = 0; i < mTriggerInfos.size(); ++i) {
+			copy.mTriggerInfos.get(i).listener = copy;
+			copy.mTriggerInfos.get(i).trigger = mTriggerInfos.get(i).trigger;
+			mTriggerInfos.get(i).trigger.addListener(copy.mTriggerInfos.get(i));
+		}
+
+		return (ResourceType) copy;
 	}
 
 	@Override
@@ -561,11 +579,11 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	}
 
 	/**
-	 * Sets the level speed
-	 * @param levelSpeed current speed of the level
+	 * Sets the level
+	 * @param level the current level
 	 */
-	public static void setLevelSpeed(float levelSpeed) {
-		mLevelSpeed = levelSpeed;
+	public static void setLevel(Level level) {
+		mLevel = level;
 	}
 
 	/**
@@ -588,7 +606,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	 */
 	public void createBody(BodyDef bodyDef) {
 		if (mWorld != null && mBody == null) {
-			if (mSkipRotate || mDef.getCenterOffset() != NO_OFFSET) {
+			if (mSkipRotate || !mDef.getCenterOffset().equals(Vector2.Zero)) {
 				bodyDef.angularVelocity = 0;
 				bodyDef.angle = 0;
 			} else {
@@ -1071,9 +1089,6 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	protected static boolean mEditorActive = false;
 	/** The player of this game, for derived actor to have easy access */
 	protected static PlayerActor mPlayerActor = null;
-	/** Current level speed */
-	protected static float mLevelSpeed = 0;
-
-	/** No offset */
-	private final static Vector2 NO_OFFSET = new Vector2();
+	/** Current level */
+	protected static Level mLevel = null;
 }

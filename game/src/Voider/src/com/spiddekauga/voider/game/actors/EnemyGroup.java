@@ -36,7 +36,7 @@ public class EnemyGroup extends Resource {
 	 * @param enemyActor original enemy used for duplicating enemies in this group
 	 * @pre this enemy group has to be empty
 	 */
-	public void setOriginalEnemy(EnemyActor enemyActor) {
+	public void setLeaderEnemy(EnemyActor enemyActor) {
 		if (mEnemies.size() == 0) {
 			mEnemies.add(enemyActor);
 			mEnemyIds.add(enemyActor.getId());
@@ -73,17 +73,20 @@ public class EnemyGroup extends Resource {
 			}
 		}
 
-		TriggerInfo triggerInfo = getTriggerActivate(mEnemies.get(0));
+		TriggerInfo activateTrigger = TriggerInfo.getTriggerInfoByAction(mEnemies.get(0), Actions.ACTOR_ACTIVATE);
+
 		// Add
 		while (cEnemies > mEnemies.size()) {
 			EnemyActor copyEnemy = mEnemies.get(0).copy();
 
-			if (triggerInfo != null) {
-				TriggerInfo copyTriggerInfo = new TriggerInfo();
-				copyTriggerInfo.action = Actions.ACTOR_ACTIVATE;
-				copyTriggerInfo.triggerId = triggerInfo.triggerId;
-				copyTriggerInfo.delay = triggerInfo.delay + mTriggerDelay * mEnemies.size();
+
+			// Set activate trigger
+			if (activateTrigger != null) {
+				TriggerInfo copyTriggerInfo = TriggerInfo.getTriggerInfoByAction(copyEnemy, Actions.ACTOR_ACTIVATE);
+				copyTriggerInfo.delay = activateTrigger.delay + mTriggerDelay * mEnemies.size();
 			}
+
+			// TODO copy triggers
 
 			mEnemies.add(copyEnemy);
 			mEnemyIds.add(copyEnemy.getId());
@@ -148,20 +151,18 @@ public class EnemyGroup extends Resource {
 	 */
 	public void setSpawnTriggerDelay(float delay) {
 		mTriggerDelay = delay;
+
+		// Update delay in triggers
+		TriggerInfo leaderTriggerInfo = TriggerInfo.getTriggerInfoByAction(mEnemies.get(0), Actions.ACTOR_ACTIVATE);
+		if (leaderTriggerInfo != null) {
+			updateTrigger(leaderTriggerInfo);
+		}
 	}
 
 	/**
 	 * @return enemy spawn delay between the enemies
 	 */
 	public float getSpawnTriggerDelay() {
-		return mTriggerDelay;
-	}
-
-	/**
-	 * @return seconds of duplicate trigger delay between each actors. -1
-	 * if no enemy is selected, or only one duplicate exist.
-	 */
-	public float getDuplicateTriggerDelay() {
 		return mTriggerDelay;
 	}
 
@@ -191,15 +192,12 @@ public class EnemyGroup extends Resource {
 	 * Updates the specified TriggerInfo in the enemies, but not the leader
 	 * @param leaderTrigger trigger of the leader which values to copy from
 	 */
-	void updateTrigger(TriggerInfo leaderTrigger) {
+	private void updateTrigger(TriggerInfo leaderTrigger) {
 		for (int i = 1; i < mEnemies.size(); ++i) {
-			TriggerInfo enemyTrigger = getTriggerInfoFromEnemy(mEnemies.get(i), leaderTrigger);
+			TriggerInfo enemyTrigger = TriggerInfo.getTriggerInfoByDuplicate(mEnemies.get(i), leaderTrigger);
 
 			// If action is to activate, this is a special case where the delay is
 			// multiplied by the group delay
-			enemyTrigger.action = leaderTrigger.action;
-			enemyTrigger.triggerId = leaderTrigger.triggerId;
-
 			if (leaderTrigger.action == Actions.ACTOR_ACTIVATE) {
 				enemyTrigger.delay = leaderTrigger.delay + mTriggerDelay * i;
 			} else {
@@ -232,11 +230,9 @@ public class EnemyGroup extends Resource {
 	 * Adds another Trigger to the other enemies, not the leader
 	 * @param leaderTrigger trigger of the leader to add in the other enemies
 	 */
-	void addTrigger(TriggerInfo leaderTrigger) {
+	public void addTrigger(TriggerInfo leaderTrigger) {
 		for (int i = 1; i < mEnemies.size(); ++i) {
-			TriggerInfo copyTriggerInfo = new TriggerInfo();
-			copyTriggerInfo.action = leaderTrigger.action;
-			copyTriggerInfo.triggerId = leaderTrigger.triggerId;
+			TriggerInfo copyTriggerInfo = leaderTrigger.copy();
 
 			if (leaderTrigger.action == Actions.ACTOR_ACTIVATE) {
 				copyTriggerInfo.delay = leaderTrigger.delay + mTriggerDelay * i;
@@ -262,9 +258,9 @@ public class EnemyGroup extends Resource {
 	 * Removes a Trigger from the other enemies, not the leader
 	 * @param leaderTrigger trigger of the leader to remove in the other enemies
 	 */
-	void removeTrigger(TriggerInfo leaderTrigger) {
+	public void removeTrigger(TriggerInfo leaderTrigger) {
 		for (int i = 1; i < mEnemies.size(); ++i) {
-			TriggerInfo enemyTrigger = getTriggerInfoFromEnemy(mEnemies.get(i), leaderTrigger);
+			TriggerInfo enemyTrigger = TriggerInfo.getTriggerInfoByDuplicate(mEnemies.get(i), leaderTrigger);
 			mEnemies.get(i).removeTrigger(enemyTrigger);
 		}
 
@@ -279,41 +275,6 @@ public class EnemyGroup extends Resource {
 			}
 		}
 	}
-
-	/**
-	 * @return the trigger information that is set to activate from the specified enemy
-	 * @param enemy the enemy to get the trigger activate from
-	 */
-	private TriggerInfo getTriggerActivate(EnemyActor enemy) {
-		ArrayList<TriggerInfo> triggerInfos = enemy.getTriggerInfos();
-
-		for (TriggerInfo triggerInfo : triggerInfos) {
-			if (triggerInfo.action == Actions.ACTOR_ACTIVATE) {
-				return triggerInfo;
-			}
-		}
-
-		return null;
-	}
-
-	/**
-	 * Gets the specified enemy's trigger for the specified trigger info.
-	 * I.e. this will check in all the enmeny triggers until it finds the specified
-	 * trigger.
-	 * @param enemy the enemy to find the TriggerInfo in.
-	 * @param searchTriggerInfo the trigger info to search for in the specified enemy
-	 * @return TriggerInfo that have the same triggerId and action as the specified trigger.
-	 * Null if the trigger info wasn't found inside the enemy.
-	 */
-	private TriggerInfo getTriggerInfoFromEnemy(EnemyActor enemy, TriggerInfo searchTriggerInfo) {
-		for (TriggerInfo enemyTriggerInfo : enemy.getTriggerInfos()) {
-			if (enemyTriggerInfo.sameTriggerAndAction(searchTriggerInfo)) {
-				return enemyTriggerInfo;
-			}
-		}
-		return null;
-	}
-
 
 	/** All the enemies */
 	private ArrayList<EnemyActor> mEnemies = new ArrayList<EnemyActor>();

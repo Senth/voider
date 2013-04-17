@@ -39,7 +39,7 @@ public class TActorActivated extends Trigger implements Disposable, IResourceBod
 
 	@Override
 	public void createBody() {
-		if (mBody == null) {
+		if (mBody == null && !isHidden()) {
 			List<FixtureDef> fixtures = mActor.getDef().getFixtureDefs();
 
 			mBody = Actor.getWorld().createBody(new BodyDef());
@@ -189,19 +189,21 @@ public class TActorActivated extends Trigger implements Disposable, IResourceBod
 	 * Creates visual representation of the trigger
 	 */
 	private void createVertices() {
-		destroyVertices();
+		if (!isHidden()) {
+			destroyVertices();
 
-		ArrayList<Vector2> polygon = new ArrayList<Vector2>();
-		ArrayList<Vector2> actorShape = mActor.getDef().getPolygonShape();
-		if (actorShape != null) {
-			// Copy polygon from actor, so we don't free the actor's vectors when freeing
-			// this trigger
-			for (Vector2 vertex : actorShape) {
-				polygon.add(Pools.vector2.obtain().set(vertex));
+			ArrayList<Vector2> polygon = new ArrayList<Vector2>();
+			ArrayList<Vector2> actorShape = mActor.getDef().getPolygonShape();
+			if (actorShape != null) {
+				// Copy polygon from actor, so we don't free the actor's vectors when freeing
+				// this trigger
+				for (Vector2 vertex : actorShape) {
+					polygon.add(Pools.vector2.obtain().set(vertex));
+				}
+				ArrayList<Vector2> borderCorners = Geometry.createdBorderCorners(polygon, false, Config.Editor.Level.Trigger.ENEMY_WIDTH);
+
+				mVertices = Geometry.createBorderVertices(polygon, borderCorners);
 			}
-			ArrayList<Vector2> borderCorners = Geometry.createdBorderCorners(polygon, false, Config.Editor.Level.Trigger.ENEMY_WIDTH);
-
-			mVertices = Geometry.createBorderVertices(polygon, borderCorners);
 		}
 	}
 
