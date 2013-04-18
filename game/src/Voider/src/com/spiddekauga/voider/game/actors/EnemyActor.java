@@ -158,9 +158,21 @@ public class EnemyActor extends Actor {
 	 * @return trigger info that was created
 	 */
 	public TriggerInfo createDefaultActivateTrigger(Level level) {
+		// Calculate position of trigger
+		float xCoord = getPosition().x - getDef().getBoundingRadius();
+
+		// Decrease position if we are in an enemy group
+		if (mGroup != null) {
+			float distancePerEnemy = level.getSpeed() * mGroup.getSpawnTriggerDelay();
+			float offset = (mGroup.getEnemyCount() - 1) * distancePerEnemy;
+			xCoord -= offset;
+		}
+
+
 		// Create the trigger
-		TScreenAt trigger = new TScreenAt(level, getPosition().x - getDef().getBoundingRadius());
+		TScreenAt trigger = new TScreenAt(level, xCoord);
 		trigger.setHidden(true);
+
 
 		// Create the trigger information
 		TriggerInfo triggerInfo = new TriggerInfo();
