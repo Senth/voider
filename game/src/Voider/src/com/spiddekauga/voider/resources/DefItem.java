@@ -75,6 +75,7 @@ class DefItem implements Json.Serializable {
 	public void write(Json json) {
 		json.writeValue("resourceId", resourceId.toString());
 		json.writeValue("resourceType", resourceType.getName());
+		json.writeValue("count", count);
 
 		// We don't write the fullName, it's derived when reading the file again
 	}
@@ -82,6 +83,7 @@ class DefItem implements Json.Serializable {
 	@Override
 	public void read(Json json, OrderedMap<String, Object> jsonData) {
 		resourceId = UUID.fromString(json.readValue("resourceId", String.class, jsonData));
+		count = json.readValue("count", int.class, jsonData);
 
 		// resourceType
 		String className = json.readValue("resourceType", String.class, jsonData);

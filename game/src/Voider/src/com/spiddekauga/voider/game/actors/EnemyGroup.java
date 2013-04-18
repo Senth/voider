@@ -86,8 +86,6 @@ public class EnemyGroup extends Resource {
 				copyTriggerInfo.delay = activateTrigger.delay + mTriggerDelay * mEnemies.size();
 			}
 
-			// TODO copy triggers
-
 			mEnemies.add(copyEnemy);
 			mEnemyIds.add(copyEnemy.getId());
 

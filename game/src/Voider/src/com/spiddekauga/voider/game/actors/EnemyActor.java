@@ -18,6 +18,7 @@ import com.spiddekauga.voider.game.triggers.TScreenAt;
 import com.spiddekauga.voider.game.triggers.TriggerAction.Actions;
 import com.spiddekauga.voider.game.triggers.TriggerInfo;
 import com.spiddekauga.voider.resources.IResource;
+import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.utils.Geometry;
 import com.spiddekauga.voider.utils.Pools;
 
@@ -54,7 +55,10 @@ public class EnemyActor extends Actor {
 			if (def != null && def.getMovementType() != null && getBody() != null) {
 				switch (def.getMovementType()) {
 				case PATH:
-					updatePathMovement(deltaTime);
+					if (mPath != null) {
+						updatePathMovement(deltaTime);
+						checkPathDeactivate();
+					}
 					break;
 
 				case AI:
@@ -62,7 +66,7 @@ public class EnemyActor extends Actor {
 					break;
 
 				case STATIONARY:
-					// Does nothing
+					checkStationaryDeactivate();
 					break;
 				}
 			}
@@ -817,6 +821,49 @@ public class EnemyActor extends Actor {
 		float distanceSq = diff.len2();
 		Pools.vector2.free(diff);
 		return distanceSq <= Config.Actor.Enemy.PATH_NODE_CLOSE_SQ;
+	}
+
+	/**
+	 * Checks if the enemy shall be deactivated and destroyed when following an path.
+	 * It will destroy the enemy when it never can reach go onto the screen again.
+	 * @note Will do nothing if the enemy has a deactivate trigger.
+	 */
+	private void checkPathDeactivate() {
+		if (TriggerInfo.getTriggerInfoByAction(this, Actions.ACTOR_DEACTIVATE) == null) {
+			if (getPath().getRightestCorner().x + getDef().getBoundingRadius() < mLevel.getXCoord() - SceneSwitcher.getWorldWidth()) {
+
+				// For once, check that the ship cannot be seen too
+				boolean deactivate = true;
+				if (getPath().getPathType() == PathTypes.ONCE) {
+					if (getPosition().x + getDef().getBoundingRadius() > mLevel.getXCoord() - SceneSwitcher.getWorldWidth()) {
+						deactivate = false;
+					} else if (getPosition().x - getDef().getBoundingRadius() < mLevel.getXCoord()) {
+						deactivate = false;
+					} else if (getPosition().y + getDef().getBoundingRadius() < 10) {
+						// TODO
+					}
+				}
+
+				if (deactivate) {
+					deactivate();
+					destroyBody();
+				}
+			}
+		}
+	}
+
+	/**
+	 * Checks if the enemy shall be deactivated and destroyed when it is stationary.
+	 * It will destroy the enemy once it's outside of the screen.
+	 * @note Will do nothing if the enemy has a deactivate trigger.
+	 */
+	private void checkStationaryDeactivate() {
+		if (TriggerInfo.getTriggerInfoByAction(this, Actions.ACTOR_DEACTIVATE) == null) {
+			if (getPosition().x + getDef().getBoundingRadius() < mLevel.getXCoord() - SceneSwitcher.getWorldWidth()) {
+				deactivate();
+				destroyBody();
+			}
+		}
 	}
 
 	/** Enemy weapon */

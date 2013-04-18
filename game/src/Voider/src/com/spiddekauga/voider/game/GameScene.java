@@ -16,7 +16,6 @@ import com.badlogic.gdx.physics.box2d.joints.MouseJointDef;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.actors.Actor;
-import com.spiddekauga.voider.game.actors.EnemyActor;
 import com.spiddekauga.voider.game.actors.PlayerActor;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceNames;
@@ -58,8 +57,6 @@ public class GameScene extends WorldScene {
 		mMouseJointDef.bodyB = mPlayerActor.getBody(); // TODO REMOVE, set in onActivate instead
 		mMouseJointDef.collideConnected = true;
 		mMouseJointDef.maxForce = Config.Game.MouseJoint.FORCE_MAX;
-
-		/** TODO use different shaders */
 	}
 
 	/**
@@ -74,13 +71,8 @@ public class GameScene extends WorldScene {
 		mLevel.run();
 		mLevel.createDefaultTriggers();
 
-		// Create bodies, except for enemies
-		ArrayList<Actor> actors = mLevel.getResources(Actor.class);
-		for (Actor actor : actors) {
-			if (!(actor instanceof EnemyActor)) {
-				actor.createBody();
-			}
-		}
+		mBodyShepard.setActors(mLevel.getResources(Actor.class));
+
 
 		updateCameraPosition();
 		createBorder();
@@ -132,7 +124,7 @@ public class GameScene extends WorldScene {
 	 */
 	@Override
 	public void onDisposed() {
-		if (!mInvulnerable) {
+		if (!mTesting) {
 			/** @TODO save the game */
 		}
 
@@ -154,6 +146,10 @@ public class GameScene extends WorldScene {
 			mMouseJoint.setTarget(mCursorWorld);
 		}
 		super.update();
+
+		updateBodyShepherdPositions();
+		mBodyShepard.update(mBodyShepherdMinPos, mBodyShepherdMaxPos);
+
 		mLevel.update();
 		updateCameraPosition();
 
@@ -304,6 +300,18 @@ public class GameScene extends WorldScene {
 		}
 	}
 
+	/**
+	 * Updates the shepherd positions
+	 */
+	private void updateBodyShepherdPositions() {
+		screenToWorldCoord(mCamera, 0, Gdx.graphics.getHeight(), mBodyShepherdMinPos, false);
+		screenToWorldCoord(mCamera, Gdx.graphics.getWidth(), 0, mBodyShepherdMaxPos, false);
+		mBodyShepherdMinPos.x -= getWorldWidth();
+		mBodyShepherdMinPos.y -= getWorldHeight();
+		mBodyShepherdMaxPos.x += getWorldWidth();
+		mBodyShepherdMaxPos.y += getWorldHeight();
+	}
+
 	/** Invalid pointer id */
 	private static final int INVALID_POINTER = -1;
 	/** Level to load */
@@ -322,6 +330,12 @@ public class GameScene extends WorldScene {
 	private boolean mMovingPlayer = false;
 	/** Handles collision between actors/bodies */
 	private CollisionResolver mCollisionResolver = new CollisionResolver();
+	/** Body shepherd, creates and destroys bodies */
+	private BodyShepherd mBodyShepard = new BodyShepherd();
+	/** Body shepherd min position */
+	private Vector2 mBodyShepherdMinPos = new Vector2();
+	/** Body shepherd max position */
+	private Vector2 mBodyShepherdMaxPos = new Vector2();
 
 	// MOUSE JOINT
 	/** Screen coordinate for the cursor */

@@ -41,6 +41,13 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 		mUniqueId = UUID.randomUUID();
 	}
 
+	/**
+	 * @return rightest corner from the path
+	 */
+	public Vector2 getRightestCorner() {
+		return mRightestCorner;
+	}
+
 	@Override
 	public void addCorner(Vector2 corner) throws PolygonComplexException, PolygonCornerTooCloseException {
 		addCorner(corner, mCorners.size());
@@ -64,6 +71,7 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 		}
 
 		createVertices();
+		updateRightestCorner();
 	}
 
 	/**
@@ -87,6 +95,7 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 		updateEnemyPositions();
 
 		createVertices();
+		updateRightestCorner();
 
 		Pools.vector2.free(diff);
 	}
@@ -126,6 +135,10 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 			if (index == 0) {
 				updateEnemyPositions();
 			}
+
+			if (removedCorner.equals(mRightestCorner)) {
+				updateRightestCorner();
+			}
 		}
 
 		createVertices();
@@ -147,6 +160,7 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 		}
 
 		createVertices();
+		updateRightestCorner();
 	}
 
 	@Override
@@ -263,6 +277,7 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 		super.read(json, jsonData);
 		mCorners = json.readValue("mCorners", ArrayList.class, jsonData);
 		mPathType = json.readValue("mPathType", PathTypes.class, jsonData);
+		updateRightestCorner();
 	}
 
 	@Override
@@ -524,6 +539,21 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 		}
 	}
 
+	/**
+	 * Update the corner furthest to the right
+	 */
+	private void updateRightestCorner() {
+		float xCoordMax = Float.NEGATIVE_INFINITY;
+		mRightestCorner = null;
+
+		for (Vector2 corner : mCorners) {
+			if (corner.x > xCoordMax) {
+				xCoordMax = corner.x;
+				mRightestCorner = corner;
+			}
+		}
+	}
+
 	/** Path vertices for drawing in editor */
 	private ArrayList<Vector2> mVertices = null;
 	/** If this path is selected */
@@ -532,6 +562,8 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 	private ArrayList<Vector2> mCorners = new ArrayList<Vector2>();
 	/** Corner bodies, for picking */
 	private ArrayList<Body> mBodyCorners = new ArrayList<Body>();
+	/** Corner furthest to the right */
+	private Vector2 mRightestCorner = null;
 	/** What type of path type the enemy uses, only applicable if movement type
 	 * is set to path */
 	private PathTypes mPathType = PathTypes.ONCE;
