@@ -573,9 +573,7 @@ public class EnemyActor extends Actor {
 			mTargetDirection.set(mPath.getCornerPosition(mPathIndexNext)).sub(getPosition());
 			moveToTarget(mTargetDirection, deltaTime);
 		}
-
-
-		if (getDef(EnemyActorDef.class).isTurning()) {
+		else if (getDef(EnemyActorDef.class).isTurning()) {
 			mTargetDirection.set(mPath.getCornerPosition(mPathIndexNext)).sub(getPosition());
 			moveToTarget(mTargetDirection, deltaTime);
 		}
@@ -692,7 +690,7 @@ public class EnemyActor extends Actor {
 		velocity.set(getBody().getLinearVelocity());
 
 		// Decrease with level speed
-		if (!mEditorActive) {
+		if (!mEditorActive && !velocity.equals(Vector2.Zero)) {
 			velocity.x -= mLevel.getSpeed();
 		}
 
@@ -743,7 +741,7 @@ public class EnemyActor extends Actor {
 			}
 		}
 
-		if (!Maths.approxCompare(diffAngle, Config.Actor.Enemy.TURN_ANGLE_MIN) || oppositeDirection) {
+		if (!Maths.approxCompare(diffAngle, Config.Actor.Enemy.TURN_ANGLE_MIN) || oppositeDirection || noVelocity) {
 			float angleBefore = velocity.angle();
 			float rotation = getDef(EnemyActorDef.class).getTurnSpeed() * deltaTime * getDef(EnemyActorDef.class).getSpeed();
 			if (!counterClockwise) {
@@ -752,13 +750,13 @@ public class EnemyActor extends Actor {
 
 			float angleAfter = velocityAngleOriginal + rotation;
 
-			if (noVelocity) {
-				velocity.x = 1;
-				velocity.setAngle(angleAfter);
-				velocity.scl(getDef(EnemyActorDef.class).getSpeed());
-			} else {
-				velocity.rotate(rotation);
-			}
+			//			if (noVelocity) {
+			//			velocity.x = 1;
+			//			velocity.setAngle(angleAfter);
+			//			velocity.scl(getDef(EnemyActorDef.class).getSpeed());
+			//			} else {
+			//				velocity.rotate(rotation);
+			//			}
 
 			// Check if we turned too much?
 			boolean turnedTooMuch = false;
@@ -778,6 +776,11 @@ public class EnemyActor extends Actor {
 			if (turnedTooMuch) {
 				velocity.set(targetDirection);
 				velocity.nor().scl(getDef(EnemyActorDef.class).getSpeed());
+			} else {
+				velocity.y = 0;
+				velocity.x = 1;
+				velocity.setAngle(angleAfter);
+				velocity.scl(getDef(EnemyActorDef.class).getSpeed());
 			}
 
 			// Increase with level speed
