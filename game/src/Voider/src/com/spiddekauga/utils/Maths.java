@@ -43,4 +43,19 @@ public class Maths {
 	public static boolean approxCompare(float value, float delta) {
 		return value <= delta && value >= -delta;
 	}
+
+	/**
+	 * Compare if two floats are close to equal
+	 * @param left compares against right
+	 * @param right compares against left
+	 * @return true if left -right is in the range of [{@value #FLOAT_EQUALS_DELTA},
+	 * {@value #FLOAT_EQUALS_DELTA}].
+	 */
+	public static boolean floatEquals(float left, float right) {
+		float diff = left - right;
+		return diff <= FLOAT_EQUALS_DELTA && diff >= -FLOAT_EQUALS_DELTA;
+	}
+
+	/** Float compare value */
+	public static float FLOAT_EQUALS_DELTA = 0.001f;
 }

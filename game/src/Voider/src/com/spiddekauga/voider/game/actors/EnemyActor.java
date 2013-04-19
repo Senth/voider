@@ -65,7 +65,9 @@ public class EnemyActor extends Actor {
 				case PATH:
 					if (mPath != null) {
 						updatePathMovement(deltaTime);
-						checkPathDeactivate();
+						if (!mEditorActive) {
+							checkPathDeactivate();
+						}
 					}
 					break;
 
@@ -74,7 +76,9 @@ public class EnemyActor extends Actor {
 					break;
 
 				case STATIONARY:
-					checkStationaryDeactivate();
+					if (!mEditorActive) {
+						checkStationaryDeactivate();
+					}
 					break;
 				}
 			}
@@ -499,16 +503,22 @@ public class EnemyActor extends Actor {
 
 		case IN_FRONT_OF_PLAYER: {
 			Vector2 playerVelocity = mPlayerActor.getBody().getLinearVelocity();
+			float levelSpeed = 0;
+			if (!mEditorActive) {
+				levelSpeed = mLevel.getSpeed();
+			}
+			playerVelocity.x -= levelSpeed;
 
 			boolean targetPlayerInstead = false;
 
 			// If velocity is standing still, just shoot at the player...
-			if (playerVelocity.len2() == 0) {
+			float playerSpeedSq = playerVelocity.len2();
+			if (Maths.floatEquals(playerSpeedSq, 0)) {
 				targetPlayerInstead = true;
 			}
 			// Calculate where the bullet would intersect with the player
 			else {
-				Vector2 bulletVelocity = Geometry.interceptTarget(getPosition(), mWeapon.getDef().getBulletSpeed(), mPlayerActor.getPosition(), playerVelocity);
+				Vector2 bulletVelocity = Geometry.interceptTarget(getPosition(), mWeapon.getDef().getBulletSpeed() + levelSpeed, mPlayerActor.getPosition(), playerVelocity);
 				shootDirection.set(bulletVelocity);
 				Pools.vector2.free(bulletVelocity);
 

@@ -57,6 +57,7 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 	public void onActivate(Outcomes outcome, String message) {
 		Actor.setEditorActive(true);
 		Actor.setWorld(mWorld);
+		Actor.setLevel(null);
 
 		if (outcome == Outcomes.LOADING_SUCCEEDED) {
 			mGui.initGui();

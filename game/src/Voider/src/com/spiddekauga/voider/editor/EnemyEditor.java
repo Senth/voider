@@ -93,6 +93,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	public void onActivate(Outcomes outcome, String message) {
 		Actor.setEditorActive(true);
 		Actor.setWorld(mWorld);
+		Actor.setLevel(null);
 
 		if (outcome == Outcomes.LOADING_SUCCEEDED) {
 			mGui.initGui();
