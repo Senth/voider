@@ -51,6 +51,7 @@ public class CollisionResolver implements ContactListener {
 
 				actor.decreaseLife(damage);
 				destroyActor.deactivate();
+				destroyActor.destroyBodySafe();
 				return;
 			}
 

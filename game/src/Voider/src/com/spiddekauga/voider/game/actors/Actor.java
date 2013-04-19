@@ -67,6 +67,11 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	 */
 	@Override
 	public void update(float deltaTime) {
+		if (mDestroyBody) {
+			mActive = false;
+			destroyBody();
+		}
+
 		if (mActive) {
 			// Update position
 			if (mBody != null) {
@@ -845,6 +850,20 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	}
 
 	/**
+	 * The body will destroyed next update...
+	 */
+	public void destroyBodySafe() {
+		mDestroyBody = true;
+	}
+
+	/**
+	 * @return true if the body shall be destroyed
+	 */
+	public boolean shallBodyBeDestroyed() {
+		return mDestroyBody;
+	}
+
+	/**
 	 * @return true if the actor is activated
 	 */
 	public boolean isActive() {
@@ -1082,6 +1101,8 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	private ArrayList<Vector2> mRotatedVertices = null;
 	/** Rotated border vertices */
 	private ArrayList<Vector2> mRotatedBorderVertices = null;
+	/** If the actor shall be destroyed */
+	private boolean mDestroyBody = false;
 
 	/** The world used for creating bodies */
 	protected static World mWorld = null;

@@ -7,6 +7,7 @@ import java.util.List;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
@@ -81,7 +82,7 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	 * @param angle the starting angle
 	 */
 	public void setStartAngle(float angle) {
-		getBodyDef().angle = angle;
+		getBodyDef().angle = MathUtils.degreesToRadians * angle;
 
 		mBodyChangeTime = GameTime.getTotalGlobalTimeElapsed();
 	}

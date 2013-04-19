@@ -509,7 +509,7 @@ public class Config {
 	 */
 	public static class Graphics {
 		/** If we shall use debug_renderer to display graphics instead of sprites (where applicable) */
-		public final static boolean USE_DEBUG_RENDERER = true;
+		public final static boolean USE_DEBUG_RENDERER = false;
 		/** Renders regular graphics */
 		public final static boolean USE_RELEASE_RENDERER = true;
 		/** Minimum length between two corners in a polygon */
