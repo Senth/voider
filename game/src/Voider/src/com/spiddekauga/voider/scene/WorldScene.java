@@ -101,6 +101,30 @@ public abstract class WorldScene extends Scene {
 	}
 
 	/**
+	 * @return 0,0 of screen in world coordinates, null if current scene isn't a world
+	 * scene. Remember to free the returned vector with
+	 * Pools.vector2.free(returnedVector);
+	 */
+	@Override
+	public Vector2 getWorldMinCoordinates() {
+		Vector2 minPos = Pools.vector2.obtain();
+		screenToWorldCoord(mCamera, 0, Gdx.graphics.getHeight(), minPos, false);
+		return minPos;
+	}
+
+	/**
+	 * @return screenWidth,screenHeight in world coordinates, null if current scene
+	 * isn't a world scene. Remember to free the returned vector with
+	 * Pools.vector2.free(returnedVector);
+	 */
+	@Override
+	public Vector2 getWorldMaxCoordinates() {
+		Vector2 maxPos = Pools.vector2.obtain();
+		screenToWorldCoord(mCamera, Gdx.graphics.getWidth(), 0, maxPos, false);
+		return maxPos;
+	}
+
+	/**
 	 * Fixes the camera resolution
 	 */
 	protected void fixCamera() {

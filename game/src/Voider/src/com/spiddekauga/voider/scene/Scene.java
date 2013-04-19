@@ -75,6 +75,24 @@ public abstract class Scene extends InputAdapter {
 	}
 
 	/**
+	 * @return 0,0 of screen in world coordinates, null if current scene isn't a world
+	 * scene. Remember to free the returned vector with
+	 * Pools.vector2.free(returnedVector);
+	 */
+	public Vector2 getWorldMinCoordinates() {
+		return null;
+	}
+
+	/**
+	 * @return screenWidth,screenHeight in world coordinates, null if current scene
+	 * isn't a world scene. Remember to free the returned vector with
+	 * Pools.vector2.free(returnedVector);
+	 */
+	public Vector2 getWorldMaxCoordinates() {
+		return null;
+	}
+
+	/**
 	 * @return scene's invoker if the scene uses one, null otherwise.
 	 */
 	public Invoker getInvoker() {

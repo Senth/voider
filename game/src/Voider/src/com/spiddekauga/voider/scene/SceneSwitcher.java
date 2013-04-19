@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.utils.Invoker;
@@ -137,6 +138,32 @@ public class SceneSwitcher {
 			return 0;
 		} else {
 			return mScenes.peek().getWorldHeight();
+		}
+	}
+
+	/**
+	 * @return 0,0 of screen in world coordinates, null if current scene isn't a world
+	 * scene. Remember to free the returned vector with
+	 * Pools.vector2.free(returnedVector);
+	 */
+	public static Vector2 getWorldMinCoordinates() {
+		if (mScenes.isEmpty()) {
+			return null;
+		} else {
+			return mScenes.peek().getWorldMinCoordinates();
+		}
+	}
+
+	/**
+	 * @return screenWidth,screenHeight in world coordinates, null if current scene
+	 * isn't a world scene. Remember to free the returned vector with
+	 * Pools.vector2.free(returnedVector);
+	 */
+	public static Vector2 getWorldMaxCoordinates() {
+		if (mScenes.isEmpty()) {
+			return null;
+		} else {
+			return mScenes.peek().getWorldMaxCoordinates();
 		}
 	}
 

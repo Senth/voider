@@ -833,15 +833,32 @@ public class EnemyActor extends Actor {
 			if (getPath().getRightestCorner().x + getDef().getBoundingRadius() < mLevel.getXCoord() - SceneSwitcher.getWorldWidth()) {
 
 				// For once, check that the ship cannot be seen too
-				boolean deactivate = true;
+				boolean deactivate = false;
 				if (getPath().getPathType() == PathTypes.ONCE) {
-					if (getPosition().x + getDef().getBoundingRadius() > mLevel.getXCoord() - SceneSwitcher.getWorldWidth()) {
-						deactivate = false;
-					} else if (getPosition().x - getDef().getBoundingRadius() < mLevel.getXCoord()) {
-						deactivate = false;
-					} else if (getPosition().y + getDef().getBoundingRadius() < 10) {
-						// TODO
+					Vector2 minPos = SceneSwitcher.getWorldMinCoordinates();
+					Vector2 maxPos = SceneSwitcher.getWorldMaxCoordinates();
+
+					// Left
+					if (getPosition().x + getDef().getBoundingRadius() < minPos.x) {
+						deactivate = true;
 					}
+					// Right
+					else if (getPosition().x - getDef().getBoundingRadius() > maxPos.x) {
+						deactivate = true;
+					}
+					// Bottom
+					else if (getPosition().y + getDef().getBoundingRadius() < minPos.y) {
+						deactivate = true;
+					}
+					// Top
+					else if (getPosition().y - getDef().getBoundingRadius() > maxPos.y) {
+						deactivate = true;
+					}
+
+					Pools.vector2.free(minPos);
+					Pools.vector2.free(maxPos);
+				} else {
+					deactivate = true;
 				}
 
 				if (deactivate) {
