@@ -14,6 +14,7 @@ import com.spiddekauga.voider.game.Path.PathTypes;
 import com.spiddekauga.voider.game.Weapon;
 import com.spiddekauga.voider.game.actors.EnemyActorDef.AimTypes;
 import com.spiddekauga.voider.game.actors.EnemyActorDef.MovementTypes;
+import com.spiddekauga.voider.game.triggers.TActorActivated;
 import com.spiddekauga.voider.game.triggers.TScreenAt;
 import com.spiddekauga.voider.game.triggers.TriggerAction.Actions;
 import com.spiddekauga.voider.game.triggers.TriggerInfo;
@@ -35,6 +36,13 @@ public class EnemyActor extends Actor {
 		if (!mEditorActive) {
 			deactivate();
 		}
+	}
+
+	@Override
+	public void dispose() {
+		super.dispose();
+		Pools.vector2.free(mTargetDirection);
+		Pools.vector2.free(mRandomMoveDirection);
 	}
 
 	@Override
@@ -183,6 +191,22 @@ public class EnemyActor extends Actor {
 
 		triggerInfo.action = Actions.ACTOR_ACTIVATE;
 		triggerInfo.delay = 0;
+		triggerInfo.listener = this;
+		triggerInfo.setTrigger(trigger);
+
+		return triggerInfo;
+	}
+
+	/**
+	 * Creates the default deactivate trigger. Only AI movement uses this atm
+	 * @return trigger info that was created
+	 */
+	public TriggerInfo createDefaultDeactivateTrigger() {
+		TActorActivated trigger = new TActorActivated(this);
+
+		TriggerInfo triggerInfo = new TriggerInfo();
+		triggerInfo.action = Actions.ACTOR_DEACTIVATE;
+		triggerInfo.delay = Config.Actor.Enemy.DEACTIVATE_TIME_DEFAULT;
 		triggerInfo.listener = this;
 		triggerInfo.setTrigger(trigger);
 
@@ -524,21 +548,18 @@ public class EnemyActor extends Actor {
 			mPathIndexNext = 1;
 			setPosition(mPath.getCornerPosition(0));
 
-			Vector2 velocity = Pools.vector2.obtain();
-			velocity.set(mPath.getCornerPosition(mPathIndexNext)).sub(getPosition());
-			velocity.nor().scl(getDef(EnemyActorDef.class).getSpeed());
-			getBody().setLinearVelocity(velocity);
+			mTargetDirection.set(mPath.getCornerPosition(mPathIndexNext)).sub(getPosition());
 
 			// Set angle
 			if (getDef(EnemyActorDef.class).isTurning()) {
-				getBody().setTransform(getPosition(), (float)Math.toRadians(velocity.angle()));
+				getBody().setTransform(getPosition(), (float)Math.toRadians(mTargetDirection.angle()));
 			}
 
-			Pools.vector2.free(velocity);
+			moveToTarget(mTargetDirection, deltaTime);
 		}
 
 
-		if (isCloseToNextIndex()) {
+		if (hasPassedTarget()) {
 			// Special case for ONCE and last index
 			// Just continue straight forward, i.e do nothing
 			if (mPath.getPathType() == PathTypes.ONCE && mPathIndexNext == mPath.getCornerCount() - 1) {
@@ -549,20 +570,14 @@ public class EnemyActor extends Actor {
 			calculateNextPathIndex();
 
 			// No turning, change direction directly
-			if (!getDef(EnemyActorDef.class).isTurning()) {
-				Vector2 velocity = Pools.vector2.obtain();
-				velocity.set(mPath.getCornerPosition(mPathIndexNext)).sub(getPosition());
-				velocity.nor().scl(getDef(EnemyActorDef.class).getSpeed());
-				getBody().setLinearVelocity(velocity);
-				Pools.vector2.free(velocity);
-			}
+			mTargetDirection.set(mPath.getCornerPosition(mPathIndexNext)).sub(getPosition());
+			moveToTarget(mTargetDirection, deltaTime);
 		}
 
 
 		if (getDef(EnemyActorDef.class).isTurning()) {
-			Vector2 target = Pools.vector2.obtain();
-			target.set(mPath.getCornerPosition(mPathIndexNext)).sub(getPosition());
-			moveToTarget(target, deltaTime);
+			mTargetDirection.set(mPath.getCornerPosition(mPathIndexNext)).sub(getPosition());
+			moveToTarget(mTargetDirection, deltaTime);
 		}
 	}
 
@@ -592,7 +607,11 @@ public class EnemyActor extends Actor {
 			if (getDef(EnemyActorDef.class).isMovingRandomly()) {
 				calculateRandomMove(deltaTime);
 			} else {
-				getBody().setLinearVelocity(mLevel.getSpeed(), 0);
+				if (mEditorActive) {
+					getBody().setLinearVelocity(0, 0);
+				} else {
+					getBody().setLinearVelocity(mLevel.getSpeed(), 0);
+				}
 				getBody().setAngularVelocity(0);
 				resetRandomMove();
 			}
@@ -654,8 +673,8 @@ public class EnemyActor extends Actor {
 		velocity.set(targetDirection);
 		velocity.nor().scl(getDef(EnemyActorDef.class).getSpeed());
 
-		// Increase with level speed if AI movement
-		if (getDef(EnemyActorDef.class).getMovementType() == MovementTypes.AI) {
+		// Increase with level speed
+		if (!mEditorActive) {
 			velocity.x += mLevel.getSpeed();
 		}
 
@@ -672,12 +691,12 @@ public class EnemyActor extends Actor {
 		Vector2 velocity = Pools.vector2.obtain();
 		velocity.set(getBody().getLinearVelocity());
 
-		// Decrease with level speed if AI movement
-		if (getDef(EnemyActorDef.class).getMovementType() == MovementTypes.AI) {
+		// Decrease with level speed
+		if (!mEditorActive) {
 			velocity.x -= mLevel.getSpeed();
 		}
 
-		boolean noVelocity = velocity.len2() == 0;
+		boolean noVelocity = Maths.approxCompare(velocity.len2(), 0.01f);
 
 		// Calculate angle between the vectors
 		boolean counterClockwise = false;
@@ -761,8 +780,8 @@ public class EnemyActor extends Actor {
 				velocity.nor().scl(getDef(EnemyActorDef.class).getSpeed());
 			}
 
-			// Increase with level speed if AI movement
-			if (getDef(EnemyActorDef.class).getMovementType() == MovementTypes.AI) {
+			// Increase with level speed
+			if (!mEditorActive) {
 				velocity.x += mLevel.getSpeed();
 			}
 
@@ -813,14 +832,26 @@ public class EnemyActor extends Actor {
 	}
 
 	/**
-	 * @return true if the enemy is close to the next path index
+	 * @return true if the enemy has passed the target.
 	 */
-	private boolean isCloseToNextIndex() {
+	private boolean hasPassedTarget() {
 		Vector2 diff = Pools.vector2.obtain();
 		diff.set(mPath.getCornerPosition(mPathIndexNext)).sub(getPosition());
-		float distanceSq = diff.len2();
+
+		boolean hasPassedTarget = false;
+
+		if (getDef(EnemyActorDef.class).isTurning()) {
+			float distanceSq = diff.len2();
+			hasPassedTarget = distanceSq <= Config.Actor.Enemy.PATH_NODE_CLOSE_SQ;
+		} else {
+			float diffAngle = diff.angle() - mTargetDirection.angle();
+			if (diffAngle > 100 || diffAngle < -100) {
+				hasPassedTarget = true;
+			}
+		}
+
 		Pools.vector2.free(diff);
-		return distanceSq <= Config.Actor.Enemy.PATH_NODE_CLOSE_SQ;
+		return hasPassedTarget;
 	}
 
 	/**
@@ -900,7 +931,7 @@ public class EnemyActor extends Actor {
 	/** Next random move time */
 	private float mRandomMoveNext = 0;
 	/** Direction of the current random move */
-	private Vector2 mRandomMoveDirection = new Vector2();
+	private Vector2 mRandomMoveDirection = Pools.vector2.obtain().set(0,0);
 
 
 	// PATH MOVEMENT
@@ -914,4 +945,6 @@ public class EnemyActor extends Actor {
 	private boolean mPathForward = true;
 	/** ONCE path reach end */
 	private boolean mPathOnceReachedEnd = false;
+	/** Last direction */
+	private Vector2 mTargetDirection = Pools.vector2.obtain().set(0,0);
 }

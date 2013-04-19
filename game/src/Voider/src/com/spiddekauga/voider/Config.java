@@ -60,6 +60,8 @@ public class Config {
 			public final static float PATH_NODE_CLOSE_SQ = 0.5f * 0.5f;
 			/** Minimum angle if we shall turn */
 			public final static float TURN_ANGLE_MIN = 0.5f;
+			/** Default deactivate time for AI enemies */
+			public final static float DEACTIVATE_TIME_DEFAULT = 20;
 		}
 		/**
 		 * Pickups
