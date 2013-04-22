@@ -190,21 +190,48 @@ public class TooltipListener implements EventListener {
 			int cursorX = Gdx.input.getX();
 			int cursorY = Gdx.input.getY();
 
-			// Lower right corner
-			if (cursorX - windowWidth >= 0 && cursorY - windowHeight >= 0) {
+			float leftXMissing = windowWidth - cursorX;
+			float lowerYMissing = windowHeight - cursorY;
+			float rightXMissing = cursorX + windowWidth - screenWidth;
+			float upperYMissing = cursorY + windowHeight - screenHeight;
+
+			// The tooltip fits the screen
+			// Lower left corner
+			if (leftXMissing <= 0 && lowerYMissing <= 0) {
 				mWindow.setPosition(cursorX - windowWidth, screenHeight - cursorY);
 			}
-			// Lower left corner
-			else if (cursorX + windowWidth <= screenWidth && cursorY - windowHeight >= 0) {
-				mWindow.setPosition(cursorX + windowWidth, screenHeight - cursorY);
-			}
-			// Upper right corner
-			else if (cursorX - windowWidth >= 0 && cursorY + windowHeight <= screenHeight) {
-				mWindow.setPosition(cursorX - windowWidth, screenHeight - (cursorY + windowHeight));
+			// Lower right corner
+			else if (rightXMissing <= 0 && lowerYMissing <= 0) {
+				mWindow.setPosition(cursorX, screenHeight - cursorY);
 			}
 			// Upper left corner
-			else if (cursorX + windowWidth <= screenWidth && cursorY + windowHeight <= screenHeight) {
-				mWindow.setPosition(cursorX + windowWidth, screenHeight - (cursorY + windowHeight));
+			else if (leftXMissing <= 0 && upperYMissing <= 0) {
+				mWindow.setPosition(cursorX - windowWidth, screenHeight - (cursorY + windowHeight + 1));
+			}
+			// Upper right corner
+			else if (rightXMissing <= 0 && upperYMissing <= 0) {
+				mWindow.setPosition(cursorX, screenHeight - (cursorY + windowHeight + 1));
+			}
+			// Tooltip doesn't fit the screen from this position
+			else {
+
+				// Left or right side
+				int xPosition = 0;
+				if (leftXMissing < rightXMissing) {
+					xPosition = (int) (leftXMissing > 0 ? 0 : -leftXMissing);
+				} else {
+					xPosition = (int) (rightXMissing > 0 ? cursorX - rightXMissing : cursorX);
+				}
+
+				// Upper or lower
+				int yPosition = 0;
+				if (lowerYMissing < upperYMissing) {
+					yPosition = lowerYMissing > 0 ? 0 : cursorY;
+				} else {
+					yPosition = (int) (upperYMissing > 0 ? cursorY - upperYMissing : cursorY + windowHeight + 1);
+				}
+
+				mWindow.setPosition(xPosition, screenHeight - yPosition);
 			}
 		}
 	}
