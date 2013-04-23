@@ -59,8 +59,6 @@ class LevelEditorGui extends EditorGui {
 
 	@Override
 	public void initGui() {
-		super.initGui();
-
 		mMainTable.setTableAlign(Horizontal.RIGHT, Vertical.TOP);
 		mMainTable.setRowAlign(Horizontal.RIGHT, Vertical.TOP);
 		mMainTable.setCellPaddingDefault(1, 1, 1, 1);
@@ -86,6 +84,7 @@ class LevelEditorGui extends EditorGui {
 		mMainTable.setTransform(true);
 		mMainTable.invalidate();
 
+		super.initGui();
 		switchTool(mStaticTerrainTable);
 	}
 

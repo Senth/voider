@@ -1,6 +1,7 @@
 package com.spiddekauga.voider.scene;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import com.badlogic.gdx.graphics.Camera;
@@ -390,18 +391,30 @@ public class PathTool extends TouchTool implements ISelectTool {
 
 	@Override
 	protected Body filterPick(ArrayList<Body> hitBodies) {
+		// Fast return a picking circle if hit, otherwise return another path.
 		if (!hitBodies.isEmpty()) {
-			return hitBodies.get(0);
-		} else {
-			return null;
+			Body returnHitBody = null;
+			Iterator<Body> hitBodyIt = hitBodies.iterator();
+			while (hitBodyIt.hasNext()) {
+				Body hitBody = hitBodyIt.next();
+				if (hitBody.getUserData() instanceof HitWrapper) {
+					return hitBody;
+				} else if (hitBody.getUserData() instanceof Path) {
+					returnHitBody = hitBody;
+				}
+			}
+
+			return returnHitBody;
 		}
+
+		return null;
 	}
 
 	/**
 	 * @return true if we hit the selected path
 	 */
 	private boolean hitSelectedPath() {
-		return mHitBody != null && mHitBody.getUserData() == mSelectedPath;
+		return mHitSelectedPath;
 	}
 
 	/**
@@ -470,27 +483,32 @@ public class PathTool extends TouchTool implements ISelectTool {
 	private QueryCallback mCallback = new QueryCallback() {
 		@Override
 		public boolean reportFixture(Fixture fixture) {
+			mHitSelectedPath = false;
+
 			Body body = fixture.getBody();
 			// Hit a corner
 			if (body.getUserData() instanceof HitWrapper) {
 				if (!mOnlyFindPath) {
 					HitWrapper hitWrapper = (HitWrapper) body.getUserData();
 					if (hitWrapper.resource != null && hitWrapper.resource instanceof Path) {
-						mHitBodies.clear();
 						mHitBodies.add(fixture.getBody());
-						return false;
 					}
 				}
 			}
 			// Hit an actor
 			else if (body.getUserData() != null && body.getUserData() instanceof Path) {
 				mHitBodies.add(body);
+				if (body.getUserData() == mSelectedPath) {
+					mHitSelectedPath = true;
+				}
 			}
 
 			return true;
 		}
 	};
 
+	/** If the player hit the selected path */
+	private boolean mHitSelectedPath = false;
 	/** Current state of the tool */
 	private States mState = States.ADD_CORNER;
 	/** Currently selected path */

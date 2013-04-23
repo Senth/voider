@@ -58,8 +58,8 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 		mCorners.add(index, Pools.vector2.obtain().set(corner));
 
 		if (mWorld != null) {
+			destroyBodyFixture();
 			createFixture();
-			resetBodyFixture();
 
 			if (mSelected) {
 				createBodyCorner(corner, index);
@@ -89,8 +89,8 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 		}
 
 		resetBodyCorners();
+		destroyBodyFixture();
 		createFixture();
-		resetBodyFixture();
 
 		updateEnemyPositions();
 
@@ -128,9 +128,9 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 
 		if (index >= 0 && index < mCorners.size()) {
 			removedCorner = mCorners.remove(index);
-			destroyBodyCorners(index);
+			destroyBodyCorners(index);;
+			destroyBodyFixture();
 			createFixture();
-			resetBodyFixture();
 
 			if (index == 0) {
 				updateEnemyPositions();
@@ -151,8 +151,8 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 		if (index >= 0 && index < mCorners.size()) {
 			mCorners.get(index).set(newPos);
 			resetBodyCorners();
+			destroyBodyFixture();
 			createFixture();
-			resetBodyFixture();
 
 			if (index == 0) {
 				updateEnemyPositions();
@@ -177,7 +177,6 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 		mWorld = world;
 
 		if (mWorld != null) {
-			createFixture();
 			createBody();
 		}
 		// NULL: Dispose everything
@@ -231,10 +230,8 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 
 			mBody = mWorld.createBody(new BodyDef());
 			mBody.setUserData(this);
-			if (mFixtureDef != null && mFixtureDef.shape != null) {
-				mBody.createFixture(mFixtureDef);
-			}
 
+			createFixture();
 			createVertices();
 		}
 	}
@@ -445,13 +442,17 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 				Pools.vector2.free(tempPosition);
 			}
 		}
+
+		if (mBody != null && mFixtureDef != null && mFixtureDef.shape != null) {
+			mBody.createFixture(mFixtureDef);
+		}
 	}
 
 	/**
 	 * Removes existing body fixture and adds the current fixture
 	 */
 	@SuppressWarnings("unchecked")
-	private void resetBodyFixture() {
+	private void destroyBodyFixture() {
 		if (mFixtureDef != null && mBody != null && mFixtureDef.shape != null) {
 			ArrayList<Fixture> fixtures = (ArrayList<Fixture>) mBody.getFixtureList().clone();
 			for (Fixture fixture : fixtures) {
@@ -478,6 +479,7 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 		cornerBody.setTransform(position, 0);
 		cornerBody.createFixture(Config.Editor.getPickingFixture());
 		HitWrapper hitWrapper = new HitWrapper(this);
+		hitWrapper.data = "picking";
 		cornerBody.setUserData(hitWrapper);
 
 		mBodyCorners.add(index, cornerBody);
