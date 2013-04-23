@@ -266,7 +266,7 @@ class LevelEditorGui extends EditorGui {
 		mWidgets.enemy.name.setSize(mWidgets.enemy.name.getPrefWidth(), mWidgets.enemy.name.getPrefHeight());
 
 
-		if (mLevelEditor.hasEnemyOptions()) {
+		if (mLevelEditor.isEnemySelected()) {
 			mHiders.enemyOptions.show();
 		} else {
 			mHiders.enemyOptions.hide();
@@ -302,28 +302,16 @@ class LevelEditorGui extends EditorGui {
 		}
 
 
-		// Can have deactivate trigger -> Show button
-		if (mLevelEditor.canSelectedEnemyUseDeactivateTrigger()) {
-			mHiders.enemyDeactive.show();
+		// Has deactivate trigger -> Show trigger delay
+		if (mLevelEditor.hasSelectedEnemyDeactivateTrigger()) {
+			mHiders.enemyDeactivateDelay.show();
 
-			// Has deactivate trigger -> Show trigger delay
-			if (mLevelEditor.hasSelectedEnemyDeactivateTrigger()) {
-				mHiders.enemyDeactivateDelay.show();
-
-				float deactivateDelay = mLevelEditor.getSelectedEnemyDeactivateTriggerDelay();
-				if (deactivateDelay >= 0 && deactivateDelay!= mWidgets.enemy.deactivateDelay.getValue()) {
-					mInvoker.execute(new CGuiSlider(mWidgets.enemy.deactivateDelay, deactivateDelay, mWidgets.enemy.deactivateDelay.getValue()));
-				}
-			} else {
-				mHiders.enemyDeactivateDelay.hide();
+			float deactivateDelay = mLevelEditor.getSelectedEnemyDeactivateTriggerDelay();
+			if (deactivateDelay >= 0 && deactivateDelay!= mWidgets.enemy.deactivateDelay.getValue()) {
+				mInvoker.execute(new CGuiSlider(mWidgets.enemy.deactivateDelay, deactivateDelay, mWidgets.enemy.deactivateDelay.getValue()));
 			}
 		} else {
-			mHiders.enemyDeactive.hide();
-
-			// Current state is deactivate, change to select instead
-			if (mLevelEditor.getEnemyState() == AddEnemyTool.States.SET_DEACTIVATE_TRIGGER) {
-				mLevelEditor.setEnemyState(AddEnemyTool.States.SELECT);
-			}
+			mHiders.enemyDeactivateDelay.hide();
 		}
 	}
 
@@ -871,7 +859,7 @@ class LevelEditorGui extends EditorGui {
 		mEnemyTable.row();
 		button = new TextButton("Set deactivate trigger", toggleStyle);
 		menuGroup.add(button);
-		mHiders.enemyDeactive.addToggleActor(button);
+		mHiders.enemyOptions.addToggleActor(button);
 		mWidgets.enemy.deactivateTrigger = button;
 		mEnemyTable.add(button);
 		button.addListener(enemyInnerMenu);
@@ -1269,8 +1257,7 @@ class LevelEditorGui extends EditorGui {
 		public Hiders() {
 			enemy.addChild(enemyOptions);
 			enemyOptions.addChild(enemyActivateDelay);
-			enemyOptions.addChild(enemyDeactive);
-			enemyDeactive.addChild(enemyDeactivateDelay);
+			enemyOptions.addChild(enemyDeactivateDelay);
 			path.addChild(pathOptions);
 			trigger.addChild(triggerActorActivate);
 			trigger.addChild(triggerScreenAt);
@@ -1284,8 +1271,6 @@ class LevelEditorGui extends EditorGui {
 		HideManual enemyActivateDelay = new HideManual();
 		/** Hides trigger deactivate delay */
 		HideManual enemyDeactivateDelay = new HideManual();
-		/** Hides trigger deactivate, only AI will see this */
-		HideManual enemyDeactive = new HideManual();
 		/** Hides the path */
 		HideListener path = new HideListener(true);
 		/** Hides path options */

@@ -26,7 +26,6 @@ import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.ActorDef;
 import com.spiddekauga.voider.game.actors.EnemyActor;
 import com.spiddekauga.voider.game.actors.EnemyActorDef;
-import com.spiddekauga.voider.game.actors.EnemyActorDef.MovementTypes;
 import com.spiddekauga.voider.game.actors.EnemyGroup;
 import com.spiddekauga.voider.game.actors.PickupActor;
 import com.spiddekauga.voider.game.actors.PickupActorDef;
@@ -512,20 +511,6 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 		// Main menu
 		else if (KeyHelper.isBackPressed(keycode)) {
 			((EditorGui)mGui).showMainMenu();
-		}
-
-		return false;
-	}
-
-	/**
-	 * @return true if the enemy has options
-	 */
-	boolean hasEnemyOptions() {
-		if (mToolType == Tools.ENEMY) {
-			EnemyActor enemy = (EnemyActor) ((AddActorTool)mTouchTools[Tools.ENEMY.ordinal()]).getSelectedResource();
-			if (enemy != null) {
-				return enemy.getDef(EnemyActorDef.class).getMovementType() != EnemyActorDef.MovementTypes.STATIONARY;
-			}
 		}
 
 		return false;
@@ -1152,20 +1137,6 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 		}
 
 		return false;
-	}
-
-	/**
-	 * @return true if the selected enemy can set a deactivation trigger
-	 */
-	boolean canSelectedEnemyUseDeactivateTrigger() {
-		EnemyActor enemy =  (EnemyActor) ((AddEnemyTool)mTouchTools[Tools.ENEMY.ordinal()]).getSelectedResource();
-
-		// Only AI can set a deactivation trigger. The rest deactivates automatically
-		if (enemy.getDef(EnemyActorDef.class).getMovementType() == MovementTypes.AI) {
-			return true;
-		} else {
-			return false;
-		}
 	}
 
 	/**
