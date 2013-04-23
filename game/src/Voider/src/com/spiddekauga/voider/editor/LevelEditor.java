@@ -535,6 +535,8 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 			mInputMultiplexer.addProcessor(mTouchTools[mToolType.ordinal()]);
 			mTouchTools[mToolType.ordinal()].activate();
 		}
+
+		((LevelEditorGui)mGui).resetEnemyOptions();
 	}
 
 	/**
