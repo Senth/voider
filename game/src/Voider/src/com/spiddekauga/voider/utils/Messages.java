@@ -1,5 +1,7 @@
 package com.spiddekauga.voider.utils;
 
+import com.spiddekauga.voider.Config;
+
 
 
 /**
@@ -156,15 +158,17 @@ public class Messages {
 				public final static String SELECT = "Selects an enemy, used when you want to see " +
 						"the enemy's option without moving it.";
 				public final static String ADD = "Adds a new enemy or moves an existing one. " +
-						"To add an enemy you first need to select one by pressing \"Select type\"." +
+						"To add an enemy you first need to select a type by pressing \"Select type\"." +
 						"\n\n" +
-						"Usage:\n" +
-						"Static enemies do not have any option and they automatically activates " +
-						"and deactivates when they come on the screen.\n" +
-						"Enemies that follow a path will snap to the beggining of a path (marked green)." +
-						"NOTE: Enemies that follow a path but aren't bound to one will be stationary, but" +
-						"still need a trigger to activate.\n" +
-						"Path and AI enemies have additional options, see their tooltip for how they work.";
+						"About triggers:\n" +
+						"All enemies have a default activate and deactivate trigger (not displayed " +
+						"in editor); these are described below.\n" +
+						"All enemies activate just before entering the screen. If multiple enemies are set " +
+						"the first enemy will spawn earlier making sure the last enemy spawns off screen. " +
+						"Stationary enemies deactivate when they disappear from the screen. Path enemies will " +
+						"only disappear when the whole path AND the enemy has disappeared off the screen. " +
+						"AI enemies will deactivate " + Config.Actor.Enemy.DEACTIVATE_TIME_DEFAULT +
+						" seconds after activation.";
 				public final static String REMOVE = "Removes an enemy. If a \"on activate\" trigger is bound to " +
 						"this enemy, that trigger will also be removed.";
 				public final static String MOVE = "Moves an enemy. Enemies that follow a path will snap to " +
@@ -179,9 +183,9 @@ public class Messages {
 						"be used as an activate trigger for the enemy, i.e. the enemy will activate " +
 						"when this trigger is shot. " +
 						"If you want to delay the activation by X seconds you can do that below (only shown " +
-						"if a trigger has been selected). If you cannot see deactivate trigger, it " +
-						"is only available for AI enemies " +
-						"as path and stationary enemies automatically deactivates.";
+						"if a trigger has been selected).\n" +
+						"NOTE: All enemies have a default trigger, this is for those that want more control when their" +
+						"enemies spawn.";
 				public final static String ACTIVATE_DELAY = "Delay the activation by X seconds.\nExample of use:\n " +
 						"You have one path, but want two different enemies to follow it but not activate exactly at" +
 						"the same time. You then set the activation trigger of both enemies to the same value, but" +
@@ -189,8 +193,9 @@ public class Messages {
 				public final static String SET_DEACTIVATE_DELAY = "Click/touch to select a trigger to be used " +
 						"as a deactivate trigger for the enemy, i.e. the enemy will deactivate when this " +
 						"trigger is shot. If you you want to delay the deactivation by X seconds you can do that below " +
-						"(only shown if a trigger has been selected. Deactivate trigger is only available for AI enemies " +
-						"as path and stationary enemies automatically deactivates.";
+						"(only shown if a trigger has been selected.\n" +
+						"NOTE: All enemies have a default trigger, this is for those that want more control when their" +
+						"enemies spawn.";
 				public final static String DEACTIVATE_DELAY = "Delay the deactivation by X seconds.\nExample of use:\n" +
 						"You want the AI enemy to only be active for 10 seconds. You can then select its own activation " +
 						"trigger (if one has been created). This trigger will be shot once the enemy is activated, but " +
@@ -383,5 +388,6 @@ public class Messages {
 		return message.replace(ACTOR_TYPE, actorTypeName);
 	}
 
+	/** Actor type to be replaced in text */
 	private final static String ACTOR_TYPE = "ACTOR_TYPE";
 }
