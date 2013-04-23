@@ -46,7 +46,7 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 		mWeapon.setWeaponDef(new WeaponDef());
 		mWeapon.getDef().setBulletActorDef(mDef);
 		Vector2 weaponPos = Pools.vector2.obtain();
-		screenToWorldCoord(mCamera, Gdx.graphics.getWidth() * 0.1f, Gdx.graphics.getHeight() * 0.5f, weaponPos, true);
+		screenToWorldCoord(mCamera, Gdx.graphics.getWidth() * 0.1f, Gdx.graphics.getHeight() * 0.7f, weaponPos, true);
 		mWeapon.setPosition(weaponPos);
 		Pools.vector2.free(weaponPos);
 
@@ -428,6 +428,14 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 	@Override
 	public void onResourceAdded(IResource resource) {
 		mBulletActor = (BulletActor) resource;
+
+		// Set position other than center
+		Vector2 worldPosition = Pools.vector2.obtain();
+		screenToWorldCoord(mCamera, Gdx.graphics.getWidth() / 3, Gdx.graphics.getHeight() / 3, worldPosition, false);
+		mBulletActor.setPosition(worldPosition);
+		Pools.vector2.free(worldPosition);
+
+
 		mUnsaved = true;
 	}
 
