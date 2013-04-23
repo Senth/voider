@@ -84,6 +84,8 @@ public class DrawActorTool extends ActorTool {
 			mActorEditor.onResourceRemoved(mSelectedActor);
 			mSelectedActor = null;
 		}
+
+		activate();
 	}
 
 	/**

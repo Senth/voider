@@ -515,7 +515,6 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 			// Set position
 			bodyDef.position.set(mPosition);
 		}
-		/** @todo Save body def and use it when creating the body */
 	}
 
 	@Override

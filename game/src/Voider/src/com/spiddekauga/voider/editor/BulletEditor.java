@@ -524,6 +524,7 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 		mDef = def;
 		mDrawActorTool.setActorDef(def);
 		mWeapon.getDef().setBulletActorDef(def);
+		setShapeType(mDef.getShapeType());
 	}
 
 	/** Current weapon that fires the bullets */
