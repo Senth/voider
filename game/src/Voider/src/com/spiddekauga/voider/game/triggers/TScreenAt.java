@@ -225,6 +225,7 @@ public class TScreenAt extends Trigger implements IResourceBody, IResourcePositi
 	private void destroyVertices() {
 		if (mVertices != null) {
 			Pools.vector2.freeDuplicates(mVertices);
+			Pools.arrayList.free(mVertices);
 			mVertices = null;
 		}
 	}

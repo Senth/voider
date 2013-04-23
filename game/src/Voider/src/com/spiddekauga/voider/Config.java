@@ -411,6 +411,14 @@ public class Config {
 		}
 
 		/**
+		 * Path specifics
+		 */
+		public static class Path {
+			/** Vector of default path (only one corner) */
+			public final static Vector2 DEFAULT_ADD_PATH = new Vector2(-1,0);
+		}
+
+		/**
 		 * Weapon specifics
 		 */
 		public static class Weapon {

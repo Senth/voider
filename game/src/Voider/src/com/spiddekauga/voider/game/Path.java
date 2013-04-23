@@ -231,7 +231,7 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 
 			mBody = mWorld.createBody(new BodyDef());
 			mBody.setUserData(this);
-			if (mFixtureDef != null) {
+			if (mFixtureDef != null && mFixtureDef.shape != null) {
 				mBody.createFixture(mFixtureDef);
 			}
 
@@ -397,35 +397,37 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 	 * Creates the fixtures for the path
 	 */
 	private void createFixture() {
+		// Assertion test (to skip crash)
 		if (mCorners.size() >= 2) {
-			if (mFixtureDef == null) {
-				mFixtureDef = new FixtureDef();
-				mFixtureDef.filter.categoryBits = ActorFilterCategories.NONE;
-				mFixtureDef.filter.groupIndex = ActorFilterCategories.NONE;
-			} else {
-				if (mFixtureDef.shape != null) {
-					mFixtureDef.shape.dispose();
-					mFixtureDef.shape = null;
+			Vector2 diff = Pools.vector2.obtain();
+			for (int i = 0; i < mCorners.size() -1; ++i) {
+				diff.set(mCorners.get(i)).sub(mCorners.get(i+1));
+				if (diff.len2() <= CHAIN_CORNER_DISTANCE_MIN) {
+					Pools.vector2.free(diff);
+					return;
 				}
 			}
+			Pools.vector2.free(diff);
+		}
 
+		if (mFixtureDef == null) {
+			mFixtureDef = new FixtureDef();
+			mFixtureDef.filter.categoryBits = ActorFilterCategories.NONE;
+			mFixtureDef.filter.groupIndex = ActorFilterCategories.NONE;
+		} else {
+			if (mFixtureDef.shape != null) {
+				mFixtureDef.shape.dispose();
+				mFixtureDef.shape = null;
+			}
+		}
+
+		if (mCorners.size() >= 2) {
 			// Create shape
 			ChainShape chainShape = new ChainShape();
 			Vector2[] tempArray = new Vector2[mCorners.size()];
 			chainShape.createChain(mCorners.toArray(tempArray));
 			mFixtureDef.shape = chainShape;
 		} else if (mCorners.size() >= 1) {
-			if (mFixtureDef == null) {
-				mFixtureDef = new FixtureDef();
-				mFixtureDef.filter.categoryBits = ActorFilterCategories.NONE;
-				mFixtureDef.filter.groupIndex = ActorFilterCategories.NONE;
-			} else {
-				if (mFixtureDef.shape != null) {
-					mFixtureDef.shape.dispose();
-					mFixtureDef.shape = null;
-				}
-			}
-
 			ChainShape chainShape = new ChainShape();
 			Vector2[] tempArray = new Vector2[2];
 
@@ -434,7 +436,7 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 			}
 
 			tempArray[0].set(mCorners.get(0));
-			tempArray[1].set(mCorners.get(0)).sub(1,0);
+			tempArray[1].set(mCorners.get(0)).add(Config.Editor.Path.DEFAULT_ADD_PATH);
 
 			chainShape.createChain(tempArray);
 			mFixtureDef.shape = chainShape;
@@ -450,13 +452,11 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 	 */
 	@SuppressWarnings("unchecked")
 	private void resetBodyFixture() {
-		if (mFixtureDef != null && mBody != null) {
+		if (mFixtureDef != null && mBody != null && mFixtureDef.shape != null) {
 			ArrayList<Fixture> fixtures = (ArrayList<Fixture>) mBody.getFixtureList().clone();
 			for (Fixture fixture : fixtures) {
 				mBody.destroyFixture(fixture);
 			}
-
-			mBody.createFixture(mFixtureDef);
 		}
 	}
 
@@ -526,7 +526,19 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 			destroyVertices();
 		}
 
-		mVertices = Geometry.createLinePolygon(mCorners, Config.Editor.Level.Path.WIDTH);
+		if (mCorners.size() >= 2) {
+			mVertices = Geometry.createLinePolygon(mCorners, Config.Editor.Level.Path.WIDTH);
+		} else if (mCorners.size() >= 1) {
+			@SuppressWarnings("unchecked")
+			ArrayList<Vector2> corners = Pools.arrayList.obtain();
+			corners.clear();
+			corners.addAll(mCorners);
+			Vector2 tempCorner = Pools.vector2.obtain();
+			tempCorner.set(mCorners.get(0)).add(Config.Editor.Path.DEFAULT_ADD_PATH);
+			corners.add(tempCorner);
+			mVertices = Geometry.createLinePolygon(corners, Config.Editor.Level.Path.WIDTH);
+			Pools.arrayList.free(corners);
+		}
 	}
 
 	/**
@@ -535,6 +547,7 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 	private void destroyVertices() {
 		if (mVertices != null) {
 			Pools.vector2.freeDuplicates(mVertices);
+			Pools.arrayList.free(mVertices);
 			mVertices = null;
 		}
 	}
@@ -575,4 +588,6 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 	private FixtureDef mFixtureDef = null;
 	/** Enemies bound to this path */
 	private ArrayList<EnemyActor> mEnemies = new ArrayList<EnemyActor>();
+
+	private final static float CHAIN_CORNER_DISTANCE_MIN = 0.005f * 0.005f;
 }

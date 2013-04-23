@@ -284,12 +284,14 @@ public class Geometry {
 	 * Vector2Pool, make sure to free them afterwards :)
 	 */
 	public static ArrayList<Vector2> createLinePolygon(ArrayList<Vector2> corners, float width) {
-		ArrayList<Vector2> vertices = new ArrayList<Vector2>();
-
 		// Do nothing if only one or zero corners. Cannot draw a line from this...
 		if (corners.size() < 2) {
-			return vertices;
+			return null;
 		}
+
+		@SuppressWarnings("unchecked")
+		ArrayList<Vector2> vertices = Pools.arrayList.obtain();
+		vertices.clear();
 
 		Vector2 directionBefore = Pools.vector2.obtain();
 		Vector2 directionAfter = Pools.vector2.obtain();
@@ -362,7 +364,9 @@ public class Geometry {
 			}
 		}
 
-		ArrayList<Vector2> triangles = new ArrayList<Vector2>();
+		@SuppressWarnings("unchecked")
+		ArrayList<Vector2> triangles = Pools.arrayList.obtain();
+		triangles.clear();
 
 		// Create triangles from the positions
 		if (Geometry.isPolygonCounterClockwise(corners)) {
@@ -397,7 +401,7 @@ public class Geometry {
 			}
 		}
 
-
+		Pools.arrayList.free(vertices);
 
 		Pools.vector2.free(directionBefore);
 		Pools.vector2.free(directionAfter);
