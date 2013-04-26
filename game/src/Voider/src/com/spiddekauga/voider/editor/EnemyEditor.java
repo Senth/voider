@@ -411,6 +411,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 				ResourceCacheFacade.finishLoading();
 
 				mDef = ResourceCacheFacade.get(mDef.getId(), mDef.getClass());
+				setEnemyDef();
 			} catch (Exception e) {
 				Gdx.app.error("EnemyEditor", "Loading of saved actor failed! " + e.toString());
 			}
