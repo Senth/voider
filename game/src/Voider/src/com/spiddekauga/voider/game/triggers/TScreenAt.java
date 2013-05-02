@@ -60,6 +60,11 @@ public class TScreenAt extends Trigger implements IResourceBody, IResourcePositi
 	}
 
 	@Override
+	public float getBoundingRadius() {
+		return 0;
+	}
+
+	@Override
 	protected Object getCauseObject() {
 		return null;
 	}

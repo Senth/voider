@@ -123,6 +123,33 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 	}
 
 	@Override
+	public float getBoundingRadius() {
+		// Calculate the bounding radius
+		float maxLengthSq = Float.MIN_VALUE;
+		Vector2 diffVector = Pools.vector2.obtain();
+		Vector2 center = getPosition();
+
+		for (Vector2 corner : mCorners) {
+			diffVector.set(center).sub(corner);
+			float lengthSq = diffVector.len2();
+
+			if (lengthSq > maxLengthSq) {
+				maxLengthSq = lengthSq;
+			}
+		}
+
+		Pools.vector2.free(center);
+		Pools.vector2.free(diffVector);
+
+		float maxLength = 0;
+		if (maxLengthSq > 0) {
+			maxLength = (float) Math.sqrt(maxLengthSq);
+		}
+
+		return maxLength;
+	}
+
+	@Override
 	public Vector2 removeCorner(int index) {
 		Vector2 removedCorner = null;
 

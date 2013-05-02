@@ -184,14 +184,14 @@ public class LevelDef extends Def {
 
 	/**
 	 * Sets the end x coordinate of the level
-	 * @param endXCoord end x coordinate of the level (left screen edge)
+	 * @param endXCoord end x coordinate of the level
 	 */
 	public void setEndXCoord(float endXCoord) {
 		mEndXCoord = endXCoord;
 	}
 
 	/**
-	 * @return the end x coordinate of the level (left screen edge)
+	 * @return the end x coordinate of the level
 	 */
 	public float getEndXCoord() {
 		return mEndXCoord;
@@ -219,6 +219,21 @@ public class LevelDef extends Def {
 	 */
 	public UUID getLevelId() {
 		return mLevelId;
+	}
+
+	/**
+	 * Sets the starting position of the level
+	 * @param startXCoord starting x coordinate of the level
+	 */
+	void setStartXCoord(float startXCoord) {
+		mStartXCoord = startXCoord;
+	}
+
+	/**
+	 * @return starting position of the level
+	 */
+	public float getStartXCoord() {
+		return mStartXCoord;
 	}
 
 	/**
@@ -252,6 +267,7 @@ public class LevelDef extends Def {
 		json.writeValue("mStoryAfter", mStoryAfter);
 		json.writeValue("mRevision", mRevision);
 		json.writeValue("mVersion", getVersionString());
+		json.writeValue("mStartXCoord", mStartXCoord);
 		json.writeValue("mEndXCoord", mEndXCoord);
 		json.writeValue("mSpeed", mSpeed);
 		json.writeValue("mLevelId", mLevelId);
@@ -274,6 +290,7 @@ public class LevelDef extends Def {
 		mStoryBefore = json.readValue("mStoryBefore", String.class, jsonData);
 		mStoryAfter = json.readValue("mStoryAfter", String.class, jsonData);
 		mRevision = json.readValue("mRevision", long.class, jsonData);
+		mStartXCoord = json.readValue("mStartXCoord", float.class, jsonData);
 		mEndXCoord = json.readValue("mEndXCoord", float.class, jsonData);
 		mSpeed = json.readValue("mSpeed", float.class, jsonData);
 
@@ -292,7 +309,8 @@ public class LevelDef extends Def {
 	}
 
 
-
+	/** Starting coordinate of the level (right screen edge) */
+	private float mStartXCoord = 0;
 	/** Theme of the level */
 	private UUID mThemeId = null;
 	/** The actual level id, i.e. not this definition's id */
@@ -308,8 +326,8 @@ public class LevelDef extends Def {
 	/** Base speed of the level, the actual level speed may vary as it can
 	 * be changed by triggers */
 	private float mSpeed = Config.Editor.Level.LEVEL_SPEED_DEFAULT;
-	/** End of the map (left screen edge) */
-	private float mEndXCoord = 100.0f;
+	/** End of the map (right screen edge) */
+	private float mEndXCoord = 100f;
 	/** The revision of the map, this increases after each save */
 	private long mRevision = 1;
 	/** Main version (1 in 1.0.13) */

@@ -182,9 +182,9 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 
 		clearTools();
 
-		// Reset camera position
+		// Reset camera position to the start
 		if (!sameLevel) {
-			mCamera.position.x = -mCamera.viewportWidth * 0.5f;
+			mCamera.position.x = mLevel.getDef().getStartXCoord() + mCamera.viewportWidth * 0.5f;
 			mCamera.update();
 		}
 		mScroller.stop();
@@ -589,6 +589,7 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 
 	@Override
 	public void saveDef() {
+		mLevel.calculateStartPosition();
 		ResourceSaver.save(mLevel.getDef());
 		ResourceSaver.save(mLevel);
 

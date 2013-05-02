@@ -22,6 +22,7 @@ import com.spiddekauga.voider.game.triggers.TriggerInfo;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourceEditorRender;
 import com.spiddekauga.voider.resources.IResourceEditorUpdate;
+import com.spiddekauga.voider.resources.IResourcePosition;
 import com.spiddekauga.voider.resources.IResourceRender;
 import com.spiddekauga.voider.resources.IResourceUpdate;
 import com.spiddekauga.voider.resources.Resource;
@@ -340,6 +341,25 @@ public class Level extends Resource implements Disposable {
 	 */
 	public void usesResource(IResource usesResource, ArrayList<IResource> foundResources) {
 		mResourceBinder.usesResource(usesResource, foundResources);
+	}
+
+	/**
+	 * Calculates the starting position of the level
+	 */
+	public void calculateStartPosition() {
+		float startPosition = Float.MAX_VALUE;
+
+		ArrayList<IResourcePosition> resources = mResourceBinder.getResources(IResourcePosition.class);
+
+		for (IResourcePosition resource : resources) {
+			float position = resource.getPosition().x - resource.getBoundingRadius();
+
+			if (position < startPosition) {
+				startPosition = position;
+			}
+		}
+
+		mLevelDef.setStartXCoord(startPosition);
 	}
 
 	@Override

@@ -18,4 +18,9 @@ public interface IResourcePosition extends IResource {
 	 * @return current position of the resource
 	 */
 	Vector2 getPosition();
+
+	/**
+	 * @return radius bounding area of the resource
+	 */
+	float getBoundingRadius();
 }

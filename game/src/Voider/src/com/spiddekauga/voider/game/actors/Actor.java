@@ -820,6 +820,11 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 		return mSelected;
 	}
 
+	@Override
+	public float getBoundingRadius() {
+		return mDef.getBoundingRadius();
+	}
+
 	/**
 	 * @return activation time of the actor, negative value if the actor is
 	 * inactive.
