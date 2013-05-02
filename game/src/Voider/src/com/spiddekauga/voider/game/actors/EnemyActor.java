@@ -423,7 +423,7 @@ public class EnemyActor extends Actor {
 		copy.mPath = mPath;
 		copy.mGroup = mGroup;
 
-		// Always make copy never is a group leader
+		// Never make copy a group leader
 		copy.mGroupLeader = false;
 
 		return (ResourceType) copy;

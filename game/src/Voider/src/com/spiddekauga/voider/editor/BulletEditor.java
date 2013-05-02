@@ -188,7 +188,7 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 				ResourceCacheFacade.load(mDef.getId(), mDef.getClass(), true);
 				ResourceCacheFacade.finishLoading();
 
-				mDef = ResourceCacheFacade.get(mDef.getId(), mDef.getClass());
+				setDef(ResourceCacheFacade.get(mDef.getId(), mDef.getClass()));
 			} catch (Exception e) {
 				Gdx.app.error("BulletEditor", "Loading of saved actor failed! " + e.toString());
 			}

@@ -161,8 +161,15 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 	 * @param level level to play
 	 */
 	public void setLevel(Level level) {
+		boolean sameLevel = false;
+
 		if (mLevel != null) {
-			if (ResourceCacheFacade.isLoaded(mLevel.getId(), Level.class)) {
+			if (mLevel.equals(level)) {
+				sameLevel = true;
+			}
+
+			// Dispose the level
+			if (ResourceCacheFacade.isLoaded(mLevel.getId(), Level.class) && !sameLevel) {
 				ResourceCacheFacade.unload(mLevel, mLevel.getDef());
 			} else {
 				mLevel.dispose();
@@ -176,8 +183,10 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 		clearTools();
 
 		// Reset camera position
-		mCamera.position.x = -mCamera.viewportWidth * 0.5f;
-		mCamera.update();
+		if (!sameLevel) {
+			mCamera.position.x = -mCamera.viewportWidth * 0.5f;
+			mCamera.update();
+		}
 		mScroller.stop();
 
 		createResourceBodies();
@@ -486,6 +495,17 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 	}
 
 	/**
+	 * Checks for all bound resources that uses  the specified parameter resource.
+	 * @param usesResource resource to check for in all other resources
+	 * @param foundResources list with all resources that uses
+	 */
+	public void usesResource(IResource usesResource, ArrayList<IResource> foundResources) {
+		if (mLevel != null) {
+			mLevel.usesResource(usesResource, foundResources);
+		}
+	}
+
+	/**
 	 * @return true if an enemy is currently selected
 	 */
 	boolean isEnemySelected() {
@@ -576,7 +596,10 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 		if (!ResourceCacheFacade.isLoaded(mLevel.getDef().getId(), LevelDef.class)) {
 			try {
 				ResourceCacheFacade.load(mLevel.getDef().getId(), LevelDef.class, false);
+				ResourceCacheFacade.load(mLevel.getId(), Level.class, mLevel.getDef());
 				ResourceCacheFacade.finishLoading();
+
+				setLevel(ResourceCacheFacade.get(mLevel.getId(), Level.class));
 			} catch (Exception e) {
 				Gdx.app.error("LevelEditor", "Loading of saved level failed! " + e.toString());
 			}

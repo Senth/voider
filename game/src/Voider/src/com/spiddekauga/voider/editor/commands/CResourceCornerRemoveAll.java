@@ -43,7 +43,7 @@ public class CResourceCornerRemoveAll extends CResourceChange {
 				mResourceCorner.addCorner(corner);
 			}
 		} catch (Exception e) {
-			Gdx.app.error("CActorCornerRemoveAll", "Could not readd all the corners on undo " + e.toString());
+			Gdx.app.error("CResourceCornerRemoveAll", "Could not readd all the corners on undo " + e.toString());
 			return false;
 		}
 

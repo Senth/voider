@@ -333,6 +333,15 @@ public class Level extends Resource implements Disposable {
 		return mLevelDef;
 	}
 
+	/**
+	 * Checks for all bound resources that uses  the specified parameter resource.
+	 * @param usesResource resource to check for in all other resources
+	 * @param foundResources list with all resources that uses
+	 */
+	public void usesResource(IResource usesResource, ArrayList<IResource> foundResources) {
+		mResourceBinder.usesResource(usesResource, foundResources);
+	}
+
 	@Override
 	public void write(Json json) {
 		super.write(json);

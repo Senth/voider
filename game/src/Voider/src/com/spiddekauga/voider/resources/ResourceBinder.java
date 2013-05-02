@@ -87,6 +87,21 @@ public class ResourceBinder implements Json.Serializable {
 		return resources;
 	}
 
+	/**
+	 * Checks for all bound resources that uses  the specified parameter resource.
+	 * @param usesResource resource to check for in all other resources
+	 * @param foundResources list with all resources that uses
+	 */
+	public void usesResource(IResource usesResource, ArrayList<IResource> foundResources) {
+		for (ObjectMap.Entry<UUID, IResource> entry : mResources.entries()) {
+			IResource resource = entry.value;
+
+			if (isResourceBoundIn(resource, usesResource.getId())) {
+				foundResources.add(resource);
+			}
+		}
+	}
+
 	@Override
 	public void write(Json json) {
 		json.writeValue("REVISION", Config.REVISION);
