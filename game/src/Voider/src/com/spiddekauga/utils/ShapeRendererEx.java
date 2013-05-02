@@ -1,6 +1,7 @@
 package com.spiddekauga.utils;
 
 import java.util.ArrayList;
+import java.util.Stack;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
@@ -36,18 +37,18 @@ import com.spiddekauga.voider.utils.Pools;
  * camera.update();
  * shapeRenderer.setProjectionMatrix(camera.combined);
  * 
- * shapeRenderer.begin(ShapeType.Line);
+ * shapeRenderer.push(ShapeType.Line);
  * shapeRenderer.color(1, 1, 0, 1);
  * shapeRenderer.line(x, y, x2, y2);
  * shapeRenderer.rect(x, y, width, height);
  * shapeRenderer.circle(x, y, radius);
- * shapeRenderer.end();
+ * shapeRenderer.pop();
  * 
- * shapeRenderer.begin(ShapeType.Filled);
+ * shapeRenderer.push(ShapeType.Filled);
  * shapeRenderer.color(0, 1, 0, 1);
  * shapeRenderer.rect(x, y, width, height);
  * shapeRenderer.circle(x, y, radius);
- * shapeRenderer.end();
+ * shapeRenderer.pop();
  * }
  * </pre>
  * 
@@ -56,12 +57,12 @@ import com.spiddekauga.voider.utils.Pools;
  * rectangle around its center using the z-axis as the rotation axis and placing it's center at (20, 12, 2):
  * 
  * <pre>
- * shapeRenderer.begin(ShapeType.Line);
+ * shapeRenderer.push(ShapeType.Line);
  * shapeRenderer.identity();
  * shapeRenderer.translate(20, 12, 2);
  * shapeRenderer.rotate(0, 0, 1, 90);
  * shapeRenderer.rect(-width / 2, -height / 2, width, height);
- * shapeRenderer.end();
+ * shapeRenderer.pop();
  * </pre>
  * 
  * Matrix operations all use postmultiplication and work just like glTranslate, glScale and glRotate. The last transformation
@@ -82,8 +83,8 @@ public class ShapeRendererEx implements Disposable {
 	 * @param shaderProgram shader to be used for rendering shapes
 	 */
 	public void setShader(ShaderProgram shaderProgram) {
-		if (renderer instanceof ImmediateModeRenderer20) {
-			((ImmediateModeRenderer20)renderer).setShader(shaderProgram);
+		if (mRenderer instanceof ImmediateModeRenderer20) {
+			((ImmediateModeRenderer20)mRenderer).setShader(shaderProgram);
 		}
 	}
 
@@ -170,7 +171,7 @@ public class ShapeRendererEx implements Disposable {
 	 * @param triangles an array with triangles to draw
 	 * @param positionOffset position offset of the triangles
 	 */
-	public void triangles(ArrayList<Vector2> triangles, Vector2 positionOffset) {
+	public void triangles(final ArrayList<Vector2> triangles, final Vector2 positionOffset) {
 		if (triangles.size() % 3 != 0) {
 			throw new IllegalArgumentException("triangles must have a pair of 3 vertices.");
 		}
@@ -213,8 +214,8 @@ public class ShapeRendererEx implements Disposable {
 	 * @param offset offset all lines with this much
 	 */
 	public void polyline(ArrayList<Vector2> vertices, boolean loop, Vector2 offset) {
-		if (currType != ShapeType.Line) {
-			throw new GdxRuntimeException("Must call begin(ShapeType.Line)");
+		if (mCurrentType.isEmpty() || mCurrentType.peek() != ShapeType.Line) {
+			throw new GdxRuntimeException("Must call push(ShapeType.Line)");
 		}
 		if (vertices.size() < 1) {
 			throw new IllegalArgumentException("Polylines must contain at least 2 points.");
@@ -276,19 +277,19 @@ public class ShapeRendererEx implements Disposable {
 	 */
 	public ShapeRendererEx (int maxVertices) {
 		if (Gdx.graphics.isGL20Available()) {
-			renderer = new ImmediateModeRenderer20(maxVertices, false, true, 0);
+			mRenderer = new ImmediateModeRenderer20(maxVertices, false, true, 0);
 		}
 		else {
-			renderer = new ImmediateModeRenderer10(maxVertices);
+			mRenderer = new ImmediateModeRenderer10(maxVertices);
 		}
-		projView.setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		matrixDirty = true;
+		mProjView.setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		mMatrixDirty = true;
 	}
 
 	/** Sets the {@link Color} to be used by shapes.
 	 * @param color */
 	public void setColor (Color color) {
-		this.color.set(color);
+		this.mColor.set(color);
 	}
 
 	/** Sets the {@link Color} to be used by shapes.
@@ -297,28 +298,28 @@ public class ShapeRendererEx implements Disposable {
 	 * @param b
 	 * @param a */
 	public void setColor (float r, float g, float b, float a) {
-		this.color.set(r, g, b, a);
+		this.mColor.set(r, g, b, a);
 	}
 
 	/** Sets the projection matrix to be used for rendering. Usually this will be set to {@link Camera#combined}.
 	 * @param matrix */
 	public void setProjectionMatrix (Matrix4 matrix) {
-		projView.set(matrix);
-		matrixDirty = true;
+		mProjView.set(matrix);
+		mMatrixDirty = true;
 	}
 
 	/**
 	 * @param matrix
 	 */
 	public void setTransformMatrix (Matrix4 matrix) {
-		transform.set(matrix);
-		matrixDirty = true;
+		mTransform.set(matrix);
+		mMatrixDirty = true;
 	}
 
 	/** Sets the transformation matrix to identity. */
 	public void identity () {
-		transform.idt();
-		matrixDirty = true;
+		mTransform.idt();
+		mMatrixDirty = true;
 	}
 
 	/** Multiplies the current transformation matrix by a translation matrix.
@@ -326,8 +327,8 @@ public class ShapeRendererEx implements Disposable {
 	 * @param y
 	 * @param z */
 	public void translate (float x, float y, float z) {
-		transform.translate(x, y, z);
-		matrixDirty = true;
+		mTransform.translate(x, y, z);
+		mMatrixDirty = true;
 	}
 
 	/** Multiplies the current transformation matrix by a rotation matrix.
@@ -336,8 +337,8 @@ public class ShapeRendererEx implements Disposable {
 	 * @param axisY
 	 * @param axisZ */
 	public void rotate (float axisX, float axisY, float axisZ, float angle) {
-		transform.rotate(axisX, axisY, axisZ, angle);
-		matrixDirty = true;
+		mTransform.rotate(axisX, axisY, axisZ, angle);
+		mMatrixDirty = true;
 	}
 
 	/** Multiplies the current transformation matrix by a scale matrix.
@@ -345,29 +346,25 @@ public class ShapeRendererEx implements Disposable {
 	 * @param scaleY
 	 * @param scaleZ */
 	public void scale (float scaleX, float scaleY, float scaleZ) {
-		transform.scale(scaleX, scaleY, scaleZ);
-		matrixDirty = true;
+		mTransform.scale(scaleX, scaleY, scaleZ);
+		mMatrixDirty = true;
 	}
 
 	/** Starts a new batch of shapes. All shapes within the batch have to have the type specified. E.g. if {@link ShapeType#Point}
 	 * is specified, only call #point().
 	 * 
-	 * The call to this method must be paired with a call to {@link #end()}.
-	 * 
 	 * In case OpenGL ES 1.x is used, the projection and modelview matrix will be modified.
-	 * 
-	 * @param type the {@link ShapeType}. */
-	public void begin (ShapeType type) {
-		if (currType != null) {
-			throw new GdxRuntimeException("Call end() before beginning a new shape batch");
+	 * */
+	private void begin () {
+		if (mCurrentType.isEmpty()) {
+			throw new GdxRuntimeException("Call push() before beginning a new shape batch");
 		}
-		currType = type;
-		if (matrixDirty) {
-			combined.set(projView);
-			Matrix4.mul(combined.val, transform.val);
-			matrixDirty = false;
+		if (mMatrixDirty) {
+			mCombined.set(mProjView);
+			Matrix4.mul(mCombined.val, mTransform.val);
+			mMatrixDirty = false;
 		}
-		renderer.begin(combined, currType.getGlType());
+		mRenderer.begin(mCombined, mCurrentType.peek().getGlType());
 	}
 
 	/** Draws a point. The {@link ShapeType} passed to begin has to be {@link ShapeType#Point}.
@@ -375,13 +372,13 @@ public class ShapeRendererEx implements Disposable {
 	 * @param y
 	 * @param z */
 	public void point(float x, float y, float z){
-		if (currType != ShapeType.Point) {
+		if (mCurrentType.isEmpty() || mCurrentType.peek() != ShapeType.Point) {
 			throw new GdxRuntimeException("Must call begin(ShapeType.Point)");
 		}
 		checkDirty();
 		checkFlush(1);
-		renderer.color(color.r, color.g, color.b, color.a);
-		renderer.vertex(x, y, z);
+		mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+		mRenderer.vertex(x, y, z);
 	}
 
 	/** Draws a line. The {@link ShapeType} passed to begin has to be {@link ShapeType#Line}.
@@ -392,15 +389,15 @@ public class ShapeRendererEx implements Disposable {
 	 * @param y2
 	 * @param z2 */
 	public void line(float x, float y, float z, float x2, float y2, float z2){
-		if (currType != ShapeType.Line) {
+		if (mCurrentType.isEmpty() || mCurrentType.peek() != ShapeType.Line) {
 			throw new GdxRuntimeException("Must call begin(ShapeType.Line)");
 		}
 		checkDirty();
 		checkFlush(2);
-		renderer.color(color.r, color.g, color.b, color.a);
-		renderer.vertex(x, y, z);
-		renderer.color(color.r, color.g, color.b, color.a);
-		renderer.vertex(x2, y2, z2);
+		mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+		mRenderer.vertex(x, y, z);
+		mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+		mRenderer.vertex(x2, y2, z2);
 	}
 
 	/** Draws a line in the x/y plane. The {@link ShapeType} passed to begin has to be {@link ShapeType#Line}.
@@ -409,15 +406,15 @@ public class ShapeRendererEx implements Disposable {
 	 * @param x2
 	 * @param y2 */
 	public void line(float x, float y, float x2, float y2){
-		if (currType != ShapeType.Line) {
+		if (mCurrentType.isEmpty() || mCurrentType.peek() != ShapeType.Line) {
 			throw new GdxRuntimeException("Must call begin(ShapeType.Line)");
 		}
 		checkDirty();
 		checkFlush(2);
-		renderer.color(color.r, color.g, color.b, color.a);
-		renderer.vertex(x, y, 0);
-		renderer.color(color.r, color.g, color.b, color.a);
-		renderer.vertex(x2, y2, 0);
+		mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+		mRenderer.vertex(x, y, 0);
+		mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+		mRenderer.vertex(x2, y2, 0);
 	}
 
 	/**
@@ -432,7 +429,7 @@ public class ShapeRendererEx implements Disposable {
 	 * @param segments
 	 */
 	public void curve(float x1, float y1, float cx1, float cy1, float cx2, float cy2, float x2, float y2, int segments){
-		if (currType != ShapeType.Line) {
+		if (mCurrentType.isEmpty() || mCurrentType.peek() != ShapeType.Line) {
 			throw new GdxRuntimeException("Must call begin(ShapeType.Line)");
 		}
 		checkDirty();
@@ -467,21 +464,21 @@ public class ShapeRendererEx implements Disposable {
 		float dddfy = tmp2y * pre5;
 
 		while (segments-- > 0) {
-			renderer.color(color.r, color.g, color.b, color.a);
-			renderer.vertex(fx, fy, 0);
+			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+			mRenderer.vertex(fx, fy, 0);
 			fx += dfx;
 			fy += dfy;
 			dfx += ddfx;
 			dfy += ddfy;
 			ddfx += dddfx;
 			ddfy += dddfy;
-			renderer.color(color.r, color.g, color.b, color.a);
-			renderer.vertex(fx, fy, 0);
+			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+			mRenderer.vertex(fx, fy, 0);
 		}
-		renderer.color(color.r, color.g, color.b, color.a);
-		renderer.vertex(fx, fy, 0);
-		renderer.color(color.r, color.g, color.b, color.a);
-		renderer.vertex(x2, y2, 0);
+		mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+		mRenderer.vertex(fx, fy, 0);
+		mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+		mRenderer.vertex(x2, y2, 0);
 	}
 
 	/**
@@ -493,34 +490,34 @@ public class ShapeRendererEx implements Disposable {
 	 * @param y3
 	 */
 	public void triangle(float x1, float y1, float x2, float y2, float x3, float y3){
-		if (currType != ShapeType.Filled && currType != ShapeType.Line) {
+		if (mCurrentType.isEmpty() || (mCurrentType.peek() != ShapeType.Filled && mCurrentType.peek() != ShapeType.Line)) {
 			throw new GdxRuntimeException("Must call begin(ShapeType.Filled) or begin(ShapeType.Line)");
 		}
 		checkDirty();
 		checkFlush(6);
-		if(currType == ShapeType.Line){
-			renderer.color(color.r, color.g, color.b, color.a);
-			renderer.vertex(x1, y1, 0);
-			renderer.color(color.r, color.g, color.b, color.a);
-			renderer.vertex(x2, y2, 0);
+		if(mCurrentType.peek() == ShapeType.Line){
+			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+			mRenderer.vertex(x1, y1, 0);
+			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+			mRenderer.vertex(x2, y2, 0);
 
-			renderer.color(color.r, color.g, color.b, color.a);
-			renderer.vertex(x2, y2, 0);
-			renderer.color(color.r, color.g, color.b, color.a);
-			renderer.vertex(x3, y3, 0);
+			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+			mRenderer.vertex(x2, y2, 0);
+			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+			mRenderer.vertex(x3, y3, 0);
 
-			renderer.color(color.r, color.g, color.b, color.a);
-			renderer.vertex(x3, y3, 0);
-			renderer.color(color.r, color.g, color.b, color.a);
-			renderer.vertex(x1, y1, 0);
+			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+			mRenderer.vertex(x3, y3, 0);
+			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+			mRenderer.vertex(x1, y1, 0);
 		}
 		else {
-			renderer.color(color.r, color.g, color.b, color.a);
-			renderer.vertex(x1, y1, 0);
-			renderer.color(color.r, color.g, color.b, color.a);
-			renderer.vertex(x2, y2, 0);
-			renderer.color(color.r, color.g, color.b, color.a);
-			renderer.vertex(x3, y3, 0);
+			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+			mRenderer.vertex(x1, y1, 0);
+			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+			mRenderer.vertex(x2, y2, 0);
+			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+			mRenderer.vertex(x3, y3, 0);
 		}
 	}
 
@@ -531,48 +528,48 @@ public class ShapeRendererEx implements Disposable {
 	 * @param width
 	 * @param height */
 	public void rect(float x, float y, float width, float height){
-		if (currType != ShapeType.Filled && currType != ShapeType.Line) {
+		if (mCurrentType.isEmpty() || (mCurrentType.peek() != ShapeType.Filled && mCurrentType.peek() != ShapeType.Line)) {
 			throw new GdxRuntimeException("Must call begin(ShapeType.Filled) or begin(ShapeType.Line)");
 		}
 
 		checkDirty();
 		checkFlush(8);
 
-		if(currType == ShapeType.Line){
-			renderer.color(color.r, color.g, color.b, color.a);
-			renderer.vertex(x, y, 0);
-			renderer.color(color.r, color.g, color.b, color.a);
-			renderer.vertex(x + width, y, 0);
+		if(mCurrentType.peek() == ShapeType.Line){
+			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+			mRenderer.vertex(x, y, 0);
+			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+			mRenderer.vertex(x + width, y, 0);
 
-			renderer.color(color.r, color.g, color.b, color.a);
-			renderer.vertex(x + width, y, 0);
-			renderer.color(color.r, color.g, color.b, color.a);
-			renderer.vertex(x + width, y + height, 0);
+			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+			mRenderer.vertex(x + width, y, 0);
+			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+			mRenderer.vertex(x + width, y + height, 0);
 
-			renderer.color(color.r, color.g, color.b, color.a);
-			renderer.vertex(x + width, y + height, 0);
-			renderer.color(color.r, color.g, color.b, color.a);
-			renderer.vertex(x, y + height, 0);
+			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+			mRenderer.vertex(x + width, y + height, 0);
+			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+			mRenderer.vertex(x, y + height, 0);
 
-			renderer.color(color.r, color.g, color.b, color.a);
-			renderer.vertex(x, y + height, 0);
-			renderer.color(color.r, color.g, color.b, color.a);
-			renderer.vertex(x, y, 0);
+			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+			mRenderer.vertex(x, y + height, 0);
+			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+			mRenderer.vertex(x, y, 0);
 		}
 		else {
-			renderer.color(color.r, color.g, color.b, color.a);
-			renderer.vertex(x, y, 0);
-			renderer.color(color.r, color.g, color.b, color.a);
-			renderer.vertex(x + width, y, 0);
-			renderer.color(color.r, color.g, color.b, color.a);
-			renderer.vertex(x + width, y + height, 0);
+			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+			mRenderer.vertex(x, y, 0);
+			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+			mRenderer.vertex(x + width, y, 0);
+			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+			mRenderer.vertex(x + width, y + height, 0);
 
-			renderer.color(color.r, color.g, color.b, color.a);
-			renderer.vertex(x + width, y + height, 0);
-			renderer.color(color.r, color.g, color.b, color.a);
-			renderer.vertex(x, y + height, 0);
-			renderer.color(color.r, color.g, color.b, color.a);
-			renderer.vertex(x, y, 0);
+			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+			mRenderer.vertex(x + width, y + height, 0);
+			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+			mRenderer.vertex(x, y + height, 0);
+			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+			mRenderer.vertex(x, y, 0);
 		}
 	}
 
@@ -588,48 +585,48 @@ public class ShapeRendererEx implements Disposable {
 	 * @param col3 The color at (x + width, y + height)
 	 * @param col4 The color at (x, y + height) */
 	public void rect(float x, float y, float width, float height, Color col1, Color col2, Color col3, Color col4){
-		if (currType != ShapeType.Filled && currType != ShapeType.Line) {
+		if (mCurrentType.isEmpty() || mCurrentType.peek() != ShapeType.Filled && mCurrentType.peek() != ShapeType.Line) {
 			throw new GdxRuntimeException("Must call begin(ShapeType.Filled) or begin(ShapeType.Line)");
 		}
 
 		checkDirty();
 		checkFlush(8);
 
-		if(currType == ShapeType.Line){
-			renderer.color(col1.r, col1.g, col1.b, col1.a);
-			renderer.vertex(x, y, 0);
-			renderer.color(col2.r, col2.g, col2.b, col2.a);
-			renderer.vertex(x + width, y, 0);
+		if(mCurrentType.peek() == ShapeType.Line){
+			mRenderer.color(col1.r, col1.g, col1.b, col1.a);
+			mRenderer.vertex(x, y, 0);
+			mRenderer.color(col2.r, col2.g, col2.b, col2.a);
+			mRenderer.vertex(x + width, y, 0);
 
-			renderer.color(col2.r, col2.g, col2.b, col2.a);
-			renderer.vertex(x + width, y, 0);
-			renderer.color(col3.r, col3.g, col3.b, col3.a);
-			renderer.vertex(x + width, y + height, 0);
+			mRenderer.color(col2.r, col2.g, col2.b, col2.a);
+			mRenderer.vertex(x + width, y, 0);
+			mRenderer.color(col3.r, col3.g, col3.b, col3.a);
+			mRenderer.vertex(x + width, y + height, 0);
 
-			renderer.color(col3.r, col3.g, col3.b, col3.a);
-			renderer.vertex(x + width, y + height, 0);
-			renderer.color(col4.r, col4.g, col4.b, col4.a);
-			renderer.vertex(x, y + height, 0);
+			mRenderer.color(col3.r, col3.g, col3.b, col3.a);
+			mRenderer.vertex(x + width, y + height, 0);
+			mRenderer.color(col4.r, col4.g, col4.b, col4.a);
+			mRenderer.vertex(x, y + height, 0);
 
-			renderer.color(col4.r, col4.g, col4.b, col4.a);
-			renderer.vertex(x, y + height, 0);
-			renderer.color(col1.r, col1.g, col1.b, col1.a);
-			renderer.vertex(x, y, 0);
+			mRenderer.color(col4.r, col4.g, col4.b, col4.a);
+			mRenderer.vertex(x, y + height, 0);
+			mRenderer.color(col1.r, col1.g, col1.b, col1.a);
+			mRenderer.vertex(x, y, 0);
 		}
 		else {
-			renderer.color(col1.r, col1.g, col1.b, col1.a);
-			renderer.vertex(x, y, 0);
-			renderer.color(col2.r, col2.g, col2.b, col2.a);
-			renderer.vertex(x + width, y, 0);
-			renderer.color(col3.r, col3.g, col3.b, col3.a);
-			renderer.vertex(x + width, y + height, 0);
+			mRenderer.color(col1.r, col1.g, col1.b, col1.a);
+			mRenderer.vertex(x, y, 0);
+			mRenderer.color(col2.r, col2.g, col2.b, col2.a);
+			mRenderer.vertex(x + width, y, 0);
+			mRenderer.color(col3.r, col3.g, col3.b, col3.a);
+			mRenderer.vertex(x + width, y + height, 0);
 
-			renderer.color(col3.r, col3.g, col3.b, col3.a);
-			renderer.vertex(x + width, y + height, 0);
-			renderer.color(col4.r, col4.g, col4.b, col4.a);
-			renderer.vertex(x, y + height, 0);
-			renderer.color(col1.r, col1.g, col1.b, col1.a);
-			renderer.vertex(x, y, 0);
+			mRenderer.color(col3.r, col3.g, col3.b, col3.a);
+			mRenderer.vertex(x + width, y + height, 0);
+			mRenderer.color(col4.r, col4.g, col4.b, col4.a);
+			mRenderer.vertex(x, y + height, 0);
+			mRenderer.color(col1.r, col1.g, col1.b, col1.a);
+			mRenderer.vertex(x, y, 0);
 		}
 	}
 
@@ -643,7 +640,7 @@ public class ShapeRendererEx implements Disposable {
 	 * @param depth
 	 */
 	public void box(float x, float y, float z, float width, float height, float depth){
-		if (currType != ShapeType.Line) {
+		if (mCurrentType.isEmpty() || mCurrentType.peek() != ShapeType.Line) {
 			throw new GdxRuntimeException("Must call begin(ShapeType.Line)");
 		}
 
@@ -652,65 +649,65 @@ public class ShapeRendererEx implements Disposable {
 
 		depth = -depth;
 
-		renderer.color(color.r, color.g, color.b, color.a);
-		renderer.vertex(x, y, z);
-		renderer.color(color.r, color.g, color.b, color.a);
-		renderer.vertex(x + width, y, z);
+		mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+		mRenderer.vertex(x, y, z);
+		mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+		mRenderer.vertex(x + width, y, z);
 
-		renderer.color(color.r, color.g, color.b, color.a);
-		renderer.vertex(x + width, y, z);
-		renderer.color(color.r, color.g, color.b, color.a);
-		renderer.vertex(x + width, y, z + depth);
+		mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+		mRenderer.vertex(x + width, y, z);
+		mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+		mRenderer.vertex(x + width, y, z + depth);
 
-		renderer.color(color.r, color.g, color.b, color.a);
-		renderer.vertex(x + width, y, z + depth);
-		renderer.color(color.r, color.g, color.b, color.a);
-		renderer.vertex(x, y, z + depth);
+		mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+		mRenderer.vertex(x + width, y, z + depth);
+		mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+		mRenderer.vertex(x, y, z + depth);
 
-		renderer.color(color.r, color.g, color.b, color.a);
-		renderer.vertex(x, y, z + depth);
-		renderer.color(color.r, color.g, color.b, color.a);
-		renderer.vertex(x, y, z);
+		mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+		mRenderer.vertex(x, y, z + depth);
+		mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+		mRenderer.vertex(x, y, z);
 
-		renderer.color(color.r, color.g, color.b, color.a);
-		renderer.vertex(x, y, z);
-		renderer.color(color.r, color.g, color.b, color.a);
-		renderer.vertex(x, y + height, z);
+		mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+		mRenderer.vertex(x, y, z);
+		mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+		mRenderer.vertex(x, y + height, z);
 
-		renderer.color(color.r, color.g, color.b, color.a);
-		renderer.vertex(x, y + height, z);
-		renderer.color(color.r, color.g, color.b, color.a);
-		renderer.vertex(x + width, y + height, z);
+		mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+		mRenderer.vertex(x, y + height, z);
+		mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+		mRenderer.vertex(x + width, y + height, z);
 
-		renderer.color(color.r, color.g, color.b, color.a);
-		renderer.vertex(x + width, y + height, z);
-		renderer.color(color.r, color.g, color.b, color.a);
-		renderer.vertex(x + width, y + height, z + depth);
+		mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+		mRenderer.vertex(x + width, y + height, z);
+		mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+		mRenderer.vertex(x + width, y + height, z + depth);
 
-		renderer.color(color.r, color.g, color.b, color.a);
-		renderer.vertex(x + width, y + height, z + depth);
-		renderer.color(color.r, color.g, color.b, color.a);
-		renderer.vertex(x, y + height, z + depth);
+		mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+		mRenderer.vertex(x + width, y + height, z + depth);
+		mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+		mRenderer.vertex(x, y + height, z + depth);
 
-		renderer.color(color.r, color.g, color.b, color.a);
-		renderer.vertex(x, y + height, z + depth);
-		renderer.color(color.r, color.g, color.b, color.a);
-		renderer.vertex(x, y + height, z);
+		mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+		mRenderer.vertex(x, y + height, z + depth);
+		mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+		mRenderer.vertex(x, y + height, z);
 
-		renderer.color(color.r, color.g, color.b, color.a);
-		renderer.vertex(x + width, y, z);
-		renderer.color(color.r, color.g, color.b, color.a);
-		renderer.vertex(x + width, y + height, z);
+		mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+		mRenderer.vertex(x + width, y, z);
+		mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+		mRenderer.vertex(x + width, y + height, z);
 
-		renderer.color(color.r, color.g, color.b, color.a);
-		renderer.vertex(x + width, y, z + depth);
-		renderer.color(color.r, color.g, color.b, color.a);
-		renderer.vertex(x + width, y + height, z + depth);
+		mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+		mRenderer.vertex(x + width, y, z + depth);
+		mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+		mRenderer.vertex(x + width, y + height, z + depth);
 
-		renderer.color(color.r, color.g, color.b, color.a);
-		renderer.vertex(x, y, z + depth);
-		renderer.color(color.r, color.g, color.b, color.a);
-		renderer.vertex(x, y + height, z + depth);
+		mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+		mRenderer.vertex(x, y, z + depth);
+		mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+		mRenderer.vertex(x, y + height, z + depth);
 	}
 
 	/** Calls {@link #circle(float, float, float, int)} by estimating the number of segments needed for a smooth circle.
@@ -732,7 +729,7 @@ public class ShapeRendererEx implements Disposable {
 		if (segments <= 0) {
 			throw new IllegalArgumentException("segments must be >= 0.");
 		}
-		if (currType != ShapeType.Filled && currType != ShapeType.Line) {
+		if (mCurrentType.isEmpty() || (mCurrentType.peek() != ShapeType.Filled && mCurrentType.peek() != ShapeType.Line)) {
 			throw new GdxRuntimeException("Must call begin(ShapeType.Filled) or begin(ShapeType.Line)");
 		}
 		checkDirty();
@@ -742,44 +739,44 @@ public class ShapeRendererEx implements Disposable {
 		float cos = MathUtils.cos(angle);
 		float sin = MathUtils.sin(angle);
 		float cx = radius, cy = 0;
-		if(currType == ShapeType.Line){
+		if(mCurrentType.peek() == ShapeType.Line){
 			for (int i = 0; i < segments; i++) {
-				renderer.color(color.r, color.g, color.b, color.a);
-				renderer.vertex(x + cx, y + cy, 0);
+				mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+				mRenderer.vertex(x + cx, y + cy, 0);
 				float temp = cx;
 				cx = cos * cx - sin * cy;
 				cy = sin * temp + cos * cy;
-				renderer.color(color.r, color.g, color.b, color.a);
-				renderer.vertex(x + cx, y + cy, 0);
+				mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+				mRenderer.vertex(x + cx, y + cy, 0);
 			}
 			// Ensure the last segment is identical to the first.
-			renderer.color(color.r, color.g, color.b, color.a);
-			renderer.vertex(x + cx, y + cy, 0);
+			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+			mRenderer.vertex(x + cx, y + cy, 0);
 		}
 		else {
 			segments--;
 			for (int i = 0; i < segments; i++) {
-				renderer.color(color.r, color.g, color.b, color.a);
-				renderer.vertex(x, y, 0);
-				renderer.color(color.r, color.g, color.b, color.a);
-				renderer.vertex(x + cx, y + cy, 0);
+				mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+				mRenderer.vertex(x, y, 0);
+				mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+				mRenderer.vertex(x + cx, y + cy, 0);
 				float temp = cx;
 				cx = cos * cx - sin * cy;
 				cy = sin * temp + cos * cy;
-				renderer.color(color.r, color.g, color.b, color.a);
-				renderer.vertex(x + cx, y + cy, 0);
+				mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+				mRenderer.vertex(x + cx, y + cy, 0);
 			}
 			// Ensure the last segment is identical to the first.
-			renderer.color(color.r, color.g, color.b, color.a);
-			renderer.vertex(x, y, 0);
-			renderer.color(color.r, color.g, color.b, color.a);
-			renderer.vertex(x + cx, y + cy, 0);
+			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+			mRenderer.vertex(x, y, 0);
+			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+			mRenderer.vertex(x + cx, y + cy, 0);
 		}
 
 		cx = radius;
 		cy = 0;
-		renderer.color(color.r, color.g, color.b, color.a);
-		renderer.vertex(x + cx, y + cy, 0);
+		mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+		mRenderer.vertex(x + cx, y + cy, 0);
 	}
 
 	/** Calls {@link #cone(float, float, float, float, float, int)} by estimating the number of segments needed for a smooth
@@ -806,7 +803,7 @@ public class ShapeRendererEx implements Disposable {
 		if (segments <= 0) {
 			throw new IllegalArgumentException("segments must be >= 0.");
 		}
-		if (currType != ShapeType.Filled && currType != ShapeType.Line) {
+		if (mCurrentType.isEmpty() || (mCurrentType.peek() != ShapeType.Filled && mCurrentType.peek() != ShapeType.Line)) {
 			throw new GdxRuntimeException("Must call begin(ShapeType.Filled) or begin(ShapeType.Line)");
 		}
 		checkDirty();
@@ -815,61 +812,61 @@ public class ShapeRendererEx implements Disposable {
 		float cos = MathUtils.cos(angle);
 		float sin = MathUtils.sin(angle);
 		float cx = radius, cy = 0;
-		if(currType == ShapeType.Line){
+		if(mCurrentType.peek() == ShapeType.Line){
 			for (int i = 0; i < segments; i++) {
-				renderer.color(color.r, color.g, color.b, color.a);
-				renderer.vertex(x + cx, y + cy, z);
-				renderer.color(color.r, color.g, color.b, color.a);
-				renderer.vertex(x, y, z + height);
-				renderer.color(color.r, color.g, color.b, color.a);
-				renderer.vertex(x + cx, y + cy, z);
+				mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+				mRenderer.vertex(x + cx, y + cy, z);
+				mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+				mRenderer.vertex(x, y, z + height);
+				mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+				mRenderer.vertex(x + cx, y + cy, z);
 				float temp = cx;
 				cx = cos * cx - sin * cy;
 				cy = sin * temp + cos * cy;
-				renderer.color(color.r, color.g, color.b, color.a);
-				renderer.vertex(x + cx, y + cy, z);
+				mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+				mRenderer.vertex(x + cx, y + cy, z);
 			}
 			// Ensure the last segment is identical to the first.
-			renderer.color(color.r, color.g, color.b, color.a);
-			renderer.vertex(x + cx, y + cy, z);
+			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+			mRenderer.vertex(x + cx, y + cy, z);
 		}
 		else {
 			segments--;
 			for (int i = 0; i < segments; i++) {
-				renderer.color(color.r, color.g, color.b, color.a);
-				renderer.vertex(x, y, z);
-				renderer.color(color.r, color.g, color.b, color.a);
-				renderer.vertex(x + cx, y + cy, z);
+				mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+				mRenderer.vertex(x, y, z);
+				mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+				mRenderer.vertex(x + cx, y + cy, z);
 				float temp = cx;
 				float temp2 = cy;
 				cx = cos * cx - sin * cy;
 				cy = sin * temp + cos * cy;
-				renderer.color(color.r, color.g, color.b, color.a);
-				renderer.vertex(x + cx, y + cy, z);
-				renderer.color(color.r, color.g, color.b, color.a);
-				renderer.vertex(x + temp, y + temp2, z);
-				renderer.color(color.r, color.g, color.b, color.a);
-				renderer.vertex(x + cx, y + cy, z);
-				renderer.color(color.r, color.g, color.b, color.a);
-				renderer.vertex(x, y, z + height);
+				mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+				mRenderer.vertex(x + cx, y + cy, z);
+				mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+				mRenderer.vertex(x + temp, y + temp2, z);
+				mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+				mRenderer.vertex(x + cx, y + cy, z);
+				mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+				mRenderer.vertex(x, y, z + height);
 			}
 			// Ensure the last segment is identical to the first.
-			renderer.color(color.r, color.g, color.b, color.a);
-			renderer.vertex(x, y, z);
-			renderer.color(color.r, color.g, color.b, color.a);
-			renderer.vertex(x + cx, y + cy, z);
+			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+			mRenderer.vertex(x, y, z);
+			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+			mRenderer.vertex(x + cx, y + cy, z);
 		}
 		cx = radius;
 		cy = 0;
-		renderer.color(color.r, color.g, color.b, color.a);
-		renderer.vertex(x + cx, y + cy, z);
+		mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+		mRenderer.vertex(x + cx, y + cy, z);
 	}
 
 	/** Draws a polygon in the x/y plane. The vertices must contain at least 3 points (6 floats x,y). The
 	 * {@link ShapeType} passed to begin has to be {@link ShapeType#Line}.
 	 * @param vertices */
 	public void polygon(float[] vertices){
-		if (currType != ShapeType.Line) {
+		if (mCurrentType.isEmpty() || mCurrentType.peek() != ShapeType.Line) {
 			throw new GdxRuntimeException("Must call begin(ShapeType.Line)");
 		}
 		if (vertices.length < 6) {
@@ -901,10 +898,10 @@ public class ShapeRendererEx implements Disposable {
 				y2 = vertices[i + 3];
 			}
 
-			renderer.color(color.r, color.g, color.b, color.a);
-			renderer.vertex(x1, y1, 0);
-			renderer.color(color.r, color.g, color.b, color.a);
-			renderer.vertex(x2, y2, 0);
+			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+			mRenderer.vertex(x1, y1, 0);
+			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+			mRenderer.vertex(x2, y2, 0);
 		}
 	}
 
@@ -912,8 +909,8 @@ public class ShapeRendererEx implements Disposable {
 	 * {@link ShapeType} passed to begin has to be {@link ShapeType#Line}.
 	 * @param vertices */
 	public void polyline(float[] vertices) {
-		if (currType != ShapeType.Line) {
-			throw new GdxRuntimeException("Must call begin(ShapeType.Line)");
+		if (mCurrentType.isEmpty() || mCurrentType.peek() != ShapeType.Line) {
+			throw new GdxRuntimeException("Must call push(ShapeType.Line)");
 		}
 		if (vertices.length < 4) {
 			throw new IllegalArgumentException("Polylines must contain at least 2 points.");
@@ -936,10 +933,10 @@ public class ShapeRendererEx implements Disposable {
 			x2 = vertices[i + 2];
 			y2 = vertices[i + 3];
 
-			renderer.color(color.r, color.g, color.b, color.a);
-			renderer.vertex(x1, y1, 0);
-			renderer.color(color.r, color.g, color.b, color.a);
-			renderer.vertex(x2, y2, 0);
+			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+			mRenderer.vertex(x1, y1, 0);
+			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+			mRenderer.vertex(x2, y2, 0);
 		}
 	}
 
@@ -947,7 +944,7 @@ public class ShapeRendererEx implements Disposable {
 	 * Checks if the matrix is dirty, it flushes the vertices if it is.
 	 */
 	protected void checkDirty () {
-		if (!matrixDirty) {
+		if (!mMatrixDirty) {
 			return;
 		}
 		flush();
@@ -958,52 +955,85 @@ public class ShapeRendererEx implements Disposable {
 	 * @param newVertices
 	 */
 	protected void checkFlush (int newVertices) {
-		if (renderer.getMaxVertices() - renderer.getNumVertices() >= newVertices) {
+		if (mRenderer.getMaxVertices() - mRenderer.getNumVertices() >= newVertices) {
 			return;
 		}
 		flush();
-	}
-
-	/** Finishes the batch of shapes and ensures they get rendered. */
-	public void end () {
-		renderer.end();
-		currType = null;
 	}
 
 	/**
 	 * Flushes the shapes to OpenGL. Equivalent to end(); and begin(type);
 	 */
 	public void flush () {
-		end();
-		begin(currType);
+		mRenderer.end();
+		begin();
 	}
 
 	/**
 	 * @return current shape type
 	 */
 	public ShapeType getCurrentType () {
-		return currType;
+		if (mCurrentType.isEmpty()) {
+			return null;
+		} else {
+			return mCurrentType.peek();
+		}
 	}
 
 	@Override
 	public void dispose () {
-		renderer.dispose();
+		mRenderer.dispose();
+	}
+
+	/**
+	 * Pushes the shape type, i.e. will end current rendering type and start
+	 * to draw using this one. {@link #pop()} will return to the previous rendering type
+	 * @param shapeType the new shape type to use for future drawing.
+	 */
+	public void push(ShapeType shapeType) {
+		if (mCurrentType.isEmpty() || mCurrentType.peek() != shapeType) {
+			if (!mCurrentType.isEmpty()) {
+				mRenderer.end();
+			}
+			mCurrentType.push(shapeType);
+			begin();
+		} else {
+			mCurrentType.push(shapeType);
+		}
+	}
+
+	/**
+	 * Pops the current rendering type and start to draw the previous one. If
+	 * no previous rendering type exist.
+	 */
+	public void pop() {
+		if (mCurrentType.isEmpty()) {
+			throw new GdxRuntimeException("Called pop() more times than push()!");
+		}
+
+		ShapeType poppedType = mCurrentType.pop();
+		if (mCurrentType.isEmpty() || mCurrentType.peek() != poppedType) {
+			mRenderer.end();
+		}
+		if (!mCurrentType.isEmpty()) {
+			begin();
+		}
 	}
 
 	/** Renderer */
-	ImmediateModeRenderer renderer;
+	ImmediateModeRenderer mRenderer;
 	/** If the matrix is dirty */
-	boolean matrixDirty = false;
+	boolean mMatrixDirty = false;
 	/** projection view matrix */
-	Matrix4 projView = new Matrix4();
+	Matrix4 mProjView = new Matrix4();
 	/** any temporary transformtion to move the object */
-	Matrix4 transform = new Matrix4();
+	Matrix4 mTransform = new Matrix4();
 	/** combined view of the camera */
-	Matrix4 combined = new Matrix4();
+	Matrix4 mCombined = new Matrix4();
 	/** temporary matrix */
-	Matrix4 tmp = new Matrix4();
+	Matrix4 mTmp = new Matrix4();
 	/** Color of the shape */
-	Color color = new Color(1, 1, 1, 1);
-	/** Current shape type */
-	ShapeType currType = null;
+	Color mColor = new Color(1, 1, 1, 1);
+	/** Stack of shape type */
+	Stack<ShapeType> mCurrentType = new Stack<ShapeRendererEx.ShapeType>();
 }

@@ -107,7 +107,7 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 				mShapeRenderer.setShader(defaultShader);
 			}
 			mShapeRenderer.setProjectionMatrix(mCamera.combined);
-			mShapeRenderer.begin(ShapeType.Filled);
+			mShapeRenderer.push(ShapeType.Filled);
 			Gdx.gl.glEnable(GL20.GL_BLEND);
 			Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
@@ -120,7 +120,7 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 				mBulletActor.renderEditor(mShapeRenderer);
 			}
 
-			mShapeRenderer.end();
+			mShapeRenderer.pop();
 		}
 	}
 

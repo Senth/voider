@@ -15,6 +15,7 @@ import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.OrderedMap;
 import com.spiddekauga.utils.Json;
 import com.spiddekauga.utils.ShapeRendererEx;
+import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.editor.HitWrapper;
 import com.spiddekauga.voider.game.actors.ActorFilterCategories;
@@ -368,12 +369,14 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 
 				// Render corners
 				if (!mBodyCorners.isEmpty()) {
+					shapeRenderer.push(ShapeType.Line);
+
 					shapeRenderer.setColor(Config.Editor.CORNER_COLOR);
-					Vector2 cornerOffset = Pools.vector2.obtain();
 					for (Vector2 corner : mCorners) {
-						cornerOffset.set(corner);
-						shapeRenderer.triangles(Config.Editor.PICKING_VERTICES, cornerOffset);
+						shapeRenderer.polyline(Config.Editor.PICKING_VERTICES, true, corner);
 					}
+
+					shapeRenderer.pop();
 				}
 			}
 		}

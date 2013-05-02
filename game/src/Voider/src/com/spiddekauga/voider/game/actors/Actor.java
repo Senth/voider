@@ -353,11 +353,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 
 		// Draw corners?
 		if (mHasBodyCorners) {
-			ShapeType oldShapeType = shapeRenderer.getCurrentType();
-			if (oldShapeType != ShapeType.Line) {
-				shapeRenderer.end();
-				shapeRenderer.begin(ShapeType.Line);
-			}
+			shapeRenderer.push(ShapeType.Line);
 
 			shapeRenderer.setColor(Config.Editor.CORNER_COLOR);
 			Vector2 cornerOffset = Pools.vector2.obtain();
@@ -367,28 +363,18 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 			}
 			Pools.vector2.free(cornerOffset);
 
-			if (oldShapeType != ShapeType.Line) {
-				shapeRenderer.end();
-				shapeRenderer.begin(oldShapeType);
-			}
+			shapeRenderer.pop();
 		}
 
 
 		// Draw center body?
 		if (mHasBodyCenter) {
-			ShapeType oldShapeType = shapeRenderer.getCurrentType();
-			if (oldShapeType != ShapeType.Line) {
-				shapeRenderer.end();
-				shapeRenderer.begin(ShapeType.Line);
-			}
+			shapeRenderer.push(ShapeType.Line);
 
 			shapeRenderer.setColor(Config.Editor.CENTER_OFFSET_COLOR);
 			shapeRenderer.polyline(Config.Editor.PICKING_VERTICES, true, offsetPosition);
 
-			if (oldShapeType != ShapeType.Line) {
-				shapeRenderer.end();
-				shapeRenderer.begin(oldShapeType);
-			}
+			shapeRenderer.pop();
 		}
 
 		Pools.vector2.free(offsetPosition);
