@@ -70,6 +70,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 		if (mDestroyBody) {
 			mActive = false;
 			destroyBody();
+			mDestroyBody = false;
 		}
 
 		if (mActive) {
@@ -653,6 +654,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 		mDef = null;
 		mPosition.set(0,0);
 		mCollidingActors.clear();
+		mDestroyBody = false;
 
 		if (mRotatedVertices != null) {
 			Pools.vector2.freeDuplicates(mRotatedVertices);
@@ -830,6 +832,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	 * Activates the actor.
 	 */
 	public void activate() {
+		mDestroyBody = false;
 		mActive = true;
 		mActivationTime = SceneSwitcher.getGameTime().getTotalTimeElapsed();
 

@@ -94,6 +94,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 		Actor.setEditorActive(true);
 		Actor.setWorld(mWorld);
 		Actor.setLevel(null);
+		Actor.setPlayerActor(mPlayerActor);
 
 		if (outcome == Outcomes.LOADING_SUCCEEDED) {
 			mGui.initGui();
@@ -151,9 +152,6 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 		else if (outcome == Outcomes.NOT_APPLICAPLE) {
 			mGui.hideMsgBoxes();
 		}
-
-		Actor.setEditorActive(true);
-		Actor.setPlayerActor(mPlayerActor);
 	}
 
 	/**
@@ -225,6 +223,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 		super.update();
 		float deltaTime = Gdx.graphics.getDeltaTime();
 		mPlayerActor.update(deltaTime);
+		checkForDeadActors();
 
 		switch (mDef.getMovementType()) {
 		case AI:
@@ -1255,6 +1254,31 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 			mDef.addDependency(bulletActorDef);
 		}
 		mActorSavedSinceLastEdit = false;
+	}
+
+	/**
+	 * Checks for dead enemy actors and recreates them.
+	 */
+	private void checkForDeadActors() {
+		if (!mEnemyActor.isActive()) {
+			mEnemyActor.activate();
+			mEnemyActor.setPosition(Vector2.Zero);
+		}
+
+		checkForDeadPathActor(mEnemyPathBackAndForth);
+		checkForDeadPathActor(mEnemyPathLoop);
+		checkForDeadPathActor(mEnemyPathOnce);
+	}
+
+	/**
+	 * Checks for dead enemy path actor and recreates it if it is dead
+	 * @param enemyActor the enemy actor to check if it's dead
+	 */
+	private void checkForDeadPathActor(EnemyActor enemyActor) {
+		if (!enemyActor.isActive()) {
+			enemyActor.resetPathMovement();
+			enemyActor.activate();
+		}
 	}
 
 	/**
