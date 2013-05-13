@@ -39,7 +39,7 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 	 * Creates a bullet editor.
 	 */
 	public BulletEditor() {
-		super(new BulletEditorGui());
+		super(new BulletEditorGui(), Config.Editor.PICKING_CIRCLE_RADIUS_EDITOR);
 
 		((BulletEditorGui)mGui).setBulletEditor(this);
 

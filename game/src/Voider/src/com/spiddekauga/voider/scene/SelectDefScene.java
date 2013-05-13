@@ -35,7 +35,7 @@ public class SelectDefScene extends WorldScene {
 	 * to only display one's own actors.
 	 */
 	public SelectDefScene(Class<?> defType, boolean showMineOnly, boolean showMineOnlyCheckbox) {
-		super(new SelectDefGui(showMineOnlyCheckbox));
+		super(new SelectDefGui(showMineOnlyCheckbox), 0);
 
 		mShowMineOnly = showMineOnly;
 		mDefType = defType;

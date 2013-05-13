@@ -36,7 +36,7 @@ public class GameScene extends WorldScene {
 	 * Scoring will still be used (player could be testing scoring.
 	 */
 	public GameScene(boolean testing, boolean invulnerable) {
-		super(new GameSceneGui());
+		super(new GameSceneGui(), Config.Editor.PICKING_CIRCLE_RADIUS_EDITOR);
 		((GameSceneGui)mGui).setGameScene(this);
 
 		mTesting = testing;

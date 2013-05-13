@@ -25,6 +25,7 @@ import com.spiddekauga.voider.resources.IResourceCorner;
 import com.spiddekauga.voider.resources.IResourceEditorRender;
 import com.spiddekauga.voider.resources.IResourcePosition;
 import com.spiddekauga.voider.resources.Resource;
+import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.utils.Geometry;
 import com.spiddekauga.voider.utils.Pools;
 
@@ -373,7 +374,7 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 
 					shapeRenderer.setColor(Config.Editor.CORNER_COLOR);
 					for (Vector2 corner : mCorners) {
-						shapeRenderer.polyline(Config.Editor.PICKING_VERTICES_EDITOR, true, corner);
+						shapeRenderer.polyline(SceneSwitcher.getPickingVertices(), true, corner);
 					}
 
 					shapeRenderer.pop();
@@ -507,7 +508,7 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 	private void createBodyCorner(Vector2 position, int index) {
 		Body cornerBody = mWorld.createBody(new BodyDef());
 		cornerBody.setTransform(position, 0);
-		cornerBody.createFixture(Config.Editor.getPickingFixtureLevelEditor());
+		cornerBody.createFixture(SceneSwitcher.getPickingFixtureDef());
 		HitWrapper hitWrapper = new HitWrapper(this);
 		hitWrapper.data = "picking";
 		cornerBody.setUserData(hitWrapper);

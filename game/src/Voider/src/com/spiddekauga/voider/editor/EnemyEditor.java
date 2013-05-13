@@ -57,7 +57,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	 * Creates the enemy editor
 	 */
 	public EnemyEditor() {
-		super(new EnemyEditorGui());
+		super(new EnemyEditorGui(), Config.Editor.PICKING_CIRCLE_RADIUS_EDITOR);
 		mPlayerActor = new PlayerActor();
 		mPlayerActor.createBody();
 		resetPlayerPosition();

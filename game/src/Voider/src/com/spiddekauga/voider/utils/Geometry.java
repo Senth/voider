@@ -255,7 +255,9 @@ public class Geometry {
 	 * @return array with the vertices of the circle, all vertices are created from Vector2Pool
 	 */
 	public static ArrayList<Vector2> createCircle(float radius) {
-		ArrayList<Vector2> polygon = new ArrayList<Vector2>();
+		@SuppressWarnings("unchecked")
+		ArrayList<Vector2> polygon = Pools.arrayList.obtain();
+		polygon.clear();
 
 		int segments = calculateCircleSegments(radius);
 

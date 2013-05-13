@@ -1,5 +1,7 @@
 package com.spiddekauga.voider.scene;
 
+import java.util.ArrayList;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
@@ -7,6 +9,7 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.utils.Invoker;
 import com.spiddekauga.utils.ShapeRendererEx;
@@ -96,6 +99,20 @@ public abstract class Scene extends InputAdapter {
 	 * @return scene's invoker if the scene uses one, null otherwise.
 	 */
 	public Invoker getInvoker() {
+		return null;
+	}
+
+	/**
+	 * @return picking fixture from editors, null otherwise.
+	 */
+	public FixtureDef getPickingFixtureDef() {
+		return null;
+	}
+
+	/**
+	 * @return picking vertices from editors, null otherwise.
+	 */
+	public ArrayList<Vector2> getPickingVertices() {
 		return null;
 	}
 

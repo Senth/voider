@@ -1,10 +1,12 @@
 package com.spiddekauga.voider.scene;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.utils.Invoker;
@@ -176,6 +178,30 @@ public class SceneSwitcher {
 			return null;
 		} else {
 			return mScenes.peek().getInvoker();
+		}
+	}
+
+	/**
+	 * @return picking fixture for current editor scene, null if the scene doesn't have
+	 * a picking fixture definition or no scene exists
+	 */
+	public static FixtureDef getPickingFixtureDef() {
+		if (mScenes.isEmpty()) {
+			return null;
+		} else {
+			return mScenes.peek().getPickingFixtureDef();
+		}
+	}
+
+	/**
+	 * @return picking vertices for editor scenes, null if the scene doesn't have
+	 * picking vertices or no scene exists.
+	 */
+	public static ArrayList<Vector2> getPickingVertices() {
+		if (mScenes.isEmpty()) {
+			return null;
+		} else {
+			return mScenes.peek().getPickingVertices();
 		}
 	}
 

@@ -2,19 +2,13 @@ package com.spiddekauga.voider;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
 import java.util.Arrays;
 
 import javax.crypto.spec.SecretKeySpec;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.CircleShape;
-import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.Shape;
-import com.spiddekauga.voider.game.actors.ActorFilterCategories;
 import com.spiddekauga.voider.game.actors.ActorShapeTypes;
-import com.spiddekauga.voider.utils.Geometry;
 
 /**
  * Game configuration
@@ -27,19 +21,13 @@ public class Config {
 	 */
 	public static void init() {
 		Crypto.init();
-		Editor.init();
 	}
 
 	/**
 	 * Dispose all objects that have been initialized
 	 */
 	public static void dispose() {
-		if (Editor.PICKING_SHAPE_EDITOR != null) {
-			Editor.PICKING_SHAPE_EDITOR.dispose();
-		}
-		if (Editor.PICKING_SHAPE_LEVEL_EDITOR != null) {
-			Editor.PICKING_SHAPE_LEVEL_EDITOR.dispose();
-		}
+		// Does nothing
 	}
 
 	/**
@@ -135,44 +123,6 @@ public class Config {
 	 * Editor options
 	 */
 	public static class Editor {
-		/**
-		 * Bigger picking fixture because the level editor is downscaled to fit.
-		 * @return picking fixture for level editor.
-		 */
-		public static FixtureDef getPickingFixtureLevelEditor() {
-			return PICKING_FIXTURE_LEVEL_EDITOR;
-		}
-
-		/**
-		 * @return picking fixture for regular editors
-		 */
-		public static FixtureDef getPickingFixtureEditor() {
-			return PICKING_FIXTURE_EDITOR;
-		}
-
-		/**
-		 * Initialization of the editor configuration
-		 */
-		public static void init() {
-			// Editor picking shape
-			PICKING_SHAPE_EDITOR = new CircleShape();
-			PICKING_SHAPE_EDITOR.setRadius(PICKING_CIRCLE_RADIUS_EDITOR);
-			PICKING_FIXTURE_EDITOR = new FixtureDef();
-			PICKING_FIXTURE_EDITOR.filter.categoryBits = ActorFilterCategories.NONE;
-			PICKING_FIXTURE_EDITOR.filter.maskBits = ActorFilterCategories.NONE;
-			PICKING_FIXTURE_EDITOR.shape = PICKING_SHAPE_EDITOR;
-			PICKING_VERTICES_EDITOR = Geometry.createCircle(PICKING_CIRCLE_RADIUS_EDITOR);
-
-			// Level editor picking shape
-			PICKING_SHAPE_LEVEL_EDITOR = new CircleShape();
-			PICKING_SHAPE_LEVEL_EDITOR.setRadius(PICKING_CIRCLE_RADIUS_LEVEL_EDITOR);
-			PICKING_FIXTURE_LEVEL_EDITOR = new FixtureDef();
-			PICKING_FIXTURE_LEVEL_EDITOR.filter.categoryBits = ActorFilterCategories.NONE;
-			PICKING_FIXTURE_LEVEL_EDITOR.filter.maskBits = ActorFilterCategories.NONE;
-			PICKING_FIXTURE_LEVEL_EDITOR.shape = PICKING_SHAPE_LEVEL_EDITOR;
-			PICKING_VERTICES_LEVEL_EDITOR = Geometry.createCircle(PICKING_CIRCLE_RADIUS_LEVEL_EDITOR);
-		}
-
 		/**
 		 * General editor options
 		 */
@@ -487,21 +437,9 @@ public class Config {
 		/** Trigger pick size */
 		public final static float PICK_TRIGGER_SIZE = PICK_PATH_SIZE;
 		/** Radius of all picking circles */
-		private final static float PICKING_CIRCLE_RADIUS_EDITOR = 1;
+		public final static float PICKING_CIRCLE_RADIUS_EDITOR = 1;
 		/** Radius of level editor picking circles */
-		private final static float PICKING_CIRCLE_RADIUS_LEVEL_EDITOR = 2;
-		/** Picking shape for editor */
-		private static Shape PICKING_SHAPE_EDITOR = null;
-		/** Picking shape for level editor */
-		private static Shape PICKING_SHAPE_LEVEL_EDITOR = null;
-		/** Picking fixture */
-		private static FixtureDef PICKING_FIXTURE_EDITOR = null;
-		/** Picking fixture for level editor */
-		private static FixtureDef PICKING_FIXTURE_LEVEL_EDITOR = null;
-		/** Picking vertices */
-		public static ArrayList<Vector2> PICKING_VERTICES_EDITOR = null;
-		/** Picking vertices for level editor */
-		public static ArrayList<Vector2> PICKING_VERTICES_LEVEL_EDITOR = null;
+		public final static float PICKING_CIRCLE_RADIUS_LEVEL_EDITOR = 2;
 	}
 
 	/**

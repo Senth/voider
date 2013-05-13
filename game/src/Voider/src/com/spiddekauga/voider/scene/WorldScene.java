@@ -11,6 +11,7 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.ChainShape;
+import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
@@ -18,6 +19,7 @@ import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.BulletDestroyer;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.ActorFilterCategories;
+import com.spiddekauga.voider.utils.Geometry;
 import com.spiddekauga.voider.utils.Pools;
 
 /**
@@ -28,12 +30,17 @@ import com.spiddekauga.voider.utils.Pools;
 public abstract class WorldScene extends Scene {
 	/**
 	 * @param gui the GUI to use for the scene
+	 * @param pickRadius picking radius for editors
 	 */
-	public WorldScene(Gui gui) {
+	public WorldScene(Gui gui, float pickRadius) {
 		super(gui);
 		fixCamera();
 		mWorld = new World(new Vector2(), true);
 		Actor.setWorld(mWorld);
+
+		if (pickRadius > 0) {
+			initPickingCircle(pickRadius);
+		}
 	}
 
 	@Override
@@ -191,6 +198,30 @@ public abstract class WorldScene extends Scene {
 		shape.dispose();
 	}
 
+	@Override
+	public FixtureDef getPickingFixtureDef() {
+		return mPickingFixtureDef;
+	}
+
+	@Override
+	public ArrayList<Vector2> getPickingVertices() {
+		return mPickingVertices;
+	}
+
+	/**
+	 * Initializes the picking fixture and vertices
+	 * @param pickRadius size of the picking circle
+	 */
+	public void initPickingCircle(float pickRadius) {
+		CircleShape circleShape = new CircleShape();
+		circleShape.setRadius(pickRadius);
+		mPickingFixtureDef = new FixtureDef();
+		mPickingFixtureDef.filter.categoryBits = ActorFilterCategories.NONE;
+		mPickingFixtureDef.filter.maskBits = ActorFilterCategories.NONE;
+		mPickingFixtureDef.shape = circleShape;
+		mPickingVertices = Geometry.createCircle(pickRadius);
+	}
+
 	/** Physics world */
 	protected World mWorld = null;
 	/** Camera for the editor */
@@ -202,4 +233,9 @@ public abstract class WorldScene extends Scene {
 
 	/** Debug renderer */
 	private Box2DDebugRenderer mDebugRenderer = new Box2DDebugRenderer();
+	/** Picking fixture definition (for body) */
+	private FixtureDef mPickingFixtureDef = null;
+	/** Picking vertices (for drawing) */
+	@SuppressWarnings("unchecked")
+	private ArrayList<Vector2> mPickingVertices = null;
 }

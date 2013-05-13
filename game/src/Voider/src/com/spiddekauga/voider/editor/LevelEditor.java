@@ -63,7 +63,7 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 	 * Constructor for the level editor
 	 */
 	public LevelEditor() {
-		super(new LevelEditorGui());
+		super(new LevelEditorGui(), Config.Editor.PICKING_CIRCLE_RADIUS_LEVEL_EDITOR);
 		((LevelEditorGui)mGui).setLevelEditor(this);
 
 		Actor.setEditorActive(true);

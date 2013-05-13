@@ -21,7 +21,6 @@ import com.spiddekauga.utils.Json;
 import com.spiddekauga.utils.ShapeRendererEx;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.voider.Config;
-import com.spiddekauga.voider.Config.Editor;
 import com.spiddekauga.voider.editor.HitWrapper;
 import com.spiddekauga.voider.game.Level;
 import com.spiddekauga.voider.game.triggers.ITriggerListener;
@@ -359,7 +358,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 			Vector2 cornerOffset = Pools.vector2.obtain();
 			for (Vector2 corner : mDef.getCorners()) {
 				cornerOffset.set(offsetPosition).add(corner).add(mDef.getCenterOffset());
-				shapeRenderer.polyline(Config.Editor.PICKING_VERTICES_EDITOR, true, cornerOffset);
+				shapeRenderer.polyline(SceneSwitcher.getPickingVertices(), true, cornerOffset);
 			}
 			Pools.vector2.free(cornerOffset);
 
@@ -372,7 +371,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 			shapeRenderer.push(ShapeType.Line);
 
 			shapeRenderer.setColor(Config.Editor.CENTER_OFFSET_COLOR);
-			shapeRenderer.polyline(Config.Editor.PICKING_VERTICES_EDITOR, true, offsetPosition);
+			shapeRenderer.polyline(SceneSwitcher.getPickingVertices(), true, offsetPosition);
 
 			shapeRenderer.pop();
 		}
@@ -714,7 +713,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 			mHasBodyCenter = true;
 			if (mBody != null && mCenterBody == null) {
 				mCenterBody = mWorld.createBody(new BodyDef());
-				mCenterBody.createFixture(Editor.getPickingFixtureLevelEditor());
+				mCenterBody.createFixture(SceneSwitcher.getPickingFixtureDef());
 				mCenterBody.setTransform(mPosition, 0);
 				HitWrapper hitWrapper = new HitWrapper(this, "center");
 				mCenterBody.setUserData(hitWrapper);
@@ -1048,7 +1047,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	 */
 	private void createBodyCorner(Vector2 corner) {
 		Body body = mWorld.createBody(new BodyDef());
-		body.createFixture(Config.Editor.getPickingFixtureLevelEditor());
+		body.createFixture(SceneSwitcher.getPickingFixtureDef());
 		body.setTransform(corner, 0);
 		HitWrapper hitWrapper = new HitWrapper(this, "corner");
 		body.setUserData(hitWrapper);
