@@ -34,8 +34,11 @@ public class Config {
 	 * Dispose all objects that have been initialized
 	 */
 	public static void dispose() {
-		if (Editor.PICKING_CIRCLE_SHAPE != null) {
-			Editor.PICKING_CIRCLE_SHAPE.dispose();
+		if (Editor.PICKING_SHAPE_EDITOR != null) {
+			Editor.PICKING_SHAPE_EDITOR.dispose();
+		}
+		if (Editor.PICKING_SHAPE_LEVEL_EDITOR != null) {
+			Editor.PICKING_SHAPE_LEVEL_EDITOR.dispose();
 		}
 	}
 
@@ -133,33 +136,41 @@ public class Config {
 	 */
 	public static class Editor {
 		/**
-		 * @return picking shape
+		 * Bigger picking fixture because the level editor is downscaled to fit.
+		 * @return picking fixture for level editor.
 		 */
-		public static Shape getPickingShape() {
-			return PICKING_CIRCLE_SHAPE;
+		public static FixtureDef getPickingFixtureLevelEditor() {
+			return PICKING_FIXTURE_LEVEL_EDITOR;
 		}
 
 		/**
-		 * @return picking fixture
+		 * @return picking fixture for regular editors
 		 */
-		public static FixtureDef getPickingFixture() {
-			return PICKING_CIRCLE_FIXTURE;
+		public static FixtureDef getPickingFixtureEditor() {
+			return PICKING_FIXTURE_EDITOR;
 		}
 
 		/**
 		 * Initialization of the editor configuration
 		 */
 		public static void init() {
-			PICKING_CIRCLE_SHAPE = new CircleShape();
-			PICKING_CIRCLE_SHAPE.setRadius(PICKING_CIRCLE_RADIUS);
-			PICKING_CIRCLE_FIXTURE = new FixtureDef();
-			PICKING_CIRCLE_FIXTURE.filter.categoryBits = ActorFilterCategories.NONE;
-			PICKING_CIRCLE_FIXTURE.filter.maskBits = ActorFilterCategories.NONE;
-			PICKING_CIRCLE_FIXTURE.shape = PICKING_CIRCLE_SHAPE;
-			PICKING_VERTICES = Geometry.createCircle(PICKING_CIRCLE_RADIUS);
-			//			ArrayList<Vector2> circles = Geometry.createCircle(PICKING_CIRCLE_RADIUS);
-			//			EarClippingTriangulator earClippingTriangulator = new EarClippingTriangulator();
-			//			PICKING_VERTICES = earClippingTriangulator.computeTriangles(circles);
+			// Editor picking shape
+			PICKING_SHAPE_EDITOR = new CircleShape();
+			PICKING_SHAPE_EDITOR.setRadius(PICKING_CIRCLE_RADIUS_EDITOR);
+			PICKING_FIXTURE_EDITOR = new FixtureDef();
+			PICKING_FIXTURE_EDITOR.filter.categoryBits = ActorFilterCategories.NONE;
+			PICKING_FIXTURE_EDITOR.filter.maskBits = ActorFilterCategories.NONE;
+			PICKING_FIXTURE_EDITOR.shape = PICKING_SHAPE_EDITOR;
+			PICKING_VERTICES_EDITOR = Geometry.createCircle(PICKING_CIRCLE_RADIUS_EDITOR);
+
+			// Level editor picking shape
+			PICKING_SHAPE_LEVEL_EDITOR = new CircleShape();
+			PICKING_SHAPE_LEVEL_EDITOR.setRadius(PICKING_CIRCLE_RADIUS_LEVEL_EDITOR);
+			PICKING_FIXTURE_LEVEL_EDITOR = new FixtureDef();
+			PICKING_FIXTURE_LEVEL_EDITOR.filter.categoryBits = ActorFilterCategories.NONE;
+			PICKING_FIXTURE_LEVEL_EDITOR.filter.maskBits = ActorFilterCategories.NONE;
+			PICKING_FIXTURE_LEVEL_EDITOR.shape = PICKING_SHAPE_LEVEL_EDITOR;
+			PICKING_VERTICES_LEVEL_EDITOR = Geometry.createCircle(PICKING_CIRCLE_RADIUS_LEVEL_EDITOR);
 		}
 
 		/**
@@ -476,13 +487,21 @@ public class Config {
 		/** Trigger pick size */
 		public final static float PICK_TRIGGER_SIZE = PICK_PATH_SIZE;
 		/** Radius of all picking circles */
-		private final static float PICKING_CIRCLE_RADIUS = 2.0f;
-		/** Picking shape */
-		private static Shape PICKING_CIRCLE_SHAPE = null;
+		private final static float PICKING_CIRCLE_RADIUS_EDITOR = 1;
+		/** Radius of level editor picking circles */
+		private final static float PICKING_CIRCLE_RADIUS_LEVEL_EDITOR = 2;
+		/** Picking shape for editor */
+		private static Shape PICKING_SHAPE_EDITOR = null;
+		/** Picking shape for level editor */
+		private static Shape PICKING_SHAPE_LEVEL_EDITOR = null;
 		/** Picking fixture */
-		private static FixtureDef PICKING_CIRCLE_FIXTURE = null;
+		private static FixtureDef PICKING_FIXTURE_EDITOR = null;
+		/** Picking fixture for level editor */
+		private static FixtureDef PICKING_FIXTURE_LEVEL_EDITOR = null;
 		/** Picking vertices */
-		public static ArrayList<Vector2> PICKING_VERTICES = null;
+		public static ArrayList<Vector2> PICKING_VERTICES_EDITOR = null;
+		/** Picking vertices for level editor */
+		public static ArrayList<Vector2> PICKING_VERTICES_LEVEL_EDITOR = null;
 	}
 
 	/**
