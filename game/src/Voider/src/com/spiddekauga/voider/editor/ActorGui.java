@@ -93,11 +93,11 @@ public abstract class ActorGui extends EditorGui {
 		// Custom shape
 		if (mWidgets.visual.shapeCustom != null) {
 			switch (mActorEditor.getDrawActorToolState()) {
-			case ADD_CORNER:
+			case ADJUST_ADD_MOVE_CORNER:
 				mWidgets.visual.customShapeAddMove.setChecked(true);
 				break;
 
-			case REMOVE:
+			case ADD_REMOVE:
 				mWidgets.visual.customShapeRemove.setChecked(true);
 				break;
 
@@ -595,7 +595,7 @@ public abstract class ActorGui extends EditorGui {
 				@Override
 				protected void onChecked(boolean checked) {
 					if (checked) {
-						mActorEditor.setDrawActorToolState(States.ADD_CORNER);
+						mActorEditor.setDrawActorToolState(States.ADJUST_ADD_MOVE_CORNER);
 					}
 				}
 			};
@@ -612,7 +612,7 @@ public abstract class ActorGui extends EditorGui {
 				@Override
 				protected void onChecked(boolean checked) {
 					if (checked) {
-						mActorEditor.setDrawActorToolState(States.REMOVE);
+						mActorEditor.setDrawActorToolState(States.ADD_REMOVE);
 					}
 				}
 			};

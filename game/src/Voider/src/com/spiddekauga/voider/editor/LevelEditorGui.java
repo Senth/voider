@@ -215,7 +215,7 @@ class LevelEditorGui extends EditorGui {
 
 		// Terrain
 		switch (mLevelEditor.getStaticTerrainState()) {
-		case ADD_CORNER:
+		case ADJUST_ADD_MOVE_CORNER:
 			mWidgets.terrain.add.setChecked(true);
 			break;
 
@@ -223,7 +223,7 @@ class LevelEditorGui extends EditorGui {
 			mWidgets.terrain.move.setChecked(true);
 			break;
 
-		case REMOVE:
+		case ADD_REMOVE:
 			mWidgets.terrain.remove.setChecked(true);
 			break;
 
@@ -1114,7 +1114,7 @@ class LevelEditorGui extends EditorGui {
 			@Override
 			public void onChecked(boolean checked) {
 				if (checked) {
-					mLevelEditor.setStaticTerrainState(DrawActorTool.States.ADD_CORNER);
+					mLevelEditor.setStaticTerrainState(DrawActorTool.States.ADJUST_ADD_MOVE_CORNER);
 				}
 			}
 		};
@@ -1128,7 +1128,7 @@ class LevelEditorGui extends EditorGui {
 			@Override
 			public void onChecked(boolean checked) {
 				if (checked) {
-					mLevelEditor.setStaticTerrainState(DrawActorTool.States.REMOVE);
+					mLevelEditor.setStaticTerrainState(DrawActorTool.States.ADD_REMOVE);
 				}
 			}
 		};

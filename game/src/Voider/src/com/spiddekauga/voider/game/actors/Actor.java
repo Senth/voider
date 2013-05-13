@@ -305,17 +305,33 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 		Vector2 offsetPosition = Pools.vector2.obtain();
 		offsetPosition.set(mBody.getPosition());
 
+		// Offset for circle
 		if (mDef.getShapeType() == ActorShapeTypes.CUSTOM && mDef.getCornerCount() >= 1 && mDef.getCornerCount() <= 2) {
 			offsetPosition.add(mDef.getCorners().get(0));
 		}
 
-		// Shape
-		shapeRenderer.setColor(mDef.getColor());
-		shapeRenderer.triangles(mRotatedVertices, offsetPosition);
+		// Draw regular shape
+		if (!mDrawOnlyOutline) {
+			// Shape
+			shapeRenderer.setColor(mDef.getColor());
+			shapeRenderer.triangles(mRotatedVertices, offsetPosition);
 
-		// Border
-		shapeRenderer.setColor(mDef.getBorderColor());
-		shapeRenderer.triangles(mRotatedBorderVertices, offsetPosition);
+			// Border
+			shapeRenderer.setColor(mDef.getBorderColor());
+			shapeRenderer.triangles(mRotatedBorderVertices, offsetPosition);
+		} else if (mDef.getCornerCount() >= 2) {
+			shapeRenderer.push(ShapeType.Line);
+
+			shapeRenderer.setColor(Config.Actor.OUTLINE_COLOR);
+			shapeRenderer.polyline(mDef.getCorners(), false, offsetPosition);
+
+			if (mDef.getCornerCount() >= 3) {
+				shapeRenderer.setColor(Config.Actor.OUTLINE_CLOSE_COLOR);
+				shapeRenderer.line(mDef.getCorners().get(mDef.getCornerCount()-1), mDef.getCorners().get(0));
+			}
+
+			shapeRenderer.pop();
+		}
 
 		Pools.vector2.free(offsetPosition);
 	}
@@ -411,6 +427,15 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	 */
 	public void decreaseLife(float amount) {
 		mLife -= amount;
+	}
+
+	/**
+	 * Sets if the actor shall only draw its outline
+	 * @param drawOnlyOutline set to true if the actor shall only draw its
+	 * shape's outline.
+	 */
+	public void setDrawOnlyOutline(boolean drawOnlyOutline) {
+		mDrawOnlyOutline = drawOnlyOutline;
 	}
 
 	@Override
@@ -1095,6 +1120,8 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	private ArrayList<Vector2> mRotatedBorderVertices = null;
 	/** If the actor shall be destroyed */
 	private boolean mDestroyBody = false;
+	/** Only draws the shape's outline */
+	private boolean mDrawOnlyOutline = false;
 
 	/** The world used for creating bodies */
 	protected static World mWorld = null;

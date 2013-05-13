@@ -59,25 +59,22 @@ public class Config {
 		 */
 		public static class Pickup {
 			/** Default radius for the pickups */
-			public final static float RADIUS = 1f;
-		}
-		/**
-		 * Player
-		 */
-		public static class Player {
-			/** How many seconds we shall save the player's position, in seconds */
-			public static float RECENT_POS_SAVE_TIME = 1;
+			public final static float RADIUS = 2;
 		}
 		/**
 		 * Static terrain
 		 */
 		public static class Terrain {
 			/** Default size of terrain circle */
-			public final static float DEFAULT_CIRCLE_RADIUS = 2.0f;
+			public final static float DEFAULT_CIRCLE_RADIUS = 3f;
 		}
 
 		/** Border width of all actors */
 		public final static float BORDER_WIDTH = 0.5f;
+		/** Outline color */
+		public final static Color OUTLINE_COLOR = Color.ORANGE;
+		/** Closing outline color (color from corner.end -> corner.begin) */
+		public final static Color OUTLINE_CLOSE_COLOR = Color.PINK;
 	}
 
 

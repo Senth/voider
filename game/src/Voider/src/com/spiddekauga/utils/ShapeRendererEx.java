@@ -268,14 +268,14 @@ public class ShapeRendererEx implements Disposable {
 	/**
 	 * Default constructor. Creates 5000 max vertices
 	 */
-	public ShapeRendererEx () {
+	public ShapeRendererEx() {
 		this(5000);
 	}
 
 	/**
 	 * @param maxVertices
 	 */
-	public ShapeRendererEx (int maxVertices) {
+	public ShapeRendererEx(int maxVertices) {
 		if (Gdx.graphics.isGL20Available()) {
 			mRenderer = new ImmediateModeRenderer20(maxVertices, false, true, 0);
 		}
@@ -288,7 +288,7 @@ public class ShapeRendererEx implements Disposable {
 
 	/** Sets the {@link Color} to be used by shapes.
 	 * @param color */
-	public void setColor (Color color) {
+	public void setColor(Color color) {
 		this.mColor.set(color);
 	}
 
@@ -297,13 +297,13 @@ public class ShapeRendererEx implements Disposable {
 	 * @param g
 	 * @param b
 	 * @param a */
-	public void setColor (float r, float g, float b, float a) {
+	public void setColor(float r, float g, float b, float a) {
 		this.mColor.set(r, g, b, a);
 	}
 
 	/** Sets the projection matrix to be used for rendering. Usually this will be set to {@link Camera#combined}.
 	 * @param matrix */
-	public void setProjectionMatrix (Matrix4 matrix) {
+	public void setProjectionMatrix(Matrix4 matrix) {
 		mProjView.set(matrix);
 		mMatrixDirty = true;
 	}
@@ -311,13 +311,13 @@ public class ShapeRendererEx implements Disposable {
 	/**
 	 * @param matrix
 	 */
-	public void setTransformMatrix (Matrix4 matrix) {
+	public void setTransformMatrix(Matrix4 matrix) {
 		mTransform.set(matrix);
 		mMatrixDirty = true;
 	}
 
 	/** Sets the transformation matrix to identity. */
-	public void identity () {
+	public void identity() {
 		mTransform.idt();
 		mMatrixDirty = true;
 	}
@@ -326,7 +326,7 @@ public class ShapeRendererEx implements Disposable {
 	 * @param x
 	 * @param y
 	 * @param z */
-	public void translate (float x, float y, float z) {
+	public void translate(float x, float y, float z) {
 		mTransform.translate(x, y, z);
 		mMatrixDirty = true;
 	}
@@ -336,7 +336,7 @@ public class ShapeRendererEx implements Disposable {
 	 * @param axisX
 	 * @param axisY
 	 * @param axisZ */
-	public void rotate (float axisX, float axisY, float axisZ, float angle) {
+	public void rotate(float axisX, float axisY, float axisZ, float angle) {
 		mTransform.rotate(axisX, axisY, axisZ, angle);
 		mMatrixDirty = true;
 	}
@@ -345,7 +345,7 @@ public class ShapeRendererEx implements Disposable {
 	 * @param scaleX
 	 * @param scaleY
 	 * @param scaleZ */
-	public void scale (float scaleX, float scaleY, float scaleZ) {
+	public void scale(float scaleX, float scaleY, float scaleZ) {
 		mTransform.scale(scaleX, scaleY, scaleZ);
 		mMatrixDirty = true;
 	}
@@ -355,7 +355,7 @@ public class ShapeRendererEx implements Disposable {
 	 * 
 	 * In case OpenGL ES 1.x is used, the projection and modelview matrix will be modified.
 	 * */
-	private void begin () {
+	private void begin() {
 		if (mCurrentType.isEmpty()) {
 			throw new GdxRuntimeException("Call push() before beginning a new shape batch");
 		}
@@ -407,7 +407,7 @@ public class ShapeRendererEx implements Disposable {
 	 * @param y2 */
 	public void line(float x, float y, float x2, float y2){
 		if (mCurrentType.isEmpty() || mCurrentType.peek() != ShapeType.Line) {
-			throw new GdxRuntimeException("Must call begin(ShapeType.Line)");
+			throw new GdxRuntimeException("Must call push(ShapeType.Line)");
 		}
 		checkDirty();
 		checkFlush(2);
@@ -416,6 +416,23 @@ public class ShapeRendererEx implements Disposable {
 		mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
 		mRenderer.vertex(x2, y2, 0);
 	}
+
+	/** Draws a line in the x/y plane. The {@link ShapeType} passed to begin has to be {@link ShapeType#Line}.
+	 * @param posA draw line from this position
+	 * @param posB to this position
+	 */
+	public void line(Vector2 posA, Vector2 posB) {
+		if (mCurrentType.isEmpty() || mCurrentType.peek() != ShapeType.Line) {
+			throw new GdxRuntimeException("Must call push(ShapeType.Line)");
+		}
+		checkDirty();
+		checkFlush(2);
+		mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+		mRenderer.vertex(posA.x, posB.y, 0);
+		mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
+		mRenderer.vertex(posB.x, posB.y, 0);
+	}
+
 
 	/**
 	 * @param x1
@@ -430,7 +447,7 @@ public class ShapeRendererEx implements Disposable {
 	 */
 	public void curve(float x1, float y1, float cx1, float cy1, float cx2, float cy2, float x2, float y2, int segments){
 		if (mCurrentType.isEmpty() || mCurrentType.peek() != ShapeType.Line) {
-			throw new GdxRuntimeException("Must call begin(ShapeType.Line)");
+			throw new GdxRuntimeException("Must call push(ShapeType.Line)");
 		}
 		checkDirty();
 		checkFlush(segments * 2 + 2);
@@ -491,7 +508,7 @@ public class ShapeRendererEx implements Disposable {
 	 */
 	public void triangle(float x1, float y1, float x2, float y2, float x3, float y3){
 		if (mCurrentType.isEmpty() || (mCurrentType.peek() != ShapeType.Filled && mCurrentType.peek() != ShapeType.Line)) {
-			throw new GdxRuntimeException("Must call begin(ShapeType.Filled) or begin(ShapeType.Line)");
+			throw new GdxRuntimeException("Must call push(ShapeType.Filled) or push(ShapeType.Line)");
 		}
 		checkDirty();
 		checkFlush(6);

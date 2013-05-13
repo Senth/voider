@@ -116,11 +116,15 @@ public class DrawActorTool extends ActorTool {
 			}
 
 			switch (mState) {
-			case ADD_CORNER:
-			case REMOVE:
+			case ADJUST_ADD_MOVE_CORNER:
+			case ADJUST_REMOVE_CORNER:
 				mSelectedActor.createBodyCorners();
+
+			case APPEND:
+				mSelectedActor.setDrawOnlyOutline(true);
 				break;
 
+			case ADD_REMOVE:
 			case MOVE:
 				// Does nothing
 				break;
@@ -147,11 +151,15 @@ public class DrawActorTool extends ActorTool {
 			}
 
 			switch (mState) {
-			case ADD_CORNER:
-			case REMOVE:
+			case ADJUST_ADD_MOVE_CORNER:
+			case ADJUST_REMOVE_CORNER:
 				mSelectedActor.destroyBodyCorners();
+
+			case APPEND:
+				mSelectedActor.setDrawOnlyOutline(false);
 				break;
 
+			case ADD_REMOVE:
 			case MOVE:
 				// Does nothing
 				break;
@@ -168,6 +176,10 @@ public class DrawActorTool extends ActorTool {
 	 * @param state which state the tool is actively in
 	 */
 	public void setState(States state) {
+		if (state == mState) {
+			return;
+		}
+
 		// Delete old state values
 		deactivate();
 
@@ -187,10 +199,14 @@ public class DrawActorTool extends ActorTool {
 	 * All the states the tool can be in
 	 */
 	public enum States {
-		/** Adds corners to the actor */
-		ADD_CORNER,
-		/** Removes either corners the whole actor */
-		REMOVE,
+		/** Adds or moves corners to the actor, only one corner at the time.*/
+		ADJUST_ADD_MOVE_CORNER,
+		/** Removes corners one at the time */
+		ADJUST_REMOVE_CORNER,
+		/** Append drawing */
+		APPEND,
+		/** Adds or removes parts to the actor */
+		ADD_REMOVE,
 		/** Moves the whole actor, corners can be moved in ADD_CORNER state */
 		MOVE,
 		/** Sets the center of the actor */
@@ -200,7 +216,7 @@ public class DrawActorTool extends ActorTool {
 	@Override
 	protected void down() {
 		switch (mState) {
-		case ADD_CORNER:
+		case ADJUST_ADD_MOVE_CORNER:
 			// Double click inside current actor finishes/closes it, but only if we can have more than
 			// one actor
 			if (mDoubleClick && hitSelectedActor() && !mOnlyOneActor) {
@@ -279,7 +295,7 @@ public class DrawActorTool extends ActorTool {
 			break;
 
 
-		case REMOVE:
+		case ADD_REMOVE:
 			testPick();
 
 			// If we hit the actor's body twice (no corners) we delete the actor along with
@@ -334,7 +350,7 @@ public class DrawActorTool extends ActorTool {
 	@Override
 	protected void dragged() {
 		switch (mState) {
-		case ADD_CORNER:
+		case ADJUST_ADD_MOVE_CORNER:
 			if (mCornerIndexCurrent != -1) {
 				try {
 					Vector2 newCornerPos = Pools.vector2.obtain();
@@ -357,7 +373,7 @@ public class DrawActorTool extends ActorTool {
 			break;
 
 
-		case REMOVE:
+		case ADD_REMOVE:
 			// Does nothing
 			break;
 
@@ -380,7 +396,7 @@ public class DrawActorTool extends ActorTool {
 	@Override
 	protected void up() {
 		switch (mState) {
-		case ADD_CORNER:
+		case ADJUST_ADD_MOVE_CORNER:
 			if (mSelectedActor != null && mCornerIndexCurrent != -1) {
 				// New corner
 				if (mCornerAddedNow) {
@@ -422,7 +438,7 @@ public class DrawActorTool extends ActorTool {
 			break;
 
 
-		case REMOVE:
+		case ADD_REMOVE:
 			// Does nothing
 			break;
 
@@ -507,7 +523,7 @@ public class DrawActorTool extends ActorTool {
 	/** Invoker used for undoing/redoing commands */
 	protected Invoker mInvoker = null;
 	/** Current state of the tool */
-	protected States mState = States.ADD_CORNER;
+	protected States mState = States.ADJUST_ADD_MOVE_CORNER;
 
 	/** Origin of the drag */
 	private Vector2 mDragOrigin = new Vector2();

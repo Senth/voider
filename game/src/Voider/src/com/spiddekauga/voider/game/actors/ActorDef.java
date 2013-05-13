@@ -780,7 +780,7 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 
 			// Create vertices for the circle
 			ArrayList<Vector2> circleVertices = Geometry.createCircle(radius);
-			mVisualVars.vertices =mEarClippingTriangulator.computeTriangles(circleVertices);
+			mVisualVars.vertices = mEarClippingTriangulator.computeTriangles(circleVertices);
 			Collections.reverse(mVisualVars.vertices);
 
 			createBorder(circleVertices);
