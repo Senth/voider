@@ -308,8 +308,6 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	@Override
 	public void setScaleX(float scale) {
 		if (mScalable) {
-			mScaleX = scale;
-
 			for (Row row : mRows) {
 				row.setScaleX(scale);
 			}
@@ -320,8 +318,6 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	@Override
 	public void setScaleY(float scale) {
 		if (mScalable) {
-			mScaleY = scale;
-
 			for (Row row : mRows) {
 				row.setScaleY(scale);
 			}
@@ -431,8 +427,6 @@ public class AlignTable extends WidgetGroup implements Disposable {
 		super.clear();
 		mRows.clear();
 
-		mScaleX = 1;
-		mScaleY = 1;
 		invalidate();
 	}
 
@@ -458,8 +452,6 @@ public class AlignTable extends WidgetGroup implements Disposable {
 		mPrefWidth = 0;
 		mMinHeight = 0;
 		mMinWidth = 0;
-		mExtraHeight = 0;
-		mExtraWidth = 0;
 
 		float width = 0;
 		float height = 0;
@@ -469,11 +461,6 @@ public class AlignTable extends WidgetGroup implements Disposable {
 			mPrefHeight += row.getPrefHeight();
 			mMinHeight += row.getMinHeight();
 			height += row.getHeight();
-
-			// Add extra height
-			if (row.getMinHeight() < row.getPrefHeight()) {
-				mExtraHeight += row.getPrefHeight() - row.getMinHeight();
-			}
 
 			if (row.getPrefWidth() > mPrefWidth) {
 				mPrefWidth = row.getPrefWidth();
@@ -486,10 +473,6 @@ public class AlignTable extends WidgetGroup implements Disposable {
 			if (row.getWidth() > width) {
 				width = row.getWidth();
 			}
-		}
-
-		if (getMinWidth() < getPrefWidth()) {
-			mExtraWidth = getPrefWidth() - getMinWidth();
 		}
 
 		// Set the size of the table (without scaling)
@@ -544,14 +527,6 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	private float mMinWidth = 0;
 	/** Minimum height, equals all non-scalable cells' height */
 	private float mMinHeight = 0;
-	/** Extra height for scaling, i.e. non-scalable cells' are not the highest one */
-	private float mExtraHeight = 0;
-	/** Extra width for scaling, i.e. non-scalable cells' (rows) are not the widest ones */
-	private float mExtraWidth = 0;
-	/** Scale X value */
-	private float mScaleX = 1;
-	/** Scale Y value */
-	private float mScaleY = 1;
 	/** True if the table can be scaled */
 	private boolean mScalable = true;
 	/** If the table shall keep size after layout, or it shall resize itself */

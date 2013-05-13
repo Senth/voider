@@ -48,6 +48,7 @@ public class GuiSliderCommandCreator implements EventListener {
 	private void sendCommand(Slider slider) {
 		// Only create the command if it wasn't sent by an invoker
 		if (slider.getName() == null || !slider.getName().equals(Gui.GUI_INVOKER_TEMP_NAME)) {
+			// TODO set slider value?
 		}
 	}
 

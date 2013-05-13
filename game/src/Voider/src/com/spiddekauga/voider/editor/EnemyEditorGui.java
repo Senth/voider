@@ -20,7 +20,6 @@ import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.utils.scene.ui.Cell;
 import com.spiddekauga.utils.scene.ui.HideListener;
-import com.spiddekauga.utils.scene.ui.Row;
 import com.spiddekauga.utils.scene.ui.SliderListener;
 import com.spiddekauga.utils.scene.ui.TooltipListener;
 import com.spiddekauga.voider.Config.Editor;
@@ -233,7 +232,7 @@ public class EnemyEditorGui extends ActorGui {
 		TextButtonStyle textToogleStyle = editorSkin.get("toggle", TextButtonStyle.class);
 
 		// Path
-		Row row = mMovementTable.row();
+		mMovementTable.row();
 		GuiCheckCommandCreator movementChecker = new GuiCheckCommandCreator(mInvoker);
 		ButtonGroup buttonGroup = new ButtonGroup();
 		CheckBox checkBox = new CheckBox("Path", checkBoxStyle);

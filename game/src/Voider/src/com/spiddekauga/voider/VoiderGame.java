@@ -20,8 +20,6 @@ import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.Cell;
 import com.spiddekauga.utils.scene.ui.Row;
-import com.spiddekauga.voider.editor.BulletEditor;
-import com.spiddekauga.voider.editor.EnemyEditor;
 import com.spiddekauga.voider.editor.LevelEditor;
 import com.spiddekauga.voider.game.Collectibles;
 import com.spiddekauga.voider.game.GameScene;
@@ -157,20 +155,6 @@ public class VoiderGame implements ApplicationListener {
 		Level level = new Level(levelDef);
 		levelEditor.setLevel(level);
 		SceneSwitcher.switchTo(levelEditor);
-	}
-
-	/**
-	 * Testing the enemy editor
-	 */
-	private void testEnemyEditor() {
-		SceneSwitcher.switchTo(new EnemyEditor());
-	}
-
-	/**
-	 * Testing the bullet editor
-	 */
-	private void testBulletEditor() {
-		SceneSwitcher.switchTo(new BulletEditor());
 	}
 
 	/**

@@ -116,8 +116,6 @@ public class TriggerTool extends TouchTool implements ISelectTool {
 			selectListener.onResourceSelected(oldSelected, mSelectedTrigger);
 		}
 
-		mChangedSinceUp = true;
-
 		enableSelectedDrawing();
 	}
 
@@ -243,8 +241,6 @@ public class TriggerTool extends TouchTool implements ISelectTool {
 			// Does nothing
 			break;
 		}
-
-		mChangedSinceUp = false;
 	}
 
 	@Override
@@ -313,8 +309,6 @@ public class TriggerTool extends TouchTool implements ISelectTool {
 
 	/** Original position of the currently dragging body */
 	private Vector2 mDragOrigin = new Vector2();
-	/** Changed trigger since up */
-	private boolean mChangedSinceUp = false;
 	/** Selection listeners */
 	private ArrayList<ISelectListener> mSelectListeners = new ArrayList<ISelectListener>();
 	/** Current state of the tool */

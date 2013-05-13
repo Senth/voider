@@ -236,7 +236,7 @@ public class ShapeRendererEx implements Disposable {
 	// -----------------------
 	// Old stuff
 	// -----------------------
-	/** Shape types to be used with {@link #begin(ShapeType)}.
+	/** Shape types to be used with {@link #push(ShapeType)}.
 	 * @author mzechner, stbachmann */
 	public enum ShapeType {
 		/** Used for drawing points */

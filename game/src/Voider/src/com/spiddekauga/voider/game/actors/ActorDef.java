@@ -11,7 +11,6 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
-import com.badlogic.gdx.physics.box2d.EdgeShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.utils.Disposable;
@@ -1020,33 +1019,6 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	}
 
 	/**
-	 * Creates a line shape from the visual variables
-	 * @return line shape for fixture
-	 */
-	private EdgeShape createLineShape() {
-		EdgeShape edgeShape = new EdgeShape();
-
-		//		Vector2 pointA = Pools.vector2.obtain();
-		//		Vector2 pointB = Pools.vector2.obtain();
-
-		//		pointA.set(-mVisualVars.shapeWidth * 0.5f, 0);
-		//		pointB.set(mVisualVars.shapeWidth * 0.5f, 0);
-
-		/** @todo use center for all shapes */
-		//		edgeShape.set(-mVisualVars.shapeWidth * 0.5f + mVisualVars.centerOffset.x, mVisualVars.centerOffset.y, mVisualVars.shapeWidth * 0.5f + mVisualVars.centerOffset.x, mVisualVars.centerOffset.y);
-		edgeShape.set(-mVisualVars.shapeWidth * 0.5f, 0, mVisualVars.shapeWidth * 0.5f, 0);
-
-		//		Pools.vector2.free(pointA);
-		//		Pools.vector2.free(pointB);
-
-
-
-		/** @todo create polygon ? */
-
-		return edgeShape;
-	}
-
-	/**
 	 * Gets the first fixture definition. Prints an error if there are more or less fixtures than 1
 	 * @return first fixture definition, null if none is found
 	 */
@@ -1058,14 +1030,6 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 			Gdx.app.error("EnemyActorDef", "Too few/many fixture definitions! " + fixtureDefs.size());
 			return null;
 		}
-	}
-
-	/**
-	 * Sets the fixture def to the default values
-	 * @param fixtureDef the fixture def to copy values from the default fixture def
-	 */
-	private void setDefaultFixtureValues(FixtureDef fixtureDef) {
-		copyFixtureDef(getDefaultFixtureDef(), fixtureDef);
 	}
 
 	/**

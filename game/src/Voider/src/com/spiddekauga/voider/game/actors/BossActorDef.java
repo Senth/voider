@@ -10,25 +10,9 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
  */
 public class BossActorDef extends ActorDef {
 	/**
-	 * Constructor that sets all variables
-	 * @param maxLife maximum life of the actor, also starting amount of life
-	 * @param name name of the actor
-	 * @param fixtureDef physical representation of the object
-	 * @TODO just a stub for now
-	 */
-	public BossActorDef(
-			float maxLife,
-			String name,
-			FixtureDef fixtureDef
-			)
-	{
-		super(maxLife, name, fixtureDef);
-	}
-
-	/**
 	 * Empty constructor that does nothing. Used for JSON.
 	 */
-	protected BossActorDef() {
+	public BossActorDef() {
 		super(ActorTypes.BOSS);
 	}
 

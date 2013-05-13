@@ -621,5 +621,6 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 	/** Enemies bound to this path */
 	private ArrayList<EnemyActor> mEnemies = new ArrayList<EnemyActor>();
 
+	/** Minimum distance between chain corners, less than this will assert the program */
 	private final static float CHAIN_CORNER_DISTANCE_MIN = 0.005f * 0.005f;
 }
