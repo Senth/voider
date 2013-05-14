@@ -215,20 +215,35 @@ class LevelEditorGui extends EditorGui {
 
 		// Terrain
 		switch (mLevelEditor.getStaticTerrainState()) {
-		case ADJUST_ADD_MOVE_CORNER:
-			mWidgets.terrain.add.setChecked(true);
+		case DRAW_APPEND:
+			mWidgets.terrain.append.setChecked(true);
+			break;
+
+		case ADJUST_ADD_CORNER:
+			mWidgets.terrain.addCorner.setChecked(true);
+			break;
+
+		case ADJUST_MOVE_CORNER:
+			mWidgets.terrain.moveCorner.setChecked(true);
+			break;
+
+		case ADJUST_REMOVE_CORNER:
+			mWidgets.terrain.removeCorner.setChecked(true);
+			break;
+
+		case DRAW_ERASE:
+			mWidgets.terrain.drawErase.setChecked(true);
 			break;
 
 		case MOVE:
 			mWidgets.terrain.move.setChecked(true);
 			break;
 
-		case ADD_REMOVE:
-			mWidgets.terrain.remove.setChecked(true);
-			break;
-
 		case SET_CENTER:
 			// Does nothing
+			break;
+
+		default:
 			break;
 		}
 
@@ -1104,31 +1119,72 @@ class LevelEditorGui extends EditorGui {
 	private void initStaticTerrain() {
 		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
 		TextButtonStyle textStyle = editorSkin.get("toggle", TextButtonStyle.class);
-		ImageButtonStyle imageStyle = editorSkin.get("add", ImageButtonStyle.class);
 
 		ButtonGroup toggleGroup = new ButtonGroup();
-		Button button = new ImageButton(imageStyle);
-		mWidgets.terrain.add = button;
-		TooltipListener tooltipListener = new TooltipListener(button, "Add terrain", Messages.Tooltip.Level.Terrain.ADD);
+		Button button = new TextButton("Draw/Append", textStyle);
+		mWidgets.terrain.append = button;
+		TooltipListener tooltipListener = new TooltipListener(button, "Draw/Append", Messages.replaceName(Messages.Tooltip.Actor.Visuals.APPEND, "terrain"));
 		new ButtonListener(button, tooltipListener) {
 			@Override
 			public void onChecked(boolean checked) {
 				if (checked) {
-					mLevelEditor.setStaticTerrainState(DrawActorTool.States.ADJUST_ADD_MOVE_CORNER);
+					mLevelEditor.setStaticTerrainState(DrawActorTool.States.DRAW_APPEND);
 				}
 			}
 		};
 		toggleGroup.add(button);
 		mStaticTerrainTable.add(button);
 
-		button = new TextButton("Remove", textStyle);
-		mWidgets.terrain.remove = button;
-		tooltipListener = new TooltipListener(button, "Remove terrain", Messages.Tooltip.Level.Terrain.REMOVE);
+		button = new TextButton("Add corner", textStyle);
+		mWidgets.terrain.addCorner = button;
+		tooltipListener = new TooltipListener(button, "Add corner", Messages.replaceName(Messages.Tooltip.Actor.Visuals.ADJUST_ADD_CORNER, "terrain"));
 		new ButtonListener(button, tooltipListener) {
 			@Override
 			public void onChecked(boolean checked) {
 				if (checked) {
-					mLevelEditor.setStaticTerrainState(DrawActorTool.States.ADD_REMOVE);
+					mLevelEditor.setStaticTerrainState(DrawActorTool.States.ADJUST_ADD_CORNER);
+				}
+			}
+		};
+		toggleGroup.add(button);
+		mStaticTerrainTable.add(button);
+
+		button = new TextButton("Move corner", textStyle);
+		mWidgets.terrain.moveCorner = button;
+		tooltipListener = new TooltipListener(button, "Move corner", Messages.replaceName(Messages.Tooltip.Actor.Visuals.ADJUST_MOVE_CORNER, "terrain"));
+		new ButtonListener(button, tooltipListener) {
+			@Override
+			public void onChecked(boolean checked) {
+				if (checked) {
+					mLevelEditor.setStaticTerrainState(DrawActorTool.States.ADJUST_MOVE_CORNER);
+				}
+			}
+		};
+		toggleGroup.add(button);
+		mStaticTerrainTable.add(button);
+
+		button = new TextButton("Remove corner", textStyle);
+		mWidgets.terrain.removeCorner = button;
+		tooltipListener = new TooltipListener(button, "Remove corner", Messages.replaceName(Messages.Tooltip.Actor.Visuals.ADJUST_REMOVE_CORNER, "terrain"));
+		new ButtonListener(button, tooltipListener) {
+			@Override
+			public void onChecked(boolean checked) {
+				if (checked) {
+					mLevelEditor.setStaticTerrainState(DrawActorTool.States.ADJUST_REMOVE_CORNER);
+				}
+			}
+		};
+		toggleGroup.add(button);
+		mStaticTerrainTable.add(button);
+
+		button = new TextButton("Draw/Erase", textStyle);
+		mWidgets.terrain.drawErase = button;
+		tooltipListener = new TooltipListener(button, "Draw/Erase", Messages.replaceName(Messages.Tooltip.Actor.Visuals.ADD_REMOVE, "terrain"));
+		new ButtonListener(button, tooltipListener) {
+			@Override
+			public void onChecked(boolean checked) {
+				if (checked) {
+					mLevelEditor.setStaticTerrainState(DrawActorTool.States.DRAW_ERASE);
 				}
 			}
 		};
@@ -1137,7 +1193,7 @@ class LevelEditorGui extends EditorGui {
 
 		button = new TextButton("Move", textStyle);
 		mWidgets.terrain.move = button;
-		tooltipListener = new TooltipListener(button, "Move terrain", Messages.Tooltip.Level.Terrain.MOVE);
+		tooltipListener = new TooltipListener(button, "Move shape", Messages.replaceName(Messages.Tooltip.Actor.Visuals.MOVE, "terrain"));
 		new ButtonListener(button, tooltipListener) {
 			@Override
 			public void onChecked(boolean checked) {
@@ -1353,8 +1409,11 @@ class LevelEditorGui extends EditorGui {
 		}
 
 		static class TerrainWidgets {
-			Button add = null;
-			Button remove = null;
+			Button append = null;
+			Button addCorner = null;
+			Button removeCorner = null;
+			Button moveCorner = null;
+			Button drawErase = null;
 			Button move = null;
 		}
 

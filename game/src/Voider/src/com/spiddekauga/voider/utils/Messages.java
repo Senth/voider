@@ -115,26 +115,6 @@ public class Messages {
 						"description, level speed, story to be displayed before and after the level.";
 			}
 
-			public static class Terrain {
-				public final static String ADD = "Add corners to the terrain, move corners, or " +
-						"select an existing terrain.\n\n" +
-						"Usage:\n" +
-						"When no Terrain is selected it will add a new Terrain and a corner.\n" +
-						"When a Terrain is selected it add a new corner.\n" +
-						"Click/touch on a corner to move it.\n" +
-						"Click/touch on another terrain to select it\n" +
-						"Double click on the terrain to \"finish\" and deselect it, " +
-						"now you are able to start a new Terrain" +
-						"Edges of the same Terrain is not allowed to intersect.\n" +
-						"Corners cannot be added between other corners at the moment.\n";
-				public final static String REMOVE = "Removes either corners or the whole terrain" +
-						"\n\n" +
-						"Usage:\n" +
-						"Press on a corner to remove it.\n" +
-						"Press in a terrain to remove the whole terrain.";
-				public final static String MOVE = "Moves the whole terrain. Use add to move individual " +
-						"corners.";
-			}
 
 			public static class Pickup {
 				public final static String ADD = "Adds pickups to the level. To be able to add a pickup " +
@@ -331,9 +311,7 @@ public class Messages {
 			}
 
 		}
-		public static class Bullet {
 
-		}
 		public static class Actor {
 			public static class Visuals {
 				public final static String STARTING_ANGLE = "Which direction the " + ACTOR_TYPE + " starts facing " +
@@ -341,16 +319,24 @@ public class Messages {
 						"turning, as it will automatically start in right direction then.";
 				public final static String ROTATION_SPEED = "If the " + ACTOR_TYPE + " shall rotate. Not applicable " +
 						"for enemies it uses turning.";
-				public final static String CIRCLE = "Makes the " + ACTOR_TYPE + " in a shape of a circle. Will also reset " +
-						"the shape's center!";
+				public final static String CIRCLE = "Makes the " + ACTOR_TYPE + " in a shape of a circle. (Will reset the shape's center)";
 				public final static String RECTANGLE = "Make the " + ACTOR_TYPE + " in a shape of a rectangle. Can " +
-						"also be used to make it look like a line. Will also reset the shape's center!";
-				public final static String TRIANGLE = "Make the " + ACTOR_TYPE + " in a shape of a triangle. Will also " +
-						"reset the shape's center.";
-				public final static String DRAW = "Here you can freely draw your own shape. Will also reset the shape's " +
-						"center!";
-				public final static String ADD_MOVE = "Adds and moves corners to your shape.";
-				public final static String REMOVE = "Remove corners from your shape.";
+						"also be used to make it look like a line. (Will reset the shape's center)";
+				public final static String TRIANGLE = "Make the " + ACTOR_TYPE + " in a shape of a triangle. (Will reset the shape's center)";
+				public final static String DRAW = "Here you can freely draw your own shape. (Will reset the shape's center)";
+				public final static String APPEND = "Creates a new shape, or append to an existing shape. " +
+						"Double click or press ESC to deselect the shape.";
+				public final static String ADJUST_ADD_CORNER = "Adjust existing shape by adding new corners. " +
+						"Press once between two corners to add a new corner, move it, then release it. " +
+						"Double click or press ESC to deselect the shape.";
+				public final static String ADJUST_MOVE_CORNER = "Adjust existing shape by moving existing corners. " +
+						"Double click or press ESC to deselect the shape.";
+				public final static String ADJUST_REMOVE_CORNER = "Adjust existing shape by removing existing corners. " +
+						"Double click or press ESC to deselect the shape.";
+				public final static String ADD_REMOVE = "Draw or erase parts of your shape. Starting from the inside will " +
+						"add parts whenever you pass the shape's border. Starting from the inside will erase parts of your shape " +
+						"whenever you pass the shape's border.";
+				public final static String MOVE = "Moves the whole shape.";
 				public final static String SET_CENTER = "Sets the center of the shape. Generally you want it " +
 						"in the middle of the shape (use reset center to accomplish this), but sometimes you " +
 						"might want to create som cool effects when rotating.";

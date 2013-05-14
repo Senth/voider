@@ -48,7 +48,6 @@ public class JsonLoaderTest {
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
 		mAssetManager.dispose();
-		Config.dispose();
 	}
 
 	/**
@@ -58,7 +57,7 @@ public class JsonLoaderTest {
 	public void load() {
 		ActorDef def1 = new BulletActorDef();
 		ActorDef def2 = new PlayerActorDef();
-		ActorDef def3 = new BossActorDef(300, "boss", null);
+		ActorDef def3 = new BossActorDef();
 
 		save(def1);
 		save(def2);

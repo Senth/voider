@@ -68,7 +68,7 @@ public class DefTest {
 	@Test
 	public void writeRead() {
 		Def def = new PlayerActorDef();
-		Def dependency1 = new BossActorDef(200, "boss", null);
+		Def dependency1 = new BossActorDef();
 		Def dependency2 = new BulletActorDef();
 		def.setDescription("testComment");
 		try {
@@ -112,7 +112,7 @@ public class DefTest {
 	@Test
 	public void addDependencyDef() {
 		Def def = new PlayerActorDef();
-		Def dependency1 = new BossActorDef(200, "boss", null);
+		Def dependency1 = new BossActorDef();
 		Def dependency2 = new BulletActorDef();
 		def.addDependency(dependency1);
 		def.addDependency(dependency2);
@@ -154,7 +154,7 @@ public class DefTest {
 	@Test
 	public void removeDependencyUUID() {
 		Def def = new PlayerActorDef();
-		Def dependency1 = new BossActorDef(200, "boss", null);
+		Def dependency1 = new BossActorDef();
 		Def dependency2 = new BulletActorDef();
 		def.addDependency(dependency1);
 		def.addDependency(dependency2);

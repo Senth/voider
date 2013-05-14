@@ -93,12 +93,28 @@ public abstract class ActorGui extends EditorGui {
 		// Custom shape
 		if (mWidgets.visual.shapeCustom != null) {
 			switch (mActorEditor.getDrawActorToolState()) {
-			case ADJUST_ADD_MOVE_CORNER:
-				mWidgets.visual.customShapeAddMove.setChecked(true);
+			case DRAW_APPEND:
+				mWidgets.visual.customShapeAppend.setChecked(true);
 				break;
 
-			case ADD_REMOVE:
-				mWidgets.visual.customShapeRemove.setChecked(true);
+			case ADJUST_ADD_CORNER:
+				mWidgets.visual.customShapeAddCorner.setChecked(true);
+				break;
+
+			case ADJUST_MOVE_CORNER:
+				mWidgets.visual.customShapeMoveCorner.setChecked(true);
+				break;
+
+			case ADJUST_REMOVE_CORNER:
+				mWidgets.visual.customShapeRemoveCorner.setChecked(true);
+				break;
+
+			case DRAW_ERASE:
+				mWidgets.visual.customShapeDrawErase.setChecked(true);
+				break;
+
+			case MOVE:
+				mWidgets.visual.customShapeMoveShape.setChecked(true);
 				break;
 
 			case SET_CENTER:
@@ -583,36 +599,104 @@ public abstract class ActorGui extends EditorGui {
 			mVisualTable.row();
 			buttonGroup = new ButtonGroup();
 
-			// Add/Move
+			// Append
 			GuiCheckCommandCreator shapeCustomChecker = new GuiCheckCommandCreator(mInvoker);
-			Button button = new TextButton("Add/Move", toggleStyle);
+			Button button = new TextButton("Draw/Append", toggleStyle);
 			button.addListener(shapeCustomChecker);
-			mWidgets.visual.customShapeAddMove = button;
+			mWidgets.visual.customShapeAppend = button;
 			buttonGroup.add(button);
 			customHider.addToggleActor(button);
-			TooltipListener tooltipListener = new TooltipListener(button, "Add/Move", Messages.replaceName(Messages.Tooltip.Actor.Visuals.ADD_MOVE, actorTypeName));
+			TooltipListener tooltipListener = new TooltipListener(button, "Draw/Append", Messages.replaceName(Messages.Tooltip.Actor.Visuals.APPEND, actorTypeName));
 			new ButtonListener(button, tooltipListener) {
 				@Override
 				protected void onChecked(boolean checked) {
 					if (checked) {
-						mActorEditor.setDrawActorToolState(States.ADJUST_ADD_MOVE_CORNER);
+						mActorEditor.setDrawActorToolState(States.DRAW_APPEND);
 					}
 				}
 			};
 			mVisualTable.add(button);
 
-			// Remove
-			button = new TextButton("Remove", toggleStyle);
+			// Adjust - Add corner
+			button = new TextButton("Add corner", toggleStyle);
 			button.addListener(shapeCustomChecker);
-			mWidgets.visual.customShapeRemove = button;
+			mWidgets.visual.customShapeAddCorner = button;
 			buttonGroup.add(button);
 			customHider.addToggleActor(button);
-			tooltipListener = new TooltipListener(button, "Remove", Messages.replaceName(Messages.Tooltip.Actor.Visuals.REMOVE, actorTypeName));
+			tooltipListener = new TooltipListener(button, "Add corner", Messages.replaceName(Messages.Tooltip.Actor.Visuals.ADJUST_ADD_CORNER, actorTypeName));
 			new ButtonListener(button, tooltipListener) {
 				@Override
 				protected void onChecked(boolean checked) {
 					if (checked) {
-						mActorEditor.setDrawActorToolState(States.ADD_REMOVE);
+						mActorEditor.setDrawActorToolState(States.ADJUST_ADD_CORNER);
+					}
+				}
+			};
+			mVisualTable.add(button);
+
+			// Adjust - Move corner
+			button = new TextButton("Move corner", toggleStyle);
+			button.addListener(shapeCustomChecker);
+			mWidgets.visual.customShapeMoveCorner = button;
+			buttonGroup.add(button);
+			customHider.addToggleActor(button);
+			tooltipListener = new TooltipListener(button, "Move corner", Messages.replaceName(Messages.Tooltip.Actor.Visuals.ADJUST_MOVE_CORNER, actorTypeName));
+			new ButtonListener(button, tooltipListener) {
+				@Override
+				protected void onChecked(boolean checked) {
+					if (checked) {
+						mActorEditor.setDrawActorToolState(States.ADJUST_MOVE_CORNER);
+					}
+				}
+			};
+			mVisualTable.add(button);
+
+			// Adjust - Remove corner
+			button = new TextButton("Remove corner", toggleStyle);
+			button.addListener(shapeCustomChecker);
+			mWidgets.visual.customShapeRemoveCorner = button;
+			buttonGroup.add(button);
+			customHider.addToggleActor(button);
+			tooltipListener = new TooltipListener(button, "Remove corner", Messages.replaceName(Messages.Tooltip.Actor.Visuals.ADJUST_REMOVE_CORNER, actorTypeName));
+			new ButtonListener(button, tooltipListener) {
+				@Override
+				protected void onChecked(boolean checked) {
+					if (checked) {
+						mActorEditor.setDrawActorToolState(States.ADJUST_REMOVE_CORNER);
+					}
+				}
+			};
+			mVisualTable.add(button);
+
+			// Add Remove (draw/erase)
+			button = new TextButton("Draw/Erase", toggleStyle);
+			button.addListener(shapeCustomChecker);
+			mWidgets.visual.customShapeDrawErase = button;
+			buttonGroup.add(button);
+			customHider.addToggleActor(button);
+			tooltipListener = new TooltipListener(button, "Draw/Erase", Messages.replaceName(Messages.Tooltip.Actor.Visuals.ADD_REMOVE, actorTypeName));
+			new ButtonListener(button, tooltipListener) {
+				@Override
+				protected void onChecked(boolean checked) {
+					if (checked) {
+						mActorEditor.setDrawActorToolState(States.DRAW_ERASE);
+					}
+				}
+			};
+			mVisualTable.add(button);
+
+			// Move shape
+			button = new TextButton("Move shape", toggleStyle);
+			button.addListener(shapeCustomChecker);
+			mWidgets.visual.customShapeMoveShape = button;
+			buttonGroup.add(button);
+			customHider.addToggleActor(button);
+			tooltipListener = new TooltipListener(button, "Move shape", Messages.replaceName(Messages.Tooltip.Actor.Visuals.MOVE, actorTypeName));
+			new ButtonListener(button, tooltipListener) {
+				@Override
+				protected void onChecked(boolean checked) {
+					if (checked) {
+						mActorEditor.setDrawActorToolState(States.MOVE);
 					}
 				}
 			};
@@ -739,8 +823,12 @@ public abstract class ActorGui extends EditorGui {
 			Slider shapeHeight = null;
 
 			// Custom shape
-			Button customShapeAddMove = null;
-			Button customShapeRemove = null;
+			Button customShapeAppend = null;
+			Button customShapeAddCorner = null;
+			Button customShapeMoveCorner = null;
+			Button customShapeRemoveCorner = null;
+			Button customShapeDrawErase = null;
+			Button customShapeMoveShape = null;
 			Button customShapeSetCenter = null;
 		}
 
