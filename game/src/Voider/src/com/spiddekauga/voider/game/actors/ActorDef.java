@@ -34,27 +34,6 @@ import com.spiddekauga.voider.utils.Pools;
  */
 public abstract class ActorDef extends Def implements Json.Serializable, Disposable, IResourceCorner {
 	/**
-	 * Constructor that sets all variables
-	 * @param maxLife maximum life of the actor, also starting amount of life
-	 * @param name name of the actor
-	 * @param fixtureDef physical representation of the object
-	 * @deprecated will be removed soon
-	 */
-	@Deprecated
-	public ActorDef(
-			float maxLife,
-			String name,
-			FixtureDef fixtureDef
-			)
-	{
-		setName(name);
-		mMaxLife = maxLife;
-		if (fixtureDef != null) {
-			addFixtureDef(fixtureDef);
-		}
-	}
-
-	/**
 	 * Sets the visual variable to the specified type
 	 * @param actorType the actor type to which set the default values of
 	 * the visual variables
@@ -65,7 +44,31 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 		createFixtureDef();
 
 		/** @todo remove default color */
-		setColor(new Color(1, 1, 0, 1));
+		switch (actorType) {
+		case BULLET:
+			setColor(new Color(0.8f, 0.5f, 0, 1));
+			break;
+
+		case ENEMY:
+			setColor(new Color(1, 0, 0, 1));
+			break;
+
+		case PICKUP:
+			setColor(new Color(1, 1, 0, 1));
+			break;
+
+		case PLAYER:
+			setColor(new Color(0, 1, 0, 1));
+			break;
+
+		case STATIC_TERRAIN:
+			setColor(new Color(0, 0.75f, 0, 1));
+			break;
+
+		default:
+			setColor(new Color(1, 1, 1, 1));
+			break;
+		}
 	}
 
 	/**
@@ -278,11 +281,7 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 
 
 			case CUSTOM:
-				try {
-					fixCustomShapeFixtures();
-				} catch (PolygonCornerTooCloseException e) {
-					Gdx.app.error("ActorDef", "Could not set custom shape when changing shapes");
-				}
+				fixCustomShapeFixtures();
 				break;
 			}
 
@@ -430,27 +429,27 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	public void addCorner(Vector2 corner, int index) throws PolygonComplexException, PolygonCornerTooCloseException{
 		mVisualVars.corners.add(index, corner.cpy());
 
-		// Make sure no intersection exist
-		if (intersectionExists(index)) {
-			mVisualVars.corners.remove(index);
-			throw new PolygonComplexException();
-		}
-
-		try {
-			fixCustomShapeFixtures();
-		} catch (PolygonCornerTooCloseException e) {
-			mVisualVars.corners.remove(index);
-
-			// Reset to old fixtures
-			try {
-				fixCustomShapeFixtures();
-			} catch (PolygonCornerTooCloseException e1) {
-				Gdx.app.error("ActorDef", "Could not fix custom shape fixtures!");
-			}
-
-			throw e;
-		}
-		mFixtureChangeTime = GameTime.getTotalGlobalTimeElapsed();
+		//		// Make sure no intersection exist
+		//		if (intersectionExists(index)) {
+		//			mVisualVars.corners.remove(index);
+		//			throw new PolygonComplexException();
+		//		}
+		//
+		//		try {
+		//			fixCustomShapeFixtures();
+		//		} catch (PolygonCornerTooCloseException e) {
+		//			mVisualVars.corners.remove(index);
+		//
+		//			// Reset to old fixtures
+		//			try {
+		//				fixCustomShapeFixtures();
+		//			} catch (PolygonCornerTooCloseException e1) {
+		//				Gdx.app.error("ActorDef", "Could not fix custom shape fixtures!");
+		//			}
+		//
+		//			throw e;
+		//		}
+		//		mFixtureChangeTime = GameTime.getTotalGlobalTimeElapsed();
 	}
 
 	@Override
@@ -461,11 +460,7 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 
 			removedPosition = mVisualVars.corners.remove(index);
 
-			try {
-				fixCustomShapeFixtures();
-			} catch (PolygonCornerTooCloseException e) {
-				Gdx.app.error("ActorDef", "Failed to remove corner, exception, should never happen");
-			}
+			fixCustomShapeFixtures();
 		}
 		mFixtureChangeTime = GameTime.getTotalGlobalTimeElapsed();
 
@@ -473,24 +468,19 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	}
 
 	@Override
-	public void moveCorner(int index, Vector2 newPos) throws PolygonComplexException, PolygonCornerTooCloseException {
+	public void moveCorner(int index, Vector2 newPos) throws PolygonComplexException {
 		Vector2 oldPos = Pools.vector2.obtain();
 		oldPos.set(mVisualVars.corners.get(index));
 		mVisualVars.corners.get(index).set(newPos);
 
+		// TODO remove intersection test
 		if (intersectionExists(index)) {
 			mVisualVars.corners.get(index).set(oldPos);
 			Pools.vector2.free(oldPos);
 			throw new PolygonComplexException();
 		}
 
-		try {
-			fixCustomShapeFixtures();
-		} catch (PolygonCornerTooCloseException e) {
-			mVisualVars.corners.get(index).set(oldPos);
-			Pools.vector2.free(oldPos);
-			throw e;
-		}
+		fixCustomShapeFixtures();
 
 		Pools.vector2.free(oldPos);
 
@@ -651,12 +641,11 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 
 	/**
 	 * Readjusts/fixes the fixtures for the custom shape
-	 * @throws PolygonCornerTooCloseException thrown when a resulting triangle polygon
 	 * would become too small. NOTE: When this exception is thrown all fixtures
 	 * have been removed and some might have been added. Fix the faulty corner
 	 * and call #fixCustomShapeFixtures() again to fix this.
 	 */
-	private void fixCustomShapeFixtures() throws PolygonCornerTooCloseException {
+	public void fixCustomShapeFixtures() {
 		// Save fixture properties
 		FixtureDef savedFixtureProperties = null;
 		if (mFixtureDefs.size() >= 1) {
@@ -708,19 +697,19 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 				lengthTest.set(triangleVertices[0]).sub(triangleVertices[1]);
 				if (lengthTest.len2() <= Config.Graphics.EDGE_LENGTH_MIN) {
 					cornerTooClose = true;
-					break;
+					continue;
 				}
 				// 0 - 2
 				lengthTest.set(triangleVertices[0]).sub(triangleVertices[2]);
 				if (lengthTest.len2() <= Config.Graphics.EDGE_LENGTH_MIN) {
 					cornerTooClose = true;
-					break;
+					continue;
 				}
 				// 1 - 2
 				lengthTest.set(triangleVertices[1]).sub(triangleVertices[2]);
 				if (lengthTest.len2() <= Config.Graphics.EDGE_LENGTH_MIN) {
 					cornerTooClose = true;
-					break;
+					continue;
 				}
 
 
@@ -740,7 +729,7 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 			Pools.vector2.free(lengthTest);
 
 			if (cornerTooClose) {
-				throw new PolygonCornerTooCloseException();
+				Gdx.app.error("ActorDef", "Polygon corners are too close...");
 			}
 
 			mVisualVars.vertices = (ArrayList<Vector2>) triangles;

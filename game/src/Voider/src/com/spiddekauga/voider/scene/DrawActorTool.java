@@ -1,15 +1,16 @@
 package com.spiddekauga.voider.scene;
 
+import java.util.ArrayList;
+
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.spiddekauga.utils.Invoker;
+import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.editor.HitWrapper;
 import com.spiddekauga.voider.editor.IResourceChangeEditor;
 import com.spiddekauga.voider.editor.commands.CActorCenterMove;
 import com.spiddekauga.voider.editor.commands.CResourceAdd;
-import com.spiddekauga.voider.editor.commands.CResourceCornerAdd;
-import com.spiddekauga.voider.editor.commands.CResourceCornerMove;
 import com.spiddekauga.voider.editor.commands.CResourceCornerRemove;
 import com.spiddekauga.voider.editor.commands.CResourceCornerRemoveAll;
 import com.spiddekauga.voider.editor.commands.CResourceMove;
@@ -17,8 +18,7 @@ import com.spiddekauga.voider.editor.commands.CResourceRemove;
 import com.spiddekauga.voider.editor.commands.CResourceSelect;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.ActorDef;
-import com.spiddekauga.voider.resources.IResourceCorner.PolygonComplexException;
-import com.spiddekauga.voider.resources.IResourceCorner.PolygonCornerTooCloseException;
+import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.utils.Pools;
 
 /**
@@ -26,7 +26,7 @@ import com.spiddekauga.voider.utils.Pools;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class DrawActorTool extends ActorTool {
+public class DrawActorTool extends ActorTool implements ISelectListener {
 	/**
 	 * Creates a draw actor tool.
 	 * @param camera used for determining where the pointer is in the world
@@ -218,95 +218,91 @@ public class DrawActorTool extends ActorTool {
 	}
 
 	@Override
+	public void onResourceSelected(IResource deselectedResource, IResource selectedResource) {
+		mChangedActorSinceUp = true;
+	}
+
+	@Override
 	protected void down() {
+		mChangedActorSinceUp = false;
+
+		// Double click inside current actor finishes/closes it, but only if we can have more than
+		// one actor
+		if (shallDeselectActor()) {
+			deselectActor();
+			return;
+		}
+
+		// Test if we hit a body or corner
+		testPick();
+
+		if (hitAnotherActor()) {
+			mInvoker.execute(new CResourceSelect((Actor)mHitBody.getUserData(), this));
+			return;
+		}
+
 		switch (mState) {
 		case ADJUST_ADD_CORNER:
-			// Double click inside current actor finishes/closes it, but only if we can have more than
-			// one actor
-			if (mDoubleClick && hitSelectedActor() && !mOnlyOneActor) {
-				// Remove the last corner if we accidentally added one when double clicking
-				if (mCornerIndexLast != -1) {
-					mInvoker.undo(false);
-				}
-				mInvoker.execute(new CResourceSelect(null, this));
-				return;
-			}
-
-			// Test if we hit a body or corner
-			testPick();
-
-			// If we didn't change actor, do something
-			if (mHitBody != null) {
-				// Hit the body (no corner), create corner
-				if (hitSelectedActor()) {
-					if (!mChangedActorSinceUp) {
-						createTempCorner();
-					}
-				}
-				// Hit another actor
-				else if (mHitBody.getUserData() instanceof Actor) {
-					// We can only hit our actor, create a temp corner
-					if (mOnlyOneActor) {
-						createTempCorner();
-					}
-					// Select the other actor if we can create multiple actors
-					else {
-						mInvoker.execute(new CResourceSelect((Actor)mHitBody.getUserData(), this));
-					}
-				}
-				// Else hit a corner, start moving it
-				else {
-					mCornerIndexCurrent = mSelectedActor.getCornerIndex(mHitBody.getPosition());
-					mDragOrigin.set(mSelectedActor.getDef().getCornerPosition(mCornerIndexCurrent));
-					mCornerAddedNow = false;
-				}
-			}
-			// Else create a new corner
-			else {
-				// No actor, create a new actor
-				if (mSelectedActor == null /** @todo !mLevel.containsActor(mActor) */) {
-					Actor actor = newActor();
-					if (mOnlyOneActor) {
-						actor.setDef(mActorDef);
-					}
-					actor.setPosition(mTouchOrigin);
-					mInvoker.execute(new CResourceAdd(actor, mActorEditor));
-					mInvoker.execute(new CResourceSelect(actor, this), true);
-				}
-
-				if (mSelectedActor != null) {
-					createTempCorner();
-				}
-			}
+			// TODO
+			//			// If we didn't change actor, do something
+			//			if (mHitBody != null) {
+			//				// Hit the body (no corner), create corner
+			//				if (hitSelectedActor()) {
+			//					if (!mChangedActorSinceUp) {
+			//						createTempCorner();
+			//					}
+			//				}
+			//				// Hit another actor
+			//				else if (mHitBody.getUserData() instanceof Actor) {
+			//					// We can only hit our actor, create a temp corner
+			//					if (mOnlyOneActor) {
+			//						createTempCorner();
+			//					}
+			//					// Select the other actor if we can create multiple actors
+			//					else {
+			//						mInvoker.execute(new CResourceSelect((Actor)mHitBody.getUserData(), this));
+			//					}
+			//				}
+			//				// Else hit a corner, start moving it
+			//				else {
+			//					mCornerIndexCurrent = mSelectedActor.getCornerIndex(mHitBody.getPosition());
+			//					mDragOrigin.set(mSelectedActor.getDef().getCornerPosition(mCornerIndexCurrent));
+			//					mCornerAddedNow = false;
+			//				}
+			//			}
+			//			// Else create a new corner
+			//			else {
+			//				// No actor, create a new actor
+			//				if (mSelectedActor == null /** @todo !mLevel.containsActor(mActor) */) {
+			//					Actor actor = newActor();
+			//					if (mOnlyOneActor) {
+			//						actor.setDef(mActorDef);
+			//					}
+			//					actor.setPosition(mTouchOrigin);
+			//					mInvoker.execute(new CResourceAdd(actor, mActorEditor));
+			//					mInvoker.execute(new CResourceSelect(actor, this), true);
+			//				}
+			//
+			//				if (mSelectedActor != null) {
+			//					createTempCorner();
+			//				}
+			//			}
 			break;
 
 
-		case MOVE:
-			testPick();
-
-			// If hit actor (no corner), start dragging the actor
-			if (mHitBody != null && mHitBody.getUserData() instanceof Actor) {
-				// Select the actor
-				if (mSelectedActor != mHitBody.getUserData()) {
-					mInvoker.execute(new CResourceSelect((Actor) mHitBody.getUserData(), this));
-				}
-				mDragOrigin.set(mHitBody.getPosition());
-			} else {
-				if (mSelectedActor != null) {
-					mInvoker.execute(new CResourceSelect(null, this));
-				}
-			}
+		case ADJUST_MOVE_CORNER:
+			// TODO
 			break;
 
 
-		case DRAW_ERASE:
-			testPick();
+		case ADJUST_REMOVE_CORNER:
+			// TODO
 
 			// If we hit the actor's body twice (no corners) we delete the actor along with
 			// all the corners. If we hit a corner that corner is deleted.
 			if (mHitBody != null) {
 				// Hit actor body (no corner) and it's the second time -> Remove actor
-				if (mHitBody.getUserData() == mSelectedActor) {
+				if (hitSelectedActor()) {
 					// Only do something if we didn't hit the actor the first time
 					if (!mChangedActorSinceUp) {
 						mInvoker.execute(new CResourceRemove(mSelectedActor, mActorEditor));
@@ -325,11 +321,42 @@ public class DrawActorTool extends ActorTool {
 						mInvoker.execute(new CResourceSelect(null, this), true);
 					}
 				}
-				// Hit another actor
-				else if (mHitBody.getUserData() instanceof Actor) {
-					mInvoker.execute(new CResourceSelect((Actor)mHitBody.getUserData(), this));
-				}
+			}
+			break;
 
+
+		case DRAW_APPEND:
+			// Create an actor if we don't have one selected
+			if (mSelectedActor == null) {
+				createNewSelectedActor();
+				mChangedActorSinceUp = false;
+			}
+
+			// Create corner here
+			appendCorner();
+			break;
+
+
+		case DRAW_ERASE:
+			// TODO
+			break;
+
+
+		case MOVE:
+			// TODO
+			testPick();
+
+			// If hit actor (no corner), start dragging the actor
+			if (mHitBody != null && mHitBody.getUserData() instanceof Actor) {
+				// Select the actor
+				if (mSelectedActor != mHitBody.getUserData()) {
+					mInvoker.execute(new CResourceSelect((Actor) mHitBody.getUserData(), this));
+				}
+				mDragOrigin.set(mHitBody.getPosition());
+			} else {
+				if (mSelectedActor != null) {
+					mInvoker.execute(new CResourceSelect(null, this));
+				}
 			}
 			break;
 
@@ -353,18 +380,51 @@ public class DrawActorTool extends ActorTool {
 
 	@Override
 	protected void dragged() {
+		if (mChangedActorSinceUp) {
+			return;
+		}
+
 		switch (mState) {
 		case ADJUST_ADD_CORNER:
-			if (mCornerIndexCurrent != -1) {
-				try {
-					Vector2 newCornerPos = Pools.vector2.obtain();
-					newCornerPos.set(mTouchCurrent).sub(mSelectedActor.getPosition()).sub(mSelectedActor.getDef().getCenterOffset());
-					mSelectedActor.getDef().moveCorner(mCornerIndexCurrent, newCornerPos);
-					Pools.vector2.free(newCornerPos);
-				} catch (Exception e) {
-					// Does nothing
+			// TODO
+			//			if (mCornerIndexCurrent != -1) {
+			//				try {
+			//					Vector2 newCornerPos = Pools.vector2.obtain();
+			//					newCornerPos.set(mTouchCurrent).sub(mSelectedActor.getPosition()).sub(mSelectedActor.getDef().getCenterOffset());
+			//					mSelectedActor.getDef().moveCorner(mCornerIndexCurrent, newCornerPos);
+			//					Pools.vector2.free(newCornerPos);
+			//				} catch (Exception e) {
+			//					// Does nothing
+			//				}
+			//			}
+			break;
+
+
+		case ADJUST_MOVE_CORNER:
+			// TODO
+			break;
+
+
+		case ADJUST_REMOVE_CORNER:
+			// TODO
+			break;
+
+
+		case DRAW_APPEND:
+			if (!mChangedActorSinceUp) {
+				// If has drawn more than minimum distance, add another corner here
+				Vector2 diffVector = Pools.vector2.obtain();
+				diffVector.set(mTouchCurrent).sub(mDragOrigin);
+				if (diffVector.len2() >= Config.Editor.Actor.Visual.DRAW_NEW_CORNER_MIN_DIST_SQ) {
+					appendCorner();
 				}
+				Pools.vector2.free(diffVector);
 			}
+			break;
+
+
+		case DRAW_ERASE:
+			// TODO
 			break;
 
 
@@ -374,11 +434,6 @@ public class DrawActorTool extends ActorTool {
 				mSelectedActor.setPosition(newPosition);
 				Pools.vector2.free(newPosition);
 			}
-			break;
-
-
-		case DRAW_ERASE:
-			// Does nothing
 			break;
 
 
@@ -399,37 +454,71 @@ public class DrawActorTool extends ActorTool {
 
 	@Override
 	protected void up() {
+		if (mChangedActorSinceUp) {
+			mChangedActorSinceUp = false;
+			return;
+		}
+
 		switch (mState) {
 		case ADJUST_ADD_CORNER:
-			if (mSelectedActor != null && mCornerIndexCurrent != -1) {
-				// New corner
-				if (mCornerAddedNow) {
-					createCornerFromTemp();
-				}
-				// Move corner
-				else {
-					// Reset to original position
-					Vector2 newPos = Pools.vector2.obtain();
+			// TODO
+			//			if (mSelectedActor != null && mCornerIndexCurrent != -1) {
+			//				// New corner
+			//				if (mCornerAddedNow) {
+			//					createCornerFromTemp();
+			//				}
+			//				// Move corner
+			//				else {
+			//					// Reset to original position
+			//					Vector2 newPos = Pools.vector2.obtain();
+			//
+			//					newPos.set(mSelectedActor.getDef().getCornerPosition(mCornerIndexCurrent));
+			//					try {
+			//						mSelectedActor.getDef().moveCorner(mCornerIndexCurrent, mDragOrigin);
+			//						mInvoker.execute(new CResourceCornerMove(mSelectedActor.getDef(), mCornerIndexCurrent, newPos, mActorEditor), mCornerAddedNow);
+			//					} catch (Exception e) {
+			//						// Does nothing
+			//					}
+			//
+			//					Pools.vector2.free(newPos);
+			//				}
+			//			}
+			//
+			//			mCornerIndexLast = mCornerIndexCurrent;
+			//			mCornerIndexCurrent = -1;
+			//			mCornerAddedNow = false;
+			break;
 
-					newPos.set(mSelectedActor.getDef().getCornerPosition(mCornerIndexCurrent));
-					try {
-						mSelectedActor.getDef().moveCorner(mCornerIndexCurrent, mDragOrigin);
-						mInvoker.execute(new CResourceCornerMove(mSelectedActor.getDef(), mCornerIndexCurrent, newPos, mActorEditor), mCornerAddedNow);
-					} catch (Exception e) {
-						// Does nothing
-					}
 
-					Pools.vector2.free(newPos);
-				}
+		case ADJUST_MOVE_CORNER:
+			// TODO
+			break;
+
+
+		case ADJUST_REMOVE_CORNER:
+			// TODO
+			break;
+
+
+		case DRAW_APPEND:
+			if (!mChangedActorSinceUp) {
+				// Add a final corner when released
+				appendCorner();
+
+				removeExcessiveCorners();
+
+				mSelectedActor.getDef().fixCustomShapeFixtures();
 			}
+			break;
 
-			mCornerIndexLast = mCornerIndexCurrent;
-			mCornerIndexCurrent = -1;
-			mCornerAddedNow = false;
+
+		case DRAW_ERASE:
+			// TODO
 			break;
 
 
 		case MOVE:
+			// TODO
 			// Set the new position of the actor
 			if (mSelectedActor != null) {
 				// Reset actor to original position
@@ -439,11 +528,6 @@ public class DrawActorTool extends ActorTool {
 				mInvoker.execute(new CResourceMove(mSelectedActor, newPos, mActorEditor), mChangedActorSinceUp);
 				Pools.vector2.free(newPos);
 			}
-			break;
-
-
-		case DRAW_ERASE:
-			// Does nothing
 			break;
 
 
@@ -472,40 +556,25 @@ public class DrawActorTool extends ActorTool {
 	}
 
 	/**
-	 * Creates a temporary corner
+	 * @return true if we hit another actor
 	 */
-	private void createTempCorner() {
-		Vector2 localPos = Pools.vector2.obtain();
-
-		localPos.set(mTouchOrigin).sub(mSelectedActor.getPosition()).sub(mSelectedActor.getDef().getCenterOffset());
-
-		try {
-			mSelectedActor.getDef().addCorner(localPos);
-			mCornerIndexCurrent = mSelectedActor.getDef().getCornerCount() - 1;
-			mDragOrigin.set(mTouchOrigin);
-			mCornerAddedNow = true;
-			mSelectedActor.reloadFixtures();
-		} catch (PolygonComplexException e) {
-			/** @TODO print some error message on screen, cannot add corner here */
-		} catch (PolygonCornerTooCloseException e) {
-			/** @TODO print error message on screen */
-		}
-
-		Pools.vector2.free(localPos);
+	private boolean hitAnotherActor() {
+		return mHitBody != null && mHitBody.getUserData() != mSelectedActor;
 	}
 
+
 	/**
-	 * Creates a corner from the temporary corner
+	 * Appends a temporary corner in the current position
 	 */
-	private void createCornerFromTemp() {
-		// Get the position of the corner then remove it
-		Vector2 cornerPos = mSelectedActor.getDef().getCornerPosition(mCornerIndexCurrent);
-		mSelectedActor.getDef().removeCorner(mCornerIndexCurrent);
+	private void appendCorner() {
+		Vector2 localPos = Pools.vector2.obtain();
 
-		// Set the command as chained if no corner exist in the actor
-		boolean chained = mSelectedActor.getDef().getCornerCount() == 0;
+		localPos.set(mTouchCurrent).sub(mSelectedActor.getPosition()).sub(mSelectedActor.getDef().getCenterOffset());
 
-		mInvoker.execute(new CResourceCornerAdd(mSelectedActor.getDef(), cornerPos, mActorEditor), chained);
+		mTempCorners.add(mTouchCurrent);
+		mDragOrigin.set(mTouchCurrent);
+
+		Pools.vector2.free(localPos);
 	}
 
 	/**
@@ -523,12 +592,60 @@ public class DrawActorTool extends ActorTool {
 		return newPosition;
 	}
 
+	/**
+	 * @return true if we shall close the actor (double clicked inside it)
+	 */
+	private boolean shallDeselectActor() {
+		return mDoubleClick && hitSelectedActor() && !mOnlyOneActor;
+	}
+
+	/**
+	 * Deselects the current actor, will undo added corner if one was added.
+	 */
+	private void deselectActor() {
+		// Remove the last corner if we accidentally added one when double clicking
+		if (mCornerIndexLast != -1) {
+			mInvoker.undo(false);
+		}
+
+		mInvoker.execute(new CResourceSelect(null, this));
+	}
+
+	/**
+	 * Creates a new selected actor
+	 */
+	private void createNewSelectedActor() {
+		Actor actor = newActor();
+		if (mOnlyOneActor) {
+			actor.setDef(mActorDef);
+		}
+		actor.setPosition(mTouchOrigin);
+		mInvoker.execute(new CResourceAdd(actor, mActorEditor));
+		mInvoker.execute(new CResourceSelect(actor, this), true);
+	}
+
+	/**
+	 * Removes unnecessary corners, i.e. corners that have almost no angle difference between them.
+	 * E.g. three corners > 0,0 -> 0,5 -> 0,10. In this case 0,5 does not add anything to the shape,
+	 * it will only make calculations slower...
+	 */
+	private void removeExcessiveCorners() {
+		Vector2 beforeVector = Pools.vector2.obtain();
+		Vector2 afterVector = Pools.vector2.obtain();
+		for (int i = 1; i < mSelectedActor.getDef().getCornerCount() - 1; ++i) {
+
+		}
+		Pools.vector2.free(beforeVector);
+		Pools.vector2.free(afterVector);
+	}
 
 	/** Invoker used for undoing/redoing commands */
 	protected Invoker mInvoker = null;
 	/** Current state of the tool */
 	protected States mState = States.ADJUST_ADD_CORNER;
 
+	/** Temporary corners when drawing corners */
+	private ArrayList<Vector2> mTempCorners = new ArrayList<Vector2>();
 	/** Origin of the drag */
 	private Vector2 mDragOrigin = new Vector2();
 	/** Origin of center offset */

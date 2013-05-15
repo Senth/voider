@@ -327,7 +327,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 
 			if (mDef.getCornerCount() >= 3) {
 				shapeRenderer.setColor(Config.Actor.OUTLINE_CLOSE_COLOR);
-				shapeRenderer.line(mDef.getCorners().get(mDef.getCornerCount()-1), mDef.getCorners().get(0));
+				shapeRenderer.line(mDef.getCorners().get(mDef.getCornerCount()-1), mDef.getCorners().get(0), offsetPosition);
 			}
 
 			shapeRenderer.pop();
@@ -351,7 +351,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 
 
 		// Draw selected overlay
-		if (mSelected) {
+		if (!mDrawOnlyOutline && mSelected) {
 			if (mDef.getShapeType() == ActorShapeTypes.CUSTOM && mDef.getCornerCount() >= 1 && mDef.getCornerCount() <= 2) {
 				offsetPosition.add(mDef.getCorners().get(0));
 			}
@@ -687,7 +687,9 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 			destroyFixtures();
 
 			for (FixtureDef fixtureDef : mDef.getFixtureDefs()) {
-				mBody.createFixture(fixtureDef);
+				if (fixtureDef != null) {
+					mBody.createFixture(fixtureDef);
+				}
 			}
 
 			// Do we have body corners? Reset those in that case

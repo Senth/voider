@@ -153,9 +153,9 @@ public abstract class TouchTool extends InputAdapter {
 	protected boolean mDoubleClick = false;
 	/** Last time the player clicked */
 	protected float mClickTimeLast = 0;
-	/** Current position of the touch */
+	/** Current position of the touch, in world coordinates */
 	protected Vector2 mTouchCurrent = new Vector2();
-	/** Original position of the touch */
+	/** Original position of the touch, in world coordinates */
 	protected Vector2 mTouchOrigin = new Vector2();
 	/** Current body that was hit */
 	protected Body mHitBody = null;

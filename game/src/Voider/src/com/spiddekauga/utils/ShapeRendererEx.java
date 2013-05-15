@@ -422,17 +422,17 @@ public class ShapeRendererEx implements Disposable {
 	 * @param posB to this position
 	 */
 	public void line(Vector2 posA, Vector2 posB) {
-		if (mCurrentType.isEmpty() || mCurrentType.peek() != ShapeType.Line) {
-			throw new GdxRuntimeException("Must call push(ShapeType.Line)");
-		}
-		checkDirty();
-		checkFlush(2);
-		mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-		mRenderer.vertex(posA.x, posB.y, 0);
-		mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-		mRenderer.vertex(posB.x, posB.y, 0);
+		line(posA.x, posA.y, posB.x, posB.y);
 	}
 
+	/** Draws a line in the x/y plane. The {@link ShapeType} passed to begin has to be {@link ShapeType#Line}.
+	 * @param posA draw line from this position
+	 * @param posB to this position
+	 * @param offset offsets posA and posB with offset.
+	 */
+	public void line(Vector2 posA, Vector2 posB, Vector2 offset) {
+		line(posA.x + offset.x, posA.y + offset.y, posB.x + offset.x, posA.y + offset.y);
+	}
 
 	/**
 	 * @param x1

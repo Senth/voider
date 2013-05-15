@@ -136,6 +136,11 @@ public class Config {
 				public final static float ROTATE_SPEED_DEFAULT = 0;
 				/** Step size of rotate speed */
 				public final static float ROTATE_SPEED_STEP_SIZE = 1;
+
+				/** Minimum distance for new corners when drawing */
+				public final static float DRAW_NEW_CORNER_MIN_DIST_SQ = 0.5f * 0.5f;
+				/** Minimum angle between corners, if less than this, the corner will be removed */
+				public final static float DRAW_CORNER_ANGLE_MIN = 2;
 			}
 
 			/**

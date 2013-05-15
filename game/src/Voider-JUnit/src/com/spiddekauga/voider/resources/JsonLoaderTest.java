@@ -16,8 +16,8 @@ import com.badlogic.gdx.files.FileHandle;
 import com.spiddekauga.utils.Json;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.actors.ActorDef;
-import com.spiddekauga.voider.game.actors.BossActorDef;
 import com.spiddekauga.voider.game.actors.BulletActorDef;
+import com.spiddekauga.voider.game.actors.PickupActorDef;
 import com.spiddekauga.voider.game.actors.PlayerActorDef;
 import com.spiddekauga.voider.utils.ObjectCrypter;
 
@@ -57,7 +57,7 @@ public class JsonLoaderTest {
 	public void load() {
 		ActorDef def1 = new BulletActorDef();
 		ActorDef def2 = new PlayerActorDef();
-		ActorDef def3 = new BossActorDef();
+		ActorDef def3 = new PickupActorDef();
 
 		save(def1);
 		save(def2);
@@ -65,11 +65,11 @@ public class JsonLoaderTest {
 
 		// Try to actually load the file using the asset manager
 		mAssetManager.setLoader(PlayerActorDef.class, new JsonLoader<PlayerActorDef>(new ExternalFileHandleResolver(), PlayerActorDef.class));
-		mAssetManager.setLoader(BossActorDef.class, new JsonLoader<BossActorDef>(new ExternalFileHandleResolver(), BossActorDef.class));
+		mAssetManager.setLoader(PickupActorDef.class, new JsonLoader<PickupActorDef>(new ExternalFileHandleResolver(), PickupActorDef.class));
 		mAssetManager.setLoader(BulletActorDef.class, new JsonLoader<BulletActorDef>(new ExternalFileHandleResolver(), BulletActorDef.class));
 		mAssetManager.load(getPath(def1), BulletActorDef.class);
 		mAssetManager.load(getPath(def2), PlayerActorDef.class);
-		mAssetManager.load(getPath(def3), BossActorDef.class);
+		mAssetManager.load(getPath(def3), PickupActorDef.class);
 
 		// Wait until the loading has finished
 		mAssetManager.finishLoading();
@@ -79,7 +79,7 @@ public class JsonLoaderTest {
 		assertTrue("Def 3 loaded()", mAssetManager.isLoaded(getPath(def3)));
 		assertEquals("Def 1 equals()", mAssetManager.get(getPath(def1), BulletActorDef.class), def1);
 		assertEquals("Def 2 equals()", mAssetManager.get(getPath(def2), PlayerActorDef.class), def2);
-		assertEquals("Def 3 equals()", mAssetManager.get(getPath(def3), BossActorDef.class), def3);
+		assertEquals("Def 3 equals()", mAssetManager.get(getPath(def3), PickupActorDef.class), def3);
 
 		mAssetManager.unload(getPath(def1));
 		mAssetManager.unload(getPath(def2));

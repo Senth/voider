@@ -163,7 +163,7 @@ class VisualVars implements Json.Serializable, Disposable {
 	void clearVertices() {
 		// Remove border corner indexes first. These should include all
 		// regular vertices, so no need to free them later
-		if (!borderVertices.isEmpty()) {
+		if (borderVertices != null && !borderVertices.isEmpty()) {
 			// Because the vertices contains duplicates, we save the ones that have been
 			// freed, so we don't free them twice. Never remove corners though
 			ArrayList<Vector2> freedVertices = new ArrayList<Vector2>();

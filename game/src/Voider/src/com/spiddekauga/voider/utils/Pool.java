@@ -1,5 +1,6 @@
 package com.spiddekauga.voider.utils;
 
+import java.util.HashSet;
 import java.util.List;
 
 import com.badlogic.gdx.utils.ReflectionPool;
@@ -42,9 +43,14 @@ public class Pool<T> extends ReflectionPool<T> {
 		return newObject();
 	}
 
-	@Override
-	public void free(T object) {
-
+	/**
+	 * Frees all the objects
+	 * @param objects all objects to free
+	 */
+	public void freeAll(T... objects) {
+		for (T object : objects) {
+			free(object);
+		}
 	}
 
 	/**
@@ -52,9 +58,9 @@ public class Pool<T> extends ReflectionPool<T> {
 	 * @param list list with vectors to free
 	 */
 	public void freeAll(List<T> list) {
-		//		for (T vector : list) {
-		//			free(vector);
-		//		}
+		for (T object : list) {
+			free(object);
+		}
 	}
 
 	/**
@@ -63,12 +69,12 @@ public class Pool<T> extends ReflectionPool<T> {
 	 * @param list list with vectors to free, can contain duplicates.
 	 */
 	public void freeDuplicates(List<T> list) {
-		//		HashSet<T> freedVectors = new HashSet<T>();
-		//		for (T vector : list) {
-		//			if (!freedVectors.contains(vector)) {
-		//				free(vector);
-		//				freedVectors.add(vector);
-		//			}
-		//		}
+		HashSet<T> freedObjects = new HashSet<T>();
+		for (T object : list) {
+			if (!freedObjects.contains(object)) {
+				free(object);
+				freedObjects.add(object);
+			}
+		}
 	}
 }

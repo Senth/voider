@@ -64,16 +64,18 @@ public abstract class ActorTool extends TouchTool implements ISelectTool {
 
 	@Override
 	public void setSelectedResource(IResource selectedResource) {
-		deactivate();
+		if (selectedResource != mSelectedActor) {
+			deactivate();
 
-		Actor oldSelected = mSelectedActor;
-		mSelectedActor = (Actor) selectedResource;
+			Actor oldSelected = mSelectedActor;
+			mSelectedActor = (Actor) selectedResource;
 
-		for (ISelectListener selectListener : mSelectListeners) {
-			selectListener.onResourceSelected(oldSelected, mSelectedActor);
+			for (ISelectListener selectListener : mSelectListeners) {
+				selectListener.onResourceSelected(oldSelected, mSelectedActor);
+			}
+
+			activate();
 		}
-
-		activate();
 	}
 
 	@Override

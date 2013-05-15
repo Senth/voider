@@ -13,8 +13,8 @@ import org.junit.Test;
 
 import com.badlogic.gdx.utils.ObjectMap;
 import com.spiddekauga.utils.Json;
-import com.spiddekauga.voider.game.actors.BossActorDef;
 import com.spiddekauga.voider.game.actors.BulletActorDef;
+import com.spiddekauga.voider.game.actors.PickupActorDef;
 import com.spiddekauga.voider.game.actors.PlayerActorDef;
 
 /**
@@ -68,7 +68,7 @@ public class DefTest {
 	@Test
 	public void writeRead() {
 		Def def = new PlayerActorDef();
-		Def dependency1 = new BossActorDef();
+		Def dependency1 = new PickupActorDef();
 		Def dependency2 = new BulletActorDef();
 		def.setDescription("testComment");
 		try {
@@ -112,7 +112,7 @@ public class DefTest {
 	@Test
 	public void addDependencyDef() {
 		Def def = new PlayerActorDef();
-		Def dependency1 = new BossActorDef();
+		Def dependency1 = new PickupActorDef();
 		Def dependency2 = new BulletActorDef();
 		def.addDependency(dependency1);
 		def.addDependency(dependency2);
@@ -154,7 +154,7 @@ public class DefTest {
 	@Test
 	public void removeDependencyUUID() {
 		Def def = new PlayerActorDef();
-		Def dependency1 = new BossActorDef();
+		Def dependency1 = new PickupActorDef();
 		Def dependency2 = new BulletActorDef();
 		def.addDependency(dependency1);
 		def.addDependency(dependency2);

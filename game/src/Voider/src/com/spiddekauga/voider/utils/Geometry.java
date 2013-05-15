@@ -719,4 +719,93 @@ public class Geometry {
 
 		return farthestAway;
 	}
+
+	/**
+	 * Makes a polygon non-complex, i.e. it will create new vertices so that it doesn't intersect
+	 * itself.
+	 * @param vertices all the corner vertices of the polygon, this array will be modified if
+	 * an intersection exists
+	 * @return newly created vertices, these have been created from Pools.vector2 be sure to free
+	 * them after their use. Same goes for the ArrayList. Null if no vertices were created.
+	 */
+	public static ArrayList<Vector2> makePolygonNonComplex(ArrayList<Vector2> vertices) {
+		@SuppressWarnings("unchecked")
+		ArrayList<Vector2> newVertices = Pools.arrayList.obtain();
+		newVertices.clear();
+
+
+		for (int i = 0; i < vertices.size(); ++i) {
+			int intersectionIndex = intersectionExists(vertices, i, i);
+
+			if (intersectionIndex != -1) {
+				Vector2 line1a = vertices.get(i);
+				Vector2 line1b = vertices.get(computeNextIndex(vertices, i));
+				Vector2 line2a = vertices.get(intersectionIndex);
+				Vector2 line2b = vertices.get(computeNextIndex(vertices, intersectionIndex));
+				Vector2 intersectionPoint = getLineLineIntersection(line1a, line1b, line2a, line2b);
+				newVertices.add(intersectionPoint);
+
+
+				// Reorder...
+				// If let say we have indices with 1 2 3 4 5 6 7 and there is an intersection
+				// between 3-4 and 5-6 the new order will be (X is the intersectionPoint)
+				// 1 2 3 X 5 4 X 6 7. The order is always reversed between i (3) and intersectionIndex + 1 (6).
+
+				// First reverse
+				for (int forwardIndex = i + 1, backwardIndex = computeNextIndex(vertices, intersectionIndex); forwardIndex < backwardIndex || backwardIndex == 0; ++forwardIndex, computePreviousIndex(vertices, backwardIndex)) {
+					Collections.swap(vertices, forwardIndex, backwardIndex);
+				}
+
+				// Add intersection point to the vertices
+				vertices.add(computeNextIndex(vertices, intersectionIndex), intersectionPoint);
+				vertices.add(computeNextIndex(vertices, i), intersectionPoint);
+			}
+		}
+
+		if (newVertices.isEmpty()) {
+			Pools.arrayList.free(newVertices);
+			return null;
+		} else {
+			return newVertices;
+		}
+	}
+
+	/**
+	 * Checks if an intersection exists from a line that starts from the specified index
+	 * @param vertices all vertices to check the intersection with
+	 * @param lineIndex which vertex the line start from
+	 * @param testFromIndex only tests from the specified index (lines before this index is not tested)
+	 * @return index of the other line that intersects with lineIndex, -1 if no intersection
+	 * exists.
+	 */
+	public static int intersectionExists(ArrayList<Vector2> vertices, int lineIndex, int testFromIndex) {
+		if (vertices.size() < 3) {
+			return -1;
+		}
+
+		if (lineIndex < 0 || lineIndex < testFromIndex || lineIndex >= vertices.size()) {
+			throw new IndexOutOfBoundsException();
+		}
+
+		// Calculate start/end of line
+		Vector2 lineStart = vertices.get(lineIndex);
+		Vector2 lineEnd = vertices.get(computeNextIndex(vertices, lineIndex));
+
+
+		for (int i = testFromIndex; i < vertices.size(); ++i) {
+			// Skip checking with line that starts on lineIndex, as it is the same line...
+			if (i == lineIndex) {
+				continue;
+			}
+
+			Vector2 compareLineStart = vertices.get(i);
+			Vector2 compareLineEnd = vertices.get(computeNextIndex(vertices, i));
+
+			if (linesIntersectNoCorners(lineStart, lineEnd, compareLineStart, compareLineEnd)) {
+				return i;
+			}
+		}
+
+		return -1;
+	}
 }
