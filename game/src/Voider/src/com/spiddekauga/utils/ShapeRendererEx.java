@@ -172,7 +172,7 @@ public class ShapeRendererEx implements Disposable {
 	 * @param positionOffset position offset of the triangles
 	 */
 	public void triangles(final ArrayList<Vector2> triangles, final Vector2 positionOffset) {
-		if (triangles.size() % 3 != 0) {
+		if (triangles == null || triangles.size() % 3 != 0) {
 			throw new IllegalArgumentException("triangles must have a pair of 3 vertices.");
 		}
 
@@ -431,7 +431,7 @@ public class ShapeRendererEx implements Disposable {
 	 * @param offset offsets posA and posB with offset.
 	 */
 	public void line(Vector2 posA, Vector2 posB, Vector2 offset) {
-		line(posA.x + offset.x, posA.y + offset.y, posB.x + offset.x, posA.y + offset.y);
+		line(posA.x + offset.x, posA.y + offset.y, posB.x + offset.x, posB.y + offset.y);
 	}
 
 	/**

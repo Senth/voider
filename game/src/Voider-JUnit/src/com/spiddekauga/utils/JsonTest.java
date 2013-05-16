@@ -191,11 +191,11 @@ public class JsonTest {
 		assertEquals("number of vertices", 3, testPolygon.getVertexCount());
 		Vector2 testVertex = new Vector2();
 		testPolygon.getVertex(0, testVertex);
-		assertEquals("Polygon vertex 1", testVertex, vertices[0]);
+		assertEquals("Polygon vertex 1", testVertex, vertices[2]);
 		testPolygon.getVertex(1, testVertex);
-		assertEquals("Polygon vertex 2", testVertex, vertices[1]);
+		assertEquals("Polygon vertex 2", testVertex, vertices[0]);
 		testPolygon.getVertex(2, testVertex);
-		assertEquals("Polygon vertex 3", testVertex, vertices[2]);
+		assertEquals("Polygon vertex 3", testVertex, vertices[1]);
 
 		// Cleanup
 		polygon.dispose();

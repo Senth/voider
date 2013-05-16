@@ -752,7 +752,7 @@ public class Geometry {
 				// 1 2 3 X 5 4 X 6 7. The order is always reversed between i (3) and intersectionIndex + 1 (6).
 
 				// First reverse
-				for (int forwardIndex = i + 1, backwardIndex = computeNextIndex(vertices, intersectionIndex); forwardIndex < backwardIndex || backwardIndex == 0; ++forwardIndex, computePreviousIndex(vertices, backwardIndex)) {
+				for (int forwardIndex = i + 1, backwardIndex = intersectionIndex; forwardIndex < backwardIndex; ++forwardIndex, --backwardIndex) {
 					Collections.swap(vertices, forwardIndex, backwardIndex);
 				}
 

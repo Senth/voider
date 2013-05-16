@@ -11,8 +11,12 @@ import java.util.UUID;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.backends.lwjgl.LwjglFiles;
+import com.badlogic.gdx.backends.lwjgl.LwjglNativesLoader;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.spiddekauga.utils.Json;
+import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.actors.BulletActorDef;
 import com.spiddekauga.voider.game.actors.PickupActorDef;
 import com.spiddekauga.voider.game.actors.PlayerActorDef;
@@ -31,6 +35,9 @@ public class DefTest {
 	 */
 	@BeforeClass
 	static public void setUpBeforeClass() throws SecurityException, NoSuchFieldException {
+		LwjglNativesLoader.load();
+		Gdx.files = new LwjglFiles();
+		Config.init();
 		mfCreator = Def.class.getDeclaredField("mCreator");
 		mfCreator.setAccessible(true);
 
@@ -167,7 +174,11 @@ public class DefTest {
 		assertEquals("res dependencies", def.getInternalDependencies().size(), 0);
 
 		// Test to remove a dependency that doesn't exist
-		def.removeDependency(UUID.randomUUID());
+		try {
+			def.removeDependency(UUID.randomUUID());
+		} catch (Exception e) {
+			// Does nothing
+		}
 		assertEquals("def dependencies size removed unknown", def.getExternalDependencies().size, 1);
 
 		// Remove the last dependency

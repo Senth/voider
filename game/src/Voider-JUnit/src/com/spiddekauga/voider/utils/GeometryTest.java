@@ -134,5 +134,30 @@ public class GeometryTest {
 		assertEquals(new Vector2(4, 5), complexPolygon.get(5));
 		assertEquals(new Vector2(2, 5), complexPolygon.get(6));
 		assertEquals(new Vector2(2, 3), complexPolygon.get(7));
+
+		// Test complex with two intersections
+		complexPolygon = new ArrayList<Vector2>();
+		complexPolygon.add(new Vector2(0, 0));
+		complexPolygon.add(new Vector2(0, 5));
+		complexPolygon.add(new Vector2(4, 5));
+		complexPolygon.add(new Vector2(2, 7));
+		complexPolygon.add(new Vector2(2, 3));
+		complexPolygon.add(new Vector2(-1, 3));
+
+		createdVertices = Geometry.makePolygonNonComplex(complexPolygon);
+		assertNotNull(createdVertices);
+		assertEquals(2, createdVertices.size());
+		assertEquals(10, complexPolygon.size());
+		assertEquals(new Vector2(0, 0), complexPolygon.get(0));
+		assertEquals(new Vector2(0, 3), complexPolygon.get(1));
+		assertEquals(new Vector2(2, 3), complexPolygon.get(2));
+		assertEquals(new Vector2(2, 5), complexPolygon.get(3));
+		assertEquals(new Vector2(4, 5), complexPolygon.get(4));
+		assertEquals(new Vector2(2, 7), complexPolygon.get(5));
+		assertEquals(new Vector2(2, 5), complexPolygon.get(6));
+		assertEquals(new Vector2(0, 5), complexPolygon.get(7));
+		assertEquals(new Vector2(0, 3), complexPolygon.get(8));
+		assertEquals(new Vector2(-1, 3), complexPolygon.get(9));
+
 	}
 }

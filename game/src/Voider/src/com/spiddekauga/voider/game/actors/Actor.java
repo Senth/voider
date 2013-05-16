@@ -317,8 +317,10 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 			shapeRenderer.triangles(mRotatedVertices, offsetPosition);
 
 			// Border
-			shapeRenderer.setColor(mDef.getBorderColor());
-			shapeRenderer.triangles(mRotatedBorderVertices, offsetPosition);
+			if (mRotatedBorderVertices != null) {
+				shapeRenderer.setColor(mDef.getBorderColor());
+				shapeRenderer.triangles(mRotatedBorderVertices, offsetPosition);
+			}
 		} else if (mDef.getCornerCount() >= 2) {
 			shapeRenderer.push(ShapeType.Line);
 
@@ -687,7 +689,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 			destroyFixtures();
 
 			for (FixtureDef fixtureDef : mDef.getFixtureDefs()) {
-				if (fixtureDef != null) {
+				if (fixtureDef != null && fixtureDef.shape != null) {
 					mBody.createFixture(fixtureDef);
 				}
 			}
@@ -975,6 +977,9 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 			if (mRotatedVertices != null) {
 				Pools.vector2.freeDuplicates(mRotatedVertices);
 				Pools.arrayList.free(mRotatedVertices);
+			}
+
+			if (mRotatedBorderVertices != null) {
 				Pools.vector2.freeDuplicates(mRotatedBorderVertices);
 				Pools.arrayList.free(mRotatedBorderVertices);
 			}

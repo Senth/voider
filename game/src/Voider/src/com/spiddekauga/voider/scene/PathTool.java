@@ -26,8 +26,6 @@ import com.spiddekauga.voider.editor.commands.CResourceSelect;
 import com.spiddekauga.voider.game.Path;
 import com.spiddekauga.voider.game.actors.EnemyActor;
 import com.spiddekauga.voider.resources.IResource;
-import com.spiddekauga.voider.resources.IResourceCorner.PolygonComplexException;
-import com.spiddekauga.voider.resources.IResourceCorner.PolygonCornerTooCloseException;
 import com.spiddekauga.voider.utils.Pools;
 
 /**
@@ -425,16 +423,11 @@ public class PathTool extends TouchTool implements ISelectTool {
 
 		localPos.set(mTouchOrigin);
 
-		try {
-			mSelectedPath.addCorner(localPos);
-			mCornerIndexCurrent = mSelectedPath.getCornerCount() - 1;
-			mDragOrigin.set(mTouchOrigin);
-			mCornerAddedNow = true;
-		} catch (PolygonComplexException e) {
-			/** @TODO print some error message on screen, cannot add corner here */
-		} catch (PolygonCornerTooCloseException e) {
-			/** @TODO print error message on screen */
-		}
+		mSelectedPath.addCorner(localPos);
+		mCornerIndexCurrent = mSelectedPath.getCornerCount() - 1;
+		mDragOrigin.set(mTouchOrigin);
+		mCornerAddedNow = true;
+
 
 		Pools.vector2.free(localPos);
 	}

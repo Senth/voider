@@ -4,8 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.spiddekauga.voider.editor.IResourceChangeEditor;
 import com.spiddekauga.voider.resources.IResourceCorner;
-import com.spiddekauga.voider.resources.IResourceCorner.PolygonComplexException;
-import com.spiddekauga.voider.resources.IResourceCorner.PolygonCornerTooCloseException;
+import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Removes a corner from a resource
@@ -38,19 +37,23 @@ public class CResourceCornerRemove extends CResourceChange {
 	public boolean undo() {
 		try {
 			mResourceCorner.addCorner(mCorner, mIndex);
+			mCorner = null;
 			sendOnChange();
-		} catch (PolygonComplexException e) {
-			Gdx.app.error("ClTerrainActorRemoveCorner", "Complax polygon");
-			return false;
-		} catch (PolygonCornerTooCloseException e) {
-			Gdx.app.error("ClTerrainActorRemoveCorner", "Corner too close");
-			return false;
 		} catch (IndexOutOfBoundsException e) {
 			Gdx.app.error("ClTerrainActorRemoveCorner", "Index out of bounds");
 			return false;
 		}
 
 		return true;
+	}
+
+	@Override
+	public void dispose() {
+		super.dispose();
+
+		if (mCorner != null) {
+			Pools.vector2.free(mCorner);
+		}
 	}
 
 	/** Actor to remove/add the corner from/to */

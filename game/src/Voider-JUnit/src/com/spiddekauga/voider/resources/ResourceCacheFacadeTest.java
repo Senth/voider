@@ -106,7 +106,7 @@ public class ResourceCacheFacadeTest {
 			fail("Undefined resource type exception");
 		}
 
-		assertEquals("number of actor, after unload()", ACTORS, ResourceCacheFacade.getLoadedCount());
+		assertEquals("number of actor, after unload()", 0, ResourceCacheFacade.getLoadedCount());
 	}
 
 	/**

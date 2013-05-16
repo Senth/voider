@@ -6,6 +6,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.resolvers.ExternalFileHandleResolver;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.spiddekauga.voider.game.actors.ActorDef;
@@ -16,7 +17,7 @@ import com.spiddekauga.voider.game.actors.ActorDef;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-class ResourceDependencyLoader {
+class ResourceDependencyLoader implements Disposable {
 	/**
 	 * Constructor that takes an asset manager that is used to load
 	 * the resources.
@@ -45,7 +46,11 @@ class ResourceDependencyLoader {
 		/** @note by loading again, this might cause problems in the future */
 		final String fullPath = ResourceNames.getDirPath(type) + defId.toString();
 		mAssetManager.load(fullPath, type);
+	}
 
+	@Override
+	public void dispose() {
+		mLoadingDefs.clear();
 	}
 
 	/**

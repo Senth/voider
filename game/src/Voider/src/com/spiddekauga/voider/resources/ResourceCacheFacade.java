@@ -401,7 +401,9 @@ public class ResourceCacheFacade {
 	 * Disposes all the resources allocated.
 	 */
 	public static void dispose() {
+		mDependencyLoader.dispose();
 		mAssetManager.dispose();
+		mLoadQueue.clear();
 	}
 
 	/**

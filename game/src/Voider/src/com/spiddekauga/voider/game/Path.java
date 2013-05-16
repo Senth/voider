@@ -51,12 +51,12 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 	}
 
 	@Override
-	public void addCorner(Vector2 corner) throws PolygonComplexException, PolygonCornerTooCloseException {
+	public void addCorner(Vector2 corner) {
 		addCorner(corner, mCorners.size());
 	}
 
 	@Override
-	public void addCorner(Vector2 corner, int index) throws PolygonComplexException, PolygonCornerTooCloseException {
+	public void addCorner(Vector2 corner, int index) {
 		mCorners.add(index, Pools.vector2.obtain().set(corner));
 
 		if (mWorld != null) {
@@ -176,7 +176,7 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 	}
 
 	@Override
-	public void moveCorner(int index, Vector2 newPos) throws PolygonComplexException, PolygonCornerTooCloseException {
+	public void moveCorner(int index, Vector2 newPos) {
 		if (index >= 0 && index < mCorners.size()) {
 			mCorners.get(index).set(newPos);
 			resetBodyCorners();

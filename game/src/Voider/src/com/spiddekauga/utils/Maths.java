@@ -28,7 +28,7 @@ public class Maths {
 	 * @param valueA compares against valueB
 	 * @param valueB compares against valueA
 	 * @param delta the maximum range the values can differ to be counted as close
-	 * @return true if valueA - valueB is in less than delta and greater than -delta
+	 * @return true if valueA - valueB is in less or equal to delta and greater or equal to -delta
 	 */
 	public static boolean approxCompare(float valueA, float valueB, float delta) {
 		return approxCompare(valueA - valueB, delta);

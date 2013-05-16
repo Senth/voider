@@ -421,12 +421,12 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	}
 
 	@Override
-	public void addCorner(Vector2 corner) throws PolygonComplexException, PolygonCornerTooCloseException {
+	public void addCorner(Vector2 corner) {
 		addCorner(corner, mVisualVars.corners.size());
 	}
 
 	@Override
-	public void addCorner(Vector2 corner, int index) throws PolygonComplexException, PolygonCornerTooCloseException{
+	public void addCorner(Vector2 corner, int index) {
 		mVisualVars.corners.add(index, corner.cpy());
 
 		//		// Make sure no intersection exist
@@ -468,23 +468,8 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	}
 
 	@Override
-	public void moveCorner(int index, Vector2 newPos) throws PolygonComplexException {
-		Vector2 oldPos = Pools.vector2.obtain();
-		oldPos.set(mVisualVars.corners.get(index));
+	public void moveCorner(int index, Vector2 newPos) {
 		mVisualVars.corners.get(index).set(newPos);
-
-		// TODO remove intersection test
-		if (intersectionExists(index)) {
-			mVisualVars.corners.get(index).set(oldPos);
-			Pools.vector2.free(oldPos);
-			throw new PolygonComplexException();
-		}
-
-		fixCustomShapeFixtures();
-
-		Pools.vector2.free(oldPos);
-
-		mFixtureChangeTime = GameTime.getTotalGlobalTimeElapsed();
 	}
 
 	@Override
@@ -664,15 +649,24 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 		// Create the new fixture
 		// Polygon
 		if (mVisualVars.corners.size() >= 3) {
-			List<Vector2> triangles = null;
+			ArrayList<Vector2> triangles = null;
+			ArrayList<Vector2> createdVertices = null;
 			if (mVisualVars.corners.size() == 3) {
 				triangles = new ArrayList<Vector2>(mVisualVars.corners);
 				Geometry.makePolygonCounterClockwise(triangles);
 			} else {
-				triangles = mEarClippingTriangulator.computeTriangles(mVisualVars.corners);
+				@SuppressWarnings("unchecked")
+				ArrayList<Vector2> tempVertices = Pools.arrayList.obtain();
+				tempVertices.clear();
+				tempVertices.addAll(mVisualVars.corners);
+				createdVertices = Geometry.makePolygonNonComplex(tempVertices);
+
+				triangles = mEarClippingTriangulator.computeTriangles(tempVertices);
 				// Always reverse, triangles are always clockwise, whereas box2d needs
 				// counter clockwise...
 				Collections.reverse(triangles);
+
+				Pools.arrayList.free(tempVertices);
 			}
 
 			int cTriangles = triangles.size() / 3;
@@ -727,12 +721,16 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 				Pools.vector2.free(triangleVertices[i]);
 			}
 			Pools.vector2.free(lengthTest);
+			if (createdVertices != null) {
+				Pools.vector2.freeAll(createdVertices);
+				Pools.arrayList.free(createdVertices);
+			}
 
 			if (cornerTooClose) {
 				Gdx.app.error("ActorDef", "Polygon corners are too close...");
 			}
 
-			mVisualVars.vertices = (ArrayList<Vector2>) triangles;
+			mVisualVars.vertices = triangles;
 			createBorder(mVisualVars.corners);
 		}
 		// Circle
@@ -788,76 +786,6 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	 */
 	ArrayList<Vector2> getTriangleBorderVertices() {
 		return mVisualVars.borderVertices;
-	}
-
-	/**
-	 * Checks if a line, that starts/ends from the specified index, intersects
-	 * with any other line from the polygon.
-	 * @param index the corner to check the lines from
-	 * @return true if there is an intersection
-	 */
-	private boolean intersectionExists(int index) {
-		if (mVisualVars.corners.size() < 3 || index < 0 || index >= mVisualVars.corners.size()) {
-			return false;
-		}
-
-
-		// Get the two lines
-		// First vertex is between before
-		Vector2 vertexBefore = null;
-
-		// If index is 0, get the last corner instead
-		if (index == 0) {
-			vertexBefore = mVisualVars.corners.get(mVisualVars.corners.size() - 1);
-		} else {
-			vertexBefore = mVisualVars.corners.get(index - 1);
-		}
-
-		// Vertex of index
-		Vector2 vertexIndex = mVisualVars.corners.get(index);
-
-		// Vertex after index
-		Vector2 vertexAfter = null;
-
-		// If index is the last, wrap and use first
-		if (index == mVisualVars.corners.size() - 1) {
-			vertexAfter = mVisualVars.corners.get(0);
-		} else {
-			vertexAfter = mVisualVars.corners.get(index + 1);
-		}
-
-
-		boolean intersects = false;
-		// Using shape because the chain is looped, i.e. first and last is the same vertex
-		for (int i = 0; i < mVisualVars.corners.size(); ++i) {
-			// Skip checking index before and the current index, these are the lines
-			// we are checking with... If index is 0 we need to wrap it
-			if (i == index || i == index - 1 || (index == 0 && i == mVisualVars.corners.size() - 1)) {
-				continue;
-			}
-
-
-			/** @TODO can be optimized if necessary. Swap instead of getting
-			 * new vertexes all the time. */
-			Vector2 lineA = mVisualVars.corners.get(i);
-			Vector2 lineB = mVisualVars.corners.get(Geometry.computeNextIndex(mVisualVars.corners, i));
-
-
-			// Check with first line
-			if (Geometry.linesIntersectNoCorners(vertexBefore, vertexIndex, lineA, lineB)) {
-				intersects = true;
-				break;
-			}
-
-			// Check second line
-			if (Geometry.linesIntersectNoCorners(vertexIndex, vertexAfter, lineA, lineB)) {
-				intersects = true;
-				break;
-			}
-		}
-
-
-		return intersects;
 	}
 
 	/**

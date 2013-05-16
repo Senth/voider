@@ -3,7 +3,6 @@ package com.spiddekauga.voider.game;
 import static org.junit.Assert.assertEquals;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -53,8 +52,6 @@ public class LevelTest {
 		ResourceCacheFacade.load(mUsingLevelDef, false);
 		ResourceCacheFacade.finishLoading();
 
-		mfActors = Level.class.getDeclaredField("mActors");
-		mfActors.setAccessible(true);
 		mfXCoord = Level.class.getDeclaredField("mXCoord");
 		mfXCoord.setAccessible(true);
 		mfLevelDef = Level.class.getDeclaredField("mLevelDef");
@@ -82,7 +79,6 @@ public class LevelTest {
 	 * @throws IllegalAccessException
 	 * @throws IllegalArgumentException
 	 */
-	@SuppressWarnings("unchecked")
 	@Test
 	public void writeRead() throws IllegalArgumentException, IllegalAccessException {
 		// Empty level
@@ -93,7 +89,6 @@ public class LevelTest {
 		Level jsonLevel = json.fromJson(Level.class, jsonString);
 
 		assertEquals("uuid", level.getId(), jsonLevel.getId());
-		assertEquals("actors", 0, ((ArrayList<Actor>) mfActors.get(jsonLevel)).size());
 		assertEquals("x-coord", 0.0f, mfXCoord.get(jsonLevel));
 		assertEquals("level def", mUsingLevelDef, mfLevelDef.get(jsonLevel));
 		assertEquals("speed", mfSpeed.get(level), mfSpeed.get(jsonLevel));
@@ -101,7 +96,6 @@ public class LevelTest {
 
 
 		// Test with setting the values to something else
-		((ArrayList<Actor>) mfActors.get(level)).add(new PlayerActor());
 		mfXCoord.set(level, 55.3f);
 		mfSpeed.set(level, 0.578f);
 		mfCompletedLevel.set(level, true);
@@ -110,7 +104,6 @@ public class LevelTest {
 		jsonLevel = json.fromJson(Level.class, jsonString);
 
 		assertEquals("uuid", level.getId(), jsonLevel.getId());
-		assertEquals("actors", 1, ((ArrayList<Actor>) mfActors.get(jsonLevel)).size());
 		assertEquals("x-coord", 55.3f, mfXCoord.get(jsonLevel));
 		assertEquals("level def", mUsingLevelDef, mfLevelDef.get(jsonLevel));
 		assertEquals("speed", 0.578f, mfSpeed.get(jsonLevel));
@@ -125,8 +118,6 @@ public class LevelTest {
 	private static World mWorld = null;
 
 	// Fields for testing private members
-	/** Actors */
-	private static Field mfActors = null;
 	/** X-Coord */
 	private static Field mfXCoord = null;
 	/** Level Def */

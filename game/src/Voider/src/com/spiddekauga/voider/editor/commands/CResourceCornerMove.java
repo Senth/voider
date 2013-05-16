@@ -1,11 +1,8 @@
 package com.spiddekauga.voider.editor.commands;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.spiddekauga.voider.editor.IResourceChangeEditor;
 import com.spiddekauga.voider.resources.IResourceCorner;
-import com.spiddekauga.voider.resources.IResourceCorner.PolygonComplexException;
-import com.spiddekauga.voider.resources.IResourceCorner.PolygonCornerTooCloseException;
 import com.spiddekauga.voider.utils.Pools;
 
 /**
@@ -36,16 +33,8 @@ public class CResourceCornerMove extends CResourceChange {
 		newPos.set(mResourceCorner.getCornerPosition(mIndex));
 		newPos.add(mDiffMovement);
 		boolean moveSuccess = true;
-		try {
-			mResourceCorner.moveCorner(mIndex, newPos);
-			sendOnChange();
-		} catch (PolygonComplexException e) {
-			moveSuccess = false;
-			Gdx.app.error("CResourceCornerMove", "Complex polygon");
-		} catch (PolygonCornerTooCloseException e) {
-			moveSuccess = false;
-			Gdx.app.error("CResourceCornerMove", "Corner too close");
-		}
+		mResourceCorner.moveCorner(mIndex, newPos);
+		sendOnChange();
 		Pools.vector2.free(newPos);
 
 		return moveSuccess;
@@ -57,16 +46,8 @@ public class CResourceCornerMove extends CResourceChange {
 		newPos.set(mResourceCorner.getCornerPosition(mIndex));
 		newPos.sub(mDiffMovement);
 		boolean moveSuccess = true;
-		try {
-			mResourceCorner.moveCorner(mIndex, newPos);
-			sendOnChange();
-		} catch (PolygonComplexException e) {
-			moveSuccess = false;
-			Gdx.app.error("CResourceCornerMove", "Complex polygon");
-		} catch (PolygonCornerTooCloseException e) {
-			moveSuccess = false;
-			Gdx.app.error("CResourceCornerMove", "Corner too close");
-		}
+		mResourceCorner.moveCorner(mIndex, newPos);
+		sendOnChange();
 		Pools.vector2.free(newPos);
 		return moveSuccess;
 	}

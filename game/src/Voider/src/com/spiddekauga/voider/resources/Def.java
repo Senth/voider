@@ -155,7 +155,7 @@ public abstract class Def extends Resource implements Json.Serializable {
 			}
 		}
 
-		ObjectMap<UUID, DefItem> externalDependencies = json.readValue("externalDependencies", ObjectMap.class, jsonData);
+		ObjectMap<UUID, DefItem> externalDependencies = json.readValue("mExternalDependencies", ObjectMap.class, jsonData);
 		if (externalDependencies != null) {
 			mExternalDependencies = externalDependencies;
 		}
