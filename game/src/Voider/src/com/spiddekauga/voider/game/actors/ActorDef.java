@@ -1,6 +1,7 @@
 package com.spiddekauga.voider.game.actors;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -23,6 +24,8 @@ import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.IResourceCorner;
 import com.spiddekauga.voider.utils.EarClippingTriangulator;
 import com.spiddekauga.voider.utils.Geometry;
+import com.spiddekauga.voider.utils.Geometry.PolygonComplexException;
+import com.spiddekauga.voider.utils.Geometry.PolygonCornersTooCloseException;
 import com.spiddekauga.voider.utils.Pools;
 
 /**
@@ -58,11 +61,11 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 			break;
 
 		case PLAYER:
-			setColor(new Color(0, 1, 0, 1));
+			setColor(new Color(0.25f, 1, 0.25f, 1));
 			break;
 
 		case STATIC_TERRAIN:
-			setColor(new Color(0, 0.75f, 0, 1));
+			setColor(new Color(0, 0.5f, 0.1f, 1));
 			break;
 
 		default:
@@ -459,11 +462,7 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 			mVisualVars.clearVertices();
 
 			removedPosition = mVisualVars.corners.remove(index);
-
-			fixCustomShapeFixtures();
 		}
-		mFixtureChangeTime = GameTime.getTotalGlobalTimeElapsed();
-
 		return removedPosition;
 	}
 
@@ -629,6 +628,8 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	 * would become too small. NOTE: When this exception is thrown all fixtures
 	 * have been removed and some might have been added. Fix the faulty corner
 	 * and call #fixCustomShapeFixtures() again to fix this.
+	 * @throws PolygonComplexException if the method failed to make the polygon non-complex
+	 * @throws PolygonCornersTooCloseException if some corners are too close
 	 */
 	public void fixCustomShapeFixtures() {
 		// Save fixture properties
@@ -661,10 +662,15 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 				tempVertices.addAll(mVisualVars.corners);
 				createdVertices = Geometry.makePolygonNonComplex(tempVertices);
 
-				triangles = mEarClippingTriangulator.computeTriangles(tempVertices);
-				// Always reverse, triangles are always clockwise, whereas box2d needs
-				// counter clockwise...
-				Collections.reverse(triangles);
+				try {
+					triangles = mEarClippingTriangulator.computeTriangles(tempVertices);
+					// Always reverse, triangles are always clockwise, whereas box2d needs
+					// counter clockwise...
+					Collections.reverse(triangles);
+				} catch (PolygonComplexException e) {
+					Pools.arrayList.free(tempVertices);
+					throw e;
+				}
 
 				Pools.arrayList.free(tempVertices);
 			}
@@ -691,19 +697,38 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 				lengthTest.set(triangleVertices[0]).sub(triangleVertices[1]);
 				if (lengthTest.len2() <= Config.Graphics.EDGE_LENGTH_MIN) {
 					cornerTooClose = true;
-					continue;
+				} else {
+					// 0 - 2
+					lengthTest.set(triangleVertices[0]).sub(triangleVertices[2]);
+					if (lengthTest.len2() <= Config.Graphics.EDGE_LENGTH_MIN) {
+						cornerTooClose = true;
+					} else {
+						// 1 - 2
+						lengthTest.set(triangleVertices[1]).sub(triangleVertices[2]);
+						if (lengthTest.len2() <= Config.Graphics.EDGE_LENGTH_MIN) {
+							cornerTooClose = true;
+						}
+					}
 				}
-				// 0 - 2
-				lengthTest.set(triangleVertices[0]).sub(triangleVertices[2]);
-				if (lengthTest.len2() <= Config.Graphics.EDGE_LENGTH_MIN) {
-					cornerTooClose = true;
-					continue;
+
+				if (cornerTooClose) {
+					Gdx.app.debug("ActorDef", "Corners too close, skipping (" + lengthTest.len() + ")");
+					throw new PolygonCornersTooCloseException("Corners to close: " + lengthTest.len());
 				}
-				// 1 - 2
-				lengthTest.set(triangleVertices[1]).sub(triangleVertices[2]);
-				if (lengthTest.len2() <= Config.Graphics.EDGE_LENGTH_MIN) {
-					cornerTooClose = true;
-					continue;
+
+				// Check area
+				float triangleArea = Geometry.calculateTriangleArea(triangleVertices[0], triangleVertices[1], triangleVertices[2]);
+
+				// Make clockwise
+				if (triangleArea < 0) {
+					Collections.reverse(Arrays.asList(triangleVertices));
+					triangleArea = -triangleArea;
+					Gdx.app.log("ActorDef", "Fixture triangle negative area, reversing order...");
+				}
+
+				if (triangleArea <= Config.Graphics.POLYGON_AREA_MIN) {
+					Gdx.app.debug("ActorDef", "Area too small: (" + triangleArea + ")");
+					throw new PolygonCornersTooCloseException("Area too small: " + triangleArea);
 				}
 
 
@@ -724,10 +749,6 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 			if (createdVertices != null) {
 				Pools.vector2.freeAll(createdVertices);
 				Pools.arrayList.free(createdVertices);
-			}
-
-			if (cornerTooClose) {
-				Gdx.app.error("ActorDef", "Polygon corners are too close...");
 			}
 
 			mVisualVars.vertices = triangles;

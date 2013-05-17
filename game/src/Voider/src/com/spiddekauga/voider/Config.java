@@ -140,7 +140,7 @@ public class Config {
 				/** Minimum distance for new corners when drawing */
 				public final static float DRAW_NEW_CORNER_MIN_DIST_SQ = 1.0f * 1.0f;
 				/** Minimum angle between corners, if less than this, the corner will be removed */
-				public final static float DRAW_CORNER_ANGLE_MIN = 15;
+				public final static float DRAW_CORNER_ANGLE_MIN = 10;
 			}
 
 			/**
@@ -479,8 +479,12 @@ public class Config {
 		public final static boolean USE_DEBUG_RENDERER = false;
 		/** Renders regular graphics */
 		public final static boolean USE_RELEASE_RENDERER = true;
+		/** Epsilon for box 2d */
+		private final static float EPSILON = 1.19209289550781250000e-7F;
 		/** Minimum length between two corners in a polygon */
-		public final static float EDGE_LENGTH_MIN = 1.19209289550781250000e-7F * 1.19209289550781250000e-7F;
+		public final static float EDGE_LENGTH_MIN = EPSILON * 1000;
+		/** Minimum area of a polygon shape */
+		public final static float POLYGON_AREA_MIN = EPSILON * 1000;
 		/** Default width of the graphics */
 		public final static float WIDTH = 800;
 		/** Default height of the graphics */

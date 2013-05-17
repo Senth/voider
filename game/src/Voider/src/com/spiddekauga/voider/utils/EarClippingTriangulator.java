@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.List;
 
 import com.badlogic.gdx.math.Vector2;
+import com.spiddekauga.voider.utils.Geometry.PolygonComplexException;
 
 /** A simple implementation of the ear cutting algorithm to triangulate simple polygons without holes. For more information:
  * <ul>
@@ -39,10 +40,14 @@ public final class EarClippingTriangulator {
 
 	private int concaveVertexCount;
 
-	/** Triangulates the given (concave) polygon to a list of triangles. The resulting triangles have clockwise order.
+	/**
+	 * Triangulates the given (concave) polygon to a list of triangles.
+	 * The resulting triangles have clockwise order.
 	 * 
 	 * @param polygon the polygon
-	 * @return the triangles */
+	 * @return the triangles.
+	 * @throws PolygonComplexException if the polygon is complex, i.e. can't triangulate the polygon
+	 */
 	public ArrayList<Vector2> computeTriangles (final List<Vector2> polygon) {
 		// TODO Check if LinkedList performs better
 		final ArrayList<Vector2> triangles = new ArrayList<Vector2>();
@@ -55,6 +60,7 @@ public final class EarClippingTriangulator {
 		 * this loop.
 		 */
 		while (vertices.size() > 3) {
+			int beforeSize = vertices.size();
 			// TODO Usually(Always?) only the Types of the vertices next to the
 			// ear change! --> Improve
 			final int vertexTypes[] = this.classifyVertices(vertices);
@@ -65,6 +71,10 @@ public final class EarClippingTriangulator {
 					this.cutEarTip(vertices, index, triangles);
 					break;
 				}
+			}
+
+			if (beforeSize == vertices.size()) {
+				throw new Geometry.PolygonComplexException();
 			}
 		}
 

@@ -1,5 +1,6 @@
 package com.spiddekauga.voider;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL10;
@@ -45,6 +46,7 @@ public class VoiderGame implements ApplicationListener {
 		Config.init();
 		ResourceSaver.init();
 		ResourceCacheFacade.init();
+		Gdx.app.setLogLevel(Application.LOG_INFO);
 
 		ShaderProgram.pedantic = false;
 

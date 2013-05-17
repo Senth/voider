@@ -79,8 +79,6 @@ public class Invoker implements Disposable {
 				}
 				mUndoCommands.push(command);
 				disposeRedo();
-
-				/** @TODO maybe set a limit on 100 undo commands? */
 			} else {
 				command.dispose();
 			}
@@ -158,6 +156,13 @@ public class Invoker implements Disposable {
 	 */
 	public boolean canRedo() {
 		return !mRedoCommands.isEmpty();
+	}
+
+	/**
+	 * Clears the redo stack
+	 */
+	public void clearRedo() {
+		disposeRedo();
 	}
 
 	/**

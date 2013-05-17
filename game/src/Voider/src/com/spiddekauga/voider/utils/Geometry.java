@@ -8,6 +8,7 @@ import java.util.List;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.GdxRuntimeException;
 
 /**
  * Various geometry help functions
@@ -189,12 +190,7 @@ public class Geometry {
 	 * @return true if the polygon is counter-clockwise
 	 */
 	public static boolean isPolygonCounterClockwise(final List<Vector2> vertices) {
-		float area = 0;
-		for (int i = 0; i < vertices.size(); i++) {
-			final Vector2 p1 = vertices.get(i);
-			final Vector2 p2 = vertices.get(computeNextIndex(vertices, i));
-			area += p1.x * p2.y - p2.x * p1.y;
-		}
+		float area = calculatePolygonArea(vertices);
 
 		if (area < 0) {
 			return false;
@@ -204,12 +200,48 @@ public class Geometry {
 	}
 
 	/**
+	 * Calculates the triangle area. Uses this algorithm:
+	 * \code
+	 *              (a)           (b)            (c)
+	 *        | Ax(By - Cy) + Bx(Cy - Ay) + Cx(Ay - By) |
+	 * area = | ——————————————————————————————————————— |
+	 *        |                    2                    |
+	 * \endcode
+	 * @param vertex1
+	 * @param vertex2
+	 * @param vertex3
+	 * @return positive value if the triangle is counter-clockwise, negative for clockwise triangle.
+	 */
+	public static float calculateTriangleArea(final Vector2 vertex1, final Vector2 vertex2, final Vector2 vertex3) {
+		float a = vertex1.x * (vertex2.y - vertex3.y);
+		float b = vertex2.x * (vertex3.y - vertex1.y);
+		float c = vertex3.x * (vertex1.y - vertex2.y);
+		return (a + b + c) * 0.5f;
+	}
+
+	/**
+	 * Calculates the area of a polygon
+	 * @param vertices all vertices of the polygon
+	 * @return positive value if the polygon is counter-clockwise, negative for clockwise polygons.
+	 */
+	public static float calculatePolygonArea(final List<Vector2> vertices) {
+		float area = 0;
+		for (int i = 0; i < vertices.size(); i++) {
+			final Vector2 p1 = vertices.get(i);
+			final Vector2 p2 = vertices.get(computeNextIndex(vertices, i));
+			area += p1.x * p2.y - p2.x * p1.y;
+		}
+
+		return area;
+	}
+
+	/**
 	 * Computes the next index of an array, i.e. it wraps the index from back to front if needed.
 	 * @param array the array to wrap
 	 * @param index calculates the next index of this
 	 * @return next index
 	 */
-	public static int computeNextIndex(final List<?> array, final int index) {
+	public static int computeNextIndex(final List<?> array, int index) {
 		return index == array.size() - 1 ? 0 : index + 1;
 	}
 
@@ -219,7 +251,7 @@ public class Geometry {
 	 * @param index calculates the previous index of this
 	 * @return previous index
 	 */
-	public static int computePreviousIndex(final List<?> array, final int index) {
+	public static int computePreviousIndex(final List<?> array, int index) {
 		return index == 0 ? array.size() - 1 : index - 1;
 	}
 
@@ -743,22 +775,27 @@ public class Geometry {
 				Vector2 line2a = vertices.get(intersectionIndex);
 				Vector2 line2b = vertices.get(computeNextIndex(vertices, intersectionIndex));
 				Vector2 intersectionPoint = getLineLineIntersection(line1a, line1b, line2a, line2b);
-				newVertices.add(intersectionPoint);
+
+				if (intersectionPoint != null) {
+					newVertices.add(intersectionPoint);
 
 
-				// Reorder...
-				// If let say we have indices with 1 2 3 4 5 6 7 and there is an intersection
-				// between 3-4 and 5-6 the new order will be (X is the intersectionPoint)
-				// 1 2 3 X 5 4 X 6 7. The order is always reversed between i (3) and intersectionIndex + 1 (6).
+					// Reorder...
+					// If let say we have indices with 1 2 3 4 5 6 7 and there is an intersection
+					// between 3-4 and 5-6 the new order will be (X is the intersectionPoint)
+					// 1 2 3 X 5 4 X 6 7. The order is always reversed between i (3) and intersectionIndex + 1 (6).
 
-				// First reverse
-				for (int forwardIndex = i + 1, backwardIndex = intersectionIndex; forwardIndex < backwardIndex; ++forwardIndex, --backwardIndex) {
-					Collections.swap(vertices, forwardIndex, backwardIndex);
+					// First reverse
+					for (int forwardIndex = i + 1, backwardIndex = intersectionIndex; forwardIndex < backwardIndex; ++forwardIndex, --backwardIndex) {
+						Collections.swap(vertices, forwardIndex, backwardIndex);
+					}
+
+					// Add intersection point to the vertices
+					vertices.add(computeNextIndex(vertices, intersectionIndex), intersectionPoint);
+					vertices.add(computeNextIndex(vertices, i), intersectionPoint);
+				} else {
+					Gdx.app.debug("Geometry", "Intersection found, but was parallell");
 				}
-
-				// Add intersection point to the vertices
-				vertices.add(computeNextIndex(vertices, intersectionIndex), intersectionPoint);
-				vertices.add(computeNextIndex(vertices, i), intersectionPoint);
 			}
 		}
 
@@ -807,5 +844,36 @@ public class Geometry {
 		}
 
 		return -1;
+	}
+
+	/**
+	 * Polygon complex exception
+	 */
+	public static class PolygonComplexException extends GdxRuntimeException {
+		/**
+		 * Default constructor
+		 */
+		public PolygonComplexException() {
+			super("");
+		}
+
+		/** serialize id */
+		private static final long serialVersionUID = 6341884787418006713L;
+	}
+
+	/**
+	 * Polygon corners are too close
+	 */
+	public static class PolygonCornersTooCloseException extends GdxRuntimeException {
+		/**
+		 * Writes a message to the exception
+		 * @param message
+		 */
+		public PolygonCornersTooCloseException(String message) {
+			super(message);
+		}
+
+		/** serialize id */
+		private static final long serialVersionUID = -3852020475614942724L;
 	}
 }

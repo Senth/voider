@@ -1,29 +1,28 @@
 package com.spiddekauga.voider.scene;
 
-import java.util.ArrayList;
-
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.spiddekauga.utils.Invoker;
-import com.spiddekauga.utils.Maths;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.editor.HitWrapper;
 import com.spiddekauga.voider.editor.IResourceChangeEditor;
 import com.spiddekauga.voider.editor.commands.CActorCenterMove;
-import com.spiddekauga.voider.editor.commands.CActorDefFixCustomFixturesOnUndo;
+import com.spiddekauga.voider.editor.commands.CActorDefFixCustomFixtures;
 import com.spiddekauga.voider.editor.commands.CResourceAdd;
 import com.spiddekauga.voider.editor.commands.CResourceCornerAdd;
 import com.spiddekauga.voider.editor.commands.CResourceCornerMove;
 import com.spiddekauga.voider.editor.commands.CResourceCornerRemove;
 import com.spiddekauga.voider.editor.commands.CResourceCornerRemoveAll;
+import com.spiddekauga.voider.editor.commands.CResourceCornerRemoveExcessive;
 import com.spiddekauga.voider.editor.commands.CResourceMove;
 import com.spiddekauga.voider.editor.commands.CResourceRemove;
 import com.spiddekauga.voider.editor.commands.CResourceSelect;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.ActorDef;
 import com.spiddekauga.voider.resources.IResource;
-import com.spiddekauga.voider.utils.Geometry;
+import com.spiddekauga.voider.utils.Geometry.PolygonComplexException;
+import com.spiddekauga.voider.utils.Geometry.PolygonCornersTooCloseException;
 import com.spiddekauga.voider.utils.Pools;
 
 /**
@@ -341,7 +340,7 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 				createNewSelectedActor();
 				mChangedActorSinceUp = false;
 			} else {
-				mInvoker.execute(new CActorDefFixCustomFixturesOnUndo(mSelectedActor.getDef()));
+				mInvoker.execute(new CActorDefFixCustomFixtures(mSelectedActor.getDef(), false));
 			}
 
 			// Create corner here
@@ -493,9 +492,19 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 				// Add a final corner when released
 				appendCorner(true);
 
-				removeExcessiveCorners();
+				mInvoker.execute(new CResourceCornerRemoveExcessive(mSelectedActor.getDef()), true);
 
-				mSelectedActor.getDef().fixCustomShapeFixtures();
+				try {
+					mInvoker.execute(new CActorDefFixCustomFixtures(mSelectedActor.getDef(), true), true);
+				} catch (PolygonComplexException e) {
+					/** @todo print pop up error message */
+					mInvoker.undo();
+					mInvoker.clearRedo();
+				} catch (PolygonCornersTooCloseException e) {
+					/** @todo print pop up error message */
+					mInvoker.undo();
+					mInvoker.clearRedo();
+				}
 			}
 
 			mCornerIndexLast = mCornerIndexCurrent;
@@ -617,58 +626,6 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 		actor.setPosition(mTouchOrigin);
 		mInvoker.execute(new CResourceAdd(actor, mActorEditor));
 		mInvoker.execute(new CResourceSelect(actor, this), true);
-	}
-
-	/**
-	 * Removes unnecessary corners, i.e. corners that have almost no angle difference between them.
-	 * E.g. three corners > 0,0 -> 0,5 -> 0,10. In this case 0,5 does not add anything to the shape,
-	 * it will only make calculations slower...
-	 */
-	private void removeExcessiveCorners() {
-		if (mSelectedActor.getDef().getCornerCount() < 3) {
-			return;
-		}
-
-		Vector2 afterVector = Pools.vector2.obtain();
-		float beforeAngle = 0;
-		float afterAngle = 0;
-		ArrayList<Vector2> corners = mSelectedActor.getDef().getCorners();
-		afterVector.set(corners.get(1)).sub(corners.get(0));
-		afterAngle = afterVector.angle();
-		for (int i = 1; i < corners.size() - 1; ++i) {
-			beforeAngle = afterAngle;
-
-			// Calculate after vector
-			afterVector.set(corners.get(Geometry.computeNextIndex(corners, i))).sub(corners.get(i));
-			afterAngle = afterVector.angle();
-
-			boolean tooLowAngleDiff = false;
-			if (Maths.approxCompare(beforeAngle, afterAngle, Config.Editor.Actor.Visual.DRAW_CORNER_ANGLE_MIN)) {
-				tooLowAngleDiff = true;
-			} else if (beforeAngle < afterAngle) {
-				if (Maths.approxCompare(beforeAngle + 360, afterAngle, Config.Editor.Actor.Visual.DRAW_CORNER_ANGLE_MIN)) {
-					tooLowAngleDiff = true;
-				}
-			} else {
-				if (Maths.approxCompare(beforeAngle - 360, afterAngle, Config.Editor.Actor.Visual.DRAW_CORNER_ANGLE_MIN)) {
-					tooLowAngleDiff = true;
-				}
-			}
-
-			// Too low difference in degrees between angles...
-			if (tooLowAngleDiff) {
-				mInvoker.execute(new CResourceCornerRemove(mSelectedActor.getDef(), i, mActorEditor), true);
-
-				// Before vector will have changed again
-				if (i < corners.size() - 1) {
-					afterVector.set(corners.get(i)).sub(corners.get(i-1));
-					afterAngle = afterVector.angle();
-
-					--i;
-				}
-			}
-		}
-		Pools.vector2.free(afterVector);
 	}
 
 	/** Invoker used for undoing/redoing commands */
