@@ -1,7 +1,6 @@
 package com.spiddekauga.voider.game.actors;
 
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
-import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.spiddekauga.voider.Config.Editor.Bullet;
 
 /**
@@ -19,17 +18,8 @@ public class BulletActorDef extends ActorDef {
 
 		getBodyDef().type = BodyType.DynamicBody;
 
-		setShapeType(Bullet.Visual.SHAPE_DEFAULT);
+		mVisualVars.setShapeType(Bullet.Visual.SHAPE_DEFAULT);
 
 		setDestroyOnCollide(true);
-	}
-
-	@Override
-	protected FixtureDef getDefaultFixtureDef() {
-		FixtureDef fixtureDef = new FixtureDef();
-		fixtureDef.friction = 0.0f;
-		fixtureDef.restitution = 0.1f;
-		fixtureDef.density = 0.001f;
-		return fixtureDef;
 	}
 }

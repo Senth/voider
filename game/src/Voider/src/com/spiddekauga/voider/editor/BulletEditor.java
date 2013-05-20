@@ -91,7 +91,7 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 			mWeapon.shoot(SHOOT_DIRECTION);
 		}
 
-		if (mBulletActor != null && mDef.getShapeType() == ActorShapeTypes.CUSTOM) {
+		if (mBulletActor != null && mDef.getVisualVars().getShapeType() == ActorShapeTypes.CUSTOM) {
 			//			mBulletActor.update(Gdx.graphics.getDeltaTime());
 			mBulletActor.updateEditor();
 		}
@@ -280,7 +280,7 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 
 	@Override
 	public void setShapeType(ActorShapeTypes shapeType) {
-		mDef.setShapeType(shapeType);
+		mDef.getVisualVars().setShapeType(shapeType);
 		mUnsaved = true;
 
 		if (shapeType == ActorShapeTypes.CUSTOM) {
@@ -296,57 +296,57 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 
 	@Override
 	public ActorShapeTypes getShapeType() {
-		return mDef.getShapeType();
+		return mDef.getVisualVars().getShapeType();
 	}
 
 	@Override
 	public void setShapeRadius(float radius) {
-		mDef.setShapeRadius(radius);
+		mDef.getVisualVars().setShapeRadius(radius);
 		mUnsaved = true;
 	}
 
 	@Override
 	public float getShapeRadius() {
-		return mDef.getShapeRadius();
+		return mDef.getVisualVars().getShapeRadius();
 	}
 
 	@Override
 	public void setShapeWidth(float width) {
-		mDef.setShapeWidth(width);
+		mDef.getVisualVars().setShapeWidth(width);
 		mUnsaved = true;
 	}
 
 	@Override
 	public float getShapeWidth() {
-		return mDef.getShapeWidth();
+		return mDef.getVisualVars().getShapeWidth();
 	}
 
 	@Override
 	public void setShapeHeight(float height) {
-		mDef.setShapeHeight(height);
+		mDef.getVisualVars().setShapeHeight(height);
 		mUnsaved = true;
 	}
 
 	@Override
 	public float getShapeHeight() {
-		return mDef.getShapeHeight();
+		return mDef.getVisualVars().getShapeHeight();
 	}
 
 	@Override
 	public void resetCenterOffset() {
 		// Save diff offset and move the actor in the opposite direction...
 		Vector2 diffOffset = null;
-		if (mBulletActor != null && mDef.getShapeType() == ActorShapeTypes.CUSTOM) {
+		if (mBulletActor != null && mDef.getVisualVars().getShapeType() == ActorShapeTypes.CUSTOM) {
 			mBulletActor.destroyBody();
 
 			diffOffset = Pools.vector2.obtain();
-			diffOffset.set(mDef.getCenterOffset());
+			diffOffset.set(mDef.getVisualVars().getCenterOffset());
 		}
 
-		mDef.resetCenterOffset();
+		mDef.getVisualVars().resetCenterOffset();
 
-		if (mBulletActor != null && mDef.getShapeType() == ActorShapeTypes.CUSTOM) {
-			diffOffset.sub(mDef.getCenterOffset());
+		if (mBulletActor != null && mDef.getVisualVars().getShapeType() == ActorShapeTypes.CUSTOM) {
+			diffOffset.sub(mDef.getVisualVars().getCenterOffset());
 			diffOffset.add(mBulletActor.getPosition());
 			mBulletActor.setPosition(diffOffset);
 			mBulletActor.createBody();
@@ -358,17 +358,17 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 	public void setCenterOffset(Vector2 newCenter) {
 		// Save diff offset and move the actor in the opposite direction...
 		Vector2 diffOffset = null;
-		if (mBulletActor != null && mDef.getShapeType() == ActorShapeTypes.CUSTOM) {
+		if (mBulletActor != null && mDef.getVisualVars().getShapeType() == ActorShapeTypes.CUSTOM) {
 			mBulletActor.destroyBody();
 
 			diffOffset = Pools.vector2.obtain();
-			diffOffset.set(mDef.getCenterOffset());
+			diffOffset.set(mDef.getVisualVars().getCenterOffset());
 		}
 
-		mDef.setCenterOffset(newCenter);
+		mDef.getVisualVars().setCenterOffset(newCenter);
 
-		if (mBulletActor != null && mDef.getShapeType() == ActorShapeTypes.CUSTOM) {
-			diffOffset.sub(mDef.getCenterOffset());
+		if (mBulletActor != null && mDef.getVisualVars().getShapeType() == ActorShapeTypes.CUSTOM) {
+			diffOffset.sub(mDef.getVisualVars().getCenterOffset());
 			diffOffset.add(mBulletActor.getPosition());
 			mBulletActor.setPosition(diffOffset);
 			mBulletActor.createBody();
@@ -378,7 +378,7 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 
 	@Override
 	public Vector2 getCenterOffset() {
-		return mDef.getCenterOffset();
+		return mDef.getVisualVars().getCenterOffset();
 	}
 
 	@Override
@@ -524,7 +524,7 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 		mDef = def;
 		mDrawActorTool.setActorDef(def);
 		mWeapon.getDef().setBulletActorDef(def);
-		setShapeType(mDef.getShapeType());
+		setShapeType(mDef.getVisualVars().getShapeType());
 	}
 
 	/** Current weapon that fires the bullets */

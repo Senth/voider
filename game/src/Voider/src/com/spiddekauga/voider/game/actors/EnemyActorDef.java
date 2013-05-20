@@ -1,7 +1,6 @@
 package com.spiddekauga.voider.game.actors;
 
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
-import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.utils.OrderedMap;
 import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.utils.Json;
@@ -24,7 +23,7 @@ public class EnemyActorDef extends ActorDef {
 		getBodyDef().type = BodyType.KinematicBody;
 		getBodyDef().fixedRotation = true;
 
-		setShapeType(Enemy.Visual.SHAPE_DEFAULT);
+		mVisualVars.setShapeType(Enemy.Visual.SHAPE_DEFAULT);
 	}
 
 	/**
@@ -349,15 +348,6 @@ public class EnemyActorDef extends ActorDef {
 		MOVE_DIRECTION,
 		/** Rotates */
 		ROTATE
-	}
-
-	@Override
-	protected FixtureDef getDefaultFixtureDef() {
-		FixtureDef fixtureDef = new FixtureDef();
-		fixtureDef.friction = 0.0f;
-		fixtureDef.restitution = 0.1f;
-		fixtureDef.density = 0.001f;
-		return fixtureDef;
 	}
 
 	/** If the enemy has a weapon */

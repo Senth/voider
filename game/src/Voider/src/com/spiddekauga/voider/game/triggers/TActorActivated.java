@@ -40,7 +40,7 @@ public class TActorActivated extends Trigger implements Disposable, IResourceBod
 	@Override
 	public void createBody() {
 		if (mBody == null && !isHidden()) {
-			List<FixtureDef> fixtures = mActor.getDef().getFixtureDefs();
+			List<FixtureDef> fixtures = mActor.getDef().getVisualVars().getFixtureDefs();
 
 			mBody = Actor.getWorld().createBody(new BodyDef());
 
@@ -68,7 +68,7 @@ public class TActorActivated extends Trigger implements Disposable, IResourceBod
 		if (mVertices != null && mActor != null) {
 			shapeRenderer.setColor(Config.Editor.Level.Trigger.COLOR);
 			Vector2 offsetPosition = Pools.vector2.obtain();
-			offsetPosition.set(mActor.getPosition()).add(mActor.getDef().getCenterOffset());
+			offsetPosition.set(mActor.getPosition()).add(mActor.getDef().getVisualVars().getCenterOffset());
 			shapeRenderer.triangles(mVertices, offsetPosition);
 
 			if (isSelected()) {
@@ -193,7 +193,7 @@ public class TActorActivated extends Trigger implements Disposable, IResourceBod
 			destroyVertices();
 
 			ArrayList<Vector2> polygon = new ArrayList<Vector2>();
-			ArrayList<Vector2> actorShape = mActor.getDef().getPolygonShape();
+			ArrayList<Vector2> actorShape = mActor.getDef().getVisualVars().getPolygonShape();
 			if (actorShape != null) {
 				// Copy polygon from actor, so we don't free the actor's vectors when freeing
 				// this trigger

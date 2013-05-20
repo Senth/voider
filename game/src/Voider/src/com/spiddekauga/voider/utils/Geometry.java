@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Stack;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
@@ -753,10 +754,49 @@ public class Geometry {
 	}
 
 	/**
+	 * Tests whether the polygon shape with intersections only contains simple intersections,
+	 * i.e. intersections that won't make a hole inside the polygon.
+	 * @param vertices all the vertices of the polygon
+	 * @param intersections all intersection points
+	 * @return true if the polygon shape only contains simple intersections.
+	 */
+	public static boolean arePolygonIntersectionsSimple(ArrayList<Vector2> vertices, ArrayList<Vector2> intersections) {
+		@SuppressWarnings("unchecked")
+		Stack<Vector2> stack = Pools.stack.obtain();
+		stack.clear();
+
+		// This method will iterate through vertices and push the intersection
+		// if the intersection isn't at the top of the stack, in that case it will
+		// pop it. If only simple intersections exists when popping
+		// the top of the stack shall always contain the intersection to pop.
+		// When all vertices have push/popped onto the stack, if the stack isn't empty
+		// the polygon contains complex intersections.
+		for (Vector2 vertex : vertices) {
+			if (com.spiddekauga.utils.Collections.linearSearch(intersections, vertex) != -1) {
+				if (stack.peek() == vertex) {
+					stack.pop();
+				} else {
+					stack.push(vertex);
+				}
+			}
+		}
+
+		boolean simpleIntersections = false;
+		if (stack.isEmpty()) {
+			simpleIntersections = true;
+		}
+
+		Pools.stack.free(stack);
+
+		return simpleIntersections;
+	}
+
+	/**
 	 * Makes a polygon non-complex, i.e. it will create new vertices so that it doesn't intersect
-	 * itself.
+	 * itself. Will only work for simple intersections, i.e. intersections that won't make a hole
+	 * inside the polygon. To try if it's valid use
 	 * @param vertices all the corner vertices of the polygon, this array will be modified if
-	 * an intersection exists
+	 * an intersection exists {@link #arePolygonIntersectionsSimple(ArrayList, ArrayList)}
 	 * @return newly created vertices, these have been created from Pools.vector2 be sure to free
 	 * them after their use. Same goes for the ArrayList. Null if no vertices were created.
 	 */
@@ -767,13 +807,13 @@ public class Geometry {
 
 
 		for (int i = 0; i < vertices.size(); ++i) {
-			int intersectionIndex = intersectionExists(vertices, i, i);
+			int intersectionIndexEnd = intersectionExists(vertices, i, i);
 
-			if (intersectionIndex != -1) {
+			if (intersectionIndexEnd != -1) {
 				Vector2 line1a = vertices.get(i);
 				Vector2 line1b = vertices.get(computeNextIndex(vertices, i));
-				Vector2 line2a = vertices.get(intersectionIndex);
-				Vector2 line2b = vertices.get(computeNextIndex(vertices, intersectionIndex));
+				Vector2 line2a = vertices.get(intersectionIndexEnd);
+				Vector2 line2b = vertices.get(computeNextIndex(vertices, intersectionIndexEnd));
 				Vector2 intersectionPoint = getLineLineIntersection(line1a, line1b, line2a, line2b);
 
 				if (intersectionPoint != null) {
@@ -786,12 +826,12 @@ public class Geometry {
 					// 1 2 3 X 5 4 X 6 7. The order is always reversed between i (3) and intersectionIndex + 1 (6).
 
 					// First reverse
-					for (int forwardIndex = i + 1, backwardIndex = intersectionIndex; forwardIndex < backwardIndex; ++forwardIndex, --backwardIndex) {
+					for (int forwardIndex = i + 1, backwardIndex = intersectionIndexEnd; forwardIndex < backwardIndex; ++forwardIndex, --backwardIndex) {
 						Collections.swap(vertices, forwardIndex, backwardIndex);
 					}
 
 					// Add intersection point to the vertices
-					vertices.add(computeNextIndex(vertices, intersectionIndex), intersectionPoint);
+					vertices.add(computeNextIndex(vertices, intersectionIndexEnd), intersectionPoint);
 					vertices.add(computeNextIndex(vertices, i), intersectionPoint);
 				} else {
 					Gdx.app.debug("Geometry", "Intersection found, but was parallell");
@@ -801,6 +841,33 @@ public class Geometry {
 
 		if (newVertices.isEmpty()) {
 			Pools.arrayList.free(newVertices);
+			return null;
+		} else {
+			return newVertices;
+		}
+	}
+
+	/**
+	 * Makes a complex polygon into several non-complex polygons.
+	 * I.e. it will create new vertices so that it doesn't intersect itself.
+	 * @param vertices all the corner vertices of the polygon. This array will be modified!
+	 * @param polygons an array of non-complex polygons
+	 * @return newly created vertices, these have been created from Pools.vector2 be sure to free
+	 * them after their use. Same goes for the ArrayList. Null if no vertices were created.
+	 */
+	public static ArrayList<Vector2> makePolygonNonComplex(ArrayList<Vector2> vertices, ArrayList<ArrayList<Vector2>> polygons) {
+		// Find intersections
+		ArrayList<Vector2> newVertices = makePolygonNonComplex(vertices);
+
+		// Add all vertices to the polygon
+		@SuppressWarnings("unchecked")
+		ArrayList<Vector2> newPolygon = Pools.arrayList.obtain();
+		newPolygon.clear();
+		newPolygon.addAll(vertices);
+
+		// Find split points
+
+		if (newVertices == null) {
 			return null;
 		} else {
 			return newVertices;

@@ -2,6 +2,7 @@ package com.spiddekauga.voider.utils;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Stack;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
@@ -25,6 +26,9 @@ public class Pools {
 	/** Hash set */
 	@SuppressWarnings("rawtypes")
 	public static Pool<HashSet> hashSet = new Pool<HashSet>(HashSet.class, 16, 100);
+	/** Stack */
+	@SuppressWarnings("rawtypes")
+	public static Pool<Stack> stack = new Pool<Stack>(Stack.class, 5, 20);
 	/** Cells for tables */
 	public static Pool<Cell> cell = new Pool<Cell>(Cell.class, 16, 250);
 	/** Row for tables */

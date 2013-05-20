@@ -175,7 +175,7 @@ public class EnemyActor extends Actor {
 	 */
 	public TriggerInfo createDefaultActivateTrigger(Level level) {
 		// Calculate position of trigger
-		float xCoord = getPosition().x - getDef().getBoundingRadius();
+		float xCoord = getPosition().x - getDef().getVisualVars().getBoundingRadius();
 
 		// Decrease position if we are in an enemy group
 		if (mGroup != null) {
@@ -874,7 +874,7 @@ public class EnemyActor extends Actor {
 	 */
 	private void checkPathDeactivate() {
 		if (TriggerInfo.getTriggerInfoByAction(this, Actions.ACTOR_DEACTIVATE) == null) {
-			if (getPath().getRightestCorner().x + getDef().getBoundingRadius() < mLevel.getXCoord() - SceneSwitcher.getWorldWidth()) {
+			if (getPath().getRightestCorner().x + getDef().getVisualVars().getBoundingRadius() < mLevel.getXCoord() - SceneSwitcher.getWorldWidth()) {
 
 				// For once, check that the ship cannot be seen too
 				boolean deactivate = false;
@@ -883,19 +883,19 @@ public class EnemyActor extends Actor {
 					Vector2 maxPos = SceneSwitcher.getWorldMaxCoordinates();
 
 					// Left
-					if (getPosition().x + getDef().getBoundingRadius() < minPos.x) {
+					if (getPosition().x + getDef().getVisualVars().getBoundingRadius() < minPos.x) {
 						deactivate = true;
 					}
 					// Right
-					else if (getPosition().x - getDef().getBoundingRadius() > maxPos.x) {
+					else if (getPosition().x - getDef().getVisualVars().getBoundingRadius() > maxPos.x) {
 						deactivate = true;
 					}
 					// Bottom
-					else if (getPosition().y + getDef().getBoundingRadius() < minPos.y) {
+					else if (getPosition().y + getDef().getVisualVars().getBoundingRadius() < minPos.y) {
 						deactivate = true;
 					}
 					// Top
-					else if (getPosition().y - getDef().getBoundingRadius() > maxPos.y) {
+					else if (getPosition().y - getDef().getVisualVars().getBoundingRadius() > maxPos.y) {
 						deactivate = true;
 					}
 
@@ -920,7 +920,7 @@ public class EnemyActor extends Actor {
 	 */
 	private void checkStationaryDeactivate() {
 		if (TriggerInfo.getTriggerInfoByAction(this, Actions.ACTOR_DEACTIVATE) == null) {
-			if (getPosition().x + getDef().getBoundingRadius() < mLevel.getXCoord() - SceneSwitcher.getWorldWidth()) {
+			if (getPosition().x + getDef().getVisualVars().getBoundingRadius() < mLevel.getXCoord() - SceneSwitcher.getWorldWidth()) {
 				deactivate();
 				destroyBody();
 			}

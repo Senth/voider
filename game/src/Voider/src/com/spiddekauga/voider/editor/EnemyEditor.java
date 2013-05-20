@@ -821,50 +821,50 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 
 	@Override
 	public void setShapeType(ActorShapeTypes shapeType) {
-		mDef.setShapeType(shapeType);
+		mDef.getVisualVars().setShapeType(shapeType);
 
 		resetBodyShapes();
 	}
 
 	@Override
 	public ActorShapeTypes getShapeType() {
-		return mDef.getShapeType();
+		return mDef.getVisualVars().getShapeType();
 	}
 
 	@Override
 	public void setShapeRadius(float radius) {
-		mDef.setShapeRadius(radius);
+		mDef.getVisualVars().setShapeRadius(radius);
 
 		resetBodyShapes();
 	}
 
 	@Override
 	public float getShapeRadius() {
-		return mDef.getShapeRadius();
+		return mDef.getVisualVars().getShapeRadius();
 	}
 
 	@Override
 	public void setShapeWidth(float width) {
-		mDef.setShapeWidth(width);
+		mDef.getVisualVars().setShapeWidth(width);
 
 		resetBodyShapes();
 	}
 
 	@Override
 	public float getShapeWidth() {
-		return mDef.getShapeWidth();
+		return mDef.getVisualVars().getShapeWidth();
 	}
 
 	@Override
 	public void setShapeHeight(float height) {
-		mDef.setShapeHeight(height);
+		mDef.getVisualVars().setShapeHeight(height);
 
 		resetBodyShapes();
 	}
 
 	@Override
 	public float getShapeHeight() {
-		return mDef.getShapeHeight();
+		return mDef.getVisualVars().getShapeHeight();
 	}
 
 	@Override
@@ -878,7 +878,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 		//			diffOffset.set(mDef.getCenterOffset());
 		//		}
 
-		mDef.resetCenterOffset();
+		mDef.getVisualVars().resetCenterOffset();
 
 		//		if (mBulletActor != null) {
 		//			diffOffset.sub(mDef.getCenterOffset());
@@ -900,7 +900,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 		//			diffOffset.set(mDef.getCenterOffset());
 		//		}
 
-		mDef.setCenterOffset(newCenter);
+		mDef.getVisualVars().setCenterOffset(newCenter);
 
 		//		if (mBulletActor != null) {
 		//			diffOffset.sub(mDef.getCenterOffset());
@@ -913,7 +913,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 
 	@Override
 	public Vector2 getCenterOffset() {
-		return mDef.getCenterOffset();
+		return mDef.getVisualVars().getCenterOffset();
 	}
 
 	@Override

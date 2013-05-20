@@ -79,7 +79,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 				calculateRotatedVertices();
 
 				// Rotation
-				if (!mSkipRotate && mDef.getBodyDef().angularVelocity != 0 && !mDef.getCenterOffset().equals(Vector2.Zero)) {
+				if (!mSkipRotate && mDef.getBodyDef().angularVelocity != 0 && !mDef.getVisualVars().getCenterOffset().equals(Vector2.Zero)) {
 					float newAngle = mBody.getAngle();
 					newAngle += mDef.getBodyDef().angularVelocity * deltaTime;
 					if (newAngle >= MathUtils.PI2) {
@@ -114,7 +114,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 				reloadBody();
 			}
 			// Do we need to reload the fixtures?
-			else if (mFixtureCreateTime <= getDef().getFixtureChangeTime()) {
+			else if (mFixtureCreateTime <= getDef().getVisualVars().getFixtureChangeTime()) {
 				reloadFixtures();
 				calculateRotatedVertices(true);
 			}
@@ -306,30 +306,32 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 		offsetPosition.set(mBody.getPosition());
 
 		// Offset for circle
-		if (mDef.getShapeType() == ActorShapeTypes.CUSTOM && mDef.getCornerCount() >= 1 && mDef.getCornerCount() <= 2) {
-			offsetPosition.add(mDef.getCorners().get(0));
+		if (mDef.getVisualVars().getShapeType() == ActorShapeTypes.CUSTOM && mDef.getVisualVars().getCornerCount() >= 1 && mDef.getVisualVars().getCornerCount() <= 2) {
+			offsetPosition.add(mDef.getVisualVars().getCorners().get(0));
 		}
 
-		// Draw regular shape
+		// Draw regular filled shape
 		if (!mDrawOnlyOutline) {
 			// Shape
-			shapeRenderer.setColor(mDef.getColor());
+			shapeRenderer.setColor(mDef.getVisualVars().getColor());
 			shapeRenderer.triangles(mRotatedVertices, offsetPosition);
 
 			// Border
-			if (mRotatedBorderVertices != null) {
-				shapeRenderer.setColor(mDef.getBorderColor());
-				shapeRenderer.triangles(mRotatedBorderVertices, offsetPosition);
-			}
-		} else if (mDef.getCornerCount() >= 2) {
+			//			if (mRotatedBorderVertices != null) {
+			//				shapeRenderer.setColor(mDef.getBorderColor());
+			//				shapeRenderer.triangles(mRotatedBorderVertices, offsetPosition);
+			//			}
+		}
+		// Draw outline
+		else if (mDef.getVisualVars().getCornerCount() >= 2) {
 			shapeRenderer.push(ShapeType.Line);
 
 			shapeRenderer.setColor(Config.Actor.OUTLINE_COLOR);
-			shapeRenderer.polyline(mDef.getCorners(), false, offsetPosition);
+			shapeRenderer.polyline(mDef.getVisualVars().getCorners(), false, offsetPosition);
 
-			if (mDef.getCornerCount() >= 3) {
+			if (mDef.getVisualVars().getCornerCount() >= 3) {
 				shapeRenderer.setColor(Config.Actor.OUTLINE_CLOSE_COLOR);
-				shapeRenderer.line(mDef.getCorners().get(mDef.getCornerCount()-1), mDef.getCorners().get(0), offsetPosition);
+				shapeRenderer.line(mDef.getVisualVars().getCorners().get(mDef.getVisualVars().getCornerCount()-1), mDef.getVisualVars().getCorners().get(0), offsetPosition);
 			}
 
 			shapeRenderer.pop();
@@ -354,16 +356,16 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 
 		// Draw selected overlay
 		if (!mDrawOnlyOutline && mSelected) {
-			if (mDef.getShapeType() == ActorShapeTypes.CUSTOM && mDef.getCornerCount() >= 1 && mDef.getCornerCount() <= 2) {
-				offsetPosition.add(mDef.getCorners().get(0));
+			if (mDef.getVisualVars().getShapeType() == ActorShapeTypes.CUSTOM && mDef.getVisualVars().getCornerCount() >= 1 && mDef.getVisualVars().getCornerCount() <= 2) {
+				offsetPosition.add(mDef.getVisualVars().getCorners().get(0));
 			}
 
 			// Draw selected overlay
 			shapeRenderer.setColor(Config.Editor.SELECTED_COLOR);
 			shapeRenderer.triangles(mRotatedVertices, offsetPosition);
 
-			if (mDef.getShapeType() == ActorShapeTypes.CUSTOM && mDef.getCornerCount() >= 1 && mDef.getCornerCount() <= 2) {
-				offsetPosition.sub(mDef.getCorners().get(0));
+			if (mDef.getVisualVars().getShapeType() == ActorShapeTypes.CUSTOM && mDef.getVisualVars().getCornerCount() >= 1 && mDef.getVisualVars().getCornerCount() <= 2) {
+				offsetPosition.sub(mDef.getVisualVars().getCorners().get(0));
 			}
 		}
 
@@ -374,8 +376,8 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 
 			shapeRenderer.setColor(Config.Editor.CORNER_COLOR);
 			Vector2 cornerOffset = Pools.vector2.obtain();
-			for (Vector2 corner : mDef.getCorners()) {
-				cornerOffset.set(offsetPosition).add(corner).add(mDef.getCenterOffset());
+			for (Vector2 corner : mDef.getVisualVars().getCorners()) {
+				cornerOffset.set(offsetPosition).add(corner).add(mDef.getVisualVars().getCenterOffset());
 				shapeRenderer.polyline(SceneSwitcher.getPickingVertices(), true, cornerOffset);
 			}
 			Pools.vector2.free(cornerOffset);
@@ -623,7 +625,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	 */
 	public void createBody(BodyDef bodyDef) {
 		if (mWorld != null && mBody == null) {
-			if (mSkipRotate || !mDef.getCenterOffset().equals(Vector2.Zero)) {
+			if (mSkipRotate || !mDef.getVisualVars().getCenterOffset().equals(Vector2.Zero)) {
 				bodyDef.angularVelocity = 0;
 				bodyDef.angle = 0;
 			} else {
@@ -671,9 +673,9 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 		if (mRotatedVertices != null) {
 			Pools.vector2.freeDuplicates(mRotatedVertices);
 			Pools.arrayList.free(mRotatedVertices);
-			Pools.vector2.freeDuplicates(mRotatedBorderVertices);
-			Pools.arrayList.free(mRotatedBorderVertices);
-			mRotatedBorderVertices = null;
+			//			Pools.vector2.freeDuplicates(mRotatedBorderVertices);
+			//			Pools.arrayList.free(mRotatedBorderVertices);
+			//			mRotatedBorderVertices = null;
 			mRotatedVertices = null;
 		}
 	}
@@ -688,7 +690,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 		if (mBody != null) {
 			destroyFixtures();
 
-			for (FixtureDef fixtureDef : mDef.getFixtureDefs()) {
+			for (FixtureDef fixtureDef : mDef.getVisualVars().getFixtureDefs()) {
 				if (fixtureDef != null && fixtureDef.shape != null) {
 					mBody.createFixture(fixtureDef);
 				}
@@ -773,11 +775,11 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	 * and in an editor.
 	 */
 	public void createBodyCorners() {
-		if (mDef.getShapeType() == ActorShapeTypes.CUSTOM && mEditorActive) {
+		if (mDef.getVisualVars().getShapeType() == ActorShapeTypes.CUSTOM && mEditorActive) {
 			mHasBodyCorners = true;
 			Vector2 worldPos = Pools.vector2.obtain();
-			for (Vector2 localPos : mDef.getCorners()) {
-				worldPos.set(localPos).add(mPosition).add(getDef().getCenterOffset());
+			for (Vector2 localPos : mDef.getVisualVars().getCorners()) {
+				worldPos.set(localPos).add(mPosition).add(getDef().getVisualVars().getCenterOffset());
 				createBodyCorner(worldPos);
 			}
 			Pools.vector2.free(worldPos);
@@ -836,7 +838,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 
 	@Override
 	public float getBoundingRadius() {
-		return mDef.getBoundingRadius();
+		return mDef.getVisualVars().getBoundingRadius();
 	}
 
 	/**
@@ -910,7 +912,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	 * @param fixtureDef the fixture to add
 	 */
 	protected void addFixture(FixtureDef fixtureDef) {
-		mDef.addFixtureDef(fixtureDef);
+		mDef.getVisualVars().addFixtureDef(fixtureDef);
 		mBody.createFixture(fixtureDef);
 
 		mFixtureCreateTime = GameTime.getTotalGlobalTimeElapsed();
@@ -923,7 +925,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 		destroyFixtures();
 
 		if (mDef != null) {
-			mDef.clearFixtures();
+			mDef.getVisualVars().clearFixtures();
 		}
 	}
 
@@ -958,12 +960,12 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 		return mRotatedVertices;
 	}
 
-	/**
-	 * @return rotated border vertices
-	 */
-	protected ArrayList<Vector2> getRotatedBorderVertices() {
-		return mRotatedBorderVertices;
-	}
+	//	/**
+	//	 * @return rotated border vertices
+	//	 */
+	//	protected ArrayList<Vector2> getRotatedBorderVertices() {
+	//		return mRotatedBorderVertices;
+	//	}
 
 	/**
 	 * Calculates the rotated vertices (both regular and border)
@@ -979,24 +981,24 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 				Pools.arrayList.free(mRotatedVertices);
 			}
 
-			if (mRotatedBorderVertices != null) {
-				Pools.vector2.freeDuplicates(mRotatedBorderVertices);
-				Pools.arrayList.free(mRotatedBorderVertices);
-			}
+			//			if (mRotatedBorderVertices != null) {
+			//				Pools.vector2.freeDuplicates(mRotatedBorderVertices);
+			//				Pools.arrayList.free(mRotatedBorderVertices);
+			//			}
 
 			float rotation = MathUtils.radiansToDegrees * getBody().getAngle();
 
-			mRotatedVertices = copyVectorArray(mDef.getTriangleVertices());
+			mRotatedVertices = copyVectorArray(mDef.getVisualVars().getTriangleVertices());
 			if (mRotatedVertices != null) {
-				Geometry.moveVertices(mRotatedVertices, getDef().getCenterOffset(), true);
+				Geometry.moveVertices(mRotatedVertices, getDef().getVisualVars().getCenterOffset(), true);
 				Geometry.rotateVertices(mRotatedVertices, rotation, true);
 			}
 
-			mRotatedBorderVertices = copyVectorArray(mDef.getTriangleBorderVertices());
-			if (mRotatedBorderVertices != null) {
-				Geometry.moveVertices(mRotatedBorderVertices, getDef().getCenterOffset(), true);
-				Geometry.rotateVertices(mRotatedBorderVertices, rotation, true);
-			}
+			//			mRotatedBorderVertices = copyVectorArray(mDef.getTriangleBorderVertices());
+			//			if (mRotatedBorderVertices != null) {
+			//				Geometry.moveVertices(mRotatedBorderVertices, getDef().getCenterOffset(), true);
+			//				Geometry.rotateVertices(mRotatedBorderVertices, rotation, true);
+			//			}
 		}
 	}
 
@@ -1038,7 +1040,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	 * Create the fixtures for the actor
 	 */
 	protected void createFixtures() {
-		for (FixtureDef fixtureDef : mDef.getFixtureDefs()) {
+		for (FixtureDef fixtureDef : mDef.getVisualVars().getFixtureDefs()) {
 			if (fixtureDef != null && fixtureDef.shape != null) {
 				setFilterCollisionData(fixtureDef);
 				mBody.createFixture(fixtureDef);
@@ -1123,8 +1125,8 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	private float mRotationPrevious = 0;
 	/** Rotated vertices of the actor */
 	private ArrayList<Vector2> mRotatedVertices = null;
-	/** Rotated border vertices */
-	private ArrayList<Vector2> mRotatedBorderVertices = null;
+	//	/** Rotated border vertices */
+	//	private ArrayList<Vector2> mRotatedBorderVertices = null;
 	/** If the actor shall be destroyed */
 	private boolean mDestroyBody = false;
 	/** Only draws the shape's outline */

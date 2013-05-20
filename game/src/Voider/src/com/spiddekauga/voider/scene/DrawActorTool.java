@@ -78,7 +78,7 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 
 		deactivate();
 
-		if (actorDef.getCornerCount() > 0) {
+		if (actorDef.getVisualVars().getCornerCount() > 0) {
 			if (mSelectedActor == null) {
 				mSelectedActor = newActor();
 				mActorEditor.onResourceAdded(mSelectedActor);
@@ -299,7 +299,7 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 			if (mHitBody != null) {
 				if (mHitBody.getUserData() instanceof HitWrapper) {
 					mCornerIndexCurrent = mSelectedActor.getCornerIndex(mHitBody.getPosition());
-					mDragOrigin.set(mSelectedActor.getDef().getCornerPosition(mCornerIndexCurrent));
+					mDragOrigin.set(mSelectedActor.getDef().getVisualVars().getCornerPosition(mCornerIndexCurrent));
 				}
 			}
 			break;
@@ -316,17 +316,17 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 					// Only do something if we didn't hit the actor the first time
 					if (!mChangedActorSinceDown) {
 						mInvoker.execute(new CResourceRemove(mSelectedActor, mActorEditor));
-						mInvoker.execute(new CResourceCornerRemoveAll(mSelectedActor.getDef(), mActorEditor), true);
+						mInvoker.execute(new CResourceCornerRemoveAll(mSelectedActor.getDef().getVisualVars(), mActorEditor), true);
 						mInvoker.execute(new CResourceSelect(null, this), true);
 					}
 				}
 				// Else hit a corner, delete it
 				else if (mHitBody.getUserData() instanceof HitWrapper){
 					mCornerIndexCurrent = mSelectedActor.getCornerIndex(mHitBody.getPosition());
-					mInvoker.execute(new CResourceCornerRemove(mSelectedActor.getDef(), mCornerIndexCurrent, mActorEditor));
+					mInvoker.execute(new CResourceCornerRemove(mSelectedActor.getDef().getVisualVars(), mCornerIndexCurrent, mActorEditor));
 
 					// Was it the last corner? Remove actor too then
-					if (mSelectedActor.getDef().getCornerCount() == 0) {
+					if (mSelectedActor.getDef().getVisualVars().getCornerCount() == 0) {
 						mInvoker.execute(new CResourceRemove(mSelectedActor, mActorEditor), true);
 						mInvoker.execute(new CResourceSelect(null, this), true);
 					}
@@ -371,11 +371,11 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 		case SET_CENTER:
 			if (mSelectedActor != null) {
 				mDragOrigin.set(mSelectedActor.getPosition());
-				mCenterOffsetOrigin.set(mSelectedActor.getDef().getCenterOffset());
+				mCenterOffsetOrigin.set(mSelectedActor.getDef().getVisualVars().getCenterOffset());
 				Vector2 centerOffset = Pools.vector2.obtain();
 				centerOffset.set(mDragOrigin).sub(mTouchCurrent);
-				centerOffset.add(mSelectedActor.getDef().getCenterOffset());
-				mSelectedActor.getDef().setCenterOffset(centerOffset);
+				centerOffset.add(mSelectedActor.getDef().getVisualVars().getCenterOffset());
+				mSelectedActor.getDef().getVisualVars().setCenterOffset(centerOffset);
 				mSelectedActor.destroyBody();
 				mSelectedActor.setPosition(mTouchOrigin);
 				mSelectedActor.createBody();
@@ -392,8 +392,8 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 		case ADJUST_MOVE_CORNER:
 			if (mSelectedActor != null && mCornerIndexCurrent != -1) {
 				Vector2 newCornerPos = Pools.vector2.obtain();
-				newCornerPos.set(mTouchCurrent).sub(mSelectedActor.getPosition()).sub(mSelectedActor.getDef().getCenterOffset());
-				mSelectedActor.getDef().moveCorner(mCornerIndexCurrent, newCornerPos);
+				newCornerPos.set(mTouchCurrent).sub(mSelectedActor.getPosition()).sub(mSelectedActor.getDef().getVisualVars().getCenterOffset());
+				mSelectedActor.getDef().getVisualVars().moveCorner(mCornerIndexCurrent, newCornerPos);
 				Pools.vector2.free(newCornerPos);
 			}
 			break;
@@ -436,7 +436,7 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 				Vector2 centerOffset = Pools.vector2.obtain();
 				centerOffset.set(mDragOrigin).sub(mTouchCurrent);
 				centerOffset.add(mCenterOffsetOrigin);
-				mSelectedActor.getDef().setCenterOffset(centerOffset);
+				mSelectedActor.getDef().getVisualVars().setCenterOffset(centerOffset);
 				mSelectedActor.destroyBody();
 				mSelectedActor.setPosition(mTouchCurrent);
 				mSelectedActor.createBody();
@@ -455,9 +455,9 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 				// Reset to original position
 				Vector2 newPos = Pools.vector2.obtain();
 
-				newPos.set(mSelectedActor.getDef().getCornerPosition(mCornerIndexCurrent));
-				mSelectedActor.getDef().moveCorner(mCornerIndexCurrent, mDragOrigin);
-				mInvoker.execute(new CResourceCornerMove(mSelectedActor.getDef(), mCornerIndexCurrent, newPos, mActorEditor), mCornerAddedNow);
+				newPos.set(mSelectedActor.getDef().getVisualVars().getCornerPosition(mCornerIndexCurrent));
+				mSelectedActor.getDef().getVisualVars().moveCorner(mCornerIndexCurrent, mDragOrigin);
+				mInvoker.execute(new CResourceCornerMove(mSelectedActor.getDef().getVisualVars(), mCornerIndexCurrent, newPos, mActorEditor), mCornerAddedNow);
 
 				Pools.vector2.free(newPos);
 			}
@@ -481,7 +481,7 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 					// Add a final corner when released
 					appendCorner(true);
 
-					mInvoker.execute(new CResourceCornerRemoveExcessive(mSelectedActor.getDef()), true);
+					mInvoker.execute(new CResourceCornerRemoveExcessive(mSelectedActor.getDef().getVisualVars()), true);
 
 					try {
 						mInvoker.execute(new CActorDefFixCustomFixtures(mSelectedActor.getDef(), true), true);
@@ -560,11 +560,11 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 	private void appendCorner(boolean chained) {
 		Vector2 localPos = Pools.vector2.obtain();
 
-		localPos.set(mTouchCurrent).sub(mSelectedActor.getPosition()).sub(mSelectedActor.getDef().getCenterOffset());
+		localPos.set(mTouchCurrent).sub(mSelectedActor.getPosition()).sub(mSelectedActor.getDef().getVisualVars().getCenterOffset());
 
-		mInvoker.execute(new CResourceCornerAdd(mSelectedActor.getDef(), localPos, mActorEditor), chained);
+		mInvoker.execute(new CResourceCornerAdd(mSelectedActor.getDef().getVisualVars(), localPos, mActorEditor), chained);
 		mDragOrigin.set(mTouchCurrent);
-		mCornerIndexCurrent = mSelectedActor.getDef().getCornerCount() - 1;
+		mCornerIndexCurrent = mSelectedActor.getDef().getVisualVars().getCornerCount() - 1;
 
 		Pools.vector2.free(localPos);
 	}

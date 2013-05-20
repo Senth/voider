@@ -1,11 +1,8 @@
 package com.spiddekauga.voider.game.actors;
 
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
-import com.badlogic.gdx.physics.box2d.CircleShape;
-import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.utils.OrderedMap;
 import com.spiddekauga.utils.Json;
-import com.spiddekauga.voider.Config.Actor.Pickup;
 import com.spiddekauga.voider.game.Collectibles;
 /**
  * Pickup actor definition, does nothing more than specify that the actor
@@ -54,15 +51,6 @@ public class PickupActorDef extends ActorDef {
 		super.read(json, jsonData);
 
 		mCollectible = json.readValue("mCollectible", Collectibles.class, jsonData);
-	}
-
-	@Override
-	protected FixtureDef getDefaultFixtureDef() {
-		CircleShape circle = new CircleShape();
-		circle.setRadius(Pickup.RADIUS);
-		FixtureDef fixtureDef = new FixtureDef();
-		fixtureDef.shape = circle;
-		return fixtureDef;
 	}
 
 	/** Collectible inside the pickup */
