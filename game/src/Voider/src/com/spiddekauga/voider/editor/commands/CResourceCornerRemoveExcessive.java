@@ -99,10 +99,11 @@ public class CResourceCornerRemoveExcessive extends Command {
 	 */
 	@Override
 	public boolean undo() {
-		for (CornerIndex removedCorner : mRemovedCorners) {
-			mResource.addCorner(removedCorner.corner, removedCorner.index);
+		// Re-add corners, but from back
+		for (int i = mRemovedCorners.size() - 1; i >= 0; --i) {
+			mResource.addCorner(mRemovedCorners.get(i).corner, mRemovedCorners.get(i).index);
 
-			mCornerIndexPool.free(removedCorner);
+			mCornerIndexPool.free(mRemovedCorners.get(i));
 		}
 
 		mRemovedCorners.clear();
@@ -117,6 +118,8 @@ public class CResourceCornerRemoveExcessive extends Command {
 				Pools.vector2.free(cornerIndex.corner);
 				mCornerIndexPool.free(cornerIndex);
 			}
+			Pools.arrayList.free(mRemovedCorners);
+			mRemovedCorners = null;
 		}
 	}
 

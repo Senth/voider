@@ -298,7 +298,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	 */
 	@Override
 	public void render(ShapeRendererEx shapeRenderer) {
-		if (mRotatedVertices == null || mBody == null) {
+		if (mBody == null) {
 			return;
 		}
 
@@ -312,15 +312,12 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 
 		// Draw regular filled shape
 		if (!mDrawOnlyOutline && mDef.getVisualVars().isComplete()) {
-			// Shape
-			shapeRenderer.setColor(mDef.getVisualVars().getColor());
-			shapeRenderer.triangles(mRotatedVertices, offsetPosition);
-
-			// Border
-			//			if (mRotatedBorderVertices != null) {
-			//				shapeRenderer.setColor(mDef.getBorderColor());
-			//				shapeRenderer.triangles(mRotatedBorderVertices, offsetPosition);
-			//			}
+			if (mRotatedVertices != null) {
+				shapeRenderer.setColor(mDef.getVisualVars().getColor());
+				shapeRenderer.triangles(mRotatedVertices, offsetPosition);
+			} else {
+				Gdx.app.error("Actor", "Rotated vertices are null!");
+			}
 		}
 		// Draw outline
 		else if (mDef.getVisualVars().getCornerCount() >= 2) {
@@ -355,7 +352,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 
 
 		// Draw selected overlay
-		if (!mDrawOnlyOutline && mSelected) {
+		if (!mDrawOnlyOutline && mSelected && !getDef().getVisualVars().isComplete()) {
 			if (mDef.getVisualVars().getShapeType() == ActorShapeTypes.CUSTOM && mDef.getVisualVars().getCornerCount() >= 1 && mDef.getVisualVars().getCornerCount() <= 2) {
 				offsetPosition.add(mDef.getVisualVars().getCorners().get(0));
 			}
@@ -1125,8 +1122,6 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	private float mRotationPrevious = 0;
 	/** Rotated vertices of the actor */
 	private ArrayList<Vector2> mRotatedVertices = null;
-	//	/** Rotated border vertices */
-	//	private ArrayList<Vector2> mRotatedBorderVertices = null;
 	/** If the actor shall be destroyed */
 	private boolean mDestroyBody = false;
 	/** Only draws the shape's outline */

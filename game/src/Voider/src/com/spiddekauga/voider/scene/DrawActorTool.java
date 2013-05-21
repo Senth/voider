@@ -484,7 +484,7 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 					mInvoker.execute(new CResourceCornerRemoveExcessive(mSelectedActor.getDef().getVisualVars()), true);
 
 					try {
-						mInvoker.execute(new CActorDefFixCustomFixtures(mSelectedActor.getDef(), true), true);
+						//						mInvoker.execute(new CActorDefFixCustomFixtures(mSelectedActor.getDef(), true), true);
 					} catch (PolygonComplexException e) {
 						/** @todo print pop up error message */
 						mInvoker.undo();

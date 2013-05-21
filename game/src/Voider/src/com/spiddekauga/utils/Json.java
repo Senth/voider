@@ -1063,7 +1063,7 @@ public class Json {
 				}
 			}
 
-			// UUID
+
 			if (type == UUID.class) {
 				return (T) UUID.fromString((String)((OrderedMap<String, Object>)jsonData).get("uuid"));
 			}
@@ -1148,7 +1148,7 @@ public class Json {
 				return (T)newArray;
 			}
 			if (ArrayList.class.isAssignableFrom(type)) {
-				ArrayList<Object> newArray = new ArrayList<Object>(array.size);
+				ArrayList<Object> newArray = Pools.arrayList.obtain();
 				for (int i = 0, n = array.size; i < n; i++) {
 					newArray.add(readValue(elementType, null, array.get(i)));
 				}
