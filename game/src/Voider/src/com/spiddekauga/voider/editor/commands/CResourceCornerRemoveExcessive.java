@@ -5,11 +5,11 @@ import java.util.ArrayList;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Pool;
+import com.spiddekauga.utils.Collections;
 import com.spiddekauga.utils.Command;
 import com.spiddekauga.utils.Maths;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.resources.IResourceCorner;
-import com.spiddekauga.voider.utils.Geometry;
 import com.spiddekauga.voider.utils.Pools;
 
 /**
@@ -47,7 +47,7 @@ public class CResourceCornerRemoveExcessive extends Command {
 			beforeAngle = afterAngle;
 
 			// Calculate after vector
-			afterVector.set(corners.get(Geometry.computeNextIndex(corners, i))).sub(corners.get(i));
+			afterVector.set(corners.get(Collections.computeNextIndex(corners, i))).sub(corners.get(i));
 			afterAngle = afterVector.angle();
 
 			boolean tooLowAngleDiff = false;

@@ -37,6 +37,9 @@ public class VisualVars implements Json.Serializable, Disposable, IResourceCorne
 	 * @param actorType the default values depends on which actor type is set
 	 */
 	VisualVars(ActorTypes actorType) {
+		mCorners.clear();
+		mFixtureDefs.clear();
+
 		mActorType = actorType;
 		setDefaultValues();
 		createFixtureDef();
@@ -104,9 +107,10 @@ public class VisualVars implements Json.Serializable, Disposable, IResourceCorne
 	/**
 	 * Default constructor for JSON
 	 */
-	@SuppressWarnings("unused")
+	@SuppressWarnings({ "unused" })
 	private VisualVars() {
-		// Does nothing
+		mCorners.clear();
+		mFixtureDefs.clear();
 	}
 
 	/**
@@ -273,12 +277,11 @@ public class VisualVars implements Json.Serializable, Disposable, IResourceCorne
 
 	@Override
 	public void dispose() {
-		for (Vector2 corner : mCorners) {
-			Pools.vector2.free(corner);
-		}
-		mCorners.clear();
-
+		Pools.vector2.freeAll(mCorners);
+		Pools.arrayList.free(mCorners);
+		mCorners = null;
 		clearFixtures();
+		mFixtureDefs = null;
 		clearVertices();
 	}
 
@@ -286,33 +289,11 @@ public class VisualVars implements Json.Serializable, Disposable, IResourceCorne
 	 * Clears (and possibly frees) the vertices of the shape.
 	 */
 	public void clearVertices() {
-		// Remove border corner indexes first. These should include all
-		// regular vertices, so no need to free them later
-		//		if (borderVertices != null && !borderVertices.isEmpty()) {
-		//			// Because the vertices contains duplicates, we save the ones that have been
-		//			// freed, so we don't free them twice. Never remove corners though
-		//			ArrayList<Vector2> freedVertices = new ArrayList<Vector2>();
-		//			freedVertices.addAll(corners);
-		//			for (Vector2 vertex : borderVertices) {
-		//				if (!freedVertices.contains(vertex)) {
-		//					Pools.vector2.free(vertex);
-		//					freedVertices.add(vertex);
-		//				}
-		//			}
-		//			borderVertices.clear();
-		//		} else {
-		// Because the vertices contains duplicates, we save the ones that have been
-		// freed, so we don't free them twice. Never remove corners though
-		ArrayList<Vector2> freedVertices = new ArrayList<Vector2>();
-		freedVertices.addAll(mCorners);
-		for (Vector2 vertex : mVertices) {
-			if (!freedVertices.contains(vertex)) {
-				Pools.vector2.free(vertex);
-				freedVertices.add(vertex);
-			}
+		if (mVertices != null) {
+			Pools.vector2.freeDuplicates(mVertices);
+			Pools.arrayList.free(mVertices);
+			mVertices = null;
 		}
-		//		}
-		mVertices.clear();
 	}
 
 	/**
@@ -465,7 +446,6 @@ public class VisualVars implements Json.Serializable, Disposable, IResourceCorne
 				fixtureDef.shape = null;
 			}
 		}
-
 		mFixtureDefs.clear();
 	}
 
@@ -591,6 +571,7 @@ public class VisualVars implements Json.Serializable, Disposable, IResourceCorne
 	 * @throws PolygonComplexException if the method failed to make the polygon non-complex
 	 * @throws PolygonCornersTooCloseException if some corners are too close
 	 */
+	@SuppressWarnings("unchecked")
 	public void fixCustomShapeFixtures() {
 		// Save fixture properties
 		FixtureDef savedFixtureProperties = null;
@@ -603,7 +584,6 @@ public class VisualVars implements Json.Serializable, Disposable, IResourceCorne
 
 		// Destroy previous fixtures
 		clearFixtures();
-
 		clearVertices();
 
 
@@ -613,25 +593,59 @@ public class VisualVars implements Json.Serializable, Disposable, IResourceCorne
 			ArrayList<Vector2> triangles = null;
 			ArrayList<Vector2> createdVertices = null;
 			if (mCorners.size() == 3) {
-				triangles = new ArrayList<Vector2>(mCorners);
+				triangles = createCopy(mCorners);
 				Geometry.makePolygonCounterClockwise(triangles);
 			} else {
-				@SuppressWarnings("unchecked")
-				ArrayList<Vector2> tempVertices = Pools.arrayList.obtain();
-				tempVertices.clear();
-				tempVertices.addAll(mCorners);
-				createdVertices = Geometry.makePolygonNonComplex(tempVertices);
+				ArrayList<Vector2> tempVertices = createCopy(mCorners);
+				createdVertices = Geometry.makePolygonNonComplex(tempVertices, true);
 
-				try {
-					triangles = mEarClippingTriangulator.computeTriangles(tempVertices);
-					// Always reverse, triangles are always clockwise, whereas box2d needs
-					// counter clockwise...
-					Collections.reverse(triangles);
-				} catch (PolygonComplexException e) {
+				mShapeComplete = true;
+				// Test if polygon is complex with no loop
+				if (!Geometry.arePolygonIntersectionsSimple(tempVertices, createdVertices)) {
+					Pools.vector2.freeAll(createdVertices);
+					createdVertices.clear();
+					Pools.vector2.freeAll(tempVertices);
 					Pools.arrayList.free(tempVertices);
-					throw e;
+					tempVertices = createCopy(mCorners);
+
+					mShapeComplete = false;
+					createdVertices = Geometry.makePolygonNonComplex(tempVertices, false);
+
+					// Still complex
+					if (!Geometry.arePolygonIntersectionsSimple(tempVertices, createdVertices)) {
+						handlePolygonComplexException(tempVertices, createdVertices, null);
+					}
 				}
 
+				// Split polygon into smaller polygons
+				if (mShapeComplete) {
+					ArrayList<ArrayList<Vector2>> polygons = Geometry.splitPolygonWithIntersections(tempVertices, createdVertices);
+					triangles = Pools.arrayList.obtain();
+					triangles.clear();
+
+					for (ArrayList<Vector2> polygon : polygons) {
+						try {
+							ArrayList<Vector2> tempTriangles = mEarClippingTriangulator.computeTriangles(polygon);
+							Collections.reverse(tempTriangles);
+							triangles.addAll(tempTriangles);
+							Pools.arrayList.free(tempTriangles);
+						} catch (PolygonComplexException e) {
+							handlePolygonComplexException(tempVertices, createdVertices, e);
+						}
+					}
+
+				}
+				// Polygon not complete, just add the fixtures anyway
+				else {
+					try {
+						// Always reverse, triangles are always clockwise, whereas box2d needs
+						// counter clockwise...
+						triangles = mEarClippingTriangulator.computeTriangles(tempVertices);
+						Collections.reverse(triangles);
+					} catch (PolygonComplexException e) {
+						handlePolygonComplexException(tempVertices, createdVertices, e);
+					}
+				}
 				Pools.arrayList.free(tempVertices);
 			}
 
@@ -671,24 +685,38 @@ public class VisualVars implements Json.Serializable, Disposable, IResourceCorne
 					}
 				}
 
+				String throwMessage = null;
 				if (cornerTooClose) {
-					Gdx.app.debug("ActorDef", "Corners too close, skipping (" + lengthTest.len() + ")");
-					throw new PolygonCornersTooCloseException("Corners to close: " + lengthTest.len());
+					throwMessage = "Corners too close, skipping (" + lengthTest.len() + ")";
 				}
-
 				// Check area
-				float triangleArea = Geometry.calculateTriangleArea(triangleVertices[0], triangleVertices[1], triangleVertices[2]);
+				else {
+					float triangleArea = Geometry.calculateTriangleArea(triangleVertices[0], triangleVertices[1], triangleVertices[2]);
 
-				// Make clockwise
-				if (triangleArea < 0) {
-					Collections.reverse(Arrays.asList(triangleVertices));
-					triangleArea = -triangleArea;
-					Gdx.app.log("ActorDef", "Fixture triangle negative area, reversing order...");
+					// Make clockwise
+					if (triangleArea < 0) {
+						Collections.reverse(Arrays.asList(triangleVertices));
+						triangleArea = -triangleArea;
+						Gdx.app.log("ActorDef", "Fixture triangle negative area, reversing order...");
+					}
+
+					if (triangleArea <= Config.Graphics.POLYGON_AREA_MIN) {
+						throwMessage = "Area too small: (" + triangleArea + ")";
+					}
 				}
 
-				if (triangleArea <= Config.Graphics.POLYGON_AREA_MIN) {
-					Gdx.app.debug("ActorDef", "Area too small: (" + triangleArea + ")");
-					throw new PolygonCornersTooCloseException("Area too small: " + triangleArea);
+				if (throwMessage != null) {
+					Gdx.app.error("ActorDef", throwMessage);
+					if (createdVertices != null) {
+						Pools.vector2.freeAll(createdVertices);
+						Pools.arrayList.free(createdVertices);
+					}
+					Pools.vector2.freeDuplicates(triangles);
+					Pools.arrayList.free(triangles);
+					Pools.vector2.free(lengthTest);
+					Pools.vector2.freeAll(triangleVertices);
+
+					throw new PolygonCornersTooCloseException(throwMessage);
 				}
 
 
@@ -701,18 +729,19 @@ public class VisualVars implements Json.Serializable, Disposable, IResourceCorne
 			}
 
 
-			// Free stuff
-			for (int i = 0; i < triangleVertices.length; ++i) {
-				Pools.vector2.free(triangleVertices[i]);
-			}
-			Pools.vector2.free(lengthTest);
-			if (createdVertices != null) {
-				Pools.vector2.freeAll(createdVertices);
-				Pools.arrayList.free(createdVertices);
+			mVertices = triangles;
+
+			// Free vertices stuff
+			if (!mShapeComplete) {
+				clearVertices();
 			}
 
-			mVertices = triangles;
-			//			createBorder(corners);
+			// Free stuff
+			Pools.vector2.freeAll(triangleVertices);
+			Pools.vector2.free(lengthTest);
+			if (createdVertices != null) {
+				Pools.arrayList.free(createdVertices);
+			}
 		}
 		// Circle
 		else if (mCorners.size() >= 1) {
@@ -742,16 +771,10 @@ public class VisualVars implements Json.Serializable, Disposable, IResourceCorne
 			savedFixtureProperties.shape = circle;
 			addFixtureDef(savedFixtureProperties);
 
-
-			// Set AABB box
-			//			mAabbBox.setFromCircle(circle.getPosition(), circle.getRadius());
-
 			// Create vertices for the circle
 			ArrayList<Vector2> circleVertices = Geometry.createCircle(radius);
 			mVertices = mEarClippingTriangulator.computeTriangles(circleVertices);
 			Collections.reverse(mVertices);
-
-			//			createBorder(circleVertices);
 		}
 	}
 
@@ -761,13 +784,6 @@ public class VisualVars implements Json.Serializable, Disposable, IResourceCorne
 	ArrayList<Vector2> getTriangleVertices() {
 		return mVertices;
 	}
-
-	//	/**
-	//	 * @return border triangle vertices. Grouped together in groups of three vertices to form a triangle.
-	//	 */
-	//	ArrayList<Vector2> getTriangleBorderVertices() {
-	//		return borderVertices;
-	//	}
 
 	/**
 	 * Creates a circle from the visual variables
@@ -781,19 +797,12 @@ public class VisualVars implements Json.Serializable, Disposable, IResourceCorne
 		/** @todo use center for all shapes */
 		//		circleShape.setPosition(centerOffset);
 
-		// Set AABB box
-		//		mAabbBox.setFromCircle(circleShape.getPosition(), circleShape.getRadius());
-
-
 		// Create vertices for the circle
 		ArrayList<Vector2> circleVertices = Geometry.createCircle(mShapeCircleRadius);
 		mVertices = mEarClippingTriangulator.computeTriangles(circleVertices);
 		Collections.reverse(circleVertices);
 
 		mPolygon = circleVertices;
-
-		//		createBorder(circleVertices);
-
 
 		return circleShape;
 	}
@@ -811,10 +820,6 @@ public class VisualVars implements Json.Serializable, Disposable, IResourceCorne
 		/** @todo use center for all shapes */
 		//		rectangleShape.setAsBox(halfWidth, halfHeight, centerOffset, 0);
 		rectangleShape.setAsBox(halfWidth, halfHeight);
-
-		// Set AABB box
-		//		mAabbBox.setFromBox(centerOffset, halfWidth, halfHeight);
-		//		mAabbBox.setFromBox(new Vector2(), halfWidth, halfHeight);
 
 		clearVertices();
 
@@ -847,8 +852,6 @@ public class VisualVars implements Json.Serializable, Disposable, IResourceCorne
 		} else {
 			Gdx.app.error("ActorDef", "Vertex count is not 4 in rectangle!");
 		}
-
-		/** @todo create border for rectangle */
 
 		return rectangleShape;
 	}
@@ -893,11 +896,6 @@ public class VisualVars implements Json.Serializable, Disposable, IResourceCorne
 			//			vertex.add(centerOffset);
 		}
 
-
-		// Set AABB box
-		//		mAabbBox.setFromPolygon(vertices);
-
-
 		PolygonShape polygonShape = new PolygonShape();
 		polygonShape.set(vertices);
 
@@ -910,7 +908,6 @@ public class VisualVars implements Json.Serializable, Disposable, IResourceCorne
 			mVertices.add(vertex);
 			mPolygon.add(vertex);
 		}
-		//		createBorder(vertices);
 
 
 		return polygonShape;
@@ -974,6 +971,46 @@ public class VisualVars implements Json.Serializable, Disposable, IResourceCorne
 		return fixtureDef;
 	}
 
+	/**
+	 * Creates a copy of the list
+	 * @param vertices all vertices to create a copy of
+	 * @return new array list with a copy of the vertices
+	 */
+	private ArrayList<Vector2> createCopy(ArrayList<Vector2> vertices) {
+		@SuppressWarnings("unchecked")
+		ArrayList<Vector2> copy = Pools.arrayList.obtain();
+		copy.clear();
+
+		for (Vector2 vertex : vertices) {
+			copy.add(vertex.cpy());
+		}
+
+		return copy;
+	}
+
+	/**
+	 * Handles PolygonComplexException for #fixCustomShapeFixtures()
+	 * @param tempVertices
+	 * @param createdVertices
+	 * @param exception if null it will throw a new exception, else it will re-throw
+	 * the exception.
+	 */
+	private void handlePolygonComplexException(ArrayList<Vector2> tempVertices, ArrayList<Vector2> createdVertices, PolygonComplexException exception) {
+		if (createdVertices != null) {
+			Pools.vector2.freeAll(createdVertices);
+			Pools.arrayList.free(createdVertices);
+		}
+		Pools.vector2.freeAll(tempVertices);
+		Pools.arrayList.free(tempVertices);
+
+		if (exception == null) {
+			throw new PolygonComplexException();
+		} else {
+			throw exception;
+		}
+	}
+
+
 	/** Color of the actor */
 	private Color mColor = new Color();
 	/** Current shape of the enemy */
@@ -987,24 +1024,27 @@ public class VisualVars implements Json.Serializable, Disposable, IResourceCorne
 	/** Center offset for fixtures */
 	private Vector2 mCenterOffset = new Vector2();
 	/** Corners of polygon, used for custom shapes */
-	private ArrayList<Vector2> mCorners = new ArrayList<Vector2>();
+	@SuppressWarnings("unchecked")
+	private ArrayList<Vector2> mCorners = Pools.arrayList.obtain();
 	/** Array list of the polygon figure, this contains the vertices but not
 	 * in triangles. */
 	private ArrayList<Vector2> mPolygon = null;
 	/** Triangle vertices.
 	 * To easier render the shape. No optimization has been done to reduce
 	 * the number of vertices. */
-	private ArrayList<Vector2> mVertices = new ArrayList<Vector2>();
+	private ArrayList<Vector2> mVertices = null;
 	/** True if shape is drawable/complete */
 	private boolean mShapeComplete = true;
 	/** Defines the mass, shape, etc. */
-	private ArrayList<FixtureDef> mFixtureDefs = new ArrayList<FixtureDef>();
+	@SuppressWarnings("unchecked")
+	private ArrayList<FixtureDef> mFixtureDefs = Pools.arrayList.obtain();
 	/** Radius of the actor, or rather circle bounding box */
 	private float mBoundingRadius = 0;
 	/** Actor type, used for setting default values */
 	private ActorTypes mActorType = null;
 	/** Time when the fixture was changed last time */
 	protected float mFixtureChangeTime = 0;
+
 	/** Ear clipping triangulator for custom shapes */
 	private static EarClippingTriangulator mEarClippingTriangulator = new EarClippingTriangulator();
 }

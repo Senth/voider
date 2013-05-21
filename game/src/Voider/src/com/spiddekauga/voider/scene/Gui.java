@@ -9,7 +9,6 @@ import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.spiddekauga.utils.Collections;
 import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
@@ -146,7 +145,7 @@ public abstract class Gui {
 	public void showMsgBox(MsgBoxExecuter msgBox) {
 		// No active message box, add directly
 		if (mActiveMsgBoxes.isEmpty()) {
-			int index = Collections.linearSearch(mInactiveMsgBoxes, msgBox);
+			int index = mInactiveMsgBoxes.indexOf(msgBox);
 			if (index != -1) {
 				mInactiveMsgBoxes.remove(index);
 				mActiveMsgBoxes.add(msgBox);

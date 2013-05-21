@@ -229,31 +229,11 @@ public class Geometry {
 		float area = 0;
 		for (int i = 0; i < vertices.size(); i++) {
 			final Vector2 p1 = vertices.get(i);
-			final Vector2 p2 = vertices.get(computeNextIndex(vertices, i));
+			final Vector2 p2 = vertices.get(com.spiddekauga.utils.Collections.computeNextIndex(vertices, i));
 			area += p1.x * p2.y - p2.x * p1.y;
 		}
 
 		return area;
-	}
-
-	/**
-	 * Computes the next index of an array, i.e. it wraps the index from back to front if needed.
-	 * @param array the array to wrap
-	 * @param index calculates the next index of this
-	 * @return next index
-	 */
-	public static int computeNextIndex(final List<?> array, int index) {
-		return index == array.size() - 1 ? 0 : index + 1;
-	}
-
-	/**
-	 * Computes the previous index of an array, i.e. it wraps the index from the front to back if needed.
-	 * @param array the array to wrap
-	 * @param index calculates the previous index of this
-	 * @return previous index
-	 */
-	public static int computePreviousIndex(final List<?> array, int index) {
-		return index == 0 ? array.size() - 1 : index - 1;
 	}
 
 	/**
@@ -341,8 +321,8 @@ public class Geometry {
 		Vector2 borderBelowAfter2 = Pools.vector2.obtain();
 
 		for (int i = 0; i < corners.size(); ++i) {
-			int nextIndex = computeNextIndex(corners, i);
-			int prevIndex = computePreviousIndex(corners, i);
+			int nextIndex = com.spiddekauga.utils.Collections.computeNextIndex(corners, i);
+			int prevIndex = com.spiddekauga.utils.Collections.computePreviousIndex(corners, i);
 
 			// First position only takes into account the forward direction
 			if (i == 0) {
@@ -573,8 +553,8 @@ public class Geometry {
 		for (int i = 0; i < corners.size(); ++i) {
 			// Get direction of lines that uses this vertex (i.e. that has it
 			// as its end (line before) or start (line after) position.
-			int indexBefore = Geometry.computePreviousIndex(corners, i);
-			int indexAfter = Geometry.computeNextIndex(corners, i);
+			int indexBefore = com.spiddekauga.utils.Collections.computePreviousIndex(corners, i);
+			int indexAfter = com.spiddekauga.utils.Collections.computeNextIndex(corners, i);
 			Geometry.getDirection(corners.get(indexBefore), corners.get(i), directionBefore);
 			Geometry.getDirection(corners.get(i), corners.get(indexAfter), directionAfter);
 
@@ -644,7 +624,7 @@ public class Geometry {
 
 		if (Geometry.isPolygonCounterClockwise(corners)) {
 			for (int i = 0; i < corners.size(); ++i) {
-				int nextIndex = Geometry.computeNextIndex(corners, i);
+				int nextIndex = com.spiddekauga.utils.Collections.computeNextIndex(corners, i);
 
 				// First triangle
 				vertices.add(corners.get(i));
@@ -658,7 +638,7 @@ public class Geometry {
 			}
 		} else {
 			for (int i = 0; i < corners.size(); ++i) {
-				int nextIndex = Geometry.computeNextIndex(corners, i);
+				int nextIndex = com.spiddekauga.utils.Collections.computeNextIndex(corners, i);
 
 				// First triangle
 				vertices.add(corners.get(i));
@@ -761,6 +741,10 @@ public class Geometry {
 	 * @return true if the polygon shape only contains simple intersections.
 	 */
 	public static boolean arePolygonIntersectionsSimple(ArrayList<Vector2> vertices, ArrayList<Vector2> intersections) {
+		if (intersections == null) {
+			return true;
+		}
+
 		@SuppressWarnings("unchecked")
 		Stack<Vector2> stack = Pools.stack.obtain();
 		stack.clear();
@@ -772,8 +756,8 @@ public class Geometry {
 		// When all vertices have push/popped onto the stack, if the stack isn't empty
 		// the polygon contains complex intersections.
 		for (Vector2 vertex : vertices) {
-			if (com.spiddekauga.utils.Collections.linearSearch(intersections, vertex) != -1) {
-				if (stack.peek() == vertex) {
+			if (intersections.indexOf(vertex) != -1) {
+				if (!stack.isEmpty() && stack.peek() == vertex) {
 					stack.pop();
 				} else {
 					stack.push(vertex);
@@ -797,23 +781,26 @@ public class Geometry {
 	 * inside the polygon. To try if it's valid use
 	 * @param vertices all the corner vertices of the polygon, this array will be modified if
 	 * an intersection exists {@link #arePolygonIntersectionsSimple(ArrayList, ArrayList)}
+	 * @param testLoop this will include a test from end to begin vertices. If the polygon
+	 * isn't complete you might not want to test this.
 	 * @return newly created vertices, these have been created from Pools.vector2 be sure to free
 	 * them after their use. Same goes for the ArrayList. Null if no vertices were created.
 	 */
-	public static ArrayList<Vector2> makePolygonNonComplex(ArrayList<Vector2> vertices) {
+	public static ArrayList<Vector2> makePolygonNonComplex(ArrayList<Vector2> vertices, boolean testLoop) {
 		@SuppressWarnings("unchecked")
 		ArrayList<Vector2> newVertices = Pools.arrayList.obtain();
 		newVertices.clear();
 
+		int end = testLoop ? vertices.size() : vertices.size() - 1;
 
-		for (int i = 0; i < vertices.size(); ++i) {
-			int intersectionIndexEnd = intersectionExists(vertices, i, i);
+		for (int i = 0; i < end; ++i) {
+			int intersectionIndexEnd = intersectionExists(vertices, i, i, end);
 
 			if (intersectionIndexEnd != -1) {
 				Vector2 line1a = vertices.get(i);
-				Vector2 line1b = vertices.get(computeNextIndex(vertices, i));
+				Vector2 line1b = vertices.get(com.spiddekauga.utils.Collections.computeNextIndex(vertices, i));
 				Vector2 line2a = vertices.get(intersectionIndexEnd);
-				Vector2 line2b = vertices.get(computeNextIndex(vertices, intersectionIndexEnd));
+				Vector2 line2b = vertices.get(com.spiddekauga.utils.Collections.computeNextIndex(vertices, intersectionIndexEnd));
 				Vector2 intersectionPoint = getLineLineIntersection(line1a, line1b, line2a, line2b);
 
 				if (intersectionPoint != null) {
@@ -831,8 +818,8 @@ public class Geometry {
 					}
 
 					// Add intersection point to the vertices
-					vertices.add(computeNextIndex(vertices, intersectionIndexEnd), intersectionPoint);
-					vertices.add(computeNextIndex(vertices, i), intersectionPoint);
+					vertices.add(com.spiddekauga.utils.Collections.computeNextIndex(vertices, intersectionIndexEnd), intersectionPoint);
+					vertices.add(com.spiddekauga.utils.Collections.computeNextIndex(vertices, i), intersectionPoint);
 				} else {
 					Gdx.app.debug("Geometry", "Intersection found, but was parallell");
 				}
@@ -848,30 +835,64 @@ public class Geometry {
 	}
 
 	/**
-	 * Makes a complex polygon into several non-complex polygons.
-	 * I.e. it will create new vertices so that it doesn't intersect itself.
-	 * @param vertices all the corner vertices of the polygon. This array will be modified!
-	 * @param polygons an array of non-complex polygons
-	 * @return newly created vertices, these have been created from Pools.vector2 be sure to free
-	 * them after their use. Same goes for the ArrayList. Null if no vertices were created.
+	 * Splits a polygon with intersections into smaller polygons. This only works
+	 * if the polygon contains simple intersections, i.e. test it with
+	 * @param vertices all the vertices of the polygon (including intersections)
+	 * @param intersections all intersections of the polygon
+	 * @return list of polygons that were split from the original polygon.
+	 * Don't forget to free the array lists!
 	 */
-	public static ArrayList<Vector2> makePolygonNonComplex(ArrayList<Vector2> vertices, ArrayList<ArrayList<Vector2>> polygons) {
-		// Find intersections
-		ArrayList<Vector2> newVertices = makePolygonNonComplex(vertices);
-
-		// Add all vertices to the polygon
+	public static ArrayList<ArrayList<Vector2>> splitPolygonWithIntersections(ArrayList<Vector2> vertices, ArrayList<Vector2> intersections) {
 		@SuppressWarnings("unchecked")
-		ArrayList<Vector2> newPolygon = Pools.arrayList.obtain();
-		newPolygon.clear();
-		newPolygon.addAll(vertices);
+		ArrayList<ArrayList<Vector2>> polygons = Pools.arrayList.obtain();
+		polygons.clear();
 
-		// Find split points
+		// Add original list
+		@SuppressWarnings("unchecked")
+		ArrayList<Vector2> tempPolygon = Pools.arrayList.obtain();
+		tempPolygon.clear();
+		tempPolygon.addAll(vertices);
+		polygons.add(tempPolygon);
 
-		if (newVertices == null) {
-			return null;
-		} else {
-			return newVertices;
+		// No intersections, just use polygons
+		if (intersections == null) {
+			return polygons;
 		}
+
+		for (Vector2 intersection : intersections) {
+			boolean splitDone = false;
+			for (int polygon = 0; polygon < polygons.size() && !splitDone; ++polygon) {
+				ArrayList<Vector2> currentPolygon = polygons.get(polygon);
+				int splitStartIndex = currentPolygon.indexOf(intersection);
+
+				// Found
+				if (splitStartIndex != -1) {
+					// Find end
+					int splitEndIndex = currentPolygon.lastIndexOf(intersection);
+
+					// Move to new polygon
+					@SuppressWarnings("unchecked")
+					ArrayList<Vector2> newPolygon = Pools.arrayList.obtain();
+					newPolygon.clear();
+
+					// Add to new polygon
+					for (int vertex = splitStartIndex; vertex < splitEndIndex; ++vertex) {
+						newPolygon.add(currentPolygon.get(vertex));
+					}
+					polygons.add(newPolygon);
+
+					// Remove vertices from the polygon
+					currentPolygon.removeAll(newPolygon);
+
+					// Re-add split point.
+					currentPolygon.add(splitStartIndex, newPolygon.get(0));
+
+					splitDone = true;
+				}
+			}
+		}
+
+		return polygons;
 	}
 
 	/**
@@ -879,31 +900,40 @@ public class Geometry {
 	 * @param vertices all vertices to check the intersection with
 	 * @param lineIndex which vertex the line start from
 	 * @param testFromIndex only tests from the specified index (lines before this index is not tested)
+	 * @param testToIndex only tests to the specified index (lines after and including this is not tested)
 	 * @return index of the other line that intersects with lineIndex, -1 if no intersection
 	 * exists.
 	 */
-	public static int intersectionExists(ArrayList<Vector2> vertices, int lineIndex, int testFromIndex) {
+	public static int intersectionExists(ArrayList<Vector2> vertices, int lineIndex, int testFromIndex, int testToIndex) {
 		if (vertices.size() < 3) {
 			return -1;
 		}
 
-		if (lineIndex < 0 || lineIndex < testFromIndex || lineIndex >= vertices.size()) {
-			throw new IndexOutOfBoundsException();
+		// Test index boundaries
+		if (testFromIndex < 0 || testFromIndex >= vertices.size()) {
+			throw new IndexOutOfBoundsException("Invalid testFromIndex!");
 		}
+		if (testToIndex > vertices.size()) {
+			throw new IndexOutOfBoundsException("Invalid testToIndex!");
+		}
+		if (lineIndex < 0 || lineIndex < testFromIndex || lineIndex >= vertices.size()) {
+			throw new IndexOutOfBoundsException("Invalid lineIndex!");
+		}
+
 
 		// Calculate start/end of line
 		Vector2 lineStart = vertices.get(lineIndex);
-		Vector2 lineEnd = vertices.get(computeNextIndex(vertices, lineIndex));
+		Vector2 lineEnd = vertices.get(com.spiddekauga.utils.Collections.computeNextIndex(vertices, lineIndex));
 
 
-		for (int i = testFromIndex; i < vertices.size(); ++i) {
+		for (int i = testFromIndex; i < testToIndex; ++i) {
 			// Skip checking with line that starts on lineIndex, as it is the same line...
 			if (i == lineIndex) {
 				continue;
 			}
 
 			Vector2 compareLineStart = vertices.get(i);
-			Vector2 compareLineEnd = vertices.get(computeNextIndex(vertices, i));
+			Vector2 compareLineEnd = vertices.get(com.spiddekauga.utils.Collections.computeNextIndex(vertices, i));
 
 			if (linesIntersectNoCorners(lineStart, lineEnd, compareLineStart, compareLineEnd)) {
 				return i;

@@ -311,7 +311,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 		}
 
 		// Draw regular filled shape
-		if (!mDrawOnlyOutline) {
+		if (!mDrawOnlyOutline && mDef.getVisualVars().isComplete()) {
 			// Shape
 			shapeRenderer.setColor(mDef.getVisualVars().getColor());
 			shapeRenderer.triangles(mRotatedVertices, offsetPosition);
@@ -1025,7 +1025,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 		verticesCopy.clear();
 
 		for (Vector2 vertex : array) {
-			int foundIndex = com.spiddekauga.utils.Collections.linearSearch(verticesCopy, vertex);
+			int foundIndex = verticesCopy.indexOf(vertex);
 			if (foundIndex != -1) {
 				verticesCopy.add(verticesCopy.get(foundIndex));
 			} else {

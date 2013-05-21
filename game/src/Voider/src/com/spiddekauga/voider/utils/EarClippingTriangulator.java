@@ -48,10 +48,13 @@ public final class EarClippingTriangulator {
 	 * @return the triangles.
 	 * @throws PolygonComplexException if the polygon is complex, i.e. can't triangulate the polygon
 	 */
+	@SuppressWarnings("unchecked")
 	public ArrayList<Vector2> computeTriangles (final List<Vector2> polygon) {
 		// TODO Check if LinkedList performs better
-		final ArrayList<Vector2> triangles = new ArrayList<Vector2>();
-		final ArrayList<Vector2> vertices = new ArrayList<Vector2>(polygon.size());
+		final ArrayList<Vector2> triangles = Pools.arrayList.obtain();
+		triangles.clear();
+		final ArrayList<Vector2> vertices = Pools.arrayList.obtain();
+		vertices.clear();
 		vertices.addAll(polygon);
 
 		/*

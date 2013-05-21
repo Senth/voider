@@ -6,7 +6,6 @@ import java.util.UUID;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.OrderedMap;
-import com.spiddekauga.utils.Collections;
 import com.spiddekauga.utils.Json;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.triggers.TriggerAction.Actions;
@@ -133,7 +132,7 @@ public class EnemyGroup extends Resource {
 	public boolean bindReference(IResource resource) {
 		boolean success = super.bindReference(resource);
 
-		int foundIndex = Collections.linearSearch(mEnemyIds, resource.getId());
+		int foundIndex = mEnemyIds.indexOf(resource.getId());
 
 		if (foundIndex != -1) {
 			mEnemies.set(foundIndex, (EnemyActor) resource);

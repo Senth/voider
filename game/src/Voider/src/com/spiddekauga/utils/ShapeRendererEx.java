@@ -16,7 +16,6 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.GdxRuntimeException;
-import com.spiddekauga.voider.utils.Geometry;
 import com.spiddekauga.voider.utils.Pools;
 
 /**
@@ -223,7 +222,7 @@ public class ShapeRendererEx implements Disposable {
 
 		if (loop) {
 			for (int i = 0; i < vertices.size(); ++i) {
-				int nextIndex = Geometry.computeNextIndex(vertices, i);
+				int nextIndex = Collections.computeNextIndex(vertices, i);
 				line(vertices.get(i).x + offset.x, vertices.get(i).y + offset.y, vertices.get(nextIndex).x + offset.x, vertices.get(nextIndex).y + offset.y);
 			}
 		} else {
