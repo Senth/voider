@@ -135,8 +135,9 @@ public class GeometryTest {
 		assertEquals(new Vector2(2, 5), complexPolygon.get(6));
 		assertEquals(new Vector2(2, 3), complexPolygon.get(7));
 
+
 		// Test complex with two intersections
-		complexPolygon = new ArrayList<Vector2>();
+		complexPolygon.clear();
 		complexPolygon.add(new Vector2(0, 0));
 		complexPolygon.add(new Vector2(0, 5));
 		complexPolygon.add(new Vector2(4, 5));
@@ -158,6 +159,68 @@ public class GeometryTest {
 		assertEquals(new Vector2(0, 5), complexPolygon.get(7));
 		assertEquals(new Vector2(0, 3), complexPolygon.get(8));
 		assertEquals(new Vector2(-1, 3), complexPolygon.get(9));
+
+
+		//		// Create invalid polygon, but valid when not testing loop
+		//		complexPolygon.clear();
+		//		complexPolygon.add(new Vector2(0, 0));
+		//		complexPolygon.add(new Vector2(1, 0));
+		//		complexPolygon.add(new Vector2(1, 3));
+		//		complexPolygon.add(new Vector2(4, 3));
+		//		complexPolygon.add(new Vector2(4, 1));
+		//		complexPolygon.add(new Vector2(2, 1));
+		//		complexPolygon.add(new Vector2(2, 4));
+		//		complexPolygon.add(new Vector2(4, 4));
+		//
+		//		createdVertices = Geometry.makePolygonNonComplex(complexPolygon, true);
+		//		assertNotNull(createdVertices);
+		//		assertEquals(4, createdVertices.size());
+		//		assertEquals(17, complexPolygon);
+		//		assertEquals(new Vector2(0, 0), complexPolygon.get(0));
+		//		assertEquals(new Vector2(0, 3), complexPolygon.get(1));
+		//		assertEquals(new Vector2(2, 3), complexPolygon.get(2));
+		//		assertEquals(new Vector2(2, 5), complexPolygon.get(3));
+		//		assertEquals(new Vector2(4, 5), complexPolygon.get(4));
+		//		assertEquals(new Vector2(2, 7), complexPolygon.get(5));
+		//		assertEquals(new Vector2(2, 5), complexPolygon.get(6));
+		//		assertEquals(new Vector2(0, 5), complexPolygon.get(7));
+		//		assertEquals(new Vector2(0, 3), complexPolygon.get(8));
+		//		assertEquals(new Vector2(-1, 3), complexPolygon.get(9));
+	}
+
+	/**
+	 * Test if the polygons intersections are simple
+	 */
+	@Test
+	public void arePolygonIntersectionsSimple() {
+		// Test non-complex
+		ArrayList<Vector2> nonComplexPolygon = new ArrayList<Vector2>();
+		nonComplexPolygon.add(new Vector2(0,0));
+		nonComplexPolygon.add(new Vector2(1,0));
+		nonComplexPolygon.add(new Vector2(1,1));
+		nonComplexPolygon.add(new Vector2(0,1));
+
+		assertTrue(Geometry.arePolygonIntersectionsSimple(nonComplexPolygon, null));
+
+
+		// Test valid polygon with two intersections
+		ArrayList<Vector2> intersections = new ArrayList<Vector2>();
+		intersections.add(new Vector2(0, 3));
+		intersections.add(new Vector2(2, 5));
+
+		ArrayList<Vector2> validPolygon = new ArrayList<Vector2>();
+		validPolygon.add(new Vector2(0, 0));
+		validPolygon.add(intersections.get(0));
+		validPolygon.add(new Vector2(0, 5));
+		validPolygon.add(intersections.get(1));
+		validPolygon.add(new Vector2(4, 5));
+		validPolygon.add(new Vector2(2, 7));
+		validPolygon.add(intersections.get(1));
+		validPolygon.add(new Vector2(2, 3));
+		validPolygon.add(intersections.get(0));
+		validPolygon.add(new Vector2(-1, 3));
+
+		assertTrue(Geometry.arePolygonIntersectionsSimple(validPolygon, intersections));
 	}
 
 	/**
@@ -171,41 +234,31 @@ public class GeometryTest {
 		nonComplexPolygon.add(new Vector2(1,0));
 		nonComplexPolygon.add(new Vector2(1,1));
 		nonComplexPolygon.add(new Vector2(0,1));
-		assertNull(Geometry.makePolygonNonComplex(nonComplexPolygon, true));
-
 		ArrayList<ArrayList<Vector2>> splitPolygons = Geometry.splitPolygonWithIntersections(nonComplexPolygon, null);
 		assertEquals(1, splitPolygons.size());
 		ArrayList<Vector2> firstPolygon = splitPolygons.get(0);
-
 		assertEquals(new Vector2(0, 0), firstPolygon.get(0));
 		assertEquals(new Vector2(1, 0), firstPolygon.get(1));
 		assertEquals(new Vector2(1, 1), firstPolygon.get(2));
 		assertEquals(new Vector2(0, 1), firstPolygon.get(3));
 
+
 		// Test complex with two intersections
+		ArrayList<Vector2> createdVertices = new ArrayList<Vector2>();
+		createdVertices.add(new Vector2(0, 3));
+		createdVertices.add(new Vector2(2, 5));
+
 		ArrayList<Vector2> complexPolygon = new ArrayList<Vector2>();
 		complexPolygon.add(new Vector2(0, 0));
+		complexPolygon.add(createdVertices.get(0));
 		complexPolygon.add(new Vector2(0, 5));
+		complexPolygon.add(createdVertices.get(1));
 		complexPolygon.add(new Vector2(4, 5));
 		complexPolygon.add(new Vector2(2, 7));
+		complexPolygon.add(createdVertices.get(1));
 		complexPolygon.add(new Vector2(2, 3));
+		complexPolygon.add(createdVertices.get(0));
 		complexPolygon.add(new Vector2(-1, 3));
-
-
-		ArrayList<Vector2> createdVertices = Geometry.makePolygonNonComplex(complexPolygon, true);
-		assertNotNull(createdVertices);
-		assertEquals(2, createdVertices.size());
-		assertEquals(10, complexPolygon.size());
-		assertEquals(new Vector2(0, 0), complexPolygon.get(0));
-		assertEquals(new Vector2(0, 3), complexPolygon.get(1)); // 1
-		assertEquals(new Vector2(2, 3), complexPolygon.get(2));
-		assertEquals(new Vector2(2, 5), complexPolygon.get(3)); // 2
-		assertEquals(new Vector2(4, 5), complexPolygon.get(4));
-		assertEquals(new Vector2(2, 7), complexPolygon.get(5));
-		assertEquals(new Vector2(2, 5), complexPolygon.get(6)); // 2
-		assertEquals(new Vector2(0, 5), complexPolygon.get(7));
-		assertEquals(new Vector2(0, 3), complexPolygon.get(8)); // 1
-		assertEquals(new Vector2(-1, 3), complexPolygon.get(9));
 
 		splitPolygons = Geometry.splitPolygonWithIntersections(complexPolygon, createdVertices);
 		assertEquals(3, splitPolygons.size());

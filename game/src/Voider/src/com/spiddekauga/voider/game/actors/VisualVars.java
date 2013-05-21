@@ -601,7 +601,7 @@ public class VisualVars implements Json.Serializable, Disposable, IResourceCorne
 				// Test if polygon is complex with no loop
 				if (!Geometry.arePolygonIntersectionsSimple(tempVertices, createdVertices)) {
 					Pools.vector2.freeAll(createdVertices);
-					createdVertices.clear();
+					Pools.arrayList.free(createdVertices);
 					Pools.vector2.freeAll(tempVertices);
 					Pools.arrayList.free(tempVertices);
 					tempVertices = createCopy(mCorners);
