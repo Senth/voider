@@ -236,6 +236,5 @@ public abstract class WorldScene extends Scene {
 	/** Picking fixture definition (for body) */
 	private FixtureDef mPickingFixtureDef = null;
 	/** Picking vertices (for drawing) */
-	@SuppressWarnings("unchecked")
 	private ArrayList<Vector2> mPickingVertices = null;
 }

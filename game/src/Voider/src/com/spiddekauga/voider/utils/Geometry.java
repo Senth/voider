@@ -896,6 +896,39 @@ public class Geometry {
 	}
 
 	/**
+	 * Enumeration of intersection possibiliets
+	 */
+	public enum Intersections {
+		/** No intersections */
+		NONE,
+		/** Intersection exists inside the polygon */
+		INTERSECTS,
+		/** Intersection exists, but only if included loop */
+		INTERSECTS_WITH_LOOP,
+	}
+
+	/**
+	 * Checks if an intersection exists in the polygon
+	 * @param vertices the vertices of the polygon
+	 * @return one of the Intersections enumerations
+	 */
+	public static Intersections intersectionExists(ArrayList<Vector2> vertices) {
+		// Test inside intersection
+		for (int i = 0; i < vertices.size() - 1; ++i) {
+			if (intersectionExists(vertices, i, i, vertices.size() - 1) != -1) {
+				return Intersections.INTERSECTS;
+			}
+		}
+
+		// Test loop
+		if (intersectionExists(vertices, vertices.size() - 1, 0, vertices.size()) != -1) {
+			return Intersections.INTERSECTS_WITH_LOOP;
+		}
+
+		return Intersections.NONE;
+	}
+
+	/**
 	 * Checks if an intersection exists from a line that starts from the specified index
 	 * @param vertices all vertices to check the intersection with
 	 * @param lineIndex which vertex the line start from

@@ -569,7 +569,6 @@ public class VisualVars implements Json.Serializable, Disposable, IResourceCorne
 	 * @throws PolygonComplexException if the method failed to make the polygon non-complex
 	 * @throws PolygonCornersTooCloseException if some corners are too close
 	 */
-	@SuppressWarnings("unchecked")
 	public void fixCustomShapeFixtures() {
 		// Save fixture properties
 		FixtureDef savedFixtureProperties = null;
@@ -589,60 +588,35 @@ public class VisualVars implements Json.Serializable, Disposable, IResourceCorne
 		// Polygon
 		if (mCorners.size() >= 3) {
 			ArrayList<Vector2> triangles = null;
-			ArrayList<Vector2> createdVertices = null;
 			if (mCorners.size() == 3) {
 				triangles = createCopy(mCorners);
 				Geometry.makePolygonCounterClockwise(triangles);
 			} else {
 				ArrayList<Vector2> tempVertices = createCopy(mCorners);
-				createdVertices = Geometry.makePolygonNonComplex(tempVertices, true);
 
-				mShapeComplete = true;
-				// Test if polygon is complex with no loop
-				if (!Geometry.arePolygonIntersectionsSimple(tempVertices, createdVertices)) {
-					Pools.vector2.freeAll(createdVertices);
-					Pools.arrayList.free(createdVertices);
-					Pools.vector2.freeAll(tempVertices);
-					Pools.arrayList.free(tempVertices);
-					tempVertices = createCopy(mCorners);
+				switch (Geometry.intersectionExists(tempVertices)) {
+				case NONE:
+					mShapeComplete = true;
+					break;
 
+				case INTERSECTS:
 					mShapeComplete = false;
-					createdVertices = Geometry.makePolygonNonComplex(tempVertices, false);
+					handlePolygonComplexException(tempVertices, null);
+					break;
 
-					// Still complex
-					if (!Geometry.arePolygonIntersectionsSimple(tempVertices, createdVertices)) {
-						handlePolygonComplexException(tempVertices, createdVertices, null);
-					}
+				case INTERSECTS_WITH_LOOP:
+					mShapeComplete = false;
+					break;
 				}
 
-				// Split polygon into smaller polygons
-				if (mShapeComplete) {
-					ArrayList<ArrayList<Vector2>> polygons = Geometry.splitPolygonWithIntersections(tempVertices, createdVertices);
-					triangles = Pools.arrayList.obtain();
-					triangles.clear();
 
-					for (ArrayList<Vector2> polygon : polygons) {
-						try {
-							ArrayList<Vector2> tempTriangles = mEarClippingTriangulator.computeTriangles(polygon);
-							Collections.reverse(tempTriangles);
-							triangles.addAll(tempTriangles);
-							Pools.arrayList.free(tempTriangles);
-						} catch (PolygonComplexException e) {
-							handlePolygonComplexException(tempVertices, createdVertices, e);
-						}
-					}
-
-				}
-				// Polygon not complete, just add the fixtures anyway
-				else {
-					try {
-						// Always reverse, triangles are always clockwise, whereas box2d needs
-						// counter clockwise...
-						triangles = mEarClippingTriangulator.computeTriangles(tempVertices);
-						Collections.reverse(triangles);
-					} catch (PolygonComplexException e) {
-						handlePolygonComplexException(tempVertices, createdVertices, e);
-					}
+				try {
+					triangles = mEarClippingTriangulator.computeTriangles(tempVertices);
+					// Always reverse, triangles are always clockwise, whereas box2d needs
+					// counter clockwise...
+					Collections.reverse(triangles);
+				} catch (PolygonComplexException e) {
+					handlePolygonComplexException(tempVertices, e);
 				}
 				Pools.arrayList.free(tempVertices);
 			}
@@ -705,10 +679,6 @@ public class VisualVars implements Json.Serializable, Disposable, IResourceCorne
 
 				if (throwMessage != null) {
 					Gdx.app.error("ActorDef", throwMessage);
-					if (createdVertices != null) {
-						Pools.vector2.freeAll(createdVertices);
-						Pools.arrayList.free(createdVertices);
-					}
 					Pools.vector2.freeDuplicates(triangles);
 					Pools.arrayList.free(triangles);
 					Pools.vector2.free(lengthTest);
@@ -737,9 +707,6 @@ public class VisualVars implements Json.Serializable, Disposable, IResourceCorne
 			// Free stuff
 			Pools.vector2.freeAll(triangleVertices);
 			Pools.vector2.free(lengthTest);
-			if (createdVertices != null) {
-				Pools.arrayList.free(createdVertices);
-			}
 		}
 		// Circle
 		else if (mCorners.size() >= 1) {
@@ -989,15 +956,10 @@ public class VisualVars implements Json.Serializable, Disposable, IResourceCorne
 	/**
 	 * Handles PolygonComplexException for #fixCustomShapeFixtures()
 	 * @param tempVertices
-	 * @param createdVertices
 	 * @param exception if null it will throw a new exception, else it will re-throw
 	 * the exception.
 	 */
-	private void handlePolygonComplexException(ArrayList<Vector2> tempVertices, ArrayList<Vector2> createdVertices, PolygonComplexException exception) {
-		if (createdVertices != null) {
-			Pools.vector2.freeAll(createdVertices);
-			Pools.arrayList.free(createdVertices);
-		}
+	private void handlePolygonComplexException(ArrayList<Vector2> tempVertices, PolygonComplexException exception) {
 		Pools.vector2.freeAll(tempVertices);
 		Pools.arrayList.free(tempVertices);
 
