@@ -141,6 +141,8 @@ public class Config {
 				public final static float DRAW_NEW_CORNER_MIN_DIST_SQ = 1.0f * 1.0f;
 				/** Minimum angle between corners, if less than this, the corner will be removed */
 				public final static float DRAW_CORNER_ANGLE_MIN = 10;
+				/** Maximum squared distance a new corners might be from a line segment */
+				public final static float NEW_CORNER_DIST_MAX_SQ = 3 * 3;
 			}
 
 			/**

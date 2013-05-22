@@ -464,7 +464,7 @@ public class VisualVars implements Json.Serializable, Disposable, IResourceCorne
 
 	@Override
 	public void addCorner(Vector2 corner, int index) {
-		mCorners.add(index, corner.cpy());
+		mCorners.add(index, Pools.vector2.obtain().set(corner));
 	}
 
 	@Override

@@ -358,7 +358,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 
 
 		// Draw selected overlay
-		if (!mDrawOnlyOutline && mSelected && !getDef().getVisualVars().isComplete() && mRotatedVertices != null) {
+		if (!mDrawOnlyOutline && mSelected && getDef().getVisualVars().isComplete() && mRotatedVertices != null) {
 			if (mDef.getVisualVars().getShapeType() == ActorShapeTypes.CUSTOM && mDef.getVisualVars().getCornerCount() >= 1 && mDef.getVisualVars().getCornerCount() <= 2) {
 				offsetPosition.add(mDef.getVisualVars().getCorners().get(0));
 			}

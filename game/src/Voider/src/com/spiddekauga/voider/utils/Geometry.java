@@ -977,6 +977,46 @@ public class Geometry {
 	}
 
 	/**
+	 * Calculates the minimum distance between a point and a line segment
+	 * @param lineStart start of line segment
+	 * @param lineEnd end of line segment
+	 * @param point the point to find the minimum distance to
+	 * @return minimum squared distance between the point and the line segment
+	 * @author Grumdrig http://stackoverflow.com/167531/grumdrig
+	 * Question: http://stackoverflow.com/questions/849211/shortest-distance-between-a-point-and-a-line-segment
+	 */
+	public static float distBetweenPointLineSegmentSq(Vector2 lineStart, Vector2 lineEnd, Vector2 point) {
+		// LineStart == LineEnd
+		float lineLengthSq = lineStart.dst2(lineEnd);
+		if (lineLengthSq == 0.0f) {
+			return lineStart.dst2(point);
+		}
+
+		Vector2 lineStartDiffPoint = Pools.vector2.obtain();
+		lineStartDiffPoint.set(point).sub(lineStart);
+		Vector2 lineStartDiffLineEnd = Pools.vector2.obtain();
+		lineStartDiffLineEnd.set(lineEnd).sub(lineStart);
+
+		float t = lineStartDiffPoint.dot(lineStartDiffLineEnd) / lineLengthSq;
+
+		// Beyond lineStart of segment
+		if (t < 0.0f) {
+			return lineStart.dst2(point);
+		}
+		// Beyond lineEnd of segment
+		else if (t > 1.0f) {
+			return lineEnd.dst(point);
+		}
+		// Projection falls on the segment
+		else {
+			lineStartDiffLineEnd.scl(t);
+			Vector2 projection = Pools.vector2.obtain();
+			projection.set(lineStart).add(lineStartDiffLineEnd);
+			return projection.dst2(point);
+		}
+	}
+
+	/**
 	 * Polygon complex exception
 	 */
 	public static class PolygonComplexException extends GdxRuntimeException {

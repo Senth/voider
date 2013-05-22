@@ -1,8 +1,11 @@
 package com.spiddekauga.voider.scene;
 
+import java.util.ArrayList;
+
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
+import com.spiddekauga.utils.Collections;
 import com.spiddekauga.utils.Invoker;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.editor.HitWrapper;
@@ -21,6 +24,7 @@ import com.spiddekauga.voider.editor.commands.CResourceSelect;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.ActorDef;
 import com.spiddekauga.voider.resources.IResource;
+import com.spiddekauga.voider.utils.Geometry;
 import com.spiddekauga.voider.utils.Geometry.PolygonComplexException;
 import com.spiddekauga.voider.utils.Geometry.PolygonCornersTooCloseException;
 import com.spiddekauga.voider.utils.Pools;
@@ -124,15 +128,16 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 			switch (mState) {
 			case ADJUST_MOVE_CORNER:
 			case ADJUST_REMOVE_CORNER:
+			case ADJUST_ADD_CORNER:
 				mSelectedActor.createBodyCorners();
 				mCornerIndexCurrent = -1;
 				mCornerIndexLast = -1;
+				// No break
 
 			case DRAW_APPEND:
 				mSelectedActor.setDrawOnlyOutline(true);
 				break;
 
-			case ADJUST_ADD_CORNER:
 			case DRAW_ERASE:
 			case MOVE:
 				// Does nothing
@@ -162,13 +167,14 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 			switch (mState) {
 			case ADJUST_MOVE_CORNER:
 			case ADJUST_REMOVE_CORNER:
+			case ADJUST_ADD_CORNER:
 				mSelectedActor.destroyBodyCorners();
+				// No break
 
 			case DRAW_APPEND:
 				mSelectedActor.setDrawOnlyOutline(false);
 				break;
 
-			case ADJUST_ADD_CORNER:
 			case DRAW_ERASE:
 			case MOVE:
 				// Does nothing
@@ -250,50 +256,19 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 
 		switch (mState) {
 		case ADJUST_ADD_CORNER:
-			// TODO
-			//			// If we didn't change actor, do something
-			//			if (mHitBody != null) {
-			//				// Hit the body (no corner), create corner
-			//				if (hitSelectedActor()) {
-			//					if (!mChangedActorSinceUp) {
-			//						createTempCorner();
-			//					}
-			//				}
-			//				// Hit another actor
-			//				else if (mHitBody.getUserData() instanceof Actor) {
-			//					// We can only hit our actor, create a temp corner
-			//					if (mOnlyOneActor) {
-			//						createTempCorner();
-			//					}
-			//					// Select the other actor if we can create multiple actors
-			//					else {
-			//						mInvoker.execute(new CResourceSelect((Actor)mHitBody.getUserData(), this));
-			//					}
-			//				}
-			//				// Else hit a corner, start moving it
-			//				else {
-			//					mCornerIndexCurrent = mSelectedActor.getCornerIndex(mHitBody.getPosition());
-			//					mDragOrigin.set(mSelectedActor.getDef().getCornerPosition(mCornerIndexCurrent));
-			//					mCornerAddedNow = false;
-			//				}
-			//			}
-			//			// Else create a new corner
-			//			else {
-			//				// No actor, create a new actor
-			//				if (mSelectedActor == null /** @todo !mLevel.containsActor(mActor) */) {
-			//					Actor actor = newActor();
-			//					if (mOnlyOneActor) {
-			//						actor.setDef(mActorDef);
-			//					}
-			//					actor.setPosition(mTouchOrigin);
-			//					mInvoker.execute(new CResourceAdd(actor, mActorEditor));
-			//					mInvoker.execute(new CResourceSelect(actor, this), true);
-			//				}
-			//
-			//				if (mSelectedActor != null) {
-			//					createTempCorner();
-			//				}
-			//			}
+			// Only do stuff if we didn't change actor
+			if (!mChangedActorThisEvent && mSelectedActor != null) {
+				Vector2 localPos = getLocalPosition(mTouchCurrent);
+				mCornerIndexCurrent = getIndexOfPosBetweenCorners(localPos);
+
+				if (mCornerIndexCurrent != -1) {
+					mSelectedActor.getDef().getVisualVars().addCorner(localPos, mCornerIndexCurrent);
+					mCornerAddedNow = true;
+				}
+
+				Pools.vector2.free(localPos);
+
+			}
 			break;
 
 
@@ -407,8 +382,7 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 		case ADJUST_ADD_CORNER:
 		case ADJUST_MOVE_CORNER:
 			if (mSelectedActor != null && mCornerIndexCurrent != -1) {
-				Vector2 newCornerPos = Pools.vector2.obtain();
-				newCornerPos.set(mTouchCurrent).sub(mSelectedActor.getPosition()).sub(mSelectedActor.getDef().getVisualVars().getCenterOffset());
+				Vector2 newCornerPos = getLocalPosition(mTouchCurrent);
 				mSelectedActor.getDef().getVisualVars().moveCorner(mCornerIndexCurrent, newCornerPos);
 				Pools.vector2.free(newCornerPos);
 			}
@@ -466,6 +440,27 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 	protected void up() {
 		switch (mState) {
 		case ADJUST_ADD_CORNER:
+			if (mSelectedActor != null && mCornerIndexCurrent != -1) {
+				// Remove temporary corner
+				Vector2 removedCorner = mSelectedActor.getDef().getVisualVars().removeCorner(mCornerIndexCurrent);
+
+				// Add the corner via invoker instead
+				mInvoker.execute(new CActorDefFixCustomFixtures(mSelectedActor.getDef(), false));
+				mInvoker.execute(new CResourceCornerAdd(mSelectedActor.getDef().getVisualVars(), removedCorner, mCornerIndexCurrent, mActorEditor), true);
+				try {
+					mInvoker.execute(new CActorDefFixCustomFixtures(mSelectedActor.getDef(), true), true);
+				} catch (PolygonComplexException e) {
+					/** @todo write some error message */
+					handleBadCornerPosition(null);
+				} catch (PolygonCornersTooCloseException e) {
+					handleBadCornerPosition(null);
+				}
+
+				Pools.vector2.free(removedCorner);
+			}
+			break;
+
+
 		case ADJUST_MOVE_CORNER:
 			if (mSelectedActor != null && mCornerIndexCurrent != -1) {
 				// Reset to original position
@@ -480,22 +475,14 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 					mInvoker.execute(new CActorDefFixCustomFixtures(mSelectedActor.getDef(), true), true);
 				} catch (PolygonComplexException e) {
 					/** @todo print some error message */
-					mInvoker.undo();
-					mInvoker.clearRedo();
-					mCornerIndexCurrent = -1;
+					handleBadCornerPosition(null);
 				} catch (PolygonCornersTooCloseException e) {
 					/** @todo print some error message */
-					mInvoker.undo();
-					mInvoker.clearRedo();
-					mCornerIndexCurrent = -1;
+					handleBadCornerPosition(null);
 				}
 
 				Pools.vector2.free(newPos);
 			}
-
-			mCornerIndexLast = mCornerIndexCurrent;
-			mCornerIndexCurrent = -1;
-			mCornerAddedNow = false;
 			break;
 
 
@@ -516,20 +503,12 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 						mInvoker.execute(new CActorDefFixCustomFixtures(mSelectedActor.getDef(), true), true);
 					} catch (PolygonComplexException e) {
 						/** @todo print pop up error message */
-						mInvoker.undo();
-						mInvoker.clearRedo();
-						mCornerIndexCurrent = -1;
+						handleBadCornerPosition(null);
 					} catch (PolygonCornersTooCloseException e) {
 						/** @todo print pop up error message */
-						mInvoker.undo();
-						mInvoker.clearRedo();
-						mCornerIndexCurrent = -1;
+						handleBadCornerPosition(null);
 					}
 				}
-
-				mCornerIndexLast = mCornerIndexCurrent;
-				mCornerIndexCurrent = -1;
-				mCornerAddedNow = false;
 			}
 			break;
 
@@ -567,6 +546,10 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 			}
 			break;
 		}
+
+		mCornerIndexLast = mCornerIndexCurrent;
+		mCornerIndexCurrent = -1;
+		mCornerAddedNow = false;
 	}
 
 	/**
@@ -589,9 +572,7 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 	 * @param chained if the command shall be chained or not.
 	 */
 	private void appendCorner(boolean chained) {
-		Vector2 localPos = Pools.vector2.obtain();
-
-		localPos.set(mTouchCurrent).sub(mSelectedActor.getPosition()).sub(mSelectedActor.getDef().getVisualVars().getCenterOffset());
+		Vector2 localPos = getLocalPosition(mTouchCurrent);
 
 		mInvoker.execute(new CResourceCornerAdd(mSelectedActor.getDef().getVisualVars(), localPos, mActorEditor), chained);
 		mDragOrigin.set(mTouchCurrent);
@@ -645,6 +626,63 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 		actor.setPosition(mTouchOrigin);
 		mInvoker.execute(new CResourceAdd(actor, mActorEditor));
 		mInvoker.execute(new CResourceSelect(actor, this), true);
+	}
+
+	/**
+	 * Checks if a position is between two corners of the currently selected actor
+	 * @param pos check if this is between two corners
+	 * @return index of the second corner, i.e. if we hit between corner 19 and 20
+	 * 20 will be returned, because that's where the new position would be placed.
+	 * -1 if we didn't hit between two corners.
+	 */
+	private int getIndexOfPosBetweenCorners(Vector2 pos) {
+		if (mSelectedActor == null) {
+			return -1;
+		}
+
+		int bestCorner = -1;
+		float bestDist = Config.Editor.Actor.Visual.NEW_CORNER_DIST_MAX_SQ;
+
+		ArrayList<Vector2> corners = mSelectedActor.getDef().getVisualVars().getCorners();
+		for (int i = 0; i < corners.size(); ++i) {
+			int nextIndex = Collections.computeNextIndex(corners, i);
+			float distance = Geometry.distBetweenPointLineSegmentSq(corners.get(i), corners.get(nextIndex), pos);
+
+			if (distance < bestDist) {
+				bestCorner = nextIndex;
+				bestDist = distance;
+			}
+		}
+
+		return bestCorner;
+	}
+
+	/**
+	 * Handles a bad corner position
+	 * @param message the message to print
+	 */
+	private void handleBadCornerPosition(String message) {
+		/** @todo implement error messaage */
+		mInvoker.undo();
+		mInvoker.clearRedo();
+		mCornerIndexCurrent = -1;
+	}
+
+	/**
+	 * Get local position for the selected actor from the specified world position
+	 * @param worldPos world position
+	 * @return Local position of the currently selected actor, copy of worldPos if no actor was selected.
+	 * Don't forget to free the localPosition using Pools.vector2.free(localPos)
+	 */
+	private Vector2 getLocalPosition(Vector2 worldPos) {
+		Vector2 localPos = Pools.vector2.obtain();
+		localPos.set(worldPos);
+
+		if (mSelectedActor != null) {
+			localPos.sub(mSelectedActor.getPosition()).sub(mSelectedActor.getDef().getVisualVars().getCenterOffset());
+		}
+
+		return localPos;
 	}
 
 	/** Invoker used for undoing/redoing commands */
