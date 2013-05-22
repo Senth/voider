@@ -489,10 +489,12 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 						/** @todo print pop up error message */
 						mInvoker.undo();
 						mInvoker.clearRedo();
+						mCornerIndexCurrent = -1;
 					} catch (PolygonCornersTooCloseException e) {
 						/** @todo print pop up error message */
 						mInvoker.undo();
 						mInvoker.clearRedo();
+						mCornerIndexCurrent = -1;
 					}
 				}
 

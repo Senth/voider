@@ -128,11 +128,11 @@ public class Config {
 			 * Visual options
 			 */
 			public class Visual {
-				/** Minimum rotate speed of the weapon */
+				/** Minimum rotate speed of an actor */
 				public final static float ROTATE_SPEED_MIN = -720;
-				/** Maximum rotate speed of the weapon */
+				/** Maximum rotate speed of an actor */
 				public final static float ROTATE_SPEED_MAX = 720;
-				/** Default rotate speed of the weapon */
+				/** Default rotate speed of an actor */
 				public final static float ROTATE_SPEED_DEFAULT = 0;
 				/** Step size of rotate speed */
 				public final static float ROTATE_SPEED_STEP_SIZE = 1;
