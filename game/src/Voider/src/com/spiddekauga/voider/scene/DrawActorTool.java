@@ -470,19 +470,32 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 			if (mSelectedActor != null && mCornerIndexCurrent != -1) {
 				// Reset to original position
 				Vector2 newPos = Pools.vector2.obtain();
-
 				newPos.set(mSelectedActor.getDef().getVisualVars().getCornerPosition(mCornerIndexCurrent));
 				mSelectedActor.getDef().getVisualVars().moveCorner(mCornerIndexCurrent, mDragOrigin);
-				mInvoker.execute(new CResourceCornerMove(mSelectedActor.getDef().getVisualVars(), mCornerIndexCurrent, newPos, mActorEditor), mCornerAddedNow);
+
+				// Execute
+				mInvoker.execute(new CActorDefFixCustomFixtures(mSelectedActor.getDef(), false), mCornerAddedNow);
+				mInvoker.execute(new CResourceCornerMove(mSelectedActor.getDef().getVisualVars(), mCornerIndexCurrent, newPos, mActorEditor), true);
+				try {
+					mInvoker.execute(new CActorDefFixCustomFixtures(mSelectedActor.getDef(), true), true);
+				} catch (PolygonComplexException e) {
+					/** @todo print some error message */
+					mInvoker.undo();
+					mInvoker.clearRedo();
+					mCornerIndexCurrent = -1;
+				} catch (PolygonCornersTooCloseException e) {
+					/** @todo print some error message */
+					mInvoker.undo();
+					mInvoker.clearRedo();
+					mCornerIndexCurrent = -1;
+				}
 
 				Pools.vector2.free(newPos);
 			}
 
-			if (mState == States.ADJUST_ADD_CORNER) {
-				mCornerIndexLast = mCornerIndexCurrent;
-				mCornerIndexCurrent = -1;
-				mCornerAddedNow = false;
-			}
+			mCornerIndexLast = mCornerIndexCurrent;
+			mCornerIndexCurrent = -1;
+			mCornerAddedNow = false;
 			break;
 
 
