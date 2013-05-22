@@ -125,6 +125,8 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 			case ADJUST_MOVE_CORNER:
 			case ADJUST_REMOVE_CORNER:
 				mSelectedActor.createBodyCorners();
+				mCornerIndexCurrent = -1;
+				mCornerIndexLast = -1;
 
 			case DRAW_APPEND:
 				mSelectedActor.setDrawOnlyOutline(true);
@@ -225,12 +227,12 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 
 	@Override
 	public void onResourceSelected(IResource deselectedResource, IResource selectedResource) {
-		mChangedActorSinceDown = true;
+		mChangedActorThisEvent = true;
 	}
 
 	@Override
 	protected void down() {
-		mChangedActorSinceDown = false;
+		mChangedActorThisEvent = false;
 
 		// Double click inside current actor finishes/closes it, but only if we can have more than
 		// one actor
@@ -306,29 +308,43 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 
 
 		case ADJUST_REMOVE_CORNER:
-			// TODO
-
 			// If we hit the actor's body twice (no corners) we delete the actor along with
 			// all the corners. If we hit a corner that corner is deleted.
 			if (mHitBody != null) {
 				// Hit actor body (no corner) and it's the second time -> Remove actor
 				if (hitSelectedActor()) {
 					// Only do something if we didn't hit the actor the first time
-					if (!mChangedActorSinceDown) {
-						mInvoker.execute(new CResourceRemove(mSelectedActor, mActorEditor));
+					if (!mChangedActorThisEvent) {
+						mInvoker.execute(new CActorDefFixCustomFixtures(mSelectedActor.getDef(), false));
 						mInvoker.execute(new CResourceCornerRemoveAll(mSelectedActor.getDef().getVisualVars(), mActorEditor), true);
+						mInvoker.execute(new CResourceRemove(mSelectedActor, mActorEditor), true);
 						mInvoker.execute(new CResourceSelect(null, this), true);
 					}
 				}
 				// Else hit a corner, delete it
 				else if (mHitBody.getUserData() instanceof HitWrapper){
-					mCornerIndexCurrent = mSelectedActor.getCornerIndex(mHitBody.getPosition());
-					mInvoker.execute(new CResourceCornerRemove(mSelectedActor.getDef().getVisualVars(), mCornerIndexCurrent, mActorEditor));
+					int removeIndex = mSelectedActor.getCornerIndex(mHitBody.getPosition());
+					if (removeIndex != -1) {
+						mInvoker.execute(new CActorDefFixCustomFixtures(mSelectedActor.getDef(), false));
+						mInvoker.execute(new CResourceCornerRemove(mSelectedActor.getDef().getVisualVars(), removeIndex, mActorEditor), true);
 
-					// Was it the last corner? Remove actor too then
-					if (mSelectedActor.getDef().getVisualVars().getCornerCount() == 0) {
-						mInvoker.execute(new CResourceRemove(mSelectedActor, mActorEditor), true);
-						mInvoker.execute(new CResourceSelect(null, this), true);
+						// Was it the last corner? Remove actor too then
+						if (mSelectedActor.getDef().getVisualVars().getCornerCount() == 0) {
+							mInvoker.execute(new CResourceRemove(mSelectedActor, mActorEditor), true);
+							mInvoker.execute(new CResourceSelect(null, this), true);
+						} else {
+							try {
+								mInvoker.execute(new CActorDefFixCustomFixtures(mSelectedActor.getDef(), true), true);
+							} catch (PolygonComplexException e) {
+								/** @todo print some error message */
+								mInvoker.undo();
+								mInvoker.clearRedo();
+							} catch (PolygonCornersTooCloseException e) {
+								/** @todo print som error message */
+								mInvoker.undo();
+								mInvoker.clearRedo();
+							}
+						}
 					}
 				}
 			}
@@ -336,11 +352,11 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 
 
 		case DRAW_APPEND:
-			if (!mChangedActorSinceDown) {
+			if (!mChangedActorThisEvent) {
 				// Create an actor if we don't have one selected
 				if (mSelectedActor == null) {
 					createNewSelectedActor();
-					mChangedActorSinceDown = false;
+					mChangedActorThisEvent = false;
 				} else {
 					mInvoker.execute(new CActorDefFixCustomFixtures(mSelectedActor.getDef(), false));
 				}
@@ -400,12 +416,12 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 
 
 		case ADJUST_REMOVE_CORNER:
-			// TODO
+			// Does nothing
 			break;
 
 
 		case DRAW_APPEND:
-			if (!mChangedActorSinceDown) {
+			if (!mChangedActorThisEvent) {
 				// If has drawn more than minimum distance, add another corner here
 				Vector2 diffVector = Pools.vector2.obtain();
 				diffVector.set(mTouchCurrent).sub(mDragOrigin);
@@ -471,12 +487,12 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 
 
 		case ADJUST_REMOVE_CORNER:
-			// TODO
+			// Does nothing
 			break;
 
 
 		case DRAW_APPEND:
-			if (!mChangedActorSinceDown) {
+			if (!mChangedActorThisEvent) {
 				if (mSelectedActor != null) {
 					// Add a final corner when released
 					appendCorner(true);
@@ -517,7 +533,7 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 				mSelectedActor.setPosition(mDragOrigin);
 
 				Vector2 newPos = getNewMovePosition();
-				mInvoker.execute(new CResourceMove(mSelectedActor, newPos, mActorEditor), mChangedActorSinceDown);
+				mInvoker.execute(new CResourceMove(mSelectedActor, newPos, mActorEditor), mChangedActorThisEvent);
 				Pools.vector2.free(newPos);
 			}
 			break;
@@ -632,7 +648,7 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 	/** Last corner index */
 	private int mCornerIndexLast = -1;
 	/** If we changed actor since the last up */
-	private boolean mChangedActorSinceDown = false;
+	private boolean mChangedActorThisEvent = false;
 	/** True if the current corner was added during the down() event */
 	private boolean mCornerAddedNow = false;
 	/** The actor editor */

@@ -118,6 +118,12 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 				reloadFixtures();
 				calculateRotatedVertices(true);
 			}
+
+			// Do we need to fix the body corners?
+			if (hasBodyCorners() && mCorners != null && mCorners.size() != mDef.getVisualVars().getCornerCount()) {
+				destroyBodyCorners();
+				createBodyCorners();
+			}
 		}
 	}
 
@@ -343,7 +349,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	 */
 	@Override
 	public void renderEditor(ShapeRendererEx shapeRenderer) {
-		if (mRotatedVertices == null) {
+		if (mBody == null) {
 			return;
 		}
 
@@ -352,7 +358,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 
 
 		// Draw selected overlay
-		if (!mDrawOnlyOutline && mSelected && !getDef().getVisualVars().isComplete()) {
+		if (!mDrawOnlyOutline && mSelected && !getDef().getVisualVars().isComplete() && mRotatedVertices != null) {
 			if (mDef.getVisualVars().getShapeType() == ActorShapeTypes.CUSTOM && mDef.getVisualVars().getCornerCount() >= 1 && mDef.getVisualVars().getCornerCount() <= 2) {
 				offsetPosition.add(mDef.getVisualVars().getCorners().get(0));
 			}
