@@ -444,6 +444,10 @@ public class Config {
 		public final static float PICKING_CIRCLE_RADIUS_EDITOR = 1;
 		/** Radius of level editor picking circles */
 		public final static float PICKING_CIRCLE_RADIUS_LEVEL_EDITOR = 2;
+		/** Brush draw add color  */
+		public final static Color BRUSH_ADD_COLOR = Color.GREEN;
+		/** Brush erase color */
+		public final static Color BRUSH_ERASE_COLOR = Color.RED;
 	}
 
 	/**

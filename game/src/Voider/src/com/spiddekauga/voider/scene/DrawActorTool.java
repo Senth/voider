@@ -5,11 +5,14 @@ import java.util.ArrayList;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.Disposable;
 import com.spiddekauga.utils.Collections;
+import com.spiddekauga.utils.Command;
 import com.spiddekauga.utils.Invoker;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.editor.HitWrapper;
 import com.spiddekauga.voider.editor.IResourceChangeEditor;
+import com.spiddekauga.voider.editor.VectorBrush;
 import com.spiddekauga.voider.editor.commands.CActorCenterMove;
 import com.spiddekauga.voider.editor.commands.CActorDefFixCustomFixtures;
 import com.spiddekauga.voider.editor.commands.CResourceAdd;
@@ -24,7 +27,9 @@ import com.spiddekauga.voider.editor.commands.CResourceSelect;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.ActorDef;
 import com.spiddekauga.voider.resources.IResource;
+import com.spiddekauga.voider.resources.IResourceCorner;
 import com.spiddekauga.voider.utils.Geometry;
+import com.spiddekauga.voider.utils.Geometry.Intersections;
 import com.spiddekauga.voider.utils.Geometry.PolygonComplexException;
 import com.spiddekauga.voider.utils.Geometry.PolygonCornersTooCloseException;
 import com.spiddekauga.voider.utils.Pools;
@@ -343,7 +348,16 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 
 
 		case DRAW_ERASE:
-			// TODO
+			if (!mChangedActorThisEvent) {
+				if (hitSelectedActor()) {
+					mDrawEraseBrush = new VectorBrush(true);
+				} else {
+					mDrawEraseBrush = new VectorBrush(false);
+				}
+				mActorEditor.onResourceAdded(mDrawEraseBrush);
+				mDrawEraseBrush.addCorner(mTouchCurrent);
+				mDragOrigin.set(mTouchCurrent);
+			}
 			break;
 
 
@@ -396,19 +410,20 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 
 		case DRAW_APPEND:
 			if (!mChangedActorThisEvent) {
-				// If has drawn more than minimum distance, add another corner here
-				Vector2 diffVector = Pools.vector2.obtain();
-				diffVector.set(mTouchCurrent).sub(mDragOrigin);
-				if (diffVector.len2() >= Config.Editor.Actor.Visual.DRAW_NEW_CORNER_MIN_DIST_SQ) {
+				if (haveMovedEnoughToAddAnotherCorner()) {
 					appendCorner(true);
 				}
-				Pools.vector2.free(diffVector);
 			}
 			break;
 
 
 		case DRAW_ERASE:
-			// TODO
+			if (!mChangedActorThisEvent) {
+				if (haveMovedEnoughToAddAnotherCorner()) {
+					mDrawEraseBrush.addCorner(mTouchCurrent);
+					mDragOrigin.set(mTouchCurrent);
+				}
+			}
 			break;
 
 
@@ -514,7 +529,90 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 
 
 		case DRAW_ERASE:
-			// TODO
+			if (!mChangedActorThisEvent) {
+				mActorEditor.onResourceRemoved(mDrawEraseBrush);
+				mDrawEraseBrush.addCorner(mTouchCurrent);
+
+				Command removeExcessiveCorners = new CResourceCornerRemoveExcessive(mDrawEraseBrush);
+				removeExcessiveCorners.execute();
+
+				// Check for intersections in draw erase brush...
+				if (Geometry.intersectionExists(mDrawEraseBrush.getCorners()) != Intersections.INTERSECTS) {
+					ArrayList<BrushActorIntersection> intersections = getBrushActorIntersections();
+
+					// If odd, remove last intersection...
+					if (intersections.size() % 2 == 1) {
+						intersections.remove(intersections.size() - 1);
+					}
+
+					// Reverse order, i.e. always start with the highest actor index. Otherwise the rest
+					// of the indices will not be correct
+					java.util.Collections.reverse(intersections);
+
+					mInvoker.execute(new CActorDefFixCustomFixtures(mSelectedActor.getDef(), false));
+
+					// Change shape of actor to use the brush corners.
+					IResourceCorner actorCorner = mSelectedActor.getDef().getVisualVars();
+					while (intersections.size() >= 2) {
+						// Remove actor corners between intersections
+						int addIndex = intersections.get(1).actorIndex + 1;
+						int cornersToRemove = intersections.get(0).actorIndex - intersections.get(1).actorIndex;
+						for (int i = 0; i < cornersToRemove; ++i) {
+							mInvoker.execute(new CResourceCornerRemove(actorCorner, addIndex, mActorEditor), true);
+						}
+
+
+						// Add end intersection
+						Vector2 localPos = getLocalPosition(intersections.get(0).intersection);
+						mInvoker.execute(new CResourceCornerAdd(actorCorner, intersections.get(0).intersection, addIndex, mActorEditor), true);
+						Pools.vector2.free(localPos);
+
+						// Add brush corners
+						int fromIndex;
+						int toIndex;
+						if (intersections.get(0).brushIndex < intersections.get(1).brushIndex) {
+							fromIndex = intersections.get(0).brushIndex + 1;
+							toIndex = intersections.get(1).brushIndex;
+						} else {
+							fromIndex = intersections.get(1).brushIndex + 1;
+							toIndex = intersections.get(0).brushIndex;
+						}
+
+						for (int i = fromIndex; i < toIndex; ++i) {
+							localPos = getLocalPosition(mDrawEraseBrush.getCornerPosition(i));
+							mInvoker.execute(new CResourceCornerAdd(actorCorner, localPos, addIndex, mActorEditor), true);
+							Pools.vector2.free(localPos);
+						}
+
+
+						// Add begin intersection
+						localPos = getLocalPosition(intersections.get(1).intersection);
+						mInvoker.execute(new CResourceCornerAdd(actorCorner, localPos, addIndex, mActorEditor), true);
+						Pools.vector2.free(localPos);
+
+						intersections.remove(1).dispose();
+						intersections.remove(0).dispose();
+					}
+
+					Pools.arrayList.free(intersections);
+
+					try {
+						mInvoker.execute(new CActorDefFixCustomFixtures(mSelectedActor.getDef(), true), true);
+					} catch (PolygonComplexException e) {
+						/** @todo error message */
+						handleBadCornerPosition(null);
+					} catch (PolygonCornersTooCloseException e) {
+						/** @todo error message */
+						handleBadCornerPosition(null);
+					}
+
+				} else {
+					/** @todo print pop up error message about draw erase brush */
+				}
+
+				mDrawEraseBrush.dispose();
+				mDrawEraseBrush = null;
+			}
 			break;
 
 
@@ -645,7 +743,7 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 
 		ArrayList<Vector2> corners = mSelectedActor.getDef().getVisualVars().getCorners();
 		for (int i = 0; i < corners.size(); ++i) {
-			int nextIndex = Collections.computeNextIndex(corners, i);
+			int nextIndex = Collections.nextIndex(corners, i);
 			float distance = Geometry.distBetweenPointLineSegmentSq(corners.get(i), corners.get(nextIndex), pos);
 
 			if (distance < bestDist) {
@@ -672,7 +770,7 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 	 * Get local position for the selected actor from the specified world position
 	 * @param worldPos world position
 	 * @return Local position of the currently selected actor, copy of worldPos if no actor was selected.
-	 * Don't forget to free the localPosition using Pools.vector2.free(localPos)
+	 * Don't forget to free the localPos using Pools.vector2.free(localPos)
 	 */
 	private Vector2 getLocalPosition(Vector2 worldPos) {
 		Vector2 localPos = Pools.vector2.obtain();
@@ -683,6 +781,105 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 		}
 
 		return localPos;
+	}
+
+	/**
+	 * Get world position from the selected actor
+	 * @param localPos local position
+	 * @return world position of the currently selected actor, copy of localPos if no actor was selected.
+	 * Don't forget to free the worldPos using Pools.vector2.free(worldPos);
+	 */
+	private Vector2 getWorldPosition(Vector2 localPos) {
+		Vector2 worldPos = Pools.vector2.obtain();
+		worldPos.set(localPos);
+
+		if (mSelectedActor != null) {
+			worldPos.add(mSelectedActor.getPosition()).add(mSelectedActor.getDef().getVisualVars().getCenterOffset());
+		}
+
+		return worldPos;
+	}
+
+	/**
+	 * Tests whether the pointer have moved enough to add another corner
+	 * @return true if we shall add another corner.
+	 */
+	private boolean haveMovedEnoughToAddAnotherCorner() {
+		boolean movedEnough = false;
+		// If has drawn more than minimum distance, add another corner here
+		Vector2 diffVector = Pools.vector2.obtain();
+		diffVector.set(mTouchCurrent).sub(mDragOrigin);
+		if (diffVector.len2() >= Config.Editor.Actor.Visual.DRAW_NEW_CORNER_MIN_DIST_SQ) {
+			movedEnough = true;
+		}
+		Pools.vector2.free(diffVector);
+
+		return movedEnough;
+	}
+
+	/**
+	 * Checks for intersections between selected actor and draw erase brush
+	 * @return array list with all intersections including indicies for both
+	 * actor and brush.
+	 */
+	private ArrayList<BrushActorIntersection> getBrushActorIntersections() {
+		@SuppressWarnings("unchecked")
+		ArrayList<BrushActorIntersection> intersections = Pools.arrayList.obtain();
+		intersections.clear();
+
+		ArrayList<Vector2> actorCorners = mSelectedActor.getDef().getVisualVars().getCorners();
+		ArrayList<Vector2> brushCorners = mDrawEraseBrush.getCorners();
+		for (int actorIndex = 0; actorIndex < actorCorners.size(); ++actorIndex) {
+			Vector2 actorLineStart = getWorldPosition(actorCorners.get(actorIndex));
+			Vector2 actorLineEnd = getWorldPosition(actorCorners.get(Collections.nextIndex(actorCorners, actorIndex)));
+
+			// Don't loop the brush...
+			for (int brushIndex = 0; brushIndex < brushCorners.size() - 1; ++brushIndex) {
+				Vector2 brushLineStart = brushCorners.get(brushIndex);
+				Vector2 brushLineEnd = brushCorners.get(Collections.nextIndex(brushCorners, brushIndex));
+
+				// Save intersection
+				if (Geometry.linesIntersect(actorLineStart, actorLineEnd, brushLineStart, brushLineEnd)) {
+					Vector2 intersection = Geometry.getLineLineIntersection(actorLineStart, actorLineEnd, brushLineStart, brushLineEnd);
+
+					intersections.add(new BrushActorIntersection(intersection, actorIndex, brushIndex));
+				}
+			}
+
+			Pools.vector2.freeAll(actorLineStart, actorLineEnd);
+		}
+
+
+		return intersections;
+	}
+
+	/**
+	 * Wrapper class for intersection, actor corner index, brush index.
+	 */
+	private class BrushActorIntersection implements Disposable {
+		/**
+		 * Initializes with initial parameters
+		 * @param intersection where the intersection is
+		 * @param actorIndex index of the intersection in the actor
+		 * @param brushIndex index of the intersection in the brush
+		 */
+		BrushActorIntersection(Vector2 intersection, int actorIndex, int brushIndex) {
+			this.intersection = intersection;
+			this.actorIndex = actorIndex;
+			this.brushIndex = brushIndex;
+		}
+
+		@Override
+		public void dispose() {
+			Pools.vector2.free(intersection);
+		}
+
+		/** Intersection point */
+		Vector2 intersection;
+		/** Actor index */
+		int actorIndex;
+		/** Brush index */
+		int brushIndex;
 	}
 
 	/** Invoker used for undoing/redoing commands */
@@ -704,9 +901,10 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 	private boolean mCornerAddedNow = false;
 	/** The actor editor */
 	private IResourceChangeEditor mActorEditor;
-
 	/** If only one actor shall be able to be created simultaneously */
 	private boolean mOnlyOneActor;
 	/** Actor definition, only set if only one actor */
 	private ActorDef mActorDef = null;
+	/** Vector brush for draw/erase */
+	private VectorBrush mDrawEraseBrush = null;
 }

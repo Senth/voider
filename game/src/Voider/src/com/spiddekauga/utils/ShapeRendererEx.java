@@ -222,7 +222,7 @@ public class ShapeRendererEx implements Disposable {
 
 		if (loop) {
 			for (int i = 0; i < vertices.size(); ++i) {
-				int nextIndex = Collections.computeNextIndex(vertices, i);
+				int nextIndex = Collections.nextIndex(vertices, i);
 				line(vertices.get(i).x + offset.x, vertices.get(i).y + offset.y, vertices.get(nextIndex).x + offset.x, vertices.get(nextIndex).y + offset.y);
 			}
 		} else {

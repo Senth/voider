@@ -229,7 +229,7 @@ public class Geometry {
 		float area = 0;
 		for (int i = 0; i < vertices.size(); i++) {
 			final Vector2 p1 = vertices.get(i);
-			final Vector2 p2 = vertices.get(com.spiddekauga.utils.Collections.computeNextIndex(vertices, i));
+			final Vector2 p2 = vertices.get(com.spiddekauga.utils.Collections.nextIndex(vertices, i));
 			area += p1.x * p2.y - p2.x * p1.y;
 		}
 
@@ -321,8 +321,8 @@ public class Geometry {
 		Vector2 borderBelowAfter2 = Pools.vector2.obtain();
 
 		for (int i = 0; i < corners.size(); ++i) {
-			int nextIndex = com.spiddekauga.utils.Collections.computeNextIndex(corners, i);
-			int prevIndex = com.spiddekauga.utils.Collections.computePreviousIndex(corners, i);
+			int nextIndex = com.spiddekauga.utils.Collections.nextIndex(corners, i);
+			int prevIndex = com.spiddekauga.utils.Collections.previousIndex(corners, i);
 
 			// First position only takes into account the forward direction
 			if (i == 0) {
@@ -553,8 +553,8 @@ public class Geometry {
 		for (int i = 0; i < corners.size(); ++i) {
 			// Get direction of lines that uses this vertex (i.e. that has it
 			// as its end (line before) or start (line after) position.
-			int indexBefore = com.spiddekauga.utils.Collections.computePreviousIndex(corners, i);
-			int indexAfter = com.spiddekauga.utils.Collections.computeNextIndex(corners, i);
+			int indexBefore = com.spiddekauga.utils.Collections.previousIndex(corners, i);
+			int indexAfter = com.spiddekauga.utils.Collections.nextIndex(corners, i);
 			Geometry.getDirection(corners.get(indexBefore), corners.get(i), directionBefore);
 			Geometry.getDirection(corners.get(i), corners.get(indexAfter), directionAfter);
 
@@ -624,7 +624,7 @@ public class Geometry {
 
 		if (Geometry.isPolygonCounterClockwise(corners)) {
 			for (int i = 0; i < corners.size(); ++i) {
-				int nextIndex = com.spiddekauga.utils.Collections.computeNextIndex(corners, i);
+				int nextIndex = com.spiddekauga.utils.Collections.nextIndex(corners, i);
 
 				// First triangle
 				vertices.add(corners.get(i));
@@ -638,7 +638,7 @@ public class Geometry {
 			}
 		} else {
 			for (int i = 0; i < corners.size(); ++i) {
-				int nextIndex = com.spiddekauga.utils.Collections.computeNextIndex(corners, i);
+				int nextIndex = com.spiddekauga.utils.Collections.nextIndex(corners, i);
 
 				// First triangle
 				vertices.add(corners.get(i));
@@ -798,9 +798,9 @@ public class Geometry {
 
 			if (intersectionIndexEnd != -1) {
 				Vector2 line1a = vertices.get(i);
-				Vector2 line1b = vertices.get(com.spiddekauga.utils.Collections.computeNextIndex(vertices, i));
+				Vector2 line1b = vertices.get(com.spiddekauga.utils.Collections.nextIndex(vertices, i));
 				Vector2 line2a = vertices.get(intersectionIndexEnd);
-				Vector2 line2b = vertices.get(com.spiddekauga.utils.Collections.computeNextIndex(vertices, intersectionIndexEnd));
+				Vector2 line2b = vertices.get(com.spiddekauga.utils.Collections.nextIndex(vertices, intersectionIndexEnd));
 				Vector2 intersectionPoint = getLineLineIntersection(line1a, line1b, line2a, line2b);
 
 				if (intersectionPoint != null) {
@@ -818,8 +818,8 @@ public class Geometry {
 					}
 
 					// Add intersection point to the vertices
-					vertices.add(com.spiddekauga.utils.Collections.computeNextIndex(vertices, intersectionIndexEnd), intersectionPoint);
-					vertices.add(com.spiddekauga.utils.Collections.computeNextIndex(vertices, i), intersectionPoint);
+					vertices.add(com.spiddekauga.utils.Collections.nextIndex(vertices, intersectionIndexEnd), intersectionPoint);
+					vertices.add(com.spiddekauga.utils.Collections.nextIndex(vertices, i), intersectionPoint);
 				} else {
 					Gdx.app.debug("Geometry", "Intersection found, but was parallell");
 				}
@@ -896,7 +896,7 @@ public class Geometry {
 	}
 
 	/**
-	 * Enumeration of intersection possibiliets
+	 * Enumeration of intersection possibilities
 	 */
 	public enum Intersections {
 		/** No intersections */
@@ -956,7 +956,7 @@ public class Geometry {
 
 		// Calculate start/end of line
 		Vector2 lineStart = vertices.get(lineIndex);
-		Vector2 lineEnd = vertices.get(com.spiddekauga.utils.Collections.computeNextIndex(vertices, lineIndex));
+		Vector2 lineEnd = vertices.get(com.spiddekauga.utils.Collections.nextIndex(vertices, lineIndex));
 
 
 		for (int i = testFromIndex; i < testToIndex; ++i) {
@@ -966,7 +966,7 @@ public class Geometry {
 			}
 
 			Vector2 compareLineStart = vertices.get(i);
-			Vector2 compareLineEnd = vertices.get(com.spiddekauga.utils.Collections.computeNextIndex(vertices, i));
+			Vector2 compareLineEnd = vertices.get(com.spiddekauga.utils.Collections.nextIndex(vertices, i));
 
 			if (linesIntersectNoCorners(lineStart, lineEnd, compareLineStart, compareLineEnd)) {
 				return i;

@@ -16,8 +16,7 @@ import com.spiddekauga.voider.utils.Pools;
  * Removes excessive corners from the resource. I.e. corners that have almost
  * no angle difference between them. E.g. three corners > 0,0 -> 0,5 -> 0,10.
  * In this case 0,5 does not add anything to the shape, it will only make
- * calculations slower...<br/>
- * <br/>
+ * calculations slower... Also removes corners that are too close.
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
@@ -46,51 +45,79 @@ public class CResourceCornerRemoveExcessive extends Command {
 		for (int i = 1; i < corners.size() - 1; ++i) {
 			beforeAngle = afterAngle;
 
-			// Calculate after vector
-			afterVector.set(corners.get(Collections.computeNextIndex(corners, i))).sub(corners.get(i));
-			afterAngle = afterVector.angle();
+			boolean removeCorner = false;
 
-			boolean tooLowAngleDiff = false;
-			if (Maths.approxCompare(beforeAngle, afterAngle, Config.Editor.Actor.Visual.DRAW_CORNER_ANGLE_MIN)) {
-				tooLowAngleDiff = true;
-			} else if (beforeAngle < afterAngle) {
-				if (Maths.approxCompare(beforeAngle + 360, afterAngle, Config.Editor.Actor.Visual.DRAW_CORNER_ANGLE_MIN)) {
-					tooLowAngleDiff = true;
-				}
-			} else {
-				if (Maths.approxCompare(beforeAngle - 360, afterAngle, Config.Editor.Actor.Visual.DRAW_CORNER_ANGLE_MIN)) {
-					tooLowAngleDiff = true;
+			// Test distance
+			if (afterVector.len2() < Config.Editor.Actor.Visual.DRAW_NEW_CORNER_MIN_DIST_SQ) {
+				removeCorner = true;
+			}
+			// Test angle
+			else {
+				// Calculate after vector
+				afterVector.set(corners.get(Collections.nextIndex(corners, i))).sub(corners.get(i));
+				afterAngle = afterVector.angle();
+
+				if (Maths.approxCompare(beforeAngle, afterAngle, Config.Editor.Actor.Visual.DRAW_CORNER_ANGLE_MIN)) {
+					removeCorner = true;
+				} else if (beforeAngle < afterAngle) {
+					if (Maths.approxCompare(beforeAngle + 360, afterAngle, Config.Editor.Actor.Visual.DRAW_CORNER_ANGLE_MIN)) {
+						removeCorner = true;
+					}
+				} else {
+					if (Maths.approxCompare(beforeAngle - 360, afterAngle, Config.Editor.Actor.Visual.DRAW_CORNER_ANGLE_MIN)) {
+						removeCorner = true;
+					}
 				}
 			}
 
 			// Too low difference in degrees between angles...
-			if (tooLowAngleDiff) {
-				Vector2 removedCorner = mResource.removeCorner(i);
+			if (removeCorner) {
+				removeCorner(i);
 
-				if (removedCorner != null) {
-					// Save removed corner
-					CornerIndex cornerIndex = mCornerIndexPool.obtain();
-					cornerIndex.corner = removedCorner;
-					cornerIndex.index = i;
-					mRemovedCorners.add(cornerIndex);
+				// Before vector will have changed again
+				if (i < corners.size() - 1) {
+					afterVector.set(corners.get(i)).sub(corners.get(i-1));
+					afterAngle = afterVector.angle();
 
-
-					// Before vector will have changed again
-					if (i < corners.size() - 1) {
-						afterVector.set(corners.get(i)).sub(corners.get(i-1));
-						afterAngle = afterVector.angle();
-
-						--i;
-					}
-				} else {
-					Gdx.app.error("CResourceCornerRemoveExcessive", "Could not remove the corner");
+					--i;
 				}
 			}
 		}
+
+		// Test length between last corners, i.e. end - 1 -> end & end -> begin
+		// end - 1 -> end.
+		afterVector.set(corners.get(corners.size() - 1)).sub(corners.get(corners.size() - 2));
+		if (afterVector.len2() < Config.Editor.Actor.Visual.DRAW_NEW_CORNER_MIN_DIST_SQ) {
+			removeCorner(corners.size()-1);
+		}
+
+		// end -> begin
+		afterVector.set(corners.get(corners.size() - 1)).sub(corners.get(0));
+		if (afterVector.len2() < Config.Editor.Actor.Visual.DRAW_NEW_CORNER_MIN_DIST_SQ) {
+			removeCorner(corners.size()-1);
+		}
+
 		Pools.vector2.free(afterVector);
 
 
 		return true;
+	}
+
+	/**
+	 * Saves and removes the specified corner
+	 * @param index index of the corner to remove
+	 */
+	private void removeCorner(int index) {
+		Vector2 removedCorner = mResource.removeCorner(index);
+
+		if (removedCorner != null) {
+			CornerIndex cornerIndex = mCornerIndexPool.obtain();
+			cornerIndex.corner = removedCorner;
+			cornerIndex.index = index;
+			mRemovedCorners.add(cornerIndex);
+		} else {
+			Gdx.app.error("CResourceCornerRemoveExcessive", "Could not remove the corner");
+		}
 	}
 
 	/**

@@ -14,7 +14,7 @@ public class Collections {
 	 * @param index calculates the previous index of this
 	 * @return previous index
 	 */
-	public static int computePreviousIndex(final List<?> array, int index) {
+	public static int previousIndex(final List<?> array, int index) {
 		return index == 0 ? array.size() - 1 : index - 1;
 	}
 
@@ -24,7 +24,7 @@ public class Collections {
 	 * @param index calculates the next index of this
 	 * @return next index
 	 */
-	public static int computeNextIndex(final List<?> array, int index) {
+	public static int nextIndex(final List<?> array, int index) {
 		return index == array.size() - 1 ? 0 : index + 1;
 	}
 }

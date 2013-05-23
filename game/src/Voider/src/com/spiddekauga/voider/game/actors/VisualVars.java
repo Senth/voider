@@ -469,11 +469,7 @@ public class VisualVars implements Json.Serializable, Disposable, IResourceCorne
 
 	@Override
 	public Vector2 removeCorner(int index) {
-		Vector2 removedPosition = null;
-		if (index >= 0 && index < mCorners.size()) {
-			removedPosition = mCorners.remove(index);
-		}
-		return removedPosition;
+		return mCorners.remove(index);
 	}
 
 	@Override
