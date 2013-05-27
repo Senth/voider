@@ -2,6 +2,7 @@ package com.spiddekauga.voider.scene;
 
 import java.util.ArrayList;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
@@ -540,9 +541,14 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 				if (Geometry.intersectionExists(mDrawEraseBrush.getCorners()) != Intersections.INTERSECTS) {
 					ArrayList<BrushActorIntersection> intersections = getBrushActorIntersections();
 
-					// If odd, remove last intersection...
+					// If odd, remove added last intersection...
 					if (intersections.size() % 2 == 1) {
-						intersections.remove(intersections.size() - 1);
+						if (intersections.get(0).brushIndex > intersections.get(intersections.size() - 1).brushIndex) {
+							intersections.remove(0);
+						} else {
+							intersections.remove(intersections.size() - 1);
+						}
+
 					}
 
 					// Reverse order, i.e. always start with the highest actor index. Otherwise the rest
@@ -554,39 +560,99 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 					// Change shape of actor to use the brush corners.
 					IResourceCorner actorCorner = mSelectedActor.getDef().getVisualVars();
 					while (intersections.size() >= 2) {
-						// Remove actor corners between intersections
-						int addIndex = intersections.get(1).actorIndex + 1;
-						int cornersToRemove = intersections.get(0).actorIndex - intersections.get(1).actorIndex;
-						for (int i = 0; i < cornersToRemove; ++i) {
-							mInvoker.execute(new CResourceCornerRemove(actorCorner, addIndex, mActorEditor), true);
+						int actorIndexHigh = intersections.get(0).actorIndex;
+						int actorIndexLow = intersections.get(1).actorIndex;
+
+						// Check the indices of the other intersections, if they are
+						// between or wrapped indices.
+						boolean intersectionsBetween = false;
+						boolean intersectionsWrapped = false;
+						for (int i = 2; i < intersections.size(); ++i) {
+							int actorIndex = intersections.get(i).actorIndex;
+							if (actorIndex > actorIndexLow && actorIndex < actorIndexHigh) {
+								intersectionsBetween = true;
+							} else {
+								intersectionsWrapped = true;
+							}
+						}
+
+						if (intersectionsBetween && intersectionsWrapped) {
+							Gdx.app.debug("DrawActorTool", "Both intersection between and wrapped!");
+						}
+
+						boolean removeBetween = intersectionsWrapped && !intersectionsBetween;
+						if (!removeBetween && !intersectionsBetween) {
+							removeBetween = isShortestBetweenIndices(actorCorner.getCorners(), intersections.get(1), intersections.get(0));
 						}
 
 
-						// Add end intersection
-						Vector2 localPos = getLocalPosition(intersections.get(0).intersection);
-						mInvoker.execute(new CResourceCornerAdd(actorCorner, intersections.get(0).intersection, addIndex, mActorEditor), true);
+						// Remove actor corners between intersections
+						int addIndex;
+						if (removeBetween) {
+							addIndex = actorIndexLow + 1;
+							int cornersToRemove = actorIndexHigh - actorIndexLow;
+							for (int i = 0; i < cornersToRemove; ++i) {
+								mInvoker.execute(new CResourceCornerRemove(actorCorner, addIndex, mActorEditor), true);
+							}
+						}
+						// Remove actor corners between last and first intersection (wrapped)
+						else {
+							// Remove at the back
+							int cornersToRemoveAtBack = actorCorner.getCornerCount() - actorIndexHigh - 1;
+							for (int i = 0; i < cornersToRemoveAtBack; ++i) {
+								mInvoker.execute(new CResourceCornerRemove(actorCorner, actorCorner.getCornerCount() - 1, mActorEditor), true);
+							}
+
+							// Remove at the front
+							for (int i = 0; i <= actorIndexLow; ++i) {
+								mInvoker.execute(new CResourceCornerRemove(actorCorner, 0, mActorEditor), true);
+							}
+
+							// Fix actorIndices (because we removed some at the front)
+							for (int i = 2; i < intersections.size(); ++i) {
+								intersections.get(i).actorIndex -= actorIndexLow + 1;
+							}
+
+							addIndex = actorCorner.getCornerCount();
+						}
+
+
+						// Add end or begin intersection
+						BrushActorIntersection fromIntersection;
+						BrushActorIntersection toIntersection;
+						if (removeBetween) {
+							fromIntersection = intersections.get(0);
+							toIntersection = intersections.get(1);
+						} else {
+							fromIntersection = intersections.get(1);
+							toIntersection = intersections.get(0);
+						}
+
+						Vector2 localPos = getLocalPosition(fromIntersection.intersection);
+						mInvoker.execute(new CResourceCornerAdd(actorCorner, localPos, addIndex, mActorEditor), true);
 						Pools.vector2.free(localPos);
 
 						// Add brush corners
-						int fromIndex;
-						int toIndex;
-						if (intersections.get(0).brushIndex < intersections.get(1).brushIndex) {
-							fromIndex = intersections.get(0).brushIndex + 1;
-							toIndex = intersections.get(1).brushIndex;
+						if (fromIntersection.brushIndex < toIntersection.brushIndex) {
+							int fromIndex = fromIntersection.brushIndex + 1;
+							int toIndex = toIntersection.brushIndex;
+							for (int i = fromIndex; i < toIndex; ++i) {
+								localPos = getLocalPosition(mDrawEraseBrush.getCornerPosition(i));
+								mInvoker.execute(new CResourceCornerAdd(actorCorner, localPos, addIndex, mActorEditor), true);
+								Pools.vector2.free(localPos);
+							}
 						} else {
-							fromIndex = intersections.get(1).brushIndex + 1;
-							toIndex = intersections.get(0).brushIndex;
+							int fromIndex = fromIntersection.brushIndex;
+							int toIndex = toIntersection.brushIndex + 1;
+							for (int i = fromIndex; i > toIndex; --i) {
+								localPos = getLocalPosition(mDrawEraseBrush.getCornerPosition(i));
+								mInvoker.execute(new CResourceCornerAdd(actorCorner, localPos, addIndex, mActorEditor), true);
+								Pools.vector2.free(localPos);
+							}
 						}
-
-						for (int i = fromIndex; i < toIndex; ++i) {
-							localPos = getLocalPosition(mDrawEraseBrush.getCornerPosition(i));
-							mInvoker.execute(new CResourceCornerAdd(actorCorner, localPos, addIndex, mActorEditor), true);
-							Pools.vector2.free(localPos);
-						}
-
 
 						// Add begin intersection
-						localPos = getLocalPosition(intersections.get(1).intersection);
+						localPos = getLocalPosition(toIntersection.intersection);
 						mInvoker.execute(new CResourceCornerAdd(actorCorner, localPos, addIndex, mActorEditor), true);
 						Pools.vector2.free(localPos);
 
@@ -851,6 +917,59 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 
 
 		return intersections;
+	}
+
+	/**
+	 * Calculate if shortest path between to actorIndices are between the indices and not wrapped.
+	 * @param vertices current vertices of the actor
+	 * @param fromIntersection the intersection to calculate from
+	 * @param toIntersection the intersection to calculate to
+	 * @return true if the shortest length between two actorIndices are between the indices, false if wrapped
+	 */
+	private boolean isShortestBetweenIndices(ArrayList<Vector2> vertices, BrushActorIntersection fromIntersection, BrushActorIntersection toIntersection) {
+		// BETWEEN
+		float betweenLengthSq = 0;
+		// vertices between
+		if (fromIntersection.actorIndex != toIntersection.actorIndex) {
+			// Calculate from before intersection to first between index
+			Vector2 localPos = getLocalPosition(fromIntersection.intersection);
+			betweenLengthSq += localPos.dst2(vertices.get(fromIntersection.actorIndex + 1));
+			Pools.vector2.free(localPos);
+
+			// Calculate between
+			for (int i = fromIntersection.actorIndex + 1; i < toIntersection.actorIndex; ++i) {
+				betweenLengthSq += vertices.get(i).dst2(vertices.get(i+1));
+			}
+
+			// Calculate from last between index to after intersection
+			localPos = getLocalPosition(toIntersection.intersection);
+			betweenLengthSq += vertices.get(toIntersection.actorIndex).dst2(localPos);
+			Pools.vector2.free(localPos);
+		}
+		// No vertices between
+		else {
+			betweenLengthSq += fromIntersection.intersection.dst2(toIntersection.intersection);
+		}
+
+
+		// WRAPPED
+		float wrappedLengthSq = 0;
+		// Calculate from after intersection to first after index
+		Vector2 localPos = getLocalPosition(toIntersection.intersection);
+		int nextIndex = Collections.nextIndex(vertices,toIntersection.actorIndex);
+		wrappedLengthSq += localPos.dst2(vertices.get(nextIndex));
+		Pools.vector2.free(localPos);
+
+		// Calculate wrapped indices
+		int i = nextIndex;
+		while (i != fromIntersection.actorIndex && wrappedLengthSq <= betweenLengthSq) {
+			nextIndex = Collections.nextIndex(vertices, i);
+			wrappedLengthSq += vertices.get(i).dst2(vertices.get(nextIndex));
+
+			i = nextIndex;
+		}
+
+		return betweenLengthSq <= wrappedLengthSq;
 	}
 
 	/**
