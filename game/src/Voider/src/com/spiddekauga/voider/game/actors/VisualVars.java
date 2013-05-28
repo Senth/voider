@@ -79,9 +79,9 @@ public class VisualVars implements Json.Serializable, Disposable, IResourceCorne
 
 		setDefaultValues();
 
-		mShapeType = json.readValue("shapeType", ActorShapeTypes.class, jsonData);
-		mCenterOffset = json.readValue("centerOffset", Vector2.class, jsonData);
-		mColor = json.readValue("color", Color.class, jsonData);
+		mShapeType = json.readValue("mShapeType", ActorShapeTypes.class, jsonData);
+		mCenterOffset = json.readValue("mCenterOffset", Vector2.class, jsonData);
+		mColor = json.readValue("mColor", Color.class, jsonData);
 		mShapeComplete = json.readValue("mShapeComplete", boolean.class, jsonData);
 
 		switch (mShapeType) {
