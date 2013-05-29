@@ -1122,6 +1122,7 @@ class LevelEditorGui extends EditorGui {
 		GuiCheckCommandCreator terrainShapeChecker = new GuiCheckCommandCreator(mInvoker);
 
 
+		// Draw/Append
 		ButtonGroup toggleGroup = new ButtonGroup();
 		Button button = new TextButton("Draw/Append", textStyle);
 		button.addListener(terrainShapeChecker);
@@ -1138,6 +1139,7 @@ class LevelEditorGui extends EditorGui {
 		toggleGroup.add(button);
 		mStaticTerrainTable.add(button);
 
+		// Add corner
 		button = new TextButton("Add corner", textStyle);
 		button.addListener(terrainShapeChecker);
 		mWidgets.terrain.addCorner = button;
@@ -1153,6 +1155,7 @@ class LevelEditorGui extends EditorGui {
 		toggleGroup.add(button);
 		mStaticTerrainTable.add(button);
 
+		// Move corner
 		button = new TextButton("Move corner", textStyle);
 		button.addListener(terrainShapeChecker);
 		mWidgets.terrain.moveCorner = button;
@@ -1168,6 +1171,7 @@ class LevelEditorGui extends EditorGui {
 		toggleGroup.add(button);
 		mStaticTerrainTable.add(button);
 
+		// Remove corner
 		button = new TextButton("Remove corner", textStyle);
 		button.addListener(terrainShapeChecker);
 		mWidgets.terrain.removeCorner = button;
@@ -1183,6 +1187,7 @@ class LevelEditorGui extends EditorGui {
 		toggleGroup.add(button);
 		mStaticTerrainTable.add(button);
 
+		// Draw/Erase
 		button = new TextButton("Draw/Erase", textStyle);
 		button.addListener(terrainShapeChecker);
 		mWidgets.terrain.drawErase = button;
@@ -1198,6 +1203,7 @@ class LevelEditorGui extends EditorGui {
 		toggleGroup.add(button);
 		mStaticTerrainTable.add(button);
 
+		// Move shape
 		button = new TextButton("Move", textStyle);
 		button.addListener(terrainShapeChecker);
 		mWidgets.terrain.move = button;

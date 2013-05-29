@@ -162,8 +162,6 @@ public class VisualVars implements Json.Serializable, Disposable, IResourceCorne
 			mShapeWidth = 1;
 			break;
 		}
-
-		calculateBoundingRadius();
 	}
 
 	/**
@@ -772,6 +770,7 @@ public class VisualVars implements Json.Serializable, Disposable, IResourceCorne
 	 * Creates a rectangle shape from the visual variables
 	 * @return rectangle shape for fixture
 	 */
+	@SuppressWarnings("unchecked")
 	private PolygonShape createRectangleShape() {
 		PolygonShape rectangleShape = new PolygonShape();
 
@@ -783,6 +782,7 @@ public class VisualVars implements Json.Serializable, Disposable, IResourceCorne
 		rectangleShape.setAsBox(halfWidth, halfHeight);
 
 		clearVertices();
+		mVertices = Pools.arrayList.obtain();
 
 		// Create triangle vertices and polygon for the rectangle
 		if (rectangleShape.getVertexCount() == 4) {
@@ -821,6 +821,7 @@ public class VisualVars implements Json.Serializable, Disposable, IResourceCorne
 	 * Creates a triangle shape from the visual variables
 	 * @return triangle polygon used for fixture
 	 */
+	@SuppressWarnings("unchecked")
 	private PolygonShape createTriangleShape() {
 		Vector2[] vertices = new Vector2[3];
 
@@ -864,6 +865,7 @@ public class VisualVars implements Json.Serializable, Disposable, IResourceCorne
 
 		// Set vertices and create border
 		clearVertices();
+		mVertices = Pools.arrayList.obtain();
 		mPolygon = new ArrayList<Vector2>();
 		for (Vector2 vertex : vertices) {
 			mVertices.add(vertex);

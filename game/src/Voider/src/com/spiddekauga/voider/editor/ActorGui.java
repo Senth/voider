@@ -598,9 +598,9 @@ public abstract class ActorGui extends EditorGui {
 		if (containsShape(ActorShapeTypes.CUSTOM, actorShapeTypes)) {
 			mVisualTable.row();
 			buttonGroup = new ButtonGroup();
+			GuiCheckCommandCreator shapeCustomChecker = new GuiCheckCommandCreator(mInvoker);
 
 			// Append
-			GuiCheckCommandCreator shapeCustomChecker = new GuiCheckCommandCreator(mInvoker);
 			Button button = new TextButton("Draw/Append", toggleStyle);
 			button.addListener(shapeCustomChecker);
 			mWidgets.visual.customShapeAppend = button;
@@ -617,7 +617,7 @@ public abstract class ActorGui extends EditorGui {
 			};
 			mVisualTable.add(button);
 
-			// Adjust - Add corner
+			// Add corner
 			button = new TextButton("Add corner", toggleStyle);
 			button.addListener(shapeCustomChecker);
 			mWidgets.visual.customShapeAddCorner = button;
@@ -634,7 +634,7 @@ public abstract class ActorGui extends EditorGui {
 			};
 			mVisualTable.add(button);
 
-			// Adjust - Move corner
+			// Move corner
 			button = new TextButton("Move corner", toggleStyle);
 			button.addListener(shapeCustomChecker);
 			mWidgets.visual.customShapeMoveCorner = button;
@@ -651,7 +651,8 @@ public abstract class ActorGui extends EditorGui {
 			};
 			mVisualTable.add(button);
 
-			// Adjust - Remove corner
+			// Remove corner
+			mVisualTable.row();
 			button = new TextButton("Remove corner", toggleStyle);
 			button.addListener(shapeCustomChecker);
 			mWidgets.visual.customShapeRemoveCorner = button;

@@ -1006,7 +1006,7 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 	/** Invoker used for undoing/redoing commands */
 	protected Invoker mInvoker = null;
 	/** Current state of the tool */
-	protected States mState = States.ADJUST_ADD_CORNER;
+	protected States mState = States.DRAW_APPEND;
 
 	/** Origin of the drag */
 	private Vector2 mDragOrigin = new Vector2();

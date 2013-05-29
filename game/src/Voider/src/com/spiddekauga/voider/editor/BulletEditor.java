@@ -427,27 +427,32 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 
 	@Override
 	public void onResourceAdded(IResource resource) {
-		mBulletActor = (BulletActor) resource;
+		if (resource instanceof BulletActor) {
+			mBulletActor = (BulletActor) resource;
 
-		// Set position other than center
-		Vector2 worldPosition = Pools.vector2.obtain();
-		screenToWorldCoord(mCamera, Gdx.graphics.getWidth() / 3, Gdx.graphics.getHeight() / 3, worldPosition, false);
-		mBulletActor.setPosition(worldPosition);
-		Pools.vector2.free(worldPosition);
+			// Set position other than center
+			Vector2 worldPosition = Pools.vector2.obtain();
+			screenToWorldCoord(mCamera, Gdx.graphics.getWidth() / 3, Gdx.graphics.getHeight() / 3, worldPosition, false);
+			mBulletActor.setPosition(worldPosition);
+			Pools.vector2.free(worldPosition);
 
-
-		mUnsaved = true;
+			mUnsaved = true;
+		}
 	}
 
 	@Override
 	public void onResourceRemoved(IResource resource) {
-		mBulletActor = null;
-		mUnsaved = true;
+		if (resource instanceof BulletActor) {
+			mBulletActor = null;
+			mUnsaved = true;
+		}
 	}
 
 	@Override
 	public void onResourceChanged(IResource resource) {
-		mUnsaved = true;
+		if (resource instanceof BulletActor) {
+			mUnsaved = true;
+		}
 	}
 
 	@Override

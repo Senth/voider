@@ -321,8 +321,6 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 			if (mRotatedVertices != null) {
 				shapeRenderer.setColor(mDef.getVisualVars().getColor());
 				shapeRenderer.triangles(mRotatedVertices, offsetPosition);
-			} else {
-				Gdx.app.error("Actor", "Rotated vertices are null!");
 			}
 		}
 		// Draw outline
