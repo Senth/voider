@@ -1119,9 +1119,12 @@ class LevelEditorGui extends EditorGui {
 	private void initStaticTerrain() {
 		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
 		TextButtonStyle textStyle = editorSkin.get("toggle", TextButtonStyle.class);
+		GuiCheckCommandCreator terrainShapeChecker = new GuiCheckCommandCreator(mInvoker);
+
 
 		ButtonGroup toggleGroup = new ButtonGroup();
 		Button button = new TextButton("Draw/Append", textStyle);
+		button.addListener(terrainShapeChecker);
 		mWidgets.terrain.append = button;
 		TooltipListener tooltipListener = new TooltipListener(button, "Draw/Append", Messages.replaceName(Messages.Tooltip.Actor.Visuals.APPEND, "terrain"));
 		new ButtonListener(button, tooltipListener) {
@@ -1136,6 +1139,7 @@ class LevelEditorGui extends EditorGui {
 		mStaticTerrainTable.add(button);
 
 		button = new TextButton("Add corner", textStyle);
+		button.addListener(terrainShapeChecker);
 		mWidgets.terrain.addCorner = button;
 		tooltipListener = new TooltipListener(button, "Add corner", Messages.replaceName(Messages.Tooltip.Actor.Visuals.ADJUST_ADD_CORNER, "terrain"));
 		new ButtonListener(button, tooltipListener) {
@@ -1150,6 +1154,7 @@ class LevelEditorGui extends EditorGui {
 		mStaticTerrainTable.add(button);
 
 		button = new TextButton("Move corner", textStyle);
+		button.addListener(terrainShapeChecker);
 		mWidgets.terrain.moveCorner = button;
 		tooltipListener = new TooltipListener(button, "Move corner", Messages.replaceName(Messages.Tooltip.Actor.Visuals.ADJUST_MOVE_CORNER, "terrain"));
 		new ButtonListener(button, tooltipListener) {
@@ -1164,6 +1169,7 @@ class LevelEditorGui extends EditorGui {
 		mStaticTerrainTable.add(button);
 
 		button = new TextButton("Remove corner", textStyle);
+		button.addListener(terrainShapeChecker);
 		mWidgets.terrain.removeCorner = button;
 		tooltipListener = new TooltipListener(button, "Remove corner", Messages.replaceName(Messages.Tooltip.Actor.Visuals.ADJUST_REMOVE_CORNER, "terrain"));
 		new ButtonListener(button, tooltipListener) {
@@ -1178,6 +1184,7 @@ class LevelEditorGui extends EditorGui {
 		mStaticTerrainTable.add(button);
 
 		button = new TextButton("Draw/Erase", textStyle);
+		button.addListener(terrainShapeChecker);
 		mWidgets.terrain.drawErase = button;
 		tooltipListener = new TooltipListener(button, "Draw/Erase", Messages.replaceName(Messages.Tooltip.Actor.Visuals.ADD_REMOVE, "terrain"));
 		new ButtonListener(button, tooltipListener) {
@@ -1192,6 +1199,7 @@ class LevelEditorGui extends EditorGui {
 		mStaticTerrainTable.add(button);
 
 		button = new TextButton("Move", textStyle);
+		button.addListener(terrainShapeChecker);
 		mWidgets.terrain.move = button;
 		tooltipListener = new TooltipListener(button, "Move shape", Messages.replaceName(Messages.Tooltip.Actor.Visuals.MOVE, "terrain"));
 		new ButtonListener(button, tooltipListener) {
