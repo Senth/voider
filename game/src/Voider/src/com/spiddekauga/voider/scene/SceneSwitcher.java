@@ -228,6 +228,16 @@ public class SceneSwitcher {
 	}
 
 	/**
+	 * Prints an error message to the current scene
+	 * @param message the message to print
+	 */
+	public static void showErrorMessage(String message) {
+		if (!mScenes.isEmpty()) {
+			mScenes.peek().mGui.showErrorMessage(message);
+		}
+	}
+
+	/**
 	 * Updates (and renders) the scene switcher and the current scene.
 	 */
 	public static void update() {
@@ -317,7 +327,7 @@ public class SceneSwitcher {
 	 * Loads the resources of the current active scene
 	 */
 	private static void loadActiveSceneResources() {
-		Scene currentsScene = mScenes.getFirst();
+		Scene currentsScene = mScenes.peek();
 		currentsScene.loadResources();
 		LoadingScene loadingScene = currentsScene.getLoadingScene();
 
@@ -333,7 +343,7 @@ public class SceneSwitcher {
 	 */
 	private static void deactivateCurrentScene() {
 		if (!mScenes.isEmpty()) {
-			Scene previouScene = mScenes.getFirst();
+			Scene previouScene = mScenes.peek();
 			previouScene.onDeactivate();
 			Gdx.input.setInputProcessor(null);
 

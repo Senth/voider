@@ -33,6 +33,7 @@ import com.spiddekauga.voider.utils.Geometry;
 import com.spiddekauga.voider.utils.Geometry.Intersections;
 import com.spiddekauga.voider.utils.Geometry.PolygonComplexException;
 import com.spiddekauga.voider.utils.Geometry.PolygonCornersTooCloseException;
+import com.spiddekauga.voider.utils.Messages;
 import com.spiddekauga.voider.utils.Pools;
 
 /**
@@ -466,9 +467,10 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 				try {
 					mInvoker.execute(new CActorDefFixCustomFixtures(mSelectedActor.getDef(), true), true);
 				} catch (PolygonComplexException e) {
-					/** @todo write some error message */
+					SceneSwitcher.showErrorMessage(Messages.Error.POLYGON_COMPLEX_ADD);
 					handleBadCornerPosition(null);
 				} catch (PolygonCornersTooCloseException e) {
+					Gdx.app.error("DrawActorTool", "PolygonCornersTooClose! Should never happen!");
 					handleBadCornerPosition(null);
 				}
 
@@ -490,10 +492,10 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 				try {
 					mInvoker.execute(new CActorDefFixCustomFixtures(mSelectedActor.getDef(), true), true);
 				} catch (PolygonComplexException e) {
-					/** @todo print some error message */
+					SceneSwitcher.showErrorMessage(Messages.Error.POLYGON_COMPLEX_MOVE);
 					handleBadCornerPosition(null);
 				} catch (PolygonCornersTooCloseException e) {
-					/** @todo print some error message */
+					Gdx.app.error("DrawActorTool", "PolygonCornersTooClose! Should never happen!");
 					handleBadCornerPosition(null);
 				}
 
@@ -518,10 +520,10 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 					try {
 						mInvoker.execute(new CActorDefFixCustomFixtures(mSelectedActor.getDef(), true), true);
 					} catch (PolygonComplexException e) {
-						/** @todo print pop up error message */
+						SceneSwitcher.showErrorMessage(Messages.Error.POLYGON_COMPLEX_DRAW_APPEND);
 						handleBadCornerPosition(null);
 					} catch (PolygonCornersTooCloseException e) {
-						/** @todo print pop up error message */
+						Gdx.app.error("DrawActorTool", "PolygonCornersTooClose! Should never happen!");
 						handleBadCornerPosition(null);
 					}
 				}
@@ -665,15 +667,15 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 					try {
 						mInvoker.execute(new CActorDefFixCustomFixtures(mSelectedActor.getDef(), true), true);
 					} catch (PolygonComplexException e) {
-						/** @todo error message */
+						SceneSwitcher.showErrorMessage(Messages.Error.POLYGON_COMPLEX_DRAW_ERASE);
 						handleBadCornerPosition(null);
 					} catch (PolygonCornersTooCloseException e) {
-						/** @todo error message */
+						Gdx.app.error("DrawActorTool", "PolygonCornersTooClose! Should never happen!");
 						handleBadCornerPosition(null);
 					}
 
 				} else {
-					/** @todo print pop up error message about draw erase brush */
+					SceneSwitcher.showErrorMessage(Messages.Error.POLYGON_DRAW_ERASE_LINE_COMPLEX);
 				}
 
 				mDrawEraseBrush.dispose();
