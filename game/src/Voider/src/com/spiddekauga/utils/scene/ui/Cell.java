@@ -601,6 +601,14 @@ public class Cell implements Poolable {
 		}
 	}
 
+	/**
+	 * @param actor the actor to test if it's here
+	 * @return true if the cell contains the specified actor
+	 */
+	boolean containsActor(Actor actor) {
+		return mActor == actor;
+	}
+
 
 	/** Actor in the cell */
 	private Actor mActor = null;

@@ -1,8 +1,10 @@
 package com.spiddekauga.utils.scene.ui;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.utils.Pool.Poolable;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
@@ -363,6 +365,28 @@ public class Row implements Poolable {
 	 */
 	float getHeight() {
 		return mHeight + getPadTop() + getPadBottom();
+	}
+
+	/**
+	 * Removes the specified actor from all cells that matches the actor
+	 * @param actor the actor to remove
+	 */
+	void removeActor(Actor actor) {
+		Iterator<Cell> cellIt = mCells.iterator();
+		while (cellIt.hasNext()) {
+			Cell cell = cellIt.next();
+
+			if (cell.containsActor(actor)) {
+				cellIt.remove();
+			}
+		}
+	}
+
+	/**
+	 * @return number of cells in the row
+	 */
+	int getCellCount() {
+		return mCells.size();
 	}
 
 	/**

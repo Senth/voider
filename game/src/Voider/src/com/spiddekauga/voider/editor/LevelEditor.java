@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
@@ -531,6 +532,14 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 		// Main menu
 		else if (KeyHelper.isBackPressed(keycode)) {
 			((EditorGui)mGui).showMainMenu();
+		}
+		/** @todo remove test buttons */
+		else if (keycode == Input.Keys.F5) {
+			String message = "This is an error message";
+			mGui.showErrorMessage(message);
+		} else if (keycode== Input.Keys.F6) {
+			String message = "This is a longer error message with more text, a lot more text, see if it will wrap correctly later...";
+			mGui.showErrorMessage(message);
 		}
 
 		return false;

@@ -522,6 +522,12 @@ public class Config {
 		public static float TOOLTIP_PRESS_SHOW = 1;
 		/** fade duration of the tooltip when hovering */
 		public static float TOOLTIP_HOVER_FADE_DURATION = 0.3f;
+		/** Fade in duration of the label and window for error messages */
+		public static float ERROR_MESSAGE_FADE_IN_DURATION = 0.3f;
+		/** Fade out duration of the label and window for error messages */
+		public static float ERROR_MESSAGE_FADE_OUT_DURATION = 1.0f;
+		/** Time to display error message per character */
+		public static float ERROR_MESSAGE_TIME_PER_CHARACTER = 0.08f;
 	}
 
 	/**

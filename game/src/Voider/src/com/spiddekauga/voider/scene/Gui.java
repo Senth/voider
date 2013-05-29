@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.spiddekauga.utils.scene.ui.AlignTable;
+import com.spiddekauga.utils.scene.ui.ErrorMessageShower;
 import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceNames;
@@ -166,6 +167,7 @@ public abstract class Gui {
 	 */
 	public void initGui() {
 		MsgBoxExecuter.fadeDuration = 0.01f;
+		mErrorMessageShower = new ErrorMessageShower(mStage);
 		mInitialized = true;
 	}
 
@@ -206,6 +208,14 @@ public abstract class Gui {
 	}
 
 	/**
+	 * Will display an error message
+	 * @param message the error message to display
+	 */
+	public void showErrorMessage(String message) {
+		mErrorMessageShower.addMessage(message);
+	}
+
+	/**
 	 * Checks if a button is checked (from the event).
 	 * @param event checks if the target inside the event is a button and it's checked
 	 * @return checked button. If the target isn't a button or the button isn't checked
@@ -238,12 +248,15 @@ public abstract class Gui {
 		outerTable.invalidateHierarchy();
 	}
 
+
 	/** Main table for the layout */
 	protected AlignTable mMainTable = new AlignTable();
 	/** True if the GUI has been initialized */
 	protected boolean mInitialized = false;
 	/** Stage for the GUI */
 	private Stage mStage = new Stage();
+	/** Error message shower */
+	private ErrorMessageShower mErrorMessageShower = null;
 	/** Active message boxes */
 	private ArrayList<MsgBoxExecuter> mActiveMsgBoxes = new ArrayList<MsgBoxExecuter>();
 	/** Inactive/free message boxes */

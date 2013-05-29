@@ -6,9 +6,13 @@ import java.util.Stack;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.spiddekauga.utils.scene.ui.Cell;
+import com.spiddekauga.utils.scene.ui.Label;
 import com.spiddekauga.utils.scene.ui.Row;
 import com.spiddekauga.voider.game.actors.BulletActor;
+import com.spiddekauga.voider.resources.ResourceCacheFacade;
+import com.spiddekauga.voider.resources.ResourceNames;
 
 /**
  * Common pools used in the program
@@ -37,4 +41,12 @@ public class Pools {
 	public static Pool<BulletActor> bullet = new Pool<BulletActor>(BulletActor.class, 100, 1000);
 	/** Time bullets */
 	public static Pool<TimeBullet> timeBullet = new Pool<TimeBullet>(TimeBullet.class, 100, 1000);
+	/** Label pool */
+	public static Pool<Label> label = new Pool<Label>(Label.class, 10, 100) {
+		@Override
+		protected Label newObject() {
+			Skin skin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
+			return new Label("", skin);
+		}
+	};
 }

@@ -1,6 +1,7 @@
 package com.spiddekauga.utils.scene.ui;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -94,6 +95,13 @@ public class AlignTable extends WidgetGroup implements Disposable {
 		mRowPaddingDefault.bottom = bottom;
 		mRowPaddingDefault.left = left;
 		return this;
+	}
+
+	/**
+	 * @return number of rows inside the table
+	 */
+	public int getRowCount() {
+		return mRows.size();
 	}
 
 	/**
@@ -442,6 +450,29 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	public AlignTable setKeepSize(boolean keepSize) {
 		mKeepSize = keepSize;
 		return this;
+	}
+
+	@Override
+	public boolean removeActor(Actor actor) {
+		boolean removed = super.removeActor(actor);
+
+		// Remove the cell the actor was in
+		if (removed) {
+			Iterator<Row> rowIt = mRows.iterator();
+			while (rowIt.hasNext()) {
+				Row row = rowIt.next();
+
+				row.removeActor(actor);
+
+				if (row.getCellCount() == 0) {
+					rowIt.remove();
+				}
+			}
+
+			layout();
+		}
+
+		return removed;
 	}
 
 	/**
