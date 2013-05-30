@@ -364,13 +364,9 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 
 
 		case MOVE:
-			// If hit actor (no corner), start dragging the actor
-			if (mHitBody != null && mHitBody.getUserData() instanceof Actor) {
+			if (mHitBody != null && mHitBody.getUserData() == mSelectedActor) {
 				mDragOrigin.set(mHitBody.getPosition());
-			} else {
-				if (mSelectedActor != null) {
-					mInvoker.execute(new CResourceSelect(null, this));
-				}
+				mMovingShape = true;
 			}
 			break;
 
@@ -430,7 +426,7 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 
 
 		case MOVE:
-			if (mSelectedActor != null) {
+			if (mSelectedActor != null && mMovingShape) {
 				Vector2 newPosition = getNewMovePosition();
 				mSelectedActor.setPosition(newPosition);
 				Pools.vector2.free(newPosition);
@@ -686,13 +682,15 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 
 		case MOVE:
 			// Set the new position of the actor
-			if (mSelectedActor != null) {
+			if (mSelectedActor != null && mMovingShape) {
 				// Reset actor to original position
 				mSelectedActor.setPosition(mDragOrigin);
 
 				Vector2 newPos = getNewMovePosition();
 				mInvoker.execute(new CResourceMove(mSelectedActor, newPos, mActorEditor), mChangedActorThisEvent);
 				Pools.vector2.free(newPos);
+
+				mMovingShape = false;
 			}
 			break;
 
@@ -729,7 +727,7 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 	 * @return true if we hit another actor
 	 */
 	private boolean hitAnotherActor() {
-		return mHitBody != null && mHitBody.getUserData() instanceof Actor && mHitBody.getUserData() != mSelectedActor;
+		return mHitBody != null && mHitBody.getUserData() instanceof Actor && mHitBody.getUserData() != mSelectedActor && !mOnlyOneActor;
 	}
 
 
@@ -1028,4 +1026,6 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 	private ActorDef mActorDef = null;
 	/** Vector brush for draw/erase */
 	private VectorBrush mDrawEraseBrush = null;
+	/** True when moving the shape */
+	private boolean mMovingShape = false;
 }
