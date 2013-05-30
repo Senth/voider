@@ -27,14 +27,28 @@ public class SceneSwitcher {
 	 * Switches to the specified scene. This scene will not be removed
 	 * until it self has decided that it has finished.
 	 * @param scene the scene to switch to.
+	 * @see #switchTo(Class) for switching to a scene that already exists.
 	 */
 	public static void switchTo(Scene scene) {
+		switchTo(scene, null);
+	}
+
+	/**
+	 * Switches to the specified scene. This scene will not be removed until
+	 * it self has decided that it has finished.
+	 * @param scene the scene to switch to.
+	 * @param loadingScene this scene will override any other loading scene, i.e.
+	 * while the scene is loading the loading scene will be displayed in its place.
+	 * If loadingScene is null, it works exactly as {@link #switchTo(Scene)}.
+	 * @see #switchTo(Class) for switching to a scene that already exists.
+	 */
+	public static void switchTo(Scene scene, LoadingScene loadingScene) {
 		deactivateCurrentScene();
 
 		mScenes.push(scene);
 		// Do we need to load resources for the scene?
 		if (scene.hasResources()) {
-			loadActiveSceneResources();
+			loadActiveSceneResources(loadingScene);
 		}
 		// No resources activate directly
 		else {
@@ -327,14 +341,27 @@ public class SceneSwitcher {
 	 * Loads the resources of the current active scene
 	 */
 	private static void loadActiveSceneResources() {
+		loadActiveSceneResources(null);
+	}
+
+	/**
+	 * Loads the resources of the current active scene
+	 * @param forceLoadingScene forces this loading scene if not null.
+	 */
+	private static void loadActiveSceneResources(LoadingScene forceLoadingScene) {
 		Scene currentsScene = mScenes.peek();
 		currentsScene.loadResources();
-		LoadingScene loadingScene = currentsScene.getLoadingScene();
 
-		if (loadingScene != null) {
-			switchTo(loadingScene);
+		if (forceLoadingScene != null) {
+			switchTo(forceLoadingScene);
 		} else {
-			mSwitcherLoading = true;
+			LoadingScene loadingScene = currentsScene.getLoadingScene();
+
+			if (loadingScene != null) {
+				switchTo(loadingScene);
+			} else {
+				mSwitcherLoading = true;
+			}
 		}
 	}
 

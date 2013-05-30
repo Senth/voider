@@ -6,6 +6,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -37,7 +38,7 @@ public abstract class Scene extends InputAdapter {
 	 * Runs the scene. Clears the screen, renders it, and updates the scene elements.
 	 */
 	public final void run() {
-		Gdx.gl.glClearColor(0, 0, 0, 0);
+		Gdx.gl.glClearColor(mClearColor.r, mClearColor.g, mClearColor.b, mClearColor.a);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
 		if (!mGui.isMsgBoxActive()) {
@@ -337,6 +338,28 @@ public abstract class Scene extends InputAdapter {
 	}
 
 	/**
+	 * Sets the clear color of the scene
+	 * @param r red
+	 * @param b blue
+	 * @param g green
+	 * @param a alpha
+	 */
+	protected void setClearColor(float r, float g, float b, float a) {
+		mClearColor.r = r;
+		mClearColor.g = g;
+		mClearColor.b = b;
+		mClearColor.a = a;
+	}
+
+	/**
+	 * Sets the clear color of the scene
+	 * @param color new color to clear the screen with
+	 */
+	protected void setClearColor(Color color) {
+		mClearColor.set(color);
+	}
+
+	/**
 	 * Screen to world coordinate
 	 * @param camera for the world coordinate
 	 * @param screenPos screen position
@@ -379,6 +402,8 @@ public abstract class Scene extends InputAdapter {
 	private Outcomes mOutcome = null;
 	/** Message of the outcome */
 	private String mOutcomeMessage = null;
+	/** Clear color */
+	private Color mClearColor = new Color(0, 0, 0, 0);
 
 	// Temporary variables
 	/** For ray testing on player ship when touching it */

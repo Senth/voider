@@ -167,7 +167,9 @@ public abstract class Gui {
 	 */
 	public void initGui() {
 		MsgBoxExecuter.fadeDuration = 0.01f;
-		mErrorMessageShower = new ErrorMessageShower(mStage);
+		if (ResourceCacheFacade.isLoaded(ResourceNames.EDITOR_BUTTONS)) {
+			mErrorMessageShower = new ErrorMessageShower(mStage);
+		}
 		mInitialized = true;
 	}
 

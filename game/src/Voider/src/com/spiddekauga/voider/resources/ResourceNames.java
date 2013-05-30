@@ -9,7 +9,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.Level;
 import com.spiddekauga.voider.game.LevelDef;
-import com.spiddekauga.voider.game.ThemeDef;
 import com.spiddekauga.voider.game.actors.BossActorDef;
 import com.spiddekauga.voider.game.actors.BulletActorDef;
 import com.spiddekauga.voider.game.actors.EnemyActorDef;
@@ -29,6 +28,8 @@ import com.spiddekauga.voider.game.actors.StaticTerrainActorDef;
 public enum ResourceNames {
 	/** Editor button */
 	EDITOR_BUTTONS("editor.json", Skin.class),
+	/** Splash Screen */
+	SPLASH_SCREEN("spiddekauga_m.png", Texture.class),
 	/** Default vertex shader */
 	SHADER_DEFAULT("default", ShaderProgram.class),
 
@@ -91,8 +92,6 @@ public enum ResourceNames {
 			return LEVEL_DEF_PATH;
 		} else if (type == Level.class) {
 			return LEVEL_PATH;
-		} else if (type == ThemeDef.class) {
-			return LEVEL_THEME_DEF_PATH;
 		} else if (type == ParticleEffect.class){
 			return PARTICLE_PATH;
 		} else if (type == Skin.class) {
@@ -112,7 +111,6 @@ public enum ResourceNames {
 	public static void useTestPath() {
 		LEVEL_DEF_PATH = Config.File.TEST_STORAGE + "levelDefs/";
 		LEVEL_PATH = Config.File.TEST_STORAGE + "levels/";
-		LEVEL_THEME_DEF_PATH = Config.File.TEST_STORAGE + "theme/levels/";
 
 		// Actors
 		ACTOR_DEF_PATH = Config.File.TEST_STORAGE + "actors/";
@@ -149,8 +147,6 @@ public enum ResourceNames {
 	private static String LEVEL_DEF_PATH = Config.File.STORAGE + "levelDefs/";
 	/** Directory for all the actual levels */
 	private static String LEVEL_PATH = Config.File.STORAGE + "levels/";
-	/** Directory for all the level themes */
-	private static String LEVEL_THEME_DEF_PATH = Config.File.STORAGE + "theme/levels/";
 	/** Directory for all particle effects */
 	private static final String PARTICLE_PATH = "particles/";
 	/** Directory for all sound effects */

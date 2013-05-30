@@ -94,95 +94,6 @@ public class LevelDef extends Def {
 	}
 
 	/**
-	 * Sets the version of the level
-	 * @param first the first number (i.e. 1 in 1.0.13)
-	 * @param second the second number (i.e. 0 in 1.0.13)
-	 * @param third the third number (i.e. 13 in 1.0.13)
-	 */
-	public void setVersion(int first, int second, int third) {
-		mVersionFirst = first;
-		mVersionSecond = second;
-		mVersionThird = third;
-	}
-
-	/**
-	 * @return the first number in the version (i.e. 1 in 1.0.13)
-	 */
-	public int getVersionFirst() {
-		return mVersionFirst;
-	}
-
-	/**
-	 * @return the second number in the version (i.e. 0 in 1.0.13)
-	 */
-	public int getVersionSecond() {
-		return mVersionSecond;
-	}
-
-	/**
-	 * @return the third number in the version (i.e. 0 in 1.0.13)
-	 */
-	public int getVersionThird() {
-		return mVersionThird;
-	}
-
-	/**
-	 * Updates the first number in the version and resets the other counters
-	 */
-	public void increaseVersionFirst() {
-		mVersionFirst++;
-		mVersionSecond = 0;
-		mVersionThird = 0;
-	}
-
-	/**
-	 * Updates the second number in the version and resets the third counter.
-	 * The first number is unchanged
-	 */
-	public void increaseVersionSecond() {
-		mVersionSecond++;
-		mVersionThird = 0;
-	}
-
-	/**
-	 * Updates the third number in the version. The first and second number
-	 * is unchanged
-	 */
-	public void increaseVersionThird() {
-		mVersionThird++;
-	}
-
-	/**
-	 * @return the version number as a string
-	 */
-	public String getVersionString() {
-		return Integer.toString(mVersionFirst) + "." +
-				Integer.toString(mVersionSecond) + "." +
-				Integer.toString(mVersionThird);
-	}
-
-	/**
-	 * @return the theme id of the level
-	 */
-	public UUID getThemeId() {
-		return mThemeId;
-	}
-
-	/**
-	 * @return the revision of the level
-	 */
-	public long getRevision() {
-		return mRevision;
-	}
-
-	/**
-	 * Increases the revision count by one
-	 */
-	public void increaseRevision() {
-		++mRevision;
-	}
-
-	/**
 	 * Sets the end x coordinate of the level
 	 * @param endXCoord end x coordinate of the level
 	 */
@@ -236,24 +147,6 @@ public class LevelDef extends Def {
 		return mStartXCoord;
 	}
 
-	/**
-	 * Sets the theme id, also adds it as a dependency
-	 * @param themeId the theme of the level
-	 */
-	public void setThemeId(UUID themeId) {
-		// Remove old theme from dependencies
-		if (mThemeId != null) {
-			removeDependency(mThemeId);
-		}
-
-		mThemeId = themeId;
-
-		// Add new dependency
-		if (mThemeId != null) {
-			addDependency(mThemeId, ThemeDef.class);
-		}
-	}
-
 	@Override
 	public void write(Json json) {
 		json.writeValue("REVISION", Config.REVISION);
@@ -265,14 +158,11 @@ public class LevelDef extends Def {
 		json.writeValue("mMusic", mMusic);
 		json.writeValue("mStoryBefore", mStoryBefore);
 		json.writeValue("mStoryAfter", mStoryAfter);
-		json.writeValue("mRevision", mRevision);
-		json.writeValue("mVersion", getVersionString());
 		json.writeValue("mStartXCoord", mStartXCoord);
 		json.writeValue("mEndXCoord", mEndXCoord);
 		json.writeValue("mSpeed", mSpeed);
 		json.writeValue("mLevelId", mLevelId);
 		json.writeValue("mCampaignId", mCampaignId);
-		json.writeValue("mThemeId", mThemeId);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -289,7 +179,6 @@ public class LevelDef extends Def {
 		mMusic = json.readValue("mMusic", ResourceNames.class, jsonData);
 		mStoryBefore = json.readValue("mStoryBefore", String.class, jsonData);
 		mStoryAfter = json.readValue("mStoryAfter", String.class, jsonData);
-		mRevision = json.readValue("mRevision", long.class, jsonData);
 		mStartXCoord = json.readValue("mStartXCoord", float.class, jsonData);
 		mEndXCoord = json.readValue("mEndXCoord", float.class, jsonData);
 		mSpeed = json.readValue("mSpeed", float.class, jsonData);
@@ -297,22 +186,14 @@ public class LevelDef extends Def {
 
 		// UUIDs
 		mCampaignId = json.readValue("mCampaignId", UUID.class, jsonData);
-		mThemeId = json.readValue("mThemeId", UUID.class, jsonData);
 		mLevelId = json.readValue("mLevelId", UUID.class, jsonData);
 
-		// Version
-		String stringVersion = json.readValue("mVersion", String.class, jsonData);
-		String[] stringVersions = stringVersion.split("\\.");
-		mVersionFirst = Integer.parseInt(stringVersions[0]);
-		mVersionSecond = Integer.parseInt(stringVersions[1]);
-		mVersionThird = Integer.parseInt(stringVersions[2]);
+
 	}
 
 
 	/** Starting coordinate of the level (right screen edge) */
 	private float mStartXCoord = 0;
-	/** Theme of the level */
-	private UUID mThemeId = null;
 	/** The actual level id, i.e. not this definition's id */
 	private UUID mLevelId = null;
 	/** The level's music */
@@ -328,12 +209,5 @@ public class LevelDef extends Def {
 	private float mSpeed = Config.Editor.Level.LEVEL_SPEED_DEFAULT;
 	/** End of the map (right screen edge) */
 	private float mEndXCoord = 100f;
-	/** The revision of the map, this increases after each save */
-	private long mRevision = 1;
-	/** Main version (1 in 1.0.13) */
-	private int mVersionFirst = 0;
-	/** Minor version (0 in 1.0.13) */
-	private int mVersionSecond = 0;
-	/** Third small version (13 in 1.0.13) */
-	private int mVersionThird = 0;
+
 }

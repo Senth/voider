@@ -13,7 +13,7 @@ import com.spiddekauga.voider.resources.UndefinedResourceTypeException;
 public abstract class LoadingScene extends Scene {
 	/**
 	 * Constructor which takes the GUI object
-	 * @param gui the gui this loading scene is bound to.
+	 * @param gui the GUI this loading scene is bound to.
 	 */
 	public LoadingScene(Gui gui){
 		super(gui);

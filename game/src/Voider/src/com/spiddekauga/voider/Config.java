@@ -77,7 +77,6 @@ public class Config {
 		public final static Color OUTLINE_CLOSE_COLOR = Color.PINK;
 	}
 
-
 	/**
 	 * Encryption
 	 */
@@ -536,6 +535,22 @@ public class Config {
 	public static class Input {
 		/** How many seconds for a double click? */
 		public final static float DOUBLE_CLICK_TIME = 0.2f;
+	}
+
+	/**
+	 * Menus
+	 */
+	public static class Menu {
+		/** Splash screen time, including entering and fade in, excluding fade out exiting */
+		public final static float SPLASH_SCREEN_TIME = 3.5f;
+		/** Splash screen fade in time */
+		public final static float SPLASH_SCREEN_FADE_IN = 1.0f;
+		/** Splash screen fade out time */
+		public final static float SPLASH_SCREEN_FADE_OUT = 1.0f;
+		/** Splash screen enter time */
+		public final static float SPLASH_SCREEN_ENTER_TIME = 0.4f;
+		/** Splash screen exiting time */
+		public final static float SPLASH_SCREEN_EXIT_TIME = 0.1f;
 	}
 
 	/** Revision of the game, as in code. This allows files of older revisions

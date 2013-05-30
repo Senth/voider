@@ -16,7 +16,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.spiddekauga.voider.game.Level;
 import com.spiddekauga.voider.game.LevelDef;
-import com.spiddekauga.voider.game.ThemeDef;
 import com.spiddekauga.voider.game.actors.BossActorDef;
 import com.spiddekauga.voider.game.actors.BulletActorDef;
 import com.spiddekauga.voider.game.actors.EnemyActorDef;
@@ -51,7 +50,6 @@ public class ResourceCacheFacade {
 		mAssetManager.setLoader(PickupActorDef.class, new JsonLoader<PickupActorDef>(new ExternalFileHandleResolver(), PickupActorDef.class));
 		mAssetManager.setLoader(PlayerActorDef.class, new JsonLoader<PlayerActorDef>(new ExternalFileHandleResolver(), PlayerActorDef.class));
 		mAssetManager.setLoader(StaticTerrainActorDef.class, new JsonLoader<StaticTerrainActorDef>(new ExternalFileHandleResolver(), StaticTerrainActorDef.class));
-		mAssetManager.setLoader(ThemeDef.class, new JsonLoader<ThemeDef>(new ExternalFileHandleResolver(), ThemeDef.class));
 		mAssetManager.setLoader(LevelDef.class, new JsonLoader<LevelDef>(new ExternalFileHandleResolver(), LevelDef.class));
 		mAssetManager.setLoader(Level.class, new JsonLoader<Level>(new ExternalFileHandleResolver(), Level.class));
 		mAssetManager.setLoader(ShaderProgram.class, new ShaderLoader(new InternalFileHandleResolver()));
@@ -334,6 +332,21 @@ public class ResourceCacheFacade {
 		} catch (UndefinedResourceTypeException e) {
 			return false;
 		}
+	}
+
+	/**
+	 * Checks whether a resource has been loaded or not
+	 * @param resource the resource to check if it has been loaded
+	 * @return true if the resource has been loaded
+	 */
+	public static boolean isLoaded(ResourceNames resource) {
+		String fullPath = null;
+		try {
+			fullPath = ResourceNames.getDirPath(resource.type) + resource.filename;
+		} catch (UndefinedResourceTypeException e) {
+			Gdx.app.error("UndefinedType", "Undefined resource type for a resource name. This should NEVER happen");
+		}
+		return mAssetManager.isLoaded(fullPath, resource.type);
 	}
 
 	/**

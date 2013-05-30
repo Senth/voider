@@ -21,6 +21,7 @@ import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.Cell;
 import com.spiddekauga.utils.scene.ui.Row;
+import com.spiddekauga.voider.app.SplashScreen;
 import com.spiddekauga.voider.editor.LevelEditor;
 import com.spiddekauga.voider.game.Collectibles;
 import com.spiddekauga.voider.game.GameScene;
@@ -55,9 +56,10 @@ public class VoiderGame implements ApplicationListener {
 		//testGame();
 		//		testBulletEditor();
 		//		testEnemyEditor();
-		testEditor();
+		//		testEditor();
 		//		testSavePickups();
 		//testStage();
+		testSplashScreen();
 	}
 
 	/**
@@ -135,6 +137,7 @@ public class VoiderGame implements ApplicationListener {
 	/**
 	 * Testing to save pickups
 	 */
+	@SuppressWarnings({ "unused" })
 	private void testSavePickups() {
 		PickupActorDef def = new PickupActorDef();
 		def.setCollectible(Collectibles.HEALTH_25);
@@ -157,6 +160,21 @@ public class VoiderGame implements ApplicationListener {
 		Level level = new Level(levelDef);
 		levelEditor.setLevel(level);
 		SceneSwitcher.switchTo(levelEditor);
+	}
+
+	/**
+	 * Test splash screen
+	 */
+	private void testSplashScreen() {
+		LevelEditor levelEditor = new LevelEditor();
+
+		LevelDef levelDef = new LevelDef();
+		Level level = new Level(levelDef);
+		levelEditor.setLevel(level);
+
+		SplashScreen splashScreen = new SplashScreen();
+
+		SceneSwitcher.switchTo(levelEditor, splashScreen);
 	}
 
 	/**

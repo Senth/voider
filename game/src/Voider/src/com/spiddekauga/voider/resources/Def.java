@@ -115,6 +115,8 @@ public abstract class Def extends Resource implements Json.Serializable {
 		json.writeValue("mName", mName);
 		json.writeValue("mDescription", mDescription);
 		json.writeValue("mCreator", mCreator);
+		json.writeValue("mRevision", mRevision);
+		json.writeValue("mVersion", getVersionString());
 		json.writeValue("mOriginalCreator", mOriginalCreator);
 
 		if (mInternalDependencies.isEmpty()) {
@@ -146,6 +148,7 @@ public abstract class Def extends Resource implements Json.Serializable {
 		mName = json.readValue("mName", String.class, jsonData);
 		mCreator = json.readValue("mCreator", String.class, jsonData);
 		mOriginalCreator = json.readValue("mOriginalCreator", String.class, jsonData);
+		mRevision = json.readValue("mRevision", long.class, jsonData);
 		mDescription = json.readValue("mDescription", String.class, jsonData);
 
 		OrderedMap<?,?> internalMap = json.readValue("mInternalDependencies", OrderedMap.class, jsonData);
@@ -159,6 +162,13 @@ public abstract class Def extends Resource implements Json.Serializable {
 		if (externalDependencies != null) {
 			mExternalDependencies = externalDependencies;
 		}
+
+		// Version
+		String stringVersion = json.readValue("mVersion", String.class, jsonData);
+		String[] stringVersions = stringVersion.split("\\.");
+		mVersionFirst = Integer.parseInt(stringVersions[0]);
+		mVersionSecond = Integer.parseInt(stringVersions[1]);
+		mVersionThird = Integer.parseInt(stringVersions[2]);
 	}
 
 	/**
@@ -222,6 +232,88 @@ public abstract class Def extends Resource implements Json.Serializable {
 	}
 
 	/**
+	 * Sets the version of the level
+	 * @param first the first number (i.e. 1 in 1.0.13)
+	 * @param second the second number (i.e. 0 in 1.0.13)
+	 * @param third the third number (i.e. 13 in 1.0.13)
+	 */
+	public void setVersion(int first, int second, int third) {
+		mVersionFirst = first;
+		mVersionSecond = second;
+		mVersionThird = third;
+	}
+
+	/**
+	 * @return the first number in the version (i.e. 1 in 1.0.13)
+	 */
+	public int getVersionFirst() {
+		return mVersionFirst;
+	}
+
+	/**
+	 * @return the second number in the version (i.e. 0 in 1.0.13)
+	 */
+	public int getVersionSecond() {
+		return mVersionSecond;
+	}
+
+	/**
+	 * @return the third number in the version (i.e. 0 in 1.0.13)
+	 */
+	public int getVersionThird() {
+		return mVersionThird;
+	}
+
+	/**
+	 * Updates the first number in the version and resets the other counters
+	 */
+	public void increaseVersionFirst() {
+		mVersionFirst++;
+		mVersionSecond = 0;
+		mVersionThird = 0;
+	}
+
+	/**
+	 * Updates the second number in the version and resets the third counter.
+	 * The first number is unchanged
+	 */
+	public void increaseVersionSecond() {
+		mVersionSecond++;
+		mVersionThird = 0;
+	}
+
+	/**
+	 * Updates the third number in the version. The first and second number
+	 * is unchanged
+	 */
+	public void increaseVersionThird() {
+		mVersionThird++;
+	}
+
+	/**
+	 * @return the version number as a string
+	 */
+	public String getVersionString() {
+		return Integer.toString(mVersionFirst) + "." +
+				Integer.toString(mVersionSecond) + "." +
+				Integer.toString(mVersionThird);
+	}
+
+	/**
+	 * @return the revision of the level
+	 */
+	public long getRevision() {
+		return mRevision;
+	}
+
+	/**
+	 * Increases the revision count by one
+	 */
+	public void increaseRevision() {
+		++mRevision;
+	}
+
+	/**
 	 * @return all external dependencies
 	 */
 	ObjectMap<UUID, DefItem> getExternalDependencies() {
@@ -247,4 +339,12 @@ public abstract class Def extends Resource implements Json.Serializable {
 	private String mCreator = User.getNickName();
 	/** Comment of the definition */
 	private String mDescription = "";
+	/** The revision of the map, this increases after each save */
+	private long mRevision = 1;
+	/** Main version (1 in 1.0.13) */
+	private int mVersionFirst = 0;
+	/** Minor version (0 in 1.0.13) */
+	private int mVersionSecond = 0;
+	/** Third small version (13 in 1.0.13) */
+	private int mVersionThird = 0;
 }
