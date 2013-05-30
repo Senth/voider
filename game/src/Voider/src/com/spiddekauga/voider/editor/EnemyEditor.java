@@ -295,6 +295,10 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 			mPlayerActor.render(mShapeRenderer);
 			mBulletDestroyer.render(mShapeRenderer);
 
+			if (mVectorBrush != null) {
+				mVectorBrush.renderEditor(mShapeRenderer);
+			}
+
 			mShapeRenderer.pop();
 		}
 	}
@@ -960,12 +964,16 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 
 	@Override
 	public void onResourceAdded(IResource resource) {
-		// Does nothing
+		if (resource instanceof VectorBrush) {
+			mVectorBrush = (VectorBrush) resource;
+		}
 	}
 
 	@Override
 	public void onResourceRemoved(IResource resource) {
-		// Does nothing
+		if (resource instanceof VectorBrush) {
+			mVectorBrush = null;
+		}
 	}
 
 	@Override
@@ -1322,7 +1330,8 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	private Invoker mInvoker = new Invoker();
 	/** Listens for collisions */
 	private CollisionResolver mCollisionResolver = new CollisionResolver();
-
+	/** Vector brush to render when drawing custom shapes */
+	private VectorBrush mVectorBrush = null;
 	/** Table for path lables, these are added directly to the stage */
 	private Table mPathLabels = new Table();
 }

@@ -116,8 +116,11 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 
 			if (mBulletActor != null && mActiveTouchTool == mDrawActorTool) {
 				mBulletActor.render(mShapeRenderer);
-				//				mBulletActor.setSelected(false);
 				mBulletActor.renderEditor(mShapeRenderer);
+			}
+
+			if (mVectorBrush != null) {
+				mVectorBrush.renderEditor(mShapeRenderer);
 			}
 
 			mShapeRenderer.pop();
@@ -437,6 +440,8 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 			Pools.vector2.free(worldPosition);
 
 			mUnsaved = true;
+		} else if (resource instanceof VectorBrush) {
+			mVectorBrush = (VectorBrush) resource;
 		}
 	}
 
@@ -445,6 +450,8 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 		if (resource instanceof BulletActor) {
 			mBulletActor = null;
 			mUnsaved = true;
+		} else if (resource instanceof VectorBrush) {
+			mVectorBrush = null;
 		}
 	}
 
@@ -550,4 +557,6 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 	private DrawActorTool mDrawActorTool;
 	/** Current bullet actor (when drawing) */
 	private BulletActor mBulletActor = null;
+	/** Draw brush to render */
+	private VectorBrush mVectorBrush = null;
 }
