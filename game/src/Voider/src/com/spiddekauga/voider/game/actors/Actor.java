@@ -299,6 +299,24 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	}
 
 	/**
+	 * @return actor offset, i.e. local to world coordinates. Don't forget to free
+	 * the returned offset.
+	 */
+	public Vector2 getWorldOffset() {
+		Vector2 offsetPosition = Pools.vector2.obtain();
+		offsetPosition.set(mBody.getPosition());
+
+		// Offset for circle
+		if (mDef.getVisualVars().getShapeType() == ActorShapeTypes.CUSTOM && mDef.getVisualVars().getCornerCount() >= 1 && mDef.getVisualVars().getCornerCount() <= 2) {
+			offsetPosition.add(mDef.getVisualVars().getCorners().get(0));
+		}
+
+		offsetPosition.add(mDef.getVisualVars().getCenterOffset());
+
+		return offsetPosition;
+	}
+
+	/**
 	 * Renders the actor
 	 * @param shapeRenderer the current sprite batch for the scene
 	 */
@@ -308,13 +326,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 			return;
 		}
 
-		Vector2 offsetPosition = Pools.vector2.obtain();
-		offsetPosition.set(mBody.getPosition());
-
-		// Offset for circle
-		if (mDef.getVisualVars().getShapeType() == ActorShapeTypes.CUSTOM && mDef.getVisualVars().getCornerCount() >= 1 && mDef.getVisualVars().getCornerCount() <= 2) {
-			offsetPosition.add(mDef.getVisualVars().getCorners().get(0));
-		}
+		Vector2 offsetPosition = getWorldOffset();
 
 		// Draw regular filled shape
 		if (!mDrawOnlyOutline && mDef.getVisualVars().isComplete()) {
@@ -351,9 +363,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 			return;
 		}
 
-		Vector2 offsetPosition = Pools.vector2.obtain();
-		offsetPosition.set(mPosition);
-
+		Vector2 offsetPosition = getWorldOffset();
 
 		// Draw selected overlay
 		if (!mDrawOnlyOutline && mSelected && getDef().getVisualVars().isComplete() && mRotatedVertices != null) {
@@ -378,7 +388,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 			shapeRenderer.setColor(Config.Editor.CORNER_COLOR);
 			Vector2 cornerOffset = Pools.vector2.obtain();
 			for (Vector2 corner : mDef.getVisualVars().getCorners()) {
-				cornerOffset.set(offsetPosition).add(corner).add(mDef.getVisualVars().getCenterOffset());
+				cornerOffset.set(offsetPosition).add(corner);
 				shapeRenderer.polyline(SceneSwitcher.getPickingVertices(), true, cornerOffset);
 			}
 			Pools.vector2.free(cornerOffset);
@@ -391,6 +401,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 		if (mHasBodyCenter) {
 			shapeRenderer.push(ShapeType.Line);
 
+			offsetPosition.sub(mDef.getVisualVars().getCenterOffset());
 			shapeRenderer.setColor(Config.Editor.CENTER_OFFSET_COLOR);
 			shapeRenderer.polyline(SceneSwitcher.getPickingVertices(), true, offsetPosition);
 
@@ -961,13 +972,6 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 		return mRotatedVertices;
 	}
 
-	//	/**
-	//	 * @return rotated border vertices
-	//	 */
-	//	protected ArrayList<Vector2> getRotatedBorderVertices() {
-	//		return mRotatedBorderVertices;
-	//	}
-
 	/**
 	 * Calculates the rotated vertices (both regular and border)
 	 * @param forceRecalculation this forces recalculation
@@ -982,24 +986,13 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 				Pools.arrayList.free(mRotatedVertices);
 			}
 
-			//			if (mRotatedBorderVertices != null) {
-			//				Pools.vector2.freeDuplicates(mRotatedBorderVertices);
-			//				Pools.arrayList.free(mRotatedBorderVertices);
-			//			}
-
 			float rotation = MathUtils.radiansToDegrees * getBody().getAngle();
 
 			mRotatedVertices = copyVectorArray(mDef.getVisualVars().getTriangleVertices());
 			if (mRotatedVertices != null) {
-				Geometry.moveVertices(mRotatedVertices, getDef().getVisualVars().getCenterOffset(), true);
+				//				Geometry.moveVertices(mRotatedVertices, getDef().getVisualVars().getCenterOffset(), true);
 				Geometry.rotateVertices(mRotatedVertices, rotation, true);
 			}
-
-			//			mRotatedBorderVertices = copyVectorArray(mDef.getTriangleBorderVertices());
-			//			if (mRotatedBorderVertices != null) {
-			//				Geometry.moveVertices(mRotatedBorderVertices, getDef().getCenterOffset(), true);
-			//				Geometry.rotateVertices(mRotatedBorderVertices, rotation, true);
-			//			}
 		}
 	}
 

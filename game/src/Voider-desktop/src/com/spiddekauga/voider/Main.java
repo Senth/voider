@@ -9,7 +9,7 @@ public class Main {
 		cfg.title = "Voider";
 		cfg.useGL20 = true;
 		cfg.width = 800;
-		cfg.height = 400;
+		cfg.height = 480;
 
 		new LwjglApplication(new VoiderGame(), cfg);
 	}
