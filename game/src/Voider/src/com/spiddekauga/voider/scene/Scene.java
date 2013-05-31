@@ -160,7 +160,7 @@ public abstract class Scene extends InputAdapter {
 	 * @see #getLoadingScene() if this scene should have some sort of loading scene
 	 */
 	public void loadResources() {
-		// Does nothing
+		// Does nothings
 	}
 
 	/**
