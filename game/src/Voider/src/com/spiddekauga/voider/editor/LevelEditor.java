@@ -218,30 +218,24 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 
 	@Override
 	public void loadResources() {
+		super.loadResources();
 		ResourceCacheFacade.load(ResourceNames.UI_EDITOR_BUTTONS);
 		ResourceCacheFacade.load(ResourceNames.UI_GENERAL);
 		ResourceCacheFacade.load(ResourceNames.SHADER_DEFAULT);
-		try {
-			ResourceCacheFacade.loadAllOf(EnemyActorDef.class, false);
-			ResourceCacheFacade.loadAllOf(PickupActorDef.class, false);
-			ResourceCacheFacade.loadAllOf(LevelDef.class, false);
-		} catch (UndefinedResourceTypeException e) {
-			Gdx.app.error("LevelEditor", e.toString());
-		}
+		ResourceCacheFacade.loadAllOf(EnemyActorDef.class, false);
+		ResourceCacheFacade.loadAllOf(PickupActorDef.class, false);
+		ResourceCacheFacade.loadAllOf(LevelDef.class, false);
 	}
 
 	@Override
 	public void unloadResources() {
+		super.unloadResources();
 		ResourceCacheFacade.unload(ResourceNames.UI_EDITOR_BUTTONS);
 		ResourceCacheFacade.unload(ResourceNames.UI_GENERAL);
 		ResourceCacheFacade.unload(ResourceNames.SHADER_DEFAULT);
-		try {
-			ResourceCacheFacade.unloadAllOf(EnemyActorDef.class, false);
-			ResourceCacheFacade.unloadAllOf(PickupActorDef.class, false);
-			ResourceCacheFacade.unloadAllOf(LevelDef.class, false);
-		} catch (UndefinedResourceTypeException e) {
-			Gdx.app.error("LevelEditor", e.toString());
-		}
+		ResourceCacheFacade.unloadAllOf(EnemyActorDef.class, false);
+		ResourceCacheFacade.unloadAllOf(PickupActorDef.class, false);
+		ResourceCacheFacade.unloadAllOf(LevelDef.class, false);
 	}
 
 	@Override
@@ -278,10 +272,6 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 		}
 		else if (outcome == Outcomes.LOADING_FAILED_MISSING_FILE) {
 			/** @todo loading failed, missing file */
-			mLoadingLevel = null;
-		}
-		else if (outcome == Outcomes.LOADING_FAILED_UNDEFINED_TYPE) {
-			/** @todo loalding failed, undefined type */
 			mLoadingLevel = null;
 		}
 		else if (outcome == Outcomes.DEF_SELECTED) {

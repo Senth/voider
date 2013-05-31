@@ -1,17 +1,20 @@
 package com.spiddekauga.voider.resources;
 
+import com.badlogic.gdx.utils.GdxRuntimeException;
+
 /**
  * Thrown when an undefined resource type has been used
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class UndefinedResourceTypeException extends Exception {
+public class UndefinedResourceTypeException extends GdxRuntimeException {
 
 	/**
 	 * Constructor with the undefined resource type
 	 * @param undefinedResourceType
 	 */
 	public UndefinedResourceTypeException(Class<?> undefinedResourceType) {
+		super(undefinedResourceType.getName());
 		mUndefinedResourceType = undefinedResourceType;
 	}
 

@@ -310,26 +310,20 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 
 	@Override
 	public void loadResources() {
+		super.loadResources();
 		ResourceCacheFacade.load(ResourceNames.UI_EDITOR_BUTTONS);
 		ResourceCacheFacade.load(ResourceNames.UI_GENERAL);
-		try {
-			ResourceCacheFacade.loadAllOf(EnemyActorDef.class, true);
-			ResourceCacheFacade.loadAllOf(BulletActorDef.class, true);
-		} catch (UndefinedResourceTypeException e) {
-			Gdx.app.error("EnemyEditor", "UndefinedResourceTypeException: " + e);
-		}
+		ResourceCacheFacade.loadAllOf(EnemyActorDef.class, true);
+		ResourceCacheFacade.loadAllOf(BulletActorDef.class, true);
 	}
 
 	@Override
 	public void unloadResources() {
+		super.unloadResources();
 		ResourceCacheFacade.load(ResourceNames.UI_EDITOR_BUTTONS);
 		ResourceCacheFacade.load(ResourceNames.UI_GENERAL);
-		try {
-			ResourceCacheFacade.unloadAllOf(EnemyActorDef.class, true);
-			ResourceCacheFacade.unloadAllOf(BulletActorDef.class, true);
-		} catch (UndefinedResourceTypeException e) {
-			Gdx.app.error("EnemyEditor", "UndefinedResourceTypeException: " + e);
-		}
+		ResourceCacheFacade.unloadAllOf(EnemyActorDef.class, true);
+		ResourceCacheFacade.unloadAllOf(BulletActorDef.class, true);
 	}
 
 	// --------------------------------

@@ -154,24 +154,18 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 
 	@Override
 	public void loadResources() {
+		super.loadResources();
 		ResourceCacheFacade.load(ResourceNames.UI_EDITOR_BUTTONS);
 		ResourceCacheFacade.load(ResourceNames.UI_GENERAL);
-		try {
-			ResourceCacheFacade.loadAllOf(BulletActorDef.class, true);
-		} catch (UndefinedResourceTypeException e) {
-			Gdx.app.error("EnemyEditor", "UndefinedResourceTypeException: " + e);
-		}
+		ResourceCacheFacade.loadAllOf(BulletActorDef.class, true);
 	}
 
 	@Override
 	public void unloadResources() {
+		super.unloadResources();
 		ResourceCacheFacade.load(ResourceNames.UI_GENERAL);
 		ResourceCacheFacade.load(ResourceNames.UI_EDITOR_BUTTONS);
-		try {
-			ResourceCacheFacade.unloadAllOf(BulletActorDef.class, true);
-		} catch (UndefinedResourceTypeException e) {
-			Gdx.app.error("EnemyEditor", "UndefinedResourceTypeException: " + e);
-		}
+		ResourceCacheFacade.unloadAllOf(BulletActorDef.class, true);
 	}
 
 	@Override

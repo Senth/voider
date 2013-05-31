@@ -192,11 +192,7 @@ public class GameScene extends WorldScene {
 	@Override
 	public void loadResources() {
 		if (mLevelToLoad != null) {
-			try {
-				ResourceCacheFacade.load(mLevelToLoad.getLevelId(), Level.class, mLevelToLoad);
-			} catch (UndefinedResourceTypeException e) {
-				Gdx.app.error("GameScene", e.toString());
-			}
+			ResourceCacheFacade.load(mLevelToLoad.getLevelId(), Level.class, mLevelToLoad);
 		}
 	}
 

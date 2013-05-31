@@ -280,8 +280,6 @@ public abstract class Scene extends InputAdapter {
 		LEVEL_QUIT,
 		/** Loading succeeded */
 		LOADING_SUCCEEDED,
-		/** Loading failed, undefined resource type */
-		LOADING_FAILED_UNDEFINED_TYPE,
 		/** Loading failed, missing file */
 		LOADING_FAILED_MISSING_FILE,
 		/** Loading failed, corrupt file */

@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceNames;
-import com.spiddekauga.voider.resources.UndefinedResourceTypeException;
 import com.spiddekauga.voider.scene.LoadingScene;
 
 /**
@@ -24,12 +23,7 @@ public class SplashScreen extends LoadingScene {
 
 		// Load splash screen image
 		ResourceCacheFacade.load(ResourceNames.IMAGE_SPLASH_SCREEN);
-
-		try {
-			ResourceCacheFacade.finishLoading();
-		} catch (UndefinedResourceTypeException e) {
-			setOutcome(Outcomes.LOADING_FAILED_UNDEFINED_TYPE);
-		}
+		ResourceCacheFacade.finishLoading();
 
 		mGui.initGui();
 	}

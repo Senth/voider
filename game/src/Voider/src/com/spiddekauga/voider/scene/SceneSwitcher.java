@@ -14,7 +14,6 @@ import com.spiddekauga.voider.game.BulletDestroyer;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceCorruptException;
 import com.spiddekauga.voider.resources.ResourceNotFoundException;
-import com.spiddekauga.voider.resources.UndefinedResourceTypeException;
 import com.spiddekauga.voider.scene.Scene.Outcomes;
 
 /**
@@ -342,9 +341,6 @@ public class SceneSwitcher {
 					Gdx.input.setInputProcessor(currentScene.getInputMultiplexer());
 					mSwitcherLoading = false;
 				}
-			} catch (UndefinedResourceTypeException e) {
-				currentScene.onActivate(Outcomes.LOADING_FAILED_UNDEFINED_TYPE, e.toString());
-				Gdx.input.setInputProcessor(currentScene.getInputMultiplexer());
 			} catch (ResourceNotFoundException e) {
 				currentScene.onActivate(Outcomes.LOADING_FAILED_MISSING_FILE, e.toString());
 				Gdx.input.setInputProcessor(currentScene.getInputMultiplexer());

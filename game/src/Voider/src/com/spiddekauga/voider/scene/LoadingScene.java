@@ -3,7 +3,6 @@ package com.spiddekauga.voider.scene;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceCorruptException;
 import com.spiddekauga.voider.resources.ResourceNotFoundException;
-import com.spiddekauga.voider.resources.UndefinedResourceTypeException;
 
 /**
  * Base class for all loading scenes
@@ -23,8 +22,6 @@ public abstract class LoadingScene extends Scene {
 	protected void update() {
 		try {
 			ResourceCacheFacade.update();
-		} catch (UndefinedResourceTypeException e) {
-			setOutcome(Outcomes.LOADING_FAILED_UNDEFINED_TYPE, e.toString());
 		} catch (ResourceNotFoundException e) {
 			setOutcome(Outcomes.LOADING_FAILED_MISSING_FILE, e.toString());
 		} catch (ResourceCorruptException e) {
