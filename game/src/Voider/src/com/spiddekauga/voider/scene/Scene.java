@@ -170,7 +170,7 @@ public abstract class Scene extends InputAdapter {
 	 * Called after #onDispose() and #onDeactive().
 	 */
 	public void unloadResources() {
-		// Does nothings
+		// Does nothing
 	}
 
 	/**
