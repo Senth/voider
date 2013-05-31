@@ -69,12 +69,12 @@ public class SelectDefScene extends WorldScene {
 
 	@Override
 	public void loadResources() {
-		ResourceCacheFacade.load(ResourceNames.EDITOR_BUTTONS);
+		ResourceCacheFacade.load(ResourceNames.UI_EDITOR_BUTTONS);
 	}
 
 	@Override
 	public void unloadResources() {
-		ResourceCacheFacade.unload(ResourceNames.EDITOR_BUTTONS);
+		ResourceCacheFacade.unload(ResourceNames.UI_EDITOR_BUTTONS);
 	}
 
 	@Override

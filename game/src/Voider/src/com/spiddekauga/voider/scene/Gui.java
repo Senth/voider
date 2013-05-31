@@ -103,7 +103,7 @@ public abstract class Gui {
 
 		// No free found, create new
 		if (msgBox == null) {
-			Skin skin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
+			Skin skin = ResourceCacheFacade.get(ResourceNames.UI_EDITOR_BUTTONS);
 			msgBox = new MsgBoxExecuter(skin, "modal");
 			mInactiveMsgBoxes.add(msgBox);
 		}
@@ -167,7 +167,7 @@ public abstract class Gui {
 	 */
 	public void initGui() {
 		MsgBoxExecuter.fadeDuration = 0.01f;
-		if (ResourceCacheFacade.isLoaded(ResourceNames.EDITOR_BUTTONS)) {
+		if (ResourceCacheFacade.isLoaded(ResourceNames.UI_GENERAL)) {
 			mErrorMessageShower = new ErrorMessageShower(mStage);
 		}
 		mInitialized = true;

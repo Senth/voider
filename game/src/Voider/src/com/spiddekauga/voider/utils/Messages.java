@@ -98,9 +98,11 @@ public class Messages {
 		/** Polygon complex append */
 		public final static String POLYGON_COMPLEX_DRAW_APPEND = "Can't draw a polygon with an intersection!";
 		/** Polygon complex add corner */
-		public final static String POLYGON_COMPLEX_ADD = "Can't add corner here, would create an intersection...";
+		public final static String POLYGON_COMPLEX_ADD = "Can't add a corner here, would create an intersection.";
+		/** Polygon complex remove corner */
+		public final static String POLYGON_COMPLEX_REMOVE = "Can't remove this corner, would create an intersection.";
 		/** Polygon complex move corner */
-		public final static String POLYGON_COMPLEX_MOVE = "Can't move here, would create an intersection";
+		public final static String POLYGON_COMPLEX_MOVE = "Can't move here, would create an intersection.";
 		/** Polygon complex draw/erase */
 		public final static String POLYGON_COMPLEX_DRAW_ERASE = "Can't draw a polygon with an intersection!";
 		/** Polygon draw/erase line is complex */

@@ -156,7 +156,7 @@ public abstract class ActorGui extends EditorGui {
 	 * @param actorTypeName name of the actor type to be displayed in messages
 	 */
 	protected void initOptions(String actorTypeName) {
-		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
+		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
 		LabelStyle labelStyle = editorSkin.get("default", LabelStyle.class);
 		TextFieldStyle textFieldStyle = editorSkin.get("default", TextFieldStyle.class);
 
@@ -204,7 +204,7 @@ public abstract class ActorGui extends EditorGui {
 	 * @param actorName name of the actor, this will be displayed in message boxes
 	 */
 	protected void initFileMenu(final String actorName) {
-		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
+		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
 
 		final TextButtonStyle textStyle = editorSkin.get("default", TextButtonStyle.class);
 
@@ -338,7 +338,7 @@ public abstract class ActorGui extends EditorGui {
 	 * @param actorShapeTypes all shapes that shall be initializes
 	 */
 	protected void initVisual(String actorTypeName, ActorShapeTypes... actorShapeTypes) {
-		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
+		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
 		LabelStyle labelStyle = editorSkin.get("default", LabelStyle.class);
 		SliderStyle sliderStyle = editorSkin.get("default", SliderStyle.class);
 		TextFieldStyle textFieldStyle = editorSkin.get("default", TextFieldStyle.class);
@@ -756,7 +756,7 @@ public abstract class ActorGui extends EditorGui {
 	 * @param actorTypeName name of the actor type
 	 */
 	protected void initCollision(String actorTypeName) {
-		Skin skin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
+		Skin skin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
 		LabelStyle labelStyle = skin.get("default", LabelStyle.class);
 		SliderStyle sliderStyle = skin.get("default", SliderStyle.class);
 		TextFieldStyle textFieldStyle = skin.get("default", TextFieldStyle.class);

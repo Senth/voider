@@ -90,7 +90,7 @@ public class BulletEditorGui extends ActorGui {
 	 * Initializes the top menu
 	 */
 	private void initMenu() {
-		Skin skin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
+		Skin skin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
 		TextButtonStyle textToggleStyle = skin.get("toggle", TextButtonStyle.class);
 
 
@@ -136,7 +136,7 @@ public class BulletEditorGui extends ActorGui {
 	 * Initializes test weapon table
 	 */
 	private void initWeapon() {
-		Skin skin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
+		Skin skin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
 		LabelStyle labelStyle = skin.get("default", LabelStyle.class);
 		SliderStyle sliderStyle = skin.get("default", SliderStyle.class);
 		TextFieldStyle textFieldStyle = skin.get("default", TextFieldStyle.class);

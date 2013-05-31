@@ -23,7 +23,7 @@ public class SplashScreen extends LoadingScene {
 		setClearColor(1, 1, 1, 0);
 
 		// Load splash screen image
-		ResourceCacheFacade.load(ResourceNames.SPLASH_SCREEN);
+		ResourceCacheFacade.load(ResourceNames.IMAGE_SPLASH_SCREEN);
 
 		try {
 			ResourceCacheFacade.finishLoading();
@@ -55,6 +55,11 @@ public class SplashScreen extends LoadingScene {
 			break;
 
 		}
+	}
+
+	@Override
+	public void onDispose() {
+		ResourceCacheFacade.unload(ResourceNames.IMAGE_SPLASH_SCREEN);
 	}
 
 	/**

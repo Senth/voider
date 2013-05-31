@@ -28,7 +28,7 @@ public class ErrorMessageShower {
 	 * @param stage the stage to show the messages in
 	 */
 	public ErrorMessageShower(Stage stage) {
-		Skin skin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
+		Skin skin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
 		mWindow = new Window("", skin);
 		mWindow.setPosition(0, Gdx.graphics.getHeight());
 		mWindow.setWidth(Gdx.graphics.getWidth() * 0.35f);

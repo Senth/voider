@@ -81,10 +81,10 @@ public abstract class WorldScene extends Scene {
 	}
 
 	@Override
-	public void onDisposed() {
+	public void onDispose() {
 		mBulletDestroyer.dispose();
 
-		super.onDisposed();
+		super.onDispose();
 	}
 
 	/**

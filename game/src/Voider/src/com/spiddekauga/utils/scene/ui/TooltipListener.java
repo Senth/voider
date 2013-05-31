@@ -45,7 +45,7 @@ public class TooltipListener implements EventListener {
 		mGui = SceneSwitcher.getGui();
 
 		if (mWindow == null) {
-			Skin editorSkin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
+			Skin editorSkin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
 
 			mWindow = new Window("", editorSkin);
 			mWindow.setModal(false);

@@ -19,8 +19,8 @@ public class SplashScreenGui extends Gui {
 	public void initGui() {
 		super.initGui();
 
-		if (ResourceCacheFacade.isLoaded(ResourceNames.SPLASH_SCREEN)) {
-			Texture splashScreenTexture = ResourceCacheFacade.get(ResourceNames.SPLASH_SCREEN);
+		if (ResourceCacheFacade.isLoaded(ResourceNames.IMAGE_SPLASH_SCREEN)) {
+			Texture splashScreenTexture = ResourceCacheFacade.get(ResourceNames.IMAGE_SPLASH_SCREEN);
 
 			if (splashScreenTexture != null) {
 				mSplashScreenImage = new Image(splashScreenTexture);

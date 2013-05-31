@@ -318,11 +318,11 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 							try {
 								mInvoker.execute(new CActorDefFixCustomFixtures(mSelectedActor.getDef(), true), true);
 							} catch (PolygonComplexException e) {
-								/** @todo print some error message */
+								SceneSwitcher.showErrorMessage(Messages.Error.POLYGON_COMPLEX_REMOVE);
 								mInvoker.undo();
 								mInvoker.clearRedo();
 							} catch (PolygonCornersTooCloseException e) {
-								/** @todo print som error message */
+								Gdx.app.error("DrawActorTool", "PolygonCornerTooClose, should not happen when removing corner...");
 								mInvoker.undo();
 								mInvoker.clearRedo();
 							}

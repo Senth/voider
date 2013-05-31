@@ -196,7 +196,7 @@ public abstract class Scene extends InputAdapter {
 	 * Called when the scene is deleted. Called before #unloadResources() if this
 	 * scene has resources.
 	 */
-	public void onDisposed() {
+	public void onDispose() {
 		// Does nothing
 	}
 
@@ -257,7 +257,7 @@ public abstract class Scene extends InputAdapter {
 	 * @param outcome the outcome of the scene
 	 * @param message a descriptive outcome message.
 	 */
-	public void setOutcome(Outcomes outcome, String message) {
+	public final void setOutcome(Outcomes outcome, String message) {
 		if (mOutcome == null) {
 			setOutcome(outcome);
 			mOutcomeMessage = message;

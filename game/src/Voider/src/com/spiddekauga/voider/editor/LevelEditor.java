@@ -218,7 +218,8 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 
 	@Override
 	public void loadResources() {
-		ResourceCacheFacade.load(ResourceNames.EDITOR_BUTTONS);
+		ResourceCacheFacade.load(ResourceNames.UI_EDITOR_BUTTONS);
+		ResourceCacheFacade.load(ResourceNames.UI_GENERAL);
 		ResourceCacheFacade.load(ResourceNames.SHADER_DEFAULT);
 		try {
 			ResourceCacheFacade.loadAllOf(EnemyActorDef.class, false);
@@ -231,7 +232,8 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 
 	@Override
 	public void unloadResources() {
-		ResourceCacheFacade.unload(ResourceNames.EDITOR_BUTTONS);
+		ResourceCacheFacade.unload(ResourceNames.UI_EDITOR_BUTTONS);
+		ResourceCacheFacade.unload(ResourceNames.UI_GENERAL);
 		ResourceCacheFacade.unload(ResourceNames.SHADER_DEFAULT);
 		try {
 			ResourceCacheFacade.unloadAllOf(EnemyActorDef.class, false);
@@ -409,7 +411,7 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 	}
 
 	@Override
-	public void onDisposed() {
+	public void onDispose() {
 		// Unload old dependencies for tools
 		for (TouchTool touchTool : mTouchTools) {
 			if (touchTool instanceof ActorTool) {

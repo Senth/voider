@@ -27,9 +27,11 @@ import com.spiddekauga.voider.game.actors.StaticTerrainActorDef;
  */
 public enum ResourceNames {
 	/** Editor button */
-	EDITOR_BUTTONS("editor.json", Skin.class),
+	UI_EDITOR_BUTTONS("editor.json", Skin.class),
+	/** General UI */
+	UI_GENERAL("general.json", Skin.class),
 	/** Splash Screen */
-	SPLASH_SCREEN("spiddekauga_m.png", Texture.class),
+	IMAGE_SPLASH_SCREEN("spiddekauga_m.png", Texture.class),
 	/** Default vertex shader */
 	SHADER_DEFAULT("default", ShaderProgram.class),
 

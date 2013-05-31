@@ -154,7 +154,8 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 
 	@Override
 	public void loadResources() {
-		ResourceCacheFacade.load(ResourceNames.EDITOR_BUTTONS);
+		ResourceCacheFacade.load(ResourceNames.UI_EDITOR_BUTTONS);
+		ResourceCacheFacade.load(ResourceNames.UI_GENERAL);
 		try {
 			ResourceCacheFacade.loadAllOf(BulletActorDef.class, true);
 		} catch (UndefinedResourceTypeException e) {
@@ -164,7 +165,8 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 
 	@Override
 	public void unloadResources() {
-		ResourceCacheFacade.load(ResourceNames.EDITOR_BUTTONS);
+		ResourceCacheFacade.load(ResourceNames.UI_GENERAL);
+		ResourceCacheFacade.load(ResourceNames.UI_EDITOR_BUTTONS);
 		try {
 			ResourceCacheFacade.unloadAllOf(BulletActorDef.class, true);
 		} catch (UndefinedResourceTypeException e) {

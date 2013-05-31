@@ -3,8 +3,6 @@ package com.spiddekauga.voider.editor;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -355,7 +353,7 @@ class LevelEditorGui extends EditorGui {
 	 * Initializes the top menu
 	 */
 	private void initMenu() {
-		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
+		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
 		TextButtonStyle textToogleStyle = editorSkin.get("toggle", TextButtonStyle.class);
 		final TextButtonStyle textStyle = editorSkin.get("default", TextButtonStyle.class);
 
@@ -452,7 +450,7 @@ class LevelEditorGui extends EditorGui {
 			@Override
 			protected void onPressed() {
 				AlignTable test = new AlignTable();
-				Skin editorSkin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
+				Skin editorSkin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
 				LabelStyle labelStyle = editorSkin.get(LabelStyle.class);
 				Label label = new Label("Test label", labelStyle);
 				test.add(label);
@@ -479,7 +477,7 @@ class LevelEditorGui extends EditorGui {
 	 * Initializes options content for message box
 	 */
 	private void initOptions() {
-		Skin skin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
+		Skin skin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
 		SliderStyle sliderStyle = skin.get("default", SliderStyle.class);
 		TextFieldStyle textFieldStyle = skin.get("default", TextFieldStyle.class);
 		LabelStyle labelStyle = skin.get("default", LabelStyle.class);
@@ -629,7 +627,7 @@ class LevelEditorGui extends EditorGui {
 	 * Initializes Enemy tool GUI
 	 */
 	private void initEnemy() {
-		Skin skin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
+		Skin skin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
 		TextButtonStyle textStyle = skin.get("default", TextButtonStyle.class);
 		TextButtonStyle toggleStyle = skin.get("toggle", TextButtonStyle.class);
 		SliderStyle sliderStyle = skin.get("default", SliderStyle.class);
@@ -915,7 +913,7 @@ class LevelEditorGui extends EditorGui {
 	 * Initializes path tool GUI
 	 */
 	private void initPath() {
-		Skin skin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
+		Skin skin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
 		TextButtonStyle toggleStyle = skin.get("toggle", TextButtonStyle.class);
 
 		// ---- PATH -----
@@ -1040,14 +1038,13 @@ class LevelEditorGui extends EditorGui {
 	 * Initializes Pickup tool GUI
 	 */
 	private void initPickup() {
-		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
+		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
 		TextButtonStyle toggleStyle = editorSkin.get("toggle", TextButtonStyle.class);
 		TextButtonStyle textStyle = editorSkin.get("default", TextButtonStyle.class);
-		ImageButtonStyle addStyle = editorSkin.get("add", ImageButtonStyle.class);
 		LabelStyle labelStyle = editorSkin.get("default", LabelStyle.class);
 
 		ButtonGroup toggleGroup = new ButtonGroup();
-		Button button = new ImageButton(addStyle);
+		Button button = new TextButton("Add", textStyle);
 		mWidgets.pickup.add = button;
 		TooltipListener tooltipListener = new TooltipListener(button, "Add pickup", Messages.Tooltip.Level.Pickup.ADD);
 		new ButtonListener(button, tooltipListener) {
@@ -1117,7 +1114,7 @@ class LevelEditorGui extends EditorGui {
 	 * Initializes the static terrain
 	 */
 	private void initStaticTerrain() {
-		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
+		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
 		TextButtonStyle textStyle = editorSkin.get("toggle", TextButtonStyle.class);
 		GuiCheckCommandCreator terrainShapeChecker = new GuiCheckCommandCreator(mInvoker);
 
@@ -1228,7 +1225,7 @@ class LevelEditorGui extends EditorGui {
 	 * Initializes GUI for the trigger tool
 	 */
 	private void initTrigger() {
-		Skin skin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
+		Skin skin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
 		TextButtonStyle toggleStyle = skin.get("toggle", TextButtonStyle.class);
 
 		// ---- Trigger -----

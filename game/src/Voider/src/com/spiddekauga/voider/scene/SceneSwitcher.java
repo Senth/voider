@@ -134,6 +134,7 @@ public class SceneSwitcher {
 					}
 				}
 
+				currentScene.onDispose();
 			}
 		}
 
@@ -373,7 +374,7 @@ public class SceneSwitcher {
 		Outcomes outcome = poppedScene.getOutcome();
 		String outcomeMessage = poppedScene.getOutcomeMessage();
 
-		poppedScene.onDisposed();
+		poppedScene.onDispose();
 		Gdx.input.setInputProcessor(null);
 
 		// Unload resources from the old scene

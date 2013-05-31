@@ -156,7 +156,7 @@ public class EnemyEditorGui extends ActorGui {
 	 * Initializes the menu buttons
 	 */
 	private void initMenu() {
-		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
+		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
 
 		TextButtonStyle textToggleStyle = editorSkin.get("toggle", TextButtonStyle.class);
 
@@ -224,7 +224,7 @@ public class EnemyEditorGui extends ActorGui {
 	 * Initializes the movement GUI part
 	 */
 	private void initMovement() {
-		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
+		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
 		CheckBoxStyle checkBoxStyle = editorSkin.get("default", CheckBoxStyle.class);
 		LabelStyle labelStyle = editorSkin.get("default", LabelStyle.class);
 		SliderStyle sliderStyle = editorSkin.get("default", SliderStyle.class);
@@ -509,7 +509,7 @@ public class EnemyEditorGui extends ActorGui {
 	 * Initializes the weapon GUI part
 	 */
 	private void initWeapon() {
-		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
+		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
 
 		TextButtonStyle toggleButtonStyle = editorSkin.get("toggle", TextButtonStyle.class);
 		TextButtonStyle textButtonStyle = editorSkin.get("default", TextButtonStyle.class);

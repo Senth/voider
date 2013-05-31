@@ -100,7 +100,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 			mGui.initGui();
 
 			// Path labels
-			Skin editorSkin = ResourceCacheFacade.get(ResourceNames.EDITOR_BUTTONS);
+			Skin editorSkin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
 			LabelStyle labelStyle = editorSkin.get("default", LabelStyle.class);
 			Label label = new Label("Back and Forth", labelStyle);
 			Table wrapTable = new Table();
@@ -208,14 +208,14 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	}
 
 	@Override
-	public void onDisposed() {
+	public void onDispose() {
 		mPlayerActor.dispose();
 		mEnemyActor.dispose();
 		mEnemyPathBackAndForth.dispose();
 		mEnemyPathLoop.dispose();
 		mEnemyPathOnce.dispose();
 
-		super.onDisposed();
+		super.onDispose();
 	}
 
 	@Override
@@ -310,7 +310,8 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 
 	@Override
 	public void loadResources() {
-		ResourceCacheFacade.load(ResourceNames.EDITOR_BUTTONS);
+		ResourceCacheFacade.load(ResourceNames.UI_EDITOR_BUTTONS);
+		ResourceCacheFacade.load(ResourceNames.UI_GENERAL);
 		try {
 			ResourceCacheFacade.loadAllOf(EnemyActorDef.class, true);
 			ResourceCacheFacade.loadAllOf(BulletActorDef.class, true);
@@ -321,7 +322,8 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 
 	@Override
 	public void unloadResources() {
-		ResourceCacheFacade.load(ResourceNames.EDITOR_BUTTONS);
+		ResourceCacheFacade.load(ResourceNames.UI_EDITOR_BUTTONS);
+		ResourceCacheFacade.load(ResourceNames.UI_GENERAL);
 		try {
 			ResourceCacheFacade.unloadAllOf(EnemyActorDef.class, true);
 			ResourceCacheFacade.unloadAllOf(BulletActorDef.class, true);

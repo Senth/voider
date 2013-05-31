@@ -123,7 +123,7 @@ public class GameScene extends WorldScene {
 	 * Saves the game if we're not testing from the Editor.
 	 */
 	@Override
-	public void onDisposed() {
+	public void onDispose() {
 		if (!mTesting) {
 			/** @TODO save the game */
 		}
