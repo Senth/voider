@@ -63,6 +63,7 @@ public class SceneSwitcher {
 	 * @param sceneType the type of scene to switch to
 	 * @return true if found the scene of the specified type and switched to it,
 	 * false if no scene of the specified type was found.
+	 * @see #returnTo(Class sceneType)
 	 */
 	public static boolean switchTo(Class<? extends Scene> sceneType) {
 		Scene foundScene = null;
@@ -93,6 +94,62 @@ public class SceneSwitcher {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Tries to return to a scene that already exists. Will pop all scenes that
+	 * are above the specified scene type.
+	 * @param sceneType the type of scene to return to
+	 * @return true if the scene was found and was returned to, false if no scene of
+	 * this type was found.
+	 * @see #switchTo(Class sceneType)
+	 */
+	public static boolean returnTo(Class<? extends Scene> sceneType) {
+		boolean foundScene = false;
+		Iterator<Scene> sceneIt = mScenes.iterator();
+		while (sceneIt.hasNext()) {
+			Scene currentScene = sceneIt.next();
+
+			if (!foundScene) {
+				if (currentScene.getClass() == sceneType) {
+					foundScene = true;
+				}
+			}
+			// Remove all scenes after the found scene
+			else {
+				sceneIt.remove();
+
+				// If it was the last scene, deactivate it too
+				if (!sceneIt.hasNext()) {
+					currentScene.onDeactivate();
+
+					if (currentScene.hasResources()) {
+						mScenesNeedUnloading.add(currentScene);
+					}
+				}
+				// Else check if needs to unload resources
+				else {
+					if (currentScene.hasResources() && !currentScene.unloadResourcesOnDeactivate()) {
+						mScenesNeedUnloading.add(currentScene);
+					}
+				}
+
+			}
+		}
+
+		// Activate current scene
+		if (foundScene) {
+			Scene activateScene = mScenes.peek();
+			// Does the current scene needs loading resources?
+			if (activateScene.hasResources() && activateScene.unloadResourcesOnDeactivate()) {
+				loadActiveSceneResources();
+			} else {
+				activateScene.onActivate(Outcomes.NOT_APPLICAPLE, null);
+				Gdx.input.setInputProcessor(activateScene.getInputMultiplexer());
+			}
+		}
+
+		return foundScene;
 	}
 
 	/**
@@ -261,9 +318,13 @@ public class SceneSwitcher {
 
 
 		// Scene which resources needs to be unloaded after we have loaded all for the next scene
-		if (mSceneNeedsUnloading != null && !ResourceCacheFacade.isLoading()) {
-			mSceneNeedsUnloading.unloadResources();
-			mSceneNeedsUnloading = null;
+		if (!mScenesNeedUnloading.isEmpty() && !ResourceCacheFacade.isLoading()) {
+			Iterator<Scene> sceneIt = mScenesNeedUnloading.iterator();
+			while (sceneIt.hasNext()) {
+				Scene unloadScene = sceneIt.next();
+				unloadScene.unloadResources();
+				sceneIt.remove();
+			}
 		}
 
 
@@ -317,7 +378,7 @@ public class SceneSwitcher {
 
 		// Unload resources from the old scene
 		if (poppedScene.hasResources()) {
-			mSceneNeedsUnloading = poppedScene;
+			mScenesNeedUnloading.add(poppedScene);
 		}
 
 		// Activate new scene
@@ -370,13 +431,13 @@ public class SceneSwitcher {
 	 */
 	private static void deactivateCurrentScene() {
 		if (!mScenes.isEmpty()) {
-			Scene previouScene = mScenes.peek();
-			previouScene.onDeactivate();
+			Scene previousScene = mScenes.peek();
+			previousScene.onDeactivate();
 			Gdx.input.setInputProcessor(null);
 
 			// Should we unload resources?
-			if (previouScene.hasResources() && previouScene.unloadResourcesOnDeactivate()) {
-				mSceneNeedsUnloading = previouScene;
+			if (previousScene.hasResources() && previousScene.unloadResourcesOnDeactivate()) {
+				mScenesNeedUnloading.add(previousScene);
 			}
 		}
 	}
@@ -392,6 +453,6 @@ public class SceneSwitcher {
 	private static LinkedList<Scene> mScenes = new LinkedList<Scene>();
 	/** If we're currently loading */
 	private static boolean mSwitcherLoading = false;
-	/** Last popped scene that has resoures that needs unloading */
-	private static Scene mSceneNeedsUnloading = null;
+	/** Generally last popped scene that needs unloading, but could be several */
+	private static ArrayList<Scene> mScenesNeedUnloading = new ArrayList<Scene>();
 }
