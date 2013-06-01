@@ -103,7 +103,7 @@ public abstract class Gui {
 
 		// No free found, create new
 		if (msgBox == null) {
-			Skin skin = ResourceCacheFacade.get(ResourceNames.UI_EDITOR_BUTTONS);
+			Skin skin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
 			msgBox = new MsgBoxExecuter(skin, "modal");
 			mInactiveMsgBoxes.add(msgBox);
 		}

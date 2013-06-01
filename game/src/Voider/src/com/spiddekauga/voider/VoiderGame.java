@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.utils.scene.ui.AlignTable;
+import com.spiddekauga.voider.app.MainMenu;
 import com.spiddekauga.voider.app.SplashScreen;
 import com.spiddekauga.voider.editor.LevelEditor;
 import com.spiddekauga.voider.game.Collectibles;
@@ -74,15 +75,7 @@ public class VoiderGame implements ApplicationListener {
 	 * Test splash screen
 	 */
 	private void testSplashScreen() {
-		LevelEditor levelEditor = new LevelEditor();
-
-		LevelDef levelDef = new LevelDef();
-		Level level = new Level(levelDef);
-		levelEditor.setLevel(level);
-
-		SplashScreen splashScreen = new SplashScreen();
-
-		SceneSwitcher.switchTo(levelEditor, splashScreen);
+		SceneSwitcher.switchTo(new MainMenu(), new SplashScreen());
 	}
 
 	@Override
