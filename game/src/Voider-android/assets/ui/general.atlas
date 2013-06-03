@@ -53,7 +53,7 @@ cursor
   orig: 5, 16
   offset: 0, 0
   index: -1
-button-default-down
+textfield
   rotate: false
   xy: 14, 4
   size: 9, 9
@@ -61,25 +61,49 @@ button-default-down
   orig: 9, 9
   offset: 0, 0
   index: -1
-button-default-up
+button-default-checked-over
   rotate: false
-  xy: 82, 22
-  size: 9, 9
-  split: 4, 4, 4, 4
-  orig: 9, 9
+  xy: 82, 24
+  size: 7, 7
+  split: 3, 3, 3, 3
+  orig: 7, 7
   offset: 0, 0
   index: -1
-textfield
+button-default-disabled
   rotate: false
-  xy: 25, 4
-  size: 9, 9
-  split: 4, 4, 4, 4
-  orig: 9, 9
+  xy: 25, 6
+  size: 7, 7
+  split: 3, 3, 3, 3
+  orig: 7, 7
+  offset: 0, 0
+  index: -1
+button-default-down
+  rotate: false
+  xy: 82, 15
+  size: 7, 7
+  split: 3, 3, 3, 3
+  orig: 7, 7
+  offset: 0, 0
+  index: -1
+button-default-over
+  rotate: false
+  xy: 91, 24
+  size: 7, 7
+  split: 3, 3, 3, 3
+  orig: 7, 7
+  offset: 0, 0
+  index: -1
+button-default-up
+  rotate: false
+  xy: 34, 6
+  size: 7, 7
+  split: 3, 3, 3, 3
+  orig: 7, 7
   offset: 0, 0
   index: -1
 slider-background
   rotate: false
-  xy: 93, 23
+  xy: 91, 14
   size: 1, 8
   orig: 1, 8
   offset: 0, 0

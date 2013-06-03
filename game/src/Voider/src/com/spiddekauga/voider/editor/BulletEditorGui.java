@@ -3,6 +3,7 @@ package com.spiddekauga.voider.editor;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -18,6 +19,7 @@ import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.HideListener;
 import com.spiddekauga.utils.scene.ui.SliderListener;
 import com.spiddekauga.utils.scene.ui.TooltipListener;
+import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Editor;
 import com.spiddekauga.voider.Config.Editor.Weapon;
 import com.spiddekauga.voider.game.actors.ActorShapeTypes;
@@ -90,8 +92,9 @@ public class BulletEditorGui extends ActorGui {
 	 * Initializes the top menu
 	 */
 	private void initMenu() {
-		Skin skin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
-		TextButtonStyle textToggleStyle = skin.get("toggle", TextButtonStyle.class);
+		Skin generalSkin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
+		TextButtonStyle textToggleStyle = generalSkin .get("toggle", TextButtonStyle.class);
+		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.UI_EDITOR_BUTTONS);
 
 
 		// --- Active options ---
@@ -100,7 +103,13 @@ public class BulletEditorGui extends ActorGui {
 
 		// Visual
 		GuiCheckCommandCreator menuChecker = new GuiCheckCommandCreator(mInvoker);
-		Button button = new TextButton("Visual", textToggleStyle);
+		Button button;
+		if (Config.Gui.USE_TEXT_BUTTONS) {
+			button = new TextButton("Visuals", textToggleStyle);
+		} else {
+			/** @todo default stub image button */
+			button = new ImageButton(editorSkin, "default-toggle");
+		}
 		button.addListener(menuChecker);
 		buttonGroup.add(button);
 		mMainTable.add(button);
@@ -109,7 +118,12 @@ public class BulletEditorGui extends ActorGui {
 		new TooltipListener(button, "Visuals", Messages.replaceName(Messages.Tooltip.Actor.Menu.VISUALS, "bullet"));
 
 		// Weapon
-		button = new TextButton("Weapons", textToggleStyle);
+		if (Config.Gui.USE_TEXT_BUTTONS) {
+			button = new TextButton("Weapon", textToggleStyle);
+		} else {
+			/** @todo default stub image button */
+			button = new ImageButton(editorSkin, "default-toggle");
+		}
 		button.addListener(menuChecker);
 		buttonGroup.add(button);
 		mMainTable.add(button);
@@ -117,7 +131,12 @@ public class BulletEditorGui extends ActorGui {
 		mWeaponHider.setButton(button);
 
 		// Options
-		button = new TextButton("Options", textToggleStyle);
+		if (Config.Gui.USE_TEXT_BUTTONS) {
+			button = new TextButton("Options", textToggleStyle);
+		} else {
+			/** @todo default stub image button */
+			button = new ImageButton(editorSkin, "default-toggle");
+		}
 		button.addListener(menuChecker);
 		buttonGroup.add(button);
 		mMainTable.add(button);
@@ -136,10 +155,10 @@ public class BulletEditorGui extends ActorGui {
 	 * Initializes test weapon table
 	 */
 	private void initWeapon() {
-		Skin skin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
-		LabelStyle labelStyle = skin.get("default", LabelStyle.class);
-		SliderStyle sliderStyle = skin.get("default", SliderStyle.class);
-		TextFieldStyle textFieldStyle = skin.get("default", TextFieldStyle.class);
+		Skin generalSkin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
+		LabelStyle labelStyle = generalSkin.get("default", LabelStyle.class);
+		SliderStyle sliderStyle = generalSkin.get("default", SliderStyle.class);
+		TextFieldStyle textFieldStyle = generalSkin.get("default", TextFieldStyle.class);
 
 		String warningText =
 				"These options are not bound to the " +

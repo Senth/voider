@@ -1,11 +1,23 @@
 {
 com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
-	add: {
+	default: {
+		down: button-default-down,
+		up: button-default-up,
+		disabled: button-default-disabled,
+		over: button-default-over,
+		imageDown: stub,
+		imageUp: stub
+	},
+	default-toggle: {
 		down: button-default-down,
 		checked: button-default-down,
 		up: button-default-up,
-		imageDown: button-add,
-		imageUp: button-add
+		disabled: button-default-disabled,
+		over: button-default-over,
+		checkedOver: button-default-checked-over,
+		imageDown: stub,
+		imageChecked: stub,
+		imageUp: stub
 	}
 }
 

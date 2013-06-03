@@ -38,8 +38,8 @@ public abstract class EditorGui extends Gui {
 	 * @param defTypeName the definition type name to save is unsaved, etc.
 	 */
 	protected void initMainMenu(final IEditor editor, final String defTypeName) {
-		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
-		final TextButtonStyle textStyle = editorSkin.get("default", TextButtonStyle.class);
+		Skin generalSkin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
+		final TextButtonStyle textStyle = generalSkin.get("default", TextButtonStyle.class);
 
 		mMainMenuTable.setRowAlign(Horizontal.CENTER, Vertical.MIDDLE);
 

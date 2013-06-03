@@ -38,9 +38,9 @@ public class VoiderGame implements ApplicationListener {
 
 		/** @TODO set main menu as start screen */
 
-		//		testEditor();
+		testEditor();
 		//		testSavePickups();
-		testSplashScreen();
+		//		testSplashScreen();
 	}
 
 	/**

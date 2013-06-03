@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox.CheckBoxStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -22,6 +23,7 @@ import com.spiddekauga.utils.scene.ui.Cell;
 import com.spiddekauga.utils.scene.ui.HideListener;
 import com.spiddekauga.utils.scene.ui.SliderListener;
 import com.spiddekauga.utils.scene.ui.TooltipListener;
+import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Editor;
 import com.spiddekauga.voider.Config.Editor.Enemy;
 import com.spiddekauga.voider.Config.Editor.Enemy.Movement;
@@ -156,9 +158,9 @@ public class EnemyEditorGui extends ActorGui {
 	 * Initializes the menu buttons
 	 */
 	private void initMenu() {
-		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
-
-		TextButtonStyle textToggleStyle = editorSkin.get("toggle", TextButtonStyle.class);
+		Skin generalSkin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
+		TextButtonStyle textToggleStyle = generalSkin.get("toggle", TextButtonStyle.class);
+		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.UI_EDITOR_BUTTONS);
 
 
 		// --- Active options ---
@@ -167,7 +169,13 @@ public class EnemyEditorGui extends ActorGui {
 
 		// Movement
 		GuiCheckCommandCreator menuChecker = new GuiCheckCommandCreator(mInvoker);
-		Button button  = new TextButton("Movement", textToggleStyle);
+		Button button;
+		if (Config.Gui.USE_TEXT_BUTTONS) {
+			button = new TextButton("Movement", textToggleStyle);
+		} else {
+			/** @todo default stub image button */
+			button = new ImageButton(editorSkin, "default-toggle");
+		}
 		button.addListener(menuChecker);
 		buttonGroup.add(button);
 		mMainTable.add(button);
@@ -176,7 +184,12 @@ public class EnemyEditorGui extends ActorGui {
 		new TooltipListener(button, "", Messages.Tooltip.Enemy.Menu.MOVEMENT);
 
 		// Weapons
-		button = new TextButton("Weapons", textToggleStyle);
+		if (Config.Gui.USE_TEXT_BUTTONS) {
+			button = new TextButton("Weapons", textToggleStyle);
+		} else {
+			/** @todo default stub image button */
+			button = new ImageButton(editorSkin, "default-toggle");
+		}
 		button.addListener(menuChecker);
 		buttonGroup.add(button);
 		mMainTable.add(button);
@@ -185,7 +198,12 @@ public class EnemyEditorGui extends ActorGui {
 		new TooltipListener(button, "", Messages.Tooltip.Enemy.Menu.WEAPON);
 
 		// Visuals
-		button = new TextButton("Visuals", textToggleStyle);
+		if (Config.Gui.USE_TEXT_BUTTONS) {
+			button = new TextButton("Visuals", textToggleStyle);
+		} else {
+			/** @todo default stub image button */
+			button = new ImageButton(editorSkin, "default-toggle");
+		}
 		button.addListener(menuChecker);
 		buttonGroup.add(button);
 		mMainTable.add(button);
@@ -194,7 +212,12 @@ public class EnemyEditorGui extends ActorGui {
 		new TooltipListener(button, "Visuals", Messages.replaceName(Messages.Tooltip.Actor.Menu.VISUALS, "enemy"));
 
 		// Options
-		button = new TextButton("Options", textToggleStyle);
+		if (Config.Gui.USE_TEXT_BUTTONS) {
+			button = new TextButton("Options", textToggleStyle);
+		} else {
+			/** @todo default stub image button */
+			button = new ImageButton(editorSkin, "default-toggle");
+		}
 		button.addListener(menuChecker);
 		buttonGroup.add(button);
 		mMainTable.add(button);
@@ -203,7 +226,12 @@ public class EnemyEditorGui extends ActorGui {
 		new TooltipListener(button, "Options", Messages.replaceName(Messages.Tooltip.Actor.Menu.OPTIONS, "enemy"));
 
 		// Collision
-		button = new TextButton("Collision", textToggleStyle);
+		if (Config.Gui.USE_TEXT_BUTTONS) {
+			button = new TextButton("Collision", textToggleStyle);
+		} else {
+			/** @todo default stub image button */
+			button = new ImageButton(editorSkin, "default-toggle");
+		}
 		button.addListener(menuChecker);
 		buttonGroup.add(button);
 		mMainTable.add(button);
@@ -224,12 +252,13 @@ public class EnemyEditorGui extends ActorGui {
 	 * Initializes the movement GUI part
 	 */
 	private void initMovement() {
-		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
-		CheckBoxStyle checkBoxStyle = editorSkin.get("default", CheckBoxStyle.class);
-		LabelStyle labelStyle = editorSkin.get("default", LabelStyle.class);
-		SliderStyle sliderStyle = editorSkin.get("default", SliderStyle.class);
-		TextFieldStyle textFieldStyle = editorSkin.get("default", TextFieldStyle.class);
-		TextButtonStyle textToogleStyle = editorSkin.get("toggle", TextButtonStyle.class);
+		Skin generalSkin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
+		CheckBoxStyle checkBoxStyle = generalSkin.get("default", CheckBoxStyle.class);
+		LabelStyle labelStyle = generalSkin.get("default", LabelStyle.class);
+		SliderStyle sliderStyle = generalSkin.get("default", SliderStyle.class);
+		TextFieldStyle textFieldStyle = generalSkin.get("default", TextFieldStyle.class);
+		TextButtonStyle textToggleStyle = generalSkin.get("toggle", TextButtonStyle.class);
+		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.UI_EDITOR_BUTTONS);
 
 		// Path
 		mMovementTable.row();
@@ -313,11 +342,17 @@ public class EnemyEditorGui extends ActorGui {
 
 		// Turning
 		mPathTable.row().setScalable(false);
-		TextButton textButton = new TextButton("Turning speed OFF", textToogleStyle);
-		mWidgets.movement.turnSpeedToggleButton = textButton;
-		mPathTable.add(textButton);
-		new TooltipListener(textButton, "Turning speed", Messages.Tooltip.Enemy.Movement.Common.TURNING_SPEED_BUTTON);
-		HideListener hideListener = new HideListener(textButton, true) {
+		Button button;
+		if (Config.Gui.USE_TEXT_BUTTONS) {
+			button = new TextButton("Turning speed OFF", textToggleStyle);
+		} else {
+			/** @todo default stub image button */
+			button = new ImageButton(editorSkin, "default-toggle");
+		}
+		mWidgets.movement.turnSpeedToggleButton = button;
+		mPathTable.add(button);
+		new TooltipListener(button, "Turning speed", Messages.Tooltip.Enemy.Movement.Common.TURNING_SPEED_BUTTON);
+		HideListener hideListener = new HideListener(button, true) {
 			@Override
 			protected void onShow() {
 				if (mButton instanceof TextButton) {
@@ -419,7 +454,12 @@ public class EnemyEditorGui extends ActorGui {
 
 		// Random movement
 		mAiTable.row();
-		Button button = new TextButton("Random Movement OFF", textToogleStyle);
+		if (Config.Gui.USE_TEXT_BUTTONS) {
+			button = new TextButton("Random Movement OFF", textToggleStyle);
+		} else {
+			/** @todo default stub image button */
+			button = new ImageButton(editorSkin, "default-toggle");
+		}
 		mWidgets.movement.aiRandomMovementToggleButton = button;
 		mAiTable.add(button);
 		new TooltipListener(button, "Random Movement", Messages.Tooltip.Enemy.Movement.Ai.RANDOM_MOVEMENT_BUTTON);
@@ -509,17 +549,23 @@ public class EnemyEditorGui extends ActorGui {
 	 * Initializes the weapon GUI part
 	 */
 	private void initWeapon() {
-		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
-
-		TextButtonStyle toggleButtonStyle = editorSkin.get("toggle", TextButtonStyle.class);
-		TextButtonStyle textButtonStyle = editorSkin.get("default", TextButtonStyle.class);
-		LabelStyle labelStyle = editorSkin.get("default", LabelStyle.class);
-		SliderStyle sliderStyle = editorSkin.get("default", SliderStyle.class);
-		TextFieldStyle textFieldStyle = editorSkin.get("default", TextFieldStyle.class);
+		Skin generalSkin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
+		TextButtonStyle textToggleStyle = generalSkin.get("toggle", TextButtonStyle.class);
+		TextButtonStyle textButtonStyle = generalSkin.get("default", TextButtonStyle.class);
+		LabelStyle labelStyle = generalSkin.get("default", LabelStyle.class);
+		SliderStyle sliderStyle = generalSkin.get("default", SliderStyle.class);
+		TextFieldStyle textFieldStyle = generalSkin.get("default", TextFieldStyle.class);
+		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.UI_EDITOR_BUTTONS);
 
 		mWeaponTable.setScalable(false);
 
-		Button button = new TextButton("Weapons OFF", toggleButtonStyle);
+		Button button;
+		if (Config.Gui.USE_TEXT_BUTTONS) {
+			button = new TextButton("Weapons OFF", textToggleStyle);
+		} else {
+			/** @todo default stub image button */
+			button = new ImageButton(editorSkin, "default-toggle");
+		}
 		mWidgets.weapon.toggleButton = button;
 		mWeaponTable.add(button);
 		/** @todo only use hider */
@@ -546,7 +592,12 @@ public class EnemyEditorGui extends ActorGui {
 		mWeaponTable.row();
 		GuiCheckCommandCreator weaponMenuChecker = new GuiCheckCommandCreator(mInvoker);
 		ButtonGroup buttonGroup = new ButtonGroup();
-		button = new TextButton("Bullet", toggleButtonStyle);
+		if (Config.Gui.USE_TEXT_BUTTONS) {
+			button = new TextButton("Bullet", textToggleStyle);
+		} else {
+			/** @todo default stub image button */
+			button = new ImageButton(editorSkin, "default-toggle");
+		}
 		button.addListener(weaponMenuChecker);
 		buttonGroup.add(button);
 		mWeaponTable.add(button);
@@ -555,7 +606,12 @@ public class EnemyEditorGui extends ActorGui {
 		HideListener bulletHider = new HideListener(button, true);
 		weaponInnerHider.addChild(bulletHider);
 
-		button = new TextButton("Aim", toggleButtonStyle);
+		if (Config.Gui.USE_TEXT_BUTTONS) {
+			button = new TextButton("Aim", textToggleStyle);
+		} else {
+			/** @todo default stub image button */
+			button = new ImageButton(editorSkin, "default-toggle");
+		}
 		button.addListener(weaponMenuChecker);
 		buttonGroup.add(button);
 		mWeaponTable.add(button);
@@ -576,7 +632,12 @@ public class EnemyEditorGui extends ActorGui {
 		mWidgets.weapon.bulletName = label;
 		bulletTable.add(label);
 
-		button = new TextButton("Select bullet type", textButtonStyle);
+		if (Config.Gui.USE_TEXT_BUTTONS) {
+			button = new TextButton("Select bullet type", textButtonStyle);
+		} else {
+			/** @todo default stub image button */
+			button = new ImageButton(editorSkin);
+		}
 		bulletTable.add(button);
 		tooltipListener = new TooltipListener(button, "Select bullet", Messages.Tooltip.Enemy.Weapon.Bullet.SELECT_BULLET);
 		new ButtonListener(button) {
@@ -684,7 +745,12 @@ public class EnemyEditorGui extends ActorGui {
 		// Aim on what?
 		mWeaponTable.row();
 		GuiCheckCommandCreator aimChecker = new GuiCheckCommandCreator(mInvoker);
-		button = new TextButton("On Player", toggleButtonStyle);
+		if (Config.Gui.USE_TEXT_BUTTONS) {
+			button = new TextButton("On Player", textToggleStyle);
+		} else {
+			/** @todo default stub image button */
+			button = new ImageButton(editorSkin, "default-toggle");
+		}
 		button.addListener(aimChecker);
 		mWidgets.weapon.aimOnPlayer = button;
 		mWeaponTable.add(button);
@@ -701,7 +767,12 @@ public class EnemyEditorGui extends ActorGui {
 			}
 		};
 
-		button = new TextButton("Move Dir", toggleButtonStyle);
+		if (Config.Gui.USE_TEXT_BUTTONS) {
+			button = new TextButton("Move dir", textToggleStyle);
+		} else {
+			/** @todo default stub image button */
+			button = new ImageButton(editorSkin, "default-toggle");
+		}
 		button.addListener(aimChecker);
 		mWidgets.weapon.aimMoveDirection = button;
 		mWeaponTable.add(button);
@@ -718,7 +789,12 @@ public class EnemyEditorGui extends ActorGui {
 		};
 
 		mWeaponTable.row();
-		button = new TextButton("In front of Player", toggleButtonStyle);
+		if (Config.Gui.USE_TEXT_BUTTONS) {
+			button = new TextButton("In front of player", textToggleStyle);
+		} else {
+			/** @todo default stub image button */
+			button = new ImageButton(editorSkin, "default-toggle");
+		}
 		button.addListener(aimChecker);
 		mWidgets.weapon.aimInFrontOfPlayer = button;
 		mWeaponTable.add(button);
@@ -734,7 +810,12 @@ public class EnemyEditorGui extends ActorGui {
 			}
 		};
 
-		button = new TextButton("Rotate", toggleButtonStyle);
+		if (Config.Gui.USE_TEXT_BUTTONS) {
+			button = new TextButton("Rotate", textToggleStyle);
+		} else {
+			/** @todo default stub image button */
+			button = new ImageButton(editorSkin, "default-toggle");
+		}
 		button.addListener(aimChecker);
 		mWidgets.weapon.aimRotate = button;
 		mWeaponTable.add(button);

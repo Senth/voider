@@ -3,42 +3,50 @@ editor.png
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
-button-add-down
+stub
   rotate: false
-  xy: 1, 1
-  size: 126, 126
-  split: 5, 5, 5, 5
-  orig: 126, 126
+  xy: 1, 19
+  size: 64, 64
+  orig: 64, 64
   offset: 0, 0
   index: -1
-button-add-up
+button-default-checked-over
   rotate: false
-  xy: 129, 1
-  size: 126, 126
-  split: 5, 5, 5, 5
-  orig: 126, 126
+  xy: 1, 10
+  size: 7, 7
+  split: 3, 3, 3, 3
+  orig: 7, 7
   offset: 0, 0
   index: -1
-button-add
+button-default-disabled
   rotate: false
-  xy: 257, 17
-  size: 110, 110
-  orig: 110, 110
+  xy: 67, 76
+  size: 7, 7
+  split: 3, 3, 3, 3
+  orig: 7, 7
   offset: 0, 0
   index: -1
 button-default-down
   rotate: false
-  xy: 257, 6
-  size: 9, 9
-  split: 4, 4, 4, 4
-  orig: 9, 9
+  xy: 1, 1
+  size: 7, 7
+  split: 3, 3, 3, 3
+  orig: 7, 7
+  offset: 0, 0
+  index: -1
+button-default-over
+  rotate: false
+  xy: 10, 10
+  size: 7, 7
+  split: 3, 3, 3, 3
+  orig: 7, 7
   offset: 0, 0
   index: -1
 button-default-up
   rotate: false
-  xy: 369, 118
-  size: 9, 9
-  split: 4, 4, 4, 4
-  orig: 9, 9
+  xy: 67, 67
+  size: 7, 7
+  split: 3, 3, 3, 3
+  orig: 7, 7
   offset: 0, 0
   index: -1

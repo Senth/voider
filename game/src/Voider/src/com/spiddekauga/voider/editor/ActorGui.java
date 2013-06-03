@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox.CheckBoxStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -156,9 +157,9 @@ public abstract class ActorGui extends EditorGui {
 	 * @param actorTypeName name of the actor type to be displayed in messages
 	 */
 	protected void initOptions(String actorTypeName) {
-		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
-		LabelStyle labelStyle = editorSkin.get("default", LabelStyle.class);
-		TextFieldStyle textFieldStyle = editorSkin.get("default", TextFieldStyle.class);
+		Skin generalSkin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
+		LabelStyle labelStyle = generalSkin.get("default", LabelStyle.class);
+		TextFieldStyle textFieldStyle = generalSkin.get("default", TextFieldStyle.class);
 
 		mOptionTable.setScalable(false);
 		mOptionTable.setTableAlign(Horizontal.LEFT, Vertical.TOP);
@@ -204,12 +205,19 @@ public abstract class ActorGui extends EditorGui {
 	 * @param actorName name of the actor, this will be displayed in message boxes
 	 */
 	protected void initFileMenu(final String actorName) {
-		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
+		Skin generalSkin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
+		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.UI_EDITOR_BUTTONS);
 
-		final TextButtonStyle textStyle = editorSkin.get("default", TextButtonStyle.class);
+		final TextButtonStyle textStyle = generalSkin.get("default", TextButtonStyle.class);
 
-		// New Enemy
-		Button button = new TextButton("New", textStyle);
+		// New
+		Button button;
+		if (Config.Gui.USE_TEXT_BUTTONS) {
+			button = new TextButton("New", textStyle);
+		} else {
+			/** @todo default stub image button */
+			button = new ImageButton(editorSkin);
+		}
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed() {
@@ -241,7 +249,12 @@ public abstract class ActorGui extends EditorGui {
 		mMainTable.add(button);
 
 		// Save
-		button = new TextButton("Save", textStyle);
+		if (Config.Gui.USE_TEXT_BUTTONS) {
+			button = new TextButton("Save", textStyle);
+		} else {
+			/** @todo default stub image button */
+			button = new ImageButton(editorSkin);
+		}
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed() {
@@ -251,7 +264,12 @@ public abstract class ActorGui extends EditorGui {
 		mMainTable.add(button);
 
 		// Load
-		button = new TextButton("Load", textStyle);
+		if (Config.Gui.USE_TEXT_BUTTONS) {
+			button = new TextButton("Load", textStyle);
+		} else {
+			/** @todo default stub image button */
+			button = new ImageButton(editorSkin);
+		}
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed() {
@@ -281,7 +299,12 @@ public abstract class ActorGui extends EditorGui {
 		mMainTable.add(button);
 
 		// Duplicate
-		button = new TextButton("Duplicate", textStyle);
+		if (Config.Gui.USE_TEXT_BUTTONS) {
+			button = new TextButton("Duplicate", textStyle);
+		} else {
+			/** @todo default stub image button */
+			button = new ImageButton(editorSkin);
+		}
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed() {
@@ -312,7 +335,12 @@ public abstract class ActorGui extends EditorGui {
 
 		// Undo/Redo
 		if (mActorEditor.hasUndo()) {
-			button = new TextButton("Undo", textStyle);
+			if (Config.Gui.USE_TEXT_BUTTONS) {
+				button = new TextButton("Undo", textStyle);
+			} else {
+				/** @todo default stub image button */
+				button = new ImageButton(editorSkin);
+			}
 			new ButtonListener(button) {
 				@Override
 				protected void onPressed() {
@@ -321,7 +349,12 @@ public abstract class ActorGui extends EditorGui {
 			};
 			mMainTable.add(button);
 
-			button = new TextButton("Redo", textStyle);
+			if (Config.Gui.USE_TEXT_BUTTONS) {
+				button = new TextButton("Redo", textStyle);
+			} else {
+				/** @todo default stub image button */
+				button = new ImageButton(editorSkin);
+			}
 			new ButtonListener(button) {
 				@Override
 				protected void onPressed() {
@@ -338,12 +371,13 @@ public abstract class ActorGui extends EditorGui {
 	 * @param actorShapeTypes all shapes that shall be initializes
 	 */
 	protected void initVisual(String actorTypeName, ActorShapeTypes... actorShapeTypes) {
-		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
-		LabelStyle labelStyle = editorSkin.get("default", LabelStyle.class);
-		SliderStyle sliderStyle = editorSkin.get("default", SliderStyle.class);
-		TextFieldStyle textFieldStyle = editorSkin.get("default", TextFieldStyle.class);
-		TextButtonStyle toggleStyle = editorSkin.get("toggle", TextButtonStyle.class);
-		TextButtonStyle textButtonStyle = editorSkin.get("default", TextButtonStyle.class);
+		Skin generalSkin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
+		LabelStyle labelStyle = generalSkin.get("default", LabelStyle.class);
+		SliderStyle sliderStyle = generalSkin.get("default", SliderStyle.class);
+		TextFieldStyle textFieldStyle = generalSkin.get("default", TextFieldStyle.class);
+		TextButtonStyle toggleStyle = generalSkin.get("toggle", TextButtonStyle.class);
+		TextButtonStyle textButtonStyle = generalSkin.get("default", TextButtonStyle.class);
+		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.UI_EDITOR_BUTTONS);
 
 		mVisualTable.setScalable(false);
 
@@ -399,7 +433,13 @@ public abstract class ActorGui extends EditorGui {
 		ButtonGroup buttonGroup = new ButtonGroup();
 		HideListener circleHider = null;
 		if (containsShape(ActorShapeTypes.CIRCLE, actorShapeTypes)) {
-			Button button = new TextButton("Circle", toggleStyle);
+			Button button;
+			if (Config.Gui.USE_TEXT_BUTTONS) {
+				button = new TextButton("Circle", toggleStyle);
+			} else {
+				/** @todo default stub image button */
+				button = new ImageButton(editorSkin, "default-toggle");
+			}
 			mWidgets.visual.shapeCircle = button;
 			mVisualTable.add(button);
 			button.addListener(shapeChecker);
@@ -420,7 +460,13 @@ public abstract class ActorGui extends EditorGui {
 		boolean hasRectangle = false;
 		if (containsShape(ActorShapeTypes.RECTANGLE, actorShapeTypes)) {
 			hasRectangle = true;
-			Button button = new TextButton("Rect", toggleStyle);
+			Button button;
+			if (Config.Gui.USE_TEXT_BUTTONS) {
+				button = new TextButton("Rectangle", toggleStyle);
+			} else {
+				/** @todo default stub image button */
+				button = new ImageButton(editorSkin, "default-toggle");
+			}
 			mWidgets.visual.shapeRectangle = button;
 			mVisualTable.add(button);
 			button.addListener(shapeChecker);
@@ -441,7 +487,13 @@ public abstract class ActorGui extends EditorGui {
 		boolean hasTriangle = false;
 		if (containsShape(ActorShapeTypes.TRIANGLE, actorShapeTypes)) {
 			hasTriangle = true;
-			Button button = new TextButton("Triangle", toggleStyle);
+			Button button;
+			if (Config.Gui.USE_TEXT_BUTTONS) {
+				button = new TextButton("Triangle", toggleStyle);
+			} else {
+				/** @todo default stub image button */
+				button = new ImageButton(editorSkin, "default-toggle");
+			}
 			mWidgets.visual.shapeTriangle = button;
 			mVisualTable.add(button);
 			button.addListener(shapeChecker);
@@ -461,7 +513,13 @@ public abstract class ActorGui extends EditorGui {
 
 		HideListener customHider = null;
 		if (containsShape(ActorShapeTypes.CUSTOM, actorShapeTypes)) {
-			Button button = new TextButton("Draw", toggleStyle);
+			Button button;
+			if (Config.Gui.USE_TEXT_BUTTONS) {
+				button = new TextButton("Draw", toggleStyle);
+			} else {
+				/** @todo default stub image button */
+				button = new ImageButton(editorSkin, "default-toggle");
+			}
 			mWidgets.visual.shapeCustom = button;
 			mVisualTable.add(button);
 			button.addListener(shapeChecker);
@@ -601,7 +659,13 @@ public abstract class ActorGui extends EditorGui {
 			GuiCheckCommandCreator shapeCustomChecker = new GuiCheckCommandCreator(mInvoker);
 
 			// Append
-			Button button = new TextButton("Draw/Append", toggleStyle);
+			Button button;
+			if (Config.Gui.USE_TEXT_BUTTONS) {
+				button = new TextButton("Draw/Append", toggleStyle);
+			} else {
+				/** @todo default stub image button */
+				button = new ImageButton(editorSkin, "default-toggle");
+			}
 			button.addListener(shapeCustomChecker);
 			mWidgets.visual.customShapeAppend = button;
 			buttonGroup.add(button);
@@ -618,7 +682,12 @@ public abstract class ActorGui extends EditorGui {
 			mVisualTable.add(button);
 
 			// Add corner
-			button = new TextButton("Add corner", toggleStyle);
+			if (Config.Gui.USE_TEXT_BUTTONS) {
+				button = new TextButton("Add corner", toggleStyle);
+			} else {
+				/** @todo default stub image button */
+				button = new ImageButton(editorSkin, "default-toggle");
+			}
 			button.addListener(shapeCustomChecker);
 			mWidgets.visual.customShapeAddCorner = button;
 			buttonGroup.add(button);
@@ -635,7 +704,12 @@ public abstract class ActorGui extends EditorGui {
 			mVisualTable.add(button);
 
 			// Move corner
-			button = new TextButton("Move corner", toggleStyle);
+			if (Config.Gui.USE_TEXT_BUTTONS) {
+				button = new TextButton("Move corner", toggleStyle);
+			} else {
+				/** @todo default stub image button */
+				button = new ImageButton(editorSkin, "default-toggle");
+			}
 			button.addListener(shapeCustomChecker);
 			mWidgets.visual.customShapeMoveCorner = button;
 			buttonGroup.add(button);
@@ -653,7 +727,12 @@ public abstract class ActorGui extends EditorGui {
 
 			// Remove corner
 			mVisualTable.row();
-			button = new TextButton("Remove corner", toggleStyle);
+			if (Config.Gui.USE_TEXT_BUTTONS) {
+				button = new TextButton("Remove corner", toggleStyle);
+			} else {
+				/** @todo default stub image button */
+				button = new ImageButton(editorSkin, "default-toggle");
+			}
 			button.addListener(shapeCustomChecker);
 			mWidgets.visual.customShapeRemoveCorner = button;
 			buttonGroup.add(button);
@@ -670,7 +749,12 @@ public abstract class ActorGui extends EditorGui {
 			mVisualTable.add(button);
 
 			// Add Remove (draw/erase)
-			button = new TextButton("Draw/Erase", toggleStyle);
+			if (Config.Gui.USE_TEXT_BUTTONS) {
+				button = new TextButton("Draw/Erase", toggleStyle);
+			} else {
+				/** @todo default stub image button */
+				button = new ImageButton(editorSkin, "default-toggle");
+			}
 			button.addListener(shapeCustomChecker);
 			mWidgets.visual.customShapeDrawErase = button;
 			buttonGroup.add(button);
@@ -687,7 +771,12 @@ public abstract class ActorGui extends EditorGui {
 			mVisualTable.add(button);
 
 			// Move shape
-			button = new TextButton("Move shape", toggleStyle);
+			if (Config.Gui.USE_TEXT_BUTTONS) {
+				button = new TextButton("Move shape", toggleStyle);
+			} else {
+				/** @todo default stub image button */
+				button = new ImageButton(editorSkin, "default-toggle");
+			}
 			button.addListener(shapeCustomChecker);
 			mWidgets.visual.customShapeMoveShape = button;
 			buttonGroup.add(button);
@@ -704,7 +793,12 @@ public abstract class ActorGui extends EditorGui {
 			mVisualTable.add(button);
 
 			// Set center
-			button = new TextButton("Set center", toggleStyle);
+			if (Config.Gui.USE_TEXT_BUTTONS) {
+				button = new TextButton("Set center", toggleStyle);
+			} else {
+				/** @todo default stub image button */
+				button = new ImageButton(editorSkin, "default-toggle");
+			}
 			button.addListener(shapeCustomChecker);
 			mWidgets.visual.customShapeSetCenter = button;
 			HideListener setCenterHider = new HideListener(button, true);
@@ -724,7 +818,12 @@ public abstract class ActorGui extends EditorGui {
 
 
 			mVisualTable.row(Horizontal.RIGHT, Vertical.TOP);
-			button = new TextButton("Reset center", textButtonStyle);
+			if (Config.Gui.USE_TEXT_BUTTONS) {
+				button = new TextButton("Reset center", toggleStyle);
+			} else {
+				/** @todo default stub image button */
+				button = new ImageButton(editorSkin);
+			}
 			setCenterHider.addToggleActor(button);
 			tooltipListener = new TooltipListener(button, "Reset center", Messages.replaceName(Messages.Tooltip.Actor.Visuals.RESET_CENTER, actorTypeName));
 			new ButtonListener(button, tooltipListener) {

@@ -510,23 +510,25 @@ public class Config {
 	 */
 	public static class Gui {
 		/** Temporary GUI name when using an invoker */
-		public static String GUI_INVOKER_TEMP_NAME = "invoker";
+		public final static String GUI_INVOKER_TEMP_NAME = "invoker";
 		/** Seconds before text field commands aren't combinable */
-		public static float TEXT_FIELD_COMBINABLE_WITHIN = 1;
+		public final static float TEXT_FIELD_COMBINABLE_WITHIN = 1;
 		/** Separator padding */
-		public static float SEPARATE_PADDING = 5;
+		public final static float SEPARATE_PADDING = 5;
 		/** Seconds before tooltip is shown when hovering over */
-		public static float TOOLTIP_HOVER_SHOW = 0.5f;
+		public final static float TOOLTIP_HOVER_SHOW = 0.5f;
 		/** Seconds before tooltip is shown when pressing */
-		public static float TOOLTIP_PRESS_SHOW = 1;
+		public final static float TOOLTIP_PRESS_SHOW = 1;
 		/** fade duration of the tooltip when hovering */
-		public static float TOOLTIP_HOVER_FADE_DURATION = 0.3f;
+		public final static float TOOLTIP_HOVER_FADE_DURATION = 0.3f;
 		/** Fade in duration of the label and window for error messages */
-		public static float ERROR_MESSAGE_FADE_IN_DURATION = 0.3f;
+		public final static float ERROR_MESSAGE_FADE_IN_DURATION = 0.3f;
 		/** Fade out duration of the label and window for error messages */
-		public static float ERROR_MESSAGE_FADE_OUT_DURATION = 1.0f;
+		public final static float ERROR_MESSAGE_FADE_OUT_DURATION = 1.0f;
 		/** Time to display error message per character */
-		public static float ERROR_MESSAGE_TIME_PER_CHARACTER = 0.08f;
+		public final static float ERROR_MESSAGE_TIME_PER_CHARACTER = 0.08f;
+		/** Use text instead of images for editor buttons */
+		public final static boolean USE_TEXT_BUTTONS = false;
 	}
 
 	/**
