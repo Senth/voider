@@ -13,10 +13,12 @@ import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.app.MainMenu;
 import com.spiddekauga.voider.editor.commands.CEditorDuplicate;
 import com.spiddekauga.voider.editor.commands.CEditorLoad;
 import com.spiddekauga.voider.editor.commands.CEditorNew;
 import com.spiddekauga.voider.editor.commands.CEditorSave;
+import com.spiddekauga.voider.editor.commands.CSceneReturn;
 import com.spiddekauga.voider.editor.commands.CSceneSwitch;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceNames;
@@ -149,30 +151,7 @@ public abstract class EditorGui extends Gui {
 			new ButtonListener(button) {
 				@Override
 				protected void onPressed() {
-					if (editor.isUnsaved()) {
-						Button yes = new TextButton("Save then switch", textStyle);
-						Button no = new TextButton("Switch anyway", textStyle);
-						Button cancel = new TextButton("Cancel", textStyle);
-
-						Command save = new CEditorSave(editor);
-						Command switchCommand = new CSceneSwitch(LevelEditor.class);
-						Command saveAndNew = new CommandSequence(save, switchCommand);
-
-						MsgBoxExecuter msgBox = getFreeMsgBox();
-
-						msgBox.clear();
-						msgBox.setTitle("Switch to Level Editor");
-						msgBox.content(Messages.getUnsavedMessage(defTypeName, UnsavedActions.ENEMY_EDITOR));
-						msgBox.button(yes, saveAndNew);
-						msgBox.button(no, switchCommand);
-						msgBox.button(cancel);
-						msgBox.key(Keys.BACK, null);
-						msgBox.key(Keys.ESCAPE, null);
-						showMsgBox(msgBox);
-					} else {
-						Command switchCommand = new CSceneSwitch(LevelEditor.class);
-						switchCommand.execute();
-					}
+					switchReturnTo("Level Editor", new CSceneSwitch(LevelEditor.class), UnsavedActions.LEVEL_EDITOR, editor, defTypeName);
 				}
 			};
 		}
@@ -185,30 +164,7 @@ public abstract class EditorGui extends Gui {
 			new ButtonListener(button) {
 				@Override
 				protected void onPressed() {
-					if (editor.isUnsaved()) {
-						Button yes = new TextButton("Save then switch", textStyle);
-						Button no = new TextButton("Switch anyway", textStyle);
-						Button cancel = new TextButton("Cancel", textStyle);
-
-						Command save = new CEditorSave(editor);
-						Command switchCommand = new CSceneSwitch(EnemyEditor.class);
-						Command saveAndNew = new CommandSequence(save, switchCommand);
-
-						MsgBoxExecuter msgBox = getFreeMsgBox();
-
-						msgBox.clear();
-						msgBox.setTitle("Switch to Enemy Editor");
-						msgBox.content(Messages.getUnsavedMessage(defTypeName, UnsavedActions.ENEMY_EDITOR));
-						msgBox.button(yes, saveAndNew);
-						msgBox.button(no, switchCommand);
-						msgBox.button(cancel);
-						msgBox.key(Keys.BACK, null);
-						msgBox.key(Keys.ESCAPE, null);
-						showMsgBox(msgBox);
-					} else {
-						Command switchCommand = new CSceneSwitch(EnemyEditor.class);
-						switchCommand.execute();
-					}
+					switchReturnTo("Enemy Editor", new CSceneSwitch(EnemyEditor.class), UnsavedActions.ENEMY_EDITOR, editor, defTypeName);
 				}
 			};
 		}
@@ -221,32 +177,62 @@ public abstract class EditorGui extends Gui {
 			new ButtonListener(button) {
 				@Override
 				protected void onPressed() {
-					if (editor.isUnsaved()) {
-						Button yes = new TextButton("Save then switch", textStyle);
-						Button no = new TextButton("Switch anyway", textStyle);
-						Button cancel = new TextButton("Cancel", textStyle);
-
-						Command save = new CEditorSave(editor);
-						Command switchCommand = new CSceneSwitch(BulletEditor.class);
-						Command saveAndNew = new CommandSequence(save, switchCommand);
-
-						MsgBoxExecuter msgBox = getFreeMsgBox();
-
-						msgBox.clear();
-						msgBox.setTitle("Switch to Bullet Editor");
-						msgBox.content(Messages.getUnsavedMessage(defTypeName, UnsavedActions.ENEMY_EDITOR));
-						msgBox.button(yes, saveAndNew);
-						msgBox.button(no, switchCommand);
-						msgBox.button(cancel);
-						msgBox.key(Keys.BACK, null);
-						msgBox.key(Keys.ESCAPE, null);
-						showMsgBox(msgBox);
-					} else {
-						Command switchCommand = new CSceneSwitch(BulletEditor.class);
-						switchCommand.execute();
-					}
+					switchReturnTo("Bullet Editor", new CSceneSwitch(BulletEditor.class), UnsavedActions.BULLET_EDITOR, editor, defTypeName);
 				}
 			};
+		}
+
+		// Return to main menu
+		mMainMenuTable.row();
+		button = new TextButton("Main Menu", textStyle);
+		mMainMenuTable.add(button);
+		new ButtonListener(button) {
+			@Override
+			protected void onPressed() {
+				switchReturnTo("Main Menu", new CSceneReturn(MainMenu.class), UnsavedActions.MAIN_MENU, editor, defTypeName);
+			}
+		};
+	}
+
+	/**
+	 * Switches or returns to the specified editor or menu.
+	 * @param switchReturnTo what we're switching or returning to.
+	 * @param command the command to be executed when switching or returning
+	 * @param unsavedAction message to be displayed in the message box
+	 * @param editor the editor this GUI is bound to
+	 * @param defTypeName name of the editor.
+	 */
+	private void switchReturnTo(String switchReturnTo, Command command, UnsavedActions unsavedAction, IEditor editor, String defTypeName) {
+		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
+		final TextButtonStyle textStyle = editorSkin.get("default", TextButtonStyle.class);
+
+		boolean switching = command instanceof CSceneSwitch;
+
+		if (editor.isUnsaved()) {
+			String yesMessage = switching ? "Save then switch" : "Save then return";
+			String noMessage = switching ? "Switch anyway" : "Return anymay";
+			Button yes = new TextButton(yesMessage, textStyle);
+			Button no = new TextButton(noMessage, textStyle);
+			Button cancel = new TextButton("Cancel", textStyle);
+
+			Command save = new CEditorSave(editor);
+			Command saveAndNew = new CommandSequence(save, command);
+
+			String msgBoxTitle = switching ? "Switch" : "Return";
+			msgBoxTitle += " to " + switchReturnTo;
+			MsgBoxExecuter msgBox = getFreeMsgBox();
+
+			msgBox.clear();
+			msgBox.setTitle(msgBoxTitle);
+			msgBox.content(Messages.getUnsavedMessage(defTypeName, unsavedAction));
+			msgBox.button(yes, saveAndNew);
+			msgBox.button(no, command);
+			msgBox.button(cancel);
+			msgBox.key(Keys.BACK, null);
+			msgBox.key(Keys.ESCAPE, null);
+			showMsgBox(msgBox);
+		} else {
+			command.execute();
 		}
 	}
 

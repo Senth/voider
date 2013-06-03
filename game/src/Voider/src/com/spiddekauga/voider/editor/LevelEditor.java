@@ -178,19 +178,24 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 		}
 
 		mLevel = level;
-		mLevel.addResource(mLevel);
-		mLevel.bindResources();
 
-		clearTools();
+		if (mLevel != null) {
+			mLevel.addResource(mLevel);
+			mLevel.bindResources();
 
-		// Reset camera position to the start
-		if (!sameLevel) {
-			mCamera.position.x = mLevel.getDef().getStartXCoord() + mCamera.viewportWidth * 0.5f;
-			mCamera.update();
+
+			clearTools();
+
+			// Reset camera position to the start
+			if (!sameLevel) {
+				mCamera.position.x = mLevel.getDef().getStartXCoord() + mCamera.viewportWidth * 0.5f;
+				mCamera.update();
+			}
+			mScroller.stop();
+
+			createResourceBodies();
+
 		}
-		mScroller.stop();
-
-		createResourceBodies();
 
 		mInvoker.dispose();
 

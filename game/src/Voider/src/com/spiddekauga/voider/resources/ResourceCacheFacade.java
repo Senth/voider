@@ -126,7 +126,7 @@ public class ResourceCacheFacade {
 		// Get all resource files
 		FileHandle dir = Gdx.files.external(dirPath);
 		if (!dir.exists() || !dir.isDirectory()) {
-			throw new UndefinedResourceTypeException(type);
+			return;
 		}
 
 		FileHandle[] files = dir.list();

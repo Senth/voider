@@ -51,7 +51,9 @@ public class Messages {
 		/** Switching to bullet editor */
 		BULLET_EDITOR("switching to the bullet editor"),
 		/** Switching to campaign editor */
-		CAMPAIGN_EDITOR("switching to the campaign editor")
+		CAMPAIGN_EDITOR("switching to the campaign editor"),
+		/** Returning to main menu */
+		MAIN_MENU("returning to main menu"),
 
 		;
 		/**

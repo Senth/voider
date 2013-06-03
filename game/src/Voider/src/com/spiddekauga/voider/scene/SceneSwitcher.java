@@ -105,7 +105,7 @@ public class SceneSwitcher {
 	 */
 	public static boolean returnTo(Class<? extends Scene> sceneType) {
 		boolean foundScene = false;
-		Iterator<Scene> sceneIt = mScenes.iterator();
+		Iterator<Scene> sceneIt = mScenes.descendingIterator();
 		while (sceneIt.hasNext()) {
 			Scene currentScene = sceneIt.next();
 
