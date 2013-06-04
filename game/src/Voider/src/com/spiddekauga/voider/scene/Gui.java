@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.utils.Disposable;
 import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.ErrorMessageShower;
 import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
@@ -20,7 +21,7 @@ import com.spiddekauga.voider.resources.ResourceNames;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public abstract class Gui {
+public abstract class Gui implements Disposable {
 	/**
 	 * Default constructor
 	 */
@@ -29,6 +30,14 @@ public abstract class Gui {
 		mMainTable.setKeepSize(true);
 		mMainTable.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		mMainTable.setName("MainTable");
+	}
+
+	@Override
+	public void dispose() {
+		if (mMainTable != null) {
+			mMainTable.dispose();
+			mMainTable = null;
+		}
 	}
 
 	/**

@@ -153,6 +153,19 @@ public class SceneSwitcher {
 	}
 
 	/**
+	 * Disposes the scene switcher
+	 */
+	public static void dispose() {
+		if (mScenes != null) {
+			for (Scene scene : mScenes) {
+				scene.onDispose();
+				scene.unloadResources();
+			}
+			mScenes.clear();
+		}
+	}
+
+	/**
 	 * Call when the window has been resized. This will resize all scenes
 	 * @param width new width of the window
 	 * @param height new height of the window

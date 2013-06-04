@@ -80,6 +80,7 @@ public class VoiderGame implements ApplicationListener {
 
 	@Override
 	public void dispose() {
+		SceneSwitcher.dispose();
 		ResourceCacheFacade.dispose();
 		Config.dispose();
 	}

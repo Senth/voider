@@ -53,6 +53,19 @@ public class EnemyEditorGui extends ActorGui {
 	}
 
 	@Override
+	public void dispose() {
+		mMovementTable.dispose();
+		mAiTable.dispose();
+		mWeaponTable.dispose();
+		mVisualTable.dispose();
+		mOptionTable.dispose();
+		mPathTable.dispose();
+		mCollisionTable.dispose();
+
+		super.dispose();
+	}
+
+	@Override
 	public void initGui() {
 		super.initGui();
 

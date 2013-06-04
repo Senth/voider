@@ -88,6 +88,17 @@ class LevelEditorGui extends EditorGui {
 	}
 
 	@Override
+	public void dispose() {
+		mPickupTable.dispose();
+		mStaticTerrainTable.dispose();
+		mEnemyTable.dispose();
+		mOptionTable.dispose();
+		mMainMenuTable.dispose();
+
+		super.dispose();
+	}
+
+	@Override
 	public void resetValues() {
 		// Main menu
 		switch (mLevelEditor.getSelectedTool()) {

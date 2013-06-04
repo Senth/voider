@@ -5,6 +5,7 @@ import java.util.Iterator;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.Pool.Poolable;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
@@ -16,7 +17,27 @@ import com.spiddekauga.voider.utils.Pools;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class Row implements Poolable {
+public class Row implements Poolable, Disposable {
+	/**
+	 * Default constructor
+	 */
+	public Row() {
+		mCells.clear();
+	}
+
+	@Override
+	public void dispose() {
+		if (mCells != null) {
+			for (Cell cell : mCells) {
+				cell.dispose();
+				Pools.cell.free(cell);
+			}
+			Pools.arrayList.free(mCells);
+			mCells = null;
+		}
+	}
+
+	@SuppressWarnings("unchecked")
 	@Override
 	public void reset() {
 		mPrefHeight = 0;
@@ -31,10 +52,16 @@ public class Row implements Poolable {
 		mEqualSize = false;
 		mUseCellAlign = false;
 
-		for (Cell cell : mCells) {
-			Pools.cell.free(cell);
+		if (mCells != null) {
+			for (Cell cell : mCells) {
+				cell.dispose();
+				Pools.cell.free(cell);
+			}
+			mCells.clear();
+		} else {
+			mCells = Pools.arrayList.obtain();
+			mCells.clear();
 		}
-		mCells.clear();
 
 		mAlign.horizontal = Horizontal.LEFT;
 		mAlign.vertical = Vertical.MIDDLE;
@@ -605,7 +632,8 @@ public class Row implements Poolable {
 	 * #mEqualSpacing is true */
 	private boolean mUseCellAlign = false;
 	/** All the columns in the table */
-	private ArrayList<Cell> mCells = new ArrayList<Cell>();
+	@SuppressWarnings("unchecked")
+	private ArrayList<Cell> mCells = Pools.arrayList.obtain();
 	/** Total preferred width of the actors in this row */
 	private float mPrefWidth = 0;
 	/** Preferred height of the actors in this row, this is set to the actor

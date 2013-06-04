@@ -34,6 +34,7 @@ public abstract class Scene extends InputAdapter {
 		mInputMultiplexer.addProcessor(1, this);
 	}
 
+
 	/**
 	 * Runs the scene. Clears the screen, renders it, and updates the scene elements.
 	 */
@@ -197,7 +198,7 @@ public abstract class Scene extends InputAdapter {
 	 * scene has resources.
 	 */
 	public void onDispose() {
-		// Does nothing
+		mGui.dispose();
 	}
 
 	/**

@@ -29,10 +29,13 @@ public class AlignTable extends WidgetGroup implements Disposable {
 
 	@Override
 	public void dispose() {
-		for (Row row : mRows) {
-			Pools.row.free(row);
+		if (mRows != null) {
+			for (Row row : mRows) {
+				row.dispose();
+				Pools.row.free(row);
+			}
+			mRows.clear();
 		}
-		mRows.clear();
 	}
 
 	/**
@@ -211,11 +214,11 @@ public class AlignTable extends WidgetGroup implements Disposable {
 		super.setWidth(width);
 
 		// Scaling needed?
-		if (getWidth() < getPrefWidth()) {
-			scaleToFit();
+		if (getWidth() < mPrefWidth) {
+			//			scaleToFit();
 		}
 		// Scale to 1
-		else if (oldWidth < getPrefWidth() && getHeight() >= getPrefHeight()) {
+		else if (oldWidth < mPrefWidth && getHeight() >= mPrefHeight) {
 			setScale(1);
 		}
 		invalidate();
@@ -237,10 +240,10 @@ public class AlignTable extends WidgetGroup implements Disposable {
 		super.setHeight(height);
 
 		// Scaling needed?
-		if (getHeight() < getPrefHeight()) {
-			scaleToFit();
+		if (getHeight() < mPrefHeight) {
+			//			scaleToFit();
 		}
-		else if (oldHeight < getPrefHeight() && getWidth() >= getPrefWidth()) {
+		else if (oldHeight < mPrefHeight && getWidth() >= mPrefWidth) {
 			setScale(1);
 		}
 		invalidate();
@@ -524,14 +527,14 @@ public class AlignTable extends WidgetGroup implements Disposable {
 
 		float widthScale = 1;
 		//		if (getPrefWidth() - getWidth() > mExtraWidth) {
-		widthScale = (getWidth() - getMinWidth()) / (getPrefWidth() - getMinWidth());
+		widthScale = (getWidth() - getMinWidth()) / (mPrefWidth - getMinWidth());
 		//		} else {
 		//		widthScale = getWidth() / getPrefWidth();
 		//		}
 
 		float heightScale = 1;
 		//		if (getPrefHeight() - getHeight() > mExtraHeight) {
-		heightScale = (getHeight() - getMinHeight()) / (getPrefHeight() - getMinHeight());
+		heightScale = (getHeight() - getMinHeight()) / (mPrefHeight - getMinHeight());
 		//		} else {
 		//		heightScale = getHeight() / getPrefHeight();
 		//		}

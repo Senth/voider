@@ -54,6 +54,8 @@ public class SplashScreen extends LoadingScene {
 	@Override
 	public void onDispose() {
 		ResourceCacheFacade.unload(ResourceNames.IMAGE_SPLASH_SCREEN);
+
+		super.onDispose();
 	}
 
 	/**
