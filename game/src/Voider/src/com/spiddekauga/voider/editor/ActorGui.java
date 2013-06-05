@@ -212,7 +212,7 @@ public abstract class ActorGui extends EditorGui {
 
 		// New
 		Button button;
-		if (Config.Gui.USE_TEXT_BUTTONS) {
+		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("New", textStyle);
 		} else {
 			/** @todo default stub image button */
@@ -249,7 +249,7 @@ public abstract class ActorGui extends EditorGui {
 		mMainTable.add(button);
 
 		// Save
-		if (Config.Gui.USE_TEXT_BUTTONS) {
+		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Save", textStyle);
 		} else {
 			/** @todo default stub image button */
@@ -264,7 +264,7 @@ public abstract class ActorGui extends EditorGui {
 		mMainTable.add(button);
 
 		// Load
-		if (Config.Gui.USE_TEXT_BUTTONS) {
+		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Load", textStyle);
 		} else {
 			/** @todo default stub image button */
@@ -299,7 +299,7 @@ public abstract class ActorGui extends EditorGui {
 		mMainTable.add(button);
 
 		// Duplicate
-		if (Config.Gui.USE_TEXT_BUTTONS) {
+		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Duplicate", textStyle);
 		} else {
 			/** @todo default stub image button */
@@ -335,7 +335,7 @@ public abstract class ActorGui extends EditorGui {
 
 		// Undo/Redo
 		if (mActorEditor.hasUndo()) {
-			if (Config.Gui.USE_TEXT_BUTTONS) {
+			if (Config.Gui.usesTextButtons()) {
 				button = new TextButton("Undo", textStyle);
 			} else {
 				/** @todo default stub image button */
@@ -349,7 +349,7 @@ public abstract class ActorGui extends EditorGui {
 			};
 			mMainTable.add(button);
 
-			if (Config.Gui.USE_TEXT_BUTTONS) {
+			if (Config.Gui.usesTextButtons()) {
 				button = new TextButton("Redo", textStyle);
 			} else {
 				/** @todo default stub image button */
@@ -434,7 +434,7 @@ public abstract class ActorGui extends EditorGui {
 		HideListener circleHider = null;
 		if (containsShape(ActorShapeTypes.CIRCLE, actorShapeTypes)) {
 			Button button;
-			if (Config.Gui.USE_TEXT_BUTTONS) {
+			if (Config.Gui.usesTextButtons()) {
 				button = new TextButton("Circle", toggleStyle);
 			} else {
 				/** @todo default stub image button */
@@ -461,7 +461,7 @@ public abstract class ActorGui extends EditorGui {
 		if (containsShape(ActorShapeTypes.RECTANGLE, actorShapeTypes)) {
 			hasRectangle = true;
 			Button button;
-			if (Config.Gui.USE_TEXT_BUTTONS) {
+			if (Config.Gui.usesTextButtons()) {
 				button = new TextButton("Rectangle", toggleStyle);
 			} else {
 				/** @todo default stub image button */
@@ -488,7 +488,7 @@ public abstract class ActorGui extends EditorGui {
 		if (containsShape(ActorShapeTypes.TRIANGLE, actorShapeTypes)) {
 			hasTriangle = true;
 			Button button;
-			if (Config.Gui.USE_TEXT_BUTTONS) {
+			if (Config.Gui.usesTextButtons()) {
 				button = new TextButton("Triangle", toggleStyle);
 			} else {
 				/** @todo default stub image button */
@@ -514,7 +514,7 @@ public abstract class ActorGui extends EditorGui {
 		HideListener customHider = null;
 		if (containsShape(ActorShapeTypes.CUSTOM, actorShapeTypes)) {
 			Button button;
-			if (Config.Gui.USE_TEXT_BUTTONS) {
+			if (Config.Gui.usesTextButtons()) {
 				button = new TextButton("Draw", toggleStyle);
 			} else {
 				/** @todo default stub image button */
@@ -660,7 +660,7 @@ public abstract class ActorGui extends EditorGui {
 
 			// Append
 			Button button;
-			if (Config.Gui.USE_TEXT_BUTTONS) {
+			if (Config.Gui.usesTextButtons()) {
 				button = new TextButton("Draw/Append", toggleStyle);
 			} else {
 				/** @todo default stub image button */
@@ -682,7 +682,7 @@ public abstract class ActorGui extends EditorGui {
 			mVisualTable.add(button);
 
 			// Add corner
-			if (Config.Gui.USE_TEXT_BUTTONS) {
+			if (Config.Gui.usesTextButtons()) {
 				button = new TextButton("Add corner", toggleStyle);
 			} else {
 				/** @todo default stub image button */
@@ -704,7 +704,7 @@ public abstract class ActorGui extends EditorGui {
 			mVisualTable.add(button);
 
 			// Move corner
-			if (Config.Gui.USE_TEXT_BUTTONS) {
+			if (Config.Gui.usesTextButtons()) {
 				button = new TextButton("Move corner", toggleStyle);
 			} else {
 				/** @todo default stub image button */
@@ -727,7 +727,7 @@ public abstract class ActorGui extends EditorGui {
 
 			// Remove corner
 			mVisualTable.row();
-			if (Config.Gui.USE_TEXT_BUTTONS) {
+			if (Config.Gui.usesTextButtons()) {
 				button = new TextButton("Remove corner", toggleStyle);
 			} else {
 				/** @todo default stub image button */
@@ -749,7 +749,7 @@ public abstract class ActorGui extends EditorGui {
 			mVisualTable.add(button);
 
 			// Add Remove (draw/erase)
-			if (Config.Gui.USE_TEXT_BUTTONS) {
+			if (Config.Gui.usesTextButtons()) {
 				button = new TextButton("Draw/Erase", toggleStyle);
 			} else {
 				/** @todo default stub image button */
@@ -771,7 +771,7 @@ public abstract class ActorGui extends EditorGui {
 			mVisualTable.add(button);
 
 			// Move shape
-			if (Config.Gui.USE_TEXT_BUTTONS) {
+			if (Config.Gui.usesTextButtons()) {
 				button = new TextButton("Move shape", toggleStyle);
 			} else {
 				/** @todo default stub image button */
@@ -793,7 +793,7 @@ public abstract class ActorGui extends EditorGui {
 			mVisualTable.add(button);
 
 			// Set center
-			if (Config.Gui.USE_TEXT_BUTTONS) {
+			if (Config.Gui.usesTextButtons()) {
 				button = new TextButton("Set center", toggleStyle);
 			} else {
 				/** @todo default stub image button */
@@ -818,7 +818,7 @@ public abstract class ActorGui extends EditorGui {
 
 
 			mVisualTable.row(Horizontal.RIGHT, Vertical.TOP);
-			if (Config.Gui.USE_TEXT_BUTTONS) {
+			if (Config.Gui.usesTextButtons()) {
 				button = new TextButton("Reset center", toggleStyle);
 			} else {
 				/** @todo default stub image button */

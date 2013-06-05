@@ -27,15 +27,30 @@ public class AlignTable extends WidgetGroup implements Disposable {
 		setTouchable(Touchable.enabled);
 	}
 
+	/**
+	 * Disposes the rows, cells, and all actors inside the table
+	 * @see #dispose(boolean) if you want the ability to save the actors.
+	 */
 	@Override
 	public void dispose() {
+		dispose(false);
+	}
+
+	/**
+	 * Disposes the rows and cells of the table, the actors can be saved
+	 * @param disposeActors true if you want to call dispose() on
+	 * the actors.
+	 */
+	public void dispose(boolean disposeActors) {
+		mDisposing = true;
 		if (mRows != null) {
 			for (Row row : mRows) {
-				row.dispose();
+				row.dispose(disposeActors);
 				Pools.row.free(row);
 			}
 			mRows.clear();
 		}
+		mDisposing = false;
 	}
 
 	/**
@@ -428,20 +443,6 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	}
 
 	/**
-	 * Clears the table
-	 * @note this does not dispose the rows in a correct manner. You have to
-	 * do this manually. This can be useful if you want reorder some rows/columns
-	 * and save the actors manually.
-	 */
-	@Override
-	public void clear() {
-		super.clear();
-		mRows.clear();
-
-		invalidate();
-	}
-
-	/**
 	 * Makes the table keep its size (that was set through #setSize(float,float), #setWidth(float), or
 	 * #setHeight(float)) after the table has been invalidated. I.e. it will not resize the table to fit
 	 * the contents.
@@ -459,8 +460,8 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	public boolean removeActor(Actor actor) {
 		boolean removed = super.removeActor(actor);
 
-		// Remove the cell the actor was in
-		if (removed) {
+		// Remove the cell the actor was in (not if we're disposing)
+		if (removed && !mDisposing) {
 			Iterator<Row> rowIt = mRows.iterator();
 			while (rowIt.hasNext()) {
 				Row row = rowIt.next();
@@ -469,6 +470,7 @@ public class AlignTable extends WidgetGroup implements Disposable {
 
 				if (row.getCellCount() == 0) {
 					rowIt.remove();
+					Pools.row.free(row);
 				}
 			}
 
@@ -565,6 +567,8 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	private boolean mScalable = true;
 	/** If the table shall keep size after layout, or it shall resize itself */
 	private boolean mKeepSize = false;
+	/** If we're currently disposing */
+	private boolean mDisposing = false;
 	/** Default cell padding */
 	private Padding mCellPaddingDefault = new Padding();
 	/** Default row padding */

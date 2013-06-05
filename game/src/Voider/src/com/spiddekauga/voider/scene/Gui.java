@@ -36,8 +36,8 @@ public abstract class Gui implements Disposable {
 	public void dispose() {
 		if (mMainTable != null) {
 			mMainTable.dispose();
-			mMainTable = null;
 		}
+		mInitialized = false;
 	}
 
 	/**
@@ -176,7 +176,7 @@ public abstract class Gui implements Disposable {
 	 */
 	public void initGui() {
 		MsgBoxExecuter.fadeDuration = 0.01f;
-		if (ResourceCacheFacade.isLoaded(ResourceNames.UI_GENERAL)) {
+		if (ResourceCacheFacade.isLoaded(ResourceNames.UI_GENERAL) && mErrorMessageShower == null) {
 			mErrorMessageShower = new ErrorMessageShower(mStage);
 		}
 		mInitialized = true;
@@ -249,7 +249,7 @@ public abstract class Gui implements Disposable {
 	 * @param outerTable the table to clear and then add innerTable to.
 	 */
 	protected static void addInnerTable(AlignTable innerTable, AlignTable outerTable) {
-		outerTable.clear();
+		outerTable.dispose(false);
 
 		if (innerTable != null) {
 			outerTable.add(innerTable);

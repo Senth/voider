@@ -43,6 +43,7 @@ public class Config {
 			/** Maximum number of bullets */
 			public final static int BULLETS_MAX = 1000;
 		}
+
 		/**
 		 * Enemies
 		 */
@@ -54,6 +55,7 @@ public class Config {
 			/** Default deactivate time for AI enemies */
 			public final static float DEACTIVATE_TIME_DEFAULT = 20;
 		}
+
 		/**
 		 * Pickups
 		 */
@@ -61,6 +63,7 @@ public class Config {
 			/** Default radius for the pickups */
 			public final static float RADIUS = 2;
 		}
+
 		/**
 		 * Static terrain
 		 */
@@ -92,7 +95,7 @@ public class Config {
 				byte[] hashedFileKey = sha.digest(FILE_KEY_BYTES);
 
 				// Use only the first 128 bits
-				hashedFileKey = Arrays.copyOf(hashedFileKey,  16);
+				hashedFileKey = Arrays.copyOf(hashedFileKey, 16);
 
 				mFileKey = new SecretKeySpec(hashedFileKey, "AES");
 			} catch (NoSuchAlgorithmException e) {
@@ -103,6 +106,7 @@ public class Config {
 
 		/**
 		 * Returns the file key
+		 * 
 		 * @return key for encrypting/decrypting files
 		 */
 		public static SecretKeySpec getFileKey() {
@@ -110,7 +114,8 @@ public class Config {
 		}
 
 		/** Salt for file key */
-		private static final byte[] FILE_KEY_BYTES = {15, 35, 68, 86, 57, 2, 99, 105, 127, -38, -100, -35, 35, 48, 68, -79, 95, -22, 0, 15, 0, 0, 98, 15, 27, 35};
+		private static final byte[] FILE_KEY_BYTES = { 15, 35, 68, 86, 57, 2, 99, 105, 127, -38, -100, -35, 35, 48, 68, -79, 95, -22, 0, 15, 0, 0,
+			98, 15, 27, 35 };
 		/** The actual file key */
 		private static SecretKeySpec mFileKey = null;
 	}
@@ -197,8 +202,9 @@ public class Config {
 			 * Enemy movement
 			 */
 			public static class Movement {
-				/** How long time ONCE enemy should have reached the goal before it is reset.
-				 * In EnemyEditor */
+				/**
+				 * How long time ONCE enemy should have reached the goal before it is reset. In EnemyEditor
+				 */
 				public final static float PATH_ONCE_RESET_TIME = 2;
 				/** Minimum speed of enemies */
 				public final static float MOVE_SPEED_MIN = 0.5f;
@@ -369,8 +375,9 @@ public class Config {
 			public final static float LEVEL_SPEED_DEFAULT = 5;
 			/** Step size of level speeed */
 			public final static float LEVEL_SPEED_STEP_SIZE = 1;
-			/** Color of above and below the actual level, so the player can see
-			 * that this doesn't below to the level. */
+			/**
+			 * Color of above and below the actual level, so the player can see that this doesn't below to the level.
+			 */
 			public final static Color ABOVE_BELOW_COLOR = new Color(1, 1, 1, 0.1f);
 		}
 
@@ -379,7 +386,7 @@ public class Config {
 		 */
 		public static class Path {
 			/** Vector of default path (only one corner) */
-			public final static Vector2 DEFAULT_ADD_PATH = new Vector2(-1,0);
+			public final static Vector2 DEFAULT_ADD_PATH = new Vector2(-1, 0);
 		}
 
 		/**
@@ -406,7 +413,7 @@ public class Config {
 			public final static float COOLDOWN_STEP_SIZE = 0.1f;
 			/** Minimum bullet damage */
 			public final static float DAMAGE_MIN = 1;
-			/** Maximum bullet damage  */
+			/** Maximum bullet damage */
 			public final static float DAMAGE_MAX = 100;
 			/** Default bullet damage */
 			public final static float DAMAGE_DEFAULT = 5;
@@ -424,7 +431,7 @@ public class Config {
 		public final static int NAME_LENGTH_MAX = 16;
 		/** Maximum length of description */
 		public final static int DESCRIPTION_LENGTH_MAX = 256;
-		/** Maximum length of story  */
+		/** Maximum length of story */
 		public final static int STORY_LENGTH_MAX = 512;
 
 		/** Corner pick color */
@@ -443,7 +450,7 @@ public class Config {
 		public final static float PICKING_CIRCLE_RADIUS_EDITOR = 1;
 		/** Radius of level editor picking circles */
 		public final static float PICKING_CIRCLE_RADIUS_LEVEL_EDITOR = 2;
-		/** Brush draw add color  */
+		/** Brush draw add color */
 		public final static Color BRUSH_ADD_COLOR = Color.GREEN;
 		/** Brush erase color */
 		public final static Color BRUSH_ERASE_COLOR = Color.RED;
@@ -496,12 +503,14 @@ public class Config {
 		public final static float HEIGHT = 480;
 		/** World scaling factor */
 		public final static float WORLD_SCALE = 0.1f;
-		/** How much bigger of the screen is shown in height from
-		 * the regular scale. E.g. 3 will show the same amount of free
-		 * space above and below the level */
+		/**
+		 * How much bigger of the screen is shown in height from the regular scale. E.g. 3 will show the same amount of
+		 * free space above and below the level
+		 */
 		public final static float LEVEL_EDITOR_HEIGHT_SCALE = 2;
-		/** Level editor scale, this allows the player to see above and below
-		 * the level */
+		/**
+		 * Level editor scale, this allows the player to see above and below the level
+		 */
 		public final static float LEVEL_EDITOR_SCALE = WORLD_SCALE * LEVEL_EDITOR_HEIGHT_SCALE;
 	}
 
@@ -527,8 +536,26 @@ public class Config {
 		public final static float ERROR_MESSAGE_FADE_OUT_DURATION = 1.0f;
 		/** Time to display error message per character */
 		public final static float ERROR_MESSAGE_TIME_PER_CHARACTER = 0.08f;
-		/** Use text instead of images for editor buttons */
-		public final static boolean USE_TEXT_BUTTONS = false;
+
+		/**
+		 * @return true if we want to display text buttons instead of image buttons
+		 */
+		public static boolean usesTextButtons() {
+			return mUseTextButtons;
+		}
+
+		/**
+		 * Sets if we want to display text or image buttons
+		 * 
+		 * @param usesText
+		 *            set to true to use text buttons, false for image buttons
+		 */
+		public static void setUseTextButtons(boolean usesText) {
+			mUseTextButtons = usesText;
+		}
+
+		/** If we're using text buttons instead of images */
+		private static boolean mUseTextButtons = true;
 	}
 
 	/**
@@ -555,11 +582,13 @@ public class Config {
 		public final static float SPLASH_SCREEN_EXIT_TIME = 0.1f;
 	}
 
-	/** Revision of the game, as in code. This allows files of older revisions
-	 * to be loaded into new revisions */
+	/**
+	 * Revision of the game, as in code. This allows files of older revisions to be loaded into new revisions
+	 */
 	public final static int REVISION = 1;
 	/** If debugging tests shall be activate */
 	public final static boolean DEBUG_TESTS = true;
+
 	/**
 	 * Private constructor so that no instance can be created
 	 */

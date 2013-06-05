@@ -531,9 +531,11 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 			((EditorGui)mGui).showMainMenu();
 		}
 		/** @todo remove test buttons */
+		// Toggle GUI/text buttons
 		else if (keycode == Input.Keys.F5) {
-			String message = "This is an error message";
-			mGui.showErrorMessage(message);
+			Config.Gui.setUseTextButtons(!Config.Gui.usesTextButtons());
+			mGui.dispose();
+			mGui.initGui();
 		} else if (keycode== Input.Keys.F6) {
 			String message = "This is a longer error message with more text, a lot more text, see if it will wrap correctly later...";
 			mGui.showErrorMessage(message);

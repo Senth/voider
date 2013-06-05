@@ -5,7 +5,6 @@ import java.util.Iterator;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.Pool.Poolable;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
@@ -17,7 +16,7 @@ import com.spiddekauga.voider.utils.Pools;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class Row implements Poolable, Disposable {
+public class Row implements Poolable {
 	/**
 	 * Default constructor
 	 */
@@ -25,11 +24,14 @@ public class Row implements Poolable, Disposable {
 		mCells.clear();
 	}
 
-	@Override
-	public void dispose() {
+	/**
+	 * Disposes all cells but can save the actors inside the cells.
+	 * @param disposeActor true if you want to call dispose() on the actors
+	 */
+	public void dispose(boolean disposeActor) {
 		if (mCells != null) {
 			for (Cell cell : mCells) {
-				cell.dispose();
+				cell.dispose(disposeActor);
 				Pools.cell.free(cell);
 			}
 			Pools.arrayList.free(mCells);
@@ -54,7 +56,7 @@ public class Row implements Poolable, Disposable {
 
 		if (mCells != null) {
 			for (Cell cell : mCells) {
-				cell.dispose();
+				cell.dispose(true);
 				Pools.cell.free(cell);
 			}
 			mCells.clear();
@@ -404,7 +406,9 @@ public class Row implements Poolable, Disposable {
 			Cell cell = cellIt.next();
 
 			if (cell.containsActor(actor)) {
+				cell.setActor(null);
 				cellIt.remove();
+				Pools.cell.free(cell);
 			}
 		}
 	}

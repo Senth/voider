@@ -183,7 +183,7 @@ public class EnemyEditorGui extends ActorGui {
 		// Movement
 		GuiCheckCommandCreator menuChecker = new GuiCheckCommandCreator(mInvoker);
 		Button button;
-		if (Config.Gui.USE_TEXT_BUTTONS) {
+		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Movement", textToggleStyle);
 		} else {
 			/** @todo default stub image button */
@@ -197,7 +197,7 @@ public class EnemyEditorGui extends ActorGui {
 		new TooltipListener(button, "", Messages.Tooltip.Enemy.Menu.MOVEMENT);
 
 		// Weapons
-		if (Config.Gui.USE_TEXT_BUTTONS) {
+		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Weapons", textToggleStyle);
 		} else {
 			/** @todo default stub image button */
@@ -211,7 +211,7 @@ public class EnemyEditorGui extends ActorGui {
 		new TooltipListener(button, "", Messages.Tooltip.Enemy.Menu.WEAPON);
 
 		// Visuals
-		if (Config.Gui.USE_TEXT_BUTTONS) {
+		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Visuals", textToggleStyle);
 		} else {
 			/** @todo default stub image button */
@@ -225,7 +225,7 @@ public class EnemyEditorGui extends ActorGui {
 		new TooltipListener(button, "Visuals", Messages.replaceName(Messages.Tooltip.Actor.Menu.VISUALS, "enemy"));
 
 		// Options
-		if (Config.Gui.USE_TEXT_BUTTONS) {
+		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Options", textToggleStyle);
 		} else {
 			/** @todo default stub image button */
@@ -239,7 +239,7 @@ public class EnemyEditorGui extends ActorGui {
 		new TooltipListener(button, "Options", Messages.replaceName(Messages.Tooltip.Actor.Menu.OPTIONS, "enemy"));
 
 		// Collision
-		if (Config.Gui.USE_TEXT_BUTTONS) {
+		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Collision", textToggleStyle);
 		} else {
 			/** @todo default stub image button */
@@ -356,7 +356,7 @@ public class EnemyEditorGui extends ActorGui {
 		// Turning
 		mPathTable.row().setScalable(false);
 		Button button;
-		if (Config.Gui.USE_TEXT_BUTTONS) {
+		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Turning speed OFF", textToggleStyle);
 		} else {
 			/** @todo default stub image button */
@@ -467,7 +467,7 @@ public class EnemyEditorGui extends ActorGui {
 
 		// Random movement
 		mAiTable.row();
-		if (Config.Gui.USE_TEXT_BUTTONS) {
+		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Random Movement OFF", textToggleStyle);
 		} else {
 			/** @todo default stub image button */
@@ -573,7 +573,7 @@ public class EnemyEditorGui extends ActorGui {
 		mWeaponTable.setScalable(false);
 
 		Button button;
-		if (Config.Gui.USE_TEXT_BUTTONS) {
+		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Weapons OFF", textToggleStyle);
 		} else {
 			/** @todo default stub image button */
@@ -605,7 +605,7 @@ public class EnemyEditorGui extends ActorGui {
 		mWeaponTable.row();
 		GuiCheckCommandCreator weaponMenuChecker = new GuiCheckCommandCreator(mInvoker);
 		ButtonGroup buttonGroup = new ButtonGroup();
-		if (Config.Gui.USE_TEXT_BUTTONS) {
+		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Bullet", textToggleStyle);
 		} else {
 			/** @todo default stub image button */
@@ -619,7 +619,7 @@ public class EnemyEditorGui extends ActorGui {
 		HideListener bulletHider = new HideListener(button, true);
 		weaponInnerHider.addChild(bulletHider);
 
-		if (Config.Gui.USE_TEXT_BUTTONS) {
+		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Aim", textToggleStyle);
 		} else {
 			/** @todo default stub image button */
@@ -645,7 +645,7 @@ public class EnemyEditorGui extends ActorGui {
 		mWidgets.weapon.bulletName = label;
 		bulletTable.add(label);
 
-		if (Config.Gui.USE_TEXT_BUTTONS) {
+		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Select bullet type", textButtonStyle);
 		} else {
 			/** @todo default stub image button */
@@ -758,7 +758,7 @@ public class EnemyEditorGui extends ActorGui {
 		// Aim on what?
 		mWeaponTable.row();
 		GuiCheckCommandCreator aimChecker = new GuiCheckCommandCreator(mInvoker);
-		if (Config.Gui.USE_TEXT_BUTTONS) {
+		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("On Player", textToggleStyle);
 		} else {
 			/** @todo default stub image button */
@@ -780,7 +780,7 @@ public class EnemyEditorGui extends ActorGui {
 			}
 		};
 
-		if (Config.Gui.USE_TEXT_BUTTONS) {
+		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Move dir", textToggleStyle);
 		} else {
 			/** @todo default stub image button */
@@ -802,7 +802,7 @@ public class EnemyEditorGui extends ActorGui {
 		};
 
 		mWeaponTable.row();
-		if (Config.Gui.USE_TEXT_BUTTONS) {
+		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("In front of player", textToggleStyle);
 		} else {
 			/** @todo default stub image button */
@@ -823,7 +823,7 @@ public class EnemyEditorGui extends ActorGui {
 			}
 		};
 
-		if (Config.Gui.USE_TEXT_BUTTONS) {
+		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Rotate", textToggleStyle);
 		} else {
 			/** @todo default stub image button */

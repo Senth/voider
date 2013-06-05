@@ -104,7 +104,7 @@ public class BulletEditorGui extends ActorGui {
 		// Visual
 		GuiCheckCommandCreator menuChecker = new GuiCheckCommandCreator(mInvoker);
 		Button button;
-		if (Config.Gui.USE_TEXT_BUTTONS) {
+		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Visuals", textToggleStyle);
 		} else {
 			/** @todo default stub image button */
@@ -118,7 +118,7 @@ public class BulletEditorGui extends ActorGui {
 		new TooltipListener(button, "Visuals", Messages.replaceName(Messages.Tooltip.Actor.Menu.VISUALS, "bullet"));
 
 		// Weapon
-		if (Config.Gui.USE_TEXT_BUTTONS) {
+		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Weapon", textToggleStyle);
 		} else {
 			/** @todo default stub image button */
@@ -131,7 +131,7 @@ public class BulletEditorGui extends ActorGui {
 		mWeaponHider.setButton(button);
 
 		// Options
-		if (Config.Gui.USE_TEXT_BUTTONS) {
+		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Options", textToggleStyle);
 		} else {
 			/** @todo default stub image button */

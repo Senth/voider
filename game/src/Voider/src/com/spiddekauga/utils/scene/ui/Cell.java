@@ -16,7 +16,7 @@ import com.spiddekauga.voider.utils.Pools;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class Cell implements Poolable, Disposable {
+public class Cell implements Poolable {
 	/**
 	 * Sets the alignment of this cell
 	 * @param horizontal the horizontal alignment
@@ -29,17 +29,28 @@ public class Cell implements Poolable, Disposable {
 		return this;
 	}
 
-	@Override
-	public void dispose() {
-		if (mActor instanceof Disposable) {
-			((Disposable) mActor).dispose();
+	/**
+	 * Disposes the cell, the actor can be saved
+	 * @param disposeActor true if you want to call dispose() on the actor
+	 */
+	public void dispose(boolean disposeActor) {
+		if (mActor != null) {
+			mActor.remove();
+
+			if (disposeActor) {
+				mActor.clearActions();
+				if (mActor instanceof Disposable) {
+					((Disposable) mActor).dispose();
+				}
+			}
 		}
+
 		mActor = null;
 	}
 
 	@Override
 	public void reset() {
-		dispose();
+		dispose(true);
 		mAlign.horizontal = Horizontal.LEFT;
 		mAlign.vertical = Vertical.MIDDLE;
 		mScalable = true;
