@@ -62,6 +62,7 @@ class LevelEditorGui extends EditorGui {
 		mMainTable.setRowAlign(Horizontal.RIGHT, Vertical.TOP);
 		mMainTable.setCellPaddingDefault(1, 1, 1, 1);
 		mMenuTable.setPreferences(mMainTable);
+		mMenuTable.setName("Menu");
 		mPickupTable.setPreferences(mMainTable);
 		mPickupTable.setRowAlign(Horizontal.RIGHT, Vertical.MIDDLE);
 		mStaticTerrainTable.setPreferences(mMainTable);
@@ -513,11 +514,6 @@ class LevelEditorGui extends EditorGui {
 			}
 		};
 		mMenuTable.add(button);
-
-		mMainTable.add(mMenuTable);
-		mMainTable.setTransform(true);
-
-		mMainTable.invalidate();
 	}
 
 	/**
@@ -1494,12 +1490,14 @@ class LevelEditorGui extends EditorGui {
 	 * @param toolTable the tool's table we want to activate
 	 */
 	private void switchTool(AlignTable toolTable) {
-		mMainTable.dispose(false);
-		toolTable.invalidate();
-		mMainTable.add(mMenuTable);
-		mMainTable.row();
-		mMainTable.add(toolTable);
-		mMainTable.invalidate();
+		if (mInitialized) {
+			mMainTable.dispose(false);
+			toolTable.invalidate();
+			mMainTable.add(mMenuTable);
+			mMainTable.row();
+			mMainTable.add(toolTable);
+			mMainTable.invalidate();
+		}
 	}
 
 	/** Wrapper for what tool is currently active */
