@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector2;
@@ -392,6 +393,12 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 		// Main menu
 		else if (KeyHelper.isBackPressed(keycode)) {
 			((EditorGui)mGui).showMainMenu();
+		}
+		/** @todo remove test keys */
+		else if (keycode == Input.Keys.F5) {
+			Config.Gui.setUseTextButtons(!Config.Gui.usesTextButtons());
+			mGui.dispose();
+			mGui.initGui();
 		}
 
 		return false;

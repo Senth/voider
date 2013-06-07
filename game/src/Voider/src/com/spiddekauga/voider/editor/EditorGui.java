@@ -32,6 +32,13 @@ import com.spiddekauga.voider.utils.Messages.UnsavedActions;
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
 public abstract class EditorGui extends Gui {
+	@Override
+	public void dispose() {
+		mMainMenuTable.dispose();
+
+		super.dispose();
+	}
+
 	/**
 	 * Initializes the main menu that is shown when pressed back
 	 * @param editor the current editor

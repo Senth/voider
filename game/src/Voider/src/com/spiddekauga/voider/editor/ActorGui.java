@@ -52,6 +52,15 @@ import com.spiddekauga.voider.utils.Messages.UnsavedActions;
 public abstract class ActorGui extends EditorGui {
 
 	@Override
+	public void dispose() {
+		mVisualTable.dispose();
+		mCollisionTable.dispose();
+		mOptionTable.dispose();
+
+		super.dispose();
+	}
+
+	@Override
 	public void resetValues() {
 		// Visuals
 		mWidgets.visual.startAngle.setValue(mActorEditor.getStartingAngle());

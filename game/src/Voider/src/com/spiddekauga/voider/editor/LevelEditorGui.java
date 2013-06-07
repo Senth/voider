@@ -96,7 +96,6 @@ class LevelEditorGui extends EditorGui {
 		mStaticTerrainTable.dispose();
 		mEnemyTable.dispose();
 		mOptionTable.dispose();
-		mMainMenuTable.dispose();
 		mMenuTable.dispose();
 
 		super.dispose();

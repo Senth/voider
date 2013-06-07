@@ -70,6 +70,14 @@ public class BulletEditorGui extends ActorGui {
 	}
 
 	@Override
+	public void dispose() {
+		mMainTable.dispose();
+		mWeaponTable.dispose();
+
+		super.dispose();
+	}
+
+	@Override
 	public void resetValues() {
 		super.resetValues();
 
