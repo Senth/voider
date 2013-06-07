@@ -1,0 +1,51 @@
+[General]
+new
+save
+load
+duplicate
+options - general options
+add
+remove
+move
+select_type - selects a type, do we need different for each type?
+select
+ok - as in message box OK - CANCEL
+cancel - as in message box CANCEL
+enabled - when something is enabled
+disabled - when something is disabled
+circle - circle shape
+rectangle
+triangle
+draw_custom_shape
+
+[LevelEditor]
+run - test run the game
+static_terrain - static terrain tools
+pickup - pick up tools
+enemy - enemy options
+path
+path_back_and_forth
+path_loop
+path_once
+trigger
+
+[EnemyEditor]
+movement
+movement_path
+movement_stationary
+movement_ai
+movement_turning_speed
+movement_random
+bullet
+aim
+aim_on_player
+aim_move_dir
+aim_front_of_player
+aim_rotate
+
+[Draw]
+draw_append - draw shape
+add_corner - adds a corner
+draw_erase - adds/erases to/from the shape
+set_center - sets the center of the shape
+reset_center
