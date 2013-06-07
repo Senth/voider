@@ -32,7 +32,7 @@ com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
 	},
 	toggle: {
 		down: button-default-down,
-		checked: button-default-down,
+		checked: button-default-checked,
 		up: button-default-up,
 		disabled: button-default-disabled,
 		over: button-default-over,

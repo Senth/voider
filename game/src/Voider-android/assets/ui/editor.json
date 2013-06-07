@@ -10,7 +10,7 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 	},
 	default-toggle: {
 		down: button-default-down,
-		checked: button-default-down,
+		checked: button-default-checked,
 		up: button-default-up,
 		disabled: button-default-disabled,
 		over: button-default-over,
@@ -18,7 +18,386 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageDown: stub,
 		imageChecked: stub,
 		imageUp: stub
+	},
+	default-tab: {
+		down: tab-default-down,
+		checked: tab-default-checked,
+		up: tab-default-up,
+		disabled: tab-default-disabled,
+		over: tab-default-over,
+		checkedOver: tab-default-checked-over,
+		imageDown: stub,
+		imageChecked: stub,
+		imageUp: stub
+	},
+	
+	new: {
+		down: button-default-down,
+		up: button-default-up,
+		disabled: button-default-disabled,
+		over: button-default-over,
+		imageDown: new,
+		imageUp: new
+	},
+
+	save: {
+		down: button-default-down,
+		up: button-default-up,
+		disabled: button-default-disabled,
+		over: button-default-over,
+		imageDown: save,
+		imageUp: save
+	},
+
+	load: {
+		down: button-default-down,
+		up: button-default-up,
+		disabled: button-default-disabled,
+		over: button-default-over,
+		imageDown: load,
+		imageUp: load
+	},
+
+	duplicate: {
+		down: button-default-down,
+		up: button-default-up,
+		disabled: button-default-disabled,
+		over: button-default-over,
+		imageDown: duplicate,
+		imageUp: duplicate
+	},
+	
+	options: {
+		down: tab-default-down,
+		checked: tab-default-checked,
+		up: tab-default-up,
+		disabled: tab-default-disabled,
+		over: tab-default-over,
+		checkedOver: tab-default-checked-over,
+		imageDown: options,
+		imageChecked: options,
+		imageUp: options
+	},
+	
+	add: {
+		down: button-default-down,
+		checked: button-default-checked,
+		up: button-default-up,
+		disabled: button-default-disabled,
+		over: button-default-over,
+		checkedOver: button-default-checked-over,
+		imageDown: add,
+		imageChecked: add,
+		imageUp: add
+	},
+	
+	remove: {
+		down: button-default-down,
+		checked: button-default-checked,
+		up: button-default-up,
+		disabled: button-default-disabled,
+		over: button-default-over,
+		checkedOver: button-default-checked-over,
+		imageDown: remove,
+		imageChecked: remove,
+		imageUp: remove
+	},
+	
+	move: {
+		down: button-default-down,
+		checked: button-default-checked,
+		up: button-default-up,
+		disabled: button-default-disabled,
+		over: button-default-over,
+		checkedOver: button-default-checked-over,
+		imageDown: move,
+		imageChecked: move,
+		imageUp: move
+	},
+	
+	select_type: {
+		down: button-default-down,
+		up: button-default-up,
+		disabled: button-default-disabled,
+		over: button-default-over,
+		imageDown: select_type,
+		imageUp: select_type
+	},
+	
+	select: {
+		down: button-default-down,
+		checked: button-default-checked,
+		up: button-default-up,
+		disabled: button-default-disabled,
+		over: button-default-over,
+		checkedOver: button-default-checked-over,
+		imageDown: select,
+		imageChecked: select,
+		imageUp: select
+	},
+	
+	ok: {
+		down: button-default-down,
+		up: button-default-up,
+		disabled: button-default-disabled,
+		over: button-default-over,
+		imageDown: ok,
+		imageUp: ok
+	},
+	
+	cancel: {
+		down: button-default-down,
+		up: button-default-up,
+		disabled: button-default-disabled,
+		over: button-default-over,
+		imageDown: cancel,
+		imageUp: cancel
+	},
+	
+	enabled_disabled: {
+		down: button-default-down,
+		checked: button-default-checked,
+		up: button-default-up,
+		disabled: button-default-disabled,
+		over: button-default-over,
+		checkedOver: button-default-checked-over,
+		imageDown: enabled,
+		imageChecked: enabled,
+		imageUp: disabled
+	},
+	
+	circle: {
+		down: tab-default-down,
+		checked: tab-default-checked,
+		up: tab-default-up,
+		disabled: tab-default-disabled,
+		over: tab-default-over,
+		checkedOver: tab-default-checked-over,
+		imageDown: circle,
+		imageChecked: circle,
+		imageUp: circle
+	},
+	
+	rectangle: {
+		down: tab-default-down,
+		checked: tab-default-checked,
+		up: tab-default-up,
+		disabled: tab-default-disabled,
+		over: tab-default-over,
+		checkedOver: tab-default-checked-over,
+		imageDown: rectangle,
+		imageChecked: rectangle,
+		imageUp: rectangle
+	},
+	
+	triangle: {
+		down: tab-default-down,
+		checked: tab-default-checked,
+		up: tab-default-up,
+		disabled: tab-default-disabled,
+		over: tab-default-over,
+		checkedOver: tab-default-checked-over,
+		imageDown: triangle,
+		imageChecked: triangle,
+		imageUp: triangle
+	},
+	
+	draw_custom_shape: {
+		down: tab-default-down,
+		checked: tab-default-checked,
+		up: tab-default-up,
+		disabled: tab-default-disabled,
+		over: tab-default-over,
+		checkedOver: tab-default-checked-over,
+		imageDown: draw_custom_shape,
+		imageChecked: draw_custom_shape,
+		imageUp: draw_custom_shape
+	},
+	
+	run: {
+		down: button-default-down,
+		up: button-default-up,
+		disabled: button-default-disabled,
+		over: button-default-over,
+		imageDown: run,
+		imageUp: run
+	},
+	
+	static_terrain: {
+		down: tab-default-down,
+		checked: tab-default-checked,
+		up: tab-default-up,
+		disabled: tab-default-disabled,
+		over: tab-default-over,
+		checkedOver: tab-default-checked-over,
+		imageDown: static_terrain,
+		imageChecked: static_terrain,
+		imageUp: static_terrain
+	},
+	
+	pickup: {
+		down: tab-default-down,
+		checked: tab-default-checked,
+		up: tab-default-up,
+		disabled: tab-default-disabled,
+		over: tab-default-over,
+		checkedOver: tab-default-checked-over,
+		imageDown: pickup,
+		imageChecked: pickup,
+		imageUp: pickup
+	},
+	
+	enemy: {
+		down: tab-default-down,
+		checked: tab-default-checked,
+		up: tab-default-up,
+		disabled: tab-default-disabled,
+		over: tab-default-over,
+		checkedOver: tab-default-checked-over,
+		imageDown: enemy,
+		imageChecked: enemy,
+		imageUp: enemy
+	},
+	
+	path: {
+		down: tab-default-down,
+		checked: tab-default-checked,
+		up: tab-default-up,
+		disabled: tab-default-disabled,
+		over: tab-default-over,
+		checkedOver: tab-default-checked-over,
+		imageDown: path,
+		imageChecked: path,
+		imageUp: path
+	},
+	
+	trigger: {
+		down: tab-default-down,
+		checked: tab-default-checked,
+		up: tab-default-up,
+		disabled: tab-default-disabled,
+		over: tab-default-over,
+		checkedOver: tab-default-checked-over,
+		imageDown: trigger,
+		imageChecked: trigger,
+		imageUp: trigger
+	},
+	
+	movement: {
+		down: tab-default-down,
+		checked: tab-default-checked,
+		up: tab-default-up,
+		disabled: tab-default-disabled,
+		over: tab-default-over,
+		checkedOver: tab-default-checked-over,
+		imageDown: movement,
+		imageChecked: movement,
+		imageUp: movement
+	},
+	
+	movement_turning_speed: {
+		down: button-default-down,
+		checked: button-default-checked,
+		up: button-default-up,
+		disabled: button-default-disabled,
+		over: button-default-over,
+		checkedOver: button-default-checked-over,
+		imageDown: movement_turning_speed,
+		imageChecked: movement_turning_speed,
+		imageUp: movement_turning_speed
+	},
+	
+	movement_random: {
+		down: button-default-down,
+		checked: button-default-checked,
+		up: button-default-up,
+		disabled: button-default-disabled,
+		over: button-default-over,
+		checkedOver: button-default-checked-over,
+		imageDown: movement_random,
+		imageChecked: movement_random,
+		imageUp: movement_random
+	},
+	
+	bullet: {
+		down: tab-default-down,
+		checked: tab-default-checked,
+		up: tab-default-up,
+		disabled: tab-default-disabled,
+		over: tab-default-over,
+		checkedOver: tab-default-checked-over,
+		imageDown: bullet,
+		imageChecked: bullet,
+		imageUp: bullet
+	},
+	
+	aim: {
+		down: tab-default-down,
+		checked: tab-default-checked,
+		up: tab-default-up,
+		disabled: tab-default-disabled,
+		over: tab-default-over,
+		checkedOver: tab-default-checked-over,
+		imageDown: aim,
+		imageChecked: aim,
+		imageUp: aim
+	},
+	
+	draw_append: {
+		down: button-default-down,
+		checked: button-default-checked,
+		up: button-default-up,
+		disabled: button-default-disabled,
+		over: button-default-over,
+		checkedOver: button-default-checked-over,
+		imageDown: draw_append,
+		imageChecked: draw_append,
+		imageUp: draw_append
+	},
+	
+	add_corner: {
+		down: button-default-down,
+		checked: button-default-checked,
+		up: button-default-up,
+		disabled: button-default-disabled,
+		over: button-default-over,
+		checkedOver: button-default-checked-over,
+		imageDown: add_corner,
+		imageChecked: add_corner,
+		imageUp: add_corner
+	},
+	
+	draw_erase: {
+		down: button-default-down,
+		checked: button-default-checked,
+		up: button-default-up,
+		disabled: button-default-disabled,
+		over: button-default-over,
+		checkedOver: button-default-checked-over,
+		imageDown: draw_erase,
+		imageChecked: draw_erase,
+		imageUp: draw_erase
+	},
+	
+	set_center: {
+		down: button-default-down,
+		checked: button-default-checked,
+		up: button-default-up,
+		disabled: button-default-disabled,
+		over: button-default-over,
+		checkedOver: button-default-checked-over,
+		imageDown: set_center,
+		imageChecked: set_center,
+		imageUp: set_center
+	},
+	
+	reset_center: {
+		down: button-default-down,
+		up: button-default-up,
+		disabled: button-default-disabled,
+		over: button-default-over,
+		imageDown: reset_center,
+		imageUp: reset_center
 	}
 }
-
 }

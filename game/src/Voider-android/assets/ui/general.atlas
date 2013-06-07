@@ -69,7 +69,7 @@ button-default-checked-over
   orig: 7, 7
   offset: 0, 0
   index: -1
-button-default-disabled
+button-default-checked
   rotate: false
   xy: 25, 6
   size: 7, 7
@@ -77,7 +77,7 @@ button-default-disabled
   orig: 7, 7
   offset: 0, 0
   index: -1
-button-default-down
+button-default-disabled
   rotate: false
   xy: 82, 15
   size: 7, 7
@@ -85,7 +85,7 @@ button-default-down
   orig: 7, 7
   offset: 0, 0
   index: -1
-button-default-over
+button-default-down
   rotate: false
   xy: 91, 24
   size: 7, 7
@@ -93,7 +93,7 @@ button-default-over
   orig: 7, 7
   offset: 0, 0
   index: -1
-button-default-up
+button-default-over
   rotate: false
   xy: 34, 6
   size: 7, 7
@@ -101,9 +101,65 @@ button-default-up
   orig: 7, 7
   offset: 0, 0
   index: -1
+button-default-up
+  rotate: false
+  xy: 91, 15
+  size: 7, 7
+  split: 3, 3, 3, 3
+  orig: 7, 7
+  offset: 0, 0
+  index: -1
+tab-default-checked-over
+  rotate: false
+  xy: 100, 24
+  size: 7, 7
+  split: 3, 3, 3, 3
+  orig: 7, 7
+  offset: 0, 0
+  index: -1
+tab-default-checked
+  rotate: false
+  xy: 43, 6
+  size: 7, 7
+  split: 3, 3, 3, 3
+  orig: 7, 7
+  offset: 0, 0
+  index: -1
+tab-default-disabled
+  rotate: false
+  xy: 100, 15
+  size: 7, 7
+  split: 3, 3, 3, 3
+  orig: 7, 7
+  offset: 0, 0
+  index: -1
+tab-default-down
+  rotate: false
+  xy: 109, 24
+  size: 7, 7
+  split: 3, 3, 3, 3
+  orig: 7, 7
+  offset: 0, 0
+  index: -1
+tab-default-over
+  rotate: false
+  xy: 52, 6
+  size: 7, 7
+  split: 3, 3, 3, 3
+  orig: 7, 7
+  offset: 0, 0
+  index: -1
+tab-default-up
+  rotate: false
+  xy: 109, 15
+  size: 7, 7
+  split: 3, 3, 3, 3
+  orig: 7, 7
+  offset: 0, 0
+  index: -1
 slider-background
   rotate: false
-  xy: 91, 14
+  xy: 118, 23
   size: 1, 8
   orig: 1, 8
   offset: 0, 0
