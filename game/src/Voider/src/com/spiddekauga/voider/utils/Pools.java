@@ -45,7 +45,7 @@ public class Pools {
 	public static Pool<Label> label = new Pool<Label>(Label.class, 10, 100) {
 		@Override
 		protected Label newObject() {
-			Skin skin = ResourceCacheFacade.get(ResourceNames.UI_EDITOR_BUTTONS);
+			Skin skin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
 			return new Label("", skin);
 		}
 	};

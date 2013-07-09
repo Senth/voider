@@ -494,9 +494,9 @@ public class Config {
 		/** Epsilon for box 2d */
 		private final static float EPSILON = 1.19209289550781250000e-7F;
 		/** Minimum length between two corners in a polygon */
-		public final static float EDGE_LENGTH_MIN = EPSILON * 1000;
+		public final static float EDGE_LENGTH_MIN = EPSILON * 1.1f;
 		/** Minimum area of a polygon shape */
-		public final static float POLYGON_AREA_MIN = EPSILON * 1000;
+		public final static float POLYGON_AREA_MIN = EPSILON * 1.1f;
 		/** Default width of the graphics */
 		public final static float WIDTH = 800;
 		/** Default height of the graphics */
