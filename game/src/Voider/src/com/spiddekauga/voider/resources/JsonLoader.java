@@ -34,9 +34,8 @@ public class JsonLoader<StoredType> extends AsynchronousAssetLoader<StoredType, 
 	}
 
 	@Override
-	public void loadAsync(AssetManager manager, String fileName, JsonParameter<StoredType> parameter) {
+	public void loadAsync(AssetManager manager, String fileName, FileHandle file, JsonParameter<StoredType> parameter) {
 		mStoredObject = null;
-		FileHandle file = resolve(fileName);
 
 		if (!file.exists()) {
 			throw new ResourceNotFoundException(fileName);
@@ -55,7 +54,7 @@ public class JsonLoader<StoredType> extends AsynchronousAssetLoader<StoredType, 
 	}
 
 	@Override
-	public StoredType loadSync(AssetManager manager, String fileName, JsonParameter<StoredType> parameter) {
+	public StoredType loadSync(AssetManager manager, String fileName, FileHandle file, JsonParameter<StoredType> parameter) {
 		return mStoredObject;
 	}
 
@@ -64,7 +63,7 @@ public class JsonLoader<StoredType> extends AsynchronousAssetLoader<StoredType, 
 	 */
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Array<AssetDescriptor> getDependencies(String fileName, JsonParameter<StoredType> parameter) {
+	public Array<AssetDescriptor> getDependencies(String fileName, FileHandle file, JsonParameter<StoredType> parameter) {
 		return null;
 	}
 

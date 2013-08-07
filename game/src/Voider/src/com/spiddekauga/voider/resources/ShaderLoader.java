@@ -24,7 +24,7 @@ public class ShaderLoader extends AsynchronousAssetLoader<ShaderProgram, ShaderP
 	}
 
 	@Override
-	public void loadAsync(AssetManager manager, String fileName, ShaderParameter parameter) {
+	public void loadAsync(AssetManager manager, String fileName, FileHandle file, ShaderParameter parameter) {
 		String vertexPath = fileName + ".vsh";
 		String fragmentPath = fileName + ".fsh";
 
@@ -38,7 +38,7 @@ public class ShaderLoader extends AsynchronousAssetLoader<ShaderProgram, ShaderP
 	}
 
 	@Override
-	public ShaderProgram loadSync(AssetManager manager, String fileName, ShaderParameter parameter) {
+	public ShaderProgram loadSync(AssetManager manager, String fileName, FileHandle file, ShaderParameter parameter) {
 		if (mFragmentShader != null && mVertexShader != null) {
 			return new ShaderProgram(mVertexShader, mFragmentShader);
 		} else {
@@ -48,7 +48,7 @@ public class ShaderLoader extends AsynchronousAssetLoader<ShaderProgram, ShaderP
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Array<AssetDescriptor> getDependencies(String fileName, ShaderParameter parameter) {
+	public Array<AssetDescriptor> getDependencies(String fileName, FileHandle file, ShaderParameter parameter) {
 		return null;
 	}
 

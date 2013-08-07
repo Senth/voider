@@ -61,7 +61,7 @@ public class SelectDefGui extends Gui {
 		mDefTable.setPreferences(mMainTable);
 		mDefTable.setKeepSize(true);
 
-		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.UI_EDITOR_BUTTONS);
+		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
 
 		//		LabelStyle labelStyle = editorSkin.get("default", LabelStyle.class);
 		TextFieldStyle textFieldStyle = editorSkin.get("default", TextFieldStyle.class);
@@ -105,7 +105,7 @@ public class SelectDefGui extends Gui {
 	 * Refills the definition table with only visible actors
 	 */
 	void refillDefTable() {
-		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.UI_EDITOR_BUTTONS);
+		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
 		TextButtonStyle toggleStyle = editorSkin.get("toggle", TextButtonStyle.class);
 
 
