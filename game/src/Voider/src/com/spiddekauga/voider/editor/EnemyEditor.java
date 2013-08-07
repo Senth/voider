@@ -594,13 +594,13 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 
 	@Override
 	public void setRotationSpeed(float rotationSpeed) {
-		mDef.setRotationSpeed(rotationSpeed);
+		mDef.setRotationSpeedDeg(rotationSpeed);
 		mActorSavedSinceLastEdit = false;
 	}
 
 	@Override
 	public float getRotationSpeed() {
-		return mDef.getRotationSpeed();
+		return mDef.getRotationSpeedDeg();
 	}
 
 	@Override

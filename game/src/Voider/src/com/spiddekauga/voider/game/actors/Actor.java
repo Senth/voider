@@ -820,7 +820,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 			if (mSkipRotate) {
 				mBody.setAngularVelocity(0);
 			} else {
-				mBody.setAngularVelocity(mDef.getRotationSpeed());
+				mBody.setAngularVelocity(mDef.getRotationSpeedRad());
 			}
 		}
 	}
@@ -1058,9 +1058,9 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	 */
 	private void reloadBody() {
 		if (!mSkipRotate) {
-			mBody.setAngularVelocity(mDef.getRotationSpeed());
+			mBody.setAngularVelocity(mDef.getRotationSpeedRad());
 			// Only set starting angle if we're not rotating
-			if (mDef.getRotationSpeed() == 0) {
+			if (mDef.getRotationSpeedRad() == 0) {
 				mBody.setTransform(mPosition, mDef.getStartAngle());
 			}
 			mBody.setType(mDef.getBodyDef().type);

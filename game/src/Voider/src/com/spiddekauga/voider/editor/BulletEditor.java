@@ -275,13 +275,13 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 
 	@Override
 	public void setRotationSpeed(float rotationSpeed) {
-		mDef.setRotationSpeed((float) Math.toRadians(rotationSpeed));
+		mDef.setRotationSpeedDeg(rotationSpeed);
 		mUnsaved = true;
 	}
 
 	@Override
 	public float getRotationSpeed() {
-		return (float) Math.toDegrees(mDef.getRotationSpeed());
+		return mDef.getRotationSpeedDeg();
 	}
 
 	@Override

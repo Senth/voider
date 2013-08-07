@@ -224,18 +224,34 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	/**
 	 * Sets the rotation speed of the actor. This might not work for
 	 * some actors that rotate the actor on their own...
-	 * @param rotationSpeed new rotation speed of the actor.
+	 * @param rotationSpeed new rotation speed of the actor. In radians.
 	 */
-	public void setRotationSpeed(float rotationSpeed) {
+	public void setRotationSpeedRad(float rotationSpeed) {
 		getBodyDef().angularVelocity = rotationSpeed;
 		mBodyChangeTime = GameTime.getTotalGlobalTimeElapsed();
 	}
 
 	/**
-	 * @return rotation speed of the actor
+	 * Sets the rotation speed of the actor. This might not work for
+	 * some actors that rotate the actor on their own...
+	 * @param rotationSpeed new rotation speed of the actor. In degrees
 	 */
-	public float getRotationSpeed() {
+	public void setRotationSpeedDeg(float rotationSpeed) {
+		setRotationSpeedRad(rotationSpeed * MathUtils.degreesToRadians);
+	}
+
+	/**
+	 * @return rotation speed of the actor, in radians
+	 */
+	public float getRotationSpeedRad() {
 		return getBodyDef().angularVelocity;
+	}
+
+	/**
+	 * @return rotation speed of the actor, in degrees
+	 */
+	public float getRotationSpeedDeg() {
+		return getRotationSpeedRad() * MathUtils.radiansToDegrees;
 	}
 
 	/** When the body was changed last time */
