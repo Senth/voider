@@ -264,13 +264,13 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 
 	@Override
 	public void setStartingAngle(float angle) {
-		mDef.setStartAngle((float)Math.toRadians(angle));
+		mDef.setStartAngleDeg(angle);
 		mUnsaved = true;
 	}
 
 	@Override
 	public float getStartingAngle() {
-		return (float)Math.toDegrees(mDef.getStartAngle());
+		return mDef.getStartAngleDeg();
 	}
 
 	@Override

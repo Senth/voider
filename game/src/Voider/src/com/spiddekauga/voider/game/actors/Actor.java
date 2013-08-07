@@ -1061,7 +1061,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 			mBody.setAngularVelocity(mDef.getRotationSpeedRad());
 			// Only set starting angle if we're not rotating
 			if (mDef.getRotationSpeedRad() == 0) {
-				mBody.setTransform(mPosition, mDef.getStartAngle());
+				mBody.setTransform(mPosition, mDef.getStartAngleRad());
 			}
 			mBody.setType(mDef.getBodyDef().type);
 		}

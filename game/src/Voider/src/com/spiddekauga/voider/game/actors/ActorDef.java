@@ -64,19 +64,33 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 
 	/**
 	 * Sets the starting angle of the actor
-	 * @param angle the starting angle
+	 * @param angle the starting angle, in radians
 	 */
-	public void setStartAngle(float angle) {
-		getBodyDef().angle = MathUtils.degreesToRadians * angle;
-
+	public void setStartAngleRad(float angle) {
+		getBodyDef().angle = angle;
 		mBodyChangeTime = GameTime.getTotalGlobalTimeElapsed();
+	}
+
+	/**
+	 * Sets the starting angle of the actor
+	 * @param angle the starting angle, in degrees
+	 */
+	public void setStartAngleDeg(float angle) {
+		setStartAngleRad(angle * MathUtils.degreesToRadians);
+	}
+
+	/**
+	 * @return starting angle of the actor (in radians)
+	 */
+	public float getStartAngleRad() {
+		return getBodyDef().angle;
 	}
 
 	/**
 	 * @return starting angle of the actor (in degrees)
 	 */
-	public float getStartAngle() {
-		return getBodyDef().angle;
+	public float getStartAngleDeg() {
+		return getStartAngleRad() * MathUtils.radiansToDegrees;
 	}
 
 	/**

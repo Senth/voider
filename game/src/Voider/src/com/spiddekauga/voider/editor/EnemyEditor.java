@@ -588,8 +588,13 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 
 	@Override
 	public void setStartingAngle(float angle) {
-		mDef.setStartAngle(angle);
+		mDef.setStartAngleDeg(angle);
 		mActorSavedSinceLastEdit = false;
+	}
+
+	@Override
+	public float getStartingAngle() {
+		return mDef.getStartAngleDeg();
 	}
 
 	@Override
@@ -611,11 +616,6 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	@Override
 	public DrawActorTool.States getDrawActorToolState() {
 		return null;
-	}
-
-	@Override
-	public float getStartingAngle() {
-		return mDef.getStartAngle();
 	}
 
 	/**
