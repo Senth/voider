@@ -149,6 +149,7 @@ public class JsonWrapper extends Json {
 					writeValue("radius", circle.getRadius());
 					break;
 
+
 				case Polygon: {
 					PolygonShape polygon = (PolygonShape)object;
 					if (polygon.getVertexCount() >= 3) {
@@ -167,6 +168,7 @@ public class JsonWrapper extends Json {
 					break;
 				}
 
+
 				case Edge:
 					EdgeShape edge = (EdgeShape)object;
 					Vector2 tempVector = Pools.vector2.obtain();
@@ -176,6 +178,7 @@ public class JsonWrapper extends Json {
 					writeValue("vertex2", tempVector);
 					Pools.vector2.free(tempVector);
 					break;
+
 
 				case Chain: {
 					ChainShape chainShape = (ChainShape)object;
@@ -235,6 +238,7 @@ public class JsonWrapper extends Json {
 					circle.setRadius(radius);
 					break;
 
+
 				case Polygon: {
 					Vector2[] vertices = readValue("vertices", Vector2[].class, jsonData);
 					PolygonShape polygon = new PolygonShape();
@@ -245,6 +249,7 @@ public class JsonWrapper extends Json {
 					break;
 				}
 
+
 				case Edge:
 					Vector2 vertex1 = readValue("vertex1", Vector2.class, jsonData);
 					Vector2 vertex2 = readValue("vertex2", Vector2.class, jsonData);
@@ -252,6 +257,7 @@ public class JsonWrapper extends Json {
 					newShape = edge;
 					edge.set(vertex1, vertex2);
 					break;
+
 
 				case Chain: {
 					Vector2[] vertices = readValue("vertices", Vector2[].class, jsonData);
