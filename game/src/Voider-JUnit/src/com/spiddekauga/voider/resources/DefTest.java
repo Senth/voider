@@ -15,7 +15,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.lwjgl.LwjglFiles;
 import com.badlogic.gdx.backends.lwjgl.LwjglNativesLoader;
 import com.badlogic.gdx.utils.ObjectMap;
-import com.spiddekauga.utils.Json;
+import com.spiddekauga.utils.JsonWrapper; import com.badlogic.gdx.utils.Json;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.actors.BulletActorDef;
 import com.spiddekauga.voider.game.actors.PickupActorDef;

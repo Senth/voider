@@ -6,7 +6,7 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.JsonValue;
 import com.spiddekauga.utils.GameTime;
-import com.spiddekauga.utils.Json;
+import com.spiddekauga.utils.JsonWrapper; import com.badlogic.gdx.utils.Json;
 import com.spiddekauga.voider.game.Collectibles;
 import com.spiddekauga.voider.resources.Def;
 

@@ -9,7 +9,7 @@ import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.ObjectMap.Entry;
 import com.badlogic.gdx.utils.OrderedMap;
-import com.spiddekauga.utils.Json;
+import com.spiddekauga.utils.JsonWrapper; import com.badlogic.gdx.utils.Json;
 import com.spiddekauga.voider.User;
 
 /**

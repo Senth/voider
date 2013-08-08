@@ -6,7 +6,7 @@ import java.util.UUID;
 
 import org.junit.Test;
 
-import com.spiddekauga.utils.Json;
+import com.spiddekauga.utils.JsonWrapper; import com.badlogic.gdx.utils.Json;
 import com.spiddekauga.voider.resources.ResourceNames;
 
 /**
@@ -28,7 +28,6 @@ public class LevelDefTest {
 		def.setStoryAfter("story after");
 		def.setEndXCoord(555.025f);
 		def.setVersion(1, 2, 3);
-		def.setThemeId(UUID.randomUUID());
 		def.increaseRevision();
 
 		Json json = new Json();
@@ -42,7 +41,6 @@ public class LevelDefTest {
 		assertEquals("story after", def.getStoryAfter(), jsonDef.getStoryAfter());
 		assertEquals("end x coord", def.getEndXCoord(), jsonDef.getEndXCoord(), 0.0f);
 		assertEquals("version", def.getVersionString(), jsonDef.getVersionString());
-		assertEquals("theme id", def.getThemeId(), jsonDef.getThemeId());
 		assertEquals("revision", def.getRevision(), jsonDef.getRevision());
 		assertEquals("base speed", def.getBaseSpeed(), jsonDef.getBaseSpeed(), 0.0f);
 		assertEquals("level id", def.getLevelId(), jsonDef.getLevelId());
@@ -60,34 +58,9 @@ public class LevelDefTest {
 		assertEquals("story after", def.getStoryAfter(), jsonDef.getStoryAfter());
 		assertEquals("end x coord", def.getEndXCoord(), jsonDef.getEndXCoord(), 0.0f);
 		assertEquals("version", def.getVersionString(), jsonDef.getVersionString());
-		assertEquals("theme id", def.getThemeId(), jsonDef.getThemeId());
 		assertEquals("revision", def.getRevision(), jsonDef.getRevision());
 		assertEquals("base speed", def.getBaseSpeed(), jsonDef.getBaseSpeed(), 0.0f);
 		assertEquals("level id", def.getLevelId(), jsonDef.getLevelId());
-	}
-
-	/**
-	 * Tests to set a theme and see if it is added to dependencies
-	 */
-	@Test
-	public void setThemeId() {
-		LevelDef def = new LevelDef();
-		// No theme
-		assertEquals("No theme", 0, def.getExternalDependenciesCount());
-
-		// Set theme
-		UUID themeId = UUID.randomUUID();
-		def.setThemeId(themeId);
-		assertEquals("theme added dependency", 1, def.getExternalDependenciesCount());
-
-		// Set another theme
-		themeId = UUID.randomUUID();
-		def.setThemeId(themeId);
-		assertEquals("another theme added size", 1, def.getExternalDependenciesCount());
-
-		// Remove theme
-		def.setThemeId(null);
-		assertEquals("removed theme", 0, def.getExternalDependenciesCount());
 	}
 
 	/**

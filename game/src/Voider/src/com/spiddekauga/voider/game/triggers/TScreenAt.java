@@ -10,7 +10,7 @@ import com.badlogic.gdx.physics.box2d.EdgeShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.JsonValue;
-import com.spiddekauga.utils.Json;
+import com.spiddekauga.utils.JsonWrapper; import com.badlogic.gdx.utils.Json;
 import com.spiddekauga.utils.ShapeRendererEx;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.Level;

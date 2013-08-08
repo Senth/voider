@@ -3,8 +3,8 @@ package com.spiddekauga.voider.resources;
 import java.util.ArrayList;
 import java.util.UUID;
 
+import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
-import com.spiddekauga.utils.Json;
 import com.spiddekauga.voider.Config;
 
 /**

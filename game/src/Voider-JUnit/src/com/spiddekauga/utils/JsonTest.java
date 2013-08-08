@@ -20,6 +20,7 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.spiddekauga.voider.game.LevelDef;
 import com.spiddekauga.voider.resources.Def;
@@ -44,7 +45,7 @@ public class JsonTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void maps() {
-		Json json = new Json();
+		Json json = new JsonWrapper();
 
 		// String - Integer
 		ObjectMap<String, Integer> stringMap = new ObjectMap<String, Integer>();
@@ -76,7 +77,7 @@ public class JsonTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void uuid() {
-		Json json = new Json();
+		Json json = new JsonWrapper();
 		String jsonString = null;
 		UUID testUuid = UUID.randomUUID();
 		try {
@@ -154,7 +155,7 @@ public class JsonTest {
 		circle.setRadius(2f);
 		circle.setPosition(new Vector2(1, 2));
 
-		Json json = new Json();
+		Json json = new JsonWrapper();
 		String jsonString = json.toJson(circle);
 		Shape testShape = json.fromJson(Shape.class, jsonString);
 
@@ -321,7 +322,7 @@ public class JsonTest {
 		fixtureDef.restitution = 70.6f;
 		fixtureDef.friction = 15f;
 
-		Json json = new Json();
+		Json json = new JsonWrapper();
 		String jsonString = json.toJson(fixtureDef);
 		FixtureDef testFixtureDef = json.fromJson(FixtureDef.class, jsonString);
 

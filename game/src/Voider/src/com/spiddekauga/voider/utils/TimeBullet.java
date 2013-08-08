@@ -1,7 +1,7 @@
 package com.spiddekauga.voider.utils;
 
+import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
-import com.spiddekauga.utils.Json;
 import com.spiddekauga.voider.game.actors.BulletActor;
 
 /**

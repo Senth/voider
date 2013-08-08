@@ -7,7 +7,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.spiddekauga.utils.Invoker;
-import com.spiddekauga.utils.Json;
+import com.spiddekauga.utils.JsonWrapper; import com.badlogic.gdx.utils.Json;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.editor.commands.CResourceBoundRemove;
 import com.spiddekauga.voider.game.Level;

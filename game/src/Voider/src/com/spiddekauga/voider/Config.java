@@ -8,6 +8,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.JsonWriter.OutputType;
 import com.spiddekauga.voider.game.actors.ActorShapeTypes;
 
 /**
@@ -588,6 +589,8 @@ public class Config {
 	public final static int REVISION = 1;
 	/** If debugging tests shall be activate */
 	public final static boolean DEBUG_TESTS = true;
+	/** Output type for JsonWrapper */
+	public final static OutputType JSON_OUTPUT_TYPE = OutputType.json;
 
 	/**
 	 * Private constructor so that no instance can be created
