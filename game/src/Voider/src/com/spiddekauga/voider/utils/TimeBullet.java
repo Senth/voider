@@ -1,6 +1,6 @@
 package com.spiddekauga.voider.utils;
 
-import com.badlogic.gdx.utils.OrderedMap;
+import com.badlogic.gdx.utils.JsonValue;
 import com.spiddekauga.utils.Json;
 import com.spiddekauga.voider.game.actors.BulletActor;
 
@@ -18,8 +18,8 @@ public class TimeBullet implements Json.Serializable {
 	}
 
 	@Override
-	public void read(Json json, OrderedMap<String, Object> jsonData) {
-		bulletActor = json.readValue(BulletActor.class, jsonData);
+	public void read(Json json, JsonValue jsonValue) {
+		bulletActor = json.readValue(BulletActor.class, jsonValue);
 	}
 
 	/** The bound bullet actor to this time */

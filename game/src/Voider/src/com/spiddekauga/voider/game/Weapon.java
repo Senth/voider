@@ -2,7 +2,7 @@ package com.spiddekauga.voider.game;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Disposable;
-import com.badlogic.gdx.utils.OrderedMap;
+import com.badlogic.gdx.utils.JsonValue;
 import com.spiddekauga.utils.Json;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.actors.BulletActor;
@@ -120,8 +120,8 @@ public class Weapon implements Disposable, Json.Serializable {
 	}
 
 	@Override
-	public void read(Json json, OrderedMap<String, Object> jsonData) {
-		mCooldown = json.readValue("mCooldown", float.class, jsonData);
+	public void read(Json json, JsonValue jsonValue) {
+		mCooldown = json.readValue("mCooldown", float.class, jsonValue);
 	}
 
 	/** Weapon definition */

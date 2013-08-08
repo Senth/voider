@@ -14,7 +14,7 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.GdxRuntimeException;
-import com.badlogic.gdx.utils.OrderedMap;
+import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.Pool.Poolable;
 import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.utils.Json;
@@ -488,12 +488,12 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void read(Json json, OrderedMap<String, Object> jsonData) {
-		super.read(json, jsonData);
+	public void read(Json json, JsonValue jsonValue) {
+		super.read(json, jsonValue);
 
-		mLife = json.readValue("mLife", float.class, jsonData);
-		mPosition = json.readValue("mPosition", Vector2.class, jsonData);
-		mTriggerInfos = json.readValue("mTriggerInfos", ArrayList.class, jsonData);
+		mLife = json.readValue("mLife", float.class, jsonValue);
+		mPosition = json.readValue("mPosition", Vector2.class, jsonValue);
+		mTriggerInfos = json.readValue("mTriggerInfos", ArrayList.class, jsonValue);
 
 		// Set trigger listener to this
 		for (TriggerInfo triggerInfo : mTriggerInfos) {
@@ -503,12 +503,12 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 
 		// Definition
 		if (savesDef()) {
-			mDef = json.readValue("mDef", StaticTerrainActorDef.class, jsonData);
+			mDef = json.readValue("mDef", StaticTerrainActorDef.class, jsonValue);
 		}
 		// Get definition information to be able to load it
 		else {
-			UUID defId = json.readValue("mDefId", UUID.class, jsonData);
-			String defTypeName = json.readValue("mDefType", String.class, jsonData);
+			UUID defId = json.readValue("mDefId", UUID.class, jsonValue);
+			String defTypeName = json.readValue("mDefType", String.class, jsonValue);
 			Class<?> defType = null;
 			try {
 				defType = Class.forName(defTypeName);
@@ -531,13 +531,13 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 		BodyDef bodyDef = mDef.getBodyDefCopy();
 
 		// Set body information, i.e. position etc.
-		OrderedMap<?, ?> bodyMap = json.readValue("mBody", OrderedMap.class, jsonData);
-		if (bodyMap != null) {
-			bodyDef.angle = json.readValue("angle", float.class, bodyMap);
-			bodyDef.angularVelocity = json.readValue("angular_velocity", float.class, bodyMap);
-			bodyDef.linearVelocity.set(json.readValue("linear_velocity", Vector2.class, bodyMap));
-			bodyDef.awake = json.readValue("awake", boolean.class, bodyMap);
-			bodyDef.active = json.readValue("active", boolean.class, bodyMap);
+		JsonValue bodyValues = jsonValue.getChild("mBody");
+		if (bodyValues != null) {
+			bodyDef.angle = json.readValue("angle", float.class, bodyValues);
+			bodyDef.angularVelocity = json.readValue("angular_velocity", float.class, bodyValues);
+			bodyDef.linearVelocity.set(json.readValue("linear_velocity", Vector2.class, bodyValues));
+			bodyDef.awake = json.readValue("awake", boolean.class, bodyValues);
+			bodyDef.active = json.readValue("active", boolean.class, bodyValues);
 
 			// Set position
 			bodyDef.position.set(mPosition);

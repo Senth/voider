@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectMap;
-import com.badlogic.gdx.utils.OrderedMap;
 import com.spiddekauga.utils.Invoker;
 import com.spiddekauga.utils.Json;
 import com.spiddekauga.voider.Config;
@@ -110,8 +110,8 @@ public class ResourceBinder implements Json.Serializable {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void read(Json json, OrderedMap<String, Object> jsonData) {
-		mResources = json.readValue("mResources", ObjectMap.class, jsonData);
+	public void read(Json json, JsonValue jsonValue) {
+		mResources = json.readValue("mResources", ObjectMap.class, jsonValue);
 	}
 
 	/**

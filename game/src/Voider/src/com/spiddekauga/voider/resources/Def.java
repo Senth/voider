@@ -5,6 +5,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.ObjectMap.Entry;
 import com.badlogic.gdx.utils.OrderedMap;
@@ -139,32 +140,32 @@ public abstract class Def extends Resource implements Json.Serializable {
 	/**
 	 * Reads this class as a json object.
 	 * @param json the json to read the value from
-	 * @param jsonData this is where all the json variables have been loaded
+	 * @param jsonValue this is where all the json variables have been loaded
 	 */
 	@Override
-	public void read(Json json, OrderedMap<String, Object> jsonData) {
-		super.read(json, jsonData);
+	public void read(Json json, JsonValue jsonValue) {
+		super.read(json, jsonValue);
 
-		mName = json.readValue("mName", String.class, jsonData);
-		mCreator = json.readValue("mCreator", String.class, jsonData);
-		mOriginalCreator = json.readValue("mOriginalCreator", String.class, jsonData);
-		mRevision = json.readValue("mRevision", long.class, jsonData);
-		mDescription = json.readValue("mDescription", String.class, jsonData);
+		mName = json.readValue("mName", String.class, jsonValue);
+		mCreator = json.readValue("mCreator", String.class, jsonValue);
+		mOriginalCreator = json.readValue("mOriginalCreator", String.class, jsonValue);
+		mRevision = json.readValue("mRevision", long.class, jsonValue);
+		mDescription = json.readValue("mDescription", String.class, jsonValue);
 
-		OrderedMap<?,?> internalMap = json.readValue("mInternalDependencies", OrderedMap.class, jsonData);
+		OrderedMap<?,?> internalMap = json.readValue("mInternalDependencies", OrderedMap.class, jsonValue);
 		if (internalMap != null) {
 			for (Entry<?,?> entry : internalMap.entries()) {
 				mInternalDependencies.add(ResourceNames.valueOf((String)entry.value));
 			}
 		}
 
-		ObjectMap<UUID, DefItem> externalDependencies = json.readValue("mExternalDependencies", ObjectMap.class, jsonData);
+		ObjectMap<UUID, DefItem> externalDependencies = json.readValue("mExternalDependencies", ObjectMap.class, jsonValue);
 		if (externalDependencies != null) {
 			mExternalDependencies = externalDependencies;
 		}
 
 		// Version
-		String stringVersion = json.readValue("mVersion", String.class, jsonData);
+		String stringVersion = json.readValue("mVersion", String.class, jsonValue);
 		String[] stringVersions = stringVersion.split("\\.");
 		mVersionFirst = Integer.parseInt(stringVersions[0]);
 		mVersionSecond = Integer.parseInt(stringVersions[1]);

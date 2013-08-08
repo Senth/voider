@@ -1,7 +1,7 @@
 package com.spiddekauga.voider.game.actors;
 
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
-import com.badlogic.gdx.utils.OrderedMap;
+import com.badlogic.gdx.utils.JsonValue;
 import com.spiddekauga.utils.Json;
 import com.spiddekauga.voider.game.Collectibles;
 /**
@@ -47,10 +47,10 @@ public class PickupActorDef extends ActorDef {
 	}
 
 	@Override
-	public void read(Json json, OrderedMap<String, Object> jsonData) {
-		super.read(json, jsonData);
+	public void read(Json json, JsonValue jsonValue) {
+		super.read(json, jsonValue);
 
-		mCollectible = json.readValue("mCollectible", Collectibles.class, jsonData);
+		mCollectible = json.readValue("mCollectible", Collectibles.class, jsonValue);
 	}
 
 	/** Collectible inside the pickup */

@@ -9,7 +9,7 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.utils.Disposable;
-import com.badlogic.gdx.utils.OrderedMap;
+import com.badlogic.gdx.utils.JsonValue;
 import com.spiddekauga.utils.Json;
 import com.spiddekauga.utils.ShapeRendererEx;
 import com.spiddekauga.voider.Config;
@@ -102,9 +102,9 @@ public class TActorActivated extends Trigger implements Disposable, IResourceBod
 	}
 
 	@Override
-	public void read(Json json, OrderedMap<String, Object> jsonData) {
-		super.read(json, jsonData);
-		mActorId = json.readValue("mActorId", UUID.class, jsonData);
+	public void read(Json json, JsonValue jsonValue) {
+		super.read(json, jsonValue);
+		mActorId = json.readValue("mActorId", UUID.class, jsonValue);
 	}
 
 	@Override

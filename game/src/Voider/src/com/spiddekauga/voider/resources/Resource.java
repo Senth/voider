@@ -3,7 +3,7 @@ package com.spiddekauga.voider.resources;
 import java.util.ArrayList;
 import java.util.UUID;
 
-import com.badlogic.gdx.utils.OrderedMap;
+import com.badlogic.gdx.utils.JsonValue;
 import com.spiddekauga.utils.Json;
 import com.spiddekauga.voider.Config;
 
@@ -110,8 +110,8 @@ public abstract class Resource implements IResource, Json.Serializable {
 	}
 
 	@Override
-	public void read(Json json, OrderedMap<String, Object> jsonData) {
-		mUniqueId = json.readValue("mUniqueId", UUID.class, jsonData);
+	public void read(Json json, JsonValue jsonValue) {
+		mUniqueId = json.readValue("mUniqueId", UUID.class, jsonValue);
 	}
 
 	/** Unique id of the resource */

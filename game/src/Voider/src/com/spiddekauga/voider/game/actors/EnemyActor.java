@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.OrderedMap;
+import com.badlogic.gdx.utils.JsonValue;
 import com.spiddekauga.utils.Json;
 import com.spiddekauga.utils.Maths;
 import com.spiddekauga.voider.Config;
@@ -272,36 +272,36 @@ public class EnemyActor extends Actor {
 	}
 
 	@Override
-	public void read(Json json, OrderedMap<String, Object> jsonData) {
-		super.read(json, jsonData);
+	public void read(Json json, JsonValue jsonValue) {
+		super.read(json, jsonValue);
 
-		mGroupId = json.readValue("mGroupId", UUID.class, jsonData);
+		mGroupId = json.readValue("mGroupId", UUID.class, jsonValue);
 		if (mGroupId != null) {
-			mGroupLeader = json.readValue("mGroupLeader", boolean.class, jsonData);
+			mGroupLeader = json.readValue("mGroupLeader", boolean.class, jsonValue);
 		}
 
 		EnemyActorDef enemyDef = getDef(EnemyActorDef.class);
 
 		if (enemyDef.hasWeapon()) {
-			mWeapon = json.readValue("mWeapon", Weapon.class, jsonData);
+			mWeapon = json.readValue("mWeapon", Weapon.class, jsonValue);
 			mWeapon.setWeaponDef(enemyDef.getWeaponDef());
-			mShootAngle = json.readValue("mShootAngle", float.class, jsonData);
+			mShootAngle = json.readValue("mShootAngle", float.class, jsonValue);
 		}
 
 		if (enemyDef.getMovementType() == MovementTypes.AI) {
 			if (enemyDef.isMovingRandomly()) {
-				mRandomMoveNext = json.readValue("mRandomMoveNext", int.class, jsonData);
-				mRandomMoveDirection = json.readValue("mRandomMoveDirection", Vector2.class, jsonData);
+				mRandomMoveNext = json.readValue("mRandomMoveNext", int.class, jsonValue);
+				mRandomMoveDirection = json.readValue("mRandomMoveDirection", Vector2.class, jsonValue);
 			}
 		}
 		else if (enemyDef.getMovementType() == MovementTypes.PATH) {
-			mPathId = json.readValue("mPathId", UUID.class, jsonData);
+			mPathId = json.readValue("mPathId", UUID.class, jsonValue);
 
-			if (jsonData.containsKey("mPathOnceReachedEnd")) {
-				mPathOnceReachedEnd = json.readValue("mPathOnceReachedEnd", boolean.class, jsonData);
+			if (jsonValue.getChild("mPathOnceReachedEnd") != null) {
+				mPathOnceReachedEnd = json.readValue("mPathOnceReachedEnd", boolean.class, jsonValue);
 			}
-			if (jsonData.containsKey("mPathForward")) {
-				mPathForward = json.readValue("mPathForward", boolean.class, jsonData);
+			if (jsonValue.getChild("mPathForward") != null) {
+				mPathForward = json.readValue("mPathForward", boolean.class, jsonValue);
 			}
 		}
 	}

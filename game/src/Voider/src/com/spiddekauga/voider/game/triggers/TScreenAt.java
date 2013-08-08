@@ -9,7 +9,7 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.EdgeShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.utils.Disposable;
-import com.badlogic.gdx.utils.OrderedMap;
+import com.badlogic.gdx.utils.JsonValue;
 import com.spiddekauga.utils.Json;
 import com.spiddekauga.utils.ShapeRendererEx;
 import com.spiddekauga.voider.Config;
@@ -83,11 +83,11 @@ public class TScreenAt extends Trigger implements IResourceBody, IResourcePositi
 	}
 
 	@Override
-	public void read(Json json, OrderedMap<String, Object> jsonData) {
-		super.read(json, jsonData);
+	public void read(Json json, JsonValue jsonValue) {
+		super.read(json, jsonValue);
 
-		mLevelId = json.readValue("mLevelId", UUID.class, jsonData);
-		mPosition.x = json.readValue("mPosition.x", float.class, jsonData);
+		mLevelId = json.readValue("mLevelId", UUID.class, jsonValue);
+		mPosition.x = json.readValue("mPosition.x", float.class, jsonValue);
 	}
 
 	@Override

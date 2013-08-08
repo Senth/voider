@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.UUID;
 
-import com.badlogic.gdx.utils.OrderedMap;
+import com.badlogic.gdx.utils.JsonValue;
 import com.spiddekauga.utils.Json;
 import com.spiddekauga.voider.resources.IResourceEditorRender;
 import com.spiddekauga.voider.resources.IResourceUpdate;
@@ -122,11 +122,11 @@ public abstract class Trigger extends Resource implements IResourceUpdate, IReso
 	}
 
 	@Override
-	public void read(Json json, OrderedMap<String, Object> jsonData) {
-		super.read(json, jsonData);
+	public void read(Json json, JsonValue jsonValue) {
+		super.read(json, jsonValue);
 
-		mTriggered = json.readValue("mTriggered", boolean.class, jsonData);
-		mTriggeredTime = json.readValue("mTriggeredTime", float.class, jsonData);
+		mTriggered = json.readValue("mTriggered", boolean.class, jsonValue);
+		mTriggeredTime = json.readValue("mTriggeredTime", float.class, jsonValue);
 	}
 
 	/**

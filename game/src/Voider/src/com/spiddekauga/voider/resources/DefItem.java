@@ -3,7 +3,7 @@ package com.spiddekauga.voider.resources;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.utils.OrderedMap;
+import com.badlogic.gdx.utils.JsonValue;
 import com.spiddekauga.utils.Json;
 
 /**
@@ -81,12 +81,12 @@ class DefItem implements Json.Serializable {
 	}
 
 	@Override
-	public void read(Json json, OrderedMap<String, Object> jsonData) {
-		resourceId = UUID.fromString(json.readValue("resourceId", String.class, jsonData));
-		count = json.readValue("count", int.class, jsonData);
+	public void read(Json json, JsonValue jsonValue) {
+		resourceId = UUID.fromString(json.readValue("resourceId", String.class, jsonValue));
+		count = json.readValue("count", int.class, jsonValue);
 
 		// resourceType
-		String className = json.readValue("resourceType", String.class, jsonData);
+		String className = json.readValue("resourceType", String.class, jsonValue);
 		try {
 			resourceType = Class.forName(className);
 		} catch (ClassNotFoundException e) {

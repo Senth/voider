@@ -2,7 +2,7 @@ package com.spiddekauga.voider.game;
 
 import java.util.UUID;
 
-import com.badlogic.gdx.utils.OrderedMap;
+import com.badlogic.gdx.utils.JsonValue;
 import com.spiddekauga.utils.Json;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.resources.Def;
@@ -149,11 +149,7 @@ public class LevelDef extends Def {
 
 	@Override
 	public void write(Json json) {
-		json.writeValue("REVISION", Config.REVISION);
-
-		json.writeObjectStart("Def");
 		super.write(json);
-		json.writeObjectEnd();
 
 		json.writeValue("mMusic", mMusic);
 		json.writeValue("mStoryBefore", mStoryBefore);
@@ -167,28 +163,22 @@ public class LevelDef extends Def {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void read(Json json, OrderedMap<String, Object> jsonData) {
-		// Superclass
-		OrderedMap<String, Object> defMap = json.readValue("Def", OrderedMap.class, jsonData);
-		if (defMap != null) {
-			super.read(json, defMap);
-		}
+	public void read(Json json, JsonValue jsonValue) {
+		super.read(json, jsonValue);
 
 
 		// Variables
-		mMusic = json.readValue("mMusic", ResourceNames.class, jsonData);
-		mStoryBefore = json.readValue("mStoryBefore", String.class, jsonData);
-		mStoryAfter = json.readValue("mStoryAfter", String.class, jsonData);
-		mStartXCoord = json.readValue("mStartXCoord", float.class, jsonData);
-		mEndXCoord = json.readValue("mEndXCoord", float.class, jsonData);
-		mSpeed = json.readValue("mSpeed", float.class, jsonData);
+		mMusic = json.readValue("mMusic", ResourceNames.class, jsonValue);
+		mStoryBefore = json.readValue("mStoryBefore", String.class, jsonValue);
+		mStoryAfter = json.readValue("mStoryAfter", String.class, jsonValue);
+		mStartXCoord = json.readValue("mStartXCoord", float.class, jsonValue);
+		mEndXCoord = json.readValue("mEndXCoord", float.class, jsonValue);
+		mSpeed = json.readValue("mSpeed", float.class, jsonValue);
 
 
 		// UUIDs
-		mCampaignId = json.readValue("mCampaignId", UUID.class, jsonData);
-		mLevelId = json.readValue("mLevelId", UUID.class, jsonData);
-
-
+		mCampaignId = json.readValue("mCampaignId", UUID.class, jsonValue);
+		mLevelId = json.readValue("mLevelId", UUID.class, jsonValue);
 	}
 
 

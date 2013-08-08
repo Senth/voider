@@ -12,7 +12,7 @@ import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.utils.Disposable;
-import com.badlogic.gdx.utils.OrderedMap;
+import com.badlogic.gdx.utils.JsonValue;
 import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.utils.Json;
 import com.spiddekauga.voider.Config;
@@ -74,29 +74,29 @@ public class VisualVars implements Json.Serializable, Disposable, IResourceCorne
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void read(Json json, OrderedMap<String, Object> jsonData) {
-		mActorType = json.readValue("mActorType", ActorTypes.class, jsonData);
+	public void read(Json json, JsonValue jsonValue) {
+		mActorType = json.readValue("mActorType", ActorTypes.class, jsonValue);
 
 		setDefaultValues();
 
-		mShapeType = json.readValue("mShapeType", ActorShapeTypes.class, jsonData);
-		mCenterOffset = json.readValue("mCenterOffset", Vector2.class, jsonData);
-		mColor = json.readValue("mColor", Color.class, jsonData);
-		mShapeComplete = json.readValue("mShapeComplete", boolean.class, jsonData);
+		mShapeType = json.readValue("mShapeType", ActorShapeTypes.class, jsonValue);
+		mCenterOffset = json.readValue("mCenterOffset", Vector2.class, jsonValue);
+		mColor = json.readValue("mColor", Color.class, jsonValue);
+		mShapeComplete = json.readValue("mShapeComplete", boolean.class, jsonValue);
 
 		switch (mShapeType) {
 		case TRIANGLE:
 		case RECTANGLE:
-			mShapeWidth = json.readValue("mShapeWidth", float.class, jsonData);
-			mShapeHeight = json.readValue("mShapeHeight", float.class, jsonData);
+			mShapeWidth = json.readValue("mShapeWidth", float.class, jsonValue);
+			mShapeHeight = json.readValue("mShapeHeight", float.class, jsonValue);
 			break;
 
 		case CIRCLE:
-			mShapeCircleRadius = json.readValue("mShapeCircleRadius", float.class, jsonData);
+			mShapeCircleRadius = json.readValue("mShapeCircleRadius", float.class, jsonValue);
 			break;
 
 		case CUSTOM:
-			mCorners = json.readValue("mCorners", ArrayList.class, jsonData);
+			mCorners = json.readValue("mCorners", ArrayList.class, jsonValue);
 			break;
 		}
 

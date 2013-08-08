@@ -5,7 +5,7 @@ import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.OrderedMap;
+import com.badlogic.gdx.utils.JsonValue;
 import com.spiddekauga.utils.Json;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.triggers.TriggerAction.Actions;
@@ -173,11 +173,11 @@ public class EnemyGroup extends Resource {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void read(Json json, OrderedMap<String, Object> jsonData) {
-		super.read(json, jsonData);
+	public void read(Json json, JsonValue jsonValue) {
+		super.read(json, jsonValue);
 
-		mTriggerDelay = json.readValue("mTriggerDelay", float.class, jsonData);
-		mEnemyIds = json.readValue("mEnemyIds", ArrayList.class, jsonData);
+		mTriggerDelay = json.readValue("mTriggerDelay", float.class, jsonValue);
+		mEnemyIds = json.readValue("mEnemyIds", ArrayList.class, jsonValue);
 
 		// Fill enemies with null values
 		for (int i = 0; i < mEnemyIds.size(); ++i) {

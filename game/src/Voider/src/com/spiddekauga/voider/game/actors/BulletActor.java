@@ -1,7 +1,7 @@
 package com.spiddekauga.voider.game.actors;
 
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.OrderedMap;
+import com.badlogic.gdx.utils.JsonValue;
 import com.spiddekauga.utils.Json;
 import com.spiddekauga.voider.utils.Pools;
 
@@ -87,11 +87,11 @@ public class BulletActor extends Actor {
 	}
 
 	@Override
-	public void read(Json json, OrderedMap<String, Object> jsonData) {
-		super.read(json, jsonData);
+	public void read(Json json, JsonValue jsonValue) {
+		super.read(json, jsonValue);
 
-		mShotByPlayer = json.readValue("mShotByPlayer", boolean.class, jsonData);
-		mDamage = json.readValue("mDamage", float.class, jsonData);
+		mShotByPlayer = json.readValue("mShotByPlayer", boolean.class, jsonValue);
+		mDamage = json.readValue("mDamage", float.class, jsonValue);
 	}
 
 	@Override

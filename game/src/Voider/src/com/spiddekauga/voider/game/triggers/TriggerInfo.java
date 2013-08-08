@@ -2,7 +2,7 @@ package com.spiddekauga.voider.game.triggers;
 
 import java.util.UUID;
 
-import com.badlogic.gdx.utils.OrderedMap;
+import com.badlogic.gdx.utils.JsonValue;
 import com.spiddekauga.utils.Json;
 import com.spiddekauga.voider.game.triggers.TriggerAction.Actions;
 
@@ -77,10 +77,10 @@ public class TriggerInfo implements Json.Serializable {
 	}
 
 	@Override
-	public void read(Json json, OrderedMap<String, Object> jsonData) {
-		action = json.readValue("action", TriggerAction.Actions.class, jsonData);
-		delay = json.readValue("delay", float.class, jsonData);
-		triggerId = json.readValue("triggerId", UUID.class, jsonData);
+	public void read(Json json, JsonValue jsonValue) {
+		action = json.readValue("action", TriggerAction.Actions.class, jsonValue);
+		delay = json.readValue("delay", float.class, jsonValue);
+		triggerId = json.readValue("triggerId", UUID.class, jsonValue);
 	}
 
 	/**

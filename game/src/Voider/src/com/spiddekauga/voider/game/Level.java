@@ -6,8 +6,8 @@ import java.util.UUID;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.GdxRuntimeException;
+import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectMap;
-import com.badlogic.gdx.utils.OrderedMap;
 import com.spiddekauga.utils.Json;
 import com.spiddekauga.utils.ShapeRendererEx;
 import com.spiddekauga.voider.game.actors.Actor;
@@ -377,14 +377,14 @@ public class Level extends Resource implements Disposable {
 	}
 
 	@Override
-	public void read(Json json, OrderedMap<String, Object> jsonData) {
-		super.read(json, jsonData);
+	public void read(Json json, JsonValue jsonValue) {
+		super.read(json, jsonValue);
 
-		mResourceBinder = json.readValue("mResourceBinder", ResourceBinder.class, jsonData);
+		mResourceBinder = json.readValue("mResourceBinder", ResourceBinder.class, jsonValue);
 
-		mXCoord = json.readValue("mXCoord", float.class, jsonData);
-		mSpeed = json.readValue("mSpeed", float.class, jsonData);
-		mCompletedLevel = json.readValue("mCompletedLevel", boolean.class, jsonData);
+		mXCoord = json.readValue("mXCoord", float.class, jsonValue);
+		mSpeed = json.readValue("mSpeed", float.class, jsonValue);
+		mCompletedLevel = json.readValue("mCompletedLevel", boolean.class, jsonValue);
 
 		ArrayList<Trigger> triggers = mResourceBinder.getResources(Trigger.class);
 		for (Trigger trigger : triggers) {
@@ -392,7 +392,7 @@ public class Level extends Resource implements Disposable {
 		}
 
 		// Get the actual LevelDef
-		UUID levelDefId = json.readValue("mLevelDefId", UUID.class, jsonData);
+		UUID levelDefId = json.readValue("mLevelDefId", UUID.class, jsonValue);
 		try {
 			mLevelDef = ResourceCacheFacade.get(levelDefId, LevelDef.class);
 		} catch (UndefinedResourceTypeException e) {

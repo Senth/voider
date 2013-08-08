@@ -1,7 +1,7 @@
 package com.spiddekauga.voider.game.actors;
 
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
-import com.badlogic.gdx.utils.OrderedMap;
+import com.badlogic.gdx.utils.JsonValue;
 import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.utils.Json;
 import com.spiddekauga.voider.Config.Editor.Enemy;
@@ -299,28 +299,28 @@ public class EnemyActorDef extends ActorDef {
 	}
 
 	@Override
-	public void read(Json json, OrderedMap<String, Object> jsonData) {
-		super.read(json, jsonData);
+	public void read(Json json, JsonValue jsonValue) {
+		super.read(json, jsonValue);
 
 
-		mHasWeapon = json.readValue("mHasWeapon", boolean.class, jsonData);
-		mMovementType = json.readValue("mMovementType", MovementTypes.class, jsonData);
+		mHasWeapon = json.readValue("mHasWeapon", boolean.class, jsonValue);
+		mMovementType = json.readValue("mMovementType", MovementTypes.class, jsonValue);
 
 
 		// Conditional variables to read
 		if (mHasWeapon) {
-			mWeapon = json.readValue("mWeapon", WeaponDef.class, jsonData);
-			mAimType = json.readValue("mAimType", AimTypes.class, jsonData);
+			mWeapon = json.readValue("mWeapon", WeaponDef.class, jsonValue);
+			mAimType = json.readValue("mAimType", AimTypes.class, jsonValue);
 
 			if (mAimType == AimTypes.ROTATE) {
-				mAimRotateVars = json.readValue("mAimRotateVars", AimRotateVars.class, jsonData);
+				mAimRotateVars = json.readValue("mAimRotateVars", AimRotateVars.class, jsonValue);
 			}
 		}
 		if (mMovementType == MovementTypes.AI) {
-			mAiMovementVars = json.readValue("mAiMovementVars", AiMovementVars.class, jsonData);
+			mAiMovementVars = json.readValue("mAiMovementVars", AiMovementVars.class, jsonValue);
 		}
 		if (mMovementType != MovementTypes.STATIONARY) {
-			mMovementVars = json.readValue("mMovementVars", MovementVars.class, jsonData);
+			mMovementVars = json.readValue("mMovementVars", MovementVars.class, jsonValue);
 		}
 	}
 

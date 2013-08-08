@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.utils.Disposable;
-import com.badlogic.gdx.utils.OrderedMap;
+import com.badlogic.gdx.utils.JsonValue;
 import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.utils.Json;
 import com.spiddekauga.voider.game.Collectibles;
@@ -208,16 +208,16 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	}
 
 	@Override
-	public void read(Json json, OrderedMap<String, Object> jsonData) {
-		super.read(json, jsonData);
+	public void read(Json json, JsonValue jsonValue) {
+		super.read(json, jsonValue);
 
 
 		// Our variables
-		mMaxLife = json.readValue("mMaxLife", float.class, jsonData);
-		mBodyDef = json.readValue("mBodyDef", BodyDef.class, jsonData);
-		mCollisionDamage = json.readValue("mCollisionDamage", float.class, jsonData);
-		mDestroyOnCollide = json.readValue("mDestroyOnCollide", boolean.class, jsonData);
-		mVisualVars = json.readValue("mVisualVars", VisualVars.class, jsonData);
+		mMaxLife = json.readValue("mMaxLife", float.class, jsonValue);
+		mBodyDef = json.readValue("mBodyDef", BodyDef.class, jsonValue);
+		mCollisionDamage = json.readValue("mCollisionDamage", float.class, jsonValue);
+		mDestroyOnCollide = json.readValue("mDestroyOnCollide", boolean.class, jsonValue);
+		mVisualVars = json.readValue("mVisualVars", VisualVars.class, jsonValue);
 	}
 
 
