@@ -49,7 +49,7 @@ public class JsonLoader<StoredType> extends AsynchronousAssetLoader<StoredType, 
 			throw new ResourceCorruptException(fileName);
 		}
 
-		Json json = new Json();
+		Json json = new JsonWrapper();
 		mStoredObject = json.fromJson(mStoredType, jsonString);
 	}
 

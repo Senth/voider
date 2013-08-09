@@ -54,7 +54,7 @@ public class ObjectCrypterTest {
 	public void encryptDecrypt() {
 		ActorDef actorDef = new PlayerActorDef();
 
-		Json json = new Json();
+		Json json = new JsonWrapper();
 		String jsonString = json.toJson(actorDef);
 
 

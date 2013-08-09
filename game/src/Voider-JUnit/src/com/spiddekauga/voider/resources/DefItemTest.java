@@ -47,7 +47,7 @@ public class DefItemTest {
 		UUID uuid = UUID.randomUUID();
 		DefItem item = new DefItem(uuid, PlayerActorDef.class);
 
-		Json json = new Json();
+		Json json = new JsonWrapper();
 		String jsonString = json.toJson(item);
 
 		DefItem testItem = json.fromJson(DefItem.class, jsonString);

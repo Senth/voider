@@ -58,7 +58,7 @@ public class DefTest {
 
 
 		// Use JSON to create a second definition with the same UUID
-		Json json = new Json();
+		Json json = new JsonWrapper();
 		String jsonString = json.toJson(def);
 		Def testDef = json.fromJson(PlayerActorDef.class, jsonString);
 		assertEquals("equals() from json", testDef, def);
@@ -89,7 +89,7 @@ public class DefTest {
 		def.addDependency(ResourceNames.PARTICLE_TEST);
 		def.addDependency(ResourceNames.TEXTURE_PLAYER);
 
-		Json json = new Json();
+		Json json = new JsonWrapper();
 		String jsonString = json.toJson(def);
 		Def testDef = json.fromJson(PlayerActorDef.class, jsonString);
 

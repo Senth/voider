@@ -101,7 +101,7 @@ public class Level extends Resource implements Disposable {
 	 */
 	@Override
 	public <ResourceType> ResourceType copy() {
-		Json json = new Json();
+		Json json = new JsonWrapper();
 		String jsonString = json.toJson(this);
 		Level level = json.fromJson(Level.class, jsonString);
 
@@ -121,7 +121,7 @@ public class Level extends Resource implements Disposable {
 	 * @return a copy of this level without changing the ID of it
 	 */
 	public Level copyKeepId() {
-		Json json = new Json();
+		Json json = new JsonWrapper();
 		String jsonString = json.toJson(this);
 		Level level = json.fromJson(Level.class, jsonString);
 

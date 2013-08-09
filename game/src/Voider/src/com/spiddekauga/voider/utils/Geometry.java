@@ -713,6 +713,10 @@ public class Geometry {
 	 * a null vertex will be returned.
 	 */
 	public static Vector2 vertexFarthestAway(Vector2 point, ArrayList<Vector2> vertices) {
+		if (point == null || vertices == null) {
+			return null;
+		}
+
 		Vector2 farthestAway = null;
 		float longestSquareDistance = 0;
 

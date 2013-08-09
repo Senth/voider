@@ -38,7 +38,7 @@ public class QueueItemTest {
 	@Test
 	public void writeAndRead() {
 		DefItem writeItem = new DefItem(UUID.randomUUID(), PlayerActorDef.class);
-		Json json = new Json();
+		Json json = new JsonWrapper();
 
 		String jsonString = json.toJson(writeItem);
 		DefItem readItem = json.fromJson(DefItem.class, jsonString);

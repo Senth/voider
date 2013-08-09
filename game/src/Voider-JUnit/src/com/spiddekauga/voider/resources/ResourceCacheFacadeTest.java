@@ -256,13 +256,14 @@ public class ResourceCacheFacadeTest {
 	 */
 	@Test
 	public void loadResourceName() {
+		fail("Not yet implemented, waiting for regular config file to load");
 		//		try {
-		//			ResourceCacheFacade.load(ResourceNames.EDITOR_BUTTONS);
+		//			ResourceCacheFacade.load(ResourceNames.UI_GENERAL);
 		//			ResourceCacheFacade.finishLoading();
 		//			assertEquals("Loaded internal resource", 1, ResourceCacheFacade.getLoadedCount());
 		//
 		//			// Unload
-		//			ResourceCacheFacade.unload(ResourceNames.EDITOR_BUTTONS);
+		//			ResourceCacheFacade.unload(ResourceNames.UI_GENERAL);
 		//			assertEquals("Unloaded internal resource", 0, ResourceCacheFacade.getLoadedCount());
 		//
 		//		} catch (UndefinedResourceTypeException e) {

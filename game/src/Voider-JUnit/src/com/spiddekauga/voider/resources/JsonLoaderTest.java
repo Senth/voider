@@ -97,7 +97,7 @@ public class JsonLoaderTest {
 	private void save(IResource resource) {
 		assert(mCrypter != null);
 
-		Json json = new Json();
+		Json json = new JsonWrapper();
 		String jsonString = json.toJson(resource);
 		try {
 			byte[] encryptedDef = mCrypter.encrypt(jsonString);

@@ -5,11 +5,10 @@ import java.util.Set;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectMap;
-import com.badlogic.gdx.utils.ObjectMap.Entry;
-import com.badlogic.gdx.utils.OrderedMap;
-import com.spiddekauga.utils.JsonWrapper; import com.badlogic.gdx.utils.Json;
+import com.spiddekauga.utils.JsonWrapper;
 import com.spiddekauga.voider.User;
 
 /**
@@ -36,7 +35,7 @@ public abstract class Def extends Resource implements Json.Serializable {
 	public <ResourceType> ResourceType copy() {
 		Class<?> derivedClass = getClass();
 
-		Json json = new Json();
+		Json json = new JsonWrapper();
 		String defString = json.toJson(this);
 		Def copy = (Def) json.fromJson(derivedClass, defString);
 
@@ -123,11 +122,12 @@ public abstract class Def extends Resource implements Json.Serializable {
 		if (mInternalDependencies.isEmpty()) {
 			json.writeValue("mInternalDependencies", (Set<?>) null);
 		} else {
-			json.writeObjectStart("mInternalDependencies");
-			for (ResourceNames item : mInternalDependencies) {
-				json.writeValue(item.toString(), item);
-			}
-			json.writeObjectEnd();
+			json.writeValue("mInternalDependencies", mInternalDependencies);
+			//			json.writeObjectStart("mInternalDependencies");
+			//			for (ResourceNames item : mInternalDependencies) {
+			//				json.writeValue(item.toString(), item);
+			//			}
+			//			json.writeObjectEnd();
 		}
 
 		if (mExternalDependencies.size == 0) {
@@ -152,11 +152,9 @@ public abstract class Def extends Resource implements Json.Serializable {
 		mRevision = json.readValue("mRevision", long.class, jsonValue);
 		mDescription = json.readValue("mDescription", String.class, jsonValue);
 
-		OrderedMap<?,?> internalMap = json.readValue("mInternalDependencies", OrderedMap.class, jsonValue);
+		HashSet<ResourceNames> internalMap = json.readValue("mInternalDependencies", HashSet.class, jsonValue);
 		if (internalMap != null) {
-			for (Entry<?,?> entry : internalMap.entries()) {
-				mInternalDependencies.add(ResourceNames.valueOf((String)entry.value));
-			}
+			mInternalDependencies.addAll(internalMap);
 		}
 
 		ObjectMap<UUID, DefItem> externalDependencies = json.readValue("mExternalDependencies", ObjectMap.class, jsonValue);

@@ -30,7 +30,7 @@ public class LevelDefTest {
 		def.setVersion(1, 2, 3);
 		def.increaseRevision();
 
-		Json json = new Json();
+		Json json = new JsonWrapper();
 		String jsonString = json.toJson(def);
 
 		LevelDef jsonDef = json.fromJson(LevelDef.class, jsonString);

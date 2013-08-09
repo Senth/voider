@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
+import com.spiddekauga.utils.JsonWrapper;
 import com.spiddekauga.voider.Config;
 
 /**
@@ -39,7 +40,7 @@ public abstract class Resource implements IResource, Json.Serializable {
 	public <ResourceType> ResourceType copy() {
 		Class<?> derivedClass = getClass();
 
-		Json json = new Json();
+		Json json = new JsonWrapper();
 		String jsonString = json.toJson(this);
 		Resource copy = (Resource) json.fromJson(derivedClass, jsonString);
 

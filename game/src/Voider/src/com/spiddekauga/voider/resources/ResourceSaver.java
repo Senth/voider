@@ -40,7 +40,7 @@ public class ResourceSaver {
 	private static void save(Object object, String filename) {
 		assert(mCrypter != null);
 
-		Json json = new Json();
+		Json json = new JsonWrapper();
 		String jsonString = json.toJson(object);
 		try {
 			byte[] encryptedDef = mCrypter.encrypt(jsonString);

@@ -63,7 +63,6 @@ public class JsonWrapper extends Json {
 		addSerializeUUID();
 		addSerializeFixtureDef();
 		addSerializeShape();
-		addSerializeMap();
 	}
 
 	/**
@@ -138,146 +137,218 @@ public class JsonWrapper extends Json {
 			@SuppressWarnings("rawtypes")
 			@Override
 			public void write(Json json, Shape object, Class knownType) {
-				writeObjectStart(Shape.class, null);
-				writeValue("type", object.getType());
-
-				// Shape specific actions
-				switch (object.getType()) {
-				case Circle:
-					CircleShape circle = (CircleShape)object;
-					writeValue("position", circle.getPosition());
-					writeValue("radius", circle.getRadius());
-					break;
-
-
-				case Polygon: {
-					PolygonShape polygon = (PolygonShape)object;
-					if (polygon.getVertexCount() >= 3) {
-						Vector2[] vertices = new Vector2[polygon.getVertexCount()];
-						for (int i = 0; i < polygon.getVertexCount(); ++i) {
-							vertices[i] = Pools.vector2.obtain();
-							polygon.getVertex(i, vertices[i]);
-						}
-						writeValue("vertices", vertices);
-						for (Vector2 vertex : vertices) {
-							Pools.vector2.free(vertex);
-						}
-					} else {
-						writeValue("vertices", (Object)null);
-					}
-					break;
-				}
-
-
-				case Edge:
-					EdgeShape edge = (EdgeShape)object;
-					Vector2 tempVector = Pools.vector2.obtain();
-					edge.getVertex1(tempVector);
-					writeValue("vertex1", tempVector);
-					edge.getVertex2(tempVector);
-					writeValue("vertex2", tempVector);
-					Pools.vector2.free(tempVector);
-					break;
-
-
-				case Chain: {
-					ChainShape chainShape = (ChainShape)object;
-					if (chainShape.getVertexCount() >= 3) {
-						// If first and same vertex is the same, it's a loop
-						Vector2 firstVertex = Pools.vector2.obtain();
-						Vector2 lastVertex = Pools.vector2.obtain();
-						chainShape.getVertex(0, firstVertex);
-						chainShape.getVertex(chainShape.getVertexCount() - 1, lastVertex);
-
-						int cVertices = 0;
-						if (firstVertex.equals(lastVertex)) {
-							cVertices = chainShape.getVertexCount() - 1;
-							writeValue("loop", true);
-						} else {
-							cVertices = chainShape.getVertexCount();
-							writeValue("loop", false);
-						}
-
-						Vector2[] vertices = new Vector2[cVertices];
-						for (int i = 0; i < cVertices; ++i) {
-							vertices[i] = Pools.vector2.obtain();
-							chainShape.getVertex(i, vertices[i]);
-						}
-						writeValue("vertices", vertices);
-						for (Vector2 vertex : vertices) {
-							Pools.vector2.free(vertex);
-						}
-					} else {
-						writeValue("vertices", (Object)null);
-					}
-					break;
-				}
-				}
-
-				writeObjectEnd();
+				writeShape(object);
 			}
 
 			@SuppressWarnings("rawtypes")
 			@Override
 			public Shape read(Json json, JsonValue jsonData, Class type) {
-				if (jsonData.child == null) {
-					return null;
-				}
-
-				Shape newShape = null;
-
-				// Shape
-				Shape.Type shapeType = readValue("type", Shape.Type.class, jsonData);
-				switch (shapeType) {
-				case Circle:
-					float radius = readValue("radius", float.class, jsonData);
-					Vector2 position = readValue("position", Vector2.class, jsonData);
-					CircleShape circle = new CircleShape();
-					newShape = circle;
-					circle.setPosition(position);
-					circle.setRadius(radius);
-					break;
-
-
-				case Polygon: {
-					Vector2[] vertices = readValue("vertices", Vector2[].class, jsonData);
-					PolygonShape polygon = new PolygonShape();
-					newShape = polygon;
-					if (vertices != null) {
-						polygon.set(vertices);
-					}
-					break;
-				}
-
-
-				case Edge:
-					Vector2 vertex1 = readValue("vertex1", Vector2.class, jsonData);
-					Vector2 vertex2 = readValue("vertex2", Vector2.class, jsonData);
-					EdgeShape edge = new EdgeShape();
-					newShape = edge;
-					edge.set(vertex1, vertex2);
-					break;
-
-
-				case Chain: {
-					Vector2[] vertices = readValue("vertices", Vector2[].class, jsonData);
-					ChainShape chainShape = new ChainShape();
-					newShape = chainShape;
-					if (vertices != null) {
-						boolean loop = readValue("loop", boolean.class, jsonData);
-						if (loop) {
-							chainShape.createLoop(vertices);
-						} else {
-							chainShape.createChain(vertices);
-						}
-					}
-					break;
-				}
-				}
-
-				return newShape;
-
+				return readShape(jsonData);
 			}
 		});
+
+		setSerializer(ChainShape.class, new Json.Serializer<ChainShape>() {
+			@SuppressWarnings("rawtypes")
+			@Override
+			public void write(Json json, ChainShape object, Class knownType) {
+				writeShape(object);
+			}
+
+			@SuppressWarnings("rawtypes")
+			@Override
+			public ChainShape read(Json json, JsonValue jsonData, Class type) {
+				return (ChainShape) readShape(jsonData);
+			}
+		});
+
+		setSerializer(EdgeShape.class, new Json.Serializer<EdgeShape>() {
+			@SuppressWarnings("rawtypes")
+			@Override
+			public void write(Json json, EdgeShape object, Class knownType) {
+				writeShape(object);
+			}
+
+			@SuppressWarnings("rawtypes")
+			@Override
+			public EdgeShape read(Json json, JsonValue jsonData, Class type) {
+				return (EdgeShape) readShape(jsonData);
+			}
+		});
+
+		setSerializer(PolygonShape.class, new Json.Serializer<PolygonShape>() {
+			@SuppressWarnings("rawtypes")
+			@Override
+			public void write(Json json, PolygonShape object, Class knownType) {
+				writeShape(object);
+			}
+
+			@SuppressWarnings("rawtypes")
+			@Override
+			public PolygonShape read(Json json, JsonValue jsonData, Class type) {
+				return (PolygonShape) readShape(jsonData);
+			}
+		});
+
+		setSerializer(CircleShape.class, new Json.Serializer<CircleShape>() {
+			@SuppressWarnings("rawtypes")
+			@Override
+			public void write(Json json, CircleShape object, Class knownType) {
+				writeShape(object);
+			}
+
+			@SuppressWarnings("rawtypes")
+			@Override
+			public CircleShape read(Json json, JsonValue jsonData, Class type) {
+				return (CircleShape) readShape(jsonData);
+			}
+		});
+	}
+
+	/**
+	 * Writes the shape to a json object
+	 * @param shape the actual shape to write to the json
+	 */
+	public void writeShape(Shape shape) {
+		writeObjectStart(Shape.class, null);
+		writeValue("type", shape.getType());
+
+		// Shape specific actions
+		switch (shape.getType()) {
+		case Circle:
+			CircleShape circle = (CircleShape)shape;
+			writeValue("position", circle.getPosition());
+			writeValue("radius", circle.getRadius());
+			break;
+
+
+		case Polygon: {
+			PolygonShape polygon = (PolygonShape)shape;
+			if (polygon.getVertexCount() >= 3) {
+				Vector2[] vertices = new Vector2[polygon.getVertexCount()];
+				for (int i = 0; i < polygon.getVertexCount(); ++i) {
+					vertices[i] = Pools.vector2.obtain();
+					polygon.getVertex(i, vertices[i]);
+				}
+				writeValue("vertices", vertices);
+				for (Vector2 vertex : vertices) {
+					Pools.vector2.free(vertex);
+				}
+			} else {
+				writeValue("vertices", (Object)null);
+			}
+			break;
+		}
+
+
+		case Edge:
+			EdgeShape edge = (EdgeShape)shape;
+			Vector2 tempVector = Pools.vector2.obtain();
+			edge.getVertex1(tempVector);
+			writeValue("vertex1", tempVector);
+			edge.getVertex2(tempVector);
+			writeValue("vertex2", tempVector);
+			Pools.vector2.free(tempVector);
+			break;
+
+
+		case Chain: {
+			ChainShape chainShape = (ChainShape)shape;
+			if (chainShape.getVertexCount() >= 3) {
+				// If first and same vertex is the same, it's a loop
+				Vector2 firstVertex = Pools.vector2.obtain();
+				Vector2 lastVertex = Pools.vector2.obtain();
+				chainShape.getVertex(0, firstVertex);
+				chainShape.getVertex(chainShape.getVertexCount() - 1, lastVertex);
+
+				int cVertices = 0;
+				if (firstVertex.equals(lastVertex)) {
+					cVertices = chainShape.getVertexCount() - 1;
+					writeValue("loop", true);
+				} else {
+					cVertices = chainShape.getVertexCount();
+					writeValue("loop", false);
+				}
+
+				Vector2[] vertices = new Vector2[cVertices];
+				for (int i = 0; i < cVertices; ++i) {
+					vertices[i] = Pools.vector2.obtain();
+					chainShape.getVertex(i, vertices[i]);
+				}
+				writeValue("vertices", vertices);
+				for (Vector2 vertex : vertices) {
+					Pools.vector2.free(vertex);
+				}
+			} else {
+				writeValue("vertices", (Object)null);
+			}
+			break;
+		}
+		}
+
+		writeObjectEnd();
+	}
+
+	/**
+	 * Reads a json object and creates the appropriate shape for it
+	 * @param jsonData "string" value of the json to convert to a shape
+	 * @return new shape from the json object.
+	 */
+	public Shape readShape(JsonValue jsonData) {
+		if (jsonData.child == null) {
+			return null;
+		}
+
+		Shape newShape = null;
+
+		// Shape
+		Shape.Type shapeType = readValue("type", Shape.Type.class, jsonData);
+		switch (shapeType) {
+		case Circle:
+			float radius = readValue("radius", float.class, jsonData);
+			Vector2 position = readValue("position", Vector2.class, jsonData);
+			CircleShape circle = new CircleShape();
+			newShape = circle;
+			circle.setPosition(position);
+			circle.setRadius(radius);
+			break;
+
+
+		case Polygon: {
+			Vector2[] vertices = readValue("vertices", Vector2[].class, jsonData);
+			PolygonShape polygon = new PolygonShape();
+			newShape = polygon;
+			if (vertices != null) {
+				polygon.set(vertices);
+			}
+			break;
+		}
+
+
+		case Edge:
+			Vector2 vertex1 = readValue("vertex1", Vector2.class, jsonData);
+			Vector2 vertex2 = readValue("vertex2", Vector2.class, jsonData);
+			EdgeShape edge = new EdgeShape();
+			newShape = edge;
+			edge.set(vertex1, vertex2);
+			break;
+
+
+		case Chain: {
+			Vector2[] vertices = readValue("vertices", Vector2[].class, jsonData);
+			ChainShape chainShape = new ChainShape();
+			newShape = chainShape;
+			if (vertices != null) {
+				boolean loop = readValue("loop", boolean.class, jsonData);
+				if (loop) {
+					chainShape.createLoop(vertices);
+				} else {
+					chainShape.createChain(vertices);
+				}
+			}
+			break;
+		}
+		}
+
+		return newShape;
 	}
 }

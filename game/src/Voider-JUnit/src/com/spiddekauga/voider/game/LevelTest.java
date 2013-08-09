@@ -84,7 +84,7 @@ public class LevelTest {
 		// Empty level
 		Level level = new Level(mUsingLevelDef);
 
-		Json json = new Json();
+		Json json = new JsonWrapper();
 		String jsonString = json.toJson(level);
 		Level jsonLevel = json.fromJson(Level.class, jsonString);
 

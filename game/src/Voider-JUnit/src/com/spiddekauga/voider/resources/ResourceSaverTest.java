@@ -76,7 +76,7 @@ public class ResourceSaverTest {
 			fail("Undefined resource type exception");
 		}
 
-		Json json = new Json();
+		Json json = new JsonWrapper();
 		Def savedDef = json.fromJson(PickupActorDef.class, jsonString);
 
 		assertEquals("saved def equals()", savedDef, def);
