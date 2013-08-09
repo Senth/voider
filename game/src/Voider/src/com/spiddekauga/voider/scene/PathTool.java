@@ -169,8 +169,8 @@ public class PathTool extends TouchTool implements ISelectTool {
 	protected void down() {
 		switch (mState) {
 		case ADD_CORNER:
-			// Double click inside current path finishes/closes it
-			if (mDoubleClick && hitSelectedPath()) {
+			// Double anywhere
+			if (mDoubleClick) {
 				// Remove the last corner if we accidentally added one when double clicking
 				if (mCornerIndexLast != -1) {
 					mInvoker.undo(false);

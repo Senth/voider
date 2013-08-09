@@ -565,7 +565,7 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 		}
 
 		if (mGui.isInitialized()) {
-			((LevelEditorGui)mGui).resetEnemyOptions();
+			mGui.resetValues();
 		}
 	}
 
