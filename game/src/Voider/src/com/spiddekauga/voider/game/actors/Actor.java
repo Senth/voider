@@ -398,6 +398,9 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 		if (mHasBodyCenter) {
 			shapeRenderer.push(ShapeType.Line);
 
+			if (mDef.getVisualVars().getCornerCount() > 0 && mDef.getVisualVars().getCornerCount() <= 2) {
+				offsetPosition.sub(mDef.getVisualVars().getCorners().get(0));
+			}
 			offsetPosition.sub(mDef.getVisualVars().getCenterOffset());
 			shapeRenderer.setColor(Config.Editor.CENTER_OFFSET_COLOR);
 			shapeRenderer.polyline(SceneSwitcher.getPickingVertices(), true, offsetPosition);

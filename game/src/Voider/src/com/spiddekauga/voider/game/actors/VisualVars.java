@@ -494,6 +494,11 @@ public class VisualVars implements Json.Serializable, Disposable, IResourceCorne
 	public void setCenterOffset(Vector2 centerOffset) {
 		mCenterOffset.set(centerOffset);
 
+		//		// Special case for draw and circle...
+		//		if (mShapeType == ActorShapeTypes.CUSTOM && mCorners.size() > 0 && mCorners.size() <= 2) {
+		//			mCenterOffset.add(mCorners.get(0));
+		//		}
+
 		// Create new fixtures on the right place
 		setShapeType(mShapeType);
 	}
@@ -531,6 +536,8 @@ public class VisualVars implements Json.Serializable, Disposable, IResourceCorne
 				}
 
 				center.div(mCorners.size());
+			} else {
+				center.set(0,0);
 			}
 			break;
 		}
@@ -707,8 +714,7 @@ public class VisualVars implements Json.Serializable, Disposable, IResourceCorne
 			CircleShape circle = new CircleShape();
 
 			Vector2 offsetPosition = Pools.vector2.obtain();
-			offsetPosition.set(mCorners.get(0)).add(mCenterOffset);
-			circle.setPosition(offsetPosition);
+			offsetPosition.set(0,0).sub(mCenterOffset).sub(mCorners.get(0));
 			Pools.vector2.free(offsetPosition);
 
 			float radius = 0;
@@ -732,7 +738,7 @@ public class VisualVars implements Json.Serializable, Disposable, IResourceCorne
 			// Create vertices for the circle
 			ArrayList<Vector2> circleVertices = Geometry.createCircle(radius);
 			for (Vector2 vertex : circleVertices) {
-				vertex.sub(mCenterOffset);
+				vertex.add(offsetPosition);
 			}
 			mVertices = mEarClippingTriangulator.computeTriangles(circleVertices);
 			Collections.reverse(mVertices);
