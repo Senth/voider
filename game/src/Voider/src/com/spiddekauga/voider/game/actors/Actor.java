@@ -14,10 +14,10 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.GdxRuntimeException;
+import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.Pool.Poolable;
 import com.spiddekauga.utils.GameTime;
-import com.spiddekauga.utils.JsonWrapper; import com.badlogic.gdx.utils.Json;
 import com.spiddekauga.utils.ShapeRendererEx;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.voider.Config;
@@ -339,9 +339,15 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 		else if (mDef.getVisualVars().getCornerCount() >= 2) {
 			shapeRenderer.push(ShapeType.Line);
 
+			if (mDef.getVisualVars().getCornerCount() == 2) {
+				offsetPosition.sub(mDef.getVisualVars().getCorners().get(0));
+				offsetPosition.sub(mDef.getVisualVars().getCenterOffset());
+			}
+
 			shapeRenderer.setColor(Config.Actor.OUTLINE_COLOR);
 			shapeRenderer.polyline(mDef.getVisualVars().getCorners(), false, offsetPosition);
 
+			// Close the shape
 			if (mDef.getVisualVars().getCornerCount() >= 3) {
 				shapeRenderer.setColor(Config.Actor.OUTLINE_CLOSE_COLOR);
 				shapeRenderer.line(mDef.getVisualVars().getCorners().get(mDef.getVisualVars().getCornerCount()-1), mDef.getVisualVars().getCorners().get(0), offsetPosition);
@@ -367,17 +373,8 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 
 		// Draw selected overlay
 		if (!mDrawOnlyOutline && mSelected && getDef().getVisualVars().isComplete() && mRotatedVertices != null) {
-			if (mDef.getVisualVars().getShapeType() == ActorShapeTypes.CUSTOM && mDef.getVisualVars().getCornerCount() >= 1 && mDef.getVisualVars().getCornerCount() <= 2) {
-				offsetPosition.add(mDef.getVisualVars().getCorners().get(0));
-			}
-
-			// Draw selected overlay
 			shapeRenderer.setColor(Config.Editor.SELECTED_COLOR);
 			shapeRenderer.triangles(mRotatedVertices, offsetPosition);
-
-			if (mDef.getVisualVars().getShapeType() == ActorShapeTypes.CUSTOM && mDef.getVisualVars().getCornerCount() >= 1 && mDef.getVisualVars().getCornerCount() <= 2) {
-				offsetPosition.sub(mDef.getVisualVars().getCorners().get(0));
-			}
 		}
 
 

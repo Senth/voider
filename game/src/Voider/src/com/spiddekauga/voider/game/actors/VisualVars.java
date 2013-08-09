@@ -12,9 +12,9 @@ import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.utils.Disposable;
+import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.spiddekauga.utils.GameTime;
-import com.spiddekauga.utils.JsonWrapper; import com.badlogic.gdx.utils.Json;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Actor.Pickup;
 import com.spiddekauga.voider.Config.Editor.Bullet;
@@ -715,7 +715,6 @@ public class VisualVars implements Json.Serializable, Disposable, IResourceCorne
 
 			// One corner, use standard size
 			if (mCorners.size() == 1) {
-				circle.setRadius(Config.Actor.Terrain.DEFAULT_CIRCLE_RADIUS);
 				radius = Config.Actor.Terrain.DEFAULT_CIRCLE_RADIUS;
 			}
 			// Else two corners, determine radius of circle
@@ -723,15 +722,18 @@ public class VisualVars implements Json.Serializable, Disposable, IResourceCorne
 				Vector2 lengthVector = Pools.vector2.obtain();
 				lengthVector.set(mCorners.get(0)).sub(mCorners.get(1));
 				radius = lengthVector.len();
-				circle.setRadius(radius);
 				Pools.vector2.free(lengthVector);
 			}
+			circle.setRadius(radius);
 
 			savedFixtureProperties.shape = circle;
 			addFixtureDef(savedFixtureProperties);
 
 			// Create vertices for the circle
 			ArrayList<Vector2> circleVertices = Geometry.createCircle(radius);
+			for (Vector2 vertex : circleVertices) {
+				vertex.sub(mCenterOffset);
+			}
 			mVertices = mEarClippingTriangulator.computeTriangles(circleVertices);
 			Collections.reverse(mVertices);
 		}

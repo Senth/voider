@@ -32,7 +32,7 @@ public class CResourceCornerRemoveExcessive extends Command {
 
 	@Override
 	public boolean execute() {
-		if (mResource.getCornerCount() < 3) {
+		if (mResource.getCornerCount() < 2) {
 			return false;
 		}
 
@@ -86,15 +86,19 @@ public class CResourceCornerRemoveExcessive extends Command {
 
 		// Test length between last corners, i.e. end - 1 -> end & end -> begin
 		// end - 1 -> end.
-		afterVector.set(corners.get(corners.size() - 1)).sub(corners.get(corners.size() - 2));
-		if (afterVector.len2() < Config.Editor.Actor.Visual.DRAW_NEW_CORNER_MIN_DIST_SQ) {
-			removeCorner(corners.size()-1);
+		if (corners.size() > 1) {
+			afterVector.set(corners.get(corners.size() - 1)).sub(corners.get(corners.size() - 2));
+			if (afterVector.len2() < Config.Editor.Actor.Visual.DRAW_NEW_CORNER_MIN_DIST_SQ) {
+				removeCorner(corners.size()-1);
+			}
 		}
 
 		// end -> begin
-		afterVector.set(corners.get(corners.size() - 1)).sub(corners.get(0));
-		if (afterVector.len2() < Config.Editor.Actor.Visual.DRAW_NEW_CORNER_MIN_DIST_SQ) {
-			removeCorner(corners.size()-1);
+		if (corners.size() > 1) {
+			afterVector.set(corners.get(corners.size() - 1)).sub(corners.get(0));
+			if (afterVector.len2() < Config.Editor.Actor.Visual.DRAW_NEW_CORNER_MIN_DIST_SQ) {
+				removeCorner(corners.size()-1);
+			}
 		}
 
 		Pools.vector2.free(afterVector);
