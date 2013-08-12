@@ -881,6 +881,8 @@ public abstract class ActorGui extends EditorGui {
 		TextField textField = new TextField("", textFieldStyle);
 		textField.setWidth(Editor.TEXT_FIELD_NUMBER_WIDTH);
 		mCollisionTable.add(textField);
+		new TooltipListener(label, "Collision Damage", Messages.replaceName(Messages.Tooltip.Actor.Collision.DAMAGE, actorTypeName));
+		new TooltipListener(textField, "Collision Damage", Messages.replaceName(Messages.Tooltip.Actor.Collision.DAMAGE, actorTypeName));
 		new TooltipListener(slider, "Collision Damage", Messages.replaceName(Messages.Tooltip.Actor.Collision.DAMAGE, actorTypeName));
 		new SliderListener(slider, textField, mInvoker) {
 			@Override
