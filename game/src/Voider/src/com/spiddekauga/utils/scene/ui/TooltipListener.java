@@ -305,6 +305,10 @@ public class TooltipListener implements EventListener {
 
 		int wrapWidth = (int) (Math.sqrt(prefHeight * prefWidth) * 1.5f);
 
+		if (wrapWidth > Gdx.graphics.getWidth() - Config.Gui.TOOLTIP_MARGIN_WIDTH) {
+			wrapWidth = Gdx.graphics.getWidth() - Config.Gui.TOOLTIP_MARGIN_WIDTH;
+		}
+
 		mLabel.setWidth(wrapWidth);
 		mLabel.setWrap(true);
 	}

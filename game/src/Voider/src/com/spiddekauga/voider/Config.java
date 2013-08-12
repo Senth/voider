@@ -529,8 +529,10 @@ public class Config {
 		public final static float TOOLTIP_HOVER_SHOW = 0.5f;
 		/** Seconds before tooltip is shown when pressing */
 		public final static float TOOLTIP_PRESS_SHOW = 1;
-		/** fade duration of the tooltip when hovering */
+		/** Fade duration of the tooltip when hovering */
 		public final static float TOOLTIP_HOVER_FADE_DURATION = 0.3f;
+		/** Tooltip margin for the screen */
+		public final static int TOOLTIP_MARGIN_WIDTH = 10;
 		/** Fade in duration of the label and window for error messages */
 		public final static float ERROR_MESSAGE_FADE_IN_DURATION = 0.3f;
 		/** Fade out duration of the label and window for error messages */
