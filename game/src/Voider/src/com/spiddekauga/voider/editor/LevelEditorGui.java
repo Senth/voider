@@ -494,7 +494,7 @@ class LevelEditorGui extends EditorGui {
 		mMenuTable.add(button);
 
 		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Options", textToggleStyle);
+			button = new TextButton("Options", textButtonStyle);
 		} else {
 			/** @todo default stub image button */
 			button = new ImageButton(editorSkin, "default-toggle");
