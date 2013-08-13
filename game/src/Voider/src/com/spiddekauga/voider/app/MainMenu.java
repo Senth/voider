@@ -1,12 +1,16 @@
 package com.spiddekauga.voider.app;
 
+import java.util.UUID;
+
 import com.spiddekauga.voider.editor.LevelEditor;
+import com.spiddekauga.voider.game.GameScene;
 import com.spiddekauga.voider.game.Level;
 import com.spiddekauga.voider.game.LevelDef;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceNames;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
+import com.spiddekauga.voider.scene.SelectDefScene;
 
 /**
  * Main menu of the scene
@@ -48,6 +52,11 @@ public class MainMenu extends Scene {
 			/** @todo handle corrupt file */
 		} else if (outcome == Outcomes.LOADING_FAILED_MISSING_FILE) {
 			/** @todo handle missing file */
+		} else if (outcome == Outcomes.DEF_SELECTED) {
+			LevelDef loadedLevelDef = ResourceCacheFacade.get(UUID.fromString(message), LevelDef.class);
+			GameScene gameScene = new GameScene(false, false);
+			gameScene.setLevelToLoad(loadedLevelDef);
+			SceneSwitcher.switchTo(gameScene);
 		} else {
 			if (!mGui.isInitialized()) {
 				mGui.initGui();
@@ -82,7 +91,9 @@ public class MainMenu extends Scene {
 	 * Goes to the downloaded content menu
 	 */
 	void gotoDownloadedContentMenu() {
-		/** @todo goes to the downloaded content menus */
+		/** @todo change the simple load level to a more advanced level */
+		SelectDefScene selectLevelScene = new SelectDefScene(LevelDef.class, false, true);
+		SceneSwitcher.switchTo(selectLevelScene);
 	}
 
 	/**
