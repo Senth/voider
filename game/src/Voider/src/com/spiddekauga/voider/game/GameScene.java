@@ -157,6 +157,11 @@ public class GameScene extends WorldScene {
 		if (mPlayerActor.getLife() <= 0 && !mInvulnerable) {
 			setOutcome(Outcomes.LEVEL_PLAYER_DIED);
 		}
+
+		// Have we reached the end of the level?
+		if (mLevel.hasCompletedLevel()) {
+			setOutcome(Outcomes.LEVEL_COMPLETED);
+		}
 	}
 
 	@Override

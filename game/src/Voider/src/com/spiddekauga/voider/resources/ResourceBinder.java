@@ -4,14 +4,15 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.spiddekauga.utils.Invoker;
-import com.spiddekauga.utils.JsonWrapper; import com.badlogic.gdx.utils.Json;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.editor.commands.CResourceBoundRemove;
 import com.spiddekauga.voider.game.Level;
 import com.spiddekauga.voider.scene.SceneSwitcher;
+import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Contains all the resources. Used for example in levels to later bind all
@@ -71,10 +72,13 @@ public class ResourceBinder implements Json.Serializable {
 	 * @param <ResourceType> type of resources to return
 	 * @param resourceType the resource type (including derived) to return
 	 * @return a list of resources that are instances of the specified type.
+	 * Don't forget to free the ArrayList once it has been used using
+	 * Pools.arraylist.free(resources);
 	 */
 	@SuppressWarnings("unchecked")
 	public <ResourceType> ArrayList<ResourceType> getResources(Class<ResourceType> resourceType) {
-		ArrayList<ResourceType> resources = new ArrayList<ResourceType>();
+		ArrayList<ResourceType> resources = Pools.arrayList.obtain();
+		resources.clear();
 
 		for (ObjectMap.Entry<UUID, IResource> entry : mResources.entries()) {
 			IResource resource = entry.value;

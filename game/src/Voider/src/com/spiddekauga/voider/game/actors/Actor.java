@@ -458,7 +458,6 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	public void write(Json json) {
 		super.write(json);
 
-		json.writeValue("REVISION", Config.REVISION);
 		json.writeValue("mLife", mLife);
 		json.writeValue("mPosition", mPosition);
 		json.writeValue("mTriggerInfos", mTriggerInfos);
@@ -531,7 +530,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 		BodyDef bodyDef = mDef.getBodyDefCopy();
 
 		// Set body information, i.e. position etc.
-		JsonValue bodyValues = jsonValue.getChild("mBody");
+		JsonValue bodyValues = jsonValue.get("mBody");
 		if (bodyValues != null) {
 			bodyDef.angle = json.readValue("angle", float.class, bodyValues);
 			bodyDef.angularVelocity = json.readValue("angular_velocity", float.class, bodyValues);

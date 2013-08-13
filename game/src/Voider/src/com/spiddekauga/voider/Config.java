@@ -570,6 +570,15 @@ public class Config {
 	}
 
 	/**
+	 * Level
+	 */
+	public static class Level {
+		/** How much offset from the last resource inside the level the
+		 * x-coordinate should appear */
+		public static float END_COORD_OFFSET = Graphics.WIDTH * Graphics.WORLD_SCALE * 1.25f;
+	}
+
+	/**
 	 * Menus
 	 */
 	public static class Menu {

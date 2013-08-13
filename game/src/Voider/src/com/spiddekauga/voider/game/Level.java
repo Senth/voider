@@ -6,10 +6,12 @@ import java.util.UUID;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.GdxRuntimeException;
+import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectMap;
-import com.spiddekauga.utils.JsonWrapper; import com.badlogic.gdx.utils.Json;
+import com.spiddekauga.utils.JsonWrapper;
 import com.spiddekauga.utils.ShapeRendererEx;
+import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.EnemyActor;
 import com.spiddekauga.voider.game.actors.EnemyActorDef;
@@ -29,6 +31,7 @@ import com.spiddekauga.voider.resources.Resource;
 import com.spiddekauga.voider.resources.ResourceBinder;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.UndefinedResourceTypeException;
+import com.spiddekauga.voider.utils.Pools;
 
 /**
  * A game level
@@ -89,9 +92,11 @@ public class Level extends Resource implements Disposable {
 			}
 
 		} else {
-			for (IResourceEditorUpdate resource : mResourceBinder.getResources(IResourceEditorUpdate.class)) {
+			ArrayList<IResourceEditorUpdate> resourceUpdates = mResourceBinder.getResources(IResourceEditorUpdate.class);
+			for (IResourceEditorUpdate resource : resourceUpdates) {
 				resource.updateEditor();
 			}
+			Pools.arrayList.free(resourceUpdates);
 		}
 	}
 
@@ -126,6 +131,7 @@ public class Level extends Resource implements Disposable {
 		Level level = json.fromJson(Level.class, jsonString);
 
 		level.mLevelDef = mLevelDef;
+		level.calculateEndPosition();
 
 		return level;
 	}
@@ -209,9 +215,11 @@ public class Level extends Resource implements Disposable {
 				resourceRender.render(shapeRenderer);
 			}
 		} else {
-			for (IResourceRender resourceRender : mResourceBinder.getResources(IResourceRender.class)) {
+			ArrayList<IResourceRender> resourceRenders = mResourceBinder.getResources(IResourceRender.class);
+			for (IResourceRender resourceRender : resourceRenders) {
 				resourceRender.render(shapeRenderer);
 			}
+			Pools.arrayList.free(resourceRenders);
 		}
 
 		if (mPlayerActor != null) {
@@ -224,9 +232,11 @@ public class Level extends Resource implements Disposable {
 	 * @param shapeRenderer shape renderer used for rendering
 	 */
 	public void renderEditor(ShapeRendererEx shapeRenderer) {
-		for (IResourceEditorRender resourceRender : mResourceBinder.getResources(IResourceEditorRender.class)) {
+		ArrayList<IResourceEditorRender> resourceRenders = mResourceBinder.getResources(IResourceEditorRender.class);
+		for (IResourceEditorRender resourceRender : resourceRenders) {
 			resourceRender.renderEditor(shapeRenderer);
 		}
+		Pools.arrayList.free(resourceRenders);
 	}
 
 	/**
@@ -259,7 +269,8 @@ public class Level extends Resource implements Disposable {
 	 * need to be the leader.
 	 */
 	public void createDefaultTriggers() {
-		for (EnemyActor enemy : mResourceBinder.getResources(EnemyActor.class)) {
+		ArrayList<EnemyActor> enemies = mResourceBinder.getResources(EnemyActor.class);
+		for (EnemyActor enemy : enemies) {
 			// Check enemy group
 			EnemyGroup enemyGroup = enemy.getEnemyGroup();
 			if (enemyGroup == null || enemy.isGroupLeader()) {
@@ -287,6 +298,7 @@ public class Level extends Resource implements Disposable {
 				}
 			}
 		}
+		Pools.arrayList.free(enemies);
 	}
 
 	/**
@@ -322,8 +334,16 @@ public class Level extends Resource implements Disposable {
 		// Remove this level first...
 		mResourceBinder.removeResource(getId());
 
-		for (Disposable disposable : mResourceBinder.getResources(Disposable.class)) {
+		ArrayList<Disposable> disposables = mResourceBinder.getResources(Disposable.class);
+		for (Disposable disposable : disposables) {
 			disposable.dispose();
+		}
+		Pools.arrayList.free(disposables);
+		if (mResourceRenders != null) {
+			Pools.arrayList.free(mResourceRenders);
+		}
+		if (mResourceUpdates != null) {
+			Pools.arrayList.free(mResourceUpdates);
 		}
 	}
 
@@ -360,7 +380,32 @@ public class Level extends Resource implements Disposable {
 		}
 
 		mLevelDef.setStartXCoord(startPosition);
+
+		Pools.arrayList.free(resources);
 	}
+
+	/**
+	 * Calculate the end position of the level
+	 */
+	public void calculateEndPosition() {
+		float endPosition = Float.MIN_VALUE;
+
+		ArrayList<IResourcePosition> resources = mResourceBinder.getResources(IResourcePosition.class);
+
+		for (IResourcePosition resource : resources) {
+			float position = resource.getPosition().x + resource.getBoundingRadius();
+
+			if (position > endPosition) {
+				endPosition = position;
+			}
+		}
+
+		endPosition += Config.Level.END_COORD_OFFSET;
+		mLevelDef.setEndXCoord(endPosition);
+
+		Pools.arrayList.free(resources);
+	}
+
 
 	@Override
 	public void write(Json json) {
@@ -390,6 +435,7 @@ public class Level extends Resource implements Disposable {
 		for (Trigger trigger : triggers) {
 			mTriggers.put(trigger.getId(), trigger);
 		}
+		Pools.arrayList.free(triggers);
 
 		// Get the actual LevelDef
 		UUID levelDefId = json.readValue("mLevelDefId", UUID.class, jsonValue);
