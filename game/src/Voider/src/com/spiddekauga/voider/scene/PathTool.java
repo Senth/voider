@@ -10,7 +10,9 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.World;
+import com.spiddekauga.utils.Collections;
 import com.spiddekauga.utils.Invoker;
+import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Editor;
 import com.spiddekauga.voider.editor.HitWrapper;
 import com.spiddekauga.voider.editor.LevelEditor;
@@ -26,6 +28,7 @@ import com.spiddekauga.voider.editor.commands.CResourceSelect;
 import com.spiddekauga.voider.game.Path;
 import com.spiddekauga.voider.game.actors.EnemyActor;
 import com.spiddekauga.voider.resources.IResource;
+import com.spiddekauga.voider.utils.Geometry;
 import com.spiddekauga.voider.utils.Pools;
 
 /**
@@ -186,10 +189,17 @@ public class PathTool extends TouchTool implements ISelectTool {
 
 
 			if (mHitBody != null) {
-				// Hit the path -> create corner
+				// Hit the path -> create corner in between
 				if (hitSelectedPath()) {
 					if (!mChangedSelectedSinceUp) {
-						createTempCorner();
+						mCornerIndexCurrent = getIndexOfPosBetweenCorners(mTouchCurrent);
+
+						if (mCornerIndexCurrent != -1) {
+							mSelectedPath.addCorner(mTouchCurrent, mCornerIndexCurrent);
+							mCornerAddedNow = true;
+						} else {
+							createTempCorner();
+						}
 					}
 				}
 				// Hit another path -> Select it
@@ -419,17 +429,10 @@ public class PathTool extends TouchTool implements ISelectTool {
 	 * Creates a temporary corner for the path
 	 */
 	private void createTempCorner() {
-		Vector2 localPos = Pools.vector2.obtain();
-
-		localPos.set(mTouchOrigin);
-
-		mSelectedPath.addCorner(localPos);
+		mSelectedPath.addCorner(mTouchCurrent);
 		mCornerIndexCurrent = mSelectedPath.getCornerCount() - 1;
 		mDragOrigin.set(mTouchOrigin);
 		mCornerAddedNow = true;
-
-
-		Pools.vector2.free(localPos);
 	}
 
 	/**
@@ -443,7 +446,36 @@ public class PathTool extends TouchTool implements ISelectTool {
 		// Set the command as chained if no corner exist in the actor
 		boolean chained = mSelectedPath.getCornerCount() == 0;
 
-		mInvoker.execute(new CResourceCornerAdd(mSelectedPath, cornerPos, mLevelEditor), chained);
+		mInvoker.execute(new CResourceCornerAdd(mSelectedPath, cornerPos, mCornerIndexCurrent, mLevelEditor), chained);
+	}
+
+	/**
+	 * Checks if a position is between two corners of the currently selected path
+	 * @param pos check if this is between two corners
+	 * @return index of the second corner, i.e. if we hit between corner 19 and 20
+	 * 20 will be returned, because that's where the new position would be placed.
+	 * -1 if we didn't hit between two corners.
+	 */
+	private int getIndexOfPosBetweenCorners(Vector2 pos) {
+		if (mSelectedPath == null) {
+			return -1;
+		}
+
+		int bestCorner = -1;
+		float bestDist = Config.Editor.Actor.Visual.NEW_CORNER_DIST_MAX_SQ;
+
+		ArrayList<Vector2> corners = mSelectedPath.getCorners();
+		for (int i = 0; i < corners.size(); ++i) {
+			int nextIndex = Collections.nextIndex(corners, i);
+			float distance = Geometry.distBetweenPointLineSegmentSq(corners.get(i), corners.get(nextIndex), pos);
+
+			if (distance < bestDist) {
+				bestCorner = nextIndex;
+				bestDist = distance;
+			}
+		}
+
+		return bestCorner;
 	}
 
 	/**
