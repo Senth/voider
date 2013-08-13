@@ -79,6 +79,7 @@ class LevelEditorGui extends EditorGui {
 		initPickup();
 		initStaticTerrain();
 		initMenu();
+		initEnemyMenu();
 		initEnemy();
 		initPath();
 		initTrigger();
@@ -131,30 +132,32 @@ class LevelEditorGui extends EditorGui {
 
 
 		// Enemy
-		switch (mLevelEditor.getEnemyState()) {
-		case ADD:
-			mWidgets.enemy.add.setChecked(true);
-			break;
+		if (mLevelEditor.getSelectedTool() == Tools.ENEMY) {
+			switch (mLevelEditor.getEnemyState()) {
+			case ADD:
+				mWidgets.enemy.add.setChecked(true);
+				break;
 
-		case SELECT:
-			mWidgets.enemy.select.setChecked(true);
-			break;
+			case SELECT:
+				mWidgets.enemy.select.setChecked(true);
+				break;
 
-		case MOVE:
-			mWidgets.enemy.move.setChecked(true);
-			break;
+			case MOVE:
+				mWidgets.enemy.move.setChecked(true);
+				break;
 
-		case REMOVE:
-			mWidgets.enemy.remove.setChecked(true);
-			break;
+			case REMOVE:
+				mWidgets.enemy.remove.setChecked(true);
+				break;
 
-		case SET_ACTIVATE_TRIGGER:
-			mWidgets.enemy.activateTrigger.setChecked(true);
-			break;
+			case SET_ACTIVATE_TRIGGER:
+				mWidgets.enemy.activateTrigger.setChecked(true);
+				break;
 
-		case SET_DEACTIVATE_TRIGGER:
-			mWidgets.enemy.deactivateTrigger.setChecked(true);
-			break;
+			case SET_DEACTIVATE_TRIGGER:
+				mWidgets.enemy.deactivateTrigger.setChecked(true);
+				break;
+			}
 		}
 
 		// Enemy options
@@ -172,22 +175,24 @@ class LevelEditorGui extends EditorGui {
 
 
 		// Path
-		switch (mLevelEditor.getPathState()) {
-		case ADD_CORNER:
-			mWidgets.path.add.setChecked(true);
-			break;
+		if (mLevelEditor.getSelectedTool() == Tools.PATH) {
+			switch (mLevelEditor.getPathState()) {
+			case ADD_CORNER:
+				mWidgets.path.add.setChecked(true);
+				break;
 
-		case SELECT:
-			mWidgets.path.select.setChecked(true);
-			break;
+			case SELECT:
+				mWidgets.path.select.setChecked(true);
+				break;
 
-		case MOVE:
-			mWidgets.path.move.setChecked(true);
-			break;
+			case MOVE:
+				mWidgets.path.move.setChecked(true);
+				break;
 
-		case REMOVE:
-			mWidgets.path.remove.setChecked(true);
-			break;
+			case REMOVE:
+				mWidgets.path.remove.setChecked(true);
+				break;
+			}
 		}
 
 		// Path options
@@ -262,22 +267,24 @@ class LevelEditorGui extends EditorGui {
 
 
 		// Trigger
-		switch (mLevelEditor.getTriggerState()) {
-		case ADD:
-			mWidgets.trigger.add.setChecked(true);
-			break;
+		if (mLevelEditor.getSelectedTool() == Tools.TRIGGER) {
+			switch (mLevelEditor.getTriggerState()) {
+			case ADD:
+				mWidgets.trigger.add.setChecked(true);
+				break;
 
-		case MOVE:
-			mWidgets.trigger.move.setChecked(true);
-			break;
+			case MOVE:
+				mWidgets.trigger.move.setChecked(true);
+				break;
 
-		case REMOVE:
-			mWidgets.trigger.remove.setChecked(true);
-			break;
+			case REMOVE:
+				mWidgets.trigger.remove.setChecked(true);
+				break;
 
-		case SELECT:
-			// Does nothing
-			break;
+			case SELECT:
+				// Does nothing
+				break;
+			}
 		}
 	}
 
@@ -668,13 +675,9 @@ class LevelEditorGui extends EditorGui {
 	/**
 	 * Initializes Enemy tool GUI
 	 */
-	private void initEnemy() {
+	private void initEnemyMenu() {
 		Skin generalSkin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
-		TextButtonStyle textButtonStyle = generalSkin.get("default", TextButtonStyle.class);
 		TextButtonStyle textToggleStyle = generalSkin.get("toggle", TextButtonStyle.class);
-		SliderStyle sliderStyle = generalSkin.get("default", SliderStyle.class);
-		TextFieldStyle textFieldStyle = generalSkin.get("default", TextFieldStyle.class);
-		LabelStyle labelStyle = generalSkin.get("default", LabelStyle.class);
 		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.UI_EDITOR_BUTTONS);
 
 
@@ -696,7 +699,9 @@ class LevelEditorGui extends EditorGui {
 		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onChecked(boolean checked) {
-				mLevelEditor.switchTool(Tools.ENEMY);
+				if (checked) {
+					mLevelEditor.switchTool(Tools.ENEMY);
+				}
 			}
 		};
 		mHiders.enemy.setButton(button);
@@ -715,7 +720,9 @@ class LevelEditorGui extends EditorGui {
 		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onChecked(boolean checked) {
-				mLevelEditor.switchTool(Tools.PATH);
+				if (checked) {
+					mLevelEditor.switchTool(Tools.PATH);
+				}
 			}
 		};
 		mHiders.path.setButton(button);
@@ -734,16 +741,27 @@ class LevelEditorGui extends EditorGui {
 		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onChecked(boolean checked) {
-				mLevelEditor.switchTool(Tools.TRIGGER);
+				if (checked) {
+					mLevelEditor.switchTool(Tools.TRIGGER);
+				}
 			}
 		};
 		mHiders.trigger.setButton(button);
+	}
 
+	private void initEnemy() {
+		Skin generalSkin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
+		TextButtonStyle textButtonStyle = generalSkin.get("default", TextButtonStyle.class);
+		TextButtonStyle textToggleStyle = generalSkin.get("toggle", TextButtonStyle.class);
+		SliderStyle sliderStyle = generalSkin.get("default", SliderStyle.class);
+		TextFieldStyle textFieldStyle = generalSkin.get("default", TextFieldStyle.class);
+		LabelStyle labelStyle = generalSkin.get("default", LabelStyle.class);
+		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.UI_EDITOR_BUTTONS);
 
-		// ---- Enemy ----
 		mEnemyTable.row();
 		GuiCheckCommandCreator enemyInnerMenu = new GuiCheckCommandCreator(mInvoker);
 		ButtonGroup menuGroup = new ButtonGroup();
+		Button button = null;
 		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Select", textToggleStyle);
 		} else {
@@ -755,7 +773,7 @@ class LevelEditorGui extends EditorGui {
 		menuGroup.add(button);
 		mEnemyTable.add(button);
 		button.addListener(enemyInnerMenu);
-		tooltipListener = new TooltipListener(button, "Select enemy", Messages.Tooltip.Level.Enemy.SELECT);
+		TooltipListener tooltipListener = new TooltipListener(button, "Select enemy", Messages.Tooltip.Level.Enemy.SELECT);
 		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onChecked(boolean checked) {
