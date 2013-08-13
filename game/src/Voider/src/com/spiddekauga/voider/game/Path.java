@@ -7,13 +7,13 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.ChainShape;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Disposable;
+import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
-import com.spiddekauga.utils.JsonWrapper; import com.badlogic.gdx.utils.Json;
 import com.spiddekauga.utils.ShapeRendererEx;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.voider.Config;
@@ -60,8 +60,7 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 		mCorners.add(index, Pools.vector2.obtain().set(corner));
 
 		if (mWorld != null) {
-			destroyBodyFixture();
-			createFixture();
+			updateVerticesBodyFixtures();
 
 			if (mSelected) {
 				createBodyCorner(corner, index);
@@ -72,8 +71,18 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 			updateEnemyPositions();
 		}
 
-		createVertices();
 		updateRightestCorner();
+	}
+
+	/**
+	 * Updates the path's vertices, body/fixtures
+	 */
+	private void updateVerticesBodyFixtures() {
+		if (mWorld != null) {
+			createVertices();
+			destroyBodyFixture();
+			createFixture();
+		}
 	}
 
 	/**
@@ -90,13 +99,13 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 			corner.sub(diff);
 		}
 
-		resetBodyCorners();
-		destroyBodyFixture();
-		createFixture();
+		if (mWorld != null) {
+			resetBodyCorners();
+			updateVerticesBodyFixtures();
+		}
 
 		updateEnemyPositions();
 
-		createVertices();
 		updateRightestCorner();
 
 		Pools.vector2.free(diff);
@@ -157,9 +166,9 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 
 		if (index >= 0 && index < mCorners.size()) {
 			removedCorner = mCorners.remove(index);
-			destroyBodyCorners(index);;
-			destroyBodyFixture();
-			createFixture();
+			destroyBodyCorners(index);
+
+			updateVerticesBodyFixtures();
 
 			if (index == 0) {
 				updateEnemyPositions();
@@ -170,8 +179,6 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 			}
 		}
 
-		createVertices();
-
 		return removedCorner;
 	}
 
@@ -180,15 +187,13 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 		if (index >= 0 && index < mCorners.size()) {
 			mCorners.get(index).set(newPos);
 			resetBodyCorners();
-			destroyBodyFixture();
-			createFixture();
+			updateVerticesBodyFixtures();
 
 			if (index == 0) {
 				updateEnemyPositions();
 			}
 		}
 
-		createVertices();
 		updateRightestCorner();
 	}
 
@@ -213,11 +218,6 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 			if (mBody != null) {
 				mBody.getWorld().destroyBody(mBody);
 				mBody = null;
-			}
-
-			if (mFixtureDef != null && mFixtureDef.shape != null) {
-				mFixtureDef.shape.dispose();
-				mFixtureDef = null;
 			}
 		}
 	}
@@ -260,8 +260,7 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 			mBody = mWorld.createBody(new BodyDef());
 			mBody.setUserData(this);
 
-			createFixture();
-			createVertices();
+			updateVerticesBodyFixtures();
 		}
 	}
 
@@ -308,10 +307,6 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 
 	@Override
 	public void dispose() {
-		if (mFixtureDef != null && mFixtureDef.shape != null) {
-			mFixtureDef.shape.dispose();
-			mFixtureDef.shape = null;
-		}
 		if (mBody != null) {
 			destroyBody();
 			destroyBodyCorners();
@@ -438,45 +433,41 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 			Pools.vector2.free(diff);
 		}
 
-		if (mFixtureDef == null) {
-			mFixtureDef = new FixtureDef();
-			mFixtureDef.filter.categoryBits = ActorFilterCategories.NONE;
-			mFixtureDef.filter.groupIndex = ActorFilterCategories.NONE;
-		} else {
-			if (mFixtureDef.shape != null) {
-				mFixtureDef.shape.dispose();
-				mFixtureDef.shape = null;
-			}
+		if (mBody == null || mWorld == null || mVertices == null) {
+			return;
 		}
 
-		if (mCorners.size() >= 2) {
-			// Create shape
-			ChainShape chainShape = new ChainShape();
-			Vector2[] tempArray = new Vector2[mCorners.size()];
-			chainShape.createChain(mCorners.toArray(tempArray));
-			mFixtureDef.shape = chainShape;
-		} else if (mCorners.size() >= 1) {
-			ChainShape chainShape = new ChainShape();
-			Vector2[] tempArray = new Vector2[2];
 
-			for (int i = 0; i < tempArray.length; ++i) {
-				tempArray[i] = Pools.vector2.obtain();
-			}
-
-			tempArray[0].set(mCorners.get(0));
-			tempArray[1].set(mCorners.get(0)).add(Config.Editor.Path.DEFAULT_ADD_PATH);
-
-			chainShape.createChain(tempArray);
-			mFixtureDef.shape = chainShape;
-
-			for (Vector2 tempPosition : tempArray) {
-				Pools.vector2.free(tempPosition);
-			}
+		// Temporary vertices for creating polygon shape
+		Vector2[] triangleVertices = new Vector2[3];
+		for (int i = 0; i < triangleVertices.length; ++i) {
+			triangleVertices[i] = Pools.vector2.obtain();
 		}
 
-		if (mBody != null && mFixtureDef != null && mFixtureDef.shape != null) {
-			mBody.createFixture(mFixtureDef);
+		FixtureDef fixtureDef = new FixtureDef();
+		fixtureDef.filter.categoryBits = ActorFilterCategories.NONE;
+		fixtureDef.filter.groupIndex = ActorFilterCategories.NONE;
+
+		// Create (triangle) polygon shapes and fixture defs
+		for (int triangle = 0; triangle < mVertices.size() - 2; triangle += 3) {
+			// Copy values so that we have an array instead
+			for (int i = 0; i < 3; ++i) {
+				triangleVertices[i].set(mVertices.get(triangle + i));
+			}
+
+			PolygonShape polygonShape = new PolygonShape();
+			polygonShape.set(triangleVertices);
+			fixtureDef.shape = polygonShape;
+
+			// Create fixtures
+			mBody.createFixture(fixtureDef);
+
+			// Dispose
+			polygonShape.dispose();
 		}
+
+		// Dispose
+		Pools.vector2.freeAll(triangleVertices);
 	}
 
 	/**
@@ -484,7 +475,7 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 	 */
 	@SuppressWarnings("unchecked")
 	private void destroyBodyFixture() {
-		if (mFixtureDef != null && mBody != null && mFixtureDef.shape != null) {
+		if (mBody != null) {
 			ArrayList<Fixture> fixtures = (ArrayList<Fixture>) mBody.getFixtureList().clone();
 			for (Fixture fixture : fixtures) {
 				mBody.destroyFixture(fixture);
@@ -617,8 +608,6 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 	private World mWorld = null;
 	/** Body of the path */
 	private Body mBody = null;
-	/** Fixtures for the path */
-	private FixtureDef mFixtureDef = null;
 	/** Enemies bound to this path */
 	private ArrayList<EnemyActor> mEnemies = new ArrayList<EnemyActor>();
 
