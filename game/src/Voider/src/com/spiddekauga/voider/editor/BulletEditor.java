@@ -7,6 +7,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector2;
+import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.utils.Invoker;
 import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
@@ -28,6 +29,7 @@ import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.scene.SelectDefScene;
 import com.spiddekauga.voider.scene.TouchTool;
 import com.spiddekauga.voider.scene.WorldScene;
+import com.spiddekauga.voider.utils.Messages;
 import com.spiddekauga.voider.utils.Pools;
 
 /**
@@ -95,6 +97,11 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 		if (mBulletActor != null && mDef.getVisualVars().getShapeType() == ActorShapeTypes.CUSTOM) {
 			//			mBulletActor.update(Gdx.graphics.getDeltaTime());
 			mBulletActor.updateEditor();
+		}
+
+		if (shallAutoSave()) {
+			saveDef();
+			mGui.showErrorMessage(Messages.Info.SAVING);
 		}
 	}
 
@@ -200,6 +207,7 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 			}
 		}
 
+		mSaveTimeLast = GameTime.getTotalGlobalTimeElapsed();
 		mUnsaved = false;
 	}
 
@@ -470,6 +478,11 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 		// Does nothing
 	}
 
+	@Override
+	public boolean shallAutoSave() {
+		return !mUnsaved && GameTime.getTotalGlobalTimeElapsed() - mSaveTimeLast >= Config.Editor.AUTO_SAVE_TIME;
+	}
+
 	/**
 	 * Sets the minimum cooldown of the weapon
 	 * @param time new cooldown of the weapon
@@ -546,6 +559,8 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 	private Weapon mWeapon = new Weapon();
 	/** If the bullet is unsaved since it was edited */
 	private boolean mUnsaved = false;
+	/** Last time we saved */
+	private float mSaveTimeLast = GameTime.getTotalGlobalTimeElapsed();
 	/** Current bullet definition */
 	private BulletActorDef mDef = new BulletActorDef();
 	/** Current selection scene */

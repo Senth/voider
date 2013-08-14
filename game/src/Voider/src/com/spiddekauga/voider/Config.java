@@ -434,6 +434,8 @@ public class Config {
 		public final static int DESCRIPTION_LENGTH_MAX = 256;
 		/** Maximum length of story */
 		public final static int STORY_LENGTH_MAX = 512;
+		/** Auto save time, in seconds */
+		public final static float AUTO_SAVE_TIME = 300;
 
 		/** Corner pick color */
 		public final static Color CORNER_COLOR = new Color(0.75f, 0, 0, 1);
@@ -537,6 +539,8 @@ public class Config {
 		public final static float ERROR_MESSAGE_FADE_IN_DURATION = 0.3f;
 		/** Fade out duration of the label and window for error messages */
 		public final static float ERROR_MESSAGE_FADE_OUT_DURATION = 1.0f;
+		/** Minimum time shown */
+		public final static float ERROR_MESSAGE_TIME_SHOWN_MIN = 2.0f;
 		/** Time to display error message per character */
 		public final static float ERROR_MESSAGE_TIME_PER_CHARACTER = 0.08f;
 

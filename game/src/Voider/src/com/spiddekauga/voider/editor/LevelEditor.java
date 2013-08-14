@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector2;
+import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.utils.Invoker;
 import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.utils.Scroller;
@@ -52,6 +53,7 @@ import com.spiddekauga.voider.scene.SelectDefScene;
 import com.spiddekauga.voider.scene.TouchTool;
 import com.spiddekauga.voider.scene.TriggerTool;
 import com.spiddekauga.voider.scene.WorldScene;
+import com.spiddekauga.voider.utils.Messages;
 import com.spiddekauga.voider.utils.Pools;
 
 /**
@@ -115,6 +117,11 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 			mCreatedScrollCommand = true;
 
 			Pools.vector2.free(scrollCameraCurrent);
+		}
+
+		if (shallAutoSave()) {
+			saveDef();
+			mGui.showErrorMessage(Messages.Info.SAVING);
 		}
 	}
 
@@ -615,6 +622,7 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 			}
 		}
 
+		mSaveTimeLast = GameTime.getTotalGlobalTimeElapsed();
 		mUnsaved = false;
 	}
 
@@ -1092,6 +1100,11 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 		SceneSwitcher.switchTo(scene);
 	}
 
+	@Override
+	public boolean shallAutoSave() {
+		return mUnsaved && GameTime.getTotalGlobalTimeElapsed() - mSaveTimeLast >= Config.Editor.AUTO_SAVE_TIME;
+	}
+
 	/**
 	 * Select enemy
 	 */
@@ -1350,4 +1363,6 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 	private TouchTool[] mTouchTools = new TouchTool[Tools.values().length];
 	/** Is unsaved since last edit */
 	private boolean mUnsaved = false;
+	/** Last time we saved */
+	private float mSaveTimeLast = GameTime.getTotalGlobalTimeElapsed();
 }

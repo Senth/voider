@@ -82,6 +82,14 @@ public class Messages {
 	}
 
 	/**
+	 * Info messages
+	 */
+	public static class Info {
+		/** Text displayed when saving */
+		public static String SAVING = "Saving...";
+	}
+
+	/**
 	 * Messages for level editor
 	 */
 	public static class Level {

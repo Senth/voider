@@ -11,7 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Disposable;
 import com.spiddekauga.utils.scene.ui.AlignTable;
-import com.spiddekauga.utils.scene.ui.ErrorMessageShower;
+import com.spiddekauga.utils.scene.ui.MessageShower;
 import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceNames;
@@ -177,7 +177,7 @@ public abstract class Gui implements Disposable {
 	public void initGui() {
 		MsgBoxExecuter.fadeDuration = 0.01f;
 		if (ResourceCacheFacade.isLoaded(ResourceNames.UI_GENERAL) && mErrorMessageShower == null) {
-			mErrorMessageShower = new ErrorMessageShower(mStage);
+			mErrorMessageShower = new MessageShower(mStage);
 		}
 		mInitialized = true;
 	}
@@ -267,7 +267,7 @@ public abstract class Gui implements Disposable {
 	/** Stage for the GUI */
 	private Stage mStage = new Stage();
 	/** Error message shower */
-	private ErrorMessageShower mErrorMessageShower = null;
+	private MessageShower mErrorMessageShower = null;
 	/** Active message boxes */
 	private ArrayList<MsgBoxExecuter> mActiveMsgBoxes = new ArrayList<MsgBoxExecuter>();
 	/** Inactive/free message boxes */

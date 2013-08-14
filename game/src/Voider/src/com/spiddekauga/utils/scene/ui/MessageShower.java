@@ -22,12 +22,12 @@ import com.spiddekauga.voider.utils.Pools;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class ErrorMessageShower {
+public class MessageShower {
 	/**
 	 * Creates the error message shower for the specified stage
 	 * @param stage the stage to show the messages in
 	 */
-	public ErrorMessageShower(Stage stage) {
+	public MessageShower(Stage stage) {
 		Skin skin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
 		mWindow = new Window("", skin);
 		mWindow.setPosition(0, Gdx.graphics.getHeight());
@@ -64,7 +64,7 @@ public class ErrorMessageShower {
 		packAndPlaceWindow();
 
 		// Set timer for fadeIn - display - fadeOut - remove - free
-		float showDuration = Config.Gui.ERROR_MESSAGE_TIME_PER_CHARACTER * message.length();
+		float showDuration = Config.Gui.ERROR_MESSAGE_TIME_SHOWN_MIN + Config.Gui.ERROR_MESSAGE_TIME_PER_CHARACTER * message.length();
 		Action fadeOutAction = Actions.parallel(fadeOut(Config.Gui.ERROR_MESSAGE_FADE_OUT_DURATION), Actions.run(mWindowFadeOut));
 		messageLabel.addAction(sequence(fadeIn(Config.Gui.ERROR_MESSAGE_FADE_IN_DURATION), delay(showDuration), fadeOutAction, removeActor(), Actions.run(new FreeLabel(messageLabel))));
 	}
