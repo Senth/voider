@@ -199,14 +199,17 @@ public class GameScene extends WorldScene {
 		if (mLevelToLoad != null) {
 			ResourceCacheFacade.load(mLevelToLoad.getLevelId(), Level.class, mLevelToLoad);
 		}
+		ResourceCacheFacade.load(ResourceNames.UI_GENERAL);
+		ResourceCacheFacade.load(ResourceNames.SHADER_DEFAULT);
 	}
 
 	@Override
 	public void unloadResources() {
 		if (mLevelToLoad != null) {
 			ResourceCacheFacade.unload(mLevel, mLevel.getDef());
-			ResourceCacheFacade.unload(mLevelToLoad, true);
 		}
+		ResourceCacheFacade.unload(ResourceNames.UI_GENERAL);
+		ResourceCacheFacade.unload(ResourceNames.SHADER_DEFAULT);
 	}
 
 

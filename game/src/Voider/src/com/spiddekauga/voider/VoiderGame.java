@@ -38,7 +38,7 @@ public class VoiderGame implements ApplicationListener {
 
 		/** @TODO set main menu as start screen */
 
-		testEditor();
+		testMainMenu();
 		//		testSavePickups();
 		//		testSplashScreen();
 	}
@@ -62,6 +62,14 @@ public class VoiderGame implements ApplicationListener {
 	/**
 	 * Testing the editor
 	 */
+	private void testMainMenu() {
+		SceneSwitcher.switchTo(new MainMenu());
+	}
+
+	/**
+	 * Testing editor
+	 */
+	@SuppressWarnings("unused")
 	private void testEditor() {
 		LevelEditor levelEditor = new LevelEditor();
 
@@ -74,6 +82,7 @@ public class VoiderGame implements ApplicationListener {
 	/**
 	 * Test splash screen
 	 */
+	@SuppressWarnings("unused")
 	private void testSplashScreen() {
 		SceneSwitcher.switchTo(new MainMenu(), new SplashScreen());
 	}

@@ -39,11 +39,13 @@ public class MainMenu extends Scene {
 	@Override
 	public void loadResources() {
 		ResourceCacheFacade.load(ResourceNames.UI_GENERAL);
+		ResourceCacheFacade.loadAllOf(LevelDef.class, false);
 	}
 
 	@Override
 	public void unloadResources() {
 		ResourceCacheFacade.unload(ResourceNames.UI_GENERAL);
+		ResourceCacheFacade.unloadAllOf(LevelDef.class, false);
 	}
 
 	@Override

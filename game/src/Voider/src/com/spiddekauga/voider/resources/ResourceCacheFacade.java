@@ -14,6 +14,7 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.GdxRuntimeException;
+import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.Level;
 import com.spiddekauga.voider.game.LevelDef;
 import com.spiddekauga.voider.game.actors.BossActorDef;
@@ -414,6 +415,14 @@ public class ResourceCacheFacade {
 	 * Disposes all the resources allocated.
 	 */
 	public static void dispose() {
+		if (Config.DEBUG_TESTS) {
+			// All assets should be unloaded by now
+			if (mAssetManager.getLoadedAssets() > 0) {
+				Gdx.app.error("Assets", "All assets have not been unloaded!");
+				Gdx.app.error("Assets", mAssetManager.getDiagnostics());
+			}
+		}
+
 		mDependencyLoader.dispose();
 		mAssetManager.dispose();
 		mLoadQueue.clear();
