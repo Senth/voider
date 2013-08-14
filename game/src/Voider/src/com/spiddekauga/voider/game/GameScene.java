@@ -17,6 +17,7 @@ import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.PlayerActor;
+import com.spiddekauga.voider.game.actors.PlayerActorDef;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceNames;
 import com.spiddekauga.voider.resources.UndefinedResourceTypeException;
@@ -45,19 +46,6 @@ public class GameScene extends WorldScene {
 
 		Actor.setEditorActive(false);
 		mWorld.setContactListener(mCollisionResolver);
-
-		mPlayerActor = new PlayerActor();
-		mPlayerActor.createBody();
-
-
-		// Create mouse joint
-		BodyDef bodyDef = new BodyDef();
-		mMouseBody = mWorld.createBody(bodyDef);
-		mMouseJointDef.frequencyHz = Config.Game.MouseJoint.FREQUENCY;
-		mMouseJointDef.bodyA = mMouseBody;
-		mMouseJointDef.bodyB = mPlayerActor.getBody(); // TODO REMOVE, set in onActivate instead
-		mMouseJointDef.collideConnected = true;
-		mMouseJointDef.maxForce = Config.Game.MouseJoint.FORCE_MAX;
 	}
 
 	/**
@@ -66,7 +54,6 @@ public class GameScene extends WorldScene {
 	 */
 	public void setLevel(Level level) {
 		mLevel = level;
-		mLevel.setPlayer(mPlayerActor);
 		mLevel.addResource(mLevel);
 		mLevel.bindResources();
 		mLevel.run();
@@ -77,12 +64,8 @@ public class GameScene extends WorldScene {
 
 		updateCameraPosition();
 		createBorder();
-		resetPlayerPosition();
 
 		Actor.setLevel(mLevel);
-
-		mPlayerStats = new PlayerStats(mLevel.getDef().getStartXCoord(), mLevel.getSpeed());
-		mGui.resetValues();
 	}
 
 	/**
@@ -110,6 +93,7 @@ public class GameScene extends WorldScene {
 		if (outcome == Outcomes.LOADING_SUCCEEDED) {
 			mGui.initGui();
 
+			// Load level
 			if (mLevelToLoad != null) {
 				try {
 					Level level = ResourceCacheFacade.get(mLevelToLoad.getLevelId(), Level.class);
@@ -118,6 +102,9 @@ public class GameScene extends WorldScene {
 					Gdx.app.error("GameScene", e.toString());
 				}
 			}
+
+			createPlayerShip();
+			createMouseJoint();
 		}
 
 		/** @TODO game completed, aborted? */
@@ -157,9 +144,16 @@ public class GameScene extends WorldScene {
 		mLevel.update();
 		updateCameraPosition();
 
-		// Is the player dead?
+		// Is the player dead? Loose a life or game over
 		if (mPlayerActor.getLife() <= 0 && !mInvulnerable) {
-			setOutcome(Outcomes.LEVEL_PLAYER_DIED);
+
+			if (mPlayerStats.getExtraLives() > 0) {
+				mPlayerActor.resetLife();
+				mPlayerStats.decreaseExtraLives();
+				mPlayerLifeShips.remove(mPlayerLifeShips.size() - 1).dispose();
+			} else {
+				setOutcome(Outcomes.LEVEL_PLAYER_DIED);
+			}
 		}
 
 		// Have we reached the end of the level?
@@ -167,7 +161,10 @@ public class GameScene extends WorldScene {
 			setOutcome(Outcomes.LEVEL_COMPLETED);
 		}
 
+
+		// GUI
 		mGui.resetValues();
+		updateLifePosition();
 	}
 
 	@Override
@@ -188,7 +185,11 @@ public class GameScene extends WorldScene {
 			mBulletDestroyer.render(mShapeRenderer);
 			mPlayerActor.render(mShapeRenderer);
 
+
+			// GUI
 			renderHealth();
+			renderLives();
+
 
 			mShapeRenderer.pop();
 		}
@@ -212,6 +213,29 @@ public class GameScene extends WorldScene {
 		}
 	}
 
+	/**
+	 * Update life positions
+	 */
+	private void updateLifePosition() {
+		Vector2 position = Pools.vector2.obtain();
+		position.x = mLevel.getXCoord() - mPlayerActor.getBoundingRadius() - Config.Game.LIVES_OFFSET_POSITION;
+		position.y = -SceneSwitcher.getWorldHeight()/2 + Config.Game.LIVES_OFFSET_POSITION + mPlayerActor.getBoundingRadius();
+		for (PlayerActor lifeActor : mPlayerLifeShips) {
+			lifeActor.setPosition(position);
+			position.y += mPlayerActor.getBoundingRadius()*2 + Config.Game.LIVES_OFFSET_POSITION;
+		}
+		Pools.vector2.free(position);
+	}
+
+	/**
+	 * Render lives
+	 */
+	private void renderLives() {
+		for (PlayerActor lifeActor : mPlayerLifeShips) {
+			lifeActor.render(mShapeRenderer);
+		}
+	}
+
 	// --------------------------------
 	//		Resource loading etc.
 	// --------------------------------
@@ -227,6 +251,7 @@ public class GameScene extends WorldScene {
 		}
 		ResourceCacheFacade.load(ResourceNames.UI_GENERAL);
 		ResourceCacheFacade.load(ResourceNames.SHADER_DEFAULT);
+		ResourceCacheFacade.loadAllOf(PlayerActorDef.class, true);
 	}
 
 	@Override
@@ -236,6 +261,7 @@ public class GameScene extends WorldScene {
 		}
 		ResourceCacheFacade.unload(ResourceNames.UI_GENERAL);
 		ResourceCacheFacade.unload(ResourceNames.SHADER_DEFAULT);
+		ResourceCacheFacade.unloadAllOf(PlayerActorDef.class, true);
 	}
 
 
@@ -324,6 +350,45 @@ public class GameScene extends WorldScene {
 	}
 
 	/**
+	 * Creates the mouse joint
+	 */
+	private void createMouseJoint() {
+		BodyDef bodyDef = new BodyDef();
+		mMouseBody = mWorld.createBody(bodyDef);
+		mMouseJointDef.frequencyHz = Config.Game.MouseJoint.FREQUENCY;
+		mMouseJointDef.bodyA = mMouseBody;
+		mMouseJointDef.bodyB = mPlayerActor.getBody(); // TODO REMOVE, set in onActivate instead
+		mMouseJointDef.collideConnected = true;
+		mMouseJointDef.maxForce = Config.Game.MouseJoint.FORCE_MAX;
+	}
+
+	/**
+	 * Create player ship
+	 */
+	private void createPlayerShip() {
+		// Find first available player ship
+		java.util.List<PlayerActorDef> ships = ResourceCacheFacade.get(PlayerActorDef.class);
+		if (ships.isEmpty()) {
+			setOutcome(Outcomes.LOADING_FAILED_MISSING_FILE, "Could not find any ships");
+			return;
+		}
+
+		mPlayerActor = new PlayerActor(ships.get(0));
+		mPlayerActor.createBody();
+		resetPlayerPosition();
+
+		// Set lives
+		mLevel.setPlayer(mPlayerActor);
+		mPlayerStats = new PlayerStats(mLevel.getDef().getStartXCoord(), mLevel.getSpeed());
+		mGui.resetValues();
+
+		// Create life ships
+		for (int i = 0; i < mPlayerStats.getExtraLives(); ++i) {
+			mPlayerLifeShips.add((PlayerActor) mPlayerActor.copy());
+		}
+	}
+
+	/**
 	 * Updates the camera's position depending on where on the level location
 	 */
 	private void updateCameraPosition() {
@@ -390,6 +455,8 @@ public class GameScene extends WorldScene {
 	private Vector2 mBodyShepherdMaxPos = new Vector2();
 	/** Player score */
 	private PlayerStats mPlayerStats = null;
+	/** Player life ships */
+	private ArrayList<PlayerActor> mPlayerLifeShips = new ArrayList<PlayerActor>();
 
 	// MOUSE JOINT
 	/** Screen coordinate for the cursor */

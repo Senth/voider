@@ -293,8 +293,8 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 
 			if (mBody != null) {
 				createFixtures();
-				calculateRotatedVertices(true);
 			}
+			calculateRotatedVertices(true);
 		}
 	}
 
@@ -304,7 +304,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	 */
 	public Vector2 getWorldOffset() {
 		Vector2 offsetPosition = Pools.vector2.obtain();
-		offsetPosition.set(mBody.getPosition());
+		offsetPosition.set(mPosition);
 
 		// Offset for circle
 		if (mDef.getVisualVars().getShapeType() == ActorShapeTypes.CUSTOM && mDef.getVisualVars().getCornerCount() >= 1 && mDef.getVisualVars().getCornerCount() <= 2) {
@@ -322,10 +322,6 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	 */
 	@Override
 	public void render(ShapeRendererEx shapeRenderer) {
-		if (mBody == null) {
-			return;
-		}
-
 		Vector2 offsetPosition = getWorldOffset();
 
 		// Draw regular filled shape
@@ -435,6 +431,13 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	 */
 	public float getLife() {
 		return mLife;
+	}
+
+	/**
+	 * Resets the life
+	 */
+	public void resetLife() {
+		mLife = getDef().getMaxLife();
 	}
 
 	/**
@@ -976,20 +979,24 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	 * @param forceRecalculation this forces recalculation
 	 */
 	protected void calculateRotatedVertices(boolean forceRecalculation) {
+		float currentRotation = mDef.getBodyDef().angle;
+		if (mBody != null) {
+			currentRotation = mBody.getAngle();
+		}
+
 		// Update vertices
-		if (mRotationPrevious != getBody().getAngle() || mRotatedVertices == null || forceRecalculation) {
-			mRotationPrevious = getBody().getAngle();
+		if (mRotationPrevious != currentRotation || mRotatedVertices == null || forceRecalculation) {
+			mRotationPrevious = currentRotation;
 
 			if (mRotatedVertices != null) {
 				Pools.vector2.freeDuplicates(mRotatedVertices);
 				Pools.arrayList.free(mRotatedVertices);
 			}
 
-			float rotation = MathUtils.radiansToDegrees * getBody().getAngle();
+			float rotation = MathUtils.radiansToDegrees * currentRotation;
 
 			mRotatedVertices = copyVectorArray(mDef.getVisualVars().getTriangleVertices());
 			if (mRotatedVertices != null) {
-				//				Geometry.moveVertices(mRotatedVertices, getDef().getVisualVars().getCenterOffset(), true);
 				Geometry.rotateVertices(mRotatedVertices, rotation, true);
 			}
 		}

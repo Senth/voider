@@ -15,7 +15,16 @@ public class PlayerActor extends com.spiddekauga.voider.game.actors.Actor {
 	 * Creates a default player
 	 */
 	public PlayerActor() {
-		super(new PlayerActorDef());
+		this(new PlayerActorDef());
+	}
+
+	/**
+	 * Creates a player from the specified actor definition
+	 * @param playerActorDef player actor definition to create the player from
+	 */
+	public PlayerActor(PlayerActorDef playerActorDef) {
+		super(playerActorDef);
+		setDef(playerActorDef);
 	}
 
 	/**

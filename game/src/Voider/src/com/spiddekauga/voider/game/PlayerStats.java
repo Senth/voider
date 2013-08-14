@@ -67,6 +67,22 @@ public class PlayerStats {
 		return Integer.toString((int)(multiplier + 0.5f));
 	}
 
+	/**
+	 * @return number of extra lives
+	 */
+	public int getExtraLives() {
+		return mExtraLives;
+	}
+
+	/**
+	 * Decreases the number of extra lives
+	 */
+	public void decreaseExtraLives() {
+		--mExtraLives;
+	}
+
+	/** Number of lives left */
+	private int mExtraLives = 2;
 	/** Speed of the level, used for calculating multiplier values */
 	private float mLevelSpeed = 1;
 	/** Current multiplier */

@@ -492,6 +492,8 @@ public class Config {
 		public final static float SCORE_MULTIPLIER = 10;
 		/** Health color */
 		public final static Color HEALTH_COLOR = new Color(1, 0, 0, 0.3f);
+		/** Lives offset */
+		public final static float LIVES_OFFSET_POSITION = 1;
 	}
 
 	/**

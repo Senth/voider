@@ -15,6 +15,7 @@ import com.spiddekauga.voider.game.Collectibles;
 import com.spiddekauga.voider.game.Level;
 import com.spiddekauga.voider.game.LevelDef;
 import com.spiddekauga.voider.game.actors.PickupActorDef;
+import com.spiddekauga.voider.game.actors.PlayerActorDef;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceSaver;
 import com.spiddekauga.voider.scene.SceneSwitcher;
@@ -38,9 +39,18 @@ public class VoiderGame implements ApplicationListener {
 
 		/** @TODO set main menu as start screen */
 
+		//		testSavePlayerShip();
 		testMainMenu();
 		//		testSavePickups();
 		//		testSplashScreen();
+	}
+
+	/**
+	 * Test to save player ship
+	 */
+	@SuppressWarnings("unused")
+	private void testSavePlayerShip() {
+		ResourceSaver.save(new PlayerActorDef());
 	}
 
 	/**
