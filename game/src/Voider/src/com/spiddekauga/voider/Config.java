@@ -490,6 +490,8 @@ public class Config {
 		public final static int SCORE_CHARACTERS = 10;
 		/** Score multiplier, used to create a greater score */
 		public final static float SCORE_MULTIPLIER = 10;
+		/** Health color */
+		public final static Color HEALTH_COLOR = new Color(1, 0, 0, 0.3f);
 	}
 
 	/**

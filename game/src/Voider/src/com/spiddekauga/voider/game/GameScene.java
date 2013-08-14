@@ -20,6 +20,7 @@ import com.spiddekauga.voider.game.actors.PlayerActor;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceNames;
 import com.spiddekauga.voider.resources.UndefinedResourceTypeException;
+import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.scene.WorldScene;
 import com.spiddekauga.voider.utils.Pools;
 /**
@@ -187,7 +188,27 @@ public class GameScene extends WorldScene {
 			mBulletDestroyer.render(mShapeRenderer);
 			mPlayerActor.render(mShapeRenderer);
 
+			renderHealth();
+
 			mShapeRenderer.pop();
+		}
+	}
+
+	/**
+	 * Renders the life as on overlay on the whole map
+	 */
+	private void renderHealth() {
+		mShapeRenderer.setColor(Config.Game.HEALTH_COLOR);
+
+		// Calculate how big part of the window should be covered
+		float healthWidth = mPlayerActor.getLife() / mPlayerActor.getDef().getMaxLife();
+		healthWidth *= SceneSwitcher.getWorldWidth();
+
+		float startPoint = mLevel.getXCoord() - SceneSwitcher.getWorldWidth();
+
+		// Cover remaining place with bar
+		if (SceneSwitcher.getWorldWidth() - healthWidth >= 1f) {
+			mShapeRenderer.rect(startPoint + healthWidth, -SceneSwitcher.getWorldHeight()/2f, SceneSwitcher.getWorldWidth()-healthWidth, SceneSwitcher.getWorldHeight());
 		}
 	}
 
