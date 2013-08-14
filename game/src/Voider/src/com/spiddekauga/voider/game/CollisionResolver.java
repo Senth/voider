@@ -86,6 +86,11 @@ public class CollisionResolver implements ContactListener {
 
 	@Override
 	public void endContact(Contact contact) {
+		if (contact.getFixtureA() == null || contact.getFixtureA().getBody() == null ||
+				contact.getFixtureB() == null || contact.getFixtureB().getBody() == null) {
+			return;
+		}
+
 		Body bodyA = contact.getFixtureA().getBody();
 		Body bodyB = contact.getFixtureB().getBody();
 
