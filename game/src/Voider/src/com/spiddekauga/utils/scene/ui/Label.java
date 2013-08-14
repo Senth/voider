@@ -145,6 +145,7 @@ public class Label extends Widget {
 			mText.append(newText);
 		}
 		invalidateHierarchy();
+		pack();
 	}
 
 	/**

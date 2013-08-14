@@ -484,6 +484,12 @@ public class Config {
 			/** Maximum force the mouse joint has */
 			public final static float FORCE_MAX = 10000;
 		}
+
+		/** How many characters the score should contain, i.e. number
+		 * of leading zeros */
+		public final static int SCORE_CHARACTERS = 10;
+		/** Score multiplier, used to create a greater score */
+		public final static float SCORE_MULTIPLIER = 10;
 	}
 
 	/**

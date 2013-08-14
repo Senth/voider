@@ -79,6 +79,9 @@ public class GameScene extends WorldScene {
 		resetPlayerPosition();
 
 		Actor.setLevel(mLevel);
+
+		mPlayerStats = new PlayerStats(mLevel.getDef().getStartXCoord(), mLevel.getSpeed());
+		mGui.resetValues();
 	}
 
 	/**
@@ -162,6 +165,8 @@ public class GameScene extends WorldScene {
 		if (mLevel.hasCompletedLevel()) {
 			setOutcome(Outcomes.LEVEL_COMPLETED);
 		}
+
+		mGui.resetValues();
 	}
 
 	@Override
@@ -276,6 +281,28 @@ public class GameScene extends WorldScene {
 	}
 
 	/**
+	 * @return player score with leading zeros
+	 */
+	String getPlayerScore() {
+		if (mPlayerStats != null) {
+			return mPlayerStats.getScoreStringLeadingZero();
+		} else {
+			return "";
+		}
+	}
+
+	/**
+	 * @return player multiplier
+	 */
+	String getPlayerMultiplier() {
+		if (mPlayerStats != null) {
+			return mPlayerStats.getMultiplierString();
+		} else {
+			return "";
+		}
+	}
+
+	/**
 	 * Updates the camera's position depending on where on the level location
 	 */
 	private void updateCameraPosition() {
@@ -340,6 +367,8 @@ public class GameScene extends WorldScene {
 	private Vector2 mBodyShepherdMinPos = new Vector2();
 	/** Body shepherd max position */
 	private Vector2 mBodyShepherdMaxPos = new Vector2();
+	/** Player score */
+	private PlayerStats mPlayerStats = null;
 
 	// MOUSE JOINT
 	/** Screen coordinate for the cursor */
