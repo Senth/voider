@@ -2,8 +2,8 @@ package com.spiddekauga.voider.game.triggers;
 
 import java.util.UUID;
 
+import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
-import com.spiddekauga.utils.JsonWrapper; import com.badlogic.gdx.utils.Json;
 import com.spiddekauga.voider.game.triggers.TriggerAction.Actions;
 
 /**

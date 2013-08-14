@@ -385,7 +385,6 @@ public abstract class ActorGui extends EditorGui {
 		SliderStyle sliderStyle = generalSkin.get("default", SliderStyle.class);
 		TextFieldStyle textFieldStyle = generalSkin.get("default", TextFieldStyle.class);
 		TextButtonStyle toggleStyle = generalSkin.get("toggle", TextButtonStyle.class);
-		TextButtonStyle textButtonStyle = generalSkin.get("default", TextButtonStyle.class);
 		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.UI_EDITOR_BUTTONS);
 
 		mVisualTable.setScalable(false);

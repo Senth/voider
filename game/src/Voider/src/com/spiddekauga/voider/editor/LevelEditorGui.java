@@ -673,7 +673,7 @@ class LevelEditorGui extends EditorGui {
 	}
 
 	/**
-	 * Initializes Enemy tool GUI
+	 * Initializes the enemy menu where you can switch between, enemy/path/trigger
 	 */
 	private void initEnemyMenu() {
 		Skin generalSkin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
@@ -749,6 +749,9 @@ class LevelEditorGui extends EditorGui {
 		mHiders.trigger.setButton(button);
 	}
 
+	/**
+	 * Initializes Enemy Tool GUI
+	 */
 	private void initEnemy() {
 		Skin generalSkin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
 		TextButtonStyle textButtonStyle = generalSkin.get("default", TextButtonStyle.class);

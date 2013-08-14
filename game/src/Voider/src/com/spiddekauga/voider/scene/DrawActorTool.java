@@ -555,14 +555,12 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 					// Change shape of actor to use the brush corners.
 					IResourceCorner actorCorner = mSelectedActor.getDef().getVisualVars();
 					while (intersections.size() >= 2) {
-						boolean intersectionBetween = false;
 						boolean intersectionSame = false;
 						int actorIndexHigh;
 						int actorIndexLow;
 
 						// Between
 						if (intersections.get(0).actorIndex != intersections.get(1).actorIndex) {
-							intersectionBetween = true;
 							actorIndexLow = intersections.get(0).actorIndex;
 							actorIndexHigh = intersections.get(1).actorIndex;
 						}
