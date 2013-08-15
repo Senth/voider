@@ -7,7 +7,8 @@ import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.spiddekauga.voider.Config;
-import com.spiddekauga.voider.game.GameScene;
+import com.spiddekauga.voider.game.GameSave;
+import com.spiddekauga.voider.game.GameSaveDef;
 import com.spiddekauga.voider.game.Level;
 import com.spiddekauga.voider.game.LevelDef;
 import com.spiddekauga.voider.game.actors.BossActorDef;
@@ -103,8 +104,10 @@ public enum ResourceNames {
 			return SOUND_PATH;
 		} else if (type == ShaderProgram.class) {
 			return SHADER_PATH;
-		} else if (type == GameScene.class) {
-			return LEVEL_RESUME_PATH;
+		} else if (type == GameSave.class) {
+			return GAME_SAVE_PATH;
+		} else if (type == GameSaveDef.class) {
+			return GAME_SAVE_DEF_PATH;
 		} else {
 			throw new UndefinedResourceTypeException(type);
 		}
@@ -116,7 +119,8 @@ public enum ResourceNames {
 	public static void useTestPath() {
 		LEVEL_DEF_PATH = Config.File.TEST_STORAGE + "levelDefs/";
 		LEVEL_PATH = Config.File.TEST_STORAGE + "levels/";
-		LEVEL_RESUME_PATH = Config.File.TEST_STORAGE + "resumeLevels/";
+		GAME_SAVE_PATH = Config.File.TEST_STORAGE + "resumeLevels/";
+		GAME_SAVE_DEF_PATH = Config.File.TEST_STORAGE + "gameSaveDef/";
 
 		// Actors
 		ACTOR_DEF_PATH = Config.File.TEST_STORAGE + "actors/";
@@ -153,8 +157,10 @@ public enum ResourceNames {
 	private static String LEVEL_DEF_PATH = Config.File.STORAGE + "levelDefs/";
 	/** Directory for all the actual levels */
 	private static String LEVEL_PATH = Config.File.STORAGE + "levels/";
-	/** Directory for all level to resume, i.e. when the player plays and quits a level */
-	private static String LEVEL_RESUME_PATH = Config.File.STORAGE + "resumeLevel/";
+	/** Directory for all game saves, i.e. when the player plays and quits a level */
+	private static String GAME_SAVE_PATH = Config.File.STORAGE + "gameSave/";
+	/** Directory for all game save definitions */
+	private static String GAME_SAVE_DEF_PATH = Config.File.STORAGE + "gameSaveDef/";
 	/** Directory for all particle effects */
 	private static final String PARTICLE_PATH = "particles/";
 	/** Directory for all sound effects */

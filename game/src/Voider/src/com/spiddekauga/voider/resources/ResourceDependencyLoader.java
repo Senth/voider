@@ -26,7 +26,7 @@ class ResourceDependencyLoader implements Disposable {
 	 */
 	ResourceDependencyLoader(AssetManager assetManager) {
 		mAssetManager = assetManager;
-		mAssetManager.setLoader(ActorDef.class, new JsonLoader<ActorDef>(new ExternalFileHandleResolver(), ActorDef.class));
+		mAssetManager.setLoader(ActorDef.class, new JsonLoaderAsync<ActorDef>(new ExternalFileHandleResolver(), ActorDef.class));
 	}
 
 	/**
@@ -40,7 +40,7 @@ class ResourceDependencyLoader implements Disposable {
 	 */
 	<DefType> void load(UUID defId, Class<DefType> type) throws UndefinedResourceTypeException {
 		// Add definition to wait queue
-		mLoadingDefs.add(new DefItem(defId, type));
+		mLoadingDefs.add(new ResourceItem(defId, type));
 
 		// Load the resource
 		/** @note by loading again, this might cause problems in the future */
@@ -55,18 +55,18 @@ class ResourceDependencyLoader implements Disposable {
 
 	/**
 	 * Unloads the definition including all its dependencies.
-	 * @param def the definition to unload
+	 * @param resource the definition to unload
 	 */
-	void unload(Def def) {
+	void unload(IResourceDependency resource) {
 		// Recursive, unload all dependencies first
 		// Internal
-		for (ResourceNames dependency : def.getInternalDependencies()) {
+		for (ResourceNames dependency : resource.getInternalDependencies()) {
 			mAssetManager.unload(dependency.fullName);
 		}
 
 		// External
-		for (ObjectMap.Entry<UUID, DefItem> entry : def.getExternalDependencies().entries()) {
-			DefItem dependency = entry.value;
+		for (ObjectMap.Entry<UUID, ResourceItem> entry : resource.getExternalDependencies().entries()) {
+			ResourceItem dependency = entry.value;
 			Def externalDef = (Def) mAssetManager.get(dependency.fullName, dependency.resourceType);
 			unload(externalDef);
 			// DO NOT USE externalDef AFTER THIS TIME, IT HAS BEEN UNLOADED!
@@ -74,7 +74,7 @@ class ResourceDependencyLoader implements Disposable {
 
 		// unload this def
 		try {
-			String fullName = ResourceNames.getDirPath(def.getClass()) + def.getId().toString();
+			String fullName = ResourceNames.getDirPath(resource.getClass()) + resource.getId().toString();
 			mAssetManager.unload(fullName);
 		} catch (UndefinedResourceTypeException e) {
 			Gdx.app.error("UndefinedResourceType", e.toString());
@@ -101,16 +101,16 @@ class ResourceDependencyLoader implements Disposable {
 		// If any of the resources we're waiting for been loaded ->
 		// Check for its dependencies and remove from load
 		for (int i = 0; i < mLoadingDefs.size; ++i) {
-			DefItem queueItem = mLoadingDefs.get(i);
+			ResourceItem queueItem = mLoadingDefs.get(i);
 
 			if (mAssetManager.isLoaded(queueItem.fullName)) {
-				Def def = (Def) mAssetManager.get(queueItem.fullName, queueItem.resourceType);
+				IResourceDependency def = (IResourceDependency) mAssetManager.get(queueItem.fullName, queueItem.resourceType);
 
 
 				// Load dependencies
 				// External
-				for (ObjectMap.Entry<UUID, DefItem> entry : def.getExternalDependencies().entries()) {
-					DefItem dependency = entry.value;
+				for (ObjectMap.Entry<UUID, ResourceItem> entry : def.getExternalDependencies().entries()) {
+					ResourceItem dependency = entry.value;
 					try {
 						load(dependency.resourceId, dependency.resourceType);
 					} catch (UndefinedResourceTypeException e) {
@@ -145,7 +145,7 @@ class ResourceDependencyLoader implements Disposable {
 	}
 
 	/** The load queue which we're loading the resources */
-	private Array<DefItem> mLoadingDefs = new Array<DefItem>();
+	private Array<ResourceItem> mLoadingDefs = new Array<ResourceItem>();
 	/** The class actually loading the resources */
 	private AssetManager mAssetManager;
 }

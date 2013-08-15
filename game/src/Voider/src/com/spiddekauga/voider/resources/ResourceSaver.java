@@ -6,7 +6,6 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Json;
 import com.spiddekauga.utils.JsonWrapper;
 import com.spiddekauga.voider.Config;
-import com.spiddekauga.voider.game.GameScene;
 import com.spiddekauga.voider.utils.ObjectCrypter;
 
 /**
@@ -29,10 +28,6 @@ public class ResourceSaver {
 	 * @param resource the resource to save
 	 */
 	public static void save(IResource resource) {
-		if (resource instanceof GameScene) {
-			clearResources(resource.getClass());
-		}
-
 		save(resource, resource.getId().toString());
 	}
 
@@ -72,7 +67,7 @@ public class ResourceSaver {
 	 * Removes all resource of the specified type! BEWARE DRAGONS!
 	 * @param resourceType removes all the resources of this type from the folder
 	 */
-	private static void clearResources(Class<? extends IResource> resourceType) {
+	public static void clearResources(Class<? extends IResource> resourceType) {
 		try {
 			String relativePath = ResourceNames.getDirPath(resourceType);
 			FileHandle folder = Gdx.files.external(relativePath);

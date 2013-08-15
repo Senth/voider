@@ -11,7 +11,7 @@ import com.badlogic.gdx.utils.JsonValue;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-class DefItem implements Json.Serializable {
+public class ResourceItem implements Json.Serializable {
 	/**
 	 * Checks whether the resources are the same
 	 * @param object another queue item
@@ -24,7 +24,7 @@ class DefItem implements Json.Serializable {
 		} else if (object == null) {
 			return false;
 		} else if (object.getClass() == this.getClass()) {
-			return ((DefItem) object).resourceId.equals(resourceId);
+			return ((ResourceItem) object).resourceId.equals(resourceId);
 		} else if (object instanceof UUID) {
 			return resourceId.equals(object);
 		} else {
@@ -37,7 +37,7 @@ class DefItem implements Json.Serializable {
 	 * @param resourceId id of the resource
 	 * @param resourceType class of the resource
 	 */
-	DefItem(UUID resourceId, Class<?> resourceType) {
+	public ResourceItem(UUID resourceId, Class<?> resourceType) {
 		this.resourceId = resourceId;
 		this.resourceType = resourceType;
 		if (resourceType != null) {
@@ -53,7 +53,7 @@ class DefItem implements Json.Serializable {
 	/**
 	 * Default constructor for queue item, used for when reading instances from json
 	 */
-	DefItem() {
+	ResourceItem() {
 		// Does nothing
 	}
 
@@ -63,7 +63,7 @@ class DefItem implements Json.Serializable {
 	}
 
 	/** Number of references */
-	int count = 0;
+	public int count = 0;
 	/** Unique id */
 	UUID resourceId = null;
 	/** Resource Type */

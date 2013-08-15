@@ -14,8 +14,9 @@ import org.junit.Test;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.lwjgl.LwjglFiles;
 import com.badlogic.gdx.backends.lwjgl.LwjglNativesLoader;
+import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.ObjectMap;
-import com.spiddekauga.utils.JsonWrapper; import com.badlogic.gdx.utils.Json;
+import com.spiddekauga.utils.JsonWrapper;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.actors.BulletActorDef;
 import com.spiddekauga.voider.game.actors.PickupActorDef;
@@ -70,7 +71,7 @@ public class DefTest {
 	}
 
 	/**
-	 * Test method for {@link com.spiddekauga.voider.resources.Def#write(com.spiddekauga.utils.Json)}.
+	 * Test method for {@link com.spiddekauga.voider.resources.Def#write(com.badlogic.gdx.utils.Json)}.
 	 */
 	@Test
 	public void writeRead() {
@@ -102,7 +103,7 @@ public class DefTest {
 
 		// Def dependencies
 		assertEquals("Dep def size", def.getExternalDependencies().size, testDef.getExternalDependencies().size);
-		for (ObjectMap.Entry<UUID, DefItem> entry : def.getExternalDependencies().entries()) {
+		for (ObjectMap.Entry<UUID, ResourceItem> entry : def.getExternalDependencies().entries()) {
 			assertTrue("Dep def item", testDef.getExternalDependencies().containsKey(entry.key));
 		}
 

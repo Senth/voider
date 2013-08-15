@@ -13,8 +13,6 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.joints.MouseJoint;
 import com.badlogic.gdx.physics.box2d.joints.MouseJointDef;
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonValue;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.actors.Actor;
@@ -52,17 +50,6 @@ public class GameScene extends WorldScene {
 	}
 
 	/**
-	 * Default constructor for JSON
-	 */
-	private GameScene() {
-		super(new GameSceneGui(), Config.Editor.PICKING_CIRCLE_RADIUS_EDITOR);
-		((GameSceneGui)mGui).setGameScene(this);
-
-		Actor.setEditorActive(false);
-		mWorld.setContactListener(mCollisionResolver);
-	}
-
-	/**
 	 * Sets the level that shall be played
 	 * @param level level to play
 	 */
@@ -88,6 +75,14 @@ public class GameScene extends WorldScene {
 	 */
 	public void setLevelToLoad(LevelDef levelDef) {
 		mLevelToLoad = levelDef;
+	}
+
+	/**
+	 * Sets the game to resume
+	 * @param gameSaveDef definition of the game save to resume
+	 */
+	public void setGameToResume(GameSaveDef gameSaveDef) {
+		mGameSaveDef = gameSaveDef;
 	}
 
 	@Override
@@ -117,6 +112,19 @@ public class GameScene extends WorldScene {
 				}
 			}
 
+			if (mGameSaveDef != null) {
+				try {
+					mGameSave = ResourceCacheFacade.get(mGameSaveDef.getGameSaveId(), GameSave.class);
+
+					mPlayerActor = mGameSave.getPlayerActor();
+					mPlayerStats = mGameSave.getPlayerStats();
+					mBulletDestroyer = mGameSave.getBulletDestroyer();
+					setLevel(mGameSave.getLevel());
+				} catch (UndefinedResourceTypeException e) {
+					Gdx.app.error("GameScene", e.toString());
+				}
+			}
+
 			createPlayerShip();
 			createMouseJoint();
 		}
@@ -124,18 +132,27 @@ public class GameScene extends WorldScene {
 		/** @TODO game completed, aborted? */
 	}
 
-	/**
-	 * Saves the game if we're not testing from the Editor.
-	 */
+
 	@Override
 	public void onDispose() {
+		// Save the level
 		if (!mTesting) {
-			ResourceSaver.save(this);
+			ResourceSaver.clearResources(GameSave.class);
+			ResourceSaver.clearResources(GameSaveDef.class);
+
+			if (getOutcome() == Outcomes.LEVEL_QUIT) {
+				GameSave gameSave = new GameSave(mLevel, mPlayerActor, mPlayerStats, mBulletDestroyer);
+				GameSaveDef gameSaveDef = new GameSaveDef(gameSave);
+				ResourceSaver.save(gameSave);
+				ResourceSaver.save(gameSaveDef);
+			}
 		}
 
 		if (mLevel != null) {
 			mLevel.dispose();
 		}
+
+		super.onDispose();
 	}
 
 	@Override
@@ -260,22 +277,36 @@ public class GameScene extends WorldScene {
 
 	@Override
 	public void loadResources() {
-		if (mLevelToLoad != null) {
-			ResourceCacheFacade.load(mLevelToLoad.getLevelId(), Level.class, mLevelToLoad);
-		}
 		ResourceCacheFacade.load(ResourceNames.UI_GENERAL);
 		ResourceCacheFacade.load(ResourceNames.SHADER_DEFAULT);
 		ResourceCacheFacade.loadAllOf(PlayerActorDef.class, true);
+
+		if (mLevelToLoad != null) {
+			ResourceCacheFacade.load(mLevelToLoad, false);
+			ResourceCacheFacade.load(mLevelToLoad.getLevelId(), Level.class, mLevelToLoad);
+		}
+
+		if (mGameSaveDef != null) {
+			ResourceCacheFacade.load(mGameSaveDef.getGameSaveId(), GameSave.class, mGameSaveDef);
+		}
 	}
 
 	@Override
 	public void unloadResources() {
-		if (mLevelToLoad != null) {
-			ResourceCacheFacade.unload(mLevel, mLevel.getDef());
-		}
 		ResourceCacheFacade.unload(ResourceNames.UI_GENERAL);
 		ResourceCacheFacade.unload(ResourceNames.SHADER_DEFAULT);
 		ResourceCacheFacade.unloadAllOf(PlayerActorDef.class, true);
+
+		// Loaded level
+		if (mLevelToLoad != null) {
+			ResourceCacheFacade.unload(mLevel, mLevel.getDef());
+			ResourceCacheFacade.unload(mLevelToLoad, false);
+		}
+
+		// Resumed game
+		if (mGameSave != null) {
+			ResourceCacheFacade.unload(mGameSave, mGameSaveDef);
+		}
 	}
 
 
@@ -443,40 +474,6 @@ public class GameScene extends WorldScene {
 		mBodyShepherdMaxPos.y += getWorldHeight();
 	}
 
-	@Override
-	public void write(Json json) {
-		super.write(json);
-
-		//		if (mLevelToLoad != null) {
-		//			json.writeValue("mLevelToLoad", mLevelToLoad.getId());
-		//		}
-
-		mLevel.removeResource(mLevel.getId());
-		json.writeValue("mLevel", mLevel);
-		json.writeValue("mTesting", mTesting);
-		json.writeValue("mInvulnerable", mInvulnerable);
-		json.writeValue("mPlayerActor", mPlayerActor);
-		json.writeValue("mPlayerStats", mPlayerStats);
-	}
-
-	@Override
-	public void read(Json json, JsonValue jsonData) {
-		super.read(json, jsonData);
-
-		//		if (jsonData.get("mLevelToLoad") != null) {
-		//			UUID levelToLoadId = json.readValue("mLevelToLoad", UUID.class, jsonData);
-		//			mLevelToLoad = ResourceCacheFacade.get(levelToLoadId, LevelDef.class);
-		//		}
-
-		mLevel = json.readValue("mLevel", Level.class, jsonData);
-		mTesting = json.readValue("mTesting", boolean.class, jsonData);
-		mInvulnerable = json.readValue("mInvulnerable", boolean.class, jsonData);
-		mPlayerActor = json.readValue("mPlayerActor", PlayerActor.class, jsonData);
-		mPlayerStats = json.readValue("mPlayerStats", PlayerStats.class, jsonData);
-
-		setLevel(mLevel);
-	}
-
 	/** Invalid pointer id */
 	private static final int INVALID_POINTER = -1;
 	/** Level to load */
@@ -487,6 +484,10 @@ public class GameScene extends WorldScene {
 	private boolean mTesting = false;
 	/** Makes the player invulnerable, useful for testing */
 	private boolean mInvulnerable = false;
+	/** Resumed game save definition, will only be set if resumed a game */
+	private GameSaveDef mGameSaveDef = null;
+	/** Resumed game save, will only be set if resumed a game */
+	private GameSave mGameSave = null;
 	/** Player ship actor, plays the game */
 	private PlayerActor mPlayerActor;
 	/** Current pointer that moves the player */

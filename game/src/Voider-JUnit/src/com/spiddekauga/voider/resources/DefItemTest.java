@@ -24,14 +24,14 @@ public class DefItemTest {
 	@Test
 	public void equals() {
 		UUID uuid = UUID.randomUUID();
-		DefItem item = new DefItem(uuid, PlayerActorDef.class);
-		DefItem testItem = new DefItem(uuid, Texture.class);
+		ResourceItem item = new ResourceItem(uuid, PlayerActorDef.class);
+		ResourceItem testItem = new ResourceItem(uuid, Texture.class);
 
 		assertEquals("testing with uuid directly", item.resourceId, uuid);
 		assertEquals("different types", testItem, item);
 
 		UUID otherUuid = UUID.randomUUID();
-		testItem = new DefItem(otherUuid, PlayerActorDef.class);
+		testItem = new ResourceItem(otherUuid, PlayerActorDef.class);
 		assertTrue("different uuid", !item.equals(testItem));
 
 
@@ -45,12 +45,12 @@ public class DefItemTest {
 	@Test
 	public void writeRead() {
 		UUID uuid = UUID.randomUUID();
-		DefItem item = new DefItem(uuid, PlayerActorDef.class);
+		ResourceItem item = new ResourceItem(uuid, PlayerActorDef.class);
 
 		Json json = new JsonWrapper();
 		String jsonString = json.toJson(item);
 
-		DefItem testItem = json.fromJson(DefItem.class, jsonString);
+		ResourceItem testItem = json.fromJson(ResourceItem.class, jsonString);
 
 		assertEquals("uuid", testItem.resourceId, uuid);
 		assertEquals("type", testItem.resourceType, PlayerActorDef.class);

@@ -64,9 +64,9 @@ public class JsonLoaderTest {
 		save(def3);
 
 		// Try to actually load the file using the asset manager
-		mAssetManager.setLoader(PlayerActorDef.class, new JsonLoader<PlayerActorDef>(new ExternalFileHandleResolver(), PlayerActorDef.class));
-		mAssetManager.setLoader(PickupActorDef.class, new JsonLoader<PickupActorDef>(new ExternalFileHandleResolver(), PickupActorDef.class));
-		mAssetManager.setLoader(BulletActorDef.class, new JsonLoader<BulletActorDef>(new ExternalFileHandleResolver(), BulletActorDef.class));
+		mAssetManager.setLoader(PlayerActorDef.class, new JsonLoaderAsync<PlayerActorDef>(new ExternalFileHandleResolver(), PlayerActorDef.class));
+		mAssetManager.setLoader(PickupActorDef.class, new JsonLoaderAsync<PickupActorDef>(new ExternalFileHandleResolver(), PickupActorDef.class));
+		mAssetManager.setLoader(BulletActorDef.class, new JsonLoaderAsync<BulletActorDef>(new ExternalFileHandleResolver(), BulletActorDef.class));
 		mAssetManager.load(getPath(def1), BulletActorDef.class);
 		mAssetManager.load(getPath(def2), PlayerActorDef.class);
 		mAssetManager.load(getPath(def3), PickupActorDef.class);

@@ -1,7 +1,6 @@
 package com.spiddekauga.voider.scene;
 
 import java.util.ArrayList;
-import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
@@ -12,15 +11,10 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonValue;
 import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.utils.Invoker;
 import com.spiddekauga.utils.ShapeRendererEx;
-import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.BulletDestroyer;
-import com.spiddekauga.voider.resources.IResource;
-import com.spiddekauga.voider.resources.IResourceChangeListener;
 
 /**
  * Base class for all scenes that should be rendered. Examples of scenes:
@@ -29,7 +23,7 @@ import com.spiddekauga.voider.resources.IResourceChangeListener;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public abstract class Scene extends InputAdapter implements Json.Serializable, IResource {
+public abstract class Scene extends InputAdapter {
 	/**
 	 * Creates the input multiplexer. UI always has priority over everything else.
 	 * @param gui the GUI to use for the scene
@@ -39,7 +33,6 @@ public abstract class Scene extends InputAdapter implements Json.Serializable, I
 		mInputMultiplexer.addProcessor(0, mGui.getStage());
 		mInputMultiplexer.addProcessor(1, this);
 	}
-
 
 	/**
 	 * Runs the scene. Clears the screen, renders it, and updates the scene elements.
@@ -303,35 +296,19 @@ public abstract class Scene extends InputAdapter implements Json.Serializable, I
 		return mGameTime;
 	}
 
-	public UUID getId() {
-		return mId;
+	/**
+	 * @return true if the scene is loading
+	 */
+	public boolean isLoading() {
+		return mLoading;
 	}
 
-	public void getReferences(ArrayList<UUID> references) {
-		// Does nothing
-	}
-
-	public boolean bindReference(IResource resource) {
-		// Does nothing
-		return false;
-	}
-
-	public boolean removeBoundResource(IResource boundResource) {
-		// Does nothing
-		return false;
-	}
-
-	public boolean addBoundResource(IResource boundResource) {
-		// Does nothing
-		return false;
-	}
-
-	public void addChangeListener(IResourceChangeListener listener) {
-		// Does nothing
-	}
-
-	public void removeChangeListener(IResourceChangeListener listener) {
-		// Does nothing
+	/**
+	 * Set if the current scene is loading or not
+	 * @param loading set to true if the scene is loading.
+	 */
+	public void setLoading(boolean loading) {
+		mLoading = loading;
 	}
 
 	/**
@@ -425,19 +402,6 @@ public abstract class Scene extends InputAdapter implements Json.Serializable, I
 		worldCoordinate.y = mTestPoint.y;
 	}
 
-	@Override
-	public void write(Json json) {
-		json.writeValue("REVISION", Config.REVISION);
-		json.writeValue("mGameTime", mGameTime);
-		json.writeValue("mId", mId);
-	}
-
-	@Override
-	public void read(Json json, JsonValue jsonData) {
-		mGameTime = json.readValue("mGameTime", GameTime.class, jsonData);
-		mId = json.readValue("mId", UUID.class, jsonData);
-	}
-
 	/** Shape Renderer used for rendering stuff */
 	protected ShapeRendererEx mShapeRenderer = new ShapeRendererEx();
 	/** Input multiplexer */
@@ -445,6 +409,8 @@ public abstract class Scene extends InputAdapter implements Json.Serializable, I
 	/** GUI for the scene */
 	protected Gui mGui = null;
 
+	/** If the current scene is loading */
+	private boolean mLoading = false;
 	/** Game time of current scene */
 	private GameTime mGameTime = new GameTime();
 	/** Outcome of scene, this is set when a derived class calls setOutcome */
@@ -453,8 +419,6 @@ public abstract class Scene extends InputAdapter implements Json.Serializable, I
 	private String mOutcomeMessage = null;
 	/** Clear color */
 	private Color mClearColor = new Color(0, 0, 0, 0);
-	/** UUID of the scene */
-	private UUID mId = UUID.randomUUID();
 
 	// Temporary variables
 	/** For ray testing on player ship when touching it */

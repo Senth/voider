@@ -15,6 +15,8 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.game.GameSave;
+import com.spiddekauga.voider.game.GameSaveDef;
 import com.spiddekauga.voider.game.Level;
 import com.spiddekauga.voider.game.LevelDef;
 import com.spiddekauga.voider.game.actors.BossActorDef;
@@ -45,15 +47,17 @@ public class ResourceCacheFacade {
 		mAssetManager = new AssetManager();
 
 		// Own loaders
-		mAssetManager.setLoader(BossActorDef.class, new JsonLoader<BossActorDef>(new ExternalFileHandleResolver(), BossActorDef.class));
-		mAssetManager.setLoader(BulletActorDef.class, new JsonLoader<BulletActorDef>(new ExternalFileHandleResolver(), BulletActorDef.class));
-		mAssetManager.setLoader(EnemyActorDef.class, new JsonLoader<EnemyActorDef>(new ExternalFileHandleResolver(), EnemyActorDef.class));
-		mAssetManager.setLoader(PickupActorDef.class, new JsonLoader<PickupActorDef>(new ExternalFileHandleResolver(), PickupActorDef.class));
-		mAssetManager.setLoader(PlayerActorDef.class, new JsonLoader<PlayerActorDef>(new ExternalFileHandleResolver(), PlayerActorDef.class));
-		mAssetManager.setLoader(StaticTerrainActorDef.class, new JsonLoader<StaticTerrainActorDef>(new ExternalFileHandleResolver(), StaticTerrainActorDef.class));
-		mAssetManager.setLoader(LevelDef.class, new JsonLoader<LevelDef>(new ExternalFileHandleResolver(), LevelDef.class));
-		mAssetManager.setLoader(Level.class, new JsonLoader<Level>(new ExternalFileHandleResolver(), Level.class));
+		mAssetManager.setLoader(BossActorDef.class, new JsonLoaderAsync<BossActorDef>(new ExternalFileHandleResolver(), BossActorDef.class));
+		mAssetManager.setLoader(BulletActorDef.class, new JsonLoaderAsync<BulletActorDef>(new ExternalFileHandleResolver(), BulletActorDef.class));
+		mAssetManager.setLoader(EnemyActorDef.class, new JsonLoaderAsync<EnemyActorDef>(new ExternalFileHandleResolver(), EnemyActorDef.class));
+		mAssetManager.setLoader(PickupActorDef.class, new JsonLoaderAsync<PickupActorDef>(new ExternalFileHandleResolver(), PickupActorDef.class));
+		mAssetManager.setLoader(PlayerActorDef.class, new JsonLoaderAsync<PlayerActorDef>(new ExternalFileHandleResolver(), PlayerActorDef.class));
+		mAssetManager.setLoader(StaticTerrainActorDef.class, new JsonLoaderAsync<StaticTerrainActorDef>(new ExternalFileHandleResolver(), StaticTerrainActorDef.class));
+		mAssetManager.setLoader(LevelDef.class, new JsonLoaderAsync<LevelDef>(new ExternalFileHandleResolver(), LevelDef.class));
+		mAssetManager.setLoader(Level.class, new JsonLoaderAsync<Level>(new ExternalFileHandleResolver(), Level.class));
 		mAssetManager.setLoader(ShaderProgram.class, new ShaderLoader(new InternalFileHandleResolver()));
+		mAssetManager.setLoader(GameSave.class, new JsonLoaderSync<GameSave>(new ExternalFileHandleResolver(), GameSave.class));
+		mAssetManager.setLoader(GameSaveDef.class, new JsonLoaderAsync<GameSaveDef>(new ExternalFileHandleResolver(), GameSaveDef.class));
 
 		// Existing loaders
 		mAssetManager.setLoader(Skin.class, new SkinLoader(new InternalFileHandleResolver()));
@@ -157,7 +161,7 @@ public class ResourceCacheFacade {
 	}
 
 	/**
-	 * Loads the resource including all dependencies.
+	 * Loads the resource, definition and all dependencies.
 	 * @param <ResourceType> Class of the resource that shall be loaded.
 	 * @param resourceId the id of the resource we're loading (i.e. not the
 	 * definition's id).
@@ -169,19 +173,19 @@ public class ResourceCacheFacade {
 		load(def, true);
 
 		// Add the level to the queue. Load this level once all dependencies are loaded
-		mLoadQueue.add(new DefItem(resourceId, resourceType));
+		mLoadQueue.add(new ResourceItem(resourceId, resourceType));
 	}
 
 	/**
 	 * Loads an external definition. Included in these are in general resources
 	 * that the user can add and remove. E.g. ActorDef, WeaponDef, etc.
-	 * @param def the resource we want to load. This includes a unique id
+	 * @param resource the resource we want to load. This includes a unique id
 	 * as well as dependencies.
 	 * @param loadDependencies if we also shall load the dependencies
 	 * @throws UndefinedResourceTypeException
 	 */
-	public static void load(Def def, boolean loadDependencies) throws UndefinedResourceTypeException {
-		load(def.getId(), def.getClass(), loadDependencies);
+	public static void load(IResource resource, boolean loadDependencies) throws UndefinedResourceTypeException {
+		load(resource.getId(), resource.getClass(), loadDependencies);
 	}
 
 	/**
@@ -195,7 +199,12 @@ public class ResourceCacheFacade {
 	 */
 	public static <DefClass> void load(UUID defId, Class<DefClass> type, boolean loadDependencies) throws UndefinedResourceTypeException {
 		if (loadDependencies) {
-			mDependencyLoader.load(defId, type);
+			// Type need to implement the IResourceDependency interface to load resources
+			if (IResourceDependency.class.isAssignableFrom(type)) {
+				mDependencyLoader.load(defId, type);
+			} else {
+				Gdx.app.error("ResourceCacheFacade", "Tried to load dependencies of a class that don't hold dependencies!");
+			}
 		} else {
 			final String fullName = ResourceNames.getDirPath(type) + defId.toString();
 			mAssetManager.load(fullName, type);
@@ -204,15 +213,19 @@ public class ResourceCacheFacade {
 
 	/**
 	 * Unloads a definition.
-	 * @param def the definition to unload
+	 * @param resource the resource to unload
 	 * @param unloadDependencies if we shall unload the dependencies
 	 */
-	public static void unload(Def def, boolean unloadDependencies) {
+	public static void unload(IResource resource, boolean unloadDependencies) {
 		if (unloadDependencies) {
-			mDependencyLoader.unload(def);
+			if (resource instanceof IResourceDependency) {
+				mDependencyLoader.unload((IResourceDependency) resource);
+			} else {
+				Gdx.app.error("ResourceCacheFacade", "Tried to load dependencies of a class that don't hold dependencies!");
+			}
 		} else {
 			try {
-				final String fullName = ResourceNames.getDirPath(def.getClass()) + def.getId().toString();
+				final String fullName = ResourceNames.getDirPath(resource.getClass()) + resource.getId().toString();
 				mAssetManager.unload(fullName);
 			} catch (UndefinedResourceTypeException e) {
 				Gdx.app.error("Unknown resource type", "Should never happen when unloading");
@@ -221,7 +234,7 @@ public class ResourceCacheFacade {
 	}
 
 	/**
-	 * Unloads a resource
+	 * Unloads a resource (its definition and dependencies)
 	 * @param resource the resource to unload
 	 * @param resourceDef the resource definition
 	 */
@@ -300,19 +313,17 @@ public class ResourceCacheFacade {
 	public static <ResourceType> List<ResourceType> get(Class<ResourceType> type) throws UndefinedResourceTypeException {
 		String dirPath = ResourceNames.getDirPath(type);
 
-		// Get all resource files
-		FileHandle dir = Gdx.files.external(dirPath);
-		if (!dir.exists() || !dir.isDirectory()) {
-			throw new UndefinedResourceTypeException(type);
-		}
-
-		FileHandle[] files = dir.list();
-
 		ArrayList<ResourceType> resources = new ArrayList<ResourceType>();
 
-		for (FileHandle file : files) {
-			if (mAssetManager.isLoaded(file.path())) {
-				resources.add(mAssetManager.get(file.path(), type));
+		// Get all resource files
+		FileHandle dir = Gdx.files.external(dirPath);
+		if (dir.exists() && dir.isDirectory()) {
+			FileHandle[] files = dir.list();
+
+			for (FileHandle file : files) {
+				if (mAssetManager.isLoaded(file.path())) {
+					resources.add(mAssetManager.get(file.path(), type));
+				}
 			}
 		}
 
@@ -367,7 +378,7 @@ public class ResourceCacheFacade {
 				}
 				else if (!mLoadQueue.isEmpty()) {
 					fullyLoaded = false;
-					DefItem toLoad = mLoadQueue.removeFirst();
+					ResourceItem toLoad = mLoadQueue.removeFirst();
 					mAssetManager.load(toLoad.fullName, toLoad.resourceType);
 				}
 			} catch (UndefinedResourceTypeException e) {
@@ -409,6 +420,29 @@ public class ResourceCacheFacade {
 	 */
 	public static int getLoadedCount() {
 		return mAssetManager.getLoadedAssets();
+	}
+
+	/**
+	 * Checks how many of the specific resource there exists
+	 * @param resourceType type of resource to count
+	 * @return number of existing resources. Note the resources don't have to be
+	 * loaded. It checks all resources of the type, whether loaded or not.
+	 */
+	public static int getExistingResourcesCount(Class<? extends IResource> resourceType) {
+		try {
+			String resourceDirPath = ResourceNames.getDirPath(resourceType);
+
+			FileHandle resourceDir = Gdx.files.external(resourceDirPath);
+
+			if (resourceDir.exists() && resourceDir.isDirectory()) {
+				return resourceDir.list().length;
+			}
+
+		} catch (UndefinedResourceTypeException e) {
+			Gdx.app.error("ResourceCacheFacade", e.toString());
+		}
+
+		return 0;
 	}
 
 	/**
@@ -456,5 +490,5 @@ public class ResourceCacheFacade {
 	 * is to wait until the asset manager have loaded everything and then load the
 	 * instances from the queue.
 	 */
-	private static LinkedList<DefItem> mLoadQueue = new LinkedList<DefItem>();
+	private static LinkedList<ResourceItem> mLoadQueue = new LinkedList<ResourceItem>();
 }

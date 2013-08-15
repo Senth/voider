@@ -1,8 +1,10 @@
 package com.spiddekauga.voider.app;
 
+import java.util.List;
 import java.util.UUID;
 
 import com.spiddekauga.voider.editor.LevelEditor;
+import com.spiddekauga.voider.game.GameSaveDef;
 import com.spiddekauga.voider.game.GameScene;
 import com.spiddekauga.voider.game.Level;
 import com.spiddekauga.voider.game.LevelDef;
@@ -40,12 +42,19 @@ public class MainMenu extends Scene {
 	public void loadResources() {
 		ResourceCacheFacade.load(ResourceNames.UI_GENERAL);
 		ResourceCacheFacade.loadAllOf(LevelDef.class, false);
+		ResourceCacheFacade.loadAllOf(GameSaveDef.class, false);
 	}
 
 	@Override
 	public void unloadResources() {
 		ResourceCacheFacade.unload(ResourceNames.UI_GENERAL);
 		ResourceCacheFacade.unloadAllOf(LevelDef.class, false);
+		ResourceCacheFacade.unloadAllOf(GameSaveDef.class, false);
+	}
+
+	@Override
+	public boolean unloadResourcesOnDeactivate() {
+		return true;
 	}
 
 	@Override
@@ -62,24 +71,30 @@ public class MainMenu extends Scene {
 		} else {
 			if (!mGui.isInitialized()) {
 				mGui.initGui();
-				mGui.resetValues();
 			}
 		}
+
+		mGui.resetValues();
 	}
 
 	/**
 	 * @return true if there is a game to resume
 	 */
 	boolean hasResumeGame() {
-		/** @todo check if a game exists to resume */
-		return false;
+		return ResourceCacheFacade.get(GameSaveDef.class).size() > 0;
 	}
 
 	/**
 	 * Resumes the current game
 	 */
 	void resumeGame() {
-		/** @todo resume current game */
+		List<GameSaveDef> gameSaves = ResourceCacheFacade.get(GameSaveDef.class);
+
+		if (!gameSaves.isEmpty()) {
+			GameScene gameScene = new GameScene(false, false);
+			gameScene.setGameToResume(gameSaves.get(0));
+			SceneSwitcher.switchTo(gameScene);
+		}
 	}
 
 	/**

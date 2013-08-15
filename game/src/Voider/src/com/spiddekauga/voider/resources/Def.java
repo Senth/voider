@@ -18,7 +18,7 @@ import com.spiddekauga.voider.User;
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
 @SuppressWarnings("unchecked")
-public abstract class Def extends Resource implements Json.Serializable {
+public abstract class Def extends Resource implements Json.Serializable, IResourceDependency {
 	/**
 	 * Default constructor for the resource.
 	 */
@@ -46,16 +46,12 @@ public abstract class Def extends Resource implements Json.Serializable {
 		return (ResourceType) copy;
 	}
 
-	/**
-	 * @return number of external dependencies
-	 */
+	@Override
 	public int getExternalDependenciesCount() {
 		return mExternalDependencies.size;
 	}
 
-	/**
-	 * @return number of internal dependencies
-	 */
+	@Override
 	public int getInternalDependenciesCount() {
 		return mInternalDependencies.size();
 	}
@@ -123,11 +119,6 @@ public abstract class Def extends Resource implements Json.Serializable {
 			json.writeValue("mInternalDependencies", (Set<?>) null);
 		} else {
 			json.writeValue("mInternalDependencies", mInternalDependencies);
-			//			json.writeObjectStart("mInternalDependencies");
-			//			for (ResourceNames item : mInternalDependencies) {
-			//				json.writeValue(item.toString(), item);
-			//			}
-			//			json.writeObjectEnd();
 		}
 
 		if (mExternalDependencies.size == 0) {
@@ -140,78 +131,63 @@ public abstract class Def extends Resource implements Json.Serializable {
 	/**
 	 * Reads this class as a json object.
 	 * @param json the json to read the value from
-	 * @param jsonValue this is where all the json variables have been loaded
+	 * @param jsonData this is where all the json variables have been loaded
 	 */
 	@Override
-	public void read(Json json, JsonValue jsonValue) {
-		super.read(json, jsonValue);
+	public void read(Json json, JsonValue jsonData) {
+		super.read(json, jsonData);
 
-		mName = json.readValue("mName", String.class, jsonValue);
-		mCreator = json.readValue("mCreator", String.class, jsonValue);
-		mOriginalCreator = json.readValue("mOriginalCreator", String.class, jsonValue);
-		mRevision = json.readValue("mRevision", long.class, jsonValue);
-		mDescription = json.readValue("mDescription", String.class, jsonValue);
+		mName = json.readValue("mName", String.class, jsonData);
+		mCreator = json.readValue("mCreator", String.class, jsonData);
+		mOriginalCreator = json.readValue("mOriginalCreator", String.class, jsonData);
+		mRevision = json.readValue("mRevision", long.class, jsonData);
+		mDescription = json.readValue("mDescription", String.class, jsonData);
 
-		HashSet<ResourceNames> internalMap = json.readValue("mInternalDependencies", HashSet.class, jsonValue);
+		HashSet<ResourceNames> internalMap = json.readValue("mInternalDependencies", HashSet.class, jsonData);
 		if (internalMap != null) {
 			mInternalDependencies.addAll(internalMap);
 		}
 
-		ObjectMap<UUID, DefItem> externalDependencies = json.readValue("mExternalDependencies", ObjectMap.class, jsonValue);
+		ObjectMap<UUID, ResourceItem> externalDependencies = json.readValue("mExternalDependencies", ObjectMap.class, jsonData);
 		if (externalDependencies != null) {
 			mExternalDependencies = externalDependencies;
 		}
 
 		// Version
-		String stringVersion = json.readValue("mVersion", String.class, jsonValue);
+		String stringVersion = json.readValue("mVersion", String.class, jsonData);
 		String[] stringVersions = stringVersion.split("\\.");
 		mVersionFirst = Integer.parseInt(stringVersions[0]);
 		mVersionSecond = Integer.parseInt(stringVersions[1]);
 		mVersionThird = Integer.parseInt(stringVersions[2]);
 	}
 
-	/**
-	 * Adds an external dependency to the resource
-	 * @param dependency the resource dependency
-	 * @see #addDependency(ResourceNames)
-	 */
-	public void addDependency(Def dependency) {
+	@Override
+	public void addDependency(IResource dependency) {
 		addDependency(dependency.getId(), dependency.getClass());
 	}
 
-	/**
-	 * Adds an external dependency to the resource
-	 * @param uuid the unique id of the dependency
-	 * @param type the type of dependency
-	 */
+	@Override
 	public void addDependency(UUID uuid, Class<?> type) {
 		// Increment value of old one if one exist...
-		DefItem oldDefItem = mExternalDependencies.get(uuid);
+		ResourceItem oldDefItem = mExternalDependencies.get(uuid);
 
 		if (oldDefItem != null) {
 			oldDefItem.count++;
 		} else {
-			mExternalDependencies.put(uuid, new DefItem(uuid, type));
+			mExternalDependencies.put(uuid, new ResourceItem(uuid, type));
 		}
 	}
 
-	/**
-	 * Adds an internal dependency to the resource
-	 * @param dependency the resource dependency
-	 * @see #addDependency(Def)
-	 */
+	@Override
 	public void addDependency(ResourceNames dependency) {
 		mInternalDependencies.add(dependency);
 	}
 
-	/**
-	 * Removes an external dependency from the resource
-	 * @param dependency the id of the dependency to remove
-	 */
+	@Override
 	public void removeDependency(UUID dependency) {
 		// Decrement the value, remove if only one was left...
 
-		DefItem oldDefItem = mExternalDependencies.get(dependency);
+		ResourceItem oldDefItem = mExternalDependencies.get(dependency);
 		if (oldDefItem != null) {
 			oldDefItem.count--;
 			if (oldDefItem.count == 0) {
@@ -222,10 +198,7 @@ public abstract class Def extends Resource implements Json.Serializable {
 		}
 	}
 
-	/**
-	 * Removes an internal dependency from the resource
-	 * @param dependency the name of the dependency to remove
-	 */
+	@Override
 	public void removeDependency(ResourceNames dependency) {
 		mInternalDependencies.remove(dependency);
 	}
@@ -312,22 +285,18 @@ public abstract class Def extends Resource implements Json.Serializable {
 		++mRevision;
 	}
 
-	/**
-	 * @return all external dependencies
-	 */
-	ObjectMap<UUID, DefItem> getExternalDependencies() {
+	@Override
+	public ObjectMap<UUID, ResourceItem> getExternalDependencies() {
 		return mExternalDependencies;
 	}
 
-	/**
-	 * @return all internal dependencies
-	 */
-	Set<ResourceNames> getInternalDependencies() {
+	@Override
+	public Set<ResourceNames> getInternalDependencies() {
 		return mInternalDependencies;
 	}
 
 	/** Dependencies for the resource */
-	private ObjectMap<UUID, DefItem> mExternalDependencies = new ObjectMap<UUID, DefItem>();
+	private ObjectMap<UUID, ResourceItem> mExternalDependencies = new ObjectMap<UUID, ResourceItem>();
 	/** Internal dependencies, such as textures, sound, particle effects */
 	private Set<ResourceNames> mInternalDependencies = new HashSet<ResourceNames>();
 	/** Name of the definition */
@@ -338,7 +307,7 @@ public abstract class Def extends Resource implements Json.Serializable {
 	private String mCreator = User.getNickName();
 	/** Comment of the definition */
 	private String mDescription = "";
-	/** The revision of the map, this increases after each save */
+	/** The revision of the definition, this increases after each save */
 	private long mRevision = 1;
 	/** Main version (1 in 1.0.13) */
 	private int mVersionFirst = 0;

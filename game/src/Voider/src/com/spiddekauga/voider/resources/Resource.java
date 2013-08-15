@@ -111,8 +111,8 @@ public abstract class Resource implements IResource, Json.Serializable {
 	}
 
 	@Override
-	public void read(Json json, JsonValue jsonValue) {
-		mUniqueId = json.readValue("mUniqueId", UUID.class, jsonValue);
+	public void read(Json json, JsonValue jsonData) {
+		mUniqueId = json.readValue("mUniqueId", UUID.class, jsonData);
 	}
 
 	/** Unique id of the resource */

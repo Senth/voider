@@ -37,7 +37,7 @@ public class VoiderGame implements ApplicationListener {
 
 		ShaderProgram.pedantic = false;
 
-		/** @TODO set main menu as start screen */
+		/** @TODO set splash screen as start screen */
 
 		//		testSavePlayerShip();
 		testMainMenu();

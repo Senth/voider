@@ -341,18 +341,24 @@ public class SceneSwitcher {
 		}
 
 
-		Scene currentScene = mScenes.getFirst();
+		Scene currentScene = mScenes.peek();
 
 		// Loading using no loading scene
-		if (mSwitcherLoading) {
+		if (currentScene.isLoading()) {
 			try {
 				boolean allLoaded = ResourceCacheFacade.update();
 
 				// Loading done -> Activate scene
 				if (allLoaded) {
-					currentScene.onActivate(Outcomes.LOADING_SUCCEEDED, null);
+					if (mOutcome != null) {
+						currentScene.onActivate(mOutcome, mOutcomeMessage);
+						mOutcome = null;
+						mOutcomeMessage = null;
+					} else {
+						currentScene.onActivate(Outcomes.LOADING_SUCCEEDED, null);
+					}
 					Gdx.input.setInputProcessor(currentScene.getInputMultiplexer());
-					mSwitcherLoading = false;
+					currentScene.setLoading(false);
 				}
 			} catch (ResourceNotFoundException e) {
 				currentScene.onActivate(Outcomes.LOADING_FAILED_MISSING_FILE, e.toString());
@@ -362,16 +368,13 @@ public class SceneSwitcher {
 				Gdx.input.setInputProcessor(currentScene.getInputMultiplexer());
 			}
 		}
-		// Running a scene or a loading scene, either way run the scene...
+		// Scene is done, pop it
+		else if (currentScene.isDone()) {
+			popCurrentScene();
+		}
+		// Else -> Update it
 		else {
-			// Done -> Pop scene
-			if (currentScene.isDone()) {
-				popCurrentScene();
-			}
-			// Else -> Update it
-			else {
-				currentScene.run();
-			}
+			currentScene.run();
 		}
 	}
 
@@ -400,8 +403,18 @@ public class SceneSwitcher {
 			if (currentScene.hasResources() &&
 					currentScene.unloadResourcesOnDeactivate() &&
 					!(poppedScene instanceof LoadingScene)) {
+				// Save outcome so that we don't get LOADING_SUCCESS
+				mOutcome = outcome;
+				mOutcomeMessage = outcomeMessage;
 				loadActiveSceneResources();
 			} else {
+				// Use old outcome instead of LOADING_SUCCESS
+				if (mOutcome != null) {
+					outcome = mOutcome;
+					outcomeMessage = mOutcomeMessage;
+					mOutcome = null;
+					mOutcomeMessage = null;
+				}
 				currentScene.onActivate(outcome, outcomeMessage);
 				Gdx.input.setInputProcessor(currentScene.getInputMultiplexer());
 			}
@@ -431,7 +444,7 @@ public class SceneSwitcher {
 			if (loadingScene != null) {
 				switchTo(loadingScene);
 			} else {
-				mSwitcherLoading = true;
+				currentsScene.setLoading(true);
 			}
 		}
 	}
@@ -461,8 +474,11 @@ public class SceneSwitcher {
 
 	/** Stack with all the active scenes */
 	private static LinkedList<Scene> mScenes = new LinkedList<Scene>();
-	/** If we're currently loading */
-	private static boolean mSwitcherLoading = false;
 	/** Generally last popped scene that needs unloading, but could be several */
 	private static ArrayList<Scene> mScenesNeedUnloading = new ArrayList<Scene>();
+
+	/** Outcome of last scene */
+	private static Outcomes mOutcome = null;
+	/** Message from the last outcome */
+	private static String mOutcomeMessage = null;
 }
