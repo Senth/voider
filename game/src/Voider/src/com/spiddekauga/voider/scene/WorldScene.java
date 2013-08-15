@@ -15,6 +15,8 @@ import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.Json;
+import com.badlogic.gdx.utils.JsonValue;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.BulletDestroyer;
 import com.spiddekauga.voider.game.actors.Actor;
@@ -220,6 +222,20 @@ public abstract class WorldScene extends Scene {
 		mPickingFixtureDef.filter.maskBits = ActorFilterCategories.NONE;
 		mPickingFixtureDef.shape = circleShape;
 		mPickingVertices = Geometry.createCircle(pickRadius);
+	}
+
+	@Override
+	public void write(Json json) {
+		super.write(json);
+
+		json.writeValue("mBulletDestroyer", mBulletDestroyer);
+	}
+
+	@Override
+	public void read(Json json, JsonValue jsonData) {
+		super.read(json, jsonData);
+
+		mBulletDestroyer = json.readValue("mBulletDestroyer", BulletDestroyer.class, jsonData);
 	}
 
 	/** Physics world */

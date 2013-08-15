@@ -13,6 +13,8 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.joints.MouseJoint;
 import com.badlogic.gdx.physics.box2d.joints.MouseJointDef;
+import com.badlogic.gdx.utils.Json;
+import com.badlogic.gdx.utils.JsonValue;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.actors.Actor;
@@ -20,6 +22,7 @@ import com.spiddekauga.voider.game.actors.PlayerActor;
 import com.spiddekauga.voider.game.actors.PlayerActorDef;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceNames;
+import com.spiddekauga.voider.resources.ResourceSaver;
 import com.spiddekauga.voider.resources.UndefinedResourceTypeException;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.scene.WorldScene;
@@ -49,6 +52,17 @@ public class GameScene extends WorldScene {
 	}
 
 	/**
+	 * Default constructor for JSON
+	 */
+	private GameScene() {
+		super(new GameSceneGui(), Config.Editor.PICKING_CIRCLE_RADIUS_EDITOR);
+		((GameSceneGui)mGui).setGameScene(this);
+
+		Actor.setEditorActive(false);
+		mWorld.setContactListener(mCollisionResolver);
+	}
+
+	/**
 	 * Sets the level that shall be played
 	 * @param level level to play
 	 */
@@ -59,7 +73,7 @@ public class GameScene extends WorldScene {
 		mLevel.run();
 		mLevel.createDefaultTriggers();
 
-		mBodyShepard.setActors(mLevel.getResources(Actor.class));
+		mBodyShepherd.setActors(mLevel.getResources(Actor.class));
 
 
 		updateCameraPosition();
@@ -116,7 +130,7 @@ public class GameScene extends WorldScene {
 	@Override
 	public void onDispose() {
 		if (!mTesting) {
-			/** @TODO save the game */
+			ResourceSaver.save(this);
 		}
 
 		if (mLevel != null) {
@@ -139,7 +153,7 @@ public class GameScene extends WorldScene {
 		super.update();
 
 		updateBodyShepherdPositions();
-		mBodyShepard.update(mBodyShepherdMinPos, mBodyShepherdMaxPos);
+		mBodyShepherd.update(mBodyShepherdMinPos, mBodyShepherdMaxPos);
 
 		mLevel.update();
 		updateCameraPosition();
@@ -320,7 +334,7 @@ public class GameScene extends WorldScene {
 	@Override
 	public boolean keyDown(int keycode) {
 		// Set level as complete if we want to go back while testing
-		if (mTesting && (keycode == Keys.ESCAPE || keycode == Keys.BACK)) {
+		if (keycode == Keys.ESCAPE || keycode == Keys.BACK) {
 			setOutcome(Outcomes.LEVEL_QUIT);
 		}
 
@@ -429,6 +443,40 @@ public class GameScene extends WorldScene {
 		mBodyShepherdMaxPos.y += getWorldHeight();
 	}
 
+	@Override
+	public void write(Json json) {
+		super.write(json);
+
+		//		if (mLevelToLoad != null) {
+		//			json.writeValue("mLevelToLoad", mLevelToLoad.getId());
+		//		}
+
+		mLevel.removeResource(mLevel.getId());
+		json.writeValue("mLevel", mLevel);
+		json.writeValue("mTesting", mTesting);
+		json.writeValue("mInvulnerable", mInvulnerable);
+		json.writeValue("mPlayerActor", mPlayerActor);
+		json.writeValue("mPlayerStats", mPlayerStats);
+	}
+
+	@Override
+	public void read(Json json, JsonValue jsonData) {
+		super.read(json, jsonData);
+
+		//		if (jsonData.get("mLevelToLoad") != null) {
+		//			UUID levelToLoadId = json.readValue("mLevelToLoad", UUID.class, jsonData);
+		//			mLevelToLoad = ResourceCacheFacade.get(levelToLoadId, LevelDef.class);
+		//		}
+
+		mLevel = json.readValue("mLevel", Level.class, jsonData);
+		mTesting = json.readValue("mTesting", boolean.class, jsonData);
+		mInvulnerable = json.readValue("mInvulnerable", boolean.class, jsonData);
+		mPlayerActor = json.readValue("mPlayerActor", PlayerActor.class, jsonData);
+		mPlayerStats = json.readValue("mPlayerStats", PlayerStats.class, jsonData);
+
+		setLevel(mLevel);
+	}
+
 	/** Invalid pointer id */
 	private static final int INVALID_POINTER = -1;
 	/** Level to load */
@@ -436,9 +484,9 @@ public class GameScene extends WorldScene {
 	/** The current level used in the game */
 	private Level mLevel = null;
 	/** If we're just testing the level */
-	private boolean mTesting;
+	private boolean mTesting = false;
 	/** Makes the player invulnerable, useful for testing */
-	private boolean mInvulnerable;
+	private boolean mInvulnerable = false;
 	/** Player ship actor, plays the game */
 	private PlayerActor mPlayerActor;
 	/** Current pointer that moves the player */
@@ -448,7 +496,7 @@ public class GameScene extends WorldScene {
 	/** Handles collision between actors/bodies */
 	private CollisionResolver mCollisionResolver = new CollisionResolver();
 	/** Body shepherd, creates and destroys bodies */
-	private BodyShepherd mBodyShepard = new BodyShepherd();
+	private BodyShepherd mBodyShepherd = new BodyShepherd();
 	/** Body shepherd min position */
 	private Vector2 mBodyShepherdMinPos = new Vector2();
 	/** Body shepherd max position */
