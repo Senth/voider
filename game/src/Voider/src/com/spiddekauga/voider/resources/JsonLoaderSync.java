@@ -13,13 +13,14 @@ import com.spiddekauga.voider.utils.ObjectCrypter;
 
 /**
  * Loads JSON objects (that has been encrypted) synchronously.
+ *  * @param <StoredType> The stored type in the JSON file
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
 public class JsonLoaderSync<StoredType> extends SynchronousAssetLoader<StoredType, JsonParameter<StoredType>> {
 	/**
-	 * Constructor which takse a file handle resolver (where to load resources
-	 * from) and what type of ojbect is stored in the json file.
+	 * Constructor which takes a file handle resolver (where to load resources
+	 * from) and what type of object is stored in the json file.
 	 * @param resolver where to load resources from
 	 * @param type what type of object is stored in the json file
 	 */
@@ -32,24 +33,20 @@ public class JsonLoaderSync<StoredType> extends SynchronousAssetLoader<StoredTyp
 
 	@Override
 	public StoredType load(AssetManager assetManager, String fileName, FileHandle file, JsonParameter<StoredType> parameter) {
-		if (mStoredObject == null) {
-			if (!file.exists()) {
-				throw new ResourceNotFoundException(fileName);
-			}
-
-			byte[] encryptedJson = file.readBytes();
-			String jsonString = null;
-			try {
-				jsonString = (String) mCrypter.decrypt(encryptedJson);
-			} catch (Exception e) {
-				throw new ResourceCorruptException(fileName);
-			}
-
-			Json json = new JsonWrapper();
-			mStoredObject = json.fromJson(mStoredType, jsonString);
+		if (!file.exists()) {
+			throw new ResourceNotFoundException(fileName);
 		}
 
-		return mStoredObject;
+		byte[] encryptedJson = file.readBytes();
+		String jsonString = null;
+		try {
+			jsonString = (String) mCrypter.decrypt(encryptedJson);
+		} catch (Exception e) {
+			throw new ResourceCorruptException(fileName);
+		}
+
+		Json json = new JsonWrapper();
+		return json.fromJson(mStoredType, jsonString);
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -57,9 +54,6 @@ public class JsonLoaderSync<StoredType> extends SynchronousAssetLoader<StoredTyp
 	public Array<AssetDescriptor> getDependencies(String fileName, FileHandle file, JsonParameter<StoredType> parameter) {
 		return null;
 	}
-
-	/** The actual object that was stored */
-	StoredType mStoredObject = null;
 
 	/** Type of object stored in the json file */
 	Class<StoredType> mStoredType;

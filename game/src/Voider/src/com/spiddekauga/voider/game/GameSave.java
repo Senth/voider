@@ -33,7 +33,7 @@ public class GameSave extends Resource {
 	 */
 	@SuppressWarnings("unused")
 	private GameSave() {
-		// Does nonthing
+		// Does nothing
 	}
 
 	/**

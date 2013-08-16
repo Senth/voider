@@ -33,7 +33,7 @@ public class VoiderGame implements ApplicationListener {
 		Config.init();
 		ResourceSaver.init();
 		ResourceCacheFacade.init();
-		Gdx.app.setLogLevel(Application.LOG_INFO);
+		Gdx.app.setLogLevel(Application.LOG_DEBUG);
 
 		ShaderProgram.pedantic = false;
 

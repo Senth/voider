@@ -112,6 +112,7 @@ public class GameScene extends WorldScene {
 				}
 			}
 
+			// Resume a level
 			if (mGameSaveDef != null) {
 				try {
 					mGameSave = ResourceCacheFacade.get(mGameSaveDef.getGameSaveId(), GameSave.class);
@@ -160,6 +161,8 @@ public class GameScene extends WorldScene {
 		// Make sure border maintains same speed as level
 		if (mBorderBody != null) {
 			mBorderBody.setLinearVelocity(mLevel.getSpeed(), 0.0f);
+
+			/** @todo Update the border when it's too far from the original place */
 		}
 
 		// Update mouse position even when still
@@ -411,20 +414,26 @@ public class GameScene extends WorldScene {
 	 * Create player ship
 	 */
 	private void createPlayerShip() {
-		// Find first available player ship
-		java.util.List<PlayerActorDef> ships = ResourceCacheFacade.get(PlayerActorDef.class);
-		if (ships.isEmpty()) {
-			setOutcome(Outcomes.LOADING_FAILED_MISSING_FILE, "Could not find any ships");
-			return;
-		}
+		// Create a new ship when we're not resuming a game
+		if (mGameSaveDef == null) {
+			// Find first available player ship
+			java.util.List<PlayerActorDef> ships = ResourceCacheFacade.get(PlayerActorDef.class);
+			if (ships.isEmpty()) {
+				setOutcome(Outcomes.LOADING_FAILED_MISSING_FILE, "Could not find any ships");
+				return;
+			}
 
-		mPlayerActor = new PlayerActor(ships.get(0));
-		mPlayerActor.createBody();
-		resetPlayerPosition();
+			mPlayerActor = new PlayerActor(ships.get(0));
+			mPlayerActor.createBody();
+			resetPlayerPosition();
+
+			mPlayerStats = new PlayerStats(mLevel.getDef().getStartXCoord(), mLevel.getSpeed());
+		} else {
+			mPlayerActor.createBody();
+		}
 
 		// Set lives
 		mLevel.setPlayer(mPlayerActor);
-		mPlayerStats = new PlayerStats(mLevel.getDef().getStartXCoord(), mLevel.getSpeed());
 		mGui.resetValues();
 
 		// Create life ships
