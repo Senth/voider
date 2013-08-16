@@ -104,6 +104,7 @@ public class EnemyActor extends Actor {
 		mPath = path;
 
 		if (path != null) {
+
 			mPathId = path.getId();
 			mPath.addEnemy(this);
 		} else {
@@ -272,36 +273,37 @@ public class EnemyActor extends Actor {
 	}
 
 	@Override
-	public void read(Json json, JsonValue jsonValue) {
-		super.read(json, jsonValue);
+	public void read(Json json, JsonValue jsonData) {
+		super.read(json, jsonData);
 
-		mGroupId = json.readValue("mGroupId", UUID.class, jsonValue);
+		mGroupId = json.readValue("mGroupId", UUID.class, jsonData);
 		if (mGroupId != null) {
-			mGroupLeader = json.readValue("mGroupLeader", boolean.class, jsonValue);
+			mGroupLeader = json.readValue("mGroupLeader", boolean.class, jsonData);
 		}
 
 		EnemyActorDef enemyDef = getDef(EnemyActorDef.class);
 
 		if (enemyDef.hasWeapon()) {
-			mWeapon = json.readValue("mWeapon", Weapon.class, jsonValue);
+			mWeapon = json.readValue("mWeapon", Weapon.class, jsonData);
 			mWeapon.setWeaponDef(enemyDef.getWeaponDef());
-			mShootAngle = json.readValue("mShootAngle", float.class, jsonValue);
+			mShootAngle = json.readValue("mShootAngle", float.class, jsonData);
 		}
 
 		if (enemyDef.getMovementType() == MovementTypes.AI) {
 			if (enemyDef.isMovingRandomly()) {
-				mRandomMoveNext = json.readValue("mRandomMoveNext", int.class, jsonValue);
-				mRandomMoveDirection = json.readValue("mRandomMoveDirection", Vector2.class, jsonValue);
+				mRandomMoveNext = json.readValue("mRandomMoveNext", int.class, jsonData);
+				mRandomMoveDirection = json.readValue("mRandomMoveDirection", Vector2.class, jsonData);
 			}
 		}
 		else if (enemyDef.getMovementType() == MovementTypes.PATH) {
-			mPathId = json.readValue("mPathId", UUID.class, jsonValue);
+			mPathId = json.readValue("mPathId", UUID.class, jsonData);
+			mPathIndexNext = json.readValue("mPathIndexNext", int.class, jsonData);
 
-			if (jsonValue.getChild("mPathOnceReachedEnd") != null) {
-				mPathOnceReachedEnd = json.readValue("mPathOnceReachedEnd", boolean.class, jsonValue);
+			if (jsonData.getChild("mPathOnceReachedEnd") != null) {
+				mPathOnceReachedEnd = json.readValue("mPathOnceReachedEnd", boolean.class, jsonData);
 			}
-			if (jsonValue.getChild("mPathForward") != null) {
-				mPathForward = json.readValue("mPathForward", boolean.class, jsonValue);
+			if (jsonData.getChild("mPathForward") != null) {
+				mPathForward = json.readValue("mPathForward", boolean.class, jsonData);
 			}
 		}
 	}

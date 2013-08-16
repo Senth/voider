@@ -462,6 +462,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	public void write(Json json) {
 		super.write(json);
 
+		json.writeValue("mActive", mActive);
 		json.writeValue("mLife", mLife);
 		json.writeValue("mPosition", mPosition);
 		json.writeValue("mTriggerInfos", mTriggerInfos);
@@ -489,12 +490,13 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void read(Json json, JsonValue jsonValue) {
-		super.read(json, jsonValue);
+	public void read(Json json, JsonValue jsonData) {
+		super.read(json, jsonData);
 
-		mLife = json.readValue("mLife", float.class, jsonValue);
-		mPosition = json.readValue("mPosition", Vector2.class, jsonValue);
-		mTriggerInfos = json.readValue("mTriggerInfos", ArrayList.class, jsonValue);
+		mActive = json.readValue("mActive", boolean.class, jsonData);
+		mLife = json.readValue("mLife", float.class, jsonData);
+		mPosition = json.readValue("mPosition", Vector2.class, jsonData);
+		mTriggerInfos = json.readValue("mTriggerInfos", ArrayList.class, jsonData);
 
 		// Set trigger listener to this
 		for (TriggerInfo triggerInfo : mTriggerInfos) {
@@ -504,12 +506,12 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 
 		// Definition
 		if (savesDef()) {
-			mDef = json.readValue("mDef", StaticTerrainActorDef.class, jsonValue);
+			mDef = json.readValue("mDef", StaticTerrainActorDef.class, jsonData);
 		}
 		// Get definition information to be able to load it
 		else {
-			UUID defId = json.readValue("mDefId", UUID.class, jsonValue);
-			String defTypeName = json.readValue("mDefType", String.class, jsonValue);
+			UUID defId = json.readValue("mDefId", UUID.class, jsonData);
+			String defTypeName = json.readValue("mDefType", String.class, jsonData);
 			Class<?> defType = null;
 			try {
 				defType = Class.forName(defTypeName);
@@ -529,19 +531,23 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 
 
 		// Create stub body
-		BodyDef bodyDef = mDef.getBodyDefCopy();
+		if (mActive) {
+			BodyDef bodyDef = mDef.getBodyDefCopy();
 
-		// Set body information, i.e. position etc.
-		JsonValue bodyValues = jsonValue.get("mBody");
-		if (bodyValues != null) {
-			bodyDef.angle = json.readValue("angle", float.class, bodyValues);
-			bodyDef.angularVelocity = json.readValue("angular_velocity", float.class, bodyValues);
-			bodyDef.linearVelocity.set(json.readValue("linear_velocity", Vector2.class, bodyValues));
-			bodyDef.awake = json.readValue("awake", boolean.class, bodyValues);
-			bodyDef.active = json.readValue("active", boolean.class, bodyValues);
+			// Set body information, i.e. position etc.
+			JsonValue bodyValues = jsonData.get("mBody");
+			if (bodyValues != null) {
+				bodyDef.angle = json.readValue("angle", float.class, bodyValues);
+				bodyDef.angularVelocity = json.readValue("angular_velocity", float.class, bodyValues);
+				bodyDef.linearVelocity.set(json.readValue("linear_velocity", Vector2.class, bodyValues));
+				bodyDef.awake = json.readValue("awake", boolean.class, bodyValues);
+				bodyDef.active = json.readValue("active", boolean.class, bodyValues);
 
-			// Set position
-			bodyDef.position.set(mPosition);
+				// Set position
+				bodyDef.position.set(mPosition);
+
+				createBody(bodyDef);
+			}
 		}
 	}
 
