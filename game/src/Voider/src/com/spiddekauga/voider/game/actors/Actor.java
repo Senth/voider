@@ -94,7 +94,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 			// Decrease life if colliding with something...
 			if (mDef.getMaxLife() > 0 && mLife > 0) {
 				for (ActorDef collidingActor : mCollidingActors) {
-					mLife -= collidingActor.getCollisionDamage() * deltaTime;
+					decreaseLife(collidingActor.getCollisionDamage() * deltaTime);
 				}
 			}
 		}
@@ -446,6 +446,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	 */
 	public void decreaseLife(float amount) {
 		mLife -= amount;
+		sendChangeEvent(EventTypes.LIFE_DECREASED);
 	}
 
 	/**
@@ -483,8 +484,6 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 			json.writeValue("awake", mBody.isAwake());
 			json.writeValue("active", mBody.isActive());
 			json.writeObjectEnd();
-		} else {
-			json.writeValue("mBody", (String) null);
 		}
 	}
 

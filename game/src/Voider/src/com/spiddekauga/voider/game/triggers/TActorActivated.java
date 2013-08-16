@@ -97,6 +97,10 @@ public class TActorActivated extends Trigger implements Disposable, IResourceBod
 
 	@Override
 	public void write(Json json) {
+		// We only want to manually listen to the actor's position
+		// and only in the editor, therefore we never save this listener
+		mActor.removeChangeListener(this);
+
 		super.write(json);
 		json.writeValue("mActorId", mActorId);
 	}

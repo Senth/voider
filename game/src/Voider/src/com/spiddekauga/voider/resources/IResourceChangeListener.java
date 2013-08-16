@@ -6,7 +6,7 @@ package com.spiddekauga.voider.resources;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public interface IResourceChangeListener {
+public interface IResourceChangeListener extends IResource {
 	/**
 	 * Called when the resource has changed
 	 * @param resource the changed resource
@@ -20,5 +20,7 @@ public interface IResourceChangeListener {
 	public enum EventTypes {
 		/** Position was changed */
 		POSITION,
+		/** Life was decreased */
+		LIFE_DECREASED
 	}
 }

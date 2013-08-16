@@ -106,6 +106,7 @@ public class GameScene extends WorldScene {
 			if (mLevelToLoad != null) {
 				try {
 					Level level = ResourceCacheFacade.get(mLevelToLoad.getLevelId(), Level.class);
+					level.setXCoord(level.getDef().getStartXCoord());
 					setLevel(level);
 				} catch (UndefinedResourceTypeException e) {
 					Gdx.app.error("GameScene", e.toString());
@@ -118,9 +119,16 @@ public class GameScene extends WorldScene {
 					mGameSave = ResourceCacheFacade.get(mGameSaveDef.getGameSaveId(), GameSave.class);
 
 					mPlayerActor = mGameSave.getPlayerActor();
-					mPlayerStats = mGameSave.getPlayerStats();
 					mBulletDestroyer = mGameSave.getBulletDestroyer();
 					setLevel(mGameSave.getLevel());
+
+					// Get player stats from level
+					ArrayList<PlayerStats> playerStats = mLevel.getResources(PlayerStats.class);
+					if (!playerStats.isEmpty()) {
+						mPlayerStats = playerStats.get(0);
+					} else {
+						Gdx.app.error("GameSave", "Could not find player stats in level!");
+					}
 				} catch (UndefinedResourceTypeException e) {
 					Gdx.app.error("GameScene", e.toString());
 				}
@@ -142,7 +150,7 @@ public class GameScene extends WorldScene {
 			ResourceSaver.clearResources(GameSaveDef.class);
 
 			if (getOutcome() == Outcomes.LEVEL_QUIT) {
-				GameSave gameSave = new GameSave(mLevel, mPlayerActor, mPlayerStats, mBulletDestroyer);
+				GameSave gameSave = new GameSave(mLevel, mPlayerActor, mBulletDestroyer);
 				GameSaveDef gameSaveDef = new GameSaveDef(gameSave);
 				ResourceSaver.save(gameSave);
 				ResourceSaver.save(gameSaveDef);
@@ -194,6 +202,8 @@ public class GameScene extends WorldScene {
 		if (mLevel.hasCompletedLevel()) {
 			setOutcome(Outcomes.LEVEL_COMPLETED);
 		}
+
+		mPlayerStats.updateScore(mLevel.getXCoord());
 
 
 		// GUI
@@ -427,7 +437,8 @@ public class GameScene extends WorldScene {
 			mPlayerActor.createBody();
 			resetPlayerPosition();
 
-			mPlayerStats = new PlayerStats(mLevel.getDef().getStartXCoord(), mLevel.getSpeed());
+			mPlayerStats = new PlayerStats(mLevel.getDef().getStartXCoord(), mLevel.getSpeed(), mPlayerActor);
+			mLevel.addResource(mPlayerStats);
 		} else {
 			mPlayerActor.createBody();
 		}

@@ -379,6 +379,7 @@ public class Level extends Resource implements Disposable {
 			}
 		}
 
+		startPosition -= Config.Level.START_COORD_OFFSET;
 		mLevelDef.setStartXCoord(startPosition);
 
 		Pools.arrayList.free(resources);

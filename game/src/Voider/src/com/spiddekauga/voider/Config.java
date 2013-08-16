@@ -587,9 +587,12 @@ public class Config {
 	 * Level
 	 */
 	public static class Level {
+		/** How much offset from the first resource inside the level
+		 * the beginning of the level should be placed */
+		public final static float START_COORD_OFFSET = Graphics.WIDTH * Graphics.WORLD_SCALE * 0.25f;
 		/** How much offset from the last resource inside the level the
 		 * x-coordinate should appear */
-		public static float END_COORD_OFFSET = Graphics.WIDTH * Graphics.WORLD_SCALE * 1.25f;
+		public final static float END_COORD_OFFSET = Graphics.WIDTH * Graphics.WORLD_SCALE * 1.25f;
 	}
 
 	/**

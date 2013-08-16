@@ -17,14 +17,12 @@ public class GameSave extends Resource {
 	 * Constructs a game save with all the necessary information
 	 * @param level the level to save
 	 * @param playerActor ship of the player
-	 * @param playerStats score, lives... of the player
 	 * @param bulletDestroyer all bullets currently in-game
 	 */
-	public GameSave(Level level, PlayerActor playerActor, PlayerStats playerStats, BulletDestroyer bulletDestroyer) {
+	public GameSave(Level level, PlayerActor playerActor, BulletDestroyer bulletDestroyer) {
 		mUniqueId = UUID.randomUUID();
 		mLevel = level;
 		mPlayerActor = playerActor;
-		mPlayerStats = playerStats;
 		mBulletDestroyer = bulletDestroyer;
 	}
 
@@ -51,13 +49,6 @@ public class GameSave extends Resource {
 	}
 
 	/**
-	 * @return saved player stats
-	 */
-	public PlayerStats getPlayerStats() {
-		return mPlayerStats;
-	}
-
-	/**
 	 * @return saved bullets
 	 */
 	public BulletDestroyer getBulletDestroyer() {
@@ -71,7 +62,6 @@ public class GameSave extends Resource {
 		mLevel.removeResource(mLevel.getId());
 		json.writeValue("mLevel", mLevel);
 		json.writeValue("mPlayerActor", mPlayerActor);
-		json.writeValue("mPlayerStats", mPlayerStats);
 		json.writeValue("mBulletDestroyer", mBulletDestroyer);
 	}
 
@@ -81,7 +71,6 @@ public class GameSave extends Resource {
 
 		mLevel = json.readValue("mLevel", Level.class, jsonData);
 		mPlayerActor = json.readValue("mPlayerActor", PlayerActor.class, jsonData);
-		mPlayerStats = json.readValue("mPlayerStats", PlayerStats.class, jsonData);
 		mBulletDestroyer = json.readValue("mBulletDestroyer", BulletDestroyer.class, jsonData);
 	}
 
@@ -89,8 +78,6 @@ public class GameSave extends Resource {
 	private Level mLevel;
 	/** Saved player ship */
 	private PlayerActor mPlayerActor;
-	/** Saved player stats */
-	private PlayerStats mPlayerStats;
 	/** Saved bullets */
 	private BulletDestroyer mBulletDestroyer;
 }

@@ -56,24 +56,38 @@ public abstract class Resource implements IResource, Json.Serializable {
 
 	@Override
 	public void getReferences(ArrayList<UUID> references) {
-		// Does nothing here
+		if (mListenerIds != null) {
+			references.addAll(mListenerIds);
+		}
 	}
 
 	@Override
 	public boolean bindReference(IResource resource) {
-		// Does nothing here
+		if (resource instanceof IResourceChangeListener) {
+			addChangeListener((IResourceChangeListener) resource);
+			return true;
+		}
+
 		return false;
 	}
 
 	@Override
 	public boolean addBoundResource(IResource boundResource)  {
-		// Does nothing here
+		if (boundResource instanceof IResourceChangeListener) {
+			addChangeListener((IResourceChangeListener) boundResource);
+			return true;
+		}
+
 		return false;
 	}
 
 	@Override
 	public boolean removeBoundResource(IResource boundResource) {
-		// Does nothing here
+		if (boundResource instanceof IResourceChangeListener) {
+			removeChangeListener((IResourceChangeListener)boundResource);
+			return true;
+		}
+
 		return false;
 	}
 
@@ -82,13 +96,18 @@ public abstract class Resource implements IResource, Json.Serializable {
 		if (mListeners == null) {
 			mListeners = new ArrayList<IResourceChangeListener>();
 		}
+		if (mListenerIds == null) {
+			mListenerIds = new ArrayList<UUID>();
+		}
 		mListeners.add(listener);
+		mListenerIds.add(listener.getId());
 	}
 
 	@Override
 	public void removeChangeListener(IResourceChangeListener listener) {
 		if (mListeners != null) {
 			mListeners.remove(listener);
+			mListenerIds.remove(listener.getId());
 		}
 	}
 
@@ -108,15 +127,21 @@ public abstract class Resource implements IResource, Json.Serializable {
 	public void write(Json json) {
 		json.writeValue("REVISION", Config.REVISION);
 		json.writeValue("mUniqueId", mUniqueId);
+		json.writeValue("mListenerIds", mListenerIds);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void read(Json json, JsonValue jsonData) {
 		mUniqueId = json.readValue("mUniqueId", UUID.class, jsonData);
+		mListenerIds = json.readValue("mListenerIds", ArrayList.class, jsonData);
 	}
 
 	/** Unique id of the resource */
 	protected UUID mUniqueId = null;
 	/** Listeners of the resource */
 	private ArrayList<IResourceChangeListener> mListeners = null;
+	/** Listener ids */
+	private ArrayList<UUID> mListenerIds = null;
+
 }
