@@ -34,11 +34,11 @@ public class PlayerActor extends com.spiddekauga.voider.game.actors.Actor {
 	public void addCollectible(Collectibles collectible) {
 		switch (collectible) {
 		case HEALTH_25:
-			mLife += 25;
+			increaseLife(25);
 			break;
 
 		case HEALTH_50:
-			mLife += 50;
+			increaseLife(50);
 			break;
 		}
 	}

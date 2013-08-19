@@ -450,6 +450,14 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	}
 
 	/**
+	 * Increases the actor's life with the specified amount
+	 * @param amount the amount to increase
+	 */
+	public void increaseLife(float amount) {
+		mLife += amount;
+	}
+
+	/**
 	 * Sets if the actor shall only draw its outline
 	 * @param drawOnlyOutline set to true if the actor shall only draw its
 	 * shape's outline.
@@ -1096,8 +1104,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	}
 
 	/** Current life */
-	protected float mLife = 0;
-
+	private float mLife = 0;
 	/** Physical body */
 	private Body mBody = null;
 	/** The belonging definition of this actor */

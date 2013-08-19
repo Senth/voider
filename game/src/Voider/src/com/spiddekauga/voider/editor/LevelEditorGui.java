@@ -607,7 +607,7 @@ class LevelEditorGui extends EditorGui {
 		};
 
 
-		left.row();
+		left.row().setAlign(Horizontal.LEFT, Vertical.MIDDLE);
 		label = new Label("Revision:", labelStyle);
 		new TooltipListener(label, "Revision", Messages.Tooltip.Level.Option.REVISION);
 		left.add(label).setPadRight(Editor.LABEL_PADDING_BEFORE_SLIDER);
@@ -618,7 +618,7 @@ class LevelEditorGui extends EditorGui {
 		mWidgets.option.revision = label;
 
 
-		left.row();
+		left.row().setAlign(Horizontal.LEFT, Vertical.MIDDLE);
 		label = new Label("Current version:", labelStyle);
 		new TooltipListener(label, "Version", Messages.Tooltip.Level.Option.VERSION);
 		left.add(label).setPadRight(Editor.LABEL_PADDING_BEFORE_SLIDER);
