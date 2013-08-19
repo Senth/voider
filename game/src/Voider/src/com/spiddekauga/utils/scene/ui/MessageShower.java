@@ -15,6 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceNames;
+import com.spiddekauga.voider.utils.Messages;
 import com.spiddekauga.voider.utils.Pools;
 
 /**
@@ -44,7 +45,7 @@ public class MessageShower {
 		// Add window to stage, if it's not in the stage
 		if (mWindow.getStage() == null) {
 			mStage.addActor(mWindow);
-			mWindow.addAction(fadeIn(Config.Gui.ERROR_MESSAGE_FADE_IN_DURATION));
+			mWindow.addAction(fadeIn(Config.Gui.MESSAGE_FADE_IN_DURATION));
 		}
 		// Make sure window isn't fading out
 		else if (mWindow.getActions().size > 0) {
@@ -64,9 +65,9 @@ public class MessageShower {
 		packAndPlaceWindow();
 
 		// Set timer for fadeIn - display - fadeOut - remove - free
-		float showDuration = Config.Gui.ERROR_MESSAGE_TIME_SHOWN_MIN + Config.Gui.ERROR_MESSAGE_TIME_PER_CHARACTER * message.length();
-		Action fadeOutAction = Actions.parallel(fadeOut(Config.Gui.ERROR_MESSAGE_FADE_OUT_DURATION), Actions.run(mWindowFadeOut));
-		messageLabel.addAction(sequence(fadeIn(Config.Gui.ERROR_MESSAGE_FADE_IN_DURATION), delay(showDuration), fadeOutAction, removeActor(), Actions.run(new FreeLabel(messageLabel))));
+		float showDuration = Messages.calculateTimeToShowMessage(message);
+		Action fadeOutAction = Actions.parallel(fadeOut(Config.Gui.MESSAGE_FADE_OUT_DURATION), Actions.run(mWindowFadeOut));
+		messageLabel.addAction(sequence(fadeIn(Config.Gui.MESSAGE_FADE_IN_DURATION), delay(showDuration), fadeOutAction, removeActor(), Actions.run(new FreeLabel(messageLabel))));
 	}
 
 	/**
@@ -89,10 +90,10 @@ public class MessageShower {
 		public void run() {
 			mcMessages--;
 			if (mcMessages == 0) {
-				mWindow.addAction(sequence(fadeOut(Config.Gui.ERROR_MESSAGE_FADE_OUT_DURATION),delay(0.1f),Actions.run(mWindowReset),removeActor()));
+				mWindow.addAction(sequence(fadeOut(Config.Gui.MESSAGE_FADE_OUT_DURATION),delay(0.1f),Actions.run(mWindowReset),removeActor()));
 				// Pack the window...
 			} else {
-				mWindow.addAction(sequence(delay(Config.Gui.ERROR_MESSAGE_FADE_OUT_DURATION), Actions.run(mWindowPack)));
+				mWindow.addAction(sequence(delay(Config.Gui.MESSAGE_FADE_OUT_DURATION), Actions.run(mWindowPack)));
 			}
 		}
 	};

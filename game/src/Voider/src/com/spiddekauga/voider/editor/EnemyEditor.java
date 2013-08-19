@@ -93,7 +93,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	}
 
 	@Override
-	public void onActivate(Outcomes outcome, String message) {
+	protected void onActivate(Outcomes outcome, String message) {
 		Actor.setEditorActive(true);
 		Actor.setWorld(mWorld);
 		Actor.setLevel(null);
@@ -203,13 +203,13 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	}
 
 	@Override
-	public void onResize(int width, int height) {
+	protected void onResize(int width, int height) {
 		super.onResize(width, height);
 		scalePathLabels();
 	}
 
 	@Override
-	public void onDispose() {
+	protected void onDispose() {
 		mPlayerActor.dispose();
 		mEnemyActor.dispose();
 		mEnemyPathBackAndForth.dispose();
@@ -311,12 +311,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	}
 
 	@Override
-	public boolean hasResources() {
-		return true;
-	}
-
-	@Override
-	public void loadResources() {
+	protected void loadResources() {
 		super.loadResources();
 		ResourceCacheFacade.load(ResourceNames.UI_EDITOR_BUTTONS);
 		ResourceCacheFacade.load(ResourceNames.UI_GENERAL);
@@ -325,7 +320,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	}
 
 	@Override
-	public void unloadResources() {
+	protected void unloadResources() {
 		super.unloadResources();
 		ResourceCacheFacade.unload(ResourceNames.UI_EDITOR_BUTTONS);
 		ResourceCacheFacade.unload(ResourceNames.UI_GENERAL);

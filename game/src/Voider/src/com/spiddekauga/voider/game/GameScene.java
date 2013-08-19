@@ -22,6 +22,7 @@ import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceNames;
 import com.spiddekauga.voider.resources.ResourceSaver;
 import com.spiddekauga.voider.resources.UndefinedResourceTypeException;
+import com.spiddekauga.voider.scene.LoadingScene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.scene.WorldScene;
 import com.spiddekauga.voider.utils.Pools;
@@ -86,14 +87,14 @@ public class GameScene extends WorldScene {
 	}
 
 	@Override
-	public void onResize(int width, int height) {
+	protected void onResize(int width, int height) {
 		super.onResize(width, height);
 		updateCameraPosition();
 		createBorder();
 	}
 
 	@Override
-	public void onActivate(Outcomes outcome, String message) {
+	protected void onActivate(Outcomes outcome, String message) {
 		Actor.setEditorActive(false);
 		Actor.setPlayerActor(mPlayerActor);
 		Actor.setWorld(mWorld);
@@ -141,9 +142,8 @@ public class GameScene extends WorldScene {
 		/** @TODO game completed, aborted? */
 	}
 
-
 	@Override
-	public void onDispose() {
+	protected void onDispose() {
 		// Save the level
 		if (!mTesting) {
 			ResourceSaver.clearResources(GameSave.class);
@@ -283,12 +283,7 @@ public class GameScene extends WorldScene {
 	//		Resource loading etc.
 	// --------------------------------
 	@Override
-	public boolean hasResources() {
-		return true;
-	}
-
-	@Override
-	public void loadResources() {
+	protected void loadResources() {
 		super.loadResources();
 
 		ResourceCacheFacade.load(ResourceNames.UI_GENERAL);
@@ -306,7 +301,7 @@ public class GameScene extends WorldScene {
 	}
 
 	@Override
-	public void unloadResources() {
+	protected void unloadResources() {
 		super.unloadResources();
 		ResourceCacheFacade.unload(ResourceNames.UI_GENERAL);
 		ResourceCacheFacade.unload(ResourceNames.SHADER_DEFAULT);
@@ -314,14 +309,44 @@ public class GameScene extends WorldScene {
 
 		// Loaded level
 		if (mLevelToLoad != null) {
-			ResourceCacheFacade.unload(mLevel, mLevel.getDef());
+			// Set level (will not be set if the user quits the game while loading)
+			if (mLevel == null) {
+				mLevel = ResourceCacheFacade.get(mLevelToLoad.getLevelId(), Level.class);
+			}
+
+			if (mLevel != null) {
+				ResourceCacheFacade.unload(mLevel, mLevel.getDef());
+			}
 			ResourceCacheFacade.unload(mLevelToLoad, false);
 		}
 
 		// Resumed game
 		if (mGameSave != null) {
-			ResourceCacheFacade.unload(mGameSave, mGameSaveDef);
+			// Set game save (will not be set if the user quits the game while loading)
+			if (mGameSave == null) {
+				mGameSave = ResourceCacheFacade.get(mGameSaveDef.getGameSaveId(), GameSave.class);
+			}
+
+			if (mGameSave != null) {
+				ResourceCacheFacade.unload(mGameSave, mGameSaveDef);
+			}
 		}
+	}
+
+	@Override
+	protected LoadingScene getLoadingScene() {
+		LoadingScene loadingScene = null;
+
+		// Loading text scene as there is a prologue
+		if (mLevelToLoad != null && !mLevelToLoad.getPrologue().equals("")) {
+			loadingScene = new LoadingTextScene(mLevelToLoad.getPrologue());
+		}
+		// TODO regular loading screen
+		else {
+
+		}
+
+		return loadingScene;
 	}
 
 

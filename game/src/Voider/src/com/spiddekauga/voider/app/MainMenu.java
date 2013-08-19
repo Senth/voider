@@ -29,17 +29,7 @@ public class MainMenu extends Scene {
 	}
 
 	@Override
-	protected void update() {
-
-	}
-
-	@Override
-	public boolean hasResources() {
-		return true;
-	}
-
-	@Override
-	public void loadResources() {
+	protected void loadResources() {
 		super.loadResources();
 		ResourceCacheFacade.load(ResourceNames.UI_GENERAL);
 		ResourceCacheFacade.loadAllOf(LevelDef.class, false);
@@ -47,7 +37,7 @@ public class MainMenu extends Scene {
 	}
 
 	@Override
-	public void unloadResources() {
+	protected void unloadResources() {
 		super.unloadResources();
 		ResourceCacheFacade.unload(ResourceNames.UI_GENERAL);
 		ResourceCacheFacade.unloadAllOf(LevelDef.class, false);
@@ -55,12 +45,12 @@ public class MainMenu extends Scene {
 	}
 
 	@Override
-	public boolean unloadResourcesOnDeactivate() {
+	protected boolean unloadResourcesOnDeactivate() {
 		return true;
 	}
 
 	@Override
-	public void onActivate(Outcomes outcome, String message) {
+	protected void onActivate(Outcomes outcome, String message) {
 		if (outcome == Outcomes.LOADING_FAILED_CORRUPT_FILE) {
 			/** @todo handle corrupt file */
 		} else if (outcome == Outcomes.LOADING_FAILED_MISSING_FILE) {

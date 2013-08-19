@@ -57,7 +57,7 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 	}
 
 	@Override
-	public void onActivate(Outcomes outcome, String message) {
+	protected void onActivate(Outcomes outcome, String message) {
 		Actor.setEditorActive(true);
 		Actor.setWorld(mWorld);
 		Actor.setLevel(null);
@@ -136,11 +136,6 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 	}
 
 	@Override
-	public boolean hasResources() {
-		return true;
-	}
-
-	@Override
 	public boolean keyDown(int keycode) {
 		// Redo
 		if (KeyHelper.isRedoPressed(keycode)) {
@@ -167,7 +162,7 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 	}
 
 	@Override
-	public void loadResources() {
+	protected void loadResources() {
 		super.loadResources();
 		ResourceCacheFacade.load(ResourceNames.UI_EDITOR_BUTTONS);
 		ResourceCacheFacade.load(ResourceNames.UI_GENERAL);
@@ -175,7 +170,7 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 	}
 
 	@Override
-	public void unloadResources() {
+	protected void unloadResources() {
 		super.unloadResources();
 		ResourceCacheFacade.unload(ResourceNames.UI_GENERAL);
 		ResourceCacheFacade.unload(ResourceNames.UI_EDITOR_BUTTONS);

@@ -14,7 +14,7 @@ import com.spiddekauga.voider.scene.Gui;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class SplashScreenGui extends Gui {
+class SplashScreenGui extends Gui {
 	@Override
 	public void initGui() {
 		super.initGui();

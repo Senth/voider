@@ -2,8 +2,6 @@ package com.spiddekauga.voider.utils;
 
 import com.spiddekauga.voider.Config;
 
-
-
 /**
  * Class containing all messages for voider, including help function
  * for retrieving messages
@@ -32,6 +30,17 @@ public class Messages {
 		String message = "Your current " + unsavedType + " is unsaved.\n" +
 				"Do you want to save it before " + action.getMessage(unsavedType) + "?";
 		return message;
+	}
+
+	/**
+	 * Calculates the amount of time to show a specific message depending
+	 * on its length
+	 * @param message the message to calculate how long time to display
+	 * @return seconds to display the message
+	 */
+	public static float calculateTimeToShowMessage(String message) {
+		return Config.Gui.MESSAGE_TIME_SHOWN_MIN + Config.Gui.MESSAGE_TIME_PER_CHARACTER * message.length();
+
 	}
 
 	/**

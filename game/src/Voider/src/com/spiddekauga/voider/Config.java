@@ -548,13 +548,13 @@ public class Config {
 		/** Tooltip margin for the screen */
 		public final static int TOOLTIP_MARGIN_WIDTH = 10;
 		/** Fade in duration of the label and window for error messages */
-		public final static float ERROR_MESSAGE_FADE_IN_DURATION = 0.3f;
+		public final static float MESSAGE_FADE_IN_DURATION = 0.3f;
 		/** Fade out duration of the label and window for error messages */
-		public final static float ERROR_MESSAGE_FADE_OUT_DURATION = 1.0f;
+		public final static float MESSAGE_FADE_OUT_DURATION = 1.0f;
 		/** Minimum time shown */
-		public final static float ERROR_MESSAGE_TIME_SHOWN_MIN = 2.0f;
+		public final static float MESSAGE_TIME_SHOWN_MIN = 2.0f;
 		/** Time to display error message per character */
-		public final static float ERROR_MESSAGE_TIME_PER_CHARACTER = 0.08f;
+		public final static float MESSAGE_TIME_PER_CHARACTER = 0.08f;
 
 		/**
 		 * @return true if we want to display text buttons instead of image buttons
@@ -601,6 +601,7 @@ public class Config {
 	 * Menus
 	 */
 	public static class Menu {
+		// Splash screen
 		/** Splash screen time, including entering and fade in, excluding fade out exiting */
 		public final static float SPLASH_SCREEN_TIME = 3.5f;
 		/** Splash screen fade in time */
@@ -611,6 +612,16 @@ public class Config {
 		public final static float SPLASH_SCREEN_ENTER_TIME = 0.4f;
 		/** Splash screen exiting time */
 		public final static float SPLASH_SCREEN_EXIT_TIME = 0.1f;
+
+		// Loading text screen
+		/** Loading text scene fade in time */
+		public final static float LOADING_TEXT_SCENE_FADE_IN = 1f;
+		/** Loading text scene fade out time */
+		public final static float LOADING_TEXT_SCENE_FADE_OUT = 1f;
+		/** Loading text scene enter time */
+		public final static float LOADING_TEXT_SCENE_ENTER_TIME = 0.4f;
+		/** Loading text scene exiting time */
+		public final static float LOADING_TEXT_SCENE_EXIT_TIME = 0.1f;
 	}
 
 	/**

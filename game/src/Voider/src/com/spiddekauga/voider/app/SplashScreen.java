@@ -20,12 +20,18 @@ public class SplashScreen extends LoadingScene {
 		super(new SplashScreenGui());
 
 		setClearColor(1, 1, 1, 0);
+	}
 
-		// Load splash screen image
+	@Override
+	protected void loadResources() {
+		super.loadResources();
 		ResourceCacheFacade.load(ResourceNames.IMAGE_SPLASH_SCREEN);
-		ResourceCacheFacade.finishLoading();
+	}
 
-		mGui.initGui();
+	@Override
+	protected void unloadResources() {
+		super.unloadResources();
+		ResourceCacheFacade.unload(ResourceNames.IMAGE_SPLASH_SCREEN);
 	}
 
 	@Override
@@ -47,15 +53,7 @@ public class SplashScreen extends LoadingScene {
 				setOutcome(Outcomes.LOADING_SUCCEEDED);
 			}
 			break;
-
 		}
-	}
-
-	@Override
-	public void onDispose() {
-		ResourceCacheFacade.unload(ResourceNames.IMAGE_SPLASH_SCREEN);
-
-		super.onDispose();
 	}
 
 	/**
@@ -70,7 +68,7 @@ public class SplashScreen extends LoadingScene {
 
 	/** How long the splash screen has been displayed */
 	private float mDisplayTime = 0;
-	/** Splash screen states */
+	/** Current splash screen state */
 	States mState = States.DISPLAY;
 
 

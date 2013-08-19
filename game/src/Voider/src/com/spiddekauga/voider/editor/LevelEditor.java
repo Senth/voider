@@ -224,12 +224,7 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 	}
 
 	@Override
-	public boolean hasResources() {
-		return true;
-	}
-
-	@Override
-	public void loadResources() {
+	protected void loadResources() {
 		super.loadResources();
 		ResourceCacheFacade.load(ResourceNames.UI_EDITOR_BUTTONS);
 		ResourceCacheFacade.load(ResourceNames.UI_GENERAL);
@@ -240,7 +235,7 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 	}
 
 	@Override
-	public void unloadResources() {
+	protected void unloadResources() {
 		super.unloadResources();
 		ResourceCacheFacade.unload(ResourceNames.UI_EDITOR_BUTTONS);
 		ResourceCacheFacade.unload(ResourceNames.UI_GENERAL);
@@ -251,7 +246,7 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 	}
 
 	@Override
-	public void onActivate(Outcomes outcome, String message) {
+	protected void onActivate(Outcomes outcome, String message) {
 		Actor.setEditorActive(true);
 		Actor.setWorld(mWorld);
 
@@ -402,7 +397,7 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 	}
 
 	@Override
-	public void onDispose() {
+	protected void onDispose() {
 		setLevel(null);
 	}
 

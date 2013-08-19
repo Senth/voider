@@ -48,7 +48,7 @@ public class SelectDefScene extends WorldScene {
 	}
 
 	@Override
-	public void onActivate(Outcomes outcome, String message) {
+	protected void onActivate(Outcomes outcome, String message) {
 		if (outcome  == Outcomes.LOADING_SUCCEEDED) {
 			try {
 				@SuppressWarnings("unchecked")
@@ -68,24 +68,21 @@ public class SelectDefScene extends WorldScene {
 	}
 
 	@Override
-	public void loadResources() {
+	protected void loadResources() {
+		super.loadResources();
 		ResourceCacheFacade.load(ResourceNames.UI_GENERAL);
 		ResourceCacheFacade.loadAllOf(mDefType, false);
 	}
 
 	@Override
-	public void unloadResources() {
+	protected void unloadResources() {
+		super.unloadResources();
 		ResourceCacheFacade.unload(ResourceNames.UI_GENERAL);
 		ResourceCacheFacade.unloadAllOf(mDefType, false);
 	}
 
 	@Override
-	public boolean hasResources() {
-		return true;
-	}
-
-	@Override
-	public void onResize(int width, int height) {
+	protected void onResize(int width, int height) {
 		super.onResize(width, height);
 
 		((SelectDefGui)mGui).refillDefTable();

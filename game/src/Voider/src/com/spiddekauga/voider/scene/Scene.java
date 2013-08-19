@@ -28,7 +28,7 @@ public abstract class Scene extends InputAdapter {
 	 * Creates the input multiplexer. UI always has priority over everything else.
 	 * @param gui the GUI to use for the scene
 	 */
-	public Scene(Gui gui) {
+	protected Scene(Gui gui) {
 		mGui = gui;
 		mInputMultiplexer.addProcessor(0, mGui.getStage());
 		mInputMultiplexer.addProcessor(1, this);
@@ -37,7 +37,7 @@ public abstract class Scene extends InputAdapter {
 	/**
 	 * Runs the scene. Clears the screen, renders it, and updates the scene elements.
 	 */
-	public final void run() {
+	final void run() {
 		Gdx.gl.glClearColor(mClearColor.r, mClearColor.g, mClearColor.b, mClearColor.a);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
@@ -55,7 +55,7 @@ public abstract class Scene extends InputAdapter {
 	 * @param width new width of the window
 	 * @param height new height of the window
 	 */
-	public void onResize(int width, int height) {
+	protected void onResize(int width, int height) {
 		mGui.resize(width, height);
 	}
 
@@ -65,7 +65,7 @@ public abstract class Scene extends InputAdapter {
 	 * is a world scene.
 	 * @return screen width in world coordinates, if scene is not a world it return 0.
 	 */
-	public float getWorldWidth() {
+	protected float getWorldWidth() {
 		return 0;
 	}
 
@@ -74,7 +74,7 @@ public abstract class Scene extends InputAdapter {
 	 * a world scene.
 	 * @return screen height in world coordinates, if scene is not a world it return 0.
 	 */
-	public float getWorldHeight() {
+	protected float getWorldHeight() {
 		return 0;
 	}
 
@@ -83,7 +83,7 @@ public abstract class Scene extends InputAdapter {
 	 * scene. Remember to free the returned vector with
 	 * Pools.vector2.free(returnedVector);
 	 */
-	public Vector2 getWorldMinCoordinates() {
+	protected Vector2 getWorldMinCoordinates() {
 		return null;
 	}
 
@@ -92,7 +92,7 @@ public abstract class Scene extends InputAdapter {
 	 * isn't a world scene. Remember to free the returned vector with
 	 * Pools.vector2.free(returnedVector);
 	 */
-	public Vector2 getWorldMaxCoordinates() {
+	protected Vector2 getWorldMaxCoordinates() {
 		return null;
 	}
 
@@ -106,30 +106,23 @@ public abstract class Scene extends InputAdapter {
 	/**
 	 * @return picking fixture from editors, null otherwise.
 	 */
-	public FixtureDef getPickingFixtureDef() {
+	protected FixtureDef getPickingFixtureDef() {
 		return null;
 	}
 
 	/**
 	 * @return picking vertices from editors, null otherwise.
 	 */
-	public ArrayList<Vector2> getPickingVertices() {
+	protected ArrayList<Vector2> getPickingVertices() {
 		return null;
 	}
 
 	/**
 	 * Updates the scene
 	 */
-	protected abstract void update();
-
-	/**
-	 * Checks whether the derived class has any resources that needs to be loaded.
-	 * If this method returns true. SceneSwitcher will call loadResources() before
-	 * activating this resource and unloadResources() after this class has been
-	 * deactivated.
-	 * @return true if this scene has any resources that needs to be loaded.
-	 */
-	public abstract boolean hasResources();
+	protected void update() {
+		// Does nothing
+	}
 
 	/**
 	 * Override this function if you want your scene to unload all of its resources
@@ -142,7 +135,7 @@ public abstract class Scene extends InputAdapter {
 	 * @return true if this scene shall unload all of its resources when deactivated.
 	 * Defaults to false.
 	 */
-	public boolean unloadResourcesOnDeactivate() {
+	protected boolean unloadResourcesOnDeactivate() {
 		return false;
 	}
 
@@ -151,7 +144,7 @@ public abstract class Scene extends InputAdapter {
 	 * loading the resources for this scene. Defaults to null, which means no loading
 	 * scene will be displayed.
 	 */
-	public LoadingScene getLoadingScene() {
+	protected LoadingScene getLoadingScene() {
 		return null;
 	}
 
@@ -159,7 +152,7 @@ public abstract class Scene extends InputAdapter {
 	 * Loads the resources of the scene. Called before #onActivate(Outcome,String)
 	 * @see #getLoadingScene() if this scene should have some sort of loading scene
 	 */
-	public void loadResources() {
+	protected void loadResources() {
 		mResourceLoaded = true;
 	}
 
@@ -169,7 +162,7 @@ public abstract class Scene extends InputAdapter {
 	 * supplied a loading scene.
 	 * Called after #onDispose() and #onDeactive().
 	 */
-	public void unloadResources() {
+	protected void unloadResources() {
 		mResourceLoaded = false;
 	}
 
@@ -177,7 +170,7 @@ public abstract class Scene extends InputAdapter {
 	 * @return true if #loadResources() has been called, false if #unloadResources()
 	 * has been called.
 	 */
-	public boolean isResourcesLoaded() {
+	protected boolean isResourcesLoaded() {
 		return mResourceLoaded;
 	}
 
@@ -188,7 +181,7 @@ public abstract class Scene extends InputAdapter {
 	 * @param message the outcome message provided with the outcome, null if none
 	 * was provided.
 	 */
-	public void onActivate(Outcomes outcome, String message) {
+	protected void onActivate(Outcomes outcome, String message) {
 		// Does nothing
 	}
 
@@ -196,7 +189,7 @@ public abstract class Scene extends InputAdapter {
 	 * Called when the scene deactivates (another one is activated, push onto the scene stack).
 	 * @note #onDisposed() instead when this scene is deleted (popped from the scene stack).
 	 */
-	public void onDeactivate() {
+	protected void onDeactivate() {
 		// Does nothing
 	}
 
@@ -204,7 +197,7 @@ public abstract class Scene extends InputAdapter {
 	 * Called when the scene is deleted. Called before #unloadResources() if this
 	 * scene has resources.
 	 */
-	public void onDispose() {
+	protected void onDispose() {
 		mGui.dispose();
 	}
 
@@ -219,7 +212,7 @@ public abstract class Scene extends InputAdapter {
 	 * @return true if the scene is done with it work, i.e. it should be popped
 	 * from the stack.
 	 */
-	public final boolean isDone() {
+	final boolean isDone() {
 		return mOutcome != null;
 	}
 
@@ -227,14 +220,14 @@ public abstract class Scene extends InputAdapter {
 	 * @return outcome of the scene, returns null if no outcome has been set (when
 	 * #isDone() returns true.
 	 */
-	public final Outcomes getOutcome() {
+	protected final Outcomes getOutcome() {
 		return mOutcome;
 	}
 
 	/**
 	 * @return outcome message of the scene, if none exist it will return null.
 	 */
-	public final String getOutcomeMessage() {
+	protected final String getOutcomeMessage() {
 		return mOutcomeMessage;
 	}
 
@@ -244,7 +237,7 @@ public abstract class Scene extends InputAdapter {
 	 * outcome to overwrite the original outcome.
 	 * @param outcome the outcome of the scene
 	 */
-	public final void setOutcome(Outcomes outcome) {
+	protected final void setOutcome(Outcomes outcome) {
 		if (mOutcome == null) {
 			mOutcome = outcome;
 		}
@@ -253,7 +246,7 @@ public abstract class Scene extends InputAdapter {
 	/**
 	 * @return the input multiplexer, this determines who shall get the input
 	 */
-	public final InputMultiplexer getInputMultiplexer() {
+	protected final InputMultiplexer getInputMultiplexer() {
 		return mInputMultiplexer;
 	}
 
@@ -265,7 +258,7 @@ public abstract class Scene extends InputAdapter {
 	 * @param outcome the outcome of the scene
 	 * @param message a descriptive outcome message.
 	 */
-	public final void setOutcome(Outcomes outcome, String message) {
+	protected final void setOutcome(Outcomes outcome, String message) {
 		if (mOutcome == null) {
 			setOutcome(outcome);
 			mOutcomeMessage = message;
@@ -315,7 +308,7 @@ public abstract class Scene extends InputAdapter {
 	 * Set if the current scene is loading or not
 	 * @param loading set to true if the scene is loading.
 	 */
-	public void setLoading(boolean loading) {
+	void setLoading(boolean loading) {
 		mLoading = loading;
 	}
 

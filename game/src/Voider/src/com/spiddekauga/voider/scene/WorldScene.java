@@ -44,7 +44,7 @@ public abstract class WorldScene extends Scene {
 	}
 
 	@Override
-	public void onResize(int width, int height) {
+	protected void onResize(int width, int height) {
 		super.onResize(width, height);
 		fixCamera();
 		mShapeRenderer.setProjectionMatrix(mCamera.combined);
@@ -89,7 +89,7 @@ public abstract class WorldScene extends Scene {
 	}
 
 	@Override
-	public void onDispose() {
+	protected void onDispose() {
 		mBulletDestroyer.dispose();
 
 		super.onDispose();
@@ -101,7 +101,7 @@ public abstract class WorldScene extends Scene {
 	 * @return screen width in world coordinates, if scene is not a world it return 0.
 	 */
 	@Override
-	public float getWorldWidth() {
+	protected float getWorldWidth() {
 		return mCamera.viewportWidth;
 	}
 
@@ -111,7 +111,7 @@ public abstract class WorldScene extends Scene {
 	 * @return screen height in world coordinates, if scene is not a world it return 0.
 	 */
 	@Override
-	public float getWorldHeight() {
+	protected float getWorldHeight() {
 		return mCamera.viewportHeight;
 	}
 
@@ -121,7 +121,7 @@ public abstract class WorldScene extends Scene {
 	 * Pools.vector2.free(returnedVector);
 	 */
 	@Override
-	public Vector2 getWorldMinCoordinates() {
+	protected Vector2 getWorldMinCoordinates() {
 		Vector2 minPos = Pools.vector2.obtain();
 		screenToWorldCoord(mCamera, 0, Gdx.graphics.getHeight(), minPos, false);
 		return minPos;
@@ -133,7 +133,7 @@ public abstract class WorldScene extends Scene {
 	 * Pools.vector2.free(returnedVector);
 	 */
 	@Override
-	public Vector2 getWorldMaxCoordinates() {
+	protected Vector2 getWorldMaxCoordinates() {
 		Vector2 maxPos = Pools.vector2.obtain();
 		screenToWorldCoord(mCamera, Gdx.graphics.getWidth(), 0, maxPos, false);
 		return maxPos;
@@ -207,12 +207,12 @@ public abstract class WorldScene extends Scene {
 	}
 
 	@Override
-	public FixtureDef getPickingFixtureDef() {
+	protected FixtureDef getPickingFixtureDef() {
 		return mPickingFixtureDef;
 	}
 
 	@Override
-	public ArrayList<Vector2> getPickingVertices() {
+	protected ArrayList<Vector2> getPickingVertices() {
 		return mPickingVertices;
 	}
 

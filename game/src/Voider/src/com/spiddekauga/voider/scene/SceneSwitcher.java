@@ -45,15 +45,14 @@ public class SceneSwitcher {
 		deactivateCurrentScene();
 
 		mScenes.push(scene);
-		// Do we need to load resources for the scene?
-		if (scene.hasResources()) {
-			loadActiveSceneResources(loadingScene);
-		}
-		// No resources activate directly
-		else {
-			scene.onActivate(Outcomes.NOT_APPLICAPLE, null);
-			Gdx.input.setInputProcessor(scene.getInputMultiplexer());
-		}
+		//		if (scene.hasResources()) {
+		loadActiveSceneResources(loadingScene);
+		//		}
+		//		// No resources activate directly
+		//		else {
+		//			scene.onActivate(Outcomes.NOT_APPLICAPLE, null);
+		//			Gdx.input.setInputProcessor(scene.getInputMultiplexer());
+		//		}
 	}
 
 	/**
@@ -82,7 +81,7 @@ public class SceneSwitcher {
 
 			mScenes.push(foundScene);
 			// Does the current scene need loading resources?
-			if (foundScene.hasResources() && foundScene.unloadResourcesOnDeactivate()) {
+			if (foundScene.unloadResourcesOnDeactivate()) {
 				loadActiveSceneResources();
 			} else {
 				foundScene.onActivate(Outcomes.NOT_APPLICAPLE, null);
@@ -122,13 +121,13 @@ public class SceneSwitcher {
 				if (!sceneIt.hasNext()) {
 					currentScene.onDeactivate();
 
-					if (currentScene.hasResources()) {
-						mScenesNeedUnloading.add(currentScene);
-					}
+					//					if (currentScene.hasResources()) {
+					mScenesNeedUnloading.add(currentScene);
+					//					}
 				}
 				// Else check if needs to unload resources
 				else {
-					if (currentScene.hasResources() && !currentScene.unloadResourcesOnDeactivate()) {
+					if (!currentScene.unloadResourcesOnDeactivate()) {
 						mScenesNeedUnloading.add(currentScene);
 					}
 				}
@@ -141,7 +140,7 @@ public class SceneSwitcher {
 		if (foundScene) {
 			Scene activateScene = mScenes.peek();
 			// Does the current scene needs loading resources?
-			if (activateScene.hasResources() && activateScene.unloadResourcesOnDeactivate()) {
+			if (activateScene.unloadResourcesOnDeactivate()) {
 				loadActiveSceneResources();
 			} else {
 				activateScene.onActivate(Outcomes.NOT_APPLICAPLE, null);
@@ -392,9 +391,7 @@ public class SceneSwitcher {
 		Gdx.input.setInputProcessor(null);
 
 		// Unload resources from the old scene
-		if (poppedScene.hasResources()) {
-			mScenesNeedUnloading.add(poppedScene);
-		}
+		mScenesNeedUnloading.add(poppedScene);
 
 		// Activate new scene
 		if (!mScenes.isEmpty()) {
@@ -402,8 +399,7 @@ public class SceneSwitcher {
 
 			// Does the current scene need loading resources?
 			// If the popped scene is a LoadingScene it should not try to load again...
-			if (currentScene.hasResources() &&
-					currentScene.unloadResourcesOnDeactivate() &&
+			if (currentScene.unloadResourcesOnDeactivate() &&
 					!(poppedScene instanceof LoadingScene)) {
 				// Save outcome so that we don't get LOADING_SUCCESS
 				mOutcome = outcome;
@@ -435,18 +431,20 @@ public class SceneSwitcher {
 	 * @param forceLoadingScene forces this loading scene if not null.
 	 */
 	private static void loadActiveSceneResources(LoadingScene forceLoadingScene) {
-		Scene currentsScene = mScenes.peek();
-		currentsScene.loadResources();
+		Scene currentScene = mScenes.peek();
 
 		if (forceLoadingScene != null) {
+			forceLoadingScene.setSceneToload(currentScene);
 			switchTo(forceLoadingScene);
 		} else {
-			LoadingScene loadingScene = currentsScene.getLoadingScene();
+			LoadingScene loadingScene = currentScene.getLoadingScene();
 
 			if (loadingScene != null) {
+				loadingScene.setSceneToload(currentScene);
 				switchTo(loadingScene);
 			} else {
-				currentsScene.setLoading(true);
+				currentScene.loadResources();
+				currentScene.setLoading(true);
 			}
 		}
 	}
@@ -461,7 +459,7 @@ public class SceneSwitcher {
 			Gdx.input.setInputProcessor(null);
 
 			// Should we unload resources?
-			if (previousScene.hasResources() && previousScene.unloadResourcesOnDeactivate()) {
+			if (previousScene.unloadResourcesOnDeactivate()) {
 				mScenesNeedUnloading.add(previousScene);
 			}
 		}
