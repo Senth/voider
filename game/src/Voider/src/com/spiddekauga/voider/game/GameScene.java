@@ -169,8 +169,6 @@ public class GameScene extends WorldScene {
 		// Make sure border maintains same speed as level
 		if (mBorderBody != null) {
 			mBorderBody.setLinearVelocity(mLevel.getSpeed(), 0.0f);
-
-			/** @todo Update the border when it's too far from the original place */
 		}
 
 		// Update mouse position even when still

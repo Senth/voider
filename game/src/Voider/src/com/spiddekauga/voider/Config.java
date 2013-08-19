@@ -494,6 +494,8 @@ public class Config {
 		public final static Color HEALTH_COLOR = new Color(1, 0, 0, 0.3f);
 		/** Lives offset */
 		public final static float LIVES_OFFSET_POSITION = 1;
+		/** Border threshold, when border is too out of sync, it will get synced */
+		public final static float BORDER_SYNC_THRESHOLD = 0.1f;
 	}
 
 	/**

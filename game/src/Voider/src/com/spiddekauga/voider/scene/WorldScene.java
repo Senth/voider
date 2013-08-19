@@ -65,6 +65,14 @@ public abstract class WorldScene extends Scene {
 
 		Pools.vector2.free(minScreenPos);
 		Pools.vector2.free(maxScreenPos);
+
+		// Sync border position with screen
+		if (mBorderBody != null) {
+			float borderDiffPosition = mBorderBody.getPosition().x - mCamera.position.x;
+			if (borderDiffPosition >= Config.Game.BORDER_SYNC_THRESHOLD) {
+				mBorderBody.setTransform(mCamera.position.x, mCamera.position.y, 0);
+			}
+		}
 	}
 
 	@Override
