@@ -736,9 +736,9 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 	 * Sets the story before the level
 	 * @param storyText the story that will be displayed before the level
 	 */
-	void setStoryBefore(String storyText) {
+	void setPrologue(String storyText) {
 		if (mLevel != null) {
-			mLevel.getDef().setStoryBefore(storyText);
+			mLevel.getDef().setPrologue(storyText);
 			mUnsaved = true;
 		}
 	}
@@ -747,9 +747,9 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 	 * @return story that will be displayed before the level, empty string if no
 	 * level is available
 	 */
-	String getStoryBefore() {
+	String getPrologue() {
 		if (mLevel != null) {
-			return mLevel.getDef().getStoryBefore();
+			return mLevel.getDef().getPrologue();
 		} else {
 			return "";
 		}
@@ -759,7 +759,7 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 	 * Sets the story after completing the level
 	 * @param storyText the story that will be displayed after the level
 	 */
-	void setStoryAfter(String storyText) {
+	void setEpilogue(String storyText) {
 		if (mLevel != null) {
 			mLevel.getDef().setStoryAfter(storyText);
 			mUnsaved = true;
@@ -770,9 +770,9 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 	 * @return story that will be displayed after completing the level, empty string if no
 	 * level is available
 	 */
-	String getStoryAfter() {
+	String getEpilogue() {
 		if (mLevel != null) {
-			return mLevel.getDef().getStoryAfter();
+			return mLevel.getDef().getEpilogue();
 		} else {
 			return "";
 		}

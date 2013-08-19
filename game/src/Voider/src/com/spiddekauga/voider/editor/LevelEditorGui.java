@@ -169,8 +169,8 @@ class LevelEditorGui extends EditorGui {
 		mWidgets.option.name.setText(mLevelEditor.getLevelName());
 		mWidgets.option.revision.setText(mLevelEditor.getLevelRevision());
 		mWidgets.option.version.setText(mLevelEditor.getLevelVersion());
-		mWidgets.option.storyBefore.setText(mLevelEditor.getStoryBefore());
-		mWidgets.option.storyAfter.setText(mLevelEditor.getStoryAfter());
+		mWidgets.option.storyBefore.setText(mLevelEditor.getPrologue());
+		mWidgets.option.epilogue.setText(mLevelEditor.getEpilogue());
 		mWidgets.option.speed.setValue(mLevelEditor.getLevelStartingSpeed());
 
 
@@ -631,8 +631,8 @@ class LevelEditorGui extends EditorGui {
 
 		// RIGHT
 		right.row();
-		label = new Label("Story before level", labelStyle);
-		new TooltipListener(label, "Story before", Messages.Tooltip.Level.Option.STORY_BEFORE);
+		label = new Label("Prologue", labelStyle);
+		new TooltipListener(label, "Prologue", Messages.Tooltip.Level.Option.STORY_BEFORE);
 		right.add(label);
 
 		right.row().setFillWidth(true).setFillHeight(true);
@@ -640,30 +640,30 @@ class LevelEditorGui extends EditorGui {
 		textField.setMaxLength(Config.Editor.STORY_LENGTH_MAX);
 		right.add(textField).setFillWidth(true).setFillHeight(true);
 		mWidgets.option.storyBefore = textField;
-		new TooltipListener(textField, "Story before", Messages.Tooltip.Level.Option.STORY_BEFORE);
-		new TextFieldListener(textField, "Write a story (optional)...", mInvoker) {
+		new TooltipListener(textField, "Prologue", Messages.Tooltip.Level.Option.STORY_BEFORE);
+		new TextFieldListener(textField, "Write a story to be displayed when loading the level (optional)...", mInvoker) {
 			@Override
 			protected void onChange(String newText) {
-				mLevelEditor.setStoryBefore(newText);
+				mLevelEditor.setPrologue(newText);
 			}
 		};
 
 
 		right.row();
-		label = new Label("Afterstory", labelStyle);
-		new TooltipListener(label, "Afterstory", Messages.Tooltip.Level.Option.STORY_AFTER);
+		label = new Label("Epilogue", labelStyle);
+		new TooltipListener(label, "Epilogue", Messages.Tooltip.Level.Option.STORY_AFTER);
 		right.add(label);
 
 		right.row().setFillWidth(true).setFillHeight(true);
 		textField = new TextField("", textFieldStyle);
 		textField.setMaxLength(Config.Editor.STORY_LENGTH_MAX);
 		right.add(textField).setFillWidth(true).setFillHeight(true);
-		mWidgets.option.storyAfter = textField;
-		new TooltipListener(textField, "Afterstory", Messages.Tooltip.Level.Option.STORY_AFTER);
-		new TextFieldListener(textField, "Write the story that will be displayed when the level is completed (optional)", mInvoker) {
+		mWidgets.option.epilogue = textField;
+		new TooltipListener(textField, "Epilogue", Messages.Tooltip.Level.Option.STORY_AFTER);
+		new TextFieldListener(textField, "Write the story to be displayed when the level is completed (optional)...", mInvoker) {
 			@Override
 			protected void onChange(String newText) {
-				mLevelEditor.setStoryAfter(newText);
+				mLevelEditor.setEpilogue(newText);
 			}
 		};
 
@@ -1623,7 +1623,7 @@ class LevelEditorGui extends EditorGui {
 			Label revision = null;
 			Label version = null;
 			TextField storyBefore = null;
-			TextField storyAfter = null;
+			TextField epilogue = null;
 		}
 
 		static class PathWidgets {

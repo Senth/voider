@@ -65,32 +65,32 @@ public class LevelDef extends Def {
 	/**
 	 * @return story displayed before the level starts
 	 */
-	public String getStoryBefore() {
-		return mStoryBefore;
+	public String getPrologue() {
+		return mPrologue;
 	}
 
 	/**
 	 * Sets a new story that is displayed before the level starts
-	 * @param storyBefore the new story to be displayed before the level starts
+	 * @param prologue the new story to be displayed before the level starts
 	 */
-	public void setStoryBefore(String storyBefore) {
-		mStoryBefore = storyBefore;
+	public void setPrologue(String prologue) {
+		mPrologue = prologue;
 	}
 
 	/**
 	 * @return story displayed after the level starts
 	 */
-	public String getStoryAfter() {
-		return mStoryAfter;
+	public String getEpilogue() {
+		return mEpilogue;
 	}
 
 	/**
 	 * Sets a new story that is displayed after the level ends, i.e. the player
 	 * clears the map.
-	 * @param storyAfter the new story to be displayeb after the level ends.
+	 * @param epilogue the new story to be displayed after the level ends.
 	 */
-	public void setStoryAfter(String storyAfter) {
-		mStoryAfter = storyAfter;
+	public void setStoryAfter(String epilogue) {
+		mEpilogue = epilogue;
 	}
 
 	/**
@@ -152,8 +152,8 @@ public class LevelDef extends Def {
 		super.write(json);
 
 		json.writeValue("mMusic", mMusic);
-		json.writeValue("mStoryBefore", mStoryBefore);
-		json.writeValue("mStoryAfter", mStoryAfter);
+		json.writeValue("mPrologue", mPrologue);
+		json.writeValue("mEpilogue", mEpilogue);
 		json.writeValue("mStartXCoord", mStartXCoord);
 		json.writeValue("mEndXCoord", mEndXCoord);
 		json.writeValue("mSpeed", mSpeed);
@@ -168,8 +168,8 @@ public class LevelDef extends Def {
 
 		// Variables
 		mMusic = json.readValue("mMusic", ResourceNames.class, jsonValue);
-		mStoryBefore = json.readValue("mStoryBefore", String.class, jsonValue);
-		mStoryAfter = json.readValue("mStoryAfter", String.class, jsonValue);
+		mPrologue = json.readValue("mPrologue", String.class, jsonValue);
+		mEpilogue = json.readValue("mEpilogue", String.class, jsonValue);
 		mStartXCoord = json.readValue("mStartXCoord", float.class, jsonValue);
 		mEndXCoord = json.readValue("mEndXCoord", float.class, jsonValue);
 		mSpeed = json.readValue("mSpeed", float.class, jsonValue);
@@ -190,9 +190,9 @@ public class LevelDef extends Def {
 	/** Campaign id the level belongs to, null if it doesn't belong to any */
 	private UUID mCampaignId = null;
 	/** Story before the level, set to null to not show */
-	private String mStoryBefore = "";
+	private String mPrologue = "";
 	/** Story after the level, set to null to not show */
-	private String mStoryAfter = "";
+	private String mEpilogue = "";
 	/** Base speed of the level, the actual level speed may vary as it can
 	 * be changed by triggers */
 	private float mSpeed = Config.Editor.Level.LEVEL_SPEED_DEFAULT;

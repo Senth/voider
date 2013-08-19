@@ -382,8 +382,8 @@ public class Messages {
 				public final static String VERSION = "Used when publishing the level. Not available at the moment.";
 				public final static String STORY_BEFORE = "This story will be displayed in the loading screen for " +
 						"the level. If left empty no story will be displayed.";
-				public final static String STORY_AFTER = "This story will be displayed if the player clears the map. " +
-						"If the player dies, s/he will never see this story.";
+				public final static String STORY_AFTER = "This story will be displayed only if the player successfully " +
+						"completes the map. If the player dies, s/he will never see this story :(.";
 			}
 		}
 
