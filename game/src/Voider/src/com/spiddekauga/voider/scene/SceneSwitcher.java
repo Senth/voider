@@ -159,7 +159,9 @@ public class SceneSwitcher {
 		if (mScenes != null) {
 			for (Scene scene : mScenes) {
 				scene.onDispose();
-				scene.unloadResources();
+				if (scene.isResourcesLoaded()) {
+					scene.unloadResources();
+				}
 			}
 			mScenes.clear();
 		}

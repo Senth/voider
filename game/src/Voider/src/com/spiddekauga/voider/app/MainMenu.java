@@ -40,6 +40,7 @@ public class MainMenu extends Scene {
 
 	@Override
 	public void loadResources() {
+		super.loadResources();
 		ResourceCacheFacade.load(ResourceNames.UI_GENERAL);
 		ResourceCacheFacade.loadAllOf(LevelDef.class, false);
 		ResourceCacheFacade.loadAllOf(GameSaveDef.class, false);
@@ -47,6 +48,7 @@ public class MainMenu extends Scene {
 
 	@Override
 	public void unloadResources() {
+		super.unloadResources();
 		ResourceCacheFacade.unload(ResourceNames.UI_GENERAL);
 		ResourceCacheFacade.unloadAllOf(LevelDef.class, false);
 		ResourceCacheFacade.unloadAllOf(GameSaveDef.class, false);

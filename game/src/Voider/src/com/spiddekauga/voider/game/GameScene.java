@@ -288,6 +288,8 @@ public class GameScene extends WorldScene {
 
 	@Override
 	public void loadResources() {
+		super.loadResources();
+
 		ResourceCacheFacade.load(ResourceNames.UI_GENERAL);
 		ResourceCacheFacade.load(ResourceNames.SHADER_DEFAULT);
 		ResourceCacheFacade.loadAllOf(PlayerActorDef.class, true);
@@ -304,6 +306,7 @@ public class GameScene extends WorldScene {
 
 	@Override
 	public void unloadResources() {
+		super.unloadResources();
 		ResourceCacheFacade.unload(ResourceNames.UI_GENERAL);
 		ResourceCacheFacade.unload(ResourceNames.SHADER_DEFAULT);
 		ResourceCacheFacade.unloadAllOf(PlayerActorDef.class, true);

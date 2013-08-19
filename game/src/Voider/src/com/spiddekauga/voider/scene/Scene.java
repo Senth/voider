@@ -160,7 +160,7 @@ public abstract class Scene extends InputAdapter {
 	 * @see #getLoadingScene() if this scene should have some sort of loading scene
 	 */
 	public void loadResources() {
-		// Does nothing
+		mResourceLoaded = true;
 	}
 
 	/**
@@ -170,7 +170,15 @@ public abstract class Scene extends InputAdapter {
 	 * Called after #onDispose() and #onDeactive().
 	 */
 	public void unloadResources() {
-		// Does nothings
+		mResourceLoaded = false;
+	}
+
+	/**
+	 * @return true if #loadResources() has been called, false if #unloadResources()
+	 * has been called.
+	 */
+	public boolean isResourcesLoaded() {
+		return mResourceLoaded;
 	}
 
 	/**
@@ -419,6 +427,8 @@ public abstract class Scene extends InputAdapter {
 	private String mOutcomeMessage = null;
 	/** Clear color */
 	private Color mClearColor = new Color(0, 0, 0, 0);
+	/** If resource has been loaded */
+	private boolean mResourceLoaded = false;
 
 	// Temporary variables
 	/** For ray testing on player ship when touching it */
