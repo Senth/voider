@@ -127,10 +127,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 
 			mUnsaved = true;
 
-			mEnemyActor.activate();
-			mEnemyPathBackAndForth.activate();
-			mEnemyPathLoop.activate();
-			mEnemyPathOnce.activate();
+			setMovementType(mDef.getMovementType());
 		}
 		else if (outcome == Outcomes.DEF_SELECTED) {
 			switch (mSelectionAction) {
@@ -142,6 +139,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 				try {
 					mDef = ResourceCacheFacade.get(UUID.fromString(message), EnemyActorDef.class);
 					setEnemyDef();
+					setMovementType(mDef.getMovementType());
 					mGui.resetValues();
 					mUnsaved = true;
 				} catch (UndefinedResourceTypeException e) {
@@ -287,6 +285,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 			switch (getMovementType()) {
 			case AI:
 			case STATIONARY:
+				mEnemyActor.renderEditor(mShapeRenderer);
 				mEnemyActor.render(mShapeRenderer);
 				break;
 
@@ -553,7 +552,6 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	 * @param movementType new movement type
 	 */
 	void setMovementType(MovementTypes movementType) {
-		mEnemyActor.destroyBody();
 		mDef.setMovementType(movementType);
 
 		switch (movementType) {
@@ -561,6 +559,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 			mGui.addActor(mPathLabels);
 			createPathBodies();
 			resetPlayerPosition();
+			mEnemyActor.deactivate();
 			break;
 
 		case STATIONARY:
@@ -575,6 +574,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 			resetPlayerPosition();
 			break;
 		}
+
 		mUnsaved = false;
 	}
 
@@ -1180,11 +1180,11 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 		mPathOnce.setWorld(mWorld);
 		mPathLoop.setWorld(mWorld);
 		mPathBackAndForth.setWorld(mWorld);
-		mEnemyPathOnce.createBody();
+		mEnemyPathOnce.activate();
 		mEnemyPathOnce.resetPathMovement();
-		mEnemyPathLoop.createBody();
+		mEnemyPathLoop.activate();
 		mEnemyPathLoop.resetPathMovement();
-		mEnemyPathBackAndForth.createBody();
+		mEnemyPathBackAndForth.activate();
 		mEnemyPathBackAndForth.resetPathMovement();
 		mEnemyPathOnceOutOfBoundsTime = 0f;
 	}
@@ -1196,9 +1196,9 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 		mPathOnce.setWorld(null);
 		mPathLoop.setWorld(null);
 		mPathBackAndForth.setWorld(null);
-		mEnemyPathOnce.destroyBody();
-		mEnemyPathLoop.destroyBody();
-		mEnemyPathBackAndForth.destroyBody();
+		mEnemyPathOnce.deactivate();
+		mEnemyPathLoop.deactivate();
+		mEnemyPathBackAndForth.deactivate();
 
 		// Clear GUI text
 		mGui.reset();
@@ -1250,7 +1250,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	 */
 	private void createEnemyActor() {
 		mEnemyActor.setPosition(new Vector2());
-		mEnemyActor.createBody();
+		mEnemyActor.activate();
 	}
 
 	/**
@@ -1284,14 +1284,26 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	 * Checks for dead enemy actors and recreates them.
 	 */
 	private void checkForDeadActors() {
-		if (!mEnemyActor.isActive()) {
-			mEnemyActor.activate();
-			mEnemyActor.setPosition(Vector2.Zero);
+		switch (getMovementType()) {
+		case STATIONARY:
+		case AI:
+			if (!mEnemyActor.isActive()) {
+				mEnemyActor.activate();
+				mEnemyActor.setPosition(Vector2.Zero);
+			}
+			break;
+
+
+		case PATH:
+			checkForDeadPathActor(mEnemyPathBackAndForth);
+			checkForDeadPathActor(mEnemyPathLoop);
+			checkForDeadPathActor(mEnemyPathOnce);
+			break;
 		}
 
-		checkForDeadPathActor(mEnemyPathBackAndForth);
-		checkForDeadPathActor(mEnemyPathLoop);
-		checkForDeadPathActor(mEnemyPathOnce);
+
+
+
 	}
 
 	/**

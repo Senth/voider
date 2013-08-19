@@ -889,6 +889,8 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	public void deactivate() {
 		mActivationTime = -1;
 		mActive = false;
+
+		destroyBody();
 	}
 
 	/**
