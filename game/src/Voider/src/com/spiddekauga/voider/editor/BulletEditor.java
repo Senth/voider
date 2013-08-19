@@ -177,8 +177,8 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 	@Override
 	public void unloadResources() {
 		super.unloadResources();
-		ResourceCacheFacade.load(ResourceNames.UI_GENERAL);
-		ResourceCacheFacade.load(ResourceNames.UI_EDITOR_BUTTONS);
+		ResourceCacheFacade.unload(ResourceNames.UI_GENERAL);
+		ResourceCacheFacade.unload(ResourceNames.UI_EDITOR_BUTTONS);
 		ResourceCacheFacade.unloadAllOf(BulletActorDef.class, true);
 	}
 

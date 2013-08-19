@@ -327,8 +327,8 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	@Override
 	public void unloadResources() {
 		super.unloadResources();
-		ResourceCacheFacade.load(ResourceNames.UI_EDITOR_BUTTONS);
-		ResourceCacheFacade.load(ResourceNames.UI_GENERAL);
+		ResourceCacheFacade.unload(ResourceNames.UI_EDITOR_BUTTONS);
+		ResourceCacheFacade.unload(ResourceNames.UI_GENERAL);
 		ResourceCacheFacade.unloadAllOf(EnemyActorDef.class, true);
 		ResourceCacheFacade.unloadAllOf(BulletActorDef.class, true);
 	}
