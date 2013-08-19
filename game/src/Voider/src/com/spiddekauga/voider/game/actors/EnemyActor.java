@@ -297,8 +297,10 @@ public class EnemyActor extends Actor {
 		}
 		else if (enemyDef.getMovementType() == MovementTypes.PATH) {
 			mPathId = json.readValue("mPathId", UUID.class, jsonData);
-			mPathIndexNext = json.readValue("mPathIndexNext", int.class, jsonData);
 
+			if (jsonData.getChild("mPathIndexNext") != null) {
+				mPathIndexNext = json.readValue("mPathIndexNext", int.class, jsonData);
+			}
 			if (jsonData.getChild("mPathOnceReachedEnd") != null) {
 				mPathOnceReachedEnd = json.readValue("mPathOnceReachedEnd", boolean.class, jsonData);
 			}

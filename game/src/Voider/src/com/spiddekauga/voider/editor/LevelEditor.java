@@ -234,8 +234,8 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 		ResourceCacheFacade.load(ResourceNames.UI_EDITOR_BUTTONS);
 		ResourceCacheFacade.load(ResourceNames.UI_GENERAL);
 		ResourceCacheFacade.load(ResourceNames.SHADER_DEFAULT);
-		ResourceCacheFacade.loadAllOf(EnemyActorDef.class, false);
-		ResourceCacheFacade.loadAllOf(PickupActorDef.class, false);
+		ResourceCacheFacade.loadAllOf(EnemyActorDef.class, true);
+		ResourceCacheFacade.loadAllOf(PickupActorDef.class, true);
 		ResourceCacheFacade.loadAllOf(LevelDef.class, false);
 	}
 
@@ -245,8 +245,8 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 		ResourceCacheFacade.unload(ResourceNames.UI_EDITOR_BUTTONS);
 		ResourceCacheFacade.unload(ResourceNames.UI_GENERAL);
 		ResourceCacheFacade.unload(ResourceNames.SHADER_DEFAULT);
-		ResourceCacheFacade.unloadAllOf(EnemyActorDef.class, false);
-		ResourceCacheFacade.unloadAllOf(PickupActorDef.class, false);
+		ResourceCacheFacade.unloadAllOf(EnemyActorDef.class, true);
+		ResourceCacheFacade.unloadAllOf(PickupActorDef.class, true);
 		ResourceCacheFacade.unloadAllOf(LevelDef.class, false);
 	}
 
@@ -346,14 +346,8 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 	 */
 	public boolean selectEnemyDef(UUID enemyId) {
 		try {
-			EnemyActorDef oldEnemyActorDef = (EnemyActorDef) ((ActorTool)mTouchTools[Tools.PICKUP.ordinal()]).getNewActorDef();
-
 			if (enemyId != null) {
 				EnemyActorDef enemyActorDef = ResourceCacheFacade.get(enemyId, EnemyActorDef.class);
-
-				// Load dependencies
-				ResourceCacheFacade.load(enemyActorDef, true);
-				ResourceCacheFacade.finishLoading();
 
 				// Update def
 				((ActorTool)mTouchTools[Tools.ENEMY.ordinal()]).setNewActorDef(enemyActorDef);
@@ -362,11 +356,6 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 			}
 
 			mGui.resetValues();
-
-			// Unload old dependencies
-			if (oldEnemyActorDef != null) {
-				ResourceCacheFacade.unload(oldEnemyActorDef, true);
-			}
 		} catch (Exception e) {
 			Gdx.app.error("LevelEditor", e.toString());
 			e.printStackTrace();
@@ -414,17 +403,6 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 
 	@Override
 	public void onDispose() {
-		// Unload old dependencies for tools
-		for (TouchTool touchTool : mTouchTools) {
-			if (touchTool instanceof ActorTool) {
-				ActorDef actorDef = ((ActorTool) touchTool).getNewActorDef();
-				if (actorDef != null) {
-					ResourceCacheFacade.unload(actorDef, true);
-				}
-			}
-		}
-
-
 		setLevel(null);
 	}
 
@@ -619,6 +597,7 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 				setLevel(ResourceCacheFacade.get(mLevel.getId(), Level.class));
 			} catch (Exception e) {
 				Gdx.app.error("LevelEditor", "Loading of saved level failed! " + e.toString());
+				e.printStackTrace();
 			}
 		}
 
