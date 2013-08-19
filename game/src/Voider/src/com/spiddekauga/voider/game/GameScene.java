@@ -176,12 +176,13 @@ public class GameScene extends WorldScene {
 			screenToWorldCoord(mCamera, mCursorScreen, mCursorWorld, true);
 			mMouseJoint.setTarget(mCursorWorld);
 		}
-		super.update();
 
 		updateBodyShepherdPositions();
 		mBodyShepherd.update(mBodyShepherdMinPos, mBodyShepherdMaxPos);
 
 		mLevel.update();
+		super.update();
+
 		updateCameraPosition();
 
 		// Is the player dead? Loose a life or game over

@@ -54,23 +54,6 @@ public class BulletActor extends Actor {
 		activate();
 	}
 
-	//	/**
-	//	 * Renders the actor
-	//	 * @param shapeRenderer the current sprite batch for the scene
-	//	 */
-	//	@Override
-	//	public void render(ShapeRendererEx shapeRenderer) {
-	//		calculateRotatedVertices();
-	//
-	//		// Shape
-	//		shapeRenderer.setColor(getDef().getColor());
-	//		shapeRenderer.triangles(getRotatedVertices(), getBody().getPosition());
-	//
-	//		// Border
-	//		shapeRenderer.setColor(getDef().getBorderColor());
-	//		shapeRenderer.triangles(getRotatedBorderVertices(), getBody().getPosition());
-	//	}
-
 	/**
 	 * @return how much damage the bullet will inflict on hit
 	 */
