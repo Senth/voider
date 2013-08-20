@@ -1,6 +1,5 @@
 package com.spiddekauga.voider.scene;
 
-import com.badlogic.gdx.Gdx;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceCorruptException;
 import com.spiddekauga.voider.resources.ResourceNotFoundException;
@@ -21,13 +20,12 @@ public abstract class LoadingScene extends Scene {
 
 	@Override
 	protected void onActivate(Outcomes outcome, String message) {
+		super.onActivate(outcome, message);
+
 		if (outcome == Outcomes.LOADING_SUCCEEDED) {
-			mGui.initGui();
 			if (mSceneToLoad != null) {
 				mSceneToLoad.loadResources();
 			}
-		} else {
-			Gdx.app.error("LoadingScene", "Failed to load scene!");
 		}
 	}
 

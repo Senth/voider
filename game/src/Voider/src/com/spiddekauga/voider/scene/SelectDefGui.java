@@ -63,12 +63,9 @@ public class SelectDefGui extends Gui {
 
 		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
 
-		//		LabelStyle labelStyle = editorSkin.get("default", LabelStyle.class);
 		TextFieldStyle textFieldStyle = editorSkin.get("default", TextFieldStyle.class);
 		CheckBoxStyle checkBoxStyle = editorSkin.get("default", CheckBoxStyle.class);
 
-		//		Label label = new Label("Filter: ", labelStyle);
-		//		mMainTable.add(label);
 		TextField textField = new TextField("", textFieldStyle);
 		Row row = mMainTable.row();
 		row.setFillWidth(true);
@@ -98,13 +95,11 @@ public class SelectDefGui extends Gui {
 		cell = mMainTable.add(mDefTable);
 		cell.setFillWidth(true);
 
-		refillDefTable();
+		resetValues();
 	}
 
-	/**
-	 * Refills the definition table with only visible actors
-	 */
-	void refillDefTable() {
+	@Override
+	public void resetValues() {
 		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
 		TextButtonStyle toggleStyle = editorSkin.get("toggle", TextButtonStyle.class);
 

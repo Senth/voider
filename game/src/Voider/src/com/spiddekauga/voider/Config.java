@@ -556,6 +556,9 @@ public class Config {
 		/** Time to display error message per character */
 		public final static float MESSAGE_TIME_PER_CHARACTER = 0.08f;
 
+		/** Width of the score table's first cells */
+		public final static int SCORE_TABLE_FIRST_CELL_WIDTH = 100;
+
 		/**
 		 * @return true if we want to display text buttons instead of image buttons
 		 */

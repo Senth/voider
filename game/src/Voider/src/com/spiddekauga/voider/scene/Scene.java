@@ -182,7 +182,18 @@ public abstract class Scene extends InputAdapter {
 	 * was provided.
 	 */
 	protected void onActivate(Outcomes outcome, String message) {
-		// Does nothing
+		if (outcome == Outcomes.LOADING_SUCCEEDED) {
+			if (!mGui.isInitialized()) {
+				mGui.initGui();
+				mGui.resetValues();
+
+				if (getInvoker() != null) {
+					getInvoker().dispose();
+				}
+			}
+		} else if (!mGui.isInitialized()) {
+			Gdx.app.error("Scene", "Failed to load scene!");
+		}
 	}
 
 	/**
@@ -388,7 +399,7 @@ public abstract class Scene extends InputAdapter {
 	 * @param nextScene if not null nextScene will be run after this scene has
 	 * completed. If null SceneSwitcher will return to the previous scene
 	 */
-	protected final void setNextScene(Scene nextScene) {
+	public final void setNextScene(Scene nextScene) {
 		mNextScene = nextScene;
 	}
 

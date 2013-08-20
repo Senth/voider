@@ -58,13 +58,13 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 
 	@Override
 	protected void onActivate(Outcomes outcome, String message) {
+		super.onActivate(outcome, message);
+
 		Actor.setEditorActive(true);
 		Actor.setWorld(mWorld);
 		Actor.setLevel(null);
 
 		if (outcome == Outcomes.LOADING_SUCCEEDED) {
-			mGui.initGui();
-			mGui.resetValues();
 			mInvoker.dispose();
 			mUnsaved = false;
 		} else if (outcome == Outcomes.DEF_SELECTED) {

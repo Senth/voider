@@ -94,14 +94,14 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 
 	@Override
 	protected void onActivate(Outcomes outcome, String message) {
+		super.onActivate(outcome, message);
+
 		Actor.setEditorActive(true);
 		Actor.setWorld(mWorld);
 		Actor.setLevel(null);
 		Actor.setPlayerActor(mPlayerActor);
 
 		if (outcome == Outcomes.LOADING_SUCCEEDED) {
-			mGui.initGui();
-
 			// Path labels
 			Skin editorSkin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
 			LabelStyle labelStyle = editorSkin.get("default", LabelStyle.class);

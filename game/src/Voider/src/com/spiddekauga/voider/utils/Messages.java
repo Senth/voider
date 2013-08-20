@@ -108,6 +108,10 @@ public class Messages {
 		public final static String RUN_INVULNERABLE_CONTENT = "Do you want to be invulnerable when " +
 				"you're testing the level?\n\n" +
 				"Hit Escape or back when you want to stop the test.";
+		/** Header for successfully completing the level */
+		public final static String COMPLETED_HEADER = "Congratulations!";
+		/** Header for game over */
+		public final static String GAME_OVER_HEADER = "Game Over!";
 	}
 
 	/**

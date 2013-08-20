@@ -49,7 +49,9 @@ public class SelectDefScene extends WorldScene {
 
 	@Override
 	protected void onActivate(Outcomes outcome, String message) {
-		if (outcome  == Outcomes.LOADING_SUCCEEDED) {
+		super.onActivate(outcome, message);
+
+		if (outcome == Outcomes.LOADING_SUCCEEDED) {
 			try {
 				@SuppressWarnings("unchecked")
 				List<Def> defs = (List<Def>) ResourceCacheFacade.get(mDefType);
@@ -58,12 +60,11 @@ public class SelectDefScene extends WorldScene {
 					mDefs.add(new DefVisible(def));
 				}
 
+				mGui.resetValues();
+
 			} catch (UndefinedResourceTypeException e) {
 				Gdx.app.error("SelectDefScene", e.toString());
 			}
-
-
-			mGui.initGui();
 		}
 	}
 
@@ -84,8 +85,7 @@ public class SelectDefScene extends WorldScene {
 	@Override
 	protected void onResize(int width, int height) {
 		super.onResize(width, height);
-
-		((SelectDefGui)mGui).refillDefTable();
+		mGui.resetValues();
 	}
 
 	@Override
@@ -251,7 +251,7 @@ public class SelectDefScene extends WorldScene {
 			}
 		}
 
-		((SelectDefGui)mGui).refillDefTable();
+		mGui.resetValues();
 	}
 
 	/**

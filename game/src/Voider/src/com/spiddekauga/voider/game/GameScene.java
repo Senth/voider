@@ -22,6 +22,7 @@ import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceNames;
 import com.spiddekauga.voider.resources.ResourceSaver;
 import com.spiddekauga.voider.resources.UndefinedResourceTypeException;
+import com.spiddekauga.voider.scene.GameOverScene;
 import com.spiddekauga.voider.scene.LoadingScene;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
@@ -96,14 +97,14 @@ public class GameScene extends WorldScene {
 
 	@Override
 	protected void onActivate(Outcomes outcome, String message) {
+		super.onActivate(outcome, message);
+
 		Actor.setEditorActive(false);
 		Actor.setPlayerActor(mPlayerActor);
 		Actor.setWorld(mWorld);
 
 		/** @TODO loading done */
 		if (outcome == Outcomes.LOADING_SUCCEEDED) {
-			mGui.initGui();
-
 			// Load level
 			if (mLevelToLoad != null) {
 				try {
@@ -282,21 +283,27 @@ public class GameScene extends WorldScene {
 
 	@Override
 	protected Scene getNextScene() {
+		GameOverScene gameOverScene = new GameOverScene(mPlayerStats, mLevel.getDef());
+
 		switch (getOutcome()) {
 		case LEVEL_COMPLETED:
+			gameOverScene.setLevelCompleted(true);
 			if (mLevelToLoad != null && !mLevelToLoad.getEpilogue().equals("")) {
-				return new LoadingTextScene(mLevelToLoad.getEpilogue());
+				Scene nextScene = new LoadingTextScene(mLevelToLoad.getEpilogue());
+				nextScene.setNextScene(gameOverScene);
+				return nextScene;
 			}
 			// Continues ->
 		case LEVEL_PLAYER_DIED:
 			// TODO switch to score scene
-			return null;
+			return gameOverScene;
 
 		case LEVEL_QUIT:
 			return null;
-		}
 
-		return null;
+		default:
+			return null;
+		}
 	}
 
 	// --------------------------------

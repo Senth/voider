@@ -247,17 +247,14 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 
 	@Override
 	protected void onActivate(Outcomes outcome, String message) {
+		super.onActivate(outcome, message);
+
 		Actor.setEditorActive(true);
 		Actor.setWorld(mWorld);
 
 		// Check so that all resources have been loaded
 		if (outcome == Outcomes.LOADING_SUCCEEDED) {
-			if (!mGui.isInitialized()) {
-				mGui.initGui();
-				mGui.resetValues();
-				mInvoker.dispose();
-				mUnsaved = false;
-			}
+			mUnsaved = false;
 
 			// Loading a level
 			if (mLoadingLevel != null) {
