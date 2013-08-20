@@ -268,7 +268,7 @@ public abstract class Scene extends InputAdapter {
 	/**
 	 * Different outcomes a scene can have
 	 */
-	public enum Outcomes {
+	protected enum Outcomes {
 		/** Selected a definition */
 		DEF_SELECTED,
 		/** Canceled definition selection */
@@ -293,14 +293,14 @@ public abstract class Scene extends InputAdapter {
 	/**
 	 * @return Game time of the current scene
 	 */
-	public GameTime getGameTime() {
+	protected GameTime getGameTime() {
 		return mGameTime;
 	}
 
 	/**
 	 * @return true if the scene is loading
 	 */
-	public boolean isLoading() {
+	protected boolean isLoading() {
 		return mLoading;
 	}
 
@@ -358,7 +358,7 @@ public abstract class Scene extends InputAdapter {
 	 * @param g green
 	 * @param a alpha
 	 */
-	protected void setClearColor(float r, float g, float b, float a) {
+	protected final void setClearColor(float r, float g, float b, float a) {
 		mClearColor.r = r;
 		mClearColor.g = g;
 		mClearColor.b = b;
@@ -369,8 +369,27 @@ public abstract class Scene extends InputAdapter {
 	 * Sets the clear color of the scene
 	 * @param color new color to clear the screen with
 	 */
-	protected void setClearColor(Color color) {
+	protected final void setClearColor(Color color) {
 		mClearColor.set(color);
+	}
+
+	/**
+	 * By default this method return null. If, however, it does not this next
+	 * scene will be run instead of returning to the previous scene.
+	 * @return next scene to be run, null by default
+	 * @see #setNextScene(Scene)
+	 */
+	protected Scene getNextScene() {
+		return mNextScene;
+	}
+
+	/**
+	 * Sets the next scene to be run after this scene has been completed
+	 * @param nextScene if not null nextScene will be run after this scene has
+	 * completed. If null SceneSwitcher will return to the previous scene
+	 */
+	protected final void setNextScene(Scene nextScene) {
+		mNextScene = nextScene;
 	}
 
 	/**
@@ -422,6 +441,8 @@ public abstract class Scene extends InputAdapter {
 	private Color mClearColor = new Color(0, 0, 0, 0);
 	/** If resource has been loaded */
 	private boolean mResourceLoaded = false;
+	/** The next scene to be run */
+	private Scene mNextScene = null;
 
 	// Temporary variables
 	/** For ray testing on player ship when touching it */

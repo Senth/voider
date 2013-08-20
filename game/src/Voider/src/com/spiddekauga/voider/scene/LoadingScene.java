@@ -23,7 +23,9 @@ public abstract class LoadingScene extends Scene {
 	protected void onActivate(Outcomes outcome, String message) {
 		if (outcome == Outcomes.LOADING_SUCCEEDED) {
 			mGui.initGui();
-			mSceneToLoad.loadResources();
+			if (mSceneToLoad != null) {
+				mSceneToLoad.loadResources();
+			}
 		} else {
 			Gdx.app.error("LoadingScene", "Failed to load scene!");
 		}

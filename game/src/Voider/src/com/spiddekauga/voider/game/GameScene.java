@@ -23,6 +23,7 @@ import com.spiddekauga.voider.resources.ResourceNames;
 import com.spiddekauga.voider.resources.ResourceSaver;
 import com.spiddekauga.voider.resources.UndefinedResourceTypeException;
 import com.spiddekauga.voider.scene.LoadingScene;
+import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.scene.WorldScene;
 import com.spiddekauga.voider.utils.Pools;
@@ -279,6 +280,25 @@ public class GameScene extends WorldScene {
 		}
 	}
 
+	@Override
+	protected Scene getNextScene() {
+		switch (getOutcome()) {
+		case LEVEL_COMPLETED:
+			if (mLevelToLoad != null && !mLevelToLoad.getEpilogue().equals("")) {
+				return new LoadingTextScene(mLevelToLoad.getEpilogue());
+			}
+			// Continues ->
+		case LEVEL_PLAYER_DIED:
+			// TODO switch to score scene
+			return null;
+
+		case LEVEL_QUIT:
+			return null;
+		}
+
+		return null;
+	}
+
 	// --------------------------------
 	//		Resource loading etc.
 	// --------------------------------
@@ -348,7 +368,6 @@ public class GameScene extends WorldScene {
 
 		return loadingScene;
 	}
-
 
 	// --------------------------------
 	//				EVENTS

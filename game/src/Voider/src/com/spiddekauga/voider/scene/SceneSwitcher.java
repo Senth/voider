@@ -27,6 +27,7 @@ public class SceneSwitcher {
 	 * until it self has decided that it has finished.
 	 * @param scene the scene to switch to.
 	 * @see #switchTo(Class) for switching to a scene that already exists.
+	 * @see #switchTo(Scene, LoadingScene) for forcing another loading scene
 	 */
 	public static void switchTo(Scene scene) {
 		switchTo(scene, null);
@@ -39,20 +40,14 @@ public class SceneSwitcher {
 	 * @param loadingScene this scene will override any other loading scene, i.e.
 	 * while the scene is loading the loading scene will be displayed in its place.
 	 * If loadingScene is null, it works exactly as {@link #switchTo(Scene)}.
+	 * @see #switchTo(Scene)
 	 * @see #switchTo(Class) for switching to a scene that already exists.
 	 */
 	public static void switchTo(Scene scene, LoadingScene loadingScene) {
 		deactivateCurrentScene();
 
 		mScenes.push(scene);
-		//		if (scene.hasResources()) {
 		loadActiveSceneResources(loadingScene);
-		//		}
-		//		// No resources activate directly
-		//		else {
-		//			scene.onActivate(Outcomes.NOT_APPLICAPLE, null);
-		//			Gdx.input.setInputProcessor(scene.getInputMultiplexer());
-		//		}
 	}
 
 	/**
@@ -61,7 +56,9 @@ public class SceneSwitcher {
 	 * @param sceneType the type of scene to switch to
 	 * @return true if found the scene of the specified type and switched to it,
 	 * false if no scene of the specified type was found.
-	 * @see #returnTo(Class sceneType)
+	 * @see #switchTo(Scene, LoadingScene)
+	 * @see #switchTo(Scene)
+	 * @see #returnTo(Class)
 	 */
 	public static boolean switchTo(Class<? extends Scene> sceneType) {
 		Scene foundScene = null;
@@ -100,7 +97,9 @@ public class SceneSwitcher {
 	 * @param sceneType the type of scene to return to
 	 * @return true if the scene was found and was returned to, false if no scene of
 	 * this type was found.
-	 * @see #switchTo(Class sceneType)
+	 * @see #switchTo(Class)
+	 * @see #switchTo(Scene)
+	 * @see #switchTo(Scene, LoadingScene)
 	 */
 	public static boolean returnTo(Class<? extends Scene> sceneType) {
 		boolean foundScene = false;
@@ -120,14 +119,11 @@ public class SceneSwitcher {
 				// If it was the last scene, deactivate it too
 				if (!sceneIt.hasNext()) {
 					currentScene.onDeactivate();
-
-					//					if (currentScene.hasResources()) {
 					mScenesNeedUnloading.add(currentScene);
-					//					}
 				}
 				// Else check if needs to unload resources
 				else {
-					if (!currentScene.unloadResourcesOnDeactivate()) {
+					if (currentScene.isResourcesLoaded()) {
 						mScenesNeedUnloading.add(currentScene);
 					}
 				}
@@ -391,16 +387,24 @@ public class SceneSwitcher {
 		Gdx.input.setInputProcessor(null);
 
 		// Unload resources from the old scene
-		mScenesNeedUnloading.add(poppedScene);
+		if (poppedScene.isResourcesLoaded()) {
+			mScenesNeedUnloading.add(poppedScene);
+		}
 
-		// Activate new scene
-		if (!mScenes.isEmpty()) {
-			Scene currentScene = mScenes.getFirst();
+
+		// Go to next scene, or return to the previous?
+		// Go to next scene
+		if (poppedScene.getNextScene() != null) {
+			mScenes.push(poppedScene.getNextScene());
+			loadActiveSceneResources();
+		}
+		// Activate previous scene
+		else if (!mScenes.isEmpty()) {
+			Scene previousScene = mScenes.getFirst();
 
 			// Does the current scene need loading resources?
 			// If the popped scene is a LoadingScene it should not try to load again...
-			if (currentScene.unloadResourcesOnDeactivate() &&
-					!(poppedScene instanceof LoadingScene)) {
+			if (!previousScene.isResourcesLoaded()) {
 				// Save outcome so that we don't get LOADING_SUCCESS
 				mOutcome = outcome;
 				mOutcomeMessage = outcomeMessage;
@@ -413,8 +417,8 @@ public class SceneSwitcher {
 					mOutcome = null;
 					mOutcomeMessage = null;
 				}
-				currentScene.onActivate(outcome, outcomeMessage);
-				Gdx.input.setInputProcessor(currentScene.getInputMultiplexer());
+				previousScene.onActivate(outcome, outcomeMessage);
+				Gdx.input.setInputProcessor(previousScene.getInputMultiplexer());
 			}
 		}
 	}
@@ -459,7 +463,7 @@ public class SceneSwitcher {
 			Gdx.input.setInputProcessor(null);
 
 			// Should we unload resources?
-			if (previousScene.unloadResourcesOnDeactivate()) {
+			if (previousScene.isResourcesLoaded() && previousScene.unloadResourcesOnDeactivate()) {
 				mScenesNeedUnloading.add(previousScene);
 			}
 		}
