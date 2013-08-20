@@ -11,6 +11,7 @@ import com.spiddekauga.voider.game.GameSave;
 import com.spiddekauga.voider.game.GameSaveDef;
 import com.spiddekauga.voider.game.Level;
 import com.spiddekauga.voider.game.LevelDef;
+import com.spiddekauga.voider.game.PlayerStats;
 import com.spiddekauga.voider.game.actors.BossActorDef;
 import com.spiddekauga.voider.game.actors.BulletActorDef;
 import com.spiddekauga.voider.game.actors.EnemyActorDef;
@@ -108,6 +109,8 @@ public enum ResourceNames {
 			return GAME_SAVE_PATH;
 		} else if (type == GameSaveDef.class) {
 			return GAME_SAVE_DEF_PATH;
+		} else if (type == PlayerStats.class) {
+			return PLAYER_STATS_PATH;
 		} else {
 			throw new UndefinedResourceTypeException(type);
 		}
@@ -121,6 +124,7 @@ public enum ResourceNames {
 		LEVEL_PATH = Config.File.TEST_STORAGE + "levels/";
 		GAME_SAVE_PATH = Config.File.TEST_STORAGE + "resumeLevels/";
 		GAME_SAVE_DEF_PATH = Config.File.TEST_STORAGE + "gameSaveDef/";
+		PLAYER_STATS_PATH = Config.File.TEST_STORAGE + "stats/";
 
 		// Actors
 		ACTOR_DEF_PATH = Config.File.TEST_STORAGE + "actors/";
@@ -161,6 +165,8 @@ public enum ResourceNames {
 	private static String GAME_SAVE_PATH = Config.File.STORAGE + "gameSave/";
 	/** Directory for all game save definitions */
 	private static String GAME_SAVE_DEF_PATH = Config.File.STORAGE + "gameSaveDef/";
+	/** Directory for saving player stats */
+	private static String PLAYER_STATS_PATH = Config.File.STORAGE + "stats/";
 	/** Directory for all particle effects */
 	private static final String PARTICLE_PATH = "particles/";
 	/** Directory for all sound effects */

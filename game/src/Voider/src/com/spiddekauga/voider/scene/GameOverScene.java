@@ -1,6 +1,5 @@
 package com.spiddekauga.voider.scene;
 
-import com.badlogic.gdx.Input;
 import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.voider.app.MainMenu;
 import com.spiddekauga.voider.game.GameScene;
@@ -8,6 +7,7 @@ import com.spiddekauga.voider.game.LevelDef;
 import com.spiddekauga.voider.game.PlayerStats;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceNames;
+import com.spiddekauga.voider.utils.StatSyncer;
 
 /**
  * Score and game over scene. Displayed whether the player completed or failed a level.
@@ -41,6 +41,13 @@ public class GameOverScene extends Scene {
 	}
 
 	@Override
+	protected void onActivate(Outcomes outcome, String message) {
+		super.onActivate(outcome, message);
+
+		StatSyncer.uploadStats(mPlayerStats);
+	}
+
+	@Override
 	protected void loadResources() {
 		super.loadResources();
 		ResourceCacheFacade.load(ResourceNames.UI_GENERAL);
@@ -59,10 +66,6 @@ public class GameOverScene extends Scene {
 		if (KeyHelper.isBackPressed(keycode)) {
 			gotoMainMenu();
 			return true;
-		}
-		else if (keycode == Input.Keys.F5) {
-			mGui.reset();
-			mGui.initGui();
 		}
 
 		return false;
