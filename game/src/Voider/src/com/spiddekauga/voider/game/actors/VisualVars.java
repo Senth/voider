@@ -107,8 +107,7 @@ public class VisualVars implements Json.Serializable, Disposable, IResourceCorne
 	/**
 	 * Default constructor for JSON
 	 */
-	@SuppressWarnings({ "unused" })
-	private VisualVars() {
+	public VisualVars() {
 		mCorners.clear();
 		mFixtureDefs.clear();
 	}

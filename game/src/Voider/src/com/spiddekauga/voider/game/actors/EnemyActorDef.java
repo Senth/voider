@@ -367,8 +367,9 @@ public class EnemyActorDef extends ActorDef {
 
 	/**
 	 * Class for all movement variables (both AI and path)
+	 * @note needs to be public for reflect on android
 	 */
-	private static class MovementVars {
+	public static class MovementVars {
 		/** Speed of the enemy */
 		float speed = Enemy.Movement.MOVE_SPEED_DEFAULT;
 		/** How fast the enemy can turn */
@@ -377,8 +378,9 @@ public class EnemyActorDef extends ActorDef {
 
 	/**
 	 * Class for all AI movement variables
+	 * @note needs to be public for reflect on android
 	 */
-	private static class AiMovementVars {
+	public static class AiMovementVars {
 		/** Minimum distance from the player */
 		float playerDistanceMin = Enemy.Movement.AI_DISTANCE_MIN_DEFAULT;
 		/** Minimum distance from player, squared */
@@ -397,8 +399,9 @@ public class EnemyActorDef extends ActorDef {
 
 	/**
 	 * Class for aim rotating variables
+	 * @note needs to be public for reflect on android
 	 */
-	private static class AimRotateVars {
+	public static class AimRotateVars {
 		/** Starting angle */
 		float startAngle = Enemy.Weapon.START_ANGLE_DEFAULT;
 		/** Rotating speed */

@@ -53,7 +53,7 @@ public class ResourceItem implements Json.Serializable {
 	/**
 	 * Default constructor for queue item, used for when reading instances from json
 	 */
-	ResourceItem() {
+	public ResourceItem() {
 		// Does nothing
 	}
 

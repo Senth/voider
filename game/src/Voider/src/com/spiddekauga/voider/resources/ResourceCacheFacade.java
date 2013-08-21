@@ -20,7 +20,6 @@ import com.spiddekauga.voider.game.GameSaveDef;
 import com.spiddekauga.voider.game.Level;
 import com.spiddekauga.voider.game.LevelDef;
 import com.spiddekauga.voider.game.PlayerStats;
-import com.spiddekauga.voider.game.actors.BossActorDef;
 import com.spiddekauga.voider.game.actors.BulletActorDef;
 import com.spiddekauga.voider.game.actors.EnemyActorDef;
 import com.spiddekauga.voider.game.actors.PickupActorDef;
@@ -48,7 +47,6 @@ public class ResourceCacheFacade {
 		mAssetManager = new AssetManager();
 
 		// Own loaders
-		mAssetManager.setLoader(BossActorDef.class, new JsonLoaderAsync<BossActorDef>(new ExternalFileHandleResolver(), BossActorDef.class));
 		mAssetManager.setLoader(BulletActorDef.class, new JsonLoaderAsync<BulletActorDef>(new ExternalFileHandleResolver(), BulletActorDef.class));
 		mAssetManager.setLoader(EnemyActorDef.class, new JsonLoaderAsync<EnemyActorDef>(new ExternalFileHandleResolver(), EnemyActorDef.class));
 		mAssetManager.setLoader(PickupActorDef.class, new JsonLoaderAsync<PickupActorDef>(new ExternalFileHandleResolver(), PickupActorDef.class));

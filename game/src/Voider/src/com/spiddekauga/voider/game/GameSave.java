@@ -28,9 +28,9 @@ public class GameSave extends Resource {
 
 	/**
 	 * Default constructor for JSON
+	 * @note needs to be public for reflect on android
 	 */
-	@SuppressWarnings("unused")
-	private GameSave() {
+	public GameSave() {
 		// Does nothing
 	}
 

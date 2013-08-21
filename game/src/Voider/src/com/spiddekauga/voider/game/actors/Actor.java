@@ -930,9 +930,10 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	}
 
 	/**
-	 * Protected constructor
+	 * Default constructor
+	 * @note needs to be public for reflect on android
 	 */
-	protected Actor() {
+	public Actor() {
 		mUniqueId = UUID.randomUUID();
 	}
 

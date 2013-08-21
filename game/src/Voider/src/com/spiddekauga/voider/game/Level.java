@@ -452,8 +452,9 @@ public class Level extends Resource implements Disposable {
 
 	/**
 	 * Default constructor, used when loading levels.
+	 * @note needs to be public for reflect on android
 	 */
-	protected Level() {
+	public Level() {
 		// Does nothing
 	}
 

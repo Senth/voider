@@ -12,7 +12,6 @@ import com.spiddekauga.voider.game.GameSaveDef;
 import com.spiddekauga.voider.game.Level;
 import com.spiddekauga.voider.game.LevelDef;
 import com.spiddekauga.voider.game.PlayerStats;
-import com.spiddekauga.voider.game.actors.BossActorDef;
 import com.spiddekauga.voider.game.actors.BulletActorDef;
 import com.spiddekauga.voider.game.actors.EnemyActorDef;
 import com.spiddekauga.voider.game.actors.PickupActorDef;
@@ -81,8 +80,6 @@ public enum ResourceNames {
 	static String getDirPath(Class<?> type) throws UndefinedResourceTypeException {
 		if (type == Texture.class) {
 			return TEXTURE_PATH;
-		} else if (type == BossActorDef.class) {
-			return ACTOR_BOSS_PATH;
 		} else if (type == BulletActorDef.class) {
 			return ACTOR_BULLET_PATH;
 		} else if (type == EnemyActorDef.class) {
@@ -128,7 +125,6 @@ public enum ResourceNames {
 
 		// Actors
 		ACTOR_DEF_PATH = Config.File.TEST_STORAGE + "actors/";
-		ACTOR_BOSS_PATH = ACTOR_DEF_PATH + "bosses/";
 		ACTOR_BULLET_PATH = ACTOR_DEF_PATH + "bullets/";
 		ACTOR_ENEMY_PATH = ACTOR_DEF_PATH + "enemies/";
 		ACTOR_PICKUP_PATH = ACTOR_DEF_PATH + "pickups/";
@@ -145,8 +141,6 @@ public enum ResourceNames {
 	private static final String SHADER_PATH = "shaders/";
 	/** Directory for all actor definitions */
 	private static String ACTOR_DEF_PATH = Config.File.STORAGE + "actors/";
-	/** Directory for all boss actor definitions */
-	private static String ACTOR_BOSS_PATH = ACTOR_DEF_PATH + "bosses/";
 	/** Directory for all bullet actor definitions */
 	private static String ACTOR_BULLET_PATH = ACTOR_DEF_PATH + "bullets/";
 	/** Directory for all enemy actor definitions */
