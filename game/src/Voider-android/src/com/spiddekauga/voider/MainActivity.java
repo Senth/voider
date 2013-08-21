@@ -15,4 +15,9 @@ public class MainActivity extends AndroidApplication {
 
 		initialize(new VoiderGame(), cfg);
 	}
+
+	@Override
+	public void onBackPressed() {
+
+	}
 }

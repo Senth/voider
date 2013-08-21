@@ -46,6 +46,8 @@ public class ResourceSaver {
 		try {
 			byte[] encryptedDef = mCrypter.encrypt(jsonString);
 
+			Gdx.app.debug("ResourceSaver", "Encrypted " + filename);
+
 			String relativePath = ResourceNames.getDirPath(object.getClass());
 			relativePath += filename;
 			FileHandle saveFile = Gdx.files.external(relativePath);
@@ -57,6 +59,8 @@ public class ResourceSaver {
 
 			// Save the file
 			saveFile.writeBytes(encryptedDef, false);
+
+			Gdx.app.debug("ResourceSaver", "Saved resource " + filename);
 
 		} catch (Exception e) {
 			Gdx.app.error("ResourceSaver", "Could not encrypt message. Your file has not been saved!");
