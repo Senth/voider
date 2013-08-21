@@ -99,10 +99,6 @@ public class GameScene extends WorldScene {
 	protected void onActivate(Outcomes outcome, String message) {
 		super.onActivate(outcome, message);
 
-		Actor.setEditorActive(false);
-		Actor.setPlayerActor(mPlayerActor);
-		Actor.setWorld(mWorld);
-
 		/** @TODO loading done */
 		if (outcome == Outcomes.LOADING_SUCCEEDED) {
 			// Load level
@@ -140,6 +136,10 @@ public class GameScene extends WorldScene {
 			createPlayerShip();
 			createMouseJoint();
 		}
+
+		Actor.setEditorActive(false);
+		Actor.setPlayerActor(mPlayerActor);
+		Actor.setWorld(mWorld);
 
 		/** @TODO game completed, aborted? */
 	}

@@ -139,7 +139,7 @@ public class ResourceCacheFacadeTest {
 	}
 
 	/**
-	 * Test method for {@link com.spiddekauga.voider.resources.ResourceCacheFacade#load(com.spiddekauga.voider.resources.Def, boolean)}.
+	 * Test method for {@link com.spiddekauga.voider.resources.ResourceCacheFacade#load(com.spiddekauga.voider.resources.IResource, boolean)}.
 	 */
 	@Test
 	public void loadDef() {

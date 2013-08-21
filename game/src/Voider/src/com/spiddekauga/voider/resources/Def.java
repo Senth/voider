@@ -300,7 +300,7 @@ public abstract class Def extends Resource implements Json.Serializable, IResour
 	/** Internal dependencies, such as textures, sound, particle effects */
 	private Set<ResourceNames> mInternalDependencies = new HashSet<ResourceNames>();
 	/** Name of the definition */
-	private String mName = "Unnamed";
+	private String mName = "(Unnamed)";
 	/** Original creator name */
 	private String mOriginalCreator = User.getNickName();
 	/** Creator name */

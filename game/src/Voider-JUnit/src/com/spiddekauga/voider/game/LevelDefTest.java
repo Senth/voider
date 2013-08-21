@@ -25,7 +25,7 @@ public class LevelDefTest {
 		LevelDef def = new LevelDef();
 		def.setMusic(ResourceNames.SOUND_TEST);
 		def.setCampaignId(UUID.randomUUID());
-		def.setStoryBefore("story before");
+		def.setPrologue("story before");
 		def.setStoryAfter("story after");
 		def.setEndXCoord(555.025f);
 		def.setVersion(1, 2, 3);
@@ -38,8 +38,8 @@ public class LevelDefTest {
 		assertEquals("same def", def, jsonDef);
 		assertEquals("music", def.getMusic(), jsonDef.getMusic());
 		assertEquals("campaign id", def.getCampaignId(), jsonDef.getCampaignId());
-		assertEquals("story before", def.getStoryBefore(), jsonDef.getStoryBefore());
-		assertEquals("story after", def.getStoryAfter(), jsonDef.getStoryAfter());
+		assertEquals("story before", def.getPrologue(), jsonDef.getPrologue());
+		assertEquals("story after", def.getEpilogue(), jsonDef.getEpilogue());
 		assertEquals("end x coord", def.getEndXCoord(), jsonDef.getEndXCoord(), 0.0f);
 		assertEquals("version", def.getVersionString(), jsonDef.getVersionString());
 		assertEquals("revision", def.getRevision(), jsonDef.getRevision());
@@ -55,8 +55,8 @@ public class LevelDefTest {
 		assertEquals("same def", def, jsonDef);
 		assertEquals("music", def.getMusic(), jsonDef.getMusic());
 		assertEquals("campaign id", def.getCampaignId(), jsonDef.getCampaignId());
-		assertEquals("story before", def.getStoryBefore(), jsonDef.getStoryBefore());
-		assertEquals("story after", def.getStoryAfter(), jsonDef.getStoryAfter());
+		assertEquals("story before", def.getPrologue(), jsonDef.getPrologue());
+		assertEquals("story after", def.getEpilogue(), jsonDef.getEpilogue());
 		assertEquals("end x coord", def.getEndXCoord(), jsonDef.getEndXCoord(), 0.0f);
 		assertEquals("version", def.getVersionString(), jsonDef.getVersionString());
 		assertEquals("revision", def.getRevision(), jsonDef.getRevision());

@@ -115,7 +115,7 @@ public class DefTest {
 	}
 
 	/**
-	 * Test method for {@link com.spiddekauga.voider.resources.Def#addDependency(com.spiddekauga.voider.resources.Def)}.
+	 * Test method for {@link com.spiddekauga.voider.resources.Def#addDependency(com.spiddekauga.voider.resources.IResource)}.
 	 */
 	@Test
 	public void addDependencyDef() {

@@ -20,6 +20,7 @@ public class EnemyActorDef extends ActorDef {
 	public EnemyActorDef() {
 		super(ActorTypes.ENEMY);
 
+		setCollisionDamage(5);
 		getBodyDef().type = BodyType.KinematicBody;
 		getBodyDef().fixedRotation = true;
 

@@ -798,13 +798,15 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 	 * @param chained if the command shall be chained or not.
 	 */
 	private void appendCorner(boolean chained) {
-		Vector2 localPos = getLocalPosition(mTouchCurrent);
+		if (mSelectedActor != null) {
+			Vector2 localPos = getLocalPosition(mTouchCurrent);
 
-		mInvoker.execute(new CResourceCornerAdd(mSelectedActor.getDef().getVisualVars(), localPos, mActorEditor), chained);
-		mDragOrigin.set(mTouchCurrent);
-		mCornerIndexCurrent = mSelectedActor.getDef().getVisualVars().getCornerCount() - 1;
+			mInvoker.execute(new CResourceCornerAdd(mSelectedActor.getDef().getVisualVars(), localPos, mActorEditor), chained);
+			mDragOrigin.set(mTouchCurrent);
+			mCornerIndexCurrent = mSelectedActor.getDef().getVisualVars().getCornerCount() - 1;
 
-		Pools.vector2.free(localPos);
+			Pools.vector2.free(localPos);
+		}
 	}
 
 	/**
