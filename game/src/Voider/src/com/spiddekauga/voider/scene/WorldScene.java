@@ -15,6 +15,7 @@ import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
+import com.spiddekauga.utils.Maths;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.BulletDestroyer;
 import com.spiddekauga.voider.game.actors.Actor;
@@ -69,7 +70,7 @@ public abstract class WorldScene extends Scene {
 		// Sync border position with screen
 		if (mBorderBody != null) {
 			float borderDiffPosition = mBorderBody.getPosition().x - mCamera.position.x;
-			if (borderDiffPosition >= Config.Game.BORDER_SYNC_THRESHOLD) {
+			if (Maths.approxCompare(borderDiffPosition, Config.Game.BORDER_SYNC_THRESHOLD)) {
 				mBorderBody.setTransform(mCamera.position.x, mCamera.position.y, 0);
 			}
 		}
