@@ -554,7 +554,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 			mGui.addActor(mPathLabels);
 			createPathBodies();
 			resetPlayerPosition();
-			mEnemyActor.deactivate();
+			mEnemyActor.destroyBody();
 			break;
 
 		case STATIONARY:
@@ -1175,11 +1175,11 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 		mPathOnce.setWorld(mWorld);
 		mPathLoop.setWorld(mWorld);
 		mPathBackAndForth.setWorld(mWorld);
-		mEnemyPathOnce.activate();
+		mEnemyPathOnce.createBody();
 		mEnemyPathOnce.resetPathMovement();
-		mEnemyPathLoop.activate();
+		mEnemyPathLoop.createBody();
 		mEnemyPathLoop.resetPathMovement();
-		mEnemyPathBackAndForth.activate();
+		mEnemyPathBackAndForth.createBody();
 		mEnemyPathBackAndForth.resetPathMovement();
 		mEnemyPathOnceOutOfBoundsTime = 0f;
 	}
@@ -1191,9 +1191,9 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 		mPathOnce.setWorld(null);
 		mPathLoop.setWorld(null);
 		mPathBackAndForth.setWorld(null);
-		mEnemyPathOnce.deactivate();
-		mEnemyPathLoop.deactivate();
-		mEnemyPathBackAndForth.deactivate();
+		mEnemyPathOnce.destroyBody();
+		mEnemyPathLoop.destroyBody();
+		mEnemyPathBackAndForth.destroyBody();
 
 		// Clear GUI text
 		mGui.reset();
@@ -1245,7 +1245,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	 */
 	private void createEnemyActor() {
 		mEnemyActor.setPosition(new Vector2());
-		mEnemyActor.activate();
+		mEnemyActor.createBody();
 	}
 
 	/**
@@ -1283,7 +1283,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 		case STATIONARY:
 		case AI:
 			if (!mEnemyActor.isActive()) {
-				mEnemyActor.activate();
+				mEnemyActor.createBody();
 				mEnemyActor.setPosition(Vector2.Zero);
 			}
 			break;
@@ -1308,7 +1308,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	private void checkForDeadPathActor(EnemyActor enemyActor) {
 		if (!enemyActor.isActive()) {
 			enemyActor.resetPathMovement();
-			enemyActor.activate();
+			enemyActor.createBody();
 		}
 	}
 

@@ -206,7 +206,6 @@ public class Level extends Resource implements Disposable {
 	 * @param shapeRenderer shape renderer used for rendering
 	 */
 	public void render(ShapeRendererEx shapeRenderer) {
-		// TODO IResourceRender for rendering resources
 		if (mRunning) {
 			if (mResourceRenders == null) {
 				mResourceRenders = mResourceBinder.getResources(IResourceRender.class);

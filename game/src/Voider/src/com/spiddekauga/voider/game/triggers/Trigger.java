@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.UUID;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.spiddekauga.voider.resources.IResourceEditorRender;
@@ -32,6 +33,7 @@ public abstract class Trigger extends Resource implements IResourceUpdate, IReso
 			if (isTriggered()) {
 				mTriggered = true;
 				mTriggeredTime = totalTimeElapsed;
+				Gdx.app.debug("Trigger", getClass().getSimpleName() + " triggered at " + totalTimeElapsed);
 			}
 		}
 

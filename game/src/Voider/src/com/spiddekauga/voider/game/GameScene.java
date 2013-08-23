@@ -98,6 +98,7 @@ public class GameScene extends WorldScene {
 	@Override
 	protected void onActivate(Outcomes outcome, String message) {
 		super.onActivate(outcome, message);
+		Actor.setEditorActive(false);
 
 		/** @TODO loading done */
 		if (outcome == Outcomes.LOADING_SUCCEEDED) {
@@ -137,7 +138,6 @@ public class GameScene extends WorldScene {
 			createMouseJoint();
 		}
 
-		Actor.setEditorActive(false);
 		Actor.setPlayerActor(mPlayerActor);
 		Actor.setWorld(mWorld);
 
@@ -228,7 +228,7 @@ public class GameScene extends WorldScene {
 
 			mLevel.render(mShapeRenderer);
 			mBulletDestroyer.render(mShapeRenderer);
-			mPlayerActor.render(mShapeRenderer);
+			//			mPlayerActor.render(mShapeRenderer);
 
 
 			// GUI

@@ -72,10 +72,13 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 			mDestroyBody = false;
 		}
 
+		if (mBody != null) {
+			mPosition.set(mBody.getPosition());
+		}
+
 		if (mActive) {
 			// Update position
 			if (mBody != null) {
-				mPosition.set(mBody.getPosition());
 				calculateRotatedVertices();
 
 				// Rotation
@@ -471,7 +474,6 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	public void write(Json json) {
 		super.write(json);
 
-		json.writeValue("mActive", mActive);
 		json.writeValue("mLife", mLife);
 		json.writeValue("mPosition", mPosition);
 		json.writeValue("mTriggerInfos", mTriggerInfos);
@@ -502,7 +504,6 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	public void read(Json json, JsonValue jsonData) {
 		super.read(json, jsonData);
 
-		mActive = json.readValue("mActive", boolean.class, jsonData);
 		mLife = json.readValue("mLife", float.class, jsonData);
 		mPosition = json.readValue("mPosition", Vector2.class, jsonData);
 		mTriggerInfos = json.readValue("mTriggerInfos", ArrayList.class, jsonData);
@@ -672,6 +673,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 		if (mBody != null) {
 			mBody.getWorld().destroyBody(mBody);
 			mBody = null;
+			clearRotatedVertices();
 		}
 	}
 
@@ -897,8 +899,6 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	public void deactivate() {
 		mActivationTime = -1;
 		mActive = false;
-
-		destroyBody();
 	}
 
 	/**
@@ -1004,10 +1004,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 		if (mRotationPrevious != currentRotation || mRotatedVertices == null || forceRecalculation) {
 			mRotationPrevious = currentRotation;
 
-			if (mRotatedVertices != null) {
-				Pools.vector2.freeDuplicates(mRotatedVertices);
-				Pools.arrayList.free(mRotatedVertices);
-			}
+			clearRotatedVertices();
 
 			float rotation = MathUtils.radiansToDegrees * currentRotation;
 
@@ -1015,6 +1012,17 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 			if (mRotatedVertices != null) {
 				Geometry.rotateVertices(mRotatedVertices, rotation, true);
 			}
+		}
+	}
+
+	/**
+	 * Clears the rotated vertices
+	 */
+	private void clearRotatedVertices() {
+		if (mRotatedVertices != null) {
+			Pools.vector2.freeDuplicates(mRotatedVertices);
+			Pools.arrayList.free(mRotatedVertices);
+			mRotatedVertices = null;
 		}
 	}
 
