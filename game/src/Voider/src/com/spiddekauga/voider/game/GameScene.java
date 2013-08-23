@@ -283,6 +283,10 @@ public class GameScene extends WorldScene {
 
 	@Override
 	protected Scene getNextScene() {
+		if (mTesting) {
+			return null;
+		}
+
 		GameOverScene gameOverScene = new GameOverScene(mPlayerStats, mLevel.getDef());
 
 		switch (getOutcome()) {

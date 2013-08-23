@@ -292,6 +292,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 			mLife = mDef.getMaxLife();
 
 			if (mBody != null) {
+				reloadBody();
 				createFixtures();
 			}
 			calculateRotatedVertices(true);
@@ -654,7 +655,6 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 		if (mWorld != null && mBody == null) {
 			if (mSkipRotate || !mDef.getVisualVars().getCenterOffset().equals(Vector2.Zero)) {
 				bodyDef.angularVelocity = 0;
-				bodyDef.angle = 0;
 			} else {
 				bodyDef.fixedRotation = true;
 			}
@@ -1081,12 +1081,13 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	private void reloadBody() {
 		if (!mSkipRotate) {
 			mBody.setAngularVelocity(mDef.getRotationSpeedRad());
-			// Only set starting angle if we're not rotating
-			if (mDef.getRotationSpeedRad() == 0) {
-				mBody.setTransform(mPosition, mDef.getStartAngleRad());
-			}
-			mBody.setType(mDef.getBodyDef().type);
 		}
+
+		// Only set starting angle if we're not rotating
+		if (mDef.getRotationSpeedRad() == 0) {
+			mBody.setTransform(mPosition, mDef.getStartAngleRad());
+		}
+		mBody.setType(mDef.getBodyDef().type);
 
 		mBodyUpdateTime = GameTime.getTotalGlobalTimeElapsed();
 	}
