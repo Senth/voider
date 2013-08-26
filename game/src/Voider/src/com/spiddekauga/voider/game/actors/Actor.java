@@ -474,6 +474,10 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	public void write(Json json) {
 		super.write(json);
 
+		if (!mEditorActive) {
+			json.writeValue("mActive", mActive);
+		}
+
 		json.writeValue("mLife", mLife);
 		json.writeValue("mPosition", mPosition);
 		json.writeValue("mTriggerInfos", mTriggerInfos);
@@ -503,6 +507,10 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	@Override
 	public void read(Json json, JsonValue jsonData) {
 		super.read(json, jsonData);
+
+		if (jsonData.get("mActive") != null) {
+			mActive = json.readValue("mActive", boolean.class, jsonData);
+		}
 
 		mLife = json.readValue("mLife", float.class, jsonData);
 		mPosition = json.readValue("mPosition", Vector2.class, jsonData);

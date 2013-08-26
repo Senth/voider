@@ -202,6 +202,11 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 
 			createResourceBodies();
 
+			// Activate all enemies
+			ArrayList<EnemyActor> enemies = mLevel.getResources(EnemyActor.class);
+			for (EnemyActor enemy : enemies) {
+				enemy.activate();
+			}
 		}
 
 		mInvoker.dispose();
@@ -567,7 +572,6 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 				copyLevel.removeResource(trigger.getId());
 			}
 		}
-
 
 		SceneSwitcher.switchTo(testGame);
 	}

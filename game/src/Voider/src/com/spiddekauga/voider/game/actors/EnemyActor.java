@@ -33,9 +33,7 @@ public class EnemyActor extends Actor {
 	 * Default constructor
 	 */
 	public EnemyActor() {
-		if (!mEditorActive) {
-			deactivate();
-		}
+		deactivate();
 	}
 
 	@Override
@@ -507,11 +505,11 @@ public class EnemyActor extends Actor {
 
 		case IN_FRONT_OF_PLAYER: {
 			Vector2 playerVelocity = mPlayerActor.getBody().getLinearVelocity();
-			float levelSpeed = 0;
-			if (!mEditorActive) {
-				levelSpeed = mLevel.getSpeed();
-			}
-			playerVelocity.x -= levelSpeed;
+			//			float levelSpeed = 0;
+			//			if (!mEditorActive) {
+			//				levelSpeed = mLevel.getSpeed();
+			//			}
+			//			playerVelocity.x -= levelSpeed;
 
 			boolean targetPlayerInstead = false;
 
@@ -522,7 +520,7 @@ public class EnemyActor extends Actor {
 			}
 			// Calculate where the bullet would intersect with the player
 			else {
-				Vector2 bulletVelocity = Geometry.interceptTarget(getPosition(), mWeapon.getDef().getBulletSpeed() + levelSpeed, mPlayerActor.getPosition(), playerVelocity);
+				Vector2 bulletVelocity = Geometry.interceptTarget(getPosition(), mWeapon.getDef().getBulletSpeed() /*+ levelSpeed*/, mPlayerActor.getPosition(), playerVelocity);
 				shootDirection.set(bulletVelocity);
 				Pools.vector2.free(bulletVelocity);
 
@@ -685,6 +683,11 @@ public class EnemyActor extends Actor {
 		velocity.set(targetDirection);
 		velocity.nor().scl(getDef(EnemyActorDef.class).getSpeed());
 
+		//		// Increase with level speed
+		//		if (!mEditorActive && getDef(EnemyActorDef.class).getMovementType() == MovementTypes.AI) {
+		//			velocity.x += mLevel.getSpeed();
+		//		}
+
 		getBody().setLinearVelocity(velocity);
 		Pools.vector2.free(velocity);
 	}
@@ -698,10 +701,10 @@ public class EnemyActor extends Actor {
 		Vector2 velocity = Pools.vector2.obtain();
 		velocity.set(getBody().getLinearVelocity());
 
-		// Decrease with level speed
-		if (!mEditorActive && !velocity.equals(Vector2.Zero)) {
-			velocity.x -= mLevel.getSpeed();
-		}
+		//		// Decrease with level speed
+		//		if (!mEditorActive && getDef(EnemyActorDef.class).getMovementType() == MovementTypes.AI && !velocity.equals(Vector2.Zero)) {
+		//			velocity.x -= mLevel.getSpeed();
+		//		}
 
 		boolean noVelocity = Maths.approxCompare(velocity.len2(), 0.01f);
 
@@ -783,6 +786,11 @@ public class EnemyActor extends Actor {
 				velocity.setAngle(angleAfter);
 				velocity.scl(getDef(EnemyActorDef.class).getSpeed());
 			}
+
+			//			// Increase with level speed
+			//			if (!mEditorActive && getDef(EnemyActorDef.class).getMovementType() == MovementTypes.AI) {
+			//				velocity.x += mLevel.getSpeed();
+			//			}
 
 			getBody().setLinearVelocity(velocity);
 		}

@@ -435,7 +435,7 @@ public class Config {
 		/** Maximum length of story */
 		public final static int STORY_LENGTH_MAX = 512;
 		/** Auto save time, in seconds */
-		public final static float AUTO_SAVE_TIME = 300;
+		public final static float AUTO_SAVE_TIME = 60;
 
 		/** Corner pick color */
 		public final static Color CORNER_COLOR = new Color(0.75f, 0, 0, 1);
@@ -503,7 +503,7 @@ public class Config {
 	 */
 	public static class Graphics {
 		/** If we shall use debug_renderer to display graphics instead of sprites (where applicable) */
-		public final static boolean USE_DEBUG_RENDERER = true;
+		public final static boolean USE_DEBUG_RENDERER = false;
 		/** Renders regular graphics */
 		public final static boolean USE_RELEASE_RENDERER = true;
 		/** Epsilon for box 2d */

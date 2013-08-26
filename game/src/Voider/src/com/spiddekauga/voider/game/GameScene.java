@@ -48,7 +48,6 @@ public class GameScene extends WorldScene {
 		mTesting = testing;
 		mInvulnerable = invulnerable;
 
-		Actor.setEditorActive(false);
 		mWorld.setContactListener(mCollisionResolver);
 	}
 
