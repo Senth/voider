@@ -25,8 +25,8 @@ public class LoadingTextScene extends LoadingScene {
 	}
 
 	@Override
-	protected void update() {
-		super.update();
+	protected void update(float deltaTime) {
+		super.update(deltaTime);
 
 		switch (mState) {
 		case DISPLAY:

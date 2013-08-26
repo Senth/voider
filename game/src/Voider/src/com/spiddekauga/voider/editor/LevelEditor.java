@@ -92,13 +92,13 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 	}
 
 	@Override
-	protected void update() {
-		super.update();
-		mLevel.update();
+	protected void update(float deltaTime) {
+		super.update(deltaTime);
+		mLevel.update(deltaTime);
 
 		// Scrolling
 		if (mScroller.isScrolling()) {
-			mScroller.update(Gdx.graphics.getDeltaTime());
+			mScroller.update(deltaTime);
 
 			Vector2 diffScroll = Pools.vector2.obtain();
 			diffScroll.set(mScroller.getCurrentScroll()).sub(mScroller.getOriginScroll());

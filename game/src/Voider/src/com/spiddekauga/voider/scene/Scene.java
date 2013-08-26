@@ -43,7 +43,7 @@ public abstract class Scene extends InputAdapter {
 
 		if (!mGui.isMsgBoxActive()) {
 			mGameTime.update(Gdx.graphics.getDeltaTime());
-			update();
+			update(mGameTime.getDeltaTime());
 		}
 		render();
 		mGui.update();
@@ -119,8 +119,9 @@ public abstract class Scene extends InputAdapter {
 
 	/**
 	 * Updates the scene
+	 * @param deltaTime elapsed time since last frame
 	 */
-	protected void update() {
+	protected void update(float deltaTime) {
 		// Does nothing
 	}
 

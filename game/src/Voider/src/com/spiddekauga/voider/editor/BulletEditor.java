@@ -86,16 +86,15 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 	}
 
 	@Override
-	protected void update() {
-		super.update();
-		mWeapon.update(Gdx.graphics.getDeltaTime());
+	protected void update(float deltaTime) {
+		super.update(deltaTime);
+		mWeapon.update(deltaTime);
 
 		if (mWeapon.canShoot()) {
 			mWeapon.shoot(SHOOT_DIRECTION);
 		}
 
 		if (mBulletActor != null && mDef.getVisualVars().getShapeType() == ActorShapeTypes.CUSTOM) {
-			//			mBulletActor.update(Gdx.graphics.getDeltaTime());
 			mBulletActor.updateEditor();
 		}
 
@@ -119,7 +118,6 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 			Gdx.gl.glEnable(GL20.GL_BLEND);
 			Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
-			mBulletDestroyer.update(Gdx.graphics.getDeltaTime());
 			mBulletDestroyer.render(mShapeRenderer);
 
 			if (mBulletActor != null && mActiveTouchTool == mDrawActorTool) {

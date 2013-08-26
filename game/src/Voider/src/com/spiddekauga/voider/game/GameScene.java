@@ -167,7 +167,7 @@ public class GameScene extends WorldScene {
 	}
 
 	@Override
-	protected void update() {
+	protected void update(float deltaTime) {
 		// Make sure border maintains same speed as level
 		if (mBorderBody != null) {
 			mBorderBody.setLinearVelocity(mLevel.getSpeed(), 0.0f);
@@ -182,8 +182,8 @@ public class GameScene extends WorldScene {
 		updateBodyShepherdPositions();
 		mBodyShepherd.update(mBodyShepherdMinPos, mBodyShepherdMaxPos);
 
-		mLevel.update();
-		super.update();
+		mLevel.update(deltaTime);
+		super.update(deltaTime);
 
 		updateCameraPosition();
 
@@ -228,7 +228,6 @@ public class GameScene extends WorldScene {
 
 			mLevel.render(mShapeRenderer);
 			mBulletDestroyer.render(mShapeRenderer);
-			//			mPlayerActor.render(mShapeRenderer);
 
 
 			// GUI

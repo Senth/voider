@@ -1,6 +1,5 @@
 package com.spiddekauga.voider.app;
 
-import com.badlogic.gdx.Gdx;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceNames;
@@ -35,12 +34,12 @@ public class SplashScreen extends LoadingScene {
 	}
 
 	@Override
-	protected void update() {
-		super.update();
+	protected void update(float deltaTime) {
+		super.update(deltaTime);
 
 		switch (mState) {
 		case DISPLAY:
-			mDisplayTime += Gdx.graphics.getDeltaTime();
+			mDisplayTime += deltaTime;
 			if (mDisplayTime >= Config.Menu.SPLASH_SCREEN_TIME && !ResourceCacheFacade.isLoading()) {
 				((SplashScreenGui)mGui).fadeOut();
 				mState = States.FADING;

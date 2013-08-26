@@ -52,7 +52,8 @@ public abstract class WorldScene extends Scene {
 	}
 
 	@Override
-	protected void update() {
+	protected void update(float deltaTime) {
+		super.update(deltaTime);
 		mWorld.step(1/60f, 6, 2);
 
 		// Remove unwanted bullets
@@ -61,7 +62,7 @@ public abstract class WorldScene extends Scene {
 
 		screenToWorldCoord(mCamera, 0, Gdx.graphics.getHeight(), minScreenPos, false);
 		screenToWorldCoord(mCamera, Gdx.graphics.getWidth(), 0, maxScreenPos, false);
-		mBulletDestroyer.update(Gdx.graphics.getDeltaTime());
+		mBulletDestroyer.update(deltaTime);
 		mBulletDestroyer.removeOutOfBondsBullets(minScreenPos, maxScreenPos);
 
 		Pools.vector2.free(minScreenPos);

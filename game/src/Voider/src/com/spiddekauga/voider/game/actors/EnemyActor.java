@@ -685,11 +685,6 @@ public class EnemyActor extends Actor {
 		velocity.set(targetDirection);
 		velocity.nor().scl(getDef(EnemyActorDef.class).getSpeed());
 
-		// Increase with level speed
-		if (!mEditorActive) {
-			velocity.x += mLevel.getSpeed();
-		}
-
 		getBody().setLinearVelocity(velocity);
 		Pools.vector2.free(velocity);
 	}
@@ -764,14 +759,6 @@ public class EnemyActor extends Actor {
 
 			float angleAfter = velocityAngleOriginal + rotation;
 
-			//			if (noVelocity) {
-			//			velocity.x = 1;
-			//			velocity.setAngle(angleAfter);
-			//			velocity.scl(getDef(EnemyActorDef.class).getSpeed());
-			//			} else {
-			//				velocity.rotate(rotation);
-			//			}
-
 			// Check if we turned too much?
 			boolean turnedTooMuch = false;
 			// If toTarget angle is between the before and after velocity angles
@@ -795,11 +782,6 @@ public class EnemyActor extends Actor {
 				velocity.x = 1;
 				velocity.setAngle(angleAfter);
 				velocity.scl(getDef(EnemyActorDef.class).getSpeed());
-			}
-
-			// Increase with level speed
-			if (!mEditorActive) {
-				velocity.x += mLevel.getSpeed();
 			}
 
 			getBody().setLinearVelocity(velocity);

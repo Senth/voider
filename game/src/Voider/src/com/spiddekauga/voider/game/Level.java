@@ -63,11 +63,11 @@ public class Level extends Resource implements Disposable {
 
 	/**
 	 * Updates all the actors in the level. To optimize set is as running
+	 * @param deltaTime elapsed seconds since last frame
 	 */
-	public void update() {
+	public void update(float deltaTime) {
 		// Make the map move forward
 		if (mRunning) {
-			float deltaTime = Gdx.graphics.getDeltaTime();
 			mXCoord += mSpeed * deltaTime;
 
 			if (mPlayerActor != null && mPlayerActor.getBody() != null) {
@@ -81,7 +81,7 @@ public class Level extends Resource implements Disposable {
 			}
 
 
-			mPlayerActor.update(Gdx.graphics.getDeltaTime());
+			mPlayerActor.update(deltaTime);
 
 			// Update resources
 			if (mResourceUpdates == null) {

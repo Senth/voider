@@ -30,7 +30,7 @@ public abstract class LoadingScene extends Scene {
 	}
 
 	@Override
-	protected void update() {
+	protected void update(float deltaTime) {
 		try {
 			ResourceCacheFacade.update();
 		} catch (ResourceNotFoundException e) {

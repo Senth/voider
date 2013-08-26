@@ -200,7 +200,7 @@ public abstract class Gui implements Disposable {
 	 * Renders the GUI
 	 */
 	public final void render() {
-		mStage.act(Gdx.graphics.getDeltaTime());
+		mStage.act(SceneSwitcher.getGameTime().getDeltaTime());
 		mStage.draw();
 	}
 

@@ -1,7 +1,10 @@
 package com.spiddekauga.utils;
 
+import com.spiddekauga.voider.Config;
+
 /**
- * Measures the total game time of the game.
+ * Measures the total game time of the game. If a frame is longer than 0.1s
+ * it will clamp the delta time to 0.1s
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
@@ -11,7 +14,20 @@ public class GameTime {
 	 * @param deltaTime elapsed time since last frame
 	 */
 	public void update(float deltaTime) {
-		mTotalTimeElapsed += deltaTime;
+		if (deltaTime < Config.Graphics.FRAME_LENGTH_MAX) {
+			mDeltaTime = deltaTime;
+		} else {
+			mDeltaTime = Config.Graphics.FRAME_LENGTH_MAX;
+		}
+
+		mTotalTimeElapsed += mDeltaTime;
+	}
+
+	/**
+	 * @return current frame delta time
+	 */
+	public float getDeltaTime() {
+		return mDeltaTime;
 	}
 
 	/**
@@ -23,8 +39,10 @@ public class GameTime {
 
 	/** Total time elapsed since start of game */
 	private float mTotalTimeElapsed = 0;
+	/** Current delta time */
+	private float mDeltaTime = 0;
 
-
+	// Static methods
 	/**
 	 * Updates the global game time, call once per fram
 	 * @param deltaTime elapsed time since last frame

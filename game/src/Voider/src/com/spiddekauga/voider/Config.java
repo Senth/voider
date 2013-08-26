@@ -518,15 +518,13 @@ public class Config {
 		public final static float HEIGHT = 480;
 		/** World scaling factor */
 		public final static float WORLD_SCALE = 0.1f;
-		/**
-		 * How much bigger of the screen is shown in height from the regular scale. E.g. 3 will show the same amount of
-		 * free space above and below the level
-		 */
+		/** How much bigger of the screen is shown in height from the regular scale. E.g. 3 will show the same amount of
+		 * free space above and below the level */
 		public final static float LEVEL_EDITOR_HEIGHT_SCALE = 2;
-		/**
-		 * Level editor scale, this allows the player to see above and below the level
-		 */
+		/** Level editor scale, this allows the player to see above and below the level */
 		public final static float LEVEL_EDITOR_SCALE = WORLD_SCALE * LEVEL_EDITOR_HEIGHT_SCALE;
+		/** Maximum frame time length */
+		public final static float FRAME_LENGTH_MAX = 0.1f;
 	}
 
 	/**
