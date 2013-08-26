@@ -290,10 +290,14 @@ public class GameScene extends WorldScene {
 		switch (getOutcome()) {
 		case LEVEL_COMPLETED:
 			gameOverScene.setLevelCompleted(true);
-			if (mLevelToLoad != null && !mLevelToLoad.getEpilogue().equals("")) {
-				Scene nextScene = new LoadingTextScene(mLevelToLoad.getEpilogue());
-				nextScene.setNextScene(gameOverScene);
-				return nextScene;
+			LevelDef levelDef = null;
+			if (mLevelToLoad != null || mGameSave != null) {
+				levelDef = mLevel.getDef();
+				if (levelDef != null && !levelDef.getEpilogue().equals("")) {
+					Scene nextScene = new LoadingTextScene(levelDef.getEpilogue());
+					nextScene.setNextScene(gameOverScene);
+					return nextScene;
+				}
 			}
 			// Continues ->
 		case LEVEL_PLAYER_DIED:
