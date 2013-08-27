@@ -28,7 +28,14 @@ public class ResourceSaver {
 	 * @param resource the resource to save
 	 */
 	public static void save(IResource resource) {
-		save(resource, resource.getId().toString());
+		String filename = resource.getId().toString();
+
+		// Check if the resource is a definition which contains revision numbering
+		if (resource instanceof IResourceRevision) {
+			filename += ".r" + String.valueOf(((IResourceRevision) resource).getRevision());
+		}
+
+		save(resource, filename);
 	}
 
 	/**

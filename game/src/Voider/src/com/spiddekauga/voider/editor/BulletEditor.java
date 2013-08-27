@@ -186,6 +186,7 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 
 	@Override
 	public void saveDef() {
+		mDef.increaseRevision();
 		ResourceSaver.save(mDef);
 
 		// Load the saved actor and use it instead

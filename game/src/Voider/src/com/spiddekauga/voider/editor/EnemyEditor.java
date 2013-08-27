@@ -408,6 +408,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	 * Saves the current enemy actor
 	 */
 	public void saveDef() {
+		mDef.increaseRevision();
 		ResourceSaver.save(mDef);
 
 		// Load the saved actor and use it instead

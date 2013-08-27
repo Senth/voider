@@ -26,6 +26,7 @@ import com.spiddekauga.voider.resources.IResourceEditorRender;
 import com.spiddekauga.voider.resources.IResourceEditorUpdate;
 import com.spiddekauga.voider.resources.IResourcePosition;
 import com.spiddekauga.voider.resources.IResourceRender;
+import com.spiddekauga.voider.resources.IResourceRevision;
 import com.spiddekauga.voider.resources.IResourceUpdate;
 import com.spiddekauga.voider.resources.Resource;
 import com.spiddekauga.voider.resources.ResourceBinder;
@@ -39,7 +40,7 @@ import com.spiddekauga.voider.utils.Pools;
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
 @SuppressWarnings("unchecked")
-public class Level extends Resource implements Disposable {
+public class Level extends Resource implements Disposable, IResourceRevision {
 	/**
 	 * Constructor which creates an new empty level with the bound
 	 * level definition
@@ -98,6 +99,11 @@ public class Level extends Resource implements Disposable {
 			}
 			Pools.arrayList.free(resourceUpdates);
 		}
+	}
+
+	@Override
+	public long getRevision() {
+		return mLevelDef.getRevision();
 	}
 
 	/**

@@ -47,16 +47,16 @@ public class ResourceCacheFacade {
 		mAssetManager = new AssetManager();
 
 		// Own loaders
-		mAssetManager.setLoader(BulletActorDef.class, new JsonLoaderAsync<BulletActorDef>(new ExternalFileHandleResolver(), BulletActorDef.class));
-		mAssetManager.setLoader(EnemyActorDef.class, new JsonLoaderAsync<EnemyActorDef>(new ExternalFileHandleResolver(), EnemyActorDef.class));
-		mAssetManager.setLoader(PickupActorDef.class, new JsonLoaderAsync<PickupActorDef>(new ExternalFileHandleResolver(), PickupActorDef.class));
-		mAssetManager.setLoader(PlayerActorDef.class, new JsonLoaderAsync<PlayerActorDef>(new ExternalFileHandleResolver(), PlayerActorDef.class));
-		mAssetManager.setLoader(StaticTerrainActorDef.class, new JsonLoaderAsync<StaticTerrainActorDef>(new ExternalFileHandleResolver(), StaticTerrainActorDef.class));
-		mAssetManager.setLoader(LevelDef.class, new JsonLoaderAsync<LevelDef>(new ExternalFileHandleResolver(), LevelDef.class));
-		mAssetManager.setLoader(Level.class, new JsonLoaderAsync<Level>(new ExternalFileHandleResolver(), Level.class));
+		mAssetManager.setLoader(BulletActorDef.class, new JsonLoaderAsync<BulletActorDef>(new RevisionFileHandleResolver(), BulletActorDef.class));
+		mAssetManager.setLoader(EnemyActorDef.class, new JsonLoaderAsync<EnemyActorDef>(new RevisionFileHandleResolver(), EnemyActorDef.class));
+		mAssetManager.setLoader(PickupActorDef.class, new JsonLoaderAsync<PickupActorDef>(new RevisionFileHandleResolver(), PickupActorDef.class));
+		mAssetManager.setLoader(PlayerActorDef.class, new JsonLoaderAsync<PlayerActorDef>(new RevisionFileHandleResolver(), PlayerActorDef.class));
+		mAssetManager.setLoader(StaticTerrainActorDef.class, new JsonLoaderAsync<StaticTerrainActorDef>(new RevisionFileHandleResolver(), StaticTerrainActorDef.class));
+		mAssetManager.setLoader(LevelDef.class, new JsonLoaderAsync<LevelDef>(new RevisionFileHandleResolver(), LevelDef.class));
+		mAssetManager.setLoader(Level.class, new JsonLoaderAsync<Level>(new RevisionFileHandleResolver(), Level.class));
 		mAssetManager.setLoader(ShaderProgram.class, new ShaderLoader(new InternalFileHandleResolver()));
 		mAssetManager.setLoader(GameSave.class, new JsonLoaderSync<GameSave>(new ExternalFileHandleResolver(), GameSave.class));
-		mAssetManager.setLoader(GameSaveDef.class, new JsonLoaderAsync<GameSaveDef>(new ExternalFileHandleResolver(), GameSaveDef.class));
+		mAssetManager.setLoader(GameSaveDef.class, new JsonLoaderAsync<GameSaveDef>(new RevisionFileHandleResolver(), GameSaveDef.class));
 		mAssetManager.setLoader(PlayerStats.class, new JsonLoaderAsync<PlayerStats>(new ExternalFileHandleResolver(), PlayerStats.class));
 
 		// Existing loaders
@@ -85,35 +85,13 @@ public class ResourceCacheFacade {
 		}
 
 		FileHandle[] files = dir.list();
-		// Only load the resource, no dependencies
-		// Skip filenames that aren't fully UUIDs, e.g. backup files
-		if (!loadDependencies) {
-			for (FileHandle file : files) {
-				// Skip files with extension (these can be backup files etc)
-				if (file.extension().length() == 0) {
-					// Is it really an UUID?
-					try {
-						UUID.fromString(file.name());
-						mAssetManager.load(file.path(), type);
-					} catch (IllegalArgumentException e) {
-						Gdx.app.error("ResourceCacheFacade", "File is not resource: " + file.path());
-					}
-				}
-			}
-		}
-		// Load dependencies too, note dependency loader will load this resource too. Thus
-		// No call to asset manager should be done from this class.
-		else {
-			for (FileHandle file : files) {
-				// Skif files with extension (these can be backup files etc)
-				if (file.extension().length() == 0) {
-					try {
-						UUID uuid = UUID.fromString(file.name());
-						mDependencyLoader.load(uuid, type);
-					} catch (IllegalArgumentException e) {
-						Gdx.app.error("ResourceCacheFacade", "File is not resource: " + file.path());
-					}
-				}
+		for (FileHandle file : files) {
+			// Is file really an UUID
+			try {
+				UUID uuid = UUID.fromString(file.nameWithoutExtension());
+				load(uuid, type, loadDependencies);
+			} catch (IllegalArgumentException e) {
+				Gdx.app.error("ResourceCacheFacade", "File is not resource: " + file.path());
 			}
 		}
 	}
@@ -135,7 +113,7 @@ public class ResourceCacheFacade {
 		}
 
 		FileHandle[] files = dir.list();
-		// Only load the resource, no dependencies
+		// Only unload the resource, no dependencies
 		if (!unloadDependencies) {
 			for (FileHandle file : files) {
 				if (mAssetManager.isLoaded(file.path())) {
@@ -143,7 +121,7 @@ public class ResourceCacheFacade {
 				}
 			}
 		}
-		// Load dependencies too
+		// Unload dependencies too
 		else {
 			for (FileHandle file : files) {
 				if (mAssetManager.isLoaded(file.path())) {
@@ -207,6 +185,7 @@ public class ResourceCacheFacade {
 			}
 		} else {
 			final String fullName = ResourceNames.getDirPath(type) + defId.toString();
+			/** @todo get revision */
 			mAssetManager.load(fullName, type);
 		}
 	}

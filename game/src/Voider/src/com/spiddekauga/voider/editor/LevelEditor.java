@@ -594,6 +594,7 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 	public void saveDef() {
 		mLevel.calculateStartPosition();
 		mLevel.calculateEndPosition();
+		mLevel.getDef().increaseRevision();
 		ResourceSaver.save(mLevel.getDef());
 		ResourceSaver.save(mLevel);
 

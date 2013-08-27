@@ -18,7 +18,7 @@ import com.spiddekauga.voider.User;
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
 @SuppressWarnings("unchecked")
-public abstract class Def extends Resource implements Json.Serializable, IResourceDependency {
+public abstract class Def extends Resource implements Json.Serializable, IResourceDependency, IResourceRevision {
 	/**
 	 * Default constructor for the resource.
 	 */
@@ -308,7 +308,7 @@ public abstract class Def extends Resource implements Json.Serializable, IResour
 	/** Comment of the definition */
 	private String mDescription = "";
 	/** The revision of the definition, this increases after each save */
-	private long mRevision = 1;
+	private long mRevision = 0;
 	/** Main version (1 in 1.0.13) */
 	private int mVersionFirst = 0;
 	/** Minor version (0 in 1.0.13) */

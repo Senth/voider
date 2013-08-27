@@ -25,10 +25,9 @@ public class GameSaveDef extends Def {
 	}
 
 	/**
-	 * Private constructor for JSON
+	 * Default constructor for JSON
 	 */
-	@SuppressWarnings("unused")
-	private GameSaveDef() {
+	public GameSaveDef() {
 		// Does nothing
 	}
 
