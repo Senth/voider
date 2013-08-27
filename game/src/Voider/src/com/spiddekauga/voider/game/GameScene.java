@@ -13,6 +13,7 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.joints.MouseJoint;
 import com.badlogic.gdx.physics.box2d.joints.MouseJointDef;
+import com.spiddekauga.utils.Maths;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.actors.Actor;
@@ -235,6 +236,14 @@ public class GameScene extends WorldScene {
 
 
 			mShapeRenderer.pop();
+		}
+	}
+
+	@Override
+	protected void synchronizeBorder(Body border) {
+		float borderDiffPosition = border.getPosition().x - mLevel.getXCoord();
+		if (!Maths.approxCompare(borderDiffPosition, Config.Game.BORDER_SYNC_THRESHOLD)) {
+			border.setTransform(mLevel.getXCoord(), border.getPosition().y, 0);
 		}
 	}
 

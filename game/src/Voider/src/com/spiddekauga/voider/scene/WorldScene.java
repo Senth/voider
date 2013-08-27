@@ -57,11 +57,8 @@ public abstract class WorldScene extends Scene {
 		mWorld.step(1/60f, 6, 2);
 
 		// Remove unwanted bullets
-		Vector2 minScreenPos = Pools.vector2.obtain();
-		Vector2 maxScreenPos = Pools.vector2.obtain();
-
-		screenToWorldCoord(mCamera, 0, Gdx.graphics.getHeight(), minScreenPos, false);
-		screenToWorldCoord(mCamera, Gdx.graphics.getWidth(), 0, maxScreenPos, false);
+		Vector2 minScreenPos = getWorldMinCoordinates();
+		Vector2 maxScreenPos = getWorldMaxCoordinates();
 		mBulletDestroyer.update(deltaTime);
 		mBulletDestroyer.removeOutOfBondsBullets(minScreenPos, maxScreenPos);
 
@@ -70,11 +67,21 @@ public abstract class WorldScene extends Scene {
 
 		// Sync border position with screen
 		if (mBorderBody != null) {
-			float borderDiffPosition = mBorderBody.getPosition().x - mCamera.position.x;
-			if (Maths.approxCompare(borderDiffPosition, Config.Game.BORDER_SYNC_THRESHOLD)) {
-				mBorderBody.setTransform(mCamera.position.x, mCamera.position.y, 0);
-			}
+			synchronizeBorder(mBorderBody);
 		}
+	}
+
+	/**
+	 * Synchronize collision border
+	 * @param border the border to synchronize
+	 */
+	protected void synchronizeBorder(Body border) {
+		Vector2 maxScreenPos = getWorldMaxCoordinates();
+		float borderDiffPosition = border.getPosition().x - maxScreenPos.x;
+		if (!Maths.approxCompare(borderDiffPosition, Config.Game.BORDER_SYNC_THRESHOLD)) {
+			border.setTransform(maxScreenPos.x, border.getPosition().y, 0);
+		}
+		Pools.vector2.free(maxScreenPos);
 	}
 
 	@Override
@@ -185,10 +192,15 @@ public abstract class WorldScene extends Scene {
 		for (int i = 0; i < corners.length; ++i) {
 			corners[i] = Pools.vector2.obtain();
 		}
-		screenToWorldCoord(mCamera, 0, 0, corners[0], false);
-		screenToWorldCoord(mCamera, Gdx.graphics.getWidth(), 0, corners[1], false);
-		screenToWorldCoord(mCamera, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), corners[2], false);
-		screenToWorldCoord(mCamera, 0, Gdx.graphics.getHeight(), corners[3], false);
+		corners[0].set(0, -getWorldHeight() * 0.5f);
+		corners[1].set(-getWorldWidth(), -getWorldHeight() * 0.5f);
+		corners[2].set(-getWorldWidth(), getWorldHeight() * 0.5f);
+		corners[3].set(0, getWorldHeight() * 0.5f);
+
+		//		screenToWorldCoord(mCamera, 0, 0, corners[0], false);
+		//		screenToWorldCoord(mCamera, Gdx.graphics.getWidth(), 0, corners[1], false);
+		//		screenToWorldCoord(mCamera, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), corners[2], false);
+		//		screenToWorldCoord(mCamera, 0, Gdx.graphics.getHeight(), corners[3], false);
 
 
 		// Create fixture
@@ -200,6 +212,8 @@ public abstract class WorldScene extends Scene {
 		fixtureDef.filter.maskBits = ActorFilterCategories.PLAYER;
 		mBorderBody.createFixture(fixtureDef);
 
+		// Set position
+		synchronizeBorder(mBorderBody);
 
 		// Free stuff
 		for (int i = 0; i < corners.length; ++i) {
