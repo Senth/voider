@@ -383,6 +383,7 @@ class LevelEditorGui extends EditorGui {
 		ButtonGroup toggleGroup = new ButtonGroup();
 
 		Button button;
+		// Save
 		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Save", textButtonStyle);
 		} else {
@@ -397,6 +398,37 @@ class LevelEditorGui extends EditorGui {
 		};
 		mMenuTable.add(button);
 
+		// Undo
+		if (Config.Gui.usesTextButtons()) {
+			button = new TextButton("Undo", textButtonStyle);
+		} else {
+			/** @todo default stub image button */
+			button = new ImageButton(editorSkin);
+		}
+		new ButtonListener(button) {
+			@Override
+			protected void onPressed() {
+				mLevelEditor.undo();
+			}
+		};
+		mMenuTable.add(button);
+
+		// Redo
+		if (Config.Gui.usesTextButtons()) {
+			button = new TextButton("Redo", textButtonStyle);
+		} else {
+			/** @todo default stub image button */
+			button = new ImageButton(editorSkin);
+		}
+		new ButtonListener(button) {
+			@Override
+			protected void onPressed() {
+				mLevelEditor.redo();
+			}
+		};
+		mMenuTable.add(button);
+
+		// Run
 		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Run", textButtonStyle);
 		} else {
@@ -421,7 +453,7 @@ class LevelEditorGui extends EditorGui {
 
 		GuiCheckCommandCreator menuChecker = new GuiCheckCommandCreator(mInvoker);
 		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Static Terrain", textToggleStyle);
+			button = new TextButton("Terrain", textToggleStyle);
 		} else {
 			/** @todo default stub image button */
 			button = new ImageButton(editorSkin, "default-toggle");
@@ -429,7 +461,7 @@ class LevelEditorGui extends EditorGui {
 		button.setName("static");
 		mWidgets.menu.terrain = button;
 		button.addListener(menuChecker);
-		tooltipListener = new TooltipListener(button, "Static Terrain", Messages.Tooltip.Level.Menu.TERRAIN);
+		tooltipListener = new TooltipListener(button, "Terrain", Messages.Tooltip.Level.Menu.TERRAIN);
 		new ButtonListener(button, tooltipListener) {
 			@Override
 			public void onChecked(boolean checked) {

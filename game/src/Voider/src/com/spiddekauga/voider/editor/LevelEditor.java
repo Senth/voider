@@ -527,6 +527,20 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 	}
 
 	/**
+	 * Undoes the previous action
+	 */
+	void undo() {
+		mInvoker.undo();
+	}
+
+	/**
+	 * Redo the action
+	 */
+	void redo() {
+		mInvoker.redo();
+	}
+
+	/**
 	 * Switches the tool to the selected tool
 	 * @param tool the new tool type
 	 */
