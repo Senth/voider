@@ -101,10 +101,10 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 			mScroller.update(deltaTime);
 
 			Vector2 diffScroll = Pools.vector2.obtain();
-			diffScroll.set(mScroller.getCurrentScroll()).sub(mScroller.getOriginScroll());
-			diffScroll.scl(Config.Graphics.WORLD_SCALE);
+			diffScroll.set(mScroller.getOriginScroll()).sub(mScroller.getCurrentScroll());
+			float scale = diffScroll.x / Gdx.graphics.getWidth() * getWorldWidth();
 
-			mCamera.position.x = diffScroll.x + mScrollCameraOrigin.x;
+			mCamera.position.x = scale + mScrollCameraOrigin.x;
 			mCamera.update();
 
 			Pools.vector2.free(diffScroll);
