@@ -102,7 +102,7 @@ public class Level extends Resource implements Disposable, IResourceRevision {
 	}
 
 	@Override
-	public long getRevision() {
+	public int getRevision() {
 		return mLevelDef.getRevision();
 	}
 

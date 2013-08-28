@@ -10,5 +10,5 @@ public interface IResourceRevision extends IResource {
 	/**
 	 * @return current revision of the resource
 	 */
-	long getRevision();
+	int getRevision();
 }

@@ -625,10 +625,9 @@ public class Config {
 		public final static float LOADING_TEXT_SCENE_EXIT_TIME = 0.1f;
 	}
 
-	/**
-	 * Revision of the game, as in code. This allows files of older revisions to be loaded into new revisions
-	 */
-	public final static int REVISION = 1;
+	/** Revision of the game, as in code.
+	 * This allows files of older revisions to be loaded into new revisions */
+	public final static int REVISION = 2;
 	/** If debugging tests shall be activate */
 	public final static boolean DEBUG_TESTS = true;
 	/** Output type for JsonWrapper */

@@ -1,8 +1,11 @@
 package com.spiddekauga.voider.scene;
 
 import java.lang.reflect.Method;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
@@ -131,6 +134,127 @@ public class SelectDefScene extends WorldScene {
 	 */
 	ArrayList<DefVisible> getDefs() {
 		return mDefs;
+	}
+
+	/**
+	 * Sets the selected definition
+	 * @param defName name of the definition
+	 */
+	void setSelectedDef(String defName) {
+		UUID defId = UUID.fromString(defName);
+		mSelectedDef = (Def) ResourceCacheFacade.get(defId, mDefType);
+	}
+
+	/**
+	 * Checks if this resource is currently selected
+	 * @param defName name of the definition to check if it's selected
+	 * @return true if it's selected, false if not
+	 */
+	boolean isDefSelected(String defName) {
+		if (mSelectedDef != null) {
+			return mSelectedDef.getId().toString().equals(defName);
+		}
+		return false;
+	}
+
+	/**
+	 * @return name of the selected definition. An empty string if no
+	 * definition has been selected
+	 */
+	String getName() {
+		if (mSelectedDef != null) {
+			return mSelectedDef.getName();
+		}
+		return "";
+	}
+
+	/**
+	 * @return current date of the selected definition. An empty string if no
+	 * definition has been selected
+	 */
+	String getDate() {
+		if (mSelectedDef != null) {
+			Date date = mSelectedDef.getDate();
+
+			// Format date
+			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
+			String dateString = simpleDateFormat.format(date);
+			return dateString;
+		}
+		return "";
+	}
+
+	/**
+	 * @return description of the definiton. An empty string if no
+	 * definition has been selected
+	 */
+	String getDescription() {
+		if (mSelectedDef != null) {
+			return mSelectedDef.getDescription();
+		}
+		return "";
+	}
+
+	/**
+	 * @return creator of the definition. An empty string if no
+	 * definition has been selected
+	 */
+	String getCreator() {
+		if (mSelectedDef != null) {
+			return mSelectedDef.getCreator();
+		}
+		return "";
+	}
+
+	/**
+	 * @return original creator of the definition. An empty string if no
+	 * definition has been selected
+	 */
+	String getOriginalCreator() {
+		if (mSelectedDef != null) {
+			return mSelectedDef.getOriginalCreator();
+		}
+		return "";
+	}
+
+	/**
+	 * @return revision of the definition. An empty string if no
+	 * definition has been selected
+	 */
+	String getRevision() {
+		if (mSelectedDef != null) {
+			return String.valueOf(mSelectedDef.getRevision());
+		}
+		return "";
+	}
+
+	/**
+	 * @return version of the definition. An empty string if no
+	 * definition has been selected
+	 */
+	String getVersion() {
+		if (mSelectedDef != null) {
+			return mSelectedDef.getVersionString();
+		}
+		return "";
+	}
+
+	/**
+	 * Loads the selected definition
+	 */
+	void loadDef() {
+		if (mSelectedDef != null) {
+			setOutcome(Outcomes.DEF_SELECTED, mSelectedDef.getId().toString());
+		} else {
+			/** @todo print an error message */
+		}
+	}
+
+	/**
+	 * Cancels the loading of another definition
+	 */
+	void cancel() {
+		setOutcome(Outcomes.DEF_SELECT_CANCEL);
 	}
 
 	/**
@@ -356,6 +480,8 @@ public class SelectDefScene extends WorldScene {
 		private Method mMethod = null;
 	}
 
+	/** Currently selected definition */
+	private Def mSelectedDef = null;
 	/** All the loaded definitions */
 	private ArrayList<DefVisible> mDefs = new ArrayList<DefVisible>();
 	/** Filter for the definitions, which to show and which to hide */

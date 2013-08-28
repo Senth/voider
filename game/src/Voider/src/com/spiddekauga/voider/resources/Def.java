@@ -1,5 +1,6 @@
 package com.spiddekauga.voider.resources;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -109,6 +110,7 @@ public abstract class Def extends Resource implements Json.Serializable, IResour
 		super.write(json);
 
 		json.writeValue("mName", mName);
+		json.writeValue("mDate", mDate);
 		json.writeValue("mDescription", mDescription);
 		json.writeValue("mCreator", mCreator);
 		json.writeValue("mRevision", mRevision);
@@ -137,10 +139,16 @@ public abstract class Def extends Resource implements Json.Serializable, IResour
 	public void read(Json json, JsonValue jsonData) {
 		super.read(json, jsonData);
 
+		if (jsonData.getInt("REVISION") > 2) {
+			mDate = json.readValue("mDate", Date.class, jsonData);
+		} else {
+			mDate = new Date();
+		}
+
 		mName = json.readValue("mName", String.class, jsonData);
 		mCreator = json.readValue("mCreator", String.class, jsonData);
 		mOriginalCreator = json.readValue("mOriginalCreator", String.class, jsonData);
-		mRevision = json.readValue("mRevision", long.class, jsonData);
+		mRevision = json.readValue("mRevision", int.class, jsonData);
 		mDescription = json.readValue("mDescription", String.class, jsonData);
 
 		HashSet<ResourceNames> internalMap = json.readValue("mInternalDependencies", HashSet.class, jsonData);
@@ -201,6 +209,20 @@ public abstract class Def extends Resource implements Json.Serializable, IResour
 	@Override
 	public void removeDependency(ResourceNames dependency) {
 		mInternalDependencies.remove(dependency);
+	}
+
+	/**
+	 * Update the date to the current date
+	 */
+	public void updateDate() {
+		mDate = new Date();
+	}
+
+	/**
+	 * @return date of the definition
+	 */
+	public Date getDate() {
+		return mDate;
 	}
 
 	/**
@@ -274,7 +296,7 @@ public abstract class Def extends Resource implements Json.Serializable, IResour
 	/**
 	 * @return the revision of the level
 	 */
-	public long getRevision() {
+	public int getRevision() {
 		return mRevision;
 	}
 
@@ -307,8 +329,10 @@ public abstract class Def extends Resource implements Json.Serializable, IResour
 	private String mCreator = User.getNickName();
 	/** Comment of the definition */
 	private String mDescription = "";
+	/** Saved date for the definition */
+	private Date mDate = null;
 	/** The revision of the definition, this increases after each save */
-	private long mRevision = 0;
+	private int mRevision = 0;
 	/** Main version (1 in 1.0.13) */
 	private int mVersionFirst = 0;
 	/** Minor version (0 in 1.0.13) */
