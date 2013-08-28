@@ -33,18 +33,17 @@ class ResourceDependencyLoader implements Disposable {
 	 * Loads the definition including all its dependencies.
 	 * @note it will load the definition first, as it needs to read
 	 * its dependencies which is in the file.
-	 * @param <DefType> class of the defId to load
-	 * @param defId the definition and its dependencies to load
-	 * @param type the class type of defId
-	 * @throws UndefinedResourceTypeException thrown when type is an undefined resourec type
+	 * @param <ResourceType> class of the resourceId to load
+	 * @param resourceId the id of the resource which we want to load, including its dependencies
+	 * @param type the class type of resourceId
+	 * @throws UndefinedResourceTypeException thrown when type is an undefined resource type
 	 */
-	<DefType> void load(UUID defId, Class<DefType> type) throws UndefinedResourceTypeException {
+	<ResourceType> void load(UUID resourceId, Class<ResourceType> type) throws UndefinedResourceTypeException {
 		// Add definition to wait queue
-		mLoadingDefs.add(new ResourceItem(defId, type));
+		mLoadingDefs.add(new ResourceItem(resourceId, type));
 
 		// Load the resource
-		/** @note by loading again, this might cause problems in the future */
-		final String fullPath = ResourceNames.getDirPath(type) + defId.toString();
+		final String fullPath = ResourceNames.getDirPath(type) + resourceId.toString();
 		mAssetManager.load(fullPath, type);
 	}
 

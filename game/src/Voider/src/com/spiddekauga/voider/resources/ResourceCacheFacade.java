@@ -46,20 +46,20 @@ public class ResourceCacheFacade {
 	public static void init() {
 		mAssetManager = new AssetManager();
 
-		// Own loaders
-		mAssetManager.setLoader(BulletActorDef.class, new JsonLoaderAsync<BulletActorDef>(new RevisionFileHandleResolver(), BulletActorDef.class));
-		mAssetManager.setLoader(EnemyActorDef.class, new JsonLoaderAsync<EnemyActorDef>(new RevisionFileHandleResolver(), EnemyActorDef.class));
-		mAssetManager.setLoader(PickupActorDef.class, new JsonLoaderAsync<PickupActorDef>(new RevisionFileHandleResolver(), PickupActorDef.class));
-		mAssetManager.setLoader(PlayerActorDef.class, new JsonLoaderAsync<PlayerActorDef>(new RevisionFileHandleResolver(), PlayerActorDef.class));
-		mAssetManager.setLoader(StaticTerrainActorDef.class, new JsonLoaderAsync<StaticTerrainActorDef>(new RevisionFileHandleResolver(), StaticTerrainActorDef.class));
-		mAssetManager.setLoader(LevelDef.class, new JsonLoaderAsync<LevelDef>(new RevisionFileHandleResolver(), LevelDef.class));
-		mAssetManager.setLoader(Level.class, new JsonLoaderAsync<Level>(new RevisionFileHandleResolver(), Level.class));
-		mAssetManager.setLoader(ShaderProgram.class, new ShaderLoader(new InternalFileHandleResolver()));
+		// External
+		mAssetManager.setLoader(BulletActorDef.class, new JsonLoaderAsync<BulletActorDef>(new ExternalFileHandleResolver(), BulletActorDef.class));
+		mAssetManager.setLoader(EnemyActorDef.class, new JsonLoaderAsync<EnemyActorDef>(new ExternalFileHandleResolver(), EnemyActorDef.class));
+		mAssetManager.setLoader(PickupActorDef.class, new JsonLoaderAsync<PickupActorDef>(new ExternalFileHandleResolver(), PickupActorDef.class));
+		mAssetManager.setLoader(PlayerActorDef.class, new JsonLoaderAsync<PlayerActorDef>(new ExternalFileHandleResolver(), PlayerActorDef.class));
+		mAssetManager.setLoader(StaticTerrainActorDef.class, new JsonLoaderAsync<StaticTerrainActorDef>(new ExternalFileHandleResolver(), StaticTerrainActorDef.class));
+		mAssetManager.setLoader(LevelDef.class, new JsonLoaderAsync<LevelDef>(new ExternalFileHandleResolver(), LevelDef.class));
+		mAssetManager.setLoader(Level.class, new JsonLoaderAsync<Level>(new ExternalFileHandleResolver(), Level.class));
 		mAssetManager.setLoader(GameSave.class, new JsonLoaderSync<GameSave>(new ExternalFileHandleResolver(), GameSave.class));
-		mAssetManager.setLoader(GameSaveDef.class, new JsonLoaderAsync<GameSaveDef>(new RevisionFileHandleResolver(), GameSaveDef.class));
+		mAssetManager.setLoader(GameSaveDef.class, new JsonLoaderAsync<GameSaveDef>(new ExternalFileHandleResolver(), GameSaveDef.class));
 		mAssetManager.setLoader(PlayerStats.class, new JsonLoaderAsync<PlayerStats>(new ExternalFileHandleResolver(), PlayerStats.class));
 
-		// Existing loaders
+		// Internal
+		mAssetManager.setLoader(ShaderProgram.class, new ShaderLoader(new InternalFileHandleResolver()));
 		mAssetManager.setLoader(Skin.class, new SkinLoader(new InternalFileHandleResolver()));
 
 		mDependencyLoader = new ResourceDependencyLoader(mAssetManager);
@@ -86,12 +86,14 @@ public class ResourceCacheFacade {
 
 		FileHandle[] files = dir.list();
 		for (FileHandle file : files) {
-			// Is file really an UUID
-			try {
-				UUID uuid = UUID.fromString(file.nameWithoutExtension());
-				load(uuid, type, loadDependencies);
-			} catch (IllegalArgumentException e) {
-				Gdx.app.error("ResourceCacheFacade", "File is not resource: " + file.path());
+			if (!file.isDirectory()) {
+				// Is file really an UUID
+				try {
+					UUID uuid = UUID.fromString(file.name());
+					load(uuid, type, loadDependencies);
+				} catch (IllegalArgumentException e) {
+					Gdx.app.error("ResourceCacheFacade", "File is not resource: " + file.path());
+				}
 			}
 		}
 	}
@@ -167,25 +169,24 @@ public class ResourceCacheFacade {
 	}
 
 	/**
-	 * Loads a definition. Included in these are in general resources
+	 * Loads a resource. Included in these are in general resources
 	 * that the user can add and remove. E.g. all actor, definitions, levels, etc.
-	 * @param <DefClass> Class of the definition to load
-	 * @param defId the unique id of the resource we want to load
+	 * @param <ResourceType> Class of the resource to load
+	 * @param resourceId the unique id of the resource we want to load
 	 * @param type the class type of the resource
 	 * @param loadDependencies if we also shall load the dependencies
 	 * @throws UndefinedResourceTypeException
 	 */
-	public static <DefClass> void load(UUID defId, Class<DefClass> type, boolean loadDependencies) throws UndefinedResourceTypeException {
+	public static <ResourceType> void load(UUID resourceId, Class<ResourceType> type, boolean loadDependencies) throws UndefinedResourceTypeException {
 		if (loadDependencies) {
 			// Type need to implement the IResourceDependency interface to load resources
 			if (IResourceDependency.class.isAssignableFrom(type)) {
-				mDependencyLoader.load(defId, type);
+				mDependencyLoader.load(resourceId, type);
 			} else {
 				Gdx.app.error("ResourceCacheFacade", "Tried to load dependencies of a class that don't hold dependencies!");
 			}
 		} else {
-			final String fullName = ResourceNames.getDirPath(type) + defId.toString();
-			/** @todo get revision */
+			final String fullName = ResourceNames.getDirPath(type) + resourceId.toString();
 			mAssetManager.load(fullName, type);
 		}
 	}

@@ -114,6 +114,19 @@ public enum ResourceNames {
 	}
 
 	/**
+	 * Gets the fully qualified folder name including the file name
+	 * @param resource a revision resource
+	 * @return fully qualified file path for the resource, i.e. where its revision
+	 * version should be saved.
+	 */
+	static String getRevisionFileName(IResourceRevision resource) {
+		String dir = getDirPath(resource.getClass());
+		String revisionDir = resource.getId().toString() + "/";
+		String revisionFormat = String.format("%010d", resource.getRevision());
+		return dir + REVISION_PATH + revisionDir + revisionFormat;
+	}
+
+	/**
 	 * Changes the external storage path to the TEST_STORAGE instead
 	 */
 	public static void useTestPath() {
@@ -165,5 +178,8 @@ public enum ResourceNames {
 	private static final String PARTICLE_PATH = "particles/";
 	/** Directory for all sound effects */
 	private static final String SOUND_PATH = "sound/";
+
+	/** Directory for revisions */
+	private static final String REVISION_PATH = "revisions/";
 
 }
