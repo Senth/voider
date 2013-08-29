@@ -5,6 +5,7 @@ import java.util.UUID;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
+import com.spiddekauga.voider.Config;
 
 /**
  * Wrapper to simplify the queue. Only available for this pacakage
@@ -36,10 +37,12 @@ public class ResourceItem implements Json.Serializable {
 	 * Constructor that sets the resource id and type
 	 * @param resourceId id of the resource
 	 * @param resourceType class of the resource
+	 * @param revision the revision of the resourc
 	 */
-	public ResourceItem(UUID resourceId, Class<?> resourceType) {
+	public ResourceItem(UUID resourceId, Class<?> resourceType, int revision) {
 		this.resourceId = resourceId;
 		this.resourceType = resourceType;
+		this.revision = revision;
 		if (resourceType != null) {
 			try {
 				fullName = ResourceNames.getDirPath(resourceType) + resourceId.toString();
@@ -70,23 +73,31 @@ public class ResourceItem implements Json.Serializable {
 	Class<?> resourceType = null;
 	/** The full file path to this resource */
 	String fullName = null;
+	/** revision of the resource */
+	int revision = -1;
 
 	@Override
 	public void write(Json json) {
+		json.writeValue("REVISION", Config.REVISION);
 		json.writeValue("resourceId", resourceId.toString());
 		json.writeValue("resourceType", resourceType.getName());
 		json.writeValue("count", count);
+		json.writeValue("revision", revision);
 
 		// We don't write the fullName, it's derived when reading the file again
 	}
 
 	@Override
-	public void read(Json json, JsonValue jsonValue) {
-		resourceId = UUID.fromString(json.readValue("resourceId", String.class, jsonValue));
-		count = json.readValue("count", int.class, jsonValue);
+	public void read(Json json, JsonValue jsonData) {
+		resourceId = UUID.fromString(json.readValue("resourceId", String.class, jsonData));
+		count = json.readValue("count", int.class, jsonData);
+
+		if (jsonData.get("revision") != null) {
+			revision = json.readValue("revision", int.class, jsonData);
+		}
 
 		// resourceType
-		String className = json.readValue("resourceType", String.class, jsonValue);
+		String className = json.readValue("resourceType", String.class, jsonData);
 		try {
 			resourceType = Class.forName(className);
 		} catch (ClassNotFoundException e) {

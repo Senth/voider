@@ -57,7 +57,7 @@ public class SelectDefScene extends WorldScene {
 		if (outcome == Outcomes.LOADING_SUCCEEDED) {
 			try {
 				@SuppressWarnings("unchecked")
-				List<Def> defs = (List<Def>) ResourceCacheFacade.get(mDefType);
+				List<Def> defs = (List<Def>) ResourceCacheFacade.getAll(mDefType);
 
 				for (Def def : defs) {
 					mDefs.add(new DefVisible(def));

@@ -139,7 +139,7 @@ public abstract class Def extends Resource implements Json.Serializable, IResour
 	public void read(Json json, JsonValue jsonData) {
 		super.read(json, jsonData);
 
-		if (jsonData.getInt("REVISION") > 2) {
+		if (jsonData.getInt("REVISION") > 1) {
 			mDate = json.readValue("mDate", Date.class, jsonData);
 		} else {
 			mDate = new Date();
@@ -171,18 +171,18 @@ public abstract class Def extends Resource implements Json.Serializable, IResour
 
 	@Override
 	public void addDependency(IResource dependency) {
-		addDependency(dependency.getId(), dependency.getClass());
-	}
-
-	@Override
-	public void addDependency(UUID uuid, Class<?> type) {
-		// Increment value of old one if one exist...
-		ResourceItem oldDefItem = mExternalDependencies.get(uuid);
+		ResourceItem oldDefItem = mExternalDependencies.get(dependency.getId());
 
 		if (oldDefItem != null) {
 			oldDefItem.count++;
 		} else {
-			mExternalDependencies.put(uuid, new ResourceItem(uuid, type));
+			int revision = -1;
+			if (dependency instanceof IResourceRevision) {
+				revision = ((IResourceRevision) dependency).getRevision();
+			}
+
+			ResourceItem newDepItem = new ResourceItem(dependency.getId(), dependency.getClass(), revision);
+			mExternalDependencies.put(dependency.getId(), newDepItem);
 		}
 	}
 

@@ -36,13 +36,15 @@ class ResourceDependencyLoader implements Disposable {
 	 * @param <ResourceType> class of the resourceId to load
 	 * @param resourceId the id of the resource which we want to load, including its dependencies
 	 * @param type the class type of resourceId
+	 * @param revision the revision of the resource, -1 to use latest revision
 	 * @throws UndefinedResourceTypeException thrown when type is an undefined resource type
 	 */
-	<ResourceType> void load(UUID resourceId, Class<ResourceType> type) throws UndefinedResourceTypeException {
+	<ResourceType> void load(UUID resourceId, Class<ResourceType> type, int revision) throws UndefinedResourceTypeException {
 		// Add definition to wait queue
-		mLoadingDefs.add(new ResourceItem(resourceId, type));
+		mLoadingDefs.add(new ResourceItem(resourceId, type, revision));
 
 		// Load the resource
+		/** @todo What should the fullPath be? */
 		final String fullPath = ResourceNames.getDirPath(type) + resourceId.toString();
 		mAssetManager.load(fullPath, type);
 	}
@@ -60,7 +62,7 @@ class ResourceDependencyLoader implements Disposable {
 		// Recursive, unload all dependencies first
 		// Internal
 		for (ResourceNames dependency : resource.getInternalDependencies()) {
-			mAssetManager.unload(dependency.fullName);
+			mAssetManager.unload(dependency.getFilePath());
 		}
 
 		// External
@@ -111,7 +113,7 @@ class ResourceDependencyLoader implements Disposable {
 				for (ObjectMap.Entry<UUID, ResourceItem> entry : def.getExternalDependencies().entries()) {
 					ResourceItem dependency = entry.value;
 					try {
-						load(dependency.resourceId, dependency.resourceType);
+						load(dependency.resourceId, dependency.resourceType, dependency.revision);
 					} catch (UndefinedResourceTypeException e) {
 						// Reset entire loading queue
 						mLoadingDefs.clear();
@@ -124,7 +126,7 @@ class ResourceDependencyLoader implements Disposable {
 
 				// Internal
 				for (ResourceNames dependency : def.getInternalDependencies()) {
-					mAssetManager.load(dependency.fullName, dependency.type);
+					mAssetManager.load(dependency.getFilePath(), dependency.type);
 				}
 
 				// Remove element

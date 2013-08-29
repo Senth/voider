@@ -465,22 +465,22 @@ public class Cell implements Poolable {
 	 * @param size available size for the cell
 	 */
 	void layout(Vector2 startPos, Vector2 size) {
+		if (mActor == null) {
+			return;
+		}
+
 		Vector2 offset = Pools.vector2.obtain();
 		offset.set(startPos);
 		offset.x += getPadLeft();
 
 		if (mFillWidth) {
-			if (mActor != null) {
-				mActor.setWidth(size.x - getPadLeft() - getPadRight());
-			}
+			mActor.setWidth(size.x - getPadLeft() - getPadRight());
 			if (mActor instanceof Layout) {
 				((Layout) mActor).invalidate();
 			}
 		}
 		if (mFillHeight) {
-			if (mActor != null) {
-				mActor.setHeight(size.y - getPadTop() - getPadBottom());
-			}
+			mActor.setHeight(size.y - getPadTop() - getPadBottom());
 			if (mActor instanceof Layout) {
 				((Layout) mActor).invalidate();
 			}
@@ -497,25 +497,16 @@ public class Cell implements Poolable {
 		if (mAlign.vertical == Vertical.BOTTOM) {
 			offset.y = startPos.y + getPadBottom();
 		} else if (mAlign.vertical == Vertical.TOP) {
-			if (mActor != null) {
-				offset.y = startPos.y + size.y - mActor.getHeight() - getPadTop();
-			} else {
-				offset.y = startPos.y + size.y - getPadTop();
-			}
+			offset.y = startPos.y + size.y - mActor.getHeight() - getPadTop();
 		} else if (mAlign.vertical == Vertical.MIDDLE) {
-			if (mActor != null) {
-				offset.y = startPos.y + (size.y - mActor.getHeight() + getPadBottom() - getPadTop()) * 0.5f;
-			} else {
-				offset.y = startPos.y + (size.y + getPadBottom() - getPadTop()) * 0.5f;
-			}
+			offset.y = startPos.y + (size.y - mActor.getHeight() + getPadBottom() - getPadTop()) * 0.5f;
 		}
 
-		if (mActor != null) {
-			mActor.setPosition((int)offset.x, (int)offset.y);
-		}
+		mActor.setPosition((int)offset.x, (int)offset.y);
 
 
 		Pools.vector2.free(offset);
+
 	}
 
 	/**
@@ -545,10 +536,10 @@ public class Cell implements Poolable {
 	 */
 	void calculateSize() {
 		// Reset width/height if it is set fill width/height
-		if (mFillHeight) {
+		if (mFillHeight && mActor != null) {
 			mActor.setHeight(mHeightBeforeFill);
 		}
-		if (mFillWidth) {
+		if (mFillWidth && mActor != null) {
 			mActor.setWidth(mWidthBeforeFill);
 		}
 		if (mActor instanceof Layout) {

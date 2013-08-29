@@ -1,6 +1,7 @@
 package com.spiddekauga.voider.resources;
 
-import com.badlogic.gdx.Gdx;
+import java.util.UUID;
+
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
@@ -54,22 +55,20 @@ public enum ResourceNames {
 	private ResourceNames(String filename, Class<?> type) {
 		this.filename = filename;
 		this.type = type;
+	}
 
-		String name = "";
-		try {
-			name = getDirPath(type) + filename;
-		} catch (UndefinedResourceTypeException e) {
-			Gdx.app.error("UndefinedResourceType", e.toString());
-		}
-		fullName = name;
+	/**
+	 * @return file path of this resource
+	 */
+	String getFilePath() {
+		return getDirPath(type) + filename;
 	}
 
 	/** Filename of the resource */
 	final String filename;
 	/** The resource class type */
 	final Class<?> type;
-	/** Full path of the resource */
-	final String fullName;
+
 
 	/**
 	 * Gets the fully qualified folder name the resource should be in
@@ -114,16 +113,41 @@ public enum ResourceNames {
 	}
 
 	/**
-	 * Gets the fully qualified folder name including the file name
-	 * @param resource a revision resource
-	 * @return fully qualified file path for the resource, i.e. where its revision
-	 * version should be saved.
+	 * Gets the revision directory for the specified resource
+	 * @param resourceId id of the resource
+	 * @param type type of the resource
+	 * @return directory of the file path
 	 */
-	static String getRevisionFileName(IResourceRevision resource) {
-		String dir = getDirPath(resource.getClass());
-		String revisionDir = resource.getId().toString() + "/";
-		String revisionFormat = String.format("%010d", resource.getRevision());
-		return dir + REVISION_PATH + revisionDir + revisionFormat;
+	private static String getRevisionDir(UUID resourceId, Class<?> type) {
+		return getDirPath(type) + REVISION_PATH + resourceId.toString() + "/";
+	}
+
+	/**
+	 * Gets the fully qualilfied file path name for the resource
+	 * @param resource the resource to get the file path for
+	 * @param revision path to the revision, -1 to use latest revision, i.e.
+	 * regular path
+	 * @return file path of the resource
+	 */
+	static String getFilePath(IResource resource, int revision) {
+		return getFilePath(resource.getId(), resource.getClass(), revision);
+	}
+
+	/**
+	 * Gets the fully qualified file path name for the resource
+	 * @param resourceId id of the resource
+	 * @param type the type of the resource
+	 * @param revision the revision to get, -1 to use latest revision, i.e.
+	 * regular path
+	 * @return file path of the resource
+	 */
+	static String getFilePath(UUID resourceId, Class<?> type, int revision) {
+		if (revision > 0 && IResourceRevision.class.isAssignableFrom(type)) {
+			String revisionFormat = String.format("%010d", revision);
+			return getRevisionDir(resourceId, type) + revisionFormat;
+		} else {
+			return getDirPath(type) + resourceId.toString();
+		}
 	}
 
 	/**

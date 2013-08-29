@@ -25,11 +25,11 @@ public class QueueItemTest {
 	public void equalsObject() {
 		// Queue item should equal if the UUID is equal, that is enough
 		UUID equalUUID = UUID.randomUUID();
-		ResourceItem equalUUID1 = new ResourceItem(equalUUID, Texture.class);
-		ResourceItem equalUUID2 = new ResourceItem(equalUUID, PlayerActorDef.class);
+		ResourceItem equalUUID1 = new ResourceItem(equalUUID, Texture.class, -1);
+		ResourceItem equalUUID2 = new ResourceItem(equalUUID, PlayerActorDef.class, -1);
 		assertTrue("QueueItem.equals() with same UUID, but different types", equalUUID1.equals(equalUUID2));
 
-		ResourceItem inequal = new ResourceItem(UUID.randomUUID(), Texture.class);
+		ResourceItem inequal = new ResourceItem(UUID.randomUUID(), Texture.class, -1);
 		assertTrue("QueueItem.equals() inequality different UUID, but same types", !equalUUID1.equals(inequal));
 	}
 
@@ -38,7 +38,7 @@ public class QueueItemTest {
 	 */
 	@Test
 	public void writeAndRead() {
-		ResourceItem writeItem = new ResourceItem(UUID.randomUUID(), PlayerActorDef.class);
+		ResourceItem writeItem = new ResourceItem(UUID.randomUUID(), PlayerActorDef.class, -1);
 		Json json = new JsonWrapper();
 
 		String jsonString = json.toJson(writeItem);

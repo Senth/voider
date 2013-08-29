@@ -77,6 +77,21 @@ com.badlogic.gdx.scenes.scene2d.ui.Window$WindowStyle: {
 		stageBackground: modal-fade,
 		background: window-background-default
 	}
+},
+
+com.badlogic.gdx.scenes.scene2d.ui.ScrollPane$ScrollPaneStyle: {
+	default: {
+		background: window-background-default
+	}
+},
+
+com.badlogic.gdx.scenes.scene2d.ui.List$ListStyle:  {
+	default: {
+		font: default-font,
+		fontColorSelected: red,
+		fontColorUnselected: white,
+		selection: selection
+	}
 }
 
 }

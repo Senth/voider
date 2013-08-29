@@ -50,7 +50,7 @@ public class ResourceDependencyLoaderTest {
 	}
 
 	/**
-	 * Test method for {@link com.spiddekauga.voider.resources.ResourceDependencyLoader#load(java.util.UUID, java.lang.Class)}.
+	 * Test method for {@link com.spiddekauga.voider.resources.ResourceDependencyLoader#load(java.util.UUID, java.lang.Class, int)}.
 	 */
 	@Test
 	public void loadUnload() {
@@ -72,7 +72,7 @@ public class ResourceDependencyLoaderTest {
 
 		// Try to load all actors via resource dependency loader
 		try {
-			dependencyLoader.load(def.getId(), def.getClass());
+			dependencyLoader.load(def.getId(), def.getClass(), -1);
 
 			// Wait until all resources have been loaded
 			while (!dependencyLoader.update() || !mAssetManager.update()) {

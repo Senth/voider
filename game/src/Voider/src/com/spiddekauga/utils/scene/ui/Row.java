@@ -487,7 +487,7 @@ public class Row implements Poolable {
 					}
 
 					cell.layout(offset, cellSize);
-					offset.x += cell.getWidth();
+					offset.x += cellSize.x;
 				}
 			}
 

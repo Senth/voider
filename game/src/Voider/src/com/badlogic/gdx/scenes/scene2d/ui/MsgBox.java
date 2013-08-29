@@ -190,7 +190,7 @@ public class MsgBox extends Dialog {
 	 * @see #addCancelButtonAndKeys(String) for using a custom text for the cancel button
 	 */
 	public MsgBox addCancelButtonAndKeys() {
-		return addCancelButtonAndKeys("cancel");
+		return addCancelButtonAndKeys("Cancel");
 	}
 
 	/**

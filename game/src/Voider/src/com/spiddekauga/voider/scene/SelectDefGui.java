@@ -8,6 +8,8 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent.Type;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox.CheckBoxStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.List;
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
@@ -21,6 +23,7 @@ import com.spiddekauga.utils.scene.ui.Cell;
 import com.spiddekauga.utils.scene.ui.HideManual;
 import com.spiddekauga.utils.scene.ui.Label;
 import com.spiddekauga.utils.scene.ui.Label.LabelStyle;
+import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
 import com.spiddekauga.utils.scene.ui.Row;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
 import com.spiddekauga.voider.Config;
@@ -65,10 +68,12 @@ public class SelectDefGui extends Gui {
 		mInfoPanel.setPreferences(mMainTable);
 		mInfoPanel.setRowPaddingDefault(2, 2, 2, 2);
 		mInfoPanel.setKeepSize(true);
+		mInfoPanel.setWidth(Gdx.graphics.getWidth()*0.20f);
 
 		initSearchBar();
 		initDefTable();
 		initInfoPanel();
+		initSelectRevision();
 
 		resetValues();
 	}
@@ -121,7 +126,6 @@ public class SelectDefGui extends Gui {
 	 * Initializes info panel to the right
 	 */
 	private void initInfoPanel() {
-		mInfoPanel.setName("infopanel");
 		mMainTable.add(mInfoPanel).setFillHeight(true);
 		mInfoPanelHider.addToggleActor(mInfoPanel);
 
@@ -188,15 +192,16 @@ public class SelectDefGui extends Gui {
 
 
 		// Select another revision
-		mInfoPanel.row();
+		mInfoPanel.row().setFillWidth(true);
 		TextButton button = new TextButton("Select rev.", buttonStyle);
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed() {
-				/** @todo show message box where the player can select another revision */
+				showSelectRevisionMsgBox();
 			}
 		};
 		mInfoPanel.add(button);
+		mInfoPanel.add().setFillWidth(true);
 
 		// Load
 		button = new TextButton("Load", buttonStyle);
@@ -225,7 +230,7 @@ public class SelectDefGui extends Gui {
 		TextButtonStyle toggleStyle = editorSkin.get("toggle", TextButtonStyle.class);
 
 
-		float floatPerRow = Gdx.graphics.getWidth() / Config.Editor.SELECT_DEF_WIDTH_MAX;
+		float floatPerRow = Gdx.graphics.getWidth() * 0.8f / Config.Editor.SELECT_DEF_WIDTH_MAX;
 		floatPerRow += 0.5f;
 		int cellsPerRow = (int) floatPerRow;
 
@@ -277,6 +282,42 @@ public class SelectDefGui extends Gui {
 	}
 
 	/**
+	 * Initialize select revision
+	 */
+	private void initSelectRevision() {
+		Skin skin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
+
+		/** @todo add all the revisions after database has been created */
+
+		String[] revisions = new String[2];
+		revisions[0] = "Testing 1";
+		revisions[1] = "Testing 2 aoesuaes aoeu as";
+		List list = new List(revisions, skin);
+		ScrollPane scrollPane = new ScrollPane(list, skin);
+		mMsgBoxTable.add(scrollPane);
+	}
+
+	/**
+	 * Show select revision message box
+	 */
+	private void showSelectRevisionMsgBox() {
+		MsgBoxExecuter msgBox = getFreeMsgBox();
+
+		msgBox.setTitle("Select another revision");
+		msgBox.setWidth((int) (Gdx.graphics.getWidth() * 0.8f));
+		msgBox.setHeight((int) (Gdx.graphics.getHeight() * 0.8f));
+
+		msgBox.content(mMsgBoxTable);
+
+		/** @todo add actions to latest and select buttons */
+		msgBox.button("Latest", null);
+		msgBox.button("Select", null);
+		msgBox.addCancelButtonAndKeys();
+
+		showMsgBox(msgBox);
+	}
+
+	/**
 	 * Event listener for buttons
 	 */
 	private EventListener mDefListener = new EventListener() {
@@ -301,10 +342,13 @@ public class SelectDefGui extends Gui {
 			return true;
 		}
 	};
+
 	/** Info panel */
 	private AlignTable mInfoPanel = new AlignTable();
 	/** Info panel hider */
 	private HideManual mInfoPanelHider = new HideManual();
+	/** Msgbox table */
+	private AlignTable mMsgBoxTable = new AlignTable();
 	/** Table for all the definitions */
 	private AlignTable mDefTable = new AlignTable();
 	/** If the checkbox that only shows one's own actors shall be shown */

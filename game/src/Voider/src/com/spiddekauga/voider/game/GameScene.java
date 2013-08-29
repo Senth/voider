@@ -495,7 +495,7 @@ public class GameScene extends WorldScene {
 		// Create a new ship when we're not resuming a game
 		if (mGameSaveDef == null) {
 			// Find first available player ship
-			java.util.List<PlayerActorDef> ships = ResourceCacheFacade.get(PlayerActorDef.class);
+			java.util.List<PlayerActorDef> ships = ResourceCacheFacade.getAll(PlayerActorDef.class);
 			if (ships.isEmpty()) {
 				setOutcome(Outcomes.LOADING_FAILED_MISSING_FILE, "Could not find any ships");
 				return;

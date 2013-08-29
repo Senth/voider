@@ -53,7 +53,7 @@ public class ResourceSaver {
 		try {
 			byte[] encryptedDef = mCrypter.encrypt(jsonString);
 
-			Gdx.app.debug("ResourceSaver", "Encrypted " + filename);
+			Gdx.app.debug("ResourceSaver", "Encrypted (" + resource.getClass().getSimpleName() + ") " + filename);
 
 			String relativePath = ResourceNames.getDirPath(resource.getClass());
 			relativePath += filename;
@@ -62,7 +62,7 @@ public class ResourceSaver {
 			// Save the file
 			saveFile.writeBytes(encryptedDef, false);
 
-			Gdx.app.debug("ResourceSaver", "Saved resource " + filename);
+			Gdx.app.debug("ResourceSaver", "Saved resource (" + resource.getClass().getSimpleName() + ") " + filename);
 
 		} catch (Exception e) {
 			Gdx.app.error("ResourceSaver", "Could not encrypt message. Your file has not been saved!");
@@ -76,8 +76,8 @@ public class ResourceSaver {
 	 * @param filename the name of the file, i.e. its uuid. But not its revision filename
 	 */
 	private static void saveRevision(IResourceRevision resource, String filename) {
-		String revisionPath = ResourceNames.getRevisionFileName(resource);
-		String originalPath = ResourceNames.getDirPath(resource.getClass()) + filename;
+		String revisionPath = ResourceNames.getFilePath(resource, resource.getRevision());
+		String originalPath = ResourceNames.getFilePath(resource, -1);
 
 		// Copy from the original location
 		FileHandle fileToCopy = Gdx.files.external(originalPath);

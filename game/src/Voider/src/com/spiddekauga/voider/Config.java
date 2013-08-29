@@ -627,7 +627,7 @@ public class Config {
 
 	/** Revision of the game, as in code.
 	 * This allows files of older revisions to be loaded into new revisions */
-	public final static int REVISION = 2;
+	public final static int REVISION = 3;
 	/** If debugging tests shall be activate */
 	public final static boolean DEBUG_TESTS = true;
 	/** Output type for JsonWrapper */

@@ -28,12 +28,12 @@ public interface IResourceDependency extends IResource {
 	 */
 	public void addDependency(IResource dependency);
 
-	/**
-	 * Adds an external dependency to the resource
-	 * @param uuid the unique id of the dependency
-	 * @param type the type of dependency
-	 */
-	public void addDependency(UUID uuid, Class<?> type);
+	//	/**
+	//	 * Adds an external dependency to the resource
+	//	 * @param uuid the unique id of the dependency
+	//	 * @param type the type of dependency
+	//	 */
+	//	public void addDependency(UUID uuid, Class<?> type);
 
 	/**
 	 * Adds an internal dependency to the resource

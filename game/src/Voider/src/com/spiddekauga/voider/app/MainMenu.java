@@ -73,14 +73,14 @@ public class MainMenu extends Scene {
 	 * @return true if there is a game to resume
 	 */
 	boolean hasResumeGame() {
-		return ResourceCacheFacade.get(GameSaveDef.class).size() > 0;
+		return ResourceCacheFacade.getAll(GameSaveDef.class).size() > 0;
 	}
 
 	/**
 	 * Resumes the current game
 	 */
 	void resumeGame() {
-		List<GameSaveDef> gameSaves = ResourceCacheFacade.get(GameSaveDef.class);
+		List<GameSaveDef> gameSaves = ResourceCacheFacade.getAll(GameSaveDef.class);
 
 		if (!gameSaves.isEmpty()) {
 			GameScene gameScene = new GameScene(false, false);

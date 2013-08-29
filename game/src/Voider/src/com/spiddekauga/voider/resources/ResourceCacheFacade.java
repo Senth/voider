@@ -141,7 +141,7 @@ public class ResourceCacheFacade {
 	}
 
 	/**
-	 * Loads the resource, definition and all dependencies.
+	 * Loads the resource, definition and all dependencies. Loads latest revision
 	 * @param <ResourceType> Class of the resource that shall be loaded.
 	 * @param resourceId the id of the resource we're loading (i.e. not the
 	 * definition's id).
@@ -150,10 +150,37 @@ public class ResourceCacheFacade {
 	 * @throws UndefinedResourceTypeException
 	 */
 	public static <ResourceType> void load(UUID resourceId, Class<ResourceType> resourceType, Def def) throws UndefinedResourceTypeException {
-		load(def, true);
+		load(resourceId, resourceType, def, -1);
+	}
+
+	/**
+	 * Loads the resource, definition and all dependencies.
+	 * @param <ResourceType> Class of the resource that shall be loaded.
+	 * @param resourceId the id of the resource we're loading (i.e. not the
+	 * definition's id).
+	 * @param resourceType the class of the resource to load
+	 * @param def the definition of the resource we're loading
+	 * @param revision the revision of the resource to load
+	 * @throws UndefinedResourceTypeException
+	 */
+	public static <ResourceType> void load(UUID resourceId, Class<ResourceType> resourceType, Def def, int revision) throws UndefinedResourceTypeException {
+		load(def, true, revision);
 
 		// Add the level to the queue. Load this level once all dependencies are loaded
-		mLoadQueue.add(new ResourceItem(resourceId, resourceType));
+		mLoadQueue.add(new ResourceItem(resourceId, resourceType, revision));
+	}
+
+	/**
+	 * Loads an external definition. Included in these are in general resources
+	 * that the user can add and remove. E.g. ActorDef, WeaponDef, etc. Loads
+	 * latest revision
+	 * @param resource the resource we want to load. This includes a unique id
+	 * as well as dependencies.
+	 * @param loadDependencies if we also shall load the dependencies
+	 * @throws UndefinedResourceTypeException
+	 */
+	public static void load(IResource resource, boolean loadDependencies) throws UndefinedResourceTypeException {
+		load(resource.getId(), resource.getClass(), loadDependencies, -1);
 	}
 
 	/**
@@ -162,10 +189,25 @@ public class ResourceCacheFacade {
 	 * @param resource the resource we want to load. This includes a unique id
 	 * as well as dependencies.
 	 * @param loadDependencies if we also shall load the dependencies
+	 * @param revision the revision to load the resource of
 	 * @throws UndefinedResourceTypeException
 	 */
-	public static void load(IResource resource, boolean loadDependencies) throws UndefinedResourceTypeException {
-		load(resource.getId(), resource.getClass(), loadDependencies);
+	public static void load(IResource resource, boolean loadDependencies, int revision) throws UndefinedResourceTypeException {
+		load(resource.getId(), resource.getClass(), loadDependencies, revision);
+	}
+
+	/**
+	 * Loads a resource. Included in these are in general resources
+	 * that the user can add and remove. E.g. all actor, definitions, levels, etc.
+	 * Loads the latest revision
+	 * @param <ResourceType> Class of the resource to load
+	 * @param resourceId the unique id of the resource we want to load
+	 * @param type the class type of the resource
+	 * @param loadDependencies if we also shall load the dependencies
+	 * @throws UndefinedResourceTypeException
+	 */
+	public static <ResourceType> void load(UUID resourceId, Class<ResourceType> type, boolean loadDependencies) throws UndefinedResourceTypeException {
+		load(resourceId, type, loadDependencies, -1);
 	}
 
 	/**
@@ -175,24 +217,30 @@ public class ResourceCacheFacade {
 	 * @param resourceId the unique id of the resource we want to load
 	 * @param type the class type of the resource
 	 * @param loadDependencies if we also shall load the dependencies
+	 * @param revision loads the specific revision of the resource
 	 * @throws UndefinedResourceTypeException
 	 */
-	public static <ResourceType> void load(UUID resourceId, Class<ResourceType> type, boolean loadDependencies) throws UndefinedResourceTypeException {
+	public static <ResourceType> void load(UUID resourceId, Class<ResourceType> type, boolean loadDependencies, int revision) throws UndefinedResourceTypeException {
+		int revisionToLoad = revision;
+		if (!IResourceRevision.class.isAssignableFrom(type)) {
+			revisionToLoad = -1;
+		}
+
 		if (loadDependencies) {
 			// Type need to implement the IResourceDependency interface to load resources
 			if (IResourceDependency.class.isAssignableFrom(type)) {
-				mDependencyLoader.load(resourceId, type);
+				mDependencyLoader.load(resourceId, type, revisionToLoad);
 			} else {
 				Gdx.app.error("ResourceCacheFacade", "Tried to load dependencies of a class that don't hold dependencies!");
 			}
 		} else {
-			final String fullName = ResourceNames.getDirPath(type) + resourceId.toString();
+			final String fullName = ResourceNames.getFilePath(resourceId, type, revisionToLoad);
 			mAssetManager.load(fullName, type);
 		}
 	}
 
 	/**
-	 * Unloads a definition.
+	 * Unloads a definition. This will automatically unload the correct revision
 	 * @param resource the resource to unload
 	 * @param unloadDependencies if we shall unload the dependencies
 	 */
@@ -205,6 +253,9 @@ public class ResourceCacheFacade {
 			}
 		} else {
 			try {
+				/** @todo check if the resource is the latest, then unload that and not
+				 * the revision */
+
 				final String fullName = ResourceNames.getDirPath(resource.getClass()) + resource.getId().toString();
 				mAssetManager.unload(fullName);
 			} catch (UndefinedResourceTypeException e) {
@@ -233,7 +284,7 @@ public class ResourceCacheFacade {
 	 * @param resourceName the name of the resource
 	 */
 	public static void unload(ResourceNames resourceName) {
-		mAssetManager.unload(resourceName.fullName);
+		mAssetManager.unload(resourceName.getFilePath());
 	}
 
 	/**
@@ -245,7 +296,7 @@ public class ResourceCacheFacade {
 	public static void load(ResourceNames resource) {
 		String fullPath = null;
 		try {
-			fullPath = ResourceNames.getDirPath(resource.type) + resource.filename;
+			fullPath = resource.getFilePath();
 		} catch (UndefinedResourceTypeException e) {
 			Gdx.app.error("UndefinedType", "Undefined resource type for a resource name. This should NEVER happen");
 		}
@@ -262,7 +313,7 @@ public class ResourceCacheFacade {
 	public static <ResourceType> ResourceType get(ResourceNames resource) {
 		String fullPath = null;
 		try {
-			fullPath = ResourceNames.getDirPath(resource.type) + resource.filename;
+			fullPath = resource.getFilePath();
 		} catch (UndefinedResourceTypeException e) {
 			Gdx.app.error("UndefinedType", "Undefined resource type for a resource name. This should NEVER happen");
 		}
@@ -270,7 +321,7 @@ public class ResourceCacheFacade {
 	}
 
 	/**
-	 * Get a resource based on the id and class of resource
+	 * Get a resource based on the id and class of resource. Always gets the latest revision
 	 * @param <ResourceType> type of resource that will be returned
 	 * @param resourceId id of the resource, can be both def and instance resource
 	 * @param resourceType the class of the resource
@@ -278,7 +329,20 @@ public class ResourceCacheFacade {
 	 * @throws UndefinedResourceTypeException
 	 */
 	public static <ResourceType> ResourceType get(UUID resourceId, Class<ResourceType> resourceType) throws UndefinedResourceTypeException {
-		final String fullPath = ResourceNames.getDirPath(resourceType) + resourceId.toString();
+		return get(resourceId, resourceType, -1);
+	}
+
+	/**
+	 * Get a resource based on the id and class of resource
+	 * @param <ResourceType> type of resource that will be returned
+	 * @param resourceId id of the resource, can be both def and instance resource
+	 * @param resourceType the class of the resource
+	 * @param revision which revision to get, -1 to use latest revision
+	 * @return the actual resource
+	 * @throws UndefinedResourceTypeException
+	 */
+	public static <ResourceType> ResourceType get(UUID resourceId, Class<ResourceType> resourceType, int revision) throws UndefinedResourceTypeException {
+		final String fullPath = ResourceNames.getFilePath(resourceId, resourceType, revision);
 		return mAssetManager.get(fullPath, resourceType);
 	}
 
@@ -290,7 +354,7 @@ public class ResourceCacheFacade {
 	 * @return array with all the resources of that type
 	 * @throws UndefinedResourceTypeException
 	 */
-	public static <ResourceType> List<ResourceType> get(Class<ResourceType> type) throws UndefinedResourceTypeException {
+	public static <ResourceType> List<ResourceType> getAll(Class<ResourceType> type) throws UndefinedResourceTypeException {
 		String dirPath = ResourceNames.getDirPath(type);
 
 		ArrayList<ResourceType> resources = new ArrayList<ResourceType>();
@@ -318,8 +382,20 @@ public class ResourceCacheFacade {
 	 * @return true if the object has been loaded
 	 */
 	public static <ResourceType> boolean isLoaded(UUID uuid, Class<ResourceType> type) {
+		return isLoaded(uuid, type, -1);
+	}
+
+	/**
+	 * Checks whether a resource has been loaded or not
+	 * @param <ResourceType> type of the resource to check if it has been loaded
+	 * @param uuid unique id of the object to test if it's loaded
+	 * @param type the type of resource
+	 * @param revision the revision to check if it's loaded
+	 * @return true if the object has been loaded
+	 */
+	public static <ResourceType> boolean isLoaded(UUID uuid, Class<ResourceType> type, int revision) {
 		try {
-			String fullPath = ResourceNames.getDirPath(type) + uuid.toString();
+			String fullPath = ResourceNames.getFilePath(uuid, type, revision);
 			return mAssetManager.isLoaded(fullPath, type);
 		} catch (UndefinedResourceTypeException e) {
 			return false;
@@ -334,7 +410,7 @@ public class ResourceCacheFacade {
 	public static boolean isLoaded(ResourceNames resource) {
 		String fullPath = null;
 		try {
-			fullPath = ResourceNames.getDirPath(resource.type) + resource.filename;
+			fullPath = resource.getFilePath();
 		} catch (UndefinedResourceTypeException e) {
 			Gdx.app.error("UndefinedType", "Undefined resource type for a resource name. This should NEVER happen");
 		}
