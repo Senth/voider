@@ -1,5 +1,6 @@
 package com.spiddekauga.voider.resources;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -223,6 +224,16 @@ public abstract class Def extends Resource implements Json.Serializable, IResour
 	 */
 	public Date getDate() {
 		return mDate;
+	}
+
+	/**
+	 * @return date string
+	 */
+	public String getDateString() {
+		// Format date
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
+		String dateString = simpleDateFormat.format(mDate);
+		return dateString;
 	}
 
 	/**

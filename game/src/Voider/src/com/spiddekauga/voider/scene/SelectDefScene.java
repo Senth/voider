@@ -1,9 +1,7 @@
 package com.spiddekauga.voider.scene;
 
 import java.lang.reflect.Method;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -174,12 +172,7 @@ public class SelectDefScene extends WorldScene {
 	 */
 	String getDate() {
 		if (mSelectedDef != null) {
-			Date date = mSelectedDef.getDate();
-
-			// Format date
-			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
-			String dateString = simpleDateFormat.format(date);
-			return dateString;
+			return mSelectedDef.getDateString();
 		}
 		return "";
 	}

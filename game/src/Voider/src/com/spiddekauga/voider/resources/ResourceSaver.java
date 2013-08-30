@@ -28,24 +28,6 @@ public class ResourceSaver {
 	 * @param resource the resource to save
 	 */
 	public static void save(IResource resource) {
-		String filename = resource.getId().toString();
-
-		save(resource, filename);
-
-		// Check if the resource is a definition which contains revision numbering
-		if (resource instanceof IResourceRevision) {
-			saveRevision((IResourceRevision)resource, filename);
-		}
-	}
-
-	/**
-	 * Encrypts and saves the object at the appropriate place
-	 * If an object already exist with the same filename, the existing object
-	 * will be moved filename.bak
-	 * @param resource the object to encrypt and save
-	 * @param filename the filename of the object to save
-	 */
-	private static void save(IResource resource, String filename) {
 		assert(mCrypter != null);
 
 		Json json = new JsonWrapper();
@@ -53,40 +35,21 @@ public class ResourceSaver {
 		try {
 			byte[] encryptedDef = mCrypter.encrypt(jsonString);
 
-			Gdx.app.debug("ResourceSaver", "Encrypted (" + resource.getClass().getSimpleName() + ") " + filename);
+			Gdx.app.debug("ResourceSaver", "Encrypted (" + resource.getClass().getSimpleName() + ") " + resource.getId().toString());
 
-			String relativePath = ResourceNames.getDirPath(resource.getClass());
-			relativePath += filename;
-			FileHandle saveFile = Gdx.files.external(relativePath);
+			if (resource instanceof Def) {
+				((Def) resource).updateDate();
+			}
+			String filePath = ResourceDatabase.getFilePath(resource);
+			FileHandle saveFile = Gdx.files.external(filePath);
 
 			// Save the file
 			saveFile.writeBytes(encryptedDef, false);
 
-			Gdx.app.debug("ResourceSaver", "Saved resource (" + resource.getClass().getSimpleName() + ") " + filename);
+			Gdx.app.debug("ResourceSaver", "Saved resource (" + resource.getClass().getSimpleName() + ") " + resource.getId().toString());
 
 		} catch (Exception e) {
 			Gdx.app.error("ResourceSaver", "Could not encrypt message. Your file has not been saved!");
-		}
-	}
-
-	/**
-	 * Saves a copy of the current file as a revision. This will just copy the current
-	 * resource from the current directory, so be sure to use
-	 * @param resource the resource to save as a revision
-	 * @param filename the name of the file, i.e. its uuid. But not its revision filename
-	 */
-	private static void saveRevision(IResourceRevision resource, String filename) {
-		String revisionPath = ResourceNames.getFilePath(resource, resource.getRevision());
-		String originalPath = ResourceNames.getFilePath(resource, -1);
-
-		// Copy from the original location
-		FileHandle fileToCopy = Gdx.files.external(originalPath);
-		FileHandle copyDestination = Gdx.files.external(revisionPath);
-
-		if (fileToCopy.exists()) {
-			fileToCopy.copyTo(copyDestination);
-		} else {
-			Gdx.app.error("ResourceSaver", "Could not save the revision as the original file wasn't found.");
 		}
 	}
 

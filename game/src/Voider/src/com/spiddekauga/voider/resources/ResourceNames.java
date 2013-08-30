@@ -1,7 +1,5 @@
 package com.spiddekauga.voider.resources;
 
-import java.util.UUID;
-
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
@@ -109,44 +107,6 @@ public enum ResourceNames {
 			return PLAYER_STATS_PATH;
 		} else {
 			throw new UndefinedResourceTypeException(type);
-		}
-	}
-
-	/**
-	 * Gets the revision directory for the specified resource
-	 * @param resourceId id of the resource
-	 * @param type type of the resource
-	 * @return directory of the file path
-	 */
-	private static String getRevisionDir(UUID resourceId, Class<?> type) {
-		return getDirPath(type) + REVISION_PATH + resourceId.toString() + "/";
-	}
-
-	/**
-	 * Gets the fully qualilfied file path name for the resource
-	 * @param resource the resource to get the file path for
-	 * @param revision path to the revision, -1 to use latest revision, i.e.
-	 * regular path
-	 * @return file path of the resource
-	 */
-	static String getFilePath(IResource resource, int revision) {
-		return getFilePath(resource.getId(), resource.getClass(), revision);
-	}
-
-	/**
-	 * Gets the fully qualified file path name for the resource
-	 * @param resourceId id of the resource
-	 * @param type the type of the resource
-	 * @param revision the revision to get, -1 to use latest revision, i.e.
-	 * regular path
-	 * @return file path of the resource
-	 */
-	static String getFilePath(UUID resourceId, Class<?> type, int revision) {
-		if (revision > 0 && IResourceRevision.class.isAssignableFrom(type)) {
-			String revisionFormat = String.format("%010d", revision);
-			return getRevisionDir(resourceId, type) + revisionFormat;
-		} else {
-			return getDirPath(type) + resourceId.toString();
 		}
 	}
 
