@@ -469,6 +469,8 @@ public class Config {
 		public final static String BACKUP_EXT = ".bak";
 		/** The external directory used when storing test game data */
 		public final static String TEST_STORAGE = "Voider-test/";
+		/** Revision number length */
+		public final static int REVISION_LENGTH = 10;
 	}
 
 	/**

@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.utils.ObjectMap;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.GameSave;
 import com.spiddekauga.voider.game.GameSaveDef;
@@ -75,36 +76,10 @@ public enum ResourceNames {
 	 * @throws UndefinedResourceTypeException throws this for all undefined resource types
 	 */
 	static String getDirPath(Class<?> type) throws UndefinedResourceTypeException {
-		if (type == Texture.class) {
-			return TEXTURE_PATH;
-		} else if (type == BulletActorDef.class) {
-			return ACTOR_BULLET_PATH;
-		} else if (type == EnemyActorDef.class) {
-			return ACTOR_ENEMY_PATH;
-		} else if (type == PickupActorDef.class) {
-			return ACTOR_PICKUP_PATH;
-		} else if (type == PlayerActorDef.class){
-			return ACTOR_PLAYER_PATH;
-		} else if (type == StaticTerrainActorDef.class) {
-			return ACTOR_STATIC_TERRAIN_PATH;
-		} else if (type == LevelDef.class) {
-			return LEVEL_DEF_PATH;
-		} else if (type == Level.class) {
-			return LEVEL_PATH;
-		} else if (type == ParticleEffect.class){
-			return PARTICLE_PATH;
-		} else if (type == Skin.class) {
-			return UI_PATH;
-		} else if (type == Sound.class) {
-			return SOUND_PATH;
-		} else if (type == ShaderProgram.class) {
-			return SHADER_PATH;
-		} else if (type == GameSave.class) {
-			return GAME_SAVE_PATH;
-		} else if (type == GameSaveDef.class) {
-			return GAME_SAVE_DEF_PATH;
-		} else if (type == PlayerStats.class) {
-			return PLAYER_STATS_PATH;
+		String path = mResourcePaths.get(type);
+
+		if (path != null) {
+			return path;
 		} else {
 			throw new UndefinedResourceTypeException(type);
 		}
@@ -127,8 +102,38 @@ public enum ResourceNames {
 		ACTOR_PICKUP_PATH = ACTOR_DEF_PATH + "pickups/";
 		ACTOR_PLAYER_PATH = ACTOR_DEF_PATH + "player_ships/";
 		ACTOR_STATIC_TERRAIN_PATH = ACTOR_DEF_PATH + "static_terrain/";
-
 	}
+
+	/**
+	 * Initializes the resource names
+	 */
+	public static void init() {
+		mResourcePaths.put(Texture.class, TEXTURE_PATH);
+		mResourcePaths.put(BulletActorDef.class, ACTOR_BULLET_PATH);
+		mResourcePaths.put(EnemyActorDef.class, ACTOR_ENEMY_PATH);
+		mResourcePaths.put(PickupActorDef.class, ACTOR_PICKUP_PATH);
+		mResourcePaths.put(PlayerActorDef.class, ACTOR_PLAYER_PATH);
+		mResourcePaths.put(StaticTerrainActorDef.class, ACTOR_STATIC_TERRAIN_PATH);
+		mResourcePaths.put(LevelDef.class, LEVEL_DEF_PATH);
+		mResourcePaths.put(Level.class, LEVEL_PATH);
+		mResourcePaths.put(ShaderProgram.class, SHADER_PATH);
+		mResourcePaths.put(ParticleEffect.class, PARTICLE_PATH);
+		mResourcePaths.put(Skin.class, UI_PATH);
+		mResourcePaths.put(Sound.class, SOUND_PATH);
+		mResourcePaths.put(GameSave.class, GAME_SAVE_PATH);
+		mResourcePaths.put(GameSaveDef.class, GAME_SAVE_DEF_PATH);
+		mResourcePaths.put(PlayerStats.class, PLAYER_STATS_PATH);
+	}
+
+	/**
+	 * @return all resource paths
+	 */
+	public static ObjectMap<Class<?>, String> getResourcePaths() {
+		return mResourcePaths;
+	}
+
+	/** Map for all resource paths */
+	private static ObjectMap<Class<?>, String> mResourcePaths = new ObjectMap<Class<?>, String>();
 
 	/** Directory for all texture */
 	private static final String TEXTURE_PATH = "gfx/";
@@ -136,6 +141,10 @@ public enum ResourceNames {
 	private static final String UI_PATH = "ui/";
 	/** Directory for all shaders */
 	private static final String SHADER_PATH = "shaders/";
+	/** Directory for all particle effects */
+	private static final String PARTICLE_PATH = "particles/";
+	/** Directory for all sound effects */
+	private static final String SOUND_PATH = "sound/";
 	/** Directory for all actor definitions */
 	private static String ACTOR_DEF_PATH = Config.File.STORAGE + "actors/";
 	/** Directory for all bullet actor definitions */
@@ -158,12 +167,4 @@ public enum ResourceNames {
 	private static String GAME_SAVE_DEF_PATH = Config.File.STORAGE + "gameSaveDef/";
 	/** Directory for saving player stats */
 	private static String PLAYER_STATS_PATH = Config.File.STORAGE + "stats/";
-	/** Directory for all particle effects */
-	private static final String PARTICLE_PATH = "particles/";
-	/** Directory for all sound effects */
-	private static final String SOUND_PATH = "sound/";
-
-	/** Directory for revisions */
-	private static final String REVISION_PATH = "revisions/";
-
 }

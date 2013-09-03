@@ -6,6 +6,9 @@ import java.util.Map.Entry;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.utils.ObjectMap;
+import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.utils.Pool;
 import com.spiddekauga.voider.utils.Pools;
@@ -22,7 +25,99 @@ class ResourceDatabase {
 	 * Builds the resource database
 	 */
 	static void init() {
+		ObjectMap<Class<?>, String> resourcePaths = ResourceNames.getResourcePaths();
 
+		for (ObjectMap.Entry<Class<?>, String> entry : resourcePaths.entries()) {
+			FileHandle dir = Gdx.files.external(entry.value);
+
+			if (!dir.exists() || !dir.isDirectory()) {
+				continue;
+			}
+
+			// Resource revision
+			if (IResourceRevision.class.isAssignableFrom(entry.key)) {
+				buildResourceRevisionDb(entry.key, dir);
+			}
+			// Simple resource
+			else if (IResource.class.isAssignableFrom(entry.key)) {
+				buildResourceDb(entry.key, dir);
+			}
+		}
+	}
+
+	/**
+	 * Iterates through a resource with revision and builds its database
+	 * @param type what type of class the resource is
+	 * @param dir the directory where the resources of this type is located
+	 */
+	private static void buildResourceRevisionDb(Class<?> type, FileHandle dir) {
+		FileHandle[] resourceDirs = dir.list();
+
+		for (FileHandle revisionDir : resourceDirs) {
+			if (!revisionDir.isDirectory()) {
+				continue;
+			}
+
+			// Test if directory is a UUID
+			try {
+				UUID resourceId = UUID.fromString(revisionDir.name());
+
+				ResourceDb resourceDb = new ResourceDb(type);
+
+				// Add all revisions, the file can contain both revision and
+				// date in that case split the string and store both
+				for (FileHandle revisionFile : revisionDir.list()) {
+					int splitPos = revisionFile.name().indexOf('_');
+
+					String revisionString = null;
+					String dateString = null;
+
+					// Get revision and date substrings
+					if (splitPos != -1) {
+						revisionString = revisionFile.name().substring(0, splitPos);
+						dateString = revisionFile.name().substring(splitPos + 1);
+					} else {
+						revisionString = revisionFile.name();
+					}
+
+					if (revisionString.length() != Config.File.REVISION_LENGTH) {
+						Gdx.app.debug("ResourceDatabase", "Revision is not the correct length!" + revisionFile.path());
+					}
+
+					// Convert revision string to integer
+					int revision = Integer.parseInt(revisionString);
+
+					resourceDb.addRevision(revision, dateString);
+				}
+
+				mResources.put(resourceId, resourceDb);
+			} catch (IllegalArgumentException e) {
+				Gdx.app.debug("ResourceDatabase", "Directory was not a resource! " + revisionDir.path());
+			}
+		}
+	}
+
+	/**
+	 * Iterates through a simple resource and builds its database
+	 * @param type what type of class the resource is
+	 * @param dir the directory where the resources of this type is located
+	 */
+	private static void buildResourceDb(Class<?> type, FileHandle dir) {
+		FileHandle[] resources = dir.list();
+
+		for (FileHandle resource : resources) {
+			// Test if file is UUID
+			try {
+				UUID resourceId = UUID.fromString(resource.name());
+
+				// Save resource
+				ResourceDb resourceDb = new ResourceDb(type);
+				mResources.put(resourceId, resourceDb);
+
+			} catch (IllegalArgumentException e) {
+				Gdx.app.debug("ResourceDatabase", "File was not a resource! " + resource.path());
+			}
+		}
 	}
 
 	/**
@@ -40,6 +135,33 @@ class ResourceDatabase {
 				String date = ((Def) resource).getDateString();
 				filePath += "_" + date;
 			}
+		}
+
+		return filePath;
+	}
+
+	/**
+	 * Gets the fully qualified file path name for the resource
+	 * @param type the type of resource
+	 * @param uuid the id of the resource
+	 * @return file path of the resource
+	 */
+	static String getFilePath(Class<?> type, UUID uuid) {
+		return ResourceNames.getDirPath(type) + uuid.toString();
+	}
+
+	/**
+	 * Gets the fully qualified file path name for a resource with revision
+	 * @param type the type of the resource
+	 * @param uuid id of the resource
+	 * @param revision revision of the resource to use
+	 * @return file path of the resource
+	 */
+	static String getFilePath(Class<?> type, UUID uuid, int revision) {
+		String filePath = getFilePath(type, uuid);
+
+		if (IResourceRevision.class.isAssignableFrom(type)) {
+			filePath += "/" + getRevisionFormat(revision);
 		}
 
 		return filePath;
@@ -91,20 +213,20 @@ class ResourceDatabase {
 
 	/**
 	 * Checks whether the resource has been loaded or not
-	 * @param resourceId the resource to check if it has been loaded
 	 * @param scene the scene to check if the resource has been loaded in
+	 * @param resourceId the resource to check if it has been loaded
 	 * @return true if the resource has been loaded in the specified scene, false if not.
 	 */
-	static boolean isResourceLoaded(UUID resourceId, Scene scene) {
-		return getLoadedResource(resourceId, scene) != null;
+	static boolean isResourceLoaded(Scene scene, UUID resourceId) {
+		return getLoadedResource(scene, resourceId) != null;
 	}
 
 	/**
 	 * Adds another resources that has been loaded
-	 * @param resource the resource that has been loaded
 	 * @param scene which scene the resource was loaded in
+	 * @param resource the resource that has been loaded
 	 */
-	static void addLoadedResource(IResource resource, Scene scene) {
+	static void addLoadedResource(Scene scene, IResource resource) {
 		HashMap<UUID, LoadedDb> sceneResources = mLoadedResources.get(scene);
 
 		// No existing scene resources, add scene
@@ -139,12 +261,15 @@ class ResourceDatabase {
 	/**
 	 * Removes the loaded resource. This has to be called the same number of
 	 * times the resource was loaded.
-	 * @param resource the resource to remove
 	 * @param scene the scene the resource was loaded in
+	 * @param resource the resource to remove
+	 * @return true if the resource was fully unloaded
 	 * @see #clearLoadedSceneResources(Scene)
 	 */
-	static void removeLoadedResource(IResource resource, Scene scene) {
+	static boolean removeLoadedResource(Scene scene, IResource resource) {
 		HashMap<UUID, LoadedDb> sceneResources = mLoadedResources.get(scene);
+
+		boolean fullyUnloaded = false;
 
 		if (sceneResources  !=  null) {
 			LoadedDb loadedResource = sceneResources.get(resource.getId());
@@ -155,6 +280,7 @@ class ResourceDatabase {
 				if (loadedResource.count == 0) {
 					mLoadedDbPool.free(loadedResource);
 					sceneResources.remove(resource.getId());
+					fullyUnloaded = true;
 				}
 
 			} else {
@@ -162,8 +288,9 @@ class ResourceDatabase {
 			}
 		} else {
 			Gdx.app.error("ResourceDatabase", "Scene resources does not exist when trying to remove a resource");
-			return;
 		}
+
+		return fullyUnloaded;
 	}
 
 	/**
@@ -205,13 +332,13 @@ class ResourceDatabase {
 	/**
 	 * Gets a loaded resources. This method automatically gets the correct revision
 	 * for this scene.
-	 * @param <ResourceType> the resource type
-	 * @param resourceId UUID of the resource
 	 * @param scene scene which the resource was loaded in
+	 * @param resourceId UUID of the resource
+	 * @param <ResourceType> the resource type
 	 * @return A loaded resource. Null if not found
 	 */
 	@SuppressWarnings("unchecked")
-	static <ResourceType> ResourceType getLoadedResource(UUID resourceId, Scene scene) {
+	static <ResourceType> ResourceType getLoadedResource(Scene scene, UUID resourceId) {
 		HashMap<UUID, LoadedDb> loadedSceneResources = mLoadedResources.get(scene);
 		if (loadedSceneResources != null) {
 			LoadedDb loadedResource = loadedSceneResources.get(resourceId);
@@ -258,34 +385,68 @@ class ResourceDatabase {
 	 */
 	static class ResourceDb {
 		/**
-		 * Creates a new resource DB type
-		 * @param resource the initial resource to be added
+		 * Creates a new resource DB type with no revision
+		 * @param type the type of the resource
+		 */
+		ResourceDb(Class<?> type) {
+			this.type = type;
+		}
+
+		/**
+		 * Creates a new resource DB type, automatically adds a revision if the
+		 * resource uses revisions
+		 * @param resource
 		 */
 		ResourceDb(IResource resource) {
 			type = resource.getClass();
 
 			if (resource instanceof IResourceRevision) {
-				revisionDates = new HashMap<Integer, String>();
+				addRevision((IResourceRevision)resource);
 			}
 		}
 
 		/**
+		 * Creates a new resource DB type with revision information
+		 * @param type the type of the resource
+		 * @param revision the revision to initially add
+		 * @param date creation date of the revision, may be null
+		 */
+		ResourceDb(Class<?> type, int revision, String date) {
+			this.type = type;
+
+			addRevision(revision, date);
+		}
+
+		/**
 		 * Adds a new revision to the resource
-		 * @param resource the resource to add
+		 * @param revision the revision to add
+		 * @param date creation date of the revision, may be null
+		 */
+		void addRevision(int revision, String date) {
+			if (revisionDates == null) {
+				revisionDates = new ObjectMap<Integer, String>();
+			}
+
+			revisionDates.put(revision, date);
+		}
+
+		/**
+		 * Adds a new revision to the resource
+		 * @param resource the resource to add the revision
 		 */
 		void addRevision(IResourceRevision resource) {
 			// Add date if the resource is a definition
 			if (resource instanceof Def) {
-				revisionDates.put(resource.getRevision(), ((Def) resource).getDateString());
+				addRevision(resource.getRevision(), ((Def)resource).getDateString());
 			} else {
-				revisionDates.put(resource.getRevision(), null);
+				addRevision(resource.getRevision(), null);
 			}
 		}
 
 		/** Type of resource */
 		Class<?> type;
 		/** all available including the date */
-		HashMap<Integer, String> revisionDates = null;
+		ObjectMap<Integer, String> revisionDates = null;
 	}
 
 	/**
@@ -301,9 +462,9 @@ class ResourceDatabase {
 	}
 
 	/** All resources and revisions */
-	static HashMap<UUID, ResourceDb> mResources = new HashMap<UUID, ResourceDatabase.ResourceDb>();
+	static ObjectMap<UUID, ResourceDb> mResources = new ObjectMap<UUID, ResourceDatabase.ResourceDb>();
 	/** All loaded resources */
-	static HashMap<Scene, HashMap<UUID, LoadedDb>> mLoadedResources = new HashMap<Scene, HashMap<UUID,LoadedDb>>();
+	static ObjectMap<Scene, HashMap<UUID, LoadedDb>> mLoadedResources = new ObjectMap<Scene, HashMap<UUID,LoadedDb>>();
 	/** Pool for LoadedDb */
 	static Pool<LoadedDb> mLoadedDbPool = new Pool<ResourceDatabase.LoadedDb>(LoadedDb.class, 30, 300);
 }
