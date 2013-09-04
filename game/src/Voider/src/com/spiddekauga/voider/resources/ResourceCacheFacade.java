@@ -63,6 +63,7 @@ public class ResourceCacheFacade {
 		mAssetManager.setLoader(Skin.class, new SkinLoader(new InternalFileHandleResolver()));
 
 		mDependencyLoader = new ResourceDependencyLoader(mAssetManager);
+		ResourceDatabase.init(mAssetManager);
 	}
 
 	/**

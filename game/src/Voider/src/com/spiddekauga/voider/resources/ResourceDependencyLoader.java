@@ -148,5 +148,5 @@ class ResourceDependencyLoader implements Disposable {
 	/** The load queue which we're loading the resources */
 	private Array<ResourceItem> mLoadingDefs = new Array<ResourceItem>();
 	/** The class actually loading the resources */
-	private AssetManager mAssetManager;
+	//	private AssetManager mAssetManager;
 }
