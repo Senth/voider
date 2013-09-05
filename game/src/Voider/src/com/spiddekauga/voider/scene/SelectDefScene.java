@@ -55,7 +55,7 @@ public class SelectDefScene extends WorldScene {
 		if (outcome == Outcomes.LOADING_SUCCEEDED) {
 			try {
 				@SuppressWarnings("unchecked")
-				List<Def> defs = (List<Def>) ResourceCacheFacade.getAll(mDefType);
+				List<Def> defs = (List<Def>) ResourceCacheFacade.getAll(this, mDefType);
 
 				for (Def def : defs) {
 					mDefs.add(new DefVisible(def));
@@ -73,14 +73,14 @@ public class SelectDefScene extends WorldScene {
 	protected void loadResources() {
 		super.loadResources();
 		ResourceCacheFacade.load(ResourceNames.UI_GENERAL);
-		ResourceCacheFacade.loadAllOf(mDefType, false);
+		ResourceCacheFacade.loadAllOf(this, mDefType, false);
 	}
 
 	@Override
 	protected void unloadResources() {
 		super.unloadResources();
 		ResourceCacheFacade.unload(ResourceNames.UI_GENERAL);
-		ResourceCacheFacade.unloadAllOf(mDefType, false);
+		ResourceCacheFacade.unloadAllOf(this, mDefType, false);
 	}
 
 	@Override
@@ -140,7 +140,7 @@ public class SelectDefScene extends WorldScene {
 	 */
 	void setSelectedDef(String defName) {
 		UUID defId = UUID.fromString(defName);
-		mSelectedDef = (Def) ResourceCacheFacade.get(defId, mDefType);
+		mSelectedDef = (Def) ResourceCacheFacade.get(this, defId, revision???);
 	}
 
 	/**

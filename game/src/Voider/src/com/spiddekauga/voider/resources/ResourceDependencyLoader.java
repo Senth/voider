@@ -2,14 +2,12 @@ package com.spiddekauga.voider.resources;
 
 import java.util.UUID;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.assets.loaders.resolvers.ExternalFileHandleResolver;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.ObjectMap;
-import com.spiddekauga.voider.game.actors.ActorDef;
+import com.spiddekauga.voider.scene.Scene;
 
 /**
  * Makes sure that all dependencies to the specified resource is loaded
@@ -21,12 +19,10 @@ class ResourceDependencyLoader implements Disposable {
 	/**
 	 * Constructor that takes an asset manager that is used to load
 	 * the resources.
-	 * @param assetManager used for loading (and then getting) the
-	 * resources. This asset manager is used #ResourceCacheFacade.
+	 * @param assetManager used for loading/unloading dependencies
 	 */
 	ResourceDependencyLoader(AssetManager assetManager) {
 		mAssetManager = assetManager;
-		mAssetManager.setLoader(ActorDef.class, new JsonLoaderAsync<ActorDef>(new ExternalFileHandleResolver(), ActorDef.class));
 	}
 
 	/**
@@ -34,19 +30,18 @@ class ResourceDependencyLoader implements Disposable {
 	 * @note it will load the definition first, as it needs to read
 	 * its dependencies which is in the file.
 	 * @param <ResourceType> class of the resourceId to load
+	 * @param scene the scene to load this resource into
 	 * @param resourceId the id of the resource which we want to load, including its dependencies
 	 * @param type the class type of resourceId
 	 * @param revision the revision of the resource, -1 to use latest revision
 	 * @throws UndefinedResourceTypeException thrown when type is an undefined resource type
 	 */
-	<ResourceType> void load(UUID resourceId, Class<ResourceType> type, int revision) throws UndefinedResourceTypeException {
+	<ResourceType> void load(Scene scene, UUID resourceId, Class<ResourceType> type, int revision) throws UndefinedResourceTypeException {
 		// Add definition to wait queue
-		mLoadingDefs.add(new ResourceItem(resourceId, type, revision));
+		mLoadingDefs.add(new ResourceItem(scene, resourceId, type, revision));
 
 		// Load the resource
-		/** @todo What should the fullPath be? */
-		final String fullPath = ResourceNames.getDirPath(type) + resourceId.toString();
-		mAssetManager.load(fullPath, type);
+		ResourceDatabase.load(scene, resourceId, type, revision);
 	}
 
 	@Override
@@ -56,9 +51,10 @@ class ResourceDependencyLoader implements Disposable {
 
 	/**
 	 * Unloads the definition including all its dependencies.
+	 * @param scene the scene to unload the resource from
 	 * @param resource the definition to unload
 	 */
-	void unload(IResourceDependency resource) {
+	void unload(Scene scene, IResourceDependency resource) {
 		// Recursive, unload all dependencies first
 		// Internal
 		for (ResourceNames dependency : resource.getInternalDependencies()) {
@@ -67,20 +63,13 @@ class ResourceDependencyLoader implements Disposable {
 
 		// External
 		for (ObjectMap.Entry<UUID, ResourceItem> entry : resource.getExternalDependencies().entries()) {
-			ResourceItem dependency = entry.value;
-			Def externalDef = (Def) mAssetManager.get(dependency.fullName, dependency.resourceType);
-			unload(externalDef);
-			// DO NOT USE externalDef AFTER THIS TIME, IT HAS BEEN UNLOADED!
+			ResourceItem dependencyInformation = entry.value;
+			IResource dependency = ResourceDatabase.getLoadedResource(scene, dependencyInformation.resourceId, dependencyInformation.revision);
+			ResourceDatabase.unload(scene, dependency);
 		}
 
-		// unload this def
-		try {
-			String fullName = ResourceNames.getDirPath(resource.getClass()) + resource.getId().toString();
-			mAssetManager.unload(fullName);
-		} catch (UndefinedResourceTypeException e) {
-			Gdx.app.error("UndefinedResourceType", e.toString());
-		}
-
+		// unload this resource
+		ResourceDatabase.unload(scene, resource);
 	}
 
 	/**
@@ -112,8 +101,11 @@ class ResourceDependencyLoader implements Disposable {
 				// External
 				for (ObjectMap.Entry<UUID, ResourceItem> entry : def.getExternalDependencies().entries()) {
 					ResourceItem dependency = entry.value;
+
+					// Propagate scene so that we always know which scene to load into
+					dependency.scene = queueItem.scene;
 					try {
-						load(dependency.resourceId, dependency.resourceType, dependency.revision);
+						load(queueItem.scene, dependency.resourceId, dependency.resourceType, dependency.revision);
 					} catch (UndefinedResourceTypeException e) {
 						// Reset entire loading queue
 						mLoadingDefs.clear();
@@ -148,5 +140,5 @@ class ResourceDependencyLoader implements Disposable {
 	/** The load queue which we're loading the resources */
 	private Array<ResourceItem> mLoadingDefs = new Array<ResourceItem>();
 	/** The class actually loading the resources */
-	//	private AssetManager mAssetManager;
+	private AssetManager mAssetManager;
 }

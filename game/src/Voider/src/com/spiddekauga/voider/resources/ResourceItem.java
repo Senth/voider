@@ -6,6 +6,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.scene.Scene;
 
 /**
  * Wrapper to simplify the queue. Only available for this pacakage
@@ -40,6 +41,18 @@ public class ResourceItem implements Json.Serializable {
 	 * @param revision the revision of the resourc
 	 */
 	public ResourceItem(UUID resourceId, Class<?> resourceType, int revision) {
+		this(null, resourceId, resourceType, revision);
+	}
+
+	/**
+	 * Constructor that sets the resource id and type
+	 * @param scene to use for the resource
+	 * @param resourceId id of the resource
+	 * @param resourceType class of the resource
+	 * @param revision the revision of the resourc
+	 */
+	public ResourceItem(Scene scene, UUID resourceId, Class<?> resourceType, int revision) {
+		this.scene = scene;
 		this.resourceId = resourceId;
 		this.resourceType = resourceType;
 		this.revision = revision;
@@ -67,6 +80,8 @@ public class ResourceItem implements Json.Serializable {
 
 	/** Number of references */
 	public int count = 0;
+	/** Scene */
+	Scene scene = null;
 	/** Unique id */
 	UUID resourceId = null;
 	/** Resource Type */

@@ -524,6 +524,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 
 		// Definition
 		if (savesDef()) {
+			// TODO get correct actorDef when loading
 			mDef = json.readValue("mDef", StaticTerrainActorDef.class, jsonData);
 		}
 		// Get definition information to be able to load it
