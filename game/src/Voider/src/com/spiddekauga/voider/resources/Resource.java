@@ -19,12 +19,23 @@ public abstract class Resource implements IResource, Json.Serializable {
 		return mUniqueId;
 	}
 
+	//	@Override
+	//	public int getRevision() {
+	//		return -1;
+	//	}
+
 	@Override
 	public boolean equals(Object object) {
 		if (object == null) {
 			return false;
 		} else if (object.getClass() == this.getClass()) {
-			return mUniqueId.equals(((IResource)object).getId());
+			if (mUniqueId.equals(((IResource)object).getId())) {
+				if (this instanceof IResourceRevision && object instanceof IResourceRevision) {
+					return ((IResourceRevision)this).getRevision() == ((IResourceRevision)object).getRevision();
+				} else {
+					return true;
+				}
+			}
 		} else if (object instanceof UUID) {
 			return mUniqueId.equals(object);
 		}

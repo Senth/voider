@@ -29,7 +29,7 @@ public interface IEditor {
 	/**
 	 * @return true if the current definition in the editor is unsaved
 	 */
-	boolean isUnsaved();
+	boolean isUnSaved();
 
 	/**
 	 * @return true if the editor shall try to auto-save the current file

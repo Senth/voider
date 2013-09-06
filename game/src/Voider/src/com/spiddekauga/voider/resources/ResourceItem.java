@@ -81,15 +81,15 @@ public class ResourceItem implements Json.Serializable {
 	/** Number of references */
 	public int count = 0;
 	/** Scene */
-	Scene scene = null;
+	public Scene scene = null;
 	/** Unique id */
-	UUID resourceId = null;
+	public UUID resourceId = null;
 	/** Resource Type */
-	Class<?> resourceType = null;
+	public Class<?> resourceType = null;
 	/** The full file path to this resource */
-	String fullName = null;
+	public String fullName = null;
 	/** revision of the resource */
-	int revision = -1;
+	public int revision = -1;
 
 	@Override
 	public void write(Json json) {

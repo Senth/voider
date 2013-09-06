@@ -182,7 +182,7 @@ public abstract class Scene extends InputAdapter {
 	 * @param message the outcome message provided with the outcome, null if none
 	 * was provided.
 	 */
-	protected void onActivate(Outcomes outcome, String message) {
+	protected void onActivate(Outcomes outcome, Object message) {
 		if (outcome == Outcomes.LOADING_SUCCEEDED) {
 			if (!mGui.isInitialized()) {
 				mGui.initGui();
@@ -239,7 +239,7 @@ public abstract class Scene extends InputAdapter {
 	/**
 	 * @return outcome message of the scene, if none exist it will return null.
 	 */
-	protected final String getOutcomeMessage() {
+	protected final Object getOutcomeMessage() {
 		return mOutcomeMessage;
 	}
 
@@ -270,7 +270,7 @@ public abstract class Scene extends InputAdapter {
 	 * @param outcome the outcome of the scene
 	 * @param message a descriptive outcome message.
 	 */
-	protected final void setOutcome(Outcomes outcome, String message) {
+	protected final void setOutcome(Outcomes outcome, Object message) {
 		if (mOutcome == null) {
 			setOutcome(outcome);
 			mOutcomeMessage = message;
@@ -448,7 +448,7 @@ public abstract class Scene extends InputAdapter {
 	/** Outcome of scene, this is set when a derived class calls setOutcome */
 	private Outcomes mOutcome = null;
 	/** Message of the outcome */
-	private String mOutcomeMessage = null;
+	private Object mOutcomeMessage = null;
 	/** Clear color */
 	private Color mClearColor = new Color(0, 0, 0, 0);
 	/** If resource has been loaded */

@@ -39,9 +39,9 @@ import com.spiddekauga.voider.game.actors.EnemyActorDef.MovementTypes;
 import com.spiddekauga.voider.game.actors.PlayerActor;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
+import com.spiddekauga.voider.resources.ResourceItem;
 import com.spiddekauga.voider.resources.ResourceNames;
 import com.spiddekauga.voider.resources.ResourceSaver;
-import com.spiddekauga.voider.resources.UndefinedResourceTypeException;
 import com.spiddekauga.voider.scene.DrawActorTool;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
@@ -93,7 +93,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	}
 
 	@Override
-	protected void onActivate(Outcomes outcome, String message) {
+	protected void onActivate(Outcomes outcome, Object message) {
 		super.onActivate(outcome, message);
 
 		Actor.setEditorActive(true);
@@ -125,27 +125,29 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 
 			scalePathLabels();
 
-			mUnsaved = true;
+			mSaved = true;
 
 			setMovementType(mDef.getMovementType());
 		}
 		else if (outcome == Outcomes.DEF_SELECTED) {
-			switch (mSelectionAction) {
-			case BULLET_TYPE:
-				mInvoker.execute(new CEnemyBulletDefSelect(UUID.fromString(message), this));
-				break;
+			if (message instanceof ResourceItem) {
+				switch (mSelectionAction) {
+				case BULLET_TYPE:
+					mInvoker.execute(new CEnemyBulletDefSelect(((ResourceItem) message).resourceId, this));
+					break;
 
-			case LOAD_ENEMY:
-				try {
-					mDef = ResourceCacheFacade.get(UUID.fromString(message), EnemyActorDef.class);
+				case LOAD_ENEMY:
+					mDef = ResourceCacheFacade.get(this, ((ResourceItem) message).resourceId, ((ResourceItem) message).revision);
 					setEnemyDef();
 					setMovementType(mDef.getMovementType());
 					mGui.resetValues();
-					mUnsaved = true;
-				} catch (UndefinedResourceTypeException e) {
-					Gdx.app.error("EnemyEditor", e.toString());
+					mSaved = true;
+					break;
 				}
-				break;
+
+
+			} else {
+				Gdx.app.error("MainMenu", "When seleting def, message was not a ResourceItem but a " + message.getClass().getName());
 			}
 
 			mSelectionAction = null;
@@ -158,25 +160,25 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	/**
 	 * Sets the selected bullet definition. This will make the enemies use this bullet.
 	 * @param bulletId id of the bullet definition to select
+	 * @param revision the revision of the bullet to use.
 	 * @return true if bullet was selected successfully, false if unsuccessful
 	 */
-	public boolean selectBulletDef(UUID bulletId) {
+	public boolean selectBulletDef(UUID bulletId, int revision) {
 		try {
 			BulletActorDef oldBulletDef = mDef.getWeaponDef().getBulletActorDef();
 
 			if (bulletId != null) {
-				BulletActorDef bulletActorDef = ResourceCacheFacade.get(bulletId, BulletActorDef.class);
-
-				ResourceCacheFacade.load(bulletActorDef, true);
+				ResourceCacheFacade.load(this, bulletId, BulletActorDef.class, true, revision);
 				ResourceCacheFacade.finishLoading();
 
+				BulletActorDef bulletActorDef = ResourceCacheFacade.get(this, bulletId, revision);
 				setBulletActorDef(bulletActorDef);
 			} else {
 				setBulletActorDef(null);
 			}
 
 			if (oldBulletDef != null) {
-				ResourceCacheFacade.unload(oldBulletDef, true);
+				ResourceCacheFacade.unload(this, oldBulletDef, true);
 			}
 
 			mGui.resetValues();
@@ -314,8 +316,8 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 		super.loadResources();
 		ResourceCacheFacade.load(ResourceNames.UI_EDITOR_BUTTONS);
 		ResourceCacheFacade.load(ResourceNames.UI_GENERAL);
-		ResourceCacheFacade.loadAllOf(EnemyActorDef.class, true);
-		ResourceCacheFacade.loadAllOf(BulletActorDef.class, true);
+		//		ResourceCacheFacade.loadAllOf(this, EnemyActorDef.class, true);
+		//		ResourceCacheFacade.loadAllOf(this, BulletActorDef.class, true);
 	}
 
 	@Override
@@ -323,8 +325,8 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 		super.unloadResources();
 		ResourceCacheFacade.unload(ResourceNames.UI_EDITOR_BUTTONS);
 		ResourceCacheFacade.unload(ResourceNames.UI_GENERAL);
-		ResourceCacheFacade.unloadAllOf(EnemyActorDef.class, true);
-		ResourceCacheFacade.unloadAllOf(BulletActorDef.class, true);
+		//		ResourceCacheFacade.unloadAllOf(this, EnemyActorDef.class, true);
+		//		ResourceCacheFacade.unloadAllOf(this, BulletActorDef.class, true);
 	}
 
 	// --------------------------------
@@ -412,12 +414,12 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 		ResourceSaver.save(mDef);
 
 		// Load the saved actor and use it instead
-		if (!ResourceCacheFacade.isLoaded(mDef.getId(), mDef.getClass())) {
+		if (!ResourceCacheFacade.isLoaded(this, mDef.getId(), mDef.getRevision())) {
 			try {
-				ResourceCacheFacade.load(mDef.getId(), mDef.getClass(), true);
+				ResourceCacheFacade.load(this, mDef.getId(), mDef.getClass(), true, mDef.getRevision());
 				ResourceCacheFacade.finishLoading();
 
-				mDef = ResourceCacheFacade.get(mDef.getId(), mDef.getClass());
+				mDef = ResourceCacheFacade.get(this, mDef.getId(), mDef.getRevision());
 				setEnemyDef();
 			} catch (Exception e) {
 				Gdx.app.error("EnemyEditor", "Loading of saved actor failed! " + e.toString());
@@ -425,7 +427,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 		}
 
 		mSaveTimeLast = GameTime.getTotalGlobalTimeElapsed();
-		mUnsaved = true;
+		mSaved = true;
 	}
 
 	/**
@@ -435,7 +437,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 		mDef = new EnemyActorDef();
 		setEnemyDef();
 		mGui.resetValues();
-		mUnsaved = true;
+		mSaved = true;
 	}
 
 	/**
@@ -448,7 +450,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 		mEnemyPathBackAndForth.setSpeed(speed);
 		mEnemyPathLoop.setSpeed(speed);
 		mEnemyPathOnce.setSpeed(speed);
-		mUnsaved = false;
+		mSaved = false;
 	}
 
 	/**
@@ -468,7 +470,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 		mEnemyPathBackAndForth.resetPathMovement();
 		mEnemyPathLoop.resetPathMovement();
 		mEnemyPathOnce.resetPathMovement();
-		mUnsaved = false;
+		mSaved = false;
 	}
 
 	/**
@@ -479,8 +481,8 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	}
 
 	@Override
-	public boolean isUnsaved() {
-		return !mUnsaved;
+	public boolean isUnSaved() {
+		return !mSaved;
 	}
 
 	@Override
@@ -509,7 +511,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	 */
 	void setPlayerDistanceMin(float minDistance) {
 		mDef.setPlayerDistanceMin(minDistance);
-		mUnsaved = false;
+		mSaved = false;
 	}
 
 	/**
@@ -532,7 +534,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	 */
 	void setPlayerDistanceMax(float maxDistance) {
 		mDef.setPlayerDistanceMax(maxDistance);
-		mUnsaved = false;
+		mSaved = false;
 	}
 
 	/**
@@ -570,7 +572,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 			break;
 		}
 
-		mUnsaved = false;
+		mSaved = false;
 	}
 
 	/**
@@ -579,7 +581,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	 */
 	void setTurnSpeed(float turnSpeed) {
 		mDef.setTurnSpeed(turnSpeed);
-		mUnsaved = false;
+		mSaved = false;
 	}
 
 	/**
@@ -592,7 +594,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	@Override
 	public void setStartingAngle(float angle) {
 		mDef.setStartAngleDeg(angle);
-		mUnsaved = false;
+		mSaved = false;
 	}
 
 	@Override
@@ -603,7 +605,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	@Override
 	public void setRotationSpeed(float rotationSpeed) {
 		mDef.setRotationSpeedDeg(rotationSpeed);
-		mUnsaved = false;
+		mSaved = false;
 	}
 
 	@Override
@@ -628,7 +630,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	 */
 	void setMoveRandomly(boolean moveRandomly) {
 		mDef.setMoveRandomly(moveRandomly);
-		mUnsaved = false;
+		mSaved = false;
 	}
 
 	/**
@@ -647,7 +649,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	 */
 	void setRandomTimeMin(float minTime) {
 		mDef.setRandomTimeMin(minTime);
-		mUnsaved = false;
+		mSaved = false;
 	}
 
 	/**
@@ -665,7 +667,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	 */
 	void setRandomTimeMax(float maxTime) {
 		mDef.setRandomTimeMax(maxTime);
-		mUnsaved = false;
+		mSaved = false;
 	}
 
 	/**
@@ -688,7 +690,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	 */
 	void setUseWeapon(boolean useWeapon) {
 		mDef.setUseWeapon(useWeapon);
-		mUnsaved = false;
+		mSaved = false;
 	}
 
 	/**
@@ -704,7 +706,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	 */
 	void setBulletSpeed(float speed) {
 		mDef.getWeaponDef().setBulletSpeed(speed);
-		mUnsaved = false;
+		mSaved = false;
 	}
 
 	/**
@@ -720,7 +722,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	 */
 	void setWeaponDamage(float damage) {
 		mDef.getWeaponDef().setDamage(damage);
-		mUnsaved = false;
+		mSaved = false;
 	}
 
 	/**
@@ -738,7 +740,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	 */
 	void setCooldownMin(float minCooldown) {
 		mDef.getWeaponDef().setCooldownMin(minCooldown);
-		mUnsaved = false;
+		mSaved = false;
 	}
 
 	/**
@@ -756,7 +758,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	 */
 	void setCooldownMax(float maxCooldown) {
 		mDef.getWeaponDef().setCooldownMax(maxCooldown);
-		mUnsaved = false;
+		mSaved = false;
 	}
 
 	/**
@@ -772,7 +774,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	 */
 	void setAimType(AimTypes aimType) {
 		mDef.setAimType(aimType);
-		mUnsaved = false;
+		mSaved = false;
 	}
 
 	/**
@@ -792,7 +794,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 		mEnemyPathBackAndForth.resetWeapon();
 		mEnemyPathOnce.resetWeapon();
 		mEnemyPathLoop.resetWeapon();
-		mUnsaved = false;
+		mSaved = false;
 	}
 
 	/**
@@ -809,7 +811,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	 */
 	void setAimRotateSpeed(float rotateSpeed) {
 		mDef.setAimRotateSpeed(rotateSpeed);
-		mUnsaved = false;
+		mSaved = false;
 	}
 
 	/**
@@ -965,7 +967,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 		mDef = (EnemyActorDef) mDef.copy();
 		setEnemyDef();
 		mGui.resetValues();
-		mUnsaved = false;
+		mSaved = false;
 	}
 
 	@Override
@@ -1040,7 +1042,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 
 	@Override
 	public boolean shallAutoSave() {
-		return !mUnsaved && GameTime.getTotalGlobalTimeElapsed() - mSaveTimeLast >= Config.Editor.AUTO_SAVE_TIME;
+		return !mSaved && GameTime.getTotalGlobalTimeElapsed() - mSaveTimeLast >= Config.Editor.AUTO_SAVE_TIME;
 	}
 
 
@@ -1272,7 +1274,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 		if (bulletActorDef != null) {
 			mDef.addDependency(bulletActorDef);
 		}
-		mUnsaved = false;
+		mSaved = false;
 	}
 
 	/**
@@ -1336,7 +1338,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	/** Current enemy actor definition */
 	private EnemyActorDef mDef = new EnemyActorDef();
 	/** If actor has been saved since edit */
-	private boolean mUnsaved = true;
+	private boolean mSaved = true;
 	/** Last time we saved */
 	private float mSaveTimeLast = GameTime.getTotalGlobalTimeElapsed();
 	/** Display path how once works */

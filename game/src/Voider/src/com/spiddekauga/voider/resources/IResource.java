@@ -15,6 +15,12 @@ public interface IResource {
 	 */
 	public UUID getId();
 
+	//	/**
+	//	 * @return revision of the resource. This will actually be -1
+	//	 * if the resource isn't an istance of IResourceRevision!
+	//	 */
+	//	public int getRevision();
+
 	/**
 	 * Returns all references this resource uses
 	 * @param references all resources this resource uses

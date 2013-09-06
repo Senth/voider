@@ -96,7 +96,7 @@ public class GameScene extends WorldScene {
 	}
 
 	@Override
-	protected void onActivate(Outcomes outcome, String message) {
+	protected void onActivate(Outcomes outcome, Object message) {
 		super.onActivate(outcome, message);
 		Actor.setEditorActive(false);
 

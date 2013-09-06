@@ -1,7 +1,5 @@
 package com.spiddekauga.voider.editor;
 
-import java.util.UUID;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
@@ -20,9 +18,9 @@ import com.spiddekauga.voider.game.actors.BulletActor;
 import com.spiddekauga.voider.game.actors.BulletActorDef;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
+import com.spiddekauga.voider.resources.ResourceItem;
 import com.spiddekauga.voider.resources.ResourceNames;
 import com.spiddekauga.voider.resources.ResourceSaver;
-import com.spiddekauga.voider.resources.UndefinedResourceTypeException;
 import com.spiddekauga.voider.scene.DrawActorTool;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
@@ -57,7 +55,7 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 	}
 
 	@Override
-	protected void onActivate(Outcomes outcome, String message) {
+	protected void onActivate(Outcomes outcome, Object message) {
 		super.onActivate(outcome, message);
 
 		Actor.setEditorActive(true);
@@ -70,14 +68,14 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 		} else if (outcome == Outcomes.DEF_SELECTED) {
 			switch (mSelectionAction) {
 			case LOAD_BULLET:
-				try {
-					BulletActorDef bulletDef = ResourceCacheFacade.get(UUID.fromString(message), BulletActorDef.class);
+				if (message instanceof ResourceItem) {
+					BulletActorDef bulletDef = ResourceCacheFacade.get(this, ((ResourceItem) message).resourceId, ((ResourceItem) message).revision);
 					setDef(bulletDef);
 					mGui.resetValues();
 					mUnsaved = false;
 					mInvoker.dispose();
-				} catch (UndefinedResourceTypeException e) {
-					Gdx.app.error("BulletEditor", e.toString());
+				} else {
+					Gdx.app.error("MainMenu", "When seleting def, message was not a ResourceItem but a " + message.getClass().getName());
 				}
 			}
 		} else if (outcome == Outcomes.NOT_APPLICAPLE) {
@@ -164,7 +162,7 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 		super.loadResources();
 		ResourceCacheFacade.load(ResourceNames.UI_EDITOR_BUTTONS);
 		ResourceCacheFacade.load(ResourceNames.UI_GENERAL);
-		ResourceCacheFacade.loadAllOf(BulletActorDef.class, true);
+		ResourceCacheFacade.loadAllOf(this, BulletActorDef.class, true);
 	}
 
 	@Override
@@ -172,7 +170,7 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 		super.unloadResources();
 		ResourceCacheFacade.unload(ResourceNames.UI_GENERAL);
 		ResourceCacheFacade.unload(ResourceNames.UI_EDITOR_BUTTONS);
-		ResourceCacheFacade.unloadAllOf(BulletActorDef.class, true);
+		ResourceCacheFacade.unloadAllOf(this, BulletActorDef.class, true);
 	}
 
 	@Override
@@ -190,12 +188,12 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 		ResourceSaver.save(mDef);
 
 		// Load the saved actor and use it instead
-		if (!ResourceCacheFacade.isLoaded(mDef.getId(), mDef.getClass())) {
+		if (!ResourceCacheFacade.isLoaded(this, mDef.getId(), mDef.getRevision())) {
 			try {
-				ResourceCacheFacade.load(mDef.getId(), mDef.getClass(), true);
+				ResourceCacheFacade.load(this, mDef.getId(), mDef.getClass(), true, mDef.getRevision());
 				ResourceCacheFacade.finishLoading();
 
-				setDef(ResourceCacheFacade.get(mDef.getId(), mDef.getClass()));
+				setDef((BulletActorDef) ResourceCacheFacade.get(this, mDef.getId(), mDef.getRevision()));
 			} catch (Exception e) {
 				Gdx.app.error("BulletEditor", "Loading of saved actor failed! " + e.toString());
 			}
@@ -223,7 +221,7 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 	}
 
 	@Override
-	public boolean isUnsaved() {
+	public boolean isUnSaved() {
 		return mUnsaved;
 	}
 

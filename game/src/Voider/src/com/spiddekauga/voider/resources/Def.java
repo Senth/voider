@@ -318,6 +318,14 @@ public abstract class Def extends Resource implements Json.Serializable, IResour
 		++mRevision;
 	}
 
+	/**
+	 * Sets the revision of the resource
+	 * @param revision the new revision of the resource
+	 */
+	public void setRevision(int revision) {
+		mRevision = revision;
+	}
+
 	@Override
 	public ObjectMap<UUID, ResourceItem> getExternalDependencies() {
 		return mExternalDependencies;

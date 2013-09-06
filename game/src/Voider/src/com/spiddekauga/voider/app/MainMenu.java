@@ -1,18 +1,20 @@
 package com.spiddekauga.voider.app;
 
 import java.util.List;
-import java.util.UUID;
 
+import com.badlogic.gdx.Gdx;
 import com.spiddekauga.voider.editor.LevelEditor;
 import com.spiddekauga.voider.game.GameSaveDef;
 import com.spiddekauga.voider.game.GameScene;
 import com.spiddekauga.voider.game.Level;
 import com.spiddekauga.voider.game.LevelDef;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
+import com.spiddekauga.voider.resources.ResourceItem;
 import com.spiddekauga.voider.resources.ResourceNames;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.scene.SelectDefScene;
+import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Main menu of the scene
@@ -32,16 +34,16 @@ public class MainMenu extends Scene {
 	protected void loadResources() {
 		super.loadResources();
 		ResourceCacheFacade.load(ResourceNames.UI_GENERAL);
-		ResourceCacheFacade.loadAllOf(LevelDef.class, false);
-		ResourceCacheFacade.loadAllOf(GameSaveDef.class, false);
+		ResourceCacheFacade.loadAllOf(this, LevelDef.class, false);
+		ResourceCacheFacade.loadAllOf(this, GameSaveDef.class, false);
 	}
 
 	@Override
 	protected void unloadResources() {
 		super.unloadResources();
 		ResourceCacheFacade.unload(ResourceNames.UI_GENERAL);
-		ResourceCacheFacade.unloadAllOf(LevelDef.class, false);
-		ResourceCacheFacade.unloadAllOf(GameSaveDef.class, false);
+		ResourceCacheFacade.unloadAllOf(this, LevelDef.class, false);
+		ResourceCacheFacade.unloadAllOf(this, GameSaveDef.class, false);
 	}
 
 	@Override
@@ -50,16 +52,21 @@ public class MainMenu extends Scene {
 	}
 
 	@Override
-	protected void onActivate(Outcomes outcome, String message) {
+	protected void onActivate(Outcomes outcome, Object message) {
 		if (outcome == Outcomes.LOADING_FAILED_CORRUPT_FILE) {
 			/** @todo handle corrupt file */
 		} else if (outcome == Outcomes.LOADING_FAILED_MISSING_FILE) {
 			/** @todo handle missing file */
 		} else if (outcome == Outcomes.DEF_SELECTED) {
-			LevelDef loadedLevelDef = ResourceCacheFacade.get(UUID.fromString(message), LevelDef.class);
-			GameScene gameScene = new GameScene(false, false);
-			gameScene.setLevelToLoad(loadedLevelDef);
-			SceneSwitcher.switchTo(gameScene);
+			if (message instanceof ResourceItem) {
+				LevelDef loadedLevelDef = ResourceCacheFacade.get(this, ((ResourceItem) message).resourceId, ((ResourceItem) message).revision);
+				GameScene gameScene = new GameScene(false, false);
+				gameScene.setLevelToLoad(loadedLevelDef);
+				SceneSwitcher.switchTo(gameScene);
+				Pools.resourceItem.free((ResourceItem)message);
+			} else {
+				Gdx.app.error("MainMenu", "When seleting def, message was not a ResourceItem but a " + message.getClass().getName());
+			}
 		} else {
 			if (!mGui.isInitialized()) {
 				mGui.initGui();
@@ -73,14 +80,14 @@ public class MainMenu extends Scene {
 	 * @return true if there is a game to resume
 	 */
 	boolean hasResumeGame() {
-		return ResourceCacheFacade.getAll(GameSaveDef.class).size() > 0;
+		return ResourceCacheFacade.getAll(this, GameSaveDef.class).size() > 0;
 	}
 
 	/**
 	 * Resumes the current game
 	 */
 	void resumeGame() {
-		List<GameSaveDef> gameSaves = ResourceCacheFacade.getAll(GameSaveDef.class);
+		List<GameSaveDef> gameSaves = ResourceCacheFacade.getAll(this, GameSaveDef.class);
 
 		if (!gameSaves.isEmpty()) {
 			GameScene gameScene = new GameScene(false, false);

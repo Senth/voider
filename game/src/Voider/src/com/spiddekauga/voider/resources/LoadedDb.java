@@ -84,22 +84,24 @@ class LoadedDb {
 	/**
 	 * Removes a loaded resource from the specified scene
 	 * @param scene the scene the resource was loaded into
-	 * @param resource the resource that was loaded
+	 * @param resourceId the resource that was loaded
+	 * @param type of the resource that was loaded
+	 * @param revision the revision of the resource
 	 * @return true if this was the last resource of this revision, i.e. it shall
 	 * be unloaded
 	 */
-	boolean removeLoadedResource(Scene scene, IResource resource) {
+	boolean removeLoadedResource(Scene scene, UUID resourceId, Class<?> type, int revision) {
 		ObjectMap<UUID, LoadedResource> sceneResources = mLoadedResources.get(scene);
 
 		boolean fullyUnloaded = false;
 
 		if (sceneResources != null) {
-			LoadedResource loadedResource = sceneResources.get(resource.getId());
+			LoadedResource loadedResource = sceneResources.get(resourceId);
 
 			if (loadedResource != null) {
 				int revisionToUse = -1;
-				if (resource instanceof IResourceRevision) {
-					revisionToUse = ((IResourceRevision) resource).getRevision();
+				if (IResourceRevision.class.isAssignableFrom(type)) {
+					revisionToUse = revision;
 				}
 
 				LoadedRevision loadedRevision = loadedResource.revisions.get(revisionToUse);
@@ -114,7 +116,7 @@ class LoadedDb {
 
 						// Remove and free resource if this was the last revision
 						if (loadedResource.revisions.size == 0) {
-							sceneResources.remove(resource.getId());
+							sceneResources.remove(resourceId);
 							mLoadedResourcePool.free(loadedResource);
 
 							// Remove the scene if this was the last resource
@@ -223,6 +225,33 @@ class LoadedDb {
 			for (ObjectMap.Entry<UUID, LoadedResource> resourceEntry : sceneResources.entries()) {
 				for (ObjectMap.Entry<Integer, LoadedRevision> revisionEntry : resourceEntry.value.revisions.entries()) {
 					resources.add(revisionEntry.value.resource);
+				}
+			}
+		}
+
+		return resources;
+	}
+
+	/**
+	 * Get all loaded resources of the specified type for this scene
+	 * @param <ResourceType> Type of the resource to get
+	 * @param scene the scene to get all loaded resources from
+	 * @param type the type of resource to get
+	 * @return all loaded resource of the specified type in this scene. Don't forget to use Pool.arrayList.free(resources)
+	 * once you have used it!
+	 */
+	@SuppressWarnings("unchecked")
+	<ResourceType extends IResource> ArrayList<ResourceType> getAllLoadedSceneResourceOf(Scene scene, Class<ResourceType> type) {
+		ArrayList<ResourceType> resources = Pools.arrayList.obtain();
+		resources.clear();
+
+		ObjectMap<UUID, LoadedResource> sceneResources = mLoadedResources.get(scene);
+		if (sceneResources != null) {
+			for (ObjectMap.Entry<UUID, LoadedResource> resourceEntry : sceneResources.entries()) {
+				if (resourceEntry.value.type == type) {
+					for (ObjectMap.Entry<Integer, LoadedRevision> revisionEntry : resourceEntry.value.revisions.entries()) {
+						resources.add((ResourceType)revisionEntry.value.resource);
+					}
 				}
 			}
 		}

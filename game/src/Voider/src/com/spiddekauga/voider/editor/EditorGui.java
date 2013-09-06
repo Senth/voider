@@ -55,7 +55,7 @@ public abstract class EditorGui extends Gui {
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed() {
-				if (editor.isUnsaved()) {
+				if (editor.isUnSaved()) {
 					Button yes = new TextButton("Save first", textStyle);
 					Button no = new TextButton("Discard current", textStyle);
 
@@ -96,7 +96,7 @@ public abstract class EditorGui extends Gui {
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed() {
-				if (editor.isUnsaved()) {
+				if (editor.isUnSaved()) {
 					Button yes = new TextButton("Save first", textStyle);
 					Button no = new TextButton("Load anyway", textStyle);
 
@@ -124,7 +124,7 @@ public abstract class EditorGui extends Gui {
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed() {
-				if (editor.isUnsaved()) {
+				if (editor.isUnSaved()) {
 					Button yes = new TextButton("Save first", textStyle);
 					Button no = new TextButton("Duplicate anyway", textStyle);
 
@@ -215,7 +215,7 @@ public abstract class EditorGui extends Gui {
 
 		boolean switching = command instanceof CSceneSwitch;
 
-		if (editor.isUnsaved()) {
+		if (editor.isUnSaved()) {
 			String yesMessage = switching ? "Save then switch" : "Save then return";
 			String noMessage = switching ? "Switch anyway" : "Return anymay";
 			Button yes = new TextButton(yesMessage, textStyle);

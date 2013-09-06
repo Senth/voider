@@ -9,9 +9,13 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.spiddekauga.voider.User;
 import com.spiddekauga.voider.resources.Def;
+import com.spiddekauga.voider.resources.IResource;
+import com.spiddekauga.voider.resources.IResourceRevision;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
+import com.spiddekauga.voider.resources.ResourceItem;
 import com.spiddekauga.voider.resources.ResourceNames;
 import com.spiddekauga.voider.resources.UndefinedResourceTypeException;
+import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Scene for selecting definitions (actors, levels). It will display a scene
@@ -35,7 +39,7 @@ public class SelectDefScene extends WorldScene {
 	 * @param showMineOnlyCheckbox set to true if you want the scene to show a checkbox
 	 * to only display one's own actors.
 	 */
-	public SelectDefScene(Class<?> defType, boolean showMineOnly, boolean showMineOnlyCheckbox) {
+	public SelectDefScene(Class<? extends IResource> defType, boolean showMineOnly, boolean showMineOnlyCheckbox) {
 		super(new SelectDefGui(showMineOnlyCheckbox), 0);
 
 		mShowMineOnly = showMineOnly;
@@ -49,7 +53,7 @@ public class SelectDefScene extends WorldScene {
 	}
 
 	@Override
-	protected void onActivate(Outcomes outcome, String message) {
+	protected void onActivate(Outcomes outcome, Object message) {
 		super.onActivate(outcome, message);
 
 		if (outcome == Outcomes.LOADING_SUCCEEDED) {
@@ -237,7 +241,14 @@ public class SelectDefScene extends WorldScene {
 	 */
 	void loadDef() {
 		if (mSelectedDef != null) {
-			setOutcome(Outcomes.DEF_SELECTED, mSelectedDef.getId().toString());
+			ResourceItem resourceItem = Pools.resourceItem.obtain();
+			resourceItem.resourceId = mSelectedDef.getId();
+			resourceItem.revision = -1;
+			if (mSelectedDef instanceof IResourceRevision) {
+				resourceItem.revision = mSelectedDef.getRevision();
+			}
+
+			setOutcome(Outcomes.DEF_SELECTED, resourceItem);
 		} else {
 			/** @todo print an error message */
 		}
@@ -487,5 +498,5 @@ public class SelectDefScene extends WorldScene {
 	/** Shows only one's own actors, this is the value of the checkbox */
 	private boolean mShowMineOnly;
 	/** Definition type to select from */
-	private Class<?> mDefType;
+	private Class<? extends IResource> mDefType;
 }

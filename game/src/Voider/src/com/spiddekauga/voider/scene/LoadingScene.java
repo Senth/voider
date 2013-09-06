@@ -19,7 +19,7 @@ public abstract class LoadingScene extends Scene {
 	}
 
 	@Override
-	protected void onActivate(Outcomes outcome, String message) {
+	protected void onActivate(Outcomes outcome, Object message) {
 		super.onActivate(outcome, message);
 
 		if (outcome == Outcomes.LOADING_SUCCEEDED) {

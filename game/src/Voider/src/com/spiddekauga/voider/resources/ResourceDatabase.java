@@ -9,9 +9,11 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.ObjectMap;
+import com.badlogic.gdx.utils.ObjectMap.Entry;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.utils.Pool;
+import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Contains all current resources, revisions and loaded resources
@@ -65,7 +67,7 @@ class ResourceDatabase {
 			try {
 				UUID resourceId = UUID.fromString(revisionDir.name());
 
-				ResourceItem resourceDb = new ResourceItem(type);
+				ResourceInfo resourceDb = new ResourceInfo(type);
 
 				// Add all revisions, the file can contain both revision and
 				// date in that case split the string and store both
@@ -114,7 +116,7 @@ class ResourceDatabase {
 				UUID resourceId = UUID.fromString(resource.name());
 
 				// Save resource
-				ResourceItem resourceDb = new ResourceItem(type);
+				ResourceInfo resourceDb = new ResourceInfo(type);
 				mResources.put(resourceId, resourceDb);
 
 			} catch (IllegalArgumentException e) {
@@ -143,15 +145,15 @@ class ResourceDatabase {
 		return filePath;
 	}
 
-	/**
-	 * Gets the fully qualified file path name for the resource
-	 * @param type the type of resource
-	 * @param uuid the id of the resource
-	 * @return file path of the resource
-	 */
-	static String getFilePath(Class<?> type, UUID uuid) {
-		return ResourceNames.getDirPath(type) + uuid.toString();
-	}
+	//	/**
+	//	 * Gets the fully qualified file path name for the resource
+	//	 * @param type the type of resource
+	//	 * @param uuid the id of the resource
+	//	 * @return file path of the resource
+	//	 */
+	//	static String getFilePath(Class<?> type, UUID uuid) {
+	//		return ResourceNames.getDirPath(type) + uuid.toString();
+	//	}
 
 	/**
 	 * @param revision the revision to get the format of
@@ -169,7 +171,7 @@ class ResourceDatabase {
 	 * @return file path of the resource
 	 */
 	static String getFilePath(UUID resourceId, int revision) {
-		ResourceItem resourceDb = mResources.get(resourceId);
+		ResourceInfo resourceDb = mResources.get(resourceId);
 
 		if (resourceDb != null) {
 			if (resourceDb.revisionDates != null) {
@@ -260,9 +262,7 @@ class ResourceDatabase {
 			mAssetManager.load(filePath, type);
 
 			LoadingQueueItem loadingQueueItem = mLoadingQueuePool.obtain();
-			loadingQueueItem.resourceId = resourceId;
 			loadingQueueItem.scene = scene;
-			loadingQueueItem.revision = revisionToUse;
 			loadingQueueItem.filePath = filePath;
 			mLoadingQueue.add(loadingQueueItem);
 		}
@@ -274,13 +274,67 @@ class ResourceDatabase {
 	 * @param scene the scene the resource was loaded in
 	 * @param resource the resource to remove
 	 * @see #clearLoadedSceneResources(Scene)
+	 * @see #unload(Scene, UUID, Class, int) is a bit slower as it must lookup the filePath.
 	 */
 	static void unload(Scene scene, IResource resource) {
-		boolean fullyUnloaded = mLoadedResources.removeLoadedResource(scene, resource);
+		int revisionToUse = -1;
+		if (resource instanceof IResourceRevision) {
+			revisionToUse = ((IResourceRevision) resource).getRevision();
+		}
 
-		if (fullyUnloaded) {
+		boolean fullUnloaded = mLoadedResources.removeLoadedResource(scene, resource.getId(), resource.getClass(), revisionToUse);
+
+		if (fullUnloaded) {
 			mAssetManager.unload(getFilePath(resource));
 		}
+	}
+
+	/**
+	 * Removes the loaded resource. This has to be called the same number of
+	 * times the resource was loaded.
+	 * @param scene the scene the resource was loaded in
+	 * @param resourceId id of the resource to be unloaded
+	 * @param type the resource type of there resource
+	 * @param revision revision of the resource to be unloaded, if the resource doesn't
+	 * use a revision this parameter will not be used...
+	 * @see #clearLoadedSceneResources(Scene)
+	 * @see #unload(Scene, IResource) is a bit faster.
+	 */
+	static void unload(Scene scene, UUID resourceId, Class<?> type, int revision) {
+		int revisionToUse = -1;
+		if (IResourceRevision.class.isAssignableFrom(type)) {
+			revisionToUse = revision;
+		}
+
+		boolean fullyUnloaded = mLoadedResources.removeLoadedResource(scene, resourceId, type, revisionToUse);
+
+		if (fullyUnloaded) {
+			mAssetManager.unload(getFilePath(resourceId, revisionToUse));
+		}
+	}
+
+	/**
+	 * Get all existing resources of a specified type, this will always return the latest resource
+	 * @param type the type of resource to return
+	 * @return all existing resources of the specified type, usually these aren't loaded, so be sure to load
+	 * them first. Don't forget to free the all resource items with Pools.resourceItem.freeAll(resources) and
+	 * the arraylist with Pools.arrayList(resources).
+	 */
+	static ArrayList<ResourceItem> getAllExistingResource(Class<?> type) {
+		@SuppressWarnings("unchecked")
+		ArrayList<ResourceItem> resources = Pools.arrayList.obtain();
+		resources.clear();
+
+		for (Entry<UUID, ResourceInfo> entry : mResources.entries()) {
+			if (entry.value.type == type) {
+				ResourceItem resourceItem = Pools.resourceItem.obtain();
+				resourceItem.resourceId = entry.key;
+				resourceItem.revision = entry.value.latestRevision;
+				resources.add(resourceItem);
+			}
+		}
+
+		return resources;
 	}
 
 	/**
@@ -291,6 +345,18 @@ class ResourceDatabase {
 	 */
 	static ArrayList<IResource> getAllLoadedSceneResources(Scene scene) {
 		return mLoadedResources.getAllLoadedSceneResources(scene);
+	}
+
+	/**
+	 * Get all loaded resources of the specified type for this scene
+	 * @param <ResourceType> type of the resource to get
+	 * @param scene the scene to get all loaded resources from
+	 * @param type the type of resource to get
+	 * @return all loaded resource of the specified type in this scene. Don't forget to use Pool.arrayList.free(resources)
+	 * once you have used it!
+	 */
+	static <ResourceType extends IResource> ArrayList<ResourceType> getAllLoadedSceneResourceOf(Scene scene, Class<ResourceType> type) {
+		return mLoadedResources.getAllLoadedSceneResourceOf(scene, type);
 	}
 
 	/**
@@ -319,7 +385,7 @@ class ResourceDatabase {
 	 * @param resource the resource that has been saved
 	 */
 	static void addSavedResource(IResource resource) {
-		ResourceItem resourceDb = mResources.get(resource.getId());
+		ResourceInfo resourceDb = mResources.get(resource.getId());
 
 		// Resource already exist, just add revision
 		if (resourceDb != null) {
@@ -329,7 +395,7 @@ class ResourceDatabase {
 		}
 		// Create new resource db with revision
 		else {
-			resourceDb = new ResourceItem(resource);
+			resourceDb = new ResourceInfo(resource);
 			mResources.put(resource.getId(), resourceDb);
 		}
 	}
@@ -346,12 +412,12 @@ class ResourceDatabase {
 	 * 
 	 * @author Matteus Magnusson <senth.wallace@gmail.com>
 	 */
-	private static class ResourceItem {
+	private static class ResourceInfo {
 		/**
 		 * Creates a new resource DB type with no revision
 		 * @param type the type of the resource
 		 */
-		ResourceItem(Class<?> type) {
+		ResourceInfo(Class<?> type) {
 			this.type = type;
 		}
 
@@ -360,24 +426,12 @@ class ResourceDatabase {
 		 * resource uses revisions
 		 * @param resource
 		 */
-		ResourceItem(IResource resource) {
+		ResourceInfo(IResource resource) {
 			type = resource.getClass();
 
 			if (resource instanceof IResourceRevision) {
 				addRevision((IResourceRevision)resource);
 			}
-		}
-
-		/**
-		 * Creates a new resource DB type with revision information
-		 * @param type the type of the resource
-		 * @param revision the revision to initially add
-		 * @param date creation date of the revision, may be null
-		 */
-		ResourceItem(Class<?> type, int revision, String date) {
-			this.type = type;
-
-			addRevision(revision, date);
 		}
 
 		/**
@@ -388,6 +442,10 @@ class ResourceDatabase {
 		void addRevision(int revision, String date) {
 			if (revisionDates == null) {
 				revisionDates = new ObjectMap<Integer, String>();
+			}
+
+			if (revision > latestRevision) {
+				latestRevision = revision;
 			}
 
 			revisionDates.put(revision, date);
@@ -407,29 +465,27 @@ class ResourceDatabase {
 		}
 
 		/** Type of resource */
-		Class<?> type;
+		private Class<?> type;
+		/** Latest revision of the resource */
+		private int latestRevision = -1;
 		/** all available including the date */
-		ObjectMap<Integer, String> revisionDates = null;
+		private ObjectMap<Integer, String> revisionDates = null;
 	}
 
 	/**
 	 * Container for currently loading resources (and waiting to be set)
 	 */
 	private static class LoadingQueueItem {
-		/** Currently loading resource */
-		UUID resourceId = null;
 		/** File path of the resource */
 		String filePath = null;
 		/** For this scene */
 		Scene scene = null;
-		/** Revision of the loading resource */
-		int revision = -1;
 	}
 
 	/** Loaded resources */
 	private static LoadedDb mLoadedResources = new LoadedDb();
 	/** All resources and revisions */
-	private static ObjectMap<UUID, ResourceItem> mResources = new ObjectMap<UUID, ResourceDatabase.ResourceItem>();
+	private static ObjectMap<UUID, ResourceInfo> mResources = new ObjectMap<UUID, ResourceDatabase.ResourceInfo>();
 	/** Pool for LoadingQueue */
 	private static Pool<LoadingQueueItem> mLoadingQueuePool = new Pool<ResourceDatabase.LoadingQueueItem>(LoadingQueueItem.class, 30, 300);
 	/** Asset manager */

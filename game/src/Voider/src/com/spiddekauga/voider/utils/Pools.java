@@ -12,6 +12,7 @@ import com.spiddekauga.utils.scene.ui.Label;
 import com.spiddekauga.utils.scene.ui.Row;
 import com.spiddekauga.voider.game.actors.BulletActor;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
+import com.spiddekauga.voider.resources.ResourceItem;
 import com.spiddekauga.voider.resources.ResourceNames;
 
 /**
@@ -37,6 +38,8 @@ public class Pools {
 	public static Pool<Cell> cell = new Pool<Cell>(Cell.class, 16, 250);
 	/** Row for tables */
 	public static Pool<Row> row = new Pool<Row>(Row.class, 16, 100);
+	/** Resource Items */
+	public static Pool<ResourceItem> resourceItem = new Pool<ResourceItem>(ResourceItem.class, 50, 400);
 	/** Bullets */
 	public static Pool<BulletActor> bullet = new Pool<BulletActor>(BulletActor.class, 100, 1000);
 	/** Time bullets */
