@@ -69,7 +69,7 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 			switch (mSelectionAction) {
 			case LOAD_BULLET:
 				if (message instanceof ResourceItem) {
-					BulletActorDef bulletDef = ResourceCacheFacade.get(this, ((ResourceItem) message).resourceId, ((ResourceItem) message).revision);
+					BulletActorDef bulletDef = ResourceCacheFacade.get(this, ((ResourceItem) message).id, ((ResourceItem) message).revision);
 					setDef(bulletDef);
 					mGui.resetValues();
 					mUnsaved = false;

@@ -150,12 +150,12 @@ public class SelectDefScene extends WorldScene {
 
 	/**
 	 * Checks if this resource is currently selected
-	 * @param defName name of the definition to check if it's selected
+	 * @param defId id of the definition to check if it's currently selected
 	 * @return true if it's selected, false if not
 	 */
-	boolean isDefSelected(String defName) {
+	boolean isDefSelected(UUID defId) {
 		if (mSelectedDef != null) {
-			return mSelectedDef.getId().toString().equals(defName);
+			return mSelectedDef.equals(defId);
 		}
 		return false;
 	}
@@ -232,7 +232,7 @@ public class SelectDefScene extends WorldScene {
 	void loadDef() {
 		if (mSelectedDef != null) {
 			ResourceItem resourceItem = Pools.resourceItem.obtain();
-			resourceItem.resourceId = mSelectedDef.getId();
+			resourceItem.id = mSelectedDef.getId();
 			resourceItem.revision = -1;
 			if (mSelectedDef instanceof IResourceRevision) {
 				resourceItem.revision = mSelectedDef.getRevision();

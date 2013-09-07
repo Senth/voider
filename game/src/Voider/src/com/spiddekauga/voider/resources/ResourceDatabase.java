@@ -178,18 +178,26 @@ class ResourceDatabase {
 		if (resourceDb != null) {
 			if (resourceDb.revisionDates != null) {
 				if (revision > 0) {
-					String date = resourceDb.revisionDates.get(revision);
+					String filePath = ResourceNames.getDirPath(resourceDb.type) + resourceId.toString() + "/" + getRevisionFormat(revision);
 
-					if (date != null) {
-						String filePath = ResourceNames.getDirPath(resourceDb.type) + resourceId.toString() + "/";
-						filePath += getRevisionFormat(revision) + "_" + date;
+					// Add date for definitions
+					if (Def.class.isAssignableFrom(resourceDb.type)) {
+						String date = resourceDb.revisionDates.get(revision);
+
+						if (date != null) {
+							filePath += "_" + date;
+							return filePath;
+						} else {
+							Gdx.app.error("ResourceDatabase", "Could not find revision (" + revision + ") for (" + resourceId + ") in getFilePath");
+						}
+					}
+					// No def, just return filepath :)
+					else {
 						return filePath;
-					} else {
-						Gdx.app.error("ResourceDatabase", "Could not find revision (" + revision + ") for this resource in getFilePath");
 					}
 
 				} else {
-					Gdx.app.error("ResourceDatabase", "Invalid revision (" + revision + "for resource database.");
+					Gdx.app.error("ResourceDatabase", "Invalid revision (" + revision + ") for resource database.");
 				}
 			} else {
 				return ResourceNames.getDirPath(resourceDb.type) + resourceId.toString();
@@ -216,6 +224,7 @@ class ResourceDatabase {
 				IResource resource = mAssetManager.get(loadingQueueItem.filePath);
 				mLoadedResources.setLoadedResource(loadingQueueItem.scene, resource);
 				iterator.remove();
+				Gdx.app.debug("ResourceDatabase", "Loaded " + resource.getClass().getSimpleName() + ": " + loadingQueueItem.filePath);
 			}
 		}
 
@@ -252,9 +261,9 @@ class ResourceDatabase {
 	 * revision of the resource as only one revision per scene and resource is allowed.
 	 */
 	static void load(Scene scene, UUID resourceId, Class<?> type, int revision) {
-		boolean alreadyIsLoading = mLoadedResources.addLoadingResource(scene, resourceId, type, revision);
+		boolean isNewResource = mLoadedResources.addLoadingResource(scene, resourceId, type, revision);
 
-		if (!alreadyIsLoading) {
+		if (isNewResource) {
 			int revisionToUse = -1;
 			if (IResourceRevision.class.isAssignableFrom(type)) {
 				revisionToUse = revision;
@@ -287,7 +296,9 @@ class ResourceDatabase {
 		boolean fullUnloaded = mLoadedResources.removeLoadedResource(scene, resource.getId(), resource.getClass(), revisionToUse);
 
 		if (fullUnloaded) {
-			mAssetManager.unload(getFilePath(resource));
+			String filepath = getFilePath(resource);
+			mAssetManager.unload(filepath);
+			Gdx.app.debug("ResourceDatabase", "Unloaded " + resource.getClass().getSimpleName() + ": " + filepath);
 		}
 	}
 
@@ -311,7 +322,9 @@ class ResourceDatabase {
 		boolean fullyUnloaded = mLoadedResources.removeLoadedResource(scene, resourceId, type, revisionToUse);
 
 		if (fullyUnloaded) {
-			mAssetManager.unload(getFilePath(resourceId, revisionToUse));
+			String filepath = getFilePath(resourceId, revisionToUse);
+			mAssetManager.unload(filepath);
+			Gdx.app.debug("ResourceDatabase", "Unloaded " + type.getSimpleName() + ": " + filepath);
 		}
 	}
 
@@ -330,7 +343,7 @@ class ResourceDatabase {
 		for (Entry<UUID, ResourceInfo> entry : mResources.entries()) {
 			if (entry.value.type == type) {
 				ResourceItem resourceItem = Pools.resourceItem.obtain();
-				resourceItem.resourceId = entry.key;
+				resourceItem.id = entry.key;
 				resourceItem.revision = entry.value.latestRevision;
 				resources.add(resourceItem);
 			}

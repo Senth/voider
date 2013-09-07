@@ -170,14 +170,18 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 	 */
 	public void setLevel(Level level) {
 		boolean sameLevel = false;
+		boolean sameRevision = false;
 
 		if (mLevel != null) {
-			if (mLevel.equals(level)) {
+			if (mLevel.equals(level.getId())) {
 				sameLevel = true;
+				if (mLevel.equals(level)) {
+					sameRevision = true;
+				}
 			}
 
 			// Unload the old level
-			if (ResourceCacheFacade.isLoaded(this, mLevel.getId(), mLevel.getRevision()) && !sameLevel) {
+			if (ResourceCacheFacade.isLoaded(this, mLevel.getId(), mLevel.getRevision()) && !sameRevision) {
 				ResourceCacheFacade.unload(this, mLevel, mLevel.getDef());
 			} else {
 				mLevel.dispose();
@@ -290,7 +294,7 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 				switch (mSelectionAction) {
 				case LEVEL:
 
-					mLoadingLevel = ResourceCacheFacade.get(this, ((ResourceItem) message).resourceId, ((ResourceItem) message).revision);
+					mLoadingLevel = ResourceCacheFacade.get(this, ((ResourceItem) message).id, ((ResourceItem) message).revision);
 
 					// Only load level if it's not the current level we selected
 					if (!mLoadingLevel.equals(mLevel.getDef())) {
@@ -314,11 +318,11 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 					break;
 
 				case PICKUP:
-					mInvoker.execute(new CLevelPickupDefSelect(((ResourceItem) message).resourceId, this));
+					mInvoker.execute(new CLevelPickupDefSelect(((ResourceItem) message).id, this));
 					break;
 
 				case ENEMY:
-					mInvoker.execute(new CLevelEnemyDefSelect(((ResourceItem) message).resourceId, ((ResourceItem) message).revision, this));
+					mInvoker.execute(new CLevelEnemyDefSelect(((ResourceItem) message).id, ((ResourceItem) message).revision, this));
 					break;
 				}
 			} else {
@@ -591,7 +595,9 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 		mLevel.getDef().setRevision(mLevel.getDef().getRevision()-1);
 
 		// Load the saved actor and use it instead
+		// Def needs to be loaded twice, as the def should still be visible if we change level
 		try {
+			ResourceCacheFacade.load(this, mLevel.getDef().getId(), LevelDef.class, false, mLevel.getDef().getRevision()+1);
 			ResourceCacheFacade.load(this, mLevel.getId(), Level.class, mLevel.getDef().getId(), LevelDef.class, mLevel.getDef().getRevision()+1);
 			ResourceCacheFacade.finishLoading();
 

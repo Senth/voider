@@ -59,7 +59,7 @@ public class MainMenu extends Scene {
 			/** @todo handle missing file */
 		} else if (outcome == Outcomes.DEF_SELECTED) {
 			if (message instanceof ResourceItem) {
-				LevelDef loadedLevelDef = ResourceCacheFacade.get(this, ((ResourceItem) message).resourceId, ((ResourceItem) message).revision);
+				LevelDef loadedLevelDef = ResourceCacheFacade.get(this, ((ResourceItem) message).id, ((ResourceItem) message).revision);
 				GameScene gameScene = new GameScene(false, false);
 				gameScene.setLevelToLoad(loadedLevelDef);
 				SceneSwitcher.switchTo(gameScene);

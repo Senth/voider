@@ -64,7 +64,7 @@ class ResourceDependencyLoader implements Disposable {
 		// External
 		for (ObjectMap.Entry<UUID, ResourceItem> entry : resource.getExternalDependencies().entries()) {
 			ResourceItem dependencyInformation = entry.value;
-			IResource dependency = ResourceDatabase.getLoadedResource(scene, dependencyInformation.resourceId, dependencyInformation.revision);
+			IResource dependency = ResourceDatabase.getLoadedResource(scene, dependencyInformation.id, dependencyInformation.revision);
 			ResourceDatabase.unload(scene, dependency);
 		}
 
@@ -93,9 +93,8 @@ class ResourceDependencyLoader implements Disposable {
 		for (int i = 0; i < mLoadingDefs.size; ++i) {
 			ResourceItem queueItem = mLoadingDefs.get(i);
 
-			if (mAssetManager.isLoaded(queueItem.fullName)) {
-				IResourceDependency def = (IResourceDependency) mAssetManager.get(queueItem.fullName, queueItem.resourceType);
-
+			if (ResourceDatabase.isResourceLoaded(queueItem.scene, queueItem.id, queueItem.revision)) {
+				IResourceDependency def = (IResourceDependency) ResourceDatabase.getLoadedResource(queueItem.scene, queueItem.id, queueItem.revision);
 
 				// Load dependencies
 				// External
@@ -105,7 +104,7 @@ class ResourceDependencyLoader implements Disposable {
 					// Propagate scene so that we always know which scene to load into
 					dependency.scene = queueItem.scene;
 					try {
-						load(queueItem.scene, dependency.resourceId, dependency.resourceType, dependency.revision);
+						load(queueItem.scene, dependency.id, dependency.type, dependency.revision);
 					} catch (UndefinedResourceTypeException e) {
 						// Reset entire loading queue
 						mLoadingDefs.clear();

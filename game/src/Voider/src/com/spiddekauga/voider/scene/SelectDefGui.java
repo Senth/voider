@@ -263,14 +263,21 @@ public class SelectDefGui extends Gui {
 			mDefTable.add(cellsPerRow - cellCount);
 		}
 
+		resetInfoPanel();
+	}
 
-		// Reset values of the info panel.
+	/**
+	 * Resets the info panel
+	 */
+	private void resetInfoPanel() {
 		mWidgets.infoPanel.name.setText(mSelectDefScene.getName());
 		mWidgets.infoPanel.date.setText(mSelectDefScene.getDate());
 		mWidgets.infoPanel.description.setText(mSelectDefScene.getDescription());
 		mWidgets.infoPanel.creator.setText(mSelectDefScene.getCreator());
 		mWidgets.infoPanel.originalCreator.setText(mSelectDefScene.getOriginalCreator());
 		mWidgets.infoPanel.revision.setText(mSelectDefScene.getRevision());
+
+		mInfoPanelHider.show();
 	}
 
 	/**
@@ -320,22 +327,23 @@ public class SelectDefGui extends Gui {
 				if (inputEvent.getType() == Type.touchDown) {
 					String defName = event.getListenerActor().getName();
 
-					// Pressed same twice -> select this
-					if (mSelectDefScene.isDefSelected(defName)) {
-						mSelectDefScene.loadDef();
+					UUID id = null;
+					int revision = -1;
+					String[] splitStrings = defName.split("_");
+					if (splitStrings.length == 2) {
+						id = UUID.fromString(splitStrings[0]);
+						revision = Integer.parseInt(splitStrings[1]);
 					} else {
-						String[] splitStrings = defName.split("_");
-						if (splitStrings.length == 2) {
-							UUID id = UUID.fromString(splitStrings[0]);
-							int revision = Integer.parseInt(splitStrings[1]);
-							mSelectDefScene.setSelectedDef(id, revision);
-							resetValues();
-						} else {
-							Gdx.app.error("SelectDefGui", "Split string does not contain one _");
-						}
+						Gdx.app.error("SelectDefGui", "Split string does not contain one _");
 					}
 
-					mInfoPanelHider.show();
+					// Pressed same twice -> select this
+					if (mSelectDefScene.isDefSelected(id)) {
+						mSelectDefScene.loadDef();
+					} else {
+						mSelectDefScene.setSelectedDef(id, revision);
+						resetInfoPanel();
+					}
 				}
 			}
 			return true;

@@ -30,6 +30,10 @@ public class ResourceSaver {
 	public static void save(IResource resource) {
 		assert(mCrypter != null);
 
+		if (resource instanceof Def) {
+			((Def) resource).updateDate();
+		}
+
 		Json json = new JsonWrapper();
 		String jsonString = json.toJson(resource);
 		try {
@@ -37,16 +41,15 @@ public class ResourceSaver {
 
 			Gdx.app.debug("ResourceSaver", "Encrypted (" + resource.getClass().getSimpleName() + ") " + resource.getId().toString());
 
-			if (resource instanceof Def) {
-				((Def) resource).updateDate();
-			}
 			String filePath = ResourceDatabase.getFilePath(resource);
 			FileHandle saveFile = Gdx.files.external(filePath);
+
+			ResourceDatabase.addSavedResource(resource);
 
 			// Save the file
 			saveFile.writeBytes(encryptedDef, false);
 
-			Gdx.app.debug("ResourceSaver", "Saved resource (" + resource.getClass().getSimpleName() + ") " + resource.getId().toString());
+			Gdx.app.debug("ResourceSaver", "Saved resource (" + resource.getClass().getSimpleName() + ") " + filePath);
 
 		} catch (Exception e) {
 			Gdx.app.error("ResourceSaver", "Could not encrypt message. Your file has not been saved!");

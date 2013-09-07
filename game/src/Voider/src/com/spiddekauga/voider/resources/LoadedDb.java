@@ -28,7 +28,7 @@ class LoadedDb {
 	boolean addLoadingResource(Scene scene, UUID resourceId, Class<?> type, int revision) {
 		ObjectMap<UUID, LoadedResource> sceneResources = mLoadedResources.get(scene);
 
-		// No existing scene, add scen
+		// No existing scene, add scene
 		if (sceneResources == null) {
 			sceneResources = new ObjectMap<UUID, LoadedDb.LoadedResource>();
 			mLoadedResources.put(scene, sceneResources);
@@ -126,13 +126,13 @@ class LoadedDb {
 						}
 					}
 				} else {
-					Gdx.app.error("LoadedDb", "Could not find the revision for the resource");
+					Gdx.app.error("LoadedDb", "Could not find the revision (" + revision + ") for (" + type.getSimpleName() + ": " + resourceId + ")");
 				}
 			} else {
-				Gdx.app.error("LoadedDb", "Could not find resource for the resource!");
+				Gdx.app.error("LoadedDb", "Could not find " + type.getSimpleName() + ": " + resourceId);
 			}
 		} else {
-			Gdx.app.error("LoadedDb", "Could not find scene for the resource!");
+			Gdx.app.error("LoadedDb", "Could not find scene (" + scene.getClass().getSimpleName() + ") for the resource!");
 		}
 
 		return fullyUnloaded;
@@ -176,13 +176,13 @@ class LoadedDb {
 				if (loadedRevision != null) {
 					return loadedRevision;
 				} else {
-					Gdx.app.error("LoadedDb", "Could not find the revision for the resource");
+					Gdx.app.debug("LoadedDb", "Could not find the revision (" + revision + ") for (" + loadedResource.type.getSimpleName() + ": " + resourceId + ")");
 				}
 			} else {
-				Gdx.app.error("LoadedDb", "Could not find resource for the resource!");
+				Gdx.app.debug("LoadedDb", "Could not find " + resourceId);
 			}
 		} else {
-			Gdx.app.error("LoadedDb", "Could not find scene for the resource!");
+			Gdx.app.error("LoadedDb", "Could not find scene (" + scene.getClass().getSimpleName() + ") for the resource!");
 		}
 
 		return null;

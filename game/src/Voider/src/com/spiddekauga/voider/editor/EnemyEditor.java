@@ -133,11 +133,11 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 			if (message instanceof ResourceItem) {
 				switch (mSelectionAction) {
 				case BULLET_TYPE:
-					mInvoker.execute(new CEnemyBulletDefSelect(((ResourceItem) message).resourceId, ((ResourceItem) message).revision, this));
+					mInvoker.execute(new CEnemyBulletDefSelect(((ResourceItem) message).id, ((ResourceItem) message).revision, this));
 					break;
 
 				case LOAD_ENEMY:
-					mDef = ResourceCacheFacade.get(this, ((ResourceItem) message).resourceId, ((ResourceItem) message).revision);
+					mDef = ResourceCacheFacade.get(this, ((ResourceItem) message).id, ((ResourceItem) message).revision);
 					setEnemyDef();
 					setMovementType(mDef.getMovementType());
 					mGui.resetValues();

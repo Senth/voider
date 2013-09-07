@@ -139,13 +139,8 @@ public abstract class Def extends Resource implements Json.Serializable, IResour
 	public void read(Json json, JsonValue jsonData) {
 		super.read(json, jsonData);
 
-		if (jsonData.getInt("REVISION") > 1) {
-			mDate = json.readValue("mDate", Date.class, jsonData);
-		} else {
-			mDate = new Date();
-		}
-
 		mName = json.readValue("mName", String.class, jsonData);
+		mDate = json.readValue("mDate", Date.class, jsonData);
 		mCreator = json.readValue("mCreator", String.class, jsonData);
 		mOriginalCreator = json.readValue("mOriginalCreator", String.class, jsonData);
 		mRevision = json.readValue("mRevision", int.class, jsonData);

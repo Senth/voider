@@ -86,13 +86,13 @@ public class ResourceCacheFacade {
 		// Load dependencies
 		if (loadDependencies) {
 			for (ResourceItem resourceItem : resources) {
-				mDependencyLoader.load(scene, resourceItem.resourceId, type, resourceItem.revision);
+				mDependencyLoader.load(scene, resourceItem.id, type, resourceItem.revision);
 			}
 		}
 		// Only load them, no dependencies
 		else {
 			for (ResourceItem resourceItem : resources) {
-				ResourceDatabase.load(scene, resourceItem.resourceId, type, resourceItem.revision);
+				ResourceDatabase.load(scene, resourceItem.id, type, resourceItem.revision);
 			}
 		}
 
@@ -122,21 +122,21 @@ public class ResourceCacheFacade {
 		// Load dependencies
 		if (loadDependencies) {
 			for (ResourceItem resourceItem : resources) {
-				Integer overridingRevision = revisionsToLoad.get(resourceItem.resourceId);
+				Integer overridingRevision = revisionsToLoad.get(resourceItem.id);
 				if (overridingRevision == null) {
 					overridingRevision = resourceItem.revision;
 				}
-				mDependencyLoader.load(scene, resourceItem.resourceId, type, overridingRevision);
+				mDependencyLoader.load(scene, resourceItem.id, type, overridingRevision);
 			}
 		}
 		// Only load them, no dependencies
 		else {
 			for (ResourceItem resourceItem : resources) {
-				Integer overridingRevision = revisionsToLoad.get(resourceItem.resourceId);
+				Integer overridingRevision = revisionsToLoad.get(resourceItem.id);
 				if (overridingRevision == null) {
 					overridingRevision = resourceItem.revision;
 				}
-				ResourceDatabase.load(scene, resourceItem.resourceId, type, overridingRevision);
+				ResourceDatabase.load(scene, resourceItem.id, type, overridingRevision);
 			}
 		}
 
@@ -158,18 +158,18 @@ public class ResourceCacheFacade {
 		ArrayList<ResourceItem> resources = ResourceDatabase.getAllExistingResource(type);
 
 
-		// Load dependencies
+		// Unload dependencies
 		if (unloadDependencies) {
 			for (ResourceItem resourceItem : resources) {
 				// Get the resource first
-				IResourceDependency resource = ResourceDatabase.getLoadedResource(scene, resourceItem.resourceId, resourceItem.revision);
+				IResourceDependency resource = ResourceDatabase.getLoadedResource(scene, resourceItem.id, resourceItem.revision);
 				mDependencyLoader.unload(scene, resource);
 			}
 		}
-		// Only load them, no dependencies
+		// Only unload the resource, no dependencies
 		else {
 			for (ResourceItem resourceItem : resources) {
-				ResourceDatabase.unload(scene, resourceItem.resourceId, type, resourceItem.revision);
+				ResourceDatabase.unload(scene, resourceItem.id, type, resourceItem.revision);
 			}
 		}
 
@@ -197,23 +197,23 @@ public class ResourceCacheFacade {
 		// Load dependencies
 		if (unloadDependencies) {
 			for (ResourceItem resourceItem : resources) {
-				Integer overridingRevision = revisionsToUnload.get(resourceItem.resourceId);
+				Integer overridingRevision = revisionsToUnload.get(resourceItem.id);
 				if (overridingRevision == null) {
 					overridingRevision = resourceItem.revision;
 				}
 				// Get the resource first
-				IResourceDependency resource = ResourceDatabase.getLoadedResource(scene, resourceItem.resourceId, overridingRevision);
+				IResourceDependency resource = ResourceDatabase.getLoadedResource(scene, resourceItem.id, overridingRevision);
 				mDependencyLoader.unload(scene, resource);
 			}
 		}
 		// Only load them, no dependencies
 		else {
 			for (ResourceItem resourceItem : resources) {
-				Integer overridingRevision = revisionsToUnload.get(resourceItem.resourceId);
+				Integer overridingRevision = revisionsToUnload.get(resourceItem.id);
 				if (overridingRevision == null) {
 					overridingRevision = resourceItem.revision;
 				}
-				ResourceDatabase.unload(scene, resourceItem.resourceId, type, overridingRevision);
+				ResourceDatabase.unload(scene, resourceItem.id, type, overridingRevision);
 			}
 		}
 
@@ -227,7 +227,7 @@ public class ResourceCacheFacade {
 	 * @return true if the resource cache facade is currently loading
 	 */
 	public static boolean isLoading() {
-		return mAssetManager.getQueuedAssets() > 0 || mDependencyLoader.isLoading();
+		return mAssetManager.getQueuedAssets() > 0 || mDependencyLoader.isLoading() || !ResourceDatabase.isAllResourcesLoaded();
 	}
 
 	/**
@@ -245,7 +245,7 @@ public class ResourceCacheFacade {
 		load(scene, defId, defType, true, revision);
 
 		// Add the resource to the queue. Load this resource once all dependencies are loaded
-		mLoadQueue.add(new ResourceItem(resourceId, resourceType, revision));
+		mLoadQueue.add(new ResourceItem(scene, resourceId, resourceType, revision));
 	}
 
 	//	/**
@@ -496,7 +496,7 @@ public class ResourceCacheFacade {
 				else if (!mLoadQueue.isEmpty()) {
 					fullyLoaded = false;
 					ResourceItem toLoad = mLoadQueue.removeFirst();
-					mAssetManager.load(toLoad.fullName, toLoad.resourceType);
+					ResourceDatabase.load(toLoad.scene, toLoad.id, toLoad.type, toLoad.revision);
 				}
 			} catch (UndefinedResourceTypeException e) {
 				mLoadQueue.clear();
