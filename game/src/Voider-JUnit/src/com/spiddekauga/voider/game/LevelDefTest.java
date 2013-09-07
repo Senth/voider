@@ -28,7 +28,6 @@ public class LevelDefTest {
 		def.setPrologue("story before");
 		def.setStoryAfter("story after");
 		def.setEndXCoord(555.025f);
-		def.setVersion(1, 2, 3);
 		def.increaseRevision();
 
 		Json json = new JsonWrapper();
@@ -41,7 +40,6 @@ public class LevelDefTest {
 		assertEquals("story before", def.getPrologue(), jsonDef.getPrologue());
 		assertEquals("story after", def.getEpilogue(), jsonDef.getEpilogue());
 		assertEquals("end x coord", def.getEndXCoord(), jsonDef.getEndXCoord(), 0.0f);
-		assertEquals("version", def.getVersionString(), jsonDef.getVersionString());
 		assertEquals("revision", def.getRevision(), jsonDef.getRevision());
 		assertEquals("base speed", def.getBaseSpeed(), jsonDef.getBaseSpeed(), 0.0f);
 		assertEquals("level id", def.getLevelId(), jsonDef.getLevelId());
@@ -58,62 +56,9 @@ public class LevelDefTest {
 		assertEquals("story before", def.getPrologue(), jsonDef.getPrologue());
 		assertEquals("story after", def.getEpilogue(), jsonDef.getEpilogue());
 		assertEquals("end x coord", def.getEndXCoord(), jsonDef.getEndXCoord(), 0.0f);
-		assertEquals("version", def.getVersionString(), jsonDef.getVersionString());
 		assertEquals("revision", def.getRevision(), jsonDef.getRevision());
 		assertEquals("base speed", def.getBaseSpeed(), jsonDef.getBaseSpeed(), 0.0f);
 		assertEquals("level id", def.getLevelId(), jsonDef.getLevelId());
-	}
-
-	/**
-	 * Test method for {@link com.spiddekauga.voider.game.LevelDef#increaseVersionFirst()}.
-	 */
-	@Test
-	public void increaseVersionFirst() {
-		LevelDef def = new LevelDef();
-		def.setVersion(1, 2, 3);
-		def.increaseVersionFirst();
-
-		assertEquals("first", 2, def.getVersionFirst());
-		assertEquals("second", 0, def.getVersionSecond());
-		assertEquals("third", 0, def.getVersionThird());
-	}
-
-	/**
-	 * Test method for {@link com.spiddekauga.voider.game.LevelDef#increaseVersionSecond()}.
-	 */
-	@Test
-	public void increaseVersionSecond() {
-		LevelDef def = new LevelDef();
-		def.setVersion(1, 2, 3);
-		def.increaseVersionSecond();
-
-		assertEquals("first", 1, def.getVersionFirst());
-		assertEquals("second", 3, def.getVersionSecond());
-		assertEquals("third", 0, def.getVersionThird());
-	}
-
-	/**
-	 * Test method for {@link com.spiddekauga.voider.game.LevelDef#increaseVersionThird()}.
-	 */
-	@Test
-	public void increaseVersionThird() {
-		LevelDef def = new LevelDef();
-		def.setVersion(1, 2, 3);
-		def.increaseVersionThird();
-
-		assertEquals("first", 1, def.getVersionFirst());
-		assertEquals("second", 2, def.getVersionSecond());
-		assertEquals("third", 4, def.getVersionThird());
-	}
-
-	/**
-	 * Test method for {@link com.spiddekauga.voider.game.LevelDef#getVersionString()}.
-	 */
-	@Test
-	public void getVersionString() {
-		LevelDef def = new LevelDef();
-		def.setVersion(1, 2, 3);
-		assertEquals("version string", "1.2.3", def.getVersionString());
 	}
 
 }

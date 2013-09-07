@@ -168,7 +168,6 @@ class LevelEditorGui extends EditorGui {
 		mWidgets.option.description.setText(mLevelEditor.getLevelDescription());
 		mWidgets.option.name.setText(mLevelEditor.getLevelName());
 		mWidgets.option.revision.setText(mLevelEditor.getLevelRevision());
-		mWidgets.option.version.setText(mLevelEditor.getLevelVersion());
 		mWidgets.option.storyBefore.setText(mLevelEditor.getPrologue());
 		mWidgets.option.epilogue.setText(mLevelEditor.getEpilogue());
 		mWidgets.option.speed.setValue(mLevelEditor.getLevelStartingSpeed());
@@ -648,17 +647,6 @@ class LevelEditorGui extends EditorGui {
 		new TooltipListener(label, "Revision", Messages.Tooltip.Level.Option.REVISION);
 		left.add(label);
 		mWidgets.option.revision = label;
-
-
-		left.row().setAlign(Horizontal.LEFT, Vertical.MIDDLE);
-		label = new Label("Current version:", labelStyle);
-		new TooltipListener(label, "Version", Messages.Tooltip.Level.Option.VERSION);
-		left.add(label).setPadRight(Editor.LABEL_PADDING_BEFORE_SLIDER);
-
-		label = new Label("", labelStyle);
-		new TooltipListener(label, "Version", Messages.Tooltip.Level.Option.VERSION);
-		left.add(label);
-		mWidgets.option.version = label;
 
 
 		// RIGHT
@@ -1653,7 +1641,6 @@ class LevelEditorGui extends EditorGui {
 			TextField description = null;
 			Slider speed = null;
 			Label revision = null;
-			Label version = null;
 			TextField storyBefore = null;
 			TextField epilogue = null;
 		}

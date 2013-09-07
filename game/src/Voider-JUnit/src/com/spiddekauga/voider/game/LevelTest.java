@@ -13,10 +13,12 @@ import com.badlogic.gdx.backends.lwjgl.LwjglFiles;
 import com.badlogic.gdx.backends.lwjgl.LwjglNativesLoader;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
-import com.spiddekauga.utils.JsonWrapper; import com.badlogic.gdx.utils.Json;
+import com.badlogic.gdx.utils.Json;
+import com.spiddekauga.utils.JsonWrapper;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.PlayerActor;
+import com.spiddekauga.voider.game.actors.PlayerActorDef;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceDependencyLoaderTest;
 import com.spiddekauga.voider.resources.ResourceNames;
@@ -46,10 +48,12 @@ public class LevelTest {
 		Actor.setWorld(mWorld);
 		mPlayerActor = new PlayerActor();
 
+		LoadingTextScene scene = new LoadingTextScene("test");
+
 		ResourceSaver.save(mUsingLevelDef);
 		ResourceSaver.save(mPlayerActor.getDef());
-		ResourceCacheFacade.load(mPlayerActor.getDef(), false);
-		ResourceCacheFacade.load(mUsingLevelDef, false);
+		ResourceCacheFacade.load(scene, mPlayerActor.getDef().getId(), PlayerActorDef.class, false, mPlayerActor.getDef().getRevision());
+		ResourceCacheFacade.load(scene, mUsingLevelDef.getId(), LevelDef.class, false, mUsingLevelDef.getRevision());
 		ResourceCacheFacade.finishLoading();
 
 		mfXCoord = Level.class.getDeclaredField("mXCoord");

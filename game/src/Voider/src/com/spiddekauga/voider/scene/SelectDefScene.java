@@ -45,6 +45,7 @@ public class SelectDefScene extends WorldScene {
 		mShowMineOnly = showMineOnly;
 		mDefType = defType;
 
+
 		((SelectDefGui)mGui).setSelectDefScene(this);
 
 		for (int i = 0; i < mCategoryFilters.length; ++i) {
@@ -140,11 +141,11 @@ public class SelectDefScene extends WorldScene {
 
 	/**
 	 * Sets the selected definition
-	 * @param defName name of the definition
+	 * @param defId id of the definition
+	 * @param defRevision definition's revision
 	 */
-	void setSelectedDef(String defName) {
-		UUID defId = UUID.fromString(defName);
-		mSelectedDef = (Def) ResourceCacheFacade.get(this, defId, revision???);
+	void setSelectedDef(UUID defId, int defRevision) {
+		mSelectedDef = (Def) ResourceCacheFacade.get(this, defId, defRevision);
 	}
 
 	/**
@@ -221,17 +222,6 @@ public class SelectDefScene extends WorldScene {
 	String getRevision() {
 		if (mSelectedDef != null) {
 			return String.valueOf(mSelectedDef.getRevision());
-		}
-		return "";
-	}
-
-	/**
-	 * @return version of the definition. An empty string if no
-	 * definition has been selected
-	 */
-	String getVersion() {
-		if (mSelectedDef != null) {
-			return mSelectedDef.getVersionString();
 		}
 		return "";
 	}

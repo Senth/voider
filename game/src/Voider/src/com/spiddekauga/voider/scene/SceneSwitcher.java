@@ -199,6 +199,37 @@ public class SceneSwitcher {
 	}
 
 	/**
+	 * @param skipLoadingScenes Set to true to return the scene to be activated after a loading
+	 * scene is done (if one is active)
+	 * @return current active scene
+	 */
+	public static Scene getActiveScene(boolean skipLoadingScenes) {
+		Scene activeScene = null;
+
+		if (!mScenes.isEmpty()) {
+			activeScene = mScenes.peek();
+
+			if (skipLoadingScenes && activeScene instanceof LoadingScene) {
+				Iterator<Scene> iterator = mScenes.iterator();
+				// Skip first as we already know it's a loading scene
+				iterator.next();
+
+				while (activeScene instanceof LoadingScene && iterator.hasNext()) {
+					activeScene = iterator.next();
+				}
+
+				// If we have iterated through all scenes and we still only find loading scenes
+				// return null
+				if (activeScene instanceof LoadingScene) {
+					activeScene = null;
+				}
+			}
+		}
+
+		return activeScene;
+	}
+
+	/**
 	 * Return screen width in world coordinates, but only if the current scene
 	 * is a world scene.
 	 * @return screen width in world coordinates, if scene is not a world it return 0.
@@ -381,7 +412,7 @@ public class SceneSwitcher {
 	private static void popCurrentScene() {
 		Scene poppedScene = mScenes.pop();
 		Outcomes outcome = poppedScene.getOutcome();
-		String outcomeMessage = poppedScene.getOutcomeMessage();
+		Object outcomeMessage = poppedScene.getOutcomeMessage();
 
 		poppedScene.onDispose();
 		Gdx.input.setInputProcessor(null);
@@ -484,5 +515,5 @@ public class SceneSwitcher {
 	/** Outcome of last scene */
 	private static Outcomes mOutcome = null;
 	/** Message from the last outcome */
-	private static String mOutcomeMessage = null;
+	private static Object mOutcomeMessage = null;
 }

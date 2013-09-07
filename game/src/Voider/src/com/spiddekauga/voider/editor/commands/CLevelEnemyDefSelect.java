@@ -14,34 +14,41 @@ import com.spiddekauga.voider.game.actors.ActorDef;
 public class CLevelEnemyDefSelect extends Command {
 	/**
 	 * Creates a command that will select an enemy in the specified level editor.
-	 * @param enemyId id of the enemie to select
+	 * @param id enemy id to select
+	 * @param revision enemy revision to select
 	 * @param levelEditor level editor to select the enemy in
 	 */
-	public CLevelEnemyDefSelect(UUID enemyId, LevelEditor levelEditor) {
-		mEnemyId = enemyId;
+	public CLevelEnemyDefSelect(UUID id, int revision, LevelEditor levelEditor) {
+		mId = id;
+		mRevision = revision;
 		mLevelEditor = levelEditor;
 		ActorDef selectedEnemy = levelEditor.getSelectedEnemyDef();
 		if (selectedEnemy != null) {
-			mPrevEnemyId = selectedEnemy.getId();
+			mIdPrev = selectedEnemy.getId();
+			mRevisionPrev = selectedEnemy.getRevision();
 		}
 	}
 
 	@Override
 	public boolean execute() {
-		boolean success = mLevelEditor.selectEnemyDef(mEnemyId);
+		boolean success = mLevelEditor.selectEnemyDef(mId, mRevision);
 		return success;
 	}
 
 	@Override
 	public boolean undo() {
-		boolean success = mLevelEditor.selectEnemyDef(mPrevEnemyId);
+		boolean success = mLevelEditor.selectEnemyDef(mIdPrev, mRevisionPrev);
 		return success;
 	}
 
 	/** The enemy to select (on execute) */
-	private UUID mEnemyId;
+	private UUID mId;
+	/** Enemy revision to select (on execute) */
+	private int mRevision;
 	/** Previous enemy id (on undo) */
-	private UUID mPrevEnemyId = null;
+	private UUID mIdPrev = null;
+	/** Previous enemy revision (on undo) */
+	private int mRevisionPrev = -1;
 	/** Level editor to select the enemy in */
 	private LevelEditor mLevelEditor;
 }

@@ -422,20 +422,21 @@ public class Level extends Resource implements Disposable, IResourceRevision {
 
 		json.writeValue("mResourceBinder", mResourceBinder);
 		json.writeValue("mLevelDefId", mLevelDef.getId());
+		json.writeValue("mLevelDefRev", mLevelDef.getRevision());
 		json.writeValue("mXCoord", mXCoord);
 		json.writeValue("mSpeed", mSpeed);
 		json.writeValue("mCompletedLevel", mCompletedLevel);
 	}
 
 	@Override
-	public void read(Json json, JsonValue jsonValue) {
-		super.read(json, jsonValue);
+	public void read(Json json, JsonValue jsonData) {
+		super.read(json, jsonData);
 
-		mResourceBinder = json.readValue("mResourceBinder", ResourceBinder.class, jsonValue);
+		mResourceBinder = json.readValue("mResourceBinder", ResourceBinder.class, jsonData);
 
-		mXCoord = json.readValue("mXCoord", float.class, jsonValue);
-		mSpeed = json.readValue("mSpeed", float.class, jsonValue);
-		mCompletedLevel = json.readValue("mCompletedLevel", boolean.class, jsonValue);
+		mXCoord = json.readValue("mXCoord", float.class, jsonData);
+		mSpeed = json.readValue("mSpeed", float.class, jsonData);
+		mCompletedLevel = json.readValue("mCompletedLevel", boolean.class, jsonData);
 
 		ArrayList<Trigger> triggers = mResourceBinder.getResources(Trigger.class);
 		for (Trigger trigger : triggers) {
@@ -444,9 +445,10 @@ public class Level extends Resource implements Disposable, IResourceRevision {
 		Pools.arrayList.free(triggers);
 
 		// Get the actual LevelDef
-		UUID levelDefId = json.readValue("mLevelDefId", UUID.class, jsonValue);
+		UUID levelDefId = json.readValue("mLevelDefId", UUID.class, jsonData);
+		int levelDefRev = json.readValue("mLevelDefRev", int.class, jsonData);
 		try {
-			mLevelDef = ResourceCacheFacade.get(levelDefId, LevelDef.class);
+			mLevelDef = ResourceCacheFacade.get(null, levelDefId, levelDefRev);
 		} catch (UndefinedResourceTypeException e) {
 			Gdx.app.error("Level", "Could not get level def when loading level");
 		} catch (GdxRuntimeException e) {

@@ -14,34 +14,41 @@ import com.spiddekauga.voider.game.actors.BulletActorDef;
 public class CEnemyBulletDefSelect extends Command {
 	/**
 	 * Creates a command that will select a bullet type for the specified enemy editor
-	 * @param bulletId id of the bullet definition to select
+	 * @param id bullet id definition to select
+	 * @param revision bullet revision
 	 * @param enemyEditor the enemy editor to select the bullet in
 	 */
-	public CEnemyBulletDefSelect(UUID bulletId, EnemyEditor enemyEditor) {
+	public CEnemyBulletDefSelect(UUID id, int revision, EnemyEditor enemyEditor) {
 		mEnemyEditor = enemyEditor;
-		mBulletId = bulletId;
+		mId = id;
+		mRevision = revision;
 		BulletActorDef selectedBullet = mEnemyEditor.getSelectedBulletDef();
 		if (selectedBullet != null) {
-			mPrevBulletId = selectedBullet.getId();
+			mIdPrev = selectedBullet.getId();
+			mRevisionPrev = selectedBullet.getRevision();
 		}
 	}
 
 	@Override
 	public boolean execute() {
-		boolean success = mEnemyEditor.selectBulletDef(mBulletId);
+		boolean success = mEnemyEditor.selectBulletDef(mId, mRevision);
 		return success;
 	}
 
 	@Override
 	public boolean undo() {
-		boolean success = mEnemyEditor.selectBulletDef(mPrevBulletId);
+		boolean success = mEnemyEditor.selectBulletDef(mIdPrev, mRevisionPrev);
 		return success;
 	}
 
 	/** Bullet to select (on execute) */
-	private UUID mBulletId;
+	private UUID mId;
 	/** Previous bullet (on undo) */
-	private UUID mPrevBulletId = null;
+	private UUID mIdPrev = null;
+	/** Bullet revision */
+	private int mRevision;
+	/** Previous bullet revision (on undo) */
+	private int mRevisionPrev = -1;
 	/** Enemy edito to select the bullet in */
 	private EnemyEditor mEnemyEditor;
 }

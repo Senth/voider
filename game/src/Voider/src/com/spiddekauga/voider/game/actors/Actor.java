@@ -487,7 +487,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 			json.writeValue("mDef", mDef);
 		} else {
 			json.writeValue("mDefId", mDef.getId());
-			json.writeValue("mDefType", mDef.getClass().getName());
+			json.writeValue("mDefRev", mDef.getRevision());
 		}
 
 		/** @TODO Do we need to save colliding actors? */
@@ -524,24 +524,19 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 
 		// Definition
 		if (savesDef()) {
-			// TODO get correct actorDef when loading
+			/** @todo when the game is publish all other resources will be
+			 * saved in the level. This means that the definition of enemies etc
+			 * should be saved as references and not save the actual definition */
 			mDef = json.readValue("mDef", StaticTerrainActorDef.class, jsonData);
 		}
 		// Get definition information to be able to load it
 		else {
 			UUID defId = json.readValue("mDefId", UUID.class, jsonData);
-			String defTypeName = json.readValue("mDefType", String.class, jsonData);
-			Class<?> defType = null;
-			try {
-				defType = Class.forName(defTypeName);
-			} catch (ClassNotFoundException e) {
-				Gdx.app.error("JsonRead", "Class not found for class: " + defTypeName);
-				throw new GdxRuntimeException(e);
-			}
+			int defRev = json.readValue("mDefRev", int.class, jsonData);
 
 			// Set the actual actor definition
 			try {
-				mDef = (ActorDef) ResourceCacheFacade.get(defId, defType);
+				mDef = (ActorDef) ResourceCacheFacade.get(null, defId, defRev);
 			} catch (UndefinedResourceTypeException e) {
 				Gdx.app.error("JsonRead", "Undefined Resource Type exception!");
 				throw new GdxRuntimeException(e);

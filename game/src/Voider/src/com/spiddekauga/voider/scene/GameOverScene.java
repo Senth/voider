@@ -41,7 +41,7 @@ public class GameOverScene extends Scene {
 	}
 
 	@Override
-	protected void onActivate(Outcomes outcome, String message) {
+	protected void onActivate(Outcomes outcome, Object message) {
 		super.onActivate(outcome, message);
 
 		StatSyncer.uploadStats(mPlayerStats);
@@ -51,14 +51,14 @@ public class GameOverScene extends Scene {
 	protected void loadResources() {
 		super.loadResources();
 		ResourceCacheFacade.load(ResourceNames.UI_GENERAL);
-		ResourceCacheFacade.load(mLevelDef, false);
+		ResourceCacheFacade.load(this, mLevelDef.getId(), LevelDef.class, false, mLevelDef.getRevision());
 	}
 
 	@Override
 	protected void unloadResources() {
 		super.unloadResources();
 		ResourceCacheFacade.unload(ResourceNames.UI_GENERAL);
-		ResourceCacheFacade.unload(mLevelDef, false);
+		ResourceCacheFacade.unload(this, mLevelDef, false);
 	}
 
 	@Override

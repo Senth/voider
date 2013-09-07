@@ -1,5 +1,7 @@
 package com.spiddekauga.voider.scene;
 
+import java.util.UUID;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
@@ -178,15 +180,6 @@ public class SelectDefGui extends Gui {
 		mWidgets.infoPanel.revision = label;
 		mInfoPanel.add(label);
 
-		// Version
-		mInfoPanel.row().setFillHeight(true);
-		label = new Label("Version", labelStyle);
-		mInfoPanel.add(label);
-		label = new Label("", labelStyle);
-		mWidgets.infoPanel.version = label;
-		mInfoPanel.add(label);
-
-
 		// Padding
 		mInfoPanel.row().setFillHeight(true);
 
@@ -248,7 +241,7 @@ public class SelectDefGui extends Gui {
 				}
 
 				TextButton button = new TextButton(defVisible.def.getName(), toggleStyle);
-				button.setName(defVisible.def.getId().toString());
+				button.setName(defVisible.def.getId().toString() + "_" + defVisible.def.getRevision());
 				button.addListener(mDefListener);
 
 				/** @todo cut text if too long */
@@ -278,7 +271,6 @@ public class SelectDefGui extends Gui {
 		mWidgets.infoPanel.creator.setText(mSelectDefScene.getCreator());
 		mWidgets.infoPanel.originalCreator.setText(mSelectDefScene.getOriginalCreator());
 		mWidgets.infoPanel.revision.setText(mSelectDefScene.getRevision());
-		mWidgets.infoPanel.version.setText(mSelectDefScene.getVersion());
 	}
 
 	/**
@@ -332,8 +324,15 @@ public class SelectDefGui extends Gui {
 					if (mSelectDefScene.isDefSelected(defName)) {
 						mSelectDefScene.loadDef();
 					} else {
-						mSelectDefScene.setSelectedDef(defName);
-						resetValues();
+						String[] splitStrings = defName.split("_");
+						if (splitStrings.length == 2) {
+							UUID id = UUID.fromString(splitStrings[0]);
+							int revision = Integer.parseInt(splitStrings[1]);
+							mSelectDefScene.setSelectedDef(id, revision);
+							resetValues();
+						} else {
+							Gdx.app.error("SelectDefGui", "Split string does not contain one _");
+						}
 					}
 
 					mInfoPanelHider.show();
@@ -369,7 +368,6 @@ public class SelectDefGui extends Gui {
 			Label creator = null;
 			Label originalCreator = null;
 			Label revision = null;
-			Label version = null;
 		}
 	}
 }

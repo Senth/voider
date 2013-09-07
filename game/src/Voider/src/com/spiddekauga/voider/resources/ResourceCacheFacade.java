@@ -26,6 +26,7 @@ import com.spiddekauga.voider.game.actors.PickupActorDef;
 import com.spiddekauga.voider.game.actors.PlayerActorDef;
 import com.spiddekauga.voider.game.actors.StaticTerrainActorDef;
 import com.spiddekauga.voider.scene.Scene;
+import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.utils.Pools;
 
 
@@ -366,38 +367,53 @@ public class ResourceCacheFacade {
 	/**
 	 * Get a resource based on the id and class of resource. Always gets the latest revision
 	 * @param <ResourceType> type of resource that will be returned
-	 * @param scene the scene the resource was loaded in
+	 * @param scene the scene the resource was loaded in, if null it will use the
+	 * current active scene.
 	 * @param resourceId id of the resource, can be both def and instance resource
 	 * @param revision the revision of the resource to get
 	 * @return the actual resource, null if not found
 	 */
 	public static <ResourceType extends IResource> ResourceType get(Scene scene, UUID resourceId, int revision) {
-		return ResourceDatabase.getLoadedResource(scene, resourceId, revision);
+		Scene sceneToUse = scene;
+		if (scene == null) {
+			sceneToUse = SceneSwitcher.getActiveScene(true);
+		}
+		return ResourceDatabase.getLoadedResource(sceneToUse, resourceId, revision);
 	}
 
 	/**
 	 * Returns all of the specified resource type
 	 * @Precondition the resources have been loaded
 	 * @param <ResourceType> the resource type that will be returned
-	 * @param scene the scene the resources was loaded in
+	 * @param scene the scene the resources was loaded in, if null it will use the
+	 * current active scene.
 	 * @param type resource type that will be returned
 	 * @return array with all the resources of that type. Don't forget to free the arraylist
 	 * using Pools.arrayList.free(resources).
 	 */
 	public static <ResourceType extends IResource> ArrayList<ResourceType> getAll(Scene scene, Class<ResourceType> type) {
-		return ResourceDatabase.getAllLoadedSceneResourceOf(scene, type);
+		Scene sceneToUse = scene;
+		if (scene == null) {
+			sceneToUse = SceneSwitcher.getActiveScene(true);
+		}
+		return ResourceDatabase.getAllLoadedSceneResourceOf(sceneToUse, type);
 	}
 
 	/**
 	 * Checks whether a resource has been loaded or not
-	 * @param scene the scene which is has been loaded in
+	 * @param scene the scene which is has been loaded in, if null it will use the
+	 * current active scene.
 	 * @param resourceId unique id of the object to test if it's loaded
 	 * @param revision the revision to check if it's loaded. If the resource doesn't use a revision
 	 * this parameter won't be used.
 	 * @return true if the object has been loaded
 	 */
 	public static boolean isLoaded(Scene scene, UUID resourceId, int revision) {
-		return ResourceDatabase.isResourceLoaded(scene, resourceId, revision);
+		Scene sceneToUse = scene;
+		if (scene == null) {
+			sceneToUse = SceneSwitcher.getActiveScene(true);
+		}
+		return ResourceDatabase.isResourceLoaded(sceneToUse, resourceId, revision);
 	}
 
 	// -----------------------------

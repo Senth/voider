@@ -15,6 +15,7 @@ import com.badlogic.gdx.backends.lwjgl.LwjglFiles;
 import com.badlogic.gdx.backends.lwjgl.LwjglNativesLoader;
 import com.badlogic.gdx.files.FileHandle;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.game.LoadingTextScene;
 import com.spiddekauga.voider.game.actors.ActorDef;
 import com.spiddekauga.voider.game.actors.PlayerActorDef;
 
@@ -50,7 +51,7 @@ public class ResourceDependencyLoaderTest {
 	}
 
 	/**
-	 * Test method for {@link com.spiddekauga.voider.resources.ResourceDependencyLoader#load(java.util.UUID, java.lang.Class, int)}.
+	 * Test method for {@link com.spiddekauga.voider.resources.ResourceDependencyLoader#load(com.spiddekauga.voider.scene.Scene, java.util.UUID, java.lang.Class, int)}.
 	 */
 	@Test
 	public void loadUnload() {
@@ -69,10 +70,11 @@ public class ResourceDependencyLoaderTest {
 		ResourceSaver.save(depdep);
 
 		ResourceDependencyLoader dependencyLoader = new ResourceDependencyLoader(mAssetManager);
+		LoadingTextScene scene = new LoadingTextScene("");
 
 		// Try to load all actors via resource dependency loader
 		try {
-			dependencyLoader.load(def.getId(), def.getClass(), -1);
+			dependencyLoader.load(scene, def.getId(), def.getClass(), def.getRevision());
 
 			// Wait until all resources have been loaded
 			while (!dependencyLoader.update() || !mAssetManager.update()) {
@@ -90,7 +92,7 @@ public class ResourceDependencyLoaderTest {
 		}
 
 		// Unload
-		dependencyLoader.unload(def);
+		dependencyLoader.unload(scene, def);
 		assertTrue("def is loaded", !mAssetManager.isLoaded(getPath(def)));
 		assertTrue("dep1 is loaded", !mAssetManager.isLoaded(getPath(dep1)));
 		assertTrue("dep2 is loaded", !mAssetManager.isLoaded(getPath(dep2)));

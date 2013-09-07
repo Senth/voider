@@ -286,21 +286,22 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 		else if (outcome == Outcomes.DEF_SELECTED) {
 			mGui.hideMsgBoxes();
 
-			switch (mSelectionAction) {
-			case LEVEL:
-				try {
-					mLoadingLevel = ResourceCacheFacade.get(UUID.fromString(message), LevelDef.class);
+			if (message instanceof ResourceItem) {
+				switch (mSelectionAction) {
+				case LEVEL:
+
+					mLoadingLevel = ResourceCacheFacade.get(this, ((ResourceItem) message).resourceId, ((ResourceItem) message).revision);
 
 					// Only load level if it's not the current level we selected
 					if (!mLoadingLevel.equals(mLevel.getDef())) {
-						ResourceCacheFacade.load(mLoadingLevel.getLevelId(), Level.class, false);
+						ResourceCacheFacade.load(this, mLoadingLevel.getLevelId(), Level.class, mLoadingLevel.getId(), LevelDef.class, mLoadingLevel.getRevision());
 						Scene scene = getLoadingScene();
 						if (scene != null) {
 							SceneSwitcher.switchTo(scene);
 						} else {
 							/** @todo remove after we have a loading scene */
 							ResourceCacheFacade.finishLoading();
-							Level loadedLevel = ResourceCacheFacade.get(mLoadingLevel.getLevelId(), Level.class);
+							Level loadedLevel = ResourceCacheFacade.get(this, mLoadingLevel.getLevelId(), mLoadingLevel.getRevision());
 							setLevel(loadedLevel);
 							mUnsaved = false;
 							mGui.resetValues();
@@ -309,19 +310,19 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 					} else {
 						mLoadingLevel = null;
 					}
-				} catch (Exception e) {
-					Gdx.app.error("LevelEditor", e.toString());
-					e.printStackTrace();
+
+					break;
+
+				case PICKUP:
+					mInvoker.execute(new CLevelPickupDefSelect(((ResourceItem) message).resourceId, this));
+					break;
+
+				case ENEMY:
+					mInvoker.execute(new CLevelEnemyDefSelect(((ResourceItem) message).resourceId, ((ResourceItem) message).revision, this));
+					break;
 				}
-				break;
-
-			case PICKUP:
-				mInvoker.execute(new CLevelPickupDefSelect(UUID.fromString(message), this));
-				break;
-
-			case ENEMY:
-				mInvoker.execute(new CLevelEnemyDefSelect(UUID.fromString(message), this));
-				break;
+			} else {
+				Gdx.app.error(getClass().getSimpleName(), "When seleting def, message was not a ResourceItem but a " + message.getClass().getName());
 			}
 		} else if (outcome == Outcomes.NOT_APPLICAPLE) {
 			mGui.hideMsgBoxes();
@@ -338,13 +339,14 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 
 	/**
 	 * Selects the specified enemy definition. This enemy will be used when adding new enemies.
-	 * @param enemyId the enemy id to select
+	 * @param enemyId the enemy id to select, can be null.
+	 * @param revision the revision of the enemy to select
 	 * @return true if enemy was selected successfully, false if unsuccessful
 	 */
-	public boolean selectEnemyDef(UUID enemyId) {
+	public boolean selectEnemyDef(UUID enemyId, int revision) {
 		try {
 			if (enemyId != null) {
-				EnemyActorDef enemyActorDef = ResourceCacheFacade.get(enemyId, EnemyActorDef.class);
+				EnemyActorDef enemyActorDef = ResourceCacheFacade.get(this, enemyId, revision);
 
 				// Update def
 				((ActorTool)mTouchTools[Tools.ENEMY.ordinal()]).setNewActorDef(enemyActorDef);
@@ -369,14 +371,8 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 	 */
 	public boolean selectPickupDef(UUID pickupId) {
 		try {
-			PickupActorDef oldPickupActorDef = (PickupActorDef) ((ActorTool)mTouchTools[Tools.PICKUP.ordinal()]).getNewActorDef();
-
 			if (pickupId != null) {
-				PickupActorDef pickupActorDef = ResourceCacheFacade.get(pickupId, PickupActorDef.class);
-
-				// Load dependencies
-				ResourceCacheFacade.load(pickupActorDef, true);
-				ResourceCacheFacade.finishLoading();
+				PickupActorDef pickupActorDef = ResourceCacheFacade.get(this, pickupId, -1);
 
 				// Update def
 				((ActorTool)mTouchTools[Tools.PICKUP.ordinal()]).setNewActorDef(pickupActorDef);
@@ -384,11 +380,6 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 				((ActorTool)mTouchTools[Tools.PICKUP.ordinal()]).setNewActorDef(null);
 			}
 			mGui.resetValues();
-
-			// Unload old dependencies
-			if (oldPickupActorDef != null) {
-				ResourceCacheFacade.unload(oldPickupActorDef, true);
-			}
 		} catch (Exception e) {
 			Gdx.app.error("LevelEditor", e.toString());
 			e.printStackTrace();
@@ -681,17 +672,6 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 	String getLevelRevision() {
 		if (mLevel != null) {
 			return String.valueOf(mLevel.getDef().getRevision());
-		} else {
-			return "";
-		}
-	}
-
-	/**
-	 * @return version of the level, empty string if no level is available
-	 */
-	String getLevelVersion() {
-		if (mLevel != null) {
-			return mLevel.getDef().getVersionString();
 		} else {
 			return "";
 		}

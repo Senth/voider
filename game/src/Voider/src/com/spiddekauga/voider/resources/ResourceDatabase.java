@@ -72,15 +72,17 @@ class ResourceDatabase {
 				// Add all revisions, the file can contain both revision and
 				// date in that case split the string and store both
 				for (FileHandle revisionFile : revisionDir.list()) {
-					int splitPos = revisionFile.name().indexOf('_');
+					String[] splitStrings = revisionFile.name().split("_");
+
 
 					String revisionString = null;
 					String dateString = null;
 
+
 					// Get revision and date substrings
-					if (splitPos != -1) {
-						revisionString = revisionFile.name().substring(0, splitPos);
-						dateString = revisionFile.name().substring(splitPos + 1);
+					if (splitStrings.length == 2) {
+						revisionString = splitStrings[0];
+						dateString = splitStrings[1];
 					} else {
 						revisionString = revisionFile.name();
 					}

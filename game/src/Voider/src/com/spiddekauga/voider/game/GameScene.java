@@ -105,7 +105,7 @@ public class GameScene extends WorldScene {
 			// Load level
 			if (mLevelToLoad != null) {
 				try {
-					Level level = ResourceCacheFacade.get(mLevelToLoad.getLevelId(), Level.class);
+					Level level = ResourceCacheFacade.get(this, mLevelToLoad.getLevelId(), mLevelToLoad.getRevision());
 					level.setXCoord(level.getDef().getStartXCoord());
 					setLevel(level);
 				} catch (UndefinedResourceTypeException e) {
@@ -116,7 +116,7 @@ public class GameScene extends WorldScene {
 			// Resume a level
 			if (mGameSaveDef != null) {
 				try {
-					mGameSave = ResourceCacheFacade.get(mGameSaveDef.getGameSaveId(), GameSave.class);
+					mGameSave = ResourceCacheFacade.get(this, mGameSaveDef.getGameSaveId(), mGameSaveDef.getRevision());
 
 					mPlayerActor = mGameSave.getPlayerActor();
 					mBulletDestroyer = mGameSave.getBulletDestroyer();
@@ -330,15 +330,14 @@ public class GameScene extends WorldScene {
 
 		ResourceCacheFacade.load(ResourceNames.UI_GENERAL);
 		ResourceCacheFacade.load(ResourceNames.SHADER_DEFAULT);
-		ResourceCacheFacade.loadAllOf(PlayerActorDef.class, true);
+		ResourceCacheFacade.loadAllOf(this, PlayerActorDef.class, true);
 
 		if (mLevelToLoad != null) {
-			ResourceCacheFacade.load(mLevelToLoad, false);
-			ResourceCacheFacade.load(mLevelToLoad.getLevelId(), Level.class, mLevelToLoad);
+			ResourceCacheFacade.load(this, mLevelToLoad.getLevelId(), Level.class, mLevelToLoad.getId(), LevelDef.class, mLevelToLoad.getRevision());
 		}
 
 		if (mGameSaveDef != null) {
-			ResourceCacheFacade.load(mGameSaveDef.getGameSaveId(), GameSave.class, mGameSaveDef);
+			ResourceCacheFacade.load(this, mGameSaveDef.getGameSaveId(), GameSave.class, mGameSaveDef.getId(), GameSaveDef.class, mGameSaveDef.getRevision());
 		}
 	}
 
@@ -347,30 +346,29 @@ public class GameScene extends WorldScene {
 		super.unloadResources();
 		ResourceCacheFacade.unload(ResourceNames.UI_GENERAL);
 		ResourceCacheFacade.unload(ResourceNames.SHADER_DEFAULT);
-		ResourceCacheFacade.unloadAllOf(PlayerActorDef.class, true);
+		ResourceCacheFacade.unloadAllOf(this, PlayerActorDef.class, true);
 
 		// Loaded level
 		if (mLevelToLoad != null) {
 			// Set level (will not be set if the user quits the game while loading)
 			if (mLevel == null) {
-				mLevel = ResourceCacheFacade.get(mLevelToLoad.getLevelId(), Level.class);
+				mLevel = ResourceCacheFacade.get(this, mLevelToLoad.getLevelId(), mLevelToLoad.getRevision());
 			}
 
 			if (mLevel != null) {
-				ResourceCacheFacade.unload(mLevel, mLevel.getDef());
+				ResourceCacheFacade.unload(this, mLevel, mLevel.getDef());
 			}
-			ResourceCacheFacade.unload(mLevelToLoad, false);
 		}
 
 		// Resumed game
 		if (mGameSave != null) {
 			// Set game save (will not be set if the user quits the game while loading)
 			if (mGameSave == null) {
-				mGameSave = ResourceCacheFacade.get(mGameSaveDef.getGameSaveId(), GameSave.class);
+				mGameSave = ResourceCacheFacade.get(this, mGameSaveDef.getGameSaveId(), mGameSaveDef.getRevision());
 			}
 
 			if (mGameSave != null) {
-				ResourceCacheFacade.unload(mGameSave, mGameSaveDef);
+				ResourceCacheFacade.unload(this, mGameSave, mGameSaveDef);
 			}
 		}
 	}
@@ -495,7 +493,7 @@ public class GameScene extends WorldScene {
 		// Create a new ship when we're not resuming a game
 		if (mGameSaveDef == null) {
 			// Find first available player ship
-			java.util.List<PlayerActorDef> ships = ResourceCacheFacade.getAll(PlayerActorDef.class);
+			java.util.List<PlayerActorDef> ships = ResourceCacheFacade.getAll(this, PlayerActorDef.class);
 			if (ships.isEmpty()) {
 				setOutcome(Outcomes.LOADING_FAILED_MISSING_FILE, "Could not find any ships");
 				return;
