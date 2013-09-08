@@ -81,6 +81,7 @@ public class SceneSwitcher {
 			if (foundScene.unloadResourcesOnDeactivate()) {
 				loadActiveSceneResources();
 			} else {
+				foundScene.reloadResourcesOnActivate();
 				foundScene.onActivate(Outcomes.NOT_APPLICAPLE, null);
 				Gdx.input.setInputProcessor(foundScene.getInputMultiplexer());
 			}
@@ -139,6 +140,7 @@ public class SceneSwitcher {
 			if (activateScene.unloadResourcesOnDeactivate()) {
 				loadActiveSceneResources();
 			} else {
+				activateScene.reloadResourcesOnActivate();
 				activateScene.onActivate(Outcomes.NOT_APPLICAPLE, null);
 				Gdx.input.setInputProcessor(activateScene.getInputMultiplexer());
 			}
@@ -448,6 +450,7 @@ public class SceneSwitcher {
 					mOutcome = null;
 					mOutcomeMessage = null;
 				}
+				previousScene.reloadResourcesOnActivate();
 				previousScene.onActivate(outcome, outcomeMessage);
 				Gdx.input.setInputProcessor(previousScene.getInputMultiplexer());
 			}

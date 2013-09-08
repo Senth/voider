@@ -229,14 +229,6 @@ public abstract class Def extends Resource implements Json.Serializable, IResour
 	public int getRevision() {
 		return mRevision;
 	}
-
-	/**
-	 * Increases the revision count by one
-	 */
-	public void increaseRevision() {
-		++mRevision;
-	}
-
 	/**
 	 * Sets the revision of the resource
 	 * @param revision the new revision of the resource

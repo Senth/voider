@@ -16,6 +16,7 @@
 
 package com.spiddekauga.utils;
 
+import java.util.Date;
 import java.util.UUID;
 
 import com.badlogic.gdx.math.Vector2;
@@ -48,6 +49,7 @@ public class JsonWrapper extends Json {
 	 * <li>UUID</li>
 	 * <li>FixtureDef</li>
 	 * <li>Shape</li>
+	 * <li>Date</li>
 	 * </úl>
 	 */
 	public JsonWrapper() {
@@ -63,6 +65,7 @@ public class JsonWrapper extends Json {
 		addSerializeUUID();
 		addSerializeFixtureDef();
 		addSerializeShape();
+		addSerializeDate();
 	}
 
 	/**
@@ -74,7 +77,7 @@ public class JsonWrapper extends Json {
 			@Override
 			public void write(Json json, UUID object, Class knownType) {
 				json.writeObjectStart(UUID.class, null);
-				writeValue("uuid", object.toString());
+				json.writeValue("uuid", object.toString());
 				json.writeObjectEnd();
 			}
 
@@ -200,6 +203,27 @@ public class JsonWrapper extends Json {
 			@Override
 			public CircleShape read(Json json, JsonValue jsonData, Class type) {
 				return (CircleShape) readShape(jsonData);
+			}
+		});
+	}
+
+	/**
+	 * Add ability to serialize java.util.Date
+	 */
+	private void addSerializeDate() {
+		setSerializer(Date.class, new Json.Serializer<Date>() {
+			@SuppressWarnings("rawtypes")
+			@Override
+			public void write (Json json, Date date, Class knownType) {
+				json.writeObjectStart(Date.class, null);
+				json.writeValue("milis", date.getTime());
+				json.writeObjectEnd();
+			}
+
+			@SuppressWarnings("rawtypes")
+			@Override
+			public Date read(Json json, JsonValue jsonData, Class type) {
+				return jsonData.child == null ? null : new Date(jsonData.child.asLong());
 			}
 		});
 	}

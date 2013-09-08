@@ -481,7 +481,7 @@ public class GameScene extends WorldScene {
 		mMouseBody = mWorld.createBody(bodyDef);
 		mMouseJointDef.frequencyHz = Config.Game.MouseJoint.FREQUENCY;
 		mMouseJointDef.bodyA = mMouseBody;
-		mMouseJointDef.bodyB = mPlayerActor.getBody(); // TODO REMOVE, set in onActivate instead
+		mMouseJointDef.bodyB = mPlayerActor.getBody();
 		mMouseJointDef.collideConnected = true;
 		mMouseJointDef.maxForce = Config.Game.MouseJoint.FORCE_MAX;
 	}
@@ -493,9 +493,10 @@ public class GameScene extends WorldScene {
 		// Create a new ship when we're not resuming a game
 		if (mGameSaveDef == null) {
 			// Find first available player ship
-			java.util.List<PlayerActorDef> ships = ResourceCacheFacade.getAll(this, PlayerActorDef.class);
+			ArrayList<PlayerActorDef> ships = ResourceCacheFacade.getAll(this, PlayerActorDef.class);
 			if (ships.isEmpty()) {
 				setOutcome(Outcomes.LOADING_FAILED_MISSING_FILE, "Could not find any ships");
+				Pools.arrayList.free(ships);
 				return;
 			}
 
@@ -505,6 +506,8 @@ public class GameScene extends WorldScene {
 
 			mPlayerStats = new PlayerStats(mLevel.getDef().getStartXCoord(), mLevel.getSpeed(), mPlayerActor);
 			mLevel.addResource(mPlayerStats);
+
+			Pools.arrayList.free(ships);
 		} else {
 			mPlayerActor.createBody();
 		}

@@ -184,19 +184,19 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 
 	@Override
 	public void saveDef() {
-		mDef.increaseRevision();
+		int oldRevision = mDef.getRevision();
 		ResourceSaver.save(mDef);
+		int newRevision = mDef.getRevision();
+		mDef.setRevision(oldRevision);
 
 		// Load the saved actor and use it instead
-		if (!ResourceCacheFacade.isLoaded(this, mDef.getId(), mDef.getRevision())) {
-			try {
-				ResourceCacheFacade.load(this, mDef.getId(), mDef.getClass(), true, mDef.getRevision());
-				ResourceCacheFacade.finishLoading();
+		try {
+			ResourceCacheFacade.load(this, mDef.getId(), mDef.getClass(), true, newRevision);
+			ResourceCacheFacade.finishLoading();
 
-				setDef((BulletActorDef) ResourceCacheFacade.get(this, mDef.getId(), mDef.getRevision()));
-			} catch (Exception e) {
-				Gdx.app.error("BulletEditor", "Loading of saved actor failed! " + e.toString());
-			}
+			setDef((BulletActorDef) ResourceCacheFacade.get(this, mDef.getId(), newRevision));
+		} catch (Exception e) {
+			Gdx.app.error("BulletEditor", "Loading of saved actor failed! " + e.toString());
 		}
 
 		mSaveTimeLast = GameTime.getTotalGlobalTimeElapsed();

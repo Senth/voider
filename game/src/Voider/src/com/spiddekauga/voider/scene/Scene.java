@@ -168,6 +168,14 @@ public abstract class Scene extends InputAdapter {
 	}
 
 	/**
+	 * Resources to be reloaded when the scene is activated once again. This method only
+	 * gets called if {@link #unloadResourcesOnDeactivate()} returns false.
+	 */
+	protected void reloadResourcesOnActivate() {
+		// Dose nothing
+	}
+
+	/**
 	 * @return true if #loadResources() has been called, false if #unloadResources()
 	 * has been called.
 	 */

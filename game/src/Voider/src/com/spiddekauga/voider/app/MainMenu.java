@@ -1,6 +1,6 @@
 package com.spiddekauga.voider.app;
 
-import java.util.List;
+import java.util.ArrayList;
 
 import com.badlogic.gdx.Gdx;
 import com.spiddekauga.voider.editor.LevelEditor;
@@ -80,20 +80,25 @@ public class MainMenu extends Scene {
 	 * @return true if there is a game to resume
 	 */
 	boolean hasResumeGame() {
-		return ResourceCacheFacade.getAll(this, GameSaveDef.class).size() > 0;
+		ArrayList<GameSaveDef> gameSaves = ResourceCacheFacade.getAll(this, GameSaveDef.class);
+		boolean hasSaves = gameSaves.size() > 0;
+		Pools.arrayList.free(gameSaves);
+		return hasSaves;
 	}
 
 	/**
 	 * Resumes the current game
 	 */
 	void resumeGame() {
-		List<GameSaveDef> gameSaves = ResourceCacheFacade.getAll(this, GameSaveDef.class);
+		ArrayList<GameSaveDef> gameSaves = ResourceCacheFacade.getAll(this, GameSaveDef.class);
 
 		if (!gameSaves.isEmpty()) {
 			GameScene gameScene = new GameScene(false, false);
 			gameScene.setGameToResume(gameSaves.get(0));
 			SceneSwitcher.switchTo(gameScene);
 		}
+
+		Pools.arrayList.free(gameSaves);
 	}
 
 	/**

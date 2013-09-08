@@ -64,7 +64,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 		mPlayerActor = new PlayerActor();
 		mPlayerActor.createBody();
 		resetPlayerPosition();
-		setEnemyDef();
+		setEnemyDef(mDef);
 		createExamplePaths();
 
 		mWorld.setContactListener(mCollisionResolver);
@@ -137,8 +137,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 					break;
 
 				case LOAD_ENEMY:
-					mDef = ResourceCacheFacade.get(this, ((ResourceItem) message).id, ((ResourceItem) message).revision);
-					setEnemyDef();
+					setEnemyDef((EnemyActorDef) ResourceCacheFacade.get(this, ((ResourceItem) message).id, ((ResourceItem) message).revision));
 					setMovementType(mDef.getMovementType());
 					mGui.resetValues();
 					mSaved = true;
@@ -316,8 +315,8 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 		super.loadResources();
 		ResourceCacheFacade.load(ResourceNames.UI_EDITOR_BUTTONS);
 		ResourceCacheFacade.load(ResourceNames.UI_GENERAL);
-		//		ResourceCacheFacade.loadAllOf(this, EnemyActorDef.class, true);
-		//		ResourceCacheFacade.loadAllOf(this, BulletActorDef.class, true);
+		ResourceCacheFacade.loadAllOf(this, EnemyActorDef.class, true);
+		ResourceCacheFacade.loadAllOf(this, BulletActorDef.class, true);
 	}
 
 	@Override
@@ -325,8 +324,16 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 		super.unloadResources();
 		ResourceCacheFacade.unload(ResourceNames.UI_EDITOR_BUTTONS);
 		ResourceCacheFacade.unload(ResourceNames.UI_GENERAL);
-		//		ResourceCacheFacade.unloadAllOf(this, EnemyActorDef.class, true);
-		//		ResourceCacheFacade.unloadAllOf(this, BulletActorDef.class, true);
+		ResourceCacheFacade.unloadAllOf(this, EnemyActorDef.class, true);
+		ResourceCacheFacade.unloadAllOf(this, BulletActorDef.class, true);
+	}
+
+	@Override
+	protected void reloadResourcesOnActivate() {
+		super.reloadResourcesOnActivate();
+		ResourceCacheFacade.unloadAllOf(this, BulletActorDef.class, true);
+		ResourceCacheFacade.loadAllOf(this, BulletActorDef.class, true);
+		ResourceCacheFacade.finishLoading();
 	}
 
 	// --------------------------------
@@ -410,20 +417,20 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	 * Saves the current enemy actor
 	 */
 	public void saveDef() {
-		mDef.increaseRevision();
+		int oldRevision = mDef.getRevision();
 		ResourceSaver.save(mDef);
+		int newRevision = mDef.getRevision();
+		mDef.setRevision(oldRevision);
 
 		// Load the saved actor and use it instead
-		if (!ResourceCacheFacade.isLoaded(this, mDef.getId(), mDef.getRevision())) {
-			try {
-				ResourceCacheFacade.load(this, mDef.getId(), mDef.getClass(), true, mDef.getRevision());
-				ResourceCacheFacade.finishLoading();
+		try {
+			ResourceCacheFacade.unload(this, mDef, true);
+			ResourceCacheFacade.load(this, mDef.getId(), EnemyActorDef.class, true, newRevision);
+			ResourceCacheFacade.finishLoading();
 
-				mDef = ResourceCacheFacade.get(this, mDef.getId(), mDef.getRevision());
-				setEnemyDef();
-			} catch (Exception e) {
-				Gdx.app.error("EnemyEditor", "Loading of saved actor failed! " + e.toString());
-			}
+			setEnemyDef((EnemyActorDef) ResourceCacheFacade.get(this, mDef.getId(), newRevision));
+		} catch (Exception e) {
+			Gdx.app.error("EnemyEditor", "Loading of saved actor failed! " + e.toString());
 		}
 
 		mSaveTimeLast = GameTime.getTotalGlobalTimeElapsed();
@@ -434,8 +441,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	 * Creates a new enemy
 	 */
 	public void newDef() {
-		mDef = new EnemyActorDef();
-		setEnemyDef();
+		setEnemyDef(new EnemyActorDef());
 		mGui.resetValues();
 		mSaved = true;
 	}
@@ -964,8 +970,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	 */
 	@Override
 	public void duplicateDef() {
-		mDef = (EnemyActorDef) mDef.copy();
-		setEnemyDef();
+		setEnemyDef((EnemyActorDef) mDef.copy());
 		mGui.resetValues();
 		mSaved = false;
 	}
@@ -1160,10 +1165,11 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	}
 
 	/**
-	 * Sets the definition for the enemy actors. Uses the definition from
-	 * mDef.
+	 * Sets the definition for the enemy actors.
+	 * @param def the new definition to use for the enemies
 	 */
-	private void setEnemyDef() {
+	private void setEnemyDef(EnemyActorDef def) {
+		mDef = def;
 		mEnemyActor.setDef(mDef);
 		mEnemyPathOnce.setDef(mDef);
 		mEnemyPathLoop.setDef(mDef);
@@ -1286,6 +1292,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 		case AI:
 			if (!mEnemyActor.isActive()) {
 				mEnemyActor.createBody();
+				mEnemyActor.activate();
 				mEnemyActor.setPosition(Vector2.Zero);
 			}
 			break;
@@ -1311,6 +1318,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 		if (!enemyActor.isActive()) {
 			enemyActor.resetPathMovement();
 			enemyActor.createBody();
+			enemyActor.activate();
 		}
 	}
 

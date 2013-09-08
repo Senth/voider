@@ -97,7 +97,10 @@ class ResourceDatabase {
 					resourceDb.addRevision(revision, dateString);
 				}
 
-				mResources.put(resourceId, resourceDb);
+				// Only add resource if there actually were any revisions and not just an empty directory...
+				if (resourceDb.revisionDates != null) {
+					mResources.put(resourceId, resourceDb);
+				}
 			} catch (IllegalArgumentException e) {
 				Gdx.app.debug("ResourceDatabase", "Directory was not a resource! " + revisionDir.path());
 			}
@@ -224,7 +227,15 @@ class ResourceDatabase {
 				IResource resource = mAssetManager.get(loadingQueueItem.filePath);
 				mLoadedResources.setLoadedResource(loadingQueueItem.scene, resource);
 				iterator.remove();
-				Gdx.app.debug("ResourceDatabase", "Loaded " + resource.getClass().getSimpleName() + ": " + loadingQueueItem.filePath);
+				int loadedRevision = -1;
+				if (resource instanceof IResourceRevision) {
+					loadedRevision = ((IResourceRevision) resource).getRevision();
+				}
+				int cRefScenes = mAssetManager.getReferenceCount(loadingQueueItem.filePath);
+				Gdx.app.debug("ResourceDatabase", "+++ " +
+						loadingQueueItem.scene.getClass().getSimpleName() +
+						": (" + resource.getClass().getSimpleName() + ":" + loadedRevision +") " +
+						loadingQueueItem.filePath + ", scenes: " + cRefScenes);
 			}
 		}
 
@@ -280,12 +291,28 @@ class ResourceDatabase {
 	}
 
 	/**
+	 * Gets the latest revision number of the specified resource
+	 * @param resourceId the resource to get the latest revision from
+	 * @return the latest revision from the specified resource. 0 if the resource doesn't exist yet. -1 if
+	 * the resource doesn't use revisions
+	 */
+	static int getLatestRevisionNumber(UUID resourceId) {
+		int revision = 0;
+		ResourceInfo resourceInfo = mResources.get(resourceId);
+
+		if (resourceInfo != null) {
+			revision = resourceInfo.latestRevision;
+		}
+
+		return revision;
+	}
+
+	/**
 	 * Removes the loaded resource. This has to be called the same number of
 	 * times the resource was loaded.
 	 * @param scene the scene the resource was loaded in
 	 * @param resource the resource to remove
 	 * @see #clearLoadedSceneResources(Scene)
-	 * @see #unload(Scene, UUID, Class, int) is a bit slower as it must lookup the filePath.
 	 */
 	static void unload(Scene scene, IResource resource) {
 		int revisionToUse = -1;
@@ -293,13 +320,7 @@ class ResourceDatabase {
 			revisionToUse = ((IResourceRevision) resource).getRevision();
 		}
 
-		boolean fullUnloaded = mLoadedResources.removeLoadedResource(scene, resource.getId(), resource.getClass(), revisionToUse);
-
-		if (fullUnloaded) {
-			String filepath = getFilePath(resource);
-			mAssetManager.unload(filepath);
-			Gdx.app.debug("ResourceDatabase", "Unloaded " + resource.getClass().getSimpleName() + ": " + filepath);
-		}
+		unload(scene, resource.getId(), resource.getClass(), revisionToUse);
 	}
 
 	/**
@@ -311,7 +332,6 @@ class ResourceDatabase {
 	 * @param revision revision of the resource to be unloaded, if the resource doesn't
 	 * use a revision this parameter will not be used...
 	 * @see #clearLoadedSceneResources(Scene)
-	 * @see #unload(Scene, IResource) is a bit faster.
 	 */
 	static void unload(Scene scene, UUID resourceId, Class<?> type, int revision) {
 		int revisionToUse = -1;
@@ -324,7 +344,15 @@ class ResourceDatabase {
 		if (fullyUnloaded) {
 			String filepath = getFilePath(resourceId, revisionToUse);
 			mAssetManager.unload(filepath);
-			Gdx.app.debug("ResourceDatabase", "Unloaded " + type.getSimpleName() + ": " + filepath);
+
+			int cRefScenes = 0;
+			if (mAssetManager.isLoaded(filepath)) {
+				cRefScenes = mAssetManager.getReferenceCount(filepath);
+			}
+
+			Gdx.app.debug("ResourceDatabase", "--- " + scene.getClass().getSimpleName() +
+					": (" + type.getSimpleName() + ":" + revisionToUse + ") " + filepath +
+					", scenes: " + cRefScenes);
 		}
 	}
 
@@ -333,7 +361,7 @@ class ResourceDatabase {
 	 * @param type the type of resource to return
 	 * @return all existing resources of the specified type, usually these aren't loaded, so be sure to load
 	 * them first. Don't forget to free the all resource items with Pools.resourceItem.freeAll(resources) and
-	 * the arraylist with Pools.arrayList(resources).
+	 * the ArrayList with Pools.arrayList(resources).
 	 */
 	static ArrayList<ResourceItem> getAllExistingResource(Class<?> type) {
 		@SuppressWarnings("unchecked")
@@ -360,6 +388,13 @@ class ResourceDatabase {
 	 */
 	static ArrayList<IResource> getAllLoadedSceneResources(Scene scene) {
 		return mLoadedResources.getAllLoadedSceneResources(scene);
+	}
+
+	/**
+	 * @return string with all the current loaded resources
+	 */
+	static String getAllLoadedResourcesString() {
+		return mLoadedResources.getAllLoadedResourcesString();
 	}
 
 	/**

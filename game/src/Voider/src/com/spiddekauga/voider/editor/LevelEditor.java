@@ -9,6 +9,8 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.ObjectMap;
+import com.badlogic.gdx.utils.ObjectMap.Entry;
 import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.utils.Invoker;
 import com.spiddekauga.utils.KeyHelper;
@@ -22,6 +24,7 @@ import com.spiddekauga.voider.editor.commands.CLevelPickupDefSelect;
 import com.spiddekauga.voider.game.GameScene;
 import com.spiddekauga.voider.game.Level;
 import com.spiddekauga.voider.game.LevelDef;
+import com.spiddekauga.voider.game.LoadingTextScene;
 import com.spiddekauga.voider.game.Path;
 import com.spiddekauga.voider.game.Path.PathTypes;
 import com.spiddekauga.voider.game.actors.Actor;
@@ -173,7 +176,7 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 		boolean sameRevision = false;
 
 		if (mLevel != null) {
-			if (mLevel.equals(level.getId())) {
+			if (level != null && mLevel.equals(level.getId())) {
 				sameLevel = true;
 				if (mLevel.equals(level)) {
 					sameRevision = true;
@@ -193,7 +196,6 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 		if (mLevel != null) {
 			mLevel.addResource(mLevel);
 			mLevel.bindResources();
-
 
 			clearTools();
 
@@ -229,7 +231,7 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 	@Override
 	public LoadingScene getLoadingScene() {
 		/** @TODO create default loading scene */
-		return null;
+		return new LoadingTextScene("Loading...");
 	}
 
 	@Override
@@ -255,6 +257,29 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 	}
 
 	@Override
+	protected void reloadResourcesOnActivate() {
+		super.reloadResourcesOnActivate();
+		ResourceCacheFacade.unloadAllOf(this, EnemyActorDef.class, true);
+
+		// Get the specific revision of certain enemies we currently use
+		ObjectMap<UUID, Integer> resourceRevision = new ObjectMap<UUID, Integer>();
+		if (mLoadingLevel != null) {
+			ObjectMap<UUID, ResourceItem> dependencies = mLoadingLevel.getExternalDependencies();
+
+			// Add all enemy revision to this dependency
+			for (Entry<UUID, ResourceItem> entry : dependencies.entries()) {
+				if (EnemyActorDef.class.isAssignableFrom(entry.value.type)) {
+					resourceRevision.put(entry.key, entry.value.revision);
+				}
+			}
+		}
+
+
+		ResourceCacheFacade.loadAllOf(this, EnemyActorDef.class, true, resourceRevision);
+		ResourceCacheFacade.finishLoading();
+	}
+
+	@Override
 	protected void onActivate(Outcomes outcome, Object message) {
 		super.onActivate(outcome, message);
 
@@ -268,14 +293,14 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 			// Loading a level
 			if (mLoadingLevel != null) {
 				Level loadedLevel;
-				if (message instanceof ResourceItem) {
-					loadedLevel = ResourceCacheFacade.get(this, mLoadingLevel.getLevelId(), mLoadingLevel.getRevision());
+				loadedLevel = ResourceCacheFacade.get(this, mLoadingLevel.getLevelId(), mLoadingLevel.getRevision());
+				if (loadedLevel != null) {
 					setLevel(loadedLevel);
 					mGui.resetValues();
 					mGui.hideMsgBoxes();
 					mUnsaved = false;
 				} else {
-					Gdx.app.error("MainMenu", "When seleting def, message was not a ResourceItem but a " + message.getClass().getName());
+					Gdx.app.error("LevelEditor", "Could not find level (" + mLoadingLevel.getLevelId() + ")");
 				}
 			}
 		}
@@ -302,14 +327,6 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 						Scene scene = getLoadingScene();
 						if (scene != null) {
 							SceneSwitcher.switchTo(scene);
-						} else {
-							/** @todo remove after we have a loading scene */
-							ResourceCacheFacade.finishLoading();
-							Level loadedLevel = ResourceCacheFacade.get(this, mLoadingLevel.getLevelId(), mLoadingLevel.getRevision());
-							setLevel(loadedLevel);
-							mUnsaved = false;
-							mGui.resetValues();
-							mGui.hideMsgBoxes();
 						}
 					} else {
 						mLoadingLevel = null;
@@ -589,16 +606,17 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 	public void saveDef() {
 		mLevel.calculateStartPosition();
 		mLevel.calculateEndPosition();
-		mLevel.getDef().increaseRevision();
+		int oldRevision = mLevel.getDef().getRevision();
 		ResourceSaver.save(mLevel.getDef());
 		ResourceSaver.save(mLevel);
-		mLevel.getDef().setRevision(mLevel.getDef().getRevision()-1);
+		int newRevision = mLevel.getDef().getRevision();
+		mLevel.getDef().setRevision(oldRevision);
 
 		// Load the saved actor and use it instead
 		// Def needs to be loaded twice, as the def should still be visible if we change level
 		try {
-			ResourceCacheFacade.load(this, mLevel.getDef().getId(), LevelDef.class, false, mLevel.getDef().getRevision()+1);
-			ResourceCacheFacade.load(this, mLevel.getId(), Level.class, mLevel.getDef().getId(), LevelDef.class, mLevel.getDef().getRevision()+1);
+			ResourceCacheFacade.load(this, mLevel.getDef().getId(), LevelDef.class, false, newRevision);
+			ResourceCacheFacade.load(this, mLevel.getId(), Level.class, mLevel.getDef().getId(), LevelDef.class, newRevision);
 			ResourceCacheFacade.finishLoading();
 
 			setLevel((Level) ResourceCacheFacade.get(this, mLevel.getId(), mLevel.getRevision()+1));

@@ -128,7 +128,7 @@ public enum ResourceNames {
 	/**
 	 * @return all resource paths
 	 */
-	public static ObjectMap<Class<?>, String> getResourcePaths() {
+	static ObjectMap<Class<?>, String> getResourcePaths() {
 		return mResourcePaths;
 	}
 

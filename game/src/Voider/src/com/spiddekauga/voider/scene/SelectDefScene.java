@@ -2,7 +2,6 @@ package com.spiddekauga.voider.scene;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
@@ -60,13 +59,15 @@ public class SelectDefScene extends WorldScene {
 		if (outcome == Outcomes.LOADING_SUCCEEDED) {
 			try {
 				@SuppressWarnings("unchecked")
-				List<Def> defs = (List<Def>) ResourceCacheFacade.getAll(this, mDefType);
+				ArrayList<Def> defs = (ArrayList<Def>) ResourceCacheFacade.getAll(this, mDefType);
 
 				for (Def def : defs) {
 					mDefs.add(new DefVisible(def));
 				}
 
 				mGui.resetValues();
+
+				Pools.arrayList.free(defs);
 
 			} catch (UndefinedResourceTypeException e) {
 				Gdx.app.error("SelectDefScene", e.toString());

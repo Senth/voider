@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.ObjectMap;
+import com.badlogic.gdx.utils.ObjectMap.Entry;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.utils.Pool;
 import com.spiddekauga.voider.utils.Pools;
@@ -278,6 +279,30 @@ class LoadedDb {
 	}
 
 	/**
+	 * @return string with all the current loaded resources
+	 */
+	String getAllLoadedResourcesString() {
+		String message = "";
+
+		// Add all loaded resources
+		for (Entry<Scene, ObjectMap<UUID, LoadedResource>> sceneEntry : mLoadedResources.entries()) {
+			String sceneString = sceneEntry.key.getClass().getSimpleName();
+
+			for (Entry<UUID, LoadedResource> resourceEntry : sceneEntry.value.entries()) {
+				for(Entry<Integer, LoadedRevision> revisionEntry : resourceEntry.value.revisions.entries()) {
+					if (revisionEntry.value.resource != null) {
+						String filePath = ResourceDatabase.getFilePath(revisionEntry.value.resource);
+
+						message += sceneString + ": " + filePath + ", refs: " + revisionEntry.value.count + "\n";
+					}
+				}
+			}
+		}
+
+		return message;
+	}
+
+	/**
 	 * A loaded resource
 	 */
 	private static class LoadedResource {
@@ -299,7 +324,7 @@ class LoadedDb {
 	}
 
 	/** All scene resources */
-	ObjectMap<Scene, ObjectMap<UUID, LoadedResource>> mLoadedResources = new ObjectMap<Scene, ObjectMap<UUID,LoadedResource>>();
+	private ObjectMap<Scene, ObjectMap<UUID, LoadedResource>> mLoadedResources = new ObjectMap<Scene, ObjectMap<UUID,LoadedResource>>();
 	/** Pool for loaded resources */
 	private Pool<LoadedResource> mLoadedResourcePool = new Pool<LoadedDb.LoadedResource>(LoadedResource.class, 30, 300);
 	/** Pool for loaded revisions */

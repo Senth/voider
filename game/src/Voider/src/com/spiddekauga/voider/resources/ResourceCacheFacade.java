@@ -153,29 +153,31 @@ public class ResourceCacheFacade {
 	 * @param type the type of resources to unload
 	 * @param unloadDependencies true if the cache shall unload all the dependencies.
 	 */
+	@SuppressWarnings("unchecked")
 	public static void unloadAllOf(Scene scene, Class<? extends IResource> type, boolean unloadDependencies) {
-		// Get all resources of this type
-		ArrayList<ResourceItem> resources = ResourceDatabase.getAllExistingResource(type);
+		// Get all loaded resources of this type
+		ArrayList<IResource> resources = (ArrayList<IResource>) getAll(scene, type);
 
 
 		// Unload dependencies
 		if (unloadDependencies) {
-			for (ResourceItem resourceItem : resources) {
-				// Get the resource first
-				IResourceDependency resource = ResourceDatabase.getLoadedResource(scene, resourceItem.id, resourceItem.revision);
-				mDependencyLoader.unload(scene, resource);
+			if (IResourceDependency.class.isAssignableFrom(type)) {
+				for (IResource resource : resources) {
+					mDependencyLoader.unload(scene, (IResourceDependency) resource);
+				}
+			} else {
+				Gdx.app.error("ResourceCacheFacade", "Tried to unload dependencies of (" + type.getSimpleName() + "), but this class cannot hold dependencies!");
 			}
 		}
 		// Only unload the resource, no dependencies
 		else {
-			for (ResourceItem resourceItem : resources) {
-				ResourceDatabase.unload(scene, resourceItem.id, type, resourceItem.revision);
+			for (IResource resource : resources) {
+				ResourceDatabase.unload(scene, resource);
 			}
 		}
 
 
 		// Free
-		Pools.resourceItem.freeAll(resources);
 		Pools.arrayList.free(resources);
 	}
 
@@ -571,7 +573,8 @@ public class ResourceCacheFacade {
 			// All assets should be unloaded by now
 			if (mAssetManager.getLoadedAssets() > 0) {
 				Gdx.app.error("Assets", "All assets have not been unloaded!");
-				Gdx.app.error("Assets", mAssetManager.getDiagnostics());
+				Gdx.app.error("LoadedResource", "\n" + ResourceDatabase.getAllLoadedResourcesString());
+				Gdx.app.error("Assets", "\n" + mAssetManager.getDiagnostics());
 			}
 		}
 

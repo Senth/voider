@@ -30,8 +30,13 @@ public class ResourceSaver {
 	public static void save(IResource resource) {
 		assert(mCrypter != null);
 
+		// Update date and revision
 		if (resource instanceof Def) {
 			((Def) resource).updateDate();
+
+			int nextRevision = ResourceDatabase.getLatestRevisionNumber(resource.getId());
+			nextRevision++;
+			((Def) resource).setRevision(nextRevision);
 		}
 
 		Json json = new JsonWrapper();

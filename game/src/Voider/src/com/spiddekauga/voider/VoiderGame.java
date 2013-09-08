@@ -15,8 +15,8 @@ import com.spiddekauga.voider.game.Collectibles;
 import com.spiddekauga.voider.game.Level;
 import com.spiddekauga.voider.game.LevelDef;
 import com.spiddekauga.voider.game.actors.PickupActorDef;
-import com.spiddekauga.voider.game.actors.PlayerActorDef;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
+import com.spiddekauga.voider.resources.ResourceChecker;
 import com.spiddekauga.voider.resources.ResourceNames;
 import com.spiddekauga.voider.resources.ResourceSaver;
 import com.spiddekauga.voider.scene.SceneSwitcher;
@@ -35,24 +35,16 @@ public class VoiderGame implements ApplicationListener {
 		ResourceNames.init();
 		ResourceSaver.init();
 		ResourceCacheFacade.init();
+		ResourceChecker.checkAndCreateResources();
 		Gdx.app.setLogLevel(Application.LOG_DEBUG);
 
 		ShaderProgram.pedantic = false;
 
 		/** @TODO set splash screen as start screen */
 
-		//		testSavePlayerShip();
 		testMainMenu();
 		//		testSavePickups();
 		//		testSplashScreen();
-	}
-
-	/**
-	 * Test to save player ship
-	 */
-	@SuppressWarnings("unused")
-	private void testSavePlayerShip() {
-		ResourceSaver.save(new PlayerActorDef());
 	}
 
 	/**
