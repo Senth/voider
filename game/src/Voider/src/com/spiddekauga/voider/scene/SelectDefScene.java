@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.utils.ObjectMap;
 import com.spiddekauga.voider.User;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.IResource;
@@ -29,16 +30,15 @@ import com.spiddekauga.voider.utils.Pools;
  */
 public class SelectDefScene extends WorldScene {
 	/**
-	 * Creates a selector scene (with no checkbox)
-	 * @param defType the definition type that the user want to select. All these
-	 * definition types need to be loaded already!
+	 * Private common constructor
+	 * @param defType the definition type that the player want to select.
 	 * @param showMineOnly set as true if the player only shall see his/her own
 	 * definitions by default, if showMineOnlyCheckbox is set to true the player can
-	 * changed this value.
+	 * change this value.
 	 * @param showMineOnlyCheckbox set to true if you want the scene to show a checkbox
 	 * to only display one's own actors.
 	 */
-	public SelectDefScene(Class<? extends IResource> defType, boolean showMineOnly, boolean showMineOnlyCheckbox) {
+	private SelectDefScene(Class<? extends IResource> defType, boolean showMineOnly, boolean showMineOnlyCheckbox) {
 		super(new SelectDefGui(showMineOnlyCheckbox), 0);
 
 		mShowMineOnly = showMineOnly;
@@ -50,6 +50,38 @@ public class SelectDefScene extends WorldScene {
 		for (int i = 0; i < mCategoryFilters.length; ++i) {
 			mCategoryFilters[i] = new ArrayList<String>();
 		}
+	}
+
+	/**
+	 * Creates a selector scene with the latest revisions of the specified definition type.
+	 * @param defType the definition type that the player want to select.
+	 * @param showMineOnly set as true if the player only shall see his/her own
+	 * definitions by default, if showMineOnlyCheckbox is set to true the player can
+	 * change this value.
+	 * @param showMineOnlyCheckbox set to true if you want the scene to show a checkbox
+	 * to only display one's own actors.
+	 * @param canChooseRevision set this to true if the player should be able to select
+	 * another revision of the resource.
+	 */
+	public SelectDefScene(Class<? extends IResource> defType, boolean showMineOnly, boolean showMineOnlyCheckbox, boolean canChooseRevision) {
+		this(defType, showMineOnly, showMineOnlyCheckbox);
+
+		mCanChooseRevision = canChooseRevision;
+	}
+
+	/**
+	 * Creates a selector scene with specific revisions of some of the resources
+	 * @param defType the definition type that the player want to select.
+	 * @param showMineOnly set as true if the player only shall see his/her own definitions by default,
+	 * if showMineOnlyCheckbox is set to true the player can change this value.
+	 * @param showMineOnlyCheckbox set to true if you want the scene to show a checkbox
+	 * to only display one's own actors.
+	 * @param resourceRevisions specific revisions to use for some resources of this type.
+	 */
+	public SelectDefScene(Class<? extends IResource> defType, boolean showMineOnly, boolean showMineOnlyCheckbox, ObjectMap<UUID, Integer> resourceRevisions) {
+		this(defType, showMineOnly, showMineOnlyCheckbox);
+
+		mRevisionsToUse = resourceRevisions;
 	}
 
 	@Override
@@ -79,14 +111,22 @@ public class SelectDefScene extends WorldScene {
 	protected void loadResources() {
 		super.loadResources();
 		ResourceCacheFacade.load(ResourceNames.UI_GENERAL);
-		ResourceCacheFacade.loadAllOf(this, mDefType, false);
+		if (mRevisionsToUse != null) {
+			ResourceCacheFacade.loadAllOf(this, mDefType, true, mRevisionsToUse);
+		} else {
+			ResourceCacheFacade.loadAllOf(this, mDefType, true);
+		}
 	}
 
 	@Override
 	protected void unloadResources() {
 		super.unloadResources();
 		ResourceCacheFacade.unload(ResourceNames.UI_GENERAL);
-		ResourceCacheFacade.unloadAllOf(this, mDefType, false);
+		if (mRevisionsToUse != null) {
+			ResourceCacheFacade.unloadAllOf(this, mDefType, true, mRevisionsToUse);
+		} else {
+			ResourceCacheFacade.unloadAllOf(this, mDefType, true);
+		}
 	}
 
 	@Override
@@ -225,6 +265,13 @@ public class SelectDefScene extends WorldScene {
 			return String.valueOf(mSelectedDef.getRevision());
 		}
 		return "";
+	}
+
+	/**
+	 * @return true if the player can select another revision of the resource
+	 */
+	boolean canChooseRevision() {
+		return mCanChooseRevision;
 	}
 
 	/**
@@ -475,6 +522,10 @@ public class SelectDefScene extends WorldScene {
 		private Method mMethod = null;
 	}
 
+	/** If the player shall be able to choose another revision for the definition */
+	private boolean mCanChooseRevision = false;
+	/** Revisions to use for some resources (instead of latest) */
+	private ObjectMap<UUID, Integer> mRevisionsToUse = null;
 	/** Currently selected definition */
 	private Def mSelectedDef = null;
 	/** All the loaded definitions */

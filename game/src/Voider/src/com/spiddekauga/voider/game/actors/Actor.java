@@ -658,7 +658,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	 */
 	public void createBody(BodyDef bodyDef) {
 		if (mWorld != null && mBody == null) {
-			if (mSkipRotate || !mDef.getVisualVars().getCenterOffset().equals(Vector2.Zero)) {
+			if (mSkipRotate) {
 				bodyDef.angularVelocity = 0;
 			} else {
 				bodyDef.fixedRotation = true;
@@ -670,6 +670,25 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 			mFixtureCreateTime = GameTime.getTotalGlobalTimeElapsed();
 			mBodyUpdateTime = mFixtureCreateTime;
 		}
+	}
+
+	/**
+	 * Sets the angular dampening on the current body
+	 */
+	private void reloadBody() {
+		if (!mSkipRotate) {
+			mBody.setAngularVelocity(mDef.getRotationSpeedRad());
+		} else {
+			mBody.setAngularVelocity(0);
+		}
+
+		// Only set starting angle if we're not rotating
+		if (mDef.getRotationSpeedRad() == 0) {
+			mBody.setTransform(mPosition, mDef.getStartAngleRad());
+		}
+		mBody.setType(mDef.getBodyDef().type);
+
+		mBodyUpdateTime = GameTime.getTotalGlobalTimeElapsed();
 	}
 
 	@Override
@@ -1085,23 +1104,6 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 			fixtureDef.filter.categoryBits = getFilterCategory();
 			fixtureDef.filter.maskBits = getFilterCollidingCategories();
 		}
-	}
-
-	/**
-	 * Sets the angular dampening on the current body
-	 */
-	private void reloadBody() {
-		if (!mSkipRotate) {
-			mBody.setAngularVelocity(mDef.getRotationSpeedRad());
-		}
-
-		// Only set starting angle if we're not rotating
-		if (mDef.getRotationSpeedRad() == 0) {
-			mBody.setTransform(mPosition, mDef.getStartAngleRad());
-		}
-		mBody.setType(mDef.getBodyDef().type);
-
-		mBodyUpdateTime = GameTime.getTotalGlobalTimeElapsed();
 	}
 
 	/**

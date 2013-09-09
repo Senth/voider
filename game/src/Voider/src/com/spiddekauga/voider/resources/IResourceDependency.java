@@ -28,13 +28,6 @@ public interface IResourceDependency extends IResource {
 	 */
 	public void addDependency(IResource dependency);
 
-	//	/**
-	//	 * Adds an external dependency to the resource
-	//	 * @param uuid the unique id of the dependency
-	//	 * @param type the type of dependency
-	//	 */
-	//	public void addDependency(UUID uuid, Class<?> type);
-
 	/**
 	 * Adds an internal dependency to the resource
 	 * @param dependency the resource dependency
@@ -53,6 +46,13 @@ public interface IResourceDependency extends IResource {
 	 * @param dependency the name of the dependency to remove
 	 */
 	public void removeDependency(ResourceNames dependency);
+
+	/**
+	 * Updates a revision of an external dependency
+	 * @param dependency id of the dependency to update the revision of
+	 * @param revision new revision of the dependency
+	 */
+	public void updateDependencyRevision(UUID dependency, int revision);
 
 	/**
 	 * @return all external dependencies

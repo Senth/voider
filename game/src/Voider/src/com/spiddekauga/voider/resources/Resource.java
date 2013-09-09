@@ -19,11 +19,6 @@ public abstract class Resource implements IResource, Json.Serializable {
 		return mUniqueId;
 	}
 
-	//	@Override
-	//	public int getRevision() {
-	//		return -1;
-	//	}
-
 	@Override
 	public boolean equals(Object object) {
 		if (object == null) {
@@ -136,7 +131,7 @@ public abstract class Resource implements IResource, Json.Serializable {
 
 	@Override
 	public void write(Json json) {
-		json.writeValue("REVISION", Config.REVISION);
+		json.writeValue("Config.REVISION", Config.REVISION);
 		json.writeValue("mUniqueId", mUniqueId);
 		json.writeValue("mListenerIds", mListenerIds);
 	}

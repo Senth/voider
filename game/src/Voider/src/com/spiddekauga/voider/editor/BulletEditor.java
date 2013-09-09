@@ -191,7 +191,7 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 
 		// Load the saved actor and use it instead
 		try {
-			ResourceCacheFacade.load(this, mDef.getId(), mDef.getClass(), true, newRevision);
+			ResourceCacheFacade.load(this, mDef.getId(), mDef.getClass(), newRevision, true);
 			ResourceCacheFacade.finishLoading();
 
 			setDef((BulletActorDef) ResourceCacheFacade.get(this, mDef.getId(), newRevision));
@@ -207,7 +207,7 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 	public void loadDef() {
 		mSelectionAction = SelectionActions.LOAD_BULLET;
 
-		Scene selectionScene = new SelectDefScene(BulletActorDef.class, true, true);
+		Scene selectionScene = new SelectDefScene(BulletActorDef.class, true, true, true);
 		SceneSwitcher.switchTo(selectionScene);
 	}
 

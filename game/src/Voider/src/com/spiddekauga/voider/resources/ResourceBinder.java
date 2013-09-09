@@ -108,7 +108,7 @@ public class ResourceBinder implements Json.Serializable {
 
 	@Override
 	public void write(Json json) {
-		json.writeValue("REVISION", Config.REVISION);
+		json.writeValue("Config.REVISION", Config.REVISION);
 		json.writeValue("mResources", mResources);
 	}
 

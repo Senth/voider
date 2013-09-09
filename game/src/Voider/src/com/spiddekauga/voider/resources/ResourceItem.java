@@ -83,7 +83,7 @@ public class ResourceItem implements Json.Serializable {
 
 	@Override
 	public void write(Json json) {
-		json.writeValue("REVISION", Config.REVISION);
+		json.writeValue("Config.REVISION", Config.REVISION);
 		json.writeValue("resourceId", id.toString());
 		json.writeValue("resourceType", type.getName());
 		json.writeValue("count", count);

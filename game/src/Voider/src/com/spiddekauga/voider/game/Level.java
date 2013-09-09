@@ -31,6 +31,7 @@ import com.spiddekauga.voider.resources.IResourceUpdate;
 import com.spiddekauga.voider.resources.Resource;
 import com.spiddekauga.voider.resources.ResourceBinder;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
+import com.spiddekauga.voider.resources.ResourceItem;
 import com.spiddekauga.voider.resources.UndefinedResourceTypeException;
 import com.spiddekauga.voider.utils.Pools;
 
@@ -104,6 +105,23 @@ public class Level extends Resource implements Disposable, IResourceRevision {
 	@Override
 	public int getRevision() {
 		return mLevelDef.getRevision();
+	}
+
+	/**
+	 * Resets the the resource to use the correct defs. Specifically enemies and bullets as
+	 * these could be changed.
+	 */
+	public void resetDefs() {
+		ArrayList<EnemyActor> enemyActors = mResourceBinder.getResources(EnemyActor.class);
+		ObjectMap<UUID, ResourceItem> externalDependencies = mLevelDef.getExternalDependencies();
+
+		// Update defs for all enemies
+		for (EnemyActor enemy : enemyActors) {
+			ResourceItem resourceItem = externalDependencies.get(enemy.getDef().getId());
+
+			EnemyActorDef correctDef = ResourceCacheFacade.get(null, resourceItem.id, resourceItem.revision);
+			enemy.setDef(correctDef);
+		}
 	}
 
 	/**

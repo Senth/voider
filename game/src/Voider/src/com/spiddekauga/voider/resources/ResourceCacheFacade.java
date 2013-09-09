@@ -244,7 +244,7 @@ public class ResourceCacheFacade {
 	 */
 	public static void load(Scene scene, UUID resourceId, Class<? extends IResource> resourceType, UUID defId, Class<? extends Def> defType, int revision) {
 		// Load definition dependencies first
-		load(scene, defId, defType, true, revision);
+		load(scene, defId, defType, revision, true);
 
 		// Add the resource to the queue. Load this resource once all dependencies are loaded
 		mLoadQueue.add(new ResourceItem(scene, resourceId, resourceType, revision));
@@ -297,10 +297,10 @@ public class ResourceCacheFacade {
 	 * @param scene the scene to load the resource to
 	 * @param resourceId the unique id of the resource we want to load
 	 * @param type the class type of the resource
-	 * @param loadDependencies if we also shall load the dependencies
 	 * @param revision loads the specific revision of the resource
+	 * @param loadDependencies if we also shall load the dependencies
 	 */
-	public static void load(Scene scene, UUID resourceId, Class<? extends IResource> type, boolean loadDependencies, int revision) {
+	public static void load(Scene scene, UUID resourceId, Class<? extends IResource> type, int revision, boolean loadDependencies) {
 		if (loadDependencies) {
 			// Type need to implement the IResourceDependency interface to load resources
 			if (IResourceDependency.class.isAssignableFrom(type)) {
@@ -311,6 +311,18 @@ public class ResourceCacheFacade {
 		} else {
 			ResourceDatabase.load(scene, resourceId, type, revision);
 		}
+	}
+
+	/**
+	 * Reloads a loaded resource. This reloads the resource directly by calling {@link #finishLoading()}
+	 * Useful when a resource is saved (and thus the revision increased, but we want the loaded resource to
+	 * use the real revision (i.e. not the changed one). This method reloads the resource for all scenes.
+	 * Does nothing if the resource isn't loaded. Only applicable on resources that has revisions...
+	 * @param resourceId resource id to reload
+	 * @param revision specific revision of the resource to reload.
+	 */
+	public static void reload(UUID resourceId, int revision) {
+		ResourceDatabase.reload(resourceId, revision);
 	}
 
 	//	/**

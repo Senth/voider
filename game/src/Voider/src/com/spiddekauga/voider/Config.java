@@ -122,6 +122,14 @@ public class Config {
 	}
 
 	/**
+	 * Debug options
+	 */
+	public static class Debug {
+		/** If loading/unloading debug messages should be turned on/off */
+		public static boolean LOAD_UNLOAD_MESSAGES = true;
+	}
+
+	/**
 	 * Editor options
 	 */
 	public static class Editor {

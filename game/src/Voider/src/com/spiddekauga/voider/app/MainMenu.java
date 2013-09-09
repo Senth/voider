@@ -113,7 +113,7 @@ public class MainMenu extends Scene {
 	 */
 	void gotoDownloadedContentMenu() {
 		/** @todo change the simple load level to a more advanced level */
-		SelectDefScene selectLevelScene = new SelectDefScene(LevelDef.class, false, true);
+		SelectDefScene selectLevelScene = new SelectDefScene(LevelDef.class, false, true, false);
 		SceneSwitcher.switchTo(selectLevelScene);
 	}
 

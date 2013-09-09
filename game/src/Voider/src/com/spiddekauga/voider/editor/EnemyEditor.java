@@ -167,7 +167,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 			BulletActorDef oldBulletDef = mDef.getWeaponDef().getBulletActorDef();
 
 			if (bulletId != null) {
-				ResourceCacheFacade.load(this, bulletId, BulletActorDef.class, true, revision);
+				ResourceCacheFacade.load(this, bulletId, BulletActorDef.class, revision, true);
 				ResourceCacheFacade.finishLoading();
 
 				BulletActorDef bulletActorDef = ResourceCacheFacade.get(this, bulletId, revision);
@@ -329,8 +329,8 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	}
 
 	@Override
-	protected void reloadResourcesOnActivate() {
-		super.reloadResourcesOnActivate();
+	protected void reloadResourcesOnActivate(Outcomes outcome, Object message) {
+		super.reloadResourcesOnActivate(outcome, message);
 		ResourceCacheFacade.unloadAllOf(this, BulletActorDef.class, true);
 		ResourceCacheFacade.loadAllOf(this, BulletActorDef.class, true);
 		ResourceCacheFacade.finishLoading();
@@ -425,8 +425,11 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 		// Load the saved actor and use it instead
 		try {
 			ResourceCacheFacade.unload(this, mDef, true);
-			ResourceCacheFacade.load(this, mDef.getId(), EnemyActorDef.class, true, newRevision);
+			ResourceCacheFacade.load(this, mDef.getId(), EnemyActorDef.class, newRevision, true);
 			ResourceCacheFacade.finishLoading();
+
+			// Reload the old definition, some other scenes might be using it...
+			ResourceCacheFacade.reload(mDef.getId(), oldRevision);
 
 			setEnemyDef((EnemyActorDef) ResourceCacheFacade.get(this, mDef.getId(), newRevision));
 		} catch (Exception e) {
@@ -833,7 +836,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	void selectBulletType() {
 		mSelectionAction = SelectionActions.BULLET_TYPE;
 
-		Scene selectionScene = new SelectDefScene(BulletActorDef.class, false, false);
+		Scene selectionScene = new SelectDefScene(BulletActorDef.class, false, false, true);
 		SceneSwitcher.switchTo(selectionScene);
 	}
 
@@ -961,7 +964,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	public void loadDef() {
 		mSelectionAction = SelectionActions.LOAD_ENEMY;
 
-		Scene selectionScene = new SelectDefScene(EnemyActorDef.class, true, true);
+		Scene selectionScene = new SelectDefScene(EnemyActorDef.class, true, true, true);
 		SceneSwitcher.switchTo(selectionScene);
 	}
 

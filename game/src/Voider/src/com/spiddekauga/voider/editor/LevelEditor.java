@@ -185,6 +185,7 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 
 			// Unload the old level
 			if (ResourceCacheFacade.isLoaded(this, mLevel.getId(), mLevel.getRevision()) && !sameRevision) {
+				ResourceCacheFacade.unload(this, mLevel.getDef(), false);
 				ResourceCacheFacade.unload(this, mLevel, mLevel.getDef());
 			} else {
 				mLevel.dispose();
@@ -257,26 +258,60 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 	}
 
 	@Override
-	protected void reloadResourcesOnActivate() {
-		super.reloadResourcesOnActivate();
-		ResourceCacheFacade.unloadAllOf(this, EnemyActorDef.class, true);
+	protected void reloadResourcesOnActivate(Outcomes outcome, Object message) {
+		super.reloadResourcesOnActivate(outcome, message);
 
-		// Get the specific revision of certain enemies we currently use
-		ObjectMap<UUID, Integer> resourceRevision = new ObjectMap<UUID, Integer>();
-		if (mLoadingLevel != null) {
-			ObjectMap<UUID, ResourceItem> dependencies = mLoadingLevel.getExternalDependencies();
-
-			// Add all enemy revision to this dependency
-			for (Entry<UUID, ResourceItem> entry : dependencies.entries()) {
-				if (EnemyActorDef.class.isAssignableFrom(entry.value.type)) {
-					resourceRevision.put(entry.key, entry.value.revision);
-				}
-			}
+		// Unload enemies if there was a chance we have edited an enemy in the enemy editor
+		// Or if we loaded another level
+		if (outcome == Outcomes.NOT_APPLICAPLE) {
+			reloadEnemies();
+		} else if (outcome == Outcomes.DEF_SELECTED && mSelectionAction == SelectionActions.LEVEL) {
+			reloadEnemies();
 		}
 
 
-		ResourceCacheFacade.loadAllOf(this, EnemyActorDef.class, true, resourceRevision);
+		if (mLevel != null) {
+			mLevel.resetDefs();
+		}
+	}
+
+	/**
+	 * Reloads all the enemies
+	 */
+	private void reloadEnemies() {
+		ResourceCacheFacade.unloadAllOf(this, EnemyActorDef.class, true);
+
+		/** @todo Improve reloading to only unload the latest revision of the enemies the level
+		 * will be using. However, when unloading a level care must be taken to load the
+		 * latest revision of these enemies again. For now unloading then loading all enemies with
+		 * correct revisions is the easiest way to do this.
+		 */
+
+		ResourceCacheFacade.loadAllOf(this, EnemyActorDef.class, true, getEnemyRevisions());
 		ResourceCacheFacade.finishLoading();
+	}
+
+	/**
+	 * @return the revision of all enemy resource the level is currently using
+	 */
+	private ObjectMap<UUID, Integer> getEnemyRevisions() {
+		// Get the specific revision of certain enemies we currently use
+		ObjectMap<UUID, Integer> enemyRevisions = new ObjectMap<UUID, Integer>();
+		ObjectMap<UUID, ResourceItem> dependencies = null;
+		if (mLevel != null) {
+			dependencies = mLevel.getDef().getExternalDependencies();
+		} else {
+			dependencies = new ObjectMap<UUID, ResourceItem>();
+		}
+
+		// Add all enemy revision to this dependency
+		for (Entry<UUID, ResourceItem> entry : dependencies.entries()) {
+			if (EnemyActorDef.class.isAssignableFrom(entry.value.type)) {
+				enemyRevisions.put(entry.key, entry.value.revision);
+			}
+		}
+
+		return enemyRevisions;
 	}
 
 	@Override
@@ -299,6 +334,7 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 					mGui.resetValues();
 					mGui.hideMsgBoxes();
 					mUnsaved = false;
+					mLoadingLevel = null;
 				} else {
 					Gdx.app.error("LevelEditor", "Could not find level (" + mLoadingLevel.getLevelId() + ")");
 				}
@@ -615,7 +651,7 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 		// Load the saved actor and use it instead
 		// Def needs to be loaded twice, as the def should still be visible if we change level
 		try {
-			ResourceCacheFacade.load(this, mLevel.getDef().getId(), LevelDef.class, false, newRevision);
+			ResourceCacheFacade.load(this, mLevel.getDef().getId(), LevelDef.class, newRevision, false);
 			ResourceCacheFacade.load(this, mLevel.getId(), Level.class, mLevel.getDef().getId(), LevelDef.class, newRevision);
 			ResourceCacheFacade.finishLoading();
 
@@ -633,7 +669,7 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 	public void loadDef() {
 		mSelectionAction = SelectionActions.LEVEL;
 
-		Scene scene = new SelectDefScene(LevelDef.class, true, true);
+		Scene scene = new SelectDefScene(LevelDef.class, true, true, true);
 		SceneSwitcher.switchTo(scene);
 	}
 
@@ -648,6 +684,8 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 		setLevel(level);
 
 		clearTools();
+
+		reloadEnemies();
 
 		mUnsaved = false;
 	}
@@ -1088,7 +1126,7 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 	void selectPickup() {
 		mSelectionAction = SelectionActions.PICKUP;
 
-		Scene scene = new SelectDefScene(PickupActorDef.class, false, false);
+		Scene scene = new SelectDefScene(PickupActorDef.class, false, false, false);
 		SceneSwitcher.switchTo(scene);
 	}
 
@@ -1103,7 +1141,7 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 	void selectEnemy() {
 		mSelectionAction = SelectionActions.ENEMY;
 
-		Scene scene = new SelectDefScene(EnemyActorDef.class, false, true);
+		Scene scene = new SelectDefScene(EnemyActorDef.class, false, true, getEnemyRevisions());
 		SceneSwitcher.switchTo(scene);
 	}
 

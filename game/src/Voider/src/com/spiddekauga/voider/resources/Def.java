@@ -199,6 +199,16 @@ public abstract class Def extends Resource implements Json.Serializable, IResour
 		mInternalDependencies.remove(dependency);
 	}
 
+	@Override
+	public void updateDependencyRevision(UUID dependency, int revision) {
+		ResourceItem depItem = mExternalDependencies.get(dependency);
+		if (depItem != null) {
+			depItem.revision = revision;
+		} else {
+			Gdx.app.error("Def", "No dependency found to update the revision of");
+		}
+	}
+
 	/**
 	 * Update the date to the current date
 	 */

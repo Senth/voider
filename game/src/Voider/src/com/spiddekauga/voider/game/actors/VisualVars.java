@@ -47,7 +47,7 @@ public class VisualVars implements Json.Serializable, Disposable, IResourceCorne
 
 	@Override
 	public void write(Json json) {
-		json.writeValue("REVISION", Config.REVISION);
+		json.writeValue("Config.REVISION", Config.REVISION);
 
 		json.writeValue("mShapeType", mShapeType);
 		json.writeValue("mActorType", mActorType);

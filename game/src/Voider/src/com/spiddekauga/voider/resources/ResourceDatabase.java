@@ -10,6 +10,7 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.ObjectMap.Entry;
+import com.spiddekauga.utils.Strings;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.utils.Pool;
@@ -227,15 +228,13 @@ class ResourceDatabase {
 				IResource resource = mAssetManager.get(loadingQueueItem.filePath);
 				mLoadedResources.setLoadedResource(loadingQueueItem.scene, resource);
 				iterator.remove();
+
 				int loadedRevision = -1;
 				if (resource instanceof IResourceRevision) {
 					loadedRevision = ((IResourceRevision) resource).getRevision();
 				}
-				int cRefScenes = mAssetManager.getReferenceCount(loadingQueueItem.filePath);
-				Gdx.app.debug("ResourceDatabase", "+++ " +
-						loadingQueueItem.scene.getClass().getSimpleName() +
-						": (" + resource.getClass().getSimpleName() + ":" + loadedRevision +") " +
-						loadingQueueItem.filePath + ", scenes: " + cRefScenes);
+
+				debugOutputLoadedUnloaded(loadingQueueItem.scene, true, resource.getClass(), loadedRevision, loadingQueueItem.filePath);
 			}
 		}
 
@@ -308,6 +307,40 @@ class ResourceDatabase {
 	}
 
 	/**
+	 * Reloads a loaded resource.
+	 * Useful when a resource is saved (and thus the revision increased, but we want the loaded resource to
+	 * use the real revision (i.e. not the changed one). This method reloads the resource for all scenes.
+	 * Does nothing if the resource isn't loaded. Only applicable on resources that has revisions...
+	 * @param resourceId resource id to reload
+	 * @param revision specific revision of the resource to reload.
+	 */
+	static void reload(UUID resourceId, int revision) {
+		String filepath = getFilePath(resourceId, revision);
+
+		if (mAssetManager.isLoaded(filepath)) {
+			// Get scenes the resource is loaded into
+			ArrayList<Scene> scenes = mLoadedResources.getResourceScenes(resourceId, revision);
+
+			// Reload the actual asset
+			ResourceInfo resourceInfo = mResources.get(resourceId);
+			int cRefs = mAssetManager.getReferenceCount(filepath);
+			mAssetManager.setReferenceCount(filepath, 1);
+			mAssetManager.unload(filepath);
+			mAssetManager.load(filepath, resourceInfo.type);
+			mAssetManager.finishLoading();
+			mAssetManager.setReferenceCount(filepath, cRefs);
+
+			// Update the scene resource to contain the new reference of the resource
+			IResource resource = (IResource) mAssetManager.get(filepath, resourceInfo.type);
+			for (Scene scene : scenes) {
+				mLoadedResources.setLoadedResource(scene, resource);
+			}
+
+			Pools.arrayList.free(scenes);
+		}
+	}
+
+	/**
 	 * Removes the loaded resource. This has to be called the same number of
 	 * times the resource was loaded.
 	 * @param scene the scene the resource was loaded in
@@ -345,14 +378,32 @@ class ResourceDatabase {
 			String filepath = getFilePath(resourceId, revisionToUse);
 			mAssetManager.unload(filepath);
 
+			debugOutputLoadedUnloaded(scene, false, type, revisionToUse, filepath);
+		}
+	}
+
+	/**
+	 * Outputs a debug message when a file is loaded/unloaded
+	 * @param scene the scene the resources was loaded/unloaded
+	 * @param loaded true if the resource was loaded, false if unloaded
+	 * @param type resource type
+	 * @param revision of the resource
+	 * @param filepath of the resource
+	 */
+	private static void debugOutputLoadedUnloaded(Scene scene, boolean loaded, Class<?> type, int revision, String filepath) {
+		if (Config.Debug.LOAD_UNLOAD_MESSAGES) {
 			int cRefScenes = 0;
 			if (mAssetManager.isLoaded(filepath)) {
 				cRefScenes = mAssetManager.getReferenceCount(filepath);
 			}
 
-			Gdx.app.debug("ResourceDatabase", "--- " + scene.getClass().getSimpleName() +
-					": (" + type.getSimpleName() + ":" + revisionToUse + ") " + filepath +
-					", scenes: " + cRefScenes);
+			String loadUnloadString = loaded ? "+++" : "---";
+
+			Gdx.app.debug("ResourceDatabase", loadUnloadString + "  s:" + cRefScenes + "  " +
+					Strings.padRight(scene.getClass().getSimpleName(), 15) + " " +
+					Strings.padRight(type.getSimpleName(), 18) + " " +
+					Strings.padRight("r." + revision, 6) + " " +
+					filepath);
 		}
 	}
 

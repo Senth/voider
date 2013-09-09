@@ -115,7 +115,7 @@ public class Weapon implements Disposable, Json.Serializable {
 
 	@Override
 	public void write(Json json) {
-		json.writeValue("REVISION", Config.REVISION);
+		json.writeValue("Config.REVISION", Config.REVISION);
 		json.writeValue("mCooldown", mCooldown);
 	}
 

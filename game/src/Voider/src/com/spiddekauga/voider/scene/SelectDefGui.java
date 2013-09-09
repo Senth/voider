@@ -186,18 +186,20 @@ public class SelectDefGui extends Gui {
 
 		// Select another revision
 		mInfoPanel.row().setFillWidth(true);
-		TextButton button = new TextButton("Select rev.", buttonStyle);
-		new ButtonListener(button) {
-			@Override
-			protected void onPressed() {
-				showSelectRevisionMsgBox();
-			}
-		};
-		mInfoPanel.add(button);
+		if (mSelectDefScene.canChooseRevision()) {
+			TextButton button = new TextButton("Select rev.", buttonStyle);
+			new ButtonListener(button) {
+				@Override
+				protected void onPressed() {
+					showSelectRevisionMsgBox();
+				}
+			};
+			mInfoPanel.add(button);
+		}
 		mInfoPanel.add().setFillWidth(true);
 
 		// Load
-		button = new TextButton("Load", buttonStyle);
+		TextButton button = new TextButton("Load", buttonStyle);
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed() {

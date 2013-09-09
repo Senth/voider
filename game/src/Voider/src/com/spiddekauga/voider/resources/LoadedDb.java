@@ -140,6 +140,31 @@ class LoadedDb {
 	}
 
 	/**
+	 * Gets an array with all the scenes the specified resource exists in
+	 * @param resourceId the resource to check if it's loaded
+	 * @param revision the revision of the resource
+	 * @return ArrayList with all scenes the resource with the specified revision is
+	 * loaded into. Don't forget to free the arraylist using Pool.arrayList.free(scenes)
+	 */
+	ArrayList<Scene> getResourceScenes(UUID resourceId, int revision) {
+		@SuppressWarnings("unchecked")
+		ArrayList<Scene> scenes = Pools.arrayList.obtain();
+		scenes.clear();
+
+		for (Entry<Scene, ObjectMap<UUID, LoadedResource>> sceneEntry : mLoadedResources.entries()) {
+			LoadedResource foundLoadedResource = sceneEntry.value.get(resourceId);
+
+			if (foundLoadedResource != null) {
+				if (foundLoadedResource.revisions.containsKey(revision)) {
+					scenes.add(sceneEntry.key);
+				}
+			}
+		}
+
+		return scenes;
+	}
+
+	/**
 	 * Gets a loaded or loading revision
 	 * @param scene the scene which the resource and revision is loaded into
 	 * @param resource the resource to get it revision from
