@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.Config.Debug;
 import com.spiddekauga.voider.game.triggers.TriggerAction.Actions;
 import com.spiddekauga.voider.game.triggers.TriggerInfo;
 import com.spiddekauga.voider.resources.IResource;
@@ -202,7 +203,7 @@ public class EnemyGroup extends Resource {
 			}
 		}
 
-		if (Config.DEBUG_TESTS) {
+		if (Debug.DEBUG_TESTS) {
 			int leaderSize = mEnemies.get(0).getTriggerInfos().size();
 
 			for (int i = 1; i < mEnemies.size(); ++i) {
@@ -240,7 +241,7 @@ public class EnemyGroup extends Resource {
 			mEnemies.get(i).addTrigger(copyTriggerInfo);
 		}
 
-		if (Config.DEBUG_TESTS) {
+		if (Debug.DEBUG_TESTS) {
 			int leaderSize = mEnemies.get(0).getTriggerInfos().size();
 
 			for (int i = 1; i < mEnemies.size(); ++i) {
@@ -262,7 +263,7 @@ public class EnemyGroup extends Resource {
 		}
 
 
-		if (Config.DEBUG_TESTS) {
+		if (Debug.DEBUG_TESTS) {
 			int leaderSize = mEnemies.get(0).getTriggerInfos().size();
 
 			for (int i = 1; i < mEnemies.size(); ++i) {

@@ -66,16 +66,7 @@ public class ResourceSaver {
 	 * @param resourceType removes all the resources of this type from the folder
 	 */
 	public static void clearResources(Class<? extends IResource> resourceType) {
-		try {
-			String relativePath = ResourceNames.getDirPath(resourceType);
-			FileHandle folder = Gdx.files.external(relativePath);
-
-			if (folder.exists()) {
-				folder.deleteDirectory();
-			}
-		} catch (UndefinedResourceTypeException e) {
-			Gdx.app.error("ResourceSaver", "Could not clear resources of the type: " + e.getMessage());
-		}
+		ResourceDatabase.removeAllOf(resourceType);
 	}
 
 	/** Private constructor to enfore that no instance exist */

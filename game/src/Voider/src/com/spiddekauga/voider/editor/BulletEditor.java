@@ -191,8 +191,14 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 
 		// Load the saved actor and use it instead
 		try {
+			if (ResourceCacheFacade.isLoaded(this, mDef.getId(), oldRevision)) {
+				ResourceCacheFacade.unload(this, mDef, true);
+			}
 			ResourceCacheFacade.load(this, mDef.getId(), mDef.getClass(), newRevision, true);
 			ResourceCacheFacade.finishLoading();
+
+			// Reload old definitions, some other scenes might be using it...
+			ResourceCacheFacade.reload(mDef.getId(), oldRevision);
 
 			setDef((BulletActorDef) ResourceCacheFacade.get(this, mDef.getId(), newRevision));
 		} catch (Exception e) {
@@ -472,7 +478,7 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 
 	@Override
 	public boolean shallAutoSave() {
-		return !mUnsaved && GameTime.getTotalGlobalTimeElapsed() - mSaveTimeLast >= Config.Editor.AUTO_SAVE_TIME;
+		return mUnsaved && GameTime.getTotalGlobalTimeElapsed() - mSaveTimeLast >= Config.Editor.AUTO_SAVE_TIME;
 	}
 
 	/**

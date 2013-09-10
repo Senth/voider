@@ -126,7 +126,12 @@ public class Config {
 	 */
 	public static class Debug {
 		/** If loading/unloading debug messages should be turned on/off */
-		public static boolean LOAD_UNLOAD_MESSAGES = true;
+		public static final boolean LOAD_UNLOAD_MESSAGES = true;
+		/** If loading/unloading including number of times a resource has been loaded into a scene */
+		public static final boolean LOAD_UNLOAD_MESSAGES_EVERY_TIME = true;
+		/** If debugging tests shall be activate. This causes extra runtime, but checks
+		 * so that none of the checks are broken. */
+		public final static boolean DEBUG_TESTS = true;
 	}
 
 	/**
@@ -638,8 +643,6 @@ public class Config {
 	/** Revision of the game, as in code.
 	 * This allows files of older revisions to be loaded into new revisions */
 	public final static int REVISION = 3;
-	/** If debugging tests shall be activate */
-	public final static boolean DEBUG_TESTS = true;
 	/** Output type for JsonWrapper */
 	public final static OutputType JSON_OUTPUT_TYPE = OutputType.json;
 

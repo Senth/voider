@@ -14,7 +14,7 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.ObjectMap;
-import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.Config.Debug;
 import com.spiddekauga.voider.game.GameSave;
 import com.spiddekauga.voider.game.GameSaveDef;
 import com.spiddekauga.voider.game.Level;
@@ -507,7 +507,7 @@ public class ResourceCacheFacade {
 				if (!mAssetManager.update()) {
 					fullyLoaded = false;
 				}
-				else if (!mLoadQueue.isEmpty()) {
+				if (fullyLoaded && !mLoadQueue.isEmpty()) {
 					fullyLoaded = false;
 					ResourceItem toLoad = mLoadQueue.removeFirst();
 					ResourceDatabase.load(toLoad.scene, toLoad.id, toLoad.type, toLoad.revision);
@@ -581,7 +581,7 @@ public class ResourceCacheFacade {
 	 * Disposes all the resources allocated.
 	 */
 	public static void dispose() {
-		if (Config.DEBUG_TESTS) {
+		if (Debug.DEBUG_TESTS) {
 			// All assets should be unloaded by now
 			if (mAssetManager.getLoadedAssets() > 0) {
 				Gdx.app.error("Assets", "All assets have not been unloaded!");

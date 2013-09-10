@@ -61,11 +61,16 @@ class ResourceDependencyLoader implements Disposable {
 			mAssetManager.unload(dependency.getFilePath());
 		}
 
-		// External
+		// External, if the dependency has dependencies, unload its dependencies too
 		for (ObjectMap.Entry<UUID, ResourceItem> entry : resource.getExternalDependencies().entries()) {
 			ResourceItem dependencyInformation = entry.value;
 			IResource dependency = ResourceDatabase.getLoadedResource(scene, dependencyInformation.id, dependencyInformation.revision);
-			ResourceDatabase.unload(scene, dependency);
+
+			if (dependency instanceof IResourceDependency) {
+				unload(scene, (IResourceDependency) dependency);
+			} else {
+				ResourceDatabase.unload(scene, dependency);
+			}
 		}
 
 		// unload this resource

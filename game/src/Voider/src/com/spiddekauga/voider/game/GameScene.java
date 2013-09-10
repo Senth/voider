@@ -148,6 +148,19 @@ public class GameScene extends WorldScene {
 	protected void onDispose() {
 		// Save the level
 		if (!mTesting) {
+			// Resumed game
+			if (mGameSave != null) {
+				// Set game save (will not be set if the user quits the game while loading)
+				if (mGameSave == null) {
+					mGameSave = ResourceCacheFacade.get(this, mGameSaveDef.getGameSaveId(), mGameSaveDef.getRevision());
+				}
+
+				if (mGameSave != null) {
+					ResourceCacheFacade.unload(this, mGameSave, mGameSaveDef);
+				}
+				mGameSave = null;
+			}
+
 			ResourceSaver.clearResources(GameSave.class);
 			ResourceSaver.clearResources(GameSaveDef.class);
 
@@ -360,17 +373,7 @@ public class GameScene extends WorldScene {
 			}
 		}
 
-		// Resumed game
-		if (mGameSave != null) {
-			// Set game save (will not be set if the user quits the game while loading)
-			if (mGameSave == null) {
-				mGameSave = ResourceCacheFacade.get(this, mGameSaveDef.getGameSaveId(), mGameSaveDef.getRevision());
-			}
-
-			if (mGameSave != null) {
-				ResourceCacheFacade.unload(this, mGameSave, mGameSaveDef);
-			}
-		}
+		// Resumed game is unloaded in #onDispose()...
 	}
 
 	@Override

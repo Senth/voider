@@ -41,13 +41,14 @@ public class BulletActor extends Actor {
 	 */
 	public void shoot(Vector2 position, Vector2 velocity, float hitDamage, boolean shotByPlayer) {
 		mShotByPlayer = shotByPlayer;
+		setPosition(position);
 
 		createBody();
 
 		// Position and rotate the bullet to face the shooting direction
-		double angle = velocity.angle();
-		angle = Math.toRadians(angle) + getDef().getBodyDef().angle;
-		getBody().setTransform(position, (float) angle);
+		//		double angle = velocity.angle();
+		//		angle = Math.toRadians(angle) + getDef().getBodyDef().angle;
+		//		getBody().setTransform(position, (float) angle);
 		getBody().setLinearVelocity(velocity);
 
 		mDamage = hitDamage;

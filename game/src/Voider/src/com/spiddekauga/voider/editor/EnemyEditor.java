@@ -18,6 +18,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.SnapshotArray;
 import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.utils.Invoker;
@@ -331,9 +332,39 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	@Override
 	protected void reloadResourcesOnActivate(Outcomes outcome, Object message) {
 		super.reloadResourcesOnActivate(outcome, message);
-		ResourceCacheFacade.unloadAllOf(this, BulletActorDef.class, true);
-		ResourceCacheFacade.loadAllOf(this, BulletActorDef.class, true);
-		ResourceCacheFacade.finishLoading();
+
+		// Unload bullets if there was a chance we have edited a bullet in
+		// the bullet editor.
+		if (outcome == Outcomes.NOT_APPLICAPLE) {
+			ResourceCacheFacade.unloadAllOf(this, BulletActorDef.class, true);
+			ResourceCacheFacade.loadAllOf(this, BulletActorDef.class, true, getBulletRevisions());
+			ResourceCacheFacade.finishLoading();
+
+			// Reset bullet definition
+			if (mDef != null && hasWeapon()) {
+				BulletActorDef unloadedBulletActorDef = getBulletActorDef();
+				if (unloadedBulletActorDef != null) {
+					BulletActorDef correctBulletActorDef = ResourceCacheFacade.get(this, unloadedBulletActorDef.getId(), unloadedBulletActorDef.getRevision());
+					setBulletActorDef(correctBulletActorDef);
+				}
+			}
+		}
+	}
+
+	/**
+	 * @return the revision of the currently used bullet if any.
+	 */
+	private ObjectMap<UUID, Integer> getBulletRevisions() {
+		ObjectMap<UUID, Integer> bulletRevisions = new ObjectMap<UUID, Integer>();
+
+		if (mDef.hasWeapon()) {
+			BulletActorDef bulletActorDef = mDef.getWeaponDef().getBulletActorDef();
+			if (bulletActorDef != null) {
+				bulletRevisions.put(bulletActorDef.getId(), bulletActorDef.getRevision());
+			}
+		}
+
+		return bulletRevisions;
 	}
 
 	// --------------------------------
@@ -424,7 +455,9 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 
 		// Load the saved actor and use it instead
 		try {
-			ResourceCacheFacade.unload(this, mDef, true);
+			if (ResourceCacheFacade.isLoaded(this, mDef.getId(), oldRevision)) {
+				ResourceCacheFacade.unload(this, mDef, true);
+			}
 			ResourceCacheFacade.load(this, mDef.getId(), EnemyActorDef.class, newRevision, true);
 			ResourceCacheFacade.finishLoading();
 

@@ -23,10 +23,10 @@ class LoadedDb {
 	 * @param type the type of the resource
 	 * @param revision the current revision that is being loaded. If the resource doesn't use a
 	 * revision this variable won't be used.
-	 * @return true if the resource was added as loading, false if this revision either has been
-	 * loaded or is currently loading
+	 * @return number of times this resource has been added onto this scene. If 1 this was the
+	 * first time it was added to this scene.
 	 */
-	boolean addLoadingResource(Scene scene, UUID resourceId, Class<?> type, int revision) {
+	int addLoadingResource(Scene scene, UUID resourceId, Class<?> type, int revision) {
 		ObjectMap<UUID, LoadedResource> sceneResources = mLoadedResources.get(scene);
 
 		// No existing scene, add scene
@@ -59,14 +59,13 @@ class LoadedDb {
 			loadedRevision = mLoadedRevisionPool.obtain();
 			loadedRevision.count = 1;
 			loadedResource.revisions.put(revisionToUse, loadedRevision);
-
-			return true;
 		}
 		// Resource already loaded, just increase count
 		else {
 			loadedRevision.count++;
-			return false;
 		}
+
+		return loadedRevision.count;
 	}
 
 	/**
@@ -88,13 +87,14 @@ class LoadedDb {
 	 * @param resourceId the resource that was loaded
 	 * @param type of the resource that was loaded
 	 * @param revision the revision of the resource
-	 * @return true if this was the last resource of this revision, i.e. it shall
-	 * be unloaded
+	 * @return number of instances the scene has of this resource after it has been unloaded. If
+	 * it returns 0, it means it has been fully unloaded from this scene. -1 if the resource
+	 * wasn't found
 	 */
-	boolean removeLoadedResource(Scene scene, UUID resourceId, Class<?> type, int revision) {
+	int removeLoadedResource(Scene scene, UUID resourceId, Class<?> type, int revision) {
 		ObjectMap<UUID, LoadedResource> sceneResources = mLoadedResources.get(scene);
 
-		boolean fullyUnloaded = false;
+		int cLoad = -1;
 
 		if (sceneResources != null) {
 			LoadedResource loadedResource = sceneResources.get(resourceId);
@@ -108,11 +108,11 @@ class LoadedDb {
 				LoadedRevision loadedRevision = loadedResource.revisions.get(revisionToUse);
 				if (loadedRevision != null) {
 					loadedRevision.count--;
+					cLoad = loadedRevision.count;
 
 					// Remove and free revision if this was the last of it
 					if (loadedRevision.count == 0) {
 						mLoadedRevisionPool.free(loadedRevision);
-						fullyUnloaded = true;
 						loadedResource.revisions.remove(revisionToUse);
 
 						// Remove and free resource if this was the last revision
@@ -136,13 +136,14 @@ class LoadedDb {
 			Gdx.app.error("LoadedDb", "Could not find scene (" + scene.getClass().getSimpleName() + ") for the resource!");
 		}
 
-		return fullyUnloaded;
+		return cLoad;
 	}
 
 	/**
 	 * Gets an array with all the scenes the specified resource exists in
 	 * @param resourceId the resource to check if it's loaded
-	 * @param revision the revision of the resource
+	 * @param revision the revision of the resource, set as -1 if the resource doesn't use
+	 * revisions OR if you don't care which revision the scene has loaded.
 	 * @return ArrayList with all scenes the resource with the specified revision is
 	 * loaded into. Don't forget to free the arraylist using Pool.arrayList.free(scenes)
 	 */
@@ -155,7 +156,7 @@ class LoadedDb {
 			LoadedResource foundLoadedResource = sceneEntry.value.get(resourceId);
 
 			if (foundLoadedResource != null) {
-				if (foundLoadedResource.revisions.containsKey(revision)) {
+				if (revision == -1 || foundLoadedResource.revisions.containsKey(revision)) {
 					scenes.add(sceneEntry.key);
 				}
 			}
