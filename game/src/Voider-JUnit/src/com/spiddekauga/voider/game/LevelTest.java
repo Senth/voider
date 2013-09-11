@@ -52,8 +52,8 @@ public class LevelTest {
 
 		ResourceSaver.save(mUsingLevelDef);
 		ResourceSaver.save(mPlayerActor.getDef());
-		ResourceCacheFacade.load(scene, mPlayerActor.getDef().getId(), PlayerActorDef.class, false, mPlayerActor.getDef().getRevision());
-		ResourceCacheFacade.load(scene, mUsingLevelDef.getId(), LevelDef.class, false, mUsingLevelDef.getRevision());
+		ResourceCacheFacade.load(scene, mPlayerActor.getDef().getId(), PlayerActorDef.class, mPlayerActor.getDef().getRevision(), false);
+		ResourceCacheFacade.load(scene, mUsingLevelDef.getId(), LevelDef.class, mUsingLevelDef.getRevision(), false);
 		ResourceCacheFacade.finishLoading();
 
 		mfXCoord = Level.class.getDeclaredField("mXCoord");

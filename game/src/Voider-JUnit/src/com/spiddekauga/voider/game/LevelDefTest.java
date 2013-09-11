@@ -28,7 +28,7 @@ public class LevelDefTest {
 		def.setPrologue("story before");
 		def.setStoryAfter("story after");
 		def.setEndXCoord(555.025f);
-		def.increaseRevision();
+		def.setRevision(1);
 
 		Json json = new JsonWrapper();
 		String jsonString = json.toJson(def);

@@ -574,18 +574,18 @@ class ResourceDatabase {
 
 				if (entry.value.type == type) {
 					iterator.remove();
+
+					// Check if there is any scene that has this resource loaded!
+					ArrayList<Scene> scenesWithResource = mLoadedResources.getResourceScenes(entry.key, -1);
+
+					if (!scenesWithResource.isEmpty()) {
+						Gdx.app.error("ResourceDatabase", "A resource of (" + type.getSimpleName() + ") was " +
+								"loaded into (" + scenesWithResource.get(0).getClass().getSimpleName() +
+								") when removing all resources of this type!");
+					}
+
+					Pools.arrayList.free(scenesWithResource);
 				}
-
-				// Check if there is any scene that has this resource loaded!
-				ArrayList<Scene> scenesWithResource = mLoadedResources.getResourceScenes(entry.key, -1);
-
-				if (!scenesWithResource.isEmpty()) {
-					Gdx.app.error("ResourceDatabase", "A resource of (" + type.getSimpleName() + ") was " +
-							"loaded into (" + scenesWithResource.get(0).getClass().getSimpleName() +
-							") when removing all resources of this type!");
-				}
-
-				Pools.arrayList.free(scenesWithResource);
 			}
 		}
 	}
