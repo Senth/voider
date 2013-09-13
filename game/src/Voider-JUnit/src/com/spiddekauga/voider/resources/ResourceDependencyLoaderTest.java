@@ -36,6 +36,7 @@ public class ResourceDependencyLoaderTest {
 		Config.init();
 		ResourceSaver.init();
 		ResourceNames.useTestPath();
+		ResourceCacheFacade.init();
 
 		mAssetManager = new AssetManager();
 		mAssetManager.setLoader(PlayerActorDef.class, new JsonLoaderAsync<PlayerActorDef>(new ExternalFileHandleResolver(), PlayerActorDef.class));

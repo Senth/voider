@@ -13,7 +13,8 @@ import com.badlogic.gdx.assets.loaders.resolvers.ExternalFileHandleResolver;
 import com.badlogic.gdx.backends.lwjgl.LwjglFiles;
 import com.badlogic.gdx.backends.lwjgl.LwjglNativesLoader;
 import com.badlogic.gdx.files.FileHandle;
-import com.spiddekauga.utils.JsonWrapper; import com.badlogic.gdx.utils.Json;
+import com.badlogic.gdx.utils.Json;
+import com.spiddekauga.utils.JsonWrapper;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.actors.ActorDef;
 import com.spiddekauga.voider.game.actors.BulletActorDef;
@@ -37,6 +38,7 @@ public class JsonLoaderTest {
 		Gdx.files = new LwjglFiles();
 		Config.init();
 		ResourceNames.useTestPath();
+		ResourceCacheFacade.init();
 
 		mCrypter = new ObjectCrypter(Config.Crypto.getFileKey());
 		mAssetManager = new AssetManager();
