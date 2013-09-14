@@ -11,6 +11,6 @@
 	<classpathentry exported="true" kind="lib" path="/Voider-desktop/libs/gdx-backend-lwjgl.jar" sourcepath="/Voider-desktop/libs/gdx-backend-lwjgl-sources.jar"/>
 	<classpathentry exported="true" kind="lib" path="/Voider-desktop/libs/gdx-natives.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/Voider-desktop"/>
-	<classpathentry kind="lib" path="/Voider/libs/kryo-debug-2.21-all-src.jar"/>
+	<classpathentry kind="lib" path="/Voider/libs/kryo-debug-2.21-all.jar" sourcepath="/Voider/libs/kryo-debug-2.21-all-src.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

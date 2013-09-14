@@ -278,7 +278,7 @@ public class JsonWrapper extends Json {
 		case Chain: {
 			ChainShape chainShape = (ChainShape)shape;
 			if (chainShape.getVertexCount() >= 3) {
-				// If first and same vertex is the same, it's a loop
+				// If first and last vertex is the same, it's a loop
 				Vector2 firstVertex = Pools.vector2.obtain();
 				Vector2 lastVertex = Pools.vector2.obtain();
 				chainShape.getVertex(0, firstVertex);
