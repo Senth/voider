@@ -38,11 +38,6 @@ public class Pool<T> extends ReflectionPool<T> {
 		super(type);
 	}
 
-	@Override
-	public T obtain() {
-		return newObject();
-	}
-
 	/**
 	 * Frees all the objects
 	 * @param objects all objects to free
