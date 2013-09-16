@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
+import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.utils.JsonWrapper;
 import com.spiddekauga.voider.Config;
 
@@ -144,10 +145,11 @@ public abstract class Resource implements IResource, Json.Serializable {
 	}
 
 	/** Unique id of the resource */
-	protected UUID mUniqueId = null;
+	@Tag(1) protected UUID mUniqueId = null;
 	/** Listeners of the resource */
-	private ArrayList<IResourceChangeListener> mListeners = null;
+	@Tag(2) private ArrayList<IResourceChangeListener> mListeners = null;
 	/** Listener ids */
+	@Deprecated
 	private ArrayList<UUID> mListenerIds = null;
 
 }

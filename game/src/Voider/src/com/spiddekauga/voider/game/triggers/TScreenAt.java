@@ -11,6 +11,7 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
+import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.utils.ShapeRendererEx;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.Level;
@@ -193,9 +194,10 @@ public class TScreenAt extends Trigger implements IResourceBody, IResourcePositi
 	}
 
 	/**
-	 * Constructor for JSON
+	 * Constructor for Kryo
 	 */
-	protected TScreenAt() {
+	@SuppressWarnings("unused")
+	private TScreenAt() {
 		// Does nothing
 	}
 
@@ -240,9 +242,10 @@ public class TScreenAt extends Trigger implements IResourceBody, IResourcePositi
 	/** Body of the trigger */
 	private Body mBody = null;
 	/** Level to check for the x-coordinate */
-	private Level mLevel = null;
+	@Tag(34) private Level mLevel = null;
 	/** Level id, used for binding the level */
+	@Deprecated
 	private UUID mLevelId = null;
-	/** Temporary positon, stores x-coord for getting the position */
-	private Vector2 mPosition = Pools.vector2.obtain();
+	/** Temporary position, stores x-coord for getting the position */
+	@Tag(35) private Vector2 mPosition = Pools.vector2.obtain();
 }

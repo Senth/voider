@@ -6,6 +6,7 @@ import java.util.UUID;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
+import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.utils.Maths;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.Level;
@@ -928,9 +929,10 @@ public class EnemyActor extends Actor {
 
 	// Group
 	/** Group id, used for binding the group after loading the enemy */
+	@Deprecated
 	private UUID mGroupId = null;
 	/** Group of the enemy, null if the enemy doesn't belong to a group */
-	private EnemyGroup mGroup = null;
+	@Tag(75) private EnemyGroup mGroup = null;
 	/** If this enemy is the first in the group */
 	private boolean mGroupLeader = false;
 
@@ -945,6 +947,7 @@ public class EnemyActor extends Actor {
 	/** Path we're currently following */
 	private Path mPath = null;
 	/** Path id, used when saving/loading enemy actor as it does not save the path */
+	@Deprecated
 	private UUID mPathId = null;
 	/** Index of path we're heading to */
 	private int mPathIndexNext = -1;

@@ -14,6 +14,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
+import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.utils.ShapeRendererEx;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.voider.Config;
@@ -596,20 +597,20 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 	/** If this path is selected */
 	private boolean mSelected = false;
 	/** All path nodes */
-	private ArrayList<Vector2> mCorners = new ArrayList<Vector2>();
+	@Tag(17) private ArrayList<Vector2> mCorners = new ArrayList<Vector2>();
 	/** Corner bodies, for picking */
 	private ArrayList<Body> mBodyCorners = new ArrayList<Body>();
 	/** Corner furthest to the right */
 	private Vector2 mRightestCorner = null;
 	/** What type of path type the enemy uses, only applicable if movement type
 	 * is set to path */
-	private PathTypes mPathType = PathTypes.ONCE;
+	@Tag(18) private PathTypes mPathType = PathTypes.ONCE;
 	/** World the path is bound to */
 	private World mWorld = null;
 	/** Body of the path */
 	private Body mBody = null;
 	/** Enemies bound to this path */
-	private ArrayList<EnemyActor> mEnemies = new ArrayList<EnemyActor>();
+	@Tag(19) private ArrayList<EnemyActor> mEnemies = new ArrayList<EnemyActor>();
 
 	/** Minimum distance between chain corners, less than this will assert the program */
 	private final static float CHAIN_CORNER_DISTANCE_MIN = 0.005f * 0.005f;

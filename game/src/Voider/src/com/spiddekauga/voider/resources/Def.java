@@ -10,6 +10,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectMap;
+import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.utils.JsonWrapper;
 import com.spiddekauga.voider.User;
 
@@ -258,19 +259,19 @@ public abstract class Def extends Resource implements Json.Serializable, IResour
 	}
 
 	/** Dependencies for the resource */
-	private ObjectMap<UUID, ResourceItem> mExternalDependencies = new ObjectMap<UUID, ResourceItem>();
+	@Tag(43) private ObjectMap<UUID, ResourceItem> mExternalDependencies = new ObjectMap<UUID, ResourceItem>();
 	/** Internal dependencies, such as textures, sound, particle effects */
-	private Set<ResourceNames> mInternalDependencies = new HashSet<ResourceNames>();
+	@Tag(42) private Set<ResourceNames> mInternalDependencies = new HashSet<ResourceNames>();
 	/** Name of the definition */
-	private String mName = "(Unnamed)";
+	@Tag(36) private String mName = "(Unnamed)";
 	/** Original creator name */
-	private String mOriginalCreator = User.getNickName();
+	@Tag(41) private String mOriginalCreator = User.getNickName();
 	/** Creator name */
-	private String mCreator = User.getNickName();
+	@Tag(39) private String mCreator = User.getNickName();
 	/** Comment of the definition */
-	private String mDescription = "";
+	@Tag(38) private String mDescription = "";
 	/** Saved date for the definition */
-	private Date mDate = null;
+	@Tag(37) private Date mDate = null;
 	/** The revision of the definition, this increases after each save */
-	private int mRevision = 0;
+	@Tag(40) private int mRevision = 0;
 }

@@ -11,6 +11,7 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
+import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.utils.ShapeRendererEx;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.actors.Actor;
@@ -224,8 +225,9 @@ public class TActorActivated extends Trigger implements Disposable, IResourceBod
 	/** Vertices for drawing the trigger */
 	private ArrayList<Vector2> mVertices = null;
 	/** Actor to check if it has been activated */
-	private Actor mActor = null;
+	@Tag(33) private Actor mActor = null;
 	/**	Actor id */
+	@Deprecated
 	private UUID mActorId = null;
 	/** Body for the trigger, used for picking */
 	private Body mBody = null;

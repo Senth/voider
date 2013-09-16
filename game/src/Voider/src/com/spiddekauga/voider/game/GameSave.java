@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
+import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.voider.game.actors.PlayerActor;
 import com.spiddekauga.voider.resources.Resource;
 
@@ -75,9 +76,9 @@ public class GameSave extends Resource {
 	}
 
 	/** Saved level */
-	private Level mLevel;
+	@Tag(10) private Level mLevel;
 	/** Saved player ship */
-	private PlayerActor mPlayerActor;
+	@Tag(11) private PlayerActor mPlayerActor;
 	/** Saved bullets */
-	private BulletDestroyer mBulletDestroyer;
+	@Tag(12) private BulletDestroyer mBulletDestroyer;
 }

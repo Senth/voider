@@ -14,6 +14,7 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
+import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Actor.Pickup;
@@ -977,20 +978,20 @@ public class VisualVars implements Json.Serializable, Disposable, IResourceCorne
 
 
 	/** Color of the actor */
-	private Color mColor = new Color();
+	@Tag(52) private Color mColor = new Color();
 	/** Current shape of the enemy */
-	private ActorShapeTypes mShapeType;
+	@Tag(49) private ActorShapeTypes mShapeType;
 	/** radius of circle */
-	private float mShapeCircleRadius;
+	@Tag(60) private float mShapeCircleRadius;
 	/** width of rectangle/triangle */
-	private float mShapeWidth;
+	@Tag(61) private float mShapeWidth;
 	/** height of rectangle/triangle */
-	private float mShapeHeight;
+	@Tag(62) private float mShapeHeight;
 	/** Center offset for fixtures */
-	private Vector2 mCenterOffset = new Vector2();
+	@Tag(51) private Vector2 mCenterOffset = new Vector2();
 	/** Corners of polygon, used for custom shapes */
 	@SuppressWarnings("unchecked")
-	private ArrayList<Vector2> mCorners = Pools.arrayList.obtain();
+	@Tag(63) private ArrayList<Vector2> mCorners = Pools.arrayList.obtain();
 	/** Array list of the polygon figure, this contains the vertices but not
 	 * in triangles. */
 	private ArrayList<Vector2> mPolygon = null;
@@ -1006,7 +1007,7 @@ public class VisualVars implements Json.Serializable, Disposable, IResourceCorne
 	/** Radius of the actor, or rather circle bounding box */
 	private float mBoundingRadius = 0;
 	/** Actor type, used for setting default values */
-	private ActorTypes mActorType = null;
+	@Tag(50) private ActorTypes mActorType = null;
 	/** Time when the fixture was changed last time */
 	protected float mFixtureChangeTime = 0;
 

@@ -25,6 +25,7 @@ public interface IResource {
 	 * Returns all references this resource uses
 	 * @param references all resources this resource uses
 	 */
+	@Deprecated
 	public void getReferences(ArrayList<UUID> references);
 
 	/**
@@ -32,6 +33,7 @@ public interface IResource {
 	 * @param resource the resource this class uses which needs to be bound to this resource
 	 * @return true if the resource was bound
 	 */
+	@Deprecated
 	public boolean bindReference(IResource resource);
 
 	/**
@@ -39,6 +41,7 @@ public interface IResource {
 	 * @param boundResource the resource to remove
 	 * @return true if the resource was removed successfully
 	 */
+	@Deprecated
 	public boolean removeBoundResource(IResource boundResource);
 
 	/**
@@ -46,6 +49,7 @@ public interface IResource {
 	 * @param boundResource the resource to add and bind
 	 * @return true if the resource was added successfully
 	 */
+	@Deprecated
 	public boolean addBoundResource(IResource boundResource);
 
 	/**

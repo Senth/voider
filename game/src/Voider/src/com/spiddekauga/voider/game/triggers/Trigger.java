@@ -7,6 +7,7 @@ import java.util.UUID;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
+import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.voider.resources.IResourceEditorRender;
 import com.spiddekauga.voider.resources.IResourceUpdate;
 import com.spiddekauga.voider.resources.Resource;
@@ -175,9 +176,9 @@ public abstract class Trigger extends Resource implements IResourceUpdate, IReso
 	/** If the trigger is currently selected */
 	private boolean mSelected = false;
 	/** If the trigger has been triggered, this is used to avoid heavy calculations */
-	private boolean mTriggered = false;
+	@Tag(26) private boolean mTriggered = false;
 	/** Triggered time */
-	private float mTriggeredTime = -1;
+	@Tag(27) private float mTriggeredTime = -1;
 	/** Listener information about the trigger */
 	private ArrayList<TriggerInfo> mListeners = new ArrayList<TriggerInfo>();
 }

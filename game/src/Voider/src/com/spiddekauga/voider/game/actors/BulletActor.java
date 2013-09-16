@@ -3,6 +3,7 @@ package com.spiddekauga.voider.game.actors;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
+import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.voider.utils.Pools;
 
 /**
@@ -97,7 +98,7 @@ public class BulletActor extends Actor {
 	}
 
 	/** True if bullet shot by player, false if shot by enemy */
-	private boolean mShotByPlayer = false;
-	/** Hom much damage the bullet will inflict on hit */
-	private float mDamage = 0;
+	@Tag(8) private boolean mShotByPlayer = false;
+	/** How much damage the bullet will inflict on hit */
+	@Tag(9) private float mDamage = 0;
 }

@@ -7,6 +7,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
+import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Debug;
 import com.spiddekauga.voider.game.triggers.TriggerAction.Actions;
@@ -275,9 +276,10 @@ public class EnemyGroup extends Resource {
 	}
 
 	/** All the enemies */
-	private ArrayList<EnemyActor> mEnemies = new ArrayList<EnemyActor>();
+	@Tag(6) private ArrayList<EnemyActor> mEnemies = new ArrayList<EnemyActor>();
 	/** All enemy references */
+	@Deprecated
 	private ArrayList<UUID> mEnemyIds = new ArrayList<UUID>();
 	/** Trigger delay between enemies, in seconds */
-	private float mTriggerDelay = Config.Editor.Level.Enemy.DELAY_BETWEEN_DEFAULT;
+	@Tag(7) private float mTriggerDelay = Config.Editor.Level.Enemy.DELAY_BETWEEN_DEFAULT;
 }

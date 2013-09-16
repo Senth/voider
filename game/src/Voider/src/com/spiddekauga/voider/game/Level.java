@@ -9,6 +9,7 @@ import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectMap;
+import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.utils.JsonWrapper;
 import com.spiddekauga.utils.ShapeRendererEx;
 import com.spiddekauga.voider.Config;
@@ -435,7 +436,7 @@ public class Level extends Resource implements Disposable, IResourceRevision {
 	public void write(Json json) {
 		super.write(json);
 
-		// Remove level from resource binder, so we don't save the level inifinitely
+		// Remove level from resource binder, so we don't save the level infinitely
 		mResourceBinder.removeResource(getId());
 
 		json.writeValue("mResourceBinder", mResourceBinder);
@@ -492,7 +493,7 @@ public class Level extends Resource implements Disposable, IResourceRevision {
 	}
 
 	/** Contains all the resources used in this level */
-	private ResourceBinder mResourceBinder = new ResourceBinder();
+	@Tag(13) private ResourceBinder mResourceBinder = new ResourceBinder();
 	/** All resources that needs updating */
 	private ArrayList<IResourceUpdate> mResourceUpdates = null;
 	/** All resources that shall be rendered */
@@ -500,13 +501,13 @@ public class Level extends Resource implements Disposable, IResourceRevision {
 	/** All triggers */
 	private ObjectMap<UUID, Trigger> mTriggers = new ObjectMap<UUID, Trigger>();
 	/** Current x coordinate (of the screen's left edge) */
-	private float mXCoord = 0.0f;
+	@Tag(14) private float mXCoord = 0.0f;
 	/** Level definition for this level */
 	private LevelDef mLevelDef = null;
 	/** Current speed of the level */
-	private float mSpeed;
+	@Tag(15) private float mSpeed;
 	/** If the level has been completed */
-	private boolean mCompletedLevel;
+	@Tag(16) private boolean mCompletedLevel;
 	/** True if the level is running */
 	private boolean mRunning = false;
 	/** The player actor */

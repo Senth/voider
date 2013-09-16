@@ -17,6 +17,7 @@ import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.Pool.Poolable;
+import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.utils.ShapeRendererEx;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
@@ -1119,14 +1120,22 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 		mCorners.add(body);
 	}
 
+	// Kryo variables
 	/** Current life */
-	private float mLife = 0;
-	/** Physical body */
-	private Body mBody = null;
+	@Tag(3) private float mLife = 0;
+	/** Body position, remember even when we don't have a body */
+	@Tag(4) private Vector2 mPosition = Pools.vector2.obtain().set(0, 0);
+	/** Trigger informations */
+	@Tag(5) private ArrayList<TriggerInfo> mTriggerInfos = new ArrayList<TriggerInfo>();
+
+	// Kryo special variables
+	/** True if the actor is active */
+	private boolean mActive = true;
 	/** The belonging definition of this actor */
 	private ActorDef mDef = null;
-	/** Body position, remember even when we don't have a body */
-	private Vector2 mPosition = Pools.vector2.obtain().set(0, 0);
+	/** Physical body */
+	private Body mBody = null;
+
 	/** Current actors we're colliding with */
 	private ArrayList<ActorDef> mCollidingActors = new ArrayList<ActorDef>();
 	/** World corners of the actor, only used for custom shape and in an editor */
@@ -1143,12 +1152,8 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	private boolean mHasBodyCorners = false;
 	/** True if the actor shall skip rotating */
 	private boolean mSkipRotate = false;
-	/** True if the actor is active */
-	private boolean mActive = true;
 	/** Activation time of the actor, local time for the scene */
 	private float mActivationTime = mActive ? 0 : -1;
-	/** Trigger informations */
-	private ArrayList<TriggerInfo> mTriggerInfos = new ArrayList<TriggerInfo>();
 	/** True if the actor is selected, only applicable in editor */
 	private boolean mSelected = false;
 	/** Old rotation */
@@ -1159,6 +1164,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	private boolean mDestroyBody = false;
 	/** Only draws the shape's outline */
 	private boolean mDrawOnlyOutline = false;
+
 
 	/** The world used for creating bodies */
 	protected static World mWorld = null;

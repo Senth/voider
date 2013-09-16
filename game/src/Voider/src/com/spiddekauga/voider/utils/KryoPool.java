@@ -1,8 +1,14 @@
 package com.spiddekauga.voider.utils;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
 import java.util.UUID;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.ChainShape;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.EdgeShape;
@@ -14,7 +20,41 @@ import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.Serializer;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
+import com.esotericsoftware.kryo.serializers.CompatibleFieldSerializer;
 import com.esotericsoftware.kryo.serializers.FieldSerializer;
+import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer;
+import com.spiddekauga.voider.Config.Editor.Level;
+import com.spiddekauga.voider.game.BulletDestroyer;
+import com.spiddekauga.voider.game.Collectibles;
+import com.spiddekauga.voider.game.GameSave;
+import com.spiddekauga.voider.game.GameSaveDef;
+import com.spiddekauga.voider.game.LevelDef;
+import com.spiddekauga.voider.game.Path;
+import com.spiddekauga.voider.game.PlayerStats;
+import com.spiddekauga.voider.game.Weapon;
+import com.spiddekauga.voider.game.WeaponDef;
+import com.spiddekauga.voider.game.actors.ActorShapeTypes;
+import com.spiddekauga.voider.game.actors.ActorTypes;
+import com.spiddekauga.voider.game.actors.BulletActor;
+import com.spiddekauga.voider.game.actors.BulletActorDef;
+import com.spiddekauga.voider.game.actors.EnemyActor;
+import com.spiddekauga.voider.game.actors.EnemyActorDef;
+import com.spiddekauga.voider.game.actors.EnemyActorDef.AiMovementVars;
+import com.spiddekauga.voider.game.actors.EnemyActorDef.AimRotateVars;
+import com.spiddekauga.voider.game.actors.EnemyActorDef.MovementTypes;
+import com.spiddekauga.voider.game.actors.EnemyActorDef.MovementVars;
+import com.spiddekauga.voider.game.actors.EnemyGroup;
+import com.spiddekauga.voider.game.actors.PickupActor;
+import com.spiddekauga.voider.game.actors.PickupActorDef;
+import com.spiddekauga.voider.game.actors.PlayerActor;
+import com.spiddekauga.voider.game.actors.PlayerActorDef;
+import com.spiddekauga.voider.game.actors.StaticTerrainActor;
+import com.spiddekauga.voider.game.actors.StaticTerrainActorDef;
+import com.spiddekauga.voider.game.actors.VisualVars;
+import com.spiddekauga.voider.game.triggers.TActorActivated;
+import com.spiddekauga.voider.game.triggers.TScreenAt;
+import com.spiddekauga.voider.game.triggers.TriggerAction;
+import com.spiddekauga.voider.game.triggers.TriggerInfo;
 
 /**
  * Pool for Kryo instances. When creating a new instance Kryo registers all
@@ -74,26 +114,133 @@ public class KryoPool extends Pool<Kryo> {
 		/** ChainShape */
 		CHAIN_SHAPE(ChainShape.class, new ChainShapeSerializer()),
 		/** UUID */
-		UUID_TYPE(UUID.class), // Has serializer
+		UUID_TYPE(UUID.class), // UUID override create
 		/** Vector2 */
-		VECTOR_2(Vector2.class), // Has serializer
+		VECTOR_2(Vector2.class), // Overrides obtain (uses pool)
 		/** Vector2[] */
 		VECTOR_2_ARRAY(Vector2[].class),
+		/** BulletActor */
+		BULLET_ACTOR(BulletActor.class, SerializerType.TAGGED),
+		/** BulletActorDef */
+		BULLET_ACTOR_DEF(BulletActorDef.class, SerializerType.TAGGED),
+		/** EnemyActor */
+		ENEMY_ACTOR(EnemyActor.class, SerializerType.TAGGED),
+		/** EnemyActorDef */
+		ENEMY_ACTOR_DEF(EnemyActorDef.class, SerializerType.TAGGED),
+		/** PickupActor */
+		PICKUP_ACTOR(PickupActor.class, SerializerType.TAGGED),
+		/** PickupActorDef */
+		PICKUP_ACTOR_DEF(PickupActorDef.class, SerializerType.TAGGED),
+		/** PlayerActor */
+		PLAYER_ACTOR(PlayerActor.class, SerializerType.TAGGED),
+		/** PlayerActorDef */
+		PLAYER_ACTOR_DEF(PlayerActorDef.class, SerializerType.TAGGED),
+		/** StaticTerrainActor */
+		STATIC_TERRAIN_ACTOR(StaticTerrainActor.class, SerializerType.TAGGED),
+		/** StaticTerrainActorDef */
+		STATIC_TERRAIN_ACTOR_DEF(StaticTerrainActorDef.class, SerializerType.TAGGED),
+		/** VisualVars */
+		VISUAL_VARS(VisualVars.class, SerializerType.TAGGED),
+		/** BulletDestroyer */
+		BULLET_DESTROYER(BulletDestroyer.class, SerializerType.TAGGED),
+		/** Collectibles */
+		COLLECTIBLES(Collectibles.class),
+		/** GameSave */
+		GAME_SAVE(GameSave.class, SerializerType.TAGGED),
+		/** GameSaveDef */
+		GAME_SAVE_DEF(GameSaveDef.class, SerializerType.TAGGED),
+		/** Level */
+		LEVEL(Level.class, SerializerType.TAGGED),
+		/** LevelDef */
+		LEVEL_DEF(LevelDef.class, SerializerType.TAGGED),
+		/** Path */
+		PATH(Path.class, SerializerType.TAGGED),
+		/** PlayerStats */
+		PLAYER_STATS(PlayerStats.class, SerializerType.TAGGED),
+		/** Weapon */
+		WEAPON(Weapon.class, SerializerType.TAGGED),
+		/** WeaponDef */
+		WEAPON_DEF(WeaponDef.class, SerializerType.TAGGED),
+		/** TActorActivated */
+		T_ACTOR_ACTIVATED(TActorActivated.class, SerializerType.TAGGED),
+		/** TriggerAction */
+		TRIGGER_ACTION(TriggerAction.class, SerializerType.TAGGED),
+		/** TriggerInfo */
+		TRIGGER_INFO(TriggerInfo.class, SerializerType.TAGGED),
+		/** TScreenAt */
+		T_SCREEN_AT(TScreenAt.class, SerializerType.TAGGED),
+		/** TimeBullet */
+		TIME_BULLET(TimeBullet.class, SerializerType.TAGGED),
+		/** TimePos */
+		TIME_POS(TimePos.class),
+		/** ArrayList */
+		ARRAY_LIST(ArrayList.class), // Created from pool
+		/** BodyDef */
+		BODY_DEF(BodyDef.class),
+		/** BodyType */
+		BODY_TYPE(BodyType.class),
+		/** HashSet */
+		HASH_SET(HashSet.class), // Created from pool
+		/** Date */
+		DATE(Date.class),
+		/** ActorShapeTypes */
+		ACTOR_SHAPE_TYPES(ActorShapeTypes.class),
+		/** Color */
+		COLOR(Color.class),
+		/** ActorTypes */
+		ACTOR_TYPES(ActorTypes.class),
+		/** EnemyGroup */
+		ENEMY_GROUP(EnemyGroup.class, SerializerType.TAGGED),
+		/** MovementType */
+		MOVEMENT_TYPE(MovementTypes.class),
+		/** MovementVars */
+		MOVEMENT_VARS(MovementVars.class, SerializerType.TAGGED),
+		/** AiMovementVars */
+		AI_MOVEMENT_VARS(AiMovementVars.class, SerializerType.TAGGED),
+		/** AimRotateVars */
+		AIM_ROTATE_VARS(AimRotateVars.class, SerializerType.TAGGED),
+
+
 
 		;
 
 		/**
-		 * Constructor which takes the type to register with Kryo using {@link #registerAll(Kryo)}
+		 * Serializer types
+		 */
+		private enum SerializerType {
+			/** Creates a TaggedFieldSerializer for the type */
+			TAGGED,
+			/** Creates a CompatibleFieldSerializer for the type */
+			COMPATIBLE,
+		}
+
+		/**
+		 * Creates a new type to be registered with Kryo using {@link #registerAll(Kryo)}
 		 * @param type the type to register, if null it won't register it. Setting to null is useful
 		 * when the class isn't used anymore (doesn't exist) but we still need to keep the register
 		 * order.
 		 */
 		private RegisterClasses(Class<?> type) {
-			this(type, null);
+			mType = type;
 		}
 
 		/**
-		 * Constructor which takes the type to register with Kryo using {@link #registerAll(Kryo)}
+		 * Creates a new type to be registered with Kryo using {@link #registerAll(Kryo)}
+		 * and when {@link #createSerializers(Kryo)} is called will created the
+		 * specified serializer type
+		 * @param type the type to register, if null it won't register it. Setting to null is useful
+		 * when the class isn't used anymore (doesn't exist) but we still need to keep the register
+		 * order.
+		 * @param createSerializerType the type of serializer to create when {@link #createSerializers(Kryo)}
+		 * is called.
+		 */
+		private RegisterClasses(Class<?> type, SerializerType createSerializerType) {
+			mType = type;
+			mSerializerType = createSerializerType;
+		}
+
+		/**
+		 * Creates a new type to be registered with Kryo using {@link #registerAll(Kryo)}
 		 * @param type the type to register, if null it won't register it. Setting to null is useful
 		 * when the class isn't used anymore (doesn't exist) but we still need to keep the register
 		 * order.
@@ -126,6 +273,22 @@ public class KryoPool extends Pool<Kryo> {
 					return Pools.vector2.obtain();
 				}
 			};
+
+
+			// Create tagged or compatible serializers
+			for (RegisterClasses registerClass : RegisterClasses.values()) {
+				if (registerClass.mSerializerType != null) {
+					switch (registerClass.mSerializerType) {
+					case TAGGED:
+						registerClass.mSerializer = new TaggedFieldSerializer<Object>(kryo, registerClass.mType);
+						break;
+
+					case COMPATIBLE:
+						registerClass.mSerializer = new CompatibleFieldSerializer<Object>(kryo, registerClass.mType);
+						break;
+					}
+				}
+			}
 		}
 
 		/**
@@ -149,7 +312,10 @@ public class KryoPool extends Pool<Kryo> {
 		/** Class type to register, if null it is not registered */
 		private Class<?> mType;
 		/** Serializer to use, if null it uses the default serializer */
-		private Serializer<?> mSerializer;
+		private Serializer<?> mSerializer = null;
+		/** If a serializer of the specified type should be created for this class.
+		 * If null, no serializer will be created for this type. */
+		private SerializerType mSerializerType = null;
 	}
 
 	/**

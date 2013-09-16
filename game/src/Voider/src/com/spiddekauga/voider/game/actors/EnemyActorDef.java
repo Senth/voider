@@ -3,6 +3,7 @@ package com.spiddekauga.voider.game.actors;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
+import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.voider.Config.Editor.Enemy;
 import com.spiddekauga.voider.game.WeaponDef;
@@ -352,19 +353,19 @@ public class EnemyActorDef extends ActorDef {
 	}
 
 	/** If the enemy has a weapon */
-	private boolean mHasWeapon = false;
+	@Tag(53) private boolean mHasWeapon = false;
 	/** Weapon of the enemy */
-	private WeaponDef mWeapon = new WeaponDef();
+	@Tag(55) private WeaponDef mWeapon = new WeaponDef();
 	/** How the enemy will aim if it has a weapon */
-	private AimTypes mAimType = AimTypes.MOVE_DIRECTION;
+	@Tag(56) private AimTypes mAimType = AimTypes.MOVE_DIRECTION;
 	/** Aim variables when using rotation aim */
-	private AimRotateVars mAimRotateVars = new AimRotateVars();
+	@Tag(57) private AimRotateVars mAimRotateVars = new AimRotateVars();
 	/** What type of movement the enemy has */
-	private MovementTypes mMovementType = MovementTypes.PATH;
+	@Tag(54) private MovementTypes mMovementType = MovementTypes.PATH;
 	/** Movement variables */
-	private MovementVars mMovementVars = new MovementVars();
+	@Tag(58) private MovementVars mMovementVars = new MovementVars();
 	/** AI movement variables */
-	private AiMovementVars mAiMovementVars = new AiMovementVars();
+	@Tag(59) private AiMovementVars mAiMovementVars = new AiMovementVars();
 
 	/**
 	 * Class for all movement variables (both AI and path)
@@ -372,9 +373,9 @@ public class EnemyActorDef extends ActorDef {
 	 */
 	public static class MovementVars {
 		/** Speed of the enemy */
-		float speed = Enemy.Movement.MOVE_SPEED_DEFAULT;
+		@Tag(64) float speed = Enemy.Movement.MOVE_SPEED_DEFAULT;
 		/** How fast the enemy can turn */
-		float turnSpeed = Enemy.Movement.TURN_SPEED_DEFAULT;
+		@Tag(65) float turnSpeed = Enemy.Movement.TURN_SPEED_DEFAULT;
 	}
 
 	/**
@@ -383,19 +384,19 @@ public class EnemyActorDef extends ActorDef {
 	 */
 	public static class AiMovementVars {
 		/** Minimum distance from the player */
-		float playerDistanceMin = Enemy.Movement.AI_DISTANCE_MIN_DEFAULT;
+		@Tag(66) float playerDistanceMin = Enemy.Movement.AI_DISTANCE_MIN_DEFAULT;
 		/** Minimum distance from player, squared */
-		float playerDistanceMinSq = playerDistanceMin * playerDistanceMin;
+		@Tag(67) float playerDistanceMinSq = playerDistanceMin * playerDistanceMin;
 		/** Maximum distance from the player */
-		float playerDistanceMax = Enemy.Movement.AI_DISTANCE_MAX_DEFAULT;
+		@Tag(68) float playerDistanceMax = Enemy.Movement.AI_DISTANCE_MAX_DEFAULT;
 		/** Maximum distance from the player, squared */
-		float playerDistanceMaxSq = playerDistanceMax * playerDistanceMax;
+		@Tag(69) float playerDistanceMaxSq = playerDistanceMax * playerDistanceMax;
 		/** If the enemy shall move randomly when inside the preferred space */
-		boolean randomMove = Enemy.Movement.RANDOM_MOVEMENT_DEFAULT;
+		@Tag(70) boolean randomMove = Enemy.Movement.RANDOM_MOVEMENT_DEFAULT;
 		/** Minimum time until next random move */
-		float randomTimeMin = Enemy.Movement.RANDOM_MOVEMENT_TIME_MIN_DEFAULT;
+		@Tag(71) float randomTimeMin = Enemy.Movement.RANDOM_MOVEMENT_TIME_MIN_DEFAULT;
 		/** Maxumum time until next random move */
-		float randomTimeMax = Enemy.Movement.RANDOM_MOVEMENT_TIME_MAX_DEFAULT;
+		@Tag(72) float randomTimeMax = Enemy.Movement.RANDOM_MOVEMENT_TIME_MAX_DEFAULT;
 	}
 
 	/**
@@ -404,8 +405,8 @@ public class EnemyActorDef extends ActorDef {
 	 */
 	public static class AimRotateVars {
 		/** Starting angle */
-		float startAngle = Enemy.Weapon.START_ANGLE_DEFAULT;
+		@Tag(73) float startAngle = Enemy.Weapon.START_ANGLE_DEFAULT;
 		/** Rotating speed */
-		float rotateSpeed = Enemy.Weapon.ROTATE_SPEED_DEFAULT;
+		@Tag(74) float rotateSpeed = Enemy.Weapon.ROTATE_SPEED_DEFAULT;
 	}
 }

@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
+import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.voider.resources.Def;
 
 /**
@@ -51,5 +52,5 @@ public class GameSaveDef extends Def {
 	}
 
 	/** Associated GameSave resource */
-	private UUID mGameSaveId = null;
+	@Tag(77) private UUID mGameSaveId = null;
 }

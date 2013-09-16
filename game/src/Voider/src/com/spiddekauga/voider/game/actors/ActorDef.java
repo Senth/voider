@@ -6,6 +6,7 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
+import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.voider.game.Collectibles;
 import com.spiddekauga.voider.resources.Def;
@@ -272,16 +273,16 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	protected float mBodyChangeTime = 0;
 
 	/** Maximum life of the actor, usually starting amount of life */
-	private float mMaxLife = 0;
+	@Tag(44) private float mMaxLife = 0;
 	/** The body definition of the actor */
-	private BodyDef mBodyDef = new BodyDef();
+	@Tag(45) private BodyDef mBodyDef = new BodyDef();
 
 
 	/** Collision damage (per second) */
-	private float mCollisionDamage = 0;
+	@Tag(46) private float mCollisionDamage = 0;
 	/** If this actor shall be destroy on collision */
-	private boolean mDestroyOnCollide = false;
+	@Tag(47) private boolean mDestroyOnCollide = false;
 	/** Visual variables */
-	protected VisualVars mVisualVars = null;
+	@Tag(48) protected VisualVars mVisualVars = null;
 
 }

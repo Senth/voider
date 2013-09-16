@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
+import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.voider.game.triggers.TriggerAction.Actions;
 
 /**
@@ -14,15 +15,16 @@ import com.spiddekauga.voider.game.triggers.TriggerAction.Actions;
  */
 public class TriggerInfo implements Json.Serializable {
 	/** The trigger this is bound to */
+	@Deprecated
 	public UUID triggerId;
 	/** The trigger */
-	public Trigger trigger = null;
+	@Tag(29) public Trigger trigger = null;
 	/** The delay of this listener */
-	public float delay = 0;
+	@Tag(30) public float delay = 0;
 	/** The action to take when the trigger is triggered */
-	public TriggerAction.Actions action;
+	@Tag(31) public TriggerAction.Actions action;
 	/** The listener object */
-	public ITriggerListener listener;
+	@Tag(32) public ITriggerListener listener;
 
 	/**
 	 * Sets the trigger, automatically sets the trigger id

@@ -4,9 +4,9 @@ import java.util.UUID;
 
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
+import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.resources.Def;
-import com.spiddekauga.voider.resources.ResourceNames;
 
 /**
  * Level definition of a level. I.e. this is the level's header information
@@ -28,21 +28,6 @@ public class LevelDef extends Def {
 		def.mLevelId = UUID.randomUUID();
 		def.mCampaignId = null;
 		return (ResourceType) def;
-	}
-
-	/**
-	 * @return the music of the level
-	 */
-	public ResourceNames getMusic() {
-		return mMusic;
-	}
-
-	/**
-	 * Sets the music of the level
-	 * @param music the music to set
-	 */
-	public void setMusic(ResourceNames music) {
-		mMusic = music;
 	}
 
 	/**
@@ -151,7 +136,6 @@ public class LevelDef extends Def {
 	public void write(Json json) {
 		super.write(json);
 
-		json.writeValue("mMusic", mMusic);
 		json.writeValue("mPrologue", mPrologue);
 		json.writeValue("mEpilogue", mEpilogue);
 		json.writeValue("mStartXCoord", mStartXCoord);
@@ -167,7 +151,6 @@ public class LevelDef extends Def {
 
 
 		// Variables
-		mMusic = json.readValue("mMusic", ResourceNames.class, jsonValue);
 		mPrologue = json.readValue("mPrologue", String.class, jsonValue);
 		mEpilogue = json.readValue("mEpilogue", String.class, jsonValue);
 		mStartXCoord = json.readValue("mStartXCoord", float.class, jsonValue);
@@ -182,21 +165,19 @@ public class LevelDef extends Def {
 
 
 	/** Starting coordinate of the level (right screen edge) */
-	private float mStartXCoord = 0;
+	@Tag(78) private float mStartXCoord = 0;
 	/** The actual level id, i.e. not this definition's id */
-	private UUID mLevelId = null;
-	/** The level's music */
-	private ResourceNames mMusic = null;
+	@Tag(79) private UUID mLevelId = null;
 	/** Campaign id the level belongs to, null if it doesn't belong to any */
-	private UUID mCampaignId = null;
+	@Tag(80) private UUID mCampaignId = null;
 	/** Story before the level, set to null to not show */
-	private String mPrologue = "";
+	@Tag(81) private String mPrologue = "";
 	/** Story after the level, set to null to not show */
-	private String mEpilogue = "";
+	@Tag(82) private String mEpilogue = "";
 	/** Base speed of the level, the actual level speed may vary as it can
 	 * be changed by triggers */
-	private float mSpeed = Config.Editor.Level.LEVEL_SPEED_DEFAULT;
+	@Tag(83) private float mSpeed = Config.Editor.Level.LEVEL_SPEED_DEFAULT;
 	/** End of the map (right screen edge) */
-	private float mEndXCoord = 100f;
+	@Tag(84) private float mEndXCoord = 100f;
 
 }

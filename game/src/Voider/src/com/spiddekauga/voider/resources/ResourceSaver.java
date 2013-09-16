@@ -1,12 +1,15 @@
 package com.spiddekauga.voider.resources;
 
 
+import java.io.ByteArrayOutputStream;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.utils.Json;
-import com.spiddekauga.utils.JsonWrapper;
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.io.Output;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.utils.ObjectCrypter;
+import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Saves resources into the appropriate place. The saver is also responsible
@@ -39,10 +42,14 @@ public class ResourceSaver {
 			((Def) resource).setRevision(nextRevision);
 		}
 
-		Json json = new JsonWrapper();
-		String jsonString = json.toJson(resource);
+		Kryo kryo = Pools.kryo.obtain();
+		ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
+		Output output = new Output(byteOut);
+		kryo.writeObject(output, resource);
+		output.close();
+
 		try {
-			byte[] encryptedDef = mCrypter.encrypt(jsonString);
+			byte[] encryptedDef = mCrypter.encrypt(byteOut.toByteArray());
 
 			Gdx.app.debug("ResourceSaver", "Encrypted (" + resource.getClass().getSimpleName() + ") " + resource.getId().toString());
 
@@ -59,6 +66,8 @@ public class ResourceSaver {
 		} catch (Exception e) {
 			Gdx.app.error("ResourceSaver", "Could not encrypt message. Your file has not been saved!");
 		}
+
+		Pools.kryo.free(kryo);
 	}
 
 	/**
