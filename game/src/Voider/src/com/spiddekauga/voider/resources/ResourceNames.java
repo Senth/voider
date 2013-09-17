@@ -86,7 +86,8 @@ public enum ResourceNames {
 	}
 
 	/**
-	 * Changes the external storage path to the TEST_STORAGE instead
+	 * Changes the external storage path to the TEST_STORAGE instead.
+	 * Needs to be called before {@link #init()}.
 	 */
 	public static void useTestPath() {
 		LEVEL_DEF_PATH = Config.File.TEST_STORAGE + "levelDefs/";

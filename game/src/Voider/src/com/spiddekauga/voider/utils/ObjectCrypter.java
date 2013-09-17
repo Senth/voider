@@ -50,7 +50,7 @@ public class ObjectCrypter {
 	 * @param <EncryptType> encrypted type
 	 * @param obj the object to encrypt
 	 * @return the encrypted object in bytes
-	 * @see #decrypt(byte[])
+	 * @see #decrypt(byte[],Class)
 	 * @throws InvalidKeyException
 	 * @throws InvalidAlgorithmParameterException
 	 * @throws IOException

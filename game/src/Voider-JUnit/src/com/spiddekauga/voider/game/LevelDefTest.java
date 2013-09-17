@@ -8,7 +8,6 @@ import org.junit.Test;
 
 import com.badlogic.gdx.utils.Json;
 import com.spiddekauga.utils.JsonWrapper;
-import com.spiddekauga.voider.resources.ResourceNames;
 
 /**
  * Tests the LevelDef for bugs
@@ -23,7 +22,6 @@ public class LevelDefTest {
 	@Test
 	public void writeRead() {
 		LevelDef def = new LevelDef();
-		def.setMusic(ResourceNames.SOUND_TEST);
 		def.setCampaignId(UUID.randomUUID());
 		def.setPrologue("story before");
 		def.setStoryAfter("story after");
@@ -35,7 +33,6 @@ public class LevelDefTest {
 
 		LevelDef jsonDef = json.fromJson(LevelDef.class, jsonString);
 		assertEquals("same def", def, jsonDef);
-		assertEquals("music", def.getMusic(), jsonDef.getMusic());
 		assertEquals("campaign id", def.getCampaignId(), jsonDef.getCampaignId());
 		assertEquals("story before", def.getPrologue(), jsonDef.getPrologue());
 		assertEquals("story after", def.getEpilogue(), jsonDef.getEpilogue());
@@ -51,7 +48,6 @@ public class LevelDefTest {
 
 		jsonDef = json.fromJson(LevelDef.class, jsonString);
 		assertEquals("same def", def, jsonDef);
-		assertEquals("music", def.getMusic(), jsonDef.getMusic());
 		assertEquals("campaign id", def.getCampaignId(), jsonDef.getCampaignId());
 		assertEquals("story before", def.getPrologue(), jsonDef.getPrologue());
 		assertEquals("story after", def.getEpilogue(), jsonDef.getEpilogue());

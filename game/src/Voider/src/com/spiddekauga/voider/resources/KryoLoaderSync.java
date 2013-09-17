@@ -18,7 +18,7 @@ import com.spiddekauga.voider.utils.Pools;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class KryoLoaderSync<StoredType> extends SynchronousAssetLoader<StoredType, JsonParameter<StoredType>> {
+public class KryoLoaderSync<StoredType> extends SynchronousAssetLoader<StoredType, KryoParameters<StoredType>> {
 	/**
 	 * Constructor which takes a file handle resolver (where to load resources
 	 * from) and what type of object is stored in the json file.
@@ -33,7 +33,7 @@ public class KryoLoaderSync<StoredType> extends SynchronousAssetLoader<StoredTyp
 	}
 
 	@Override
-	public StoredType load(AssetManager assetManager, String fileName, FileHandle file, JsonParameter<StoredType> parameter) {
+	public StoredType load(AssetManager assetManager, String fileName, FileHandle file, KryoParameters<StoredType> parameter) {
 		if (!file.exists()) {
 			throw new ResourceNotFoundException(fileName);
 		}
@@ -55,7 +55,7 @@ public class KryoLoaderSync<StoredType> extends SynchronousAssetLoader<StoredTyp
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Array<AssetDescriptor> getDependencies(String fileName, FileHandle file, JsonParameter<StoredType> parameter) {
+	public Array<AssetDescriptor> getDependencies(String fileName, FileHandle file, KryoParameters<StoredType> parameter) {
 		return null;
 	}
 

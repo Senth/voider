@@ -59,6 +59,10 @@ public class KryoPrototypeTest {
 		mKryo.register(CompatOptionalFieldClass3.class, new CompatibleFieldSerializer<CompatOptionalFieldClass3>(mKryo, CompatOptionalFieldClass3.class));
 		mKryo.register(TaggedChangeFieldTypeInt.class, new TaggedFieldSerializer<TaggedChangeFieldTypeInt>(mKryo, TaggedChangeFieldTypeInt.class));
 		mKryo.register(TaggedChangeFieldTypeString.class, new TaggedFieldSerializer<TaggedChangeFieldTypeString>(mKryo, TaggedChangeFieldTypeString.class));
+		mKryo.register(SavesValue.class, new BaseTaggedSerializer(mKryo, SavesValue.class));
+		mKryo.register(NoSave.class, new BaseTaggedSerializer(mKryo, NoSave.class));
+		mKryo.register(ClassWithFinal1.class, new TaggedFieldSerializer<ClassWithFinal1>(mKryo, ClassWithFinal1.class));
+		mKryo.register(ClassWithFinal2.class, new TaggedFieldSerializer<ClassWithFinal2>(mKryo, ClassWithFinal2.class));
 	}
 
 	@AfterClass
@@ -365,6 +369,104 @@ public class KryoPrototypeTest {
 
 			return object;
 		}
+	}
+
+	@Test
+	public void testTaggedWithCustom() {
+		// Save
+		SavesValue savesValue = new SavesValue();
+		savesValue.id = 10;
+		savesValue.justAFloat = 11;
+		savesValue.value = "12";
+
+		SavesValue readSavesValue = copy(savesValue, SavesValue.class);
+		assertEquals(10, readSavesValue.id);
+		assertEquals(11, readSavesValue.justAFloat, 0);
+		assertEquals("12", savesValue.value);
+
+		// No Save
+		NoSave noSave = new NoSave();
+		noSave.id = 20;
+		noSave.justADouble = 21;
+		noSave.value = "22";
+
+		NoSave readNoSave = copy(noSave, NoSave.class);
+		assertEquals(20, readNoSave.id);
+		assertEquals(21, readNoSave.justADouble, 0);
+		assertEquals("", readNoSave.value);
+	}
+
+	private static abstract class Base implements KryoSerializable {
+		@Tag(1) int id = 0;
+		String value = "";
+
+		boolean savesValue() {
+			return false;
+		}
+
+		@Override
+		public void write(Kryo kryo, Output output) {
+			if (savesValue()) {
+				output.writeString(value);
+			}
+		}
+
+		@Override
+		public void read(Kryo kryo, Input input) {
+			if (savesValue()) {
+				value = input.readString();
+			}
+		}
+	}
+
+	private static class SavesValue extends Base {
+		@Tag(50) float justAFloat = 1.0f;
+
+		@Override
+		boolean savesValue() {
+			return true;
+		}
+	}
+
+	private static class NoSave extends Base {
+		@Tag(50) double justADouble = 2.0f;
+	}
+
+	private static class BaseTaggedSerializer extends TaggedFieldSerializer<Base> {
+		public BaseTaggedSerializer(Kryo kryo, Class<? extends Base> type) {
+			super(kryo, type);
+		}
+
+		@Override
+		public void write(Kryo kryo, Output output, Base object) {
+			super.write(kryo, output, object);
+			object.write(kryo, output);
+		}
+
+		@Override
+		public Base read(Kryo kryo, Input input, Class<Base> type) {
+			Base base = super.read(kryo, input, type);
+			base.read(kryo, input);
+			return base;
+		}
+	}
+
+	@Test
+	public void testFinal() {
+		ClassWithFinal1 final1 = new ClassWithFinal1();
+
+		ClassWithFinal2 readFinal2 = copy(final1, ClassWithFinal2.class);
+
+		// Changing final does not work!
+		assertEquals(10, readFinal2.VERSION);
+	}
+
+	private static class ClassWithFinal1 {
+		@Tag(1) final int VERSION = 1;
+	}
+
+	private static class ClassWithFinal2 {
+		@Tag(1) final int VERSION = 10;
 	}
 
 	@Test

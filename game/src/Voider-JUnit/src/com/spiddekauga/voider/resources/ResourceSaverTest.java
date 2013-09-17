@@ -12,11 +12,13 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.lwjgl.LwjglFiles;
 import com.badlogic.gdx.backends.lwjgl.LwjglNativesLoader;
 import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.utils.Json;
-import com.spiddekauga.utils.JsonWrapper;
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.io.Input;
+import com.esotericsoftware.minlog.Log;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.actors.PickupActorDef;
 import com.spiddekauga.voider.utils.ObjectCrypter;
+import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Tests the ResourceSaver if it works to save files.
@@ -36,6 +38,7 @@ public class ResourceSaverTest {
 		Config.init();
 		ResourceSaver.init();
 		ResourceNames.useTestPath();
+		ResourceNames.init();
 		ResourceCacheFacade.init();
 	}
 
@@ -58,65 +61,49 @@ public class ResourceSaverTest {
 		// Test to save it and then load
 		ResourceSaver.save(def);
 
-		String relativePath = null;
-		try {
-			relativePath = ResourceNames.getDirPath(def.getClass()) + def.getId().toString();
-		} catch (UndefinedResourceTypeException e1) {
-			fail("Undefined resource type exception");
-		}
+		String relativePath = ResourceDatabase.getFilePath(def);
 		FileHandle savedFile = Gdx.files.external(relativePath);
-
 		assertTrue("saved file exist", savedFile.exists());
 
-		byte[] encryptedDef = savedFile.readBytes();
 
+		byte[] encryptedDef = savedFile.readBytes();
 		ObjectCrypter crypter = new ObjectCrypter(Config.Crypto.getFileKey());
-		String jsonString = null;
+		byte[] decryptedDef = null;
 		try {
-			jsonString = (String) crypter.decrypt(encryptedDef);
+			decryptedDef = crypter.decrypt(encryptedDef, byte[].class);
 		} catch (Exception e) {
-			fail("Undefined resource type exception");
+			fail("Could not decrypt file");
 		}
 
-		Json json = new JsonWrapper();
-		Def savedDef = json.fromJson(PickupActorDef.class, jsonString);
+		Kryo kryo = Pools.kryo.obtain();
+		Input input = new Input(decryptedDef);
+		Def savedDef = kryo.readObject(input, PickupActorDef.class);
+		assertEquals("saved def equals()", def, savedDef);
 
-		assertEquals("saved def equals()", savedDef, def);
 
-
-		// Save it again, now a backup should be created
+		// Save it again, now a new revision should be created
+		Log.TRACE();
 		def.addDependency(ResourceNames.TEXTURE_PLAYER);
 		ResourceSaver.save(def);
 
+		relativePath = ResourceDatabase.getFilePath(def);
 		savedFile = Gdx.files.external(relativePath);
 		encryptedDef = savedFile.readBytes();
 
-		jsonString = null;
+		decryptedDef = null;
 		try {
-			jsonString = (String) crypter.decrypt(encryptedDef);
+			decryptedDef = crypter.decrypt(encryptedDef, byte[].class);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		savedDef = json.fromJson(PickupActorDef.class, jsonString);
-		assertEquals("new saved file shall have one dependency", savedDef.getInternalDependencies().size(), 1);
+		input = new Input(decryptedDef);
+		savedDef = kryo.readObject(input, PickupActorDef.class);
+		Log.NONE();
+		assertEquals("new saved file shall have one dependency", 1, savedDef.getInternalDependencies().size());
 
-		// Check backup, should have 0 dependencies
-		FileHandle savedFileBak = Gdx.files.external(relativePath + Config.File.BACKUP_EXT);
-		encryptedDef = savedFileBak.readBytes();
-
-		jsonString = null;
-		try {
-			jsonString = (String) crypter.decrypt(encryptedDef);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		savedDef = json.fromJson(PickupActorDef.class, jsonString);
-		assertEquals("backup saved file shall have zero dependencies", savedDef.getInternalDependencies().size(), 0);
 
 		// Delete the files
-
-		savedFile.delete();
-		savedFileBak.delete();
+		ResourceSaver.clearResources(PickupActorDef.class);
 	}
 
 }

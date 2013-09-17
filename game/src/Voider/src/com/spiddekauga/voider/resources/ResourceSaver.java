@@ -51,7 +51,9 @@ public class ResourceSaver {
 		try {
 			byte[] encryptedDef = mCrypter.encrypt(byteOut.toByteArray());
 
-			Gdx.app.debug("ResourceSaver", "Encrypted (" + resource.getClass().getSimpleName() + ") " + resource.getId().toString());
+			if (Gdx.app != null) {
+				Gdx.app.debug("ResourceSaver", "Encrypted (" + resource.getClass().getSimpleName() + ") " + resource.getId().toString());
+			}
 
 			String filePath = ResourceDatabase.getFilePath(resource);
 			FileHandle saveFile = Gdx.files.external(filePath);
@@ -61,12 +63,13 @@ public class ResourceSaver {
 			// Save the file
 			saveFile.writeBytes(encryptedDef, false);
 
-			Gdx.app.debug("ResourceSaver", "Saved resource (" + resource.getClass().getSimpleName() + ") " + filePath);
+			if (Gdx.app != null) {
+				Gdx.app.debug("ResourceSaver", "Saved resource (" + resource.getClass().getSimpleName() + ") " + filePath);
+			}
 
 		} catch (Exception e) {
 			Gdx.app.error("ResourceSaver", "Could not encrypt message. Your file has not been saved!");
 		}
-
 		Pools.kryo.free(kryo);
 	}
 

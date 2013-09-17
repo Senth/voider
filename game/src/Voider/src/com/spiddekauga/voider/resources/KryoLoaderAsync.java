@@ -18,7 +18,7 @@ import com.spiddekauga.voider.utils.Pools;
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  * @param <StoredType> what type of object is stored in the json file
  */
-public class KryoLoaderAsync<StoredType> extends AsynchronousAssetLoader<StoredType, JsonParameter<StoredType>> {
+public class KryoLoaderAsync<StoredType> extends AsynchronousAssetLoader<StoredType, KryoParameters<StoredType>> {
 
 	/**
 	 * Constructor which takes a file handle resolver (where to load
@@ -34,7 +34,7 @@ public class KryoLoaderAsync<StoredType> extends AsynchronousAssetLoader<StoredT
 	}
 
 	@Override
-	public void loadAsync(AssetManager manager, String fileName, FileHandle file, JsonParameter<StoredType> parameter) {
+	public void loadAsync(AssetManager manager, String fileName, FileHandle file, KryoParameters<StoredType> parameter) {
 		mStoredObject = null;
 
 		if (!file.exists()) {
@@ -56,7 +56,7 @@ public class KryoLoaderAsync<StoredType> extends AsynchronousAssetLoader<StoredT
 	}
 
 	@Override
-	public StoredType loadSync(AssetManager manager, String fileName, FileHandle file, JsonParameter<StoredType> parameter) {
+	public StoredType loadSync(AssetManager manager, String fileName, FileHandle file, KryoParameters<StoredType> parameter) {
 		return mStoredObject;
 	}
 
@@ -65,7 +65,7 @@ public class KryoLoaderAsync<StoredType> extends AsynchronousAssetLoader<StoredT
 	 */
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Array<AssetDescriptor> getDependencies(String fileName, FileHandle file, JsonParameter<StoredType> parameter) {
+	public Array<AssetDescriptor> getDependencies(String fileName, FileHandle file, KryoParameters<StoredType> parameter) {
 		return null;
 	}
 

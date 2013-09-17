@@ -58,31 +58,18 @@ import com.spiddekauga.voider.game.triggers.TriggerAction;
 import com.spiddekauga.voider.game.triggers.TriggerInfo;
 
 /**
- * Pool for Kryo instances. When creating a new instance Kryo registers all
- * necessary classes used by Voider.
+ * Creates new instances of Kryo where all necessary classes have been registered.
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class KryoPool extends Pool<Kryo> {
-
+public class KryoFactory {
 	/**
-	 * @param initialCapacity how many initial objects will be created
-	 * @param max maximum stored objects
+	 * Creates and registers an necessary classes and serializers for kryo.
+	 * @return new instance of a Kryo object
 	 */
-	public KryoPool(int initialCapacity, int max) {
-		super(Kryo.class, initialCapacity, max);
-	}
-
-	/**
-	 * Default constructor.
-	 */
-	public KryoPool() {
-		this(5, 20);
-	}
-
-	@Override
-	public Kryo newObject() {
+	public static Kryo create() {
 		Kryo kryo = new Kryo();
+
 		kryo.setRegistrationRequired(true);
 
 		RegisterClasses.createSerializers(kryo);
@@ -203,8 +190,6 @@ public class KryoPool extends Pool<Kryo> {
 		AIM_ROTATE_VARS(AimRotateVars.class, SerializerType.TAGGED),
 		/** ObjectMap.Entries */
 		OBJECT_MAP_ENTRIES(ObjectMap.Entries.class),
-		/** ObjectMap.Entry */
-		OBJECT_MAP_ENTRY(ObjectMap.Entry.class),
 
 
 
