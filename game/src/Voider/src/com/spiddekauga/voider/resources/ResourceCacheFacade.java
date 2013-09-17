@@ -384,6 +384,22 @@ public class ResourceCacheFacade {
 	 * @param scene the scene the resource was loaded in, if null it will use the
 	 * current active scene.
 	 * @param resourceId id of the resource, can be both def and instance resource
+	 * @return the actual resource, null if not found
+	 */
+	public static <ResourceType extends IResource> ResourceType get(Scene scene, UUID resourceId) {
+		Scene sceneToUse = scene;
+		if (scene == null) {
+			sceneToUse = SceneSwitcher.getActiveScene(true);
+		}
+		return ResourceDatabase.getLoadedResource(sceneToUse, resourceId, -1);
+	}
+
+	/**
+	 * Get a resource based on the id and class of resource. Always gets the latest revision
+	 * @param <ResourceType> type of resource that will be returned
+	 * @param scene the scene the resource was loaded in, if null it will use the
+	 * current active scene.
+	 * @param resourceId id of the resource, can be both def and instance resource
 	 * @param revision the revision of the resource to get
 	 * @return the actual resource, null if not found
 	 */

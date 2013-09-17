@@ -6,6 +6,9 @@ import java.util.UUID;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.io.Input;
+import com.esotericsoftware.kryo.io.Output;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.utils.Maths;
 import com.spiddekauga.voider.Config;
@@ -224,6 +227,99 @@ public class EnemyActor extends Actor {
 		mWeapon.setWeaponDefResetCd(getDef(EnemyActorDef.class).getWeaponDef());
 
 		mShootAngle = getDef(EnemyActorDef.class).getAimStartAngle();
+	}
+
+	@Override
+	public void write(Kryo kryo, Output output) {
+		super.write(kryo, output);
+
+		EnemyActorDef enemyDef = getDef(EnemyActorDef.class);
+
+		// Weapon
+		if (enemyDef.hasWeapon()) {
+			kryo.writeObject(output, mWeapon);
+			output.writeFloat(mShootAngle);
+		}
+
+		// Group
+		if (mGroup != null) {
+			output.writeBoolean(mGroupLeader);
+		}
+
+		// Movement
+		if (enemyDef.getMovementType() == MovementTypes.AI) {
+			if (enemyDef.isMovingRandomly()) {
+				output.writeFloat(mRandomMoveNext);
+				kryo.writeObject(output, mRandomMoveDirection);
+			}
+		} else if (enemyDef.getMovementType() == MovementTypes.PATH) {
+			kryo.writeObject(output, mPath);
+
+			if (mPath != null) {
+				output.writeInt(mPathIndexNext);
+
+				switch (mPath.getPathType()) {
+				case ONCE:
+					output.writeBoolean(mPathOnceReachedEnd);
+					break;
+
+				case BACK_AND_FORTH:
+					output.writeBoolean(mPathForward);
+					break;
+
+				case LOOP:
+					// Does nothing
+					break;
+				}
+			}
+		}
+	}
+
+	@Override
+	public void read(Kryo kryo, Input input) {
+		super.read(kryo, input);
+
+		EnemyActorDef enemyDef = getDef(EnemyActorDef.class);
+
+		// Weapon
+		if (enemyDef.hasWeapon()) {
+			mWeapon = kryo.readObject(input, Weapon.class);
+			mShootAngle = input.readFloat();
+		}
+
+		// Group
+		if (mGroup != null) {
+			mGroupLeader = input.readBoolean();
+		}
+
+		// Movement
+		if (enemyDef.getMovementType() == MovementTypes.AI) {
+			if (enemyDef.isMovingRandomly()) {
+				mRandomMoveNext = input.readFloat();
+				Pools.vector2.free(mRandomMoveDirection);
+				mRandomMoveDirection = kryo.readObject(input, Vector2.class);
+			}
+		} else if (enemyDef.getMovementType() == MovementTypes.PATH) {
+			mPath = kryo.readObject(input, Path.class);
+
+			if (mPath != null) {
+				mPathIndexNext = input.readInt();
+
+				switch (mPath.getPathType()) {
+				case ONCE:
+					mPathOnceReachedEnd = input.readBoolean();
+					break;
+
+				case BACK_AND_FORTH:
+					mPathForward = input.readBoolean();
+					break;
+
+				case LOOP:
+					// Does nothing
+					break;
+				}
+			}
+		}
 	}
 
 	@Override

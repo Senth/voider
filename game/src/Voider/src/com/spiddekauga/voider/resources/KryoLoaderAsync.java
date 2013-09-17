@@ -6,18 +6,19 @@ import com.badlogic.gdx.assets.loaders.AsynchronousAssetLoader;
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.Json;
-import com.spiddekauga.utils.JsonWrapper;
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.io.Input;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.utils.ObjectCrypter;
+import com.spiddekauga.voider.utils.Pools;
 
 /**
- * Loads Json objects (that has been encrypted)
+ * Asynchronously loads resources saved as Kryo objects (that has been encrypted)
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  * @param <StoredType> what type of object is stored in the json file
  */
-public class JsonLoaderAsync<StoredType> extends AsynchronousAssetLoader<StoredType, JsonParameter<StoredType>> {
+public class KryoLoaderAsync<StoredType> extends AsynchronousAssetLoader<StoredType, JsonParameter<StoredType>> {
 
 	/**
 	 * Constructor which takes a file handle resolver (where to load
@@ -26,7 +27,7 @@ public class JsonLoaderAsync<StoredType> extends AsynchronousAssetLoader<StoredT
 	 * @param resolver where to load resources from
 	 * @param type what type of object is stored in the json file
 	 */
-	public JsonLoaderAsync (FileHandleResolver resolver, Class<StoredType> type) {
+	public KryoLoaderAsync (FileHandleResolver resolver, Class<StoredType> type) {
 		super(resolver);
 		mCrypter = new ObjectCrypter(Config.Crypto.getFileKey());
 		mStoredType = type;
@@ -40,16 +41,18 @@ public class JsonLoaderAsync<StoredType> extends AsynchronousAssetLoader<StoredT
 			throw new ResourceNotFoundException(fileName);
 		}
 
-		byte[] encryptedJson = file.readBytes();
-		String jsonString = null;
+		byte[] encryptedKryo = file.readBytes();
+		byte[] decryptedKryo;
 		try {
-			jsonString = mCrypter.decrypt(encryptedJson, String.class);
+			decryptedKryo = mCrypter.decrypt(encryptedKryo, byte[].class);
 		} catch (Exception e) {
 			throw new ResourceCorruptException(fileName);
 		}
 
-		Json json = new JsonWrapper();
-		mStoredObject = json.fromJson(mStoredType, jsonString);
+		Input input = new Input(decryptedKryo);
+		Kryo kryo = Pools.kryo.obtain();
+		mStoredObject = kryo.readObject(input, mStoredType);
+		Pools.kryo.free(kryo);
 	}
 
 	@Override

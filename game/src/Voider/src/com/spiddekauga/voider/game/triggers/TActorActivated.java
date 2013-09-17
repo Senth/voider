@@ -12,6 +12,8 @@ import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
+import com.spiddekauga.utils.KryoPostRead;
+import com.spiddekauga.utils.KryoPreWrite;
 import com.spiddekauga.utils.ShapeRendererEx;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.actors.Actor;
@@ -27,7 +29,7 @@ import com.spiddekauga.voider.utils.Pools;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class TActorActivated extends Trigger implements Disposable, IResourceBody, IResourceChangeListener {
+public class TActorActivated extends Trigger implements KryoPreWrite, KryoPostRead, Disposable, IResourceBody, IResourceChangeListener {
 	/**
 	 * Triggers when the actor is active (or activated)
 	 * @param actor the actor that shall be activate
@@ -94,6 +96,16 @@ public class TActorActivated extends Trigger implements Disposable, IResourceBod
 	@Override
 	public boolean isTriggered() {
 		return mActor.isActive();
+	}
+
+	@Override
+	public void preWrite() {
+		mActor.removeChangeListener(this);
+	}
+
+	@Override
+	public void postRead() {
+		setActorListener();
 	}
 
 	@Override
@@ -175,7 +187,7 @@ public class TActorActivated extends Trigger implements Disposable, IResourceBod
 	}
 
 	/**
-	 * Constructor for JSON
+	 * Constructor for Kryo
 	 */
 	protected TActorActivated() {
 		// Does nothing

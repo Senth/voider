@@ -9,6 +9,10 @@ import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectMap;
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.KryoSerializable;
+import com.esotericsoftware.kryo.io.Input;
+import com.esotericsoftware.kryo.io.Output;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.utils.JsonWrapper;
 import com.spiddekauga.utils.ShapeRendererEx;
@@ -42,7 +46,7 @@ import com.spiddekauga.voider.utils.Pools;
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
 @SuppressWarnings("unchecked")
-public class Level extends Resource implements Disposable, IResourceRevision {
+public class Level extends Resource implements KryoSerializable, Disposable, IResourceRevision {
 	/**
 	 * Constructor which creates an new empty level with the bound
 	 * level definition
@@ -431,6 +435,20 @@ public class Level extends Resource implements Disposable, IResourceRevision {
 		Pools.arrayList.free(resources);
 	}
 
+	@Override
+	public void write(Kryo kryo, Output output) {
+		// LevelDef
+		kryo.writeObject(output, mLevelDef.getId());
+		output.writeInt(mLevelDef.getRevision());
+	}
+
+	@Override
+	public void read(Kryo kryo, Input input) {
+		// LevelDef
+		UUID levelDefId = kryo.readObject(input, UUID.class);
+		int revision = input.readInt();
+		mLevelDef = ResourceCacheFacade.get(null, levelDefId, revision);
+	}
 
 	@Override
 	public void write(Json json) {
@@ -512,4 +530,6 @@ public class Level extends Resource implements Disposable, IResourceRevision {
 	private boolean mRunning = false;
 	/** The player actor */
 	private PlayerActor mPlayerActor = null;
+	/** Revision of the actor */
+	@Tag(100) protected int CLASS_REVISION = 1;
 }

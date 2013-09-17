@@ -17,6 +17,10 @@ import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.Pool.Poolable;
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.KryoSerializable;
+import com.esotericsoftware.kryo.io.Input;
+import com.esotericsoftware.kryo.io.Output;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.utils.ShapeRendererEx;
@@ -49,7 +53,7 @@ import com.spiddekauga.voider.utils.Pools;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public abstract class Actor extends Resource implements IResourceUpdate, Json.Serializable, Disposable, Poolable, IResourceBody, IResourcePosition, ITriggerListener, IResourceEditorUpdate, IResourceRender, IResourceEditorRender {
+public abstract class Actor extends Resource implements IResourceUpdate, Json.Serializable, KryoSerializable, Disposable, Poolable, IResourceBody, IResourcePosition, ITriggerListener, IResourceEditorUpdate, IResourceRender, IResourceEditorRender {
 	/**
 	 * Sets the texture of the actor including the actor definition.
 	 * Automatically creates a body for the actor.
@@ -469,6 +473,71 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	 */
 	public void setDrawOnlyOutline(boolean drawOnlyOutline) {
 		mDrawOnlyOutline = drawOnlyOutline;
+	}
+
+	@Override
+	public void write(Kryo kryo, Output output) {
+
+		// Saves active state?
+		output.writeBoolean(!mEditorActive);
+		if (!mEditorActive) {
+			output.writeBoolean(mActive);
+		}
+
+		// Save def or just fetch it
+		if (savesDef()) {
+			kryo.writeClassAndObject(output, mDef);
+			output.writeInt(mDef.getRevision());
+		} else {
+			kryo.writeObject(output, mDef.getId());
+		}
+
+		// Save body
+		output.writeBoolean(mBody != null);
+		if (mBody != null) {
+			output.writeFloat(mBody.getAngle());
+			output.writeFloat(mBody.getAngularVelocity());
+			kryo.writeObject(output, mBody.getLinearVelocity());
+			output.writeBoolean(mBody.isAwake());
+			output.writeBoolean(mBody.isActive());
+		}
+	}
+
+	@Override
+	public void read(Kryo kryo, Input input) {
+		// Load active state
+		if (input.readBoolean()) {
+			mActive = input.readBoolean();
+		}
+
+		// Saves def or just fetch it
+		if (savesDef()) {
+			Object object = kryo.readClassAndObject(input);
+			if (object instanceof ActorDef) {
+				mDef = (ActorDef) object;
+			} else {
+				Gdx.app.error("Actor", "Def read from kryo was not an ActorDef!");
+			}
+		} else {
+			UUID defId = kryo.readObject(input, UUID.class);
+			int revision = input.readInt();
+			mDef = ResourceCacheFacade.get(null, defId, revision);
+		}
+
+		// Read body
+		if (input.readBoolean()) {
+			BodyDef bodyDef = mDef.getBodyDefCopy();
+
+			bodyDef.angle = input.readFloat();
+			bodyDef.angularVelocity = input.readFloat();
+			bodyDef.linearVelocity.set(kryo.readObject(input, Vector2.class));
+			bodyDef.awake = input.readBoolean();
+			bodyDef.active = input.readBoolean();
+
+			bodyDef.position.set(mPosition);
+
+			createBody(bodyDef);
+		}
 	}
 
 	@Override
@@ -1127,6 +1196,8 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	@Tag(4) private Vector2 mPosition = Pools.vector2.obtain().set(0, 0);
 	/** Trigger informations */
 	@Tag(5) private ArrayList<TriggerInfo> mTriggerInfos = new ArrayList<TriggerInfo>();
+	/** Revision of the actor */
+	@Tag(100) protected int CLASS_REVISION = 1;
 
 	// Kryo special variables
 	/** True if the actor is active */
@@ -1136,7 +1207,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	/** Physical body */
 	private Body mBody = null;
 
-	/** Current actors we're colliding with */
+	/** Current actors we're colliding with @todo do we need to save colliding actors? */
 	private ArrayList<ActorDef> mCollidingActors = new ArrayList<ActorDef>();
 	/** World corners of the actor, only used for custom shape and in an editor */
 	private ArrayList<Body> mCorners = new ArrayList<Body>();
@@ -1164,7 +1235,6 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	private boolean mDestroyBody = false;
 	/** Only draws the shape's outline */
 	private boolean mDrawOnlyOutline = false;
-
 
 	/** The world used for creating bodies */
 	protected static World mWorld = null;

@@ -23,6 +23,7 @@ import com.esotericsoftware.kryo.io.Output;
 import com.esotericsoftware.kryo.serializers.CompatibleFieldSerializer;
 import com.esotericsoftware.kryo.serializers.FieldSerializer;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer;
+import com.spiddekauga.utils.SerializableTaggedFieldSerializer;
 import com.spiddekauga.voider.Config.Editor.Level;
 import com.spiddekauga.voider.game.BulletDestroyer;
 import com.spiddekauga.voider.game.Collectibles;
@@ -82,6 +83,7 @@ public class KryoPool extends Pool<Kryo> {
 	@Override
 	public Kryo newObject() {
 		Kryo kryo = new Kryo();
+		kryo.setRegistrationRequired(true);
 
 		RegisterClasses.createSerializers(kryo);
 		RegisterClasses.registerAll(kryo);
@@ -120,23 +122,23 @@ public class KryoPool extends Pool<Kryo> {
 		/** Vector2[] */
 		VECTOR_2_ARRAY(Vector2[].class),
 		/** BulletActor */
-		BULLET_ACTOR(BulletActor.class, SerializerType.TAGGED),
+		BULLET_ACTOR(BulletActor.class, SerializerType.SERIALIZABLE_TAGGED),
 		/** BulletActorDef */
 		BULLET_ACTOR_DEF(BulletActorDef.class, SerializerType.TAGGED),
 		/** EnemyActor */
-		ENEMY_ACTOR(EnemyActor.class, SerializerType.TAGGED),
+		ENEMY_ACTOR(EnemyActor.class, SerializerType.SERIALIZABLE_TAGGED),
 		/** EnemyActorDef */
 		ENEMY_ACTOR_DEF(EnemyActorDef.class, SerializerType.TAGGED),
 		/** PickupActor */
-		PICKUP_ACTOR(PickupActor.class, SerializerType.TAGGED),
+		PICKUP_ACTOR(PickupActor.class, SerializerType.SERIALIZABLE_TAGGED),
 		/** PickupActorDef */
 		PICKUP_ACTOR_DEF(PickupActorDef.class, SerializerType.TAGGED),
 		/** PlayerActor */
-		PLAYER_ACTOR(PlayerActor.class, SerializerType.TAGGED),
+		PLAYER_ACTOR(PlayerActor.class, SerializerType.SERIALIZABLE_TAGGED),
 		/** PlayerActorDef */
 		PLAYER_ACTOR_DEF(PlayerActorDef.class, SerializerType.TAGGED),
 		/** StaticTerrainActor */
-		STATIC_TERRAIN_ACTOR(StaticTerrainActor.class, SerializerType.TAGGED),
+		STATIC_TERRAIN_ACTOR(StaticTerrainActor.class, SerializerType.SERIALIZABLE_TAGGED),
 		/** StaticTerrainActorDef */
 		STATIC_TERRAIN_ACTOR_DEF(StaticTerrainActorDef.class, SerializerType.TAGGED),
 		/** VisualVars */
@@ -150,7 +152,7 @@ public class KryoPool extends Pool<Kryo> {
 		/** GameSaveDef */
 		GAME_SAVE_DEF(GameSaveDef.class, SerializerType.TAGGED),
 		/** Level */
-		LEVEL(Level.class, SerializerType.TAGGED),
+		LEVEL(Level.class, SerializerType.SERIALIZABLE_TAGGED),
 		/** LevelDef */
 		LEVEL_DEF(LevelDef.class, SerializerType.TAGGED),
 		/** Path */
@@ -162,7 +164,7 @@ public class KryoPool extends Pool<Kryo> {
 		/** WeaponDef */
 		WEAPON_DEF(WeaponDef.class, SerializerType.TAGGED),
 		/** TActorActivated */
-		T_ACTOR_ACTIVATED(TActorActivated.class, SerializerType.TAGGED),
+		T_ACTOR_ACTIVATED(TActorActivated.class, SerializerType.SERIALIZABLE_TAGGED),
 		/** TriggerAction */
 		TRIGGER_ACTION(TriggerAction.class, SerializerType.TAGGED),
 		/** TriggerInfo */
@@ -212,6 +214,8 @@ public class KryoPool extends Pool<Kryo> {
 			TAGGED,
 			/** Creates a CompatibleFieldSerializer for the type */
 			COMPATIBLE,
+			/** Creates a SerializableTaggedFieldSerialize for the type */
+			SERIALIZABLE_TAGGED,
 		}
 
 		/**
@@ -257,6 +261,7 @@ public class KryoPool extends Pool<Kryo> {
 		 * are created with this method instead.
 		 * @param kryo creates the serializers for this Kryo instance.
 		 */
+		@SuppressWarnings("rawtypes")
 		public static void createSerializers(Kryo kryo) {
 			// UUID
 			UUID_TYPE.mSerializer = new FieldSerializer<UUID>(kryo, UUID.class) {
@@ -274,6 +279,26 @@ public class KryoPool extends Pool<Kryo> {
 				}
 			};
 
+			// ArrayList
+			ARRAY_LIST.mSerializer = new FieldSerializer<ArrayList>(kryo, ArrayList.class) {
+				@Override
+				public ArrayList create(Kryo kryo, Input input, Class<ArrayList> type) {
+					ArrayList arrayList = Pools.arrayList.obtain();
+					arrayList.clear();
+					return arrayList;
+				}
+			};
+
+			// HashSet
+			HASH_SET.mSerializer = new FieldSerializer<HashSet>(kryo, HashSet.class) {
+				@Override
+				public HashSet create(Kryo kryo, Input input, Class<HashSet> type) {
+					HashSet hashSet = Pools.hashSet.obtain();
+					hashSet.clear();
+					return hashSet;
+				}
+			};
+
 
 			// Create tagged or compatible serializers
 			for (RegisterClasses registerClass : RegisterClasses.values()) {
@@ -285,6 +310,10 @@ public class KryoPool extends Pool<Kryo> {
 
 					case COMPATIBLE:
 						registerClass.mSerializer = new CompatibleFieldSerializer<Object>(kryo, registerClass.mType);
+						break;
+
+					case SERIALIZABLE_TAGGED:
+						registerClass.mSerializer = new SerializableTaggedFieldSerializer(kryo, registerClass.mType);
 						break;
 					}
 				}
@@ -411,7 +440,6 @@ public class KryoPool extends Pool<Kryo> {
 
 	/**
 	 * Serializes box2d chain shapes
-	 * 
 	 * 
 	 * @author Matteus Magnusson <senth.wallace@gmail.com>
 	 */

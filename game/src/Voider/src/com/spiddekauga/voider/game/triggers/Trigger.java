@@ -180,5 +180,5 @@ public abstract class Trigger extends Resource implements IResourceUpdate, IReso
 	/** Triggered time */
 	@Tag(27) private float mTriggeredTime = -1;
 	/** Listener information about the trigger */
-	private ArrayList<TriggerInfo> mListeners = new ArrayList<TriggerInfo>();
+	@Tag(28) private ArrayList<TriggerInfo> mListeners = new ArrayList<TriggerInfo>();
 }
