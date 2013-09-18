@@ -1,6 +1,7 @@
 package com.spiddekauga.voider.utils;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.UUID;
@@ -20,6 +21,7 @@ import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.Serializer;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
+import com.esotericsoftware.kryo.serializers.CollectionSerializer;
 import com.esotericsoftware.kryo.serializers.CompatibleFieldSerializer;
 import com.esotericsoftware.kryo.serializers.FieldSerializer;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer;
@@ -56,6 +58,7 @@ import com.spiddekauga.voider.game.triggers.TActorActivated;
 import com.spiddekauga.voider.game.triggers.TScreenAt;
 import com.spiddekauga.voider.game.triggers.TriggerAction;
 import com.spiddekauga.voider.game.triggers.TriggerInfo;
+import com.spiddekauga.voider.resources.ResourceNames;
 
 /**
  * Pool for Kryo instances. When creating a new instance Kryo registers all
@@ -205,8 +208,10 @@ public class KryoPool extends Pool<Kryo> {
 		OBJECT_MAP_ENTRIES(ObjectMap.Entries.class),
 		/** ObjectMap.Entry */
 		OBJECT_MAP_ENTRY(ObjectMap.Entry.class),
+		/** ResourceNames */
+		RESOURCE_NAMES(ResourceNames.class),
 
-
+		;
 
 		;
 
@@ -284,9 +289,9 @@ public class KryoPool extends Pool<Kryo> {
 			};
 
 			// ArrayList
-			ARRAY_LIST.mSerializer = new FieldSerializer<ArrayList>(kryo, ArrayList.class) {
+			ARRAY_LIST.mSerializer = new CollectionSerializer() {
 				@Override
-				public ArrayList create(Kryo kryo, Input input, Class<ArrayList> type) {
+				protected Collection create (Kryo kryo, Input input, Class<Collection> type) {
 					ArrayList arrayList = Pools.arrayList.obtain();
 					arrayList.clear();
 					return arrayList;
@@ -294,9 +299,9 @@ public class KryoPool extends Pool<Kryo> {
 			};
 
 			// HashSet
-			HASH_SET.mSerializer = new FieldSerializer<HashSet>(kryo, HashSet.class) {
+			HASH_SET.mSerializer = new CollectionSerializer() {
 				@Override
-				public HashSet create(Kryo kryo, Input input, Class<HashSet> type) {
+				protected Collection create (Kryo kryo, Input input, Class<Collection> type) {
 					HashSet hashSet = Pools.hashSet.obtain();
 					hashSet.clear();
 					return hashSet;

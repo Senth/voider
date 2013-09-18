@@ -5,8 +5,11 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.UUID;
 
 import org.junit.AfterClass;
@@ -28,6 +31,7 @@ import com.esotericsoftware.kryo.serializers.CompatibleFieldSerializer;
 import com.esotericsoftware.kryo.serializers.FieldSerializer.Optional;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
+import com.spiddekauga.voider.resources.ResourceNames;
 import com.spiddekauga.voider.utils.Pools;
 
 /**
@@ -476,6 +480,62 @@ public class KryoPrototypeTest {
 		UUID readUuuid = copy(writeUuid, UUID.class);
 
 		assertEquals("uuid", writeUuid, readUuuid);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testHashSet() {
+		HashSet<Integer> intSet = Pools.hashSet.obtain();
+		intSet.clear();
+		intSet.add(1);
+		intSet.add(15);
+		intSet.add(10);
+
+		HashSet<Integer> readIntSet = copy(intSet, HashSet.class);
+		assertEquals(3, readIntSet.size());
+		assertTrue(readIntSet.contains(1));
+		assertTrue(readIntSet.contains(10));
+		assertTrue(readIntSet.contains(15));
+
+		Pools.hashSet.freeAll(readIntSet);
+
+		// Same again
+		readIntSet = copy(intSet, HashSet.class);
+		assertEquals(3, readIntSet.size());
+		assertTrue(readIntSet.contains(1));
+		assertTrue(readIntSet.contains(10));
+		assertTrue(readIntSet.contains(15));
+
+		Pools.hashSet.freeAll(intSet, readIntSet);
+
+
+		// Test Resource Names
+		HashSet<ResourceNames> resourceSet = Pools.hashSet.obtain();
+		resourceSet.clear();
+		resourceSet.add(ResourceNames.UI_EDITOR_BUTTONS);
+		resourceSet.add(ResourceNames.UI_GENERAL);
+
+		HashSet<ResourceNames> readReasourceSet = copy(resourceSet, HashSet.class);
+		assertEquals(2, readReasourceSet.size());
+		assertTrue(readReasourceSet.contains(ResourceNames.UI_EDITOR_BUTTONS));
+		assertTrue(readReasourceSet.contains(ResourceNames.UI_GENERAL));
+	}
+
+	@Test
+	public void testArrayList() {
+		@SuppressWarnings("unchecked")
+		ArrayList<Integer> intList = Pools.arrayList.obtain();
+		intList.clear();
+		intList.add(1);
+		intList.add(3);
+		intList.add(2);
+
+		@SuppressWarnings("unchecked")
+		ArrayList<Integer> readIntList = copy(intList, ArrayList.class);
+		assertEquals(3, readIntList.size());
+		assertEquals((Integer) 1, readIntList.get(0));
+		assertEquals((Integer) 3, readIntList.get(1));
+		assertEquals((Integer) 2, readIntList.get(2));
 	}
 
 	@Test
