@@ -1,9 +1,8 @@
 package com.spiddekauga.voider.resources;
 
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-
-import com.badlogic.gdx.utils.ObjectMap;
 
 /**
  * This resource has dependencies
@@ -57,7 +56,7 @@ public interface IResourceDependency extends IResource {
 	/**
 	 * @return all external dependencies
 	 */
-	ObjectMap<UUID, ResourceItem> getExternalDependencies();
+	Map<UUID, ResourceItem> getExternalDependencies();
 
 	/**
 	 * @return all internal dependencies

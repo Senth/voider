@@ -1,7 +1,6 @@
 package com.spiddekauga.voider.editor;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
@@ -233,7 +232,6 @@ public abstract class ActorGui extends EditorGui {
 				if (mActorEditor.isUnSaved()) {
 					Button yes = new TextButton("Save first", textStyle);
 					Button no = new TextButton("Discard current", textStyle);
-					Button cancel = new TextButton("Cancel", textStyle);
 
 					Command save = new CEditorSave(mActorEditor);
 					Command newCommand = new CEditorNew(mActorEditor);
@@ -246,9 +244,7 @@ public abstract class ActorGui extends EditorGui {
 					msgBox.content(Messages.getUnsavedMessage(actorName, UnsavedActions.NEW));
 					msgBox.button(yes, saveAndNew);
 					msgBox.button(no, newCommand);
-					msgBox.button(cancel);
-					msgBox.key(Keys.BACK, null);
-					msgBox.key(Keys.ESCAPE, null);
+					msgBox.addCancelButtonAndKeys();
 					showMsgBox(msgBox);
 				} else {
 					mActorEditor.newDef();
@@ -285,7 +281,6 @@ public abstract class ActorGui extends EditorGui {
 				if (mActorEditor.isUnSaved()) {
 					Button yes = new TextButton("Save first", textStyle);
 					Button no = new TextButton("Load anyway", textStyle);
-					Button cancel = new TextButton("Cancel", textStyle);
 
 					CommandSequence saveAndLoad = new CommandSequence(new CEditorSave(mActorEditor), new CEditorLoad(mActorEditor));
 
@@ -296,9 +291,7 @@ public abstract class ActorGui extends EditorGui {
 					msgBox.content(Messages.getUnsavedMessage(actorName, UnsavedActions.LOAD));
 					msgBox.button(yes, saveAndLoad);
 					msgBox.button(no, new CEditorLoad(mActorEditor));
-					msgBox.button(cancel);
-					msgBox.key(Keys.BACK, null);
-					msgBox.key(Keys.ESCAPE, null);
+					msgBox.addCancelButtonAndKeys();
 					showMsgBox(msgBox);
 				} else {
 					mActorEditor.loadDef();
@@ -320,7 +313,6 @@ public abstract class ActorGui extends EditorGui {
 				if (mActorEditor.isUnSaved()) {
 					Button yes = new TextButton("Save first", textStyle);
 					Button no = new TextButton("Duplicate anyway", textStyle);
-					Button cancel = new TextButton("Cancel", textStyle);
 
 					CommandSequence saveAndDuplicate = new CommandSequence(new CEditorSave(mActorEditor), new CEditorDuplicate(mActorEditor));
 
@@ -331,9 +323,7 @@ public abstract class ActorGui extends EditorGui {
 					msgBox.content(Messages.getUnsavedMessage(actorName, UnsavedActions.DUPLICATE));
 					msgBox.button(yes, saveAndDuplicate);
 					msgBox.button(no, new CEditorDuplicate(mActorEditor));
-					msgBox.button(cancel);
-					msgBox.key(Keys.BACK, null);
-					msgBox.key(Keys.ESCAPE, null);
+					msgBox.addCancelButtonAndKeys();
 					showMsgBox(msgBox);
 				} else {
 					mActorEditor.duplicateDef();

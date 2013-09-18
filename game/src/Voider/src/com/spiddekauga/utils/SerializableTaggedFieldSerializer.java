@@ -58,4 +58,13 @@ public class SerializableTaggedFieldSerializer extends TaggedFieldSerializer<Obj
 		}
 		return object;
 	}
+
+	@Override
+	public Object copy(Kryo kryo, Object original) {
+		Object copy = super.copy(kryo, original);
+		if (copy instanceof KryoTaggedCopyable) {
+			((KryoTaggedCopyable) copy).copy(original);
+		}
+		return copy;
+	}
 }

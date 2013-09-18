@@ -155,7 +155,9 @@ public class VisualVars implements Json.Serializable, Disposable, IResourceCorne
 			break;
 
 		default:
-			Gdx.app.error("VisualVars", "Unknown actor type: " + mActorType);
+			if (Gdx.app != null) {
+				Gdx.app.error("VisualVars", "Unknown actor type: " + mActorType);
+			}
 			mShapeType = ActorShapeTypes.CIRCLE;
 			mShapeCircleRadius = 1;
 			mShapeHeight = 1;
@@ -974,6 +976,13 @@ public class VisualVars implements Json.Serializable, Disposable, IResourceCorne
 		} else {
 			throw exception;
 		}
+	}
+
+	/**
+	 * @return actor type of the visual vars
+	 */
+	public ActorTypes getActorType() {
+		return mActorType;
 	}
 
 

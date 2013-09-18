@@ -6,7 +6,7 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.GdxRuntimeException;
-import com.badlogic.gdx.utils.ObjectMap;
+import java.util.Map;
 import com.spiddekauga.voider.scene.Scene;
 
 /**
@@ -62,8 +62,8 @@ class ResourceDependencyLoader implements Disposable {
 		}
 
 		// External, if the dependency has dependencies, unload its dependencies too
-		for (ObjectMap.Entry<UUID, ResourceItem> entry : resource.getExternalDependencies().entries()) {
-			ResourceItem dependencyInformation = entry.value;
+		for (Map.Entry<UUID, ResourceItem> entry : resource.getExternalDependencies().entrySet()) {
+			ResourceItem dependencyInformation = entry.getValue();
 			IResource dependency = ResourceDatabase.getLoadedResource(scene, dependencyInformation.id, dependencyInformation.revision);
 
 			if (dependency instanceof IResourceDependency) {
@@ -103,8 +103,8 @@ class ResourceDependencyLoader implements Disposable {
 
 				// Load dependencies
 				// External
-				for (ObjectMap.Entry<UUID, ResourceItem> entry : def.getExternalDependencies().entries()) {
-					ResourceItem dependency = entry.value;
+				for (Map.Entry<UUID, ResourceItem> entry : def.getExternalDependencies().entrySet()) {
+					ResourceItem dependency = entry.getValue();
 
 					// Propagate scene so that we always know which scene to load into
 					dependency.scene = queueItem.scene;

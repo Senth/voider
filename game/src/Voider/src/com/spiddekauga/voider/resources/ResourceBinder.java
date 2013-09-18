@@ -1,12 +1,13 @@
 package com.spiddekauga.voider.resources;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
-import com.badlogic.gdx.utils.ObjectMap;
 import com.spiddekauga.utils.Invoker;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.editor.commands.CResourceBoundRemove;
@@ -45,8 +46,8 @@ public class ResourceBinder implements Json.Serializable {
 			// Unbind/Remove the removed resource from those
 			if (removedResource != null) {
 				Invoker invoker = SceneSwitcher.getInvoker();
-				for (ObjectMap.Entry<UUID, IResource> entry : mResources.entries()) {
-					IResource resource = entry.value;
+				for (Map.Entry<UUID, IResource> entry : mResources.entrySet()) {
+					IResource resource = entry.getValue();
 
 					if (isResourceBoundIn(resource, resourceId)) {
 						if (invoker != null) {
@@ -80,8 +81,8 @@ public class ResourceBinder implements Json.Serializable {
 		ArrayList<ResourceType> resources = Pools.arrayList.obtain();
 		resources.clear();
 
-		for (ObjectMap.Entry<UUID, IResource> entry : mResources.entries()) {
-			IResource resource = entry.value;
+		for (Map.Entry<UUID, IResource> entry : mResources.entrySet()) {
+			IResource resource = entry.getValue();
 
 			if (resourceType.isInstance(resource)) {
 				resources.add((ResourceType) resource);
@@ -97,8 +98,8 @@ public class ResourceBinder implements Json.Serializable {
 	 * @param foundResources list with all resources that uses
 	 */
 	public void usesResource(IResource usesResource, ArrayList<IResource> foundResources) {
-		for (ObjectMap.Entry<UUID, IResource> entry : mResources.entries()) {
-			IResource resource = entry.value;
+		for (Map.Entry<UUID, IResource> entry : mResources.entrySet()) {
+			IResource resource = entry.getValue();
 
 			if (isResourceBoundIn(resource, usesResource.getId())) {
 				foundResources.add(resource);
@@ -115,15 +116,15 @@ public class ResourceBinder implements Json.Serializable {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void read(Json json, JsonValue jsonValue) {
-		mResources = json.readValue("mResources", ObjectMap.class, jsonValue);
+		mResources = json.readValue("mResources", Map.class, jsonValue);
 	}
 
 	/**
 	 * Binds all the resources
 	 */
 	public void bindResources() {
-		for (ObjectMap.Entry<UUID, IResource> entry : mResources.entries()) {
-			IResource resource = entry.value;
+		for (Map.Entry<UUID, IResource> entry : mResources.entrySet()) {
+			IResource resource = entry.getValue();
 
 			mDependencies.clear();
 			resource.getReferences(mDependencies);
@@ -156,8 +157,8 @@ public class ResourceBinder implements Json.Serializable {
 
 		// Find dependencies of the old, and replace them to use the new one
 		if (removedResource != null) {
-			for (ObjectMap.Entry<UUID, IResource> entry : mResources.entries()) {
-				IResource resource = entry.value;
+			for (Map.Entry<UUID, IResource> entry : mResources.entrySet()) {
+				IResource resource = entry.getValue();
 
 				if (isResourceBoundIn(resource, oldId)) {
 					boolean removedSuccess = resource.removeBoundResource(removedResource);
@@ -192,7 +193,7 @@ public class ResourceBinder implements Json.Serializable {
 	}
 
 	/** All the resources */
-	private ObjectMap<UUID, IResource> mResources = new ObjectMap<UUID, IResource>();
+	private Map<UUID, IResource> mResources = new HashMap<UUID, IResource>();
 	/** Temporary array for getting dependencies */
 	private static ArrayList<UUID> mDependencies = new ArrayList<UUID>();
 }

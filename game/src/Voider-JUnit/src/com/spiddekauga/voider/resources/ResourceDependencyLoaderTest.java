@@ -14,6 +14,7 @@ import com.badlogic.gdx.assets.loaders.resolvers.ExternalFileHandleResolver;
 import com.badlogic.gdx.backends.lwjgl.LwjglFiles;
 import com.badlogic.gdx.backends.lwjgl.LwjglNativesLoader;
 import com.badlogic.gdx.files.FileHandle;
+import com.esotericsoftware.minlog.Log;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.LoadingTextScene;
 import com.spiddekauga.voider.game.actors.ActorDef;
@@ -82,10 +83,10 @@ public class ResourceDependencyLoaderTest {
 				// Do nothing
 			}
 
-			assertTrue("def is loaded", mAssetManager.isLoaded(getPath(def)));
-			assertTrue("dep1 is loaded", mAssetManager.isLoaded(getPath(dep1)));
-			assertTrue("dep2 is loaded", mAssetManager.isLoaded(getPath(dep2)));
-			assertTrue("depdep is loaded", mAssetManager.isLoaded(getPath(depdep)));
+			assertTrue("def is loaded", mAssetManager.isLoaded(ResourceDatabase.getFilePath(def)));
+			assertTrue("dep1 is loaded", mAssetManager.isLoaded(ResourceDatabase.getFilePath(dep1)));
+			assertTrue("dep2 is loaded", mAssetManager.isLoaded(ResourceDatabase.getFilePath(dep2)));
+			assertTrue("depdep is loaded", mAssetManager.isLoaded(ResourceDatabase.getFilePath(depdep)));
 			assertEquals("number of resources", mAssetManager.getLoadedAssets(), 4);
 		} catch (UndefinedResourceTypeException e) {
 			e.printStackTrace();
@@ -94,10 +95,10 @@ public class ResourceDependencyLoaderTest {
 
 		// Unload
 		dependencyLoader.unload(scene, def);
-		assertTrue("def is loaded", !mAssetManager.isLoaded(getPath(def)));
-		assertTrue("dep1 is loaded", !mAssetManager.isLoaded(getPath(dep1)));
-		assertTrue("dep2 is loaded", !mAssetManager.isLoaded(getPath(dep2)));
-		assertTrue("depdep is loaded", !mAssetManager.isLoaded(getPath(depdep)));
+		assertTrue("def is loaded", !mAssetManager.isLoaded(ResourceDatabase.getFilePath(def)));
+		assertTrue("dep1 is loaded", !mAssetManager.isLoaded(ResourceDatabase.getFilePath(dep1)));
+		assertTrue("dep2 is loaded", !mAssetManager.isLoaded(ResourceDatabase.getFilePath(dep2)));
+		assertTrue("depdep is loaded", !mAssetManager.isLoaded(ResourceDatabase.getFilePath(depdep)));
 		assertEquals("number of resources", mAssetManager.getLoadedAssets(), 0);
 
 		delete(def);
@@ -113,27 +114,13 @@ public class ResourceDependencyLoaderTest {
 	 */
 	public static void delete(IResource resource) {
 		try {
-			FileHandle saveFile = Gdx.files.external(getPath(resource));
+			FileHandle saveFile = Gdx.files.external(ResourceDatabase.getFilePath(resource));
 
 			saveFile.delete();
 
 		} catch (Exception e) {
-			Gdx.app.error("Delete file", "Could not delete your file!");
+			Log.error("Could not delete your file!");
 		}
-	}
-
-	/**
-	 * Returns the path to the resource
-	 * @param resource the resource we want the path to
-	 * @return the path to the resource
-	 */
-	private static String getPath(IResource resource) {
-		try {
-			return ResourceNames.getDirPath(resource.getClass()) + resource.getId().toString();
-		} catch (Exception e) {
-
-		}
-		return null;
 	}
 
 	/** Asset manager for all files */

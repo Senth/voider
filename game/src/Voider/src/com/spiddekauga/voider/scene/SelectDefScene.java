@@ -2,11 +2,11 @@ package com.spiddekauga.voider.scene;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
-import com.badlogic.gdx.utils.ObjectMap;
 import com.spiddekauga.voider.User;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.IResource;
@@ -78,7 +78,7 @@ public class SelectDefScene extends WorldScene {
 	 * to only display one's own actors.
 	 * @param resourceRevisions specific revisions to use for some resources of this type.
 	 */
-	public SelectDefScene(Class<? extends IResource> defType, boolean showMineOnly, boolean showMineOnlyCheckbox, ObjectMap<UUID, Integer> resourceRevisions) {
+	public SelectDefScene(Class<? extends IResource> defType, boolean showMineOnly, boolean showMineOnlyCheckbox, Map<UUID, Integer> resourceRevisions) {
 		this(defType, showMineOnly, showMineOnlyCheckbox);
 
 		mRevisionsToUse = resourceRevisions;
@@ -525,7 +525,7 @@ public class SelectDefScene extends WorldScene {
 	/** If the player shall be able to choose another revision for the definition */
 	private boolean mCanChooseRevision = false;
 	/** Revisions to use for some resources (instead of latest) */
-	private ObjectMap<UUID, Integer> mRevisionsToUse = null;
+	private Map<UUID, Integer> mRevisionsToUse = null;
 	/** Currently selected definition */
 	private Def mSelectedDef = null;
 	/** All the loaded definitions */

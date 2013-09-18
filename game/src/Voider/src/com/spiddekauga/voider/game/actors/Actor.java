@@ -23,6 +23,7 @@ import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.utils.GameTime;
+import com.spiddekauga.utils.KryoTaggedCopyable;
 import com.spiddekauga.utils.ShapeRendererEx;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.voider.Config;
@@ -53,7 +54,7 @@ import com.spiddekauga.voider.utils.Pools;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public abstract class Actor extends Resource implements IResourceUpdate, Json.Serializable, KryoSerializable, Disposable, Poolable, IResourceBody, IResourcePosition, ITriggerListener, IResourceEditorUpdate, IResourceRender, IResourceEditorRender {
+public abstract class Actor extends Resource implements IResourceUpdate, Json.Serializable, KryoTaggedCopyable, KryoSerializable, Disposable, Poolable, IResourceBody, IResourcePosition, ITriggerListener, IResourceEditorUpdate, IResourceRender, IResourceEditorRender {
 	/**
 	 * Sets the texture of the actor including the actor definition.
 	 * Automatically creates a body for the actor.
@@ -490,6 +491,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 			output.writeInt(mDef.getRevision());
 		} else {
 			kryo.writeObject(output, mDef.getId());
+			output.writeInt(mDef.getRevision());
 		}
 
 		// Save body
@@ -538,6 +540,11 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 
 			createBody(bodyDef);
 		}
+	}
+
+	@Override
+	public void copy(Object fromOriginal) {
+		// TODO implement
 	}
 
 	@Override
@@ -1195,6 +1202,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	/** Body position, remember even when we don't have a body */
 	@Tag(4) private Vector2 mPosition = Pools.vector2.obtain().set(0, 0);
 	/** Trigger informations */
+	@Deprecated
 	@Tag(5) private ArrayList<TriggerInfo> mTriggerInfos = new ArrayList<TriggerInfo>();
 	/** Revision of the actor */
 	@Tag(100) protected int CLASS_REVISION = 1;

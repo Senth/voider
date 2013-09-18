@@ -2,14 +2,15 @@ package com.spiddekauga.voider.resources;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
-import com.badlogic.gdx.utils.ObjectMap;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.utils.JsonWrapper;
 import com.spiddekauga.voider.User;
@@ -51,7 +52,7 @@ public abstract class Def extends Resource implements Json.Serializable, IResour
 
 	@Override
 	public int getExternalDependenciesCount() {
-		return mExternalDependencies.size;
+		return mExternalDependencies.size();
 	}
 
 	@Override
@@ -124,7 +125,7 @@ public abstract class Def extends Resource implements Json.Serializable, IResour
 			json.writeValue("mInternalDependencies", mInternalDependencies);
 		}
 
-		if (mExternalDependencies.size == 0) {
+		if (mExternalDependencies.size() == 0) {
 			json.writeValue("mExternalDependencies", (Object) null);
 		} else {
 			json.writeValue("mExternalDependencies", mExternalDependencies);
@@ -152,7 +153,7 @@ public abstract class Def extends Resource implements Json.Serializable, IResour
 			mInternalDependencies.addAll(internalMap);
 		}
 
-		ObjectMap<UUID, ResourceItem> externalDependencies = json.readValue("mExternalDependencies", ObjectMap.class, jsonData);
+		Map<UUID, ResourceItem> externalDependencies = json.readValue("mExternalDependencies", Map.class, jsonData);
 		if (externalDependencies != null) {
 			mExternalDependencies = externalDependencies;
 		}
@@ -249,7 +250,7 @@ public abstract class Def extends Resource implements Json.Serializable, IResour
 	}
 
 	@Override
-	public ObjectMap<UUID, ResourceItem> getExternalDependencies() {
+	public Map<UUID, ResourceItem> getExternalDependencies() {
 		return mExternalDependencies;
 	}
 
@@ -259,7 +260,7 @@ public abstract class Def extends Resource implements Json.Serializable, IResour
 	}
 
 	/** Dependencies for the resource */
-	@Tag(43) private ObjectMap<UUID, ResourceItem> mExternalDependencies = new ObjectMap<UUID, ResourceItem>();
+	@Tag(43) private Map<UUID, ResourceItem> mExternalDependencies = new HashMap<UUID, ResourceItem>();
 	/** Internal dependencies, such as textures, sound, particle effects */
 	@Tag(42) private Set<ResourceNames> mInternalDependencies = new HashSet<ResourceNames>();
 	/** Name of the definition */
@@ -274,4 +275,6 @@ public abstract class Def extends Resource implements Json.Serializable, IResour
 	@Tag(37) private Date mDate = null;
 	/** The revision of the definition, this increases after each save */
 	@Tag(40) private int mRevision = 0;
+
+	// Don't forget to add to DefTest!
 }

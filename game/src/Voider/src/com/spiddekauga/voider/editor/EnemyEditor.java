@@ -1,6 +1,8 @@
 package com.spiddekauga.voider.editor;
 
 import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
@@ -18,7 +20,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.SnapshotArray;
 import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.utils.Invoker;
@@ -354,8 +355,8 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	/**
 	 * @return the revision of the currently used bullet if any.
 	 */
-	private ObjectMap<UUID, Integer> getBulletRevisions() {
-		ObjectMap<UUID, Integer> bulletRevisions = new ObjectMap<UUID, Integer>();
+	private Map<UUID, Integer> getBulletRevisions() {
+		Map<UUID, Integer> bulletRevisions = new HashMap<UUID, Integer>();
 
 		if (mDef.hasWeapon()) {
 			BulletActorDef bulletActorDef = mDef.getWeaponDef().getBulletActorDef();
@@ -1078,7 +1079,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	 */
 	@Override
 	public boolean shallDestroyOnCollide() {
-		return mDef.shallDestroyOnCollide();
+		return mDef.isDestroyedOnCollide();
 	}
 
 	@Override

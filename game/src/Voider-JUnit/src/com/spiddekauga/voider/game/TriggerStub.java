@@ -9,7 +9,7 @@ import com.spiddekauga.voider.game.triggers.TriggerAction.Reasons;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class TestTrigger extends Trigger {
+public class TriggerStub extends Trigger {
 	@Override
 	public boolean isTriggered() {
 		return true;
@@ -22,13 +22,10 @@ public class TestTrigger extends Trigger {
 
 	@Override
 	protected Object getCauseObject() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public void renderEditor(ShapeRendererEx shapeRenderer) {
-		// TODO Auto-generated method stub
-
 	}
 }

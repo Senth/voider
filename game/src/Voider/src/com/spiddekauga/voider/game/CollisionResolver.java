@@ -32,11 +32,11 @@ public class CollisionResolver implements ContactListener {
 			// If one shall be destroyed directly
 			Actor destroyActor = null;
 			Actor actor = null;
-			if (actorA.getDef().shallDestroyOnCollide()) {
+			if (actorA.getDef().isDestroyedOnCollide()) {
 				destroyActor = actorA;
 				actor = actorB;
 			}
-			else if (actorB.getDef().shallDestroyOnCollide()) {
+			else if (actorB.getDef().isDestroyedOnCollide()) {
 				destroyActor = actorB;
 				actor = actorA;
 			}
@@ -100,7 +100,7 @@ public class CollisionResolver implements ContactListener {
 			Actor actorB = (Actor)bodyB.getUserData();
 
 			// If one shall be destroyed on collide...
-			if (actorA.getDef().shallDestroyOnCollide() || actorB.getDef().shallDestroyOnCollide()) {
+			if (actorA.getDef().isDestroyedOnCollide() || actorB.getDef().isDestroyedOnCollide()) {
 				return;
 			}
 

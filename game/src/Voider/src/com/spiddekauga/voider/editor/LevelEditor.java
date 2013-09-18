@@ -1,6 +1,8 @@
 package com.spiddekauga.voider.editor;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
@@ -9,8 +11,6 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.ObjectMap;
-import com.badlogic.gdx.utils.ObjectMap.Entry;
 import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.utils.Invoker;
 import com.spiddekauga.utils.KeyHelper;
@@ -294,20 +294,20 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 	/**
 	 * @return the revision of all enemy resource the level is currently using
 	 */
-	private ObjectMap<UUID, Integer> getEnemyRevisions() {
+	private Map<UUID, Integer> getEnemyRevisions() {
 		// Get the specific revision of certain enemies we currently use
-		ObjectMap<UUID, Integer> enemyRevisions = new ObjectMap<UUID, Integer>();
-		ObjectMap<UUID, ResourceItem> dependencies = null;
+		Map<UUID, Integer> enemyRevisions = new HashMap<UUID, Integer>();
+		Map<UUID, ResourceItem> dependencies = null;
 		if (mLevel != null) {
 			dependencies = mLevel.getDef().getExternalDependencies();
 		} else {
-			dependencies = new ObjectMap<UUID, ResourceItem>();
+			dependencies = new HashMap<UUID, ResourceItem>();
 		}
 
 		// Add all enemy revision to this dependency
-		for (Entry<UUID, ResourceItem> entry : dependencies.entries()) {
-			if (EnemyActorDef.class.isAssignableFrom(entry.value.type)) {
-				enemyRevisions.put(entry.key, entry.value.revision);
+		for (Map.Entry<UUID, ResourceItem> entry : dependencies.entrySet()) {
+			if (EnemyActorDef.class.isAssignableFrom(entry.getValue().type)) {
+				enemyRevisions.put(entry.getKey(), entry.getValue().revision);
 			}
 		}
 

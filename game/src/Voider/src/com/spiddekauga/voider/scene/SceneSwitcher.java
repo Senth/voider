@@ -494,7 +494,10 @@ public class SceneSwitcher {
 		if (!mScenes.isEmpty()) {
 			Scene previousScene = mScenes.peek();
 			previousScene.onDeactivate();
-			Gdx.input.setInputProcessor(null);
+
+			if (Gdx.input != null) {
+				Gdx.input.setInputProcessor(null);
+			}
 
 			// Should we unload resources?
 			if (previousScene.isResourcesLoaded() && previousScene.unloadResourcesOnDeactivate()) {

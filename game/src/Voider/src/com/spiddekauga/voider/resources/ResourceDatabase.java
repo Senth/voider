@@ -1,15 +1,17 @@
 package com.spiddekauga.voider.resources;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.utils.ObjectMap;
-import com.badlogic.gdx.utils.ObjectMap.Entry;
+import com.esotericsoftware.minlog.Log;
 import com.spiddekauga.utils.Strings;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Debug;
@@ -32,22 +34,22 @@ class ResourceDatabase {
 	static void init(AssetManager assetManager) {
 		mAssetManager = assetManager;
 
-		ObjectMap<Class<?>, String> resourcePaths = ResourceNames.getResourcePaths();
+		Map<Class<?>, String> resourcePaths = ResourceNames.getResourcePaths();
 
-		for (ObjectMap.Entry<Class<?>, String> entry : resourcePaths.entries()) {
-			FileHandle dir = Gdx.files.external(entry.value);
+		for (Map.Entry<Class<?>, String> entry : resourcePaths.entrySet()) {
+			FileHandle dir = Gdx.files.external(entry.getValue());
 
 			if (!dir.exists() || !dir.isDirectory()) {
 				continue;
 			}
 
 			// Resource revision
-			if (IResourceRevision.class.isAssignableFrom(entry.key)) {
-				buildResourceRevisionDb(entry.key, dir);
+			if (IResourceRevision.class.isAssignableFrom(entry.getKey())) {
+				buildResourceRevisionDb(entry.getKey(), dir);
 			}
 			// Simple resource
-			else if (IResource.class.isAssignableFrom(entry.key)) {
-				buildResourceDb(entry.key, dir);
+			else if (IResource.class.isAssignableFrom(entry.getKey())) {
+				buildResourceDb(entry.getKey(), dir);
 			}
 		}
 	}
@@ -434,13 +436,19 @@ class ResourceDatabase {
 
 				String loadUnloadString = loaded ? "+++" : "---";
 
-				Gdx.app.debug("ResourceDatabase", loadUnloadString + "  s:" + cRefScenes + "  " +
+				String message = loadUnloadString + "  s:" + cRefScenes + "  " +
 						Strings.padRight("l:" + cLoad, 4) + "  " +
 						Strings.padRight(scene.getClass().getSimpleName(), 15) + " " +
 						Strings.padRight(type.getSimpleName(), 18) + " " +
 						Strings.padRight(name, 16) + " " +
 						Strings.padRight(revisionString, 6) + " " +
-						filepath);
+						filepath;
+
+				if (Gdx.app != null) {
+					Gdx.app.debug("ResourceDatabase", message);
+				} else {
+					Log.debug(message);
+				}
 			}
 		}
 	}
@@ -457,11 +465,11 @@ class ResourceDatabase {
 		ArrayList<ResourceItem> resources = Pools.arrayList.obtain();
 		resources.clear();
 
-		for (Entry<UUID, ResourceInfo> entry : mResources.entries()) {
-			if (entry.value.type == type) {
+		for (Entry<UUID, ResourceInfo> entry : mResources.entrySet()) {
+			if (entry.getValue().type == type) {
 				ResourceItem resourceItem = Pools.resourceItem.obtain();
-				resourceItem.id = entry.key;
-				resourceItem.revision = entry.value.latestRevision;
+				resourceItem.id = entry.getKey();
+				resourceItem.revision = entry.getValue().latestRevision;
 				resources.add(resourceItem);
 			}
 		}
@@ -557,26 +565,26 @@ class ResourceDatabase {
 
 		// Delete from database
 		if (!Debug.DEBUG_TESTS) {
-			Iterator<Entry<UUID, ResourceInfo>> iterator = mResources.entries().iterator();
+			Iterator<Entry<UUID, ResourceInfo>> iterator = mResources.entrySet().iterator();
 			while (iterator.hasNext()) {
 				Entry<UUID, ResourceInfo> entry = iterator.next();
 
-				if (entry.value.type == type) {
+				if (entry.getValue().type == type) {
 					iterator.remove();
 				}
 			}
 		}
 		// Debug test delete from database
 		else {
-			Iterator<Entry<UUID, ResourceInfo>> iterator = mResources.entries().iterator();
+			Iterator<Entry<UUID, ResourceInfo>> iterator = mResources.entrySet().iterator();
 			while (iterator.hasNext()) {
 				Entry<UUID, ResourceInfo> entry = iterator.next();
 
-				if (entry.value.type == type) {
+				if (entry.getValue().type == type) {
 					iterator.remove();
 
 					// Check if there is any scene that has this resource loaded!
-					ArrayList<Scene> scenesWithResource = mLoadedResources.getResourceScenes(entry.key, -1);
+					ArrayList<Scene> scenesWithResource = mLoadedResources.getResourceScenes(entry.getKey(), -1);
 
 					if (!scenesWithResource.isEmpty()) {
 						Gdx.app.error("ResourceDatabase", "A resource of (" + type.getSimpleName() + ") was " +
@@ -631,7 +639,7 @@ class ResourceDatabase {
 		 */
 		void addRevision(int revision, String date) {
 			if (revisionDates == null) {
-				revisionDates = new ObjectMap<Integer, String>();
+				revisionDates = new HashMap<Integer, String>();
 			}
 
 			if (revision > latestRevision) {
@@ -659,7 +667,7 @@ class ResourceDatabase {
 		/** Latest revision of the resource */
 		private int latestRevision = -1;
 		/** all available including the date */
-		private ObjectMap<Integer, String> revisionDates = null;
+		private Map<Integer, String> revisionDates = null;
 	}
 
 	/**
@@ -675,7 +683,7 @@ class ResourceDatabase {
 	/** Loaded resources */
 	private static LoadedDb mLoadedResources = new LoadedDb();
 	/** All resources and revisions */
-	private static ObjectMap<UUID, ResourceInfo> mResources = new ObjectMap<UUID, ResourceDatabase.ResourceInfo>();
+	private static Map<UUID, ResourceInfo> mResources = new HashMap<UUID, ResourceDatabase.ResourceInfo>();
 	/** Pool for LoadingQueue */
 	private static Pool<LoadingQueueItem> mLoadingQueuePool = new Pool<ResourceDatabase.LoadingQueueItem>(LoadingQueueItem.class, 30, 300);
 	/** Asset manager */

@@ -23,6 +23,9 @@ import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceDependencyLoaderTest;
 import com.spiddekauga.voider.resources.ResourceNames;
 import com.spiddekauga.voider.resources.ResourceSaver;
+import com.spiddekauga.voider.scene.Scene;
+import com.spiddekauga.voider.scene.SceneStub;
+import com.spiddekauga.voider.scene.SceneSwitcher;
 
 /**
  * Tests the Level implementation. More specifically the write and read to/from
@@ -42,13 +45,14 @@ public class LevelTest {
 		Config.init();
 		ResourceSaver.init();
 		ResourceNames.useTestPath();
+		ResourceNames.init();
 		ResourceCacheFacade.init();
+		Scene scene = new SceneStub();
+		SceneSwitcher.switchTo(scene);
 
 		mWorld = new World(new Vector2(), false);
 		Actor.setWorld(mWorld);
 		mPlayerActor = new PlayerActor();
-
-		LoadingTextScene scene = new LoadingTextScene("test");
 
 		ResourceSaver.save(mUsingLevelDef);
 		ResourceSaver.save(mPlayerActor.getDef());

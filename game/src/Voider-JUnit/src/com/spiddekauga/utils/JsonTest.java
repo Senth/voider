@@ -6,6 +6,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import org.junit.BeforeClass;
@@ -21,7 +23,6 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.ObjectMap;
 import com.spiddekauga.voider.game.LevelDef;
 import com.spiddekauga.voider.resources.Def;
 /**
@@ -48,27 +49,27 @@ public class JsonTest {
 		Json json = new JsonWrapper();
 
 		// String - Integer
-		ObjectMap<String, Integer> stringMap = new ObjectMap<String, Integer>();
+		Map<String, Integer> stringMap = new HashMap<String, Integer>();
 		stringMap.put("First", 1);
 		stringMap.put("Second", 2);
 		String jsonString = json.toJson(stringMap);
-		ObjectMap<String, Integer> jsonStringMap = json.fromJson(ObjectMap.class, jsonString);
+		Map<String, Integer> jsonStringMap = json.fromJson(Map.class, jsonString);
 		assertTrue(jsonStringMap.containsKey("First"));
 		assertTrue(jsonStringMap.containsKey("Second"));
-		assertTrue(jsonStringMap.containsValue(1, false));
-		assertTrue(jsonStringMap.containsValue(2, false));
+		assertTrue(jsonStringMap.containsValue(1));
+		assertTrue(jsonStringMap.containsValue(2));
 
 
 		// Integer - Integer
-		ObjectMap<Integer, Integer> intMap = new ObjectMap<Integer, Integer>();
+		Map<Integer, Integer> intMap = new HashMap<Integer, Integer>();
 		intMap.put(1, 1);
 		intMap.put(2, 2);
 		jsonString = json.toJson(intMap);
-		ObjectMap<Integer, Integer> jsonIntMap = json.fromJson(ObjectMap.class, jsonString);
+		Map<Integer, Integer> jsonIntMap = json.fromJson(Map.class, jsonString);
 		assertTrue(jsonIntMap.containsKey(1));
 		assertTrue(jsonIntMap.containsKey(2));
-		assertTrue(jsonIntMap.containsValue(1, false));
-		assertTrue(jsonIntMap.containsValue(2, false));
+		assertTrue(jsonIntMap.containsValue(1));
+		assertTrue(jsonIntMap.containsValue(2));
 	}
 
 	/**
@@ -137,11 +138,11 @@ public class JsonTest {
 
 
 		// Test when used as a key
-		ObjectMap<UUID, String> uuidMap = new ObjectMap<UUID, String>();
+		Map<UUID, String> uuidMap = new HashMap<UUID, String>();
 		testUuid = UUID.randomUUID();
 		uuidMap.put(testUuid, "test");
 		jsonString = json.toJson(uuidMap);
-		ObjectMap<UUID, String> jsonMap = json.fromJson(ObjectMap.class, jsonString);
+		Map<UUID, String> jsonMap = json.fromJson(Map.class, jsonString);
 		assertTrue(jsonMap.containsKey(testUuid));
 	}
 

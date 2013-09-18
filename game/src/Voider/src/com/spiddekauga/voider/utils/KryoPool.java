@@ -3,6 +3,7 @@ package com.spiddekauga.voider.utils;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.UUID;
 
@@ -16,7 +17,6 @@ import com.badlogic.gdx.physics.box2d.EdgeShape;
 import com.badlogic.gdx.physics.box2d.Filter;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
-import com.badlogic.gdx.utils.ObjectMap;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.Serializer;
 import com.esotericsoftware.kryo.io.Input;
@@ -26,6 +26,7 @@ import com.esotericsoftware.kryo.serializers.CompatibleFieldSerializer;
 import com.esotericsoftware.kryo.serializers.FieldSerializer;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer;
 import com.spiddekauga.utils.SerializableTaggedFieldSerializer;
+import com.spiddekauga.utils.UUIDSerializer;
 import com.spiddekauga.voider.Config.Editor.Level;
 import com.spiddekauga.voider.game.BulletDestroyer;
 import com.spiddekauga.voider.game.Collectibles;
@@ -102,8 +103,8 @@ public class KryoPool extends Pool<Kryo> {
 	private enum RegisterClasses {
 		/** Object[] */
 		OBJECT_ARRAY(Object[].class),
-		/** ObjectMap */
-		OBJECT_MAP(ObjectMap.class),
+		/** Map */
+		HASH_MAP(HashMap.class),
 		/** float[] */
 		FLOAT_ARRAY(float[].class),
 		/** FixtureDef */
@@ -119,7 +120,7 @@ public class KryoPool extends Pool<Kryo> {
 		/** ChainShape */
 		CHAIN_SHAPE(ChainShape.class, new ChainShapeSerializer()),
 		/** UUID */
-		UUID_TYPE(UUID.class), // UUID override create
+		UUID_TYPE(UUID.class, new UUIDSerializer()),
 		/** Vector2 */
 		VECTOR_2(Vector2.class), // Overrides obtain (uses pool)
 		/** Vector2[] */
@@ -204,10 +205,6 @@ public class KryoPool extends Pool<Kryo> {
 		AI_MOVEMENT_VARS(AiMovementVars.class, SerializerType.TAGGED),
 		/** AimRotateVars */
 		AIM_ROTATE_VARS(AimRotateVars.class, SerializerType.TAGGED),
-		/** ObjectMap.Entries */
-		OBJECT_MAP_ENTRIES(ObjectMap.Entries.class),
-		/** ObjectMap.Entry */
-		OBJECT_MAP_ENTRY(ObjectMap.Entry.class),
 		/** ResourceNames */
 		RESOURCE_NAMES(ResourceNames.class),
 
@@ -272,14 +269,6 @@ public class KryoPool extends Pool<Kryo> {
 		 */
 		@SuppressWarnings("rawtypes")
 		public static void createSerializers(Kryo kryo) {
-			// UUID
-			UUID_TYPE.mSerializer = new FieldSerializer<UUID>(kryo, UUID.class) {
-				@Override
-				public UUID create(Kryo kryo, Input input, Class<UUID> type) {
-					return UUID.randomUUID();
-				}
-			};
-
 			// Vector2
 			VECTOR_2.mSerializer = new FieldSerializer<Vector2>(kryo, Vector2.class) {
 				@Override

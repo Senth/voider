@@ -1,6 +1,8 @@
 package com.spiddekauga.voider.game;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
@@ -8,7 +10,6 @@ import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
-import com.badlogic.gdx.utils.ObjectMap;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.KryoSerializable;
 import com.esotericsoftware.kryo.io.Input;
@@ -118,7 +119,7 @@ public class Level extends Resource implements KryoSerializable, Disposable, IRe
 	 */
 	public void resetDefs() {
 		ArrayList<EnemyActor> enemyActors = mResourceBinder.getResources(EnemyActor.class);
-		ObjectMap<UUID, ResourceItem> externalDependencies = mLevelDef.getExternalDependencies();
+		Map<UUID, ResourceItem> externalDependencies = mLevelDef.getExternalDependencies();
 
 		// Update defs for all enemies
 		for (EnemyActor enemy : enemyActors) {
@@ -517,7 +518,7 @@ public class Level extends Resource implements KryoSerializable, Disposable, IRe
 	/** All resources that shall be rendered */
 	private ArrayList<IResourceRender> mResourceRenders = null;
 	/** All triggers */
-	private ObjectMap<UUID, Trigger> mTriggers = new ObjectMap<UUID, Trigger>();
+	private Map<UUID, Trigger> mTriggers = new HashMap<UUID, Trigger>();
 	/** Current x coordinate (of the screen's left edge) */
 	@Tag(14) private float mXCoord = 0.0f;
 	/** Level definition for this level */

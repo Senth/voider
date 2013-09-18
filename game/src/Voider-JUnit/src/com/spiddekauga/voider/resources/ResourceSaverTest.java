@@ -14,7 +14,6 @@ import com.badlogic.gdx.backends.lwjgl.LwjglNativesLoader;
 import com.badlogic.gdx.files.FileHandle;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
-import com.esotericsoftware.minlog.Log;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.actors.PickupActorDef;
 import com.spiddekauga.voider.utils.ObjectCrypter;
@@ -82,7 +81,6 @@ public class ResourceSaverTest {
 
 
 		// Save it again, now a new revision should be created
-		Log.TRACE();
 		def.addDependency(ResourceNames.TEXTURE_PLAYER);
 		ResourceSaver.save(def);
 
@@ -98,7 +96,6 @@ public class ResourceSaverTest {
 		}
 		input = new Input(decryptedDef);
 		savedDef = kryo.readObject(input, PickupActorDef.class);
-		Log.NONE();
 		assertEquals("new saved file shall have one dependency", 1, savedDef.getInternalDependencies().size());
 
 

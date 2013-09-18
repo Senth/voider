@@ -434,7 +434,7 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 	 */
 	@Override
 	public boolean shallDestroyOnCollide() {
-		return mDef.shallDestroyOnCollide();
+		return mDef.isDestroyedOnCollide();
 	}
 
 	@Override

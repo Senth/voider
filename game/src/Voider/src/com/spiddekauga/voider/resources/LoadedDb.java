@@ -1,11 +1,12 @@
 package com.spiddekauga.voider.resources;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.utils.ObjectMap;
-import com.badlogic.gdx.utils.ObjectMap.Entry;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.utils.Pool;
 import com.spiddekauga.voider.utils.Pools;
@@ -27,11 +28,11 @@ class LoadedDb {
 	 * first time it was added to this scene.
 	 */
 	int addLoadingResource(Scene scene, UUID resourceId, Class<?> type, int revision) {
-		ObjectMap<UUID, LoadedResource> sceneResources = mLoadedResources.get(scene);
+		Map<UUID, LoadedResource> sceneResources = mLoadedResources.get(scene);
 
 		// No existing scene, add scene
 		if (sceneResources == null) {
-			sceneResources = new ObjectMap<UUID, LoadedDb.LoadedResource>();
+			sceneResources = new HashMap<UUID, LoadedDb.LoadedResource>();
 			mLoadedResources.put(scene, sceneResources);
 		}
 
@@ -92,7 +93,7 @@ class LoadedDb {
 	 * wasn't found
 	 */
 	int removeLoadedResource(Scene scene, UUID resourceId, Class<?> type, int revision) {
-		ObjectMap<UUID, LoadedResource> sceneResources = mLoadedResources.get(scene);
+		Map<UUID, LoadedResource> sceneResources = mLoadedResources.get(scene);
 
 		int cLoad = -1;
 
@@ -116,12 +117,12 @@ class LoadedDb {
 						loadedResource.revisions.remove(revisionToUse);
 
 						// Remove and free resource if this was the last revision
-						if (loadedResource.revisions.size == 0) {
+						if (loadedResource.revisions.isEmpty()) {
 							sceneResources.remove(resourceId);
 							mLoadedResourcePool.free(loadedResource);
 
 							// Remove the scene if this was the last resource
-							if (sceneResources.size == 0) {
+							if (sceneResources.isEmpty()) {
 								mLoadedResources.remove(scene);
 							}
 						}
@@ -152,12 +153,12 @@ class LoadedDb {
 		ArrayList<Scene> scenes = Pools.arrayList.obtain();
 		scenes.clear();
 
-		for (Entry<Scene, ObjectMap<UUID, LoadedResource>> sceneEntry : mLoadedResources.entries()) {
-			LoadedResource foundLoadedResource = sceneEntry.value.get(resourceId);
+		for (Entry<Scene, Map<UUID, LoadedResource>> sceneEntry : mLoadedResources.entrySet()) {
+			LoadedResource foundLoadedResource = sceneEntry.getValue().get(resourceId);
 
 			if (foundLoadedResource != null) {
 				if (revision == -1 || foundLoadedResource.revisions.containsKey(revision)) {
-					scenes.add(sceneEntry.key);
+					scenes.add(sceneEntry.getKey());
 				}
 			}
 		}
@@ -188,7 +189,7 @@ class LoadedDb {
 	 * @return loaded revision of the resource, null if revision wasn't found.
 	 */
 	private LoadedRevision getLoadedRevision(Scene scene, UUID resourceId, int revision) {
-		ObjectMap<UUID, LoadedResource> sceneResources = mLoadedResources.get(scene);
+		Map<UUID, LoadedResource> sceneResources = mLoadedResources.get(scene);
 
 		if (sceneResources != null) {
 			LoadedResource loadedResource = sceneResources.get(resourceId);
@@ -247,11 +248,11 @@ class LoadedDb {
 		ArrayList<IResource> resources = Pools.arrayList.obtain();
 		resources.clear();
 
-		ObjectMap<UUID, LoadedResource> sceneResources = mLoadedResources.get(scene);
+		Map<UUID, LoadedResource> sceneResources = mLoadedResources.get(scene);
 		if (sceneResources != null) {
-			for (ObjectMap.Entry<UUID, LoadedResource> resourceEntry : sceneResources.entries()) {
-				for (ObjectMap.Entry<Integer, LoadedRevision> revisionEntry : resourceEntry.value.revisions.entries()) {
-					resources.add(revisionEntry.value.resource);
+			for (Map.Entry<UUID, LoadedResource> resourceEntry : sceneResources.entrySet()) {
+				for (Map.Entry<Integer, LoadedRevision> revisionEntry : resourceEntry.getValue().revisions.entrySet()) {
+					resources.add(revisionEntry.getValue().resource);
 				}
 			}
 		}
@@ -272,12 +273,12 @@ class LoadedDb {
 		ArrayList<ResourceType> resources = Pools.arrayList.obtain();
 		resources.clear();
 
-		ObjectMap<UUID, LoadedResource> sceneResources = mLoadedResources.get(scene);
+		Map<UUID, LoadedResource> sceneResources = mLoadedResources.get(scene);
 		if (sceneResources != null) {
-			for (ObjectMap.Entry<UUID, LoadedResource> resourceEntry : sceneResources.entries()) {
-				if (resourceEntry.value.type == type) {
-					for (ObjectMap.Entry<Integer, LoadedRevision> revisionEntry : resourceEntry.value.revisions.entries()) {
-						resources.add((ResourceType)revisionEntry.value.resource);
+			for (Map.Entry<UUID, LoadedResource> resourceEntry : sceneResources.entrySet()) {
+				if (resourceEntry.getValue().type == type) {
+					for (Map.Entry<Integer, LoadedRevision> revisionEntry : resourceEntry.getValue().revisions.entrySet()) {
+						resources.add((ResourceType)revisionEntry.getValue().resource);
 					}
 				}
 			}
@@ -291,13 +292,13 @@ class LoadedDb {
 	 * @param scene the scene to clear all loaded resource from
 	 */
 	void clearLoadedSceneResources(Scene scene) {
-		ObjectMap<UUID, LoadedResource> sceneResources = mLoadedResources.get(scene);
+		Map<UUID, LoadedResource> sceneResources = mLoadedResources.get(scene);
 		if (sceneResources != null) {
-			for (ObjectMap.Entry<UUID, LoadedResource> resourceEntry : sceneResources.entries()) {
-				for (ObjectMap.Entry<Integer, LoadedRevision> revisionEntry : resourceEntry.value.revisions.entries()) {
-					mLoadedRevisionPool.free(revisionEntry.value);
+			for (Map.Entry<UUID, LoadedResource> resourceEntry : sceneResources.entrySet()) {
+				for (Map.Entry<Integer, LoadedRevision> revisionEntry : resourceEntry.getValue().revisions.entrySet()) {
+					mLoadedRevisionPool.free(revisionEntry.getValue());
 				}
-				mLoadedResourcePool.free(resourceEntry.value);
+				mLoadedResourcePool.free(resourceEntry.getValue());
 			}
 
 			mLoadedResources.remove(scene);
@@ -311,15 +312,15 @@ class LoadedDb {
 		String message = "";
 
 		// Add all loaded resources
-		for (Entry<Scene, ObjectMap<UUID, LoadedResource>> sceneEntry : mLoadedResources.entries()) {
-			String sceneString = sceneEntry.key.getClass().getSimpleName();
+		for (Entry<Scene, Map<UUID, LoadedResource>> sceneEntry : mLoadedResources.entrySet()) {
+			String sceneString = sceneEntry.getKey().getClass().getSimpleName();
 
-			for (Entry<UUID, LoadedResource> resourceEntry : sceneEntry.value.entries()) {
-				for(Entry<Integer, LoadedRevision> revisionEntry : resourceEntry.value.revisions.entries()) {
-					if (revisionEntry.value.resource != null) {
-						String filePath = ResourceDatabase.getFilePath(revisionEntry.value.resource);
+			for (Entry<UUID, LoadedResource> resourceEntry : sceneEntry.getValue().entrySet()) {
+				for(Entry<Integer, LoadedRevision> revisionEntry : resourceEntry.getValue().revisions.entrySet()) {
+					if (revisionEntry.getValue().resource != null) {
+						String filePath = ResourceDatabase.getFilePath(revisionEntry.getValue().resource);
 
-						message += sceneString + ": " + filePath + ", refs: " + revisionEntry.value.count + "\n";
+						message += sceneString + ": " + filePath + ", refs: " + revisionEntry.getValue().count + "\n";
 					}
 				}
 			}
@@ -336,7 +337,7 @@ class LoadedDb {
 		Class<?> type;
 		/** All resource revisions, if the resource doesn't have any revisions the information
 		 * will be found under revision -1 */
-		ObjectMap<Integer, LoadedRevision> revisions = new ObjectMap<Integer, LoadedDb.LoadedRevision>();
+		Map<Integer, LoadedRevision> revisions = new HashMap<Integer, LoadedDb.LoadedRevision>();
 	}
 
 	/**
@@ -350,7 +351,7 @@ class LoadedDb {
 	}
 
 	/** All scene resources */
-	private ObjectMap<Scene, ObjectMap<UUID, LoadedResource>> mLoadedResources = new ObjectMap<Scene, ObjectMap<UUID,LoadedResource>>();
+	private Map<Scene, Map<UUID, LoadedResource>> mLoadedResources = new HashMap<Scene, Map<UUID,LoadedResource>>();
 	/** Pool for loaded resources */
 	private Pool<LoadedResource> mLoadedResourcePool = new Pool<LoadedDb.LoadedResource>(LoadedResource.class, 30, 300);
 	/** Pool for loaded revisions */

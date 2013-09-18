@@ -13,7 +13,7 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.GdxRuntimeException;
-import com.badlogic.gdx.utils.ObjectMap;
+import java.util.Map;
 import com.spiddekauga.voider.Config.Debug;
 import com.spiddekauga.voider.game.GameSave;
 import com.spiddekauga.voider.game.GameSaveDef;
@@ -106,7 +106,7 @@ public class ResourceCacheFacade {
 	 * Loads all latest revision for the resource of the specified type, but has the ability
 	 * to override the revision loaded. I.e. not all resource need to load the latest revision.
 	 * This can be useful if you know that you want to load certain revision instead of the latest.
-	 * Used in conjunction with {@link #unloadAllOf(Scene, Class, boolean, ObjectMap)}.
+	 * Used in conjunction with {@link #unloadAllOf(Scene, Class, boolean, Map)}.
 	 * @param scene the scene to load all resource for
 	 * @param type the type of resources to load
 	 * @param loadDependencies Set to true ot load all file dependencies of the resource. E.g. some
@@ -114,7 +114,7 @@ public class ResourceCacheFacade {
 	 * these will also be loaded.
 	 * @param revisionsToLoad an object map with a specific revision to use for the specified resource.
 	 */
-	public static void loadAllOf(Scene scene, Class<? extends IResource> type, boolean loadDependencies, ObjectMap<UUID, Integer> revisionsToLoad) {
+	public static void loadAllOf(Scene scene, Class<? extends IResource> type, boolean loadDependencies, Map<UUID, Integer> revisionsToLoad) {
 		// Get all resources of this type
 		ArrayList<ResourceItem> resources = ResourceDatabase.getAllExistingResource(type);
 
@@ -184,14 +184,14 @@ public class ResourceCacheFacade {
 	/**
 	 * Unloads all of the specified resources, usually this means the latest but this
 	 * method has the ability to unload specific revisions of a resource instead of the latest.
-	 * Used in conjunction with {@link #loadAllOf(Scene, Class, boolean, ObjectMap)}.
+	 * Used in conjunction with {@link #loadAllOf(Scene, Class, boolean, Map)}.
 	 * @param scene the scene to unload all the resources from
 	 * @param type the type of resources to unload
 	 * @param unloadDependencies true if the cache shall unload all dependencies of the resources
 	 * @param revisionsToUnload these resources will override the unload of latest revision to use
 	 * this revision for the corresponding resource.
 	 */
-	public static void unloadAllOf(Scene scene, Class<? extends IResource> type, boolean unloadDependencies, ObjectMap<UUID, Integer> revisionsToUnload) {
+	public static void unloadAllOf(Scene scene, Class<? extends IResource> type, boolean unloadDependencies, Map<UUID, Integer> revisionsToUnload) {
 		// Get all resources of this type
 		ArrayList<ResourceItem> resources = ResourceDatabase.getAllExistingResource(type);
 

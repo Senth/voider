@@ -29,9 +29,11 @@ public abstract class Scene extends InputAdapter {
 	 * @param gui the GUI to use for the scene
 	 */
 	protected Scene(Gui gui) {
-		mGui = gui;
-		mInputMultiplexer.addProcessor(0, mGui.getStage());
-		mInputMultiplexer.addProcessor(1, this);
+		if (mGui != null) {
+			mGui = gui;
+			mInputMultiplexer.addProcessor(0, mGui.getStage());
+			mInputMultiplexer.addProcessor(1, this);
+		}
 	}
 
 	/**

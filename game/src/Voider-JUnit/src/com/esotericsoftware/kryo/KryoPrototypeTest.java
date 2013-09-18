@@ -9,7 +9,9 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.UUID;
 
 import org.junit.AfterClass;
@@ -24,7 +26,6 @@ import com.badlogic.gdx.physics.box2d.EdgeShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.Shape;
-import com.badlogic.gdx.utils.ObjectMap;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 import com.esotericsoftware.kryo.serializers.CompatibleFieldSerializer;
@@ -747,28 +748,32 @@ public class KryoPrototypeTest {
 	}
 
 	@Test
-	public void testObjectMap() {
-		ObjectMap<Integer, String> objectMap = new ObjectMap<Integer, String>();
+	public void testMap() {
+		Map<Integer, String> objectMap = new HashMap<Integer, String>();
 
 		objectMap.put(1, "One");
 		objectMap.put(11, "Eleven");
 		objectMap.put(5, "Five");
 
 		@SuppressWarnings("unchecked")
-		ObjectMap<Integer, String> readObjectMap = copy(objectMap, ObjectMap.class);
-		assertEquals("size", 3, readObjectMap.size);
-		assertEquals("[1]", "One", readObjectMap.get(1));
-		assertEquals("[11]", "Eleven", readObjectMap.get(11));
-		assertEquals("[5]", "Five", readObjectMap.get(5));
+		Map<Integer, String> readMap = copy(objectMap, HashMap.class);
+		assertEquals("size", 3, readMap.size());
+		assertEquals("[1]", "One", readMap.get(1));
+		assertEquals("[11]", "Eleven", readMap.get(11));
+		assertEquals("[5]", "Five", readMap.get(5));
 	}
 
-	private <CopyType,ReturnType> ReturnType copy(CopyType toCopy, Class<ReturnType> type) {
+	private static <CopyType,ReturnType> ReturnType copy(CopyType toCopy, Class<ReturnType> type) {
+		return copy(toCopy, type, mKryo);
+	}
+
+	public static <CopyType,ReturnType> ReturnType copy(CopyType toCopy, Class<ReturnType> type, Kryo kryo) {
 		ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
 		Output output = new Output(byteOut);
-		mKryo.writeObject(output, toCopy);
+		kryo.writeObject(output, toCopy);
 		output.close();
 		Input input = new Input(byteOut.toByteArray());
-		ReturnType readObject = mKryo.readObject(input, type);
+		ReturnType readObject = kryo.readObject(input, type);
 		input.close();
 		return readObject;
 	}

@@ -191,7 +191,7 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	/**
 	 * @return true if this actor shall be destroyed on collision
 	 */
-	public boolean shallDestroyOnCollide() {
+	public boolean isDestroyedOnCollide() {
 		return mDestroyOnCollide;
 	}
 
@@ -284,5 +284,7 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	@Tag(47) private boolean mDestroyOnCollide = false;
 	/** Visual variables */
 	@Tag(48) protected VisualVars mVisualVars = null;
+
+	// DON'T FORGET TO ADD TO JUNIT TEST! ActorDefTest
 
 }
