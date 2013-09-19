@@ -131,7 +131,7 @@ public class Config {
 		public static final boolean LOAD_UNLOAD_MESSAGES_EVERY_TIME = true;
 		/** If debugging tests shall be activate. This causes extra runtime, but checks
 		 * so that none of the checks are broken. */
-		public final static boolean DEBUG_TESTS = true;
+		public static boolean DEBUG_TESTS = true;
 	}
 
 	/**

@@ -1,5 +1,6 @@
 package com.spiddekauga.voider.game;
 
+import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.voider.Config.Editor;
 import com.spiddekauga.voider.game.actors.BulletActorDef;
 
@@ -88,14 +89,14 @@ public class WeaponDef {
 		return mBulletActorDef;
 	}
 
-	/** Type and visuals of the bullet. @todo remove default bullet actor def*/
-	private BulletActorDef mBulletActorDef;
+	/** Type and visuals of the bullet */
+	@Tag(91) private BulletActorDef mBulletActorDef;
 	/** Bullet speed */
-	private float mBulletSpeed = Editor.Weapon.BULLET_SPEED_DEFAULT;
+	@Tag(92) private float mBulletSpeed = Editor.Weapon.BULLET_SPEED_DEFAULT;
 	/** Damage when bullet hits */
-	private float mDamage = Editor.Weapon.DAMAGE_DEFAULT;
+	@Tag(93) private float mDamage = Editor.Weapon.DAMAGE_DEFAULT;
 	/** Minimum weapon cooldown */
-	private float mCooldownMin = Editor.Weapon.COOLDOWN_MIN_DEFAULT;
-	/** Maximum weapon coolown */
-	private float mCooldownMax = Editor.Weapon.COOLDOWN_MAX_DEFAULT;
+	@Tag(94) private float mCooldownMin = Editor.Weapon.COOLDOWN_MIN_DEFAULT;
+	/** Maximum weapon cooldown */
+	@Tag(95) private float mCooldownMax = Editor.Weapon.COOLDOWN_MAX_DEFAULT;
 }

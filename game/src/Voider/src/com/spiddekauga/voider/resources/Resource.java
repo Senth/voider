@@ -5,9 +5,10 @@ import java.util.UUID;
 
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
+import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
-import com.spiddekauga.utils.JsonWrapper;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Base class for all resources
@@ -39,21 +40,31 @@ public abstract class Resource implements IResource, Json.Serializable {
 	}
 
 	/**
-	 * Creates a copy of this resource, but with a different unique id
+	 * Creates an exact copy of this object
 	 * @param <ResourceType> the type of this resource
 	 * @return copy of this resource
+	 * @see #copyNewResource() creates a duplicate of this resource changing at least its id.
 	 */
 	@SuppressWarnings("unchecked")
-	public <ResourceType> ResourceType copy() {
-		Class<?> derivedClass = getClass();
+	public final <ResourceType> ResourceType copy() {
+		Kryo kryo = Pools.kryo.obtain();
+		ResourceType copy = (ResourceType) kryo.copy(this);
+		Pools.kryo.free(kryo);
+		return copy;
+	}
 
-		Json json = new JsonWrapper();
-		String jsonString = json.toJson(this);
-		Resource copy = (Resource) json.fromJson(derivedClass, jsonString);
-
-		copy.mUniqueId = UUID.randomUUID();
-
-		return (ResourceType) copy;
+	/**
+	 * Creates a duplicate of this object. In general this means the resource will
+	 * get a new id. Derived classes can override this behavior and add additional
+	 * changes.
+	 * @param <ResourceType> the type of this resource
+	 * @return duplicate of this object
+	 * @see #copy() creates an exact copy of this object
+	 */
+	public <ResourceType> ResourceType copyNewResource() {
+		ResourceType copy = copy();
+		((Resource)copy).mUniqueId = UUID.randomUUID();
+		return copy;
 	}
 
 	@Override

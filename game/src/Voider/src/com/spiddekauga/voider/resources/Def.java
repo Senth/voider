@@ -12,7 +12,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
-import com.spiddekauga.utils.JsonWrapper;
 import com.spiddekauga.voider.User;
 
 /**
@@ -30,24 +29,17 @@ public abstract class Def extends Resource implements Json.Serializable, IResour
 		mUniqueId = UUID.randomUUID();
 	}
 
-	/**
-	 * Creates a copy of this definition, automatically resets revision
-	 * creator, unique id.
-	 * @return copy of this definition.
-	 */
 	@Override
-	public <ResourceType> ResourceType copy() {
-		Class<?> derivedClass = getClass();
+	public <ResourceType> ResourceType copyNewResource() {
+		ResourceType copy = super.copyNewResource();
 
-		Json json = new JsonWrapper();
-		String defString = json.toJson(this);
-		Def copy = (Def) json.fromJson(derivedClass, defString);
+		Def defCopy = (Def)copy;
+		defCopy.mCopyParentId = mUniqueId;
+		defCopy.mCreator = User.getNickName();
+		// TODO create numbering of copy name if already a copy
+		defCopy.mName = defCopy.mName + " (copy)";
 
-		copy.mCreator = User.getNickName();
-		copy.mName = copy.mName + " (copy)";
-		copy.mUniqueId = UUID.randomUUID();
-
-		return (ResourceType) copy;
+		return copy;
 	}
 
 	@Override
@@ -259,6 +251,14 @@ public abstract class Def extends Resource implements Json.Serializable, IResour
 		return mInternalDependencies;
 	}
 
+	/**
+	 * @return if this object is a copy it will return the parent id which it was
+	 * copied from, null this is the original.
+	 */
+	public UUID getCopyParentId() {
+		return mCopyParentId;
+	}
+
 	/** Dependencies for the resource */
 	@Tag(43) private Map<UUID, ResourceItem> mExternalDependencies = new HashMap<UUID, ResourceItem>();
 	/** Internal dependencies, such as textures, sound, particle effects */
@@ -275,6 +275,9 @@ public abstract class Def extends Resource implements Json.Serializable, IResour
 	@Tag(37) private Date mDate = null;
 	/** The revision of the definition, this increases after each save */
 	@Tag(40) private int mRevision = 0;
+	/** When copied, this is the id of the resource we copied */
+	@Tag(87) private UUID mCopyParentId = null;
+
 
 	// Don't forget to add to DefTest!
 }

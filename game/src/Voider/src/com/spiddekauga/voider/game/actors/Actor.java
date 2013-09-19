@@ -196,21 +196,6 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 		return success;
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public <ResourceType> ResourceType copy() {
-		Actor copy = super.copy();
-
-		// Bind triggers
-		for (int i = 0; i < mTriggerInfos.size(); ++i) {
-			copy.mTriggerInfos.get(i).listener = copy;
-			copy.mTriggerInfos.get(i).trigger = mTriggerInfos.get(i).trigger;
-			mTriggerInfos.get(i).trigger.addListener(copy.mTriggerInfos.get(i));
-		}
-
-		return (ResourceType) copy;
-	}
-
 	@Override
 	public boolean addBoundResource(IResource boundResource) {
 		boolean success = super.addBoundResource(boundResource);
@@ -544,7 +529,31 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 
 	@Override
 	public void copy(Object fromOriginal) {
-		// TODO implement
+		if (fromOriginal instanceof Actor) {
+			Actor fromActor = (Actor) fromOriginal;
+
+			// Set active state
+			if (!mEditorActive) {
+				mActive = fromActor.mActive;
+			}
+
+			// Set def
+			mDef = fromActor.mDef;
+
+			// Create body
+			if (fromActor.mBody != null) {
+				BodyDef bodyDef = mDef.getBodyDefCopy();
+
+				bodyDef.angle = fromActor.mBody.getAngle();
+				bodyDef.angularVelocity = fromActor.mBody.getAngularVelocity();
+				bodyDef.linearVelocity.set(fromActor.mBody.getLinearVelocity());
+				bodyDef.awake = fromActor.mBody.isAwake();
+				bodyDef.active = fromActor.mBody.isActive();
+				bodyDef.position.set(mPosition);
+
+				createBody(bodyDef);
+			}
+		}
 	}
 
 	@Override

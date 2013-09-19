@@ -5,6 +5,7 @@ import java.util.UUID;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
+import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.scene.Scene;
 
@@ -71,15 +72,15 @@ public class ResourceItem implements Json.Serializable {
 	}
 
 	/** Number of references */
-	public int count = 1;
+	@Tag(96) public int count = 1;
 	/** Scene */
-	public Scene scene = null;
+	@Tag(97) public Scene scene = null;
 	/** Unique id */
-	public UUID id = null;
+	@Tag(98) public UUID id = null;
 	/** Resource Type */
-	public Class<?> type = null;
+	@Tag(99) public Class<?> type = null;
 	/** revision of the resource */
-	public int revision = -1;
+	@Tag(101) public int revision = -1;
 
 	@Override
 	public void write(Json json) {

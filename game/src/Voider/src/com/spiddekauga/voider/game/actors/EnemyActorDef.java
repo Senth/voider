@@ -272,8 +272,6 @@ public class EnemyActorDef extends ActorDef {
 		return mAimRotateVars.rotateSpeed;
 	}
 
-
-
 	@Override
 	public void write(Json json) {
 		super.write(json);
@@ -367,11 +365,42 @@ public class EnemyActorDef extends ActorDef {
 	/** AI movement variables */
 	@Tag(59) private AiMovementVars mAiMovementVars = new AiMovementVars();
 
+	// DON'T forget to add to EnemyActorTest!
+
 	/**
 	 * Class for all movement variables (both AI and path)
 	 * @note needs to be public for reflect on android
 	 */
 	public static class MovementVars {
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + Float.floatToIntBits(speed);
+			result = prime * result + Float.floatToIntBits(turnSpeed);
+			return result;
+		}
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj) {
+				return true;
+			}
+			if (obj == null) {
+				return false;
+			}
+			if (getClass() != obj.getClass()) {
+				return false;
+			}
+			MovementVars other = (MovementVars) obj;
+			if (Float.floatToIntBits(speed) != Float.floatToIntBits(other.speed)) {
+				return false;
+			}
+			if (Float.floatToIntBits(turnSpeed) != Float.floatToIntBits(other.turnSpeed)) {
+				return false;
+			}
+			return true;
+		}
+
 		/** Speed of the enemy */
 		@Tag(64) float speed = Enemy.Movement.MOVE_SPEED_DEFAULT;
 		/** How fast the enemy can turn */
@@ -383,6 +412,54 @@ public class EnemyActorDef extends ActorDef {
 	 * @note needs to be public for reflect on android
 	 */
 	public static class AiMovementVars {
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + Float.floatToIntBits(playerDistanceMax);
+			result = prime * result + Float.floatToIntBits(playerDistanceMaxSq);
+			result = prime * result + Float.floatToIntBits(playerDistanceMin);
+			result = prime * result + Float.floatToIntBits(playerDistanceMinSq);
+			result = prime * result + (randomMove ? 1231 : 1237);
+			result = prime * result + Float.floatToIntBits(randomTimeMax);
+			result = prime * result + Float.floatToIntBits(randomTimeMin);
+			return result;
+		}
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj) {
+				return true;
+			}
+			if (obj == null) {
+				return false;
+			}
+			if (getClass() != obj.getClass()) {
+				return false;
+			}
+			AiMovementVars other = (AiMovementVars) obj;
+			if (Float.floatToIntBits(playerDistanceMax) != Float.floatToIntBits(other.playerDistanceMax)) {
+				return false;
+			}
+			if (Float.floatToIntBits(playerDistanceMaxSq) != Float.floatToIntBits(other.playerDistanceMaxSq)) {
+				return false;
+			}
+			if (Float.floatToIntBits(playerDistanceMin) != Float.floatToIntBits(other.playerDistanceMin)) {
+				return false;
+			}
+			if (Float.floatToIntBits(playerDistanceMinSq) != Float.floatToIntBits(other.playerDistanceMinSq)) {
+				return false;
+			}
+			if (randomMove != other.randomMove) {
+				return false;
+			}
+			if (Float.floatToIntBits(randomTimeMax) != Float.floatToIntBits(other.randomTimeMax)) {
+				return false;
+			}
+			if (Float.floatToIntBits(randomTimeMin) != Float.floatToIntBits(other.randomTimeMin)) {
+				return false;
+			}
+			return true;
+		}
 		/** Minimum distance from the player */
 		@Tag(66) float playerDistanceMin = Enemy.Movement.AI_DISTANCE_MIN_DEFAULT;
 		/** Minimum distance from player, squared */
@@ -395,7 +472,7 @@ public class EnemyActorDef extends ActorDef {
 		@Tag(70) boolean randomMove = Enemy.Movement.RANDOM_MOVEMENT_DEFAULT;
 		/** Minimum time until next random move */
 		@Tag(71) float randomTimeMin = Enemy.Movement.RANDOM_MOVEMENT_TIME_MIN_DEFAULT;
-		/** Maxumum time until next random move */
+		/** Maximum time until next random move */
 		@Tag(72) float randomTimeMax = Enemy.Movement.RANDOM_MOVEMENT_TIME_MAX_DEFAULT;
 	}
 
@@ -404,6 +481,37 @@ public class EnemyActorDef extends ActorDef {
 	 * @note needs to be public for reflect on android
 	 */
 	public static class AimRotateVars {
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + Float.floatToIntBits(rotateSpeed);
+			result = prime * result + Float.floatToIntBits(startAngle);
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj) {
+				return true;
+			}
+			if (obj == null) {
+				return false;
+			}
+			if (getClass() != obj.getClass()) {
+				return false;
+			}
+			AimRotateVars other = (AimRotateVars) obj;
+			if (Float.floatToIntBits(rotateSpeed) != Float.floatToIntBits(other.rotateSpeed)) {
+				return false;
+			}
+			if (Float.floatToIntBits(startAngle) != Float.floatToIntBits(other.startAngle)) {
+				return false;
+			}
+			return true;
+		}
+
+
 		/** Starting angle */
 		@Tag(73) float startAngle = Enemy.Weapon.START_ANGLE_DEFAULT;
 		/** Rotating speed */

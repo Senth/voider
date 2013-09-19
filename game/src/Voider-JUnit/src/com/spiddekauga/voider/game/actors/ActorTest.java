@@ -1,6 +1,8 @@
 package com.spiddekauga.voider.game.actors;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertSame;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -41,6 +43,7 @@ public class ActorTest {
 		LwjglNativesLoader.load();
 		Gdx.files = new LwjglFiles();
 		Config.init();
+		Config.Debug.DEBUG_TESTS = false;
 		ResourceSaver.init();
 		ResourceNames.useTestPath();
 		ResourceNames.init();
@@ -124,21 +127,27 @@ public class ActorTest {
 		actor.decreaseLife(5);
 		actor.setPosition(new Vector2(1,1));
 
+		// Regular copy
+		ActorStub copyActor = mKryo.copy(actor);
+		testActorEquals(actor, copyActor);
+
 		// Need to save and load def
 		ResourceSaver.save(actorDef);
 		ResourceCacheFacade.load(mScene, actorDef.getId(), PickupActorDef.class, actorDef.getRevision(), false);
 		ResourceCacheFacade.finishLoading();
+		PickupActorDef loadedActorDef = ResourceCacheFacade.get(mScene, actorDef.getId());
+		actor.setDef(loadedActorDef);
 
-		ActorStub copyActor = KryoPrototypeTest.copy(actor, ActorStub.class, mKryo);
+		copyActor = KryoPrototypeTest.copy(actor, ActorStub.class, mKryo);
 		testActorEquals(actor, copyActor);
 		copyActor.dispose();
 
-		copyActor = mKryo.copy(actor);
-		testActorEquals(actor, copyActor);
+
 
 		copyActor.dispose();
 		actor.dispose();
 		actorDef.dispose();
+		loadedActorDef.dispose();
 
 		ResourceSaver.clearResources(PickupActorDef.class);
 	}
@@ -149,10 +158,13 @@ public class ActorTest {
 	 * @param actual the copied or loaded actor
 	 */
 	protected static void testActorEquals(Actor expected, Actor actual) {
+		assertNotSame(expected, actual);
 		assertEquals(expected.getLife(), actual.getLife(), 0);
+		assertNotSame(expected.getPosition(), actual.getPosition());
 		assertEquals(expected.getPosition(), actual.getPosition());
 		assertEquals(expected.isActive(), actual.isActive());
-		assertEquals(expected.getDef(), actual.getDef());
+		assertSame(expected.getDef(), actual.getDef());
+		assertNotSame(expected, actual);
 	}
 
 	/**

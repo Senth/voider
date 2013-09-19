@@ -9,11 +9,11 @@ import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceSaver;
 
 /**
- * Tests for bullets including the definition.
+ * Tests the player actor
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class BulletActorTest extends ActorTest {
+public class PlayerActorTest extends ActorTest {
 	/**
 	 * Initialize tests
 	 */
@@ -33,33 +33,30 @@ public class BulletActorTest extends ActorTest {
 	@Override
 	@Test
 	public void testActorDefWriteRead() {
-		BulletActorDef bulletDef = new BulletActorDef();
-		BulletActorDef copyBulletDef = bulletDef.copy();
+		PlayerActorDef playerDef = new PlayerActorDef();
+		PlayerActorDef copyPlayerDef = KryoPrototypeTest.copy(playerDef, PlayerActorDef.class, mKryo);
 
 		// Nothing to test atm
 
-		bulletDef.dispose();
-		copyBulletDef.dispose();
+		playerDef.dispose();
+		copyPlayerDef.dispose();
 	}
 
 	@Override
 	@Test
 	public void testActorWriteRead() {
-		BulletActor bullet = new BulletActor();
-		BulletActorDef bulletDef = new BulletActorDef();
-		bullet.setDef(bulletDef);
+		PlayerActor player = new PlayerActor();
+		PlayerActorDef playerDef = new PlayerActorDef();
+		player.setDef(playerDef);
 
-		ResourceSaver.save(bulletDef);
-		ResourceCacheFacade.load(mScene, bulletDef.getId(), BulletActorDef.class, bulletDef.getRevision(), false);
+		ResourceSaver.save(playerDef);
+		ResourceCacheFacade.load(mScene, playerDef.getId(), PlayerActorDef.class, playerDef.getRevision(), false);
 		ResourceCacheFacade.finishLoading();
 
-		BulletActor copyBullet = KryoPrototypeTest.copy(bullet, BulletActor.class, mKryo);
+		PlayerActor copyPlayer = KryoPrototypeTest.copy(player, PlayerActor.class, mKryo);
 
-		bullet.dispose();
-		copyBullet.dispose();
-		bulletDef.dispose();
-
-		ResourceSaver.clearResources(BulletActorDef.class);
+		player.dispose();
+		copyPlayer.dispose();
+		playerDef.dispose();
 	}
-
 }

@@ -4,6 +4,8 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.actors.BulletActor;
 import com.spiddekauga.voider.scene.SceneSwitcher;
@@ -37,6 +39,16 @@ public class Weapon implements Disposable, Json.Serializable {
 	 */
 	public void setWeaponDef(WeaponDef weaponDef) {
 		mDef = weaponDef;
+	}
+
+	/**
+	 * @return a copy of this object
+	 */
+	public final Weapon copy() {
+		Kryo kryo = Pools.kryo.obtain();
+		Weapon copy = kryo.copy(this);
+		Pools.kryo.free(kryo);
+		return copy;
 	}
 
 	/**
@@ -101,6 +113,13 @@ public class Weapon implements Disposable, Json.Serializable {
 		mPosition.set(position);
 	}
 
+	/**
+	 * @return position of the weapon
+	 */
+	public Vector2 getPosition() {
+		return mPosition;
+	}
+
 	@Override
 	public void dispose() {
 		Pools.vector2.free(mPosition);
@@ -125,9 +144,9 @@ public class Weapon implements Disposable, Json.Serializable {
 	}
 
 	/** Weapon definition */
-	private WeaponDef mDef = null;
+	@Tag(88) private WeaponDef mDef = null;
 	/** Current cooldown timer */
-	private float mCooldown = 0;
+	@Tag(89) private float mCooldown = 0;
 	/** Position of the weapon */
-	private Vector2 mPosition = Pools.vector2.obtain();
+	@Tag(90) private Vector2 mPosition = Pools.vector2.obtain();
 }

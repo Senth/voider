@@ -524,7 +524,14 @@ class ResourceDatabase {
 	 * @return A loaded resource. Null if not found
 	 */
 	static <ResourceType> ResourceType getLoadedResource(Scene scene, UUID resourceId, int revision) {
-		return mLoadedResources.getLoadedResource(scene, resourceId, revision);
+		int revisionToUse = revision;
+		if (revision == -1) {
+			ResourceInfo resourceInfo = mResources.get(resourceId);
+			if (resourceInfo != null) {
+				revisionToUse = resourceInfo.latestRevision;
+			}
+		}
+		return mLoadedResources.getLoadedResource(scene, resourceId, revisionToUse);
 	}
 
 	/**

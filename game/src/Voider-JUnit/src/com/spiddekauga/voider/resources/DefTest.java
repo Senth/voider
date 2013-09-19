@@ -1,6 +1,7 @@
 package com.spiddekauga.voider.resources;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -16,11 +17,14 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.lwjgl.LwjglFiles;
 import com.badlogic.gdx.backends.lwjgl.LwjglNativesLoader;
 import com.badlogic.gdx.utils.Json;
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.KryoPrototypeTest;
 import com.spiddekauga.utils.JsonWrapper;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.actors.BulletActorDef;
 import com.spiddekauga.voider.game.actors.PickupActorDef;
 import com.spiddekauga.voider.game.actors.PlayerActorDef;
+import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Tests the def class so that it works.
@@ -75,7 +79,7 @@ public class DefTest {
 	 */
 	@Test
 	public void writeRead() {
-		Def def = new PlayerActorDef();
+		PlayerActorDef def = new PlayerActorDef();
 		Def dependency1 = new PickupActorDef();
 		Def dependency2 = new BulletActorDef();
 		def.setDescription("testComment");
@@ -90,11 +94,26 @@ public class DefTest {
 		def.addDependency(ResourceNames.PARTICLE_TEST);
 		def.addDependency(ResourceNames.TEXTURE_PLAYER);
 
-		Json json = new JsonWrapper();
-		String jsonString = json.toJson(def);
-		Def testDef = json.fromJson(PlayerActorDef.class, jsonString);
-
+		Kryo kryo = Pools.kryo.obtain();
+		PlayerActorDef testDef = KryoPrototypeTest.copy(def, PlayerActorDef.class, kryo);
 		testEquals(def, testDef);
+		testDef.dispose();
+
+		// Test copy
+		testDef = def.copy();
+		testEquals(def, testDef);
+		// Test parent id
+		assertEquals(null, def.getCopyParentId());
+		testDef.dispose();
+
+		// Test copy new
+		testDef = def.copyNewResource();
+		def.setName(def.getName() + " (copy)");
+		testEquals(def, testDef);
+		// But new id
+		assertFalse(def.getId().equals(testDef.getId()));
+
+		Pools.kryo.free(kryo);
 	}
 
 	/**

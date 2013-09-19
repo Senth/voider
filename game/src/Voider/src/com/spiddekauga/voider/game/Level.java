@@ -15,7 +15,7 @@ import com.esotericsoftware.kryo.KryoSerializable;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
-import com.spiddekauga.utils.JsonWrapper;
+import com.spiddekauga.utils.KryoTaggedCopyable;
 import com.spiddekauga.utils.ShapeRendererEx;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.actors.Actor;
@@ -47,7 +47,7 @@ import com.spiddekauga.voider.utils.Pools;
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
 @SuppressWarnings("unchecked")
-public class Level extends Resource implements KryoSerializable, Disposable, IResourceRevision {
+public class Level extends Resource implements KryoTaggedCopyable, KryoSerializable, Disposable, IResourceRevision {
 	/**
 	 * Constructor which creates an new empty level with the bound
 	 * level definition
@@ -130,40 +130,35 @@ public class Level extends Resource implements KryoSerializable, Disposable, IRe
 		}
 	}
 
-	/**
-	 * @return a copy of this level.
-	 * @pre world has to been changed to the new world before copy is called()
-	 */
 	@Override
-	public <ResourceType> ResourceType copy() {
-		Json json = new JsonWrapper();
-		String jsonString = json.toJson(this);
-		Level level = json.fromJson(Level.class, jsonString);
+	public <ResourceType> ResourceType copyNewResource() {
+		ResourceType copy = super.copyNewResource();
+
+		Level copyLevel = (Level)copy;
 
 		// Create a copy of the level definition too
-		LevelDef levelDef = (LevelDef) mLevelDef.copy();
-		level.mUniqueId = levelDef.getLevelId();
-		level.mLevelDef = levelDef;
+		LevelDef levelDef = (LevelDef) mLevelDef.copyNewResource();
+		copyLevel.mUniqueId = levelDef.getLevelId();
+		copyLevel.mLevelDef = levelDef;
 
-		// Change references to the new level id
-		level.addResource(this);
-		level.updateLevelReferences(mUniqueId);
-
-		return (ResourceType) level;
+		return copy;
 	}
 
 	/**
 	 * @return a copy of this level without changing the ID of it
 	 */
 	public Level copyKeepId() {
-		Json json = new JsonWrapper();
-		String jsonString = json.toJson(this);
-		Level level = json.fromJson(Level.class, jsonString);
+		Kryo kryo = Pools.kryo.obtain();
 
-		level.mLevelDef = mLevelDef;
-		level.calculateEndPosition();
+		Level copy = kryo.copy(this);
 
-		return level;
+		copy.mLevelDef = mLevelDef;
+		copy.calculateStartPosition();
+		copy.calculateEndPosition();
+
+		Pools.kryo.free(kryo);
+
+		return copy;
 	}
 
 	/**
@@ -449,6 +444,16 @@ public class Level extends Resource implements KryoSerializable, Disposable, IRe
 		UUID levelDefId = kryo.readObject(input, UUID.class);
 		int revision = input.readInt();
 		mLevelDef = ResourceCacheFacade.get(null, levelDefId, revision);
+	}
+
+	@Override
+	public void copy(Object fromOriginal) {
+		if (fromOriginal instanceof Level) {
+			Level fromLevel = (Level)fromOriginal;
+			mLevelDef = fromLevel.mLevelDef;
+
+			// QUESTION Do we need to add references?
+		}
 	}
 
 	@Override

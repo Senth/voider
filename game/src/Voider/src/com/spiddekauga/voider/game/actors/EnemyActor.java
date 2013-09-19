@@ -323,6 +323,27 @@ public class EnemyActor extends Actor {
 	}
 
 	@Override
+	public void copy(Object fromOriginal) {
+		super.copy(fromOriginal);
+
+		EnemyActor fromEnemy = (EnemyActor)fromOriginal;
+
+		mWeapon = fromEnemy.mWeapon.copy();
+		mShootAngle = fromEnemy.mShootAngle;
+
+		mRandomMoveNext = fromEnemy.mRandomMoveNext;
+		mRandomMoveDirection.set(mRandomMoveDirection);
+
+		if (fromEnemy.mPath != null) {
+			mPath = fromEnemy.mPath.copy();
+			mPathIndexNext = fromEnemy.mPathIndexNext;
+			mPathOnceReachedEnd = fromEnemy.mPathOnceReachedEnd;
+			mPathForward = fromEnemy.mPathForward;
+		}
+
+	}
+
+	@Override
 	public void write(Json json) {
 		super.write(json);
 
@@ -513,19 +534,18 @@ public class EnemyActor extends Actor {
 		return success;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public <ResourceType> ResourceType copy() {
-		EnemyActor copy = super.copy();
+	public <ResourceType> ResourceType copyNewResource() {
+		ResourceType copy = super.copyNewResource();
 
-		// Set variables that aren't copied by default
-		copy.mPath = mPath;
-		copy.mGroup = mGroup;
+		EnemyActor enemyCopy = (EnemyActor)copy;
+		enemyCopy.mPath = mPath;
+		enemyCopy.mGroup = mGroup;
 
-		// Never make copy a group leader
-		copy.mGroupLeader = false;
+		// Never make a copy a group leader?
+		enemyCopy.mGroupLeader = false;
 
-		return (ResourceType) copy;
+		return copy;
 	}
 
 	/**

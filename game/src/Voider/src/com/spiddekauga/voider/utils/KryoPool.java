@@ -45,6 +45,7 @@ import com.spiddekauga.voider.game.actors.EnemyActor;
 import com.spiddekauga.voider.game.actors.EnemyActorDef;
 import com.spiddekauga.voider.game.actors.EnemyActorDef.AiMovementVars;
 import com.spiddekauga.voider.game.actors.EnemyActorDef.AimRotateVars;
+import com.spiddekauga.voider.game.actors.EnemyActorDef.AimTypes;
 import com.spiddekauga.voider.game.actors.EnemyActorDef.MovementTypes;
 import com.spiddekauga.voider.game.actors.EnemyActorDef.MovementVars;
 import com.spiddekauga.voider.game.actors.EnemyGroup;
@@ -59,6 +60,7 @@ import com.spiddekauga.voider.game.triggers.TActorActivated;
 import com.spiddekauga.voider.game.triggers.TScreenAt;
 import com.spiddekauga.voider.game.triggers.TriggerAction;
 import com.spiddekauga.voider.game.triggers.TriggerInfo;
+import com.spiddekauga.voider.resources.ResourceItem;
 import com.spiddekauga.voider.resources.ResourceNames;
 
 /**
@@ -89,7 +91,6 @@ public class KryoPool extends Pool<Kryo> {
 		Kryo kryo = new Kryo();
 		kryo.setRegistrationRequired(true);
 
-		RegisterClasses.createSerializers(kryo);
 		RegisterClasses.registerAll(kryo);
 
 		return kryo;
@@ -207,8 +208,13 @@ public class KryoPool extends Pool<Kryo> {
 		AIM_ROTATE_VARS(AimRotateVars.class, SerializerType.TAGGED),
 		/** ResourceNames */
 		RESOURCE_NAMES(ResourceNames.class),
+		/** ResourceItem */
+		RESOURCE_ITEM(ResourceItem.class, SerializerType.TAGGED),
+		/** Class */
+		CLASS(Class.class),
+		/** EnemyActor.AimTypes */
+		ENEMY_ACTOR_AIM_TYPES(AimTypes.class),
 
-		;
 
 		;
 
@@ -268,7 +274,7 @@ public class KryoPool extends Pool<Kryo> {
 		 * @param kryo creates the serializers for this Kryo instance.
 		 */
 		@SuppressWarnings("rawtypes")
-		public static void createSerializers(Kryo kryo) {
+		private static void createSerializers(Kryo kryo) {
 			// Vector2
 			VECTOR_2.mSerializer = new FieldSerializer<Vector2>(kryo, Vector2.class) {
 				@Override
@@ -323,6 +329,8 @@ public class KryoPool extends Pool<Kryo> {
 		 * @param kryo registers the serializers for this Kryo instance.
 		 */
 		public static void registerAll(Kryo kryo) {
+			createSerializers(kryo);
+
 			for (RegisterClasses registerClass : RegisterClasses.values()) {
 				if (registerClass.mType != null) {
 					if (registerClass.mSerializer == null) {
