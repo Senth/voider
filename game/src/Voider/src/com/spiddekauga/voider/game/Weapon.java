@@ -143,10 +143,54 @@ public class Weapon implements Disposable, Json.Serializable {
 		mCooldown = json.readValue("mCooldown", float.class, jsonValue);
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + Float.floatToIntBits(mCooldown);
+		result = prime * result + ((mDef == null) ? 0 : mDef.hashCode());
+		result = prime * result + ((mPosition == null) ? 0 : mPosition.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		Weapon other = (Weapon) obj;
+		if (Float.floatToIntBits(mCooldown) != Float.floatToIntBits(other.mCooldown)) {
+			return false;
+		}
+		if (mDef == null) {
+			if (other.mDef != null) {
+				return false;
+			}
+		}
+		else if (!mDef.equals(other.mDef)) {
+			return false;
+		}
+		if (mPosition == null) {
+			if (other.mPosition != null) {
+				return false;
+			}
+		}
+		else if (!mPosition.equals(other.mPosition)) {
+			return false;
+		}
+		return true;
+	}
+
 	/** Weapon definition */
 	@Tag(88) private WeaponDef mDef = null;
 	/** Current cooldown timer */
 	@Tag(89) private float mCooldown = 0;
 	/** Position of the weapon */
-	@Tag(90) private Vector2 mPosition = Pools.vector2.obtain();
+	@Tag(90) private Vector2 mPosition = Pools.vector2.obtain().set(0,0);
 }

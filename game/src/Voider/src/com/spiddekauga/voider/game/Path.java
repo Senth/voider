@@ -592,6 +592,59 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 		}
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ((mCorners == null) ? 0 : mCorners.hashCode());
+		result = prime * result + ((mEnemies == null) ? 0 : mEnemies.hashCode());
+		result = prime * result + ((mPathType == null) ? 0 : mPathType.hashCode());
+		result = prime * result + ((mRightestCorner == null) ? 0 : mRightestCorner.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (!super.equals(obj)) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		Path other = (Path) obj;
+		if (mCorners == null) {
+			if (other.mCorners != null) {
+				return false;
+			}
+		}
+		else if (!mCorners.equals(other.mCorners)) {
+			return false;
+		}
+		if (mEnemies == null) {
+			if (other.mEnemies != null) {
+				return false;
+			}
+		}
+		else if (!mEnemies.equals(other.mEnemies)) {
+			return false;
+		}
+		if (mPathType != other.mPathType) {
+			return false;
+		}
+		if (mRightestCorner == null) {
+			if (other.mRightestCorner != null) {
+				return false;
+			}
+		}
+		else if (!mRightestCorner.equals(other.mRightestCorner)) {
+			return false;
+		}
+		return true;
+	}
+
 	/** Path vertices for drawing in editor */
 	private ArrayList<Vector2> mVertices = null;
 	/** If this path is selected */

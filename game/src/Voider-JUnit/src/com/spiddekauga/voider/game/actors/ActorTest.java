@@ -20,6 +20,7 @@ import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.KryoPrototypeTest;
 import com.spiddekauga.utils.SerializableTaggedFieldSerializer;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.DefTest;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceNames;
@@ -219,6 +220,16 @@ public class ActorTest {
 		assertEquals(expected.getCornerCount(), actual.getCornerCount());
 		assertEquals(expected.getCorners(), actual.getCorners());
 		assertEquals(expected.getActorType(), actual.getActorType());
+	}
+
+	/**
+	 * Save and load a definition
+	 * @param def the definition to save and load
+	 */
+	protected static void saveAndLoad(Def def) {
+		ResourceSaver.save(def);
+		ResourceCacheFacade.load(mScene, def.getId(), def.getClass(), def.getRevision(), false);
+		ResourceCacheFacade.finishLoading();
 	}
 
 

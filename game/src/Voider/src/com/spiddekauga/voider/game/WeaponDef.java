@@ -89,6 +89,53 @@ public class WeaponDef {
 		return mBulletActorDef;
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((mBulletActorDef == null) ? 0 : mBulletActorDef.hashCode());
+		result = prime * result + Float.floatToIntBits(mBulletSpeed);
+		result = prime * result + Float.floatToIntBits(mCooldownMax);
+		result = prime * result + Float.floatToIntBits(mCooldownMin);
+		result = prime * result + Float.floatToIntBits(mDamage);
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		WeaponDef other = (WeaponDef) obj;
+		if (mBulletActorDef == null) {
+			if (other.mBulletActorDef != null) {
+				return false;
+			}
+		}
+		else if (!mBulletActorDef.equals(other.mBulletActorDef)) {
+			return false;
+		}
+		if (Float.floatToIntBits(mBulletSpeed) != Float.floatToIntBits(other.mBulletSpeed)) {
+			return false;
+		}
+		if (Float.floatToIntBits(mCooldownMax) != Float.floatToIntBits(other.mCooldownMax)) {
+			return false;
+		}
+		if (Float.floatToIntBits(mCooldownMin) != Float.floatToIntBits(other.mCooldownMin)) {
+			return false;
+		}
+		if (Float.floatToIntBits(mDamage) != Float.floatToIntBits(other.mDamage)) {
+			return false;
+		}
+		return true;
+	}
+
 	/** Type and visuals of the bullet */
 	@Tag(91) private BulletActorDef mBulletActorDef;
 	/** Bullet speed */
