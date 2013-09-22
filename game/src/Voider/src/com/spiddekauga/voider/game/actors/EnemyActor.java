@@ -253,7 +253,7 @@ public class EnemyActor extends Actor {
 				kryo.writeObject(output, mRandomMoveDirection);
 			}
 		} else if (enemyDef.getMovementType() == MovementTypes.PATH) {
-			kryo.writeObject(output, mPath);
+			kryo.writeObjectOrNull(output, mPath, Path.class);
 
 			if (mPath != null) {
 				output.writeInt(mPathIndexNext);
@@ -280,6 +280,7 @@ public class EnemyActor extends Actor {
 		super.read(kryo, input);
 
 		EnemyActorDef enemyDef = getDef(EnemyActorDef.class);
+		setDef(enemyDef);
 
 		// Weapon
 		if (enemyDef.hasWeapon()) {
@@ -300,7 +301,7 @@ public class EnemyActor extends Actor {
 				mRandomMoveDirection = kryo.readObject(input, Vector2.class);
 			}
 		} else if (enemyDef.getMovementType() == MovementTypes.PATH) {
-			mPath = kryo.readObject(input, Path.class);
+			mPath = kryo.readObjectOrNull(input, Path.class);
 
 			if (mPath != null) {
 				mPathIndexNext = input.readInt();
@@ -323,24 +324,38 @@ public class EnemyActor extends Actor {
 	}
 
 	@Override
+	public <ResourceType> ResourceType copyNewResource() {
+		ResourceType copy = super.copyNewResource();
+
+		EnemyActor enemyCopy = (EnemyActor)copy;
+		enemyCopy.mPath = mPath;
+		enemyCopy.mGroup = mGroup;
+
+		// Never make a copy a group leader?
+		enemyCopy.mGroupLeader = false;
+
+		return copy;
+	}
+
+	@Override
 	public void copy(Object fromOriginal) {
 		super.copy(fromOriginal);
 
 		EnemyActor fromEnemy = (EnemyActor)fromOriginal;
 
+		mGroupLeader = fromEnemy.mGroupLeader;
 		mWeapon = fromEnemy.mWeapon.copy();
 		mShootAngle = fromEnemy.mShootAngle;
 
 		mRandomMoveNext = fromEnemy.mRandomMoveNext;
-		mRandomMoveDirection.set(mRandomMoveDirection);
+		mRandomMoveDirection.set(fromEnemy.mRandomMoveDirection);
 
 		if (fromEnemy.mPath != null) {
-			mPath = fromEnemy.mPath.copy();
+			mPath = fromEnemy.mPath;
 			mPathIndexNext = fromEnemy.mPathIndexNext;
 			mPathOnceReachedEnd = fromEnemy.mPathOnceReachedEnd;
 			mPathForward = fromEnemy.mPathForward;
 		}
-
 	}
 
 	@Override
@@ -532,20 +547,6 @@ public class EnemyActor extends Actor {
 		// Enemy group is always in charge of binding/unbinding all
 
 		return success;
-	}
-
-	@Override
-	public <ResourceType> ResourceType copyNewResource() {
-		ResourceType copy = super.copyNewResource();
-
-		EnemyActor enemyCopy = (EnemyActor)copy;
-		enemyCopy.mPath = mPath;
-		enemyCopy.mGroup = mGroup;
-
-		// Never make a copy a group leader?
-		enemyCopy.mGroupLeader = false;
-
-		return copy;
 	}
 
 	/**

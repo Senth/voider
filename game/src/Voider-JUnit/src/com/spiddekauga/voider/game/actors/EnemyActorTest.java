@@ -3,6 +3,7 @@ package com.spiddekauga.voider.game.actors;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.fail;
 
@@ -17,6 +18,7 @@ import org.junit.Test;
 
 import com.badlogic.gdx.math.Vector2;
 import com.esotericsoftware.kryo.KryoPrototypeTest;
+import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.Path;
 import com.spiddekauga.voider.game.Path.PathTypes;
 import com.spiddekauga.voider.game.Weapon;
@@ -51,8 +53,8 @@ public class EnemyActorTest extends ActorTest {
 			// EnemyActor
 			mfWeapon = EnemyActor.class.getDeclaredField("mWeapon");
 			mfWeapon.setAccessible(true);
-			mfShootingAngle = EnemyActor.class.getDeclaredField("mShootingAngle");
-			mfShootingAngle.setAccessible(true);
+			mfShootAngle = EnemyActor.class.getDeclaredField("mShootAngle");
+			mfShootAngle.setAccessible(true);
 			mfRandomMoveNext = EnemyActor.class.getDeclaredField("mRandomMoveNext");
 			mfRandomMoveNext.setAccessible(true);
 			mfRandomMoveDirection = EnemyActor.class.getDeclaredField("mRandomMoveDirection");
@@ -248,9 +250,10 @@ public class EnemyActorTest extends ActorTest {
 			ActorTest.saveAndLoad(enemyActorDef);
 			enemy.dispose();
 			enemy = new EnemyActor();
+			enemy.setDef(enemyActorDef);
 			Weapon weapon = (Weapon) mfWeapon.get(enemy);
 			weapon.setPosition(new Vector2(12,213));
-			mfShootingAngle.set(enemy, 37);
+			mfShootAngle.set(enemy, 37);
 
 			// Copy sets all variables
 			copy = enemy.copy();
@@ -260,13 +263,13 @@ public class EnemyActorTest extends ActorTest {
 			// Write/Read does not set all variable
 			copy = KryoPrototypeTest.copy(enemy, EnemyActor.class, mKryo);
 			weapon.setPosition(new Vector2(0,0));
-			mfShootingAngle.set(enemy, 0);
+			mfShootAngle.set(enemy, Config.Editor.Enemy.Weapon.START_ANGLE_DEFAULT);
 			testEnemyEquals(enemy, copy, false);
 			copy.dispose();
 
 			// Test weapon has weapon
 			weapon.setPosition(new Vector2(12,213));
-			mfShootingAngle.set(enemy, 37);
+			mfShootAngle.set(enemy, 37);
 			enemyActorDef.setUseWeapon(true);
 			ActorTest.saveAndLoad(enemyActorDef);
 
@@ -288,7 +291,7 @@ public class EnemyActorTest extends ActorTest {
 			fail("Exception thrown!\n " + stringWriter.toString());
 		}
 
-		ResourceSaver.clearResources(EnemyActor.class);
+		ResourceSaver.clearResources(EnemyActorDef.class);
 	}
 
 	/**
@@ -323,18 +326,24 @@ public class EnemyActorTest extends ActorTest {
 		try {
 			assertNotSame(expected, actual);
 			if (copied) {
-				assertSame(mfWeapon.get(expected), mfWeapon.get(actual));
-				assertSame(expected.getEnemyGroup(), actual.getEnemyGroup());
 				assertSame(expected.getPath(), actual.getPath());
-			} else {
-				assertNotSame(mfWeapon.get(expected), mfWeapon.get(actual));
 				assertEquals(mfWeapon.get(expected), mfWeapon.get(actual));
-				assertNotSame(expected.getEnemyGroup(), actual.getEnemyGroup());
-				assertEquals(expected.getEnemyGroup(), actual.getEnemyGroup());
-				assertNotSame(expected.getPath(), actual.getPath());
+			} else {
+				if (expected.getPath() == null) {
+					assertNull(actual.getPath());
+				} else {
+					assertNotSame(expected.getPath(), actual.getPath());
+				}
 				assertEquals(expected.getPath(), actual.getPath());
 			}
-			assertEquals(mfShootingAngle.get(expected), mfShootingAngle.get(actual));
+			if (expected.getEnemyGroup() == null) {
+				assertNull(actual.getEnemyGroup());
+			} else {
+				assertNotSame(expected.getEnemyGroup(), actual.getEnemyGroup());
+				assertEquals(expected.getEnemyGroup(), actual.getEnemyGroup());
+			}
+			assertNotSame(mfWeapon.get(expected), mfWeapon.get(actual));
+			assertEquals(mfShootAngle.get(expected), mfShootAngle.get(actual));
 			assertEquals(expected.isGroupLeader(), actual.isGroupLeader());
 			assertEquals(mfRandomMoveNext.get(expected), mfRandomMoveNext.get(actual));
 			assertEquals(mfRandomMoveDirection.get(expected), mfRandomMoveDirection.get(actual));
@@ -362,7 +371,7 @@ public class EnemyActorTest extends ActorTest {
 	/** Weapon field */
 	private static Field mfWeapon = null;
 	/** Shooting angle field */
-	private static Field mfShootingAngle = null;
+	private static Field mfShootAngle = null;
 	/** AI random movement next time */
 	private static Field mfRandomMoveNext = null;
 	/** AI random movement direction */

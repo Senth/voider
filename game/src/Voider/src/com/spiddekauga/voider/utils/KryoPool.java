@@ -34,6 +34,7 @@ import com.spiddekauga.voider.game.GameSave;
 import com.spiddekauga.voider.game.GameSaveDef;
 import com.spiddekauga.voider.game.LevelDef;
 import com.spiddekauga.voider.game.Path;
+import com.spiddekauga.voider.game.Path.PathTypes;
 import com.spiddekauga.voider.game.PlayerStats;
 import com.spiddekauga.voider.game.Weapon;
 import com.spiddekauga.voider.game.WeaponDef;
@@ -214,6 +215,8 @@ public class KryoPool extends Pool<Kryo> {
 		CLASS(Class.class),
 		/** EnemyActor.AimTypes */
 		ENEMY_ACTOR_AIM_TYPES(AimTypes.class),
+		/** PathTypes */
+		PATH_TYPES(PathTypes.class);
 
 
 		;
