@@ -50,7 +50,7 @@ public class BulletActorTest extends ActorTest {
 		bullet.setDef(bulletDef);
 
 		ResourceSaver.save(bulletDef);
-		ResourceCacheFacade.load(mScene, bulletDef.getId(), BulletActorDef.class, bulletDef.getRevision(), false);
+		ResourceCacheFacade.load(mScene, bulletDef.getId(), false, bulletDef.getRevision());
 		ResourceCacheFacade.finishLoading();
 
 		BulletActor copyBullet = KryoPrototypeTest.copy(bullet, BulletActor.class, mKryo);

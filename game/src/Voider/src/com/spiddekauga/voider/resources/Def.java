@@ -140,12 +140,12 @@ public abstract class Def extends Resource implements Json.Serializable, IResour
 		mRevision = json.readValue("mRevision", int.class, jsonData);
 		mDescription = json.readValue("mDescription", String.class, jsonData);
 
-		HashSet<ResourceNames> internalMap = json.readValue("mInternalDependencies", HashSet.class, jsonData);
+		Set<ResourceNames> internalMap = json.readValue("mInternalDependencies", HashSet.class, jsonData);
 		if (internalMap != null) {
 			mInternalDependencies.addAll(internalMap);
 		}
 
-		Map<UUID, ResourceItem> externalDependencies = json.readValue("mExternalDependencies", Map.class, jsonData);
+		Map<UUID, Integer> externalDependencies = json.readValue("mExternalDependencies", Map.class, jsonData);
 		if (externalDependencies != null) {
 			mExternalDependencies = externalDependencies;
 		}
@@ -153,18 +153,12 @@ public abstract class Def extends Resource implements Json.Serializable, IResour
 
 	@Override
 	public void addDependency(IResource dependency) {
-		ResourceItem oldDefItem = mExternalDependencies.get(dependency.getId());
+		Integer cResources = mExternalDependencies.get(dependency.getId());
 
-		if (oldDefItem != null) {
-			oldDefItem.count++;
+		if (cResources != null) {
+			cResources++;
 		} else {
-			int revision = -1;
-			if (dependency instanceof IResourceRevision) {
-				revision = ((IResourceRevision) dependency).getRevision();
-			}
-
-			ResourceItem newDepItem = new ResourceItem(dependency.getId(), dependency.getClass(), revision);
-			mExternalDependencies.put(dependency.getId(), newDepItem);
+			mExternalDependencies.put(dependency.getId(), 1);
 		}
 	}
 
@@ -177,10 +171,10 @@ public abstract class Def extends Resource implements Json.Serializable, IResour
 	public void removeDependency(UUID dependency) {
 		// Decrement the value, remove if only one was left...
 
-		ResourceItem oldDefItem = mExternalDependencies.get(dependency);
-		if (oldDefItem != null) {
-			oldDefItem.count--;
-			if (oldDefItem.count == 0) {
+		Integer cResources = mExternalDependencies.get(dependency);
+		if (cResources != null) {
+			cResources--;
+			if (cResources.equals(0)) {
 				mExternalDependencies.remove(dependency);
 			}
 		} else {
@@ -191,16 +185,6 @@ public abstract class Def extends Resource implements Json.Serializable, IResour
 	@Override
 	public void removeDependency(ResourceNames dependency) {
 		mInternalDependencies.remove(dependency);
-	}
-
-	@Override
-	public void updateDependencyRevision(UUID dependency, int revision) {
-		ResourceItem depItem = mExternalDependencies.get(dependency);
-		if (depItem != null) {
-			depItem.revision = revision;
-		} else {
-			Gdx.app.error("Def", "No dependency found to update the revision of");
-		}
 	}
 
 	/**
@@ -242,7 +226,7 @@ public abstract class Def extends Resource implements Json.Serializable, IResour
 	}
 
 	@Override
-	public Map<UUID, ResourceItem> getExternalDependencies() {
+	public Map<UUID, Integer> getExternalDependencies() {
 		return mExternalDependencies;
 	}
 
@@ -260,7 +244,7 @@ public abstract class Def extends Resource implements Json.Serializable, IResour
 	}
 
 	/** Dependencies for the resource */
-	@Tag(43) private Map<UUID, ResourceItem> mExternalDependencies = new HashMap<UUID, ResourceItem>();
+	@Tag(43) private Map<UUID, Integer> mExternalDependencies = new HashMap<UUID, Integer>();
 	/** Internal dependencies, such as textures, sound, particle effects */
 	@Tag(42) private Set<ResourceNames> mInternalDependencies = new HashSet<ResourceNames>();
 	/** Name of the definition */

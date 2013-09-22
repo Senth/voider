@@ -18,7 +18,6 @@ import com.spiddekauga.utils.JsonWrapper;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.PlayerActor;
-import com.spiddekauga.voider.game.actors.PlayerActorDef;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceDependencyLoaderTest;
 import com.spiddekauga.voider.resources.ResourceNames;
@@ -45,7 +44,6 @@ public class LevelTest {
 		Config.init();
 		ResourceSaver.init();
 		ResourceNames.useTestPath();
-		ResourceNames.init();
 		ResourceCacheFacade.init();
 		Scene scene = new SceneStub();
 		SceneSwitcher.switchTo(scene);
@@ -56,8 +54,8 @@ public class LevelTest {
 
 		ResourceSaver.save(mUsingLevelDef);
 		ResourceSaver.save(mPlayerActor.getDef());
-		ResourceCacheFacade.load(scene, mPlayerActor.getDef().getId(), PlayerActorDef.class, mPlayerActor.getDef().getRevision(), false);
-		ResourceCacheFacade.load(scene, mUsingLevelDef.getId(), LevelDef.class, mUsingLevelDef.getRevision(), false);
+		ResourceCacheFacade.load(scene, mPlayerActor.getDef().getId(), false, mPlayerActor.getDef().getRevision());
+		ResourceCacheFacade.load(scene, mUsingLevelDef.getId(), false, mUsingLevelDef.getRevision());
 		ResourceCacheFacade.finishLoading();
 
 		mfXCoord = Level.class.getDeclaredField("mXCoord");

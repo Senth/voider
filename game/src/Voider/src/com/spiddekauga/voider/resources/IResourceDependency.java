@@ -47,16 +47,9 @@ public interface IResourceDependency extends IResource {
 	public void removeDependency(ResourceNames dependency);
 
 	/**
-	 * Updates a revision of an external dependency
-	 * @param dependency id of the dependency to update the revision of
-	 * @param revision new revision of the dependency
-	 */
-	public void updateDependencyRevision(UUID dependency, int revision);
-
-	/**
 	 * @return all external dependencies
 	 */
-	Map<UUID, ResourceItem> getExternalDependencies();
+	Map<UUID, Integer> getExternalDependencies();
 
 	/**
 	 * @return all internal dependencies

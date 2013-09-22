@@ -346,11 +346,11 @@ public class GameScene extends WorldScene {
 		ResourceCacheFacade.loadAllOf(this, PlayerActorDef.class, true);
 
 		if (mLevelToLoad != null) {
-			ResourceCacheFacade.load(this, mLevelToLoad.getLevelId(), Level.class, mLevelToLoad.getId(), LevelDef.class, mLevelToLoad.getRevision());
+			ResourceCacheFacade.load(this, mLevelToLoad.getLevelId(), mLevelToLoad.getId(), mLevelToLoad.getRevision());
 		}
 
 		if (mGameSaveDef != null) {
-			ResourceCacheFacade.load(this, mGameSaveDef.getGameSaveId(), GameSave.class, mGameSaveDef.getId(), GameSaveDef.class, mGameSaveDef.getRevision());
+			ResourceCacheFacade.load(this, mGameSaveDef.getGameSaveId(), mGameSaveDef.getId(), mGameSaveDef.getRevision());
 		}
 	}
 

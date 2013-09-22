@@ -17,7 +17,6 @@ import com.spiddekauga.voider.game.LevelDef;
 import com.spiddekauga.voider.game.actors.PickupActorDef;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceChecker;
-import com.spiddekauga.voider.resources.ResourceNames;
 import com.spiddekauga.voider.resources.ResourceSaver;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 
@@ -32,7 +31,6 @@ public class VoiderGame implements ApplicationListener {
 	public void create() {
 		// Init various classes
 		Config.init();
-		ResourceNames.init();
 		ResourceSaver.init();
 		ResourceCacheFacade.init();
 		ResourceChecker.checkAndCreateResources();

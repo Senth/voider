@@ -21,13 +21,13 @@ class LoadedDb {
 	 * Adds a resource that is currently being loaded
 	 * @param scene the scene the resource is loading into
 	 * @param resourceId id of the resource
-	 * @param type the type of the resource
 	 * @param revision the current revision that is being loaded. If the resource doesn't use a
 	 * revision this variable won't be used.
+	 * @param type the type of the resource
 	 * @return number of times this resource has been added onto this scene. If 1 this was the
 	 * first time it was added to this scene.
 	 */
-	int addLoadingResource(Scene scene, UUID resourceId, Class<?> type, int revision) {
+	int addLoadingResource(Scene scene, UUID resourceId, int revision, Class<? extends IResource> type) {
 		Map<UUID, LoadedResource> sceneResources = mLoadedResources.get(scene);
 
 		// No existing scene, add scene
@@ -42,24 +42,18 @@ class LoadedDb {
 		// Resource has never been loaded, add it
 		if (loadedResource == null) {
 			loadedResource = mLoadedResourcePool.obtain();
-			loadedResource.type = type;
 			loadedResource.revisions.clear();
+			loadedResource.type = type;
 			sceneResources.put(resourceId, loadedResource);
 		}
 
-
-		int revisionToUse = -1;
-		if (IResourceRevision.class.isAssignableFrom(type)) {
-			revisionToUse = revision;
-		}
-
-		LoadedRevision loadedRevision = loadedResource.revisions.get(revisionToUse);
+		LoadedRevision loadedRevision = loadedResource.revisions.get(revision);
 
 		// Revision has not been loaded before, add it
 		if (loadedRevision == null) {
 			loadedRevision = mLoadedRevisionPool.obtain();
 			loadedRevision.count = 1;
-			loadedResource.revisions.put(revisionToUse, loadedRevision);
+			loadedResource.revisions.put(revision, loadedRevision);
 		}
 		// Resource already loaded, just increase count
 		else {
@@ -86,13 +80,12 @@ class LoadedDb {
 	 * Removes a loaded resource from the specified scene
 	 * @param scene the scene the resource was loaded into
 	 * @param resourceId the resource that was loaded
-	 * @param type of the resource that was loaded
 	 * @param revision the revision of the resource
 	 * @return number of instances the scene has of this resource after it has been unloaded. If
 	 * it returns 0, it means it has been fully unloaded from this scene. -1 if the resource
 	 * wasn't found
 	 */
-	int removeLoadedResource(Scene scene, UUID resourceId, Class<?> type, int revision) {
+	int removeLoadedResource(Scene scene, UUID resourceId, int revision) {
 		Map<UUID, LoadedResource> sceneResources = mLoadedResources.get(scene);
 
 		int cLoad = -1;
@@ -101,12 +94,8 @@ class LoadedDb {
 			LoadedResource loadedResource = sceneResources.get(resourceId);
 
 			if (loadedResource != null) {
-				int revisionToUse = -1;
-				if (IResourceRevision.class.isAssignableFrom(type)) {
-					revisionToUse = revision;
-				}
 
-				LoadedRevision loadedRevision = loadedResource.revisions.get(revisionToUse);
+				LoadedRevision loadedRevision = loadedResource.revisions.get(revision);
 				if (loadedRevision != null) {
 					loadedRevision.count--;
 					cLoad = loadedRevision.count;
@@ -114,7 +103,7 @@ class LoadedDb {
 					// Remove and free revision if this was the last of it
 					if (loadedRevision.count == 0) {
 						mLoadedRevisionPool.free(loadedRevision);
-						loadedResource.revisions.remove(revisionToUse);
+						loadedResource.revisions.remove(revision);
 
 						// Remove and free resource if this was the last revision
 						if (loadedResource.revisions.isEmpty()) {
@@ -128,10 +117,10 @@ class LoadedDb {
 						}
 					}
 				} else {
-					Gdx.app.error("LoadedDb", "Could not find the revision (" + revision + ") for (" + type.getSimpleName() + ": " + resourceId + ")");
+					Gdx.app.error("LoadedDb", "Could not find the revision (" + revision + ") for (" + resourceId + ")");
 				}
 			} else {
-				Gdx.app.error("LoadedDb", "Could not find " + type.getSimpleName() + ": " + resourceId);
+				Gdx.app.error("LoadedDb", "Could not find " + resourceId);
 			}
 		} else {
 			Gdx.app.error("LoadedDb", "Could not find scene (" + scene.getClass().getSimpleName() + ") for the resource!");
@@ -195,21 +184,17 @@ class LoadedDb {
 			LoadedResource loadedResource = sceneResources.get(resourceId);
 
 			if (loadedResource != null) {
-				int revisionToUse = -1;
-				if (IResourceRevision.class.isAssignableFrom(loadedResource.type)) {
-					revisionToUse = revision;
-				}
-
-				LoadedRevision loadedRevision = loadedResource.revisions.get(revisionToUse);
+				LoadedRevision loadedRevision = loadedResource.revisions.get(revision);
 				if (loadedRevision != null) {
 					return loadedRevision;
-				} else {
+				} else if (Gdx.app != null) {
 					Gdx.app.debug("LoadedDb", "Could not find the revision (" + revision + ") for (" + loadedResource.type.getSimpleName() + ": " + resourceId + ")");
 				}
-			} else {
+			} else if (Gdx.app != null) {
+
 				Gdx.app.debug("LoadedDb", "Could not find " + resourceId);
 			}
-		} else {
+		} else if (Gdx.app != null) {
 			Gdx.app.error("LoadedDb", "Could not find scene (" + scene.getClass().getSimpleName() + ") for the resource!");
 		}
 

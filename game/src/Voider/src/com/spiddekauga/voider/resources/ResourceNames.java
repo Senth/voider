@@ -110,7 +110,7 @@ public enum ResourceNames {
 	/**
 	 * Initializes the resource names
 	 */
-	public static void init() {
+	static void init() {
 		mResourcePaths.put(Texture.class, TEXTURE_PATH);
 		mResourcePaths.put(BulletActorDef.class, ACTOR_BULLET_PATH);
 		mResourcePaths.put(EnemyActorDef.class, ACTOR_ENEMY_PATH);

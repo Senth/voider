@@ -1,12 +1,12 @@
 package com.spiddekauga.voider.resources;
 
+import java.util.Map;
 import java.util.UUID;
 
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.GdxRuntimeException;
-import java.util.Map;
 import com.spiddekauga.voider.scene.Scene;
 
 /**
@@ -32,16 +32,15 @@ class ResourceDependencyLoader implements Disposable {
 	 * @param <ResourceType> class of the resourceId to load
 	 * @param scene the scene to load this resource into
 	 * @param resourceId the id of the resource which we want to load, including its dependencies
-	 * @param type the class type of resourceId
 	 * @param revision the revision of the resource, -1 to use latest revision
 	 * @throws UndefinedResourceTypeException thrown when type is an undefined resource type
 	 */
-	<ResourceType> void load(Scene scene, UUID resourceId, Class<ResourceType> type, int revision) throws UndefinedResourceTypeException {
+	<ResourceType> void load(Scene scene, UUID resourceId, int revision) throws UndefinedResourceTypeException {
 		// Add definition to wait queue
-		mLoadingDefs.add(new ResourceItem(scene, resourceId, type, revision));
+		mLoadingDefs.add(new ResourceItem(scene, resourceId, revision));
 
 		// Load the resource
-		ResourceDatabase.load(scene, resourceId, type, revision);
+		ResourceDatabase.load(scene, resourceId, revision);
 	}
 
 	@Override
@@ -62,9 +61,9 @@ class ResourceDependencyLoader implements Disposable {
 		}
 
 		// External, if the dependency has dependencies, unload its dependencies too
-		for (Map.Entry<UUID, ResourceItem> entry : resource.getExternalDependencies().entrySet()) {
-			ResourceItem dependencyInformation = entry.getValue();
-			IResource dependency = ResourceDatabase.getLoadedResource(scene, dependencyInformation.id, dependencyInformation.revision);
+		for (Map.Entry<UUID, Integer> entry : resource.getExternalDependencies().entrySet()) {
+			UUID dependencyId = entry.getKey();
+			IResource dependency = ResourceDatabase.getLoadedResource(scene, dependencyId, -1);
 
 			if (dependency instanceof IResourceDependency) {
 				unload(scene, (IResourceDependency) dependency);
@@ -91,7 +90,7 @@ class ResourceDependencyLoader implements Disposable {
 			return true;
 		}
 
-		mAssetManager.update();
+		ResourceDatabase.update();
 
 		// If any of the resources we're waiting for been loaded ->
 		// Check for its dependencies and remove from load
@@ -103,13 +102,11 @@ class ResourceDependencyLoader implements Disposable {
 
 				// Load dependencies
 				// External
-				for (Map.Entry<UUID, ResourceItem> entry : def.getExternalDependencies().entrySet()) {
-					ResourceItem dependency = entry.getValue();
+				for (Map.Entry<UUID, Integer> entry : def.getExternalDependencies().entrySet()) {
+					UUID dependencyId = entry.getKey();
 
-					// Propagate scene so that we always know which scene to load into
-					dependency.scene = queueItem.scene;
 					try {
-						load(queueItem.scene, dependency.id, dependency.type, dependency.revision);
+						load(queueItem.scene, dependencyId, -1);
 					} catch (UndefinedResourceTypeException e) {
 						// Reset entire loading queue
 						mLoadingDefs.clear();

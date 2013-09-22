@@ -50,7 +50,7 @@ public class PlayerActorTest extends ActorTest {
 		player.setDef(playerDef);
 
 		ResourceSaver.save(playerDef);
-		ResourceCacheFacade.load(mScene, playerDef.getId(), PlayerActorDef.class, playerDef.getRevision(), false);
+		ResourceCacheFacade.load(mScene, playerDef.getId(), false, playerDef.getRevision());
 		ResourceCacheFacade.finishLoading();
 
 		PlayerActor copyPlayer = KryoPrototypeTest.copy(player, PlayerActor.class, mKryo);

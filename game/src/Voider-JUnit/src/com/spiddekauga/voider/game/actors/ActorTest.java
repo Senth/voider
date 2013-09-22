@@ -47,7 +47,6 @@ public class ActorTest {
 		Config.Debug.DEBUG_TESTS = false;
 		ResourceSaver.init();
 		ResourceNames.useTestPath();
-		ResourceNames.init();
 		ResourceCacheFacade.init();
 		SceneSwitcher.switchTo(mScene);
 
@@ -134,7 +133,7 @@ public class ActorTest {
 
 		// Need to save and load def
 		ResourceSaver.save(actorDef);
-		ResourceCacheFacade.load(mScene, actorDef.getId(), PickupActorDef.class, actorDef.getRevision(), false);
+		ResourceCacheFacade.load(mScene, actorDef.getId(), false, actorDef.getRevision());
 		ResourceCacheFacade.finishLoading();
 		PickupActorDef loadedActorDef = ResourceCacheFacade.get(mScene, actorDef.getId());
 		actor.setDef(loadedActorDef);
@@ -228,7 +227,7 @@ public class ActorTest {
 	 */
 	protected static void saveAndLoad(Def def) {
 		ResourceSaver.save(def);
-		ResourceCacheFacade.load(mScene, def.getId(), def.getClass(), def.getRevision(), false);
+		ResourceCacheFacade.load(mScene, def.getId(), false, def.getRevision());
 		ResourceCacheFacade.finishLoading();
 	}
 

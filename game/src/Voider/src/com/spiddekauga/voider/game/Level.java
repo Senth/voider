@@ -37,7 +37,6 @@ import com.spiddekauga.voider.resources.IResourceUpdate;
 import com.spiddekauga.voider.resources.Resource;
 import com.spiddekauga.voider.resources.ResourceBinder;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
-import com.spiddekauga.voider.resources.ResourceItem;
 import com.spiddekauga.voider.resources.UndefinedResourceTypeException;
 import com.spiddekauga.voider.utils.Pools;
 
@@ -119,13 +118,10 @@ public class Level extends Resource implements KryoTaggedCopyable, KryoSerializa
 	 */
 	public void resetDefs() {
 		ArrayList<EnemyActor> enemyActors = mResourceBinder.getResources(EnemyActor.class);
-		Map<UUID, ResourceItem> externalDependencies = mLevelDef.getExternalDependencies();
 
 		// Update defs for all enemies
 		for (EnemyActor enemy : enemyActors) {
-			ResourceItem resourceItem = externalDependencies.get(enemy.getDef().getId());
-
-			EnemyActorDef correctDef = ResourceCacheFacade.get(null, resourceItem.id, resourceItem.revision);
+			EnemyActorDef correctDef = ResourceCacheFacade.get(null, enemy.getDef().getId());
 			enemy.setDef(correctDef);
 		}
 	}

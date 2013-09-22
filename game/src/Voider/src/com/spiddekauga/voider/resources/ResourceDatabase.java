@@ -31,6 +31,7 @@ class ResourceDatabase {
 	 * Builds the resource database
 	 * @param assetManager the asset manager to load files with
 	 */
+	@SuppressWarnings("unchecked")
 	static void init(AssetManager assetManager) {
 		mAssetManager = assetManager;
 
@@ -45,11 +46,11 @@ class ResourceDatabase {
 
 			// Resource revision
 			if (IResourceRevision.class.isAssignableFrom(entry.getKey())) {
-				buildResourceRevisionDb(entry.getKey(), dir);
+				buildResourceRevisionDb((Class<? extends IResource>) entry.getKey(), dir);
 			}
 			// Simple resource
 			else if (IResource.class.isAssignableFrom(entry.getKey())) {
-				buildResourceDb(entry.getKey(), dir);
+				buildResourceDb((Class<? extends IResource>) entry.getKey(), dir);
 			}
 		}
 	}
@@ -59,7 +60,7 @@ class ResourceDatabase {
 	 * @param type what type of class the resource is
 	 * @param dir the directory where the resources of this type is located
 	 */
-	private static void buildResourceRevisionDb(Class<?> type, FileHandle dir) {
+	private static void buildResourceRevisionDb(Class<? extends IResource> type, FileHandle dir) {
 		FileHandle[] resourceDirs = dir.list();
 
 		for (FileHandle revisionDir : resourceDirs) {
@@ -116,7 +117,7 @@ class ResourceDatabase {
 	 * @param type what type of class the resource is
 	 * @param dir the directory where the resources of this type is located
 	 */
-	private static void buildResourceDb(Class<?> type, FileHandle dir) {
+	private static void buildResourceDb(Class<? extends IResource> type, FileHandle dir) {
 		FileHandle[] resources = dir.list();
 
 		for (FileHandle resource : resources) {
@@ -265,7 +266,7 @@ class ResourceDatabase {
 	 * @return true if the resource has been loaded in the specified scene, false if not.
 	 */
 	static boolean isResourceLoaded(Scene scene, UUID resourceId, int revision) {
-		return mLoadedResources.getLoadedResource(scene, resourceId, revision) != null;
+		return mLoadedResources.getLoadedResource(scene, resourceId, getRevisionToUse(resourceId, revision)) != null;
 	}
 
 	/**
@@ -273,22 +274,20 @@ class ResourceDatabase {
 	 * not try to load the resource
 	 * @param scene the scene which is loading
 	 * @param resourceId the resource that is currently being loaded
-	 * @param type the type of the resource to load
 	 * @param revision the revision to load. Note that if the resource already has
 	 * been loaded, this variable will have no effect. I.e. it will not load another
 	 * revision of the resource as only one revision per scene and resource is allowed.
 	 */
-	static void load(Scene scene, UUID resourceId, Class<?> type, int revision) {
-		int cLoad = mLoadedResources.addLoadingResource(scene, resourceId, type, revision);
+	static void load(Scene scene, UUID resourceId, int revision) {
+		ResourceInfo resourceInfo = mResources.get(resourceId);
+		int revisionToUse = getRevisionToUse(resourceId, revision);
 
-		int revisionToUse = -1;
-		if (IResourceRevision.class.isAssignableFrom(type)) {
-			revisionToUse = revision;
-		}
+		int cLoad = mLoadedResources.addLoadingResource(scene, resourceId, revisionToUse, resourceInfo.type);
+
 		String filePath = getFilePath(resourceId, revisionToUse);
 
 		if (cLoad == 1) {
-			mAssetManager.load(filePath, type);
+			mAssetManager.load(filePath, resourceInfo.type);
 
 			LoadingQueueItem loadingQueueItem = mLoadingQueuePool.obtain();
 			loadingQueueItem.scene = scene;
@@ -296,13 +295,13 @@ class ResourceDatabase {
 			mLoadingQueue.add(loadingQueueItem);
 		} else {
 			String name = "";
-			if (Def.class.isAssignableFrom(type)) {
+			if (Def.class.isAssignableFrom(resourceInfo.type)) {
 				if (mAssetManager.isLoaded(filePath)) {
 					IResource resource = mAssetManager.get(filePath);
 					name = ((Def) resource).getName();
 				}
 			}
-			debugOutputLoadedUnloaded(scene, cLoad, true, type, name, revisionToUse, filePath);
+			debugOutputLoadedUnloaded(scene, cLoad, true, resourceInfo.type, name, revisionToUse, filePath);
 		}
 	}
 
@@ -332,11 +331,12 @@ class ResourceDatabase {
 	 * @param revision specific revision of the resource to reload.
 	 */
 	static void reload(UUID resourceId, int revision) {
-		String filepath = getFilePath(resourceId, revision);
+		int revisionToUse = getRevisionToUse(resourceId, revision);
+		String filepath = getFilePath(resourceId, revisionToUse);
 
 		if (filepath != null && mAssetManager.isLoaded(filepath)) {
 			// Get scenes the resource is loaded into
-			ArrayList<Scene> scenes = mLoadedResources.getResourceScenes(resourceId, revision);
+			ArrayList<Scene> scenes = mLoadedResources.getResourceScenes(resourceId, revisionToUse);
 
 			// Reload the actual asset
 			ResourceInfo resourceInfo = mResources.get(resourceId);
@@ -348,7 +348,7 @@ class ResourceDatabase {
 			mAssetManager.setReferenceCount(filepath, cRefs);
 
 			// Update the scene resource to contain the new reference of the resource
-			IResource resource = (IResource) mAssetManager.get(filepath, resourceInfo.type);
+			IResource resource = mAssetManager.get(filepath, resourceInfo.type);
 			for (Scene scene : scenes) {
 				mLoadedResources.setLoadedResource(scene, resource);
 			}
@@ -370,7 +370,7 @@ class ResourceDatabase {
 			revisionToUse = ((IResourceRevision) resource).getRevision();
 		}
 
-		unload(scene, resource.getId(), resource.getClass(), revisionToUse);
+		unload(scene, resource.getId(), revisionToUse);
 	}
 
 	/**
@@ -378,23 +378,21 @@ class ResourceDatabase {
 	 * times the resource was loaded.
 	 * @param scene the scene the resource was loaded in
 	 * @param resourceId id of the resource to be unloaded
-	 * @param type the resource type of there resource
 	 * @param revision revision of the resource to be unloaded, if the resource doesn't
 	 * use a revision this parameter will not be used...
 	 * @see #clearLoadedSceneResources(Scene)
 	 */
-	static void unload(Scene scene, UUID resourceId, Class<?> type, int revision) {
-		int revisionToUse = -1;
-		if (IResourceRevision.class.isAssignableFrom(type)) {
-			revisionToUse = revision;
-		}
+	static void unload(Scene scene, UUID resourceId, int revision) {
+		ResourceInfo resourceInfo = mResources.get(resourceId);
 
-		int cLoad = mLoadedResources.removeLoadedResource(scene, resourceId, type, revisionToUse);
+		int revisionToUse = getRevisionToUse(resourceId, revision);
+
+		int cLoad = mLoadedResources.removeLoadedResource(scene, resourceId, revisionToUse);
 
 		String filePath = getFilePath(resourceId, revisionToUse);
 
 		String name = "";
-		if (Def.class.isAssignableFrom(type)) {
+		if (Def.class.isAssignableFrom(resourceInfo.type)) {
 			IResource resource = mAssetManager.get(filePath);
 			name = ((Def) resource).getName();
 		}
@@ -403,7 +401,7 @@ class ResourceDatabase {
 			mAssetManager.unload(filePath);
 		}
 
-		debugOutputLoadedUnloaded(scene, cLoad, false, type, name, revisionToUse, filePath);
+		debugOutputLoadedUnloaded(scene, cLoad, false, resourceInfo.type, name, revisionToUse, filePath);
 	}
 
 	/**
@@ -524,14 +522,7 @@ class ResourceDatabase {
 	 * @return A loaded resource. Null if not found
 	 */
 	static <ResourceType> ResourceType getLoadedResource(Scene scene, UUID resourceId, int revision) {
-		int revisionToUse = revision;
-		if (revision == -1) {
-			ResourceInfo resourceInfo = mResources.get(resourceId);
-			if (resourceInfo != null) {
-				revisionToUse = resourceInfo.latestRevision;
-			}
-		}
-		return mLoadedResources.getLoadedResource(scene, resourceId, revisionToUse);
+		return mLoadedResources.getLoadedResource(scene, resourceId, getRevisionToUse(resourceId, revision));
 	}
 
 	/**
@@ -606,6 +597,31 @@ class ResourceDatabase {
 	}
 
 	/**
+	 * Calculates the revision to use for the resource
+	 * @param resourceId id of the resource
+	 * @param requestedRevision the requested revision to use.
+	 * @return If the resource can use revisions the requested revision will be used unless -1 is requested.
+	 * In that case the latest revision for that resource will be used instead. If the resource cannot hold
+	 * revisions this method will always return -1.
+	 */
+	private static int getRevisionToUse(UUID resourceId, int requestedRevision) {
+		int revisionToUse = -1;
+		ResourceInfo resourceInfo = mResources.get(resourceId);
+		if (resourceId != null) {
+			if (IResourceRevision.class.isAssignableFrom(resourceInfo.type)) {
+				if (requestedRevision == -1) {
+					revisionToUse = resourceInfo.latestRevision;
+				} else {
+					revisionToUse = requestedRevision;
+				}
+			}
+		} else {
+			Gdx.app.error("ResourceDatabase", "Could not find resoure! " + resourceId);
+		}
+		return revisionToUse;
+	}
+
+	/**
 	 * Private constructor to enforce singleton usage
 	 */
 	ResourceDatabase() {
@@ -622,7 +638,7 @@ class ResourceDatabase {
 		 * Creates a new resource DB type with no revision
 		 * @param type the type of the resource
 		 */
-		ResourceInfo(Class<?> type) {
+		ResourceInfo(Class<? extends IResource> type) {
 			this.type = type;
 		}
 
@@ -670,7 +686,7 @@ class ResourceDatabase {
 		}
 
 		/** Type of resource */
-		private Class<?> type;
+		private Class<? extends IResource> type;
 		/** Latest revision of the resource */
 		private int latestRevision = -1;
 		/** all available including the date */

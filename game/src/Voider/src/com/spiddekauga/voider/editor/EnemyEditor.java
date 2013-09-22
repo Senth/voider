@@ -169,7 +169,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 			BulletActorDef oldBulletDef = mDef.getWeaponDef().getBulletActorDef();
 
 			if (bulletId != null) {
-				ResourceCacheFacade.load(this, bulletId, BulletActorDef.class, revision, true);
+				ResourceCacheFacade.load(this, bulletId, true, revision);
 				ResourceCacheFacade.finishLoading();
 
 				BulletActorDef bulletActorDef = ResourceCacheFacade.get(this, bulletId, revision);
@@ -459,7 +459,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 			if (ResourceCacheFacade.isLoaded(this, mDef.getId(), oldRevision)) {
 				ResourceCacheFacade.unload(this, mDef, true);
 			}
-			ResourceCacheFacade.load(this, mDef.getId(), EnemyActorDef.class, newRevision, true);
+			ResourceCacheFacade.load(this, mDef.getId(), true, newRevision);
 			ResourceCacheFacade.finishLoading();
 
 			// Reload the old definition, some other scenes might be using it...

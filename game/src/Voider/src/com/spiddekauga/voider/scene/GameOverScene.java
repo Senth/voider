@@ -51,7 +51,7 @@ public class GameOverScene extends Scene {
 	protected void loadResources() {
 		super.loadResources();
 		ResourceCacheFacade.load(ResourceNames.UI_GENERAL);
-		ResourceCacheFacade.load(this, mLevelDef.getId(), LevelDef.class, mLevelDef.getRevision(), false);
+		ResourceCacheFacade.load(this, mLevelDef.getId(), false, mLevelDef.getRevision());
 	}
 
 	@Override

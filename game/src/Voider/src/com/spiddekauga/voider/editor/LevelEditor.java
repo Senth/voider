@@ -1,8 +1,6 @@
 package com.spiddekauga.voider.editor;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
@@ -287,32 +285,32 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 		 * correct revisions is the easiest way to do this.
 		 */
 
-		ResourceCacheFacade.loadAllOf(this, EnemyActorDef.class, true, getEnemyRevisions());
+		ResourceCacheFacade.loadAllOf(this, EnemyActorDef.class, true);
 		ResourceCacheFacade.finishLoading();
 	}
 
-	/**
-	 * @return the revision of all enemy resource the level is currently using
-	 */
-	private Map<UUID, Integer> getEnemyRevisions() {
-		// Get the specific revision of certain enemies we currently use
-		Map<UUID, Integer> enemyRevisions = new HashMap<UUID, Integer>();
-		Map<UUID, ResourceItem> dependencies = null;
-		if (mLevel != null) {
-			dependencies = mLevel.getDef().getExternalDependencies();
-		} else {
-			dependencies = new HashMap<UUID, ResourceItem>();
-		}
-
-		// Add all enemy revision to this dependency
-		for (Map.Entry<UUID, ResourceItem> entry : dependencies.entrySet()) {
-			if (EnemyActorDef.class.isAssignableFrom(entry.getValue().type)) {
-				enemyRevisions.put(entry.getKey(), entry.getValue().revision);
-			}
-		}
-
-		return enemyRevisions;
-	}
+	//	/**
+	//	 * @return the revision of all enemy resource the level is currently using
+	//	 */
+	//	private Map<UUID, Integer> getEnemyRevisions() {
+	//		// Get the specific revision of certain enemies we currently use
+	//		Map<UUID, Integer> enemyRevisions = new HashMap<UUID, Integer>();
+	//		Map<UUID, ResourceItem> dependencies = null;
+	//		if (mLevel != null) {
+	//			dependencies = mLevel.getDef().getExternalDependencies();
+	//		} else {
+	//			dependencies = new HashMap<UUID, ResourceItem>();
+	//		}
+	//
+	//		// Add all enemy revision to this dependency
+	//		for (Map.Entry<UUID, ResourceItem> entry : dependencies.entrySet()) {
+	//			if (EnemyActorDef.class.isAssignableFrom(entry.getValue().type)) {
+	//				enemyRevisions.put(entry.getKey(), entry.getValue().revision);
+	//			}
+	//		}
+	//
+	//		return enemyRevisions;
+	//	}
 
 	@Override
 	protected void onActivate(Outcomes outcome, Object message) {
@@ -359,7 +357,7 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 
 					// Only load level if it's not the current level we selected
 					if (!mLoadingLevel.equals(mLevel.getDef())) {
-						ResourceCacheFacade.load(this, mLoadingLevel.getLevelId(), Level.class, mLoadingLevel.getId(), LevelDef.class, mLoadingLevel.getRevision());
+						ResourceCacheFacade.load(this, mLoadingLevel.getLevelId(), mLoadingLevel.getId(), mLoadingLevel.getRevision());
 						Scene scene = getLoadingScene();
 						if (scene != null) {
 							SceneSwitcher.switchTo(scene);
@@ -651,8 +649,8 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 		// Load the saved actor and use it instead
 		// Def needs to be loaded twice, as the def should still be visible if we change level
 		try {
-			ResourceCacheFacade.load(this, mLevel.getDef().getId(), LevelDef.class, newRevision, false);
-			ResourceCacheFacade.load(this, mLevel.getId(), Level.class, mLevel.getDef().getId(), LevelDef.class, newRevision);
+			ResourceCacheFacade.load(this, mLevel.getDef().getId(), false, newRevision);
+			ResourceCacheFacade.load(this, mLevel.getId(), mLevel.getDef().getId(), newRevision);
 			ResourceCacheFacade.finishLoading();
 
 			setLevel((Level) ResourceCacheFacade.get(this, mLevel.getId(), mLevel.getRevision()+1));
@@ -1141,7 +1139,7 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 	void selectEnemy() {
 		mSelectionAction = SelectionActions.ENEMY;
 
-		Scene scene = new SelectDefScene(EnemyActorDef.class, false, true, getEnemyRevisions());
+		Scene scene = new SelectDefScene(EnemyActorDef.class, false, true, false);
 		SceneSwitcher.switchTo(scene);
 	}
 

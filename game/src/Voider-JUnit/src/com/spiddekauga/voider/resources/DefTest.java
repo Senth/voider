@@ -130,8 +130,8 @@ public class DefTest {
 
 		// External dependencies
 		assertEquals(expected.getExternalDependenciesCount(), actual.getExternalDependenciesCount());
-		for (Map.Entry<UUID, ResourceItem> dependency : expected.getExternalDependencies().entrySet()) {
-			ResourceItem foundDependency = actual.getExternalDependencies().get(dependency.getKey());
+		for (Map.Entry<UUID, Integer> dependency : expected.getExternalDependencies().entrySet()) {
+			Integer foundDependency = actual.getExternalDependencies().get(dependency.getKey());
 			assertNotNull(foundDependency);
 			assertEquals(dependency.getValue(), foundDependency);
 		}
