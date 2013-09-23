@@ -465,6 +465,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 
 	@Override
 	public void write(Kryo kryo, Output output) {
+		output.writeInt(CLASS_REVISION, true);
 
 		// Saves active state?
 		output.writeBoolean(!mEditorActive);
@@ -494,6 +495,9 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 
 	@Override
 	public void read(Kryo kryo, Input input) {
+		@SuppressWarnings("unused")
+		int classRevision = input.readInt(true);
+
 		// Load active state
 		if (input.readBoolean()) {
 			mActive = input.readBoolean();
@@ -1215,10 +1219,10 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	/** Trigger informations */
 	@Deprecated
 	@Tag(5) private ArrayList<TriggerInfo> mTriggerInfos = new ArrayList<TriggerInfo>();
-	/** Revision of the actor */
-	@Tag(100) protected int CLASS_REVISION = 1;
 
 	// Kryo special variables
+	/** Revision of the actor */
+	protected final int CLASS_REVISION = 1;
 	/** True if the actor is active */
 	private boolean mActive = true;
 	/** The belonging definition of this actor */

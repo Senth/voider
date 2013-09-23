@@ -193,8 +193,8 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 		mLevel = level;
 
 		if (mLevel != null) {
-			mLevel.addResource(mLevel);
-			mLevel.bindResources();
+			//			mLevel.addResource(mLevel);
+			//			mLevel.bindResources();
 
 			clearTools();
 

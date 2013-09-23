@@ -58,8 +58,8 @@ public class GameScene extends WorldScene {
 	 */
 	public void setLevel(Level level) {
 		mLevel = level;
-		mLevel.addResource(mLevel);
-		mLevel.bindResources();
+		//		mLevel.addResource(mLevel);
+		//		mLevel.bindResources();
 		mLevel.run();
 		mLevel.createDefaultTriggers();
 

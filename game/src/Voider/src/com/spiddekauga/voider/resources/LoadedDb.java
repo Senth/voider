@@ -195,7 +195,7 @@ class LoadedDb {
 				Gdx.app.debug("LoadedDb", "Could not find " + resourceId);
 			}
 		} else if (Gdx.app != null) {
-			Gdx.app.error("LoadedDb", "Could not find scene (" + scene.getClass().getSimpleName() + ") for the resource!");
+			Gdx.app.debug("LoadedDb", "Could not find scene (" + scene.getClass().getSimpleName() + ") for the resource!");
 		}
 
 		return null;

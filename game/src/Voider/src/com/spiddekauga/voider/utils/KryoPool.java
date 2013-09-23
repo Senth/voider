@@ -149,7 +149,7 @@ public class KryoPool extends Pool<Kryo> {
 		/** StaticTerrainActorDef */
 		STATIC_TERRAIN_ACTOR_DEF(StaticTerrainActorDef.class, SerializerType.TAGGED),
 		/** VisualVars */
-		VISUAL_VARS(VisualVars.class, SerializerType.TAGGED),
+		VISUAL_VARS(VisualVars.class, SerializerType.SERIALIZABLE_TAGGED),
 		/** BulletDestroyer */
 		BULLET_DESTROYER(BulletDestroyer.class, SerializerType.TAGGED),
 		/** Collectibles */

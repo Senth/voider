@@ -54,7 +54,7 @@ public class Level extends Resource implements KryoTaggedCopyable, KryoSerializa
 		mSpeed = mLevelDef.getBaseSpeed();
 		mCompletedLevel = false;
 
-		mResourceBinder.addResource(this);
+		//		mResourceBinder.addResource(this);
 	}
 
 	/**
@@ -394,6 +394,9 @@ public class Level extends Resource implements KryoTaggedCopyable, KryoSerializa
 
 	@Override
 	public void write(Kryo kryo, Output output) {
+		// Class structure revision
+		output.writeInt(CLASS_REVISION, true);
+
 		// LevelDef
 		kryo.writeObject(output, mLevelDef.getId());
 		output.writeInt(mLevelDef.getRevision());
@@ -401,6 +404,9 @@ public class Level extends Resource implements KryoTaggedCopyable, KryoSerializa
 
 	@Override
 	public void read(Kryo kryo, Input input) {
+		@SuppressWarnings("unused")
+		int classRevision = input.readInt(true);
+
 		// LevelDef
 		UUID levelDefId = kryo.readObject(input, UUID.class);
 		int revision = input.readInt();
@@ -427,10 +433,6 @@ public class Level extends Resource implements KryoTaggedCopyable, KryoSerializa
 		LevelDef levelDef = (LevelDef) mLevelDef.copyNewResource();
 		copyLevel.mUniqueId = levelDef.getLevelId();
 		copyLevel.mLevelDef = levelDef;
-
-		// Remove this level from resource binder and add the new level
-		copyLevel.mResourceBinder.removeResource(getId());
-		copyLevel.mResourceBinder.addResource(copyLevel);
 
 		return copy;
 	}
@@ -500,5 +502,5 @@ public class Level extends Resource implements KryoTaggedCopyable, KryoSerializa
 	/** The player actor */
 	private PlayerActor mPlayerActor = null;
 	/** Revision of the actor */
-	@Tag(100) protected int CLASS_REVISION = 1;
+	protected final int CLASS_REVISION = 1;
 }

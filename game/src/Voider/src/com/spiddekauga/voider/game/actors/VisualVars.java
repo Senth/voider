@@ -14,6 +14,10 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.KryoSerializable;
+import com.esotericsoftware.kryo.io.Input;
+import com.esotericsoftware.kryo.io.Output;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.voider.Config;
@@ -32,7 +36,7 @@ import com.spiddekauga.voider.utils.Pools;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class VisualVars implements Json.Serializable, Disposable, IResourceCorner {
+public class VisualVars implements KryoSerializable, Json.Serializable, Disposable, IResourceCorner {
 	/**
 	 * Sets the appropriate default values
 	 * @param actorType the default values depends on which actor type is set
@@ -43,6 +47,20 @@ public class VisualVars implements Json.Serializable, Disposable, IResourceCorne
 
 		mActorType = actorType;
 		setDefaultValues();
+		createFixtureDef();
+	}
+
+	@Override
+	public void write(Kryo kryo, Output output) {
+		output.writeInt(CLASS_REVISION, true);
+	}
+
+	@Override
+	public void read(Kryo kryo, Input input) {
+		@SuppressWarnings("unused")
+		int classRevision = input.readInt(true);
+
+		calculateBoundingRadius();
 		createFixtureDef();
 	}
 
@@ -106,9 +124,9 @@ public class VisualVars implements Json.Serializable, Disposable, IResourceCorne
 	}
 
 	/**
-	 * Default constructor for JSON
+	 * Default constructor for Kryo
 	 */
-	public VisualVars() {
+	protected VisualVars() {
 		mCorners.clear();
 		mFixtureDefs.clear();
 	}
@@ -283,6 +301,7 @@ public class VisualVars implements Json.Serializable, Disposable, IResourceCorne
 		clearFixtures();
 		mFixtureDefs = null;
 		clearVertices();
+		Pools.vector2.free(mCenterOffset);
 	}
 
 	/**
@@ -446,7 +465,7 @@ public class VisualVars implements Json.Serializable, Disposable, IResourceCorne
 				fixtureDef.shape = null;
 			}
 		}
-		mFixtureDefs.clear();
+		Pools.arrayList.free(mFixtureDefs);
 	}
 
 	/**
@@ -997,7 +1016,7 @@ public class VisualVars implements Json.Serializable, Disposable, IResourceCorne
 	/** height of rectangle/triangle */
 	@Tag(62) private float mShapeHeight;
 	/** Center offset for fixtures */
-	@Tag(51) private Vector2 mCenterOffset = new Vector2();
+	@Tag(51) private Vector2 mCenterOffset = Pools.vector2.obtain().set(0,0);
 	/** Corners of polygon, used for custom shapes */
 	@SuppressWarnings("unchecked")
 	@Tag(63) private ArrayList<Vector2> mCorners = Pools.arrayList.obtain();
@@ -1019,6 +1038,8 @@ public class VisualVars implements Json.Serializable, Disposable, IResourceCorne
 	@Tag(50) private ActorTypes mActorType = null;
 	/** Time when the fixture was changed last time */
 	protected float mFixtureChangeTime = 0;
+	/** Class structure revision */
+	protected final int CLASS_REVISION = 1;
 
 	/** Ear clipping triangulator for custom shapes */
 	private static EarClippingTriangulator mEarClippingTriangulator = new EarClippingTriangulator();
