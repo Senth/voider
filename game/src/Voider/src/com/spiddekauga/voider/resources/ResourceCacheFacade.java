@@ -285,7 +285,6 @@ public class ResourceCacheFacade {
 	 * that the user can add and remove. E.g. all actor, definitions, levels, etc.
 	 * @param scene the scene to load the resource to
 	 * @param resourceId the unique id of the resource we want to load
-	 * @param revision loads the specific revision of the resource
 	 * @param loadDependencies if we also shall load the dependencies
 	 */
 	public static void load(Scene scene, UUID resourceId, boolean loadDependencies) {

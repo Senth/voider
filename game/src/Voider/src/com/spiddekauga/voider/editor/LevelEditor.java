@@ -617,7 +617,7 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 	 */
 	public void runFromHere(boolean invulnerable) {
 		GameScene testGame = new GameScene(true, invulnerable);
-		Level copyLevel = mLevel.copyKeepId();
+		Level copyLevel = mLevel.copy();
 		// Because of scaling decrease the x position
 		float levelScaling = (Config.Graphics.LEVEL_EDITOR_HEIGHT_SCALE - 1) / Config.Graphics.LEVEL_EDITOR_HEIGHT_SCALE;
 		float xPosition = mCamera.position.x + mCamera.viewportWidth * 0.5f - mCamera.viewportWidth * levelScaling;

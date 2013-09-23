@@ -155,6 +155,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	 * Adds a trigger to the actor
 	 * @param triggerInfo trigger information
 	 */
+	@Deprecated
 	public void addTrigger(TriggerInfo triggerInfo) {
 		triggerInfo.listener = this;
 		triggerInfo.trigger.addListener(triggerInfo);
@@ -165,6 +166,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	 * Removes the specified trigger from this actor
 	 * @param triggerInfo trigger information
 	 */
+	@Deprecated
 	public void removeTrigger(TriggerInfo triggerInfo) {
 		triggerInfo.trigger.removeListener(getId());
 		mTriggerInfos.remove(triggerInfo);

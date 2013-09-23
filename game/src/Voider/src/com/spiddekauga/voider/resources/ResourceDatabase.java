@@ -607,7 +607,7 @@ class ResourceDatabase {
 	private static int getRevisionToUse(UUID resourceId, int requestedRevision) {
 		int revisionToUse = -1;
 		ResourceInfo resourceInfo = mResources.get(resourceId);
-		if (resourceId != null) {
+		if (resourceInfo != null) {
 			if (IResourceRevision.class.isAssignableFrom(resourceInfo.type)) {
 				if (requestedRevision == -1) {
 					revisionToUse = resourceInfo.latestRevision;

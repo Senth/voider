@@ -27,11 +27,11 @@ import com.esotericsoftware.kryo.serializers.FieldSerializer;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer;
 import com.spiddekauga.utils.SerializableTaggedFieldSerializer;
 import com.spiddekauga.utils.UUIDSerializer;
-import com.spiddekauga.voider.Config.Editor.Level;
 import com.spiddekauga.voider.game.BulletDestroyer;
 import com.spiddekauga.voider.game.Collectibles;
 import com.spiddekauga.voider.game.GameSave;
 import com.spiddekauga.voider.game.GameSaveDef;
+import com.spiddekauga.voider.game.Level;
 import com.spiddekauga.voider.game.LevelDef;
 import com.spiddekauga.voider.game.Path;
 import com.spiddekauga.voider.game.Path.PathTypes;
@@ -61,6 +61,7 @@ import com.spiddekauga.voider.game.triggers.TActorActivated;
 import com.spiddekauga.voider.game.triggers.TScreenAt;
 import com.spiddekauga.voider.game.triggers.TriggerAction;
 import com.spiddekauga.voider.game.triggers.TriggerInfo;
+import com.spiddekauga.voider.resources.ResourceBinder;
 import com.spiddekauga.voider.resources.ResourceItem;
 import com.spiddekauga.voider.resources.ResourceNames;
 
@@ -216,7 +217,13 @@ public class KryoPool extends Pool<Kryo> {
 		/** EnemyActor.AimTypes */
 		ENEMY_ACTOR_AIM_TYPES(AimTypes.class),
 		/** PathTypes */
-		PATH_TYPES(PathTypes.class);
+		PATH_TYPES(PathTypes.class),
+		/** ResourceBinder */
+		RESOURCE_BINDER(ResourceBinder.class, SerializerType.TAGGED),
+		/** TriggerAction.Actions */
+		TRIGGER_ACTION_ACTIONS(TriggerAction.Actions.class),
+		/** TriggerAction.Reasons */
+		TRIGGER_ACTION_REASONS(TriggerAction.Reasons.class),
 
 
 		;

@@ -213,7 +213,7 @@ public class GameScene extends WorldScene {
 		}
 
 		// Have we reached the end of the level?
-		if (mLevel.hasCompletedLevel()) {
+		if (mLevel.isCompletedLevel()) {
 			setOutcome(Outcomes.LEVEL_COMPLETED);
 		}
 

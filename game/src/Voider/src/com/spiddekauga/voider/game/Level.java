@@ -1,8 +1,6 @@
 package com.spiddekauga.voider.game;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
@@ -24,7 +22,6 @@ import com.spiddekauga.voider.game.actors.EnemyActorDef;
 import com.spiddekauga.voider.game.actors.EnemyActorDef.MovementTypes;
 import com.spiddekauga.voider.game.actors.EnemyGroup;
 import com.spiddekauga.voider.game.actors.PlayerActor;
-import com.spiddekauga.voider.game.triggers.Trigger;
 import com.spiddekauga.voider.game.triggers.TriggerAction.Actions;
 import com.spiddekauga.voider.game.triggers.TriggerInfo;
 import com.spiddekauga.voider.resources.IResource;
@@ -45,7 +42,6 @@ import com.spiddekauga.voider.utils.Pools;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-@SuppressWarnings("unchecked")
 public class Level extends Resource implements KryoTaggedCopyable, KryoSerializable, Disposable, IResourceRevision {
 	/**
 	 * Constructor which creates an new empty level with the bound
@@ -64,7 +60,7 @@ public class Level extends Resource implements KryoTaggedCopyable, KryoSerializa
 	/**
 	 * @return true if the player has completed the level
 	 */
-	public boolean hasCompletedLevel() {
+	public boolean isCompletedLevel() {
 		return mCompletedLevel;
 	}
 
@@ -124,37 +120,6 @@ public class Level extends Resource implements KryoTaggedCopyable, KryoSerializa
 			EnemyActorDef correctDef = ResourceCacheFacade.get(null, enemy.getDef().getId());
 			enemy.setDef(correctDef);
 		}
-	}
-
-	@Override
-	public <ResourceType> ResourceType copyNewResource() {
-		ResourceType copy = super.copyNewResource();
-
-		Level copyLevel = (Level)copy;
-
-		// Create a copy of the level definition too
-		LevelDef levelDef = (LevelDef) mLevelDef.copyNewResource();
-		copyLevel.mUniqueId = levelDef.getLevelId();
-		copyLevel.mLevelDef = levelDef;
-
-		return copy;
-	}
-
-	/**
-	 * @return a copy of this level without changing the ID of it
-	 */
-	public Level copyKeepId() {
-		Kryo kryo = Pools.kryo.obtain();
-
-		Level copy = kryo.copy(this);
-
-		copy.mLevelDef = mLevelDef;
-		copy.calculateStartPosition();
-		copy.calculateEndPosition();
-
-		Pools.kryo.free(kryo);
-
-		return copy;
 	}
 
 	/**
@@ -453,6 +418,24 @@ public class Level extends Resource implements KryoTaggedCopyable, KryoSerializa
 	}
 
 	@Override
+	public <ResourceType> ResourceType copyNewResource() {
+		ResourceType copy = super.copyNewResource();
+
+		Level copyLevel = (Level)copy;
+
+		// Create a copy of the level definition too
+		LevelDef levelDef = (LevelDef) mLevelDef.copyNewResource();
+		copyLevel.mUniqueId = levelDef.getLevelId();
+		copyLevel.mLevelDef = levelDef;
+
+		// Remove this level from resource binder and add the new level
+		copyLevel.mResourceBinder.removeResource(getId());
+		copyLevel.mResourceBinder.addResource(copyLevel);
+
+		return copy;
+	}
+
+	@Override
 	public void write(Json json) {
 		super.write(json);
 
@@ -477,12 +460,6 @@ public class Level extends Resource implements KryoTaggedCopyable, KryoSerializa
 		mSpeed = json.readValue("mSpeed", float.class, jsonData);
 		mCompletedLevel = json.readValue("mCompletedLevel", boolean.class, jsonData);
 
-		ArrayList<Trigger> triggers = mResourceBinder.getResources(Trigger.class);
-		for (Trigger trigger : triggers) {
-			mTriggers.put(trigger.getId(), trigger);
-		}
-		Pools.arrayList.free(triggers);
-
 		// Get the actual LevelDef
 		UUID levelDefId = json.readValue("mLevelDefId", UUID.class, jsonData);
 		int levelDefRev = json.readValue("mLevelDefRev", int.class, jsonData);
@@ -498,19 +475,11 @@ public class Level extends Resource implements KryoTaggedCopyable, KryoSerializa
 
 	/**
 	 * Default constructor, used when loading levels.
-	 * @note needs to be public for reflect on android
 	 */
-	public Level() {
+	protected Level() {
 		// Does nothing
 	}
 
-	/**
-	 * Updates the level references of other resources to the new level id
-	 * @param oldId old level id
-	 */
-	private void updateLevelReferences(UUID oldId) {
-		mResourceBinder.replaceResource(oldId, this);
-	}
 
 	/** Contains all the resources used in this level */
 	@Tag(13) private ResourceBinder mResourceBinder = new ResourceBinder();
@@ -518,8 +487,6 @@ public class Level extends Resource implements KryoTaggedCopyable, KryoSerializa
 	private ArrayList<IResourceUpdate> mResourceUpdates = null;
 	/** All resources that shall be rendered */
 	private ArrayList<IResourceRender> mResourceRenders = null;
-	/** All triggers */
-	private Map<UUID, Trigger> mTriggers = new HashMap<UUID, Trigger>();
 	/** Current x coordinate (of the screen's left edge) */
 	@Tag(14) private float mXCoord = 0.0f;
 	/** Level definition for this level */

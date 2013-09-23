@@ -8,6 +8,7 @@ import java.util.UUID;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
+import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.utils.Invoker;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.editor.commands.CResourceBoundRemove;
@@ -65,6 +66,37 @@ public class ResourceBinder implements Json.Serializable {
 		}
 
 		return removedResource;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((mResources == null) ? 0 : mResources.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		ResourceBinder other = (ResourceBinder) obj;
+		if (mResources == null) {
+			if (other.mResources != null) {
+				return false;
+			}
+		}
+		else if (!mResources.equals(other.mResources)) {
+			return false;
+		}
+		return true;
 	}
 
 	/**
@@ -193,7 +225,7 @@ public class ResourceBinder implements Json.Serializable {
 	}
 
 	/** All the resources */
-	private Map<UUID, IResource> mResources = new HashMap<UUID, IResource>();
+	@Tag(102) private Map<UUID, IResource> mResources = new HashMap<UUID, IResource>();
 	/** Temporary array for getting dependencies */
 	private static ArrayList<UUID> mDependencies = new ArrayList<UUID>();
 }
