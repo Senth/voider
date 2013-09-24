@@ -67,9 +67,10 @@ class LoadedDb {
 	 * Sets the loaded resource
 	 * @param scene the scene the resource was loaded into
 	 * @param resource the resource that was loaded
+	 * @param revision the revision to use for the resource
 	 */
-	void setLoadedResource(Scene scene, IResource resource) {
-		LoadedRevision loadedRevision = getLoadedRevision(scene, resource);
+	void setLoadedResource(Scene scene, IResource resource, int revision) {
+		LoadedRevision loadedRevision = getLoadedRevision(scene, resource.getId(), revision);
 
 		if (loadedRevision != null) {
 			loadedRevision.resource = resource;

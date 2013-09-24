@@ -93,7 +93,10 @@ class ResourceDatabase {
 					}
 
 					if (revisionString.length() != Config.File.REVISION_LENGTH) {
-						Gdx.app.debug("ResourceDatabase", "Revision is not the correct length!" + revisionFile.path());
+						if (!revisionString.equals(Config.File.REVISION_LATEST_NAME)) {
+							Gdx.app.debug("ResourceDatabase", "Revision is not the correct length!" + revisionFile.path());
+						}
+						continue;
 					}
 
 					// Convert revision string to integer
@@ -141,29 +144,23 @@ class ResourceDatabase {
 	 * @return file path of the resource
 	 */
 	static String getFilePath(IResource resource) {
-		String filePath = ResourceNames.getDirPath(resource.getClass()) + resource.getId().toString();
+		//		String filePath = ResourceNames.getDirPath(resource.getClass()) + resource.getId().toString();
+		//
+		//		if (resource instanceof IResourceRevision) {
+		//			filePath += "/" + getRevisionFormat(((IResourceRevision) resource).getRevision());
+		//
+		//			if (resource instanceof Def) {
+		//				String date = ((Def) resource).getDateString();
+		//				filePath += "_" + date;
+		//			}
+		//		}
 
 		if (resource instanceof IResourceRevision) {
-			filePath += "/" + getRevisionFormat(((IResourceRevision) resource).getRevision());
-
-			if (resource instanceof Def) {
-				String date = ((Def) resource).getDateString();
-				filePath += "_" + date;
-			}
+			return getFilePath(resource.getId(), ((IResourceRevision) resource).getRevision());
+		} else {
+			return getFilePath(resource.getId(), -1);
 		}
-
-		return filePath;
 	}
-
-	//	/**
-	//	 * Gets the fully qualified file path name for the resource
-	//	 * @param type the type of resource
-	//	 * @param uuid the id of the resource
-	//	 * @return file path of the resource
-	//	 */
-	//	static String getFilePath(Class<?> type, UUID uuid) {
-	//		return ResourceNames.getDirPath(type) + uuid.toString();
-	//	}
 
 	/**
 	 * @param revision the revision to get the format of
@@ -176,17 +173,19 @@ class ResourceDatabase {
 	/**
 	 * Gets the fully qualified file path name for the resource
 	 * @param resourceId id of the resource
-	 * @param revision the revision to get, -1 to use latest revision, i.e.
-	 * regular path
+	 * @param revision the revision to get, -1 to use latest revision.
 	 * @return file path of the resource
 	 */
+	@SuppressWarnings("unused")
 	static String getFilePath(UUID resourceId, int revision) {
 		ResourceInfo resourceDb = mResources.get(resourceId);
+
+		String filePath = ResourceNames.getDirPath(resourceDb.type) + resourceId.toString();
 
 		if (resourceDb != null) {
 			if (resourceDb.revisionDates != null) {
 				if (revision > 0) {
-					String filePath = ResourceNames.getDirPath(resourceDb.type) + resourceId.toString() + "/" + getRevisionFormat(revision);
+					filePath += "/" + getRevisionFormat(revision);
 
 					// Add date for definitions
 					if (Def.class.isAssignableFrom(resourceDb.type)) {
@@ -194,27 +193,21 @@ class ResourceDatabase {
 
 						if (date != null) {
 							filePath += "_" + date;
-							return filePath;
 						} else {
 							Gdx.app.error("ResourceDatabase", "Could not find revision (" + revision + ") for (" + resourceId + ") in getFilePath");
+							return null;
 						}
 					}
-					// No def, just return filepath :)
-					else {
-						return filePath;
-					}
-
 				} else {
-					Gdx.app.debug("ResourceDatabase", "Invalid revision (" + revision + ") for resource database.");
+					filePath += "/" + Config.File.REVISION_LATEST_NAME;
 				}
-			} else {
-				return ResourceNames.getDirPath(resourceDb.type) + resourceId.toString();
 			}
 		} else {
 			Gdx.app.error("ResourceDatabase", "Could not find resource when getting file path!");
+			return null;
 		}
 
-		return null;
+		return filePath;
 	}
 
 	/**
@@ -230,7 +223,7 @@ class ResourceDatabase {
 			// Add resource if it has been loaded
 			if (mAssetManager.isLoaded(loadingQueueItem.filePath)) {
 				IResource resource = mAssetManager.get(loadingQueueItem.filePath);
-				mLoadedResources.setLoadedResource(loadingQueueItem.scene, resource);
+				mLoadedResources.setLoadedResource(loadingQueueItem.scene, resource, loadingQueueItem.revision);
 				iterator.remove();
 
 				int loadedRevision = -1;
@@ -280,28 +273,34 @@ class ResourceDatabase {
 	 */
 	static void load(Scene scene, UUID resourceId, int revision) {
 		ResourceInfo resourceInfo = mResources.get(resourceId);
-		int revisionToUse = getRevisionToUse(resourceId, revision);
 
-		int cLoad = mLoadedResources.addLoadingResource(scene, resourceId, revisionToUse, resourceInfo.type);
+		if (resourceInfo != null) {
+			int revisionToUse = getRevisionToUse(resourceId, revision);
 
-		String filePath = getFilePath(resourceId, revisionToUse);
+			int cLoad = mLoadedResources.addLoadingResource(scene, resourceId, revisionToUse, resourceInfo.type);
 
-		if (cLoad == 1) {
-			mAssetManager.load(filePath, resourceInfo.type);
+			String filePath = getFilePath(resourceId, revisionToUse);
 
-			LoadingQueueItem loadingQueueItem = mLoadingQueuePool.obtain();
-			loadingQueueItem.scene = scene;
-			loadingQueueItem.filePath = filePath;
-			mLoadingQueue.add(loadingQueueItem);
-		} else {
-			String name = "";
-			if (Def.class.isAssignableFrom(resourceInfo.type)) {
-				if (mAssetManager.isLoaded(filePath)) {
-					IResource resource = mAssetManager.get(filePath);
-					name = ((Def) resource).getName();
+			if (cLoad == 1) {
+				mAssetManager.load(filePath, resourceInfo.type);
+
+				LoadingQueueItem loadingQueueItem = mLoadingQueuePool.obtain();
+				loadingQueueItem.scene = scene;
+				loadingQueueItem.filePath = filePath;
+				loadingQueueItem.revision = revisionToUse;
+				mLoadingQueue.add(loadingQueueItem);
+			} else {
+				String name = "";
+				if (Def.class.isAssignableFrom(resourceInfo.type)) {
+					if (mAssetManager.isLoaded(filePath)) {
+						IResource resource = mAssetManager.get(filePath);
+						name = ((Def) resource).getName();
+					}
 				}
+				debugOutputLoadedUnloaded(scene, cLoad, true, resourceInfo.type, name, revisionToUse, filePath);
 			}
-			debugOutputLoadedUnloaded(scene, cLoad, true, resourceInfo.type, name, revisionToUse, filePath);
+		} else {
+			Gdx.app.error("ResourceDatabase", "Could not find the resource you tried to load!");
 		}
 	}
 
@@ -350,7 +349,7 @@ class ResourceDatabase {
 			// Update the scene resource to contain the new reference of the resource
 			IResource resource = mAssetManager.get(filepath, resourceInfo.type);
 			for (Scene scene : scenes) {
-				mLoadedResources.setLoadedResource(scene, resource);
+				mLoadedResources.setLoadedResource(scene, resource, revisionToUse);
 			}
 
 			Pools.arrayList.free(scenes);
@@ -443,7 +442,7 @@ class ResourceDatabase {
 						filepath;
 
 				if (Gdx.app != null) {
-					Gdx.app.debug("ResourceDatabase", message);
+					Gdx.app.log("ResourceDatabase", message);
 				} else {
 					Log.debug(message);
 				}
@@ -546,6 +545,25 @@ class ResourceDatabase {
 	}
 
 	/**
+	 * Removes the saved resource from the database (and the file if it exists)
+	 * @param resource the resource that is to be removed
+	 */
+	static void removeSavedResource(IResource resource) {
+		ResourceInfo resourceInfo = mResources.get(resource.getId());
+
+		if (resourceInfo != null) {
+			if (resource instanceof IResourceRevision) {
+				// Remove file
+				// TODO TODO TODO TODO TODO
+			} else {
+
+			}
+		} else {
+			Gdx.app.error("ResourceDatabase", "Could not find the resource you tried to remove: " + resource.getClass().getSimpleName());
+		}
+	}
+
+	/**
 	 * Removes all resources of the specified type. This includes all revisions!
 	 * @per All the resources of these types should be fully unloaded
 	 * before calling this method!
@@ -609,14 +627,14 @@ class ResourceDatabase {
 		ResourceInfo resourceInfo = mResources.get(resourceId);
 		if (resourceInfo != null) {
 			if (IResourceRevision.class.isAssignableFrom(resourceInfo.type)) {
-				if (requestedRevision == -1) {
-					revisionToUse = resourceInfo.latestRevision;
+				if (resourceInfo.latestRevision == requestedRevision) {
+					revisionToUse = -1;
 				} else {
 					revisionToUse = requestedRevision;
 				}
 			}
 		} else {
-			Gdx.app.error("ResourceDatabase", "Could not find resoure! " + resourceId);
+			Gdx.app.debug("ResourceDatabase", "Could not find resource! " + resourceId);
 		}
 		return revisionToUse;
 	}
@@ -685,6 +703,14 @@ class ResourceDatabase {
 			}
 		}
 
+		/**
+		 * Removes a revision from the resource. Only removes the active revision
+		 * @param resource the revision to remove
+		 */
+		void removeRevision(IResourceRevision resource) {
+			revisionDates.remove(resource.getRevision());
+		}
+
 		/** Type of resource */
 		private Class<? extends IResource> type;
 		/** Latest revision of the resource */
@@ -701,6 +727,8 @@ class ResourceDatabase {
 		String filePath = null;
 		/** For this scene */
 		Scene scene = null;
+		/** Revision of the loading file */
+		int revision = -1;
 	}
 
 	/** Loaded resources */

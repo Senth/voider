@@ -296,12 +296,13 @@ public class VisualVars implements KryoSerializable, Json.Serializable, Disposab
 	@Override
 	public void dispose() {
 		Pools.vector2.freeAll(mCorners);
-		Pools.arrayList.free(mCorners);
-		mCorners = null;
 		clearFixtures();
-		mFixtureDefs = null;
 		clearVertices();
 		Pools.vector2.free(mCenterOffset);
+
+		Pools.arrayList.freeAll(mCorners, mFixtureDefs);
+		mCorners = null;
+		mFixtureDefs = null;
 	}
 
 	/**
@@ -465,7 +466,7 @@ public class VisualVars implements KryoSerializable, Json.Serializable, Disposab
 				fixtureDef.shape = null;
 			}
 		}
-		Pools.arrayList.free(mFixtureDefs);
+		mFixtureDefs.clear();
 	}
 
 	/**
@@ -812,6 +813,7 @@ public class VisualVars implements KryoSerializable, Json.Serializable, Disposab
 
 		clearVertices();
 		mVertices = Pools.arrayList.obtain();
+		mVertices.clear();
 
 		// Create triangle vertices and polygon for the rectangle
 		if (rectangleShape.getVertexCount() == 4) {
@@ -895,6 +897,7 @@ public class VisualVars implements KryoSerializable, Json.Serializable, Disposab
 		// Set vertices and create border
 		clearVertices();
 		mVertices = Pools.arrayList.obtain();
+		mVertices.clear();
 		mPolygon = new ArrayList<Vector2>();
 		for (Vector2 vertex : vertices) {
 			mVertices.add(vertex);
@@ -914,7 +917,7 @@ public class VisualVars implements KryoSerializable, Json.Serializable, Disposab
 		if (fixtureDefs.size() == 1) {
 			return fixtureDefs.get(0);
 		} else {
-			Gdx.app.error("EnemyActorDef", "Too few/many fixture definitions! " + fixtureDefs.size());
+			Gdx.app.error("VisualVars", "Too few/many fixture definitions! " + fixtureDefs.size());
 			return null;
 		}
 	}

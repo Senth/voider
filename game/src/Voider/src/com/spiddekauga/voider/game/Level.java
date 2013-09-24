@@ -108,6 +108,11 @@ public class Level extends Resource implements KryoTaggedCopyable, KryoSerializa
 		return mLevelDef.getRevision();
 	}
 
+	@Override
+	public void setRevision(int revision) {
+		// Does nothing. LevelDef sets the revision.
+	}
+
 	/**
 	 * Resets the the resource to use the correct defs. Specifically enemies and bullets as
 	 * these could be changed.

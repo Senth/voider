@@ -87,13 +87,13 @@ public class ResourceCacheFacade {
 		// Load dependencies
 		if (loadDependencies) {
 			for (ResourceItem resourceItem : resources) {
-				mDependencyLoader.load(scene, resourceItem.id, resourceItem.revision);
+				mDependencyLoader.load(scene, resourceItem.id, -1);
 			}
 		}
 		// Only load them, no dependencies
 		else {
 			for (ResourceItem resourceItem : resources) {
-				ResourceDatabase.load(scene, resourceItem.id, resourceItem.revision);
+				ResourceDatabase.load(scene, resourceItem.id, -1);
 			}
 		}
 
@@ -125,7 +125,7 @@ public class ResourceCacheFacade {
 			for (ResourceItem resourceItem : resources) {
 				Integer overridingRevision = revisionsToLoad.get(resourceItem.id);
 				if (overridingRevision == null) {
-					overridingRevision = resourceItem.revision;
+					overridingRevision = -1;
 				}
 				mDependencyLoader.load(scene, resourceItem.id, overridingRevision);
 			}
@@ -135,7 +135,7 @@ public class ResourceCacheFacade {
 			for (ResourceItem resourceItem : resources) {
 				Integer overridingRevision = revisionsToLoad.get(resourceItem.id);
 				if (overridingRevision == null) {
-					overridingRevision = resourceItem.revision;
+					overridingRevision = -1;
 				}
 				ResourceDatabase.load(scene, resourceItem.id, overridingRevision);
 			}
@@ -288,11 +288,7 @@ public class ResourceCacheFacade {
 	 * @param loadDependencies if we also shall load the dependencies
 	 */
 	public static void load(Scene scene, UUID resourceId, boolean loadDependencies) {
-		if (loadDependencies) {
-			mDependencyLoader.load(scene, resourceId, -1);
-		} else {
-			ResourceDatabase.load(scene, resourceId, -1);
-		}
+		load(scene, resourceId, loadDependencies, -1);
 	}
 
 	/**
@@ -409,6 +405,17 @@ public class ResourceCacheFacade {
 			sceneToUse = SceneSwitcher.getActiveScene(true);
 		}
 		return ResourceDatabase.getAllLoadedSceneResourceOf(sceneToUse, type);
+	}
+
+	/**
+	 * Checks whether the latest revision of a resource has been loaded or not
+	 * @param scene the scene which is has been loaded in, if null it will use the
+	 * current active scene.
+	 * @param resourceId unique id of the object to test if it's loaded
+	 * @return true if the object has been loaded
+	 */
+	public static boolean isLoaded(Scene scene, UUID resourceId) {
+		return isLoaded(scene, resourceId, -1);
 	}
 
 	/**

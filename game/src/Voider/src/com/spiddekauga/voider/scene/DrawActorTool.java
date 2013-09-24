@@ -509,6 +509,8 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 		case DRAW_APPEND:
 			if (!mChangedActorThisEvent) {
 				if (mSelectedActor != null) {
+					mInvoker.execute(new CActorDefFixCustomFixtures(mSelectedActor.getDef(), false));
+
 					// Add a final corner when released
 					appendCorner(true);
 

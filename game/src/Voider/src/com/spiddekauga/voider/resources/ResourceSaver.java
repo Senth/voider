@@ -7,6 +7,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Output;
+import com.spiddekauga.utils.Strings;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.utils.ObjectCrypter;
 import com.spiddekauga.voider.utils.Pools;
@@ -33,14 +34,18 @@ public class ResourceSaver {
 	public static void save(IResource resource) {
 		assert(mCrypter != null);
 
-		// Update date and revision
+		// Update date
 		if (resource instanceof Def) {
 			((Def) resource).updateDate();
+		}
 
+		// Update date
+		if (resource instanceof IResourceRevision) {
 			int nextRevision = ResourceDatabase.getLatestRevisionNumber(resource.getId());
 			nextRevision++;
-			((Def) resource).setRevision(nextRevision);
+			((IResourceRevision) resource).setRevision(nextRevision);
 		}
+
 
 		Kryo kryo = Pools.kryo.obtain();
 		ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
@@ -55,20 +60,29 @@ public class ResourceSaver {
 				Gdx.app.debug("ResourceSaver", "Encrypted (" + resource.getClass().getSimpleName() + ") " + resource.getId().toString());
 			}
 
+			ResourceDatabase.addSavedResource(resource);
+
 			String filePath = ResourceDatabase.getFilePath(resource);
 			FileHandle saveFile = Gdx.files.external(filePath);
 
-			ResourceDatabase.addSavedResource(resource);
-
 			// Save the file
 			saveFile.writeBytes(encryptedDef, false);
+
+
+			// Create link (or copy for now)
+			if (resource instanceof IResourceRevision) {
+				String latestPath = ResourceDatabase.getFilePath(resource.getId(), -1);
+				FileHandle latestCopy = Gdx.files.external(latestPath);
+				saveFile.copyTo(latestCopy);
+			}
 
 			if (Gdx.app != null) {
 				Gdx.app.debug("ResourceSaver", "Saved resource (" + resource.getClass().getSimpleName() + ") " + filePath);
 			}
 
 		} catch (Exception e) {
-			Gdx.app.error("ResourceSaver", "Could not encrypt message. Your file has not been saved!");
+			ResourceDatabase.
+			Gdx.app.error("ResourceSaver", "Could not save your file!\n" + Strings.stackTraceToString(e));
 		}
 		Pools.kryo.free(kryo);
 	}

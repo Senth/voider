@@ -146,7 +146,7 @@ public abstract class ActorGui extends EditorGui {
 		// If one variable has been initialized, all has...
 		if (mWidgets.collision.damage != null) {
 			mWidgets.collision.damage.setValue(mActorEditor.getCollisionDamage());
-			mWidgets.collision.destroyOnCollide.setChecked(mActorEditor.shallDestroyOnCollide());
+			mWidgets.collision.destroyOnCollide.setChecked(mActorEditor.isDestroyedOnCollide());
 		}
 	}
 

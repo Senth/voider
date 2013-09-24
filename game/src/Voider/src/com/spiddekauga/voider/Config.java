@@ -6,6 +6,7 @@ import java.util.Arrays;
 
 import javax.crypto.spec.SecretKeySpec;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.JsonWriter.OutputType;
@@ -132,6 +133,10 @@ public class Config {
 		/** If debugging tests shall be activate. This causes extra runtime, but checks
 		 * so that none of the checks are broken. */
 		public static boolean DEBUG_TESTS = true;
+		/** Skip loading text */
+		public static boolean SKIP_LOADING_TIME = true;
+		/** Logging verbosity */
+		public static int LOG_VERBOSITY = Application.LOG_DEBUG;
 	}
 
 	/**
@@ -484,6 +489,8 @@ public class Config {
 		public final static String TEST_STORAGE = "Voider-test/";
 		/** Revision number length */
 		public final static int REVISION_LENGTH = 10;
+		/** Name of the latest copy in revision directories */
+		public final static String REVISION_LATEST_NAME = "LATEST";
 	}
 
 	/**

@@ -193,9 +193,6 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 		mLevel = level;
 
 		if (mLevel != null) {
-			//			mLevel.addResource(mLevel);
-			//			mLevel.bindResources();
-
 			clearTools();
 
 			// Reset camera position to the start
@@ -640,23 +637,21 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 	public void saveDef() {
 		mLevel.calculateStartPosition();
 		mLevel.calculateEndPosition();
-		int oldRevision = mLevel.getDef().getRevision();
+
+		int oldRevision = mLevel.getRevision();
 		ResourceSaver.save(mLevel.getDef());
 		ResourceSaver.save(mLevel);
-		int newRevision = mLevel.getDef().getRevision();
-		mLevel.getDef().setRevision(oldRevision);
 
-		// Load the saved actor and use it instead
-		// Def needs to be loaded twice, as the def should still be visible if we change level
-		try {
-			ResourceCacheFacade.load(this, mLevel.getDef().getId(), false, newRevision);
-			ResourceCacheFacade.load(this, mLevel.getId(), mLevel.getDef().getId(), newRevision);
+		// Saved first time? Then load level and def and use loaded versions instead
+		if (!ResourceCacheFacade.isLoaded(this, mLevel.getId())) {
+			ResourceCacheFacade.load(this, mLevel.getDef().getId(), false);
+			ResourceCacheFacade.load(this, mLevel.getId(), mLevel.getDef().getId());
 			ResourceCacheFacade.finishLoading();
 
-			setLevel((Level) ResourceCacheFacade.get(this, mLevel.getId(), mLevel.getRevision()+1));
-		} catch (Exception e) {
-			Gdx.app.error("LevelEditor", "Loading of saved level failed! " + e.toString());
-			e.printStackTrace();
+			// Reset the level to old revision
+			mLevel.getDef().setRevision(oldRevision);
+
+			setLevel((Level) ResourceCacheFacade.get(this, mLevel.getId()));
 		}
 
 		mSaveTimeLast = GameTime.getTotalGlobalTimeElapsed();
