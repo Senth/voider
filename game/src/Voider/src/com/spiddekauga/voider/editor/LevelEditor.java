@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector2;
+import com.esotericsoftware.minlog.Log;
 import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.utils.Invoker;
 import com.spiddekauga.utils.KeyHelper;
@@ -639,6 +640,7 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 		mLevel.calculateEndPosition();
 
 		int oldRevision = mLevel.getRevision();
+		Log.TRACE();
 		ResourceSaver.save(mLevel.getDef());
 		ResourceSaver.save(mLevel);
 
@@ -647,6 +649,7 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 			ResourceCacheFacade.load(this, mLevel.getDef().getId(), false);
 			ResourceCacheFacade.load(this, mLevel.getId(), mLevel.getDef().getId());
 			ResourceCacheFacade.finishLoading();
+			Log.NONE();
 
 			// Reset the level to old revision
 			mLevel.getDef().setRevision(oldRevision);

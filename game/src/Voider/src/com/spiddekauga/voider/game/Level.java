@@ -423,8 +423,6 @@ public class Level extends Resource implements KryoTaggedCopyable, KryoSerializa
 		if (fromOriginal instanceof Level) {
 			Level fromLevel = (Level)fromOriginal;
 			mLevelDef = fromLevel.mLevelDef;
-
-			// QUESTION Do we need to add references?
 		}
 	}
 

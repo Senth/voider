@@ -2,6 +2,7 @@ package com.spiddekauga.voider.resources;
 
 
 import java.io.ByteArrayOutputStream;
+import java.util.Date;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
@@ -34,13 +35,19 @@ public class ResourceSaver {
 	public static void save(IResource resource) {
 		assert(mCrypter != null);
 
+		Date oldDate = null;
+		int oldRevision = -1;
+
 		// Update date
 		if (resource instanceof Def) {
+			oldDate = ((Def) resource).getDate();
 			((Def) resource).updateDate();
 		}
 
 		// Update date
 		if (resource instanceof IResourceRevision) {
+			oldRevision = ((IResourceRevision) resource).getRevision();
+
 			int nextRevision = ResourceDatabase.getLatestRevisionNumber(resource.getId());
 			nextRevision++;
 			((IResourceRevision) resource).setRevision(nextRevision);
@@ -81,8 +88,17 @@ public class ResourceSaver {
 			}
 
 		} catch (Exception e) {
-			ResourceDatabase.
-			Gdx.app.error("ResourceSaver", "Could not save your file!\n" + Strings.stackTraceToString(e));
+			ResourceDatabase.removeSavedResource(resource);
+
+			if (resource instanceof IResourceRevision) {
+				((IResourceRevision) resource).setRevision(oldRevision);
+			}
+
+			if (resource instanceof Def) {
+				((Def) resource).setDate(oldDate);
+			}
+
+			Gdx.app.error("ResourceSaver", "Could not save the resource!\n" + Strings.stackTraceToString(e));
 		}
 		Pools.kryo.free(kryo);
 	}

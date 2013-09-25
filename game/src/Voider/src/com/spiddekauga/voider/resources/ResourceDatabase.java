@@ -144,22 +144,17 @@ class ResourceDatabase {
 	 * @return file path of the resource
 	 */
 	static String getFilePath(IResource resource) {
-		//		String filePath = ResourceNames.getDirPath(resource.getClass()) + resource.getId().toString();
-		//
-		//		if (resource instanceof IResourceRevision) {
-		//			filePath += "/" + getRevisionFormat(((IResourceRevision) resource).getRevision());
-		//
-		//			if (resource instanceof Def) {
-		//				String date = ((Def) resource).getDateString();
-		//				filePath += "_" + date;
-		//			}
-		//		}
+		String filePath = ResourceNames.getDirPath(resource.getClass()) + resource.getId().toString();
 
 		if (resource instanceof IResourceRevision) {
-			return getFilePath(resource.getId(), ((IResourceRevision) resource).getRevision());
-		} else {
-			return getFilePath(resource.getId(), -1);
+			filePath += "/" + getRevisionFormat(((IResourceRevision) resource).getRevision());
+
+			if (resource instanceof Def) {
+				String date = ((Def) resource).getDateString();
+				filePath += "_" + date;
+			}
 		}
+		return filePath;
 	}
 
 	/**
@@ -552,11 +547,33 @@ class ResourceDatabase {
 		ResourceInfo resourceInfo = mResources.get(resource.getId());
 
 		if (resourceInfo != null) {
-			if (resource instanceof IResourceRevision) {
-				// Remove file
-				// TODO TODO TODO TODO TODO
-			} else {
+			String filepath = getFilePath(resource);
 
+			// Remove file
+			FileHandle file = Gdx.files.external(filepath);
+			if (file.exists()) {
+				file.delete();
+			}
+
+			boolean removeResource = false;
+
+			if (resource instanceof IResourceRevision) {
+				// Remove folder if no more revisions are available
+				resourceInfo.removeRevision((IResourceRevision) resource);
+				if (resourceInfo.revisionDates == null || resourceInfo.revisionDates.isEmpty()) {
+					FileHandle dir = file.parent();
+					if (dir.exists() && dir.isDirectory()) {
+						dir.deleteDirectory();
+					}
+
+					removeResource = true;
+				}
+			} else {
+				removeResource = true;
+			}
+
+			if (removeResource) {
+				mResources.remove(resource.getId());
 			}
 		} else {
 			Gdx.app.error("ResourceDatabase", "Could not find the resource you tried to remove: " + resource.getClass().getSimpleName());
@@ -708,7 +725,9 @@ class ResourceDatabase {
 		 * @param resource the revision to remove
 		 */
 		void removeRevision(IResourceRevision resource) {
-			revisionDates.remove(resource.getRevision());
+			if (revisionDates != null) {
+				revisionDates.remove(resource.getRevision());
+			}
 		}
 
 		/** Type of resource */

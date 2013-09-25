@@ -838,7 +838,9 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 	 */
 	private void deselectActor() {
 		// Remove the last corner if we accidentally added one when double clicking
+		// Because a corner is added both on down and up we need to undo twice.
 		if (mCornerIndexLast != -1) {
+			mInvoker.undo(false);
 			mInvoker.undo(false);
 		}
 

@@ -476,7 +476,6 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 		// Save def or just fetch it
 		if (savesDef()) {
 			kryo.writeClassAndObject(output, mDef);
-			output.writeInt(mDef.getRevision());
 		} else {
 			kryo.writeObject(output, mDef.getId());
 			output.writeInt(mDef.getRevision());

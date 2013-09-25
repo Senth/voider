@@ -303,10 +303,16 @@ class LoadedDb {
 
 			for (Entry<UUID, LoadedResource> resourceEntry : sceneEntry.getValue().entrySet()) {
 				for(Entry<Integer, LoadedRevision> revisionEntry : resourceEntry.getValue().revisions.entrySet()) {
-					if (revisionEntry.getValue().resource != null) {
-						String filePath = ResourceDatabase.getFilePath(revisionEntry.getValue().resource);
+					IResource resource = revisionEntry.getValue().resource;
+					if (resource != null) {
+						String filepath;
+						if (resource instanceof IResourceRevision) {
+							filepath = ResourceDatabase.getFilePath(resource.getId(), ((IResourceRevision) resource).getRevision());
+						} else {
+							filepath = ResourceDatabase.getFilePath(resource);
+						}
 
-						message += sceneString + ": " + filePath + ", refs: " + revisionEntry.getValue().count + "\n";
+						message += sceneString + ": " + filepath + ", refs: " + revisionEntry.getValue().count + "\n";
 					}
 				}
 			}

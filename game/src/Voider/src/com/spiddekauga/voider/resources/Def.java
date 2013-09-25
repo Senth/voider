@@ -189,9 +189,19 @@ public abstract class Def extends Resource implements Json.Serializable, IResour
 
 	/**
 	 * Update the date to the current date
+	 * @see #setDate(Date)
 	 */
 	public void updateDate() {
 		mDate = new Date();
+	}
+
+	/**
+	 * Sets the date
+	 * @param date new date of definition
+	 * @see #updateDate()
+	 */
+	public void setDate(Date date) {
+		mDate = date;
 	}
 
 	/**
