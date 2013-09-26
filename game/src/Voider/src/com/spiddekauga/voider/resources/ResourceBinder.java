@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
@@ -50,15 +49,9 @@ public class ResourceBinder implements Json.Serializable {
 				for (Map.Entry<UUID, IResource> entry : mResources.entrySet()) {
 					IResource resource = entry.getValue();
 
-					if (isResourceBoundIn(resource, resourceId)) {
+					if (resource.removeBoundResource(removedResource)) {
 						if (invoker != null) {
 							invoker.execute(new CResourceBoundRemove(resource, removedResource), true);
-						} else {
-							boolean success = resource.removeBoundResource(removedResource);
-
-							if (!success) {
-								Gdx.app.error("ResourceBinder", "Failed to remove bound resource: " + removedResource.toString() + ", from: " + resource.toString());
-							}
 						}
 					}
 				}
@@ -124,21 +117,6 @@ public class ResourceBinder implements Json.Serializable {
 		return resources;
 	}
 
-	/**
-	 * Checks for all bound resources that uses  the specified parameter resource.
-	 * @param usesResource resource to check for in all other resources
-	 * @param foundResources list with all resources that uses
-	 */
-	public void usesResource(IResource usesResource, ArrayList<IResource> foundResources) {
-		for (Map.Entry<UUID, IResource> entry : mResources.entrySet()) {
-			IResource resource = entry.getValue();
-
-			if (isResourceBoundIn(resource, usesResource.getId())) {
-				foundResources.add(resource);
-			}
-		}
-	}
-
 	@Override
 	public void write(Json json) {
 		json.writeValue("Config.REVISION", Config.REVISION);
@@ -151,81 +129,6 @@ public class ResourceBinder implements Json.Serializable {
 		mResources = json.readValue("mResources", Map.class, jsonValue);
 	}
 
-	/**
-	 * Binds all the resources
-	 */
-	public void bindResources() {
-		for (Map.Entry<UUID, IResource> entry : mResources.entrySet()) {
-			IResource resource = entry.getValue();
-
-			mDependencies.clear();
-			resource.getReferences(mDependencies);
-			for (UUID dependencyId : mDependencies) {
-				IResource foundDependency = mResources.get(dependencyId);
-
-				if (foundDependency != null) {
-					boolean success = resource.bindReference(foundDependency);
-
-					if (!success) {
-						Gdx.app.error("ResourceBinder", "Failed to bind this reference: " + foundDependency.toString() + " to: " + resource.toString());
-					}
-				} else {
-					Gdx.app.error("ResourceBinder", "Could not find resource for " + resource.toString() + ", dependency: " + dependencyId);
-				}
-			}
-		}
-	}
-
-	/**
-	 * Replaces the specified resource with another one. This will update all
-	 * resources that uses the old resource to use the new resource instead.
-	 * @param oldId old resource id to be replaced
-	 * @param newResource the new resource that replaces the old resource
-	 */
-	public void replaceResource(UUID oldId, IResource newResource) {
-		// Remove and add resource
-		IResource removedResource = mResources.remove(oldId);
-		mResources.put(newResource.getId(), newResource);
-
-		// Find dependencies of the old, and replace them to use the new one
-		if (removedResource != null) {
-			for (Map.Entry<UUID, IResource> entry : mResources.entrySet()) {
-				IResource resource = entry.getValue();
-
-				if (isResourceBoundIn(resource, oldId)) {
-					boolean removedSuccess = resource.removeBoundResource(removedResource);
-
-					if (removedSuccess) {
-						boolean addedSuccess = resource.addBoundResource(newResource);
-
-						if (!addedSuccess) {
-							Gdx.app.error("ResourceBinder", "Failed to replace resource, could not add the resource " + newResource.toString());
-						}
-					} else {
-						Gdx.app.error("ResourceBinder", "Failed to replace resource, could not remove bound resource " + newResource.toString());
-					}
-				}
-			}
-		} else {
-			Gdx.app.error("ResourceBinder", "Failed to replace resource, did not find resource to replace");
-		}
-	}
-
-	/**
-	 * Checks if a resource is bound for the selected resource
-	 * @param insideThis the resource to check if boundResourceId is in
-	 * @param boundResourceId the resource to check if resourceToCheckIn uses.
-	 * @return true if resourceToCheckIn uses boundResourceId
-	 */
-	private boolean isResourceBoundIn(IResource insideThis, UUID boundResourceId) {
-		mDependencies.clear();
-		insideThis.getReferences(mDependencies);
-
-		return mDependencies.contains(boundResourceId);
-	}
-
 	/** All the resources */
 	@Tag(102) private Map<UUID, IResource> mResources = new HashMap<UUID, IResource>();
-	/** Temporary array for getting dependencies */
-	private static ArrayList<UUID> mDependencies = new ArrayList<UUID>();
 }

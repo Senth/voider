@@ -1,7 +1,6 @@
 package com.spiddekauga.voider.game.triggers;
 
 import java.util.ArrayList;
-import java.util.UUID;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -37,7 +36,6 @@ public class TScreenAt extends Trigger implements IResourceBody, IResourcePositi
 	 */
 	public TScreenAt(Level level, float xCoord) {
 		mLevel = level;
-		mLevelId = level.getId();
 		mPosition.x = xCoord;
 		mPosition.y = 0;
 	}
@@ -79,7 +77,6 @@ public class TScreenAt extends Trigger implements IResourceBody, IResourcePositi
 	public void write(Json json) {
 		super.write(json);
 
-		json.writeValue("mLevelId", mLevelId);
 		json.writeValue("mPosition.x", mPosition.x);
 	}
 
@@ -87,26 +84,7 @@ public class TScreenAt extends Trigger implements IResourceBody, IResourcePositi
 	public void read(Json json, JsonValue jsonValue) {
 		super.read(json, jsonValue);
 
-		mLevelId = json.readValue("mLevelId", UUID.class, jsonValue);
 		mPosition.x = json.readValue("mPosition.x", float.class, jsonValue);
-	}
-
-	@Override
-	public void getReferences(ArrayList<UUID> references) {
-		super.getReferences(references);
-		references.add(mLevelId);
-	}
-
-	@Override
-	public boolean bindReference(IResource resource) {
-		boolean success = super.bindReference(resource);
-
-		if (resource instanceof Level) {
-			mLevel = (Level) resource;
-			success = true;
-		}
-
-		return success;
 	}
 
 	@Override
@@ -115,7 +93,6 @@ public class TScreenAt extends Trigger implements IResourceBody, IResourcePositi
 
 		if (boundResource instanceof Level) {
 			mLevel = (Level) boundResource;
-			mLevelId = mLevel.getId();
 			success = true;
 		}
 
@@ -126,9 +103,8 @@ public class TScreenAt extends Trigger implements IResourceBody, IResourcePositi
 	public boolean removeBoundResource(IResource boundResource) {
 		boolean success = super.removeBoundResource(boundResource);
 
-		if (boundResource.getId().equals(mLevelId)) {
+		if (boundResource.equals(mLevel)) {
 			mLevel = null;
-			mLevelId = null;
 			success = true;
 		}
 
@@ -243,9 +219,6 @@ public class TScreenAt extends Trigger implements IResourceBody, IResourcePositi
 	private Body mBody = null;
 	/** Level to check for the x-coordinate */
 	@Tag(34) private Level mLevel = null;
-	/** Level id, used for binding the level */
-	@Deprecated
-	private UUID mLevelId = null;
 	/** Temporary position, stores x-coord for getting the position */
 	@Tag(35) private Vector2 mPosition = Pools.vector2.obtain();
 }

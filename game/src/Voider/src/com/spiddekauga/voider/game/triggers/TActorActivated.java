@@ -2,7 +2,6 @@ package com.spiddekauga.voider.game.triggers;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -10,10 +9,8 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonValue;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.utils.KryoPostRead;
-import com.spiddekauga.utils.KryoPreWrite;
 import com.spiddekauga.utils.ShapeRendererEx;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.actors.Actor;
@@ -21,6 +18,7 @@ import com.spiddekauga.voider.game.triggers.TriggerAction.Reasons;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourceBody;
 import com.spiddekauga.voider.resources.IResourceChangeListener;
+import com.spiddekauga.voider.resources.IResourcePrepareWrite;
 import com.spiddekauga.voider.utils.Geometry;
 import com.spiddekauga.voider.utils.Pools;
 
@@ -29,14 +27,13 @@ import com.spiddekauga.voider.utils.Pools;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class TActorActivated extends Trigger implements KryoPreWrite, KryoPostRead, Disposable, IResourceBody, IResourceChangeListener {
+public class TActorActivated extends Trigger implements KryoPostRead, Disposable, IResourceBody, IResourcePrepareWrite, IResourceChangeListener {
 	/**
 	 * Triggers when the actor is active (or activated)
 	 * @param actor the actor that shall be activate
 	 */
 	public TActorActivated(Actor actor) {
 		mActor = actor;
-		mActorId = actor.getId();
 		setActorListener();
 	}
 
@@ -99,7 +96,7 @@ public class TActorActivated extends Trigger implements KryoPreWrite, KryoPostRe
 	}
 
 	@Override
-	public void preWrite() {
+	public void prepareWrite() {
 		mActor.removeChangeListener(this);
 	}
 
@@ -115,33 +112,6 @@ public class TActorActivated extends Trigger implements KryoPreWrite, KryoPostRe
 		mActor.removeChangeListener(this);
 
 		super.write(json);
-		json.writeValue("mActorId", mActorId);
-	}
-
-	@Override
-	public void read(Json json, JsonValue jsonValue) {
-		super.read(json, jsonValue);
-		mActorId = json.readValue("mActorId", UUID.class, jsonValue);
-	}
-
-	@Override
-	public void getReferences(ArrayList<UUID> references) {
-		super.getReferences(references);
-
-		references.add(mActorId);
-	}
-
-	@Override
-	public boolean bindReference(IResource resource) {
-		boolean success = super.bindReference(resource);
-
-		if (resource.equals(mActorId)) {
-			mActor = (Actor) resource;
-			success = true;
-			setActorListener();
-		}
-
-		return success;
 	}
 
 	@Override
@@ -150,7 +120,6 @@ public class TActorActivated extends Trigger implements KryoPreWrite, KryoPostRe
 
 		if (boundResource instanceof Actor) {
 			mActor = (Actor)boundResource;
-			mActorId = mActor.getId();
 
 			setActorListener();
 		}
@@ -162,9 +131,8 @@ public class TActorActivated extends Trigger implements KryoPreWrite, KryoPostRe
 	public boolean removeBoundResource(IResource boundResource) {
 		boolean success = super.removeBoundResource(boundResource);
 
-		if (boundResource.getId().equals(mActorId)) {
+		if (boundResource.equals(mActor)) {
 			mActor = null;
-			mActorId = null;
 
 			if (Actor.isEditorActive()) {
 				boundResource.removeChangeListener(this);
@@ -238,9 +206,6 @@ public class TActorActivated extends Trigger implements KryoPreWrite, KryoPostRe
 	private ArrayList<Vector2> mVertices = null;
 	/** Actor to check if it has been activated */
 	@Tag(33) private Actor mActor = null;
-	/**	Actor id */
-	@Deprecated
-	private UUID mActorId = null;
 	/** Body for the trigger, used for picking */
 	private Body mBody = null;
 }

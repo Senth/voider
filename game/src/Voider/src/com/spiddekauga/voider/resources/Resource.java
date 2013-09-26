@@ -73,23 +73,6 @@ public abstract class Resource implements IResource, Json.Serializable {
 	}
 
 	@Override
-	public void getReferences(ArrayList<UUID> references) {
-		if (mListenerIds != null) {
-			references.addAll(mListenerIds);
-		}
-	}
-
-	@Override
-	public boolean bindReference(IResource resource) {
-		if (resource instanceof IResourceChangeListener) {
-			addChangeListener((IResourceChangeListener) resource);
-			return true;
-		}
-
-		return false;
-	}
-
-	@Override
 	public boolean addBoundResource(IResource boundResource)  {
 		if (boundResource instanceof IResourceChangeListener) {
 			addChangeListener((IResourceChangeListener) boundResource);
@@ -114,18 +97,13 @@ public abstract class Resource implements IResource, Json.Serializable {
 		if (mListeners == null) {
 			mListeners = new ArrayList<IResourceChangeListener>();
 		}
-		if (mListenerIds == null) {
-			mListenerIds = new ArrayList<UUID>();
-		}
 		mListeners.add(listener);
-		mListenerIds.add(listener.getId());
 	}
 
 	@Override
 	public void removeChangeListener(IResourceChangeListener listener) {
 		if (mListeners != null) {
 			mListeners.remove(listener);
-			mListenerIds.remove(listener.getId());
 		}
 	}
 
@@ -145,22 +123,16 @@ public abstract class Resource implements IResource, Json.Serializable {
 	public void write(Json json) {
 		json.writeValue("Config.REVISION", Config.REVISION);
 		json.writeValue("mUniqueId", mUniqueId);
-		json.writeValue("mListenerIds", mListenerIds);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void read(Json json, JsonValue jsonData) {
 		mUniqueId = json.readValue("mUniqueId", UUID.class, jsonData);
-		mListenerIds = json.readValue("mListenerIds", ArrayList.class, jsonData);
 	}
 
 	/** Unique id of the resource */
 	@Tag(1) protected UUID mUniqueId = null;
 	/** Listeners of the resource */
 	@Tag(2) private ArrayList<IResourceChangeListener> mListeners = null;
-	/** Listener ids */
-	@Deprecated
-	private ArrayList<UUID> mListenerIds = null;
 
 }

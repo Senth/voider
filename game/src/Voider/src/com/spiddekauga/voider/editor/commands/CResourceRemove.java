@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import com.spiddekauga.utils.Command;
 import com.spiddekauga.voider.editor.IResourceChangeEditor;
-import com.spiddekauga.voider.editor.LevelEditor;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourceBody;
 import com.spiddekauga.voider.utils.Pools;
@@ -21,17 +20,16 @@ public class CResourceRemove extends Command {
 	 * @param resource the resource to remove
 	 * @param editor the editor to remove the resource from
 	 */
-	@SuppressWarnings("unchecked")
 	public CResourceRemove(IResource resource, IResourceChangeEditor editor) {
 		mResource = resource;
 		mEditor = editor;
 
-		// Save resources that uses the resource to be removed
-		if (mEditor instanceof LevelEditor) {
-			mBoundResources = Pools.arrayList.obtain();
-
-			((LevelEditor) mEditor).usesResource(resource, mBoundResources);
-		}
+		//		// Save resources that uses the resource to be removed
+		//		if (mEditor instanceof LevelEditor) {
+		//			mBoundResources = Pools.arrayList.obtain();
+		//
+		//			((LevelEditor) mEditor).usesResource(resource, mBoundResources);
+		//		}
 	}
 
 	@Override
@@ -74,5 +72,6 @@ public class CResourceRemove extends Command {
 	private IResourceChangeEditor mEditor;
 	/** All resources that uses the removed resources, will be bound again
 	 * after undo, only used if editor is a level editor */
+	@Deprecated
 	private ArrayList<IResource> mBoundResources = null;
 }

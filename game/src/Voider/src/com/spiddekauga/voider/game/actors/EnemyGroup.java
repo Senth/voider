@@ -12,7 +12,6 @@ import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Debug;
 import com.spiddekauga.voider.game.triggers.TriggerAction.Actions;
 import com.spiddekauga.voider.game.triggers.TriggerInfo;
-import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.Resource;
 
 /**
@@ -122,26 +121,6 @@ public class EnemyGroup extends Resource {
 		mEnemyIds.clear();
 
 		return removedEnemies;
-	}
-
-	@Override
-	public void getReferences(ArrayList<UUID> references) {
-		super.getReferences(references);
-		references.addAll(mEnemyIds);
-	}
-
-	@Override
-	public boolean bindReference(IResource resource) {
-		boolean success = super.bindReference(resource);
-
-		int foundIndex = mEnemyIds.indexOf(resource.getId());
-
-		if (foundIndex != -1) {
-			mEnemies.set(foundIndex, (EnemyActor) resource);
-			success = true;
-		}
-
-		return success;
 	}
 
 	/**

@@ -233,11 +233,6 @@ class ResourceDatabase {
 
 					mLoadedResources.setLoadedResource(loadingQueueItem.scene, resource, loadingQueueItem.revision);
 
-					//				int loadedRevision = -1;
-					//				if (resource instanceof IResourceRevision) {
-					//					loadedRevision = ((IResourceRevision) resource).getRevision();
-					//				}
-
 					String name = "";
 					if (resource instanceof Def) {
 						name = ((Def) resource).getName();

@@ -13,6 +13,7 @@ import com.esotericsoftware.kryo.KryoSerializable;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
+import com.spiddekauga.utils.KryoPreWrite;
 import com.spiddekauga.utils.KryoTaggedCopyable;
 import com.spiddekauga.utils.ShapeRendererEx;
 import com.spiddekauga.voider.Config;
@@ -28,6 +29,7 @@ import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourceEditorRender;
 import com.spiddekauga.voider.resources.IResourceEditorUpdate;
 import com.spiddekauga.voider.resources.IResourcePosition;
+import com.spiddekauga.voider.resources.IResourcePrepareWrite;
 import com.spiddekauga.voider.resources.IResourceRender;
 import com.spiddekauga.voider.resources.IResourceRevision;
 import com.spiddekauga.voider.resources.IResourceUpdate;
@@ -42,7 +44,7 @@ import com.spiddekauga.voider.utils.Pools;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class Level extends Resource implements KryoTaggedCopyable, KryoSerializable, Disposable, IResourceRevision {
+public class Level extends Resource implements KryoPreWrite, KryoTaggedCopyable, KryoSerializable, Disposable, IResourceRevision {
 	/**
 	 * Constructor which creates an new empty level with the bound
 	 * level definition
@@ -169,13 +171,6 @@ public class Level extends Resource implements KryoTaggedCopyable, KryoSerializa
 	 */
 	public void run() {
 		mRunning = true;
-	}
-
-	/**
-	 * Binds all resources, call this after the level has been loaded
-	 */
-	public void bindResources() {
-		mResourceBinder.bindResources();
 	}
 
 	/**
@@ -331,15 +326,6 @@ public class Level extends Resource implements KryoTaggedCopyable, KryoSerializa
 	}
 
 	/**
-	 * Checks for all bound resources that uses  the specified parameter resource.
-	 * @param usesResource resource to check for in all other resources
-	 * @param foundResources list with all resources that uses
-	 */
-	public void usesResource(IResource usesResource, ArrayList<IResource> foundResources) {
-		mResourceBinder.usesResource(usesResource, foundResources);
-	}
-
-	/**
 	 * Calculates the starting position of the level
 	 */
 	public void calculateStartPosition() {
@@ -381,6 +367,13 @@ public class Level extends Resource implements KryoTaggedCopyable, KryoSerializa
 		mLevelDef.setEndXCoord(endPosition);
 
 		Pools.arrayList.free(resources);
+	}
+
+	@Override
+	public void preWrite() {
+		for (IResourcePrepareWrite resource : mResourceBinder.getResources(IResourcePrepareWrite.class)) {
+			resource.prepareWrite();
+		}
 	}
 
 	@Override

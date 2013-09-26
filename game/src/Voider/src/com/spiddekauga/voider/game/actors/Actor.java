@@ -155,7 +155,6 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	 * Adds a trigger to the actor
 	 * @param triggerInfo trigger information
 	 */
-	@Deprecated
 	public void addTrigger(TriggerInfo triggerInfo) {
 		triggerInfo.listener = this;
 		triggerInfo.trigger.addListener(triggerInfo);
@@ -166,36 +165,9 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	 * Removes the specified trigger from this actor
 	 * @param triggerInfo trigger information
 	 */
-	@Deprecated
 	public void removeTrigger(TriggerInfo triggerInfo) {
 		triggerInfo.trigger.removeListener(getId());
 		mTriggerInfos.remove(triggerInfo);
-	}
-
-
-	@Override
-	public void getReferences(ArrayList<UUID> references) {
-		super.getReferences(references);
-
-		for (TriggerInfo triggerInfo : mTriggerInfos) {
-			references.add(triggerInfo.triggerId);
-		}
-	}
-
-	@Override
-	public boolean bindReference(IResource resource) {
-		boolean success = super.bindReference(resource);
-
-		for (TriggerInfo triggerInfo : mTriggerInfos) {
-			if (resource.equals(triggerInfo.triggerId)) {
-				Trigger trigger = (Trigger) resource;
-				triggerInfo.trigger = trigger;
-				trigger.addListener(triggerInfo);
-				success = true;
-			}
-		}
-
-		return success;
 	}
 
 	@Override
@@ -1216,7 +1188,6 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	/** Body position, remember even when we don't have a body */
 	@Tag(4) private Vector2 mPosition = Pools.vector2.obtain().set(0, 0);
 	/** Trigger informations */
-	@Deprecated
 	@Tag(5) private ArrayList<TriggerInfo> mTriggerInfos = new ArrayList<TriggerInfo>();
 
 	// Kryo special variables

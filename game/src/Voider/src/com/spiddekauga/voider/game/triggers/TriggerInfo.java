@@ -1,7 +1,5 @@
 package com.spiddekauga.voider.game.triggers;
 
-import java.util.UUID;
-
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
@@ -14,9 +12,6 @@ import com.spiddekauga.voider.game.triggers.TriggerAction.Actions;
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
 public class TriggerInfo implements Json.Serializable {
-	/** The trigger this is bound to */
-	@Deprecated
-	public UUID triggerId;
 	/** The trigger */
 	@Tag(29) public Trigger trigger = null;
 	/** The delay of this listener */
@@ -32,11 +27,6 @@ public class TriggerInfo implements Json.Serializable {
 	 */
 	public void setTrigger(Trigger trigger) {
 		this.trigger = trigger;
-		if (trigger != null) {
-			triggerId = trigger.getId();
-		} else {
-			triggerId = null;
-		}
 	}
 
 	/**
@@ -46,10 +36,9 @@ public class TriggerInfo implements Json.Serializable {
 	 * @return true if triggerId and action is the same in both trigger infos.
 	 */
 	public boolean sameTriggerAndAction(TriggerInfo triggerInfo) {
-		if (triggerInfo == null || triggerId == null || action == null ||
-				triggerInfo.triggerId == null || triggerInfo.action == null) {
+		if (triggerInfo == null || action == null || triggerInfo.action == null) {
 			return false;
-		} else if (triggerId.equals(triggerInfo.triggerId) && action == triggerInfo.action) {
+		} else if (trigger.equals(triggerInfo.trigger) && action == triggerInfo.action) {
 			return true;
 		} else {
 			return false;
@@ -65,7 +54,6 @@ public class TriggerInfo implements Json.Serializable {
 		copy.action = action;
 		copy.delay = delay;
 		copy.listener = listener;
-		copy.triggerId = triggerId;
 		copy.trigger = trigger;
 
 		return copy;
@@ -73,7 +61,6 @@ public class TriggerInfo implements Json.Serializable {
 
 	@Override
 	public void write(Json json) {
-		json.writeValue("triggerId", triggerId);
 		json.writeValue("action", action);
 		json.writeValue("delay", delay);
 	}
@@ -82,7 +69,6 @@ public class TriggerInfo implements Json.Serializable {
 	public void read(Json json, JsonValue jsonValue) {
 		action = json.readValue("action", TriggerAction.Actions.class, jsonValue);
 		delay = json.readValue("delay", float.class, jsonValue);
-		triggerId = json.readValue("triggerId", UUID.class, jsonValue);
 	}
 
 	/**

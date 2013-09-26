@@ -500,17 +500,6 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 	}
 
 	/**
-	 * Checks for all bound resources that uses  the specified parameter resource.
-	 * @param usesResource resource to check for in all other resources
-	 * @param foundResources list with all resources that uses
-	 */
-	public void usesResource(IResource usesResource, ArrayList<IResource> foundResources) {
-		if (mLevel != null) {
-			mLevel.usesResource(usesResource, foundResources);
-		}
-	}
-
-	/**
 	 * @return true if an enemy is currently selected
 	 */
 	boolean isEnemySelected() {

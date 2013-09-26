@@ -1,6 +1,5 @@
 package com.spiddekauga.voider.game.actors;
 
-import java.util.ArrayList;
 import java.util.UUID;
 
 import com.badlogic.gdx.math.Vector2;
@@ -496,31 +495,6 @@ public class EnemyActor extends Actor {
 		return mGroupLeader;
 	}
 
-	@Override
-	public void getReferences(ArrayList<UUID> references) {
-		super.getReferences(references);
-		if (mPathId != null) {
-			references.add(mPathId);
-		}
-		if (mGroupId != null) {
-			references.add(mGroupId);
-		}
-	}
-
-	@Override
-	public boolean bindReference(IResource resource) {
-		boolean success = super.bindReference(resource);
-
-		if (resource.equals(mPathId)) {
-			setPath((Path) resource);
-			success = true;
-		} else if (resource.equals(mGroupId)) {
-			mGroup = (EnemyGroup) resource;
-			success = true;
-		}
-
-		return success;
-	}
 
 	@Override
 	public boolean addBoundResource(IResource boundResource) {
