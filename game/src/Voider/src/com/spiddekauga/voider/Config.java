@@ -126,10 +126,18 @@ public class Config {
 	 * Debug options
 	 */
 	public static class Debug {
-		/** If loading/unloading debug messages should be turned on/off */
-		public static final boolean LOAD_UNLOAD_MESSAGES = true;
-		/** If loading/unloading including number of times a resource has been loaded into a scene */
-		public static final boolean LOAD_UNLOAD_MESSAGES_EVERY_TIME = true;
+		/**
+		 * Control over debug messages
+		 */
+		public static class Messages {
+			/** If loading/unloading debug messages should be turned on/off */
+			public static final boolean LOAD_UNLOAD = true;
+			/** If loading/unloading including number of times a resource has been loaded into a scene */
+			public static final boolean LOAD_UNLOAD_EVERY_TIME = true;
+			/** If loading/unloading dependencies should be displayed */
+			public static final boolean LOAD_UNLOAD_DEPENDENCIES = true;
+		}
+
 		/** If debugging tests shall be activate. This causes extra runtime, but checks
 		 * so that none of the checks are broken. */
 		public static boolean DEBUG_TESTS = true;

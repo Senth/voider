@@ -114,20 +114,6 @@ public class Level extends Resource implements KryoTaggedCopyable, KryoSerializa
 	}
 
 	/**
-	 * Resets the the resource to use the correct defs. Specifically enemies and bullets as
-	 * these could be changed.
-	 */
-	public void resetDefs() {
-		ArrayList<EnemyActor> enemyActors = mResourceBinder.getResources(EnemyActor.class);
-
-		// Update defs for all enemies
-		for (EnemyActor enemy : enemyActors) {
-			EnemyActorDef correctDef = ResourceCacheFacade.get(null, enemy.getDef().getId());
-			enemy.setDef(correctDef);
-		}
-	}
-
-	/**
 	 * To easily get all the resources of a specific type after they have
 	 * been read.
 	 * @param <ResourceType> type of resources to return

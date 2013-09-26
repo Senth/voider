@@ -15,6 +15,7 @@ import com.esotericsoftware.minlog.Log;
 import com.spiddekauga.utils.Strings;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Debug;
+import com.spiddekauga.voider.Config.Debug.Messages;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.utils.Pool;
 import com.spiddekauga.voider.utils.Pools;
@@ -53,6 +54,15 @@ class ResourceDatabase {
 				buildResourceDb((Class<? extends IResource>) entry.getKey(), dir);
 			}
 		}
+	}
+
+	/**
+	 * Returns resource information if the resource exists
+	 * @param resourceId id of the resourc
+	 * @return resource information
+	 */
+	static ResourceInfo getResourceInfo(UUID resourceId) {
+		return mResources.get(resourceId);
 	}
 
 	/**
@@ -218,20 +228,25 @@ class ResourceDatabase {
 			// Add resource if it has been loaded
 			if (mAssetManager.isLoaded(loadingQueueItem.filePath)) {
 				IResource resource = mAssetManager.get(loadingQueueItem.filePath);
-				mLoadedResources.setLoadedResource(loadingQueueItem.scene, resource, loadingQueueItem.revision);
+
+				if (!ResourceDatabase.isResourceLoaded(loadingQueueItem.scene, resource.getId(), loadingQueueItem.revision)) {
+
+					mLoadedResources.setLoadedResource(loadingQueueItem.scene, resource, loadingQueueItem.revision);
+
+					//				int loadedRevision = -1;
+					//				if (resource instanceof IResourceRevision) {
+					//					loadedRevision = ((IResourceRevision) resource).getRevision();
+					//				}
+
+					String name = "";
+					if (resource instanceof Def) {
+						name = ((Def) resource).getName();
+					}
+
+					debugOutputLoadedUnloaded(loadingQueueItem.scene, 1, true, resource.getClass(), name, loadingQueueItem.revision, loadingQueueItem.filePath);
+				}
+
 				iterator.remove();
-
-				int loadedRevision = -1;
-				if (resource instanceof IResourceRevision) {
-					loadedRevision = ((IResourceRevision) resource).getRevision();
-				}
-
-				String name = "";
-				if (resource instanceof Def) {
-					name = ((Def) resource).getName();
-				}
-
-				debugOutputLoadedUnloaded(loadingQueueItem.scene, 1, true, resource.getClass(), name, loadedRevision, loadingQueueItem.filePath);
 			}
 		}
 
@@ -292,6 +307,11 @@ class ResourceDatabase {
 						name = ((Def) resource).getName();
 					}
 				}
+
+				if (resourceInfo.latestRevision == revisionToUse) {
+					revisionToUse = -1;
+				}
+
 				debugOutputLoadedUnloaded(scene, cLoad, true, resourceInfo.type, name, revisionToUse, filePath);
 			}
 		} else {
@@ -401,7 +421,7 @@ class ResourceDatabase {
 	/**
 	 * Outputs a debug message when a file is loaded/unloaded
 	 * @param scene the scene the resources was loaded/unloaded
-	 * @param cLoad load count for the specified scene.
+	 * @param cRefsInScene number of references for the references in the current scene.
 	 * @param loaded true if the resource was loaded, false if unloaded
 	 * @param type resource type
 	 * @param name name of the resource
@@ -409,18 +429,24 @@ class ResourceDatabase {
 	 * @param filepath of the resource
 	 */
 	@SuppressWarnings("unused")
-	private static void debugOutputLoadedUnloaded(Scene scene, int cLoad, boolean loaded, Class<?> type, String name, int revision, String filepath) {
-		if (Config.Debug.LOAD_UNLOAD_MESSAGES) {
-			if (Config.Debug.LOAD_UNLOAD_MESSAGES_EVERY_TIME || ((loaded && cLoad == 1) || (!loaded && cLoad == 0))) {
-				int cRefScenes = 0;
+	private static void debugOutputLoadedUnloaded(Scene scene, int cRefsInScene, boolean loaded, Class<?> type, String name, int revision, String filepath) {
+		if (Messages.LOAD_UNLOAD) {
+			if (Messages.LOAD_UNLOAD_EVERY_TIME || ((loaded && cRefsInScene == 1) || (!loaded && cRefsInScene == 0))) {
+				int cRefsInAssetManager = 0;
 				if (mAssetManager.isLoaded(filepath)) {
-					cRefScenes = mAssetManager.getReferenceCount(filepath);
+					cRefsInAssetManager = mAssetManager.getReferenceCount(filepath);
 				}
 
+				// Revision
 				String revisionString = "";
-				if (revision > 0) {
-					revisionString = "r." + revision;
+				if (IResourceRevision.class.isAssignableFrom(type)) {
+					if (revision > 0) {
+						revisionString = "r." + revision;
+					} else {
+						revisionString = Config.File.REVISION_LATEST_NAME;
+					}
 				}
+
 
 				if (name.equals("(Unnamed)")) {
 					name = "";
@@ -428,12 +454,12 @@ class ResourceDatabase {
 
 				String loadUnloadString = loaded ? "+++" : "---";
 
-				String message = loadUnloadString + "  s:" + cRefScenes + "  " +
-						Strings.padRight("l:" + cLoad, 4) + "  " +
+				String message = loadUnloadString + "  a:" + cRefsInAssetManager + "  " +
+						Strings.padRight("s:" + cRefsInScene, 4) + "  " +
 						Strings.padRight(scene.getClass().getSimpleName(), 15) + " " +
 						Strings.padRight(type.getSimpleName(), 18) + " " +
 						Strings.padRight(name, 16) + " " +
-						Strings.padRight(revisionString, 6) + " " +
+						Strings.padRight(revisionString, 8) + " " +
 						filepath;
 
 				if (Gdx.app != null) {
@@ -668,7 +694,7 @@ class ResourceDatabase {
 	 * 
 	 * @author Matteus Magnusson <senth.wallace@gmail.com>
 	 */
-	private static class ResourceInfo {
+	static class ResourceInfo {
 		/**
 		 * Creates a new resource DB type with no revision
 		 * @param type the type of the resource
@@ -731,9 +757,9 @@ class ResourceDatabase {
 		}
 
 		/** Type of resource */
-		private Class<? extends IResource> type;
+		Class<? extends IResource> type;
 		/** Latest revision of the resource */
-		private int latestRevision = -1;
+		int latestRevision = -1;
 		/** all available including the date */
 		private Map<Integer, String> revisionDates = null;
 	}

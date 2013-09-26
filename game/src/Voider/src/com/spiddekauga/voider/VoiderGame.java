@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.esotericsoftware.minlog.Log;
 import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.voider.app.MainMenu;
@@ -29,6 +30,7 @@ public class VoiderGame implements ApplicationListener {
 	@Override
 	public void create() {
 		Gdx.app.setLogLevel(Config.Debug.LOG_VERBOSITY);
+		Log.ERROR();
 
 		// Init various classes
 		Config.init();

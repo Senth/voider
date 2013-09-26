@@ -3,10 +3,14 @@ package com.spiddekauga.voider.resources;
 import java.util.Map;
 import java.util.UUID;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.GdxRuntimeException;
+import com.spiddekauga.utils.Strings;
+import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.resources.ResourceDatabase.ResourceInfo;
 import com.spiddekauga.voider.scene.Scene;
 
 /**
@@ -54,6 +58,8 @@ class ResourceDependencyLoader implements Disposable {
 	 * @param resource the definition to unload
 	 */
 	void unload(Scene scene, IResourceDependency resource) {
+		debugLoadUnload(scene, resource, false);
+
 		// Recursive, unload all dependencies first
 		// Internal
 		for (ResourceNames dependency : resource.getInternalDependencies()) {
@@ -98,28 +104,36 @@ class ResourceDependencyLoader implements Disposable {
 			ResourceItem queueItem = mLoadingDefs.get(i);
 
 			if (ResourceDatabase.isResourceLoaded(queueItem.scene, queueItem.id, queueItem.revision)) {
-				IResourceDependency def = (IResourceDependency) ResourceDatabase.getLoadedResource(queueItem.scene, queueItem.id, queueItem.revision);
+				IResource resource = ResourceDatabase.getLoadedResource(queueItem.scene, queueItem.id, queueItem.revision);
 
-				// Load dependencies
-				// External
-				for (Map.Entry<UUID, Integer> entry : def.getExternalDependencies().entrySet()) {
-					UUID dependencyId = entry.getKey();
+				if (resource instanceof IResourceDependency) {
+					IResourceDependency def = (IResourceDependency) resource;
 
-					try {
-						load(queueItem.scene, dependencyId, -1);
-					} catch (UndefinedResourceTypeException e) {
-						// Reset entire loading queue
-						mLoadingDefs.clear();
-						throw e;
-					} catch (GdxRuntimeException e) {
-						mLoadingDefs.clear();
-						throw e;
+					debugLoadUnload(queueItem.scene, def, true);
+
+					// Load dependencies
+					// External
+					for (Map.Entry<UUID, Integer> entry : def.getExternalDependencies().entrySet()) {
+						UUID dependencyId = entry.getKey();
+
+						try {
+							load(queueItem.scene, dependencyId, -1);
+						} catch (UndefinedResourceTypeException e) {
+							// Reset entire loading queue
+							mLoadingDefs.clear();
+							throw e;
+						} catch (GdxRuntimeException e) {
+							mLoadingDefs.clear();
+							throw e;
+						}
 					}
-				}
 
-				// Internal
-				for (ResourceNames dependency : def.getInternalDependencies()) {
-					mAssetManager.load(dependency.getFilePath(), dependency.type);
+					// Internal
+					for (ResourceNames dependency : def.getInternalDependencies()) {
+						mAssetManager.load(dependency.getFilePath(), dependency.type);
+					}
+				} else {
+					Gdx.app.debug("ResourceDependency", "Loaded resource " + resource.getClass().getSimpleName() + " does not have any dependencies.");
 				}
 
 				// Remove element
@@ -129,6 +143,48 @@ class ResourceDependencyLoader implements Disposable {
 		}
 
 		return mLoadingDefs.size == 0;
+	}
+
+	/**
+	 * Debug output for when loading/unloading dependencies
+	 * @param scene the scene the dependency is loaded/unloaded to
+	 * @param resource the resource to load/unload dependencies from
+	 * @param load true if loading
+	 */
+	private static void debugLoadUnload(Scene scene, IResourceDependency resource, boolean load) {
+		if (Config.Debug.Messages.LOAD_UNLOAD && Config.Debug.Messages.LOAD_UNLOAD_DEPENDENCIES) {
+			if (resource.getExternalDependenciesCount() > 0) {
+
+				String resourceName = "";
+				if (resource instanceof Def) {
+					resourceName = ((Def) resource).getName();
+				}
+
+				String resourceType = resource.getClass().getSimpleName();
+
+				String loadUnloadString = "";
+				if (load) {
+					loadUnloadString = "+++";
+				} else {
+					loadUnloadString = "---";
+				}
+
+				String message = Strings.padLeft(loadUnloadString, 6) + "  " +
+						Strings.padRight(scene.getClass().getSimpleName(), 15) +
+						Strings.padRight(resourceType, 18) +
+						Strings.padRight(resourceName, Config.Editor.NAME_LENGTH_MAX + 2) +
+						"---------->>>";
+
+
+				for (Map.Entry<UUID, Integer> entry : resource.getExternalDependencies().entrySet()) {
+					ResourceInfo resourceInfo = ResourceDatabase.getResourceInfo(entry.getKey());
+
+					message += "\n" + Strings.padLeft("", 49) + Strings.padRight(resourceInfo.type.getSimpleName(), 16) + entry.getKey();
+				}
+
+				Gdx.app.debug("ResourceDependencyLoader", message);
+			}
+		}
 	}
 
 	/**

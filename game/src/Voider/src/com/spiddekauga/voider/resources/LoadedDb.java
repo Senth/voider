@@ -7,6 +7,7 @@ import java.util.Map.Entry;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.utils.Pool.Poolable;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.utils.Pool;
 import com.spiddekauga.voider.utils.Pools;
@@ -42,7 +43,6 @@ class LoadedDb {
 		// Resource has never been loaded, add it
 		if (loadedResource == null) {
 			loadedResource = mLoadedResourcePool.obtain();
-			loadedResource.revisions.clear();
 			loadedResource.type = type;
 			sceneResources.put(resourceId, loadedResource);
 		}
@@ -52,7 +52,6 @@ class LoadedDb {
 		// Revision has not been loaded before, add it
 		if (loadedRevision == null) {
 			loadedRevision = mLoadedRevisionPool.obtain();
-			loadedRevision.count = 1;
 			loadedResource.revisions.put(revision, loadedRevision);
 		}
 		// Resource already loaded, just increase count
@@ -324,22 +323,39 @@ class LoadedDb {
 	/**
 	 * A loaded resource
 	 */
-	private static class LoadedResource {
+	private static class LoadedResource implements Poolable {
 		/** Resource type */
 		Class<?> type;
 		/** All resource revisions, if the resource doesn't have any revisions the information
 		 * will be found under revision -1 */
 		Map<Integer, LoadedRevision> revisions = new HashMap<Integer, LoadedDb.LoadedRevision>();
+
+		/**
+		 * Resets the resource
+		 */
+		@Override
+		public void reset() {
+			type = null;
+			revisions.clear();
+		}
 	}
 
 	/**
 	 * Revision information
 	 */
-	private static class LoadedRevision {
+	private static class LoadedRevision implements Poolable {
 		/** How many times it has been loaded */
-		int count = 0;
+		int count = 1;
 		/** The actual resource */
 		IResource resource = null;
+
+		/**
+		 * Resets the resource
+		 */
+		public void reset() {
+			count = 1;
+			resource = null;
+		}
 	}
 
 	/** All scene resources */

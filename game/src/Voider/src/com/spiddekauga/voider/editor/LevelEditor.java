@@ -9,7 +9,6 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector2;
-import com.esotericsoftware.minlog.Log;
 import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.utils.Invoker;
 import com.spiddekauga.utils.KeyHelper;
@@ -253,24 +252,6 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 		ResourceCacheFacade.unloadAllOf(this, LevelDef.class, false);
 	}
 
-	@Override
-	protected void reloadResourcesOnActivate(Outcomes outcome, Object message) {
-		super.reloadResourcesOnActivate(outcome, message);
-
-		// Unload enemies if there was a chance we have edited an enemy in the enemy editor
-		// Or if we loaded another level
-		if (outcome == Outcomes.NOT_APPLICAPLE) {
-			reloadEnemies();
-		} else if (outcome == Outcomes.DEF_SELECTED && mSelectionAction == SelectionActions.LEVEL) {
-			reloadEnemies();
-		}
-
-
-		if (mLevel != null) {
-			mLevel.resetDefs();
-		}
-	}
-
 	/**
 	 * Reloads all the enemies
 	 */
@@ -353,8 +334,8 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 
 					mLoadingLevel = ResourceCacheFacade.get(this, ((ResourceItem) message).id, ((ResourceItem) message).revision);
 
-					// Only load level if it's not the current level we selected
-					if (!mLoadingLevel.equals(mLevel.getDef())) {
+					// Only load level if it's not the current level we selected, or another revision
+					if (!mLoadingLevel.equals(mLevel.getDef()) || mLoadingLevel.getRevision() != mLevel.getRevision()) {
 						ResourceCacheFacade.load(this, mLoadingLevel.getLevelId(), mLoadingLevel.getId(), mLoadingLevel.getRevision());
 						Scene scene = getLoadingScene();
 						if (scene != null) {
@@ -640,7 +621,6 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 		mLevel.calculateEndPosition();
 
 		int oldRevision = mLevel.getRevision();
-		Log.TRACE();
 		ResourceSaver.save(mLevel.getDef());
 		ResourceSaver.save(mLevel);
 
@@ -649,7 +629,6 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 			ResourceCacheFacade.load(this, mLevel.getDef().getId(), false);
 			ResourceCacheFacade.load(this, mLevel.getId(), mLevel.getDef().getId());
 			ResourceCacheFacade.finishLoading();
-			Log.NONE();
 
 			// Reset the level to old revision
 			mLevel.getDef().setRevision(oldRevision);
