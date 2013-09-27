@@ -1,13 +1,12 @@
 package com.spiddekauga.voider.game.actors;
 
-import java.util.UUID;
-
 import com.badlogic.gdx.math.Vector2;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.utils.Maths;
+import com.spiddekauga.utils.ShapeRendererEx;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.Level;
 import com.spiddekauga.voider.game.Path;
@@ -90,6 +89,18 @@ public class EnemyActor extends Actor {
 		}
 	}
 
+	@Override
+	public void render(ShapeRendererEx shapeRenderer) {
+		// Don't render non-leaders when in editor
+		if (mEditorActive) {
+			if (mGroup == null || mGroupLeader) {
+				super.render(shapeRenderer);
+			}
+		} else {
+			super.render(shapeRenderer);
+		}
+	}
+
 	/**
 	 * Set the path we're following
 	 * @param path the path we're following
@@ -103,11 +114,7 @@ public class EnemyActor extends Actor {
 		mPath = path;
 
 		if (path != null) {
-
-			mPathId = path.getId();
 			mPath.addEnemy(this);
-		} else {
-			mPathId = null;
 		}
 	}
 
@@ -246,14 +253,14 @@ public class EnemyActor extends Actor {
 		// Movement
 		if (enemyDef.getMovementType() == MovementTypes.AI) {
 			if (enemyDef.isMovingRandomly()) {
-				output.writeFloat(mRandomMoveNext);
+				output.writeFloat(mRandomMoveNext, 100, true);
 				kryo.writeObject(output, mRandomMoveDirection);
 			}
 		} else if (enemyDef.getMovementType() == MovementTypes.PATH) {
 			kryo.writeObjectOrNull(output, mPath, Path.class);
 
 			if (mPath != null) {
-				output.writeInt(mPathIndexNext);
+				output.writeInt(mPathIndexNext, false);
 
 				switch (mPath.getPathType()) {
 				case ONCE:
@@ -293,7 +300,7 @@ public class EnemyActor extends Actor {
 		// Movement
 		if (enemyDef.getMovementType() == MovementTypes.AI) {
 			if (enemyDef.isMovingRandomly()) {
-				mRandomMoveNext = input.readFloat();
+				mRandomMoveNext = input.readFloat(100, true);
 				Pools.vector2.free(mRandomMoveDirection);
 				mRandomMoveDirection = kryo.readObject(input, Vector2.class);
 			}
@@ -301,7 +308,7 @@ public class EnemyActor extends Actor {
 			mPath = kryo.readObjectOrNull(input, Path.class);
 
 			if (mPath != null) {
-				mPathIndexNext = input.readInt();
+				mPathIndexNext = input.readInt(false);
 
 				switch (mPath.getPathType()) {
 				case ONCE:
@@ -370,29 +377,10 @@ public class EnemyActor extends Actor {
 	}
 
 	/**
-	 * @return path id used for the enemy actor, null if none is used
-	 */
-	public UUID getPathId() {
-		if (mPath != null) {
-			return mPath.getId();
-		}
-		else {
-			return mPathId;
-		}
-	}
-
-	/**
 	 * @return the enemy group
 	 */
 	public EnemyGroup getEnemyGroup() {
 		return mGroup;
-	}
-
-	/**
-	 * @return the enemy group id
-	 */
-	public UUID getEnemyGroupId() {
-		return mGroupId;
 	}
 
 	/**
@@ -463,11 +451,8 @@ public class EnemyActor extends Actor {
 	void setEnemyGroup(EnemyGroup enemyGroup) {
 		mGroup = enemyGroup;
 
-		if (mGroup != null) {
-			mGroupId = mGroup.getId();
-		} else {
+		if (mGroup == null) {
 			mGroupLeader = false;
-			mGroupId = null;
 		}
 	}
 
@@ -934,9 +919,6 @@ public class EnemyActor extends Actor {
 	private float mShootAngle = 0;
 
 	// Group
-	/** Group id, used for binding the group after loading the enemy */
-	@Deprecated
-	private UUID mGroupId = null;
 	/** Group of the enemy, null if the enemy doesn't belong to a group */
 	@Tag(75) private EnemyGroup mGroup = null;
 	/** If this enemy is the first in the group */
@@ -953,8 +935,6 @@ public class EnemyActor extends Actor {
 	/** Path we're currently following */
 	private Path mPath = null;
 	/** Path id, used when saving/loading enemy actor as it does not save the path */
-	@Deprecated
-	private UUID mPathId = null;
 	/** Index of path we're heading to */
 	private int mPathIndexNext = -1;
 	/** If the enemy is moving in the path direction */

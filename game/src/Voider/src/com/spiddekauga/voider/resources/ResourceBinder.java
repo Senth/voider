@@ -5,11 +5,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonValue;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.utils.Invoker;
-import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.editor.commands.CResourceBoundRemove;
 import com.spiddekauga.voider.game.Level;
 import com.spiddekauga.voider.scene.SceneSwitcher;
@@ -21,7 +18,7 @@ import com.spiddekauga.voider.utils.Pools;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class ResourceBinder implements Json.Serializable {
+public class ResourceBinder {
 
 	/**
 	 * Adds a resource to add and keep track of (and load its resources)
@@ -34,9 +31,13 @@ public class ResourceBinder implements Json.Serializable {
 	/**
 	 * Removes the specified resource
 	 * @param resourceId the resource to remove
+	 * @param addRemoveBoundResourceToInvoker if the removed bound resources should be added
+	 * to the invoker. If the removed resource should be undone via the undo() command
+	 * this variable should be true, otherwise the resource won't be bound to the previously
+	 * bound resources.
 	 * @return resource that was removed
 	 */
-	public IResource removeResource(UUID resourceId) {
+	public IResource removeResource(UUID resourceId, boolean addRemoveBoundResourceToInvoker) {
 		IResource removedResource = mResources.remove(resourceId);
 
 		// Skip removing bound resource for level
@@ -50,7 +51,7 @@ public class ResourceBinder implements Json.Serializable {
 					IResource resource = entry.getValue();
 
 					if (resource.removeBoundResource(removedResource)) {
-						if (invoker != null) {
+						if (invoker != null && addRemoveBoundResourceToInvoker) {
 							invoker.execute(new CResourceBoundRemove(resource, removedResource), true);
 						}
 					}
@@ -115,18 +116,6 @@ public class ResourceBinder implements Json.Serializable {
 		}
 
 		return resources;
-	}
-
-	@Override
-	public void write(Json json) {
-		json.writeValue("Config.REVISION", Config.REVISION);
-		json.writeValue("mResources", mResources);
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public void read(Json json, JsonValue jsonValue) {
-		mResources = json.readValue("mResources", Map.class, jsonValue);
 	}
 
 	/** All the resources */

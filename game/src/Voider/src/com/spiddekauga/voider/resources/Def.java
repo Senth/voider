@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import com.badlogic.gdx.Gdx;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
@@ -33,7 +34,7 @@ public abstract class Def extends Resource implements IResourceDependency, IReso
 		Def defCopy = (Def)copy;
 		defCopy.mCopyParentId = mUniqueId;
 		defCopy.mCreator = User.getNickName();
-		// TODO create numbering of copy name if already a copy
+		/** @todo create numbering of copy name if already a copy */
 		defCopy.mName = defCopy.mName + " (copy)";
 
 		return copy;
@@ -95,12 +96,12 @@ public abstract class Def extends Resource implements IResourceDependency, IReso
 
 	@Override
 	public void addDependency(IResource dependency) {
-		Integer cResources = mExternalDependencies.get(dependency.getId());
+		AtomicInteger cResources = mExternalDependencies.get(dependency.getId());
 
 		if (cResources != null) {
-			cResources++;
+			cResources.incrementAndGet();
 		} else {
-			mExternalDependencies.put(dependency.getId(), 1);
+			mExternalDependencies.put(dependency.getId(), new AtomicInteger(1));
 		}
 	}
 
@@ -113,10 +114,10 @@ public abstract class Def extends Resource implements IResourceDependency, IReso
 	public void removeDependency(UUID dependency) {
 		// Decrement the value, remove if only one was left...
 
-		Integer cResources = mExternalDependencies.get(dependency);
+		AtomicInteger cResources = mExternalDependencies.get(dependency);
 		if (cResources != null) {
-			cResources--;
-			if (cResources.equals(0)) {
+			cResources.decrementAndGet();
+			if (cResources.get() == 0) {
 				mExternalDependencies.remove(dependency);
 			}
 		} else {
@@ -178,7 +179,7 @@ public abstract class Def extends Resource implements IResourceDependency, IReso
 	}
 
 	@Override
-	public Map<UUID, Integer> getExternalDependencies() {
+	public Map<UUID, AtomicInteger> getExternalDependencies() {
 		return mExternalDependencies;
 	}
 
@@ -196,7 +197,7 @@ public abstract class Def extends Resource implements IResourceDependency, IReso
 	}
 
 	/** Dependencies for the resource */
-	@Tag(43) private Map<UUID, Integer> mExternalDependencies = new HashMap<UUID, Integer>();
+	@Tag(43) private Map<UUID, AtomicInteger> mExternalDependencies = new HashMap<UUID, AtomicInteger>();
 	/** Internal dependencies, such as textures, sound, particle effects */
 	@Tag(42) private Set<ResourceNames> mInternalDependencies = new HashSet<ResourceNames>();
 	/** Name of the definition */

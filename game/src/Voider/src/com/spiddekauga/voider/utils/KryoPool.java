@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
@@ -224,6 +225,8 @@ public class KryoPool extends Pool<Kryo> {
 		TRIGGER_ACTION_ACTIONS(TriggerAction.Actions.class),
 		/** TriggerAction.Reasons */
 		TRIGGER_ACTION_REASONS(TriggerAction.Reasons.class),
+		/** AtomicInteger */
+		ATOMIC_INTEGER(AtomicInteger.class, new AtomicIntegerSerializer()),
 
 
 		;
@@ -363,10 +366,12 @@ public class KryoPool extends Pool<Kryo> {
 		private SerializerType mSerializerType = null;
 	}
 
+
+	// ------------------------------------
+	//		Serializers
+	// ------------------------------------
 	/**
 	 * Serializes box2d circle shapes
-	 * 
-	 * @author Matteus Magnusson <senth.wallace@gmail.com>
 	 */
 	private static class CircleShapeSerializer extends Serializer<CircleShape> {
 		@Override
@@ -386,8 +391,6 @@ public class KryoPool extends Pool<Kryo> {
 
 	/**
 	 * Serializes box2d polygon shapes
-	 * 
-	 * @author Matteus Magnusson <senth.wallace@gmail.com>
 	 */
 	private static class PolygonShapeSerializer extends Serializer<PolygonShape> {
 		@Override
@@ -419,8 +422,6 @@ public class KryoPool extends Pool<Kryo> {
 
 	/**
 	 * Serializes box2d edge shapes
-	 * 
-	 * @author Matteus Magnusson <senth.wallace@gmail.com>
 	 */
 	private static class EdgeShapeSerializer extends Serializer<EdgeShape>  {
 		@Override
@@ -456,8 +457,6 @@ public class KryoPool extends Pool<Kryo> {
 
 	/**
 	 * Serializes box2d chain shapes
-	 * 
-	 * @author Matteus Magnusson <senth.wallace@gmail.com>
 	 */
 	private static class ChainShapeSerializer extends Serializer<ChainShape> {
 		@Override
@@ -509,6 +508,25 @@ public class KryoPool extends Pool<Kryo> {
 			}
 
 			return chainShape;
+		}
+	}
+
+	/**
+	 * Serializes AtomicInteger just as an Integer
+	 */
+	private static class AtomicIntegerSerializer extends Serializer<AtomicInteger> {
+		{
+			setImmutable(true);
+		}
+
+		@Override
+		public void write(Kryo kryo, Output output, AtomicInteger object) {
+			output.writeInt(object.get(), false);
+		}
+
+		@Override
+		public AtomicInteger read(Kryo kryo, Input input, Class<AtomicInteger> type) {
+			return new AtomicInteger(input.readInt(false));
 		}
 	}
 }

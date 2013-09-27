@@ -2,6 +2,7 @@ package com.spiddekauga.voider.resources;
 
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
@@ -67,7 +68,7 @@ class ResourceDependencyLoader implements Disposable {
 		}
 
 		// External, if the dependency has dependencies, unload its dependencies too
-		for (Map.Entry<UUID, Integer> entry : resource.getExternalDependencies().entrySet()) {
+		for (Map.Entry<UUID, AtomicInteger> entry : resource.getExternalDependencies().entrySet()) {
 			UUID dependencyId = entry.getKey();
 			IResource dependency = ResourceDatabase.getLoadedResource(scene, dependencyId, -1);
 
@@ -113,7 +114,7 @@ class ResourceDependencyLoader implements Disposable {
 
 					// Load dependencies
 					// External
-					for (Map.Entry<UUID, Integer> entry : def.getExternalDependencies().entrySet()) {
+					for (Map.Entry<UUID, AtomicInteger> entry : def.getExternalDependencies().entrySet()) {
 						UUID dependencyId = entry.getKey();
 
 						try {
@@ -176,7 +177,7 @@ class ResourceDependencyLoader implements Disposable {
 						"---------->>>";
 
 
-				for (Map.Entry<UUID, Integer> entry : resource.getExternalDependencies().entrySet()) {
+				for (Map.Entry<UUID, AtomicInteger> entry : resource.getExternalDependencies().entrySet()) {
 					ResourceInfo resourceInfo = ResourceDatabase.getResourceInfo(entry.getKey());
 
 					message += "\n" + Strings.padLeft("", 49) + Strings.padRight(resourceInfo.type.getSimpleName(), 16) + entry.getKey();

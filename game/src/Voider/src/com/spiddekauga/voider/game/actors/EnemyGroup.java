@@ -11,6 +11,7 @@ import com.spiddekauga.voider.Config.Debug;
 import com.spiddekauga.voider.game.triggers.TriggerAction.Actions;
 import com.spiddekauga.voider.game.triggers.TriggerInfo;
 import com.spiddekauga.voider.resources.Resource;
+import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Groups together enemies. These enemies have the same properties: Same position,
@@ -37,7 +38,6 @@ public class EnemyGroup extends Resource {
 	public void setLeaderEnemy(EnemyActor enemyActor) {
 		if (mEnemies.size() == 0) {
 			mEnemies.add(enemyActor);
-			mEnemyIds.add(enemyActor.getId());
 
 			enemyActor.setEnemyGroup(this);
 			enemyActor.setGroupLeader(true);
@@ -64,7 +64,6 @@ public class EnemyGroup extends Resource {
 		while (cEnemies < mEnemies.size()) {
 			EnemyActor removedEnemy = mEnemies.remove(cEnemies);
 			removedEnemy.setEnemyGroup(null);
-			mEnemyIds.remove(cEnemies);
 
 			if (removedEnemies != null) {
 				removedEnemies.add(removedEnemy);
@@ -76,7 +75,7 @@ public class EnemyGroup extends Resource {
 		// Add
 		while (cEnemies > mEnemies.size()) {
 			EnemyActor copyEnemy = mEnemies.get(0).copyNewResource();
-
+			copyEnemy.destroyBody();
 
 			// Set activate trigger
 			if (activateTrigger != null) {
@@ -85,7 +84,6 @@ public class EnemyGroup extends Resource {
 			}
 
 			mEnemies.add(copyEnemy);
-			mEnemyIds.add(copyEnemy.getId());
 
 			if (addedEnemies != null) {
 				addedEnemies.add(copyEnemy);
@@ -103,10 +101,13 @@ public class EnemyGroup extends Resource {
 	/**
 	 * Clears all enemies. This will remove them from the group. Although the leader
 	 * isn't in the returned array it is too removed from the group.
-	 * @return all enemies that were removed from the group, except the group leader
+	 * @return all enemies that were removed from the group, except the group leader.
+	 * Don't forget to free the array.
 	 */
 	public ArrayList<EnemyActor> clear() {
-		ArrayList<EnemyActor> removedEnemies = new ArrayList<EnemyActor>();
+		@SuppressWarnings("unchecked")
+		ArrayList<EnemyActor> removedEnemies = Pools.arrayList.obtain();
+		removedEnemies.clear();
 
 		for (EnemyActor enemyActor : mEnemies) {
 			enemyActor.setEnemyGroup(null);
@@ -116,7 +117,6 @@ public class EnemyGroup extends Resource {
 		removedEnemies.remove(0);
 
 		mEnemies.clear();
-		mEnemyIds.clear();
 
 		return removedEnemies;
 	}
@@ -267,9 +267,6 @@ public class EnemyGroup extends Resource {
 
 	/** All the enemies */
 	@Tag(6) private ArrayList<EnemyActor> mEnemies = new ArrayList<EnemyActor>();
-	/** All enemy references */
-	@Deprecated
-	private ArrayList<UUID> mEnemyIds = new ArrayList<UUID>();
 	/** Trigger delay between enemies, in seconds */
 	@Tag(7) private float mTriggerDelay = Config.Editor.Level.Enemy.DELAY_BETWEEN_DEFAULT;
 }

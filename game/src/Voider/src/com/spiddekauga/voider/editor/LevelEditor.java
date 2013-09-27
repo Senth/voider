@@ -169,7 +169,7 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 	 * Sets the level that shall be played and resets tools, invoker, etc.
 	 * @param level level to play
 	 */
-	public void setLevel(Level level) {
+	private void setLevel(Level level) {
 		boolean sameLevel = false;
 		boolean sameRevision = false;
 
@@ -207,7 +207,9 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 			// Activate all enemies
 			ArrayList<EnemyActor> enemies = mLevel.getResources(EnemyActor.class);
 			for (EnemyActor enemy : enemies) {
-				enemy.activate();
+				if (enemy.getEnemyGroup() == null || enemy.isGroupLeader()) {
+					enemy.activate();
+				}
 			}
 		}
 
@@ -252,44 +254,14 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 		ResourceCacheFacade.unloadAllOf(this, LevelDef.class, false);
 	}
 
-	/**
-	 * Reloads all the enemies
-	 */
-	private void reloadEnemies() {
-		ResourceCacheFacade.unloadAllOf(this, EnemyActorDef.class, true);
-
-		/** @todo Improve reloading to only unload the latest revision of the enemies the level
-		 * will be using. However, when unloading a level care must be taken to load the
-		 * latest revision of these enemies again. For now unloading then loading all enemies with
-		 * correct revisions is the easiest way to do this.
-		 */
-
-		ResourceCacheFacade.loadAllOf(this, EnemyActorDef.class, true);
-		ResourceCacheFacade.finishLoading();
+	@Override
+	protected void reloadResourcesOnActivate(Outcomes outcome, Object message) {
+		super.reloadResourcesOnActivate(outcome, message);
+		if (outcome == Outcomes.NOT_APPLICAPLE) {
+			ResourceCacheFacade.loadAllNotYetLoadedOf(this, EnemyActorDef.class, true);
+			ResourceCacheFacade.finishLoading();
+		}
 	}
-
-	//	/**
-	//	 * @return the revision of all enemy resource the level is currently using
-	//	 */
-	//	private Map<UUID, Integer> getEnemyRevisions() {
-	//		// Get the specific revision of certain enemies we currently use
-	//		Map<UUID, Integer> enemyRevisions = new HashMap<UUID, Integer>();
-	//		Map<UUID, ResourceItem> dependencies = null;
-	//		if (mLevel != null) {
-	//			dependencies = mLevel.getDef().getExternalDependencies();
-	//		} else {
-	//			dependencies = new HashMap<UUID, ResourceItem>();
-	//		}
-	//
-	//		// Add all enemy revision to this dependency
-	//		for (Map.Entry<UUID, ResourceItem> entry : dependencies.entrySet()) {
-	//			if (EnemyActorDef.class.isAssignableFrom(entry.getValue().type)) {
-	//				enemyRevisions.put(entry.getKey(), entry.getValue().revision);
-	//			}
-	//		}
-	//
-	//		return enemyRevisions;
-	//	}
 
 	@Override
 	protected void onActivate(Outcomes outcome, Object message) {
@@ -315,6 +287,8 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 				} else {
 					Gdx.app.error("LevelEditor", "Could not find level (" + mLoadingLevel.getLevelId() + ")");
 				}
+			} else if (mLevel == null) {
+				newDef();
 			}
 		}
 		else if (outcome == Outcomes.LOADING_FAILED_CORRUPT_FILE) {
@@ -639,17 +613,12 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 
 	@Override
 	public void newDef() {
-		if (mLevel != null) {
-			mLevel.dispose();
-		}
-
 		LevelDef levelDef = new LevelDef();
 		Level level = new Level(levelDef);
 		setLevel(level);
+		saveDef();
 
 		clearTools();
-
-		reloadEnemies();
 
 		mUnsaved = false;
 	}
@@ -833,8 +802,12 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 			if (enemyGroup != null) {
 				// Just change amount of enemies
 				if (cEnemies > 1) {
-					ArrayList<EnemyActor> addedEnemies = new ArrayList<EnemyActor>();
-					ArrayList<EnemyActor> removedEnemies = new ArrayList<EnemyActor>();
+					@SuppressWarnings("unchecked")
+					ArrayList<EnemyActor> addedEnemies = Pools.arrayList.obtain();
+					addedEnemies.clear();
+					@SuppressWarnings("unchecked")
+					ArrayList<EnemyActor> removedEnemies = Pools.arrayList.obtain();
+					removedEnemies.clear();
 
 					enemyGroup.setEnemyCount(cEnemies, addedEnemies, removedEnemies);
 
@@ -845,6 +818,8 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 					for (EnemyActor removedEnemy : removedEnemies) {
 						mLevel.removeResource(removedEnemy.getId());
 					}
+
+					Pools.arrayList.freeAll(addedEnemies, removedEnemies);
 				}
 				// Delete enemy group
 				else {
@@ -856,6 +831,8 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 					}
 
 					mLevel.removeResource(enemyGroup.getId());
+
+					Pools.arrayList.free(removedEnemies);
 				}
 			}
 			// No enemy group, do we create one?
@@ -865,12 +842,17 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 
 				enemyGroup.setLeaderEnemy(selectedEnemy);
 
-				ArrayList<EnemyActor> addedEnemies = new ArrayList<EnemyActor>();
+				@SuppressWarnings("unchecked")
+				ArrayList<EnemyActor> addedEnemies = Pools.arrayList.obtain();
+				addedEnemies.clear();
 				enemyGroup.setEnemyCount(cEnemies, addedEnemies, null);
 
 				for (EnemyActor addedEnemy : addedEnemies) {
 					mLevel.addResource(addedEnemy);
+					addedEnemy.destroyBody();
 				}
+
+				Pools.arrayList.free(addedEnemies);
 
 				// Set GUI delay value
 				((LevelEditorGui)mGui).resetEnemyOptions();

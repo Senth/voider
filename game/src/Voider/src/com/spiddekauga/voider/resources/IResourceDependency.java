@@ -3,6 +3,7 @@ package com.spiddekauga.voider.resources;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * This resource has dependencies
@@ -49,7 +50,7 @@ public interface IResourceDependency extends IResource {
 	/**
 	 * @return all external dependencies
 	 */
-	Map<UUID, Integer> getExternalDependencies();
+	Map<UUID, AtomicInteger> getExternalDependencies();
 
 	/**
 	 * @return all internal dependencies

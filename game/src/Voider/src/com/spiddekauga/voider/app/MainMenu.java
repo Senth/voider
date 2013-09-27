@@ -6,7 +6,6 @@ import com.badlogic.gdx.Gdx;
 import com.spiddekauga.voider.editor.LevelEditor;
 import com.spiddekauga.voider.game.GameSaveDef;
 import com.spiddekauga.voider.game.GameScene;
-import com.spiddekauga.voider.game.Level;
 import com.spiddekauga.voider.game.LevelDef;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceItem;
@@ -130,9 +129,6 @@ public class MainMenu extends Scene {
 	void gotoEditor() {
 		LevelEditor levelEditor = new LevelEditor();
 
-		LevelDef levelDef = new LevelDef();
-		Level level = new Level(levelDef);
-		levelEditor.setLevel(level);
 		SceneSwitcher.switchTo(levelEditor);
 	}
 

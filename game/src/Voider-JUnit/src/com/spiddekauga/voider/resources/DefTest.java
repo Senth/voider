@@ -9,6 +9,7 @@ import static org.junit.Assert.fail;
 import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -130,8 +131,8 @@ public class DefTest {
 
 		// External dependencies
 		assertEquals(expected.getExternalDependenciesCount(), actual.getExternalDependenciesCount());
-		for (Map.Entry<UUID, Integer> dependency : expected.getExternalDependencies().entrySet()) {
-			Integer foundDependency = actual.getExternalDependencies().get(dependency.getKey());
+		for (Map.Entry<UUID, AtomicInteger> dependency : expected.getExternalDependencies().entrySet()) {
+			AtomicInteger foundDependency = actual.getExternalDependencies().get(dependency.getKey());
 			assertNotNull(foundDependency);
 			assertEquals(dependency.getValue(), foundDependency);
 		}

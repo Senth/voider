@@ -12,8 +12,6 @@ import com.spiddekauga.voider.app.MainMenu;
 import com.spiddekauga.voider.app.SplashScreen;
 import com.spiddekauga.voider.editor.LevelEditor;
 import com.spiddekauga.voider.game.Collectibles;
-import com.spiddekauga.voider.game.Level;
-import com.spiddekauga.voider.game.LevelDef;
 import com.spiddekauga.voider.game.actors.PickupActorDef;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceChecker;
@@ -76,10 +74,6 @@ public class VoiderGame implements ApplicationListener {
 	@SuppressWarnings("unused")
 	private void testEditor() {
 		LevelEditor levelEditor = new LevelEditor();
-
-		LevelDef levelDef = new LevelDef();
-		Level level = new Level(levelDef);
-		levelEditor.setLevel(level);
 		SceneSwitcher.switchTo(levelEditor);
 	}
 

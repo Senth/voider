@@ -1,6 +1,9 @@
 package com.spiddekauga.voider.game;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
@@ -10,6 +13,7 @@ import com.esotericsoftware.kryo.KryoSerializable;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
+import com.spiddekauga.utils.KryoPostRead;
 import com.spiddekauga.utils.KryoPreWrite;
 import com.spiddekauga.utils.KryoTaggedCopyable;
 import com.spiddekauga.utils.ShapeRendererEx;
@@ -40,7 +44,7 @@ import com.spiddekauga.voider.utils.Pools;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class Level extends Resource implements KryoPreWrite, KryoTaggedCopyable, KryoSerializable, Disposable, IResourceRevision {
+public class Level extends Resource implements KryoPreWrite, KryoPostRead, KryoTaggedCopyable, KryoSerializable, Disposable, IResourceRevision {
 	/**
 	 * Constructor which creates an new empty level with the bound
 	 * level definition
@@ -51,8 +55,6 @@ public class Level extends Resource implements KryoPreWrite, KryoTaggedCopyable,
 		mUniqueId = levelDef.getLevelId();
 		mSpeed = mLevelDef.getBaseSpeed();
 		mCompletedLevel = false;
-
-		//		mResourceBinder.addResource(this);
 	}
 
 	/**
@@ -223,7 +225,7 @@ public class Level extends Resource implements KryoPreWrite, KryoTaggedCopyable,
 	 * @param resourceId id of the resource
 	 */
 	public void removeResource(UUID resourceId) {
-		IResource removedResource = mResourceBinder.removeResource(resourceId);
+		IResource removedResource = mResourceBinder.removeResource(resourceId, true);
 
 		if (removedResource instanceof Actor) {
 			removeActor((Actor) removedResource);
@@ -299,12 +301,13 @@ public class Level extends Resource implements KryoPreWrite, KryoTaggedCopyable,
 	@Override
 	public void dispose() {
 		// Remove this level first...
-		mResourceBinder.removeResource(getId());
+		mResourceBinder.removeResource(getId(), false);
 
 		ArrayList<Disposable> disposables = mResourceBinder.getResources(Disposable.class);
 		for (Disposable disposable : disposables) {
 			disposable.dispose();
 		}
+
 		Pools.arrayList.free(disposables);
 		if (mResourceRenders != null) {
 			Pools.arrayList.free(mResourceRenders);
@@ -370,6 +373,58 @@ public class Level extends Resource implements KryoPreWrite, KryoTaggedCopyable,
 		for (IResourcePrepareWrite resource : mResourceBinder.getResources(IResourcePrepareWrite.class)) {
 			resource.prepareWrite();
 		}
+
+
+		// Remove multiple enemies from the group, i.e. only save the leader.
+		if (Actor.isEditorActive()) {
+			@SuppressWarnings("unchecked")
+			ArrayList<EnemyActor> removeEnemies = Pools.arrayList.obtain();
+			removeEnemies.clear();
+
+			for (EnemyActor enemyActor : mResourceBinder.getResources(EnemyActor.class)) {
+				int cEnemiesBefore = removeEnemies.size();
+
+				EnemyGroup enemyGroup = enemyActor.getEnemyGroup();
+
+				if (enemyActor.isGroupLeader() && enemyGroup != null) {
+					enemyGroup.setEnemyCount(1, null, removeEnemies);
+
+					// Save number of enemies in the group
+					mGroupEnemiesSave.put(enemyGroup, removeEnemies.size() - cEnemiesBefore + 1);
+				}
+			}
+
+			// Actually remove the enemies
+			for (EnemyActor removeEnemy : removeEnemies) {
+				mResourceBinder.removeResource(removeEnemy.getId(), false);
+				removeEnemy.dispose();
+			}
+
+			Pools.arrayList.free(removeEnemies);
+		}
+	}
+
+	@Override
+	public void postRead() {
+		// Add all the removed enemies again
+		if (!mGroupEnemiesSave.isEmpty()) {
+			@SuppressWarnings("unchecked")
+			ArrayList<EnemyActor> addEnemies = Pools.arrayList.obtain();
+			addEnemies.clear();
+
+			for (Entry<EnemyGroup, Integer> entry : mGroupEnemiesSave.entrySet()) {
+				EnemyGroup enemyGroup = entry.getKey();
+				enemyGroup.setEnemyCount(entry.getValue(), addEnemies, null);
+			}
+			mGroupEnemiesSave.clear();
+
+			// Actually add all the enemies
+			for (EnemyActor addEnemy : addEnemies) {
+				mResourceBinder.addResource(addEnemy);
+			}
+
+			Pools.arrayList.free(addEnemies);
+		}
 	}
 
 	@Override
@@ -379,7 +434,7 @@ public class Level extends Resource implements KryoPreWrite, KryoTaggedCopyable,
 
 		// LevelDef
 		kryo.writeObject(output, mLevelDef.getId());
-		output.writeInt(mLevelDef.getRevision());
+		output.writeInt(mLevelDef.getRevision(), false);
 	}
 
 	@Override
@@ -389,7 +444,7 @@ public class Level extends Resource implements KryoPreWrite, KryoTaggedCopyable,
 
 		// LevelDef
 		UUID levelDefId = kryo.readObject(input, UUID.class);
-		int revision = input.readInt();
+		int revision = input.readInt(false);
 		mLevelDef = ResourceCacheFacade.get(null, levelDefId, revision);
 	}
 
@@ -441,6 +496,9 @@ public class Level extends Resource implements KryoPreWrite, KryoTaggedCopyable,
 	private boolean mRunning = false;
 	/** The player actor */
 	private PlayerActor mPlayerActor = null;
+	/** Multiple enemies in a group, but just save the leader and number of enemies */
+	@Tag(103) private Map<EnemyGroup, Integer> mGroupEnemiesSave = new HashMap<EnemyGroup, Integer>();
+
 	/** Revision of the actor */
 	protected final int CLASS_REVISION = 1;
 }

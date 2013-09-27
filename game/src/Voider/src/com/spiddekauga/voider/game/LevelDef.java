@@ -146,6 +146,6 @@ public class LevelDef extends Def {
 	 * be changed by triggers */
 	@Tag(83) private float mSpeed = Config.Editor.Level.LEVEL_SPEED_DEFAULT;
 	/** End of the map (right screen edge) */
-	@Tag(84) private float mEndXCoord = 100f;
+	@Tag(84) private float mEndXCoord = 100;
 
 }

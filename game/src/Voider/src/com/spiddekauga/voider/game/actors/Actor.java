@@ -446,7 +446,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 			kryo.writeClassAndObject(output, mDef);
 		} else {
 			kryo.writeObject(output, mDef.getId());
-			output.writeInt(mDef.getRevision());
+			output.writeInt(mDef.getRevision(), false);
 		}
 
 		// Save body
@@ -480,7 +480,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 			}
 		} else {
 			UUID defId = kryo.readObject(input, UUID.class);
-			int revision = input.readInt();
+			int revision = input.readInt(false);
 			mDef = ResourceCacheFacade.get(null, defId, revision);
 		}
 

@@ -78,6 +78,7 @@ public class ResourceCacheFacade {
 	 * @param loadDependencies Set to true ot load all file dependencies of the resource. E.g. some
 	 * ActorDef might have textures, particle effects, sound, bullets as dependencies. In this case
 	 * these will also be loaded.
+	 * @see #loadAllNotYetLoadedOf(Scene, Class, boolean)
 	 */
 	public static void loadAllOf(Scene scene, Class<? extends IResource> type, boolean loadDependencies) {
 		// Get all resources of this type
@@ -94,6 +95,45 @@ public class ResourceCacheFacade {
 		else {
 			for (ResourceItem resourceItem : resources) {
 				ResourceDatabase.load(scene, resourceItem.id, -1);
+			}
+		}
+
+
+		// Free
+		Pools.resourceItem.freeAll(resources);
+		Pools.arrayList.free(resources);
+	}
+
+	/**
+	 * Loads all resources that haven't been loaded of the specified type. Useful when new resources of
+	 * the type has been loaded and we don't want to unload and load all resources again. Always loads
+	 * the latest revision of the resource.
+	 * @param scene the scene to load all resources for
+	 * @param type the type of resource to load
+	 * @param loadDependencies Set to true ot load all file dependencies of the resource. E.g. some
+	 * ActorDef might have textures, particle effects, sound, bullets as dependencies. In this case
+	 * these will also be loaded.
+	 * @see #loadAllOf(Scene, Class, boolean)
+	 */
+	public static void loadAllNotYetLoadedOf(Scene scene, Class<? extends IResource> type, boolean loadDependencies) {
+		// Get all resources of this type
+		ArrayList<ResourceItem> resources = ResourceDatabase.getAllExistingResource(type);
+
+
+		// Load dependencies
+		if (loadDependencies) {
+			for (ResourceItem resourceItem : resources) {
+				if (!ResourceDatabase.isResourceLoaded(scene, resourceItem.id, -1)) {
+					mDependencyLoader.load(scene, resourceItem.id, -1);
+				}
+			}
+		}
+		// Only load them, no dependencies
+		else {
+			for (ResourceItem resourceItem : resources) {
+				if (!ResourceDatabase.isResourceLoaded(scene, resourceItem.id, -1)) {
+					ResourceDatabase.load(scene, resourceItem.id, -1);
+				}
 			}
 		}
 
