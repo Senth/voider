@@ -5,8 +5,6 @@ import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonValue;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Debug;
@@ -142,28 +140,6 @@ public class EnemyGroup extends Resource {
 	 */
 	public float getSpawnTriggerDelay() {
 		return mTriggerDelay;
-	}
-
-	@Override
-	public void write(Json json) {
-		super.write(json);
-
-		json.writeValue("mTriggerDelay", mTriggerDelay);
-		json.writeValue("mEnemyIds", mEnemyIds);
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public void read(Json json, JsonValue jsonValue) {
-		super.read(json, jsonValue);
-
-		mTriggerDelay = json.readValue("mTriggerDelay", float.class, jsonValue);
-		mEnemyIds = json.readValue("mEnemyIds", ArrayList.class, jsonValue);
-
-		// Fill enemies with null values
-		for (int i = 0; i < mEnemyIds.size(); ++i) {
-			mEnemies.add(null);
-		}
 	}
 
 	/**

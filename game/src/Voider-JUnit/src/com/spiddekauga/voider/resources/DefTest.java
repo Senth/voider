@@ -75,7 +75,7 @@ public class DefTest {
 	}
 
 	/**
-	 * Test method for {@link com.spiddekauga.voider.resources.Def#write(com.badlogic.gdx.utils.Json)}.
+	 * Test to write and read definition
 	 */
 	@Test
 	public void writeRead() {

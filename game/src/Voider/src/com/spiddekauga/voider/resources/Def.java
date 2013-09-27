@@ -9,8 +9,6 @@ import java.util.Set;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonValue;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.voider.User;
 
@@ -20,8 +18,7 @@ import com.spiddekauga.voider.User;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-@SuppressWarnings("unchecked")
-public abstract class Def extends Resource implements Json.Serializable, IResourceDependency, IResourceRevision {
+public abstract class Def extends Resource implements IResourceDependency, IResourceRevision {
 	/**
 	 * Default constructor for the resource.
 	 */
@@ -94,61 +91,6 @@ public abstract class Def extends Resource implements Json.Serializable, IResour
 	 */
 	public void setDescription(String description) {
 		mDescription = description;
-	}
-
-	/**
-	 * Writes this class to a json object.
-	 * @param json the object which we write all this classe's variables to.
-	 */
-	@Override
-	public void write(Json json) {
-		super.write(json);
-
-		json.writeValue("mName", mName);
-		json.writeValue("mDate", mDate);
-		json.writeValue("mDescription", mDescription);
-		json.writeValue("mCreator", mCreator);
-		json.writeValue("mRevision", mRevision);
-		json.writeValue("mOriginalCreator", mOriginalCreator);
-
-		if (mInternalDependencies.isEmpty()) {
-			json.writeValue("mInternalDependencies", (Set<?>) null);
-		} else {
-			json.writeValue("mInternalDependencies", mInternalDependencies);
-		}
-
-		if (mExternalDependencies.size() == 0) {
-			json.writeValue("mExternalDependencies", (Object) null);
-		} else {
-			json.writeValue("mExternalDependencies", mExternalDependencies);
-		}
-	}
-
-	/**
-	 * Reads this class as a json object.
-	 * @param json the json to read the value from
-	 * @param jsonData this is where all the json variables have been loaded
-	 */
-	@Override
-	public void read(Json json, JsonValue jsonData) {
-		super.read(json, jsonData);
-
-		mName = json.readValue("mName", String.class, jsonData);
-		mDate = json.readValue("mDate", Date.class, jsonData);
-		mCreator = json.readValue("mCreator", String.class, jsonData);
-		mOriginalCreator = json.readValue("mOriginalCreator", String.class, jsonData);
-		mRevision = json.readValue("mRevision", int.class, jsonData);
-		mDescription = json.readValue("mDescription", String.class, jsonData);
-
-		Set<ResourceNames> internalMap = json.readValue("mInternalDependencies", HashSet.class, jsonData);
-		if (internalMap != null) {
-			mInternalDependencies.addAll(internalMap);
-		}
-
-		Map<UUID, Integer> externalDependencies = json.readValue("mExternalDependencies", Map.class, jsonData);
-		if (externalDependencies != null) {
-			mExternalDependencies = externalDependencies;
-		}
 	}
 
 	@Override

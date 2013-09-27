@@ -13,9 +13,6 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Disposable;
-import com.badlogic.gdx.utils.GdxRuntimeException;
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.Pool.Poolable;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.KryoSerializable;
@@ -44,7 +41,6 @@ import com.spiddekauga.voider.resources.IResourceRender;
 import com.spiddekauga.voider.resources.IResourceUpdate;
 import com.spiddekauga.voider.resources.Resource;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
-import com.spiddekauga.voider.resources.UndefinedResourceTypeException;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.utils.Geometry;
 import com.spiddekauga.voider.utils.Pools;
@@ -54,7 +50,7 @@ import com.spiddekauga.voider.utils.Pools;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public abstract class Actor extends Resource implements IResourceUpdate, Json.Serializable, KryoTaggedCopyable, KryoSerializable, Disposable, Poolable, IResourceBody, IResourcePosition, ITriggerListener, IResourceEditorUpdate, IResourceRender, IResourceEditorRender {
+public abstract class Actor extends Resource implements IResourceUpdate, KryoTaggedCopyable, KryoSerializable, Disposable, Poolable, IResourceBody, IResourcePosition, ITriggerListener, IResourceEditorUpdate, IResourceRender, IResourceEditorRender {
 	/**
 	 * Sets the texture of the actor including the actor definition.
 	 * Automatically creates a body for the actor.
@@ -526,101 +522,6 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 				bodyDef.linearVelocity.set(fromActor.mBody.getLinearVelocity());
 				bodyDef.awake = fromActor.mBody.isAwake();
 				bodyDef.active = fromActor.mBody.isActive();
-				bodyDef.position.set(mPosition);
-
-				createBody(bodyDef);
-			}
-		}
-	}
-
-	@Override
-	public void write(Json json) {
-		super.write(json);
-
-		if (!mEditorActive) {
-			json.writeValue("mActive", mActive);
-		}
-
-		json.writeValue("mLife", mLife);
-		json.writeValue("mPosition", mPosition);
-		json.writeValue("mTriggerInfos", mTriggerInfos);
-
-
-		if (savesDef()) {
-			json.writeValue("mDef", mDef);
-		} else {
-			json.writeValue("mDefId", mDef.getId());
-			json.writeValue("mDefRev", mDef.getRevision());
-		}
-
-		/** @TODO Do we need to save colliding actors? */
-
-		if (mBody != null) {
-			json.writeObjectStart("mBody");
-			json.writeValue("angle", mBody.getAngle());
-			json.writeValue("angular_velocity", mBody.getAngularVelocity());
-			json.writeValue("linear_velocity", mBody.getLinearVelocity());
-			json.writeValue("awake", mBody.isAwake());
-			json.writeValue("active", mBody.isActive());
-			json.writeObjectEnd();
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public void read(Json json, JsonValue jsonData) {
-		super.read(json, jsonData);
-
-		if (jsonData.get("mActive") != null) {
-			mActive = json.readValue("mActive", boolean.class, jsonData);
-		}
-
-		mLife = json.readValue("mLife", float.class, jsonData);
-		mPosition = json.readValue("mPosition", Vector2.class, jsonData);
-		mTriggerInfos = json.readValue("mTriggerInfos", ArrayList.class, jsonData);
-
-		// Set trigger listener to this
-		for (TriggerInfo triggerInfo : mTriggerInfos) {
-			triggerInfo.listener = this;
-		}
-
-
-		// Definition
-		if (savesDef()) {
-			/** @todo when the game is publish all other resources will be
-			 * saved in the level. This means that the definition of enemies etc
-			 * should be saved as references and not save the actual definition */
-			mDef = json.readValue("mDef", StaticTerrainActorDef.class, jsonData);
-		}
-		// Get definition information to be able to load it
-		else {
-			UUID defId = json.readValue("mDefId", UUID.class, jsonData);
-			int defRev = json.readValue("mDefRev", int.class, jsonData);
-
-			// Set the actual actor definition
-			try {
-				mDef = (ActorDef) ResourceCacheFacade.get(null, defId, defRev);
-			} catch (UndefinedResourceTypeException e) {
-				Gdx.app.error("JsonRead", "Undefined Resource Type exception!");
-				throw new GdxRuntimeException(e);
-			}
-		}
-
-
-		// Create stub body
-		if (mActive) {
-			BodyDef bodyDef = mDef.getBodyDefCopy();
-
-			// Set body information, i.e. position etc.
-			JsonValue bodyValues = jsonData.get("mBody");
-			if (bodyValues != null) {
-				bodyDef.angle = json.readValue("angle", float.class, bodyValues);
-				bodyDef.angularVelocity = json.readValue("angular_velocity", float.class, bodyValues);
-				bodyDef.linearVelocity.set(json.readValue("linear_velocity", Vector2.class, bodyValues));
-				bodyDef.awake = json.readValue("awake", boolean.class, bodyValues);
-				bodyDef.active = json.readValue("active", boolean.class, bodyValues);
-
-				// Set position
 				bodyDef.position.set(mPosition);
 
 				createBody(bodyDef);

@@ -5,8 +5,6 @@ import java.util.Iterator;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonValue;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.voider.resources.IResourceEditorRender;
 import com.spiddekauga.voider.resources.IResourceUpdate;
@@ -114,22 +112,6 @@ public abstract class Trigger extends Resource implements IResourceUpdate, IReso
 	 */
 	public ArrayList<TriggerInfo> getListeners() {
 		return mListeners;
-	}
-
-	@Override
-	public void write(Json json) {
-		super.write(json);
-
-		json.writeValue("mTriggered", mTriggered);
-		json.writeValue("mTriggeredTime", mTriggeredTime);
-	}
-
-	@Override
-	public void read(Json json, JsonValue jsonValue) {
-		super.read(json, jsonValue);
-
-		mTriggered = json.readValue("mTriggered", boolean.class, jsonValue);
-		mTriggeredTime = json.readValue("mTriggeredTime", float.class, jsonValue);
 	}
 
 	/**

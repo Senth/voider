@@ -1,8 +1,6 @@
 package com.spiddekauga.voider.game.actors;
 
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonValue;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.voider.game.Collectibles;
 /**
@@ -38,20 +36,6 @@ public class PickupActorDef extends ActorDef {
 	@Override
 	public Collectibles getCollectible() {
 		return mCollectible;
-	}
-
-	@Override
-	public void write(Json json) {
-		super.write(json);
-
-		json.writeValue("mCollectible", mCollectible);
-	}
-
-	@Override
-	public void read(Json json, JsonValue jsonValue) {
-		super.read(json, jsonValue);
-
-		mCollectible = json.readValue("mCollectible", Collectibles.class, jsonValue);
 	}
 
 	/** Collectible inside the pickup */

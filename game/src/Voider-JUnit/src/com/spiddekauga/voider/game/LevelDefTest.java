@@ -20,7 +20,7 @@ import com.spiddekauga.voider.utils.Pools;
  */
 public class LevelDefTest {
 	/**
-	 * Test method for {@link com.spiddekauga.voider.game.LevelDef#write(com.badlogic.gdx.utils.Json)}.
+	 * Test to write/read the LevelDef to/from Kryo.
 	 * Tests to write and read to/from a Json object
 	 */
 	@Test

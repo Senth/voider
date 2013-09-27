@@ -2,8 +2,6 @@ package com.spiddekauga.voider.game;
 
 import java.util.UUID;
 
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonValue;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.resources.Def;
@@ -133,38 +131,6 @@ public class LevelDef extends Def {
 	public float getStartXCoord() {
 		return mStartXCoord;
 	}
-
-	@Override
-	public void write(Json json) {
-		super.write(json);
-
-		json.writeValue("mPrologue", mPrologue);
-		json.writeValue("mEpilogue", mEpilogue);
-		json.writeValue("mStartXCoord", mStartXCoord);
-		json.writeValue("mEndXCoord", mEndXCoord);
-		json.writeValue("mSpeed", mSpeed);
-		json.writeValue("mLevelId", mLevelId);
-		json.writeValue("mCampaignId", mCampaignId);
-	}
-
-	@Override
-	public void read(Json json, JsonValue jsonValue) {
-		super.read(json, jsonValue);
-
-
-		// Variables
-		mPrologue = json.readValue("mPrologue", String.class, jsonValue);
-		mEpilogue = json.readValue("mEpilogue", String.class, jsonValue);
-		mStartXCoord = json.readValue("mStartXCoord", float.class, jsonValue);
-		mEndXCoord = json.readValue("mEndXCoord", float.class, jsonValue);
-		mSpeed = json.readValue("mSpeed", float.class, jsonValue);
-
-
-		// UUIDs
-		mCampaignId = json.readValue("mCampaignId", UUID.class, jsonValue);
-		mLevelId = json.readValue("mLevelId", UUID.class, jsonValue);
-	}
-
 
 	/** Starting coordinate of the level (right screen edge) */
 	@Tag(78) private float mStartXCoord = 0;

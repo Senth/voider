@@ -3,11 +3,8 @@ package com.spiddekauga.voider.resources;
 import java.util.ArrayList;
 import java.util.UUID;
 
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonValue;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
-import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.utils.Pools;
 
 /**
@@ -15,7 +12,7 @@ import com.spiddekauga.voider.utils.Pools;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public abstract class Resource implements IResource, Json.Serializable {
+public abstract class Resource implements IResource {
 	@Override
 	public UUID getId() {
 		return mUniqueId;
@@ -117,17 +114,6 @@ public abstract class Resource implements IResource, Json.Serializable {
 				listener.onResourceChanged(this, type);
 			}
 		}
-	}
-
-	@Override
-	public void write(Json json) {
-		json.writeValue("Config.REVISION", Config.REVISION);
-		json.writeValue("mUniqueId", mUniqueId);
-	}
-
-	@Override
-	public void read(Json json, JsonValue jsonData) {
-		mUniqueId = json.readValue("mUniqueId", UUID.class, jsonData);
 	}
 
 	/** Unique id of the resource */

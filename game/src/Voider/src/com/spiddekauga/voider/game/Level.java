@@ -5,9 +5,6 @@ import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Disposable;
-import com.badlogic.gdx.utils.GdxRuntimeException;
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonValue;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.KryoSerializable;
 import com.esotericsoftware.kryo.io.Input;
@@ -36,7 +33,6 @@ import com.spiddekauga.voider.resources.IResourceUpdate;
 import com.spiddekauga.voider.resources.Resource;
 import com.spiddekauga.voider.resources.ResourceBinder;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
-import com.spiddekauga.voider.resources.UndefinedResourceTypeException;
 import com.spiddekauga.voider.utils.Pools;
 
 /**
@@ -417,44 +413,6 @@ public class Level extends Resource implements KryoPreWrite, KryoTaggedCopyable,
 		copyLevel.mLevelDef = levelDef;
 
 		return copy;
-	}
-
-	@Override
-	public void write(Json json) {
-		super.write(json);
-
-		// Remove level from resource binder, so we don't save the level infinitely
-		mResourceBinder.removeResource(getId());
-
-		json.writeValue("mResourceBinder", mResourceBinder);
-		json.writeValue("mLevelDefId", mLevelDef.getId());
-		json.writeValue("mLevelDefRev", mLevelDef.getRevision());
-		json.writeValue("mXCoord", mXCoord);
-		json.writeValue("mSpeed", mSpeed);
-		json.writeValue("mCompletedLevel", mCompletedLevel);
-	}
-
-	@Override
-	public void read(Json json, JsonValue jsonData) {
-		super.read(json, jsonData);
-
-		mResourceBinder = json.readValue("mResourceBinder", ResourceBinder.class, jsonData);
-
-		mXCoord = json.readValue("mXCoord", float.class, jsonData);
-		mSpeed = json.readValue("mSpeed", float.class, jsonData);
-		mCompletedLevel = json.readValue("mCompletedLevel", boolean.class, jsonData);
-
-		// Get the actual LevelDef
-		UUID levelDefId = json.readValue("mLevelDefId", UUID.class, jsonData);
-		int levelDefRev = json.readValue("mLevelDefRev", int.class, jsonData);
-		try {
-			mLevelDef = ResourceCacheFacade.get(null, levelDefId, levelDefRev);
-		} catch (UndefinedResourceTypeException e) {
-			Gdx.app.error("Level", "Could not get level def when loading level");
-		} catch (GdxRuntimeException e) {
-			// The level was just copied without having been saved first...
-			// The copy will set level def.
-		}
 	}
 
 	/**

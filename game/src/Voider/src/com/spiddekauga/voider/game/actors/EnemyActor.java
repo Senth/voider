@@ -3,8 +3,6 @@ package com.spiddekauga.voider.game.actors;
 import java.util.UUID;
 
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonValue;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
@@ -354,89 +352,6 @@ public class EnemyActor extends Actor {
 			mPathIndexNext = fromEnemy.mPathIndexNext;
 			mPathOnceReachedEnd = fromEnemy.mPathOnceReachedEnd;
 			mPathForward = fromEnemy.mPathForward;
-		}
-	}
-
-	@Override
-	public void write(Json json) {
-		super.write(json);
-
-		EnemyActorDef enemyDef = getDef(EnemyActorDef.class);
-
-		if (enemyDef.hasWeapon()) {
-			json.writeValue("mWeapon", mWeapon);
-			json.writeValue("mShootAngle", mShootAngle);
-		}
-
-		json.writeValue("mGroupId", mGroupId);
-		if (mGroupId != null) {
-			json.writeValue("mGroupLeader", mGroupLeader);
-		}
-
-		if (enemyDef.getMovementType() == MovementTypes.AI) {
-			if (enemyDef.isMovingRandomly()) {
-				json.writeValue("mRandomMoveNext", mRandomMoveNext);
-				json.writeValue("mRandomMoveDirection", mRandomMoveDirection);
-			}
-		} else if (enemyDef.getMovementType() == MovementTypes.PATH) {
-			json.writeValue("mPathId", getPathId());
-
-			if (mPath != null) {
-				json.writeValue("mPathIndexNext", mPathIndexNext);
-
-				switch (mPath.getPathType()) {
-				case ONCE:
-					json.writeValue("mPathOnceReachedEnd", mPathOnceReachedEnd);
-					break;
-
-				case BACK_AND_FORTH:
-					json.writeValue("mPathForward", mPathForward);
-					break;
-
-				case LOOP:
-					// Does nothing
-					break;
-				}
-
-			}
-		}
-	}
-
-	@Override
-	public void read(Json json, JsonValue jsonData) {
-		super.read(json, jsonData);
-
-		mGroupId = json.readValue("mGroupId", UUID.class, jsonData);
-		if (mGroupId != null) {
-			mGroupLeader = json.readValue("mGroupLeader", boolean.class, jsonData);
-		}
-
-		EnemyActorDef enemyDef = getDef(EnemyActorDef.class);
-
-		if (enemyDef.hasWeapon()) {
-			mWeapon = json.readValue("mWeapon", Weapon.class, jsonData);
-			mWeapon.setWeaponDef(enemyDef.getWeaponDef());
-			mShootAngle = json.readValue("mShootAngle", float.class, jsonData);
-		}
-
-		if (enemyDef.getMovementType() == MovementTypes.AI) {
-			if (enemyDef.isMovingRandomly()) {
-				mRandomMoveNext = json.readValue("mRandomMoveNext", int.class, jsonData);
-				mRandomMoveDirection = json.readValue("mRandomMoveDirection", Vector2.class, jsonData);
-			}
-		}
-		else if (enemyDef.getMovementType() == MovementTypes.PATH) {
-			mPathId = json.readValue("mPathId", UUID.class, jsonData);
-
-			if (jsonData.getChild("mPathIndexNext") != null) {
-				mPathIndexNext = json.readValue("mPathIndexNext", int.class, jsonData);
-			}
-			if (jsonData.getChild("mPathOnceReachedEnd") != null) {
-				mPathOnceReachedEnd = json.readValue("mPathOnceReachedEnd", boolean.class, jsonData);
-			}
-			if (jsonData.getChild("mPathForward") != null) {
-				mPathForward = json.readValue("mPathForward", boolean.class, jsonData);
-			}
 		}
 	}
 

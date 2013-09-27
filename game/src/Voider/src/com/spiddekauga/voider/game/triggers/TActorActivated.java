@@ -8,7 +8,6 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.utils.Disposable;
-import com.badlogic.gdx.utils.Json;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.utils.KryoPostRead;
 import com.spiddekauga.utils.ShapeRendererEx;
@@ -103,15 +102,6 @@ public class TActorActivated extends Trigger implements KryoPostRead, Disposable
 	@Override
 	public void postRead() {
 		setActorListener();
-	}
-
-	@Override
-	public void write(Json json) {
-		// We only want to manually listen to the actor's position
-		// and only in the editor, therefore we never save this listener
-		mActor.removeChangeListener(this);
-
-		super.write(json);
 	}
 
 	@Override

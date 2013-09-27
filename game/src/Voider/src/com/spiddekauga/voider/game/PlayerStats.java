@@ -2,8 +2,6 @@ package com.spiddekauga.voider.game;
 
 import java.util.UUID;
 
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonValue;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.actors.PlayerActor;
@@ -141,30 +139,6 @@ public class PlayerStats extends Resource implements IResourceChangeListener {
 		if (type == EventTypes.LIFE_DECREASED) {
 			mMultiplier = 1;
 		}
-	}
-
-	@Override
-	public void write(Json json) {
-		super.write(json);
-
-		json.writeValue("mExtraLives", mExtraLives);
-		json.writeValue("mLevelSpeed", mLevelSpeed);
-		json.writeValue("mMultiplier", mMultiplier);
-		json.writeValue("mMultiplierChangeCoordinate", mMultiplierChangeCoordinate);
-		json.writeValue("mHitCoordinateLast", mHitCoordinateLast);
-		json.writeValue("mScore", mScore);
-	}
-
-	@Override
-	public void read(Json json, JsonValue jsonData) {
-		super.read(json, jsonData);
-
-		mExtraLives = json.readValue("mExtraLives", int.class, jsonData);
-		mLevelSpeed = json.readValue("mLevelSpeed", float.class, jsonData);
-		mMultiplier = json.readValue("mMultiplier", int.class, jsonData);
-		mMultiplierChangeCoordinate = json.readValue("mMultiplierChangeCoordinate", float.class, jsonData);
-		mHitCoordinateLast = json.readValue("mHitCoordinateLast", float.class, jsonData);
-		mScore = json.readValue("mScore", double.class, jsonData);
 	}
 
 	/** Number of lives left */

@@ -12,8 +12,6 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Disposable;
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonValue;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.utils.ShapeRendererEx;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
@@ -36,7 +34,7 @@ import com.spiddekauga.voider.utils.Pools;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class Path extends Resource implements Json.Serializable, Disposable, IResourceCorner, IResourceBody, IResourcePosition, IResourceEditorRender {
+public class Path extends Resource implements Disposable, IResourceCorner, IResourceBody, IResourcePosition, IResourceEditorRender {
 	/**
 	 * Default constructor, sets the unique id of the path
 	 */
@@ -288,22 +286,6 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 		}
 
 		return -1;
-	}
-
-	@Override
-	public void write(Json json) {
-		super.write(json);
-		json.writeValue("mCorners", mCorners);
-		json.writeValue("mPathType", mPathType);
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public void read(Json json, JsonValue jsonValue) {
-		super.read(json, jsonValue);
-		mCorners = json.readValue("mCorners", ArrayList.class, jsonValue);
-		mPathType = json.readValue("mPathType", PathTypes.class, jsonValue);
-		updateRightestCorner();
 	}
 
 	@Override

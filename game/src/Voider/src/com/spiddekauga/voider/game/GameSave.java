@@ -2,8 +2,6 @@ package com.spiddekauga.voider.game;
 
 import java.util.UUID;
 
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonValue;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.voider.game.actors.PlayerActor;
 import com.spiddekauga.voider.resources.Resource;
@@ -54,25 +52,6 @@ public class GameSave extends Resource {
 	 */
 	public BulletDestroyer getBulletDestroyer() {
 		return mBulletDestroyer;
-	}
-
-	@Override
-	public void write(Json json) {
-		super.write(json);
-
-		mLevel.removeResource(mLevel.getId());
-		json.writeValue("mLevel", mLevel);
-		json.writeValue("mPlayerActor", mPlayerActor);
-		json.writeValue("mBulletDestroyer", mBulletDestroyer);
-	}
-
-	@Override
-	public void read(Json json, JsonValue jsonData) {
-		super.read(json, jsonData);
-
-		mLevel = json.readValue("mLevel", Level.class, jsonData);
-		mPlayerActor = json.readValue("mPlayerActor", PlayerActor.class, jsonData);
-		mBulletDestroyer = json.readValue("mBulletDestroyer", BulletDestroyer.class, jsonData);
 	}
 
 	/** Saved level */

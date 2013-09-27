@@ -8,8 +8,6 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.EdgeShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.utils.Disposable;
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonValue;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.utils.ShapeRendererEx;
 import com.spiddekauga.voider.Config;
@@ -71,20 +69,6 @@ public class TScreenAt extends Trigger implements IResourceBody, IResourcePositi
 	@Override
 	public boolean isTriggered() {
 		return mLevel.getXCoord() >= mPosition.x;
-	}
-
-	@Override
-	public void write(Json json) {
-		super.write(json);
-
-		json.writeValue("mPosition.x", mPosition.x);
-	}
-
-	@Override
-	public void read(Json json, JsonValue jsonValue) {
-		super.read(json, jsonValue);
-
-		mPosition.x = json.readValue("mPosition.x", float.class, jsonValue);
 	}
 
 	@Override

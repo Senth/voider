@@ -157,21 +157,6 @@ class LoadedDb {
 
 	/**
 	 * Gets a loaded or loading revision
-	 * @param scene the scene which the resource and revision is loaded into
-	 * @param resource the resource to get it revision from
-	 * @return loaded revision of the resource, null if revision wasn't found.
-	 */
-	private LoadedRevision getLoadedRevision(Scene scene, IResource resource) {
-		int revisionToUse = -1;
-		if (resource instanceof IResourceRevision) {
-			revisionToUse = ((IResourceRevision) resource).getRevision();
-		}
-
-		return getLoadedRevision(scene, resource.getId(), revisionToUse);
-	}
-
-	/**
-	 * Gets a loaded or loading revision
 	 * @param scene the scene which teh resource and revision is loaded into
 	 * @param resourceId id of the resource
 	 * @param revision revision of the resource
