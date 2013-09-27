@@ -878,8 +878,6 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	@Override
 	public void setShapeType(ActorShapeTypes shapeType) {
 		mDef.getVisualVars().setShapeType(shapeType);
-
-		resetBodyShapes();
 	}
 
 	@Override
@@ -890,8 +888,6 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	@Override
 	public void setShapeRadius(float radius) {
 		mDef.getVisualVars().setShapeRadius(radius);
-
-		resetBodyShapes();
 	}
 
 	@Override
@@ -902,8 +898,6 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	@Override
 	public void setShapeWidth(float width) {
 		mDef.getVisualVars().setShapeWidth(width);
-
-		resetBodyShapes();
 	}
 
 	@Override
@@ -914,8 +908,6 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	@Override
 	public void setShapeHeight(float height) {
 		mDef.getVisualVars().setShapeHeight(height);
-
-		resetBodyShapes();
 	}
 
 	@Override
@@ -1292,16 +1284,6 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	private void createEnemyActor() {
 		mEnemyActor.setPosition(new Vector2());
 		mEnemyActor.createBody();
-	}
-
-	/**
-	 * Resets all the bodies shapes to use the new updated shape
-	 */
-	private void resetBodyShapes() {
-		mEnemyActor.reloadFixtures();
-		mEnemyPathBackAndForth.reloadFixtures();
-		mEnemyPathLoop.reloadFixtures();
-		mEnemyPathOnce.reloadFixtures();
 	}
 
 	/**

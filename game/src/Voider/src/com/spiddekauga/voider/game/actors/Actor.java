@@ -119,7 +119,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 				reloadBody();
 			}
 			// Do we need to reload the fixtures?
-			else if (mFixtureCreateTime <= getDef().getVisualVars().getFixtureChangeTime()) {
+			if (mFixtureCreateTime <= getDef().getVisualVars().getFixtureChangeTime()) {
 				reloadFixtures();
 				calculateRotatedVertices(true);
 			}
@@ -629,6 +629,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 			}
 			mBody = mWorld.createBody(bodyDef);
 			createFixtures();
+			calculateRotatedVertices(true);
 			mBody.setUserData(this);
 
 			mFixtureCreateTime = GameTime.getTotalGlobalTimeElapsed();
