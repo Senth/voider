@@ -15,7 +15,6 @@ import com.spiddekauga.voider.game.Level;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.ActorFilterCategories;
 import com.spiddekauga.voider.game.triggers.TriggerAction.Reasons;
-import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourceBody;
 import com.spiddekauga.voider.resources.IResourcePosition;
 import com.spiddekauga.voider.scene.SceneSwitcher;
@@ -69,30 +68,6 @@ public class TScreenAt extends Trigger implements IResourceBody, IResourcePositi
 	@Override
 	public boolean isTriggered() {
 		return mLevel.getXCoord() >= mPosition.x;
-	}
-
-	@Override
-	public boolean addBoundResource(IResource boundResource) {
-		boolean success = super.addBoundResource(boundResource);
-
-		if (boundResource instanceof Level) {
-			mLevel = (Level) boundResource;
-			success = true;
-		}
-
-		return success;
-	}
-
-	@Override
-	public boolean removeBoundResource(IResource boundResource) {
-		boolean success = super.removeBoundResource(boundResource);
-
-		if (boundResource.equals(mLevel)) {
-			mLevel = null;
-			success = true;
-		}
-
-		return success;
 	}
 
 	@Override
@@ -156,8 +131,7 @@ public class TScreenAt extends Trigger implements IResourceBody, IResourcePositi
 	/**
 	 * Constructor for Kryo
 	 */
-	@SuppressWarnings("unused")
-	private TScreenAt() {
+	protected TScreenAt() {
 		// Does nothing
 	}
 

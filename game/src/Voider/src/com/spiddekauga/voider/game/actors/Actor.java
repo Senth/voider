@@ -436,7 +436,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 		output.writeInt(CLASS_REVISION, true);
 
 		// Saves active state?
-		output.writeBoolean(!mEditorActive);
+		output.writeBoolean(mEditorActive);
 		if (!mEditorActive) {
 			output.writeBoolean(mActive);
 		}
@@ -450,13 +450,15 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 		}
 
 		// Save body
-		output.writeBoolean(mBody != null);
-		if (mBody != null) {
-			output.writeFloat(mBody.getAngle());
-			output.writeFloat(mBody.getAngularVelocity());
-			kryo.writeObject(output, mBody.getLinearVelocity());
-			output.writeBoolean(mBody.isAwake());
-			output.writeBoolean(mBody.isActive());
+		if (!mEditorActive) {
+			output.writeBoolean(mBody != null);
+			if (mBody != null) {
+				output.writeFloat(mBody.getAngle());
+				output.writeFloat(mBody.getAngularVelocity());
+				kryo.writeObject(output, mBody.getLinearVelocity());
+				output.writeBoolean(mBody.isAwake());
+				output.writeBoolean(mBody.isActive());
+			}
 		}
 	}
 
@@ -466,7 +468,8 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 		int classRevision = input.readInt(true);
 
 		// Load active state
-		if (input.readBoolean()) {
+		boolean editorWasActive = input.readBoolean();
+		if (!editorWasActive) {
 			mActive = input.readBoolean();
 		}
 
@@ -485,18 +488,20 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 		}
 
 		// Read body
-		if (input.readBoolean()) {
-			BodyDef bodyDef = mDef.getBodyDefCopy();
+		if (!editorWasActive) {
+			if (input.readBoolean()) {
+				BodyDef bodyDef = mDef.getBodyDefCopy();
 
-			bodyDef.angle = input.readFloat();
-			bodyDef.angularVelocity = input.readFloat();
-			bodyDef.linearVelocity.set(kryo.readObject(input, Vector2.class));
-			bodyDef.awake = input.readBoolean();
-			bodyDef.active = input.readBoolean();
+				bodyDef.angle = input.readFloat();
+				bodyDef.angularVelocity = input.readFloat();
+				bodyDef.linearVelocity.set(kryo.readObject(input, Vector2.class));
+				bodyDef.awake = input.readBoolean();
+				bodyDef.active = input.readBoolean();
 
-			bodyDef.position.set(mPosition);
+				bodyDef.position.set(mPosition);
 
-			createBody(bodyDef);
+				createBody(bodyDef);
+			}
 		}
 	}
 
@@ -514,17 +519,19 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 			mDef = fromActor.mDef;
 
 			// Create body
-			if (fromActor.mBody != null) {
-				BodyDef bodyDef = mDef.getBodyDefCopy();
+			if (!mEditorActive) {
+				if (fromActor.mBody != null) {
+					BodyDef bodyDef = mDef.getBodyDefCopy();
 
-				bodyDef.angle = fromActor.mBody.getAngle();
-				bodyDef.angularVelocity = fromActor.mBody.getAngularVelocity();
-				bodyDef.linearVelocity.set(fromActor.mBody.getLinearVelocity());
-				bodyDef.awake = fromActor.mBody.isAwake();
-				bodyDef.active = fromActor.mBody.isActive();
-				bodyDef.position.set(mPosition);
+					bodyDef.angle = fromActor.mBody.getAngle();
+					bodyDef.angularVelocity = fromActor.mBody.getAngularVelocity();
+					bodyDef.linearVelocity.set(fromActor.mBody.getLinearVelocity());
+					bodyDef.awake = fromActor.mBody.isAwake();
+					bodyDef.active = fromActor.mBody.isActive();
+					bodyDef.position.set(mPosition);
 
-				createBody(bodyDef);
+					createBody(bodyDef);
+				}
 			}
 		}
 	}

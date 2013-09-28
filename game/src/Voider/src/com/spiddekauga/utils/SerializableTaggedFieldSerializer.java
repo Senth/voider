@@ -45,6 +45,9 @@ public class SerializableTaggedFieldSerializer extends TaggedFieldSerializer<Obj
 		if (object instanceof KryoSerializable) {
 			((KryoSerializable) object).write(kryo, output);
 		}
+		if (object instanceof KryoPostWrite) {
+			((KryoPostWrite) object).postWrite();
+		}
 	}
 
 	@Override

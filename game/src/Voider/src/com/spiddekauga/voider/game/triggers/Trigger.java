@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
+import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourceEditorRender;
 import com.spiddekauga.voider.resources.IResourceUpdate;
 import com.spiddekauga.voider.resources.Resource;
@@ -93,8 +94,9 @@ public abstract class Trigger extends Resource implements IResourceUpdate, IReso
 	/**
 	 * Removes a listener from the trigger
 	 * @param listenerId the listener id to remove
+	 * @return true if the resource was removed
 	 */
-	public void removeListener(UUID listenerId) {
+	public boolean removeListener(UUID listenerId) {
 		Iterator<TriggerInfo> iterator = mListeners.iterator();
 
 		while (iterator.hasNext()) {
@@ -102,9 +104,16 @@ public abstract class Trigger extends Resource implements IResourceUpdate, IReso
 
 			if (triggerListenerInfo.listener.getId().equals(listenerId)) {
 				iterator.remove();
-				break;
+				return true;
 			}
 		}
+
+		return false;
+	}
+
+	@Override
+	public boolean removeBoundResource(IResource resource) {
+		return removeListener(resource.getId());
 	}
 
 	/**

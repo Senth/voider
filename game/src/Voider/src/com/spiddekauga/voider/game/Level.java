@@ -14,6 +14,7 @@ import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.utils.KryoPostRead;
+import com.spiddekauga.utils.KryoPostWrite;
 import com.spiddekauga.utils.KryoPreWrite;
 import com.spiddekauga.utils.KryoTaggedCopyable;
 import com.spiddekauga.utils.ShapeRendererEx;
@@ -44,7 +45,7 @@ import com.spiddekauga.voider.utils.Pools;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class Level extends Resource implements KryoPreWrite, KryoPostRead, KryoTaggedCopyable, KryoSerializable, Disposable, IResourceRevision {
+public class Level extends Resource implements KryoPreWrite, KryoPostWrite, KryoPostRead, KryoTaggedCopyable, KryoSerializable, Disposable, IResourceRevision {
 	/**
 	 * Constructor which creates an new empty level with the bound
 	 * level definition
@@ -217,6 +218,16 @@ public class Level extends Resource implements KryoPreWrite, KryoPostRead, KryoT
 
 		if (resource instanceof Actor) {
 			addActor((Actor) resource);
+		}
+	}
+
+	/**
+	 * Adds a number of resources to the level
+	 * @param resources an arraylist of resources
+	 */
+	public void addResource(ArrayList<? extends IResource> resources) {
+		for (IResource resource : resources) {
+			addResource(resource);
 		}
 	}
 
@@ -402,6 +413,11 @@ public class Level extends Resource implements KryoPreWrite, KryoPostRead, KryoT
 
 			Pools.arrayList.free(removeEnemies);
 		}
+	}
+
+	@Override
+	public void postWrite() {
+		postRead();
 	}
 
 	@Override

@@ -4,10 +4,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 
@@ -22,10 +21,12 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.KryoPrototypeTest;
+import com.spiddekauga.utils.Strings;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.EnemyActor;
 import com.spiddekauga.voider.game.actors.EnemyActorDef;
+import com.spiddekauga.voider.game.actors.EnemyGroup;
 import com.spiddekauga.voider.game.actors.PlayerActor;
 import com.spiddekauga.voider.game.actors.PlayerActorDef;
 import com.spiddekauga.voider.game.triggers.TScreenAt;
@@ -80,6 +81,10 @@ public class LevelTest {
 		mfCompletedLevel.setAccessible(true);
 		mfTriggerLevel = TScreenAt.class.getDeclaredField("mLevel");
 		mfTriggerLevel.setAccessible(true);
+		mfTriggerListeners = Trigger.class.getDeclaredField("mListeners");
+		mfTriggerListeners.setAccessible(true);
+		mfGroupEnemies = EnemyGroup.class.getDeclaredField("mEnemies");
+		mfGroupEnemies.setAccessible(true);
 	}
 
 	/**
@@ -204,6 +209,270 @@ public class LevelTest {
 	}
 
 	/**
+	 * Test with TScreen
+	 */
+	@Test
+	public void testTScreenAt() {
+		Level level = new Level(mLevelDef);
+
+		TScreenAt tScreenAt = new TScreenAt(level, 10);
+		level.addResource(tScreenAt);
+
+		// Copy
+		Level copy = level.copy();
+		assertLevelEquals(level, copy, false);
+		assertTScreenAt(level, copy, false);
+		copy.dispose();
+
+		// Copy new resource
+		copy = level.copyNewResource();
+		assertLevelEquals(level, copy, true);
+		assertTScreenAt(level, copy, true);
+		copy.dispose();
+
+		// Write/Read
+		copy = KryoPrototypeTest.copy(level, Level.class, mKryo);
+		assertLevelEquals(level, copy, false);
+		assertTScreenAt(level, copy, false);
+		copy.dispose();
+	}
+
+	/**
+	 * Test EnemyGroup
+	 */
+	@Test
+	public void testEnemyGroup() {
+		Level level = new Level(mLevelDef);
+
+		EnemyActor enemyActor = new EnemyActor();
+		enemyActor.setDef(mEnemyDef);
+		EnemyGroup enemyGroup = new EnemyGroup();
+		enemyGroup.setLeaderEnemy(enemyActor);
+
+		level.addResource(enemyActor);
+		level.addResource(enemyGroup);
+
+		@SuppressWarnings("unchecked")
+		ArrayList<EnemyActor> addedEnemies = Pools.arrayList.obtain();
+		addedEnemies.clear();
+		enemyGroup.setEnemyCount(10, addedEnemies, null);
+		level.addResource(addedEnemies);
+		Pools.arrayList.free(addedEnemies);
+
+
+		// Copy
+		Level copy = level.copy();
+		assertLevelEquals(level, copy, false);
+		assertEnemyGroup(level, copy);
+		//		assertEnemyActor(level, copy);
+		copy.dispose();
+
+		// Copy new resource
+		copy = level.copyNewResource();
+		assertLevelEquals(level, copy, true);
+		assertEnemyGroup(level, copy);
+		//		assertEnemyActor(level, copy);
+		copy.dispose();
+
+		// Write/Read
+		copy = KryoPrototypeTest.copy(level, Level.class, mKryo);
+		assertLevelEquals(level, copy, false);
+		assertEnemyGroup(level, copy);
+		//		assertEnemyActor(level, copy);
+		copy.dispose();
+	}
+
+	/**
+	 * Test EnemyActor + TScreenAt + EnemyGroup
+	 */
+	@Test
+	public void testEnemyGroupTScreenAt() {
+		Level level = new Level(mLevelDef);
+
+		EnemyActor enemyActor = new EnemyActor();
+		enemyActor.setDef(mEnemyDef);
+
+		TScreenAt triggerActivate = new TScreenAt(level, 15);
+		TriggerInfo triggerInfoActivate = new TriggerInfo();
+		triggerInfoActivate.trigger = triggerActivate;
+		triggerInfoActivate.action = Actions.ACTOR_ACTIVATE;
+		triggerInfoActivate.listener = enemyActor;
+		enemyActor.addTrigger(triggerInfoActivate);
+
+		TScreenAt triggerDeactivate = new TScreenAt(level, 20);
+		TriggerInfo triggerInfoDeactivate = new TriggerInfo();
+		triggerInfoDeactivate.trigger = triggerDeactivate;
+		triggerInfoDeactivate.action = Actions.ACTOR_DEACTIVATE;
+		triggerInfoDeactivate.listener = enemyActor;
+		enemyActor.addTrigger(triggerInfoDeactivate);
+
+		EnemyGroup enemyGroup = new EnemyGroup();
+		enemyGroup.setLeaderEnemy(enemyActor);
+
+		level.addResource(enemyActor);
+		level.addResource(enemyGroup);
+
+		@SuppressWarnings("unchecked")
+		ArrayList<EnemyActor> addedEnemies = Pools.arrayList.obtain();
+		addedEnemies.clear();
+		enemyGroup.setEnemyCount(10, addedEnemies, null);
+		level.addResource(addedEnemies);
+		Pools.arrayList.free(addedEnemies);
+
+
+		// Copy
+		Level copy = level.copy();
+		assertLevelEquals(level, copy, false);
+		assertEnemyGroup(level, copy);
+		assertTScreenAt(level, copy, false);
+		copy.dispose();
+
+		// Copy new resource
+		copy = level.copyNewResource();
+		assertLevelEquals(level, copy, true);
+		assertEnemyGroup(level, copy);
+		assertTScreenAt(level, copy, true);
+		copy.dispose();
+
+		// Write/Read
+		copy = KryoPrototypeTest.copy(level, Level.class, mKryo);
+		assertLevelEquals(level, copy, false);
+		assertEnemyGroup(level, copy);
+		assertTScreenAt(level, copy, false);
+		copy.dispose();
+	}
+
+	/**
+	 * Assertion tests for EnemyGroup
+	 * @param expected original level
+	 * @param actual copy/read level
+	 */
+	@SuppressWarnings("unchecked")
+	public void assertEnemyGroup(Level expected, Level actual) {
+		ArrayList<EnemyGroup> groupsExpected = expected.getResources(EnemyGroup.class);
+		ArrayList<EnemyGroup> groupsActual = actual.getResources(EnemyGroup.class);
+		ArrayList<EnemyActor> enemiesExpected = expected.getResources(EnemyActor.class);
+		ArrayList<EnemyActor> enemiesActual = actual.getResources(EnemyActor.class);
+
+		assertEquals(groupsExpected.size(), groupsActual.size());
+		assertEquals(enemiesExpected.size(), enemiesActual.size());
+
+		Exception failException = null;
+		try {
+			for (int groupIndex = 0; groupIndex < groupsExpected.size(); ++groupIndex) {
+				EnemyGroup groupExpected = groupsExpected.get(groupIndex);
+				EnemyGroup groupActual = groupsActual.get(groupIndex);
+
+				assertNotSame(groupExpected, groupActual);
+				assertEquals(groupExpected, groupActual);
+
+				ArrayList<EnemyActor> groupEnemiesExpected = (ArrayList<EnemyActor>) mfGroupEnemies.get(groupExpected);
+				ArrayList<EnemyActor> groupEnemiesActual = (ArrayList<EnemyActor>) mfGroupEnemies.get(groupActual);
+
+				assertNotSame(groupEnemiesExpected, groupEnemiesActual);
+				assertEquals(groupEnemiesExpected.size(), groupEnemiesActual.size());
+
+				// Enemies equals in group?
+				for (int enemyIndex = 0; enemyIndex < groupEnemiesExpected.size(); ++enemyIndex) {
+					EnemyActor enemyExpected = groupEnemiesExpected.get(enemyIndex);
+					EnemyActor enemyActual = groupEnemiesActual.get(enemyIndex);
+
+					assertNotSame(enemyExpected, enemyActual);
+				}
+
+				// Search for enemy in level
+				assertTrue(enemiesExpected.containsAll(groupEnemiesExpected));
+				assertTrue(enemiesActual.containsAll(groupEnemiesActual));
+			}
+		} catch (Exception e) {
+			failException = e;
+		}
+
+		Pools.arrayList.freeAll(groupsExpected, groupsActual, enemiesExpected, enemiesActual);
+
+		failWithException(failException);
+	}
+
+	/**
+	 * Assertion tests for EnemyActor
+	 * @param expected original level
+	 * @param actual copy/read level
+	 */
+	public void assertEnemyActor(Level expected, Level actual) {
+		ArrayList<EnemyActor> enemiesExpected = expected.getResources(EnemyActor.class);
+		ArrayList<EnemyActor> enemiesActual = actual.getResources(EnemyActor.class);
+
+		assertEquals(enemiesExpected.size(), enemiesActual.size());
+
+		for (int i = 0; i < enemiesExpected.size(); ++i) {
+			EnemyActor enemyExpected = enemiesExpected.get(i);
+			EnemyActor enemyActual = enemiesActual.get(i);
+
+			assertNotSame(enemyExpected, enemyActual);
+			assertEquals(enemyExpected, enemyActual);
+
+			// TODO test trigger
+		}
+
+		Pools.arrayList.freeAll(enemiesExpected, enemiesActual);
+	}
+
+	/**
+	 * Asserts if TScreenAt is the same in both levels, and other things inside the TScreenAt
+	 * does not match
+	 * @param expected original level
+	 * @param actual copy/read level
+	 * @param newResource set to true if the copy is a new resource
+	 */
+	@SuppressWarnings("unchecked")
+	public void assertTScreenAt(Level expected, Level actual, boolean newResource) {
+		ArrayList<TScreenAt> tScreenAtsExpected = expected.getResources(TScreenAt.class);
+		ArrayList<TScreenAt> tScreenAtsActual = actual.getResources(TScreenAt.class);
+
+		assertEquals(tScreenAtsExpected.size(), tScreenAtsActual.size());
+
+		Exception failedException = null;
+		try {
+			for (int triggerIndex = 0; triggerIndex < tScreenAtsExpected.size(); ++triggerIndex) {
+				TScreenAt triggerExpected = tScreenAtsExpected.get(triggerIndex);
+				TScreenAt triggerActual = tScreenAtsActual.get(triggerIndex);
+
+				assertNotSame(triggerExpected, triggerActual);
+
+				// Test level
+				if (newResource) {
+					assertFalse(mfTriggerLevel.get(triggerExpected).equals(mfTriggerLevel.get(triggerActual)));
+				} else {
+					assertEquals(mfTriggerLevel.get(triggerExpected), mfTriggerLevel.get(triggerActual));
+				}
+
+				// Test listeners
+				ArrayList<TriggerInfo> listenersExpected = (ArrayList<TriggerInfo>) mfTriggerListeners.get(triggerExpected);
+				ArrayList<TriggerInfo> listenersActual  = (ArrayList<TriggerInfo>) mfTriggerListeners.get(triggerActual);
+
+				assertNotSame(listenersExpected, listenersActual );
+				assertEquals(listenersExpected.size(), listenersActual .size());
+
+				for (int listenerIndex = 0; listenerIndex < listenersExpected.size(); ++listenerIndex) {
+					TriggerInfo triggerInfoExpected = listenersExpected.get(listenerIndex);
+					TriggerInfo triggerInfoActual = listenersActual.get(listenerIndex);
+					assertNotSame(triggerInfoExpected, triggerInfoActual);
+					assertNotSame(triggerInfoExpected.trigger, triggerInfoActual.trigger);
+					assertEquals(triggerInfoExpected.trigger, triggerInfoActual.trigger);
+					assertNotSame(triggerInfoExpected.listener, triggerInfoActual.listener);
+					assertEquals(triggerInfoExpected.listener, triggerInfoActual.listener);
+				}
+			}
+		} catch (Exception e) {
+			failedException = e;
+		}
+
+		Pools.arrayList.freeAll(tScreenAtsExpected, tScreenAtsActual);
+
+		failWithException(failedException);
+	}
+
+	/**
 	 * Asserts if the bound trigger and enemy aren't the same instance
 	 * @param copy the copied/read level
 	 */
@@ -223,13 +492,16 @@ public class LevelTest {
 
 		assertSame(listenerInfo.trigger, trigger);
 		assertSame(listenerInfo.listener, enemyActor);
+		Exception failException = null;
 		try {
 			assertSame(copy, mfTriggerLevel.get(trigger));
 		} catch (Exception e) {
-			failWithException(e);
+			failException = e;
 		}
 
 		Pools.arrayList.freeAll(enemyActors, triggers);
+
+		failWithException(failException);
 	}
 
 	/**
@@ -250,19 +522,18 @@ public class LevelTest {
 			if (newResource) {
 				assertFalse(expected.equals(actual));
 				assertFalse("LevelDef", expected.getDef().equals(actual.getDef()));
-
-				// Temporarily remove level
-				expected.removeResource(expected.getId());
-				actual.removeResource(actual.getId());
-				assertEquals(expected.getResources(IResource.class), actual.getResources(IResource.class));
-				expected.addResource(expected);
-				actual.addResource(actual);
 			} else {
 				assertEquals(expected, actual);
 				assertEquals("LevelDef", expected.getDef(), actual.getDef());
-
-				assertEquals(expected.getResources(IResource.class), actual.getResources(IResource.class));
 			}
+
+			ArrayList<IResource> resourcesExpected = expected.getResources(IResource.class);
+			ArrayList<IResource> resourcesActual = actual.getResources(IResource.class);
+
+			assertEquals(resourcesExpected.size(), resourcesActual.size());
+			assertTrue(resourcesExpected.containsAll(resourcesActual));
+
+			Pools.arrayList.freeAll(resourcesActual, resourcesExpected);
 
 		} catch (Exception e) {
 			failWithException(e);
@@ -274,10 +545,9 @@ public class LevelTest {
 	 * @param exception the exception that was thrown
 	 */
 	private void failWithException(Exception exception) {
-		StringWriter stringWriter = new StringWriter();
-		PrintWriter printWriter = new PrintWriter(stringWriter);
-		exception.printStackTrace(printWriter);
-		fail("Exception thrown!\n" + stringWriter.toString());
+		if (exception != null) {
+			fail("Exception thrown!\n" + Strings.stackTraceToString(exception));
+		}
 	}
 
 
@@ -301,4 +571,8 @@ public class LevelTest {
 	private static Field mfCompletedLevel = null;
 	/** Level bound in trigger */
 	private static Field mfTriggerLevel = null;
+	/** Trigger listeners */
+	private static Field mfTriggerListeners = null;
+	/** Group enemies */
+	private static Field mfGroupEnemies = null;
 }

@@ -116,6 +116,14 @@ public abstract class Resource implements IResource {
 		}
 	}
 
+	/**
+	 * @return simple name of the class and it's id
+	 */
+	@Override
+	public String toString() {
+		return getClass().getSimpleName() + ": " + mUniqueId;
+	}
+
 	/** Unique id of the resource */
 	@Tag(1) protected UUID mUniqueId = null;
 	/** Listeners of the resource */

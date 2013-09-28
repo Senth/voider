@@ -230,41 +230,6 @@ public class EnemyGroup extends Resource {
 		}
 	}
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = super.hashCode();
-		result = prime * result + ((mEnemies == null) ? 0 : mEnemies.hashCode());
-		result = prime * result + Float.floatToIntBits(mTriggerDelay);
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (!super.equals(obj)) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		EnemyGroup other = (EnemyGroup) obj;
-		if (mEnemies == null) {
-			if (other.mEnemies != null) {
-				return false;
-			}
-		}
-		else if (!mEnemies.equals(other.mEnemies)) {
-			return false;
-		}
-		if (Float.floatToIntBits(mTriggerDelay) != Float.floatToIntBits(other.mTriggerDelay)) {
-			return false;
-		}
-		return true;
-	}
-
 	/** All the enemies */
 	@Tag(6) private ArrayList<EnemyActor> mEnemies = new ArrayList<EnemyActor>();
 	/** Trigger delay between enemies, in seconds */
