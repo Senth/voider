@@ -63,7 +63,8 @@ public class EnemyActor extends Actor {
 				case PATH:
 					if (mPath != null) {
 						updatePathMovement(deltaTime);
-						if (!mEditorActive) {
+					} else if (!mEditorActive){
+						if (TriggerInfo.getTriggerInfoByAction(this, Actions.ACTOR_DEACTIVATE) == null) {
 							checkPathDeactivate();
 						}
 					}
@@ -75,7 +76,9 @@ public class EnemyActor extends Actor {
 
 				case STATIONARY:
 					if (!mEditorActive) {
-						checkStationaryDeactivate();
+						if (TriggerInfo.getTriggerInfoByAction(this, Actions.ACTOR_DEACTIVATE) == null) {
+							checkStationaryDeactivate();
+						}
 					}
 					break;
 				}
@@ -289,6 +292,7 @@ public class EnemyActor extends Actor {
 		// Weapon
 		if (enemyDef.hasWeapon()) {
 			mWeapon = kryo.readObject(input, Weapon.class);
+			mWeapon.setWeaponDef(enemyDef.getWeaponDef());
 			mShootAngle = input.readFloat();
 		}
 
@@ -332,8 +336,8 @@ public class EnemyActor extends Actor {
 		ResourceType copy = super.copyNewResource();
 
 		EnemyActor enemyCopy = (EnemyActor)copy;
-		enemyCopy.mPath = mPath;
-		enemyCopy.mGroup = mGroup;
+		//		enemyCopy.mPath = mPath;
+		//		enemyCopy.mGroup = mGroup;
 
 		// Never make a copy a group leader?
 		enemyCopy.mGroupLeader = false;

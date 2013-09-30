@@ -1,8 +1,11 @@
 package com.spiddekauga.voider.game;
 
+import java.util.UUID;
+
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.voider.Config.Editor;
 import com.spiddekauga.voider.game.actors.BulletActorDef;
+import com.spiddekauga.voider.resources.ResourceCacheFacade;
 
 /**
  * Holds all the necessary information about a weapon
@@ -80,12 +83,17 @@ public class WeaponDef {
 	 */
 	public void setBulletActorDef(BulletActorDef bulletActorDef) {
 		mBulletActorDef = bulletActorDef;
+		mBulletActorDefId = bulletActorDef.getId();
 	}
 
 	/**
 	 * @return the bullet actor definition, i.e. the look of the bullets.
 	 */
 	public BulletActorDef getBulletActorDef() {
+		if (mBulletActorDef == null && mBulletActorDefId != null) {
+			mBulletActorDef = ResourceCacheFacade.get(null, mBulletActorDefId);
+		}
+
 		return mBulletActorDef;
 	}
 
@@ -137,7 +145,9 @@ public class WeaponDef {
 	}
 
 	/** Type and visuals of the bullet */
-	@Tag(91) private BulletActorDef mBulletActorDef;
+	private BulletActorDef mBulletActorDef = null;
+	/** Id of the bullet actor */
+	@Tag(104) private UUID mBulletActorDefId = null;
 	/** Bullet speed */
 	@Tag(92) private float mBulletSpeed = Editor.Weapon.BULLET_SPEED_DEFAULT;
 	/** Damage when bullet hits */

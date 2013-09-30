@@ -99,16 +99,18 @@ public abstract class Trigger extends Resource implements IResourceUpdate, IReso
 	public boolean removeListener(UUID listenerId) {
 		Iterator<TriggerInfo> iterator = mListeners.iterator();
 
+		boolean removed = false;
+
 		while (iterator.hasNext()) {
 			TriggerInfo triggerListenerInfo = iterator.next();
 
 			if (triggerListenerInfo.listener.getId().equals(listenerId)) {
 				iterator.remove();
-				return true;
+				removed = true;
 			}
 		}
 
-		return false;
+		return removed;
 	}
 
 	@Override

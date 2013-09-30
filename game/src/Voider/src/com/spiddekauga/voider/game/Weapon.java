@@ -2,11 +2,8 @@ package com.spiddekauga.voider.game;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Disposable;
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonValue;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
-import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.actors.BulletActor;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.utils.Pools;
@@ -15,7 +12,7 @@ import com.spiddekauga.voider.utils.Pools;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class Weapon implements Disposable, Json.Serializable {
+public class Weapon implements Disposable {
 	/**
 	 * Creates an invalid weapon. setWeaponDef needs to be called one can shoot with
 	 * the weapon.
@@ -30,7 +27,7 @@ public class Weapon implements Disposable, Json.Serializable {
 	 */
 	public void setWeaponDefResetCd(WeaponDef weaponDef) {
 		mDef = weaponDef;
-		mCooldown = 0;
+		calculateCooldown();
 	}
 
 	/**
@@ -48,6 +45,10 @@ public class Weapon implements Disposable, Json.Serializable {
 		Kryo kryo = Pools.kryo.obtain();
 		Weapon copy = kryo.copy(this);
 		Pools.kryo.free(kryo);
+
+		copy.mDef = mDef;
+		calculateCooldown();
+
 		return copy;
 	}
 
@@ -90,17 +91,23 @@ public class Weapon implements Disposable, Json.Serializable {
 			// Add to bullet destroyer
 			SceneSwitcher.getBulletDestroyer().add(bullet);
 
-			// Cooldown
-			// Random cooldown
-			if (getDef().getCooldownMin() != getDef().getCooldownMax()) {
-				mCooldown = (float) Math.random();
-				mCooldown *= getDef().getCooldownMax() - getDef().getCooldownMin();
-				mCooldown += getDef().getCooldownMin();
-			}
-			// Else always same cooldown
-			else {
-				mCooldown = getDef().getCooldownMax();
-			}
+			calculateCooldown();
+		}
+	}
+
+	/**
+	 * Calculates the cooldown, or next shooting time
+	 */
+	private void calculateCooldown() {
+		// Random cooldown
+		if (getDef().getCooldownMin() != getDef().getCooldownMax()) {
+			mCooldown = (float) Math.random();
+			mCooldown *= getDef().getCooldownMax() - getDef().getCooldownMin();
+			mCooldown += getDef().getCooldownMin();
+		}
+		// Else always same cooldown
+		else {
+			mCooldown = getDef().getCooldownMax();
 		}
 	}
 
@@ -130,17 +137,6 @@ public class Weapon implements Disposable, Json.Serializable {
 	 */
 	public WeaponDef getDef() {
 		return mDef;
-	}
-
-	@Override
-	public void write(Json json) {
-		json.writeValue("Config.REVISION", Config.REVISION);
-		json.writeValue("mCooldown", mCooldown);
-	}
-
-	@Override
-	public void read(Json json, JsonValue jsonValue) {
-		mCooldown = json.readValue("mCooldown", float.class, jsonValue);
 	}
 
 	@Override
@@ -188,9 +184,9 @@ public class Weapon implements Disposable, Json.Serializable {
 	}
 
 	/** Weapon definition */
-	@Tag(88) private WeaponDef mDef = null;
+	private WeaponDef mDef = null;
 	/** Current cooldown timer */
 	@Tag(89) private float mCooldown = 0;
 	/** Position of the weapon */
-	@Tag(90) private Vector2 mPosition = Pools.vector2.obtain().set(0,0);
+	private Vector2 mPosition = Pools.vector2.obtain().set(0,0);
 }

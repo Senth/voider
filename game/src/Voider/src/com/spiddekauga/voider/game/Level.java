@@ -135,11 +135,12 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 
 	/**
 	 * Sets the x-coordinate of the level. This makes the level jump to or start
-	 * at the specific place. Also updates the player if one exists
+	 * at the specific place.
 	 * @param x the current x-coordinate of the level
 	 */
-	public void setXCoord(float x) {
+	public void setStartPosition(float x) {
 		mXCoord = x;
+		mLevelDef.setStartXCoord(x);
 	}
 
 	/**
@@ -223,6 +224,16 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 
 	/**
 	 * Adds a number of resources to the level
+	 * @param resources all resources
+	 */
+	public void addResource(IResource... resources) {
+		for (IResource resource : resources) {
+			addResource(resource);
+		}
+	}
+
+	/**
+	 * Adds a number of resources to the level
 	 * @param resources an arraylist of resources
 	 */
 	public void addResource(ArrayList<? extends IResource> resources) {
@@ -240,6 +251,16 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 
 		if (removedResource instanceof Actor) {
 			removeActor((Actor) removedResource);
+		}
+	}
+
+	/**
+	 * Removes all the the specified resources from the level
+	 * @param resources all resources to remove from the level
+	 */
+	public void removeResource(ArrayList<? extends IResource> resources) {
+		for (IResource resource : resources) {
+			removeResource(resource.getId());
 		}
 	}
 
@@ -474,7 +495,7 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 
 	@Override
 	public <ResourceType> ResourceType copyNewResource() {
-		ResourceType copy = super.copyNewResource();
+		ResourceType copy = copy();
 
 		Level copyLevel = (Level)copy;
 

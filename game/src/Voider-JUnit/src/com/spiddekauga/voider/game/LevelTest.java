@@ -140,7 +140,7 @@ public class LevelTest {
 		Level level = new Level(mLevelDef);
 		level.setPlayer(mPlayerActor);
 		level.setSpeed(15);
-		level.setXCoord(-77);
+		level.setStartPosition(-77);
 		try {
 			mfCompletedLevel.set(level, true);
 			mfLevelDef.set(level, mLevelDef);
@@ -264,27 +264,25 @@ public class LevelTest {
 		Level copy = level.copy();
 		assertLevelEquals(level, copy, false);
 		assertEnemyGroup(level, copy);
-		//		assertEnemyActor(level, copy);
 		copy.dispose();
 
 		// Copy new resource
 		copy = level.copyNewResource();
 		assertLevelEquals(level, copy, true);
 		assertEnemyGroup(level, copy);
-		//		assertEnemyActor(level, copy);
 		copy.dispose();
 
 		// Write/Read
 		copy = KryoPrototypeTest.copy(level, Level.class, mKryo);
 		assertLevelEquals(level, copy, false);
 		assertEnemyGroup(level, copy);
-		//		assertEnemyActor(level, copy);
 		copy.dispose();
 	}
 
 	/**
 	 * Test EnemyActor + TScreenAt + EnemyGroup
 	 */
+	@SuppressWarnings("unchecked")
 	@Test
 	public void testEnemyGroupTScreenAt() {
 		Level level = new Level(mLevelDef);
@@ -298,6 +296,7 @@ public class LevelTest {
 		triggerInfoActivate.action = Actions.ACTOR_ACTIVATE;
 		triggerInfoActivate.listener = enemyActor;
 		enemyActor.addTrigger(triggerInfoActivate);
+		triggerActivate.addListener(triggerInfoActivate);
 
 		TScreenAt triggerDeactivate = new TScreenAt(level, 20);
 		TriggerInfo triggerInfoDeactivate = new TriggerInfo();
@@ -305,26 +304,101 @@ public class LevelTest {
 		triggerInfoDeactivate.action = Actions.ACTOR_DEACTIVATE;
 		triggerInfoDeactivate.listener = enemyActor;
 		enemyActor.addTrigger(triggerInfoDeactivate);
+		triggerDeactivate.addListener(triggerInfoDeactivate);
 
 		EnemyGroup enemyGroup = new EnemyGroup();
 		enemyGroup.setLeaderEnemy(enemyActor);
 
-		level.addResource(enemyActor);
-		level.addResource(enemyGroup);
+		level.addResource(triggerActivate, triggerDeactivate, enemyActor, enemyGroup);
 
-		@SuppressWarnings("unchecked")
 		ArrayList<EnemyActor> addedEnemies = Pools.arrayList.obtain();
 		addedEnemies.clear();
-		enemyGroup.setEnemyCount(10, addedEnemies, null);
+		enemyGroup.setEnemyCount(3, addedEnemies, null);
 		level.addResource(addedEnemies);
 		Pools.arrayList.free(addedEnemies);
 
+		assertEnemyGroupTriggers(level);
+
+		ArrayList<EnemyActor> removedEnemies = Pools.arrayList.obtain();
+		removedEnemies.clear();
+		enemyGroup.setEnemyCount(2, null, removedEnemies);
+		level.removeResource(removedEnemies);
+
+		assertEnemyGroupTriggers(level);
+
+		addedEnemies = Pools.arrayList.obtain();
+		addedEnemies.clear();
+		enemyGroup.setEnemyCount(4, addedEnemies, null);
+		level.addResource(addedEnemies);
+		Pools.arrayList.free(addedEnemies);
+
+		assertEnemyGroupTriggers(level);
+	}
+
+	/**
+	 * Test with same activate/deactivate trigger
+	 */
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testSameActivateDeactivateTrigger() {
+		Level level = new Level(mLevelDef);
+
+		EnemyActor enemyActor = new EnemyActor();
+		enemyActor.setDef(mEnemyDef);
+
+		TScreenAt trigger = new TScreenAt(level, 15);
+		TriggerInfo triggerInfoActivate = new TriggerInfo();
+		triggerInfoActivate.trigger = trigger;
+		triggerInfoActivate.action = Actions.ACTOR_ACTIVATE;
+		triggerInfoActivate.listener = enemyActor;
+		enemyActor.addTrigger(triggerInfoActivate);
+
+		TriggerInfo triggerInfoDeactivate = triggerInfoActivate.copy();
+		triggerInfoDeactivate.action = Actions.ACTOR_DEACTIVATE;
+		enemyActor.addTrigger(triggerInfoDeactivate);
+
+		EnemyGroup enemyGroup = new EnemyGroup();
+		enemyGroup.setLeaderEnemy(enemyActor);
+
+		level.addResource(trigger, enemyActor, enemyGroup);
+
+		ArrayList<EnemyActor> addedEnemies = Pools.arrayList.obtain();
+		addedEnemies.clear();
+		enemyGroup.setEnemyCount(3, addedEnemies, null);
+		level.addResource(addedEnemies);
+		Pools.arrayList.free(addedEnemies);
+
+		assertEnemyGroupTriggers(level);
+
+		ArrayList<EnemyActor> removedEnemies = Pools.arrayList.obtain();
+		removedEnemies.clear();
+		enemyGroup.setEnemyCount(2, null, removedEnemies);
+		level.removeResource(removedEnemies);
+
+		assertEnemyGroupTriggers(level);
+
+		addedEnemies = Pools.arrayList.obtain();
+		addedEnemies.clear();
+		enemyGroup.setEnemyCount(4, addedEnemies, null);
+		level.addResource(addedEnemies);
+		Pools.arrayList.free(addedEnemies);
+
+		assertEnemyGroupTriggers(level);
+	}
+
+	/**
+	 * Assert enemy group triggers
+	 * @param level the level to create copies of and test
+	 */
+	private void assertEnemyGroupTriggers(Level level) {
+		assertBoundEnemyTriggerSame(level);
 
 		// Copy
 		Level copy = level.copy();
 		assertLevelEquals(level, copy, false);
 		assertEnemyGroup(level, copy);
 		assertTScreenAt(level, copy, false);
+		assertBoundEnemyTriggerSame(copy);
 		copy.dispose();
 
 		// Copy new resource
@@ -332,6 +406,7 @@ public class LevelTest {
 		assertLevelEquals(level, copy, true);
 		assertEnemyGroup(level, copy);
 		assertTScreenAt(level, copy, true);
+		assertBoundEnemyTriggerSame(copy);
 		copy.dispose();
 
 		// Write/Read
@@ -339,8 +414,10 @@ public class LevelTest {
 		assertLevelEquals(level, copy, false);
 		assertEnemyGroup(level, copy);
 		assertTScreenAt(level, copy, false);
+		assertBoundEnemyTriggerSame(copy);
 		copy.dispose();
 	}
+
 
 	/**
 	 * Assertion tests for EnemyGroup
@@ -348,7 +425,7 @@ public class LevelTest {
 	 * @param actual copy/read level
 	 */
 	@SuppressWarnings("unchecked")
-	public void assertEnemyGroup(Level expected, Level actual) {
+	private void assertEnemyGroup(Level expected, Level actual) {
 		ArrayList<EnemyGroup> groupsExpected = expected.getResources(EnemyGroup.class);
 		ArrayList<EnemyGroup> groupsActual = actual.getResources(EnemyGroup.class);
 		ArrayList<EnemyActor> enemiesExpected = expected.getResources(EnemyActor.class);
@@ -394,30 +471,6 @@ public class LevelTest {
 	}
 
 	/**
-	 * Assertion tests for EnemyActor
-	 * @param expected original level
-	 * @param actual copy/read level
-	 */
-	public void assertEnemyActor(Level expected, Level actual) {
-		ArrayList<EnemyActor> enemiesExpected = expected.getResources(EnemyActor.class);
-		ArrayList<EnemyActor> enemiesActual = actual.getResources(EnemyActor.class);
-
-		assertEquals(enemiesExpected.size(), enemiesActual.size());
-
-		for (int i = 0; i < enemiesExpected.size(); ++i) {
-			EnemyActor enemyExpected = enemiesExpected.get(i);
-			EnemyActor enemyActual = enemiesActual.get(i);
-
-			assertNotSame(enemyExpected, enemyActual);
-			assertEquals(enemyExpected, enemyActual);
-
-			// TODO test trigger
-		}
-
-		Pools.arrayList.freeAll(enemiesExpected, enemiesActual);
-	}
-
-	/**
 	 * Asserts if TScreenAt is the same in both levels, and other things inside the TScreenAt
 	 * does not match
 	 * @param expected original level
@@ -425,7 +478,7 @@ public class LevelTest {
 	 * @param newResource set to true if the copy is a new resource
 	 */
 	@SuppressWarnings("unchecked")
-	public void assertTScreenAt(Level expected, Level actual, boolean newResource) {
+	private void assertTScreenAt(Level expected, Level actual, boolean newResource) {
 		ArrayList<TScreenAt> tScreenAtsExpected = expected.getResources(TScreenAt.class);
 		ArrayList<TScreenAt> tScreenAtsActual = actual.getResources(TScreenAt.class);
 
@@ -477,31 +530,46 @@ public class LevelTest {
 	 * @param copy the copied/read level
 	 */
 	private void assertBoundEnemyTriggerSame(Level copy) {
-		ArrayList<EnemyActor> enemyActors = copy.getResources(EnemyActor.class);
+		ArrayList<EnemyActor> enemies = copy.getResources(EnemyActor.class);
 		ArrayList<TScreenAt> triggers = copy.getResources(TScreenAt.class);
 
-		assertEquals(1, enemyActors.size());
-		assertEquals(1, triggers.size());
 
-		EnemyActor enemyActor = enemyActors.get(0);
-		TScreenAt trigger = triggers.get(0);
+		for (EnemyActor enemy : enemies) {
+			// Triggers should contain all triggerInfo triggers, this checks equals
+			for (TriggerInfo triggerInfo : enemy.getTriggerInfos()) {
+				assertTrue(triggers.contains(triggerInfo.trigger));
 
-		ArrayList<TriggerInfo> listeners = trigger.getListeners();
-		assertEquals(1, listeners.size());
-		TriggerInfo listenerInfo = listeners.get(0);
-
-		assertSame(listenerInfo.trigger, trigger);
-		assertSame(listenerInfo.listener, enemyActor);
-		Exception failException = null;
-		try {
-			assertSame(copy, mfTriggerLevel.get(trigger));
-		} catch (Exception e) {
-			failException = e;
+				// Check so they are same
+				for (Trigger trigger : triggers) {
+					if (trigger.equals(triggerInfo.trigger)) {
+						assertSame(trigger, triggerInfo.trigger);
+					}
+				}
+			}
 		}
 
-		Pools.arrayList.freeAll(enemyActors, triggers);
+		// Triggers' listeners should be same as enemies
+		for (TScreenAt trigger : triggers) {
+			for (TriggerInfo triggerInfo : trigger.getListeners()) {
+				assertTrue(enemies.contains(triggerInfo.listener));
 
-		failWithException(failException);
+				// Check so they are same
+				for (EnemyActor enemy : enemies) {
+					if (enemy.equals(triggerInfo.listener)) {
+						assertSame(enemy, triggerInfo.listener);
+					}
+				}
+			}
+
+			// Check so level trigger is same
+			try {
+				assertSame(copy, mfTriggerLevel.get(trigger));
+			} catch (Exception e) {
+				failWithException(e);
+			}
+		}
+
+		Pools.arrayList.freeAll(enemies, triggers);
 	}
 
 	/**
@@ -532,6 +600,13 @@ public class LevelTest {
 
 			assertEquals(resourcesExpected.size(), resourcesActual.size());
 			assertTrue(resourcesExpected.containsAll(resourcesActual));
+
+			// Test so they don't include same reference
+			for (IResource resourceExpected : resourcesExpected) {
+				for (IResource resourceActual : resourcesActual) {
+					assertNotSame(resourceExpected, resourceActual);
+				}
+			}
 
 			Pools.arrayList.freeAll(resourcesActual, resourcesExpected);
 

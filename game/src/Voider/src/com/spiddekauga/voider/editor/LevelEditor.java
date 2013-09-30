@@ -563,11 +563,12 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 		// Because of scaling decrease the x position
 		float levelScaling = (Config.Graphics.LEVEL_EDITOR_HEIGHT_SCALE - 1) / Config.Graphics.LEVEL_EDITOR_HEIGHT_SCALE;
 		float xPosition = mCamera.position.x + mCamera.viewportWidth * 0.5f - mCamera.viewportWidth * levelScaling;
-		copyLevel.setXCoord(xPosition);
+		copyLevel.setStartPosition(xPosition);
+		copyLevel.calculateEndPosition();
 
-		// Remove screen triggers before the specified coordinate
 		testGame.setLevel(copyLevel);
 
+		// Remove screen triggers before the specified coordinate
 		ArrayList<TScreenAt> triggers = copyLevel.getResources(TScreenAt.class);
 		for (TScreenAt trigger : triggers) {
 			if (trigger.isTriggered()) {

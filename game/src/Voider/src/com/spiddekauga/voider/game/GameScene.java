@@ -58,8 +58,6 @@ public class GameScene extends WorldScene {
 	 */
 	public void setLevel(Level level) {
 		mLevel = level;
-		//		mLevel.addResource(mLevel);
-		//		mLevel.bindResources();
 		mLevel.run();
 		mLevel.createDefaultTriggers();
 
@@ -106,7 +104,7 @@ public class GameScene extends WorldScene {
 			if (mLevelToLoad != null) {
 				try {
 					Level level = ResourceCacheFacade.get(this, mLevelToLoad.getLevelId(), mLevelToLoad.getRevision());
-					level.setXCoord(level.getDef().getStartXCoord());
+					level.setStartPosition(level.getDef().getStartXCoord());
 					setLevel(level);
 				} catch (UndefinedResourceTypeException e) {
 					Gdx.app.error("GameScene", e.toString());
@@ -352,6 +350,10 @@ public class GameScene extends WorldScene {
 		if (mGameSaveDef != null) {
 			ResourceCacheFacade.load(this, mGameSaveDef.getGameSaveId(), mGameSaveDef.getId(), mGameSaveDef.getRevision());
 		}
+
+		if (mTesting && mLevel != null) {
+			ResourceCacheFacade.load(this, mLevel.getDef().getId(), true);
+		}
 	}
 
 	@Override
@@ -371,6 +373,11 @@ public class GameScene extends WorldScene {
 			if (mLevel != null) {
 				ResourceCacheFacade.unload(this, mLevel, mLevel.getDef());
 			}
+		}
+
+		// Testing level unload dependencies
+		if (mTesting && mLevel != null) {
+			ResourceCacheFacade.unload(this, mLevel.getDef(), true);
 		}
 
 		// Resumed game is unloaded in #onDispose()...

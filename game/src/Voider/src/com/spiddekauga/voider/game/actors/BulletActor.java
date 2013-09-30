@@ -42,6 +42,7 @@ public class BulletActor extends Actor {
 		mShotByPlayer = shotByPlayer;
 		setPosition(position);
 
+		activate();
 		createBody();
 
 		// Position and rotate the bullet to face the shooting direction

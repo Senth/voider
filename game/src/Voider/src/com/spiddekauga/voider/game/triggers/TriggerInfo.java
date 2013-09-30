@@ -1,7 +1,5 @@
 package com.spiddekauga.voider.game.triggers;
 
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonValue;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.voider.game.triggers.TriggerAction.Actions;
 
@@ -11,7 +9,7 @@ import com.spiddekauga.voider.game.triggers.TriggerAction.Actions;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class TriggerInfo implements Json.Serializable {
+public class TriggerInfo {
 	/** The trigger */
 	@Tag(29) public Trigger trigger = null;
 	/** The delay of this listener */
@@ -59,18 +57,6 @@ public class TriggerInfo implements Json.Serializable {
 		return copy;
 	}
 
-	@Override
-	public void write(Json json) {
-		json.writeValue("action", action);
-		json.writeValue("delay", delay);
-	}
-
-	@Override
-	public void read(Json json, JsonValue jsonValue) {
-		action = json.readValue("action", TriggerAction.Actions.class, jsonValue);
-		delay = json.readValue("delay", float.class, jsonValue);
-	}
-
 	/**
 	 * Gets the specified enemy's trigger for the specified trigger info.
 	 * I.e. this will check in all the enmeny triggers until it finds the specified
@@ -81,9 +67,9 @@ public class TriggerInfo implements Json.Serializable {
 	 * Null if the trigger info wasn't found inside the enemy.
 	 */
 	public static TriggerInfo getTriggerInfoByDuplicate(ITriggerListener listener, TriggerInfo searchTriggerInfo) {
-		for (TriggerInfo enemyTriggerInfo : listener.getTriggerInfos()) {
-			if (enemyTriggerInfo.sameTriggerAndAction(searchTriggerInfo)) {
-				return enemyTriggerInfo;
+		for (TriggerInfo triggerInfo : listener.getTriggerInfos()) {
+			if (triggerInfo.sameTriggerAndAction(searchTriggerInfo)) {
+				return triggerInfo;
 			}
 		}
 
@@ -100,9 +86,9 @@ public class TriggerInfo implements Json.Serializable {
 	 * Null if the trigger info wasn't found inside the enemy.
 	 */
 	public static TriggerInfo getTriggerInfoByAction(ITriggerListener listener, Actions action) {
-		for (TriggerInfo enemyTriggerInfo : listener.getTriggerInfos()) {
-			if (enemyTriggerInfo.action == action) {
-				return enemyTriggerInfo;
+		for (TriggerInfo triggerInfo : listener.getTriggerInfos()) {
+			if (triggerInfo.action == action) {
+				return triggerInfo;
 			}
 		}
 

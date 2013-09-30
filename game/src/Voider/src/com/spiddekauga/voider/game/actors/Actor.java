@@ -60,6 +60,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 		mDef = def;
 		mLife = def.getMaxLife();
 		mUniqueId = UUID.randomUUID();
+		mTriggerInfos.clear();
 	}
 
 	/**
@@ -446,7 +447,6 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 			kryo.writeClassAndObject(output, mDef);
 		} else {
 			kryo.writeObject(output, mDef.getId());
-			output.writeInt(mDef.getRevision(), false);
 		}
 
 		// Save body
@@ -483,8 +483,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 			}
 		} else {
 			UUID defId = kryo.readObject(input, UUID.class);
-			int revision = input.readInt(false);
-			mDef = ResourceCacheFacade.get(null, defId, revision);
+			mDef = ResourceCacheFacade.get(null, defId);
 		}
 
 		// Read body
@@ -679,10 +678,12 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 	@Override
 	public void dispose() {
 		mActive = false;
+		Pools.arrayList.free(mTriggerInfos);
 
 		reset();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void reset() {
 		if (mBody != null) {
@@ -702,6 +703,9 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 			//			mRotatedBorderVertices = null;
 			mRotatedVertices = null;
 		}
+
+		mTriggerInfos = Pools.arrayList.obtain();
+		mTriggerInfos.clear();
 	}
 
 	/**
@@ -930,6 +934,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 	 */
 	public Actor() {
 		mUniqueId = UUID.randomUUID();
+		mTriggerInfos.clear();
 	}
 
 	/**
@@ -1091,13 +1096,36 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 		mCorners.add(body);
 	}
 
+	@SuppressWarnings("unchecked")
+	@Override
+	public <ResourceType> ResourceType copyNewResource() {
+		Actor copy = super.copyNewResource();
+
+		copy.mDef = mDef;
+		copy.mPosition = Pools.vector2.obtain().set(mPosition);
+		copy.mActive = false;
+
+		// Triggers
+		copy.mTriggerInfos = Pools.arrayList.obtain();
+		copy.mTriggerInfos.clear();
+		for (TriggerInfo triggerInfo : mTriggerInfos) {
+			TriggerInfo copyTriggerInfo = triggerInfo.copy();
+			copyTriggerInfo.listener = copy;
+			copy.mTriggerInfos.add(copyTriggerInfo);
+			copyTriggerInfo.trigger.addListener(copyTriggerInfo);
+		}
+
+		return (ResourceType) copy;
+	}
+
 	// Kryo variables
 	/** Current life */
 	@Tag(3) private float mLife = 0;
 	/** Body position, remember even when we don't have a body */
 	@Tag(4) private Vector2 mPosition = Pools.vector2.obtain().set(0, 0);
 	/** Trigger informations */
-	@Tag(5) private ArrayList<TriggerInfo> mTriggerInfos = new ArrayList<TriggerInfo>();
+	@SuppressWarnings("unchecked")
+	@Tag(5) private ArrayList<TriggerInfo> mTriggerInfos = Pools.arrayList.obtain();
 
 	// Kryo special variables
 	/** Revision of the actor */

@@ -58,9 +58,14 @@ public abstract class Resource implements IResource {
 	 * @return duplicate of this object
 	 * @see #copy() creates an exact copy of this object
 	 */
+	@SuppressWarnings("unchecked")
 	public <ResourceType> ResourceType copyNewResource() {
-		ResourceType copy = copy();
+		Kryo kryo = Pools.kryo.obtain();
+		ResourceType copy = (ResourceType) kryo.copyShallow(this);
+		Pools.kryo.free(kryo);
+
 		((Resource)copy).mUniqueId = UUID.randomUUID();
+
 		return copy;
 	}
 
