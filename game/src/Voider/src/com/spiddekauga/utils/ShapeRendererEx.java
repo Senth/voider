@@ -187,9 +187,7 @@ public class ShapeRendererEx implements Disposable {
 			triangle(localVertices);
 		}
 
-		for (Vector2 vertex : localVertices) {
-			Pools.vector2.free(vertex);
-		}
+		Pools.vector2.freeAll(localVertices);
 	}
 
 	/**

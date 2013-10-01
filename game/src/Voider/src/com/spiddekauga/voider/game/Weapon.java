@@ -130,6 +130,7 @@ public class Weapon implements Disposable {
 	@Override
 	public void dispose() {
 		Pools.vector2.free(mPosition);
+		mPosition = null;
 	}
 
 	/**

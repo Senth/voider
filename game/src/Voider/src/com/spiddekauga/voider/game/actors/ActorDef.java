@@ -54,14 +54,6 @@ public abstract class ActorDef extends Def implements Disposable {
 	}
 
 	/**
-	 * Default constructor for JSON
-	 */
-	@SuppressWarnings("unused")
-	private ActorDef() {
-		// Does nothing
-	}
-
-	/**
 	 * Sets the starting angle of the actor
 	 * @param angle the starting angle, in radians
 	 */
@@ -170,6 +162,7 @@ public abstract class ActorDef extends Def implements Disposable {
 	@Override
 	public void dispose() {
 		mVisualVars.dispose();
+		mVisualVars = null;
 	}
 
 

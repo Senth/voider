@@ -150,6 +150,8 @@ public class Path extends Resource implements Disposable, IResourceCorner, IReso
 
 		Pools.vector2.free(center);
 		Pools.vector2.free(diffVector);
+		center = null;
+		diffVector = null;
 
 		float maxLength = 0;
 		if (maxLengthSq > 0) {
@@ -296,6 +298,7 @@ public class Path extends Resource implements Disposable, IResourceCorner, IReso
 		}
 		destroyVertices();
 		Pools.vector2.freeAll(mCorners);
+		mCorners.clear();
 	}
 
 	/**
@@ -545,6 +548,7 @@ public class Path extends Resource implements Disposable, IResourceCorner, IReso
 			corners.add(tempCorner);
 			mVertices = Geometry.createLinePolygon(corners, Config.Editor.Level.Path.WIDTH);
 			Pools.arrayList.free(corners);
+			corners = null;
 		}
 	}
 

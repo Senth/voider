@@ -14,7 +14,7 @@ import com.spiddekauga.voider.game.WeaponDef;
  */
 public class EnemyActorDef extends ActorDef {
 	/**
-	 * Private default constructor used for json
+	 * Private default constructor used for kryo
 	 */
 	public EnemyActorDef() {
 		super(ActorTypes.ENEMY);

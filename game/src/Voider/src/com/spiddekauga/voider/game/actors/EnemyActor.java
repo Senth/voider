@@ -39,8 +39,9 @@ public class EnemyActor extends Actor {
 	@Override
 	public void dispose() {
 		super.dispose();
-		Pools.vector2.free(mTargetDirection);
-		Pools.vector2.free(mRandomMoveDirection);
+		Pools.vector2.freeAll(mTargetDirection, mRandomMoveDirection);
+		mTargetDirection = null;
+		mRandomMoveDirection = null;
 	}
 
 	@Override
@@ -342,6 +343,10 @@ public class EnemyActor extends Actor {
 		// Never make a copy a group leader?
 		enemyCopy.mGroupLeader = false;
 
+		enemyCopy.mWeapon = mWeapon.copy();
+		enemyCopy.mRandomMoveDirection = Pools.vector2.obtain().set(mRandomMoveDirection);
+		enemyCopy.mTargetDirection = Pools.vector2.obtain().set(mTargetDirection);
+
 		return copy;
 	}
 
@@ -519,6 +524,7 @@ public class EnemyActor extends Actor {
 				Vector2 bulletVelocity = Geometry.interceptTarget(getPosition(), mWeapon.getDef().getBulletSpeed() /*+ levelSpeed*/, mPlayerActor.getPosition(), playerVelocity);
 				shootDirection.set(bulletVelocity);
 				Pools.vector2.free(bulletVelocity);
+				bulletVelocity = null;
 
 				// Cannot intercept, target player
 				if (shootDirection.x != shootDirection.x || shootDirection.y != shootDirection.y) {

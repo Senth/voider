@@ -722,6 +722,7 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 					}
 
 					Pools.arrayList.free(intersections);
+					intersections = null;
 
 					try {
 						mInvoker.execute(new CResourceCornerRemoveExcessive(mSelectedActor.getDef().getVisualVars()), true);

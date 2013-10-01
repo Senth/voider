@@ -363,6 +363,7 @@ class ResourceDatabase {
 			}
 
 			Pools.arrayList.free(scenes);
+			scenes = null;
 		}
 	}
 
@@ -647,6 +648,7 @@ class ResourceDatabase {
 					}
 
 					Pools.arrayList.free(scenesWithResource);
+					scenesWithResource = null;
 				}
 			}
 		}

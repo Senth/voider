@@ -821,6 +821,8 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 					}
 
 					Pools.arrayList.freeAll(addedEnemies, removedEnemies);
+					addedEnemies = null;
+					removedEnemies = null;
 				}
 				// Delete enemy group
 				else {
@@ -834,6 +836,7 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 					mLevel.removeResource(enemyGroup.getId());
 
 					Pools.arrayList.free(removedEnemies);
+					removedEnemies = null;
 				}
 			}
 			// No enemy group, do we create one?
@@ -854,6 +857,7 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 				}
 
 				Pools.arrayList.free(addedEnemies);
+				addedEnemies = null;
 
 				// Set GUI delay value
 				((LevelEditorGui)mGui).resetEnemyOptions();

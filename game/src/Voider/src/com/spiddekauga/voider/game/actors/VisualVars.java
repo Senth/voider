@@ -12,8 +12,6 @@ import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.utils.Disposable;
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonValue;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.KryoSerializable;
 import com.esotericsoftware.kryo.io.Input;
@@ -36,14 +34,13 @@ import com.spiddekauga.voider.utils.Pools;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class VisualVars implements KryoSerializable, Json.Serializable, Disposable, IResourceCorner {
+public class VisualVars implements KryoSerializable, Disposable, IResourceCorner {
 	/**
 	 * Sets the appropriate default values
 	 * @param actorType the default values depends on which actor type is set
 	 */
 	VisualVars(ActorTypes actorType) {
-		mCorners.clear();
-		mFixtureDefs.clear();
+		this();
 
 		mActorType = actorType;
 		setDefaultValues();
@@ -59,65 +56,6 @@ public class VisualVars implements KryoSerializable, Json.Serializable, Disposab
 	public void read(Kryo kryo, Input input) {
 		@SuppressWarnings("unused")
 		int classRevision = input.readInt(true);
-
-		calculateBoundingRadius();
-		createFixtureDef();
-	}
-
-	@Override
-	public void write(Json json) {
-		json.writeValue("Config.REVISION", Config.REVISION);
-
-		json.writeValue("mShapeType", mShapeType);
-		json.writeValue("mActorType", mActorType);
-		json.writeValue("mCenterOffset", mCenterOffset);
-		json.writeValue("mColor", mColor);
-		json.writeValue("mShapeComplete", mShapeComplete);
-
-		switch (mShapeType) {
-		case TRIANGLE:
-		case RECTANGLE:
-			json.writeValue("mShapeWidth", mShapeWidth);
-			json.writeValue("mShapeHeight", mShapeHeight);
-			break;
-
-		case CIRCLE:
-			json.writeValue("mShapeCircleRadius", mShapeCircleRadius);
-			break;
-
-		case CUSTOM:
-			json.writeValue("mCorners", mCorners);
-			break;
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public void read(Json json, JsonValue jsonValue) {
-		mActorType = json.readValue("mActorType", ActorTypes.class, jsonValue);
-
-		setDefaultValues();
-
-		mShapeType = json.readValue("mShapeType", ActorShapeTypes.class, jsonValue);
-		mCenterOffset = json.readValue("mCenterOffset", Vector2.class, jsonValue);
-		mColor = json.readValue("mColor", Color.class, jsonValue);
-		mShapeComplete = json.readValue("mShapeComplete", boolean.class, jsonValue);
-
-		switch (mShapeType) {
-		case TRIANGLE:
-		case RECTANGLE:
-			mShapeWidth = json.readValue("mShapeWidth", float.class, jsonValue);
-			mShapeHeight = json.readValue("mShapeHeight", float.class, jsonValue);
-			break;
-
-		case CIRCLE:
-			mShapeCircleRadius = json.readValue("mShapeCircleRadius", float.class, jsonValue);
-			break;
-
-		case CUSTOM:
-			mCorners = json.readValue("mCorners", ArrayList.class, jsonValue);
-			break;
-		}
 
 		calculateBoundingRadius();
 		createFixtureDef();
@@ -296,13 +234,18 @@ public class VisualVars implements KryoSerializable, Json.Serializable, Disposab
 	@Override
 	public void dispose() {
 		Pools.vector2.freeAll(mCorners);
-		clearFixtures();
-		clearVertices();
 		Pools.vector2.free(mCenterOffset);
+		mCenterOffset = null;
+		clearVertices();
 
+		clearFixtures();
 		Pools.arrayList.freeAll(mCorners, mFixtureDefs);
 		mCorners = null;
 		mFixtureDefs = null;
+
+		Pools.vector2.freeDuplicates(mPolygon);
+		Pools.arrayList.free(mPolygon);
+		mPolygon = null;
 	}
 
 	/**
@@ -391,6 +334,11 @@ public class VisualVars implements KryoSerializable, Json.Serializable, Disposab
 	 * @param shapeType type of shape the enemy has
 	 */
 	public void setShapeType(ActorShapeTypes shapeType) {
+		if (shapeType == null) {
+			return;
+		}
+
+
 		clearVertices();
 
 		mShapeType = shapeType;
@@ -642,6 +590,7 @@ public class VisualVars implements KryoSerializable, Json.Serializable, Disposab
 					handlePolygonComplexException(tempVertices, e);
 				}
 				Pools.arrayList.free(tempVertices);
+				tempVertices = null;
 			}
 
 			int cTriangles = triangles.size() / 3;
@@ -704,8 +653,11 @@ public class VisualVars implements KryoSerializable, Json.Serializable, Disposab
 					Gdx.app.error("ActorDef", throwMessage);
 					Pools.vector2.freeDuplicates(triangles);
 					Pools.arrayList.free(triangles);
+					triangles = null;
 					Pools.vector2.free(lengthTest);
+					lengthTest = null;
 					Pools.vector2.freeAll(triangleVertices);
+					triangleVertices = null;
 
 					throw new PolygonCornersTooCloseException(throwMessage);
 				}
@@ -730,6 +682,8 @@ public class VisualVars implements KryoSerializable, Json.Serializable, Disposab
 			// Free stuff
 			Pools.vector2.freeAll(triangleVertices);
 			Pools.vector2.free(lengthTest);
+			triangleVertices = null;
+			lengthTest = null;
 		}
 		// Circle
 		else if (mCorners.size() >= 1) {
@@ -737,7 +691,6 @@ public class VisualVars implements KryoSerializable, Json.Serializable, Disposab
 
 			Vector2 offsetPosition = Pools.vector2.obtain();
 			offsetPosition.set(0,0).sub(mCenterOffset).sub(mCorners.get(0));
-			Pools.vector2.free(offsetPosition);
 
 			float radius = 0;
 
@@ -751,6 +704,7 @@ public class VisualVars implements KryoSerializable, Json.Serializable, Disposab
 				lengthVector.set(mCorners.get(0)).sub(mCorners.get(1));
 				radius = lengthVector.len();
 				Pools.vector2.free(lengthVector);
+				lengthVector = null;
 			}
 			circle.setRadius(radius);
 
@@ -764,6 +718,9 @@ public class VisualVars implements KryoSerializable, Json.Serializable, Disposab
 			}
 			mVertices = mEarClippingTriangulator.computeTriangles(circleVertices);
 			Collections.reverse(mVertices);
+
+			Pools.vector2.free(offsetPosition);
+			offsetPosition = null;
 		}
 	}
 
@@ -817,21 +774,22 @@ public class VisualVars implements KryoSerializable, Json.Serializable, Disposab
 
 		// Create triangle vertices and polygon for the rectangle
 		if (rectangleShape.getVertexCount() == 4) {
-			mPolygon = new ArrayList<Vector2>();
+			mPolygon = Pools.arrayList.obtain();
+			mPolygon.clear();
 
 			// First triangle
 			Vector2 vertex = Pools.vector2.obtain();
 			rectangleShape.getVertex(0, vertex);
 			mVertices.add(vertex);
-			mPolygon.add(vertex);
+			mPolygon.add(Pools.vector2.obtain().set(vertex));
 			vertex = Pools.vector2.obtain();
 			rectangleShape.getVertex(1, vertex);
 			mVertices.add(vertex);
-			mPolygon.add(vertex);
+			mPolygon.add(Pools.vector2.obtain().set(vertex));
 			vertex = Pools.vector2.obtain();
 			rectangleShape.getVertex(2, vertex);
 			mVertices.add(vertex);
-			mPolygon.add(vertex);
+			mPolygon.add(Pools.vector2.obtain().set(vertex));
 
 			// Second triangle
 			mVertices.add(vertex);
@@ -893,12 +851,14 @@ public class VisualVars implements KryoSerializable, Json.Serializable, Disposab
 		polygonShape.set(vertices);
 
 		Pools.vector2.free(center);
+		center = null;
 
 		// Set vertices and create border
 		clearVertices();
 		mVertices = Pools.arrayList.obtain();
 		mVertices.clear();
-		mPolygon = new ArrayList<Vector2>();
+		mPolygon = Pools.arrayList.obtain();
+		mPolygon.clear();
 		for (Vector2 vertex : vertices) {
 			mVertices.add(vertex);
 			mPolygon.add(vertex);
@@ -977,7 +937,7 @@ public class VisualVars implements KryoSerializable, Json.Serializable, Disposab
 		copy.clear();
 
 		for (Vector2 vertex : vertices) {
-			copy.add(vertex.cpy());
+			copy.add(Pools.vector2.obtain().set(vertex));
 		}
 
 		return copy;
@@ -992,6 +952,7 @@ public class VisualVars implements KryoSerializable, Json.Serializable, Disposab
 	private void handlePolygonComplexException(ArrayList<Vector2> tempVertices, PolygonComplexException exception) {
 		Pools.vector2.freeAll(tempVertices);
 		Pools.arrayList.free(tempVertices);
+		tempVertices = null;
 
 		if (exception == null) {
 			throw new PolygonComplexException();
@@ -1011,7 +972,7 @@ public class VisualVars implements KryoSerializable, Json.Serializable, Disposab
 	/** Color of the actor */
 	@Tag(52) private Color mColor = new Color();
 	/** Current shape of the enemy */
-	@Tag(49) private ActorShapeTypes mShapeType;
+	@Tag(49) private ActorShapeTypes mShapeType = null;
 	/** radius of circle */
 	@Tag(60) private float mShapeCircleRadius;
 	/** width of rectangle/triangle */

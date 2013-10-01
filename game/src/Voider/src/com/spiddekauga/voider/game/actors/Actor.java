@@ -351,6 +351,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 				shapeRenderer.polyline(SceneSwitcher.getPickingVertices(), true, cornerOffset);
 			}
 			Pools.vector2.free(cornerOffset);
+			cornerOffset = null;
 
 			shapeRenderer.pop();
 		}
@@ -679,6 +680,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 	public void dispose() {
 		mActive = false;
 		Pools.arrayList.free(mTriggerInfos);
+		mTriggerInfos = null;
 
 		reset();
 	}

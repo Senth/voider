@@ -1,9 +1,10 @@
 package com.spiddekauga.voider.utils;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.badlogic.gdx.utils.ReflectionPool;
+import com.spiddekauga.utils.Collections;
 
 /**
  * A pool of objects that can be reused to avoid allocation
@@ -22,12 +23,31 @@ public class Pool<T> extends ReflectionPool<T> {
 	}
 
 	/**
-	 * 
 	 * @param type object type
 	 * @param initialCapacity how many initial objects will be created
 	 */
 	public Pool(Class<T> type, int initialCapacity) {
 		super(type, initialCapacity);
+	}
+
+	//	@Override
+	//	public T obtain() {
+	//		T object = super.obtain();
+	//		if (object instanceof Vector2) {
+	//			return (T) new Vector2();
+	//		} else {
+	//			return object;
+	//		}
+	//	}
+
+	@Override
+	public T obtain() {
+		T object = super.obtain();
+		if (object instanceof ArrayList) {
+			return (T) new ArrayList();
+		} else {
+			return object;
+		}
 	}
 
 	/**
@@ -64,9 +84,11 @@ public class Pool<T> extends ReflectionPool<T> {
 	 * @param list list with vectors to free, can contain duplicates.
 	 */
 	public void freeDuplicates(List<T> list) {
-		HashSet<T> freedObjects = new HashSet<T>();
+		@SuppressWarnings("unchecked")
+		ArrayList<T> freedObjects = Pools.arrayList.obtain();
+		freedObjects.clear();
 		for (T object : list) {
-			if (!freedObjects.contains(object)) {
+			if (!Collections.listContains(freedObjects, object, true)) {
 				free(object);
 				freedObjects.add(object);
 			}

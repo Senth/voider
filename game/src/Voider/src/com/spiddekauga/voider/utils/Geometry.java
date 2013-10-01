@@ -417,6 +417,7 @@ public class Geometry {
 		}
 
 		Pools.arrayList.free(vertices);
+		vertices = null;
 
 		Pools.vector2.free(directionBefore);
 		Pools.vector2.free(directionAfter);
@@ -832,10 +833,10 @@ public class Geometry {
 
 		if (newVertices.isEmpty()) {
 			Pools.arrayList.free(newVertices);
-			return null;
-		} else {
-			return newVertices;
+			newVertices = null;
 		}
+
+		return newVertices;
 	}
 
 	/**

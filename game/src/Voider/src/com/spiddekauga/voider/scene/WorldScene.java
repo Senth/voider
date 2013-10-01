@@ -62,8 +62,7 @@ public abstract class WorldScene extends Scene {
 		mBulletDestroyer.update(deltaTime);
 		mBulletDestroyer.removeOutOfBondsBullets(minScreenPos, maxScreenPos);
 
-		Pools.vector2.free(minScreenPos);
-		Pools.vector2.free(maxScreenPos);
+		Pools.vector2.freeAll(minScreenPos, maxScreenPos);
 
 		// Sync border position with screen
 		if (mBorderBody != null) {
@@ -216,9 +215,7 @@ public abstract class WorldScene extends Scene {
 		synchronizeBorder(mBorderBody);
 
 		// Free stuff
-		for (int i = 0; i < corners.length; ++i) {
-			Pools.vector2.free(corners[i]);
-		}
+		Pools.vector2.freeAll(corners);
 		shape.dispose();
 	}
 

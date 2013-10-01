@@ -125,6 +125,7 @@ public class TScreenAt extends Trigger implements IResourceBody, IResourcePositi
 	@Override
 	public void dispose() {
 		Pools.vector2.free(mPosition);
+		mPosition = null;
 		destroyBody();
 	}
 

@@ -102,6 +102,7 @@ public class ResourceCacheFacade {
 		// Free
 		Pools.resourceItem.freeAll(resources);
 		Pools.arrayList.free(resources);
+		resources = null;
 	}
 
 	/**
@@ -141,6 +142,7 @@ public class ResourceCacheFacade {
 		// Free
 		Pools.resourceItem.freeAll(resources);
 		Pools.arrayList.free(resources);
+		resources = null;
 	}
 
 	/**
@@ -185,6 +187,7 @@ public class ResourceCacheFacade {
 		// Free
 		Pools.resourceItem.freeAll(resources);
 		Pools.arrayList.free(resources);
+		resources = null;
 	}
 
 	/**
@@ -220,6 +223,7 @@ public class ResourceCacheFacade {
 
 		// Free
 		Pools.arrayList.free(resources);
+		resources = null;
 	}
 
 	/**
@@ -264,6 +268,7 @@ public class ResourceCacheFacade {
 		// Free
 		Pools.resourceItem.freeAll(resources);
 		Pools.arrayList.free(resources);
+		resources = null;
 	}
 
 	/**

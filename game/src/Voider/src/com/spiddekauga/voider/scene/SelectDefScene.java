@@ -100,6 +100,7 @@ public class SelectDefScene extends WorldScene {
 				mGui.resetValues();
 
 				Pools.arrayList.free(defs);
+				defs = null;
 
 			} catch (UndefinedResourceTypeException e) {
 				Gdx.app.error("SelectDefScene", e.toString());

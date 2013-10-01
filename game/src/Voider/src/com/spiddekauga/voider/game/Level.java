@@ -101,6 +101,7 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 				resource.updateEditor();
 			}
 			Pools.arrayList.free(resourceUpdates);
+			resourceUpdates = null;
 		}
 	}
 
@@ -191,6 +192,7 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 				resourceRender.render(shapeRenderer);
 			}
 			Pools.arrayList.free(resourceRenders);
+			resourceRenders = null;
 		}
 
 		if (mPlayerActor != null) {
@@ -208,6 +210,7 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 			resourceRender.renderEditor(shapeRenderer);
 		}
 		Pools.arrayList.free(resourceRenders);
+		resourceRenders = null;
 	}
 
 	/**
@@ -300,6 +303,7 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 			}
 		}
 		Pools.arrayList.free(enemies);
+		enemies = null;
 	}
 
 	/**
@@ -341,11 +345,14 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 		}
 
 		Pools.arrayList.free(disposables);
+		disposables = null;
 		if (mResourceRenders != null) {
 			Pools.arrayList.free(mResourceRenders);
+			mResourceRenders = null;
 		}
 		if (mResourceUpdates != null) {
 			Pools.arrayList.free(mResourceUpdates);
+			mResourceUpdates = null;
 		}
 	}
 
@@ -376,6 +383,7 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 		mLevelDef.setStartXCoord(startPosition);
 
 		Pools.arrayList.free(resources);
+		resources = null;
 	}
 
 	/**
@@ -398,6 +406,7 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 		mLevelDef.setEndXCoord(endPosition);
 
 		Pools.arrayList.free(resources);
+		resources = null;
 	}
 
 	@Override
@@ -433,6 +442,7 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 			}
 
 			Pools.arrayList.free(removeEnemies);
+			removeEnemies = null;
 		}
 	}
 
@@ -461,6 +471,7 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 			}
 
 			Pools.arrayList.free(addEnemies);
+			addEnemies = null;
 		}
 	}
 

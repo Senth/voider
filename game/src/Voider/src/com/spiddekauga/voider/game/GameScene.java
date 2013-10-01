@@ -148,15 +148,14 @@ public class GameScene extends WorldScene {
 		if (!mTesting) {
 			// Resumed game
 			if (mGameSave != null) {
-				// Set game save (will not be set if the user quits the game while loading)
+				// Set game save (as it will not be set if the user quits the game while loading)
 				if (mGameSave == null) {
-					mGameSave = ResourceCacheFacade.get(this, mGameSaveDef.getGameSaveId(), mGameSaveDef.getRevision());
+					mGameSave = ResourceCacheFacade.get(this, mGameSaveDef.getGameSaveId());
 				}
 
 				if (mGameSave != null) {
 					ResourceCacheFacade.unload(this, mGameSave, mGameSaveDef);
 				}
-				mGameSave = null;
 			}
 
 			ResourceSaver.clearResources(GameSave.class);
@@ -170,9 +169,10 @@ public class GameScene extends WorldScene {
 			}
 		}
 
-		if (mLevel != null) {
+		if (mLevel != null && (mTesting || mGameSave != null)) {
 			mLevel.dispose();
 		}
+
 
 		super.onDispose();
 	}
@@ -344,11 +344,11 @@ public class GameScene extends WorldScene {
 		ResourceCacheFacade.loadAllOf(this, PlayerActorDef.class, true);
 
 		if (mLevelToLoad != null) {
-			ResourceCacheFacade.load(this, mLevelToLoad.getLevelId(), mLevelToLoad.getId(), mLevelToLoad.getRevision());
+			ResourceCacheFacade.load(this, mLevelToLoad.getLevelId(), mLevelToLoad.getId());
 		}
 
 		if (mGameSaveDef != null) {
-			ResourceCacheFacade.load(this, mGameSaveDef.getGameSaveId(), mGameSaveDef.getId(), mGameSaveDef.getRevision());
+			ResourceCacheFacade.load(this, mGameSaveDef.getGameSaveId(), mGameSaveDef.getId());
 		}
 
 		if (mTesting && mLevel != null) {
@@ -365,9 +365,9 @@ public class GameScene extends WorldScene {
 
 		// Loaded level
 		if (mLevelToLoad != null) {
-			// Set level (will not be set if the user quits the game while loading)
+			// Set level (as it will not be set if the user quits the game while loading)
 			if (mLevel == null) {
-				mLevel = ResourceCacheFacade.get(this, mLevelToLoad.getLevelId(), mLevelToLoad.getRevision());
+				mLevel = ResourceCacheFacade.get(this, mLevelToLoad.getLevelId());
 			}
 
 			if (mLevel != null) {
@@ -507,6 +507,7 @@ public class GameScene extends WorldScene {
 			if (ships.isEmpty()) {
 				setOutcome(Outcomes.LOADING_FAILED_MISSING_FILE, "Could not find any ships");
 				Pools.arrayList.free(ships);
+				ships = null;
 				return;
 			}
 
@@ -518,6 +519,7 @@ public class GameScene extends WorldScene {
 			mLevel.addResource(mPlayerStats);
 
 			Pools.arrayList.free(ships);
+			ships = null;
 		} else {
 			mPlayerActor.createBody();
 		}
