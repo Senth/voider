@@ -541,7 +541,6 @@ public class Path extends Resource implements Disposable, IResourceCorner, IReso
 		} else if (mCorners.size() >= 1) {
 			@SuppressWarnings("unchecked")
 			ArrayList<Vector2> corners = Pools.arrayList.obtain();
-			corners.clear();
 			corners.addAll(mCorners);
 			Vector2 tempCorner = Pools.vector2.obtain();
 			tempCorner.set(mCorners.get(0)).add(Config.Editor.Path.DEFAULT_ADD_PATH);

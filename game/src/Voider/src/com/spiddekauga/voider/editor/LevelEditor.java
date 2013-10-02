@@ -805,10 +805,8 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 				if (cEnemies > 1) {
 					@SuppressWarnings("unchecked")
 					ArrayList<EnemyActor> addedEnemies = Pools.arrayList.obtain();
-					addedEnemies.clear();
 					@SuppressWarnings("unchecked")
 					ArrayList<EnemyActor> removedEnemies = Pools.arrayList.obtain();
-					removedEnemies.clear();
 
 					enemyGroup.setEnemyCount(cEnemies, addedEnemies, removedEnemies);
 
@@ -848,7 +846,6 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 
 				@SuppressWarnings("unchecked")
 				ArrayList<EnemyActor> addedEnemies = Pools.arrayList.obtain();
-				addedEnemies.clear();
 				enemyGroup.setEnemyCount(cEnemies, addedEnemies, null);
 
 				for (EnemyActor addedEnemy : addedEnemies) {

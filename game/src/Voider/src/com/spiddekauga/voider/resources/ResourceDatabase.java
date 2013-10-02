@@ -477,7 +477,6 @@ class ResourceDatabase {
 	static ArrayList<ResourceItem> getAllExistingResource(Class<?> type) {
 		@SuppressWarnings("unchecked")
 		ArrayList<ResourceItem> resources = Pools.arrayList.obtain();
-		resources.clear();
 
 		for (Entry<UUID, ResourceInfo> entry : mResources.entrySet()) {
 			if (entry.getValue().type == type) {

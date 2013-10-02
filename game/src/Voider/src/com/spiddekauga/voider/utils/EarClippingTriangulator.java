@@ -52,9 +52,7 @@ public final class EarClippingTriangulator {
 	public ArrayList<Vector2> computeTriangles (final List<Vector2> polygon) {
 		// TODO Check if LinkedList performs better
 		final ArrayList<Vector2> triangles = Pools.arrayList.obtain();
-		triangles.clear();
 		final ArrayList<Vector2> vertices = Pools.arrayList.obtain();
-		vertices.clear();
 		vertices.addAll(polygon);
 
 		/*

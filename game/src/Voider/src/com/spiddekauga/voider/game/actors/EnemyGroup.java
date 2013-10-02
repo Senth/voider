@@ -107,7 +107,6 @@ public class EnemyGroup extends Resource {
 	public ArrayList<EnemyActor> clear() {
 		@SuppressWarnings("unchecked")
 		ArrayList<EnemyActor> removedEnemies = Pools.arrayList.obtain();
-		removedEnemies.clear();
 
 		for (EnemyActor enemyActor : mEnemies) {
 			enemyActor.setEnemyGroup(null);

@@ -105,7 +105,6 @@ public class ResourceBinder {
 	@SuppressWarnings("unchecked")
 	public <ResourceType> ArrayList<ResourceType> getResources(Class<ResourceType> resourceType) {
 		ArrayList<ResourceType> resources = Pools.arrayList.obtain();
-		resources.clear();
 
 		for (Map.Entry<UUID, IResource> entry : mResources.entrySet()) {
 			IResource resource = entry.getValue();

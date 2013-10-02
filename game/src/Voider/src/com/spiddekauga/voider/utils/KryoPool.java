@@ -301,7 +301,6 @@ public class KryoPool extends Pool<Kryo> {
 				@Override
 				protected Collection create (Kryo kryo, Input input, Class<Collection> type) {
 					ArrayList arrayList = Pools.arrayList.obtain();
-					arrayList.clear();
 					return arrayList;
 				}
 			};
@@ -311,7 +310,6 @@ public class KryoPool extends Pool<Kryo> {
 				@Override
 				protected Collection create (Kryo kryo, Input input, Class<Collection> type) {
 					HashSet hashSet = Pools.hashSet.obtain();
-					hashSet.clear();
 					return hashSet;
 				}
 			};

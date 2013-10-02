@@ -960,7 +960,6 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 	private ArrayList<BrushActorIntersection> getBrushActorIntersections() {
 		@SuppressWarnings("unchecked")
 		ArrayList<BrushActorIntersection> intersections = Pools.arrayList.obtain();
-		intersections.clear();
 
 		ArrayList<Vector2> actorCorners = mSelectedActor.getDef().getVisualVars().getCorners();
 		ArrayList<Vector2> brushCorners = mDrawEraseBrush.getCorners();

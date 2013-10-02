@@ -59,7 +59,6 @@ public class MainMenuGui extends Gui {
 
 		@SuppressWarnings("unchecked")
 		ArrayList<Button> buttons = Pools.arrayList.obtain();
-		buttons.clear();
 
 		// Resume
 		Button button = new TextButton("Resume", textPressStyle);

@@ -140,7 +140,6 @@ class LoadedDb {
 	ArrayList<Scene> getResourceScenes(UUID resourceId, int revision) {
 		@SuppressWarnings("unchecked")
 		ArrayList<Scene> scenes = Pools.arrayList.obtain();
-		scenes.clear();
 
 		for (Entry<Scene, Map<UUID, LoadedResource>> sceneEntry : mLoadedResources.entrySet()) {
 			LoadedResource foundLoadedResource = sceneEntry.getValue().get(resourceId);
@@ -216,7 +215,6 @@ class LoadedDb {
 	ArrayList<IResource> getAllLoadedSceneResources(Scene scene) {
 		@SuppressWarnings("unchecked")
 		ArrayList<IResource> resources = Pools.arrayList.obtain();
-		resources.clear();
 
 		Map<UUID, LoadedResource> sceneResources = mLoadedResources.get(scene);
 		if (sceneResources != null) {
@@ -241,7 +239,6 @@ class LoadedDb {
 	@SuppressWarnings("unchecked")
 	<ResourceType extends IResource> ArrayList<ResourceType> getAllLoadedSceneResourceOf(Scene scene, Class<ResourceType> type) {
 		ArrayList<ResourceType> resources = Pools.arrayList.obtain();
-		resources.clear();
 
 		Map<UUID, LoadedResource> sceneResources = mLoadedResources.get(scene);
 		if (sceneResources != null) {

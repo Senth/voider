@@ -1,10 +1,11 @@
 package com.spiddekauga.voider.utils;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
+import com.badlogic.gdx.utils.IdentityMap;
 import com.badlogic.gdx.utils.ReflectionPool;
-import com.spiddekauga.utils.Collections;
+import com.spiddekauga.voider.Config;
 
 /**
  * A pool of objects that can be reused to avoid allocation
@@ -30,24 +31,34 @@ public class Pool<T> extends ReflectionPool<T> {
 		super(type, initialCapacity);
 	}
 
-	//	@Override
-	//	public T obtain() {
-	//		T object = super.obtain();
-	//		if (object instanceof Vector2) {
-	//			return (T) new Vector2();
-	//		} else {
-	//			return object;
-	//		}
-	//	}
-
+	@SuppressWarnings("rawtypes")
 	@Override
 	public T obtain() {
 		T object = super.obtain();
-		if (object instanceof ArrayList) {
-			return (T) new ArrayList();
-		} else {
-			return object;
+
+		// Debug tests for checking duplicate frees
+		if (Config.Debug.DEBUG_TESTS) {
+			mFreeObjects.remove(object);
 		}
+
+		// Clear
+		if (object instanceof Collection<?>) {
+			((Collection) object).clear();
+		} else if (object instanceof IdentityMap<?, ?>) {
+			((IdentityMap) object).clear();
+		}
+
+		return object;
+	}
+
+	@Override
+	public void free(T object) {
+		if (Config.Debug.DEBUG_TESTS) {
+			assert !mFreeObjects.containsKey(object);
+			mFreeObjects.put(object, object);
+		}
+
+		super.free(object);
 	}
 
 	/**
@@ -85,13 +96,20 @@ public class Pool<T> extends ReflectionPool<T> {
 	 */
 	public void freeDuplicates(List<T> list) {
 		@SuppressWarnings("unchecked")
-		ArrayList<T> freedObjects = Pools.arrayList.obtain();
-		freedObjects.clear();
+		IdentityMap<T, T> freedObjects = Pools.identityMap.obtain();
+
 		for (T object : list) {
-			if (!Collections.listContains(freedObjects, object, true)) {
+			if (!freedObjects.containsKey(object)) {
 				free(object);
-				freedObjects.add(object);
+				freedObjects.put(object, object);
 			}
 		}
+
+		Pools.identityMap.free(freedObjects);
 	}
+
+
+	/** Debug tests if we're freeing the same object twice */
+	@SuppressWarnings("unchecked")
+	IdentityMap<T, T> mFreeObjects = new IdentityMap<T, T>();
 }

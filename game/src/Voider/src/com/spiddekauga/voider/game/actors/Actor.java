@@ -60,7 +60,6 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 		mDef = def;
 		mLife = def.getMaxLife();
 		mUniqueId = UUID.randomUUID();
-		mTriggerInfos.clear();
 	}
 
 	/**
@@ -682,15 +681,22 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 		Pools.arrayList.free(mTriggerInfos);
 		mTriggerInfos = null;
 
-		reset();
+		destroyBody();
+
+		if (mRotatedVertices != null) {
+			Pools.vector2.freeDuplicates(mRotatedVertices);
+			Pools.arrayList.free(mRotatedVertices);
+			//			Pools.vector2.freeDuplicates(mRotatedBorderVertices);
+			//			Pools.arrayList.free(mRotatedBorderVertices);
+			//			mRotatedBorderVertices = null;
+			mRotatedVertices = null;
+		}
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public void reset() {
-		if (mBody != null) {
-			destroyBody();
-		}
+		destroyBody();
 		mBody = null;
 		mDef = null;
 		mPosition.set(0,0);
@@ -706,8 +712,11 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 			mRotatedVertices = null;
 		}
 
-		mTriggerInfos = Pools.arrayList.obtain();
-		mTriggerInfos.clear();
+		if (mTriggerInfos != null) {
+			mTriggerInfos.clear();
+		} else {
+			mTriggerInfos = Pools.arrayList.obtain();
+		}
 	}
 
 	/**
@@ -936,7 +945,6 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 	 */
 	public Actor() {
 		mUniqueId = UUID.randomUUID();
-		mTriggerInfos.clear();
 	}
 
 	/**
@@ -1048,7 +1056,6 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 
 		@SuppressWarnings("unchecked")
 		ArrayList<Vector2> verticesCopy = Pools.arrayList.obtain();
-		verticesCopy.clear();
 
 		for (Vector2 vertex : array) {
 			int foundIndex = verticesCopy.indexOf(vertex);
@@ -1109,7 +1116,6 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 
 		// Triggers
 		copy.mTriggerInfos = Pools.arrayList.obtain();
-		copy.mTriggerInfos.clear();
 		for (TriggerInfo triggerInfo : mTriggerInfos) {
 			TriggerInfo copyTriggerInfo = triggerInfo.copy();
 			copyTriggerInfo.listener = copy;

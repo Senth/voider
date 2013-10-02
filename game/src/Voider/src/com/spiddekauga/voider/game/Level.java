@@ -420,7 +420,6 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 		if (Actor.isEditorActive()) {
 			@SuppressWarnings("unchecked")
 			ArrayList<EnemyActor> removeEnemies = Pools.arrayList.obtain();
-			removeEnemies.clear();
 
 			for (EnemyActor enemyActor : mResourceBinder.getResources(EnemyActor.class)) {
 				int cEnemiesBefore = removeEnemies.size();
@@ -457,7 +456,6 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 		if (!mGroupEnemiesSave.isEmpty()) {
 			@SuppressWarnings("unchecked")
 			ArrayList<EnemyActor> addEnemies = Pools.arrayList.obtain();
-			addEnemies.clear();
 
 			for (Entry<EnemyGroup, Integer> entry : mGroupEnemiesSave.entrySet()) {
 				EnemyGroup enemyGroup = entry.getKey();

@@ -130,7 +130,6 @@ public abstract class Trigger extends Resource implements IResourceUpdate, IReso
 	 * the listener
 	 */
 	public void clearListeners() {
-		mListeners.clear();
 	}
 
 	/**

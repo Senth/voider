@@ -65,8 +65,7 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 	 * Default constructor for Kryo
 	 */
 	protected VisualVars() {
-		mCorners.clear();
-		mFixtureDefs.clear();
+
 	}
 
 	/**
@@ -242,10 +241,6 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 		Pools.arrayList.freeAll(mCorners, mFixtureDefs);
 		mCorners = null;
 		mFixtureDefs = null;
-
-		Pools.vector2.freeDuplicates(mPolygon);
-		Pools.arrayList.free(mPolygon);
-		mPolygon = null;
 	}
 
 	/**
@@ -256,6 +251,11 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 			Pools.vector2.freeDuplicates(mVertices);
 			Pools.arrayList.free(mVertices);
 			mVertices = null;
+		}
+		if (mPolygon != null) {
+			Pools.vector2.freeDuplicates(mPolygon);
+			Pools.arrayList.free(mPolygon);
+			mPolygon = null;
 		}
 	}
 
@@ -735,6 +735,7 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 	 * Creates a circle from the visual variables
 	 * @return circle shape for fixture
 	 */
+	@SuppressWarnings("unchecked")
 	private CircleShape createCircleShape() {
 		clearVertices();
 
@@ -748,7 +749,10 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 		mVertices = mEarClippingTriangulator.computeTriangles(circleVertices);
 		Collections.reverse(circleVertices);
 
-		mPolygon = circleVertices;
+		mPolygon = Pools.arrayList.obtain();
+		for (Vector2 vertex : circleVertices) {
+			mPolygon.add(Pools.vector2.obtain().set(vertex));
+		}
 
 		return circleShape;
 	}
@@ -769,13 +773,11 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 		rectangleShape.setAsBox(halfWidth, halfHeight);
 
 		clearVertices();
-		mVertices = Pools.arrayList.obtain();
-		mVertices.clear();
 
 		// Create triangle vertices and polygon for the rectangle
 		if (rectangleShape.getVertexCount() == 4) {
+			mVertices = Pools.arrayList.obtain();
 			mPolygon = Pools.arrayList.obtain();
-			mPolygon.clear();
 
 			// First triangle
 			Vector2 vertex = Pools.vector2.obtain();
@@ -796,7 +798,7 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 			vertex = Pools.vector2.obtain();
 			rectangleShape.getVertex(3, vertex);
 			mVertices.add(vertex);
-			mPolygon.add(vertex);
+			mPolygon.add(Pools.vector2.obtain().set(vertex));
 			mVertices.add(mVertices.get(0));
 
 		} else {
@@ -856,12 +858,10 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 		// Set vertices and create border
 		clearVertices();
 		mVertices = Pools.arrayList.obtain();
-		mVertices.clear();
 		mPolygon = Pools.arrayList.obtain();
-		mPolygon.clear();
 		for (Vector2 vertex : vertices) {
 			mVertices.add(vertex);
-			mPolygon.add(vertex);
+			mPolygon.add(Pools.vector2.obtain().set(vertex));
 		}
 
 
@@ -934,7 +934,6 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 	private ArrayList<Vector2> createCopy(ArrayList<Vector2> vertices) {
 		@SuppressWarnings("unchecked")
 		ArrayList<Vector2> copy = Pools.arrayList.obtain();
-		copy.clear();
 
 		for (Vector2 vertex : vertices) {
 			copy.add(Pools.vector2.obtain().set(vertex));
@@ -985,7 +984,7 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 	@SuppressWarnings("unchecked")
 	@Tag(63) private ArrayList<Vector2> mCorners = Pools.arrayList.obtain();
 	/** Array list of the polygon figure, this contains the vertices but not
-	 * in triangles. */
+	 * in triangles. Used for when creating a border of some kind */
 	private ArrayList<Vector2> mPolygon = null;
 	/** Triangle vertices.
 	 * To easier render the shape. No optimization has been done to reduce
