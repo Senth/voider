@@ -5,14 +5,13 @@ import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonValue;
+import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Debug;
 import com.spiddekauga.voider.game.triggers.TriggerAction.Actions;
 import com.spiddekauga.voider.game.triggers.TriggerInfo;
-import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.Resource;
+import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Groups together enemies. These enemies have the same properties: Same position,
@@ -39,7 +38,6 @@ public class EnemyGroup extends Resource {
 	public void setLeaderEnemy(EnemyActor enemyActor) {
 		if (mEnemies.size() == 0) {
 			mEnemies.add(enemyActor);
-			mEnemyIds.add(enemyActor.getId());
 
 			enemyActor.setEnemyGroup(this);
 			enemyActor.setGroupLeader(true);
@@ -66,7 +64,6 @@ public class EnemyGroup extends Resource {
 		while (cEnemies < mEnemies.size()) {
 			EnemyActor removedEnemy = mEnemies.remove(cEnemies);
 			removedEnemy.setEnemyGroup(null);
-			mEnemyIds.remove(cEnemies);
 
 			if (removedEnemies != null) {
 				removedEnemies.add(removedEnemy);
@@ -77,8 +74,8 @@ public class EnemyGroup extends Resource {
 
 		// Add
 		while (cEnemies > mEnemies.size()) {
-			EnemyActor copyEnemy = mEnemies.get(0).copy();
-
+			EnemyActor copyEnemy = mEnemies.get(0).copyNewResource();
+			copyEnemy.destroyBody();
 
 			// Set activate trigger
 			if (activateTrigger != null) {
@@ -87,7 +84,6 @@ public class EnemyGroup extends Resource {
 			}
 
 			mEnemies.add(copyEnemy);
-			mEnemyIds.add(copyEnemy.getId());
 
 			if (addedEnemies != null) {
 				addedEnemies.add(copyEnemy);
@@ -105,10 +101,12 @@ public class EnemyGroup extends Resource {
 	/**
 	 * Clears all enemies. This will remove them from the group. Although the leader
 	 * isn't in the returned array it is too removed from the group.
-	 * @return all enemies that were removed from the group, except the group leader
+	 * @return all enemies that were removed from the group, except the group leader.
+	 * Don't forget to free the array.
 	 */
 	public ArrayList<EnemyActor> clear() {
-		ArrayList<EnemyActor> removedEnemies = new ArrayList<EnemyActor>();
+		@SuppressWarnings("unchecked")
+		ArrayList<EnemyActor> removedEnemies = Pools.arrayList.obtain();
 
 		for (EnemyActor enemyActor : mEnemies) {
 			enemyActor.setEnemyGroup(null);
@@ -118,29 +116,8 @@ public class EnemyGroup extends Resource {
 		removedEnemies.remove(0);
 
 		mEnemies.clear();
-		mEnemyIds.clear();
 
 		return removedEnemies;
-	}
-
-	@Override
-	public void getReferences(ArrayList<UUID> references) {
-		super.getReferences(references);
-		references.addAll(mEnemyIds);
-	}
-
-	@Override
-	public boolean bindReference(IResource resource) {
-		boolean success = super.bindReference(resource);
-
-		int foundIndex = mEnemyIds.indexOf(resource.getId());
-
-		if (foundIndex != -1) {
-			mEnemies.set(foundIndex, (EnemyActor) resource);
-			success = true;
-		}
-
-		return success;
 	}
 
 	/**
@@ -162,28 +139,6 @@ public class EnemyGroup extends Resource {
 	 */
 	public float getSpawnTriggerDelay() {
 		return mTriggerDelay;
-	}
-
-	@Override
-	public void write(Json json) {
-		super.write(json);
-
-		json.writeValue("mTriggerDelay", mTriggerDelay);
-		json.writeValue("mEnemyIds", mEnemyIds);
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public void read(Json json, JsonValue jsonValue) {
-		super.read(json, jsonValue);
-
-		mTriggerDelay = json.readValue("mTriggerDelay", float.class, jsonValue);
-		mEnemyIds = json.readValue("mEnemyIds", ArrayList.class, jsonValue);
-
-		// Fill enemies with null values
-		for (int i = 0; i < mEnemyIds.size(); ++i) {
-			mEnemies.add(null);
-		}
 	}
 
 	/**
@@ -275,9 +230,7 @@ public class EnemyGroup extends Resource {
 	}
 
 	/** All the enemies */
-	private ArrayList<EnemyActor> mEnemies = new ArrayList<EnemyActor>();
-	/** All enemy references */
-	private ArrayList<UUID> mEnemyIds = new ArrayList<UUID>();
+	@Tag(6) private ArrayList<EnemyActor> mEnemies = new ArrayList<EnemyActor>();
 	/** Trigger delay between enemies, in seconds */
-	private float mTriggerDelay = Config.Editor.Level.Enemy.DELAY_BETWEEN_DEFAULT;
+	@Tag(7) private float mTriggerDelay = Config.Editor.Level.Enemy.DELAY_BETWEEN_DEFAULT;
 }

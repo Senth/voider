@@ -3,17 +3,16 @@ package com.spiddekauga.voider.resources;
 import java.util.ArrayList;
 import java.util.UUID;
 
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonValue;
-import com.spiddekauga.utils.JsonWrapper;
-import com.spiddekauga.voider.Config;
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
+import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Base class for all resources
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public abstract class Resource implements IResource, Json.Serializable {
+public abstract class Resource implements IResource {
 	@Override
 	public UUID getId() {
 		return mUniqueId;
@@ -38,43 +37,41 @@ public abstract class Resource implements IResource, Json.Serializable {
 	}
 
 	/**
-	 * Creates a copy of this resource, but with a different unique id
+	 * Creates an exact copy of this object
 	 * @param <ResourceType> the type of this resource
 	 * @return copy of this resource
+	 * @see #copyNewResource() creates a duplicate of this resource changing at least its id.
 	 */
 	@SuppressWarnings("unchecked")
-	public <ResourceType> ResourceType copy() {
-		Class<?> derivedClass = getClass();
+	public final <ResourceType> ResourceType copy() {
+		Kryo kryo = Pools.kryo.obtain();
+		ResourceType copy = (ResourceType) kryo.copy(this);
+		Pools.kryo.free(kryo);
+		return copy;
+	}
 
-		Json json = new JsonWrapper();
-		String jsonString = json.toJson(this);
-		Resource copy = (Resource) json.fromJson(derivedClass, jsonString);
+	/**
+	 * Creates a duplicate of this object. In general this means the resource will
+	 * get a new id. Derived classes can override this behavior and add additional
+	 * changes.
+	 * @param <ResourceType> the type of this resource
+	 * @return duplicate of this object
+	 * @see #copy() creates an exact copy of this object
+	 */
+	@SuppressWarnings("unchecked")
+	public <ResourceType> ResourceType copyNewResource() {
+		Kryo kryo = Pools.kryo.obtain();
+		ResourceType copy = (ResourceType) kryo.copyShallow(this);
+		Pools.kryo.free(kryo);
 
-		copy.mUniqueId = UUID.randomUUID();
+		((Resource)copy).mUniqueId = UUID.randomUUID();
 
-		return (ResourceType) copy;
+		return copy;
 	}
 
 	@Override
 	public int hashCode() {
 		return mUniqueId.hashCode();
-	}
-
-	@Override
-	public void getReferences(ArrayList<UUID> references) {
-		if (mListenerIds != null) {
-			references.addAll(mListenerIds);
-		}
-	}
-
-	@Override
-	public boolean bindReference(IResource resource) {
-		if (resource instanceof IResourceChangeListener) {
-			addChangeListener((IResourceChangeListener) resource);
-			return true;
-		}
-
-		return false;
 	}
 
 	@Override
@@ -102,18 +99,13 @@ public abstract class Resource implements IResource, Json.Serializable {
 		if (mListeners == null) {
 			mListeners = new ArrayList<IResourceChangeListener>();
 		}
-		if (mListenerIds == null) {
-			mListenerIds = new ArrayList<UUID>();
-		}
 		mListeners.add(listener);
-		mListenerIds.add(listener.getId());
 	}
 
 	@Override
 	public void removeChangeListener(IResourceChangeListener listener) {
 		if (mListeners != null) {
 			mListeners.remove(listener);
-			mListenerIds.remove(listener.getId());
 		}
 	}
 
@@ -129,25 +121,17 @@ public abstract class Resource implements IResource, Json.Serializable {
 		}
 	}
 
+	/**
+	 * @return simple name of the class and it's id
+	 */
 	@Override
-	public void write(Json json) {
-		json.writeValue("Config.REVISION", Config.REVISION);
-		json.writeValue("mUniqueId", mUniqueId);
-		json.writeValue("mListenerIds", mListenerIds);
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public void read(Json json, JsonValue jsonData) {
-		mUniqueId = json.readValue("mUniqueId", UUID.class, jsonData);
-		mListenerIds = json.readValue("mListenerIds", ArrayList.class, jsonData);
+	public String toString() {
+		return getClass().getSimpleName() + ": " + mUniqueId;
 	}
 
 	/** Unique id of the resource */
-	protected UUID mUniqueId = null;
+	@Tag(1) protected UUID mUniqueId = null;
 	/** Listeners of the resource */
-	private ArrayList<IResourceChangeListener> mListeners = null;
-	/** Listener ids */
-	private ArrayList<UUID> mListenerIds = null;
+	@Tag(2) private ArrayList<IResourceChangeListener> mListeners = null;
 
 }

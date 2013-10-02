@@ -1,12 +1,15 @@
 package com.spiddekauga.voider.resources;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.lang.reflect.Field;
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -15,12 +18,14 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.lwjgl.LwjglFiles;
 import com.badlogic.gdx.backends.lwjgl.LwjglNativesLoader;
 import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.ObjectMap;
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.KryoPrototypeTest;
 import com.spiddekauga.utils.JsonWrapper;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.actors.BulletActorDef;
 import com.spiddekauga.voider.game.actors.PickupActorDef;
 import com.spiddekauga.voider.game.actors.PlayerActorDef;
+import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Tests the def class so that it works.
@@ -71,11 +76,11 @@ public class DefTest {
 	}
 
 	/**
-	 * Test method for {@link com.spiddekauga.voider.resources.Def#write(com.badlogic.gdx.utils.Json)}.
+	 * Test to write and read definition
 	 */
 	@Test
 	public void writeRead() {
-		Def def = new PlayerActorDef();
+		PlayerActorDef def = new PlayerActorDef();
 		Def dependency1 = new PickupActorDef();
 		Def dependency2 = new BulletActorDef();
 		def.setDescription("testComment");
@@ -90,27 +95,52 @@ public class DefTest {
 		def.addDependency(ResourceNames.PARTICLE_TEST);
 		def.addDependency(ResourceNames.TEXTURE_PLAYER);
 
-		Json json = new JsonWrapper();
-		String jsonString = json.toJson(def);
-		Def testDef = json.fromJson(PlayerActorDef.class, jsonString);
+		Kryo kryo = Pools.kryo.obtain();
+		PlayerActorDef testDef = KryoPrototypeTest.copy(def, PlayerActorDef.class, kryo);
+		testEquals(def, testDef);
+		testDef.dispose();
 
-		assertEquals("UUID equals", def.getId(), testDef.getId());
-		assertEquals("Name", def.getName(), testDef.getName());
-		assertEquals("Comment", def.getDescription(), testDef.getDescription());
-		assertEquals("Creator", def.getCreator(), testDef.getCreator());
-		assertEquals("Original Creator", def.getOriginalCreator(), testDef.getOriginalCreator());
+		// Test copy
+		testDef = def.copy();
+		testEquals(def, testDef);
+		// Test parent id
+		assertEquals(null, def.getCopyParentId());
+		testDef.dispose();
 
+		// Test copy new
+		testDef = def.copyNewResource();
+		def.setName(def.getName() + " (copy)");
+		testEquals(def, testDef);
+		// But new id
+		assertFalse(def.getId().equals(testDef.getId()));
 
-		// Def dependencies
-		assertEquals("Dep def size", def.getExternalDependencies().size, testDef.getExternalDependencies().size);
-		for (ObjectMap.Entry<UUID, ResourceItem> entry : def.getExternalDependencies().entries()) {
-			assertTrue("Dep def item", testDef.getExternalDependencies().containsKey(entry.key));
+		Pools.kryo.free(kryo);
+	}
+
+	/**
+	 * Test whether two definitions are equal
+	 * @param expected the original definition to test with
+	 * @param actual the copied or loaded definition
+	 */
+	public static void testEquals(Def expected, Def actual) {
+		assertEquals(expected.getName(), actual.getName());
+		assertEquals(expected.getOriginalCreator(), actual.getOriginalCreator());
+		assertEquals(expected.getDescription(), actual.getDescription());
+		assertEquals(expected.getDate(), actual.getDate());
+		assertEquals(expected.getRevision(), actual.getRevision());
+
+		// External dependencies
+		assertEquals(expected.getExternalDependenciesCount(), actual.getExternalDependenciesCount());
+		for (Map.Entry<UUID, AtomicInteger> dependency : expected.getExternalDependencies().entrySet()) {
+			AtomicInteger foundDependency = actual.getExternalDependencies().get(dependency.getKey());
+			assertNotNull(foundDependency);
+			assertEquals(dependency.getValue(), foundDependency);
 		}
 
-		// ResourceNames dependencies
-		assertEquals("Dep res size", def.getInternalDependencies().size(), testDef.getInternalDependencies().size());
-		for (ResourceNames item : def.getInternalDependencies()) {
-			assertTrue("Dep res item", testDef.getInternalDependencies().contains(item));
+		// Internal dependencies
+		assertEquals(expected.getInternalDependenciesCount(), actual.getInternalDependenciesCount());
+		for (ResourceNames dependency : expected.getInternalDependencies()) {
+			assertTrue(actual.getInternalDependencies().contains(dependency));
 		}
 	}
 
@@ -126,14 +156,14 @@ public class DefTest {
 		def.addDependency(dependency2);
 
 		assertNotNull("def dependencies not null", def.getExternalDependencies());
-		assertEquals("def dependencies size", def.getExternalDependencies().size, 2);
+		assertEquals("def dependencies size", def.getExternalDependencies().size(), 2);
 		assertNotNull("res dependencies not null", def.getInternalDependencies());
 		assertEquals("res dependencies", def.getInternalDependencies().size(), 0);
 
 
 		// Test to add the same dependency again, should remain the same
 		def.addDependency(dependency1);
-		assertEquals("def dependencies added twite", def.getExternalDependencies().size, 2);
+		assertEquals("def dependencies added twite", def.getExternalDependencies().size(), 2);
 	}
 
 	/**
@@ -147,7 +177,7 @@ public class DefTest {
 		def.addDependency(ResourceNames.SOUND_TEST);
 
 		assertNotNull("def dependencies null", def.getExternalDependencies());
-		assertEquals("def dependencies", def.getExternalDependencies().size, 0);
+		assertEquals("def dependencies", def.getExternalDependencies().size(), 0);
 		assertNotNull("res dependencies not null", def.getInternalDependencies());
 		assertEquals("res dependencies size", def.getInternalDependencies().size(), 3);
 
@@ -170,7 +200,7 @@ public class DefTest {
 		def.removeDependency(dependency1.getId());
 
 		assertNotNull("def dependencies not null", def.getExternalDependencies());
-		assertEquals("def dependencies size", def.getExternalDependencies().size, 1);
+		assertEquals("def dependencies size", def.getExternalDependencies().size(), 1);
 		assertNotNull("res dependencies not null", def.getInternalDependencies());
 		assertEquals("res dependencies", def.getInternalDependencies().size(), 0);
 
@@ -180,16 +210,16 @@ public class DefTest {
 		} catch (Exception e) {
 			// Does nothing
 		}
-		assertEquals("def dependencies size removed unknown", def.getExternalDependencies().size, 1);
+		assertEquals("def dependencies size removed unknown", def.getExternalDependencies().size(), 1);
 
 		// Remove the last dependency
 		def.removeDependency(dependency2.getId());
 		assertNotNull("def not null after all removed", def.getExternalDependencies());
-		assertEquals("def dependencies size all removed", def.getExternalDependencies().size, 0);
+		assertEquals("def dependencies size all removed", def.getExternalDependencies().size(), 0);
 
 		// Readd a dependency
 		def.addDependency(dependency1);
-		assertEquals("def dependencies size readded one", def.getExternalDependencies().size, 1);
+		assertEquals("def dependencies size readded one", def.getExternalDependencies().size(), 1);
 	}
 
 	/**
@@ -203,7 +233,7 @@ public class DefTest {
 		def.removeDependency(ResourceNames.PARTICLE_TEST);
 
 		assertNotNull("def dependencies null", def.getExternalDependencies());
-		assertEquals("def dependencies", def.getExternalDependencies().size, 0);
+		assertEquals("def dependencies", def.getExternalDependencies().size(), 0);
 		assertNotNull("res dependencies not null", def.getInternalDependencies());
 		assertEquals("res dependencies size", def.getInternalDependencies().size(), 1);
 

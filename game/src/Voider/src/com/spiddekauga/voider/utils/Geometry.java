@@ -270,7 +270,6 @@ public class Geometry {
 	public static ArrayList<Vector2> createCircle(float radius) {
 		@SuppressWarnings("unchecked")
 		ArrayList<Vector2> polygon = Pools.arrayList.obtain();
-		polygon.clear();
 
 		int segments = calculateCircleSegments(radius);
 
@@ -306,7 +305,6 @@ public class Geometry {
 
 		@SuppressWarnings("unchecked")
 		ArrayList<Vector2> vertices = Pools.arrayList.obtain();
-		vertices.clear();
 
 		Vector2 directionBefore = Pools.vector2.obtain();
 		Vector2 directionAfter = Pools.vector2.obtain();
@@ -381,7 +379,6 @@ public class Geometry {
 
 		@SuppressWarnings("unchecked")
 		ArrayList<Vector2> triangles = Pools.arrayList.obtain();
-		triangles.clear();
 
 		// Create triangles from the positions
 		if (Geometry.isPolygonCounterClockwise(corners)) {
@@ -417,6 +414,7 @@ public class Geometry {
 		}
 
 		Pools.arrayList.free(vertices);
+		vertices = null;
 
 		Pools.vector2.free(directionBefore);
 		Pools.vector2.free(directionAfter);
@@ -666,7 +664,6 @@ public class Geometry {
 		if (containsReferences) {
 			@SuppressWarnings("unchecked")
 			HashSet<Vector2> rotatedVertices = Pools.hashSet.obtain();
-			rotatedVertices.clear();
 			for (Vector2 vertex : vertices) {
 				if (!rotatedVertices.contains(vertex)) {
 					vertex.rotate(degrees);
@@ -691,7 +688,6 @@ public class Geometry {
 		if (containsReferences) {
 			@SuppressWarnings("unchecked")
 			HashSet<Vector2> movedVertices = Pools.hashSet.obtain();
-			movedVertices.clear();
 			for (Vector2 vertex : vertices) {
 				if (!movedVertices.contains(vertex)) {
 					vertex.add(offset);
@@ -751,7 +747,6 @@ public class Geometry {
 
 		@SuppressWarnings("unchecked")
 		Stack<Vector2> stack = Pools.stack.obtain();
-		stack.clear();
 
 		// This method will iterate through vertices and push the intersection
 		// if the intersection isn't at the top of the stack, in that case it will
@@ -793,7 +788,6 @@ public class Geometry {
 	public static ArrayList<Vector2> makePolygonNonComplex(ArrayList<Vector2> vertices, boolean testLoop) {
 		@SuppressWarnings("unchecked")
 		ArrayList<Vector2> newVertices = Pools.arrayList.obtain();
-		newVertices.clear();
 
 		int end = testLoop ? vertices.size() : vertices.size() - 1;
 
@@ -832,10 +826,10 @@ public class Geometry {
 
 		if (newVertices.isEmpty()) {
 			Pools.arrayList.free(newVertices);
-			return null;
-		} else {
-			return newVertices;
+			newVertices = null;
 		}
+
+		return newVertices;
 	}
 
 	/**
@@ -849,12 +843,10 @@ public class Geometry {
 	public static ArrayList<ArrayList<Vector2>> splitPolygonWithIntersections(ArrayList<Vector2> vertices, ArrayList<Vector2> intersections) {
 		@SuppressWarnings("unchecked")
 		ArrayList<ArrayList<Vector2>> polygons = Pools.arrayList.obtain();
-		polygons.clear();
 
 		// Add original list
 		@SuppressWarnings("unchecked")
 		ArrayList<Vector2> tempPolygon = Pools.arrayList.obtain();
-		tempPolygon.clear();
 		tempPolygon.addAll(vertices);
 		polygons.add(tempPolygon);
 
@@ -877,7 +869,6 @@ public class Geometry {
 					// Move to new polygon
 					@SuppressWarnings("unchecked")
 					ArrayList<Vector2> newPolygon = Pools.arrayList.obtain();
-					newPolygon.clear();
 
 					// Add to new polygon
 					for (int vertex = splitStartIndex; vertex < splitEndIndex; ++vertex) {

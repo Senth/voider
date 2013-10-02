@@ -509,6 +509,8 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 		case DRAW_APPEND:
 			if (!mChangedActorThisEvent) {
 				if (mSelectedActor != null) {
+					mInvoker.execute(new CActorDefFixCustomFixtures(mSelectedActor.getDef(), false));
+
 					// Add a final corner when released
 					appendCorner(true);
 
@@ -720,6 +722,7 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 					}
 
 					Pools.arrayList.free(intersections);
+					intersections = null;
 
 					try {
 						mInvoker.execute(new CResourceCornerRemoveExcessive(mSelectedActor.getDef().getVisualVars()), true);
@@ -836,7 +839,9 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 	 */
 	private void deselectActor() {
 		// Remove the last corner if we accidentally added one when double clicking
+		// Because a corner is added both on down and up we need to undo twice.
 		if (mCornerIndexLast != -1) {
+			mInvoker.undo(false);
 			mInvoker.undo(false);
 		}
 
@@ -955,7 +960,6 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 	private ArrayList<BrushActorIntersection> getBrushActorIntersections() {
 		@SuppressWarnings("unchecked")
 		ArrayList<BrushActorIntersection> intersections = Pools.arrayList.obtain();
-		intersections.clear();
 
 		ArrayList<Vector2> actorCorners = mSelectedActor.getDef().getVisualVars().getCorners();
 		ArrayList<Vector2> brushCorners = mDrawEraseBrush.getCorners();

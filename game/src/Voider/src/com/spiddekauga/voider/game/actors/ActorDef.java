@@ -4,8 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.utils.Disposable;
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonValue;
+import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.voider.game.Collectibles;
 import com.spiddekauga.voider.resources.Def;
@@ -17,7 +16,7 @@ import com.spiddekauga.voider.resources.Def;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public abstract class ActorDef extends Def implements Json.Serializable, Disposable {
+public abstract class ActorDef extends Def implements Disposable {
 	/**
 	 * Sets the visual variable to the specified type
 	 * @param actorType the actor type to which set the default values of
@@ -52,14 +51,6 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 			mVisualVars.setColor(new Color(1, 1, 1, 1));
 			break;
 		}
-	}
-
-	/**
-	 * Default constructor for JSON
-	 */
-	@SuppressWarnings("unused")
-	private ActorDef() {
-		// Does nothing
 	}
 
 	/**
@@ -171,6 +162,7 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	@Override
 	public void dispose() {
 		mVisualVars.dispose();
+		mVisualVars = null;
 	}
 
 
@@ -190,36 +182,9 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	/**
 	 * @return true if this actor shall be destroyed on collision
 	 */
-	public boolean shallDestroyOnCollide() {
+	public boolean isDestroyedOnCollide() {
 		return mDestroyOnCollide;
 	}
-
-	@Override
-	public void write(Json json) {
-		super.write(json);
-
-		// Write ActorDef's variables first
-		json.writeValue("mMaxLife", mMaxLife);
-		json.writeValue("mBodyDef", mBodyDef);
-		json.writeValue("mCollisionDamage", mCollisionDamage);
-		json.writeValue("mDestroyOnCollide", mDestroyOnCollide);
-		json.writeValue("mVisualVars", mVisualVars);
-
-	}
-
-	@Override
-	public void read(Json json, JsonValue jsonValue) {
-		super.read(json, jsonValue);
-
-
-		// Our variables
-		mMaxLife = json.readValue("mMaxLife", float.class, jsonValue);
-		mBodyDef = json.readValue("mBodyDef", BodyDef.class, jsonValue);
-		mCollisionDamage = json.readValue("mCollisionDamage", float.class, jsonValue);
-		mDestroyOnCollide = json.readValue("mDestroyOnCollide", boolean.class, jsonValue);
-		mVisualVars = json.readValue("mVisualVars", VisualVars.class, jsonValue);
-	}
-
 
 	/**
 	 * @return when this definition was changed that affects the body.
@@ -272,16 +237,18 @@ public abstract class ActorDef extends Def implements Json.Serializable, Disposa
 	protected float mBodyChangeTime = 0;
 
 	/** Maximum life of the actor, usually starting amount of life */
-	private float mMaxLife = 0;
+	@Tag(44) private float mMaxLife = 0;
 	/** The body definition of the actor */
-	private BodyDef mBodyDef = new BodyDef();
+	@Tag(45) private BodyDef mBodyDef = new BodyDef();
 
 
 	/** Collision damage (per second) */
-	private float mCollisionDamage = 0;
+	@Tag(46) private float mCollisionDamage = 0;
 	/** If this actor shall be destroy on collision */
-	private boolean mDestroyOnCollide = false;
+	@Tag(47) private boolean mDestroyOnCollide = false;
 	/** Visual variables */
-	protected VisualVars mVisualVars = null;
+	@Tag(48) protected VisualVars mVisualVars = null;
+
+	// DON'T FORGET TO ADD TO JUNIT TEST! ActorDefTest
 
 }

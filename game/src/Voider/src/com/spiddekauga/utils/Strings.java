@@ -1,5 +1,8 @@
 package com.spiddekauga.utils;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 /**
  * String utilities
  * 
@@ -26,5 +29,17 @@ public class Strings {
 	 */
 	public static <T> String padLeft(T message, int n) {
 		return String.format("%1$" + n + "s", message);
+	}
+
+	/**
+	 * Stack trace to string
+	 * @param exception the exception to get the stack trace from
+	 * @return stack trace in a string
+	 */
+	public static String stackTraceToString(Exception exception) {
+		StringWriter stringWriter = new StringWriter();
+		PrintWriter printWriter = new PrintWriter(stringWriter);
+		exception.printStackTrace(printWriter);
+		return stringWriter.toString();
 	}
 }

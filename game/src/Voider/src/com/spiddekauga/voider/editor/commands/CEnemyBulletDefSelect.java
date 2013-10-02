@@ -15,29 +15,26 @@ public class CEnemyBulletDefSelect extends Command {
 	/**
 	 * Creates a command that will select a bullet type for the specified enemy editor
 	 * @param id bullet id definition to select
-	 * @param revision bullet revision
 	 * @param enemyEditor the enemy editor to select the bullet in
 	 */
-	public CEnemyBulletDefSelect(UUID id, int revision, EnemyEditor enemyEditor) {
+	public CEnemyBulletDefSelect(UUID id, EnemyEditor enemyEditor) {
 		mEnemyEditor = enemyEditor;
 		mId = id;
-		mRevision = revision;
 		BulletActorDef selectedBullet = mEnemyEditor.getSelectedBulletDef();
 		if (selectedBullet != null) {
 			mIdPrev = selectedBullet.getId();
-			mRevisionPrev = selectedBullet.getRevision();
 		}
 	}
 
 	@Override
 	public boolean execute() {
-		boolean success = mEnemyEditor.selectBulletDef(mId, mRevision);
+		boolean success = mEnemyEditor.selectBulletDef(mId);
 		return success;
 	}
 
 	@Override
 	public boolean undo() {
-		boolean success = mEnemyEditor.selectBulletDef(mIdPrev, mRevisionPrev);
+		boolean success = mEnemyEditor.selectBulletDef(mIdPrev);
 		return success;
 	}
 
@@ -45,10 +42,6 @@ public class CEnemyBulletDefSelect extends Command {
 	private UUID mId;
 	/** Previous bullet (on undo) */
 	private UUID mIdPrev = null;
-	/** Bullet revision */
-	private int mRevision;
-	/** Previous bullet revision (on undo) */
-	private int mRevisionPrev = -1;
 	/** Enemy edito to select the bullet in */
 	private EnemyEditor mEnemyEditor;
 }

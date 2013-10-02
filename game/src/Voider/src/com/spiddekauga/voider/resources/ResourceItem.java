@@ -2,9 +2,9 @@ package com.spiddekauga.voider.resources;
 
 import java.util.UUID;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
+import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.scene.Scene;
 
@@ -37,24 +37,21 @@ public class ResourceItem implements Json.Serializable {
 	/**
 	 * Constructor that sets the resource id and type
 	 * @param resourceId id of the resource
-	 * @param resourceType class of the resource
-	 * @param revision the revision of the resourc
+	 * @param revision the revision of the resource
 	 */
-	public ResourceItem(UUID resourceId, Class<?> resourceType, int revision) {
-		this(null, resourceId, resourceType, revision);
+	public ResourceItem(UUID resourceId, int revision) {
+		this(null, resourceId, revision);
 	}
 
 	/**
 	 * Constructor that sets the resource id and type
 	 * @param scene to use for the resource
 	 * @param resourceId id of the resource
-	 * @param resourceType class of the resource
 	 * @param revision the revision of the resourc
 	 */
-	public ResourceItem(Scene scene, UUID resourceId, Class<?> resourceType, int revision) {
+	public ResourceItem(Scene scene, UUID resourceId, int revision) {
 		this.scene = scene;
 		this.id = resourceId;
-		this.type = resourceType;
 		this.revision = revision;
 	}
 
@@ -71,21 +68,18 @@ public class ResourceItem implements Json.Serializable {
 	}
 
 	/** Number of references */
-	public int count = 1;
+	@Tag(96) public int count = 1;
 	/** Scene */
-	public Scene scene = null;
+	@Tag(97) public Scene scene = null;
 	/** Unique id */
-	public UUID id = null;
-	/** Resource Type */
-	public Class<?> type = null;
+	@Tag(98) public UUID id = null;
 	/** revision of the resource */
-	public int revision = -1;
+	@Tag(101) public int revision = -1;
 
 	@Override
 	public void write(Json json) {
 		json.writeValue("Config.REVISION", Config.REVISION);
 		json.writeValue("resourceId", id.toString());
-		json.writeValue("resourceType", type.getName());
 		json.writeValue("count", count);
 		json.writeValue("revision", revision);
 	}
@@ -97,14 +91,6 @@ public class ResourceItem implements Json.Serializable {
 
 		if (jsonData.get("revision") != null) {
 			revision = json.readValue("revision", int.class, jsonData);
-		}
-
-		// resourceType
-		String className = json.readValue("resourceType", String.class, jsonData);
-		try {
-			type = Class.forName(className);
-		} catch (ClassNotFoundException e) {
-			Gdx.app.error("JsonRead", "Class not found for class: " + className);
 		}
 	}
 }

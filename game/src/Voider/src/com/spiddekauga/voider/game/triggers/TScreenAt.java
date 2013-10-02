@@ -1,7 +1,6 @@
 package com.spiddekauga.voider.game.triggers;
 
 import java.util.ArrayList;
-import java.util.UUID;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -9,15 +8,13 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.EdgeShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.utils.Disposable;
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonValue;
+import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.utils.ShapeRendererEx;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.Level;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.ActorFilterCategories;
 import com.spiddekauga.voider.game.triggers.TriggerAction.Reasons;
-import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourceBody;
 import com.spiddekauga.voider.resources.IResourcePosition;
 import com.spiddekauga.voider.scene.SceneSwitcher;
@@ -36,7 +33,6 @@ public class TScreenAt extends Trigger implements IResourceBody, IResourcePositi
 	 */
 	public TScreenAt(Level level, float xCoord) {
 		mLevel = level;
-		mLevelId = level.getId();
 		mPosition.x = xCoord;
 		mPosition.y = 0;
 	}
@@ -72,66 +68,6 @@ public class TScreenAt extends Trigger implements IResourceBody, IResourcePositi
 	@Override
 	public boolean isTriggered() {
 		return mLevel.getXCoord() >= mPosition.x;
-	}
-
-	@Override
-	public void write(Json json) {
-		super.write(json);
-
-		json.writeValue("mLevelId", mLevelId);
-		json.writeValue("mPosition.x", mPosition.x);
-	}
-
-	@Override
-	public void read(Json json, JsonValue jsonValue) {
-		super.read(json, jsonValue);
-
-		mLevelId = json.readValue("mLevelId", UUID.class, jsonValue);
-		mPosition.x = json.readValue("mPosition.x", float.class, jsonValue);
-	}
-
-	@Override
-	public void getReferences(ArrayList<UUID> references) {
-		super.getReferences(references);
-		references.add(mLevelId);
-	}
-
-	@Override
-	public boolean bindReference(IResource resource) {
-		boolean success = super.bindReference(resource);
-
-		if (resource instanceof Level) {
-			mLevel = (Level) resource;
-			success = true;
-		}
-
-		return success;
-	}
-
-	@Override
-	public boolean addBoundResource(IResource boundResource) {
-		boolean success = super.addBoundResource(boundResource);
-
-		if (boundResource instanceof Level) {
-			mLevel = (Level) boundResource;
-			mLevelId = mLevel.getId();
-			success = true;
-		}
-
-		return success;
-	}
-
-	@Override
-	public boolean removeBoundResource(IResource boundResource) {
-		boolean success = super.removeBoundResource(boundResource);
-
-		if (boundResource.getId().equals(mLevelId)) {
-			mLevel = null;
-			mLevelId = null;
-			success = true;
-		}
-
-		return success;
 	}
 
 	@Override
@@ -189,11 +125,12 @@ public class TScreenAt extends Trigger implements IResourceBody, IResourcePositi
 	@Override
 	public void dispose() {
 		Pools.vector2.free(mPosition);
+		mPosition = null;
 		destroyBody();
 	}
 
 	/**
-	 * Constructor for JSON
+	 * Constructor for Kryo
 	 */
 	protected TScreenAt() {
 		// Does nothing
@@ -240,9 +177,7 @@ public class TScreenAt extends Trigger implements IResourceBody, IResourcePositi
 	/** Body of the trigger */
 	private Body mBody = null;
 	/** Level to check for the x-coordinate */
-	private Level mLevel = null;
-	/** Level id, used for binding the level */
-	private UUID mLevelId = null;
-	/** Temporary positon, stores x-coord for getting the position */
-	private Vector2 mPosition = Pools.vector2.obtain();
+	@Tag(34) private Level mLevel = null;
+	/** Temporary position, stores x-coord for getting the position */
+	@Tag(35) private Vector2 mPosition = Pools.vector2.obtain();
 }

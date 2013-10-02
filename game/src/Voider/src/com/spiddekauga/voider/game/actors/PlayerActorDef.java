@@ -14,7 +14,6 @@ public class PlayerActorDef extends ActorDef {
 	 */
 	public PlayerActorDef() {
 		super(ActorTypes.PLAYER);
-		setName("Default");
 		setMaxLife(100f);
 		getBodyDef().type = BodyType.DynamicBody;
 		getBodyDef().fixedRotation = true;

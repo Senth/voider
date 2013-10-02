@@ -1,23 +1,20 @@
 package com.spiddekauga.voider;
 
-import com.badlogic.gdx.Application;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.esotericsoftware.minlog.Log;
 import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.voider.app.MainMenu;
 import com.spiddekauga.voider.app.SplashScreen;
 import com.spiddekauga.voider.editor.LevelEditor;
 import com.spiddekauga.voider.game.Collectibles;
-import com.spiddekauga.voider.game.Level;
-import com.spiddekauga.voider.game.LevelDef;
 import com.spiddekauga.voider.game.actors.PickupActorDef;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceChecker;
-import com.spiddekauga.voider.resources.ResourceNames;
 import com.spiddekauga.voider.resources.ResourceSaver;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 
@@ -30,13 +27,14 @@ public class VoiderGame implements ApplicationListener {
 
 	@Override
 	public void create() {
+		Gdx.app.setLogLevel(Config.Debug.LOG_VERBOSITY);
+		Log.ERROR();
+
 		// Init various classes
 		Config.init();
-		ResourceNames.init();
 		ResourceSaver.init();
 		ResourceCacheFacade.init();
 		ResourceChecker.checkAndCreateResources();
-		Gdx.app.setLogLevel(Application.LOG_DEBUG);
 
 		ShaderProgram.pedantic = false;
 
@@ -76,10 +74,6 @@ public class VoiderGame implements ApplicationListener {
 	@SuppressWarnings("unused")
 	private void testEditor() {
 		LevelEditor levelEditor = new LevelEditor();
-
-		LevelDef levelDef = new LevelDef();
-		Level level = new Level(levelDef);
-		levelEditor.setLevel(level);
 		SceneSwitcher.switchTo(levelEditor);
 	}
 

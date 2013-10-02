@@ -12,8 +12,7 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Disposable;
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonValue;
+import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.utils.ShapeRendererEx;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.voider.Config;
@@ -35,7 +34,7 @@ import com.spiddekauga.voider.utils.Pools;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class Path extends Resource implements Json.Serializable, Disposable, IResourceCorner, IResourceBody, IResourcePosition, IResourceEditorRender {
+public class Path extends Resource implements Disposable, IResourceCorner, IResourceBody, IResourcePosition, IResourceEditorRender {
 	/**
 	 * Default constructor, sets the unique id of the path
 	 */
@@ -151,6 +150,8 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 
 		Pools.vector2.free(center);
 		Pools.vector2.free(diffVector);
+		center = null;
+		diffVector = null;
 
 		float maxLength = 0;
 		if (maxLengthSq > 0) {
@@ -290,22 +291,6 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 	}
 
 	@Override
-	public void write(Json json) {
-		super.write(json);
-		json.writeValue("mCorners", mCorners);
-		json.writeValue("mPathType", mPathType);
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public void read(Json json, JsonValue jsonValue) {
-		super.read(json, jsonValue);
-		mCorners = json.readValue("mCorners", ArrayList.class, jsonValue);
-		mPathType = json.readValue("mPathType", PathTypes.class, jsonValue);
-		updateRightestCorner();
-	}
-
-	@Override
 	public void dispose() {
 		if (mBody != null) {
 			destroyBody();
@@ -313,6 +298,7 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 		}
 		destroyVertices();
 		Pools.vector2.freeAll(mCorners);
+		mCorners.clear();
 	}
 
 	/**
@@ -555,13 +541,13 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 		} else if (mCorners.size() >= 1) {
 			@SuppressWarnings("unchecked")
 			ArrayList<Vector2> corners = Pools.arrayList.obtain();
-			corners.clear();
 			corners.addAll(mCorners);
 			Vector2 tempCorner = Pools.vector2.obtain();
 			tempCorner.set(mCorners.get(0)).add(Config.Editor.Path.DEFAULT_ADD_PATH);
 			corners.add(tempCorner);
 			mVertices = Geometry.createLinePolygon(corners, Config.Editor.Level.Path.WIDTH);
 			Pools.arrayList.free(corners);
+			corners = null;
 		}
 	}
 
@@ -591,25 +577,78 @@ public class Path extends Resource implements Json.Serializable, Disposable, IRe
 		}
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ((mCorners == null) ? 0 : mCorners.hashCode());
+		result = prime * result + ((mEnemies == null) ? 0 : mEnemies.hashCode());
+		result = prime * result + ((mPathType == null) ? 0 : mPathType.hashCode());
+		result = prime * result + ((mRightestCorner == null) ? 0 : mRightestCorner.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (!super.equals(obj)) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		Path other = (Path) obj;
+		if (mCorners == null) {
+			if (other.mCorners != null) {
+				return false;
+			}
+		}
+		else if (!mCorners.equals(other.mCorners)) {
+			return false;
+		}
+		if (mEnemies == null) {
+			if (other.mEnemies != null) {
+				return false;
+			}
+		}
+		else if (!mEnemies.equals(other.mEnemies)) {
+			return false;
+		}
+		if (mPathType != other.mPathType) {
+			return false;
+		}
+		if (mRightestCorner == null) {
+			if (other.mRightestCorner != null) {
+				return false;
+			}
+		}
+		else if (!mRightestCorner.equals(other.mRightestCorner)) {
+			return false;
+		}
+		return true;
+	}
+
 	/** Path vertices for drawing in editor */
 	private ArrayList<Vector2> mVertices = null;
 	/** If this path is selected */
 	private boolean mSelected = false;
 	/** All path nodes */
-	private ArrayList<Vector2> mCorners = new ArrayList<Vector2>();
+	@Tag(17) private ArrayList<Vector2> mCorners = new ArrayList<Vector2>();
 	/** Corner bodies, for picking */
 	private ArrayList<Body> mBodyCorners = new ArrayList<Body>();
 	/** Corner furthest to the right */
 	private Vector2 mRightestCorner = null;
 	/** What type of path type the enemy uses, only applicable if movement type
 	 * is set to path */
-	private PathTypes mPathType = PathTypes.ONCE;
+	@Tag(18) private PathTypes mPathType = PathTypes.ONCE;
 	/** World the path is bound to */
 	private World mWorld = null;
 	/** Body of the path */
 	private Body mBody = null;
 	/** Enemies bound to this path */
-	private ArrayList<EnemyActor> mEnemies = new ArrayList<EnemyActor>();
+	@Tag(19) private ArrayList<EnemyActor> mEnemies = new ArrayList<EnemyActor>();
 
 	/** Minimum distance between chain corners, less than this will assert the program */
 	private final static float CHAIN_CORNER_DISTANCE_MIN = 0.005f * 0.005f;

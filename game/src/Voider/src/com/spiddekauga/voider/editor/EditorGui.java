@@ -1,6 +1,5 @@
 package com.spiddekauga.voider.editor;
 
-import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -220,7 +219,6 @@ public abstract class EditorGui extends Gui {
 			String noMessage = switching ? "Switch anyway" : "Return anymay";
 			Button yes = new TextButton(yesMessage, textStyle);
 			Button no = new TextButton(noMessage, textStyle);
-			Button cancel = new TextButton("Cancel", textStyle);
 
 			Command save = new CEditorSave(editor);
 			Command saveAndNew = new CommandSequence(save, command);
@@ -234,9 +232,7 @@ public abstract class EditorGui extends Gui {
 			msgBox.content(Messages.getUnsavedMessage(defTypeName, unsavedAction));
 			msgBox.button(yes, saveAndNew);
 			msgBox.button(no, command);
-			msgBox.button(cancel);
-			msgBox.key(Keys.BACK, null);
-			msgBox.key(Keys.ESCAPE, null);
+			msgBox.addCancelButtonAndKeys();
 			showMsgBox(msgBox);
 		} else {
 			command.execute();
@@ -250,9 +246,7 @@ public abstract class EditorGui extends Gui {
 		MsgBoxExecuter msgBox = getFreeMsgBox();
 
 		msgBox.content(mMainMenuTable);
-		msgBox.button("Return");
-		msgBox.key(Keys.BACK, null);
-		msgBox.key(Keys.ESCAPE, null);
+		msgBox.addCancelButtonAndKeys("Return");
 		showMsgBox(msgBox);
 	}
 

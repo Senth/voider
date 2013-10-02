@@ -1,11 +1,13 @@
 package com.spiddekauga.voider.resources;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.utils.ObjectMap;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.GameSave;
 import com.spiddekauga.voider.game.GameSaveDef;
@@ -86,7 +88,8 @@ public enum ResourceNames {
 	}
 
 	/**
-	 * Changes the external storage path to the TEST_STORAGE instead
+	 * Changes the external storage path to the TEST_STORAGE instead.
+	 * Needs to be called before {@link #init()}.
 	 */
 	public static void useTestPath() {
 		LEVEL_DEF_PATH = Config.File.TEST_STORAGE + "levelDefs/";
@@ -107,7 +110,7 @@ public enum ResourceNames {
 	/**
 	 * Initializes the resource names
 	 */
-	public static void init() {
+	static void init() {
 		mResourcePaths.put(Texture.class, TEXTURE_PATH);
 		mResourcePaths.put(BulletActorDef.class, ACTOR_BULLET_PATH);
 		mResourcePaths.put(EnemyActorDef.class, ACTOR_ENEMY_PATH);
@@ -128,12 +131,12 @@ public enum ResourceNames {
 	/**
 	 * @return all resource paths
 	 */
-	static ObjectMap<Class<?>, String> getResourcePaths() {
+	static Map<Class<?>, String> getResourcePaths() {
 		return mResourcePaths;
 	}
 
 	/** Map for all resource paths */
-	private static ObjectMap<Class<?>, String> mResourcePaths = new ObjectMap<Class<?>, String>();
+	private static Map<Class<?>, String> mResourcePaths = new HashMap<Class<?>, String>();
 
 	/** Directory for all texture */
 	private static final String TEXTURE_PATH = "gfx/";

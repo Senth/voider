@@ -13,11 +13,14 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Disposable;
-import com.badlogic.gdx.utils.GdxRuntimeException;
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.Pool.Poolable;
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.KryoSerializable;
+import com.esotericsoftware.kryo.io.Input;
+import com.esotericsoftware.kryo.io.Output;
+import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.utils.GameTime;
+import com.spiddekauga.utils.KryoTaggedCopyable;
 import com.spiddekauga.utils.ShapeRendererEx;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.voider.Config;
@@ -38,7 +41,6 @@ import com.spiddekauga.voider.resources.IResourceRender;
 import com.spiddekauga.voider.resources.IResourceUpdate;
 import com.spiddekauga.voider.resources.Resource;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
-import com.spiddekauga.voider.resources.UndefinedResourceTypeException;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.utils.Geometry;
 import com.spiddekauga.voider.utils.Pools;
@@ -48,7 +50,7 @@ import com.spiddekauga.voider.utils.Pools;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public abstract class Actor extends Resource implements IResourceUpdate, Json.Serializable, Disposable, Poolable, IResourceBody, IResourcePosition, ITriggerListener, IResourceEditorUpdate, IResourceRender, IResourceEditorRender {
+public abstract class Actor extends Resource implements IResourceUpdate, KryoTaggedCopyable, KryoSerializable, Disposable, Poolable, IResourceBody, IResourcePosition, ITriggerListener, IResourceEditorUpdate, IResourceRender, IResourceEditorRender {
 	/**
 	 * Sets the texture of the actor including the actor definition.
 	 * Automatically creates a body for the actor.
@@ -117,7 +119,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 				reloadBody();
 			}
 			// Do we need to reload the fixtures?
-			else if (mFixtureCreateTime <= getDef().getVisualVars().getFixtureChangeTime()) {
+			if (mFixtureCreateTime <= getDef().getVisualVars().getFixtureChangeTime()) {
 				reloadFixtures();
 				calculateRotatedVertices(true);
 			}
@@ -162,47 +164,6 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	public void removeTrigger(TriggerInfo triggerInfo) {
 		triggerInfo.trigger.removeListener(getId());
 		mTriggerInfos.remove(triggerInfo);
-	}
-
-
-	@Override
-	public void getReferences(ArrayList<UUID> references) {
-		super.getReferences(references);
-
-		for (TriggerInfo triggerInfo : mTriggerInfos) {
-			references.add(triggerInfo.triggerId);
-		}
-	}
-
-	@Override
-	public boolean bindReference(IResource resource) {
-		boolean success = super.bindReference(resource);
-
-		for (TriggerInfo triggerInfo : mTriggerInfos) {
-			if (resource.equals(triggerInfo.triggerId)) {
-				Trigger trigger = (Trigger) resource;
-				triggerInfo.trigger = trigger;
-				trigger.addListener(triggerInfo);
-				success = true;
-			}
-		}
-
-		return success;
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public <ResourceType> ResourceType copy() {
-		Actor copy = super.copy();
-
-		// Bind triggers
-		for (int i = 0; i < mTriggerInfos.size(); ++i) {
-			copy.mTriggerInfos.get(i).listener = copy;
-			copy.mTriggerInfos.get(i).trigger = mTriggerInfos.get(i).trigger;
-			mTriggerInfos.get(i).trigger.addListener(copy.mTriggerInfos.get(i));
-		}
-
-		return (ResourceType) copy;
 	}
 
 	@Override
@@ -389,6 +350,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 				shapeRenderer.polyline(SceneSwitcher.getPickingVertices(), true, cornerOffset);
 			}
 			Pools.vector2.free(cornerOffset);
+			cornerOffset = null;
 
 			shapeRenderer.pop();
 		}
@@ -471,96 +433,104 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	}
 
 	@Override
-	public void write(Json json) {
-		super.write(json);
+	public void write(Kryo kryo, Output output) {
+		output.writeInt(CLASS_REVISION, true);
 
+		// Saves active state?
+		output.writeBoolean(mEditorActive);
 		if (!mEditorActive) {
-			json.writeValue("mActive", mActive);
+			output.writeBoolean(mActive);
 		}
 
-		json.writeValue("mLife", mLife);
-		json.writeValue("mPosition", mPosition);
-		json.writeValue("mTriggerInfos", mTriggerInfos);
-
-
+		// Save def or just fetch it
 		if (savesDef()) {
-			json.writeValue("mDef", mDef);
+			kryo.writeClassAndObject(output, mDef);
 		} else {
-			json.writeValue("mDefId", mDef.getId());
-			json.writeValue("mDefRev", mDef.getRevision());
+			kryo.writeObject(output, mDef.getId());
 		}
 
-		/** @TODO Do we need to save colliding actors? */
-
-		if (mBody != null) {
-			json.writeObjectStart("mBody");
-			json.writeValue("angle", mBody.getAngle());
-			json.writeValue("angular_velocity", mBody.getAngularVelocity());
-			json.writeValue("linear_velocity", mBody.getLinearVelocity());
-			json.writeValue("awake", mBody.isAwake());
-			json.writeValue("active", mBody.isActive());
-			json.writeObjectEnd();
+		// Save body
+		if (!mEditorActive) {
+			output.writeBoolean(mBody != null);
+			if (mBody != null) {
+				output.writeFloat(mBody.getAngle());
+				output.writeFloat(mBody.getAngularVelocity());
+				kryo.writeObject(output, mBody.getLinearVelocity());
+				output.writeBoolean(mBody.isAwake());
+				output.writeBoolean(mBody.isActive());
+			}
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public void read(Json json, JsonValue jsonData) {
-		super.read(json, jsonData);
+	public void read(Kryo kryo, Input input) {
+		@SuppressWarnings("unused")
+		int classRevision = input.readInt(true);
 
-		if (jsonData.get("mActive") != null) {
-			mActive = json.readValue("mActive", boolean.class, jsonData);
+		// Load active state
+		boolean editorWasActive = input.readBoolean();
+		if (!editorWasActive) {
+			mActive = input.readBoolean();
 		}
 
-		mLife = json.readValue("mLife", float.class, jsonData);
-		mPosition = json.readValue("mPosition", Vector2.class, jsonData);
-		mTriggerInfos = json.readValue("mTriggerInfos", ArrayList.class, jsonData);
-
-		// Set trigger listener to this
-		for (TriggerInfo triggerInfo : mTriggerInfos) {
-			triggerInfo.listener = this;
-		}
-
-
-		// Definition
+		// Saves def or just fetch it
 		if (savesDef()) {
-			/** @todo when the game is publish all other resources will be
-			 * saved in the level. This means that the definition of enemies etc
-			 * should be saved as references and not save the actual definition */
-			mDef = json.readValue("mDef", StaticTerrainActorDef.class, jsonData);
-		}
-		// Get definition information to be able to load it
-		else {
-			UUID defId = json.readValue("mDefId", UUID.class, jsonData);
-			int defRev = json.readValue("mDefRev", int.class, jsonData);
-
-			// Set the actual actor definition
-			try {
-				mDef = (ActorDef) ResourceCacheFacade.get(null, defId, defRev);
-			} catch (UndefinedResourceTypeException e) {
-				Gdx.app.error("JsonRead", "Undefined Resource Type exception!");
-				throw new GdxRuntimeException(e);
+			Object object = kryo.readClassAndObject(input);
+			if (object instanceof ActorDef) {
+				mDef = (ActorDef) object;
+			} else {
+				Gdx.app.error("Actor", "Def read from kryo was not an ActorDef!");
 			}
+		} else {
+			UUID defId = kryo.readObject(input, UUID.class);
+			mDef = ResourceCacheFacade.get(null, defId);
 		}
 
+		// Read body
+		if (!editorWasActive) {
+			if (input.readBoolean()) {
+				BodyDef bodyDef = mDef.getBodyDefCopy();
 
-		// Create stub body
-		if (mActive) {
-			BodyDef bodyDef = mDef.getBodyDefCopy();
+				bodyDef.angle = input.readFloat();
+				bodyDef.angularVelocity = input.readFloat();
+				bodyDef.linearVelocity.set(kryo.readObject(input, Vector2.class));
+				bodyDef.awake = input.readBoolean();
+				bodyDef.active = input.readBoolean();
 
-			// Set body information, i.e. position etc.
-			JsonValue bodyValues = jsonData.get("mBody");
-			if (bodyValues != null) {
-				bodyDef.angle = json.readValue("angle", float.class, bodyValues);
-				bodyDef.angularVelocity = json.readValue("angular_velocity", float.class, bodyValues);
-				bodyDef.linearVelocity.set(json.readValue("linear_velocity", Vector2.class, bodyValues));
-				bodyDef.awake = json.readValue("awake", boolean.class, bodyValues);
-				bodyDef.active = json.readValue("active", boolean.class, bodyValues);
-
-				// Set position
 				bodyDef.position.set(mPosition);
 
 				createBody(bodyDef);
+			}
+		}
+	}
+
+	@Override
+	public void copy(Object fromOriginal) {
+		if (fromOriginal instanceof Actor) {
+			Actor fromActor = (Actor) fromOriginal;
+
+			// Set active state
+			if (!mEditorActive) {
+				mActive = fromActor.mActive;
+			}
+
+			// Set def
+			mDef = fromActor.mDef;
+
+			// Create body
+			if (!mEditorActive) {
+				if (fromActor.mBody != null) {
+					BodyDef bodyDef = mDef.getBodyDefCopy();
+
+					bodyDef.angle = fromActor.mBody.getAngle();
+					bodyDef.angularVelocity = fromActor.mBody.getAngularVelocity();
+					bodyDef.linearVelocity.set(fromActor.mBody.getLinearVelocity());
+					bodyDef.awake = fromActor.mBody.isAwake();
+					bodyDef.active = fromActor.mBody.isActive();
+					bodyDef.position.set(mPosition);
+
+					createBody(bodyDef);
+				}
 			}
 		}
 	}
@@ -665,6 +635,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 			}
 			mBody = mWorld.createBody(bodyDef);
 			createFixtures();
+			calculateRotatedVertices(true);
 			mBody.setUserData(this);
 
 			mFixtureCreateTime = GameTime.getTotalGlobalTimeElapsed();
@@ -707,15 +678,25 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	@Override
 	public void dispose() {
 		mActive = false;
+		Pools.arrayList.free(mTriggerInfos);
+		mTriggerInfos = null;
 
-		reset();
+		destroyBody();
+
+		if (mRotatedVertices != null) {
+			Pools.vector2.freeDuplicates(mRotatedVertices);
+			Pools.arrayList.free(mRotatedVertices);
+			//			Pools.vector2.freeDuplicates(mRotatedBorderVertices);
+			//			Pools.arrayList.free(mRotatedBorderVertices);
+			//			mRotatedBorderVertices = null;
+			mRotatedVertices = null;
+		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void reset() {
-		if (mBody != null) {
-			destroyBody();
-		}
+		destroyBody();
 		mBody = null;
 		mDef = null;
 		mPosition.set(0,0);
@@ -729,6 +710,12 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 			//			Pools.arrayList.free(mRotatedBorderVertices);
 			//			mRotatedBorderVertices = null;
 			mRotatedVertices = null;
+		}
+
+		if (mTriggerInfos != null) {
+			mTriggerInfos.clear();
+		} else {
+			mTriggerInfos = Pools.arrayList.obtain();
 		}
 	}
 
@@ -1069,7 +1056,6 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 
 		@SuppressWarnings("unchecked")
 		ArrayList<Vector2> verticesCopy = Pools.arrayList.obtain();
-		verticesCopy.clear();
 
 		for (Vector2 vertex : array) {
 			int foundIndex = verticesCopy.indexOf(vertex);
@@ -1119,15 +1105,47 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 		mCorners.add(body);
 	}
 
+	@SuppressWarnings("unchecked")
+	@Override
+	public <ResourceType> ResourceType copyNewResource() {
+		Actor copy = super.copyNewResource();
+
+		copy.mDef = mDef;
+		copy.mPosition = Pools.vector2.obtain().set(mPosition);
+		copy.mActive = false;
+
+		// Triggers
+		copy.mTriggerInfos = Pools.arrayList.obtain();
+		for (TriggerInfo triggerInfo : mTriggerInfos) {
+			TriggerInfo copyTriggerInfo = triggerInfo.copy();
+			copyTriggerInfo.listener = copy;
+			copy.mTriggerInfos.add(copyTriggerInfo);
+			copyTriggerInfo.trigger.addListener(copyTriggerInfo);
+		}
+
+		return (ResourceType) copy;
+	}
+
+	// Kryo variables
 	/** Current life */
-	private float mLife = 0;
-	/** Physical body */
-	private Body mBody = null;
+	@Tag(3) private float mLife = 0;
+	/** Body position, remember even when we don't have a body */
+	@Tag(4) private Vector2 mPosition = Pools.vector2.obtain().set(0, 0);
+	/** Trigger informations */
+	@SuppressWarnings("unchecked")
+	@Tag(5) private ArrayList<TriggerInfo> mTriggerInfos = Pools.arrayList.obtain();
+
+	// Kryo special variables
+	/** Revision of the actor */
+	protected final int CLASS_REVISION = 1;
+	/** True if the actor is active */
+	private boolean mActive = true;
 	/** The belonging definition of this actor */
 	private ActorDef mDef = null;
-	/** Body position, remember even when we don't have a body */
-	private Vector2 mPosition = Pools.vector2.obtain().set(0, 0);
-	/** Current actors we're colliding with */
+	/** Physical body */
+	private Body mBody = null;
+
+	/** Current actors we're colliding with @todo do we need to save colliding actors? */
 	private ArrayList<ActorDef> mCollidingActors = new ArrayList<ActorDef>();
 	/** World corners of the actor, only used for custom shape and in an editor */
 	private ArrayList<Body> mCorners = new ArrayList<Body>();
@@ -1143,12 +1161,8 @@ public abstract class Actor extends Resource implements IResourceUpdate, Json.Se
 	private boolean mHasBodyCorners = false;
 	/** True if the actor shall skip rotating */
 	private boolean mSkipRotate = false;
-	/** True if the actor is active */
-	private boolean mActive = true;
 	/** Activation time of the actor, local time for the scene */
 	private float mActivationTime = mActive ? 0 : -1;
-	/** Trigger informations */
-	private ArrayList<TriggerInfo> mTriggerInfos = new ArrayList<TriggerInfo>();
 	/** True if the actor is selected, only applicable in editor */
 	private boolean mSelected = false;
 	/** Old rotation */

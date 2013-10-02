@@ -13,7 +13,7 @@ import com.spiddekauga.voider.utils.ObjectCrypter;
 
 /**
  * Loads JSON objects (that has been encrypted) synchronously.
- *  * @param <StoredType> The stored type in the JSON file
+ * @param <StoredType> The stored type in the JSON file
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
@@ -40,7 +40,7 @@ public class JsonLoaderSync<StoredType> extends SynchronousAssetLoader<StoredTyp
 		byte[] encryptedJson = file.readBytes();
 		String jsonString = null;
 		try {
-			jsonString = (String) mCrypter.decrypt(encryptedJson);
+			jsonString = mCrypter.decrypt(encryptedJson, String.class);
 		} catch (Exception e) {
 			throw new ResourceCorruptException(fileName);
 		}

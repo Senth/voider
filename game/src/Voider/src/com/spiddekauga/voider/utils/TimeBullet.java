@@ -2,6 +2,7 @@ package com.spiddekauga.voider.utils;
 
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
+import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.voider.game.actors.BulletActor;
 
 /**
@@ -23,7 +24,7 @@ public class TimeBullet implements Json.Serializable {
 	}
 
 	/** The bound bullet actor to this time */
-	public BulletActor bulletActor = null;
+	@Tag(86) public BulletActor bulletActor = null;
 	/** Time bound to the bullet actor */
 	public float time = 0;
 }

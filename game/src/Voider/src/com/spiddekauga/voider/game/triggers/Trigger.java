@@ -5,8 +5,8 @@ import java.util.Iterator;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonValue;
+import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
+import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourceEditorRender;
 import com.spiddekauga.voider.resources.IResourceUpdate;
 import com.spiddekauga.voider.resources.Resource;
@@ -94,18 +94,28 @@ public abstract class Trigger extends Resource implements IResourceUpdate, IReso
 	/**
 	 * Removes a listener from the trigger
 	 * @param listenerId the listener id to remove
+	 * @return true if the resource was removed
 	 */
-	public void removeListener(UUID listenerId) {
+	public boolean removeListener(UUID listenerId) {
 		Iterator<TriggerInfo> iterator = mListeners.iterator();
+
+		boolean removed = false;
 
 		while (iterator.hasNext()) {
 			TriggerInfo triggerListenerInfo = iterator.next();
 
 			if (triggerListenerInfo.listener.getId().equals(listenerId)) {
 				iterator.remove();
-				break;
+				removed = true;
 			}
 		}
+
+		return removed;
+	}
+
+	@Override
+	public boolean removeBoundResource(IResource resource) {
+		return removeListener(resource.getId());
 	}
 
 	/**
@@ -115,28 +125,11 @@ public abstract class Trigger extends Resource implements IResourceUpdate, IReso
 		return mListeners;
 	}
 
-	@Override
-	public void write(Json json) {
-		super.write(json);
-
-		json.writeValue("mTriggered", mTriggered);
-		json.writeValue("mTriggeredTime", mTriggeredTime);
-	}
-
-	@Override
-	public void read(Json json, JsonValue jsonValue) {
-		super.read(json, jsonValue);
-
-		mTriggered = json.readValue("mTriggered", boolean.class, jsonValue);
-		mTriggeredTime = json.readValue("mTriggeredTime", float.class, jsonValue);
-	}
-
 	/**
 	 * Removes/Clears all the listeners. This will also remove the trigger from
 	 * the listener
 	 */
 	public void clearListeners() {
-		mListeners.clear();
 	}
 
 	/**
@@ -175,9 +168,9 @@ public abstract class Trigger extends Resource implements IResourceUpdate, IReso
 	/** If the trigger is currently selected */
 	private boolean mSelected = false;
 	/** If the trigger has been triggered, this is used to avoid heavy calculations */
-	private boolean mTriggered = false;
+	@Tag(26) private boolean mTriggered = false;
 	/** Triggered time */
-	private float mTriggeredTime = -1;
+	@Tag(27) private float mTriggeredTime = -1;
 	/** Listener information about the trigger */
-	private ArrayList<TriggerInfo> mListeners = new ArrayList<TriggerInfo>();
+	@Tag(28) private ArrayList<TriggerInfo> mListeners = new ArrayList<TriggerInfo>();
 }

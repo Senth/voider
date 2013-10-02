@@ -1,8 +1,7 @@
 package com.spiddekauga.voider.game.actors;
 
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonValue;
+import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.voider.utils.Pools;
 
 /**
@@ -43,6 +42,7 @@ public class BulletActor extends Actor {
 		mShotByPlayer = shotByPlayer;
 		setPosition(position);
 
+		activate();
 		createBody();
 
 		// Position and rotate the bullet to face the shooting direction
@@ -60,22 +60,6 @@ public class BulletActor extends Actor {
 	 */
 	public float getHitDamage() {
 		return mDamage;
-	}
-
-	@Override
-	public void write(Json json) {
-		super.write(json);
-
-		json.writeValue("mShotByPlayer", mShotByPlayer);
-		json.writeValue("mDamage", mDamage);
-	}
-
-	@Override
-	public void read(Json json, JsonValue jsonValue) {
-		super.read(json, jsonValue);
-
-		mShotByPlayer = json.readValue("mShotByPlayer", boolean.class, jsonValue);
-		mDamage = json.readValue("mDamage", float.class, jsonValue);
 	}
 
 	@Override
@@ -97,7 +81,7 @@ public class BulletActor extends Actor {
 	}
 
 	/** True if bullet shot by player, false if shot by enemy */
-	private boolean mShotByPlayer = false;
-	/** Hom much damage the bullet will inflict on hit */
-	private float mDamage = 0;
+	@Tag(8) private boolean mShotByPlayer = false;
+	/** How much damage the bullet will inflict on hit */
+	@Tag(9) private float mDamage = 0;
 }

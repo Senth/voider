@@ -2,9 +2,8 @@ package com.spiddekauga.voider.game;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Disposable;
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonValue;
-import com.spiddekauga.voider.Config;
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.voider.game.actors.BulletActor;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.utils.Pools;
@@ -13,7 +12,7 @@ import com.spiddekauga.voider.utils.Pools;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class Weapon implements Disposable, Json.Serializable {
+public class Weapon implements Disposable {
 	/**
 	 * Creates an invalid weapon. setWeaponDef needs to be called one can shoot with
 	 * the weapon.
@@ -28,7 +27,7 @@ public class Weapon implements Disposable, Json.Serializable {
 	 */
 	public void setWeaponDefResetCd(WeaponDef weaponDef) {
 		mDef = weaponDef;
-		mCooldown = 0;
+		calculateCooldown();
 	}
 
 	/**
@@ -37,6 +36,20 @@ public class Weapon implements Disposable, Json.Serializable {
 	 */
 	public void setWeaponDef(WeaponDef weaponDef) {
 		mDef = weaponDef;
+	}
+
+	/**
+	 * @return a copy of this object
+	 */
+	public final Weapon copy() {
+		Kryo kryo = Pools.kryo.obtain();
+		Weapon copy = kryo.copy(this);
+		Pools.kryo.free(kryo);
+
+		copy.mDef = mDef;
+		calculateCooldown();
+
+		return copy;
 	}
 
 	/**
@@ -78,17 +91,23 @@ public class Weapon implements Disposable, Json.Serializable {
 			// Add to bullet destroyer
 			SceneSwitcher.getBulletDestroyer().add(bullet);
 
-			// Cooldown
-			// Random cooldown
-			if (getDef().getCooldownMin() != getDef().getCooldownMax()) {
-				mCooldown = (float) Math.random();
-				mCooldown *= getDef().getCooldownMax() - getDef().getCooldownMin();
-				mCooldown += getDef().getCooldownMin();
-			}
-			// Else always same cooldown
-			else {
-				mCooldown = getDef().getCooldownMax();
-			}
+			calculateCooldown();
+		}
+	}
+
+	/**
+	 * Calculates the cooldown, or next shooting time
+	 */
+	private void calculateCooldown() {
+		// Random cooldown
+		if (getDef().getCooldownMin() != getDef().getCooldownMax()) {
+			mCooldown = (float) Math.random();
+			mCooldown *= getDef().getCooldownMax() - getDef().getCooldownMin();
+			mCooldown += getDef().getCooldownMin();
+		}
+		// Else always same cooldown
+		else {
+			mCooldown = getDef().getCooldownMax();
 		}
 	}
 
@@ -101,9 +120,17 @@ public class Weapon implements Disposable, Json.Serializable {
 		mPosition.set(position);
 	}
 
+	/**
+	 * @return position of the weapon
+	 */
+	public Vector2 getPosition() {
+		return mPosition;
+	}
+
 	@Override
 	public void dispose() {
 		Pools.vector2.free(mPosition);
+		mPosition = null;
 	}
 
 	/**
@@ -114,20 +141,53 @@ public class Weapon implements Disposable, Json.Serializable {
 	}
 
 	@Override
-	public void write(Json json) {
-		json.writeValue("Config.REVISION", Config.REVISION);
-		json.writeValue("mCooldown", mCooldown);
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + Float.floatToIntBits(mCooldown);
+		result = prime * result + ((mDef == null) ? 0 : mDef.hashCode());
+		result = prime * result + ((mPosition == null) ? 0 : mPosition.hashCode());
+		return result;
 	}
 
 	@Override
-	public void read(Json json, JsonValue jsonValue) {
-		mCooldown = json.readValue("mCooldown", float.class, jsonValue);
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		Weapon other = (Weapon) obj;
+		if (Float.floatToIntBits(mCooldown) != Float.floatToIntBits(other.mCooldown)) {
+			return false;
+		}
+		if (mDef == null) {
+			if (other.mDef != null) {
+				return false;
+			}
+		}
+		else if (!mDef.equals(other.mDef)) {
+			return false;
+		}
+		if (mPosition == null) {
+			if (other.mPosition != null) {
+				return false;
+			}
+		}
+		else if (!mPosition.equals(other.mPosition)) {
+			return false;
+		}
+		return true;
 	}
 
 	/** Weapon definition */
 	private WeaponDef mDef = null;
 	/** Current cooldown timer */
-	private float mCooldown = 0;
+	@Tag(89) private float mCooldown = 0;
 	/** Position of the weapon */
-	private Vector2 mPosition = Pools.vector2.obtain();
+	private Vector2 mPosition = Pools.vector2.obtain().set(0,0);
 }

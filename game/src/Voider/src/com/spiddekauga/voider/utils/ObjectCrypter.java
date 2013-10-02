@@ -47,9 +47,10 @@ public class ObjectCrypter {
 
 	/**
 	 * Encrypts an object to a byte array.
+	 * @param <EncryptType> encrypted type
 	 * @param obj the object to encrypt
 	 * @return the encrypted object in bytes
-	 * @see #decrypt(byte[])
+	 * @see #decrypt(byte[],Class)
 	 * @throws InvalidKeyException
 	 * @throws InvalidAlgorithmParameterException
 	 * @throws IOException
@@ -57,8 +58,13 @@ public class ObjectCrypter {
 	 * @throws ShortBufferException
 	 * @throws BadPaddingException
 	 */
-	public byte[] encrypt(Object obj) throws InvalidKeyException, InvalidAlgorithmParameterException, IOException, IllegalBlockSizeException, ShortBufferException, BadPaddingException {
-		byte[] input = convertToByteArray(obj);
+	public <EncryptType> byte[] encrypt(EncryptType obj) throws InvalidKeyException, InvalidAlgorithmParameterException, IOException, IllegalBlockSizeException, ShortBufferException, BadPaddingException {
+		byte[] input = null;
+		if (!(obj instanceof byte[])) {
+			input = convertToByteArray(obj);
+		} else {
+			input = (byte[]) obj;
+		}
 		mEnCipher.init(Cipher.ENCRYPT_MODE, mKey);
 
 		// Get IV for the encryption
@@ -76,7 +82,9 @@ public class ObjectCrypter {
 
 	/**
 	 * Decrypts an array of bytes into an object.
+	 * @param <DecryptedType> the type to decrypt to, must be same as encrypted!
 	 * @param encrypted the encrypted byte array
+	 * @param decryptToType decrypts the message to this type
 	 * @return The decrypted object
 	 * @see #encrypt(Object)
 	 * @throws InvalidKeyException
@@ -86,7 +94,8 @@ public class ObjectCrypter {
 	 * @throws IOException
 	 * @throws ClassNotFoundException
 	 */
-	public Object decrypt(byte[]  encrypted) throws InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, IOException, ClassNotFoundException {
+	@SuppressWarnings("unchecked")
+	public <DecryptedType> DecryptedType decrypt(byte[] encrypted, Class<DecryptedType> decryptToType) throws InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, IOException, ClassNotFoundException {
 		// Get the IV from the byte array
 		byte[] iv = new byte [IV_LENGTH];
 		System.arraycopy(encrypted, 0, iv, 0, IV_LENGTH);
@@ -97,11 +106,14 @@ public class ObjectCrypter {
 
 		mDeCipher.init(Cipher.DECRYPT_MODE, mKey, new IvParameterSpec(iv));
 
-		return convertFromByteArray(mDeCipher.doFinal(encryptedMessage));
+		byte[] decryptedMessage = mDeCipher.doFinal(encryptedMessage);
 
+		if (decryptToType == byte[].class) {
+			return (DecryptedType) decryptedMessage;
+		} else {
+			return (DecryptedType) convertFromByteArray(decryptedMessage);
+		}
 	}
-
-
 
 	/**
 	 * Converts a byte array back to the original object

@@ -1,9 +1,11 @@
 package com.spiddekauga.voider.utils;
 
-import java.util.HashSet;
+import java.util.Collection;
 import java.util.List;
 
+import com.badlogic.gdx.utils.IdentityMap;
 import com.badlogic.gdx.utils.ReflectionPool;
+import com.spiddekauga.voider.Config;
 
 /**
  * A pool of objects that can be reused to avoid allocation
@@ -22,12 +24,41 @@ public class Pool<T> extends ReflectionPool<T> {
 	}
 
 	/**
-	 * 
 	 * @param type object type
 	 * @param initialCapacity how many initial objects will be created
 	 */
 	public Pool(Class<T> type, int initialCapacity) {
 		super(type, initialCapacity);
+	}
+
+	@SuppressWarnings("rawtypes")
+	@Override
+	public T obtain() {
+		T object = super.obtain();
+
+		// Debug tests for checking duplicate frees
+		if (Config.Debug.DEBUG_TESTS) {
+			mFreeObjects.remove(object);
+		}
+
+		// Clear
+		if (object instanceof Collection<?>) {
+			((Collection) object).clear();
+		} else if (object instanceof IdentityMap<?, ?>) {
+			((IdentityMap) object).clear();
+		}
+
+		return object;
+	}
+
+	@Override
+	public void free(T object) {
+		if (Config.Debug.DEBUG_TESTS) {
+			assert !mFreeObjects.containsKey(object);
+			mFreeObjects.put(object, object);
+		}
+
+		super.free(object);
 	}
 
 	/**
@@ -36,11 +67,6 @@ public class Pool<T> extends ReflectionPool<T> {
 	 */
 	public Pool(Class<T> type) {
 		super(type);
-	}
-
-	@Override
-	public T obtain() {
-		return newObject();
 	}
 
 	/**
@@ -69,12 +95,20 @@ public class Pool<T> extends ReflectionPool<T> {
 	 * @param list list with vectors to free, can contain duplicates.
 	 */
 	public void freeDuplicates(List<T> list) {
-		HashSet<T> freedObjects = new HashSet<T>();
+		@SuppressWarnings("unchecked")
+		IdentityMap<T, T> freedObjects = Pools.identityMap.obtain();
+
 		for (T object : list) {
-			if (!freedObjects.contains(object)) {
+			if (!freedObjects.containsKey(object)) {
 				free(object);
-				freedObjects.add(object);
+				freedObjects.put(object, object);
 			}
 		}
+
+		Pools.identityMap.free(freedObjects);
 	}
+
+
+	/** Debug tests if we're freeing the same object twice */
+	IdentityMap<T, T> mFreeObjects = new IdentityMap<T, T>();
 }

@@ -2,15 +2,15 @@ package com.spiddekauga.voider.resources;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonValue;
-import com.badlogic.gdx.utils.ObjectMap;
-import com.spiddekauga.utils.JsonWrapper;
+import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.voider.User;
 
 /**
@@ -19,8 +19,7 @@ import com.spiddekauga.voider.User;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-@SuppressWarnings("unchecked")
-public abstract class Def extends Resource implements Json.Serializable, IResourceDependency, IResourceRevision {
+public abstract class Def extends Resource implements IResourceDependency, IResourceRevision {
 	/**
 	 * Default constructor for the resource.
 	 */
@@ -28,29 +27,22 @@ public abstract class Def extends Resource implements Json.Serializable, IResour
 		mUniqueId = UUID.randomUUID();
 	}
 
-	/**
-	 * Creates a copy of this definition, automatically resets revision
-	 * creator, unique id.
-	 * @return copy of this definition.
-	 */
 	@Override
-	public <ResourceType> ResourceType copy() {
-		Class<?> derivedClass = getClass();
+	public <ResourceType> ResourceType copyNewResource() {
+		ResourceType copy = super.copyNewResource();
 
-		Json json = new JsonWrapper();
-		String defString = json.toJson(this);
-		Def copy = (Def) json.fromJson(derivedClass, defString);
+		Def defCopy = (Def)copy;
+		defCopy.mCopyParentId = mUniqueId;
+		defCopy.mCreator = User.getNickName();
+		/** @todo create numbering of copy name if already a copy */
+		defCopy.mName = defCopy.mName + " (copy)";
 
-		copy.mCreator = User.getNickName();
-		copy.mName = copy.mName + " (copy)";
-		copy.mUniqueId = UUID.randomUUID();
-
-		return (ResourceType) copy;
+		return copy;
 	}
 
 	@Override
 	public int getExternalDependenciesCount() {
-		return mExternalDependencies.size;
+		return mExternalDependencies.size();
 	}
 
 	@Override
@@ -102,75 +94,14 @@ public abstract class Def extends Resource implements Json.Serializable, IResour
 		mDescription = description;
 	}
 
-	/**
-	 * Writes this class to a json object.
-	 * @param json the object which we write all this classe's variables to.
-	 */
-	@Override
-	public void write(Json json) {
-		super.write(json);
-
-		json.writeValue("mName", mName);
-		json.writeValue("mDate", mDate);
-		json.writeValue("mDescription", mDescription);
-		json.writeValue("mCreator", mCreator);
-		json.writeValue("mRevision", mRevision);
-		json.writeValue("mOriginalCreator", mOriginalCreator);
-
-		if (mInternalDependencies.isEmpty()) {
-			json.writeValue("mInternalDependencies", (Set<?>) null);
-		} else {
-			json.writeValue("mInternalDependencies", mInternalDependencies);
-		}
-
-		if (mExternalDependencies.size == 0) {
-			json.writeValue("mExternalDependencies", (Object) null);
-		} else {
-			json.writeValue("mExternalDependencies", mExternalDependencies);
-		}
-	}
-
-	/**
-	 * Reads this class as a json object.
-	 * @param json the json to read the value from
-	 * @param jsonData this is where all the json variables have been loaded
-	 */
-	@Override
-	public void read(Json json, JsonValue jsonData) {
-		super.read(json, jsonData);
-
-		mName = json.readValue("mName", String.class, jsonData);
-		mDate = json.readValue("mDate", Date.class, jsonData);
-		mCreator = json.readValue("mCreator", String.class, jsonData);
-		mOriginalCreator = json.readValue("mOriginalCreator", String.class, jsonData);
-		mRevision = json.readValue("mRevision", int.class, jsonData);
-		mDescription = json.readValue("mDescription", String.class, jsonData);
-
-		HashSet<ResourceNames> internalMap = json.readValue("mInternalDependencies", HashSet.class, jsonData);
-		if (internalMap != null) {
-			mInternalDependencies.addAll(internalMap);
-		}
-
-		ObjectMap<UUID, ResourceItem> externalDependencies = json.readValue("mExternalDependencies", ObjectMap.class, jsonData);
-		if (externalDependencies != null) {
-			mExternalDependencies = externalDependencies;
-		}
-	}
-
 	@Override
 	public void addDependency(IResource dependency) {
-		ResourceItem oldDefItem = mExternalDependencies.get(dependency.getId());
+		AtomicInteger cResources = mExternalDependencies.get(dependency.getId());
 
-		if (oldDefItem != null) {
-			oldDefItem.count++;
+		if (cResources != null) {
+			cResources.incrementAndGet();
 		} else {
-			int revision = -1;
-			if (dependency instanceof IResourceRevision) {
-				revision = ((IResourceRevision) dependency).getRevision();
-			}
-
-			ResourceItem newDepItem = new ResourceItem(dependency.getId(), dependency.getClass(), revision);
-			mExternalDependencies.put(dependency.getId(), newDepItem);
+			mExternalDependencies.put(dependency.getId(), new AtomicInteger(1));
 		}
 	}
 
@@ -183,10 +114,10 @@ public abstract class Def extends Resource implements Json.Serializable, IResour
 	public void removeDependency(UUID dependency) {
 		// Decrement the value, remove if only one was left...
 
-		ResourceItem oldDefItem = mExternalDependencies.get(dependency);
-		if (oldDefItem != null) {
-			oldDefItem.count--;
-			if (oldDefItem.count == 0) {
+		AtomicInteger cResources = mExternalDependencies.get(dependency);
+		if (cResources != null) {
+			cResources.decrementAndGet();
+			if (cResources.get() == 0) {
 				mExternalDependencies.remove(dependency);
 			}
 		} else {
@@ -199,21 +130,21 @@ public abstract class Def extends Resource implements Json.Serializable, IResour
 		mInternalDependencies.remove(dependency);
 	}
 
-	@Override
-	public void updateDependencyRevision(UUID dependency, int revision) {
-		ResourceItem depItem = mExternalDependencies.get(dependency);
-		if (depItem != null) {
-			depItem.revision = revision;
-		} else {
-			Gdx.app.error("Def", "No dependency found to update the revision of");
-		}
-	}
-
 	/**
 	 * Update the date to the current date
+	 * @see #setDate(Date)
 	 */
 	public void updateDate() {
 		mDate = new Date();
+	}
+
+	/**
+	 * Sets the date
+	 * @param date new date of definition
+	 * @see #updateDate()
+	 */
+	public void setDate(Date date) {
+		mDate = date;
 	}
 
 	/**
@@ -248,7 +179,7 @@ public abstract class Def extends Resource implements Json.Serializable, IResour
 	}
 
 	@Override
-	public ObjectMap<UUID, ResourceItem> getExternalDependencies() {
+	public Map<UUID, AtomicInteger> getExternalDependencies() {
 		return mExternalDependencies;
 	}
 
@@ -257,20 +188,33 @@ public abstract class Def extends Resource implements Json.Serializable, IResour
 		return mInternalDependencies;
 	}
 
+	/**
+	 * @return if this object is a copy it will return the parent id which it was
+	 * copied from, null this is the original.
+	 */
+	public UUID getCopyParentId() {
+		return mCopyParentId;
+	}
+
 	/** Dependencies for the resource */
-	private ObjectMap<UUID, ResourceItem> mExternalDependencies = new ObjectMap<UUID, ResourceItem>();
+	@Tag(43) private Map<UUID, AtomicInteger> mExternalDependencies = new HashMap<UUID, AtomicInteger>();
 	/** Internal dependencies, such as textures, sound, particle effects */
-	private Set<ResourceNames> mInternalDependencies = new HashSet<ResourceNames>();
+	@Tag(42) private Set<ResourceNames> mInternalDependencies = new HashSet<ResourceNames>();
 	/** Name of the definition */
-	private String mName = "(Unnamed)";
+	@Tag(36) private String mName = "(Unnamed)";
 	/** Original creator name */
-	private String mOriginalCreator = User.getNickName();
+	@Tag(41) private String mOriginalCreator = User.getNickName();
 	/** Creator name */
-	private String mCreator = User.getNickName();
+	@Tag(39) private String mCreator = User.getNickName();
 	/** Comment of the definition */
-	private String mDescription = "";
+	@Tag(38) private String mDescription = "";
 	/** Saved date for the definition */
-	private Date mDate = null;
+	@Tag(37) private Date mDate = null;
 	/** The revision of the definition, this increases after each save */
-	private int mRevision = 0;
+	@Tag(40) private int mRevision = 0;
+	/** When copied, this is the id of the resource we copied */
+	@Tag(87) private UUID mCopyParentId = null;
+
+
+	// Don't forget to add to DefTest!
 }

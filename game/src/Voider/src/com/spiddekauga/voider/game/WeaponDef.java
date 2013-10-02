@@ -1,7 +1,11 @@
 package com.spiddekauga.voider.game;
 
+import java.util.UUID;
+
+import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.voider.Config.Editor;
 import com.spiddekauga.voider.game.actors.BulletActorDef;
+import com.spiddekauga.voider.resources.ResourceCacheFacade;
 
 /**
  * Holds all the necessary information about a weapon
@@ -79,23 +83,77 @@ public class WeaponDef {
 	 */
 	public void setBulletActorDef(BulletActorDef bulletActorDef) {
 		mBulletActorDef = bulletActorDef;
+		mBulletActorDefId = bulletActorDef.getId();
 	}
 
 	/**
 	 * @return the bullet actor definition, i.e. the look of the bullets.
 	 */
 	public BulletActorDef getBulletActorDef() {
+		if (mBulletActorDef == null && mBulletActorDefId != null) {
+			mBulletActorDef = ResourceCacheFacade.get(null, mBulletActorDefId);
+		}
+
 		return mBulletActorDef;
 	}
 
-	/** Type and visuals of the bullet. @todo remove default bullet actor def*/
-	private BulletActorDef mBulletActorDef;
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((mBulletActorDef == null) ? 0 : mBulletActorDef.hashCode());
+		result = prime * result + Float.floatToIntBits(mBulletSpeed);
+		result = prime * result + Float.floatToIntBits(mCooldownMax);
+		result = prime * result + Float.floatToIntBits(mCooldownMin);
+		result = prime * result + Float.floatToIntBits(mDamage);
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		WeaponDef other = (WeaponDef) obj;
+		if (mBulletActorDef == null) {
+			if (other.mBulletActorDef != null) {
+				return false;
+			}
+		}
+		else if (!mBulletActorDef.equals(other.mBulletActorDef)) {
+			return false;
+		}
+		if (Float.floatToIntBits(mBulletSpeed) != Float.floatToIntBits(other.mBulletSpeed)) {
+			return false;
+		}
+		if (Float.floatToIntBits(mCooldownMax) != Float.floatToIntBits(other.mCooldownMax)) {
+			return false;
+		}
+		if (Float.floatToIntBits(mCooldownMin) != Float.floatToIntBits(other.mCooldownMin)) {
+			return false;
+		}
+		if (Float.floatToIntBits(mDamage) != Float.floatToIntBits(other.mDamage)) {
+			return false;
+		}
+		return true;
+	}
+
+	/** Type and visuals of the bullet */
+	private BulletActorDef mBulletActorDef = null;
+	/** Id of the bullet actor */
+	@Tag(104) private UUID mBulletActorDefId = null;
 	/** Bullet speed */
-	private float mBulletSpeed = Editor.Weapon.BULLET_SPEED_DEFAULT;
+	@Tag(92) private float mBulletSpeed = Editor.Weapon.BULLET_SPEED_DEFAULT;
 	/** Damage when bullet hits */
-	private float mDamage = Editor.Weapon.DAMAGE_DEFAULT;
+	@Tag(93) private float mDamage = Editor.Weapon.DAMAGE_DEFAULT;
 	/** Minimum weapon cooldown */
-	private float mCooldownMin = Editor.Weapon.COOLDOWN_MIN_DEFAULT;
-	/** Maximum weapon coolown */
-	private float mCooldownMax = Editor.Weapon.COOLDOWN_MAX_DEFAULT;
+	@Tag(94) private float mCooldownMin = Editor.Weapon.COOLDOWN_MIN_DEFAULT;
+	/** Maximum weapon cooldown */
+	@Tag(95) private float mCooldownMax = Editor.Weapon.COOLDOWN_MAX_DEFAULT;
 }

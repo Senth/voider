@@ -6,6 +6,7 @@ import java.util.Arrays;
 
 import javax.crypto.spec.SecretKeySpec;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.JsonWriter.OutputType;
@@ -125,13 +126,25 @@ public class Config {
 	 * Debug options
 	 */
 	public static class Debug {
-		/** If loading/unloading debug messages should be turned on/off */
-		public static final boolean LOAD_UNLOAD_MESSAGES = true;
-		/** If loading/unloading including number of times a resource has been loaded into a scene */
-		public static final boolean LOAD_UNLOAD_MESSAGES_EVERY_TIME = true;
+		/**
+		 * Control over debug messages
+		 */
+		public static class Messages {
+			/** If loading/unloading debug messages should be turned on/off */
+			public static final boolean LOAD_UNLOAD = true;
+			/** If loading/unloading including number of times a resource has been loaded into a scene */
+			public static final boolean LOAD_UNLOAD_EVERY_TIME = true;
+			/** If loading/unloading dependencies should be displayed */
+			public static final boolean LOAD_UNLOAD_DEPENDENCIES = true;
+		}
+
 		/** If debugging tests shall be activate. This causes extra runtime, but checks
 		 * so that none of the checks are broken. */
-		public final static boolean DEBUG_TESTS = true;
+		public static boolean DEBUG_TESTS = true;
+		/** Skip loading text */
+		public static boolean SKIP_LOADING_TIME = true;
+		/** Logging verbosity */
+		public static int LOG_VERBOSITY = Application.LOG_DEBUG;
 	}
 
 	/**
@@ -484,6 +497,8 @@ public class Config {
 		public final static String TEST_STORAGE = "Voider-test/";
 		/** Revision number length */
 		public final static int REVISION_LENGTH = 10;
+		/** Name of the latest copy in revision directories */
+		public final static String REVISION_LATEST_NAME = "LATEST";
 	}
 
 	/**
@@ -528,9 +543,13 @@ public class Config {
 		/** Minimum area of a polygon shape */
 		public final static float POLYGON_AREA_MIN = EPSILON * 1.1f;
 		/** Default width of the graphics */
-		public final static float WIDTH = 800;
+		public final static float WIDTH_DEFAULT = 800;
 		/** Default height of the graphics */
-		public final static float HEIGHT = 480;
+		public final static float HEIGHT_DEFAULT = 480;
+		/** Starting width */
+		public final static int WIDTH_START = 800;
+		/** Starting height */
+		public final static int HEIGHT_START = 480;
 		/** World scaling factor */
 		public final static float WORLD_SCALE = 0.1f;
 		/** How much bigger of the screen is shown in height from the regular scale. E.g. 3 will show the same amount of
@@ -607,10 +626,10 @@ public class Config {
 	public static class Level {
 		/** How much offset from the first resource inside the level
 		 * the beginning of the level should be placed */
-		public final static float START_COORD_OFFSET = Graphics.WIDTH * Graphics.WORLD_SCALE * 0.25f;
+		public final static float START_COORD_OFFSET = Graphics.WIDTH_DEFAULT * Graphics.WORLD_SCALE * 0.25f;
 		/** How much offset from the last resource inside the level the
 		 * x-coordinate should appear */
-		public final static float END_COORD_OFFSET = Graphics.WIDTH * Graphics.WORLD_SCALE * 1.25f;
+		public final static float END_COORD_OFFSET = Graphics.WIDTH_DEFAULT * Graphics.WORLD_SCALE * 1.25f;
 	}
 
 	/**

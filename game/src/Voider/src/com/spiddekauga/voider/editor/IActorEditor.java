@@ -174,5 +174,5 @@ public interface IActorEditor extends IEditor {
 	/**
 	 * @return true if this enemy shall be destroyed on collision
 	 */
-	boolean shallDestroyOnCollide();
+	boolean isDestroyedOnCollide();
 }

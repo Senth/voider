@@ -1,14 +1,12 @@
 package com.spiddekauga.voider.resources;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonValue;
-import com.badlogic.gdx.utils.ObjectMap;
+import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.utils.Invoker;
-import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.editor.commands.CResourceBoundRemove;
 import com.spiddekauga.voider.game.Level;
 import com.spiddekauga.voider.scene.SceneSwitcher;
@@ -20,7 +18,7 @@ import com.spiddekauga.voider.utils.Pools;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class ResourceBinder implements Json.Serializable {
+public class ResourceBinder {
 
 	/**
 	 * Adds a resource to add and keep track of (and load its resources)
@@ -33,9 +31,13 @@ public class ResourceBinder implements Json.Serializable {
 	/**
 	 * Removes the specified resource
 	 * @param resourceId the resource to remove
+	 * @param addRemoveBoundResourceToInvoker if the removed bound resources should be added
+	 * to the invoker. If the removed resource should be undone via the undo() command
+	 * this variable should be true, otherwise the resource won't be bound to the previously
+	 * bound resources.
 	 * @return resource that was removed
 	 */
-	public IResource removeResource(UUID resourceId) {
+	public IResource removeResource(UUID resourceId, boolean addRemoveBoundResourceToInvoker) {
 		IResource removedResource = mResources.remove(resourceId);
 
 		// Skip removing bound resource for level
@@ -45,18 +47,12 @@ public class ResourceBinder implements Json.Serializable {
 			// Unbind/Remove the removed resource from those
 			if (removedResource != null) {
 				Invoker invoker = SceneSwitcher.getInvoker();
-				for (ObjectMap.Entry<UUID, IResource> entry : mResources.entries()) {
-					IResource resource = entry.value;
+				for (Map.Entry<UUID, IResource> entry : mResources.entrySet()) {
+					IResource resource = entry.getValue();
 
-					if (isResourceBoundIn(resource, resourceId)) {
-						if (invoker != null) {
+					if (resource.removeBoundResource(removedResource)) {
+						if (invoker != null && addRemoveBoundResourceToInvoker) {
 							invoker.execute(new CResourceBoundRemove(resource, removedResource), true);
-						} else {
-							boolean success = resource.removeBoundResource(removedResource);
-
-							if (!success) {
-								Gdx.app.error("ResourceBinder", "Failed to remove bound resource: " + removedResource.toString() + ", from: " + resource.toString());
-							}
 						}
 					}
 				}
@@ -64,6 +60,37 @@ public class ResourceBinder implements Json.Serializable {
 		}
 
 		return removedResource;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((mResources == null) ? 0 : mResources.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		ResourceBinder other = (ResourceBinder) obj;
+		if (mResources == null) {
+			if (other.mResources != null) {
+				return false;
+			}
+		}
+		else if (!mResources.equals(other.mResources)) {
+			return false;
+		}
+		return true;
 	}
 
 	/**
@@ -78,10 +105,9 @@ public class ResourceBinder implements Json.Serializable {
 	@SuppressWarnings("unchecked")
 	public <ResourceType> ArrayList<ResourceType> getResources(Class<ResourceType> resourceType) {
 		ArrayList<ResourceType> resources = Pools.arrayList.obtain();
-		resources.clear();
 
-		for (ObjectMap.Entry<UUID, IResource> entry : mResources.entries()) {
-			IResource resource = entry.value;
+		for (Map.Entry<UUID, IResource> entry : mResources.entrySet()) {
+			IResource resource = entry.getValue();
 
 			if (resourceType.isInstance(resource)) {
 				resources.add((ResourceType) resource);
@@ -91,108 +117,6 @@ public class ResourceBinder implements Json.Serializable {
 		return resources;
 	}
 
-	/**
-	 * Checks for all bound resources that uses  the specified parameter resource.
-	 * @param usesResource resource to check for in all other resources
-	 * @param foundResources list with all resources that uses
-	 */
-	public void usesResource(IResource usesResource, ArrayList<IResource> foundResources) {
-		for (ObjectMap.Entry<UUID, IResource> entry : mResources.entries()) {
-			IResource resource = entry.value;
-
-			if (isResourceBoundIn(resource, usesResource.getId())) {
-				foundResources.add(resource);
-			}
-		}
-	}
-
-	@Override
-	public void write(Json json) {
-		json.writeValue("Config.REVISION", Config.REVISION);
-		json.writeValue("mResources", mResources);
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public void read(Json json, JsonValue jsonValue) {
-		mResources = json.readValue("mResources", ObjectMap.class, jsonValue);
-	}
-
-	/**
-	 * Binds all the resources
-	 */
-	public void bindResources() {
-		for (ObjectMap.Entry<UUID, IResource> entry : mResources.entries()) {
-			IResource resource = entry.value;
-
-			mDependencies.clear();
-			resource.getReferences(mDependencies);
-			for (UUID dependencyId : mDependencies) {
-				IResource foundDependency = mResources.get(dependencyId);
-
-				if (foundDependency != null) {
-					boolean success = resource.bindReference(foundDependency);
-
-					if (!success) {
-						Gdx.app.error("ResourceBinder", "Failed to bind this reference: " + foundDependency.toString() + " to: " + resource.toString());
-					}
-				} else {
-					Gdx.app.error("ResourceBinder", "Could not find resource for " + resource.toString() + ", dependency: " + dependencyId);
-				}
-			}
-		}
-	}
-
-	/**
-	 * Replaces the specified resource with another one. This will update all
-	 * resources that uses the old resource to use the new resource instead.
-	 * @param oldId old resource id to be replaced
-	 * @param newResource the new resource that replaces the old resource
-	 */
-	public void replaceResource(UUID oldId, IResource newResource) {
-		// Remove and add resource
-		IResource removedResource = mResources.remove(oldId);
-		mResources.put(newResource.getId(), newResource);
-
-		// Find dependencies of the old, and replace them to use the new one
-		if (removedResource != null) {
-			for (ObjectMap.Entry<UUID, IResource> entry : mResources.entries()) {
-				IResource resource = entry.value;
-
-				if (isResourceBoundIn(resource, oldId)) {
-					boolean removedSuccess = resource.removeBoundResource(removedResource);
-
-					if (removedSuccess) {
-						boolean addedSuccess = resource.addBoundResource(newResource);
-
-						if (!addedSuccess) {
-							Gdx.app.error("ResourceBinder", "Failed to replace resource, could not add the resource " + newResource.toString());
-						}
-					} else {
-						Gdx.app.error("ResourceBinder", "Failed to replace resource, could not remove bound resource " + newResource.toString());
-					}
-				}
-			}
-		} else {
-			Gdx.app.error("ResourceBinder", "Failed to replace resource, did not find resource to replace");
-		}
-	}
-
-	/**
-	 * Checks if a resource is bound for the selected resource
-	 * @param insideThis the resource to check if boundResourceId is in
-	 * @param boundResourceId the resource to check if resourceToCheckIn uses.
-	 * @return true if resourceToCheckIn uses boundResourceId
-	 */
-	private boolean isResourceBoundIn(IResource insideThis, UUID boundResourceId) {
-		mDependencies.clear();
-		insideThis.getReferences(mDependencies);
-
-		return mDependencies.contains(boundResourceId);
-	}
-
 	/** All the resources */
-	private ObjectMap<UUID, IResource> mResources = new ObjectMap<UUID, IResource>();
-	/** Temporary array for getting dependencies */
-	private static ArrayList<UUID> mDependencies = new ArrayList<UUID>();
+	@Tag(102) private Map<UUID, IResource> mResources = new HashMap<UUID, IResource>();
 }

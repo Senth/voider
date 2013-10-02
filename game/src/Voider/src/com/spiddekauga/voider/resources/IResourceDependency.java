@@ -1,9 +1,9 @@
 package com.spiddekauga.voider.resources;
 
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-
-import com.badlogic.gdx.utils.ObjectMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * This resource has dependencies
@@ -48,16 +48,9 @@ public interface IResourceDependency extends IResource {
 	public void removeDependency(ResourceNames dependency);
 
 	/**
-	 * Updates a revision of an external dependency
-	 * @param dependency id of the dependency to update the revision of
-	 * @param revision new revision of the dependency
-	 */
-	public void updateDependencyRevision(UUID dependency, int revision);
-
-	/**
 	 * @return all external dependencies
 	 */
-	ObjectMap<UUID, ResourceItem> getExternalDependencies();
+	Map<UUID, AtomicInteger> getExternalDependencies();
 
 	/**
 	 * @return all internal dependencies

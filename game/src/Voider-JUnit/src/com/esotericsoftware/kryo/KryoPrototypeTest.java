@@ -5,10 +5,16 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.UUID;
 
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -17,18 +23,16 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.ChainShape;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.EdgeShape;
-import com.badlogic.gdx.physics.box2d.Filter;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.Shape;
-import com.badlogic.gdx.utils.ObjectMap;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 import com.esotericsoftware.kryo.serializers.CompatibleFieldSerializer;
-import com.esotericsoftware.kryo.serializers.FieldSerializer;
 import com.esotericsoftware.kryo.serializers.FieldSerializer.Optional;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
+import com.spiddekauga.voider.resources.ResourceNames;
 import com.spiddekauga.voider.utils.Pools;
 
 /**
@@ -42,8 +46,7 @@ public class KryoPrototypeTest {
 	public static void beforeClass() {
 		LwjglNativesLoader.load();
 
-		RegisterClasses.createSerializers(mKryo);
-		RegisterClasses.registerAll(mKryo);
+		mKryo = Pools.kryo.obtain();
 
 
 		// Register testing classes
@@ -61,247 +64,15 @@ public class KryoPrototypeTest {
 		mKryo.register(CompatOptionalFieldClass3.class, new CompatibleFieldSerializer<CompatOptionalFieldClass3>(mKryo, CompatOptionalFieldClass3.class));
 		mKryo.register(TaggedChangeFieldTypeInt.class, new TaggedFieldSerializer<TaggedChangeFieldTypeInt>(mKryo, TaggedChangeFieldTypeInt.class));
 		mKryo.register(TaggedChangeFieldTypeString.class, new TaggedFieldSerializer<TaggedChangeFieldTypeString>(mKryo, TaggedChangeFieldTypeString.class));
+		mKryo.register(SavesValue.class, new BaseTaggedSerializer(mKryo, SavesValue.class));
+		mKryo.register(NoSave.class, new BaseTaggedSerializer(mKryo, NoSave.class));
+		mKryo.register(ClassWithFinal1.class, new TaggedFieldSerializer<ClassWithFinal1>(mKryo, ClassWithFinal1.class));
+		mKryo.register(ClassWithFinal2.class, new TaggedFieldSerializer<ClassWithFinal2>(mKryo, ClassWithFinal2.class));
 	}
 
-	/**
-	 * Contains all classes that should be registered.
-	 * Adding new classes shall only be done at the end of the enumeration. If a class isn't
-	 * used any longer, don't remove it but set it as null instead.
-	 */
-	private enum RegisterClasses {
-		OBJECT_ARRAY(Object[].class),
-		OBJECT_MAP(ObjectMap.class),
-		FLOAT_ARRAY(float[].class),
-		FIXTURE_DEF(FixtureDef.class),
-		FILTER(Filter.class),
-		CIRCLE_SHAPE(CircleShape.class, new CircleShapeSerializer()),
-		POLYGON_SHAPE(PolygonShape.class, new PolygonShapeSerializer()),
-		EDGE_SHAPE(EdgeShape.class, new EdgeShapeSerializer()),
-		CHAIN_SHAPE(ChainShape.class, new ChainShapeSerializer()),
-		UUID_TYPE(UUID.class),
-		VECTOR_2(Vector2.class),
-		VECTOR_2_ARRAY(Vector2[].class),
-
-		;
-
-		/**
-		 * Constructor which takes the type to register with Kryo using {@link #registerAll(Kryo)}
-		 * @param type the type to register, if null it won't register it. Setting to null is useful
-		 * when the class isn't used anymore (doesn't exist) but we still need to keep the register
-		 * order.
-		 */
-		private RegisterClasses(Class<?> type) {
-			this(type, null);
-		}
-
-		/**
-		 * Constructor which takes the type to register with Kryo using {@link #registerAll(Kryo)}
-		 * @param type the type to register, if null it won't register it. Setting to null is useful
-		 * when the class isn't used anymore (doesn't exist) but we still need to keep the register
-		 * order.
-		 * @param serializer the serializer to use for the specified type, if null the default
-		 * serializer will be used instead.
-		 */
-		private RegisterClasses(Class<?> type, Serializer<?> serializer) {
-			mType = type;
-			mSerializer = serializer;
-		}
-
-		/**
-		 * Some classes needs a serializer that requires Kryo in the constructor. These serializers
-		 * are created with this method instead.
-		 * @param kryo creates the serializers for this Kryo instance.
-		 */
-		public static void createSerializers(Kryo kryo) {
-			// UUID
-			UUID_TYPE.mSerializer = new FieldSerializer<UUID>(mKryo, UUID.class) {
-				@Override
-				public UUID create(Kryo kryo, Input input, Class<UUID> type) {
-					return UUID.randomUUID();
-				}
-			};
-
-			// Vector2
-			VECTOR_2.mSerializer = new FieldSerializer<Vector2>(mKryo, Vector2.class) {
-				@Override
-				public Vector2 create(Kryo kryo, Input input, Class<Vector2> type) {
-					return Pools.vector2.obtain();
-				}
-			};
-		}
-
-		/**
-		 * Registers all classes with serializers.
-		 * @param kryo registers the serializers for this Kryo instance.
-		 */
-		public static void registerAll(Kryo kryo) {
-			for (RegisterClasses registerClass : RegisterClasses.values()) {
-				if (registerClass.mType != null) {
-					if (registerClass.mSerializer == null) {
-						kryo.register(registerClass.mType, registerClass.ordinal()+OFFSET);
-					} else {
-						kryo.register(registerClass.mType, registerClass.mSerializer, registerClass.ordinal()+OFFSET);
-					}
-				}
-			}
-		}
-
-		/** Offset for register id, as there exists some default registered types */
-		private static int OFFSET = 50;
-		/** Class type to register, if null it is not registered */
-		private Class<?> mType;
-		/** Serializer to use, if null it uses the default serializer */
-		private Serializer<?> mSerializer;
-	}
-
-	/**
-	 * Serializes box2d circle shapes
-	 * 
-	 * @author Matteus Magnusson <senth.wallace@gmail.com>
-	 */
-	private static class CircleShapeSerializer extends Serializer<CircleShape> {
-		@Override
-		public void write(Kryo kryo, Output output, CircleShape object) {
-			kryo.writeObject(output, object.getPosition());
-			output.writeFloat(object.getRadius());
-		}
-
-		@Override
-		public CircleShape read(Kryo kryo, Input input, Class<CircleShape> type) {
-			CircleShape circleShape = new CircleShape();
-			circleShape.setPosition(kryo.readObject(input, Vector2.class));
-			circleShape.setRadius(input.readFloat());
-			return circleShape;
-		}
-	}
-
-	/**
-	 * Serializes box2d polygon shapes
-	 * 
-	 * @author Matteus Magnusson <senth.wallace@gmail.com>
-	 */
-	private static class PolygonShapeSerializer extends Serializer<PolygonShape> {
-		@Override
-		public void write(Kryo kryo, Output output, PolygonShape object) {
-			Vector2[] vertices = new Vector2[object.getVertexCount()];
-			for (int i = 0; i < vertices.length; i++) {
-				vertices[i] = Pools.vector2.obtain();
-				object.getVertex(i, vertices[i]);
-			}
-			kryo.writeObject(output, vertices);
-
-			Pools.vector2.freeAll(vertices);
-		}
-
-		@Override
-		public PolygonShape read(Kryo kryo, Input input, Class<PolygonShape> type) {
-			PolygonShape polygonShape = new PolygonShape();
-
-			Vector2[] vertices = kryo.readObject(input, Vector2[].class);
-			if (vertices.length > 0) {
-				polygonShape.set(vertices);
-			}
-
-			Pools.vector2.freeAll(vertices);
-
-			return polygonShape;
-		}
-	}
-
-	/**
-	 * Serializes box2d edge shapes
-	 * 
-	 * @author Matteus Magnusson <senth.wallace@gmail.com>
-	 */
-	private static class EdgeShapeSerializer extends Serializer<EdgeShape>  {
-		@Override
-		public void write(Kryo kryo, Output output, EdgeShape object) {
-			Vector2 tempVector = Pools.vector2.obtain();
-
-			kryo.setReferences(false);
-			object.getVertex1(tempVector);
-			kryo.writeObject(output, tempVector);
-			object.getVertex2(tempVector);
-			kryo.writeObject(output, tempVector);
-			kryo.setReferences(true);
-
-			Pools.vector2.free(tempVector);
-		}
-
-		@Override
-		public EdgeShape read(Kryo kryo, Input input, Class<EdgeShape> type) {
-			EdgeShape edgeShape = new EdgeShape();
-
-			kryo.setReferences(false);
-			Vector2 vertex1 = kryo.readObject(input, Vector2.class);
-			Vector2 vertex2 = kryo.readObject(input, Vector2.class);
-			kryo.setReferences(true);
-
-			edgeShape.set(vertex1, vertex2);
-
-			Pools.vector2.freeAll(vertex1, vertex2);
-
-			return edgeShape;
-		}
-	}
-
-	/**
-	 * Serializes box2d chain shapes
-	 * 
-	 * 
-	 * @author Matteus Magnusson <senth.wallace@gmail.com>
-	 */
-	private static class ChainShapeSerializer extends Serializer<ChainShape> {
-		@Override
-		public void write(Kryo kryo, Output output, ChainShape object) {
-			// Write if the shape contains vertices or not
-			int cVertices = object.getVertexCount();
-			output.writeBoolean(cVertices > 0);
-
-			if (cVertices > 0) {
-				Vector2 firstVertex = Pools.vector2.obtain();
-				Vector2 lastVertex = Pools.vector2.obtain();
-				object.getVertex(0, firstVertex);
-				object.getVertex(cVertices - 1, lastVertex);
-
-				// Is the chain a loop?
-				if (firstVertex.equals(lastVertex)) {
-					cVertices--;
-					output.writeBoolean(true);
-				} else {
-					output.writeBoolean(false);
-				}
-
-				// Write vertices
-				Vector2[] vertices = new Vector2[cVertices];
-				for (int i = 0; i < vertices.length; i++) {
-					vertices[i] = Pools.vector2.obtain();
-					object.getVertex(i, vertices[i]);
-				}
-				kryo.writeObject(output, vertices);
-
-				Pools.vector2.freeAll(vertices);
-			}
-		}
-
-		@Override
-		public ChainShape read(Kryo kryo, Input input, Class<ChainShape> type) {
-			ChainShape chainShape = new ChainShape();
-
-			boolean hasVertices = input.readBoolean();
-			if (hasVertices) {
-				boolean isLoop = input.readBoolean();
-
-				Vector2[] vertices = kryo.readObject(input, Vector2[].class);
-				if (isLoop) {
-					chainShape.createLoop(vertices);
-				} else {
-					chainShape.createChain(vertices);
-				}
-			}
-
-			return chainShape;
-		}
+	@AfterClass
+	public static void afterClass() {
+		Pools.kryo.free(mKryo);
 	}
 
 	@Test
@@ -590,10 +361,9 @@ public class KryoPrototypeTest {
 		 * @param kryo
 		 * @param type
 		 */
-		public TaggedChangeFieldSerializer(
-				Kryo kryo, Class type) {
+		@SuppressWarnings("rawtypes")
+		public TaggedChangeFieldSerializer(Kryo kryo, Class type) {
 			super(kryo, type);
-			// TODO Auto-generated constructor stub
 		}
 
 		@Override
@@ -607,12 +377,166 @@ public class KryoPrototypeTest {
 	}
 
 	@Test
+	public void testTaggedWithCustom() {
+		// Save
+		SavesValue savesValue = new SavesValue();
+		savesValue.id = 10;
+		savesValue.justAFloat = 11;
+		savesValue.value = "12";
+
+		SavesValue readSavesValue = copy(savesValue, SavesValue.class);
+		assertEquals(10, readSavesValue.id);
+		assertEquals(11, readSavesValue.justAFloat, 0);
+		assertEquals("12", savesValue.value);
+
+		// No Save
+		NoSave noSave = new NoSave();
+		noSave.id = 20;
+		noSave.justADouble = 21;
+		noSave.value = "22";
+
+		NoSave readNoSave = copy(noSave, NoSave.class);
+		assertEquals(20, readNoSave.id);
+		assertEquals(21, readNoSave.justADouble, 0);
+		assertEquals("", readNoSave.value);
+	}
+
+	private static abstract class Base implements KryoSerializable {
+		@Tag(1) int id = 0;
+		String value = "";
+
+		boolean savesValue() {
+			return false;
+		}
+
+		@Override
+		public void write(Kryo kryo, Output output) {
+			if (savesValue()) {
+				output.writeString(value);
+			}
+		}
+
+		@Override
+		public void read(Kryo kryo, Input input) {
+			if (savesValue()) {
+				value = input.readString();
+			}
+		}
+	}
+
+	private static class SavesValue extends Base {
+		@Tag(50) float justAFloat = 1.0f;
+
+		@Override
+		boolean savesValue() {
+			return true;
+		}
+	}
+
+	private static class NoSave extends Base {
+		@Tag(50) double justADouble = 2.0f;
+	}
+
+	private static class BaseTaggedSerializer extends TaggedFieldSerializer<Base> {
+		public BaseTaggedSerializer(Kryo kryo, Class<? extends Base> type) {
+			super(kryo, type);
+		}
+
+		@Override
+		public void write(Kryo kryo, Output output, Base object) {
+			super.write(kryo, output, object);
+			object.write(kryo, output);
+		}
+
+		@Override
+		public Base read(Kryo kryo, Input input, Class<Base> type) {
+			Base base = super.read(kryo, input, type);
+			base.read(kryo, input);
+			return base;
+		}
+	}
+
+	@Test
+	public void testFinal() {
+		ClassWithFinal1 final1 = new ClassWithFinal1();
+
+		ClassWithFinal2 readFinal2 = copy(final1, ClassWithFinal2.class);
+
+		// Changing final does not work!
+		assertEquals(10, readFinal2.VERSION);
+	}
+
+	private static class ClassWithFinal1 {
+		@Tag(1) final int VERSION = 1;
+	}
+
+	private static class ClassWithFinal2 {
+		@Tag(1) final int VERSION = 10;
+	}
+
+	@Test
 	public void testUUID() {
 		UUID writeUuid = UUID.randomUUID();
 
 		UUID readUuuid = copy(writeUuid, UUID.class);
 
 		assertEquals("uuid", writeUuid, readUuuid);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testHashSet() {
+		HashSet<Integer> intSet = Pools.hashSet.obtain();
+		intSet.clear();
+		intSet.add(1);
+		intSet.add(15);
+		intSet.add(10);
+
+		HashSet<Integer> readIntSet = copy(intSet, HashSet.class);
+		assertEquals(3, readIntSet.size());
+		assertTrue(readIntSet.contains(1));
+		assertTrue(readIntSet.contains(10));
+		assertTrue(readIntSet.contains(15));
+
+		Pools.hashSet.freeAll(readIntSet);
+
+		// Same again
+		readIntSet = copy(intSet, HashSet.class);
+		assertEquals(3, readIntSet.size());
+		assertTrue(readIntSet.contains(1));
+		assertTrue(readIntSet.contains(10));
+		assertTrue(readIntSet.contains(15));
+
+		Pools.hashSet.freeAll(intSet, readIntSet);
+
+
+		// Test Resource Names
+		HashSet<ResourceNames> resourceSet = Pools.hashSet.obtain();
+		resourceSet.clear();
+		resourceSet.add(ResourceNames.UI_EDITOR_BUTTONS);
+		resourceSet.add(ResourceNames.UI_GENERAL);
+
+		HashSet<ResourceNames> readReasourceSet = copy(resourceSet, HashSet.class);
+		assertEquals(2, readReasourceSet.size());
+		assertTrue(readReasourceSet.contains(ResourceNames.UI_EDITOR_BUTTONS));
+		assertTrue(readReasourceSet.contains(ResourceNames.UI_GENERAL));
+	}
+
+	@Test
+	public void testArrayList() {
+		@SuppressWarnings("unchecked")
+		ArrayList<Integer> intList = Pools.arrayList.obtain();
+		intList.clear();
+		intList.add(1);
+		intList.add(3);
+		intList.add(2);
+
+		@SuppressWarnings("unchecked")
+		ArrayList<Integer> readIntList = copy(intList, ArrayList.class);
+		assertEquals(3, readIntList.size());
+		assertEquals((Integer) 1, readIntList.get(0));
+		assertEquals((Integer) 3, readIntList.get(1));
+		assertEquals((Integer) 2, readIntList.get(2));
 	}
 
 	@Test
@@ -824,28 +748,32 @@ public class KryoPrototypeTest {
 	}
 
 	@Test
-	public void testObjectMap() {
-		ObjectMap<Integer, String> objectMap = new ObjectMap<Integer, String>();
+	public void testMap() {
+		Map<Integer, String> objectMap = new HashMap<Integer, String>();
 
 		objectMap.put(1, "One");
 		objectMap.put(11, "Eleven");
 		objectMap.put(5, "Five");
 
 		@SuppressWarnings("unchecked")
-		ObjectMap<Integer, String> readObjectMap = copy(objectMap, ObjectMap.class);
-		assertEquals("size", 3, readObjectMap.size);
-		assertEquals("[1]", "One", readObjectMap.get(1));
-		assertEquals("[11]", "Eleven", readObjectMap.get(11));
-		assertEquals("[5]", "Five", readObjectMap.get(5));
+		Map<Integer, String> readMap = copy(objectMap, HashMap.class);
+		assertEquals("size", 3, readMap.size());
+		assertEquals("[1]", "One", readMap.get(1));
+		assertEquals("[11]", "Eleven", readMap.get(11));
+		assertEquals("[5]", "Five", readMap.get(5));
 	}
 
-	private <CopyType,ReturnType> ReturnType copy(CopyType toCopy, Class<ReturnType> type) {
+	private static <CopyType,ReturnType> ReturnType copy(CopyType toCopy, Class<ReturnType> type) {
+		return copy(toCopy, type, mKryo);
+	}
+
+	public static <CopyType,ReturnType> ReturnType copy(CopyType toCopy, Class<ReturnType> type, Kryo kryo) {
 		ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
 		Output output = new Output(byteOut);
-		mKryo.writeObject(output, toCopy);
+		kryo.writeObject(output, toCopy);
 		output.close();
 		Input input = new Input(byteOut.toByteArray());
-		ReturnType readObject = mKryo.readObject(input, type);
+		ReturnType readObject = kryo.readObject(input, type);
 		input.close();
 		return readObject;
 	}

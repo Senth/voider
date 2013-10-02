@@ -1,12 +1,12 @@
 package com.spiddekauga.voider.game.actors;
 
-import java.util.ArrayList;
-import java.util.UUID;
-
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonValue;
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.io.Input;
+import com.esotericsoftware.kryo.io.Output;
+import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.utils.Maths;
+import com.spiddekauga.utils.ShapeRendererEx;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.Level;
 import com.spiddekauga.voider.game.Path;
@@ -39,8 +39,9 @@ public class EnemyActor extends Actor {
 	@Override
 	public void dispose() {
 		super.dispose();
-		Pools.vector2.free(mTargetDirection);
-		Pools.vector2.free(mRandomMoveDirection);
+		Pools.vector2.freeAll(mTargetDirection, mRandomMoveDirection);
+		mTargetDirection = null;
+		mRandomMoveDirection = null;
 	}
 
 	@Override
@@ -63,7 +64,8 @@ public class EnemyActor extends Actor {
 				case PATH:
 					if (mPath != null) {
 						updatePathMovement(deltaTime);
-						if (!mEditorActive) {
+					} else if (!mEditorActive){
+						if (TriggerInfo.getTriggerInfoByAction(this, Actions.ACTOR_DEACTIVATE) == null) {
 							checkPathDeactivate();
 						}
 					}
@@ -75,7 +77,9 @@ public class EnemyActor extends Actor {
 
 				case STATIONARY:
 					if (!mEditorActive) {
-						checkStationaryDeactivate();
+						if (TriggerInfo.getTriggerInfoByAction(this, Actions.ACTOR_DEACTIVATE) == null) {
+							checkStationaryDeactivate();
+						}
 					}
 					break;
 				}
@@ -86,6 +90,18 @@ public class EnemyActor extends Actor {
 				updateWeapon(deltaTime);
 			}
 
+		}
+	}
+
+	@Override
+	public void render(ShapeRendererEx shapeRenderer) {
+		// Don't render non-leaders when in editor
+		if (mEditorActive) {
+			if (mGroup == null || mGroupLeader) {
+				super.render(shapeRenderer);
+			}
+		} else {
+			super.render(shapeRenderer);
 		}
 	}
 
@@ -102,11 +118,7 @@ public class EnemyActor extends Actor {
 		mPath = path;
 
 		if (path != null) {
-
-			mPathId = path.getId();
 			mPath.addEnemy(this);
-		} else {
-			mPathId = null;
 		}
 	}
 
@@ -226,85 +238,136 @@ public class EnemyActor extends Actor {
 	}
 
 	@Override
-	public void write(Json json) {
-		super.write(json);
+	public void write(Kryo kryo, Output output) {
+		super.write(kryo, output);
 
 		EnemyActorDef enemyDef = getDef(EnemyActorDef.class);
 
+		// Weapon
 		if (enemyDef.hasWeapon()) {
-			json.writeValue("mWeapon", mWeapon);
-			json.writeValue("mShootAngle", mShootAngle);
+			kryo.writeObject(output, mWeapon);
+			output.writeFloat(mShootAngle);
 		}
 
-		json.writeValue("mGroupId", mGroupId);
-		if (mGroupId != null) {
-			json.writeValue("mGroupLeader", mGroupLeader);
+		// Group
+		if (mGroup != null) {
+			output.writeBoolean(mGroupLeader);
 		}
 
+		// Movement
 		if (enemyDef.getMovementType() == MovementTypes.AI) {
 			if (enemyDef.isMovingRandomly()) {
-				json.writeValue("mRandomMoveNext", mRandomMoveNext);
-				json.writeValue("mRandomMoveDirection", mRandomMoveDirection);
+				output.writeFloat(mRandomMoveNext, 100, true);
+				kryo.writeObject(output, mRandomMoveDirection);
 			}
 		} else if (enemyDef.getMovementType() == MovementTypes.PATH) {
-			json.writeValue("mPathId", getPathId());
+			kryo.writeObjectOrNull(output, mPath, Path.class);
 
 			if (mPath != null) {
-				json.writeValue("mPathIndexNext", mPathIndexNext);
+				output.writeInt(mPathIndexNext, false);
 
 				switch (mPath.getPathType()) {
 				case ONCE:
-					json.writeValue("mPathOnceReachedEnd", mPathOnceReachedEnd);
+					output.writeBoolean(mPathOnceReachedEnd);
 					break;
 
 				case BACK_AND_FORTH:
-					json.writeValue("mPathForward", mPathForward);
+					output.writeBoolean(mPathForward);
 					break;
 
 				case LOOP:
 					// Does nothing
 					break;
 				}
-
 			}
 		}
 	}
 
 	@Override
-	public void read(Json json, JsonValue jsonData) {
-		super.read(json, jsonData);
-
-		mGroupId = json.readValue("mGroupId", UUID.class, jsonData);
-		if (mGroupId != null) {
-			mGroupLeader = json.readValue("mGroupLeader", boolean.class, jsonData);
-		}
+	public void read(Kryo kryo, Input input) {
+		super.read(kryo, input);
 
 		EnemyActorDef enemyDef = getDef(EnemyActorDef.class);
+		setDef(enemyDef);
 
+		// Weapon
 		if (enemyDef.hasWeapon()) {
-			mWeapon = json.readValue("mWeapon", Weapon.class, jsonData);
+			mWeapon = kryo.readObject(input, Weapon.class);
 			mWeapon.setWeaponDef(enemyDef.getWeaponDef());
-			mShootAngle = json.readValue("mShootAngle", float.class, jsonData);
+			mShootAngle = input.readFloat();
 		}
 
+		// Group
+		if (mGroup != null) {
+			mGroupLeader = input.readBoolean();
+		}
+
+		// Movement
 		if (enemyDef.getMovementType() == MovementTypes.AI) {
 			if (enemyDef.isMovingRandomly()) {
-				mRandomMoveNext = json.readValue("mRandomMoveNext", int.class, jsonData);
-				mRandomMoveDirection = json.readValue("mRandomMoveDirection", Vector2.class, jsonData);
+				mRandomMoveNext = input.readFloat(100, true);
+				Pools.vector2.free(mRandomMoveDirection);
+				mRandomMoveDirection = kryo.readObject(input, Vector2.class);
+			}
+		} else if (enemyDef.getMovementType() == MovementTypes.PATH) {
+			mPath = kryo.readObjectOrNull(input, Path.class);
+
+			if (mPath != null) {
+				mPathIndexNext = input.readInt(false);
+
+				switch (mPath.getPathType()) {
+				case ONCE:
+					mPathOnceReachedEnd = input.readBoolean();
+					break;
+
+				case BACK_AND_FORTH:
+					mPathForward = input.readBoolean();
+					break;
+
+				case LOOP:
+					// Does nothing
+					break;
+				}
 			}
 		}
-		else if (enemyDef.getMovementType() == MovementTypes.PATH) {
-			mPathId = json.readValue("mPathId", UUID.class, jsonData);
+	}
 
-			if (jsonData.getChild("mPathIndexNext") != null) {
-				mPathIndexNext = json.readValue("mPathIndexNext", int.class, jsonData);
-			}
-			if (jsonData.getChild("mPathOnceReachedEnd") != null) {
-				mPathOnceReachedEnd = json.readValue("mPathOnceReachedEnd", boolean.class, jsonData);
-			}
-			if (jsonData.getChild("mPathForward") != null) {
-				mPathForward = json.readValue("mPathForward", boolean.class, jsonData);
-			}
+	@Override
+	public <ResourceType> ResourceType copyNewResource() {
+		ResourceType copy = super.copyNewResource();
+
+		EnemyActor enemyCopy = (EnemyActor)copy;
+		//		enemyCopy.mPath = mPath;
+		//		enemyCopy.mGroup = mGroup;
+
+		// Never make a copy a group leader?
+		enemyCopy.mGroupLeader = false;
+
+		enemyCopy.mWeapon = mWeapon.copy();
+		enemyCopy.mRandomMoveDirection = Pools.vector2.obtain().set(mRandomMoveDirection);
+		enemyCopy.mTargetDirection = Pools.vector2.obtain().set(mTargetDirection);
+
+		return copy;
+	}
+
+	@Override
+	public void copy(Object fromOriginal) {
+		super.copy(fromOriginal);
+
+		EnemyActor fromEnemy = (EnemyActor)fromOriginal;
+
+		mGroupLeader = fromEnemy.mGroupLeader;
+		mWeapon = fromEnemy.mWeapon.copy();
+		mShootAngle = fromEnemy.mShootAngle;
+
+		mRandomMoveNext = fromEnemy.mRandomMoveNext;
+		mRandomMoveDirection.set(fromEnemy.mRandomMoveDirection);
+
+		if (fromEnemy.mPath != null) {
+			mPath = fromEnemy.mPath;
+			mPathIndexNext = fromEnemy.mPathIndexNext;
+			mPathOnceReachedEnd = fromEnemy.mPathOnceReachedEnd;
+			mPathForward = fromEnemy.mPathForward;
 		}
 	}
 
@@ -323,29 +386,10 @@ public class EnemyActor extends Actor {
 	}
 
 	/**
-	 * @return path id used for the enemy actor, null if none is used
-	 */
-	public UUID getPathId() {
-		if (mPath != null) {
-			return mPath.getId();
-		}
-		else {
-			return mPathId;
-		}
-	}
-
-	/**
 	 * @return the enemy group
 	 */
 	public EnemyGroup getEnemyGroup() {
 		return mGroup;
-	}
-
-	/**
-	 * @return the enemy group id
-	 */
-	public UUID getEnemyGroupId() {
-		return mGroupId;
 	}
 
 	/**
@@ -363,31 +407,6 @@ public class EnemyActor extends Actor {
 		return mGroupLeader;
 	}
 
-	@Override
-	public void getReferences(ArrayList<UUID> references) {
-		super.getReferences(references);
-		if (mPathId != null) {
-			references.add(mPathId);
-		}
-		if (mGroupId != null) {
-			references.add(mGroupId);
-		}
-	}
-
-	@Override
-	public boolean bindReference(IResource resource) {
-		boolean success = super.bindReference(resource);
-
-		if (resource.equals(mPathId)) {
-			setPath((Path) resource);
-			success = true;
-		} else if (resource.equals(mGroupId)) {
-			mGroup = (EnemyGroup) resource;
-			success = true;
-		}
-
-		return success;
-	}
 
 	@Override
 	public boolean addBoundResource(IResource boundResource) {
@@ -416,21 +435,6 @@ public class EnemyActor extends Actor {
 		return success;
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public <ResourceType> ResourceType copy() {
-		EnemyActor copy = super.copy();
-
-		// Set variables that aren't copied by default
-		copy.mPath = mPath;
-		copy.mGroup = mGroup;
-
-		// Never make copy a group leader
-		copy.mGroupLeader = false;
-
-		return (ResourceType) copy;
-	}
-
 	/**
 	 * @return enemy filter category
 	 */
@@ -456,11 +460,8 @@ public class EnemyActor extends Actor {
 	void setEnemyGroup(EnemyGroup enemyGroup) {
 		mGroup = enemyGroup;
 
-		if (mGroup != null) {
-			mGroupId = mGroup.getId();
-		} else {
+		if (mGroup == null) {
 			mGroupLeader = false;
-			mGroupId = null;
 		}
 	}
 
@@ -523,6 +524,7 @@ public class EnemyActor extends Actor {
 				Vector2 bulletVelocity = Geometry.interceptTarget(getPosition(), mWeapon.getDef().getBulletSpeed() /*+ levelSpeed*/, mPlayerActor.getPosition(), playerVelocity);
 				shootDirection.set(bulletVelocity);
 				Pools.vector2.free(bulletVelocity);
+				bulletVelocity = null;
 
 				// Cannot intercept, target player
 				if (shootDirection.x != shootDirection.x || shootDirection.y != shootDirection.y) {
@@ -927,10 +929,8 @@ public class EnemyActor extends Actor {
 	private float mShootAngle = 0;
 
 	// Group
-	/** Group id, used for binding the group after loading the enemy */
-	private UUID mGroupId = null;
 	/** Group of the enemy, null if the enemy doesn't belong to a group */
-	private EnemyGroup mGroup = null;
+	@Tag(75) private EnemyGroup mGroup = null;
 	/** If this enemy is the first in the group */
 	private boolean mGroupLeader = false;
 
@@ -945,7 +945,6 @@ public class EnemyActor extends Actor {
 	/** Path we're currently following */
 	private Path mPath = null;
 	/** Path id, used when saving/loading enemy actor as it does not save the path */
-	private UUID mPathId = null;
 	/** Index of path we're heading to */
 	private int mPathIndexNext = -1;
 	/** If the enemy is moving in the path direction */

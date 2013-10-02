@@ -27,7 +27,6 @@ public class CResourceCornerRemoveExcessive extends Command {
 	 */
 	public CResourceCornerRemoveExcessive(IResourceCorner resource) {
 		mResource = resource;
-		mRemovedCorners.clear();
 	}
 
 	@Override

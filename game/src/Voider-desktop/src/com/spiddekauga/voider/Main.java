@@ -8,8 +8,8 @@ public class Main {
 		LwjglApplicationConfiguration cfg = new LwjglApplicationConfiguration();
 		cfg.title = "Voider";
 		cfg.useGL20 = true;
-		cfg.width = 1280;
-		cfg.height = 720;
+		cfg.width = Config.Graphics.WIDTH_START;
+		cfg.height = Config.Graphics.HEIGHT_START;
 
 		new LwjglApplication(new VoiderGame(), cfg);
 	}

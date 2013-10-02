@@ -1,6 +1,7 @@
 package com.spiddekauga.voider.game;
 
 import com.badlogic.gdx.Gdx;
+import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceNames;
 import com.spiddekauga.voider.scene.LoadingScene;
@@ -28,21 +29,25 @@ public class LoadingTextScene extends LoadingScene {
 	protected void update(float deltaTime) {
 		super.update(deltaTime);
 
-		switch (mState) {
-		case DISPLAY:
-			mDisplayTimeCurrent += Gdx.graphics.getDeltaTime();
-			if (mDisplayTimeCurrent >= mDisplayTimeMax) {
-				((LoadingTextSceneGui)mGui).fadeOut();
-				mState = States.FADING;
-			}
-			break;
+		if (!Config.Debug.SKIP_LOADING_TIME) {
+			switch (mState) {
+			case DISPLAY:
+				mDisplayTimeCurrent += Gdx.graphics.getDeltaTime();
+				if (mDisplayTimeCurrent >= mDisplayTimeMax && !ResourceCacheFacade.isLoading()) {
+					((LoadingTextSceneGui)mGui).fadeOut();
+					mState = States.FADING;
+				}
+				break;
 
 
-		case FADING:
-			if (((LoadingTextSceneGui)mGui).hasFaded()) {
-				setOutcome(Outcomes.LOADING_SUCCEEDED);
+			case FADING:
+				if (((LoadingTextSceneGui)mGui).hasFaded()) {
+					setOutcome(Outcomes.LOADING_SUCCEEDED);
+				}
+				break;
 			}
-			break;
+		} else if (!ResourceCacheFacade.isLoading()) {
+			setOutcome(Outcomes.LOADING_SUCCEEDED);
 		}
 	}
 

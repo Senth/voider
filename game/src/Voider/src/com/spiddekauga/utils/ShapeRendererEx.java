@@ -187,9 +187,7 @@ public class ShapeRendererEx implements Disposable {
 			triangle(localVertices);
 		}
 
-		for (Vector2 vertex : localVertices) {
-			Pools.vector2.free(vertex);
-		}
+		Pools.vector2.freeAll(localVertices);
 	}
 
 	/**
@@ -275,14 +273,16 @@ public class ShapeRendererEx implements Disposable {
 	 * @param maxVertices
 	 */
 	public ShapeRendererEx(int maxVertices) {
-		if (Gdx.graphics.isGL20Available()) {
-			mRenderer = new ImmediateModeRenderer20(maxVertices, false, true, 0);
+		if (Gdx.graphics != null) {
+			if (Gdx.graphics.isGL20Available()) {
+				mRenderer = new ImmediateModeRenderer20(maxVertices, false, true, 0);
+			}
+			else {
+				mRenderer = new ImmediateModeRenderer10(maxVertices);
+			}
+			mProjView.setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+			mMatrixDirty = true;
 		}
-		else {
-			mRenderer = new ImmediateModeRenderer10(maxVertices);
-		}
-		mProjView.setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		mMatrixDirty = true;
 	}
 
 	/** Sets the {@link Color} to be used by shapes.

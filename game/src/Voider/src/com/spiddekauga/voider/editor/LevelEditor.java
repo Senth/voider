@@ -6,11 +6,8 @@ import java.util.UUID;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.ObjectMap;
-import com.badlogic.gdx.utils.ObjectMap.Entry;
 import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.utils.Invoker;
 import com.spiddekauga.utils.KeyHelper;
@@ -150,28 +147,28 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 		}
 	}
 
-	@Override
-	protected void fixCamera() {
-		float width = Gdx.graphics.getWidth() * Config.Graphics.LEVEL_EDITOR_SCALE;
-		// Decrease scale of width depending on height scaled
-		float heightScale = Config.Graphics.HEIGHT / Gdx.graphics.getHeight();
-		width *= heightScale;
-		float height = Config.Graphics.HEIGHT * Config.Graphics.LEVEL_EDITOR_SCALE;
-
-		if (mCamera != null) {
-			mCamera.viewportHeight = height;
-			mCamera.viewportWidth = width;
-			mCamera.update();
-		} else {
-			mCamera = new OrthographicCamera(width , height);
-		}
-	}
+	//	@Override
+	//	protected void fixCamera() {
+	//		float width = Gdx.graphics.getWidth() * Config.Graphics.LEVEL_EDITOR_SCALE;
+	//		// Decrease scale of width depending on height scaled
+	//		float heightScale = Config.Graphics.HEIGHT / Gdx.graphics.getHeight();
+	//		width *= heightScale;
+	//		float height = Config.Graphics.HEIGHT * Config.Graphics.LEVEL_EDITOR_SCALE;
+	//
+	//		if (mCamera != null) {
+	//			mCamera.viewportHeight = height;
+	//			mCamera.viewportWidth = width;
+	//			mCamera.update();
+	//		} else {
+	//			mCamera = new OrthographicCamera(width , height);
+	//		}
+	//	}
 
 	/**
 	 * Sets the level that shall be played and resets tools, invoker, etc.
 	 * @param level level to play
 	 */
-	public void setLevel(Level level) {
+	private void setLevel(Level level) {
 		boolean sameLevel = false;
 		boolean sameRevision = false;
 
@@ -195,9 +192,6 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 		mLevel = level;
 
 		if (mLevel != null) {
-			mLevel.addResource(mLevel);
-			mLevel.bindResources();
-
 			clearTools();
 
 			// Reset camera position to the start
@@ -212,7 +206,9 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 			// Activate all enemies
 			ArrayList<EnemyActor> enemies = mLevel.getResources(EnemyActor.class);
 			for (EnemyActor enemy : enemies) {
-				enemy.activate();
+				if (enemy.getEnemyGroup() == null || enemy.isGroupLeader()) {
+					enemy.activate();
+				}
 			}
 		}
 
@@ -260,58 +256,10 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 	@Override
 	protected void reloadResourcesOnActivate(Outcomes outcome, Object message) {
 		super.reloadResourcesOnActivate(outcome, message);
-
-		// Unload enemies if there was a chance we have edited an enemy in the enemy editor
-		// Or if we loaded another level
 		if (outcome == Outcomes.NOT_APPLICAPLE) {
-			reloadEnemies();
-		} else if (outcome == Outcomes.DEF_SELECTED && mSelectionAction == SelectionActions.LEVEL) {
-			reloadEnemies();
+			ResourceCacheFacade.loadAllNotYetLoadedOf(this, EnemyActorDef.class, true);
+			ResourceCacheFacade.finishLoading();
 		}
-
-
-		if (mLevel != null) {
-			mLevel.resetDefs();
-		}
-	}
-
-	/**
-	 * Reloads all the enemies
-	 */
-	private void reloadEnemies() {
-		ResourceCacheFacade.unloadAllOf(this, EnemyActorDef.class, true);
-
-		/** @todo Improve reloading to only unload the latest revision of the enemies the level
-		 * will be using. However, when unloading a level care must be taken to load the
-		 * latest revision of these enemies again. For now unloading then loading all enemies with
-		 * correct revisions is the easiest way to do this.
-		 */
-
-		ResourceCacheFacade.loadAllOf(this, EnemyActorDef.class, true, getEnemyRevisions());
-		ResourceCacheFacade.finishLoading();
-	}
-
-	/**
-	 * @return the revision of all enemy resource the level is currently using
-	 */
-	private ObjectMap<UUID, Integer> getEnemyRevisions() {
-		// Get the specific revision of certain enemies we currently use
-		ObjectMap<UUID, Integer> enemyRevisions = new ObjectMap<UUID, Integer>();
-		ObjectMap<UUID, ResourceItem> dependencies = null;
-		if (mLevel != null) {
-			dependencies = mLevel.getDef().getExternalDependencies();
-		} else {
-			dependencies = new ObjectMap<UUID, ResourceItem>();
-		}
-
-		// Add all enemy revision to this dependency
-		for (Entry<UUID, ResourceItem> entry : dependencies.entries()) {
-			if (EnemyActorDef.class.isAssignableFrom(entry.value.type)) {
-				enemyRevisions.put(entry.key, entry.value.revision);
-			}
-		}
-
-		return enemyRevisions;
 	}
 
 	@Override
@@ -338,6 +286,8 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 				} else {
 					Gdx.app.error("LevelEditor", "Could not find level (" + mLoadingLevel.getLevelId() + ")");
 				}
+			} else if (mLevel == null) {
+				newDef();
 			}
 		}
 		else if (outcome == Outcomes.LOADING_FAILED_CORRUPT_FILE) {
@@ -357,9 +307,9 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 
 					mLoadingLevel = ResourceCacheFacade.get(this, ((ResourceItem) message).id, ((ResourceItem) message).revision);
 
-					// Only load level if it's not the current level we selected
-					if (!mLoadingLevel.equals(mLevel.getDef())) {
-						ResourceCacheFacade.load(this, mLoadingLevel.getLevelId(), Level.class, mLoadingLevel.getId(), LevelDef.class, mLoadingLevel.getRevision());
+					// Only load level if it's not the current level we selected, or another revision
+					if (!mLoadingLevel.equals(mLevel.getDef()) || mLoadingLevel.getRevision() != mLevel.getRevision()) {
+						ResourceCacheFacade.load(this, mLoadingLevel.getLevelId(), mLoadingLevel.getId(), mLoadingLevel.getRevision());
 						Scene scene = getLoadingScene();
 						if (scene != null) {
 							SceneSwitcher.switchTo(scene);
@@ -523,17 +473,6 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 	}
 
 	/**
-	 * Checks for all bound resources that uses  the specified parameter resource.
-	 * @param usesResource resource to check for in all other resources
-	 * @param foundResources list with all resources that uses
-	 */
-	public void usesResource(IResource usesResource, ArrayList<IResource> foundResources) {
-		if (mLevel != null) {
-			mLevel.usesResource(usesResource, foundResources);
-		}
-	}
-
-	/**
 	 * @return true if an enemy is currently selected
 	 */
 	boolean isEnemySelected() {
@@ -619,15 +558,16 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 	 */
 	public void runFromHere(boolean invulnerable) {
 		GameScene testGame = new GameScene(true, invulnerable);
-		Level copyLevel = mLevel.copyKeepId();
+		Level copyLevel = mLevel.copy();
 		// Because of scaling decrease the x position
 		float levelScaling = (Config.Graphics.LEVEL_EDITOR_HEIGHT_SCALE - 1) / Config.Graphics.LEVEL_EDITOR_HEIGHT_SCALE;
 		float xPosition = mCamera.position.x + mCamera.viewportWidth * 0.5f - mCamera.viewportWidth * levelScaling;
-		copyLevel.setXCoord(xPosition);
+		copyLevel.setStartPosition(xPosition);
+		copyLevel.calculateEndPosition();
 
-		// Remove screen triggers before the specified coordinate
 		testGame.setLevel(copyLevel);
 
+		// Remove screen triggers before the specified coordinate
 		ArrayList<TScreenAt> triggers = copyLevel.getResources(TScreenAt.class);
 		for (TScreenAt trigger : triggers) {
 			if (trigger.isTriggered()) {
@@ -642,23 +582,21 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 	public void saveDef() {
 		mLevel.calculateStartPosition();
 		mLevel.calculateEndPosition();
-		int oldRevision = mLevel.getDef().getRevision();
+
+		int oldRevision = mLevel.getRevision();
 		ResourceSaver.save(mLevel.getDef());
 		ResourceSaver.save(mLevel);
-		int newRevision = mLevel.getDef().getRevision();
-		mLevel.getDef().setRevision(oldRevision);
 
-		// Load the saved actor and use it instead
-		// Def needs to be loaded twice, as the def should still be visible if we change level
-		try {
-			ResourceCacheFacade.load(this, mLevel.getDef().getId(), LevelDef.class, newRevision, false);
-			ResourceCacheFacade.load(this, mLevel.getId(), Level.class, mLevel.getDef().getId(), LevelDef.class, newRevision);
+		// Saved first time? Then load level and def and use loaded versions instead
+		if (!ResourceCacheFacade.isLoaded(this, mLevel.getId())) {
+			ResourceCacheFacade.load(this, mLevel.getDef().getId(), false);
+			ResourceCacheFacade.load(this, mLevel.getId(), mLevel.getDef().getId());
 			ResourceCacheFacade.finishLoading();
 
-			setLevel((Level) ResourceCacheFacade.get(this, mLevel.getId(), mLevel.getRevision()+1));
-		} catch (Exception e) {
-			Gdx.app.error("LevelEditor", "Loading of saved level failed! " + e.toString());
-			e.printStackTrace();
+			// Reset the level to old revision
+			mLevel.getDef().setRevision(oldRevision);
+
+			setLevel((Level) ResourceCacheFacade.get(this, mLevel.getId()));
 		}
 
 		mSaveTimeLast = GameTime.getTotalGlobalTimeElapsed();
@@ -675,17 +613,12 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 
 	@Override
 	public void newDef() {
-		if (mLevel != null) {
-			mLevel.dispose();
-		}
-
 		LevelDef levelDef = new LevelDef();
 		Level level = new Level(levelDef);
 		setLevel(level);
+		saveDef();
 
 		clearTools();
-
-		reloadEnemies();
 
 		mUnsaved = false;
 	}
@@ -869,8 +802,10 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 			if (enemyGroup != null) {
 				// Just change amount of enemies
 				if (cEnemies > 1) {
-					ArrayList<EnemyActor> addedEnemies = new ArrayList<EnemyActor>();
-					ArrayList<EnemyActor> removedEnemies = new ArrayList<EnemyActor>();
+					@SuppressWarnings("unchecked")
+					ArrayList<EnemyActor> addedEnemies = Pools.arrayList.obtain();
+					@SuppressWarnings("unchecked")
+					ArrayList<EnemyActor> removedEnemies = Pools.arrayList.obtain();
 
 					enemyGroup.setEnemyCount(cEnemies, addedEnemies, removedEnemies);
 
@@ -881,6 +816,10 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 					for (EnemyActor removedEnemy : removedEnemies) {
 						mLevel.removeResource(removedEnemy.getId());
 					}
+
+					Pools.arrayList.freeAll(addedEnemies, removedEnemies);
+					addedEnemies = null;
+					removedEnemies = null;
 				}
 				// Delete enemy group
 				else {
@@ -892,6 +831,9 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 					}
 
 					mLevel.removeResource(enemyGroup.getId());
+
+					Pools.arrayList.free(removedEnemies);
+					removedEnemies = null;
 				}
 			}
 			// No enemy group, do we create one?
@@ -901,12 +843,17 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 
 				enemyGroup.setLeaderEnemy(selectedEnemy);
 
-				ArrayList<EnemyActor> addedEnemies = new ArrayList<EnemyActor>();
+				@SuppressWarnings("unchecked")
+				ArrayList<EnemyActor> addedEnemies = Pools.arrayList.obtain();
 				enemyGroup.setEnemyCount(cEnemies, addedEnemies, null);
 
 				for (EnemyActor addedEnemy : addedEnemies) {
 					mLevel.addResource(addedEnemy);
+					addedEnemy.destroyBody();
 				}
+
+				Pools.arrayList.free(addedEnemies);
+				addedEnemies = null;
 
 				// Set GUI delay value
 				((LevelEditorGui)mGui).resetEnemyOptions();
@@ -1141,7 +1088,7 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 	void selectEnemy() {
 		mSelectionAction = SelectionActions.ENEMY;
 
-		Scene scene = new SelectDefScene(EnemyActorDef.class, false, true, getEnemyRevisions());
+		Scene scene = new SelectDefScene(EnemyActorDef.class, false, true, false);
 		SceneSwitcher.switchTo(scene);
 	}
 

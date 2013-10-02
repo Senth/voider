@@ -21,7 +21,6 @@ public class Row implements Poolable {
 	 * Default constructor
 	 */
 	public Row() {
-		mCells.clear();
 	}
 
 	/**
@@ -62,7 +61,6 @@ public class Row implements Poolable {
 			mCells.clear();
 		} else {
 			mCells = Pools.arrayList.obtain();
-			mCells.clear();
 		}
 
 		mAlign.horizontal = Horizontal.LEFT;

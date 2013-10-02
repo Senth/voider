@@ -1,8 +1,7 @@
 package com.spiddekauga.voider.game.actors;
 
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonValue;
+import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.voider.Config.Editor.Enemy;
 import com.spiddekauga.voider.game.WeaponDef;
@@ -15,7 +14,7 @@ import com.spiddekauga.voider.game.WeaponDef;
  */
 public class EnemyActorDef extends ActorDef {
 	/**
-	 * Private default constructor used for json
+	 * Private default constructor used for kryo
 	 */
 	public EnemyActorDef() {
 		super(ActorTypes.ENEMY);
@@ -271,60 +270,6 @@ public class EnemyActorDef extends ActorDef {
 		return mAimRotateVars.rotateSpeed;
 	}
 
-
-
-	@Override
-	public void write(Json json) {
-		super.write(json);
-
-
-		json.writeValue("mHasWeapon", mHasWeapon);
-		json.writeValue("mMovementType", mMovementType);
-
-
-		// Conditional variables to write
-		if (mHasWeapon) {
-			json.writeValue("mWeapon", mWeapon);
-			json.writeValue("mAimType", mAimType);
-
-			if (mAimType == AimTypes.ROTATE) {
-				json.writeValue("mAimRotateVars", mAimRotateVars);
-			}
-		}
-		if (mMovementType != MovementTypes.STATIONARY) {
-			json.writeValue("mMovementVars", mMovementVars);
-		}
-		if (mMovementType == MovementTypes.AI) {
-			json.writeValue("mAiMovementVars", mAiMovementVars);
-		}
-	}
-
-	@Override
-	public void read(Json json, JsonValue jsonValue) {
-		super.read(json, jsonValue);
-
-
-		mHasWeapon = json.readValue("mHasWeapon", boolean.class, jsonValue);
-		mMovementType = json.readValue("mMovementType", MovementTypes.class, jsonValue);
-
-
-		// Conditional variables to read
-		if (mHasWeapon) {
-			mWeapon = json.readValue("mWeapon", WeaponDef.class, jsonValue);
-			mAimType = json.readValue("mAimType", AimTypes.class, jsonValue);
-
-			if (mAimType == AimTypes.ROTATE) {
-				mAimRotateVars = json.readValue("mAimRotateVars", AimRotateVars.class, jsonValue);
-			}
-		}
-		if (mMovementType == MovementTypes.AI) {
-			mAiMovementVars = json.readValue("mAiMovementVars", AiMovementVars.class, jsonValue);
-		}
-		if (mMovementType != MovementTypes.STATIONARY) {
-			mMovementVars = json.readValue("mMovementVars", MovementVars.class, jsonValue);
-		}
-	}
-
 	/**
 	 * Enumeration for all movement types
 	 */
@@ -352,29 +297,60 @@ public class EnemyActorDef extends ActorDef {
 	}
 
 	/** If the enemy has a weapon */
-	private boolean mHasWeapon = false;
+	@Tag(53) private boolean mHasWeapon = false;
 	/** Weapon of the enemy */
-	private WeaponDef mWeapon = new WeaponDef();
+	@Tag(55) private WeaponDef mWeapon = new WeaponDef();
 	/** How the enemy will aim if it has a weapon */
-	private AimTypes mAimType = AimTypes.MOVE_DIRECTION;
+	@Tag(56) private AimTypes mAimType = AimTypes.MOVE_DIRECTION;
 	/** Aim variables when using rotation aim */
-	private AimRotateVars mAimRotateVars = new AimRotateVars();
+	@Tag(57) private AimRotateVars mAimRotateVars = new AimRotateVars();
 	/** What type of movement the enemy has */
-	private MovementTypes mMovementType = MovementTypes.PATH;
+	@Tag(54) private MovementTypes mMovementType = MovementTypes.PATH;
 	/** Movement variables */
-	private MovementVars mMovementVars = new MovementVars();
+	@Tag(58) private MovementVars mMovementVars = new MovementVars();
 	/** AI movement variables */
-	private AiMovementVars mAiMovementVars = new AiMovementVars();
+	@Tag(59) private AiMovementVars mAiMovementVars = new AiMovementVars();
+
+	// DON'T forget to add to EnemyActorTest!
 
 	/**
 	 * Class for all movement variables (both AI and path)
 	 * @note needs to be public for reflect on android
 	 */
 	public static class MovementVars {
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + Float.floatToIntBits(speed);
+			result = prime * result + Float.floatToIntBits(turnSpeed);
+			return result;
+		}
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj) {
+				return true;
+			}
+			if (obj == null) {
+				return false;
+			}
+			if (getClass() != obj.getClass()) {
+				return false;
+			}
+			MovementVars other = (MovementVars) obj;
+			if (Float.floatToIntBits(speed) != Float.floatToIntBits(other.speed)) {
+				return false;
+			}
+			if (Float.floatToIntBits(turnSpeed) != Float.floatToIntBits(other.turnSpeed)) {
+				return false;
+			}
+			return true;
+		}
+
 		/** Speed of the enemy */
-		float speed = Enemy.Movement.MOVE_SPEED_DEFAULT;
+		@Tag(64) float speed = Enemy.Movement.MOVE_SPEED_DEFAULT;
 		/** How fast the enemy can turn */
-		float turnSpeed = Enemy.Movement.TURN_SPEED_DEFAULT;
+		@Tag(65) float turnSpeed = Enemy.Movement.TURN_SPEED_DEFAULT;
 	}
 
 	/**
@@ -382,20 +358,68 @@ public class EnemyActorDef extends ActorDef {
 	 * @note needs to be public for reflect on android
 	 */
 	public static class AiMovementVars {
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + Float.floatToIntBits(playerDistanceMax);
+			result = prime * result + Float.floatToIntBits(playerDistanceMaxSq);
+			result = prime * result + Float.floatToIntBits(playerDistanceMin);
+			result = prime * result + Float.floatToIntBits(playerDistanceMinSq);
+			result = prime * result + (randomMove ? 1231 : 1237);
+			result = prime * result + Float.floatToIntBits(randomTimeMax);
+			result = prime * result + Float.floatToIntBits(randomTimeMin);
+			return result;
+		}
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj) {
+				return true;
+			}
+			if (obj == null) {
+				return false;
+			}
+			if (getClass() != obj.getClass()) {
+				return false;
+			}
+			AiMovementVars other = (AiMovementVars) obj;
+			if (Float.floatToIntBits(playerDistanceMax) != Float.floatToIntBits(other.playerDistanceMax)) {
+				return false;
+			}
+			if (Float.floatToIntBits(playerDistanceMaxSq) != Float.floatToIntBits(other.playerDistanceMaxSq)) {
+				return false;
+			}
+			if (Float.floatToIntBits(playerDistanceMin) != Float.floatToIntBits(other.playerDistanceMin)) {
+				return false;
+			}
+			if (Float.floatToIntBits(playerDistanceMinSq) != Float.floatToIntBits(other.playerDistanceMinSq)) {
+				return false;
+			}
+			if (randomMove != other.randomMove) {
+				return false;
+			}
+			if (Float.floatToIntBits(randomTimeMax) != Float.floatToIntBits(other.randomTimeMax)) {
+				return false;
+			}
+			if (Float.floatToIntBits(randomTimeMin) != Float.floatToIntBits(other.randomTimeMin)) {
+				return false;
+			}
+			return true;
+		}
 		/** Minimum distance from the player */
-		float playerDistanceMin = Enemy.Movement.AI_DISTANCE_MIN_DEFAULT;
+		@Tag(66) float playerDistanceMin = Enemy.Movement.AI_DISTANCE_MIN_DEFAULT;
 		/** Minimum distance from player, squared */
-		float playerDistanceMinSq = playerDistanceMin * playerDistanceMin;
+		@Tag(67) float playerDistanceMinSq = playerDistanceMin * playerDistanceMin;
 		/** Maximum distance from the player */
-		float playerDistanceMax = Enemy.Movement.AI_DISTANCE_MAX_DEFAULT;
+		@Tag(68) float playerDistanceMax = Enemy.Movement.AI_DISTANCE_MAX_DEFAULT;
 		/** Maximum distance from the player, squared */
-		float playerDistanceMaxSq = playerDistanceMax * playerDistanceMax;
+		@Tag(69) float playerDistanceMaxSq = playerDistanceMax * playerDistanceMax;
 		/** If the enemy shall move randomly when inside the preferred space */
-		boolean randomMove = Enemy.Movement.RANDOM_MOVEMENT_DEFAULT;
+		@Tag(70) boolean randomMove = Enemy.Movement.RANDOM_MOVEMENT_DEFAULT;
 		/** Minimum time until next random move */
-		float randomTimeMin = Enemy.Movement.RANDOM_MOVEMENT_TIME_MIN_DEFAULT;
-		/** Maxumum time until next random move */
-		float randomTimeMax = Enemy.Movement.RANDOM_MOVEMENT_TIME_MAX_DEFAULT;
+		@Tag(71) float randomTimeMin = Enemy.Movement.RANDOM_MOVEMENT_TIME_MIN_DEFAULT;
+		/** Maximum time until next random move */
+		@Tag(72) float randomTimeMax = Enemy.Movement.RANDOM_MOVEMENT_TIME_MAX_DEFAULT;
 	}
 
 	/**
@@ -403,9 +427,40 @@ public class EnemyActorDef extends ActorDef {
 	 * @note needs to be public for reflect on android
 	 */
 	public static class AimRotateVars {
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + Float.floatToIntBits(rotateSpeed);
+			result = prime * result + Float.floatToIntBits(startAngle);
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj) {
+				return true;
+			}
+			if (obj == null) {
+				return false;
+			}
+			if (getClass() != obj.getClass()) {
+				return false;
+			}
+			AimRotateVars other = (AimRotateVars) obj;
+			if (Float.floatToIntBits(rotateSpeed) != Float.floatToIntBits(other.rotateSpeed)) {
+				return false;
+			}
+			if (Float.floatToIntBits(startAngle) != Float.floatToIntBits(other.startAngle)) {
+				return false;
+			}
+			return true;
+		}
+
+
 		/** Starting angle */
-		float startAngle = Enemy.Weapon.START_ANGLE_DEFAULT;
+		@Tag(73) float startAngle = Enemy.Weapon.START_ANGLE_DEFAULT;
 		/** Rotating speed */
-		float rotateSpeed = Enemy.Weapon.ROTATE_SPEED_DEFAULT;
+		@Tag(74) float rotateSpeed = Enemy.Weapon.ROTATE_SPEED_DEFAULT;
 	}
 }

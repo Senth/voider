@@ -12,8 +12,11 @@ import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.utils.Disposable;
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonValue;
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.KryoSerializable;
+import com.esotericsoftware.kryo.io.Input;
+import com.esotericsoftware.kryo.io.Output;
+import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Actor.Pickup;
@@ -31,14 +34,13 @@ import com.spiddekauga.voider.utils.Pools;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class VisualVars implements Json.Serializable, Disposable, IResourceCorner {
+public class VisualVars implements KryoSerializable, Disposable, IResourceCorner {
 	/**
 	 * Sets the appropriate default values
 	 * @param actorType the default values depends on which actor type is set
 	 */
 	VisualVars(ActorTypes actorType) {
-		mCorners.clear();
-		mFixtureDefs.clear();
+		this();
 
 		mActorType = actorType;
 		setDefaultValues();
@@ -46,70 +48,24 @@ public class VisualVars implements Json.Serializable, Disposable, IResourceCorne
 	}
 
 	@Override
-	public void write(Json json) {
-		json.writeValue("Config.REVISION", Config.REVISION);
-
-		json.writeValue("mShapeType", mShapeType);
-		json.writeValue("mActorType", mActorType);
-		json.writeValue("mCenterOffset", mCenterOffset);
-		json.writeValue("mColor", mColor);
-		json.writeValue("mShapeComplete", mShapeComplete);
-
-		switch (mShapeType) {
-		case TRIANGLE:
-		case RECTANGLE:
-			json.writeValue("mShapeWidth", mShapeWidth);
-			json.writeValue("mShapeHeight", mShapeHeight);
-			break;
-
-		case CIRCLE:
-			json.writeValue("mShapeCircleRadius", mShapeCircleRadius);
-			break;
-
-		case CUSTOM:
-			json.writeValue("mCorners", mCorners);
-			break;
-		}
+	public void write(Kryo kryo, Output output) {
+		output.writeInt(CLASS_REVISION, true);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public void read(Json json, JsonValue jsonValue) {
-		mActorType = json.readValue("mActorType", ActorTypes.class, jsonValue);
-
-		setDefaultValues();
-
-		mShapeType = json.readValue("mShapeType", ActorShapeTypes.class, jsonValue);
-		mCenterOffset = json.readValue("mCenterOffset", Vector2.class, jsonValue);
-		mColor = json.readValue("mColor", Color.class, jsonValue);
-		mShapeComplete = json.readValue("mShapeComplete", boolean.class, jsonValue);
-
-		switch (mShapeType) {
-		case TRIANGLE:
-		case RECTANGLE:
-			mShapeWidth = json.readValue("mShapeWidth", float.class, jsonValue);
-			mShapeHeight = json.readValue("mShapeHeight", float.class, jsonValue);
-			break;
-
-		case CIRCLE:
-			mShapeCircleRadius = json.readValue("mShapeCircleRadius", float.class, jsonValue);
-			break;
-
-		case CUSTOM:
-			mCorners = json.readValue("mCorners", ArrayList.class, jsonValue);
-			break;
-		}
+	public void read(Kryo kryo, Input input) {
+		@SuppressWarnings("unused")
+		int classRevision = input.readInt(true);
 
 		calculateBoundingRadius();
 		createFixtureDef();
 	}
 
 	/**
-	 * Default constructor for JSON
+	 * Default constructor for Kryo
 	 */
-	public VisualVars() {
-		mCorners.clear();
-		mFixtureDefs.clear();
+	protected VisualVars() {
+
 	}
 
 	/**
@@ -154,7 +110,9 @@ public class VisualVars implements Json.Serializable, Disposable, IResourceCorne
 			break;
 
 		default:
-			Gdx.app.error("VisualVars", "Unknown actor type: " + mActorType);
+			if (Gdx.app != null) {
+				Gdx.app.error("VisualVars", "Unknown actor type: " + mActorType);
+			}
 			mShapeType = ActorShapeTypes.CIRCLE;
 			mShapeCircleRadius = 1;
 			mShapeHeight = 1;
@@ -275,11 +233,14 @@ public class VisualVars implements Json.Serializable, Disposable, IResourceCorne
 	@Override
 	public void dispose() {
 		Pools.vector2.freeAll(mCorners);
-		Pools.arrayList.free(mCorners);
-		mCorners = null;
-		clearFixtures();
-		mFixtureDefs = null;
+		Pools.vector2.free(mCenterOffset);
+		mCenterOffset = null;
 		clearVertices();
+
+		clearFixtures();
+		Pools.arrayList.freeAll(mCorners, mFixtureDefs);
+		mCorners = null;
+		mFixtureDefs = null;
 	}
 
 	/**
@@ -290,6 +251,11 @@ public class VisualVars implements Json.Serializable, Disposable, IResourceCorne
 			Pools.vector2.freeDuplicates(mVertices);
 			Pools.arrayList.free(mVertices);
 			mVertices = null;
+		}
+		if (mPolygon != null) {
+			Pools.vector2.freeDuplicates(mPolygon);
+			Pools.arrayList.free(mPolygon);
+			mPolygon = null;
 		}
 	}
 
@@ -368,6 +334,11 @@ public class VisualVars implements Json.Serializable, Disposable, IResourceCorne
 	 * @param shapeType type of shape the enemy has
 	 */
 	public void setShapeType(ActorShapeTypes shapeType) {
+		if (shapeType == null) {
+			return;
+		}
+
+
 		clearVertices();
 
 		mShapeType = shapeType;
@@ -619,6 +590,7 @@ public class VisualVars implements Json.Serializable, Disposable, IResourceCorne
 					handlePolygonComplexException(tempVertices, e);
 				}
 				Pools.arrayList.free(tempVertices);
+				tempVertices = null;
 			}
 
 			int cTriangles = triangles.size() / 3;
@@ -681,8 +653,11 @@ public class VisualVars implements Json.Serializable, Disposable, IResourceCorne
 					Gdx.app.error("ActorDef", throwMessage);
 					Pools.vector2.freeDuplicates(triangles);
 					Pools.arrayList.free(triangles);
+					triangles = null;
 					Pools.vector2.free(lengthTest);
+					lengthTest = null;
 					Pools.vector2.freeAll(triangleVertices);
+					triangleVertices = null;
 
 					throw new PolygonCornersTooCloseException(throwMessage);
 				}
@@ -707,6 +682,8 @@ public class VisualVars implements Json.Serializable, Disposable, IResourceCorne
 			// Free stuff
 			Pools.vector2.freeAll(triangleVertices);
 			Pools.vector2.free(lengthTest);
+			triangleVertices = null;
+			lengthTest = null;
 		}
 		// Circle
 		else if (mCorners.size() >= 1) {
@@ -714,7 +691,6 @@ public class VisualVars implements Json.Serializable, Disposable, IResourceCorne
 
 			Vector2 offsetPosition = Pools.vector2.obtain();
 			offsetPosition.set(0,0).sub(mCenterOffset).sub(mCorners.get(0));
-			Pools.vector2.free(offsetPosition);
 
 			float radius = 0;
 
@@ -728,6 +704,7 @@ public class VisualVars implements Json.Serializable, Disposable, IResourceCorne
 				lengthVector.set(mCorners.get(0)).sub(mCorners.get(1));
 				radius = lengthVector.len();
 				Pools.vector2.free(lengthVector);
+				lengthVector = null;
 			}
 			circle.setRadius(radius);
 
@@ -741,6 +718,9 @@ public class VisualVars implements Json.Serializable, Disposable, IResourceCorne
 			}
 			mVertices = mEarClippingTriangulator.computeTriangles(circleVertices);
 			Collections.reverse(mVertices);
+
+			Pools.vector2.free(offsetPosition);
+			offsetPosition = null;
 		}
 	}
 
@@ -755,6 +735,7 @@ public class VisualVars implements Json.Serializable, Disposable, IResourceCorne
 	 * Creates a circle from the visual variables
 	 * @return circle shape for fixture
 	 */
+	@SuppressWarnings("unchecked")
 	private CircleShape createCircleShape() {
 		clearVertices();
 
@@ -768,7 +749,10 @@ public class VisualVars implements Json.Serializable, Disposable, IResourceCorne
 		mVertices = mEarClippingTriangulator.computeTriangles(circleVertices);
 		Collections.reverse(circleVertices);
 
-		mPolygon = circleVertices;
+		mPolygon = Pools.arrayList.obtain();
+		for (Vector2 vertex : circleVertices) {
+			mPolygon.add(Pools.vector2.obtain().set(vertex));
+		}
 
 		return circleShape;
 	}
@@ -789,32 +773,32 @@ public class VisualVars implements Json.Serializable, Disposable, IResourceCorne
 		rectangleShape.setAsBox(halfWidth, halfHeight);
 
 		clearVertices();
-		mVertices = Pools.arrayList.obtain();
 
 		// Create triangle vertices and polygon for the rectangle
 		if (rectangleShape.getVertexCount() == 4) {
-			mPolygon = new ArrayList<Vector2>();
+			mVertices = Pools.arrayList.obtain();
+			mPolygon = Pools.arrayList.obtain();
 
 			// First triangle
 			Vector2 vertex = Pools.vector2.obtain();
 			rectangleShape.getVertex(0, vertex);
 			mVertices.add(vertex);
-			mPolygon.add(vertex);
+			mPolygon.add(Pools.vector2.obtain().set(vertex));
 			vertex = Pools.vector2.obtain();
 			rectangleShape.getVertex(1, vertex);
 			mVertices.add(vertex);
-			mPolygon.add(vertex);
+			mPolygon.add(Pools.vector2.obtain().set(vertex));
 			vertex = Pools.vector2.obtain();
 			rectangleShape.getVertex(2, vertex);
 			mVertices.add(vertex);
-			mPolygon.add(vertex);
+			mPolygon.add(Pools.vector2.obtain().set(vertex));
 
 			// Second triangle
 			mVertices.add(vertex);
 			vertex = Pools.vector2.obtain();
 			rectangleShape.getVertex(3, vertex);
 			mVertices.add(vertex);
-			mPolygon.add(vertex);
+			mPolygon.add(Pools.vector2.obtain().set(vertex));
 			mVertices.add(mVertices.get(0));
 
 		} else {
@@ -869,14 +853,15 @@ public class VisualVars implements Json.Serializable, Disposable, IResourceCorne
 		polygonShape.set(vertices);
 
 		Pools.vector2.free(center);
+		center = null;
 
 		// Set vertices and create border
 		clearVertices();
 		mVertices = Pools.arrayList.obtain();
-		mPolygon = new ArrayList<Vector2>();
+		mPolygon = Pools.arrayList.obtain();
 		for (Vector2 vertex : vertices) {
 			mVertices.add(vertex);
-			mPolygon.add(vertex);
+			mPolygon.add(Pools.vector2.obtain().set(vertex));
 		}
 
 
@@ -892,7 +877,7 @@ public class VisualVars implements Json.Serializable, Disposable, IResourceCorne
 		if (fixtureDefs.size() == 1) {
 			return fixtureDefs.get(0);
 		} else {
-			Gdx.app.error("EnemyActorDef", "Too few/many fixture definitions! " + fixtureDefs.size());
+			Gdx.app.error("VisualVars", "Too few/many fixture definitions! " + fixtureDefs.size());
 			return null;
 		}
 	}
@@ -949,10 +934,9 @@ public class VisualVars implements Json.Serializable, Disposable, IResourceCorne
 	private ArrayList<Vector2> createCopy(ArrayList<Vector2> vertices) {
 		@SuppressWarnings("unchecked")
 		ArrayList<Vector2> copy = Pools.arrayList.obtain();
-		copy.clear();
 
 		for (Vector2 vertex : vertices) {
-			copy.add(vertex.cpy());
+			copy.add(Pools.vector2.obtain().set(vertex));
 		}
 
 		return copy;
@@ -967,6 +951,7 @@ public class VisualVars implements Json.Serializable, Disposable, IResourceCorne
 	private void handlePolygonComplexException(ArrayList<Vector2> tempVertices, PolygonComplexException exception) {
 		Pools.vector2.freeAll(tempVertices);
 		Pools.arrayList.free(tempVertices);
+		tempVertices = null;
 
 		if (exception == null) {
 			throw new PolygonComplexException();
@@ -975,24 +960,31 @@ public class VisualVars implements Json.Serializable, Disposable, IResourceCorne
 		}
 	}
 
+	/**
+	 * @return actor type of the visual vars
+	 */
+	public ActorTypes getActorType() {
+		return mActorType;
+	}
+
 
 	/** Color of the actor */
-	private Color mColor = new Color();
+	@Tag(52) private Color mColor = new Color();
 	/** Current shape of the enemy */
-	private ActorShapeTypes mShapeType;
+	@Tag(49) private ActorShapeTypes mShapeType = null;
 	/** radius of circle */
-	private float mShapeCircleRadius;
+	@Tag(60) private float mShapeCircleRadius;
 	/** width of rectangle/triangle */
-	private float mShapeWidth;
+	@Tag(61) private float mShapeWidth;
 	/** height of rectangle/triangle */
-	private float mShapeHeight;
+	@Tag(62) private float mShapeHeight;
 	/** Center offset for fixtures */
-	private Vector2 mCenterOffset = new Vector2();
+	@Tag(51) private Vector2 mCenterOffset = Pools.vector2.obtain().set(0,0);
 	/** Corners of polygon, used for custom shapes */
 	@SuppressWarnings("unchecked")
-	private ArrayList<Vector2> mCorners = Pools.arrayList.obtain();
+	@Tag(63) private ArrayList<Vector2> mCorners = Pools.arrayList.obtain();
 	/** Array list of the polygon figure, this contains the vertices but not
-	 * in triangles. */
+	 * in triangles. Used for when creating a border of some kind */
 	private ArrayList<Vector2> mPolygon = null;
 	/** Triangle vertices.
 	 * To easier render the shape. No optimization has been done to reduce
@@ -1006,9 +998,11 @@ public class VisualVars implements Json.Serializable, Disposable, IResourceCorne
 	/** Radius of the actor, or rather circle bounding box */
 	private float mBoundingRadius = 0;
 	/** Actor type, used for setting default values */
-	private ActorTypes mActorType = null;
+	@Tag(50) private ActorTypes mActorType = null;
 	/** Time when the fixture was changed last time */
 	protected float mFixtureChangeTime = 0;
+	/** Class structure revision */
+	protected final int CLASS_REVISION = 1;
 
 	/** Ear clipping triangulator for custom shapes */
 	private static EarClippingTriangulator mEarClippingTriangulator = new EarClippingTriangulator();

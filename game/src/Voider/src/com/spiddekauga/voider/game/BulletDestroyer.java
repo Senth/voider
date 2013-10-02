@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Disposable;
+import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.utils.ShapeRendererEx;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.actors.BulletActor;
@@ -138,5 +139,5 @@ public class BulletDestroyer implements Disposable {
 	}
 
 	/** All alive bullets */
-	private ArrayList<TimeBullet> mBullets = new ArrayList<TimeBullet>();
+	@Tag(85) private ArrayList<TimeBullet> mBullets = new ArrayList<TimeBullet>();
 }

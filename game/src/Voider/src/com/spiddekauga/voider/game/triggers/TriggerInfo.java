@@ -1,9 +1,6 @@
 package com.spiddekauga.voider.game.triggers;
 
-import java.util.UUID;
-
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonValue;
+import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.voider.game.triggers.TriggerAction.Actions;
 
 /**
@@ -12,17 +9,15 @@ import com.spiddekauga.voider.game.triggers.TriggerAction.Actions;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class TriggerInfo implements Json.Serializable {
-	/** The trigger this is bound to */
-	public UUID triggerId;
+public class TriggerInfo {
 	/** The trigger */
-	public Trigger trigger = null;
+	@Tag(29) public Trigger trigger = null;
 	/** The delay of this listener */
-	public float delay = 0;
+	@Tag(30) public float delay = 0;
 	/** The action to take when the trigger is triggered */
-	public TriggerAction.Actions action;
+	@Tag(31) public TriggerAction.Actions action;
 	/** The listener object */
-	public ITriggerListener listener;
+	@Tag(32) public ITriggerListener listener;
 
 	/**
 	 * Sets the trigger, automatically sets the trigger id
@@ -30,11 +25,6 @@ public class TriggerInfo implements Json.Serializable {
 	 */
 	public void setTrigger(Trigger trigger) {
 		this.trigger = trigger;
-		if (trigger != null) {
-			triggerId = trigger.getId();
-		} else {
-			triggerId = null;
-		}
 	}
 
 	/**
@@ -44,10 +34,9 @@ public class TriggerInfo implements Json.Serializable {
 	 * @return true if triggerId and action is the same in both trigger infos.
 	 */
 	public boolean sameTriggerAndAction(TriggerInfo triggerInfo) {
-		if (triggerInfo == null || triggerId == null || action == null ||
-				triggerInfo.triggerId == null || triggerInfo.action == null) {
+		if (triggerInfo == null || action == null || triggerInfo.action == null) {
 			return false;
-		} else if (triggerId.equals(triggerInfo.triggerId) && action == triggerInfo.action) {
+		} else if (trigger.equals(triggerInfo.trigger) && action == triggerInfo.action) {
 			return true;
 		} else {
 			return false;
@@ -63,24 +52,9 @@ public class TriggerInfo implements Json.Serializable {
 		copy.action = action;
 		copy.delay = delay;
 		copy.listener = listener;
-		copy.triggerId = triggerId;
 		copy.trigger = trigger;
 
 		return copy;
-	}
-
-	@Override
-	public void write(Json json) {
-		json.writeValue("triggerId", triggerId);
-		json.writeValue("action", action);
-		json.writeValue("delay", delay);
-	}
-
-	@Override
-	public void read(Json json, JsonValue jsonValue) {
-		action = json.readValue("action", TriggerAction.Actions.class, jsonValue);
-		delay = json.readValue("delay", float.class, jsonValue);
-		triggerId = json.readValue("triggerId", UUID.class, jsonValue);
 	}
 
 	/**
@@ -93,9 +67,9 @@ public class TriggerInfo implements Json.Serializable {
 	 * Null if the trigger info wasn't found inside the enemy.
 	 */
 	public static TriggerInfo getTriggerInfoByDuplicate(ITriggerListener listener, TriggerInfo searchTriggerInfo) {
-		for (TriggerInfo enemyTriggerInfo : listener.getTriggerInfos()) {
-			if (enemyTriggerInfo.sameTriggerAndAction(searchTriggerInfo)) {
-				return enemyTriggerInfo;
+		for (TriggerInfo triggerInfo : listener.getTriggerInfos()) {
+			if (triggerInfo.sameTriggerAndAction(searchTriggerInfo)) {
+				return triggerInfo;
 			}
 		}
 
@@ -112,9 +86,9 @@ public class TriggerInfo implements Json.Serializable {
 	 * Null if the trigger info wasn't found inside the enemy.
 	 */
 	public static TriggerInfo getTriggerInfoByAction(ITriggerListener listener, Actions action) {
-		for (TriggerInfo enemyTriggerInfo : listener.getTriggerInfos()) {
-			if (enemyTriggerInfo.action == action) {
-				return enemyTriggerInfo;
+		for (TriggerInfo triggerInfo : listener.getTriggerInfos()) {
+			if (triggerInfo.action == action) {
+				return triggerInfo;
 			}
 		}
 

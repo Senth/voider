@@ -1,6 +1,5 @@
 package com.spiddekauga.voider.resources;
 
-import java.util.ArrayList;
 import java.util.UUID;
 
 /**
@@ -15,29 +14,10 @@ public interface IResource {
 	 */
 	public UUID getId();
 
-	//	/**
-	//	 * @return revision of the resource. This will actually be -1
-	//	 * if the resource isn't an istance of IResourceRevision!
-	//	 */
-	//	public int getRevision();
-
-	/**
-	 * Returns all references this resource uses
-	 * @param references all resources this resource uses
-	 */
-	public void getReferences(ArrayList<UUID> references);
-
-	/**
-	 * Binds the specific reference to this resource
-	 * @param resource the resource this class uses which needs to be bound to this resource
-	 * @return true if the resource was bound
-	 */
-	public boolean bindReference(IResource resource);
-
 	/**
 	 * Removes a bound resource
 	 * @param boundResource the resource to remove
-	 * @return true if the resource was removed successfully
+	 * @return true if the resource could be removed
 	 */
 	public boolean removeBoundResource(IResource boundResource);
 

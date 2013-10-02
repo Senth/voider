@@ -43,7 +43,7 @@ public class JsonLoaderAsync<StoredType> extends AsynchronousAssetLoader<StoredT
 		byte[] encryptedJson = file.readBytes();
 		String jsonString = null;
 		try {
-			jsonString = (String) mCrypter.decrypt(encryptedJson);
+			jsonString = mCrypter.decrypt(encryptedJson, String.class);
 		} catch (Exception e) {
 			throw new ResourceCorruptException(fileName);
 		}

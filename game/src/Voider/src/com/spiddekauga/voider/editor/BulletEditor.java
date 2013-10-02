@@ -184,25 +184,14 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 
 	@Override
 	public void saveDef() {
-		int oldRevision = mDef.getRevision();
 		ResourceSaver.save(mDef);
-		int newRevision = mDef.getRevision();
-		mDef.setRevision(oldRevision);
 
-		// Load the saved actor and use it instead
-		try {
-			if (ResourceCacheFacade.isLoaded(this, mDef.getId(), oldRevision)) {
-				ResourceCacheFacade.unload(this, mDef, true);
-			}
-			ResourceCacheFacade.load(this, mDef.getId(), mDef.getClass(), newRevision, true);
+		// Saved first time? Then load it and use the loaded version
+		if (!ResourceCacheFacade.isLoaded(this, mDef.getId())) {
+			ResourceCacheFacade.load(this, mDef.getId(), true);
 			ResourceCacheFacade.finishLoading();
 
-			// Reload old definitions, some other scenes might be using it...
-			ResourceCacheFacade.reload(mDef.getId(), oldRevision);
-
-			setDef((BulletActorDef) ResourceCacheFacade.get(this, mDef.getId(), newRevision));
-		} catch (Exception e) {
-			Gdx.app.error("BulletEditor", "Loading of saved actor failed! " + e.toString());
+			setDef((BulletActorDef) ResourceCacheFacade.get(this, mDef.getId()));
 		}
 
 		mSaveTimeLast = GameTime.getTotalGlobalTimeElapsed();
@@ -433,8 +422,8 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 	 * @return true if this enemy shall be destroyed on collision
 	 */
 	@Override
-	public boolean shallDestroyOnCollide() {
-		return mDef.shallDestroyOnCollide();
+	public boolean isDestroyedOnCollide() {
+		return mDef.isDestroyedOnCollide();
 	}
 
 	@Override

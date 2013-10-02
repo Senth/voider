@@ -17,7 +17,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.badlogic.gdx.backends.lwjgl.LwjglNativesLoader;
-import com.spiddekauga.utils.JsonWrapper; import com.badlogic.gdx.utils.Json;
+import com.badlogic.gdx.utils.Json;
+import com.spiddekauga.utils.JsonWrapper;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.actors.ActorDef;
 import com.spiddekauga.voider.game.actors.PlayerActorDef;
@@ -89,7 +90,7 @@ public class ObjectCrypterTest {
 		// Decrypt
 		String decryptedJson = null;
 		try {
-			decryptedJson = (String) crypter.decrypt(encrypted);
+			decryptedJson = crypter.decrypt(encrypted, String.class);
 		} catch (InvalidKeyException e) {
 			e.printStackTrace();
 			fail("InvalidKeyException\n" + e.getMessage());

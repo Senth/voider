@@ -7,6 +7,7 @@ import java.util.Stack;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.utils.IdentityMap;
 import com.spiddekauga.utils.scene.ui.Cell;
 import com.spiddekauga.utils.scene.ui.Label;
 import com.spiddekauga.utils.scene.ui.Row;
@@ -31,13 +32,16 @@ public class Pools {
 	/** Hash set */
 	@SuppressWarnings("rawtypes")
 	public static Pool<HashSet> hashSet = new Pool<HashSet>(HashSet.class, 16, 100);
+	/** Identity Hash Map */
+	@SuppressWarnings("rawtypes")
+	public static Pool<IdentityMap> identityMap = new Pool<IdentityMap>(IdentityMap.class, 6, 50);
 	/** Stack */
 	@SuppressWarnings("rawtypes")
 	public static Pool<Stack> stack = new Pool<Stack>(Stack.class, 5, 20);
 	/** Cells for tables */
-	public static Pool<Cell> cell = new Pool<Cell>(Cell.class, 16, 250);
+	public static Pool<Cell> cell = new Pool<Cell>(Cell.class, 50, 250);
 	/** Row for tables */
-	public static Pool<Row> row = new Pool<Row>(Row.class, 16, 100);
+	public static Pool<Row> row = new Pool<Row>(Row.class, 10, 100);
 	/** Resource Items */
 	public static Pool<ResourceItem> resourceItem = new Pool<ResourceItem>(ResourceItem.class, 50, 400);
 	/** Bullets */
@@ -52,4 +56,6 @@ public class Pools {
 			return new Label("", skin);
 		}
 	};
+	/** Kryo */
+	public static KryoPool kryo = new KryoPool(5, 20);
 }

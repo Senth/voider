@@ -2,6 +2,7 @@ package com.spiddekauga.voider.resources;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
@@ -13,7 +14,6 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.GdxRuntimeException;
-import com.badlogic.gdx.utils.ObjectMap;
 import com.spiddekauga.voider.Config.Debug;
 import com.spiddekauga.voider.game.GameSave;
 import com.spiddekauga.voider.game.GameSaveDef;
@@ -50,22 +50,23 @@ public class ResourceCacheFacade {
 		mAssetManager = new AssetManager();
 
 		// External
-		mAssetManager.setLoader(BulletActorDef.class, new JsonLoaderAsync<BulletActorDef>(new ExternalFileHandleResolver(), BulletActorDef.class));
-		mAssetManager.setLoader(EnemyActorDef.class, new JsonLoaderAsync<EnemyActorDef>(new ExternalFileHandleResolver(), EnemyActorDef.class));
-		mAssetManager.setLoader(PickupActorDef.class, new JsonLoaderAsync<PickupActorDef>(new ExternalFileHandleResolver(), PickupActorDef.class));
-		mAssetManager.setLoader(PlayerActorDef.class, new JsonLoaderAsync<PlayerActorDef>(new ExternalFileHandleResolver(), PlayerActorDef.class));
-		mAssetManager.setLoader(StaticTerrainActorDef.class, new JsonLoaderAsync<StaticTerrainActorDef>(new ExternalFileHandleResolver(), StaticTerrainActorDef.class));
-		mAssetManager.setLoader(LevelDef.class, new JsonLoaderAsync<LevelDef>(new ExternalFileHandleResolver(), LevelDef.class));
-		mAssetManager.setLoader(Level.class, new JsonLoaderAsync<Level>(new ExternalFileHandleResolver(), Level.class));
-		mAssetManager.setLoader(GameSave.class, new JsonLoaderSync<GameSave>(new ExternalFileHandleResolver(), GameSave.class));
-		mAssetManager.setLoader(GameSaveDef.class, new JsonLoaderAsync<GameSaveDef>(new ExternalFileHandleResolver(), GameSaveDef.class));
-		mAssetManager.setLoader(PlayerStats.class, new JsonLoaderAsync<PlayerStats>(new ExternalFileHandleResolver(), PlayerStats.class));
+		mAssetManager.setLoader(BulletActorDef.class, new KryoLoaderAsync<BulletActorDef>(new ExternalFileHandleResolver(), BulletActorDef.class));
+		mAssetManager.setLoader(EnemyActorDef.class, new KryoLoaderAsync<EnemyActorDef>(new ExternalFileHandleResolver(), EnemyActorDef.class));
+		mAssetManager.setLoader(PickupActorDef.class, new KryoLoaderAsync<PickupActorDef>(new ExternalFileHandleResolver(), PickupActorDef.class));
+		mAssetManager.setLoader(PlayerActorDef.class, new KryoLoaderAsync<PlayerActorDef>(new ExternalFileHandleResolver(), PlayerActorDef.class));
+		mAssetManager.setLoader(StaticTerrainActorDef.class, new KryoLoaderAsync<StaticTerrainActorDef>(new ExternalFileHandleResolver(), StaticTerrainActorDef.class));
+		mAssetManager.setLoader(LevelDef.class, new KryoLoaderAsync<LevelDef>(new ExternalFileHandleResolver(), LevelDef.class));
+		mAssetManager.setLoader(Level.class, new KryoLoaderAsync<Level>(new ExternalFileHandleResolver(), Level.class));
+		mAssetManager.setLoader(GameSave.class, new KryoLoaderSync<GameSave>(new ExternalFileHandleResolver(), GameSave.class));
+		mAssetManager.setLoader(GameSaveDef.class, new KryoLoaderAsync<GameSaveDef>(new ExternalFileHandleResolver(), GameSaveDef.class));
+		mAssetManager.setLoader(PlayerStats.class, new KryoLoaderAsync<PlayerStats>(new ExternalFileHandleResolver(), PlayerStats.class));
 
 		// Internal
 		mAssetManager.setLoader(ShaderProgram.class, new ShaderLoader(new InternalFileHandleResolver()));
 		mAssetManager.setLoader(Skin.class, new SkinLoader(new InternalFileHandleResolver()));
 
 		mDependencyLoader = new ResourceDependencyLoader(mAssetManager);
+		ResourceNames.init();
 		ResourceDatabase.init(mAssetManager);
 	}
 
@@ -77,6 +78,7 @@ public class ResourceCacheFacade {
 	 * @param loadDependencies Set to true ot load all file dependencies of the resource. E.g. some
 	 * ActorDef might have textures, particle effects, sound, bullets as dependencies. In this case
 	 * these will also be loaded.
+	 * @see #loadAllNotYetLoadedOf(Scene, Class, boolean)
 	 */
 	public static void loadAllOf(Scene scene, Class<? extends IResource> type, boolean loadDependencies) {
 		// Get all resources of this type
@@ -86,13 +88,13 @@ public class ResourceCacheFacade {
 		// Load dependencies
 		if (loadDependencies) {
 			for (ResourceItem resourceItem : resources) {
-				mDependencyLoader.load(scene, resourceItem.id, type, resourceItem.revision);
+				mDependencyLoader.load(scene, resourceItem.id, -1);
 			}
 		}
 		// Only load them, no dependencies
 		else {
 			for (ResourceItem resourceItem : resources) {
-				ResourceDatabase.load(scene, resourceItem.id, type, resourceItem.revision);
+				ResourceDatabase.load(scene, resourceItem.id, -1);
 			}
 		}
 
@@ -100,13 +102,54 @@ public class ResourceCacheFacade {
 		// Free
 		Pools.resourceItem.freeAll(resources);
 		Pools.arrayList.free(resources);
+		resources = null;
+	}
+
+	/**
+	 * Loads all resources that haven't been loaded of the specified type. Useful when new resources of
+	 * the type has been loaded and we don't want to unload and load all resources again. Always loads
+	 * the latest revision of the resource.
+	 * @param scene the scene to load all resources for
+	 * @param type the type of resource to load
+	 * @param loadDependencies Set to true ot load all file dependencies of the resource. E.g. some
+	 * ActorDef might have textures, particle effects, sound, bullets as dependencies. In this case
+	 * these will also be loaded.
+	 * @see #loadAllOf(Scene, Class, boolean)
+	 */
+	public static void loadAllNotYetLoadedOf(Scene scene, Class<? extends IResource> type, boolean loadDependencies) {
+		// Get all resources of this type
+		ArrayList<ResourceItem> resources = ResourceDatabase.getAllExistingResource(type);
+
+
+		// Load dependencies
+		if (loadDependencies) {
+			for (ResourceItem resourceItem : resources) {
+				if (!ResourceDatabase.isResourceLoaded(scene, resourceItem.id, -1)) {
+					mDependencyLoader.load(scene, resourceItem.id, -1);
+				}
+			}
+		}
+		// Only load them, no dependencies
+		else {
+			for (ResourceItem resourceItem : resources) {
+				if (!ResourceDatabase.isResourceLoaded(scene, resourceItem.id, -1)) {
+					ResourceDatabase.load(scene, resourceItem.id, -1);
+				}
+			}
+		}
+
+
+		// Free
+		Pools.resourceItem.freeAll(resources);
+		Pools.arrayList.free(resources);
+		resources = null;
 	}
 
 	/**
 	 * Loads all latest revision for the resource of the specified type, but has the ability
 	 * to override the revision loaded. I.e. not all resource need to load the latest revision.
 	 * This can be useful if you know that you want to load certain revision instead of the latest.
-	 * Used in conjunction with {@link #unloadAllOf(Scene, Class, boolean, ObjectMap)}.
+	 * Used in conjunction with {@link #unloadAllOf(Scene, Class, boolean, Map)}.
 	 * @param scene the scene to load all resource for
 	 * @param type the type of resources to load
 	 * @param loadDependencies Set to true ot load all file dependencies of the resource. E.g. some
@@ -114,7 +157,7 @@ public class ResourceCacheFacade {
 	 * these will also be loaded.
 	 * @param revisionsToLoad an object map with a specific revision to use for the specified resource.
 	 */
-	public static void loadAllOf(Scene scene, Class<? extends IResource> type, boolean loadDependencies, ObjectMap<UUID, Integer> revisionsToLoad) {
+	public static void loadAllOf(Scene scene, Class<? extends IResource> type, boolean loadDependencies, Map<UUID, Integer> revisionsToLoad) {
 		// Get all resources of this type
 		ArrayList<ResourceItem> resources = ResourceDatabase.getAllExistingResource(type);
 
@@ -124,9 +167,9 @@ public class ResourceCacheFacade {
 			for (ResourceItem resourceItem : resources) {
 				Integer overridingRevision = revisionsToLoad.get(resourceItem.id);
 				if (overridingRevision == null) {
-					overridingRevision = resourceItem.revision;
+					overridingRevision = -1;
 				}
-				mDependencyLoader.load(scene, resourceItem.id, type, overridingRevision);
+				mDependencyLoader.load(scene, resourceItem.id, overridingRevision);
 			}
 		}
 		// Only load them, no dependencies
@@ -134,9 +177,9 @@ public class ResourceCacheFacade {
 			for (ResourceItem resourceItem : resources) {
 				Integer overridingRevision = revisionsToLoad.get(resourceItem.id);
 				if (overridingRevision == null) {
-					overridingRevision = resourceItem.revision;
+					overridingRevision = -1;
 				}
-				ResourceDatabase.load(scene, resourceItem.id, type, overridingRevision);
+				ResourceDatabase.load(scene, resourceItem.id, overridingRevision);
 			}
 		}
 
@@ -144,6 +187,7 @@ public class ResourceCacheFacade {
 		// Free
 		Pools.resourceItem.freeAll(resources);
 		Pools.arrayList.free(resources);
+		resources = null;
 	}
 
 	/**
@@ -179,19 +223,20 @@ public class ResourceCacheFacade {
 
 		// Free
 		Pools.arrayList.free(resources);
+		resources = null;
 	}
 
 	/**
 	 * Unloads all of the specified resources, usually this means the latest but this
 	 * method has the ability to unload specific revisions of a resource instead of the latest.
-	 * Used in conjunction with {@link #loadAllOf(Scene, Class, boolean, ObjectMap)}.
+	 * Used in conjunction with {@link #loadAllOf(Scene, Class, boolean, Map)}.
 	 * @param scene the scene to unload all the resources from
 	 * @param type the type of resources to unload
 	 * @param unloadDependencies true if the cache shall unload all dependencies of the resources
 	 * @param revisionsToUnload these resources will override the unload of latest revision to use
 	 * this revision for the corresponding resource.
 	 */
-	public static void unloadAllOf(Scene scene, Class<? extends IResource> type, boolean unloadDependencies, ObjectMap<UUID, Integer> revisionsToUnload) {
+	public static void unloadAllOf(Scene scene, Class<? extends IResource> type, boolean unloadDependencies, Map<UUID, Integer> revisionsToUnload) {
 		// Get all resources of this type
 		ArrayList<ResourceItem> resources = ResourceDatabase.getAllExistingResource(type);
 
@@ -215,7 +260,7 @@ public class ResourceCacheFacade {
 				if (overridingRevision == null) {
 					overridingRevision = resourceItem.revision;
 				}
-				ResourceDatabase.unload(scene, resourceItem.id, type, overridingRevision);
+				ResourceDatabase.unload(scene, resourceItem.id, overridingRevision);
 			}
 		}
 
@@ -223,6 +268,7 @@ public class ResourceCacheFacade {
 		// Free
 		Pools.resourceItem.freeAll(resources);
 		Pools.arrayList.free(resources);
+		resources = null;
 	}
 
 	/**
@@ -237,80 +283,57 @@ public class ResourceCacheFacade {
 	 * @param scene the scene to load the resource to
 	 * @param resourceId the id of the resource we're loading (i.e. not the
 	 * definition's id).
-	 * @param resourceType the class of the resource to load
 	 * @param defId the definition of the resource we're loading
-	 * @param defType the class of the definition
 	 * @param revision the revision of the resource to load
 	 */
-	public static void load(Scene scene, UUID resourceId, Class<? extends IResource> resourceType, UUID defId, Class<? extends Def> defType, int revision) {
+	public static void load(Scene scene, UUID resourceId, UUID defId, int revision) {
 		// Load definition dependencies first
-		load(scene, defId, defType, revision, true);
+		load(scene, defId, true, revision);
 
 		// Add the resource to the queue. Load this resource once all dependencies are loaded
-		mLoadQueue.add(new ResourceItem(scene, resourceId, resourceType, revision));
+		mLoadQueue.add(new ResourceItem(scene, resourceId, revision));
 	}
 
-	//	/**
-	//	 * Loads an external definition. Included in these are in general resources
-	//	 * that the user can add and remove. E.g. ActorDef, WeaponDef, etc. Loads
-	//	 * latest revision
-	//	 * @param scene the scene to load the resource to
-	//	 * @param resource the resource we want to load. This includes a unique id
-	//	 * as well as dependencies.
-	//	 * @param loadDependencies if we also shall load the dependencies
-	//	 * @throws UndefinedResourceTypeException
-	//	 */
-	//	public static void load(Scene scene, IResource resource, boolean loadDependencies) throws UndefinedResourceTypeException {
-	//		load(scene, resource.getId(), resource.getClass(), loadDependencies, -1);
-	//	}
+	/**
+	 * Loads the latest revision of both resource, definition and all dependencies.
+	 * @param scene the scene to load the resource to
+	 * @param resourceId the id of the resource we're loading (i.e. not the
+	 * definition's id).
+	 * @param defId the definition of the resource we're loading
+	 */
+	public static void load(Scene scene, UUID resourceId, UUID defId) {
+		// Load definition dependencies first
+		load(scene, defId, true, -1);
 
-	//	/**
-	//	 * Loads an external definition. Included in these are in general resources
-	//	 * that the user can add and remove. E.g. ActorDef, WeaponDef, etc.
-	//	 * @param scene the scene to load the resource to
-	//	 * @param resource the resource we want to load. This includes a unique id
-	//	 * as well as dependencies.
-	//	 * @param loadDependencies if we also shall load the dependencies
-	//	 * @param revision the revision to load the resource of
-	//	 */
-	//	private static void load(Scene scene, IResource resource, boolean loadDependencies, int revision) {
-	//		load(scene, resource.getId(), resource.getClass(), loadDependencies, revision);
-	//	}
-
-	//	/**
-	//	 * Loads a resource. Included in these are in general resources
-	//	 * that the user can add and remove. E.g. all actor, definitions, levels, etc.
-	//	 * Loads the latest revision
-	//	 * @param scene the scene to load the resource to
-	//	 * @param resourceId the unique id of the resource we want to load
-	//	 * @param type the class type of the resource
-	//	 * @param loadDependencies if we also shall load the dependencies
-	//	 * @throws UndefinedResourceTypeException
-	//	 */
-	//	public static void load(Scene scene, UUID resourceId, Class<?> type, boolean loadDependencies) throws UndefinedResourceTypeException {
-	//		load(scene, resourceId, type, loadDependencies, -1);
-	//	}
+		// Add the resource to the queue. Load this resource once all dependencies are loaded
+		mLoadQueue.add(new ResourceItem(scene, resourceId, -1));
+	}
 
 	/**
 	 * Loads a resource. Included in these are in general resources
 	 * that the user can add and remove. E.g. all actor, definitions, levels, etc.
 	 * @param scene the scene to load the resource to
 	 * @param resourceId the unique id of the resource we want to load
-	 * @param type the class type of the resource
+	 * @param loadDependencies if we also shall load the dependencies
 	 * @param revision loads the specific revision of the resource
+	 */
+	public static void load(Scene scene, UUID resourceId, boolean loadDependencies, int revision) {
+		if (loadDependencies) {
+			mDependencyLoader.load(scene, resourceId, revision);
+		} else {
+			ResourceDatabase.load(scene, resourceId, revision);
+		}
+	}
+
+	/**
+	 * Loads the latest revision of this resource. Included in these are in general resources
+	 * that the user can add and remove. E.g. all actor, definitions, levels, etc.
+	 * @param scene the scene to load the resource to
+	 * @param resourceId the unique id of the resource we want to load
 	 * @param loadDependencies if we also shall load the dependencies
 	 */
-	public static void load(Scene scene, UUID resourceId, Class<? extends IResource> type, int revision, boolean loadDependencies) {
-		if (loadDependencies) {
-			// Type need to implement the IResourceDependency interface to load resources
-			if (IResourceDependency.class.isAssignableFrom(type)) {
-				mDependencyLoader.load(scene, resourceId, type, revision);
-			} else {
-				Gdx.app.error("ResourceCacheFacade", "Tried to load dependencies of a class that doesn't hold dependencies!");
-			}
-		} else {
-			ResourceDatabase.load(scene, resourceId, type, revision);
-		}
+	public static void load(Scene scene, UUID resourceId, boolean loadDependencies) {
+		load(scene, resourceId, loadDependencies, -1);
 	}
 
 	/**
@@ -384,6 +407,22 @@ public class ResourceCacheFacade {
 	 * @param scene the scene the resource was loaded in, if null it will use the
 	 * current active scene.
 	 * @param resourceId id of the resource, can be both def and instance resource
+	 * @return the actual resource, null if not found
+	 */
+	public static <ResourceType extends IResource> ResourceType get(Scene scene, UUID resourceId) {
+		Scene sceneToUse = scene;
+		if (scene == null) {
+			sceneToUse = SceneSwitcher.getActiveScene(true);
+		}
+		return ResourceDatabase.getLoadedResource(sceneToUse, resourceId, -1);
+	}
+
+	/**
+	 * Get a resource based on the id and class of resource. Always gets the latest revision
+	 * @param <ResourceType> type of resource that will be returned
+	 * @param scene the scene the resource was loaded in, if null it will use the
+	 * current active scene.
+	 * @param resourceId id of the resource, can be both def and instance resource
 	 * @param revision the revision of the resource to get
 	 * @return the actual resource, null if not found
 	 */
@@ -411,6 +450,17 @@ public class ResourceCacheFacade {
 			sceneToUse = SceneSwitcher.getActiveScene(true);
 		}
 		return ResourceDatabase.getAllLoadedSceneResourceOf(sceneToUse, type);
+	}
+
+	/**
+	 * Checks whether the latest revision of a resource has been loaded or not
+	 * @param scene the scene which is has been loaded in, if null it will use the
+	 * current active scene.
+	 * @param resourceId unique id of the object to test if it's loaded
+	 * @return true if the object has been loaded
+	 */
+	public static boolean isLoaded(Scene scene, UUID resourceId) {
+		return isLoaded(scene, resourceId, -1);
 	}
 
 	/**
@@ -510,7 +560,7 @@ public class ResourceCacheFacade {
 				if (fullyLoaded && !mLoadQueue.isEmpty()) {
 					fullyLoaded = false;
 					ResourceItem toLoad = mLoadQueue.removeFirst();
-					ResourceDatabase.load(toLoad.scene, toLoad.id, toLoad.type, toLoad.revision);
+					ResourceDatabase.load(toLoad.scene, toLoad.id, toLoad.revision);
 				}
 			} catch (UndefinedResourceTypeException e) {
 				mLoadQueue.clear();

@@ -12,7 +12,7 @@ public class CResourceBoundRemove extends Command {
 	/**
 	 * Creates a command that will remove a bound resource from another resource
 	 * @param removeFrom the resource to remove from
-	 * @param resourceToRemove the resource to remove
+	 * @param resourceToRemove the resource that has been removed
 	 */
 	public CResourceBoundRemove(IResource removeFrom, IResource resourceToRemove) {
 		mRemoveFrom = removeFrom;
@@ -21,7 +21,8 @@ public class CResourceBoundRemove extends Command {
 
 	@Override
 	public boolean execute() {
-		mRemoveFrom.removeBoundResource(mResourceToRemove);
+		// Does nothing
+		//		mRemoveFrom.removeBoundResource(mResourceToRemove);
 		return true;
 	}
 

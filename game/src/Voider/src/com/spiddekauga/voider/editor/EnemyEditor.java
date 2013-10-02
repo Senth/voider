@@ -1,6 +1,8 @@
 package com.spiddekauga.voider.editor;
 
 import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
@@ -18,7 +20,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.SnapshotArray;
 import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.utils.Invoker;
@@ -134,7 +135,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 			if (message instanceof ResourceItem) {
 				switch (mSelectionAction) {
 				case BULLET_TYPE:
-					mInvoker.execute(new CEnemyBulletDefSelect(((ResourceItem) message).id, ((ResourceItem) message).revision, this));
+					mInvoker.execute(new CEnemyBulletDefSelect(((ResourceItem) message).id, this));
 					break;
 
 				case LOAD_ENEMY:
@@ -160,24 +161,29 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	/**
 	 * Sets the selected bullet definition. This will make the enemies use this bullet.
 	 * @param bulletId id of the bullet definition to select
-	 * @param revision the revision of the bullet to use.
 	 * @return true if bullet was selected successfully, false if unsuccessful
 	 */
-	public boolean selectBulletDef(UUID bulletId, int revision) {
+	public boolean selectBulletDef(UUID bulletId) {
 		try {
 			BulletActorDef oldBulletDef = mDef.getWeaponDef().getBulletActorDef();
 
 			if (bulletId != null) {
-				ResourceCacheFacade.load(this, bulletId, BulletActorDef.class, revision, true);
-				ResourceCacheFacade.finishLoading();
+				// Load it because it is added as a dependency we would try to unload it we would have
+				// one reference too low.
+				if (ResourceCacheFacade.isLoaded(this, mDef.getId())) {
+					ResourceCacheFacade.load(this, bulletId, true);
+					ResourceCacheFacade.finishLoading();
+				}
 
-				BulletActorDef bulletActorDef = ResourceCacheFacade.get(this, bulletId, revision);
+				BulletActorDef bulletActorDef = ResourceCacheFacade.get(this, bulletId);
 				setBulletActorDef(bulletActorDef);
 			} else {
 				setBulletActorDef(null);
 			}
 
-			if (oldBulletDef != null) {
+			// We need to unload it because it has been loaded as a dependency to this enemy, but now
+			// we remove the dependency. I.e. one loaded reference would be left.
+			if (oldBulletDef != null && ResourceCacheFacade.isLoaded(this, mDef.getId())) {
 				ResourceCacheFacade.unload(this, oldBulletDef, true);
 			}
 
@@ -354,8 +360,8 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	/**
 	 * @return the revision of the currently used bullet if any.
 	 */
-	private ObjectMap<UUID, Integer> getBulletRevisions() {
-		ObjectMap<UUID, Integer> bulletRevisions = new ObjectMap<UUID, Integer>();
+	private Map<UUID, Integer> getBulletRevisions() {
+		Map<UUID, Integer> bulletRevisions = new HashMap<UUID, Integer>();
 
 		if (mDef.hasWeapon()) {
 			BulletActorDef bulletActorDef = mDef.getWeaponDef().getBulletActorDef();
@@ -448,25 +454,14 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	 * Saves the current enemy actor
 	 */
 	public void saveDef() {
-		int oldRevision = mDef.getRevision();
 		ResourceSaver.save(mDef);
-		int newRevision = mDef.getRevision();
-		mDef.setRevision(oldRevision);
 
-		// Load the saved actor and use it instead
-		try {
-			if (ResourceCacheFacade.isLoaded(this, mDef.getId(), oldRevision)) {
-				ResourceCacheFacade.unload(this, mDef, true);
-			}
-			ResourceCacheFacade.load(this, mDef.getId(), EnemyActorDef.class, newRevision, true);
+		// Saved first time? Then load it and use the loaded resource
+		if (!ResourceCacheFacade.isLoaded(this, mDef.getId())) {
+			ResourceCacheFacade.load(this, mDef.getId(), true);
 			ResourceCacheFacade.finishLoading();
 
-			// Reload the old definition, some other scenes might be using it...
-			ResourceCacheFacade.reload(mDef.getId(), oldRevision);
-
-			setEnemyDef((EnemyActorDef) ResourceCacheFacade.get(this, mDef.getId(), newRevision));
-		} catch (Exception e) {
-			Gdx.app.error("EnemyEditor", "Loading of saved actor failed! " + e.toString());
+			setEnemyDef((EnemyActorDef) ResourceCacheFacade.get(this, mDef.getId()));
 		}
 
 		mSaveTimeLast = GameTime.getTotalGlobalTimeElapsed();
@@ -732,6 +727,13 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	 */
 	void setUseWeapon(boolean useWeapon) {
 		mDef.setUseWeapon(useWeapon);
+
+		// Remove weapon def
+		BulletActorDef bulletDef = mDef.getWeaponDef().getBulletActorDef();
+		if (!useWeapon && bulletDef != null) {
+			mInvoker.execute(new CEnemyBulletDefSelect(bulletDef.getId(), this));
+		}
+
 		mSaved = false;
 	}
 
@@ -869,15 +871,13 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	void selectBulletType() {
 		mSelectionAction = SelectionActions.BULLET_TYPE;
 
-		Scene selectionScene = new SelectDefScene(BulletActorDef.class, false, false, true);
+		Scene selectionScene = new SelectDefScene(BulletActorDef.class, false, false, false);
 		SceneSwitcher.switchTo(selectionScene);
 	}
 
 	@Override
 	public void setShapeType(ActorShapeTypes shapeType) {
 		mDef.getVisualVars().setShapeType(shapeType);
-
-		resetBodyShapes();
 	}
 
 	@Override
@@ -888,8 +888,6 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	@Override
 	public void setShapeRadius(float radius) {
 		mDef.getVisualVars().setShapeRadius(radius);
-
-		resetBodyShapes();
 	}
 
 	@Override
@@ -900,8 +898,6 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	@Override
 	public void setShapeWidth(float width) {
 		mDef.getVisualVars().setShapeWidth(width);
-
-		resetBodyShapes();
 	}
 
 	@Override
@@ -912,8 +908,6 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	@Override
 	public void setShapeHeight(float height) {
 		mDef.getVisualVars().setShapeHeight(height);
-
-		resetBodyShapes();
 	}
 
 	@Override
@@ -1077,8 +1071,8 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	 * @return true if this enemy shall be destroyed on collision
 	 */
 	@Override
-	public boolean shallDestroyOnCollide() {
-		return mDef.shallDestroyOnCollide();
+	public boolean isDestroyedOnCollide() {
+		return mDef.isDestroyedOnCollide();
 	}
 
 	@Override
@@ -1290,16 +1284,6 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	private void createEnemyActor() {
 		mEnemyActor.setPosition(new Vector2());
 		mEnemyActor.createBody();
-	}
-
-	/**
-	 * Resets all the bodies shapes to use the new updated shape
-	 */
-	private void resetBodyShapes() {
-		mEnemyActor.reloadFixtures();
-		mEnemyPathBackAndForth.reloadFixtures();
-		mEnemyPathLoop.reloadFixtures();
-		mEnemyPathOnce.reloadFixtures();
 	}
 
 	/**

@@ -1,15 +1,22 @@
 package com.spiddekauga.voider.game;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Disposable;
-import com.badlogic.gdx.utils.GdxRuntimeException;
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonValue;
-import com.badlogic.gdx.utils.ObjectMap;
-import com.spiddekauga.utils.JsonWrapper;
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.KryoSerializable;
+import com.esotericsoftware.kryo.io.Input;
+import com.esotericsoftware.kryo.io.Output;
+import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
+import com.spiddekauga.utils.KryoPostRead;
+import com.spiddekauga.utils.KryoPostWrite;
+import com.spiddekauga.utils.KryoPreWrite;
+import com.spiddekauga.utils.KryoTaggedCopyable;
 import com.spiddekauga.utils.ShapeRendererEx;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.actors.Actor;
@@ -18,21 +25,19 @@ import com.spiddekauga.voider.game.actors.EnemyActorDef;
 import com.spiddekauga.voider.game.actors.EnemyActorDef.MovementTypes;
 import com.spiddekauga.voider.game.actors.EnemyGroup;
 import com.spiddekauga.voider.game.actors.PlayerActor;
-import com.spiddekauga.voider.game.triggers.Trigger;
 import com.spiddekauga.voider.game.triggers.TriggerAction.Actions;
 import com.spiddekauga.voider.game.triggers.TriggerInfo;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourceEditorRender;
 import com.spiddekauga.voider.resources.IResourceEditorUpdate;
 import com.spiddekauga.voider.resources.IResourcePosition;
+import com.spiddekauga.voider.resources.IResourcePrepareWrite;
 import com.spiddekauga.voider.resources.IResourceRender;
 import com.spiddekauga.voider.resources.IResourceRevision;
 import com.spiddekauga.voider.resources.IResourceUpdate;
 import com.spiddekauga.voider.resources.Resource;
 import com.spiddekauga.voider.resources.ResourceBinder;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
-import com.spiddekauga.voider.resources.ResourceItem;
-import com.spiddekauga.voider.resources.UndefinedResourceTypeException;
 import com.spiddekauga.voider.utils.Pools;
 
 /**
@@ -40,8 +45,7 @@ import com.spiddekauga.voider.utils.Pools;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-@SuppressWarnings("unchecked")
-public class Level extends Resource implements Disposable, IResourceRevision {
+public class Level extends Resource implements KryoPreWrite, KryoPostWrite, KryoPostRead, KryoTaggedCopyable, KryoSerializable, Disposable, IResourceRevision {
 	/**
 	 * Constructor which creates an new empty level with the bound
 	 * level definition
@@ -52,14 +56,12 @@ public class Level extends Resource implements Disposable, IResourceRevision {
 		mUniqueId = levelDef.getLevelId();
 		mSpeed = mLevelDef.getBaseSpeed();
 		mCompletedLevel = false;
-
-		mResourceBinder.addResource(this);
 	}
 
 	/**
 	 * @return true if the player has completed the level
 	 */
-	public boolean hasCompletedLevel() {
+	public boolean isCompletedLevel() {
 		return mCompletedLevel;
 	}
 
@@ -99,6 +101,7 @@ public class Level extends Resource implements Disposable, IResourceRevision {
 				resource.updateEditor();
 			}
 			Pools.arrayList.free(resourceUpdates);
+			resourceUpdates = null;
 		}
 	}
 
@@ -107,57 +110,9 @@ public class Level extends Resource implements Disposable, IResourceRevision {
 		return mLevelDef.getRevision();
 	}
 
-	/**
-	 * Resets the the resource to use the correct defs. Specifically enemies and bullets as
-	 * these could be changed.
-	 */
-	public void resetDefs() {
-		ArrayList<EnemyActor> enemyActors = mResourceBinder.getResources(EnemyActor.class);
-		ObjectMap<UUID, ResourceItem> externalDependencies = mLevelDef.getExternalDependencies();
-
-		// Update defs for all enemies
-		for (EnemyActor enemy : enemyActors) {
-			ResourceItem resourceItem = externalDependencies.get(enemy.getDef().getId());
-
-			EnemyActorDef correctDef = ResourceCacheFacade.get(null, resourceItem.id, resourceItem.revision);
-			enemy.setDef(correctDef);
-		}
-	}
-
-	/**
-	 * @return a copy of this level.
-	 * @pre world has to been changed to the new world before copy is called()
-	 */
 	@Override
-	public <ResourceType> ResourceType copy() {
-		Json json = new JsonWrapper();
-		String jsonString = json.toJson(this);
-		Level level = json.fromJson(Level.class, jsonString);
-
-		// Create a copy of the level definition too
-		LevelDef levelDef = (LevelDef) mLevelDef.copy();
-		level.mUniqueId = levelDef.getLevelId();
-		level.mLevelDef = levelDef;
-
-		// Change references to the new level id
-		level.addResource(this);
-		level.updateLevelReferences(mUniqueId);
-
-		return (ResourceType) level;
-	}
-
-	/**
-	 * @return a copy of this level without changing the ID of it
-	 */
-	public Level copyKeepId() {
-		Json json = new JsonWrapper();
-		String jsonString = json.toJson(this);
-		Level level = json.fromJson(Level.class, jsonString);
-
-		level.mLevelDef = mLevelDef;
-		level.calculateEndPosition();
-
-		return level;
+	public void setRevision(int revision) {
+		// Does nothing. LevelDef sets the revision.
 	}
 
 	/**
@@ -181,11 +136,12 @@ public class Level extends Resource implements Disposable, IResourceRevision {
 
 	/**
 	 * Sets the x-coordinate of the level. This makes the level jump to or start
-	 * at the specific place. Also updates the player if one exists
+	 * at the specific place.
 	 * @param x the current x-coordinate of the level
 	 */
-	public void setXCoord(float x) {
+	public void setStartPosition(float x) {
 		mXCoord = x;
+		mLevelDef.setStartXCoord(x);
 	}
 
 	/**
@@ -219,13 +175,6 @@ public class Level extends Resource implements Disposable, IResourceRevision {
 	}
 
 	/**
-	 * Binds all resources, call this after the level has been loaded
-	 */
-	public void bindResources() {
-		mResourceBinder.bindResources();
-	}
-
-	/**
 	 * Renders the level, or rather its actors
 	 * @param shapeRenderer shape renderer used for rendering
 	 */
@@ -243,6 +192,7 @@ public class Level extends Resource implements Disposable, IResourceRevision {
 				resourceRender.render(shapeRenderer);
 			}
 			Pools.arrayList.free(resourceRenders);
+			resourceRenders = null;
 		}
 
 		if (mPlayerActor != null) {
@@ -260,6 +210,7 @@ public class Level extends Resource implements Disposable, IResourceRevision {
 			resourceRender.renderEditor(shapeRenderer);
 		}
 		Pools.arrayList.free(resourceRenders);
+		resourceRenders = null;
 	}
 
 	/**
@@ -275,14 +226,44 @@ public class Level extends Resource implements Disposable, IResourceRevision {
 	}
 
 	/**
+	 * Adds a number of resources to the level
+	 * @param resources all resources
+	 */
+	public void addResource(IResource... resources) {
+		for (IResource resource : resources) {
+			addResource(resource);
+		}
+	}
+
+	/**
+	 * Adds a number of resources to the level
+	 * @param resources an arraylist of resources
+	 */
+	public void addResource(ArrayList<? extends IResource> resources) {
+		for (IResource resource : resources) {
+			addResource(resource);
+		}
+	}
+
+	/**
 	 * Removes a resource from the level
 	 * @param resourceId id of the resource
 	 */
 	public void removeResource(UUID resourceId) {
-		IResource removedResource = mResourceBinder.removeResource(resourceId);
+		IResource removedResource = mResourceBinder.removeResource(resourceId, true);
 
 		if (removedResource instanceof Actor) {
 			removeActor((Actor) removedResource);
+		}
+	}
+
+	/**
+	 * Removes all the the specified resources from the level
+	 * @param resources all resources to remove from the level
+	 */
+	public void removeResource(ArrayList<? extends IResource> resources) {
+		for (IResource resource : resources) {
+			removeResource(resource.getId());
 		}
 	}
 
@@ -322,6 +303,7 @@ public class Level extends Resource implements Disposable, IResourceRevision {
 			}
 		}
 		Pools.arrayList.free(enemies);
+		enemies = null;
 	}
 
 	/**
@@ -355,18 +337,22 @@ public class Level extends Resource implements Disposable, IResourceRevision {
 	@Override
 	public void dispose() {
 		// Remove this level first...
-		mResourceBinder.removeResource(getId());
+		mResourceBinder.removeResource(getId(), false);
 
 		ArrayList<Disposable> disposables = mResourceBinder.getResources(Disposable.class);
 		for (Disposable disposable : disposables) {
 			disposable.dispose();
 		}
+
 		Pools.arrayList.free(disposables);
+		disposables = null;
 		if (mResourceRenders != null) {
 			Pools.arrayList.free(mResourceRenders);
+			mResourceRenders = null;
 		}
 		if (mResourceUpdates != null) {
 			Pools.arrayList.free(mResourceUpdates);
+			mResourceUpdates = null;
 		}
 	}
 
@@ -375,15 +361,6 @@ public class Level extends Resource implements Disposable, IResourceRevision {
 	 */
 	public LevelDef getDef() {
 		return mLevelDef;
-	}
-
-	/**
-	 * Checks for all bound resources that uses  the specified parameter resource.
-	 * @param usesResource resource to check for in all other resources
-	 * @param foundResources list with all resources that uses
-	 */
-	public void usesResource(IResource usesResource, ArrayList<IResource> foundResources) {
-		mResourceBinder.usesResource(usesResource, foundResources);
 	}
 
 	/**
@@ -406,6 +383,7 @@ public class Level extends Resource implements Disposable, IResourceRevision {
 		mLevelDef.setStartXCoord(startPosition);
 
 		Pools.arrayList.free(resources);
+		resources = null;
 	}
 
 	/**
@@ -428,87 +406,145 @@ public class Level extends Resource implements Disposable, IResourceRevision {
 		mLevelDef.setEndXCoord(endPosition);
 
 		Pools.arrayList.free(resources);
-	}
-
-
-	@Override
-	public void write(Json json) {
-		super.write(json);
-
-		// Remove level from resource binder, so we don't save the level inifinitely
-		mResourceBinder.removeResource(getId());
-
-		json.writeValue("mResourceBinder", mResourceBinder);
-		json.writeValue("mLevelDefId", mLevelDef.getId());
-		json.writeValue("mLevelDefRev", mLevelDef.getRevision());
-		json.writeValue("mXCoord", mXCoord);
-		json.writeValue("mSpeed", mSpeed);
-		json.writeValue("mCompletedLevel", mCompletedLevel);
+		resources = null;
 	}
 
 	@Override
-	public void read(Json json, JsonValue jsonData) {
-		super.read(json, jsonData);
-
-		mResourceBinder = json.readValue("mResourceBinder", ResourceBinder.class, jsonData);
-
-		mXCoord = json.readValue("mXCoord", float.class, jsonData);
-		mSpeed = json.readValue("mSpeed", float.class, jsonData);
-		mCompletedLevel = json.readValue("mCompletedLevel", boolean.class, jsonData);
-
-		ArrayList<Trigger> triggers = mResourceBinder.getResources(Trigger.class);
-		for (Trigger trigger : triggers) {
-			mTriggers.put(trigger.getId(), trigger);
+	public void preWrite() {
+		for (IResourcePrepareWrite resource : mResourceBinder.getResources(IResourcePrepareWrite.class)) {
+			resource.prepareWrite();
 		}
-		Pools.arrayList.free(triggers);
 
-		// Get the actual LevelDef
-		UUID levelDefId = json.readValue("mLevelDefId", UUID.class, jsonData);
-		int levelDefRev = json.readValue("mLevelDefRev", int.class, jsonData);
-		try {
-			mLevelDef = ResourceCacheFacade.get(null, levelDefId, levelDefRev);
-		} catch (UndefinedResourceTypeException e) {
-			Gdx.app.error("Level", "Could not get level def when loading level");
-		} catch (GdxRuntimeException e) {
-			// The level was just copied without having been saved first...
-			// The copy will set level def.
+
+		// Remove multiple enemies from the group, i.e. only save the leader.
+		if (Actor.isEditorActive()) {
+			@SuppressWarnings("unchecked")
+			ArrayList<EnemyActor> removeEnemies = Pools.arrayList.obtain();
+
+			for (EnemyActor enemyActor : mResourceBinder.getResources(EnemyActor.class)) {
+				int cEnemiesBefore = removeEnemies.size();
+
+				EnemyGroup enemyGroup = enemyActor.getEnemyGroup();
+
+				if (enemyActor.isGroupLeader() && enemyGroup != null) {
+					enemyGroup.setEnemyCount(1, null, removeEnemies);
+
+					// Save number of enemies in the group
+					mGroupEnemiesSave.put(enemyGroup, removeEnemies.size() - cEnemiesBefore + 1);
+				}
+			}
+
+			// Actually remove the enemies
+			for (EnemyActor removeEnemy : removeEnemies) {
+				mResourceBinder.removeResource(removeEnemy.getId(), false);
+				removeEnemy.dispose();
+			}
+
+			Pools.arrayList.free(removeEnemies);
+			removeEnemies = null;
 		}
+	}
+
+	@Override
+	public void postWrite() {
+		postRead();
+	}
+
+	@Override
+	public void postRead() {
+		// Add all the removed enemies again
+		if (!mGroupEnemiesSave.isEmpty()) {
+			@SuppressWarnings("unchecked")
+			ArrayList<EnemyActor> addEnemies = Pools.arrayList.obtain();
+
+			for (Entry<EnemyGroup, Integer> entry : mGroupEnemiesSave.entrySet()) {
+				EnemyGroup enemyGroup = entry.getKey();
+				enemyGroup.setEnemyCount(entry.getValue(), addEnemies, null);
+			}
+			mGroupEnemiesSave.clear();
+
+			// Actually add all the enemies
+			for (EnemyActor addEnemy : addEnemies) {
+				mResourceBinder.addResource(addEnemy);
+			}
+
+			Pools.arrayList.free(addEnemies);
+			addEnemies = null;
+		}
+	}
+
+	@Override
+	public void write(Kryo kryo, Output output) {
+		// Class structure revision
+		output.writeInt(CLASS_REVISION, true);
+
+		// LevelDef
+		kryo.writeObject(output, mLevelDef.getId());
+		output.writeInt(mLevelDef.getRevision(), false);
+	}
+
+	@Override
+	public void read(Kryo kryo, Input input) {
+		@SuppressWarnings("unused")
+		int classRevision = input.readInt(true);
+
+		// LevelDef
+		UUID levelDefId = kryo.readObject(input, UUID.class);
+		int revision = input.readInt(false);
+		mLevelDef = ResourceCacheFacade.get(null, levelDefId, revision);
+	}
+
+	@Override
+	public void copy(Object fromOriginal) {
+		if (fromOriginal instanceof Level) {
+			Level fromLevel = (Level)fromOriginal;
+			mLevelDef = fromLevel.mLevelDef;
+		}
+	}
+
+	@Override
+	public <ResourceType> ResourceType copyNewResource() {
+		ResourceType copy = copy();
+
+		Level copyLevel = (Level)copy;
+
+		// Create a copy of the level definition too
+		LevelDef levelDef = (LevelDef) mLevelDef.copyNewResource();
+		copyLevel.mUniqueId = levelDef.getLevelId();
+		copyLevel.mLevelDef = levelDef;
+
+		return copy;
 	}
 
 	/**
 	 * Default constructor, used when loading levels.
-	 * @note needs to be public for reflect on android
 	 */
-	public Level() {
+	protected Level() {
 		// Does nothing
 	}
 
-	/**
-	 * Updates the level references of other resources to the new level id
-	 * @param oldId old level id
-	 */
-	private void updateLevelReferences(UUID oldId) {
-		mResourceBinder.replaceResource(oldId, this);
-	}
 
 	/** Contains all the resources used in this level */
-	private ResourceBinder mResourceBinder = new ResourceBinder();
+	@Tag(13) private ResourceBinder mResourceBinder = new ResourceBinder();
 	/** All resources that needs updating */
 	private ArrayList<IResourceUpdate> mResourceUpdates = null;
 	/** All resources that shall be rendered */
 	private ArrayList<IResourceRender> mResourceRenders = null;
-	/** All triggers */
-	private ObjectMap<UUID, Trigger> mTriggers = new ObjectMap<UUID, Trigger>();
 	/** Current x coordinate (of the screen's left edge) */
-	private float mXCoord = 0.0f;
+	@Tag(14) private float mXCoord = 0.0f;
 	/** Level definition for this level */
 	private LevelDef mLevelDef = null;
 	/** Current speed of the level */
-	private float mSpeed;
+	@Tag(15) private float mSpeed;
 	/** If the level has been completed */
-	private boolean mCompletedLevel;
+	@Tag(16) private boolean mCompletedLevel;
 	/** True if the level is running */
 	private boolean mRunning = false;
 	/** The player actor */
 	private PlayerActor mPlayerActor = null;
+	/** Multiple enemies in a group, but just save the leader and number of enemies */
+	@Tag(103) private Map<EnemyGroup, Integer> mGroupEnemiesSave = new HashMap<EnemyGroup, Integer>();
+
+	/** Revision of the actor */
+	protected final int CLASS_REVISION = 1;
 }

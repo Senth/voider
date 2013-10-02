@@ -58,8 +58,6 @@ public class GameScene extends WorldScene {
 	 */
 	public void setLevel(Level level) {
 		mLevel = level;
-		mLevel.addResource(mLevel);
-		mLevel.bindResources();
 		mLevel.run();
 		mLevel.createDefaultTriggers();
 
@@ -106,7 +104,7 @@ public class GameScene extends WorldScene {
 			if (mLevelToLoad != null) {
 				try {
 					Level level = ResourceCacheFacade.get(this, mLevelToLoad.getLevelId(), mLevelToLoad.getRevision());
-					level.setXCoord(level.getDef().getStartXCoord());
+					level.setStartPosition(level.getDef().getStartXCoord());
 					setLevel(level);
 				} catch (UndefinedResourceTypeException e) {
 					Gdx.app.error("GameScene", e.toString());
@@ -150,15 +148,14 @@ public class GameScene extends WorldScene {
 		if (!mTesting) {
 			// Resumed game
 			if (mGameSave != null) {
-				// Set game save (will not be set if the user quits the game while loading)
+				// Set game save (as it will not be set if the user quits the game while loading)
 				if (mGameSave == null) {
-					mGameSave = ResourceCacheFacade.get(this, mGameSaveDef.getGameSaveId(), mGameSaveDef.getRevision());
+					mGameSave = ResourceCacheFacade.get(this, mGameSaveDef.getGameSaveId());
 				}
 
 				if (mGameSave != null) {
 					ResourceCacheFacade.unload(this, mGameSave, mGameSaveDef);
 				}
-				mGameSave = null;
 			}
 
 			ResourceSaver.clearResources(GameSave.class);
@@ -172,9 +169,10 @@ public class GameScene extends WorldScene {
 			}
 		}
 
-		if (mLevel != null) {
+		if (mLevel != null && (mTesting || mGameSave != null)) {
 			mLevel.dispose();
 		}
+
 
 		super.onDispose();
 	}
@@ -213,7 +211,7 @@ public class GameScene extends WorldScene {
 		}
 
 		// Have we reached the end of the level?
-		if (mLevel.hasCompletedLevel()) {
+		if (mLevel.isCompletedLevel()) {
 			setOutcome(Outcomes.LEVEL_COMPLETED);
 		}
 
@@ -346,11 +344,15 @@ public class GameScene extends WorldScene {
 		ResourceCacheFacade.loadAllOf(this, PlayerActorDef.class, true);
 
 		if (mLevelToLoad != null) {
-			ResourceCacheFacade.load(this, mLevelToLoad.getLevelId(), Level.class, mLevelToLoad.getId(), LevelDef.class, mLevelToLoad.getRevision());
+			ResourceCacheFacade.load(this, mLevelToLoad.getLevelId(), mLevelToLoad.getId());
 		}
 
 		if (mGameSaveDef != null) {
-			ResourceCacheFacade.load(this, mGameSaveDef.getGameSaveId(), GameSave.class, mGameSaveDef.getId(), GameSaveDef.class, mGameSaveDef.getRevision());
+			ResourceCacheFacade.load(this, mGameSaveDef.getGameSaveId(), mGameSaveDef.getId());
+		}
+
+		if (mTesting && mLevel != null) {
+			ResourceCacheFacade.load(this, mLevel.getDef().getId(), true);
 		}
 	}
 
@@ -363,14 +365,19 @@ public class GameScene extends WorldScene {
 
 		// Loaded level
 		if (mLevelToLoad != null) {
-			// Set level (will not be set if the user quits the game while loading)
+			// Set level (as it will not be set if the user quits the game while loading)
 			if (mLevel == null) {
-				mLevel = ResourceCacheFacade.get(this, mLevelToLoad.getLevelId(), mLevelToLoad.getRevision());
+				mLevel = ResourceCacheFacade.get(this, mLevelToLoad.getLevelId());
 			}
 
 			if (mLevel != null) {
 				ResourceCacheFacade.unload(this, mLevel, mLevel.getDef());
 			}
+		}
+
+		// Testing level unload dependencies
+		if (mTesting && mLevel != null) {
+			ResourceCacheFacade.unload(this, mLevel.getDef(), true);
 		}
 
 		// Resumed game is unloaded in #onDispose()...
@@ -500,6 +507,7 @@ public class GameScene extends WorldScene {
 			if (ships.isEmpty()) {
 				setOutcome(Outcomes.LOADING_FAILED_MISSING_FILE, "Could not find any ships");
 				Pools.arrayList.free(ships);
+				ships = null;
 				return;
 			}
 
@@ -511,6 +519,7 @@ public class GameScene extends WorldScene {
 			mLevel.addResource(mPlayerStats);
 
 			Pools.arrayList.free(ships);
+			ships = null;
 		} else {
 			mPlayerActor.createBody();
 		}
