@@ -110,6 +110,5 @@ public class Pool<T> extends ReflectionPool<T> {
 
 
 	/** Debug tests if we're freeing the same object twice */
-	@SuppressWarnings("unchecked")
 	IdentityMap<T, T> mFreeObjects = new IdentityMap<T, T>();
 }

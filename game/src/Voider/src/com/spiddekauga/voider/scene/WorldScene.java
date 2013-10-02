@@ -153,9 +153,9 @@ public abstract class WorldScene extends Scene {
 	protected void fixCamera() {
 		float width = Gdx.graphics.getWidth() * Config.Graphics.WORLD_SCALE;
 		// Decrease scale of width depending on height scaled
-		float heightScale = Config.Graphics.HEIGHT / Gdx.graphics.getHeight();
+		float heightScale = Config.Graphics.HEIGHT_DEFAULT / Gdx.graphics.getHeight();
 		width *= heightScale;
-		float height = Config.Graphics.HEIGHT * Config.Graphics.WORLD_SCALE;
+		float height = Config.Graphics.HEIGHT_DEFAULT * Config.Graphics.WORLD_SCALE;
 
 		if (mCamera != null) {
 			mCamera.viewportHeight = height;

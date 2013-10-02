@@ -543,9 +543,13 @@ public class Config {
 		/** Minimum area of a polygon shape */
 		public final static float POLYGON_AREA_MIN = EPSILON * 1.1f;
 		/** Default width of the graphics */
-		public final static float WIDTH = 800;
+		public final static float WIDTH_DEFAULT = 800;
 		/** Default height of the graphics */
-		public final static float HEIGHT = 480;
+		public final static float HEIGHT_DEFAULT = 480;
+		/** Starting width */
+		public final static int WIDTH_START = 800;
+		/** Starting height */
+		public final static int HEIGHT_START = 480;
 		/** World scaling factor */
 		public final static float WORLD_SCALE = 0.1f;
 		/** How much bigger of the screen is shown in height from the regular scale. E.g. 3 will show the same amount of
@@ -622,10 +626,10 @@ public class Config {
 	public static class Level {
 		/** How much offset from the first resource inside the level
 		 * the beginning of the level should be placed */
-		public final static float START_COORD_OFFSET = Graphics.WIDTH * Graphics.WORLD_SCALE * 0.25f;
+		public final static float START_COORD_OFFSET = Graphics.WIDTH_DEFAULT * Graphics.WORLD_SCALE * 0.25f;
 		/** How much offset from the last resource inside the level the
 		 * x-coordinate should appear */
-		public final static float END_COORD_OFFSET = Graphics.WIDTH * Graphics.WORLD_SCALE * 1.25f;
+		public final static float END_COORD_OFFSET = Graphics.WIDTH_DEFAULT * Graphics.WORLD_SCALE * 1.25f;
 	}
 
 	/**

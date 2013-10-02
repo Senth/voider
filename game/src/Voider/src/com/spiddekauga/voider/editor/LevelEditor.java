@@ -6,7 +6,6 @@ import java.util.UUID;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector2;
 import com.spiddekauga.utils.GameTime;
@@ -148,22 +147,22 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 		}
 	}
 
-	@Override
-	protected void fixCamera() {
-		float width = Gdx.graphics.getWidth() * Config.Graphics.LEVEL_EDITOR_SCALE;
-		// Decrease scale of width depending on height scaled
-		float heightScale = Config.Graphics.HEIGHT / Gdx.graphics.getHeight();
-		width *= heightScale;
-		float height = Config.Graphics.HEIGHT * Config.Graphics.LEVEL_EDITOR_SCALE;
-
-		if (mCamera != null) {
-			mCamera.viewportHeight = height;
-			mCamera.viewportWidth = width;
-			mCamera.update();
-		} else {
-			mCamera = new OrthographicCamera(width , height);
-		}
-	}
+	//	@Override
+	//	protected void fixCamera() {
+	//		float width = Gdx.graphics.getWidth() * Config.Graphics.LEVEL_EDITOR_SCALE;
+	//		// Decrease scale of width depending on height scaled
+	//		float heightScale = Config.Graphics.HEIGHT / Gdx.graphics.getHeight();
+	//		width *= heightScale;
+	//		float height = Config.Graphics.HEIGHT * Config.Graphics.LEVEL_EDITOR_SCALE;
+	//
+	//		if (mCamera != null) {
+	//			mCamera.viewportHeight = height;
+	//			mCamera.viewportWidth = width;
+	//			mCamera.update();
+	//		} else {
+	//			mCamera = new OrthographicCamera(width , height);
+	//		}
+	//	}
 
 	/**
 	 * Sets the level that shall be played and resets tools, invoker, etc.
