@@ -114,7 +114,7 @@ public abstract class SliderListener implements EventListener {
 						return true;
 					}
 				}
-				// Enter was pressed
+				// key was was pressed
 				else if (event instanceof InputEvent) {
 					InputEvent inputEvent = (InputEvent)event;
 					if (inputEvent.getType() == Type.keyDown) {
@@ -147,10 +147,13 @@ public abstract class SliderListener implements EventListener {
 				}
 
 
+
 				mEditingText = true;
 
-
-				float newValue = Float.parseFloat(mTextField.getText());
+				float newValue = 0;
+				if (!mTextField.getText().equals("")) {
+					newValue = Float.parseFloat(mTextField.getText());
+				}
 
 				// Clamp value
 				newValue = MathUtils.clamp(newValue, mSlider.getMinValue(), mSlider.getMaxValue());
