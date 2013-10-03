@@ -499,6 +499,8 @@ public class Config {
 		public final static int REVISION_LENGTH = 10;
 		/** Name of the latest copy in revision directories */
 		public final static String REVISION_LATEST_NAME = "LATEST";
+		/** Uses external images, etc. instead of internal for resources */
+		public final static boolean USE_EXTERNAL_RESOURCES = false;
 	}
 
 	/**

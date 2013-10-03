@@ -8,7 +8,9 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.spiddekauga.utils.Path;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.Config.File;
 import com.spiddekauga.voider.game.GameSave;
 import com.spiddekauga.voider.game.GameSaveDef;
 import com.spiddekauga.voider.game.Level;
@@ -111,6 +113,18 @@ public enum ResourceNames {
 	 * Initializes the resource names
 	 */
 	static void init() {
+		if (File.USE_EXTERNAL_RESOURCES) {
+			String execDir = Path.getExecDir();
+			String dir = execDir + "internal_resources/";
+
+			TEXTURE_PATH = dir + TEXTURE_PATH;
+			UI_PATH = dir + UI_PATH;
+			SHADER_PATH = dir + SHADER_PATH;
+			PARTICLE_PATH = dir + PARTICLE_PATH;
+			SOUND_PATH = dir + SOUND_PATH;
+		}
+
+
 		mResourcePaths.put(Texture.class, TEXTURE_PATH);
 		mResourcePaths.put(BulletActorDef.class, ACTOR_BULLET_PATH);
 		mResourcePaths.put(EnemyActorDef.class, ACTOR_ENEMY_PATH);
@@ -139,15 +153,16 @@ public enum ResourceNames {
 	private static Map<Class<?>, String> mResourcePaths = new HashMap<Class<?>, String>();
 
 	/** Directory for all texture */
-	private static final String TEXTURE_PATH = "gfx/";
+	private static String TEXTURE_PATH = "gfx/";
 	/** Directory for all UI */
-	private static final String UI_PATH = "ui/";
+	private static String UI_PATH = "ui/";
 	/** Directory for all shaders */
-	private static final String SHADER_PATH = "shaders/";
+	private static String SHADER_PATH = "shaders/";
 	/** Directory for all particle effects */
-	private static final String PARTICLE_PATH = "particles/";
+	private static String PARTICLE_PATH = "particles/";
 	/** Directory for all sound effects */
-	private static final String SOUND_PATH = "sound/";
+	private static String SOUND_PATH = "sound/";
+
 	/** Directory for all actor definitions */
 	private static String ACTOR_DEF_PATH = Config.File.STORAGE + "actors/";
 	/** Directory for all bullet actor definitions */

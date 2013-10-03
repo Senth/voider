@@ -14,6 +14,7 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.GdxRuntimeException;
+import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Debug;
 import com.spiddekauga.voider.game.GameSave;
 import com.spiddekauga.voider.game.GameSaveDef;
@@ -27,6 +28,7 @@ import com.spiddekauga.voider.game.actors.PlayerActorDef;
 import com.spiddekauga.voider.game.actors.StaticTerrainActorDef;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
+import com.spiddekauga.voider.utils.AbsoluteFileHandleResolver;
 import com.spiddekauga.voider.utils.Pools;
 
 
@@ -47,7 +49,11 @@ public class ResourceCacheFacade {
 	 * method
 	 */
 	public static void init() {
-		mAssetManager = new AssetManager();
+		if (Config.File.USE_EXTERNAL_RESOURCES) {
+			mAssetManager = new AssetManager(new AbsoluteFileHandleResolver());
+		} else {
+			mAssetManager = new AssetManager();
+		}
 
 		// External
 		mAssetManager.setLoader(BulletActorDef.class, new KryoLoaderAsync<BulletActorDef>(new ExternalFileHandleResolver(), BulletActorDef.class));
@@ -62,8 +68,13 @@ public class ResourceCacheFacade {
 		mAssetManager.setLoader(PlayerStats.class, new KryoLoaderAsync<PlayerStats>(new ExternalFileHandleResolver(), PlayerStats.class));
 
 		// Internal
-		mAssetManager.setLoader(ShaderProgram.class, new ShaderLoader(new InternalFileHandleResolver()));
-		mAssetManager.setLoader(Skin.class, new SkinLoader(new InternalFileHandleResolver()));
+		if (Config.File.USE_EXTERNAL_RESOURCES) {
+			mAssetManager.setLoader(ShaderProgram.class, new ShaderLoader(new AbsoluteFileHandleResolver()));
+			mAssetManager.setLoader(Skin.class, new SkinLoader(new AbsoluteFileHandleResolver()));
+		} else {
+			mAssetManager.setLoader(ShaderProgram.class, new ShaderLoader(new InternalFileHandleResolver()));
+			mAssetManager.setLoader(Skin.class, new SkinLoader(new InternalFileHandleResolver()));
+		}
 
 		mDependencyLoader = new ResourceDependencyLoader(mAssetManager);
 		ResourceNames.init();
