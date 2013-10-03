@@ -169,9 +169,9 @@ public class Config {
 				public final static float ROTATE_SPEED_STEP_SIZE = 1;
 
 				/** Minimum distance for new corners when drawing */
-				public final static float DRAW_NEW_CORNER_MIN_DIST_SQ = 1.0f * 1.0f;
+				public final static float DRAW_NEW_CORNER_MIN_DIST_SQ = 0.75f * 0.75f;
 				/** Minimum angle between corners, if less than this, the corner will be removed */
-				public final static float DRAW_CORNER_ANGLE_MIN = 10;
+				public final static float DRAW_CORNER_ANGLE_MIN = 9;
 				/** Maximum squared distance a new corners might be from a line segment */
 				public final static float NEW_CORNER_DIST_MAX_SQ = 3 * 3;
 			}
@@ -217,6 +217,11 @@ public class Config {
 				public final static float SIZE_STEP_SIZE = RADIUS_STEP_SIZE;
 				/** Default shape type of the enemy */
 				public final static ActorShapeTypes SHAPE_DEFAULT = ActorShapeTypes.RECTANGLE;
+
+				/** Minimum distance for new corners when drawing */
+				public final static float DRAW_NEW_CORNER_MIN_DIST_SQ = 0.25f * 0.25f;
+				/** Minimum angle between corners, if less than this, the corner will be removed */
+				public final static float DRAW_CORNER_ANGLE_MIN = 5;
 			}
 		}
 

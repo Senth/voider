@@ -9,6 +9,7 @@ import com.spiddekauga.utils.Collections;
 import com.spiddekauga.utils.Command;
 import com.spiddekauga.utils.Maths;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.game.actors.BulletActorDef;
 import com.spiddekauga.voider.resources.IResourceCorner;
 import com.spiddekauga.voider.utils.Pools;
 
@@ -35,6 +36,13 @@ public class CResourceCornerRemoveExcessive extends Command {
 			return false;
 		}
 
+		float drawNewCornerMinDistanceSq = Config.Editor.Actor.Visual.DRAW_NEW_CORNER_MIN_DIST_SQ;
+		float drawCornerAngleMin = Config.Editor.Actor.Visual.DRAW_CORNER_ANGLE_MIN;
+		if (mResource instanceof BulletActorDef) {
+			drawNewCornerMinDistanceSq = Config.Editor.Bullet.Visual.DRAW_NEW_CORNER_MIN_DIST_SQ;
+			drawCornerAngleMin = Config.Editor.Bullet.Visual.DRAW_CORNER_ANGLE_MIN;
+		}
+
 		Vector2 afterVector = Pools.vector2.obtain();
 		float beforeAngle = 0;
 		float afterAngle = 0;
@@ -47,7 +55,7 @@ public class CResourceCornerRemoveExcessive extends Command {
 			boolean removeCorner = false;
 
 			// Test distance
-			if (afterVector.len2() < Config.Editor.Actor.Visual.DRAW_NEW_CORNER_MIN_DIST_SQ) {
+			if (afterVector.len2() < drawNewCornerMinDistanceSq) {
 				removeCorner = true;
 			}
 			// Test angle
@@ -56,14 +64,14 @@ public class CResourceCornerRemoveExcessive extends Command {
 				afterVector.set(corners.get(Collections.nextIndex(corners, i))).sub(corners.get(i));
 				afterAngle = afterVector.angle();
 
-				if (Maths.approxCompare(beforeAngle, afterAngle, Config.Editor.Actor.Visual.DRAW_CORNER_ANGLE_MIN)) {
+				if (Maths.approxCompare(beforeAngle, afterAngle, drawCornerAngleMin)) {
 					removeCorner = true;
 				} else if (beforeAngle < afterAngle) {
-					if (Maths.approxCompare(beforeAngle + 360, afterAngle, Config.Editor.Actor.Visual.DRAW_CORNER_ANGLE_MIN)) {
+					if (Maths.approxCompare(beforeAngle + 360, afterAngle, drawCornerAngleMin)) {
 						removeCorner = true;
 					}
 				} else {
-					if (Maths.approxCompare(beforeAngle - 360, afterAngle, Config.Editor.Actor.Visual.DRAW_CORNER_ANGLE_MIN)) {
+					if (Maths.approxCompare(beforeAngle - 360, afterAngle, drawCornerAngleMin)) {
 						removeCorner = true;
 					}
 				}
@@ -83,11 +91,12 @@ public class CResourceCornerRemoveExcessive extends Command {
 			}
 		}
 
-		// Test length between last corners, i.e. end - 1 -> end & end -> begin
-		// end - 1 -> end.
+
+		// Test length between last corners, i.e. end-1 -> end & end -> begin
+		// end-1 -> end.
 		if (corners.size() > 1) {
 			afterVector.set(corners.get(corners.size() - 1)).sub(corners.get(corners.size() - 2));
-			if (afterVector.len2() < Config.Editor.Actor.Visual.DRAW_NEW_CORNER_MIN_DIST_SQ) {
+			if (afterVector.len2() < drawNewCornerMinDistanceSq) {
 				removeCorner(corners.size()-1);
 			}
 		}
@@ -95,7 +104,7 @@ public class CResourceCornerRemoveExcessive extends Command {
 		// end -> begin
 		if (corners.size() > 1) {
 			afterVector.set(corners.get(corners.size() - 1)).sub(corners.get(0));
-			if (afterVector.len2() < Config.Editor.Actor.Visual.DRAW_NEW_CORNER_MIN_DIST_SQ) {
+			if (afterVector.len2() < drawNewCornerMinDistanceSq) {
 				removeCorner(corners.size()-1);
 			}
 		}

@@ -28,6 +28,7 @@ import com.spiddekauga.voider.editor.commands.CResourceRemove;
 import com.spiddekauga.voider.editor.commands.CResourceSelect;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.ActorDef;
+import com.spiddekauga.voider.game.actors.BulletActorDef;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourceCorner;
 import com.spiddekauga.voider.utils.Geometry;
@@ -941,10 +942,16 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 	 */
 	private boolean haveMovedEnoughToAddAnotherCorner() {
 		boolean movedEnough = false;
+
+		float drawNewCornerMinDistSq = Config.Editor.Actor.Visual.DRAW_NEW_CORNER_MIN_DIST_SQ;
+		if (mActorDef instanceof BulletActorDef) {
+			drawNewCornerMinDistSq = Config.Editor.Bullet.Visual.DRAW_NEW_CORNER_MIN_DIST_SQ;
+		}
+
 		// If has drawn more than minimum distance, add another corner here
 		Vector2 diffVector = Pools.vector2.obtain();
 		diffVector.set(mTouchCurrent).sub(mDragOrigin);
-		if (diffVector.len2() >= Config.Editor.Actor.Visual.DRAW_NEW_CORNER_MIN_DIST_SQ) {
+		if (diffVector.len2() >= drawNewCornerMinDistSq) {
 			movedEnough = true;
 		}
 		Pools.vector2.free(diffVector);
