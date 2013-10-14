@@ -95,6 +95,11 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	}
 
 	@Override
+	protected void onDeactivate() {
+		((EnemyEditorGui)mGui).clearCollisionBoxes();
+	}
+
+	@Override
 	protected void onActivate(Outcomes outcome, Object message) {
 		super.onActivate(outcome, message);
 
@@ -272,6 +277,8 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 			saveDef();
 			mGui.showErrorMessage(Messages.Info.SAVING);
 		}
+
+		((EnemyEditorGui)mGui).resetCollisionBoxes();
 	}
 
 	@Override

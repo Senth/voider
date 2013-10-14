@@ -162,8 +162,6 @@ public class EnemyEditorGui extends ActorGui {
 			mWidgets.weapon.aimRotate.setChecked(true);
 			break;
 		}
-
-		resetCollisionBoxes();
 	}
 
 	/**
@@ -598,16 +596,7 @@ public class EnemyEditorGui extends ActorGui {
 				mEnemyEditor.setUseWeapon(checked);
 			}
 		};
-		HideListener weaponInnerHider = new HideListener(button, true) {
-			@Override
-			protected void onShow() {
-				resetCollisionBoxes();
-			}
-			@Override
-			protected void onHide() {
-				resetCollisionBoxes();
-			}
-		};
+		HideListener weaponInnerHider = new HideListener(button, true);
 
 		// TYPES
 		mWeaponTable.row();
@@ -919,19 +908,9 @@ public class EnemyEditorGui extends ActorGui {
 
 	// Hiders
 	/** Hides weapon options */
-	private HideListener mWeaponHider = new HideListener(true) {
-		@Override
-		protected void onShow() {
-			resetCollisionBoxes();
-		}
-	};
+	private HideListener mWeaponHider = new HideListener(true);
 	/** Hides movement options */
-	private HideListener mMovementHider = new HideListener(true) {
-		@Override
-		protected void onShow() {
-			resetCollisionBoxes();
-		}
-	};
+	private HideListener mMovementHider = new HideListener(true);
 
 
 	/** All widgets that needs updating when an actor is changed */

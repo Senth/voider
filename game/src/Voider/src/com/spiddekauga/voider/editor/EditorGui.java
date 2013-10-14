@@ -49,9 +49,7 @@ public abstract class EditorGui extends Gui {
 	@Override
 	public void dispose() {
 		mMainMenuTable.dispose();
-		for (Body body : mBodies) {
-			body.getWorld().destroyBody(body);
-		}
+		clearCollisionBoxes();
 		Pools.arrayList.free(mBodies);
 
 		super.dispose();
@@ -274,65 +272,84 @@ public abstract class EditorGui extends Gui {
 	}
 
 	/**
-	 * Reset and add collision boxes for all UI-elements
+	 * Reset and add collision boxes for all UI-elements. Should be called
+	 * every frame, will reset only when necessary.
 	 */
-	protected void resetCollisionBoxes() {
+	void resetCollisionBoxes() {
 		if (mWorldScene == null) {
 			return;
 		}
 
-		// Remove old bodies
+		if (mLayoutWasValid) {
+			mLayoutWasValid = mMainTable.isLayoutValid();
+		}
+
+
+		// Update collision boxes once main table has a valid layout again
+		if (!mLayoutWasValid && mMainTable.isLayoutValid()) {
+			mMainTable.invalidateHierarchy();
+
+			clearCollisionBoxes();
+
+
+			// Create new bodies
+			BodyDef bodyDef = new BodyDef();
+			bodyDef.type = BodyType.StaticBody;
+			FixtureDef fixtureDef = new FixtureDef();
+			fixtureDef.filter.categoryBits = ActorFilterCategories.SCREEN_BORDER;
+			fixtureDef.filter.maskBits = ActorFilterCategories.PLAYER;
+
+			PolygonShape polygonShape = new PolygonShape();
+			fixtureDef.shape = polygonShape;
+
+			World world = mWorldScene.getWorld();
+			float scale = mWorldScene.getCamera().viewportWidth / Gdx.graphics.getWidth() * 0.5f;
+
+			Vector2 screenPos = Pools.vector2.obtain();
+
+			ArrayList<Actor> actors = mMainTable.getActors(true);
+			for (Actor actor : actors) {
+
+				// Scale width & height
+				float worldWidth = actor.getWidth() * scale;
+				float worldHeight = actor.getHeight() * scale;
+				polygonShape.setAsBox(worldWidth, worldHeight);
+
+				// Scale position
+				screenPos.set(actor.getWidth() * 0.5f, actor.getHeight() * 0.5f);
+				actor.localToStageCoordinates(screenPos);
+				Scene.screenToWorldCoord(mWorldScene.getCamera(), screenPos, bodyDef.position, false);
+				bodyDef.position.y *= -1;
+
+				// Create body
+				Body body = world.createBody(bodyDef);
+				body.createFixture(fixtureDef);
+				mBodies.add(body);
+			}
+
+			polygonShape.dispose();
+			Pools.arrayList.free(actors);
+
+
+			Pools.vector2.freeAll(screenPos);
+		}
+	}
+
+	/**
+	 * Clears the collision boxes
+	 */
+	void clearCollisionBoxes() {
 		for (Body body : mBodies) {
 			body.getWorld().destroyBody(body);
 		}
 		mBodies.clear();
-
-
-		// Create new bodies
-		BodyDef bodyDef = new BodyDef();
-		bodyDef.type = BodyType.StaticBody;
-		FixtureDef fixtureDef = new FixtureDef();
-		fixtureDef.filter.categoryBits = ActorFilterCategories.SCREEN_BORDER;
-		fixtureDef.filter.maskBits = ActorFilterCategories.PLAYER;
-
-		PolygonShape polygonShape = new PolygonShape();
-		fixtureDef.shape = polygonShape;
-
-		World world = mWorldScene.getWorld();
-		float scale = mWorldScene.getCamera().viewportWidth / Gdx.graphics.getWidth() * 0.5f;
-
-		Vector2 screenPos = Pools.vector2.obtain();
-
-		ArrayList<Actor> actors = mMainTable.getActors(true);
-		for (Actor actor : actors) {
-
-			// Scale width & height
-			float worldWidth = actor.getWidth() * scale;
-			float worldHeight = actor.getHeight() * scale;
-			polygonShape.setAsBox(worldWidth, worldHeight);
-
-			// Scale position
-			screenPos.set(actor.getWidth() * 0.5f, actor.getHeight() * 0.5f);
-			actor.localToStageCoordinates(screenPos);
-			Scene.screenToWorldCoord(mWorldScene.getCamera(), screenPos, bodyDef.position, false);
-			bodyDef.position.y *= -1;
-
-			// Create body
-			Body body = world.createBody(bodyDef);
-			body.createFixture(fixtureDef);
-			mBodies.add(body);
-		}
-
-		polygonShape.dispose();
-		Pools.arrayList.free(actors);
-
-
-		Pools.vector2.freeAll(screenPos);
 	}
 
 	/** Main menu table */
 	protected AlignTable mMainMenuTable = new AlignTable();
-
+	/** If the main table has a valid layout, false means the collision boxes
+	 * will be updated once the main table has a valid layout again */
+	private boolean mLayoutWasValid = false;
 	/** World scene */
 	private WorldScene mWorldScene = null;
 	/** All UI-bodies for collision */

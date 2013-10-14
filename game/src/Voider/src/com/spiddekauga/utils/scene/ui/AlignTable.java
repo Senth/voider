@@ -55,6 +55,27 @@ public class AlignTable extends WidgetGroup implements Disposable {
 		mDisposing = false;
 	}
 
+	@Override
+	public void invalidateHierarchy() {
+		super.invalidateHierarchy();
+
+		mValidLayout = false;
+	}
+
+	@Override
+	public void invalidate() {
+		super.invalidate();
+
+		mValidLayout = false;
+	}
+
+	/**
+	 * @return true if the table has a valid layout
+	 */
+	public boolean isLayoutValid() {
+		return mValidLayout;
+	}
+
 	/**
 	 * Sets the table alignment
 	 * @param horizontal horizontal alignment of the table
@@ -478,6 +499,8 @@ public class AlignTable extends WidgetGroup implements Disposable {
 
 		Pools.vector2.free(rowSize);
 		Pools.vector2.free(offset);
+
+		mValidLayout = true;
 	}
 
 	@Override
@@ -593,7 +616,8 @@ public class AlignTable extends WidgetGroup implements Disposable {
 		}
 	}
 
-
+	/** Layout is valid, false if the table needs to call layout() */
+	private boolean mValidLayout = true;
 	/** All the rows of the table */
 	private ArrayList<Row> mRows = new ArrayList<Row>();
 	/** Table alignment (not cell alignment) */
