@@ -617,6 +617,13 @@ public class Cell implements Poolable {
 		return mActor == actor;
 	}
 
+	/**
+	 * @return actor of the cell
+	 */
+	Actor getActor() {
+		return mActor;
+	}
+
 
 	/** Actor in the cell */
 	private Actor mActor = null;

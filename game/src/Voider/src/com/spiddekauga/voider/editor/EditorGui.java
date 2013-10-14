@@ -1,5 +1,16 @@
 package com.spiddekauga.voider.editor;
 
+import java.util.ArrayList;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -19,11 +30,15 @@ import com.spiddekauga.voider.editor.commands.CEditorNew;
 import com.spiddekauga.voider.editor.commands.CEditorSave;
 import com.spiddekauga.voider.editor.commands.CSceneReturn;
 import com.spiddekauga.voider.editor.commands.CSceneSwitch;
+import com.spiddekauga.voider.game.actors.ActorFilterCategories;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceNames;
 import com.spiddekauga.voider.scene.Gui;
+import com.spiddekauga.voider.scene.Scene;
+import com.spiddekauga.voider.scene.WorldScene;
 import com.spiddekauga.voider.utils.Messages;
 import com.spiddekauga.voider.utils.Messages.UnsavedActions;
+import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Common methods for all editors
@@ -34,6 +49,10 @@ public abstract class EditorGui extends Gui {
 	@Override
 	public void dispose() {
 		mMainMenuTable.dispose();
+		for (Body body : mBodies) {
+			body.getWorld().destroyBody(body);
+		}
+		Pools.arrayList.free(mBodies);
 
 		super.dispose();
 	}
@@ -44,6 +63,10 @@ public abstract class EditorGui extends Gui {
 	 * @param defTypeName the definition type name to save is unsaved, etc.
 	 */
 	protected void initMainMenu(final IEditor editor, final String defTypeName) {
+		if (editor instanceof WorldScene) {
+			mWorldScene = ((WorldScene) editor);
+		}
+
 		Skin generalSkin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
 		final TextButtonStyle textStyle = generalSkin.get("default", TextButtonStyle.class);
 
@@ -250,6 +273,69 @@ public abstract class EditorGui extends Gui {
 		showMsgBox(msgBox);
 	}
 
+	/**
+	 * Reset and add collision boxes for all UI-elements
+	 */
+	protected void resetCollisionBoxes() {
+		if (mWorldScene == null) {
+			return;
+		}
+
+		// Remove old bodies
+		for (Body body : mBodies) {
+			body.getWorld().destroyBody(body);
+		}
+		mBodies.clear();
+
+
+		// Create new bodies
+		BodyDef bodyDef = new BodyDef();
+		bodyDef.type = BodyType.StaticBody;
+		FixtureDef fixtureDef = new FixtureDef();
+		fixtureDef.filter.categoryBits = ActorFilterCategories.SCREEN_BORDER;
+		fixtureDef.filter.maskBits = ActorFilterCategories.PLAYER;
+
+		PolygonShape polygonShape = new PolygonShape();
+		fixtureDef.shape = polygonShape;
+
+		World world = mWorldScene.getWorld();
+		float scale = mWorldScene.getCamera().viewportWidth / Gdx.graphics.getWidth() * 0.5f;
+
+		Vector2 screenPos = Pools.vector2.obtain();
+
+		ArrayList<Actor> actors = mMainTable.getActors(true);
+		for (Actor actor : actors) {
+
+			// Scale width & height
+			float worldWidth = actor.getWidth() * scale;
+			float worldHeight = actor.getHeight() * scale;
+			polygonShape.setAsBox(worldWidth, worldHeight);
+
+			// Scale position
+			screenPos.set(actor.getWidth() * 0.5f, actor.getHeight() * 0.5f);
+			actor.localToStageCoordinates(screenPos);
+			Scene.screenToWorldCoord(mWorldScene.getCamera(), screenPos, bodyDef.position, false);
+			bodyDef.position.y *= -1;
+
+			// Create body
+			Body body = world.createBody(bodyDef);
+			body.createFixture(fixtureDef);
+			mBodies.add(body);
+		}
+
+		polygonShape.dispose();
+		Pools.arrayList.free(actors);
+
+
+		Pools.vector2.freeAll(screenPos);
+	}
+
 	/** Main menu table */
 	protected AlignTable mMainMenuTable = new AlignTable();
+
+	/** World scene */
+	private WorldScene mWorldScene = null;
+	/** All UI-bodies for collision */
+	@SuppressWarnings("unchecked")
+	private ArrayList<Body> mBodies = Pools.arrayList.obtain();
 }

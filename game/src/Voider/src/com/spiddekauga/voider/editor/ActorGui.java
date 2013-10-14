@@ -975,11 +975,26 @@ public abstract class ActorGui extends EditorGui {
 
 	// Hiders
 	/** Hides visual table */
-	protected HideListener mVisualHider = new HideListener(true);
+	protected HideListener mVisualHider = new HideListener(true) {
+		@Override
+		protected void onShow() {
+			resetCollisionBoxes();
+		}
+	};
 	/** Hides options options :D:D:D */
-	protected HideListener mOptionHider = new HideListener(true);
+	protected HideListener mOptionHider = new HideListener(true) {
+		@Override
+		protected void onShow() {
+			resetCollisionBoxes();
+		}
+	};
 	/** Hides collision options */
-	protected HideListener mCollisionHider = new HideListener(true);
+	protected HideListener mCollisionHider = new HideListener(true) {
+		@Override
+		protected void onShow() {
+			resetCollisionBoxes();
+		}
+	};
 	/** Invoker */
 	protected Invoker mInvoker = null;
 

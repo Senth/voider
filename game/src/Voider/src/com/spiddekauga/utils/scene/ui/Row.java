@@ -419,6 +419,13 @@ public class Row implements Poolable {
 	}
 
 	/**
+	 * @return all cells
+	 */
+	ArrayList<Cell> getCells() {
+		return mCells;
+	}
+
+	/**
 	 * Call this to layout the row.
 	 * @param startPos starting position of the row
 	 * @param size available size for this row

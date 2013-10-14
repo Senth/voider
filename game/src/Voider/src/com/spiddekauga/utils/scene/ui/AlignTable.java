@@ -6,9 +6,11 @@ import java.util.Iterator;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup;
 import com.badlogic.gdx.scenes.scene2d.utils.Layout;
 import com.badlogic.gdx.utils.Disposable;
+import com.badlogic.gdx.utils.SnapshotArray;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.voider.utils.Pools;
@@ -113,6 +115,49 @@ public class AlignTable extends WidgetGroup implements Disposable {
 		mRowPaddingDefault.bottom = bottom;
 		mRowPaddingDefault.left = left;
 		return this;
+	}
+
+	/**
+	 * Gets all actors in the table
+	 * @param onlyVisible set to true to get visible actors, false to get all
+	 * @return array with all actors. Don't forget to free the ArrayList after
+	 * it has been used.
+	 */
+	public ArrayList<Actor> getActors(boolean onlyVisible) {
+		@SuppressWarnings("unchecked")
+		ArrayList<Actor> actors = Pools.arrayList.obtain();
+
+		getActors(onlyVisible, actors);
+
+		return actors;
+	}
+
+	/**
+	 * Add all actors to the specified list
+	 * @param onlyVisible set to true to get visible actors, false to get all
+	 * @param actors list to add the actors to
+	 */
+	private void getActors(boolean onlyVisible, ArrayList<Actor> actors) {
+		for (Row row : mRows) {
+			for (Cell cell : row.getCells()) {
+				if (!onlyVisible || cell.isVisible()) {
+					Actor actor = cell.getActor();
+					if (actor instanceof AlignTable) {
+						((AlignTable) actor).getActors(onlyVisible, actors);
+					} else if (actor.getClass() == Table.class) {
+						SnapshotArray<Actor> tableActors = ((Table) actor).getChildren();
+						for (int i = 0; i < tableActors.size; ++i) {
+							Actor tableActor = tableActors.get(i);
+							if (!onlyVisible || cell.isVisible()) {
+								actors.add(tableActor);
+							}
+						}
+					} else if (actor != null) {
+						actors.add(actor);
+					}
+				}
+			}
+		}
 	}
 
 	/**

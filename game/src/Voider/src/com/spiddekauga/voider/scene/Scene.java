@@ -423,7 +423,7 @@ public abstract class Scene extends InputAdapter {
 	 * @param worldCoordinate the vector to set the world coordinate for
 	 * @param clamp if the x and y coordinates should be clamped
 	 */
-	protected static void screenToWorldCoord(Camera camera, Vector2 screenPos, Vector2 worldCoordinate, boolean clamp) {
+	public static void screenToWorldCoord(Camera camera, Vector2 screenPos, Vector2 worldCoordinate, boolean clamp) {
 		screenToWorldCoord(camera, screenPos.x, screenPos.y, worldCoordinate, clamp);
 	}
 
@@ -435,7 +435,7 @@ public abstract class Scene extends InputAdapter {
 	 * @param worldCoordinate the vector to set the world coordinate for
 	 * @param clamp if the x and y coordinates should be clamped
 	 */
-	protected static void screenToWorldCoord(Camera camera, float x, float y, Vector2 worldCoordinate, boolean clamp) {
+	public static void screenToWorldCoord(Camera camera, float x, float y, Vector2 worldCoordinate, boolean clamp) {
 		if (clamp) {
 			mTestPoint.set(clampX(x), clampY(y), 0);
 		} else {

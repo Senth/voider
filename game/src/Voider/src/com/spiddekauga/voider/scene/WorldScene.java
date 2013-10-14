@@ -124,24 +124,24 @@ public abstract class WorldScene extends Scene {
 	}
 
 	/**
-	 * @return 0,0 of screen in world coordinates, null if current scene isn't a world
+	 * @return 0,0 (lower left corner) of screen in world coordinates, null if current scene isn't a world
 	 * scene. Remember to free the returned vector with
 	 * Pools.vector2.free(returnedVector);
 	 */
 	@Override
-	protected Vector2 getWorldMinCoordinates() {
+	public Vector2 getWorldMinCoordinates() {
 		Vector2 minPos = Pools.vector2.obtain();
 		screenToWorldCoord(mCamera, 0, Gdx.graphics.getHeight(), minPos, false);
 		return minPos;
 	}
 
 	/**
-	 * @return screenWidth,screenHeight in world coordinates, null if current scene
+	 * @return screenWidth,screenHeight (upper right corner) in world coordinates, null if current scene
 	 * isn't a world scene. Remember to free the returned vector with
 	 * Pools.vector2.free(returnedVector);
 	 */
 	@Override
-	protected Vector2 getWorldMaxCoordinates() {
+	public Vector2 getWorldMaxCoordinates() {
 		Vector2 maxPos = Pools.vector2.obtain();
 		screenToWorldCoord(mCamera, Gdx.graphics.getWidth(), 0, maxPos, false);
 		return maxPos;
@@ -196,11 +196,6 @@ public abstract class WorldScene extends Scene {
 		corners[2].set(-getWorldWidth(), getWorldHeight() * 0.5f);
 		corners[3].set(0, getWorldHeight() * 0.5f);
 
-		//		screenToWorldCoord(mCamera, 0, 0, corners[0], false);
-		//		screenToWorldCoord(mCamera, Gdx.graphics.getWidth(), 0, corners[1], false);
-		//		screenToWorldCoord(mCamera, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), corners[2], false);
-		//		screenToWorldCoord(mCamera, 0, Gdx.graphics.getHeight(), corners[3], false);
-
 
 		// Create fixture
 		ChainShape shape = new ChainShape();
@@ -241,6 +236,20 @@ public abstract class WorldScene extends Scene {
 		mPickingFixtureDef.filter.maskBits = ActorFilterCategories.NONE;
 		mPickingFixtureDef.shape = circleShape;
 		mPickingVertices = Geometry.createCircle(pickRadius);
+	}
+
+	/**
+	 * @return world of the current scene
+	 */
+	public World getWorld() {
+		return mWorld;
+	}
+
+	/**
+	 * @return camera of the current scene
+	 */
+	public Camera getCamera() {
+		return mCamera;
 	}
 
 	/** Physics world */
