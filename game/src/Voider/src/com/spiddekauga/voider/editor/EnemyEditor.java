@@ -32,6 +32,7 @@ import com.spiddekauga.voider.game.CollisionResolver;
 import com.spiddekauga.voider.game.Path;
 import com.spiddekauga.voider.game.Path.PathTypes;
 import com.spiddekauga.voider.game.actors.Actor;
+import com.spiddekauga.voider.game.actors.ActorFilterCategories;
 import com.spiddekauga.voider.game.actors.ActorShapeTypes;
 import com.spiddekauga.voider.game.actors.BulletActorDef;
 import com.spiddekauga.voider.game.actors.EnemyActor;
@@ -278,6 +279,8 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 			mGui.showErrorMessage(Messages.Info.SAVING);
 		}
 
+		checkAndResetPlayerPosition();
+
 		((EnemyEditorGui)mGui).resetCollisionBoxes();
 	}
 
@@ -380,6 +383,34 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 		return bulletRevisions;
 	}
 
+	/**
+	 * Resets the player if necessary. This happens if the player gets stuck
+	 * behind something.
+	 */
+	private void checkAndResetPlayerPosition() {
+		// Skip if moving player
+		if (mMovingPlayer) {
+			return;
+		}
+
+
+		// Only test if player is still
+		if (!mPlayerLastPosition.equals(mPlayerActor.getPosition())) {
+			mPlayerLastPosition.set(mPlayerActor.getPosition());
+			return;
+		}
+
+
+		// Test hit UI
+		float playerRadius = mPlayerActor.getDef().getVisualVars().getBoundingRadius();
+		mWorld.QueryAABB(mCallbackUiHit, mPlayerLastPosition.x - playerRadius, mPlayerLastPosition.y - playerRadius, mPlayerLastPosition.x + playerRadius, mPlayerLastPosition.y + playerRadius);
+
+		// Player can be stuck -> Reset player position
+		if (mPlayerHitUi) {
+			resetPlayerPosition();
+		}
+	}
+
 	// --------------------------------
 	//		INPUT EVENTS (not gui)
 	// --------------------------------
@@ -389,7 +420,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 		if (mPlayerPointer == INVALID_POINTER) {
 			screenToWorldCoord(mCamera, x, y, mCursorWorld, true);
 
-			mWorld.QueryAABB(mCallback, mCursorWorld.x - 0.0001f, mCursorWorld.y - 0.0001f, mCursorWorld.x + 0.0001f, mCursorWorld.y + 0.0001f);
+			mWorld.QueryAABB(mCallbackPlayerHit, mCursorWorld.x - 0.0001f, mCursorWorld.y - 0.0001f, mCursorWorld.x + 0.0001f, mCursorWorld.y + 0.0001f);
 
 			if (mMovingPlayer) {
 				mPlayerPointer = pointer;
@@ -1100,8 +1131,8 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	private MouseJoint mMouseJoint = null;
 	/** Body of the mouse, for mouse joint */
 	private Body mMouseBody = null;
-	/** Callback for "ray testing" */
-	private QueryCallback mCallback = new QueryCallback() {
+	/** Callback for "ray testing" if hit player */
+	private QueryCallback mCallbackPlayerHit = new QueryCallback() {
 		@Override
 		public boolean reportFixture(Fixture fixture) {
 			if (fixture.testPoint(mCursorWorld.x, mCursorWorld.y)) {
@@ -1115,6 +1146,24 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	};
 	/** World coordinate for the cursor */
 	private Vector2 mCursorWorld = new Vector2();
+
+	/** Callback for "ray testing" hitting a UI element */
+	private QueryCallback mCallbackUiHit = new QueryCallback() {
+		@Override
+		public boolean reportFixture(Fixture fixture) {
+			mPlayerHitUi = false;
+			if (fixture.getFilterData().categoryBits == ActorFilterCategories.SCREEN_BORDER) {
+				mPlayerHitUi = true;
+				return false;
+			}
+			return true;
+		}
+	};
+	/** Player hit UI element */
+	private boolean mPlayerHitUi = false;
+	/** Player last position */
+	private Vector2 mPlayerLastPosition = new Vector2();
+
 
 	/**
 	 * Creates the example paths that are used
@@ -1252,6 +1301,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 		Scene.screenToWorldCoord(mCamera, Gdx.graphics.getWidth() * 0.1f, Gdx.graphics.getHeight() * 0.5f, playerPosition, true);
 		mPlayerActor.setPosition(playerPosition);
 		mPlayerActor.getBody().setLinearVelocity(0, 0);
+		Pools.vector2.free(playerPosition);
 	}
 
 	/**
