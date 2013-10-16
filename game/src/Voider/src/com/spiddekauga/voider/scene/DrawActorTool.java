@@ -353,6 +353,7 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 
 		case DRAW_ERASE:
 			if (!mChangedActorThisEvent) {
+				testPick(0.00001f);
 				if (hitSelectedActor()) {
 					mDrawEraseBrush = new VectorBrush(true);
 				} else {
@@ -453,9 +454,14 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 
 	@Override
 	protected void up() {
+		if (mSelectedActor == null) {
+			return;
+		}
+
+
 		switch (mState) {
 		case ADJUST_ADD_CORNER:
-			if (mSelectedActor != null && mCornerIndexCurrent != -1) {
+			if (mCornerIndexCurrent != -1) {
 				// Remove temporary corner
 				Vector2 removedCorner = mSelectedActor.getDef().getVisualVars().removeCorner(mCornerIndexCurrent);
 
@@ -478,7 +484,7 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 
 
 		case ADJUST_MOVE_CORNER:
-			if (mSelectedActor != null && mCornerIndexCurrent != -1) {
+			if (mCornerIndexCurrent != -1) {
 				// Reset to original position
 				Vector2 newPos = Pools.vector2.obtain();
 				newPos.set(mSelectedActor.getDef().getVisualVars().getCornerPosition(mCornerIndexCurrent));
@@ -509,23 +515,19 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 
 		case DRAW_APPEND:
 			if (!mChangedActorThisEvent) {
-				if (mSelectedActor != null) {
-					mInvoker.execute(new CActorDefFixCustomFixtures(mSelectedActor.getDef(), false));
+				// Add a final corner when released
+				appendCorner(true);
 
-					// Add a final corner when released
-					appendCorner(true);
+				mInvoker.execute(new CResourceCornerRemoveExcessive(mSelectedActor.getDef().getVisualVars()), true);
 
-					mInvoker.execute(new CResourceCornerRemoveExcessive(mSelectedActor.getDef().getVisualVars()), true);
-
-					try {
-						mInvoker.execute(new CActorDefFixCustomFixtures(mSelectedActor.getDef(), true), true);
-					} catch (PolygonComplexException e) {
-						SceneSwitcher.showErrorMessage(Messages.Error.POLYGON_COMPLEX_DRAW_APPEND);
-						handleBadCornerPosition(null);
-					} catch (PolygonCornersTooCloseException e) {
-						Gdx.app.error("DrawActorTool", "PolygonCornersTooClose! Should never happen!");
-						handleBadCornerPosition(null);
-					}
+				try {
+					mInvoker.execute(new CActorDefFixCustomFixtures(mSelectedActor.getDef(), true), true);
+				} catch (PolygonComplexException e) {
+					SceneSwitcher.showErrorMessage(Messages.Error.POLYGON_COMPLEX_DRAW_APPEND);
+					handleBadCornerPosition(null);
+				} catch (PolygonCornersTooCloseException e) {
+					Gdx.app.error("DrawActorTool", "PolygonCornersTooClose! Should never happen!");
+					handleBadCornerPosition(null);
 				}
 			}
 			break;
@@ -748,7 +750,7 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 
 		case MOVE:
 			// Set the new position of the actor
-			if (mSelectedActor != null && mMovingShape) {
+			if (mMovingShape) {
 				// Reset actor to original position
 				mSelectedActor.setPosition(mDragOrigin);
 
@@ -843,7 +845,6 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 		// Because a corner is added both on down and up we need to undo twice.
 		if (mCornerIndexLast != -1) {
 			mInvoker.undo(false);
-			mInvoker.undo(false);
 		}
 
 		mInvoker.execute(new CResourceSelect(null, this));
@@ -896,8 +897,7 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 	 * @param message the message to print
 	 */
 	private void handleBadCornerPosition(String message) {
-		/** @todo implement error messaage */
-		mInvoker.undo();
+		mInvoker.undo(false);
 		mInvoker.clearRedo();
 		mCornerIndexCurrent = -1;
 	}
