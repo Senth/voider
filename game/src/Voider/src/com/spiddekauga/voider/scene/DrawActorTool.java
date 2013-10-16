@@ -274,6 +274,7 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 					mSelectedActor.getDef().getVisualVars().addCorner(localPos, mCornerIndexCurrent);
 					mCornerAddedNow = true;
 				}
+				setDrawing(true);
 
 				Pools.vector2.free(localPos);
 
@@ -286,6 +287,7 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 				if (mHitBody.getUserData() instanceof HitWrapper) {
 					mCornerIndexCurrent = mSelectedActor.getCornerIndex(mHitBody.getPosition());
 					mDragOrigin.set(mSelectedActor.getDef().getVisualVars().getCornerPosition(mCornerIndexCurrent));
+					setDrawing(true);
 				}
 			}
 			break;
@@ -344,6 +346,7 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 				} else {
 					mInvoker.execute(new CActorDefFixCustomFixtures(mSelectedActor.getDef(), false));
 				}
+				setDrawing(true);
 
 				// Create corner here
 				appendCorner(true);
@@ -362,6 +365,7 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 				mActorEditor.onResourceAdded(mDrawEraseBrush);
 				mDrawEraseBrush.addCorner(mTouchCurrent);
 				mDragOrigin.set(mTouchCurrent);
+				setDrawing(true);
 			}
 			break;
 
@@ -370,6 +374,7 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 			if (mHitBody != null && mHitBody.getUserData() == mSelectedActor) {
 				mDragOrigin.set(mHitBody.getPosition());
 				mMovingShape = true;
+				setDrawing(true);
 			}
 			break;
 
@@ -386,6 +391,7 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 				mSelectedActor.setPosition(mTouchOrigin);
 				mSelectedActor.createBody();
 				Pools.vector2.free(centerOffset);
+				setDrawing(true);
 			}
 			break;
 		}
@@ -782,6 +788,7 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 		mCornerIndexLast = mCornerIndexCurrent;
 		mCornerIndexCurrent = -1;
 		mCornerAddedNow = false;
+		setDrawing(false);
 	}
 
 	/**

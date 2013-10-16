@@ -102,6 +102,13 @@ public abstract class TouchTool extends InputAdapter {
 	}
 
 	/**
+	 * @return true if the tool is currently drawing something
+	 */
+	public boolean isDrawing() {
+		return mDrawing;
+	}
+
+	/**
 	 * Tests to pick a body from the current touch. The hit body is
 	 * set to mHitBody. Uses the default pick size
 	 */
@@ -136,6 +143,14 @@ public abstract class TouchTool extends InputAdapter {
 	protected abstract void up();
 
 	/**
+	 * Sets the tool as drawing
+	 * @param drawing true if the tool is drawing
+	 */
+	protected void setDrawing(boolean drawing) {
+		mDrawing = drawing;
+	}
+
+	/**
 	 * To work properly this callback shall set mHitBodies for
 	 * all bodies that were hit
 	 * @return the callback for testing picking
@@ -162,6 +177,8 @@ public abstract class TouchTool extends InputAdapter {
 	/** World used for picking */
 	protected World mWorld;
 
+	/** If the tool is currently draving */
+	private boolean mDrawing = false;
 	/** Camera of the tool, used to get world coordinates of the click */
 	private Camera mCamera;
 

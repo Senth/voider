@@ -1,7 +1,7 @@
 package com.spiddekauga.voider.editor;
 
 /**
- * Common actions for all editors
+ * 
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
@@ -27,12 +27,12 @@ public interface IEditor {
 	void duplicateDef();
 
 	/**
-	 * @return true if the current definition in the editor is unsaved
+	 * @return true if the editor is currently drawing
 	 */
-	boolean isUnSaved();
+	boolean isDrawing();
 
 	/**
-	 * @return true if the editor shall try to auto-save the current file
+	 * @return true if the resource is saved
 	 */
-	boolean shallAutoSave();
+	boolean isSaved();
 }

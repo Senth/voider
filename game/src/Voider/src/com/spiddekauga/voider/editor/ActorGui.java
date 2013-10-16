@@ -229,7 +229,7 @@ public abstract class ActorGui extends EditorGui {
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed() {
-				if (mActorEditor.isUnSaved()) {
+				if (!mActorEditor.isSaved()) {
 					Button yes = new TextButton("Save first", textStyle);
 					Button no = new TextButton("Discard current", textStyle);
 
@@ -278,7 +278,7 @@ public abstract class ActorGui extends EditorGui {
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed() {
-				if (mActorEditor.isUnSaved()) {
+				if (!mActorEditor.isSaved()) {
 					Button yes = new TextButton("Save first", textStyle);
 					Button no = new TextButton("Load anyway", textStyle);
 
@@ -310,7 +310,7 @@ public abstract class ActorGui extends EditorGui {
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed() {
-				if (mActorEditor.isUnSaved()) {
+				if (!mActorEditor.isSaved()) {
 					Button yes = new TextButton("Save first", textStyle);
 					Button no = new TextButton("Duplicate anyway", textStyle);
 

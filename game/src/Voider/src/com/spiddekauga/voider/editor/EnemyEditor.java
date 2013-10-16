@@ -21,7 +21,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.SnapshotArray;
-import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.utils.Invoker;
 import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
@@ -49,7 +48,6 @@ import com.spiddekauga.voider.scene.DrawActorTool;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.scene.SelectDefScene;
-import com.spiddekauga.voider.scene.WorldScene;
 import com.spiddekauga.voider.utils.Messages;
 import com.spiddekauga.voider.utils.Pools;
 
@@ -58,7 +56,7 @@ import com.spiddekauga.voider.utils.Pools;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class EnemyEditor extends WorldScene implements IActorEditor, IResourceChangeEditor {
+public class EnemyEditor extends Editor implements IActorEditor, IResourceChangeEditor {
 	/**
 	 * Creates the enemy editor
 	 */
@@ -133,7 +131,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 
 			scalePathLabels();
 
-			mSaved = true;
+			setSaved();
 
 			setMovementType(mDef.getMovementType());
 		}
@@ -148,7 +146,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 					setEnemyDef((EnemyActorDef) ResourceCacheFacade.get(this, ((ResourceItem) message).id, ((ResourceItem) message).revision));
 					setMovementType(mDef.getMovementType());
 					mGui.resetValues();
-					mSaved = true;
+					setSaved();
 					break;
 				}
 
@@ -231,6 +229,11 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 		mEnemyPathOnce.dispose();
 
 		super.onDispose();
+	}
+
+	@Override
+	public boolean isDrawing() {
+		return false;
 	}
 
 	@Override
@@ -491,6 +494,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	/**
 	 * Saves the current enemy actor
 	 */
+	@Override
 	public void saveDef() {
 		ResourceSaver.save(mDef);
 
@@ -502,17 +506,19 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 			setEnemyDef((EnemyActorDef) ResourceCacheFacade.get(this, mDef.getId()));
 		}
 
-		mSaveTimeLast = GameTime.getTotalGlobalTimeElapsed();
-		mSaved = true;
+		setSaved();
 	}
 
 	/**
 	 * Creates a new enemy
 	 */
+	@Override
 	public void newDef() {
 		setEnemyDef(new EnemyActorDef());
 		mGui.resetValues();
-		mSaved = true;
+
+		/** @todo open name dialog */
+		saveDef();
 	}
 
 	/**
@@ -525,7 +531,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 		mEnemyPathBackAndForth.setSpeed(speed);
 		mEnemyPathLoop.setSpeed(speed);
 		mEnemyPathOnce.setSpeed(speed);
-		mSaved = false;
+		setUnsaved();
 	}
 
 	/**
@@ -545,7 +551,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 		mEnemyPathBackAndForth.resetPathMovement();
 		mEnemyPathLoop.resetPathMovement();
 		mEnemyPathOnce.resetPathMovement();
-		mSaved = false;
+		setUnsaved();
 	}
 
 	/**
@@ -553,11 +559,6 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	 */
 	boolean isTurning() {
 		return mDef.isTurning();
-	}
-
-	@Override
-	public boolean isUnSaved() {
-		return !mSaved;
 	}
 
 	@Override
@@ -586,7 +587,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	 */
 	void setPlayerDistanceMin(float minDistance) {
 		mDef.setPlayerDistanceMin(minDistance);
-		mSaved = false;
+		setUnsaved();
 	}
 
 	/**
@@ -609,7 +610,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	 */
 	void setPlayerDistanceMax(float maxDistance) {
 		mDef.setPlayerDistanceMax(maxDistance);
-		mSaved = false;
+		setUnsaved();
 	}
 
 	/**
@@ -647,7 +648,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 			break;
 		}
 
-		mSaved = false;
+		setUnsaved();
 	}
 
 	/**
@@ -656,7 +657,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	 */
 	void setTurnSpeed(float turnSpeed) {
 		mDef.setTurnSpeed(turnSpeed);
-		mSaved = false;
+		setUnsaved();
 	}
 
 	/**
@@ -669,7 +670,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	@Override
 	public void setStartingAngle(float angle) {
 		mDef.setStartAngleDeg(angle);
-		mSaved = false;
+		setUnsaved();
 	}
 
 	@Override
@@ -680,7 +681,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	@Override
 	public void setRotationSpeed(float rotationSpeed) {
 		mDef.setRotationSpeedDeg(rotationSpeed);
-		mSaved = false;
+		setUnsaved();
 	}
 
 	@Override
@@ -705,7 +706,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	 */
 	void setMoveRandomly(boolean moveRandomly) {
 		mDef.setMoveRandomly(moveRandomly);
-		mSaved = false;
+		setUnsaved();
 	}
 
 	/**
@@ -724,7 +725,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	 */
 	void setRandomTimeMin(float minTime) {
 		mDef.setRandomTimeMin(minTime);
-		mSaved = false;
+		setUnsaved();
 	}
 
 	/**
@@ -742,7 +743,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	 */
 	void setRandomTimeMax(float maxTime) {
 		mDef.setRandomTimeMax(maxTime);
-		mSaved = false;
+		setUnsaved();
 	}
 
 	/**
@@ -772,7 +773,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 			mInvoker.execute(new CEnemyBulletDefSelect(bulletDef.getId(), this));
 		}
 
-		mSaved = false;
+		setUnsaved();
 	}
 
 	/**
@@ -788,7 +789,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	 */
 	void setBulletSpeed(float speed) {
 		mDef.getWeaponDef().setBulletSpeed(speed);
-		mSaved = false;
+		setUnsaved();
 	}
 
 	/**
@@ -804,7 +805,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	 */
 	void setWeaponDamage(float damage) {
 		mDef.getWeaponDef().setDamage(damage);
-		mSaved = false;
+		setUnsaved();
 	}
 
 	/**
@@ -822,7 +823,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	 */
 	void setCooldownMin(float minCooldown) {
 		mDef.getWeaponDef().setCooldownMin(minCooldown);
-		mSaved = false;
+		setUnsaved();
 	}
 
 	/**
@@ -840,7 +841,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	 */
 	void setCooldownMax(float maxCooldown) {
 		mDef.getWeaponDef().setCooldownMax(maxCooldown);
-		mSaved = false;
+		setUnsaved();
 	}
 
 	/**
@@ -856,7 +857,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	 */
 	void setAimType(AimTypes aimType) {
 		mDef.setAimType(aimType);
-		mSaved = false;
+		setUnsaved();
 	}
 
 	/**
@@ -876,7 +877,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 		mEnemyPathBackAndForth.resetWeapon();
 		mEnemyPathOnce.resetWeapon();
 		mEnemyPathLoop.resetWeapon();
-		mSaved = false;
+		setUnsaved();
 	}
 
 	/**
@@ -893,7 +894,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	 */
 	void setAimRotateSpeed(float rotateSpeed) {
 		mDef.setAimRotateSpeed(rotateSpeed);
-		mSaved = false;
+		setUnsaved();
 	}
 
 	/**
@@ -926,6 +927,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	@Override
 	public void setShapeRadius(float radius) {
 		mDef.getVisualVars().setShapeRadius(radius);
+		setUnsaved();
 	}
 
 	@Override
@@ -936,6 +938,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	@Override
 	public void setShapeWidth(float width) {
 		mDef.getVisualVars().setShapeWidth(width);
+		setUnsaved();
 	}
 
 	@Override
@@ -946,6 +949,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	@Override
 	public void setShapeHeight(float height) {
 		mDef.getVisualVars().setShapeHeight(height);
+		setUnsaved();
 	}
 
 	@Override
@@ -973,6 +977,8 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 		//			mBulletActor.createBody();
 		//			Pools.vector2.free(diffOffset);
 		//		}
+
+		setUnsaved();
 	}
 
 	@Override
@@ -995,6 +1001,8 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 		//			mBulletActor.createBody();
 		//			Pools.vector2.free(diffOffset);
 		//		}
+
+		setUnsaved();
 	}
 
 	@Override
@@ -1005,6 +1013,8 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	@Override
 	public void setName(String name) {
 		mDef.setName(name);
+
+		setUnsaved();
 	}
 
 	@Override
@@ -1015,6 +1025,8 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	@Override
 	public void setDescription(String description) {
 		mDef.setDescription(description);
+
+		setUnsaved();
 	}
 
 	@Override
@@ -1040,7 +1052,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	public void duplicateDef() {
 		setEnemyDef((EnemyActorDef) mDef.copy());
 		mGui.resetValues();
-		mSaved = false;
+		saveDef();
 	}
 
 	@Override
@@ -1086,6 +1098,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	@Override
 	public void setCollisionDamage(float damage) {
 		mDef.setCollisionDamage(damage);
+		setUnsaved();
 	}
 
 	/**
@@ -1103,6 +1116,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	@Override
 	public void setDestroyOnCollide(boolean destroyOnCollision) {
 		mDef.setDestroyOnCollide(destroyOnCollision);
+		setUnsaved();
 	}
 
 	/**
@@ -1112,12 +1126,6 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	public boolean isDestroyedOnCollide() {
 		return mDef.isDestroyedOnCollide();
 	}
-
-	@Override
-	public boolean shallAutoSave() {
-		return !mSaved && GameTime.getTotalGlobalTimeElapsed() - mSaveTimeLast >= Config.Editor.AUTO_SAVE_TIME;
-	}
-
 
 	/** Invalid pointer id */
 	private static final int INVALID_POINTER = -1;
@@ -1357,7 +1365,7 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 		if (bulletActorDef != null) {
 			mDef.addDependency(bulletActorDef);
 		}
-		mSaved = false;
+		setUnsaved();
 	}
 
 	/**
@@ -1422,10 +1430,6 @@ public class EnemyEditor extends WorldScene implements IActorEditor, IResourceCh
 	private EnemyActor mEnemyPathBackAndForth = new EnemyActor();
 	/** Current enemy actor definition */
 	private EnemyActorDef mDef = new EnemyActorDef();
-	/** If actor has been saved since edit */
-	private boolean mSaved = true;
-	/** Last time we saved */
-	private float mSaveTimeLast = GameTime.getTotalGlobalTimeElapsed();
 	/** Display path how once works */
 	private Path mPathOnce = new Path();
 	/** Display path how loop works */

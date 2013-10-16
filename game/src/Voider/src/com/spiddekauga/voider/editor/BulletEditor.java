@@ -5,7 +5,6 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector2;
-import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.utils.Invoker;
 import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
@@ -26,7 +25,6 @@ import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.scene.SelectDefScene;
 import com.spiddekauga.voider.scene.TouchTool;
-import com.spiddekauga.voider.scene.WorldScene;
 import com.spiddekauga.voider.utils.Messages;
 import com.spiddekauga.voider.utils.Pools;
 
@@ -35,7 +33,7 @@ import com.spiddekauga.voider.utils.Pools;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class BulletEditor extends WorldScene implements IActorEditor, IResourceChangeEditor {
+public class BulletEditor extends Editor implements IActorEditor, IResourceChangeEditor {
 	/**
 	 * Creates a bullet editor.
 	 */
@@ -64,7 +62,7 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 
 		if (outcome == Outcomes.LOADING_SUCCEEDED) {
 			mInvoker.dispose();
-			mUnsaved = false;
+			setSaved();
 		} else if (outcome == Outcomes.DEF_SELECTED) {
 			switch (mSelectionAction) {
 			case LOAD_BULLET:
@@ -72,7 +70,7 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 					BulletActorDef bulletDef = ResourceCacheFacade.get(this, ((ResourceItem) message).id, ((ResourceItem) message).revision);
 					setDef(bulletDef);
 					mGui.resetValues();
-					mUnsaved = false;
+					setSaved();
 					mInvoker.dispose();
 				} else {
 					Gdx.app.error("MainMenu", "When seleting def, message was not a ResourceItem but a " + message.getClass().getName());
@@ -80,6 +78,15 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 			}
 		} else if (outcome == Outcomes.NOT_APPLICAPLE) {
 			mGui.hideMsgBoxes();
+		}
+	}
+
+	@Override
+	public boolean isDrawing() {
+		if (mActiveTouchTool != null) {
+			return mActiveTouchTool.isDrawing();
+		} else {
+			return false;
 		}
 	}
 
@@ -178,7 +185,7 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 		BulletActorDef newDef = new BulletActorDef();
 		setDef(newDef);
 		mGui.resetValues();
-		mUnsaved = false;
+		setSaved();
 		mInvoker.dispose();
 	}
 
@@ -194,8 +201,7 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 			setDef((BulletActorDef) ResourceCacheFacade.get(this, mDef.getId()));
 		}
 
-		mSaveTimeLast = GameTime.getTotalGlobalTimeElapsed();
-		mUnsaved = false;
+		setSaved();
 	}
 
 	@Override
@@ -211,13 +217,8 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 		mDef = (BulletActorDef) mDef.copy();
 		mWeapon.getDef().setBulletActorDef(mDef);
 		mGui.resetValues();
-		mUnsaved = true;
 		mInvoker.dispose();
-	}
-
-	@Override
-	public boolean isUnSaved() {
-		return mUnsaved;
+		saveDef();
 	}
 
 	@Override
@@ -243,13 +244,13 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 	@Override
 	public void setName(String name) {
 		mDef.setName(name);
-		mUnsaved = true;
+		setUnsaved();
 	}
 
 	@Override
 	public void setDescription(String description) {
 		mDef.setDescription(description);
-		mUnsaved = true;
+		setUnsaved();
 	}
 
 	@Override
@@ -260,7 +261,7 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 	@Override
 	public void setStartingAngle(float angle) {
 		mDef.setStartAngleDeg(angle);
-		mUnsaved = true;
+		setUnsaved();
 	}
 
 	@Override
@@ -271,7 +272,7 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 	@Override
 	public void setRotationSpeed(float rotationSpeed) {
 		mDef.setRotationSpeedDeg(rotationSpeed);
-		mUnsaved = true;
+		setUnsaved();
 	}
 
 	@Override
@@ -282,7 +283,7 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 	@Override
 	public void setShapeType(ActorShapeTypes shapeType) {
 		mDef.getVisualVars().setShapeType(shapeType);
-		mUnsaved = true;
+		setUnsaved();
 
 		if (shapeType == ActorShapeTypes.CUSTOM) {
 			mActiveTouchTool = mDrawActorTool;
@@ -303,7 +304,7 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 	@Override
 	public void setShapeRadius(float radius) {
 		mDef.getVisualVars().setShapeRadius(radius);
-		mUnsaved = true;
+		setUnsaved();
 	}
 
 	@Override
@@ -314,7 +315,7 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 	@Override
 	public void setShapeWidth(float width) {
 		mDef.getVisualVars().setShapeWidth(width);
-		mUnsaved = true;
+		setUnsaved();
 	}
 
 	@Override
@@ -325,7 +326,7 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 	@Override
 	public void setShapeHeight(float height) {
 		mDef.getVisualVars().setShapeHeight(height);
-		mUnsaved = true;
+		setUnsaved();
 	}
 
 	@Override
@@ -353,6 +354,8 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 			mBulletActor.createBody();
 			Pools.vector2.free(diffOffset);
 		}
+
+		setUnsaved();
 	}
 
 	@Override
@@ -375,6 +378,8 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 			mBulletActor.createBody();
 			Pools.vector2.free(diffOffset);
 		}
+
+		setUnsaved();
 	}
 
 	@Override
@@ -399,6 +404,8 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 	@Override
 	public void setCollisionDamage(float damage) {
 		mDef.setCollisionDamage(damage);
+
+		setUnsaved();
 	}
 
 	/**
@@ -416,6 +423,8 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 	@Override
 	public void setDestroyOnCollide(boolean destroyOnCollision) {
 		mDef.setDestroyOnCollide(destroyOnCollision);
+
+		setUnsaved();
 	}
 
 	/**
@@ -437,7 +446,7 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 			mBulletActor.setPosition(worldPosition);
 			Pools.vector2.free(worldPosition);
 
-			mUnsaved = true;
+			setUnsaved();
 		} else if (resource instanceof VectorBrush) {
 			mVectorBrush = (VectorBrush) resource;
 		}
@@ -447,7 +456,7 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 	public void onResourceRemoved(IResource resource) {
 		if (resource instanceof BulletActor) {
 			mBulletActor = null;
-			mUnsaved = true;
+			setUnsaved();
 		} else if (resource instanceof VectorBrush) {
 			mVectorBrush = null;
 		}
@@ -456,18 +465,13 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 	@Override
 	public void onResourceChanged(IResource resource) {
 		if (resource instanceof BulletActor) {
-			mUnsaved = true;
+			setUnsaved();
 		}
 	}
 
 	@Override
 	public void onResourceSelected(IResource deselectedResource, IResource selectedResource) {
 		// Does nothing
-	}
-
-	@Override
-	public boolean shallAutoSave() {
-		return mUnsaved && GameTime.getTotalGlobalTimeElapsed() - mSaveTimeLast >= Config.Editor.AUTO_SAVE_TIME;
 	}
 
 	/**
@@ -544,10 +548,6 @@ public class BulletEditor extends WorldScene implements IActorEditor, IResourceC
 
 	/** Current weapon that fires the bullets */
 	private Weapon mWeapon = new Weapon();
-	/** If the bullet is unsaved since it was edited */
-	private boolean mUnsaved = false;
-	/** Last time we saved */
-	private float mSaveTimeLast = GameTime.getTotalGlobalTimeElapsed();
 	/** Current bullet definition */
 	private BulletActorDef mDef = new BulletActorDef();
 	/** Current selection scene */

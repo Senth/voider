@@ -8,7 +8,6 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector2;
-import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.utils.Invoker;
 import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.utils.Scroller;
@@ -52,7 +51,6 @@ import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.scene.SelectDefScene;
 import com.spiddekauga.voider.scene.TouchTool;
 import com.spiddekauga.voider.scene.TriggerTool;
-import com.spiddekauga.voider.scene.WorldScene;
 import com.spiddekauga.voider.utils.Messages;
 import com.spiddekauga.voider.utils.Pools;
 
@@ -61,7 +59,7 @@ import com.spiddekauga.voider.utils.Pools;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class LevelEditor extends WorldScene implements IResourceChangeEditor, IEditor {
+public class LevelEditor extends Editor implements IResourceChangeEditor {
 	/**
 	 * Constructor for the level editor
 	 */
@@ -147,22 +145,10 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 		}
 	}
 
-	//	@Override
-	//	protected void fixCamera() {
-	//		float width = Gdx.graphics.getWidth() * Config.Graphics.LEVEL_EDITOR_SCALE;
-	//		// Decrease scale of width depending on height scaled
-	//		float heightScale = Config.Graphics.HEIGHT / Gdx.graphics.getHeight();
-	//		width *= heightScale;
-	//		float height = Config.Graphics.HEIGHT * Config.Graphics.LEVEL_EDITOR_SCALE;
-	//
-	//		if (mCamera != null) {
-	//			mCamera.viewportHeight = height;
-	//			mCamera.viewportWidth = width;
-	//			mCamera.update();
-	//		} else {
-	//			mCamera = new OrthographicCamera(width , height);
-	//		}
-	//	}
+	@Override
+	public boolean isDrawing() {
+		return mTouchTools[mToolType.ordinal()].isDrawing();
+	}
 
 	/**
 	 * Sets the level that shall be played and resets tools, invoker, etc.
@@ -271,7 +257,7 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 
 		// Check so that all resources have been loaded
 		if (outcome == Outcomes.LOADING_SUCCEEDED) {
-			mUnsaved = false;
+			setSaved();
 
 			// Loading a level
 			if (mLoadingLevel != null) {
@@ -281,7 +267,7 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 					setLevel(loadedLevel);
 					mGui.resetValues();
 					mGui.hideMsgBoxes();
-					mUnsaved = false;
+					setSaved();
 					mLoadingLevel = null;
 				} else {
 					Gdx.app.error("LevelEditor", "Could not find level (" + mLoadingLevel.getLevelId() + ")");
@@ -403,6 +389,8 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 
 	@Override
 	public boolean touchDown(int x, int y, int pointer, int button) {
+		super.touchDown(x, y, pointer, button);
+
 		// Scroll -> When press middle mouse or two fingers
 		if (button == 2 || (Gdx.app.getInput().isTouched(0) && Gdx.app.getInput().isTouched(1))) {
 			// If we're already scrolling create scroll command
@@ -426,6 +414,8 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 
 	@Override
 	public boolean touchDragged(int x, int y, int pointer) {
+		super.touchDragged(x, y, pointer);
+
 		// Scrolling, move the map
 		if (mScroller.isScrollingByHand() && pointer == 0) {
 			mScroller.touchDragged(x, y);
@@ -436,6 +426,7 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 
 	@Override
 	public boolean touchUp(int x, int y, int pointer, int button) {
+		super.touchUp(x, y, pointer, button);
 
 		// Not scrolling any more
 		if (mScroller.isScrollingByHand() && (button == 2 || !Gdx.app.getInput().isTouched(0) || !Gdx.app.getInput().isTouched(1))) {
@@ -449,18 +440,18 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 	@Override
 	public void onResourceAdded(IResource resource) {
 		mLevel.addResource(resource);
-		mUnsaved = true;
+		setUnsaved();
 	}
 
 	@Override
 	public void onResourceRemoved(IResource resource) {
 		mLevel.removeResource(resource.getId());
-		mUnsaved = true;
+		setUnsaved();
 	}
 
 	@Override
 	public void onResourceChanged(IResource resource) {
-		mUnsaved = true;
+		setUnsaved();
 
 		if (resource instanceof EnemyActor) {
 			((LevelEditorGui)mGui).resetEnemyOptions();
@@ -599,8 +590,7 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 			setLevel((Level) ResourceCacheFacade.get(this, mLevel.getId()));
 		}
 
-		mSaveTimeLast = GameTime.getTotalGlobalTimeElapsed();
-		mUnsaved = false;
+		setSaved();
 	}
 
 	@Override
@@ -620,7 +610,7 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 
 		clearTools();
 
-		mUnsaved = false;
+		setSaved();
 	}
 
 	@Override
@@ -630,13 +620,8 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 		setLevel(level);
 
 		mGui.resetValues();
-		mUnsaved = true;
 		mInvoker.dispose();
-	}
-
-	@Override
-	public boolean isUnSaved() {
-		return mUnsaved;
+		saveDef();
 	}
 
 	/**
@@ -646,7 +631,7 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 	void setLevelStartingSpeed(float speed) {
 		if (mLevel != null) {
 			mLevel.setSpeed(speed);
-			mUnsaved = true;
+			setUnsaved();
 		}
 	}
 
@@ -679,7 +664,7 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 	void setLevelName(String name) {
 		if (mLevel != null) {
 			mLevel.getDef().setName(name);
-			mUnsaved = true;
+			setUnsaved();
 		}
 	}
 
@@ -701,7 +686,7 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 	void setLevelDescription(String description) {
 		if (mLevel != null) {
 			mLevel.getDef().setDescription(description);
-			mUnsaved = true;
+			setUnsaved();
 		}
 	}
 
@@ -723,7 +708,7 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 	void setPrologue(String storyText) {
 		if (mLevel != null) {
 			mLevel.getDef().setPrologue(storyText);
-			mUnsaved = true;
+			setUnsaved();
 		}
 	}
 
@@ -746,7 +731,7 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 	void setEpilogue(String storyText) {
 		if (mLevel != null) {
 			mLevel.getDef().setStoryAfter(storyText);
-			mUnsaved = true;
+			setUnsaved();
 		}
 	}
 
@@ -1077,11 +1062,6 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 		SceneSwitcher.switchTo(scene);
 	}
 
-	@Override
-	public boolean shallAutoSave() {
-		return mUnsaved && GameTime.getTotalGlobalTimeElapsed() - mSaveTimeLast >= Config.Editor.AUTO_SAVE_TIME;
-	}
-
 	/**
 	 * Select enemy
 	 */
@@ -1338,8 +1318,5 @@ public class LevelEditor extends WorldScene implements IResourceChangeEditor, IE
 	private Tools mToolType = Tools.STATIC_TERRAIN;
 	/** All the available tools */
 	private TouchTool[] mTouchTools = new TouchTool[Tools.values().length];
-	/** Is unsaved since last edit */
-	private boolean mUnsaved = false;
-	/** Last time we saved */
-	private float mSaveTimeLast = GameTime.getTotalGlobalTimeElapsed();
+
 }
