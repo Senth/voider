@@ -126,7 +126,7 @@ public class TriggerTool extends TouchTool implements ISelectTool {
 
 	@Override
 	protected void down() {
-		testPick(Editor.PICK_TRIGGER_SIZE);
+		testPickAabb(Editor.PICK_TRIGGER_SIZE);
 		Object hitObject = null;
 		if (mHitBody != null) {
 			hitObject = mHitBody.getUserData();

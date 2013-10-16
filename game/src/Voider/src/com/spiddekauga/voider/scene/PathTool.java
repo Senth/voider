@@ -494,11 +494,11 @@ public class PathTool extends TouchTool implements ISelectTool {
 	 * Test pick for the level
 	 */
 	private void testPickPath() {
-		testPick();
+		testPickAabb();
 
 		if (mHitBody == null) {
 			mOnlyFindPath = true;
-			testPick(Editor.PICK_PATH_SIZE);
+			testPickAabb(Editor.PICK_PATH_SIZE);
 			mOnlyFindPath = false;
 		}
 	}

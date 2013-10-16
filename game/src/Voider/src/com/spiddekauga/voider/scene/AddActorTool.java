@@ -86,7 +86,7 @@ public class AddActorTool extends ActorTool {
 		case ADD:
 			boolean addActor = false;
 			if (mAddMoveSelects) {
-				testPick();
+				testPickAabb();
 				selectActor(false);
 
 				if (mSelectedActor != null) {
@@ -113,7 +113,7 @@ public class AddActorTool extends ActorTool {
 			break;
 
 		case REMOVE:
-			testPick();
+			testPickAabb();
 
 			if (mHitBody != null) {
 				if (mHitBody.getUserData() instanceof Actor) {
@@ -123,7 +123,7 @@ public class AddActorTool extends ActorTool {
 			break;
 
 		case MOVE:
-			testPick();
+			testPickAabb();
 
 			if (mAddMoveSelects) {
 				selectActor(false);
@@ -138,7 +138,7 @@ public class AddActorTool extends ActorTool {
 			break;
 
 		case SELECT:
-			testPick();
+			testPickAabb();
 			selectActor(false);
 			break;
 		}

@@ -257,7 +257,7 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 		}
 
 		// Test if we hit a body or corner
-		testPick();
+		testPickAabb();
 
 		if (hitAnotherActor()) {
 			mInvoker.execute(new CResourceSelect((Actor)mHitBody.getUserData(), this));
@@ -355,8 +355,8 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 
 
 		case DRAW_ERASE:
-			if (!mChangedActorThisEvent) {
-				testPick(0.00001f);
+			if (!mChangedActorThisEvent && mSelectedActor != null) {
+				testPickPoint();
 				if (hitSelectedActor()) {
 					mDrawEraseBrush = new VectorBrush(true);
 				} else {
@@ -399,10 +399,14 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 
 	@Override
 	protected void dragged() {
+		if (mSelectedActor == null) {
+			return;
+		}
+
 		switch (mState) {
 		case ADJUST_ADD_CORNER:
 		case ADJUST_MOVE_CORNER:
-			if (mSelectedActor != null && mCornerIndexCurrent != -1) {
+			if (mCornerIndexCurrent != -1) {
 				Vector2 newCornerPos = getLocalPosition(mTouchCurrent);
 				mSelectedActor.getDef().getVisualVars().moveCorner(mCornerIndexCurrent, newCornerPos);
 				Pools.vector2.free(newCornerPos);
@@ -435,7 +439,7 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 
 
 		case MOVE:
-			if (mSelectedActor != null && mMovingShape) {
+			if (mMovingShape) {
 				Vector2 newPosition = getNewMovePosition();
 				mSelectedActor.setPosition(newPosition);
 				Pools.vector2.free(newPosition);
@@ -443,18 +447,17 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 			break;
 
 
-		case SET_CENTER:
-			if (mSelectedActor != null) {
-				Vector2 centerOffset = Pools.vector2.obtain();
-				centerOffset.set(mDragOrigin).sub(mTouchCurrent);
-				centerOffset.add(mCenterOffsetOrigin);
-				mSelectedActor.getDef().getVisualVars().setCenterOffset(centerOffset);
-				mSelectedActor.destroyBody();
-				mSelectedActor.setPosition(mTouchCurrent);
-				mSelectedActor.createBody();
-				Pools.vector2.free(centerOffset);
-			}
-			break;
+		case SET_CENTER: {
+			Vector2 centerOffset = Pools.vector2.obtain();
+			centerOffset.set(mDragOrigin).sub(mTouchCurrent);
+			centerOffset.add(mCenterOffsetOrigin);
+			mSelectedActor.getDef().getVisualVars().setCenterOffset(centerOffset);
+			mSelectedActor.destroyBody();
+			mSelectedActor.setPosition(mTouchCurrent);
+			mSelectedActor.createBody();
+			Pools.vector2.free(centerOffset);
+		}
+		break;
 		}
 	}
 

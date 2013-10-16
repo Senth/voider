@@ -141,7 +141,7 @@ public abstract class ActorTool extends TouchTool implements ISelectTool {
 	protected Body filterPick(ArrayList<Body> hitBodies) {
 		// If we hit the selected body, always return that first
 		if (!hitBodies.isEmpty()) {
-			if (hitBodies.contains(mSelectedActor.getBody())) {
+			if (mSelectedActor != null && hitBodies.contains(mSelectedActor.getBody())) {
 				return mSelectedActor.getBody();
 			} else {
 				return hitBodies.get(0);

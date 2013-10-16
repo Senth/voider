@@ -138,7 +138,7 @@ public class AddEnemyTool extends AddActorTool {
 
 		case SET_ACTIVATE_TRIGGER:
 		case SET_DEACTIVATE_TRIGGER:
-			testPick(Editor.PICK_TRIGGER_SIZE);
+			testPickAabb(Editor.PICK_TRIGGER_SIZE);
 
 			if (mHitBody != null) {
 				Object hitObject = mHitBody.getUserData();

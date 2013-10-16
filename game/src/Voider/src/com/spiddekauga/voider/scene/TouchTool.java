@@ -6,6 +6,7 @@ import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.World;
 import com.spiddekauga.voider.Config;
@@ -112,8 +113,8 @@ public abstract class TouchTool extends InputAdapter {
 	 * Tests to pick a body from the current touch. The hit body is
 	 * set to mHitBody. Uses the default pick size
 	 */
-	protected void testPick() {
-		testPick(Editor.PICK_SIZE_DEFAULT);
+	protected void testPickAabb() {
+		testPickAabb(Editor.PICK_SIZE_DEFAULT);
 	}
 
 	/**
@@ -121,9 +122,18 @@ public abstract class TouchTool extends InputAdapter {
 	 * set to mHitBody
 	 * @param halfSize how far the touch shall test
 	 */
-	protected void testPick(float halfSize) {
+	protected void testPickAabb(float halfSize) {
 		mHitBodies.clear();
 		mWorld.QueryAABB(getCallback(), mTouchCurrent.x - halfSize, mTouchCurrent.y - halfSize, mTouchCurrent.x + halfSize, mTouchCurrent.y + halfSize);
+		mHitBody = filterPick(mHitBodies);
+	}
+
+	/**
+	 * Tests to pick a body from the current touch point. The hit body will be set to mHitBody
+	 */
+	protected void testPickPoint() {
+		mHitBodies.clear();
+		mWorld.QueryAABB(mCallbackPoint, mTouchCurrent.x, mTouchCurrent.y, mTouchCurrent.x, mTouchCurrent.y);
 		mHitBody = filterPick(mHitBodies);
 	}
 
@@ -181,6 +191,16 @@ public abstract class TouchTool extends InputAdapter {
 	private boolean mDrawing = false;
 	/** Camera of the tool, used to get world coordinates of the click */
 	private Camera mCamera;
+	/** Callback for testing points */
+	private QueryCallback mCallbackPoint = new QueryCallback() {
+		@Override
+		public boolean reportFixture(Fixture fixture) {
+			if (fixture.testPoint(mTouchCurrent)) {
+				return getCallback().reportFixture(fixture);
+			}
+			return true;
+		}
+	};
 
 	// Temp variables
 	/** All bodies that were hit during the pick */
