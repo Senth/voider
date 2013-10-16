@@ -407,10 +407,13 @@ public class Config {
 			public final static float LEVEL_SPEED_DEFAULT = 5;
 			/** Step size of level speeed */
 			public final static float LEVEL_SPEED_STEP_SIZE = 1;
-			/**
-			 * Color of above and below the actual level, so the player can see that this doesn't below to the level.
-			 */
+			/** Color of above and below the actual level, so the player can see
+			 * that this doesn't below to the level. */
 			public final static Color ABOVE_BELOW_COLOR = new Color(1, 1, 1, 0.1f);
+			/** Color from enemies to activate trigger */
+			public static Color ENEMY_ACTIVATE_TRIGGER_PATH_COLOR = new Color(0.25f, 1, 0.25f, 0.4f);
+			/** Color from enemies to deactivate trigger */
+			public static Color ENEMY_DEACTIVATE_TRIGGER_PATH_COLOR = new Color(1, 0.25f, 0.6f, 0.4f);
 		}
 
 		/**

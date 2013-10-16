@@ -7,6 +7,7 @@ import com.esotericsoftware.kryo.io.Output;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.utils.Maths;
 import com.spiddekauga.utils.ShapeRendererEx;
+import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.Level;
 import com.spiddekauga.voider.game.Path;
@@ -19,6 +20,7 @@ import com.spiddekauga.voider.game.triggers.TScreenAt;
 import com.spiddekauga.voider.game.triggers.TriggerAction.Actions;
 import com.spiddekauga.voider.game.triggers.TriggerInfo;
 import com.spiddekauga.voider.resources.IResource;
+import com.spiddekauga.voider.resources.IResourcePosition;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.utils.Geometry;
 import com.spiddekauga.voider.utils.Pools;
@@ -102,6 +104,32 @@ public class EnemyActor extends Actor {
 			}
 		} else {
 			super.render(shapeRenderer);
+		}
+	}
+
+	@Override
+	public void renderEditor(ShapeRendererEx shapeRenderer) {
+		if (mGroup == null || mGroupLeader) {
+			super.renderEditor(shapeRenderer);
+
+
+			// Draw path to
+			// Activate trigger
+			shapeRenderer.push(ShapeType.Line);
+			TriggerInfo activateTrigger = TriggerInfo.getTriggerInfoByAction(this, Actions.ACTOR_ACTIVATE);
+			if (activateTrigger != null && activateTrigger.trigger instanceof IResourcePosition) {
+				shapeRenderer.setColor(Config.Editor.Level.ENEMY_ACTIVATE_TRIGGER_PATH_COLOR);
+				shapeRenderer.line(getPosition(), ((IResourcePosition)activateTrigger.trigger).getPosition());
+			}
+
+			// Deactivate trigger
+			TriggerInfo deactivateTrigger = TriggerInfo.getTriggerInfoByAction(this, Actions.ACTOR_DEACTIVATE);
+			if (deactivateTrigger != null && deactivateTrigger.trigger instanceof IResourcePosition) {
+				shapeRenderer.setColor(Config.Editor.Level.ENEMY_DEACTIVATE_TRIGGER_PATH_COLOR);
+				shapeRenderer.line(getPosition(), ((IResourcePosition)deactivateTrigger.trigger).getPosition());
+			}
+			shapeRenderer.pop();
+
 		}
 	}
 

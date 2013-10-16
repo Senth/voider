@@ -83,7 +83,7 @@ public class TriggerInfo {
 	 * @param listener the enemy to find the TriggerInfo in.
 	 * @param action the action the trigger contains.
 	 * @return TriggerInfo that have the same triggerId and action as the specified trigger.
-	 * Null if the trigger info wasn't found inside the enemy.
+	 * null if the trigger info wasn't found inside the listener.
 	 */
 	public static TriggerInfo getTriggerInfoByAction(ITriggerListener listener, Actions action) {
 		for (TriggerInfo triggerInfo : listener.getTriggerInfos()) {
