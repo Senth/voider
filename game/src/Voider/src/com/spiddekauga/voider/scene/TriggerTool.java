@@ -39,9 +39,8 @@ public class TriggerTool extends TouchTool implements ISelectTool {
 	 * @param levelEditor sending command to it
 	 */
 	public TriggerTool(Camera camera, World world, Invoker invoker, LevelEditor levelEditor) {
-		super(camera, world);
+		super(camera, world, invoker);
 
-		mInvoker = invoker;
 		mLevelEditor = levelEditor;
 	}
 
@@ -125,7 +124,7 @@ public class TriggerTool extends TouchTool implements ISelectTool {
 	}
 
 	@Override
-	protected void down() {
+	protected boolean down() {
 		testPickAabb(Editor.PICK_TRIGGER_SIZE);
 		Object hitObject = null;
 		if (mHitBody != null) {
@@ -195,10 +194,12 @@ public class TriggerTool extends TouchTool implements ISelectTool {
 			}
 			break;
 		}
+
+		return true;
 	}
 
 	@Override
-	protected void dragged() {
+	protected boolean dragged() {
 		switch (mState) {
 		case ADD:
 		case MOVE:
@@ -216,10 +217,12 @@ public class TriggerTool extends TouchTool implements ISelectTool {
 			// Does nothing
 			break;
 		}
+
+		return true;
 	}
 
 	@Override
-	protected void up() {
+	protected boolean up() {
 		switch (mState) {
 		case ADD:
 		case MOVE:
@@ -241,6 +244,8 @@ public class TriggerTool extends TouchTool implements ISelectTool {
 			// Does nothing
 			break;
 		}
+
+		return true;
 	}
 
 	@Override
@@ -315,8 +320,6 @@ public class TriggerTool extends TouchTool implements ISelectTool {
 	private States mState = States.ADD;
 	/** Currently selected trigger */
 	private Trigger mSelectedTrigger = null;
-	/** Invoker to send the command to */
-	private Invoker mInvoker;
 	/** Level editor */
 	private LevelEditor mLevelEditor;
 }

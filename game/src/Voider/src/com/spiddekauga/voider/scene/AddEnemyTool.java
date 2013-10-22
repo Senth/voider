@@ -42,7 +42,7 @@ public class AddEnemyTool extends AddActorTool {
 	 * @param editor will be called when actors are added/removed
 	 */
 	public AddEnemyTool(Camera camera, World world, Invoker invoker, LevelEditor editor) {
-		super(camera, world, EnemyActor.class, invoker, true, editor);
+		super(camera, world, invoker, EnemyActor.class, true, editor);
 		mLevelEditor = editor;
 	}
 
@@ -127,7 +127,7 @@ public class AddEnemyTool extends AddActorTool {
 	}
 
 	@Override
-	protected void down() {
+	protected boolean down() {
 		switch (mState) {
 		case ADD:
 		case MOVE:
@@ -177,10 +177,12 @@ public class AddEnemyTool extends AddActorTool {
 			}
 			break;
 		}
+
+		return true;
 	}
 
 	@Override
-	protected void dragged() {
+	protected boolean dragged() {
 		switch (mState) {
 		case ADD:
 		case MOVE:
@@ -203,10 +205,12 @@ public class AddEnemyTool extends AddActorTool {
 			// Does nothing
 			break;
 		}
+
+		return true;
 	}
 
 	@Override
-	protected void up() {
+	protected boolean up() {
 		boolean chained = false;
 		switch (mState) {
 		case ADD:
@@ -238,6 +242,8 @@ public class AddEnemyTool extends AddActorTool {
 			// Does nothing
 			break;
 		}
+
+		return true;
 	}
 
 	/**

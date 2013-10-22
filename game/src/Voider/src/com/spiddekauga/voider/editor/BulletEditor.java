@@ -49,7 +49,7 @@ public class BulletEditor extends Editor implements IActorEditor, IResourceChang
 		mWeapon.setPosition(weaponPos);
 		Pools.vector2.free(weaponPos);
 
-		mDrawActorTool = new DrawActorTool(mCamera, mWorld, BulletActor.class, mInvoker, this, mDef);
+		mDrawActorTool = new DrawActorTool(mCamera, mWorld, mInvoker, BulletActor.class, this, mDef);
 	}
 
 	@Override

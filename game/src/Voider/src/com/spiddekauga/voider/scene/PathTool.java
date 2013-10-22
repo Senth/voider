@@ -44,10 +44,9 @@ public class PathTool extends TouchTool implements ISelectTool {
 	 * @param levelEditor will be called when paths are added/removed
 	 */
 	public PathTool(Camera camera, World world, Invoker invoker, LevelEditor levelEditor) {
-		super(camera, world);
+		super(camera, world, invoker);
 
 		mLevelEditor = levelEditor;
-		mInvoker = invoker;
 	}
 
 	@Override
@@ -169,7 +168,7 @@ public class PathTool extends TouchTool implements ISelectTool {
 	}
 
 	@Override
-	protected void down() {
+	protected boolean down() {
 		switch (mState) {
 		case ADD_CORNER:
 			// Double anywhere
@@ -180,7 +179,7 @@ public class PathTool extends TouchTool implements ISelectTool {
 				}
 
 				mInvoker.execute(new CResourceSelect(null, this));
-				return;
+				return true;
 			}
 
 
@@ -303,10 +302,12 @@ public class PathTool extends TouchTool implements ISelectTool {
 			}
 			break;
 		}
+
+		return true;
 	}
 
 	@Override
-	protected void dragged() {
+	protected boolean dragged() {
 		switch (mState) {
 		case ADD_CORNER:
 			if (mCornerIndexCurrent != -1) {
@@ -336,10 +337,12 @@ public class PathTool extends TouchTool implements ISelectTool {
 			// Does nothing
 			break;
 		}
+
+		return true;
 	}
 
 	@Override
-	protected void up() {
+	protected boolean up() {
 		switch (mState) {
 		case ADD_CORNER:
 			if (mSelectedPath != null && mCornerIndexCurrent != -1) {
@@ -390,6 +393,8 @@ public class PathTool extends TouchTool implements ISelectTool {
 		}
 
 		mChangedSelectedSinceUp = false;
+
+		return true;
 	}
 
 	@Override
@@ -538,8 +543,6 @@ public class PathTool extends TouchTool implements ISelectTool {
 	private States mState = States.ADD_CORNER;
 	/** Currently selected path */
 	private Path mSelectedPath = null;
-	/** Invoker for undo/redo */
-	private Invoker mInvoker;
 	/** Level editor */
 	private LevelEditor mLevelEditor;
 	/** Last added corner */

@@ -49,6 +49,7 @@ import com.spiddekauga.voider.scene.PathTool;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.scene.SelectDefScene;
+import com.spiddekauga.voider.scene.SelectionTool;
 import com.spiddekauga.voider.scene.TouchTool;
 import com.spiddekauga.voider.scene.TriggerTool;
 import com.spiddekauga.voider.utils.Messages;
@@ -72,21 +73,24 @@ public class LevelEditor extends Editor implements IResourceChangeEditor {
 		mScroller = new Scroller(50, 2000, 10, 200, ScrollAxis.X);
 
 		// Initialize all tools
-		DrawActorTool terrainTool = new DrawActorTool(mCamera, mWorld, StaticTerrainActor.class, mInvoker, this);
-		mTouchTools[Tools.STATIC_TERRAIN.ordinal()] = terrainTool;
-		AddActorTool pickupTool = new AddActorTool(mCamera, mWorld, PickupActor.class, mInvoker, true, this);
-		mTouchTools[Tools.PICKUP.ordinal()] = pickupTool;
+		DrawActorTool terrainTool = new DrawActorTool(mCamera, mWorld, mInvoker, StaticTerrainActor.class, this);
+		mTouchTools[ToolGroups.STATIC_TERRAIN.ordinal()] = terrainTool;
+		AddActorTool pickupTool = new AddActorTool(mCamera, mWorld, mInvoker, PickupActor.class, true, this);
+		mTouchTools[ToolGroups.PICKUP.ordinal()] = pickupTool;
 		AddEnemyTool enemyTool = new AddEnemyTool(mCamera, mWorld, mInvoker, this);
 		enemyTool.addListener(this);
-		mTouchTools[Tools.ENEMY.ordinal()] = enemyTool;
+		mTouchTools[ToolGroups.ENEMY.ordinal()] = enemyTool;
 		PathTool pathTool = new PathTool(mCamera, mWorld, mInvoker, this);
 		pathTool.addListener(this);
-		mTouchTools[Tools.PATH.ordinal()] = pathTool;
+		mTouchTools[ToolGroups.PATH.ordinal()] = pathTool;
 		TriggerTool triggerTool = new TriggerTool(mCamera, mWorld, mInvoker, this);
 		triggerTool.addListener(this);
-		mTouchTools[Tools.TRIGGER.ordinal()] = triggerTool;
+		mTouchTools[ToolGroups.TRIGGER.ordinal()] = triggerTool;
+		mSelectionTool = new SelectionTool(mCamera, mWorld, mInvoker);
 
-		switchTool(Tools.STATIC_TERRAIN);
+		mInputMultiplexer.addProcessor(mSelectionTool);
+
+		switchToolGroup(ToolGroups.STATIC_TERRAIN);
 	}
 
 	@Override
@@ -147,7 +151,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor {
 
 	@Override
 	public boolean isDrawing() {
-		return mTouchTools[mToolType.ordinal()].isDrawing();
+		return mTouchTools[mToolGroup.ordinal()].isDrawing();
 	}
 
 	/**
@@ -178,7 +182,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor {
 		mLevel = level;
 
 		if (mLevel != null) {
-			clearTools();
+			clearToolGroups();
 
 			// Reset camera position to the start
 			if (!sameLevel) {
@@ -342,9 +346,9 @@ public class LevelEditor extends Editor implements IResourceChangeEditor {
 				EnemyActorDef enemyActorDef = ResourceCacheFacade.get(this, enemyId, revision);
 
 				// Update def
-				((ActorTool)mTouchTools[Tools.ENEMY.ordinal()]).setNewActorDef(enemyActorDef);
+				((ActorTool)mTouchTools[ToolGroups.ENEMY.ordinal()]).setNewActorDef(enemyActorDef);
 			} else {
-				((ActorTool)mTouchTools[Tools.ENEMY.ordinal()]).setNewActorDef(null);
+				((ActorTool)mTouchTools[ToolGroups.ENEMY.ordinal()]).setNewActorDef(null);
 			}
 
 			mGui.resetValues();
@@ -368,9 +372,9 @@ public class LevelEditor extends Editor implements IResourceChangeEditor {
 				PickupActorDef pickupActorDef = ResourceCacheFacade.get(this, pickupId, -1);
 
 				// Update def
-				((ActorTool)mTouchTools[Tools.PICKUP.ordinal()]).setNewActorDef(pickupActorDef);
+				((ActorTool)mTouchTools[ToolGroups.PICKUP.ordinal()]).setNewActorDef(pickupActorDef);
 			} else {
-				((ActorTool)mTouchTools[Tools.PICKUP.ordinal()]).setNewActorDef(null);
+				((ActorTool)mTouchTools[ToolGroups.PICKUP.ordinal()]).setNewActorDef(null);
 			}
 			mGui.resetValues();
 		} catch (Exception e) {
@@ -467,8 +471,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor {
 	 * @return true if an enemy is currently selected
 	 */
 	boolean isEnemySelected() {
-		if (mToolType == Tools.ENEMY) {
-			return ((AddActorTool)mTouchTools[Tools.ENEMY.ordinal()]).getSelectedResource() != null;
+		if (mToolGroup == ToolGroups.ENEMY) {
+			return ((AddActorTool)mTouchTools[ToolGroups.ENEMY.ordinal()]).getSelectedResource() != null;
 		}
 
 		return false;
@@ -520,28 +524,57 @@ public class LevelEditor extends Editor implements IResourceChangeEditor {
 
 	/**
 	 * Switches the tool to the selected tool
-	 * @param tool the new tool type
+	 * @param toolGroup the new tool type
 	 */
-	void switchTool(Tools tool) {
+	void switchToolGroup(ToolGroups toolGroup) {
 		// Remove old tool
-		if (mToolType != null) {
-			mInputMultiplexer.removeProcessor(mTouchTools[mToolType.ordinal()]);
-			mTouchTools[mToolType.ordinal()].deactivate();
+		if (mToolGroup != null) {
+			mInputMultiplexer.removeProcessor(mTouchTools[mToolGroup.ordinal()]);
+			mTouchTools[mToolGroup.ordinal()].deactivate();
 		}
 
 		// Set current tool
-		mToolType = tool;
+		mToolGroup = toolGroup;
 
 		// add new tool
-		if (mToolType != null) {
-			mInputMultiplexer.addProcessor(mTouchTools[mToolType.ordinal()]);
-			mTouchTools[mToolType.ordinal()].activate();
+		if (mToolGroup != null) {
+			mInputMultiplexer.addProcessor(mTouchTools[mToolGroup.ordinal()]);
+			mTouchTools[mToolGroup.ordinal()].activate();
 		}
 
 		if (mGui.isInitialized()) {
 			mGui.resetValues();
 		}
 	}
+
+	/**
+	 * Switch currently selected tool
+	 * @param tool the new tool to use
+	 */
+	void switchTool(Tools tool) {
+		switch (mTool) {
+		case SELECTION:
+			mSelectionTool.deactivate();
+			break;
+
+		default:
+			// Does nothing
+			break;
+		}
+
+		mTool = tool;
+
+		switch (mTool) {
+		case SELECTION:
+			mSelectionTool.activate();
+			break;
+
+		default:
+			// Does nothing
+			break;
+		}
+	}
+
 
 	/**
 	 * Tests to run a game from the current location
@@ -608,7 +641,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor {
 		setLevel(level);
 		saveDef();
 
-		clearTools();
+		clearToolGroups();
 
 		setSaved();
 	}
@@ -751,7 +784,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor {
 	 * @return selected enemy name, null if none is selected
 	 */
 	String getSelectedEnemyName() {
-		ActorDef actorDef = ((AddActorTool)mTouchTools[Tools.ENEMY.ordinal()]).getNewActorDef();
+		ActorDef actorDef = ((AddActorTool)mTouchTools[ToolGroups.ENEMY.ordinal()]).getNewActorDef();
 
 		if (actorDef != null) {
 			return actorDef.getName();
@@ -764,7 +797,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor {
 	 * @return selected pickup name, null if none is selected
 	 */
 	String getSelectedPickupName() {
-		ActorDef actorDef = ((AddActorTool)mTouchTools[Tools.PICKUP.ordinal()]).getNewActorDef();
+		ActorDef actorDef = ((AddActorTool)mTouchTools[ToolGroups.PICKUP.ordinal()]).getNewActorDef();
 
 		if (actorDef != null) {
 			return actorDef.getName();
@@ -778,7 +811,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor {
 	 * @param cEnemies number of enemies in the group
 	 */
 	void setEnemyCount(int cEnemies) {
-		EnemyActor selectedEnemy = (EnemyActor) ((AddEnemyTool)mTouchTools[Tools.ENEMY.ordinal()]).getSelectedResource();
+		EnemyActor selectedEnemy = (EnemyActor) ((AddEnemyTool)mTouchTools[ToolGroups.ENEMY.ordinal()]).getSelectedResource();
 
 		if (selectedEnemy != null) {
 			EnemyGroup enemyGroup = selectedEnemy.getEnemyGroup();
@@ -850,7 +883,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor {
 	 * @return number of enemies in a group
 	 */
 	int getEnemyCount() {
-		EnemyActor selectedEnemy = (EnemyActor) ((AddEnemyTool)mTouchTools[Tools.ENEMY.ordinal()]).getSelectedResource();
+		EnemyActor selectedEnemy = (EnemyActor) ((AddEnemyTool)mTouchTools[ToolGroups.ENEMY.ordinal()]).getSelectedResource();
 
 		int cEnemies = 0;
 
@@ -874,7 +907,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor {
 	 * @param delay seconds of delay between actors are activated.
 	 */
 	void setEnemySpawnDelay(float delay) {
-		EnemyActor selectedEnemy = (EnemyActor) ((AddEnemyTool)mTouchTools[Tools.ENEMY.ordinal()]).getSelectedResource();
+		EnemyActor selectedEnemy = (EnemyActor) ((AddEnemyTool)mTouchTools[ToolGroups.ENEMY.ordinal()]).getSelectedResource();
 
 		if (selectedEnemy != null) {
 			EnemyGroup enemyGroup = selectedEnemy.getEnemyGroup();
@@ -890,7 +923,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor {
 	 * @return spawn delay between actors in the same group, negative value if no group exist
 	 */
 	float getEnemySpawnDelay() {
-		EnemyActor selectedEnemy = (EnemyActor) ((AddEnemyTool)mTouchTools[Tools.ENEMY.ordinal()]).getSelectedResource();
+		EnemyActor selectedEnemy = (EnemyActor) ((AddEnemyTool)mTouchTools[ToolGroups.ENEMY.ordinal()]).getSelectedResource();
 
 		if (selectedEnemy != null) {
 			EnemyGroup enemyGroup = selectedEnemy.getEnemyGroup();
@@ -909,7 +942,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor {
 	 * @param pathType type of the path
 	 */
 	void setPathType(Path.PathTypes pathType) {
-		Path selectedPath = (Path) ((PathTool)mTouchTools[Tools.PATH.ordinal()]).getSelectedResource();
+		Path selectedPath = (Path) ((PathTool)mTouchTools[ToolGroups.PATH.ordinal()]).getSelectedResource();
 
 		if (selectedPath != null) {
 			selectedPath.setPathType(pathType);
@@ -920,7 +953,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor {
 	 * @return current path type, null if no path has been selected
 	 */
 	PathTypes getPathType() {
-		Path selectedPath = (Path) ((PathTool)mTouchTools[Tools.PATH.ordinal()]).getSelectedResource();
+		Path selectedPath = (Path) ((PathTool)mTouchTools[ToolGroups.PATH.ordinal()]).getSelectedResource();
 
 		if (selectedPath != null) {
 			return selectedPath.getPathType();
@@ -933,8 +966,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor {
 	 * @return true if a path is selected
 	 */
 	boolean isPathSelected() {
-		if (mToolType == Tools.PATH) {
-			return ((Path) ((PathTool)mTouchTools[Tools.PATH.ordinal()]).getSelectedResource()) != null;
+		if (mToolGroup == ToolGroups.PATH) {
+			return ((Path) ((PathTool)mTouchTools[ToolGroups.PATH.ordinal()]).getSelectedResource()) != null;
 		} else {
 			return false;
 		}
@@ -945,7 +978,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor {
 	 * @param state current active pickup tool
 	 */
 	void setPickupState(AddActorTool.States state) {
-		AddActorTool addActorTool = (AddActorTool) mTouchTools[Tools.PICKUP.ordinal()];
+		AddActorTool addActorTool = (AddActorTool) mTouchTools[ToolGroups.PICKUP.ordinal()];
 		addActorTool.setState(state);
 	}
 
@@ -953,7 +986,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor {
 	 * @return current active pickup tool state
 	 */
 	AddActorTool.States getPickupState() {
-		return ((AddActorTool)mTouchTools[Tools.PICKUP.ordinal()]).getState();
+		return ((AddActorTool)mTouchTools[ToolGroups.PICKUP.ordinal()]).getState();
 	}
 
 	/**
@@ -961,7 +994,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor {
 	 * @param state current active static terrain tool
 	 */
 	void setStaticTerrainState(DrawActorTool.States state) {
-		DrawActorTool drawActorTool = (DrawActorTool) mTouchTools[Tools.STATIC_TERRAIN.ordinal()];
+		DrawActorTool drawActorTool = (DrawActorTool) mTouchTools[ToolGroups.STATIC_TERRAIN.ordinal()];
 		drawActorTool.setState(state);
 	}
 
@@ -969,7 +1002,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor {
 	 * @return current active static terrain tool state
 	 */
 	DrawActorTool.States getStaticTerrainState() {
-		return ((DrawActorTool)mTouchTools[Tools.STATIC_TERRAIN.ordinal()]).getState();
+		return ((DrawActorTool)mTouchTools[ToolGroups.STATIC_TERRAIN.ordinal()]).getState();
 	}
 
 	/**
@@ -977,7 +1010,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor {
 	 * @param state current active enemy tool state
 	 */
 	void setEnemyState(AddEnemyTool.States state) {
-		AddEnemyTool addEnemyTool = (AddEnemyTool) mTouchTools[Tools.ENEMY.ordinal()];
+		AddEnemyTool addEnemyTool = (AddEnemyTool) mTouchTools[ToolGroups.ENEMY.ordinal()];
 		addEnemyTool.setEnemyState(state);
 	}
 
@@ -985,7 +1018,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor {
 	 * Resets the enemy state to the active add actor state.
 	 */
 	void resetEnemyState() {
-		AddEnemyTool addEnemyTool = (AddEnemyTool) mTouchTools[Tools.ENEMY.ordinal()];
+		AddEnemyTool addEnemyTool = (AddEnemyTool) mTouchTools[ToolGroups.ENEMY.ordinal()];
 
 		switch (addEnemyTool.getState()) {
 		case ADD:
@@ -1010,7 +1043,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor {
 	 * @return current active enemy tool state
 	 */
 	AddEnemyTool.States getEnemyState() {
-		return ((AddEnemyTool)mTouchTools[Tools.ENEMY.ordinal()]).getEnemyState();
+		return ((AddEnemyTool)mTouchTools[ToolGroups.ENEMY.ordinal()]).getEnemyState();
 	}
 
 	/**
@@ -1018,7 +1051,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor {
 	 * @param state new active path tool state
 	 */
 	void setPathState(PathTool.States state) {
-		PathTool pathTool = (PathTool) mTouchTools[Tools.PATH.ordinal()];
+		PathTool pathTool = (PathTool) mTouchTools[ToolGroups.PATH.ordinal()];
 		pathTool.setState(state);
 	}
 
@@ -1026,7 +1059,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor {
 	 * @return current path tool state
 	 */
 	PathTool.States getPathState() {
-		return ((PathTool)mTouchTools[Tools.PATH.ordinal()]).getState();
+		return ((PathTool)mTouchTools[ToolGroups.PATH.ordinal()]).getState();
 	}
 
 	/**
@@ -1034,7 +1067,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor {
 	 * @param state new active trigger tool state
 	 */
 	void setTriggerState(TriggerTool.States state) {
-		TriggerTool triggerTool = (TriggerTool) mTouchTools[Tools.TRIGGER.ordinal()];
+		TriggerTool triggerTool = (TriggerTool) mTouchTools[ToolGroups.TRIGGER.ordinal()];
 		triggerTool.setState(state);
 	}
 
@@ -1042,7 +1075,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor {
 	 * @return current state of the trigger tool
 	 */
 	TriggerTool.States getTriggerState() {
-		return ((TriggerTool)mTouchTools[Tools.TRIGGER.ordinal()]).getState();
+		return ((TriggerTool)mTouchTools[ToolGroups.TRIGGER.ordinal()]).getState();
 	}
 
 	/**
@@ -1077,7 +1110,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor {
 	 * if no enemy is selected
 	 */
 	boolean hasSelectedEnemyActivateTrigger() {
-		EnemyActor enemy =  (EnemyActor) ((AddEnemyTool)mTouchTools[Tools.ENEMY.ordinal()]).getSelectedResource();
+		EnemyActor enemy =  (EnemyActor) ((AddEnemyTool)mTouchTools[ToolGroups.ENEMY.ordinal()]).getSelectedResource();
 
 		if (enemy != null) {
 			ArrayList<TriggerInfo> triggers = enemy.getTriggerInfos();
@@ -1096,7 +1129,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor {
 	 * been set.
 	 */
 	float getSelectedEnemyActivateTriggerDelay() {
-		EnemyActor enemy =  (EnemyActor) ((AddEnemyTool)mTouchTools[Tools.ENEMY.ordinal()]).getSelectedResource();
+		EnemyActor enemy =  (EnemyActor) ((AddEnemyTool)mTouchTools[ToolGroups.ENEMY.ordinal()]).getSelectedResource();
 
 		if (enemy != null) {
 			ArrayList<TriggerInfo> triggers = enemy.getTriggerInfos();
@@ -1115,7 +1148,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor {
 	 * @param delay seconds of delay
 	 */
 	void setSelectedEnemyActivateTriggerDelay(float delay) {
-		EnemyActor enemy =  (EnemyActor) ((AddEnemyTool)mTouchTools[Tools.ENEMY.ordinal()]).getSelectedResource();
+		EnemyActor enemy =  (EnemyActor) ((AddEnemyTool)mTouchTools[ToolGroups.ENEMY.ordinal()]).getSelectedResource();
 
 		if (enemy != null) {
 			ArrayList<TriggerInfo> triggers = enemy.getTriggerInfos();
@@ -1132,7 +1165,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor {
 	 * if no enemy is selected
 	 */
 	boolean hasSelectedEnemyDeactivateTrigger() {
-		EnemyActor enemy =  (EnemyActor) ((AddEnemyTool)mTouchTools[Tools.ENEMY.ordinal()]).getSelectedResource();
+		EnemyActor enemy =  (EnemyActor) ((AddEnemyTool)mTouchTools[ToolGroups.ENEMY.ordinal()]).getSelectedResource();
 
 		if (enemy != null) {
 			ArrayList<TriggerInfo> triggers = enemy.getTriggerInfos();
@@ -1151,7 +1184,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor {
 	 * been set.
 	 */
 	float getSelectedEnemyDeactivateTriggerDelay() {
-		EnemyActor enemy =  (EnemyActor) ((AddEnemyTool)mTouchTools[Tools.ENEMY.ordinal()]).getSelectedResource();
+		EnemyActor enemy =  (EnemyActor) ((AddEnemyTool)mTouchTools[ToolGroups.ENEMY.ordinal()]).getSelectedResource();
 
 		if (enemy != null) {
 			ArrayList<TriggerInfo> triggers = enemy.getTriggerInfos();
@@ -1170,7 +1203,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor {
 	 * @param delay seconds of delay
 	 */
 	void setSelectedEnemyDeactivateTriggerDelay(float delay) {
-		EnemyActor enemy =  (EnemyActor) ((AddEnemyTool)mTouchTools[Tools.ENEMY.ordinal()]).getSelectedResource();
+		EnemyActor enemy =  (EnemyActor) ((AddEnemyTool)mTouchTools[ToolGroups.ENEMY.ordinal()]).getSelectedResource();
 
 		if (enemy != null) {
 			ArrayList<TriggerInfo> triggers = enemy.getTriggerInfos();
@@ -1192,28 +1225,28 @@ public class LevelEditor extends Editor implements IResourceChangeEditor {
 	/**
 	 * @return the current active tool of the level editor
 	 */
-	Tools getSelectedTool() {
-		return mToolType;
+	ToolGroups getSelectedTool() {
+		return mToolGroup;
 	}
 
 	/**
 	 * @return currently selected pickup definition
 	 */
 	public ActorDef getSelectedPickupDef() {
-		return ((ActorTool) mTouchTools[Tools.PICKUP.ordinal()]).getNewActorDef();
+		return ((ActorTool) mTouchTools[ToolGroups.PICKUP.ordinal()]).getNewActorDef();
 	}
 
 	/**
 	 * @return currently selected enemy definition
 	 */
 	public ActorDef getSelectedEnemyDef() {
-		return ((ActorTool) mTouchTools[Tools.ENEMY.ordinal()]).getNewActorDef();
+		return ((ActorTool) mTouchTools[ToolGroups.ENEMY.ordinal()]).getNewActorDef();
 	}
 
 	/**
 	 * All the main tool buttons
 	 */
-	enum Tools {
+	enum ToolGroups {
 		/** Add enemies */
 		ENEMY,
 		/** Add/Move/Remove pickups */
@@ -1224,6 +1257,34 @@ public class LevelEditor extends Editor implements IResourceChangeEditor {
 		PATH,
 		/** Add/remove triggers */
 		TRIGGER,
+	}
+
+	/**
+	 * All tools, such as selection, add terrain, etc
+	 */
+	enum Tools {
+		/** Selection tool */
+		SELECTION,
+		/** Move */
+		MOVE,
+		/** Delete */
+		DELETE,
+		/** Append either add a corner or move a corner in a terrain */
+		TERRAIN_ADJUST_ADD_MOVE_CORNER,
+		/** Remove a corner from the terrain */
+		TERRAIN_ADJUST_REMOVE_CORNER,
+		/** Append to the terrain */
+		TERRAIN_APPEND,
+		/** Draw erase for terrain */
+		TERRAIN_DRAW_ERASE,
+		/** Add pickup */
+		PICKUP_ADD,
+		/** Add enemy */
+		ENEMY_ADD,
+		/** Add a trigger */
+		TRIGGER_ADD,
+		/** Add a corner to a path */
+		PATH_ADD_CORNER,
 	}
 
 	/**
@@ -1253,7 +1314,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor {
 	/**
 	 * Clears all the tools
 	 */
-	private void clearTools() {
+	private void clearToolGroups() {
 		for (TouchTool touchTool : mTouchTools) {
 			if (touchTool != null) {
 				touchTool.clear();
@@ -1314,9 +1375,13 @@ public class LevelEditor extends Editor implements IResourceChangeEditor {
 	private SelectionActions mSelectionAction = null;
 	/** Currently loading level */
 	private LevelDef mLoadingLevel = null;
-	/** Current selected tool */
-	private Tools mToolType = Tools.STATIC_TERRAIN;
+	/** Current selected tool group */
+	private ToolGroups mToolGroup = ToolGroups.STATIC_TERRAIN;
 	/** All the available tools */
-	private TouchTool[] mTouchTools = new TouchTool[Tools.values().length];
+	private TouchTool[] mTouchTools = new TouchTool[ToolGroups.values().length];
+	/** Selection Tool */
+	private SelectionTool mSelectionTool = null;
+	/** Current selected tool */
+	private Tools mTool = Tools.SELECTION;
 
 }

@@ -9,6 +9,7 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.World;
+import com.spiddekauga.utils.Invoker;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Editor;
 
@@ -22,10 +23,12 @@ public abstract class TouchTool extends InputAdapter {
 	 * Constructs a touch tool with a camera
 	 * @param camera used for determining where in the world the pointer is
 	 * @param world used for picking
+	 * @param invoker used for undo/redo of some commands
 	 */
-	public TouchTool(Camera camera, World world) {
+	public TouchTool(Camera camera, World world, Invoker invoker) {
 		mCamera = camera;
 		mWorld = world;
+		mInvoker = invoker;
 	}
 
 	@Override
@@ -139,18 +142,21 @@ public abstract class TouchTool extends InputAdapter {
 
 	/**
 	 * Called on touchDown event
+	 * @return false if event should continue to be handled downstream
 	 */
-	protected abstract void down();
+	protected abstract boolean down();
 
 	/**
 	 * Called on touchDragged event
+	 * @return false if event should continue to be handled downstream
 	 */
-	protected abstract void dragged();
+	protected abstract boolean dragged();
 
 	/**
 	 * Called on touchUp event
+	 * @return false if event should continue to be handled downstream
 	 */
-	protected abstract void up();
+	protected abstract boolean up();
 
 	/**
 	 * Sets the tool as drawing
@@ -186,6 +192,8 @@ public abstract class TouchTool extends InputAdapter {
 	protected Body mHitBody = null;
 	/** World used for picking */
 	protected World mWorld;
+	/** Invoker */
+	protected Invoker mInvoker;
 
 	/** If the tool is currently draving */
 	private boolean mDrawing = false;

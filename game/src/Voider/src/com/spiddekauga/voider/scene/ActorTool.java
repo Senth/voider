@@ -10,6 +10,7 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.World;
+import com.spiddekauga.utils.Invoker;
 import com.spiddekauga.voider.editor.HitWrapper;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.ActorDef;
@@ -25,10 +26,11 @@ public abstract class ActorTool extends TouchTool implements ISelectTool {
 	 * Creates an actor tool.
 	 * @param camera used for determining where the pointer is in the world
 	 * @param world used for picking
+	 * @param invoker used for undo/redo
 	 * @param actorType the actor type to add/remove
 	 */
-	public ActorTool(Camera camera, World world, Class<?> actorType) {
-		super(camera, world);
+	public ActorTool(Camera camera, World world, Invoker invoker, Class<?> actorType) {
+		super(camera, world, invoker);
 		mActorType = actorType;
 	}
 

@@ -47,13 +47,12 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 	 * Creates a draw actor tool.
 	 * @param camera used for determining where the pointer is in the world
 	 * @param world used for picking
-	 * @param actorType the actor type to create/use
 	 * @param invoker used for undoing/redoing some commands
+	 * @param actorType the actor type to create/use
 	 * @param actorEditor editor for the actor, will call some methods in here
 	 */
-	public DrawActorTool(Camera camera, World world, Class<?> actorType, Invoker invoker, IResourceChangeEditor actorEditor) {
-		super(camera, world, actorType);
-		mInvoker = invoker;
+	public DrawActorTool(Camera camera, World world, Invoker invoker, Class<?> actorType, IResourceChangeEditor actorEditor) {
+		super(camera, world, invoker, actorType);
 		mActorEditor = actorEditor;
 		mOnlyOneActor = false;
 
@@ -65,13 +64,13 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 	 * actor definition.
 	 * @param camera used for determining where the pointer is in the world
 	 * @param world used for picking
-	 * @param actorType the actor type to create/use
 	 * @param invoker used for undoing/redoing some commands
+	 * @param actorType the actor type to create/use
 	 * @param actorEditor editor for the actor, will call some methods in here
 	 * @param actorDef the actor definition to use for the only actor
 	 */
-	public DrawActorTool(Camera camera, World world, Class<?> actorType, Invoker invoker, IResourceChangeEditor actorEditor, ActorDef actorDef) {
-		super(camera, world, actorType);
+	public DrawActorTool(Camera camera, World world, Invoker invoker, Class<?> actorType, IResourceChangeEditor actorEditor, ActorDef actorDef) {
+		super(camera, world, invoker, actorType);
 		mInvoker = invoker;
 		mActorEditor = actorEditor;
 		mOnlyOneActor = true;
@@ -245,14 +244,14 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 	}
 
 	@Override
-	protected void down() {
+	protected boolean down() {
 		mChangedActorThisEvent = false;
 
 		// Double click inside current actor finishes/closes it, but only if we can have more than
 		// one actor
 		if (shallDeselectActor()) {
 			deselectActor();
-			return;
+			return true;
 		}
 
 		// Test if we hit a body or corner
@@ -394,12 +393,14 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 			}
 			break;
 		}
+
+		return true;
 	}
 
 	@Override
-	protected void dragged() {
+	protected boolean dragged() {
 		if (mSelectedActor == null) {
-			return;
+			return false;
 		}
 
 		switch (mState) {
@@ -458,12 +459,14 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 		}
 		break;
 		}
+
+		return true;
 	}
 
 	@Override
-	protected void up() {
+	protected boolean up() {
 		if (mSelectedActor == null) {
-			return;
+			return false;
 		}
 
 
@@ -802,6 +805,8 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 		mCornerIndexCurrent = -1;
 		mCornerAddedNow = false;
 		setDrawing(false);
+
+		return true;
 	}
 
 	/**
@@ -989,27 +994,6 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 		ArrayList<BrushActorIntersection> intersections = Pools.arrayList.obtain();
 
 
-		//		for (int actorIndex = 0; actorIndex < actorCorners.size(); ++actorIndex) {
-		//			Vector2 actorLineStart = getWorldPosition(actorCorners.get(actorIndex));
-		//			Vector2 actorLineEnd = getWorldPosition(actorCorners.get(Collections.nextIndex(actorCorners, actorIndex)));
-		//
-		//			// Don't loop the brush...
-		//			for (int brushIndex = 0; brushIndex < brushCorners.size() - 1; ++brushIndex) {
-		//				Vector2 brushLineStart = brushCorners.get(brushIndex);
-		//				Vector2 brushLineEnd = brushCorners.get(Collections.nextIndex(brushCorners, brushIndex));
-		//
-		//				// Save intersection
-		//				if (Geometry.linesIntersect(actorLineStart, actorLineEnd, brushLineStart, brushLineEnd)) {
-		//					Vector2 intersection = Geometry.getLineLineIntersection(actorLineStart, actorLineEnd, brushLineStart, brushLineEnd);
-		//
-		//					intersections.add(new BrushActorIntersection(intersection, actorIndex, brushIndex));
-		//				}
-		//			}
-		//
-		//			Pools.vector2.freeAll(actorLineStart, actorLineEnd);
-		//		}
-
-
 		// Convert to world positions
 		@SuppressWarnings("unchecked")
 		ArrayList<Vector2> actorCorners = Pools.arrayList.obtain();
@@ -1127,8 +1111,6 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 		int brushIndex;
 	}
 
-	/** Invoker used for undoing/redoing commands */
-	protected Invoker mInvoker = null;
 	/** Current state of the tool */
 	protected States mState = States.DRAW_APPEND;
 

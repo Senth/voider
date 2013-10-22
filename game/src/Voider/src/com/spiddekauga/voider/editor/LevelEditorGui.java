@@ -28,7 +28,7 @@ import com.spiddekauga.utils.scene.ui.TooltipListener;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Editor;
 import com.spiddekauga.voider.Config.Editor.Level;
-import com.spiddekauga.voider.editor.LevelEditor.Tools;
+import com.spiddekauga.voider.editor.LevelEditor.ToolGroups;
 import com.spiddekauga.voider.editor.commands.CGuiSlider;
 import com.spiddekauga.voider.editor.commands.CLevelRun;
 import com.spiddekauga.voider.game.Path.PathTypes;
@@ -141,7 +141,7 @@ class LevelEditorGui extends EditorGui {
 
 
 		// Enemy
-		if (mLevelEditor.getSelectedTool() == Tools.ENEMY) {
+		if (mLevelEditor.getSelectedTool() == ToolGroups.ENEMY) {
 			switch (mLevelEditor.getEnemyState()) {
 			case ADD:
 				mWidgets.enemy.add.setChecked(true);
@@ -183,7 +183,7 @@ class LevelEditorGui extends EditorGui {
 
 
 		// Path
-		if (mLevelEditor.getSelectedTool() == Tools.PATH) {
+		if (mLevelEditor.getSelectedTool() == ToolGroups.PATH) {
 			switch (mLevelEditor.getPathState()) {
 			case ADD_CORNER:
 				mWidgets.path.add.setChecked(true);
@@ -275,7 +275,7 @@ class LevelEditorGui extends EditorGui {
 
 
 		// Trigger
-		if (mLevelEditor.getSelectedTool() == Tools.TRIGGER) {
+		if (mLevelEditor.getSelectedTool() == ToolGroups.TRIGGER) {
 			switch (mLevelEditor.getTriggerState()) {
 			case ADD:
 				mWidgets.trigger.add.setChecked(true);
@@ -731,7 +731,7 @@ class LevelEditorGui extends EditorGui {
 			@Override
 			protected void onChecked(boolean checked) {
 				if (checked) {
-					mLevelEditor.switchTool(Tools.ENEMY);
+					mLevelEditor.switchToolGroup(ToolGroups.ENEMY);
 				}
 			}
 		};
@@ -752,7 +752,7 @@ class LevelEditorGui extends EditorGui {
 			@Override
 			protected void onChecked(boolean checked) {
 				if (checked) {
-					mLevelEditor.switchTool(Tools.PATH);
+					mLevelEditor.switchToolGroup(ToolGroups.PATH);
 				}
 			}
 		};
@@ -773,7 +773,7 @@ class LevelEditorGui extends EditorGui {
 			@Override
 			protected void onChecked(boolean checked) {
 				if (checked) {
-					mLevelEditor.switchTool(Tools.TRIGGER);
+					mLevelEditor.switchToolGroup(ToolGroups.TRIGGER);
 				}
 			}
 		};

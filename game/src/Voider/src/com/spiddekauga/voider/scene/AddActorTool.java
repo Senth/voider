@@ -26,14 +26,14 @@ public class AddActorTool extends ActorTool {
 	 * to add actors.
 	 * @param camera used for determining where the pointer is in the world
 	 * @param world used for picking
-	 * @param actorType the actor type to add/move/remove
 	 * @param invoker used for undo/redo the actions by this tool
+	 * @param actorType the actor type to add/move/remove
 	 * @param addMoveSelects set to true if add and move states shall be able
 	 * to select actors, otherwise only the select state will be able to select actors
 	 * @param editor will be called when actors are added/removed.
 	 */
-	public AddActorTool(Camera camera, World world, Class<?> actorType, Invoker invoker, boolean addMoveSelects, IResourceChangeEditor editor) {
-		super(camera, world, actorType);
+	public AddActorTool(Camera camera, World world, Invoker invoker, Class<?> actorType, boolean addMoveSelects, IResourceChangeEditor editor) {
+		super(camera, world, invoker, actorType);
 		mInvoker = invoker;
 		mEditor = editor;
 		mAddMoveSelects = addMoveSelects;
@@ -81,7 +81,7 @@ public class AddActorTool extends ActorTool {
 	}
 
 	@Override
-	protected void down() {
+	protected boolean down() {
 		switch (mState) {
 		case ADD:
 			boolean addActor = false;
@@ -142,10 +142,12 @@ public class AddActorTool extends ActorTool {
 			selectActor(false);
 			break;
 		}
+
+		return true;
 	}
 
 	@Override
-	protected void dragged() {
+	protected boolean dragged() {
 		switch (mState) {
 		case ADD:
 		case MOVE:
@@ -161,10 +163,12 @@ public class AddActorTool extends ActorTool {
 			// Does nothing
 			break;
 		}
+
+		return true;
 	}
 
 	@Override
-	protected void up() {
+	protected boolean up() {
 		boolean chained = false;
 		switch (mState) {
 		case ADD:
@@ -193,6 +197,8 @@ public class AddActorTool extends ActorTool {
 		}
 
 		mSelectedSinceUp = false;
+
+		return true;
 	}
 
 	/**
