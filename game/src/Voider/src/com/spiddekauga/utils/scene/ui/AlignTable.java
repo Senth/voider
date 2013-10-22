@@ -439,44 +439,48 @@ public class AlignTable extends WidgetGroup implements Disposable {
 			}
 		}
 
-		Vector2 offset = Pools.vector2.obtain();
+		Vector2 position = Pools.vector2.obtain();
 		// Horizontal offset
 		// If fill row, the x offset will always be 0
 		if (rowFillWidth) {
-			offset.x = 0;
+			position.x = 0;
 		}
 		// Calculate offset depending on alignment
 		else {
 			if (mTableAlign.horizontal == Horizontal.LEFT) {
-				offset.x = 0;
+				position.x = 0;
 			} else if (mTableAlign.horizontal == Horizontal.RIGHT) {
-				offset.x = getWidth() - rowWidth;
+				position.x = getAvailableWidth() - rowWidth;
 			} else if (mTableAlign.horizontal == Horizontal.CENTER) {
-				offset.x = getWidth() * 0.5f - rowWidth * 0.5f;
+				position.x = getAvailableWidth() * 0.5f - rowWidth * 0.5f;
 			}
 		}
 
 		// Vertical
 		// If fill height, the y offset will always be 0
 		if (cRowFillHeight > 0) {
-			offset.y = 0;
+			position.y = 0;
 		}
 		// Calculate offset depending on alignment
 		else {
 			if (mTableAlign.vertical == Vertical.BOTTOM) {
-				offset.y = 0;
+				position.y = 0;
 			} else if (mTableAlign.vertical == Vertical.TOP) {
-				offset.y = getHeight() - rowHeight;
+				position.y = getAvailableHeight() - rowHeight;
 			} else if (mTableAlign.vertical == Vertical.MIDDLE) {
-				offset.y = getHeight() * 0.5f - rowHeight * 0.5f;
+				position.y = getAvailableHeight() * 0.5f - rowHeight * 0.5f;
 			}
 		}
 
+		setPosition((int)position.x, (int)position.y);
+
+		Vector2 offset = Pools.vector2.obtain();
+		offset.set(0,0);
 
 		// Layout the rows
 		Vector2 rowSize = Pools.vector2.obtain();
 		if (rowFillWidth) {
-			rowSize.x = getWidth();
+			rowSize.x = getAvailableWidth();
 		} else {
 			rowSize.x = rowWidth < mPrefWidth ? rowWidth : mPrefWidth;
 		}
@@ -486,7 +490,7 @@ public class AlignTable extends WidgetGroup implements Disposable {
 
 			// If row shall fill height, give it the extra height
 			if (row.shallFillHeight()) {
-				float fillHeight = getHeight() - mPrefHeight;
+				float fillHeight = getAvailableHeight() - mPrefHeight;
 				fillHeight /= cRowFillHeight;
 				rowSize.y = row.getPrefHeight() + fillHeight;
 			} else {
@@ -497,8 +501,7 @@ public class AlignTable extends WidgetGroup implements Disposable {
 			offset.y += rowSize.y;
 		}
 
-		Pools.vector2.free(rowSize);
-		Pools.vector2.free(offset);
+		Pools.vector2.freeAll(rowSize, position, offset);
 
 		mValidLayout = true;
 	}
@@ -507,6 +510,28 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	public void setTransform(boolean transform) {
 		for (Row row : mRows) {
 			row.setTransform(transform);
+		}
+	}
+
+	/**
+	 * @return available width of the table
+	 */
+	protected float getAvailableWidth() {
+		if ((getParent() == null || getParent().getParent() == null) && getStage() != null) {
+			return getStage().getWidth();
+		} else {
+			return getWidth();
+		}
+	}
+
+	/**
+	 * @return available height of the table
+	 */
+	protected float getAvailableHeight() {
+		if ((getParent() == null || getParent().getParent() == null) && getStage() != null) {
+			return getStage().getHeight();
+		} else {
+			return getHeight();
 		}
 	}
 

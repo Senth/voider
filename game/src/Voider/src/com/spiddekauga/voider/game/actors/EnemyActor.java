@@ -112,7 +112,6 @@ public class EnemyActor extends Actor {
 		if (mGroup == null || mGroupLeader) {
 			super.renderEditor(shapeRenderer);
 
-
 			// Draw path to
 			// Activate trigger
 			shapeRenderer.push(ShapeType.Line);

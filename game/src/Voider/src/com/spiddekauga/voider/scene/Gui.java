@@ -27,8 +27,6 @@ public abstract class Gui implements Disposable {
 	 */
 	public Gui() {
 		mStage.addActor(mMainTable);
-		mMainTable.setKeepSize(true);
-		mMainTable.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		mMainTable.setName("MainTable");
 	}
 

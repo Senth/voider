@@ -76,8 +76,8 @@ class LevelEditorGui extends EditorGui {
 
 		initMainMenu(mLevelEditor, "level");
 		initOptions();
-		initPickup();
 		initStaticTerrain();
+		initPickup();
 		initMenu();
 		initEnemyMenu();
 		initEnemy();
@@ -86,9 +86,18 @@ class LevelEditorGui extends EditorGui {
 
 		mMainTable.setTransform(true);
 		mMainTable.invalidate();
+		mMainTable.add(mMenuTable);
+		mMainTable.row();
+		mMainTable.add(mStaticTerrainTable);
+		mMainTable.add(mPickupTable);
+
+
+		// REMOVE prototyping
+		getStage().addActor(mMultiselectDifferentGroups);
+		getStage().addActor(mMultiselectSharedGroup);
+
 
 		super.initGui();
-		switchTool(mStaticTerrainTable);
 	}
 
 	@Override
@@ -461,15 +470,16 @@ class LevelEditorGui extends EditorGui {
 		mWidgets.menu.terrain = button;
 		button.addListener(menuChecker);
 		tooltipListener = new TooltipListener(button, "Terrain", Messages.Tooltip.Level.Menu.TERRAIN);
-		new ButtonListener(button, tooltipListener) {
-			@Override
-			public void onChecked(boolean checked) {
-				if (checked) {
-					mLevelEditor.switchTool(Tools.STATIC_TERRAIN);
-					switchTool(mStaticTerrainTable);
-				}
-			}
-		};
+		mHiders.terrain.setButton(button);
+		//		new ButtonListener(button, tooltipListener) {
+		//			@Override
+		//			public void onChecked(boolean checked) {
+		//				if (checked) {
+		//					mLevelEditor.switchTool(Tools.STATIC_TERRAIN);
+		//					switchTool(mStaticTerrainTable);
+		//				}
+		//			}
+		//		};
 		toggleGroup.add(button);
 		mMenuTable.add(button);
 
@@ -482,15 +492,16 @@ class LevelEditorGui extends EditorGui {
 		mWidgets.menu.pickup = button;
 		button.addListener(menuChecker);
 		tooltipListener = new TooltipListener(button, "Pickup", Messages.Tooltip.Level.Menu.PICKUP);
-		new ButtonListener(button, tooltipListener) {
-			@Override
-			public void onChecked(boolean checked) {
-				if (checked) {
-					mLevelEditor.switchTool(Tools.PICKUP);
-					switchTool(mPickupTable);
-				}
-			}
-		};
+		mHiders.pickups.setButton(button);
+		//		new ButtonListener(button, tooltipListener) {
+		//			@Override
+		//			public void onChecked(boolean checked) {
+		//				if (checked) {
+		//					mLevelEditor.switchTool(Tools.PICKUP);
+		//					switchTool(mPickupTable);
+		//				}
+		//			}
+		//		};
 		toggleGroup.add(button);
 		mMenuTable.add(button);
 
@@ -503,24 +514,24 @@ class LevelEditorGui extends EditorGui {
 		mWidgets.menu.enemy = button;
 		button.addListener(menuChecker);
 		tooltipListener = new TooltipListener(button, "Enemy", Messages.Tooltip.Level.Menu.ENEMY);
-		new ButtonListener(button, tooltipListener) {
-			@Override
-			protected void onChecked(boolean checked) {
-				if (checked) {
-					switchTool(mEnemyTable);
-
-					// Which is currently active from the enemy table?
-					if (mWidgets.enemyMenu.enemy.isChecked()) {
-						mLevelEditor.switchTool(Tools.ENEMY);
-						resetEnemyOptions();
-					} else if (mWidgets.enemyMenu.path.isChecked()) {
-						mLevelEditor.switchTool(Tools.PATH);
-					} else if (mWidgets.enemyMenu.trigger.isChecked()) {
-						mLevelEditor.switchTool(Tools.TRIGGER);
-					}
-				}
-			}
-		};
+		//		new ButtonListener(button, tooltipListener) {
+		//			@Override
+		//			protected void onChecked(boolean checked) {
+		//				if (checked) {
+		//					switchTool(mEnemyTable);
+		//
+		//					// Which is currently active from the enemy table?
+		//					if (mWidgets.enemyMenu.enemy.isChecked()) {
+		//						mLevelEditor.switchTool(Tools.ENEMY);
+		//						resetEnemyOptions();
+		//					} else if (mWidgets.enemyMenu.path.isChecked()) {
+		//						mLevelEditor.switchTool(Tools.PATH);
+		//					} else if (mWidgets.enemyMenu.trigger.isChecked()) {
+		//						mLevelEditor.switchTool(Tools.TRIGGER);
+		//					}
+		//				}
+		//			}
+		//		};
 		toggleGroup.add(button);
 		mMenuTable.add(button);
 
@@ -1217,6 +1228,8 @@ class LevelEditorGui extends EditorGui {
 		LabelStyle labelStyle = generalSkin.get("default", LabelStyle.class);
 		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.UI_EDITOR_BUTTONS);
 
+		mHiders.pickups.addToggleActor(mPickupTable);
+
 		ButtonGroup toggleGroup = new ButtonGroup();
 		Button button;
 		if (Config.Gui.usesTextButtons()) {
@@ -1303,6 +1316,25 @@ class LevelEditorGui extends EditorGui {
 
 		mPickupTable.setTransform(true);
 		mPickupTable.invalidate();
+
+
+		// REMOVE prototyping
+		ButtonGroup differentGroup = new ButtonGroup();
+		button = new TextButton("Select", textToggleStyle);
+		differentGroup.add(button);
+		mHiders.pickups.addToggleActor(button);
+		mMultiselectDifferentGroups.add(button);
+
+		button = new TextButton("Pickup", textToggleStyle);
+		differentGroup.add(button);
+		mHiders.pickups.addToggleActor(button);
+		mMultiselectDifferentGroups.add(button);
+
+		// Same
+		button = new TextButton("Pickup", textToggleStyle);
+		mSharedButtonGroup.add(button);
+		mHiders.pickups.addToggleActor(button);
+		mMultiselectSharedGroup.add(button);
 	}
 
 	/**
@@ -1314,6 +1346,7 @@ class LevelEditorGui extends EditorGui {
 		GuiCheckCommandCreator terrainShapeChecker = new GuiCheckCommandCreator(mInvoker);
 		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.UI_EDITOR_BUTTONS);
 
+		mHiders.terrain.addToggleActor(mStaticTerrainTable);
 
 		// Draw/Append
 		ButtonGroup toggleGroup = new ButtonGroup();
@@ -1446,6 +1479,39 @@ class LevelEditorGui extends EditorGui {
 
 		mStaticTerrainTable.setTransform(true);
 		mStaticTerrainTable.invalidate();
+
+
+		// REMOVE prototyping tasks
+		mMultiselectSharedGroup.setName("shared");
+		mMultiselectSharedGroup.setPreferences(mMainTable);
+		mMultiselectSharedGroup.setTableAlign(Horizontal.RIGHT, Vertical.BOTTOM);
+		mMultiselectSharedGroup.setRowAlign(Horizontal.RIGHT, Vertical.BOTTOM);
+		mMultiselectDifferentGroups.setName("different");
+		mMultiselectDifferentGroups.setPreferences(mMainTable);
+		mMultiselectDifferentGroups.setTableAlign(Horizontal.LEFT, Vertical.BOTTOM);
+		mMultiselectDifferentGroups.setRowAlign(Horizontal.LEFT, Vertical.BOTTOM);
+
+		// Different
+		ButtonGroup differentGroup = new ButtonGroup();
+		button = new TextButton("Select", textToggleStyle);
+		differentGroup.add(button);
+		mHiders.terrain.addToggleActor(button);
+		mMultiselectDifferentGroups.add(button);
+
+		button = new TextButton("Terrain", textToggleStyle);
+		differentGroup.add(button);
+		mHiders.terrain.addToggleActor(button);
+		mMultiselectDifferentGroups.add(button);
+
+		// shared
+		button = new TextButton("Select", textToggleStyle);
+		mSharedButtonGroup.add(button);
+		mMultiselectSharedGroup.add(button);
+
+		button = new TextButton("Terrain", textToggleStyle);
+		mSharedButtonGroup.add(button);
+		mHiders.terrain.addToggleActor(button);
+		mMultiselectSharedGroup.add(button);
 	}
 
 	/**
@@ -1525,20 +1591,20 @@ class LevelEditorGui extends EditorGui {
 		};
 	}
 
-	/**
-	 * Switches the GUI to the selected tool
-	 * @param toolTable the tool's table we want to activate
-	 */
-	private void switchTool(AlignTable toolTable) {
-		if (mInitialized) {
-			mMainTable.dispose(false);
-			toolTable.invalidate();
-			mMainTable.add(mMenuTable);
-			mMainTable.row();
-			mMainTable.add(toolTable);
-			mMainTable.invalidate();
-		}
-	}
+	//	/**
+	//	 * Switches the GUI to the selected tool
+	//	 * @param toolTable the tool's table we want to activate
+	//	 */
+	//	private void switchTool(AlignTable toolTable) {
+	//		if (mInitialized) {
+	//			mMainTable.dispose(false);
+	//			toolTable.invalidate();
+	//			mMainTable.add(mMenuTable);
+	//			mMainTable.row();
+	//			mMainTable.add(toolTable);
+	//			mMainTable.invalidate();
+	//		}
+	//	}
 
 	/** Wrapper for what tool is currently active */
 	private AlignTable mMenuTable = new AlignTable();
@@ -1558,6 +1624,11 @@ class LevelEditorGui extends EditorGui {
 	private InnerWidgets mWidgets = new InnerWidgets();
 	/** All hiders  */
 	private Hiders mHiders = null;
+
+	// REMOVE prototype multiselect button group variables
+	private AlignTable mMultiselectSharedGroup = new AlignTable();
+	private AlignTable mMultiselectDifferentGroups = new AlignTable();
+	private ButtonGroup mSharedButtonGroup = new ButtonGroup();
 
 	/**
 	 * Container for all hiders
@@ -1593,6 +1664,10 @@ class LevelEditorGui extends EditorGui {
 		HideManual triggerScreenAt = new HideManual();
 		/** Hides trigger actor activate options */
 		HideManual triggerActorActivate = new HideManual();
+		/** Hides static terrain */
+		HideListener terrain = new HideListener(true);
+		/** Hides pickups */
+		HideListener pickups = new HideListener(true);
 	}
 
 	/**
