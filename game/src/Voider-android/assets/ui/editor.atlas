@@ -3,56 +3,28 @@ editor.png
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
-add
+add_move_corner
   rotate: false
   xy: 1, 10
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
   index: -1
-add_corner
+bullet_editor
   rotate: false
   xy: 1, 10
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
   index: -1
-aim
+bullet_select
   rotate: false
   xy: 1, 10
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
   index: -1
-aim_front_of_player
-  rotate: false
-  xy: 1, 10
-  size: 48, 48
-  orig: 48, 48
-  offset: 0, 0
-  index: -1
-aim_move_dir
-  rotate: false
-  xy: 1, 10
-  size: 48, 48
-  orig: 48, 48
-  offset: 0, 0
-  index: -1
-aim_on_player
-  rotate: false
-  xy: 1, 10
-  size: 48, 48
-  orig: 48, 48
-  offset: 0, 0
-  index: -1
-aim_rotate
-  rotate: false
-  xy: 1, 10
-  size: 48, 48
-  orig: 48, 48
-  offset: 0, 0
-  index: -1
-bullet
+campaign_editor
   rotate: false
   xy: 1, 10
   size: 48, 48
@@ -66,14 +38,14 @@ cancel
   orig: 48, 48
   offset: 0, 0
   index: -1
-circle
+circle_shape
   rotate: false
   xy: 1, 10
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
   index: -1
-disabled
+delete
   rotate: false
   xy: 1, 10
   size: 48, 48
@@ -108,14 +80,35 @@ duplicate
   orig: 48, 48
   offset: 0, 0
   index: -1
-enabled
+enemy_add
   rotate: false
   xy: 1, 10
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
   index: -1
-enemy
+enemy_editor
+  rotate: false
+  xy: 1, 10
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+enemy_select
+  rotate: false
+  xy: 1, 10
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+info
+  rotate: false
+  xy: 1, 10
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+level_editor
   rotate: false
   xy: 1, 10
   size: 48, 48
@@ -136,48 +129,6 @@ move
   orig: 48, 48
   offset: 0, 0
   index: -1
-movement
-  rotate: false
-  xy: 1, 10
-  size: 48, 48
-  orig: 48, 48
-  offset: 0, 0
-  index: -1
-movement_ai
-  rotate: false
-  xy: 1, 10
-  size: 48, 48
-  orig: 48, 48
-  offset: 0, 0
-  index: -1
-movement_path
-  rotate: false
-  xy: 1, 10
-  size: 48, 48
-  orig: 48, 48
-  offset: 0, 0
-  index: -1
-movement_random
-  rotate: false
-  xy: 1, 10
-  size: 48, 48
-  orig: 48, 48
-  offset: 0, 0
-  index: -1
-movement_stationary
-  rotate: false
-  xy: 1, 10
-  size: 48, 48
-  orig: 48, 48
-  offset: 0, 0
-  index: -1
-movement_turning_speed
-  rotate: false
-  xy: 1, 10
-  size: 48, 48
-  orig: 48, 48
-  offset: 0, 0
-  index: -1
 new
   rotate: false
   xy: 1, 10
@@ -185,63 +136,35 @@ new
   orig: 48, 48
   offset: 0, 0
   index: -1
-ok
+path_add
   rotate: false
   xy: 1, 10
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
   index: -1
-options
+pickup_add
   rotate: false
   xy: 1, 10
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
   index: -1
-path
+pickup_select
   rotate: false
   xy: 1, 10
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
   index: -1
-path_back_and_forth
+rectangle_shape
   rotate: false
   xy: 1, 10
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
   index: -1
-path_loop
-  rotate: false
-  xy: 1, 10
-  size: 48, 48
-  orig: 48, 48
-  offset: 0, 0
-  index: -1
-path_once
-  rotate: false
-  xy: 1, 10
-  size: 48, 48
-  orig: 48, 48
-  offset: 0, 0
-  index: -1
-pickup
-  rotate: false
-  xy: 1, 10
-  size: 48, 48
-  orig: 48, 48
-  offset: 0, 0
-  index: -1
-rectangle
-  rotate: false
-  xy: 1, 10
-  size: 48, 48
-  orig: 48, 48
-  offset: 0, 0
-  index: -1
-remove
+remove_corner
   rotate: false
   xy: 1, 10
   size: 48, 48
@@ -276,21 +199,7 @@ select
   orig: 48, 48
   offset: 0, 0
   index: -1
-select_type
-  rotate: false
-  xy: 1, 10
-  size: 48, 48
-  orig: 48, 48
-  offset: 0, 0
-  index: -1
 set_center
-  rotate: false
-  xy: 1, 10
-  size: 48, 48
-  orig: 48, 48
-  offset: 0, 0
-  index: -1
-static_terrain
   rotate: false
   xy: 1, 10
   size: 48, 48
@@ -304,14 +213,42 @@ stub
   orig: 48, 48
   offset: 0, 0
   index: -1
-triangle
+terrain_add_move_corner
   rotate: false
   xy: 1, 10
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
   index: -1
-trigger
+terrain_draw_append
+  rotate: false
+  xy: 1, 10
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+terrain_draw_erase
+  rotate: false
+  xy: 1, 10
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+terrain_remove_corner
+  rotate: false
+  xy: 1, 10
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+triangle_shape
+  rotate: false
+  xy: 1, 10
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+trigger_add
   rotate: false
   xy: 1, 10
   size: 48, 48

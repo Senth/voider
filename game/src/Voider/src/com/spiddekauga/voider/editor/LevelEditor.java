@@ -1274,7 +1274,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor {
 		/** Remove a corner from the terrain */
 		TERRAIN_ADJUST_REMOVE_CORNER,
 		/** Append to the terrain */
-		TERRAIN_APPEND,
+		TERRAIN_DRAW_APPEND,
 		/** Draw erase for terrain */
 		TERRAIN_DRAW_ERASE,
 		/** Add pickup */

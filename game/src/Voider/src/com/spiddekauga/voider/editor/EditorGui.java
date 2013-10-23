@@ -12,6 +12,7 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
@@ -28,14 +29,15 @@ import com.spiddekauga.voider.editor.commands.CEditorDuplicate;
 import com.spiddekauga.voider.editor.commands.CEditorLoad;
 import com.spiddekauga.voider.editor.commands.CEditorNew;
 import com.spiddekauga.voider.editor.commands.CEditorSave;
+import com.spiddekauga.voider.editor.commands.CLevelRun;
 import com.spiddekauga.voider.editor.commands.CSceneReturn;
 import com.spiddekauga.voider.editor.commands.CSceneSwitch;
 import com.spiddekauga.voider.game.actors.ActorFilterCategories;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceNames;
+import com.spiddekauga.voider.resources.SkinNames.EditorIcons;
 import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.scene.Scene;
-import com.spiddekauga.voider.scene.WorldScene;
 import com.spiddekauga.voider.utils.Messages;
 import com.spiddekauga.voider.utils.Messages.UnsavedActions;
 import com.spiddekauga.voider.utils.Pools;
@@ -46,13 +48,232 @@ import com.spiddekauga.voider.utils.Pools;
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
 public abstract class EditorGui extends Gui {
+	/**
+	 * Default constructor
+	 */
+	public EditorGui() {
+		getStage().addActor(mEditorMenu);
+		getStage().addActor(mFileMenu);
+		getStage().addActor(mToolMenu);
+	}
+
+
 	@Override
 	public void dispose() {
-		mMainMenuTable.dispose();
+		mEditorMenu.dispose();
+		mFileMenu.dispose();
+		mToolMenu.dispose();
+
 		clearCollisionBoxes();
 		Pools.arrayList.free(mBodies);
 
 		super.dispose();
+	}
+
+	/**
+	 * Sets the editor bound to this GUI
+	 * @param editor the editor bound to this GUI
+	 */
+	public void setEditor(Editor editor) {
+		mEditor = editor;
+	}
+
+	@Override
+	public void initGui() {
+		super.initGui();
+
+		mGeneralSkin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
+		mEditorSkin = ResourceCacheFacade.get(ResourceNames.UI_EDITOR_BUTTONS);
+		mTextButtonStyle = mGeneralSkin.get("default", TextButtonStyle.class);
+		mTextToggleStyle = mGeneralSkin.get("toggle", TextButtonStyle.class);
+
+		mEditorMenu.setTableAlign(Horizontal.LEFT, Vertical.TOP);
+		mFileMenu.setTableAlign(Horizontal.RIGHT, Vertical.TOP);
+		mToolMenu.setTableAlign(Horizontal.LEFT, Vertical.TOP);
+		mToolMenu.row().setPadTop(Config.Gui.TOOL_PADDING_TOP);
+
+		initEditorMenu();
+		initFileMenu();
+	}
+
+	/**
+	 * Initializes the editor menu
+	 */
+	private void initEditorMenu() {
+		Button button;
+
+		/** @todo add campaign editor button */
+
+		// Level editor
+		/** @todo REMOVE text button */
+		if (Config.Gui.usesTextButtons()) {
+			button = new TextButton("Level", mTextButtonStyle);
+		} else {
+			if (this.getClass() == LevelEditorGui.class) {
+				button = new ImageButton(mEditorSkin, EditorIcons.LEVEL_EDITOR_SELECTED.toString());
+			} else {
+				button = new ImageButton(mEditorSkin, EditorIcons.LEVEL_EDITOR.toString());
+			}
+		}
+		mEditorMenu.add(button);
+		if (this.getClass() != LevelEditorGui.class) {
+			new ButtonListener(button) {
+				@Override
+				protected void onPressed() {
+					switchReturnTo("Level Editor", new CSceneSwitch(LevelEditor.class), UnsavedActions.LEVEL_EDITOR);
+				}
+			};
+		}
+
+		// Enemy editor
+		/** @todo REMOVE text button */
+		if (Config.Gui.usesTextButtons()) {
+			button = new TextButton("Enemy", mTextButtonStyle);
+		} else {
+			if (this.getClass() == EnemyEditorGui.class) {
+				button = new ImageButton(mEditorSkin, EditorIcons.ENEMY_EDITOR_SELECTED.toString());
+			} else {
+				button = new ImageButton(mEditorSkin, EditorIcons.ENEMY_EDITOR.toString());
+			}
+		}
+		mEditorMenu.add(button);
+		if (this.getClass() != EnemyEditorGui.class) {
+			new ButtonListener(button) {
+				@Override
+				protected void onPressed() {
+					switchReturnTo("Enemy Editor", new CSceneSwitch(EnemyEditor.class), UnsavedActions.ENEMY_EDITOR);
+				}
+			};
+		}
+
+		// Bullet editor
+		/** @todo REMOVE text button */
+		if (Config.Gui.usesTextButtons()) {
+			button = new TextButton("Bullet", mTextButtonStyle);
+		} else {
+			if (this.getClass() == BulletEditorGui.class) {
+				button = new ImageButton(mEditorSkin, EditorIcons.BULLET_EDITOR_SELECTED.toString());
+			} else {
+				button = new ImageButton(mEditorSkin, EditorIcons.BULLET_EDITOR.toString());
+			}
+		}
+		mEditorMenu.add(button);
+		if (this.getClass() != BulletEditorGui.class) {
+			new ButtonListener(button) {
+				@Override
+				protected void onPressed() {
+					switchReturnTo("Bullet Editor", new CSceneSwitch(BulletEditor.class), UnsavedActions.ENEMY_EDITOR);
+				}
+			};
+		}
+	}
+
+	/**
+	 * Initializes the file menu
+	 */
+	protected void initFileMenu() {
+		Button button;
+
+		// New
+		/** @todo REMOVE text button */
+		if (Config.Gui.usesTextButtons()) {
+			button = new TextButton("New", mTextButtonStyle);
+		} else {
+			button = new ImageButton(mEditorSkin, EditorIcons.NEW.toString());
+		}
+		mFileMenu.add(button);
+		new ButtonListener(button) {
+			@Override
+			protected void onPressed() {
+				executeCommandAndCheckSave(new CEditorNew(mEditor), "New " + getResourceTypeName(), "Save first", "Discard current", Messages.getUnsavedMessage(getResourceTypeName(), UnsavedActions.NEW));
+			}
+		};
+
+		// Save
+		/** @todo REMOVE text button */
+		if (Config.Gui.usesTextButtons()) {
+			button = new TextButton("Save", mTextButtonStyle);
+		} else {
+			button = new ImageButton(mEditorSkin, EditorIcons.SAVE.toString());
+		}
+		mFileMenu.add(button);
+		new ButtonListener(button) {
+			@Override
+			protected void onPressed() {
+				mEditor.saveDef();
+			}
+		};
+
+		// Load
+		/** @todo REMOVE text button */
+		if (Config.Gui.usesTextButtons()) {
+			button = new TextButton("Load", mTextButtonStyle);
+		} else {
+			button = new ImageButton(mEditorSkin, EditorIcons.LOAD.toString());
+		}
+		mFileMenu.add(button);
+		new ButtonListener(button) {
+			@Override
+			protected void onPressed() {
+				executeCommandAndCheckSave(new CEditorNew(mEditor), "Load another " + getResourceTypeName(), "Save first", "Discard current", Messages.getUnsavedMessage(getResourceTypeName(), UnsavedActions.LOAD));
+			}
+		};
+
+		// Duplicate
+		/** @todo REMOVE text button */
+		if (Config.Gui.usesTextButtons()) {
+			button = new TextButton("Duplicate", mTextButtonStyle);
+		} else {
+			button = new ImageButton(mEditorSkin, EditorIcons.DUPLICATATE.toString());
+		}
+		mFileMenu.add(button).setPadRight(Config.Gui.SEPARATE_PADDING);
+		new ButtonListener(button) {
+			@Override
+			protected void onPressed() {
+				mEditor.saveDef();
+				mEditor.duplicateDef();
+			}
+		};
+
+
+		// Run (for level editor)
+		if (mEditor instanceof LevelEditor) {
+			/** @todo REMOVE text button */
+			if (Config.Gui.usesTextButtons()) {
+				button = new TextButton("Run", mTextButtonStyle);
+			} else {
+				button = new ImageButton(mEditorSkin, EditorIcons.RUN.toString());
+			}
+			mFileMenu.add(button);
+			new ButtonListener(button) {
+				@Override
+				protected void onPressed() {
+					MsgBoxExecuter msgBox = getFreeMsgBox();
+
+					msgBox.setTitle(Messages.Level.RUN_INVULNERABLE_TITLE);
+					msgBox.content(Messages.Level.RUN_INVULNERABLE_CONTENT);
+					msgBox.button("Can die", new CLevelRun(false, (LevelEditor)mEditor));
+					msgBox.button("Invulnerable", new CLevelRun(true, (LevelEditor)mEditor));
+					msgBox.addCancelButtonAndKeys();
+					showMsgBox(msgBox);
+				}
+			};
+		}
+
+		// Info
+		/** @todo REMOVE text button */
+		if (Config.Gui.usesTextButtons()) {
+			button = new TextButton("Info", mTextButtonStyle);
+		} else {
+			button = new ImageButton(mEditorSkin, EditorIcons.INFO.toString());
+		}
+		mFileMenu.add(button);
+		new ButtonListener(button) {
+			@Override
+			protected void onPressed() {
+				/** @todo handle info button press */
+			}
+		};
 	}
 
 	/**
@@ -61,23 +282,16 @@ public abstract class EditorGui extends Gui {
 	 * @param defTypeName the definition type name to save is unsaved, etc.
 	 */
 	protected void initMainMenu(final IEditor editor, final String defTypeName) {
-		if (editor instanceof WorldScene) {
-			mWorldScene = ((WorldScene) editor);
-		}
+		mFileMenu.setRowAlign(Horizontal.CENTER, Vertical.MIDDLE);
 
-		Skin generalSkin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
-		final TextButtonStyle textStyle = generalSkin.get("default", TextButtonStyle.class);
-
-		mMainMenuTable.setRowAlign(Horizontal.CENTER, Vertical.MIDDLE);
-
-		mMainMenuTable.row();
-		Button button = new TextButton("New", textStyle);
+		mFileMenu.row();
+		Button button = new TextButton("New", mTextButtonStyle);
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed() {
 				if (!editor.isSaved()) {
-					Button yes = new TextButton("Save first", textStyle);
-					Button no = new TextButton("Discard current", textStyle);
+					Button yes = new TextButton("Save first", mTextButtonStyle);
+					Button no = new TextButton("Discard current", mTextButtonStyle);
 
 					Command save = new CEditorSave(editor);
 					Command newCommand = new CEditorNew(editor);
@@ -97,28 +311,28 @@ public abstract class EditorGui extends Gui {
 				}
 			}
 		};
-		mMainMenuTable.add(button);
+		mFileMenu.add(button);
 
 		// Save
-		mMainMenuTable.row();
-		button = new TextButton("Save", textStyle);
+		mFileMenu.row();
+		button = new TextButton("Save", mTextButtonStyle);
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed() {
 				editor.saveDef();
 			}
 		};
-		mMainMenuTable.add(button);
+		mFileMenu.add(button);
 
 		// Load
-		mMainMenuTable.row();
-		button = new TextButton("Load", textStyle);
+		mFileMenu.row();
+		button = new TextButton("Load", mTextButtonStyle);
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed() {
 				if (!editor.isSaved()) {
-					Button yes = new TextButton("Save first", textStyle);
-					Button no = new TextButton("Load anyway", textStyle);
+					Button yes = new TextButton("Save first", mTextButtonStyle);
+					Button no = new TextButton("Load anyway", mTextButtonStyle);
 
 					CommandSequence saveAndLoad = new CommandSequence(new CEditorSave(editor), new CEditorLoad(editor));
 
@@ -136,17 +350,17 @@ public abstract class EditorGui extends Gui {
 				}
 			}
 		};
-		mMainMenuTable.add(button);
+		mFileMenu.add(button);
 
 		// Duplicate
-		mMainMenuTable.row();
-		button = new TextButton("Duplicate", textStyle);
+		mFileMenu.row();
+		button = new TextButton("Duplicate", mTextButtonStyle);
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed() {
 				if (!editor.isSaved()) {
-					Button yes = new TextButton("Save first", textStyle);
-					Button no = new TextButton("Duplicate anyway", textStyle);
+					Button yes = new TextButton("Save first", mTextButtonStyle);
+					Button no = new TextButton("Duplicate anyway", mTextButtonStyle);
 
 					CommandSequence saveAndDuplicate = new CommandSequence(new CEditorSave(editor), new CEditorDuplicate(editor));
 
@@ -164,59 +378,59 @@ public abstract class EditorGui extends Gui {
 				}
 			}
 		};
-		mMainMenuTable.add(button);
+		mFileMenu.add(button);
 
 
 		// Switch editors
-		mMainMenuTable.row().setPadTop(Config.Gui.SEPARATE_PADDING);
+		mFileMenu.row().setPadTop(Config.Gui.SEPARATE_PADDING);
 
 		// Level editor
 		if (editor.getClass() != LevelEditor.class) {
-			mMainMenuTable.row();
-			button = new TextButton("Level Editor", textStyle);
-			mMainMenuTable.add(button);
+			mFileMenu.row();
+			button = new TextButton("Level Editor", mTextButtonStyle);
+			mFileMenu.add(button);
 			new ButtonListener(button) {
 				@Override
 				protected void onPressed() {
-					switchReturnTo("Level Editor", new CSceneSwitch(LevelEditor.class), UnsavedActions.LEVEL_EDITOR, editor, defTypeName);
+					switchReturnTo("Level Editor", new CSceneSwitch(LevelEditor.class), UnsavedActions.LEVEL_EDITOR);
 				}
 			};
 		}
 
 		// Enemy editor
 		if (editor.getClass() != EnemyEditor.class) {
-			mMainMenuTable.row();
-			button = new TextButton("Enemy Editor", textStyle);
-			mMainMenuTable.add(button);
+			mFileMenu.row();
+			button = new TextButton("Enemy Editor", mTextButtonStyle);
+			mFileMenu.add(button);
 			new ButtonListener(button) {
 				@Override
 				protected void onPressed() {
-					switchReturnTo("Enemy Editor", new CSceneSwitch(EnemyEditor.class), UnsavedActions.ENEMY_EDITOR, editor, defTypeName);
+					switchReturnTo("Enemy Editor", new CSceneSwitch(EnemyEditor.class), UnsavedActions.ENEMY_EDITOR);
 				}
 			};
 		}
 
 		// Bullet editor
 		if (editor.getClass() != BulletEditor.class) {
-			mMainMenuTable.row();
-			button = new TextButton("Bullet Editor", textStyle);
-			mMainMenuTable.add(button);
+			mFileMenu.row();
+			button = new TextButton("Bullet Editor", mTextButtonStyle);
+			mFileMenu.add(button);
 			new ButtonListener(button) {
 				@Override
 				protected void onPressed() {
-					switchReturnTo("Bullet Editor", new CSceneSwitch(BulletEditor.class), UnsavedActions.BULLET_EDITOR, editor, defTypeName);
+					switchReturnTo("Bullet Editor", new CSceneSwitch(BulletEditor.class), UnsavedActions.BULLET_EDITOR);
 				}
 			};
 		}
 
 		// Return to main menu
-		mMainMenuTable.row();
-		button = new TextButton("Main Menu", textStyle);
-		mMainMenuTable.add(button);
+		mFileMenu.row();
+		button = new TextButton("Main Menu", mTextButtonStyle);
+		mFileMenu.add(button);
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed() {
-				switchReturnTo("Main Menu", new CSceneReturn(MainMenu.class), UnsavedActions.MAIN_MENU, editor, defTypeName);
+				switchReturnTo("Main Menu", new CSceneReturn(MainMenu.class), UnsavedActions.MAIN_MENU);
 			}
 		};
 	}
@@ -226,33 +440,45 @@ public abstract class EditorGui extends Gui {
 	 * @param switchReturnTo what we're switching or returning to.
 	 * @param command the command to be executed when switching or returning
 	 * @param unsavedAction message to be displayed in the message box
-	 * @param editor the editor this GUI is bound to
-	 * @param defTypeName name of the editor.
 	 */
-	private void switchReturnTo(String switchReturnTo, Command command, UnsavedActions unsavedAction, IEditor editor, String defTypeName) {
-		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
-		final TextButtonStyle textStyle = editorSkin.get("default", TextButtonStyle.class);
-
+	private void switchReturnTo(String switchReturnTo, Command command, UnsavedActions unsavedAction) {
 		boolean switching = command instanceof CSceneSwitch;
 
-		if (!editor.isSaved()) {
-			String yesMessage = switching ? "Save then switch" : "Save then return";
-			String noMessage = switching ? "Switch anyway" : "Return anymay";
-			Button yes = new TextButton(yesMessage, textStyle);
-			Button no = new TextButton(noMessage, textStyle);
+		String msgBoxTitle = switching ? "Switch" : "Return";
+		msgBoxTitle += " to " + switchReturnTo;
 
-			Command save = new CEditorSave(editor);
-			Command saveAndNew = new CommandSequence(save, command);
+		String saveMessage = switching ? "Save then switch" : "Save then return";
+		String justExecuteMessage = switching ? "Switch anyway" : "Return anymay";
 
-			String msgBoxTitle = switching ? "Switch" : "Return";
-			msgBoxTitle += " to " + switchReturnTo;
+		String content = Messages.getUnsavedMessage(getResourceTypeName(), unsavedAction);
+
+		executeCommandAndCheckSave(command, msgBoxTitle, saveMessage, justExecuteMessage, content);
+	}
+
+	/**
+	 * Run a command. If the editor isn't saved a message box is displayed that asks the player
+	 * to either save or discard the resource before executing the command.
+	 * @param command the command to run
+	 * @param title message box title
+	 * @param saveButtonText text for the save button then execute the command
+	 * @param withoutSaveButtonText text for the button when to just execute the command without saving
+	 * @param content the message to be displayed in the message box
+	 */
+	protected void executeCommandAndCheckSave(Command command, String title, String saveButtonText, String withoutSaveButtonText, String content) {
+		if (!mEditor.isSaved()) {
+			Button saveThenExecuteButton = new TextButton(saveButtonText, mTextButtonStyle);
+			Button justExecuteButton = new TextButton(withoutSaveButtonText, mTextButtonStyle);
+
+			Command save = new CEditorSave(mEditor);
+			Command saveAndExecute = new CommandSequence(save, command);
+
 			MsgBoxExecuter msgBox = getFreeMsgBox();
 
 			msgBox.clear();
-			msgBox.setTitle(msgBoxTitle);
-			msgBox.content(Messages.getUnsavedMessage(defTypeName, unsavedAction));
-			msgBox.button(yes, saveAndNew);
-			msgBox.button(no, command);
+			msgBox.setTitle(title);
+			msgBox.content(content);
+			msgBox.button(saveThenExecuteButton, saveAndExecute);
+			msgBox.button(justExecuteButton, command);
 			msgBox.addCancelButtonAndKeys();
 			showMsgBox(msgBox);
 		} else {
@@ -266,7 +492,7 @@ public abstract class EditorGui extends Gui {
 	void showMainMenu() {
 		MsgBoxExecuter msgBox = getFreeMsgBox();
 
-		msgBox.content(mMainMenuTable);
+		msgBox.content(mFileMenu);
 		msgBox.addCancelButtonAndKeys("Return");
 		showMsgBox(msgBox);
 	}
@@ -276,7 +502,7 @@ public abstract class EditorGui extends Gui {
 	 * every frame, will reset only when necessary.
 	 */
 	void resetCollisionBoxes() {
-		if (mWorldScene == null) {
+		if (mEditor == null) {
 			return;
 		}
 
@@ -302,8 +528,8 @@ public abstract class EditorGui extends Gui {
 			PolygonShape polygonShape = new PolygonShape();
 			fixtureDef.shape = polygonShape;
 
-			World world = mWorldScene.getWorld();
-			float scale = mWorldScene.getCamera().viewportWidth / Gdx.graphics.getWidth() * 0.5f;
+			World world = mEditor.getWorld();
+			float scale = mEditor.getCamera().viewportWidth / Gdx.graphics.getWidth() * 0.5f;
 
 			Vector2 screenPos = Pools.vector2.obtain();
 
@@ -318,7 +544,7 @@ public abstract class EditorGui extends Gui {
 				// Scale position
 				screenPos.set(actor.getWidth() * 0.5f, actor.getHeight() * 0.5f);
 				actor.localToStageCoordinates(screenPos);
-				Scene.screenToWorldCoord(mWorldScene.getCamera(), screenPos, bodyDef.position, false);
+				Scene.screenToWorldCoord(mEditor.getCamera(), screenPos, bodyDef.position, false);
 				bodyDef.position.y *= -1;
 
 				// Create body
@@ -345,13 +571,31 @@ public abstract class EditorGui extends Gui {
 		mBodies.clear();
 	}
 
+	/**
+	 * @return resource type name
+	 */
+	protected abstract String getResourceTypeName();
+
+	/** General UI skin */
+	protected Skin mGeneralSkin = null;
+	/** Editor UI skin */
+	protected Skin mEditorSkin = null;
+	/** Text button style */
+	protected TextButtonStyle mTextButtonStyle = null;
+	/** Text toggle button style */
+	protected TextButtonStyle mTextToggleStyle = null;
+
+	/** Editor scene */
+	protected Editor mEditor = null;
+	/** Editor menu table */
+	private AlignTable mEditorMenu = new AlignTable();
 	/** Main menu table */
-	protected AlignTable mMainMenuTable = new AlignTable();
+	private AlignTable mFileMenu = new AlignTable();
+	/** Tool table */
+	protected AlignTable mToolMenu = new AlignTable();
 	/** If the main table has a valid layout, false means the collision boxes
 	 * will be updated once the main table has a valid layout again */
 	private boolean mLayoutWasValid = false;
-	/** World scene */
-	private WorldScene mWorldScene = null;
 	/** All UI-bodies for collision */
 	@SuppressWarnings("unchecked")
 	private ArrayList<Body> mBodies = Pools.arrayList.obtain();

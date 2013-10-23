@@ -599,9 +599,12 @@ public class Config {
 		public final static float MESSAGE_TIME_SHOWN_MIN = 2.0f;
 		/** Time to display error message per character */
 		public final static float MESSAGE_TIME_PER_CHARACTER = 0.08f;
-
 		/** Width of the score table's first cells */
 		public final static int SCORE_TABLE_FIRST_CELL_WIDTH = 100;
+		/** @todo REMOVE default padding for cells */
+		public final static float PADDING_DEFAULT = 1;
+		/** Top padding for tool menu */
+		public final static float TOOL_PADDING_TOP = 65;
 
 		/**
 		 * @return true if we want to display text buttons instead of image buttons

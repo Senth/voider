@@ -96,6 +96,11 @@ public class BulletEditorGui extends ActorGui {
 		setActorEditor(mBulletEditor);
 	}
 
+	@Override
+	protected String getResourceTypeName() {
+		return "bullet";
+	}
+
 	/**
 	 * Initializes the top menu
 	 */

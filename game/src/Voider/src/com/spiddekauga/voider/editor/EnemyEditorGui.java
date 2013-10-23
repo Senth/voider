@@ -164,6 +164,11 @@ public class EnemyEditorGui extends ActorGui {
 		}
 	}
 
+	@Override
+	protected String getResourceTypeName() {
+		return "enemy";
+	}
+
 	/**
 	 * Initializes the menu buttons
 	 */

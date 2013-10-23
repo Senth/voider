@@ -122,6 +122,22 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	}
 
 	/**
+	 * Sets the default padding for all new cells in the table. By default this is
+	 * 0 for all sides. This only affects new cells added to the table.
+	 * To change the padding of a Cell, you need to retrieve it from the {@link #add(Actor)}
+	 * method and then call the appropriate padding method.
+	 * @param padding padding for all sides
+	 * @return this table for chaining
+	 */
+	public AlignTable setCellPaddingDefault(float padding) {
+		mCellPaddingDefault.top = padding;
+		mCellPaddingDefault.right = padding;
+		mCellPaddingDefault.bottom = padding;
+		mCellPaddingDefault.left = padding;
+		return this;
+	}
+
+	/**
 	 * Sets the default padding for all new rows in the table. By default this
 	 * is 0 for all sides. Only affects new rows created after this call.
 	 * @param top padding at the top

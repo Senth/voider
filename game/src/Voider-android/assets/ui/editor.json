@@ -8,6 +8,7 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageDown: stub,
 		imageUp: stub
 	},
+	
 	default-toggle: {
 		down: button-default-down,
 		checked: button-default-checked,
@@ -19,6 +20,7 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageChecked: stub,
 		imageUp: stub
 	},
+	
 	default-tab: {
 		down: tab-default-down,
 		checked: tab-default-checked,
@@ -29,6 +31,55 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageDown: stub,
 		imageChecked: stub,
 		imageUp: stub
+	},
+	
+	
+	bullet_editor: {
+		down: button-default-down,
+		up: button-default-up,
+		over: button-default-over,
+		imageDown: bullet_editor,
+		imageUp: bullet_editor
+	},
+	
+	bullet_editor_selected: {
+		down: button-default-checked,
+		up: button-default-checked,
+		over: button-default-checked,
+		imageDown: bullet_editor,
+		imageUp: bullet_editor
+	},
+	
+	level_editor: {
+		down: button-default-down,
+		up: button-default-up,
+		over: button-default-over,
+		imageDown: level_editor,
+		imageUp: level_editor
+	},
+	
+	level_editor_selected: {
+		down: button-default-checked,
+		up: button-default-checked,
+		over: button-default-checked,
+		imageDown: level_editor,
+		imageUp: level_editor
+	},
+	
+	enemy_editor: {
+		down: button-default-down,
+		up: button-default-up,
+		over: button-default-over,
+		imageDown: enemy_editor,
+		imageUp: enemy_editor
+	},
+	
+	enemy_editor_selected: {
+		down: button-default-checked,
+		up: button-default-checked,
+		over: button-default-checked,
+		imageDown: enemy_editor,
+		imageUp: enemy_editor
 	},
 	
 	new: {
@@ -67,40 +118,37 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageUp: duplicate
 	},
 	
-	options: {
+	info: {
 		down: tab-default-down,
 		checked: tab-default-checked,
 		up: tab-default-up,
 		disabled: tab-default-disabled,
 		over: tab-default-over,
 		checkedOver: tab-default-checked-over,
-		imageDown: options,
-		imageChecked: options,
-		imageUp: options
+		imageDown: info,
+		imageChecked: info,
+		imageUp: info
 	},
 	
-	add: {
+	run: {
+		down: button-default-down,
+		up: button-default-up,
+		disabled: button-default-disabled,
+		over: button-default-over,
+		imageDown: run,
+		imageUp: run
+	},
+	
+	delete: {
 		down: button-default-down,
 		checked: button-default-checked,
 		up: button-default-up,
 		disabled: button-default-disabled,
 		over: button-default-over,
 		checkedOver: button-default-checked-over,
-		imageDown: add,
-		imageChecked: add,
-		imageUp: add
-	},
-	
-	remove: {
-		down: button-default-down,
-		checked: button-default-checked,
-		up: button-default-up,
-		disabled: button-default-disabled,
-		over: button-default-over,
-		checkedOver: button-default-checked-over,
-		imageDown: remove,
-		imageChecked: remove,
-		imageUp: remove
+		imageDown: delete,
+		imageChecked: delete,
+		imageUp: delete
 	},
 	
 	move: {
@@ -115,15 +163,6 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageUp: move
 	},
 	
-	select_type: {
-		down: button-default-down,
-		up: button-default-up,
-		disabled: button-default-disabled,
-		over: button-default-over,
-		imageDown: select_type,
-		imageUp: select_type
-	},
-	
 	select: {
 		down: button-default-down,
 		checked: button-default-checked,
@@ -136,15 +175,6 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageUp: select
 	},
 	
-	ok: {
-		down: button-default-down,
-		up: button-default-up,
-		disabled: button-default-disabled,
-		over: button-default-over,
-		imageDown: ok,
-		imageUp: ok
-	},
-	
 	cancel: {
 		down: button-default-down,
 		up: button-default-up,
@@ -154,52 +184,40 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageUp: cancel
 	},
 	
-	enabled_disabled: {
-		down: button-default-down,
-		checked: button-default-checked,
-		up: button-default-up,
-		disabled: button-default-disabled,
-		over: button-default-over,
-		checkedOver: button-default-checked-over,
-		imageDown: enabled,
-		imageChecked: enabled,
-		imageUp: disabled
-	},
-	
-	circle: {
+	circle_shape: {
 		down: tab-default-down,
 		checked: tab-default-checked,
 		up: tab-default-up,
 		disabled: tab-default-disabled,
 		over: tab-default-over,
 		checkedOver: tab-default-checked-over,
-		imageDown: circle,
-		imageChecked: circle,
-		imageUp: circle
+		imageDown: circle_shape,
+		imageChecked: circle_shape,
+		imageUp: circle_shape
 	},
 	
-	rectangle: {
+	rectangle_shape: {
 		down: tab-default-down,
 		checked: tab-default-checked,
 		up: tab-default-up,
 		disabled: tab-default-disabled,
 		over: tab-default-over,
 		checkedOver: tab-default-checked-over,
-		imageDown: rectangle,
-		imageChecked: rectangle,
-		imageUp: rectangle
+		imageDown: rectangle_shape,
+		imageChecked: rectangle_shape,
+		imageUp: rectangle_shape
 	},
 	
-	triangle: {
+	triangle_shape: {
 		down: tab-default-down,
 		checked: tab-default-checked,
 		up: tab-default-up,
 		disabled: tab-default-disabled,
 		over: tab-default-over,
 		checkedOver: tab-default-checked-over,
-		imageDown: triangle,
-		imageChecked: triangle,
-		imageUp: triangle
+		imageDown: triangle_shape,
+		imageChecked: triangle_shape,
+		imageUp: triangle_shape
 	},
 	
 	draw_custom_shape: {
@@ -214,133 +232,88 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageUp: draw_custom_shape
 	},
 	
-	run: {
-		down: button-default-down,
-		up: button-default-up,
-		disabled: button-default-disabled,
-		over: button-default-over,
-		imageDown: run,
-		imageUp: run
-	},
-	
-	static_terrain: {
+	pickup_add: {
 		down: tab-default-down,
 		checked: tab-default-checked,
 		up: tab-default-up,
 		disabled: tab-default-disabled,
 		over: tab-default-over,
 		checkedOver: tab-default-checked-over,
-		imageDown: static_terrain,
-		imageChecked: static_terrain,
-		imageUp: static_terrain
+		imageDown: pickup_add,
+		imageChecked: pickup_add,
+		imageUp: pickup_add
 	},
 	
-	pickup: {
+	pickup_select: {
 		down: tab-default-down,
 		checked: tab-default-checked,
 		up: tab-default-up,
 		disabled: tab-default-disabled,
 		over: tab-default-over,
 		checkedOver: tab-default-checked-over,
-		imageDown: pickup,
-		imageChecked: pickup,
-		imageUp: pickup
+		imageDown: pickup_select,
+		imageChecked: pickup_select,
+		imageUp: pickup_select
 	},
 	
-	enemy: {
+	enemy_add: {
 		down: tab-default-down,
 		checked: tab-default-checked,
 		up: tab-default-up,
 		disabled: tab-default-disabled,
 		over: tab-default-over,
 		checkedOver: tab-default-checked-over,
-		imageDown: enemy,
-		imageChecked: enemy,
-		imageUp: enemy
+		imageDown: enemy_add,
+		imageChecked: enemy_add,
+		imageUp: enemy_add
 	},
 	
-	path: {
+	enemy_select: {
 		down: tab-default-down,
 		checked: tab-default-checked,
 		up: tab-default-up,
 		disabled: tab-default-disabled,
 		over: tab-default-over,
 		checkedOver: tab-default-checked-over,
-		imageDown: path,
-		imageChecked: path,
-		imageUp: path
+		imageDown: enemy_select,
+		imageChecked: enemy_select,
+		imageUp: enemy_select
 	},
 	
-	trigger: {
+	path_add: {
 		down: tab-default-down,
 		checked: tab-default-checked,
 		up: tab-default-up,
 		disabled: tab-default-disabled,
 		over: tab-default-over,
 		checkedOver: tab-default-checked-over,
-		imageDown: trigger,
-		imageChecked: trigger,
-		imageUp: trigger
+		imageDown: path_add,
+		imageChecked: path_add,
+		imageUp: path_add
 	},
 	
-	movement: {
+	trigger_add: {
 		down: tab-default-down,
 		checked: tab-default-checked,
 		up: tab-default-up,
 		disabled: tab-default-disabled,
 		over: tab-default-over,
 		checkedOver: tab-default-checked-over,
-		imageDown: movement,
-		imageChecked: movement,
-		imageUp: movement
+		imageDown: trigger_add,
+		imageChecked: trigger_add,
+		imageUp: trigger_add
 	},
 	
-	movement_turning_speed: {
-		down: button-default-down,
-		checked: button-default-checked,
-		up: button-default-up,
-		disabled: button-default-disabled,
-		over: button-default-over,
-		checkedOver: button-default-checked-over,
-		imageDown: movement_turning_speed,
-		imageChecked: movement_turning_speed,
-		imageUp: movement_turning_speed
-	},
-	
-	movement_random: {
-		down: button-default-down,
-		checked: button-default-checked,
-		up: button-default-up,
-		disabled: button-default-disabled,
-		over: button-default-over,
-		checkedOver: button-default-checked-over,
-		imageDown: movement_random,
-		imageChecked: movement_random,
-		imageUp: movement_random
-	},
-	
-	bullet: {
+	bullet_select: {
 		down: tab-default-down,
 		checked: tab-default-checked,
 		up: tab-default-up,
 		disabled: tab-default-disabled,
 		over: tab-default-over,
 		checkedOver: tab-default-checked-over,
-		imageDown: bullet,
-		imageChecked: bullet,
-		imageUp: bullet
-	},
-	
-	aim: {
-		down: tab-default-down,
-		checked: tab-default-checked,
-		up: tab-default-up,
-		disabled: tab-default-disabled,
-		over: tab-default-over,
-		checkedOver: tab-default-checked-over,
-		imageDown: aim,
-		imageChecked: aim,
-		imageUp: aim
+		imageDown: bullet_select,
+		imageChecked: bullet_select,
+		imageUp: bullet_select
 	},
 	
 	draw_append: {
@@ -355,16 +328,16 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageUp: draw_append
 	},
 	
-	add_corner: {
+	add_move_corner: {
 		down: button-default-down,
 		checked: button-default-checked,
 		up: button-default-up,
 		disabled: button-default-disabled,
 		over: button-default-over,
 		checkedOver: button-default-checked-over,
-		imageDown: add_corner,
-		imageChecked: add_corner,
-		imageUp: add_corner
+		imageDown: add_move_corner,
+		imageChecked: add_move_corner,
+		imageUp: add_move_corner
 	},
 	
 	draw_erase: {
@@ -377,6 +350,42 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageDown: draw_erase,
 		imageChecked: draw_erase,
 		imageUp: draw_erase
+	},
+	
+	terrain_draw_append: {
+		down: button-default-down,
+		checked: button-default-checked,
+		up: button-default-up,
+		disabled: button-default-disabled,
+		over: button-default-over,
+		checkedOver: button-default-checked-over,
+		imageDown: terrain_draw_append,
+		imageChecked: terrain_draw_append,
+		imageUp: terrain_draw_append
+	},
+	
+	terrain_add_move_corner: {
+		down: button-default-down,
+		checked: button-default-checked,
+		up: button-default-up,
+		disabled: button-default-disabled,
+		over: button-default-over,
+		checkedOver: button-default-checked-over,
+		imageDown: terrain_add_move_corner,
+		imageChecked: terrain_add_move_corner,
+		imageUp: terrain_add_move_corner
+	},
+	
+	terrain_draw_erase: {
+		down: button-default-down,
+		checked: button-default-checked,
+		up: button-default-up,
+		disabled: button-default-disabled,
+		over: button-default-over,
+		checkedOver: button-default-checked-over,
+		imageDown: terrain_draw_erase,
+		imageChecked: terrain_draw_erase,
+		imageUp: terrain_draw_erase
 	},
 	
 	set_center: {
