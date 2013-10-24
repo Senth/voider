@@ -1,4 +1,4 @@
-package com.spiddekauga.voider.scene;
+package com.spiddekauga.voider.editor.tools;
 
 import java.util.List;
 
@@ -9,6 +9,7 @@ import com.spiddekauga.voider.resources.IResource;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
+@Deprecated
 public interface ISelectTool {
 	/**
 	 * Adds one select listener

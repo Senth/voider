@@ -537,6 +537,18 @@ public class ShapeRendererEx implements Disposable {
 		}
 	}
 
+	/**
+	 * Draws a rectangle in the x/y plane.
+	 * @param startPosition rectangle's start position
+	 * @param endPosition rectangle's end position
+	 */
+	public void rect(Vector2 startPosition, Vector2 endPosition) {
+		float width = endPosition.x - startPosition.x;
+		float height = endPosition.y - startPosition.y;
+		rect(startPosition.x, startPosition.y, width, height);
+	}
+
+
 	/** Draws a rectangle in the x/y plane. The x and y coordinate specify the bottom left corner of the rectangle. The
 	 * {@link ShapeType} passed to begin has to be {@link ShapeType#Filled} or  {@link ShapeType#Line}.
 	 * @param x

@@ -33,7 +33,7 @@ public class Main {
 	public static void main(String[] args) {
 		String path = getExecDir();
 
-		Log.setLogger(new FileLogger(path));
+		//		Log.setLogger(new FileLogger(path));
 		Log.NONE();
 		Log.debug(path + "\n\n");
 

@@ -1,4 +1,4 @@
-package com.spiddekauga.voider.scene;
+package com.spiddekauga.voider.editor.tools;
 
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector2;
@@ -74,8 +74,8 @@ public class AddEnemyTool extends AddActorTool {
 	}
 
 	/**
-	 * Sets the enemy state, not to be confused with {@link #setState(com.spiddekauga.voider.scene.AddActorTool.States)}
-	 * Always use this instead of {@link #setState(com.spiddekauga.voider.scene.AddActorTool.States)}.
+	 * Sets the enemy state, not to be confused with {@link #setState(com.spiddekauga.voider.editor.tools.AddActorTool.States)}
+	 * Always use this instead of {@link #setState(com.spiddekauga.voider.editor.tools.AddActorTool.States)}.
 	 * @param state new state of the tool
 	 */
 	public void setEnemyState(States state) {

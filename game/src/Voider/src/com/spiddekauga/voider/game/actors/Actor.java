@@ -38,6 +38,7 @@ import com.spiddekauga.voider.resources.IResourceEditorRender;
 import com.spiddekauga.voider.resources.IResourceEditorUpdate;
 import com.spiddekauga.voider.resources.IResourcePosition;
 import com.spiddekauga.voider.resources.IResourceRender;
+import com.spiddekauga.voider.resources.IResourceSelectable;
 import com.spiddekauga.voider.resources.IResourceUpdate;
 import com.spiddekauga.voider.resources.Resource;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
@@ -50,7 +51,7 @@ import com.spiddekauga.voider.utils.Pools;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public abstract class Actor extends Resource implements IResourceUpdate, KryoTaggedCopyable, KryoSerializable, Disposable, Poolable, IResourceBody, IResourcePosition, ITriggerListener, IResourceEditorUpdate, IResourceRender, IResourceEditorRender {
+public abstract class Actor extends Resource implements IResourceUpdate, KryoTaggedCopyable, KryoSerializable, Disposable, Poolable, IResourceBody, IResourcePosition, ITriggerListener, IResourceEditorUpdate, IResourceRender, IResourceEditorRender, IResourceSelectable {
 	/**
 	 * Sets the texture of the actor including the actor definition.
 	 * Automatically creates a body for the actor.
@@ -859,18 +860,12 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 		return mSkipRotate;
 	}
 
-	/**
-	 * Sets if the actor is currently selected. This will make it draw differently
-	 * when in the editor.
-	 * @param selected true if the actor is selected
-	 */
+	@Override
 	public void setSelected(boolean selected) {
 		mSelected = selected;
 	}
 
-	/**
-	 * @return true if the actor is currently selected
-	 */
+	@Override
 	public boolean isSelected() {
 		return mSelected;
 	}

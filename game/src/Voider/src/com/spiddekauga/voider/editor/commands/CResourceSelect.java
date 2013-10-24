@@ -1,8 +1,8 @@
 package com.spiddekauga.voider.editor.commands;
 
 import com.spiddekauga.utils.Command;
+import com.spiddekauga.voider.editor.tools.ISelectTool;
 import com.spiddekauga.voider.resources.IResource;
-import com.spiddekauga.voider.scene.ISelectTool;
 
 /**
  * Selects a resource in the specified select tool

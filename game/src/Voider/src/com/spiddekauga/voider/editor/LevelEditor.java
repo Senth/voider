@@ -17,6 +17,14 @@ import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.editor.commands.CCameraMove;
 import com.spiddekauga.voider.editor.commands.CLevelEnemyDefSelect;
 import com.spiddekauga.voider.editor.commands.CLevelPickupDefSelect;
+import com.spiddekauga.voider.editor.tools.ActorTool;
+import com.spiddekauga.voider.editor.tools.AddActorTool;
+import com.spiddekauga.voider.editor.tools.AddEnemyTool;
+import com.spiddekauga.voider.editor.tools.DrawActorTool;
+import com.spiddekauga.voider.editor.tools.PathTool;
+import com.spiddekauga.voider.editor.tools.SelectionTool;
+import com.spiddekauga.voider.editor.tools.TouchTool;
+import com.spiddekauga.voider.editor.tools.TriggerTool;
 import com.spiddekauga.voider.game.GameScene;
 import com.spiddekauga.voider.game.Level;
 import com.spiddekauga.voider.game.LevelDef;
@@ -40,18 +48,10 @@ import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceItem;
 import com.spiddekauga.voider.resources.ResourceNames;
 import com.spiddekauga.voider.resources.ResourceSaver;
-import com.spiddekauga.voider.scene.ActorTool;
-import com.spiddekauga.voider.scene.AddActorTool;
-import com.spiddekauga.voider.scene.AddEnemyTool;
-import com.spiddekauga.voider.scene.DrawActorTool;
 import com.spiddekauga.voider.scene.LoadingScene;
-import com.spiddekauga.voider.scene.PathTool;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.scene.SelectDefScene;
-import com.spiddekauga.voider.scene.SelectionTool;
-import com.spiddekauga.voider.scene.TouchTool;
-import com.spiddekauga.voider.scene.TriggerTool;
 import com.spiddekauga.voider.utils.Messages;
 import com.spiddekauga.voider.utils.Pools;
 
@@ -86,9 +86,13 @@ public class LevelEditor extends Editor implements IResourceChangeEditor {
 		TriggerTool triggerTool = new TriggerTool(mCamera, mWorld, mInvoker, this);
 		triggerTool.addListener(this);
 		mTouchTools[ToolGroups.TRIGGER.ordinal()] = triggerTool;
-		mSelectionTool = new SelectionTool(mCamera, mWorld, mInvoker);
 
-		mInputMultiplexer.addProcessor(mSelectionTool);
+
+
+
+		// Initialize tools
+		Tools.SELECTION.setTool(new SelectionTool(mCamera, mWorld, mInvoker, this));
+		mInputMultiplexer.addProcessor(Tools.SELECTION.getTool());
 
 		switchToolGroup(ToolGroups.STATIC_TERRAIN);
 	}
@@ -552,26 +556,14 @@ public class LevelEditor extends Editor implements IResourceChangeEditor {
 	 * @param tool the new tool to use
 	 */
 	void switchTool(Tools tool) {
-		switch (mTool) {
-		case SELECTION:
-			mSelectionTool.deactivate();
-			break;
-
-		default:
-			// Does nothing
-			break;
+		if (mTool.getTool() != null) {
+			mTool.getTool().deactivate();
 		}
 
 		mTool = tool;
 
-		switch (mTool) {
-		case SELECTION:
-			mSelectionTool.activate();
-			break;
-
-		default:
-			// Does nothing
-			break;
+		if (mTool.getTool() != null) {
+			mTool.getTool().activate();
 		}
 	}
 
@@ -1285,6 +1277,26 @@ public class LevelEditor extends Editor implements IResourceChangeEditor {
 		TRIGGER_ADD,
 		/** Add a corner to a path */
 		PATH_ADD_CORNER,
+
+		;
+
+		/**
+		 * Sets the actual tool
+		 * @param tool the actual tool that is used
+		 */
+		public void setTool(TouchTool tool) {
+			mTool = tool;
+		}
+
+		/**
+		 * @return the actual tool used in the editor
+		 */
+		public TouchTool getTool() {
+			return mTool;
+		}
+
+		/** The actual tool */
+		private TouchTool mTool = null;
 	}
 
 	/**
@@ -1379,8 +1391,6 @@ public class LevelEditor extends Editor implements IResourceChangeEditor {
 	private ToolGroups mToolGroup = ToolGroups.STATIC_TERRAIN;
 	/** All the available tools */
 	private TouchTool[] mTouchTools = new TouchTool[ToolGroups.values().length];
-	/** Selection Tool */
-	private SelectionTool mSelectionTool = null;
 	/** Current selected tool */
 	private Tools mTool = Tools.SELECTION;
 

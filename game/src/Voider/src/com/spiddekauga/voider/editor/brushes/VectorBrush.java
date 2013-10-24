@@ -1,4 +1,4 @@
-package com.spiddekauga.voider.editor;
+package com.spiddekauga.voider.editor.brushes;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -22,7 +22,8 @@ public class VectorBrush extends Resource implements IResourceCorner, IResourceE
 	/**
 	 * Creates a vector brush with the specified brush mode
 	 * @param addMode set to true if the brush shall be in add mode,
-	 * false if it shall be in erase mode
+	 * false if it shall be in erase mode. Add mode = green line, otherwise
+	 * the line is dark purple.
 	 */
 	public VectorBrush(boolean addMode) {
 		mUniqueId = UUID.randomUUID();

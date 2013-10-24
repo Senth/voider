@@ -1,4 +1,4 @@
-package com.spiddekauga.voider.scene;
+package com.spiddekauga.voider.editor.tools;
 
 import com.spiddekauga.voider.resources.IResource;
 
@@ -7,6 +7,7 @@ import com.spiddekauga.voider.resources.IResource;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
+@Deprecated
 public interface ISelectListener {
 	/**
 	 * Called when an actor is selected

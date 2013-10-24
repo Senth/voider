@@ -1,7 +1,7 @@
 package com.spiddekauga.voider.editor;
 
+import com.spiddekauga.voider.editor.tools.ISelectListener;
 import com.spiddekauga.voider.resources.IResource;
-import com.spiddekauga.voider.scene.ISelectListener;
 
 
 /**

@@ -2,8 +2,8 @@ package com.spiddekauga.voider.editor;
 
 import com.badlogic.gdx.math.Vector2;
 import com.spiddekauga.utils.Invoker;
+import com.spiddekauga.voider.editor.tools.DrawActorTool;
 import com.spiddekauga.voider.game.actors.ActorShapeTypes;
-import com.spiddekauga.voider.scene.DrawActorTool;
 
 /**
  * Interface for actor editors. This interface have some common

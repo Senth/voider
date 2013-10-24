@@ -493,6 +493,8 @@ public class Config {
 		public final static Color BRUSH_ADD_COLOR = Color.GREEN;
 		/** Brush erase color */
 		public final static Color BRUSH_ERASE_COLOR = Color.RED;
+		/** Selection brush color */
+		public final static Color BRUSH_SELECTION_COLOR = Color.GRAY;
 	}
 
 	/**

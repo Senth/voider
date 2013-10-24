@@ -23,6 +23,7 @@ import com.spiddekauga.voider.resources.IResourceBody;
 import com.spiddekauga.voider.resources.IResourceCorner;
 import com.spiddekauga.voider.resources.IResourceEditorRender;
 import com.spiddekauga.voider.resources.IResourcePosition;
+import com.spiddekauga.voider.resources.IResourceSelectable;
 import com.spiddekauga.voider.resources.Resource;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.utils.Geometry;
@@ -34,7 +35,7 @@ import com.spiddekauga.voider.utils.Pools;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class Path extends Resource implements Disposable, IResourceCorner, IResourceBody, IResourcePosition, IResourceEditorRender {
+public class Path extends Resource implements Disposable, IResourceCorner, IResourceBody, IResourcePosition, IResourceEditorRender, IResourceSelectable {
 	/**
 	 * Default constructor, sets the unique id of the path
 	 */
@@ -323,17 +324,12 @@ public class Path extends Resource implements Disposable, IResourceCorner, IReso
 		}
 	}
 
-	/**
-	 * Set the path as selected, this will render the path differently
-	 * @param selected set to true if the path shall be set as selected
-	 */
+	@Override
 	public void setSelected(boolean selected) {
 		mSelected = selected;
 	}
 
-	/**
-	 * @return true if this path is selected
-	 */
+	@Override
 	public boolean isSelected() {
 		return mSelected;
 	}

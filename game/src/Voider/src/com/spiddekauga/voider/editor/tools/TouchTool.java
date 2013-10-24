@@ -1,4 +1,4 @@
-package com.spiddekauga.voider.scene;
+package com.spiddekauga.voider.editor.tools;
 
 import java.util.ArrayList;
 
@@ -12,6 +12,8 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.spiddekauga.utils.Invoker;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Editor;
+import com.spiddekauga.voider.scene.Scene;
+import com.spiddekauga.voider.scene.SceneSwitcher;
 
 /**
  * Abstract tool for handling touch events
@@ -118,6 +120,34 @@ public abstract class TouchTool extends InputAdapter {
 	 */
 	protected void testPickAabb() {
 		testPickAabb(Editor.PICK_SIZE_DEFAULT);
+	}
+
+	/**
+	 * Tests to pick bodies within the specified AABB box
+	 * @param startPosition the start (AA) of the box
+	 * @param endPosition the end (BB) of the box
+	 */
+	protected void testPickAabb(Vector2 startPosition, Vector2 endPosition) {
+		float lowX, lowY, highX, highY;
+
+		if (startPosition.x < endPosition.x) {
+			lowX = startPosition.x;
+			highX = endPosition.x;
+		} else {
+			lowX = endPosition.x;
+			highX = startPosition.x;
+		}
+
+		if (startPosition.y < endPosition.y) {
+			lowY = startPosition.y;
+			highY = endPosition.y;
+		} else {
+			lowY = endPosition.y;
+			highY = startPosition.y;
+		}
+
+		mHitBodies.clear();
+		mWorld.QueryAABB(getCallback(), lowX, lowY, highX, highY);
 	}
 
 	/**

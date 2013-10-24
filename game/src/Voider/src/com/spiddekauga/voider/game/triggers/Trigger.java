@@ -8,6 +8,7 @@ import com.badlogic.gdx.Gdx;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourceEditorRender;
+import com.spiddekauga.voider.resources.IResourceSelectable;
 import com.spiddekauga.voider.resources.IResourceUpdate;
 import com.spiddekauga.voider.resources.Resource;
 import com.spiddekauga.voider.scene.SceneSwitcher;
@@ -17,7 +18,7 @@ import com.spiddekauga.voider.scene.SceneSwitcher;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public abstract class Trigger extends Resource implements IResourceUpdate, IResourceEditorRender {
+public abstract class Trigger extends Resource implements IResourceUpdate, IResourceEditorRender, IResourceSelectable {
 	/**
 	 * Default constructor for the trigger. Creates a new unique id
 	 */
@@ -132,17 +133,12 @@ public abstract class Trigger extends Resource implements IResourceUpdate, IReso
 	public void clearListeners() {
 	}
 
-	/**
-	 * Sets the trigger as selected
-	 * @param selected true if the trigger is selected, false if not selected
-	 */
+	@Override
 	public void setSelected(boolean selected) {
 		mSelected = selected;
 	}
 
-	/**
-	 * @return true if the trigger is selected
-	 */
+	@Override
 	public boolean isSelected() {
 		return mSelected;
 	}
