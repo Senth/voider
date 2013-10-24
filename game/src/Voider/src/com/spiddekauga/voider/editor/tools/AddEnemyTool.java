@@ -11,7 +11,7 @@ import com.spiddekauga.voider.Config.Editor;
 import com.spiddekauga.voider.editor.LevelEditor;
 import com.spiddekauga.voider.editor.commands.CEnemySetPath;
 import com.spiddekauga.voider.editor.commands.CResourceMove;
-import com.spiddekauga.voider.editor.commands.CResourceSelect;
+import com.spiddekauga.voider.editor.commands.CResourceSelectOld;
 import com.spiddekauga.voider.editor.commands.CTriggerSet;
 import com.spiddekauga.voider.game.Path;
 import com.spiddekauga.voider.game.actors.EnemyActor;
@@ -145,7 +145,7 @@ public class AddEnemyTool extends AddActorTool {
 
 				// Hit enemy
 				if (hitObject instanceof EnemyActor) {
-					mInvoker.execute(new CResourceSelect((IResource) hitObject, this));
+					mInvoker.execute(new CResourceSelectOld((IResource) hitObject, this));
 				}
 				// Hit trigger
 				else if (hitObject instanceof Trigger) {

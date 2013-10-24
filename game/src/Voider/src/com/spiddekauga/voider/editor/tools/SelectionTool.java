@@ -29,7 +29,7 @@ public class SelectionTool extends TouchTool implements ISelection {
 	 * @param editor the editor the selection tool uses
 	 */
 	public SelectionTool(Camera camera, World world, Invoker invoker, IResourceChangeEditor editor) {
-		super(camera, world, invoker);
+		super(camera, world, invoker, null, editor);
 		mEditor = editor;
 	}
 
@@ -42,7 +42,21 @@ public class SelectionTool extends TouchTool implements ISelection {
 		}
 		// Test if we shall add or remove any actors
 		else {
-			// TODO
+			if (mDoubleClick) {
+				clearSelection();
+				return true;
+			}
+
+			testPickPoint();
+
+			if (mHitBody != null) {
+				IResource resource = (IResource) mHitBody.getUserData();
+				if (!isSelected(resource)) {
+					clearSelection();
+					addResource(resource);
+					return true;
+				}
+			}
 		}
 
 		return mActive;
@@ -84,6 +98,41 @@ public class SelectionTool extends TouchTool implements ISelection {
 		return mActive;
 	}
 
+	@Override
+	public void addResource(IResource resource) {
+		mSelectedResources.add(resource);
+
+		if (resource instanceof IResourceSelectable) {
+			((IResourceSelectable) resource).setSelected(true);
+		}
+
+		for (ISelectionListener listener : mListeners) {
+			listener.onResourceSelected(resource);
+		}
+	}
+
+	@Override
+	public void removeResource(IResource resource) {
+		boolean removed = mSelectedResources.remove(resource);
+
+		if (removed) {
+			if (resource instanceof IResourceSelectable) {
+				((IResourceSelectable) resource).setSelected(false);
+			}
+
+			for (ISelectionListener listener : mListeners) {
+				listener.onResourceDeselected(resource);
+			}
+		}
+	}
+
+	@Override
+	public void addResources(ArrayList<IResource> resources) {
+		for (IResource resource : resources) {
+			addResource(resource);
+		}
+	}
+
 	/**
 	 * Adds all the picked resources
 	 */
@@ -91,11 +140,7 @@ public class SelectionTool extends TouchTool implements ISelection {
 		for (Body body : mHitBodies) {
 			if (body.getUserData() instanceof IResource) {
 				IResource resource = (IResource) body.getUserData();
-				mSelectedResources.add(resource);
-
-				if (resource instanceof IResourceSelectable) {
-					((IResourceSelectable) resource).setSelected(true);
-				}
+				addResource(resource);
 			}
 		}
 	}
@@ -107,13 +152,7 @@ public class SelectionTool extends TouchTool implements ISelection {
 		for (Body body : mHitBodies) {
 			if (body.getUserData() instanceof IResource) {
 				IResource resource = (IResource) body.getUserData();
-				boolean removed = mSelectedResources.remove(resource);
-
-				if (removed) {
-					if (resource instanceof IResourceSelectable) {
-						((IResourceSelectable) resource).setSelected(false);
-					}
-				}
+				removeResource(resource);
 			}
 		}
 	}
@@ -125,6 +164,24 @@ public class SelectionTool extends TouchTool implements ISelection {
 
 	@Override
 	protected Body filterPick(ArrayList<Body> hitBodies) {
+		if (hitBodies.isEmpty() || mActive) {
+			return null;
+		}
+
+		// Just pick first if none are selected
+		if (mSelectedResources.isEmpty()) {
+			return hitBodies.get(0);
+		}
+		// Only return a resource that is the same as the most type
+		else {
+			Class<? extends IResource> mostCommonType = getMostCommonSelectedResourceType();
+			for (Body body : hitBodies) {
+				if (body.getUserData().getClass() == mostCommonType) {
+					return body;
+				}
+			}
+		}
+
 		return null;
 	}
 
@@ -174,11 +231,44 @@ public class SelectionTool extends TouchTool implements ISelection {
 			if (resource instanceof IResourceSelectable) {
 				((IResourceSelectable) resource).setSelected(false);
 			}
+
+			for (ISelectionListener listener : mListeners) {
+				listener.onResourceDeselected(resource);
+			}
 		}
 
 		mSelectedResources.clear();
 	}
 
+	@Override
+	public boolean isSelected(IResource resource) {
+		return mSelectedResources.contains(resource);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public <ResourceType extends IResource> ResourceType getFirstSelectedResourceOfType(Class<ResourceType> type) {
+		for (IResource resource : mSelectedResources) {
+			if (resource.getClass() == type) {
+				return (ResourceType) resource;
+			}
+		}
+
+		return null;
+	}
+
+	@Override
+	public void addListener(ISelectionListener listener) {
+		mListeners.add(listener);
+	}
+
+	@Override
+	public void removeListener(ISelectionListener listener) {
+		mListeners.remove(listener);
+	}
+
+	/** All listeners */
+	private ArrayList<ISelectionListener> mListeners = new ArrayList<ISelectionListener>();
 	/** Editor that uses the tool */
 	private IResourceChangeEditor mEditor;
 	/** Rectangle brush */
@@ -197,6 +287,7 @@ public class SelectionTool extends TouchTool implements ISelection {
 			if (body.getUserData() instanceof IResource) {
 				mHitBodies.add(body);
 			}
+
 
 			return true;
 		}

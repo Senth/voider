@@ -24,7 +24,7 @@ import com.spiddekauga.voider.editor.commands.CResourceCornerRemove;
 import com.spiddekauga.voider.editor.commands.CResourceCornerRemoveAll;
 import com.spiddekauga.voider.editor.commands.CResourceMove;
 import com.spiddekauga.voider.editor.commands.CResourceRemove;
-import com.spiddekauga.voider.editor.commands.CResourceSelect;
+import com.spiddekauga.voider.editor.commands.CResourceSelectOld;
 import com.spiddekauga.voider.game.Path;
 import com.spiddekauga.voider.game.actors.EnemyActor;
 import com.spiddekauga.voider.resources.IResource;
@@ -178,7 +178,7 @@ public class PathTool extends TouchTool implements ISelectTool {
 					mInvoker.undo(false);
 				}
 
-				mInvoker.execute(new CResourceSelect(null, this));
+				mInvoker.execute(new CResourceSelectOld(null, this));
 				return true;
 			}
 
@@ -203,7 +203,7 @@ public class PathTool extends TouchTool implements ISelectTool {
 				}
 				// Hit another path -> Select it
 				else if (mHitBody.getUserData() instanceof Path) {
-					mInvoker.execute(new CResourceSelect((IResource) mHitBody.getUserData(), this));
+					mInvoker.execute(new CResourceSelectOld((IResource) mHitBody.getUserData(), this));
 				}
 				// Hit a corner -> Move it
 				else {
@@ -219,7 +219,7 @@ public class PathTool extends TouchTool implements ISelectTool {
 					Path path = new Path();
 					path.setWorld(mWorld);
 					mInvoker.execute(new CResourceAdd(path, mLevelEditor));
-					mInvoker.execute(new CResourceSelect(path, this), true);
+					mInvoker.execute(new CResourceSelectOld(path, this), true);
 				}
 
 				createTempCorner();
@@ -234,12 +234,12 @@ public class PathTool extends TouchTool implements ISelectTool {
 			if (mHitBody != null && mHitBody.getUserData() instanceof Path) {
 				// Select the actor
 				if (mSelectedPath != mHitBody.getUserData()) {
-					mInvoker.execute(new CResourceSelect((IResource)mHitBody.getUserData(), this));
+					mInvoker.execute(new CResourceSelectOld((IResource)mHitBody.getUserData(), this));
 				}
 				mDragOrigin.set(((Path)mHitBody.getUserData()).getPosition());
 			} else {
 				if (mSelectedPath != null) {
-					mInvoker.execute(new CResourceSelect(null, this));
+					mInvoker.execute(new CResourceSelectOld(null, this));
 				}
 			}
 			break;
@@ -269,7 +269,7 @@ public class PathTool extends TouchTool implements ISelectTool {
 				}
 				// Hit another path
 				else if (mHitBody.getUserData() instanceof Path) {
-					mInvoker.execute(new CResourceSelect((IResource) mHitBody.getUserData(), this));
+					mInvoker.execute(new CResourceSelectOld((IResource) mHitBody.getUserData(), this));
 				}
 
 				if (removePath) {
@@ -282,7 +282,7 @@ public class PathTool extends TouchTool implements ISelectTool {
 					}
 
 					mInvoker.execute(new CResourceCornerRemoveAll(mSelectedPath, mLevelEditor), true);
-					mInvoker.execute(new CResourceSelect(null, this), true);
+					mInvoker.execute(new CResourceSelectOld(null, this), true);
 				}
 			}
 			break;
@@ -293,11 +293,11 @@ public class PathTool extends TouchTool implements ISelectTool {
 
 			if (mHitBody != null && mHitBody.getUserData() instanceof Path) {
 				if (mHitBody.getUserData() != mSelectedPath) {
-					mInvoker.execute(new CResourceSelect((Path)mHitBody.getUserData(), this));
+					mInvoker.execute(new CResourceSelectOld((Path)mHitBody.getUserData(), this));
 				}
 			} else {
 				if (mSelectedPath != null) {
-					mInvoker.execute(new CResourceSelect(null, this));
+					mInvoker.execute(new CResourceSelectOld(null, this));
 				}
 			}
 			break;

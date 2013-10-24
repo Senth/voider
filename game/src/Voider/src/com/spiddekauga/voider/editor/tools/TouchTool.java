@@ -12,6 +12,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.spiddekauga.utils.Invoker;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Editor;
+import com.spiddekauga.voider.editor.IResourceChangeEditor;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 
@@ -27,10 +28,25 @@ public abstract class TouchTool extends InputAdapter {
 	 * @param world used for picking
 	 * @param invoker used for undo/redo of some commands
 	 */
+	@Deprecated
 	public TouchTool(Camera camera, World world, Invoker invoker) {
+		this(camera, world, invoker, null, null);
+	}
+
+	/**
+	 * Constructs a touch tool with a camera
+	 * @param camera used for determining where in the world the pointer is
+	 * @param world used for picking
+	 * @param invoker used for undo/redo of some commands
+	 * @param selection current selected resources
+	 * @param editor the editor used, can be null
+	 */
+	public TouchTool(Camera camera, World world, Invoker invoker, ISelection selection, IResourceChangeEditor editor) {
 		mCamera = camera;
 		mWorld = world;
 		mInvoker = invoker;
+		mSelection = selection;
+		mEditor = editor;
 	}
 
 	@Override
@@ -224,6 +240,10 @@ public abstract class TouchTool extends InputAdapter {
 	protected World mWorld;
 	/** Invoker */
 	protected Invoker mInvoker;
+	/** Current selection */
+	protected ISelection mSelection = null;
+	/** Editor */
+	protected IResourceChangeEditor mEditor = null;
 
 	/** If the tool is currently draving */
 	private boolean mDrawing = false;

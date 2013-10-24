@@ -24,7 +24,7 @@ import com.spiddekauga.voider.editor.commands.CResourceCornerRemoveAll;
 import com.spiddekauga.voider.editor.commands.CResourceCornerRemoveExcessive;
 import com.spiddekauga.voider.editor.commands.CResourceMove;
 import com.spiddekauga.voider.editor.commands.CResourceRemove;
-import com.spiddekauga.voider.editor.commands.CResourceSelect;
+import com.spiddekauga.voider.editor.commands.CResourceSelectOld;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.ActorDef;
 import com.spiddekauga.voider.game.actors.BulletActorDef;
@@ -43,7 +43,7 @@ import com.spiddekauga.voider.utils.Pools;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class DrawActorTool extends ActorTool implements ISelectListener {
+public class DrawActorTool extends ActorToolOld implements ISelectListener {
 	/**
 	 * Creates a draw actor tool.
 	 * @param camera used for determining where the pointer is in the world
@@ -259,7 +259,7 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 		testPickAabb();
 
 		if (hitAnotherActor()) {
-			mInvoker.execute(new CResourceSelect((Actor)mHitBody.getUserData(), this));
+			mInvoker.execute(new CResourceSelectOld((Actor)mHitBody.getUserData(), this));
 		}
 
 		switch (mState) {
@@ -303,7 +303,7 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 						mInvoker.execute(new CActorDefFixCustomFixtures(mSelectedActor.getDef(), false));
 						mInvoker.execute(new CResourceCornerRemoveAll(mSelectedActor.getDef().getVisualVars(), mActorEditor), true);
 						mInvoker.execute(new CResourceRemove(mSelectedActor, mActorEditor), true);
-						mInvoker.execute(new CResourceSelect(null, this), true);
+						mInvoker.execute(new CResourceSelectOld(null, this), true);
 					}
 				}
 				// Else hit a corner, delete it
@@ -316,7 +316,7 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 						// Was it the last corner? Remove actor too then
 						if (mSelectedActor.getDef().getVisualVars().getCornerCount() == 0) {
 							mInvoker.execute(new CResourceRemove(mSelectedActor, mActorEditor), true);
-							mInvoker.execute(new CResourceSelect(null, this), true);
+							mInvoker.execute(new CResourceSelectOld(null, this), true);
 						} else {
 							try {
 								mInvoker.execute(new CActorDefFixCustomFixtures(mSelectedActor.getDef(), true), true);
@@ -873,7 +873,7 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 			mInvoker.undo(false);
 		}
 
-		mInvoker.execute(new CResourceSelect(null, this));
+		mInvoker.execute(new CResourceSelectOld(null, this));
 	}
 
 	/**
@@ -886,7 +886,7 @@ public class DrawActorTool extends ActorTool implements ISelectListener {
 		}
 		actor.setPosition(mTouchOrigin);
 		mInvoker.execute(new CResourceAdd(actor, mActorEditor));
-		mInvoker.execute(new CResourceSelect(actor, this), true);
+		mInvoker.execute(new CResourceSelectOld(actor, this), true);
 	}
 
 	/**

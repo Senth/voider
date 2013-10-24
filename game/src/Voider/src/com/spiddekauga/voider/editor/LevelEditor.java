@@ -17,7 +17,7 @@ import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.editor.commands.CCameraMove;
 import com.spiddekauga.voider.editor.commands.CLevelEnemyDefSelect;
 import com.spiddekauga.voider.editor.commands.CLevelPickupDefSelect;
-import com.spiddekauga.voider.editor.tools.ActorTool;
+import com.spiddekauga.voider.editor.tools.ActorToolOld;
 import com.spiddekauga.voider.editor.tools.AddActorTool;
 import com.spiddekauga.voider.editor.tools.AddEnemyTool;
 import com.spiddekauga.voider.editor.tools.DrawActorTool;
@@ -350,9 +350,9 @@ public class LevelEditor extends Editor implements IResourceChangeEditor {
 				EnemyActorDef enemyActorDef = ResourceCacheFacade.get(this, enemyId, revision);
 
 				// Update def
-				((ActorTool)mTouchTools[ToolGroups.ENEMY.ordinal()]).setNewActorDef(enemyActorDef);
+				((ActorToolOld)mTouchTools[ToolGroups.ENEMY.ordinal()]).setNewActorDef(enemyActorDef);
 			} else {
-				((ActorTool)mTouchTools[ToolGroups.ENEMY.ordinal()]).setNewActorDef(null);
+				((ActorToolOld)mTouchTools[ToolGroups.ENEMY.ordinal()]).setNewActorDef(null);
 			}
 
 			mGui.resetValues();
@@ -376,9 +376,9 @@ public class LevelEditor extends Editor implements IResourceChangeEditor {
 				PickupActorDef pickupActorDef = ResourceCacheFacade.get(this, pickupId, -1);
 
 				// Update def
-				((ActorTool)mTouchTools[ToolGroups.PICKUP.ordinal()]).setNewActorDef(pickupActorDef);
+				((ActorToolOld)mTouchTools[ToolGroups.PICKUP.ordinal()]).setNewActorDef(pickupActorDef);
 			} else {
-				((ActorTool)mTouchTools[ToolGroups.PICKUP.ordinal()]).setNewActorDef(null);
+				((ActorToolOld)mTouchTools[ToolGroups.PICKUP.ordinal()]).setNewActorDef(null);
 			}
 			mGui.resetValues();
 		} catch (Exception e) {
@@ -1225,14 +1225,14 @@ public class LevelEditor extends Editor implements IResourceChangeEditor {
 	 * @return currently selected pickup definition
 	 */
 	public ActorDef getSelectedPickupDef() {
-		return ((ActorTool) mTouchTools[ToolGroups.PICKUP.ordinal()]).getNewActorDef();
+		return ((ActorToolOld) mTouchTools[ToolGroups.PICKUP.ordinal()]).getNewActorDef();
 	}
 
 	/**
 	 * @return currently selected enemy definition
 	 */
 	public ActorDef getSelectedEnemyDef() {
-		return ((ActorTool) mTouchTools[ToolGroups.ENEMY.ordinal()]).getNewActorDef();
+		return ((ActorToolOld) mTouchTools[ToolGroups.ENEMY.ordinal()]).getNewActorDef();
 	}
 
 	/**

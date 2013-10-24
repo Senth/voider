@@ -9,7 +9,7 @@ import com.spiddekauga.voider.editor.IResourceChangeEditor;
 import com.spiddekauga.voider.editor.commands.CResourceAdd;
 import com.spiddekauga.voider.editor.commands.CResourceMove;
 import com.spiddekauga.voider.editor.commands.CResourceRemove;
-import com.spiddekauga.voider.editor.commands.CResourceSelect;
+import com.spiddekauga.voider.editor.commands.CResourceSelectOld;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.utils.Pools;
@@ -19,7 +19,7 @@ import com.spiddekauga.voider.utils.Pools;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class AddActorTool extends ActorTool {
+public class AddActorTool extends ActorToolOld {
 	/**
 	 * Creates an add actor tool for the specified type of actor.
 	 * You still need to set an actor definition via {@link #setNewActorDef(com.spiddekauga.voider.game.actors.ActorDef)}
@@ -107,7 +107,7 @@ public class AddActorTool extends ActorTool {
 					mInvoker.execute(new CResourceAdd(actor, mEditor), mSelectedSinceUp);
 					mMovingActor = actor;
 					mActorOrigin.set(mTouchOrigin);
-					mInvoker.execute(new CResourceSelect(actor, this), true);
+					mInvoker.execute(new CResourceSelectOld(actor, this), true);
 				}
 			}
 			break;
@@ -232,7 +232,7 @@ public class AddActorTool extends ActorTool {
 		}
 
 		if (actorToSelect != mSelectedActor) {
-			mInvoker.execute(new CResourceSelect(actorToSelect, this), chained);
+			mInvoker.execute(new CResourceSelectOld(actorToSelect, this), chained);
 		}
 	}
 

@@ -15,7 +15,7 @@ import com.spiddekauga.voider.editor.LevelEditor;
 import com.spiddekauga.voider.editor.commands.CResourceAdd;
 import com.spiddekauga.voider.editor.commands.CResourceMove;
 import com.spiddekauga.voider.editor.commands.CResourceRemove;
-import com.spiddekauga.voider.editor.commands.CResourceSelect;
+import com.spiddekauga.voider.editor.commands.CResourceSelectOld;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.EnemyActor;
 import com.spiddekauga.voider.game.triggers.TActorActivated;
@@ -136,7 +136,7 @@ public class TriggerTool extends TouchTool implements ISelectTool {
 			// Just select the trigger
 			if (hitObject instanceof Trigger) {
 				if (hitObject != mSelectedTrigger) {
-					mInvoker.execute(new CResourceSelect((IResource) hitObject, this));
+					mInvoker.execute(new CResourceSelectOld((IResource) hitObject, this));
 				}
 
 				if (hitObject instanceof IResourcePosition) {
@@ -147,13 +147,13 @@ public class TriggerTool extends TouchTool implements ISelectTool {
 			else if (hitObject instanceof EnemyActor) {
 				TActorActivated newTrigger = new TActorActivated((Actor) hitObject);
 				mInvoker.execute(new CResourceAdd(newTrigger, mLevelEditor));
-				mInvoker.execute(new CResourceSelect(newTrigger, this), true);
+				mInvoker.execute(new CResourceSelectOld(newTrigger, this), true);
 			}
 			// Create TriggerScreenAt
 			else {
 				TScreenAt newTrigger = new TScreenAt(mLevelEditor.getLevel(), mTouchCurrent.x);
 				mInvoker.execute(new CResourceAdd(newTrigger, mLevelEditor));
-				mInvoker.execute(new CResourceSelect(newTrigger, this), true);
+				mInvoker.execute(new CResourceSelectOld(newTrigger, this), true);
 
 				mDragOrigin.set(mTouchOrigin);
 			}
@@ -163,7 +163,7 @@ public class TriggerTool extends TouchTool implements ISelectTool {
 		case SELECT:
 			if (hitObject instanceof Trigger) {
 				if (hitObject != mSelectedTrigger) {
-					mInvoker.execute(new CResourceSelect((IResource) hitObject, this));
+					mInvoker.execute(new CResourceSelectOld((IResource) hitObject, this));
 				}
 
 				if (hitObject instanceof IResourcePosition) {
@@ -172,7 +172,7 @@ public class TriggerTool extends TouchTool implements ISelectTool {
 
 			} else {
 				if (mSelectedTrigger != null) {
-					mInvoker.execute(new CResourceSelect(null, this));
+					mInvoker.execute(new CResourceSelectOld(null, this));
 				}
 			}
 			break;
@@ -183,13 +183,13 @@ public class TriggerTool extends TouchTool implements ISelectTool {
 				// Hit same twice, remove it
 				if (hitObject == mSelectedTrigger) {
 					mInvoker.execute(new CResourceRemove(mSelectedTrigger, mLevelEditor));
-					mInvoker.execute(new CResourceSelect(null, this), true);
+					mInvoker.execute(new CResourceSelectOld(null, this), true);
 				} else {
-					mInvoker.execute(new CResourceSelect((IResource) hitObject, this));
+					mInvoker.execute(new CResourceSelectOld((IResource) hitObject, this));
 				}
 			} else {
 				if (mSelectedTrigger != null) {
-					mInvoker.execute(new CResourceSelect(null, this));
+					mInvoker.execute(new CResourceSelectOld(null, this));
 				}
 			}
 			break;
