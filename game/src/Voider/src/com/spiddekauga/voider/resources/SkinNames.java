@@ -44,7 +44,7 @@ public class SkinNames {
 		/** When the level editor is selected, i.e. we're in the level editor */
 		LEVEL_EDITOR_SELECTED,
 		/** Duplicates the current actor or level */
-		DUPLICATATE,
+		DUPLICATE,
 		/** Loads another resource */
 		LOAD,
 		/** Creates a new resource */

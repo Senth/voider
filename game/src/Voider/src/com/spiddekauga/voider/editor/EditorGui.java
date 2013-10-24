@@ -64,8 +64,11 @@ public abstract class EditorGui extends Gui {
 		mFileMenu.dispose();
 		mToolMenu.dispose();
 
-		clearCollisionBoxes();
-		Pools.arrayList.free(mBodies);
+		if (mBodies != null) {
+			clearCollisionBoxes();
+			Pools.arrayList.free(mBodies);
+			mBodies = null;
+		}
 
 		super.dispose();
 	}
@@ -78,9 +81,12 @@ public abstract class EditorGui extends Gui {
 		mEditor = editor;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void initGui() {
 		super.initGui();
+
+		mBodies = Pools.arrayList.obtain();
 
 		mGeneralSkin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
 		mEditorSkin = ResourceCacheFacade.get(ResourceNames.UI_EDITOR_BUTTONS);
@@ -90,10 +96,12 @@ public abstract class EditorGui extends Gui {
 		mEditorMenu.setTableAlign(Horizontal.LEFT, Vertical.TOP);
 		mFileMenu.setTableAlign(Horizontal.RIGHT, Vertical.TOP);
 		mToolMenu.setTableAlign(Horizontal.LEFT, Vertical.TOP);
-		mToolMenu.row().setPadTop(Config.Gui.TOOL_PADDING_TOP);
+		mToolMenu.setRowAlign(Horizontal.LEFT, Vertical.TOP);
 
 		initEditorMenu();
 		initFileMenu();
+
+		mToolMenu.row().setPadTop(getEditorMenuTopPadding());
 	}
 
 	/**
@@ -224,7 +232,7 @@ public abstract class EditorGui extends Gui {
 		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Duplicate", mTextButtonStyle);
 		} else {
-			button = new ImageButton(mEditorSkin, EditorIcons.DUPLICATATE.toString());
+			button = new ImageButton(mEditorSkin, EditorIcons.DUPLICATE.toString());
 		}
 		mFileMenu.add(button).setPadRight(Config.Gui.SEPARATE_PADDING);
 		new ButtonListener(button) {
@@ -572,6 +580,23 @@ public abstract class EditorGui extends Gui {
 	}
 
 	/**
+	 * Calculate top editor menu padding
+	 * @return pixel top padding for other menus that start from the top
+	 */
+	protected float getEditorMenuTopPadding() {
+		mEditorMenu.layout();
+		return mEditorMenu.getHeight() * Config.Gui.PADDING_FROM_EDITOR_MULTIPLIER;
+	}
+
+	/**
+	 * Calculate maximum tool menu height. Uses editor menu top padding.
+	 * @return maximum tool menu height
+	 */
+	protected float getMaximumToolMenuHeight() {
+		return Gdx.graphics.getHeight() - getEditorMenuTopPadding();
+	}
+
+	/**
 	 * @return resource type name
 	 */
 	protected abstract String getResourceTypeName();
@@ -598,5 +623,5 @@ public abstract class EditorGui extends Gui {
 	private boolean mLayoutWasValid = false;
 	/** All UI-bodies for collision */
 	@SuppressWarnings("unchecked")
-	private ArrayList<Body> mBodies = Pools.arrayList.obtain();
+	private ArrayList<Body> mBodies = null;
 }

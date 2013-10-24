@@ -603,8 +603,8 @@ public class Config {
 		public final static int SCORE_TABLE_FIRST_CELL_WIDTH = 100;
 		/** @todo REMOVE default padding for cells */
 		public final static float PADDING_DEFAULT = 1;
-		/** Top padding for tool menu */
-		public final static float TOOL_PADDING_TOP = 65;
+		/** Multiplier for editor menu when padding the top for other menus */
+		public final static float PADDING_FROM_EDITOR_MULTIPLIER = 1.5f;
 
 		/**
 		 * @return true if we want to display text buttons instead of image buttons

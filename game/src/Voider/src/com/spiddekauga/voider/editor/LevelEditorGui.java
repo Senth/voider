@@ -1,5 +1,8 @@
 package com.spiddekauga.voider.editor;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
@@ -42,6 +45,7 @@ import com.spiddekauga.voider.scene.DrawActorTool;
 import com.spiddekauga.voider.scene.PathTool;
 import com.spiddekauga.voider.scene.TriggerTool;
 import com.spiddekauga.voider.utils.Messages;
+import com.spiddekauga.voider.utils.Pools;
 
 /**
  * GUI for the level editor
@@ -364,17 +368,17 @@ class LevelEditorGui extends EditorGui {
 	 */
 	private void initToolMenu() {
 		Button button;
-		ButtonGroup buttonGroup = new ButtonGroup();
+
+		@SuppressWarnings("unchecked")
+		ArrayList<Button> toolButtons = Pools.arrayList.obtain();
 
 		// Select
-		mToolMenu.row();
 		/** @todo REMOVE text button */
 		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Select", mTextToggleStyle);
 		} else {
 			button = new ImageButton(mEditorSkin, EditorIcons.SELECT.toString());
 		}
-		mToolMenu.add(button);
 		new ButtonListener(button) {
 			@Override
 			protected void onChecked(boolean checked) {
@@ -383,17 +387,15 @@ class LevelEditorGui extends EditorGui {
 				}
 			}
 		};
-		buttonGroup.add(button);
+		toolButtons.add(button);
 
 		// Cancel
-		mToolMenu.row();
 		/** @todo REMOVE text button */
 		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Cancel", mTextToggleStyle);
 		} else {
 			button = new ImageButton(mEditorSkin, EditorIcons.CANCEL.toString());
 		}
-		mToolMenu.add(button);
 		new ButtonListener(button) {
 			@Override
 			protected void onChecked(boolean checked) {
@@ -402,17 +404,15 @@ class LevelEditorGui extends EditorGui {
 				}
 			}
 		};
-		buttonGroup.add(button);
+		toolButtons.add(button);
 
 		// Move
-		mToolMenu.row();
 		/** @todo REMOVE text button */
 		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Move", mTextToggleStyle);
 		} else {
 			button = new ImageButton(mEditorSkin, EditorIcons.MOVE.toString());
 		}
-		mToolMenu.add(button);
 		new ButtonListener(button) {
 			@Override
 			protected void onChecked(boolean checked) {
@@ -421,17 +421,15 @@ class LevelEditorGui extends EditorGui {
 				}
 			}
 		};
-		buttonGroup.add(button);
+		toolButtons.add(button);
 
 		// Delete
-		mToolMenu.row();
 		/** @todo REMOVE text button */
 		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Delete", mTextToggleStyle);
 		} else {
 			button = new ImageButton(mEditorSkin, EditorIcons.DELETE.toString());
 		}
-		mToolMenu.add(button);
 		new ButtonListener(button) {
 			@Override
 			protected void onChecked(boolean checked) {
@@ -440,17 +438,15 @@ class LevelEditorGui extends EditorGui {
 				}
 			}
 		};
-		buttonGroup.add(button);
+		toolButtons.add(button);
 
 		// Terrain draw_append
-		mToolMenu.row();
 		/** @todo REMOVE text button */
 		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Terrain, append", mTextToggleStyle);
 		} else {
 			button = new ImageButton(mEditorSkin, EditorIcons.TERRAIN_DRAW_APPEND.toString());
 		}
-		mToolMenu.add(button);
 		new ButtonListener(button) {
 			@Override
 			protected void onChecked(boolean checked) {
@@ -459,17 +455,15 @@ class LevelEditorGui extends EditorGui {
 				}
 			}
 		};
-		buttonGroup.add(button);
+		toolButtons.add(button);
 
 		// Terrain draw_erase
-		mToolMenu.row();
 		/** @todo REMOVE text button */
 		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Terrain, draw erase", mTextToggleStyle);
 		} else {
 			button = new ImageButton(mEditorSkin, EditorIcons.TERRAIN_DRAW_ERASE.toString());
 		}
-		mToolMenu.add(button);
 		new ButtonListener(button) {
 			@Override
 			protected void onChecked(boolean checked) {
@@ -478,17 +472,15 @@ class LevelEditorGui extends EditorGui {
 				}
 			}
 		};
-		buttonGroup.add(button);
+		toolButtons.add(button);
 
 		// Terrain add_move_corner
-		mToolMenu.row();
 		/** @todo REMOVE text button */
 		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Terrain, add/move corner", mTextToggleStyle);
 		} else {
 			button = new ImageButton(mEditorSkin, EditorIcons.TERRAIN_ADD_MOVE_CORNER.toString());
 		}
-		mToolMenu.add(button);
 		new ButtonListener(button) {
 			@Override
 			protected void onChecked(boolean checked) {
@@ -497,17 +489,15 @@ class LevelEditorGui extends EditorGui {
 				}
 			}
 		};
-		buttonGroup.add(button);
+		toolButtons.add(button);
 
 		// Terrain remove_corner
-		mToolMenu.row();
 		/** @todo REMOVE text button */
 		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Terrain, remove corner", mTextToggleStyle);
 		} else {
 			button = new ImageButton(mEditorSkin, EditorIcons.TERRAIN_REMOVE_CORNER.toString());
 		}
-		mToolMenu.add(button);
 		new ButtonListener(button) {
 			@Override
 			protected void onChecked(boolean checked) {
@@ -516,17 +506,15 @@ class LevelEditorGui extends EditorGui {
 				}
 			}
 		};
-		buttonGroup.add(button);
+		toolButtons.add(button);
 
 		// Enemy add
-		mToolMenu.row();
 		/** @todo REMOVE text button */
 		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Add enemy", mTextToggleStyle);
 		} else {
 			button = new ImageButton(mEditorSkin, EditorIcons.ENEMY_ADD.toString());
 		}
-		mToolMenu.add(button);
 		new ButtonListener(button) {
 			@Override
 			protected void onChecked(boolean checked) {
@@ -535,17 +523,15 @@ class LevelEditorGui extends EditorGui {
 				}
 			}
 		};
-		buttonGroup.add(button);
+		toolButtons.add(button);
 
 		// Path add
-		mToolMenu.row();
 		/** @todo REMOVE text button */
 		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Add path", mTextToggleStyle);
 		} else {
 			button = new ImageButton(mEditorSkin, EditorIcons.PATH_ADD.toString());
 		}
-		mToolMenu.add(button);
 		new ButtonListener(button) {
 			@Override
 			protected void onChecked(boolean checked) {
@@ -554,17 +540,15 @@ class LevelEditorGui extends EditorGui {
 				}
 			}
 		};
-		buttonGroup.add(button);
+		toolButtons.add(button);
 
 		// Trigger add
-		mToolMenu.row();
 		/** @todo REMOVE text button */
 		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Add trigger", mTextToggleStyle);
 		} else {
 			button = new ImageButton(mEditorSkin, EditorIcons.TRIGGER_ADD.toString());
 		}
-		mToolMenu.add(button);
 		new ButtonListener(button) {
 			@Override
 			protected void onChecked(boolean checked) {
@@ -573,17 +557,15 @@ class LevelEditorGui extends EditorGui {
 				}
 			}
 		};
-		buttonGroup.add(button);
+		toolButtons.add(button);
 
 		// Pickup add
-		mToolMenu.row();
 		/** @todo REMOVE text button */
 		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Add pickup", mTextToggleStyle);
 		} else {
 			button = new ImageButton(mEditorSkin, EditorIcons.PICKUP_ADD.toString());
 		}
-		mToolMenu.add(button);
 		new ButtonListener(button) {
 			@Override
 			protected void onChecked(boolean checked) {
@@ -592,7 +574,45 @@ class LevelEditorGui extends EditorGui {
 				}
 			}
 		};
-		buttonGroup.add(button);
+		toolButtons.add(button);
+
+
+		// Add buttons to tool
+		float maximumToolMenuHeight = getMaximumToolMenuHeight();
+		float paddingHeight = Config.Gui.PADDING_DEFAULT * 2;
+		float totalHeight = 0;
+
+		AlignTable column = new AlignTable();
+		column.setPreferences(mToolMenu);
+		ButtonGroup buttonGroup = new ButtonGroup();
+
+		Iterator<Button> iterator = toolButtons.iterator();
+		while (iterator.hasNext()) {
+			Button nextButton = iterator.next();
+
+			float buttonHeight = nextButton.getHeight() + paddingHeight;
+
+			if (totalHeight + buttonHeight > maximumToolMenuHeight) {
+				mToolMenu.add(column);
+				column = new AlignTable();
+				column.setPreferences(mToolMenu);
+				totalHeight = 0;
+
+				// Only switch to bottom alignment if one row is full
+				mToolMenu.setTableAlign(Horizontal.LEFT, Vertical.BOTTOM);
+			}
+
+			totalHeight += buttonHeight;
+
+			column.row();
+			column.add(nextButton);
+			buttonGroup.add(nextButton);
+		}
+
+		// Add last column
+		mToolMenu.add(column);
+
+		Pools.arrayList.free(toolButtons);
 	}
 
 	/**
@@ -1800,6 +1820,13 @@ class LevelEditorGui extends EditorGui {
 	/** All hiders  */
 	private OldHiders mOldHiders = null;
 
+
+	/**
+	 * Container for inner widgets
+	 */
+	private static class InnerWidgets {
+
+	}
 
 	/**
 	 * Container for all hiders

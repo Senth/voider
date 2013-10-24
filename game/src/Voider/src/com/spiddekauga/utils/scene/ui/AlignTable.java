@@ -26,7 +26,7 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	 * Constructor, creates an empty first row
 	 */
 	public AlignTable() {
-		setTouchable(Touchable.enabled);
+		setTouchable(Touchable.childrenOnly);
 	}
 
 	/**
