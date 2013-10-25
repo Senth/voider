@@ -34,6 +34,7 @@ public class Pools {
 	@SuppressWarnings("rawtypes")
 	public static Pool<HashSet> hashSet = new Pool<HashSet>(HashSet.class, 16, 100);
 	/** Hash map */
+	@SuppressWarnings("rawtypes")
 	public static Pool<HashMap> hashMap = new Pool<HashMap>(HashMap.class, 16, 100);
 	/** Identity Hash Map */
 	@SuppressWarnings("rawtypes")

@@ -34,6 +34,7 @@ import com.spiddekauga.voider.game.triggers.TriggerInfo;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourceBody;
 import com.spiddekauga.voider.resources.IResourceChangeListener.EventTypes;
+import com.spiddekauga.voider.resources.IResourceCorner;
 import com.spiddekauga.voider.resources.IResourceEditorRender;
 import com.spiddekauga.voider.resources.IResourceEditorUpdate;
 import com.spiddekauga.voider.resources.IResourcePosition;
@@ -51,7 +52,7 @@ import com.spiddekauga.voider.utils.Pools;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public abstract class Actor extends Resource implements IResourceUpdate, KryoTaggedCopyable, KryoSerializable, Disposable, Poolable, IResourceBody, IResourcePosition, ITriggerListener, IResourceEditorUpdate, IResourceRender, IResourceEditorRender, IResourceSelectable {
+public abstract class Actor extends Resource implements IResourceUpdate, KryoTaggedCopyable, KryoSerializable, Disposable, Poolable, IResourceBody, IResourcePosition, ITriggerListener, IResourceEditorUpdate, IResourceRender, IResourceEditorRender, IResourceSelectable, IResourceCorner {
 	/**
 	 * Sets the texture of the actor including the actor definition.
 	 * Automatically creates a body for the actor.
@@ -761,22 +762,6 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 	}
 
 	/**
-	 * Checks what index the specified position has. Only applicable if actor is using a custom
-	 * shape and in an editor
-	 * @param position the position of a corner
-	 * @return corner index if a corner was found at position, -1 if none was found
-	 */
-	public int getCornerIndex(Vector2 position) {
-		for (int i = 0; i < mCorners.size(); ++i) {
-			if (mCorners.get(i).getPosition().equals(position)) {
-				return i;
-			}
-		}
-
-		return -1;
-	}
-
-	/**
 	 * Creates a center picking body to move the center of the actor
 	 */
 	public void createBodyCenter() {
@@ -1119,6 +1104,52 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 		}
 
 		return (ResourceType) copy;
+	}
+
+	@Override
+	public void addCorner(Vector2 corner) {
+		getDef().getVisualVars().addCorner(corner);
+	}
+
+	@Override
+	public void addCorner(Vector2 corner, int index) {
+		getDef().getVisualVars().addCorner(corner, index);
+	}
+
+	@Override
+	public Vector2 removeCorner(int index) {
+		return getDef().getVisualVars().removeCorner(index);
+	}
+
+	@Override
+	public void moveCorner(int index, Vector2 newPos) {
+		getDef().getVisualVars().moveCorner(index, newPos);
+	}
+
+	@Override
+	public int getCornerCount() {
+		return getDef().getVisualVars().getCornerCount();
+	}
+
+	@Override
+	public Vector2 getCornerPosition(int index) {
+		return getDef().getVisualVars().getCornerPosition(index);
+	}
+
+	@Override
+	public int getCornerIndex(Vector2 position) {
+		for (int i = 0; i < mCorners.size(); ++i) {
+			if (mCorners.get(i).getPosition().equals(position)) {
+				return i;
+			}
+		}
+
+		return -1;
+	}
+
+	@Override
+	public ArrayList<Vector2> getCorners() {
+		return getDef().getVisualVars().getCorners();
 	}
 
 	// Kryo variables

@@ -49,6 +49,14 @@ public interface IResourceCorner {
 	public Vector2 getCornerPosition(int index);
 
 	/**
+	 * Gets the index of the corner at the exact specified location
+	 * @param position get the index of the corner at this position
+	 * @return index of the corner at the specified position -1 if no
+	 * corner was found on this exact position.
+	 */
+	public int getCornerIndex(Vector2 position);
+
+	/**
 	 * @return all the corners of the resource
 	 */
 	public ArrayList<Vector2> getCorners();

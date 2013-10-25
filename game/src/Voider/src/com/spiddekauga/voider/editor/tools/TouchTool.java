@@ -170,7 +170,7 @@ public abstract class TouchTool extends InputAdapter {
 	protected void testPickAabb(float halfSize) {
 		mHitBodies.clear();
 		mWorld.QueryAABB(getCallback(), mTouchCurrent.x - halfSize, mTouchCurrent.y - halfSize, mTouchCurrent.x + halfSize, mTouchCurrent.y + halfSize);
-		mHitBody = filterPick(mHitBodies);
+		//		mHitBody = filterPick(mHitBodies);
 	}
 
 	/**
@@ -179,7 +179,7 @@ public abstract class TouchTool extends InputAdapter {
 	protected void testPickPoint() {
 		mHitBodies.clear();
 		mWorld.QueryAABB(mCallbackPoint, mTouchCurrent.x, mTouchCurrent.y, mTouchCurrent.x, mTouchCurrent.y);
-		mHitBody = filterPick(mHitBodies);
+		//		mHitBody = filterPick(mHitBodies);
 	}
 
 	/**
@@ -220,7 +220,11 @@ public abstract class TouchTool extends InputAdapter {
 	 * @param hitBodies all the bodies that were hit in the pick
 	 * @return hitBody the body that had a prioritized hit
 	 */
-	protected abstract Body filterPick(ArrayList<Body> hitBodies);
+	@Deprecated
+	protected Body filterPick(ArrayList<Body> hitBodies) {
+		// does nothing
+		return null;
+	}
 
 	/** If the player double clicked */
 	protected boolean mDoubleClick = false;
@@ -231,6 +235,7 @@ public abstract class TouchTool extends InputAdapter {
 	/** Original position of the touch, in world coordinates */
 	protected Vector2 mTouchOrigin = new Vector2();
 	/** Current body that was hit */
+	@Deprecated
 	protected Body mHitBody = null;
 	/** World used for picking */
 	protected World mWorld;
@@ -258,5 +263,6 @@ public abstract class TouchTool extends InputAdapter {
 
 	// Temp variables
 	/** All bodies that were hit during the pick */
+	@Deprecated
 	protected static ArrayList<Body> mHitBodies = new ArrayList<Body>();
 }

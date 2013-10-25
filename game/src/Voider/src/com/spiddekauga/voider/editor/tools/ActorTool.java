@@ -1,12 +1,10 @@
 package com.spiddekauga.voider.editor.tools;
 
 import java.lang.reflect.Constructor;
-import java.util.ArrayList;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.World;
 import com.spiddekauga.utils.Invoker;
@@ -39,11 +37,6 @@ abstract public class ActorTool extends TouchTool {
 
 	@Override
 	protected QueryCallback getCallback() {
-		return null;
-	}
-
-	@Override
-	protected Body filterPick(ArrayList<Body> hitBodies) {
 		return null;
 	}
 

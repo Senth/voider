@@ -436,6 +436,17 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 	}
 
 	@Override
+	public int getCornerIndex(Vector2 position) {
+		for (int i = 0; i < mCorners.size(); ++i) {
+			if (mCorners.get(i).equals(position)) {
+				return i;
+			}
+		}
+
+		return -1;
+	}
+
+	@Override
 	public Vector2 removeCorner(int index) {
 		return mCorners.remove(index);
 	}

@@ -52,8 +52,7 @@ public class DrawEraseTool extends ActorTool {
 		if (!mSelection.isEmpty()) {
 			testPickPoint();
 			// Hit a selected actor
-			if (!mHitBodies.isEmpty()) {
-				mBeganInsideActor = (Actor) mHitBody.getUserData();
+			if (mHitActor != null) {
 				mDrawEraseBrush = new VectorBrush(true);
 			} else {
 				mDrawEraseBrush = new VectorBrush(false);
@@ -94,7 +93,8 @@ public class DrawEraseTool extends ActorTool {
 
 			mEditor.onResourceRemoved(mDrawEraseBrush);
 			mDrawEraseBrush = null;
-			mBeganInsideActor = null;
+			mHitActor = null;
+			setDrawing(false);
 		}
 		return false;
 	}
@@ -385,9 +385,9 @@ public class DrawEraseTool extends ActorTool {
 		ArrayList<Actor> selectedActors;
 
 		// Only the actor we hit
-		if (mBeganInsideActor != null) {
+		if (mHitActor != null) {
 			selectedActors = Pools.arrayList.obtain();
-			selectedActors.add(mBeganInsideActor);
+			selectedActors.add(mHitActor);
 		}
 		// Hit outside of any selected actor, iterate through all
 		else {
@@ -494,17 +494,8 @@ public class DrawEraseTool extends ActorTool {
 		Actor actor;
 	}
 
-	@Override
-	protected Body filterPick(ArrayList<Body> hitBodies) {
-		if (hitBodies.isEmpty()) {
-			return null;
-		} else {
-			return hitBodies.get(0);
-		}
-	}
-
-	/** Began inside of an actor */
-	private Actor mBeganInsideActor = null;
+	/** If we hit an actor */
+	private Actor mHitActor = null;
 	/** Vector brush for drawing line */
 	private VectorBrush mDrawEraseBrush = null;
 	/** Last position we dragged to */
@@ -517,7 +508,8 @@ public class DrawEraseTool extends ActorTool {
 			// Hit an actor
 			if (body.getUserData() != null && body.getUserData().getClass() == mActorType) {
 				if (mSelection.isSelected((IResource)body.getUserData())) {
-					mHitBodies.add(body);
+					mHitActor = (Actor) body.getUserData();
+					return false;
 				}
 			}
 			return true;
