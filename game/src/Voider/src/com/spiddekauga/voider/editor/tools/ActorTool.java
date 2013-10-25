@@ -12,7 +12,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.spiddekauga.utils.Invoker;
 import com.spiddekauga.voider.editor.IResourceChangeEditor;
 import com.spiddekauga.voider.editor.commands.CResourceAdd;
-import com.spiddekauga.voider.editor.commands.CResourceSelect;
+import com.spiddekauga.voider.editor.commands.CSelectionSet;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.ActorDef;
 import com.spiddekauga.voider.utils.Pools;
@@ -85,7 +85,7 @@ abstract public class ActorTool extends TouchTool {
 		}
 		actor.setPosition(mTouchOrigin);
 		mInvoker.execute(new CResourceAdd(actor, mEditor));
-		mInvoker.execute(new CResourceSelect(actor, mSelection));
+		mInvoker.execute(new CSelectionSet(mSelection, actor), true);
 	}
 
 	/**

@@ -9,19 +9,19 @@ import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.utils.Pools;
 
 /**
- * 
+ * Sets the current selection
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class CResourceSelect extends Command implements Disposable {
+public class CSelectionSet extends Command implements Disposable {
 	/**
 	 * Creates a command that will select an actor in the specified tool
-	 * @param resource the resource to select, if null it deselects any resource
 	 * @param selection the selection container
+	 * @param resources the resources to select
 	 */
-	public CResourceSelect(IResource resource, ISelection selection) {
+	public CSelectionSet(ISelection selection, IResource... resources) {
 		mSelection = selection;
-		mResource = resource;
+		mResources = resources;
 	}
 
 	@Override
@@ -29,9 +29,8 @@ public class CResourceSelect extends Command implements Disposable {
 		if (mSelection != null) {
 			ArrayList<IResource> oldSelection = mSelection.getSelectedResources();
 			mOldSelection.addAll(oldSelection);
-
 			mSelection.clearSelection();
-			mSelection.addResource(mResource);
+			mSelection.selectResources(mResources);
 			return true;
 		} else {
 			return false;
@@ -42,7 +41,7 @@ public class CResourceSelect extends Command implements Disposable {
 	public boolean undo() {
 		if (mSelection != null) {
 			mSelection.clearSelection();
-			mSelection.addResources(mOldSelection);
+			mSelection.selectResources(mOldSelection);
 			return true;
 		} else {
 			return false;
@@ -55,8 +54,8 @@ public class CResourceSelect extends Command implements Disposable {
 		mOldSelection = null;
 	}
 
-	/** The actor to select */
-	private IResource mResource;
+	/** The resources to select */
+	private IResource[] mResources;
 	/** Old selection */
 	@SuppressWarnings("unchecked")
 	private ArrayList<IResource> mOldSelection = Pools.arrayList.obtain();

@@ -223,7 +223,7 @@ public abstract class EditorGui extends Gui {
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed() {
-				executeCommandAndCheckSave(new CEditorNew(mEditor), "Load another " + getResourceTypeName(), "Save first", "Discard current", Messages.getUnsavedMessage(getResourceTypeName(), UnsavedActions.LOAD));
+				executeCommandAndCheckSave(new CEditorLoad(mEditor), "Load another " + getResourceTypeName(), "Save first", "Discard current", Messages.getUnsavedMessage(getResourceTypeName(), UnsavedActions.LOAD));
 			}
 		};
 

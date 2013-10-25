@@ -40,12 +40,18 @@ public class DrawAppendTool extends ActorTool implements ISelectionListener {
 
 	@Override
 	protected boolean down() {
+		mDrewPreviousClick = false;
+
 		mSelectedActor = mSelection.getFirstSelectedResourceOfType(mActorType);
 
 		if (mSelectedActor == null) {
 			createNewSelectedActor();
+			mSelectedActor = mSelection.getFirstSelectedResourceOfType(mActorType);
+			mDrewPreviousClick = true;
 		} else {
 			mInvoker.execute(new CActorDefFixCustomFixtures(mSelectedActor.getDef(), false));
+			appendCorner(true);
+			mDrewPreviousClick = true;
 		}
 		setDrawing(true);
 
@@ -108,14 +114,18 @@ public class DrawAppendTool extends ActorTool implements ISelectionListener {
 	@Override
 	public void onResourceSelected(IResource resource) {
 		if (resource.getClass() == mActorType) {
-			// TODO
+			((Actor)resource).setDrawOnlyOutline(true);
 		}
 	}
 
 	@Override
 	public void onResourceDeselected(IResource resource) {
 		if (resource.getClass() == mActorType) {
-			// TODO
+			((Actor)resource).setDrawOnlyOutline(false);
+		}
+
+		if (mSelectedActor == resource) {
+			mSelectedActor = null;
 		}
 	}
 
@@ -126,7 +136,6 @@ public class DrawAppendTool extends ActorTool implements ISelectionListener {
 	private void handleBadCornerPosition(String message) {
 		mInvoker.undo(false);
 		mInvoker.clearRedo();
-		//		mCornerIndexCurrent = -1;
 	}
 
 	/**
@@ -162,16 +171,15 @@ public class DrawAppendTool extends ActorTool implements ISelectionListener {
 
 			mInvoker.execute(new CResourceCornerAdd(mSelectedActor.getDef().getVisualVars(), localPos, mEditor), chained);
 			mDragOrigin.set(mTouchCurrent);
-			//			mCornerIndexCurrent = mSelectedActor.getDef().getVisualVars().getCornerCount() - 1;
 
 			Pools.vector2.free(localPos);
 		}
 	}
 
+	/** Drew previous click */
+	private boolean mDrewPreviousClick = false;
 	/** Temporary variable for selected actor */
-	Actor mSelectedActor = null;
+	private Actor mSelectedActor = null;
 	/** Origin of the drag */
 	private Vector2 mDragOrigin = new Vector2();
-	//	/** Current corner index */
-	//	private int mCornerIndexCurrent = -1;
 }

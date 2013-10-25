@@ -65,9 +65,7 @@ public abstract class TouchTool extends InputAdapter {
 			Scene.screenToWorldCoord(mCamera, x, y, mTouchOrigin, true);
 			mTouchCurrent.set(mTouchOrigin);
 
-			down();
-
-			return true;
+			return down();
 		}
 
 
@@ -79,9 +77,7 @@ public abstract class TouchTool extends InputAdapter {
 		if (pointer == 0) {
 			Scene.screenToWorldCoord(mCamera, x, y, mTouchCurrent, true);
 
-			dragged();
-
-			return true;
+			return dragged();
 		}
 
 
@@ -93,7 +89,7 @@ public abstract class TouchTool extends InputAdapter {
 		if (pointer == 0) {
 			Scene.screenToWorldCoord(mCamera, x, y, mTouchCurrent, true);
 
-			up();
+			return up();
 		}
 
 		return false;

@@ -14,14 +14,18 @@ import com.spiddekauga.utils.Scroller;
 import com.spiddekauga.utils.Scroller.ScrollAxis;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.app.MainMenu;
 import com.spiddekauga.voider.editor.commands.CCameraMove;
 import com.spiddekauga.voider.editor.commands.CLevelEnemyDefSelect;
 import com.spiddekauga.voider.editor.commands.CLevelPickupDefSelect;
-import com.spiddekauga.voider.editor.tools.ActorToolOld;
+import com.spiddekauga.voider.editor.commands.CSelectionSet;
 import com.spiddekauga.voider.editor.tools.AddActorTool;
 import com.spiddekauga.voider.editor.tools.AddEnemyTool;
 import com.spiddekauga.voider.editor.tools.DrawActorTool;
+import com.spiddekauga.voider.editor.tools.DrawAppendTool;
+import com.spiddekauga.voider.editor.tools.ISelection;
 import com.spiddekauga.voider.editor.tools.PathTool;
+import com.spiddekauga.voider.editor.tools.Selection;
 import com.spiddekauga.voider.editor.tools.SelectionTool;
 import com.spiddekauga.voider.editor.tools.TouchTool;
 import com.spiddekauga.voider.editor.tools.TriggerTool;
@@ -35,13 +39,9 @@ import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.ActorDef;
 import com.spiddekauga.voider.game.actors.EnemyActor;
 import com.spiddekauga.voider.game.actors.EnemyActorDef;
-import com.spiddekauga.voider.game.actors.EnemyGroup;
-import com.spiddekauga.voider.game.actors.PickupActor;
 import com.spiddekauga.voider.game.actors.PickupActorDef;
 import com.spiddekauga.voider.game.actors.StaticTerrainActor;
 import com.spiddekauga.voider.game.triggers.TScreenAt;
-import com.spiddekauga.voider.game.triggers.TriggerAction.Actions;
-import com.spiddekauga.voider.game.triggers.TriggerInfo;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourceBody;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
@@ -71,30 +71,31 @@ public class LevelEditor extends Editor implements IResourceChangeEditor {
 		Actor.setEditorActive(true);
 
 		mScroller = new Scroller(50, 2000, 10, 200, ScrollAxis.X);
+		mSelection = new Selection();
 
 		// Initialize all tools
-		DrawActorTool terrainTool = new DrawActorTool(mCamera, mWorld, mInvoker, StaticTerrainActor.class, this);
-		mTouchTools[ToolGroups.STATIC_TERRAIN.ordinal()] = terrainTool;
-		AddActorTool pickupTool = new AddActorTool(mCamera, mWorld, mInvoker, PickupActor.class, true, this);
-		mTouchTools[ToolGroups.PICKUP.ordinal()] = pickupTool;
-		AddEnemyTool enemyTool = new AddEnemyTool(mCamera, mWorld, mInvoker, this);
-		enemyTool.addListener(this);
-		mTouchTools[ToolGroups.ENEMY.ordinal()] = enemyTool;
-		PathTool pathTool = new PathTool(mCamera, mWorld, mInvoker, this);
-		pathTool.addListener(this);
-		mTouchTools[ToolGroups.PATH.ordinal()] = pathTool;
-		TriggerTool triggerTool = new TriggerTool(mCamera, mWorld, mInvoker, this);
-		triggerTool.addListener(this);
-		mTouchTools[ToolGroups.TRIGGER.ordinal()] = triggerTool;
+		//		DrawActorTool terrainTool = new DrawActorTool(mCamera, mWorld, mInvoker, StaticTerrainActor.class, this);
+		//		mTouchTools[ToolGroups.STATIC_TERRAIN.ordinal()] = terrainTool;
+		//		AddActorTool pickupTool = new AddActorTool(mCamera, mWorld, mInvoker, PickupActor.class, true, this);
+		//		mTouchTools[ToolGroups.PICKUP.ordinal()] = pickupTool;
+		//		AddEnemyTool enemyTool = new AddEnemyTool(mCamera, mWorld, mInvoker, this);
+		//		enemyTool.addListener(this);
+		//		mTouchTools[ToolGroups.ENEMY.ordinal()] = enemyTool;
+		//		PathTool pathTool = new PathTool(mCamera, mWorld, mInvoker, this);
+		//		pathTool.addListener(this);
+		//		mTouchTools[ToolGroups.PATH.ordinal()] = pathTool;
+		//		TriggerTool triggerTool = new TriggerTool(mCamera, mWorld, mInvoker, this);
+		//		triggerTool.addListener(this);
+		//		mTouchTools[ToolGroups.TRIGGER.ordinal()] = triggerTool;
 
 
 
 
 		// Initialize tools
-		Tools.SELECTION.setTool(new SelectionTool(mCamera, mWorld, mInvoker, this));
+		Tools.SELECTION.setTool(new SelectionTool(mCamera, mWorld, mInvoker, mSelection, this));
 		mInputMultiplexer.addProcessor(Tools.SELECTION.getTool());
 
-		switchToolGroup(ToolGroups.STATIC_TERRAIN);
+		Tools.TERRAIN_DRAW_APPEND.setTool(new DrawAppendTool(mCamera, mWorld, mInvoker, mSelection, this, StaticTerrainActor.class));
 	}
 
 	@Override
@@ -155,7 +156,10 @@ public class LevelEditor extends Editor implements IResourceChangeEditor {
 
 	@Override
 	public boolean isDrawing() {
-		return mTouchTools[mToolGroup.ordinal()].isDrawing();
+		if (mTool.getTool() != null) {
+			return mTool.getTool().isDrawing();
+		}
+		return false;
 	}
 
 	/**
@@ -350,9 +354,11 @@ public class LevelEditor extends Editor implements IResourceChangeEditor {
 				EnemyActorDef enemyActorDef = ResourceCacheFacade.get(this, enemyId, revision);
 
 				// Update def
-				((ActorToolOld)mTouchTools[ToolGroups.ENEMY.ordinal()]).setNewActorDef(enemyActorDef);
+				// TODO
+				//				((ActorToolOld)mTouchTools[ToolGroups.ENEMY.ordinal()]).setNewActorDef(enemyActorDef);
 			} else {
-				((ActorToolOld)mTouchTools[ToolGroups.ENEMY.ordinal()]).setNewActorDef(null);
+				// TODO
+				//				((ActorToolOld)mTouchTools[ToolGroups.ENEMY.ordinal()]).setNewActorDef(null);
 			}
 
 			mGui.resetValues();
@@ -376,9 +382,11 @@ public class LevelEditor extends Editor implements IResourceChangeEditor {
 				PickupActorDef pickupActorDef = ResourceCacheFacade.get(this, pickupId, -1);
 
 				// Update def
-				((ActorToolOld)mTouchTools[ToolGroups.PICKUP.ordinal()]).setNewActorDef(pickupActorDef);
+				// TODO
+				//				((ActorToolOld)mTouchTools[ToolGroups.PICKUP.ordinal()]).setNewActorDef(pickupActorDef);
 			} else {
-				((ActorToolOld)mTouchTools[ToolGroups.PICKUP.ordinal()]).setNewActorDef(null);
+				// TODO
+				//				((ActorToolOld)mTouchTools[ToolGroups.PICKUP.ordinal()]).setNewActorDef(null);
 			}
 			mGui.resetValues();
 		} catch (Exception e) {
@@ -475,28 +483,29 @@ public class LevelEditor extends Editor implements IResourceChangeEditor {
 	 * @return true if an enemy is currently selected
 	 */
 	boolean isEnemySelected() {
-		if (mToolGroup == ToolGroups.ENEMY) {
-			return ((AddActorTool)mTouchTools[ToolGroups.ENEMY.ordinal()]).getSelectedResource() != null;
-		}
-
-		return false;
+		return mSelection.getMostCommonSelectedResourceType() == EnemyActor.class;
 	}
 
 	@Override
 	public boolean keyDown(int keycode) {
 		// Redo
 		if (KeyHelper.isRedoPressed(keycode)) {
-			mInvoker.redo();
+			redo();
 			return true;
 		}
 		// Undo
 		else if (KeyHelper.isUndoPressed(keycode)) {
-			mInvoker.undo();
+			undo();
 			return true;
 		}
-		// Main menu
+		// Back - Deselect or go back
 		else if (KeyHelper.isBackPressed(keycode)) {
-			((EditorGui)mGui).showMainMenu();
+			if (!mSelection.isEmpty()) {
+				mInvoker.execute(new CSelectionSet(mSelection));
+			} else {
+				saveDef();
+				SceneSwitcher.returnTo(MainMenu.class);
+			}
 		}
 		/** @todo remove test buttons */
 		// Toggle GUI/text buttons
@@ -530,25 +539,26 @@ public class LevelEditor extends Editor implements IResourceChangeEditor {
 	 * Switches the tool to the selected tool
 	 * @param toolGroup the new tool type
 	 */
+	@Deprecated
 	void switchToolGroup(ToolGroups toolGroup) {
-		// Remove old tool
-		if (mToolGroup != null) {
-			mInputMultiplexer.removeProcessor(mTouchTools[mToolGroup.ordinal()]);
-			mTouchTools[mToolGroup.ordinal()].deactivate();
-		}
-
-		// Set current tool
-		mToolGroup = toolGroup;
-
-		// add new tool
-		if (mToolGroup != null) {
-			mInputMultiplexer.addProcessor(mTouchTools[mToolGroup.ordinal()]);
-			mTouchTools[mToolGroup.ordinal()].activate();
-		}
-
-		if (mGui.isInitialized()) {
-			mGui.resetValues();
-		}
+		//		// Remove old tool
+		//		if (mToolGroup != null) {
+		//			mInputMultiplexer.removeProcessor(mTouchTools[mToolGroup.ordinal()]);
+		//			mTouchTools[mToolGroup.ordinal()].deactivate();
+		//		}
+		//
+		//		// Set current tool
+		//		mToolGroup = toolGroup;
+		//
+		//		// add new tool
+		//		if (mToolGroup != null) {
+		//			mInputMultiplexer.addProcessor(mTouchTools[mToolGroup.ordinal()]);
+		//			mTouchTools[mToolGroup.ordinal()].activate();
+		//		}
+		//
+		//		if (mGui.isInitialized()) {
+		//			mGui.resetValues();
+		//		}
 	}
 
 	/**
@@ -558,12 +568,22 @@ public class LevelEditor extends Editor implements IResourceChangeEditor {
 	void switchTool(Tools tool) {
 		if (mTool.getTool() != null) {
 			mTool.getTool().deactivate();
+
+			// Never remove selection tool
+			if (mTool != Tools.SELECTION) {
+				mInputMultiplexer.removeProcessor(mTool.getTool());
+			}
 		}
 
 		mTool = tool;
 
 		if (mTool.getTool() != null) {
 			mTool.getTool().activate();
+
+			// Never add selection tool
+			if (mTool != Tools.SELECTION) {
+				mInputMultiplexer.addProcessor(mTool.getTool());
+			}
 		}
 	}
 
@@ -776,26 +796,30 @@ public class LevelEditor extends Editor implements IResourceChangeEditor {
 	 * @return selected enemy name, null if none is selected
 	 */
 	String getSelectedEnemyName() {
-		ActorDef actorDef = ((AddActorTool)mTouchTools[ToolGroups.ENEMY.ordinal()]).getNewActorDef();
-
-		if (actorDef != null) {
-			return actorDef.getName();
-		} else {
-			return null;
-		}
+		// TODO
+		//		ActorDef actorDef = ((AddActorTool)mTouchTools[ToolGroups.ENEMY.ordinal()]).getNewActorDef();
+		//
+		//		if (actorDef != null) {
+		//			return actorDef.getName();
+		//		} else {
+		//			return null;
+		//		}
+		return null;
 	}
 
 	/**
 	 * @return selected pickup name, null if none is selected
 	 */
 	String getSelectedPickupName() {
-		ActorDef actorDef = ((AddActorTool)mTouchTools[ToolGroups.PICKUP.ordinal()]).getNewActorDef();
-
-		if (actorDef != null) {
-			return actorDef.getName();
-		} else {
-			return null;
-		}
+		// TODO
+		//		ActorDef actorDef = ((AddActorTool)mTouchTools[ToolGroups.PICKUP.ordinal()]).getNewActorDef();
+		//
+		//		if (actorDef != null) {
+		//			return actorDef.getName();
+		//		} else {
+		//			return null;
+		//		}
+		return null;
 	}
 
 	/**
@@ -803,95 +827,98 @@ public class LevelEditor extends Editor implements IResourceChangeEditor {
 	 * @param cEnemies number of enemies in the group
 	 */
 	void setEnemyCount(int cEnemies) {
-		EnemyActor selectedEnemy = (EnemyActor) ((AddEnemyTool)mTouchTools[ToolGroups.ENEMY.ordinal()]).getSelectedResource();
-
-		if (selectedEnemy != null) {
-			EnemyGroup enemyGroup = selectedEnemy.getEnemyGroup();
-
-			// We have an enemy group
-			if (enemyGroup != null) {
-				// Just change amount of enemies
-				if (cEnemies > 1) {
-					@SuppressWarnings("unchecked")
-					ArrayList<EnemyActor> addedEnemies = Pools.arrayList.obtain();
-					@SuppressWarnings("unchecked")
-					ArrayList<EnemyActor> removedEnemies = Pools.arrayList.obtain();
-
-					enemyGroup.setEnemyCount(cEnemies, addedEnemies, removedEnemies);
-
-					for (EnemyActor addedEnemy : addedEnemies) {
-						mLevel.addResource(addedEnemy);
-					}
-
-					for (EnemyActor removedEnemy : removedEnemies) {
-						mLevel.removeResource(removedEnemy.getId());
-					}
-
-					Pools.arrayList.freeAll(addedEnemies, removedEnemies);
-					addedEnemies = null;
-					removedEnemies = null;
-				}
-				// Delete enemy group
-				else {
-					// Remove all excess enemies
-					ArrayList<EnemyActor> removedEnemies = enemyGroup.clear();
-
-					for (EnemyActor enemyActor : removedEnemies) {
-						mLevel.removeResource(enemyActor.getId());
-					}
-
-					mLevel.removeResource(enemyGroup.getId());
-
-					Pools.arrayList.free(removedEnemies);
-					removedEnemies = null;
-				}
-			}
-			// No enemy group, do we create one?
-			else if (cEnemies > 1) {
-				enemyGroup = new EnemyGroup();
-				mLevel.addResource(enemyGroup);
-
-				enemyGroup.setLeaderEnemy(selectedEnemy);
-
-				@SuppressWarnings("unchecked")
-				ArrayList<EnemyActor> addedEnemies = Pools.arrayList.obtain();
-				enemyGroup.setEnemyCount(cEnemies, addedEnemies, null);
-
-				for (EnemyActor addedEnemy : addedEnemies) {
-					mLevel.addResource(addedEnemy);
-					addedEnemy.destroyBody();
-				}
-
-				Pools.arrayList.free(addedEnemies);
-				addedEnemies = null;
-
-				// Set GUI delay value
-				((LevelEditorGui)mGui).resetEnemyOptions();
-			}
-		}
+		// TODO
+		//		EnemyActor selectedEnemy = (EnemyActor) ((AddEnemyTool)mTouchTools[ToolGroups.ENEMY.ordinal()]).getSelectedResource();
+		//
+		//		if (selectedEnemy != null) {
+		//			EnemyGroup enemyGroup = selectedEnemy.getEnemyGroup();
+		//
+		//			// We have an enemy group
+		//			if (enemyGroup != null) {
+		//				// Just change amount of enemies
+		//				if (cEnemies > 1) {
+		//					@SuppressWarnings("unchecked")
+		//					ArrayList<EnemyActor> addedEnemies = Pools.arrayList.obtain();
+		//					@SuppressWarnings("unchecked")
+		//					ArrayList<EnemyActor> removedEnemies = Pools.arrayList.obtain();
+		//
+		//					enemyGroup.setEnemyCount(cEnemies, addedEnemies, removedEnemies);
+		//
+		//					for (EnemyActor addedEnemy : addedEnemies) {
+		//						mLevel.addResource(addedEnemy);
+		//					}
+		//
+		//					for (EnemyActor removedEnemy : removedEnemies) {
+		//						mLevel.removeResource(removedEnemy.getId());
+		//					}
+		//
+		//					Pools.arrayList.freeAll(addedEnemies, removedEnemies);
+		//					addedEnemies = null;
+		//					removedEnemies = null;
+		//				}
+		//				// Delete enemy group
+		//				else {
+		//					// Remove all excess enemies
+		//					ArrayList<EnemyActor> removedEnemies = enemyGroup.clear();
+		//
+		//					for (EnemyActor enemyActor : removedEnemies) {
+		//						mLevel.removeResource(enemyActor.getId());
+		//					}
+		//
+		//					mLevel.removeResource(enemyGroup.getId());
+		//
+		//					Pools.arrayList.free(removedEnemies);
+		//					removedEnemies = null;
+		//				}
+		//			}
+		//			// No enemy group, do we create one?
+		//			else if (cEnemies > 1) {
+		//				enemyGroup = new EnemyGroup();
+		//				mLevel.addResource(enemyGroup);
+		//
+		//				enemyGroup.setLeaderEnemy(selectedEnemy);
+		//
+		//				@SuppressWarnings("unchecked")
+		//				ArrayList<EnemyActor> addedEnemies = Pools.arrayList.obtain();
+		//				enemyGroup.setEnemyCount(cEnemies, addedEnemies, null);
+		//
+		//				for (EnemyActor addedEnemy : addedEnemies) {
+		//					mLevel.addResource(addedEnemy);
+		//					addedEnemy.destroyBody();
+		//				}
+		//
+		//				Pools.arrayList.free(addedEnemies);
+		//				addedEnemies = null;
+		//
+		//				// Set GUI delay value
+		//				((LevelEditorGui)mGui).resetEnemyOptions();
+		//			}
+		//		}
 	}
 
 	/**
 	 * @return number of enemies in a group
 	 */
 	int getEnemyCount() {
-		EnemyActor selectedEnemy = (EnemyActor) ((AddEnemyTool)mTouchTools[ToolGroups.ENEMY.ordinal()]).getSelectedResource();
-
-		int cEnemies = 0;
-
-		if (selectedEnemy != null) {
-			EnemyGroup enemyGroup = selectedEnemy.getEnemyGroup();
-
-			if (enemyGroup != null) {
-				cEnemies = enemyGroup.getEnemyCount();
-			}
-			// No group, that means we only have one enemy
-			else {
-				cEnemies = 1;
-			}
-		}
-
-		return cEnemies;
+		// TODO
+		//		EnemyActor selectedEnemy = (EnemyActor) ((AddEnemyTool)mTouchTools[ToolGroups.ENEMY.ordinal()]).getSelectedResource();
+		//
+		//		int cEnemies = 0;
+		//
+		//		if (selectedEnemy != null) {
+		//			EnemyGroup enemyGroup = selectedEnemy.getEnemyGroup();
+		//
+		//			if (enemyGroup != null) {
+		//				cEnemies = enemyGroup.getEnemyCount();
+		//			}
+		//			// No group, that means we only have one enemy
+		//			else {
+		//				cEnemies = 1;
+		//			}
+		//		}
+		//
+		//		return cEnemies;
+		return 0;
 	}
 
 	/**
@@ -899,32 +926,34 @@ public class LevelEditor extends Editor implements IResourceChangeEditor {
 	 * @param delay seconds of delay between actors are activated.
 	 */
 	void setEnemySpawnDelay(float delay) {
-		EnemyActor selectedEnemy = (EnemyActor) ((AddEnemyTool)mTouchTools[ToolGroups.ENEMY.ordinal()]).getSelectedResource();
-
-		if (selectedEnemy != null) {
-			EnemyGroup enemyGroup = selectedEnemy.getEnemyGroup();
-
-			// We have an enemy group
-			if (enemyGroup != null) {
-				enemyGroup.setSpawnTriggerDelay(delay);
-			}
-		}
+		// TODO
+		//		EnemyActor selectedEnemy = (EnemyActor) ((AddEnemyTool)mTouchTools[ToolGroups.ENEMY.ordinal()]).getSelectedResource();
+		//
+		//		if (selectedEnemy != null) {
+		//			EnemyGroup enemyGroup = selectedEnemy.getEnemyGroup();
+		//
+		//			// We have an enemy group
+		//			if (enemyGroup != null) {
+		//				enemyGroup.setSpawnTriggerDelay(delay);
+		//			}
+		//		}
 	}
 
 	/**
 	 * @return spawn delay between actors in the same group, negative value if no group exist
 	 */
 	float getEnemySpawnDelay() {
-		EnemyActor selectedEnemy = (EnemyActor) ((AddEnemyTool)mTouchTools[ToolGroups.ENEMY.ordinal()]).getSelectedResource();
-
-		if (selectedEnemy != null) {
-			EnemyGroup enemyGroup = selectedEnemy.getEnemyGroup();
-
-			// We have an enemy group
-			if (enemyGroup != null) {
-				return enemyGroup.getSpawnTriggerDelay();
-			}
-		}
+		// TODO
+		//		EnemyActor selectedEnemy = (EnemyActor) ((AddEnemyTool)mTouchTools[ToolGroups.ENEMY.ordinal()]).getSelectedResource();
+		//
+		//		if (selectedEnemy != null) {
+		//			EnemyGroup enemyGroup = selectedEnemy.getEnemyGroup();
+		//
+		//			// We have an enemy group
+		//			if (enemyGroup != null) {
+		//				return enemyGroup.getSpawnTriggerDelay();
+		//			}
+		//		}
 
 		return -1;
 	}
@@ -934,140 +963,155 @@ public class LevelEditor extends Editor implements IResourceChangeEditor {
 	 * @param pathType type of the path
 	 */
 	void setPathType(Path.PathTypes pathType) {
-		Path selectedPath = (Path) ((PathTool)mTouchTools[ToolGroups.PATH.ordinal()]).getSelectedResource();
-
-		if (selectedPath != null) {
-			selectedPath.setPathType(pathType);
-		}
+		// TODO
+		//		Path selectedPath = (Path) ((PathTool)mTouchTools[ToolGroups.PATH.ordinal()]).getSelectedResource();
+		//
+		//		if (selectedPath != null) {
+		//			selectedPath.setPathType(pathType);
+		//		}
 	}
 
 	/**
 	 * @return current path type, null if no path has been selected
 	 */
 	PathTypes getPathType() {
-		Path selectedPath = (Path) ((PathTool)mTouchTools[ToolGroups.PATH.ordinal()]).getSelectedResource();
-
-		if (selectedPath != null) {
-			return selectedPath.getPathType();
-		} else {
-			return null;
-		}
+		// TODO
+		//		Path selectedPath = (Path) ((PathTool)mTouchTools[ToolGroups.PATH.ordinal()]).getSelectedResource();
+		//
+		//		if (selectedPath != null) {
+		//			return selectedPath.getPathType();
+		//		} else {
+		//			return null;
+		//		}
+		return null;
 	}
 
 	/**
 	 * @return true if a path is selected
 	 */
 	boolean isPathSelected() {
-		if (mToolGroup == ToolGroups.PATH) {
-			return ((Path) ((PathTool)mTouchTools[ToolGroups.PATH.ordinal()]).getSelectedResource()) != null;
-		} else {
-			return false;
-		}
+		return mSelection.getMostCommonSelectedResourceType() == Path.class;
 	}
 
 	/**
 	 * Sets the current active pickup tool
 	 * @param state current active pickup tool
 	 */
+	@Deprecated
 	void setPickupState(AddActorTool.States state) {
-		AddActorTool addActorTool = (AddActorTool) mTouchTools[ToolGroups.PICKUP.ordinal()];
-		addActorTool.setState(state);
+		//		AddActorTool addActorTool = (AddActorTool) mTouchTools[ToolGroups.PICKUP.ordinal()];
+		//		addActorTool.setState(state);
 	}
 
 	/**
 	 * @return current active pickup tool state
 	 */
+	@Deprecated
 	AddActorTool.States getPickupState() {
-		return ((AddActorTool)mTouchTools[ToolGroups.PICKUP.ordinal()]).getState();
+		return null;
+		//		return ((AddActorTool)mTouchTools[ToolGroups.PICKUP.ordinal()]).getState();
 	}
 
 	/**
 	 * Sets the current active static terrain tool
 	 * @param state current active static terrain tool
 	 */
+	@Deprecated
 	void setStaticTerrainState(DrawActorTool.States state) {
-		DrawActorTool drawActorTool = (DrawActorTool) mTouchTools[ToolGroups.STATIC_TERRAIN.ordinal()];
-		drawActorTool.setState(state);
+		//		DrawActorTool drawActorTool = (DrawActorTool) mTouchTools[ToolGroups.STATIC_TERRAIN.ordinal()];
+		//		drawActorTool.setState(state);
 	}
 
 	/**
 	 * @return current active static terrain tool state
 	 */
+	@Deprecated
 	DrawActorTool.States getStaticTerrainState() {
-		return ((DrawActorTool)mTouchTools[ToolGroups.STATIC_TERRAIN.ordinal()]).getState();
+		//		return ((DrawActorTool)mTouchTools[ToolGroups.STATIC_TERRAIN.ordinal()]).getState();
+		return null;
 	}
 
 	/**
 	 * Sets the active enemy tool state
 	 * @param state current active enemy tool state
 	 */
+	@Deprecated
 	void setEnemyState(AddEnemyTool.States state) {
-		AddEnemyTool addEnemyTool = (AddEnemyTool) mTouchTools[ToolGroups.ENEMY.ordinal()];
-		addEnemyTool.setEnemyState(state);
+		//		AddEnemyTool addEnemyTool = (AddEnemyTool) mTouchTools[ToolGroups.ENEMY.ordinal()];
+		//		addEnemyTool.setEnemyState(state);
 	}
 
 	/**
 	 * Resets the enemy state to the active add actor state.
 	 */
+	@Deprecated
 	void resetEnemyState() {
-		AddEnemyTool addEnemyTool = (AddEnemyTool) mTouchTools[ToolGroups.ENEMY.ordinal()];
-
-		switch (addEnemyTool.getState()) {
-		case ADD:
-			addEnemyTool.setEnemyState(AddEnemyTool.States.ADD);
-			break;
-
-		case REMOVE:
-			addEnemyTool.setEnemyState(AddEnemyTool.States.REMOVE);
-			break;
-
-		case MOVE:
-			addEnemyTool.setEnemyState(AddEnemyTool.States.MOVE);
-			break;
-
-		case SELECT:
-			addEnemyTool.setEnemyState(AddEnemyTool.States.SELECT);
-			break;
-		}
+		//		AddEnemyTool addEnemyTool = (AddEnemyTool) mTouchTools[ToolGroups.ENEMY.ordinal()];
+		//
+		//		switch (addEnemyTool.getState()) {
+		//		case ADD:
+		//			addEnemyTool.setEnemyState(AddEnemyTool.States.ADD);
+		//			break;
+		//
+		//		case REMOVE:
+		//			addEnemyTool.setEnemyState(AddEnemyTool.States.REMOVE);
+		//			break;
+		//
+		//		case MOVE:
+		//			addEnemyTool.setEnemyState(AddEnemyTool.States.MOVE);
+		//			break;
+		//
+		//		case SELECT:
+		//			addEnemyTool.setEnemyState(AddEnemyTool.States.SELECT);
+		//			break;
+		//		}
 	}
 
 	/**
 	 * @return current active enemy tool state
 	 */
+	@Deprecated
 	AddEnemyTool.States getEnemyState() {
-		return ((AddEnemyTool)mTouchTools[ToolGroups.ENEMY.ordinal()]).getEnemyState();
+		//		return ((AddEnemyTool)mTouchTools[ToolGroups.ENEMY.ordinal()]).getEnemyState();
+		return null;
 	}
 
 	/**
 	 * Sets the active path tool state
 	 * @param state new active path tool state
 	 */
+	@Deprecated
 	void setPathState(PathTool.States state) {
-		PathTool pathTool = (PathTool) mTouchTools[ToolGroups.PATH.ordinal()];
-		pathTool.setState(state);
+		//		PathTool pathTool = (PathTool) mTouchTools[ToolGroups.PATH.ordinal()];
+		//		pathTool.setState(state);
 	}
 
 	/**
 	 * @return current path tool state
 	 */
+	@Deprecated
 	PathTool.States getPathState() {
-		return ((PathTool)mTouchTools[ToolGroups.PATH.ordinal()]).getState();
+		//		return ((PathTool)mTouchTools[ToolGroups.PATH.ordinal()]).getState();
+		return null;
 	}
 
 	/**
 	 * Sets the active trigger tool state
 	 * @param state new active trigger tool state
 	 */
+	@Deprecated
 	void setTriggerState(TriggerTool.States state) {
-		TriggerTool triggerTool = (TriggerTool) mTouchTools[ToolGroups.TRIGGER.ordinal()];
-		triggerTool.setState(state);
+		//		TriggerTool triggerTool = (TriggerTool) mTouchTools[ToolGroups.TRIGGER.ordinal()];
+		//		triggerTool.setState(state);
 	}
 
 	/**
 	 * @return current state of the trigger tool
 	 */
+	@Deprecated
 	TriggerTool.States getTriggerState() {
-		return ((TriggerTool)mTouchTools[ToolGroups.TRIGGER.ordinal()]).getState();
+		//		return ((TriggerTool)mTouchTools[ToolGroups.TRIGGER.ordinal()]).getState();
+		return null;
 	}
 
 	/**
@@ -1102,17 +1146,18 @@ public class LevelEditor extends Editor implements IResourceChangeEditor {
 	 * if no enemy is selected
 	 */
 	boolean hasSelectedEnemyActivateTrigger() {
-		EnemyActor enemy =  (EnemyActor) ((AddEnemyTool)mTouchTools[ToolGroups.ENEMY.ordinal()]).getSelectedResource();
-
-		if (enemy != null) {
-			ArrayList<TriggerInfo> triggers = enemy.getTriggerInfos();
-			for (TriggerInfo trigger : triggers) {
-				if (trigger.action == Actions.ACTOR_ACTIVATE) {
-					return true;
-				}
-			}
-		}
-
+		// TODO
+		//		EnemyActor enemy =  (EnemyActor) ((AddEnemyTool)mTouchTools[ToolGroups.ENEMY.ordinal()]).getSelectedResource();
+		//
+		//		if (enemy != null) {
+		//			ArrayList<TriggerInfo> triggers = enemy.getTriggerInfos();
+		//			for (TriggerInfo trigger : triggers) {
+		//				if (trigger.action == Actions.ACTOR_ACTIVATE) {
+		//					return true;
+		//				}
+		//			}
+		//		}
+		//
 		return false;
 	}
 
@@ -1121,16 +1166,17 @@ public class LevelEditor extends Editor implements IResourceChangeEditor {
 	 * been set.
 	 */
 	float getSelectedEnemyActivateTriggerDelay() {
-		EnemyActor enemy =  (EnemyActor) ((AddEnemyTool)mTouchTools[ToolGroups.ENEMY.ordinal()]).getSelectedResource();
-
-		if (enemy != null) {
-			ArrayList<TriggerInfo> triggers = enemy.getTriggerInfos();
-			for (TriggerInfo trigger : triggers) {
-				if (trigger.action == Actions.ACTOR_ACTIVATE) {
-					return trigger.delay;
-				}
-			}
-		}
+		// TODO
+		//		EnemyActor enemy =  (EnemyActor) ((AddEnemyTool)mTouchTools[ToolGroups.ENEMY.ordinal()]).getSelectedResource();
+		//
+		//		if (enemy != null) {
+		//			ArrayList<TriggerInfo> triggers = enemy.getTriggerInfos();
+		//			for (TriggerInfo trigger : triggers) {
+		//				if (trigger.action == Actions.ACTOR_ACTIVATE) {
+		//					return trigger.delay;
+		//				}
+		//			}
+		//		}
 
 		return -1;
 	}
@@ -1140,16 +1186,17 @@ public class LevelEditor extends Editor implements IResourceChangeEditor {
 	 * @param delay seconds of delay
 	 */
 	void setSelectedEnemyActivateTriggerDelay(float delay) {
-		EnemyActor enemy =  (EnemyActor) ((AddEnemyTool)mTouchTools[ToolGroups.ENEMY.ordinal()]).getSelectedResource();
-
-		if (enemy != null) {
-			ArrayList<TriggerInfo> triggers = enemy.getTriggerInfos();
-			for (TriggerInfo trigger : triggers) {
-				if (trigger.action == Actions.ACTOR_ACTIVATE) {
-					trigger.delay = delay;
-				}
-			}
-		}
+		// TODO
+		//		EnemyActor enemy =  (EnemyActor) ((AddEnemyTool)mTouchTools[ToolGroups.ENEMY.ordinal()]).getSelectedResource();
+		//
+		//		if (enemy != null) {
+		//			ArrayList<TriggerInfo> triggers = enemy.getTriggerInfos();
+		//			for (TriggerInfo trigger : triggers) {
+		//				if (trigger.action == Actions.ACTOR_ACTIVATE) {
+		//					trigger.delay = delay;
+		//				}
+		//			}
+		//		}
 	}
 
 	/**
@@ -1157,16 +1204,17 @@ public class LevelEditor extends Editor implements IResourceChangeEditor {
 	 * if no enemy is selected
 	 */
 	boolean hasSelectedEnemyDeactivateTrigger() {
-		EnemyActor enemy =  (EnemyActor) ((AddEnemyTool)mTouchTools[ToolGroups.ENEMY.ordinal()]).getSelectedResource();
-
-		if (enemy != null) {
-			ArrayList<TriggerInfo> triggers = enemy.getTriggerInfos();
-			for (TriggerInfo trigger : triggers) {
-				if (trigger.action == Actions.ACTOR_DEACTIVATE) {
-					return true;
-				}
-			}
-		}
+		// TODO
+		//		EnemyActor enemy =  (EnemyActor) ((AddEnemyTool)mTouchTools[ToolGroups.ENEMY.ordinal()]).getSelectedResource();
+		//
+		//		if (enemy != null) {
+		//			ArrayList<TriggerInfo> triggers = enemy.getTriggerInfos();
+		//			for (TriggerInfo trigger : triggers) {
+		//				if (trigger.action == Actions.ACTOR_DEACTIVATE) {
+		//					return true;
+		//				}
+		//			}
+		//		}
 
 		return false;
 	}
@@ -1176,16 +1224,17 @@ public class LevelEditor extends Editor implements IResourceChangeEditor {
 	 * been set.
 	 */
 	float getSelectedEnemyDeactivateTriggerDelay() {
-		EnemyActor enemy =  (EnemyActor) ((AddEnemyTool)mTouchTools[ToolGroups.ENEMY.ordinal()]).getSelectedResource();
-
-		if (enemy != null) {
-			ArrayList<TriggerInfo> triggers = enemy.getTriggerInfos();
-			for (TriggerInfo trigger : triggers) {
-				if (trigger.action == Actions.ACTOR_DEACTIVATE) {
-					return trigger.delay;
-				}
-			}
-		}
+		// TODO
+		//		EnemyActor enemy =  (EnemyActor) ((AddEnemyTool)mTouchTools[ToolGroups.ENEMY.ordinal()]).getSelectedResource();
+		//
+		//		if (enemy != null) {
+		//			ArrayList<TriggerInfo> triggers = enemy.getTriggerInfos();
+		//			for (TriggerInfo trigger : triggers) {
+		//				if (trigger.action == Actions.ACTOR_DEACTIVATE) {
+		//					return trigger.delay;
+		//				}
+		//			}
+		//		}
 
 		return -1;
 	}
@@ -1195,16 +1244,17 @@ public class LevelEditor extends Editor implements IResourceChangeEditor {
 	 * @param delay seconds of delay
 	 */
 	void setSelectedEnemyDeactivateTriggerDelay(float delay) {
-		EnemyActor enemy =  (EnemyActor) ((AddEnemyTool)mTouchTools[ToolGroups.ENEMY.ordinal()]).getSelectedResource();
-
-		if (enemy != null) {
-			ArrayList<TriggerInfo> triggers = enemy.getTriggerInfos();
-			for (TriggerInfo trigger : triggers) {
-				if (trigger.action == Actions.ACTOR_DEACTIVATE) {
-					trigger.delay = delay;
-				}
-			}
-		}
+		// TODO
+		//		EnemyActor enemy =  (EnemyActor) ((AddEnemyTool)mTouchTools[ToolGroups.ENEMY.ordinal()]).getSelectedResource();
+		//
+		//		if (enemy != null) {
+		//			ArrayList<TriggerInfo> triggers = enemy.getTriggerInfos();
+		//			for (TriggerInfo trigger : triggers) {
+		//				if (trigger.action == Actions.ACTOR_DEACTIVATE) {
+		//					trigger.delay = delay;
+		//				}
+		//			}
+		//		}
 	}
 
 	/**
@@ -1225,14 +1275,18 @@ public class LevelEditor extends Editor implements IResourceChangeEditor {
 	 * @return currently selected pickup definition
 	 */
 	public ActorDef getSelectedPickupDef() {
-		return ((ActorToolOld) mTouchTools[ToolGroups.PICKUP.ordinal()]).getNewActorDef();
+		// TODO
+		//		return ((ActorToolOld) mTouchTools[ToolGroups.PICKUP.ordinal()]).getNewActorDef();
+		return null;
 	}
 
 	/**
 	 * @return currently selected enemy definition
 	 */
 	public ActorDef getSelectedEnemyDef() {
-		return ((ActorToolOld) mTouchTools[ToolGroups.ENEMY.ordinal()]).getNewActorDef();
+		// TODO
+		//		return ((ActorToolOld) mTouchTools[ToolGroups.ENEMY.ordinal()]).getNewActorDef();
+		return null;
 	}
 
 	/**
@@ -1326,12 +1380,13 @@ public class LevelEditor extends Editor implements IResourceChangeEditor {
 	/**
 	 * Clears all the tools
 	 */
+	@Deprecated
 	private void clearToolGroups() {
-		for (TouchTool touchTool : mTouchTools) {
-			if (touchTool != null) {
-				touchTool.clear();
-			}
-		}
+		//		for (TouchTool touchTool : mTouchTools) {
+		//			if (touchTool != null) {
+		//				touchTool.clear();
+		//			}
+		//		}
 	}
 
 	/**
@@ -1389,8 +1444,10 @@ public class LevelEditor extends Editor implements IResourceChangeEditor {
 	private LevelDef mLoadingLevel = null;
 	/** Current selected tool group */
 	private ToolGroups mToolGroup = ToolGroups.STATIC_TERRAIN;
-	/** All the available tools */
-	private TouchTool[] mTouchTools = new TouchTool[ToolGroups.values().length];
+	/** The selection */
+	private ISelection mSelection = null;
+	//	/** All the available tools */
+	//	private TouchTool[] mTouchTools = new TouchTool[ToolGroups.values().length];
 	/** Current selected tool */
 	private Tools mTool = Tools.SELECTION;
 

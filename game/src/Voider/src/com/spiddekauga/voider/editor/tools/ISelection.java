@@ -33,11 +33,6 @@ public interface ISelection {
 	<ResourceType extends IResource> ArrayList<ResourceType> getSelectedResourcesOfType(Class<ResourceType> type);
 
 	/**
-	 * Delete selected actors
-	 */
-	void deleteSelectedActors();
-
-	/**
 	 * Clears the selection, i.e. no resources will be selected
 	 */
 	void clearSelection();
@@ -54,19 +49,39 @@ public interface ISelection {
 	 * Adds a resource to the selection
 	 * @param resource the resource to add to the selection
 	 */
-	void addResource(IResource resource);
+	void selectResource(IResource resource);
+
+	/**
+	 * Adds several resources to the selection
+	 * @param resources all resources to add to the current selection
+	 */
+	void selectResources(ArrayList<IResource> resources);
+
+	/**
+	 * Adds several resource to the selection
+	 * @param resources all resources to add to the current selection
+	 */
+	void selectResources(IResource[] resources);
 
 	/**
 	 * Removes a resource from the selection
 	 * @param resource the resource to remove from the selection
 	 */
-	void removeResource(IResource resource);
+	void deselectResource(IResource resource);
 
 	/**
-	 * Adds several resources to the selection
-	 * @param resources all resource to add to the current selection
+	 * Removes the resources from the selection
+	 * @param resources all resources to deselect. Resources inside this array
+	 * that aren't currently selected are just ignored
 	 */
-	void addResources(ArrayList<IResource> resources);
+	void deselectResources(ArrayList<IResource> resources);
+
+	/**
+	 * Removes the resources from the selection
+	 * @param resources all resources to deselect. Resources inside this array
+	 * that aren't currently selected are just ignored
+	 */
+	void deselectResources(IResource[] resources);
 
 	/**
 	 * Adds a listener to the selection. This listener is called when a resources is
@@ -81,4 +96,14 @@ public interface ISelection {
 	 * @param listener the listener to remove
 	 */
 	void removeListener(ISelectionListener listener);
+
+	/**
+	 * @return true if no resources are selected
+	 */
+	boolean isEmpty();
+
+	/**
+	 * @return the total number of selected resources
+	 */
+	int getSize();
 }
