@@ -34,17 +34,16 @@ abstract public class ActorTool extends TouchTool {
 	 */
 	public ActorTool(Camera camera, World world, Invoker invoker, ISelection selection, IResourceChangeEditor editor, Class<? extends Actor> actorType) {
 		super(camera, world, invoker, selection, editor);
+		mActorType = actorType;
 	}
 
 	@Override
 	protected QueryCallback getCallback() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	protected Body filterPick(ArrayList<Body> hitBodies) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

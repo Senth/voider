@@ -1,0 +1,526 @@
+package com.spiddekauga.voider.editor.tools;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map.Entry;
+
+import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.QueryCallback;
+import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.Disposable;
+import com.spiddekauga.utils.Collections;
+import com.spiddekauga.utils.Command;
+import com.spiddekauga.utils.Invoker;
+import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.editor.IResourceChangeEditor;
+import com.spiddekauga.voider.editor.brushes.VectorBrush;
+import com.spiddekauga.voider.editor.commands.CActorDefFixCustomFixtures;
+import com.spiddekauga.voider.editor.commands.CResourceCornerAdd;
+import com.spiddekauga.voider.editor.commands.CResourceCornerRemove;
+import com.spiddekauga.voider.editor.commands.CResourceCornerRemoveExcessive;
+import com.spiddekauga.voider.game.actors.Actor;
+import com.spiddekauga.voider.game.actors.BulletActorDef;
+import com.spiddekauga.voider.resources.IResource;
+import com.spiddekauga.voider.resources.IResourceCorner;
+import com.spiddekauga.voider.utils.Geometry;
+import com.spiddekauga.voider.utils.Geometry.Intersections;
+import com.spiddekauga.voider.utils.Pools;
+
+/**
+ * Tool for adding or removing from a shape
+ * 
+ * @author Matteus Magnusson <senth.wallace@gmail.com>
+ */
+public class DrawEraseTool extends ActorTool {
+	/**
+	 * @param camera the camera
+	 * @param world the world
+	 * @param invoker used for undo/redo
+	 * @param selection which enemies are selected
+	 * @param editor editor this tool is bound to
+	 * @param actorType the type of actor to draw
+	 */
+	public DrawEraseTool(Camera camera, World world, Invoker invoker, ISelection selection, IResourceChangeEditor editor, Class<? extends Actor> actorType) {
+		super(camera, world, invoker, selection, editor, actorType);
+	}
+
+	@Override
+	protected boolean down() {
+		if (!mSelection.isEmpty()) {
+			testPickPoint();
+			// Hit a selected actor
+			if (!mHitBodies.isEmpty()) {
+				mBeganInsideActor = (Actor) mHitBody.getUserData();
+				mDrawEraseBrush = new VectorBrush(true);
+			} else {
+				mDrawEraseBrush = new VectorBrush(false);
+			}
+			mEditor.onResourceAdded(mDrawEraseBrush);
+			mDrawEraseBrush.addCorner(mTouchCurrent);
+			mDragOrigin.set(mTouchCurrent);
+			setDrawing(true);
+		}
+		return false;
+	}
+
+	@Override
+	protected boolean dragged() {
+		if (mDrawEraseBrush != null) {
+			if (haveMovedEnoughToAddAnotherCorner()) {
+				mDrawEraseBrush.addCorner(mTouchCurrent);
+				mDragOrigin.set(mTouchCurrent);
+			}
+		}
+		return false;
+	}
+
+	@Override
+	protected boolean up() {
+		if (mDrawEraseBrush != null) {
+			mDrawEraseBrush.addCorner(mTouchCurrent);
+
+			Command removeExcessiveCorners = new CResourceCornerRemoveExcessive(mDrawEraseBrush);
+			removeExcessiveCorners.execute();
+
+			// Check for intersections in draw erase brush...
+			if (Geometry.intersectionExists(mDrawEraseBrush.getCorners()) != Intersections.INTERSECTS) {
+				ArrayList<BrushActorIntersection> intersections = getBrushActorIntersections();
+
+				updateShapesForAllIntersectionActors(intersections);
+			}
+
+			mEditor.onResourceRemoved(mDrawEraseBrush);
+			mDrawEraseBrush = null;
+			mBeganInsideActor = null;
+		}
+		return false;
+	}
+
+	/**
+	 * Split intersections by actor.
+	 * @param intersections all intersections
+	 * @return hash map of array of intersections. Where each inner array has intersections for the same
+	 * actor. Don't forget to free both the hash map and all inner arrays
+	 */
+	@SuppressWarnings("unchecked")
+	private HashMap<Actor, ArrayList<BrushActorIntersection>> splitIntersectionsByActor(ArrayList<BrushActorIntersection> intersections) {
+		HashMap<Actor, ArrayList<BrushActorIntersection>> splitIntersections = Pools.hashMap.obtain();
+
+		for (BrushActorIntersection intersection : intersections) {
+			ArrayList<BrushActorIntersection> actorIntersections = splitIntersections.get(intersection.actor);
+
+			if (actorIntersections == null) {
+				actorIntersections = Pools.arrayList.obtain();
+				splitIntersections.put(intersection.actor, actorIntersections);
+			}
+
+			actorIntersections.add(intersection);
+		}
+
+		return splitIntersections;
+	}
+
+	/**
+	 * Update shape for actor
+	 * @param intersections should only contain one type of actor
+	 */
+	private void updateShapeForActor(ArrayList<BrushActorIntersection> intersections) {
+		Actor actor = intersections.get(0).actor;
+
+		mInvoker.execute(new CActorDefFixCustomFixtures(actor.getDef(), false));
+
+		// Change shape of actor to use the brush corners.
+		IResourceCorner actorCorners = actor.getDef().getVisualVars();
+		while (intersections.size() >= 2) {
+			boolean intersectionSame = false;
+
+			// Same actor corner index
+			if (intersections.get(0).actorIndex == intersections.get(1).actorIndex) {
+				intersectionSame = true;
+			}
+
+			// Set high/low actor index
+			// Calculate begin and end intersections
+			BrushActorIntersection lowIntersection;
+			BrushActorIntersection highIntersection;
+			if (intersections.get(0).actorIndex >= intersections.get(1).actorIndex) {
+				lowIntersection = intersections.get(1);
+				highIntersection = intersections.get(0);
+			} else {
+				lowIntersection = intersections.get(0);
+				highIntersection = intersections.get(1);
+			}
+
+			// Check if we shall remove corners between or wrapped...
+			boolean removeBetween = false;
+			boolean removeWrapped = false;
+			if (!intersectionSame) {
+				removeBetween = isShortestBetweenIndices(actorCorners.getCorners(), lowIntersection, highIntersection);
+				removeWrapped = !removeBetween;
+			}
+
+
+			// Remove actor corners
+			int addIndex;
+			// No corners to be removed, all new are between two corners
+			if (intersectionSame) {
+				addIndex = lowIntersection.actorIndex + 1;
+			}
+			// Remove actor corners between intersections
+			else if (removeBetween) {
+				addIndex = lowIntersection.actorIndex + 1;
+				int cornersToRemove = highIntersection.actorIndex - lowIntersection.actorIndex;
+				for (int i = 0; i < cornersToRemove; ++i) {
+					mInvoker.execute(new CResourceCornerRemove(actorCorners, addIndex, mEditor), true);
+				}
+			}
+			// Remove actor corners between last and first intersection (wrapped)
+			else {
+				// Remove at the back
+				int cornersToRemoveAtBack = actorCorners.getCornerCount() - highIntersection.actorIndex - 1;
+				for (int i = 0; i < cornersToRemoveAtBack; ++i) {
+					mInvoker.execute(new CResourceCornerRemove(actorCorners, actorCorners.getCornerCount() - 1, mEditor), true);
+				}
+
+				// Remove at the front
+				for (int i = 0; i <= lowIntersection.actorIndex; ++i) {
+					mInvoker.execute(new CResourceCornerRemove(actorCorners, 0, mEditor), true);
+				}
+
+				// Fix actorIndices (because we removed some at the front)
+				for (int i = 2; i < intersections.size(); ++i) {
+					intersections.get(i).actorIndex -= lowIntersection.actorIndex + 1;
+				}
+
+				addIndex = actorCorners.getCornerCount();
+			}
+
+			// Switch high/low for wrapped cases
+			if (removeWrapped) {
+				BrushActorIntersection tempIntersection = lowIntersection;
+				lowIntersection = highIntersection;
+				highIntersection = tempIntersection;
+			}
+			// same intersection, i.e. none was removed. Calculate which
+			// is closest to the lowest actor index
+			else if (!removeBetween) {
+				Vector2 lowestActorIndexCorner = actorCorners.getCornerPosition(lowIntersection.actorIndex);
+				Vector2 intersection0Diff = getLocalPosition(intersections.get(0).intersection, actor);
+				intersection0Diff.sub(lowestActorIndexCorner);
+				Vector2 intersection1Diff = getLocalPosition(intersections.get(1).intersection, actor);
+				intersection1Diff.sub(lowestActorIndexCorner);
+
+				if (intersection0Diff.len2() < intersection1Diff.len2()) {
+					lowIntersection = intersections.get(0);
+					highIntersection = intersections.get(1);
+				} else {
+					lowIntersection = intersections.get(1);
+					highIntersection = intersections.get(0);
+				}
+
+				Pools.vector2.freeAll(intersection0Diff, intersection1Diff);
+			}
+
+			// Add new corners
+			// Add end intersection
+			Vector2 localPos = getLocalPosition(highIntersection.intersection, actor);
+			mInvoker.execute(new CResourceCornerAdd(actorCorners, localPos, addIndex, mEditor), true);
+			Pools.vector2.free(localPos);
+
+			// Add brush corners
+			if (highIntersection.brushIndex < lowIntersection.brushIndex) {
+				int fromIndex = highIntersection.brushIndex + 1;
+				int toIndex = lowIntersection.brushIndex;
+				for (int i = fromIndex; i < toIndex; ++i) {
+					localPos = getLocalPosition(mDrawEraseBrush.getCornerPosition(i), actor);
+					mInvoker.execute(new CResourceCornerAdd(actorCorners, localPos, addIndex, mEditor), true);
+					Pools.vector2.free(localPos);
+				}
+			} else {
+				int fromIndex = highIntersection.brushIndex;
+				int toIndex = lowIntersection.brushIndex + 1;
+				for (int i = fromIndex; i > toIndex; --i) {
+					localPos = getLocalPosition(mDrawEraseBrush.getCornerPosition(i), actor);
+					mInvoker.execute(new CResourceCornerAdd(actorCorners, localPos, addIndex, mEditor), true);
+					Pools.vector2.free(localPos);
+				}
+			}
+
+			// Add begin intersection
+			localPos = getLocalPosition(lowIntersection.intersection, actor);
+			mInvoker.execute(new CResourceCornerAdd(actorCorners, localPos, addIndex, mEditor), true);
+			Pools.vector2.free(localPos);
+
+			intersections.remove(1).dispose();
+			intersections.remove(0).dispose();
+
+
+			// Correct other intersections after we added the corners...
+			if (intersections.size() >= 2) {
+				ArrayList<Vector2> drawEraseCorners = mDrawEraseBrush.getCorners();
+				for (int intersectionIndex = 0; intersectionIndex < 2; ++intersectionIndex) {
+					BrushActorIntersection currentIntersection = intersections.get(intersectionIndex);
+
+					Vector2 brushBegin = getLocalPosition(drawEraseCorners.get(currentIntersection.brushIndex), actor);
+					int nextBrushIndex = Collections.nextIndex(drawEraseCorners, currentIntersection.brushIndex);
+					Vector2 brushEnd = getLocalPosition(drawEraseCorners.get(nextBrushIndex), actor);
+					int actorIndex = 0;
+					boolean foundIntersection = false;
+					boolean looped = false;
+					while (!looped && !foundIntersection) {
+						int nextActorIndex = Collections.nextIndex(actorCorners.getCorners(), actorIndex);
+						Vector2 actorBegin = actorCorners.getCornerPosition(actorIndex);
+						Vector2 actorEnd = actorCorners.getCornerPosition(nextActorIndex);
+
+						if (Geometry.linesIntersect(brushBegin, brushEnd, actorBegin, actorEnd)) {
+							foundIntersection = true;
+						} else {
+							actorIndex = nextActorIndex;
+							if (nextActorIndex == 0) {
+								looped = true;
+							}
+						}
+					}
+
+					Pools.vector2.freeAll(brushBegin, brushEnd);
+
+					if (foundIntersection) {
+						currentIntersection.actorIndex = actorIndex;
+					}
+					// We probably removed the intersections, remove these rest
+					else {
+						for (BrushActorIntersection brushActorIntersection : intersections) {
+							brushActorIntersection.dispose();
+						}
+						intersections.clear();
+						break;
+					}
+				}
+			}
+		}
+
+		mInvoker.execute(new CActorDefFixCustomFixtures(actor.getDef(), true), true);
+	}
+
+	/**
+	 * Calculate if shortest path between to actorIndices are between the indices and not wrapped.
+	 * @param vertices current vertices of the actor
+	 * @param fromIntersection the intersection to calculate from
+	 * @param toIntersection the intersection to calculate to
+	 * @return true if the shortest length between two actorIndices are between the indices, false if wrapped
+	 */
+	private boolean isShortestBetweenIndices(ArrayList<Vector2> vertices, BrushActorIntersection fromIntersection, BrushActorIntersection toIntersection) {
+		// BETWEEN
+		float betweenLengthSq = 0;
+		// vertices between
+		if (fromIntersection.actorIndex != toIntersection.actorIndex) {
+			// Calculate from before intersection to first between index
+			Vector2 localPos = getLocalPosition(fromIntersection.intersection, fromIntersection.actor);
+			betweenLengthSq += localPos.dst2(vertices.get(fromIntersection.actorIndex + 1));
+			Pools.vector2.free(localPos);
+
+			// Calculate between
+			for (int i = fromIntersection.actorIndex + 1; i < toIntersection.actorIndex; ++i) {
+				betweenLengthSq += vertices.get(i).dst2(vertices.get(i+1));
+			}
+
+			// Calculate from last between index to after intersection
+			localPos = getLocalPosition(toIntersection.intersection, toIntersection.actor);
+			betweenLengthSq += vertices.get(toIntersection.actorIndex).dst2(localPos);
+			Pools.vector2.free(localPos);
+		}
+		// No vertices between
+		else {
+			return true;
+		}
+
+
+		// WRAPPED
+		float wrappedLengthSq = 0;
+		// Calculate from after intersection to first after index
+		Vector2 localPos = getLocalPosition(toIntersection.intersection, toIntersection.actor);
+		int nextIndex = Collections.nextIndex(vertices,toIntersection.actorIndex);
+		wrappedLengthSq += localPos.dst2(vertices.get(nextIndex));
+		Pools.vector2.free(localPos);
+
+		// Calculate wrapped indices
+		int i = nextIndex;
+		while (i != fromIntersection.actorIndex && wrappedLengthSq <= betweenLengthSq) {
+			nextIndex = Collections.nextIndex(vertices, i);
+			wrappedLengthSq += vertices.get(i).dst2(vertices.get(nextIndex));
+
+			i = nextIndex;
+		}
+
+		return betweenLengthSq <= wrappedLengthSq;
+	}
+
+	/**
+	 * Change shape for all actors inside the intersections
+	 * @param intersections all intersections between actors and the brush
+	 */
+	private void updateShapesForAllIntersectionActors(ArrayList<BrushActorIntersection> intersections) {
+		HashMap<Actor, ArrayList<BrushActorIntersection>> splitIntersections = splitIntersectionsByActor(intersections);
+
+		for (Entry<Actor, ArrayList<BrushActorIntersection>> entry : splitIntersections.entrySet()) {
+			updateShapeForActor(entry.getValue());
+		}
+	}
+
+	/**
+	 * Checks for intersections between selected actor and draw erase brush
+	 * @return array list with all intersections including indices for both
+	 * actor and brush.
+	 */
+	@SuppressWarnings("unchecked")
+	private ArrayList<BrushActorIntersection> getBrushActorIntersections() {
+		ArrayList<BrushActorIntersection> intersections = Pools.arrayList.obtain();
+		ArrayList<Vector2> brushCorners = mDrawEraseBrush.getCorners();
+
+
+		// Which actors should we iterate through?
+		ArrayList<Actor> selectedActors;
+
+		// Only the actor we hit
+		if (mBeganInsideActor != null) {
+			selectedActors = Pools.arrayList.obtain();
+			selectedActors.add(mBeganInsideActor);
+		}
+		// Hit outside of any selected actor, iterate through all
+		else {
+			selectedActors = (ArrayList<Actor>) mSelection.getSelectedResourcesOfType(mActorType);
+		}
+
+
+		// Iterate through all actors
+		ArrayList<Vector2> actorCornerss = Pools.arrayList.obtain();
+		for (Actor selectedActor : selectedActors) {
+			// Convert to world positions
+			for (Vector2 corner : selectedActor.getDef().getVisualVars().getCorners()) {
+				actorCornerss.add(getWorldPosition(corner, selectedActor));
+			}
+
+
+			// Don't loop the brush
+			for (int brushIndex = 0; brushIndex < brushCorners.size() - 1; ++brushIndex) {
+				Vector2 brushLineStart = brushCorners.get(brushIndex);
+				Vector2 brushLineEnd = brushCorners.get(Collections.nextIndex(brushCorners, brushIndex));
+
+				for (int actorIndex = 0; actorIndex < actorCornerss.size(); ++actorIndex) {
+					Vector2 actorLineStart = actorCornerss.get(actorIndex);
+					Vector2 actorLineEnd = actorCornerss.get(Collections.nextIndex(actorCornerss, actorIndex));
+
+					// Save intersection
+					if (Geometry.linesIntersect(actorLineStart, actorLineEnd, brushLineStart, brushLineEnd)) {
+						Vector2 intersection = Geometry.getLineLineIntersection(actorLineStart, actorLineEnd, brushLineStart, brushLineEnd);
+
+						intersections.add(new BrushActorIntersection(selectedActor, intersection, actorIndex, brushIndex));
+					}
+				}
+			}
+			Pools.vector2.freeAll(actorCornerss);
+			actorCornerss.clear();
+		}
+
+
+
+		Pools.arrayList.freeAll(actorCornerss, selectedActors);
+
+
+		return intersections;
+	}
+
+	@Override
+	protected QueryCallback getCallback() {
+		return mCallback;
+	}
+
+	/**
+	 * Tests whether the pointer have moved enough to add another corner
+	 * @return true if we shall add another corner.
+	 */
+	private boolean haveMovedEnoughToAddAnotherCorner() {
+		boolean movedEnough = false;
+
+		float drawNewCornerMinDistSq = Config.Editor.Actor.Visual.DRAW_NEW_CORNER_MIN_DIST_SQ;
+		if (mActorDef instanceof BulletActorDef) {
+			drawNewCornerMinDistSq = Config.Editor.Bullet.Visual.DRAW_NEW_CORNER_MIN_DIST_SQ;
+		}
+
+		// If has drawn more than minimum distance, add another corner here
+		Vector2 diffVector = Pools.vector2.obtain();
+		diffVector.set(mTouchCurrent).sub(mDragOrigin);
+		if (diffVector.len2() >= drawNewCornerMinDistSq) {
+			movedEnough = true;
+		}
+		Pools.vector2.free(diffVector);
+
+		return movedEnough;
+	}
+
+	/**
+	 * Wrapper class for intersection, actor corner index, brush index.
+	 */
+	private class BrushActorIntersection implements Disposable {
+		/**
+		 * Initializes with initial parameters
+		 * @param actor the actor the intersion is in
+		 * @param intersection where the intersection is
+		 * @param actorIndex index of the intersection in the actor
+		 * @param brushIndex index of the intersection in the brush
+		 */
+		BrushActorIntersection(Actor actor, Vector2 intersection, int actorIndex, int brushIndex) {
+			this.actor = actor;
+			this.intersection = intersection;
+			this.actorIndex = actorIndex;
+			this.brushIndex = brushIndex;
+		}
+
+		@Override
+		public void dispose() {
+			Pools.vector2.free(intersection);
+		}
+
+		/** Intersection point */
+		Vector2 intersection;
+		/** Actor index */
+		int actorIndex;
+		/** Brush index */
+		int brushIndex;
+		/** The actor the intersection is in */
+		Actor actor;
+	}
+
+	@Override
+	protected Body filterPick(ArrayList<Body> hitBodies) {
+		if (hitBodies.isEmpty()) {
+			return null;
+		} else {
+			return hitBodies.get(0);
+		}
+	}
+
+	/** Began inside of an actor */
+	private Actor mBeganInsideActor = null;
+	/** Vector brush for drawing line */
+	private VectorBrush mDrawEraseBrush = null;
+	/** Last position we dragged to */
+	private Vector2 mDragOrigin = new Vector2();
+	/** Picking for current actor type */
+	private QueryCallback mCallback = new QueryCallback() {
+		@Override
+		public boolean reportFixture(Fixture fixture) {
+			Body body = fixture.getBody();
+			// Hit an actor
+			if (body.getUserData() != null && body.getUserData().getClass() == mActorType) {
+				if (mSelection.isSelected((IResource)body.getUserData())) {
+					mHitBodies.add(body);
+				}
+			}
+			return true;
+		}
+	};
+}

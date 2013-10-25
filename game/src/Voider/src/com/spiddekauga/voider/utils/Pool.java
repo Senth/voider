@@ -2,6 +2,7 @@ package com.spiddekauga.voider.utils;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import com.badlogic.gdx.utils.IdentityMap;
 import com.badlogic.gdx.utils.ReflectionPool;
@@ -46,6 +47,8 @@ public class Pool<T> extends ReflectionPool<T> {
 			((Collection) object).clear();
 		} else if (object instanceof IdentityMap<?, ?>) {
 			((IdentityMap) object).clear();
+		} else if (object instanceof Map<?, ?>) {
+			((Map) object).clear();
 		}
 
 		return object;

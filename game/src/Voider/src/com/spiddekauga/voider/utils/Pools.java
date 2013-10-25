@@ -1,6 +1,7 @@
 package com.spiddekauga.voider.utils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Stack;
 
@@ -32,6 +33,8 @@ public class Pools {
 	/** Hash set */
 	@SuppressWarnings("rawtypes")
 	public static Pool<HashSet> hashSet = new Pool<HashSet>(HashSet.class, 16, 100);
+	/** Hash map */
+	public static Pool<HashMap> hashMap = new Pool<HashMap>(HashMap.class, 16, 100);
 	/** Identity Hash Map */
 	@SuppressWarnings("rawtypes")
 	public static Pool<IdentityMap> identityMap = new Pool<IdentityMap>(IdentityMap.class, 6, 50);

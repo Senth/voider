@@ -40,18 +40,14 @@ public class DrawAppendTool extends ActorTool implements ISelectionListener {
 
 	@Override
 	protected boolean down() {
-		mDrewPreviousClick = false;
-
 		mSelectedActor = mSelection.getFirstSelectedResourceOfType(mActorType);
 
 		if (mSelectedActor == null) {
 			createNewSelectedActor();
 			mSelectedActor = mSelection.getFirstSelectedResourceOfType(mActorType);
-			mDrewPreviousClick = true;
 		} else {
 			mInvoker.execute(new CActorDefFixCustomFixtures(mSelectedActor.getDef(), false));
 			appendCorner(true);
-			mDrewPreviousClick = true;
 		}
 		setDrawing(true);
 
@@ -176,8 +172,6 @@ public class DrawAppendTool extends ActorTool implements ISelectionListener {
 		}
 	}
 
-	/** Drew previous click */
-	private boolean mDrewPreviousClick = false;
 	/** Temporary variable for selected actor */
 	private Actor mSelectedActor = null;
 	/** Origin of the drag */
