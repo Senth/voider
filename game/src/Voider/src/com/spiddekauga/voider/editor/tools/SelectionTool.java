@@ -1,6 +1,7 @@
 package com.spiddekauga.voider.editor.tools;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -46,32 +47,34 @@ public class SelectionTool extends TouchTool {
 		else {
 			testPickPoint();
 
-			if (mHitBody != null) {
-				IResource resource = (IResource) mHitBody.getUserData();
+			if (!mHitResources.isEmpty()) {
+				boolean handled = false;
 
-				// Add to selection
-				if (KeyHelper.isShiftPressed()) {
-					if (!mSelection.isSelected(resource)) {
-						mInvoker.execute(new CSelectionAdd(mSelection, resource));
-						return true;
+				for (IResource resource : mHitResources) {
+					// Add to selection
+					if (KeyHelper.isShiftPressed()) {
+						if (!mSelection.isSelected(resource)) {
+							mInvoker.execute(new CSelectionAdd(mSelection, resource));
+							handled = true;
+						}
+					}
+					// Remove from selection
+					else if (KeyHelper.isCtrlPressed()) {
+						if (mSelection.isSelected(resource)) {
+							mInvoker.execute(new CSelectionRemove(mSelection, resource));
+							handled = true;
+						}
+					}
+					// Set selection
+					else {
+						if (!mSelection.isSelected(resource)) {
+							mInvoker.execute(new CSelectionSet(mSelection, resource));
+							handled = true;
+						}
 					}
 				}
-				// Remove from selection
-				else if (KeyHelper.isCtrlPressed()) {
-					if (mSelection.isSelected(resource)) {
-						mInvoker.execute(new CSelectionRemove(mSelection, resource));
-						return true;
-					}
-				}
-				// Set selection
-				else {
-					if (!mSelection.isSelected(resource)) {
-						mInvoker.execute(new CSelectionSet(mSelection, resource));
-						return true;
-					}
-				}
 
-
+				return handled;
 			}
 		}
 
@@ -111,6 +114,8 @@ public class SelectionTool extends TouchTool {
 			mRectangleBrush = null;
 		}
 
+		mHitResources.clear();
+
 		return mActive;
 	}
 
@@ -124,11 +129,8 @@ public class SelectionTool extends TouchTool {
 		@SuppressWarnings("unchecked")
 		ArrayList<IResource> toSelect = Pools.arrayList.obtain();
 
-		for (Body body : mHitBodies) {
-			if (body.getUserData() instanceof IResource) {
-				IResource resource = (IResource) body.getUserData();
-				toSelect.add(resource);
-			}
+		for (IResource resource : mHitResources) {
+			toSelect.add(resource);
 		}
 
 		mInvoker.execute(new CSelectionAdd(mSelection, toSelect), chained);
@@ -143,11 +145,8 @@ public class SelectionTool extends TouchTool {
 		@SuppressWarnings("unchecked")
 		ArrayList<IResource> toDeselect = Pools.arrayList.obtain();
 
-		for (Body body : mHitBodies) {
-			if (body.getUserData() instanceof IResource) {
-				IResource resource = (IResource) body.getUserData();
-				toDeselect.add(resource);
-			}
+		for (IResource resource : mHitResources) {
+			toDeselect.add(resource);
 		}
 
 		mInvoker.execute(new CSelectionRemove(mSelection, toDeselect), chained);
@@ -160,26 +159,20 @@ public class SelectionTool extends TouchTool {
 	}
 
 	@Override
-	protected Body filterPick(ArrayList<Body> hitBodies) {
-		if (hitBodies.isEmpty() || mActive) {
-			return null;
-		}
-
-		// Just pick first if none are selected
-		if (mSelection.isEmpty()) {
-			return hitBodies.get(0);
-		}
-		// Only return a resource that is the same as the most type
-		else {
-			Class<? extends IResource> mostCommonType = mSelection.getMostCommonSelectedResourceType();
-			for (Body body : hitBodies) {
-				if (body.getUserData().getClass() == mostCommonType) {
-					return body;
+	protected void filterPick() {
+		if (!mHitResources.isEmpty()) {
+			// We keep all if no resources is selected
+			// If other resources are selected we only keep those of the same type
+			if (!mSelection.isEmpty()) {
+				Class<? extends IResource> mostCommonType = mSelection.getMostCommonSelectedResourceType();
+				Iterator<IResource> iterator = mHitResources.iterator();
+				while (iterator.hasNext()) {
+					if (iterator.next().getClass() != mostCommonType) {
+						iterator.remove();
+					}
 				}
 			}
 		}
-
-		return null;
 	}
 
 	@Override
@@ -192,12 +185,6 @@ public class SelectionTool extends TouchTool {
 		mActive = false;
 	}
 
-	/** Rectangle brush */
-	private RectangleBrush mRectangleBrush = null;
-	/** If the selection tool is active */
-	private boolean mActive = false;
-
-
 	/** Picking for resources */
 	private QueryCallback mCallback = new QueryCallback() {
 		@Override
@@ -205,11 +192,19 @@ public class SelectionTool extends TouchTool {
 			Body body = fixture.getBody();
 
 			if (body.getUserData() instanceof IResource) {
-				mHitBodies.add(body);
+				mHitResources.add((IResource)body.getUserData());
 			}
-
 
 			return true;
 		}
 	};
+
+	/** Rectangle brush */
+	private RectangleBrush mRectangleBrush = null;
+	/** If the selection tool is active */
+	private boolean mActive = false;
+	/** All hit resources */
+	private ArrayList<IResource> mHitResources = new ArrayList<IResource>();
+
+
 }

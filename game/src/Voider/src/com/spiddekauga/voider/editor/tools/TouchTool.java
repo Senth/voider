@@ -170,6 +170,7 @@ public abstract class TouchTool extends InputAdapter {
 	protected void testPickAabb(float halfSize) {
 		mHitBodies.clear();
 		mWorld.QueryAABB(getCallback(), mTouchCurrent.x - halfSize, mTouchCurrent.y - halfSize, mTouchCurrent.x + halfSize, mTouchCurrent.y + halfSize);
+		filterPick();
 		//		mHitBody = filterPick(mHitBodies);
 	}
 
@@ -224,6 +225,13 @@ public abstract class TouchTool extends InputAdapter {
 	protected Body filterPick(ArrayList<Body> hitBodies) {
 		// does nothing
 		return null;
+	}
+
+	/**
+	 * Called to filter the hit objects
+	 */
+	protected void filterPick() {
+		// Does nothing
 	}
 
 	/** If the player double clicked */

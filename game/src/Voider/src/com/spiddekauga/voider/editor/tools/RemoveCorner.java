@@ -77,7 +77,7 @@ public class RemoveCorner extends TouchTool implements ISelectionListener {
 			}
 		}
 		// Hit a resource -> remove it
-		else {
+		else if (mHitResource != null) {
 			boolean chained = false;
 			if (mHitResource instanceof Actor) {
 				mInvoker.execute(new CActorDefFixCustomFixtures(((Actor)mHitResource).getDef(), false));
@@ -167,7 +167,9 @@ public class RemoveCorner extends TouchTool implements ISelectionListener {
 			}
 			// Hit a resource
 			else if (userData instanceof IResourceCorner) {
-				mHitResource = (IResourceCorner) userData;
+				if (mSelection.isSelected((IResourceCorner)userData)) {
+					mHitResource = (IResourceCorner) userData;
+				}
 			}
 
 			return true;
