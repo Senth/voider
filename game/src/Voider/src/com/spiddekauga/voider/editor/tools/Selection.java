@@ -115,7 +115,7 @@ public class Selection implements ISelection {
 		ArrayList<ResourceType> selectedActors = Pools.arrayList.obtain();
 
 		for (IResource selectedResource : mSelectedResources) {
-			if (selectedResource.getClass() == type) {
+			if (type.isAssignableFrom(selectedResource.getClass())) {
 				selectedActors.add((ResourceType) selectedResource);
 			}
 		}

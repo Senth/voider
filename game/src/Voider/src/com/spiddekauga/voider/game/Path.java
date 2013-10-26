@@ -305,6 +305,7 @@ public class Path extends Resource implements Disposable, IResourceCorner, IReso
 	/**
 	 * Creates all the body corners
 	 */
+	@Override
 	public void createBodyCorners() {
 		if (!mBodyCorners.isEmpty()) {
 			Gdx.app.error("Path", "Shall only create body corners if empty!");
@@ -318,6 +319,7 @@ public class Path extends Resource implements Disposable, IResourceCorner, IReso
 	/**
 	 * Destroys all body corners
 	 */
+	@Override
 	public void destroyBodyCorners() {
 		while (!mBodyCorners.isEmpty()) {
 			destroyBodyCorners(0);

@@ -109,6 +109,16 @@ public class VectorBrush extends Resource implements IResourceCorner, IResourceE
 		mAddMode = addMode;
 	}
 
+	@Override
+	public void createBodyCorners() {
+		// Does nothing
+	}
+
+	@Override
+	public void destroyBodyCorners() {
+		// Does nothing
+	}
+
 	/** All corners */
 	@SuppressWarnings("unchecked")
 	private ArrayList<Vector2> mCorners = Pools.arrayList.obtain();

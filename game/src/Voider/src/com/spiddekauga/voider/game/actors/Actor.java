@@ -799,6 +799,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 	 * Creates body corners for the actor. Only applicable if actor is using a custom shape
 	 * and in an editor.
 	 */
+	@Override
 	public void createBodyCorners() {
 		if (mDef.getVisualVars().getShapeType() == ActorShapeTypes.CUSTOM && mEditorActive) {
 			mHasBodyCorners = true;
@@ -814,6 +815,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 	/**
 	 * Destroys all body corners
 	 */
+	@Override
 	public void destroyBodyCorners() {
 		mHasBodyCorners = false;
 		for (Body body : mCorners) {

@@ -9,7 +9,7 @@ import com.badlogic.gdx.math.Vector2;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public interface IResourceCorner {
+public interface IResourceCorner extends IResource {
 	/**
 	 * Add another corner position to the back of the array
 	 * @param corner a new corner that will be placed at the back
@@ -60,4 +60,14 @@ public interface IResourceCorner {
 	 * @return all the corners of the resource
 	 */
 	public ArrayList<Vector2> getCorners();
+
+	/**
+	 * Creates body corners for the resource
+	 */
+	public void createBodyCorners();
+
+	/**
+	 * Destroys all body corners
+	 */
+	public void destroyBodyCorners();
 }

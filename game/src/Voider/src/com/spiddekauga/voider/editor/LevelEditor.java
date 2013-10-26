@@ -21,6 +21,7 @@ import com.spiddekauga.voider.editor.commands.CLevelPickupDefSelect;
 import com.spiddekauga.voider.editor.commands.CSelectionSet;
 import com.spiddekauga.voider.editor.tools.AddActorTool;
 import com.spiddekauga.voider.editor.tools.AddEnemyTool;
+import com.spiddekauga.voider.editor.tools.AddMoveCorner;
 import com.spiddekauga.voider.editor.tools.DrawActorTool;
 import com.spiddekauga.voider.editor.tools.DrawAppendTool;
 import com.spiddekauga.voider.editor.tools.DrawEraseTool;
@@ -98,6 +99,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor {
 
 		Tools.TERRAIN_DRAW_APPEND.setTool(new DrawAppendTool(mCamera, mWorld, mInvoker, mSelection, this, StaticTerrainActor.class));
 		Tools.TERRAIN_DRAW_ERASE.setTool(new DrawEraseTool(mCamera, mWorld, mInvoker, mSelection, this, StaticTerrainActor.class));
+		Tools.TERRAIN_ADJUST_ADD_MOVE_CORNER.setTool(new AddMoveCorner(mCamera, mWorld, mInvoker, mSelection, this));
 	}
 
 	@Override

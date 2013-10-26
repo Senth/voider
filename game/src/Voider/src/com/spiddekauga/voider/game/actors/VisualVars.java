@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -22,6 +23,8 @@ import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Actor.Pickup;
 import com.spiddekauga.voider.Config.Editor.Bullet;
 import com.spiddekauga.voider.Config.Editor.Enemy;
+import com.spiddekauga.voider.resources.IResource;
+import com.spiddekauga.voider.resources.IResourceChangeListener;
 import com.spiddekauga.voider.resources.IResourceCorner;
 import com.spiddekauga.voider.utils.EarClippingTriangulator;
 import com.spiddekauga.voider.utils.Geometry;
@@ -976,6 +979,41 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 	 */
 	public ActorTypes getActorType() {
 		return mActorType;
+	}
+
+	@Override
+	public void createBodyCorners() {
+		// Does nothing
+	}
+
+	@Override
+	public void destroyBodyCorners() {
+		// Does nothing
+	}
+
+	@Override
+	public UUID getId() {
+		return null;
+	}
+
+	@Override
+	public boolean removeBoundResource(IResource boundResource) {
+		return false;
+	}
+
+	@Override
+	public boolean addBoundResource(IResource boundResource) {
+		return false;
+	}
+
+	@Override
+	public void addChangeListener(IResourceChangeListener listener) {
+		// Does nothing
+	}
+
+	@Override
+	public void removeChangeListener(IResourceChangeListener listener) {
+		// Does nothing
 	}
 
 
