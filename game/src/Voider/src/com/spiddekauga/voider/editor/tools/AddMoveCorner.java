@@ -50,10 +50,10 @@ public class AddMoveCorner extends TouchTool implements ISelectionListener {
 		testPickAabb();
 
 		// Hit a corner move it
-		if (mHitCorner != null) {
+		if (mHitResource != null) {
 			mAddingCorner = false;
-			mCornerIndexCurrent = mHitCorner.getCornerIndex(mHitCornerBody.getPosition());
-			mDragOrigin.set(mHitCorner.getCornerPosition(mCornerIndexCurrent));
+			mCornerIndexCurrent = mHitResource.getCornerIndex(mHitCornerBody.getPosition());
+			mDragOrigin.set(mHitResource.getCornerPosition(mCornerIndexCurrent));
 			setDrawing(true);
 			return true;
 		}
@@ -63,8 +63,8 @@ public class AddMoveCorner extends TouchTool implements ISelectionListener {
 			calculateIndexOfPosBetweenCorners(mTouchCurrent);
 
 			if (mCornerIndexCurrent != -1) {
-				Vector2 localPos = getLocalPosition(mTouchCurrent, mHitCorner);
-				mHitCorner.addCorner(localPos, mCornerIndexCurrent);
+				Vector2 localPos = getLocalPosition(mTouchCurrent, mHitResource);
+				mHitResource.addCorner(localPos, mCornerIndexCurrent);
 				Pools.vector2.free(localPos);
 
 				setDrawing(true);
@@ -77,9 +77,9 @@ public class AddMoveCorner extends TouchTool implements ISelectionListener {
 	@Override
 	protected boolean dragged() {
 		if (mCornerIndexCurrent != -1) {
-			Vector2 newCornerPos = getLocalPosition(mTouchCurrent, mHitCorner);
+			Vector2 newCornerPos = getLocalPosition(mTouchCurrent, mHitResource);
 
-			mHitCorner.moveCorner(mCornerIndexCurrent, newCornerPos);
+			mHitResource.moveCorner(mCornerIndexCurrent, newCornerPos);
 			Pools.vector2.free(newCornerPos);
 		}
 		return false;
@@ -91,24 +91,24 @@ public class AddMoveCorner extends TouchTool implements ISelectionListener {
 			// Add or move?
 			Command addOrMoveCommand;
 			if (mAddingCorner) {
-				Vector2 removedCorner = mHitCorner.removeCorner(mCornerIndexCurrent);
-				addOrMoveCommand = new CResourceCornerAdd(mHitCorner, removedCorner, mCornerIndexCurrent, mEditor);
+				Vector2 removedCorner = mHitResource.removeCorner(mCornerIndexCurrent);
+				addOrMoveCommand = new CResourceCornerAdd(mHitResource, removedCorner, mCornerIndexCurrent, mEditor);
 				Pools.vector2.free(removedCorner);
 			} else {
 				Vector2 newPos = Pools.vector2.obtain();
-				newPos.set(mHitCorner.getCornerPosition(mCornerIndexCurrent));
-				mHitCorner.moveCorner(mCornerIndexCurrent, mDragOrigin);
-				addOrMoveCommand = new CResourceCornerMove(mHitCorner, mCornerIndexCurrent, newPos, mEditor);
+				newPos.set(mHitResource.getCornerPosition(mCornerIndexCurrent));
+				mHitResource.moveCorner(mCornerIndexCurrent, mDragOrigin);
+				addOrMoveCommand = new CResourceCornerMove(mHitResource, mCornerIndexCurrent, newPos, mEditor);
 				Pools.vector2.free(newPos);
 			}
 
 			// Add corner via invoker instead
-			if (mHitCorner instanceof Actor) {
-				mInvoker.execute(new CActorDefFixCustomFixtures(((Actor) mHitCorner).getDef(), false));
+			if (mHitResource instanceof Actor) {
+				mInvoker.execute(new CActorDefFixCustomFixtures(((Actor) mHitResource).getDef(), false));
 				mInvoker.execute(addOrMoveCommand, true);
 
 				try {
-					mInvoker.execute(new CActorDefFixCustomFixtures(((Actor) mHitCorner).getDef(), true), true);
+					mInvoker.execute(new CActorDefFixCustomFixtures(((Actor) mHitResource).getDef(), true), true);
 				} catch (PolygonComplexException e) {
 					SceneSwitcher.showErrorMessage(Messages.Error.POLYGON_COMPLEX_ADD);
 					handleBadCornerPosition(null);
@@ -122,7 +122,7 @@ public class AddMoveCorner extends TouchTool implements ISelectionListener {
 
 			mCornerIndexCurrent = -1;
 		}
-		mHitCorner = null;
+		mHitResource = null;
 		mHitCornerBody = null;
 
 		return false;
@@ -147,7 +147,7 @@ public class AddMoveCorner extends TouchTool implements ISelectionListener {
 
 				if (distance < bestDist) {
 					mCornerIndexCurrent = nextIndex;
-					mHitCorner = resource;
+					mHitResource = resource;
 					bestDist = distance;
 				}
 			}
@@ -248,7 +248,7 @@ public class AddMoveCorner extends TouchTool implements ISelectionListener {
 				mHitCornerBody = fixture.getBody();
 
 				if (((HitWrapper) userData).resource instanceof IResourceCorner) {
-					mHitCorner = (IResourceCorner) ((HitWrapper) mHitCornerBody.getUserData()).resource;
+					mHitResource = (IResourceCorner) ((HitWrapper) mHitCornerBody.getUserData()).resource;
 				} else {
 					Gdx.app.error("AddMoveCorner", "HitWrapper resources was not a corner!");
 				}
@@ -264,7 +264,7 @@ public class AddMoveCorner extends TouchTool implements ISelectionListener {
 	/** Body of first corner we hit */
 	private Body mHitCornerBody = null;
 	/** First corner we hit */
-	private IResourceCorner mHitCorner = null;
+	private IResourceCorner mHitResource = null;
 	/** Corner index */
 	private int mCornerIndexCurrent = -1;
 	/** Where we started dragging from */
