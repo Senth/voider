@@ -21,13 +21,13 @@ import com.spiddekauga.voider.editor.commands.CLevelPickupDefSelect;
 import com.spiddekauga.voider.editor.commands.CSelectionSet;
 import com.spiddekauga.voider.editor.tools.AddActorTool;
 import com.spiddekauga.voider.editor.tools.AddEnemyTool;
-import com.spiddekauga.voider.editor.tools.AddMoveCorner;
+import com.spiddekauga.voider.editor.tools.AddMoveCornerTool;
 import com.spiddekauga.voider.editor.tools.DrawActorTool;
 import com.spiddekauga.voider.editor.tools.DrawAppendTool;
 import com.spiddekauga.voider.editor.tools.DrawEraseTool;
 import com.spiddekauga.voider.editor.tools.ISelection;
 import com.spiddekauga.voider.editor.tools.PathTool;
-import com.spiddekauga.voider.editor.tools.RemoveCorner;
+import com.spiddekauga.voider.editor.tools.RemoveCornerTool;
 import com.spiddekauga.voider.editor.tools.Selection;
 import com.spiddekauga.voider.editor.tools.SelectionTool;
 import com.spiddekauga.voider.editor.tools.TouchTool;
@@ -100,8 +100,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor {
 
 		Tools.TERRAIN_DRAW_APPEND.setTool(new DrawAppendTool(mCamera, mWorld, mInvoker, mSelection, this, StaticTerrainActor.class));
 		Tools.TERRAIN_DRAW_ERASE.setTool(new DrawEraseTool(mCamera, mWorld, mInvoker, mSelection, this, StaticTerrainActor.class));
-		Tools.TERRAIN_ADJUST_ADD_MOVE_CORNER.setTool(new AddMoveCorner(mCamera, mWorld, mInvoker, mSelection, this));
-		Tools.TERRAIN_ADJUST_REMOVE_CORNER.setTool(new RemoveCorner(mCamera, mWorld, mInvoker, mSelection, this));
+		Tools.TERRAIN_ADJUST_ADD_MOVE_CORNER.setTool(new AddMoveCornerTool(mCamera, mWorld, mInvoker, mSelection, this));
+		Tools.TERRAIN_ADJUST_REMOVE_CORNER.setTool(new RemoveCornerTool(mCamera, mWorld, mInvoker, mSelection, this));
 	}
 
 	@Override

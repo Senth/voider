@@ -23,11 +23,11 @@ import com.spiddekauga.voider.utils.Geometry.PolygonCornersTooCloseException;
 import com.spiddekauga.voider.utils.Messages;
 
 /**
- * 
+ * Tool for removing corners of a resource that has corners
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class RemoveCorner extends TouchTool implements ISelectionListener {
+public class RemoveCornerTool extends TouchTool implements ISelectionListener {
 	/**
 	 * @param camera the camera
 	 * @param world world where the objects are in
@@ -35,8 +35,7 @@ public class RemoveCorner extends TouchTool implements ISelectionListener {
 	 * @param selection all selected resources
 	 * @param editor the editor this tool is bound to
 	 */
-	public RemoveCorner(
-			Camera camera, World world, Invoker invoker, ISelection selection, IResourceChangeEditor editor) {
+	public RemoveCornerTool(Camera camera, World world, Invoker invoker, ISelection selection, IResourceChangeEditor editor) {
 		super(camera, world, invoker, selection, editor);
 	}
 
