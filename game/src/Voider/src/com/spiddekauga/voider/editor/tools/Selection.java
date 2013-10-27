@@ -176,6 +176,18 @@ public class Selection implements ISelection {
 		return mSelectedResources.size();
 	}
 
+	@Override
+	public void setSelectionChangedDuringDown(boolean changed) {
+		mChangedDuringLastDown = changed;
+	}
+
+	@Override
+	public boolean isSelectionChangedDuringDown() {
+		return mChangedDuringLastDown;
+	}
+
+	/** If selection was changed during a touch down */
+	private boolean mChangedDuringLastDown = false;
 	/** All listeners */
 	private ArrayList<ISelectionListener> mListeners = new ArrayList<ISelectionListener>();
 	/** Current resource selection */

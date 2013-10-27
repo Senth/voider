@@ -104,7 +104,9 @@ public class SelectionTool extends TouchTool {
 				testPickPoint();
 			}
 
-			return addRemoveOrSetHitResources();
+			if (addRemoveOrSetHitResources()) {
+				mSelection.setSelectionChangedDuringDown(true);
+			}
 		}
 
 		return mActive;
@@ -120,6 +122,8 @@ public class SelectionTool extends TouchTool {
 
 	@Override
 	protected boolean up() {
+		mSelection.setSelectionChangedDuringDown(false);
+
 		if (mRectangleBrush != null) {
 			// Check with AABB which actors were inside the selection box
 			testPickAabb(mTouchOrigin, mTouchCurrent);

@@ -39,6 +39,11 @@ public class PathAddTool extends TouchTool implements ISelectionListener {
 
 	@Override
 	protected boolean down() {
+		// Skip if selected resource was changed
+		if (mSelection.isSelectionChangedDuringDown()) {
+			return false;
+		}
+
 		testPickPoint();
 
 		// Hit corner -> move it

@@ -49,6 +49,11 @@ public class DrawEraseTool extends ActorTool {
 
 	@Override
 	protected boolean down() {
+		// Skip if selected resource was changed
+		if (mSelection.isSelectionChangedDuringDown()) {
+			return false;
+		}
+
 		if (!mSelection.isEmpty()) {
 			testPickPoint();
 			// Hit a selected actor

@@ -40,6 +40,11 @@ public class DrawAppendTool extends ActorTool implements ISelectionListener {
 
 	@Override
 	protected boolean down() {
+		// Skip if selected resource was changed
+		if (mSelection.isSelectionChangedDuringDown()) {
+			return false;
+		}
+
 		mSelectedActor = mSelection.getFirstSelectedResourceOfType(mActorType);
 
 		if (mSelectedActor == null) {

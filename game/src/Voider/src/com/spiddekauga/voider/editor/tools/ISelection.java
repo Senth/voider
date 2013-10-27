@@ -98,6 +98,18 @@ public interface ISelection {
 	void removeListener(ISelectionListener listener);
 
 	/**
+	 * Sets if the selection was changed during a touch down() event. This should
+	 * always be called as setSelectionChangeDuringDown(false) after the up() event
+	 * @param changed set to true if this was changed
+	 */
+	void setSelectionChangedDuringDown(boolean changed);
+
+	/**
+	 * @return true if the selection was changed during the last down() event
+	 */
+	boolean isSelectionChangedDuringDown();
+
+	/**
 	 * @return true if no resources are selected
 	 */
 	boolean isEmpty();

@@ -32,6 +32,11 @@ public class TriggerAddTool extends TouchTool {
 
 	@Override
 	protected boolean down() {
+		// Skip if selected resource was changed
+		if (mSelection.isSelectionChangedDuringDown()) {
+			return false;
+		}
+
 		testPickPoint();
 
 		// Create TriggerActorActivated if we hit an enemy

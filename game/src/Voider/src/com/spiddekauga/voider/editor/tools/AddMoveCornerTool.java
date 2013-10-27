@@ -47,6 +47,11 @@ public class AddMoveCornerTool extends TouchTool implements ISelectionListener {
 
 	@Override
 	protected boolean down() {
+		// Skip if selected resource was changed
+		if (mSelection.isSelectionChangedDuringDown()) {
+			return false;
+		}
+
 		testPickAabb();
 
 		// Hit a corner move it
