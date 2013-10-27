@@ -26,6 +26,7 @@ import com.spiddekauga.voider.editor.tools.DrawActorTool;
 import com.spiddekauga.voider.editor.tools.DrawAppendTool;
 import com.spiddekauga.voider.editor.tools.DrawEraseTool;
 import com.spiddekauga.voider.editor.tools.ISelection;
+import com.spiddekauga.voider.editor.tools.MoveTool;
 import com.spiddekauga.voider.editor.tools.PathAddTool;
 import com.spiddekauga.voider.editor.tools.PathTool;
 import com.spiddekauga.voider.editor.tools.RemoveCornerTool;
@@ -82,6 +83,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor {
 		Tools.SELECTION.setTool(new SelectionTool(mCamera, mWorld, mInvoker, mSelection, this));
 		mInputMultiplexer.addProcessor(Tools.SELECTION.getTool());
 
+		Tools.MOVE.setTool(new MoveTool(mCamera, mWorld, mInvoker, mSelection, this));
 		Tools.PATH_ADD_CORNER.setTool(new PathAddTool(mCamera, mWorld, mInvoker, mSelection, this));
 		Tools.TERRAIN_DRAW_APPEND.setTool(new DrawAppendTool(mCamera, mWorld, mInvoker, mSelection, this, StaticTerrainActor.class));
 		Tools.TERRAIN_DRAW_ERASE.setTool(new DrawEraseTool(mCamera, mWorld, mInvoker, mSelection, this, StaticTerrainActor.class));

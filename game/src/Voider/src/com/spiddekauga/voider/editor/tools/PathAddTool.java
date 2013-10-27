@@ -33,8 +33,7 @@ public class PathAddTool extends TouchTool implements ISelectionListener {
 	 * @param selection all selected resources
 	 * @param editor editor this tool is bound to
 	 */
-	public PathAddTool(
-			Camera camera, World world, Invoker invoker, ISelection selection, IResourceChangeEditor editor) {
+	public PathAddTool(Camera camera, World world, Invoker invoker, ISelection selection, IResourceChangeEditor editor) {
 		super(camera, world, invoker, selection, editor);
 	}
 
