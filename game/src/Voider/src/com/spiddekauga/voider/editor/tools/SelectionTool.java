@@ -11,13 +11,14 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.spiddekauga.utils.Invoker;
 import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.Config.Editor;
 import com.spiddekauga.voider.editor.IResourceChangeEditor;
 import com.spiddekauga.voider.editor.brushes.RectangleBrush;
 import com.spiddekauga.voider.editor.commands.CSelectionAdd;
 import com.spiddekauga.voider.editor.commands.CSelectionRemove;
 import com.spiddekauga.voider.editor.commands.CSelectionSet;
+import com.spiddekauga.voider.game.triggers.Trigger;
 import com.spiddekauga.voider.resources.IResource;
-import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Container class for all the selected actors in the level editor
@@ -36,6 +37,42 @@ public class SelectionTool extends TouchTool {
 		super(camera, world, invoker, selection, editor);
 	}
 
+	/**
+	 * Adds, removes or sets the hit resources
+	 * @return true if the selection list was changed
+	 */
+	private boolean addRemoveOrSetHitResources() {
+		boolean handled = false;
+
+		if (!mHitResources.isEmpty()) {
+			for (IResource resource : mHitResources) {
+				// Add to selection
+				if (KeyHelper.isShiftPressed()) {
+					if (!mSelection.isSelected(resource)) {
+						mInvoker.execute(new CSelectionAdd(mSelection, resource));
+						handled = true;
+					}
+				}
+				// Remove from selection
+				else if (KeyHelper.isCtrlPressed()) {
+					if (mSelection.isSelected(resource)) {
+						mInvoker.execute(new CSelectionRemove(mSelection, resource));
+						handled = true;
+					}
+				}
+				// Set selection
+				else {
+					if (!mSelection.isSelected(resource)) {
+						mInvoker.execute(new CSelectionSet(mSelection, resource));
+						handled = true;
+					}
+				}
+			}
+		}
+
+		return handled;
+	}
+
 	@Override
 	protected boolean down() {
 		// Draw selection box
@@ -45,37 +82,29 @@ public class SelectionTool extends TouchTool {
 		}
 		// Test if we shall add or remove any actors
 		else {
-			testPickPoint();
+			boolean addRegularResources = false;
+			boolean addTriggers = false;
 
-			if (!mHitResources.isEmpty()) {
-				boolean handled = false;
-
-				for (IResource resource : mHitResources) {
-					// Add to selection
-					if (KeyHelper.isShiftPressed()) {
-						if (!mSelection.isSelected(resource)) {
-							mInvoker.execute(new CSelectionAdd(mSelection, resource));
-							handled = true;
-						}
-					}
-					// Remove from selection
-					else if (KeyHelper.isCtrlPressed()) {
-						if (mSelection.isSelected(resource)) {
-							mInvoker.execute(new CSelectionRemove(mSelection, resource));
-							handled = true;
-						}
-					}
-					// Set selection
-					else {
-						if (!mSelection.isSelected(resource)) {
-							mInvoker.execute(new CSelectionSet(mSelection, resource));
-							handled = true;
-						}
-					}
-				}
-
-				return handled;
+			// Add all resources (including triggers)
+			if (mSelection.isEmpty()) {
+				addRegularResources = true;
+				addTriggers = true;
 			}
+			// Add only triggers
+			else if (Trigger.class.isAssignableFrom(mSelection.getMostCommonSelectedResourceType())) {
+				addTriggers = true;
+			} else {
+				addRegularResources = true;
+			}
+
+			if (addTriggers) {
+				testPickAabb(Editor.PICK_TRIGGER_SIZE);
+			}
+			if (addRegularResources) {
+				testPickPoint();
+			}
+
+			return addRemoveOrSetHitResources();
 		}
 
 		return mActive;
@@ -97,16 +126,15 @@ public class SelectionTool extends TouchTool {
 
 			// Add resources to selection
 			if (KeyHelper.isShiftPressed()) {
-				addPickedResources(false);
+				mInvoker.execute(new CSelectionAdd(mSelection, mHitResources));
 			}
 			// Remove resources from selection
 			else if (KeyHelper.isCtrlPressed()) {
-				removePickedResources(false);
+				mInvoker.execute(new CSelectionRemove(mSelection, mHitResources));
 			}
 			// Set selected resources
 			else {
-				mInvoker.execute(new CSelectionSet(mSelection));
-				addPickedResources(true);
+				mInvoker.execute(new CSelectionSet(mSelection, mHitResources));
 			}
 
 
@@ -117,40 +145,6 @@ public class SelectionTool extends TouchTool {
 		mHitResources.clear();
 
 		return mActive;
-	}
-
-
-
-	/**
-	 * Adds all the picked resources
-	 * @param chained if the command shall be chained
-	 */
-	private void addPickedResources(boolean chained) {
-		@SuppressWarnings("unchecked")
-		ArrayList<IResource> toSelect = Pools.arrayList.obtain();
-
-		for (IResource resource : mHitResources) {
-			toSelect.add(resource);
-		}
-
-		mInvoker.execute(new CSelectionAdd(mSelection, toSelect), chained);
-		Pools.arrayList.free(toSelect);
-	}
-
-	/**
-	 * Removes all picked actors from the selection
-	 * @param chained if the command shall be chained
-	 */
-	private void removePickedResources(boolean chained) {
-		@SuppressWarnings("unchecked")
-		ArrayList<IResource> toDeselect = Pools.arrayList.obtain();
-
-		for (IResource resource : mHitResources) {
-			toDeselect.add(resource);
-		}
-
-		mInvoker.execute(new CSelectionRemove(mSelection, toDeselect), chained);
-		Pools.arrayList.free(toDeselect);
 	}
 
 	@Override

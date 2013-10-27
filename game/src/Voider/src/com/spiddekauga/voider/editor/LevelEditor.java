@@ -31,6 +31,7 @@ import com.spiddekauga.voider.editor.tools.RemoveCornerTool;
 import com.spiddekauga.voider.editor.tools.Selection;
 import com.spiddekauga.voider.editor.tools.SelectionTool;
 import com.spiddekauga.voider.editor.tools.TouchTool;
+import com.spiddekauga.voider.editor.tools.TriggerAddTool;
 import com.spiddekauga.voider.editor.tools.TriggerTool;
 import com.spiddekauga.voider.game.GameScene;
 import com.spiddekauga.voider.game.Level;
@@ -76,24 +77,6 @@ public class LevelEditor extends Editor implements IResourceChangeEditor {
 		mScroller = new Scroller(50, 2000, 10, 200, ScrollAxis.X);
 		mSelection = new Selection();
 
-		// Initialize all tools
-		//		DrawActorTool terrainTool = new DrawActorTool(mCamera, mWorld, mInvoker, StaticTerrainActor.class, this);
-		//		mTouchTools[ToolGroups.STATIC_TERRAIN.ordinal()] = terrainTool;
-		//		AddActorTool pickupTool = new AddActorTool(mCamera, mWorld, mInvoker, PickupActor.class, true, this);
-		//		mTouchTools[ToolGroups.PICKUP.ordinal()] = pickupTool;
-		//		AddEnemyTool enemyTool = new AddEnemyTool(mCamera, mWorld, mInvoker, this);
-		//		enemyTool.addListener(this);
-		//		mTouchTools[ToolGroups.ENEMY.ordinal()] = enemyTool;
-		//		PathTool pathTool = new PathTool(mCamera, mWorld, mInvoker, this);
-		//		pathTool.addListener(this);
-		//		mTouchTools[ToolGroups.PATH.ordinal()] = pathTool;
-		//		TriggerTool triggerTool = new TriggerTool(mCamera, mWorld, mInvoker, this);
-		//		triggerTool.addListener(this);
-		//		mTouchTools[ToolGroups.TRIGGER.ordinal()] = triggerTool;
-
-
-
-
 		// Initialize tools
 		Tools.SELECTION.setTool(new SelectionTool(mCamera, mWorld, mInvoker, mSelection, this));
 		mInputMultiplexer.addProcessor(Tools.SELECTION.getTool());
@@ -102,6 +85,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor {
 		Tools.TERRAIN_DRAW_ERASE.setTool(new DrawEraseTool(mCamera, mWorld, mInvoker, mSelection, this, StaticTerrainActor.class));
 		Tools.TERRAIN_ADJUST_ADD_MOVE_CORNER.setTool(new AddMoveCornerTool(mCamera, mWorld, mInvoker, mSelection, this));
 		Tools.TERRAIN_ADJUST_REMOVE_CORNER.setTool(new RemoveCornerTool(mCamera, mWorld, mInvoker, mSelection, this));
+		Tools.TRIGGER_ADD.setTool(new TriggerAddTool(mCamera, mWorld, mInvoker, mSelection, this));
 	}
 
 	@Override

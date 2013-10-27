@@ -24,6 +24,18 @@ public class CSelectionSet extends Command implements Disposable {
 		mResources = resources;
 	}
 
+	/**
+	 * Creates a command that will select an actor in the specified tool
+	 * @param selection the selection container
+	 * @param resources the resources to select
+	 */
+	public CSelectionSet(ISelection selection, ArrayList<IResource> resources) {
+		mSelection = selection;
+
+		mResources = new IResource[resources.size()];
+		resources.toArray(mResources);
+	}
+
 	@Override
 	public boolean execute() {
 		if (mSelection != null) {

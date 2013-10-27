@@ -21,7 +21,7 @@ public interface ISelection {
 	ArrayList<IResource> getSelectedResources();
 
 	/**
-	 * @return the most common type of selected resources
+	 * @return the most common type of selected resources, null if no resources are selected
 	 */
 	Class<? extends IResource> getMostCommonSelectedResourceType();
 
