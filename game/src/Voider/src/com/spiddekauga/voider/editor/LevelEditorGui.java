@@ -84,9 +84,9 @@ class LevelEditorGui extends EditorGui {
 
 	@Override
 	public void dispose() {
-		mPickupTable.dispose();
+		mWidgets.enemyAdd.table.dispose();
 		mWidgets.enemy.table.dispose();
-		mOptionTable.dispose();
+		mWidgets.path.table.dispose();
 
 		super.dispose();
 	}

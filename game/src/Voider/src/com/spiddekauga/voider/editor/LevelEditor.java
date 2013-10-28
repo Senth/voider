@@ -23,6 +23,7 @@ import com.spiddekauga.voider.editor.tools.AddMoveCornerTool;
 import com.spiddekauga.voider.editor.tools.DeleteTool;
 import com.spiddekauga.voider.editor.tools.DrawAppendTool;
 import com.spiddekauga.voider.editor.tools.DrawEraseTool;
+import com.spiddekauga.voider.editor.tools.EnemySetTriggerTool;
 import com.spiddekauga.voider.editor.tools.ISelection;
 import com.spiddekauga.voider.editor.tools.ISelectionListener;
 import com.spiddekauga.voider.editor.tools.MoveTool;
@@ -30,7 +31,6 @@ import com.spiddekauga.voider.editor.tools.PathAddTool;
 import com.spiddekauga.voider.editor.tools.RemoveCornerTool;
 import com.spiddekauga.voider.editor.tools.Selection;
 import com.spiddekauga.voider.editor.tools.SelectionTool;
-import com.spiddekauga.voider.editor.tools.EnemySetTriggerTool;
 import com.spiddekauga.voider.editor.tools.TouchTool;
 import com.spiddekauga.voider.editor.tools.TriggerAddTool;
 import com.spiddekauga.voider.game.GameScene;
@@ -526,6 +526,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 			Config.Gui.setUseTextButtons(!Config.Gui.usesTextButtons());
 			mGui.dispose();
 			mGui.initGui();
+			mGui.resetValues();
+			return true;
 		}
 		else if (keycode == Input.Keys.F6) {
 			String message = "This is a longer error message with more text, a lot more text, see if it will wrap correctly later...";

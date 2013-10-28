@@ -400,9 +400,18 @@ public abstract class EditorGui extends Gui {
 
 			Vector2 screenPos = Pools.vector2.obtain();
 
-			ArrayList<Actor> actors = mMainTable.getActors(true);
-			for (Actor actor : actors) {
+			ArrayList<Actor> allActors = mMainTable.getActors(true);
+			ArrayList<Actor> actors = mEditorMenu.getActors(true);
+			allActors.addAll(actors);
+			Pools.arrayList.free(actors);
+			actors = mFileMenu.getActors(true);
+			allActors.addAll(actors);
+			Pools.arrayList.free(actors);
+			actors = mToolMenu.getActors(true);
+			allActors.addAll(actors);
+			Pools.arrayList.free(actors);
 
+			for (Actor actor : allActors) {
 				// Scale width & height
 				float worldWidth = actor.getWidth() * scale;
 				float worldHeight = actor.getHeight() * scale;
@@ -421,7 +430,7 @@ public abstract class EditorGui extends Gui {
 			}
 
 			polygonShape.dispose();
-			Pools.arrayList.free(actors);
+			Pools.arrayList.free(allActors);
 
 
 			Pools.vector2.freeAll(screenPos);

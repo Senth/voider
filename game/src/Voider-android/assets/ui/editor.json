@@ -326,6 +326,42 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageUp: path_add
 	},
 	
+	path_once: {
+		down: button-default-down,
+		checked: button-default-checked,
+		up: button-default-up,
+		disabled: button-default-disabled,
+		over: button-default-over,
+		checkedOver: button-default-checked-over,
+		imageDown: path_once,
+		imageChecked: path_once,
+		imageUp: path_once
+	},
+	
+	path_back_and_forth: {
+		down: button-default-down,
+		checked: button-default-checked,
+		up: button-default-up,
+		disabled: button-default-disabled,
+		over: button-default-over,
+		checkedOver: button-default-checked-over,
+		imageDown: path_back_and_forth,
+		imageChecked: path_back_and_forth,
+		imageUp: path_back_and_forth
+	},
+	
+	path_loop: {
+		down: button-default-down,
+		checked: button-default-checked,
+		up: button-default-up,
+		disabled: button-default-disabled,
+		over: button-default-over,
+		checkedOver: button-default-checked-over,
+		imageDown: path_loop,
+		imageChecked: path_loop,
+		imageUp: path_loop
+	},
+	
 	trigger_add: {
 		down: button-default-down,
 		checked: button-default-checked,
