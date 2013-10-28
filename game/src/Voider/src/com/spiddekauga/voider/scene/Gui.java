@@ -10,6 +10,8 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Disposable;
+import com.spiddekauga.utils.scene.ui.Align.Horizontal;
+import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.MessageShower;
 import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
@@ -28,6 +30,7 @@ public abstract class Gui implements Disposable {
 	public Gui() {
 		mStage.addActor(mMainTable);
 		mMainTable.setName("MainTable");
+		mMainTable.setTableAlign(Horizontal.RIGHT, Vertical.TOP);
 	}
 
 	@Override
@@ -45,7 +48,7 @@ public abstract class Gui implements Disposable {
 	 */
 	public void resize(int width, int height) {
 		mStage.setViewport(width, height, true);
-		mMainTable.setSize(width, height);
+		//		mMainTable.setSize(width, height);
 	}
 
 	/**

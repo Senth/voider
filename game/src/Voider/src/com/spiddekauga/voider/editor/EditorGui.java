@@ -24,13 +24,10 @@ import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
 import com.spiddekauga.voider.Config;
-import com.spiddekauga.voider.app.MainMenu;
-import com.spiddekauga.voider.editor.commands.CEditorDuplicate;
 import com.spiddekauga.voider.editor.commands.CEditorLoad;
 import com.spiddekauga.voider.editor.commands.CEditorNew;
 import com.spiddekauga.voider.editor.commands.CEditorSave;
 import com.spiddekauga.voider.editor.commands.CLevelRun;
-import com.spiddekauga.voider.editor.commands.CSceneReturn;
 import com.spiddekauga.voider.editor.commands.CSceneSwitch;
 import com.spiddekauga.voider.game.actors.ActorFilterCategories;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
@@ -102,6 +99,7 @@ public abstract class EditorGui extends Gui {
 		initFileMenu();
 
 		mToolMenu.row().setPadTop(getEditorMenuTopPadding());
+		mMainTable.row().setPadTop(getEditorMenuTopPadding());
 	}
 
 	/**
@@ -285,165 +283,6 @@ public abstract class EditorGui extends Gui {
 	}
 
 	/**
-	 * Initializes the main menu that is shown when pressed back
-	 * @param editor the current editor
-	 * @param defTypeName the definition type name to save is unsaved, etc.
-	 */
-	protected void initMainMenu(final IEditor editor, final String defTypeName) {
-		mFileMenu.setRowAlign(Horizontal.CENTER, Vertical.MIDDLE);
-
-		mFileMenu.row();
-		Button button = new TextButton("New", mTextButtonStyle);
-		new ButtonListener(button) {
-			@Override
-			protected void onPressed() {
-				if (!editor.isSaved()) {
-					Button yes = new TextButton("Save first", mTextButtonStyle);
-					Button no = new TextButton("Discard current", mTextButtonStyle);
-
-					Command save = new CEditorSave(editor);
-					Command newCommand = new CEditorNew(editor);
-					Command saveAndNew = new CommandSequence(save, newCommand);
-
-					MsgBoxExecuter msgBox = getFreeMsgBox();
-
-					msgBox.clear();
-					msgBox.setTitle("New Enemy");
-					msgBox.content(Messages.getUnsavedMessage(defTypeName, UnsavedActions.NEW));
-					msgBox.button(yes, saveAndNew);
-					msgBox.button(no, newCommand);
-					msgBox.addCancelButtonAndKeys();
-					showMsgBox(msgBox);
-				} else {
-					editor.newDef();
-				}
-			}
-		};
-		mFileMenu.add(button);
-
-		// Save
-		mFileMenu.row();
-		button = new TextButton("Save", mTextButtonStyle);
-		new ButtonListener(button) {
-			@Override
-			protected void onPressed() {
-				editor.saveDef();
-			}
-		};
-		mFileMenu.add(button);
-
-		// Load
-		mFileMenu.row();
-		button = new TextButton("Load", mTextButtonStyle);
-		new ButtonListener(button) {
-			@Override
-			protected void onPressed() {
-				if (!editor.isSaved()) {
-					Button yes = new TextButton("Save first", mTextButtonStyle);
-					Button no = new TextButton("Load anyway", mTextButtonStyle);
-
-					CommandSequence saveAndLoad = new CommandSequence(new CEditorSave(editor), new CEditorLoad(editor));
-
-					MsgBoxExecuter msgBox = getFreeMsgBox();
-
-					msgBox.clear();
-					msgBox.setTitle("Load Enemy");
-					msgBox.content(Messages.getUnsavedMessage(defTypeName, UnsavedActions.LOAD));
-					msgBox.button(yes, saveAndLoad);
-					msgBox.button(no, new CEditorLoad(editor));
-					msgBox.addCancelButtonAndKeys();
-					showMsgBox(msgBox);
-				} else {
-					editor.loadDef();
-				}
-			}
-		};
-		mFileMenu.add(button);
-
-		// Duplicate
-		mFileMenu.row();
-		button = new TextButton("Duplicate", mTextButtonStyle);
-		new ButtonListener(button) {
-			@Override
-			protected void onPressed() {
-				if (!editor.isSaved()) {
-					Button yes = new TextButton("Save first", mTextButtonStyle);
-					Button no = new TextButton("Duplicate anyway", mTextButtonStyle);
-
-					CommandSequence saveAndDuplicate = new CommandSequence(new CEditorSave(editor), new CEditorDuplicate(editor));
-
-					MsgBoxExecuter msgBox = getFreeMsgBox();
-
-					msgBox.clear();
-					msgBox.setTitle("Duplicate Enemy");
-					msgBox.content(Messages.getUnsavedMessage(defTypeName, UnsavedActions.DUPLICATE));
-					msgBox.button(yes, saveAndDuplicate);
-					msgBox.button(no, new CEditorDuplicate(editor));
-					msgBox.addCancelButtonAndKeys();
-					showMsgBox(msgBox);
-				} else {
-					editor.duplicateDef();
-				}
-			}
-		};
-		mFileMenu.add(button);
-
-
-		// Switch editors
-		mFileMenu.row().setPadTop(Config.Gui.SEPARATE_PADDING);
-
-		// Level editor
-		if (editor.getClass() != LevelEditor.class) {
-			mFileMenu.row();
-			button = new TextButton("Level Editor", mTextButtonStyle);
-			mFileMenu.add(button);
-			new ButtonListener(button) {
-				@Override
-				protected void onPressed() {
-					switchReturnTo("Level Editor", new CSceneSwitch(LevelEditor.class), UnsavedActions.LEVEL_EDITOR);
-				}
-			};
-		}
-
-		// Enemy editor
-		if (editor.getClass() != EnemyEditor.class) {
-			mFileMenu.row();
-			button = new TextButton("Enemy Editor", mTextButtonStyle);
-			mFileMenu.add(button);
-			new ButtonListener(button) {
-				@Override
-				protected void onPressed() {
-					switchReturnTo("Enemy Editor", new CSceneSwitch(EnemyEditor.class), UnsavedActions.ENEMY_EDITOR);
-				}
-			};
-		}
-
-		// Bullet editor
-		if (editor.getClass() != BulletEditor.class) {
-			mFileMenu.row();
-			button = new TextButton("Bullet Editor", mTextButtonStyle);
-			mFileMenu.add(button);
-			new ButtonListener(button) {
-				@Override
-				protected void onPressed() {
-					switchReturnTo("Bullet Editor", new CSceneSwitch(BulletEditor.class), UnsavedActions.BULLET_EDITOR);
-				}
-			};
-		}
-
-		// Return to main menu
-		mFileMenu.row();
-		button = new TextButton("Main Menu", mTextButtonStyle);
-		mFileMenu.add(button);
-		new ButtonListener(button) {
-			@Override
-			protected void onPressed() {
-				switchReturnTo("Main Menu", new CSceneReturn(MainMenu.class), UnsavedActions.MAIN_MENU);
-			}
-		};
-	}
-
-	/**
 	 * Switches or returns to the specified editor or menu.
 	 * @param switchReturnTo what we're switching or returning to.
 	 * @param command the command to be executed when switching or returning
@@ -492,17 +331,6 @@ public abstract class EditorGui extends Gui {
 		} else {
 			command.execute();
 		}
-	}
-
-	/**
-	 * Shows the main menu of the level editor
-	 */
-	void showMainMenu() {
-		MsgBoxExecuter msgBox = getFreeMsgBox();
-
-		msgBox.content(mFileMenu);
-		msgBox.addCancelButtonAndKeys("Return");
-		showMsgBox(msgBox);
 	}
 
 	/**

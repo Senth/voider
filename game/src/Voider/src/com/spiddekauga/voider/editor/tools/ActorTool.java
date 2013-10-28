@@ -69,15 +69,14 @@ abstract public class ActorTool extends TouchTool {
 
 	/**
 	 * Creates a new selected actor
+	 * @return the newly created and selected actor
 	 */
-	protected void createNewSelectedActor() {
+	protected Actor createNewSelectedActor() {
 		Actor actor = newActor();
-		if (mActorDef != null) {
-			actor.setDef(mActorDef);
-		}
 		actor.setPosition(mTouchOrigin);
 		mInvoker.execute(new CResourceAdd(actor, mEditor));
 		mInvoker.execute(new CSelectionSet(mSelection, actor), true);
+		return actor;
 	}
 
 	/**
@@ -116,7 +115,22 @@ abstract public class ActorTool extends TouchTool {
 		return worldPos;
 	}
 
-	/** Actor definition, used when only drawing on one actor */
+	/**
+	 * Sets the actor definition to use for new actors
+	 * @param actorDef actor definition to use
+	 */
+	public void setActorDef(ActorDef actorDef) {
+		mActorDef = actorDef;
+	}
+
+	/**
+	 * @return the actor def used when creating new actors
+	 */
+	public ActorDef getActorDef() {
+		return mActorDef;
+	}
+
+	/** Actor definition */
 	protected ActorDef mActorDef = null;
 	/** Actor type */
 	protected Class<? extends Actor> mActorType;

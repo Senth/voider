@@ -17,6 +17,7 @@ import com.spiddekauga.voider.editor.brushes.RectangleBrush;
 import com.spiddekauga.voider.editor.commands.CSelectionAdd;
 import com.spiddekauga.voider.editor.commands.CSelectionRemove;
 import com.spiddekauga.voider.editor.commands.CSelectionSet;
+import com.spiddekauga.voider.game.Path;
 import com.spiddekauga.voider.game.triggers.Trigger;
 import com.spiddekauga.voider.resources.IResource;
 
@@ -84,21 +85,34 @@ public class SelectionTool extends TouchTool {
 		else {
 			boolean addRegularResources = false;
 			boolean addTriggers = false;
+			boolean addPaths = false;
 
-			// Add all resources (including triggers)
+			Class<? extends IResource> mostCommonSelectedResourceType = mSelection.getMostCommonSelectedResourceType();
+
+			// Add all resources (including triggers and paths)
 			if (mSelection.isEmpty()) {
 				addRegularResources = true;
 				addTriggers = true;
+				addPaths = true;
 			}
 			// Add only triggers
-			else if (Trigger.class.isAssignableFrom(mSelection.getMostCommonSelectedResourceType())) {
+			else if (Trigger.class.isAssignableFrom(mostCommonSelectedResourceType)) {
 				addTriggers = true;
-			} else {
+			}
+			// Add only paths
+			else if (Path.class.isAssignableFrom(mostCommonSelectedResourceType)) {
+				addPaths = true;
+			}
+			// Only regular
+			else {
 				addRegularResources = true;
 			}
 
 			if (addTriggers) {
 				testPickAabb(Editor.PICK_TRIGGER_SIZE);
+			}
+			if (addPaths) {
+				testPickAabb(Editor.PICK_PATH_SIZE);
 			}
 			if (addRegularResources) {
 				testPickPoint();

@@ -115,6 +115,12 @@ public interface ISelection {
 	boolean isEmpty();
 
 	/**
+	 * @param type the type to check if it's selected
+	 * @return true if at least one of the specified resource type is selected
+	 */
+	boolean isSelected(Class<? extends IResource> type);
+
+	/**
 	 * @return the total number of selected resources
 	 */
 	int getSize();

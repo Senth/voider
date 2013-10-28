@@ -24,22 +24,15 @@ import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.utils.scene.ui.HideListener;
 import com.spiddekauga.utils.scene.ui.HideManual;
 import com.spiddekauga.utils.scene.ui.HideSliderValue;
-import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
 import com.spiddekauga.utils.scene.ui.SliderListener;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
 import com.spiddekauga.utils.scene.ui.TooltipListener;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Editor;
 import com.spiddekauga.voider.Config.Editor.Level;
-import com.spiddekauga.voider.editor.LevelEditor.ToolGroups;
+import com.spiddekauga.voider.Config.Gui;
 import com.spiddekauga.voider.editor.LevelEditor.Tools;
 import com.spiddekauga.voider.editor.commands.CGuiSlider;
-import com.spiddekauga.voider.editor.commands.CLevelRun;
-import com.spiddekauga.voider.editor.tools.AddActorTool;
-import com.spiddekauga.voider.editor.tools.AddEnemyTool;
-import com.spiddekauga.voider.editor.tools.DrawActorTool;
-import com.spiddekauga.voider.editor.tools.PathTool;
-import com.spiddekauga.voider.editor.tools.TriggerTool;
 import com.spiddekauga.voider.game.Path.PathTypes;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceNames;
@@ -72,52 +65,61 @@ class LevelEditorGui extends EditorGui {
 		mMainTable.setRowAlign(Horizontal.RIGHT, Vertical.TOP);
 
 
-		mMenuTable.setPreferences(mMainTable);
-		mMenuTable.setName("Menu");
 		mPickupTable.setPreferences(mMainTable);
 		mPickupTable.setRowAlign(Horizontal.RIGHT, Vertical.MIDDLE);
-		mStaticTerrainTable.setPreferences(mMainTable);
-		mStaticTerrainTable.setRowAlign(Horizontal.RIGHT, Vertical.MIDDLE);
 		mEnemyTable.setPreferences(mMainTable);
 		mEnemyTable.setRowAlign(Horizontal.RIGHT, Vertical.MIDDLE);
 		mOptionTable.setPreferences(mMainTable);
-		//		mFileMenuTable.setPreferences(mMainTable);
 
-		mOldHiders = new OldHiders();
+		mHiders = new Hiders();
 
-		//		initMainMenu(mLevelEditor, "level");
 		//		initOptions();
-		//		initStaticTerrain();
 		//		initPickup();
-		//		initMenu();
-		//		initEnemyMenu();
-		//		initEnemy();
-		//		initPath();
-		//		initTrigger();
-
 		initToolMenu();
-
-		mMainTable.setTransform(true);
-		mMainTable.invalidate();
-		mMainTable.add(mMenuTable);
-		mMainTable.row();
-		mMainTable.add(mStaticTerrainTable);
-		mMainTable.add(mPickupTable);
+		//		initEnemy();
+		initPathTable();
 	}
 
 	@Override
 	public void dispose() {
 		mPickupTable.dispose();
-		mStaticTerrainTable.dispose();
 		mEnemyTable.dispose();
 		mOptionTable.dispose();
-		mMenuTable.dispose();
 
 		super.dispose();
 	}
 
 	@Override
 	public void resetValues() {
+
+		// Path
+		if (mLevelEditor.isPathSelected()) {
+			mHiders.pathOptions.show();
+
+			if (mLevelEditor.getPathType() != null) {
+				switch (mLevelEditor.getPathType()) {
+				case BACK_AND_FORTH:
+					mWidgets.path.backAndForth.setChecked(true);
+					break;
+
+				case LOOP:
+					mWidgets.path.loop.setChecked(true);
+					break;
+
+				case ONCE:
+					mWidgets.path.once.setChecked(true);
+					break;
+				}
+			}
+			// No paths selected or they have different path types -> Uncheck all
+			else {
+				mWidgets.path.backAndForth.setChecked(false);
+				mWidgets.path.loop.setChecked(false);
+				mWidgets.path.once.setChecked(false);
+			}
+		} else {
+			mHiders.pathOptions.hide();
+		}
 
 		//		// Main menu
 		//		switch (mLevelEditor.getSelectedTool()) {
@@ -474,52 +476,35 @@ class LevelEditorGui extends EditorGui {
 		};
 		toolButtons.add(button);
 
-		// Terrain add_move_corner
+		// add_move_corner
 		/** @todo REMOVE text button */
 		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Terrain, add/move corner", mTextToggleStyle);
+			button = new TextButton("Add/move corner", mTextToggleStyle);
 		} else {
-			button = new ImageButton(mEditorSkin, EditorIcons.TERRAIN_ADD_MOVE_CORNER.toString());
+			button = new ImageButton(mEditorSkin, EditorIcons.ADD_MOVE_CORNER.toString());
 		}
 		new ButtonListener(button) {
 			@Override
 			protected void onChecked(boolean checked) {
 				if (checked) {
-					mLevelEditor.switchTool(Tools.TERRAIN_ADJUST_ADD_MOVE_CORNER);
+					mLevelEditor.switchTool(Tools.ADD_MOVE_CORNER);
 				}
 			}
 		};
 		toolButtons.add(button);
 
-		// Terrain remove_corner
+		// remove_corner
 		/** @todo REMOVE text button */
 		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Terrain, remove corner", mTextToggleStyle);
+			button = new TextButton("Remove corner", mTextToggleStyle);
 		} else {
-			button = new ImageButton(mEditorSkin, EditorIcons.TERRAIN_REMOVE_CORNER.toString());
+			button = new ImageButton(mEditorSkin, EditorIcons.REMOVE_CORNER.toString());
 		}
 		new ButtonListener(button) {
 			@Override
 			protected void onChecked(boolean checked) {
 				if (checked) {
-					mLevelEditor.switchTool(Tools.TERRAIN_ADJUST_REMOVE_CORNER);
-				}
-			}
-		};
-		toolButtons.add(button);
-
-		// Enemy add
-		/** @todo REMOVE text button */
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Add enemy", mTextToggleStyle);
-		} else {
-			button = new ImageButton(mEditorSkin, EditorIcons.ENEMY_ADD.toString());
-		}
-		new ButtonListener(button) {
-			@Override
-			protected void onChecked(boolean checked) {
-				if (checked) {
-					mLevelEditor.switchTool(Tools.ENEMY_ADD);
+					mLevelEditor.switchTool(Tools.REMOVE_CORNER);
 				}
 			}
 		};
@@ -537,6 +522,23 @@ class LevelEditorGui extends EditorGui {
 			protected void onChecked(boolean checked) {
 				if (checked) {
 					mLevelEditor.switchTool(Tools.PATH_ADD_CORNER);
+				}
+			}
+		};
+		toolButtons.add(button);
+
+		// Enemy add
+		/** @todo REMOVE text button */
+		if (Config.Gui.usesTextButtons()) {
+			button = new TextButton("Add enemy", mTextToggleStyle);
+		} else {
+			button = new ImageButton(mEditorSkin, EditorIcons.ENEMY_ADD.toString());
+		}
+		new ButtonListener(button) {
+			@Override
+			protected void onChecked(boolean checked) {
+				if (checked) {
+					mLevelEditor.switchTool(Tools.ENEMY_ADD);
 				}
 			}
 		};
@@ -622,15 +624,15 @@ class LevelEditorGui extends EditorGui {
 	private void setPathType(PathTypes pathType) {
 		switch (pathType) {
 		case ONCE:
-			mOldWidgets.path.once.setChecked(true);
+			mWidgets.path.once.setChecked(true);
 			break;
 
 		case LOOP:
-			mOldWidgets.path.loop.setChecked(true);
+			mWidgets.path.loop.setChecked(true);
 			break;
 
 		case BACK_AND_FORTH:
-			mOldWidgets.path.backAndForth.setChecked(true);
+			mWidgets.path.backAndForth.setChecked(true);
 			break;
 		}
 	}
@@ -638,191 +640,6 @@ class LevelEditorGui extends EditorGui {
 	@Override
 	protected String getResourceTypeName() {
 		return "level";
-	}
-
-	/**
-	 * Initializes the top menu
-	 */
-	private void initMenu() {
-		Skin generalSkin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
-		TextButtonStyle textToggleStyle = generalSkin.get("toggle", TextButtonStyle.class);
-		final TextButtonStyle textButtonStyle = generalSkin.get("default", TextButtonStyle.class);
-		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.UI_EDITOR_BUTTONS);
-
-		ButtonGroup toggleGroup = new ButtonGroup();
-
-		Button button;
-		// Save
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Save", textButtonStyle);
-		} else {
-			/** @todo default stub image button */
-			button = new ImageButton(editorSkin);
-		}
-		new ButtonListener(button) {
-			@Override
-			protected void onPressed() {
-				mLevelEditor.saveDef();
-			}
-		};
-		mMenuTable.add(button);
-
-		// Undo
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Undo", textButtonStyle);
-		} else {
-			/** @todo default stub image button */
-			button = new ImageButton(editorSkin);
-		}
-		new ButtonListener(button) {
-			@Override
-			protected void onPressed() {
-				mLevelEditor.undo();
-			}
-		};
-		mMenuTable.add(button);
-
-		// Redo
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Redo", textButtonStyle);
-		} else {
-			/** @todo default stub image button */
-			button = new ImageButton(editorSkin);
-		}
-		new ButtonListener(button) {
-			@Override
-			protected void onPressed() {
-				mLevelEditor.redo();
-			}
-		};
-		mMenuTable.add(button);
-
-		// Run
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Run", textButtonStyle);
-		} else {
-			/** @todo default stub image button */
-			button = new ImageButton(editorSkin);
-		}
-		TooltipListener tooltipListener = new TooltipListener(button, "Run", Messages.Tooltip.Level.Menu.RUN);
-		new ButtonListener(button, tooltipListener) {
-			@Override
-			protected void onPressed() {
-				MsgBoxExecuter msgBox = getFreeMsgBox();
-
-				msgBox.setTitle(Messages.Level.RUN_INVULNERABLE_TITLE);
-				msgBox.content(Messages.Level.RUN_INVULNERABLE_CONTENT);
-				msgBox.button("Can die", new CLevelRun(false, mLevelEditor));
-				msgBox.button("Invulnerable", new CLevelRun(true, mLevelEditor));
-				msgBox.addCancelButtonAndKeys();
-				showMsgBox(msgBox);
-			}
-		};
-		mMenuTable.add(button);
-
-		GuiCheckCommandCreator menuChecker = new GuiCheckCommandCreator(mInvoker);
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Terrain", textToggleStyle);
-		} else {
-			/** @todo default stub image button */
-			button = new ImageButton(editorSkin, "default-toggle");
-		}
-		button.setName("static");
-		mOldWidgets.menu.terrain = button;
-		button.addListener(menuChecker);
-		tooltipListener = new TooltipListener(button, "Terrain", Messages.Tooltip.Level.Menu.TERRAIN);
-		mOldHiders.terrain.setButton(button);
-		//		new ButtonListener(button, tooltipListener) {
-		//			@Override
-		//			public void onChecked(boolean checked) {
-		//				if (checked) {
-		//					mLevelEditor.switchTool(Tools.STATIC_TERRAIN);
-		//					switchTool(mStaticTerrainTable);
-		//				}
-		//			}
-		//		};
-		toggleGroup.add(button);
-		mMenuTable.add(button);
-
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Pickup", textToggleStyle);
-		} else {
-			/** @todo default stub image button */
-			button = new ImageButton(editorSkin, "default-toggle");
-		}
-		mOldWidgets.menu.pickup = button;
-		button.addListener(menuChecker);
-		tooltipListener = new TooltipListener(button, "Pickup", Messages.Tooltip.Level.Menu.PICKUP);
-		mOldHiders.pickups.setButton(button);
-		//		new ButtonListener(button, tooltipListener) {
-		//			@Override
-		//			public void onChecked(boolean checked) {
-		//				if (checked) {
-		//					mLevelEditor.switchTool(Tools.PICKUP);
-		//					switchTool(mPickupTable);
-		//				}
-		//			}
-		//		};
-		toggleGroup.add(button);
-		mMenuTable.add(button);
-
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Enemy", textToggleStyle);
-		} else {
-			/** @todo default stub image button */
-			button = new ImageButton(editorSkin, "default-toggle");
-		}
-		mOldWidgets.menu.enemy = button;
-		button.addListener(menuChecker);
-		tooltipListener = new TooltipListener(button, "Enemy", Messages.Tooltip.Level.Menu.ENEMY);
-		//		new ButtonListener(button, tooltipListener) {
-		//			@Override
-		//			protected void onChecked(boolean checked) {
-		//				if (checked) {
-		//					switchTool(mEnemyTable);
-		//
-		//					// Which is currently active from the enemy table?
-		//					if (mWidgets.enemyMenu.enemy.isChecked()) {
-		//						mLevelEditor.switchTool(Tools.ENEMY);
-		//						resetEnemyOptions();
-		//					} else if (mWidgets.enemyMenu.path.isChecked()) {
-		//						mLevelEditor.switchTool(Tools.PATH);
-		//					} else if (mWidgets.enemyMenu.trigger.isChecked()) {
-		//						mLevelEditor.switchTool(Tools.TRIGGER);
-		//					}
-		//				}
-		//			}
-		//		};
-		toggleGroup.add(button);
-		mMenuTable.add(button);
-
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Options", textButtonStyle);
-		} else {
-			/** @todo default stub image button */
-			button = new ImageButton(editorSkin, "default-toggle");
-		}
-		tooltipListener = new TooltipListener(button, "Options", Messages.Tooltip.Level.Menu.OPTION);
-		new ButtonListener(button) {
-			@Override
-			protected void onPressed() {
-				AlignTable test = new AlignTable();
-				Skin editorSkin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
-				LabelStyle labelStyle = editorSkin.get(LabelStyle.class);
-				Label label = new Label("Test label", labelStyle);
-				test.add(label);
-				test.invalidate();
-
-				MsgBoxExecuter msgBox = getFreeMsgBox();
-
-				msgBox.clear();
-				msgBox.setTitle("Level options");
-				msgBox.content(mOptionTable);
-				msgBox.addCancelButtonAndKeys("OK");
-				showMsgBox(msgBox);
-			}
-		};
-		mMenuTable.add(button);
 	}
 
 	/**
@@ -861,7 +678,7 @@ class LevelEditorGui extends EditorGui {
 		TextField textField = new TextField("", textFieldStyle);
 		textField.setMaxLength(Config.Editor.NAME_LENGTH_MAX);
 		left.add(textField).setFillWidth(true);
-		mOldWidgets.option.name = textField;
+		mWidgets.option.name = textField;
 		new TooltipListener(textField, "Name", Messages.Tooltip.Level.Option.NAME);
 		new TextFieldListener(textField, "Name", mInvoker) {
 			@Override
@@ -879,7 +696,7 @@ class LevelEditorGui extends EditorGui {
 		textField = new TextField("", textFieldStyle);
 		textField.setMaxLength(Config.Editor.DESCRIPTION_LENGTH_MAX);
 		left.add(textField).setFillHeight(true).setFillWidth(true);
-		mOldWidgets.option.description = textField;
+		mWidgets.option.description = textField;
 		new TooltipListener(textField, "Description", Messages.Tooltip.Level.Option.DESCRIPTION);
 		new TextFieldListener(textField, "Set your description...", mInvoker) {
 			@Override
@@ -897,7 +714,7 @@ class LevelEditorGui extends EditorGui {
 
 		Slider slider = new Slider(Editor.Level.LEVEL_SPEED_MIN, Editor.Level.LEVEL_SPEED_MAX, Editor.Level.LEVEL_SPEED_STEP_SIZE, false, sliderStyle);
 		left.add(slider).setFillWidth(true);
-		mOldWidgets.option.speed = slider;
+		mWidgets.option.speed = slider;
 
 		textField = new TextField("", textFieldStyle);
 		new TooltipListener(textField, "Level speed", Messages.Tooltip.Level.Option.LEVEL_SPEED);
@@ -918,7 +735,7 @@ class LevelEditorGui extends EditorGui {
 		label = new Label("", labelStyle);
 		new TooltipListener(label, "Revision", Messages.Tooltip.Level.Option.REVISION);
 		left.add(label);
-		mOldWidgets.option.revision = label;
+		mWidgets.option.revision = label;
 
 
 		// RIGHT
@@ -931,7 +748,7 @@ class LevelEditorGui extends EditorGui {
 		textField = new TextField("", textFieldStyle);
 		textField.setMaxLength(Config.Editor.STORY_LENGTH_MAX);
 		right.add(textField).setFillWidth(true).setFillHeight(true);
-		mOldWidgets.option.storyBefore = textField;
+		mWidgets.option.storyBefore = textField;
 		new TooltipListener(textField, "Prologue", Messages.Tooltip.Level.Option.STORY_BEFORE);
 		new TextFieldListener(textField, "Write a story to be displayed when loading the level (optional)...", mInvoker) {
 			@Override
@@ -950,7 +767,7 @@ class LevelEditorGui extends EditorGui {
 		textField = new TextField("", textFieldStyle);
 		textField.setMaxLength(Config.Editor.STORY_LENGTH_MAX);
 		right.add(textField).setFillWidth(true).setFillHeight(true);
-		mOldWidgets.option.epilogue = textField;
+		mWidgets.option.epilogue = textField;
 		new TooltipListener(textField, "Epilogue", Messages.Tooltip.Level.Option.STORY_AFTER);
 		new TextFieldListener(textField, "Write the story to be displayed when the level is completed (optional)...", mInvoker) {
 			@Override
@@ -964,82 +781,7 @@ class LevelEditorGui extends EditorGui {
 		mOptionTable.setKeepSize(true);
 	}
 
-	/**
-	 * Initializes the enemy menu where you can switch between, enemy/path/trigger
-	 */
-	private void initEnemyMenu() {
-		Skin generalSkin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
-		TextButtonStyle textToggleStyle = generalSkin.get("toggle", TextButtonStyle.class);
-		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.UI_EDITOR_BUTTONS);
 
-
-		mEnemyTable.row();
-		GuiCheckCommandCreator enemyOuterMenu = new GuiCheckCommandCreator(mInvoker);
-		ButtonGroup buttonGroup = new ButtonGroup();
-		Button button;
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Enemy", textToggleStyle);
-		} else {
-			/** @todo default stub image button */
-			button = new ImageButton(editorSkin, "default-toggle");
-		}
-		mOldWidgets.enemyMenu.enemy = button;
-		buttonGroup.add(button);
-		mEnemyTable.add(button);
-		button.addListener(enemyOuterMenu);
-		TooltipListener tooltipListener = new TooltipListener(button, "Enemy", Messages.Tooltip.Level.EnemyMenu.ENEMY);
-		new ButtonListener(button, tooltipListener) {
-			@Override
-			protected void onChecked(boolean checked) {
-				if (checked) {
-					mLevelEditor.switchToolGroup(ToolGroups.ENEMY);
-				}
-			}
-		};
-		mOldHiders.enemy.setButton(button);
-
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Path", textToggleStyle);
-		} else {
-			/** @todo default stub image button */
-			button = new ImageButton(editorSkin, "default-toggle");
-		}
-		mOldWidgets.enemyMenu.path = button;
-		buttonGroup.add(button);
-		mEnemyTable.add(button);
-		button.addListener(enemyOuterMenu);
-		tooltipListener = new TooltipListener(button, "Path", Messages.Tooltip.Level.EnemyMenu.PATH);
-		new ButtonListener(button, tooltipListener) {
-			@Override
-			protected void onChecked(boolean checked) {
-				if (checked) {
-					mLevelEditor.switchToolGroup(ToolGroups.PATH);
-				}
-			}
-		};
-		mOldHiders.path.setButton(button);
-
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Trigger", textToggleStyle);
-		} else {
-			/** @todo default stub image button */
-			button = new ImageButton(editorSkin, "default-toggle");
-		}
-		mOldWidgets.enemyMenu.trigger = button;
-		buttonGroup.add(button);
-		mEnemyTable.add(button);
-		button.addListener(enemyOuterMenu);
-		tooltipListener = new TooltipListener(button, "Trigger", Messages.Tooltip.Level.EnemyMenu.TRIGGER);
-		new ButtonListener(button, tooltipListener) {
-			@Override
-			protected void onChecked(boolean checked) {
-				if (checked) {
-					mLevelEditor.switchToolGroup(ToolGroups.TRIGGER);
-				}
-			}
-		};
-		mOldHiders.trigger.setButton(button);
-	}
 
 	/**
 	 * Initializes Enemy Tool GUI
@@ -1056,134 +798,48 @@ class LevelEditorGui extends EditorGui {
 		mEnemyTable.row();
 		GuiCheckCommandCreator enemyInnerMenu = new GuiCheckCommandCreator(mInvoker);
 		ButtonGroup menuGroup = new ButtonGroup();
-		Button button = null;
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Select", textToggleStyle);
-		} else {
-			/** @todo default stub image button */
-			button = new ImageButton(editorSkin, "default-toggle");
-		}
-		mOldWidgets.enemy.select = button;
-		mOldHiders.enemy.addToggleActor(button);
-		menuGroup.add(button);
-		mEnemyTable.add(button);
-		button.addListener(enemyInnerMenu);
-		TooltipListener tooltipListener = new TooltipListener(button, "Select enemy", Messages.Tooltip.Level.Enemy.SELECT);
-		new ButtonListener(button, tooltipListener) {
-			@Override
-			protected void onChecked(boolean checked) {
-				if (checked) {
-					mLevelEditor.setEnemyState(AddEnemyTool.States.SELECT);
-				}
-			}
-		};
+		Button button;
 
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Add", textToggleStyle);
-		} else {
-			/** @todo default stub image button */
-			button = new ImageButton(editorSkin, "default-toggle");
-		}
-		mOldWidgets.enemy.add = button;
-		mOldHiders.enemy.addToggleActor(button);
-		menuGroup.add(button);
-		mEnemyTable.add(button);
-		button.addListener(enemyInnerMenu);
-		tooltipListener = new TooltipListener(button, "Add enemy", Messages.Tooltip.Level.Enemy.ADD);
-		new ButtonListener(button, tooltipListener) {
-			@Override
-			protected void onChecked(boolean checked) {
-				if (checked) {
-					mLevelEditor.setEnemyState(AddEnemyTool.States.ADD);
-				}
-			}
-		};
-		HideListener enemyAddHider = new HideListener(button, true);
-		mOldHiders.enemy.addChild(enemyAddHider);
-
-
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Remove", textToggleStyle);
-		} else {
-			/** @todo default stub image button */
-			button = new ImageButton(editorSkin, "default-toggle");
-		}
-		mOldWidgets.enemy.remove = button;
-		mOldHiders.enemy.addToggleActor(button);
-		menuGroup.add(button);
-		mEnemyTable.add(button);
-		button.addListener(enemyInnerMenu);
-		tooltipListener = new TooltipListener(button, "Remove enemy", Messages.Tooltip.Level.Enemy.REMOVE);
-		new ButtonListener(button, tooltipListener) {
-			@Override
-			protected void onChecked(boolean checked) {
-				if (checked) {
-					mLevelEditor.setEnemyState(AddEnemyTool.States.REMOVE);
-				}
-			}
-		};
-
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Move", textToggleStyle);
-		} else {
-			/** @todo default stub image button */
-			button = new ImageButton(editorSkin, "default-toggle");
-		}
-		mOldWidgets.enemy.move = button;
-		mOldHiders.enemy.addToggleActor(button);
-		menuGroup.add(button);
-		mEnemyTable.add(button);
-		button.addListener(enemyInnerMenu);
-		tooltipListener = new TooltipListener(button, "Move enemy", Messages.Tooltip.Level.Enemy.MOVE);
-		new ButtonListener(button, tooltipListener) {
-			@Override
-			protected void onChecked(boolean checked) {
-				if (checked) {
-					mLevelEditor.setEnemyState(AddEnemyTool.States.MOVE);
-				}
-			}
-		};
-
-		// Select type
-		mEnemyTable.row();
-		Label label = new Label("", labelStyle);
-		new TooltipListener(label, "Enemy type name", Messages.Tooltip.Level.Enemy.SELECT_NAME);
-		enemyAddHider.addToggleActor(label);
-		mOldWidgets.enemy.name = label;
-		mEnemyTable.add(label).setAlign(Horizontal.RIGHT, Vertical.MIDDLE);
-
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Select type", textButtonStyle);
-		} else {
-			/** @todo default stub image button */
-			button = new ImageButton(editorSkin, "default-toggle");
-		}
-		enemyAddHider.addToggleActor(button);
-		mEnemyTable.add(button);
-		tooltipListener = new TooltipListener(button, "Select enemy type", Messages.Tooltip.Level.Enemy.SELECT_TYPE);
-		new ButtonListener(button, tooltipListener) {
-			@Override
-			protected void onPressed() {
-				mLevelEditor.selectEnemy();
-			}
-		};
+		//		// Select type
+		//		mEnemyTable.row();
+		//		Label label = new Label("", labelStyle);
+		//		new TooltipListener(label, "Enemy type name", Messages.Tooltip.Level.Enemy.SELECT_NAME);
+		//		enemyAddHider.addToggleActor(label);
+		//		mWidgets.enemy.name = label;
+		//		mEnemyTable.add(label).setAlign(Horizontal.RIGHT, Vertical.MIDDLE);
+		//
+		//		if (Config.Gui.usesTextButtons()) {
+		//			button = new TextButton("Select type", textButtonStyle);
+		//		} else {
+		//			/** @todo default stub image button */
+		//			button = new ImageButton(editorSkin, "default-toggle");
+		//		}
+		//		enemyAddHider.addToggleActor(button);
+		//		mEnemyTable.add(button);
+		//		tooltipListener = new TooltipListener(button, "Select enemy type", Messages.Tooltip.Level.Enemy.SELECT_TYPE);
+		//		new ButtonListener(button, tooltipListener) {
+		//			@Override
+		//			protected void onPressed() {
+		//				mLevelEditor.selectEnemy();
+		//			}
+		//		};
 
 
 		// Enemy options when an enemy is selected
 		// # Enemies
 		mEnemyTable.row();
-		label = new Label("# Enemies", labelStyle);
+		Label label = new Label("# Enemies", labelStyle);
 		new TooltipListener(label, "No. of enemies", Messages.Tooltip.Level.Enemy.ENEMY_COUNT);
-		mOldHiders.enemyOptions.addToggleActor(label);
+		mHiders.enemyOptions.addToggleActor(label);
 		mEnemyTable.add(label);
 
 		mEnemyTable.row();
 		Slider slider = new Slider(Level.Enemy.ENEMIES_MIN, Level.Enemy.ENEMIES_MAX, Level.Enemy.ENEMIES_STEP_SIZE, false, sliderStyle);
-		mOldHiders.enemyOptions.addToggleActor(slider);
-		mOldWidgets.enemy.cEnemies = slider;
+		mHiders.enemyOptions.addToggleActor(slider);
+		mWidgets.enemy.cEnemies = slider;
 		mEnemyTable.add(slider);
 		TextField textField = new TextField("", textFieldStyle);
-		mOldHiders.enemyOptions.addToggleActor(textField);
+		mHiders.enemyOptions.addToggleActor(textField);
 		textField.setWidth(Config.Editor.TEXT_FIELD_NUMBER_WIDTH);
 		mEnemyTable.add(textField);
 		new TooltipListener(slider, "No. of enemies", Messages.Tooltip.Level.Enemy.ENEMY_COUNT);
@@ -1196,7 +852,7 @@ class LevelEditorGui extends EditorGui {
 			}
 		};
 		HideSliderValue delayHider = new HideSliderValue(slider, 2, Float.MAX_VALUE);
-		mOldHiders.enemyOptions.addChild(delayHider);
+		mHiders.enemyOptions.addChild(delayHider);
 
 		// Delay
 		mEnemyTable.row();
@@ -1208,7 +864,7 @@ class LevelEditorGui extends EditorGui {
 		mEnemyTable.row();
 		slider = new Slider(Level.Enemy.DELAY_BETWEEN_MIN, Level.Enemy.DELAY_BETWEEN_MAX, Level.Enemy.DELAY_BETWEEN_STEP_SIZE, false, sliderStyle);
 		delayHider.addToggleActor(slider);
-		mOldWidgets.enemy.betweenDelay = slider;
+		mWidgets.enemy.betweenDelay = slider;
 		mEnemyTable.add(slider);
 		textField = new TextField("", textFieldStyle);
 		delayHider.addToggleActor(textField);
@@ -1233,16 +889,16 @@ class LevelEditorGui extends EditorGui {
 			button = new ImageButton(editorSkin, "default-toggle");
 		}
 		menuGroup.add(button);
-		mOldHiders.enemyOptions.addToggleActor(button);
-		mOldWidgets.enemy.activateTrigger = button;
+		mHiders.enemyOptions.addToggleActor(button);
+		mWidgets.enemy.activateTrigger = button;
 		mEnemyTable.add(button);
 		button.addListener(enemyInnerMenu);
-		tooltipListener = new TooltipListener(button, "Set activate trigger", Messages.Tooltip.Level.Enemy.SET_ACTIVATE_TRIGGER);
+		TooltipListener tooltipListener = new TooltipListener(button, "Set activate trigger", Messages.Tooltip.Level.Enemy.SET_ACTIVATE_TRIGGER);
 		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onChecked(boolean checked) {
 				if (checked) {
-					mLevelEditor.setEnemyState(AddEnemyTool.States.SET_ACTIVATE_TRIGGER);
+					//					mLevelEditor.setEnemyState(AddEnemyTool.States.SET_ACTIVATE_TRIGGER);
 				}
 			}
 		};
@@ -1250,15 +906,15 @@ class LevelEditorGui extends EditorGui {
 		mEnemyTable.row();
 		label = new Label("Activate delay", labelStyle);
 		new TooltipListener(label, "Activate delay", Messages.Tooltip.Level.Enemy.ACTIVATE_DELAY);
-		mOldHiders.enemyActivateDelay.addToggleActor(label);
+		mHiders.enemyActivateDelay.addToggleActor(label);
 
 		mEnemyTable.row();
 		slider = new Slider(Level.Enemy.TRIGGER_ACTIVATE_DELAY_MIN, Level.Enemy.TRIGGER_ACTIVATE_DELAY_MAX, Level.Enemy.TRIGGER_ACTIVATE_DELAY_STEP_SIZE, false, sliderStyle);
-		mOldHiders.enemyActivateDelay.addToggleActor(slider);
-		mOldWidgets.enemy.activateDelay = slider;
+		mHiders.enemyActivateDelay.addToggleActor(slider);
+		mWidgets.enemy.activateDelay = slider;
 		mEnemyTable.add(slider);
 		textField = new TextField("", textFieldStyle);
-		mOldHiders.enemyActivateDelay.addToggleActor(textField);
+		mHiders.enemyActivateDelay.addToggleActor(textField);
 		textField.setWidth(Config.Editor.TEXT_FIELD_NUMBER_WIDTH);
 		mEnemyTable.add(textField);
 		new TooltipListener(slider, "Activate delay", Messages.Tooltip.Level.Enemy.ACTIVATE_DELAY);
@@ -1279,8 +935,8 @@ class LevelEditorGui extends EditorGui {
 			button = new ImageButton(editorSkin, "default-toggle");
 		}
 		menuGroup.add(button);
-		mOldHiders.enemyOptions.addToggleActor(button);
-		mOldWidgets.enemy.deactivateTrigger = button;
+		mHiders.enemyOptions.addToggleActor(button);
+		mWidgets.enemy.deactivateTrigger = button;
 		mEnemyTable.add(button);
 		button.addListener(enemyInnerMenu);
 		tooltipListener = new TooltipListener(button, "Set deactivate trigger", Messages.Tooltip.Level.Enemy.SET_DEACTIVATE_DELAY);
@@ -1288,7 +944,7 @@ class LevelEditorGui extends EditorGui {
 			@Override
 			protected void onChecked(boolean checked) {
 				if (checked) {
-					mLevelEditor.setEnemyState(AddEnemyTool.States.SET_DEACTIVATE_TRIGGER);
+					//					mLevelEditor.setEnemyState(AddEnemyTool.States.SET_DEACTIVATE_TRIGGER);
 				}
 			}
 		};
@@ -1296,15 +952,15 @@ class LevelEditorGui extends EditorGui {
 		mEnemyTable.row();
 		label = new Label("Deactivation delay", labelStyle);
 		new TooltipListener(label, "Deactivate delay", Messages.Tooltip.Level.Enemy.DEACTIVATE_DELAY);
-		mOldHiders.enemyDeactivateDelay.addToggleActor(label);
+		mHiders.enemyDeactivateDelay.addToggleActor(label);
 
 		mEnemyTable.row();
 		slider = new Slider(Level.Enemy.TRIGGER_DEACTIVATE_DELAY_MIN, Level.Enemy.TRIGGER_DEACTIVATE_DELAY_MAX, Level.Enemy.TRIGGER_DEACTIVATE_DELAY_STEP_SIZE, false, sliderStyle);
-		mOldHiders.enemyDeactivateDelay.addToggleActor(slider);
-		mOldWidgets.enemy.deactivateDelay = slider;
+		mHiders.enemyDeactivateDelay.addToggleActor(slider);
+		mWidgets.enemy.deactivateDelay = slider;
 		mEnemyTable.add(slider);
 		textField = new TextField("", textFieldStyle);
-		mOldHiders.enemyDeactivateDelay.addToggleActor(textField);
+		mHiders.enemyDeactivateDelay.addToggleActor(textField);
 		textField.setWidth(Config.Editor.TEXT_FIELD_NUMBER_WIDTH);
 		mEnemyTable.add(textField);
 		new TooltipListener(slider, "Deactivate delay", Messages.Tooltip.Level.Enemy.DEACTIVATE_DELAY);
@@ -1320,115 +976,30 @@ class LevelEditorGui extends EditorGui {
 	/**
 	 * Initializes path tool GUI
 	 */
-	private void initPath() {
+	private void initPathTable() {
 		Skin generalSkin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
 		TextButtonStyle textToggleStyle = generalSkin.get("toggle", TextButtonStyle.class);
 		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.UI_EDITOR_BUTTONS);
 
-		// ---- PATH -----
-		mEnemyTable.row();
-		GuiCheckCommandCreator pathMenu = new GuiCheckCommandCreator(mInvoker);
-		ButtonGroup buttonGroup = new ButtonGroup();
-		Button button;
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Select", textToggleStyle);
-		} else {
-			/** @todo default stub image button */
-			button = new ImageButton(editorSkin, "default-toggle");
-		}
-		mOldWidgets.path.select = button;
-		buttonGroup.add(button);
-		mEnemyTable.add(button);
-		mOldHiders.path.addToggleActor(button);
-		button.addListener(pathMenu);
-		TooltipListener tooltipListener = new TooltipListener(button, "Select path", Messages.Tooltip.Level.Path.SELECT);
-		new ButtonListener(button, tooltipListener) {
-			@Override
-			protected void onChecked(boolean checked) {
-				if (checked) {
-					mLevelEditor.setPathState(PathTool.States.SELECT);
-				}
-			}
-		};
-
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Add", textToggleStyle);
-		} else {
-			/** @todo default stub image button */
-			button = new ImageButton(editorSkin, "default-toggle");
-		}
-		mOldWidgets.path.add = button;
-		buttonGroup.add(button);
-		mEnemyTable.add(button);
-		mOldHiders.path.addToggleActor(button);
-		button.addListener(pathMenu);
-		tooltipListener = new TooltipListener(button, "Add path", Messages.Tooltip.Level.Path.ADD);
-		new ButtonListener(button, tooltipListener) {
-			@Override
-			protected void onChecked(boolean checked) {
-				if (checked) {
-					mLevelEditor.setPathState(PathTool.States.ADD_CORNER);
-				}
-			}
-		};
-
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Remove", textToggleStyle);
-		} else {
-			/** @todo default stub image button */
-			button = new ImageButton(editorSkin, "default-toggle");
-		}
-		mOldWidgets.path.remove = button;
-		buttonGroup.add(button);
-		mEnemyTable.add(button);
-		mOldHiders.path.addToggleActor(button);
-		button.addListener(pathMenu);
-		tooltipListener = new TooltipListener(button, "Remove path", Messages.Tooltip.Level.Path.REMOVE);
-		new ButtonListener(button, tooltipListener) {
-			@Override
-			protected void onChecked(boolean checked) {
-				if (checked) {
-					mLevelEditor.setPathState(PathTool.States.REMOVE);
-				}
-			}
-		};
-
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Move", textToggleStyle);
-		} else {
-			/** @todo default stub image button */
-			button = new ImageButton(editorSkin, "default-toggle");
-		}
-		mOldWidgets.path.move = button;
-		buttonGroup.add(button);
-		mEnemyTable.add(button);
-		mOldHiders.path.addToggleActor(button);
-		button.addListener(pathMenu);
-		tooltipListener = new TooltipListener(button, "Move path", Messages.Tooltip.Level.Path.MOVE);
-		new ButtonListener(button, tooltipListener) {
-			@Override
-			protected void onChecked(boolean checked) {
-				if (checked) {
-					mLevelEditor.setPathState(PathTool.States.MOVE);
-				}
-			}
-		};
-
+		mHiders.pathOptions.addToggleActor(mWidgets.path.table);
+		mMainTable.row();
+		mMainTable.add(mWidgets.path.table);
+		mWidgets.path.table.setPreferences(mMainTable);
 
 		// Path options
-		mEnemyTable.row();
-		buttonGroup = new ButtonGroup();
+		Button button;
+		ButtonGroup buttonGroup = new ButtonGroup();
+		buttonGroup.setMinCheckCount(0);
+		/** @todo remove text button */
 		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Once", textToggleStyle);
 		} else {
-			/** @todo default stub image button */
-			button = new ImageButton(editorSkin, "default-toggle");
+			button = new ImageButton(editorSkin, "path_once");
 		}
-		mOldWidgets.path.once = button;
-		mEnemyTable.add(button);
+		mWidgets.path.once = button;
+		mWidgets.path.table.add(button);
 		buttonGroup.add(button);
-		mOldHiders.pathOptions.addToggleActor(button);
-		tooltipListener = new TooltipListener(button, "Once", Messages.Tooltip.Level.Path.ONCE);
+		TooltipListener tooltipListener = new TooltipListener(button, "Once", Messages.Tooltip.Level.Path.ONCE);
 		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onChecked(boolean checked) {
@@ -1438,16 +1009,17 @@ class LevelEditorGui extends EditorGui {
 			}
 		};
 
+
+		mWidgets.path.table.row();
+		/** @todo remove text button */
 		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Loop", textToggleStyle);
 		} else {
-			/** @todo default stub image button */
-			button = new ImageButton(editorSkin, "default-toggle");
+			button = new ImageButton(editorSkin, "path_loop");
 		}
-		mOldWidgets.path.loop = button;
-		mEnemyTable.add(button);
+		mWidgets.path.loop = button;
+		mWidgets.path.table.add(button);
 		buttonGroup.add(button);
-		mOldHiders.pathOptions.addToggleActor(button);
 		tooltipListener = new TooltipListener(button, "Loop", Messages.Tooltip.Level.Path.LOOP);
 		new ButtonListener(button, tooltipListener) {
 			@Override
@@ -1458,16 +1030,17 @@ class LevelEditorGui extends EditorGui {
 			}
 		};
 
+
+		mWidgets.path.table.row();
+		/** @todo remove text button */
 		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Back and forth", textToggleStyle);
 		} else {
-			/** @todo default stub image button */
-			button = new ImageButton(editorSkin, "default-toggle");
+			button = new ImageButton(editorSkin, "path_back_and_forth");
 		}
-		mOldWidgets.path.backAndForth = button;
-		mEnemyTable.add(button);
+		mWidgets.path.backAndForth = button;
+		mWidgets.path.table.add(button);
 		buttonGroup.add(button);
-		mOldHiders.pathOptions.addToggleActor(button);
 		tooltipListener = new TooltipListener(button, "Back and forth", Messages.Tooltip.Level.Path.BACK_AND_FORTH);
 		new ButtonListener(button, tooltipListener) {
 			@Override
@@ -1477,6 +1050,8 @@ class LevelEditorGui extends EditorGui {
 				}
 			}
 		};
+
+		mWidgets.path.table.row().setPadTop(Gui.SEPARATE_PADDING);
 	}
 
 	/**
@@ -1489,73 +1064,14 @@ class LevelEditorGui extends EditorGui {
 		LabelStyle labelStyle = generalSkin.get("default", LabelStyle.class);
 		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.UI_EDITOR_BUTTONS);
 
-		mOldHiders.pickups.addToggleActor(mPickupTable);
-
-		ButtonGroup toggleGroup = new ButtonGroup();
+		mHiders.pickups.addToggleActor(mPickupTable);
 		Button button;
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Add", textToggleStyle);
-		} else {
-			/** @todo default stub image button */
-			button = new ImageButton(editorSkin, "default-toggle");
-		}
-		mOldWidgets.pickup.add = button;
-		TooltipListener tooltipListener = new TooltipListener(button, "Add pickup", Messages.Tooltip.Level.Pickup.ADD);
-		new ButtonListener(button, tooltipListener) {
-			@Override
-			public void onChecked(boolean checked) {
-				if (checked) {
-					mLevelEditor.setPickupState(AddActorTool.States.ADD);
-				}
-			}
-		};
-		HideListener addHider = new HideListener(button, true);
-		toggleGroup.add(button);
-		mPickupTable.add(button);
 
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Remove", textToggleStyle);
-		} else {
-			/** @todo default stub image button */
-			button = new ImageButton(editorSkin, "default-toggle");
-		}
-		mOldWidgets.pickup.remove = button;
-		tooltipListener = new TooltipListener(button, "Remove pickup", Messages.Tooltip.Level.Pickup.REMOVE);
-		new ButtonListener(button, tooltipListener) {
-			@Override
-			public void onChecked(boolean checked) {
-				if (checked) {
-					mLevelEditor.setPickupState(AddActorTool.States.REMOVE);
-				}
-			}
-		};
-		toggleGroup.add(button);
-		mPickupTable.add(button);
-
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Move", textToggleStyle);
-		} else {
-			/** @todo default stub image button */
-			button = new ImageButton(editorSkin, "default-toggle");
-		}
-		mOldWidgets.pickup.move = button;
-		tooltipListener = new TooltipListener(button, "Move pickup", Messages.Tooltip.Level.Pickup.MOVE);
-		new ButtonListener(button, tooltipListener) {
-			@Override
-			public void onChecked(boolean checked) {
-				if (checked) {
-					mLevelEditor.setPickupState(AddActorTool.States.MOVE);
-				}
-			}
-		};
-		toggleGroup.add(button);
-		mPickupTable.add(button);
 
 		mPickupTable.row();
 		Label label = new Label("", labelStyle);
 		new TooltipListener(label, "Pickup name", Messages.Tooltip.Level.Pickup.SELECT_NAME);
-		addHider.addToggleActor(label);
-		mOldWidgets.pickup.name = label;
+		mWidgets.pickup.name = label;
 		mPickupTable.add(label);
 
 		if (Config.Gui.usesTextButtons()) {
@@ -1564,14 +1080,13 @@ class LevelEditorGui extends EditorGui {
 			/** @todo default stub image button */
 			button = new ImageButton(editorSkin, "default-toggle");
 		}
-		tooltipListener = new TooltipListener(button, "Select type", Messages.Tooltip.Level.Pickup.SELECT_TYPE);
+		TooltipListener tooltipListener = new TooltipListener(button, "Select type", Messages.Tooltip.Level.Pickup.SELECT_TYPE);
 		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onPressed() {
 				mLevelEditor.selectPickup();
 			}
 		};
-		addHider.addToggleActor(button);
 		mPickupTable.add(button);
 
 
@@ -1579,234 +1094,8 @@ class LevelEditorGui extends EditorGui {
 		mPickupTable.invalidate();
 	}
 
-	/**
-	 * Initializes the static terrain
-	 */
-	private void initStaticTerrain() {
-		Skin genaralSkin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
-		TextButtonStyle textToggleStyle = genaralSkin.get("toggle", TextButtonStyle.class);
-		GuiCheckCommandCreator terrainShapeChecker = new GuiCheckCommandCreator(mInvoker);
-		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.UI_EDITOR_BUTTONS);
-
-		mOldHiders.terrain.addToggleActor(mStaticTerrainTable);
-
-		// Draw/Append
-		ButtonGroup toggleGroup = new ButtonGroup();
-		Button button;
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Draw/Append", textToggleStyle);
-		} else {
-			/** @todo default stub image button */
-			button = new ImageButton(editorSkin, "default-toggle");
-		}
-		button.addListener(terrainShapeChecker);
-		mOldWidgets.terrain.append = button;
-		TooltipListener tooltipListener = new TooltipListener(button, "Draw/Append", Messages.replaceName(Messages.Tooltip.Actor.Visuals.APPEND, "terrain"));
-		new ButtonListener(button, tooltipListener) {
-			@Override
-			public void onChecked(boolean checked) {
-				if (checked) {
-					mLevelEditor.setStaticTerrainState(DrawActorTool.States.DRAW_APPEND);
-				}
-			}
-		};
-		toggleGroup.add(button);
-		mStaticTerrainTable.add(button);
-
-		// Add corner
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Add corner", textToggleStyle);
-		} else {
-			/** @todo default stub image button */
-			button = new ImageButton(editorSkin, "default-toggle");
-		}
-		button.addListener(terrainShapeChecker);
-		mOldWidgets.terrain.addCorner = button;
-		tooltipListener = new TooltipListener(button, "Add corner", Messages.replaceName(Messages.Tooltip.Actor.Visuals.ADJUST_ADD_CORNER, "terrain"));
-		new ButtonListener(button, tooltipListener) {
-			@Override
-			public void onChecked(boolean checked) {
-				if (checked) {
-					mLevelEditor.setStaticTerrainState(DrawActorTool.States.ADJUST_ADD_CORNER);
-				}
-			}
-		};
-		toggleGroup.add(button);
-		mStaticTerrainTable.add(button);
-
-		// Move corner
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Move corner", textToggleStyle);
-		} else {
-			/** @todo default stub image button */
-			button = new ImageButton(editorSkin, "default-toggle");
-		}
-		button.addListener(terrainShapeChecker);
-		mOldWidgets.terrain.moveCorner = button;
-		tooltipListener = new TooltipListener(button, "Move corner", Messages.replaceName(Messages.Tooltip.Actor.Visuals.ADJUST_MOVE_CORNER, "terrain"));
-		new ButtonListener(button, tooltipListener) {
-			@Override
-			public void onChecked(boolean checked) {
-				if (checked) {
-					mLevelEditor.setStaticTerrainState(DrawActorTool.States.ADJUST_MOVE_CORNER);
-				}
-			}
-		};
-		toggleGroup.add(button);
-		mStaticTerrainTable.add(button);
-
-		// Remove corner
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Remove corner", textToggleStyle);
-		} else {
-			/** @todo default stub image button */
-			button = new ImageButton(editorSkin, "default-toggle");
-		}
-		button.addListener(terrainShapeChecker);
-		mOldWidgets.terrain.removeCorner = button;
-		tooltipListener = new TooltipListener(button, "Remove corner", Messages.replaceName(Messages.Tooltip.Actor.Visuals.ADJUST_REMOVE_CORNER, "terrain"));
-		new ButtonListener(button, tooltipListener) {
-			@Override
-			public void onChecked(boolean checked) {
-				if (checked) {
-					mLevelEditor.setStaticTerrainState(DrawActorTool.States.ADJUST_REMOVE_CORNER);
-				}
-			}
-		};
-		toggleGroup.add(button);
-		mStaticTerrainTable.add(button);
-
-		// Draw/Erase
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Draw/Erase", textToggleStyle);
-		} else {
-			/** @todo default stub image button */
-			button = new ImageButton(editorSkin, "default-toggle");
-		}
-		button.addListener(terrainShapeChecker);
-		mOldWidgets.terrain.drawErase = button;
-		tooltipListener = new TooltipListener(button, "Draw/Erase", Messages.replaceName(Messages.Tooltip.Actor.Visuals.ADD_REMOVE, "terrain"));
-		new ButtonListener(button, tooltipListener) {
-			@Override
-			public void onChecked(boolean checked) {
-				if (checked) {
-					mLevelEditor.setStaticTerrainState(DrawActorTool.States.DRAW_ERASE);
-				}
-			}
-		};
-		toggleGroup.add(button);
-		mStaticTerrainTable.add(button);
-
-		// Move shape
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Move", textToggleStyle);
-		} else {
-			/** @todo default stub image button */
-			button = new ImageButton(editorSkin, "default-toggle");
-		}
-		button.addListener(terrainShapeChecker);
-		mOldWidgets.terrain.move = button;
-		tooltipListener = new TooltipListener(button, "Move shape", Messages.replaceName(Messages.Tooltip.Actor.Visuals.MOVE, "terrain"));
-		new ButtonListener(button, tooltipListener) {
-			@Override
-			public void onChecked(boolean checked) {
-				if (checked) {
-					mLevelEditor.setStaticTerrainState(DrawActorTool.States.MOVE);
-				}
-			}
-		};
-		toggleGroup.add(button);
-		mStaticTerrainTable.add(button);
-
-
-		mStaticTerrainTable.setTransform(true);
-		mStaticTerrainTable.invalidate();
-	}
-
-	/**
-	 * Initializes GUI for the trigger tool
-	 */
-	private void initTrigger() {
-		Skin generalSkin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
-		TextButtonStyle textToggleStyle = generalSkin.get("toggle", TextButtonStyle.class);
-		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.UI_EDITOR_BUTTONS);
-
-		// ---- Trigger -----
-		mEnemyTable.row();
-		GuiCheckCommandCreator triggerMenu = new GuiCheckCommandCreator(mInvoker);
-		ButtonGroup buttonGroup = new ButtonGroup();
-		Button button;
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Add", textToggleStyle);
-		} else {
-			/** @todo default stub image button */
-			button = new ImageButton(editorSkin, "default-toggle");
-		}
-		mOldWidgets.trigger.add = button;
-		buttonGroup.add(button);
-		mEnemyTable.add(button);
-		mOldHiders.trigger.addToggleActor(button);
-		button.addListener(triggerMenu);
-		TooltipListener tooltipListener = new TooltipListener(button, "Add trigger", Messages.Tooltip.Level.Trigger.ADD);
-		new ButtonListener(button, tooltipListener) {
-			@Override
-			protected void onChecked(boolean checked) {
-				if (checked) {
-					mLevelEditor.setTriggerState(TriggerTool.States.ADD);
-				}
-			}
-		};
-
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Remove", textToggleStyle);
-		} else {
-			/** @todo default stub image button */
-			button = new ImageButton(editorSkin, "default-toggle");
-		}
-		mOldWidgets.trigger.remove = button;
-		buttonGroup.add(button);
-		mEnemyTable.add(button);
-		mOldHiders.trigger.addToggleActor(button);
-		button.addListener(triggerMenu);
-		tooltipListener = new TooltipListener(button, "Remove trigger", Messages.Tooltip.Level.Trigger.REMOVE);
-		new ButtonListener(button, tooltipListener) {
-			@Override
-			protected void onChecked(boolean checked) {
-				if (checked) {
-					mLevelEditor.setTriggerState(TriggerTool.States.REMOVE);
-				}
-			}
-		};
-
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Move", textToggleStyle);
-		} else {
-			/** @todo default stub image button */
-			button = new ImageButton(editorSkin, "default-toggle");
-		}
-		mOldWidgets.trigger.move = button;
-		buttonGroup.add(button);
-		mEnemyTable.add(button);
-		mOldHiders.trigger.addToggleActor(button);
-		button.addListener(triggerMenu);
-		tooltipListener = new TooltipListener(button, "Move trigger", Messages.Tooltip.Level.Trigger.MOVE);
-		new ButtonListener(button) {
-			@Override
-			protected void onChecked(boolean checked) {
-				if (checked) {
-					mLevelEditor.setTriggerState(TriggerTool.States.MOVE);
-				}
-			}
-		};
-	}
-
-
-	/** Wrapper for what tool is currently active */
-	private AlignTable mMenuTable = new AlignTable();
 	/** Pickup table */
 	private AlignTable mPickupTable = new AlignTable();
-	/** Static terrain table */
-	private AlignTable mStaticTerrainTable = new AlignTable();
 	/** Enemy table */
 	private AlignTable mEnemyTable = new AlignTable();
 	/** Options table */
@@ -1816,30 +1105,23 @@ class LevelEditorGui extends EditorGui {
 	/** Invoker for level editor */
 	private Invoker mInvoker = null;
 	/** Inner widgets */
-	private OldInnerWidgets mOldWidgets = new OldInnerWidgets();
+	private InnerWidgets mWidgets = new InnerWidgets();
 	/** All hiders  */
-	private OldHiders mOldHiders = null;
+	private Hiders mHiders = null;
 
 
-	/**
-	 * Container for inner widgets
-	 */
-	private static class InnerWidgets {
-
-	}
 
 	/**
 	 * Container for all hiders
 	 */
-	private static class OldHiders {
+	private static class Hiders {
 		/**
 		 * Sets correct children etc.
 		 */
-		public OldHiders() {
+		public Hiders() {
 			enemy.addChild(enemyOptions);
 			enemyOptions.addChild(enemyActivateDelay);
 			enemyOptions.addChild(enemyDeactivateDelay);
-			path.addChild(pathOptions);
 			trigger.addChild(triggerActorActivate);
 			trigger.addChild(triggerScreenAt);
 		}
@@ -1852,8 +1134,6 @@ class LevelEditorGui extends EditorGui {
 		HideManual enemyActivateDelay = new HideManual();
 		/** Hides trigger deactivate delay */
 		HideManual enemyDeactivateDelay = new HideManual();
-		/** Hides the path */
-		HideListener path = new HideListener(true);
 		/** Hides path options */
 		HideManual pathOptions = new HideManual();
 		/** Trigger hider */
@@ -1862,8 +1142,6 @@ class LevelEditorGui extends EditorGui {
 		HideManual triggerScreenAt = new HideManual();
 		/** Hides trigger actor activate options */
 		HideManual triggerActorActivate = new HideManual();
-		/** Hides static terrain */
-		HideListener terrain = new HideListener(true);
 		/** Hides pickups */
 		HideListener pickups = new HideListener(true);
 	}
@@ -1872,33 +1150,14 @@ class LevelEditorGui extends EditorGui {
 	 * Container for inner widgets
 	 */
 	@SuppressWarnings("javadoc")
-	private static class OldInnerWidgets {
-		MenuWidgets menu = new MenuWidgets();
-		EnemyMenuWidget enemyMenu = new EnemyMenuWidget();
+	private static class InnerWidgets {
 		EnemyWidgets enemy = new EnemyWidgets();
 		PathWidgets path = new PathWidgets();
 		PickupWidgets pickup = new PickupWidgets();
-		TerrainWidgets terrain = new TerrainWidgets();
-		TriggerWidgets trigger = new TriggerWidgets();
 		OptionWidgets option = new OptionWidgets();
 
-		static class MenuWidgets {
-			Button enemy = null;
-			Button pickup = null;
-			Button terrain = null;
-		}
-
-		static class EnemyMenuWidget {
-			Button enemy = null;
-			Button path = null;
-			Button trigger = null;
-		}
 
 		static class EnemyWidgets {
-			Button select = null;
-			Button add = null;
-			Button remove = null;
-			Button move = null;
 			Button activateTrigger = null;
 			Button deactivateTrigger = null;
 
@@ -1919,37 +1178,14 @@ class LevelEditorGui extends EditorGui {
 		}
 
 		static class PathWidgets {
-			Button select = null;
-			Button add = null;
-			Button remove = null;
-			Button move = null;
-
+			AlignTable table = new AlignTable();
 			Button once = null;
 			Button loop = null;
 			Button backAndForth = null;
 		}
 
 		static class PickupWidgets {
-			Button add = null;
-			Button remove = null;
-			Button move = null;
-
 			Label name =  null;
-		}
-
-		static class TerrainWidgets {
-			Button append = null;
-			Button addCorner = null;
-			Button removeCorner = null;
-			Button moveCorner = null;
-			Button drawErase = null;
-			Button move = null;
-		}
-
-		static class TriggerWidgets {
-			Button add = null;
-			Button remove = null;
-			Button move = null;
 		}
 	}
 }

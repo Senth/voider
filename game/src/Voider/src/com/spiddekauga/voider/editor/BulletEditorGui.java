@@ -55,7 +55,6 @@ public class BulletEditorGui extends ActorGui {
 		initWeapon();
 		initOptions("bullet");
 		initFileMenu("bullet");
-		initMainMenu(mBulletEditor, "bullet");
 		initMenu();
 
 		resetValues();

@@ -89,6 +89,8 @@ public class SkinNames {
 		ENEMY_ADD,
 		/** Select one or several actors */
 		SELECT,
+		/** Remove corner from a path */
+		PATH_REMOVE_CORNER,
 
 		;
 

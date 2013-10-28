@@ -126,7 +126,13 @@ public class Selection implements ISelection {
 
 	@Override
 	public void clearSelection() {
-		for (IResource resource : mSelectedResources) {
+		@SuppressWarnings("unchecked")
+		ArrayList<IResource> removingResources = Pools.arrayList.obtain();
+		removingResources.addAll(mSelectedResources);
+
+		mSelectedResources.clear();
+
+		for (IResource resource : removingResources) {
 			if (resource instanceof IResourceSelectable) {
 				((IResourceSelectable) resource).setSelected(false);
 			}
@@ -136,7 +142,7 @@ public class Selection implements ISelection {
 			}
 		}
 
-		mSelectedResources.clear();
+		Pools.arrayList.free(removingResources);
 	}
 
 	@Override
@@ -144,11 +150,21 @@ public class Selection implements ISelection {
 		return mSelectedResources.contains(resource);
 	}
 
+	@Override
+	public boolean isSelected(Class<? extends IResource> type) {
+		for (IResource resource : mSelectedResources) {
+			if (type.isAssignableFrom(resource.getClass())) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public <ResourceType extends IResource> ResourceType getFirstSelectedResourceOfType(Class<ResourceType> type) {
 		for (IResource resource : mSelectedResources) {
-			if (resource.getClass() == type) {
+			if (type.isAssignableFrom(resource.getClass())) {
 				return (ResourceType) resource;
 			}
 		}

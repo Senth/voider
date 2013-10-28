@@ -19,23 +19,20 @@ import com.spiddekauga.voider.editor.commands.CCameraMove;
 import com.spiddekauga.voider.editor.commands.CLevelEnemyDefSelect;
 import com.spiddekauga.voider.editor.commands.CLevelPickupDefSelect;
 import com.spiddekauga.voider.editor.commands.CSelectionSet;
-import com.spiddekauga.voider.editor.tools.AddActorTool;
-import com.spiddekauga.voider.editor.tools.AddEnemyTool;
+import com.spiddekauga.voider.editor.tools.ActorAddTool;
 import com.spiddekauga.voider.editor.tools.AddMoveCornerTool;
 import com.spiddekauga.voider.editor.tools.DeleteTool;
-import com.spiddekauga.voider.editor.tools.DrawActorTool;
 import com.spiddekauga.voider.editor.tools.DrawAppendTool;
 import com.spiddekauga.voider.editor.tools.DrawEraseTool;
 import com.spiddekauga.voider.editor.tools.ISelection;
+import com.spiddekauga.voider.editor.tools.ISelectionListener;
 import com.spiddekauga.voider.editor.tools.MoveTool;
 import com.spiddekauga.voider.editor.tools.PathAddTool;
-import com.spiddekauga.voider.editor.tools.PathTool;
 import com.spiddekauga.voider.editor.tools.RemoveCornerTool;
 import com.spiddekauga.voider.editor.tools.Selection;
 import com.spiddekauga.voider.editor.tools.SelectionTool;
 import com.spiddekauga.voider.editor.tools.TouchTool;
 import com.spiddekauga.voider.editor.tools.TriggerAddTool;
-import com.spiddekauga.voider.editor.tools.TriggerTool;
 import com.spiddekauga.voider.game.GameScene;
 import com.spiddekauga.voider.game.Level;
 import com.spiddekauga.voider.game.LevelDef;
@@ -46,6 +43,7 @@ import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.ActorDef;
 import com.spiddekauga.voider.game.actors.EnemyActor;
 import com.spiddekauga.voider.game.actors.EnemyActorDef;
+import com.spiddekauga.voider.game.actors.PickupActor;
 import com.spiddekauga.voider.game.actors.PickupActorDef;
 import com.spiddekauga.voider.game.actors.StaticTerrainActor;
 import com.spiddekauga.voider.game.triggers.TScreenAt;
@@ -67,7 +65,7 @@ import com.spiddekauga.voider.utils.Pools;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class LevelEditor extends Editor implements IResourceChangeEditor {
+public class LevelEditor extends Editor implements IResourceChangeEditor, ISelectionListener {
 	/**
 	 * Constructor for the level editor
 	 */
@@ -79,18 +77,21 @@ public class LevelEditor extends Editor implements IResourceChangeEditor {
 
 		mScroller = new Scroller(50, 2000, 10, 200, ScrollAxis.X);
 		mSelection = new Selection();
+		mSelection.addListener(this);
 
 		// Initialize tools
 		Tools.SELECTION.setTool(new SelectionTool(mCamera, mWorld, mInvoker, mSelection, this));
 		mInputMultiplexer.addProcessor(Tools.SELECTION.getTool());
 
+		Tools.ADD_MOVE_CORNER.setTool(new AddMoveCornerTool(mCamera, mWorld, mInvoker, mSelection, this));
 		Tools.DELETE.setTool(new DeleteTool(mCamera, mWorld, mInvoker, mSelection, this));
+		Tools.ENEMY_ADD.setTool(new ActorAddTool(mCamera, mWorld, mInvoker, mSelection, this, EnemyActor.class));
 		Tools.MOVE.setTool(new MoveTool(mCamera, mWorld, mInvoker, mSelection, this));
 		Tools.PATH_ADD_CORNER.setTool(new PathAddTool(mCamera, mWorld, mInvoker, mSelection, this));
+		Tools.PICKUP_ADD.setTool(new ActorAddTool(mCamera, mWorld, mInvoker, mSelection, this, PickupActor.class));
+		Tools.REMOVE_CORNER.setTool(new RemoveCornerTool(mCamera, mWorld, mInvoker, mSelection, this));
 		Tools.TERRAIN_DRAW_APPEND.setTool(new DrawAppendTool(mCamera, mWorld, mInvoker, mSelection, this, StaticTerrainActor.class));
 		Tools.TERRAIN_DRAW_ERASE.setTool(new DrawEraseTool(mCamera, mWorld, mInvoker, mSelection, this, StaticTerrainActor.class));
-		Tools.TERRAIN_ADJUST_ADD_MOVE_CORNER.setTool(new AddMoveCornerTool(mCamera, mWorld, mInvoker, mSelection, this));
-		Tools.TERRAIN_ADJUST_REMOVE_CORNER.setTool(new RemoveCornerTool(mCamera, mWorld, mInvoker, mSelection, this));
 		Tools.TRIGGER_ADD.setTool(new TriggerAddTool(mCamera, mWorld, mInvoker, mSelection, this));
 	}
 
@@ -451,12 +452,14 @@ public class LevelEditor extends Editor implements IResourceChangeEditor {
 
 	@Override
 	public void onResourceAdded(IResource resource) {
+		mGui.resetValues();
 		mLevel.addResource(resource);
 		setUnsaved();
 	}
 
 	@Override
 	public void onResourceRemoved(IResource resource) {
+		mGui.resetValues();
 		mLevel.removeResource(resource.getId());
 		setUnsaved();
 	}
@@ -468,6 +471,16 @@ public class LevelEditor extends Editor implements IResourceChangeEditor {
 		if (resource instanceof EnemyActor) {
 			((LevelEditorGui)mGui).resetEnemyOptions();
 		}
+	}
+
+	@Override
+	public void onResourceSelected(IResource resource) {
+		mGui.resetValues();
+	}
+
+	@Override
+	public void onResourceDeselected(IResource resource) {
+		mGui.resetValues();
 	}
 
 	@Override
@@ -959,26 +972,56 @@ public class LevelEditor extends Editor implements IResourceChangeEditor {
 	 * @param pathType type of the path
 	 */
 	void setPathType(Path.PathTypes pathType) {
-		// TODO
-		//		Path selectedPath = (Path) ((PathTool)mTouchTools[ToolGroups.PATH.ordinal()]).getSelectedResource();
-		//
-		//		if (selectedPath != null) {
-		//			selectedPath.setPathType(pathType);
-		//		}
+		ArrayList<Path> selectedPaths = mSelection.getSelectedResourcesOfType(Path.class);
+
+		for (Path path : selectedPaths) {
+			path.setPathType(pathType);
+		}
+
+		Pools.arrayList.free(selectedPaths);
+
+		mGui.resetValues();
 	}
 
 	/**
-	 * @return current path type, null if no path has been selected
+	 * @return current path type. If several paths are selected and they have different path types
+	 * null is return. If no path is selected null is also returned.
 	 */
 	PathTypes getPathType() {
-		// TODO
-		//		Path selectedPath = (Path) ((PathTool)mTouchTools[ToolGroups.PATH.ordinal()]).getSelectedResource();
-		//
-		//		if (selectedPath != null) {
-		//			return selectedPath.getPathType();
-		//		} else {
-		//			return null;
-		//		}
+		int cOnce = 0;
+		int cLoop = 0;
+		int cBackAndForth = 0;
+
+		ArrayList<Path> selectedPaths = mSelection.getSelectedResourcesOfType(Path.class);
+
+		for (Path path : selectedPaths) {
+			switch (path.getPathType()) {
+			case ONCE:
+				cOnce++;
+				break;
+
+			case LOOP:
+				cLoop++;
+				break;
+
+			case BACK_AND_FORTH:
+				cBackAndForth++;
+				break;
+			}
+		}
+
+		Pools.arrayList.free(selectedPaths);
+
+
+		// Only allow one to be above 0
+		if (cOnce > 0 && cLoop == 0 && cBackAndForth == 0) {
+			return PathTypes.ONCE;
+		} else if (cLoop > 0 && cOnce == 0 && cBackAndForth == 0) {
+			return PathTypes.LOOP;
+		} else if (cBackAndForth > 0 && cOnce == 0 && cLoop == 0) {
+			return PathTypes.BACK_AND_FORTH;
+		}
+
 		return null;
 	}
 
@@ -986,128 +1029,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor {
 	 * @return true if a path is selected
 	 */
 	boolean isPathSelected() {
-		return mSelection.getMostCommonSelectedResourceType() == Path.class;
-	}
-
-	/**
-	 * Sets the current active pickup tool
-	 * @param state current active pickup tool
-	 */
-	@Deprecated
-	void setPickupState(AddActorTool.States state) {
-		//		AddActorTool addActorTool = (AddActorTool) mTouchTools[ToolGroups.PICKUP.ordinal()];
-		//		addActorTool.setState(state);
-	}
-
-	/**
-	 * @return current active pickup tool state
-	 */
-	@Deprecated
-	AddActorTool.States getPickupState() {
-		return null;
-		//		return ((AddActorTool)mTouchTools[ToolGroups.PICKUP.ordinal()]).getState();
-	}
-
-	/**
-	 * Sets the current active static terrain tool
-	 * @param state current active static terrain tool
-	 */
-	@Deprecated
-	void setStaticTerrainState(DrawActorTool.States state) {
-		//		DrawActorTool drawActorTool = (DrawActorTool) mTouchTools[ToolGroups.STATIC_TERRAIN.ordinal()];
-		//		drawActorTool.setState(state);
-	}
-
-	/**
-	 * @return current active static terrain tool state
-	 */
-	@Deprecated
-	DrawActorTool.States getStaticTerrainState() {
-		//		return ((DrawActorTool)mTouchTools[ToolGroups.STATIC_TERRAIN.ordinal()]).getState();
-		return null;
-	}
-
-	/**
-	 * Sets the active enemy tool state
-	 * @param state current active enemy tool state
-	 */
-	@Deprecated
-	void setEnemyState(AddEnemyTool.States state) {
-		//		AddEnemyTool addEnemyTool = (AddEnemyTool) mTouchTools[ToolGroups.ENEMY.ordinal()];
-		//		addEnemyTool.setEnemyState(state);
-	}
-
-	/**
-	 * Resets the enemy state to the active add actor state.
-	 */
-	@Deprecated
-	void resetEnemyState() {
-		//		AddEnemyTool addEnemyTool = (AddEnemyTool) mTouchTools[ToolGroups.ENEMY.ordinal()];
-		//
-		//		switch (addEnemyTool.getState()) {
-		//		case ADD:
-		//			addEnemyTool.setEnemyState(AddEnemyTool.States.ADD);
-		//			break;
-		//
-		//		case REMOVE:
-		//			addEnemyTool.setEnemyState(AddEnemyTool.States.REMOVE);
-		//			break;
-		//
-		//		case MOVE:
-		//			addEnemyTool.setEnemyState(AddEnemyTool.States.MOVE);
-		//			break;
-		//
-		//		case SELECT:
-		//			addEnemyTool.setEnemyState(AddEnemyTool.States.SELECT);
-		//			break;
-		//		}
-	}
-
-	/**
-	 * @return current active enemy tool state
-	 */
-	@Deprecated
-	AddEnemyTool.States getEnemyState() {
-		//		return ((AddEnemyTool)mTouchTools[ToolGroups.ENEMY.ordinal()]).getEnemyState();
-		return null;
-	}
-
-	/**
-	 * Sets the active path tool state
-	 * @param state new active path tool state
-	 */
-	@Deprecated
-	void setPathState(PathTool.States state) {
-		//		PathTool pathTool = (PathTool) mTouchTools[ToolGroups.PATH.ordinal()];
-		//		pathTool.setState(state);
-	}
-
-	/**
-	 * @return current path tool state
-	 */
-	@Deprecated
-	PathTool.States getPathState() {
-		//		return ((PathTool)mTouchTools[ToolGroups.PATH.ordinal()]).getState();
-		return null;
-	}
-
-	/**
-	 * Sets the active trigger tool state
-	 * @param state new active trigger tool state
-	 */
-	@Deprecated
-	void setTriggerState(TriggerTool.States state) {
-		//		TriggerTool triggerTool = (TriggerTool) mTouchTools[ToolGroups.TRIGGER.ordinal()];
-		//		triggerTool.setState(state);
-	}
-
-	/**
-	 * @return current state of the trigger tool
-	 */
-	@Deprecated
-	TriggerTool.States getTriggerState() {
-		//		return ((TriggerTool)mTouchTools[ToolGroups.TRIGGER.ordinal()]).getState();
-		return null;
+		return mSelection.isSelected(Path.class);
 	}
 
 	/**
@@ -1312,9 +1234,9 @@ public class LevelEditor extends Editor implements IResourceChangeEditor {
 		/** Delete */
 		DELETE,
 		/** Append either add a corner or move a corner in a terrain */
-		TERRAIN_ADJUST_ADD_MOVE_CORNER,
+		ADD_MOVE_CORNER,
 		/** Remove a corner from the terrain */
-		TERRAIN_ADJUST_REMOVE_CORNER,
+		REMOVE_CORNER,
 		/** Append to the terrain */
 		TERRAIN_DRAW_APPEND,
 		/** Draw erase for terrain */
@@ -1327,6 +1249,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor {
 		TRIGGER_ADD,
 		/** Add a corner to a path */
 		PATH_ADD_CORNER,
+		/** Path remove corner */
+		PATH_REMOVE_CORNER,
 
 		;
 
@@ -1446,5 +1370,4 @@ public class LevelEditor extends Editor implements IResourceChangeEditor {
 	//	private TouchTool[] mTouchTools = new TouchTool[ToolGroups.values().length];
 	/** Current selected tool */
 	private Tools mTool = Tools.SELECTION;
-
 }

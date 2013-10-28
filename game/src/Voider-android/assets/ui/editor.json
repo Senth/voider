@@ -388,30 +388,6 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageUp: terrain_draw_erase
 	},
 	
-	terrain_add_move_corner: {
-		down: button-default-down,
-		checked: button-default-checked,
-		up: button-default-up,
-		disabled: button-default-disabled,
-		over: button-default-over,
-		checkedOver: button-default-checked-over,
-		imageDown: terrain_add_move_corner,
-		imageChecked: terrain_add_move_corner,
-		imageUp: terrain_add_move_corner
-	},
-	
-	terrain_remove_corner: {
-		down: button-default-down,
-		checked: button-default-checked,
-		up: button-default-up,
-		disabled: button-default-disabled,
-		over: button-default-over,
-		checkedOver: button-default-checked-over,
-		imageDown: terrain_remove_corner,
-		imageChecked: terrain_remove_corner,
-		imageUp: terrain_remove_corner
-	},
-	
 	set_center: {
 		down: button-default-down,
 		checked: button-default-checked,

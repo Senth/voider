@@ -151,10 +151,6 @@ public class BulletEditor extends Editor implements IActorEditor, IResourceChang
 			mInvoker.undo();
 			return true;
 		}
-		// menu
-		else if (KeyHelper.isBackPressed(keycode)) {
-			((EditorGui)mGui).showMainMenu();
-		}
 		/** @todo remove test buttons */
 		else if (keycode == Input.Keys.F5) {
 			Config.Gui.setUseTextButtons(!Config.Gui.usesTextButtons());

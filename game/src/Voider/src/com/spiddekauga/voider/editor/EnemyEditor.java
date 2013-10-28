@@ -478,10 +478,6 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 			mInvoker.undo();
 			return true;
 		}
-		// Main menu
-		else if (KeyHelper.isBackPressed(keycode)) {
-			((EditorGui)mGui).showMainMenu();
-		}
 		/** @todo remove test keys */
 		else if (keycode == Input.Keys.F5) {
 			Config.Gui.setUseTextButtons(!Config.Gui.usesTextButtons());

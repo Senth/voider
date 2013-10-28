@@ -143,6 +143,13 @@ path_add
   orig: 48, 48
   offset: 0, 0
   index: -1
+path_remove_corner
+  rotate: false
+  xy: 1, 10
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
 pickup_add
   rotate: false
   xy: 1, 10
