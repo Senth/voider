@@ -45,6 +45,13 @@ circle_shape
   orig: 48, 48
   offset: 0, 0
   index: -1
+collision
+  rotate: false
+  xy: 1, 10
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
 delete
   rotate: false
   xy: 1, 10
@@ -137,6 +144,13 @@ load
   offset: 0, 0
   index: -1
 move
+  rotate: false
+  xy: 1, 10
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+movement
   rotate: false
   xy: 1, 10
   size: 48, 48
@@ -284,6 +298,20 @@ trigger_add
   offset: 0, 0
   index: -1
 undo
+  rotate: false
+  xy: 1, 10
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+visuals
+  rotate: false
+  xy: 1, 10
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+weapon
   rotate: false
   xy: 1, 10
   size: 48, 48

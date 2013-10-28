@@ -12,16 +12,20 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.CheckBox.CheckBoxStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Slider.SliderStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
 import com.spiddekauga.utils.Command;
 import com.spiddekauga.utils.CommandSequence;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
+import com.spiddekauga.utils.scene.ui.Label.LabelStyle;
 import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.editor.commands.CEditorLoad;
@@ -85,10 +89,15 @@ public abstract class EditorGui extends Gui {
 
 		mBodies = Pools.arrayList.obtain();
 
-		mGeneralSkin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
-		mEditorSkin = ResourceCacheFacade.get(ResourceNames.UI_EDITOR_BUTTONS);
-		mTextButtonStyle = mGeneralSkin.get("default", TextButtonStyle.class);
-		mTextToggleStyle = mGeneralSkin.get("toggle", TextButtonStyle.class);
+		mStyles.skin.general = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
+		mStyles.skin.editor = ResourceCacheFacade.get(ResourceNames.UI_EDITOR_BUTTONS);
+		mStyles.textButton.standard = mStyles.skin.general.get("default", TextButtonStyle.class);
+		mStyles.textButton.toggle = mStyles.skin.general.get("toggle", TextButtonStyle.class);
+		mStyles.textButton.selected = mStyles.skin.general.get("selected", TextButtonStyle.class);
+		mStyles.slider.standard = mStyles.skin.general.get("default", SliderStyle.class);
+		mStyles.textField.standard = mStyles.skin.general.get("default", TextFieldStyle.class);
+		mStyles.label.standard = mStyles.skin.general.get("default", LabelStyle.class);
+		mStyles.checkBox.standard = mStyles.skin.general.get("default", CheckBoxStyle.class);
 
 		mEditorMenu.setTableAlign(Horizontal.LEFT, Vertical.TOP);
 		mFileMenu.setTableAlign(Horizontal.RIGHT, Vertical.TOP);
@@ -113,12 +122,16 @@ public abstract class EditorGui extends Gui {
 		// Level editor
 		/** @todo REMOVE text button */
 		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Level", mTextButtonStyle);
+			if (this.getClass() == LevelEditorGui.class) {
+				button = new TextButton("Level", mStyles.textButton.selected);
+			} else {
+				button = new TextButton("Level", mStyles.textButton.standard);
+			}
 		} else {
 			if (this.getClass() == LevelEditorGui.class) {
-				button = new ImageButton(mEditorSkin, EditorIcons.LEVEL_EDITOR_SELECTED.toString());
+				button = new ImageButton(mStyles.skin.editor, EditorIcons.LEVEL_EDITOR_SELECTED.toString());
 			} else {
-				button = new ImageButton(mEditorSkin, EditorIcons.LEVEL_EDITOR.toString());
+				button = new ImageButton(mStyles.skin.editor, EditorIcons.LEVEL_EDITOR.toString());
 			}
 		}
 		mEditorMenu.add(button);
@@ -134,12 +147,16 @@ public abstract class EditorGui extends Gui {
 		// Enemy editor
 		/** @todo REMOVE text button */
 		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Enemy", mTextButtonStyle);
+			if (this.getClass() == EnemyEditorGui.class) {
+				button = new TextButton("Enemy", mStyles.textButton.selected);
+			} else {
+				button = new TextButton("Enemy", mStyles.textButton.standard);
+			}
 		} else {
 			if (this.getClass() == EnemyEditorGui.class) {
-				button = new ImageButton(mEditorSkin, EditorIcons.ENEMY_EDITOR_SELECTED.toString());
+				button = new ImageButton(mStyles.skin.editor, EditorIcons.ENEMY_EDITOR_SELECTED.toString());
 			} else {
-				button = new ImageButton(mEditorSkin, EditorIcons.ENEMY_EDITOR.toString());
+				button = new ImageButton(mStyles.skin.editor, EditorIcons.ENEMY_EDITOR.toString());
 			}
 		}
 		mEditorMenu.add(button);
@@ -155,15 +172,19 @@ public abstract class EditorGui extends Gui {
 		// Bullet editor
 		/** @todo REMOVE text button */
 		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Bullet", mTextButtonStyle);
+			if (this.getClass() == BulletEditorGui.class) {
+				button = new TextButton("Bullet", mStyles.textButton.selected);
+			} else {
+				button = new TextButton("Bullet", mStyles.textButton.standard);
+			}
 		} else {
 			if (this.getClass() == BulletEditorGui.class) {
-				button = new ImageButton(mEditorSkin, EditorIcons.BULLET_EDITOR_SELECTED.toString());
+				button = new ImageButton(mStyles.skin.editor, EditorIcons.BULLET_EDITOR_SELECTED.toString());
 			} else {
-				button = new ImageButton(mEditorSkin, EditorIcons.BULLET_EDITOR.toString());
+				button = new ImageButton(mStyles.skin.editor, EditorIcons.BULLET_EDITOR.toString());
 			}
 		}
-		mEditorMenu.add(button);
+		mEditorMenu.add(button).setPadRight(Config.Gui.SEPARATE_PADDING);
 		if (this.getClass() != BulletEditorGui.class) {
 			new ButtonListener(button) {
 				@Override
@@ -175,6 +196,14 @@ public abstract class EditorGui extends Gui {
 	}
 
 	/**
+	 * Adds a button to the editor menu
+	 * @param button the button to add to the editor menu
+	 */
+	protected void addToEditorMenu(Button button) {
+		mEditorMenu.add(button);
+	}
+
+	/**
 	 * Initializes the file menu
 	 */
 	protected void initFileMenu() {
@@ -183,9 +212,9 @@ public abstract class EditorGui extends Gui {
 		// New
 		/** @todo REMOVE text button */
 		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("New", mTextButtonStyle);
+			button = new TextButton("New", mStyles.textButton.standard);
 		} else {
-			button = new ImageButton(mEditorSkin, EditorIcons.NEW.toString());
+			button = new ImageButton(mStyles.skin.editor, EditorIcons.NEW.toString());
 		}
 		mFileMenu.add(button);
 		new ButtonListener(button) {
@@ -198,9 +227,9 @@ public abstract class EditorGui extends Gui {
 		// Save
 		/** @todo REMOVE text button */
 		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Save", mTextButtonStyle);
+			button = new TextButton("Save", mStyles.textButton.standard);
 		} else {
-			button = new ImageButton(mEditorSkin, EditorIcons.SAVE.toString());
+			button = new ImageButton(mStyles.skin.editor, EditorIcons.SAVE.toString());
 		}
 		mFileMenu.add(button);
 		new ButtonListener(button) {
@@ -213,9 +242,9 @@ public abstract class EditorGui extends Gui {
 		// Load
 		/** @todo REMOVE text button */
 		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Load", mTextButtonStyle);
+			button = new TextButton("Load", mStyles.textButton.standard);
 		} else {
-			button = new ImageButton(mEditorSkin, EditorIcons.LOAD.toString());
+			button = new ImageButton(mStyles.skin.editor, EditorIcons.LOAD.toString());
 		}
 		mFileMenu.add(button);
 		new ButtonListener(button) {
@@ -228,9 +257,9 @@ public abstract class EditorGui extends Gui {
 		// Duplicate
 		/** @todo REMOVE text button */
 		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Duplicate", mTextButtonStyle);
+			button = new TextButton("Duplicate", mStyles.textButton.standard);
 		} else {
-			button = new ImageButton(mEditorSkin, EditorIcons.DUPLICATE.toString());
+			button = new ImageButton(mStyles.skin.editor, EditorIcons.DUPLICATE.toString());
 		}
 		mFileMenu.add(button).setPadRight(Config.Gui.SEPARATE_PADDING);
 		new ButtonListener(button) {
@@ -245,9 +274,9 @@ public abstract class EditorGui extends Gui {
 		// Undo
 		/** @todo REMOVE text button */
 		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Undo", mTextButtonStyle);
+			button = new TextButton("Undo", mStyles.textButton.standard);
 		} else {
-			button = new ImageButton(mEditorSkin, EditorIcons.UNDO.toString());
+			button = new ImageButton(mStyles.skin.editor, EditorIcons.UNDO.toString());
 		}
 		mFileMenu.add(button);
 		new ButtonListener(button) {
@@ -260,9 +289,9 @@ public abstract class EditorGui extends Gui {
 		// Redo
 		/** @todo REMOVE text button */
 		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Redo", mTextButtonStyle);
+			button = new TextButton("Redo", mStyles.textButton.standard);
 		} else {
-			button = new ImageButton(mEditorSkin, EditorIcons.REDO.toString());
+			button = new ImageButton(mStyles.skin.editor, EditorIcons.REDO.toString());
 		}
 		mFileMenu.add(button).setPadRight(Config.Gui.SEPARATE_PADDING);
 		new ButtonListener(button) {
@@ -277,9 +306,9 @@ public abstract class EditorGui extends Gui {
 		if (mEditor instanceof LevelEditor) {
 			/** @todo REMOVE text button */
 			if (Config.Gui.usesTextButtons()) {
-				button = new TextButton("Run", mTextButtonStyle);
+				button = new TextButton("Run", mStyles.textButton.standard);
 			} else {
-				button = new ImageButton(mEditorSkin, EditorIcons.RUN.toString());
+				button = new ImageButton(mStyles.skin.editor, EditorIcons.RUN.toString());
 			}
 			mFileMenu.add(button);
 			new ButtonListener(button) {
@@ -300,18 +329,23 @@ public abstract class EditorGui extends Gui {
 		// Info
 		/** @todo REMOVE text button */
 		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Info", mTextButtonStyle);
+			button = new TextButton("Info", mStyles.textButton.standard);
 		} else {
-			button = new ImageButton(mEditorSkin, EditorIcons.INFO.toString());
+			button = new ImageButton(mStyles.skin.editor, EditorIcons.INFO.toString());
 		}
 		mFileMenu.add(button);
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed() {
-				/** @todo */
+				showInfoDialog();
 			}
 		};
 	}
+
+	/**
+	 * Shows the information for the resource we're editing
+	 */
+	protected abstract void showInfoDialog();
 
 	/**
 	 * Switches or returns to the specified editor or menu.
@@ -344,8 +378,8 @@ public abstract class EditorGui extends Gui {
 	 */
 	protected void executeCommandAndCheckSave(Command command, String title, String saveButtonText, String withoutSaveButtonText, String content) {
 		if (!mEditor.isSaved()) {
-			Button saveThenExecuteButton = new TextButton(saveButtonText, mTextButtonStyle);
-			Button justExecuteButton = new TextButton(withoutSaveButtonText, mTextButtonStyle);
+			Button saveThenExecuteButton = new TextButton(saveButtonText, mStyles.textButton.standard);
+			Button justExecuteButton = new TextButton(withoutSaveButtonText, mStyles.textButton.standard);
 
 			Command save = new CEditorSave(mEditor);
 			Command saveAndExecute = new CommandSequence(save, command);
@@ -469,14 +503,48 @@ public abstract class EditorGui extends Gui {
 	 */
 	protected abstract String getResourceTypeName();
 
-	/** General UI skin */
-	protected Skin mGeneralSkin = null;
-	/** Editor UI skin */
-	protected Skin mEditorSkin = null;
-	/** Text button style */
-	protected TextButtonStyle mTextButtonStyle = null;
-	/** Text toggle button style */
-	protected TextButtonStyle mTextToggleStyle = null;
+	/**
+	 * Container for all ui styles
+	 */
+	@SuppressWarnings("javadoc")
+	protected static class UiStyles {
+		TextButton textButton = new TextButton();
+		Slider slider = new Slider();
+		TextField textField = new TextField();
+		Skins skin = new Skins();
+		Label label = new Label();
+		CheckBox checkBox = new CheckBox();
+
+		static class TextButton {
+			TextButtonStyle standard = null;
+			TextButtonStyle toggle = null;
+			TextButtonStyle selected = null;
+		}
+
+		static class Slider {
+			SliderStyle standard = null;
+		}
+
+		static class TextField {
+			TextFieldStyle standard = null;
+		}
+
+		static class Skins {
+			Skin general = null;
+			Skin editor = null;
+		}
+
+		static class Label {
+			LabelStyle standard = null;
+		}
+
+		static class CheckBox {
+			CheckBoxStyle standard = null;
+		}
+	}
+
+	/** All skins and styles */
+	protected UiStyles mStyles = new UiStyles();
 
 	/** Editor scene */
 	protected Editor mEditor = null;

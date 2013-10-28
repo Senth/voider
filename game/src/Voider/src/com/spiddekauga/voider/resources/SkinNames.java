@@ -109,6 +109,14 @@ public class SkinNames {
 		 * it will go directly (i.e. not along the path) to the start and go through
 		 * the path again and again... */
 		PATH_LOOP,
+		/** All visual options for enemies and bullets */
+		VISUALS,
+		/** Movement options for enemies */
+		MOVEMENT,
+		/** Weapon options for enemies and bullets */
+		WEAPON,
+		/** Collision options for enemies */
+		COLLISION,
 
 		;
 

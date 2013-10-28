@@ -24,6 +24,7 @@ import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.utils.scene.ui.HideListener;
 import com.spiddekauga.utils.scene.ui.HideManual;
 import com.spiddekauga.utils.scene.ui.HideSliderValue;
+import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
 import com.spiddekauga.utils.scene.ui.SliderListener;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
 import com.spiddekauga.utils.scene.ui.TooltipListener;
@@ -70,12 +71,12 @@ class LevelEditorGui extends EditorGui {
 		mPickupTable.setRowAlign(Horizontal.RIGHT, Vertical.MIDDLE);
 		mWidgets.enemy.table.setPreferences(mMainTable);
 		mWidgets.enemy.table.setRowAlign(Horizontal.RIGHT, Vertical.MIDDLE);
-		mOptionTable.setPreferences(mMainTable);
+		mWidgets.info.table.setPreferences(mMainTable);
 
 		mHiders = new Hiders();
 
 		initToolMenu();
-		//		initOptions();
+		initInfo();
 		//		initPickup();
 		initPathOptions();
 		initEnemyAddOptions();
@@ -93,24 +94,21 @@ class LevelEditorGui extends EditorGui {
 
 	@Override
 	public void resetValues() {
-
 		resetPathOptions();
 		resetEnemyOptions();
+		resetLevelInfo();
+	}
 
-
-
-
-		//
-		//
-		//		// General options
-		//		mWidgets.option.description.setText(mLevelEditor.getLevelDescription());
-		//		mWidgets.option.name.setText(mLevelEditor.getLevelName());
-		//		mWidgets.option.revision.setText(mLevelEditor.getLevelRevision());
-		//		mWidgets.option.storyBefore.setText(mLevelEditor.getPrologue());
-		//		mWidgets.option.epilogue.setText(mLevelEditor.getEpilogue());
-		//		mWidgets.option.speed.setValue(mLevelEditor.getLevelStartingSpeed());
-		//
-		//
+	/**
+	 * Reset level info
+	 */
+	void resetLevelInfo() {
+		mWidgets.info.description.setText(mLevelEditor.getLevelDescription());
+		mWidgets.info.name.setText(mLevelEditor.getLevelName());
+		mWidgets.info.revision.setText(mLevelEditor.getLevelRevision());
+		mWidgets.info.storyBefore.setText(mLevelEditor.getPrologue());
+		mWidgets.info.epilogue.setText(mLevelEditor.getEpilogue());
+		mWidgets.info.speed.setValue(mLevelEditor.getLevelStartingSpeed());
 	}
 
 	/**
@@ -202,55 +200,15 @@ class LevelEditorGui extends EditorGui {
 		} else {
 			mHiders.enemyOptions.hide();
 		}
-		//
-		//
-		//		if (mLevelEditor.isEnemySelected()) {
-		//			mHiders.enemyOptions.show();
-		//		} else {
-		//			mHiders.enemyOptions.hide();
-		//
-		//			// Current state is set active/deactive trigger, change to select instead
-		//			if (mLevelEditor.getEnemyState() == AddEnemyTool.States.SET_ACTIVATE_TRIGGER ||
-		//					mLevelEditor.getEnemyState() == AddEnemyTool.States.SET_DEACTIVATE_TRIGGER) {
-		//				mLevelEditor.setEnemyState(AddEnemyTool.States.SELECT);
-		//			}
-		//
-		//			return;
-		//		}
-		//
-		//		if (mWidgets.enemy.cEnemies.getValue() != mLevelEditor.getEnemyCount()) {
-		//			mInvoker.execute(new CGuiSlider(mWidgets.enemy.cEnemies, mLevelEditor.getEnemyCount(), mWidgets.enemy.cEnemies.getValue()), true);
-		//		}
-		//
-		//		if (mLevelEditor.getEnemySpawnDelay() >= 0 &&  mLevelEditor.getEnemySpawnDelay() != mWidgets.enemy.betweenDelay.getValue()) {
-		//			mInvoker.execute(new CGuiSlider(mWidgets.enemy.betweenDelay, mLevelEditor.getEnemySpawnDelay(), mWidgets.enemy.betweenDelay.getValue()), true);
-		//		}
-		//
-		//
-		//		// Has activate trigger -> Show trigger delay
-		//		if (mLevelEditor.hasSelectedEnemyActivateTrigger()) {
-		//			mHiders.enemyActivateDelay.show();
-		//
-		//			float activateDelay = mLevelEditor.getSelectedEnemyActivateTriggerDelay();
-		//			if (activateDelay >= 0 && activateDelay != mWidgets.enemy.activateDelay.getValue()) {
-		//				mInvoker.execute(new CGuiSlider(mWidgets.enemy.activateDelay, activateDelay, mWidgets.enemy.activateDelay.getValue()));
-		//			}
-		//		} else {
-		//			mHiders.enemyActivateDelay.hide();
-		//		}
-		//
-		//
-		//		// Has deactivate trigger -> Show trigger delay
-		//		if (mLevelEditor.hasSelectedEnemyDeactivateTrigger()) {
-		//			mHiders.enemyDeactivateDelay.show();
-		//
-		//			float deactivateDelay = mLevelEditor.getSelectedEnemyDeactivateTriggerDelay();
-		//			if (deactivateDelay >= 0 && deactivateDelay!= mWidgets.enemy.deactivateDelay.getValue()) {
-		//				mInvoker.execute(new CGuiSlider(mWidgets.enemy.deactivateDelay, deactivateDelay, mWidgets.enemy.deactivateDelay.getValue()));
-		//			}
-		//		} else {
-		//			mHiders.enemyDeactivateDelay.hide();
-		//		}
+	}
+
+	@Override
+	protected void showInfoDialog() {
+		MsgBoxExecuter msgBox = getFreeMsgBox();
+		msgBox.setTitle("Level options");
+		msgBox.content(mWidgets.info.table);
+		msgBox.addCancelButtonAndKeys("OK");
+		showMsgBox(msgBox);
 	}
 
 	/**
@@ -265,9 +223,9 @@ class LevelEditorGui extends EditorGui {
 		// Select
 		/** @todo REMOVE text button */
 		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Select", mTextToggleStyle);
+			button = new TextButton("Select", mStyles.textButton.standard);
 		} else {
-			button = new ImageButton(mEditorSkin, EditorIcons.SELECT.toString());
+			button = new ImageButton(mStyles.skin.editor, EditorIcons.SELECT.toString());
 		}
 		new ButtonListener(button) {
 			@Override
@@ -282,9 +240,9 @@ class LevelEditorGui extends EditorGui {
 		// Cancel
 		/** @todo REMOVE text button */
 		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Cancel", mTextToggleStyle);
+			button = new TextButton("Cancel", mStyles.textButton.standard);
 		} else {
-			button = new ImageButton(mEditorSkin, EditorIcons.CANCEL.toString());
+			button = new ImageButton(mStyles.skin.editor, EditorIcons.CANCEL.toString());
 		}
 		new ButtonListener(button) {
 			@Override
@@ -299,9 +257,9 @@ class LevelEditorGui extends EditorGui {
 		// Move
 		/** @todo REMOVE text button */
 		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Move", mTextToggleStyle);
+			button = new TextButton("Move", mStyles.textButton.standard);
 		} else {
-			button = new ImageButton(mEditorSkin, EditorIcons.MOVE.toString());
+			button = new ImageButton(mStyles.skin.editor, EditorIcons.MOVE.toString());
 		}
 		new ButtonListener(button) {
 			@Override
@@ -316,9 +274,9 @@ class LevelEditorGui extends EditorGui {
 		// Delete
 		/** @todo REMOVE text button */
 		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Delete", mTextToggleStyle);
+			button = new TextButton("Delete", mStyles.textButton.standard);
 		} else {
-			button = new ImageButton(mEditorSkin, EditorIcons.DELETE.toString());
+			button = new ImageButton(mStyles.skin.editor, EditorIcons.DELETE.toString());
 		}
 		new ButtonListener(button) {
 			@Override
@@ -333,9 +291,9 @@ class LevelEditorGui extends EditorGui {
 		// Terrain draw_append
 		/** @todo REMOVE text button */
 		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Terrain, append", mTextToggleStyle);
+			button = new TextButton("Terrain, append", mStyles.textButton.standard);
 		} else {
-			button = new ImageButton(mEditorSkin, EditorIcons.TERRAIN_DRAW_APPEND.toString());
+			button = new ImageButton(mStyles.skin.editor, EditorIcons.TERRAIN_DRAW_APPEND.toString());
 		}
 		new ButtonListener(button) {
 			@Override
@@ -350,9 +308,9 @@ class LevelEditorGui extends EditorGui {
 		// Terrain draw_erase
 		/** @todo REMOVE text button */
 		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Terrain, draw erase", mTextToggleStyle);
+			button = new TextButton("Terrain, draw erase", mStyles.textButton.standard);
 		} else {
-			button = new ImageButton(mEditorSkin, EditorIcons.TERRAIN_DRAW_ERASE.toString());
+			button = new ImageButton(mStyles.skin.editor, EditorIcons.TERRAIN_DRAW_ERASE.toString());
 		}
 		new ButtonListener(button) {
 			@Override
@@ -367,9 +325,9 @@ class LevelEditorGui extends EditorGui {
 		// add_move_corner
 		/** @todo REMOVE text button */
 		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Add/move corner", mTextToggleStyle);
+			button = new TextButton("Add/move corner", mStyles.textButton.standard);
 		} else {
-			button = new ImageButton(mEditorSkin, EditorIcons.ADD_MOVE_CORNER.toString());
+			button = new ImageButton(mStyles.skin.editor, EditorIcons.ADD_MOVE_CORNER.toString());
 		}
 		new ButtonListener(button) {
 			@Override
@@ -384,9 +342,9 @@ class LevelEditorGui extends EditorGui {
 		// remove_corner
 		/** @todo REMOVE text button */
 		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Remove corner", mTextToggleStyle);
+			button = new TextButton("Remove corner", mStyles.textButton.standard);
 		} else {
-			button = new ImageButton(mEditorSkin, EditorIcons.REMOVE_CORNER.toString());
+			button = new ImageButton(mStyles.skin.editor, EditorIcons.REMOVE_CORNER.toString());
 		}
 		new ButtonListener(button) {
 			@Override
@@ -401,9 +359,9 @@ class LevelEditorGui extends EditorGui {
 		// Path add
 		/** @todo REMOVE text button */
 		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Add path", mTextToggleStyle);
+			button = new TextButton("Add path", mStyles.textButton.standard);
 		} else {
-			button = new ImageButton(mEditorSkin, EditorIcons.PATH_ADD.toString());
+			button = new ImageButton(mStyles.skin.editor, EditorIcons.PATH_ADD.toString());
 		}
 		new ButtonListener(button) {
 			@Override
@@ -418,9 +376,9 @@ class LevelEditorGui extends EditorGui {
 		// Enemy add
 		/** @todo REMOVE text button */
 		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Add enemy", mTextToggleStyle);
+			button = new TextButton("Add enemy", mStyles.textButton.standard);
 		} else {
-			button = new ImageButton(mEditorSkin, EditorIcons.ENEMY_ADD.toString());
+			button = new ImageButton(mStyles.skin.editor, EditorIcons.ENEMY_ADD.toString());
 		}
 		mWidgets.tool.enemyAdd = button;
 		new ButtonListener(button) {
@@ -436,9 +394,9 @@ class LevelEditorGui extends EditorGui {
 		// Enemy - set activate trigger
 		/** @todo REMOVE text button */
 		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Set activate trigger", mTextToggleStyle);
+			button = new TextButton("Set activate trigger", mStyles.textButton.standard);
 		} else {
-			button = new ImageButton(mEditorSkin, EditorIcons.ENEMY_SET_ACTIVATE_TRIGGER.toString());
+			button = new ImageButton(mStyles.skin.editor, EditorIcons.ENEMY_SET_ACTIVATE_TRIGGER.toString());
 		}
 		new ButtonListener(button) {
 			@Override
@@ -453,9 +411,9 @@ class LevelEditorGui extends EditorGui {
 		// ENemy - set deactivate trigger
 		/** @todo REMOVE text button */
 		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Set deactivate trigger", mTextToggleStyle);
+			button = new TextButton("Set deactivate trigger", mStyles.textButton.standard);
 		} else {
-			button = new ImageButton(mEditorSkin, EditorIcons.ENEMY_SET_DEACTIVATE_TRIGGER.toString());
+			button = new ImageButton(mStyles.skin.editor, EditorIcons.ENEMY_SET_DEACTIVATE_TRIGGER.toString());
 		}
 		new ButtonListener(button) {
 			@Override
@@ -470,9 +428,9 @@ class LevelEditorGui extends EditorGui {
 		// Trigger add
 		/** @todo REMOVE text button */
 		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Add trigger", mTextToggleStyle);
+			button = new TextButton("Add trigger", mStyles.textButton.standard);
 		} else {
-			button = new ImageButton(mEditorSkin, EditorIcons.TRIGGER_ADD.toString());
+			button = new ImageButton(mStyles.skin.editor, EditorIcons.TRIGGER_ADD.toString());
 		}
 		new ButtonListener(button) {
 			@Override
@@ -487,9 +445,9 @@ class LevelEditorGui extends EditorGui {
 		//		// Pickup add
 		//		/** @todo REMOVE text button */
 		//		if (Config.Gui.usesTextButtons()) {
-		//			button = new TextButton("Add pickup", mTextToggleStyle);
+		//			button = new TextButton("Add pickup", mStyles.textButton.standard);
 		//		} else {
-		//			button = new ImageButton(mEditorSkin, EditorIcons.PICKUP_ADD.toString());
+		//			button = new ImageButton(mStyles.skin.editor, EditorIcons.PICKUP_ADD.toString());
 		//		}
 		//		new ButtonListener(button) {
 		//			@Override
@@ -566,9 +524,9 @@ class LevelEditorGui extends EditorGui {
 	}
 
 	/**
-	 * Initializes options content for message box
+	 * Initializes level info content for message box
 	 */
-	private void initOptions() {
+	private void initInfo() {
 		Skin generalSkin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
 		SliderStyle sliderStyle = generalSkin.get("default", SliderStyle.class);
 		TextFieldStyle textFieldStyle = generalSkin.get("default", TextFieldStyle.class);
@@ -576,16 +534,16 @@ class LevelEditorGui extends EditorGui {
 
 		AlignTable left = new AlignTable();
 		AlignTable right = new AlignTable();
-		mOptionTable.setRowAlign(Horizontal.LEFT, Vertical.TOP);
-		left.setPreferences(mOptionTable);
-		right.setPreferences(mOptionTable);
+		mWidgets.info.table.setRowAlign(Horizontal.LEFT, Vertical.TOP);
+		left.setPreferences(mWidgets.info.table);
+		right.setPreferences(mWidgets.info.table);
 
 		float halfWidth = Gdx.graphics.getWidth() * Config.Editor.Level.OPTIONS_WIDTH * 0.5f;
 		float height = Gdx.graphics.getHeight() * Config.Editor.Level.OPTIONS_HEIGHT;
 
-		mOptionTable.row().setPadTop(10);
-		mOptionTable.add(left);
-		mOptionTable.add(right);
+		mWidgets.info.table.row().setPadTop(10);
+		mWidgets.info.table.add(left);
+		mWidgets.info.table.add(right);
 
 		left.setSize(halfWidth, height);
 		right.setSize(halfWidth, height);
@@ -601,7 +559,7 @@ class LevelEditorGui extends EditorGui {
 		TextField textField = new TextField("", textFieldStyle);
 		textField.setMaxLength(Config.Editor.NAME_LENGTH_MAX);
 		left.add(textField).setFillWidth(true);
-		mWidgets.option.name = textField;
+		mWidgets.info.name = textField;
 		new TooltipListener(textField, "Name", Messages.Tooltip.Level.Option.NAME);
 		new TextFieldListener(textField, "Name", mInvoker) {
 			@Override
@@ -619,7 +577,7 @@ class LevelEditorGui extends EditorGui {
 		textField = new TextField("", textFieldStyle);
 		textField.setMaxLength(Config.Editor.DESCRIPTION_LENGTH_MAX);
 		left.add(textField).setFillHeight(true).setFillWidth(true);
-		mWidgets.option.description = textField;
+		mWidgets.info.description = textField;
 		new TooltipListener(textField, "Description", Messages.Tooltip.Level.Option.DESCRIPTION);
 		new TextFieldListener(textField, "Set your description...", mInvoker) {
 			@Override
@@ -637,7 +595,7 @@ class LevelEditorGui extends EditorGui {
 
 		Slider slider = new Slider(Editor.Level.LEVEL_SPEED_MIN, Editor.Level.LEVEL_SPEED_MAX, Editor.Level.LEVEL_SPEED_STEP_SIZE, false, sliderStyle);
 		left.add(slider).setFillWidth(true);
-		mWidgets.option.speed = slider;
+		mWidgets.info.speed = slider;
 
 		textField = new TextField("", textFieldStyle);
 		new TooltipListener(textField, "Level speed", Messages.Tooltip.Level.Option.LEVEL_SPEED);
@@ -658,7 +616,7 @@ class LevelEditorGui extends EditorGui {
 		label = new Label("", labelStyle);
 		new TooltipListener(label, "Revision", Messages.Tooltip.Level.Option.REVISION);
 		left.add(label);
-		mWidgets.option.revision = label;
+		mWidgets.info.revision = label;
 
 
 		// RIGHT
@@ -671,7 +629,7 @@ class LevelEditorGui extends EditorGui {
 		textField = new TextField("", textFieldStyle);
 		textField.setMaxLength(Config.Editor.STORY_LENGTH_MAX);
 		right.add(textField).setFillWidth(true).setFillHeight(true);
-		mWidgets.option.storyBefore = textField;
+		mWidgets.info.storyBefore = textField;
 		new TooltipListener(textField, "Prologue", Messages.Tooltip.Level.Option.STORY_BEFORE);
 		new TextFieldListener(textField, "Write a story to be displayed when loading the level (optional)...", mInvoker) {
 			@Override
@@ -690,7 +648,7 @@ class LevelEditorGui extends EditorGui {
 		textField = new TextField("", textFieldStyle);
 		textField.setMaxLength(Config.Editor.STORY_LENGTH_MAX);
 		right.add(textField).setFillWidth(true).setFillHeight(true);
-		mWidgets.option.epilogue = textField;
+		mWidgets.info.epilogue = textField;
 		new TooltipListener(textField, "Epilogue", Messages.Tooltip.Level.Option.STORY_AFTER);
 		new TextFieldListener(textField, "Write the story to be displayed when the level is completed (optional)...", mInvoker) {
 			@Override
@@ -699,9 +657,9 @@ class LevelEditorGui extends EditorGui {
 			}
 		};
 
-		mOptionTable.setTransform(true);
-		mOptionTable.layout();
-		mOptionTable.setKeepSize(true);
+		mWidgets.info.table.setTransform(true);
+		mWidgets.info.table.layout();
+		mWidgets.info.table.setKeepSize(true);
 	}
 
 	/**
@@ -992,8 +950,6 @@ class LevelEditorGui extends EditorGui {
 
 	/** Pickup table */
 	private AlignTable mPickupTable = new AlignTable();
-	/** Options table */
-	private AlignTable mOptionTable = new AlignTable();
 	/** Level editor the GUI will act on */
 	private LevelEditor mLevelEditor = null;
 	/** Invoker for level editor */
@@ -1047,7 +1003,7 @@ class LevelEditorGui extends EditorGui {
 		EnemyOptionWidgets enemy = new EnemyOptionWidgets();
 		PathOptionWidgets path = new PathOptionWidgets();
 		PickupWidgets pickup = new PickupWidgets();
-		OptionWidgets option = new OptionWidgets();
+		InfoWidgets info = new InfoWidgets();
 		EnemyAddWidgets enemyAdd = new EnemyAddWidgets();
 		ToolWidgets tool = new ToolWidgets();
 
@@ -1068,7 +1024,8 @@ class LevelEditorGui extends EditorGui {
 			Label name = null;
 		}
 
-		static class OptionWidgets {
+		static class InfoWidgets {
+			AlignTable table = new AlignTable();
 			TextField name = null;
 			TextField description = null;
 			Slider speed = null;

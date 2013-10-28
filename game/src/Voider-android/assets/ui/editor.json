@@ -473,6 +473,54 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		over: button-default-over,
 		imageDown: reset_center,
 		imageUp: reset_center
-	}
+	},
+	
+	visuals: {
+		down: button-default-down,
+		checked: button-default-checked,
+		up: button-default-up,
+		disabled: button-default-disabled,
+		over: button-default-over,
+		checkedOver: button-default-checked-over,
+		imageDown: visuals,
+		imageChecked: visuals,
+		imageUp: visuals
+	},
+	
+	weapon: {
+		down: button-default-down,
+		checked: button-default-checked,
+		up: button-default-up,
+		disabled: button-default-disabled,
+		over: button-default-over,
+		checkedOver: button-default-checked-over,
+		imageDown: weapon,
+		imageChecked: weapon,
+		imageUp: weapon
+	},
+	
+	collision: {
+		down: button-default-down,
+		checked: button-default-checked,
+		up: button-default-up,
+		disabled: button-default-disabled,
+		over: button-default-over,
+		checkedOver: button-default-checked-over,
+		imageDown: collision,
+		imageChecked: collision,
+		imageUp: collision
+	},
+	
+	movement: {
+		down: button-default-down,
+		checked: button-default-checked,
+		up: button-default-up,
+		disabled: button-default-disabled,
+		over: button-default-over,
+		checkedOver: button-default-checked-over,
+		imageDown: movement,
+		imageChecked: movement,
+		imageUp: movement
+	},
 }
 }

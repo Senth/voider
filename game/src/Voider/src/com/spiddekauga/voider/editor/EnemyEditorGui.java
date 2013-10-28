@@ -1,6 +1,5 @@
 package com.spiddekauga.voider.editor;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
@@ -30,7 +29,6 @@ import com.spiddekauga.voider.Config.Editor.Enemy.Movement;
 import com.spiddekauga.voider.Config.Editor.Weapon;
 import com.spiddekauga.voider.Config.Gui;
 import com.spiddekauga.voider.editor.commands.CGuiCheck;
-import com.spiddekauga.voider.game.actors.ActorShapeTypes;
 import com.spiddekauga.voider.game.actors.EnemyActorDef.AimTypes;
 import com.spiddekauga.voider.game.actors.EnemyActorDef.MovementTypes;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
@@ -75,31 +73,25 @@ public class EnemyEditorGui extends ActorGui {
 		mWeaponTable.setPreferences(mMainTable);
 		mAiTable.setPreferences(mMainTable);
 		mPathTable.setPreferences(mPathTable);
-		mVisualTable.setPreferences(mMainTable);
-		mOptionTable.setPreferences(mMainTable);
-		mCollisionTable.setPreferences(mMainTable);
 
 
-		initMovement();
-		initWeapon();
-		initVisual("enemy", ActorShapeTypes.CIRCLE, ActorShapeTypes.RECTANGLE, ActorShapeTypes.TRIANGLE);
-		initOptions("enemy");
-		initCollision("enemy");
-		initFileMenu("enemy");
-		initMenu();
+		//		initMovement();
+		//		initWeapon();
+		//		initVisual("enemy", ActorShapeTypes.CIRCLE, ActorShapeTypes.RECTANGLE, ActorShapeTypes.TRIANGLE);
+		//		initOptions("enemy");
+		//		initCollision("enemy");
+		//		initFileMenu("enemy");
+		//		initMenu();
 
 		resetValues();
 
 
-		mMainTable.setTransform(true);
-		mMovementTable.setTransform(true);
-		mWeaponTable.setTransform(true);
-		mAiTable.setTransform(true);
-		mVisualTable.setTransform(true);
-		mOptionTable.setTransform(true);
-		mCollisionTable.setTransform(true);
-		mMainTable.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		mMainTable.invalidate();
+		//		mMainTable.setTransform(true);
+		//		mMovementTable.setTransform(true);
+		//		mWeaponTable.setTransform(true);
+		//		mAiTable.setTransform(true);
+		//		mMainTable.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		//		mMainTable.invalidate();
 	}
 
 	@Override
@@ -165,6 +157,11 @@ public class EnemyEditorGui extends ActorGui {
 	}
 
 	@Override
+	protected void showInfoDialog() {
+		// TODO
+	}
+
+	@Override
 	protected String getResourceTypeName() {
 		return "enemy";
 	}
@@ -176,7 +173,6 @@ public class EnemyEditorGui extends ActorGui {
 		Skin generalSkin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
 		TextButtonStyle textToggleStyle = generalSkin.get("toggle", TextButtonStyle.class);
 		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.UI_EDITOR_BUTTONS);
-
 
 		// --- Active options ---
 		mMainTable.row().setAlign(Horizontal.RIGHT, Vertical.BOTTOM);
@@ -193,7 +189,7 @@ public class EnemyEditorGui extends ActorGui {
 		}
 		button.addListener(menuChecker);
 		buttonGroup.add(button);
-		mMainTable.add(button);
+		addToEditorMenu(button);
 		mMovementHider.addToggleActor(mMovementTable);
 		mMovementHider.setButton(button);
 		new TooltipListener(button, "", Messages.Tooltip.Enemy.Menu.MOVEMENT);
@@ -207,7 +203,7 @@ public class EnemyEditorGui extends ActorGui {
 		}
 		button.addListener(menuChecker);
 		buttonGroup.add(button);
-		mMainTable.add(button);
+		addToEditorMenu(button);
 		mWeaponHider.addToggleActor(mWeaponTable);
 		mWeaponHider.setButton(button);
 		new TooltipListener(button, "", Messages.Tooltip.Enemy.Menu.WEAPON);
@@ -221,24 +217,10 @@ public class EnemyEditorGui extends ActorGui {
 		}
 		button.addListener(menuChecker);
 		buttonGroup.add(button);
-		mMainTable.add(button);
+		addToEditorMenu(button);
 		mVisualHider.setButton(button);
-		mVisualHider.addToggleActor(mVisualTable);
+		mVisualHider.addToggleActor(getVisualTable());
 		new TooltipListener(button, "Visuals", Messages.replaceName(Messages.Tooltip.Actor.Menu.VISUALS, "enemy"));
-
-		// Options
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Options", textToggleStyle);
-		} else {
-			/** @todo default stub image button */
-			button = new ImageButton(editorSkin, "default-toggle");
-		}
-		button.addListener(menuChecker);
-		buttonGroup.add(button);
-		mMainTable.add(button);
-		mOptionHider.setButton(button);
-		mOptionHider.addToggleActor(mOptionTable);
-		new TooltipListener(button, "Options", Messages.replaceName(Messages.Tooltip.Actor.Menu.OPTIONS, "enemy"));
 
 		// Collision
 		if (Config.Gui.usesTextButtons()) {
@@ -249,18 +231,18 @@ public class EnemyEditorGui extends ActorGui {
 		}
 		button.addListener(menuChecker);
 		buttonGroup.add(button);
-		mMainTable.add(button);
+		addToEditorMenu(button);
 		mCollisionHider.setButton(button);
-		mCollisionHider.addToggleActor(mCollisionTable);
+		mCollisionHider.addToggleActor(getCollisionTable());
 		new TooltipListener(button, "Collision", Messages.replaceName(Messages.Tooltip.Actor.Menu.COLLISION, "enemy"));
 
 
-		mMainTable.row().setFillHeight(true).setAlign(Horizontal.RIGHT, Vertical.TOP);
-		mMainTable.add(mWeaponTable);
-		mMainTable.add(mVisualTable);
-		mMainTable.add(mMovementTable);
-		mMainTable.add(mOptionTable).setFillWidth(true).setFillHeight(true);
-		mMainTable.add(mCollisionTable);
+		//		mMainTable.row().setFillHeight(true).setAlign(Horizontal.RIGHT, Vertical.TOP);
+		//		mMainTable.add(mWeaponTable);
+		//		mMainTable.add(mVisualTable);
+		//		mMainTable.add(mMovementTable);
+		//		mMainTable.add(mOptionTable).setFillWidth(true).setFillHeight(true);
+		//		mMainTable.add(mCollisionTable);
 	}
 
 	/**

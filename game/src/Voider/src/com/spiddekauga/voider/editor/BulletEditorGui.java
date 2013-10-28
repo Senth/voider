@@ -1,6 +1,5 @@
 package com.spiddekauga.voider.editor;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
@@ -10,7 +9,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider.SliderStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
@@ -22,9 +20,10 @@ import com.spiddekauga.utils.scene.ui.TooltipListener;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Editor;
 import com.spiddekauga.voider.Config.Editor.Weapon;
-import com.spiddekauga.voider.game.actors.ActorShapeTypes;
+import com.spiddekauga.voider.Config.Gui;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceNames;
+import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.utils.Messages;
 
 /**
@@ -40,32 +39,37 @@ public class BulletEditorGui extends ActorGui {
 
 		mMainTable.setTableAlign(Horizontal.RIGHT, Vertical.TOP);
 		mMainTable.setRowAlign(Horizontal.LEFT, Vertical.TOP);
-		mMainTable.setCellPaddingDefault(2, 2, 2, 2);
-		mVisualTable.setPreferences(mMainTable);
-		mWeaponTable.setPreferences(mMainTable);
-		mOptionTable.setPreferences(mMainTable);
+		mMainTable.setCellPaddingDefault(Gui.PADDING_DEFAULT);
 
 
-		initVisual("bullet",
-				ActorShapeTypes.CIRCLE,
-				ActorShapeTypes.TRIANGLE,
-				ActorShapeTypes.RECTANGLE,
-				ActorShapeTypes.CUSTOM
-				);
+		//		mVisualTable.setPreferences(mMainTable);
+		//		mWeaponTable.setPreferences(mMainTable);
+		//		mOptionTable.setPreferences(mMainTable);
+
+
+		//		initVisual("bullet",
+		//				ActorShapeTypes.CIRCLE,
+		//				ActorShapeTypes.TRIANGLE,
+		//				ActorShapeTypes.RECTANGLE,
+		//				ActorShapeTypes.CUSTOM
+		//				);
+		//		initWeapon();
+		//		initOptions("bullet");
+		//		initFileMenu("bullet");
+		//		initMenu();
+
+		initVisual();
 		initWeapon();
-		initOptions("bullet");
-		initFileMenu("bullet");
-		initMenu();
-
+		initMainMenu();
 		resetValues();
 
 
-		mMainTable.setTransform(true);
-		mVisualTable.setTransform(true);
-		mOptionTable.setTransform(true);
-		mWeaponTable.setTransform(true);
-		mMainTable.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		mMainTable.invalidate();
+		//		mMainTable.setTransform(true);
+		//		mVisualTable.setTransform(true);
+		//		mOptionTable.setTransform(true);
+		//		mWeaponTable.setTransform(true);
+		//		mMainTable.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		//		mMainTable.invalidate();
 	}
 
 	@Override
@@ -83,6 +87,46 @@ public class BulletEditorGui extends ActorGui {
 		mWidgets.weapon.bulletSpeed.setValue(mBulletEditor.getBulletSpeed());
 		mWidgets.weapon.cooldownMin.setValue(mBulletEditor.getCooldownMin());
 		mWidgets.weapon.cooldownMax.setValue(mBulletEditor.getCooldownMax());
+	}
+
+	/**
+	 * Initializes menu for switching between visuals and weapon
+	 */
+	private void initMainMenu() {
+		// Visual
+		GuiCheckCommandCreator menuChecker = new GuiCheckCommandCreator(mInvoker);
+		Button button;
+		ButtonGroup buttonGroup = new ButtonGroup();
+		/** @todo remove text button */
+		if (Config.Gui.usesTextButtons()) {
+			button = new TextButton("Visuals", mStyles.textButton.toggle);
+		} else {
+			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.VISUALS.toString());
+		}
+		button.addListener(menuChecker);
+		buttonGroup.add(button);
+		addToEditorMenu(button);
+		mVisualHider.addToggleActor(getVisualTable());
+		mVisualHider.setButton(button);
+		new TooltipListener(button, "Visuals", Messages.replaceName(Messages.Tooltip.Actor.Menu.VISUALS, "bullet"));
+
+		// Weapon
+		/** @todo remove text button */
+		if (Config.Gui.usesTextButtons()) {
+			button = new TextButton("Weapon", mStyles.textButton.toggle);
+		} else {
+			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.WEAPON.toString());
+		}
+		button.addListener(menuChecker);
+		buttonGroup.add(button);
+		addToEditorMenu(button);
+		mWeaponHider.addToggleActor(mWeaponTable);
+		mWeaponHider.setButton(button);
+	}
+
+	@Override
+	protected void showInfoDialog() {
+		// TODO
 	}
 
 	/**
@@ -104,63 +148,63 @@ public class BulletEditorGui extends ActorGui {
 	 * Initializes the top menu
 	 */
 	private void initMenu() {
-		Skin generalSkin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
-		TextButtonStyle textToggleStyle = generalSkin .get("toggle", TextButtonStyle.class);
-		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.UI_EDITOR_BUTTONS);
-
-
-		// --- Active options ---
-		mMainTable.row().setAlign(Horizontal.CENTER, Vertical.BOTTOM);
-		ButtonGroup buttonGroup = new ButtonGroup();
-
-		// Visual
-		GuiCheckCommandCreator menuChecker = new GuiCheckCommandCreator(mInvoker);
-		Button button;
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Visuals", textToggleStyle);
-		} else {
-			/** @todo default stub image button */
-			button = new ImageButton(editorSkin, "default-toggle");
-		}
-		button.addListener(menuChecker);
-		buttonGroup.add(button);
-		mMainTable.add(button);
-		mVisualHider.addToggleActor(mVisualTable);
-		mVisualHider.setButton(button);
-		new TooltipListener(button, "Visuals", Messages.replaceName(Messages.Tooltip.Actor.Menu.VISUALS, "bullet"));
-
-		// Weapon
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Weapon", textToggleStyle);
-		} else {
-			/** @todo default stub image button */
-			button = new ImageButton(editorSkin, "default-toggle");
-		}
-		button.addListener(menuChecker);
-		buttonGroup.add(button);
-		mMainTable.add(button);
-		mWeaponHider.addToggleActor(mWeaponTable);
-		mWeaponHider.setButton(button);
-
-		// Options
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Options", textToggleStyle);
-		} else {
-			/** @todo default stub image button */
-			button = new ImageButton(editorSkin, "default-toggle");
-		}
-		button.addListener(menuChecker);
-		buttonGroup.add(button);
-		mMainTable.add(button);
-		mOptionHider.setButton(button);
-		mOptionHider.addToggleActor(mOptionTable);
-		new TooltipListener(button, "Options", Messages.replaceName(Messages.Tooltip.Actor.Menu.OPTIONS, "bullet"));
-
-
-		mMainTable.row().setFillHeight(true).setAlign(Horizontal.LEFT, Vertical.TOP);
-		mMainTable.add(mWeaponTable).setFillWidth(true);
-		mMainTable.add(mVisualTable);
-		mMainTable.add(mOptionTable).setFillWidth(true).setFillHeight(true);
+		//		Skin generalSkin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
+		//		TextButtonStyle mStyles.textButton.toggle = generalSkin .get("toggle", TextButtonStyle.class);
+		//		Skin mStyles.skin.editor = ResourceCacheFacade.get(ResourceNames.UI_EDITOR_BUTTONS);
+		//
+		//
+		//		// --- Active options ---
+		//		mMainTable.row().setAlign(Horizontal.CENTER, Vertical.BOTTOM);
+		//		ButtonGroup buttonGroup = new ButtonGroup();
+		//
+		//		// Visual
+		//		GuiCheckCommandCreator menuChecker = new GuiCheckCommandCreator(mInvoker);
+		//		Button button;
+		//		if (Config.Gui.usesTextButtons()) {
+		//			button = new TextButton("Visuals", mStyles.textButton.toggle);
+		//		} else {
+		//			/** @todo default stub image button */
+		//			button = new ImageButton(mStyles.skin.editor, "default-toggle");
+		//		}
+		//		button.addListener(menuChecker);
+		//		buttonGroup.add(button);
+		//		mMainTable.add(button);
+		//		mVisualHider.addToggleActor(mVisualTable);
+		//		mVisualHider.setButton(button);
+		//		new TooltipListener(button, "Visuals", Messages.replaceName(Messages.Tooltip.Actor.Menu.VISUALS, "bullet"));
+		//
+		//		// Weapon
+		//		if (Config.Gui.usesTextButtons()) {
+		//			button = new TextButton("Weapon", mStyles.textButton.toggle);
+		//		} else {
+		//			/** @todo default stub image button */
+		//			button = new ImageButton(mStyles.skin.editor, "default-toggle");
+		//		}
+		//		button.addListener(menuChecker);
+		//		buttonGroup.add(button);
+		//		mMainTable.add(button);
+		//		mWeaponHider.addToggleActor(mWeaponTable);
+		//		mWeaponHider.setButton(button);
+		//
+		//		// Options
+		//		if (Config.Gui.usesTextButtons()) {
+		//			button = new TextButton("Options", mStyles.textButton.toggle);
+		//		} else {
+		//			/** @todo default stub image button */
+		//			button = new ImageButton(mStyles.skin.editor, "default-toggle");
+		//		}
+		//		button.addListener(menuChecker);
+		//		buttonGroup.add(button);
+		//		mMainTable.add(button);
+		//		mOptionHider.setButton(button);
+		//		mOptionHider.addToggleActor(mOptionTable);
+		//		new TooltipListener(button, "Options", Messages.replaceName(Messages.Tooltip.Actor.Menu.OPTIONS, "bullet"));
+		//
+		//
+		//		mMainTable.row().setFillHeight(true).setAlign(Horizontal.LEFT, Vertical.TOP);
+		//		mMainTable.add(mWeaponTable).setFillWidth(true);
+		//		mMainTable.add(mVisualTable);
+		//		mMainTable.add(mOptionTable).setFillWidth(true).setFillHeight(true);
 	}
 
 	/**

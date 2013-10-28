@@ -691,7 +691,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	 */
 	String getLevelRevision() {
 		if (mLevel != null) {
-			return String.valueOf(mLevel.getDef().getRevision());
+			return String.valueOf(mLevel.getRevision());
 		}
 		else {
 			return "";

@@ -512,7 +512,7 @@ public class Config {
 		/** Name of the latest copy in revision directories */
 		public final static String REVISION_LATEST_NAME = "LATEST";
 		/** Uses external images, etc. instead of internal for resources */
-		public final static boolean USE_EXTERNAL_RESOURCES = true;
+		public final static boolean USE_EXTERNAL_RESOURCES = false;
 	}
 
 	/**
@@ -547,7 +547,7 @@ public class Config {
 	 */
 	public static class Graphics {
 		/** If we shall use debug_renderer to display graphics instead of sprites (where applicable) */
-		public final static boolean USE_DEBUG_RENDERER = false;
+		public final static boolean USE_DEBUG_RENDERER = true;
 		/** Renders regular graphics */
 		public final static boolean USE_RELEASE_RENDERER = true;
 		/** Epsilon for box 2d */
@@ -584,7 +584,7 @@ public class Config {
 		/** Seconds before text field commands aren't combinable */
 		public final static float TEXT_FIELD_COMBINABLE_WITHIN = 1;
 		/** Separator padding */
-		public final static float SEPARATE_PADDING = 5;
+		public final static float SEPARATE_PADDING = 10;
 		/** Seconds before tooltip is shown when hovering over */
 		public final static float TOOLTIP_HOVER_SHOW = 0.5f;
 		/** Seconds before tooltip is shown when pressing */
