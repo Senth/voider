@@ -21,7 +21,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.SnapshotArray;
-import com.spiddekauga.utils.Invoker;
 import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.voider.Config;
@@ -571,11 +570,6 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 	@Override
 	public void redo() {
 		mInvoker.redo();
-	}
-
-	@Override
-	public Invoker getInvoker() {
-		return mInvoker;
 	}
 
 	/**
@@ -1439,8 +1433,6 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 	private Field mfEnemyOnceReachEnd = null;
 	/** Player actor, for the enemies to work properly */
 	private PlayerActor mPlayerActor = null;
-	/** Invoker */
-	private Invoker mInvoker = new Invoker();
 	/** Listens for collisions */
 	private CollisionResolver mCollisionResolver = new CollisionResolver();
 	/** Vector brush to render when drawing custom shapes */

@@ -50,6 +50,7 @@ public class EnemyEditorGui extends ActorGui {
 	public void setEnemyEditor(EnemyEditor enemyEditor) {
 		mEnemyEditor = enemyEditor;
 		setActorEditor(mEnemyEditor);
+		setEditor(enemyEditor);
 	}
 
 	@Override

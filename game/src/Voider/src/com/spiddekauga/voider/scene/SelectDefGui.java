@@ -21,12 +21,10 @@ import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
-import com.spiddekauga.utils.scene.ui.Cell;
 import com.spiddekauga.utils.scene.ui.HideManual;
 import com.spiddekauga.utils.scene.ui.Label;
 import com.spiddekauga.utils.scene.ui.Label.LabelStyle;
 import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
-import com.spiddekauga.utils.scene.ui.Row;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
@@ -64,11 +62,12 @@ public class SelectDefGui extends Gui {
 
 		mMainTable.setTableAlign(Horizontal.LEFT, Vertical.TOP);
 		mMainTable.setRowAlign(Horizontal.LEFT, Vertical.TOP);
+		//		mMainTable.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		mMainTable.setScalable(false);
 		mDefTable.setPreferences(mMainTable);
 		mDefTable.setKeepSize(true);
+		mDefTable.setName("DefTable");
 		mInfoPanel.setPreferences(mMainTable);
-		mInfoPanel.setRowPaddingDefault(2, 2, 2, 2);
 		mInfoPanel.setKeepSize(true);
 		mInfoPanel.setWidth(Gdx.graphics.getWidth()*0.20f);
 
@@ -77,6 +76,13 @@ public class SelectDefGui extends Gui {
 		initInfoPanel();
 		initSelectRevision();
 
+		resetValues();
+	}
+
+	@Override
+	public void resize(int width, int height) {
+		super.resize(width, height);
+		mMainTable.setSize(width, height);
 		resetValues();
 	}
 
@@ -90,10 +96,8 @@ public class SelectDefGui extends Gui {
 		CheckBoxStyle checkBoxStyle = editorSkin.get("default", CheckBoxStyle.class);
 
 		TextField textField = new TextField("", textFieldStyle);
-		Row row = mMainTable.row();
-		row.setFillWidth(true);
-		Cell cell = mMainTable.add(textField);
-		cell.setFillWidth(true);
+		mMainTable.row().setFillWidth(true);
+		mMainTable.add(textField).setFillWidth(true);
 		new TextFieldListener(textField, "Filter", null) {
 			@Override
 			protected void onChange(String newText) {
@@ -113,14 +117,13 @@ public class SelectDefGui extends Gui {
 			mMainTable.add(checkBox);
 		}
 
-
+		mMainTable.row().setFillWidth(true);
 	}
 
 	/**
 	 * Initializes the definition table
 	 */
 	private void initDefTable() {
-		mMainTable.row().setFillWidth(true).setFillHeight(true);
 		mMainTable.add(mDefTable).setFillWidth(true);
 	}
 
@@ -128,7 +131,7 @@ public class SelectDefGui extends Gui {
 	 * Initializes info panel to the right
 	 */
 	private void initInfoPanel() {
-		mMainTable.add(mInfoPanel).setFillHeight(true);
+		//		mMainTable.add(mInfoPanel).setFillHeight(true);
 		mInfoPanelHider.addToggleActor(mInfoPanel);
 
 		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
@@ -181,11 +184,11 @@ public class SelectDefGui extends Gui {
 		mInfoPanel.add(label);
 
 		// Padding
-		mInfoPanel.row().setFillHeight(true);
+		//		mInfoPanel.row().setFillHeight(true);
 
 
 		// Select another revision
-		mInfoPanel.row().setFillWidth(true);
+		//		mInfoPanel.row().setFillWidth(true);
 		if (mSelectDefScene.canChooseRevision()) {
 			TextButton button = new TextButton("Select rev.", buttonStyle);
 			new ButtonListener(button) {
@@ -196,7 +199,8 @@ public class SelectDefGui extends Gui {
 			};
 			mInfoPanel.add(button);
 		}
-		mInfoPanel.add().setFillWidth(true);
+		//		mInfoPanel.add().setFillWidth(true);
+		mInfoPanel.row(Horizontal.RIGHT, Vertical.BOTTOM);
 
 		// Load
 		TextButton button = new TextButton("Load", buttonStyle);
@@ -237,9 +241,7 @@ public class SelectDefGui extends Gui {
 		for (DefVisible defVisible : mSelectDefScene.getDefs()) {
 			if (defVisible.visible) {
 				if (cellCount == 0) {
-					Row row = mDefTable.row();
-					row.setEqualCellSize(true);
-					row.setFillWidth(true);
+					mDefTable.row().setEqualCellSize(true).setFillWidth(true);
 				}
 
 				TextButton button = new TextButton(defVisible.def.getName(), toggleStyle);
@@ -248,8 +250,7 @@ public class SelectDefGui extends Gui {
 
 				/** @todo cut text if too long */
 				buttonGroup.add(button);
-				Cell cell = mDefTable.add(button);
-				cell.setFillWidth(true);
+				mDefTable.add(button).setFillWidth(true);
 
 				++cellCount;
 

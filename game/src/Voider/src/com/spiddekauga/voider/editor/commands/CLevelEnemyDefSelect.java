@@ -15,12 +15,10 @@ public class CLevelEnemyDefSelect extends Command {
 	/**
 	 * Creates a command that will select an enemy in the specified level editor.
 	 * @param id enemy id to select
-	 * @param revision enemy revision to select
 	 * @param levelEditor level editor to select the enemy in
 	 */
-	public CLevelEnemyDefSelect(UUID id, int revision, LevelEditor levelEditor) {
+	public CLevelEnemyDefSelect(UUID id, LevelEditor levelEditor) {
 		mId = id;
-		mRevision = revision;
 		mLevelEditor = levelEditor;
 		ActorDef selectedEnemy = levelEditor.getSelectedEnemyDef();
 		if (selectedEnemy != null) {
@@ -31,20 +29,18 @@ public class CLevelEnemyDefSelect extends Command {
 
 	@Override
 	public boolean execute() {
-		boolean success = mLevelEditor.selectEnemyDef(mId, mRevision);
+		boolean success = mLevelEditor.selectEnemyDef(mId);
 		return success;
 	}
 
 	@Override
 	public boolean undo() {
-		boolean success = mLevelEditor.selectEnemyDef(mIdPrev, mRevisionPrev);
+		boolean success = mLevelEditor.selectEnemyDef(mIdPrev);
 		return success;
 	}
 
 	/** The enemy to select (on execute) */
 	private UUID mId;
-	/** Enemy revision to select (on execute) */
-	private int mRevision;
 	/** Previous enemy id (on undo) */
 	private UUID mIdPrev = null;
 	/** Previous enemy revision (on undo) */

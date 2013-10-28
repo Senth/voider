@@ -156,7 +156,6 @@ public abstract class ActorGui extends EditorGui {
 	 */
 	protected void setActorEditor(IActorEditor actorEditor) {
 		mActorEditor = actorEditor;
-
 		mInvoker = mActorEditor.getInvoker();
 	}
 

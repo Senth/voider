@@ -91,6 +91,24 @@ public class SkinNames {
 		SELECT,
 		/** Remove corner from a path */
 		PATH_REMOVE_CORNER,
+		/** Undo */
+		UNDO,
+		/** Redo */
+		REDO,
+		/** Set activate trigger for enemies. I.e. binds the enemy to a trigger */
+		ENEMY_SET_ACTIVATE_TRIGGER,
+		/** Set deactivate trigger for enemies. I.e. binds the enemy to a trigger */
+		ENEMY_SET_DEACTIVATE_TRIGGER,
+		/** How enemies should move in the path ONCE means just once.
+		 * Then it will just continue in a straight line when it reaches the end of the path */
+		PATH_ONCE,
+		/** How enemies should move in the path. Back and forth means once it reached
+		 * the end it will move backwards on the path */
+		PATH_BACK_AND_FORTH,
+		/** How enemies should move in the path. Loop means once the enemy reaches the end
+		 * it will go directly (i.e. not along the path) to the start and go through
+		 * the path again and again... */
+		PATH_LOOP,
 
 		;
 

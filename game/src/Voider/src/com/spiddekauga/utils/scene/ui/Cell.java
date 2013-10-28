@@ -461,7 +461,7 @@ public class Cell implements Poolable {
 
 	/**
 	 * Call this to layout the cell
-	 * @param startPos starting positino of the cell
+	 * @param startPos starting position of the cell
 	 * @param size available size for the cell
 	 */
 	void layout(Vector2 startPos, Vector2 size) {

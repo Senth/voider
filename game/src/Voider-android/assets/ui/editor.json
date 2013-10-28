@@ -108,6 +108,24 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageDown: load,
 		imageUp: load
 	},
+	
+	undo: {
+		down: button-default-down,
+		up: button-default-up,
+		disabled: button-default-disabled,
+		over: button-default-over,
+		imageDown: undo,
+		imageUp: undo
+	},
+	
+	redo: {
+		down: button-default-down,
+		up: button-default-up,
+		disabled: button-default-disabled,
+		over: button-default-over,
+		imageDown: redo,
+		imageUp: redo
+	},
 
 	duplicate: {
 		down: button-default-down,
@@ -246,13 +264,9 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 	
 	pickup_select: {
 		down: button-default-down,
-		checked: button-default-checked,
 		up: button-default-up,
-		disabled: button-default-disabled,
 		over: button-default-over,
-		checkedOver: button-default-checked-over,
 		imageDown: pickup_select,
-		imageChecked: pickup_select,
 		imageUp: pickup_select
 	},
 	
@@ -268,15 +282,35 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageUp: enemy_add
 	},
 	
-	enemy_select: {
+	enemy_set_activate_trigger: {
 		down: button-default-down,
 		checked: button-default-checked,
 		up: button-default-up,
 		disabled: button-default-disabled,
 		over: button-default-over,
 		checkedOver: button-default-checked-over,
+		imageDown: enemy_set_activate_trigger,
+		imageChecked: enemy_set_activate_trigger,
+		imageUp: enemy_set_activate_trigger
+	},
+	
+	enemy_set_deactivate_trigger: {
+		down: button-default-down,
+		checked: button-default-checked,
+		up: button-default-up,
+		disabled: button-default-disabled,
+		over: button-default-over,
+		checkedOver: button-default-checked-over,
+		imageDown: enemy_set_deactivate_trigger,
+		imageChecked: enemy_set_deactivate_trigger,
+		imageUp: enemy_set_deactivate_trigger
+	},
+	
+	enemy_select: {
+		down: button-default-down,
+		up: button-default-up,
+		over: button-default-over,
 		imageDown: enemy_select,
-		imageChecked: enemy_select,
 		imageUp: enemy_select
 	},
 	
@@ -306,13 +340,9 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 	
 	bullet_select: {
 		down: button-default-down,
-		checked: button-default-checked,
 		up: button-default-up,
-		disabled: button-default-disabled,
 		over: button-default-over,
-		checkedOver: button-default-checked-over,
 		imageDown: bullet_select,
-		imageChecked: bullet_select,
 		imageUp: bullet_select
 	},
 	

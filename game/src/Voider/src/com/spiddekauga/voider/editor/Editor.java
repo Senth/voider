@@ -1,5 +1,6 @@
 package com.spiddekauga.voider.editor;
 
+import com.spiddekauga.utils.Invoker;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.scene.WorldScene;
@@ -15,8 +16,7 @@ public abstract class Editor extends WorldScene implements IEditor {
 	 * @param gui GUI to be used with the editor
 	 * @param pickRadius picking radius of the editor
 	 */
-	public Editor(
-			Gui gui, float pickRadius) {
+	public Editor(Gui gui, float pickRadius) {
 		super(gui, pickRadius);
 	}
 
@@ -72,6 +72,16 @@ public abstract class Editor extends WorldScene implements IEditor {
 		mActivityTimeLast = getGameTime().getTotalTimeElapsed();
 	}
 
+	/**
+	 * @return invoker for the editor
+	 */
+	@Override
+	public Invoker getInvoker() {
+		return mInvoker;
+	}
+
+	/** Invoker */
+	protected Invoker mInvoker = new Invoker();
 	/** Is the resource currently saved? */
 	private boolean mSaved = false;
 	/** When the resource became unsaved */

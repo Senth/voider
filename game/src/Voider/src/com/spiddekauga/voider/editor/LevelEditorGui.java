@@ -36,6 +36,7 @@ import com.spiddekauga.voider.editor.commands.CGuiSlider;
 import com.spiddekauga.voider.game.Path.PathTypes;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceNames;
+import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.resources.SkinNames.EditorIcons;
 import com.spiddekauga.voider.utils.Messages;
 import com.spiddekauga.voider.utils.Pools;
@@ -67,23 +68,24 @@ class LevelEditorGui extends EditorGui {
 
 		mPickupTable.setPreferences(mMainTable);
 		mPickupTable.setRowAlign(Horizontal.RIGHT, Vertical.MIDDLE);
-		mEnemyTable.setPreferences(mMainTable);
-		mEnemyTable.setRowAlign(Horizontal.RIGHT, Vertical.MIDDLE);
+		mWidgets.enemy.table.setPreferences(mMainTable);
+		mWidgets.enemy.table.setRowAlign(Horizontal.RIGHT, Vertical.MIDDLE);
 		mOptionTable.setPreferences(mMainTable);
 
 		mHiders = new Hiders();
 
+		initToolMenu();
 		//		initOptions();
 		//		initPickup();
-		initToolMenu();
-		//		initEnemy();
-		initPathTable();
+		initPathOptions();
+		initEnemyAddOptions();
+		initEnemyOptions();
 	}
 
 	@Override
 	public void dispose() {
 		mPickupTable.dispose();
-		mEnemyTable.dispose();
+		mWidgets.enemy.table.dispose();
 		mOptionTable.dispose();
 
 		super.dispose();
@@ -92,7 +94,29 @@ class LevelEditorGui extends EditorGui {
 	@Override
 	public void resetValues() {
 
-		// Path
+		resetPathOptions();
+		resetEnemyOptions();
+
+
+
+
+		//
+		//
+		//		// General options
+		//		mWidgets.option.description.setText(mLevelEditor.getLevelDescription());
+		//		mWidgets.option.name.setText(mLevelEditor.getLevelName());
+		//		mWidgets.option.revision.setText(mLevelEditor.getLevelRevision());
+		//		mWidgets.option.storyBefore.setText(mLevelEditor.getPrologue());
+		//		mWidgets.option.epilogue.setText(mLevelEditor.getEpilogue());
+		//		mWidgets.option.speed.setValue(mLevelEditor.getLevelStartingSpeed());
+		//
+		//
+	}
+
+	/**
+	 * Reset path options
+	 */
+	void resetPathOptions() {
 		if (mLevelEditor.isPathSelected()) {
 			mHiders.pathOptions.show();
 
@@ -120,206 +144,70 @@ class LevelEditorGui extends EditorGui {
 		} else {
 			mHiders.pathOptions.hide();
 		}
-
-		//		// Main menu
-		//		switch (mLevelEditor.getSelectedTool()) {
-		//		case ENEMY:
-		//			mOldWidgets.menu.enemy.setChecked(true);
-		//			mOldWidgets.enemyMenu.enemy.setChecked(true);
-		//			break;
-		//
-		//		case PATH:
-		//			mOldWidgets.menu.enemy.setChecked(true);
-		//			mOldWidgets.enemyMenu.path.setChecked(true);
-		//			break;
-		//
-		//		case TRIGGER:
-		//			mOldWidgets.menu.enemy.setChecked(true);
-		//			mOldWidgets.enemyMenu.trigger.setChecked(true);
-		//			break;
-		//
-		//		case PICKUP:
-		//			mOldWidgets.menu.pickup.setChecked(true);
-		//			break;
-		//
-		//		case STATIC_TERRAIN:
-		//			mOldWidgets.menu.terrain.setChecked(true);
-		//			break;
-		//		}
-		//
-		//
-		//		// Enemy
-		//		if (mLevelEditor.getSelectedTool() == ToolGroups.ENEMY) {
-		//			switch (mLevelEditor.getEnemyState()) {
-		//			case ADD:
-		//				mOldWidgets.enemy.add.setChecked(true);
-		//				break;
-		//
-		//			case SELECT:
-		//				mOldWidgets.enemy.select.setChecked(true);
-		//				break;
-		//
-		//			case MOVE:
-		//				mOldWidgets.enemy.move.setChecked(true);
-		//				break;
-		//
-		//			case REMOVE:
-		//				mOldWidgets.enemy.remove.setChecked(true);
-		//				break;
-		//
-		//			case SET_ACTIVATE_TRIGGER:
-		//				mOldWidgets.enemy.activateTrigger.setChecked(true);
-		//				break;
-		//
-		//			case SET_DEACTIVATE_TRIGGER:
-		//				mOldWidgets.enemy.deactivateTrigger.setChecked(true);
-		//				break;
-		//			}
-		//		}
-		//
-		//		// Enemy options
-		//		resetEnemyOptions();
-		//
-		//
-		//		// General options
-		//		mOldWidgets.option.description.setText(mLevelEditor.getLevelDescription());
-		//		mOldWidgets.option.name.setText(mLevelEditor.getLevelName());
-		//		mOldWidgets.option.revision.setText(mLevelEditor.getLevelRevision());
-		//		mOldWidgets.option.storyBefore.setText(mLevelEditor.getPrologue());
-		//		mOldWidgets.option.epilogue.setText(mLevelEditor.getEpilogue());
-		//		mOldWidgets.option.speed.setValue(mLevelEditor.getLevelStartingSpeed());
-		//
-		//
-		//		// Path
-		//		if (mLevelEditor.getSelectedTool() == ToolGroups.PATH) {
-		//			switch (mLevelEditor.getPathState()) {
-		//			case ADD_CORNER:
-		//				mOldWidgets.path.add.setChecked(true);
-		//				break;
-		//
-		//			case SELECT:
-		//				mOldWidgets.path.select.setChecked(true);
-		//				break;
-		//
-		//			case MOVE:
-		//				mOldWidgets.path.move.setChecked(true);
-		//				break;
-		//
-		//			case REMOVE:
-		//				mOldWidgets.path.remove.setChecked(true);
-		//				break;
-		//			}
-		//		}
-		//
-		//		// Path options
-		//		if (mLevelEditor.isPathSelected()) {
-		//			mOldHiders.pathOptions.show();
-		//			setPathType(mLevelEditor.getPathType());
-		//		} else {
-		//			mOldHiders.pathOptions.hide();
-		//		}
-		//
-		//
-		//		// Pickup
-		//		switch (mLevelEditor.getPickupState()) {
-		//		case ADD:
-		//			mOldWidgets.pickup.add.setChecked(true);
-		//			break;
-		//
-		//		case SELECT:
-		//			// Does nothing
-		//			break;
-		//
-		//		case MOVE:
-		//			mOldWidgets.pickup.move.setChecked(true);
-		//			break;
-		//
-		//		case REMOVE:
-		//			mOldWidgets.pickup.remove.setChecked(true);
-		//			break;
-		//		}
-		//
-		//		String pickupName = mLevelEditor.getSelectedPickupName();
-		//		if (pickupName == null) {
-		//			pickupName = Messages.getNoDefSelected("pickup");
-		//		}
-		//		mOldWidgets.pickup.name.setText(pickupName);
-		//		mOldWidgets.pickup.name.setSize(mOldWidgets.pickup.name.getPrefWidth(), mOldWidgets.pickup.name.getPrefHeight());
-		//
-		//
-		//		// Terrain
-		//		switch (mLevelEditor.getStaticTerrainState()) {
-		//		case DRAW_APPEND:
-		//			mOldWidgets.terrain.append.setChecked(true);
-		//			break;
-		//
-		//		case ADJUST_ADD_CORNER:
-		//			mOldWidgets.terrain.addCorner.setChecked(true);
-		//			break;
-		//
-		//		case ADJUST_MOVE_CORNER:
-		//			mOldWidgets.terrain.moveCorner.setChecked(true);
-		//			break;
-		//
-		//		case ADJUST_REMOVE_CORNER:
-		//			mOldWidgets.terrain.removeCorner.setChecked(true);
-		//			break;
-		//
-		//		case DRAW_ERASE:
-		//			mOldWidgets.terrain.drawErase.setChecked(true);
-		//			break;
-		//
-		//		case MOVE:
-		//			mOldWidgets.terrain.move.setChecked(true);
-		//			break;
-		//
-		//		case SET_CENTER:
-		//			// Does nothing
-		//			break;
-		//
-		//		default:
-		//			break;
-		//		}
-		//
-		//
-		//		// Trigger
-		//		if (mLevelEditor.getSelectedTool() == ToolGroups.TRIGGER) {
-		//			switch (mLevelEditor.getTriggerState()) {
-		//			case ADD:
-		//				mOldWidgets.trigger.add.setChecked(true);
-		//				break;
-		//
-		//			case MOVE:
-		//				mOldWidgets.trigger.move.setChecked(true);
-		//				break;
-		//
-		//			case REMOVE:
-		//				mOldWidgets.trigger.remove.setChecked(true);
-		//				break;
-		//
-		//			case SELECT:
-		//				// Does nothing
-		//				break;
-		//			}
-		//		}
 	}
 
 	/**
 	 * Resets enemy option values
 	 */
 	void resetEnemyOptions() {
-		//		String enemyName = mLevelEditor.getSelectedEnemyName();
-		//		if (enemyName == null) {
-		//			enemyName = Messages.getNoDefSelected("enemy");
-		//		}
-		//		mOldWidgets.enemy.name.setText(enemyName);
-		//		mOldWidgets.enemy.name.setSize(mOldWidgets.enemy.name.getPrefWidth(), mOldWidgets.enemy.name.getPrefHeight());
+
+		// Add name
+		String enemyName = mLevelEditor.getSelectedEnemyName();
+		if (enemyName == null) {
+			enemyName = Messages.getNoDefSelected("enemy");
+		}
+		mWidgets.enemyAdd.name.setText(enemyName);
+		mWidgets.enemyAdd.name.setSize(mWidgets.enemyAdd.name.getPrefWidth(), mWidgets.enemyAdd.name.getPrefHeight());
+
+
+		// Show/Hide options
+		if (mLevelEditor.isEnemySelected()) {
+			mHiders.enemyOptions.show();
+
+			// Update enemy count slider values
+			if (mWidgets.enemy.cEnemies.getValue() != mLevelEditor.getEnemyCount()) {
+				mInvoker.execute(new CGuiSlider(mWidgets.enemy.cEnemies, mLevelEditor.getEnemyCount(), mWidgets.enemy.cEnemies.getValue()), true);
+			}
+
+			// Update enemy delay slider values
+			if (mLevelEditor.getEnemySpawnDelay() >= 0 &&  mLevelEditor.getEnemySpawnDelay() != mWidgets.enemy.betweenDelay.getValue()) {
+				mInvoker.execute(new CGuiSlider(mWidgets.enemy.betweenDelay, mLevelEditor.getEnemySpawnDelay(), mWidgets.enemy.betweenDelay.getValue()), true);
+			}
+
+			// Has activate trigger -> Show trigger delay
+			if (mLevelEditor.hasSelectedEnemyActivateTrigger()) {
+				mHiders.enemyActivateDelay.show();
+
+				float activateDelay = mLevelEditor.getSelectedEnemyActivateTriggerDelay();
+				if (activateDelay >= 0 && activateDelay != mWidgets.enemy.activateDelay.getValue()) {
+					mInvoker.execute(new CGuiSlider(mWidgets.enemy.activateDelay, activateDelay, mWidgets.enemy.activateDelay.getValue()));
+				}
+			} else {
+				mHiders.enemyActivateDelay.hide();
+			}
+
+
+			// Has deactivate trigger -> Show trigger delay
+			if (mLevelEditor.hasSelectedEnemyDeactivateTrigger()) {
+				mHiders.enemyDeactivateDelay.show();
+
+				float deactivateDelay = mLevelEditor.getSelectedEnemyDeactivateTriggerDelay();
+				if (deactivateDelay >= 0 && deactivateDelay!= mWidgets.enemy.deactivateDelay.getValue()) {
+					mInvoker.execute(new CGuiSlider(mWidgets.enemy.deactivateDelay, deactivateDelay, mWidgets.enemy.deactivateDelay.getValue()));
+				}
+			} else {
+				mHiders.enemyDeactivateDelay.hide();
+			}
+
+		} else {
+			mHiders.enemyOptions.hide();
+		}
 		//
 		//
 		//		if (mLevelEditor.isEnemySelected()) {
-		//			mOldHiders.enemyOptions.show();
+		//			mHiders.enemyOptions.show();
 		//		} else {
-		//			mOldHiders.enemyOptions.hide();
+		//			mHiders.enemyOptions.hide();
 		//
 		//			// Current state is set active/deactive trigger, change to select instead
 		//			if (mLevelEditor.getEnemyState() == AddEnemyTool.States.SET_ACTIVATE_TRIGGER ||
@@ -330,38 +218,38 @@ class LevelEditorGui extends EditorGui {
 		//			return;
 		//		}
 		//
-		//		if (mOldWidgets.enemy.cEnemies.getValue() != mLevelEditor.getEnemyCount()) {
-		//			mInvoker.execute(new CGuiSlider(mOldWidgets.enemy.cEnemies, mLevelEditor.getEnemyCount(), mOldWidgets.enemy.cEnemies.getValue()), true);
+		//		if (mWidgets.enemy.cEnemies.getValue() != mLevelEditor.getEnemyCount()) {
+		//			mInvoker.execute(new CGuiSlider(mWidgets.enemy.cEnemies, mLevelEditor.getEnemyCount(), mWidgets.enemy.cEnemies.getValue()), true);
 		//		}
 		//
-		//		if (mLevelEditor.getEnemySpawnDelay() >= 0 &&  mLevelEditor.getEnemySpawnDelay() != mOldWidgets.enemy.betweenDelay.getValue()) {
-		//			mInvoker.execute(new CGuiSlider(mOldWidgets.enemy.betweenDelay, mLevelEditor.getEnemySpawnDelay(), mOldWidgets.enemy.betweenDelay.getValue()), true);
+		//		if (mLevelEditor.getEnemySpawnDelay() >= 0 &&  mLevelEditor.getEnemySpawnDelay() != mWidgets.enemy.betweenDelay.getValue()) {
+		//			mInvoker.execute(new CGuiSlider(mWidgets.enemy.betweenDelay, mLevelEditor.getEnemySpawnDelay(), mWidgets.enemy.betweenDelay.getValue()), true);
 		//		}
 		//
 		//
 		//		// Has activate trigger -> Show trigger delay
 		//		if (mLevelEditor.hasSelectedEnemyActivateTrigger()) {
-		//			mOldHiders.enemyActivateDelay.show();
+		//			mHiders.enemyActivateDelay.show();
 		//
 		//			float activateDelay = mLevelEditor.getSelectedEnemyActivateTriggerDelay();
-		//			if (activateDelay >= 0 && activateDelay != mOldWidgets.enemy.activateDelay.getValue()) {
-		//				mInvoker.execute(new CGuiSlider(mOldWidgets.enemy.activateDelay, activateDelay, mOldWidgets.enemy.activateDelay.getValue()));
+		//			if (activateDelay >= 0 && activateDelay != mWidgets.enemy.activateDelay.getValue()) {
+		//				mInvoker.execute(new CGuiSlider(mWidgets.enemy.activateDelay, activateDelay, mWidgets.enemy.activateDelay.getValue()));
 		//			}
 		//		} else {
-		//			mOldHiders.enemyActivateDelay.hide();
+		//			mHiders.enemyActivateDelay.hide();
 		//		}
 		//
 		//
 		//		// Has deactivate trigger -> Show trigger delay
 		//		if (mLevelEditor.hasSelectedEnemyDeactivateTrigger()) {
-		//			mOldHiders.enemyDeactivateDelay.show();
+		//			mHiders.enemyDeactivateDelay.show();
 		//
 		//			float deactivateDelay = mLevelEditor.getSelectedEnemyDeactivateTriggerDelay();
-		//			if (deactivateDelay >= 0 && deactivateDelay!= mOldWidgets.enemy.deactivateDelay.getValue()) {
-		//				mInvoker.execute(new CGuiSlider(mOldWidgets.enemy.deactivateDelay, deactivateDelay, mOldWidgets.enemy.deactivateDelay.getValue()));
+		//			if (deactivateDelay >= 0 && deactivateDelay!= mWidgets.enemy.deactivateDelay.getValue()) {
+		//				mInvoker.execute(new CGuiSlider(mWidgets.enemy.deactivateDelay, deactivateDelay, mWidgets.enemy.deactivateDelay.getValue()));
 		//			}
 		//		} else {
-		//			mOldHiders.enemyDeactivateDelay.hide();
+		//			mHiders.enemyDeactivateDelay.hide();
 		//		}
 	}
 
@@ -534,11 +422,46 @@ class LevelEditorGui extends EditorGui {
 		} else {
 			button = new ImageButton(mEditorSkin, EditorIcons.ENEMY_ADD.toString());
 		}
+		mWidgets.tool.enemyAdd = button;
 		new ButtonListener(button) {
 			@Override
 			protected void onChecked(boolean checked) {
 				if (checked) {
 					mLevelEditor.switchTool(Tools.ENEMY_ADD);
+				}
+			}
+		};
+		toolButtons.add(button);
+
+		// Enemy - set activate trigger
+		/** @todo REMOVE text button */
+		if (Config.Gui.usesTextButtons()) {
+			button = new TextButton("Set activate trigger", mTextToggleStyle);
+		} else {
+			button = new ImageButton(mEditorSkin, EditorIcons.ENEMY_SET_ACTIVATE_TRIGGER.toString());
+		}
+		new ButtonListener(button) {
+			@Override
+			protected void onChecked(boolean checked) {
+				if (checked) {
+					mLevelEditor.switchTool(Tools.ENEMY_SET_ACTIVATE_TRIGGER);
+				}
+			}
+		};
+		toolButtons.add(button);
+
+		// ENemy - set deactivate trigger
+		/** @todo REMOVE text button */
+		if (Config.Gui.usesTextButtons()) {
+			button = new TextButton("Set deactivate trigger", mTextToggleStyle);
+		} else {
+			button = new ImageButton(mEditorSkin, EditorIcons.ENEMY_SET_DEACTIVATE_TRIGGER.toString());
+		}
+		new ButtonListener(button) {
+			@Override
+			protected void onChecked(boolean checked) {
+				if (checked) {
+					mLevelEditor.switchTool(Tools.ENEMY_SET_DEACTIVATE_TRIGGER);
 				}
 			}
 		};
@@ -561,22 +484,22 @@ class LevelEditorGui extends EditorGui {
 		};
 		toolButtons.add(button);
 
-		// Pickup add
-		/** @todo REMOVE text button */
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Add pickup", mTextToggleStyle);
-		} else {
-			button = new ImageButton(mEditorSkin, EditorIcons.PICKUP_ADD.toString());
-		}
-		new ButtonListener(button) {
-			@Override
-			protected void onChecked(boolean checked) {
-				if (checked) {
-					mLevelEditor.switchTool(Tools.PICKUP_ADD);
-				}
-			}
-		};
-		toolButtons.add(button);
+		//		// Pickup add
+		//		/** @todo REMOVE text button */
+		//		if (Config.Gui.usesTextButtons()) {
+		//			button = new TextButton("Add pickup", mTextToggleStyle);
+		//		} else {
+		//			button = new ImageButton(mEditorSkin, EditorIcons.PICKUP_ADD.toString());
+		//		}
+		//		new ButtonListener(button) {
+		//			@Override
+		//			protected void onChecked(boolean checked) {
+		//				if (checked) {
+		//					mLevelEditor.switchTool(Tools.PICKUP_ADD);
+		//				}
+		//			}
+		//		};
+		//		toolButtons.add(button);
 
 
 		// Add buttons to tool
@@ -781,142 +704,132 @@ class LevelEditorGui extends EditorGui {
 		mOptionTable.setKeepSize(true);
 	}
 
+	/**
+	 * Init add enemy options
+	 */
+	private void initEnemyAddOptions() {
+		Skin generalSkin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
+		TextButtonStyle textButtonStyle = generalSkin.get("default", TextButtonStyle.class);
+		LabelStyle labelStyle = generalSkin.get("default", LabelStyle.class);
+		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.UI_EDITOR_BUTTONS);
 
+		mWidgets.enemyAdd.table.setPreferences(mMainTable);
+		mWidgets.enemyAdd.table.row();
+		mHiders.enemyAdd.addToggleActor(mWidgets.enemyAdd.table);
+		mHiders.enemyAdd.setButton(mWidgets.tool.enemyAdd);
+		mMainTable.row();
+		mMainTable.add(mWidgets.enemyAdd.table);
+
+		Button button;
+		TooltipListener tooltipListener;
+
+		// Select type
+		Label label = new Label("", labelStyle);
+		new TooltipListener(label, "Enemy type name", Messages.Tooltip.Level.Enemy.SELECT_NAME);
+		mWidgets.enemyAdd.name = label;
+		mWidgets.enemyAdd.table.add(label).setAlign(Horizontal.RIGHT, Vertical.MIDDLE);
+
+		mWidgets.enemyAdd.table.row();
+		/** @todo remove text button */
+		if (Config.Gui.usesTextButtons()) {
+			button = new TextButton("Select type", textButtonStyle);
+		} else {
+			button = new ImageButton(editorSkin, SkinNames.EditorIcons.ENEMY_SELECT.toString());
+		}
+		mWidgets.enemyAdd.table.add(button);
+		tooltipListener = new TooltipListener(button, "Select enemy type", Messages.Tooltip.Level.Enemy.SELECT_TYPE);
+		new ButtonListener(button, tooltipListener) {
+			@Override
+			protected void onPressed() {
+				mLevelEditor.selectEnemy();
+			}
+		};
+
+		mWidgets.enemyAdd.table.row().setPadTop(Gui.SEPARATE_PADDING);
+	}
 
 	/**
 	 * Initializes Enemy Tool GUI
 	 */
-	private void initEnemy() {
+	private void initEnemyOptions() {
 		Skin generalSkin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
-		TextButtonStyle textButtonStyle = generalSkin.get("default", TextButtonStyle.class);
-		TextButtonStyle textToggleStyle = generalSkin.get("toggle", TextButtonStyle.class);
 		SliderStyle sliderStyle = generalSkin.get("default", SliderStyle.class);
 		TextFieldStyle textFieldStyle = generalSkin.get("default", TextFieldStyle.class);
 		LabelStyle labelStyle = generalSkin.get("default", LabelStyle.class);
-		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.UI_EDITOR_BUTTONS);
 
-		mEnemyTable.row();
-		GuiCheckCommandCreator enemyInnerMenu = new GuiCheckCommandCreator(mInvoker);
-		ButtonGroup menuGroup = new ButtonGroup();
-		Button button;
-
-		//		// Select type
-		//		mEnemyTable.row();
-		//		Label label = new Label("", labelStyle);
-		//		new TooltipListener(label, "Enemy type name", Messages.Tooltip.Level.Enemy.SELECT_NAME);
-		//		enemyAddHider.addToggleActor(label);
-		//		mWidgets.enemy.name = label;
-		//		mEnemyTable.add(label).setAlign(Horizontal.RIGHT, Vertical.MIDDLE);
-		//
-		//		if (Config.Gui.usesTextButtons()) {
-		//			button = new TextButton("Select type", textButtonStyle);
-		//		} else {
-		//			/** @todo default stub image button */
-		//			button = new ImageButton(editorSkin, "default-toggle");
-		//		}
-		//		enemyAddHider.addToggleActor(button);
-		//		mEnemyTable.add(button);
-		//		tooltipListener = new TooltipListener(button, "Select enemy type", Messages.Tooltip.Level.Enemy.SELECT_TYPE);
-		//		new ButtonListener(button, tooltipListener) {
-		//			@Override
-		//			protected void onPressed() {
-		//				mLevelEditor.selectEnemy();
-		//			}
-		//		};
+		mWidgets.enemy.table.setPreferences(mMainTable);
+		mMainTable.row();
+		mMainTable.add(mWidgets.enemy.table);
+		mHiders.enemyOptions.addToggleActor(mWidgets.enemy.table);
 
 
 		// Enemy options when an enemy is selected
 		// # Enemies
-		mEnemyTable.row();
+		mWidgets.enemy.table.row();
 		Label label = new Label("# Enemies", labelStyle);
 		new TooltipListener(label, "No. of enemies", Messages.Tooltip.Level.Enemy.ENEMY_COUNT);
-		mHiders.enemyOptions.addToggleActor(label);
-		mEnemyTable.add(label);
+		mWidgets.enemy.table.add(label);
 
-		mEnemyTable.row();
+		mWidgets.enemy.table.row();
 		Slider slider = new Slider(Level.Enemy.ENEMIES_MIN, Level.Enemy.ENEMIES_MAX, Level.Enemy.ENEMIES_STEP_SIZE, false, sliderStyle);
-		mHiders.enemyOptions.addToggleActor(slider);
 		mWidgets.enemy.cEnemies = slider;
-		mEnemyTable.add(slider);
+		mWidgets.enemy.table.add(slider);
 		TextField textField = new TextField("", textFieldStyle);
-		mHiders.enemyOptions.addToggleActor(textField);
 		textField.setWidth(Config.Editor.TEXT_FIELD_NUMBER_WIDTH);
-		mEnemyTable.add(textField);
+		mWidgets.enemy.table.add(textField);
 		new TooltipListener(slider, "No. of enemies", Messages.Tooltip.Level.Enemy.ENEMY_COUNT);
 		new TooltipListener(textField, "No. of enemies", Messages.Tooltip.Level.Enemy.ENEMY_COUNT);
 		new SliderListener(slider, textField, mInvoker) {
 			@Override
 			protected void onChange(float newValue) {
-				mInvoker.execute(new CGuiSlider(mSlider, newValue, mLevelEditor.getEnemyCount()));
 				mLevelEditor.setEnemyCount((int) (newValue + 0.5f));
 			}
 		};
 		HideSliderValue delayHider = new HideSliderValue(slider, 2, Float.MAX_VALUE);
 		mHiders.enemyOptions.addChild(delayHider);
 
+
 		// Delay
-		mEnemyTable.row();
+		mWidgets.enemy.table.row();
 		label = new Label("Spawn delay between enemies", labelStyle);
 		new TooltipListener(label, "Spawn delay", Messages.Tooltip.Level.Enemy.ENEMY_SPAWN_DELAY);
 		delayHider.addToggleActor(label);
-		mEnemyTable.add(label);
+		mWidgets.enemy.table.add(label);
 
-		mEnemyTable.row();
+		mWidgets.enemy.table.row();
 		slider = new Slider(Level.Enemy.DELAY_BETWEEN_MIN, Level.Enemy.DELAY_BETWEEN_MAX, Level.Enemy.DELAY_BETWEEN_STEP_SIZE, false, sliderStyle);
 		delayHider.addToggleActor(slider);
 		mWidgets.enemy.betweenDelay = slider;
-		mEnemyTable.add(slider);
+		mWidgets.enemy.table.add(slider);
 		textField = new TextField("", textFieldStyle);
 		delayHider.addToggleActor(textField);
 		textField.setWidth(Config.Editor.TEXT_FIELD_NUMBER_WIDTH);
-		mEnemyTable.add(textField);
+		mWidgets.enemy.table.add(textField);
 		new TooltipListener(slider, "Spawn delay", Messages.Tooltip.Level.Enemy.ENEMY_SPAWN_DELAY);
 		new TooltipListener(textField, "Spawn delay", Messages.Tooltip.Level.Enemy.ENEMY_SPAWN_DELAY);
 		new SliderListener(slider, textField, mInvoker) {
 			@Override
 			protected void onChange(float newValue) {
-				mInvoker.execute(new CGuiSlider(mSlider, newValue, mLevelEditor.getEnemySpawnDelay()));
 				mLevelEditor.setEnemySpawnDelay(newValue);
 			}
 		};
 
-		// Activate trigger
-		mEnemyTable.row();
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Set activate trigger", textToggleStyle);
-		} else {
-			/** @todo default stub image button */
-			button = new ImageButton(editorSkin, "default-toggle");
-		}
-		menuGroup.add(button);
-		mHiders.enemyOptions.addToggleActor(button);
-		mWidgets.enemy.activateTrigger = button;
-		mEnemyTable.add(button);
-		button.addListener(enemyInnerMenu);
-		TooltipListener tooltipListener = new TooltipListener(button, "Set activate trigger", Messages.Tooltip.Level.Enemy.SET_ACTIVATE_TRIGGER);
-		new ButtonListener(button, tooltipListener) {
-			@Override
-			protected void onChecked(boolean checked) {
-				if (checked) {
-					//					mLevelEditor.setEnemyState(AddEnemyTool.States.SET_ACTIVATE_TRIGGER);
-				}
-			}
-		};
 
-		mEnemyTable.row();
+		// Activation delay
+		mWidgets.enemy.table.row();
 		label = new Label("Activate delay", labelStyle);
 		new TooltipListener(label, "Activate delay", Messages.Tooltip.Level.Enemy.ACTIVATE_DELAY);
 		mHiders.enemyActivateDelay.addToggleActor(label);
 
-		mEnemyTable.row();
+		mWidgets.enemy.table.row();
 		slider = new Slider(Level.Enemy.TRIGGER_ACTIVATE_DELAY_MIN, Level.Enemy.TRIGGER_ACTIVATE_DELAY_MAX, Level.Enemy.TRIGGER_ACTIVATE_DELAY_STEP_SIZE, false, sliderStyle);
 		mHiders.enemyActivateDelay.addToggleActor(slider);
 		mWidgets.enemy.activateDelay = slider;
-		mEnemyTable.add(slider);
+		mWidgets.enemy.table.add(slider);
 		textField = new TextField("", textFieldStyle);
 		mHiders.enemyActivateDelay.addToggleActor(textField);
 		textField.setWidth(Config.Editor.TEXT_FIELD_NUMBER_WIDTH);
-		mEnemyTable.add(textField);
+		mWidgets.enemy.table.add(textField);
 		new TooltipListener(slider, "Activate delay", Messages.Tooltip.Level.Enemy.ACTIVATE_DELAY);
 		new TooltipListener(textField, "Activate delay", Messages.Tooltip.Level.Enemy.ACTIVATE_DELAY);
 		new SliderListener(slider, textField, mInvoker) {
@@ -926,43 +839,22 @@ class LevelEditorGui extends EditorGui {
 			}
 		};
 
-		// Deactivate trigger
-		mEnemyTable.row();
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Set deactivate trigger", textToggleStyle);
-		} else {
-			/** @todo default stub image button */
-			button = new ImageButton(editorSkin, "default-toggle");
-		}
-		menuGroup.add(button);
-		mHiders.enemyOptions.addToggleActor(button);
-		mWidgets.enemy.deactivateTrigger = button;
-		mEnemyTable.add(button);
-		button.addListener(enemyInnerMenu);
-		tooltipListener = new TooltipListener(button, "Set deactivate trigger", Messages.Tooltip.Level.Enemy.SET_DEACTIVATE_DELAY);
-		new ButtonListener(button, tooltipListener) {
-			@Override
-			protected void onChecked(boolean checked) {
-				if (checked) {
-					//					mLevelEditor.setEnemyState(AddEnemyTool.States.SET_DEACTIVATE_TRIGGER);
-				}
-			}
-		};
 
-		mEnemyTable.row();
+		// Deactivation delay
+		mWidgets.enemy.table.row();
 		label = new Label("Deactivation delay", labelStyle);
 		new TooltipListener(label, "Deactivate delay", Messages.Tooltip.Level.Enemy.DEACTIVATE_DELAY);
 		mHiders.enemyDeactivateDelay.addToggleActor(label);
 
-		mEnemyTable.row();
+		mWidgets.enemy.table.row();
 		slider = new Slider(Level.Enemy.TRIGGER_DEACTIVATE_DELAY_MIN, Level.Enemy.TRIGGER_DEACTIVATE_DELAY_MAX, Level.Enemy.TRIGGER_DEACTIVATE_DELAY_STEP_SIZE, false, sliderStyle);
 		mHiders.enemyDeactivateDelay.addToggleActor(slider);
 		mWidgets.enemy.deactivateDelay = slider;
-		mEnemyTable.add(slider);
+		mWidgets.enemy.table.add(slider);
 		textField = new TextField("", textFieldStyle);
 		mHiders.enemyDeactivateDelay.addToggleActor(textField);
 		textField.setWidth(Config.Editor.TEXT_FIELD_NUMBER_WIDTH);
-		mEnemyTable.add(textField);
+		mWidgets.enemy.table.add(textField);
 		new TooltipListener(slider, "Deactivate delay", Messages.Tooltip.Level.Enemy.DEACTIVATE_DELAY);
 		new TooltipListener(textField, "Deactivate delay", Messages.Tooltip.Level.Enemy.DEACTIVATE_DELAY);
 		new SliderListener(slider, textField, mInvoker) {
@@ -971,12 +863,14 @@ class LevelEditorGui extends EditorGui {
 				mLevelEditor.setSelectedEnemyDeactivateTriggerDelay(newValue);
 			}
 		};
+
+		mWidgets.enemy.table.row().setPadTop(Gui.SEPARATE_PADDING);
 	}
 
 	/**
 	 * Initializes path tool GUI
 	 */
-	private void initPathTable() {
+	private void initPathOptions() {
 		Skin generalSkin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
 		TextButtonStyle textToggleStyle = generalSkin.get("toggle", TextButtonStyle.class);
 		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.UI_EDITOR_BUTTONS);
@@ -994,7 +888,7 @@ class LevelEditorGui extends EditorGui {
 		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Once", textToggleStyle);
 		} else {
-			button = new ImageButton(editorSkin, "path_once");
+			button = new ImageButton(editorSkin, SkinNames.EditorIcons.PATH_ONCE.toString());
 		}
 		mWidgets.path.once = button;
 		mWidgets.path.table.add(button);
@@ -1015,7 +909,7 @@ class LevelEditorGui extends EditorGui {
 		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Loop", textToggleStyle);
 		} else {
-			button = new ImageButton(editorSkin, "path_loop");
+			button = new ImageButton(editorSkin, SkinNames.EditorIcons.PATH_LOOP.toString());
 		}
 		mWidgets.path.loop = button;
 		mWidgets.path.table.add(button);
@@ -1036,7 +930,7 @@ class LevelEditorGui extends EditorGui {
 		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Back and forth", textToggleStyle);
 		} else {
-			button = new ImageButton(editorSkin, "path_back_and_forth");
+			button = new ImageButton(editorSkin, SkinNames.EditorIcons.PATH_BACK_AND_FORTH.toString());
 		}
 		mWidgets.path.backAndForth = button;
 		mWidgets.path.table.add(button);
@@ -1096,8 +990,6 @@ class LevelEditorGui extends EditorGui {
 
 	/** Pickup table */
 	private AlignTable mPickupTable = new AlignTable();
-	/** Enemy table */
-	private AlignTable mEnemyTable = new AlignTable();
 	/** Options table */
 	private AlignTable mOptionTable = new AlignTable();
 	/** Level editor the GUI will act on */
@@ -1119,7 +1011,6 @@ class LevelEditorGui extends EditorGui {
 		 * Sets correct children etc.
 		 */
 		public Hiders() {
-			enemy.addChild(enemyOptions);
 			enemyOptions.addChild(enemyActivateDelay);
 			enemyOptions.addChild(enemyDeactivateDelay);
 			trigger.addChild(triggerActorActivate);
@@ -1127,7 +1018,7 @@ class LevelEditorGui extends EditorGui {
 		}
 
 		/** Enemy hider */
-		HideListener enemy = new HideListener(true);
+		HideListener enemyAdd = new HideListener(true);
 		/** Hides enemy options */
 		HideManual enemyOptions = new HideManual();
 		/** Hides trigger delay for trigger */
@@ -1151,20 +1042,27 @@ class LevelEditorGui extends EditorGui {
 	 */
 	@SuppressWarnings("javadoc")
 	private static class InnerWidgets {
-		EnemyWidgets enemy = new EnemyWidgets();
-		PathWidgets path = new PathWidgets();
+		EnemyOptionWidgets enemy = new EnemyOptionWidgets();
+		PathOptionWidgets path = new PathOptionWidgets();
 		PickupWidgets pickup = new PickupWidgets();
 		OptionWidgets option = new OptionWidgets();
+		EnemyAddWidgets enemyAdd = new EnemyAddWidgets();
+		ToolWidgets tool = new ToolWidgets();
 
+		static class ToolWidgets {
+			Button enemyAdd = null;
+		}
 
-		static class EnemyWidgets {
-			Button activateTrigger = null;
-			Button deactivateTrigger = null;
-
+		static class EnemyOptionWidgets {
+			AlignTable table = new AlignTable();
 			Slider cEnemies = null;
 			Slider betweenDelay = null;
 			Slider activateDelay = null;
 			Slider deactivateDelay = null;
+		}
+
+		static class EnemyAddWidgets {
+			AlignTable table = new AlignTable();
 			Label name = null;
 		}
 
@@ -1177,7 +1075,7 @@ class LevelEditorGui extends EditorGui {
 			TextField epilogue = null;
 		}
 
-		static class PathWidgets {
+		static class PathOptionWidgets {
 			AlignTable table = new AlignTable();
 			Button once = null;
 			Button loop = null;

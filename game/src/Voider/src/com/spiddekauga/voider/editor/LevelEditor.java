@@ -8,7 +8,6 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector2;
-import com.spiddekauga.utils.Invoker;
 import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.utils.Scroller;
 import com.spiddekauga.utils.Scroller.ScrollAxis;
@@ -31,6 +30,7 @@ import com.spiddekauga.voider.editor.tools.PathAddTool;
 import com.spiddekauga.voider.editor.tools.RemoveCornerTool;
 import com.spiddekauga.voider.editor.tools.Selection;
 import com.spiddekauga.voider.editor.tools.SelectionTool;
+import com.spiddekauga.voider.editor.tools.EnemySetTriggerTool;
 import com.spiddekauga.voider.editor.tools.TouchTool;
 import com.spiddekauga.voider.editor.tools.TriggerAddTool;
 import com.spiddekauga.voider.game.GameScene;
@@ -43,10 +43,13 @@ import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.ActorDef;
 import com.spiddekauga.voider.game.actors.EnemyActor;
 import com.spiddekauga.voider.game.actors.EnemyActorDef;
+import com.spiddekauga.voider.game.actors.EnemyGroup;
 import com.spiddekauga.voider.game.actors.PickupActor;
 import com.spiddekauga.voider.game.actors.PickupActorDef;
 import com.spiddekauga.voider.game.actors.StaticTerrainActor;
 import com.spiddekauga.voider.game.triggers.TScreenAt;
+import com.spiddekauga.voider.game.triggers.TriggerAction.Actions;
+import com.spiddekauga.voider.game.triggers.TriggerInfo;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourceBody;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
@@ -71,7 +74,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	 */
 	public LevelEditor() {
 		super(new LevelEditorGui(), Config.Editor.PICKING_CIRCLE_RADIUS_LEVEL_EDITOR);
-		((LevelEditorGui)mGui).setLevelEditor(this);
+		((LevelEditorGui) mGui).setLevelEditor(this);
 
 		Actor.setEditorActive(true);
 
@@ -80,19 +83,22 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		mSelection.addListener(this);
 
 		// Initialize tools
-		Tools.SELECTION.setTool(new SelectionTool(mCamera, mWorld, mInvoker, mSelection, this));
-		mInputMultiplexer.addProcessor(Tools.SELECTION.getTool());
-
 		Tools.ADD_MOVE_CORNER.setTool(new AddMoveCornerTool(mCamera, mWorld, mInvoker, mSelection, this));
 		Tools.DELETE.setTool(new DeleteTool(mCamera, mWorld, mInvoker, mSelection, this));
 		Tools.ENEMY_ADD.setTool(new ActorAddTool(mCamera, mWorld, mInvoker, mSelection, this, EnemyActor.class));
+		Tools.ENEMY_SET_ACTIVATE_TRIGGER.setTool(new EnemySetTriggerTool(mCamera, mWorld, mInvoker, mSelection, this, Actions.ACTOR_ACTIVATE));
+		Tools.ENEMY_SET_DEACTIVATE_TRIGGER.setTool(new EnemySetTriggerTool(mCamera, mWorld, mInvoker, mSelection, this, Actions.ACTOR_DEACTIVATE));
 		Tools.MOVE.setTool(new MoveTool(mCamera, mWorld, mInvoker, mSelection, this));
 		Tools.PATH_ADD_CORNER.setTool(new PathAddTool(mCamera, mWorld, mInvoker, mSelection, this));
 		Tools.PICKUP_ADD.setTool(new ActorAddTool(mCamera, mWorld, mInvoker, mSelection, this, PickupActor.class));
 		Tools.REMOVE_CORNER.setTool(new RemoveCornerTool(mCamera, mWorld, mInvoker, mSelection, this));
+		Tools.SELECTION.setTool(new SelectionTool(mCamera, mWorld, mInvoker, mSelection, this));
 		Tools.TERRAIN_DRAW_APPEND.setTool(new DrawAppendTool(mCamera, mWorld, mInvoker, mSelection, this, StaticTerrainActor.class));
 		Tools.TERRAIN_DRAW_ERASE.setTool(new DrawEraseTool(mCamera, mWorld, mInvoker, mSelection, this, StaticTerrainActor.class));
 		Tools.TRIGGER_ADD.setTool(new TriggerAddTool(mCamera, mWorld, mInvoker, mSelection, this));
+
+		mInputMultiplexer.addProcessor(Tools.SELECTION.getTool());
+		mInputMultiplexer.addProcessor(Tools.DELETE.getTool());
 	}
 
 	@Override
@@ -112,7 +118,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 			mCamera.update();
 
 			Pools.vector2.free(diffScroll);
-		} else if (!mCreatedScrollCommand) {
+		}
+		else if (!mCreatedScrollCommand) {
 			Vector2 scrollCameraCurrent = Pools.vector2.obtain();
 			scrollCameraCurrent.set(mCamera.position.x, mCamera.position.y);
 
@@ -161,7 +168,9 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 	/**
 	 * Sets the level that shall be played and resets tools, invoker, etc.
-	 * @param level level to play
+	 * 
+	 * @param level
+	 *            level to play
 	 */
 	private void setLevel(Level level) {
 		boolean sameLevel = false;
@@ -179,7 +188,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 			if (ResourceCacheFacade.isLoaded(this, mLevel.getId(), mLevel.getRevision()) && !sameRevision) {
 				ResourceCacheFacade.unload(this, mLevel.getDef(), false);
 				ResourceCacheFacade.unload(this, mLevel, mLevel.getDef());
-			} else {
+			}
+			else {
 				mLevel.dispose();
 			}
 		}
@@ -187,8 +197,6 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		mLevel = level;
 
 		if (mLevel != null) {
-			clearToolGroups();
-
 			// Reset camera position to the start
 			if (!sameLevel) {
 				mCamera.position.x = mLevel.getDef().getStartXCoord() + mCamera.viewportWidth * 0.5f;
@@ -212,13 +220,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		Actor.setLevel(mLevel);
 	}
 
-	@Override
-	public Invoker getInvoker() {
-		return mInvoker;
-	}
-
 	// --------------------------------
-	//		Resource loading etc.
+	// Resource loading etc.
 	// --------------------------------
 	@Override
 	public LoadingScene getLoadingScene() {
@@ -278,10 +281,12 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 					mGui.hideMsgBoxes();
 					setSaved();
 					mLoadingLevel = null;
-				} else {
+				}
+				else {
 					Gdx.app.error("LevelEditor", "Could not find level (" + mLoadingLevel.getLevelId() + ")");
 				}
-			} else if (mLevel == null) {
+			}
+			else if (mLevel == null) {
 				newDef();
 			}
 		}
@@ -309,7 +314,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 						if (scene != null) {
 							SceneSwitcher.switchTo(scene);
 						}
-					} else {
+					}
+					else {
 						mLoadingLevel = null;
 					}
 
@@ -320,13 +326,15 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 					break;
 
 				case ENEMY:
-					mInvoker.execute(new CLevelEnemyDefSelect(((ResourceItem) message).id, ((ResourceItem) message).revision, this));
+					mInvoker.execute(new CLevelEnemyDefSelect(((ResourceItem) message).id, this));
 					break;
 				}
-			} else {
+			}
+			else {
 				Gdx.app.error(getClass().getSimpleName(), "When seleting def, message was not a ResourceItem but a " + message.getClass().getName());
 			}
-		} else if (outcome == Outcomes.NOT_APPLICAPLE) {
+		}
+		else if (outcome == Outcomes.NOT_APPLICAPLE) {
 			mGui.hideMsgBoxes();
 
 			if (mLevel == null) {
@@ -341,24 +349,21 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 	/**
 	 * Selects the specified enemy definition. This enemy will be used when adding new enemies.
-	 * @param enemyId the enemy id to select, can be null.
-	 * @param revision the revision of the enemy to select
+	 * 
+	 * @param enemyId
+	 *            the enemy id to select, can be null.
 	 * @return true if enemy was selected successfully, false if unsuccessful
 	 */
-	public boolean selectEnemyDef(UUID enemyId, int revision) {
+	public boolean selectEnemyDef(UUID enemyId) {
 		try {
+			EnemyActorDef enemyActorDef = null;
 			if (enemyId != null) {
-				EnemyActorDef enemyActorDef = ResourceCacheFacade.get(this, enemyId, revision);
-
-				// Update def
-				// TODO
-				//				((ActorToolOld)mTouchTools[ToolGroups.ENEMY.ordinal()]).setNewActorDef(enemyActorDef);
-			} else {
-				// TODO
-				//				((ActorToolOld)mTouchTools[ToolGroups.ENEMY.ordinal()]).setNewActorDef(null);
+				enemyActorDef = ResourceCacheFacade.get(this, enemyId);
 			}
 
-			mGui.resetValues();
+			((ActorAddTool) Tools.ENEMY_ADD.getTool()).setActorDef(enemyActorDef);
+			((LevelEditorGui) mGui).resetEnemyOptions();
+
 		} catch (Exception e) {
 			Gdx.app.error("LevelEditor", e.toString());
 			e.printStackTrace();
@@ -370,21 +375,18 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 	/**
 	 * Selects the specified pickup definition. This pickup will be used when adding new pickups
-	 * @param pickupId the pickup id to select
+	 * 
+	 * @param pickupId
+	 *            the pickup id to select
 	 * @return true if the pickup was selected successfully, false if unsuccessful
 	 */
 	public boolean selectPickupDef(UUID pickupId) {
 		try {
+			PickupActorDef pickupActorDef = null;
 			if (pickupId != null) {
-				PickupActorDef pickupActorDef = ResourceCacheFacade.get(this, pickupId, -1);
-
-				// Update def
-				// TODO
-				//				((ActorToolOld)mTouchTools[ToolGroups.PICKUP.ordinal()]).setNewActorDef(pickupActorDef);
-			} else {
-				// TODO
-				//				((ActorToolOld)mTouchTools[ToolGroups.PICKUP.ordinal()]).setNewActorDef(null);
+				pickupActorDef = ResourceCacheFacade.get(this, pickupId);
 			}
+			((ActorAddTool) Tools.PICKUP_ADD.getTool()).setActorDef(pickupActorDef);
 			mGui.resetValues();
 		} catch (Exception e) {
 			Gdx.app.error("LevelEditor", e.toString());
@@ -418,7 +420,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 			mScrollCameraOrigin.set(mCamera.position.x, mCamera.position.y);
 			mCreatedScrollCommand = false;
 			return true;
-		} else if (mScroller.isScrolling()) {
+		}
+		else if (mScroller.isScrolling()) {
 			return true;
 		}
 
@@ -469,7 +472,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		setUnsaved();
 
 		if (resource instanceof EnemyActor) {
-			((LevelEditorGui)mGui).resetEnemyOptions();
+			((LevelEditorGui) mGui).resetEnemyOptions();
 		}
 	}
 
@@ -492,7 +495,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	 * @return true if an enemy is currently selected
 	 */
 	boolean isEnemySelected() {
-		return mSelection.getMostCommonSelectedResourceType() == EnemyActor.class;
+		return mSelection.isSelected(EnemyActor.class);
 	}
 
 	@Override
@@ -511,7 +514,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		else if (KeyHelper.isBackPressed(keycode)) {
 			if (!mSelection.isEmpty()) {
 				mInvoker.execute(new CSelectionSet(mSelection));
-			} else {
+			}
+			else {
 				saveDef();
 				SceneSwitcher.returnTo(MainMenu.class);
 			}
@@ -522,7 +526,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 			Config.Gui.setUseTextButtons(!Config.Gui.usesTextButtons());
 			mGui.dispose();
 			mGui.initGui();
-		} else if (keycode== Input.Keys.F6) {
+		}
+		else if (keycode == Input.Keys.F6) {
 			String message = "This is a longer error message with more text, a lot more text, see if it will wrap correctly later...";
 			mGui.showErrorMessage(message);
 		}
@@ -545,41 +550,17 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	}
 
 	/**
-	 * Switches the tool to the selected tool
-	 * @param toolGroup the new tool type
-	 */
-	@Deprecated
-	void switchToolGroup(ToolGroups toolGroup) {
-		//		// Remove old tool
-		//		if (mToolGroup != null) {
-		//			mInputMultiplexer.removeProcessor(mTouchTools[mToolGroup.ordinal()]);
-		//			mTouchTools[mToolGroup.ordinal()].deactivate();
-		//		}
-		//
-		//		// Set current tool
-		//		mToolGroup = toolGroup;
-		//
-		//		// add new tool
-		//		if (mToolGroup != null) {
-		//			mInputMultiplexer.addProcessor(mTouchTools[mToolGroup.ordinal()]);
-		//			mTouchTools[mToolGroup.ordinal()].activate();
-		//		}
-		//
-		//		if (mGui.isInitialized()) {
-		//			mGui.resetValues();
-		//		}
-	}
-
-	/**
 	 * Switch currently selected tool
-	 * @param tool the new tool to use
+	 * 
+	 * @param tool
+	 *            the new tool to use
 	 */
 	void switchTool(Tools tool) {
 		if (mTool.getTool() != null) {
 			mTool.getTool().deactivate();
 
 			// Never remove selection tool
-			if (mTool != Tools.SELECTION) {
+			if (mTool != Tools.SELECTION && mTool != Tools.DELETE) {
 				mInputMultiplexer.removeProcessor(mTool.getTool());
 			}
 		}
@@ -590,7 +571,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 			mTool.getTool().activate();
 
 			// Never add selection tool
-			if (mTool != Tools.SELECTION) {
+			if (mTool != Tools.SELECTION && mTool != Tools.DELETE) {
 				mInputMultiplexer.addProcessor(mTool.getTool());
 			}
 		}
@@ -599,7 +580,9 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 	/**
 	 * Tests to run a game from the current location
-	 * @param invulnerable makes the player invulnerable
+	 * 
+	 * @param invulnerable
+	 *            makes the player invulnerable
 	 */
 	public void runFromHere(boolean invulnerable) {
 		GameScene testGame = new GameScene(true, invulnerable);
@@ -662,8 +645,6 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		setLevel(level);
 		saveDef();
 
-		clearToolGroups();
-
 		setSaved();
 	}
 
@@ -680,7 +661,9 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 	/**
 	 * Sets the starting speed of the current level
-	 * @param speed starting speed of the current level
+	 * 
+	 * @param speed
+	 *            starting speed of the current level
 	 */
 	void setLevelStartingSpeed(float speed) {
 		if (mLevel != null) {
@@ -695,7 +678,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	float getLevelStartingSpeed() {
 		if (mLevel != null) {
 			return mLevel.getSpeed();
-		} else {
+		}
+		else {
 			return -1;
 		}
 	}
@@ -706,14 +690,17 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	String getLevelRevision() {
 		if (mLevel != null) {
 			return String.valueOf(mLevel.getDef().getRevision());
-		} else {
+		}
+		else {
 			return "";
 		}
 	}
 
 	/**
 	 * Sets the name of the level
-	 * @param name name of the level
+	 * 
+	 * @param name
+	 *            name of the level
 	 */
 	void setLevelName(String name) {
 		if (mLevel != null) {
@@ -728,14 +715,17 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	String getLevelName() {
 		if (mLevel != null) {
 			return mLevel.getDef().getName();
-		} else {
+		}
+		else {
 			return "";
 		}
 	}
 
 	/**
 	 * Sets the description of the level
-	 * @param description text description of the level
+	 * 
+	 * @param description
+	 *            text description of the level
 	 */
 	void setLevelDescription(String description) {
 		if (mLevel != null) {
@@ -750,14 +740,17 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	String getLevelDescription() {
 		if (mLevel != null) {
 			return mLevel.getDef().getDescription();
-		} else {
+		}
+		else {
 			return "";
 		}
 	}
 
 	/**
 	 * Sets the story before the level
-	 * @param storyText the story that will be displayed before the level
+	 * 
+	 * @param storyText
+	 *            the story that will be displayed before the level
 	 */
 	void setPrologue(String storyText) {
 		if (mLevel != null) {
@@ -767,20 +760,22 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	}
 
 	/**
-	 * @return story that will be displayed before the level, empty string if no
-	 * level is available
+	 * @return story that will be displayed before the level, empty string if no level is available
 	 */
 	String getPrologue() {
 		if (mLevel != null) {
 			return mLevel.getDef().getPrologue();
-		} else {
+		}
+		else {
 			return "";
 		}
 	}
 
 	/**
 	 * Sets the story after completing the level
-	 * @param storyText the story that will be displayed after the level
+	 * 
+	 * @param storyText
+	 *            the story that will be displayed after the level
 	 */
 	void setEpilogue(String storyText) {
 		if (mLevel != null) {
@@ -790,13 +785,13 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	}
 
 	/**
-	 * @return story that will be displayed after completing the level, empty string if no
-	 * level is available
+	 * @return story that will be displayed after completing the level, empty string if no level is available
 	 */
 	String getEpilogue() {
 		if (mLevel != null) {
 			return mLevel.getDef().getEpilogue();
-		} else {
+		}
+		else {
 			return "";
 		}
 	}
@@ -805,171 +800,187 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	 * @return selected enemy name, null if none is selected
 	 */
 	String getSelectedEnemyName() {
-		// TODO
-		//		ActorDef actorDef = ((AddActorTool)mTouchTools[ToolGroups.ENEMY.ordinal()]).getNewActorDef();
-		//
-		//		if (actorDef != null) {
-		//			return actorDef.getName();
-		//		} else {
-		//			return null;
-		//		}
-		return null;
+		ActorDef actorDef = ((ActorAddTool) Tools.ENEMY_ADD.getTool()).getActorDef();
+
+		if (actorDef != null) {
+			return actorDef.getName();
+		}
+		else {
+			return null;
+		}
 	}
 
 	/**
 	 * @return selected pickup name, null if none is selected
 	 */
 	String getSelectedPickupName() {
-		// TODO
-		//		ActorDef actorDef = ((AddActorTool)mTouchTools[ToolGroups.PICKUP.ordinal()]).getNewActorDef();
-		//
-		//		if (actorDef != null) {
-		//			return actorDef.getName();
-		//		} else {
-		//			return null;
-		//		}
-		return null;
+		ActorDef actorDef = ((ActorAddTool) Tools.PICKUP_ADD.getTool()).getActorDef();
+
+		if (actorDef != null) {
+			return actorDef.getName();
+		}
+		else {
+			return null;
+		}
 	}
 
 	/**
 	 * Sets the number of enemies in one group
-	 * @param cEnemies number of enemies in the group
+	 * 
+	 * @param cEnemies
+	 *            number of enemies in the group
 	 */
 	void setEnemyCount(int cEnemies) {
-		// TODO
-		//		EnemyActor selectedEnemy = (EnemyActor) ((AddEnemyTool)mTouchTools[ToolGroups.ENEMY.ordinal()]).getSelectedResource();
-		//
-		//		if (selectedEnemy != null) {
-		//			EnemyGroup enemyGroup = selectedEnemy.getEnemyGroup();
-		//
-		//			// We have an enemy group
-		//			if (enemyGroup != null) {
-		//				// Just change amount of enemies
-		//				if (cEnemies > 1) {
-		//					@SuppressWarnings("unchecked")
-		//					ArrayList<EnemyActor> addedEnemies = Pools.arrayList.obtain();
-		//					@SuppressWarnings("unchecked")
-		//					ArrayList<EnemyActor> removedEnemies = Pools.arrayList.obtain();
-		//
-		//					enemyGroup.setEnemyCount(cEnemies, addedEnemies, removedEnemies);
-		//
-		//					for (EnemyActor addedEnemy : addedEnemies) {
-		//						mLevel.addResource(addedEnemy);
-		//					}
-		//
-		//					for (EnemyActor removedEnemy : removedEnemies) {
-		//						mLevel.removeResource(removedEnemy.getId());
-		//					}
-		//
-		//					Pools.arrayList.freeAll(addedEnemies, removedEnemies);
-		//					addedEnemies = null;
-		//					removedEnemies = null;
-		//				}
-		//				// Delete enemy group
-		//				else {
-		//					// Remove all excess enemies
-		//					ArrayList<EnemyActor> removedEnemies = enemyGroup.clear();
-		//
-		//					for (EnemyActor enemyActor : removedEnemies) {
-		//						mLevel.removeResource(enemyActor.getId());
-		//					}
-		//
-		//					mLevel.removeResource(enemyGroup.getId());
-		//
-		//					Pools.arrayList.free(removedEnemies);
-		//					removedEnemies = null;
-		//				}
-		//			}
-		//			// No enemy group, do we create one?
-		//			else if (cEnemies > 1) {
-		//				enemyGroup = new EnemyGroup();
-		//				mLevel.addResource(enemyGroup);
-		//
-		//				enemyGroup.setLeaderEnemy(selectedEnemy);
-		//
-		//				@SuppressWarnings("unchecked")
-		//				ArrayList<EnemyActor> addedEnemies = Pools.arrayList.obtain();
-		//				enemyGroup.setEnemyCount(cEnemies, addedEnemies, null);
-		//
-		//				for (EnemyActor addedEnemy : addedEnemies) {
-		//					mLevel.addResource(addedEnemy);
-		//					addedEnemy.destroyBody();
-		//				}
-		//
-		//				Pools.arrayList.free(addedEnemies);
-		//				addedEnemies = null;
-		//
-		//				// Set GUI delay value
-		//				((LevelEditorGui)mGui).resetEnemyOptions();
-		//			}
-		//		}
+		ArrayList<EnemyActor> selectedEnemies = mSelection.getSelectedResourcesOfType(EnemyActor.class);
+
+		for (EnemyActor selectedEnemy : selectedEnemies) {
+
+			if (selectedEnemy != null) {
+				EnemyGroup enemyGroup = selectedEnemy.getEnemyGroup();
+
+				// We have an enemy group
+				if (enemyGroup != null) {
+					// Just change amount of enemies
+					if (cEnemies > 1) {
+						@SuppressWarnings("unchecked")
+						ArrayList<EnemyActor> addedEnemies = Pools.arrayList.obtain();
+						@SuppressWarnings("unchecked")
+						ArrayList<EnemyActor> removedEnemies = Pools.arrayList.obtain();
+
+						enemyGroup.setEnemyCount(cEnemies, addedEnemies, removedEnemies);
+
+						for (EnemyActor addedEnemy : addedEnemies) {
+							mLevel.addResource(addedEnemy);
+						}
+
+						for (EnemyActor removedEnemy : removedEnemies) {
+							mLevel.removeResource(removedEnemy.getId());
+						}
+
+						Pools.arrayList.freeAll(addedEnemies, removedEnemies);
+						addedEnemies = null;
+						removedEnemies = null;
+					}
+					// Delete enemy group
+					else {
+						// Remove all excess enemies
+						ArrayList<EnemyActor> removedEnemies = enemyGroup.clear();
+
+						for (EnemyActor enemyActor : removedEnemies) {
+							mLevel.removeResource(enemyActor.getId());
+						}
+
+						mLevel.removeResource(enemyGroup.getId());
+
+						Pools.arrayList.free(removedEnemies);
+						removedEnemies = null;
+					}
+				}
+				// No enemy group, do we create one?
+				else if (cEnemies > 1) {
+					enemyGroup = new EnemyGroup();
+					mLevel.addResource(enemyGroup);
+
+					enemyGroup.setLeaderEnemy(selectedEnemy);
+
+					@SuppressWarnings("unchecked")
+					ArrayList<EnemyActor> addedEnemies = Pools.arrayList.obtain();
+					enemyGroup.setEnemyCount(cEnemies, addedEnemies, null);
+
+					for (EnemyActor addedEnemy : addedEnemies) {
+						mLevel.addResource(addedEnemy);
+						addedEnemy.destroyBody();
+					}
+
+					Pools.arrayList.free(addedEnemies);
+					addedEnemies = null;
+				}
+			}
+		}
+
+		((LevelEditorGui) mGui).resetEnemyOptions();
+
+		Pools.arrayList.free(selectedEnemies);
 	}
 
 	/**
 	 * @return number of enemies in a group
 	 */
 	int getEnemyCount() {
-		// TODO
-		//		EnemyActor selectedEnemy = (EnemyActor) ((AddEnemyTool)mTouchTools[ToolGroups.ENEMY.ordinal()]).getSelectedResource();
-		//
-		//		int cEnemies = 0;
-		//
-		//		if (selectedEnemy != null) {
-		//			EnemyGroup enemyGroup = selectedEnemy.getEnemyGroup();
-		//
-		//			if (enemyGroup != null) {
-		//				cEnemies = enemyGroup.getEnemyCount();
-		//			}
-		//			// No group, that means we only have one enemy
-		//			else {
-		//				cEnemies = 1;
-		//			}
-		//		}
-		//
-		//		return cEnemies;
-		return 0;
+		ArrayList<EnemyActor> selectedEnemies = mSelection.getSelectedResourcesOfType(EnemyActor.class);
+
+		// Only return enemy count if all selected enemies have the same enemy count
+		if (selectedEnemies.size() > 0) {
+			int cEnemies = 1;
+			EnemyActor firstEnemy = selectedEnemies.get(0);
+			EnemyGroup enemyGroup = firstEnemy.getEnemyGroup();
+			if (enemyGroup != null) {
+				cEnemies = enemyGroup.getEnemyCount();
+			}
+
+			for (int i = 1; i < selectedEnemies.size(); ++i) {
+				enemyGroup = selectedEnemies.get(i).getEnemyGroup();
+
+				if (enemyGroup != null) {
+					if (cEnemies != enemyGroup.getEnemyCount()) {
+						return -1;
+					}
+				}
+				else if (cEnemies != 1) {
+					return -1;
+				}
+			}
+
+			return cEnemies;
+		}
+
+		Pools.arrayList.free(selectedEnemies);
+
+		return -1;
 	}
 
 	/**
 	 * Sets the spawn delay between actors in the same group.
-	 * @param delay seconds of delay between actors are activated.
+	 * 
+	 * @param delay
+	 *            seconds of delay between actors are activated.
 	 */
 	void setEnemySpawnDelay(float delay) {
-		// TODO
-		//		EnemyActor selectedEnemy = (EnemyActor) ((AddEnemyTool)mTouchTools[ToolGroups.ENEMY.ordinal()]).getSelectedResource();
-		//
-		//		if (selectedEnemy != null) {
-		//			EnemyGroup enemyGroup = selectedEnemy.getEnemyGroup();
-		//
-		//			// We have an enemy group
-		//			if (enemyGroup != null) {
-		//				enemyGroup.setSpawnTriggerDelay(delay);
-		//			}
-		//		}
+		ArrayList<EnemyActor> selectedEnemies = mSelection.getSelectedResourcesOfType(EnemyActor.class);
+
+		for (EnemyActor enemy : selectedEnemies) {
+			EnemyGroup enemyGroup = enemy.getEnemyGroup();
+
+			if (enemyGroup != null) {
+				enemyGroup.setSpawnTriggerDelay(delay);
+			}
+		}
+
+		Pools.arrayList.free(selectedEnemies);
 	}
 
 	/**
 	 * @return spawn delay between actors in the same group, negative value if no group exist
 	 */
 	float getEnemySpawnDelay() {
-		// TODO
-		//		EnemyActor selectedEnemy = (EnemyActor) ((AddEnemyTool)mTouchTools[ToolGroups.ENEMY.ordinal()]).getSelectedResource();
-		//
-		//		if (selectedEnemy != null) {
-		//			EnemyGroup enemyGroup = selectedEnemy.getEnemyGroup();
-		//
-		//			// We have an enemy group
-		//			if (enemyGroup != null) {
-		//				return enemyGroup.getSpawnTriggerDelay();
-		//			}
-		//		}
+		if (getEnemyCount() > 1) {
+			ArrayList<EnemyActor> selectedEnemies = mSelection.getSelectedResourcesOfType(EnemyActor.class);
+
+			if (!selectedEnemies.isEmpty()) {
+				return selectedEnemies.get(0).getEnemyGroup().getSpawnTriggerDelay();
+			}
+
+			Pools.arrayList.free(selectedEnemies);
+		}
 
 		return -1;
 	}
 
 	/**
 	 * Sets the path type of the selected path
-	 * @param pathType type of the path
+	 * 
+	 * @param pathType
+	 *            type of the path
 	 */
 	void setPathType(Path.PathTypes pathType) {
 		ArrayList<Path> selectedPaths = mSelection.getSelectedResourcesOfType(Path.class);
@@ -984,8 +995,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	}
 
 	/**
-	 * @return current path type. If several paths are selected and they have different path types
-	 * null is return. If no path is selected null is also returned.
+	 * @return current path type. If several paths are selected and they have different path types null is return. If no
+	 *         path is selected null is also returned.
 	 */
 	PathTypes getPathType() {
 		int cOnce = 0;
@@ -1016,9 +1027,11 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		// Only allow one to be above 0
 		if (cOnce > 0 && cLoop == 0 && cBackAndForth == 0) {
 			return PathTypes.ONCE;
-		} else if (cLoop > 0 && cOnce == 0 && cBackAndForth == 0) {
+		}
+		else if (cLoop > 0 && cOnce == 0 && cBackAndForth == 0) {
 			return PathTypes.LOOP;
-		} else if (cBackAndForth > 0 && cOnce == 0 && cLoop == 0) {
+		}
+		else if (cBackAndForth > 0 && cOnce == 0 && cLoop == 0) {
 			return PathTypes.BACK_AND_FORTH;
 		}
 
@@ -1060,119 +1073,141 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	}
 
 	/**
-	 * @return true if the selected enemy has an activation trigger, false if not or
-	 * if no enemy is selected
+	 * @return true if the selected enemy has an activation trigger, false if not or if no enemy is selected
 	 */
 	boolean hasSelectedEnemyActivateTrigger() {
-		// TODO
-		//		EnemyActor enemy =  (EnemyActor) ((AddEnemyTool)mTouchTools[ToolGroups.ENEMY.ordinal()]).getSelectedResource();
-		//
-		//		if (enemy != null) {
-		//			ArrayList<TriggerInfo> triggers = enemy.getTriggerInfos();
-		//			for (TriggerInfo trigger : triggers) {
-		//				if (trigger.action == Actions.ACTOR_ACTIVATE) {
-		//					return true;
-		//				}
-		//			}
-		//		}
-		//
-		return false;
+		ArrayList<EnemyActor> selectedEnemies = mSelection.getSelectedResourcesOfType(EnemyActor.class);
+
+		boolean allHasActivateTrigger = true;
+		for (EnemyActor enemy : selectedEnemies) {
+			if (TriggerInfo.getTriggerInfoByAction(enemy, Actions.ACTOR_ACTIVATE) == null) {
+				allHasActivateTrigger = false;
+				break;
+			}
+		}
+
+
+		Pools.arrayList.free(selectedEnemies);
+
+		return allHasActivateTrigger;
 	}
 
 	/**
-	 * @return delay of the activation trigger, negative if no activation trigger has
-	 * been set.
+	 * @return delay of the activation trigger, negative if no activation trigger has been set.
 	 */
 	float getSelectedEnemyActivateTriggerDelay() {
-		// TODO
-		//		EnemyActor enemy =  (EnemyActor) ((AddEnemyTool)mTouchTools[ToolGroups.ENEMY.ordinal()]).getSelectedResource();
-		//
-		//		if (enemy != null) {
-		//			ArrayList<TriggerInfo> triggers = enemy.getTriggerInfos();
-		//			for (TriggerInfo trigger : triggers) {
-		//				if (trigger.action == Actions.ACTOR_ACTIVATE) {
-		//					return trigger.delay;
-		//				}
-		//			}
-		//		}
+		ArrayList<EnemyActor> selectedEnemies = mSelection.getSelectedResourcesOfType(EnemyActor.class);
 
-		return -1;
+		float triggerDelay = 0;
+		if (!selectedEnemies.isEmpty()) {
+			TriggerInfo triggerInfo = TriggerInfo.getTriggerInfoByAction(selectedEnemies.get(0), Actions.ACTOR_ACTIVATE);
+			if (triggerInfo != null) {
+				triggerDelay = triggerInfo.delay;
+			}
+		}
+
+		for (EnemyActor enemy : selectedEnemies) {
+			TriggerInfo triggerInfo = TriggerInfo.getTriggerInfoByAction(enemy, Actions.ACTOR_ACTIVATE);
+
+			if (triggerInfo == null || triggerInfo.delay != triggerDelay) {
+				triggerDelay = 0;
+				break;
+			}
+		}
+
+		Pools.arrayList.free(selectedEnemies);
+
+		return triggerDelay;
 	}
 
 	/**
 	 * Sets the delay of the activation trigger
-	 * @param delay seconds of delay
+	 * 
+	 * @param delay
+	 *            seconds of delay
 	 */
 	void setSelectedEnemyActivateTriggerDelay(float delay) {
-		// TODO
-		//		EnemyActor enemy =  (EnemyActor) ((AddEnemyTool)mTouchTools[ToolGroups.ENEMY.ordinal()]).getSelectedResource();
-		//
-		//		if (enemy != null) {
-		//			ArrayList<TriggerInfo> triggers = enemy.getTriggerInfos();
-		//			for (TriggerInfo trigger : triggers) {
-		//				if (trigger.action == Actions.ACTOR_ACTIVATE) {
-		//					trigger.delay = delay;
-		//				}
-		//			}
-		//		}
+		ArrayList<EnemyActor> selectedEnemies = mSelection.getSelectedResourcesOfType(EnemyActor.class);
+
+		for (EnemyActor enemy : selectedEnemies) {
+			TriggerInfo triggerInfo = TriggerInfo.getTriggerInfoByAction(enemy, Actions.ACTOR_ACTIVATE);
+
+			if (triggerInfo != null) {
+				triggerInfo.delay = delay;
+				break;
+			}
+		}
+
+		Pools.arrayList.free(selectedEnemies);
 	}
 
 	/**
-	 * @return true if the selected enemy has an deactivation trigger, false if not or
-	 * if no enemy is selected
+	 * @return true if the selected enemy has an deactivation trigger, false if not or if no enemy is selected
 	 */
 	boolean hasSelectedEnemyDeactivateTrigger() {
-		// TODO
-		//		EnemyActor enemy =  (EnemyActor) ((AddEnemyTool)mTouchTools[ToolGroups.ENEMY.ordinal()]).getSelectedResource();
-		//
-		//		if (enemy != null) {
-		//			ArrayList<TriggerInfo> triggers = enemy.getTriggerInfos();
-		//			for (TriggerInfo trigger : triggers) {
-		//				if (trigger.action == Actions.ACTOR_DEACTIVATE) {
-		//					return true;
-		//				}
-		//			}
-		//		}
+		ArrayList<EnemyActor> selectedEnemies = mSelection.getSelectedResourcesOfType(EnemyActor.class);
 
-		return false;
+		boolean allHasDeactivateTrigger = true;
+		for (EnemyActor enemy : selectedEnemies) {
+			if (TriggerInfo.getTriggerInfoByAction(enemy, Actions.ACTOR_DEACTIVATE) == null) {
+				allHasDeactivateTrigger = false;
+				break;
+			}
+		}
+
+
+		Pools.arrayList.free(selectedEnemies);
+
+		return allHasDeactivateTrigger;
 	}
 
 	/**
-	 * @return delay of the deactivation trigger, negative if no deactivation trigger has
-	 * been set.
+	 * @return delay of the deactivation trigger, negative if no deactivation trigger has been set.
 	 */
 	float getSelectedEnemyDeactivateTriggerDelay() {
-		// TODO
-		//		EnemyActor enemy =  (EnemyActor) ((AddEnemyTool)mTouchTools[ToolGroups.ENEMY.ordinal()]).getSelectedResource();
-		//
-		//		if (enemy != null) {
-		//			ArrayList<TriggerInfo> triggers = enemy.getTriggerInfos();
-		//			for (TriggerInfo trigger : triggers) {
-		//				if (trigger.action == Actions.ACTOR_DEACTIVATE) {
-		//					return trigger.delay;
-		//				}
-		//			}
-		//		}
+		ArrayList<EnemyActor> selectedEnemies = mSelection.getSelectedResourcesOfType(EnemyActor.class);
 
-		return -1;
+		float triggerDelay = 0;
+		if (!selectedEnemies.isEmpty()) {
+			TriggerInfo triggerInfo = TriggerInfo.getTriggerInfoByAction(selectedEnemies.get(0), Actions.ACTOR_DEACTIVATE);
+			if (triggerInfo != null) {
+				triggerDelay = triggerInfo.delay;
+			}
+		}
+
+		for (EnemyActor enemy : selectedEnemies) {
+			TriggerInfo triggerInfo = TriggerInfo.getTriggerInfoByAction(enemy, Actions.ACTOR_DEACTIVATE);
+
+			if (triggerInfo == null || triggerInfo.delay != triggerDelay) {
+				triggerDelay = 0;
+				break;
+			}
+		}
+
+		Pools.arrayList.free(selectedEnemies);
+
+		return triggerDelay;
 	}
 
 	/**
 	 * Sets the delay of the deactivate trigger
-	 * @param delay seconds of delay
+	 * 
+	 * @param delay
+	 *            seconds of delay
 	 */
 	void setSelectedEnemyDeactivateTriggerDelay(float delay) {
-		// TODO
-		//		EnemyActor enemy =  (EnemyActor) ((AddEnemyTool)mTouchTools[ToolGroups.ENEMY.ordinal()]).getSelectedResource();
-		//
-		//		if (enemy != null) {
-		//			ArrayList<TriggerInfo> triggers = enemy.getTriggerInfos();
-		//			for (TriggerInfo trigger : triggers) {
-		//				if (trigger.action == Actions.ACTOR_DEACTIVATE) {
-		//					trigger.delay = delay;
-		//				}
-		//			}
-		//		}
+		ArrayList<EnemyActor> selectedEnemies = mSelection.getSelectedResourcesOfType(EnemyActor.class);
+
+		for (EnemyActor enemy : selectedEnemies) {
+			TriggerInfo triggerInfo = TriggerInfo.getTriggerInfoByAction(enemy, Actions.ACTOR_DEACTIVATE);
+
+			if (triggerInfo != null) {
+				triggerInfo.delay = delay;
+				break;
+			}
+		}
+
+		Pools.arrayList.free(selectedEnemies);
 	}
 
 	/**
@@ -1183,45 +1218,19 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	}
 
 	/**
-	 * @return the current active tool of the level editor
-	 */
-	ToolGroups getSelectedTool() {
-		return mToolGroup;
-	}
-
-	/**
 	 * @return currently selected pickup definition
 	 */
 	public ActorDef getSelectedPickupDef() {
-		// TODO
-		//		return ((ActorToolOld) mTouchTools[ToolGroups.PICKUP.ordinal()]).getNewActorDef();
-		return null;
+		return ((ActorAddTool) Tools.PICKUP_ADD.getTool()).getActorDef();
 	}
 
 	/**
 	 * @return currently selected enemy definition
 	 */
 	public ActorDef getSelectedEnemyDef() {
-		// TODO
-		//		return ((ActorToolOld) mTouchTools[ToolGroups.ENEMY.ordinal()]).getNewActorDef();
-		return null;
+		return ((ActorAddTool)Tools.ENEMY_ADD.getTool()).getActorDef();
 	}
 
-	/**
-	 * All the main tool buttons
-	 */
-	enum ToolGroups {
-		/** Add enemies */
-		ENEMY,
-		/** Add/Move/Remove pickups */
-		PICKUP,
-		/** Draws the terrain */
-		STATIC_TERRAIN,
-		/** Draw paths */
-		PATH,
-		/** Add/remove triggers */
-		TRIGGER,
-	}
 
 	/**
 	 * All tools, such as selection, add terrain, etc
@@ -1245,6 +1254,10 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		PICKUP_ADD,
 		/** Add enemy */
 		ENEMY_ADD,
+		/** Set activate trigger for enemies */
+		ENEMY_SET_ACTIVATE_TRIGGER,
+		/** Set deactivate trigger for enemies */
+		ENEMY_SET_DEACTIVATE_TRIGGER,
 		/** Add a trigger */
 		TRIGGER_ADD,
 		/** Add a corner to a path */
@@ -1256,7 +1269,9 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 		/**
 		 * Sets the actual tool
-		 * @param tool the actual tool that is used
+		 * 
+		 * @param tool
+		 *            the actual tool that is used
 		 */
 		public void setTool(TouchTool tool) {
 			mTool = tool;
@@ -1283,7 +1298,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 			// Create all bodies except enemies in a group, only create the leader then.
 			for (IResourceBody resourceBody : resources) {
 				if (resourceBody instanceof EnemyActor) {
-					if (((EnemyActor) resourceBody).getEnemyGroup() == null || ((EnemyActor)resourceBody).isGroupLeader()) {
+					if (((EnemyActor) resourceBody).getEnemyGroup() == null || ((EnemyActor) resourceBody).isGroupLeader()) {
 						resourceBody.createBody();
 					}
 				}
@@ -1295,18 +1310,6 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 				}
 			}
 		}
-	}
-
-	/**
-	 * Clears all the tools
-	 */
-	@Deprecated
-	private void clearToolGroups() {
-		//		for (TouchTool touchTool : mTouchTools) {
-		//			if (touchTool != null) {
-		//				touchTool.clear();
-		//			}
-		//		}
 	}
 
 	/**
@@ -1352,8 +1355,6 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	private boolean mCreatedScrollCommand = true;
 	/** Level we're currently editing */
 	private Level mLevel = null;
-	/** Invoker for the level editor */
-	private Invoker mInvoker = new Invoker();
 	/** Scrolling for nice scrolling */
 	private Scroller mScroller;
 	/** Starting position for the camera scroll */
@@ -1362,12 +1363,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	private SelectionActions mSelectionAction = null;
 	/** Currently loading level */
 	private LevelDef mLoadingLevel = null;
-	/** Current selected tool group */
-	private ToolGroups mToolGroup = ToolGroups.STATIC_TERRAIN;
 	/** The selection */
 	private ISelection mSelection = null;
-	//	/** All the available tools */
-	//	private TouchTool[] mTouchTools = new TouchTool[ToolGroups.values().length];
 	/** Current selected tool */
 	private Tools mTool = Tools.SELECTION;
 }

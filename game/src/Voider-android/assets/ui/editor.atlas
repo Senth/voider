@@ -101,6 +101,20 @@ enemy_select
   orig: 48, 48
   offset: 0, 0
   index: -1
+enemy_set_activate_trigger
+  rotate: false
+  xy: 1, 10
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+enemy_set_deactivate_trigger
+  rotate: false
+  xy: 1, 10
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
 info
   rotate: false
   xy: 1, 10
@@ -143,7 +157,21 @@ path_add
   orig: 48, 48
   offset: 0, 0
   index: -1
-path_remove_corner
+path_back_and_forth
+  rotate: false
+  xy: 1, 10
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+path_loop
+  rotate: false
+  xy: 1, 10
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+path_once
   rotate: false
   xy: 1, 10
   size: 48, 48
@@ -165,6 +193,13 @@ pickup_select
   offset: 0, 0
   index: -1
 rectangle_shape
+  rotate: false
+  xy: 1, 10
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+redo
   rotate: false
   xy: 1, 10
   size: 48, 48
@@ -220,13 +255,6 @@ stub
   orig: 48, 48
   offset: 0, 0
   index: -1
-terrain_add_move_corner
-  rotate: false
-  xy: 1, 10
-  size: 48, 48
-  orig: 48, 48
-  offset: 0, 0
-  index: -1
 terrain_draw_append
   rotate: false
   xy: 1, 10
@@ -241,13 +269,6 @@ terrain_draw_erase
   orig: 48, 48
   offset: 0, 0
   index: -1
-terrain_remove_corner
-  rotate: false
-  xy: 1, 10
-  size: 48, 48
-  orig: 48, 48
-  offset: 0, 0
-  index: -1
 triangle_shape
   rotate: false
   xy: 1, 10
@@ -256,6 +277,13 @@ triangle_shape
   offset: 0, 0
   index: -1
 trigger_add
+  rotate: false
+  xy: 1, 10
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+undo
   rotate: false
   xy: 1, 10
   size: 48, 48

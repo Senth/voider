@@ -48,7 +48,6 @@ public abstract class Gui implements Disposable {
 	 */
 	public void resize(int width, int height) {
 		mStage.setViewport(width, height, true);
-		//		mMainTable.setSize(width, height);
 	}
 
 	/**

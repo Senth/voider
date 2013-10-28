@@ -242,6 +242,37 @@ public abstract class EditorGui extends Gui {
 		};
 
 
+		// Undo
+		/** @todo REMOVE text button */
+		if (Config.Gui.usesTextButtons()) {
+			button = new TextButton("Undo", mTextButtonStyle);
+		} else {
+			button = new ImageButton(mEditorSkin, EditorIcons.UNDO.toString());
+		}
+		mFileMenu.add(button);
+		new ButtonListener(button) {
+			@Override
+			protected void onPressed() {
+				mEditor.getInvoker().undo();
+			}
+		};
+
+		// Redo
+		/** @todo REMOVE text button */
+		if (Config.Gui.usesTextButtons()) {
+			button = new TextButton("Redo", mTextButtonStyle);
+		} else {
+			button = new ImageButton(mEditorSkin, EditorIcons.REDO.toString());
+		}
+		mFileMenu.add(button).setPadRight(Config.Gui.SEPARATE_PADDING);
+		new ButtonListener(button) {
+			@Override
+			protected void onPressed() {
+				mEditor.getInvoker().redo();
+			}
+		};
+
+
 		// Run (for level editor)
 		if (mEditor instanceof LevelEditor) {
 			/** @todo REMOVE text button */
@@ -277,7 +308,7 @@ public abstract class EditorGui extends Gui {
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed() {
-				/** @todo handle info button press */
+				/** @todo */
 			}
 		};
 	}

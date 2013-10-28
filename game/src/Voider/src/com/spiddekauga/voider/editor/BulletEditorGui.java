@@ -91,8 +91,8 @@ public class BulletEditorGui extends ActorGui {
 	 */
 	public void setBulletEditor(BulletEditor bulletEditor) {
 		mBulletEditor = bulletEditor;
-
 		setActorEditor(mBulletEditor);
+		setEditor(bulletEditor);
 	}
 
 	@Override

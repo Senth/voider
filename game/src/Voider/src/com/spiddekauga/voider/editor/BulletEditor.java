@@ -5,7 +5,6 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector2;
-import com.spiddekauga.utils.Invoker;
 import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.voider.Config;
@@ -519,11 +518,6 @@ public class BulletEditor extends Editor implements IActorEditor, IResourceChang
 		return mWeapon.getDef().getBulletSpeed();
 	}
 
-	@Override
-	public Invoker getInvoker() {
-		return mInvoker;
-	}
-
 	/**
 	 * Enumeration for what we're currently selecting from a selection scene
 	 */
@@ -551,8 +545,6 @@ public class BulletEditor extends Editor implements IActorEditor, IResourceChang
 	private SelectionActions mSelectionAction = null;
 	/** Shoot direction */
 	private final static Vector2 SHOOT_DIRECTION = new Vector2(1, 0);
-	/** Invoker for the bullet editor */
-	private Invoker mInvoker = new Invoker();
 	/** Active touch tool */
 	private TouchTool mActiveTouchTool = null;
 	/** Current draw actor tool */

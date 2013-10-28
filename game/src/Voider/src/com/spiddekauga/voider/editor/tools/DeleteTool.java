@@ -2,6 +2,7 @@ package com.spiddekauga.voider.editor.tools;
 
 import java.util.ArrayList;
 
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.World;
@@ -31,7 +32,9 @@ public class DeleteTool extends TouchTool {
 
 	@Override
 	protected boolean down() {
-		removeSelectedResources();
+		if (mActive) {
+			removeSelectedResources();
+		}
 		return false;
 	}
 
@@ -52,6 +55,21 @@ public class DeleteTool extends TouchTool {
 		super.activate();
 
 		removeSelectedResources();
+		mActive = true;
+	}
+
+	@Override
+	public void deactivate() {
+		super.deactivate();
+		mActive = false;
+	}
+
+	@Override
+	public boolean keyDown(int keycode) {
+		if (keycode == Keys.DEL || keycode == Keys.BACKSPACE) {
+			removeSelectedResources();
+		}
+		return false;
 	}
 
 	/**
@@ -77,4 +95,7 @@ public class DeleteTool extends TouchTool {
 	protected QueryCallback getCallback() {
 		return null;
 	}
+
+	/** True if the tool is active */
+	private boolean mActive = false;
 }
