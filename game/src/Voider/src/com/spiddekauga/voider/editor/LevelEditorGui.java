@@ -820,6 +820,7 @@ class LevelEditorGui extends EditorGui {
 		label = new Label("Activate delay", labelStyle);
 		new TooltipListener(label, "Activate delay", Messages.Tooltip.Level.Enemy.ACTIVATE_DELAY);
 		mHiders.enemyActivateDelay.addToggleActor(label);
+		mWidgets.enemy.table.add(label);
 
 		mWidgets.enemy.table.row();
 		slider = new Slider(Level.Enemy.TRIGGER_ACTIVATE_DELAY_MIN, Level.Enemy.TRIGGER_ACTIVATE_DELAY_MAX, Level.Enemy.TRIGGER_ACTIVATE_DELAY_STEP_SIZE, false, sliderStyle);
@@ -842,9 +843,10 @@ class LevelEditorGui extends EditorGui {
 
 		// Deactivation delay
 		mWidgets.enemy.table.row();
-		label = new Label("Deactivation delay", labelStyle);
+		label = new Label("Deactivate delay", labelStyle);
 		new TooltipListener(label, "Deactivate delay", Messages.Tooltip.Level.Enemy.DEACTIVATE_DELAY);
 		mHiders.enemyDeactivateDelay.addToggleActor(label);
+		mWidgets.enemy.table.add(label);
 
 		mWidgets.enemy.table.row();
 		slider = new Slider(Level.Enemy.TRIGGER_DEACTIVATE_DELAY_MIN, Level.Enemy.TRIGGER_DEACTIVATE_DELAY_MAX, Level.Enemy.TRIGGER_DEACTIVATE_DELAY_STEP_SIZE, false, sliderStyle);
