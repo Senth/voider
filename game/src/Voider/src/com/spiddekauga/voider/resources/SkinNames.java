@@ -117,6 +117,16 @@ public class SkinNames {
 		WEAPON,
 		/** Collision options for enemies */
 		COLLISION,
+		/** The enemy will shoot on the player, or rather
+		 * in the direction where the player is currently located */
+		AIM_ON_PLAYER,
+		/** The enemy will shoot in a circle (or in a straight line) */
+		AIM_ROTATE,
+		/** The enemy will shoot in its moving direction */
+		AIM_MOVEMENT,
+		/** The enemy will shoot in front of the player (i.e. where
+		 * the player will be if s/he continues to move in the same direction) */
+		AIM_IN_FRONT_PLAYER,
 
 		;
 

@@ -618,6 +618,8 @@ public abstract class ActorGui extends EditorGui {
 				mActorEditor.setDestroyOnCollide(checked);
 			}
 		};
+
+		mMainTable.add(mWidgets.collision.table);
 	}
 
 	/**

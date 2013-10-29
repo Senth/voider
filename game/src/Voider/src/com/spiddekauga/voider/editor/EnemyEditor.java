@@ -28,6 +28,15 @@ import com.spiddekauga.voider.Config.Editor.Enemy;
 import com.spiddekauga.voider.app.MainMenu;
 import com.spiddekauga.voider.editor.brushes.VectorBrush;
 import com.spiddekauga.voider.editor.commands.CEnemyBulletDefSelect;
+import com.spiddekauga.voider.editor.tools.AddMoveCornerTool;
+import com.spiddekauga.voider.editor.tools.DeleteTool;
+import com.spiddekauga.voider.editor.tools.DrawAppendTool;
+import com.spiddekauga.voider.editor.tools.DrawEraseTool;
+import com.spiddekauga.voider.editor.tools.MoveTool;
+import com.spiddekauga.voider.editor.tools.RemoveCornerTool;
+import com.spiddekauga.voider.editor.tools.Selection;
+import com.spiddekauga.voider.editor.tools.SetCenterTool;
+import com.spiddekauga.voider.editor.tools.TouchTool;
 import com.spiddekauga.voider.game.CollisionResolver;
 import com.spiddekauga.voider.game.Path;
 import com.spiddekauga.voider.game.Path.PathTypes;
@@ -62,6 +71,15 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 	 */
 	public EnemyEditor() {
 		super(new EnemyEditorGui(), Config.Editor.PICKING_CIRCLE_RADIUS_EDITOR);
+
+		mTools[Tools.MOVE.ordinal()] = new MoveTool(mCamera, mWorld, mInvoker, mSelection, this);
+		mTools[Tools.DELETE.ordinal()] = new DeleteTool(mCamera, mWorld, mInvoker, mSelection, this);
+		mTools[Tools.DRAW_APPEND.ordinal()] = new DrawAppendTool(mCamera, mWorld, mInvoker, mSelection, this, EnemyActor.class);
+		mTools[Tools.DRAW_ERASE.ordinal()] = new DrawEraseTool(mCamera, mWorld, mInvoker, mSelection, this, EnemyActor.class);
+		mTools[Tools.ADD_MOVE_CORNER.ordinal()] = new AddMoveCornerTool(mCamera, mWorld, mInvoker, mSelection, this);
+		mTools[Tools.REMOVE_CORNER.ordinal()] = new RemoveCornerTool(mCamera, mWorld, mInvoker, mSelection, this);
+		mTools[Tools.SET_CENTER.ordinal()] = new SetCenterTool(mCamera, mWorld, mInvoker, mSelection, this, EnemyActor.class);
+
 		mPlayerActor = new PlayerActor();
 		mPlayerActor.createBody();
 		resetPlayerPosition();
@@ -690,13 +708,30 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 
 	@Override
 	public void switchTool(Tools tool) {
-		// TODO
+		if (mTools[mActiveTool.ordinal()] != null) {
+			mTools[mActiveTool.ordinal()].deactivate();
+
+			// Never remove delete tool
+			if (mActiveTool != Tools.DELETE) {
+				mInputMultiplexer.removeProcessor(mTools[mActiveTool.ordinal()]);
+			}
+		}
+
+		mActiveTool = tool;
+
+		if (mTools[mActiveTool.ordinal()] != null) {
+			mTools[mActiveTool.ordinal()].activate();
+
+			// Never add delete tool
+			if (mActiveTool != Tools.DELETE) {
+				mInputMultiplexer.addProcessor(mTools[mActiveTool.ordinal()]);
+			}
+		}
 	}
 
 	@Override
 	public Tools getActiveTool() {
-		// TODO
-		return null;
+		return mActiveTool;
 	}
 
 	/**
@@ -1268,6 +1303,10 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 		mEnemyPathOnce.setDef(mDef);
 		mEnemyPathLoop.setDef(mDef);
 		mEnemyPathBackAndForth.setDef(mDef);
+		((DrawAppendTool)mTools[Tools.DRAW_APPEND.ordinal()]).setActorDef(mDef);
+		if (mGui.isInitialized()) {
+			mGui.resetValues();
+		}
 	}
 
 	/**
@@ -1417,7 +1456,12 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 		LOAD_ENEMY,
 	}
 
-
+	/** Active tool */
+	private TouchTool[] mTools = new TouchTool[Tools.values().length];
+	/** Current tool state */
+	private Tools mActiveTool = Tools.NONE;
+	/** Current selection */
+	private Selection mSelection = new Selection();
 	/** Current selection action, null if none */
 	private SelectionActions mSelectionAction = null;
 	/** Current enemy actor */
