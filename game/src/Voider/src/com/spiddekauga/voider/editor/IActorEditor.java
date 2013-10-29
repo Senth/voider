@@ -2,7 +2,6 @@ package com.spiddekauga.voider.editor;
 
 import com.badlogic.gdx.math.Vector2;
 import com.spiddekauga.utils.Invoker;
-import com.spiddekauga.voider.editor.tools.DrawActorTool;
 import com.spiddekauga.voider.game.actors.ActorShapeTypes;
 
 /**
@@ -143,15 +142,15 @@ public interface IActorEditor extends IEditor {
 
 	// --------------- Custom Tool ----------------
 	/**
-	 * Sets the DrawActorTool state
-	 * @param state new state of the DrawActorTool
+	 * Sets the active tool for drawing shapes
+	 * @param tool the new tool to select
 	 */
-	void setDrawActorToolState(DrawActorTool.States state);
+	void switchTool(Tools tool);
 
 	/**
-	 * @return current state of the draw actor tool
+	 * @return current active tool for drawing shapes
 	 */
-	DrawActorTool.States getDrawActorToolState();
+	Tools getActiveTool();
 
 	// --------------- Collision -----------------
 	/**
@@ -175,4 +174,26 @@ public interface IActorEditor extends IEditor {
 	 * @return true if this enemy shall be destroyed on collision
 	 */
 	boolean isDestroyedOnCollide();
+
+	/**
+	 * All tools used by bullet editor (those in tool menu)
+	 */
+	enum Tools {
+		/** No tool */
+		NONE,
+		/** move */
+		MOVE,
+		/** Delete */
+		DELETE,
+		/** Add or move a corner */
+		ADD_MOVE_CORNER,
+		/** Remove a corner */
+		REMOVE_CORNER,
+		/** Draw append to the shape */
+		DRAW_APPEND,
+		/** Draw erase to/from the shape */
+		DRAW_ERASE,
+		/** Set center */
+		SET_CENTER,
+	}
 }

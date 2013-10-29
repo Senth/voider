@@ -9,7 +9,13 @@ import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.editor.brushes.VectorBrush;
-import com.spiddekauga.voider.editor.tools.DrawActorTool;
+import com.spiddekauga.voider.editor.tools.AddMoveCornerTool;
+import com.spiddekauga.voider.editor.tools.DeleteTool;
+import com.spiddekauga.voider.editor.tools.DrawAppendTool;
+import com.spiddekauga.voider.editor.tools.DrawEraseTool;
+import com.spiddekauga.voider.editor.tools.MoveTool;
+import com.spiddekauga.voider.editor.tools.RemoveCornerTool;
+import com.spiddekauga.voider.editor.tools.Selection;
 import com.spiddekauga.voider.editor.tools.TouchTool;
 import com.spiddekauga.voider.game.Weapon;
 import com.spiddekauga.voider.game.WeaponDef;
@@ -43,13 +49,22 @@ public class BulletEditor extends Editor implements IActorEditor, IResourceChang
 		((BulletEditorGui)mGui).setBulletEditor(this);
 
 		mWeapon.setWeaponDef(new WeaponDef());
-		mWeapon.getDef().setBulletActorDef(mDef);
 		Vector2 weaponPos = Pools.vector2.obtain();
 		screenToWorldCoord(mCamera, Gdx.graphics.getWidth() * 0.1f, Gdx.graphics.getHeight() * 0.7f, weaponPos, true);
 		mWeapon.setPosition(weaponPos);
 		Pools.vector2.free(weaponPos);
 
-		mDrawActorTool = new DrawActorTool(mCamera, mWorld, mInvoker, BulletActor.class, this, mDef);
+		// Initialize tools
+		mTools[Tools.MOVE.ordinal()] = new MoveTool(mCamera, mWorld, mInvoker, mSelection, this);
+		mTools[Tools.DELETE.ordinal()] = new DeleteTool(mCamera, mWorld, mInvoker, mSelection, this);
+		mTools[Tools.DRAW_APPEND.ordinal()] = new DrawAppendTool(mCamera, mWorld, mInvoker, mSelection, this, BulletActor.class);
+		mTools[Tools.DRAW_ERASE.ordinal()] = new DrawEraseTool(mCamera, mWorld, mInvoker, mSelection, this, BulletActor.class);
+		mTools[Tools.ADD_MOVE_CORNER.ordinal()] = new AddMoveCornerTool(mCamera, mWorld, mInvoker, mSelection, this);
+		mTools[Tools.REMOVE_CORNER.ordinal()] = new RemoveCornerTool(mCamera, mWorld, mInvoker, mSelection, this);
+		mTools[Tools.SET_CENTER.ordinal()] = null;
+
+
+		setDef(mDef);
 	}
 
 	@Override
@@ -83,8 +98,8 @@ public class BulletEditor extends Editor implements IActorEditor, IResourceChang
 
 	@Override
 	public boolean isDrawing() {
-		if (mActiveTouchTool != null) {
-			return mActiveTouchTool.isDrawing();
+		if (mTools[mActiveTool.ordinal()] != null) {
+			return mTools[mActiveTool.ordinal()].isDrawing();
 		} else {
 			return false;
 		}
@@ -125,7 +140,7 @@ public class BulletEditor extends Editor implements IActorEditor, IResourceChang
 
 			mBulletDestroyer.render(mShapeRenderer);
 
-			if (mBulletActor != null && mActiveTouchTool == mDrawActorTool) {
+			if (mBulletActor != null && mDef.getVisualVars().getShapeType() == ActorShapeTypes.CUSTOM) {
 				mBulletActor.render(mShapeRenderer);
 				mBulletActor.renderEditor(mShapeRenderer);
 			}
@@ -155,6 +170,8 @@ public class BulletEditor extends Editor implements IActorEditor, IResourceChang
 			Config.Gui.setUseTextButtons(!Config.Gui.usesTextButtons());
 			mGui.dispose();
 			mGui.initGui();
+			mGui.resetValues();
+			return true;
 		}
 
 		return false;
@@ -282,13 +299,15 @@ public class BulletEditor extends Editor implements IActorEditor, IResourceChang
 		setUnsaved();
 
 		if (shapeType == ActorShapeTypes.CUSTOM) {
-			mActiveTouchTool = mDrawActorTool;
-			mInputMultiplexer.addProcessor(mActiveTouchTool);
-			mDrawActorTool.activate();
-		} else if (mActiveTouchTool == mDrawActorTool) {
-			mDrawActorTool.deactivate();
-			mActiveTouchTool = null;
-			mInputMultiplexer.removeProcessor(mDrawActorTool);
+			switchTool(Tools.DRAW_APPEND);
+
+			// Add delete tool to input multiplexer
+			if (!mInputMultiplexer.getProcessors().contains(mTools[Tools.DELETE.ordinal()], true)) {
+				mInputMultiplexer.addProcessor(mTools[Tools.DELETE.ordinal()]);
+			}
+		} else {
+			switchTool(Tools.NONE);
+			mInputMultiplexer.removeProcessor(mTools[Tools.DELETE.ordinal()]);
 		}
 	}
 
@@ -383,16 +402,6 @@ public class BulletEditor extends Editor implements IActorEditor, IResourceChang
 		return mDef.getVisualVars().getCenterOffset();
 	}
 
-	@Override
-	public void setDrawActorToolState(DrawActorTool.States state) {
-		mDrawActorTool.setState(state);
-	}
-
-	@Override
-	public DrawActorTool.States getDrawActorToolState() {
-		return mDrawActorTool.getState();
-	}
-
 	/**
 	 * Sets colliding damage of the enemy
 	 * @param damage how much damage the enemy will inflict on a collision
@@ -451,6 +460,7 @@ public class BulletEditor extends Editor implements IActorEditor, IResourceChang
 	@Override
 	public void onResourceRemoved(IResource resource) {
 		if (resource instanceof BulletActor) {
+			mDef.getVisualVars().clearCorners();
 			mBulletActor = null;
 			setUnsaved();
 		} else if (resource instanceof VectorBrush) {
@@ -532,11 +542,53 @@ public class BulletEditor extends Editor implements IActorEditor, IResourceChang
 	 */
 	private void setDef(BulletActorDef def) {
 		mDef = def;
-		mDrawActorTool.setActorDef(def);
+		((DrawAppendTool)mTools[Tools.DRAW_APPEND.ordinal()]).setActorDef(def);
 		mWeapon.getDef().setBulletActorDef(def);
 		setShapeType(mDef.getVisualVars().getShapeType());
+		if (mGui.isInitialized()) {
+			mGui.resetValues();
+		}
 	}
 
+	/**
+	 * Switch currently selected tool
+	 * 
+	 * @param tool
+	 *            the new tool to use
+	 */
+	public void switchTool(Tools tool) {
+		if (mTools[mActiveTool.ordinal()] != null) {
+			mTools[mActiveTool.ordinal()].deactivate();
+
+			// Never remove delete tool
+			if (mActiveTool != Tools.DELETE) {
+				mInputMultiplexer.removeProcessor(mTools[mActiveTool.ordinal()]);
+			}
+		}
+
+		mActiveTool = tool;
+
+		if (mTools[mActiveTool.ordinal()] != null) {
+			mTools[mActiveTool.ordinal()].activate();
+
+			// Never add delete tool
+			if (mActiveTool != Tools.DELETE) {
+				mInputMultiplexer.addProcessor(mTools[mActiveTool.ordinal()]);
+			}
+		}
+	}
+
+	public Tools getActiveTool() {
+		return mActiveTool;
+	}
+
+
+	/** Active tool */
+	private TouchTool[] mTools = new TouchTool[Tools.values().length];
+	/** Current tool state */
+	private Tools mActiveTool = Tools.NONE;
+	/** Selection */
+	private Selection mSelection = new Selection();
 	/** Current weapon that fires the bullets */
 	private Weapon mWeapon = new Weapon();
 	/** Current bullet definition */
@@ -545,10 +597,6 @@ public class BulletEditor extends Editor implements IActorEditor, IResourceChang
 	private SelectionActions mSelectionAction = null;
 	/** Shoot direction */
 	private final static Vector2 SHOOT_DIRECTION = new Vector2(1, 0);
-	/** Active touch tool */
-	private TouchTool mActiveTouchTool = null;
-	/** Current draw actor tool */
-	private DrawActorTool mDrawActorTool;
 	/** Current bullet actor (when drawing) */
 	private BulletActor mBulletActor = null;
 	/** Draw brush to render */

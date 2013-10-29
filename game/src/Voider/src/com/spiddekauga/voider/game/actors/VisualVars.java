@@ -472,6 +472,16 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 	}
 
 	/**
+	 * Removes all the corners
+	 */
+	public void clearCorners() {
+		Pools.vector2.freeAll(mCorners);
+		mCorners.clear();
+		clearFixtures();
+		clearVertices();
+	}
+
+	/**
 	 * Sets the center offset for the fixtures
 	 * @param centerOffset center offset position for fixtures
 	 */

@@ -18,7 +18,7 @@ public class SkinNames {
 		/** Shape of actor (enemy or bullet) */
 		RECTANGLE_SHAPE,
 		/** Shape of actor (enemy or bullet) */
-		TRAIANGLE_SHAPE,
+		TRIANGLE_SHAPE,
 		/** Add a corner between two corners in a shape, or move an existing corner */
 		ADD_MOVE_CORNER,
 		/** Removes a corner from an actor shape */

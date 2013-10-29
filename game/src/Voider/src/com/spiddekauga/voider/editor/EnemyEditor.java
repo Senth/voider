@@ -27,7 +27,6 @@ import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Editor.Enemy;
 import com.spiddekauga.voider.editor.brushes.VectorBrush;
 import com.spiddekauga.voider.editor.commands.CEnemyBulletDefSelect;
-import com.spiddekauga.voider.editor.tools.DrawActorTool;
 import com.spiddekauga.voider.game.CollisionResolver;
 import com.spiddekauga.voider.game.Path;
 import com.spiddekauga.voider.game.Path.PathTypes;
@@ -482,6 +481,8 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 			Config.Gui.setUseTextButtons(!Config.Gui.usesTextButtons());
 			mGui.dispose();
 			mGui.initGui();
+			mGui.resetValues();
+			return true;
 		}
 
 		return false;
@@ -681,12 +682,13 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 	}
 
 	@Override
-	public void setDrawActorToolState(DrawActorTool.States state) {
-		// Does nothing
+	public void switchTool(Tools tool) {
+		// TODO
 	}
 
 	@Override
-	public DrawActorTool.States getDrawActorToolState() {
+	public Tools getActiveTool() {
+		// TODO
 		return null;
 	}
 

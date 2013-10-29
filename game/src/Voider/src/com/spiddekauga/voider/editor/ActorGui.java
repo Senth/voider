@@ -1,6 +1,5 @@
 package com.spiddekauga.voider.editor;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
@@ -22,9 +21,10 @@ import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Editor;
 import com.spiddekauga.voider.Config.Editor.Bullet;
 import com.spiddekauga.voider.Config.Editor.Enemy;
+import com.spiddekauga.voider.editor.IActorEditor.Tools;
 import com.spiddekauga.voider.editor.commands.CActorEditorCenterReset;
-import com.spiddekauga.voider.editor.tools.DrawActorTool.States;
 import com.spiddekauga.voider.game.actors.ActorShapeTypes;
+import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.utils.Messages;
 
 /**
@@ -50,6 +50,10 @@ public abstract class ActorGui extends EditorGui {
 		mWidgets.collision.table.setPreferences(mMainTable);
 		mWidgets.info.table.setPreferences(mMainTable);
 		mWidgets.visual.table.setPreferences(mMainTable);
+		mWidgets.visualToolMenu.table.setPreferences(mToolMenu);
+
+		initVisual();
+		initToolMenu();
 	}
 
 	@Override
@@ -90,42 +94,6 @@ public abstract class ActorGui extends EditorGui {
 		case CUSTOM:
 			mWidgets.visual.shapeCustom.setChecked(true);
 			break;
-		}
-
-		// Custom shape
-		if (mWidgets.visual.shapeCustom != null) {
-			switch (mActorEditor.getDrawActorToolState()) {
-			case DRAW_APPEND:
-				mWidgets.visual.customShapeAppend.setChecked(true);
-				break;
-
-			case ADJUST_ADD_CORNER:
-				mWidgets.visual.customShapeAddCorner.setChecked(true);
-				break;
-
-			case ADJUST_MOVE_CORNER:
-				mWidgets.visual.customShapeMoveCorner.setChecked(true);
-				break;
-
-			case ADJUST_REMOVE_CORNER:
-				mWidgets.visual.customShapeRemoveCorner.setChecked(true);
-				break;
-
-			case DRAW_ERASE:
-				mWidgets.visual.customShapeDrawErase.setChecked(true);
-				break;
-
-			case MOVE:
-				mWidgets.visual.customShapeMoveShape.setChecked(true);
-				break;
-
-			case SET_CENTER:
-				mWidgets.visual.customShapeSetCenter.setChecked(true);
-				break;
-
-			default:
-				Gdx.app.error("ActorGui", "Invalid draw actor tool state! " + mActorEditor.getDrawActorToolState());
-			}
 		}
 
 
@@ -199,7 +167,7 @@ public abstract class ActorGui extends EditorGui {
 	 * Initializes visual options
 	 */
 	protected void initVisual() {
-		mWidgets.visual.table.setScalable(false);
+		mVisualHider.addToggleActor(mWidgets.visual.table);
 
 
 		// Starting angle
@@ -253,11 +221,11 @@ public abstract class ActorGui extends EditorGui {
 		ButtonGroup buttonGroup = new ButtonGroup();
 		HideListener circleHider = null;
 		Button button;
+		/** @todo remove text button */
 		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Circle", mStyles.textButton.toggle);
 		} else {
-			/** @todo default stub image button */
-			button = new ImageButton(mStyles.skin.editor, "default-toggle");
+			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.CIRCLE_SHAPE.toString());
 		}
 		mWidgets.visual.shapeCircle = button;
 		mWidgets.visual.table.add(button);
@@ -275,13 +243,11 @@ public abstract class ActorGui extends EditorGui {
 		};
 
 		HideListener rectangleHider = null;
-		boolean hasRectangle = false;
-		hasRectangle = true;
+		/** @todo remove text button */
 		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Rectangle", mStyles.textButton.toggle);
 		} else {
-			/** @todo default stub image button */
-			button = new ImageButton(mStyles.skin.editor, "default-toggle");
+			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.RECTANGLE_SHAPE.toString());
 		}
 		mWidgets.visual.shapeRectangle = button;
 		mWidgets.visual.table.add(button);
@@ -299,13 +265,11 @@ public abstract class ActorGui extends EditorGui {
 		};
 
 		HideListener triangleHider = null;
-		boolean hasTriangle = false;
-		hasTriangle = true;
+		/** @todo remove text button */
 		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Triangle", mStyles.textButton.toggle);
 		} else {
-			/** @todo default stub image button */
-			button = new ImageButton(mStyles.skin.editor, "default-toggle");
+			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.TRIANGLE_SHAPE.toString());
 		}
 		mWidgets.visual.shapeTriangle = button;
 		mWidgets.visual.table.add(button);
@@ -323,19 +287,18 @@ public abstract class ActorGui extends EditorGui {
 		};
 
 
-		HideListener customHider = null;
+		/** @todo remove text button */
 		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Draw", mStyles.textButton.toggle);
 		} else {
-			/** @todo default stub image button */
-			button = new ImageButton(mStyles.skin.editor, "default-toggle");
+			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.DRAW_CUSTOM_SHAPE.toString());
 		}
 		mWidgets.visual.shapeCustom = button;
 		mWidgets.visual.table.add(button);
 		button.addListener(shapeChecker);
 		buttonGroup.add(button);
 		new TooltipListener(button, "Draw", Messages.replaceName(Messages.Tooltip.Actor.Visuals.DRAW, getResourceTypeName()));
-		customHider = new HideListener(button, true) {
+		mDrawToolHider = new HideListener(button, true) {
 			@Override
 			protected void onShow() {
 				if (mActorEditor.getShapeType() != ActorShapeTypes.CUSTOM) {
@@ -352,7 +315,6 @@ public abstract class ActorGui extends EditorGui {
 		mWidgets.visual.table.add(label).setPadRight(Editor.LABEL_PADDING_BEFORE_SLIDER);
 		circleHider.addToggleActor(label);
 
-		// Enemy
 		if (this instanceof EnemyEditorGui) {
 			slider = new Slider(Enemy.Visual.RADIUS_MIN, Enemy.Visual.RADIUS_MAX, Enemy.Visual.RADIUS_STEP_SIZE, false, mStyles.slider.standard);
 		} else if (this instanceof BulletEditorGui) {
@@ -377,12 +339,8 @@ public abstract class ActorGui extends EditorGui {
 		mWidgets.visual.table.row();
 		label = new Label("Width", mStyles.label.standard);
 		mWidgets.visual.table.add(label).setPadRight(Editor.LABEL_PADDING_BEFORE_SLIDER);
-		if (hasRectangle) {
-			rectangleHider.addToggleActor(label);
-		}
-		if (hasTriangle) {
-			triangleHider.addToggleActor(label);
-		}
+		rectangleHider.addToggleActor(label);
+		triangleHider.addToggleActor(label);
 
 		if (this instanceof EnemyEditorGui) {
 			slider = new Slider(Enemy.Visual.SIZE_MIN, Enemy.Visual.SIZE_MAX, Enemy.Visual.SIZE_STEP_SIZE, false, mStyles.slider.standard);
@@ -391,22 +349,14 @@ public abstract class ActorGui extends EditorGui {
 		}
 		mWidgets.visual.shapeWidth = slider;
 		mWidgets.visual.table.add(slider);
-		if (hasRectangle) {
-			rectangleHider.addToggleActor(slider);
-		}
-		if (hasTriangle) {
-			triangleHider.addToggleActor(slider);
-		}
+		rectangleHider.addToggleActor(slider);
+		triangleHider.addToggleActor(slider);
 
 		textField = new TextField("", mStyles.textField.standard);
 		mWidgets.visual.table.add(textField);
 		textField.setWidth(Editor.TEXT_FIELD_NUMBER_WIDTH);
-		if (hasRectangle) {
-			rectangleHider.addToggleActor(textField);
-		}
-		if (hasTriangle) {
-			triangleHider.addToggleActor(textField);
-		}
+		rectangleHider.addToggleActor(textField);
+		triangleHider.addToggleActor(textField);
 		new SliderListener(slider, textField, mInvoker) {
 			@Override
 			protected void onChange(float newValue) {
@@ -418,12 +368,8 @@ public abstract class ActorGui extends EditorGui {
 		mWidgets.visual.table.row();
 		label = new Label("Height", mStyles.label.standard);
 		mWidgets.visual.table.add(label).setPadRight(Editor.LABEL_PADDING_BEFORE_SLIDER);
-		if (hasRectangle) {
-			rectangleHider.addToggleActor(label);
-		}
-		if (hasTriangle) {
-			triangleHider.addToggleActor(label);
-		}
+		rectangleHider.addToggleActor(label);
+		triangleHider.addToggleActor(label);
 
 		if (this instanceof EnemyEditorGui) {
 			slider = new Slider(Enemy.Visual.SIZE_MIN, Enemy.Visual.SIZE_MAX, Enemy.Visual.SIZE_STEP_SIZE, false, mStyles.slider.standard);
@@ -432,22 +378,14 @@ public abstract class ActorGui extends EditorGui {
 		}
 		mWidgets.visual.shapeHeight = slider;
 		mWidgets.visual.table.add(slider);
-		if (hasRectangle) {
-			rectangleHider.addToggleActor(slider);
-		}
-		if (hasTriangle) {
-			triangleHider.addToggleActor(slider);
-		}
+		rectangleHider.addToggleActor(slider);
+		triangleHider.addToggleActor(slider);
 
 		textField = new TextField("", mStyles.textField.standard);
 		mWidgets.visual.table.add(textField);
 		textField.setWidth(Editor.TEXT_FIELD_NUMBER_WIDTH);
-		if (hasRectangle) {
-			rectangleHider.addToggleActor(textField);
-		}
-		if (hasTriangle) {
-			triangleHider.addToggleActor(textField);
-		}
+		rectangleHider.addToggleActor(textField);
+		triangleHider.addToggleActor(textField);
 		new SliderListener(slider, textField, mInvoker) {
 			@Override
 			protected void onChange(float newValue) {
@@ -455,177 +393,183 @@ public abstract class ActorGui extends EditorGui {
 			}
 		};
 
-		// Custom
-		mWidgets.visual.table.row();
-		buttonGroup = new ButtonGroup();
+
+		mVisualHider.addChild(circleHider);
+		mVisualHider.addChild(rectangleHider);
+		mVisualHider.addChild(triangleHider);
+		mVisualHider.addChild(mDrawToolHider);
+
+		mMainTable.add(mWidgets.visual.table);
+	}
+
+	/**
+	 * Initializes the toolbox
+	 */
+	private void initToolMenu() {
+		ButtonGroup buttonGroup = new ButtonGroup();
+		Button button;
 		GuiCheckCommandCreator shapeCustomChecker = new GuiCheckCommandCreator(mInvoker);
 
+		mWidgets.visualToolMenu.table.setPreferences(mToolMenu);
+		mToolMenu.add(mWidgets.visualToolMenu.table);
+		mDrawToolHider.addToggleActor(mWidgets.visualToolMenu.table);
+
+		// Move
+		/** @todo remove text button */
+		mWidgets.visualToolMenu.table.row();
+		if (Config.Gui.usesTextButtons()) {
+			button = new TextButton("Move", mStyles.textButton.toggle);
+		} else {
+			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.MOVE.toString());
+		}
+		button.addListener(shapeCustomChecker);
+		buttonGroup.add(button);
+		TooltipListener tooltipListener = new TooltipListener(button, "Move", Messages.replaceName(Messages.Tooltip.Actor.Visuals.MOVE, getResourceTypeName()));
+		new ButtonListener(button, tooltipListener) {
+			@Override
+			protected void onChecked(boolean checked) {
+				if (checked) {
+					mActorEditor.switchTool(Tools.MOVE);
+				}
+			}
+		};
+		mWidgets.visualToolMenu.table.add(button);
+
+		// Delete
+		mWidgets.visualToolMenu.table.row();
+		/** @todo remove text button */
+		if (Config.Gui.usesTextButtons()) {
+			button = new TextButton("Delete", mStyles.textButton.toggle);
+		} else {
+			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.DELETE.toString());
+		}
+		button.addListener(shapeCustomChecker);
+		buttonGroup.add(button);
+		//		TooltipListener tooltipListener = new TooltipListener(button, "Delete", Messages.replaceName(Messages.Tooltip.Actor.Visuals., getResourceTypeName()));
+		new ButtonListener(button) {
+			@Override
+			protected void onChecked(boolean checked) {
+				if (checked) {
+					mActorEditor.switchTool(Tools.DELETE);
+				}
+			}
+		};
+		mWidgets.visualToolMenu.table.add(button);
+
 		// Append
+		mWidgets.visualToolMenu.table.row();
+		/** @todo remove text button */
 		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Draw/Append", mStyles.textButton.toggle);
 		} else {
-			/** @todo default stub image button */
-			button = new ImageButton(mStyles.skin.editor, "default-toggle");
+			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.DRAW_APPEND.toString());
 		}
 		button.addListener(shapeCustomChecker);
-		mWidgets.visual.customShapeAppend = button;
 		buttonGroup.add(button);
-		customHider.addToggleActor(button);
-		TooltipListener tooltipListener = new TooltipListener(button, "Draw/Append", Messages.replaceName(Messages.Tooltip.Actor.Visuals.APPEND, getResourceTypeName()));
+		tooltipListener = new TooltipListener(button, "Draw/Append", Messages.replaceName(Messages.Tooltip.Actor.Visuals.APPEND, getResourceTypeName()));
 		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onChecked(boolean checked) {
 				if (checked) {
-					mActorEditor.setDrawActorToolState(States.DRAW_APPEND);
+					mActorEditor.switchTool(Tools.DRAW_APPEND);
 				}
 			}
 		};
-		mWidgets.visual.table.add(button);
-
-		// Add corner
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Add corner", mStyles.textButton.toggle);
-		} else {
-			/** @todo default stub image button */
-			button = new ImageButton(mStyles.skin.editor, "default-toggle");
-		}
-		button.addListener(shapeCustomChecker);
-		mWidgets.visual.customShapeAddCorner = button;
-		buttonGroup.add(button);
-		customHider.addToggleActor(button);
-		tooltipListener = new TooltipListener(button, "Add corner", Messages.replaceName(Messages.Tooltip.Actor.Visuals.ADJUST_ADD_CORNER, getResourceTypeName()));
-		new ButtonListener(button, tooltipListener) {
-			@Override
-			protected void onChecked(boolean checked) {
-				if (checked) {
-					mActorEditor.setDrawActorToolState(States.ADJUST_ADD_CORNER);
-				}
-			}
-		};
-		mWidgets.visual.table.add(button);
-
-		// Move corner
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Move corner", mStyles.textButton.toggle);
-		} else {
-			/** @todo default stub image button */
-			button = new ImageButton(mStyles.skin.editor, "default-toggle");
-		}
-		button.addListener(shapeCustomChecker);
-		mWidgets.visual.customShapeMoveCorner = button;
-		buttonGroup.add(button);
-		customHider.addToggleActor(button);
-		tooltipListener = new TooltipListener(button, "Move corner", Messages.replaceName(Messages.Tooltip.Actor.Visuals.ADJUST_MOVE_CORNER, getResourceTypeName()));
-		new ButtonListener(button, tooltipListener) {
-			@Override
-			protected void onChecked(boolean checked) {
-				if (checked) {
-					mActorEditor.setDrawActorToolState(States.ADJUST_MOVE_CORNER);
-				}
-			}
-		};
-		mWidgets.visual.table.add(button);
-
-		// Remove corner
-		mWidgets.visual.table.row();
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Remove corner", mStyles.textButton.toggle);
-		} else {
-			/** @todo default stub image button */
-			button = new ImageButton(mStyles.skin.editor, "default-toggle");
-		}
-		button.addListener(shapeCustomChecker);
-		mWidgets.visual.customShapeRemoveCorner = button;
-		buttonGroup.add(button);
-		customHider.addToggleActor(button);
-		tooltipListener = new TooltipListener(button, "Remove corner", Messages.replaceName(Messages.Tooltip.Actor.Visuals.ADJUST_REMOVE_CORNER, getResourceTypeName()));
-		new ButtonListener(button, tooltipListener) {
-			@Override
-			protected void onChecked(boolean checked) {
-				if (checked) {
-					mActorEditor.setDrawActorToolState(States.ADJUST_REMOVE_CORNER);
-				}
-			}
-		};
-		mWidgets.visual.table.add(button);
+		mWidgets.visualToolMenu.table.add(button);
 
 		// Add Remove (draw/erase)
+		mWidgets.visualToolMenu.table.row();
+		/** @todo remove text button */
 		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Draw/Erase", mStyles.textButton.toggle);
 		} else {
-			/** @todo default stub image button */
-			button = new ImageButton(mStyles.skin.editor, "default-toggle");
+			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.DRAW_ERASE.toString());
 		}
 		button.addListener(shapeCustomChecker);
-		mWidgets.visual.customShapeDrawErase = button;
 		buttonGroup.add(button);
-		customHider.addToggleActor(button);
 		tooltipListener = new TooltipListener(button, "Draw/Erase", Messages.replaceName(Messages.Tooltip.Actor.Visuals.ADD_REMOVE, getResourceTypeName()));
 		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onChecked(boolean checked) {
 				if (checked) {
-					mActorEditor.setDrawActorToolState(States.DRAW_ERASE);
+					mActorEditor.switchTool(Tools.DRAW_ERASE);
 				}
 			}
 		};
-		mWidgets.visual.table.add(button);
+		mWidgets.visualToolMenu.table.add(button);
 
-		// Move shape
+		// Add corner
+		mWidgets.visualToolMenu.table.row();
+		/** @todo remove text button */
 		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Move shape", mStyles.textButton.toggle);
+			button = new TextButton("Add/Move corner", mStyles.textButton.toggle);
 		} else {
-			/** @todo default stub image button */
-			button = new ImageButton(mStyles.skin.editor, "default-toggle");
+			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.ADD_MOVE_CORNER.toString());
 		}
 		button.addListener(shapeCustomChecker);
-		mWidgets.visual.customShapeMoveShape = button;
 		buttonGroup.add(button);
-		customHider.addToggleActor(button);
-		tooltipListener = new TooltipListener(button, "Move shape", Messages.replaceName(Messages.Tooltip.Actor.Visuals.MOVE, getResourceTypeName()));
+		tooltipListener = new TooltipListener(button, "Add/Move corner", Messages.replaceName(Messages.Tooltip.Actor.Visuals.ADJUST_ADD_CORNER, getResourceTypeName()));
 		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onChecked(boolean checked) {
 				if (checked) {
-					mActorEditor.setDrawActorToolState(States.MOVE);
+					mActorEditor.switchTool(Tools.ADD_MOVE_CORNER);
 				}
 			}
 		};
-		mWidgets.visual.table.add(button);
+		mWidgets.visualToolMenu.table.add(button);
+
+		// Remove corner
+		mWidgets.visualToolMenu.table.row();
+		/** @todo remove text button */
+		if (Config.Gui.usesTextButtons()) {
+			button = new TextButton("Remove corner", mStyles.textButton.toggle);
+		} else {
+			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.REMOVE_CORNER.toString());
+		}
+		button.addListener(shapeCustomChecker);
+		buttonGroup.add(button);
+		tooltipListener = new TooltipListener(button, "Remove corner", Messages.replaceName(Messages.Tooltip.Actor.Visuals.ADJUST_REMOVE_CORNER, getResourceTypeName()));
+		new ButtonListener(button, tooltipListener) {
+			@Override
+			protected void onChecked(boolean checked) {
+				if (checked) {
+					mActorEditor.switchTool(Tools.REMOVE_CORNER);
+				}
+			}
+		};
+		mWidgets.visualToolMenu.table.add(button);
 
 		// Set center
+		mWidgets.visualToolMenu.table.row();
+		/** @todo remove text button */
 		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Set center", mStyles.textButton.toggle);
 		} else {
-			/** @todo default stub image button */
-			button = new ImageButton(mStyles.skin.editor, "default-toggle");
+			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.SET_CENTER.toString());
 		}
 		button.addListener(shapeCustomChecker);
-		mWidgets.visual.customShapeSetCenter = button;
-		HideListener setCenterHider = new HideListener(button, true);
 		buttonGroup.add(button);
-		customHider.addToggleActor(button);
-		customHider.addChild(setCenterHider);
 		tooltipListener = new TooltipListener(button, "Set center", Messages.replaceName(Messages.Tooltip.Actor.Visuals.SET_CENTER, getResourceTypeName()));
 		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onChecked(boolean checked) {
 				if (checked) {
-					mActorEditor.setDrawActorToolState(States.SET_CENTER);
+					mActorEditor.switchTool(Tools.SET_CENTER);
 				}
 			}
 		};
-		mWidgets.visual.table.add(button);
+		mWidgets.visualToolMenu.table.add(button);
 
 
-		mWidgets.visual.table.row(Horizontal.RIGHT, Vertical.TOP);
+		// Reset center
+		mWidgets.visualToolMenu.table.row();
+		/** @todo remove text button */
 		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Reset center", mStyles.textButton.toggle);
 		} else {
-			/** @todo default stub image button */
-			button = new ImageButton(mStyles.skin.editor);
+			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.RESET_CENTER.toString());
 		}
-		setCenterHider.addToggleActor(button);
 		tooltipListener = new TooltipListener(button, "Reset center", Messages.replaceName(Messages.Tooltip.Actor.Visuals.RESET_CENTER, getResourceTypeName()));
 		new ButtonListener(button, tooltipListener) {
 			@Override
@@ -633,21 +577,7 @@ public abstract class ActorGui extends EditorGui {
 				mInvoker.execute(new CActorEditorCenterReset(mActorEditor));
 			}
 		};
-		mWidgets.visual.table.add(button);
-
-
-		if (circleHider != null) {
-			mVisualHider.addChild(circleHider);
-		}
-		if (rectangleHider != null) {
-			mVisualHider.addChild(rectangleHider);
-		}
-		if (triangleHider != null) {
-			mVisualHider.addChild(triangleHider);
-		}
-		if (customHider != null) {
-			mVisualHider.addChild(customHider);
-		}
+		mWidgets.visualToolMenu.table.add(button);
 	}
 
 	/**
@@ -697,6 +627,7 @@ public abstract class ActorGui extends EditorGui {
 		VisualWidgets visual = new VisualWidgets();
 		InfoWidgets info = new InfoWidgets();
 		CollisionWidgets collision = new CollisionWidgets();
+		VisualToolMenuWidgets visualToolMenu = new VisualToolMenuWidgets();
 
 		/**
 		 * Visual widgets
@@ -727,6 +658,13 @@ public abstract class ActorGui extends EditorGui {
 			Button customShapeDrawErase = null;
 			Button customShapeMoveShape = null;
 			Button customShapeSetCenter = null;
+		}
+
+		/**
+		 * Visual tool box/menu
+		 */
+		static class VisualToolMenuWidgets {
+			AlignTable table = new AlignTable();
 		}
 
 		/**
@@ -783,6 +721,8 @@ public abstract class ActorGui extends EditorGui {
 	protected HideListener mVisualHider = new HideListener(true);
 	/** Hides collision options */
 	protected HideListener mCollisionHider = new HideListener(true);
+	/** Hides custom draw tool menu */
+	private HideListener mDrawToolHider = null;
 	/** Invoker */
 	protected Invoker mInvoker = null;
 

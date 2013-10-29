@@ -1244,7 +1244,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		MOVE,
 		/** Delete */
 		DELETE,
-		/** Append either add a corner or move a corner in a terrain */
+		/** add a corner or move a corner in a terrain */
 		ADD_MOVE_CORNER,
 		/** Remove a corner from the terrain */
 		REMOVE_CORNER,
