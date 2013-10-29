@@ -39,6 +39,7 @@ public abstract class ActorGui extends EditorGui {
 		mWidgets.visual.table.dispose();
 		mWidgets.collision.table.dispose();
 		mWidgets.info.table.dispose();
+		mWidgets.visualToolMenu.table.dispose();
 
 		super.dispose();
 	}

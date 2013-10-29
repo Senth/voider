@@ -25,6 +25,7 @@ import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Editor.Enemy;
+import com.spiddekauga.voider.app.MainMenu;
 import com.spiddekauga.voider.editor.brushes.VectorBrush;
 import com.spiddekauga.voider.editor.commands.CEnemyBulletDefSelect;
 import com.spiddekauga.voider.game.CollisionResolver;
@@ -474,6 +475,12 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 		// Undo
 		else if (KeyHelper.isUndoPressed(keycode)) {
 			mInvoker.undo();
+			return true;
+		}
+		// Back - main menu
+		else if (KeyHelper.isBackPressed(keycode)) {
+			saveDef();
+			SceneSwitcher.returnTo(MainMenu.class);
 			return true;
 		}
 		/** @todo remove test keys */

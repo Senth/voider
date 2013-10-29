@@ -3,26 +3,20 @@ package com.spiddekauga.voider.editor;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
-import com.badlogic.gdx.scenes.scene2d.ui.Slider.SliderStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
-import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.HideListener;
+import com.spiddekauga.utils.scene.ui.Label;
 import com.spiddekauga.utils.scene.ui.SliderListener;
 import com.spiddekauga.utils.scene.ui.TooltipListener;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Editor;
 import com.spiddekauga.voider.Config.Editor.Weapon;
 import com.spiddekauga.voider.Config.Gui;
-import com.spiddekauga.voider.resources.ResourceCacheFacade;
-import com.spiddekauga.voider.resources.ResourceNames;
 import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.utils.Messages;
 
@@ -41,35 +35,9 @@ public class BulletEditorGui extends ActorGui {
 		mMainTable.setRowAlign(Horizontal.LEFT, Vertical.TOP);
 		mMainTable.setCellPaddingDefault(Gui.PADDING_DEFAULT);
 
-
-		//		mVisualTable.setPreferences(mMainTable);
-		//		mWeaponTable.setPreferences(mMainTable);
-		//		mOptionTable.setPreferences(mMainTable);
-
-
-		//		initVisual("bullet",
-		//				ActorShapeTypes.CIRCLE,
-		//				ActorShapeTypes.TRIANGLE,
-		//				ActorShapeTypes.RECTANGLE,
-		//				ActorShapeTypes.CUSTOM
-		//				);
-		//		initWeapon();
-		//		initOptions("bullet");
-		//		initFileMenu("bullet");
-		//		initMenu();
-
-		//		initVisual();
 		initWeapon();
 		initMainMenu();
 		resetValues();
-
-
-		//		mMainTable.setTransform(true);
-		//		mVisualTable.setTransform(true);
-		//		mOptionTable.setTransform(true);
-		//		mWeaponTable.setTransform(true);
-		//		mMainTable.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		//		mMainTable.invalidate();
 	}
 
 	@Override
@@ -145,103 +113,35 @@ public class BulletEditorGui extends ActorGui {
 	}
 
 	/**
-	 * Initializes the top menu
-	 */
-	private void initMenu() {
-		//		Skin generalSkin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
-		//		TextButtonStyle mStyles.textButton.toggle = generalSkin .get("toggle", TextButtonStyle.class);
-		//		Skin mStyles.skin.editor = ResourceCacheFacade.get(ResourceNames.UI_EDITOR_BUTTONS);
-		//
-		//
-		//		// --- Active options ---
-		//		mMainTable.row().setAlign(Horizontal.CENTER, Vertical.BOTTOM);
-		//		ButtonGroup buttonGroup = new ButtonGroup();
-		//
-		//		// Visual
-		//		GuiCheckCommandCreator menuChecker = new GuiCheckCommandCreator(mInvoker);
-		//		Button button;
-		//		if (Config.Gui.usesTextButtons()) {
-		//			button = new TextButton("Visuals", mStyles.textButton.toggle);
-		//		} else {
-		//			/** @todo default stub image button */
-		//			button = new ImageButton(mStyles.skin.editor, "default-toggle");
-		//		}
-		//		button.addListener(menuChecker);
-		//		buttonGroup.add(button);
-		//		mMainTable.add(button);
-		//		mVisualHider.addToggleActor(mVisualTable);
-		//		mVisualHider.setButton(button);
-		//		new TooltipListener(button, "Visuals", Messages.replaceName(Messages.Tooltip.Actor.Menu.VISUALS, "bullet"));
-		//
-		//		// Weapon
-		//		if (Config.Gui.usesTextButtons()) {
-		//			button = new TextButton("Weapon", mStyles.textButton.toggle);
-		//		} else {
-		//			/** @todo default stub image button */
-		//			button = new ImageButton(mStyles.skin.editor, "default-toggle");
-		//		}
-		//		button.addListener(menuChecker);
-		//		buttonGroup.add(button);
-		//		mMainTable.add(button);
-		//		mWeaponHider.addToggleActor(mWeaponTable);
-		//		mWeaponHider.setButton(button);
-		//
-		//		// Options
-		//		if (Config.Gui.usesTextButtons()) {
-		//			button = new TextButton("Options", mStyles.textButton.toggle);
-		//		} else {
-		//			/** @todo default stub image button */
-		//			button = new ImageButton(mStyles.skin.editor, "default-toggle");
-		//		}
-		//		button.addListener(menuChecker);
-		//		buttonGroup.add(button);
-		//		mMainTable.add(button);
-		//		mOptionHider.setButton(button);
-		//		mOptionHider.addToggleActor(mOptionTable);
-		//		new TooltipListener(button, "Options", Messages.replaceName(Messages.Tooltip.Actor.Menu.OPTIONS, "bullet"));
-		//
-		//
-		//		mMainTable.row().setFillHeight(true).setAlign(Horizontal.LEFT, Vertical.TOP);
-		//		mMainTable.add(mWeaponTable).setFillWidth(true);
-		//		mMainTable.add(mVisualTable);
-		//		mMainTable.add(mOptionTable).setFillWidth(true).setFillHeight(true);
-	}
-
-	/**
 	 * Initializes test weapon table
 	 */
 	private void initWeapon() {
-		Skin generalSkin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
-		LabelStyle labelStyle = generalSkin.get("default", LabelStyle.class);
-		SliderStyle sliderStyle = generalSkin.get("default", SliderStyle.class);
-		TextFieldStyle textFieldStyle = generalSkin.get("default", TextFieldStyle.class);
-
 		String warningText =
 				"These options are not bound to the " +
 						"current bullet. They are only here to " +
 						"test how the bullet will appear on " +
 						"different weapons.";
 
-		Label label = new Label(warningText, labelStyle);
+		Label label = new Label(warningText, mStyles.label.standard);
 		label.setWrap(true);
 		label.setName("warning");
-		label.setWidth(0);
+		label.setWidth(10);
 		label.setHeight(label.getHeight() * 4);
 		mWeaponTable.setName("weapon");
-
-		mWeaponTable.setScalable(false);
 		mWeaponTable.row().setFillWidth(true).setAlign(Horizontal.CENTER, Vertical.TOP);
 		mWeaponTable.add(label).setFillWidth(true).setAlign(Horizontal.CENTER, Vertical.TOP);
+		mMainTable.add(mWeaponTable);
+
 
 
 		// Speed
 		mWeaponTable.row();
-		label = new Label("Speed", labelStyle);
+		label = new Label("Speed", mStyles.label.standard);
 		mWeaponTable.add(label).setPadRight(Editor.LABEL_PADDING_BEFORE_SLIDER);
-		Slider slider = new Slider(Weapon.BULLET_SPEED_MIN, Weapon.BULLET_SPEED_MAX, Weapon.BULLET_SPEED_STEP_SIZE, false, sliderStyle);
+		Slider slider = new Slider(Weapon.BULLET_SPEED_MIN, Weapon.BULLET_SPEED_MAX, Weapon.BULLET_SPEED_STEP_SIZE, false, mStyles.slider.standard);
 		mWidgets.weapon.bulletSpeed = slider;
 		mWeaponTable.add(slider);
-		TextField textField = new TextField("", textFieldStyle);
+		TextField textField = new TextField("", mStyles.textField.standard);
 		textField.setWidth(Editor.TEXT_FIELD_NUMBER_WIDTH);
 		mWeaponTable.add(textField);
 		new SliderListener(slider, textField, mInvoker) {
@@ -252,17 +152,17 @@ public class BulletEditorGui extends ActorGui {
 		};
 
 		// Cooldown
-		label = new Label("Cooldown time", labelStyle);
+		label = new Label("Cooldown time", mStyles.label.standard);
 		mWeaponTable.row();
 		mWeaponTable.add(label);
-		label = new Label("Min", labelStyle);
+		label = new Label("Min", mStyles.label.standard);
 		mWeaponTable.row();
 		mWeaponTable.add(label).setPadRight(Editor.LABEL_PADDING_BEFORE_SLIDER);
 
-		Slider sliderMin = new Slider(Weapon.COOLDOWN_MIN, Weapon.COOLDOWN_MAX, Weapon.COOLDOWN_STEP_SIZE, false, sliderStyle);
+		Slider sliderMin = new Slider(Weapon.COOLDOWN_MIN, Weapon.COOLDOWN_MAX, Weapon.COOLDOWN_STEP_SIZE, false, mStyles.slider.standard);
 		mWidgets.weapon.cooldownMin = sliderMin;
 		mWeaponTable.add(sliderMin);
-		textField = new TextField("", textFieldStyle);
+		textField = new TextField("", mStyles.textField.standard);
 		textField.setWidth(Editor.TEXT_FIELD_NUMBER_WIDTH);
 		mWeaponTable.add(textField);
 		SliderListener sliderMinListener = new SliderListener(sliderMin, textField, mInvoker) {
@@ -273,14 +173,14 @@ public class BulletEditorGui extends ActorGui {
 		};
 
 
-		label = new Label("Max", labelStyle);
+		label = new Label("Max", mStyles.label.standard);
 		mWeaponTable.row();
 		mWeaponTable.add(label).setPadRight(Editor.LABEL_PADDING_BEFORE_SLIDER);
 
-		Slider sliderMax = new Slider(Weapon.COOLDOWN_MIN, Weapon.COOLDOWN_MAX, Weapon.COOLDOWN_STEP_SIZE, false, sliderStyle);
+		Slider sliderMax = new Slider(Weapon.COOLDOWN_MIN, Weapon.COOLDOWN_MAX, Weapon.COOLDOWN_STEP_SIZE, false, mStyles.slider.standard);
 		mWidgets.weapon.cooldownMax = sliderMax;
 		mWeaponTable.add(sliderMax);
-		textField = new TextField("", textFieldStyle);
+		textField = new TextField("", mStyles.textField.standard);
 		textField.setWidth(Editor.TEXT_FIELD_NUMBER_WIDTH);
 		mWeaponTable.add(textField);
 		SliderListener sliderMaxListener = new SliderListener(sliderMax, textField, mInvoker) {

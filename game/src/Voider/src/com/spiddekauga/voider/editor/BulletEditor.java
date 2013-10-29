@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.app.MainMenu;
 import com.spiddekauga.voider.editor.brushes.VectorBrush;
 import com.spiddekauga.voider.editor.tools.AddMoveCornerTool;
 import com.spiddekauga.voider.editor.tools.DeleteTool;
@@ -16,6 +17,7 @@ import com.spiddekauga.voider.editor.tools.DrawEraseTool;
 import com.spiddekauga.voider.editor.tools.MoveTool;
 import com.spiddekauga.voider.editor.tools.RemoveCornerTool;
 import com.spiddekauga.voider.editor.tools.Selection;
+import com.spiddekauga.voider.editor.tools.SetCenterTool;
 import com.spiddekauga.voider.editor.tools.TouchTool;
 import com.spiddekauga.voider.game.Weapon;
 import com.spiddekauga.voider.game.WeaponDef;
@@ -61,8 +63,7 @@ public class BulletEditor extends Editor implements IActorEditor, IResourceChang
 		mTools[Tools.DRAW_ERASE.ordinal()] = new DrawEraseTool(mCamera, mWorld, mInvoker, mSelection, this, BulletActor.class);
 		mTools[Tools.ADD_MOVE_CORNER.ordinal()] = new AddMoveCornerTool(mCamera, mWorld, mInvoker, mSelection, this);
 		mTools[Tools.REMOVE_CORNER.ordinal()] = new RemoveCornerTool(mCamera, mWorld, mInvoker, mSelection, this);
-		mTools[Tools.SET_CENTER.ordinal()] = null;
-
+		mTools[Tools.SET_CENTER.ordinal()] = new SetCenterTool(mCamera, mWorld, mInvoker, mSelection, this, BulletActor.class);
 
 		setDef(mDef);
 	}
@@ -163,6 +164,12 @@ public class BulletEditor extends Editor implements IActorEditor, IResourceChang
 		// Undo
 		else if (KeyHelper.isUndoPressed(keycode)) {
 			mInvoker.undo();
+			return true;
+		}
+		// Back - main menu
+		else if (KeyHelper.isBackPressed(keycode)) {
+			saveDef();
+			SceneSwitcher.returnTo(MainMenu.class);
 			return true;
 		}
 		/** @todo remove test buttons */
