@@ -23,6 +23,7 @@ import com.spiddekauga.voider.editor.tools.AddMoveCornerTool;
 import com.spiddekauga.voider.editor.tools.DeleteTool;
 import com.spiddekauga.voider.editor.tools.DrawAppendTool;
 import com.spiddekauga.voider.editor.tools.DrawEraseTool;
+import com.spiddekauga.voider.editor.tools.EnemyAddTool;
 import com.spiddekauga.voider.editor.tools.EnemySetTriggerTool;
 import com.spiddekauga.voider.editor.tools.ISelection;
 import com.spiddekauga.voider.editor.tools.ISelectionListener;
@@ -85,7 +86,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		// Initialize tools
 		Tools.ADD_MOVE_CORNER.setTool(new AddMoveCornerTool(mCamera, mWorld, mInvoker, mSelection, this));
 		Tools.DELETE.setTool(new DeleteTool(mCamera, mWorld, mInvoker, mSelection, this));
-		Tools.ENEMY_ADD.setTool(new ActorAddTool(mCamera, mWorld, mInvoker, mSelection, this, EnemyActor.class));
+		Tools.ENEMY_ADD.setTool(new EnemyAddTool(mCamera, mWorld, mInvoker, mSelection, this, EnemyActor.class));
 		Tools.ENEMY_SET_ACTIVATE_TRIGGER.setTool(new EnemySetTriggerTool(mCamera, mWorld, mInvoker, mSelection, this, Actions.ACTOR_ACTIVATE));
 		Tools.ENEMY_SET_DEACTIVATE_TRIGGER.setTool(new EnemySetTriggerTool(mCamera, mWorld, mInvoker, mSelection, this, Actions.ACTOR_DEACTIVATE));
 		Tools.MOVE.setTool(new MoveTool(mCamera, mWorld, mInvoker, mSelection, this));

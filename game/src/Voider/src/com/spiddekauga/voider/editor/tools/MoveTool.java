@@ -9,7 +9,9 @@ import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.World;
 import com.spiddekauga.utils.Invoker;
 import com.spiddekauga.voider.editor.IResourceChangeEditor;
+import com.spiddekauga.voider.editor.LevelEditor;
 import com.spiddekauga.voider.editor.commands.CResourceMove;
+import com.spiddekauga.voider.game.actors.EnemyActor;
 import com.spiddekauga.voider.resources.IResourcePosition;
 import com.spiddekauga.voider.utils.Pool;
 import com.spiddekauga.voider.utils.Pools;
@@ -57,16 +59,28 @@ public class MoveTool extends TouchTool {
 	@Override
 	protected boolean dragged() {
 		if (!mMovingResources.isEmpty()) {
-			Vector2 diffMovement = Pools.vector2.obtain();
-			diffMovement.set(mTouchCurrent).sub(mTouchOrigin);
-			Vector2 newPosition = Pools.vector2.obtain();
+			// Special case for enemies - snap to path
+			if (mMovingResources.size() == 1 && mSelection.isSelected(EnemyActor.class) && mEditor instanceof LevelEditor) {
+				Vector2 newPosition = Pools.vector2.obtain();
+				newPosition.set(mTouchCurrent).sub(mTouchOrigin);
+				newPosition.add(mMovingResources.get(0).originalPos);
+				EnemyAddTool.setSnapPosition((EnemyActor)mMovingResources.get(0).resource, newPosition, (LevelEditor)mEditor, null);
 
-			for (ResourcePositionWrapper movingResource : mMovingResources) {
-				newPosition.set(movingResource.originalPos).add(diffMovement);
-				movingResource.resource.setPosition(newPosition);
+				Pools.vector2.free(newPosition);
 			}
+			// Regular move
+			else {
+				Vector2 diffMovement = Pools.vector2.obtain();
+				diffMovement.set(mTouchCurrent).sub(mTouchOrigin);
+				Vector2 newPosition = Pools.vector2.obtain();
 
-			Pools.vector2.freeAll(diffMovement, newPosition);
+				for (ResourcePositionWrapper movingResource : mMovingResources) {
+					newPosition.set(movingResource.originalPos).add(diffMovement);
+					movingResource.resource.setPosition(newPosition);
+				}
+
+				Pools.vector2.freeAll(diffMovement, newPosition);
+			}
 			return true;
 		}
 		return false;
@@ -75,25 +89,36 @@ public class MoveTool extends TouchTool {
 	@Override
 	protected boolean up() {
 		if (!mMovingResources.isEmpty()) {
-			Vector2 diffMovement = Pools.vector2.obtain();
-			diffMovement.set(mTouchCurrent).sub(mTouchOrigin);
-			Vector2 newPosition = Pools.vector2.obtain();
+			// Special case for enemies - snap to path
+			if (mMovingResources.size() == 1 && mSelection.isSelected(EnemyActor.class) && mEditor instanceof LevelEditor) {
+				Vector2 newPosition = Pools.vector2.obtain();
+				newPosition.set(mTouchCurrent).sub(mTouchOrigin);
+				newPosition.add(mMovingResources.get(0).originalPos);
+				EnemyAddTool.setSnapPosition((EnemyActor)mMovingResources.get(0).resource, newPosition, (LevelEditor)mEditor, null);
 
-
-			// Reset to original position then move to new position using command
-			boolean chained = false;
-			for (ResourcePositionWrapper movingResource : mMovingResources) {
-				newPosition.set(movingResource.originalPos).add(diffMovement);
-				movingResource.resource.setPosition(movingResource.originalPos);
-
-				mInvoker.execute(new CResourceMove(movingResource.resource, newPosition, mEditor), chained);
-				chained = true;
+				Pools.vector2.free(newPosition);
 			}
+			// Regular move
+			else {
+				Vector2 diffMovement = Pools.vector2.obtain();
+				diffMovement.set(mTouchCurrent).sub(mTouchOrigin);
+				Vector2 newPosition = Pools.vector2.obtain();
 
-			mResourcePositionPool.freeAll(mMovingResources);
-			mMovingResources.clear();
+				// Reset to original position then move to new position using command
+				boolean chained = false;
+				for (ResourcePositionWrapper movingResource : mMovingResources) {
+					newPosition.set(movingResource.originalPos).add(diffMovement);
+					movingResource.resource.setPosition(movingResource.originalPos);
 
-			Pools.vector2.freeAll(diffMovement, newPosition);
+					mInvoker.execute(new CResourceMove(movingResource.resource, newPosition, mEditor), chained);
+					chained = true;
+				}
+
+				mResourcePositionPool.freeAll(mMovingResources);
+				mMovingResources.clear();
+
+				Pools.vector2.freeAll(diffMovement, newPosition);
+			}
 
 			return true;
 		}

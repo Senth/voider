@@ -87,7 +87,7 @@ public class ActorAddTool extends ActorTool {
 	/**
 	 * @return new position of the actor
 	 */
-	private Vector2 getNewPosition() {
+	protected Vector2 getNewPosition() {
 		Vector2 newPosition = Pools.vector2.obtain();
 		newPosition.set(mTouchCurrent).sub(mTouchOrigin);
 		newPosition.add(mDragOrigin);
@@ -95,7 +95,7 @@ public class ActorAddTool extends ActorTool {
 	}
 
 	/** Test if hit an actor of this type */
-	QueryCallback mCallback = new QueryCallback() {
+	private QueryCallback mCallback = new QueryCallback() {
 		@Override
 		public boolean reportFixture(Fixture fixture) {
 			Object userData = fixture.getBody().getUserData();
@@ -107,9 +107,9 @@ public class ActorAddTool extends ActorTool {
 	};
 
 	/** If the actor was created this down */
-	private boolean mCreatedThisEvent = false;
+	protected boolean mCreatedThisEvent = false;
 	/** Moving actor */
-	private Actor mMovingActor = null;
+	protected Actor mMovingActor = null;
 	/** Original position of the actor */
-	private Vector2 mDragOrigin = new Vector2();
+	protected Vector2 mDragOrigin = new Vector2();
 }
