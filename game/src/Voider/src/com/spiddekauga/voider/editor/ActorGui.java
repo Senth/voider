@@ -102,9 +102,9 @@ public abstract class ActorGui extends EditorGui {
 
 
 		// Options
-		//		mWidgets.info.name.setText(mActorEditor.getName());
-		//		mWidgets.info.description.setText(mActorEditor.getDescription());
-		//		mWidgets.info.description.setTextFieldListener(null);
+		mWidgets.info.name.setText(mActorEditor.getName());
+		mWidgets.info.description.setText(mActorEditor.getDescription());
+		mWidgets.info.description.setTextFieldListener(null);
 
 
 		// Collision
@@ -436,7 +436,7 @@ public abstract class ActorGui extends EditorGui {
 		}
 		button.addListener(shapeCustomChecker);
 		buttonGroup.add(button);
-		TooltipListener tooltipListener = new TooltipListener(button, "Move", Messages.replaceName(Messages.Tooltip.Actor.Visuals.MOVE, getResourceTypeName()));
+		TooltipListener tooltipListener = new TooltipListener(button, "Move", Messages.replaceName(Messages.Tooltip.Tools.MOVE, getResourceTypeName()));
 		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onChecked(boolean checked) {
@@ -457,7 +457,7 @@ public abstract class ActorGui extends EditorGui {
 		}
 		button.addListener(shapeCustomChecker);
 		buttonGroup.add(button);
-		//		TooltipListener tooltipListener = new TooltipListener(button, "Delete", Messages.replaceName(Messages.Tooltip.Actor.Visuals., getResourceTypeName()));
+		tooltipListener = new TooltipListener(button, "Delete", Messages.replaceName(Messages.Tooltip.Tools.DELETE, getResourceTypeName()));
 		new ButtonListener(button) {
 			@Override
 			protected void onChecked(boolean checked) {
@@ -478,7 +478,7 @@ public abstract class ActorGui extends EditorGui {
 		}
 		button.addListener(shapeCustomChecker);
 		buttonGroup.add(button);
-		tooltipListener = new TooltipListener(button, "Draw/Append", Messages.replaceName(Messages.Tooltip.Actor.Visuals.APPEND, getResourceTypeName()));
+		tooltipListener = new TooltipListener(button, "Draw/Append", Messages.replaceName(Messages.Tooltip.Tools.DRAW_APPEND, getResourceTypeName()));
 		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onChecked(boolean checked) {
@@ -499,7 +499,7 @@ public abstract class ActorGui extends EditorGui {
 		}
 		button.addListener(shapeCustomChecker);
 		buttonGroup.add(button);
-		tooltipListener = new TooltipListener(button, "Draw/Erase", Messages.replaceName(Messages.Tooltip.Actor.Visuals.ADD_REMOVE, getResourceTypeName()));
+		tooltipListener = new TooltipListener(button, "Draw/Erase", Messages.replaceName(Messages.Tooltip.Tools.DRAW_ERASE, getResourceTypeName()));
 		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onChecked(boolean checked) {
@@ -520,7 +520,7 @@ public abstract class ActorGui extends EditorGui {
 		}
 		button.addListener(shapeCustomChecker);
 		buttonGroup.add(button);
-		tooltipListener = new TooltipListener(button, "Add/Move corner", Messages.replaceName(Messages.Tooltip.Actor.Visuals.ADJUST_ADD_CORNER, getResourceTypeName()));
+		tooltipListener = new TooltipListener(button, "Add/Move corner", Messages.replaceName(Messages.Tooltip.Tools.ADJUST_ADD_MOVE_CORNER, getResourceTypeName()));
 		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onChecked(boolean checked) {
@@ -541,7 +541,7 @@ public abstract class ActorGui extends EditorGui {
 		}
 		button.addListener(shapeCustomChecker);
 		buttonGroup.add(button);
-		tooltipListener = new TooltipListener(button, "Remove corner", Messages.replaceName(Messages.Tooltip.Actor.Visuals.ADJUST_REMOVE_CORNER, getResourceTypeName()));
+		tooltipListener = new TooltipListener(button, "Remove corner", Messages.replaceName(Messages.Tooltip.Tools.ADJUST_REMOVE_CORNER, getResourceTypeName()));
 		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onChecked(boolean checked) {
@@ -562,7 +562,7 @@ public abstract class ActorGui extends EditorGui {
 		}
 		button.addListener(shapeCustomChecker);
 		buttonGroup.add(button);
-		tooltipListener = new TooltipListener(button, "Set center", Messages.replaceName(Messages.Tooltip.Actor.Visuals.SET_CENTER, getResourceTypeName()));
+		tooltipListener = new TooltipListener(button, "Set center", Messages.replaceName(Messages.Tooltip.Tools.SET_CENTER, getResourceTypeName()));
 		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onChecked(boolean checked) {
@@ -582,7 +582,7 @@ public abstract class ActorGui extends EditorGui {
 		} else {
 			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.RESET_CENTER.toString());
 		}
-		tooltipListener = new TooltipListener(button, "Reset center", Messages.replaceName(Messages.Tooltip.Actor.Visuals.RESET_CENTER, getResourceTypeName()));
+		tooltipListener = new TooltipListener(button, "Reset center", Messages.replaceName(Messages.Tooltip.Tools.RESET_CENTER, getResourceTypeName()));
 		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onPressed() {
@@ -663,15 +663,6 @@ public abstract class ActorGui extends EditorGui {
 			Slider shapeTriangleHeight = null;
 			Slider shapeWidth = null;
 			Slider shapeHeight = null;
-
-			// Custom shape
-			Button customShapeAppend = null;
-			Button customShapeAddCorner = null;
-			Button customShapeMoveCorner = null;
-			Button customShapeRemoveCorner = null;
-			Button customShapeDrawErase = null;
-			Button customShapeMoveShape = null;
-			Button customShapeSetCenter = null;
 		}
 
 		/**

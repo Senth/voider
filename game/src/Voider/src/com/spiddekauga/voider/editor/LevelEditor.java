@@ -943,6 +943,13 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	}
 
 	/**
+	 * Clears the selection
+	 */
+	void clearSelection() {
+		mSelection.clearSelection();
+	}
+
+	/**
 	 * Sets the spawn delay between actors in the same group.
 	 * 
 	 * @param delay

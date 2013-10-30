@@ -227,7 +227,8 @@ class LevelEditorGui extends EditorGui {
 		} else {
 			button = new ImageButton(mStyles.skin.editor, EditorIcons.SELECT.toString());
 		}
-		new ButtonListener(button) {
+		TooltipListener tooltipListener = new TooltipListener(button, "Select", Messages.replaceName(Messages.Tooltip.Tools.SELECT, getResourceTypeName()));
+		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onChecked(boolean checked) {
 				if (checked) {
@@ -244,11 +245,12 @@ class LevelEditorGui extends EditorGui {
 		} else {
 			button = new ImageButton(mStyles.skin.editor, EditorIcons.CANCEL.toString());
 		}
-		new ButtonListener(button) {
+		tooltipListener = new TooltipListener(button, "Cancel", Messages.replaceName(Messages.Tooltip.Tools.CANCEL, getResourceTypeName()));
+		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onChecked(boolean checked) {
 				if (checked) {
-					/** @todo remove selection */
+					mLevelEditor.clearSelection();
 				}
 			}
 		};
@@ -261,7 +263,8 @@ class LevelEditorGui extends EditorGui {
 		} else {
 			button = new ImageButton(mStyles.skin.editor, EditorIcons.MOVE.toString());
 		}
-		new ButtonListener(button) {
+		tooltipListener = new TooltipListener(button, "Move", Messages.replaceName(Messages.Tooltip.Tools.MOVE, getResourceTypeName()));
+		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onChecked(boolean checked) {
 				if (checked) {
@@ -278,7 +281,8 @@ class LevelEditorGui extends EditorGui {
 		} else {
 			button = new ImageButton(mStyles.skin.editor, EditorIcons.DELETE.toString());
 		}
-		new ButtonListener(button) {
+		tooltipListener = new TooltipListener(button, "Delete", Messages.replaceName(Messages.Tooltip.Tools.DELETE, getResourceTypeName()));
+		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onChecked(boolean checked) {
 				if (checked) {
@@ -295,7 +299,8 @@ class LevelEditorGui extends EditorGui {
 		} else {
 			button = new ImageButton(mStyles.skin.editor, EditorIcons.TERRAIN_DRAW_APPEND.toString());
 		}
-		new ButtonListener(button) {
+		tooltipListener = new TooltipListener(button, "Terrain, append", Messages.replaceName(Messages.Tooltip.Tools.DRAW_APPEND, "terrain"));
+		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onChecked(boolean checked) {
 				if (checked) {
@@ -312,7 +317,8 @@ class LevelEditorGui extends EditorGui {
 		} else {
 			button = new ImageButton(mStyles.skin.editor, EditorIcons.TERRAIN_DRAW_ERASE.toString());
 		}
-		new ButtonListener(button) {
+		tooltipListener = new TooltipListener(button, "Terrain, draw erase", Messages.replaceName(Messages.Tooltip.Tools.DRAW_ERASE, "terrain"));
+		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onChecked(boolean checked) {
 				if (checked) {
@@ -329,7 +335,8 @@ class LevelEditorGui extends EditorGui {
 		} else {
 			button = new ImageButton(mStyles.skin.editor, EditorIcons.ADD_MOVE_CORNER.toString());
 		}
-		new ButtonListener(button) {
+		tooltipListener = new TooltipListener(button, "Add/move corner", Messages.replaceName(Messages.Tooltip.Tools.ADJUST_ADD_MOVE_CORNER, "terrain"));
+		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onChecked(boolean checked) {
 				if (checked) {
@@ -346,7 +353,8 @@ class LevelEditorGui extends EditorGui {
 		} else {
 			button = new ImageButton(mStyles.skin.editor, EditorIcons.REMOVE_CORNER.toString());
 		}
-		new ButtonListener(button) {
+		tooltipListener = new TooltipListener(button, "Remove corner", Messages.replaceName(Messages.Tooltip.Tools.ADJUST_REMOVE_CORNER, "terrain"));
+		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onChecked(boolean checked) {
 				if (checked) {
@@ -363,7 +371,8 @@ class LevelEditorGui extends EditorGui {
 		} else {
 			button = new ImageButton(mStyles.skin.editor, EditorIcons.PATH_ADD.toString());
 		}
-		new ButtonListener(button) {
+		tooltipListener = new TooltipListener(button, "Add path", Messages.replaceName(Messages.Tooltip.Tools.PATH_ADD, getResourceTypeName()));
+		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onChecked(boolean checked) {
 				if (checked) {
@@ -381,7 +390,8 @@ class LevelEditorGui extends EditorGui {
 			button = new ImageButton(mStyles.skin.editor, EditorIcons.ENEMY_ADD.toString());
 		}
 		mWidgets.tool.enemyAdd = button;
-		new ButtonListener(button) {
+		tooltipListener = new TooltipListener(button, "Add enemy", Messages.replaceName(Messages.Tooltip.Tools.ENEMY_ADD, getResourceTypeName()));
+		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onChecked(boolean checked) {
 				if (checked) {
@@ -398,7 +408,8 @@ class LevelEditorGui extends EditorGui {
 		} else {
 			button = new ImageButton(mStyles.skin.editor, EditorIcons.ENEMY_SET_ACTIVATE_TRIGGER.toString());
 		}
-		new ButtonListener(button) {
+		tooltipListener = new TooltipListener(button, "Set activate trigger", Messages.replaceName(Messages.Tooltip.Tools.SET_ACTIVATE_TRIGGER, getResourceTypeName()));
+		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onChecked(boolean checked) {
 				if (checked) {
@@ -415,7 +426,8 @@ class LevelEditorGui extends EditorGui {
 		} else {
 			button = new ImageButton(mStyles.skin.editor, EditorIcons.ENEMY_SET_DEACTIVATE_TRIGGER.toString());
 		}
-		new ButtonListener(button) {
+		tooltipListener = new TooltipListener(button, "Set deactivate trigger", Messages.replaceName(Messages.Tooltip.Tools.SET_DEACTIVATE_DELAY, getResourceTypeName()));
+		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onChecked(boolean checked) {
 				if (checked) {
@@ -432,7 +444,7 @@ class LevelEditorGui extends EditorGui {
 		} else {
 			button = new ImageButton(mStyles.skin.editor, EditorIcons.TRIGGER_ADD.toString());
 		}
-		new ButtonListener(button) {
+		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onChecked(boolean checked) {
 				if (checked) {
