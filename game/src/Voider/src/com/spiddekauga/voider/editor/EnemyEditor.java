@@ -16,11 +16,6 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.joints.MouseJoint;
 import com.badlogic.gdx.physics.box2d.joints.MouseJointDef;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.utils.SnapshotArray;
 import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.voider.Config;
@@ -126,29 +121,6 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 		Actor.setPlayerActor(mPlayerActor);
 
 		if (outcome == Outcomes.LOADING_SUCCEEDED) {
-			// Path labels
-			Skin editorSkin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
-			LabelStyle labelStyle = editorSkin.get("default", LabelStyle.class);
-			Label label = new Label("Back and Forth", labelStyle);
-			Table wrapTable = new Table();
-			wrapTable.add(label);
-			mPathLabels.add(wrapTable);
-			mPathLabels.row();
-
-			label = new Label("Loop", labelStyle);
-			wrapTable = new Table();
-			wrapTable.add(label);
-			mPathLabels.add(wrapTable);
-			mPathLabels.row();
-
-			label = new Label("Once", labelStyle);
-			wrapTable = new Table();
-			wrapTable.add(label);
-			mPathLabels.add(wrapTable);
-			mPathLabels.row();
-
-			scalePathLabels();
-
 			setSaved();
 
 			setMovementType(mDef.getMovementType());
@@ -235,7 +207,7 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 	@Override
 	protected void onResize(int width, int height) {
 		super.onResize(width, height);
-		scalePathLabels();
+		((EnemyEditorGui)mGui).scalePathLabels();
 	}
 
 	@Override
@@ -646,7 +618,6 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 
 		switch (movementType) {
 		case PATH:
-			mGui.addActor(mPathLabels);
 			createPathBodies();
 			resetPlayerPosition();
 			mEnemyActor.destroyBody();
@@ -1335,9 +1306,6 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 		mEnemyPathOnce.destroyBody();
 		mEnemyPathLoop.destroyBody();
 		mEnemyPathBackAndForth.destroyBody();
-
-		// Clear GUI text
-		mGui.reset();
 	}
 
 	/**
@@ -1349,37 +1317,6 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 		mPlayerActor.setPosition(playerPosition);
 		mPlayerActor.getBody().setLinearVelocity(0, 0);
 		Pools.vector2.free(playerPosition);
-	}
-
-	/**
-	 * Scale label for paths
-	 */
-	private void scalePathLabels() {
-		float spaceBetween = Gdx.graphics.getHeight() * 0.1f;
-		float height = Gdx.graphics.getHeight() * 0.2f;
-		float initialOffset = spaceBetween + height * 0.5f + spaceBetween + height;
-
-		mPathLabels.setPosition(Gdx.graphics.getWidth() / 3f, initialOffset);
-
-
-		// Fix padding
-		SnapshotArray<com.badlogic.gdx.scenes.scene2d.Actor> actors = mPathLabels.getChildren();
-		// Reset padding first
-		for (int i = 0; i < actors.size - 1; ++i) {
-			if (actors.get(i) instanceof Table) {
-				Table table = (Table) actors.get(i);
-				table.padBottom(0);
-				table.invalidateHierarchy();
-			}
-		}
-
-		for (int i = 0; i < actors.size - 1; ++i) {
-			if (actors.get(i) instanceof Table) {
-				Table table = (Table) actors.get(i);
-				table.padBottom(spaceBetween + height - table.getPrefHeight());
-				table.invalidateHierarchy();
-			}
-		}
 	}
 
 	/**
@@ -1490,6 +1427,4 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 	private CollisionResolver mCollisionResolver = new CollisionResolver();
 	/** Vector brush to render when drawing custom shapes */
 	private VectorBrush mVectorBrush = null;
-	/** Table for path lables, these are added directly to the stage */
-	private Table mPathLabels = new Table();
 }

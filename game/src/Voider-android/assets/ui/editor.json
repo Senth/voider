@@ -522,5 +522,53 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageChecked: movement,
 		imageUp: movement
 	},
+	
+	aim_on_player: {
+		down: button-default-down,
+		checked: button-default-checked,
+		up: button-default-up,
+		disabled: button-default-disabled,
+		over: button-default-over,
+		checkedOver: button-default-checked-over,
+		imageDown: aim_on_player,
+		imageChecked: aim_on_player,
+		imageUp: aim_on_player
+	},
+	
+	aim_in_front_player: {
+		down: button-default-down,
+		checked: button-default-checked,
+		up: button-default-up,
+		disabled: button-default-disabled,
+		over: button-default-over,
+		checkedOver: button-default-checked-over,
+		imageDown: aim_in_front_player,
+		imageChecked: aim_in_front_player,
+		imageUp: aim_in_front_player
+	},
+	
+	aim_movement: {
+		down: button-default-down,
+		checked: button-default-checked,
+		up: button-default-up,
+		disabled: button-default-disabled,
+		over: button-default-over,
+		checkedOver: button-default-checked-over,
+		imageDown: aim_movement,
+		imageChecked: aim_movement,
+		imageUp: aim_movement
+	},
+	
+	aim_rotate: {
+		down: button-default-down,
+		checked: button-default-checked,
+		up: button-default-up,
+		disabled: button-default-disabled,
+		over: button-default-over,
+		checkedOver: button-default-checked-over,
+		imageDown: aim_rotate,
+		imageChecked: aim_rotate,
+		imageUp: aim_rotate
+	},
 }
 }

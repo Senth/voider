@@ -1,12 +1,17 @@
 package com.spiddekauga.voider.editor;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+import com.badlogic.gdx.utils.SnapshotArray;
+import com.spiddekauga.utils.scene.ui.Align.Horizontal;
+import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.utils.scene.ui.Cell;
@@ -47,6 +52,7 @@ public class EnemyEditorGui extends ActorGui {
 		mAiTable.dispose();
 		mWeaponTable.dispose();
 		mPathTable.dispose();
+		mPathLabels.clear();
 
 		super.dispose();
 	}
@@ -56,15 +62,19 @@ public class EnemyEditorGui extends ActorGui {
 		super.initGui();
 
 		mMovementTable.setPreferences(mMainTable);
+		mMovementTable.setTableAlign(Horizontal.RIGHT, Vertical.TOP);
+		mMovementTable.setRowAlign(Horizontal.RIGHT, Vertical.TOP);
 		mMovementTable.setName("temp");
 		mWeaponTable.setPreferences(mMainTable);
-		mAiTable.setPreferences(mMainTable);
-		mPathTable.setPreferences(mPathTable);
+		mAiTable.setPreferences(mMovementTable);
+		mPathTable.setPreferences(mMovementTable);
 
 		initMenu();
 		initWeapon();
 		initCollision();
 		initMovementMenu();
+		initMovement();
+		initPathLabels();
 
 		resetValues();
 	}
@@ -73,20 +83,22 @@ public class EnemyEditorGui extends ActorGui {
 	public void resetValues() {
 		super.resetValues();
 
-		//		// Movement
-		//		switch (mEnemyEditor.getMovementType()) {
-		//		case PATH:
-		//			mWidgets.movement.pathBox.setChecked(true);
-		//			break;
-		//
-		//		case STATIONARY:
-		//			mWidgets.movement.stationaryBox.setChecked(true);
-		//			break;
-		//
-		//		case AI:
-		//			mWidgets.movement.aiBox.setChecked(true);
-		//			break;
-		//		}
+		scalePathLabels();
+
+		// Movement
+		switch (mEnemyEditor.getMovementType()) {
+		case PATH:
+			mWidgets.movement.pathBox.setChecked(true);
+			break;
+
+		case STATIONARY:
+			mWidgets.movement.stationaryBox.setChecked(true);
+			break;
+
+		case AI:
+			mWidgets.movement.aiBox.setChecked(true);
+			break;
+		}
 		//
 		//		mWidgets.movement.speedSlider.setValue(mEnemyEditor.getSpeed());
 		//		mWidgets.movement.turnSpeedToggleButton.setChecked(mEnemyEditor.isTurning());
@@ -129,6 +141,62 @@ public class EnemyEditorGui extends ActorGui {
 		//			mWidgets.weapon.aimRotate.setChecked(true);
 		//			break;
 		//		}
+	}
+
+	/**
+	 * Initializes the path labels
+	 */
+	private void initPathLabels() {
+		Label label = new Label("Back and Forth", mStyles.label.standard);
+		Table wrapTable = new Table();
+		wrapTable.add(label);
+		mPathLabels.add(wrapTable);
+		mPathLabels.row();
+
+		label = new Label("Loop", mStyles.label.standard);
+		wrapTable = new Table();
+		wrapTable.add(label);
+		mPathLabels.add(wrapTable);
+		mPathLabels.row();
+
+		label = new Label("Once", mStyles.label.standard);
+		wrapTable = new Table();
+		wrapTable.add(label);
+		mPathLabels.add(wrapTable);
+		mPathLabels.row();
+
+		getStage().addActor(mPathLabels);
+	}
+
+	/**
+	 * Scale path labels
+	 */
+	void scalePathLabels() {
+		float spaceBetween = Gdx.graphics.getHeight() * 0.1f;
+		float height = Gdx.graphics.getHeight() * 0.2f;
+		float initialOffset = spaceBetween + height * 0.5f + spaceBetween + height;
+
+		mPathLabels.setPosition(Gdx.graphics.getWidth() / 3f, initialOffset);
+
+
+		// Fix padding
+		SnapshotArray<com.badlogic.gdx.scenes.scene2d.Actor> actors = mPathLabels.getChildren();
+		// Reset padding first
+		for (int i = 0; i < actors.size - 1; ++i) {
+			if (actors.get(i) instanceof Table) {
+				Table table = (Table) actors.get(i);
+				table.padBottom(0);
+				table.invalidateHierarchy();
+			}
+		}
+
+		for (int i = 0; i < actors.size - 1; ++i) {
+			if (actors.get(i) instanceof Table) {
+				Table table = (Table) actors.get(i);
+				table.padBottom(spaceBetween + height - table.getPrefHeight());
+				table.invalidateHierarchy();
+			}
+		}
 	}
 
 	@Override
@@ -432,7 +500,10 @@ public class EnemyEditorGui extends ActorGui {
 		sliderMinListener.setGreaterSlider(mWidgets.movement.aiRandomTimeMax);
 		sliderMaxListener.setLesserSlider(mWidgets.movement.aiRandomTimeMin);
 
-		mMainTable.add(mMovementTable);
+		mMainTable.row();
+		mMainTable.add(mPathTable);
+		mMainTable.row();
+		mMainTable.add(mAiTable);
 	}
 
 	/**
@@ -446,6 +517,11 @@ public class EnemyEditorGui extends ActorGui {
 		CheckBox checkBox = new CheckBox("Path", mStyles.checkBox.standard);
 		checkBox.addListener(movementChecker);
 		mWidgets.movement.pathBox = checkBox;
+		HideListener hideListener = new HideListener(checkBox, true);
+		hideListener.addToggleActor(mPathTable);
+		mMovementHider.addChild(hideListener);
+		hideListener = new HideListener(checkBox, true);
+		hideListener.addToggleActor(mPathLabels);
 		TooltipListener tooltipListener = new TooltipListener(checkBox, "Path", Messages.Tooltip.Enemy.Movement.Menu.PATH);
 		new ButtonListener(checkBox, tooltipListener) {
 			@Override
@@ -476,6 +552,10 @@ public class EnemyEditorGui extends ActorGui {
 		checkBox = new CheckBox("AI", mStyles.checkBox.standard);
 		checkBox.addListener(movementChecker);
 		mWidgets.movement.aiBox = checkBox;
+		hideListener = new HideListener(checkBox, true);
+		hideListener.addToggleActor(mPathTable);
+		hideListener.addToggleActor(mAiTable);
+		mMovementHider.addChild(hideListener);
 		tooltipListener = new TooltipListener(checkBox, "AI", Messages.Tooltip.Enemy.Movement.Menu.AI);
 		new ButtonListener(checkBox, tooltipListener) {
 			@Override
@@ -485,11 +565,10 @@ public class EnemyEditorGui extends ActorGui {
 		};
 		buttonGroup.add(checkBox);
 		mMovementTable.add(checkBox);
-		mMovementTable.row();
-		mMovementTable.add(mMovementTypeTable);
+		mWidgets.movement.aiBox.setChecked(true);
+		mWidgets.movement.pathBox.setChecked(true);
 
-
-
+		mMainTable.add(mMovementTable);
 	}
 
 	/**
@@ -833,12 +912,12 @@ public class EnemyEditorGui extends ActorGui {
 	private AlignTable mMovementTable = new AlignTable();
 	/** Container for all weapon options */
 	private AlignTable mWeaponTable = new AlignTable();
-	/** Container for the different movement variables */
-	private AlignTable mMovementTypeTable = new AlignTable();
 	/** Table for Path movement */
 	private AlignTable mPathTable = new AlignTable();
 	/** Table for AI movement */
 	private AlignTable mAiTable = new AlignTable();
+	/** Table for path labels */
+	private Table mPathLabels = new Table();
 
 	// Hiders
 	/** Hides weapon options */
