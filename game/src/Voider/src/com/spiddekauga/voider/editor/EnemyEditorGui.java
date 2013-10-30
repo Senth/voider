@@ -99,48 +99,47 @@ public class EnemyEditorGui extends ActorGui {
 			mWidgets.movement.aiBox.setChecked(true);
 			break;
 		}
-		//
-		//		mWidgets.movement.speedSlider.setValue(mEnemyEditor.getSpeed());
-		//		mWidgets.movement.turnSpeedToggleButton.setChecked(mEnemyEditor.isTurning());
-		//		mWidgets.movement.turnSpeedSlider.setValue(mEnemyEditor.getTurnSpeed());
-		//
-		//		// AI movement
-		//		mWidgets.movement.aiDistanceMax.setValue(mEnemyEditor.getPlayerDistanceMax());
-		//		mWidgets.movement.aiDistanceMin.setValue(mEnemyEditor.getPlayerDistanceMin());
-		//		mWidgets.movement.aiRandomMovementToggleButton.setChecked(mEnemyEditor.isMovingRandomly());
-		//		mWidgets.movement.aiRandomTimeMax.setValue(mEnemyEditor.getRandomTimeMax());
-		//		mWidgets.movement.aiRandomTimeMin.setValue(mEnemyEditor.getRandomTimeMin());
-		//
-		//
-		//		// Weapons
-		//		mWidgets.weapon.toggleButton.setChecked(mEnemyEditor.hasWeapon());
-		//		mWidgets.weapon.bulletSpeed.setValue(mEnemyEditor.getBulletSpeed());
-		//		mWidgets.weapon.damage.setValue(mEnemyEditor.getWeaponDamage());
-		//		mWidgets.weapon.cooldownMax.setValue(mEnemyEditor.getCooldownMax());
-		//		mWidgets.weapon.cooldownMin.setValue(mEnemyEditor.getCooldownMin());
-		//		mWidgets.weapon.bulletName.setText(mEnemyEditor.getBulletName());
-		//		mWidgets.weapon.bulletName.setSize(mWidgets.weapon.bulletName.getPrefWidth(), mWidgets.weapon.bulletName.getPrefHeight());
-		//
-		//		// Aim
-		//		mWidgets.weapon.aimRotateSpeed.setValue(mEnemyEditor.getAimRotateSpeed());
-		//		mWidgets.weapon.aimRotateStartAngle.setValue(mEnemyEditor.getAimStartAngle());
-		//		switch (mEnemyEditor.getAimType()) {
-		//		case ON_PLAYER:
-		//			mWidgets.weapon.aimOnPlayer.setChecked(true);
-		//			break;
-		//
-		//		case MOVE_DIRECTION:
-		//			mWidgets.weapon.aimMoveDirection.setChecked(true);
-		//			break;
-		//
-		//		case IN_FRONT_OF_PLAYER:
-		//			mWidgets.weapon.aimInFrontOfPlayer.setChecked(true);
-		//			break;
-		//
-		//		case ROTATE:
-		//			mWidgets.weapon.aimRotate.setChecked(true);
-		//			break;
-		//		}
+
+		mWidgets.movement.speedSlider.setValue(mEnemyEditor.getSpeed());
+		mWidgets.movement.turnSpeedToggleButton.setChecked(mEnemyEditor.isTurning());
+		mWidgets.movement.turnSpeedSlider.setValue(mEnemyEditor.getTurnSpeed());
+
+		// AI movement
+		mWidgets.movement.aiDistanceMax.setValue(mEnemyEditor.getPlayerDistanceMax());
+		mWidgets.movement.aiDistanceMin.setValue(mEnemyEditor.getPlayerDistanceMin());
+		mWidgets.movement.aiRandomMovementToggleButton.setChecked(mEnemyEditor.isMovingRandomly());
+		mWidgets.movement.aiRandomTimeMax.setValue(mEnemyEditor.getRandomTimeMax());
+		mWidgets.movement.aiRandomTimeMin.setValue(mEnemyEditor.getRandomTimeMin());
+
+		// Weapons
+		mWidgets.weapon.toggleButton.setChecked(mEnemyEditor.hasWeapon());
+		mWidgets.weapon.bulletSpeed.setValue(mEnemyEditor.getBulletSpeed());
+		mWidgets.weapon.damage.setValue(mEnemyEditor.getWeaponDamage());
+		mWidgets.weapon.cooldownMax.setValue(mEnemyEditor.getCooldownMax());
+		mWidgets.weapon.cooldownMin.setValue(mEnemyEditor.getCooldownMin());
+		mWidgets.weapon.bulletName.setText(mEnemyEditor.getBulletName());
+		mWidgets.weapon.bulletName.setSize(mWidgets.weapon.bulletName.getPrefWidth(), mWidgets.weapon.bulletName.getPrefHeight());
+
+		// Aim
+		mWidgets.weapon.aimRotateSpeed.setValue(mEnemyEditor.getAimRotateSpeed());
+		mWidgets.weapon.aimRotateStartAngle.setValue(mEnemyEditor.getAimStartAngle());
+		switch (mEnemyEditor.getAimType()) {
+		case ON_PLAYER:
+			mWidgets.weapon.aimOnPlayer.setChecked(true);
+			break;
+
+		case MOVE_DIRECTION:
+			mWidgets.weapon.aimMoveDirection.setChecked(true);
+			break;
+
+		case IN_FRONT_OF_PLAYER:
+			mWidgets.weapon.aimInFrontOfPlayer.setChecked(true);
+			break;
+
+		case ROTATE:
+			mWidgets.weapon.aimRotate.setChecked(true);
+			break;
+		}
 	}
 
 	/**
@@ -197,11 +196,6 @@ public class EnemyEditorGui extends ActorGui {
 				table.invalidateHierarchy();
 			}
 		}
-	}
-
-	@Override
-	protected void showInfoDialog() {
-		// TODO
 	}
 
 	@Override

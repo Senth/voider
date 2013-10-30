@@ -92,11 +92,6 @@ public class BulletEditorGui extends ActorGui {
 		mWeaponHider.setButton(button);
 	}
 
-	@Override
-	protected void showInfoDialog() {
-		// TODO
-	}
-
 	/**
 	 * Bind this GUI to the specified bullet editor scene
 	 * @param bulletEditor scene to bind this GUI with

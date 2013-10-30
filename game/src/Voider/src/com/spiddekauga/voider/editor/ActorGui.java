@@ -1,5 +1,6 @@
 package com.spiddekauga.voider.editor;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
@@ -14,6 +15,7 @@ import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.utils.scene.ui.HideListener;
 import com.spiddekauga.utils.scene.ui.Label;
+import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
 import com.spiddekauga.utils.scene.ui.SliderListener;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
 import com.spiddekauga.utils.scene.ui.TooltipListener;
@@ -55,6 +57,7 @@ public abstract class ActorGui extends EditorGui {
 
 		initVisual();
 		initToolMenu();
+		initOptions();
 	}
 
 	@Override
@@ -125,18 +128,17 @@ public abstract class ActorGui extends EditorGui {
 	 * Initializes actor options
 	 */
 	protected void initOptions() {
-		mWidgets.info.table.setScalable(false);
 		mWidgets.info.table.setTableAlign(Horizontal.LEFT, Vertical.TOP);
-		mWidgets.info.table.setName("optiontable");
-		mWidgets.info.table.setKeepSize(true);
 
 		Label label = new Label("Name", mStyles.label.standard);
 		mWidgets.info.table.add(label);
 
-		mWidgets.info.table.row().setFillWidth(true);
+		int width = (int) (Gdx.graphics.getWidth()*0.4f);
+
+		mWidgets.info.table.row();
 		TextField textField = new TextField("", mStyles.textField.standard);
 		textField.setMaxLength(Config.Editor.NAME_LENGTH_MAX);
-		mWidgets.info.table.add(textField).setFillWidth(true);
+		mWidgets.info.table.add(textField).setWidth(width);
 		mWidgets.info.name = textField;
 		new TooltipListener(textField, "Name", Messages.replaceName(Messages.Tooltip.Actor.Option.NAME, getResourceTypeName()));
 		new TextFieldListener(textField, "Name", mInvoker) {
@@ -150,10 +152,10 @@ public abstract class ActorGui extends EditorGui {
 		label = new Label("Description", mStyles.label.standard);
 		mWidgets.info.table.add(label);
 
-		mWidgets.info.table.row().setFillWidth(true).setFillHeight(true).setAlign(Horizontal.LEFT, Vertical.TOP);
+		mWidgets.info.table.row().setAlign(Horizontal.LEFT, Vertical.TOP);
 		textField = new TextField("", mStyles.textField.standard);
 		textField.setMaxLength(Config.Editor.DESCRIPTION_LENGTH_MAX);
-		mWidgets.info.table.add(textField).setFillWidth(true).setFillHeight(true);
+		mWidgets.info.table.add(textField).setSize(width, (int) (Gdx.graphics.getHeight()*0.5f));
 		mWidgets.info.description = textField;
 		new TooltipListener(textField, "Description", Messages.replaceName(Messages.Tooltip.Actor.Option.DESCRIPTION, getResourceTypeName()));
 		new TextFieldListener(textField, "Write your description here...", mInvoker) {
@@ -162,6 +164,15 @@ public abstract class ActorGui extends EditorGui {
 				mActorEditor.setDescription(newText);
 			}
 		};
+	}
+
+	@Override
+	protected void showInfoDialog() {
+		MsgBoxExecuter msgBox = getFreeMsgBox();
+		msgBox.setTitle("Info");
+		msgBox.content(mWidgets.info.table);
+		msgBox.addCancelButtonAndKeys("OK");
+		showMsgBox(msgBox);
 	}
 
 	/**
