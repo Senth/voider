@@ -570,5 +570,29 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageChecked: aim_rotate,
 		imageUp: aim_rotate
 	},
+	
+	on: {
+		down: button-default-down,
+		checked: button-default-checked,
+		up: button-default-up,
+		disabled: button-default-disabled,
+		over: button-default-over,
+		checkedOver: button-default-checked-over,
+		imageDown: on,
+		imageChecked: on,
+		imageUp: on
+	},
+	
+	off: {
+		down: button-default-down,
+		checked: button-default-checked,
+		up: button-default-up,
+		disabled: button-default-disabled,
+		over: button-default-over,
+		checkedOver: button-default-checked-over,
+		imageDown: off,
+		imageChecked: off,
+		imageUp: off
+	},
 }
 }

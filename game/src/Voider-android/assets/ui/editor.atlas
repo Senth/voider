@@ -3,352 +3,373 @@ editor.png
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
-add_move_corner
-  rotate: false
-  xy: 1, 10
-  size: 48, 48
-  orig: 48, 48
-  offset: 0, 0
-  index: -1
 aim_in_front_player
   rotate: false
-  xy: 1, 10
+  xy: 1, 79
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
   index: -1
 aim_movement
   rotate: false
-  xy: 1, 10
+  xy: 1, 79
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
   index: -1
 aim_on_player
   rotate: false
-  xy: 1, 10
+  xy: 1, 79
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
   index: -1
 aim_rotate
   rotate: false
-  xy: 1, 10
-  size: 48, 48
-  orig: 48, 48
-  offset: 0, 0
-  index: -1
-bullet_editor
-  rotate: false
-  xy: 1, 10
-  size: 48, 48
-  orig: 48, 48
-  offset: 0, 0
-  index: -1
-bullet_select
-  rotate: false
-  xy: 1, 10
-  size: 48, 48
-  orig: 48, 48
-  offset: 0, 0
-  index: -1
-campaign_editor
-  rotate: false
-  xy: 1, 10
+  xy: 1, 79
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
   index: -1
 cancel
   rotate: false
-  xy: 1, 10
-  size: 48, 48
-  orig: 48, 48
-  offset: 0, 0
-  index: -1
-circle_shape
-  rotate: false
-  xy: 1, 10
+  xy: 1, 79
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
   index: -1
 collision
   rotate: false
-  xy: 1, 10
-  size: 48, 48
-  orig: 48, 48
-  offset: 0, 0
-  index: -1
-delete
-  rotate: false
-  xy: 1, 10
-  size: 48, 48
-  orig: 48, 48
-  offset: 0, 0
-  index: -1
-draw_append
-  rotate: false
-  xy: 1, 10
-  size: 48, 48
-  orig: 48, 48
-  offset: 0, 0
-  index: -1
-draw_custom_shape
-  rotate: false
-  xy: 1, 10
-  size: 48, 48
-  orig: 48, 48
-  offset: 0, 0
-  index: -1
-draw_erase
-  rotate: false
-  xy: 1, 10
-  size: 48, 48
-  orig: 48, 48
-  offset: 0, 0
-  index: -1
-duplicate
-  rotate: false
-  xy: 1, 10
-  size: 48, 48
-  orig: 48, 48
-  offset: 0, 0
-  index: -1
-enemy_add
-  rotate: false
-  xy: 1, 10
-  size: 48, 48
-  orig: 48, 48
-  offset: 0, 0
-  index: -1
-enemy_editor
-  rotate: false
-  xy: 1, 10
-  size: 48, 48
-  orig: 48, 48
-  offset: 0, 0
-  index: -1
-enemy_select
-  rotate: false
-  xy: 1, 10
+  xy: 1, 79
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
   index: -1
 enemy_set_activate_trigger
   rotate: false
-  xy: 1, 10
+  xy: 1, 79
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
   index: -1
 enemy_set_deactivate_trigger
   rotate: false
-  xy: 1, 10
-  size: 48, 48
-  orig: 48, 48
-  offset: 0, 0
-  index: -1
-info
-  rotate: false
-  xy: 1, 10
-  size: 48, 48
-  orig: 48, 48
-  offset: 0, 0
-  index: -1
-level_editor
-  rotate: false
-  xy: 1, 10
-  size: 48, 48
-  orig: 48, 48
-  offset: 0, 0
-  index: -1
-load
-  rotate: false
-  xy: 1, 10
-  size: 48, 48
-  orig: 48, 48
-  offset: 0, 0
-  index: -1
-move
-  rotate: false
-  xy: 1, 10
+  xy: 1, 79
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
   index: -1
 movement
   rotate: false
-  xy: 1, 10
+  xy: 1, 79
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
   index: -1
-new
+off
   rotate: false
-  xy: 1, 10
+  xy: 1, 79
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
   index: -1
-path_add
+on
   rotate: false
-  xy: 1, 10
+  xy: 1, 79
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
   index: -1
 path_back_and_forth
   rotate: false
-  xy: 1, 10
+  xy: 1, 79
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
   index: -1
 path_loop
   rotate: false
-  xy: 1, 10
+  xy: 1, 79
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
   index: -1
 path_once
   rotate: false
-  xy: 1, 10
-  size: 48, 48
-  orig: 48, 48
-  offset: 0, 0
-  index: -1
-pickup_add
-  rotate: false
-  xy: 1, 10
-  size: 48, 48
-  orig: 48, 48
-  offset: 0, 0
-  index: -1
-pickup_select
-  rotate: false
-  xy: 1, 10
-  size: 48, 48
-  orig: 48, 48
-  offset: 0, 0
-  index: -1
-rectangle_shape
-  rotate: false
-  xy: 1, 10
+  xy: 1, 79
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
   index: -1
 redo
   rotate: false
-  xy: 1, 10
-  size: 48, 48
-  orig: 48, 48
-  offset: 0, 0
-  index: -1
-remove_corner
-  rotate: false
-  xy: 1, 10
-  size: 48, 48
-  orig: 48, 48
-  offset: 0, 0
-  index: -1
-reset_center
-  rotate: false
-  xy: 1, 10
-  size: 48, 48
-  orig: 48, 48
-  offset: 0, 0
-  index: -1
-run
-  rotate: false
-  xy: 1, 10
-  size: 48, 48
-  orig: 48, 48
-  offset: 0, 0
-  index: -1
-save
-  rotate: false
-  xy: 1, 10
-  size: 48, 48
-  orig: 48, 48
-  offset: 0, 0
-  index: -1
-select
-  rotate: false
-  xy: 1, 10
-  size: 48, 48
-  orig: 48, 48
-  offset: 0, 0
-  index: -1
-set_center
-  rotate: false
-  xy: 1, 10
+  xy: 1, 79
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
   index: -1
 stub
   rotate: false
-  xy: 1, 10
-  size: 48, 48
-  orig: 48, 48
-  offset: 0, 0
-  index: -1
-terrain_draw_append
-  rotate: false
-  xy: 1, 10
-  size: 48, 48
-  orig: 48, 48
-  offset: 0, 0
-  index: -1
-terrain_draw_erase
-  rotate: false
-  xy: 1, 10
-  size: 48, 48
-  orig: 48, 48
-  offset: 0, 0
-  index: -1
-triangle_shape
-  rotate: false
-  xy: 1, 10
-  size: 48, 48
-  orig: 48, 48
-  offset: 0, 0
-  index: -1
-trigger_add
-  rotate: false
-  xy: 1, 10
+  xy: 1, 79
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
   index: -1
 undo
   rotate: false
-  xy: 1, 10
+  xy: 1, 79
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
   index: -1
 visuals
   rotate: false
-  xy: 1, 10
+  xy: 1, 79
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
   index: -1
 weapon
   rotate: false
-  xy: 1, 10
+  xy: 1, 79
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
   index: -1
+add_move_corner
+  rotate: false
+  xy: 1, 37
+  size: 40, 40
+  orig: 40, 40
+  offset: 0, 0
+  index: -1
+bullet_editor
+  rotate: false
+  xy: 51, 87
+  size: 40, 40
+  orig: 40, 40
+  offset: 0, 0
+  index: -1
+bullet_select
+  rotate: false
+  xy: 93, 87
+  size: 40, 40
+  orig: 40, 40
+  offset: 0, 0
+  index: -1
+campaign_editor
+  rotate: false
+  xy: 135, 87
+  size: 40, 40
+  orig: 40, 40
+  offset: 0, 0
+  index: -1
+circle_shape
+  rotate: false
+  xy: 177, 87
+  size: 40, 40
+  orig: 40, 40
+  offset: 0, 0
+  index: -1
+delete
+  rotate: false
+  xy: 219, 87
+  size: 40, 40
+  orig: 40, 40
+  offset: 0, 0
+  index: -1
+draw_erase
+  rotate: false
+  xy: 219, 87
+  size: 40, 40
+  orig: 40, 40
+  offset: 0, 0
+  index: -1
+draw_append
+  rotate: false
+  xy: 261, 87
+  size: 40, 40
+  orig: 40, 40
+  offset: 0, 0
+  index: -1
+draw_custom_shape
+  rotate: false
+  xy: 303, 87
+  size: 40, 40
+  orig: 40, 40
+  offset: 0, 0
+  index: -1
+duplicate
+  rotate: false
+  xy: 345, 87
+  size: 40, 40
+  orig: 40, 40
+  offset: 0, 0
+  index: -1
+enemy_add
+  rotate: false
+  xy: 387, 87
+  size: 40, 40
+  orig: 40, 40
+  offset: 0, 0
+  index: -1
+enemy_editor
+  rotate: false
+  xy: 429, 87
+  size: 40, 40
+  orig: 40, 40
+  offset: 0, 0
+  index: -1
+enemy_select
+  rotate: false
+  xy: 471, 87
+  size: 40, 40
+  orig: 40, 40
+  offset: 0, 0
+  index: -1
+info
+  rotate: false
+  xy: 43, 37
+  size: 40, 40
+  orig: 40, 40
+  offset: 0, 0
+  index: -1
+level_editor
+  rotate: false
+  xy: 85, 45
+  size: 40, 40
+  orig: 40, 40
+  offset: 0, 0
+  index: -1
+load
+  rotate: false
+  xy: 127, 45
+  size: 40, 40
+  orig: 40, 40
+  offset: 0, 0
+  index: -1
+move
+  rotate: false
+  xy: 169, 45
+  size: 40, 40
+  orig: 40, 40
+  offset: 0, 0
+  index: -1
+new
+  rotate: false
+  xy: 211, 45
+  size: 40, 40
+  orig: 40, 40
+  offset: 0, 0
+  index: -1
+path_add
+  rotate: false
+  xy: 253, 45
+  size: 40, 40
+  orig: 40, 40
+  offset: 0, 0
+  index: -1
+pickup_add
+  rotate: false
+  xy: 295, 45
+  size: 40, 40
+  orig: 40, 40
+  offset: 0, 0
+  index: -1
+pickup_select
+  rotate: false
+  xy: 337, 45
+  size: 40, 40
+  orig: 40, 40
+  offset: 0, 0
+  index: -1
+rectangle_shape
+  rotate: false
+  xy: 379, 45
+  size: 40, 40
+  orig: 40, 40
+  offset: 0, 0
+  index: -1
+remove_corner
+  rotate: false
+  xy: 421, 45
+  size: 40, 40
+  orig: 40, 40
+  offset: 0, 0
+  index: -1
+reset_center
+  rotate: false
+  xy: 463, 45
+  size: 40, 40
+  orig: 40, 40
+  offset: 0, 0
+  index: -1
+run
+  rotate: false
+  xy: 85, 3
+  size: 40, 40
+  orig: 40, 40
+  offset: 0, 0
+  index: -1
+save
+  rotate: false
+  xy: 127, 3
+  size: 40, 40
+  orig: 40, 40
+  offset: 0, 0
+  index: -1
+select
+  rotate: false
+  xy: 169, 3
+  size: 40, 40
+  orig: 40, 40
+  offset: 0, 0
+  index: -1
+set_center
+  rotate: false
+  xy: 211, 3
+  size: 40, 40
+  orig: 40, 40
+  offset: 0, 0
+  index: -1
+terrain_add_move_corner
+  rotate: false
+  xy: 253, 3
+  size: 40, 40
+  orig: 40, 40
+  offset: 0, 0
+  index: -1
+terrain_draw_append
+  rotate: false
+  xy: 295, 3
+  size: 40, 40
+  orig: 40, 40
+  offset: 0, 0
+  index: -1
+terrain_draw_erase
+  rotate: false
+  xy: 337, 3
+  size: 40, 40
+  orig: 40, 40
+  offset: 0, 0
+  index: -1
+triangle_shape
+  rotate: false
+  xy: 379, 3
+  size: 40, 40
+  orig: 40, 40
+  offset: 0, 0
+  index: -1
+trigger_add
+  rotate: false
+  xy: 421, 3
+  size: 40, 40
+  orig: 40, 40
+  offset: 0, 0
+  index: -1
 button-default-checked-over
   rotate: false
-  xy: 1, 1
+  xy: 1, 28
   size: 7, 7
   split: 3, 3, 3, 3
   orig: 7, 7
@@ -356,7 +377,7 @@ button-default-checked-over
   index: -1
 button-default-checked
   rotate: false
-  xy: 51, 51
+  xy: 463, 36
   size: 7, 7
   split: 3, 3, 3, 3
   orig: 7, 7
@@ -364,7 +385,7 @@ button-default-checked
   index: -1
 button-default-disabled
   rotate: false
-  xy: 10, 1
+  xy: 1, 19
   size: 7, 7
   split: 3, 3, 3, 3
   orig: 7, 7
@@ -372,7 +393,7 @@ button-default-disabled
   index: -1
 button-default-down
   rotate: false
-  xy: 51, 42
+  xy: 10, 28
   size: 7, 7
   split: 3, 3, 3, 3
   orig: 7, 7
@@ -380,7 +401,7 @@ button-default-down
   index: -1
 button-default-over
   rotate: false
-  xy: 19, 1
+  xy: 463, 27
   size: 7, 7
   split: 3, 3, 3, 3
   orig: 7, 7
@@ -388,7 +409,7 @@ button-default-over
   index: -1
 button-default-up
   rotate: false
-  xy: 51, 33
+  xy: 472, 36
   size: 7, 7
   split: 3, 3, 3, 3
   orig: 7, 7
@@ -396,7 +417,7 @@ button-default-up
   index: -1
 tab-default-checked-over
   rotate: false
-  xy: 28, 1
+  xy: 1, 10
   size: 7, 7
   split: 3, 3, 3, 3
   orig: 7, 7
@@ -404,7 +425,7 @@ tab-default-checked-over
   index: -1
 tab-default-checked
   rotate: false
-  xy: 51, 24
+  xy: 1, 1
   size: 7, 7
   split: 3, 3, 3, 3
   orig: 7, 7
@@ -412,7 +433,7 @@ tab-default-checked
   index: -1
 tab-default-disabled
   rotate: false
-  xy: 37, 1
+  xy: 10, 19
   size: 7, 7
   split: 3, 3, 3, 3
   orig: 7, 7
@@ -420,7 +441,7 @@ tab-default-disabled
   index: -1
 tab-default-down
   rotate: false
-  xy: 51, 15
+  xy: 19, 28
   size: 7, 7
   split: 3, 3, 3, 3
   orig: 7, 7
@@ -428,7 +449,7 @@ tab-default-down
   index: -1
 tab-default-over
   rotate: false
-  xy: 46, 1
+  xy: 463, 18
   size: 7, 7
   split: 3, 3, 3, 3
   orig: 7, 7
@@ -436,7 +457,7 @@ tab-default-over
   index: -1
 tab-default-up
   rotate: false
-  xy: 55, 6
+  xy: 472, 27
   size: 7, 7
   split: 3, 3, 3, 3
   orig: 7, 7
