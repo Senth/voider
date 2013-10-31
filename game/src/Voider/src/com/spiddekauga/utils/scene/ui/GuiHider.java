@@ -4,13 +4,20 @@ import java.util.ArrayList;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.utils.Layout;
+import com.badlogic.gdx.utils.Disposable;
 
 /**
  * Class for hiding GUI elements
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public abstract class GuiHider {
+public abstract class GuiHider implements Disposable {
+	@Override
+	public void dispose() {
+		mToggles.clear();
+		mChildren.clear();
+	}
+
 	/**
 	 * Adds a child hide listener. This allows child hide listeners
 	 * to remain hidden when this listener is shown.
@@ -92,6 +99,23 @@ public abstract class GuiHider {
 		}
 	}
 
+	/**
+	 * Sets the name of the hider
+	 * @param name the name of the hider
+	 */
+	public void setName(String name) {
+		mName = name;
+	}
+
+	/**
+	 * @return name of the hider
+	 */
+	public String getName() {
+		return mName;
+	}
+
+	/** Name of the hider, used for debugging purposes */
+	private String mName = "";
 	/** List of actors to activate/deactivate */
 	protected ArrayList<Actor> mToggles = new ArrayList<Actor>();
 	/** Children */

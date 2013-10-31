@@ -45,6 +45,8 @@ public class BulletEditorGui extends ActorGui {
 		mMainTable.dispose();
 		mWeaponTable.dispose();
 
+		mWeaponHider.dispose();
+
 		super.dispose();
 	}
 

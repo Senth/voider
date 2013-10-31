@@ -16,6 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
+import com.badlogic.gdx.utils.Disposable;
 import com.spiddekauga.utils.Invoker;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
@@ -88,6 +89,8 @@ class LevelEditorGui extends EditorGui {
 		mWidgets.enemyAdd.table.dispose();
 		mWidgets.enemy.table.dispose();
 		mWidgets.path.table.dispose();
+
+		mHiders.dispose();
 
 		super.dispose();
 	}
@@ -976,7 +979,7 @@ class LevelEditorGui extends EditorGui {
 	/**
 	 * Container for all hiders
 	 */
-	private static class Hiders {
+	private static class Hiders implements Disposable {
 		/**
 		 * Sets correct children etc.
 		 */
@@ -985,6 +988,22 @@ class LevelEditorGui extends EditorGui {
 			enemyOptions.addChild(enemyDeactivateDelay);
 			trigger.addChild(triggerActorActivate);
 			trigger.addChild(triggerScreenAt);
+		}
+
+		/**
+		 * Dispose
+		 */
+		@Override
+		public void dispose() {
+			enemyAdd.dispose();
+			enemyOptions.dispose();
+			enemyActivateDelay.dispose();
+			enemyDeactivateDelay.dispose();
+			pathOptions.dispose();
+			trigger.dispose();
+			triggerScreenAt.dispose();
+			triggerActorActivate.dispose();
+			pickups.dispose();
 		}
 
 		/** Enemy hider */

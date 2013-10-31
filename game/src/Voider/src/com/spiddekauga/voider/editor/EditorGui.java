@@ -97,7 +97,7 @@ public abstract class EditorGui extends Gui {
 		mStyles.slider.standard = mStyles.skin.general.get("default", SliderStyle.class);
 		mStyles.textField.standard = mStyles.skin.general.get("default", TextFieldStyle.class);
 		mStyles.label.standard = mStyles.skin.general.get("default", LabelStyle.class);
-		mStyles.checkBox.standard = mStyles.skin.general.get("default", CheckBoxStyle.class);
+		mStyles.checkBox.radio = mStyles.skin.general.get("default", CheckBoxStyle.class);
 
 		mEditorMenu.setTableAlign(Horizontal.LEFT, Vertical.TOP);
 		mFileMenu.setTableAlign(Horizontal.RIGHT, Vertical.TOP);
@@ -539,7 +539,7 @@ public abstract class EditorGui extends Gui {
 		}
 
 		static class CheckBox {
-			CheckBoxStyle standard = null;
+			CheckBoxStyle radio = null;
 		}
 	}
 

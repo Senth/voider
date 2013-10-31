@@ -127,6 +127,10 @@ public class SkinNames {
 		/** The enemy will shoot in front of the player (i.e. where
 		 * the player will be if s/he continues to move in the same direction) */
 		AIM_IN_FRONT_PLAYER,
+		/** Turns something on (e.g. enemy weapons or turn movement) */
+		ON,
+		/** Turn something off (e.g. enemy weapons or turn movement) */
+		OFF,
 
 		;
 

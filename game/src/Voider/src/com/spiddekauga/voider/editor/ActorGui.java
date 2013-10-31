@@ -43,6 +43,10 @@ public abstract class ActorGui extends EditorGui {
 		mWidgets.info.table.dispose();
 		mWidgets.visualToolMenu.table.dispose();
 
+		mDrawToolHider.dispose();
+		mCollisionHider.dispose();
+		mVisualHider.dispose();
+
 		super.dispose();
 	}
 
@@ -50,8 +54,9 @@ public abstract class ActorGui extends EditorGui {
 	public void initGui() {
 		super.initGui();
 
+		mMainTable.setTableAlign(Horizontal.RIGHT, Vertical.TOP);
+		mMainTable.setRowAlign(Horizontal.RIGHT, Vertical.TOP);
 		mWidgets.collision.table.setPreferences(mMainTable);
-		mWidgets.info.table.setPreferences(mMainTable);
 		mWidgets.visual.table.setPreferences(mMainTable);
 		mWidgets.visualToolMenu.table.setPreferences(mToolMenu);
 
@@ -619,7 +624,7 @@ public abstract class ActorGui extends EditorGui {
 
 		// Collision destroy
 		mWidgets.collision.table.row();
-		Button button = new CheckBox("Destroy on collide", mStyles.checkBox.standard);
+		Button button = new CheckBox("Destroy on collide", mStyles.checkBox.radio);
 		mWidgets.collision.destroyOnCollide = button;
 		mWidgets.collision.table.add(button);
 		TooltipListener tooltipListener = new TooltipListener(button, "Destroy on collide", Messages.replaceName(Messages.Tooltip.Actor.Collision.DESTROY_ON_COLLIDE, getResourceTypeName()));
