@@ -105,6 +105,12 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	@Override
 	protected void update(float deltaTime) {
 		super.update(deltaTime);
+
+		if (mLevel == null) {
+			((EditorGui)mGui).showFirstTimeMenu();
+			return;
+		}
+
 		mLevel.update(deltaTime);
 
 		// Scrolling
@@ -140,6 +146,10 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	@Override
 	protected void render() {
 		super.render();
+
+		if (mLevel == null) {
+			return;
+		}
 
 		if (Config.Graphics.USE_RELEASE_RENDERER) {
 			ShaderProgram defaultShader = ResourceCacheFacade.get(ResourceNames.SHADER_DEFAULT);
@@ -270,8 +280,6 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 		// Check so that all resources have been loaded
 		if (outcome == Outcomes.LOADING_SUCCEEDED) {
-			setSaved();
-
 			// Loading a level
 			if (mLoadingLevel != null) {
 				Level loadedLevel;
@@ -286,9 +294,6 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 				else {
 					Gdx.app.error("LevelEditor", "Could not find level (" + mLoadingLevel.getLevelId() + ")");
 				}
-			}
-			else if (mLevel == null) {
-				newDef();
 			}
 		}
 		else if (outcome == Outcomes.LOADING_FAILED_CORRUPT_FILE) {
@@ -337,10 +342,6 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		}
 		else if (outcome == Outcomes.NOT_APPLICAPLE) {
 			mGui.hideMsgBoxes();
-
-			if (mLevel == null) {
-				newDef();
-			}
 		}
 
 		if (mLevel != null) {

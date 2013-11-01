@@ -78,7 +78,6 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 		mPlayerActor = new PlayerActor();
 		mPlayerActor.createBody();
 		resetPlayerPosition();
-		setEnemyDef(mDef);
 		createExamplePaths();
 
 		mWorld.setContactListener(mCollisionResolver);
@@ -93,8 +92,6 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 		}
 
 		createBorder();
-
-		mDef.setMovementType(MovementTypes.PATH);
 
 		// Create mouse joint
 		BodyDef bodyDef = new BodyDef();
@@ -121,9 +118,7 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 		Actor.setPlayerActor(mPlayerActor);
 
 		if (outcome == Outcomes.LOADING_SUCCEEDED) {
-			setSaved();
-
-			setMovementType(mDef.getMovementType());
+			// Does nothing
 		}
 		else if (outcome == Outcomes.DEF_SELECTED) {
 			if (message instanceof ResourceItem) {
@@ -197,7 +192,7 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 	public BulletActorDef getSelectedBulletDef() {
 		BulletActorDef selectedBulletDef = null;
 
-		if (mDef.getWeaponDef() != null) {
+		if (mDef != null && mDef.getWeaponDef() != null) {
 			selectedBulletDef = mDef.getWeaponDef().getBulletActorDef();
 		}
 
@@ -223,12 +218,22 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 
 	@Override
 	public boolean isDrawing() {
-		return false;
+		if (mTools[mActiveTool.ordinal()] != null) {
+			return mTools[mActiveTool.ordinal()].isDrawing();
+		} else {
+			return false;
+		}
 	}
 
 	@Override
 	protected void update(float deltaTime) {
 		super.update(deltaTime);
+
+		if (mDef == null) {
+			((EditorGui)mGui).showFirstTimeMenu();
+			return;
+		}
+
 		mPlayerActor.update(deltaTime);
 		checkForDeadActors();
 
@@ -281,6 +286,10 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 	protected void render() {
 		super.render();
 
+		if (mDef == null) {
+			return;
+		}
+
 		if (Config.Graphics.USE_RELEASE_RENDERER) {
 			ShaderProgram defaultShader = ResourceCacheFacade.get(ResourceNames.SHADER_DEFAULT);
 			if (defaultShader != null) {
@@ -325,6 +334,7 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 		super.loadResources();
 		ResourceCacheFacade.load(ResourceNames.UI_EDITOR_BUTTONS);
 		ResourceCacheFacade.load(ResourceNames.UI_GENERAL);
+		ResourceCacheFacade.load(ResourceNames.SHADER_DEFAULT);
 		ResourceCacheFacade.loadAllOf(this, EnemyActorDef.class, true);
 		ResourceCacheFacade.loadAllOf(this, BulletActorDef.class, true);
 	}
@@ -334,6 +344,7 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 		super.unloadResources();
 		ResourceCacheFacade.unload(ResourceNames.UI_EDITOR_BUTTONS);
 		ResourceCacheFacade.unload(ResourceNames.UI_GENERAL);
+		ResourceCacheFacade.unload(ResourceNames.SHADER_DEFAULT);
 		ResourceCacheFacade.unloadAllOf(this, EnemyActorDef.class, true);
 		ResourceCacheFacade.unloadAllOf(this, BulletActorDef.class, true);
 	}
@@ -510,6 +521,7 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 	public void newDef() {
 		setEnemyDef(new EnemyActorDef());
 		mGui.resetValues();
+		setMovementType(MovementTypes.PATH);
 
 		/** @todo open name dialog */
 		saveDef();
@@ -520,6 +532,9 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 	 * @param speed new movement speed of the enemy
 	 */
 	void setSpeed(float speed) {
+		if (mDef == null) {
+			return;
+		}
 		mDef.setSpeed(speed);
 		mEnemyActor.setSpeed(speed);
 		mEnemyPathBackAndForth.setSpeed(speed);
@@ -532,7 +547,11 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 	 * @return movement speed of the enemy
 	 */
 	float getSpeed() {
-		return mDef.getSpeed();
+		if (mDef != null) {
+			return mDef.getSpeed();
+		} else {
+			return 0;
+		}
 	}
 
 	/**
@@ -540,6 +559,9 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 	 * @param enabled true if enemy turning is enabled
 	 */
 	void setTurning(boolean enabled) {
+		if (mDef == null) {
+			return;
+		}
 		mDef.setTurn(enabled);
 		mEnemyActor.resetPathMovement();
 		mEnemyPathBackAndForth.resetPathMovement();
@@ -552,12 +574,16 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 	 * @return true if the enemy is turning
 	 */
 	boolean isTurning() {
-		return mDef.isTurning();
+		if (mDef != null) {
+			return mDef.isTurning();
+		} else {
+			return false;
+		}
 	}
 
 	@Override
 	public boolean hasUndo() {
-		return false;
+		return mInvoker.canUndo();
 	}
 
 	@Override
@@ -575,6 +601,9 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 	 * @param minDistance minimum distance from the player
 	 */
 	void setPlayerDistanceMin(float minDistance) {
+		if (mDef == null) {
+			return;
+		}
 		mDef.setPlayerDistanceMin(minDistance);
 		setUnsaved();
 	}
@@ -583,14 +612,22 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 	 * @return minimum distance from the player the enemy wants to be
 	 */
 	float getPlayerDistanceMin() {
-		return mDef.getPlayerDistanceMin();
+		if (mDef != null) {
+			return mDef.getPlayerDistanceMin();
+		} else {
+			return 0;
+		}
 	}
 
 	/**
 	 * @return maximum distance from the player the enemy wants to be
 	 */
 	float getPlayerDistanceMax() {
-		return mDef.getPlayerDistanceMax();
+		if (mDef != null) {
+			return mDef.getPlayerDistanceMax();
+		} else {
+			return 0;
+		}
 	}
 
 	/**
@@ -598,6 +635,9 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 	 * @param maxDistance maximum distance from the player
 	 */
 	void setPlayerDistanceMax(float maxDistance) {
+		if (mDef == null) {
+			return;
+		}
 		mDef.setPlayerDistanceMax(maxDistance);
 		setUnsaved();
 	}
@@ -606,7 +646,11 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 	 * @return movement type of the enemy
 	 */
 	MovementTypes getMovementType() {
-		return mDef.getMovementType();
+		if (mDef != null) {
+			return mDef.getMovementType();
+		} else {
+			return MovementTypes.PATH;
+		}
 	}
 
 	/**
@@ -614,6 +658,9 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 	 * @param movementType new movement type
 	 */
 	void setMovementType(MovementTypes movementType) {
+		if (mDef == null) {
+			return;
+		}
 		mDef.setMovementType(movementType);
 
 		switch (movementType) {
@@ -644,6 +691,9 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 	 * @param turnSpeed how fast the enemy shall turn
 	 */
 	void setTurnSpeed(float turnSpeed) {
+		if (mDef == null) {
+			return;
+		}
 		mDef.setTurnSpeed(turnSpeed);
 		setUnsaved();
 	}
@@ -652,29 +702,47 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 	 * @return turning speed of the enemy
 	 */
 	float getTurnSpeed() {
-		return mDef.getTurnSpeed();
+		if (mDef != null) {
+			return mDef.getTurnSpeed();
+		} else {
+			return 0;
+		}
 	}
 
 	@Override
 	public void setStartingAngle(float angle) {
+		if (mDef == null) {
+			return;
+		}
 		mDef.setStartAngleDeg(angle);
 		setUnsaved();
 	}
 
 	@Override
 	public float getStartingAngle() {
-		return mDef.getStartAngleDeg();
+		if (mDef != null) {
+			return mDef.getStartAngleDeg();
+		} else {
+			return 0;
+		}
 	}
 
 	@Override
 	public void setRotationSpeed(float rotationSpeed) {
+		if (mDef == null) {
+			return;
+		}
 		mDef.setRotationSpeedDeg(rotationSpeed);
 		setUnsaved();
 	}
 
 	@Override
 	public float getRotationSpeed() {
-		return mDef.getRotationSpeedDeg();
+		if (mDef != null) {
+			return mDef.getRotationSpeedDeg();
+		} else {
+			return 0;
+		}
 	}
 
 	@Override
@@ -711,6 +779,9 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 	 * @param moveRandomly true if the enemy shall move randomly.
 	 */
 	void setMoveRandomly(boolean moveRandomly) {
+		if (mDef == null) {
+			return;
+		}
 		mDef.setMoveRandomly(moveRandomly);
 		setUnsaved();
 	}
@@ -720,7 +791,11 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 	 * @see #setRandomTimeMin(float) to set how random the enemy shall move
 	 */
 	boolean isMovingRandomly() {
-		return mDef.isMovingRandomly();
+		if (mDef != null) {
+			return mDef.isMovingRandomly();
+		} else {
+			return false;
+		}
 	}
 
 	/**
@@ -730,6 +805,9 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 	 * @see #setMoveRandomly(boolean) to activate/deactivate the random movement
 	 */
 	void setRandomTimeMin(float minTime) {
+		if (mDef == null) {
+			return;
+		}
 		mDef.setRandomTimeMin(minTime);
 		setUnsaved();
 	}
@@ -738,7 +816,11 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 	 * @return Minimum time until next random move
 	 */
 	float getRandomTimeMin() {
-		return mDef.getRandomTimeMin();
+		if (mDef != null) {
+			return mDef.getRandomTimeMin();
+		} else {
+			return 0;
+		}
 	}
 
 	/**
@@ -748,6 +830,9 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 	 * @see #setMoveRandomly(boolean) to activate/deactivate the random movement
 	 */
 	void setRandomTimeMax(float maxTime) {
+		if (mDef == null) {
+			return;
+		}
 		mDef.setRandomTimeMax(maxTime);
 		setUnsaved();
 	}
@@ -756,14 +841,22 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 	 * @return Maximum time until next random move
 	 */
 	float getRandomTimeMax() {
-		return mDef.getRandomTimeMax();
+		if (mDef != null) {
+			return mDef.getRandomTimeMax();
+		} else {
+			return 0;
+		}
 	}
 
 	/**
 	 * @return the bullet actor definition of this enemy, null if it doesn't shoot.
 	 */
 	BulletActorDef getBulletActorDef() {
-		return mDef.getWeaponDef().getBulletActorDef();
+		if (mDef != null) {
+			return mDef.getWeaponDef().getBulletActorDef();
+		} else {
+			return null;
+		}
 	}
 
 	/**
@@ -771,6 +864,9 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 	 * @param useWeapon true if the enemy shall use weapons
 	 */
 	void setUseWeapon(boolean useWeapon) {
+		if (mDef == null) {
+			return;
+		}
 		mDef.setUseWeapon(useWeapon);
 
 		// Remove weapon def
@@ -786,7 +882,11 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 	 * @return true if the enemy shall use weapons
 	 */
 	boolean hasWeapon() {
-		return mDef.hasWeapon();
+		if (mDef != null) {
+			return mDef.hasWeapon();
+		} else {
+			return false;
+		}
 	}
 
 	/**
@@ -794,6 +894,9 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 	 * @param speed new bullet speed
 	 */
 	void setBulletSpeed(float speed) {
+		if (mDef == null) {
+			return;
+		}
 		mDef.getWeaponDef().setBulletSpeed(speed);
 		setUnsaved();
 	}
@@ -802,7 +905,11 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 	 * @return the bullet speed
 	 */
 	float getBulletSpeed() {
-		return mDef.getWeaponDef().getBulletSpeed();
+		if (mDef != null) {
+			return mDef.getWeaponDef().getBulletSpeed();
+		} else {
+			return 0;
+		}
 	}
 
 	/**
@@ -810,6 +917,9 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 	 * @param damage how much damage the bullets will take when they hit something
 	 */
 	void setWeaponDamage(float damage) {
+		if (mDef == null) {
+			return;
+		}
 		mDef.getWeaponDef().setDamage(damage);
 		setUnsaved();
 	}
@@ -818,7 +928,11 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 	 * @return weapon damage
 	 */
 	float getWeaponDamage() {
-		return mDef.getWeaponDef().getDamage();
+		if (mDef != null) {
+			return mDef.getWeaponDef().getDamage();
+		} else {
+			return 0;
+		}
 	}
 
 	/**
@@ -828,6 +942,9 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 	 * @param minCooldown minimum cooldown.
 	 */
 	void setCooldownMin(float minCooldown) {
+		if (mDef == null) {
+			return;
+		}
 		mDef.getWeaponDef().setCooldownMin(minCooldown);
 		setUnsaved();
 	}
@@ -836,7 +953,11 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 	 * @return minimum cooldown time
 	 */
 	float getCooldownMin() {
-		return mDef.getWeaponDef().getCooldownMin();
+		if (mDef != null) {
+			return mDef.getWeaponDef().getCooldownMin();
+		} else {
+			return 0;
+		}
 	}
 
 	/**
@@ -846,6 +967,9 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 	 * @param maxCooldown maximum cooldown.
 	 */
 	void setCooldownMax(float maxCooldown) {
+		if (mDef == null) {
+			return;
+		}
 		mDef.getWeaponDef().setCooldownMax(maxCooldown);
 		setUnsaved();
 	}
@@ -854,7 +978,11 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 	 * @return minimum cooldown time
 	 */
 	float getCooldownMax() {
-		return mDef.getWeaponDef().getCooldownMax();
+		if (mDef != null) {
+			return mDef.getWeaponDef().getCooldownMax();
+		} else {
+			return 0;
+		}
 	}
 
 	/**
@@ -862,6 +990,9 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 	 * @param aimType new aim type
 	 */
 	void setAimType(AimTypes aimType) {
+		if (mDef == null) {
+			return;
+		}
 		mDef.setAimType(aimType);
 		setUnsaved();
 	}
@@ -870,7 +1001,11 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 	 * @return the aim type of the enemy
 	 */
 	AimTypes getAimType() {
-		return mDef.getAimType();
+		if (mDef != null) {
+			return mDef.getAimType();
+		} else {
+			return AimTypes.MOVE_DIRECTION;
+		}
 	}
 
 	/**
@@ -878,6 +1013,9 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 	 * @param angle starting angle of aim.
 	 */
 	void setAimStartAngle(float angle) {
+		if (mDef == null) {
+			return;
+		}
 		mDef.setAimStartAngle(angle);
 		mEnemyActor.resetWeapon();
 		mEnemyPathBackAndForth.resetWeapon();
@@ -890,7 +1028,11 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 	 * @return starting aim angle.
 	 */
 	float getAimStartAngle() {
-		return mDef.getAimStartAngle();
+		if (mDef != null) {
+			return mDef.getAimStartAngle();
+		} else {
+			return 0;
+		}
 	}
 
 	/**
@@ -899,6 +1041,9 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 	 * @param rotateSpeed new rotation speed
 	 */
 	void setAimRotateSpeed(float rotateSpeed) {
+		if (mDef == null) {
+			return;
+		}
 		mDef.setAimRotateSpeed(rotateSpeed);
 		setUnsaved();
 	}
@@ -907,13 +1052,20 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 	 * @return aim's rotation speed.
 	 */
 	float getAimRotateSpeed() {
-		return mDef.getAimRotateSpeed();
+		if (mDef != null) {
+			return mDef.getAimRotateSpeed();
+		} else {
+			return 0;
+		}
 	}
 
 	/**
 	 * Switches scene to select a bullet type for the weapon
 	 */
 	void selectBulletType() {
+		if (mDef == null) {
+			return;
+		}
 		mSelectionAction = SelectionActions.BULLET_TYPE;
 
 		Scene selectionScene = new SelectDefScene(BulletActorDef.class, false, false, false);
@@ -922,49 +1074,80 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 
 	@Override
 	public void setShapeType(ActorShapeTypes shapeType) {
+		if (mDef == null) {
+			return;
+		}
 		mDef.getVisualVars().setShapeType(shapeType);
 	}
 
 	@Override
 	public ActorShapeTypes getShapeType() {
-		return mDef.getVisualVars().getShapeType();
+		if (mDef != null) {
+			return mDef.getVisualVars().getShapeType();
+		} else {
+			return ActorShapeTypes.CIRCLE;
+		}
 	}
 
 	@Override
 	public void setShapeRadius(float radius) {
+		if (mDef == null) {
+			return;
+		}
 		mDef.getVisualVars().setShapeRadius(radius);
 		setUnsaved();
 	}
 
 	@Override
 	public float getShapeRadius() {
-		return mDef.getVisualVars().getShapeRadius();
+		if (mDef != null) {
+			return mDef.getVisualVars().getShapeRadius();
+		} else {
+			return 0;
+		}
 	}
 
 	@Override
 	public void setShapeWidth(float width) {
+		if (mDef == null) {
+			return;
+		}
 		mDef.getVisualVars().setShapeWidth(width);
 		setUnsaved();
 	}
 
 	@Override
 	public float getShapeWidth() {
-		return mDef.getVisualVars().getShapeWidth();
+		if (mDef != null) {
+			return mDef.getVisualVars().getShapeWidth();
+		} else {
+			return 0;
+		}
 	}
 
 	@Override
 	public void setShapeHeight(float height) {
+		if (mDef == null) {
+			return;
+		}
 		mDef.getVisualVars().setShapeHeight(height);
 		setUnsaved();
 	}
 
 	@Override
 	public float getShapeHeight() {
-		return mDef.getVisualVars().getShapeHeight();
+		if (mDef != null) {
+			return mDef.getVisualVars().getShapeHeight();
+		} else {
+			return 0;
+		}
 	}
 
 	@Override
 	public void resetCenterOffset() {
+		if (mDef == null) {
+			return;
+		}
 		// Save diff offset and move the actor in the opposite direction...
 		//		Vector2 diffOffset = null;
 		//		if (mBulletActor != null) {
@@ -989,6 +1172,9 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 
 	@Override
 	public void setCenterOffset(Vector2 newCenter) {
+		if (mDef == null) {
+			return;
+		}
 		// Save diff offset and move the actor in the opposite direction...
 		//		Vector2 diffOffset = null;
 		//		if (mBulletActor != null) {
@@ -1013,11 +1199,18 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 
 	@Override
 	public Vector2 getCenterOffset() {
-		return mDef.getVisualVars().getCenterOffset();
+		if (mDef != null) {
+			return mDef.getVisualVars().getCenterOffset();
+		} else {
+			return new Vector2();
+		}
 	}
 
 	@Override
 	public void setName(String name) {
+		if (mDef == null) {
+			return;
+		}
 		mDef.setName(name);
 
 		setUnsaved();
@@ -1025,11 +1218,18 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 
 	@Override
 	public String getName() {
-		return mDef.getName();
+		if (mDef != null) {
+			return mDef.getName();
+		} else {
+			return "";
+		}
 	}
 
 	@Override
 	public void setDescription(String description) {
+		if (mDef == null) {
+			return;
+		}
 		mDef.setDescription(description);
 
 		setUnsaved();
@@ -1037,7 +1237,11 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 
 	@Override
 	public String getDescription() {
-		return mDef.getDescription();
+		if (mDef != null) {
+			return mDef.getDescription();
+		} else {
+			return "";
+		}
 	}
 
 	/**
@@ -1090,7 +1294,7 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 	 * using weapons or has no bullet actor definition set.
 	 */
 	String getBulletName() {
-		if (mDef.getWeaponDef() != null && mDef.getWeaponDef().getBulletActorDef() != null) {
+		if (mDef != null && mDef.getWeaponDef() != null && mDef.getWeaponDef().getBulletActorDef() != null) {
 			return mDef.getWeaponDef().getBulletActorDef().getName();
 		} else {
 			return "";
@@ -1103,6 +1307,9 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 	 */
 	@Override
 	public void setCollisionDamage(float damage) {
+		if (mDef == null) {
+			return;
+		}
 		mDef.setCollisionDamage(damage);
 		setUnsaved();
 	}
@@ -1112,7 +1319,11 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 	 */
 	@Override
 	public float getCollisionDamage() {
-		return mDef.getCollisionDamage();
+		if (mDef != null) {
+			return mDef.getCollisionDamage();
+		} else {
+			return 0;
+		}
 	}
 
 	/**
@@ -1121,6 +1332,9 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 	 */
 	@Override
 	public void setDestroyOnCollide(boolean destroyOnCollision) {
+		if (mDef == null) {
+			return;
+		}
 		mDef.setDestroyOnCollide(destroyOnCollision);
 		setUnsaved();
 	}
@@ -1130,7 +1344,11 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 	 */
 	@Override
 	public boolean isDestroyedOnCollide() {
-		return mDef.isDestroyedOnCollide();
+		if (mDef != null) {
+			return mDef.isDestroyedOnCollide();
+		} else {
+			return false;
+		}
 	}
 
 	/** Invalid pointer id */
@@ -1410,7 +1628,7 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 	/** Enemy actor for path back and forth */
 	private EnemyActor mEnemyPathBackAndForth = new EnemyActor();
 	/** Current enemy actor definition */
-	private EnemyActorDef mDef = new EnemyActorDef();
+	private EnemyActorDef mDef = null;
 	/** Display path how once works */
 	private Path mPathOnce = new Path();
 	/** Display path how loop works */

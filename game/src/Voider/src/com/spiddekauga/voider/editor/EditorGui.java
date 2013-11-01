@@ -29,10 +29,12 @@ import com.spiddekauga.utils.scene.ui.Label.LabelStyle;
 import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
 import com.spiddekauga.utils.scene.ui.TooltipListener;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.app.MainMenu;
 import com.spiddekauga.voider.editor.commands.CEditorLoad;
 import com.spiddekauga.voider.editor.commands.CEditorNew;
 import com.spiddekauga.voider.editor.commands.CEditorSave;
 import com.spiddekauga.voider.editor.commands.CLevelRun;
+import com.spiddekauga.voider.editor.commands.CSceneReturn;
 import com.spiddekauga.voider.editor.commands.CSceneSwitch;
 import com.spiddekauga.voider.game.actors.ActorFilterCategories;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
@@ -110,6 +112,19 @@ public abstract class EditorGui extends Gui {
 
 		mToolMenu.row().setPadTop(getEditorMenuTopPadding());
 		mMainTable.row().setPadTop(getEditorMenuTopPadding());
+	}
+
+	/**
+	 * Shows the first time menu
+	 */
+	void showFirstTimeMenu() {
+		MsgBoxExecuter msgBox = getFreeMsgBox();
+		msgBox.button("New", new CEditorNew(mEditor));
+		msgBox.buttonRow();
+		msgBox.button("Load", new CEditorLoad(mEditor));
+		msgBox.buttonRow();
+		msgBox.button("Main Menu", new CSceneReturn(MainMenu.class));
+		showMsgBox(msgBox);
 	}
 
 	/**
@@ -543,6 +558,8 @@ public abstract class EditorGui extends Gui {
 
 	/** Editor scene */
 	protected Editor mEditor = null;
+	/** New resource msg box table */
+	private AlignTable mNewResourceMsgBoxTable = new AlignTable();
 	/** Editor menu table */
 	private AlignTable mEditorMenu = new AlignTable();
 	/** Main menu table */

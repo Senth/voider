@@ -26,12 +26,14 @@ public class EditorSelectionScene extends Scene {
 	protected void loadResources() {
 		super.loadResources();
 		ResourceCacheFacade.load(ResourceNames.UI_EDITOR_BUTTONS);
+		ResourceCacheFacade.load(ResourceNames.UI_GENERAL);
 	}
 
 	@Override
 	protected void unloadResources() {
 		super.unloadResources();
 		ResourceCacheFacade.unload(ResourceNames.UI_EDITOR_BUTTONS);
+		ResourceCacheFacade.unload(ResourceNames.UI_GENERAL);
 	}
 
 	@Override
@@ -63,7 +65,7 @@ public class EditorSelectionScene extends Scene {
 	 * Go to bullet editor
 	 */
 	void gotoBulletEditor() {
-		setNextScene(new EnemyEditor());
+		setNextScene(new BulletEditor());
 		setOutcome(Outcomes.NOT_APPLICAPLE);
 	}
 }

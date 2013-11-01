@@ -60,7 +60,7 @@ public class EditorSelectionGui extends Gui {
 		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onPressed() {
-				mEditorSelectionScene.gotoLevelEditor();
+				mEditorSelectionScene.gotoEnemyEditor();
 			}
 		};
 		mMainTable.add(button);
@@ -70,7 +70,7 @@ public class EditorSelectionGui extends Gui {
 		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onPressed() {
-				mEditorSelectionScene.gotoLevelEditor();
+				mEditorSelectionScene.gotoBulletEditor();
 			}
 		};
 		mMainTable.add(button);

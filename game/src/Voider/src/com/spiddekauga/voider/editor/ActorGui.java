@@ -87,22 +87,24 @@ public abstract class ActorGui extends EditorGui {
 		if (mWidgets.visual.shapeTriangleHeight != null) {
 			mWidgets.visual.shapeTriangleHeight.setValue(mActorEditor.getShapeHeight());
 		}
-		switch (mActorEditor.getShapeType()) {
-		case CIRCLE:
-			mWidgets.visual.shapeCircle.setChecked(true);
-			break;
+		if (mActorEditor.getShapeType() != null) {
+			switch (mActorEditor.getShapeType()) {
+			case CIRCLE:
+				mWidgets.visual.shapeCircle.setChecked(true);
+				break;
 
-		case RECTANGLE:
-			mWidgets.visual.shapeRectangle.setChecked(true);
-			break;
+			case RECTANGLE:
+				mWidgets.visual.shapeRectangle.setChecked(true);
+				break;
 
-		case TRIANGLE:
-			mWidgets.visual.shapeTriangle.setChecked(true);
-			break;
+			case TRIANGLE:
+				mWidgets.visual.shapeTriangle.setChecked(true);
+				break;
 
-		case CUSTOM:
-			mWidgets.visual.shapeCustom.setChecked(true);
-			break;
+			case CUSTOM:
+				mWidgets.visual.shapeCustom.setChecked(true);
+				break;
+			}
 		}
 
 
