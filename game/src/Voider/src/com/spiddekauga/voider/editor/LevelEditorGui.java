@@ -89,6 +89,7 @@ class LevelEditorGui extends EditorGui {
 		mWidgets.enemyAdd.table.dispose();
 		mWidgets.enemy.table.dispose();
 		mWidgets.path.table.dispose();
+		mWidgets.info.table.dispose();
 
 		mHiders.dispose();
 
@@ -224,7 +225,6 @@ class LevelEditorGui extends EditorGui {
 		ArrayList<Button> toolButtons = Pools.arrayList.obtain();
 
 		// Select
-		/** @todo REMOVE text button */
 		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Select", mStyles.textButton.standard);
 		} else {
@@ -242,25 +242,24 @@ class LevelEditorGui extends EditorGui {
 		toolButtons.add(button);
 
 		// Cancel
-		/** @todo REMOVE text button */
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Cancel", mStyles.textButton.standard);
-		} else {
-			button = new ImageButton(mStyles.skin.editor, EditorIcons.CANCEL.toString());
-		}
-		tooltipListener = new TooltipListener(button, "Cancel", Messages.replaceName(Messages.Tooltip.Tools.CANCEL, getResourceTypeName()));
-		new ButtonListener(button, tooltipListener) {
-			@Override
-			protected void onChecked(boolean checked) {
-				if (checked) {
-					mLevelEditor.clearSelection();
-				}
-			}
-		};
-		toolButtons.add(button);
+		/** @todo set image button */
+		//		if (Config.Gui.usesTextButtons()) {
+		//			button = new TextButton("Cancel", mStyles.textButton.standard);
+		//		} else {
+		//			button = new ImageButton(mStyles.skin.editor, EditorIcons.CANCEL.toString());
+		//		}
+		//		tooltipListener = new TooltipListener(button, "Cancel", Messages.replaceName(Messages.Tooltip.Tools.CANCEL, getResourceTypeName()));
+		//		new ButtonListener(button, tooltipListener) {
+		//			@Override
+		//			protected void onChecked(boolean checked) {
+		//				if (checked) {
+		//					mLevelEditor.clearSelection();
+		//				}
+		//			}
+		//		};
+		//		toolButtons.add(button);
 
 		// Move
-		/** @todo REMOVE text button */
 		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Move", mStyles.textButton.standard);
 		} else {
@@ -278,7 +277,6 @@ class LevelEditorGui extends EditorGui {
 		toolButtons.add(button);
 
 		// Delete
-		/** @todo REMOVE text button */
 		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Delete", mStyles.textButton.standard);
 		} else {
@@ -296,7 +294,6 @@ class LevelEditorGui extends EditorGui {
 		toolButtons.add(button);
 
 		// Terrain draw_append
-		/** @todo REMOVE text button */
 		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Terrain, append", mStyles.textButton.standard);
 		} else {
@@ -314,7 +311,6 @@ class LevelEditorGui extends EditorGui {
 		toolButtons.add(button);
 
 		// Terrain draw_erase
-		/** @todo REMOVE text button */
 		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Terrain, draw erase", mStyles.textButton.standard);
 		} else {
@@ -332,7 +328,6 @@ class LevelEditorGui extends EditorGui {
 		toolButtons.add(button);
 
 		// add_move_corner
-		/** @todo REMOVE text button */
 		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Add/move corner", mStyles.textButton.standard);
 		} else {
@@ -350,7 +345,6 @@ class LevelEditorGui extends EditorGui {
 		toolButtons.add(button);
 
 		// remove_corner
-		/** @todo REMOVE text button */
 		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Remove corner", mStyles.textButton.standard);
 		} else {
@@ -368,7 +362,6 @@ class LevelEditorGui extends EditorGui {
 		toolButtons.add(button);
 
 		// Path add
-		/** @todo REMOVE text button */
 		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Add path", mStyles.textButton.standard);
 		} else {
@@ -386,7 +379,6 @@ class LevelEditorGui extends EditorGui {
 		toolButtons.add(button);
 
 		// Enemy add
-		/** @todo REMOVE text button */
 		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Add enemy", mStyles.textButton.standard);
 		} else {
@@ -405,12 +397,12 @@ class LevelEditorGui extends EditorGui {
 		toolButtons.add(button);
 
 		// Enemy - set activate trigger
-		/** @todo REMOVE text button */
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Set activate trigger", mStyles.textButton.standard);
-		} else {
-			button = new ImageButton(mStyles.skin.editor, EditorIcons.ENEMY_SET_ACTIVATE_TRIGGER.toString());
-		}
+		/** @todo set image button */
+		//		if (Config.Gui.usesTextButtons()) {
+		button = new TextButton("Set activate trigger", mStyles.textButton.standard);
+		//		} else {
+		//			button = new ImageButton(mStyles.skin.editor, EditorIcons.ENEMY_SET_ACTIVATE_TRIGGER.toString());
+		//		}
 		tooltipListener = new TooltipListener(button, "Set activate trigger", Messages.replaceName(Messages.Tooltip.Tools.SET_ACTIVATE_TRIGGER, getResourceTypeName()));
 		new ButtonListener(button, tooltipListener) {
 			@Override
@@ -422,13 +414,13 @@ class LevelEditorGui extends EditorGui {
 		};
 		toolButtons.add(button);
 
-		// ENemy - set deactivate trigger
-		/** @todo REMOVE text button */
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Set deactivate trigger", mStyles.textButton.standard);
-		} else {
-			button = new ImageButton(mStyles.skin.editor, EditorIcons.ENEMY_SET_DEACTIVATE_TRIGGER.toString());
-		}
+		// Enemy - set deactivate trigger
+		/** @todo set image button */
+		//		if (Config.Gui.usesTextButtons()) {
+		button = new TextButton("Set deactivate trigger", mStyles.textButton.standard);
+		//		} else {
+		//			button = new ImageButton(mStyles.skin.editor, EditorIcons.ENEMY_SET_DEACTIVATE_TRIGGER.toString());
+		//		}
 		tooltipListener = new TooltipListener(button, "Set deactivate trigger", Messages.replaceName(Messages.Tooltip.Tools.SET_DEACTIVATE_DELAY, getResourceTypeName()));
 		new ButtonListener(button, tooltipListener) {
 			@Override
@@ -441,12 +433,12 @@ class LevelEditorGui extends EditorGui {
 		toolButtons.add(button);
 
 		// Trigger add
-		/** @todo REMOVE text button */
 		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Add trigger", mStyles.textButton.standard);
 		} else {
 			button = new ImageButton(mStyles.skin.editor, EditorIcons.TRIGGER_ADD.toString());
 		}
+		tooltipListener = new TooltipListener(button, "Add Trigger", Messages.replaceName(Messages.Tooltip.Tools.TRIGGER_ADD, "trigger"));
 		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onChecked(boolean checked) {
@@ -511,26 +503,6 @@ class LevelEditorGui extends EditorGui {
 		mToolMenu.add(column);
 
 		Pools.arrayList.free(toolButtons);
-	}
-
-	/**
-	 * Set the path type
-	 * @param pathType the path type to be set in GUI buttons
-	 */
-	private void setPathType(PathTypes pathType) {
-		switch (pathType) {
-		case ONCE:
-			mWidgets.path.once.setChecked(true);
-			break;
-
-		case LOOP:
-			mWidgets.path.loop.setChecked(true);
-			break;
-
-		case BACK_AND_FORTH:
-			mWidgets.path.backAndForth.setChecked(true);
-			break;
-		}
 	}
 
 	@Override

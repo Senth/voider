@@ -120,7 +120,6 @@ public abstract class EditorGui extends Gui {
 		/** @todo add campaign editor button */
 
 		// Level editor
-		/** @todo REMOVE text button */
 		if (Config.Gui.usesTextButtons()) {
 			if (this.getClass() == LevelEditorGui.class) {
 				button = new TextButton("Level", mStyles.textButton.selected);
@@ -145,7 +144,6 @@ public abstract class EditorGui extends Gui {
 		}
 
 		// Enemy editor
-		/** @todo REMOVE text button */
 		if (Config.Gui.usesTextButtons()) {
 			if (this.getClass() == EnemyEditorGui.class) {
 				button = new TextButton("Enemy", mStyles.textButton.selected);
@@ -170,7 +168,6 @@ public abstract class EditorGui extends Gui {
 		}
 
 		// Bullet editor
-		/** @todo REMOVE text button */
 		if (Config.Gui.usesTextButtons()) {
 			if (this.getClass() == BulletEditorGui.class) {
 				button = new TextButton("Bullet", mStyles.textButton.selected);
@@ -210,7 +207,6 @@ public abstract class EditorGui extends Gui {
 		Button button;
 
 		// New
-		/** @todo REMOVE text button */
 		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("New", mStyles.textButton.standard);
 		} else {
@@ -225,7 +221,6 @@ public abstract class EditorGui extends Gui {
 		};
 
 		// Save
-		/** @todo REMOVE text button */
 		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Save", mStyles.textButton.standard);
 		} else {
@@ -240,7 +235,6 @@ public abstract class EditorGui extends Gui {
 		};
 
 		// Load
-		/** @todo REMOVE text button */
 		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Load", mStyles.textButton.standard);
 		} else {
@@ -255,7 +249,6 @@ public abstract class EditorGui extends Gui {
 		};
 
 		// Duplicate
-		/** @todo REMOVE text button */
 		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Duplicate", mStyles.textButton.standard);
 		} else {
@@ -272,12 +265,12 @@ public abstract class EditorGui extends Gui {
 
 
 		// Undo
-		/** @todo REMOVE text button */
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Undo", mStyles.textButton.standard);
-		} else {
-			button = new ImageButton(mStyles.skin.editor, EditorIcons.UNDO.toString());
-		}
+		/** @todo set image button */
+		//		if (Config.Gui.usesTextButtons()) {
+		button = new TextButton("Undo", mStyles.textButton.standard);
+		//		} else {
+		//			button = new ImageButton(mStyles.skin.editor, EditorIcons.UNDO.toString());
+		//		}
 		mFileMenu.add(button);
 		new ButtonListener(button) {
 			@Override
@@ -287,12 +280,12 @@ public abstract class EditorGui extends Gui {
 		};
 
 		// Redo
-		/** @todo REMOVE text button */
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Redo", mStyles.textButton.standard);
-		} else {
-			button = new ImageButton(mStyles.skin.editor, EditorIcons.REDO.toString());
-		}
+		/** @todo set image button */
+		//		if (Config.Gui.usesTextButtons()) {
+		button = new TextButton("Redo", mStyles.textButton.standard);
+		//		} else {
+		//			button = new ImageButton(mStyles.skin.editor, EditorIcons.REDO.toString());
+		//		}
 		mFileMenu.add(button).setPadRight(Config.Gui.SEPARATE_PADDING);
 		new ButtonListener(button) {
 			@Override
@@ -304,7 +297,6 @@ public abstract class EditorGui extends Gui {
 
 		// Run (for level editor)
 		if (mEditor instanceof LevelEditor) {
-			/** @todo REMOVE text button */
 			if (Config.Gui.usesTextButtons()) {
 				button = new TextButton("Run", mStyles.textButton.standard);
 			} else {
@@ -327,7 +319,6 @@ public abstract class EditorGui extends Gui {
 		}
 
 		// Info
-		/** @todo REMOVE text button */
 		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Info", mStyles.textButton.standard);
 		} else {

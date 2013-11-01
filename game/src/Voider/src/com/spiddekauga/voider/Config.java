@@ -469,7 +469,7 @@ public class Config {
 		/** Maximum length of story */
 		public final static int STORY_LENGTH_MAX = 512;
 		/** Auto save time, in seconds */
-		public final static float AUTO_SAVE_TIME_FORCED = 300;
+		public final static float AUTO_SAVE_TIME_FORCED = 240;
 		/** Auto save time after inactivity, in seconds */
 		public final static float AUTO_SAVE_TIME_ON_INACTIVITY = 20;
 

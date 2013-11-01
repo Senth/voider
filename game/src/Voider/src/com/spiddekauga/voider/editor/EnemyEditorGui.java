@@ -234,12 +234,12 @@ public class EnemyEditorGui extends ActorGui {
 		// Movement
 		GuiCheckCommandCreator menuChecker = new GuiCheckCommandCreator(mInvoker);
 		Button button;
-		/** @todo remove text button */
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Movement", mStyles.textButton.toggle);
-		} else {
-			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.MOVEMENT.toString());
-		}
+		/** @todo set image button */
+		//		if (Config.Gui.usesTextButtons()) {
+		button = new TextButton("Movement", mStyles.textButton.toggle);
+		//		} else {
+		//			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.MOVEMENT.toString());
+		//		}
 		button.addListener(menuChecker);
 		buttonGroup.add(button);
 		addToEditorMenu(button);
@@ -248,12 +248,12 @@ public class EnemyEditorGui extends ActorGui {
 		new TooltipListener(button, "", Messages.Tooltip.Enemy.Menu.MOVEMENT);
 
 		// Weapons
-		/** @todo remove text button */
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Weapons", mStyles.textButton.toggle);
-		} else {
-			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.WEAPON.toString());
-		}
+		/** @todo set image button */
+		//		if (Config.Gui.usesTextButtons()) {
+		button = new TextButton("Weapons", mStyles.textButton.toggle);
+		//		} else {
+		//			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.WEAPON.toString());
+		//		}
 		button.addListener(menuChecker);
 		buttonGroup.add(button);
 		addToEditorMenu(button);
@@ -262,12 +262,12 @@ public class EnemyEditorGui extends ActorGui {
 		new TooltipListener(button, "", Messages.Tooltip.Enemy.Menu.WEAPON);
 
 		// Visuals
-		/** @todo remove text button */
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Visuals", mStyles.textButton.toggle);
-		} else {
-			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.VISUALS.toString());
-		}
+		/** @todo set image button */
+		//		if (Config.Gui.usesTextButtons()) {
+		button = new TextButton("Visuals", mStyles.textButton.toggle);
+		//		} else {
+		//			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.VISUALS.toString());
+		//		}
 		button.addListener(menuChecker);
 		buttonGroup.add(button);
 		addToEditorMenu(button);
@@ -276,12 +276,12 @@ public class EnemyEditorGui extends ActorGui {
 		new TooltipListener(button, "Visuals", Messages.replaceName(Messages.Tooltip.Actor.Menu.VISUALS, "enemy"));
 
 		// Collision
-		/** @todo remove text button */
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Collision", mStyles.textButton.toggle);
-		} else {
-			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.COLLISION.toString());
-		}
+		/** @todo set image button */
+		//		if (Config.Gui.usesTextButtons()) {
+		button = new TextButton("Collision", mStyles.textButton.toggle);
+		//		} else {
+		//			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.COLLISION.toString());
+		//		}
 		button.addListener(menuChecker);
 		buttonGroup.add(button);
 		addToEditorMenu(button);
@@ -325,11 +325,12 @@ public class EnemyEditorGui extends ActorGui {
 		mPathTable.row();
 		ButtonGroup buttonGroup = new ButtonGroup();
 		Button button;
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("ON", mStyles.textButton.toggle);
-		} else {
-			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.ON.toString());
-		}
+		/** @todo set image button */
+		//		if (Config.Gui.usesTextButtons()) {
+		button = new TextButton("ON", mStyles.textButton.toggle);
+		//		} else {
+		//			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.ON.toString());
+		//		}
 		buttonGroup.add(button);
 		mWidgets.movement.turnSpeedOn = button;
 		mPathTable.add(button);
@@ -362,14 +363,16 @@ public class EnemyEditorGui extends ActorGui {
 		mPathHider.addChild(hideListener);
 
 		// OFF
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("OFF", mStyles.textButton.toggle);
-		} else {
-			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.OFF.toString());
-		}
+		/** @todo set image button */
+		//		if (Config.Gui.usesTextButtons()) {
+		button = new TextButton("OFF", mStyles.textButton.toggle);
+		//		} else {
+		//			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.OFF.toString());
+		//		}
 		buttonGroup.add(button);
 		mWidgets.movement.turnSpeedOff = button;
 		mPathTable.add(button);
+		button.setChecked(true);
 
 		// Turn speed
 		mPathTable.row();
@@ -447,11 +450,12 @@ public class EnemyEditorGui extends ActorGui {
 		// ON
 		mAiTable.row();
 		buttonGroup = new ButtonGroup();
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("ON", mStyles.textButton.toggle);
-		} else {
-			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.ON.toString());
-		}
+		/** @todo set image button */
+		//		if (Config.Gui.usesTextButtons()) {
+		button = new TextButton("ON", mStyles.textButton.toggle);
+		//		} else {
+		//			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.ON.toString());
+		//		}
 		buttonGroup.add(button);
 		mWidgets.movement.aiRandomMovementOn = button;
 		mAiTable.add(button);
@@ -480,14 +484,16 @@ public class EnemyEditorGui extends ActorGui {
 		mMovementHider.addChild(hideListener);
 
 		// OFF
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("OFF", mStyles.textButton.toggle);
-		} else {
-			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.OFF.toString());
-		}
+		/** @todo set image button */
+		//		if (Config.Gui.usesTextButtons()) {
+		button = new TextButton("OFF", mStyles.textButton.toggle);
+		//		} else {
+		//			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.OFF.toString());
+		//		}
 		buttonGroup.add(button);
 		mWidgets.movement.aiRandomMovementOff = button;
 		mAiTable.add(button);
+		button.setChecked(true);
 
 		// Min
 		label = new Label("Min", mStyles.label.standard);
@@ -560,6 +566,7 @@ public class EnemyEditorGui extends ActorGui {
 		checkBox.addListener(movementChecker);
 		mWidgets.movement.pathBox = checkBox;
 		mPathHider.setButton(checkBox);
+		mPathHider.addToggleActor(mPathTableWrapper);
 		mMovementHider.addChild(mPathHider);
 		HideListener hideListener = new HideListener(checkBox, true);
 		hideListener.addToggleActor(mPathLabels);
@@ -605,8 +612,6 @@ public class EnemyEditorGui extends ActorGui {
 		};
 		buttonGroup.add(checkBox);
 		mMovementTable.add(checkBox);
-		mWidgets.movement.aiBox.setChecked(true);
-		mWidgets.movement.pathBox.setChecked(true);
 
 		mMainTable.add(mMovementTable);
 	}
@@ -618,11 +623,12 @@ public class EnemyEditorGui extends ActorGui {
 		// ON
 		Button button;
 		ButtonGroup buttonGroup = new ButtonGroup();
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("ON", mStyles.textButton.toggle);
-		} else {
-			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.ON.toString());
-		}
+		/** @todo set image button */
+		//		if (Config.Gui.usesTextButtons()) {
+		button = new TextButton("ON", mStyles.textButton.toggle);
+		//		} else {
+		//			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.ON.toString());
+		//		}
 		buttonGroup.add(button);
 		mWidgets.weapon.on = button;
 		mWeaponTable.add(button);
@@ -637,22 +643,25 @@ public class EnemyEditorGui extends ActorGui {
 		HideListener weaponInnerHider = new HideListener(button, true);
 
 		// OFF
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("OFF", mStyles.textButton.toggle);
-		} else {
-			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.OFF.toString());
-		}
+		/** @todo set image button */
+		//		if (Config.Gui.usesTextButtons()) {
+		button = new TextButton("OFF", mStyles.textButton.toggle);
+		//		} else {
+		//			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.OFF.toString());
+		//		}
 		buttonGroup.add(button);
 		mWidgets.weapon.off = button;
 		mWeaponTable.add(button);
 		/** @todo only use hider */
 		new TooltipListener(button, "Weapon", Messages.Tooltip.Enemy.Weapon.WEAPON_BUTTON);
+		mWidgets.weapon.off.setChecked(true);
 
 
 		// TYPES
 		mWeaponTable.row();
 		GuiCheckCommandCreator weaponMenuChecker = new GuiCheckCommandCreator(mInvoker);
 		buttonGroup = new ButtonGroup();
+		/** @todo set image button */
 		//		if (Config.Gui.usesTextButtons()) {
 		button = new TextButton("Bullet", mStyles.textButton.toggle);
 		//		} else {
@@ -667,6 +676,7 @@ public class EnemyEditorGui extends ActorGui {
 		HideListener bulletHider = new HideListener(button, true);
 		weaponInnerHider.addChild(bulletHider);
 
+		/** @todo set image button */
 		//		if (Config.Gui.usesTextButtons()) {
 		button = new TextButton("Aim", mStyles.textButton.toggle);
 		//		} else {
@@ -693,7 +703,6 @@ public class EnemyEditorGui extends ActorGui {
 		mWidgets.weapon.bulletName = label;
 		bulletTable.add(label);
 
-		/** @todo remove text button */
 		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Select bullet type", mStyles.textButton.standard);
 		} else {
@@ -807,12 +816,12 @@ public class EnemyEditorGui extends ActorGui {
 		// On player
 		mWeaponTable.row();
 		GuiCheckCommandCreator aimChecker = new GuiCheckCommandCreator(mInvoker);
-		/** @todo remove text button */
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("On Player", mStyles.textButton.toggle);
-		} else {
-			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.AIM_ON_PLAYER.toString());
-		}
+		/** @todo set image button */
+		//		if (Config.Gui.usesTextButtons()) {
+		button = new TextButton("On Player", mStyles.textButton.toggle);
+		//		} else {
+		//			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.AIM_ON_PLAYER.toString());
+		//		}
 		button.addListener(aimChecker);
 		mWidgets.weapon.aimOnPlayer = button;
 		mWeaponTable.add(button);
@@ -830,12 +839,12 @@ public class EnemyEditorGui extends ActorGui {
 		};
 
 		// movement direction
-		/** @todo remove text button */
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Move dir", mStyles.textButton.toggle);
-		} else {
-			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.MOVEMENT.toString());
-		}
+		/** @todo set image button */
+		//		if (Config.Gui.usesTextButtons()) {
+		button = new TextButton("Move dir", mStyles.textButton.toggle);
+		//		} else {
+		//			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.MOVEMENT.toString());
+		//		}
 		button.addListener(aimChecker);
 		mWidgets.weapon.aimMoveDirection = button;
 		mWeaponTable.add(button);
@@ -853,13 +862,12 @@ public class EnemyEditorGui extends ActorGui {
 
 		// In front of player
 		mWeaponTable.row();
-		/** @todo in front of player */
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("In front of player", mStyles.textButton.toggle);
-		} else {
-			/** @todo default stub image button */
-			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.AIM_IN_FRONT_PLAYER.toString());
-		}
+		/** @todo set image button */
+		//		if (Config.Gui.usesTextButtons()) {
+		button = new TextButton("In front of player", mStyles.textButton.toggle);
+		//		} else {
+		//			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.AIM_IN_FRONT_PLAYER.toString());
+		//		}
 		button.addListener(aimChecker);
 		mWidgets.weapon.aimInFrontOfPlayer = button;
 		mWeaponTable.add(button);
@@ -876,12 +884,12 @@ public class EnemyEditorGui extends ActorGui {
 		};
 
 		// Rotate
-		/** @todo remove text button */
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Rotate", mStyles.textButton.toggle);
-		} else {
-			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.AIM_ROTATE.toString());
-		}
+		/** @todo set image button */
+		//		if (Config.Gui.usesTextButtons()) {
+		button = new TextButton("Rotate", mStyles.textButton.toggle);
+		//		} else {
+		//			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.AIM_ROTATE.toString());
+		//		}
 		button.addListener(aimChecker);
 		mWidgets.weapon.aimRotate = button;
 		mWeaponTable.add(button);
