@@ -3,7 +3,7 @@ package com.spiddekauga.voider.app;
 import java.util.ArrayList;
 
 import com.badlogic.gdx.Gdx;
-import com.spiddekauga.voider.editor.LevelEditor;
+import com.spiddekauga.voider.editor.EditorSelectionScene;
 import com.spiddekauga.voider.game.GameSaveDef;
 import com.spiddekauga.voider.game.GameScene;
 import com.spiddekauga.voider.game.LevelDef;
@@ -69,6 +69,9 @@ public class MainMenu extends Scene {
 		} else {
 			if (!mGui.isInitialized()) {
 				mGui.initGui();
+			} else {
+				mGui.dispose();
+				mGui.initGui();
 			}
 		}
 
@@ -127,9 +130,8 @@ public class MainMenu extends Scene {
 	 * Goes to the editor
 	 */
 	void gotoEditor() {
-		LevelEditor levelEditor = new LevelEditor();
-
-		SceneSwitcher.switchTo(levelEditor);
+		Scene scene = new EditorSelectionScene();
+		SceneSwitcher.switchTo(scene);
 	}
 
 	/**

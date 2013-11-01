@@ -10,6 +10,7 @@ import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.utils.scene.ui.TooltipListener;
+import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceNames;
 import com.spiddekauga.voider.scene.Gui;
@@ -29,7 +30,7 @@ public class MainMenuGui extends Gui {
 
 		mMainTable.setTableAlign(Horizontal.CENTER, Vertical.MIDDLE);
 		mMainTable.setRowAlign(Horizontal.CENTER, Vertical.TOP);
-		mMainTable.setCellPaddingDefault(2, 2, 2, 2);
+		mMainTable.setCellPaddingDefault(Config.Gui.PADDING_DEFAULT);
 		initMainMenu();
 	}
 

@@ -327,6 +327,11 @@ public class Messages {
 				public final static String EDITOR = "Create your own levels, campaigns, enemies, " +
 						"and bullets.";
 			}
+			public static class Editor {
+				public final static String LEVEL_EDITOR = "Create your levels";
+				public final static String ENEMY_EDITOR = "Create enemies for your levels";
+				public final static String BULLET_EDITOR = "Create bullets to use for you enemies";
+			}
 		}
 
 		public static class Tools {

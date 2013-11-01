@@ -27,6 +27,7 @@ import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.utils.scene.ui.Label.LabelStyle;
 import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
+import com.spiddekauga.utils.scene.ui.TooltipListener;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.editor.commands.CEditorLoad;
 import com.spiddekauga.voider.editor.commands.CEditorNew;
@@ -133,9 +134,10 @@ public abstract class EditorGui extends Gui {
 				button = new ImageButton(mStyles.skin.editor, EditorIcons.LEVEL_EDITOR.toString());
 			}
 		}
+		TooltipListener tooltipListener = new TooltipListener(button, "Level Editor", Messages.replaceName(Messages.Tooltip.Menus.Editor.LEVEL_EDITOR,  "level"));
 		mEditorMenu.add(button);
 		if (this.getClass() != LevelEditorGui.class) {
-			new ButtonListener(button) {
+			new ButtonListener(button, tooltipListener) {
 				@Override
 				protected void onPressed() {
 					switchReturnTo("Level Editor", new CSceneSwitch(LevelEditor.class), UnsavedActions.LEVEL_EDITOR);
@@ -157,9 +159,10 @@ public abstract class EditorGui extends Gui {
 				button = new ImageButton(mStyles.skin.editor, EditorIcons.ENEMY_EDITOR.toString());
 			}
 		}
+		tooltipListener = new TooltipListener(button, "Enemy Editor", Messages.replaceName(Messages.Tooltip.Menus.Editor.ENEMY_EDITOR,  "enemy"));
 		mEditorMenu.add(button);
 		if (this.getClass() != EnemyEditorGui.class) {
-			new ButtonListener(button) {
+			new ButtonListener(button, tooltipListener) {
 				@Override
 				protected void onPressed() {
 					switchReturnTo("Enemy Editor", new CSceneSwitch(EnemyEditor.class), UnsavedActions.ENEMY_EDITOR);
@@ -181,9 +184,10 @@ public abstract class EditorGui extends Gui {
 				button = new ImageButton(mStyles.skin.editor, EditorIcons.BULLET_EDITOR.toString());
 			}
 		}
+		tooltipListener = new TooltipListener(button, "Bullet Editor", Messages.replaceName(Messages.Tooltip.Menus.Editor.BULLET_EDITOR,  "bullet"));
 		mEditorMenu.add(button).setPadRight(Config.Gui.SEPARATE_PADDING);
 		if (this.getClass() != BulletEditorGui.class) {
-			new ButtonListener(button) {
+			new ButtonListener(button, tooltipListener) {
 				@Override
 				protected void onPressed() {
 					switchReturnTo("Bullet Editor", new CSceneSwitch(BulletEditor.class), UnsavedActions.ENEMY_EDITOR);
