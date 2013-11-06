@@ -159,7 +159,7 @@ public abstract class Def extends Resource implements IResourceDependency, IReso
 	 */
 	public String getDateString() {
 		// Format date
-		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy.MM.dd-HH.mm.ss");
 		String dateString = simpleDateFormat.format(mDate);
 		return dateString;
 	}

@@ -66,15 +66,10 @@ public class MainMenu extends Scene {
 			} else {
 				Gdx.app.error("MainMenu", "When seleting def, message was not a ResourceItem but a " + message.getClass().getName());
 			}
-		} else {
-			if (!mGui.isInitialized()) {
-				mGui.initGui();
-			} else {
-				mGui.dispose();
-				mGui.initGui();
-			}
 		}
 
+		mGui.dispose();
+		mGui.initGui();
 		mGui.resetValues();
 	}
 

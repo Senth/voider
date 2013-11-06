@@ -68,7 +68,11 @@ public class EnemyActor extends Actor {
 						updatePathMovement(deltaTime);
 					} else if (!mEditorActive){
 						if (TriggerInfo.getTriggerInfoByAction(this, Actions.ACTOR_DEACTIVATE) == null) {
-							checkPathDeactivate();
+							if (mPath != null) {
+								checkPathDeactivate();
+							} else {
+								checkStationaryDeactivate();
+							}
 						}
 					}
 					break;

@@ -67,6 +67,13 @@ public class BulletEditor extends Editor implements IActorEditor, IResourceChang
 	}
 
 	@Override
+	protected void onResize(int width, int height) {
+		super.onResize(width, height);
+		mGui.dispose();
+		mGui.initGui();
+	}
+
+	@Override
 	protected void onActivate(Outcomes outcome, Object message) {
 		super.onActivate(outcome, message);
 

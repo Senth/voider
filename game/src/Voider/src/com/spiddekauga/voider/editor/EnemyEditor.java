@@ -202,6 +202,8 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 	@Override
 	protected void onResize(int width, int height) {
 		super.onResize(width, height);
+		mGui.dispose();
+		mGui.initGui();
 		((EnemyEditorGui)mGui).scalePathLabels();
 	}
 

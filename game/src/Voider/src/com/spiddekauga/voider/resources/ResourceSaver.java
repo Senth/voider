@@ -2,6 +2,7 @@ package com.spiddekauga.voider.resources;
 
 
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
 import java.util.Date;
 
 import com.badlogic.gdx.Gdx;
@@ -71,6 +72,21 @@ public class ResourceSaver {
 
 			String filePath = ResourceDatabase.getFilePath(resource);
 			FileHandle saveFile = Gdx.files.external(filePath);
+
+			// Create parent paths
+			@SuppressWarnings("unchecked")
+			ArrayList<FileHandle> directoriesToCreate = Pools.arrayList.obtain();
+			FileHandle currentDir = saveFile.parent();
+			currentDir.mkdirs();
+			while (!currentDir.exists()) {
+				directoriesToCreate.add(currentDir);
+				currentDir = currentDir.parent();
+			}
+
+			for (int i = directoriesToCreate.size() - 1; i >= 0; --i) {
+				Gdx.app.debug("ResourceSaver", "Mkdir: " + directoriesToCreate.get(i).path());
+				directoriesToCreate.get(i).mkdirs();
+			}
 
 			// Save the file
 			saveFile.writeBytes(encryptedDef, false);

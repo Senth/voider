@@ -103,6 +103,13 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	}
 
 	@Override
+	protected void onResize(int width, int height) {
+		super.onResize(width, height);
+		mGui.dispose();
+		mGui.initGui();
+	}
+
+	@Override
 	protected void update(float deltaTime) {
 		super.update(deltaTime);
 
@@ -314,7 +321,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 					mLoadingLevel = ResourceCacheFacade.get(this, ((ResourceItem) message).id, ((ResourceItem) message).revision);
 
 					// Only load level if it's not the current level we selected, or another revision
-					if (!mLoadingLevel.equals(mLevel.getDef()) || mLoadingLevel.getRevision() != mLevel.getRevision()) {
+					if (mLevel == null || !mLoadingLevel.equals(mLevel.getDef()) || mLoadingLevel.getRevision() != mLevel.getRevision()) {
 						ResourceCacheFacade.load(this, mLoadingLevel.getLevelId(), mLoadingLevel.getId(), mLoadingLevel.getRevision());
 						Scene scene = getLoadingScene();
 						if (scene != null) {
@@ -648,7 +655,6 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		Level level = new Level(levelDef);
 		setLevel(level);
 		saveDef();
-
 		setSaved();
 	}
 
