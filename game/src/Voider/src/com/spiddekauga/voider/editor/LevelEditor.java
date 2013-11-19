@@ -536,7 +536,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 					SceneSwitcher.returnTo(MainMenu.class);
 				}
 			} else {
-				/** @todo close msg box */
+				/** @todo close message box */
 			}
 		}
 		/** @todo remove test buttons */

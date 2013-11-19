@@ -488,9 +488,13 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 		}
 		// Back - main menu
 		else if (KeyHelper.isBackPressed(keycode)) {
-			saveDef();
-			SceneSwitcher.returnTo(MainMenu.class);
-			return true;
+			if (!mGui.isMsgBoxActive()) {
+				saveDef();
+				SceneSwitcher.returnTo(MainMenu.class);
+				return true;
+			} else {
+				/** @todo close message box */
+			}
 		}
 		/** @todo remove test keys */
 		else if (keycode == Input.Keys.F5) {

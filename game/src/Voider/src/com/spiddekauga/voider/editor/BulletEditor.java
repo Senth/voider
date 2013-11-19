@@ -188,9 +188,13 @@ public class BulletEditor extends Editor implements IActorEditor, IResourceChang
 		}
 		// Back - main menu
 		else if (KeyHelper.isBackPressed(keycode)) {
-			saveDef();
-			SceneSwitcher.returnTo(MainMenu.class);
-			return true;
+			if (!mGui.isMsgBoxActive()) {
+				saveDef();
+				SceneSwitcher.returnTo(MainMenu.class);
+				return true;
+			} else {
+				/** @todo close message box */
+			}
 		}
 		/** @todo remove test buttons */
 		else if (keycode == Input.Keys.F5) {
