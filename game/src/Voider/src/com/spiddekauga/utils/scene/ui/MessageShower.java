@@ -12,6 +12,8 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
+import com.spiddekauga.utils.scene.ui.Align.Horizontal;
+import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceNames;
@@ -34,6 +36,9 @@ public class MessageShower {
 		mWindow.setPosition(0, Gdx.graphics.getHeight());
 		mWindow.setWidth(Gdx.graphics.getWidth() * 0.35f);
 		mWindow.add(mAlignTable);
+		mAlignTable.setTableAlign(Horizontal.LEFT, Vertical.TOP);
+		mAlignTable.setRowAlign(Horizontal.LEFT, Vertical.TOP);
+		mAlignTable.setRowPaddingDefault(Config.Gui.PADDING_DEFAULT);
 		mStage = stage;
 	}
 
@@ -47,9 +52,12 @@ public class MessageShower {
 			mStage.addActor(mWindow);
 			mWindow.addAction(fadeIn(Config.Gui.MESSAGE_FADE_IN_DURATION));
 		}
-		// Make sure window isn't fading out
+		// Make sure window isn't fading out and set it to correct alpha
 		else if (mWindow.getActions().size > 0) {
 			mWindow.clearActions();
+			if (mWindow.getColor().a < 1) {
+				mWindow.addAction(fadeIn(Config.Gui.MESSAGE_FADE_IN_DURATION));
+			}
 		}
 
 		// Get free label

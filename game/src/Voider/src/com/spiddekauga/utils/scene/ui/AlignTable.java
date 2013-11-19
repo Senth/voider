@@ -155,6 +155,20 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	}
 
 	/**
+	 * Sets the default padding for all new rows in the table. By default this
+	 * is 0 for all sides. Only affects new rows created after this call.
+	 * @param padding padding to the left, right, top, and bottom
+	 * @return this table for chaining
+	 */
+	public AlignTable setRowPaddingDefault(float padding) {
+		mRowPaddingDefault.top = padding;
+		mRowPaddingDefault.right = padding;
+		mRowPaddingDefault.bottom = padding;
+		mRowPaddingDefault.left = padding;
+		return this;
+	}
+
+	/**
 	 * Gets all actors in the table
 	 * @param onlyVisible set to true to get visible actors, false to get all
 	 * @return array with all actors. Don't forget to free the ArrayList after

@@ -11,6 +11,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import com.badlogic.gdx.Gdx;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
+import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.User;
 
 /**
@@ -201,7 +202,7 @@ public abstract class Def extends Resource implements IResourceDependency, IReso
 	/** Internal dependencies, such as textures, sound, particle effects */
 	@Tag(42) private Set<ResourceNames> mInternalDependencies = new HashSet<ResourceNames>();
 	/** Name of the definition */
-	@Tag(36) private String mName = "(Unnamed)";
+	@Tag(36) private String mName = Config.Actor.NAME_DEFAULT;
 	/** Original creator name */
 	@Tag(41) private String mOriginalCreator = User.getNickName();
 	/** Creator name */

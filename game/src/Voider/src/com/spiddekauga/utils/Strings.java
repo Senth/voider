@@ -2,6 +2,8 @@ package com.spiddekauga.utils;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * String utilities
@@ -42,4 +44,20 @@ public class Strings {
 		exception.printStackTrace(printWriter);
 		return stringWriter.toString();
 	}
+
+	/**
+	 * @param word the word to check if it begins with a vowel or consonant.
+	 * @return true if the word begins with a wovel, i.e. uses
+	 */
+	public static boolean beginsWithWovel(String word) {
+		if (word != null && word.length() > 0) {
+			Matcher matcher = mVowelPattern.matcher(word.substring(0, 1));
+			return matcher.find();
+		} else {
+			return false;
+		}
+	}
+
+	/** Vowel pattern */
+	private static Pattern mVowelPattern = Pattern.compile("[aeiouAEIOU]");
 }

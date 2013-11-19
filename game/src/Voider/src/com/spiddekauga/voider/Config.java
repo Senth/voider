@@ -80,6 +80,10 @@ public class Config {
 		public final static Color OUTLINE_COLOR = Color.ORANGE;
 		/** Closing outline color (color from corner.end -> corner.begin) */
 		public final static Color OUTLINE_CLOSE_COLOR = Color.PINK;
+		/** Default name of definitions */
+		public final static String NAME_DEFAULT = "(Unnamed)";
+		/** Minimum name length */
+		public final static int NAME_LENGTH_MIN = 3;
 	}
 
 	/**

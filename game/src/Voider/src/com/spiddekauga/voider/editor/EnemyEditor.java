@@ -236,6 +236,12 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 			return;
 		}
 
+		// Force the player to set a name
+		if (mDef.getName().equals(Config.Actor.NAME_DEFAULT)) {
+			((ActorGui)mGui).showInfoDialog();
+			mGui.showErrorMessage("Please enter an enemy name");
+		}
+
 		mPlayerActor.update(deltaTime);
 		checkForDeadActors();
 

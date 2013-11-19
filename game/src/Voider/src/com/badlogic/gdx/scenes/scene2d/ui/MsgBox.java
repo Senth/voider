@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
+import com.spiddekauga.utils.Command;
 import com.spiddekauga.utils.scene.ui.AlignTable;
 
 /**
@@ -200,9 +201,21 @@ public class MsgBox extends Dialog {
 	 * @see #addCancelButtonAndKeys()
 	 */
 	public MsgBox addCancelButtonAndKeys(String buttonText) {
-		button(buttonText);
-		key(Keys.BACK, null);
-		key(Keys.ESCAPE, null);
+		return addCancelButtonAndKeys(buttonText, null);
+	}
+
+	/**
+	 * Add a cancel button and keys.
+	 * @param buttonText text for the cancel button
+	 * @param cancelCommand this command shall return true in execute if the message box
+	 * is allowed to cancel.
+	 * @return this message box for chaining
+	 * @see #addCancelButtonAndKeys()
+	 */
+	public MsgBox addCancelButtonAndKeys(String buttonText, Command cancelCommand) {
+		button(buttonText, cancelCommand);
+		key(Keys.BACK, cancelCommand);
+		key(Keys.ESCAPE, cancelCommand);
 		return this;
 	}
 

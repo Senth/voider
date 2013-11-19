@@ -118,6 +118,12 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 			return;
 		}
 
+		// Force the player to set a name
+		if (mLevel.getDef().getName().equals(Config.Actor.NAME_DEFAULT)) {
+			((LevelEditorGui)mGui).showInfoDialog();
+			mGui.showErrorMessage("Please enter a level name");
+		}
+
 		mLevel.update(deltaTime);
 
 		// Scrolling
@@ -521,12 +527,16 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		}
 		// Back - Deselect or go back
 		else if (KeyHelper.isBackPressed(keycode)) {
-			if (!mSelection.isEmpty()) {
-				mInvoker.execute(new CSelectionSet(mSelection));
-			}
-			else {
-				saveDef();
-				SceneSwitcher.returnTo(MainMenu.class);
+			if (!mGui.isMsgBoxActive()) {
+				if (!mSelection.isEmpty()) {
+					mInvoker.execute(new CSelectionSet(mSelection));
+				}
+				else {
+					saveDef();
+					SceneSwitcher.returnTo(MainMenu.class);
+				}
+			} else {
+				/** @todo close msg box */
 			}
 		}
 		/** @todo remove test buttons */
@@ -722,7 +732,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	/**
 	 * @return name of the level, empty string if no level is available
 	 */
-	String getLevelName() {
+	public String getLevelName() {
 		if (mLevel != null) {
 			return mLevel.getDef().getName();
 		}

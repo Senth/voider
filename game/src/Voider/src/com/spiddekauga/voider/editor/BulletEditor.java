@@ -120,21 +120,28 @@ public class BulletEditor extends Editor implements IActorEditor, IResourceChang
 
 		if (mDef == null) {
 			((EditorGui)mGui).showFirstTimeMenu();
-		} else {
-			mWeapon.update(deltaTime);
+			return;
+		}
 
-			if (mWeapon.canShoot()) {
-				mWeapon.shoot(SHOOT_DIRECTION);
-			}
+		// Force the player to set a name
+		if (mDef.getName().equals(Config.Actor.NAME_DEFAULT)) {
+			((ActorGui)mGui).showInfoDialog();
+			mGui.showErrorMessage("Please enter a bullet name");
+		}
 
-			if (mBulletActor != null && mDef.getVisualVars().getShapeType() == ActorShapeTypes.CUSTOM) {
-				mBulletActor.updateEditor();
-			}
+		mWeapon.update(deltaTime);
 
-			if (shallAutoSave()) {
-				saveDef();
-				mGui.showErrorMessage(Messages.Info.SAVING);
-			}
+		if (mWeapon.canShoot()) {
+			mWeapon.shoot(SHOOT_DIRECTION);
+		}
+
+		if (mBulletActor != null && mDef.getVisualVars().getShapeType() == ActorShapeTypes.CUSTOM) {
+			mBulletActor.updateEditor();
+		}
+
+		if (shallAutoSave()) {
+			saveDef();
+			mGui.showErrorMessage(Messages.Info.SAVING);
 		}
 	}
 

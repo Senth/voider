@@ -25,6 +25,7 @@ import com.spiddekauga.voider.Config.Editor.Bullet;
 import com.spiddekauga.voider.Config.Editor.Enemy;
 import com.spiddekauga.voider.editor.IActorEditor.Tools;
 import com.spiddekauga.voider.editor.commands.CActorEditorCenterReset;
+import com.spiddekauga.voider.editor.commands.CDefHasValidName;
 import com.spiddekauga.voider.game.actors.ActorShapeTypes;
 import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.utils.Messages;
@@ -62,7 +63,7 @@ public abstract class ActorGui extends EditorGui {
 
 		initVisual();
 		initToolMenu();
-		initOptions();
+		initInfoTable();
 	}
 
 	@Override
@@ -134,7 +135,7 @@ public abstract class ActorGui extends EditorGui {
 	/**
 	 * Initializes actor options
 	 */
-	protected void initOptions() {
+	protected void initInfoTable() {
 		mWidgets.info.table.setTableAlign(Horizontal.LEFT, Vertical.TOP);
 
 		Label label = new Label("Name", mStyles.label.standard);
@@ -178,7 +179,7 @@ public abstract class ActorGui extends EditorGui {
 		MsgBoxExecuter msgBox = getFreeMsgBox();
 		msgBox.setTitle("Info");
 		msgBox.content(mWidgets.info.table);
-		msgBox.addCancelButtonAndKeys("OK");
+		msgBox.addCancelButtonAndKeys("OK", new CDefHasValidName(msgBox, this, mActorEditor, getResourceTypeName()));
 		showMsgBox(msgBox);
 	}
 

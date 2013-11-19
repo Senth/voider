@@ -34,6 +34,7 @@ import com.spiddekauga.voider.Config.Editor;
 import com.spiddekauga.voider.Config.Editor.Level;
 import com.spiddekauga.voider.Config.Gui;
 import com.spiddekauga.voider.editor.LevelEditor.Tools;
+import com.spiddekauga.voider.editor.commands.CDefHasValidName;
 import com.spiddekauga.voider.editor.commands.CGuiSlider;
 import com.spiddekauga.voider.game.Path.PathTypes;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
@@ -211,7 +212,7 @@ class LevelEditorGui extends EditorGui {
 		MsgBoxExecuter msgBox = getFreeMsgBox();
 		msgBox.setTitle("Level options");
 		msgBox.content(mWidgets.info.table);
-		msgBox.addCancelButtonAndKeys("OK");
+		msgBox.addCancelButtonAndKeys("OK", new CDefHasValidName(msgBox, this, mLevelEditor, getResourceTypeName()));
 		showMsgBox(msgBox);
 	}
 
