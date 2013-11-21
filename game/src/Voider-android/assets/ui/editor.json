@@ -19,20 +19,7 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageDown: stub,
 		imageChecked: stub,
 		imageUp: stub
-	},
-	
-	default-tab: {
-		down: tab-default-down,
-		checked: tab-default-checked,
-		up: tab-default-up,
-		disabled: tab-default-disabled,
-		over: tab-default-over,
-		checkedOver: tab-default-checked-over,
-		imageDown: stub,
-		imageChecked: stub,
-		imageUp: stub
-	},
-	
+	},	
 	
 	bullet_editor: {
 		down: button-default-down,

@@ -3,6 +3,7 @@ package com.spiddekauga.voider.app;
 import java.util.ArrayList;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.spiddekauga.voider.editor.EditorSelectionScene;
 import com.spiddekauga.voider.game.GameSaveDef;
 import com.spiddekauga.voider.game.GameScene;
@@ -71,6 +72,14 @@ public class MainMenu extends Scene {
 		mGui.dispose();
 		mGui.initGui();
 		mGui.resetValues();
+	}
+
+	@Override
+	public boolean keyDown(int keycode) {
+		if (keycode == Input.Keys.F5) {
+			SceneSwitcher.switchTo(new TestUiScene());
+		}
+		return false;
 	}
 
 	/**

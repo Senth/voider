@@ -113,7 +113,7 @@ public abstract class Gui implements Disposable {
 		// No free found, create new
 		if (msgBox == null) {
 			Skin skin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
-			msgBox = new MsgBoxExecuter(skin, "modal");
+			msgBox = new MsgBoxExecuter(skin, "modal-title");
 			mInactiveMsgBoxes.add(msgBox);
 		}
 
