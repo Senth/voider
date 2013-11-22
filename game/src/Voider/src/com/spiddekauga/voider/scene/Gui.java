@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Window.WindowStyle;
 import com.badlogic.gdx.utils.Disposable;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
@@ -97,10 +98,13 @@ public abstract class Gui implements Disposable {
 	}
 
 	/**
+	 * @param useTitleStyle set to true to use a message box with the title style
 	 * @return free message box
 	 */
-	public MsgBoxExecuter getFreeMsgBox() {
+	public MsgBoxExecuter getFreeMsgBox(boolean useTitleStyle) {
 		MsgBoxExecuter msgBox = null;
+
+		String windowStyleName = useTitleStyle ? "modal-title" : "modal";
 
 		// Find a free existing one
 		for (int i = mInactiveMsgBoxes.size() - 1; i >= 0; i--) {
@@ -110,12 +114,15 @@ public abstract class Gui implements Disposable {
 			}
 		}
 
+		Skin skin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
 		// No free found, create new
 		if (msgBox == null) {
-			Skin skin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
-			msgBox = new MsgBoxExecuter(skin, "modal-title");
+			msgBox = new MsgBoxExecuter(skin, windowStyleName);
 			mInactiveMsgBoxes.add(msgBox);
+		} else {
+			msgBox.setStyle(skin.get(windowStyleName, WindowStyle.class));
 		}
+
 
 		msgBox.clear();
 		return msgBox;
@@ -126,7 +133,8 @@ public abstract class Gui implements Disposable {
 	 */
 	public void hideMsgBoxes() {
 		if (mActiveMsgBoxes.size() >= 2) {
-			// Remove all already hidden once, start hiding shown
+			// Only the latest message box is shown, i.e. just remove all except the
+			// last message box which we hide.
 			Iterator<MsgBoxExecuter> msgBoxIt = mActiveMsgBoxes.iterator();
 			while (msgBoxIt.hasNext()) {
 				MsgBoxExecuter msgBox = msgBoxIt.next();

@@ -39,13 +39,6 @@ checkbox-on
   orig: 16, 16
   offset: 0, 0
   index: -1
-radio-button-on
-  rotate: false
-  xy: 44, 46
-  size: 16, 16
-  orig: 16, 16
-  offset: 0, 0
-  index: -1
 loading-bar
   rotate: false
   xy: 62, 36
@@ -53,37 +46,44 @@ loading-bar
   orig: 1, 26
   offset: 0, 0
   index: -1
-scroll-corner
+radio-button-on
   rotate: false
   xy: 1, 4
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+scroll-corner
+  rotate: false
+  xy: 26, 28
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
 scroll-horizontal-knob
   rotate: false
-  xy: 1, 4
+  xy: 26, 28
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
 scroll-vertical-knob
   rotate: false
-  xy: 1, 4
+  xy: 26, 28
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
 slider-knob
   rotate: false
-  xy: 1, 4
+  xy: 26, 28
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
 scroll-background
   rotate: false
-  xy: 14, 23
+  xy: 44, 33
   size: 11, 11
   split: 5, 5, 5, 5
   orig: 11, 11
@@ -91,7 +91,7 @@ scroll-background
   index: -1
 selectbox-background-open
   rotate: false
-  xy: 14, 23
+  xy: 44, 33
   size: 11, 11
   split: 5, 5, 5, 5
   orig: 11, 11
@@ -99,7 +99,7 @@ selectbox-background-open
   index: -1
 selectbox-background-over
   rotate: false
-  xy: 14, 23
+  xy: 44, 33
   size: 11, 11
   split: 5, 5, 5, 5
   orig: 11, 11
@@ -107,7 +107,7 @@ selectbox-background-over
   index: -1
 selectbox-background
   rotate: false
-  xy: 14, 23
+  xy: 44, 33
   size: 11, 11
   split: 5, 5, 5, 5
   orig: 11, 11
@@ -115,41 +115,87 @@ selectbox-background
   index: -1
 window-background
   rotate: false
-  xy: 14, 23
+  xy: 44, 33
   size: 11, 11
   split: 5, 5, 5, 5
   orig: 11, 11
   offset: 0, 0
   index: -1
+textfield
+  rotate: false
+  xy: 14, 25
+  size: 9, 9
+  split: 4, 4, 4, 4
+  orig: 9, 9
+  offset: 0, 0
+  index: -1
 cursor
   rotate: false
-  xy: 19, 5
+  xy: 19, 7
   size: 5, 16
   orig: 5, 16
   offset: 0, 0
   index: -1
 button-default-checked-over
   rotate: false
-  xy: 26, 37
+  xy: 26, 19
   size: 7, 7
   split: 3, 3, 3, 3
   orig: 7, 7
-  offset: 0, 0
-  index: -1
-textfield
-  rotate: false
-  xy: 35, 35
-  size: 9, 9
-  split: 4, 4, 4, 4
-  orig: 9, 9
   offset: 0, 0
   index: -1
 button-default-checked
   rotate: false
-  xy: 46, 37
+  xy: 26, 10
   size: 7, 7
   split: 3, 3, 3, 3
   orig: 7, 7
+  offset: 0, 0
+  index: -1
+button-default-disabled
+  rotate: false
+  xy: 35, 19
+  size: 7, 7
+  split: 3, 3, 3, 3
+  orig: 7, 7
+  offset: 0, 0
+  index: -1
+button-default-down
+  rotate: false
+  xy: 44, 24
+  size: 7, 7
+  split: 3, 3, 3, 3
+  orig: 7, 7
+  offset: 0, 0
+  index: -1
+button-default-over
+  rotate: false
+  xy: 35, 10
+  size: 7, 7
+  split: 3, 3, 3, 3
+  orig: 7, 7
+  offset: 0, 0
+  index: -1
+button-default-up
+  rotate: false
+  xy: 44, 15
+  size: 7, 7
+  split: 3, 3, 3, 3
+  orig: 7, 7
+  offset: 0, 0
+  index: -1
+scroll-horizontal
+  rotate: false
+  xy: 57, 36
+  size: 1, 8
+  orig: 1, 8
+  offset: 0, 0
+  index: -1
+slider-background
+  rotate: false
+  xy: 57, 36
+  size: 1, 8
+  orig: 1, 8
   offset: 0, 0
   index: -1
 scroll-vertical
@@ -159,62 +205,16 @@ scroll-vertical
   orig: 8, 1
   offset: 0, 0
   index: -1
-scroll-horizontal
-  rotate: false
-  xy: 27, 27
-  size: 1, 8
-  orig: 1, 8
-  offset: 0, 0
-  index: -1
-slider-background
-  rotate: false
-  xy: 27, 27
-  size: 1, 8
-  orig: 1, 8
-  offset: 0, 0
-  index: -1
-button-default-disabled
-  rotate: false
-  xy: 30, 26
-  size: 7, 7
-  split: 3, 3, 3, 3
-  orig: 7, 7
-  offset: 0, 0
-  index: -1
-button-default-down
-  rotate: false
-  xy: 39, 26
-  size: 7, 7
-  split: 3, 3, 3, 3
-  orig: 7, 7
-  offset: 0, 0
-  index: -1
-button-default-over
-  rotate: false
-  xy: 48, 28
-  size: 7, 7
-  split: 3, 3, 3, 3
-  orig: 7, 7
-  offset: 0, 0
-  index: -1
-button-default-up
-  rotate: false
-  xy: 48, 19
-  size: 7, 7
-  split: 3, 3, 3, 3
-  orig: 7, 7
-  offset: 0, 0
-  index: -1
 modal-fade
   rotate: false
-  xy: 27, 24
+  xy: 14, 22
   size: 1, 1
   orig: 1, 1
   offset: 0, 0
   index: -1
 selection
   rotate: false
-  xy: 11, 1
+  xy: 57, 33
   size: 1, 1
   orig: 1, 1
   offset: 0, 0

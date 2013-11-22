@@ -62,7 +62,10 @@ public class TestUiScene extends Scene {
 	 * Reload UI elements
 	 */
 	private void reloadUi() {
-		/** @todo reload UI */
+		ResourceCacheFacade.reload(ResourceNames.UI_GENERAL);
+
+		mGui.dispose();
+		mGui.initGui();
 	}
 
 	/** Loading value */

@@ -10,6 +10,12 @@ com.badlogic.gdx.graphics.Color: {
 	black: { a: 1, b: 0, g: 0, r: 0 }
 },
 
+com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
+	default: {
+		font: default-font,
+	}
+},
+
 com.spiddekauga.utils.scene.ui.Label$LabelStyle: {
 	default: {
 		font: default-font,
@@ -113,8 +119,13 @@ com.badlogic.gdx.scenes.scene2d.ui.Window$WindowStyle: {
 
 com.badlogic.gdx.scenes.scene2d.ui.ScrollPane$ScrollPaneStyle: {
 	default: {
-		background: scroll-background,
-		corner: scroll-corner,
+		hScroll: scroll-horizontal,
+		hScrollKnob: scroll-horizontal-knob,
+		vScroll: scroll-vertical,
+		vScrollKnob: scroll-vertical-knob,
+	},
+	background: {
+		background: window-background,
 		hScroll: scroll-horizontal,
 		hScrollKnob: scroll-horizontal-knob,
 		vScroll: scroll-vertical,
@@ -135,7 +146,7 @@ com.badlogic.gdx.scenes.scene2d.ui.SelectBox$SelectBoxStyle: {
 	default: {
 		font: default-font,
 		background: selectbox-background,
-		scrollStyle: default,
+		scrollStyle: background,
 		listStyle: default,
 		backgroundOver: selectbox-background-over,
 		backgroundOpen: selectbox-background-open

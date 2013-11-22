@@ -209,7 +209,7 @@ class LevelEditorGui extends EditorGui {
 
 	@Override
 	protected void showInfoDialog() {
-		MsgBoxExecuter msgBox = getFreeMsgBox();
+		MsgBoxExecuter msgBox = getFreeMsgBox(true);
 		msgBox.setTitle("Level options");
 		msgBox.content(mWidgets.info.table);
 		msgBox.addCancelButtonAndKeys("OK", new CDefHasValidName(msgBox, this, mLevelEditor, getResourceTypeName()));

@@ -176,7 +176,7 @@ public abstract class ActorGui extends EditorGui {
 
 	@Override
 	protected void showInfoDialog() {
-		MsgBoxExecuter msgBox = getFreeMsgBox();
+		MsgBoxExecuter msgBox = getFreeMsgBox(true);
 		msgBox.setTitle("Info");
 		msgBox.content(mWidgets.info.table);
 		msgBox.addCancelButtonAndKeys("OK", new CDefHasValidName(msgBox, this, mActorEditor, getResourceTypeName()));

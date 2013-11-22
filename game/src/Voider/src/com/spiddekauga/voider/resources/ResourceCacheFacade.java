@@ -349,9 +349,9 @@ public class ResourceCacheFacade {
 
 	/**
 	 * Reloads a loaded resource. This reloads the resource directly by calling {@link #finishLoading()}
-	 * Useful when a resource is saved (and thus the revision increased, but we want the loaded resource to
-	 * use the real revision (i.e. not the changed one). This method reloads the resource for all scenes.
-	 * Does nothing if the resource isn't loaded. Only applicable on resources that has revisions...
+	 * Useful when we want to load an older revision of the specified resource, or the newest revision
+	 * if we have loaded an older revision before
+	 * Does nothing if the resource isn't loaded. Only applicable on resources that has revisions.
 	 * @param resourceId resource id to reload
 	 * @param revision specific revision of the resource to reload.
 	 */
@@ -359,16 +359,26 @@ public class ResourceCacheFacade {
 		ResourceDatabase.reload(resourceId, revision);
 	}
 
-	//	/**
-	//	 * Reloads a resource to the specified resource
-	//	 * @param scene the scene to reload the resource in
-	//	 * @param resourceId id of the resource to reload to another revision
-	//	 * @param revision the revision to reload the resource to
-	//	 * @param reloadDependencies if all dependencies should be reloaded
-	//	 */
-	//	public static void reload(Scene scene, UUID resourceId, int revision, boolean reloadDependencies) {
-	//		// reload
-	//	}
+	/**
+	 * Reloads a resource. Useful when changing updating resources and we don't want to restart
+	 * the program to test them.
+	 * @param resource the resource to reload
+	 * @note <b>Use with care!</b> This will simply reload the resource, meaning all other previous
+	 * instances that uses the old resource won't work.
+	 */
+	public static void reload(ResourceNames resource) {
+		String filepath = resource.getFilePath();
+
+		// Reload the actual asset
+		if (filepath != null && mAssetManager.isLoaded(filepath)) {
+			int cRefs = mAssetManager.getReferenceCount(filepath);
+			mAssetManager.setReferenceCount(filepath, 1);
+			mAssetManager.unload(filepath);
+			mAssetManager.load(filepath, resource.type);
+			mAssetManager.finishLoading();
+			mAssetManager.setReferenceCount(filepath, cRefs);
+		}
+	}
 
 	/**
 	 * !!!NOT IMPLEMENTED!!! Unloads all <b>External</b> resources for the specified scene.

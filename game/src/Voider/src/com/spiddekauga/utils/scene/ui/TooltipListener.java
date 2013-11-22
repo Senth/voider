@@ -286,7 +286,7 @@ public class TooltipListener implements EventListener {
 	 * Shows the message box
 	 */
 	private void showMsgBox() {
-		mMsgBox = mGui.getFreeMsgBox();
+		mMsgBox = mGui.getFreeMsgBox(mTitle != null && mTitle.length() > 0);
 		mMsgBox.addCancelButtonAndKeys("OK");
 		mMsgBox.setTitle(mTitle);
 		mLabel.setText(mMessage);
@@ -357,7 +357,7 @@ public class TooltipListener implements EventListener {
 	}
 
 	/** Title of the window */
-	private String mTitle;
+	private String mTitle = null;
 	/** Message to display in the tooltip */
 	private String mMessage;
 	/** GUI Actor we're listening to */

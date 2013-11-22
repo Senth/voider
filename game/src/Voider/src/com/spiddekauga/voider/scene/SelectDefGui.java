@@ -303,7 +303,7 @@ public class SelectDefGui extends Gui {
 	 * Show select revision message box
 	 */
 	private void showSelectRevisionMsgBox() {
-		MsgBoxExecuter msgBox = getFreeMsgBox();
+		MsgBoxExecuter msgBox = getFreeMsgBox(true);
 
 		msgBox.setTitle("Select another revision");
 		msgBox.setWidth((int) (Gdx.graphics.getWidth() * 0.8f));

@@ -118,7 +118,7 @@ public abstract class EditorGui extends Gui {
 	 * Shows the first time menu
 	 */
 	void showFirstTimeMenu() {
-		MsgBoxExecuter msgBox = getFreeMsgBox();
+		MsgBoxExecuter msgBox = getFreeMsgBox(false);
 		msgBox.button("New", new CEditorNew(mEditor));
 		msgBox.buttonRow();
 		msgBox.button("Load", new CEditorLoad(mEditor));
@@ -325,7 +325,7 @@ public abstract class EditorGui extends Gui {
 			new ButtonListener(button) {
 				@Override
 				protected void onPressed() {
-					MsgBoxExecuter msgBox = getFreeMsgBox();
+					MsgBoxExecuter msgBox = getFreeMsgBox(true);
 
 					msgBox.setTitle(Messages.Level.RUN_INVULNERABLE_TITLE);
 					msgBox.content(Messages.Level.RUN_INVULNERABLE_CONTENT);
@@ -394,7 +394,7 @@ public abstract class EditorGui extends Gui {
 			Command save = new CEditorSave(mEditor);
 			Command saveAndExecute = new CommandSequence(save, command);
 
-			MsgBoxExecuter msgBox = getFreeMsgBox();
+			MsgBoxExecuter msgBox = getFreeMsgBox(true);
 
 			msgBox.clear();
 			msgBox.setTitle(title);
