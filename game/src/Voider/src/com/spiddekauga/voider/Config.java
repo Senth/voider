@@ -507,8 +507,6 @@ public class Config {
 	public static class File {
 		/** The external directory used for storing game data */
 		public final static String STORAGE = "Voider/";
-		/** Backup extension */
-		public final static String BACKUP_EXT = ".bak";
 		/** The external directory used when storing test game data */
 		public final static String TEST_STORAGE = "Voider-test/";
 		/** Revision number length */

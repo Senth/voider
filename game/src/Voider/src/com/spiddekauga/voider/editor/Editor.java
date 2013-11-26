@@ -2,6 +2,8 @@ package com.spiddekauga.voider.editor;
 
 import com.spiddekauga.utils.Invoker;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.resources.ResourceCacheFacade;
+import com.spiddekauga.voider.resources.ResourceNames;
 import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.scene.WorldScene;
 
@@ -36,6 +38,24 @@ public abstract class Editor extends WorldScene implements IEditor {
 			}
 		}
 		return false;
+	}
+
+	@Override
+	protected void loadResources() {
+		super.loadResources();
+		ResourceCacheFacade.load(ResourceNames.UI_EDITOR_BUTTONS);
+		ResourceCacheFacade.load(ResourceNames.UI_GENERAL);
+		ResourceCacheFacade.load(ResourceNames.SHADER_DEFAULT);
+		ResourceCacheFacade.load(ResourceNames.UI_EDITOR_TOOLTIPS);
+	}
+
+	@Override
+	protected void unloadResources() {
+		super.unloadResources();
+		ResourceCacheFacade.unload(ResourceNames.UI_EDITOR_BUTTONS);
+		ResourceCacheFacade.unload(ResourceNames.UI_GENERAL);
+		ResourceCacheFacade.unload(ResourceNames.SHADER_DEFAULT);
+		ResourceCacheFacade.unload(ResourceNames.UI_EDITOR_TOOLTIPS);
 	}
 
 	/**

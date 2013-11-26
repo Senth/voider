@@ -256,9 +256,6 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	@Override
 	protected void loadResources() {
 		super.loadResources();
-		ResourceCacheFacade.load(ResourceNames.UI_EDITOR_BUTTONS);
-		ResourceCacheFacade.load(ResourceNames.UI_GENERAL);
-		ResourceCacheFacade.load(ResourceNames.SHADER_DEFAULT);
 		ResourceCacheFacade.loadAllOf(this, EnemyActorDef.class, true);
 		ResourceCacheFacade.loadAllOf(this, PickupActorDef.class, true);
 		ResourceCacheFacade.loadAllOf(this, LevelDef.class, false);
@@ -267,9 +264,6 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	@Override
 	protected void unloadResources() {
 		super.unloadResources();
-		ResourceCacheFacade.unload(ResourceNames.UI_EDITOR_BUTTONS);
-		ResourceCacheFacade.unload(ResourceNames.UI_GENERAL);
-		ResourceCacheFacade.unload(ResourceNames.SHADER_DEFAULT);
 		ResourceCacheFacade.unloadAllOf(this, EnemyActorDef.class, true);
 		ResourceCacheFacade.unloadAllOf(this, PickupActorDef.class, true);
 		ResourceCacheFacade.unloadAllOf(this, LevelDef.class, false);

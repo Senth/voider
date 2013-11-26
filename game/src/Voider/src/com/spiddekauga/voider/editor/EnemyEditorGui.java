@@ -672,7 +672,6 @@ public class EnemyEditorGui extends ActorGui {
 		buttonGroup.add(button);
 		mWeaponTable.add(button);
 		weaponInnerHider.addToggleActor(button);
-		new TooltipListener(button, "Bullet", Messages.Tooltip.Enemy.Weapon.BULLET);
 		HideListener bulletHider = new HideListener(button, true);
 		weaponInnerHider.addChild(bulletHider);
 
@@ -687,7 +686,6 @@ public class EnemyEditorGui extends ActorGui {
 		buttonGroup.add(button);
 		mWeaponTable.add(button);
 		weaponInnerHider.addToggleActor(button);
-		new TooltipListener(button, "Aim", Messages.Tooltip.Enemy.Weapon.AIM);
 		HideListener aimHider = new HideListener(button, true);
 		weaponInnerHider.addChild(aimHider);
 

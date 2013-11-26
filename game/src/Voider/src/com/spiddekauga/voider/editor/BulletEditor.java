@@ -211,18 +211,12 @@ public class BulletEditor extends Editor implements IActorEditor, IResourceChang
 	@Override
 	protected void loadResources() {
 		super.loadResources();
-		ResourceCacheFacade.load(ResourceNames.SHADER_DEFAULT);
-		ResourceCacheFacade.load(ResourceNames.UI_EDITOR_BUTTONS);
-		ResourceCacheFacade.load(ResourceNames.UI_GENERAL);
 		ResourceCacheFacade.loadAllOf(this, BulletActorDef.class, true);
 	}
 
 	@Override
 	protected void unloadResources() {
 		super.unloadResources();
-		ResourceCacheFacade.unload(ResourceNames.SHADER_DEFAULT);
-		ResourceCacheFacade.unload(ResourceNames.UI_GENERAL);
-		ResourceCacheFacade.unload(ResourceNames.UI_EDITOR_BUTTONS);
 		ResourceCacheFacade.unloadAllOf(this, BulletActorDef.class, true);
 	}
 

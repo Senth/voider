@@ -141,7 +141,7 @@ public class Messages {
 		public static class Actor {
 			public static class Visuals {
 				public final static String STARTING_ANGLE = "Which direction the " + ACTOR_TYPE + " starts facing " +
-						"when created. Not applicable for enemies when the enemy follows a path and uses" +
+						"when created. Not applicable for enemies when the enemy follows a path and uses " +
 						"turning, as it will automatically start in right direction then.";
 				public final static String ROTATION_SPEED = "If the " + ACTOR_TYPE + " shall rotate. Not applicable " +
 						"for enemies it uses turning.";
@@ -225,8 +225,6 @@ public class Messages {
 			public static class Weapon {
 				public final static String WEAPON_BUTTON = "Turn on/off the weapons. Note that you need to select " +
 						"a bullet type before the enemy will start to shoot.";
-				public final static String BULLET = "Bullet and weapon settings.";
-				public final static String AIM = "Settings for how the enemy shall aim";
 
 				public static class Bullet {
 					public final static String SELECT_BULLET = "Selects a bullet type. I.e. how it looks and behaves.";
@@ -261,14 +259,6 @@ public class Messages {
 						"still.\n\n" +
 						"You can decide whether or not you want to loose life during this test to test the " +
 						"level's difficulty.";
-				public final static String TERRAIN = "Draw your own Terrain using this tool";
-				public final static String PICKUP = "Place various pickups that the player will " +
-						"be able to pick up during the game.";
-				public final static String ENEMY = "Allows you to place enemies in the level. You, however," +
-						" need to create some enemies before using the Enemy Editor found by pressing Back " +
-						"(Android) or Escape (PC).\n\n" +
-						"Includes tools for enemies such as drawing paths for enemies to follow " +
-						"and placing triggers to activate and deactivate the enemies.";
 				public final static String OPTION = "Allows you to set general level options such as, name, " +
 						"description, level speed, story to be displayed before and after the level.";
 			}

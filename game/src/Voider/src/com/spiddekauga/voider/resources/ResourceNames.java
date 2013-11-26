@@ -36,6 +36,8 @@ public enum ResourceNames {
 	UI_EDITOR_BUTTONS("editor.json", Skin.class),
 	/** General UI */
 	UI_GENERAL("general.json", Skin.class),
+	/** Editor tooltip images */
+	UI_EDITOR_TOOLTIPS("editor_tooltips.json", Skin.class),
 	/** Splash Screen */
 	IMAGE_SPLASH_SCREEN("spiddekauga_m.png", Texture.class),
 	/** Default vertex shader */

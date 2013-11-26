@@ -340,9 +340,6 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 	@Override
 	protected void loadResources() {
 		super.loadResources();
-		ResourceCacheFacade.load(ResourceNames.UI_EDITOR_BUTTONS);
-		ResourceCacheFacade.load(ResourceNames.UI_GENERAL);
-		ResourceCacheFacade.load(ResourceNames.SHADER_DEFAULT);
 		ResourceCacheFacade.loadAllOf(this, EnemyActorDef.class, true);
 		ResourceCacheFacade.loadAllOf(this, BulletActorDef.class, true);
 	}
@@ -350,9 +347,6 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 	@Override
 	protected void unloadResources() {
 		super.unloadResources();
-		ResourceCacheFacade.unload(ResourceNames.UI_EDITOR_BUTTONS);
-		ResourceCacheFacade.unload(ResourceNames.UI_GENERAL);
-		ResourceCacheFacade.unload(ResourceNames.SHADER_DEFAULT);
 		ResourceCacheFacade.unloadAllOf(this, EnemyActorDef.class, true);
 		ResourceCacheFacade.unloadAllOf(this, BulletActorDef.class, true);
 	}

@@ -5,371 +5,371 @@ filter: Nearest,Nearest
 repeat: none
 aim_in_front_player
   rotate: false
-  xy: 1, 79
+  xy: 1, 77
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
   index: -1
 aim_movement
   rotate: false
-  xy: 1, 79
+  xy: 1, 77
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
   index: -1
 aim_on_player
   rotate: false
-  xy: 1, 79
+  xy: 1, 77
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
   index: -1
 aim_rotate
   rotate: false
-  xy: 1, 79
+  xy: 1, 77
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
   index: -1
 cancel
   rotate: false
-  xy: 1, 79
+  xy: 1, 77
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
   index: -1
 collision
   rotate: false
-  xy: 1, 79
+  xy: 1, 77
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
   index: -1
 enemy_set_activate_trigger
   rotate: false
-  xy: 1, 79
+  xy: 1, 77
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
   index: -1
 enemy_set_deactivate_trigger
   rotate: false
-  xy: 1, 79
+  xy: 1, 77
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
   index: -1
 movement
   rotate: false
-  xy: 1, 79
+  xy: 1, 77
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
   index: -1
 off
   rotate: false
-  xy: 1, 79
+  xy: 1, 77
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
   index: -1
 on
   rotate: false
-  xy: 1, 79
+  xy: 1, 77
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
   index: -1
 path_back_and_forth
   rotate: false
-  xy: 1, 79
+  xy: 1, 77
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
   index: -1
 path_loop
   rotate: false
-  xy: 1, 79
+  xy: 1, 77
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
   index: -1
 path_once
   rotate: false
-  xy: 1, 79
+  xy: 1, 77
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
   index: -1
 redo
   rotate: false
-  xy: 1, 79
+  xy: 1, 77
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
   index: -1
 stub
   rotate: false
-  xy: 1, 79
+  xy: 1, 77
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
   index: -1
 undo
   rotate: false
-  xy: 1, 79
+  xy: 1, 77
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
   index: -1
 visuals
   rotate: false
-  xy: 1, 79
+  xy: 1, 77
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
   index: -1
 weapon
   rotate: false
-  xy: 1, 79
+  xy: 1, 77
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
   index: -1
 add_move_corner
   rotate: false
-  xy: 1, 37
+  xy: 1, 35
   size: 40, 40
   orig: 40, 40
   offset: 0, 0
   index: -1
 bullet_editor
   rotate: false
-  xy: 51, 87
+  xy: 51, 85
   size: 40, 40
   orig: 40, 40
   offset: 0, 0
   index: -1
 bullet_select
   rotate: false
-  xy: 93, 87
+  xy: 93, 85
   size: 40, 40
   orig: 40, 40
   offset: 0, 0
   index: -1
 campaign_editor
   rotate: false
-  xy: 135, 87
+  xy: 135, 85
   size: 40, 40
   orig: 40, 40
   offset: 0, 0
   index: -1
 circle_shape
   rotate: false
-  xy: 177, 87
+  xy: 177, 85
   size: 40, 40
   orig: 40, 40
   offset: 0, 0
   index: -1
 delete
   rotate: false
-  xy: 219, 87
+  xy: 219, 85
   size: 40, 40
   orig: 40, 40
   offset: 0, 0
   index: -1
 draw_erase
   rotate: false
-  xy: 219, 87
+  xy: 219, 85
   size: 40, 40
   orig: 40, 40
   offset: 0, 0
   index: -1
 draw_append
   rotate: false
-  xy: 261, 87
+  xy: 261, 85
   size: 40, 40
   orig: 40, 40
   offset: 0, 0
   index: -1
 draw_custom_shape
   rotate: false
-  xy: 303, 87
+  xy: 303, 85
   size: 40, 40
   orig: 40, 40
   offset: 0, 0
   index: -1
 duplicate
   rotate: false
-  xy: 345, 87
+  xy: 345, 85
   size: 40, 40
   orig: 40, 40
   offset: 0, 0
   index: -1
 enemy_add
   rotate: false
-  xy: 387, 87
+  xy: 387, 85
   size: 40, 40
   orig: 40, 40
   offset: 0, 0
   index: -1
 enemy_editor
   rotate: false
-  xy: 429, 87
+  xy: 429, 85
   size: 40, 40
   orig: 40, 40
   offset: 0, 0
   index: -1
 enemy_select
   rotate: false
-  xy: 471, 87
+  xy: 471, 85
   size: 40, 40
   orig: 40, 40
   offset: 0, 0
   index: -1
 info
   rotate: false
-  xy: 43, 37
+  xy: 43, 35
   size: 40, 40
   orig: 40, 40
   offset: 0, 0
   index: -1
 level_editor
   rotate: false
-  xy: 85, 45
+  xy: 85, 43
   size: 40, 40
   orig: 40, 40
   offset: 0, 0
   index: -1
 load
   rotate: false
-  xy: 127, 45
+  xy: 127, 43
   size: 40, 40
   orig: 40, 40
   offset: 0, 0
   index: -1
 move
   rotate: false
-  xy: 169, 45
+  xy: 169, 43
   size: 40, 40
   orig: 40, 40
   offset: 0, 0
   index: -1
 new
   rotate: false
-  xy: 211, 45
+  xy: 211, 43
   size: 40, 40
   orig: 40, 40
   offset: 0, 0
   index: -1
 path_add
   rotate: false
-  xy: 253, 45
+  xy: 253, 43
   size: 40, 40
   orig: 40, 40
   offset: 0, 0
   index: -1
 pickup_add
   rotate: false
-  xy: 295, 45
+  xy: 295, 43
   size: 40, 40
   orig: 40, 40
   offset: 0, 0
   index: -1
 pickup_select
   rotate: false
-  xy: 337, 45
+  xy: 337, 43
   size: 40, 40
   orig: 40, 40
   offset: 0, 0
   index: -1
 rectangle_shape
   rotate: false
-  xy: 379, 45
+  xy: 379, 43
   size: 40, 40
   orig: 40, 40
   offset: 0, 0
   index: -1
 remove_corner
   rotate: false
-  xy: 421, 45
+  xy: 421, 43
   size: 40, 40
   orig: 40, 40
   offset: 0, 0
   index: -1
 reset_center
   rotate: false
-  xy: 463, 45
+  xy: 463, 43
   size: 40, 40
   orig: 40, 40
   offset: 0, 0
   index: -1
 run
   rotate: false
-  xy: 85, 3
+  xy: 85, 1
   size: 40, 40
   orig: 40, 40
   offset: 0, 0
   index: -1
 save
   rotate: false
-  xy: 127, 3
+  xy: 127, 1
   size: 40, 40
   orig: 40, 40
   offset: 0, 0
   index: -1
 select
   rotate: false
-  xy: 169, 3
+  xy: 169, 1
   size: 40, 40
   orig: 40, 40
   offset: 0, 0
   index: -1
 set_center
   rotate: false
-  xy: 211, 3
+  xy: 211, 1
   size: 40, 40
   orig: 40, 40
   offset: 0, 0
   index: -1
 terrain_add_move_corner
   rotate: false
-  xy: 253, 3
+  xy: 253, 1
   size: 40, 40
   orig: 40, 40
   offset: 0, 0
   index: -1
 terrain_draw_append
   rotate: false
-  xy: 295, 3
+  xy: 295, 1
   size: 40, 40
   orig: 40, 40
   offset: 0, 0
   index: -1
 terrain_draw_erase
   rotate: false
-  xy: 337, 3
+  xy: 337, 1
   size: 40, 40
   orig: 40, 40
   offset: 0, 0
   index: -1
 triangle_shape
   rotate: false
-  xy: 379, 3
+  xy: 379, 1
   size: 40, 40
   orig: 40, 40
   offset: 0, 0
   index: -1
 trigger_add
   rotate: false
-  xy: 421, 3
+  xy: 421, 1
   size: 40, 40
   orig: 40, 40
   offset: 0, 0
   index: -1
 button-default-checked-over
   rotate: false
-  xy: 1, 28
+  xy: 1, 26
   size: 7, 7
   split: 3, 3, 3, 3
   orig: 7, 7
@@ -377,7 +377,7 @@ button-default-checked-over
   index: -1
 button-default-checked
   rotate: false
-  xy: 463, 36
+  xy: 463, 34
   size: 7, 7
   split: 3, 3, 3, 3
   orig: 7, 7
@@ -385,7 +385,7 @@ button-default-checked
   index: -1
 button-default-disabled
   rotate: false
-  xy: 1, 19
+  xy: 1, 17
   size: 7, 7
   split: 3, 3, 3, 3
   orig: 7, 7
@@ -393,7 +393,7 @@ button-default-disabled
   index: -1
 button-default-down
   rotate: false
-  xy: 10, 28
+  xy: 10, 26
   size: 7, 7
   split: 3, 3, 3, 3
   orig: 7, 7
@@ -401,7 +401,7 @@ button-default-down
   index: -1
 button-default-over
   rotate: false
-  xy: 463, 27
+  xy: 463, 25
   size: 7, 7
   split: 3, 3, 3, 3
   orig: 7, 7
@@ -409,55 +409,7 @@ button-default-over
   index: -1
 button-default-up
   rotate: false
-  xy: 472, 36
-  size: 7, 7
-  split: 3, 3, 3, 3
-  orig: 7, 7
-  offset: 0, 0
-  index: -1
-tab-default-checked-over
-  rotate: false
-  xy: 1, 10
-  size: 7, 7
-  split: 3, 3, 3, 3
-  orig: 7, 7
-  offset: 0, 0
-  index: -1
-tab-default-checked
-  rotate: false
-  xy: 1, 1
-  size: 7, 7
-  split: 3, 3, 3, 3
-  orig: 7, 7
-  offset: 0, 0
-  index: -1
-tab-default-disabled
-  rotate: false
-  xy: 10, 19
-  size: 7, 7
-  split: 3, 3, 3, 3
-  orig: 7, 7
-  offset: 0, 0
-  index: -1
-tab-default-down
-  rotate: false
-  xy: 19, 28
-  size: 7, 7
-  split: 3, 3, 3, 3
-  orig: 7, 7
-  offset: 0, 0
-  index: -1
-tab-default-over
-  rotate: false
-  xy: 463, 18
-  size: 7, 7
-  split: 3, 3, 3, 3
-  orig: 7, 7
-  offset: 0, 0
-  index: -1
-tab-default-up
-  rotate: false
-  xy: 472, 27
+  xy: 472, 34
   size: 7, 7
   split: 3, 3, 3, 3
   orig: 7, 7
