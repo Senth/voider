@@ -295,14 +295,16 @@ public class TooltipListener extends InputAdapter implements EventListener {
 	 * Toggle animation or image
 	 */
 	private void toggleAnimationOrImage() {
-		/** @todo toggle animation or image */
+		mShowImageOrAnimation = !mShowImageOrAnimation;
+		updateWindowContent();
 	}
 
 	/**
 	 * Toggle text
 	 */
 	private void toggleText() {
-		/** @todo toggle text */
+		mShowMessage = !mShowMessage;
+		updateWindowContent();
 	}
 
 	/**
@@ -461,35 +463,16 @@ public class TooltipListener extends InputAdapter implements EventListener {
 			stage.addActor(mWindow);
 			mWindow.clearActions();
 			mWindow.setTitle(mTitle);
-			mMessageLabel.setText(mMessage);
-			mTable.dispose(true);
 
-			// Only show image
-			if (mImage != null) {
-				mTable.row().setAlign(Horizontal.CENTER, Vertical.TOP);
-				mTable.add(mImage);
-			}
-			// Only show animation
-			else if (mAnimation != null) {
-				mTable.row().setAlign(Horizontal.CENTER, Vertical.TOP);
-				mTable.add(mAnimation);
-			}
-			// Show text
-			else {
-				mTable.add(mMessageLabel);
+			if (mImage != null || mAnimation != null) {
+				mShowImageOrAnimation = true;
+				mShowMessage = false;
+			} else {
+				mShowImageOrAnimation = false;
+				mShowMessage = true;
 			}
 
-			Skin uiSkin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
-			float separatorPadding = uiSkin.get("padding_separator", Float.class);
-
-			// Add descriptive text
-			mDescriptiveLabel.setText(mDescriptiveText);
-			mTable.row().setPadTop(separatorPadding);
-			mTable.add(mDescriptiveLabel);
-
-			setWrapWidth();
-			mTable.layout();
-			mWindow.pack();
+			updateWindowContent();
 
 			mWindow.addAction(Actions.fadeIn(Config.Gui.TOOLTIP_HOVER_FADE_DURATION, Interpolation.fade));
 			updateWindowPosition();
@@ -499,6 +482,43 @@ public class TooltipListener extends InputAdapter implements EventListener {
 		} else {
 			Gdx.app.error("TooltipListener", "Stage is not when showing window!");
 		}
+	}
+
+	/**
+	 * Add content to the window
+	 */
+	private void updateWindowContent() {
+		mTable.dispose(true);
+		mMessageLabel.setText(mMessage);
+		// Only show image
+		if (mImage != null && mShowImageOrAnimation) {
+			mTable.row().setAlign(Horizontal.CENTER, Vertical.TOP);
+			mTable.add(mImage);
+		}
+
+		// Only show animation
+		if (mAnimation != null && mShowImageOrAnimation) {
+			mTable.row().setAlign(Horizontal.CENTER, Vertical.TOP);
+			mTable.add(mAnimation);
+		}
+
+		// Show text
+		if (mShowMessage && mMessage.length() > 0) {
+			mTable.row();
+			mTable.add(mMessageLabel);
+		}
+
+		Skin uiSkin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
+		float separatorPadding = uiSkin.get("padding_separator", Float.class);
+
+		// Add descriptive text
+		mDescriptiveLabel.setText(mDescriptiveText);
+		mTable.row().setPadTop(separatorPadding);
+		mTable.add(mDescriptiveLabel);
+
+		setWrapWidth();
+		mTable.layout();
+		mWindow.pack();
 	}
 
 	/**
@@ -593,8 +613,12 @@ public class TooltipListener extends InputAdapter implements EventListener {
 	private AnimationWidget mAnimation = null;
 	/** Drawable for a single image. Either animation or image can be used, not both. */
 	private Image mImage = null;
+	/** Show image or animation */
+	private boolean mShowImageOrAnimation = false;
 	/** Message to display in the tooltip */
 	private String mMessage = null;
+	/** Show message */
+	private boolean mShowMessage = false;
 	/** YouTube URL, optional */
 	private String mYoutubeUrl = null;
 	/** Descriptive text of button uses */
