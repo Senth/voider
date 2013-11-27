@@ -3,6 +3,7 @@ package com.spiddekauga.voider.app;
 import java.util.ArrayList;
 
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
@@ -13,6 +14,7 @@ import com.spiddekauga.utils.scene.ui.TooltipListener;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceNames;
+import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.utils.Messages;
 import com.spiddekauga.voider.utils.Pools;
@@ -126,6 +128,9 @@ public class MainMenuGui extends Gui {
 		button = new TextButton("Options", textPressStyle);
 		buttons.add(button);
 		mMainTable.add(button);
+		Skin tooltipSkin = ResourceCacheFacade.get(ResourceNames.UI_EDITOR_TOOLTIPS);
+		Image image = new Image(tooltipSkin, SkinNames.EditorTooltips.ACTOR_COLLISION_DAMAGE.toString());
+		tooltipListener = new TooltipListener(button, "Options", image, "Testing options tooltip", "http://youtube.com");
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed() {

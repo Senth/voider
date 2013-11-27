@@ -10,6 +10,12 @@ com.badlogic.gdx.graphics.Color: {
 	black: { a: 1, b: 0, g: 0, r: 0 }
 },
 
+java.lang.Float: {
+	padding_default: {value: 1},
+	padding_window_left_right: {value: 10},
+	padding_separator: {value: 10},
+},
+
 com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
 	default: {
 		font: default-font,

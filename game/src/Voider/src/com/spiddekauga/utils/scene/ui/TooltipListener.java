@@ -2,6 +2,7 @@ package com.spiddekauga.utils.scene.ui;
 
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -11,49 +12,182 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputEvent.Type;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
+import com.spiddekauga.utils.KeyHelper;
+import com.spiddekauga.utils.scene.ui.Align.Horizontal;
+import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceNames;
+import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.utils.Pools;
+
 
 /**
  * Listens to a GUI actor to display a tooltip for it.
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class TooltipListener implements EventListener {
+public class TooltipListener extends InputAdapter implements EventListener {
 	/**
 	 * Creates a tooltip listener that will listen to the specified
-	 * actor. This will automatically add itself as a listener to
+	 * actor. This will automatically adds itself as a listener to
 	 * the actor.
 	 * @param actor the GUI actor to listen to
 	 * @param title the title of the tooltip window
 	 * @param message the message in the tooltip
 	 */
 	public TooltipListener(Actor actor, String title, String message) {
+		this(actor, title, message, null);
+	}
+
+	/**
+	 * Creates a tooltip listener that will listen to the specified actor.
+	 * Automatically adds itself as a listener to the actor. In addition to showing a
+	 * message a YouTube button will be displayed to link to the tutorial.
+	 * @param actor the GUI actor to listen to
+	 * @param title the title of the tooltip window
+	 * @param message optional text message, set to null if not used.
+	 * @param youtubeUrl optional tutorial URL, set to null if not used.
+	 */
+	public TooltipListener(Actor actor, String title, String message, String youtubeUrl) {
 		mMessage = message;
 		mActor = actor;
 		mTitle = title;
+		mYoutubeUrl = youtubeUrl;
 		mActor.addListener(this);
 
 		mGui = SceneSwitcher.getGui();
 
 		if (mWindow == null) {
-			Skin editorSkin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
+			Skin uiSkin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
 
-			mWindow = new Window("", editorSkin);
+			mWindow = new Window("", uiSkin, "title");
 			mWindow.setModal(false);
-			mLabel = new Label("", editorSkin);
-			mWindow.add(mLabel);
+			mMessageLabel = new Label("", uiSkin);
+			mMessageLabel.setWrap(true);
+			mDescriptiveLabel = new Label("", uiSkin);
+			mTable = new AlignTable();
+			mWindow.add(mTable);
+
+			float leftRightPadding = uiSkin.get(SkinNames.General.PADDING_WINDOW_LEFT_RIGHT.toString(), Float.class);
+			mWindowLeftRightMargin = leftRightPadding;
+			mTable.setRowPaddingDefault(0, leftRightPadding, leftRightPadding, leftRightPadding);
+			mTable.setTableAlign(Horizontal.LEFT, Vertical.MIDDLE);
+			mTable.setRowAlign(Horizontal.LEFT, Vertical.TOP);
+		}
+
+		if (mMessage != null) {
+			if (mDescriptiveText.length() > 0) {
+				mDescriptiveText += "\n";
+			}
+			mDescriptiveText += "T = Toggle text";
+		}
+
+		if (mYoutubeUrl != null) {
+			if (mDescriptiveText.length() > 0) {
+				mDescriptiveText += "\n";
+			}
+			mDescriptiveText += "Y = Go to YouTube tutorial";
 		}
 
 		mWindow.addListener(this);
+	}
+
+	/**
+	 * Creates a tooltip listener that will listen to the specified actor.
+	 * This will automatically adds itself as a listener to the actor.
+	 * Shows an animation as a tooltip.
+	 * @param actor the GUI actor to listen to
+	 * @param title the title of the tooltip window
+	 * @param animation the animation to show as a tooltip
+	 */
+	public TooltipListener(Actor actor, String title, AnimationWidget animation) {
+		this(actor, title, animation, null, null);
+	}
+
+	/**
+	 * Creates a tooltip listener that will listen to the specified actor.
+	 * This will automatically adds itself as a listener to the actor.
+	 * Shows an animation as a tooltip and a message.
+	 * @param actor the GUI actor to listen to
+	 * @param title the title of the tooltip window
+	 * @param animation the animation to show as a tooltip
+	 * @param message the text message to show in addition to the animation
+	 */
+	public TooltipListener(Actor actor, String title, AnimationWidget animation, String message) {
+		this(actor, title, animation, message, null);
+	}
+
+	/**
+	 * Creates a tooltip listener that will listen to the specified actor.
+	 * This will automatically adds itself as a listener to the actor.
+	 * Shows an animation as a tooltip and a message.
+	 * @param actor the GUI actor to listen to
+	 * @param title the title of the tooltip window
+	 * @param animation the animation to show as a tooltip
+	 * @param message the text message to show in addition to the animation
+	 * @param youtubeUrl the YouTube URL to a tutorial how to use the tool
+	 */
+	public TooltipListener(Actor actor, String title, AnimationWidget animation, String message, String youtubeUrl) {
+		this(actor, title, message, youtubeUrl);
+
+		mAnimation = animation;
+
+		if (mAnimation != null) {
+			mDescriptiveText = "A = Toggle animation\n" + mDescriptiveText;
+		}
+	}
+
+	/**
+	 * Creates a tooltip listener that will listen to the specified actor.
+	 * This will automatically adds itself as a listener to the actor.
+	 * Shows an image as a tooltip.
+	 * @param actor the GUI actor to listen to
+	 * @param title the title of the tooltip window
+	 * @param image the image to show as a tooltip
+	 */
+	public TooltipListener(Actor actor, String title, Image image) {
+		this(actor, title, image, null, null);
+	}
+
+	/**
+	 * Creates a tooltip listener that will listen to the specified actor.
+	 * This will automatically adds itself as a listener to the actor.
+	 * Shows an image as a tooltip and a message.
+	 * @param actor the GUI actor to listen to
+	 * @param title the title of the tooltip window
+	 * @param image the image to show as a tooltip
+	 * @param message the text message to show in addition to the image
+	 */
+	public TooltipListener(Actor actor, String title, Image image, String message) {
+		this(actor, title, image, message, null);
+	}
+
+	/**
+	 * Creates a tooltip listener that will listen to the specified actor.
+	 * This will automatically adds itself as a listener to the actor.
+	 * Shows an image as a tooltip and a message.
+	 * @param actor the GUI actor to listen to
+	 * @param title the title of the tooltip window
+	 * @param image the image to show as a tooltip
+	 * @param message the text message to show in addition to the image
+	 * @param youtubeUrl the YouTube URL to a tutorial how to use the tool
+	 */
+	public TooltipListener(Actor actor, String title, Image image, String message, String youtubeUrl) {
+		this(actor, title, message, youtubeUrl);
+
+		mImage = image;
+
+		if (mImage != null) {
+			mDescriptiveText = "A = Toggle image\n" + mDescriptiveText;
+		}
 	}
 
 	/**
@@ -66,20 +200,22 @@ public class TooltipListener implements EventListener {
 	@Override
 	public boolean handle(Event event) {
 		if (event instanceof InputEvent) {
+			InputEvent inputEvent = (InputEvent) event;
+
 			// WINDOW (Hover events)
-			if (((InputEvent) event).getType() == Type.enter) {
+			if (inputEvent.getType() == Type.enter) {
 				if (!isWindowDisplayingThis() && mActor.isAscendantOf(event.getTarget())) {
 					scheduleShowWindowTask();
 					return true;
 				}
-			} else if (((InputEvent) event).getType() == Type.exit) {
+			} else if (inputEvent.getType() == Type.exit) {
 				// Only do something if the cursor is outside the actor
 				if ((isWindowDisplayingThis() || isWindowScheduled()) && !isCursorInsideActor()) {
 					handleHoverExit();
 					return true;
 				}
 
-			} else if (((InputEvent) event).getType() == Type.mouseMoved) {
+			} else if (inputEvent.getType() == Type.mouseMoved) {
 				// Update position if just moved
 				if (isWindowDisplayingThis()) {
 					updateWindowPosition();
@@ -99,20 +235,74 @@ public class TooltipListener implements EventListener {
 			}
 
 			// MSG BOX (Press events)
-			else if (((InputEvent) event).getType() == Type.touchDown) {
+			else if (inputEvent.getType() == Type.touchDown) {
 				// Always skip if window is shown or scheduled to be shown
 				if (!isWindowShown() && mShowWindowTask == null) {
 					scheduleShowMsgBoxTask();
 				}
 				return true;
 			}
-			else if (((InputEvent) event).getType() == Type.touchUp) {
+			else if (inputEvent.getType() == Type.touchUp) {
 				cancelShowMsgBoxTask();
 				return true;
 			}
 		}
 
 		return false;
+	}
+
+	@Override
+	public boolean keyDown(int keycode) {
+		// Next Animation
+		if (mAnimation != null && KeyHelper.Tooltip.isNextAnimationPressed(keycode)) {
+			nextAnimation();
+			return true;
+		}
+		// YouTube
+		else if (mYoutubeUrl != null && KeyHelper.Tooltip.isShowYoutubePressed(keycode)) {
+			openYoutubeUrl();
+			return true;
+		}
+		// Toggle animation / image
+		else if ((mAnimation != null || mImage != null) && KeyHelper.Tooltip.isToggleAnimationPressed(keycode)) {
+			toggleAnimationOrImage();
+			return true;
+		}
+		// Toggle text
+		else if (mMessage != null && KeyHelper.Tooltip.isToggleTextPressed(keycode)) {
+			toggleText();
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Open the YouTube URL
+	 */
+	private void openYoutubeUrl() {
+		Gdx.app.getNet().openURI(mYoutubeUrl);
+	}
+
+	/**
+	 * Show next animation
+	 */
+	private void nextAnimation() {
+		/** @todo show next animation */
+	}
+
+	/**
+	 * Toggle animation or image
+	 */
+	private void toggleAnimationOrImage() {
+		/** @todo toggle animation or image */
+	}
+
+	/**
+	 * Toggle text
+	 */
+	private void toggleText() {
+		/** @todo toggle text */
 	}
 
 	/**
@@ -164,6 +354,7 @@ public class TooltipListener implements EventListener {
 	private void handleHoverExit() {
 		// Fade out window, then remove it from stage if it is shown.
 		if (mWindow.getStage() != null) {
+			SceneSwitcher.removeListener(this);
 			mWindow.addAction(Actions.sequence(Actions.fadeOut(Config.Gui.TOOLTIP_HOVER_FADE_DURATION, Interpolation.fade), Actions.removeActor()));
 		}
 
@@ -270,13 +461,41 @@ public class TooltipListener implements EventListener {
 			stage.addActor(mWindow);
 			mWindow.clearActions();
 			mWindow.setTitle(mTitle);
-			mLabel.setText(mMessage);
+			mMessageLabel.setText(mMessage);
+			mTable.dispose(true);
+
+			// Only show image
+			if (mImage != null) {
+				mTable.row().setAlign(Horizontal.CENTER, Vertical.TOP);
+				mTable.add(mImage);
+			}
+			// Only show animation
+			else if (mAnimation != null) {
+				mTable.row().setAlign(Horizontal.CENTER, Vertical.TOP);
+				mTable.add(mAnimation);
+			}
+			// Show text
+			else {
+				mTable.add(mMessageLabel);
+			}
+
+			Skin uiSkin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
+			float separatorPadding = uiSkin.get("padding_separator", Float.class);
+
+			// Add descriptive text
+			mDescriptiveLabel.setText(mDescriptiveText);
+			mTable.row().setPadTop(separatorPadding);
+			mTable.add(mDescriptiveLabel);
+
 			setWrapWidth();
+			mTable.layout();
 			mWindow.pack();
 
 			mWindow.addAction(Actions.fadeIn(Config.Gui.TOOLTIP_HOVER_FADE_DURATION, Interpolation.fade));
 			updateWindowPosition();
 			cancelShowMsgBoxTask();
+
+			SceneSwitcher.addListener(this);
 		} else {
 			Gdx.app.error("TooltipListener", "Stage is not when showing window!");
 		}
@@ -289,9 +508,9 @@ public class TooltipListener implements EventListener {
 		mMsgBox = mGui.getFreeMsgBox(mTitle != null && mTitle.length() > 0);
 		mMsgBox.addCancelButtonAndKeys("OK");
 		mMsgBox.setTitle(mTitle);
-		mLabel.setText(mMessage);
+		mMessageLabel.setText(mMessage);
 		setWrapWidth();
-		mMsgBox.content(mLabel);
+		mMsgBox.content(mMessageLabel);
 		mGui.showMsgBox(mMsgBox);
 	}
 
@@ -299,18 +518,19 @@ public class TooltipListener implements EventListener {
 	 * Sets the wrap width of the current message
 	 */
 	private void setWrapWidth() {
-		mLabel.setWrap(false);
-		int prefWidth = (int) mLabel.getPrefWidth();
-		int prefHeight = (int) mLabel.getPrefHeight();
+		mMessageLabel.setWrap(false);
+		int prefWidth = (int) mMessageLabel.getPrefWidth();
+		int prefHeight = (int) mMessageLabel.getPrefHeight();
 
 		int wrapWidth = (int) (Math.sqrt(prefHeight * prefWidth) * 1.5f);
 
-		if (wrapWidth > Gdx.graphics.getWidth() - Config.Gui.TOOLTIP_MARGIN_WIDTH) {
-			wrapWidth = Gdx.graphics.getWidth() - Config.Gui.TOOLTIP_MARGIN_WIDTH;
+		float windowMargin = mWindowLeftRightMargin * 2;
+		if (wrapWidth > Gdx.graphics.getWidth() - windowMargin) {
+			wrapWidth = (int) (Gdx.graphics.getWidth() - windowMargin);
 		}
 
-		mLabel.setWidth(wrapWidth);
-		mLabel.setWrap(true);
+		mMessageLabel.setWrap(true);
+		mMessageLabel.setWidth(wrapWidth);
 	}
 
 	/**
@@ -358,8 +578,6 @@ public class TooltipListener implements EventListener {
 
 	/** Title of the window */
 	private String mTitle = null;
-	/** Message to display in the tooltip */
-	private String mMessage;
 	/** GUI Actor we're listening to */
 	private Actor mActor;
 	/** Task that shows the window */
@@ -371,9 +589,26 @@ public class TooltipListener implements EventListener {
 	/** Message box for mobile devices */
 	private MsgBoxExecuter mMsgBox = null;
 
+	/** Animation (if used). Either animation or image can be used, not both. */
+	private AnimationWidget mAnimation = null;
+	/** Drawable for a single image. Either animation or image can be used, not both. */
+	private Image mImage = null;
+	/** Message to display in the tooltip */
+	private String mMessage = null;
+	/** YouTube URL, optional */
+	private String mYoutubeUrl = null;
+	/** Descriptive text of button uses */
+	private String mDescriptiveText = "";
+
 	/** Window for all tooltip listeners (as only one tooltip can be
 	 * displayed at the same time this is static */
 	private static Window mWindow = null;
 	/** Label inside the window */
-	private static Label mLabel = null;
+	private static Label mMessageLabel = null;
+	/** Descriptive text for window how to use control */
+	private static Label mDescriptiveLabel = null;
+	/** The table to show everything in */
+	private static AlignTable mTable = null;
+	/** Window left/right margin */
+	private static float mWindowLeftRightMargin = 0;
 }

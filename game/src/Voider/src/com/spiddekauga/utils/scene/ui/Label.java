@@ -209,7 +209,9 @@ public class Label extends Widget {
 			float prefHeight = getPrefHeight();
 			if (prefHeight != mLastPrefHeight) {
 				mLastPrefHeight = prefHeight;
+				setHeight(prefHeight);
 				invalidateHierarchy();
+				mSizeInvalid = false;
 			}
 		}
 
@@ -322,7 +324,7 @@ public class Label extends Widget {
 	 * The preferred width of the label return its current width, it is expected
 	 * that the something external will set the width of the label. Default is false. */
 	public void setWrap (boolean wrap) {
-		this.mWrap = wrap;
+		mWrap = wrap;
 		invalidateHierarchy();
 	}
 
@@ -338,16 +340,16 @@ public class Label extends Widget {
 	 * @param lineAlign Aligns each line of text (left, right, or center).
 	 * @see Align */
 	public void setAlignment (int labelAlign, int lineAlign) {
-		this.mLabelAlign = labelAlign;
+		mLabelAlign = labelAlign;
 
 		if ((lineAlign & Align.left) != 0) {
-			this.mLineAlign = HAlignment.LEFT;
+			mLineAlign = HAlignment.LEFT;
 		}
 		else if ((lineAlign & Align.right) != 0) {
-			this.mLineAlign = HAlignment.RIGHT;
+			mLineAlign = HAlignment.RIGHT;
 		}
 		else {
-			this.mLineAlign = HAlignment.CENTER;
+			mLineAlign = HAlignment.CENTER;
 		}
 
 		invalidate();
@@ -358,8 +360,8 @@ public class Label extends Widget {
 	 * @param fontScale scaling of the font
 	 */
 	public void setFontScale (float fontScale) {
-		this.mFontScaleX = fontScale;
-		this.mFontScaleY = fontScale;
+		mFontScaleX = fontScale;
+		mFontScaleY = fontScale;
 		invalidateHierarchy();
 	}
 
@@ -369,8 +371,8 @@ public class Label extends Widget {
 	 * @param fontScaleY scaling of the font
 	 */
 	public void setFontScale (float fontScaleX, float fontScaleY) {
-		this.mFontScaleX = fontScaleX;
-		this.mFontScaleY = fontScaleY;
+		mFontScaleX = fontScaleX;
+		mFontScaleY = fontScaleY;
 		invalidateHierarchy();
 	}
 
@@ -386,7 +388,7 @@ public class Label extends Widget {
 	 * @param fontScaleX horizontal scaling
 	 */
 	public void setFontScaleX (float fontScaleX) {
-		this.mFontScaleX = fontScaleX;
+		mFontScaleX = fontScaleX;
 		invalidateHierarchy();
 	}
 
@@ -402,7 +404,7 @@ public class Label extends Widget {
 	 * @param fontScaleY
 	 */
 	public void setFontScaleY (float fontScaleY) {
-		this.mFontScaleY = fontScaleY;
+		mFontScaleY = fontScaleY;
 		invalidateHierarchy();
 	}
 

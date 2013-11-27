@@ -5,6 +5,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -348,6 +350,28 @@ public class SceneSwitcher {
 	public static void showErrorMessage(String message) {
 		if (!mScenes.isEmpty()) {
 			mScenes.peek().mGui.showErrorMessage(message);
+		}
+	}
+
+	/**
+	 * Add a listener to the scene's input multiplexor
+	 * @param processor the listener to add
+	 */
+	public static void addListener(InputProcessor processor) {
+		if (!mScenes.isEmpty()) {
+			InputMultiplexer inputMultiplexer = mScenes.peek().getInputMultiplexer();
+			inputMultiplexer.addProcessor(processor);
+		}
+	}
+
+	/**
+	 * Removes a listener from the scene's input multiplexor
+	 * @param processor the listener to remove
+	 */
+	public static void removeListener(InputProcessor processor) {
+		if (!mScenes.isEmpty()) {
+			InputMultiplexer inputMultiplexer = mScenes.peek().getInputMultiplexer();
+			inputMultiplexer.removeProcessor(processor);
 		}
 	}
 

@@ -585,7 +585,8 @@ public class Config {
 		public final static String GUI_INVOKER_TEMP_NAME = "invoker";
 		/** Seconds before text field commands aren't combinable */
 		public final static float TEXT_FIELD_COMBINABLE_WITHIN = 1;
-		/** Separator padding */
+		/** @todo REMOVE Separator padding */
+		@Deprecated
 		public final static float SEPARATE_PADDING = 10;
 		/** Seconds before tooltip is shown when hovering over */
 		public final static float TOOLTIP_HOVER_SHOW = 0.5f;
@@ -594,6 +595,7 @@ public class Config {
 		/** Fade duration of the tooltip when hovering */
 		public final static float TOOLTIP_HOVER_FADE_DURATION = 0.3f;
 		/** Tooltip margin for the screen */
+		@Deprecated
 		public final static int TOOLTIP_MARGIN_WIDTH = 10;
 		/** Fade in duration of the label and window for error messages */
 		public final static float MESSAGE_FADE_IN_DURATION = 0.3f;
@@ -606,6 +608,7 @@ public class Config {
 		/** Width of the score table's first cells */
 		public final static int SCORE_TABLE_FIRST_CELL_WIDTH = 100;
 		/** @todo REMOVE default padding for cells */
+		@Deprecated
 		public final static float PADDING_DEFAULT = 1;
 		/** Multiplier for editor menu when padding the top for other menus */
 		public final static float PADDING_FROM_EDITOR_MULTIPLIER = 1.5f;

@@ -30,7 +30,7 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	}
 
 	/**
-	 * Disposes the rows, cells, and all actors inside the table
+	 * Disposes the rows, cells, but saves the actors inside the table
 	 * @see #dispose(boolean) if you want the ability to save the actors.
 	 */
 	@Override
@@ -378,6 +378,7 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	 * @note Will not set the scalable variable in the rows and cells. If false, however
 	 * it will reset the scale to 1 for this table, the rows, and the cells.
 	 */
+	@Deprecated
 	public void setScalable(boolean scalable) {
 		if (!scalable) {
 			setScale(1);
@@ -389,28 +390,33 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	/**
 	 * @return true if this table can be scaled
 	 */
+	@Deprecated
 	public boolean isScalable() {
 		return mScalable;
 	}
 
 	@Override
+	@Deprecated
 	public void setScale(float scale) {
 		setScaleX(scale);
 		setScaleY(scale);
 	}
 
 	@Override
+	@Deprecated
 	public void setScale(float scaleX, float scaleY) {
 		setScaleX(scaleX);
 		setScaleY(scaleY);
 	}
 
 	@Override
+	@Deprecated
 	public void scale(float scale) {
 		setScale(scale);
 	}
 
 	@Override
+	@Deprecated
 	public void setScaleX(float scale) {
 		if (mScalable) {
 			for (Row row : mRows) {
@@ -421,6 +427,7 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	}
 
 	@Override
+	@Deprecated
 	public void setScaleY(float scale) {
 		if (mScalable) {
 			for (Row row : mRows) {
@@ -641,6 +648,7 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	/** Minimum height, equals all non-scalable cells' height */
 	private float mMinHeight = 0;
 	/** True if the table can be scaled */
+	@Deprecated
 	private boolean mScalable = true;
 	/** If the table shall keep size after layout, or it shall resize itself */
 	private boolean mKeepSize = false;

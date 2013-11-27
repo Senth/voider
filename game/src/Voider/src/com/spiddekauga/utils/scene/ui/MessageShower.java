@@ -17,6 +17,7 @@ import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceNames;
+import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.utils.Messages;
 import com.spiddekauga.voider.utils.Pools;
 
@@ -33,12 +34,14 @@ public class MessageShower {
 	public MessageShower(Stage stage) {
 		Skin skin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
 		mWindow = new Window("", skin);
-		mWindow.setPosition(0, Gdx.graphics.getHeight());
-		mWindow.setWidth(Gdx.graphics.getWidth() * 0.35f);
+		mWidth = (int) (Gdx.graphics.getWidth() * 0.35f);
+		mWindow.setPosition(Gdx.graphics.getWidth() - mWidth, 0);
+		mWindow.setWidth(mWidth);
 		mWindow.add(mAlignTable);
 		mAlignTable.setTableAlign(Horizontal.LEFT, Vertical.TOP);
 		mAlignTable.setRowAlign(Horizontal.LEFT, Vertical.TOP);
-		mAlignTable.setRowPaddingDefault(Config.Gui.PADDING_DEFAULT);
+		float windowPadding = skin.get(SkinNames.General.PADDING_WINDOW_LEFT_RIGHT.toString(), Float.class);
+		mAlignTable.setRowPaddingDefault(0, windowPadding, windowPadding, windowPadding);
 		mStage = stage;
 	}
 
@@ -85,8 +88,9 @@ public class MessageShower {
 		mAlignTable.layout();
 		mWindow.pack();
 
-		float heightOffset = Gdx.graphics.getHeight() - mWindow.getPrefHeight();
-		mWindow.setPosition(0, heightOffset);
+
+		float actualWidth = mWindow.getPrefWidth();
+		mWindow.setPosition(Gdx.graphics.getWidth() - actualWidth, 0);
 	}
 
 	/**
@@ -157,4 +161,7 @@ public class MessageShower {
 	private Stage mStage;
 	/** Align table that the messages are displayed in */
 	private AlignTable mAlignTable = new AlignTable();
+
+	/** Width of the message window */
+	private static int mWidth = 0;
 }

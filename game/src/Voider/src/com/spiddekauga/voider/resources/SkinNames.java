@@ -8,6 +8,38 @@ package com.spiddekauga.voider.resources;
  */
 public class SkinNames {
 	/**
+	 * General UI elements
+	 */
+	public enum General {
+		/** Default padding for rows and cells */
+		PADDING_DEFAULT,
+		/** Separator padding */
+		PADDING_SEPARATOR,
+		/** Left and right window padding */
+		PADDING_WINDOW_LEFT_RIGHT,
+
+		;
+
+		/**
+		 * Creates a more user-friendly name for the enumeration
+		 */
+		private General() {
+			mName = super.toString().toLowerCase();
+		}
+
+		/**
+		 * @return name of the icon inside the skin
+		 */
+		@Override
+		public String toString() {
+			return mName;
+		}
+
+		/** skin name of the icon */
+		private String mName;
+	}
+
+	/**
 	 * Editor icon names
 	 */
 	public enum EditorIcons {

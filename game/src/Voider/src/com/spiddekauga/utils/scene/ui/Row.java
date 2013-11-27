@@ -137,6 +137,7 @@ public class Row implements Poolable {
 	 * will reset any scale.
 	 * @return this row for chaining
 	 */
+	@Deprecated
 	public Row setScalable(boolean scalable) {
 
 		if (!scalable) {
@@ -158,6 +159,7 @@ public class Row implements Poolable {
 	 * @note Setting this to false does not work with scaling AlignTable
 	 * depending on the size.
 	 */
+	@Deprecated
 	public Row setDynamicPadding(boolean dynamicPadding) {
 		mDynamicPadding = dynamicPadding;
 
@@ -546,6 +548,7 @@ public class Row implements Poolable {
 	 * @param scaleX the x scaling factor
 	 * @return this row for chaining
 	 */
+	@Deprecated
 	Row setScaleX(float scaleX) {
 		if (mScalable) {
 			mScaleX = scaleX;
@@ -568,6 +571,7 @@ public class Row implements Poolable {
 	 * @param scaleY the y scaling factor
 	 * @return this row for chaining
 	 */
+	@Deprecated
 	Row setScaleY(float scaleY) {
 		if (mScalable) {
 			mScaleY = scaleY;
@@ -657,10 +661,13 @@ public class Row implements Poolable {
 	/** Minimum height, equals all non-scalable cells' height */
 	private float mMinHeight = 0;
 	/** Scaling x-factor */
+	@Deprecated
 	private float mScaleX = 1;
 	/** Scaling y-factor */
+	@Deprecated
 	private float mScaleY = 1;
 	/** If the row and its cells can be scaled */
+	@Deprecated
 	private boolean mScalable = true;
 	/** Row alignment */
 	private Align mAlign = new Align(Horizontal.LEFT, Vertical.MIDDLE);
@@ -673,8 +680,10 @@ public class Row implements Poolable {
 	/** Padding for this row */
 	private Padding mPadding = new Padding();
 	/** Scaled padding for this row */
+	@Deprecated
 	private Padding mScaledPadding = new Padding();
 	/** If the padding value should be dynamic, i.e. it will increase/decrease
 	 * the padding depending on the scale factor */
+	@Deprecated
 	private boolean mDynamicPadding = true;
 }

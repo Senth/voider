@@ -65,4 +65,41 @@ public class KeyHelper {
 	public static boolean isShiftPressed() {
 		return Gdx.input.isKeyPressed(Keys.SHIFT_LEFT) || Gdx.input.isKeyPressed(Keys.SHIFT_RIGHT);
 	}
+
+	/**
+	 * Tooltip helper keys
+	 */
+	public static class Tooltip {
+		/**
+		 * @param keycode the key to check
+		 * @return true if we shall show YouTube
+		 */
+		public static boolean isShowYoutubePressed(int keycode) {
+			return keycode == Keys.Y;
+		}
+
+		/**
+		 * @param keycode the key to check
+		 * @return true if we shall toggle the animation window in the tooltip
+		 */
+		public static boolean isToggleAnimationPressed(int keycode) {
+			return keycode == Keys.A;
+		}
+
+		/**
+		 * @param keycode the key to check
+		 * @return true if we shall go to the next animation in the tooltip
+		 */
+		public static boolean isNextAnimationPressed(int keycode) {
+			return keycode == Keys.SPACE;
+		}
+
+		/**
+		 * @param keycode the key to check
+		 * @return true if we shall toggle the text description
+		 */
+		public static boolean isToggleTextPressed(int keycode) {
+			return keycode == Keys.T;
+		}
+	}
 }
