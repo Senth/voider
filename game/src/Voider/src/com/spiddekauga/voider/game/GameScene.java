@@ -199,8 +199,7 @@ public class GameScene extends WorldScene {
 		updateCameraPosition();
 
 		// Is the player dead? Loose a life or game over
-		if (mPlayerActor.getLife() <= 0 && !mInvulnerable) {
-
+		if (mPlayerActor.getHealth() <= 0 && !mInvulnerable) {
 			if (mPlayerStats.getExtraLives() > 0) {
 				mPlayerActor.resetLife();
 				mPlayerStats.decreaseExtraLives();
@@ -242,7 +241,7 @@ public class GameScene extends WorldScene {
 
 
 			// GUI
-			renderHealth();
+			//			renderHealth();
 			renderLives();
 
 
@@ -265,7 +264,7 @@ public class GameScene extends WorldScene {
 		mShapeRenderer.setColor(Config.Game.HEALTH_COLOR);
 
 		// Calculate how big part of the window should be covered
-		float healthWidth = mPlayerActor.getLife() / mPlayerActor.getDef().getMaxLife();
+		float healthWidth = mPlayerActor.getHealth() / mPlayerActor.getDef().getHealthMax();
 		healthWidth *= SceneSwitcher.getWorldWidth();
 
 		float startPoint = mLevel.getXCoord() - SceneSwitcher.getWorldWidth();
@@ -340,6 +339,7 @@ public class GameScene extends WorldScene {
 		super.loadResources();
 
 		ResourceCacheFacade.load(ResourceNames.UI_GENERAL);
+		ResourceCacheFacade.load(ResourceNames.UI_GAME);
 		ResourceCacheFacade.load(ResourceNames.SHADER_DEFAULT);
 		ResourceCacheFacade.loadAllOf(this, PlayerActorDef.class, true);
 
@@ -360,6 +360,7 @@ public class GameScene extends WorldScene {
 	protected void unloadResources() {
 		super.unloadResources();
 		ResourceCacheFacade.unload(ResourceNames.UI_GENERAL);
+		ResourceCacheFacade.unload(ResourceNames.UI_GAME);
 		ResourceCacheFacade.unload(ResourceNames.SHADER_DEFAULT);
 		ResourceCacheFacade.unloadAllOf(this, PlayerActorDef.class, true);
 
@@ -480,6 +481,17 @@ public class GameScene extends WorldScene {
 			return mPlayerStats.getMultiplierString();
 		} else {
 			return "";
+		}
+	}
+
+	/**
+	 * @return current percentage of health of the player
+	 */
+	float getPercentageHealth() {
+		if (mPlayerActor != null) {
+			return mPlayerActor.getHealth() / mPlayerActor.getDef().getHealthMax();
+		} else {
+			return 0;
 		}
 	}
 

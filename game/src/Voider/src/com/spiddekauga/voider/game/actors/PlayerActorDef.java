@@ -1,6 +1,7 @@
 package com.spiddekauga.voider.game.actors;
 
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+import com.spiddekauga.voider.Config;
 
 /**
  * Player actor definition, does nothing more than specify
@@ -14,7 +15,7 @@ public class PlayerActorDef extends ActorDef {
 	 */
 	public PlayerActorDef() {
 		super(ActorTypes.PLAYER);
-		setMaxLife(100f);
+		setHealthMax(Config.Actor.Player.HEALTH_MAX);
 		getBodyDef().type = BodyType.DynamicBody;
 		getBodyDef().fixedRotation = true;
 

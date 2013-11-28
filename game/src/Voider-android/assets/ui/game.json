@@ -1,0 +1,8 @@
+{
+com.badlogic.gdx.scenes.scene2d.ui.Slider$SliderStyle: {
+	health_bar: {
+		background: health_bar_background,
+		knobBefore: health_bar_health
+	}
+}
+}

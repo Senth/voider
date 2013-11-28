@@ -74,6 +74,14 @@ public class Config {
 			public final static float DEFAULT_CIRCLE_RADIUS = 3f;
 		}
 
+		/**
+		 * Player
+		 */
+		public static class Player {
+			/** Maximum player heath */
+			public final static float HEALTH_MAX = 100;
+		}
+
 		/** Border width of all actors */
 		public final static float BORDER_WIDTH = 0.5f;
 		/** Outline color */
@@ -537,6 +545,7 @@ public class Config {
 		/** Score multiplier, used to create a greater score */
 		public final static float SCORE_MULTIPLIER = 10;
 		/** Health color */
+		@Deprecated
 		public final static Color HEALTH_COLOR = new Color(1, 0, 0, 0.3f);
 		/** Lives offset */
 		public final static float LIVES_OFFSET_POSITION = 1;

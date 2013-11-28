@@ -60,7 +60,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 	 */
 	public Actor(ActorDef def) {
 		mDef = def;
-		mLife = def.getMaxLife();
+		mLife = def.getHealthMax();
 		mUniqueId = UUID.randomUUID();
 	}
 
@@ -99,7 +99,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 			}
 
 			// Decrease life if colliding with something...
-			if (mDef.getMaxLife() > 0 && mLife > 0) {
+			if (mDef.getHealthMax() > 0 && mLife > 0) {
 				for (ActorDef collidingActor : mCollidingActors) {
 					decreaseLife(collidingActor.getCollisionDamage() * deltaTime);
 				}
@@ -255,7 +255,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 			destroyFixtures();
 
 			mDef = def;
-			mLife = mDef.getMaxLife();
+			mLife = mDef.getHealthMax();
 
 			if (mBody != null) {
 				reloadBody();
@@ -397,7 +397,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 	/**
 	 * @return current life of the actor
 	 */
-	public float getLife() {
+	public float getHealth() {
 		return mLife;
 	}
 
@@ -405,7 +405,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 	 * Resets the life
 	 */
 	public void resetLife() {
-		mLife = getDef().getMaxLife();
+		mLife = getDef().getHealthMax();
 	}
 
 	/**

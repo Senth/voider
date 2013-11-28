@@ -1,6 +1,7 @@
 package com.spiddekauga.voider.game;
 
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.Label;
@@ -30,7 +31,8 @@ class GameSceneGui extends Gui {
 
 		mMainTable.setTableAlign(Horizontal.RIGHT, Vertical.TOP);
 		mMainTable.setRowAlign(Horizontal.RIGHT, Vertical.TOP);
-		mMainTable.setCellPaddingDefault(2, 2, 2, 2);
+		mMainTable.setCellPaddingDefault(Config.Gui.PADDING_DEFAULT);
+		initHealthBar();
 		initScoreMultiplier();
 	}
 
@@ -40,8 +42,21 @@ class GameSceneGui extends Gui {
 		mWidgets.score.pack();
 		mWidgets.multiplier.setText("X" + mGameScene.getPlayerMultiplier());
 		mWidgets.multiplier.invalidateHierarchy();
+		mWidgets.health.setValue(mGameScene.getPercentageHealth());
 
 		mMainTable.pack();
+	}
+
+	/**
+	 * Initializes the health bar
+	 */
+	public void initHealthBar() {
+		Skin skin = ResourceCacheFacade.get(ResourceNames.UI_GAME);
+
+		Slider slider = new Slider(0, 1, 0.01f, false, skin, "health_bar");
+		mWidgets.health = slider;
+		mMainTable.row();
+		mMainTable.add(slider);
 	}
 
 	/**
@@ -51,6 +66,7 @@ class GameSceneGui extends Gui {
 		Skin skin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
 		LabelStyle labelStyle = skin.get("default", LabelStyle.class);
 
+		mMainTable.row();
 
 		// Score
 		Label label = new Label("Score: ", labelStyle);
@@ -80,5 +96,6 @@ class GameSceneGui extends Gui {
 	private static class InnerWidgets {
 		Label score = null;
 		Label multiplier = null;
+		Slider health = null;
 	}
 }

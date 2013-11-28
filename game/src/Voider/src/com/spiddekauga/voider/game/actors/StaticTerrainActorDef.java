@@ -14,7 +14,7 @@ public class StaticTerrainActorDef extends ActorDef {
 	public StaticTerrainActorDef()
 	{
 		super(ActorTypes.STATIC_TERRAIN);
-		setMaxLife(-1);
+		setHealthMax(-1);
 		setCollisionDamage(20);
 	}
 }

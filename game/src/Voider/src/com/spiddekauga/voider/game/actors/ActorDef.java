@@ -111,7 +111,7 @@ public abstract class ActorDef extends Def implements Disposable {
 	 * @param maxLife the maximum/starting amount of life.
 	 * @return this for chaining commands
 	 */
-	public ActorDef setMaxLife(float maxLife) {
+	public ActorDef setHealthMax(float maxLife) {
 		mMaxLife = maxLife;
 		return this;
 	}
@@ -119,7 +119,7 @@ public abstract class ActorDef extends Def implements Disposable {
 	/**
 	 * @return Maximum life of the actor. I.e. starting amount of life
 	 */
-	public float getMaxLife() {
+	public float getHealthMax() {
 		return mMaxLife;
 	}
 
