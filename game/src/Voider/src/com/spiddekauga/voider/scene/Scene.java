@@ -315,6 +315,14 @@ public abstract class Scene extends InputAdapter {
 	}
 
 	/**
+	 * Sets the game time. Useful when saving the game time and then restoring it
+	 * @param gameTime the game to to use
+	 */
+	protected void setGameTime(GameTime gameTime) {
+		mGameTime = gameTime;
+	}
+
+	/**
 	 * @return Game time of the current scene
 	 */
 	protected GameTime getGameTime() {

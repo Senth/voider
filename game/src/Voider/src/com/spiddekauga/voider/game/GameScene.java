@@ -118,6 +118,7 @@ public class GameScene extends WorldScene {
 
 					mPlayerActor = mGameSave.getPlayerActor();
 					mBulletDestroyer = mGameSave.getBulletDestroyer();
+					setGameTime(mGameSave.getGameTime());
 					setLevel(mGameSave.getLevel());
 
 					// Get player stats from level
@@ -162,7 +163,7 @@ public class GameScene extends WorldScene {
 			ResourceSaver.clearResources(GameSaveDef.class);
 
 			if (getOutcome() == Outcomes.LEVEL_QUIT) {
-				GameSave gameSave = new GameSave(mLevel, mPlayerActor, mBulletDestroyer);
+				GameSave gameSave = new GameSave(mLevel, mPlayerActor, mBulletDestroyer, getGameTime());
 				GameSaveDef gameSaveDef = new GameSaveDef(gameSave);
 				ResourceSaver.save(gameSave);
 				ResourceSaver.save(gameSaveDef);

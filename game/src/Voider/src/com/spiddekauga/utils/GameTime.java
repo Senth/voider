@@ -1,5 +1,6 @@
 package com.spiddekauga.utils;
 
+import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.voider.Config;
 
 /**
@@ -38,9 +39,9 @@ public class GameTime {
 	}
 
 	/** Total time elapsed since start of game */
-	private float mTotalTimeElapsed = 0;
+	@Tag(105) private float mTotalTimeElapsed = 0;
 	/** Current delta time */
-	private float mDeltaTime = 0;
+	@Tag(106) private float mDeltaTime = 0;
 
 	// Static methods
 	/**

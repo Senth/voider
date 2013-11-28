@@ -3,6 +3,7 @@ package com.spiddekauga.voider.game;
 import java.util.UUID;
 
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
+import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.voider.game.actors.PlayerActor;
 import com.spiddekauga.voider.resources.Resource;
 
@@ -17,19 +18,20 @@ public class GameSave extends Resource {
 	 * @param level the level to save
 	 * @param playerActor ship of the player
 	 * @param bulletDestroyer all bullets currently in-game
+	 * @param gameTime current game time to be restored lator
 	 */
-	public GameSave(Level level, PlayerActor playerActor, BulletDestroyer bulletDestroyer) {
+	public GameSave(Level level, PlayerActor playerActor, BulletDestroyer bulletDestroyer, GameTime gameTime) {
 		mUniqueId = UUID.randomUUID();
 		mLevel = level;
 		mPlayerActor = playerActor;
 		mBulletDestroyer = bulletDestroyer;
+		mGameTime = gameTime;
 	}
 
 	/**
-	 * Default constructor for JSON
-	 * @note needs to be public for reflect on android
+	 * Default constructor for Kryo
 	 */
-	public GameSave() {
+	protected GameSave() {
 		// Does nothing
 	}
 
@@ -54,6 +56,15 @@ public class GameSave extends Resource {
 		return mBulletDestroyer;
 	}
 
+	/**
+	 * @return saved game time
+	 */
+	public GameTime getGameTime() {
+		return mGameTime;
+	}
+
+	/** Saved game time */
+	@Tag(107) private GameTime mGameTime;
 	/** Saved level */
 	@Tag(10) private Level mLevel;
 	/** Saved player ship */

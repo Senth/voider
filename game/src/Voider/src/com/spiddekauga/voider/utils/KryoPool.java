@@ -26,6 +26,7 @@ import com.esotericsoftware.kryo.serializers.CollectionSerializer;
 import com.esotericsoftware.kryo.serializers.CompatibleFieldSerializer;
 import com.esotericsoftware.kryo.serializers.FieldSerializer;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer;
+import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.utils.SerializableTaggedFieldSerializer;
 import com.spiddekauga.utils.UUIDSerializer;
 import com.spiddekauga.voider.game.BulletDestroyer;
@@ -227,6 +228,8 @@ public class KryoPool extends Pool<Kryo> {
 		TRIGGER_ACTION_REASONS(TriggerAction.Reasons.class),
 		/** AtomicInteger */
 		ATOMIC_INTEGER(AtomicInteger.class, new AtomicIntegerSerializer()),
+		/** GameTime */
+		GAME_TIME(GameTime.class, SerializerType.TAGGED),
 
 
 		;
