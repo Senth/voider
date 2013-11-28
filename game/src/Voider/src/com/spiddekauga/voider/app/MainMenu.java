@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.voider.editor.EditorSelectionScene;
 import com.spiddekauga.voider.game.GameSaveDef;
 import com.spiddekauga.voider.game.GameScene;
@@ -78,7 +79,12 @@ public class MainMenu extends Scene {
 
 	@Override
 	public boolean keyDown(int keycode) {
-		if (keycode == Input.Keys.F5) {
+		if (KeyHelper.isBackPressed(keycode)) {
+			Gdx.app.exit();
+		}
+
+		// REMOVE testing
+		else if (keycode == Input.Keys.F5) {
 			SceneSwitcher.switchTo(new TestUiScene());
 		}
 		return false;
