@@ -220,6 +220,20 @@ public class MsgBox extends Dialog {
 	}
 
 	/**
+	 * Add a cancel button and keys.
+	 * @param buttonText text for the cancel button
+	 * @param cancelCommand this command shall return true in execute if the message box
+	 * is allowed to cancel.
+	 * @return this message box for chaining
+	 * @see #addCancelButtonAndKeys()
+	 */
+	public MsgBox addCancelOkButtonAndKeys(String buttonText, Command cancelCommand) {
+		addCancelButtonAndKeys(buttonText, cancelCommand);
+		key(Keys.ENTER, cancelCommand);
+		return this;
+	}
+
+	/**
 	 * @return true if the message box is hidden
 	 */
 	public boolean isHidden() {

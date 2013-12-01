@@ -179,7 +179,7 @@ public abstract class ActorGui extends EditorGui {
 		MsgBoxExecuter msgBox = getFreeMsgBox(true);
 		msgBox.setTitle("Info");
 		msgBox.content(mWidgets.info.table);
-		msgBox.addCancelButtonAndKeys("OK", new CDefHasValidName(msgBox, this, mActorEditor, getResourceTypeName()));
+		msgBox.addCancelOkButtonAndKeys("OK", new CDefHasValidName(msgBox, this, mActorEditor, getResourceTypeName()));
 		showMsgBox(msgBox);
 	}
 
