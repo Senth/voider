@@ -1,5 +1,7 @@
 package com.spiddekauga.voider.game.actors;
 
+import com.spiddekauga.voider.Config.Graphics.RenderZValues;
+
 
 /**
  * Static terrain actor. This terrain will not move, and cannot be destroyed.
@@ -35,5 +37,10 @@ public class StaticTerrainActor extends Actor {
 	@Override
 	protected short getFilterCollidingCategories() {
 		return ActorFilterCategories.PLAYER;
+	}
+
+	@Override
+	protected float getZValue() {
+		return RenderZValues.TERRAIN.getZValue();
 	}
 }

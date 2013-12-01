@@ -214,6 +214,11 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 	}
 
 	/**
+	 * Sort the rendering objects. I.e. which order the objects should be rendered
+	 * so they are displayed correctly.
+	 */
+
+	/**
 	 * Adds a resource to the level
 	 * @param resource the resource to add to the level
 	 */

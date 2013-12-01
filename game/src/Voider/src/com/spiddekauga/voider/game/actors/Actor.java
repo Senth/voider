@@ -291,6 +291,8 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 	public void render(ShapeRendererEx shapeRenderer) {
 		Vector2 offsetPosition = getWorldOffset();
 
+		shapeRenderer.setZValue(getZValue());
+
 		// Draw regular filled shape
 		if (!mDrawOnlyOutline && mDef.getVisualVars().isComplete()) {
 			if (mRotatedVertices != null) {
@@ -323,6 +325,11 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 	}
 
 	/**
+	 * @return z-value of the actor
+	 */
+	protected abstract float getZValue();
+
+	/**
 	 * Renders additional information when using an editor
 	 * @param shapeRenderer the current sprite batch for the scene
 	 */
@@ -331,6 +338,8 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 		if (mBody == null) {
 			return;
 		}
+
+		shapeRenderer.setZValue(getZValue());
 
 		Vector2 offsetPosition = getWorldOffset();
 

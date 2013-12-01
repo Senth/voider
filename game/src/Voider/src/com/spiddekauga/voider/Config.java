@@ -584,6 +584,46 @@ public class Config {
 		public final static float LEVEL_EDITOR_SCALE = WORLD_SCALE * LEVEL_EDITOR_HEIGHT_SCALE;
 		/** Maximum frame time length */
 		public final static float FRAME_LENGTH_MAX = 0.1f;
+
+		/**
+		 * Z-value for rendering objects. The further up the enumeration
+		 * is located the more in front the object will be rendered.
+		 */
+		public enum RenderZValues {
+			/** The player's ship */
+			PLAYER,
+			/** All enemies */
+			ENEMY,
+			/** A bullet that is shot from an enemy */
+			BULLET,
+			/** Enemy path, only seen in editor */
+			ENEMY_PATH,
+			/** Pickup actors */
+			PICKUP,
+			/** Trigger (only screen at), only seen in editor */
+			TRIGGER_SCREEN_AT,
+			/** Terrain actor */
+			TERRAIN,
+
+			;
+
+			/**
+			 * @return z-value used for rendering objects
+			 */
+			public float getZValue() {
+				return mZValue;
+			}
+
+			/**
+			 * Default constructor which calculates the z-value
+			 */
+			private RenderZValues() {
+				mZValue = -ordinal();
+			}
+
+			/** Z-value for the rendering */
+			private float mZValue;
+		}
 	}
 
 	/**

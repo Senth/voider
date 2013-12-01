@@ -1,5 +1,6 @@
 package com.spiddekauga.voider.game.actors;
 
+import com.spiddekauga.voider.Config.Graphics.RenderZValues;
 import com.spiddekauga.voider.game.Collectibles;
 
 
@@ -58,5 +59,10 @@ public class PlayerActor extends com.spiddekauga.voider.game.actors.Actor {
 	@Override
 	protected short getFilterCollidingCategories() {
 		return (short) (ActorFilterCategories.ENEMY | ActorFilterCategories.PICKUP | ActorFilterCategories.STATIC_TERRAIN | ActorFilterCategories.SCREEN_BORDER);
+	}
+
+	@Override
+	protected float getZValue() {
+		return RenderZValues.PLAYER.getZValue();
 	}
 }

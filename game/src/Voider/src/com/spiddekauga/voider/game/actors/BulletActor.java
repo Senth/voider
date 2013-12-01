@@ -2,6 +2,7 @@ package com.spiddekauga.voider.game.actors;
 
 import com.badlogic.gdx.math.Vector2;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
+import com.spiddekauga.voider.Config.Graphics.RenderZValues;
 import com.spiddekauga.voider.utils.Pools;
 
 /**
@@ -78,6 +79,11 @@ public class BulletActor extends Actor {
 		} else {
 			return (short) (ActorFilterCategories.STATIC_TERRAIN | ActorFilterCategories.PLAYER);
 		}
+	}
+
+	@Override
+	protected float getZValue() {
+		return RenderZValues.BULLET.getZValue();
 	}
 
 	/** True if bullet shot by player, false if shot by enemy */

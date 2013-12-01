@@ -1,5 +1,7 @@
 package com.spiddekauga.voider.game.actors;
 
+import com.spiddekauga.voider.Config.Graphics.RenderZValues;
+
 
 
 /**
@@ -24,5 +26,10 @@ public class PickupActor extends Actor {
 	@Override
 	protected short getFilterCollidingCategories() {
 		return ActorFilterCategories.PLAYER;
+	}
+
+	@Override
+	protected float getZValue() {
+		return RenderZValues.PICKUP.getZValue();
 	}
 }
