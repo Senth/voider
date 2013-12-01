@@ -76,11 +76,11 @@ public abstract class ActorGui extends EditorGui {
 		if (mWidgets.visual.shapeCircleRadius != null) {
 			mWidgets.visual.shapeCircleRadius.setValue(mActorEditor.getShapeRadius());
 		}
-		if (mWidgets.visual.shapeWidth != null) {
-			mWidgets.visual.shapeWidth.setValue(mActorEditor.getShapeWidth());
+		if (mWidgets.visual.shapeRectangleWidth != null) {
+			mWidgets.visual.shapeRectangleWidth.setValue(mActorEditor.getShapeWidth());
 		}
-		if (mWidgets.visual.shapeHeight != null) {
-			mWidgets.visual.shapeHeight.setValue(mActorEditor.getShapeHeight());
+		if (mWidgets.visual.shapeRectangleHeight != null) {
+			mWidgets.visual.shapeRectangleHeight.setValue(mActorEditor.getShapeHeight());
 		}
 		if (mWidgets.visual.shapeTriangleWidth != null) {
 			mWidgets.visual.shapeTriangleWidth.setValue(mActorEditor.getShapeWidth());
@@ -355,11 +355,38 @@ public abstract class ActorGui extends EditorGui {
 			}
 		};
 
-		// Create shape width
+		// Create shape width (rectangle)
+		// Need to create duplicates as two hiders can't use the same element.
 		mWidgets.visual.table.row();
 		label = new Label("Width", mStyles.label.standard);
 		mWidgets.visual.table.add(label).setPadRight(Editor.LABEL_PADDING_BEFORE_SLIDER);
 		rectangleHider.addToggleActor(label);
+
+		if (this instanceof EnemyEditorGui) {
+			slider = new Slider(Enemy.Visual.SIZE_MIN, Enemy.Visual.SIZE_MAX, Enemy.Visual.SIZE_STEP_SIZE, false, mStyles.slider.standard);
+		} else if (this instanceof BulletEditorGui) {
+			slider = new Slider(Bullet.Visual.SIZE_MIN, Bullet.Visual.SIZE_MAX, Bullet.Visual.SIZE_STEP_SIZE, false, mStyles.slider.standard);
+		}
+		mWidgets.visual.shapeRectangleWidth = slider;
+		mWidgets.visual.table.add(slider);
+		rectangleHider.addToggleActor(slider);
+
+		textField = new TextField("", mStyles.textField.standard);
+		mWidgets.visual.table.add(textField);
+		textField.setWidth(Editor.TEXT_FIELD_NUMBER_WIDTH);
+		rectangleHider.addToggleActor(textField);
+		new SliderListener(slider, textField, mInvoker) {
+			@Override
+			protected void onChange(float newValue) {
+				mActorEditor.setShapeWidth(newValue);
+				mWidgets.visual.shapeTriangleWidth.setValue(newValue);
+			}
+		};
+
+		// Create shape width (triangle)
+		// Need to create duplicates as two hiders can't use the same element.
+		label = new Label("Width", mStyles.label.standard);
+		mWidgets.visual.table.add(label).setPadRight(Editor.LABEL_PADDING_BEFORE_SLIDER);
 		triangleHider.addToggleActor(label);
 
 		if (this instanceof EnemyEditorGui) {
@@ -367,28 +394,53 @@ public abstract class ActorGui extends EditorGui {
 		} else if (this instanceof BulletEditorGui) {
 			slider = new Slider(Bullet.Visual.SIZE_MIN, Bullet.Visual.SIZE_MAX, Bullet.Visual.SIZE_STEP_SIZE, false, mStyles.slider.standard);
 		}
-		mWidgets.visual.shapeWidth = slider;
+		mWidgets.visual.shapeTriangleWidth = slider;
 		mWidgets.visual.table.add(slider);
-		rectangleHider.addToggleActor(slider);
 		triangleHider.addToggleActor(slider);
 
 		textField = new TextField("", mStyles.textField.standard);
 		mWidgets.visual.table.add(textField);
 		textField.setWidth(Editor.TEXT_FIELD_NUMBER_WIDTH);
-		rectangleHider.addToggleActor(textField);
 		triangleHider.addToggleActor(textField);
 		new SliderListener(slider, textField, mInvoker) {
 			@Override
 			protected void onChange(float newValue) {
 				mActorEditor.setShapeWidth(newValue);
+				mWidgets.visual.shapeRectangleWidth.setValue(newValue);
 			}
 		};
 
-		// Create shape height
+		// Create shape height (rectangle)
 		mWidgets.visual.table.row();
 		label = new Label("Height", mStyles.label.standard);
 		mWidgets.visual.table.add(label).setPadRight(Editor.LABEL_PADDING_BEFORE_SLIDER);
 		rectangleHider.addToggleActor(label);
+
+		if (this instanceof EnemyEditorGui) {
+			slider = new Slider(Enemy.Visual.SIZE_MIN, Enemy.Visual.SIZE_MAX, Enemy.Visual.SIZE_STEP_SIZE, false, mStyles.slider.standard);
+		} else if (this instanceof BulletEditorGui) {
+			slider = new Slider(Bullet.Visual.SIZE_MIN, Bullet.Visual.SIZE_MAX, Bullet.Visual.SIZE_STEP_SIZE, false, mStyles.slider.standard);
+		}
+		mWidgets.visual.shapeRectangleHeight = slider;
+		mWidgets.visual.table.add(slider);
+		rectangleHider.addToggleActor(slider);
+
+		textField = new TextField("", mStyles.textField.standard);
+		mWidgets.visual.table.add(textField);
+		textField.setWidth(Editor.TEXT_FIELD_NUMBER_WIDTH);
+		rectangleHider.addToggleActor(textField);
+		new SliderListener(slider, textField, mInvoker) {
+			@Override
+			protected void onChange(float newValue) {
+				mActorEditor.setShapeHeight(newValue);
+				mWidgets.visual.shapeTriangleHeight.setValue(newValue);
+			}
+		};
+
+		// Create shape height (triangle)
+		mWidgets.visual.table.row();
+		label = new Label("Height", mStyles.label.standard);
+		mWidgets.visual.table.add(label).setPadRight(Editor.LABEL_PADDING_BEFORE_SLIDER);
 		triangleHider.addToggleActor(label);
 
 		if (this instanceof EnemyEditorGui) {
@@ -396,20 +448,19 @@ public abstract class ActorGui extends EditorGui {
 		} else if (this instanceof BulletEditorGui) {
 			slider = new Slider(Bullet.Visual.SIZE_MIN, Bullet.Visual.SIZE_MAX, Bullet.Visual.SIZE_STEP_SIZE, false, mStyles.slider.standard);
 		}
-		mWidgets.visual.shapeHeight = slider;
+		mWidgets.visual.shapeTriangleHeight = slider;
 		mWidgets.visual.table.add(slider);
-		rectangleHider.addToggleActor(slider);
 		triangleHider.addToggleActor(slider);
 
 		textField = new TextField("", mStyles.textField.standard);
 		mWidgets.visual.table.add(textField);
 		textField.setWidth(Editor.TEXT_FIELD_NUMBER_WIDTH);
-		rectangleHider.addToggleActor(textField);
 		triangleHider.addToggleActor(textField);
 		new SliderListener(slider, textField, mInvoker) {
 			@Override
 			protected void onChange(float newValue) {
 				mActorEditor.setShapeHeight(newValue);
+				mWidgets.visual.shapeRectangleHeight.setValue(newValue);
 			}
 		};
 
@@ -669,8 +720,8 @@ public abstract class ActorGui extends EditorGui {
 			Slider shapeCircleRadius = null;
 			Slider shapeTriangleWidth = null;
 			Slider shapeTriangleHeight = null;
-			Slider shapeWidth = null;
-			Slider shapeHeight = null;
+			Slider shapeRectangleWidth = null;
+			Slider shapeRectangleHeight = null;
 		}
 
 		/**

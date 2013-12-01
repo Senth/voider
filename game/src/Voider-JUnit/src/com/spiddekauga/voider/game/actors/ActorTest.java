@@ -73,7 +73,7 @@ public class ActorTest {
 	@Test
 	public void testActorDefWriteRead() {
 		ActorDefStub actorDef = new ActorDefStub();
-		actorDef.setMaxLife(99.99f);
+		actorDef.setHealthMax(99.99f);
 		actorDef.setCollisionDamage(10);
 		actorDef.setDestroyOnCollide(true);
 
@@ -121,7 +121,7 @@ public class ActorTest {
 	@Test
 	public void testActorWriteRead() {
 		PickupActorDef actorDef = new PickupActorDef();
-		actorDef.setMaxLife(10);
+		actorDef.setHealthMax(10);
 		ActorStub actor = new ActorStub();
 		actor.setDef(actorDef);
 		actor.decreaseLife(5);
@@ -159,7 +159,7 @@ public class ActorTest {
 	 */
 	protected static void testActorEquals(Actor expected, Actor actual) {
 		assertNotSame(expected, actual);
-		assertEquals(expected.getLife(), actual.getLife(), 0);
+		assertEquals(expected.getHealth(), actual.getHealth(), 0);
 		assertNotSame(expected.getPosition(), actual.getPosition());
 		assertEquals(expected.getPosition(), actual.getPosition());
 		assertEquals(expected.isActive(), actual.isActive());
@@ -175,7 +175,7 @@ public class ActorTest {
 	protected static void testActorDefEquals(ActorDef expected, ActorDef actual) {
 		DefTest.testEquals(expected, actual);
 
-		assertEquals(expected.getMaxLife(), actual.getMaxLife(), 0);
+		assertEquals(expected.getHealthMax(), actual.getHealthMax(), 0);
 		assertEquals(expected.getCollisionDamage(), actual.getCollisionDamage(), 0);
 		assertEquals(expected.isDestroyedOnCollide(), actual.isDestroyedOnCollide());
 

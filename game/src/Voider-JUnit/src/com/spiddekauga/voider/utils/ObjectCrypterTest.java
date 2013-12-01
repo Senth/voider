@@ -117,7 +117,7 @@ public class ObjectCrypterTest {
 		ActorDef newActorDef = json.fromJson(PlayerActorDef.class, decryptedJson);
 
 		assertEquals("new actor def equals original", newActorDef, actorDef);
-		assertEquals("ActorDefs' max life", newActorDef.getMaxLife(), actorDef.getMaxLife(), 0.0f);
+		assertEquals("ActorDefs' max life", newActorDef.getHealthMax(), actorDef.getHealthMax(), 0.0f);
 		assertEquals("ActorDefs' name", newActorDef.getName(), actorDef.getName());
 	}
 }
