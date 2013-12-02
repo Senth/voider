@@ -50,8 +50,10 @@ public class TScreenAt extends Trigger implements IResourceBody, IResourcePositi
 			shapeRenderer.triangles(mVertices);
 
 			if (isSelected()) {
+				shapeRenderer.translate(0, 0, Config.Graphics.DEPTH_STEP_SIZE);
 				shapeRenderer.setColor(Config.Editor.SELECTED_COLOR);
 				shapeRenderer.triangles(mVertices);
+				shapeRenderer.translate(0, 0, -Config.Graphics.DEPTH_STEP_SIZE);
 			}
 		}
 	}

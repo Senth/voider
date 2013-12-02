@@ -14,7 +14,6 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.utils.Invoker;
 import com.spiddekauga.utils.ShapeRendererEx;
-import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.BulletDestroyer;
 
 /**

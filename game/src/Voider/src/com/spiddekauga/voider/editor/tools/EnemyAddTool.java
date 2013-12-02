@@ -12,6 +12,8 @@ import com.spiddekauga.voider.editor.commands.CResourceMove;
 import com.spiddekauga.voider.game.Path;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.EnemyActor;
+import com.spiddekauga.voider.game.actors.EnemyActorDef;
+import com.spiddekauga.voider.game.actors.EnemyActorDef.MovementTypes;
 import com.spiddekauga.voider.utils.Pools;
 
 /**
@@ -33,26 +35,6 @@ public class EnemyAddTool extends ActorAddTool {
 	}
 
 	@Override
-	protected boolean down() {
-		// Move is hit an actor of selected type?
-		if (mSelection.isSelectionChangedDuringDown()) {
-			testPickPoint();
-		}
-		// Create a new actor here (if we have selected a definition
-		else if (mActorDef != null) {
-			mMovingActor = createNewSelectedActor();
-			mCreatedThisEvent = true;
-		}
-
-		if (mMovingActor != null) {
-			mDragOrigin.set(mMovingActor.getPosition());
-			return true;
-		}
-
-		return false;
-	}
-
-	@Override
 	protected boolean dragged() {
 		if (mMovingActor != null) {
 			Vector2 newPosition = getNewPosition();
@@ -68,7 +50,7 @@ public class EnemyAddTool extends ActorAddTool {
 			// Just set the new position
 			if (mCreatedThisEvent) {
 				Vector2 newPosition = getNewPosition();
-				setSnapPosition((EnemyActor)mMovingActor, newPosition, (LevelEditor)mEditor, null);
+				setSnapPosition((EnemyActor)mMovingActor, newPosition, (LevelEditor)mEditor, mInvoker);
 				Pools.vector2.free(newPosition);
 			}
 			// If not new actor, reset to old position and move using command
@@ -95,42 +77,53 @@ public class EnemyAddTool extends ActorAddTool {
 	 * set the position
 	 */
 	protected static void setSnapPosition(EnemyActor enemyActor, Vector2 newPosition, LevelEditor levelEditor, Invoker invoker) {
-		Vector2 snappedPosition = Pools.vector2.obtain().set(newPosition);
-		boolean usesPath = false;
-
-		// Is the position close to a path?
-		Path closestPath = getClosestPath(snappedPosition, levelEditor);
-		if (closestPath != null) {
-			Vector2 diffVector = Pools.vector2.obtain();
-			diffVector.set(snappedPosition).sub(closestPath.getCornerPosition(0));
-
-			if (diffVector.len2() <= Editor.Level.ENEMY_SNAP_PATH_DISTANCE_SQ) {
-				snappedPosition.set(closestPath.getCornerPosition(0));
-				usesPath = true;
+		// Non path enemy, just set position
+		if (enemyActor.getDef(EnemyActorDef.class).getMovementType() != MovementTypes.PATH) {
+			if (invoker != null) {
+				invoker.execute(new CResourceMove(enemyActor, newPosition, levelEditor));
+			} else {
+				enemyActor.setPosition(newPosition);
 			}
-
-			Pools.vector2.free(diffVector);
 		}
+		// Path enemy, try to snap
+		else {
+			Vector2 snappedPosition = Pools.vector2.obtain().set(newPosition);
+			boolean usesPath = false;
 
-		if (!usesPath) {
-			closestPath = null;
-		}
+			// Is the position close to a path?
+			Path closestPath = getClosestPath(snappedPosition, levelEditor);
+			if (closestPath != null) {
+				Vector2 diffVector = Pools.vector2.obtain();
+				diffVector.set(snappedPosition).sub(closestPath.getCornerPosition(0));
 
-		if (invoker != null) {
-			// Only change if not same path as before
-			if (closestPath != enemyActor.getPath() || closestPath == null || enemyActor.getPath() == null) {
-				invoker.execute(new CResourceMove(enemyActor, snappedPosition, levelEditor));
-
-				// Changed paths
-				if (closestPath != null || enemyActor.getPath() != null) {
-					invoker.execute(new CEnemySetPath(enemyActor, closestPath, levelEditor), true);
+				if (diffVector.len2() <= Editor.Level.ENEMY_SNAP_PATH_DISTANCE_SQ) {
+					snappedPosition.set(closestPath.getCornerPosition(0));
+					usesPath = true;
 				}
-			}
-		} else {
-			enemyActor.setPosition(snappedPosition);
-		}
 
-		Pools.vector2.free(snappedPosition);
+				Pools.vector2.free(diffVector);
+			}
+
+			if (!usesPath) {
+				closestPath = null;
+			}
+
+			if (invoker != null) {
+				// Only change if not same path as before
+				if (closestPath != enemyActor.getPath() || closestPath == null || enemyActor.getPath() == null) {
+					invoker.execute(new CResourceMove(enemyActor, snappedPosition, levelEditor));
+
+					// Changed paths
+					if (closestPath != null || enemyActor.getPath() != null) {
+						invoker.execute(new CEnemySetPath(enemyActor, closestPath, levelEditor), true);
+					}
+				}
+			} else {
+				enemyActor.setPosition(snappedPosition);
+			}
+
+			Pools.vector2.free(snappedPosition);
+		}
 	}
 
 	/**

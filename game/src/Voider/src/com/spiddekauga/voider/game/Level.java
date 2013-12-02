@@ -228,7 +228,25 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 	 * @param shapeRenderer the shape renderer to translate
 	 * @param object information about z-value translation
 	 */
-	private void offsetZValue(ShapeRendererEx shapeRenderer, IResourceRenderOrder object) {
+	private void offsetZValue(ShapeRendererEx shapeRenderer, IResourceRender object) {
+		shapeRenderer.translate(0, 0, object.getRenderOrder().getZValue() - 0.5f);
+	}
+
+	/**
+	 * Reset z-value offset
+	 * @param shapeRenderer the shape renderer to reset the z-value translation
+	 * @param object information about z-value translation
+	 */
+	private void resetZValueOffset(ShapeRendererEx shapeRenderer, IResourceRender object) {
+		shapeRenderer.translate(0, 0, -(object.getRenderOrder().getZValue() - 0.5f));
+	}
+
+	/**
+	 * Offset/Translate the z-value
+	 * @param shapeRenderer the shape renderer to translate
+	 * @param object information about z-value translation
+	 */
+	private void offsetZValue(ShapeRendererEx shapeRenderer, IResourceEditorRender object) {
 		shapeRenderer.translate(0, 0, object.getRenderOrder().getZValue());
 	}
 
@@ -237,8 +255,8 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 	 * @param shapeRenderer the shape renderer to reset the z-value translation
 	 * @param object information about z-value translation
 	 */
-	private void resetZValueOffset(ShapeRendererEx shapeRenderer, IResourceRenderOrder object) {
-		shapeRenderer.translate(0, 0, -object.getRenderOrder().getZValue());
+	private void resetZValueOffset(ShapeRendererEx shapeRenderer, IResourceEditorRender object) {
+		shapeRenderer.translate(0, 0, -(object.getRenderOrder().getZValue()));
 	}
 
 	/**

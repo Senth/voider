@@ -349,6 +349,7 @@ public class Path extends Resource implements Disposable, IResourceCorner, IReso
 			shapeRenderer.triangles(mVertices);
 
 			if (mSelected) {
+				shapeRenderer.translate(0, 0, Config.Graphics.DEPTH_STEP_SIZE);
 				shapeRenderer.setColor(Config.Editor.SELECTED_COLOR);
 				shapeRenderer.triangles(mVertices);
 
@@ -356,14 +357,17 @@ public class Path extends Resource implements Disposable, IResourceCorner, IReso
 				// Render corners
 				if (!mBodyCorners.isEmpty()) {
 					shapeRenderer.push(ShapeType.Line);
+					shapeRenderer.translate(0, 0, Config.Graphics.DEPTH_STEP_SIZE);
 
 					shapeRenderer.setColor(Config.Editor.CORNER_COLOR);
 					for (Vector2 corner : mCorners) {
 						shapeRenderer.polyline(SceneSwitcher.getPickingVertices(), true, corner);
 					}
 
+					shapeRenderer.translate(0, 0, -Config.Graphics.DEPTH_STEP_SIZE);
 					shapeRenderer.pop();
 				}
+				shapeRenderer.translate(0, 0, -Config.Graphics.DEPTH_STEP_SIZE);
 			}
 		}
 	}

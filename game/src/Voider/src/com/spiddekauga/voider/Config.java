@@ -584,6 +584,8 @@ public class Config {
 		public final static float LEVEL_EDITOR_SCALE = WORLD_SCALE * LEVEL_EDITOR_HEIGHT_SCALE;
 		/** Maximum frame time length */
 		public final static float FRAME_LENGTH_MAX = 0.1f;
+		/** Depth level step size */
+		public final static float DEPTH_STEP_SIZE = 0.001f;
 
 		/**
 		 * Z-value for rendering objects. The further up the enumeration

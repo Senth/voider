@@ -31,20 +31,22 @@ public class ActorAddTool extends ActorTool {
 
 	@Override
 	protected boolean down() {
-		// Move is hit an actor of selected type?
-		if (mSelection.isSelectionChangedDuringDown()) {
-			testPickPoint();
-		}
-		// Create a new actor here (if we have selected a definition
-		else if (mActorDef != null) {
-			mMovingActor = createNewSelectedActor();
-			mCreatedThisEvent = true;
-		}
+		testPickPoint();
 
+		// Hit an actor, move it
 		if (mMovingActor != null) {
 			mDragOrigin.set(mMovingActor.getPosition());
 			return true;
 		}
+		// Create a new actor here (if we have selected a definition)
+		else if (mActorDef != null) {
+			mMovingActor = createNewSelectedActor();
+			mDragOrigin.set(mTouchOrigin);
+			mCreatedThisEvent = true;
+			return true;
+		}
+
+
 
 		return false;
 	}

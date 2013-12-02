@@ -94,7 +94,7 @@ public class MoveTool extends TouchTool {
 				Vector2 newPosition = Pools.vector2.obtain();
 				newPosition.set(mTouchCurrent).sub(mTouchOrigin);
 				newPosition.add(mMovingResources.get(0).originalPos);
-				EnemyAddTool.setSnapPosition((EnemyActor)mMovingResources.get(0).resource, newPosition, (LevelEditor)mEditor, null);
+				EnemyAddTool.setSnapPosition((EnemyActor)mMovingResources.get(0).resource, newPosition, (LevelEditor)mEditor, mInvoker);
 
 				Pools.vector2.free(newPosition);
 			}
@@ -115,10 +115,11 @@ public class MoveTool extends TouchTool {
 				}
 
 				mResourcePositionPool.freeAll(mMovingResources);
-				mMovingResources.clear();
 
 				Pools.vector2.freeAll(diffMovement, newPosition);
 			}
+
+			mMovingResources.clear();
 
 			return true;
 		}

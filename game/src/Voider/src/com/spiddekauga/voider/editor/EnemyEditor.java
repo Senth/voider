@@ -305,8 +305,10 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 			}
 			mShapeRenderer.setProjectionMatrix(mCamera.combined);
 			mShapeRenderer.push(ShapeType.Filled);
+			mShapeRenderer.translate(0, 0, -1);
 			Gdx.gl.glEnable(GL20.GL_BLEND);
 			Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+
 
 			// Enemies
 			switch (getMovementType()) {
@@ -320,19 +322,24 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 				mPathBackAndForth.renderEditor(mShapeRenderer);
 				mPathLoop.renderEditor(mShapeRenderer);
 				mPathOnce.renderEditor(mShapeRenderer);
+				mShapeRenderer.translate(0, 0, Config.Graphics.DEPTH_STEP_SIZE);
 				mEnemyPathBackAndForth.render(mShapeRenderer);
 				mEnemyPathLoop.render(mShapeRenderer);
 				mEnemyPathOnce.render(mShapeRenderer);
+				mShapeRenderer.translate(0, 0, -Config.Graphics.DEPTH_STEP_SIZE);
 				break;
 			}
 
 			mPlayerActor.render(mShapeRenderer);
+			mShapeRenderer.translate(0, 0, 2*Config.Graphics.DEPTH_STEP_SIZE);
 			mBulletDestroyer.render(mShapeRenderer);
+			mShapeRenderer.translate(0, 0, -(2*Config.Graphics.DEPTH_STEP_SIZE));
 
 			if (mVectorBrush != null) {
 				mVectorBrush.renderEditor(mShapeRenderer);
 			}
 
+			mShapeRenderer.translate(0, 0, 1);
 			mShapeRenderer.pop();
 		}
 	}
