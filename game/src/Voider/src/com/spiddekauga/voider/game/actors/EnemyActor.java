@@ -1,5 +1,6 @@
 package com.spiddekauga.voider.game.actors;
 
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
@@ -533,7 +534,14 @@ public class EnemyActor extends Actor {
 			break;
 
 		case MOVE_DIRECTION:
+			// If we're moving shoot in moving direction
 			shootDirection.set(getBody().getLinearVelocity());
+
+			// If we're still, shoot in actor's "look" direction
+			if (shootDirection.len2() == 0) {
+				shootDirection.set(1,0);
+				shootDirection.rotate(MathUtils.radiansToDegrees * getBody().getAngle());
+			}
 			break;
 
 		case IN_FRONT_OF_PLAYER: {
