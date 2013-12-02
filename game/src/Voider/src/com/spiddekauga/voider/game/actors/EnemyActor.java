@@ -9,7 +9,7 @@ import com.spiddekauga.utils.Maths;
 import com.spiddekauga.utils.ShapeRendererEx;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.voider.Config;
-import com.spiddekauga.voider.Config.Graphics.RenderZValues;
+import com.spiddekauga.voider.Config.Graphics.RenderOrders;
 import com.spiddekauga.voider.game.Level;
 import com.spiddekauga.voider.game.Path;
 import com.spiddekauga.voider.game.Path.PathTypes;
@@ -956,8 +956,8 @@ public class EnemyActor extends Actor {
 	}
 
 	@Override
-	protected float getZValue() {
-		return RenderZValues.ENEMY.getZValue();
+	public RenderOrders getRenderOrder() {
+		return RenderOrders.ENEMY;
 	}
 
 	/** Enemy weapon */

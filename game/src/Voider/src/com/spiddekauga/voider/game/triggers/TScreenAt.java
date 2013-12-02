@@ -11,7 +11,7 @@ import com.badlogic.gdx.utils.Disposable;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.utils.ShapeRendererEx;
 import com.spiddekauga.voider.Config;
-import com.spiddekauga.voider.Config.Graphics.RenderZValues;
+import com.spiddekauga.voider.Config.Graphics.RenderOrders;
 import com.spiddekauga.voider.game.Level;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.ActorFilterCategories;
@@ -46,8 +46,6 @@ public class TScreenAt extends Trigger implements IResourceBody, IResourcePositi
 	@Override
 	public void renderEditor(ShapeRendererEx shapeRenderer) {
 		if (mVertices != null) {
-			shapeRenderer.setZValue(RenderZValues.TRIGGER_SCREEN_AT.getZValue());
-
 			shapeRenderer.setColor(Config.Editor.Level.Trigger.COLOR);
 			shapeRenderer.triangles(mVertices);
 
@@ -130,6 +128,11 @@ public class TScreenAt extends Trigger implements IResourceBody, IResourcePositi
 		Pools.vector2.free(mPosition);
 		mPosition = null;
 		destroyBody();
+	}
+
+	@Override
+	public RenderOrders getRenderOrder() {
+		return RenderOrders.TRIGGER_SCREEN_AT;
 	}
 
 	/**

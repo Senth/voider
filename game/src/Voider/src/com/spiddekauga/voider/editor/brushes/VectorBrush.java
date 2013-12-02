@@ -8,6 +8,7 @@ import com.badlogic.gdx.utils.Disposable;
 import com.spiddekauga.utils.ShapeRendererEx;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.Config.Graphics.RenderOrders;
 import com.spiddekauga.voider.resources.IResourceCorner;
 import com.spiddekauga.voider.resources.IResourceEditorRender;
 import com.spiddekauga.voider.resources.Resource;
@@ -28,6 +29,11 @@ public class VectorBrush extends Resource implements IResourceCorner, IResourceE
 	public VectorBrush(boolean addMode) {
 		mUniqueId = UUID.randomUUID();
 		mAddMode = addMode;
+	}
+
+	@Override
+	public RenderOrders getRenderOrder() {
+		return RenderOrders.BRUSH;
 	}
 
 	@Override

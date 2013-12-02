@@ -16,7 +16,7 @@ import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.utils.ShapeRendererEx;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.voider.Config;
-import com.spiddekauga.voider.Config.Graphics.RenderZValues;
+import com.spiddekauga.voider.Config.Graphics.RenderOrders;
 import com.spiddekauga.voider.editor.HitWrapper;
 import com.spiddekauga.voider.game.actors.ActorFilterCategories;
 import com.spiddekauga.voider.game.actors.EnemyActor;
@@ -42,6 +42,11 @@ public class Path extends Resource implements Disposable, IResourceCorner, IReso
 	 */
 	public Path() {
 		mUniqueId = UUID.randomUUID();
+	}
+
+	@Override
+	public RenderOrders getRenderOrder() {
+		return RenderOrders.ENEMY_PATH;
 	}
 
 	/**
@@ -340,8 +345,6 @@ public class Path extends Resource implements Disposable, IResourceCorner, IReso
 	@Override
 	public void renderEditor(ShapeRendererEx shapeRenderer) {
 		if (mVertices != null) {
-			shapeRenderer.setZValue(RenderZValues.ENEMY_PATH.getZValue());
-
 			shapeRenderer.setColor(Config.Editor.Level.Path.START_COLOR);
 			shapeRenderer.triangles(mVertices);
 

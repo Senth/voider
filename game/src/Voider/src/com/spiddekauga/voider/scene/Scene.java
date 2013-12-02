@@ -14,6 +14,7 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.utils.Invoker;
 import com.spiddekauga.utils.ShapeRendererEx;
+import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.BulletDestroyer;
 
 /**
@@ -41,13 +42,16 @@ public abstract class Scene extends InputAdapter {
 	 */
 	final void run() {
 		Gdx.gl.glClearColor(mClearColor.r, mClearColor.g, mClearColor.b, mClearColor.a);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
 		if (!mGui.isMsgBoxActive()) {
 			mGameTime.update(Gdx.graphics.getDeltaTime());
 			update(mGameTime.getDeltaTime());
 		}
+
+		Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
 		render();
+		Gdx.gl.glDisable(GL20.GL_DEPTH_TEST);
 		mGui.update();
 		mGui.render();
 	}

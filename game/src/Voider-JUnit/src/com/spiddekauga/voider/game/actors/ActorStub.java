@@ -1,5 +1,7 @@
 package com.spiddekauga.voider.game.actors;
 
+import com.spiddekauga.voider.Config.Graphics.RenderOrders;
+
 /**
  * Stub actor, used for testing
  * 
@@ -18,7 +20,7 @@ public class ActorStub extends Actor {
 	}
 
 	@Override
-	protected float getZValue() {
-		return 0;
+	public RenderOrders getRenderOrder() {
+		return RenderOrders.BRUSH;
 	}
 }

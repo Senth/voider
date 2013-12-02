@@ -1,6 +1,6 @@
 package com.spiddekauga.voider.game.actors;
 
-import com.spiddekauga.voider.Config.Graphics.RenderZValues;
+import com.spiddekauga.voider.Config.Graphics.RenderOrders;
 
 
 
@@ -29,7 +29,7 @@ public class PickupActor extends Actor {
 	}
 
 	@Override
-	protected float getZValue() {
-		return RenderZValues.PICKUP.getZValue();
+	public RenderOrders getRenderOrder() {
+		return RenderOrders.PICKUP;
 	}
 }

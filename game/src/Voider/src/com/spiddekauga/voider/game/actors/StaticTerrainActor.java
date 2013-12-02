@@ -1,6 +1,6 @@
 package com.spiddekauga.voider.game.actors;
 
-import com.spiddekauga.voider.Config.Graphics.RenderZValues;
+import com.spiddekauga.voider.Config.Graphics.RenderOrders;
 
 
 /**
@@ -40,7 +40,7 @@ public class StaticTerrainActor extends Actor {
 	}
 
 	@Override
-	protected float getZValue() {
-		return RenderZValues.TERRAIN.getZValue();
+	public RenderOrders getRenderOrder() {
+		return RenderOrders.TERRAIN;
 	}
 }

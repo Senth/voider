@@ -589,11 +589,15 @@ public class Config {
 		 * Z-value for rendering objects. The further up the enumeration
 		 * is located the more in front the object will be rendered.
 		 */
-		public enum RenderZValues {
+		public enum RenderOrders {
+			/** Brushes */
+			BRUSH,
 			/** The player's ship */
 			PLAYER,
 			/** All enemies */
 			ENEMY,
+			/** Activate actor trigger */
+			TRIGGER_ACTOR_ACTIVATE,
 			/** A bullet that is shot from an enemy */
 			BULLET,
 			/** Enemy path, only seen in editor */
@@ -608,21 +612,29 @@ public class Config {
 			;
 
 			/**
-			 * @return z-value used for rendering objects
+			 * @return the render order determining in what order to render
+			 * the objects
+			 */
+			public int getOrder() {
+				return ordinal();
+			}
+
+			/**
+			 * Default constructor that sets the z-value
+			 */
+			private RenderOrders() {
+				mZValue = -ordinal();
+			}
+
+			/**
+			 * @return z-value of the object to render
 			 */
 			public float getZValue() {
 				return mZValue;
 			}
 
-			/**
-			 * Default constructor which calculates the z-value
-			 */
-			private RenderZValues() {
-				mZValue = -ordinal();
-			}
-
-			/** Z-value for the rendering */
-			private float mZValue;
+			/** The z-value */
+			private float mZValue = 0;
 		}
 	}
 

@@ -411,9 +411,9 @@ public class ShapeRendererEx implements Disposable {
 		checkDirty();
 		checkFlush(2);
 		mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-		mRenderer.vertex(x, y, mZValue);
+		mRenderer.vertex(x, y, 0);
 		mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-		mRenderer.vertex(x2, y2, mZValue);
+		mRenderer.vertex(x2, y2, 0);
 	}
 
 	/** Draws a line in the x/y plane. The {@link ShapeType} passed to begin has to be {@link ShapeType#Line}.
@@ -489,12 +489,12 @@ public class ShapeRendererEx implements Disposable {
 			ddfx += dddfx;
 			ddfy += dddfy;
 			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-			mRenderer.vertex(fx, fy, mZValue);
+			mRenderer.vertex(fx, fy, 0);
 		}
 		mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-		mRenderer.vertex(fx, fy, mZValue);
+		mRenderer.vertex(fx, fy, 0);
 		mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-		mRenderer.vertex(x2, y2, mZValue);
+		mRenderer.vertex(x2, y2, 0);
 	}
 
 	/**
@@ -513,27 +513,27 @@ public class ShapeRendererEx implements Disposable {
 		checkFlush(6);
 		if(mCurrentType.peek() == ShapeType.Line){
 			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-			mRenderer.vertex(x1, y1, mZValue);
+			mRenderer.vertex(x1, y1, 0);
 			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-			mRenderer.vertex(x2, y2, mZValue);
+			mRenderer.vertex(x2, y2, 0);
 
 			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-			mRenderer.vertex(x2, y2, mZValue);
+			mRenderer.vertex(x2, y2, 0);
 			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-			mRenderer.vertex(x3, y3, mZValue);
+			mRenderer.vertex(x3, y3, 0);
 
 			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-			mRenderer.vertex(x3, y3, mZValue);
+			mRenderer.vertex(x3, y3, 0);
 			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-			mRenderer.vertex(x1, y1, mZValue);
+			mRenderer.vertex(x1, y1, 0);
 		}
 		else {
 			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-			mRenderer.vertex(x1, y1, mZValue);
+			mRenderer.vertex(x1, y1, 0);
 			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-			mRenderer.vertex(x2, y2, mZValue);
+			mRenderer.vertex(x2, y2, 0);
 			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-			mRenderer.vertex(x3, y3, mZValue);
+			mRenderer.vertex(x3, y3, 0);
 		}
 	}
 
@@ -565,39 +565,39 @@ public class ShapeRendererEx implements Disposable {
 
 		if(mCurrentType.peek() == ShapeType.Line){
 			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-			mRenderer.vertex(x, y, mZValue);
+			mRenderer.vertex(x, y, 0);
 			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-			mRenderer.vertex(x + width, y, mZValue);
+			mRenderer.vertex(x + width, y, 0);
 
 			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-			mRenderer.vertex(x + width, y, mZValue);
+			mRenderer.vertex(x + width, y, 0);
 			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-			mRenderer.vertex(x + width, y + height, mZValue);
+			mRenderer.vertex(x + width, y + height, 0);
 
 			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-			mRenderer.vertex(x + width, y + height, mZValue);
+			mRenderer.vertex(x + width, y + height, 0);
 			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-			mRenderer.vertex(x, y + height, mZValue);
+			mRenderer.vertex(x, y + height, 0);
 
 			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-			mRenderer.vertex(x, y + height, mZValue);
+			mRenderer.vertex(x, y + height, 0);
 			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-			mRenderer.vertex(x, y, mZValue);
+			mRenderer.vertex(x, y, 0);
 		}
 		else {
 			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-			mRenderer.vertex(x, y, mZValue);
+			mRenderer.vertex(x, y, 0);
 			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-			mRenderer.vertex(x + width, y, mZValue);
+			mRenderer.vertex(x + width, y, 0);
 			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-			mRenderer.vertex(x + width, y + height, mZValue);
+			mRenderer.vertex(x + width, y + height, 0);
 
 			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-			mRenderer.vertex(x + width, y + height, mZValue);
+			mRenderer.vertex(x + width, y + height, 0);
 			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-			mRenderer.vertex(x, y + height, mZValue);
+			mRenderer.vertex(x, y + height, 0);
 			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-			mRenderer.vertex(x, y, mZValue);
+			mRenderer.vertex(x, y, 0);
 		}
 	}
 
@@ -622,39 +622,39 @@ public class ShapeRendererEx implements Disposable {
 
 		if(mCurrentType.peek() == ShapeType.Line){
 			mRenderer.color(col1.r, col1.g, col1.b, col1.a);
-			mRenderer.vertex(x, y, mZValue);
+			mRenderer.vertex(x, y, 0);
 			mRenderer.color(col2.r, col2.g, col2.b, col2.a);
-			mRenderer.vertex(x + width, y, mZValue);
+			mRenderer.vertex(x + width, y, 0);
 
 			mRenderer.color(col2.r, col2.g, col2.b, col2.a);
-			mRenderer.vertex(x + width, y, mZValue);
+			mRenderer.vertex(x + width, y, 0);
 			mRenderer.color(col3.r, col3.g, col3.b, col3.a);
-			mRenderer.vertex(x + width, y + height, mZValue);
+			mRenderer.vertex(x + width, y + height, 0);
 
 			mRenderer.color(col3.r, col3.g, col3.b, col3.a);
-			mRenderer.vertex(x + width, y + height, mZValue);
+			mRenderer.vertex(x + width, y + height, 0);
 			mRenderer.color(col4.r, col4.g, col4.b, col4.a);
-			mRenderer.vertex(x, y + height, mZValue);
+			mRenderer.vertex(x, y + height, 0);
 
 			mRenderer.color(col4.r, col4.g, col4.b, col4.a);
-			mRenderer.vertex(x, y + height, mZValue);
+			mRenderer.vertex(x, y + height, 0);
 			mRenderer.color(col1.r, col1.g, col1.b, col1.a);
-			mRenderer.vertex(x, y, mZValue);
+			mRenderer.vertex(x, y, 0);
 		}
 		else {
 			mRenderer.color(col1.r, col1.g, col1.b, col1.a);
-			mRenderer.vertex(x, y, mZValue);
+			mRenderer.vertex(x, y, 0);
 			mRenderer.color(col2.r, col2.g, col2.b, col2.a);
-			mRenderer.vertex(x + width, y, mZValue);
+			mRenderer.vertex(x + width, y, 0);
 			mRenderer.color(col3.r, col3.g, col3.b, col3.a);
-			mRenderer.vertex(x + width, y + height, mZValue);
+			mRenderer.vertex(x + width, y + height, 0);
 
 			mRenderer.color(col3.r, col3.g, col3.b, col3.a);
-			mRenderer.vertex(x + width, y + height, mZValue);
+			mRenderer.vertex(x + width, y + height, 0);
 			mRenderer.color(col4.r, col4.g, col4.b, col4.a);
-			mRenderer.vertex(x, y + height, mZValue);
+			mRenderer.vertex(x, y + height, 0);
 			mRenderer.color(col1.r, col1.g, col1.b, col1.a);
-			mRenderer.vertex(x, y, mZValue);
+			mRenderer.vertex(x, y, 0);
 		}
 	}
 
@@ -770,41 +770,41 @@ public class ShapeRendererEx implements Disposable {
 		if(mCurrentType.peek() == ShapeType.Line){
 			for (int i = 0; i < segments; i++) {
 				mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-				mRenderer.vertex(x + cx, y + cy, mZValue);
+				mRenderer.vertex(x + cx, y + cy, 0);
 				float temp = cx;
 				cx = cos * cx - sin * cy;
 				cy = sin * temp + cos * cy;
 				mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-				mRenderer.vertex(x + cx, y + cy, mZValue);
+				mRenderer.vertex(x + cx, y + cy, 0);
 			}
 			// Ensure the last segment is identical to the first.
 			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-			mRenderer.vertex(x + cx, y + cy, mZValue);
+			mRenderer.vertex(x + cx, y + cy, 0);
 		}
 		else {
 			segments--;
 			for (int i = 0; i < segments; i++) {
 				mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-				mRenderer.vertex(x, y, mZValue);
+				mRenderer.vertex(x, y, 0);
 				mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-				mRenderer.vertex(x + cx, y + cy, mZValue);
+				mRenderer.vertex(x + cx, y + cy, 0);
 				float temp = cx;
 				cx = cos * cx - sin * cy;
 				cy = sin * temp + cos * cy;
 				mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-				mRenderer.vertex(x + cx, y + cy, mZValue);
+				mRenderer.vertex(x + cx, y + cy, 0);
 			}
 			// Ensure the last segment is identical to the first.
 			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-			mRenderer.vertex(x, y, mZValue);
+			mRenderer.vertex(x, y, 0);
 			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-			mRenderer.vertex(x + cx, y + cy, mZValue);
+			mRenderer.vertex(x + cx, y + cy, 0);
 		}
 
 		cx = radius;
 		cy = 0;
 		mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-		mRenderer.vertex(x + cx, y + cy, mZValue);
+		mRenderer.vertex(x + cx, y + cy, 0);
 	}
 
 	/** Calls {@link #cone(float, float, float, float, float, int)} by estimating the number of segments needed for a smooth
@@ -927,9 +927,9 @@ public class ShapeRendererEx implements Disposable {
 			}
 
 			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-			mRenderer.vertex(x1, y1, mZValue);
+			mRenderer.vertex(x1, y1, 0);
 			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-			mRenderer.vertex(x2, y2, mZValue);
+			mRenderer.vertex(x2, y2, 0);
 		}
 	}
 
@@ -962,9 +962,9 @@ public class ShapeRendererEx implements Disposable {
 			y2 = vertices[i + 3];
 
 			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-			mRenderer.vertex(x1, y1, mZValue);
+			mRenderer.vertex(x1, y1, 0);
 			mRenderer.color(mColor.r, mColor.g, mColor.b, mColor.a);
-			mRenderer.vertex(x2, y2, mZValue);
+			mRenderer.vertex(x2, y2, 0);
 		}
 	}
 
@@ -1048,30 +1048,6 @@ public class ShapeRendererEx implements Disposable {
 		}
 	}
 
-	/**
-	 * Sets the current z-value to be used when no specific z-value is set.
-	 * This value is used when drawing an object where no
-	 * specific z-value is used. E.g. calling {@link #line(Vector2, Vector2)} or {@link #line(float, float, float, float)}
-	 * will use this z-value where as calling {@link #line(float, float, float, float, float, float)} uses
-	 * the method's z-value.
-	 * @param zValue the z-value to use for rendering objects
-	 */
-	public void setZValue(float zValue) {
-		mZValue = zValue;
-	}
-
-	/**
-	 * @return current z-value. This value is used when drawing an object where no
-	 * specific z-value is used. E.g. calling {@link #line(Vector2, Vector2)} or {@link #line(float, float, float, float)}
-	 * will use this z-value where as calling {@link #line(float, float, float, float, float, float)} uses
-	 * the method's z-value.
-	 */
-	public float getZValue() {
-		return mZValue;
-	}
-
-	/** Current z-value, used when no specified z-value is used */
-	float mZValue = 0;
 	/** Renderer */
 	ImmediateModeRenderer mRenderer;
 	/** If the matrix is dirty */

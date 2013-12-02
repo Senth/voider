@@ -12,6 +12,7 @@ import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.utils.KryoPostRead;
 import com.spiddekauga.utils.ShapeRendererEx;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.Config.Graphics.RenderOrders;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.triggers.TriggerAction.Reasons;
 import com.spiddekauga.voider.resources.IResource;
@@ -60,6 +61,11 @@ public class TActorActivated extends Trigger implements KryoPostRead, Disposable
 			mBody.getWorld().destroyBody(mBody);
 		}
 		destroyVertices();
+	}
+
+	@Override
+	public RenderOrders getRenderOrder() {
+		return RenderOrders.TRIGGER_ACTOR_ACTIVATE;
 	}
 
 	@Override

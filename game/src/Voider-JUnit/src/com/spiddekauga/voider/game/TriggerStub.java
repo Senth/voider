@@ -1,6 +1,7 @@
 package com.spiddekauga.voider.game;
 
 import com.spiddekauga.utils.ShapeRendererEx;
+import com.spiddekauga.voider.Config.Graphics.RenderOrders;
 import com.spiddekauga.voider.game.triggers.Trigger;
 import com.spiddekauga.voider.game.triggers.TriggerAction.Reasons;
 
@@ -27,5 +28,10 @@ public class TriggerStub extends Trigger {
 
 	@Override
 	public void renderEditor(ShapeRendererEx shapeRenderer) {
+	}
+
+	@Override
+	public RenderOrders getRenderOrder() {
+		return RenderOrders.TRIGGER_ACTOR_ACTIVATE;
 	}
 }

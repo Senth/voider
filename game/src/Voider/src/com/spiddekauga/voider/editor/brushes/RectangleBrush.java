@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Disposable;
 import com.spiddekauga.utils.ShapeRendererEx;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
+import com.spiddekauga.voider.Config.Graphics.RenderOrders;
 import com.spiddekauga.voider.resources.IResourceEditorRender;
 import com.spiddekauga.voider.resources.Resource;
 import com.spiddekauga.voider.utils.Pools;
@@ -41,6 +42,11 @@ public class RectangleBrush extends Resource implements IResourceEditorRender, D
 	public void dispose() {
 		Pools.vector2.freeAll(mStartPoint, mEndPoint);
 		Pools.color.free(mColor);
+	}
+
+	@Override
+	public RenderOrders getRenderOrder() {
+		return RenderOrders.BRUSH;
 	}
 
 	@Override

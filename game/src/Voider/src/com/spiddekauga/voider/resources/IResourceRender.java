@@ -7,7 +7,7 @@ import com.spiddekauga.utils.ShapeRendererEx;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public interface IResourceRender {
+public interface IResourceRender extends IResourceRenderOrder {
 	/**
 	 * Renders the resource
 	 * @param shapeRenderer current shape renderer batch

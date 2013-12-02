@@ -1,6 +1,6 @@
 package com.spiddekauga.voider.game.actors;
 
-import com.spiddekauga.voider.Config.Graphics.RenderZValues;
+import com.spiddekauga.voider.Config.Graphics.RenderOrders;
 import com.spiddekauga.voider.game.Collectibles;
 
 
@@ -62,7 +62,7 @@ public class PlayerActor extends com.spiddekauga.voider.game.actors.Actor {
 	}
 
 	@Override
-	protected float getZValue() {
-		return RenderZValues.PLAYER.getZValue();
+	public RenderOrders getRenderOrder() {
+		return RenderOrders.PLAYER;
 	}
 }

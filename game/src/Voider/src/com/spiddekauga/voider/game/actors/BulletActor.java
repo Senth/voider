@@ -2,7 +2,7 @@ package com.spiddekauga.voider.game.actors;
 
 import com.badlogic.gdx.math.Vector2;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
-import com.spiddekauga.voider.Config.Graphics.RenderZValues;
+import com.spiddekauga.voider.Config.Graphics.RenderOrders;
 import com.spiddekauga.voider.utils.Pools;
 
 /**
@@ -82,8 +82,8 @@ public class BulletActor extends Actor {
 	}
 
 	@Override
-	protected float getZValue() {
-		return RenderZValues.BULLET.getZValue();
+	public RenderOrders getRenderOrder() {
+		return RenderOrders.BULLET;
 	}
 
 	/** True if bullet shot by player, false if shot by enemy */

@@ -19,6 +19,7 @@ import com.spiddekauga.utils.KryoPreWrite;
 import com.spiddekauga.utils.KryoTaggedCopyable;
 import com.spiddekauga.utils.ShapeRendererEx;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.Config.Graphics.RenderOrders;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.EnemyActor;
 import com.spiddekauga.voider.game.actors.EnemyActorDef;
@@ -33,6 +34,7 @@ import com.spiddekauga.voider.resources.IResourceEditorUpdate;
 import com.spiddekauga.voider.resources.IResourcePosition;
 import com.spiddekauga.voider.resources.IResourcePrepareWrite;
 import com.spiddekauga.voider.resources.IResourceRender;
+import com.spiddekauga.voider.resources.IResourceRenderOrder;
 import com.spiddekauga.voider.resources.IResourceRevision;
 import com.spiddekauga.voider.resources.IResourceUpdate;
 import com.spiddekauga.voider.resources.Resource;
@@ -182,14 +184,19 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 		if (mRunning) {
 			if (mResourceRenders == null) {
 				mResourceRenders = mResourceBinder.getResources(IResourceRender.class);
+				//				sortRenderList(mResourceRenders);
 			}
 			for (IResourceRender resourceRender : mResourceRenders) {
+				offsetZValue(shapeRenderer, resourceRender);
 				resourceRender.render(shapeRenderer);
+				resetZValueOffset(shapeRenderer, resourceRender);
 			}
 		} else {
 			ArrayList<IResourceRender> resourceRenders = mResourceBinder.getResources(IResourceRender.class);
 			for (IResourceRender resourceRender : resourceRenders) {
+				offsetZValue(shapeRenderer, resourceRender);
 				resourceRender.render(shapeRenderer);
+				resetZValueOffset(shapeRenderer, resourceRender);
 			}
 			Pools.arrayList.free(resourceRenders);
 			resourceRenders = null;
@@ -206,17 +213,66 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 	 */
 	public void renderEditor(ShapeRendererEx shapeRenderer) {
 		ArrayList<IResourceEditorRender> resourceRenders = mResourceBinder.getResources(IResourceEditorRender.class);
+		//		sortRenderList(resourceRenders);
 		for (IResourceEditorRender resourceRender : resourceRenders) {
+			offsetZValue(shapeRenderer, resourceRender);
 			resourceRender.renderEditor(shapeRenderer);
+			resetZValueOffset(shapeRenderer, resourceRender);
 		}
 		Pools.arrayList.free(resourceRenders);
 		resourceRenders = null;
 	}
 
 	/**
+	 * Offset/Translate the z-value
+	 * @param shapeRenderer the shape renderer to translate
+	 * @param object information about z-value translation
+	 */
+	private void offsetZValue(ShapeRendererEx shapeRenderer, IResourceRenderOrder object) {
+		shapeRenderer.translate(0, 0, object.getRenderOrder().getZValue());
+	}
+
+	/**
+	 * Reset z-value offset
+	 * @param shapeRenderer the shape renderer to reset the z-value translation
+	 * @param object information about z-value translation
+	 */
+	private void resetZValueOffset(ShapeRendererEx shapeRenderer, IResourceRenderOrder object) {
+		shapeRenderer.translate(0, 0, -object.getRenderOrder().getZValue());
+	}
+
+	/**
 	 * Sort the rendering objects. I.e. which order the objects should be rendered
 	 * so they are displayed correctly.
+	 * @param renderObjects the list to sort rendering orders, back objects
+	 * will be placed first in the list.
 	 */
+	@SuppressWarnings("unchecked")
+	private void sortRenderList(ArrayList<? extends IResourceRenderOrder> renderObjects) {
+		// Create arrays for storing all different render objects
+		ArrayList<IResourceRenderOrder>[] sortedLists = new ArrayList[RenderOrders.values().length];
+		for (int i = 0; i < sortedLists.length; ++i) {
+			sortedLists[i] = Pools.arrayList.obtain();
+		}
+
+
+		// Sort objects into one of the lists
+		for (IResourceRenderOrder object : renderObjects) {
+			sortedLists[object.getRenderOrder().getOrder()].add(object);
+		}
+
+
+		// Readd all objects to the original render list, starting with lowest (one in back) priority
+		renderObjects.clear();
+		ArrayList<IResourceRenderOrder> castRenderObjects = (ArrayList<IResourceRenderOrder>) renderObjects;
+		for (int i = sortedLists.length - 1; i >= 0; --i) {
+			for (IResourceRenderOrder object : sortedLists[i]) {
+				castRenderObjects.add(object);
+			}
+		}
+
+		Pools.arrayList.freeAll(sortedLists);
+	}
 
 	/**
 	 * Adds a resource to the level
