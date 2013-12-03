@@ -3,7 +3,7 @@ general.png
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
-window-background-title
+window_background_title
   rotate: false
   xy: 1, 22
   size: 11, 40
@@ -11,77 +11,77 @@ window-background-title
   orig: 11, 40
   offset: 0, 0
   index: -1
-loading-bar-progress
+loading_bar_progress
   rotate: false
   xy: 14, 36
   size: 10, 26
   orig: 10, 26
   offset: 0, 0
   index: -1
-checkbox-off
+checkbox_off
   rotate: false
   xy: 26, 46
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
-radio-button-off
+radio_button_off
   rotate: false
   xy: 26, 46
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
-checkbox-on
+checkbox_on
   rotate: false
   xy: 44, 46
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
-loading-bar
+loading_bar
   rotate: false
   xy: 62, 36
   size: 1, 26
   orig: 1, 26
   offset: 0, 0
   index: -1
-radio-button-on
+radio_button_on
   rotate: false
   xy: 1, 4
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
-scroll-corner
+scroll_corner
   rotate: false
   xy: 26, 28
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
-scroll-horizontal-knob
+scroll_horizontal_knob
   rotate: false
   xy: 26, 28
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
-scroll-vertical-knob
+scroll_vertical_knob
   rotate: false
   xy: 26, 28
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
-slider-knob
+slider_knob
   rotate: false
   xy: 26, 28
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
-scroll-background
+scroll_background
   rotate: false
   xy: 44, 33
   size: 11, 11
@@ -89,7 +89,7 @@ scroll-background
   orig: 11, 11
   offset: 0, 0
   index: -1
-selectbox-background-open
+selectbox_background
   rotate: false
   xy: 44, 33
   size: 11, 11
@@ -97,7 +97,7 @@ selectbox-background-open
   orig: 11, 11
   offset: 0, 0
   index: -1
-selectbox-background-over
+selectbox_background_open
   rotate: false
   xy: 44, 33
   size: 11, 11
@@ -105,7 +105,7 @@ selectbox-background-over
   orig: 11, 11
   offset: 0, 0
   index: -1
-selectbox-background
+selectbox_background_over
   rotate: false
   xy: 44, 33
   size: 11, 11
@@ -113,7 +113,7 @@ selectbox-background
   orig: 11, 11
   offset: 0, 0
   index: -1
-window-background
+window_background
   rotate: false
   xy: 44, 33
   size: 11, 11
@@ -136,7 +136,7 @@ cursor
   orig: 5, 16
   offset: 0, 0
   index: -1
-button-default-checked-over
+button_default_checked
   rotate: false
   xy: 26, 19
   size: 7, 7
@@ -144,7 +144,7 @@ button-default-checked-over
   orig: 7, 7
   offset: 0, 0
   index: -1
-button-default-checked
+button_default_checked_over
   rotate: false
   xy: 26, 10
   size: 7, 7
@@ -152,7 +152,7 @@ button-default-checked
   orig: 7, 7
   offset: 0, 0
   index: -1
-button-default-disabled
+button_default_disabled
   rotate: false
   xy: 35, 19
   size: 7, 7
@@ -160,7 +160,7 @@ button-default-disabled
   orig: 7, 7
   offset: 0, 0
   index: -1
-button-default-down
+button_default_down
   rotate: false
   xy: 44, 24
   size: 7, 7
@@ -168,7 +168,7 @@ button-default-down
   orig: 7, 7
   offset: 0, 0
   index: -1
-button-default-over
+button_default_over
   rotate: false
   xy: 35, 10
   size: 7, 7
@@ -176,7 +176,7 @@ button-default-over
   orig: 7, 7
   offset: 0, 0
   index: -1
-button-default-up
+button_default_up
   rotate: false
   xy: 44, 15
   size: 7, 7
@@ -184,28 +184,28 @@ button-default-up
   orig: 7, 7
   offset: 0, 0
   index: -1
-scroll-horizontal
+scroll_horizontal
   rotate: false
   xy: 57, 36
   size: 1, 8
   orig: 1, 8
   offset: 0, 0
   index: -1
-slider-background
+slider_background
   rotate: false
   xy: 57, 36
   size: 1, 8
   orig: 1, 8
   offset: 0, 0
   index: -1
-scroll-vertical
+scroll_vertical
   rotate: false
   xy: 1, 1
   size: 8, 1
   orig: 8, 1
   offset: 0, 0
   index: -1
-modal-fade
+modal_fade
   rotate: false
   xy: 14, 22
   size: 1, 1

@@ -1,6 +1,7 @@
 package com.spiddekauga.voider.resources;
 
 
+
 /**
  * All skin names
  * 
@@ -17,6 +18,42 @@ public class SkinNames {
 		PADDING_SEPARATOR,
 		/** Left and right window padding */
 		PADDING_WINDOW_LEFT_RIGHT,
+		/** Default label */
+		LABEL_DEFAULT("default"),
+		/** Text button default style */
+		TEXT_BUTTON_PRESS("default"),
+		/** Text button that can toggle */
+		TEXT_BUTTON_TOGGLE("toggle"),
+		/** Text button that always is selected */
+		TEXT_BUTTON_SELECTED("selected"),
+		/** Check box that uses check boxes */
+		CHECK_BOX_DEFAULT("default"),
+		/** Check box that uses the radio button style */
+		CHECK_BOX_RADIO("radio"),
+		/** Slider default */
+		SLIDER_DEFAULT("default"),
+		/** Loading bar slider */
+		SLIDER_LOADING_BAR("loading_bar"),
+		/** Text field default */
+		TEXT_FIELD_DEFAULT("default"),
+		/** Window default style without title */
+		WINDOW_DEFAULT("default"),
+		/** Window no title */
+		WINDOW_NO_TITLE("default"),
+		/** Window with title */
+		WINDOW_TITLE("title"),
+		/** Modal window with no title */
+		WINDOW_MODAL("modal"),
+		/** Modal window with title */
+		WINDOW_MODAL_TITLE("modal_title"),
+		/** Scroll pane default, no background */
+		SCROLL_PANE_DEFAULT("default"),
+		/** Scroll pane with background */
+		SCROLL_PANE_WINDOW_BACKGROUND("background"),
+		/** List default */
+		LIST_DEFAULT("default"),
+		/** Select box default */
+		SELECT_BOX_DEFAULT("default"),
 
 		;
 
@@ -25,6 +62,51 @@ public class SkinNames {
 		 */
 		private General() {
 			mName = super.toString().toLowerCase();
+		}
+
+		/**
+		 * Create a custom name for the enumeration
+		 * @param jsonName name in the json-file
+		 */
+		private General(String jsonName) {
+			mName = jsonName;
+		}
+
+		/**
+		 * @return name of the icon inside the skin
+		 */
+		@Override
+		public String toString() {
+			return mName;
+		}
+
+		/** skin name of the icon */
+		private String mName;
+	}
+
+	/**
+	 * Game names
+	 */
+	public enum Game {
+		/** Health bar for the game */
+		HEALTH_BAR,
+
+
+		;
+
+		/**
+		 * Creates a more user-friendly name for the enumeration
+		 */
+		private Game() {
+			mName = super.toString().toLowerCase();
+		}
+
+		/**
+		 * Create a custom name for the enumeration
+		 * @param jsonName name in the json-file
+		 */
+		private Game(String jsonName) {
+			mName = jsonName;
 		}
 
 		/**
@@ -59,7 +141,7 @@ public class SkinNames {
 		BULLET_EDITOR,
 		/** When the bullet editor is selected, i.e. we're in the bullet editor */
 		BULLET_EDITOR_SELECTED,
-		/** Opens a dialog where the palyer will be able to select which bullet the enemy should use */
+		/** Opens a dialog where the player will be able to select which bullet the enemy should use */
 		BULLET_SELECT,
 		/** Go to the campaign editor */
 		CAMPAIGN_EDITOR,

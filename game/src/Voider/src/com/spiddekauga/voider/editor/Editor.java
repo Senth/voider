@@ -2,6 +2,7 @@ package com.spiddekauga.voider.editor;
 
 import com.spiddekauga.utils.Invoker;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.game.actors.ActorDef;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceNames;
 import com.spiddekauga.voider.scene.Gui;
@@ -98,6 +99,37 @@ public abstract class Editor extends WorldScene implements IEditor {
 	@Override
 	public Invoker getInvoker() {
 		return mInvoker;
+	}
+
+	/**
+	 * Creates a texture out of the specified actor definition and sets it
+	 * for the actor definition.
+	 * @param actorDef the actor definition to create an image for
+	 */
+	protected void createActorDefTexture(ActorDef actorDef) {
+		float width = actorDef.getWidth();
+		float height = actorDef.getHeight();
+
+		// Create duplicate
+
+		// Calculate how many world coordinates 200px is
+
+		// Normalize width and height vertices to use 200px
+
+		// Create a new actor and place it in a window corner
+
+		// Clear screen
+
+		// Render actor
+
+		// Take a 200x200 screen shot
+
+		// Save the texture from the screen shot
+
+		// Make black color to alpha
+
+		// Save texture to original definition
+
 	}
 
 	/** Invoker */

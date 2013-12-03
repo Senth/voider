@@ -86,6 +86,8 @@ public class MainMenu extends Scene {
 		// REMOVE testing
 		else if (keycode == Input.Keys.F5) {
 			SceneSwitcher.switchTo(new TestUiScene());
+		} else if (keycode == Input.Keys.F10) {
+			SceneSwitcher.switchTo(new PrototypeScene());
 		}
 		return false;
 	}

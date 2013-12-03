@@ -17,10 +17,8 @@ import org.junit.Test;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.lwjgl.LwjglFiles;
 import com.badlogic.gdx.backends.lwjgl.LwjglNativesLoader;
-import com.badlogic.gdx.utils.Json;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.KryoPrototypeTest;
-import com.spiddekauga.utils.JsonWrapper;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.actors.BulletActorDef;
 import com.spiddekauga.voider.game.actors.PickupActorDef;
@@ -61,18 +59,6 @@ public class DefTest {
 
 		assertEquals("equals()", def, def);
 		assertTrue("not equals()", !def.equals(def2));
-
-
-		// Use JSON to create a second definition with the same UUID
-		Json json = new JsonWrapper();
-		String jsonString = json.toJson(def);
-		Def testDef = json.fromJson(PlayerActorDef.class, jsonString);
-		assertEquals("equals() from json", testDef, def);
-
-		// Change dependencies
-		testDef.addDependency(def2);
-		testDef.addDependency(ResourceNames.TEXTURE_PLAYER);
-		assertEquals("equals() from json, added dependencies", testDef, def);
 	}
 
 	/**

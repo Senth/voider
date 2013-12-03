@@ -20,6 +20,7 @@ import com.spiddekauga.utils.scene.ui.TextFieldListener;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceNames;
+import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.scene.Gui;
 
 /**
@@ -55,11 +56,11 @@ public class TestUiGui extends Gui {
 		mMainTable.row();
 
 		// Default
-		Button button = new TextButton("Test default", mGeneralSkin, "default");
+		Button button = new TextButton("Test default", mGeneralSkin, SkinNames.General.TEXT_BUTTON_PRESS.toString());
 		mMainTable.add(button);
 
 		// Checkable
-		button = new TextButton("Test checkable", mGeneralSkin, "toggle");
+		button = new TextButton("Test checkable", mGeneralSkin, SkinNames.General.TEXT_BUTTON_TOGGLE.toString());
 		mMainTable.add(button);
 
 		// Up
@@ -71,7 +72,7 @@ public class TestUiGui extends Gui {
 		mMainTable.add(button);
 
 		// Checked
-		button = new TextButton("Checked", mGeneralSkin, "selected");
+		button = new TextButton("Checked", mGeneralSkin, SkinNames.General.TEXT_BUTTON_SELECTED.toString());
 		mMainTable.add(button);
 
 		// Over
@@ -106,20 +107,20 @@ public class TestUiGui extends Gui {
 		mMainTable.row();
 
 		// Checkboxes
-		Button button = new CheckBox("Checkbox 1", mGeneralSkin, "default");
+		Button button = new CheckBox("Checkbox 1", mGeneralSkin, SkinNames.General.CHECK_BOX_DEFAULT.toString());
 		mMainTable.add(button);
 
-		button = new CheckBox("Checkbox 2", mGeneralSkin, "default");
+		button = new CheckBox("Checkbox 2", mGeneralSkin, SkinNames.General.CHECK_BOX_DEFAULT.toString());
 		button.setChecked(true);
 		mMainTable.add(button).setPadRight(50);
 
 		// Radio buttons
 		ButtonGroup buttonGroup = new ButtonGroup();
-		button = new CheckBox("Radio 1", mGeneralSkin, "radio");
+		button = new CheckBox("Radio 1", mGeneralSkin, SkinNames.General.CHECK_BOX_RADIO.toString());
 		buttonGroup.add(button);
 		mMainTable.add(button);
 
-		button = new CheckBox("Radio 2", mGeneralSkin, "radio");
+		button = new CheckBox("Radio 2", mGeneralSkin, SkinNames.General.CHECK_BOX_RADIO.toString());
 		buttonGroup.add(button);
 		mMainTable.add(button);
 	}
@@ -133,21 +134,21 @@ public class TestUiGui extends Gui {
 		// Default
 		Label label = new Label("Slider:", mGeneralSkin);
 		mMainTable.add(label).setPadRight(10);
-		Slider slider = new Slider(0, 100, 1, false, mGeneralSkin, "default");
+		Slider slider = new Slider(0, 100, 1, false, mGeneralSkin, SkinNames.General.SLIDER_DEFAULT.toString());
 		mMainTable.add(slider);
 
 		// Loading bar
 		mMainTable.row();
 		label = new Label("Loading bar:", mGeneralSkin);
 		mMainTable.add(label).setPadRight(10);
-		slider = new Slider(0, 100, 1, false, mGeneralSkin, "loading-bar");
+		slider = new Slider(0, 100, 1, false, mGeneralSkin, SkinNames.General.SLIDER_LOADING_BAR.toString());
 		mLoadingBar = slider;
 		mMainTable.add(slider).setPadRight(20);
 
 		// Health bar
 		label = new Label("Health bar:", mGeneralSkin);
 		mMainTable.add(label).setPadRight(10);
-		slider = new Slider(0, 100, 1, false, mGameSkin, "health_bar");
+		slider = new Slider(0, 100, 1, false, mGameSkin, SkinNames.Game.HEALTH_BAR.toString());
 		mHealthBar = slider;
 		mMainTable.add(slider);
 	}
@@ -274,6 +275,7 @@ public class TestUiGui extends Gui {
 
 	/**
 	 * Sets the health bar to the specified value
+	 * @param health the health to set
 	 */
 	void setHealthBar(float health) {
 		mHealthBar.setValue(health);

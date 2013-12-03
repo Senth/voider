@@ -241,7 +241,6 @@ public abstract class ActorGui extends EditorGui {
 		ButtonGroup buttonGroup = new ButtonGroup();
 		HideListener circleHider = null;
 		Button button;
-		/** @todo remove text button */
 		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Circle", mStyles.textButton.toggle);
 		} else {
@@ -263,7 +262,6 @@ public abstract class ActorGui extends EditorGui {
 		};
 
 		HideListener rectangleHider = null;
-		/** @todo remove text button */
 		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Rectangle", mStyles.textButton.toggle);
 		} else {
@@ -285,7 +283,6 @@ public abstract class ActorGui extends EditorGui {
 		};
 
 		HideListener triangleHider = null;
-		/** @todo remove text button */
 		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Triangle", mStyles.textButton.toggle);
 		} else {
@@ -307,7 +304,6 @@ public abstract class ActorGui extends EditorGui {
 		};
 
 
-		/** @todo remove text button */
 		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Draw", mStyles.textButton.toggle);
 		} else {
@@ -486,7 +482,6 @@ public abstract class ActorGui extends EditorGui {
 		mDrawToolHider.addToggleActor(mWidgets.visualToolMenu.table);
 
 		// Move
-		/** @todo remove text button */
 		mWidgets.visualToolMenu.table.row();
 		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Move", mStyles.textButton.toggle);
@@ -508,7 +503,6 @@ public abstract class ActorGui extends EditorGui {
 
 		// Delete
 		mWidgets.visualToolMenu.table.row();
-		/** @todo remove text button */
 		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Delete", mStyles.textButton.toggle);
 		} else {
@@ -529,7 +523,6 @@ public abstract class ActorGui extends EditorGui {
 
 		// Append
 		mWidgets.visualToolMenu.table.row();
-		/** @todo remove text button */
 		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Draw/Append", mStyles.textButton.toggle);
 		} else {
@@ -550,7 +543,6 @@ public abstract class ActorGui extends EditorGui {
 
 		// Add Remove (draw/erase)
 		mWidgets.visualToolMenu.table.row();
-		/** @todo remove text button */
 		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Draw/Erase", mStyles.textButton.toggle);
 		} else {
@@ -571,7 +563,6 @@ public abstract class ActorGui extends EditorGui {
 
 		// Add corner
 		mWidgets.visualToolMenu.table.row();
-		/** @todo remove text button */
 		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Add/Move corner", mStyles.textButton.toggle);
 		} else {
@@ -592,7 +583,6 @@ public abstract class ActorGui extends EditorGui {
 
 		// Remove corner
 		mWidgets.visualToolMenu.table.row();
-		/** @todo remove text button */
 		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Remove corner", mStyles.textButton.toggle);
 		} else {
@@ -613,7 +603,6 @@ public abstract class ActorGui extends EditorGui {
 
 		// Set center
 		mWidgets.visualToolMenu.table.row();
-		/** @todo remove text button */
 		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Set center", mStyles.textButton.toggle);
 		} else {
@@ -635,7 +624,6 @@ public abstract class ActorGui extends EditorGui {
 
 		// Reset center
 		mWidgets.visualToolMenu.table.row();
-		/** @todo remove text button */
 		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Reset center", mStyles.textButton.toggle);
 		} else {

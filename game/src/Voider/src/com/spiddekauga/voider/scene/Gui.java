@@ -18,6 +18,7 @@ import com.spiddekauga.utils.scene.ui.MessageShower;
 import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceNames;
+import com.spiddekauga.voider.resources.SkinNames;
 
 /**
  * Base class for all GUI containing windows
@@ -104,7 +105,7 @@ public abstract class Gui implements Disposable {
 	public MsgBoxExecuter getFreeMsgBox(boolean useTitleStyle) {
 		MsgBoxExecuter msgBox = null;
 
-		String windowStyleName = useTitleStyle ? "modal-title" : "modal";
+		String windowStyleName = useTitleStyle ? SkinNames.General.WINDOW_MODAL_TITLE.toString() : SkinNames.General.WINDOW_MODAL.toString();
 
 		// Find a free existing one
 		for (int i = mInactiveMsgBoxes.size() - 1; i >= 0; i--) {

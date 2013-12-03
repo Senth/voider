@@ -58,7 +58,7 @@ public class MainMenuGui extends Gui {
 	 */
 	private void initMainMenu() {
 		Skin skin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
-		TextButtonStyle textPressStyle = skin.get("default", TextButtonStyle.class);
+		TextButtonStyle textPressStyle = skin.get(SkinNames.General.TEXT_BUTTON_PRESS.toString(), TextButtonStyle.class);
 
 		@SuppressWarnings("unchecked")
 		ArrayList<Button> buttons = Pools.arrayList.obtain();

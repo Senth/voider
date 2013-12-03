@@ -2,6 +2,7 @@ package com.spiddekauga.voider.editor;
 
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
@@ -12,9 +13,11 @@ import com.spiddekauga.utils.scene.ui.HideListener;
 import com.spiddekauga.utils.scene.ui.Label;
 import com.spiddekauga.utils.scene.ui.SliderListener;
 import com.spiddekauga.utils.scene.ui.TooltipListener;
+import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Editor;
 import com.spiddekauga.voider.Config.Editor.Weapon;
 import com.spiddekauga.voider.Config.Gui;
+import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.utils.Messages;
 
 /**
@@ -64,12 +67,11 @@ public class BulletEditorGui extends ActorGui {
 		GuiCheckCommandCreator menuChecker = new GuiCheckCommandCreator(mInvoker);
 		Button button;
 		ButtonGroup buttonGroup = new ButtonGroup();
-		/** @todo add image button */
-		//		if (Config.Gui.usesTextButtons()) {
-		button = new TextButton("Visuals", mStyles.textButton.toggle);
-		//		} else {
-		//			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.VISUALS.toString());
-		//		}
+		if (Config.Gui.usesTextButtons()) {
+			button = new TextButton("Visuals", mStyles.textButton.toggle);
+		} else {
+			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.VISUALS.toString());
+		}
 		button.addListener(menuChecker);
 		buttonGroup.add(button);
 		addToEditorMenu(button);
@@ -78,12 +80,11 @@ public class BulletEditorGui extends ActorGui {
 		new TooltipListener(button, "Visuals", Messages.replaceName(Messages.Tooltip.Actor.Menu.VISUALS, "bullet"));
 
 		// Weapon
-		/** @todo add image button */
-		//		if (Config.Gui.usesTextButtons()) {
-		button = new TextButton("Weapon", mStyles.textButton.toggle);
-		//		} else {
-		//			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.WEAPON.toString());
-		//		}
+		if (Config.Gui.usesTextButtons()) {
+			button = new TextButton("Weapon", mStyles.textButton.toggle);
+		} else {
+			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.WEAPON.toString());
+		}
 		button.addListener(menuChecker);
 		buttonGroup.add(button);
 		addToEditorMenu(button);

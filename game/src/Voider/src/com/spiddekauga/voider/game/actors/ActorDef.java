@@ -1,13 +1,17 @@
 package com.spiddekauga.voider.game.actors;
 
+import java.util.ArrayList;
+
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.utils.Disposable;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.voider.game.Collectibles;
 import com.spiddekauga.voider.resources.Def;
+import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Definition of the actor. This include common attribute for a common type of actor.
@@ -82,6 +86,82 @@ public abstract class ActorDef extends Def implements Disposable {
 	 */
 	public float getStartAngleDeg() {
 		return getStartAngleRad() * MathUtils.radiansToDegrees;
+	}
+
+	/**
+	 * Calculates the height of the actor definition. Only works if the actor
+	 * has created vertices. This takes into account the starting angle of the
+	 * actor.
+	 * @return actual height of the actor. 0 if no vertices has been created.
+	 */
+	public float getHeight() {
+		ArrayList<Vector2> vertices = getVisualVars().getPolygonShape();
+
+		if (vertices.isEmpty()) {
+			return 0;
+		}
+
+		float rotation = getStartAngleDeg();
+
+		float highest = Float.MIN_VALUE;
+		float lowest = Float.MAX_VALUE;
+
+		// Rotate vertex and check if it's the highest lowest y-value
+		Vector2 tempRotatedVertex = Pools.vector2.obtain();
+		for (Vector2 vertex : vertices) {
+			tempRotatedVertex.set(vertex);
+
+			// Rotate vertex
+			tempRotatedVertex.rotate(rotation);
+
+			// Check highest and lowest
+			if (tempRotatedVertex.y > highest) {
+				highest = tempRotatedVertex.y;
+			}
+			if (tempRotatedVertex.y < lowest) {
+				lowest = tempRotatedVertex.y;
+			}
+		}
+
+		return highest - lowest;
+	}
+
+	/**
+	 * Calculates the width of the actor definition. Only works if the actor
+	 * has created vertices. This takes into account the starting angle of the
+	 * actor.
+	 * @return actual width of the actor. 0 if no vertices has been created.
+	 */
+	public float getWidth() {
+		ArrayList<Vector2> vertices = getVisualVars().getPolygonShape();
+
+		if (vertices.isEmpty()) {
+			return 0;
+		}
+
+		float rotation = getStartAngleDeg();
+
+		float highest = Float.MIN_VALUE;
+		float lowest = Float.MAX_VALUE;
+
+		// Rotate vertex and check if it's the highest lowest y-value
+		Vector2 tempRotatedVertex = Pools.vector2.obtain();
+		for (Vector2 vertex : vertices) {
+			tempRotatedVertex.set(vertex);
+
+			// Rotate vertex
+			tempRotatedVertex.rotate(rotation);
+
+			// Check highest and lowest
+			if (tempRotatedVertex.x > highest) {
+				highest = tempRotatedVertex.x;
+			}
+			if (tempRotatedVertex.x < lowest) {
+				lowest = tempRotatedVertex.x;
+			}
+		}
+
+		return highest - lowest;
 	}
 
 	/**

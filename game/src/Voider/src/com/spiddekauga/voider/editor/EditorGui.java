@@ -39,6 +39,7 @@ import com.spiddekauga.voider.editor.commands.CSceneSwitch;
 import com.spiddekauga.voider.game.actors.ActorFilterCategories;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceNames;
+import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.resources.SkinNames.EditorIcons;
 import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.scene.Scene;
@@ -94,13 +95,14 @@ public abstract class EditorGui extends Gui {
 
 		mStyles.skin.general = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
 		mStyles.skin.editor = ResourceCacheFacade.get(ResourceNames.UI_EDITOR_BUTTONS);
-		mStyles.textButton.standard = mStyles.skin.general.get("default", TextButtonStyle.class);
-		mStyles.textButton.toggle = mStyles.skin.general.get("toggle", TextButtonStyle.class);
-		mStyles.textButton.selected = mStyles.skin.general.get("selected", TextButtonStyle.class);
-		mStyles.slider.standard = mStyles.skin.general.get("default", SliderStyle.class);
-		mStyles.textField.standard = mStyles.skin.general.get("default", TextFieldStyle.class);
-		mStyles.label.standard = mStyles.skin.general.get("default", LabelStyle.class);
-		mStyles.checkBox.radio = mStyles.skin.general.get("default", CheckBoxStyle.class);
+		mStyles.textButton.standard = mStyles.skin.general.get(SkinNames.General.TEXT_BUTTON_PRESS.toString(), TextButtonStyle.class);
+		mStyles.textButton.toggle = mStyles.skin.general.get(SkinNames.General.TEXT_BUTTON_TOGGLE.toString(), TextButtonStyle.class);
+		mStyles.textButton.selected = mStyles.skin.general.get(SkinNames.General.TEXT_BUTTON_SELECTED.toString(), TextButtonStyle.class);
+		mStyles.slider.standard = mStyles.skin.general.get(SkinNames.General.SLIDER_DEFAULT.toString(), SliderStyle.class);
+		mStyles.textField.standard = mStyles.skin.general.get(SkinNames.General.TEXT_FIELD_DEFAULT.toString(), TextFieldStyle.class);
+		mStyles.label.standard = mStyles.skin.general.get(SkinNames.General.LABEL_DEFAULT.toString(), LabelStyle.class);
+		mStyles.checkBox.checkBox = mStyles.skin.general.get(SkinNames.General.CHECK_BOX_DEFAULT.toString(), CheckBoxStyle.class);
+		mStyles.checkBox.radio = mStyles.skin.general.get(SkinNames.General.CHECK_BOX_RADIO.toString(), CheckBoxStyle.class);
 
 		mEditorMenu.setTableAlign(Horizontal.LEFT, Vertical.TOP);
 		mFileMenu.setTableAlign(Horizontal.RIGHT, Vertical.TOP);
@@ -284,12 +286,11 @@ public abstract class EditorGui extends Gui {
 
 
 		// Undo
-		/** @todo set image button */
-		//		if (Config.Gui.usesTextButtons()) {
-		button = new TextButton("Undo", mStyles.textButton.standard);
-		//		} else {
-		//			button = new ImageButton(mStyles.skin.editor, EditorIcons.UNDO.toString());
-		//		}
+		if (Config.Gui.usesTextButtons()) {
+			button = new TextButton("Undo", mStyles.textButton.standard);
+		} else {
+			button = new ImageButton(mStyles.skin.editor, EditorIcons.UNDO.toString());
+		}
 		mFileMenu.add(button);
 		new ButtonListener(button) {
 			@Override
@@ -299,12 +300,11 @@ public abstract class EditorGui extends Gui {
 		};
 
 		// Redo
-		/** @todo set image button */
-		//		if (Config.Gui.usesTextButtons()) {
-		button = new TextButton("Redo", mStyles.textButton.standard);
-		//		} else {
-		//			button = new ImageButton(mStyles.skin.editor, EditorIcons.REDO.toString());
-		//		}
+		if (Config.Gui.usesTextButtons()) {
+			button = new TextButton("Redo", mStyles.textButton.standard);
+		} else {
+			button = new ImageButton(mStyles.skin.editor, EditorIcons.REDO.toString());
+		}
 		mFileMenu.add(button).setPadRight(Config.Gui.SEPARATE_PADDING);
 		new ButtonListener(button) {
 			@Override
@@ -550,6 +550,7 @@ public abstract class EditorGui extends Gui {
 
 		static class CheckBox {
 			CheckBoxStyle radio = null;
+			CheckBoxStyle checkBox = null;
 		}
 	}
 

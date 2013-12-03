@@ -231,6 +231,8 @@ public class BulletEditor extends Editor implements IActorEditor, IResourceChang
 
 	@Override
 	public void saveDef() {
+
+
 		ResourceSaver.save(mDef);
 
 		// Saved first time? Then load it and use the loaded version

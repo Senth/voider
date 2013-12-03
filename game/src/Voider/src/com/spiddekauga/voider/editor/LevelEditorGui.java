@@ -243,7 +243,7 @@ class LevelEditorGui extends EditorGui {
 		toolButtons.add(button);
 
 		// Cancel
-		/** @todo set image button */
+		/** @todo add cancel button */
 		//		if (Config.Gui.usesTextButtons()) {
 		//			button = new TextButton("Cancel", mStyles.textButton.standard);
 		//		} else {
@@ -398,12 +398,11 @@ class LevelEditorGui extends EditorGui {
 		toolButtons.add(button);
 
 		// Enemy - set activate trigger
-		/** @todo set image button */
-		//		if (Config.Gui.usesTextButtons()) {
-		button = new TextButton("Set activate trigger", mStyles.textButton.standard);
-		//		} else {
-		//			button = new ImageButton(mStyles.skin.editor, EditorIcons.ENEMY_SET_ACTIVATE_TRIGGER.toString());
-		//		}
+		if (Config.Gui.usesTextButtons()) {
+			button = new TextButton("Set activate trigger", mStyles.textButton.standard);
+		} else {
+			button = new ImageButton(mStyles.skin.editor, EditorIcons.ENEMY_SET_ACTIVATE_TRIGGER.toString());
+		}
 		tooltipListener = new TooltipListener(button, "Set activate trigger", Messages.replaceName(Messages.Tooltip.Tools.SET_ACTIVATE_TRIGGER, getResourceTypeName()));
 		new ButtonListener(button, tooltipListener) {
 			@Override
@@ -416,12 +415,11 @@ class LevelEditorGui extends EditorGui {
 		toolButtons.add(button);
 
 		// Enemy - set deactivate trigger
-		/** @todo set image button */
-		//		if (Config.Gui.usesTextButtons()) {
-		button = new TextButton("Set deactivate trigger", mStyles.textButton.standard);
-		//		} else {
-		//			button = new ImageButton(mStyles.skin.editor, EditorIcons.ENEMY_SET_DEACTIVATE_TRIGGER.toString());
-		//		}
+		if (Config.Gui.usesTextButtons()) {
+			button = new TextButton("Set deactivate trigger", mStyles.textButton.standard);
+		} else {
+			button = new ImageButton(mStyles.skin.editor, EditorIcons.ENEMY_SET_DEACTIVATE_TRIGGER.toString());
+		}
 		tooltipListener = new TooltipListener(button, "Set deactivate trigger", Messages.replaceName(Messages.Tooltip.Tools.SET_DEACTIVATE_DELAY, getResourceTypeName()));
 		new ButtonListener(button, tooltipListener) {
 			@Override
@@ -450,8 +448,8 @@ class LevelEditorGui extends EditorGui {
 		};
 		toolButtons.add(button);
 
+		/** @todo readd pickup */
 		//		// Pickup add
-		//		/** @todo REMOVE text button */
 		//		if (Config.Gui.usesTextButtons()) {
 		//			button = new TextButton("Add pickup", mStyles.textButton.standard);
 		//		} else {
@@ -676,7 +674,6 @@ class LevelEditorGui extends EditorGui {
 		mWidgets.enemyAdd.table.add(label).setAlign(Horizontal.RIGHT, Vertical.MIDDLE);
 
 		mWidgets.enemyAdd.table.row();
-		/** @todo remove text button */
 		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Select type", textButtonStyle);
 		} else {
@@ -698,11 +695,6 @@ class LevelEditorGui extends EditorGui {
 	 * Initializes Enemy Tool GUI
 	 */
 	private void initEnemyOptions() {
-		Skin generalSkin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
-		SliderStyle sliderStyle = generalSkin.get("default", SliderStyle.class);
-		TextFieldStyle textFieldStyle = generalSkin.get("default", TextFieldStyle.class);
-		LabelStyle labelStyle = generalSkin.get("default", LabelStyle.class);
-
 		mWidgets.enemy.table.setPreferences(mMainTable);
 		mMainTable.row();
 		mMainTable.add(mWidgets.enemy.table);
@@ -712,15 +704,15 @@ class LevelEditorGui extends EditorGui {
 		// Enemy options when an enemy is selected
 		// # Enemies
 		mWidgets.enemy.table.row();
-		Label label = new Label("# Enemies", labelStyle);
+		Label label = new Label("# Enemies", mStyles.label.standard);
 		new TooltipListener(label, "No. of enemies", Messages.Tooltip.Level.Enemy.ENEMY_COUNT);
 		mWidgets.enemy.table.add(label);
 
 		mWidgets.enemy.table.row();
-		Slider slider = new Slider(Level.Enemy.ENEMIES_MIN, Level.Enemy.ENEMIES_MAX, Level.Enemy.ENEMIES_STEP_SIZE, false, sliderStyle);
+		Slider slider = new Slider(Level.Enemy.ENEMIES_MIN, Level.Enemy.ENEMIES_MAX, Level.Enemy.ENEMIES_STEP_SIZE, false, mStyles.slider.standard);
 		mWidgets.enemy.cEnemies = slider;
 		mWidgets.enemy.table.add(slider);
-		TextField textField = new TextField("", textFieldStyle);
+		TextField textField = new TextField("", mStyles.textField.standard);
 		textField.setWidth(Config.Editor.TEXT_FIELD_NUMBER_WIDTH);
 		mWidgets.enemy.table.add(textField);
 		new TooltipListener(slider, "No. of enemies", Messages.Tooltip.Level.Enemy.ENEMY_COUNT);
@@ -737,17 +729,17 @@ class LevelEditorGui extends EditorGui {
 
 		// Delay
 		mWidgets.enemy.table.row();
-		label = new Label("Spawn delay between enemies", labelStyle);
+		label = new Label("Spawn delay between enemies", mStyles.label.standard);
 		new TooltipListener(label, "Spawn delay", Messages.Tooltip.Level.Enemy.ENEMY_SPAWN_DELAY);
 		delayHider.addToggleActor(label);
 		mWidgets.enemy.table.add(label);
 
 		mWidgets.enemy.table.row();
-		slider = new Slider(Level.Enemy.DELAY_BETWEEN_MIN, Level.Enemy.DELAY_BETWEEN_MAX, Level.Enemy.DELAY_BETWEEN_STEP_SIZE, false, sliderStyle);
+		slider = new Slider(Level.Enemy.DELAY_BETWEEN_MIN, Level.Enemy.DELAY_BETWEEN_MAX, Level.Enemy.DELAY_BETWEEN_STEP_SIZE, false, mStyles.slider.standard);
 		delayHider.addToggleActor(slider);
 		mWidgets.enemy.betweenDelay = slider;
 		mWidgets.enemy.table.add(slider);
-		textField = new TextField("", textFieldStyle);
+		textField = new TextField("", mStyles.textField.standard);
 		delayHider.addToggleActor(textField);
 		textField.setWidth(Config.Editor.TEXT_FIELD_NUMBER_WIDTH);
 		mWidgets.enemy.table.add(textField);
@@ -763,17 +755,17 @@ class LevelEditorGui extends EditorGui {
 
 		// Activation delay
 		mWidgets.enemy.table.row();
-		label = new Label("Activate delay", labelStyle);
+		label = new Label("Activate delay", mStyles.label.standard);
 		new TooltipListener(label, "Activate delay", Messages.Tooltip.Level.Enemy.ACTIVATE_DELAY);
 		mHiders.enemyActivateDelay.addToggleActor(label);
 		mWidgets.enemy.table.add(label);
 
 		mWidgets.enemy.table.row();
-		slider = new Slider(Level.Enemy.TRIGGER_ACTIVATE_DELAY_MIN, Level.Enemy.TRIGGER_ACTIVATE_DELAY_MAX, Level.Enemy.TRIGGER_ACTIVATE_DELAY_STEP_SIZE, false, sliderStyle);
+		slider = new Slider(Level.Enemy.TRIGGER_ACTIVATE_DELAY_MIN, Level.Enemy.TRIGGER_ACTIVATE_DELAY_MAX, Level.Enemy.TRIGGER_ACTIVATE_DELAY_STEP_SIZE, false, mStyles.slider.standard);
 		mHiders.enemyActivateDelay.addToggleActor(slider);
 		mWidgets.enemy.activateDelay = slider;
 		mWidgets.enemy.table.add(slider);
-		textField = new TextField("", textFieldStyle);
+		textField = new TextField("", mStyles.textField.standard);
 		mHiders.enemyActivateDelay.addToggleActor(textField);
 		textField.setWidth(Config.Editor.TEXT_FIELD_NUMBER_WIDTH);
 		mWidgets.enemy.table.add(textField);
@@ -789,17 +781,17 @@ class LevelEditorGui extends EditorGui {
 
 		// Deactivation delay
 		mWidgets.enemy.table.row();
-		label = new Label("Deactivate delay", labelStyle);
+		label = new Label("Deactivate delay", mStyles.label.standard);
 		new TooltipListener(label, "Deactivate delay", Messages.Tooltip.Level.Enemy.DEACTIVATE_DELAY);
 		mHiders.enemyDeactivateDelay.addToggleActor(label);
 		mWidgets.enemy.table.add(label);
 
 		mWidgets.enemy.table.row();
-		slider = new Slider(Level.Enemy.TRIGGER_DEACTIVATE_DELAY_MIN, Level.Enemy.TRIGGER_DEACTIVATE_DELAY_MAX, Level.Enemy.TRIGGER_DEACTIVATE_DELAY_STEP_SIZE, false, sliderStyle);
+		slider = new Slider(Level.Enemy.TRIGGER_DEACTIVATE_DELAY_MIN, Level.Enemy.TRIGGER_DEACTIVATE_DELAY_MAX, Level.Enemy.TRIGGER_DEACTIVATE_DELAY_STEP_SIZE, false, mStyles.slider.standard);
 		mHiders.enemyDeactivateDelay.addToggleActor(slider);
 		mWidgets.enemy.deactivateDelay = slider;
 		mWidgets.enemy.table.add(slider);
-		textField = new TextField("", textFieldStyle);
+		textField = new TextField("", mStyles.textField.standard);
 		mHiders.enemyDeactivateDelay.addToggleActor(textField);
 		textField.setWidth(Config.Editor.TEXT_FIELD_NUMBER_WIDTH);
 		mWidgets.enemy.table.add(textField);
@@ -819,8 +811,6 @@ class LevelEditorGui extends EditorGui {
 	 * Initializes path tool GUI
 	 */
 	private void initPathOptions() {
-		Skin generalSkin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
-		TextButtonStyle textToggleStyle = generalSkin.get("toggle", TextButtonStyle.class);
 		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.UI_EDITOR_BUTTONS);
 
 		mHiders.pathOptions.addToggleActor(mWidgets.path.table);
@@ -832,9 +822,8 @@ class LevelEditorGui extends EditorGui {
 		Button button;
 		ButtonGroup buttonGroup = new ButtonGroup();
 		buttonGroup.setMinCheckCount(0);
-		/** @todo remove text button */
 		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Once", textToggleStyle);
+			button = new TextButton("Once", mStyles.textButton.toggle);
 		} else {
 			button = new ImageButton(editorSkin, SkinNames.EditorIcons.PATH_ONCE.toString());
 		}
@@ -853,9 +842,8 @@ class LevelEditorGui extends EditorGui {
 
 
 		mWidgets.path.table.row();
-		/** @todo remove text button */
 		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Loop", textToggleStyle);
+			button = new TextButton("Loop", mStyles.textButton.toggle);
 		} else {
 			button = new ImageButton(editorSkin, SkinNames.EditorIcons.PATH_LOOP.toString());
 		}
@@ -874,9 +862,8 @@ class LevelEditorGui extends EditorGui {
 
 
 		mWidgets.path.table.row();
-		/** @todo remove text button */
 		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Back and forth", textToggleStyle);
+			button = new TextButton("Back and forth", mStyles.textButton.toggle);
 		} else {
 			button = new ImageButton(editorSkin, SkinNames.EditorIcons.PATH_BACK_AND_FORTH.toString());
 		}
@@ -919,8 +906,7 @@ class LevelEditorGui extends EditorGui {
 		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Select type", textButtonStyle);
 		} else {
-			/** @todo default stub image button */
-			button = new ImageButton(editorSkin, "default-toggle");
+			button = new ImageButton(editorSkin, SkinNames.EditorIcons.PICKUP_SELECT.toString());
 		}
 		TooltipListener tooltipListener = new TooltipListener(button, "Select type", Messages.Tooltip.Level.Pickup.SELECT_TYPE);
 		new ButtonListener(button, tooltipListener) {

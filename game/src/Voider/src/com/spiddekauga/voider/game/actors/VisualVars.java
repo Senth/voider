@@ -564,6 +564,7 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 	 * @throws PolygonComplexException if the method failed to make the polygon non-complex
 	 * @throws PolygonCornersTooCloseException if some corners are too close
 	 */
+	@SuppressWarnings("unchecked")
 	public void fixCustomShapeFixtures() {
 		// Save fixture properties
 		FixtureDef savedFixtureProperties = null;
@@ -701,6 +702,11 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 			// Free vertices stuff
 			if (!mShapeComplete) {
 				clearVertices();
+			} else {
+				mPolygon = Pools.arrayList.obtain();
+				for (Vector2 vertex : mCorners) {
+					mPolygon.add(Pools.vector2.obtain().set(vertex));
+				}
 			}
 
 			// Free stuff
@@ -742,6 +748,11 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 			}
 			mVertices = mEarClippingTriangulator.computeTriangles(circleVertices);
 			Collections.reverse(mVertices);
+
+			mPolygon = Pools.arrayList.obtain();
+			for (Vector2 vertex : circleVertices) {
+				mPolygon.add(Pools.vector2.obtain().set(vertex));
+			}
 
 			Pools.vector2.free(offsetPosition);
 			offsetPosition = null;

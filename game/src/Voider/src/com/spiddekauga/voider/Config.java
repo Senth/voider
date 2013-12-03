@@ -522,7 +522,7 @@ public class Config {
 		/** Name of the latest copy in revision directories */
 		public final static String REVISION_LATEST_NAME = "LATEST";
 		/** Uses external images, etc. instead of internal for resources */
-		public final static boolean USE_EXTERNAL_RESOURCES = false;
+		public final static boolean USE_EXTERNAL_RESOURCES = true;
 	}
 
 	/**
@@ -558,7 +558,7 @@ public class Config {
 	 */
 	public static class Graphics {
 		/** If we shall use debug_renderer to display graphics instead of sprites (where applicable) */
-		public final static boolean USE_DEBUG_RENDERER = true;
+		public final static boolean USE_DEBUG_RENDERER = false;
 		/** Renders regular graphics */
 		public final static boolean USE_RELEASE_RENDERER = true;
 		/** Epsilon for box 2d */

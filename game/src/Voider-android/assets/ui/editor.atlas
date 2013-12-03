@@ -367,7 +367,7 @@ trigger_add
   orig: 40, 40
   offset: 0, 0
   index: -1
-button-default-checked-over
+button_default_checked
   rotate: false
   xy: 1, 26
   size: 7, 7
@@ -375,7 +375,7 @@ button-default-checked-over
   orig: 7, 7
   offset: 0, 0
   index: -1
-button-default-checked
+button_default_checked_over
   rotate: false
   xy: 463, 34
   size: 7, 7
@@ -383,7 +383,7 @@ button-default-checked
   orig: 7, 7
   offset: 0, 0
   index: -1
-button-default-disabled
+button_default_disabled
   rotate: false
   xy: 1, 17
   size: 7, 7
@@ -391,7 +391,7 @@ button-default-disabled
   orig: 7, 7
   offset: 0, 0
   index: -1
-button-default-down
+button_default_down
   rotate: false
   xy: 10, 26
   size: 7, 7
@@ -399,7 +399,7 @@ button-default-down
   orig: 7, 7
   offset: 0, 0
   index: -1
-button-default-over
+button_default_over
   rotate: false
   xy: 463, 25
   size: 7, 7
@@ -407,7 +407,7 @@ button-default-over
   orig: 7, 7
   offset: 0, 0
   index: -1
-button-default-up
+button_default_up
   rotate: false
   xy: 472, 34
   size: 7, 7
