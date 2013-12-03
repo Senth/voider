@@ -286,6 +286,23 @@ public class SceneSwitcher {
 	}
 
 	/**
+	 * @return world:screen ratio, i.e. how many worlds it goes to fill the screen,
+	 * or screen / world. 0 if the scene isn't a world scene.
+	 */
+	public static float getWorldScreenRatio() {
+		if (mScenes.isEmpty()) {
+			return 0;
+		} else {
+			float worldWidth = getWorldWidth();
+			if (worldWidth != 0) {
+				return Gdx.graphics.getWidth() / worldWidth;
+			} else {
+				return 0;
+			}
+		}
+	}
+
+	/**
 	 * @return invoker of the current scene, null if the scene doesn't have an invoker or if
 	 * no scene exists
 	 */

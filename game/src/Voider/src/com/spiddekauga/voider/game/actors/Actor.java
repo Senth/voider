@@ -283,10 +283,6 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 		return offsetPosition;
 	}
 
-	/**
-	 * Renders the actor
-	 * @param shapeRenderer the current sprite batch for the scene
-	 */
 	@Override
 	public void render(ShapeRendererEx shapeRenderer) {
 		Vector2 offsetPosition = getWorldOffset();

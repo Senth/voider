@@ -498,6 +498,23 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 	}
 
 	/**
+	 * Sets the center offset for the fixtures
+	 * @param x offset in x-coordinates
+	 * @param y offset in y-coordinates
+	 */
+	public void setCenterOffset(float x, float y) {
+		mCenterOffset.set(x, y);
+
+		//		// Special case for draw and circle...
+		//		if (mShapeType == ActorShapeTypes.CUSTOM && mCorners.size() > 0 && mCorners.size() <= 2) {
+		//			mCenterOffset.add(mCorners.get(0));
+		//		}
+
+		// Create new fixtures on the right place
+		setShapeType(mShapeType);
+	}
+
+	/**
 	 * Center the offset. This will set the offset to the middle of
 	 * the fixture(s). It will NOT set the center to (0,0) (only if the actual
 	 * center of the fixtures are there.
@@ -762,7 +779,7 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 	/**
 	 * @return triangle vertices for the current shape. Grouped together in groups of three to form a triangle.
 	 */
-	ArrayList<Vector2> getTriangleVertices() {
+	public ArrayList<Vector2> getTriangleVertices() {
 		return mVertices;
 	}
 

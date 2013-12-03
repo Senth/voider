@@ -231,7 +231,11 @@ public class BulletEditor extends Editor implements IActorEditor, IResourceChang
 
 	@Override
 	public void saveDef() {
-
+		int i = 0;
+		while (i < 40000) {
+			createActorDefTexture(mDef, new BulletActor());
+			i++;
+		}
 
 		ResourceSaver.save(mDef);
 

@@ -1,12 +1,21 @@
 package com.spiddekauga.voider.editor;
 
+import java.util.ArrayList;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.math.Vector2;
 import com.spiddekauga.utils.Invoker;
+import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.ActorDef;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceNames;
 import com.spiddekauga.voider.scene.Gui;
+import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.scene.WorldScene;
+import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Common class for all editors
@@ -105,22 +114,62 @@ public abstract class Editor extends WorldScene implements IEditor {
 	 * Creates a texture out of the specified actor definition and sets it
 	 * for the actor definition.
 	 * @param actorDef the actor definition to create an image for
+	 * @param actor the actual actor to render and take a screenshot of, should be empty
 	 */
-	protected void createActorDefTexture(ActorDef actorDef) {
+	protected void createActorDefTexture(ActorDef actorDef, Actor actor) {
 		float width = actorDef.getWidth();
 		float height = actorDef.getHeight();
 
 		// Create duplicate
+		ActorDef copy = actorDef.copyNewResource();
 
 		// Calculate how many world coordinates 200px is
+		float worldScreenRatio = SceneSwitcher.getWorldScreenRatio();
+
+		// Calculate normalize
+		float normalizeLength = Config.Actor.SAVE_TEXTURE_SIZE * worldScreenRatio;
+		if (width > height) {
+			normalizeLength /= width;
+		} else {
+			normalizeLength /= height;
+		}
 
 		// Normalize width and height vertices to use 200px
+		copy.getVisualVars().setCenterOffset(0,0);
+		ArrayList<Vector2> vertices = copy.getVisualVars().getTriangleVertices();
+		for (Vector2 vertex : vertices) {
+			vertex.scl(normalizeLength);
+		}
 
-		// Create a new actor and place it in a window corner
+		// Calculate where to move it
+		Vector2 offset = Pools.vector2.obtain();
+		offset.set(Float.MAX_VALUE, Float.MAX_VALUE);
+		for (Vector2 vertex : vertices) {
+			if (vertex.x < offset.x) {
+				offset.x = vertex.x;
+			}
+			if (vertex.y < offset.y) {
+				offset.y = vertex.y;
+			}
+		}
+
+		// Offset with world coordinates
+		Vector2 minScreenPos = SceneSwitcher.getWorldMinCoordinates();
+		offset.add(minScreenPos);
+
+		// Set actor def
+		actor.setDef(copy);
+
+		// Set position
+		actor.setPosition(offset);
 
 		// Clear screen
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
 		// Render actor
+		mShapeRenderer.push(ShapeType.Filled);
+		actor.render(mShapeRenderer);
+		mShapeRenderer.pop();
 
 		// Take a 200x200 screen shot
 
@@ -136,6 +185,8 @@ public abstract class Editor extends WorldScene implements IEditor {
 	protected Invoker mInvoker = new Invoker();
 	/** Is the resource currently saved? */
 	private boolean mSaved = false;
+	/** Is the resource currently saving, this generally means it takes a screenshot of the image */
+	private boolean mSaving = false;
 	/** When the resource became unsaved */
 	private float mUnsavedTime = 0;
 	/** Last time the player did some activity */

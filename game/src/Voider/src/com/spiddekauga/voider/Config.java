@@ -92,6 +92,8 @@ public class Config {
 		public final static String NAME_DEFAULT = "(Unnamed)";
 		/** Minimum name length */
 		public final static int NAME_LENGTH_MIN = 3;
+		/** Texture size when saving */
+		public final static int SAVE_TEXTURE_SIZE = 200;
 	}
 
 	/**
@@ -522,7 +524,7 @@ public class Config {
 		/** Name of the latest copy in revision directories */
 		public final static String REVISION_LATEST_NAME = "LATEST";
 		/** Uses external images, etc. instead of internal for resources */
-		public final static boolean USE_EXTERNAL_RESOURCES = true;
+		public final static boolean USE_EXTERNAL_RESOURCES = false;
 	}
 
 	/**
