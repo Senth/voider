@@ -32,7 +32,8 @@ public class TestUiGui extends Gui {
 	public void initGui() {
 		super.initGui();
 
-		mSkin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
+		mGeneralSkin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
+		mGameSkin = ResourceCacheFacade.get(ResourceNames.UI_GAME);
 		mMainTable.setTableAlign(Horizontal.LEFT, Vertical.TOP);
 		mMainTable.setRowAlign(Horizontal.LEFT, Vertical.TOP);
 		mMainTable.setCellPaddingDefault(Config.Gui.PADDING_DEFAULT);
@@ -54,31 +55,31 @@ public class TestUiGui extends Gui {
 		mMainTable.row();
 
 		// Default
-		Button button = new TextButton("Test default", mSkin, "default");
+		Button button = new TextButton("Test default", mGeneralSkin, "default");
 		mMainTable.add(button);
 
 		// Checkable
-		button = new TextButton("Test checkable", mSkin, "toggle");
+		button = new TextButton("Test checkable", mGeneralSkin, "toggle");
 		mMainTable.add(button);
 
 		// Up
-		button = new TextButton("Up", mSkin, "up");
+		button = new TextButton("Up", mGeneralSkin, "up");
 		mMainTable.add(button);
 
 		// Down
-		button = new TextButton("Down", mSkin, "down");
+		button = new TextButton("Down", mGeneralSkin, "down");
 		mMainTable.add(button);
 
 		// Checked
-		button = new TextButton("Checked", mSkin, "selected");
+		button = new TextButton("Checked", mGeneralSkin, "selected");
 		mMainTable.add(button);
 
 		// Over
-		button = new TextButton("Hover", mSkin, "over");
+		button = new TextButton("Hover", mGeneralSkin, "over");
 		mMainTable.add(button);
 
 		// Disabled
-		button = new TextButton("Disabled", mSkin, "default");
+		button = new TextButton("Disabled", mGeneralSkin, "default");
 		button.setDisabled(true);
 		mMainTable.add(button);
 	}
@@ -89,11 +90,11 @@ public class TestUiGui extends Gui {
 	private void initTextFields() {
 		mMainTable.row();
 
-		TextField textField = new TextField("", mSkin);
+		TextField textField = new TextField("", mGeneralSkin);
 		new TextFieldListener(textField, "Default Text", null);
 		mMainTable.add(textField).setPadRight(10);
 
-		textField = new TextField("", mSkin);
+		textField = new TextField("", mGeneralSkin);
 		new TextFieldListener(textField, "", null);
 		mMainTable.add(textField);
 	}
@@ -105,20 +106,20 @@ public class TestUiGui extends Gui {
 		mMainTable.row();
 
 		// Checkboxes
-		Button button = new CheckBox("Checkbox 1", mSkin, "default");
+		Button button = new CheckBox("Checkbox 1", mGeneralSkin, "default");
 		mMainTable.add(button);
 
-		button = new CheckBox("Checkbox 2", mSkin, "default");
+		button = new CheckBox("Checkbox 2", mGeneralSkin, "default");
 		button.setChecked(true);
 		mMainTable.add(button).setPadRight(50);
 
 		// Radio buttons
 		ButtonGroup buttonGroup = new ButtonGroup();
-		button = new CheckBox("Radio 1", mSkin, "radio");
+		button = new CheckBox("Radio 1", mGeneralSkin, "radio");
 		buttonGroup.add(button);
 		mMainTable.add(button);
 
-		button = new CheckBox("Radio 2", mSkin, "radio");
+		button = new CheckBox("Radio 2", mGeneralSkin, "radio");
 		buttonGroup.add(button);
 		mMainTable.add(button);
 	}
@@ -130,17 +131,24 @@ public class TestUiGui extends Gui {
 		mMainTable.row();
 
 		// Default
-		Label label = new Label("Slider:", mSkin);
+		Label label = new Label("Slider:", mGeneralSkin);
 		mMainTable.add(label).setPadRight(10);
-		Slider slider = new Slider(0, 100, 1, false, mSkin, "default");
+		Slider slider = new Slider(0, 100, 1, false, mGeneralSkin, "default");
 		mMainTable.add(slider);
 
 		// Loading bar
 		mMainTable.row();
-		label = new Label("Loading bar:", mSkin);
+		label = new Label("Loading bar:", mGeneralSkin);
 		mMainTable.add(label).setPadRight(10);
-		slider = new Slider(0, 100, 1, false, mSkin, "loading-bar");
+		slider = new Slider(0, 100, 1, false, mGeneralSkin, "loading-bar");
 		mLoadingBar = slider;
+		mMainTable.add(slider).setPadRight(20);
+
+		// Health bar
+		label = new Label("Health bar:", mGeneralSkin);
+		mMainTable.add(label).setPadRight(10);
+		slider = new Slider(0, 100, 1, false, mGameSkin, "health_bar");
+		mHealthBar = slider;
 		mMainTable.add(slider);
 	}
 
@@ -151,17 +159,17 @@ public class TestUiGui extends Gui {
 		mMainTable.row();
 
 		// No title
-		Window window = new Window("", mSkin, "default");
+		Window window = new Window("", mGeneralSkin, "default");
 		window.add("No title");
 		mMainTable.add(window);
 
 		// Title
-		window = new Window("Title", mSkin, "title");
+		window = new Window("Title", mGeneralSkin, "title");
 		window.add("Has title");
 		mMainTable.add(window);
 
 		// Modal window, button
-		Button button = new TextButton("Modal window (press)", mSkin);
+		Button button = new TextButton("Modal window (press)", mGeneralSkin);
 		mMainTable.add(button);
 		new ButtonListener(button) {
 			@Override
@@ -174,7 +182,7 @@ public class TestUiGui extends Gui {
 		};
 
 		// Modal title window, button
-		button = new TextButton("Modal title window (press)", mSkin);
+		button = new TextButton("Modal title window (press)", mGeneralSkin);
 		mMainTable.add(button);
 		new ButtonListener(button) {
 			@Override
@@ -194,7 +202,7 @@ public class TestUiGui extends Gui {
 	private void initScrollPane() {
 		mMainTable.row();
 
-		Label label = new Label("", mSkin);
+		Label label = new Label("", mGeneralSkin);
 		label.setText("Scroll pane\n"
 				+ "With background\n"
 				+ "Uses same background as window\n"
@@ -206,10 +214,10 @@ public class TestUiGui extends Gui {
 				+ "aoneuthaose .ruca,huaosetuhaoetkmaenkh\n"
 				+ "aoneu.sa,oc  sa has rh.usa,o.ucas c  u-e-isk\n"
 				+ "aoseutah a.ruchktqjhk-soeu\n");
-		ScrollPane scrollPane = new ScrollPane(label, mSkin, "background");
+		ScrollPane scrollPane = new ScrollPane(label, mGeneralSkin, "background");
 		mMainTable.add(scrollPane);
 
-		label = new Label("", mSkin);
+		label = new Label("", mGeneralSkin);
 		label.setText("Scroll pane\n"
 				+ "Force scrollbars\n"
 				+ "Without background\n"
@@ -221,7 +229,7 @@ public class TestUiGui extends Gui {
 				+ "aoneuthaose .ruca,huaosetuhaoetkmaenkh\n"
 				+ "aoneu.sa,oc  sa has rh.usa,o.ucas c  u-e-isk\n"
 				+ "aoseutah a.ruchktqjhk-soeu\n");
-		scrollPane = new ScrollPane(label, mSkin);
+		scrollPane = new ScrollPane(label, mGeneralSkin);
 		scrollPane.setForceScroll(true, true);
 		scrollPane.setFadeScrollBars(false);
 		mMainTable.add(scrollPane);
@@ -237,8 +245,8 @@ public class TestUiGui extends Gui {
 			items[i] = "List item " + (i+1);
 		}
 
-		List list = new List(items, mSkin);
-		ScrollPane scrollPane = new ScrollPane(list, mSkin, "background");
+		List list = new List(items, mGeneralSkin);
+		ScrollPane scrollPane = new ScrollPane(list, mGeneralSkin, "background");
 		mMainTable.add(scrollPane);
 	}
 
@@ -252,7 +260,7 @@ public class TestUiGui extends Gui {
 			items[i] = "Select item " + (i+1);
 		}
 
-		SelectBox selectBox = new SelectBox(items, mSkin);
+		SelectBox selectBox = new SelectBox(items, mGeneralSkin);
 		mMainTable.add(selectBox);
 	}
 
@@ -264,8 +272,19 @@ public class TestUiGui extends Gui {
 		mLoadingBar.setValue(loadedValue);
 	}
 
+	/**
+	 * Sets the health bar to the specified value
+	 */
+	void setHealthBar(float health) {
+		mHealthBar.setValue(health);
+	}
+
 	/** Skin for general */
-	Skin mSkin = null;
+	Skin mGeneralSkin = null;
+	/** Skin for game */
+	Skin mGameSkin = null;
 	/** Loading bar */
 	Slider mLoadingBar = null;
+	/** Health bar */
+	Slider mHealthBar = null;
 }

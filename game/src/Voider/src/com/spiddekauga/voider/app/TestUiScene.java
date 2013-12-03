@@ -24,12 +24,14 @@ public class TestUiScene extends Scene {
 	protected void loadResources() {
 		super.loadResources();
 		ResourceCacheFacade.load(ResourceNames.UI_GENERAL);
+		ResourceCacheFacade.load(ResourceNames.UI_GAME);
 	}
 
 	@Override
 	protected void unloadResources() {
 		super.unloadResources();
 		ResourceCacheFacade.unload(ResourceNames.UI_GENERAL);
+		ResourceCacheFacade.unload(ResourceNames.UI_GAME);
 	}
 
 	@Override
@@ -56,6 +58,7 @@ public class TestUiScene extends Scene {
 		}
 
 		((TestUiGui)mGui).setLoadingBar(mLoadingValue);
+		((TestUiGui)mGui).setHealthBar(100-mLoadingValue);
 	}
 
 	/**
