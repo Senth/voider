@@ -28,6 +28,24 @@ com.spiddekauga.utils.scene.ui.Label$LabelStyle: {
 	}
 },
 
+com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
+	default: {
+		down: button_default_down,
+		up: button_default_up,
+		disabled: button_default_disabled,
+		over: button_default_over,
+	},
+	
+	toggle: {
+		down: button_default_down,
+		checked: button_default_checked,
+		up: button_default_up,
+		disabled: button_default_disabled,
+		over: button_default_over,
+		checkedOver: button_default_checked_over,
+	}
+},
+
 com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
 	default: {
 		down: button_default_down,

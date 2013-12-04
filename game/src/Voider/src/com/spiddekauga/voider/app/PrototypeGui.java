@@ -4,9 +4,9 @@ import java.util.ArrayList;
 
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
+import com.spiddekauga.utils.scene.ui.ActorButton;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
@@ -81,7 +81,8 @@ public class PrototypeGui extends Gui {
 		for (int i = 0; i < multipleCount; ++i) {
 			// Here is the actual code for creating an enemy
 			for (EnemyActorDef enemyDef : enemyDefs) {
-				Button button = new TextButton("", mSkin, SkinNames.General.TEXT_BUTTON_PRESS.toString());
+				Button button = new ActorButton(enemyDef, mSkin, SkinNames.General.IMAGE_BUTTON_DEFAULT.toString());
+				//				Button button = new TextButton("", mSkin, SkinNames.General.TEXT_BUTTON_PRESS.toString());
 
 				if (cColumEnemy == ENEMIES_PER_COLUMN) {
 					cColumEnemy = 0;

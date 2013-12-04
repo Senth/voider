@@ -230,6 +230,8 @@ public class KryoPool extends Pool<Kryo> {
 		ATOMIC_INTEGER(AtomicInteger.class, new AtomicIntegerSerializer()),
 		/** GameTime */
 		GAME_TIME(GameTime.class, SerializerType.TAGGED),
+		/** Byte array */
+		BYTE_ARRAY(byte[].class),
 
 
 		;

@@ -1,13 +1,19 @@
 package com.spiddekauga.voider.editor;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.IdentityMap;
 import com.spiddekauga.utils.Invoker;
+import com.spiddekauga.utils.KeyHelper;
+import com.spiddekauga.utils.PngExport;
+import com.spiddekauga.utils.Screens;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.app.MainMenu;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.ActorDef;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
@@ -82,6 +88,96 @@ public abstract class Editor extends WorldScene implements IEditor {
 	}
 
 	@Override
+	public boolean keyDown(int keycode) {
+		// Redo
+		if (KeyHelper.isRedoPressed(keycode)) {
+			mInvoker.redo();
+			return true;
+		}
+		// Undo
+		else if (KeyHelper.isUndoPressed(keycode)) {
+			mInvoker.undo();
+			return true;
+		}
+		// Back - main menu
+		else if (KeyHelper.isBackPressed(keycode)) {
+			if (!mGui.isMsgBoxActive()) {
+				setSavingThenExit(getActorDef(), getNewActor());
+				return true;
+			} else {
+				/** @todo close message box */
+			}
+		}
+		/** @todo remove test buttons */
+		else if (keycode == Input.Keys.F5) {
+			Config.Gui.setUseTextButtons(!Config.Gui.usesTextButtons());
+			mGui.dispose();
+			mGui.initGui();
+			mGui.resetValues();
+			return true;
+		}
+
+		return false;
+	}
+
+	@Override
+	protected void render() {
+		super.render();
+
+
+
+		// Render saving actor
+		if (mSaving) {
+			mShapeRenderer.setProjectionMatrix(mCamera.combined);
+			mShapeRenderer.push(ShapeType.Filled);
+			mSavingActor.render(mShapeRenderer);
+			mShapeRenderer.pop();
+
+			// Take a 200x200 screen shot
+			Pixmap pixmap = Screens.getScreenshot(0, 0, Config.Actor.SAVE_TEXTURE_SIZE, Config.Actor.SAVE_TEXTURE_SIZE, true);
+
+			// Make black color to alpha
+			pixmap.getPixel(0, 0);
+			for (int x = 0; x < pixmap.getWidth(); ++x) {
+				for (int y = 0; y < pixmap.getHeight(); ++y) {
+					if (isColorBlack(pixmap.getPixel(x, y))) {
+						pixmap.drawPixel(x, y, COLOR_TRANSPARENT);
+					}
+				}
+			}
+
+			// Convert to PNG
+			try {
+				byte[] pngBytes = PngExport.toPNG(pixmap);
+
+				// Save texture to original definition
+				mSavingActorDef.setPngImage(pngBytes);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			pixmap.dispose();
+
+			// Save the file to file
+			mGui.setVisible(true);
+			mSaving = false;
+			saveToFile();
+
+			if (mSaveThenExit) {
+				SceneSwitcher.returnTo(MainMenu.class);
+				mSaveThenExit = false;
+			}
+		}
+	}
+
+	/**
+	 * @param color the color to check if it's black (uses RGBA8888)
+	 * @return true if the color is black
+	 */
+	private boolean isColorBlack(int color) {
+		return (color & COLOR_BLACK) == 0;
+	}
+
+	@Override
 	public boolean isSaved() {
 		return mSaved;
 	}
@@ -113,21 +209,19 @@ public abstract class Editor extends WorldScene implements IEditor {
 	/**
 	 * Creates a texture out of the specified actor definition and sets it
 	 * for the actor definition.
-	 * @param actorDef the actor definition to create an image for
-	 * @param actor the actual actor to render and take a screenshot of, should be empty
 	 */
-	protected void createActorDefTexture(ActorDef actorDef, Actor actor) {
-		float width = actorDef.getWidth();
-		float height = actorDef.getHeight();
+	private void createActorDefTexture() {
+		float width = mSavingActorDef.getWidth();
+		float height = mSavingActorDef.getHeight();
 
 		// Create duplicate
-		ActorDef copy = actorDef.copyNewResource();
+		ActorDef copy = mSavingActorDef.copy();
 
 		// Calculate how many world coordinates 200px is
 		float worldScreenRatio = SceneSwitcher.getWorldScreenRatio();
 
 		// Calculate normalize
-		float normalizeLength = Config.Actor.SAVE_TEXTURE_SIZE * worldScreenRatio;
+		float normalizeLength = Config.Actor.SAVE_TEXTURE_SIZE / worldScreenRatio;
 		if (width > height) {
 			normalizeLength /= width;
 		} else {
@@ -136,15 +230,26 @@ public abstract class Editor extends WorldScene implements IEditor {
 
 		// Normalize width and height vertices to use 200px
 		copy.getVisualVars().setCenterOffset(0,0);
-		ArrayList<Vector2> vertices = copy.getVisualVars().getTriangleVertices();
-		for (Vector2 vertex : vertices) {
+		ArrayList<Vector2> triangleVertices = copy.getVisualVars().getTriangleVertices();
+		@SuppressWarnings("unchecked")
+		IdentityMap<Vector2, Vector2> scaledVertices = Pools.identityMap.obtain();
+		for (Vector2 vertex : triangleVertices) {
+			if (!scaledVertices.containsKey(vertex)) {
+				vertex.scl(normalizeLength);
+				scaledVertices.put(vertex, vertex);
+			}
+		}
+		Pools.identityMap.free(scaledVertices);
+
+		ArrayList<Vector2> polygonVertices = copy.getVisualVars().getPolygonShape();
+		for (Vector2 vertex : polygonVertices) {
 			vertex.scl(normalizeLength);
 		}
 
 		// Calculate where to move it
 		Vector2 offset = Pools.vector2.obtain();
 		offset.set(Float.MAX_VALUE, Float.MAX_VALUE);
-		for (Vector2 vertex : vertices) {
+		for (Vector2 vertex : polygonVertices) {
 			if (vertex.x < offset.x) {
 				offset.x = vertex.x;
 			}
@@ -155,31 +260,85 @@ public abstract class Editor extends WorldScene implements IEditor {
 
 		// Offset with world coordinates
 		Vector2 minScreenPos = SceneSwitcher.getWorldMinCoordinates();
-		offset.add(minScreenPos);
+		offset.set(minScreenPos.sub(offset));
+
+		// Center to the rectangle screenshot area.
+		height = copy.getHeight();
+		if (height < Config.Actor.SAVE_TEXTURE_SIZE) {
+			float offsetHeight = (Config.Actor.SAVE_TEXTURE_SIZE / worldScreenRatio - height) * 0.5f;
+			offset.add(0, offsetHeight);
+		}
+		width = copy.getWidth();
+		if (width < Config.Actor.SAVE_TEXTURE_SIZE) {
+			float offsetWidth = (Config.Actor.SAVE_TEXTURE_SIZE / worldScreenRatio - width) * 0.5f;
+			offset.add(offsetWidth, 0);
+		}
 
 		// Set actor def
-		actor.setDef(copy);
+		mSavingActor.setDef(copy);
 
 		// Set position
-		actor.setPosition(offset);
+		mSavingActor.setPosition(offset);
 
-		// Clear screen
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-		// Render actor
-		mShapeRenderer.push(ShapeType.Filled);
-		actor.render(mShapeRenderer);
-		mShapeRenderer.pop();
-
-		// Take a 200x200 screen shot
-
-		// Save the texture from the screen shot
-
-		// Make black color to alpha
-
-		// Save texture to original definition
-
+		Pools.vector2.freeAll(offset, minScreenPos);
 	}
+
+	/**
+	 * Set the actor as saving. This will create an image of the actor
+	 * @param actorDef the actor definition to save
+	 * @param actor a new empty actor to use for creating a screen shot
+	 */
+	protected void setSaving(ActorDef actorDef, Actor actor) {
+		mSavingActorDef = actorDef;
+		mSavingActor = actor;
+		mSaving = true;
+
+		mGui.setVisible(false);
+		createActorDefTexture();
+	}
+
+	/**
+	 * @return true if the editor is currently saving an actor. I.e. creating
+	 * a texture file for it.
+	 */
+	public boolean isSaving() {
+		return mSaving;
+	}
+
+	/**
+	 * Set the actor as saving. This will create an image of the actor. In addition
+	 * this method will make sure this editor is exited after the resource has been
+	 * saved.
+	 * @param actorDef the actor definition to save
+	 * @param actor a new empty actor to use for creating a screen shot
+	 */
+	protected void setSavingThenExit(ActorDef actorDef, Actor actor) {
+		setSaving(actorDef, actor);
+		mSaveThenExit = true;
+	}
+
+	/**
+	 * Override this method so {@link #setSavingThenExit(ActorDef, Actor)} gets a correct
+	 * definition. Only applicable for actor editors
+	 * @return the actor definition to save
+	 */
+	protected ActorDef getActorDef() {
+		return null;
+	}
+
+	/**
+	 * Override this method so {@link #setSaving(ActorDef, Actor)} gets a correct
+	 * actor. Only applicable for actor editors
+	 * @return a new actor to draw for creating an image out of it.
+	 */
+	protected Actor getNewActor() {
+		return null;
+	}
+
+	/**
+	 * Called when after the image for the actor definition has been created.
+	 */
+	protected abstract void saveToFile();
 
 	/** Invoker */
 	protected Invoker mInvoker = new Invoker();
@@ -187,8 +346,19 @@ public abstract class Editor extends WorldScene implements IEditor {
 	private boolean mSaved = false;
 	/** Is the resource currently saving, this generally means it takes a screenshot of the image */
 	private boolean mSaving = false;
+	/** Saving actor definition */
+	private ActorDef mSavingActorDef = null;
+	/** Saving actor */
+	private Actor mSavingActor = null;
 	/** When the resource became unsaved */
 	private float mUnsavedTime = 0;
 	/** Last time the player did some activity */
 	private float mActivityTimeLast = 0;
+	/** Exits after the resource has been saved */
+	private boolean mSaveThenExit = false;
+
+	/** Transparent color */
+	private static final int COLOR_TRANSPARENT = 0x00000000;
+	/** Black color */
+	private static final int COLOR_BLACK = 0xFFFFFFFF;
 }

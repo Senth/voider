@@ -623,6 +623,11 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 	@Override
 	public void saveDef() {
+		saveToFile();
+	}
+
+	@Override
+	protected void saveToFile() {
 		mLevel.calculateStartPosition();
 		mLevel.calculateEndPosition();
 

@@ -61,7 +61,7 @@ public abstract class Resource implements IResource {
 	@SuppressWarnings("unchecked")
 	public <ResourceType> ResourceType copyNewResource() {
 		Kryo kryo = Pools.kryo.obtain();
-		ResourceType copy = (ResourceType) kryo.copyShallow(this);
+		ResourceType copy = (ResourceType) kryo.copy(this);
 		Pools.kryo.free(kryo);
 
 		((Resource)copy).mUniqueId = UUID.randomUUID();

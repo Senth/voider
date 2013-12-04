@@ -1,7 +1,7 @@
 package com.spiddekauga.utils.scene.ui;
 
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.spiddekauga.voider.game.actors.ActorDef;
 
 /**
@@ -9,23 +9,52 @@ import com.spiddekauga.voider.game.actors.ActorDef;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class ActorButton extends Button {
+public class ActorButton extends ImageButton {
 	/**
 	 * Constructor which creates an actor button with the specified style and
 	 * actor.
-	 * @param actorDef the actor definition to use to create a new actor
+	 * @param actorDef the actor definition to get the texture from
 	 * @param buttonStyle the button style to be used with this button
 	 */
-	public ActorButton(ActorDef actorDef, ButtonStyle buttonStyle) {
-		super(buttonStyle);
-		mActorDef = actorDef;
+	public ActorButton(ActorDef actorDef, ImageButtonStyle buttonStyle) {
+		super(new ImageButtonStyle(buttonStyle));
+		setTexture(actorDef);
 	}
 
-	@Override
-	public void draw(SpriteBatch batch, float parentAlpha) {
-		super.draw(batch, parentAlpha);
+	/**
+	 * Constructor which creates an actor button with the specified style and
+	 * actor. Will use the default skin for image button.
+	 * @param actorDef the actor definition to get the texture from
+	 * @param skin the skin to use for the button
+	 */
+	public ActorButton(ActorDef actorDef, Skin skin) {
+		super(new ImageButtonStyle(skin.get(ImageButtonStyle.class)));
+		setTexture(actorDef);
 	}
 
-	/** The actor definition to use for draawing */
-	protected ActorDef mActorDef;
+	/**
+	 * Constructor which creates an actor button with the specified style and
+	 * actor.
+	 * @param actorDef the actor definition to get the texture from
+	 * @param skin the skin to use for the button
+	 * @param styleName the style to search for in the skin
+	 */
+	public ActorButton(ActorDef actorDef, Skin skin, String styleName) {
+		super(new ImageButtonStyle(skin.get(styleName, ImageButtonStyle.class)));
+		setTexture(actorDef);
+	}
+
+	/**
+	 * Sets the correct image style
+	 * @param actorDef the actor definition to get the texture from
+	 */
+	private void setTexture(ActorDef actorDef) {
+		ImageButtonStyle imageButtonStyle = getStyle();
+		imageButtonStyle.imageDown = actorDef.getTextureRegionDrawable();
+		imageButtonStyle.imageUp = actorDef.getTextureRegionDrawable();
+
+		if (imageButtonStyle.checked != null) {
+			imageButtonStyle.imageChecked = actorDef.getTextureRegionDrawable();
+		}
+	}
 }

@@ -268,7 +268,23 @@ public abstract class Gui implements Disposable {
 		outerTable.invalidateHierarchy();
 	}
 
+	/**
+	 * Set the GUI as visible/invisible. I.e. if the GUI should be drawn or not.
+	 * @param visible set to true for visible, false for invisible.
+	 */
+	public void setVisible(boolean visible) {
+		mVisible = visible;
+	}
 
+	/**
+	 * @return true if the GUI is visible. I.e. should be drawn.
+	 */
+	public boolean isVisible() {
+		return mVisible;
+	}
+
+	/** If the GUI is visible */
+	private boolean mVisible = true;
 	/** Main table for the layout */
 	protected AlignTable mMainTable = new AlignTable();
 	/** True if the GUI has been initialized */

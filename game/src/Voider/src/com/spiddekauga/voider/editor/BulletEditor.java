@@ -1,14 +1,11 @@
 package com.spiddekauga.voider.editor;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector2;
-import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.voider.Config;
-import com.spiddekauga.voider.app.MainMenu;
 import com.spiddekauga.voider.editor.brushes.VectorBrush;
 import com.spiddekauga.voider.editor.tools.AddMoveCornerTool;
 import com.spiddekauga.voider.editor.tools.DeleteTool;
@@ -22,6 +19,7 @@ import com.spiddekauga.voider.editor.tools.TouchTool;
 import com.spiddekauga.voider.game.Weapon;
 import com.spiddekauga.voider.game.WeaponDef;
 import com.spiddekauga.voider.game.actors.Actor;
+import com.spiddekauga.voider.game.actors.ActorDef;
 import com.spiddekauga.voider.game.actors.ActorShapeTypes;
 import com.spiddekauga.voider.game.actors.BulletActor;
 import com.spiddekauga.voider.game.actors.BulletActorDef;
@@ -83,6 +81,11 @@ public class BulletEditor extends Editor implements IActorEditor, IResourceChang
 
 		if (outcome == Outcomes.LOADING_SUCCEEDED) {
 			mInvoker.dispose();
+
+			ShaderProgram defaultShader = ResourceCacheFacade.get(ResourceNames.SHADER_DEFAULT);
+			if (defaultShader != null) {
+				mShapeRenderer.setShader(defaultShader);
+			}
 		}
 		else if (outcome == Outcomes.DEF_SELECTED) {
 			switch (mSelectionAction) {
@@ -149,11 +152,7 @@ public class BulletEditor extends Editor implements IActorEditor, IResourceChang
 	protected void render() {
 		super.render();
 
-		if (Config.Graphics.USE_RELEASE_RENDERER) {
-			ShaderProgram defaultShader = ResourceCacheFacade.get(ResourceNames.SHADER_DEFAULT);
-			if (defaultShader != null) {
-				mShapeRenderer.setShader(defaultShader);
-			}
+		if (Config.Graphics.USE_RELEASE_RENDERER && !isSaving()) {
 			mShapeRenderer.setProjectionMatrix(mCamera.combined);
 			mShapeRenderer.push(ShapeType.Filled);
 			Gdx.gl.glEnable(GL20.GL_BLEND);
@@ -175,40 +174,6 @@ public class BulletEditor extends Editor implements IActorEditor, IResourceChang
 	}
 
 	@Override
-	public boolean keyDown(int keycode) {
-		// Redo
-		if (KeyHelper.isRedoPressed(keycode)) {
-			mInvoker.redo();
-			return true;
-		}
-		// Undo
-		else if (KeyHelper.isUndoPressed(keycode)) {
-			mInvoker.undo();
-			return true;
-		}
-		// Back - main menu
-		else if (KeyHelper.isBackPressed(keycode)) {
-			if (!mGui.isMsgBoxActive()) {
-				saveDef();
-				SceneSwitcher.returnTo(MainMenu.class);
-				return true;
-			} else {
-				/** @todo close message box */
-			}
-		}
-		/** @todo remove test buttons */
-		else if (keycode == Input.Keys.F5) {
-			Config.Gui.setUseTextButtons(!Config.Gui.usesTextButtons());
-			mGui.dispose();
-			mGui.initGui();
-			mGui.resetValues();
-			return true;
-		}
-
-		return false;
-	}
-
-	@Override
 	protected void loadResources() {
 		super.loadResources();
 		ResourceCacheFacade.loadAllOf(this, BulletActorDef.class, true);
@@ -218,6 +183,16 @@ public class BulletEditor extends Editor implements IActorEditor, IResourceChang
 	protected void unloadResources() {
 		super.unloadResources();
 		ResourceCacheFacade.unloadAllOf(this, BulletActorDef.class, true);
+	}
+
+	@Override
+	protected ActorDef getActorDef() {
+		return mDef;
+	}
+
+	@Override
+	protected Actor getNewActor() {
+		return new BulletActor();
 	}
 
 	@Override
@@ -231,12 +206,11 @@ public class BulletEditor extends Editor implements IActorEditor, IResourceChang
 
 	@Override
 	public void saveDef() {
-		int i = 0;
-		while (i < 40000) {
-			createActorDefTexture(mDef, new BulletActor());
-			i++;
-		}
+		setSaving(mDef, new BulletActor());
+	}
 
+	@Override
+	protected void saveToFile() {
 		ResourceSaver.save(mDef);
 
 		// Saved first time? Then load it and use the loaded version

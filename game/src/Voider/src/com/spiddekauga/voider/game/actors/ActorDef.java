@@ -3,9 +3,13 @@ package com.spiddekauga.voider.game.actors;
 import java.util.ArrayList;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Disposable;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.utils.GameTime;
@@ -243,9 +247,19 @@ public abstract class ActorDef extends Def implements Disposable {
 	public void dispose() {
 		mVisualVars.dispose();
 		mVisualVars = null;
+
+		disposeTexture();
 	}
 
-
+	/**
+	 * Disposes the texture
+	 */
+	protected void disposeTexture() {
+		if (mTextureDrawable != null) {
+			mTextureDrawable.getRegion().getTexture().dispose();
+			mTextureDrawable = null;
+		}
+	}
 
 
 	/**
@@ -313,14 +327,52 @@ public abstract class ActorDef extends Def implements Disposable {
 		return getRotationSpeedRad() * MathUtils.radiansToDegrees;
 	}
 
+	/**
+	 * Sets the PNG image for the actor definition. This will also create a
+	 * texture for this actor.
+	 * @param pngBytes bytes for the png image
+	 */
+	public void setPngImage(byte[] pngBytes) {
+		mPngBytes = pngBytes;
+
+		disposeTexture();
+		createTexture();
+	}
+
+	/**
+	 * Create the texture from the PNG file
+	 */
+	private void createTexture() {
+		if (mPngBytes != null) {
+			Pixmap pixmap = new Pixmap(mPngBytes, 0, mPngBytes.length);
+			TextureRegion textureRegion = new TextureRegion(new Texture(pixmap));
+			mTextureDrawable = new TextureRegionDrawable(textureRegion);
+		}
+	}
+
+	/**
+	 * @return the a drawable version of the texture
+	 */
+	public TextureRegionDrawable getTextureRegionDrawable() {
+		if (mPngBytes != null && mTextureDrawable == null) {
+			createTexture();
+		}
+
+		return mTextureDrawable;
+	}
+
 	/** When the body was changed last time */
 	protected float mBodyChangeTime = 0;
+	/** The possible texture of the image, used if mPngBytes are set.
+	 * DON'T SAVE THIS as it is automatically generated when this actor def is loaded */
+	private TextureRegionDrawable mTextureDrawable = null;
 
 	/** Maximum life of the actor, usually starting amount of life */
 	@Tag(44) private float mMaxLife = 0;
 	/** The body definition of the actor */
 	@Tag(45) private BodyDef mBodyDef = new BodyDef();
-
+	/** The PNG bytes for the images, null if not used */
+	@Tag(108) private byte[] mPngBytes = null;
 
 	/** Collision damage (per second) */
 	@Tag(46) private float mCollisionDamage = 0;

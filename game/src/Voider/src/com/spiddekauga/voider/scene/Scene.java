@@ -51,8 +51,11 @@ public abstract class Scene extends InputAdapter {
 		Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
 		render();
 		Gdx.gl.glDisable(GL20.GL_DEPTH_TEST);
-		mGui.update();
-		mGui.render();
+
+		if (mGui.isVisible()) {
+			mGui.update();
+			mGui.render();
+		}
 	}
 
 	/**

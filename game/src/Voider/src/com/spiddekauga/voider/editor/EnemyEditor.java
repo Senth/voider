@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector2;
@@ -16,11 +15,9 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.joints.MouseJoint;
 import com.badlogic.gdx.physics.box2d.joints.MouseJointDef;
-import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Editor.Enemy;
-import com.spiddekauga.voider.app.MainMenu;
 import com.spiddekauga.voider.editor.brushes.VectorBrush;
 import com.spiddekauga.voider.editor.commands.CEnemyBulletDefSelect;
 import com.spiddekauga.voider.editor.tools.AddMoveCornerTool;
@@ -36,6 +33,7 @@ import com.spiddekauga.voider.game.CollisionResolver;
 import com.spiddekauga.voider.game.Path;
 import com.spiddekauga.voider.game.Path.PathTypes;
 import com.spiddekauga.voider.game.actors.Actor;
+import com.spiddekauga.voider.game.actors.ActorDef;
 import com.spiddekauga.voider.game.actors.ActorFilterCategories;
 import com.spiddekauga.voider.game.actors.ActorShapeTypes;
 import com.spiddekauga.voider.game.actors.BulletActorDef;
@@ -298,7 +296,7 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 			return;
 		}
 
-		if (Config.Graphics.USE_RELEASE_RENDERER) {
+		if (Config.Graphics.USE_RELEASE_RENDERER && !isSaving()) {
 			ShaderProgram defaultShader = ResourceCacheFacade.get(ResourceNames.SHADER_DEFAULT);
 			if (defaultShader != null) {
 				mShapeRenderer.setShader(defaultShader);
@@ -476,37 +474,13 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 	}
 
 	@Override
-	public boolean keyDown(int keycode) {
-		// Redo
-		if (KeyHelper.isRedoPressed(keycode)) {
-			mInvoker.redo();
-			return true;
-		}
-		// Undo
-		else if (KeyHelper.isUndoPressed(keycode)) {
-			mInvoker.undo();
-			return true;
-		}
-		// Back - main menu
-		else if (KeyHelper.isBackPressed(keycode)) {
-			if (!mGui.isMsgBoxActive()) {
-				saveDef();
-				SceneSwitcher.returnTo(MainMenu.class);
-				return true;
-			} else {
-				/** @todo close message box */
-			}
-		}
-		/** @todo remove test keys */
-		else if (keycode == Input.Keys.F5) {
-			Config.Gui.setUseTextButtons(!Config.Gui.usesTextButtons());
-			mGui.dispose();
-			mGui.initGui();
-			mGui.resetValues();
-			return true;
-		}
+	protected ActorDef getActorDef() {
+		return mDef;
+	}
 
-		return false;
+	@Override
+	protected Actor getNewActor() {
+		return new EnemyActor();
 	}
 
 	/**
@@ -514,6 +488,11 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 	 */
 	@Override
 	public void saveDef() {
+		setSaving(mDef, new EnemyActor());
+	}
+
+	@Override
+	protected void saveToFile() {
 		ResourceSaver.save(mDef);
 
 		// Saved first time? Then load it and use the loaded resource
@@ -535,8 +514,6 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 		setEnemyDef(new EnemyActorDef());
 		mGui.resetValues();
 		setMovementType(MovementTypes.PATH);
-
-		/** @todo open name dialog */
 		saveDef();
 	}
 

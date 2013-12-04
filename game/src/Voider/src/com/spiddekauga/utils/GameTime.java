@@ -25,22 +25,22 @@ public class GameTime {
 	}
 
 	/**
-	 * @return current frame delta time
+	 * @return current frame delta time, in seconds
 	 */
 	public float getDeltaTime() {
 		return mDeltaTime;
 	}
 
 	/**
-	 * @return elapsed time since the scene
+	 * @return elapsed time since the scene, in seconds.
 	 */
 	public float getTotalTimeElapsed() {
 		return mTotalTimeElapsed;
 	}
 
-	/** Total time elapsed since start of game */
+	/** Total time elapsed since start of game, in seconds */
 	@Tag(105) private float mTotalTimeElapsed = 0;
-	/** Current delta time */
+	/** Current delta time, in seconds */
 	@Tag(106) private float mDeltaTime = 0;
 
 	// Static methods
@@ -53,7 +53,7 @@ public class GameTime {
 	}
 
 	/**
-	 * @return elapsed global time since the game/program started
+	 * @return elapsed global time since the game/program started, in seconds.
 	 */
 	public static float getTotalGlobalTimeElapsed() {
 		return mTotalGlobalTimeElapsed;

@@ -26,6 +26,10 @@ public class SkinNames {
 		TEXT_BUTTON_TOGGLE("toggle"),
 		/** Text button that always is selected */
 		TEXT_BUTTON_SELECTED("selected"),
+		/** Image button default */
+		IMAGE_BUTTON_DEFAULT("default"),
+		/** Image button toggle */
+		IMAGE_BUTTON_TOGGLE("toggle"),
 		/** Check box that uses check boxes */
 		CHECK_BOX_DEFAULT("default"),
 		/** Check box that uses the radio button style */
