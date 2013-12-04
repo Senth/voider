@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.IdentityMap;
 import com.spiddekauga.utils.Invoker;
@@ -123,8 +124,6 @@ public abstract class Editor extends WorldScene implements IEditor {
 	@Override
 	protected void render() {
 		super.render();
-
-
 
 		// Render saving actor
 		if (mSaving) {
@@ -246,33 +245,41 @@ public abstract class Editor extends WorldScene implements IEditor {
 			vertex.scl(normalizeLength);
 		}
 
-		// Calculate where to move it
+		// Center to the rectangle screenshot area.
 		Vector2 offset = Pools.vector2.obtain();
-		offset.set(Float.MAX_VALUE, Float.MAX_VALUE);
+		offset.set(0, 0);
+		height = copy.getHeight();
+		float maxSize = Config.Actor.SAVE_TEXTURE_SIZE / worldScreenRatio;
+		if (height < maxSize) {
+			float offsetHeight = (maxSize - height) * 0.5f;
+			offset.sub(0, offsetHeight);
+		}
+		width = copy.getWidth();
+		if (width < maxSize) {
+			float offsetWidth = (maxSize - width) * 0.5f;
+			offset.sub(offsetWidth, 0);
+		}
+
+		// Calculate where to offset it so it's inside the screenshot area
+		Vector2 minPos = Pools.vector2.obtain();
+		minPos.set(Float.MAX_VALUE, Float.MAX_VALUE);
+		float rotation = mSavingActorDef.getBodyDef().angle * MathUtils.radiansToDegrees;
 		for (Vector2 vertex : polygonVertices) {
-			if (vertex.x < offset.x) {
-				offset.x = vertex.x;
+			vertex.rotate(rotation);
+			if (vertex.x < minPos.x) {
+				minPos.x = vertex.x;
 			}
-			if (vertex.y < offset.y) {
-				offset.y = vertex.y;
+			if (vertex.y < minPos.y) {
+				minPos.y = vertex.y;
 			}
 		}
+		offset.add(minPos);
 
 		// Offset with world coordinates
 		Vector2 minScreenPos = SceneSwitcher.getWorldMinCoordinates();
 		offset.set(minScreenPos.sub(offset));
 
-		// Center to the rectangle screenshot area.
-		height = copy.getHeight();
-		if (height < Config.Actor.SAVE_TEXTURE_SIZE) {
-			float offsetHeight = (Config.Actor.SAVE_TEXTURE_SIZE / worldScreenRatio - height) * 0.5f;
-			offset.add(0, offsetHeight);
-		}
-		width = copy.getWidth();
-		if (width < Config.Actor.SAVE_TEXTURE_SIZE) {
-			float offsetWidth = (Config.Actor.SAVE_TEXTURE_SIZE / worldScreenRatio - width) * 0.5f;
-			offset.add(offsetWidth, 0);
-		}
+
 
 		// Set actor def
 		mSavingActor.setDef(copy);
