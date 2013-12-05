@@ -62,6 +62,7 @@ public class EnemyAddTool extends ActorAddTool {
 				Pools.vector2.free(newPosition);
 			}
 
+			mMovingActor.setIsBeingMoved(false);
 			mMovingActor = null;
 			mCreatedThisEvent = false;
 		}

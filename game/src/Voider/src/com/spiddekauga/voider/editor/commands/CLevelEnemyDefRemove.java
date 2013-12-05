@@ -6,30 +6,30 @@ import com.spiddekauga.utils.Command;
 import com.spiddekauga.voider.editor.LevelEditor;
 
 /**
- * Adds an enemy definition to the add enemy list
+ * Removes an enemy definition from the add enemy list
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class CLevelEnemyDefAdd extends Command {
+public class CLevelEnemyDefRemove extends Command {
 	/**
-	 * Creates a command that will add an enemy to the list
-	 * @param id enemy id to add to the list
+	 * Creates a command that will remove an enemy from the list
+	 * @param id enemy id to remove from the list
 	 * @param levelEditor level editor to select the enemy in
 	 */
-	public CLevelEnemyDefAdd(UUID id, LevelEditor levelEditor) {
+	public CLevelEnemyDefRemove(UUID id, LevelEditor levelEditor) {
 		mId = id;
 		mLevelEditor = levelEditor;
 	}
 
 	@Override
 	public boolean execute() {
-		boolean success = mLevelEditor.addEnemyDef(mId);
+		boolean success = mLevelEditor.removeEnemyDef(mId);
 		return success;
 	}
 
 	@Override
 	public boolean undo() {
-		boolean success = mLevelEditor.removeEnemyDef(mId);
+		boolean success = mLevelEditor.addEnemyDef(mId);
 		return success;
 	}
 

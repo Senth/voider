@@ -2,6 +2,8 @@ package com.spiddekauga.utils.scene.ui;
 
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputEvent.Type;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent;
 
@@ -48,6 +50,13 @@ public abstract class ButtonListener implements EventListener {
 				}
 			}
 		}
+		if (event instanceof InputEvent) {
+			if (((InputEvent) event).getType() == Type.touchDown) {
+				onDown();
+			} else if (((InputEvent) event).getType() == Type.touchUp) {
+				onUp();
+			}
+		}
 		return true;
 	}
 
@@ -60,10 +69,24 @@ public abstract class ButtonListener implements EventListener {
 	}
 
 	/**
-	 * Called when the button is pressed. Will not be called if the tooltip message box
+	 * Called when the button is pressed, or actually released. Will not be called if the tooltip message box
 	 * is active even if the button is pressed.
 	 */
 	protected void onPressed() {
+		// Does nothing
+	}
+
+	/**
+	 * Called when the button is being pressed down
+	 */
+	protected void onDown() {
+		// Does nothing
+	}
+
+	/**
+	 * Called when the button has gone up. Not same as {@link #onPressed()}.
+	 */
+	protected void onUp() {
 		// Does nothing
 	}
 

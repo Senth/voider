@@ -46,7 +46,9 @@ public class ActorAddTool extends ActorTool {
 			return true;
 		}
 
-
+		if (mMovingActor != null) {
+			mMovingActor.setIsBeingMoved(true);
+		}
 
 		return false;
 	}
@@ -74,6 +76,8 @@ public class ActorAddTool extends ActorTool {
 				mMovingActor.setPosition(mDragOrigin);
 				mInvoker.execute(new CResourceMove(mMovingActor, newPosition, mEditor));
 			}
+
+			mMovingActor.setIsBeingMoved(false);
 
 			mMovingActor = null;
 			mCreatedThisEvent = false;

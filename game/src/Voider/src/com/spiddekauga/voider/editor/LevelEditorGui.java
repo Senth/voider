@@ -157,8 +157,10 @@ class LevelEditorGui extends EditorGui {
 		mWidgets.enemyAdd.scrollTable.clear();
 
 		int cColumEnemy = 0;
+		GuiCheckCommandCreator guiCheckCommandCreator = new GuiCheckCommandCreator(mInvoker);
+		ButtonGroup buttonGroup = new ButtonGroup();
 		for (EnemyActorDef enemyDef : enemyDefs) {
-			Button button = new ActorButton(enemyDef, mStyles.skin.general, SkinNames.General.IMAGE_BUTTON_DEFAULT.toString());
+			Button button = new ActorButton(enemyDef, mStyles.skin.general, SkinNames.General.IMAGE_BUTTON_TOGGLE.toString());
 
 			int enemiesPerColumn = getEnemiesPerColumnInAddTable();
 
@@ -170,10 +172,14 @@ class LevelEditorGui extends EditorGui {
 			TooltipListener tooltipListener = new TooltipListener(button, enemyDef.getName(), enemyDef.getDescription());
 			new ButtonListener(button, tooltipListener) {
 				@Override
-				protected void onPressed() {
-					mLevelEditor.createNewEnemy((EnemyActorDef) ((ActorButton)mButton).getActorDef());
+				protected void onChecked(boolean checked) {
+					if (checked) {
+						mLevelEditor.createNewEnemy((EnemyActorDef) ((ActorButton)mButton).getActorDef());
+					}
 				}
 			};
+			button.addListener(guiCheckCommandCreator);
+			buttonGroup.add(button);
 
 			mWidgets.enemyAdd.scrollTable.add(button).size(Config.Editor.Level.Enemy.ADD_BUTTON_SIZE);
 			cColumEnemy++;

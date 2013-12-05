@@ -23,4 +23,15 @@ public interface IResourcePosition extends IResource {
 	 * @return radius bounding area of the resource
 	 */
 	float getBoundingRadius();
+
+	/**
+	 * Set if the resource is currently being moved
+	 * @param isBeingMoved set to true if it's being moved
+	 */
+	void setIsBeingMoved(boolean isBeingMoved);
+
+	/**
+	 * @return true if the resource is being moved
+	 */
+	boolean isBeingMoved();
 }

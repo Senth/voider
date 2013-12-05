@@ -180,6 +180,18 @@ public class TScreenAt extends Trigger implements IResourceBody, IResourcePositi
 		}
 	}
 
+	@Override
+	public void setIsBeingMoved(boolean isBeingMoved) {
+		mIsBeingMoved = isBeingMoved;
+	}
+
+	@Override
+	public boolean isBeingMoved() {
+		return mIsBeingMoved;
+	}
+
+	/** If the trigger is being moved */
+	private boolean mIsBeingMoved = false;
 	/** Vertices for the trigger */
 	private ArrayList<Vector2> mVertices = null;
 	/** Body of the trigger */

@@ -46,6 +46,7 @@ import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.utils.Geometry;
 import com.spiddekauga.voider.utils.Pools;
+import com.sun.xml.internal.bind.annotation.OverrideAnnotationOf;
 
 /**
  * The abstract base class for all actors
@@ -1150,6 +1151,16 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 		return getDef().getVisualVars().getCorners();
 	}
 
+	@Override
+	public void setIsBeingMoved(boolean isBeingMoved) {
+		mIsBeingMoved = isBeingMoved;
+	}
+
+	@Override
+	public boolean isBeingMoved() {
+		return mIsBeingMoved;
+	}
+
 	// Kryo variables
 	/** Current life */
 	@Tag(3) private float mLife = 0;
@@ -1197,6 +1208,8 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 	private boolean mDestroyBody = false;
 	/** Only draws the shape's outline */
 	private boolean mDrawOnlyOutline = false;
+	/** If the actor is being moved */
+	private boolean mIsBeingMoved = false;
 
 	/** The world used for creating bodies */
 	protected static World mWorld = null;

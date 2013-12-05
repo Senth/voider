@@ -595,6 +595,10 @@ public class Config {
 		 * is located the more in front the object will be rendered.
 		 */
 		public enum RenderOrders {
+			/** Moving objects */
+			MOVING_OBJECTS,
+			/** Level upper lower borders */
+			LEVEL_UPPER_LOWER_BORDERS,
 			/** Brushes */
 			BRUSH,
 			/** The player's ship */

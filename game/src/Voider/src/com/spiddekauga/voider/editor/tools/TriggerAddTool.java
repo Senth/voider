@@ -46,6 +46,11 @@ public class TriggerAddTool extends TouchTool {
 			mInvoker.execute(new CSelectionSet(mSelection, mMoveTrigger), true);
 			mCreatedTriggerThisEvent = true;
 		}
+
+		if (mMoveTrigger != null) {
+			mMoveTrigger.setIsBeingMoved(true);
+		}
+
 		return false;
 	}
 
@@ -66,6 +71,9 @@ public class TriggerAddTool extends TouchTool {
 				mMoveTrigger.setPosition(mDragOrigin);
 				mInvoker.execute(new CResourceMove(mMoveTrigger, mTouchCurrent, mEditor));
 			}
+
+			mMoveTrigger.setIsBeingMoved(false);
+
 			mMoveTrigger = null;
 			mCreatedTriggerThisEvent = false;
 		}

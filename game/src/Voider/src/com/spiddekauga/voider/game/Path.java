@@ -638,6 +638,19 @@ public class Path extends Resource implements Disposable, IResourceCorner, IReso
 		return true;
 	}
 
+	@Override
+	public void setIsBeingMoved(boolean isBeingMoved) {
+		mIsBeingMoved = isBeingMoved;
+	}
+
+	@Override
+	public boolean isBeingMoved() {
+		return mIsBeingMoved;
+	}
+
+
+	/** If the resource is being moved */
+	private boolean mIsBeingMoved = false;
 	/** Path vertices for drawing in editor */
 	private ArrayList<Vector2> mVertices = null;
 	/** If this path is selected */

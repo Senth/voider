@@ -45,6 +45,7 @@ public class MoveTool extends TouchTool {
 				resourcePosition.resource = resource;
 				resourcePosition.originalPos.set(resource.getPosition());
 				mMovingResources.add(resourcePosition);
+				resource.setIsBeingMoved(true);
 			}
 
 			Pools.arrayList.free(selectedResources);
@@ -89,12 +90,14 @@ public class MoveTool extends TouchTool {
 	@Override
 	protected boolean up() {
 		if (!mMovingResources.isEmpty()) {
-			// Special case for enemies - snap to path
+			// Special case for one enemy - snap to path
 			if (mMovingResources.size() == 1 && mSelection.isSelected(EnemyActor.class) && mEditor instanceof LevelEditor) {
 				Vector2 newPosition = Pools.vector2.obtain();
 				newPosition.set(mTouchCurrent).sub(mTouchOrigin);
 				newPosition.add(mMovingResources.get(0).originalPos);
 				EnemyAddTool.setSnapPosition((EnemyActor)mMovingResources.get(0).resource, newPosition, (LevelEditor)mEditor, mInvoker);
+
+				mMovingResources.get(0).resource.setIsBeingMoved(false);
 
 				Pools.vector2.free(newPosition);
 			}
@@ -109,16 +112,16 @@ public class MoveTool extends TouchTool {
 				for (ResourcePositionWrapper movingResource : mMovingResources) {
 					newPosition.set(movingResource.originalPos).add(diffMovement);
 					movingResource.resource.setPosition(movingResource.originalPos);
+					movingResource.resource.setIsBeingMoved(false);
 
 					mInvoker.execute(new CResourceMove(movingResource.resource, newPosition, mEditor), chained);
 					chained = true;
 				}
 
-				mResourcePositionPool.freeAll(mMovingResources);
-
 				Pools.vector2.freeAll(diffMovement, newPosition);
 			}
 
+			mResourcePositionPool.freeAll(mMovingResources);
 			mMovingResources.clear();
 
 			return true;

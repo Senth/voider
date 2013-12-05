@@ -229,7 +229,16 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 	 * @param object information about z-value translation
 	 */
 	private void offsetZValue(ShapeRendererEx shapeRenderer, IResourceRender object) {
-		shapeRenderer.translate(0, 0, object.getRenderOrder().getZValue() - 0.5f);
+		float zValue = object.getRenderOrder().getZValue();
+		if (Actor.isEditorActive()) {
+			if (object instanceof IResourcePosition) {
+				if (((IResourcePosition) object).isBeingMoved()) {
+					zValue = RenderOrders.MOVING_OBJECTS.getZValue();
+				}
+			}
+		}
+
+		shapeRenderer.translate(0, 0, zValue - 0.5f);
 	}
 
 	/**
@@ -238,7 +247,16 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 	 * @param object information about z-value translation
 	 */
 	private void resetZValueOffset(ShapeRendererEx shapeRenderer, IResourceRender object) {
-		shapeRenderer.translate(0, 0, -(object.getRenderOrder().getZValue() - 0.5f));
+		float zValue = object.getRenderOrder().getZValue();
+		if (Actor.isEditorActive()) {
+			if (object instanceof IResourcePosition) {
+				if (((IResourcePosition) object).isBeingMoved()) {
+					zValue = RenderOrders.MOVING_OBJECTS.getZValue();
+				}
+			}
+		}
+
+		shapeRenderer.translate(0, 0, -(zValue - 0.5f));
 	}
 
 	/**
@@ -247,7 +265,16 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 	 * @param object information about z-value translation
 	 */
 	private void offsetZValue(ShapeRendererEx shapeRenderer, IResourceEditorRender object) {
-		shapeRenderer.translate(0, 0, object.getRenderOrder().getZValue());
+		float zValue = object.getRenderOrder().getZValue();
+		if (Actor.isEditorActive()) {
+			if (object instanceof IResourcePosition) {
+				if (((IResourcePosition) object).isBeingMoved()) {
+					zValue = RenderOrders.MOVING_OBJECTS.getZValue();
+				}
+			}
+		}
+
+		shapeRenderer.translate(0, 0, zValue);
 	}
 
 	/**
@@ -256,7 +283,16 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 	 * @param object information about z-value translation
 	 */
 	private void resetZValueOffset(ShapeRendererEx shapeRenderer, IResourceEditorRender object) {
-		shapeRenderer.translate(0, 0, -(object.getRenderOrder().getZValue()));
+		float zValue = object.getRenderOrder().getZValue();
+		if (Actor.isEditorActive()) {
+			if (object instanceof IResourcePosition) {
+				if (((IResourcePosition) object).isBeingMoved()) {
+					zValue = RenderOrders.MOVING_OBJECTS.getZValue();
+				}
+			}
+		}
+
+		shapeRenderer.translate(0, 0, -zValue);
 	}
 
 	/**

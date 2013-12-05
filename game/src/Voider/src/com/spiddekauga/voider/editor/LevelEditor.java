@@ -13,6 +13,7 @@ import com.spiddekauga.utils.Scroller;
 import com.spiddekauga.utils.Scroller.ScrollAxis;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.Config.Graphics.RenderOrders;
 import com.spiddekauga.voider.app.MainMenu;
 import com.spiddekauga.voider.editor.commands.CCameraMove;
 import com.spiddekauga.voider.editor.commands.CLevelEnemyDefAdd;
@@ -230,11 +231,13 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 			createResourceBodies();
 
-			// Activate all enemies
+			// Activate all enemies and add them ot the add enemy list
+			clearEnemyDef();
 			ArrayList<EnemyActor> enemies = mLevel.getResources(EnemyActor.class);
 			for (EnemyActor enemy : enemies) {
 				if (enemy.getEnemyGroup() == null || enemy.isGroupLeader()) {
 					enemy.activate();
+					addEnemyDef(enemy.getDef(EnemyActorDef.class));
 				}
 			}
 		}
@@ -358,7 +361,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 	/**
 	 * Adds a new enemy to the add enemy table
-	 * @param enemyId the enemy id to select.
+	 * @param enemyId the enemy id to add
 	 * @return true if enemy was selected successfully, false if unsuccessful
 	 */
 	public boolean addEnemyDef(UUID enemyId) {
@@ -376,6 +379,19 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		}
 
 		return false;
+	}
+
+	/**
+	 * Adds a new enemy to the add enemy table
+	 * @param enemyDef the enemy definition to add to the add list
+	 */
+	private void addEnemyDef(EnemyActorDef enemyDef) {
+		if (enemyDef != null) {
+			if (!mAddEnemies.contains(enemyDef)) {
+				mAddEnemies.add(0, enemyDef);
+				((LevelEditorGui) mGui).resetEnemyAddTable();
+			}
+		}
 	}
 
 	/**
@@ -397,6 +413,13 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		}
 
 		return false;
+	}
+
+	/**
+	 * Clears all enemy definitions
+	 */
+	private void clearEnemyDef() {
+		mAddEnemies.clear();
 	}
 
 	/**
@@ -1370,10 +1393,12 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 
 		// Draw borders
+		mShapeRenderer.translate(0, 0, RenderOrders.LEVEL_UPPER_LOWER_BORDERS.getZValue());
 		// Upper
 		mShapeRenderer.rect(minPos.x, minPos.y, width, heightAvailable);
 		// Lower
 		mShapeRenderer.rect(minPos.x, maxPos.y - heightAvailable, width, heightAvailable);
+		mShapeRenderer.translate(0, 0, -RenderOrders.LEVEL_UPPER_LOWER_BORDERS.getZValue());
 	}
 
 	/**
@@ -1384,11 +1409,11 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	}
 
 	/**
-	 * Called when creating a new enemy
+	 * Called when selecting the enemy type
 	 * @param enemyDef the enemy type to create
 	 */
 	void createNewEnemy(EnemyActorDef enemyDef) {
-		/** @todo create enemy */
+		((EnemyAddTool)Tools.ENEMY_ADD.mTool).setActorDef(enemyDef);
 	}
 
 	/**
