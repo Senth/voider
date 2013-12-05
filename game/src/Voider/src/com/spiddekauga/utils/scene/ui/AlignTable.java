@@ -371,70 +371,34 @@ public class AlignTable extends WidgetGroup implements Disposable {
 		}
 	}
 
-	/**
-	 * Sets if the table should be able to scale or not. Will return the table
-	 * to 1 scale if scalable is set to false
-	 * @param scalable set to true if the table should not be able to scale
-	 * @note Will not set the scalable variable in the rows and cells. If false, however
-	 * it will reset the scale to 1 for this table, the rows, and the cells.
-	 */
-	@Deprecated
-	public void setScalable(boolean scalable) {
-		if (!scalable) {
-			setScale(1);
-		}
-
-		mScalable = scalable;
-	}
-
-	/**
-	 * @return true if this table can be scaled
-	 */
-	@Deprecated
-	public boolean isScalable() {
-		return mScalable;
-	}
-
 	@Override
 	@Deprecated
 	public void setScale(float scale) {
-		setScaleX(scale);
-		setScaleY(scale);
+
 	}
 
 	@Override
 	@Deprecated
 	public void setScale(float scaleX, float scaleY) {
-		setScaleX(scaleX);
-		setScaleY(scaleY);
+
 	}
 
 	@Override
 	@Deprecated
 	public void scale(float scale) {
-		setScale(scale);
+
 	}
 
 	@Override
 	@Deprecated
 	public void setScaleX(float scale) {
-		if (mScalable) {
-			for (Row row : mRows) {
-				row.setScaleX(scale);
-			}
-			invalidate();
-		}
+
 	}
 
 	@Override
 	@Deprecated
 	public void setScaleY(float scale) {
-		if (mScalable) {
-			for (Row row : mRows) {
-				row.setScaleY(scale);
-			}
-			invalidate();
-		}
+
 	}
 
 	@Override
@@ -624,7 +588,7 @@ public class AlignTable extends WidgetGroup implements Disposable {
 			}
 		}
 
-		// Set the size of the table (without scaling)
+		// Change size of table to fit the content
 		if (!mKeepSize) {
 			super.setWidth(width);
 			super.setHeight(height);
@@ -647,9 +611,6 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	private float mMinWidth = 0;
 	/** Minimum height, equals all non-scalable cells' height */
 	private float mMinHeight = 0;
-	/** True if the table can be scaled */
-	@Deprecated
-	private boolean mScalable = true;
 	/** If the table shall keep size after layout, or it shall resize itself */
 	private boolean mKeepSize = false;
 	/** If we're currently disposing */

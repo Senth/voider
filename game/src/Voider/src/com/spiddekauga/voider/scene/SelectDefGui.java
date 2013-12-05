@@ -63,7 +63,6 @@ public class SelectDefGui extends Gui {
 		mMainTable.setTableAlign(Horizontal.LEFT, Vertical.TOP);
 		mMainTable.setRowAlign(Horizontal.LEFT, Vertical.TOP);
 		//		mMainTable.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		mMainTable.setScalable(false);
 		mDefTable.setPreferences(mMainTable);
 		mDefTable.setKeepSize(true);
 		mDefTable.setName("DefTable");

@@ -45,10 +45,19 @@ public class ActorButton extends ImageButton {
 	}
 
 	/**
+	 * @return actorDefinition that is bound to this button
+	 */
+	public ActorDef getActorDef() {
+		return mActorDef;
+	}
+
+	/**
 	 * Sets the correct image style
 	 * @param actorDef the actor definition to get the texture from
 	 */
 	private void setTexture(ActorDef actorDef) {
+		mActorDef = actorDef;
+
 		ImageButtonStyle imageButtonStyle = getStyle();
 		imageButtonStyle.imageDown = actorDef.getTextureRegionDrawable();
 		imageButtonStyle.imageUp = actorDef.getTextureRegionDrawable();
@@ -57,4 +66,7 @@ public class ActorButton extends ImageButton {
 			imageButtonStyle.imageChecked = actorDef.getTextureRegionDrawable();
 		}
 	}
+
+	/** The actor definition for the button */
+	private ActorDef mActorDef;
 }

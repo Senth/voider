@@ -259,24 +259,6 @@ public class GameScene extends WorldScene {
 	}
 
 	/**
-	 * Renders the life as on overlay on the whole map
-	 */
-	private void renderHealth() {
-		mShapeRenderer.setColor(Config.Game.HEALTH_COLOR);
-
-		// Calculate how big part of the window should be covered
-		float healthWidth = mPlayerActor.getHealth() / mPlayerActor.getDef().getHealthMax();
-		healthWidth *= SceneSwitcher.getWorldWidth();
-
-		float startPoint = mLevel.getXCoord() - SceneSwitcher.getWorldWidth();
-
-		// Cover remaining place with bar
-		if (SceneSwitcher.getWorldWidth() - healthWidth >= 1f) {
-			mShapeRenderer.rect(startPoint + healthWidth, -SceneSwitcher.getWorldHeight()/2f, SceneSwitcher.getWorldWidth()-healthWidth, SceneSwitcher.getWorldHeight());
-		}
-	}
-
-	/**
 	 * Update life positions
 	 */
 	private void updateLifePosition() {

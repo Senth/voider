@@ -3,13 +3,12 @@ package com.spiddekauga.voider.app;
 import java.util.ArrayList;
 
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Window;
-import com.badlogic.gdx.scenes.scene2d.utils.Align;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.spiddekauga.utils.scene.ui.ActorButton;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
-import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.voider.game.actors.EnemyActorDef;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceNames;
@@ -30,14 +29,13 @@ public class PrototypeGui extends Gui {
 		mMainTable.setTableAlign(Horizontal.RIGHT, Vertical.BOTTOM);
 		mMainTable.setRowAlign(Horizontal.RIGHT, Vertical.TOP);
 
-		initWindow();
+		initScrollPane();
 		initEnemies();
 	}
 
 	@Override
 	public void dispose() {
 		super.dispose();
-		mWindowTable.dispose();
 	}
 
 	/**
@@ -51,23 +49,13 @@ public class PrototypeGui extends Gui {
 	/**
 	 * Initialize window with enemy buttons
 	 */
-	private void initWindow() {
-		if (mWindowTable == null) {
-			mWindowTable = new AlignTable();
-		}
-		mWindowTable.setRowPaddingDefault(2);
-		mWindowTable.setTableAlign(Horizontal.LEFT, Vertical.TOP);
-		mWindowTable.setRowAlign(Horizontal.LEFT, Vertical.TOP);
-
-		Window window = new Window("", mSkin, SkinNames.General.WINDOW_DEFAULT.toString());
-		window.setWidth(190);
-		window.setHeight(400);
-		mWindow = window;
-		mMainTable.add(window);
-
-		mWindow.align(Align.center | Align.top);
-		mWindow.setName("Window");
-		//		window.add(mWindowTable);
+	private void initScrollPane() {
+		Table table = new Table();
+		mWindowTable = table;
+		ScrollPane scrollPane = new ScrollPane(mWindowTable, mSkin, SkinNames.General.SCROLL_PANE_WINDOW_BACKGROUND.toString());
+		scrollPane.setWidth(190);
+		scrollPane.setHeight(400);
+		mMainTable.add(scrollPane);
 	}
 
 	/**
@@ -82,14 +70,13 @@ public class PrototypeGui extends Gui {
 			// Here is the actual code for creating an enemy
 			for (EnemyActorDef enemyDef : enemyDefs) {
 				Button button = new ActorButton(enemyDef, mSkin, SkinNames.General.IMAGE_BUTTON_DEFAULT.toString());
-				//				Button button = new TextButton("", mSkin, SkinNames.General.TEXT_BUTTON_PRESS.toString());
 
 				if (cColumEnemy == ENEMIES_PER_COLUMN) {
 					cColumEnemy = 0;
-					mWindow.row();
+					mWindowTable.row();
 				}
 
-				mWindow.add(button).size(BUTTON_SIZE);
+				mWindowTable.add(button).size(BUTTON_SIZE);
 				cColumEnemy++;
 			}
 		}
@@ -97,10 +84,8 @@ public class PrototypeGui extends Gui {
 
 	/** General skin */
 	private Skin mSkin = null;
-	/** The window */
-	private Window mWindow = null;
 	/** Window table */
-	private AlignTable mWindowTable = null;
+	private Table mWindowTable = null;
 	/** Scene of the prototype */
 	private PrototypeScene mScene = null;
 

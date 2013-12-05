@@ -379,6 +379,10 @@ public class Config {
 				public final static float TRIGGER_DEACTIVATE_DELAY_DEFAULT = 0;
 				/** Step size of deactivation trigger delay */
 				public final static float TRIGGER_DEACTIVATE_DELAY_STEP_SIZE = 1;
+				/** Size of enemy buttons in the scroll list */
+				public final static int ADD_BUTTON_SIZE = 60;
+				/** Maximum percentage of width the add enemy table is allowed for */
+				public final static float ADD_ENEMY_TABLE_MAX_WIDTH = 0.25f;
 			}
 
 			/**
@@ -422,7 +426,7 @@ public class Config {
 			/** Step size of level speeed */
 			public final static float LEVEL_SPEED_STEP_SIZE = 1;
 			/** Color of above and below the actual level, so the player can see
-			 * that this doesn't below to the level. */
+			 * that this doesn't belong to the level. */
 			public final static Color ABOVE_BELOW_COLOR = new Color(1, 1, 1, 0.1f);
 			/** Color from enemies to activate trigger */
 			public static Color ENEMY_ACTIVATE_TRIGGER_PATH_COLOR = new Color(0.25f, 1, 0.25f, 0.4f);
@@ -546,9 +550,6 @@ public class Config {
 		public final static int SCORE_CHARACTERS = 10;
 		/** Score multiplier, used to create a greater score */
 		public final static float SCORE_MULTIPLIER = 10;
-		/** Health color */
-		@Deprecated
-		public final static Color HEALTH_COLOR = new Color(1, 0, 0, 0.3f);
 		/** Lives offset */
 		public final static float LIVES_OFFSET_POSITION = 1;
 		/** Border threshold, when border is too out of sync, it will get synced */

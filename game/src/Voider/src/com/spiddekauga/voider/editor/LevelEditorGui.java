@@ -7,15 +7,19 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider.SliderStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
+import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.utils.Disposable;
 import com.spiddekauga.utils.Invoker;
+import com.spiddekauga.utils.scene.ui.ActorButton;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
@@ -37,6 +41,7 @@ import com.spiddekauga.voider.editor.LevelEditor.Tools;
 import com.spiddekauga.voider.editor.commands.CDefHasValidName;
 import com.spiddekauga.voider.editor.commands.CGuiSlider;
 import com.spiddekauga.voider.game.Path.PathTypes;
+import com.spiddekauga.voider.game.actors.EnemyActorDef;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceNames;
 import com.spiddekauga.voider.resources.SkinNames;
@@ -87,7 +92,7 @@ class LevelEditorGui extends EditorGui {
 
 	@Override
 	public void dispose() {
-		mWidgets.enemyAdd.table.dispose();
+		mWidgets.enemyAdd.outerTable.dispose();
 		mWidgets.enemy.table.dispose();
 		mWidgets.path.table.dispose();
 		mWidgets.info.table.dispose();
@@ -102,6 +107,7 @@ class LevelEditorGui extends EditorGui {
 		resetPathOptions();
 		resetEnemyOptions();
 		resetLevelInfo();
+		resetEnemyAddTable();
 	}
 
 	/**
@@ -150,18 +156,47 @@ class LevelEditorGui extends EditorGui {
 	}
 
 	/**
+	 * Reset enemy add table
+	 */
+	void resetEnemyAddTable() {
+		ArrayList<EnemyActorDef> enemyDefs = mLevelEditor.getAddEnemies();
+
+		mWidgets.enemyAdd.scrollTable.clear();
+
+		int cColumEnemy = 0;
+		for (EnemyActorDef enemyDef : enemyDefs) {
+			Button button = new ActorButton(enemyDef, mStyles.skin.general, SkinNames.General.IMAGE_BUTTON_DEFAULT.toString());
+
+			int enemiesPerColumn = getEnemiesPerColumnInAddTable();
+
+			if (cColumEnemy == enemiesPerColumn) {
+				cColumEnemy = 0;
+				mWidgets.enemyAdd.scrollTable.row();
+			}
+
+			TooltipListener tooltipListener = new TooltipListener(button, enemyDef.getName(), enemyDef.getDescription());
+			new ButtonListener(button, tooltipListener) {
+				@Override
+				protected void onPressed() {
+					mLevelEditor.createNewEnemy((EnemyActorDef) ((ActorButton)mButton).getActorDef());
+				}
+			};
+
+			mWidgets.enemyAdd.scrollTable.add(button).size(Config.Editor.Level.Enemy.ADD_BUTTON_SIZE);
+			cColumEnemy++;
+		}
+	}
+
+	/**
 	 * Resets enemy option values
 	 */
 	void resetEnemyOptions() {
-
-		// Add name
-		String enemyName = mLevelEditor.getSelectedEnemyName();
-		if (enemyName == null) {
-			enemyName = Messages.getNoDefSelected("enemy");
-		}
-		mWidgets.enemyAdd.name.setText(enemyName);
-		mWidgets.enemyAdd.name.setSize(mWidgets.enemyAdd.name.getPrefWidth(), mWidgets.enemyAdd.name.getPrefHeight());
-
+		// Scroll pane width
+		int scrollPaneWidth = Config.Editor.Level.Enemy.ADD_BUTTON_SIZE * getEnemiesPerColumnInAddTable();
+		mWidgets.enemyAdd.scrollTable.setWidth(scrollPaneWidth);
+		// Add margin
+		scrollPaneWidth += 10;
+		mWidgets.enemyAdd.scrollPane.setWidth(scrollPaneWidth);
 
 		// Show/Hide options
 		if (mLevelEditor.isEnemySelected()) {
@@ -649,37 +684,56 @@ class LevelEditorGui extends EditorGui {
 	}
 
 	/**
+	 * Calculates the amount of enemies per column in the add enemy scroll pane.
+	 * Uses Config.Editor.Level.Enemy.ADD_ENEMY_TABLE_MAX_WIDTH for determining the
+	 * maximum amount of width on the scroll pane.
+	 * @return maximum number of buttons
+	 */
+	private int getEnemiesPerColumnInAddTable() {
+		float maxWidth = Gdx.graphics.getWidth() * Config.Editor.Level.Enemy.ADD_ENEMY_TABLE_MAX_WIDTH;
+
+		// How many buttons can we have for this width?
+		int maxButtons = (int) (maxWidth / Config.Editor.Level.Enemy.ADD_BUTTON_SIZE);
+
+		return maxButtons;
+	}
+
+	/**
 	 * Init add enemy options
 	 */
 	private void initEnemyAddOptions() {
-		Skin generalSkin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
-		TextButtonStyle textButtonStyle = generalSkin.get("default", TextButtonStyle.class);
-		LabelStyle labelStyle = generalSkin.get("default", LabelStyle.class);
 		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.UI_EDITOR_BUTTONS);
 
-		mWidgets.enemyAdd.table.setPreferences(mMainTable);
-		mWidgets.enemyAdd.table.row();
-		mHiders.enemyAdd.addToggleActor(mWidgets.enemyAdd.table);
+		mWidgets.enemyAdd.outerTable.setPreferences(mMainTable);
+		mWidgets.enemyAdd.outerTable.row();
+		mHiders.enemyAdd.addToggleActor(mWidgets.enemyAdd.outerTable);
 		mHiders.enemyAdd.setButton(mWidgets.tool.enemyAdd);
-		mMainTable.row();
-		mMainTable.add(mWidgets.enemyAdd.table);
+		mMainTable.row().setFillHeight(true).setAlign(Horizontal.RIGHT, Vertical.TOP);
+		mMainTable.add(mWidgets.enemyAdd.outerTable).setFillHeight(true);
 
 		Button button;
 		TooltipListener tooltipListener;
 
-		// Select type
-		Label label = new Label("", labelStyle);
-		new TooltipListener(label, "Enemy type name", Messages.Tooltip.Level.Enemy.SELECT_NAME);
-		mWidgets.enemyAdd.name = label;
-		mWidgets.enemyAdd.table.add(label).setAlign(Horizontal.RIGHT, Vertical.MIDDLE);
+		mWidgets.enemyAdd.scrollTable.align(Align.left | Align.top);
+		ScrollPane scrollPane = new ScrollPane(mWidgets.enemyAdd.scrollTable, mStyles.scrollPane.windowBackground);
+		mWidgets.enemyAdd.scrollPane = scrollPane;
 
-		mWidgets.enemyAdd.table.row();
+		int scrollPaneWidth = Config.Editor.Level.Enemy.ADD_BUTTON_SIZE * getEnemiesPerColumnInAddTable();
+		mWidgets.enemyAdd.scrollTable.setWidth(scrollPaneWidth);
+		// Add margin
+		scrollPaneWidth += 10;
+		scrollPane.setHeight(300);
+		mWidgets.enemyAdd.outerTable.row().setFillHeight(true);
+		mWidgets.enemyAdd.outerTable.add(scrollPane).setWidth(scrollPaneWidth);
+
+		// Add enemy to the list (button)
+		mWidgets.enemyAdd.outerTable.row();
 		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Select type", textButtonStyle);
+			button = new TextButton("Add enemy to list", mStyles.textButton.standard);
 		} else {
 			button = new ImageButton(editorSkin, SkinNames.EditorIcons.ENEMY_SELECT.toString());
 		}
-		mWidgets.enemyAdd.table.add(button);
+		mWidgets.enemyAdd.outerTable.add(button);
 		tooltipListener = new TooltipListener(button, "Select enemy type", Messages.Tooltip.Level.Enemy.SELECT_TYPE);
 		new ButtonListener(button, tooltipListener) {
 			@Override
@@ -688,7 +742,7 @@ class LevelEditorGui extends EditorGui {
 			}
 		};
 
-		mWidgets.enemyAdd.table.row().setPadTop(Gui.SEPARATE_PADDING);
+		mWidgets.enemyAdd.outerTable.row().setPadTop(Gui.SEPARATE_PADDING);
 	}
 
 	/**
@@ -1010,8 +1064,9 @@ class LevelEditorGui extends EditorGui {
 		}
 
 		static class EnemyAddWidgets {
-			AlignTable table = new AlignTable();
-			Label name = null;
+			ScrollPane scrollPane = null;
+			AlignTable outerTable = new AlignTable();
+			Table scrollTable = new Table();
 		}
 
 		static class InfoWidgets {

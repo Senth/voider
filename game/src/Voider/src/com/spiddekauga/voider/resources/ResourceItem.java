@@ -2,10 +2,7 @@ package com.spiddekauga.voider.resources;
 
 import java.util.UUID;
 
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonValue;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
-import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.scene.Scene;
 
 /**
@@ -13,7 +10,7 @@ import com.spiddekauga.voider.scene.Scene;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class ResourceItem implements Json.Serializable {
+public class ResourceItem {
 	/**
 	 * Checks whether the resources are the same
 	 * @param object another queue item
@@ -75,22 +72,4 @@ public class ResourceItem implements Json.Serializable {
 	@Tag(98) public UUID id = null;
 	/** revision of the resource */
 	@Tag(101) public int revision = -1;
-
-	@Override
-	public void write(Json json) {
-		json.writeValue("Config.REVISION", Config.REVISION);
-		json.writeValue("resourceId", id.toString());
-		json.writeValue("count", count);
-		json.writeValue("revision", revision);
-	}
-
-	@Override
-	public void read(Json json, JsonValue jsonData) {
-		id = UUID.fromString(json.readValue("resourceId", String.class, jsonData));
-		count = json.readValue("count", int.class, jsonData);
-
-		if (jsonData.get("revision") != null) {
-			revision = json.readValue("revision", int.class, jsonData);
-		}
-	}
 }

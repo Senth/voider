@@ -14,6 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox.CheckBoxStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane.ScrollPaneStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider.SliderStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -103,6 +104,8 @@ public abstract class EditorGui extends Gui {
 		mStyles.label.standard = mStyles.skin.general.get(SkinNames.General.LABEL_DEFAULT.toString(), LabelStyle.class);
 		mStyles.checkBox.checkBox = mStyles.skin.general.get(SkinNames.General.CHECK_BOX_DEFAULT.toString(), CheckBoxStyle.class);
 		mStyles.checkBox.radio = mStyles.skin.general.get(SkinNames.General.CHECK_BOX_RADIO.toString(), CheckBoxStyle.class);
+		mStyles.scrollPane.noBackground = mStyles.skin.general.get(SkinNames.General.SCROLL_PANE_DEFAULT.toString(), ScrollPaneStyle.class);
+		mStyles.scrollPane.windowBackground = mStyles.skin.general.get(SkinNames.General.SCROLL_PANE_WINDOW_BACKGROUND.toString(), ScrollPaneStyle.class);
 
 		mEditorMenu.setTableAlign(Horizontal.LEFT, Vertical.TOP);
 		mFileMenu.setTableAlign(Horizontal.RIGHT, Vertical.TOP);
@@ -524,6 +527,7 @@ public abstract class EditorGui extends Gui {
 		Skins skin = new Skins();
 		Label label = new Label();
 		CheckBox checkBox = new CheckBox();
+		ScrollPane scrollPane = new ScrollPane();
 
 		static class TextButton {
 			TextButtonStyle standard = null;
@@ -551,6 +555,11 @@ public abstract class EditorGui extends Gui {
 		static class CheckBox {
 			CheckBoxStyle radio = null;
 			CheckBoxStyle checkBox = null;
+		}
+
+		static class ScrollPane {
+			ScrollPaneStyle noBackground;
+			ScrollPaneStyle windowBackground;
 		}
 	}
 

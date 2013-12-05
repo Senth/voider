@@ -31,6 +31,7 @@ import com.spiddekauga.voider.utils.Pools;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
+@Deprecated
 public class AddEnemyTool extends AddActorTool {
 	/**
 	 * Creates an add enemy tool. You still need to set the enemy actor definition

@@ -53,11 +53,8 @@ public class Cell implements Poolable {
 		dispose(true);
 		mAlign.horizontal = Horizontal.LEFT;
 		mAlign.vertical = Vertical.MIDDLE;
-		mScalable = true;
 
 		mPadding.reset();
-		mScaledPadding.reset();
-		mDynamicPadding = true;
 
 		mFillHeight = false;
 		mFillWidth = false;
@@ -66,32 +63,9 @@ public class Cell implements Poolable {
 	}
 
 	/**
-	 * Sets the padding values to be dynamic. I.e. they will scale depending on the
-	 * current scale factor of the table. E.g. setPadLeft(10) and table.setScale(0.5f)
-	 * will result in setPadLeft(5).
-	 * @param dynamicPadding set to true to activate dynamic padding
-	 * @return this cell for chaining
-	 * @note Setting this to false does not work with scaling AlignTable
-	 * depending on the size.
-	 */
-	@Deprecated
-	public Cell setDynamicPadding(boolean dynamicPadding) {
-		mDynamicPadding = dynamicPadding;
-
-		if (mDynamicPadding && mActor != null) {
-			mScaledPadding.left = mPadding.left * mActor.getScaleX();
-			mScaledPadding.right = mPadding.right * mActor.getScaleX();
-			mScaledPadding.top = mPadding.top * mActor.getScaleY();
-			mScaledPadding.bottom = mPadding.bottom * mActor.getScaleY();
-		}
-		return this;
-	}
-
-	/**
 	 * Sets the padding for left, right, top, bottom
 	 * @param pad how much padding should be on the sides
 	 * @return this cell for chaining
-	 * @see #setDynamicPadding(boolean)
 	 */
 	public Cell setPadding(float pad) {
 		setPadLeft(pad);
@@ -108,7 +82,6 @@ public class Cell implements Poolable {
 	 * @param right right padding
 	 * @param bottom bottom padding
 	 * @param left left padding
-	 * @see #setDynamicPadding(boolean)
 	 * @return this cell for chaining
 	 */
 	public Cell setPadding(float top, float right, float bottom, float left) {
@@ -136,14 +109,9 @@ public class Cell implements Poolable {
 	 * Sets the padding to the left of the cell
 	 * @param padLeft how much padding should be to the left of the cell
 	 * @return this cell for chaining
-	 * @see #setDynamicPadding(boolean)
 	 */
 	public Cell setPadLeft(float padLeft) {
 		mPadding.left = padLeft;
-
-		if (mDynamicPadding && mActor != null) {
-			mScaledPadding.left = mPadding.left * mActor.getScaleX();
-		}
 
 		return this;
 	}
@@ -152,14 +120,9 @@ public class Cell implements Poolable {
 	 * Sets the padding to the right of the cell
 	 * @param padRight how much padding should be on the right of the cell
 	 * @return this cell for chaining
-	 * @see #setDynamicPadding(boolean)
 	 */
 	public Cell setPadRight(float padRight) {
 		mPadding.right = padRight;
-
-		if (mDynamicPadding && mActor != null) {
-			mScaledPadding.right = mPadding.right * mActor.getScaleX();
-		}
 
 		return this;
 	}
@@ -168,14 +131,9 @@ public class Cell implements Poolable {
 	 * Sets the padding at the top of the cell
 	 * @param padTop how much padding should be at the top of the cell
 	 * @return this cell for chaining
-	 * @see #setDynamicPadding(boolean)
 	 */
 	public Cell setPadTop(float padTop) {
 		mPadding.top = padTop;
-
-		if (mDynamicPadding && mActor != null) {
-			mScaledPadding.top = mPadding.top * mActor.getScaleY();
-		}
 
 		return this;
 	}
@@ -184,14 +142,9 @@ public class Cell implements Poolable {
 	 * Sets the padding at teh bottom of the cell
 	 * @param padBottom how much padding should be at the bottom of the cell
 	 * @return this cell for chaining
-	 * @see #setDynamicPadding(boolean)
 	 */
 	public Cell setPadBottom(float padBottom) {
 		mPadding.bottom = padBottom;
-
-		if (mDynamicPadding && mActor != null) {
-			mScaledPadding.bottom = mPadding.bottom * mActor.getScaleY();
-		}
 
 		return this;
 	}
@@ -199,37 +152,33 @@ public class Cell implements Poolable {
 	/**
 	 * @return padding to the left of this cell. If dynamic padding is on this
 	 * will return the scaled padding instead.
-	 * @see #setDynamicPadding(boolean)
 	 */
 	public float getPadLeft() {
-		return mDynamicPadding ? mScaledPadding.left : mPadding.left;
+		return mPadding.left;
 	}
 
 	/**
 	 * @return padding to the right of this cell. If dynamic padding is on this
 	 * will return the scaled padding instead.
-	 * @see #setDynamicPadding(boolean)
 	 */
 	public float getPadRight() {
-		return mDynamicPadding ? mScaledPadding.right : mPadding.right;
+		return mPadding.right;
 	}
 
 	/**
 	 * @return padding to the top of this cell. If dynamic padding is on this
 	 * will return the scaled padding instead.
-	 * @see #setDynamicPadding(boolean)
 	 */
 	public float getPadTop() {
-		return mDynamicPadding ? mScaledPadding.top : mPadding.top;
+		return mPadding.top;
 	}
 
 	/**
 	 * @return padding to the bottom of this cell. If dynamic padding is on this
 	 * will return the scaled padding instead.
-	 * @see #setDynamicPadding(boolean)
 	 */
 	public float getPadBottom() {
-		return mDynamicPadding ? mScaledPadding.bottom : mPadding.bottom;
+		return mPadding.bottom;
 	}
 
 	/**
@@ -250,7 +199,7 @@ public class Cell implements Poolable {
 	}
 
 	/**
-	 * Sets the width of the cell. Don't use this together with scaling!
+	 * Sets the width of the cell.
 	 * Does not change the preferred width.
 	 * @note That this will change the preferred size of the cell. Use #resetSize() to reset
 	 * the size to the actual preferred size
@@ -308,33 +257,6 @@ public class Cell implements Poolable {
 	 */
 	boolean isFixedSize() {
 		return mFixedSize;
-	}
-
-	/**
-	 * Sets if the cell can be scaled or not. Cells are scalable by default.
-	 * Can be good to turn off for buttons with text.
-	 * @param scalable true if the cell should be scalable. If set to false this
-	 * will reset any scale.
-	 * @return this cell for chaining
-	 */
-	@Deprecated
-	public Cell setScalable(boolean scalable) {
-		if (!scalable) {
-			setScaleX(1);
-			setScaleY(1);
-		}
-
-		mScalable = scalable;
-
-		return this;
-	}
-
-	/**
-	 * @return true if the cell is scalable
-	 */
-	@Deprecated
-	public boolean isScalable() {
-		return mScalable;
 	}
 
 	/**
@@ -422,10 +344,6 @@ public class Cell implements Poolable {
 			if (mActor.getWidth() == 0) {
 				mActor.setWidth(((Layout) mActor).getPrefWidth());
 			}
-		}
-
-		if (mActor instanceof AlignTable) {
-			mScalable = ((AlignTable) mActor).isScalable();
 		}
 
 		return this;
@@ -548,59 +466,6 @@ public class Cell implements Poolable {
 		if (mActor instanceof Layout) {
 			((Layout)mActor).validate();
 		}
-		if (mActor instanceof AlignTable) {
-			mScalable = ((AlignTable) mActor).isScalable();
-		}
-	}
-
-	/**
-	 * Sets the scaling factor for x.
-	 * @param scaleX the x scaling factor
-	 * @return this cell for chaining
-	 * @note Scaling only works if this cell is scalable (on by default)
-	 */
-	@Deprecated
-	Cell setScaleX(float scaleX) {
-		if (mScalable) {
-			if (mDynamicPadding) {
-				mScaledPadding.left = mPadding.left * scaleX;
-				mScaledPadding.right = mPadding.right * scaleX;
-			}
-
-			if (mActor!= null) {
-				if (mActor instanceof Layout) {
-					mActor.setWidth(((Layout) mActor).getPrefWidth() * scaleX);
-				}
-				mActor.setScaleX(scaleX);
-			}
-		}
-
-		return this;
-	}
-
-	/**
-	 * Sets the scaling factor for y
-	 * @param scaleY the y scaling factor
-	 * @return this cell for chaining
-	 * @note Scaling only works if this cell is scalable (on by default)
-	 */
-	@Deprecated
-	Cell setScaleY(float scaleY) {
-		if (mScalable) {
-			if (mDynamicPadding) {
-				mScaledPadding.top = mPadding.top * scaleY;
-				mScaledPadding.bottom = mPadding.bottom * scaleY;
-			}
-
-			if (mActor != null) {
-				if (mActor instanceof Layout) {
-					mActor.setHeight(((Layout) mActor).getPrefHeight() * scaleY);
-				}
-				mActor.setScaleY(scaleY);
-			}
-		}
-
-		return this;
 	}
 
 	/**
@@ -635,8 +500,6 @@ public class Cell implements Poolable {
 	/** Alignment of the cell */
 	private Align mAlign = new Align(Horizontal.LEFT, Vertical.MIDDLE);
 	/** If the cell is scalable */
-	@Deprecated
-	private boolean mScalable = true;
 	/** If the cell shall fill the width of the row */
 	private boolean mFillWidth = false;
 	/** Old width before filling the width */
@@ -649,12 +512,6 @@ public class Cell implements Poolable {
 	private boolean mFixedSize = false;
 
 	// Padding
-	/** If the padding can be scaled */
-	@Deprecated
-	private boolean mDynamicPadding = true;
 	/** Padding for this cell */
 	private Padding mPadding = new Padding();
-	/** Scaled padding */
-	@Deprecated
-	private Padding mScaledPadding = new Padding();
 }

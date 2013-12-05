@@ -15,7 +15,7 @@ import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.app.MainMenu;
 import com.spiddekauga.voider.editor.commands.CCameraMove;
-import com.spiddekauga.voider.editor.commands.CLevelEnemyDefSelect;
+import com.spiddekauga.voider.editor.commands.CLevelEnemyDefAdd;
 import com.spiddekauga.voider.editor.commands.CLevelPickupDefSelect;
 import com.spiddekauga.voider.editor.commands.CSelectionSet;
 import com.spiddekauga.voider.editor.tools.ActorAddTool;
@@ -339,7 +339,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 					break;
 
 				case ENEMY:
-					mInvoker.execute(new CLevelEnemyDefSelect(((ResourceItem) message).id, this));
+					mInvoker.execute(new CLevelEnemyDefAdd(((ResourceItem) message).id, this));
 					break;
 				}
 			}
@@ -357,36 +357,51 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	}
 
 	/**
-	 * Selects the specified enemy definition. This enemy will be used when adding new enemies.
-	 * 
-	 * @param enemyId
-	 *            the enemy id to select, can be null.
+	 * Adds a new enemy to the add enemy table
+	 * @param enemyId the enemy id to select.
 	 * @return true if enemy was selected successfully, false if unsuccessful
 	 */
-	public boolean selectEnemyDef(UUID enemyId) {
-		try {
-			EnemyActorDef enemyActorDef = null;
-			if (enemyId != null) {
-				enemyActorDef = ResourceCacheFacade.get(this, enemyId);
+	public boolean addEnemyDef(UUID enemyId) {
+		if (enemyId != null) {
+			EnemyActorDef enemyActorDef = ResourceCacheFacade.get(this, enemyId);
+			if (enemyActorDef != null) {
+				if (!mAddEnemies.contains(enemyActorDef)) {
+					mAddEnemies.add(enemyActorDef);
+					((LevelEditorGui) mGui).resetEnemyAddTable();
+					return true;
+				} else {
+					mGui.showErrorMessage("This enemy has already been added.");
+				}
 			}
-
-			((ActorAddTool) Tools.ENEMY_ADD.getTool()).setActorDef(enemyActorDef);
-			((LevelEditorGui) mGui).resetEnemyOptions();
-
-		} catch (Exception e) {
-			Gdx.app.error("LevelEditor", e.toString());
-			e.printStackTrace();
-			return false;
 		}
 
-		return true;
+		return false;
+	}
+
+	/**
+	 * Removes an enemy from teh add enemy table
+	 * @param enemyId the enemy id to remove.
+	 * @return true if the enemy was successfully removed, false if it was not found.
+	 */
+	public boolean removeEnemyDef(UUID enemyId) {
+		if (enemyId != null) {
+			EnemyActorDef enemyActorDef = ResourceCacheFacade.get(this, enemyId);
+			if (enemyActorDef != null) {
+				boolean removed = mAddEnemies.remove(enemyActorDef);
+
+				if (removed) {
+					((LevelEditorGui)mGui).resetEnemyAddTable();
+					return true;
+				}
+			}
+		}
+
+		return false;
 	}
 
 	/**
 	 * Selects the specified pickup definition. This pickup will be used when adding new pickups
-	 * 
-	 * @param pickupId
-	 *            the pickup id to select
+	 * @param pickupId the pickup id to select
 	 * @return true if the pickup was selected successfully, false if unsuccessful
 	 */
 	public boolean selectPickupDef(UUID pickupId) {
@@ -409,6 +424,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	@Override
 	protected void onDispose() {
 		setLevel(null);
+		Pools.arrayList.free(mAddEnemies);
 	}
 
 	@Override
@@ -1366,6 +1382,21 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	}
 
 	/**
+	 * @return all enemies for the add table
+	 */
+	ArrayList<EnemyActorDef> getAddEnemies() {
+		return mAddEnemies;
+	}
+
+	/**
+	 * Called when creating a new enemy
+	 * @param enemyDef the enemy type to create
+	 */
+	void createNewEnemy(EnemyActorDef enemyDef) {
+		/** @todo create enemy */
+	}
+
+	/**
 	 * All definition selection actions
 	 */
 	private enum SelectionActions {
@@ -1377,6 +1408,9 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		PICKUP,
 	}
 
+	/** Enemies in the add enemy table */
+	@SuppressWarnings("unchecked")
+	private ArrayList<EnemyActorDef> mAddEnemies = Pools.arrayList.obtain();
 	/** Created scroll command for the last scroll */
 	private boolean mCreatedScrollCommand = true;
 	/** Level we're currently editing */
