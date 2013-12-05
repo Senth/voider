@@ -8,14 +8,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
-import com.badlogic.gdx.scenes.scene2d.ui.Slider.SliderStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
-import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.utils.Disposable;
 import com.spiddekauga.utils.Invoker;
@@ -28,7 +24,6 @@ import com.spiddekauga.utils.scene.ui.HideListener;
 import com.spiddekauga.utils.scene.ui.HideManual;
 import com.spiddekauga.utils.scene.ui.HideSliderValue;
 import com.spiddekauga.utils.scene.ui.Label;
-import com.spiddekauga.utils.scene.ui.Label.LabelStyle;
 import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
 import com.spiddekauga.utils.scene.ui.SliderListener;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
@@ -42,8 +37,6 @@ import com.spiddekauga.voider.editor.commands.CDefHasValidName;
 import com.spiddekauga.voider.editor.commands.CGuiSlider;
 import com.spiddekauga.voider.game.Path.PathTypes;
 import com.spiddekauga.voider.game.actors.EnemyActorDef;
-import com.spiddekauga.voider.resources.ResourceCacheFacade;
-import com.spiddekauga.voider.resources.ResourceNames;
 import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.resources.SkinNames.EditorIcons;
 import com.spiddekauga.voider.utils.Messages;
@@ -262,7 +255,7 @@ class LevelEditorGui extends EditorGui {
 
 		// Select
 		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Select", mStyles.textButton.standard);
+			button = new TextButton("Select", mStyles.textButton.press);
 		} else {
 			button = new ImageButton(mStyles.skin.editor, EditorIcons.SELECT.toString());
 		}
@@ -297,7 +290,7 @@ class LevelEditorGui extends EditorGui {
 
 		// Move
 		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Move", mStyles.textButton.standard);
+			button = new TextButton("Move", mStyles.textButton.press);
 		} else {
 			button = new ImageButton(mStyles.skin.editor, EditorIcons.MOVE.toString());
 		}
@@ -314,7 +307,7 @@ class LevelEditorGui extends EditorGui {
 
 		// Delete
 		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Delete", mStyles.textButton.standard);
+			button = new TextButton("Delete", mStyles.textButton.press);
 		} else {
 			button = new ImageButton(mStyles.skin.editor, EditorIcons.DELETE.toString());
 		}
@@ -331,7 +324,7 @@ class LevelEditorGui extends EditorGui {
 
 		// Terrain draw_append
 		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Terrain, append", mStyles.textButton.standard);
+			button = new TextButton("Terrain, append", mStyles.textButton.press);
 		} else {
 			button = new ImageButton(mStyles.skin.editor, EditorIcons.TERRAIN_DRAW_APPEND.toString());
 		}
@@ -348,7 +341,7 @@ class LevelEditorGui extends EditorGui {
 
 		// Terrain draw_erase
 		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Terrain, draw erase", mStyles.textButton.standard);
+			button = new TextButton("Terrain, draw erase", mStyles.textButton.press);
 		} else {
 			button = new ImageButton(mStyles.skin.editor, EditorIcons.TERRAIN_DRAW_ERASE.toString());
 		}
@@ -365,7 +358,7 @@ class LevelEditorGui extends EditorGui {
 
 		// add_move_corner
 		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Add/move corner", mStyles.textButton.standard);
+			button = new TextButton("Add/move corner", mStyles.textButton.press);
 		} else {
 			button = new ImageButton(mStyles.skin.editor, EditorIcons.ADD_MOVE_CORNER.toString());
 		}
@@ -382,7 +375,7 @@ class LevelEditorGui extends EditorGui {
 
 		// remove_corner
 		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Remove corner", mStyles.textButton.standard);
+			button = new TextButton("Remove corner", mStyles.textButton.press);
 		} else {
 			button = new ImageButton(mStyles.skin.editor, EditorIcons.REMOVE_CORNER.toString());
 		}
@@ -399,7 +392,7 @@ class LevelEditorGui extends EditorGui {
 
 		// Path add
 		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Add path", mStyles.textButton.standard);
+			button = new TextButton("Add path", mStyles.textButton.press);
 		} else {
 			button = new ImageButton(mStyles.skin.editor, EditorIcons.PATH_ADD.toString());
 		}
@@ -416,7 +409,7 @@ class LevelEditorGui extends EditorGui {
 
 		// Enemy add
 		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Add enemy", mStyles.textButton.standard);
+			button = new TextButton("Add enemy", mStyles.textButton.press);
 		} else {
 			button = new ImageButton(mStyles.skin.editor, EditorIcons.ENEMY_ADD.toString());
 		}
@@ -434,7 +427,7 @@ class LevelEditorGui extends EditorGui {
 
 		// Enemy - set activate trigger
 		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Set activate trigger", mStyles.textButton.standard);
+			button = new TextButton("Set activate trigger", mStyles.textButton.press);
 		} else {
 			button = new ImageButton(mStyles.skin.editor, EditorIcons.ENEMY_SET_ACTIVATE_TRIGGER.toString());
 		}
@@ -451,7 +444,7 @@ class LevelEditorGui extends EditorGui {
 
 		// Enemy - set deactivate trigger
 		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Set deactivate trigger", mStyles.textButton.standard);
+			button = new TextButton("Set deactivate trigger", mStyles.textButton.press);
 		} else {
 			button = new ImageButton(mStyles.skin.editor, EditorIcons.ENEMY_SET_DEACTIVATE_TRIGGER.toString());
 		}
@@ -468,7 +461,7 @@ class LevelEditorGui extends EditorGui {
 
 		// Trigger add
 		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Add trigger", mStyles.textButton.standard);
+			button = new TextButton("Add trigger", mStyles.textButton.press);
 		} else {
 			button = new ImageButton(mStyles.skin.editor, EditorIcons.TRIGGER_ADD.toString());
 		}
@@ -548,11 +541,6 @@ class LevelEditorGui extends EditorGui {
 	 * Initializes level info content for message box
 	 */
 	private void initInfo() {
-		Skin generalSkin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
-		SliderStyle sliderStyle = generalSkin.get("default", SliderStyle.class);
-		TextFieldStyle textFieldStyle = generalSkin.get("default", TextFieldStyle.class);
-		LabelStyle labelStyle = generalSkin.get("default", LabelStyle.class);
-
 		AlignTable left = new AlignTable();
 		AlignTable right = new AlignTable();
 		mWidgets.info.table.setRowAlign(Horizontal.LEFT, Vertical.TOP);
@@ -573,11 +561,11 @@ class LevelEditorGui extends EditorGui {
 
 		// Left side
 		left.row().setFillWidth(true);
-		Label label = new Label("Name", labelStyle);
+		Label label = new Label("Name", mStyles.label.standard);
 		new TooltipListener(label, "Name", Messages.Tooltip.Level.Option.NAME);
 		left.add(label).setPadRight(Editor.LABEL_PADDING_BEFORE_SLIDER);
 
-		TextField textField = new TextField("", textFieldStyle);
+		TextField textField = new TextField("", mStyles.textField.standard);
 		textField.setMaxLength(Config.Editor.NAME_LENGTH_MAX);
 		left.add(textField).setFillWidth(true);
 		mWidgets.info.name = textField;
@@ -590,12 +578,12 @@ class LevelEditorGui extends EditorGui {
 		};
 
 		left.row();
-		label = new Label("Description", labelStyle);
+		label = new Label("Description", mStyles.label.standard);
 		new TooltipListener(label, "Description", Messages.Tooltip.Level.Option.DESCRIPTION);
 		left.add(label);
 
 		left.row().setFillWidth(true).setFillHeight(true);
-		textField = new TextField("", textFieldStyle);
+		textField = new TextField("", mStyles.textField.standard);
 		textField.setMaxLength(Config.Editor.DESCRIPTION_LENGTH_MAX);
 		left.add(textField).setFillHeight(true).setFillWidth(true);
 		mWidgets.info.description = textField;
@@ -610,15 +598,15 @@ class LevelEditorGui extends EditorGui {
 
 
 		left.row().setFillWidth(true);
-		label = new Label("Level Speed", labelStyle);
+		label = new Label("Level Speed", mStyles.label.standard);
 		new TooltipListener(label, "Level speed", Messages.Tooltip.Level.Option.LEVEL_SPEED);
 		left.add(label).setPadRight(Editor.LABEL_PADDING_BEFORE_SLIDER);
 
-		Slider slider = new Slider(Editor.Level.LEVEL_SPEED_MIN, Editor.Level.LEVEL_SPEED_MAX, Editor.Level.LEVEL_SPEED_STEP_SIZE, false, sliderStyle);
+		Slider slider = new Slider(Editor.Level.LEVEL_SPEED_MIN, Editor.Level.LEVEL_SPEED_MAX, Editor.Level.LEVEL_SPEED_STEP_SIZE, false, mStyles.slider.standard);
 		left.add(slider).setFillWidth(true);
 		mWidgets.info.speed = slider;
 
-		textField = new TextField("", textFieldStyle);
+		textField = new TextField("", mStyles.textField.standard);
 		new TooltipListener(textField, "Level speed", Messages.Tooltip.Level.Option.LEVEL_SPEED);
 		left.add(textField).setWidth(Editor.TEXT_FIELD_NUMBER_WIDTH);
 		new SliderListener(slider, textField, mInvoker) {
@@ -630,11 +618,11 @@ class LevelEditorGui extends EditorGui {
 
 
 		left.row().setAlign(Horizontal.LEFT, Vertical.MIDDLE);
-		label = new Label("Revision:", labelStyle);
+		label = new Label("Revision:", mStyles.label.standard);
 		new TooltipListener(label, "Revision", Messages.Tooltip.Level.Option.REVISION);
 		left.add(label).setPadRight(Editor.LABEL_PADDING_BEFORE_SLIDER);
 
-		label = new Label("", labelStyle);
+		label = new Label("", mStyles.label.standard);
 		new TooltipListener(label, "Revision", Messages.Tooltip.Level.Option.REVISION);
 		left.add(label);
 		mWidgets.info.revision = label;
@@ -642,12 +630,12 @@ class LevelEditorGui extends EditorGui {
 
 		// RIGHT
 		right.row();
-		label = new Label("Prologue", labelStyle);
+		label = new Label("Prologue", mStyles.label.standard);
 		new TooltipListener(label, "Prologue", Messages.Tooltip.Level.Option.STORY_BEFORE);
 		right.add(label);
 
 		right.row().setFillWidth(true).setFillHeight(true);
-		textField = new TextField("", textFieldStyle);
+		textField = new TextField("", mStyles.textField.standard);
 		textField.setMaxLength(Config.Editor.STORY_LENGTH_MAX);
 		right.add(textField).setFillWidth(true).setFillHeight(true);
 		mWidgets.info.storyBefore = textField;
@@ -661,12 +649,12 @@ class LevelEditorGui extends EditorGui {
 
 
 		right.row();
-		label = new Label("Epilogue", labelStyle);
+		label = new Label("Epilogue", mStyles.label.standard);
 		new TooltipListener(label, "Epilogue", Messages.Tooltip.Level.Option.STORY_AFTER);
 		right.add(label);
 
 		right.row().setFillWidth(true).setFillHeight(true);
-		textField = new TextField("", textFieldStyle);
+		textField = new TextField("", mStyles.textField.standard);
 		textField.setMaxLength(Config.Editor.STORY_LENGTH_MAX);
 		right.add(textField).setFillWidth(true).setFillHeight(true);
 		mWidgets.info.epilogue = textField;
@@ -702,8 +690,6 @@ class LevelEditorGui extends EditorGui {
 	 * Init add enemy options
 	 */
 	private void initEnemyAddOptions() {
-		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.UI_EDITOR_BUTTONS);
-
 		mWidgets.enemyAdd.outerTable.setPreferences(mMainTable);
 		mWidgets.enemyAdd.outerTable.row();
 		mHiders.enemyAdd.addToggleActor(mWidgets.enemyAdd.outerTable);
@@ -729,9 +715,9 @@ class LevelEditorGui extends EditorGui {
 		// Add enemy to the list (button)
 		mWidgets.enemyAdd.outerTable.row();
 		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Add enemy to list", mStyles.textButton.standard);
+			button = new TextButton("Add enemy to list", mStyles.textButton.press);
 		} else {
-			button = new ImageButton(editorSkin, SkinNames.EditorIcons.ENEMY_SELECT.toString());
+			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.ENEMY_SELECT.toString());
 		}
 		mWidgets.enemyAdd.outerTable.add(button);
 		tooltipListener = new TooltipListener(button, "Select enemy type", Messages.Tooltip.Level.Enemy.SELECT_TYPE);
@@ -865,8 +851,6 @@ class LevelEditorGui extends EditorGui {
 	 * Initializes path tool GUI
 	 */
 	private void initPathOptions() {
-		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.UI_EDITOR_BUTTONS);
-
 		mHiders.pathOptions.addToggleActor(mWidgets.path.table);
 		mMainTable.row();
 		mMainTable.add(mWidgets.path.table);
@@ -879,7 +863,7 @@ class LevelEditorGui extends EditorGui {
 		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Once", mStyles.textButton.toggle);
 		} else {
-			button = new ImageButton(editorSkin, SkinNames.EditorIcons.PATH_ONCE.toString());
+			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.PATH_ONCE.toString());
 		}
 		mWidgets.path.once = button;
 		mWidgets.path.table.add(button);
@@ -899,7 +883,7 @@ class LevelEditorGui extends EditorGui {
 		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Loop", mStyles.textButton.toggle);
 		} else {
-			button = new ImageButton(editorSkin, SkinNames.EditorIcons.PATH_LOOP.toString());
+			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.PATH_LOOP.toString());
 		}
 		mWidgets.path.loop = button;
 		mWidgets.path.table.add(button);
@@ -919,7 +903,7 @@ class LevelEditorGui extends EditorGui {
 		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Back and forth", mStyles.textButton.toggle);
 		} else {
-			button = new ImageButton(editorSkin, SkinNames.EditorIcons.PATH_BACK_AND_FORTH.toString());
+			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.PATH_BACK_AND_FORTH.toString());
 		}
 		mWidgets.path.backAndForth = button;
 		mWidgets.path.table.add(button);
@@ -941,26 +925,19 @@ class LevelEditorGui extends EditorGui {
 	 * Initializes Pickup tool GUI
 	 */
 	private void initPickup() {
-		Skin generalSkin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
-		TextButtonStyle textToggleStyle = generalSkin.get("toggle", TextButtonStyle.class);
-		TextButtonStyle textButtonStyle = generalSkin.get("default", TextButtonStyle.class);
-		LabelStyle labelStyle = generalSkin.get("default", LabelStyle.class);
-		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.UI_EDITOR_BUTTONS);
-
 		mHiders.pickups.addToggleActor(mPickupTable);
 		Button button;
 
-
 		mPickupTable.row();
-		Label label = new Label("", labelStyle);
+		Label label = new Label("", mStyles.label.standard);
 		new TooltipListener(label, "Pickup name", Messages.Tooltip.Level.Pickup.SELECT_NAME);
 		mWidgets.pickup.name = label;
 		mPickupTable.add(label);
 
 		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Select type", textButtonStyle);
+			button = new TextButton("Select type", mStyles.textButton.press);
 		} else {
-			button = new ImageButton(editorSkin, SkinNames.EditorIcons.PICKUP_SELECT.toString());
+			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.PICKUP_SELECT.toString());
 		}
 		TooltipListener tooltipListener = new TooltipListener(button, "Select type", Messages.Tooltip.Level.Pickup.SELECT_TYPE);
 		new ButtonListener(button, tooltipListener) {

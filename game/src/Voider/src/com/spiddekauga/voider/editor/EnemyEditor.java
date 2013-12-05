@@ -1274,11 +1274,6 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 		// Does nothing
 	}
 
-	@Override
-	public void onResourceSelected(IResource deselectedResource, IResource selectedResource) {
-		// Does nothing
-	}
-
 	/**
 	 * @return name of the bullet actor definition the enemies use, "" if they aren't
 	 * using weapons or has no bullet actor definition set.

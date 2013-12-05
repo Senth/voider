@@ -653,7 +653,7 @@ public class EnemyEditorGui extends ActorGui {
 		mWeaponTable.add(label);
 
 		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Select bullet type", mStyles.textButton.standard);
+			button = new TextButton("Select bullet type", mStyles.textButton.press);
 		} else {
 			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.BULLET_SELECT.toString());
 		}

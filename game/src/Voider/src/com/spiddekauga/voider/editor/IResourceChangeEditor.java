@@ -1,6 +1,5 @@
 package com.spiddekauga.voider.editor;
 
-import com.spiddekauga.voider.editor.tools.ISelectListener;
 import com.spiddekauga.voider.resources.IResource;
 
 
@@ -9,7 +8,7 @@ import com.spiddekauga.voider.resources.IResource;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public interface IResourceChangeEditor extends ISelectListener {
+public interface IResourceChangeEditor {
 	/**
 	 * Called when an resource is added
 	 * @param resource the resource that was created

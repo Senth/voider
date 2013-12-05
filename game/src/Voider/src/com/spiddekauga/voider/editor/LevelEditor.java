@@ -366,7 +366,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 			EnemyActorDef enemyActorDef = ResourceCacheFacade.get(this, enemyId);
 			if (enemyActorDef != null) {
 				if (!mAddEnemies.contains(enemyActorDef)) {
-					mAddEnemies.add(enemyActorDef);
+					mAddEnemies.add(0, enemyActorDef);
 					((LevelEditorGui) mGui).resetEnemyAddTable();
 					return true;
 				} else {
@@ -508,11 +508,6 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 	@Override
 	public void onResourceDeselected(IResource resource) {
-		mGui.resetValues();
-	}
-
-	@Override
-	public void onResourceSelected(IResource deselectedResource, IResource selectedResource) {
 		mGui.resetValues();
 	}
 

@@ -569,11 +569,6 @@ public class BulletEditor extends Editor implements IActorEditor, IResourceChang
 		}
 	}
 
-	@Override
-	public void onResourceSelected(IResource deselectedResource, IResource selectedResource) {
-		// Does nothing
-	}
-
 	/**
 	 * Sets the minimum cooldown of the weapon
 	 * 

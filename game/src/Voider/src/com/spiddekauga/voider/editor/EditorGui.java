@@ -96,7 +96,7 @@ public abstract class EditorGui extends Gui {
 
 		mStyles.skin.general = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
 		mStyles.skin.editor = ResourceCacheFacade.get(ResourceNames.UI_EDITOR_BUTTONS);
-		mStyles.textButton.standard = mStyles.skin.general.get(SkinNames.General.TEXT_BUTTON_PRESS.toString(), TextButtonStyle.class);
+		mStyles.textButton.press = mStyles.skin.general.get(SkinNames.General.TEXT_BUTTON_PRESS.toString(), TextButtonStyle.class);
 		mStyles.textButton.toggle = mStyles.skin.general.get(SkinNames.General.TEXT_BUTTON_TOGGLE.toString(), TextButtonStyle.class);
 		mStyles.textButton.selected = mStyles.skin.general.get(SkinNames.General.TEXT_BUTTON_SELECTED.toString(), TextButtonStyle.class);
 		mStyles.slider.standard = mStyles.skin.general.get(SkinNames.General.SLIDER_DEFAULT.toString(), SliderStyle.class);
@@ -145,7 +145,7 @@ public abstract class EditorGui extends Gui {
 			if (this.getClass() == LevelEditorGui.class) {
 				button = new TextButton("Level", mStyles.textButton.selected);
 			} else {
-				button = new TextButton("Level", mStyles.textButton.standard);
+				button = new TextButton("Level", mStyles.textButton.press);
 			}
 		} else {
 			if (this.getClass() == LevelEditorGui.class) {
@@ -170,7 +170,7 @@ public abstract class EditorGui extends Gui {
 			if (this.getClass() == EnemyEditorGui.class) {
 				button = new TextButton("Enemy", mStyles.textButton.selected);
 			} else {
-				button = new TextButton("Enemy", mStyles.textButton.standard);
+				button = new TextButton("Enemy", mStyles.textButton.press);
 			}
 		} else {
 			if (this.getClass() == EnemyEditorGui.class) {
@@ -195,7 +195,7 @@ public abstract class EditorGui extends Gui {
 			if (this.getClass() == BulletEditorGui.class) {
 				button = new TextButton("Bullet", mStyles.textButton.selected);
 			} else {
-				button = new TextButton("Bullet", mStyles.textButton.standard);
+				button = new TextButton("Bullet", mStyles.textButton.press);
 			}
 		} else {
 			if (this.getClass() == BulletEditorGui.class) {
@@ -232,7 +232,7 @@ public abstract class EditorGui extends Gui {
 
 		// New
 		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("New", mStyles.textButton.standard);
+			button = new TextButton("New", mStyles.textButton.press);
 		} else {
 			button = new ImageButton(mStyles.skin.editor, EditorIcons.NEW.toString());
 		}
@@ -246,7 +246,7 @@ public abstract class EditorGui extends Gui {
 
 		// Save
 		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Save", mStyles.textButton.standard);
+			button = new TextButton("Save", mStyles.textButton.press);
 		} else {
 			button = new ImageButton(mStyles.skin.editor, EditorIcons.SAVE.toString());
 		}
@@ -260,7 +260,7 @@ public abstract class EditorGui extends Gui {
 
 		// Load
 		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Load", mStyles.textButton.standard);
+			button = new TextButton("Load", mStyles.textButton.press);
 		} else {
 			button = new ImageButton(mStyles.skin.editor, EditorIcons.LOAD.toString());
 		}
@@ -274,7 +274,7 @@ public abstract class EditorGui extends Gui {
 
 		// Duplicate
 		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Duplicate", mStyles.textButton.standard);
+			button = new TextButton("Duplicate", mStyles.textButton.press);
 		} else {
 			button = new ImageButton(mStyles.skin.editor, EditorIcons.DUPLICATE.toString());
 		}
@@ -290,7 +290,7 @@ public abstract class EditorGui extends Gui {
 
 		// Undo
 		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Undo", mStyles.textButton.standard);
+			button = new TextButton("Undo", mStyles.textButton.press);
 		} else {
 			button = new ImageButton(mStyles.skin.editor, EditorIcons.UNDO.toString());
 		}
@@ -304,7 +304,7 @@ public abstract class EditorGui extends Gui {
 
 		// Redo
 		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Redo", mStyles.textButton.standard);
+			button = new TextButton("Redo", mStyles.textButton.press);
 		} else {
 			button = new ImageButton(mStyles.skin.editor, EditorIcons.REDO.toString());
 		}
@@ -320,7 +320,7 @@ public abstract class EditorGui extends Gui {
 		// Run (for level editor)
 		if (mEditor instanceof LevelEditor) {
 			if (Config.Gui.usesTextButtons()) {
-				button = new TextButton("Run", mStyles.textButton.standard);
+				button = new TextButton("Run", mStyles.textButton.press);
 			} else {
 				button = new ImageButton(mStyles.skin.editor, EditorIcons.RUN.toString());
 			}
@@ -342,7 +342,7 @@ public abstract class EditorGui extends Gui {
 
 		// Info
 		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Info", mStyles.textButton.standard);
+			button = new TextButton("Info", mStyles.textButton.press);
 		} else {
 			button = new ImageButton(mStyles.skin.editor, EditorIcons.INFO.toString());
 		}
@@ -391,8 +391,8 @@ public abstract class EditorGui extends Gui {
 	 */
 	protected void executeCommandAndCheckSave(Command command, String title, String saveButtonText, String withoutSaveButtonText, String content) {
 		if (!mEditor.isSaved()) {
-			Button saveThenExecuteButton = new TextButton(saveButtonText, mStyles.textButton.standard);
-			Button justExecuteButton = new TextButton(withoutSaveButtonText, mStyles.textButton.standard);
+			Button saveThenExecuteButton = new TextButton(saveButtonText, mStyles.textButton.press);
+			Button justExecuteButton = new TextButton(withoutSaveButtonText, mStyles.textButton.press);
 
 			Command save = new CEditorSave(mEditor);
 			Command saveAndExecute = new CommandSequence(save, command);
@@ -530,7 +530,7 @@ public abstract class EditorGui extends Gui {
 		ScrollPane scrollPane = new ScrollPane();
 
 		static class TextButton {
-			TextButtonStyle standard = null;
+			TextButtonStyle press = null;
 			TextButtonStyle toggle = null;
 			TextButtonStyle selected = null;
 		}
@@ -580,6 +580,5 @@ public abstract class EditorGui extends Gui {
 	 * will be updated once the main table has a valid layout again */
 	private boolean mLayoutWasValid = false;
 	/** All UI-bodies for collision */
-	@SuppressWarnings("unchecked")
 	private ArrayList<Body> mBodies = null;
 }
