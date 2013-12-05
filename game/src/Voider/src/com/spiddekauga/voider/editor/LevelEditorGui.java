@@ -63,14 +63,9 @@ class LevelEditorGui extends EditorGui {
 	public void initGui() {
 		super.initGui();
 
-		mMainTable.setTableAlign(Horizontal.RIGHT, Vertical.TOP);
-		mMainTable.setRowAlign(Horizontal.RIGHT, Vertical.TOP);
-
 
 		mPickupTable.setPreferences(mMainTable);
-		mPickupTable.setRowAlign(Horizontal.RIGHT, Vertical.MIDDLE);
 		mWidgets.enemy.table.setPreferences(mMainTable);
-		mWidgets.enemy.table.setRowAlign(Horizontal.RIGHT, Vertical.MIDDLE);
 		mWidgets.info.table.setPreferences(mMainTable);
 
 		mHiders = new Hiders();
@@ -79,13 +74,12 @@ class LevelEditorGui extends EditorGui {
 		initInfo();
 		//		initPickup();
 		initPathOptions();
-		initEnemyAddOptions();
 		initEnemyOptions();
+		initEnemyAddOptions();
 	}
 
 	@Override
 	public void dispose() {
-		mWidgets.enemyAdd.outerTable.dispose();
 		mWidgets.enemy.table.dispose();
 		mWidgets.path.table.dispose();
 		mWidgets.info.table.dispose();
@@ -502,7 +496,6 @@ class LevelEditorGui extends EditorGui {
 
 		// Add buttons to tool
 		float maximumToolMenuHeight = getMaximumToolMenuHeight();
-		float paddingHeight = Config.Gui.PADDING_DEFAULT * 2;
 		float totalHeight = 0;
 
 		AlignTable column = new AlignTable();
@@ -513,7 +506,7 @@ class LevelEditorGui extends EditorGui {
 		while (iterator.hasNext()) {
 			Button nextButton = iterator.next();
 
-			float buttonHeight = nextButton.getHeight() + paddingHeight;
+			float buttonHeight = nextButton.getHeight();
 
 			if (totalHeight + buttonHeight > maximumToolMenuHeight) {
 				mToolMenu.add(column);
@@ -696,16 +689,14 @@ class LevelEditorGui extends EditorGui {
 	 * Init add enemy options
 	 */
 	private void initEnemyAddOptions() {
-		mWidgets.enemyAdd.outerTable.setPreferences(mMainTable);
-		mWidgets.enemyAdd.outerTable.row();
-		mHiders.enemyAdd.addToggleActor(mWidgets.enemyAdd.outerTable);
 		mHiders.enemyAdd.setButton(mWidgets.tool.enemyAdd);
-		mMainTable.row().setFillHeight(true).setAlign(Horizontal.RIGHT, Vertical.TOP);
-		mMainTable.add(mWidgets.enemyAdd.outerTable).setFillHeight(true);
 
 		Button button;
 		TooltipListener tooltipListener;
 
+
+		// Scroll pane
+		mMainTable.row().setFillHeight(true);
 		mWidgets.enemyAdd.scrollTable.align(Align.left | Align.top);
 		ScrollPane scrollPane = new ScrollPane(mWidgets.enemyAdd.scrollTable, mStyles.scrollPane.windowBackground);
 		mWidgets.enemyAdd.scrollPane = scrollPane;
@@ -714,18 +705,20 @@ class LevelEditorGui extends EditorGui {
 		mWidgets.enemyAdd.scrollTable.setWidth(scrollPaneWidth);
 		// Add margin
 		scrollPaneWidth += 10;
-		scrollPane.setHeight(300);
-		mWidgets.enemyAdd.outerTable.row().setFillHeight(true);
-		mWidgets.enemyAdd.outerTable.add(scrollPane).setWidth(scrollPaneWidth);
+		mMainTable.add(scrollPane).setFillHeight(true);
+		mHiders.enemyAdd.addToggleActor(scrollPane);
+
 
 		// Add enemy to the list (button)
-		mWidgets.enemyAdd.outerTable.row();
+		mMainTable.row();
 		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Add enemy to list", mStyles.textButton.press);
 		} else {
 			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.ENEMY_SELECT.toString());
 		}
-		mWidgets.enemyAdd.outerTable.add(button);
+		//		mWidgets.enemyAdd.outerTable.add(button);
+		mMainTable.add(button);
+		mHiders.enemyAdd.addToggleActor(button);
 		tooltipListener = new TooltipListener(button, "Select enemy type", Messages.Tooltip.Level.Enemy.SELECT_TYPE);
 		new ButtonListener(button, tooltipListener) {
 			@Override
@@ -733,8 +726,6 @@ class LevelEditorGui extends EditorGui {
 				mLevelEditor.selectEnemy();
 			}
 		};
-
-		mWidgets.enemyAdd.outerTable.row().setPadTop(Gui.SEPARATE_PADDING);
 	}
 
 	/**
@@ -1048,7 +1039,6 @@ class LevelEditorGui extends EditorGui {
 
 		static class EnemyAddWidgets {
 			ScrollPane scrollPane = null;
-			AlignTable outerTable = new AlignTable();
 			Table scrollTable = new Table();
 		}
 

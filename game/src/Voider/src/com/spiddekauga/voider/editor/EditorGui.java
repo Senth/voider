@@ -111,6 +111,8 @@ public abstract class EditorGui extends Gui {
 		mFileMenu.setTableAlign(Horizontal.RIGHT, Vertical.TOP);
 		mToolMenu.setTableAlign(Horizontal.LEFT, Vertical.TOP);
 		mToolMenu.setRowAlign(Horizontal.LEFT, Vertical.TOP);
+		mMainTable.setTableAlign(Horizontal.RIGHT, Vertical.TOP);
+		mMainTable.setRowAlign(Horizontal.RIGHT, Vertical.TOP);
 
 		initEditorMenu();
 		initFileMenu();
@@ -568,8 +570,6 @@ public abstract class EditorGui extends Gui {
 
 	/** Editor scene */
 	protected Editor mEditor = null;
-	/** New resource msg box table */
-	private AlignTable mNewResourceMsgBoxTable = new AlignTable();
 	/** Editor menu table */
 	private AlignTable mEditorMenu = new AlignTable();
 	/** Main menu table */
