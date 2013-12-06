@@ -46,6 +46,8 @@ public class TScreenAt extends Trigger implements IResourceBody, IResourcePositi
 	@Override
 	public void renderEditor(ShapeRendererEx shapeRenderer) {
 		if (mVertices != null) {
+			RenderOrders.offsetZValueEditor(shapeRenderer, this);
+
 			shapeRenderer.setColor(Config.Editor.Level.Trigger.COLOR);
 			shapeRenderer.triangles(mVertices);
 
@@ -55,6 +57,8 @@ public class TScreenAt extends Trigger implements IResourceBody, IResourcePositi
 				shapeRenderer.triangles(mVertices);
 				shapeRenderer.translate(0, 0, -Config.Graphics.DEPTH_STEP_SIZE);
 			}
+
+			RenderOrders.resetZValueOffsetEditor(shapeRenderer, this);
 		}
 	}
 

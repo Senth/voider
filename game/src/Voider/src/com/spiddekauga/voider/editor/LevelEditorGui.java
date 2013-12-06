@@ -91,6 +91,8 @@ class LevelEditorGui extends EditorGui {
 
 	@Override
 	public void resetValues() {
+		super.resetValues();
+
 		resetPathOptions();
 		resetEnemyOptions();
 		resetLevelInfo();

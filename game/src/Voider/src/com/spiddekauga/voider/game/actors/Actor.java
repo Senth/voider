@@ -24,6 +24,7 @@ import com.spiddekauga.utils.KryoTaggedCopyable;
 import com.spiddekauga.utils.ShapeRendererEx;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.Config.Graphics.RenderOrders;
 import com.spiddekauga.voider.editor.HitWrapper;
 import com.spiddekauga.voider.game.Level;
 import com.spiddekauga.voider.game.triggers.ITriggerListener;
@@ -285,6 +286,8 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 
 	@Override
 	public void render(ShapeRendererEx shapeRenderer) {
+		RenderOrders.offsetZValue(shapeRenderer, this);
+
 		Vector2 offsetPosition = getWorldOffset();
 
 		// Draw regular filled shape
@@ -316,6 +319,8 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 		}
 
 		Pools.vector2.free(offsetPosition);
+
+		RenderOrders.resetZValueOffset(shapeRenderer, this);
 	}
 
 	/**
@@ -327,6 +332,8 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 		if (mBody == null) {
 			return;
 		}
+
+		RenderOrders.offsetZValueEditor(shapeRenderer, this);
 
 		Vector2 offsetPosition = getWorldOffset();
 
@@ -369,6 +376,8 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 		}
 
 		Pools.vector2.free(offsetPosition);
+
+		RenderOrders.resetZValueOffsetEditor(shapeRenderer, this);
 	}
 
 	/**

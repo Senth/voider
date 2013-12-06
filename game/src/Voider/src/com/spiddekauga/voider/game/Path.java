@@ -345,6 +345,8 @@ public class Path extends Resource implements Disposable, IResourceCorner, IReso
 	@Override
 	public void renderEditor(ShapeRendererEx shapeRenderer) {
 		if (mVertices != null) {
+			RenderOrders.offsetZValueEditor(shapeRenderer, this);
+
 			shapeRenderer.setColor(Config.Editor.Level.Path.START_COLOR);
 			shapeRenderer.triangles(mVertices);
 
@@ -369,6 +371,8 @@ public class Path extends Resource implements Disposable, IResourceCorner, IReso
 				}
 				shapeRenderer.translate(0, 0, -Config.Graphics.DEPTH_STEP_SIZE);
 			}
+
+			RenderOrders.offsetZValueEditor(shapeRenderer, this);
 		}
 	}
 

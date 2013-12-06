@@ -51,6 +51,8 @@ public class RectangleBrush extends Resource implements IResourceEditorRender, D
 
 	@Override
 	public void renderEditor(ShapeRendererEx shapeRenderer) {
+		RenderOrders.offsetZValueEditor(shapeRenderer, this);
+
 		shapeRenderer.setColor(mColor);
 
 		// Draw rectangle
@@ -69,6 +71,8 @@ public class RectangleBrush extends Resource implements IResourceEditorRender, D
 
 			shapeRenderer.pop();
 		}
+
+		RenderOrders.resetZValueOffsetEditor(shapeRenderer, this);
 	}
 
 	/**

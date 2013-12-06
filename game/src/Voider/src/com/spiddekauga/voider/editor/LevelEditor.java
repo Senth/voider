@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector2;
@@ -59,6 +60,7 @@ import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceItem;
 import com.spiddekauga.voider.resources.ResourceNames;
 import com.spiddekauga.voider.resources.ResourceSaver;
+import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.scene.LoadingScene;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
@@ -160,6 +162,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 	@Override
 	protected void render() {
+		Gdx.gl.glEnable(GL20.GL_BLEND);
+		Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 		super.render();
 
 		if (mLevel == null) {
@@ -173,8 +177,6 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 			}
 			mShapeRenderer.setProjectionMatrix(mCamera.combined);
 			mShapeRenderer.push(ShapeType.Filled);
-			Gdx.gl.glEnable(GL20.GL_BLEND);
-			Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 			mLevel.render(mShapeRenderer);
 			mLevel.renderEditor(mShapeRenderer);
 
@@ -194,9 +196,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 	/**
 	 * Sets the level that shall be played and resets tools, invoker, etc.
-	 * 
-	 * @param level
-	 *            level to play
+	 * @param level level to play
 	 */
 	private void setLevel(Level level) {
 		boolean sameLevel = false;
@@ -601,9 +601,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 	/**
 	 * Switch currently selected tool
-	 * 
-	 * @param tool
-	 *            the new tool to use
+	 * @param tool the new tool to use
 	 */
 	void switchTool(Tools tool) {
 		if (mTool.getTool() != null) {
@@ -630,9 +628,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 	/**
 	 * Tests to run a game from the current location
-	 * 
-	 * @param invulnerable
-	 *            makes the player invulnerable
+	 * @param invulnerable makes the player invulnerable
 	 */
 	public void runFromHere(boolean invulnerable) {
 		GameScene testGame = new GameScene(true, invulnerable);
@@ -723,9 +719,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 	/**
 	 * Sets the starting speed of the current level
-	 * 
-	 * @param speed
-	 *            starting speed of the current level
+	 * @param speed starting speed of the current level
 	 */
 	void setLevelStartingSpeed(float speed) {
 		if (mLevel != null) {
@@ -760,9 +754,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 	/**
 	 * Sets the name of the level
-	 * 
-	 * @param name
-	 *            name of the level
+	 * @param name name of the level
 	 */
 	void setLevelName(String name) {
 		if (mLevel != null) {
@@ -810,9 +802,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 	/**
 	 * Sets the story before the level
-	 * 
-	 * @param storyText
-	 *            the story that will be displayed before the level
+	 * @param storyText the story that will be displayed before the level
 	 */
 	void setPrologue(String storyText) {
 		if (mLevel != null) {
@@ -835,9 +825,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 	/**
 	 * Sets the story after completing the level
-	 * 
-	 * @param storyText
-	 *            the story that will be displayed after the level
+	 * @param storyText the story that will be displayed after the level
 	 */
 	void setEpilogue(String storyText) {
 		if (mLevel != null) {
@@ -888,9 +876,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 	/**
 	 * Sets the number of enemies in one group
-	 * 
-	 * @param cEnemies
-	 *            number of enemies in the group
+	 * @param cEnemies number of enemies in the group
 	 */
 	void setEnemyCount(int cEnemies) {
 		ArrayList<EnemyActor> selectedEnemies = mSelection.getSelectedResourcesOfType(EnemyActor.class);
@@ -1010,9 +996,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 	/**
 	 * Sets the spawn delay between actors in the same group.
-	 * 
-	 * @param delay
-	 *            seconds of delay between actors are activated.
+	 * @param delay seconds of delay between actors are activated.
 	 */
 	void setEnemySpawnDelay(float delay) {
 		ArrayList<EnemyActor> selectedEnemies = mSelection.getSelectedResourcesOfType(EnemyActor.class);
@@ -1047,9 +1031,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 	/**
 	 * Sets the path type of the selected path
-	 * 
-	 * @param pathType
-	 *            type of the path
+	 * @param pathType type of the path
 	 */
 	void setPathType(Path.PathTypes pathType) {
 		ArrayList<Path> selectedPaths = mSelection.getSelectedResourcesOfType(Path.class);
@@ -1065,7 +1047,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 	/**
 	 * @return current path type. If several paths are selected and they have different path types null is return. If no
-	 *         path is selected null is also returned.
+	 * path is selected null is also returned.
 	 */
 	PathTypes getPathType() {
 		int cOnce = 0;
@@ -1191,9 +1173,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 	/**
 	 * Sets the delay of the activation trigger
-	 * 
-	 * @param delay
-	 *            seconds of delay
+	 * @param delay seconds of delay
 	 */
 	void setSelectedEnemyActivateTriggerDelay(float delay) {
 		ArrayList<EnemyActor> selectedEnemies = mSelection.getSelectedResourcesOfType(EnemyActor.class);
@@ -1260,9 +1240,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 	/**
 	 * Sets the delay of the deactivate trigger
-	 * 
-	 * @param delay
-	 *            seconds of delay
+	 * @param delay seconds of delay
 	 */
 	void setSelectedEnemyDeactivateTriggerDelay(float delay) {
 		ArrayList<EnemyActor> selectedEnemies = mSelection.getSelectedResourcesOfType(EnemyActor.class);
@@ -1398,8 +1376,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		heightAvailable *= 0.5f;
 		float width = maxPos.x - minPos.x;
 
-		mShapeRenderer.setColor(Config.Editor.Level.ABOVE_BELOW_COLOR);
-
+		mShapeRenderer.setColor((Color) SkinNames.getResource(SkinNames.EditorVars.LEVEL_ABOVE_BELOW_COLOR));
 
 		// Draw borders
 		mShapeRenderer.translate(0, 0, RenderOrders.LEVEL_UPPER_LOWER_BORDERS.getZValue());

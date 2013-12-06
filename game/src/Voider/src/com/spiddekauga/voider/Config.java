@@ -10,7 +10,11 @@ import com.badlogic.gdx.Application;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.JsonWriter.OutputType;
+import com.spiddekauga.utils.ShapeRendererEx;
 import com.spiddekauga.voider.game.actors.ActorShapeTypes;
+import com.spiddekauga.voider.resources.IResourceEditorRender;
+import com.spiddekauga.voider.resources.IResourcePosition;
+import com.spiddekauga.voider.resources.IResourceRender;
 
 /**
  * Game configuration
@@ -425,13 +429,6 @@ public class Config {
 			public final static float LEVEL_SPEED_DEFAULT = 5;
 			/** Step size of level speeed */
 			public final static float LEVEL_SPEED_STEP_SIZE = 1;
-			/** Color of above and below the actual level, so the player can see
-			 * that this doesn't belong to the level. */
-			public final static Color ABOVE_BELOW_COLOR = new Color(1, 1, 1, 0.1f);
-			/** Color from enemies to activate trigger */
-			public static Color ENEMY_ACTIVATE_TRIGGER_PATH_COLOR = new Color(0.25f, 1, 0.25f, 0.4f);
-			/** Color from enemies to deactivate trigger */
-			public static Color ENEMY_DEACTIVATE_TRIGGER_PATH_COLOR = new Color(1, 0.25f, 0.6f, 0.4f);
 		}
 
 		/**
@@ -599,6 +596,8 @@ public class Config {
 			MOVING_OBJECTS,
 			/** Level upper lower borders */
 			LEVEL_UPPER_LOWER_BORDERS,
+			/** Grid when above */
+			GRID_ABOVE,
 			/** Brushes */
 			BRUSH,
 			/** The player's ship */
@@ -617,6 +616,8 @@ public class Config {
 			TRIGGER_SCREEN_AT,
 			/** Terrain actor */
 			TERRAIN,
+			/** Grid below */
+			GRID_BELOW,
 
 			;
 
@@ -642,8 +643,102 @@ public class Config {
 				return mZValue;
 			}
 
+			/**
+			 * Reset z-value offset
+			 * @param shapeRenderer the shape renderer to reset the z-value translation
+			 * @param object information about z-value translation
+			 */
+			public static void resetZValueOffsetEditor(ShapeRendererEx shapeRenderer, IResourceEditorRender object) {
+				float zValue = object.getRenderOrder().getZValue();
+				if (com.spiddekauga.voider.game.actors.Actor.isEditorActive()) {
+					if (object instanceof IResourcePosition) {
+						if (((IResourcePosition) object).isBeingMoved()) {
+							zValue = MOVING_OBJECTS.getZValue();
+						}
+					}
+				}
+
+				shapeRenderer.translate(0, 0, -zValue);
+			}
+
+			/**
+			 * Offset/Translate the z-value
+			 * @param shapeRenderer the shape renderer to translate
+			 * @param object information about z-value translation
+			 */
+			public static void offsetZValueEditor(ShapeRendererEx shapeRenderer, IResourceEditorRender object) {
+				float zValue = object.getRenderOrder().getZValue();
+				if (com.spiddekauga.voider.game.actors.Actor.isEditorActive()) {
+					if (object instanceof IResourcePosition) {
+						if (((IResourcePosition) object).isBeingMoved()) {
+							zValue = MOVING_OBJECTS.getZValue();
+						}
+					}
+				}
+
+				shapeRenderer.translate(0, 0, zValue);
+			}
+
+			/**
+			 * Reset z-value offset
+			 * @param shapeRenderer the shape renderer to reset the z-value translation
+			 * @param renderOrder the render order to offset with
+			 */
+			public static void resetZValueOffset(ShapeRendererEx shapeRenderer, RenderOrders renderOrder) {
+				float zValue = renderOrder.getZValue();
+				shapeRenderer.translate(0, 0, -(zValue - 0.5f));
+			}
+
+			/**
+			 * Offset/Translate the z-value
+			 * @param shapeRenderer the shape renderer to translate
+			 * @param renderOrder the render order to reset with
+			 */
+			public static void offsetZValue(ShapeRendererEx shapeRenderer, RenderOrders renderOrder) {
+				float zValue = renderOrder.getZValue();
+				shapeRenderer.translate(0, 0, zValue - 0.5f);
+			}
+
+			/**
+			 * Reset z-value offset
+			 * @param shapeRenderer the shape renderer to reset the z-value translation
+			 * @param object information about z-value translation
+			 */
+			public static void resetZValueOffset(ShapeRendererEx shapeRenderer, IResourceRender object) {
+				float zValue = object.getRenderOrder().getZValue();
+				if (com.spiddekauga.voider.game.actors.Actor.isEditorActive()) {
+					if (object instanceof IResourcePosition) {
+						if (((IResourcePosition) object).isBeingMoved()) {
+							zValue = MOVING_OBJECTS.getZValue();
+						}
+					}
+				}
+
+				shapeRenderer.translate(0, 0, -(zValue - 0.5f));
+			}
+
+			/**
+			 * Offset/Translate the z-value
+			 * @param shapeRenderer the shape renderer to translate
+			 * @param object information about z-value translation
+			 */
+			public static void offsetZValue(ShapeRendererEx shapeRenderer, IResourceRender object) {
+				float zValue = object.getRenderOrder().getZValue();
+				if (com.spiddekauga.voider.game.actors.Actor.isEditorActive()) {
+					if (object instanceof IResourcePosition) {
+						if (((IResourcePosition) object).isBeingMoved()) {
+							zValue = MOVING_OBJECTS.getZValue();
+						}
+					}
+				}
+
+				shapeRenderer.translate(0, 0, zValue - 0.5f);
+			}
+
 			/** The z-value */
 			private float mZValue = 0;
+
+
 		}
 	}
 

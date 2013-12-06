@@ -150,13 +150,13 @@ public class BulletEditor extends Editor implements IActorEditor, IResourceChang
 
 	@Override
 	protected void render() {
+		Gdx.gl.glEnable(GL20.GL_BLEND);
+		Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 		super.render();
 
 		if (Config.Graphics.USE_RELEASE_RENDERER && !isSaving() && !isDone()) {
 			mShapeRenderer.setProjectionMatrix(mCamera.combined);
 			mShapeRenderer.push(ShapeType.Filled);
-			Gdx.gl.glEnable(GL20.GL_BLEND);
-			Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
 			mBulletDestroyer.render(mShapeRenderer);
 

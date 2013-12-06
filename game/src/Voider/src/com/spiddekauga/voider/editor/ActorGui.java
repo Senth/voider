@@ -68,6 +68,8 @@ public abstract class ActorGui extends EditorGui {
 
 	@Override
 	public void resetValues() {
+		super.resetValues();
+
 		// Visuals
 		mWidgets.visual.startAngle.setValue(mActorEditor.getStartingAngle());
 		mWidgets.visual.rotationSpeed.setValue(mActorEditor.getRotationSpeed());

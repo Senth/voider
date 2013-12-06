@@ -1,5 +1,6 @@
 package com.spiddekauga.voider.game.actors;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.esotericsoftware.kryo.Kryo;
@@ -23,6 +24,7 @@ import com.spiddekauga.voider.game.triggers.TriggerAction.Actions;
 import com.spiddekauga.voider.game.triggers.TriggerInfo;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourcePosition;
+import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.utils.Geometry;
 import com.spiddekauga.voider.utils.Pools;
@@ -123,14 +125,14 @@ public class EnemyActor extends Actor {
 			shapeRenderer.push(ShapeType.Line);
 			TriggerInfo activateTrigger = TriggerInfo.getTriggerInfoByAction(this, Actions.ACTOR_ACTIVATE);
 			if (activateTrigger != null && activateTrigger.trigger instanceof IResourcePosition) {
-				shapeRenderer.setColor(Config.Editor.Level.ENEMY_ACTIVATE_TRIGGER_PATH_COLOR);
+				shapeRenderer.setColor((Color) SkinNames.getResource(SkinNames.EditorVars.ENEMY_ACTIVATE_TRIGGER_LINE_COLOR));
 				shapeRenderer.line(getPosition(), ((IResourcePosition)activateTrigger.trigger).getPosition());
 			}
 
 			// Deactivate trigger
 			TriggerInfo deactivateTrigger = TriggerInfo.getTriggerInfoByAction(this, Actions.ACTOR_DEACTIVATE);
 			if (deactivateTrigger != null && deactivateTrigger.trigger instanceof IResourcePosition) {
-				shapeRenderer.setColor(Config.Editor.Level.ENEMY_DEACTIVATE_TRIGGER_PATH_COLOR);
+				shapeRenderer.setColor((Color) SkinNames.getResource(SkinNames.EditorVars.ENEMY_DEACTIVET_TRIGGER_LINE_COLOR));
 				shapeRenderer.line(getPosition(), ((IResourcePosition)deactivateTrigger.trigger).getPosition());
 			}
 			shapeRenderer.pop();

@@ -59,6 +59,20 @@ enemy_set_deactivate_trigger
   orig: 48, 48
   offset: 0, 0
   index: -1
+grid
+  rotate: false
+  xy: 1, 77
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+grid_above
+  rotate: false
+  xy: 1, 77
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
 movement
   rotate: false
   xy: 1, 77

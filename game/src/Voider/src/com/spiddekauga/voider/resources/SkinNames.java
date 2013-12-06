@@ -1,5 +1,19 @@
 package com.spiddekauga.voider.resources;
 
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.scenes.scene2d.ui.CheckBox.CheckBoxStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.List.ListStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane.ScrollPaneStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.SelectBox.SelectBoxStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Slider.SliderStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.Window.WindowStyle;
+import com.spiddekauga.utils.scene.ui.Label.LabelStyle;
+
+
 
 
 /**
@@ -9,70 +23,111 @@ package com.spiddekauga.voider.resources;
  */
 public class SkinNames {
 	/**
+	 * Method for getting a skin name from the loaded resources
+	 * @param <ResourceType> The resource type to return
+	 * @param skinName the skin name to get the resource from
+	 * @return the resource that was fetched :)
+	 */
+	@SuppressWarnings("unchecked")
+	public static <ResourceType> ResourceType getResource(ISkinNames skinName) {
+		Skin skin = ResourceCacheFacade.get(skinName.getSkinName());
+		return (ResourceType) skin.get(skinName.toString(), skinName.getClassType());
+	}
+
+	/**
+	 * Interface for skin names
+	 */
+	public interface ISkinNames {
+		/**
+		 * @return skin name
+		 */
+		ResourceNames getSkinName();
+
+		/**
+		 * @return class type
+		 */
+		Class<?> getClassType();
+	}
+
+	/**
 	 * General UI elements
 	 */
-	public enum General {
+	public enum General implements ISkinNames {
 		/** Default padding for rows and cells */
-		PADDING_DEFAULT,
+		PADDING_DEFAULT(Float.class),
 		/** Separator padding */
-		PADDING_SEPARATOR,
+		PADDING_SEPARATOR(Float.class),
 		/** Left and right window padding */
-		PADDING_WINDOW_LEFT_RIGHT,
+		PADDING_WINDOW_LEFT_RIGHT(Float.class),
 		/** Default label */
-		LABEL_DEFAULT("default"),
+		LABEL_DEFAULT(LabelStyle.class, "default"),
 		/** Text button default style */
-		TEXT_BUTTON_PRESS("default"),
+		TEXT_BUTTON_PRESS(TextButtonStyle.class, "default"),
 		/** Text button that can toggle */
-		TEXT_BUTTON_TOGGLE("toggle"),
+		TEXT_BUTTON_TOGGLE(TextButtonStyle.class, "toggle"),
 		/** Text button that always is selected */
-		TEXT_BUTTON_SELECTED("selected"),
+		TEXT_BUTTON_SELECTED(TextButtonStyle.class, "selected"),
 		/** Image button default */
-		IMAGE_BUTTON_DEFAULT("default"),
+		IMAGE_BUTTON_DEFAULT(ImageButtonStyle.class, "default"),
 		/** Image button toggle */
-		IMAGE_BUTTON_TOGGLE("toggle"),
+		IMAGE_BUTTON_TOGGLE(ImageButtonStyle.class, "toggle"),
 		/** Check box that uses check boxes */
-		CHECK_BOX_DEFAULT("default"),
+		CHECK_BOX_DEFAULT(CheckBoxStyle.class, "default"),
 		/** Check box that uses the radio button style */
-		CHECK_BOX_RADIO("radio"),
+		CHECK_BOX_RADIO(CheckBoxStyle.class, "radio"),
 		/** Slider default */
-		SLIDER_DEFAULT("default"),
+		SLIDER_DEFAULT(SliderStyle.class, "default"),
 		/** Loading bar slider */
-		SLIDER_LOADING_BAR("loading_bar"),
+		SLIDER_LOADING_BAR(SliderStyle.class, "loading_bar"),
 		/** Text field default */
-		TEXT_FIELD_DEFAULT("default"),
+		TEXT_FIELD_DEFAULT(TextFieldStyle.class, "default"),
 		/** Window default style without title */
-		WINDOW_DEFAULT("default"),
+		WINDOW_DEFAULT(WindowStyle.class, "default"),
 		/** Window no title */
-		WINDOW_NO_TITLE("default"),
+		WINDOW_NO_TITLE(WindowStyle.class, "default"),
 		/** Window with title */
-		WINDOW_TITLE("title"),
+		WINDOW_TITLE(WindowStyle.class, "title"),
 		/** Modal window with no title */
-		WINDOW_MODAL("modal"),
+		WINDOW_MODAL(WindowStyle.class, "modal"),
 		/** Modal window with title */
-		WINDOW_MODAL_TITLE("modal_title"),
+		WINDOW_MODAL_TITLE(WindowStyle.class, "modal_title"),
 		/** Scroll pane default, no background */
-		SCROLL_PANE_DEFAULT("default"),
+		SCROLL_PANE_DEFAULT(ScrollPaneStyle.class, "default"),
 		/** Scroll pane with background */
-		SCROLL_PANE_WINDOW_BACKGROUND("background"),
+		SCROLL_PANE_WINDOW_BACKGROUND(ScrollPaneStyle.class, "background"),
 		/** List default */
-		LIST_DEFAULT("default"),
+		LIST_DEFAULT(ListStyle.class, "default"),
 		/** Select box default */
-		SELECT_BOX_DEFAULT("default"),
+		SELECT_BOX_DEFAULT(SelectBoxStyle.class, "default"),
 
 		;
 
+		@Override
+		public ResourceNames getSkinName() {
+			return ResourceNames.UI_GENERAL;
+		}
+
+		@Override
+		public Class<?> getClassType() {
+			return mType;
+		}
+
 		/**
 		 * Creates a more user-friendly name for the enumeration
+		 * @param type the class type
 		 */
-		private General() {
+		private General(Class<?> type) {
+			mType = type;
 			mName = super.toString().toLowerCase();
 		}
 
 		/**
 		 * Create a custom name for the enumeration
+		 * @param type the class type
 		 * @param jsonName name in the json-file
 		 */
-		private General(String jsonName) {
+		private General(Class<?> type, String jsonName) {
+			mType = type;
 			mName = jsonName;
 		}
 
@@ -86,31 +141,37 @@ public class SkinNames {
 
 		/** skin name of the icon */
 		private String mName;
+		/** Class type */
+		private Class<?> mType;
 	}
 
 	/**
 	 * Game names
 	 */
-	public enum Game {
+	public enum Game implements ISkinNames {
 		/** Health bar for the game */
-		HEALTH_BAR,
+		HEALTH_BAR(SliderStyle.class),
 
 
 		;
 
 		/**
 		 * Creates a more user-friendly name for the enumeration
+		 * @param type class type
 		 */
-		private Game() {
+		private Game(Class<?> type) {
 			mName = super.toString().toLowerCase();
+			mType = type;
 		}
 
-		/**
-		 * Create a custom name for the enumeration
-		 * @param jsonName name in the json-file
-		 */
-		private Game(String jsonName) {
-			mName = jsonName;
+		@Override
+		public ResourceNames getSkinName() {
+			return ResourceNames.UI_GAME;
+		}
+
+		@Override
+		public Class<?> getClassType() {
+			return mType;
 		}
 
 		/**
@@ -123,12 +184,65 @@ public class SkinNames {
 
 		/** skin name of the icon */
 		private String mName;
+		/** The class type */
+		private Class<?> mType;
+	}
+
+
+	/**
+	 * Editor variables
+	 */
+	public enum EditorVars implements ISkinNames {
+		/** Grid color */
+		GRID_COLOR(Color.class),
+		/** Grid milestone color */
+		GRID_MILESTONE_COLOR(Color.class),
+		/** Color above and below the level in the editor */
+		LEVEL_ABOVE_BELOW_COLOR(Color.class),
+		/** Color of line between enemy and activate trigger */
+		ENEMY_ACTIVATE_TRIGGER_LINE_COLOR(Color.class),
+		/** Color of line between enemy and deactivate trigger */
+		ENEMY_DEACTIVET_TRIGGER_LINE_COLOR(Color.class),
+
+		;
+
+		/**
+		 * Creates a more user-friendly name for the enumeration
+		 * @param type the class type
+		 */
+		private EditorVars(Class<?> type) {
+			mName = super.toString().toLowerCase();
+			mType = type;
+		}
+
+		@Override
+		public ResourceNames getSkinName() {
+			return ResourceNames.UI_EDITOR_BUTTONS;
+		}
+
+		@Override
+		public Class<?> getClassType() {
+			return mType;
+		}
+
+		/**
+		 * @return name of the icon inside the skin
+		 */
+		@Override
+		public String toString() {
+			return mName;
+		}
+
+		/** skin name of the icon */
+		private String mName;
+		/** The type of the class */
+		private Class<?> mType;
 	}
 
 	/**
 	 * Editor icon names
 	 */
-	public enum EditorIcons {
+	public enum EditorIcons implements ISkinNames {
 		/** Add a corner between two corners in a shape, or move an existing corner */
 		ADD_MOVE_CORNER,
 		/** The enemy will shoot in front of the player (i.e. where
@@ -179,6 +293,10 @@ public class SkinNames {
 		ENEMY_SET_ACTIVATE_TRIGGER,
 		/** Set deactivate trigger for enemies. I.e. binds the enemy to a trigger */
 		ENEMY_SET_DEACTIVATE_TRIGGER,
+		/** Grid button for turning it on/off */
+		GRID,
+		/** Make the grid to be rendered above all other resources */
+		GRID_ABOVE,
 		/** Information or options for the current level or actor */
 		INFO,
 		/** Go to the level editor */
@@ -257,6 +375,16 @@ public class SkinNames {
 		 */
 		private EditorIcons() {
 			mName = super.toString().toLowerCase();
+		}
+
+		@Override
+		public ResourceNames getSkinName() {
+			return ResourceNames.UI_EDITOR_BUTTONS;
+		}
+
+		@Override
+		public Class<?> getClassType() {
+			return ImageButtonStyle.class;
 		}
 
 		/**

@@ -25,6 +25,7 @@ import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
+import com.spiddekauga.utils.scene.ui.DisableListener;
 import com.spiddekauga.utils.scene.ui.Label.LabelStyle;
 import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
 import com.spiddekauga.utils.scene.ui.TooltipListener;
@@ -95,16 +96,20 @@ public abstract class EditorGui extends Gui {
 
 		mStyles.skin.general = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
 		mStyles.skin.editor = ResourceCacheFacade.get(ResourceNames.UI_EDITOR_BUTTONS);
-		mStyles.textButton.press = mStyles.skin.general.get(SkinNames.General.TEXT_BUTTON_PRESS.toString(), TextButtonStyle.class);
-		mStyles.textButton.toggle = mStyles.skin.general.get(SkinNames.General.TEXT_BUTTON_TOGGLE.toString(), TextButtonStyle.class);
-		mStyles.textButton.selected = mStyles.skin.general.get(SkinNames.General.TEXT_BUTTON_SELECTED.toString(), TextButtonStyle.class);
-		mStyles.slider.standard = mStyles.skin.general.get(SkinNames.General.SLIDER_DEFAULT.toString(), SliderStyle.class);
-		mStyles.textField.standard = mStyles.skin.general.get(SkinNames.General.TEXT_FIELD_DEFAULT.toString(), TextFieldStyle.class);
-		mStyles.label.standard = mStyles.skin.general.get(SkinNames.General.LABEL_DEFAULT.toString(), LabelStyle.class);
-		mStyles.checkBox.checkBox = mStyles.skin.general.get(SkinNames.General.CHECK_BOX_DEFAULT.toString(), CheckBoxStyle.class);
-		mStyles.checkBox.radio = mStyles.skin.general.get(SkinNames.General.CHECK_BOX_RADIO.toString(), CheckBoxStyle.class);
-		mStyles.scrollPane.noBackground = mStyles.skin.general.get(SkinNames.General.SCROLL_PANE_DEFAULT.toString(), ScrollPaneStyle.class);
-		mStyles.scrollPane.windowBackground = mStyles.skin.general.get(SkinNames.General.SCROLL_PANE_WINDOW_BACKGROUND.toString(), ScrollPaneStyle.class);
+		mStyles.textButton.press = SkinNames.getResource(SkinNames.General.TEXT_BUTTON_PRESS);
+		mStyles.textButton.toggle = SkinNames.getResource(SkinNames.General.TEXT_BUTTON_TOGGLE);
+		mStyles.textButton.selected = SkinNames.getResource(SkinNames.General.TEXT_BUTTON_SELECTED);
+		mStyles.slider.standard = SkinNames.getResource(SkinNames.General.SLIDER_DEFAULT);
+		mStyles.textField.standard = SkinNames.getResource(SkinNames.General.TEXT_FIELD_DEFAULT);
+		mStyles.label.standard = SkinNames.getResource(SkinNames.General.LABEL_DEFAULT);
+		mStyles.checkBox.checkBox = SkinNames.getResource(SkinNames.General.CHECK_BOX_DEFAULT);
+		mStyles.checkBox.radio = SkinNames.getResource(SkinNames.General.CHECK_BOX_RADIO);
+		mStyles.scrollPane.noBackground = SkinNames.getResource(SkinNames.General.SCROLL_PANE_DEFAULT);
+		mStyles.scrollPane.windowBackground = SkinNames.getResource(SkinNames.General.SCROLL_PANE_WINDOW_BACKGROUND);
+
+		// Vars
+		mStyles.vars.paddingDefault = SkinNames.getResource(SkinNames.General.PADDING_DEFAULT);
+		mStyles.vars.paddingSeparator = SkinNames.getResource(SkinNames.General.PADDING_SEPARATOR);
 
 		mEditorMenu.setTableAlign(Horizontal.LEFT, Vertical.TOP);
 		mFileMenu.setTableAlign(Horizontal.RIGHT, Vertical.TOP);
@@ -118,6 +123,14 @@ public abstract class EditorGui extends Gui {
 
 		mToolMenu.row().setPadTop(getEditorMenuTopPadding());
 		mMainTable.row().setPadTop(getEditorMenuTopPadding());
+	}
+
+	@Override
+	public void resetValues() {
+		super.resetValues();
+
+		mGridRender.setChecked(mEditor.isGridOn());
+		mGridRenderAbove.setChecked(mEditor.isGridRenderAboveResources());
 	}
 
 	/**
@@ -206,7 +219,7 @@ public abstract class EditorGui extends Gui {
 			}
 		}
 		tooltipListener = new TooltipListener(button, "Bullet Editor", Messages.replaceName(Messages.Tooltip.Menus.Editor.BULLET_EDITOR,  "bullet"));
-		mEditorMenu.add(button).setPadRight(Config.Gui.SEPARATE_PADDING);
+		mEditorMenu.add(button).setPadRight(mStyles.vars.paddingSeparator);
 		if (this.getClass() != BulletEditorGui.class) {
 			new ButtonListener(button, tooltipListener) {
 				@Override
@@ -230,6 +243,90 @@ public abstract class EditorGui extends Gui {
 	 */
 	protected void initFileMenu() {
 		Button button;
+
+		// Undo
+		if (Config.Gui.usesTextButtons()) {
+			button = new TextButton("Undo", mStyles.textButton.press);
+		} else {
+			button = new ImageButton(mStyles.skin.editor, EditorIcons.UNDO.toString());
+		}
+		mFileMenu.add(button);
+		new ButtonListener(button) {
+			@Override
+			protected void onPressed() {
+				mEditor.getInvoker().undo();
+			}
+		};
+
+		// Redo
+		if (Config.Gui.usesTextButtons()) {
+			button = new TextButton("Redo", mStyles.textButton.press);
+		} else {
+			button = new ImageButton(mStyles.skin.editor, EditorIcons.REDO.toString());
+		}
+		mFileMenu.add(button);
+		new ButtonListener(button) {
+			@Override
+			protected void onPressed() {
+				mEditor.getInvoker().redo();
+			}
+		};
+
+		// Run (for level editor)
+		if (mEditor instanceof LevelEditor) {
+			if (Config.Gui.usesTextButtons()) {
+				button = new TextButton("Run", mStyles.textButton.press);
+			} else {
+				button = new ImageButton(mStyles.skin.editor, EditorIcons.RUN.toString());
+			}
+			mFileMenu.add(button);
+			new ButtonListener(button) {
+				@Override
+				protected void onPressed() {
+					MsgBoxExecuter msgBox = getFreeMsgBox(true);
+
+					msgBox.setTitle(Messages.Level.RUN_INVULNERABLE_TITLE);
+					msgBox.content(Messages.Level.RUN_INVULNERABLE_CONTENT);
+					msgBox.button("Can die", new CLevelRun(false, (LevelEditor)mEditor));
+					msgBox.button("Invulnerable", new CLevelRun(true, (LevelEditor)mEditor));
+					msgBox.addCancelButtonAndKeys();
+					showMsgBox(msgBox);
+				}
+			};
+		}
+
+		// Grid
+		if (Config.Gui.usesTextButtons()) {
+			button = new TextButton("Grid", mStyles.textButton.toggle);
+		} else {
+			button = new ImageButton(mStyles.skin.editor, EditorIcons.GRID.toString());
+		}
+		mGridRender = button;
+		DisableListener disableListener = new DisableListener(button);
+		mFileMenu.add(button);
+		new ButtonListener(button) {
+			@Override
+			protected void onChecked(boolean checked) {
+				mEditor.setGrid(checked);
+			}
+		};
+
+		// Grid above
+		if (Config.Gui.usesTextButtons()) {
+			button = new TextButton("Grid Above", mStyles.textButton.toggle);
+		} else {
+			button = new ImageButton(mStyles.skin.editor, EditorIcons.GRID_ABOVE.toString());
+		}
+		mGridRenderAbove = button;
+		disableListener.addToggleActor(button);
+		mFileMenu.add(button).setPadRight(mStyles.vars.paddingSeparator);
+		new ButtonListener(button) {
+			@Override
+			protected void onChecked(boolean checked) {
+				mEditor.setGridRenderAboveResources(checked);
+			}
+		};
+
 
 		// New
 		if (Config.Gui.usesTextButtons()) {
@@ -279,7 +376,7 @@ public abstract class EditorGui extends Gui {
 		} else {
 			button = new ImageButton(mStyles.skin.editor, EditorIcons.DUPLICATE.toString());
 		}
-		mFileMenu.add(button).setPadRight(Config.Gui.SEPARATE_PADDING);
+		mFileMenu.add(button);
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed() {
@@ -288,58 +385,6 @@ public abstract class EditorGui extends Gui {
 			}
 		};
 
-
-		// Undo
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Undo", mStyles.textButton.press);
-		} else {
-			button = new ImageButton(mStyles.skin.editor, EditorIcons.UNDO.toString());
-		}
-		mFileMenu.add(button);
-		new ButtonListener(button) {
-			@Override
-			protected void onPressed() {
-				mEditor.getInvoker().undo();
-			}
-		};
-
-		// Redo
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Redo", mStyles.textButton.press);
-		} else {
-			button = new ImageButton(mStyles.skin.editor, EditorIcons.REDO.toString());
-		}
-		mFileMenu.add(button).setPadRight(Config.Gui.SEPARATE_PADDING);
-		new ButtonListener(button) {
-			@Override
-			protected void onPressed() {
-				mEditor.getInvoker().redo();
-			}
-		};
-
-
-		// Run (for level editor)
-		if (mEditor instanceof LevelEditor) {
-			if (Config.Gui.usesTextButtons()) {
-				button = new TextButton("Run", mStyles.textButton.press);
-			} else {
-				button = new ImageButton(mStyles.skin.editor, EditorIcons.RUN.toString());
-			}
-			mFileMenu.add(button);
-			new ButtonListener(button) {
-				@Override
-				protected void onPressed() {
-					MsgBoxExecuter msgBox = getFreeMsgBox(true);
-
-					msgBox.setTitle(Messages.Level.RUN_INVULNERABLE_TITLE);
-					msgBox.content(Messages.Level.RUN_INVULNERABLE_CONTENT);
-					msgBox.button("Can die", new CLevelRun(false, (LevelEditor)mEditor));
-					msgBox.button("Invulnerable", new CLevelRun(true, (LevelEditor)mEditor));
-					msgBox.addCancelButtonAndKeys();
-					showMsgBox(msgBox);
-				}
-			};
-		}
 
 		// Info
 		if (Config.Gui.usesTextButtons()) {
@@ -528,6 +573,12 @@ public abstract class EditorGui extends Gui {
 		Label label = new Label();
 		CheckBox checkBox = new CheckBox();
 		ScrollPane scrollPane = new ScrollPane();
+		Variables vars = new Variables();
+
+		static class Variables {
+			float paddingDefault = 0;
+			float paddingSeparator = 0;
+		}
 
 		static class TextButton {
 			TextButtonStyle press = null;
@@ -561,11 +612,16 @@ public abstract class EditorGui extends Gui {
 			ScrollPaneStyle noBackground;
 			ScrollPaneStyle windowBackground;
 		}
+
 	}
 
 	/** All skins and styles */
 	protected UiStyles mStyles = new UiStyles();
 
+	/** Grid button */
+	private Button mGridRender = null;
+	/** Grid above button */
+	private Button mGridRenderAbove = null;
 	/** Editor scene */
 	protected Editor mEditor = null;
 	/** Editor menu table */

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
@@ -15,12 +16,14 @@ import com.spiddekauga.utils.PngExport;
 import com.spiddekauga.utils.Screens;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.Config.Graphics.RenderOrders;
 import com.spiddekauga.voider.app.MainMenu;
 import com.spiddekauga.voider.editor.commands.CSceneReturn;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.ActorDef;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceNames;
+import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.scene.WorldScene;
@@ -129,46 +132,132 @@ public abstract class Editor extends WorldScene implements IEditor {
 
 		// Render saving actor
 		if (mSaving) {
-			mShapeRenderer.setProjectionMatrix(mCamera.combined);
-			mShapeRenderer.push(ShapeType.Filled);
-			mSavingActor.render(mShapeRenderer);
-			mShapeRenderer.pop();
-			mSavingActor.dispose();
-			mSavingActor = null;
+			saveResourceScreenshot();
+		}
+		else {
+			// Render grid
+			if (mGridRender) {
+				renderGrid();
+			}
+		}
+	}
 
-			// Take a 200x200 screen shot
-			Pixmap pixmap = Screens.getScreenshot(0, 0, Config.Actor.SAVE_TEXTURE_SIZE, Config.Actor.SAVE_TEXTURE_SIZE, true);
+	/**
+	 * Render the grid
+	 */
+	private void renderGrid() {
+		// Offset
+		if (mGridRenderAboveResources) {
+			RenderOrders.offsetZValue(mShapeRenderer, RenderOrders.GRID_ABOVE);
+		} else {
+			RenderOrders.offsetZValue(mShapeRenderer, RenderOrders.GRID_BELOW);
+		}
 
-			// Make black color to alpha
-			pixmap.getPixel(0, 0);
-			for (int x = 0; x < pixmap.getWidth(); ++x) {
-				for (int y = 0; y < pixmap.getHeight(); ++y) {
-					if (isColorBlack(pixmap.getPixel(x, y))) {
-						pixmap.drawPixel(x, y, COLOR_TRANSPARENT);
-					}
+		mShapeRenderer.push(ShapeType.Line);
+
+		Color color = SkinNames.getResource(SkinNames.EditorVars.GRID_COLOR);
+		Color milestoneColor = SkinNames.getResource(SkinNames.EditorVars.GRID_MILESTONE_COLOR);
+
+		Vector2 minWorldCoord = getWorldMinCoordinates();
+		Vector2 maxWorldCoord = getWorldMaxCoordinates();
+
+		// Round up/down the min/max coordinates to whole integer
+		minWorldCoord.x = MathUtils.floor(minWorldCoord.x);
+		minWorldCoord.y = MathUtils.floor(minWorldCoord.y);
+		maxWorldCoord.x = MathUtils.ceil(maxWorldCoord.x);
+		maxWorldCoord.y = MathUtils.ceil(maxWorldCoord.y);
+
+		// Change so that we only show even coordinates
+		if (minWorldCoord.x % 2 != 0) {
+			minWorldCoord.x -= 1;
+		}
+		if (minWorldCoord.y % 2 != 0) {
+			minWorldCoord.y -= 1;
+		}
+		if (maxWorldCoord.x % 2 != 0) {
+			maxWorldCoord.x += 1;
+		}
+		if (maxWorldCoord.y % 2 != 0) {
+			maxWorldCoord.y += 1;
+		}
+
+		// Draw x lines
+		for (int x = (int) minWorldCoord.x; x <= maxWorldCoord.x; x += 2) {
+			// Set color, every 5th is the milestone color
+			if (x % 10 == 0) {
+				mShapeRenderer.setColor(milestoneColor);
+			} else {
+				mShapeRenderer.setColor(color);
+			}
+
+			mShapeRenderer.line(x, minWorldCoord.y, x, maxWorldCoord.y);
+		}
+
+		// Draw y lines
+		for (int y = (int) minWorldCoord.y; y <= maxWorldCoord.y; y += 2) {
+			// Set color, every 5th is the milestone color
+			if (y % 10 == 0) {
+				mShapeRenderer.setColor(milestoneColor);
+			} else {
+				mShapeRenderer.setColor(color);
+			}
+
+			mShapeRenderer.line(minWorldCoord.x, y, maxWorldCoord.x, y);
+		}
+
+		mShapeRenderer.pop();
+
+		// Reset offset
+		if (mGridRenderAboveResources) {
+			RenderOrders.resetZValueOffset(mShapeRenderer, RenderOrders.GRID_ABOVE);
+		} else {
+			RenderOrders.resetZValueOffset(mShapeRenderer, RenderOrders.GRID_BELOW);
+		}
+	}
+
+	/**
+	 * Save resource screenshot
+	 */
+	private void saveResourceScreenshot() {
+		mShapeRenderer.setProjectionMatrix(mCamera.combined);
+		mShapeRenderer.push(ShapeType.Filled);
+		mSavingActor.render(mShapeRenderer);
+		mShapeRenderer.pop();
+		mSavingActor.dispose();
+		mSavingActor = null;
+
+		// Take a 200x200 screen shot
+		Pixmap pixmap = Screens.getScreenshot(0, 0, Config.Actor.SAVE_TEXTURE_SIZE, Config.Actor.SAVE_TEXTURE_SIZE, true);
+
+		// Make black color to alpha
+		pixmap.getPixel(0, 0);
+		for (int x = 0; x < pixmap.getWidth(); ++x) {
+			for (int y = 0; y < pixmap.getHeight(); ++y) {
+				if (isColorBlack(pixmap.getPixel(x, y))) {
+					pixmap.drawPixel(x, y, COLOR_TRANSPARENT);
 				}
 			}
+		}
 
-			// Convert to PNG
-			try {
-				byte[] pngBytes = PngExport.toPNG(pixmap);
+		// Convert to PNG
+		try {
+			byte[] pngBytes = PngExport.toPNG(pixmap);
 
-				// Save texture to original definition
-				mSavingActorDef.setPngImage(pngBytes);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			pixmap.dispose();
+			// Save texture to original definition
+			mSavingActorDef.setPngImage(pngBytes);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		pixmap.dispose();
 
-			// Save the file to file
-			mGui.setVisible(true);
-			mSaving = false;
-			saveToFile();
+		// Save the file to file
+		mGui.setVisible(true);
+		mSaving = false;
+		saveToFile();
 
-			if (mExecutedAfterSaved != null) {
-				mExecutedAfterSaved.execute();
-				mExecutedAfterSaved = null;
-			}
+		if (mExecutedAfterSaved != null) {
+			mExecutedAfterSaved.execute();
+			mExecutedAfterSaved = null;
 		}
 	}
 
@@ -329,6 +418,36 @@ public abstract class Editor extends WorldScene implements IEditor {
 	}
 
 	/**
+	 * Turn on or off the grid
+	 * @param on true if the grid shall be turned on, false if turned off
+	 */
+	void setGrid(boolean on) {
+		mGridRender = on;
+	}
+
+	/**
+	 * @return true if the grid is turned on, false if off.
+	 */
+	boolean isGridOn() {
+		return mGridRender;
+	}
+
+	/**
+	 * Make the grid render above all resources
+	 * @param above set to true to render the grid above all resources, false to render below
+	 */
+	void setGridRenderAboveResources(boolean above) {
+		mGridRenderAboveResources = above;
+	}
+
+	/**
+	 * @return true if the grid is rendered above all resources, false if below
+	 */
+	boolean isGridRenderAboveResources() {
+		return mGridRenderAboveResources;
+	}
+
+	/**
 	 * Called when after the image for the actor definition has been created.
 	 */
 	protected abstract void saveToFile();
@@ -349,6 +468,10 @@ public abstract class Editor extends WorldScene implements IEditor {
 	private float mActivityTimeLast = 0;
 	/** Command to be executed after the resource has been saved */
 	private Command mExecutedAfterSaved = null;
+	/** If grid shall be rendered */
+	private boolean mGridRender = true;
+	/** If grid shall be rendered in front of the resources */
+	private boolean mGridRenderAboveResources = false;
 
 	/** Transparent color */
 	private static final int COLOR_TRANSPARENT = 0x00000000;

@@ -85,6 +85,8 @@ public class VectorBrush extends Resource implements IResourceCorner, IResourceE
 	@Override
 	public void renderEditor(ShapeRendererEx shapeRenderer) {
 		if (mCorners.size() >= 2) {
+			RenderOrders.offsetZValueEditor(shapeRenderer, this);
+
 			shapeRenderer.push(ShapeType.Line);
 
 			if (mAddMode) {
@@ -96,6 +98,8 @@ public class VectorBrush extends Resource implements IResourceCorner, IResourceE
 			shapeRenderer.polyline(mCorners, false);
 
 			shapeRenderer.pop();
+
+			RenderOrders.resetZValueOffsetEditor(shapeRenderer, this);
 		}
 	}
 
