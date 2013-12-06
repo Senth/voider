@@ -130,7 +130,7 @@ public class SceneSwitcher {
 						mScenesNeedUnloading.add(currentScene);
 					}
 				}
-
+				currentScene.setOutcome(Outcomes.NOT_APPLICAPLE);
 				currentScene.onDispose();
 			}
 		}

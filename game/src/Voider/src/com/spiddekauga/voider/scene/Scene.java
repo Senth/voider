@@ -242,7 +242,7 @@ public abstract class Scene extends InputAdapter {
 	 * @return true if the scene is done with it work, i.e. it should be popped
 	 * from the stack.
 	 */
-	final boolean isDone() {
+	protected final boolean isDone() {
 		return mOutcome != null;
 	}
 

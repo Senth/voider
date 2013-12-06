@@ -152,7 +152,7 @@ public class BulletEditor extends Editor implements IActorEditor, IResourceChang
 	protected void render() {
 		super.render();
 
-		if (Config.Graphics.USE_RELEASE_RENDERER && !isSaving()) {
+		if (Config.Graphics.USE_RELEASE_RENDERER && !isSaving() && !isDone()) {
 			mShapeRenderer.setProjectionMatrix(mCamera.combined);
 			mShapeRenderer.push(ShapeType.Filled);
 			Gdx.gl.glEnable(GL20.GL_BLEND);

@@ -300,7 +300,7 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 			return;
 		}
 
-		if (Config.Graphics.USE_RELEASE_RENDERER && !isSaving()) {
+		if (Config.Graphics.USE_RELEASE_RENDERER && !isSaving() && !isDone()) {
 			ShaderProgram defaultShader = ResourceCacheFacade.get(ResourceNames.SHADER_DEFAULT);
 			if (defaultShader != null) {
 				mShapeRenderer.setShader(defaultShader);

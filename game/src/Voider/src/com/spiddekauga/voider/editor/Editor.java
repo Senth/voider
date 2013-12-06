@@ -131,6 +131,8 @@ public abstract class Editor extends WorldScene implements IEditor {
 			mShapeRenderer.push(ShapeType.Filled);
 			mSavingActor.render(mShapeRenderer);
 			mShapeRenderer.pop();
+			mSavingActor.dispose();
+			mSavingActor = null;
 
 			// Take a 200x200 screen shot
 			Pixmap pixmap = Screens.getScreenshot(0, 0, Config.Actor.SAVE_TEXTURE_SIZE, Config.Actor.SAVE_TEXTURE_SIZE, true);
