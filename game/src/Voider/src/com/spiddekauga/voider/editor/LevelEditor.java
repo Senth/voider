@@ -8,6 +8,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector2;
+import com.spiddekauga.utils.Command;
 import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.utils.Scroller;
 import com.spiddekauga.utils.Scroller.ScrollAxis;
@@ -658,6 +659,14 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	@Override
 	public void saveDef() {
 		saveToFile();
+	}
+
+	@Override
+	public void saveDef(Command command) {
+		saveToFile();
+		if (command != null) {
+			command.execute();
+		}
 	}
 
 	@Override

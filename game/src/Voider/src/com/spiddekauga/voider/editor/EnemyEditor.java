@@ -15,6 +15,7 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.joints.MouseJoint;
 import com.badlogic.gdx.physics.box2d.joints.MouseJointDef;
+import com.spiddekauga.utils.Command;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Editor.Enemy;
@@ -33,7 +34,6 @@ import com.spiddekauga.voider.game.CollisionResolver;
 import com.spiddekauga.voider.game.Path;
 import com.spiddekauga.voider.game.Path.PathTypes;
 import com.spiddekauga.voider.game.actors.Actor;
-import com.spiddekauga.voider.game.actors.ActorDef;
 import com.spiddekauga.voider.game.actors.ActorFilterCategories;
 import com.spiddekauga.voider.game.actors.ActorShapeTypes;
 import com.spiddekauga.voider.game.actors.BulletActorDef;
@@ -482,21 +482,13 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 	}
 
 	@Override
-	protected ActorDef getActorDef() {
-		return mDef;
-	}
-
-	@Override
-	protected Actor getNewActor() {
-		return new EnemyActor();
-	}
-
-	/**
-	 * Saves the current enemy actor
-	 */
-	@Override
 	public void saveDef() {
 		setSaving(mDef, new EnemyActor());
+	}
+
+	@Override
+	public void saveDef(Command command) {
+		setSaving(mDef, new EnemyActor(), command);
 	}
 
 	@Override

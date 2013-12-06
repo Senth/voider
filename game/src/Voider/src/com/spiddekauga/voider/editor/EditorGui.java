@@ -21,7 +21,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
 import com.spiddekauga.utils.Command;
-import com.spiddekauga.utils.CommandSequence;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
@@ -396,8 +395,7 @@ public abstract class EditorGui extends Gui {
 			Button saveThenExecuteButton = new TextButton(saveButtonText, mStyles.textButton.press);
 			Button justExecuteButton = new TextButton(withoutSaveButtonText, mStyles.textButton.press);
 
-			Command save = new CEditorSave(mEditor);
-			Command saveAndExecute = new CommandSequence(save, command);
+			Command saveAndExecute = new CEditorSave(mEditor, command);
 
 			MsgBoxExecuter msgBox = getFreeMsgBox(true);
 

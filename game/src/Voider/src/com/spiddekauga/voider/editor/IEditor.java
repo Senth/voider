@@ -1,5 +1,7 @@
 package com.spiddekauga.voider.editor;
 
+import com.spiddekauga.utils.Command;
+
 /**
  * 
  * 
@@ -15,6 +17,12 @@ public interface IEditor {
 	 * Saves the current definition
 	 */
 	void saveDef();
+
+	/**
+	 * Saves the current definition then executes a command
+	 * @param command this command will be executed after the resource has been saved
+	 */
+	void saveDef(Command command);
 
 	/**
 	 * Loads another definition

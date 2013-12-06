@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.IdentityMap;
+import com.spiddekauga.utils.Command;
 import com.spiddekauga.utils.Invoker;
 import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.utils.PngExport;
@@ -15,6 +16,7 @@ import com.spiddekauga.utils.Screens;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.app.MainMenu;
+import com.spiddekauga.voider.editor.commands.CSceneReturn;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.ActorDef;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
@@ -103,7 +105,7 @@ public abstract class Editor extends WorldScene implements IEditor {
 		// Back - main menu
 		else if (KeyHelper.isBackPressed(keycode)) {
 			if (!mGui.isMsgBoxActive()) {
-				setSavingThenExit(getActorDef(), getNewActor());
+				saveDef(new CSceneReturn(MainMenu.class));
 				return true;
 			} else {
 				/** @todo close message box */
@@ -163,9 +165,9 @@ public abstract class Editor extends WorldScene implements IEditor {
 			mSaving = false;
 			saveToFile();
 
-			if (mSaveThenExit) {
-				SceneSwitcher.returnTo(MainMenu.class);
-				mSaveThenExit = false;
+			if (mExecutedAfterSaved != null) {
+				mExecutedAfterSaved.execute();
+				mExecutedAfterSaved = null;
 			}
 		}
 	}
@@ -298,9 +300,21 @@ public abstract class Editor extends WorldScene implements IEditor {
 	 * @param actor a new empty actor to use for creating a screen shot
 	 */
 	protected void setSaving(ActorDef actorDef, Actor actor) {
+		setSaving(actorDef, actor, null);
+	}
+
+	/**
+	 * Set the actor as saving. This will create an image of the actor.
+	 * After the resource is saved the command will be executed
+	 * @param actorDef the actor definition to save
+	 * @param actor a new empty actor to use for creating a screen shot
+	 * @param command the command to be executed after the resource has been saved
+	 */
+	protected void setSaving(ActorDef actorDef, Actor actor, Command command) {
 		mSavingActorDef = actorDef;
 		mSavingActor = actor;
 		mSaving = true;
+		mExecutedAfterSaved = command;
 
 		mGui.setVisible(false);
 		createActorDefTexture();
@@ -312,36 +326,6 @@ public abstract class Editor extends WorldScene implements IEditor {
 	 */
 	public boolean isSaving() {
 		return mSaving;
-	}
-
-	/**
-	 * Set the actor as saving. This will create an image of the actor. In addition
-	 * this method will make sure this editor is exited after the resource has been
-	 * saved.
-	 * @param actorDef the actor definition to save
-	 * @param actor a new empty actor to use for creating a screen shot
-	 */
-	protected void setSavingThenExit(ActorDef actorDef, Actor actor) {
-		setSaving(actorDef, actor);
-		mSaveThenExit = true;
-	}
-
-	/**
-	 * Override this method so {@link #setSavingThenExit(ActorDef, Actor)} gets a correct
-	 * definition. Only applicable for actor editors
-	 * @return the actor definition to save
-	 */
-	protected ActorDef getActorDef() {
-		return null;
-	}
-
-	/**
-	 * Override this method so {@link #setSaving(ActorDef, Actor)} gets a correct
-	 * actor. Only applicable for actor editors
-	 * @return a new actor to draw for creating an image out of it.
-	 */
-	protected Actor getNewActor() {
-		return null;
 	}
 
 	/**
@@ -363,8 +347,8 @@ public abstract class Editor extends WorldScene implements IEditor {
 	private float mUnsavedTime = 0;
 	/** Last time the player did some activity */
 	private float mActivityTimeLast = 0;
-	/** Exits after the resource has been saved */
-	private boolean mSaveThenExit = false;
+	/** Command to be executed after the resource has been saved */
+	private Command mExecutedAfterSaved = null;
 
 	/** Transparent color */
 	private static final int COLOR_TRANSPARENT = 0x00000000;

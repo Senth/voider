@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector2;
+import com.spiddekauga.utils.Command;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.editor.brushes.VectorBrush;
@@ -19,7 +20,6 @@ import com.spiddekauga.voider.editor.tools.TouchTool;
 import com.spiddekauga.voider.game.Weapon;
 import com.spiddekauga.voider.game.WeaponDef;
 import com.spiddekauga.voider.game.actors.Actor;
-import com.spiddekauga.voider.game.actors.ActorDef;
 import com.spiddekauga.voider.game.actors.ActorShapeTypes;
 import com.spiddekauga.voider.game.actors.BulletActor;
 import com.spiddekauga.voider.game.actors.BulletActorDef;
@@ -186,16 +186,6 @@ public class BulletEditor extends Editor implements IActorEditor, IResourceChang
 	}
 
 	@Override
-	protected ActorDef getActorDef() {
-		return mDef;
-	}
-
-	@Override
-	protected Actor getNewActor() {
-		return new BulletActor();
-	}
-
-	@Override
 	public void newDef() {
 		BulletActorDef newDef = new BulletActorDef();
 		setDef(newDef);
@@ -207,6 +197,11 @@ public class BulletEditor extends Editor implements IActorEditor, IResourceChang
 	@Override
 	public void saveDef() {
 		setSaving(mDef, new BulletActor());
+	}
+
+	@Override
+	public void saveDef(Command command) {
+		setSaving(mDef, new BulletActor(), command);
 	}
 
 	@Override

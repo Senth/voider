@@ -15,12 +15,24 @@ public class CEditorSave extends Command {
 	 * @param editor the active editor which we want to call save on.
 	 */
 	public CEditorSave(IEditor editor) {
+		this(editor, null);
+	}
+
+	/**
+	 * Creates a save command for the current editor and executes
+	 * an optional command after the resource has been saved
+	 * @param editor the active editor to call saveDef()
+	 * @param executeAfterSaved command to execute after the resource has
+	 * been saved.
+	 */
+	public CEditorSave(IEditor editor, Command executeAfterSaved) {
 		mEditor = editor;
+		mExecuteAfterSaved = executeAfterSaved;
 	}
 
 	@Override
 	public boolean execute() {
-		mEditor.saveDef();
+		mEditor.saveDef(mExecuteAfterSaved);
 		return true;
 	}
 
@@ -32,4 +44,6 @@ public class CEditorSave extends Command {
 
 	/** Enemy editor to invoke the save on */
 	IEditor mEditor;
+	/** Optional command to execute after the resource has been saved */
+	Command mExecuteAfterSaved;
 }
