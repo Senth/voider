@@ -46,7 +46,6 @@ import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.utils.Geometry;
 import com.spiddekauga.voider.utils.Pools;
-import com.sun.xml.internal.bind.annotation.OverrideAnnotationOf;
 
 /**
  * The abstract base class for all actors
@@ -685,9 +684,6 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 		if (mRotatedVertices != null) {
 			Pools.vector2.freeDuplicates(mRotatedVertices);
 			Pools.arrayList.free(mRotatedVertices);
-			//			Pools.vector2.freeDuplicates(mRotatedBorderVertices);
-			//			Pools.arrayList.free(mRotatedBorderVertices);
-			//			mRotatedBorderVertices = null;
 			mRotatedVertices = null;
 		}
 	}
@@ -705,9 +701,6 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 		if (mRotatedVertices != null) {
 			Pools.vector2.freeDuplicates(mRotatedVertices);
 			Pools.arrayList.free(mRotatedVertices);
-			//			Pools.vector2.freeDuplicates(mRotatedBorderVertices);
-			//			Pools.arrayList.free(mRotatedBorderVertices);
-			//			mRotatedBorderVertices = null;
 			mRotatedVertices = null;
 		}
 

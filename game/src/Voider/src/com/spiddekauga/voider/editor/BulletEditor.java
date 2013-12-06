@@ -553,7 +553,6 @@ public class BulletEditor extends Editor implements IActorEditor, IResourceChang
 	@Override
 	public void onResourceRemoved(IResource resource) {
 		if (resource instanceof BulletActor) {
-			mDef.getVisualVars().clearCorners();
 			mBulletActor = null;
 			setUnsaved();
 		}
@@ -647,6 +646,20 @@ public class BulletEditor extends Editor implements IActorEditor, IResourceChang
 		setShapeType(mDef.getVisualVars().getShapeType());
 		if (mGui.isInitialized()) {
 			mGui.resetValues();
+		}
+
+		if (mDef.getVisualVars().getShapeType() == ActorShapeTypes.CUSTOM) {
+			if (mBulletActor == null) {
+				mBulletActor = new BulletActor();
+				mBulletActor.setDef(mDef);
+				mSelection.selectResource(mBulletActor);
+			}
+		} else {
+			if (mBulletActor != null) {
+				mSelection.deselectResource(mBulletActor);
+				mBulletActor.dispose();
+				mBulletActor = null;
+			}
 		}
 	}
 

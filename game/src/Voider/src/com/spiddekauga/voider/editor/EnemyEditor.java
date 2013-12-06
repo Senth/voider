@@ -243,6 +243,10 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 		mPlayerActor.update(deltaTime);
 		checkForDeadActors();
 
+		if (mDrawingEnemy != null && mDef.getVisualVars().getShapeType() == ActorShapeTypes.CUSTOM) {
+			mDrawingEnemy.updateEditor();
+		}
+
 		switch (mDef.getMovementType()) {
 		case AI:
 		case STATIONARY:
@@ -307,6 +311,10 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 			Gdx.gl.glEnable(GL20.GL_BLEND);
 			Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
+			if (mDrawingEnemy != null && mDef.getVisualVars().getShapeType() == ActorShapeTypes.CUSTOM) {
+				mDrawingEnemy.render(mShapeRenderer);
+				mDrawingEnemy.renderEditor(mShapeRenderer);
+			}
 
 			// Enemies
 			switch (getMovementType()) {
@@ -1139,23 +1147,23 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 			return;
 		}
 		// Save diff offset and move the actor in the opposite direction...
-		//		Vector2 diffOffset = null;
-		//		if (mBulletActor != null) {
-		//			mBulletActor.destroyBody();
-		//
-		//			diffOffset = Pools.vector2.obtain();
-		//			diffOffset.set(mDef.getCenterOffset());
-		//		}
+		Vector2 diffOffset = null;
+		if (mDrawingEnemy != null) {
+			mDrawingEnemy.destroyBody();
+
+			diffOffset = Pools.vector2.obtain();
+			diffOffset.set(mDef.getVisualVars().getCenterOffset());
+		}
 
 		mDef.getVisualVars().resetCenterOffset();
 
-		//		if (mBulletActor != null) {
-		//			diffOffset.sub(mDef.getCenterOffset());
-		//			diffOffset.add(mBulletActor.getPosition());
-		//			mBulletActor.setPosition(diffOffset);
-		//			mBulletActor.createBody();
-		//			Pools.vector2.free(diffOffset);
-		//		}
+		if (mDrawingEnemy != null) {
+			diffOffset.sub(mDef.getVisualVars().getCenterOffset());
+			diffOffset.add(mDrawingEnemy.getPosition());
+			mDrawingEnemy.setPosition(diffOffset);
+			mDrawingEnemy.createBody();
+			Pools.vector2.free(diffOffset);
+		}
 
 		setUnsaved();
 	}
@@ -1166,23 +1174,23 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 			return;
 		}
 		// Save diff offset and move the actor in the opposite direction...
-		//		Vector2 diffOffset = null;
-		//		if (mBulletActor != null) {
-		//			mBulletActor.destroyBody();
-		//
-		//			diffOffset = Pools.vector2.obtain();
-		//			diffOffset.set(mDef.getCenterOffset());
-		//		}
+		Vector2 diffOffset = null;
+		if (mDrawingEnemy != null) {
+			mDrawingEnemy.destroyBody();
+
+			diffOffset = Pools.vector2.obtain();
+			diffOffset.set(mDef.getVisualVars().getCenterOffset());
+		}
 
 		mDef.getVisualVars().setCenterOffset(newCenter);
 
-		//		if (mBulletActor != null) {
-		//			diffOffset.sub(mDef.getCenterOffset());
-		//			diffOffset.add(mBulletActor.getPosition());
-		//			mBulletActor.setPosition(diffOffset);
-		//			mBulletActor.createBody();
-		//			Pools.vector2.free(diffOffset);
-		//		}
+		if (mDrawingEnemy != null) {
+			diffOffset.sub(mDef.getVisualVars().getCenterOffset());
+			diffOffset.add(mDrawingEnemy.getPosition());
+			mDrawingEnemy.setPosition(diffOffset);
+			mDrawingEnemy.createBody();
+			Pools.vector2.free(diffOffset);
+		}
 
 		setUnsaved();
 	}
@@ -1257,14 +1265,29 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 
 	@Override
 	public void onResourceAdded(IResource resource) {
-		if (resource instanceof VectorBrush) {
+		if (resource instanceof EnemyActor) {
+			mDrawingEnemy = (EnemyActor) resource;
+
+			// Set position other than center
+			Vector2 worldPosition = Pools.vector2.obtain();
+			screenToWorldCoord(mCamera, Gdx.graphics.getWidth() / 3, Gdx.graphics.getHeight() / 3, worldPosition, false);
+			mDrawingEnemy.setPosition(worldPosition);
+			Pools.vector2.free(worldPosition);
+
+			setUnsaved();
+		}
+		else if (resource instanceof VectorBrush) {
 			mVectorBrush = (VectorBrush) resource;
 		}
 	}
 
 	@Override
 	public void onResourceRemoved(IResource resource) {
-		if (resource instanceof VectorBrush) {
+		if (resource instanceof EnemyActor) {
+			mDrawingEnemy = null;
+			setUnsaved();
+		}
+		else if (resource instanceof VectorBrush) {
 			mVectorBrush = null;
 		}
 	}
@@ -1481,6 +1504,21 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 		if (mGui.isInitialized()) {
 			mGui.resetValues();
 		}
+
+
+		if (mDef.getVisualVars().getShapeType() == ActorShapeTypes.CUSTOM) {
+			if (mDrawingEnemy == null) {
+				mDrawingEnemy = new EnemyActor();
+				mDrawingEnemy.setDef(mDef);
+				mSelection.selectResource(mDrawingEnemy);
+			}
+		} else {
+			if (mDrawingEnemy != null) {
+				mSelection.deselectResource(mDrawingEnemy);
+				mDrawingEnemy.dispose();
+				mDrawingEnemy = null;
+			}
+		}
 	}
 
 	/**
@@ -1604,6 +1642,8 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 	private Selection mSelection = new Selection();
 	/** Current selection action, null if none */
 	private SelectionActions mSelectionAction = null;
+	/** Drawing enemy actor */
+	private EnemyActor mDrawingEnemy = null;
 	/** Current enemy actor */
 	private EnemyActor mEnemyActor = new EnemyActor();
 	/** Enemy actor for path once */
