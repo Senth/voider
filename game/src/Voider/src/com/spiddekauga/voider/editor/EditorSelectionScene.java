@@ -1,7 +1,7 @@
 package com.spiddekauga.voider.editor;
 
 import com.spiddekauga.utils.KeyHelper;
-import com.spiddekauga.voider.app.MainMenu;
+import com.spiddekauga.voider.menu.MainMenu;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceNames;
 import com.spiddekauga.voider.scene.Scene;

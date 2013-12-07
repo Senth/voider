@@ -192,7 +192,7 @@ public class Cell implements Poolable {
 	 * @see #setHeight(float)
 	 * @see #resetSize()
 	 */
-	public Cell setSize(int width, int height) {
+	public Cell setSize(float width, float height) {
 		mActor.setSize(width, height);
 		mFixedSize = true;
 		return this;
@@ -205,7 +205,7 @@ public class Cell implements Poolable {
 	 * the size to the actual preferred size
 	 * @param width new width of the cell.
 	 * @return this cell for chaining.
-	 * @see #setSize(int, int)
+	 * @see #setSize(float, float)
 	 * @see #setHeight(float)
 	 * @see #resetSize()
 	 */
@@ -224,7 +224,7 @@ public class Cell implements Poolable {
 	 * the size to the actual preferred size
 	 * @param height new height of the cell.
 	 * @return this cell for chaining
-	 * @see #setSize(int, int)
+	 * @see #setSize(float, float)
 	 * @see #setWidth(float)
 	 * @see #resetSize()
 	 */
@@ -239,7 +239,7 @@ public class Cell implements Poolable {
 	/**
 	 * Resets the size of the cell to the original preferred size
 	 * @return this cell for chaining
-	 * @see #setSize(int, int)
+	 * @see #setSize(float, float)
 	 * @see #setWidth(float)
 	 * @see #setHeight(float)
 	 */

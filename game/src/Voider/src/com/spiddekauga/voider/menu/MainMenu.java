@@ -1,10 +1,13 @@
-package com.spiddekauga.voider.app;
+package com.spiddekauga.voider.menu;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.spiddekauga.utils.KeyHelper;
+import com.spiddekauga.voider.app.PrototypeScene;
+import com.spiddekauga.voider.app.TestUiScene;
 import com.spiddekauga.voider.editor.EditorSelectionScene;
 import com.spiddekauga.voider.game.GameSaveDef;
 import com.spiddekauga.voider.game.GameScene;
@@ -12,6 +15,7 @@ import com.spiddekauga.voider.game.LevelDef;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceItem;
 import com.spiddekauga.voider.resources.ResourceNames;
+import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.scene.SelectDefScene;
@@ -28,7 +32,8 @@ public class MainMenu extends Scene {
 	 */
 	public MainMenu() {
 		super(new MainMenuGui());
-		((MainMenuGui)mGui).setMainMenu(this);
+		((MainMenuGui)mGui).setMenuScene(this);
+		mGuiStack.add(mGui);
 	}
 
 	@Override
@@ -80,7 +85,7 @@ public class MainMenu extends Scene {
 	@Override
 	public boolean keyDown(int keycode) {
 		if (KeyHelper.isBackPressed(keycode)) {
-			Gdx.app.exit();
+			popMenu();
 		}
 
 		// REMOVE testing
@@ -118,26 +123,12 @@ public class MainMenu extends Scene {
 	}
 
 	/**
-	 * Goes to the campaign menus
+	 * Goes to new game
 	 */
-	void gotoCampaignMenu() {
-		/** @todo go to the campaign menus */
-	}
-
-	/**
-	 * Goes to the downloaded content menu
-	 */
-	void gotoDownloadedContentMenu() {
+	void newGame() {
 		/** @todo change the simple load level to a more advanced level */
 		SelectDefScene selectLevelScene = new SelectDefScene(LevelDef.class, false, true, false);
 		SceneSwitcher.switchTo(selectLevelScene);
-	}
-
-	/**
-	 * Goes to the explore menu
-	 */
-	void gotoExploreMenu() {
-		/** @todo goes to the explore menu */
 	}
 
 	/**
@@ -149,9 +140,73 @@ public class MainMenu extends Scene {
 	}
 
 	/**
-	 * Goes to the options menu
+	 * All different available menus
 	 */
-	void gotoOptions() {
-		/** @todo goes to the options menu */
+	enum Menus {
+		/** Main menu, or first menu the player sees */
+		MAIN(MainMenuGui.class),
+		/** Play menu, visible after clicking play in main menu */
+		PLAY(PlayMenuGui.class),
+
+		;
+
+		/**
+		 * @return new instance of this menu
+		 */
+		MenuGui newInstance() {
+			try {
+				return mGuiType.getConstructor().newInstance();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return null;
+		}
+
+		/**
+		 * Creates the enumeration with a GUI class
+		 * @param gui the GUI class to create for this menu
+		 */
+		private Menus(Class<? extends MenuGui> gui) {
+			mGuiType = gui;
+		}
+
+		/** The GUI class to create for this menu */
+		Class<? extends MenuGui> mGuiType;
 	}
+
+	/**
+	 * Pushes another GUI menu to the stack
+	 * @param menu the menu to push to the stack
+	 */
+	void pushMenu(Menus menu) {
+		MenuGui newGui = menu.newInstance();
+		if (newGui != null) {
+			newGui.setMenuScene(this);
+			mInputMultiplexer.removeProcessor(mGui.getStage());
+			mGui = newGui;
+			mGuiStack.push(newGui);
+			mInputMultiplexer.addProcessor(0, newGui.getStage());
+			newGui.initGui();
+			newGui.resetValues();
+		}
+	}
+
+	/**
+	 * Pops the current menu from the stack. Can not pop Main Menu from the stack.
+	 */
+	void popMenu() {
+		if (mGui.getClass() != MainMenuGui.class) {
+			mInputMultiplexer.removeProcessor(mGui.getStage());
+			mGuiStack.pop().dispose();
+			mGui = mGuiStack.peek();
+			mInputMultiplexer.addProcessor(0, mGui.getStage());
+		}
+		// Else exit game
+		else {
+			Gdx.app.exit();
+		}
+	}
+
+	/** GUI stack */
+	private LinkedList<Gui> mGuiStack = new LinkedList<Gui>();
 }
