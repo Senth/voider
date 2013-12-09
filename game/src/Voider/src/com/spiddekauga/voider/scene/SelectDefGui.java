@@ -1,5 +1,6 @@
 package com.spiddekauga.voider.scene;
 
+import java.util.Map;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
@@ -7,11 +8,14 @@ import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputEvent.Type;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox.CheckBoxStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.List;
+import com.badlogic.gdx.scenes.scene2d.ui.List.ListStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane.ScrollPaneStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
@@ -124,8 +128,6 @@ public class SelectDefGui extends Gui {
 	 * Initializes the definition table
 	 */
 	private void initDefTable() {
-		//		mDefTable.setWidth(Gdx.graphics.getWidth() - (Float)SkinNames.getResource(SkinNames.General.SELECT_DEF_INFO_WIDTH));
-		//		mMainTable.add(mDefTable).setFillHeight(true).setWidth(Gdx.graphics.getWidth() - (Float)SkinNames.getResource(SkinNames.General.SELECT_DEF_INFO_WIDTH));
 		mMainTable.add(mDefTable).setFillHeight(true).setFillWidth(true).setAlign(Horizontal.LEFT, Vertical.TOP);
 	}
 
@@ -136,9 +138,8 @@ public class SelectDefGui extends Gui {
 		mMainTable.add(mInfoPanel).setFillHeight(true).setWidth((Float)SkinNames.getResource(SkinNames.General.SELECT_DEF_INFO_WIDTH));
 		mInfoPanelHider.addToggleActor(mInfoPanel);
 
-		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
-		TextButtonStyle buttonStyle = editorSkin.get("default", TextButtonStyle.class);
-		LabelStyle labelStyle = editorSkin.get("default", LabelStyle.class);
+		TextButtonStyle buttonStyle = SkinNames.getResource(SkinNames.General.TEXT_BUTTON_PRESS);
+		LabelStyle labelStyle = SkinNames.getResource(SkinNames.General.LABEL_DEFAULT);
 
 		// Name
 		Label label = new Label("", labelStyle);
@@ -193,6 +194,7 @@ public class SelectDefGui extends Gui {
 		mInfoPanel.row(Horizontal.RIGHT, Vertical.BOTTOM).setFillWidth(true);
 		if (mSelectDefScene.canChooseRevision()) {
 			TextButton button = new TextButton("Select rev.", buttonStyle);
+			mWidgets.infoPanel.selectRevision = button;
 			new ButtonListener(button) {
 				@Override
 				protected void onPressed() {
@@ -227,11 +229,10 @@ public class SelectDefGui extends Gui {
 
 	@Override
 	public void resetValues() {
-		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
-		TextButtonStyle toggleStyle = editorSkin.get("toggle", TextButtonStyle.class);
+		TextButtonStyle toggleStyle = SkinNames.getResource(SkinNames.General.TEXT_BUTTON_TOGGLE);
 
 
-		float floatPerRow = Gdx.graphics.getWidth() * 0.8f / Config.Editor.SELECT_DEF_WIDTH_MAX;
+		float floatPerRow = (Gdx.graphics.getWidth() - (Float)SkinNames.getResource(SkinNames.General.SELECT_DEF_INFO_WIDTH)) / Config.Editor.SELECT_DEF_WIDTH_MAX;
 		floatPerRow += 0.5f;
 		int cellsPerRow = (int) floatPerRow;
 
@@ -262,7 +263,6 @@ public class SelectDefGui extends Gui {
 			}
 		}
 
-
 		// Add empty cells to create equal spacing
 		if (cellCount != 0) {
 			mDefTable.add(cellsPerRow - cellCount);
@@ -282,6 +282,14 @@ public class SelectDefGui extends Gui {
 		mWidgets.infoPanel.originalCreator.setText(mSelectDefScene.getOriginalCreator());
 		mWidgets.infoPanel.revision.setText(mSelectDefScene.getRevision());
 
+		if (mWidgets.infoPanel.selectRevision != null) {
+			if (mSelectDefScene.isDefSelected()) {
+				mWidgets.infoPanel.selectRevision.setDisabled(false);
+			} else {
+				mWidgets.infoPanel.selectRevision.setDisabled(true);
+			}
+		}
+
 		mInfoPanelHider.show();
 
 		mInfoPanel.invalidateHierarchy();
@@ -291,16 +299,40 @@ public class SelectDefGui extends Gui {
 	 * Initialize select revision
 	 */
 	private void initSelectRevision() {
-		Skin skin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
+		String[] revisions = new String[0];
+		List list = new List(revisions, (ListStyle)SkinNames.getResource(SkinNames.General.LIST_DEFAULT));
+		mWidgets.revisionBox.list = list;
+		mWidgets.revisionBox.scrollPane = new ScrollPane(list, (ScrollPaneStyle)SkinNames.getResource(SkinNames.General.SCROLL_PANE_DEFAULT));
+		mMsgBoxTable.setPreferences(mMainTable);
+		mMsgBoxTable.row().setFillHeight(true).setFillWidth(true);
+		mMsgBoxTable.add(mWidgets.revisionBox.scrollPane).setSize(100,100).setFillHeight(true).setFillWidth(true);
+	}
 
-		/** @todo add all the revisions after database has been created */
+	/**
+	 * Updates the revision list
+	 */
+	private void updateRevisionList() {
+		Map<Integer, String> resourceRevisions = mSelectDefScene.getSelectedResourceRevisionsWithDates();
 
-		String[] revisions = new String[2];
-		revisions[0] = "Testing 1";
-		revisions[1] = "Testing 2 aoesuaes aoeu as";
-		List list = new List(revisions, skin);
-		ScrollPane scrollPane = new ScrollPane(list, skin);
-		mMsgBoxTable.add(scrollPane);
+		String[] revisions;
+		if (resourceRevisions != null) {
+			revisions = new String[resourceRevisions.size()];
+
+			// Calculate number length
+			String latestRevision = String.valueOf(revisions.length);
+			int revisionStringLength = latestRevision.length();
+
+			//			Iterator<Entry<Integer, String>> iterator = resourceRevisions.entrySet().iterator();
+			for (int i = 0; i < revisions.length; ++i) {
+				//				Entry<Integer, String> entry = iterator.next();
+				int revisionInt = revisions.length - i;
+				revisions[i] = String.format("%0" + revisionStringLength + "d  %s", revisionInt, resourceRevisions.get(revisionInt));
+			}
+		} else {
+			revisions = new String[0];
+		}
+
+		mWidgets.revisionBox.list.setItems(revisions);
 	}
 
 	/**
@@ -310,9 +342,6 @@ public class SelectDefGui extends Gui {
 		MsgBoxExecuter msgBox = getFreeMsgBox(true);
 
 		msgBox.setTitle("Select another revision");
-		msgBox.setWidth((int) (Gdx.graphics.getWidth() * 0.8f));
-		msgBox.setHeight((int) (Gdx.graphics.getHeight() * 0.8f));
-
 		msgBox.content(mMsgBoxTable);
 
 		/** @todo add actions to latest and select buttons */
@@ -320,7 +349,17 @@ public class SelectDefGui extends Gui {
 		msgBox.button("Select", null);
 		msgBox.addCancelButtonAndKeys();
 
+
+
+		//		mWidgets.revisionBox.scrollPane.setSize(Gdx.graphics.getWidth() * 0.6f, Gdx.graphics.getHeight() * 0.6f);
+		mMsgBoxTable.setKeepSize(true);
+		mMsgBoxTable.setSize(Gdx.graphics.getWidth() * 0.6f, Gdx.graphics.getHeight() * 0.6f);
+
+		updateRevisionList();
+
 		showMsgBox(msgBox);
+
+		getStage().setScrollFocus(mWidgets.revisionBox.list);
 	}
 
 	/**
@@ -375,6 +414,12 @@ public class SelectDefGui extends Gui {
 	@SuppressWarnings("javadoc")
 	private static class InnerWidgets {
 		InfoPanel infoPanel = new InfoPanel();
+		RevisionBox revisionBox = new RevisionBox();
+
+		static class RevisionBox {
+			List list = null;
+			ScrollPane scrollPane = null;
+		}
 
 		static class InfoPanel {
 			Label name = null;
@@ -383,6 +428,7 @@ public class SelectDefGui extends Gui {
 			Label creator = null;
 			Label originalCreator = null;
 			Label revision = null;
+			Button selectRevision = null;
 		}
 	}
 }

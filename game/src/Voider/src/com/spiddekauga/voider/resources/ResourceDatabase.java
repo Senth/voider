@@ -27,7 +27,7 @@ import com.spiddekauga.voider.utils.Pools;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-class ResourceDatabase {
+public class ResourceDatabase {
 	/**
 	 * Builds the resource database
 	 * @param assetManager the asset manager to load files with
@@ -58,11 +58,26 @@ class ResourceDatabase {
 
 	/**
 	 * Returns resource information if the resource exists
-	 * @param resourceId id of the resourc
+	 * @param resourceId id of the resource
 	 * @return resource information
 	 */
 	static ResourceInfo getResourceInfo(UUID resourceId) {
 		return mResources.get(resourceId);
+	}
+
+	/**
+	 * Returns all existing revision with dates of the resource
+	 * @param resourceId id of the resource
+	 * @return all existing revisions with dates of the resource. null if the
+	 * resource either wasn't found, it doesn't have any revisions, or it has
+	 * been published (meaning all revisions have been removed)
+	 */
+	public static Map<Integer, String> getResourceRevisionsWithDate(UUID resourceId) {
+		ResourceInfo resourceInfo = mResources.get(resourceId);
+		if (resourceInfo != null) {
+			return resourceInfo.revisionDates;
+		}
+		return null;
 	}
 
 	/**

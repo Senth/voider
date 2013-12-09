@@ -12,6 +12,7 @@ import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourceRevision;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
+import com.spiddekauga.voider.resources.ResourceDatabase;
 import com.spiddekauga.voider.resources.ResourceItem;
 import com.spiddekauga.voider.resources.ResourceNames;
 import com.spiddekauga.voider.resources.UndefinedResourceTypeException;
@@ -78,6 +79,7 @@ public class SelectDefScene extends WorldScene {
 	 * to only display one's own actors.
 	 * @param resourceRevisions specific revisions to use for some resources of this type.
 	 */
+	@Deprecated
 	public SelectDefScene(Class<? extends IResource> defType, boolean showMineOnly, boolean showMineOnlyCheckbox, Map<UUID, Integer> resourceRevisions) {
 		this(defType, showMineOnly, showMineOnlyCheckbox);
 
@@ -203,6 +205,13 @@ public class SelectDefScene extends WorldScene {
 	}
 
 	/**
+	 * @return true if any def is selected
+	 */
+	boolean isDefSelected() {
+		return mSelectedDef != null;
+	}
+
+	/**
 	 * @return name of the selected definition. An empty string if no
 	 * definition has been selected
 	 */
@@ -266,6 +275,17 @@ public class SelectDefScene extends WorldScene {
 			return String.valueOf(mSelectedDef.getRevision());
 		}
 		return "";
+	}
+
+	/**
+	 * @return map with all revisions and dates of the current selected resource, null
+	 * if none was found.
+	 */
+	Map<Integer, String> getSelectedResourceRevisionsWithDates() {
+		if (mSelectedDef != null) {
+			return ResourceDatabase.getResourceRevisionsWithDate(mSelectedDef.getId());
+		}
+		return null;
 	}
 
 	/**
