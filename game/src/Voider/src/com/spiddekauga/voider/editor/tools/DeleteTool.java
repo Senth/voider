@@ -84,7 +84,7 @@ public class DeleteTool extends TouchTool {
 
 			mInvoker.execute(new CSelectionSet(mSelection));
 			for (IResource resource : copySelectedResources) {
-				mInvoker.execute(new CResourceRemove(resource, mEditor));
+				mInvoker.execute(new CResourceRemove(resource, mEditor), true);
 			}
 
 			Pools.arrayList.free(copySelectedResources);

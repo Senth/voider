@@ -10,7 +10,7 @@ import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.voider.resources.SkinNames;
 
 /**
- * Gui for play menu
+ * GUI for play menu
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */

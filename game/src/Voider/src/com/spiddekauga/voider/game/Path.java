@@ -372,7 +372,7 @@ public class Path extends Resource implements Disposable, IResourceCorner, IReso
 				shapeRenderer.translate(0, 0, -Config.Graphics.DEPTH_STEP_SIZE);
 			}
 
-			RenderOrders.offsetZValueEditor(shapeRenderer, this);
+			RenderOrders.resetZValueOffsetEditor(shapeRenderer, this);
 		}
 	}
 
