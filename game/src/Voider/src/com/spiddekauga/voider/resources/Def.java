@@ -29,6 +29,22 @@ public abstract class Def extends Resource implements IResourceDependency, IReso
 	}
 
 	@Override
+	public void set(Resource resource) {
+		super.set(resource);
+
+		Def def = (Def) resource;
+		mCopyParentId = def.mCopyParentId;
+		mCreator = def.mCreator;
+		mDate = def.mDate;
+		mDescription = def.mDescription;
+		mExternalDependencies = def.mExternalDependencies;
+		mInternalDependencies = def.mInternalDependencies;
+		mName = def.mName;
+		mOriginalCreator = def.mOriginalCreator;
+		mRevision = def.mRevision;
+	}
+
+	@Override
 	public <ResourceType> ResourceType copyNewResource() {
 		ResourceType copy = super.copyNewResource();
 

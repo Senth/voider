@@ -5,6 +5,7 @@ import java.util.UUID;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.resources.Def;
+import com.spiddekauga.voider.resources.Resource;
 
 /**
  * Level definition of a level. I.e. this is the level's header information
@@ -17,6 +18,20 @@ public class LevelDef extends Def {
 	 */
 	public LevelDef() {
 		mLevelId = UUID.randomUUID();
+	}
+
+	@Override
+	public void set(Resource resource) {
+		super.set(resource);
+
+		LevelDef def = (LevelDef) resource;
+		mCampaignId = def.mCampaignId;
+		mEndXCoord = def.mEndXCoord;
+		mEpilogue = def.mEpilogue;
+		mLevelId = def.mLevelId;
+		mPrologue = def.mPrologue;
+		mSpeed = def.mSpeed;
+		mStartXCoord = def.mStartXCoord;
 	}
 
 	@Override

@@ -3,6 +3,7 @@ package com.spiddekauga.voider.resources;
 import java.util.ArrayList;
 import java.util.UUID;
 
+import com.badlogic.gdx.utils.Disposable;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.voider.utils.Pools;
@@ -34,6 +35,20 @@ public abstract class Resource implements IResource {
 			return mUniqueId.equals(object);
 		}
 		return false;
+	}
+
+	/**
+	 * Does a shallow copy from another resource and sets it to this.
+	 * @param resource the definition to copy from
+	 */
+	public void set(Resource resource) {
+		assert(getClass() == resource.getClass());
+
+		if (this instanceof Disposable) {
+			((Disposable)this).dispose();
+		}
+		mUniqueId = resource.mUniqueId;
+		mListeners = resource.mListeners;
 	}
 
 	/**

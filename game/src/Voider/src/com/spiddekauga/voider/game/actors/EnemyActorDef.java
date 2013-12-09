@@ -5,6 +5,7 @@ import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.voider.Config.Editor.Enemy;
 import com.spiddekauga.voider.game.WeaponDef;
+import com.spiddekauga.voider.resources.Resource;
 
 /**
  * Enemy actor definition, does nothing more than specify that the actor is
@@ -24,6 +25,20 @@ public class EnemyActorDef extends ActorDef {
 		getBodyDef().fixedRotation = true;
 
 		mVisualVars.setShapeType(Enemy.Visual.SHAPE_DEFAULT);
+	}
+
+	@Override
+	public void set(Resource resource) {
+		super.set(resource);
+
+		EnemyActorDef def = (EnemyActorDef) resource;
+		mAiMovementVars = def.mAiMovementVars;
+		mAimRotateVars = def.mAimRotateVars;
+		mAimType = def.mAimType;
+		mHasWeapon = def.mHasWeapon;
+		mMovementType = def.mMovementType;
+		mMovementVars = def.mMovementVars;
+		mWeapon = def.mWeapon;
 	}
 
 	/**

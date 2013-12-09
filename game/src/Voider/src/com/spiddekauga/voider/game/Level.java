@@ -58,6 +58,23 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 		mCompletedLevel = false;
 	}
 
+	@Override
+	public void set(Resource resource) {
+		super.set(resource);
+
+		Level level = (Level) resource;
+		mCompletedLevel = level.mCompletedLevel;
+		mGroupEnemiesSave = level.mGroupEnemiesSave;
+		mLevelDef = level.mLevelDef;
+		// Skip setting player actor
+		mResourceBinder = level.mResourceBinder;
+		mResourceRenders = level.mResourceRenders;
+		mResourceUpdates = level.mResourceUpdates;
+		mRunning = level.mRunning;
+		mSpeed = level.mSpeed;
+		mXCoord = level.mXCoord;
+	}
+
 	/**
 	 * @return true if the player has completed the level
 	 */

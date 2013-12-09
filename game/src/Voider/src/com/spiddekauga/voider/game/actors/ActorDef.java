@@ -15,6 +15,7 @@ import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.voider.game.Collectibles;
 import com.spiddekauga.voider.resources.Def;
+import com.spiddekauga.voider.resources.Resource;
 import com.spiddekauga.voider.utils.Pools;
 
 /**
@@ -59,6 +60,21 @@ public abstract class ActorDef extends Def implements Disposable {
 			mVisualVars.setColor(new Color(1, 1, 1, 1));
 			break;
 		}
+	}
+
+	@Override
+	public void set(Resource resource) {
+		super.set(resource);
+
+		ActorDef def = (ActorDef) resource;
+		mBodyChangeTime = def.mBodyChangeTime;
+		mBodyDef = def.mBodyDef;
+		mCollisionDamage = def.mCollisionDamage;
+		mDestroyOnCollide = def.mDestroyOnCollide;
+		mMaxLife = def.mMaxLife;
+		mPngBytes = def.mPngBytes;
+		mTextureDrawable = def.mTextureDrawable;
+		mVisualVars = def.mVisualVars;
 	}
 
 	/**
