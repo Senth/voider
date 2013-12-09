@@ -29,6 +29,7 @@ import com.spiddekauga.utils.scene.ui.TextFieldListener;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceNames;
+import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.scene.SelectDefScene.DefVisible;
 
 /**
@@ -62,13 +63,13 @@ public class SelectDefGui extends Gui {
 
 		mMainTable.setTableAlign(Horizontal.LEFT, Vertical.TOP);
 		mMainTable.setRowAlign(Horizontal.LEFT, Vertical.TOP);
-		//		mMainTable.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		mMainTable.setKeepSize(true);
 		mDefTable.setPreferences(mMainTable);
 		mDefTable.setKeepSize(true);
 		mDefTable.setName("DefTable");
 		mInfoPanel.setPreferences(mMainTable);
 		mInfoPanel.setKeepSize(true);
-		mInfoPanel.setWidth(Gdx.graphics.getWidth()*0.20f);
+		mInfoPanel.setName("InfoPanel");
 
 		initSearchBar();
 		initDefTable();
@@ -116,21 +117,23 @@ public class SelectDefGui extends Gui {
 			mMainTable.add(checkBox);
 		}
 
-		mMainTable.row().setFillWidth(true);
+		mMainTable.row().setFillWidth(true).setFillHeight(true);
 	}
 
 	/**
 	 * Initializes the definition table
 	 */
 	private void initDefTable() {
-		mMainTable.add(mDefTable).setFillWidth(true);
+		//		mDefTable.setWidth(Gdx.graphics.getWidth() - (Float)SkinNames.getResource(SkinNames.General.SELECT_DEF_INFO_WIDTH));
+		//		mMainTable.add(mDefTable).setFillHeight(true).setWidth(Gdx.graphics.getWidth() - (Float)SkinNames.getResource(SkinNames.General.SELECT_DEF_INFO_WIDTH));
+		mMainTable.add(mDefTable).setFillHeight(true).setFillWidth(true).setAlign(Horizontal.LEFT, Vertical.TOP);
 	}
 
 	/**
 	 * Initializes info panel to the right
 	 */
 	private void initInfoPanel() {
-		//		mMainTable.add(mInfoPanel).setFillHeight(true);
+		mMainTable.add(mInfoPanel).setFillHeight(true).setWidth((Float)SkinNames.getResource(SkinNames.General.SELECT_DEF_INFO_WIDTH));
 		mInfoPanelHider.addToggleActor(mInfoPanel);
 
 		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
@@ -183,11 +186,11 @@ public class SelectDefGui extends Gui {
 		mInfoPanel.add(label);
 
 		// Padding
-		//		mInfoPanel.row().setFillHeight(true);
+		mInfoPanel.row().setFillHeight(true);
 
 
 		// Select another revision
-		//		mInfoPanel.row().setFillWidth(true);
+		mInfoPanel.row(Horizontal.RIGHT, Vertical.BOTTOM).setFillWidth(true);
 		if (mSelectDefScene.canChooseRevision()) {
 			TextButton button = new TextButton("Select rev.", buttonStyle);
 			new ButtonListener(button) {
@@ -197,9 +200,9 @@ public class SelectDefGui extends Gui {
 				}
 			};
 			mInfoPanel.add(button);
+			mInfoPanel.add().setFillWidth(true);
 		}
-		//		mInfoPanel.add().setFillWidth(true);
-		mInfoPanel.row(Horizontal.RIGHT, Vertical.BOTTOM);
+
 
 		// Load
 		TextButton button = new TextButton("Load", buttonStyle);
@@ -280,6 +283,8 @@ public class SelectDefGui extends Gui {
 		mWidgets.infoPanel.revision.setText(mSelectDefScene.getRevision());
 
 		mInfoPanelHider.show();
+
+		mInfoPanel.invalidateHierarchy();
 	}
 
 	/**

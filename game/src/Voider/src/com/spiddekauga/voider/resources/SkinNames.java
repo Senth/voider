@@ -59,6 +59,8 @@ public class SkinNames {
 		PADDING_SEPARATOR(Float.class),
 		/** Left and right window padding */
 		PADDING_WINDOW_LEFT_RIGHT(Float.class),
+		/** Select Def info width */
+		SELECT_DEF_INFO_WIDTH(Float.class),
 		/** Default label */
 		LABEL_DEFAULT(LabelStyle.class, "default"),
 		/** Text button default style */

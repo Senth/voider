@@ -401,6 +401,7 @@ public class AlignTable extends WidgetGroup implements Disposable {
 
 	}
 
+
 	@Override
 	public void layout() {
 		calculateSize();
@@ -424,6 +425,10 @@ public class AlignTable extends WidgetGroup implements Disposable {
 		}
 
 		Vector2 position = Pools.vector2.obtain();
+
+
+		// Set custom position if we don't have any table parent
+		//		if (!(getParent() instanceof AlignTable)) {
 		// Horizontal offset
 		// If fill row, the x offset will always be 0
 		if (rowFillWidth) {
@@ -456,7 +461,13 @@ public class AlignTable extends WidgetGroup implements Disposable {
 			}
 		}
 
+		if (getParent() instanceof AlignTable) {
+			position.x = getX() - position.x;
+			//			position.y = getY() - position.y;
+		}
+
 		setPosition((int)position.x, (int)position.y);
+		//		}
 
 		Vector2 offset = Pools.vector2.obtain();
 		offset.set(0,0);
