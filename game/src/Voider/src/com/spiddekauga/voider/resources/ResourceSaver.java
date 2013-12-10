@@ -45,7 +45,7 @@ public class ResourceSaver {
 			((Def) resource).updateDate();
 		}
 
-		// Update date
+		// Update revision
 		if (resource instanceof IResourceRevision) {
 			oldRevision = ((IResourceRevision) resource).getRevision();
 

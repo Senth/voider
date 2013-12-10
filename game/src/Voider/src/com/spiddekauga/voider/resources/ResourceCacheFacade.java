@@ -348,6 +348,15 @@ public class ResourceCacheFacade {
 	}
 
 	/**
+	 * Sets the latest resource to the specified resource
+	 * @param resource the resource to be set as latest resource
+	 * @param oldRevision old revision that the resource was loaded into
+	 */
+	public static void setLatestResource(Resource resource, int oldRevision) {
+		ResourceDatabase.setLatestResource(resource, oldRevision);
+	}
+
+	/**
 	 * Reloads a loaded resource. This reloads the resource directly by calling {@link #finishLoading()}
 	 * Useful when we want to load an older revision of the specified resource, or the newest revision
 	 * if we have loaded an older revision before
@@ -355,6 +364,7 @@ public class ResourceCacheFacade {
 	 * @param resourceId resource id to reload
 	 * @param revision specific revision of the resource to reload.
 	 */
+	@Deprecated
 	public static void reload(UUID resourceId, int revision) {
 		ResourceDatabase.reload(resourceId, revision);
 	}
@@ -420,6 +430,18 @@ public class ResourceCacheFacade {
 	public static void unload(Scene scene, Resource resource, Def resourceDef) {
 		ResourceDatabase.unload(scene, resource);
 		mDependencyLoader.unload(scene, resourceDef);
+	}
+
+	/**
+	 * Unloads all of the specified resources
+	 * @param scene the scene the resource was loaded into
+	 * @param resources the resources to unload
+	 * @param unloadDependencies if the we shall unload the dependencies of the resources
+	 */
+	public static void unloadAll(Scene scene, ArrayList<? extends IResource> resources, boolean unloadDependencies) {
+		for (IResource resource : resources) {
+			unload(scene, resource, unloadDependencies);
+		}
 	}
 
 	/**

@@ -31,6 +31,7 @@ import com.spiddekauga.utils.scene.ui.Label.LabelStyle;
 import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.editor.commands.CSelectDefSetRevision;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceNames;
 import com.spiddekauga.voider.resources.SkinNames;
@@ -274,13 +275,13 @@ public class SelectDefGui extends Gui {
 	/**
 	 * Resets the info panel
 	 */
-	private void resetInfoPanel() {
+	void resetInfoPanel() {
 		mWidgets.infoPanel.name.setText(mSelectDefScene.getName());
 		mWidgets.infoPanel.date.setText(mSelectDefScene.getDate());
 		mWidgets.infoPanel.description.setText(mSelectDefScene.getDescription());
 		mWidgets.infoPanel.creator.setText(mSelectDefScene.getCreator());
 		mWidgets.infoPanel.originalCreator.setText(mSelectDefScene.getOriginalCreator());
-		mWidgets.infoPanel.revision.setText(mSelectDefScene.getRevision());
+		mWidgets.infoPanel.revision.setText(mSelectDefScene.getRevisionString());
 
 		if (mWidgets.infoPanel.selectRevision != null) {
 			if (mSelectDefScene.isDefSelected()) {
@@ -322,9 +323,7 @@ public class SelectDefGui extends Gui {
 			String latestRevision = String.valueOf(revisions.length);
 			int revisionStringLength = latestRevision.length();
 
-			//			Iterator<Entry<Integer, String>> iterator = resourceRevisions.entrySet().iterator();
 			for (int i = 0; i < revisions.length; ++i) {
-				//				Entry<Integer, String> entry = iterator.next();
 				int revisionInt = revisions.length - i;
 				revisions[i] = String.format("%0" + revisionStringLength + "d  %s", revisionInt, resourceRevisions.get(revisionInt));
 			}
@@ -344,18 +343,17 @@ public class SelectDefGui extends Gui {
 		msgBox.setTitle("Select another revision");
 		msgBox.content(mMsgBoxTable);
 
-		/** @todo add actions to latest and select buttons */
-		msgBox.button("Latest", null);
-		msgBox.button("Select", null);
-		msgBox.addCancelButtonAndKeys();
-
-
-
-		//		mWidgets.revisionBox.scrollPane.setSize(Gdx.graphics.getWidth() * 0.6f, Gdx.graphics.getHeight() * 0.6f);
 		mMsgBoxTable.setKeepSize(true);
 		mMsgBoxTable.setSize(Gdx.graphics.getWidth() * 0.6f, Gdx.graphics.getHeight() * 0.6f);
 
 		updateRevisionList();
+
+		// Get latest revision number
+		int latestRevision = mWidgets.revisionBox.list.getItems().length;
+
+		msgBox.button("Latest", new CSelectDefSetRevision(latestRevision, mSelectDefScene));
+		msgBox.button("Select", new CSelectDefSetRevision(mWidgets.revisionBox.list, mSelectDefScene));
+		msgBox.addCancelButtonAndKeys();
 
 		showMsgBox(msgBox);
 

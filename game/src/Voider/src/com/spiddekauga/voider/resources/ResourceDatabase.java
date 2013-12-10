@@ -17,6 +17,7 @@ import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Debug;
 import com.spiddekauga.voider.Config.Debug.Messages;
 import com.spiddekauga.voider.scene.Scene;
+import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.utils.Pool;
 import com.spiddekauga.voider.utils.Pools;
 
@@ -347,39 +348,95 @@ public class ResourceDatabase {
 	}
 
 	/**
-	 * Reloads a loaded resource.
-	 * Useful when a resource is saved (and thus the revision increased, but we want the loaded resource to
-	 * use the real revision (i.e. not the changed one). This method reloads the resource for all scenes.
-	 * Does nothing if the resource isn't loaded. Only applicable on resources that has revisions...
+	 * Sets the latest resource to the specified resource
+	 * @param resource the resource to be set as latest resource
+	 * @param oldRevision old revision that the resource was loaded into
+	 */
+	static void setLatestResource(Resource resource, int oldRevision) {
+		Resource latestResource = getLoadedResource(SceneSwitcher.getActiveScene(true), resource.getId(), -1);
+		if (latestResource != null) {
+			// Unload old revision and reload latest resource.
+			String oldFilepath = getFilePath(resource.getId(), oldRevision);
+			mAssetManager.unload(oldFilepath);
+			mLoadedResources.removeLoadedResource(SceneSwitcher.getActiveScene(true), resource.getId(), oldRevision);
+
+			String latestFilepath = getFilePath(resource.getId(), -1);
+			int cReferences = mAssetManager.getReferenceCount(latestFilepath);
+			mAssetManager.setReferenceCount(latestFilepath, 1);
+			mAssetManager.unload(latestFilepath);
+			mAssetManager.load(latestFilepath, resource.getClass());
+			mAssetManager.finishLoading();
+			mAssetManager.setReferenceCount(latestFilepath, cReferences);
+
+			Resource newLatestResource = mAssetManager.get(latestFilepath);
+
+			// Update old latest resource
+			latestResource.set(newLatestResource);
+			resource.set(newLatestResource);
+		} else {
+			Gdx.app.error("ResourceDatabase", "Could not find latest resource");
+		}
+	}
+
+	/**
+	 * Reloads a loaded resource from latest revision to another revision.
+	 * Useful when reverting back to an older revision of the resource. This methods will set the
+	 * latest resource to contain the specified revision instead of the actual revision. This
+	 * will have the effect of "updating" all existing references to this resource so they don't
+	 * have to reload an older revision of the resource.
 	 * @param resourceId resource id to reload
-	 * @param revision specific revision of the resource to reload.
+	 * @param revision specific revision of the resource to reload to
 	 */
 	static void reload(UUID resourceId, int revision) {
-		int revisionToUse = getRevisionToUse(resourceId, revision);
-		String filepath = getFilePath(resourceId, revisionToUse);
-
-		if (filepath != null && mAssetManager.isLoaded(filepath)) {
-			// Get scenes the resource is loaded into
-			ArrayList<Scene> scenes = mLoadedResources.getResourceScenes(resourceId, revisionToUse);
-
-			// Reload the actual asset
-			ResourceInfo resourceInfo = mResources.get(resourceId);
-			int cRefs = mAssetManager.getReferenceCount(filepath);
-			mAssetManager.setReferenceCount(filepath, 1);
-			mAssetManager.unload(filepath);
-			mAssetManager.load(filepath, resourceInfo.type);
-			mAssetManager.finishLoading();
-			mAssetManager.setReferenceCount(filepath, cRefs);
-
-			// Update the scene resource to contain the new reference of the resource
-			IResource resource = mAssetManager.get(filepath, resourceInfo.type);
-			for (Scene scene : scenes) {
-				mLoadedResources.setLoadedResource(scene, resource, revisionToUse);
-			}
-
-			Pools.arrayList.free(scenes);
-			scenes = null;
-		}
+		//		int revisionToUse = getRevisionToUse(resourceId, revision);
+		//		String filepath = getFilePath(resourceId, revision);
+		//		String latestFilepath = getFilePath(resourceId, -1);
+		//
+		//		if (filepath != null && latestFilepath != null) {
+		//			ResourceInfo resourceInfo = mResources.get(resourceId);
+		//			mAssetManager.load(filepath, resourceInfo.type);
+		//			mAssetManager.finishLoading();
+		//
+		//
+		//			// Unload all internal dependencies first
+		//			for (ResourceNames dependency : resou)
+		//
+		//
+		//			ResourceCacheFacade.load(null, resourceId, true, revision);
+		//			ResourceCacheFacade.finishLoading();
+		//
+		//			Resource latestResource = ResourceCacheFacade.get(null, resourceId);
+		//			Resource loadedResource = ResourceCacheFacade.get(null, resourceId, revision);
+		//
+		//			latestResource.set(loadedResource);
+		//
+		//			Scene sceneToUse = SceneSwitcher.getActiveScene(true);
+		//			mLoadedResources.removeLoadedResource(null, resourceId, revision);
+		//			mAssetManager.setReferenceCount(filepath, refCount);
+		//		}
+		//
+		//		if (filepath != null && mAssetManager.isLoaded(filepath)) {
+		//			// Get scenes the resource is loaded into
+		//			ArrayList<Scene> scenes = mLoadedResources.getResourceScenes(resourceId, revisionToUse);
+		//
+		//			// Reload the actual asset
+		//			ResourceInfo resourceInfo = mResources.get(resourceId);
+		//			int cRefs = mAssetManager.getReferenceCount(filepath);
+		//			mAssetManager.setReferenceCount(filepath, 1);
+		//			mAssetManager.unload(filepath);
+		//			mAssetManager.load(filepath, resourceInfo.type);
+		//			mAssetManager.finishLoading();
+		//			mAssetManager.setReferenceCount(filepath, cRefs);
+		//
+		//			// Update the scene resource to contain the new reference of the resource
+		//			IResource resource = mAssetManager.get(filepath, resourceInfo.type);
+		//			for (Scene scene : scenes) {
+		//				mLoadedResources.setLoadedResource(scene, resource, revisionToUse);
+		//			}
+		//
+		//			Pools.arrayList.free(scenes);
+		//			scenes = null;
+		//		}
 	}
 
 	/**

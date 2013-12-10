@@ -67,7 +67,7 @@ public abstract class ActorDef extends Def implements Disposable {
 		super.set(resource);
 
 		ActorDef def = (ActorDef) resource;
-		mBodyChangeTime = def.mBodyChangeTime;
+		mBodyChangeTime = GameTime.getTotalGlobalTimeElapsed();
 		mBodyDef = def.mBodyDef;
 		mCollisionDamage = def.mCollisionDamage;
 		mDestroyOnCollide = def.mDestroyOnCollide;
@@ -261,8 +261,10 @@ public abstract class ActorDef extends Def implements Disposable {
 
 	@Override
 	public void dispose() {
-		mVisualVars.dispose();
-		mVisualVars = null;
+		if (mVisualVars != null) {
+			mVisualVars.dispose();
+			mVisualVars = null;
+		}
 
 		disposeTexture();
 	}

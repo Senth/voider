@@ -354,15 +354,19 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 	@Override
 	public void dispose() {
 		// Remove this level first...
-		mResourceBinder.removeResource(getId(), false);
+		if (mResourceBinder != null) {
+			mResourceBinder.removeResource(getId(), false);
 
-		ArrayList<Disposable> disposables = mResourceBinder.getResources(Disposable.class);
-		for (Disposable disposable : disposables) {
-			disposable.dispose();
+			ArrayList<Disposable> disposables = mResourceBinder.getResources(Disposable.class);
+			for (Disposable disposable : disposables) {
+				disposable.dispose();
+			}
+			Pools.arrayList.free(disposables);
+			disposables = null;
+
+			mResourceBinder = null;
 		}
 
-		Pools.arrayList.free(disposables);
-		disposables = null;
 		if (mResourceRenders != null) {
 			Pools.arrayList.free(mResourceRenders);
 			mResourceRenders = null;

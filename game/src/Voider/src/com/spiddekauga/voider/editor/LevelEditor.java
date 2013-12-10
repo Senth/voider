@@ -322,18 +322,27 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 				switch (mSelectionAction) {
 				case LEVEL:
 
-					mLoadingLevel = ResourceCacheFacade.get(this, ((ResourceItem) message).id, ((ResourceItem) message).revision);
+					ResourceItem resourceItem = (ResourceItem) message;
+
+					if (!ResourceCacheFacade.isLoaded(this, resourceItem.id, resourceItem.revision)) {
+						ResourceCacheFacade.load(this, resourceItem.id, true, resourceItem.revision);
+						ResourceCacheFacade.finishLoading();
+					}
+
+					mLoadingLevel = ResourceCacheFacade.get(this, resourceItem.id, resourceItem.revision);
 
 					// Only load level if it's not the current level we selected, or another revision
-					if (mLevel == null || !mLoadingLevel.equals(mLevel.getDef()) || mLoadingLevel.getRevision() != mLevel.getRevision()) {
-						ResourceCacheFacade.load(this, mLoadingLevel.getLevelId(), mLoadingLevel.getId(), mLoadingLevel.getRevision());
-						Scene scene = getLoadingScene();
-						if (scene != null) {
-							SceneSwitcher.switchTo(scene);
+					if (mLoadingLevel != null) {
+						if (mLevel == null || !mLoadingLevel.equals(mLevel.getDef()) || mLoadingLevel.getRevision() != mLevel.getRevision()) {
+							ResourceCacheFacade.load(this, mLoadingLevel.getLevelId(), mLoadingLevel.getId(), mLoadingLevel.getRevision());
+							Scene scene = getLoadingScene();
+							if (scene != null) {
+								SceneSwitcher.switchTo(scene);
+							}
 						}
-					}
-					else {
-						mLoadingLevel = null;
+						else {
+							mLoadingLevel = null;
+						}
 					}
 
 					break;
@@ -673,6 +682,12 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		int oldRevision = mLevel.getRevision();
 		ResourceSaver.save(mLevel.getDef());
 		ResourceSaver.save(mLevel);
+
+		// Update latest resource if revision was changed by more than one
+		if (oldRevision != mLevel.getDef().getRevision() - 1) {
+			ResourceCacheFacade.setLatestResource(mLevel, oldRevision);
+			ResourceCacheFacade.setLatestResource(mLevel.getDef(), oldRevision);
+		}
 
 		// Saved first time? Then load level and def and use loaded versions instead
 		if (!ResourceCacheFacade.isLoaded(this, mLevel.getId())) {

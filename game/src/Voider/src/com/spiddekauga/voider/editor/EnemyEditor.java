@@ -125,12 +125,20 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 					mInvoker.execute(new CEnemyBulletDefSelect(((ResourceItem) message).id, this));
 					break;
 
-				case LOAD_ENEMY:
-					setEnemyDef((EnemyActorDef) ResourceCacheFacade.get(this, ((ResourceItem) message).id, ((ResourceItem) message).revision));
+				case LOAD_ENEMY: {
+					ResourceItem resourceItem = (ResourceItem) message;
+
+					if (!ResourceCacheFacade.isLoaded(this, resourceItem.id, resourceItem.revision)) {
+						ResourceCacheFacade.load(this, resourceItem.id, true, resourceItem.revision);
+						ResourceCacheFacade.finishLoading();
+					}
+
+					setEnemyDef((EnemyActorDef) ResourceCacheFacade.get(this, resourceItem.id, resourceItem.revision));
 					setMovementType(mDef.getMovementType());
 					mGui.resetValues();
 					setSaved();
 					break;
+				}
 				}
 
 
@@ -491,6 +499,8 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 
 	@Override
 	protected void saveToFile() {
+		int oldRevision = mDef.getRevision();
+
 		ResourceSaver.save(mDef);
 
 		// Saved first time? Then load it and use the loaded resource
@@ -499,6 +509,11 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 			ResourceCacheFacade.finishLoading();
 
 			setEnemyDef((EnemyActorDef) ResourceCacheFacade.get(this, mDef.getId()));
+		}
+
+		// Update latest resource
+		if (oldRevision != mDef.getRevision() - 1) {
+			ResourceCacheFacade.setLatestResource(mDef, oldRevision);
 		}
 
 		setSaved();

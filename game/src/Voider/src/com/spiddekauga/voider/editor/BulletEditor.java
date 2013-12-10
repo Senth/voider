@@ -91,7 +91,14 @@ public class BulletEditor extends Editor implements IActorEditor, IResourceChang
 			switch (mSelectionAction) {
 			case LOAD_BULLET:
 				if (message instanceof ResourceItem) {
-					BulletActorDef bulletDef = ResourceCacheFacade.get(this, ((ResourceItem) message).id, ((ResourceItem) message).revision);
+					ResourceItem resourceItem = (ResourceItem) message;
+
+					if (!ResourceCacheFacade.isLoaded(this, resourceItem.id, resourceItem.revision)) {
+						ResourceCacheFacade.load(this, resourceItem.id, true, resourceItem.revision);
+						ResourceCacheFacade.finishLoading();
+					}
+
+					BulletActorDef bulletDef = ResourceCacheFacade.get(this, resourceItem.id, resourceItem.revision);
 					setDef(bulletDef);
 					mGui.resetValues();
 					setSaved();
@@ -206,6 +213,8 @@ public class BulletEditor extends Editor implements IActorEditor, IResourceChang
 
 	@Override
 	protected void saveToFile() {
+		int oldRevision = mDef.getRevision();
+
 		ResourceSaver.save(mDef);
 
 		// Saved first time? Then load it and use the loaded version
@@ -214,6 +223,11 @@ public class BulletEditor extends Editor implements IActorEditor, IResourceChang
 			ResourceCacheFacade.finishLoading();
 
 			setDef((BulletActorDef) ResourceCacheFacade.get(this, mDef.getId()));
+		}
+
+		// Update latest loaded resource
+		if (oldRevision != mDef.getRevision() - 1) {
+			ResourceCacheFacade.setLatestResource(mDef, oldRevision);
 		}
 
 		setSaved();

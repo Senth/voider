@@ -70,22 +70,6 @@ public class SelectDefScene extends WorldScene {
 		mCanChooseRevision = canChooseRevision;
 	}
 
-	/**
-	 * Creates a selector scene with specific revisions of some of the resources
-	 * @param defType the definition type that the player want to select.
-	 * @param showMineOnly set as true if the player only shall see his/her own definitions by default,
-	 * if showMineOnlyCheckbox is set to true the player can change this value.
-	 * @param showMineOnlyCheckbox set to true if you want the scene to show a checkbox
-	 * to only display one's own actors.
-	 * @param resourceRevisions specific revisions to use for some resources of this type.
-	 */
-	@Deprecated
-	public SelectDefScene(Class<? extends IResource> defType, boolean showMineOnly, boolean showMineOnlyCheckbox, Map<UUID, Integer> resourceRevisions) {
-		this(defType, showMineOnly, showMineOnlyCheckbox);
-
-		mRevisionsToUse = resourceRevisions;
-	}
-
 	@Override
 	protected void onActivate(Outcomes outcome, Object message) {
 		super.onActivate(outcome, message);
@@ -114,22 +98,15 @@ public class SelectDefScene extends WorldScene {
 	protected void loadResources() {
 		super.loadResources();
 		ResourceCacheFacade.load(ResourceNames.UI_GENERAL);
-		if (mRevisionsToUse != null) {
-			ResourceCacheFacade.loadAllOf(this, mDefType, true, mRevisionsToUse);
-		} else {
-			ResourceCacheFacade.loadAllOf(this, mDefType, true);
-		}
+		ResourceCacheFacade.loadAllOf(this, mDefType, true);
 	}
 
 	@Override
 	protected void unloadResources() {
 		super.unloadResources();
 		ResourceCacheFacade.unload(ResourceNames.UI_GENERAL);
-		if (mRevisionsToUse != null) {
-			ResourceCacheFacade.unloadAllOf(this, mDefType, true, mRevisionsToUse);
-		} else {
-			ResourceCacheFacade.unloadAllOf(this, mDefType, true);
-		}
+		ResourceCacheFacade.unloadAllOf(this, mDefType, true);
+		ResourceCacheFacade.unloadAll(this, mAdditionalLoadedDefs, true);
 	}
 
 	@Override
@@ -190,6 +167,33 @@ public class SelectDefScene extends WorldScene {
 	 */
 	void setSelectedDef(UUID defId, int defRevision) {
 		mSelectedDef = (Def) ResourceCacheFacade.get(this, defId, defRevision);
+		mSelectedRevision = defRevision;
+	}
+
+	/**
+	 * Set another revision of the definition
+	 * @param revision the revision to use for the selected definition
+	 */
+	public void setRevision(int revision) {
+		mSelectedRevision = revision;
+
+		// Load the revision
+		if (!ResourceCacheFacade.isLoaded(this, mSelectedDef.getId(), revision)) {
+			ResourceCacheFacade.load(this, mSelectedDef.getId(), true, revision);
+			ResourceCacheFacade.finishLoading();
+		}
+
+		// Set new resource
+		mSelectedDef = ResourceCacheFacade.get(this, mSelectedDef.getId(), revision);
+
+		((SelectDefGui)mGui).resetInfoPanel();
+	}
+
+	/**
+	 * @return current selected revision
+	 */
+	int getRevision() {
+		return mSelectedRevision;
 	}
 
 	/**
@@ -270,7 +274,7 @@ public class SelectDefScene extends WorldScene {
 	 * @return revision of the definition. An empty string if no
 	 * definition has been selected
 	 */
-	String getRevision() {
+	String getRevisionString() {
 		if (mSelectedDef != null) {
 			return String.valueOf(mSelectedDef.getRevision());
 		}
@@ -545,10 +549,12 @@ public class SelectDefScene extends WorldScene {
 
 	/** If the player shall be able to choose another revision for the definition */
 	private boolean mCanChooseRevision = false;
-	/** Revisions to use for some resources (instead of latest) */
-	private Map<UUID, Integer> mRevisionsToUse = null;
+	/** Additional loaded definitions, or rather other revisions */
+	private ArrayList<Def> mAdditionalLoadedDefs = new ArrayList<Def>();
 	/** Currently selected definition */
 	private Def mSelectedDef = null;
+	/** The selected revision for the selected definition */
+	private int mSelectedRevision = -1;
 	/** All the loaded definitions */
 	private ArrayList<DefVisible> mDefs = new ArrayList<DefVisible>();
 	/** Filter for the definitions, which to show and which to hide */
