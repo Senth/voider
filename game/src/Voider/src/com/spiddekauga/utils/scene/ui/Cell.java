@@ -63,6 +63,16 @@ public class Cell implements Poolable {
 	}
 
 	/**
+	 * Sets if the cell should be of box shape
+	 * @param boxShaped set to true to make the actor be shaped as a box
+	 * @return this cell for chaining
+	 */
+	public Cell setBoxShaped(boolean boxShaped) {
+		mBoxShape = boxShaped;
+		return this;
+	}
+
+	/**
 	 * Sets the padding for left, right, top, bottom
 	 * @param pad how much padding should be on the sides
 	 * @return this cell for chaining
@@ -396,14 +406,35 @@ public class Cell implements Poolable {
 
 		if (mFillWidth) {
 			mActor.setWidth(size.x - getPadLeft() - getPadRight());
+
+			if (mBoxShape && !mFillHeight) {
+				mActor.setHeight(mActor.getWidth());
+			}
+
 			if (mActor instanceof Layout) {
 				((Layout) mActor).invalidate();
 			}
 		}
 		if (mFillHeight) {
 			mActor.setHeight(size.y - getPadTop() - getPadBottom());
+
+			if (mBoxShape && !mFillWidth) {
+				mActor.setWidth(mActor.getHeight());
+			}
+
 			if (mActor instanceof Layout) {
 				((Layout) mActor).invalidate();
+			}
+		}
+
+		if (mBoxShape && !mFillWidth && !mFillHeight) {
+			mWidthBeforeFill = mActor.getWidth();
+			mHeightBeforeFill = mActor.getHeight();
+
+			if (mActor.getWidth() < mActor.getHeight()) {
+				mActor.setWidth(mActor.getHeight());
+			} else if (mActor.getHeight() < mActor.getWidth()) {
+				mActor.setHeight(mActor.getWidth());
 			}
 		}
 
@@ -459,10 +490,24 @@ public class Cell implements Poolable {
 		// Reset width/height if it is set fill width/height
 		if (mFillHeight && mActor != null) {
 			mActor.setHeight(mHeightBeforeFill);
+
+			if (mBoxShape && !mFillWidth) {
+				mActor.setWidth(mHeightBeforeFill);
+			}
 		}
 		if (mFillWidth && mActor != null) {
 			mActor.setWidth(mWidthBeforeFill);
+
+			if (mBoxShape && !mFillHeight) {
+				mActor.setHeight(mWidthBeforeFill);
+			}
 		}
+
+		if (mBoxShape && !mFillWidth && !mFillHeight) {
+			mActor.setWidth(mWidthBeforeFill);
+			mActor.setHeight(mWidthBeforeFill);
+		}
+
 		if (mActor instanceof Layout) {
 			((Layout)mActor).validate();
 		}
@@ -510,6 +555,8 @@ public class Cell implements Poolable {
 	private float mHeightBeforeFill = 0;
 	/** If the cell uses fixed size */
 	private boolean mFixedSize = false;
+	/** If the cell should be of box shape */
+	private boolean mBoxShape = false;
 
 	// Padding
 	/** Padding for this cell */

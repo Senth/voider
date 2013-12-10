@@ -15,7 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.utils.Disposable;
 import com.spiddekauga.utils.Invoker;
-import com.spiddekauga.utils.scene.ui.ActorButton;
+import com.spiddekauga.utils.scene.ui.ResourceTextureButton;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
@@ -156,7 +156,7 @@ class LevelEditorGui extends EditorGui {
 		GuiCheckCommandCreator guiCheckCommandCreator = new GuiCheckCommandCreator(mInvoker);
 		ButtonGroup buttonGroup = new ButtonGroup();
 		for (EnemyActorDef enemyDef : enemyDefs) {
-			Button button = new ActorButton(enemyDef, mStyles.skin.general, SkinNames.General.IMAGE_BUTTON_TOGGLE.toString());
+			Button button = new ResourceTextureButton(enemyDef, mStyles.skin.general, SkinNames.General.IMAGE_BUTTON_TOGGLE.toString());
 
 			int enemiesPerColumn = getEnemiesPerColumnInAddTable();
 
@@ -170,7 +170,7 @@ class LevelEditorGui extends EditorGui {
 				@Override
 				protected void onChecked(boolean checked) {
 					if (checked) {
-						mLevelEditor.createNewEnemy((EnemyActorDef) ((ActorButton)mButton).getActorDef());
+						mLevelEditor.createNewEnemy((EnemyActorDef) ((ResourceTextureButton)mButton).getResource());
 					}
 				}
 			};

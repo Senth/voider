@@ -471,8 +471,6 @@ public class Config {
 			public final static float DAMAGE_STEP_SIZE = 1;
 		}
 
-		/** Select definition scene, maximum width of definition */
-		public static float SELECT_DEF_WIDTH_MAX = 200;
 		/** Text field size for numbers */
 		public final static float TEXT_FIELD_NUMBER_WIDTH = 70;
 		/** Label padding in front of a slider */

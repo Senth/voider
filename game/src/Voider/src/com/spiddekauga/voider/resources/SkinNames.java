@@ -61,6 +61,10 @@ public class SkinNames {
 		PADDING_WINDOW_LEFT_RIGHT(Float.class),
 		/** Select Def info width */
 		SELECT_DEF_INFO_WIDTH(Float.class),
+		/** Maximum text width for select def scenes */
+		SELECT_DEF_TEXT_WIDTH_MAX(Float.class),
+		/** Maximum image width for select def scenes */
+		SELECT_DEF_IMAGE_WIDTH_MAX(Float.class),
 		/** Default label */
 		LABEL_DEFAULT(LabelStyle.class, "default"),
 		/** Text button default style */

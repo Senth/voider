@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox.CheckBoxStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.List;
 import com.badlogic.gdx.scenes.scene2d.ui.List.ListStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
@@ -29,9 +30,10 @@ import com.spiddekauga.utils.scene.ui.HideManual;
 import com.spiddekauga.utils.scene.ui.Label;
 import com.spiddekauga.utils.scene.ui.Label.LabelStyle;
 import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
+import com.spiddekauga.utils.scene.ui.ResourceTextureButton;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
-import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.editor.commands.CSelectDefSetRevision;
+import com.spiddekauga.voider.game.actors.ActorDef;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceNames;
 import com.spiddekauga.voider.resources.SkinNames;
@@ -231,9 +233,16 @@ public class SelectDefGui extends Gui {
 	@Override
 	public void resetValues() {
 		TextButtonStyle toggleStyle = SkinNames.getResource(SkinNames.General.TEXT_BUTTON_TOGGLE);
+		ImageButtonStyle imageButtonStyle = SkinNames.getResource(SkinNames.General.IMAGE_BUTTON_TOGGLE);
 
+		float floatPerRow = (Gdx.graphics.getWidth() - (Float)SkinNames.getResource(SkinNames.General.SELECT_DEF_INFO_WIDTH));
 
-		float floatPerRow = (Gdx.graphics.getWidth() - (Float)SkinNames.getResource(SkinNames.General.SELECT_DEF_INFO_WIDTH)) / Config.Editor.SELECT_DEF_WIDTH_MAX;
+		if (mSelectDefScene.isDefDrawable()) {
+			floatPerRow /= (Float)SkinNames.getResource(SkinNames.General.SELECT_DEF_IMAGE_WIDTH_MAX);
+		} else {
+			floatPerRow /= (Float)SkinNames.getResource(SkinNames.General.SELECT_DEF_TEXT_WIDTH_MAX);
+		}
+
 		floatPerRow += 0.5f;
 		int cellsPerRow = (int) floatPerRow;
 
@@ -248,13 +257,19 @@ public class SelectDefGui extends Gui {
 					mDefTable.row().setEqualCellSize(true).setFillWidth(true);
 				}
 
-				TextButton button = new TextButton(defVisible.def.getName(), toggleStyle);
+				Button button;
+				if (mSelectDefScene.isDefDrawable()) {
+					button = new ResourceTextureButton((ActorDef) defVisible.def, imageButtonStyle);
+				} else {
+					button = new TextButton(defVisible.def.getName(), toggleStyle);
+					/** @todo cut text if too long */
+				}
 				button.setName(defVisible.def.getId().toString() + "_" + defVisible.def.getRevision());
 				button.addListener(mDefListener);
 
-				/** @todo cut text if too long */
+
 				buttonGroup.add(button);
-				mDefTable.add(button).setFillWidth(true);
+				mDefTable.add(button).setFillWidth(true).setBoxShaped(true);
 
 				++cellCount;
 

@@ -6,7 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.spiddekauga.utils.scene.ui.ActorButton;
+import com.spiddekauga.utils.scene.ui.ResourceTextureButton;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.voider.game.actors.EnemyActorDef;
@@ -69,7 +69,7 @@ public class PrototypeGui extends Gui {
 		for (int i = 0; i < multipleCount; ++i) {
 			// Here is the actual code for creating an enemy
 			for (EnemyActorDef enemyDef : enemyDefs) {
-				Button button = new ActorButton(enemyDef, mSkin, SkinNames.General.IMAGE_BUTTON_DEFAULT.toString());
+				Button button = new ResourceTextureButton(enemyDef, mSkin, SkinNames.General.IMAGE_BUTTON_DEFAULT.toString());
 
 				if (cColumEnemy == ENEMIES_PER_COLUMN) {
 					cColumEnemy = 0;

@@ -11,6 +11,7 @@ import com.spiddekauga.voider.User;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourceRevision;
+import com.spiddekauga.voider.resources.IResourceTexture;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceDatabase;
 import com.spiddekauga.voider.resources.ResourceItem;
@@ -194,6 +195,14 @@ public class SelectDefScene extends WorldScene {
 	 */
 	int getRevision() {
 		return mSelectedRevision;
+	}
+
+	/**
+	 * @return true if the definitions have textures that show how
+	 * they look like
+	 */
+	boolean isDefDrawable() {
+		return IResourceTexture.class.isAssignableFrom(mDefType);
 	}
 
 	/**
