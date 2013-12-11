@@ -8,9 +8,12 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
+import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.tools.imagepacker.TexturePacker2;
+import com.badlogic.gdx.tools.imagepacker.TexturePacker2.Settings;
 import com.esotericsoftware.minlog.Log;
 import com.esotericsoftware.minlog.Log.Logger;
 
@@ -23,40 +26,93 @@ public class Main {
 	/** Set to true to compile packer for dropbox */
 	private static final boolean DROPBOX_PACKER = false;
 	/** UI directory where all the sub-ui directories are located */
-	private static final String UI_PARENT_DIR = DROPBOX_PACKER ? "ui-editable" : "../../ui";
+	private static final String UI_PNG_DIR = DROPBOX_PACKER ? "ui-editable" : "../../ui";
 	/** Output directory where all the atlases should be stored */
-	private static final String ATLAS_OUTPUT_DIR = DROPBOX_PACKER ? "ui" : "../Voider-android/assets/ui";
+	private static final String UI_ATLAS_DIR = DROPBOX_PACKER ? "ui" : "../Voider-android/assets/ui";
+	/** Theme directory where all the theme png files are located */
+	private static final String THEME_PNG_DIR = DROPBOX_PACKER ? "themes-editable" : "../../themes";
+	/** Theme atlas output directory */
+	private static final String THEME_ATLAS_DIR = DROPBOX_PACKER ? "themes" : "../Voider-android/assets/themes";
+
+	/** All directories to pack */
+	private static ArrayList<TextureInOutWrapper> mDirs = new ArrayList<Main.TextureInOutWrapper>();
+
+	/**
+	 * Wrapper class for texture input and output directories
+	 */
+	private static class TextureInOutWrapper {
+		/**
+		 * Sets the input and output directory
+		 * @param inputDir where png-files are kept
+		 * @param outputDir where atlases are output to
+		 */
+		TextureInOutWrapper(String inputDir, String outputDir) {
+			this.inputDir = inputDir;
+			this.outputDir = outputDir;
+		}
+
+		/** The input directory (where png-files are kept) */
+		final String inputDir;
+		/** The output directory (where atlases are output to */
+		final String outputDir;
+	}
 
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
+		initPackDirs();
+
 		String path = getExecDir();
 
 		//		Log.setLogger(new FileLogger(path));
 		Log.NONE();
 		Log.debug(path + "\n\n");
 
-		String imagesDir = DROPBOX_PACKER ? path + UI_PARENT_DIR : UI_PARENT_DIR;
-		String atlasOutDir = DROPBOX_PACKER ? path + ATLAS_OUTPUT_DIR : ATLAS_OUTPUT_DIR;
-		Log.debug("Images dir: " + imagesDir);
-		Log.debug("Atlas dir: " + atlasOutDir);
+		Settings settings = new Settings();
+		settings.alias = true;
+		settings.maxHeight = 4096;
+		settings.maxWidth = 4096;
+		settings.format = Format.RGBA8888;
+
+		for (TextureInOutWrapper textureInOutWrapper : mDirs) {
+			String imagesDir = "";
+			String atlasDir = "";
+			if (DROPBOX_PACKER) {
+				imagesDir = path;
+				atlasDir = path;
+			}
+
+			imagesDir += textureInOutWrapper.inputDir;
+			atlasDir += textureInOutWrapper.outputDir;
+
+			Log.debug("Images dir: " + imagesDir);
+			Log.debug("Atlas dir: " + atlasDir);
 
 
-		File folder = new File(imagesDir);
-		if (folder.exists()) {
-			File[] listOfFiles = folder.listFiles();
+			File folder = new File(imagesDir);
+			if (folder.exists()) {
+				File[] listOfFiles = folder.listFiles();
 
-			for (int i = 0; i < listOfFiles.length; i++)
-			{
-				if (listOfFiles[i].isDirectory())
+				for (int i = 0; i < listOfFiles.length; i++)
 				{
-					String filename = listOfFiles[i].getName();
-					String fullPath = listOfFiles[i].getAbsolutePath();
-					TexturePacker2.processIfModified(fullPath, atlasOutDir, filename);
+					if (listOfFiles[i].isDirectory())
+					{
+						String filename = listOfFiles[i].getName();
+						String fullPath = listOfFiles[i].getAbsolutePath();
+						TexturePacker2.processIfModified(settings, fullPath, atlasDir, filename);
+					}
 				}
 			}
 		}
+	}
+
+	/**
+	 * Initializes the directory to pack
+	 */
+	static private void initPackDirs() {
+		mDirs.add(new TextureInOutWrapper(UI_PNG_DIR, UI_ATLAS_DIR));
+		mDirs.add(new TextureInOutWrapper(THEME_PNG_DIR, THEME_ATLAS_DIR));
 	}
 
 	/**

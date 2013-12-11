@@ -1,0 +1,19 @@
+
+RedPlanet-Tunnels.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+bottom_layer
+  rotate: false
+  xy: 1, 483
+  size: 2400, 480
+  orig: 2400, 480
+  offset: 0, 0
+  index: -1
+top_layer
+  rotate: false
+  xy: 1, 1
+  size: 2400, 480
+  orig: 2400, 480
+  offset: 0, 0
+  index: -1

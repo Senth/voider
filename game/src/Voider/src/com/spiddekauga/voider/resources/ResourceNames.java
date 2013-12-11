@@ -20,7 +20,6 @@ import com.spiddekauga.voider.game.actors.BulletActorDef;
 import com.spiddekauga.voider.game.actors.EnemyActorDef;
 import com.spiddekauga.voider.game.actors.PickupActorDef;
 import com.spiddekauga.voider.game.actors.PlayerActorDef;
-import com.spiddekauga.voider.game.actors.StaticTerrainActorDef;
 
 /**
  * All static resources. Name and a corresponding filename
@@ -32,17 +31,31 @@ import com.spiddekauga.voider.game.actors.StaticTerrainActorDef;
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
 public enum ResourceNames {
+	// UI
 	/** Editor button */
-	UI_EDITOR_BUTTONS("editor.json", Skin.class),
+	UI_EDITOR_BUTTONS("ui/editor.json", Skin.class),
 	/** General UI */
-	UI_GENERAL("general.json", Skin.class),
+	UI_GENERAL("ui/general.json", Skin.class),
 	/** Editor tooltip images */
-	UI_EDITOR_TOOLTIPS("editor_tooltips.json", Skin.class),
+	UI_EDITOR_TOOLTIPS("ui/editor_tooltips.json", Skin.class),
 	/** Game UI */
-	UI_GAME("game.json", Skin.class),
+	UI_GAME("ui/game.json", Skin.class),
 
+	// Themes / Backgrounds
+	/** Space theme, first level */
+	THEME_SPACE("themes/Space.json", Skin.class),
+	/** Abandoned planet */
+	THEME_RED_PLANET_SURFACE("themes/RedPlanet-Surface.json", Skin.class),
+	/** Inner lava level */
+	THEME_RED_PLANET_TUNNELS("themes/RedPlanet-Tunnels.json", Skin.class),
+	/** BioCyber level */
+	THEME_RED_PLANET_CORE("themes/RedPlanet-Core.json", Skin.class),
+
+	// Images
 	/** Splash Screen */
 	IMAGE_SPLASH_SCREEN("spiddekauga_m.png", Texture.class),
+
+	// Shaders
 	/** Default vertex shader */
 	SHADER_DEFAULT("default", ShaderProgram.class),
 
@@ -111,7 +124,6 @@ public enum ResourceNames {
 		ACTOR_ENEMY_PATH = ACTOR_DEF_PATH + "enemies/";
 		ACTOR_PICKUP_PATH = ACTOR_DEF_PATH + "pickups/";
 		ACTOR_PLAYER_PATH = ACTOR_DEF_PATH + "player_ships/";
-		ACTOR_STATIC_TERRAIN_PATH = ACTOR_DEF_PATH + "static_terrain/";
 	}
 
 	/**
@@ -135,12 +147,11 @@ public enum ResourceNames {
 		mResourcePaths.put(EnemyActorDef.class, ACTOR_ENEMY_PATH);
 		mResourcePaths.put(PickupActorDef.class, ACTOR_PICKUP_PATH);
 		mResourcePaths.put(PlayerActorDef.class, ACTOR_PLAYER_PATH);
-		mResourcePaths.put(StaticTerrainActorDef.class, ACTOR_STATIC_TERRAIN_PATH);
 		mResourcePaths.put(LevelDef.class, LEVEL_DEF_PATH);
 		mResourcePaths.put(Level.class, LEVEL_PATH);
 		mResourcePaths.put(ShaderProgram.class, SHADER_PATH);
 		mResourcePaths.put(ParticleEffect.class, PARTICLE_PATH);
-		mResourcePaths.put(Skin.class, UI_PATH);
+		mResourcePaths.put(Skin.class, "");
 		mResourcePaths.put(Sound.class, SOUND_PATH);
 		mResourcePaths.put(GameSave.class, GAME_SAVE_PATH);
 		mResourcePaths.put(GameSaveDef.class, GAME_SAVE_DEF_PATH);
@@ -178,8 +189,6 @@ public enum ResourceNames {
 	private static String ACTOR_PICKUP_PATH = ACTOR_DEF_PATH + "pickups/";
 	/** Directory for all player actor definitions */
 	private static String ACTOR_PLAYER_PATH = ACTOR_DEF_PATH + "player_ships/";
-	/** Directory for all static terrain actor definitions */
-	private static String ACTOR_STATIC_TERRAIN_PATH = ACTOR_DEF_PATH + "static_terrain/";
 	/** Directory for all level definitions */
 	private static String LEVEL_DEF_PATH = Config.File.STORAGE + "levelDefs/";
 	/** Directory for all the actual levels */
