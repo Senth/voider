@@ -25,15 +25,37 @@ public enum Themes {
 	 */
 	Themes(ResourceNames skin) {
 		mSkin = skin;
+
+		createHumanReadableName();
+	}
+
+	/**
+	 * Creates a human reabale name
+	 */
+	private void createHumanReadableName() {
+		mName = name().replaceAll("_", " ").toLowerCase();
+
+		// Make first letter upper case
+		mName = Character.toUpperCase(mName.charAt(0)) + mName.substring(1);
+	}
+
+	/**
+	 * @return a human readable name
+	 */
+	@Override
+	public String toString() {
+		return mName;
 	}
 
 	/**
 	 * @return skin used with the theme
 	 */
-	ResourceNames getSkin() {
+	public ResourceNames getSkin() {
 		return mSkin;
 	}
 
 	/** The skin used with the theme */
 	ResourceNames mSkin;
+	/** Human-readable name of the theme */
+	String mName;
 }

@@ -26,6 +26,7 @@ import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
+import com.spiddekauga.utils.scene.ui.Cell;
 import com.spiddekauga.utils.scene.ui.HideManual;
 import com.spiddekauga.utils.scene.ui.Label;
 import com.spiddekauga.utils.scene.ui.Label.LabelStyle;
@@ -269,7 +270,11 @@ public class SelectDefGui extends Gui {
 
 
 				buttonGroup.add(button);
-				mDefTable.add(button).setFillWidth(true).setBoxShaped(true);
+				Cell cell = mDefTable.add(button).setFillWidth(true);
+
+				if (mSelectDefScene.isDefDrawable()) {
+					cell.setBoxShaped(true);
+				}
 
 				++cellCount;
 

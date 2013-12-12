@@ -18,6 +18,8 @@ public class LevelDef extends Def {
 	 */
 	public LevelDef() {
 		mLevelId = UUID.randomUUID();
+
+		setTheme(Themes.SPACE);
 	}
 
 	@Override
@@ -32,6 +34,7 @@ public class LevelDef extends Def {
 		mPrologue = def.mPrologue;
 		mSpeed = def.mSpeed;
 		mStartXCoord = def.mStartXCoord;
+		mTheme = def.mTheme;
 	}
 
 	@Override
@@ -147,6 +150,29 @@ public class LevelDef extends Def {
 		return mStartXCoord;
 	}
 
+	/**
+	 * Set the theme for the level
+	 * @param theme the theme for the level
+	 */
+	public void setTheme(Themes theme) {
+		if (mTheme != null) {
+			removeDependency(mTheme.getSkin());
+		}
+
+		mTheme = theme;
+
+		if (mTheme != null) {
+			addDependency(mTheme.getSkin());
+		}
+	}
+
+	/**
+	 * @return theme of the level
+	 */
+	public Themes getTheme() {
+		return mTheme;
+	}
+
 	/** Starting coordinate of the level (right screen edge) */
 	@Tag(78) private float mStartXCoord = 0;
 	/** The actual level id, i.e. not this definition's id */
@@ -162,5 +188,7 @@ public class LevelDef extends Def {
 	@Tag(83) private float mSpeed = Config.Editor.Level.LEVEL_SPEED_DEFAULT;
 	/** End of the map (right screen edge) */
 	@Tag(84) private float mEndXCoord = 100;
+	/** Theme of the level */
+	@Tag(109) private Themes mTheme = null;
 
 }

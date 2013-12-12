@@ -537,12 +537,21 @@ public class EnemyActor extends Actor {
 
 		case MOVE_DIRECTION:
 			// If we're moving shoot in moving direction
-			shootDirection.set(getBody().getLinearVelocity());
+			if (getBody() != null) {
+				shootDirection.set(getBody().getLinearVelocity());
+			} else {
+				shootDirection.set(0, 0);
+			}
 
 			// If we're still, shoot in actor's "look" direction
 			if (shootDirection.len2() == 0) {
 				shootDirection.set(1,0);
-				shootDirection.rotate(MathUtils.radiansToDegrees * getBody().getAngle());
+
+				if (getBody() != null) {
+					shootDirection.rotate(MathUtils.radiansToDegrees * getBody().getAngle());
+				} else {
+					shootDirection.rotate(MathUtils.radiansToDegrees * getDef().getBodyDef().angle);
+				}
 			}
 			break;
 

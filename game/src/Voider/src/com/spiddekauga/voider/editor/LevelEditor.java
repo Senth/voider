@@ -7,6 +7,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector2;
 import com.spiddekauga.utils.Command;
@@ -42,6 +43,7 @@ import com.spiddekauga.voider.game.LevelDef;
 import com.spiddekauga.voider.game.LoadingTextScene;
 import com.spiddekauga.voider.game.Path;
 import com.spiddekauga.voider.game.Path.PathTypes;
+import com.spiddekauga.voider.game.Themes;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.ActorDef;
 import com.spiddekauga.voider.game.actors.EnemyActor;
@@ -263,6 +265,11 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		ResourceCacheFacade.loadAllOf(this, EnemyActorDef.class, true);
 		ResourceCacheFacade.loadAllOf(this, PickupActorDef.class, true);
 		ResourceCacheFacade.loadAllOf(this, LevelDef.class, false);
+
+		// Load all themes
+		for (Themes theme : Themes.values()) {
+			ResourceCacheFacade.load(theme.getSkin());
+		}
 	}
 
 	@Override
@@ -271,16 +278,21 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		ResourceCacheFacade.unloadAllOf(this, EnemyActorDef.class, true);
 		ResourceCacheFacade.unloadAllOf(this, PickupActorDef.class, true);
 		ResourceCacheFacade.unloadAllOf(this, LevelDef.class, false);
-	}
 
-	@Override
-	protected void reloadResourcesOnActivate(Outcomes outcome, Object message) {
-		super.reloadResourcesOnActivate(outcome, message);
-		if (outcome == Outcomes.NOT_APPLICAPLE) {
-			ResourceCacheFacade.loadAllNotYetLoadedOf(this, EnemyActorDef.class, true);
-			ResourceCacheFacade.finishLoading();
+		// Unload all themes
+		for (Themes theme : Themes.values()) {
+			ResourceCacheFacade.unload(theme.getSkin());
 		}
 	}
+
+	//	@Override
+	//	protected void reloadResourcesOnActivate(Outcomes outcome, Object message) {
+	//		super.reloadResourcesOnActivate(outcome, message);
+	//		if (outcome == Outcomes.NOT_APPLICAPLE) {
+	//			ResourceCacheFacade.loadAllNotYetLoadedOf(this, EnemyActorDef.class, true);
+	//			ResourceCacheFacade.finishLoading();
+	//		}
+	//	}
 
 	@Override
 	protected void onActivate(Outcomes outcome, Object message) {
@@ -662,6 +674,23 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	}
 
 	@Override
+	protected void fixCamera() {
+		float width = Gdx.graphics.getWidth() * Config.Graphics.LEVEL_EDITOR_SCALE;
+		// Decrease scale of width depending on height scaled
+		float heightScale = Config.Graphics.HEIGHT_DEFAULT / Gdx.graphics.getHeight();
+		width *= heightScale;
+		float height = Config.Graphics.HEIGHT_DEFAULT * Config.Graphics.LEVEL_EDITOR_SCALE;
+
+		if (mCamera != null) {
+			mCamera.viewportHeight = height;
+			mCamera.viewportWidth = width;
+			mCamera.update();
+		} else {
+			mCamera = new OrthographicCamera(width , height);
+		}
+	}
+
+	@Override
 	public void saveDef() {
 		saveToFile();
 	}
@@ -710,6 +739,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 		Scene scene = new SelectDefScene(LevelDef.class, true, true, true);
 		SceneSwitcher.switchTo(scene);
+
+		setSaved();
 	}
 
 	@Override
@@ -718,7 +749,6 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		Level level = new Level(levelDef);
 		setLevel(level);
 		saveDef();
-		setSaved();
 	}
 
 	@Override
@@ -964,6 +994,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		((LevelEditorGui) mGui).resetEnemyOptions();
 
 		Pools.arrayList.free(selectedEnemies);
+
+		setUnsaved();
 	}
 
 	/**
@@ -1025,6 +1057,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		}
 
 		Pools.arrayList.free(selectedEnemies);
+
+		setUnsaved();
 	}
 
 	/**
@@ -1203,6 +1237,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		}
 
 		Pools.arrayList.free(selectedEnemies);
+
+		setUnsaved();
 	}
 
 	/**
@@ -1270,6 +1306,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		}
 
 		Pools.arrayList.free(selectedEnemies);
+
+		setUnsaved();
 	}
 
 	/**
@@ -1415,6 +1453,30 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	 */
 	void createNewEnemy(EnemyActorDef enemyDef) {
 		((EnemyAddTool)Tools.ENEMY_ADD.mTool).setActorDef(enemyDef);
+	}
+
+	/**
+	 * Set the theme for the level
+	 * @param theme the theme for the level
+	 */
+	void setTheme(Themes theme) {
+		if (mLevel != null) {
+			ResourceCacheFacade.unload(mLevel.getDef().getTheme().getSkin());
+			mLevel.getDef().setTheme(theme);
+			ResourceCacheFacade.load(mLevel.getDef().getTheme().getSkin());
+			setUnsaved();
+		}
+	}
+
+	/**
+	 * @return current theme of the level
+	 */
+	Themes getTheme() {
+		if (mLevel != null) {
+			return mLevel.getDef().getTheme();
+		} else {
+			return Themes.SPACE;
+		}
 	}
 
 	/**

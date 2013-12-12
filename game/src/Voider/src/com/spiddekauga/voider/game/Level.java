@@ -7,6 +7,9 @@ import java.util.Map.Entry;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Disposable;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.KryoSerializable;
@@ -38,6 +41,7 @@ import com.spiddekauga.voider.resources.IResourceUpdate;
 import com.spiddekauga.voider.resources.Resource;
 import com.spiddekauga.voider.resources.ResourceBinder;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
+import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.utils.Pools;
 
 /**
@@ -56,6 +60,8 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 		mUniqueId = levelDef.getLevelId();
 		mSpeed = mLevelDef.getBaseSpeed();
 		mCompletedLevel = false;
+
+		createBackground();
 	}
 
 	@Override
@@ -73,6 +79,20 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 		mRunning = level.mRunning;
 		mSpeed = level.mSpeed;
 		mXCoord = level.mXCoord;
+		mBackgroundBottom = level.mBackgroundBottom;
+		mBackgroundTop = level.mBackgroundTop;
+	}
+
+	/**
+	 * Sets the background for the level
+	 */
+	private void createBackground() {
+		// Set background textures
+		if (mLevelDef.getTheme() != null) {
+			Skin themeSkin = ResourceCacheFacade.get(mLevelDef.getTheme().getSkin());
+			mBackgroundBottom = themeSkin.getRegion(SkinNames.Theme.BOTTOM_LAYER.toString());
+			mBackgroundTop = themeSkin.getRegion(SkinNames.Theme.TOP_LAYER.toString());
+		}
 	}
 
 	/**
@@ -189,6 +209,48 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 	 */
 	public void run() {
 		mRunning = true;
+	}
+
+	/**
+	 * Renders the background
+	 * @param spriteBatch used for rendering sprites.
+	 */
+	public void renderBackground(SpriteBatch spriteBatch) {
+		// TODO use config variables instead
+		if (mBackgroundBottom != null && mBackgroundTop != null) {
+			renderBackground(spriteBatch, mBackgroundBottom, 0.29f);
+			renderBackground(spriteBatch, mBackgroundTop, 0.6f);
+		}
+	}
+
+	/**
+	 * Renders a specific background layer
+	 * @param spriteBatch used for rendering the backgrounds
+	 * @param background the background to render
+	 * @param layerSpeed the relative speed of the background
+	 */
+	private void renderBackground(SpriteBatch spriteBatch, TextureRegion background, float layerSpeed) {
+		// Calculate top and bottom layer offsets.
+		float diffCoords = mXCoord - mLevelDef.getStartXCoord();
+		float layerOffset = diffCoords * layerSpeed;
+
+		// Convert to screen coordinates
+		layerOffset /= Config.Graphics.WORLD_SCALE;
+
+		// Modulate to make in the right texture range
+		layerOffset = layerOffset % background.getRegionWidth();
+
+		// Texture scaling
+		float textureScale = Gdx.graphics.getHeight() / background.getRegionHeight();
+		float width = background.getRegionWidth() * textureScale;
+
+		// Draw first time
+		spriteBatch.draw(background, -layerOffset, 0, width, Gdx.graphics.getHeight());
+
+		// Do we need to draw second time (i.e. we draw beyond the border)
+		if (layerOffset-width < Gdx.graphics.getWidth()) {
+			spriteBatch.draw(background, -layerOffset+width, 0, width, Gdx.graphics.getHeight());
+		}
 	}
 
 	/**
@@ -513,6 +575,8 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 		UUID levelDefId = kryo.readObject(input, UUID.class);
 		int revision = input.readInt(false);
 		mLevelDef = ResourceCacheFacade.get(null, levelDefId, revision);
+
+		createBackground();
 	}
 
 	@Override
@@ -520,6 +584,7 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 		if (fromOriginal instanceof Level) {
 			Level fromLevel = (Level)fromOriginal;
 			mLevelDef = fromLevel.mLevelDef;
+			createBackground();
 		}
 	}
 
@@ -545,6 +610,10 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 	}
 
 
+	/** Top layer background */
+	private TextureRegion mBackgroundTop = null;
+	/** Bottom layer background */
+	private TextureRegion mBackgroundBottom = null;
 	/** Contains all the resources used in this level */
 	@Tag(13) private ResourceBinder mResourceBinder = new ResourceBinder();
 	/** All resources that needs updating */

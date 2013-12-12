@@ -1,6 +1,7 @@
 package com.spiddekauga.voider.resources;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox.CheckBoxStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.List.ListStyle;
@@ -50,6 +51,60 @@ public class SkinNames {
 	}
 
 	/**
+	 * Theme names
+	 */
+	public enum Theme implements ISkinNames {
+		/** Bottom layer of the background */
+		BOTTOM_LAYER(Texture.class),
+		/** Top layer of the background */
+		TOP_LAYER(Texture.class),
+
+		;
+
+		@Override
+		public ResourceNames getSkinName() {
+			return null;
+		}
+
+		@Override
+		public Class<?> getClassType() {
+			return mType;
+		}
+
+		/**
+		 * Creates a more user-friendly name for the enumeration
+		 * @param type the class type
+		 */
+		private Theme(Class<?> type) {
+			mType = type;
+			mName = super.toString().toLowerCase();
+		}
+
+		/**
+		 * Create a custom name for the enumeration
+		 * @param type the class type
+		 * @param jsonName name in the json-file
+		 */
+		private Theme(Class<?> type, String jsonName) {
+			mType = type;
+			mName = jsonName;
+		}
+
+		/**
+		 * @return name of the icon inside the skin
+		 */
+		@Override
+		public String toString() {
+			return mName;
+		}
+
+		/** skin name of the icon */
+		private String mName;
+		/** Class type */
+		private Class<?> mType;
+	}
+
+	/**
 	 * General UI elements
 	 */
 	public enum General implements ISkinNames {
@@ -59,6 +114,10 @@ public class SkinNames {
 		PADDING_SEPARATOR(Float.class),
 		/** Left and right window padding */
 		PADDING_WINDOW_LEFT_RIGHT(Float.class),
+		/** Padding after label */
+		PADDING_AFTER_LABEL(Float.class),
+		/** Width of text fields containing only numbers */
+		TEXT_FIELD_NUMBER_WIDTH(Float.class),
 		/** Select Def info width */
 		SELECT_DEF_INFO_WIDTH(Float.class),
 		/** Maximum text width for select def scenes */

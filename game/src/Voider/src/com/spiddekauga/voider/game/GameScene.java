@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -48,6 +49,7 @@ public class GameScene extends WorldScene {
 
 		mTesting = testing;
 		mInvulnerable = invulnerable;
+		mSpriteBatch = new SpriteBatch();
 
 		mWorld.setContactListener(mCollisionResolver);
 	}
@@ -232,7 +234,18 @@ public class GameScene extends WorldScene {
 			if (defaultShader != null) {
 				mShapeRenderer.setShader(defaultShader);
 			}
+			mSpriteBatch.setShader(SpriteBatch.createDefaultShader());
+			//			mSpriteBatch.setProjectionMatrix(mCamera.combined);
 			mShapeRenderer.setProjectionMatrix(mCamera.combined);
+
+			// Render sprites
+			mSpriteBatch.begin();
+			mSpriteBatch.enableBlending();
+			mSpriteBatch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+			mLevel.renderBackground(mSpriteBatch);
+			mSpriteBatch.end();
+
+			// Render actors
 			mShapeRenderer.push(ShapeType.Filled);
 			Gdx.gl.glEnable(GL20.GL_BLEND);
 			Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
@@ -242,7 +255,6 @@ public class GameScene extends WorldScene {
 
 
 			// GUI
-			//			renderHealth();
 			renderLives();
 
 
@@ -570,6 +582,8 @@ public class GameScene extends WorldScene {
 		mBodyShepherdMaxPos.y += getWorldHeight();
 	}
 
+	/** Sprite renderer */
+	private SpriteBatch mSpriteBatch = null;
 	/** Invalid pointer id */
 	private static final int INVALID_POINTER = -1;
 	/** Level to load */

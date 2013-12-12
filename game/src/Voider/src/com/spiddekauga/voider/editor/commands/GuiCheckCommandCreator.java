@@ -1,4 +1,4 @@
-package com.spiddekauga.voider.editor;
+package com.spiddekauga.voider.editor.commands;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Event;
@@ -6,7 +6,6 @@ import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.spiddekauga.utils.Invoker;
 import com.spiddekauga.voider.Config.Gui;
-import com.spiddekauga.voider.editor.commands.CGuiCheck;
 
 /**
  * Listens to a group of buttons and creates appropriate check commands that

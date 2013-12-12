@@ -26,6 +26,7 @@ import com.spiddekauga.voider.Config.Editor.Enemy;
 import com.spiddekauga.voider.editor.IActorEditor.Tools;
 import com.spiddekauga.voider.editor.commands.CActorEditorCenterReset;
 import com.spiddekauga.voider.editor.commands.CDefHasValidName;
+import com.spiddekauga.voider.editor.commands.GuiCheckCommandCreator;
 import com.spiddekauga.voider.game.actors.ActorShapeTypes;
 import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.utils.Messages;
@@ -202,7 +203,7 @@ public abstract class ActorGui extends EditorGui {
 		mWidgets.visual.startAngle = slider;
 		mWidgets.visual.table.add(slider);
 		TextField textField = new TextField("", mStyles.textField.standard);
-		textField.setWidth(Editor.TEXT_FIELD_NUMBER_WIDTH);
+		textField.setWidth(mStyles.vars.textFieldNumberWidth);
 		mWidgets.visual.table.add(textField);
 		new TooltipListener(slider, "Starting angle", Messages.replaceName(Messages.Tooltip.Actor.Visuals.STARTING_ANGLE, getResourceTypeName()));
 		new TooltipListener(textField, "Starting angle", Messages.replaceName(Messages.Tooltip.Actor.Visuals.STARTING_ANGLE, getResourceTypeName()));
@@ -225,7 +226,7 @@ public abstract class ActorGui extends EditorGui {
 		mWidgets.visual.rotationSpeed = slider;
 		mWidgets.visual.table.add(slider);
 		textField = new TextField("", mStyles.textField.standard);
-		textField.setWidth(Editor.TEXT_FIELD_NUMBER_WIDTH);
+		textField.setWidth(mStyles.vars.textFieldNumberWidth);
 		mWidgets.visual.table.add(textField);
 		new TooltipListener(slider, "Rotation speed", Messages.replaceName(Messages.Tooltip.Actor.Visuals.ROTATION_SPEED, getResourceTypeName()));
 		new TooltipListener(textField, "Rotation speed", Messages.replaceName(Messages.Tooltip.Actor.Visuals.ROTATION_SPEED, getResourceTypeName()));
@@ -330,7 +331,7 @@ public abstract class ActorGui extends EditorGui {
 		// Circle
 		mWidgets.visual.table.row();
 		label = new Label("Radius", mStyles.label.standard);
-		mWidgets.visual.table.add(label).setPadRight(Editor.LABEL_PADDING_BEFORE_SLIDER);
+		mWidgets.visual.table.add(label).setPadRight(mStyles.vars.paddingAfterLabel);
 		circleHider.addToggleActor(label);
 
 		if (this instanceof EnemyEditorGui) {
@@ -344,7 +345,7 @@ public abstract class ActorGui extends EditorGui {
 
 		textField = new TextField("", mStyles.textField.standard);
 		mWidgets.visual.table.add(textField);
-		textField.setWidth(Editor.TEXT_FIELD_NUMBER_WIDTH);
+		textField.setWidth(mStyles.vars.textFieldNumberWidth);
 		circleHider.addToggleActor(textField);
 		new SliderListener(slider, textField, mInvoker) {
 			@Override
@@ -357,7 +358,7 @@ public abstract class ActorGui extends EditorGui {
 		// Need to create duplicates as two hiders can't use the same element.
 		mWidgets.visual.table.row();
 		label = new Label("Width", mStyles.label.standard);
-		mWidgets.visual.table.add(label).setPadRight(Editor.LABEL_PADDING_BEFORE_SLIDER);
+		mWidgets.visual.table.add(label).setPadRight(mStyles.vars.paddingAfterLabel);
 		rectangleHider.addToggleActor(label);
 
 		if (this instanceof EnemyEditorGui) {
@@ -371,7 +372,7 @@ public abstract class ActorGui extends EditorGui {
 
 		textField = new TextField("", mStyles.textField.standard);
 		mWidgets.visual.table.add(textField);
-		textField.setWidth(Editor.TEXT_FIELD_NUMBER_WIDTH);
+		textField.setWidth(mStyles.vars.textFieldNumberWidth);
 		rectangleHider.addToggleActor(textField);
 		new SliderListener(slider, textField, mInvoker) {
 			@Override
@@ -384,7 +385,7 @@ public abstract class ActorGui extends EditorGui {
 		// Create shape width (triangle)
 		// Need to create duplicates as two hiders can't use the same element.
 		label = new Label("Width", mStyles.label.standard);
-		mWidgets.visual.table.add(label).setPadRight(Editor.LABEL_PADDING_BEFORE_SLIDER);
+		mWidgets.visual.table.add(label).setPadRight(mStyles.vars.paddingAfterLabel);
 		triangleHider.addToggleActor(label);
 
 		if (this instanceof EnemyEditorGui) {
@@ -398,7 +399,7 @@ public abstract class ActorGui extends EditorGui {
 
 		textField = new TextField("", mStyles.textField.standard);
 		mWidgets.visual.table.add(textField);
-		textField.setWidth(Editor.TEXT_FIELD_NUMBER_WIDTH);
+		textField.setWidth(mStyles.vars.textFieldNumberWidth);
 		triangleHider.addToggleActor(textField);
 		new SliderListener(slider, textField, mInvoker) {
 			@Override
@@ -411,7 +412,7 @@ public abstract class ActorGui extends EditorGui {
 		// Create shape height (rectangle)
 		mWidgets.visual.table.row();
 		label = new Label("Height", mStyles.label.standard);
-		mWidgets.visual.table.add(label).setPadRight(Editor.LABEL_PADDING_BEFORE_SLIDER);
+		mWidgets.visual.table.add(label).setPadRight(mStyles.vars.paddingAfterLabel);
 		rectangleHider.addToggleActor(label);
 
 		if (this instanceof EnemyEditorGui) {
@@ -425,7 +426,7 @@ public abstract class ActorGui extends EditorGui {
 
 		textField = new TextField("", mStyles.textField.standard);
 		mWidgets.visual.table.add(textField);
-		textField.setWidth(Editor.TEXT_FIELD_NUMBER_WIDTH);
+		textField.setWidth(mStyles.vars.textFieldNumberWidth);
 		rectangleHider.addToggleActor(textField);
 		new SliderListener(slider, textField, mInvoker) {
 			@Override
@@ -438,7 +439,7 @@ public abstract class ActorGui extends EditorGui {
 		// Create shape height (triangle)
 		mWidgets.visual.table.row();
 		label = new Label("Height", mStyles.label.standard);
-		mWidgets.visual.table.add(label).setPadRight(Editor.LABEL_PADDING_BEFORE_SLIDER);
+		mWidgets.visual.table.add(label).setPadRight(mStyles.vars.paddingAfterLabel);
 		triangleHider.addToggleActor(label);
 
 		if (this instanceof EnemyEditorGui) {
@@ -452,7 +453,7 @@ public abstract class ActorGui extends EditorGui {
 
 		textField = new TextField("", mStyles.textField.standard);
 		mWidgets.visual.table.add(textField);
-		textField.setWidth(Editor.TEXT_FIELD_NUMBER_WIDTH);
+		textField.setWidth(mStyles.vars.textFieldNumberWidth);
 		triangleHider.addToggleActor(textField);
 		new SliderListener(slider, textField, mInvoker) {
 			@Override
@@ -654,7 +655,7 @@ public abstract class ActorGui extends EditorGui {
 		mWidgets.collision.damage = slider;
 		mWidgets.collision.table.add(slider);
 		TextField textField = new TextField("", mStyles.textField.standard);
-		textField.setWidth(Editor.TEXT_FIELD_NUMBER_WIDTH);
+		textField.setWidth(mStyles.vars.textFieldNumberWidth);
 		mWidgets.collision.table.add(textField);
 		new TooltipListener(label, "Collision Damage", Messages.replaceName(Messages.Tooltip.Actor.Collision.DAMAGE, getResourceTypeName()));
 		new TooltipListener(textField, "Collision Damage", Messages.replaceName(Messages.Tooltip.Actor.Collision.DAMAGE, getResourceTypeName()));
@@ -752,22 +753,6 @@ public abstract class ActorGui extends EditorGui {
 	 */
 	protected AlignTable getCollisionTable() {
 		return mWidgets.collision.table;
-	}
-
-	/**
-	 * Checks whether the specified array contains the specified shape
-	 * @param shape the shape to look for
-	 * @param array the array to look in for the shape
-	 * @return true if the array contains shape
-	 */
-	private boolean containsShape(ActorShapeTypes shape, ActorShapeTypes[] array) {
-		for (ActorShapeTypes currentShape : array) {
-			if (currentShape == shape) {
-				return true;
-			}
-		}
-
-		return false;
 	}
 
 	// Hiders

@@ -110,6 +110,8 @@ public abstract class EditorGui extends Gui {
 		// Vars
 		mStyles.vars.paddingDefault = SkinNames.getResource(SkinNames.General.PADDING_DEFAULT);
 		mStyles.vars.paddingSeparator = SkinNames.getResource(SkinNames.General.PADDING_SEPARATOR);
+		mStyles.vars.paddingAfterLabel = SkinNames.getResource(SkinNames.General.PADDING_AFTER_LABEL);
+		mStyles.vars.textFieldNumberWidth = SkinNames.getResource(SkinNames.General.TEXT_FIELD_NUMBER_WIDTH);
 
 		mEditorMenu.setTableAlign(Horizontal.LEFT, Vertical.TOP);
 		mFileMenu.setTableAlign(Horizontal.RIGHT, Vertical.TOP);
@@ -578,6 +580,8 @@ public abstract class EditorGui extends Gui {
 		static class Variables {
 			float paddingDefault = 0;
 			float paddingSeparator = 0;
+			float paddingAfterLabel = 0;
+			float textFieldNumberWidth = 0;
 		}
 
 		static class TextButton {

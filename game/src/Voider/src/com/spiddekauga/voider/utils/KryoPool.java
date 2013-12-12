@@ -38,6 +38,7 @@ import com.spiddekauga.voider.game.LevelDef;
 import com.spiddekauga.voider.game.Path;
 import com.spiddekauga.voider.game.Path.PathTypes;
 import com.spiddekauga.voider.game.PlayerStats;
+import com.spiddekauga.voider.game.Themes;
 import com.spiddekauga.voider.game.Weapon;
 import com.spiddekauga.voider.game.WeaponDef;
 import com.spiddekauga.voider.game.actors.ActorShapeTypes;
@@ -232,6 +233,8 @@ public class KryoPool extends Pool<Kryo> {
 		GAME_TIME(GameTime.class, SerializerType.TAGGED),
 		/** Byte array */
 		BYTE_ARRAY(byte[].class),
+		/** Themes */
+		THEMES(Themes.class),
 
 
 		;

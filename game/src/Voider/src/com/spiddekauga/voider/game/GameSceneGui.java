@@ -1,14 +1,12 @@
 package com.spiddekauga.voider.game;
 
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
+import com.badlogic.gdx.scenes.scene2d.ui.Slider.SliderStyle;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.Label;
 import com.spiddekauga.utils.scene.ui.Label.LabelStyle;
-import com.spiddekauga.voider.Config;
-import com.spiddekauga.voider.resources.ResourceCacheFacade;
-import com.spiddekauga.voider.resources.ResourceNames;
+import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.scene.Gui;
 
 /**
@@ -31,7 +29,7 @@ class GameSceneGui extends Gui {
 
 		mMainTable.setTableAlign(Horizontal.RIGHT, Vertical.TOP);
 		mMainTable.setRowAlign(Horizontal.RIGHT, Vertical.TOP);
-		mMainTable.setCellPaddingDefault(Config.Gui.PADDING_DEFAULT);
+		mMainTable.setCellPaddingDefault((Float)SkinNames.getResource(SkinNames.General.PADDING_DEFAULT));
 		initHealthBar();
 		initScoreMultiplier();
 	}
@@ -51,9 +49,9 @@ class GameSceneGui extends Gui {
 	 * Initializes the health bar
 	 */
 	public void initHealthBar() {
-		Skin skin = ResourceCacheFacade.get(ResourceNames.UI_GAME);
+		SliderStyle healthBarStyle = SkinNames.getResource(SkinNames.Game.HEALTH_BAR);
 
-		Slider slider = new Slider(0, 1, 0.01f, false, skin, "health_bar");
+		Slider slider = new Slider(0, 1, 0.01f, false, healthBarStyle);
 		mWidgets.health = slider;
 		mMainTable.row();
 		mMainTable.add(slider);
@@ -63,14 +61,13 @@ class GameSceneGui extends Gui {
 	 * Initializes the score and multiplier
 	 */
 	public void initScoreMultiplier() {
-		Skin skin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
-		LabelStyle labelStyle = skin.get("default", LabelStyle.class);
+		LabelStyle labelStyle = SkinNames.getResource(SkinNames.General.LABEL_DEFAULT);
 
 		mMainTable.row();
 
 		// Score
 		Label label = new Label("Score: ", labelStyle);
-		mMainTable.add(label).setPadRight(Config.Gui.SEPARATE_PADDING);
+		mMainTable.add(label).setPadRight((Float)SkinNames.getResource(SkinNames.General.PADDING_SEPARATOR));
 
 		label = new Label("", labelStyle);
 		mWidgets.score = label;
