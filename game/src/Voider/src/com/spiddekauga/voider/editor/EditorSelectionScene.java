@@ -46,6 +46,14 @@ public class EditorSelectionScene extends Scene {
 	}
 
 	/**
+	 * Go to campaign editor
+	 */
+	void gotoCampaignEditor() {
+		setNextScene(new CampaignEditor());
+		setOutcome(Outcomes.NOT_APPLICAPLE);
+	}
+
+	/**
 	 * Go to level editor
 	 */
 	void gotoLevelEditor() {

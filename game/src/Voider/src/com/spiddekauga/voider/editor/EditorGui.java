@@ -131,8 +131,10 @@ public abstract class EditorGui extends Gui {
 	public void resetValues() {
 		super.resetValues();
 
-		mGridRender.setChecked(mEditor.isGridOn());
-		mGridRenderAbove.setChecked(mEditor.isGridRenderAboveResources());
+		if (mGridRender != null && mGridRenderAbove != null) {
+			mGridRender.setChecked(mEditor.isGridOn());
+			mGridRenderAbove.setChecked(mEditor.isGridRenderAboveResources());
+		}
 	}
 
 	/**
@@ -154,7 +156,31 @@ public abstract class EditorGui extends Gui {
 	private void initEditorMenu() {
 		Button button;
 
-		/** @todo add campaign editor button */
+		// Campaign editor
+		if (Config.Gui.usesTextButtons()) {
+			if (this.getClass() == CampaignEditorGui.class) {
+				button = new TextButton("Level", mStyles.textButton.selected);
+			} else {
+				button = new TextButton("Level", mStyles.textButton.press);
+			}
+		} else {
+			if (this.getClass() == CampaignEditorGui.class) {
+				button = new ImageButton(mStyles.skin.editor, EditorIcons.CAMPAIGN_EDITOR_SELECTED.toString());
+			} else {
+				button = new ImageButton(mStyles.skin.editor, EditorIcons.CAMPAIGN_EDITOR.toString());
+			}
+		}
+		TooltipListener tooltipListener = new TooltipListener(button, "Campaign Editor", Messages.replaceName(Messages.Tooltip.Menus.Editor.CAMPAIGN,  "level"));
+		mEditorMenu.add(button);
+		if (this.getClass() != LevelEditorGui.class) {
+			new ButtonListener(button, tooltipListener) {
+				@Override
+				protected void onPressed() {
+					switchReturnTo("Campaign Editor", new CSceneSwitch(CampaignEditor.class), UnsavedActions.CAMPAIGN_EDITOR);
+				}
+			};
+		}
+
 
 		// Level editor
 		if (Config.Gui.usesTextButtons()) {
@@ -170,7 +196,7 @@ public abstract class EditorGui extends Gui {
 				button = new ImageButton(mStyles.skin.editor, EditorIcons.LEVEL_EDITOR.toString());
 			}
 		}
-		TooltipListener tooltipListener = new TooltipListener(button, "Level Editor", Messages.replaceName(Messages.Tooltip.Menus.Editor.LEVEL_EDITOR,  "level"));
+		tooltipListener = new TooltipListener(button, "Level Editor", Messages.replaceName(Messages.Tooltip.Menus.Editor.LEVEL,  "level"));
 		mEditorMenu.add(button);
 		if (this.getClass() != LevelEditorGui.class) {
 			new ButtonListener(button, tooltipListener) {
@@ -180,6 +206,7 @@ public abstract class EditorGui extends Gui {
 				}
 			};
 		}
+
 
 		// Enemy editor
 		if (Config.Gui.usesTextButtons()) {
@@ -195,7 +222,7 @@ public abstract class EditorGui extends Gui {
 				button = new ImageButton(mStyles.skin.editor, EditorIcons.ENEMY_EDITOR.toString());
 			}
 		}
-		tooltipListener = new TooltipListener(button, "Enemy Editor", Messages.replaceName(Messages.Tooltip.Menus.Editor.ENEMY_EDITOR,  "enemy"));
+		tooltipListener = new TooltipListener(button, "Enemy Editor", Messages.replaceName(Messages.Tooltip.Menus.Editor.ENEMY,  "enemy"));
 		mEditorMenu.add(button);
 		if (this.getClass() != EnemyEditorGui.class) {
 			new ButtonListener(button, tooltipListener) {
@@ -205,6 +232,7 @@ public abstract class EditorGui extends Gui {
 				}
 			};
 		}
+
 
 		// Bullet editor
 		if (Config.Gui.usesTextButtons()) {
@@ -220,7 +248,7 @@ public abstract class EditorGui extends Gui {
 				button = new ImageButton(mStyles.skin.editor, EditorIcons.BULLET_EDITOR.toString());
 			}
 		}
-		tooltipListener = new TooltipListener(button, "Bullet Editor", Messages.replaceName(Messages.Tooltip.Menus.Editor.BULLET_EDITOR,  "bullet"));
+		tooltipListener = new TooltipListener(button, "Bullet Editor", Messages.replaceName(Messages.Tooltip.Menus.Editor.BULLET,  "bullet"));
 		mEditorMenu.add(button).setPadRight(mStyles.vars.paddingSeparator);
 		if (this.getClass() != BulletEditorGui.class) {
 			new ButtonListener(button, tooltipListener) {
@@ -297,38 +325,40 @@ public abstract class EditorGui extends Gui {
 			};
 		}
 
-		// Grid
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Grid", mStyles.textButton.toggle);
-		} else {
-			button = new ImageButton(mStyles.skin.editor, EditorIcons.GRID.toString());
-		}
-		mGridRender = button;
-		DisableListener disableListener = new DisableListener(button);
-		mFileMenu.add(button);
-		new ButtonListener(button) {
-			@Override
-			protected void onChecked(boolean checked) {
-				mEditor.setGrid(checked);
+		// Grid stuff
+		if (getClass() != CampaignEditorGui.class) {
+			// Grid
+			if (Config.Gui.usesTextButtons()) {
+				button = new TextButton("Grid", mStyles.textButton.toggle);
+			} else {
+				button = new ImageButton(mStyles.skin.editor, EditorIcons.GRID.toString());
 			}
-		};
+			mGridRender = button;
+			DisableListener disableListener = new DisableListener(button);
+			mFileMenu.add(button);
+			new ButtonListener(button) {
+				@Override
+				protected void onChecked(boolean checked) {
+					mEditor.setGrid(checked);
+				}
+			};
 
-		// Grid above
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Grid Above", mStyles.textButton.toggle);
-		} else {
-			button = new ImageButton(mStyles.skin.editor, EditorIcons.GRID_ABOVE.toString());
-		}
-		mGridRenderAbove = button;
-		disableListener.addToggleActor(button);
-		mFileMenu.add(button).setPadRight(mStyles.vars.paddingSeparator);
-		new ButtonListener(button) {
-			@Override
-			protected void onChecked(boolean checked) {
-				mEditor.setGridRenderAboveResources(checked);
+			// Grid above
+			if (Config.Gui.usesTextButtons()) {
+				button = new TextButton("Grid Above", mStyles.textButton.toggle);
+			} else {
+				button = new ImageButton(mStyles.skin.editor, EditorIcons.GRID_ABOVE.toString());
 			}
-		};
-
+			mGridRenderAbove = button;
+			disableListener.addToggleActor(button);
+			mFileMenu.add(button).setPadRight(mStyles.vars.paddingSeparator);
+			new ButtonListener(button) {
+				@Override
+				protected void onChecked(boolean checked) {
+					mEditor.setGridRenderAboveResources(checked);
+				}
+			};
+		}
 
 		// New
 		if (Config.Gui.usesTextButtons()) {

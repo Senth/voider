@@ -45,6 +45,22 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageUp: bullet_editor
 	},
 	
+	campaign_editor: {
+		down: button_default_down,
+		up: button_default_up,
+		over: button_default_over,
+		imageDown: campaign_editor,
+		imageUp: campaign_editor
+	},
+	
+	campaign_editor_selected: {
+		down: button_default_checked,
+		up: button_default_checked,
+		over: button_default_checked,
+		imageDown: campaign_editor,
+		imageUp: campaign_editor
+	},
+	
 	level_editor: {
 		down: button_default_down,
 		up: button_default_up,

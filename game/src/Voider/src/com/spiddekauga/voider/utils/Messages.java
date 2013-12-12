@@ -318,9 +318,10 @@ public class Messages {
 						"and bullets.";
 			}
 			public static class Editor {
-				public final static String LEVEL_EDITOR = "Create your levels";
-				public final static String ENEMY_EDITOR = "Create enemies for your levels";
-				public final static String BULLET_EDITOR = "Create bullets to use for you enemies";
+				public final static String CAMPAIGN = "Combine existing level to create a campaign!";
+				public final static String LEVEL = "Create your levels";
+				public final static String ENEMY = "Create enemies for your levels";
+				public final static String BULLET = "Create bullets for you enemies";
 			}
 		}
 
