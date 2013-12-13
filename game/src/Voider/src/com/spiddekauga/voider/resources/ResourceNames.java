@@ -151,7 +151,7 @@ public enum ResourceNames {
 		mResourcePaths.put(Level.class, LEVEL_PATH);
 		mResourcePaths.put(ShaderProgram.class, SHADER_PATH);
 		mResourcePaths.put(ParticleEffect.class, PARTICLE_PATH);
-		mResourcePaths.put(Skin.class, "");
+		mResourcePaths.put(Skin.class, UI_PATH);
 		mResourcePaths.put(Sound.class, SOUND_PATH);
 		mResourcePaths.put(GameSave.class, GAME_SAVE_PATH);
 		mResourcePaths.put(GameSaveDef.class, GAME_SAVE_DEF_PATH);
@@ -171,7 +171,7 @@ public enum ResourceNames {
 	/** Directory for all texture */
 	private static String TEXTURE_PATH = "gfx/";
 	/** Directory for all UI */
-	private static String UI_PATH = "ui/";
+	private static String UI_PATH = "";
 	/** Directory for all shaders */
 	private static String SHADER_PATH = "shaders/";
 	/** Directory for all particle effects */
