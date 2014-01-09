@@ -476,8 +476,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	public boolean touchDown(int x, int y, int pointer, int button) {
 		super.touchDown(x, y, pointer, button);
 
-		// Scroll -> When press middle mouse or two fingers
-		if (button == 2 || (Gdx.app.getInput().isTouched(0) && Gdx.app.getInput().isTouched(1))) {
+		// Scroll the screen
+		if (KeyHelper.isScrolling(button)) {
 			// If we're already scrolling create scroll command
 			if (mScroller.isScrolling()) {
 				Vector2 scrollCameraCurrent = Pools.vector2.obtain();

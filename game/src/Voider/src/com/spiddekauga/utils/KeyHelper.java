@@ -67,6 +67,27 @@ public class KeyHelper {
 	}
 
 	/**
+	 * @return true if we shall start scrolling
+	 * @param button the current button pressed on the mouse
+	 */
+	public static boolean isScrolling(int button) {
+		// Middle mouse button
+		if (button == 2) {
+			return true;
+		}
+		// Touched with two fingers
+		else if (Gdx.app.getInput().isTouched(0) && Gdx.app.getInput().isTouched(1)) {
+			return true;
+		}
+		// Holding space with first button or one finger
+		else if (button == 0 && Gdx.app.getInput().isKeyPressed(Keys.SPACE)) {
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
 	 * Tooltip helper keys
 	 */
 	public static class Tooltip {
