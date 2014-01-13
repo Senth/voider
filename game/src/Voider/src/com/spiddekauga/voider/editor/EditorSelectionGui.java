@@ -44,7 +44,7 @@ public class EditorSelectionGui extends Gui {
 	private void initMenu() {
 		Skin skin = ResourceCacheFacade.get(ResourceNames.UI_EDITOR_BUTTONS);
 
-		Button button = new ImageButton(skin, SkinNames.EditorIcons.CAMPAIGN_EDITOR.toString());
+		Button button = new ImageButton(skin, SkinNames.EditorIcons.CAMPAIGN_EDITOR_BIG.toString());
 		TooltipListener tooltipListener = new TooltipListener(button, "Campaign Editor", Messages.replaceName(Messages.Tooltip.Menus.Editor.CAMPAIGN, "campaign"));
 		new ButtonListener(button, tooltipListener) {
 			@Override
@@ -54,7 +54,7 @@ public class EditorSelectionGui extends Gui {
 		};
 		mMainTable.add(button);
 
-		button = new ImageButton(skin, SkinNames.EditorIcons.LEVEL_EDITOR.toString());
+		button = new ImageButton(skin, SkinNames.EditorIcons.LEVEL_EDITOR_BIG.toString());
 		tooltipListener = new TooltipListener(button, "Level Editor", Messages.replaceName(Messages.Tooltip.Menus.Editor.LEVEL,  "level"));
 		new ButtonListener(button, tooltipListener) {
 			@Override
@@ -64,7 +64,7 @@ public class EditorSelectionGui extends Gui {
 		};
 		mMainTable.add(button);
 
-		button = new ImageButton(skin, SkinNames.EditorIcons.ENEMY_EDITOR.toString());
+		button = new ImageButton(skin, SkinNames.EditorIcons.ENEMY_EDITOR_BIG.toString());
 		tooltipListener = new TooltipListener(button, "Enemy Editor", Messages.replaceName(Messages.Tooltip.Menus.Editor.ENEMY,  "enemy"));
 		new ButtonListener(button, tooltipListener) {
 			@Override
@@ -74,7 +74,7 @@ public class EditorSelectionGui extends Gui {
 		};
 		mMainTable.add(button);
 
-		button = new ImageButton(skin, SkinNames.EditorIcons.BULLET_EDITOR.toString());
+		button = new ImageButton(skin, SkinNames.EditorIcons.BULLET_EDITOR_BIG.toString());
 		tooltipListener = new TooltipListener(button, "Bullet Editor", Messages.replaceName(Messages.Tooltip.Menus.Editor.BULLET,  "bullet"));
 		new ButtonListener(button, tooltipListener) {
 			@Override

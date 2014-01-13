@@ -37,6 +37,14 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageUp: bullet_editor
 	},
 	
+	bullet_editor_big: {
+		down: button_default_down,
+		up: button_default_up,
+		over: button_default_over,
+		imageDown: bullet_editor_big,
+		imageUp: bullet_editor_big
+	},
+	
 	bullet_editor_selected: {
 		down: button_default_checked,
 		up: button_default_checked,
@@ -51,6 +59,14 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		over: button_default_over,
 		imageDown: campaign_editor,
 		imageUp: campaign_editor
+	},
+	
+	campaign_editor_big: {
+		down: button_default_down,
+		up: button_default_up,
+		over: button_default_over,
+		imageDown: campaign_editor_big,
+		imageUp: campaign_editor_big
 	},
 	
 	campaign_editor_selected: {
@@ -69,6 +85,14 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageUp: level_editor
 	},
 	
+	level_editor_big: {
+		down: button_default_down,
+		up: button_default_up,
+		over: button_default_over,
+		imageDown: level_editor_big,
+		imageUp: level_editor_big
+	},
+	
 	level_editor_selected: {
 		down: button_default_checked,
 		up: button_default_checked,
@@ -83,6 +107,14 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		over: button_default_over,
 		imageDown: enemy_editor,
 		imageUp: enemy_editor
+	},
+	
+	enemy_editor_big: {
+		down: button_default_down,
+		up: button_default_up,
+		over: button_default_over,
+		imageDown: enemy_editor_big,
+		imageUp: enemy_editor_big
 	},
 	
 	enemy_editor_selected: {

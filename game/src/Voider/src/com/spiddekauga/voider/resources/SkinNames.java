@@ -322,12 +322,16 @@ public class SkinNames {
 		AIM_ROTATE,
 		/** Go to the bullet editor */
 		BULLET_EDITOR,
+		/** Used in editor selection menu */
+		BULLET_EDITOR_BIG,
 		/** When the bullet editor is selected, i.e. we're in the bullet editor */
 		BULLET_EDITOR_SELECTED,
 		/** Opens a dialog where the player will be able to select which bullet the enemy should use */
 		BULLET_SELECT,
 		/** Go to the campaign editor */
 		CAMPAIGN_EDITOR,
+		/** Used in editor selection menu */
+		CAMPAIGN_EDITOR_BIG,
 		/** When the campaign editor is selected, i.e. we're in the campaign editor */
 		CAMPAIGN_EDITOR_SELECTED,
 		/** Deselects all selected actors, maybe does something else? */
@@ -350,6 +354,8 @@ public class SkinNames {
 		ENEMY_ADD,
 		/** Go to the enemy editor */
 		ENEMY_EDITOR,
+		/** Used in editor selection menu */
+		ENEMY_EDITOR_BIG,
 		/** When the enemy editor is selected, i.e. we're in the enemy editor */
 		ENEMY_EDITOR_SELECTED,
 		/** Opens a dialog where the player will be able to select which enemy to add */
@@ -366,6 +372,8 @@ public class SkinNames {
 		INFO,
 		/** Go to the level editor */
 		LEVEL_EDITOR,
+		/** Used in editor selection menu */
+		LEVEL_EDITOR_BIG,
 		/** When the level editor is selected, i.e. we're in the level editor */
 		LEVEL_EDITOR_SELECTED,
 		/** Loads another resource */
