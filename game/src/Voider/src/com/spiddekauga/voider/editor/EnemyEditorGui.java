@@ -1,6 +1,9 @@
 package com.spiddekauga.voider.editor;
 
+import java.util.ArrayList;
+
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
@@ -73,7 +76,6 @@ public class EnemyEditorGui extends ActorGui {
 		mMovementTable.setPreferences(mMainTable);
 		mWeaponTable.setPreferences(mMainTable);
 
-		initMenu();
 		initWeapon();
 		initCollision();
 		initMovementMenu();
@@ -233,10 +235,10 @@ public class EnemyEditorGui extends ActorGui {
 		return "enemy";
 	}
 
-	/**
-	 * Initializes the menu buttons
-	 */
-	private void initMenu() {
+	@Override
+	protected void initSettingsMenu() {
+		super.initSettingsMenu();
+
 		ButtonGroup buttonGroup = new ButtonGroup();
 
 		// Movement
@@ -249,7 +251,7 @@ public class EnemyEditorGui extends ActorGui {
 		}
 		button.addListener(menuChecker);
 		buttonGroup.add(button);
-		addToEditorMenu(button);
+		mMainTable.add(button);
 		mMovementHider.addToggleActor(mMovementTable);
 		mMovementHider.setButton(button);
 		new TooltipListener(button, "", Messages.Tooltip.Enemy.Menu.MOVEMENT);
@@ -262,7 +264,7 @@ public class EnemyEditorGui extends ActorGui {
 		}
 		button.addListener(menuChecker);
 		buttonGroup.add(button);
-		addToEditorMenu(button);
+		mMainTable.add(button);
 		mWeaponHider.addToggleActor(mWeaponTable);
 		mWeaponHider.setButton(button);
 		new TooltipListener(button, "", Messages.Tooltip.Enemy.Menu.WEAPON);
@@ -275,7 +277,7 @@ public class EnemyEditorGui extends ActorGui {
 		}
 		button.addListener(menuChecker);
 		buttonGroup.add(button);
-		addToEditorMenu(button);
+		mMainTable.add(button);
 		mVisualHider.setButton(button);
 		mVisualHider.addToggleActor(getVisualTable());
 		new TooltipListener(button, "Visuals", Messages.replaceName(Messages.Tooltip.Actor.Menu.VISUALS, "enemy"));
@@ -288,10 +290,12 @@ public class EnemyEditorGui extends ActorGui {
 		}
 		button.addListener(menuChecker);
 		buttonGroup.add(button);
-		addToEditorMenu(button);
+		mMainTable.add(button);
 		mCollisionHider.setButton(button);
 		mCollisionHider.addToggleActor(getCollisionTable());
 		new TooltipListener(button, "Collision", Messages.replaceName(Messages.Tooltip.Actor.Menu.COLLISION, "enemy"));
+
+		mMainTable.row();
 	}
 
 	/**
@@ -689,7 +693,6 @@ public class EnemyEditorGui extends ActorGui {
 		buttonGroup.add(button);
 		mWidgets.weapon.on = button;
 		mWeaponTable.add(button);
-		/** @todo only use hider */
 		TooltipListener tooltipListener = new TooltipListener(button, "Weapon", Messages.Tooltip.Enemy.Weapon.WEAPON_BUTTON);
 		new ButtonListener(button, tooltipListener) {
 			@Override
@@ -707,7 +710,6 @@ public class EnemyEditorGui extends ActorGui {
 		buttonGroup.add(button);
 		mWidgets.weapon.off = button;
 		mWeaponTable.add(button);
-		/** @todo only use hider */
 		new TooltipListener(button, "Weapon", Messages.Tooltip.Enemy.Weapon.WEAPON_BUTTON);
 		mWidgets.weapon.off.setChecked(true);
 
@@ -958,6 +960,17 @@ public class EnemyEditorGui extends ActorGui {
 				mEnemyEditor.setAimRotateSpeed(newValue);
 			}
 		};
+
+
+		// Create hider for all actors inside weapon table except on/off
+		HideListener innerWeaponHider = new HideListener(mWidgets.weapon.on, true);
+
+		ArrayList<Actor> actors = mWeaponTable.getActors(false);
+		for (Actor actor : actors) {
+			if (actor != mWidgets.weapon.on && actor != mWidgets.weapon.off) {
+				innerWeaponHider.addToggleActor(actor);
+			}
+		}
 
 
 		mMainTable.add(mWeaponTable);

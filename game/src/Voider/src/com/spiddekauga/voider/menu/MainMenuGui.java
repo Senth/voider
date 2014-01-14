@@ -41,6 +41,13 @@ public class MainMenuGui extends MenuGui {
 		initMainMenu();
 	}
 
+	@Override
+	public void dispose() {
+		super.dispose();
+		mInfoTable.dispose();
+		mOptionTable.dispose();
+	}
+
 	/**
 	 * Initializes the main menu
 	 */

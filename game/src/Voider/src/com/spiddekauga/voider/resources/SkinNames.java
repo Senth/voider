@@ -268,6 +268,10 @@ public class SkinNames {
 		ENEMY_ACTIVATE_TRIGGER_LINE_COLOR(Color.class),
 		/** Color of line between enemy and deactivate trigger */
 		ENEMY_DEACTIVET_TRIGGER_LINE_COLOR(Color.class),
+		/** Padding between editor menu and tools */
+		PADDING_BETWEEN_EDITOR_MENU_AND_TOOLS(Float.class),
+		/** Padding between file menu and and options table */
+		PADDING_BETWEEN_FILE_MENU_AND_OPTIONS(Float.class),
 
 		;
 

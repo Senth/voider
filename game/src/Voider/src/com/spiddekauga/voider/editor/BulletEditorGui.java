@@ -35,7 +35,6 @@ public class BulletEditorGui extends ActorGui {
 		mMainTable.setCellPaddingDefault(mStyles.vars.paddingDefault);
 
 		initWeapon();
-		initMainMenu();
 		resetValues();
 	}
 
@@ -58,10 +57,11 @@ public class BulletEditorGui extends ActorGui {
 		mWidgets.weapon.cooldownMax.setValue(mBulletEditor.getCooldownMax());
 	}
 
-	/**
-	 * Initializes menu for switching between visuals and weapon
-	 */
-	private void initMainMenu() {
+
+	@Override
+	protected void initSettingsMenu() {
+		super.initSettingsMenu();
+
 		// Visual
 		GuiCheckCommandCreator menuChecker = new GuiCheckCommandCreator(mInvoker);
 		Button button;
@@ -73,7 +73,7 @@ public class BulletEditorGui extends ActorGui {
 		}
 		button.addListener(menuChecker);
 		buttonGroup.add(button);
-		addToEditorMenu(button);
+		mMainTable.add(button);
 		mVisualHider.addToggleActor(getVisualTable());
 		mVisualHider.setButton(button);
 		new TooltipListener(button, "Visuals", Messages.replaceName(Messages.Tooltip.Actor.Menu.VISUALS, "bullet"));
@@ -86,9 +86,11 @@ public class BulletEditorGui extends ActorGui {
 		}
 		button.addListener(menuChecker);
 		buttonGroup.add(button);
-		addToEditorMenu(button);
+		mMainTable.add(button);
 		mWeaponHider.addToggleActor(mWeaponTable);
 		mWeaponHider.setButton(button);
+
+		mMainTable.row();
 	}
 
 	/**

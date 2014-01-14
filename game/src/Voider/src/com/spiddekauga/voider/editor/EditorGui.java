@@ -124,7 +124,9 @@ public abstract class EditorGui extends Gui {
 		initFileMenu();
 
 		mToolMenu.row().setPadTop(getEditorMenuTopPadding());
-		mMainTable.row().setPadTop(getEditorMenuTopPadding());
+		mMainTable.row().setPadTop(getFileMenuTopPadding());
+
+		initSettingsMenu();
 	}
 
 	@Override
@@ -135,6 +137,14 @@ public abstract class EditorGui extends Gui {
 			mGridRender.setChecked(mEditor.isGridOn());
 			mGridRenderAbove.setChecked(mEditor.isGridRenderAboveResources());
 		}
+	}
+
+	/**
+	 * An optional settings menu for the editor. E.g. to switch between visuals and weapon
+	 * settings in enemy editor.
+	 */
+	protected void initSettingsMenu() {
+		// Does nothing
 	}
 
 	/**
@@ -258,14 +268,6 @@ public abstract class EditorGui extends Gui {
 				}
 			};
 		}
-	}
-
-	/**
-	 * Adds a button to the editor menu
-	 * @param button the button to add to the editor menu
-	 */
-	protected void addToEditorMenu(Button button) {
-		mEditorMenu.add(button);
 	}
 
 	/**
@@ -577,7 +579,16 @@ public abstract class EditorGui extends Gui {
 	 */
 	protected float getEditorMenuTopPadding() {
 		mEditorMenu.layout();
-		return mEditorMenu.getHeight() * Config.Gui.PADDING_FROM_EDITOR_MULTIPLIER;
+		return mEditorMenu.getHeight() + (Float) SkinNames.getResource(SkinNames.EditorVars.PADDING_BETWEEN_EDITOR_MENU_AND_TOOLS);
+	}
+
+	/**
+	 * Calculate padding for the main table below the file menu. I.e. file menu padding
+	 * @return number of pixels to pad the main table with.
+	 */
+	protected float getFileMenuTopPadding() {
+		mFileMenu.layout();
+		return mFileMenu.getHeight() + (Float) SkinNames.getResource(SkinNames.EditorVars.PADDING_BETWEEN_FILE_MENU_AND_OPTIONS);
 	}
 
 	/**
@@ -658,11 +669,11 @@ public abstract class EditorGui extends Gui {
 	private Button mGridRenderAbove = null;
 	/** Editor scene */
 	protected Editor mEditor = null;
-	/** Editor menu table */
+	/** Editor menu table (upper left) */
 	private AlignTable mEditorMenu = new AlignTable();
-	/** Main menu table */
+	/** File menu table (upper right) */
 	private AlignTable mFileMenu = new AlignTable();
-	/** Tool table */
+	/** Tool table (left) */
 	protected AlignTable mToolMenu = new AlignTable();
 	/** If the main table has a valid layout, false means the collision boxes
 	 * will be updated once the main table has a valid layout again */
