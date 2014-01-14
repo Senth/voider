@@ -68,11 +68,11 @@ public class TooltipListener extends InputAdapter implements EventListener {
 		if (mWindow == null) {
 			Skin uiSkin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
 
-			mWindow = new Window("", uiSkin, "title");
+			mWindow = new Window("", uiSkin);
 			mWindow.setModal(false);
 			mMessageLabel = new Label("", uiSkin);
 			mMessageLabel.setWrap(true);
-			mDescriptiveLabel = new Label("", uiSkin);
+			//			mDescriptiveLabel = new Label("", uiSkin);
 			mTable = new AlignTable();
 			mWindow.add(mTable);
 
@@ -83,19 +83,22 @@ public class TooltipListener extends InputAdapter implements EventListener {
 			mTable.setRowAlign(Horizontal.LEFT, Vertical.TOP);
 		}
 
-		if (mMessage != null) {
-			if (mDescriptiveText.length() > 0) {
-				mDescriptiveText += "\n";
-			}
-			mDescriptiveText += "T = Toggle text";
-		}
+		mcTooltips++;
+		mWindowName = String.valueOf(mcTooltips);
 
-		if (mYoutubeUrl != null) {
-			if (mDescriptiveText.length() > 0) {
-				mDescriptiveText += "\n";
-			}
-			mDescriptiveText += "Y = Go to YouTube tutorial";
-		}
+		//		if (mMessage != null) {
+		//			if (mDescriptiveText.length() > 0) {
+		//				mDescriptiveText += "\n";
+		//			}
+		//			mDescriptiveText += "T = Toggle text";
+		//		}
+
+		//		if (mYoutubeUrl != null) {
+		//			if (mDescriptiveText.length() > 0) {
+		//				mDescriptiveText += "\n";
+		//			}
+		//			mDescriptiveText += "Y = Go to YouTube tutorial";
+		//		}
 
 		mWindow.addListener(this);
 	}
@@ -140,9 +143,9 @@ public class TooltipListener extends InputAdapter implements EventListener {
 
 		mAnimation = animation;
 
-		if (mAnimation != null) {
-			mDescriptiveText = "A = Toggle animation\n" + mDescriptiveText;
-		}
+		//		if (mAnimation != null) {
+		//			mDescriptiveText = "A = Toggle animation\n" + mDescriptiveText;
+		//		}
 	}
 
 	/**
@@ -185,9 +188,9 @@ public class TooltipListener extends InputAdapter implements EventListener {
 
 		mImage = image;
 
-		if (mImage != null) {
-			mDescriptiveText = "A = Toggle image\n" + mDescriptiveText;
-		}
+		//		if (mImage != null) {
+		//			mDescriptiveText = "A = Toggle image\n" + mDescriptiveText;
+		//		}
 	}
 
 	/**
@@ -268,11 +271,11 @@ public class TooltipListener extends InputAdapter implements EventListener {
 			toggleAnimationOrImage();
 			return true;
 		}
-		// Toggle text
-		else if (mMessage != null && KeyHelper.Tooltip.isToggleTextPressed(keycode)) {
-			toggleText();
-			return true;
-		}
+		//		// Toggle text
+		//		else if (mMessage != null && KeyHelper.Tooltip.isToggleTextPressed(keycode)) {
+		//			toggleText();
+		//			return true;
+		//		}
 
 		return false;
 	}
@@ -296,14 +299,6 @@ public class TooltipListener extends InputAdapter implements EventListener {
 	 */
 	private void toggleAnimationOrImage() {
 		mShowImageOrAnimation = !mShowImageOrAnimation;
-		updateWindowContent();
-	}
-
-	/**
-	 * Toggle text
-	 */
-	private void toggleText() {
-		mShowMessage = !mShowMessage;
 		updateWindowContent();
 	}
 
@@ -462,7 +457,7 @@ public class TooltipListener extends InputAdapter implements EventListener {
 		if (stage != null) {
 			stage.addActor(mWindow);
 			mWindow.clearActions();
-			mWindow.setTitle(mTitle);
+			mWindow.setName(mWindowName);
 
 			if (mImage != null || mAnimation != null) {
 				mShowImageOrAnimation = true;
@@ -508,13 +503,10 @@ public class TooltipListener extends InputAdapter implements EventListener {
 			mTable.add(mMessageLabel);
 		}
 
-		Skin uiSkin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
-		float separatorPadding = uiSkin.get("padding_separator", Float.class);
-
-		// Add descriptive text
-		mDescriptiveLabel.setText(mDescriptiveText);
-		mTable.row().setPadTop(separatorPadding);
-		mTable.add(mDescriptiveLabel);
+		//		// Add descriptive text
+		//		mDescriptiveLabel.setText(mDescriptiveText);
+		//		mTable.row().setPadTop(separatorPadding);
+		//		mTable.add(mDescriptiveLabel);
 
 		setWrapWidth();
 		mTable.layout();
@@ -525,9 +517,10 @@ public class TooltipListener extends InputAdapter implements EventListener {
 	 * Shows the message box
 	 */
 	private void showMsgBox() {
-		mMsgBox = mGui.getFreeMsgBox(mTitle != null && mTitle.length() > 0);
+		//		mMsgBox = mGui.getFreeMsgBox(mTitle != null && mTitle.length() > 0);
+		//		mMsgBox.setTitle(mTitle);
+		mMsgBox = mGui.getFreeMsgBox(false);
 		mMsgBox.addCancelButtonAndKeys("OK");
-		mMsgBox.setTitle(mTitle);
 		mMessageLabel.setText(mMessage);
 		setWrapWidth();
 		mMsgBox.content(mMessageLabel);
@@ -564,7 +557,7 @@ public class TooltipListener extends InputAdapter implements EventListener {
 	 * @return true if the window is currently displaying this tooltip
 	 */
 	private boolean isWindowDisplayingThis() {
-		return isWindowShown() && mWindow.getTitle().equals(mTitle);
+		return isWindowShown() && mWindow.getName().equals(mWindowName);
 	}
 
 	/**
@@ -621,18 +614,22 @@ public class TooltipListener extends InputAdapter implements EventListener {
 	private boolean mShowMessage = false;
 	/** YouTube URL, optional */
 	private String mYoutubeUrl = null;
-	/** Descriptive text of button uses */
-	private String mDescriptiveText = "";
+	//	/** Descriptive text of button uses */
+	//	private String mDescriptiveText = "";
+	/** Window name */
+	private String mWindowName = null;
 
 	/** Window for all tooltip listeners (as only one tooltip can be
 	 * displayed at the same time this is static */
 	private static Window mWindow = null;
 	/** Label inside the window */
 	private static Label mMessageLabel = null;
-	/** Descriptive text for window how to use control */
-	private static Label mDescriptiveLabel = null;
+	//	/** Descriptive text for window how to use control */
+	//	private static Label mDescriptiveLabel = null;
 	/** The table to show everything in */
 	private static AlignTable mTable = null;
 	/** Window left/right margin */
 	private static float mWindowLeftRightMargin = 0;
+	/** Window id counter */
+	private static int mcTooltips = 0;
 }

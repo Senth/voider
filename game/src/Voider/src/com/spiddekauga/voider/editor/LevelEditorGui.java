@@ -656,7 +656,7 @@ class LevelEditorGui extends EditorGui {
 		// RIGHT
 		right.row();
 		label = new Label("Prologue", mStyles.label.standard);
-		new TooltipListener(label, "Prologue", Messages.Tooltip.Level.Option.STORY_BEFORE);
+		new TooltipListener(label, "Prologue", Messages.Tooltip.Level.Option.PROLOGUE);
 		right.add(label);
 
 		right.row().setFillWidth(true).setFillHeight(true);
@@ -664,7 +664,7 @@ class LevelEditorGui extends EditorGui {
 		textField.setMaxLength(Config.Editor.STORY_LENGTH_MAX);
 		right.add(textField).setFillWidth(true).setFillHeight(true);
 		mWidgets.info.storyBefore = textField;
-		new TooltipListener(textField, "Prologue", Messages.Tooltip.Level.Option.STORY_BEFORE);
+		new TooltipListener(textField, "Prologue", Messages.Tooltip.Level.Option.PROLOGUE);
 		new TextFieldListener(textField, "Write a story to be displayed when loading the level (optional)...", mInvoker) {
 			@Override
 			protected void onChange(String newText) {
@@ -675,7 +675,7 @@ class LevelEditorGui extends EditorGui {
 
 		right.row();
 		label = new Label("Epilogue", mStyles.label.standard);
-		new TooltipListener(label, "Epilogue", Messages.Tooltip.Level.Option.STORY_AFTER);
+		new TooltipListener(label, "Epilogue", Messages.Tooltip.Level.Option.EPILOGUE);
 		right.add(label);
 
 		right.row().setFillWidth(true).setFillHeight(true);
@@ -683,7 +683,7 @@ class LevelEditorGui extends EditorGui {
 		textField.setMaxLength(Config.Editor.STORY_LENGTH_MAX);
 		right.add(textField).setFillWidth(true).setFillHeight(true);
 		mWidgets.info.epilogue = textField;
-		new TooltipListener(textField, "Epilogue", Messages.Tooltip.Level.Option.STORY_AFTER);
+		new TooltipListener(textField, "Epilogue", Messages.Tooltip.Level.Option.EPILOGUE);
 		new TextFieldListener(textField, "Write the story to be displayed when the level is completed (optional)...", mInvoker) {
 			@Override
 			protected void onChange(String newText) {
@@ -745,7 +745,7 @@ class LevelEditorGui extends EditorGui {
 		//		mWidgets.enemyAdd.outerTable.add(button);
 		mMainTable.add(button);
 		mHiders.enemyAdd.addToggleActor(button);
-		tooltipListener = new TooltipListener(button, "Select enemy type", Messages.Tooltip.Level.Enemy.SELECT_TYPE);
+		tooltipListener = new TooltipListener(button, null, Messages.Tooltip.Level.Enemy.ADD);
 		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onPressed() {

@@ -97,7 +97,7 @@ public class Config {
 		/** Minimum name length */
 		public final static int NAME_LENGTH_MIN = 3;
 		/** Texture size when saving */
-		public final static int SAVE_TEXTURE_SIZE = 200;
+		public final static int SAVE_TEXTURE_SIZE = 128;
 	}
 
 	/**
