@@ -233,6 +233,15 @@ public class SelectDefGui extends Gui {
 
 	@Override
 	public void resetValues() {
+		occupateDefTable();
+
+		resetInfoPanel();
+	}
+
+	/**
+	 * Occupate def table with definitions.
+	 */
+	void occupateDefTable() {
 		TextButtonStyle toggleStyle = SkinNames.getResource(SkinNames.General.TEXT_BUTTON_TOGGLE);
 		ImageButtonStyle imageButtonStyle = SkinNames.getResource(SkinNames.General.IMAGE_BUTTON_TOGGLE);
 
@@ -289,7 +298,7 @@ public class SelectDefGui extends Gui {
 			mDefTable.add(cellsPerRow - cellCount);
 		}
 
-		resetInfoPanel();
+		mDefTable.invalidateHierarchy();
 	}
 
 	/**
@@ -324,9 +333,9 @@ public class SelectDefGui extends Gui {
 		List list = new List(revisions, (ListStyle)SkinNames.getResource(SkinNames.General.LIST_DEFAULT));
 		mWidgets.revisionBox.list = list;
 		mWidgets.revisionBox.scrollPane = new ScrollPane(list, (ScrollPaneStyle)SkinNames.getResource(SkinNames.General.SCROLL_PANE_DEFAULT));
-		mMsgBoxTable.setPreferences(mMainTable);
-		mMsgBoxTable.row().setFillHeight(true).setFillWidth(true);
-		mMsgBoxTable.add(mWidgets.revisionBox.scrollPane).setSize(100,100).setFillHeight(true).setFillWidth(true);
+		mRevisionTable.setPreferences(mMainTable);
+		mRevisionTable.row().setFillHeight(true).setFillWidth(true);
+		mRevisionTable.add(mWidgets.revisionBox.scrollPane).setSize(100,100).setFillHeight(true).setFillWidth(true);
 	}
 
 	/**
@@ -361,10 +370,10 @@ public class SelectDefGui extends Gui {
 		MsgBoxExecuter msgBox = getFreeMsgBox(true);
 
 		msgBox.setTitle("Select another revision");
-		msgBox.content(mMsgBoxTable);
+		msgBox.content(mRevisionTable);
 
-		mMsgBoxTable.setKeepSize(true);
-		mMsgBoxTable.setSize(Gdx.graphics.getWidth() * 0.6f, Gdx.graphics.getHeight() * 0.6f);
+		mRevisionTable.setKeepSize(true);
+		mRevisionTable.setSize(Gdx.graphics.getWidth() * 0.6f, Gdx.graphics.getHeight() * 0.6f);
 
 		updateRevisionList();
 
@@ -419,7 +428,7 @@ public class SelectDefGui extends Gui {
 	/** Info panel hider */
 	private HideManual mInfoPanelHider = new HideManual();
 	/** Msgbox table */
-	private AlignTable mMsgBoxTable = new AlignTable();
+	private AlignTable mRevisionTable = new AlignTable();
 	/** Table for all the definitions */
 	private AlignTable mDefTable = new AlignTable();
 	/** If the checkbox that only shows one's own actors shall be shown */

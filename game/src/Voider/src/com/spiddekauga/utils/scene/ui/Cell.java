@@ -487,25 +487,13 @@ public class Cell implements Poolable {
 	 * Calculates the size of the cell
 	 */
 	void calculateSize() {
-		// Reset width/height if it is set fill width/height
-		if (mFillHeight && mActor != null) {
-			mActor.setHeight(mHeightBeforeFill);
-
-			if (mBoxShape && !mFillWidth) {
-				mActor.setWidth(mHeightBeforeFill);
-			}
-		}
-		if (mFillWidth && mActor != null) {
-			mActor.setWidth(mWidthBeforeFill);
-
-			if (mBoxShape && !mFillHeight) {
-				mActor.setHeight(mWidthBeforeFill);
-			}
+		if (mActor == null) {
+			return;
 		}
 
 		if (mBoxShape && !mFillWidth && !mFillHeight) {
 			mActor.setWidth(mWidthBeforeFill);
-			mActor.setHeight(mWidthBeforeFill);
+			mActor.setHeight(mHeightBeforeFill);
 		}
 
 		if (mActor instanceof Layout) {
