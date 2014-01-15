@@ -753,6 +753,8 @@ public class Config {
 		public final static float TOOLTIP_PRESS_SHOW = 1;
 		/** Fade duration of the tooltip when hovering */
 		public final static float TOOLTIP_HOVER_FADE_DURATION = 0.3f;
+		/** Tooltip minimum width before wrap */
+		public final static int TOOLTIP_WIDTH_MIN = 200;
 		/** Fade in duration of the label and window for error messages */
 		public final static float MESSAGE_FADE_IN_DURATION = 0.3f;
 		/** Fade out duration of the label and window for error messages */

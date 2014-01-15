@@ -462,8 +462,13 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 			}
 		}
 
-		startPosition -= Config.Level.START_COORD_OFFSET;
-		mLevelDef.setStartXCoord(startPosition);
+		// Only set start position if we had any resources
+		if (startPosition != Float.MAX_VALUE) {
+			startPosition -= Config.Level.START_COORD_OFFSET;
+			mLevelDef.setStartXCoord(startPosition);
+		} else {
+			mLevelDef.setStartXCoord(0);
+		}
 
 		Pools.arrayList.free(resources);
 		resources = null;
@@ -485,8 +490,13 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 			}
 		}
 
-		endPosition += Config.Level.END_COORD_OFFSET;
-		mLevelDef.setEndXCoord(endPosition);
+		// Only set end position if we had any resources
+		if (endPosition != Float.MIN_VALUE) {
+			endPosition += Config.Level.END_COORD_OFFSET;
+			mLevelDef.setEndXCoord(endPosition);
+		} else  {
+			mLevelDef.setEndXCoord(100);
+		}
 
 		Pools.arrayList.free(resources);
 		resources = null;

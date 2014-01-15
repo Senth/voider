@@ -1,18 +1,18 @@
 package com.spiddekauga.voider.menu;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
+import com.spiddekauga.utils.scene.ui.TooltipListener;
 import com.spiddekauga.voider.menu.MainMenu.Menus;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceNames;
 import com.spiddekauga.voider.resources.SkinNames;
+import com.spiddekauga.voider.utils.Messages;
 
 
 /**
@@ -53,46 +53,47 @@ public class MainMenuGui extends MenuGui {
 	 */
 	private void initMainMenu() {
 		Skin skin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
-		TextButtonStyle textPressStyle = skin.get(SkinNames.General.TEXT_BUTTON_PRESS.toString(), TextButtonStyle.class);
 
 		// Set same size on all buttons
-		float maxWidth = Gdx.graphics.getWidth() * 0.66f / 3;
+		//		float maxWidth = Gdx.graphics.getWidth() * 0.66f / 3;
 
 		// Play
 		mMainTable.row();
-		Button button = new TextButton("Play", textPressStyle);
-		mMainTable.add(button).setSize(maxWidth, maxWidth);
+		Button button = new ImageButton(skin, SkinNames.General.PLAY.toString());
+		mMainTable.add(button);
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed() {
 				mMenuScene.pushMenu(Menus.PLAY);
 			}
 		};
-
-		// Create
-		button = new TextButton("Create", textPressStyle);
-		mMainTable.add(button).setSize(maxWidth, maxWidth);
-		new ButtonListener(button) {
-			@Override
-			protected void onPressed() {
-				mMenuScene.gotoEditor();
-			}
-		};
+		new TooltipListener(button, null, Messages.Tooltip.Menus.Main.PLAY);
 
 		// Explore
-		button = new TextButton("Explore", textPressStyle);
-		mMainTable.add(button).setSize(maxWidth, maxWidth);
+		button = new ImageButton(skin, SkinNames.General.EXPLORE.toString());
+		mMainTable.add(button);
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed() {
 				// TODO go to explore menu
 			}
 		};
+		new TooltipListener(button, null, Messages.Tooltip.Menus.Main.EXPLORE);
 
+		// Create
+		button = new ImageButton(skin, SkinNames.General.CREATE.toString());
+		mMainTable.add(button);
+		new ButtonListener(button) {
+			@Override
+			protected void onPressed() {
+				mMenuScene.gotoEditor();
+			}
+		};
+		new TooltipListener(button, null, Messages.Tooltip.Menus.Main.CREATE);
 
 
 		// Options
-		button = new TextButton("Options", textPressStyle);
+		button = new ImageButton(skin, SkinNames.General.OPTIONS.toString());
 		mOptionTable.add(button);
 		new ButtonListener(button) {
 			@Override
@@ -101,12 +102,12 @@ public class MainMenuGui extends MenuGui {
 			}
 		};
 
-		button = new TextButton("Info", textPressStyle);
+		button = new ImageButton(skin, SkinNames.General.INFO.toString());
 		mInfoTable.add(button);
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed() {
-				// TODO go to options
+				// TODO go to info
 			}
 		};
 	}

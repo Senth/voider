@@ -164,6 +164,16 @@ public class SkinNames {
 		LIST_DEFAULT(ListStyle.class, "default"),
 		/** Select box default */
 		SELECT_BOX_DEFAULT(SelectBoxStyle.class, "default"),
+		/** Play button */
+		PLAY(ImageButtonStyle.class),
+		/** Create button */
+		CREATE(ImageButtonStyle.class),
+		/** Explore button */
+		EXPLORE(ImageButtonStyle.class),
+		/** Info button on front screen */
+		INFO(ImageButtonStyle.class),
+		/** Options button on front screen */
+		OPTIONS(ImageButtonStyle.class),
 
 		;
 

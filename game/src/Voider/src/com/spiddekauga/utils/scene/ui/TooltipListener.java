@@ -542,6 +542,14 @@ public class TooltipListener extends InputAdapter implements EventListener {
 			wrapWidth = (int) (Gdx.graphics.getWidth() - windowMargin);
 		}
 
+		if (wrapWidth < Config.Gui.TOOLTIP_WIDTH_MIN) {
+			if (prefWidth < Config.Gui.TOOLTIP_WIDTH_MIN) {
+				wrapWidth = prefWidth;
+			} else {
+				wrapWidth = Config.Gui.TOOLTIP_WIDTH_MIN;
+			}
+		}
+
 		mMessageLabel.setWrap(true);
 		mMessageLabel.setWidth(wrapWidth);
 	}

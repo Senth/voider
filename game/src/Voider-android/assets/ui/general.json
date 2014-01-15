@@ -48,7 +48,42 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		disabled: button_default_disabled,
 		over: button_default_over,
 		checkedOver: button_default_checked_over,
-	}
+	},
+	
+	play: {
+		down: button_default_down,
+		up: button_default_up,
+		over: button_default_over,
+		imageUp: play
+	},
+	
+	explore: {
+		down: button_default_down,
+		up: button_default_up,
+		over: button_default_over,
+		imageUp: explore
+	},
+	
+	create: {
+		down: button_default_down,
+		up: button_default_up,
+		over: button_default_over,
+		imageUp: create
+	},
+	
+	info: {
+		down: button_default_down,
+		up: button_default_up,
+		over: button_default_over,
+		imageUp: info
+	},
+	
+	options: {
+		down: button_default_down,
+		up: button_default_up,
+		over: button_default_over,
+		imageUp: options
+	},
 },
 
 com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
