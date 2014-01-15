@@ -956,6 +956,13 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 	}
 
 	/**
+	 * @return true if it has a valid polygon shape
+	 */
+	public boolean isPolygonShapeValid() {
+		return mPolygon != null && !mPolygon.isEmpty();
+	}
+
+	/**
 	 * @return when this definition was changed that affects the fixtures. In global time.
 	 */
 	float getFixtureChangeTime() {

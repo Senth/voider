@@ -219,10 +219,13 @@ public abstract class Editor extends WorldScene implements IEditor {
 	 * Save resource screenshot
 	 */
 	private void saveResourceScreenshot() {
-		mShapeRenderer.setProjectionMatrix(mCamera.combined);
-		mShapeRenderer.push(ShapeType.Filled);
-		mSavingActor.render(mShapeRenderer);
-		mShapeRenderer.pop();
+		// Only render if it has valid shape
+		if (mSavingActorDef.getVisualVars().isPolygonShapeValid()) {
+			mShapeRenderer.setProjectionMatrix(mCamera.combined);
+			mShapeRenderer.push(ShapeType.Filled);
+			mSavingActor.render(mShapeRenderer);
+			mShapeRenderer.pop();
+		}
 		mSavingActor.dispose();
 		mSavingActor = null;
 
@@ -305,6 +308,11 @@ public abstract class Editor extends WorldScene implements IEditor {
 	private void createActorDefTexture() {
 		float width = mSavingActorDef.getWidth();
 		float height = mSavingActorDef.getHeight();
+
+		// Skip if actor doesn't have a valid shape
+		if (width == 0 || height == 0) {
+			return;
+		}
 
 		// Create duplicate
 		ActorDef copy = mSavingActorDef.copy();

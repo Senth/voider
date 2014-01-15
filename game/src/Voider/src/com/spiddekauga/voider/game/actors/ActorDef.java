@@ -116,11 +116,11 @@ public abstract class ActorDef extends Def implements Disposable, IResourceTextu
 	 * @return actual height of the actor. 0 if no vertices has been created.
 	 */
 	public float getHeight() {
-		ArrayList<Vector2> vertices = getVisualVars().getPolygonShape();
-
-		if (vertices.isEmpty()) {
+		if (!getVisualVars().isPolygonShapeValid()) {
 			return 0;
 		}
+
+		ArrayList<Vector2> vertices = getVisualVars().getPolygonShape();
 
 		float rotation = getStartAngleDeg();
 
@@ -154,11 +154,11 @@ public abstract class ActorDef extends Def implements Disposable, IResourceTextu
 	 * @return actual width of the actor. 0 if no vertices has been created.
 	 */
 	public float getWidth() {
-		ArrayList<Vector2> vertices = getVisualVars().getPolygonShape();
-
-		if (vertices.isEmpty()) {
+		if (!getVisualVars().isPolygonShapeValid()) {
 			return 0;
 		}
+
+		ArrayList<Vector2> vertices = getVisualVars().getPolygonShape();
 
 		float rotation = getStartAngleDeg();
 

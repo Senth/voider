@@ -567,9 +567,9 @@ public class Config {
 		/** Default height of the graphics */
 		public final static float HEIGHT_DEFAULT = 480;
 		/** Starting width */
-		public final static int WIDTH_START = 800;
+		public final static int WIDTH_START = 1280;
 		/** Starting height */
-		public final static int HEIGHT_START = 480;
+		public final static int HEIGHT_START = 720;
 		/** World scaling factor */
 		public final static float WORLD_SCALE = 0.1f;
 		/** How much bigger of the screen is shown in height from the regular scale. E.g. 3 will show the same amount of
