@@ -48,7 +48,7 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		disabled: button_default_disabled,
 		over: button_default_over,
 		checkedOver: button_default_checked_over,
-	},
+	},	
 	
 	play: {
 		down: button_default_down,

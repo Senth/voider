@@ -19,7 +19,9 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		disabled: button_default_disabled,
 		over: button_default_over,
 		imageDown: stub,
-		imageUp: stub
+		imageUp: stub,
+		imageDisabled: stub,
+		imageOver: stub,
 	},
 	
 	default_toggle: {
@@ -31,8 +33,10 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		checkedOver: button_default_checked_over,
 		imageDown: stub,
 		imageChecked: stub,
-		imageUp: stub
-	},	
+		imageCheckedOver: stub,
+		imageUp: stub,
+		imageOver: stub,
+	},
 	
 	bullet_editor: {
 		down: button_default_down,
