@@ -132,7 +132,7 @@ public class EnemyActor extends Actor {
 			// Deactivate trigger
 			TriggerInfo deactivateTrigger = TriggerInfo.getTriggerInfoByAction(this, Actions.ACTOR_DEACTIVATE);
 			if (deactivateTrigger != null && deactivateTrigger.trigger instanceof IResourcePosition) {
-				shapeRenderer.setColor((Color) SkinNames.getResource(SkinNames.EditorVars.ENEMY_DEACTIVET_TRIGGER_LINE_COLOR));
+				shapeRenderer.setColor((Color) SkinNames.getResource(SkinNames.EditorVars.ENEMY_DEACTIVATE_TRIGGER_LINE_COLOR));
 				shapeRenderer.line(getPosition(), ((IResourcePosition)deactivateTrigger.trigger).getPosition());
 			}
 			shapeRenderer.pop();

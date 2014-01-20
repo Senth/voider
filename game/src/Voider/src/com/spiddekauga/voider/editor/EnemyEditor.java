@@ -245,7 +245,7 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 		// Force the player to set a name
 		if (mDef.getName().equals(Config.Actor.NAME_DEFAULT)) {
 			((ActorGui)mGui).showInfoDialog();
-			mGui.showErrorMessage("Please enter an enemy name");
+			mGui.showMessage("Please enter an enemy name");
 		}
 
 		mPlayerActor.update(deltaTime);
@@ -292,7 +292,7 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 
 		if (shallAutoSave()) {
 			saveDef();
-			mGui.showErrorMessage(Messages.Info.SAVING);
+			mGui.showMessage(Messages.Info.SAVING);
 		}
 
 		checkAndResetPlayerPosition();
@@ -1306,12 +1306,20 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 	 * @return name of the bullet actor definition the enemies use, "" if they aren't
 	 * using weapons or has no bullet actor definition set.
 	 */
+	@Deprecated
 	String getBulletName() {
 		if (mDef != null && mDef.getWeaponDef() != null && mDef.getWeaponDef().getBulletActorDef() != null) {
 			return mDef.getWeaponDef().getBulletActorDef().getName();
 		} else {
 			return "";
 		}
+	}
+
+	/**
+	 * @return true if the enemy weapon has a bullet type
+	 */
+	boolean isWeaponBulletsSelected() {
+		return mDef != null && mDef.getWeaponDef() != null && mDef.getWeaponDef().getBulletActorDef() != null;
 	}
 
 	/**

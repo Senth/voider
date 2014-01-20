@@ -19,9 +19,7 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		disabled: button_default_disabled,
 		over: button_default_over,
 		imageDown: stub,
-		imageUp: stub,
-		imageDisabled: stub,
-		imageOver: stub,
+		imageUp: stub
 	},
 	
 	default_toggle: {
@@ -35,112 +33,89 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageChecked: stub,
 		imageCheckedOver: stub,
 		imageUp: stub,
+		imageDisabled: stub,
 		imageOver: stub,
-	},
+	},	
 	
 	bullet_editor: {
-		down: button_default_down,
-		up: button_default_up,
-		over: button_default_over,
-		imageDown: bullet_editor,
+		imageOver: bullet_editor_over,
+		imageDown: bullet_editor_down,
 		imageUp: bullet_editor
 	},
 	
 	bullet_editor_big: {
-		down: button_default_down,
-		up: button_default_up,
-		over: button_default_over,
-		imageDown: bullet_editor_big,
+		imageDown: bullet_editor_big_down,
+		imageOver: bullet_editor_big_over,
 		imageUp: bullet_editor_big
 	},
 	
 	bullet_editor_selected: {
-		down: button_default_checked,
-		up: button_default_checked,
-		over: button_default_checked,
-		imageDown: bullet_editor,
-		imageUp: bullet_editor
+		imageDown: bullet_editor_down,
+		imageOver: bullet_editor_over,
+		imageUp: bullet_editor_down
 	},
 	
 	campaign_editor: {
-		down: button_default_down,
-		up: button_default_up,
-		over: button_default_over,
-		imageDown: campaign_editor,
+		imageOver: campaign_editor_over,
+		imageDown: campaign_editor_down,
 		imageUp: campaign_editor
 	},
 	
 	campaign_editor_big: {
-		down: button_default_down,
-		up: button_default_up,
-		over: button_default_over,
-		imageDown: campaign_editor_big,
+		imageDown: campaign_editor_big_down,
+		imageOver: campaign_editor_big_over,
 		imageUp: campaign_editor_big
 	},
 	
 	campaign_editor_selected: {
-		down: button_default_checked,
-		up: button_default_checked,
-		over: button_default_checked,
-		imageDown: campaign_editor,
-		imageUp: campaign_editor
+		imageOver: campaign_editor_over,
+		imageDown: campaign_editor_down,
+		imageUp: campaign_editor_down
 	},
 	
 	level_editor: {
-		down: button_default_down,
-		up: button_default_up,
-		over: button_default_over,
-		imageDown: level_editor,
+		imageOver: level_editor_over,
+		imageDown: level_editor_down,
 		imageUp: level_editor
 	},
 	
 	level_editor_big: {
-		down: button_default_down,
-		up: button_default_up,
-		over: button_default_over,
-		imageDown: level_editor_big,
+		imageDown: level_editor_big_down,
+		imageOver: level_editor_big_over,
 		imageUp: level_editor_big
 	},
 	
 	level_editor_selected: {
-		down: button_default_checked,
-		up: button_default_checked,
-		over: button_default_checked,
-		imageDown: level_editor,
-		imageUp: level_editor
+		imageOver: level_editor_over,
+		imageDown: level_editor_down,
+		imageUp: level_editor_down
 	},
 	
 	enemy_editor: {
-		down: button_default_down,
-		up: button_default_up,
-		over: button_default_over,
-		imageDown: enemy_editor,
+		imageOver: enemy_editor_over,
+		imageDown: enemy_editor_down,
 		imageUp: enemy_editor
 	},
 	
 	enemy_editor_big: {
-		down: button_default_down,
-		up: button_default_up,
-		over: button_default_over,
-		imageDown: enemy_editor_big,
+		imageDown: enemy_editor_big_down,
+		imageOver: enemy_editor_big_over,
 		imageUp: enemy_editor_big
 	},
 	
 	enemy_editor_selected: {
-		down: button_default_checked,
-		up: button_default_checked,
-		over: button_default_checked,
-		imageDown: enemy_editor,
-		imageUp: enemy_editor
+		imageOver: enemy_editor_over,
+		imageDown: enemy_editor_down,
+		imageUp: enemy_editor_down
 	},
 	
 	new: {
-		down: button_default_down,
-		up: button_default_up,
-		disabled: button_default_disabled,
-		over: button_default_over,
-		imageDown: new,
-		imageUp: new
+		imageUp: new,
+		imageOver: new_over,
+		imageDown: new_down,
+		imageChecked: new_down,
+		imageCheckedOver: new_over,
+		imageDisabled: stub,
 	},
 
 	save: {

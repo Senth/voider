@@ -5,57 +5,162 @@ filter: Nearest,Nearest
 repeat: none
 create
   rotate: false
-  xy: 1, 95
+  xy: 1, 93
+  size: 160, 160
+  orig: 160, 160
+  offset: 0, 0
+  index: -1
+create_down
+  rotate: false
+  xy: 163, 93
+  size: 160, 160
+  orig: 160, 160
+  offset: 0, 0
+  index: -1
+create_over
+  rotate: false
+  xy: 163, 93
   size: 160, 160
   orig: 160, 160
   offset: 0, 0
   index: -1
 explore
   rotate: false
-  xy: 163, 95
+  xy: 325, 93
+  size: 160, 160
+  orig: 160, 160
+  offset: 0, 0
+  index: -1
+explore_down
+  rotate: false
+  xy: 487, 93
+  size: 160, 160
+  orig: 160, 160
+  offset: 0, 0
+  index: -1
+explore_over
+  rotate: false
+  xy: 487, 93
   size: 160, 160
   orig: 160, 160
   offset: 0, 0
   index: -1
 play
   rotate: false
-  xy: 325, 95
+  xy: 649, 93
+  size: 160, 160
+  orig: 160, 160
+  offset: 0, 0
+  index: -1
+play_down
+  rotate: false
+  xy: 811, 93
+  size: 160, 160
+  orig: 160, 160
+  offset: 0, 0
+  index: -1
+play_over
+  rotate: false
+  xy: 811, 93
   size: 160, 160
   orig: 160, 160
   offset: 0, 0
   index: -1
 options
   rotate: false
-  xy: 1, 45
+  xy: 1, 43
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
   index: -1
 info
   rotate: false
-  xy: 1, 11
+  xy: 973, 221
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 window_background_title
   rotate: false
-  xy: 487, 215
+  xy: 1, 1
   size: 11, 40
   split: 5, 5, 34, 5
   orig: 11, 40
   offset: 0, 0
   index: -1
+checkbox_off
+  rotate: false
+  xy: 1007, 237
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+checkbox_on
+  rotate: false
+  xy: 1007, 219
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
 loading_bar_progress
   rotate: false
-  xy: 51, 67
+  xy: 51, 65
   size: 10, 26
   orig: 10, 26
   offset: 0, 0
   index: -1
+radio_button_off
+  rotate: false
+  xy: 14, 25
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+radio_button_on
+  rotate: false
+  xy: 973, 203
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+scroll_corner
+  rotate: false
+  xy: 63, 75
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+scroll_horizontal_knob
+  rotate: false
+  xy: 14, 7
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+scroll_vertical_knob
+  rotate: false
+  xy: 14, 7
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+slider_knob
+  rotate: false
+  xy: 14, 7
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+loading_bar
+  rotate: false
+  xy: 32, 15
+  size: 1, 26
+  orig: 1, 26
+  offset: 0, 0
+  index: -1
 scroll_background
   rotate: false
-  xy: 500, 244
+  xy: 973, 190
   size: 11, 11
   split: 5, 5, 5, 5
   orig: 11, 11
@@ -63,7 +168,7 @@ scroll_background
   index: -1
 selectbox_background
   rotate: false
-  xy: 500, 244
+  xy: 973, 190
   size: 11, 11
   split: 5, 5, 5, 5
   orig: 11, 11
@@ -71,7 +176,7 @@ selectbox_background
   index: -1
 selectbox_background_open
   rotate: false
-  xy: 500, 244
+  xy: 973, 190
   size: 11, 11
   split: 5, 5, 5, 5
   orig: 11, 11
@@ -79,7 +184,7 @@ selectbox_background_open
   index: -1
 selectbox_background_over
   rotate: false
-  xy: 500, 244
+  xy: 973, 190
   size: 11, 11
   split: 5, 5, 5, 5
   orig: 11, 11
@@ -87,85 +192,22 @@ selectbox_background_over
   index: -1
 window_background
   rotate: false
-  xy: 500, 231
+  xy: 991, 208
   size: 11, 11
   split: 5, 5, 5, 5
   orig: 11, 11
   offset: 0, 0
   index: -1
-checkbox_off
-  rotate: false
-  xy: 63, 77
-  size: 16, 16
-  orig: 16, 16
-  offset: 0, 0
-  index: -1
-checkbox_on
-  rotate: false
-  xy: 81, 77
-  size: 16, 16
-  orig: 16, 16
-  offset: 0, 0
-  index: -1
-radio_button_off
-  rotate: false
-  xy: 99, 77
-  size: 16, 16
-  orig: 16, 16
-  offset: 0, 0
-  index: -1
-radio_button_on
-  rotate: false
-  xy: 117, 77
-  size: 16, 16
-  orig: 16, 16
-  offset: 0, 0
-  index: -1
-scroll_corner
-  rotate: false
-  xy: 135, 77
-  size: 16, 16
-  orig: 16, 16
-  offset: 0, 0
-  index: -1
-scroll_horizontal_knob
-  rotate: false
-  xy: 135, 77
-  size: 16, 16
-  orig: 16, 16
-  offset: 0, 0
-  index: -1
-scroll_vertical_knob
-  rotate: false
-  xy: 135, 77
-  size: 16, 16
-  orig: 16, 16
-  offset: 0, 0
-  index: -1
-slider_knob
-  rotate: false
-  xy: 153, 77
-  size: 16, 16
-  orig: 16, 16
-  offset: 0, 0
-  index: -1
-loading_bar
-  rotate: false
-  xy: 35, 17
-  size: 1, 26
-  orig: 1, 26
-  offset: 0, 0
-  index: -1
 cursor
   rotate: false
-  xy: 487, 197
+  xy: 51, 47
   size: 5, 16
   orig: 5, 16
   offset: 0, 0
   index: -1
 textfield
   rotate: false
-  xy: 51, 56
+  xy: 81, 82
   size: 9, 9
   split: 4, 4, 4, 4
   orig: 9, 9
@@ -173,7 +215,7 @@ textfield
   index: -1
 button_default_checked
   rotate: false
-  xy: 1, 2
+  xy: 63, 66
   size: 7, 7
   split: 3, 3, 3, 3
   orig: 7, 7
@@ -181,7 +223,7 @@ button_default_checked
   index: -1
 button_default_down
   rotate: false
-  xy: 1, 2
+  xy: 63, 66
   size: 7, 7
   split: 3, 3, 3, 3
   orig: 7, 7
@@ -189,7 +231,7 @@ button_default_down
   index: -1
 button_default_checked_over
   rotate: false
-  xy: 500, 222
+  xy: 35, 34
   size: 7, 7
   split: 3, 3, 3, 3
   orig: 7, 7
@@ -197,7 +239,7 @@ button_default_checked_over
   index: -1
 button_default_over
   rotate: false
-  xy: 500, 222
+  xy: 35, 34
   size: 7, 7
   split: 3, 3, 3, 3
   orig: 7, 7
@@ -205,7 +247,7 @@ button_default_over
   index: -1
 button_default_disabled
   rotate: false
-  xy: 63, 68
+  xy: 973, 181
   size: 7, 7
   split: 3, 3, 3, 3
   orig: 7, 7
@@ -213,7 +255,7 @@ button_default_disabled
   index: -1
 button_default_up
   rotate: false
-  xy: 171, 86
+  xy: 92, 84
   size: 7, 7
   split: 3, 3, 3, 3
   orig: 7, 7
@@ -221,35 +263,35 @@ button_default_up
   index: -1
 scroll_horizontal
   rotate: false
-  xy: 10, 1
-  size: 1, 8
-  orig: 1, 8
-  offset: 0, 0
-  index: -1
-slider_background
-  rotate: false
-  xy: 13, 1
+  xy: 1004, 211
   size: 1, 8
   orig: 1, 8
   offset: 0, 0
   index: -1
 scroll_vertical
   rotate: false
-  xy: 38, 42
+  xy: 1004, 211
   size: 8, 1
   orig: 8, 1
   offset: 0, 0
   index: -1
+slider_background
+  rotate: false
+  xy: 1004, 211
+  size: 1, 8
+  orig: 1, 8
+  offset: 0, 0
+  index: -1
 modal_fade
   rotate: false
-  xy: 35, 14
+  xy: 14, 4
   size: 1, 1
   orig: 1, 1
   offset: 0, 0
   index: -1
 selection
   rotate: false
-  xy: 487, 194
+  xy: 32, 12
   size: 1, 1
   orig: 1, 1
   offset: 0, 0

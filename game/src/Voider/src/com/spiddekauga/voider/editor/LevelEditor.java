@@ -127,7 +127,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		// Force the player to set a name
 		if (mLevel.getDef().getName().equals(Config.Actor.NAME_DEFAULT)) {
 			((LevelEditorGui)mGui).showInfoDialog();
-			mGui.showErrorMessage("Please enter a level name");
+			mGui.showMessage("Please enter a level name");
 		}
 
 		mLevel.update(deltaTime);
@@ -158,7 +158,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 		if (shallAutoSave()) {
 			saveDef();
-			mGui.showErrorMessage(Messages.Info.SAVING);
+			mGui.showMessage(Messages.Info.SAVING);
 		}
 	}
 
@@ -395,7 +395,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 					((LevelEditorGui) mGui).resetEnemyAddTable();
 					return true;
 				} else {
-					mGui.showErrorMessage("This enemy has already been added.");
+					mGui.showMessage("This enemy has already been added.");
 				}
 			}
 		}
@@ -600,7 +600,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		}
 		else if (keycode == Input.Keys.F6) {
 			String message = "This is a longer error message with more text, a lot more text, see if it will wrap correctly later...";
-			mGui.showErrorMessage(message);
+			mGui.showMessage(message);
 		}
 
 		return false;

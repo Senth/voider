@@ -115,6 +115,14 @@ public class Messages {
 	}
 
 	/**
+	 * Messages for enemy editor
+	 */
+	public static class Enemy {
+		/** Text displayed when selecting bullet types */
+		public final static String SELECT_BULLET = "Select bullet type:";
+	}
+
+	/**
 	 * Error messages
 	 */
 	public static class Error {

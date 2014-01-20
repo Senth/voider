@@ -13,7 +13,7 @@ com.badlogic.gdx.graphics.Color: {
 java.lang.Float: {
 	padding_default: {value: 1},
 	padding_window_left_right: {value: 10},
-	padding_separator: {value: 10},
+	padding_separator: {value: 50},
 	padding_after_label: {value: 8},
 	text_field_number_width: {value: 70},
 	select_def_info_width: {value: 200},
@@ -30,7 +30,22 @@ com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
 com.spiddekauga.utils.scene.ui.Label$LabelStyle: {
 	default: {
 		font: default_font,
-	}
+	},
+	
+	highlight: {
+		font: default_font,
+		fontColor: red
+	},
+	
+	error: {
+		font: default_font,
+		fontColor: red
+	},
+	
+	success: {
+		font: default_font,
+		fontColor: green
+	},
 },
 
 com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
@@ -48,27 +63,24 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		disabled: button_default_disabled,
 		over: button_default_over,
 		checkedOver: button_default_checked_over,
-	},	
+	},
 	
 	play: {
-		down: button_default_down,
-		up: button_default_up,
-		over: button_default_over,
-		imageUp: play
+		imageUp: play,
+		imageOver: play,
+		imageDown: play
 	},
 	
 	explore: {
-		down: button_default_down,
-		up: button_default_up,
-		over: button_default_over,
-		imageUp: explore
+		imageUp: explore,
+		imageOver: explore,
+		imageDown: explore
 	},
 	
 	create: {
-		down: button_default_down,
-		up: button_default_up,
-		over: button_default_over,
-		imageUp: create
+		imageUp: create,
+		imageOver: create,
+		imageDown: create
 	},
 	
 	info: {

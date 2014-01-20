@@ -136,7 +136,7 @@ public class BulletEditor extends Editor implements IActorEditor, IResourceChang
 		// Force the player to set a name
 		if (mDef.getName().equals(Config.Actor.NAME_DEFAULT)) {
 			((ActorGui)mGui).showInfoDialog();
-			mGui.showErrorMessage("Please enter a bullet name");
+			mGui.showMessage("Please enter a bullet name");
 		}
 
 		mWeapon.update(deltaTime);
@@ -151,7 +151,7 @@ public class BulletEditor extends Editor implements IActorEditor, IResourceChang
 
 		if (shallAutoSave()) {
 			saveDef();
-			mGui.showErrorMessage(Messages.Info.SAVING);
+			mGui.showMessage(Messages.Info.SAVING);
 		}
 	}
 

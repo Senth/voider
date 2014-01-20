@@ -30,9 +30,8 @@ public class BulletEditorGui extends ActorGui {
 	public void initGui() {
 		super.initGui();
 
-		mMainTable.setTableAlign(Horizontal.RIGHT, Vertical.TOP);
-		mMainTable.setRowAlign(Horizontal.LEFT, Vertical.TOP);
 		mMainTable.setCellPaddingDefault(mStyles.vars.paddingDefault);
+		mWeaponTable.setPreferences(mMainTable);
 
 		initWeapon();
 		resetValues();
@@ -118,7 +117,7 @@ public class BulletEditorGui extends ActorGui {
 						"test how the bullet will appear on " +
 						"different weapons.";
 
-		Label label = new Label(warningText, mStyles.label.standard);
+		Label label = new Label(warningText, mStyles.label.highlight);
 		label.setWrap(true);
 		label.setName("warning");
 		label.setWidth(10);

@@ -56,8 +56,6 @@ public abstract class ActorGui extends EditorGui {
 	public void initGui() {
 		super.initGui();
 
-		mMainTable.setTableAlign(Horizontal.RIGHT, Vertical.TOP);
-		mMainTable.setRowAlign(Horizontal.RIGHT, Vertical.TOP);
 		mWidgets.collision.table.setPreferences(mMainTable);
 		mWidgets.visual.table.setPreferences(mMainTable);
 		mWidgets.visualToolMenu.table.setPreferences(mToolMenu);

@@ -126,6 +126,12 @@ public class SkinNames {
 		SELECT_DEF_IMAGE_WIDTH_MAX(Float.class),
 		/** Default label */
 		LABEL_DEFAULT(LabelStyle.class, "default"),
+		/** Label for highlights */
+		LABEL_HIGHLIGHT(LabelStyle.class, "highlight"),
+		/** Error messages style */
+		LABEL_ERROR(LabelStyle.class, "error"),
+		/** Success messages */
+		LABEL_SUCCESS(LabelStyle.class, "success"),
 		/** Text button default style */
 		TEXT_BUTTON_PRESS(TextButtonStyle.class, "default"),
 		/** Text button that can toggle */
@@ -277,7 +283,7 @@ public class SkinNames {
 		/** Color of line between enemy and activate trigger */
 		ENEMY_ACTIVATE_TRIGGER_LINE_COLOR(Color.class),
 		/** Color of line between enemy and deactivate trigger */
-		ENEMY_DEACTIVET_TRIGGER_LINE_COLOR(Color.class),
+		ENEMY_DEACTIVATE_TRIGGER_LINE_COLOR(Color.class),
 		/** Padding between editor menu and tools */
 		PADDING_BETWEEN_EDITOR_MENU_AND_TOOLS(Float.class),
 		/** Padding between file menu and and options table */

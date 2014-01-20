@@ -366,7 +366,7 @@ public class SceneSwitcher {
 	 */
 	public static void showErrorMessage(String message) {
 		if (!mScenes.isEmpty()) {
-			mScenes.peek().mGui.showErrorMessage(message);
+			mScenes.peek().mGui.showMessage(message);
 		}
 	}
 

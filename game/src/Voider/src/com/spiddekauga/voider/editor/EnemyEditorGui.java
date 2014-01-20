@@ -149,8 +149,14 @@ public class EnemyEditorGui extends ActorGui {
 		mWidgets.weapon.damage.setValue(mEnemyEditor.getWeaponDamage());
 		mWidgets.weapon.cooldownMax.setValue(mEnemyEditor.getCooldownMax());
 		mWidgets.weapon.cooldownMin.setValue(mEnemyEditor.getCooldownMin());
-		mWidgets.weapon.bulletName.setText(mEnemyEditor.getBulletName());
-		mWidgets.weapon.bulletName.setSize(mWidgets.weapon.bulletName.getPrefWidth(), mWidgets.weapon.bulletName.getPrefHeight());
+
+		if (mEnemyEditor.isWeaponBulletsSelected()) {
+			mWidgets.weapon.selectBullet.setText("");
+		} else {
+			mWidgets.weapon.selectBullet.setText(Messages.Enemy.SELECT_BULLET);
+		}
+		mWidgets.weapon.selectBullet.pack();
+		//		mWidgets.weapon.selectBullet.setSize(mWidgets.weapon.selectBullet.getPrefWidth(), mWidgets.weapon.selectBullet.getPrefHeight());
 
 		// Aim
 		mWidgets.weapon.aimRotateSpeed.setValue(mEnemyEditor.getAimRotateSpeed());
@@ -717,9 +723,9 @@ public class EnemyEditorGui extends ActorGui {
 		mWeaponTable.row();
 
 		// Select type
-		Label label = new Label("", mStyles.label.standard);
-		mWidgets.weapon.bulletName = label;
-		mWeaponTable.add(label);
+		Label label = new Label(Messages.Enemy.SELECT_BULLET, mStyles.label.highlight);
+		mWidgets.weapon.selectBullet = label;
+		mWeaponTable.add(label).setAlign(Horizontal.RIGHT, Vertical.MIDDLE);
 
 		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Select bullet type", mStyles.textButton.press);
@@ -1040,7 +1046,7 @@ public class EnemyEditorGui extends ActorGui {
 			Button off = null;
 
 			// Bullet
-			Label bulletName = null;
+			Label selectBullet = null;
 			Slider bulletSpeed = null;
 			Slider damage = null;
 			Slider cooldownMin = null;

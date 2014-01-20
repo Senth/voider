@@ -48,10 +48,10 @@ public class CDefHasValidName extends Command {
 
 		// Force the player to set a name
 		if (name.equals(Config.Actor.NAME_DEFAULT)) {
-			mGui.showErrorMessage(mEnterNameMessage);
+			mGui.showMessage(mEnterNameMessage);
 			mMsgBox.cancel();
 		} else if (name.length() < Config.Actor.NAME_LENGTH_MIN) {
-			mGui.showErrorMessage("Name must contain at least " + Config.Actor.NAME_LENGTH_MIN + " characters");
+			mGui.showMessage("Name must contain at least " + Config.Actor.NAME_LENGTH_MIN + " characters");
 			mMsgBox.cancel();
 		}
 

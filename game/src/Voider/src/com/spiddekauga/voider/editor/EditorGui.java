@@ -94,6 +94,28 @@ public abstract class EditorGui extends Gui {
 
 		mBodies = Pools.arrayList.obtain();
 
+		initStyles();
+
+		mEditorMenu.setTableAlign(Horizontal.LEFT, Vertical.TOP);
+		mFileMenu.setTableAlign(Horizontal.RIGHT, Vertical.TOP);
+		mToolMenu.setTableAlign(Horizontal.LEFT, Vertical.TOP);
+		mToolMenu.setRowAlign(Horizontal.LEFT, Vertical.TOP);
+		mMainTable.setTableAlign(Horizontal.RIGHT, Vertical.TOP);
+		mMainTable.setRowAlign(Horizontal.RIGHT, Vertical.MIDDLE);
+
+		initEditorMenu();
+		initFileMenu();
+
+		mToolMenu.row().setPadTop(getEditorMenuTopPadding());
+		mMainTable.row().setPadTop(getFileMenuTopPadding());
+
+		initSettingsMenu();
+	}
+
+	/**
+	 * Initializes the styles
+	 */
+	private void initStyles() {
 		mStyles.skin.general = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
 		mStyles.skin.editor = ResourceCacheFacade.get(ResourceNames.UI_EDITOR_BUTTONS);
 		mStyles.textButton.press = SkinNames.getResource(SkinNames.General.TEXT_BUTTON_PRESS);
@@ -102,6 +124,9 @@ public abstract class EditorGui extends Gui {
 		mStyles.slider.standard = SkinNames.getResource(SkinNames.General.SLIDER_DEFAULT);
 		mStyles.textField.standard = SkinNames.getResource(SkinNames.General.TEXT_FIELD_DEFAULT);
 		mStyles.label.standard = SkinNames.getResource(SkinNames.General.LABEL_DEFAULT);
+		mStyles.label.error = SkinNames.getResource(SkinNames.General.LABEL_ERROR);
+		mStyles.label.highlight = SkinNames.getResource(SkinNames.General.LABEL_HIGHLIGHT);
+		mStyles.label.success = SkinNames.getResource(SkinNames.General.LABEL_SUCCESS);
 		mStyles.checkBox.checkBox = SkinNames.getResource(SkinNames.General.CHECK_BOX_DEFAULT);
 		mStyles.checkBox.radio = SkinNames.getResource(SkinNames.General.CHECK_BOX_RADIO);
 		mStyles.scrollPane.noBackground = SkinNames.getResource(SkinNames.General.SCROLL_PANE_DEFAULT);
@@ -112,21 +137,6 @@ public abstract class EditorGui extends Gui {
 		mStyles.vars.paddingSeparator = SkinNames.getResource(SkinNames.General.PADDING_SEPARATOR);
 		mStyles.vars.paddingAfterLabel = SkinNames.getResource(SkinNames.General.PADDING_AFTER_LABEL);
 		mStyles.vars.textFieldNumberWidth = SkinNames.getResource(SkinNames.General.TEXT_FIELD_NUMBER_WIDTH);
-
-		mEditorMenu.setTableAlign(Horizontal.LEFT, Vertical.TOP);
-		mFileMenu.setTableAlign(Horizontal.RIGHT, Vertical.TOP);
-		mToolMenu.setTableAlign(Horizontal.LEFT, Vertical.TOP);
-		mToolMenu.setRowAlign(Horizontal.LEFT, Vertical.TOP);
-		mMainTable.setTableAlign(Horizontal.RIGHT, Vertical.TOP);
-		mMainTable.setRowAlign(Horizontal.RIGHT, Vertical.TOP);
-
-		initEditorMenu();
-		initFileMenu();
-
-		mToolMenu.row().setPadTop(getEditorMenuTopPadding());
-		mMainTable.row().setPadTop(getFileMenuTopPadding());
-
-		initSettingsMenu();
 	}
 
 	@Override
@@ -646,6 +656,9 @@ public abstract class EditorGui extends Gui {
 
 		static class Label {
 			LabelStyle standard = null;
+			LabelStyle error = null;
+			LabelStyle highlight = null;
+			LabelStyle success = null;
 		}
 
 		static class CheckBox {

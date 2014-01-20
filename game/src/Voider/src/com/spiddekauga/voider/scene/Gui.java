@@ -231,7 +231,7 @@ public abstract class Gui implements Disposable {
 	 * Will display an error message
 	 * @param message the error message to display
 	 */
-	public void showErrorMessage(String message) {
+	public void showMessage(String message) {
 		mErrorMessageShower.addMessage(message);
 	}
 
