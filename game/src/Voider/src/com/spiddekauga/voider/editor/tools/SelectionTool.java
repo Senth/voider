@@ -1,7 +1,6 @@
 package com.spiddekauga.voider.editor.tools;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -172,19 +171,7 @@ public class SelectionTool extends TouchTool {
 
 	@Override
 	protected void filterPick() {
-		if (!mHitResources.isEmpty()) {
-			// We keep all if no resources is selected
-			// If other resources are selected we only keep those of the same type
-			if (!mSelection.isEmpty()) {
-				Class<? extends IResource> mostCommonType = mSelection.getMostCommonSelectedResourceType();
-				Iterator<IResource> iterator = mHitResources.iterator();
-				while (iterator.hasNext()) {
-					if (iterator.next().getClass() != mostCommonType) {
-						iterator.remove();
-					}
-				}
-			}
-		}
+		// Does nothing for the moment, we select all resources
 	}
 
 	@Override
