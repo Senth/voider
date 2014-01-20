@@ -31,7 +31,6 @@ import com.spiddekauga.voider.resources.ResourceSaver;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.scene.SelectDefScene;
-import com.spiddekauga.voider.utils.Messages;
 import com.spiddekauga.voider.utils.Pools;
 
 /**
@@ -136,7 +135,7 @@ public class BulletEditor extends Editor implements IActorEditor, IResourceChang
 		// Force the player to set a name
 		if (mDef.getName().equals(Config.Actor.NAME_DEFAULT)) {
 			((ActorGui)mGui).showInfoDialog();
-			mGui.showMessage("Please enter a bullet name");
+			mGui.showHighlightMessage("Please enter a bullet name");
 		}
 
 		mWeapon.update(deltaTime);
@@ -147,11 +146,6 @@ public class BulletEditor extends Editor implements IActorEditor, IResourceChang
 
 		if (mBulletActor != null && mDef.getVisualVars().getShapeType() == ActorShapeTypes.CUSTOM) {
 			mBulletActor.updateEditor();
-		}
-
-		if (shallAutoSave()) {
-			saveDef();
-			mGui.showMessage(Messages.Info.SAVING);
 		}
 	}
 

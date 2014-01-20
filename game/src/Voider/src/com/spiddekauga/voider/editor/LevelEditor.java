@@ -67,7 +67,6 @@ import com.spiddekauga.voider.scene.LoadingScene;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.scene.SelectDefScene;
-import com.spiddekauga.voider.utils.Messages;
 import com.spiddekauga.voider.utils.Pools;
 
 /**
@@ -127,7 +126,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		// Force the player to set a name
 		if (mLevel.getDef().getName().equals(Config.Actor.NAME_DEFAULT)) {
 			((LevelEditorGui)mGui).showInfoDialog();
-			mGui.showMessage("Please enter a level name");
+			mGui.showHighlightMessage("Please enter a level name");
 		}
 
 		mLevel.update(deltaTime);
@@ -154,11 +153,6 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 			mCreatedScrollCommand = true;
 
 			Pools.vector2.free(scrollCameraCurrent);
-		}
-
-		if (shallAutoSave()) {
-			saveDef();
-			mGui.showMessage(Messages.Info.SAVING);
 		}
 	}
 

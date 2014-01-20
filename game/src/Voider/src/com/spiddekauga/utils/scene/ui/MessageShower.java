@@ -14,6 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
+import com.spiddekauga.utils.scene.ui.Label.LabelStyle;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceNames;
@@ -46,10 +47,11 @@ public class MessageShower {
 	}
 
 	/**
-	 * Adds a new error message to the screen
-	 * @param message the error message to display on the screen
+	 * Adds a new message with the specified label style
+	 * @param message the message to display on the screen
+	 * @param style the label style to use for the message
 	 */
-	public void addMessage(String message) {
+	public void addMessage(String message, LabelStyle style) {
 		// Add window to stage, if it's not in the stage
 		if (mWindow.getStage() == null) {
 			mStage.addActor(mWindow);
@@ -67,6 +69,7 @@ public class MessageShower {
 		Label messageLabel = Pools.label.obtain();
 
 		// Reset label
+		messageLabel.setStyle(style);
 		messageLabel.setText(message);
 		messageLabel.setWidth(Gdx.graphics.getWidth() * 0.3f);
 		messageLabel.setWrap(true);
@@ -79,6 +82,14 @@ public class MessageShower {
 		float showDuration = Messages.calculateTimeToShowMessage(message);
 		Action fadeOutAction = Actions.parallel(fadeOut(Config.Gui.MESSAGE_FADE_OUT_DURATION), Actions.run(mWindowFadeOut));
 		messageLabel.addAction(sequence(fadeIn(Config.Gui.MESSAGE_FADE_IN_DURATION), delay(showDuration), fadeOutAction, removeActor(), Actions.run(new FreeLabel(messageLabel))));
+	}
+
+	/**
+	 * Adds a new message to the screen, uses the default/standard label style
+	 * @param message the message to display on the screen
+	 */
+	public void addMessage(String message) {
+		addMessage(message, (LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_DEFAULT));
 	}
 
 	/**

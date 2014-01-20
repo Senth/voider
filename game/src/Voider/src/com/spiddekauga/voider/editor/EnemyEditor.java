@@ -50,7 +50,6 @@ import com.spiddekauga.voider.resources.ResourceSaver;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.scene.SelectDefScene;
-import com.spiddekauga.voider.utils.Messages;
 import com.spiddekauga.voider.utils.Pools;
 
 /**
@@ -245,7 +244,7 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 		// Force the player to set a name
 		if (mDef.getName().equals(Config.Actor.NAME_DEFAULT)) {
 			((ActorGui)mGui).showInfoDialog();
-			mGui.showMessage("Please enter an enemy name");
+			mGui.showHighlightMessage("Please enter an enemy name");
 		}
 
 		mPlayerActor.update(deltaTime);
@@ -288,11 +287,6 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 				}
 			}
 			break;
-		}
-
-		if (shallAutoSave()) {
-			saveDef();
-			mGui.showMessage(Messages.Info.SAVING);
 		}
 
 		checkAndResetPlayerPosition();

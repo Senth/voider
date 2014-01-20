@@ -14,6 +14,7 @@ import com.badlogic.gdx.utils.Disposable;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
+import com.spiddekauga.utils.scene.ui.Label.LabelStyle;
 import com.spiddekauga.utils.scene.ui.MessageShower;
 import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
@@ -185,8 +186,8 @@ public abstract class Gui implements Disposable {
 	 */
 	public void initGui() {
 		MsgBoxExecuter.fadeDuration = 0.01f;
-		if (ResourceCacheFacade.isLoaded(ResourceNames.UI_GENERAL) && mErrorMessageShower == null) {
-			mErrorMessageShower = new MessageShower(mStage);
+		if (ResourceCacheFacade.isLoaded(ResourceNames.UI_GENERAL) && mMessageShower == null) {
+			mMessageShower = new MessageShower(mStage);
 		}
 		mInitialized = true;
 	}
@@ -228,11 +229,46 @@ public abstract class Gui implements Disposable {
 	}
 
 	/**
-	 * Will display an error message
-	 * @param message the error message to display
+	 * Displays a message in the message window uses the default label style
+	 * @param message the message to display
+	 * @see #showMessage(String, LabelStyle)
 	 */
 	public void showMessage(String message) {
-		mErrorMessageShower.addMessage(message);
+		mMessageShower.addMessage(message);
+	}
+
+	/**
+	 * Displays a message in the message window with the specified style
+	 * @param message the message to display
+	 * @param style the label style of the message
+	 * @see #showMessage(String)
+	 */
+	public void showMessage(String message, LabelStyle style) {
+		mMessageShower.addMessage(message, style);
+	}
+
+	/**
+	 * Displays a highlighted message
+	 * @param message the message to display as highlighted
+	 */
+	public void showHighlightMessage(String message) {
+		mMessageShower.addMessage(message, (LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_HIGHLIGHT));
+	}
+
+	/**
+	 * Displays an error message
+	 * @param message the message to display as an error
+	 */
+	public void showErrorMessage(String message) {
+		mMessageShower.addMessage(message, (LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_ERROR));
+	}
+
+	/**
+	 * Displays a successful message
+	 * @param message the message to display as successful
+	 */
+	public void showSuccessMessage(String message) {
+		mMessageShower.addMessage(message, (LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_SUCCESS));
 	}
 
 	/**
@@ -292,7 +328,7 @@ public abstract class Gui implements Disposable {
 	/** Stage for the GUI */
 	private Stage mStage = new Stage();
 	/** Error message shower */
-	private MessageShower mErrorMessageShower = null;
+	private MessageShower mMessageShower = null;
 	/** Active message boxes */
 	private ArrayList<MsgBoxExecuter> mActiveMsgBoxes = new ArrayList<MsgBoxExecuter>();
 	/** Inactive/free message boxes */

@@ -12,6 +12,7 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.utils.Invoker;
+import com.spiddekauga.utils.scene.ui.Label.LabelStyle;
 import com.spiddekauga.voider.game.BulletDestroyer;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceCorruptException;
@@ -364,9 +365,50 @@ public class SceneSwitcher {
 	 * Prints an error message to the current scene
 	 * @param message the message to print
 	 */
-	public static void showErrorMessage(String message) {
+	public static void showMessage(String message) {
 		if (!mScenes.isEmpty()) {
 			mScenes.peek().mGui.showMessage(message);
+		}
+	}
+
+	/**
+	 * Displays a message in the message window with the specified style
+	 * @param message the message to display
+	 * @param style the label style of the message
+	 */
+	public void showMessage(String message, LabelStyle style) {
+		if (!mScenes.isEmpty()) {
+			mScenes.peek().mGui.showMessage(message, style);
+		}
+	}
+
+	/**
+	 * Displays a highlighted message
+	 * @param message the message to display as highlighted
+	 */
+	public static void showHighlightMessage(String message) {
+		if (!mScenes.isEmpty()) {
+			mScenes.peek().mGui.showHighlightMessage(message);
+		}
+	}
+
+	/**
+	 * Displays an error message
+	 * @param message the message to display as an error
+	 */
+	public static void showErrorMessage(String message) {
+		if (!mScenes.isEmpty()) {
+			mScenes.peek().mGui.showErrorMessage(message);
+		}
+	}
+
+	/**
+	 * Displays a successful message
+	 * @param message the message to display as successful
+	 */
+	public static void showSuccessMessage(String message) {
+		if (!mScenes.isEmpty()) {
+			mScenes.peek().mGui.showSuccessMessage(message);
 		}
 	}
 

@@ -27,6 +27,7 @@ import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.scene.WorldScene;
+import com.spiddekauga.voider.utils.Messages;
 import com.spiddekauga.voider.utils.Pools;
 
 /**
@@ -90,6 +91,7 @@ public abstract class Editor extends WorldScene implements IEditor {
 
 		if (shallAutoSave()) {
 			saveDef();
+			mGui.showSuccessMessage(Messages.Info.SAVING);
 		}
 	}
 
