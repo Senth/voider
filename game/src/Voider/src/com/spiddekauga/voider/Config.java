@@ -426,7 +426,7 @@ public class Config {
 			/** Maximum level speeed */
 			public final static float LEVEL_SPEED_MAX = 50;
 			/** Default level speed */
-			public final static float LEVEL_SPEED_DEFAULT = 5;
+			public final static float LEVEL_SPEED_DEFAULT = 15;
 			/** Step size of level speeed */
 			public final static float LEVEL_SPEED_STEP_SIZE = 1;
 		}
