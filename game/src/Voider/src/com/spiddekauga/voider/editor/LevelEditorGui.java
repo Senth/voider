@@ -937,7 +937,6 @@ class LevelEditorGui extends EditorGui {
 		};
 
 
-		mWidgets.path.table.row();
 		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Loop", mStyles.textButton.toggle);
 		}
@@ -958,7 +957,6 @@ class LevelEditorGui extends EditorGui {
 		};
 
 
-		mWidgets.path.table.row();
 		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Back and forth", mStyles.textButton.toggle);
 		}
