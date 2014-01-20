@@ -293,7 +293,8 @@ public abstract class EditorGui extends Gui {
 			button = new ImageButton(mStyles.skin.editor, EditorIcons.UNDO.toString());
 		}
 		mFileMenu.add(button);
-		new ButtonListener(button) {
+		TooltipListener tooltipListener = new TooltipListener(button, null, Messages.replaceName(Messages.Tooltip.Menus.File.UNDO, getResourceTypeName()));
+		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onPressed() {
 				mEditor.getInvoker().undo();
@@ -307,7 +308,8 @@ public abstract class EditorGui extends Gui {
 			button = new ImageButton(mStyles.skin.editor, EditorIcons.REDO.toString());
 		}
 		mFileMenu.add(button);
-		new ButtonListener(button) {
+		tooltipListener = new TooltipListener(button, null, Messages.replaceName(Messages.Tooltip.Menus.File.REDO, getResourceTypeName()));
+		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onPressed() {
 				mEditor.getInvoker().redo();
@@ -322,7 +324,8 @@ public abstract class EditorGui extends Gui {
 				button = new ImageButton(mStyles.skin.editor, EditorIcons.RUN.toString());
 			}
 			mFileMenu.add(button);
-			new ButtonListener(button) {
+			tooltipListener = new TooltipListener(button, null, Messages.replaceName(Messages.Tooltip.Menus.File.RUN, getResourceTypeName()));
+			new ButtonListener(button, tooltipListener) {
 				@Override
 				protected void onPressed() {
 					MsgBoxExecuter msgBox = getFreeMsgBox(true);
@@ -348,7 +351,8 @@ public abstract class EditorGui extends Gui {
 			mGridRender = button;
 			DisableListener disableListener = new DisableListener(button);
 			mFileMenu.add(button);
-			new ButtonListener(button) {
+			tooltipListener = new TooltipListener(button, null, Messages.replaceName(Messages.Tooltip.Menus.File.GRID, getResourceTypeName()));
+			new ButtonListener(button, tooltipListener) {
 				@Override
 				protected void onChecked(boolean checked) {
 					mEditor.setGrid(checked);
@@ -364,7 +368,8 @@ public abstract class EditorGui extends Gui {
 			mGridRenderAbove = button;
 			disableListener.addToggleActor(button);
 			mFileMenu.add(button).setPadRight(mStyles.vars.paddingSeparator);
-			new ButtonListener(button) {
+			tooltipListener = new TooltipListener(button, null, Messages.replaceName(Messages.Tooltip.Menus.File.GRID_ADOVE, getResourceTypeName()));
+			new ButtonListener(button, tooltipListener) {
 				@Override
 				protected void onChecked(boolean checked) {
 					mEditor.setGridRenderAboveResources(checked);
@@ -379,7 +384,8 @@ public abstract class EditorGui extends Gui {
 			button = new ImageButton(mStyles.skin.editor, EditorIcons.NEW.toString());
 		}
 		mFileMenu.add(button);
-		new ButtonListener(button) {
+		tooltipListener = new TooltipListener(button, null, Messages.replaceName(Messages.Tooltip.Menus.File.NEW, getResourceTypeName()));
+		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onPressed() {
 				executeCommandAndCheckSave(new CEditorNew(mEditor), "New " + getResourceTypeName(), "Save first", "Discard current", Messages.getUnsavedMessage(getResourceTypeName(), UnsavedActions.NEW));
@@ -393,7 +399,8 @@ public abstract class EditorGui extends Gui {
 			button = new ImageButton(mStyles.skin.editor, EditorIcons.SAVE.toString());
 		}
 		mFileMenu.add(button);
-		new ButtonListener(button) {
+		tooltipListener = new TooltipListener(button, null, Messages.replaceName(Messages.Tooltip.Menus.File.SAVE, getResourceTypeName()));
+		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onPressed() {
 				mEditor.saveDef();
@@ -407,7 +414,8 @@ public abstract class EditorGui extends Gui {
 			button = new ImageButton(mStyles.skin.editor, EditorIcons.LOAD.toString());
 		}
 		mFileMenu.add(button);
-		new ButtonListener(button) {
+		tooltipListener = new TooltipListener(button, null, Messages.replaceName(Messages.Tooltip.Menus.File.LOAD, getResourceTypeName()));
+		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onPressed() {
 				executeCommandAndCheckSave(new CEditorLoad(mEditor), "Load another " + getResourceTypeName(), "Save first", "Discard current", Messages.getUnsavedMessage(getResourceTypeName(), UnsavedActions.LOAD));
@@ -421,7 +429,8 @@ public abstract class EditorGui extends Gui {
 			button = new ImageButton(mStyles.skin.editor, EditorIcons.DUPLICATE.toString());
 		}
 		mFileMenu.add(button);
-		new ButtonListener(button) {
+		tooltipListener = new TooltipListener(button, null, Messages.replaceName(Messages.Tooltip.Menus.File.DUPLICATE, getResourceTypeName()));
+		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onPressed() {
 				mEditor.saveDef();
@@ -437,7 +446,8 @@ public abstract class EditorGui extends Gui {
 			button = new ImageButton(mStyles.skin.editor, EditorIcons.INFO.toString());
 		}
 		mFileMenu.add(button);
-		new ButtonListener(button) {
+		tooltipListener = new TooltipListener(button, null, Messages.replaceName(Messages.Tooltip.Menus.File.INFO, getResourceTypeName()));
+		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onPressed() {
 				showInfoDialog();

@@ -221,10 +221,6 @@ public class Messages {
 		}
 
 		public static class Level {
-			public static class Menu {
-				public final static String RUN = "Test play the level";
-				public final static String OPTION = "Level name, description, speed, story, ...";
-			}
 			public static class Pickup {
 				public final static String SELECT_NAME = "Pickup name";
 				public final static String SELECT_TYPE = "Select a pickup type";
@@ -262,6 +258,18 @@ public class Messages {
 				public final static String LEVEL = "Level editor";
 				public final static String ENEMY = "Enemy editor";
 				public final static String BULLET = "Bullet editor";
+			}
+			public static class File {
+				public final static String NEW = "Create a new " + ACTOR_TYPE;
+				public final static String SAVE = "Save the " + ACTOR_TYPE;
+				public final static String LOAD = "Load another " + ACTOR_TYPE;
+				public final static String DUPLICATE = "Create a duplicate of this " + ACTOR_TYPE;
+				public final static String UNDO = "Undo your previous action";
+				public final static String REDO = "Redo your action";
+				public final static String RUN = "Test run your level";
+				public final static String GRID = "Turn on/off the grid";
+				public final static String GRID_ADOVE = "Display grid above everything else";
+				public final static String INFO = "Info and options for this " + ACTOR_TYPE;
 			}
 		}
 
