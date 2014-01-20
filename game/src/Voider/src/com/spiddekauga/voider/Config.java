@@ -748,7 +748,7 @@ public class Config {
 		/** Seconds before text field commands aren't combinable */
 		public final static float TEXT_FIELD_COMBINABLE_WITHIN = 1;
 		/** Seconds before tooltip is shown when hovering over */
-		public final static float TOOLTIP_HOVER_SHOW = 0.5f;
+		public final static float TOOLTIP_HOVER_SHOW = 0.35f;
 		/** Seconds before tooltip is shown when pressing */
 		public final static float TOOLTIP_PRESS_SHOW = 1;
 		/** Fade duration of the tooltip when hovering */
