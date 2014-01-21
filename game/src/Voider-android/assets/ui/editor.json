@@ -1,7 +1,7 @@
 {
 java.lang.Float: {
-	padding_between_editor_menu_and_tools: {value: 20},
-	padding_between_file_menu_and_options: {value: 20},
+	padding_between_editor_menu_and_tools: {value: 8},
+	padding_between_file_menu_and_options: {value: 8},
 },
 
 com.badlogic.gdx.graphics.Color: {
@@ -18,7 +18,7 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		up: button_default_up,
 		disabled: button_default_disabled,
 		over: button_default_over,
-		imageDown: stub,
+		imageDown: stub_down,
 		imageUp: stub
 	},
 	
@@ -29,17 +29,17 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		disabled: button_default_disabled,
 		over: button_default_over,
 		checkedOver: button_default_checked_over,
-		imageDown: stub,
-		imageChecked: stub,
-		imageCheckedOver: stub,
 		imageUp: stub,
-		imageDisabled: stub,
-		imageOver: stub,
+		imageOver: stub_over,
+		imageDown: stub_down,
+		imageChecked: stub_checked,
+		imageCheckedOver: stub_checked_over,
+		imageDisabled: stub_disabled
 	},	
 	
 	bullet_editor: {
-		imageOver: bullet_editor_over,
 		imageDown: bullet_editor_down,
+		imageOver: bullet_editor_over,
 		imageUp: bullet_editor
 	},
 	
@@ -50,14 +50,12 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 	},
 	
 	bullet_editor_selected: {
-		imageDown: bullet_editor_down,
-		imageOver: bullet_editor_over,
 		imageUp: bullet_editor_down
 	},
 	
 	campaign_editor: {
-		imageOver: campaign_editor_over,
 		imageDown: campaign_editor_down,
+		imageOver: campaign_editor_over,
 		imageUp: campaign_editor
 	},
 	
@@ -68,14 +66,12 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 	},
 	
 	campaign_editor_selected: {
-		imageOver: campaign_editor_over,
-		imageDown: campaign_editor_down,
 		imageUp: campaign_editor_down
 	},
 	
 	level_editor: {
-		imageOver: level_editor_over,
 		imageDown: level_editor_down,
+		imageOver: level_editor_over,
 		imageUp: level_editor
 	},
 	
@@ -86,14 +82,12 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 	},
 	
 	level_editor_selected: {
-		imageOver: level_editor_over,
-		imageDown: level_editor_down,
 		imageUp: level_editor_down
 	},
 	
 	enemy_editor: {
-		imageOver: enemy_editor_over,
 		imageDown: enemy_editor_down,
+		imageOver: enemy_editor_over,
 		imageUp: enemy_editor
 	},
 	
@@ -104,8 +98,6 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 	},
 	
 	enemy_editor_selected: {
-		imageOver: enemy_editor_over,
-		imageDown: enemy_editor_down,
 		imageUp: enemy_editor_down
 	},
 	
@@ -113,537 +105,435 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageUp: new,
 		imageOver: new_over,
 		imageDown: new_down,
-		imageChecked: new_down,
-		imageCheckedOver: new_over,
-		imageDisabled: stub,
+		imageChecked: new_checked,
+		imageCheckedOver: new_checked_over,
+		imageDisabled: new_disabled
 	},
 
 	save: {
-		down: button_default_down,
-		up: button_default_up,
-		disabled: button_default_disabled,
-		over: button_default_over,
-		imageDown: save,
-		imageUp: save
+		imageUp: save,
+		imageOver: save_over,
+		imageDown: save_down,
+		imageChecked: save_checked,
+		imageCheckedOver: save_checked_over,
+		imageDisabled: save_disabled
 	},
 
 	load: {
-		down: button_default_down,
-		up: button_default_up,
-		disabled: button_default_disabled,
-		over: button_default_over,
-		imageDown: load,
-		imageUp: load
+		imageUp: load,
+		imageOver: load_over,
+		imageDown: load_down,
+		imageChecked: load_checked,
+		imageCheckedOver: load_checked_over,
+		imageDisabled: load_disabled
 	},
 	
 	undo: {
-		down: button_default_down,
-		up: button_default_up,
-		disabled: button_default_disabled,
-		over: button_default_over,
-		imageDown: undo,
-		imageUp: undo
+		imageUp: undo,
+		imageOver: undo_over,
+		imageDown: undo_down,
+		imageChecked: undo_checked,
+		imageCheckedOver: undo_checked_over,
+		imageDisabled: undo_disabled
 	},
 	
 	redo: {
-		down: button_default_down,
-		up: button_default_up,
-		disabled: button_default_disabled,
-		over: button_default_over,
-		imageDown: redo,
-		imageUp: redo
+		imageUp: redo,
+		imageOver: redo_over,
+		imageDown: redo_down,
+		imageChecked: redo_checked,
+		imageCheckedOver: redo_checked_over,
+		imageDisabled: redo_disabled
 	},
 
 	duplicate: {
-		down: button_default_down,
-		up: button_default_up,
-		disabled: button_default_disabled,
-		over: button_default_over,
-		imageDown: duplicate,
-		imageUp: duplicate
+		imageUp: duplicate,
+		imageOver: duplicate_over,
+		imageDown: duplicate_down,
+		imageChecked: duplicate_checked,
+		imageCheckedOver: duplicate_checked_over,
+		imageDisabled: duplicate_disabled
 	},
 	
 	info: {
-		down: button_default_down,
-		checked: button_default_checked,
-		up: button_default_up,
-		disabled: button_default_disabled,
-		over: button_default_over,
-		checkedOver: button_default_checked_over,
-		imageDown: info,
-		imageChecked: info,
-		imageUp: info
+		imageUp: info,
+		imageOver: info_over,
+		imageDown: info_down,
+		imageChecked: info_checked,
+		imageCheckedOver: info_checked_over,
+		imageDisabled: info_disabled
 	},
 	
 	run: {
-		down: button_default_down,
-		up: button_default_up,
-		disabled: button_default_disabled,
-		over: button_default_over,
-		imageDown: run,
-		imageUp: run
+		imageUp: run,
+		imageOver: run_over,
+		imageDown: run_down,
+		imageChecked: run_checked,
+		imageCheckedOver: run_checked_over,
+		imageDisabled: run_disabled
 	},
 	
 	delete: {
-		down: button_default_down,
-		checked: button_default_checked,
-		up: button_default_up,
-		disabled: button_default_disabled,
-		over: button_default_over,
-		checkedOver: button_default_checked_over,
-		imageDown: delete,
-		imageChecked: delete,
-		imageUp: delete
+		imageUp: delete,
+		imageOver: delete_over,
+		imageDown: delete_down,
+		imageChecked: delete_checked,
+		imageCheckedOver: delete_checked_over,
+		imageDisabled: delete_disabled
 	},
 	
 	move: {
-		down: button_default_down,
-		checked: button_default_checked,
-		up: button_default_up,
-		disabled: button_default_disabled,
-		over: button_default_over,
-		checkedOver: button_default_checked_over,
-		imageDown: move,
-		imageChecked: move,
-		imageUp: move
+		imageUp: move,
+		imageOver: move_over,
+		imageDown: move_down,
+		imageChecked: move_checked,
+		imageCheckedOver: move_checked_over,
+		imageDisabled: move_disabled
 	},
 	
 	select: {
-		down: button_default_down,
-		checked: button_default_checked,
-		up: button_default_up,
-		disabled: button_default_disabled,
-		over: button_default_over,
-		checkedOver: button_default_checked_over,
-		imageDown: select,
-		imageChecked: select,
-		imageUp: select
+		imageUp: select,
+		imageOver: select_over,
+		imageDown: select_down,
+		imageChecked: select_checked,
+		imageCheckedOver: select_checked_over,
+		imageDisabled: select_disabled
+	},
+	
+	pan: {
+		imageUp: pan,
+		imageOver: pan_over,
+		imageDown: pan_down,
+		imageChecked: pan_checked,
+		imageCheckedOver: pan_checked_over,
+		imageDisabled: pan_disabled
 	},
 	
 	cancel: {
-		down: button_default_down,
-		up: button_default_up,
-		disabled: button_default_disabled,
-		over: button_default_over,
-		imageDown: cancel,
-		imageUp: cancel
+		imageUp: cancel,
+		imageOver: cancel_over,
+		imageDown: cancel_down,
+		imageChecked: cancel_checked,
+		imageCheckedOver: cancel_checked_over,
+		imageDisabled: cancel_disabled
 	},
 	
 	circle_shape: {
-		down: button_default_down,
-		checked: button_default_checked,
-		up: button_default_up,
-		disabled: button_default_disabled,
-		over: button_default_over,
-		checkedOver: button_default_checked_over,
-		imageDown: circle_shape,
-		imageChecked: circle_shape,
-		imageUp: circle_shape
+		imageUp: circle_shape,
+		imageOver: circle_shape_over,
+		imageDown: circle_shape_down,
+		imageChecked: circle_shape_checked,
+		imageCheckedOver: circle_shape_checked_over,
+		imageDisabled: circle_shape_disabled
 	},
 	
 	rectangle_shape: {
-		down: button_default_down,
-		checked: button_default_checked,
-		up: button_default_up,
-		disabled: button_default_disabled,
-		over: button_default_over,
-		checkedOver: button_default_checked_over,
-		imageDown: rectangle_shape,
-		imageChecked: rectangle_shape,
-		imageUp: rectangle_shape
+		imageUp: rectangle_shape,
+		imageOver: rectangle_shape_over,
+		imageDown: rectangle_shape_down,
+		imageChecked: rectangle_shape_checked,
+		imageCheckedOver: rectangle_shape_checked_over,
+		imageDisabled: rectangle_shape_disabled
 	},
 	
 	triangle_shape: {
-		down: button_default_down,
-		checked: button_default_checked,
-		up: button_default_up,
-		disabled: button_default_disabled,
-		over: button_default_over,
-		checkedOver: button_default_checked_over,
-		imageDown: triangle_shape,
-		imageChecked: triangle_shape,
-		imageUp: triangle_shape
+		imageUp: triangle_shape,
+		imageOver: triangle_shape_over,
+		imageDown: triangle_shape_down,
+		imageChecked: triangle_shape_checked,
+		imageCheckedOver: triangle_shape_checked_over,
+		imageDisabled: triangle_shape_disabled
 	},
 	
 	draw_custom_shape: {
-		down: button_default_down,
-		checked: button_default_checked,
-		up: button_default_up,
-		disabled: button_default_disabled,
-		over: button_default_over,
-		checkedOver: button_default_checked_over,
-		imageDown: draw_custom_shape,
-		imageChecked: draw_custom_shape,
-		imageUp: draw_custom_shape
+		imageUp: draw_custom_shape,
+		imageOver: draw_custom_shape_over,
+		imageDown: draw_custom_shape_down,
+		imageChecked: draw_custom_shape_checked,
+		imageCheckedOver: draw_custom_shape_checked_over,
+		imageDisabled: draw_custom_shape_disabled
 	},
 	
 	pickup_add: {
-		down: button_default_down,
-		checked: button_default_checked,
-		up: button_default_up,
-		disabled: button_default_disabled,
-		over: button_default_over,
-		checkedOver: button_default_checked_over,
-		imageDown: pickup_add,
-		imageChecked: pickup_add,
-		imageUp: pickup_add
+		imageUp: pickup_add,
+		imageOver: pickup_add_over,
+		imageDown: pickup_add_down,
+		imageChecked: pickup_add_checked,
+		imageCheckedOver: pickup_add_checked_over,
+		imageDisabled: pickup_add_disabled
 	},
 	
 	pickup_select: {
-		down: button_default_down,
-		up: button_default_up,
-		over: button_default_over,
-		imageDown: pickup_select,
-		imageUp: pickup_select
+		imageUp: pickup_select,
+		imageOver: pickup_select_over,
+		imageDown: pickup_select_down,
+		imageChecked: pickup_select_checked,
+		imageCheckedOver: pickup_select_checked_over,
+		imageDisabled: pickup_select_disabled
 	},
 	
 	enemy_add: {
-		down: button_default_down,
-		checked: button_default_checked,
-		up: button_default_up,
-		disabled: button_default_disabled,
-		over: button_default_over,
-		checkedOver: button_default_checked_over,
-		imageDown: enemy_add,
-		imageChecked: enemy_add,
-		imageUp: enemy_add
+		imageUp: enemy_add,
+		imageOver: enemy_add_over,
+		imageDown: enemy_add_down,
+		imageChecked: enemy_add_checked,
+		imageCheckedOver: enemy_add_checked_over,
+		imageDisabled: enemy_add_disabled
 	},
 	
 	enemy_set_activate_trigger: {
-		down: button_default_down,
-		checked: button_default_checked,
-		up: button_default_up,
-		disabled: button_default_disabled,
-		over: button_default_over,
-		checkedOver: button_default_checked_over,
-		imageDown: enemy_set_activate_trigger,
-		imageChecked: enemy_set_activate_trigger,
-		imageUp: enemy_set_activate_trigger
+		imageUp: enemy_set_activate_trigger,
+		imageOver: enemy_set_activate_trigger_over,
+		imageDown: enemy_set_activate_trigger_down,
+		imageChecked: enemy_set_activate_trigger_checked,
+		imageCheckedOver: enemy_set_activate_trigger_checked_over,
+		imageDisabled: enemy_set_activate_trigger_disabled
 	},
 	
 	enemy_set_deactivate_trigger: {
-		down: button_default_down,
-		checked: button_default_checked,
-		up: button_default_up,
-		disabled: button_default_disabled,
-		over: button_default_over,
-		checkedOver: button_default_checked_over,
-		imageDown: enemy_set_deactivate_trigger,
-		imageChecked: enemy_set_deactivate_trigger,
-		imageUp: enemy_set_deactivate_trigger
+		imageUp: enemy_set_deactivate_trigger,
+		imageOver: enemy_set_deactivate_trigger_over,
+		imageDown: enemy_set_deactivate_trigger_down,
+		imageChecked: enemy_set_deactivate_trigger_checked,
+		imageCheckedOver: enemy_set_deactivate_trigger_checked_over,
+		imageDisabled: enemy_set_deactivate_trigger_disabled
 	},
 	
 	enemy_select: {
-		down: button_default_down,
-		up: button_default_up,
-		over: button_default_over,
-		imageDown: enemy_select,
-		imageUp: enemy_select
+		imageUp: enemy_select,
+		imageOver: enemy_select_over,
+		imageDown: enemy_select_down,
+		imageChecked: enemy_select_checked,
+		imageCheckedOver: enemy_select_checked_over,
+		imageDisabled: enemy_select_disabled
 	},
 	
 	path_add: {
-		down: button_default_down,
-		checked: button_default_checked,
-		up: button_default_up,
-		disabled: button_default_disabled,
-		over: button_default_over,
-		checkedOver: button_default_checked_over,
-		imageDown: path_add,
-		imageChecked: path_add,
-		imageUp: path_add
+		imageUp: path_add,
+		imageOver: path_add_over,
+		imageDown: path_add_down,
+		imageChecked: path_add_checked,
+		imageCheckedOver: path_add_checked_over,
+		imageDisabled: path_add_disabled
 	},
 	
 	path_once: {
-		down: button_default_down,
-		checked: button_default_checked,
-		up: button_default_up,
-		disabled: button_default_disabled,
-		over: button_default_over,
-		checkedOver: button_default_checked_over,
-		imageDown: path_once,
-		imageChecked: path_once,
 		imageUp: path_once
 	},
 	
 	path_back_and_forth: {
-		down: button_default_down,
-		checked: button_default_checked,
-		up: button_default_up,
-		disabled: button_default_disabled,
-		over: button_default_over,
-		checkedOver: button_default_checked_over,
-		imageDown: path_back_and_forth,
-		imageChecked: path_back_and_forth,
 		imageUp: path_back_and_forth
 	},
 	
 	path_loop: {
-		down: button_default_down,
-		checked: button_default_checked,
-		up: button_default_up,
-		disabled: button_default_disabled,
-		over: button_default_over,
-		checkedOver: button_default_checked_over,
-		imageDown: path_loop,
-		imageChecked: path_loop,
 		imageUp: path_loop
 	},
 	
 	trigger_add: {
-		down: button_default_down,
-		checked: button_default_checked,
-		up: button_default_up,
-		disabled: button_default_disabled,
-		over: button_default_over,
-		checkedOver: button_default_checked_over,
-		imageDown: trigger_add,
-		imageChecked: trigger_add,
-		imageUp: trigger_add
+		imageUp: trigger_add,
+		imageOver: trigger_add_over,
+		imageDown: trigger_add_down,
+		imageChecked: trigger_add_checked,
+		imageCheckedOver: trigger_add_checked_over,
+		imageDisabled: trigger_add_disabled
 	},
 	
 	bullet_select: {
-		down: button_default_down,
-		up: button_default_up,
-		over: button_default_over,
-		imageDown: bullet_select,
-		imageUp: bullet_select
+		imageUp: bullet_select,
+		imageOver: bullet_select_over,
+		imageDown: bullet_select_down,
+		imageChecked: bullet_select_checked,
+		imageCheckedOver: bullet_select_checked_over,
+		imageDisabled: bullet_select_disabled
 	},
 	
 	draw_append: {
-		down: button_default_down,
-		checked: button_default_checked,
-		up: button_default_up,
-		disabled: button_default_disabled,
-		over: button_default_over,
-		checkedOver: button_default_checked_over,
-		imageDown: draw_append,
-		imageChecked: draw_append,
-		imageUp: draw_append
+		imageUp: draw_append,
+		imageOver: draw_append_over,
+		imageDown: draw_append_down,
+		imageChecked: draw_append_checked,
+		imageCheckedOver: draw_append_checked_over,
+		imageDisabled: draw_append_disabled
 	},
 	
 	draw_erase: {
-		down: button_default_down,
-		checked: button_default_checked,
-		up: button_default_up,
-		disabled: button_default_disabled,
-		over: button_default_over,
-		checkedOver: button_default_checked_over,
-		imageDown: draw_erase,
-		imageChecked: draw_erase,
-		imageUp: draw_erase
+		imageUp: draw_erase,
+		imageOver: draw_erase_over,
+		imageDown: draw_erase_down,
+		imageChecked: draw_erase_checked,
+		imageCheckedOver: draw_erase_checked_over,
+		imageDisabled: draw_erase_disabled
 	},
 	
 	add_move_corner: {
-		down: button_default_down,
-		checked: button_default_checked,
-		up: button_default_up,
-		disabled: button_default_disabled,
-		over: button_default_over,
-		checkedOver: button_default_checked_over,
-		imageDown: add_move_corner,
-		imageChecked: add_move_corner,
-		imageUp: add_move_corner
+		imageUp: add_move_corner,
+		imageOver: add_move_corner_over,
+		imageDown: add_move_corner_down,
+		imageChecked: add_move_corner_checked,
+		imageCheckedOver: add_move_corner_checked_over,
+		imageDisabled: add_move_corner_disabled
 	},
 	
 	remove_corner: {
-		down: button_default_down,
-		checked: button_default_checked,
-		up: button_default_up,
-		disabled: button_default_disabled,
-		over: button_default_over,
-		checkedOver: button_default_checked_over,
-		imageDown: remove_corner,
-		imageChecked: remove_corner,
-		imageUp: remove_corner
+		imageUp: remove_corner,
+		imageOver: remove_corner_over,
+		imageDown: remove_corner_down,
+		imageChecked: remove_corner_checked,
+		imageCheckedOver: remove_corner_checked_over,
+		imageDisabled: remove_corner_disabled
 	},
 	
 	terrain_draw_append: {
-		down: button_default_down,
-		checked: button_default_checked,
-		up: button_default_up,
-		disabled: button_default_disabled,
-		over: button_default_over,
-		checkedOver: button_default_checked_over,
-		imageDown: terrain_draw_append,
-		imageChecked: terrain_draw_append,
-		imageUp: terrain_draw_append
+		imageUp: terrain_draw_append,
+		imageOver: terrain_draw_append_over,
+		imageDown: terrain_draw_append_down,
+		imageChecked: terrain_draw_append_checked,
+		imageCheckedOver: terrain_draw_append_checked_over,
+		imageDisabled: terrain_draw_append_disabled
 	},
 	
 	terrain_draw_erase: {
-		down: button_default_down,
-		checked: button_default_checked,
-		up: button_default_up,
-		disabled: button_default_disabled,
-		over: button_default_over,
-		checkedOver: button_default_checked_over,
-		imageDown: terrain_draw_erase,
-		imageChecked: terrain_draw_erase,
-		imageUp: terrain_draw_erase
+		imageUp: terrain_draw_erase,
+		imageOver: terrain_draw_erase_over,
+		imageDown: terrain_draw_erase_down,
+		imageChecked: terrain_draw_erase_checked,
+		imageCheckedOver: terrain_draw_erase_checked_over,
+		imageDisabled: terrain_draw_erase_disabled
 	},
 	
 	set_center: {
-		down: button_default_down,
-		checked: button_default_checked,
-		up: button_default_up,
-		disabled: button_default_disabled,
-		over: button_default_over,
-		checkedOver: button_default_checked_over,
-		imageDown: set_center,
-		imageChecked: set_center,
-		imageUp: set_center
+		imageUp: set_center,
+		imageOver: set_center_over,
+		imageDown: set_center_down,
+		imageChecked: set_center_checked,
+		imageCheckedOver: set_center_checked_over,
+		imageDisabled: set_center_disabled
 	},
 	
 	reset_center: {
-		down: button_default_down,
-		up: button_default_up,
-		disabled: button_default_disabled,
-		over: button_default_over,
-		imageDown: reset_center,
-		imageUp: reset_center
+		imageUp: reset_center,
+		imageOver: reset_center_over,
+		imageDown: reset_center_down,
+		imageChecked: reset_center_checked,
+		imageCheckedOver: reset_center_checked_over,
+		imageDisabled: reset_center_disabled
 	},
 	
 	visuals: {
-		down: button_default_down,
-		checked: button_default_checked,
-		up: button_default_up,
-		disabled: button_default_disabled,
-		over: button_default_over,
-		checkedOver: button_default_checked_over,
-		imageDown: visuals,
-		imageChecked: visuals,
-		imageUp: visuals
+		imageUp: visuals,
+		imageOver: visuals_over,
+		imageDown: visuals_down,
+		imageChecked: visuals_checked,
+		imageCheckedOver: visuals_checked_over,
+		imageDisabled: visuals_disabled
 	},
 	
 	weapon: {
-		down: button_default_down,
-		checked: button_default_checked,
-		up: button_default_up,
-		disabled: button_default_disabled,
-		over: button_default_over,
-		checkedOver: button_default_checked_over,
-		imageDown: weapon,
-		imageChecked: weapon,
-		imageUp: weapon
+		imageUp: weapon,
+		imageOver: weapon_over,
+		imageDown: weapon_down,
+		imageChecked: weapon_checked,
+		imageCheckedOver: weapon_checked_over,
+		imageDisabled: weapon_disabled
 	},
 	
 	collision: {
-		down: button_default_down,
-		checked: button_default_checked,
-		up: button_default_up,
-		disabled: button_default_disabled,
-		over: button_default_over,
-		checkedOver: button_default_checked_over,
-		imageDown: collision,
-		imageChecked: collision,
-		imageUp: collision
+		imageUp: collision,
+		imageOver: collision_over,
+		imageDown: collision_down,
+		imageChecked: collision_checked,
+		imageCheckedOver: collision_checked_over,
+		imageDisabled: collision_disabled
 	},
 	
 	movement: {
-		down: button_default_down,
-		checked: button_default_checked,
-		up: button_default_up,
-		disabled: button_default_disabled,
-		over: button_default_over,
-		checkedOver: button_default_checked_over,
-		imageDown: movement,
-		imageChecked: movement,
-		imageUp: movement
+		imageUp: movement,
+		imageOver: movement_over,
+		imageDown: movement_down,
+		imageChecked: movement_checked,
+		imageCheckedOver: movement_checked_over,
+		imageDisabled: movement_disabled
+	},
+	
+	aim_direction: {
+		imageUp: aim_direction,
+		imageOver: aim_direction_over,
+		imageDown: aim_direction_down,
+		imageChecked: aim_direction_checked,
+		imageCheckedOver: aim_direction_checked_over,
+		imageDisabled: aim_direction_disabled
 	},
 	
 	aim_on_player: {
-		down: button_default_down,
-		checked: button_default_checked,
-		up: button_default_up,
-		disabled: button_default_disabled,
-		over: button_default_over,
-		checkedOver: button_default_checked_over,
-		imageDown: aim_on_player,
-		imageChecked: aim_on_player,
-		imageUp: aim_on_player
+		imageUp: aim_on_player,
+		imageOver: aim_on_player_over,
+		imageDown: aim_on_player_down,
+		imageChecked: aim_on_player_checked,
+		imageCheckedOver: aim_on_player_checked_over,
+		imageDisabled: aim_on_player_disabled
 	},
 	
 	aim_in_front_player: {
-		down: button_default_down,
-		checked: button_default_checked,
-		up: button_default_up,
-		disabled: button_default_disabled,
-		over: button_default_over,
-		checkedOver: button_default_checked_over,
-		imageDown: aim_in_front_player,
-		imageChecked: aim_in_front_player,
-		imageUp: aim_in_front_player
+		imageUp: aim_in_front_player,
+		imageOver: aim_in_front_player_over,
+		imageDown: aim_in_front_player_down,
+		imageChecked: aim_in_front_player_checked,
+		imageCheckedOver: aim_in_front_player_checked_over,
+		imageDisabled: aim_in_front_player_disabled
 	},
 	
 	aim_movement: {
-		down: button_default_down,
-		checked: button_default_checked,
-		up: button_default_up,
-		disabled: button_default_disabled,
-		over: button_default_over,
-		checkedOver: button_default_checked_over,
-		imageDown: aim_movement,
-		imageChecked: aim_movement,
-		imageUp: aim_movement
+		imageUp: aim_movement,
+		imageOver: aim_movement_over,
+		imageDown: aim_movement_down,
+		imageChecked: aim_movement_checked,
+		imageCheckedOver: aim_movement_checked_over,
+		imageDisabled: aim_movement_disabled
 	},
 	
 	aim_rotate: {
-		down: button_default_down,
-		checked: button_default_checked,
-		up: button_default_up,
-		disabled: button_default_disabled,
-		over: button_default_over,
-		checkedOver: button_default_checked_over,
-		imageDown: aim_rotate,
-		imageChecked: aim_rotate,
-		imageUp: aim_rotate
+		imageUp: aim_rotate,
+		imageOver: aim_rotate_over,
+		imageDown: aim_rotate_down,
+		imageChecked: aim_rotate_checked,
+		imageCheckedOver: aim_rotate_checked_over,
+		imageDisabled: aim_rotate_disabled
 	},
 	
 	on: {
-		down: button_default_down,
-		checked: button_default_checked,
-		up: button_default_up,
-		disabled: button_default_disabled,
-		over: button_default_over,
-		checkedOver: button_default_checked_over,
-		imageDown: on,
-		imageChecked: on,
-		imageUp: on
+		imageUp: on,
+		imageOver: on_over,
+		imageDown: on_down,
+		imageChecked: on_checked,
+		imageCheckedOver: on_checked_over,
+		imageDisabled: on_disabled
 	},
 	
 	off: {
-		down: button_default_down,
-		checked: button_default_checked,
-		up: button_default_up,
-		disabled: button_default_disabled,
-		over: button_default_over,
-		checkedOver: button_default_checked_over,
-		imageDown: off,
-		imageChecked: off,
-		imageUp: off
+		imageUp: off,
+		imageOver: off_over,
+		imageDown: off_down,
+		imageChecked: off_checked,
+		imageCheckedOver: off_checked_over,
+		imageDisabled: off_disabled
 	},
 	
 	grid:  {
-		down: button_default_down,
-		checked: button_default_checked,
-		up: button_default_up,
-		disabled: button_default_disabled,
-		over: button_default_over,
-		checkedOver: button_default_checked_over,
-		imageDown: grid,
-		imageChecked: grid,
-		imageUp: grid
+		imageUp: grid,
+		imageOver: grid_over,
+		imageDown: grid_down,
+		imageChecked: grid_checked,
+		imageCheckedOver: grid_checked_over,
+		imageDisabled: grid_disabled
 	},
 	
 	grid_above: {
-		down: button_default_down,
-		checked: button_default_checked,
-		up: button_default_up,
-		disabled: button_default_disabled,
-		over: button_default_over,
-		checkedOver: button_default_checked_over,
-		imageDown: grid_above,
-		imageChecked: grid_above,
-		imageUp: grid_above
+		imageUp: grid_above,
+		imageOver: grid_above_over,
+		imageDown: grid_above_down,
+		imageChecked: grid_above_checked,
+		imageCheckedOver: grid_above_checked_over,
+		imageDisabled: grid_above_disabled
 	},
 }
 }

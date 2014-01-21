@@ -12,8 +12,8 @@ com.badlogic.gdx.graphics.Color: {
 
 java.lang.Float: {
 	padding_default: {value: 1},
-	padding_window_left_right: {value: 10},
-	padding_separator: {value: 50},
+	padding_window_left_right: {value: 8},
+	padding_separator: {value: 32},
 	padding_after_label: {value: 8},
 	text_field_number_width: {value: 70},
 	select_def_info_width: {value: 200},
