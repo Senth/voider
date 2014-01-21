@@ -24,312 +24,13 @@ import com.spiddekauga.utils.scene.ui.Label.LabelStyle;
  */
 public class SkinNames {
 	/**
-	 * Method for getting a skin name from the loaded resources
-	 * @param <ResourceType> The resource type to return
-	 * @param skinName the skin name to get the resource from
-	 * @return the resource that was fetched :)
-	 */
-	@SuppressWarnings("unchecked")
-	public static <ResourceType> ResourceType getResource(ISkinNames skinName) {
-		Skin skin = ResourceCacheFacade.get(skinName.getSkinName());
-		return (ResourceType) skin.get(skinName.toString(), skinName.getClassType());
-	}
-
-	/**
-	 * Interface for skin names
-	 */
-	public interface ISkinNames {
-		/**
-		 * @return skin name
-		 */
-		ResourceNames getSkinName();
-
-		/**
-		 * @return class type
-		 */
-		Class<?> getClassType();
-	}
-
-	/**
-	 * Theme names
-	 */
-	public enum Theme implements ISkinNames {
-		/** Bottom layer of the background */
-		BOTTOM_LAYER(Texture.class),
-		/** Top layer of the background */
-		TOP_LAYER(Texture.class),
-
-		;
-
-		@Override
-		public ResourceNames getSkinName() {
-			return null;
-		}
-
-		@Override
-		public Class<?> getClassType() {
-			return mType;
-		}
-
-		/**
-		 * Creates a more user-friendly name for the enumeration
-		 * @param type the class type
-		 */
-		private Theme(Class<?> type) {
-			mType = type;
-			mName = super.toString().toLowerCase();
-		}
-
-		/**
-		 * Create a custom name for the enumeration
-		 * @param type the class type
-		 * @param jsonName name in the json-file
-		 */
-		private Theme(Class<?> type, String jsonName) {
-			mType = type;
-			mName = jsonName;
-		}
-
-		/**
-		 * @return name of the icon inside the skin
-		 */
-		@Override
-		public String toString() {
-			return mName;
-		}
-
-		/** skin name of the icon */
-		private String mName;
-		/** Class type */
-		private Class<?> mType;
-	}
-
-	/**
-	 * General UI elements
-	 */
-	public enum General implements ISkinNames {
-		/** Default padding for rows and cells */
-		PADDING_DEFAULT(Float.class),
-		/** Separator padding */
-		PADDING_SEPARATOR(Float.class),
-		/** Left and right window padding */
-		PADDING_WINDOW_LEFT_RIGHT(Float.class),
-		/** Padding after label */
-		PADDING_AFTER_LABEL(Float.class),
-		/** Width of text fields containing only numbers */
-		TEXT_FIELD_NUMBER_WIDTH(Float.class),
-		/** Select Def info width */
-		SELECT_DEF_INFO_WIDTH(Float.class),
-		/** Maximum text width for select def scenes */
-		SELECT_DEF_TEXT_WIDTH_MAX(Float.class),
-		/** Maximum image width for select def scenes */
-		SELECT_DEF_IMAGE_WIDTH_MAX(Float.class),
-		/** Default label */
-		LABEL_DEFAULT(LabelStyle.class, "default"),
-		/** Label for highlights */
-		LABEL_HIGHLIGHT(LabelStyle.class, "highlight"),
-		/** Error messages style */
-		LABEL_ERROR(LabelStyle.class, "error"),
-		/** Success messages */
-		LABEL_SUCCESS(LabelStyle.class, "success"),
-		/** Text button default style */
-		TEXT_BUTTON_PRESS(TextButtonStyle.class, "default"),
-		/** Text button that can toggle */
-		TEXT_BUTTON_TOGGLE(TextButtonStyle.class, "toggle"),
-		/** Text button that always is selected */
-		TEXT_BUTTON_SELECTED(TextButtonStyle.class, "selected"),
-		/** Image button default */
-		IMAGE_BUTTON_DEFAULT(ImageButtonStyle.class, "default"),
-		/** Image button toggle */
-		IMAGE_BUTTON_TOGGLE(ImageButtonStyle.class, "toggle"),
-		/** Check box that uses check boxes */
-		CHECK_BOX_DEFAULT(CheckBoxStyle.class, "default"),
-		/** Check box that uses the radio button style */
-		CHECK_BOX_RADIO(CheckBoxStyle.class, "radio"),
-		/** Slider default */
-		SLIDER_DEFAULT(SliderStyle.class, "default"),
-		/** Loading bar slider */
-		SLIDER_LOADING_BAR(SliderStyle.class, "loading_bar"),
-		/** Text field default */
-		TEXT_FIELD_DEFAULT(TextFieldStyle.class, "default"),
-		/** Window default style without title */
-		WINDOW_DEFAULT(WindowStyle.class, "default"),
-		/** Window no title */
-		WINDOW_NO_TITLE(WindowStyle.class, "default"),
-		/** Window with title */
-		WINDOW_TITLE(WindowStyle.class, "title"),
-		/** Modal window with no title */
-		WINDOW_MODAL(WindowStyle.class, "modal"),
-		/** Modal window with title */
-		WINDOW_MODAL_TITLE(WindowStyle.class, "modal_title"),
-		/** Scroll pane default, no background */
-		SCROLL_PANE_DEFAULT(ScrollPaneStyle.class, "default"),
-		/** Scroll pane with background */
-		SCROLL_PANE_WINDOW_BACKGROUND(ScrollPaneStyle.class, "background"),
-		/** List default */
-		LIST_DEFAULT(ListStyle.class, "default"),
-		/** Select box default */
-		SELECT_BOX_DEFAULT(SelectBoxStyle.class, "default"),
-		/** Play button */
-		PLAY(ImageButtonStyle.class),
-		/** Create button */
-		CREATE(ImageButtonStyle.class),
-		/** Explore button */
-		EXPLORE(ImageButtonStyle.class),
-		/** Info button on front screen */
-		INFO(ImageButtonStyle.class),
-		/** Options button on front screen */
-		OPTIONS(ImageButtonStyle.class),
-
-		;
-
-		@Override
-		public ResourceNames getSkinName() {
-			return ResourceNames.UI_GENERAL;
-		}
-
-		@Override
-		public Class<?> getClassType() {
-			return mType;
-		}
-
-		/**
-		 * Creates a more user-friendly name for the enumeration
-		 * @param type the class type
-		 */
-		private General(Class<?> type) {
-			mType = type;
-			mName = super.toString().toLowerCase();
-		}
-
-		/**
-		 * Create a custom name for the enumeration
-		 * @param type the class type
-		 * @param jsonName name in the json-file
-		 */
-		private General(Class<?> type, String jsonName) {
-			mType = type;
-			mName = jsonName;
-		}
-
-		/**
-		 * @return name of the icon inside the skin
-		 */
-		@Override
-		public String toString() {
-			return mName;
-		}
-
-		/** skin name of the icon */
-		private String mName;
-		/** Class type */
-		private Class<?> mType;
-	}
-
-	/**
-	 * Game names
-	 */
-	public enum Game implements ISkinNames {
-		/** Health bar for the game */
-		HEALTH_BAR(SliderStyle.class),
-
-
-		;
-
-		/**
-		 * Creates a more user-friendly name for the enumeration
-		 * @param type class type
-		 */
-		private Game(Class<?> type) {
-			mName = super.toString().toLowerCase();
-			mType = type;
-		}
-
-		@Override
-		public ResourceNames getSkinName() {
-			return ResourceNames.UI_GAME;
-		}
-
-		@Override
-		public Class<?> getClassType() {
-			return mType;
-		}
-
-		/**
-		 * @return name of the icon inside the skin
-		 */
-		@Override
-		public String toString() {
-			return mName;
-		}
-
-		/** skin name of the icon */
-		private String mName;
-		/** The class type */
-		private Class<?> mType;
-	}
-
-
-	/**
-	 * Editor variables
-	 */
-	public enum EditorVars implements ISkinNames {
-		/** Grid color */
-		GRID_COLOR(Color.class),
-		/** Grid milestone color */
-		GRID_MILESTONE_COLOR(Color.class),
-		/** Color above and below the level in the editor */
-		LEVEL_ABOVE_BELOW_COLOR(Color.class),
-		/** Color of line between enemy and activate trigger */
-		ENEMY_ACTIVATE_TRIGGER_LINE_COLOR(Color.class),
-		/** Color of line between enemy and deactivate trigger */
-		ENEMY_DEACTIVATE_TRIGGER_LINE_COLOR(Color.class),
-		/** Padding between editor menu and tools */
-		PADDING_BETWEEN_EDITOR_MENU_AND_TOOLS(Float.class),
-		/** Padding between file menu and and options table */
-		PADDING_BETWEEN_FILE_MENU_AND_OPTIONS(Float.class),
-
-		;
-
-		/**
-		 * Creates a more user-friendly name for the enumeration
-		 * @param type the class type
-		 */
-		private EditorVars(Class<?> type) {
-			mName = super.toString().toLowerCase();
-			mType = type;
-		}
-
-		@Override
-		public ResourceNames getSkinName() {
-			return ResourceNames.UI_EDITOR_BUTTONS;
-		}
-
-		@Override
-		public Class<?> getClassType() {
-			return mType;
-		}
-
-		/**
-		 * @return name of the icon inside the skin
-		 */
-		@Override
-		public String toString() {
-			return mName;
-		}
-
-		/** skin name of the icon */
-		private String mName;
-		/** The type of the class */
-		private Class<?> mType;
-	}
-
-	/**
 	 * Editor icon names
 	 */
 	public enum EditorIcons implements ISkinNames {
 		/** Add a corner between two corners in a shape, or move an existing corner */
 		ADD_MOVE_CORNER,
+		/** Enemy shoot in one specific direction */
+		AIM_DIRECTION,
 		/** The enemy will shoot in front of the player (i.e. where
 		 * the player will be if s/he continues to move in the same direction) */
 		AIM_IN_FRONT_PLAYER,
@@ -408,6 +109,8 @@ public class SkinNames {
 		OFF,
 		/** Turns something on (e.g. enemy weapons or turn movement) */
 		ON,
+		/** Tool to pan the screen */
+		PAN,
 		/** Add or continue on a path in the level (can move corners too) */
 		PATH_ADD,
 		/** How enemies should move in the path. Back and forth means once it reached
@@ -471,13 +174,13 @@ public class SkinNames {
 		}
 
 		@Override
-		public ResourceNames getSkinName() {
-			return ResourceNames.UI_EDITOR_BUTTONS;
+		public Class<?> getClassType() {
+			return ImageButtonStyle.class;
 		}
 
 		@Override
-		public Class<?> getClassType() {
-			return ImageButtonStyle.class;
+		public ResourceNames getSkinName() {
+			return ResourceNames.UI_EDITOR_BUTTONS;
 		}
 
 		/**
@@ -609,5 +312,306 @@ public class SkinNames {
 
 		/** skin name of the icon */
 		private String mName;
+	}
+
+	/**
+	 * Editor variables
+	 */
+	public enum EditorVars implements ISkinNames {
+		/** Color of line between enemy and activate trigger */
+		ENEMY_ACTIVATE_TRIGGER_LINE_COLOR(Color.class),
+		/** Color of line between enemy and deactivate trigger */
+		ENEMY_DEACTIVATE_TRIGGER_LINE_COLOR(Color.class),
+		/** Grid color */
+		GRID_COLOR(Color.class),
+		/** Grid milestone color */
+		GRID_MILESTONE_COLOR(Color.class),
+		/** Color above and below the level in the editor */
+		LEVEL_ABOVE_BELOW_COLOR(Color.class),
+		/** Padding between editor menu and tools */
+		PADDING_BETWEEN_EDITOR_MENU_AND_TOOLS(Float.class),
+		/** Padding between file menu and and options table */
+		PADDING_BETWEEN_FILE_MENU_AND_OPTIONS(Float.class),
+
+		;
+
+		/**
+		 * Creates a more user-friendly name for the enumeration
+		 * @param type the class type
+		 */
+		private EditorVars(Class<?> type) {
+			mName = super.toString().toLowerCase();
+			mType = type;
+		}
+
+		@Override
+		public Class<?> getClassType() {
+			return mType;
+		}
+
+		@Override
+		public ResourceNames getSkinName() {
+			return ResourceNames.UI_EDITOR_BUTTONS;
+		}
+
+		/**
+		 * @return name of the icon inside the skin
+		 */
+		@Override
+		public String toString() {
+			return mName;
+		}
+
+		/** skin name of the icon */
+		private String mName;
+		/** The type of the class */
+		private Class<?> mType;
+	}
+
+	/**
+	 * Game names
+	 */
+	public enum Game implements ISkinNames {
+		/** Health bar for the game */
+		HEALTH_BAR(SliderStyle.class),
+
+
+		;
+
+		/**
+		 * Creates a more user-friendly name for the enumeration
+		 * @param type class type
+		 */
+		private Game(Class<?> type) {
+			mName = super.toString().toLowerCase();
+			mType = type;
+		}
+
+		@Override
+		public Class<?> getClassType() {
+			return mType;
+		}
+
+		@Override
+		public ResourceNames getSkinName() {
+			return ResourceNames.UI_GAME;
+		}
+
+		/**
+		 * @return name of the icon inside the skin
+		 */
+		@Override
+		public String toString() {
+			return mName;
+		}
+
+		/** skin name of the icon */
+		private String mName;
+		/** The class type */
+		private Class<?> mType;
+	}
+
+	/**
+	 * General UI elements
+	 */
+	public enum General implements ISkinNames {
+		/** Check box that uses check boxes */
+		CHECK_BOX_DEFAULT(CheckBoxStyle.class, "default"),
+		/** Check box that uses the radio button style */
+		CHECK_BOX_RADIO(CheckBoxStyle.class, "radio"),
+		/** Create button */
+		CREATE(ImageButtonStyle.class),
+		/** Explore button */
+		EXPLORE(ImageButtonStyle.class),
+		/** Image button default */
+		IMAGE_BUTTON_DEFAULT(ImageButtonStyle.class, "default"),
+		/** Image button toggle */
+		IMAGE_BUTTON_TOGGLE(ImageButtonStyle.class, "toggle"),
+		/** Info button on front screen */
+		INFO(ImageButtonStyle.class),
+		/** Default label */
+		LABEL_DEFAULT(LabelStyle.class, "default"),
+		/** Error messages style */
+		LABEL_ERROR(LabelStyle.class, "error"),
+		/** Label for highlights */
+		LABEL_HIGHLIGHT(LabelStyle.class, "highlight"),
+		/** Success messages */
+		LABEL_SUCCESS(LabelStyle.class, "success"),
+		/** List default */
+		LIST_DEFAULT(ListStyle.class, "default"),
+		/** Options button on front screen */
+		OPTIONS(ImageButtonStyle.class),
+		/** Padding after label */
+		PADDING_AFTER_LABEL(Float.class),
+		/** Default padding for rows and cells */
+		PADDING_DEFAULT(Float.class),
+		/** Separator padding */
+		PADDING_SEPARATOR(Float.class),
+		/** Left and right window padding */
+		PADDING_WINDOW_LEFT_RIGHT(Float.class),
+		/** Play button */
+		PLAY(ImageButtonStyle.class),
+		/** Scroll pane default, no background */
+		SCROLL_PANE_DEFAULT(ScrollPaneStyle.class, "default"),
+		/** Scroll pane with background */
+		SCROLL_PANE_WINDOW_BACKGROUND(ScrollPaneStyle.class, "background"),
+		/** Select box default */
+		SELECT_BOX_DEFAULT(SelectBoxStyle.class, "default"),
+		/** Maximum image width for select def scenes */
+		SELECT_DEF_IMAGE_WIDTH_MAX(Float.class),
+		/** Select Def info width */
+		SELECT_DEF_INFO_WIDTH(Float.class),
+		/** Maximum text width for select def scenes */
+		SELECT_DEF_TEXT_WIDTH_MAX(Float.class),
+		/** Slider default */
+		SLIDER_DEFAULT(SliderStyle.class, "default"),
+		/** Loading bar slider */
+		SLIDER_LOADING_BAR(SliderStyle.class, "loading_bar"),
+		/** Text button default style */
+		TEXT_BUTTON_PRESS(TextButtonStyle.class, "default"),
+		/** Text button that always is selected */
+		TEXT_BUTTON_SELECTED(TextButtonStyle.class, "selected"),
+		/** Text button that can toggle */
+		TEXT_BUTTON_TOGGLE(TextButtonStyle.class, "toggle"),
+		/** Text field default */
+		TEXT_FIELD_DEFAULT(TextFieldStyle.class, "default"),
+		/** Width of text fields containing only numbers */
+		TEXT_FIELD_NUMBER_WIDTH(Float.class),
+		/** Window default style without title */
+		WINDOW_DEFAULT(WindowStyle.class, "default"),
+		/** Modal window with no title */
+		WINDOW_MODAL(WindowStyle.class, "modal"),
+		/** Modal window with title */
+		WINDOW_MODAL_TITLE(WindowStyle.class, "modal_title"),
+		/** Window no title */
+		WINDOW_NO_TITLE(WindowStyle.class, "default"),
+		/** Window with title */
+		WINDOW_TITLE(WindowStyle.class, "title"),
+
+		;
+
+		/**
+		 * Creates a more user-friendly name for the enumeration
+		 * @param type the class type
+		 */
+		private General(Class<?> type) {
+			mType = type;
+			mName = super.toString().toLowerCase();
+		}
+
+		/**
+		 * Create a custom name for the enumeration
+		 * @param type the class type
+		 * @param jsonName name in the json-file
+		 */
+		private General(Class<?> type, String jsonName) {
+			mType = type;
+			mName = jsonName;
+		}
+
+		@Override
+		public Class<?> getClassType() {
+			return mType;
+		}
+
+		@Override
+		public ResourceNames getSkinName() {
+			return ResourceNames.UI_GENERAL;
+		}
+
+		/**
+		 * @return name of the icon inside the skin
+		 */
+		@Override
+		public String toString() {
+			return mName;
+		}
+
+		/** skin name of the icon */
+		private String mName;
+		/** Class type */
+		private Class<?> mType;
+	}
+
+
+	/**
+	 * Interface for skin names
+	 */
+	public interface ISkinNames {
+		/**
+		 * @return class type
+		 */
+		Class<?> getClassType();
+
+		/**
+		 * @return skin name
+		 */
+		ResourceNames getSkinName();
+	}
+
+	/**
+	 * Theme names
+	 */
+	public enum Theme implements ISkinNames {
+		/** Bottom layer of the background */
+		BOTTOM_LAYER(Texture.class),
+		/** Top layer of the background */
+		TOP_LAYER(Texture.class),
+
+		;
+
+		/**
+		 * Creates a more user-friendly name for the enumeration
+		 * @param type the class type
+		 */
+		private Theme(Class<?> type) {
+			mType = type;
+			mName = super.toString().toLowerCase();
+		}
+
+		/**
+		 * Create a custom name for the enumeration
+		 * @param type the class type
+		 * @param jsonName name in the json-file
+		 */
+		private Theme(Class<?> type, String jsonName) {
+			mType = type;
+			mName = jsonName;
+		}
+
+		@Override
+		public Class<?> getClassType() {
+			return mType;
+		}
+
+		@Override
+		public ResourceNames getSkinName() {
+			return null;
+		}
+
+		/**
+		 * @return name of the icon inside the skin
+		 */
+		@Override
+		public String toString() {
+			return mName;
+		}
+
+		/** skin name of the icon */
+		private String mName;
+		/** Class type */
+		private Class<?> mType;
+	}
+
+	/**
+	 * Method for getting a skin name from the loaded resources
+	 * @param <ResourceType> The resource type to return
+	 * @param skinName the skin name to get the resource from
+	 * @return the resource that was fetched :)
+	 */
+	@SuppressWarnings("unchecked")
+	public static <ResourceType> ResourceType getResource(ISkinNames skinName) {
+		Skin skin = ResourceCacheFacade.get(skinName.getSkinName());
+		return (ResourceType) skin.get(skinName.toString(), skinName.getClassType());
 	}
 }

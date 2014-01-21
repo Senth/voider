@@ -308,7 +308,9 @@ public class EnemyActorDef extends ActorDef {
 		/** In the moving direction */
 		MOVE_DIRECTION,
 		/** Rotates */
-		ROTATE
+		ROTATE,
+		/** In a specific direction */
+		DIRECTION,
 	}
 
 	/** If the enemy has a weapon */

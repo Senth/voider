@@ -211,6 +211,8 @@ public class Messages {
 					public final static String COOLDOWN = "Weapon cooldown";
 				}
 				public static class Aim {
+					public final static String DIRECTION = "Shoot in one direction";
+					public final static String DIRECTION_ANGLE = "Angle to shoot in";
 					public final static String ON_PLAYER = "Shoot on player";
 					public final static String MOVE_DIR = "Shoot in movement direction";
 					public final static String IN_FRONT_OF_PLAYER = "Shoot in front of player";

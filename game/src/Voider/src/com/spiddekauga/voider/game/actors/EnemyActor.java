@@ -267,7 +267,7 @@ public class EnemyActor extends Actor {
 	 * Resets the weapon
 	 */
 	public void resetWeapon() {
-		mWeapon.setWeaponDefResetCd(getDef(EnemyActorDef.class).getWeaponDef());
+		mWeapon.setWeaponDef(getDef(EnemyActorDef.class).getWeaponDef());
 
 		mShootAngle = getDef(EnemyActorDef.class).getAimStartAngle();
 	}
@@ -533,6 +533,12 @@ public class EnemyActor extends Actor {
 		switch (getDef(EnemyActorDef.class).getAimType()) {
 		case ON_PLAYER:
 			shootDirection.set(mPlayerActor.getPosition()).sub(getPosition());
+			break;
+
+		case DIRECTION:
+			// Shoot in current direction
+			shootDirection.set(1,0);
+			shootDirection.rotate(getDef(EnemyActorDef.class).getAimStartAngle());
 			break;
 
 		case MOVE_DIRECTION:
