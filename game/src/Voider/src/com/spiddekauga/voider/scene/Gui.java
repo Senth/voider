@@ -4,22 +4,30 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Window.WindowStyle;
 import com.badlogic.gdx.utils.Disposable;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
+import com.spiddekauga.utils.scene.ui.Label;
 import com.spiddekauga.utils.scene.ui.Label.LabelStyle;
 import com.spiddekauga.utils.scene.ui.MessageShower;
 import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
+import com.spiddekauga.utils.scene.ui.TextFieldListener;
+import com.spiddekauga.voider.editor.commands.CBugReportSend;
+import com.spiddekauga.voider.editor.commands.CGameQuit;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceNames;
 import com.spiddekauga.voider.resources.SkinNames;
+import com.spiddekauga.voider.utils.Messages;
 
 /**
  * Base class for all GUI containing windows
@@ -182,6 +190,69 @@ public abstract class Gui implements Disposable {
 	}
 
 	/**
+	 * Shows the bug report window
+	 * @param exception the exception that was thrown, null if no exception was thrown
+	 */
+	public void showBugReportWindow(Exception exception) {
+		MsgBoxExecuter msgBox = getFreeMsgBox(true);
+		msgBox.setTitle("Bug Report");
+
+		LabelStyle labelStyle = SkinNames.getResource(SkinNames.General.LABEL_DEFAULT);
+		LabelStyle errorStyle = SkinNames.getResource(SkinNames.General.LABEL_ERROR);
+		TextFieldStyle textFieldStyle = SkinNames.getResource(SkinNames.General.TEXT_FIELD_DEFAULT);
+
+		int fieldWidth = (int) (Gdx.graphics.getWidth() * 0.75f);
+
+		AlignTable content = new AlignTable();
+		content.setCellPaddingDefault((Float) SkinNames.getResource(SkinNames.General.PADDING_DEFAULT));
+
+		Label errorLabel = new Label(Messages.Error.BUG_REPORT_INFO, errorStyle);
+		errorLabel.setWidth(fieldWidth);
+		errorLabel.setWrap(true);
+		errorLabel.pack();
+		content.add(errorLabel).setPadBottom((Float) SkinNames.getResource(SkinNames.General.PADDING_SEPARATOR));
+		content.row();
+
+
+		TextField lastAction = new TextField("", textFieldStyle);
+		lastAction.setWidth(fieldWidth);
+		new TextFieldListener(lastAction, "Last action you did before the bug occured", null);
+		content.add(lastAction);
+		content.row();
+		TextField secondLastAction = new TextField("", textFieldStyle);
+		secondLastAction.setWidth(fieldWidth);
+		new TextFieldListener(secondLastAction, "Second last action...", null);
+		content.add(secondLastAction);
+		content.row();
+		TextField thirdLastAction = new TextField("", textFieldStyle);
+		thirdLastAction.setWidth(fieldWidth);
+		new TextFieldListener(thirdLastAction, "Third last action...", null);
+		content.add(thirdLastAction).setPadBottom((Float) SkinNames.getResource(SkinNames.General.PADDING_SEPARATOR));
+		content.row();
+
+		Label descriptionLabel = new Label("Detailed description (optional)", labelStyle);
+		content.add(descriptionLabel);
+		content.row();
+		TextField description = new TextField("", textFieldStyle);
+		description.setWidth(fieldWidth);
+		int height = (int) (Gdx.graphics.getHeight()*0.35f);
+		description.setHeight(height);
+		content.add(description);
+
+		CBugReportSend bugReportSend = new CBugReportSend(lastAction, secondLastAction, thirdLastAction, description, exception);
+		CGameQuit quit = new CGameQuit();
+
+		msgBox.content(content);
+		msgBox.button("Send report and quit", bugReportSend);
+		msgBox.button("Quit game", quit);
+		msgBox.key(Keys.ESCAPE, quit);
+		msgBox.key(Keys.BACK, quit);
+		msgBox.key(Keys.ENTER, bugReportSend);
+
+		showMsgBox(msgBox);
+	}
+
+	/**
 	 * Initializes the GUI
 	 */
 	public void initGui() {
@@ -285,23 +356,6 @@ public abstract class Gui implements Disposable {
 			}
 		}
 		return null;
-	}
-
-	/**
-	 * Adds inner table to the outer table
-	 * @param innerTable the table to add to the outerTable, if null outerTable will
-	 * only be cleared.
-	 * @param outerTable the table to clear and then add innerTable to.
-	 */
-	protected static void addInnerTable(AlignTable innerTable, AlignTable outerTable) {
-		outerTable.dispose(false);
-
-		if (innerTable != null) {
-			outerTable.add(innerTable);
-			innerTable.invalidateHierarchy();
-		}
-
-		outerTable.invalidateHierarchy();
 	}
 
 	/**

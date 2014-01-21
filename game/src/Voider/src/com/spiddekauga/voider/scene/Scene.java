@@ -12,6 +12,8 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.spiddekauga.utils.GameTime;
+import com.spiddekauga.utils.IExceptionHandler;
+import com.spiddekauga.utils.InputMultiplexerExceptionSnatcher;
 import com.spiddekauga.utils.Invoker;
 import com.spiddekauga.utils.ShapeRendererEx;
 import com.spiddekauga.voider.game.BulletDestroyer;
@@ -23,7 +25,7 @@ import com.spiddekauga.voider.game.BulletDestroyer;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public abstract class Scene extends InputAdapter {
+public abstract class Scene extends InputAdapter implements IExceptionHandler {
 	/**
 	 * Creates the input multiplexer. UI always has priority over everything else.
 	 * @param gui the GUI to use for the scene
@@ -31,6 +33,7 @@ public abstract class Scene extends InputAdapter {
 	protected Scene(Gui gui) {
 		if (gui != null) {
 			mGui = gui;
+			mInputMultiplexer = new InputMultiplexerExceptionSnatcher(this);
 			mInputMultiplexer.addProcessor(0, mGui.getStage());
 			mInputMultiplexer.addProcessor(1, this);
 		}
@@ -56,6 +59,15 @@ public abstract class Scene extends InputAdapter {
 			mGui.render();
 		}
 		Gdx.gl.glDisable(GL20.GL_DEPTH_TEST);
+	}
+
+	/**
+	 * Report an exception
+	 * @param exception the exception that was thrown
+	 */
+	@Override
+	public void handleException(Exception exception) {
+		mGui.showBugReportWindow(exception);
 	}
 
 	/**
@@ -463,7 +475,7 @@ public abstract class Scene extends InputAdapter {
 	/** Shape Renderer used for rendering stuff */
 	protected ShapeRendererEx mShapeRenderer = new ShapeRendererEx();
 	/** Input multiplexer */
-	protected InputMultiplexer mInputMultiplexer = new InputMultiplexer();
+	protected InputMultiplexerExceptionSnatcher mInputMultiplexer = null;
 	/** GUI for the scene */
 	protected Gui mGui = null;
 

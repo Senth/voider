@@ -138,7 +138,9 @@ public class Messages {
 		public final static String POLYGON_COMPLEX_DRAW_ERASE = "Can't draw a polygon with an intersection!";
 		/** Polygon draw/erase line is complex */
 		public final static String POLYGON_DRAW_ERASE_LINE_COMPLEX = "Draw line must not intersect itself.";
-
+		/** Bug report */
+		public final static String BUG_REPORT_INFO = "The game has crashed due to some unknown bug. "
+				+ "Please describe the last 3 steps you did; this helps enormously when debugging :)";
 	}
 
 	/**

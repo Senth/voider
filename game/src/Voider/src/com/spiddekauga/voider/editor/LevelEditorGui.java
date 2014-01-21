@@ -740,12 +740,6 @@ class LevelEditorGui extends EditorGui {
 	/**
 	 * Init add enemy options
 	 */
-	/**
-	 * 
-	 */
-	/**
-	 * 
-	 */
 	private void initEnemyAddOptions() {
 		mHiders.enemyAdd.setButton(mWidgets.tool.enemyAdd);
 

@@ -3,11 +3,12 @@ package com.badlogic.gdx.scenes.scene2d.ui;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.spiddekauga.utils.Command;
 import com.spiddekauga.utils.scene.ui.AlignTable;
+import com.spiddekauga.utils.scene.ui.Label;
+import com.spiddekauga.utils.scene.ui.Label.LabelStyle;
 
 /**
  * Message box wrapper for dialog. This allows other content than just text.
@@ -21,6 +22,7 @@ public class MsgBox extends Dialog {
 	 */
 	public MsgBox(Skin skin) {
 		super("", skin);
+		mSkin = skin;
 	}
 
 	/**
@@ -31,6 +33,7 @@ public class MsgBox extends Dialog {
 	 */
 	public MsgBox(Skin skin, String windowStyleName) {
 		super("", skin, windowStyleName);
+		mSkin = skin;
 	}
 
 	/**
@@ -85,19 +88,28 @@ public class MsgBox extends Dialog {
 	 * @return this message box for chaining
 	 */
 	public MsgBox content(String text) {
-		super.text(text);
-		return this;
+		if (mSkin == null) {
+			throw new IllegalStateException("This method may only be used if the message box was constructed with a Skin.");
+		}
+		return content(text, mSkin.get(LabelStyle.class));
 	}
 
 	/**
 	 * Adds a label to the content table.
 	 * @param text text to write in the content
 	 * @param labelStyle what label style to use for the label
-	 * @see #text(String, LabelStyle) does exactly the same thing
 	 * @return this message box for chaining
 	 */
 	public MsgBox content(String text, LabelStyle labelStyle) {
-		super.text(text, labelStyle);
+		return content(new Label(text, labelStyle));
+	}
+
+	/**
+	 * Adds a row to the content
+	 * @return this message box for chaining
+	 */
+	public MsgBox contentRow() {
+		contentTable.row();
 		return this;
 	}
 
@@ -106,23 +118,27 @@ public class MsgBox extends Dialog {
 	 * The dialog must have been constructed with a skin to use this method.
 	 */
 	@Override
+	@Deprecated
 	public MsgBox text (String text) {
-		super.text(text);
-		return this;
+		return content(text);
 	}
 
-	/** Adds a label to the content table. */
+	/**
+	 * Invalid, don't call this. Throws an exception
+	 */
 	@Override
-	public MsgBox text (String text, LabelStyle labelStyle) {
-		super.text(text, labelStyle);
-		return this;
+	@Deprecated
+	public MsgBox text (String text, com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle labelStyle) {
+		throw new IllegalAccessError("This method should never be called");
 	}
 
-	/** Adds the given Label to the content table */
+	/**
+	 * Invalid, don't call this. Throws an exception
+	 */
 	@Override
-	public MsgBox text (Label label) {
-		contentTable.add(label);
-		return this;
+	@Deprecated
+	public MsgBox text (com.badlogic.gdx.scenes.scene2d.ui.Label label) {
+		throw new IllegalAccessError("This method should never be called");
 	}
 
 	/**
@@ -253,4 +269,6 @@ public class MsgBox extends Dialog {
 
 	/** If the message box is hiding */
 	protected boolean mHiding = false;
+	/** Skin of the message box */
+	protected Skin mSkin = null;
 }

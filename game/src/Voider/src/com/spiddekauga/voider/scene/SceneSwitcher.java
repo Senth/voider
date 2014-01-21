@@ -442,52 +442,61 @@ public class SceneSwitcher {
 			return;
 		}
 
+		try {
 
-		// Scene which resources needs to be unloaded after we have loaded all for the next scene
-		if (!mScenesNeedUnloading.isEmpty() && !ResourceCacheFacade.isLoading()) {
-			Iterator<Scene> sceneIt = mScenesNeedUnloading.iterator();
-			while (sceneIt.hasNext()) {
-				Scene unloadScene = sceneIt.next();
-				unloadScene.unloadResources();
-				sceneIt.remove();
-			}
-		}
-
-
-		Scene currentScene = mScenes.peek();
-
-		// Loading using no loading scene
-		if (currentScene.isLoading()) {
-			try {
-				boolean allLoaded = ResourceCacheFacade.update();
-
-				// Loading done -> Activate scene
-				if (allLoaded) {
-					if (mOutcome != null) {
-						currentScene.onActivate(mOutcome, mOutcomeMessage);
-						mOutcome = null;
-						mOutcomeMessage = null;
-					} else {
-						currentScene.onActivate(Outcomes.LOADING_SUCCEEDED, null);
-					}
-					Gdx.input.setInputProcessor(currentScene.getInputMultiplexer());
-					currentScene.setLoading(false);
+			// Scene which resources needs to be unloaded after we have loaded all for the next scene
+			if (!mScenesNeedUnloading.isEmpty() && !ResourceCacheFacade.isLoading()) {
+				Iterator<Scene> sceneIt = mScenesNeedUnloading.iterator();
+				while (sceneIt.hasNext()) {
+					Scene unloadScene = sceneIt.next();
+					unloadScene.unloadResources();
+					sceneIt.remove();
 				}
-			} catch (ResourceNotFoundException e) {
-				currentScene.onActivate(Outcomes.LOADING_FAILED_MISSING_FILE, e.toString());
-				Gdx.input.setInputProcessor(currentScene.getInputMultiplexer());
-			} catch (ResourceCorruptException e) {
-				currentScene.onActivate(Outcomes.LOADING_FAILED_CORRUPT_FILE, e.toString());
-				Gdx.input.setInputProcessor(currentScene.getInputMultiplexer());
 			}
-		}
-		// Scene is done, pop it
-		else if (currentScene.isDone()) {
-			popCurrentScene();
-		}
-		// Else -> Update it
-		else {
-			currentScene.run();
+
+
+			Scene currentScene = mScenes.peek();
+
+			// Loading using no loading scene
+			if (currentScene.isLoading()) {
+				try {
+					boolean allLoaded = ResourceCacheFacade.update();
+
+					// Loading done -> Activate scene
+					if (allLoaded) {
+						if (mOutcome != null) {
+							currentScene.onActivate(mOutcome, mOutcomeMessage);
+							mOutcome = null;
+							mOutcomeMessage = null;
+						} else {
+							currentScene.onActivate(Outcomes.LOADING_SUCCEEDED, null);
+						}
+						Gdx.input.setInputProcessor(currentScene.getInputMultiplexer());
+						currentScene.setLoading(false);
+					}
+				} catch (ResourceNotFoundException e) {
+					currentScene.onActivate(Outcomes.LOADING_FAILED_MISSING_FILE, e.toString());
+					Gdx.input.setInputProcessor(currentScene.getInputMultiplexer());
+				} catch (ResourceCorruptException e) {
+					currentScene.onActivate(Outcomes.LOADING_FAILED_CORRUPT_FILE, e.toString());
+					Gdx.input.setInputProcessor(currentScene.getInputMultiplexer());
+				}
+			}
+			// Scene is done, pop it
+			else if (currentScene.isDone()) {
+				popCurrentScene();
+			}
+			// Else -> Update it
+			else {
+				currentScene.run();
+			}
+
+		} catch (Exception e) {
+			if (!mScenes.isEmpty()) {
+				Scene currentScene = mScenes.peek();
+
+				currentScene.handleException(e);
+			}
 		}
 	}
 
