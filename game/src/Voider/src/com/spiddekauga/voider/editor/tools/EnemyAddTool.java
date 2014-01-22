@@ -1,5 +1,7 @@
 package com.spiddekauga.voider.editor.tools;
 
+import java.util.ArrayList;
+
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
@@ -14,6 +16,7 @@ import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.EnemyActor;
 import com.spiddekauga.voider.game.actors.EnemyActorDef;
 import com.spiddekauga.voider.game.actors.EnemyActorDef.MovementTypes;
+import com.spiddekauga.voider.utils.Geometry;
 import com.spiddekauga.voider.utils.Pools;
 
 /**
@@ -92,31 +95,26 @@ public class EnemyAddTool extends ActorAddTool {
 			boolean usesPath = false;
 
 			// Is the position close to a path?
-			Path closestPath = getClosestPath(snappedPosition, levelEditor);
+			PathDistanceWrapper closestPath = getClosestPath(snappedPosition, levelEditor);
 			if (closestPath != null) {
-				Vector2 diffVector = Pools.vector2.obtain();
-				diffVector.set(snappedPosition).sub(closestPath.getCornerPosition(0));
-
-				if (diffVector.len2() <= Editor.Level.ENEMY_SNAP_PATH_DISTANCE_SQ) {
-					snappedPosition.set(closestPath.getCornerPosition(0));
+				if (closestPath.distance <= Editor.Level.ENEMY_SNAP_PATH_DISTANCE_SQ) {
+					snappedPosition.set(closestPath.path.getCornerPosition(0));
 					usesPath = true;
 				}
-
-				Pools.vector2.free(diffVector);
 			}
 
 			if (!usesPath) {
-				closestPath = null;
+				closestPath.path = null;
 			}
 
 			if (invoker != null) {
 				// Only change if not same path as before
-				if (closestPath != enemyActor.getPath() || closestPath == null || enemyActor.getPath() == null) {
+				if (closestPath.path != enemyActor.getPath() || closestPath.path == null || enemyActor.getPath() == null) {
 					invoker.execute(new CResourceMove(enemyActor, snappedPosition, levelEditor));
 
 					// Changed paths
-					if (closestPath != null || enemyActor.getPath() != null) {
-						invoker.execute(new CEnemySetPath(enemyActor, closestPath, levelEditor), true);
+					if (closestPath.path != null || enemyActor.getPath() != null) {
+						invoker.execute(new CEnemySetPath(enemyActor, closestPath.path, levelEditor), true);
 					}
 				}
 			} else {
@@ -131,28 +129,41 @@ public class EnemyAddTool extends ActorAddTool {
 	 * Calculates the closest path to the specified position
 	 * @param position the position to search from
 	 * @param levelEditor the level editor to search for paths
-	 * @return closest path, null if none exist
+	 * @return closest path and the distance to the specified position
 	 */
-	private static Path getClosestPath(Vector2 position, LevelEditor levelEditor) {
+	private static PathDistanceWrapper getClosestPath(Vector2 position, LevelEditor levelEditor) {
 		Path closestPath = null;
 		float closestDistance = Float.POSITIVE_INFINITY;
-		Vector2 diffVector = Pools.vector2.obtain();
 
 		for (Path path : levelEditor.getPaths()) {
 			if (path.getCornerCount() >= 2) {
-				diffVector.set(path.getCornerPosition(0));
-				diffVector.sub(position);
+				ArrayList<Vector2> pathCorners = path.getCorners();
+				for (int i = 0; i < path.getCornerCount() - 1; ++i) {
+					int nextIndex = i+1;
 
-				float diffDistance = diffVector.len2();
-				if (diffDistance < closestDistance) {
-					closestDistance = diffDistance;
-					closestPath = path;
+					float diffDistance = Geometry.distBetweenPointLineSegmentSq(pathCorners.get(i), pathCorners.get(nextIndex), position);
+					if (diffDistance < closestDistance) {
+						closestDistance = diffDistance;
+						closestPath = path;
+					}
 				}
 			}
 		}
 
-		Pools.vector2.free(diffVector);
-
-		return closestPath;
+		mTmpPathDistanceWrapper.distance = closestDistance;
+		mTmpPathDistanceWrapper.path = closestPath;
+		return mTmpPathDistanceWrapper;
 	}
+
+	/**
+	 * Wrapper class for a pointer and a distance
+	 */
+	@SuppressWarnings("javadoc")
+	private static class PathDistanceWrapper {
+		Path path;
+		float distance;
+	}
+
+	/** Temporary path distance variable */
+	private static PathDistanceWrapper mTmpPathDistanceWrapper = new PathDistanceWrapper();
 }
