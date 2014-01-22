@@ -163,6 +163,8 @@ public class Config {
 		public static boolean SKIP_LOADING_TIME = true;
 		/** Logging verbosity */
 		public static int LOG_VERBOSITY = Application.LOG_DEBUG;
+		/** Set to true to turn on the exception handler */
+		public static boolean EXCEPTION_HANDLER = false;
 	}
 
 	/**

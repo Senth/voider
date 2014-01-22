@@ -15,10 +15,10 @@ java.lang.Float: {
 	padding_window_left_right: {value: 8},
 	padding_separator: {value: 32},
 	padding_after_label: {value: 8},
-	text_field_number_width: {value: 70},
-	select_def_info_width: {value: 200},
-	select_def_text_width_max: {value: 200},
-	select_def_image_width_max: {value: 100},
+	text_field_number_width: {value: 64},
+	select_def_info_width: {value: 240},
+	select_def_text_width_max: {value: 160},
+	select_def_image_width_max: {value: 80},
 },
 
 com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
@@ -67,34 +67,47 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 	
 	play: {
 		imageUp: play,
-		imageOver: play,
-		imageDown: play
+		imageOver: play_over,
+		imageDown: play_down,
+		imageChecked: play_checked,
+		imageCheckedOver: play_checked_over,
+		imageDisabled: play_disabled
 	},
 	
 	explore: {
 		imageUp: explore,
-		imageOver: explore,
-		imageDown: explore
+		imageOver: explore_over,
+		imageDown: explore_down,
+		imageChecked: explore_checked,
+		imageCheckedOver: explore_checked_over,
+		imageDisabled: explore_disabled
 	},
 	
 	create: {
 		imageUp: create,
-		imageOver: create,
-		imageDown: create
+		imageOver: create_over,
+		imageDown: create_down,
+		imageChecked: create_checked,
+		imageCheckedOver: create_checked_over,
+		imageDisabled: create_disabled
 	},
 	
 	info: {
-		down: button_default_down,
-		up: button_default_up,
-		over: button_default_over,
-		imageUp: info
+		imageUp: info,
+		imageOver: info_over,
+		imageDown: info_down,
+		imageChecked: info_checked,
+		imageCheckedOver: info_checked_over,
+		imageDisabled: info_disabled
 	},
 	
 	options: {
-		down: button_default_down,
-		up: button_default_up,
-		over: button_default_over,
-		imageUp: options
+		imageUp: stub,
+		imageOver: stub_over,
+		imageDown: stub_down,
+		imageChecked: stub_checked,
+		imageCheckedOver: stub_checked_over,
+		imageDisabled: stub_disabled
 	},
 },
 

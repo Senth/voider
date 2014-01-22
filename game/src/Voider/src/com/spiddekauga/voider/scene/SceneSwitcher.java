@@ -13,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.utils.Invoker;
 import com.spiddekauga.utils.scene.ui.Label.LabelStyle;
+import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.BulletDestroyer;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceCorruptException;
@@ -491,11 +492,14 @@ public class SceneSwitcher {
 				currentScene.run();
 			}
 
-		} catch (Exception e) {
-			if (!mScenes.isEmpty()) {
+		} catch (RuntimeException e) {
+			boolean handleException = Config.Debug.EXCEPTION_HANDLER && !mScenes.isEmpty();
+			if (handleException) {
 				Scene currentScene = mScenes.peek();
 
 				currentScene.handleException(e);
+			} else {
+				throw e;
 			}
 		}
 	}

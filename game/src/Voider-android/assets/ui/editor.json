@@ -8,8 +8,8 @@ com.badlogic.gdx.graphics.Color: {
 	grid_color: { r: 1, g: 1, b: 1, a: 0.2 },
 	grid_milestone_color: { r: 1, g: 1, b: 1, a: 0.4 },
 	level_above_below_color: { r: 1, g: 1, b: 1 , a: 0.2 },
-	enemy_activate_trigger_path_color: { r: 0.25, g: 1, b: 0.25, a: 0.4 },
-	enemy_deactivate_trigger_path_color: { r: 1, g: 0.25, b: 0.6, a: 0.4 } 
+	enemy_activate_trigger_line_color: { r: 0.25, g: 1, b: 0.25, a: 0.4 },
+	enemy_deactivate_trigger_line_color: { r: 1, g: 0.25, b: 0.6, a: 0.4 } 
 },
 
 com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {

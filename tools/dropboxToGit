@@ -1,0 +1,80 @@
+#!/bin/bash
+
+CAN_SYNC=('json' 'game' 'editor' 'general')
+DROPBOX_DIR="$HOME/Dropbox"
+DROPBOX_SUB_DIR="$DROPBOX_DIR/Voider exec/Voider - editable resources/internal_resources"
+DROPBOX_UI_PICS_DIR="$DROPBOX_SUB_DIR/ui-editable"
+DROPBOX_JSON_DIR="$DROPBOX_SUB_DIR/ui"
+GIT_SUB_DIR="$GIT_DIR/game"
+GIT_UI_PICS_DIR="$GIT_SUB_DIR/ui"
+GIT_JSON_DIR="$GIT_SUB_DIR/src/Voider-android/assets"
+
+usage() {
+cat << EOF
+Usage: $0 [json/game/editor/general]
+When not specifying anything all are synced from the dropbox directory to the git folder
+
+Options:
+	-h, --help
+		Displays this text
+EOF
+}
+
+
+syncing=()
+
+containsElement() {
+	local e
+	for e in "${@:2}"; do [[ "$e" == "$1" ]] && return 0; done
+	return 1
+}
+
+# Parse the arguments
+while [ -n "$*" ]; do
+	case $1 in
+	-h)
+		usage
+		exit 1
+		;;
+	--help)
+		usage
+		exit 1
+		;;
+	*)
+		containsElement "$1" "${CAN_SYNC[@]}"
+		if [ $? -eq 0 ]; then
+			syncing+=("$1")
+		fi
+		;;
+
+	esac
+
+	shift
+done
+
+# If no sync elements were passed add all
+if [ ${#syncing[@]} -eq 0 ]; then
+	syncing=( "${CAN_SYNC[@]}" )
+fi
+
+# echo "Syncing array:"
+# printf -- '%s\n' "${syncing[@]}"
+
+
+syncJsonStyles() {
+	cp -rv "$DROPBOX_JSON_DIR" "$GIT_JSON_DIR"
+}
+
+syncPics() {
+	cp -rv "$DROPBOX_UI_PICS_DIR/$1" "$GIT_UI_PICS_DIR"
+}
+
+for sync_object in "${syncing[@]}"
+do
+	if [ "$sync_object" = "json" ]; then
+		syncJsonStyles
+	# The rest are picture files sync them using syncPics
+	else
+		syncPics "$sync_object"
+	fi
+done
