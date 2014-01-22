@@ -271,6 +271,7 @@ public class Messages {
 				public final static String UNDO = "Undo your previous action";
 				public final static String REDO = "Redo your action";
 				public final static String RUN = "Test run your level";
+				public final static String HIGHLIGHT_ENEMY = "Highlight enemies used during test run";
 				public final static String GRID = "Turn on/off the grid";
 				public final static String GRID_ADOVE = "Display grid above everything else";
 				public final static String INFO = "Info and options for this " + ACTOR_TYPE;

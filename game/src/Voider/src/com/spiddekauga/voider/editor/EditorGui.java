@@ -147,6 +147,12 @@ public abstract class EditorGui extends Gui {
 			mGridRender.setChecked(mEditor.isGridOn());
 			mGridRenderAbove.setChecked(mEditor.isGridRenderAboveResources());
 		}
+
+		if (mEnemyHighlight != null) {
+			if (mEditor instanceof LevelEditor) {
+				mEnemyHighlight.setChecked(((LevelEditor) mEditor).isEnemyHighlightOn());
+			}
+		}
 	}
 
 	/**
@@ -316,8 +322,26 @@ public abstract class EditorGui extends Gui {
 			}
 		};
 
-		// Run (for level editor)
+		// Run & Enemy highlight (for level editor)
 		if (mEditor instanceof LevelEditor) {
+			// Highlight enemy if it will spawn when test running the level from
+			// the current position
+			if (Config.Gui.usesTextButtons()) {
+				button = new TextButton("Highlight enemies", mStyles.textButton.press);
+			} else {
+				button = new ImageButton(mStyles.skin.editor, EditorIcons.ENEMY_SPAWN_HIGHLIGHT.toString());
+			}
+			mEnemyHighlight = button;
+			mFileMenu.add(button);
+			tooltipListener = new TooltipListener(button, null, Messages.Tooltip.Menus.File.HIGHLIGHT_ENEMY);
+			new ButtonListener(button, tooltipListener) {
+				@Override
+				protected void onChecked(boolean checked) {
+					((LevelEditor) mEditor).setEnemyHighlight(checked);
+				}
+			};
+
+			// Run
 			if (Config.Gui.usesTextButtons()) {
 				button = new TextButton("Run", mStyles.textButton.press);
 			} else {
@@ -686,6 +710,8 @@ public abstract class EditorGui extends Gui {
 	/** All skins and styles */
 	protected UiStyles mStyles = new UiStyles();
 
+	/** Enemy highlight button */
+	private Button mEnemyHighlight = null;
 	/** Grid button */
 	private Button mGridRender = null;
 	/** Grid above button */

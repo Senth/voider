@@ -15,8 +15,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Window.WindowStyle;
 import com.spiddekauga.utils.scene.ui.Label.LabelStyle;
 
 
-
-
 /**
  * All skin names
  * 
@@ -71,6 +69,9 @@ public class SkinNames {
 		DRAW_ERASE,
 		/** Duplicates the current actor or level */
 		DUPLICATE,
+		/** When checked it shows which enemies will be spawned when testing
+		 * the level from the current position */
+		ENEMY_SPAWN_HIGHLIGHT,
 		/** Add an enemy to the level */
 		ENEMY_ADD,
 		/** Go to the enemy editor */

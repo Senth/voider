@@ -1312,6 +1312,23 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	}
 
 	/**
+	 * Sets if enemies that will be used when test running the level from here should
+	 * be highlighted.
+	 * @param highlight set to true to highlight the enemies
+	 */
+	void setEnemyHighlight(boolean highlight) {
+		mEnemyHighlight = highlight;
+	}
+
+	/**
+	 * @return true if the enemy should be highlighted if the will be used when test running
+	 * a level from the current position
+	 */
+	public boolean isEnemyHighlightOn() {
+		return mEnemyHighlight;
+	}
+
+	/**
 	 * @return current level
 	 */
 	public Level getLevel() {
@@ -1511,4 +1528,6 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	private ISelection mSelection = null;
 	/** Current selected tool */
 	private Tools mTool = Tools.SELECTION;
+	/** If enemies should be highlighted if they will be used when test running the level */
+	private boolean mEnemyHighlight = true;
 }

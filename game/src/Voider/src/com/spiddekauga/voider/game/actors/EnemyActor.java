@@ -150,44 +150,48 @@ public class EnemyActor extends Actor {
 
 			shapeRenderer.pop();
 
-			// Render overlay if will be spawned when test running the level
+
+			// Highlight if will be spawned when test running the level
 			Scene scene = SceneSwitcher.getActiveScene(false);
 			if (scene instanceof LevelEditor) {
 				LevelEditor levelEditor = (LevelEditor) scene;
-				float levelStartCoord = levelEditor.getRunFromHerePosition();
-				float enemyActivationCoord = Float.MIN_VALUE;
+				if (levelEditor.isEnemyHighlightOn()) {
 
-				// Enemy has a dedicated trigger
-				TriggerInfo triggerInfo = TriggerInfo.getTriggerInfoByAction(this, Actions.ACTOR_ACTIVATE);
-				if (triggerInfo != null) {
-					if (triggerInfo.trigger instanceof TScreenAt) {
-						enemyActivationCoord = ((TScreenAt)triggerInfo.trigger).getPosition().x;
-					}
-				}
+					float levelStartCoord = levelEditor.getRunFromHerePosition();
+					float enemyActivationCoord = Float.MIN_VALUE;
 
-				// Enemy will use default trigger
-				if (enemyActivationCoord == Float.MIN_VALUE) {
-					enemyActivationCoord = calculateDefaultActivateTriggerPosition(levelEditor.getLevel().getSpeed());
-				}
-
-				// Enemy will spawn
-				if (levelStartCoord <= enemyActivationCoord) {
-
-					shapeRenderer.setColor((Color) SkinNames.getResource(SkinNames.EditorVars.ENEMY_WILL_ACTIVATE_ON_TEST_RUN_COLOR));
-
-					Vector2 offsetPosition = getWorldOffset();
-
-					if (getDef().getVisualVars().getCornerCount() == 2) {
-						offsetPosition.sub(getDef().getVisualVars().getCorners().get(0));
-						offsetPosition.sub(getDef().getVisualVars().getCenterOffset());
+					// Enemy has a dedicated trigger
+					TriggerInfo triggerInfo = TriggerInfo.getTriggerInfoByAction(this, Actions.ACTOR_ACTIVATE);
+					if (triggerInfo != null) {
+						if (triggerInfo.trigger instanceof TScreenAt) {
+							enemyActivationCoord = ((TScreenAt)triggerInfo.trigger).getPosition().x;
+						}
 					}
 
-					if (mPolygonOutline == null) {
-						reloadPolygonOutline();
+					// Enemy will use default trigger
+					if (enemyActivationCoord == Float.MIN_VALUE) {
+						enemyActivationCoord = calculateDefaultActivateTriggerPosition(levelEditor.getLevel().getSpeed());
 					}
 
-					if (mPolygonOutline != null) {
-						shapeRenderer.triangles(mPolygonOutline, offsetPosition);
+					// Enemy will spawn
+					if (levelStartCoord <= enemyActivationCoord) {
+
+						shapeRenderer.setColor((Color) SkinNames.getResource(SkinNames.EditorVars.ENEMY_WILL_ACTIVATE_ON_TEST_RUN_COLOR));
+
+						Vector2 offsetPosition = getWorldOffset();
+
+						if (getDef().getVisualVars().getCornerCount() == 2) {
+							offsetPosition.sub(getDef().getVisualVars().getCorners().get(0));
+							offsetPosition.sub(getDef().getVisualVars().getCenterOffset());
+						}
+
+						if (mPolygonOutline == null) {
+							reloadPolygonOutline();
+						}
+
+						if (mPolygonOutline != null) {
+							shapeRenderer.triangles(mPolygonOutline, offsetPosition);
+						}
 					}
 				}
 			}

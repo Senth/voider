@@ -161,6 +161,7 @@ public class EnemyEditorGui extends ActorGui {
 		// Aim
 		mWidgets.weapon.aimRotateSpeed.setValue(mEnemyEditor.getAimRotateSpeed());
 		mWidgets.weapon.aimRotateStartAngle.setValue(mEnemyEditor.getAimStartAngle());
+		mWidgets.weapon.aimDirectionAngle.setValue(mEnemyEditor.getAimStartAngle());
 		switch (mEnemyEditor.getAimType()) {
 		case ON_PLAYER:
 			mWidgets.weapon.aimOnPlayer.setChecked(true);
@@ -176,6 +177,10 @@ public class EnemyEditorGui extends ActorGui {
 
 		case ROTATE:
 			mWidgets.weapon.aimRotate.setChecked(true);
+			break;
+
+		case DIRECTION:
+			mWidgets.weapon.aimDirection.setChecked(true);
 			break;
 		}
 	}

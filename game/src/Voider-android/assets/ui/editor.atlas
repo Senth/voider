@@ -262,6 +262,20 @@ aim_direction
   orig: 32, 32
   offset: 0, 0
   index: -1
+enemy_activates_on_test_run
+  rotate: false
+  xy: 1347, 95
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+enemy_spawn_highlight
+  rotate: false
+  xy: 1347, 95
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
 pan
   rotate: false
   xy: 1347, 95
@@ -284,6 +298,34 @@ aim_direction_checked
   offset: 0, 0
   index: -1
 aim_direction_down
+  rotate: false
+  xy: 69, 13
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+enemy_activates_on_test_run_checked
+  rotate: false
+  xy: 69, 13
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+enemy_activates_on_test_run_down
+  rotate: false
+  xy: 69, 13
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+enemy_spawn_highlight_checked
+  rotate: false
+  xy: 69, 13
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+enemy_spawn_highlight_down
   rotate: false
   xy: 69, 13
   size: 32, 32
@@ -332,6 +374,34 @@ aim_direction_over
   orig: 32, 32
   offset: 0, 0
   index: -1
+enemy_activates_on_test_run_checked_over
+  rotate: false
+  xy: 1347, 61
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+enemy_activates_on_test_run_over
+  rotate: false
+  xy: 1347, 61
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+enemy_spawn_highlight_checked_over
+  rotate: false
+  xy: 1347, 61
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+enemy_spawn_highlight_over
+  rotate: false
+  xy: 1347, 61
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
 pan_checked_over
   rotate: false
   xy: 1347, 61
@@ -361,6 +431,20 @@ stub_over
   offset: 0, 0
   index: -1
 aim_direction_disabled
+  rotate: false
+  xy: 1381, 95
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+enemy_activates_on_test_run_disabled
+  rotate: false
+  xy: 1381, 95
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+enemy_spawn_highlight_disabled
   rotate: false
   xy: 1381, 95
   size: 32, 32
