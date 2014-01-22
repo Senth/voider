@@ -649,8 +649,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		GameScene testGame = new GameScene(true, invulnerable);
 		Level copyLevel = mLevel.copy();
 		// Because of scaling decrease the x position
-		float levelScaling = (Config.Graphics.LEVEL_EDITOR_HEIGHT_SCALE - 1) / Config.Graphics.LEVEL_EDITOR_HEIGHT_SCALE;
-		float xPosition = mCamera.position.x + mCamera.viewportWidth * 0.5f - mCamera.viewportWidth * levelScaling;
+		float xPosition = getRunFromHerePosition();
 		copyLevel.setStartPosition(xPosition);
 		copyLevel.calculateEndPosition();
 
@@ -665,6 +664,14 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		}
 
 		SceneSwitcher.switchTo(testGame);
+	}
+
+	/**
+	 * Calculates the current starting position when test running
+	 * @return start position of the level when test running from here
+	 */
+	public float getRunFromHerePosition() {
+		return mCamera.position.x + mCamera.viewportWidth * 0.5f - mCamera.viewportWidth * Config.Graphics.LEVEL_EDITOR_HEIGHT_SCALE_INVERT;
 	}
 
 	@Override

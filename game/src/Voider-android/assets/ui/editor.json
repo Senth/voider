@@ -2,6 +2,7 @@
 java.lang.Float: {
 	padding_between_editor_menu_and_tools: {value: 8},
 	padding_between_file_menu_and_options: {value: 8},
+	enemy_will_activate_on_test_run_line_width: {value: 0.25},
 },
 
 com.badlogic.gdx.graphics.Color: {
@@ -9,7 +10,8 @@ com.badlogic.gdx.graphics.Color: {
 	grid_milestone_color: { r: 1, g: 1, b: 1, a: 0.4 },
 	level_above_below_color: { r: 1, g: 1, b: 1 , a: 0.2 },
 	enemy_activate_trigger_line_color: { r: 0.25, g: 1, b: 0.25, a: 0.4 },
-	enemy_deactivate_trigger_line_color: { r: 1, g: 0.25, b: 0.6, a: 0.4 } 
+	enemy_deactivate_trigger_line_color: { r: 1, g: 0.25, b: 0.6, a: 0.4 },
+	enemy_will_activate_on_test_run_color: { r: 1, g: 1, b: 1, a: 1},
 },
 
 com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {

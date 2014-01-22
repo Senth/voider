@@ -1,5 +1,7 @@
 package com.spiddekauga.voider.game.actors;
 
+import java.util.ArrayList;
+
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
@@ -12,6 +14,7 @@ import com.spiddekauga.utils.ShapeRendererEx;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Graphics.RenderOrders;
+import com.spiddekauga.voider.editor.LevelEditor;
 import com.spiddekauga.voider.game.Level;
 import com.spiddekauga.voider.game.Path;
 import com.spiddekauga.voider.game.Path.PathTypes;
@@ -25,6 +28,7 @@ import com.spiddekauga.voider.game.triggers.TriggerInfo;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourcePosition;
 import com.spiddekauga.voider.resources.SkinNames;
+import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.utils.Geometry;
 import com.spiddekauga.voider.utils.Pools;
@@ -48,6 +52,14 @@ public class EnemyActor extends Actor {
 		Pools.vector2.freeAll(mTargetDirection, mRandomMoveDirection);
 		mTargetDirection = null;
 		mRandomMoveDirection = null;
+
+		if (mPolygonOutline != null) {
+			Pools.arrayList.free(mPolygonOutline);
+		}
+		if (mPolygonOutlineInnerCorners != null) {
+			Pools.vector2.freeAll(mPolygonOutlineInnerCorners);
+			Pools.arrayList.free(mPolygonOutlineInnerCorners);
+		}
 	}
 
 	@Override
@@ -135,7 +147,51 @@ public class EnemyActor extends Actor {
 				shapeRenderer.setColor((Color) SkinNames.getResource(SkinNames.EditorVars.ENEMY_DEACTIVATE_TRIGGER_LINE_COLOR));
 				shapeRenderer.line(getPosition(), ((IResourcePosition)deactivateTrigger.trigger).getPosition());
 			}
+
 			shapeRenderer.pop();
+
+			// Render overlay if will be spawned when test running the level
+			Scene scene = SceneSwitcher.getActiveScene(false);
+			if (scene instanceof LevelEditor) {
+				LevelEditor levelEditor = (LevelEditor) scene;
+				float levelStartCoord = levelEditor.getRunFromHerePosition();
+				float enemyActivationCoord = Float.MIN_VALUE;
+
+				// Enemy has a dedicated trigger
+				TriggerInfo triggerInfo = TriggerInfo.getTriggerInfoByAction(this, Actions.ACTOR_ACTIVATE);
+				if (triggerInfo != null) {
+					if (triggerInfo.trigger instanceof TScreenAt) {
+						enemyActivationCoord = ((TScreenAt)triggerInfo.trigger).getPosition().x;
+					}
+				}
+
+				// Enemy will use default trigger
+				if (enemyActivationCoord == Float.MIN_VALUE) {
+					enemyActivationCoord = calculateDefaultActivateTriggerPosition(levelEditor.getLevel().getSpeed());
+				}
+
+				// Enemy will spawn
+				if (levelStartCoord <= enemyActivationCoord) {
+
+					shapeRenderer.setColor((Color) SkinNames.getResource(SkinNames.EditorVars.ENEMY_WILL_ACTIVATE_ON_TEST_RUN_COLOR));
+
+					Vector2 offsetPosition = getWorldOffset();
+
+					if (getDef().getVisualVars().getCornerCount() == 2) {
+						offsetPosition.sub(getDef().getVisualVars().getCorners().get(0));
+						offsetPosition.sub(getDef().getVisualVars().getCenterOffset());
+					}
+
+					if (mPolygonOutline == null) {
+						reloadPolygonOutline();
+					}
+
+					if (mPolygonOutline != null) {
+						shapeRenderer.triangles(mPolygonOutline, offsetPosition);
+					}
+				}
+			}
+
 
 		}
 	}
@@ -221,15 +277,7 @@ public class EnemyActor extends Actor {
 	 */
 	public TriggerInfo createDefaultActivateTrigger(Level level) {
 		// Calculate position of trigger
-		float xCoord = getPosition().x - getDef().getVisualVars().getBoundingRadius();
-
-		// Decrease position if we are in an enemy group
-		if (mGroup != null) {
-			float distancePerEnemy = level.getSpeed() * mGroup.getSpawnTriggerDelay();
-			float offset = (mGroup.getEnemyCount() - 1) * distancePerEnemy;
-			xCoord -= offset;
-		}
-
+		float xCoord = calculateDefaultActivateTriggerPosition(level.getSpeed());
 
 		// Create the trigger
 		TScreenAt trigger = new TScreenAt(level, xCoord);
@@ -245,6 +293,25 @@ public class EnemyActor extends Actor {
 		triggerInfo.setTrigger(trigger);
 
 		return triggerInfo;
+	}
+
+	/**
+	 * Calculates the activation coordinate depending on the current level speed
+	 * @param levelSpeed speed of the level
+	 * @return enemy activation coordinate
+	 */
+	private float calculateDefaultActivateTriggerPosition(float levelSpeed) {
+		// Calculate position of trigger
+		float xCoord = getPosition().x - getDef().getVisualVars().getBoundingRadius();
+
+		// Decrease position if we are in an enemy group
+		if (mGroup != null) {
+			float distancePerEnemy = levelSpeed * mGroup.getSpawnTriggerDelay();
+			float offset = (mGroup.getEnemyCount() - 1) * distancePerEnemy;
+			xCoord -= offset;
+		}
+
+		return xCoord;
 	}
 
 	/**
@@ -981,10 +1048,42 @@ public class EnemyActor extends Actor {
 	}
 
 	@Override
+	public void reloadFixtures() {
+		super.reloadFixtures();
+
+		reloadPolygonOutline();
+	}
+
+	/**
+	 * Reloads the polygon outline for the enemy
+	 */
+	private void reloadPolygonOutline() {
+		if (mEditorActive) {
+			if (mPolygonOutline != null) {
+				Pools.arrayList.free(mPolygonOutline);
+			}
+			if (mPolygonOutlineInnerCorners != null) {
+				Pools.vector2.freeAll(mPolygonOutlineInnerCorners);
+				Pools.arrayList.free(mPolygonOutlineInnerCorners);
+			}
+
+			//		mPolygonOutline = Geometry.createLinePolygon(getDef().getVisualVars().getPolygonShape(), (Float) SkinNames.getResource(SkinNames.EditorVars.ENEMY_WILL_ACTIVATE_ON_TEST_RUN_LINE_WIDTH));
+			//		mPolygonOutline = Geometry.createLinePolygon(getDef().getVisualVars().getPolygonShape(), 1);
+			ArrayList<Vector2> corners = getDef().getVisualVars().getPolygonShape();
+			mPolygonOutlineInnerCorners = Geometry.createdBorderCorners(corners, true, 0.25f);
+			mPolygonOutline = Geometry.createBorderVertices(corners, mPolygonOutlineInnerCorners);
+		}
+	}
+
+	@Override
 	public RenderOrders getRenderOrder() {
 		return RenderOrders.ENEMY;
 	}
 
+	/** Polygon line for drawing wider outline */
+	private ArrayList<Vector2> mPolygonOutline = null;
+	/** Polygon border corners, saved for releasing */
+	private ArrayList<Vector2> mPolygonOutlineInnerCorners = null;
 	/** Enemy weapon */
 	private Weapon mWeapon = new Weapon();
 	/** Shooting angle (used when rotating) */

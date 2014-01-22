@@ -577,6 +577,9 @@ public class Config {
 		/** How much bigger of the screen is shown in height from the regular scale. E.g. 3 will show the same amount of
 		 * free space above and below the level */
 		public final static float LEVEL_EDITOR_HEIGHT_SCALE = 2;
+		/** Amount of extra space that has been added to the level */
+		public final static float LEVEL_EDITOR_HEIGHT_SCALE_INVERT = (LEVEL_EDITOR_HEIGHT_SCALE - 1) / LEVEL_EDITOR_HEIGHT_SCALE;
+		/** The actual level scaling */
 		/** Level editor scale, this allows the player to see above and below the level */
 		public final static float LEVEL_EDITOR_SCALE = WORLD_SCALE * LEVEL_EDITOR_HEIGHT_SCALE;
 		/** Maximum frame time length */

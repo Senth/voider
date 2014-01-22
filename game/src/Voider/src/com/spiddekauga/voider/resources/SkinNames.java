@@ -322,6 +322,10 @@ public class SkinNames {
 		ENEMY_ACTIVATE_TRIGGER_LINE_COLOR(Color.class),
 		/** Color of line between enemy and deactivate trigger */
 		ENEMY_DEACTIVATE_TRIGGER_LINE_COLOR(Color.class),
+		/** Enemy will be activated when test running from here, line color */
+		ENEMY_WILL_ACTIVATE_ON_TEST_RUN_COLOR(Color.class),
+		/** Line width of outline color when the enemy will be activated */
+		ENEMY_WILL_ACTIVATE_ON_TEST_RUN_LINE_WIDTH(Float.class),
 		/** Grid color */
 		GRID_COLOR(Color.class),
 		/** Grid milestone color */
