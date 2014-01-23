@@ -27,6 +27,8 @@ public class DeleteTool extends TouchTool {
 	 */
 	public DeleteTool(Camera camera, World world, Invoker invoker, ISelection selection, IResourceChangeEditor editor) {
 		super(camera, world, invoker, selection, editor);
+
+		mSelectableResourceTypes.add(IResource.class);
 	}
 
 	@Override

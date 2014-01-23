@@ -35,6 +35,8 @@ public class EnemyAddTool extends ActorAddTool {
 	 */
 	public EnemyAddTool(Camera camera, World world, Invoker invoker, ISelection selection, IResourceChangeEditor editor, Class<? extends Actor> actorType) {
 		super(camera, world, invoker, selection, editor, actorType);
+
+		mSelectableResourceTypes.add(EnemyActor.class);
 	}
 
 	@Override

@@ -33,6 +33,9 @@ public class EnemySetTriggerTool extends TouchTool {
 		super(camera, world, invoker, selection, editor);
 
 		mTriggerAction = action;
+
+		mSelectableResourceTypes.add(Trigger.class);
+		mSelectableResourceTypes.add(EnemyActor.class);
 	}
 
 	@Override

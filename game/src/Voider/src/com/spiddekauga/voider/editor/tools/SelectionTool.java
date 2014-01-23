@@ -1,6 +1,7 @@
 package com.spiddekauga.voider.editor.tools;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -73,6 +74,43 @@ public class SelectionTool extends TouchTool {
 		return handled;
 	}
 
+	/**
+	 * @param resourceType the resource type to test if it can be selected
+	 * @return true if the resource type can be selected
+	 */
+	private boolean isResourceSelectable(Class<? extends IResource> resourceType) {
+		boolean isSelectable = false;
+
+		// Check if we are allowed to select this
+		Iterator<Class<? extends IResource>> iterator = mSelectableResourceTypes.iterator();
+		while (iterator.hasNext() && !isSelectable) {
+			if (iterator.next().isAssignableFrom(resourceType)) {
+				isSelectable = true;
+			}
+		}
+
+		// Check the current selection and if we are allowed to select this
+		if (isSelectable && !mCanChangeResourceTypeSelection) {
+			if (!mSelection.isSelected(resourceType) && !mSelection.isEmpty()) {
+				isSelectable = false;
+			}
+		}
+
+		return isSelectable;
+	}
+
+	/**
+	 * Removes all resources that aren't allowed to be selected
+	 */
+	private void removeUnallowedResources() {
+		Iterator<IResource> iterator = mHitResources.iterator();
+		while (iterator.hasNext()) {
+			if (!isResourceSelectable(iterator.next().getClass())) {
+				iterator.remove();
+			}
+		}
+	}
+
 	@Override
 	protected boolean down() {
 		// Draw selection box
@@ -82,40 +120,15 @@ public class SelectionTool extends TouchTool {
 		}
 		// Test if we shall add or remove any actors
 		else {
-			boolean addRegularResources = false;
-			boolean addTriggers = false;
-			boolean addPaths = false;
+			if (isResourceSelectable(Path.class)) {
+				testPickAabb(mCallbackPaths, Editor.PICK_TRIGGER_SIZE);
+			}
+			if (isResourceSelectable(Trigger.class)) {
+				testPickAabb(mCallbackTriggers, Editor.PICK_PATH_SIZE);
+			}
+			testPickPoint(mCallbackResources);
 
-			Class<? extends IResource> mostCommonSelectedResourceType = mSelection.getMostCommonSelectedResourceType();
-
-			// Add all resources (including triggers and paths)
-			if (mSelection.isEmpty()) {
-				addRegularResources = true;
-				addTriggers = true;
-				addPaths = true;
-			}
-			// Add only triggers
-			else if (Trigger.class.isAssignableFrom(mostCommonSelectedResourceType)) {
-				addTriggers = true;
-			}
-			// Add only paths
-			else if (Path.class.isAssignableFrom(mostCommonSelectedResourceType)) {
-				addPaths = true;
-			}
-			// Only regular
-			else {
-				addRegularResources = true;
-			}
-
-			if (addTriggers) {
-				testPickAabb(mCallbackTriggers, Editor.PICK_TRIGGER_SIZE);
-			}
-			if (addPaths) {
-				testPickAabb(mCallbackPaths, Editor.PICK_PATH_SIZE);
-			}
-			if (addRegularResources) {
-				testPickPoint(mCallbackResources);
-			}
+			removeUnallowedResources();
 
 			if (addRemoveOrSetHitResources()) {
 				mSelection.setSelectionChangedDuringDown(true);
@@ -174,6 +187,32 @@ public class SelectionTool extends TouchTool {
 		mActive = false;
 	}
 
+	/**
+	 * Set the current selectable resource
+	 * @param selectableResourceTypes what kind of resource the selection tool is allowed to select
+	 * @param canChangeResourceType if the selection tool is allowed to change the selection
+	 * independent of the current selection. E.g. if it is allowed to change the selection to an
+	 * enemy from a trigger.
+	 */
+	public void setSelectableResourceTypes(ArrayList<Class<? extends IResource>> selectableResourceTypes, boolean canChangeResourceType) {
+		mSelectableResourceTypes = selectableResourceTypes;
+		mCanChangeResourceTypeSelection = canChangeResourceType;
+
+		clearSelectionFromUnallowedResources();
+	}
+
+	/**
+	 * Clears the current selection from the resources that aren't allowed
+	 * to be selected.
+	 */
+	private void clearSelectionFromUnallowedResources() {
+		mHitResources.clear();
+		mHitResources.addAll(mSelection.getSelectedResources());
+		removeUnallowedResources();
+		mInvoker.execute(new CSelectionSet(mSelection, mHitResources));
+		mHitResources.clear();
+	}
+
 	/** Picking for paths */
 	private QueryCallback mCallbackPaths = new QueryCallback() {
 		@Override
@@ -216,6 +255,8 @@ public class SelectionTool extends TouchTool {
 		}
 	};
 
+	/** If we are allowed to change resource types independent of the current selection */
+	private boolean mCanChangeResourceTypeSelection = true;
 	/** Rectangle brush */
 	private RectangleBrush mRectangleBrush = null;
 	/** If the selection tool is active */

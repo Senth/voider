@@ -1,5 +1,7 @@
 package com.spiddekauga.voider.editor.tools;
 
+import java.util.ArrayList;
+
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector2;
@@ -10,6 +12,7 @@ import com.spiddekauga.utils.Invoker;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Editor;
 import com.spiddekauga.voider.editor.IResourceChangeEditor;
+import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 
@@ -206,6 +209,25 @@ public abstract class TouchTool extends InputAdapter {
 		mDrawing = drawing;
 	}
 
+	/**
+	 * What type of resources the selection tool is allowed to select when this
+	 * tool is active
+	 * @return array of resources the selection tool is allowed to select
+	 */
+	public final ArrayList<Class<? extends IResource>> getSelectableResourceTypes() {
+		return mSelectableResourceTypes;
+	}
+
+	/**
+	 * Override this method if you want the selection tool to only select resources
+	 * of the currently selected resource
+	 * @return true if the selection tool is allowed to change between resources types
+	 * independent of the current selection.
+	 */
+	public boolean isSelectionToolAllowedToChangeResourceType() {
+		return true;
+	}
+
 	/** If the player double clicked */
 	protected boolean mDoubleClick = false;
 	/** Last time the player clicked */
@@ -222,6 +244,8 @@ public abstract class TouchTool extends InputAdapter {
 	protected ISelection mSelection = null;
 	/** Editor */
 	protected IResourceChangeEditor mEditor = null;
+	/** Selectable resource types */
+	protected ArrayList<Class<? extends IResource>> mSelectableResourceTypes = new ArrayList<Class<? extends IResource>>();
 
 	/** If the tool is currently draving */
 	private boolean mDrawing = false;

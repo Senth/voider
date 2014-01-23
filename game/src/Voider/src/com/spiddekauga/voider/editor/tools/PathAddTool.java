@@ -35,6 +35,8 @@ public class PathAddTool extends TouchTool implements ISelectionListener {
 	 */
 	public PathAddTool(Camera camera, World world, Invoker invoker, ISelection selection, IResourceChangeEditor editor) {
 		super(camera, world, invoker, selection, editor);
+
+		mSelectableResourceTypes.add(Path.class);
 	}
 
 	@Override

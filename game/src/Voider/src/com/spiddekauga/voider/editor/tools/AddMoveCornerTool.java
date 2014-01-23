@@ -15,10 +15,13 @@ import com.spiddekauga.utils.Invoker;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.editor.HitWrapper;
 import com.spiddekauga.voider.editor.IResourceChangeEditor;
+import com.spiddekauga.voider.editor.LevelEditor;
 import com.spiddekauga.voider.editor.commands.CActorDefFixCustomFixtures;
 import com.spiddekauga.voider.editor.commands.CResourceCornerAdd;
 import com.spiddekauga.voider.editor.commands.CResourceCornerMove;
+import com.spiddekauga.voider.game.Path;
 import com.spiddekauga.voider.game.actors.Actor;
+import com.spiddekauga.voider.game.actors.StaticTerrainActor;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourceCorner;
 import com.spiddekauga.voider.scene.SceneSwitcher;
@@ -43,6 +46,13 @@ public class AddMoveCornerTool extends TouchTool implements ISelectionListener {
 	 */
 	public AddMoveCornerTool(Camera camera, World world, Invoker invoker, ISelection selection, IResourceChangeEditor editor) {
 		super(camera, world, invoker, selection, editor);
+
+		if (editor instanceof LevelEditor) {
+			mSelectableResourceTypes.add(StaticTerrainActor.class);
+			mSelectableResourceTypes.add(Path.class);
+		} else {
+			mSelectableResourceTypes.add(IResource.class);
+		}
 	}
 
 	@Override

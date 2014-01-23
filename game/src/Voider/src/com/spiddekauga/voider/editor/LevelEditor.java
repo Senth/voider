@@ -27,7 +27,6 @@ import com.spiddekauga.voider.editor.tools.DeleteTool;
 import com.spiddekauga.voider.editor.tools.DrawAppendTool;
 import com.spiddekauga.voider.editor.tools.DrawEraseTool;
 import com.spiddekauga.voider.editor.tools.EnemyAddTool;
-import com.spiddekauga.voider.editor.tools.EnemySetTriggerTool;
 import com.spiddekauga.voider.editor.tools.ISelection;
 import com.spiddekauga.voider.editor.tools.ISelectionListener;
 import com.spiddekauga.voider.editor.tools.MoveTool;
@@ -37,6 +36,7 @@ import com.spiddekauga.voider.editor.tools.Selection;
 import com.spiddekauga.voider.editor.tools.SelectionTool;
 import com.spiddekauga.voider.editor.tools.TouchTool;
 import com.spiddekauga.voider.editor.tools.TriggerAddTool;
+import com.spiddekauga.voider.editor.tools.TriggerSetTool;
 import com.spiddekauga.voider.game.GameScene;
 import com.spiddekauga.voider.game.Level;
 import com.spiddekauga.voider.game.LevelDef;
@@ -92,8 +92,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		Tools.ADD_MOVE_CORNER.setTool(new AddMoveCornerTool(mCamera, mWorld, mInvoker, mSelection, this));
 		Tools.DELETE.setTool(new DeleteTool(mCamera, mWorld, mInvoker, mSelection, this));
 		Tools.ENEMY_ADD.setTool(new EnemyAddTool(mCamera, mWorld, mInvoker, mSelection, this, EnemyActor.class));
-		Tools.ENEMY_SET_ACTIVATE_TRIGGER.setTool(new EnemySetTriggerTool(mCamera, mWorld, mInvoker, mSelection, this, Actions.ACTOR_ACTIVATE));
-		Tools.ENEMY_SET_DEACTIVATE_TRIGGER.setTool(new EnemySetTriggerTool(mCamera, mWorld, mInvoker, mSelection, this, Actions.ACTOR_DEACTIVATE));
+		Tools.ENEMY_SET_ACTIVATE_TRIGGER.setTool(new TriggerSetTool(mCamera, mWorld, mInvoker, mSelection, this, Actions.ACTOR_ACTIVATE));
+		Tools.ENEMY_SET_DEACTIVATE_TRIGGER.setTool(new TriggerSetTool(mCamera, mWorld, mInvoker, mSelection, this, Actions.ACTOR_DEACTIVATE));
 		Tools.MOVE.setTool(new MoveTool(mCamera, mWorld, mInvoker, mSelection, this));
 		Tools.PATH_ADD_CORNER.setTool(new PathAddTool(mCamera, mWorld, mInvoker, mSelection, this));
 		Tools.PICKUP_ADD.setTool(new ActorAddTool(mCamera, mWorld, mInvoker, mSelection, this, PickupActor.class));
@@ -622,7 +622,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		if (mTool.getTool() != null) {
 			mTool.getTool().deactivate();
 
-			// Never remove selection tool
+			// Never remove selection or delete tool
 			if (mTool != Tools.SELECTION && mTool != Tools.DELETE) {
 				mInputMultiplexer.removeProcessor(mTool.getTool());
 			}
@@ -633,9 +633,14 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		if (mTool.getTool() != null) {
 			mTool.getTool().activate();
 
-			// Never add selection tool
+			// Never add selection or delete tool
 			if (mTool != Tools.SELECTION && mTool != Tools.DELETE) {
 				mInputMultiplexer.addProcessor(mTool.getTool());
+			}
+
+			// Set selectable resource types
+			if (mTool != Tools.SELECTION) {
+				((SelectionTool)Tools.SELECTION.getTool()).setSelectableResourceTypes(mTool.getTool().getSelectableResourceTypes(), mTool.getTool().isSelectionToolAllowedToChangeResourceType());
 			}
 		}
 	}
@@ -1387,9 +1392,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 		/**
 		 * Sets the actual tool
-		 * 
-		 * @param tool
-		 *            the actual tool that is used
+		 * @param tool the actual tool that is used
 		 */
 		public void setTool(TouchTool tool) {
 			mTool = tool;

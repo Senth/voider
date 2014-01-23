@@ -12,6 +12,7 @@ import com.spiddekauga.voider.editor.commands.CResourceAdd;
 import com.spiddekauga.voider.editor.commands.CResourceMove;
 import com.spiddekauga.voider.editor.commands.CSelectionSet;
 import com.spiddekauga.voider.game.triggers.TScreenAt;
+import com.spiddekauga.voider.game.triggers.Trigger;
 
 /**
  * Tool for adding triggers
@@ -29,6 +30,8 @@ public class TriggerAddTool extends TouchTool {
 	public TriggerAddTool(Camera camera, World world, Invoker invoker, ISelection selection, LevelEditor levelEditor) {
 		super(camera, world, invoker, selection, levelEditor);
 		mLevelEditor = levelEditor;
+
+		mSelectableResourceTypes.add(Trigger.class);
 	}
 
 	@Override

@@ -9,12 +9,15 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.spiddekauga.utils.Invoker;
 import com.spiddekauga.voider.editor.HitWrapper;
 import com.spiddekauga.voider.editor.IResourceChangeEditor;
+import com.spiddekauga.voider.editor.LevelEditor;
 import com.spiddekauga.voider.editor.commands.CActorDefFixCustomFixtures;
 import com.spiddekauga.voider.editor.commands.CResourceCornerRemove;
 import com.spiddekauga.voider.editor.commands.CResourceCornerRemoveAll;
 import com.spiddekauga.voider.editor.commands.CResourceRemove;
 import com.spiddekauga.voider.editor.commands.CSelectionRemove;
+import com.spiddekauga.voider.game.Path;
 import com.spiddekauga.voider.game.actors.Actor;
+import com.spiddekauga.voider.game.actors.StaticTerrainActor;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourceCorner;
 import com.spiddekauga.voider.scene.SceneSwitcher;
@@ -37,6 +40,13 @@ public class RemoveCornerTool extends TouchTool implements ISelectionListener {
 	 */
 	public RemoveCornerTool(Camera camera, World world, Invoker invoker, ISelection selection, IResourceChangeEditor editor) {
 		super(camera, world, invoker, selection, editor);
+
+		if (editor instanceof LevelEditor) {
+			mSelectableResourceTypes.add(StaticTerrainActor.class);
+			mSelectableResourceTypes.add(Path.class);
+		} else {
+			mSelectableResourceTypes.add(IResource.class);
+		}
 	}
 
 	@Override

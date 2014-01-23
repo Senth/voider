@@ -12,6 +12,7 @@ import com.spiddekauga.voider.editor.IResourceChangeEditor;
 import com.spiddekauga.voider.editor.LevelEditor;
 import com.spiddekauga.voider.editor.commands.CResourceMove;
 import com.spiddekauga.voider.game.actors.EnemyActor;
+import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourcePosition;
 import com.spiddekauga.voider.utils.Pool;
 import com.spiddekauga.voider.utils.Pools;
@@ -31,6 +32,8 @@ public class MoveTool extends TouchTool {
 	 */
 	public MoveTool(Camera camera, World world, Invoker invoker, ISelection selection, IResourceChangeEditor editor) {
 		super(camera, world, invoker, selection, editor);
+
+		mSelectableResourceTypes.add(IResource.class);
 	}
 
 	@Override
