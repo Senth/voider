@@ -112,7 +112,7 @@ public class SelectionTool extends TouchTool {
 	}
 
 	@Override
-	protected boolean down() {
+	protected boolean down(int button) {
 		// Draw selection box
 		if (mActive) {
 			mRectangleBrush = new RectangleBrush(Config.Editor.BRUSH_SELECTION_COLOR, mTouchCurrent);
@@ -147,7 +147,7 @@ public class SelectionTool extends TouchTool {
 	}
 
 	@Override
-	protected boolean up() {
+	protected boolean up(int button) {
 		mSelection.setSelectionChangedDuringDown(false);
 
 		if (mRectangleBrush != null) {

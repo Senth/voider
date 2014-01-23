@@ -56,7 +56,7 @@ public class AddMoveCornerTool extends TouchTool implements ISelectionListener {
 	}
 
 	@Override
-	protected boolean down() {
+	protected boolean down(int button) {
 		// Skip if selected resource was changed
 		if (mSelection.isSelectionChangedDuringDown()) {
 			return false;
@@ -101,7 +101,7 @@ public class AddMoveCornerTool extends TouchTool implements ISelectionListener {
 	}
 
 	@Override
-	protected boolean up() {
+	protected boolean up(int button) {
 		if (mCornerIndexCurrent != -1) {
 			// Add or move?
 			Command addOrMoveCommand;

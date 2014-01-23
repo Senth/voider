@@ -31,7 +31,7 @@ public class SetCenterTool extends ActorTool implements ISelectionListener {
 	}
 
 	@Override
-	protected boolean down() {
+	protected boolean down(int button) {
 		if (!mSelection.isSelectionChangedDuringDown()) {
 			ArrayList<? extends Actor> selectedActors = mSelection.getSelectedResourcesOfType(mActorType);
 
@@ -58,7 +58,7 @@ public class SetCenterTool extends ActorTool implements ISelectionListener {
 	}
 
 	@Override
-	protected boolean up() {
+	protected boolean up(int button) {
 		// Does nothing
 		return false;
 	}

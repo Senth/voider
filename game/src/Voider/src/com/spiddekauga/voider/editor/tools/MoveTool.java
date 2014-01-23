@@ -37,7 +37,7 @@ public class MoveTool extends TouchTool {
 	}
 
 	@Override
-	protected boolean down() {
+	protected boolean down(int button) {
 		testPickPoint(mCallback);
 
 		if (mHitResource) {
@@ -91,7 +91,7 @@ public class MoveTool extends TouchTool {
 	}
 
 	@Override
-	protected boolean up() {
+	protected boolean up(int button) {
 		if (!mMovingResources.isEmpty()) {
 			// Special case for one enemy - snap to path
 			if (mMovingResources.size() == 1 && mSelection.isSelected(EnemyActor.class) && mEditor instanceof LevelEditor) {

@@ -30,7 +30,7 @@ public class ActorAddTool extends ActorTool {
 	}
 
 	@Override
-	protected boolean down() {
+	protected boolean down(int button) {
 		testPickPoint(mCallback);
 
 		// Hit an actor, move it
@@ -64,7 +64,7 @@ public class ActorAddTool extends ActorTool {
 	}
 
 	@Override
-	protected boolean up() {
+	protected boolean up(int button) {
 		if (mMovingActor != null) {
 			Vector2 newPosition = getNewPosition();
 			// Just set the new position

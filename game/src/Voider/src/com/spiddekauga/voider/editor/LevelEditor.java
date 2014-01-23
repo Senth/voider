@@ -12,12 +12,9 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector2;
 import com.spiddekauga.utils.Command;
 import com.spiddekauga.utils.KeyHelper;
-import com.spiddekauga.utils.Scroller;
-import com.spiddekauga.utils.Scroller.ScrollAxis;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Graphics.RenderOrders;
-import com.spiddekauga.voider.editor.commands.CCameraMove;
 import com.spiddekauga.voider.editor.commands.CLevelEnemyDefAdd;
 import com.spiddekauga.voider.editor.commands.CLevelPickupDefSelect;
 import com.spiddekauga.voider.editor.commands.CSelectionSet;
@@ -30,6 +27,7 @@ import com.spiddekauga.voider.editor.tools.EnemyAddTool;
 import com.spiddekauga.voider.editor.tools.ISelection;
 import com.spiddekauga.voider.editor.tools.ISelectionListener;
 import com.spiddekauga.voider.editor.tools.MoveTool;
+import com.spiddekauga.voider.editor.tools.PanTool;
 import com.spiddekauga.voider.editor.tools.PathAddTool;
 import com.spiddekauga.voider.editor.tools.RemoveCornerTool;
 import com.spiddekauga.voider.editor.tools.Selection;
@@ -83,7 +81,6 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 		Actor.setEditorActive(true);
 
-		mScroller = new Scroller(50, 2000, 10, 200, ScrollAxis.X);
 		mSelection = new Selection();
 		mSelection.addListener(this);
 
@@ -94,6 +91,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		Tools.ENEMY_SET_ACTIVATE_TRIGGER.setTool(new TriggerSetTool(mCamera, mWorld, mInvoker, mSelection, this, Actions.ACTOR_ACTIVATE));
 		Tools.ENEMY_SET_DEACTIVATE_TRIGGER.setTool(new TriggerSetTool(mCamera, mWorld, mInvoker, mSelection, this, Actions.ACTOR_DEACTIVATE));
 		Tools.MOVE.setTool(new MoveTool(mCamera, mWorld, mInvoker, mSelection, this));
+		Tools.PAN.setTool(new PanTool(mCamera, mWorld, mInvoker, mSelection, this));
 		Tools.PATH_ADD_CORNER.setTool(new PathAddTool(mCamera, mWorld, mInvoker, mSelection, this));
 		Tools.PICKUP_ADD.setTool(new ActorAddTool(mCamera, mWorld, mInvoker, mSelection, this, PickupActor.class));
 		Tools.REMOVE_CORNER.setTool(new RemoveCornerTool(mCamera, mWorld, mInvoker, mSelection, this));
@@ -101,6 +99,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		Tools.TERRAIN_DRAW_APPEND.setTool(new DrawAppendTool(mCamera, mWorld, mInvoker, mSelection, this, StaticTerrainActor.class));
 		Tools.TERRAIN_DRAW_ERASE.setTool(new DrawEraseTool(mCamera, mWorld, mInvoker, mSelection, this, StaticTerrainActor.class));
 
+		mInputMultiplexer.addProcessor(Tools.PAN.getTool());
 		mInputMultiplexer.addProcessor(Tools.SELECTION.getTool());
 		mInputMultiplexer.addProcessor(Tools.DELETE.getTool());
 	}
@@ -129,29 +128,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 		mLevel.update(deltaTime);
 
-		// Scrolling
-		if (mScroller.isScrolling()) {
-			mScroller.update(deltaTime);
-
-			Vector2 diffScroll = Pools.vector2.obtain();
-			diffScroll.set(mScroller.getOriginScroll()).sub(mScroller.getCurrentScroll());
-			float scale = diffScroll.x / Gdx.graphics.getWidth() * getWorldWidth();
-
-			mCamera.position.x = scale + mScrollCameraOrigin.x;
-			mCamera.update();
-
-			Pools.vector2.free(diffScroll);
-		}
-		else if (!mCreatedScrollCommand) {
-			Vector2 scrollCameraCurrent = Pools.vector2.obtain();
-			scrollCameraCurrent.set(mCamera.position.x, mCamera.position.y);
-
-			mInvoker.execute(new CCameraMove(mCamera, scrollCameraCurrent, mScrollCameraOrigin));
-
-			mCreatedScrollCommand = true;
-
-			Pools.vector2.free(scrollCameraCurrent);
-		}
+		((PanTool)Tools.PAN.getTool()).update(deltaTime);
 	}
 
 	@Override
@@ -222,7 +199,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 				mCamera.position.x = mLevel.getDef().getStartXCoord() + mCamera.viewportWidth * 0.5f;
 				mCamera.update();
 			}
-			mScroller.stop();
+			((PanTool)Tools.PAN.getTool()).stop();
 
 			createResourceBodies();
 
@@ -276,15 +253,6 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 			ResourceCacheFacade.unload(theme.getSkin());
 		}
 	}
-
-	//	@Override
-	//	protected void reloadResourcesOnActivate(Outcomes outcome, Object message) {
-	//		super.reloadResourcesOnActivate(outcome, message);
-	//		if (outcome == Outcomes.NOT_APPLICAPLE) {
-	//			ResourceCacheFacade.loadAllNotYetLoadedOf(this, EnemyActorDef.class, true);
-	//			ResourceCacheFacade.finishLoading();
-	//		}
-	//	}
 
 	@Override
 	protected void onActivate(Outcomes outcome, Object message) {
@@ -465,57 +433,6 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	}
 
 	@Override
-	public boolean touchDown(int x, int y, int pointer, int button) {
-		super.touchDown(x, y, pointer, button);
-
-		// Scroll the screen
-		if (KeyHelper.isScrolling(button)) {
-			// If we're already scrolling create scroll command
-			if (mScroller.isScrolling()) {
-				Vector2 scrollCameraCurrent = Pools.vector2.obtain();
-				scrollCameraCurrent.set(mCamera.position.x, mCamera.position.y);
-				mInvoker.execute(new CCameraMove(mCamera, scrollCameraCurrent, mScrollCameraOrigin));
-				Pools.vector2.free(scrollCameraCurrent);
-			}
-
-			mScroller.touchDown(x, y);
-			mScrollCameraOrigin.set(mCamera.position.x, mCamera.position.y);
-			mCreatedScrollCommand = false;
-			return true;
-		}
-		else if (mScroller.isScrolling()) {
-			return true;
-		}
-
-		return false;
-	}
-
-	@Override
-	public boolean touchDragged(int x, int y, int pointer) {
-		super.touchDragged(x, y, pointer);
-
-		// Scrolling, move the map
-		if (mScroller.isScrollingByHand() && pointer == 0) {
-			mScroller.touchDragged(x, y);
-			return true;
-		}
-		return false;
-	}
-
-	@Override
-	public boolean touchUp(int x, int y, int pointer, int button) {
-		super.touchUp(x, y, pointer, button);
-
-		// Not scrolling any more
-		if (mScroller.isScrollingByHand() && (button == 2 || !Gdx.app.getInput().isTouched(0) || !Gdx.app.getInput().isTouched(1))) {
-			mScroller.touchUp(x, y);
-			return true;
-		}
-
-		return false;
-	}
-
-	@Override
 	public void onResourceAdded(IResource resource) {
 		mGui.resetValues();
 		mLevel.addResource(resource);
@@ -620,8 +537,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		if (mTool.getTool() != null) {
 			mTool.getTool().deactivate();
 
-			// Never remove selection or delete tool
-			if (mTool != Tools.SELECTION && mTool != Tools.DELETE) {
+			// Never remove pan, selection or delete tool
+			if (mTool != Tools.SELECTION && mTool != Tools.DELETE && mTool != Tools.PAN) {
 				mInputMultiplexer.removeProcessor(mTool.getTool());
 			}
 		}
@@ -631,8 +548,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		if (mTool.getTool() != null) {
 			mTool.getTool().activate();
 
-			// Never add selection or delete tool
-			if (mTool != Tools.SELECTION && mTool != Tools.DELETE) {
+			// Never add pan, selection or delete tool
+			if (mTool != Tools.SELECTION && mTool != Tools.DELETE && mTool != Tools.PAN) {
 				mInputMultiplexer.addProcessor(mTool.getTool());
 			}
 
@@ -1363,6 +1280,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		MOVE,
 		/** Delete */
 		DELETE,
+		/** Pan */
+		PAN,
 		/** add a corner or move a corner in a terrain */
 		ADD_MOVE_CORNER,
 		/** Remove a corner from the terrain */
@@ -1511,14 +1430,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	/** Enemies in the add enemy table */
 	@SuppressWarnings("unchecked")
 	private ArrayList<EnemyActorDef> mAddEnemies = Pools.arrayList.obtain();
-	/** Created scroll command for the last scroll */
-	private boolean mCreatedScrollCommand = true;
 	/** Level we're currently editing */
 	private Level mLevel = null;
-	/** Scrolling for nice scrolling */
-	private Scroller mScroller;
-	/** Starting position for the camera scroll */
-	private Vector2 mScrollCameraOrigin = new Vector2();
 	/** Which definition we're currently selecting */
 	private SelectionActions mSelectionAction = null;
 	/** Currently loading level */

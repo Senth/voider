@@ -27,17 +27,6 @@ public abstract class TouchTool extends InputAdapter {
 	 * @param camera used for determining where in the world the pointer is
 	 * @param world used for picking
 	 * @param invoker used for undo/redo of some commands
-	 */
-	@Deprecated
-	public TouchTool(Camera camera, World world, Invoker invoker) {
-		this(camera, world, invoker, null, null);
-	}
-
-	/**
-	 * Constructs a touch tool with a camera
-	 * @param camera used for determining where in the world the pointer is
-	 * @param world used for picking
-	 * @param invoker used for undo/redo of some commands
 	 * @param selection current selected resources
 	 * @param editor the editor used, can be null
 	 */
@@ -54,6 +43,8 @@ public abstract class TouchTool extends InputAdapter {
 
 		// Only do something for the first pointer
 		if (pointer == 0) {
+			mScreenCurrent.set(x,y);
+
 			if (mClickTimeLast + Config.Input.DOUBLE_CLICK_TIME > SceneSwitcher.getGameTime().getTotalTimeElapsed()) {
 				mClickTimeLast = 0;
 				mDoubleClick = true;
@@ -65,7 +56,7 @@ public abstract class TouchTool extends InputAdapter {
 			Scene.screenToWorldCoord(mCamera, x, y, mTouchOrigin, true);
 			mTouchCurrent.set(mTouchOrigin);
 
-			return down();
+			return down(button);
 		}
 
 
@@ -75,6 +66,7 @@ public abstract class TouchTool extends InputAdapter {
 	@Override
 	public boolean touchDragged(int x, int y, int pointer) {
 		if (pointer == 0) {
+			mScreenCurrent.set(x, y);
 			Scene.screenToWorldCoord(mCamera, x, y, mTouchCurrent, true);
 
 			return dragged();
@@ -87,9 +79,10 @@ public abstract class TouchTool extends InputAdapter {
 	@Override
 	public boolean touchUp(int x, int y, int pointer, int button) {
 		if (pointer == 0) {
+			mScreenCurrent.set(x, y);
 			Scene.screenToWorldCoord(mCamera, x, y, mTouchCurrent, true);
 
-			return up();
+			return up(button);
 		}
 
 		return false;
@@ -185,9 +178,10 @@ public abstract class TouchTool extends InputAdapter {
 
 	/**
 	 * Called on touchDown event
+	 * @param button the button that was pressed
 	 * @return false if event should continue to be handled downstream
 	 */
-	protected abstract boolean down();
+	protected abstract boolean down(int button);
 
 	/**
 	 * Called on touchDragged event
@@ -197,9 +191,10 @@ public abstract class TouchTool extends InputAdapter {
 
 	/**
 	 * Called on touchUp event
+	 * @param button the button that was released
 	 * @return false if event should continue to be handled downstream
 	 */
-	protected abstract boolean up();
+	protected abstract boolean up(int button);
 
 	/**
 	 * Sets the tool as drawing
@@ -232,12 +227,16 @@ public abstract class TouchTool extends InputAdapter {
 	protected boolean mDoubleClick = false;
 	/** Last time the player clicked */
 	protected float mClickTimeLast = 0;
+	/** Current screen coordinates */
+	protected Vector2 mScreenCurrent = new Vector2();
 	/** Current position of the touch, in world coordinates */
 	protected Vector2 mTouchCurrent = new Vector2();
 	/** Original position of the touch, in world coordinates */
 	protected Vector2 mTouchOrigin = new Vector2();
 	/** World used for picking */
 	protected World mWorld;
+	/** Camera of the tool, used to get world coordinates of the click */
+	protected Camera mCamera;
 	/** Invoker */
 	protected Invoker mInvoker;
 	/** Current selection */
@@ -247,10 +246,8 @@ public abstract class TouchTool extends InputAdapter {
 	/** Selectable resource types */
 	protected ArrayList<Class<? extends IResource>> mSelectableResourceTypes = new ArrayList<Class<? extends IResource>>();
 
-	/** If the tool is currently draving */
+	/** If the tool is currently drawing */
 	private boolean mDrawing = false;
-	/** Camera of the tool, used to get world coordinates of the click */
-	private Camera mCamera;
 	/** Temporary callback variable, used for testing points */
 	private QueryCallback mTempPointCallback = null;
 	/** Callback for testing points */

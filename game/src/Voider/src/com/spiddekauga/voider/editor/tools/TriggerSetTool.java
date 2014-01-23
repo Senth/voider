@@ -48,7 +48,7 @@ public class TriggerSetTool extends TouchTool {
 	}
 
 	@Override
-	protected boolean down() {
+	protected boolean down(int button) {
 		// Enemy selected
 		if (mSelection.isSelected(EnemyActor.class)) {
 			// Skip if we just selected another enemy
@@ -160,7 +160,7 @@ public class TriggerSetTool extends TouchTool {
 	}
 
 	@Override
-	protected boolean up() {
+	protected boolean up(int button) {
 		if (mMoveTrigger != null) {
 			if (mCreatedTriggerThisEvent) {
 				mMoveTrigger.setPosition(mTouchCurrent);

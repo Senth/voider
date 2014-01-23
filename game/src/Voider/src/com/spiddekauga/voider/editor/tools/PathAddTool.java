@@ -40,7 +40,7 @@ public class PathAddTool extends TouchTool implements ISelectionListener {
 	}
 
 	@Override
-	protected boolean down() {
+	protected boolean down(int button) {
 		// Skip if selected resource was changed
 		if (mSelection.isSelectionChangedDuringDown()) {
 			return false;
@@ -79,7 +79,7 @@ public class PathAddTool extends TouchTool implements ISelectionListener {
 	}
 
 	@Override
-	protected boolean up() {
+	protected boolean up(int button) {
 		if (!mMovingCorners.isEmpty()) {
 			// Added corner, no need to move back the corner
 			if (mAddedCorner) {

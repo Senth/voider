@@ -32,7 +32,7 @@ public class DeleteTool extends TouchTool {
 	}
 
 	@Override
-	protected boolean down() {
+	protected boolean down(int button) {
 		if (mActive) {
 			removeSelectedResources();
 		}
@@ -46,7 +46,7 @@ public class DeleteTool extends TouchTool {
 	}
 
 	@Override
-	protected boolean up() {
+	protected boolean up(int button) {
 		// Does nothing
 		return false;
 	}

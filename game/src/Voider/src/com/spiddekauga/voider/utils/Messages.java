@@ -281,7 +281,8 @@ public class Messages {
 		public static class Tools {
 			public final static String SET_CENTER = "Set shape center";
 			public final static String RESET_CENTER = "Reset shape center";
-			public final static String MOVE = "Move something :)";
+			public final static String MOVE = "Move stuff";
+			public final static String PAN = "Pan the screen";
 			public final static String DRAW_ERASE = "Draw or erase parts to your " + ACTOR_TYPE;
 			public final static String DRAW_APPEND = "Create a new " + ACTOR_TYPE + ", or append to an existing";
 			public final static String ADJUST_ADD_MOVE_CORNER = "Add or move a shape corner";

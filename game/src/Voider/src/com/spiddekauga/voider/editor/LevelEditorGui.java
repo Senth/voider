@@ -307,6 +307,24 @@ class LevelEditorGui extends EditorGui {
 		};
 		toolButtons.add(button);
 
+		// Pan
+		if (Config.Gui.usesTextButtons()) {
+			button = new TextButton("Pan", mStyles.textButton.press);
+		}
+		else {
+			button = new ImageButton(mStyles.skin.editor, EditorIcons.PAN.toString());
+		}
+		tooltipListener = new TooltipListener(button, null, Messages.replaceName(Messages.Tooltip.Tools.PAN, getResourceTypeName()));
+		new ButtonListener(button, tooltipListener) {
+			@Override
+			protected void onChecked(boolean checked) {
+				if (checked) {
+					mLevelEditor.switchTool(Tools.PAN);
+				}
+			}
+		};
+		toolButtons.add(button);
+
 		// Move
 		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Move", mStyles.textButton.press);

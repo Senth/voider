@@ -48,7 +48,7 @@ public class DrawEraseTool extends ActorTool {
 	}
 
 	@Override
-	protected boolean down() {
+	protected boolean down(int button) {
 		// Skip if selected resource was changed
 		if (mSelection.isSelectionChangedDuringDown()) {
 			return false;
@@ -82,7 +82,7 @@ public class DrawEraseTool extends ActorTool {
 	}
 
 	@Override
-	protected boolean up() {
+	protected boolean up(int button) {
 		if (mDrawEraseBrush != null) {
 			mDrawEraseBrush.addCorner(mTouchCurrent);
 

@@ -50,7 +50,7 @@ public class EnemyAddTool extends ActorAddTool {
 	}
 
 	@Override
-	protected boolean up() {
+	protected boolean up(int button) {
 		if (mMovingActor != null) {
 			// Just set the new position
 			if (mCreatedThisEvent) {

@@ -50,7 +50,7 @@ public class RemoveCornerTool extends TouchTool implements ISelectionListener {
 	}
 
 	@Override
-	protected boolean down() {
+	protected boolean down(int button) {
 		// Skip if selected resource was changed
 		if (mSelection.isSelectionChangedDuringDown()) {
 			return false;
@@ -115,7 +115,7 @@ public class RemoveCornerTool extends TouchTool implements ISelectionListener {
 	}
 
 	@Override
-	protected boolean up() {
+	protected boolean up(int button) {
 		// Does nothing
 		return false;
 	}
