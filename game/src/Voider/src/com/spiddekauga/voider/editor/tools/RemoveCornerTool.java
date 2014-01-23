@@ -46,7 +46,7 @@ public class RemoveCornerTool extends TouchTool implements ISelectionListener {
 			return false;
 		}
 
-		testPickPoint();
+		testPickPoint(mCallback);
 
 		// Hit a corner -> remove it
 		if (mHitCornerBody != null) {
@@ -150,11 +150,6 @@ public class RemoveCornerTool extends TouchTool implements ISelectionListener {
 		if (resource instanceof Actor) {
 			((Actor) resource).setDrawOnlyOutline(false);
 		}
-	}
-
-	@Override
-	protected QueryCallback getCallback() {
-		return mCallback;
 	}
 
 	/** Callback for testing to hit the resource or a corner */

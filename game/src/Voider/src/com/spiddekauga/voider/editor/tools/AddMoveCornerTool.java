@@ -52,7 +52,7 @@ public class AddMoveCornerTool extends TouchTool implements ISelectionListener {
 			return false;
 		}
 
-		testPickAabb();
+		testPickAabb(mCallback);
 
 		// Hit a corner move it
 		if (mHitResource != null) {
@@ -195,11 +195,6 @@ public class AddMoveCornerTool extends TouchTool implements ISelectionListener {
 		mInvoker.undo(false);
 		mInvoker.clearRedo();
 		mCornerIndexCurrent = -1;
-	}
-
-	@Override
-	protected QueryCallback getCallback() {
-		return mCallback;
 	}
 
 	@Override

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.World;
 import com.spiddekauga.utils.Invoker;
 import com.spiddekauga.voider.editor.IResourceChangeEditor;
@@ -89,11 +88,6 @@ public class DeleteTool extends TouchTool {
 
 			Pools.arrayList.free(copySelectedResources);
 		}
-	}
-
-	@Override
-	protected QueryCallback getCallback() {
-		return null;
 	}
 
 	/** True if the tool is active */

@@ -33,9 +33,9 @@ public class TriggerAddTool extends TouchTool {
 
 	@Override
 	protected boolean down() {
-		testPickAabb(Editor.PICK_TRIGGER_SIZE);
+		testPickAabb(mCallback, Editor.PICK_TRIGGER_SIZE);
 
-		// Create TriggerActorActivated if we hit an enemy
+		// Hit a trigger, move it
 		if (mMoveTrigger != null) {
 			mDragOrigin.set(mMoveTrigger.getPosition());
 		}
@@ -79,11 +79,6 @@ public class TriggerAddTool extends TouchTool {
 		}
 
 		return false;
-	}
-
-	@Override
-	protected QueryCallback getCallback() {
-		return mCallback;
 	}
 
 	/** Callback for picking triggers */

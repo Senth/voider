@@ -44,7 +44,7 @@ public class PathAddTool extends TouchTool implements ISelectionListener {
 			return false;
 		}
 
-		testPickPoint();
+		testPickPoint(mCallback);
 
 		// Hit corner -> move it
 		if (mHitCornerBody != null) {
@@ -139,11 +139,6 @@ public class PathAddTool extends TouchTool implements ISelectionListener {
 		mAddedCorner = true;
 
 		Pools.arrayList.free(selectedPaths);
-	}
-
-	@Override
-	protected QueryCallback getCallback() {
-		return mCallback;
 	}
 
 	@Override

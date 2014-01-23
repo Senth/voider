@@ -35,7 +35,7 @@ public class MoveTool extends TouchTool {
 
 	@Override
 	protected boolean down() {
-		testPickPoint();
+		testPickPoint(mCallback);
 
 		if (mHitResource) {
 			ArrayList<IResourcePosition> selectedResources = mSelection.getSelectedResourcesOfType(IResourcePosition.class);
@@ -127,11 +127,6 @@ public class MoveTool extends TouchTool {
 			return true;
 		}
 		return false;
-	}
-
-	@Override
-	protected QueryCallback getCallback() {
-		return mCallback;
 	}
 
 	/**

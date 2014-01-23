@@ -31,7 +31,7 @@ public class ActorAddTool extends ActorTool {
 
 	@Override
 	protected boolean down() {
-		testPickPoint();
+		testPickPoint(mCallback);
 
 		// Hit an actor, move it
 		if (mMovingActor != null) {
@@ -83,11 +83,6 @@ public class ActorAddTool extends ActorTool {
 			mCreatedThisEvent = false;
 		}
 		return false;
-	}
-
-	@Override
-	protected QueryCallback getCallback() {
-		return mCallback;
 	}
 
 	/**

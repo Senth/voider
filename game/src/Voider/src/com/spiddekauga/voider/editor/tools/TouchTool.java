@@ -1,11 +1,8 @@
 package com.spiddekauga.voider.editor.tools;
 
-import java.util.ArrayList;
-
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.World;
@@ -129,17 +126,19 @@ public abstract class TouchTool extends InputAdapter {
 	/**
 	 * Tests to pick a body from the current touch. The hit body is
 	 * set to mHitBody. Uses the default pick size
+	 * @param callback method to use for getting picks
 	 */
-	protected void testPickAabb() {
-		testPickAabb(Editor.PICK_SIZE_DEFAULT);
+	protected void testPickAabb(QueryCallback callback) {
+		testPickAabb(callback, Editor.PICK_SIZE_DEFAULT);
 	}
 
 	/**
 	 * Tests to pick bodies within the specified AABB box
+	 * @param callback method to use for getting picks
 	 * @param startPosition the start (AA) of the box
 	 * @param endPosition the end (BB) of the box
 	 */
-	protected void testPickAabb(Vector2 startPosition, Vector2 endPosition) {
+	protected void testPickAabb(QueryCallback callback, Vector2 startPosition, Vector2 endPosition) {
 		float lowX, lowY, highX, highY;
 
 		if (startPosition.x < endPosition.x) {
@@ -158,29 +157,27 @@ public abstract class TouchTool extends InputAdapter {
 			highY = startPosition.y;
 		}
 
-		mHitBodies.clear();
-		mWorld.QueryAABB(getCallback(), lowX, lowY, highX, highY);
+		mWorld.QueryAABB(callback, lowX, lowY, highX, highY);
 	}
 
 	/**
 	 * Tests to pick a body from the current touch. The hit body will be
 	 * set to mHitBody
+	 * @param callback method to use for getting picks
 	 * @param halfSize how far the touch shall test
 	 */
-	protected void testPickAabb(float halfSize) {
-		mHitBodies.clear();
-		mWorld.QueryAABB(getCallback(), mTouchCurrent.x - halfSize, mTouchCurrent.y - halfSize, mTouchCurrent.x + halfSize, mTouchCurrent.y + halfSize);
-		filterPick();
-		//		mHitBody = filterPick(mHitBodies);
+	protected void testPickAabb(QueryCallback callback, float halfSize) {
+		mWorld.QueryAABB(callback, mTouchCurrent.x - halfSize, mTouchCurrent.y - halfSize, mTouchCurrent.x + halfSize, mTouchCurrent.y + halfSize);
 	}
 
 	/**
 	 * Tests to pick a body from the current touch point. The hit body will be set to mHitBody
+	 * @param callback callback method used when picking
 	 */
-	protected void testPickPoint() {
-		mHitBodies.clear();
+	protected void testPickPoint(QueryCallback callback) {
+		mTempPointCallback = callback;
 		mWorld.QueryAABB(mCallbackPoint, mTouchCurrent.x, mTouchCurrent.y, mTouchCurrent.x, mTouchCurrent.y);
-		//		mHitBody = filterPick(mHitBodies);
+		mTempPointCallback = null;
 	}
 
 	/**
@@ -209,31 +206,6 @@ public abstract class TouchTool extends InputAdapter {
 		mDrawing = drawing;
 	}
 
-	/**
-	 * To work properly this callback shall set mHitBodies for
-	 * all bodies that were hit
-	 * @return the callback for testing picking
-	 */
-	protected abstract QueryCallback getCallback();
-
-	/**
-	 * Called to filter the bodies that were hit.
-	 * @param hitBodies all the bodies that were hit in the pick
-	 * @return hitBody the body that had a prioritized hit
-	 */
-	@Deprecated
-	protected Body filterPick(ArrayList<Body> hitBodies) {
-		// does nothing
-		return null;
-	}
-
-	/**
-	 * Called to filter the hit objects
-	 */
-	protected void filterPick() {
-		// Does nothing
-	}
-
 	/** If the player double clicked */
 	protected boolean mDoubleClick = false;
 	/** Last time the player clicked */
@@ -242,9 +214,6 @@ public abstract class TouchTool extends InputAdapter {
 	protected Vector2 mTouchCurrent = new Vector2();
 	/** Original position of the touch, in world coordinates */
 	protected Vector2 mTouchOrigin = new Vector2();
-	/** Current body that was hit */
-	@Deprecated
-	protected Body mHitBody = null;
 	/** World used for picking */
 	protected World mWorld;
 	/** Invoker */
@@ -258,19 +227,16 @@ public abstract class TouchTool extends InputAdapter {
 	private boolean mDrawing = false;
 	/** Camera of the tool, used to get world coordinates of the click */
 	private Camera mCamera;
+	/** Temporary callback variable, used for testing points */
+	private QueryCallback mTempPointCallback = null;
 	/** Callback for testing points */
 	private QueryCallback mCallbackPoint = new QueryCallback() {
 		@Override
 		public boolean reportFixture(Fixture fixture) {
 			if (fixture.testPoint(mTouchCurrent)) {
-				return getCallback().reportFixture(fixture);
+				return mTempPointCallback.reportFixture(fixture);
 			}
 			return true;
 		}
 	};
-
-	// Temp variables
-	/** All bodies that were hit during the pick */
-	@Deprecated
-	protected static ArrayList<Body> mHitBodies = new ArrayList<Body>();
 }

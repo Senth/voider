@@ -108,13 +108,13 @@ public class SelectionTool extends TouchTool {
 			}
 
 			if (addTriggers) {
-				testPickAabb(Editor.PICK_TRIGGER_SIZE);
+				testPickAabb(mCallbackTriggers, Editor.PICK_TRIGGER_SIZE);
 			}
 			if (addPaths) {
-				testPickAabb(Editor.PICK_PATH_SIZE);
+				testPickAabb(mCallbackPaths, Editor.PICK_PATH_SIZE);
 			}
 			if (addRegularResources) {
-				testPickPoint();
+				testPickPoint(mCallbackResources);
 			}
 
 			if (addRemoveOrSetHitResources()) {
@@ -139,7 +139,7 @@ public class SelectionTool extends TouchTool {
 
 		if (mRectangleBrush != null) {
 			// Check with AABB which actors were inside the selection box
-			testPickAabb(mTouchOrigin, mTouchCurrent);
+			testPickAabb(mCallbackResources, mTouchOrigin, mTouchCurrent);
 
 			// Add resources to selection
 			if (KeyHelper.isShiftPressed()) {
@@ -165,16 +165,6 @@ public class SelectionTool extends TouchTool {
 	}
 
 	@Override
-	protected QueryCallback getCallback() {
-		return mCallback;
-	}
-
-	@Override
-	protected void filterPick() {
-		// Does nothing for the moment, we select all resources
-	}
-
-	@Override
 	public void activate() {
 		mActive = true;
 	}
@@ -184,8 +174,36 @@ public class SelectionTool extends TouchTool {
 		mActive = false;
 	}
 
+	/** Picking for paths */
+	private QueryCallback mCallbackPaths = new QueryCallback() {
+		@Override
+		public boolean reportFixture(Fixture fixture) {
+			Body body = fixture.getBody();
+
+			if (body.getUserData() instanceof Path) {
+				mHitResources.add((IResource)body.getUserData());
+			}
+
+			return true;
+		}
+	};
+
+	/** Picking for paths */
+	private QueryCallback mCallbackTriggers = new QueryCallback() {
+		@Override
+		public boolean reportFixture(Fixture fixture) {
+			Body body = fixture.getBody();
+
+			if (body.getUserData() instanceof Trigger) {
+				mHitResources.add((IResource)body.getUserData());
+			}
+
+			return true;
+		}
+	};
+
 	/** Picking for resources */
-	private QueryCallback mCallback = new QueryCallback() {
+	private QueryCallback mCallbackResources = new QueryCallback() {
 		@Override
 		public boolean reportFixture(Fixture fixture) {
 			Body body = fixture.getBody();

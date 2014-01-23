@@ -5,7 +5,6 @@ import java.lang.reflect.Constructor;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.World;
 import com.spiddekauga.utils.Invoker;
 import com.spiddekauga.voider.editor.IResourceChangeEditor;
@@ -23,21 +22,16 @@ import com.spiddekauga.voider.utils.Pools;
 abstract public class ActorTool extends TouchTool {
 
 	/**
-	 * @param camera
-	 * @param world
-	 * @param invoker
-	 * @param selection
+	 * @param camera used for picking on the screen
+	 * @param world used for converting screen to world coordinates
+	 * @param invoker used for undo/redo
+	 * @param selection all selected resources
 	 * @param editor can be null
 	 * @param actorType the type of actor this tool uses
 	 */
 	public ActorTool(Camera camera, World world, Invoker invoker, ISelection selection, IResourceChangeEditor editor, Class<? extends Actor> actorType) {
 		super(camera, world, invoker, selection, editor);
 		mActorType = actorType;
-	}
-
-	@Override
-	protected QueryCallback getCallback() {
-		return null;
 	}
 
 	/**

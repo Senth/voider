@@ -41,7 +41,7 @@ public class EnemySetTriggerTool extends TouchTool {
 			return false;
 		}
 
-		testPickAabb(Editor.PICK_TRIGGER_SIZE);
+		testPickAabb(mCallback, Editor.PICK_TRIGGER_SIZE);
 
 		// Set the trigger (both if we hit or missed a trigger)
 		ArrayList<EnemyActor> selectedEnemies = mSelection.getSelectedResourcesOfType(EnemyActor.class);
@@ -67,11 +67,6 @@ public class EnemySetTriggerTool extends TouchTool {
 	protected boolean up() {
 		// Does nothing
 		return false;
-	}
-
-	@Override
-	protected QueryCallback getCallback() {
-		return mCallback;
 	}
 
 	/** Callback for picking triggers */

@@ -55,7 +55,7 @@ public class DrawEraseTool extends ActorTool {
 		}
 
 		if (!mSelection.isEmpty()) {
-			testPickPoint();
+			testPickPoint(mCallback);
 			// Hit a selected actor
 			if (mHitActor != null) {
 				mDrawEraseBrush = new VectorBrush(true);
@@ -436,11 +436,6 @@ public class DrawEraseTool extends ActorTool {
 
 
 		return intersections;
-	}
-
-	@Override
-	protected QueryCallback getCallback() {
-		return mCallback;
 	}
 
 	/**
