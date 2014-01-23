@@ -2,10 +2,10 @@ package com.spiddekauga.voider.editor.tools;
 
 import java.util.ArrayList;
 
-import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.physics.box2d.World;
 import com.spiddekauga.utils.Invoker;
+import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.voider.editor.IResourceChangeEditor;
 import com.spiddekauga.voider.editor.commands.CResourceRemove;
 import com.spiddekauga.voider.editor.commands.CSelectionSet;
@@ -67,7 +67,7 @@ public class DeleteTool extends TouchTool {
 
 	@Override
 	public boolean keyDown(int keycode) {
-		if (keycode == Keys.DEL || keycode == Keys.BACKSPACE) {
+		if (KeyHelper.isDeletePressed(keycode)) {
 			removeSelectedResources();
 		}
 		return false;

@@ -82,7 +82,9 @@ public class EnemyActor extends Actor {
 				case PATH:
 					if (mPath != null) {
 						updatePathMovement(deltaTime);
-					} else if (!mEditorActive){
+					}
+
+					if (!mEditorActive){
 						if (TriggerInfo.getTriggerInfoByAction(this, Actions.ACTOR_DEACTIVATE) == null) {
 							if (mPath != null) {
 								checkPathDeactivate();
@@ -1000,7 +1002,7 @@ public class EnemyActor extends Actor {
 		if (TriggerInfo.getTriggerInfoByAction(this, Actions.ACTOR_DEACTIVATE) == null) {
 			if (getPath().getRightestCorner().x + getDef().getVisualVars().getBoundingRadius() < mLevel.getXCoord() - SceneSwitcher.getWorldWidth()) {
 
-				// For once, check that the ship cannot be seen too
+				// For 'once', check that the ship cannot be seen too
 				boolean deactivate = false;
 				if (getPath().getPathType() == PathTypes.ONCE) {
 					Vector2 minPos = SceneSwitcher.getWorldMinCoordinates();

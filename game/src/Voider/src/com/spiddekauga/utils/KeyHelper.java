@@ -10,6 +10,15 @@ import com.badlogic.gdx.Input.Keys;
  */
 public class KeyHelper {
 	/**
+	 * Checks if delete is pressed
+	 * @param keycode the key to check
+	 * @return true if a delete key was pressed
+	 */
+	public static boolean isDeletePressed(int keycode) {
+		return keycode == Keys.DEL || keycode == Keys.BACKSPACE || keycode == Keys.FORWARD_DEL;
+	}
+
+	/**
 	 * Checks if back/Escape is pressed
 	 * @param keycode the key to check
 	 * @return true if the back or escape key is pressed
