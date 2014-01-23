@@ -35,7 +35,6 @@ import com.spiddekauga.voider.editor.tools.RemoveCornerTool;
 import com.spiddekauga.voider.editor.tools.Selection;
 import com.spiddekauga.voider.editor.tools.SelectionTool;
 import com.spiddekauga.voider.editor.tools.TouchTool;
-import com.spiddekauga.voider.editor.tools.TriggerAddTool;
 import com.spiddekauga.voider.editor.tools.TriggerSetTool;
 import com.spiddekauga.voider.game.GameScene;
 import com.spiddekauga.voider.game.Level;
@@ -101,7 +100,6 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		Tools.SELECTION.setTool(new SelectionTool(mCamera, mWorld, mInvoker, mSelection, this));
 		Tools.TERRAIN_DRAW_APPEND.setTool(new DrawAppendTool(mCamera, mWorld, mInvoker, mSelection, this, StaticTerrainActor.class));
 		Tools.TERRAIN_DRAW_ERASE.setTool(new DrawEraseTool(mCamera, mWorld, mInvoker, mSelection, this, StaticTerrainActor.class));
-		Tools.TRIGGER_ADD.setTool(new TriggerAddTool(mCamera, mWorld, mInvoker, mSelection, this));
 
 		mInputMultiplexer.addProcessor(Tools.SELECTION.getTool());
 		mInputMultiplexer.addProcessor(Tools.DELETE.getTool());
@@ -1381,8 +1379,6 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		ENEMY_SET_ACTIVATE_TRIGGER,
 		/** Set deactivate trigger for enemies */
 		ENEMY_SET_DEACTIVATE_TRIGGER,
-		/** Add a trigger */
-		TRIGGER_ADD,
 		/** Add a corner to a path */
 		PATH_ADD_CORNER,
 		/** Path remove corner */

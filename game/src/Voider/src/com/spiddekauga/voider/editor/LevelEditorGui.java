@@ -491,23 +491,6 @@ class LevelEditorGui extends EditorGui {
 		};
 		toolButtons.add(button);
 
-		// Trigger add
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Add trigger", mStyles.textButton.press);
-		}
-		else {
-			button = new ImageButton(mStyles.skin.editor, EditorIcons.TRIGGER_ADD.toString());
-		}
-		tooltipListener = new TooltipListener(button, "Add Trigger", Messages.replaceName(Messages.Tooltip.Tools.TRIGGER_ADD, "trigger"));
-		new ButtonListener(button, tooltipListener) {
-			@Override
-			protected void onChecked(boolean checked) {
-				if (checked) {
-					mLevelEditor.switchTool(Tools.TRIGGER_ADD);
-				}
-			}
-		};
-		toolButtons.add(button);
 
 		/** @todo readd pickup */
 		// // Pickup add
