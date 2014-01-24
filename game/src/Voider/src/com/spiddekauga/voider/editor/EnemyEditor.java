@@ -19,31 +19,18 @@ import com.spiddekauga.utils.Command;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Editor.Enemy;
-import com.spiddekauga.voider.editor.brushes.VectorBrush;
 import com.spiddekauga.voider.editor.commands.CEnemyBulletDefSelect;
-import com.spiddekauga.voider.editor.commands.CResourceCornerRemoveAll;
-import com.spiddekauga.voider.editor.tools.AddMoveCornerTool;
-import com.spiddekauga.voider.editor.tools.DeleteTool;
-import com.spiddekauga.voider.editor.tools.DrawAppendTool;
-import com.spiddekauga.voider.editor.tools.DrawEraseTool;
-import com.spiddekauga.voider.editor.tools.MoveTool;
-import com.spiddekauga.voider.editor.tools.RemoveCornerTool;
-import com.spiddekauga.voider.editor.tools.Selection;
-import com.spiddekauga.voider.editor.tools.SetCenterTool;
-import com.spiddekauga.voider.editor.tools.TouchTool;
 import com.spiddekauga.voider.game.CollisionResolver;
 import com.spiddekauga.voider.game.Path;
 import com.spiddekauga.voider.game.Path.PathTypes;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.ActorFilterCategories;
-import com.spiddekauga.voider.game.actors.ActorShapeTypes;
 import com.spiddekauga.voider.game.actors.BulletActorDef;
 import com.spiddekauga.voider.game.actors.EnemyActor;
 import com.spiddekauga.voider.game.actors.EnemyActorDef;
 import com.spiddekauga.voider.game.actors.EnemyActorDef.AimTypes;
 import com.spiddekauga.voider.game.actors.EnemyActorDef.MovementTypes;
 import com.spiddekauga.voider.game.actors.PlayerActor;
-import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceItem;
 import com.spiddekauga.voider.resources.ResourceNames;
@@ -58,20 +45,12 @@ import com.spiddekauga.voider.utils.Pools;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class EnemyEditor extends Editor implements IActorEditor, IResourceChangeEditor {
+public class EnemyEditor extends ActorEditor {
 	/**
 	 * Creates the enemy editor
 	 */
 	public EnemyEditor() {
-		super(new EnemyEditorGui(), Config.Editor.PICKING_CIRCLE_RADIUS_EDITOR);
-
-		mTools[Tools.MOVE.ordinal()] = new MoveTool(mCamera, mWorld, mInvoker, mSelection, this);
-		mTools[Tools.DELETE.ordinal()] = new DeleteTool(mCamera, mWorld, mInvoker, mSelection, this);
-		mTools[Tools.DRAW_APPEND.ordinal()] = new DrawAppendTool(mCamera, mWorld, mInvoker, mSelection, this, EnemyActor.class);
-		mTools[Tools.DRAW_ERASE.ordinal()] = new DrawEraseTool(mCamera, mWorld, mInvoker, mSelection, this, EnemyActor.class);
-		mTools[Tools.ADD_MOVE_CORNER.ordinal()] = new AddMoveCornerTool(mCamera, mWorld, mInvoker, mSelection, this);
-		mTools[Tools.REMOVE_CORNER.ordinal()] = new RemoveCornerTool(mCamera, mWorld, mInvoker, mSelection, this);
-		mTools[Tools.SET_CENTER.ordinal()] = new SetCenterTool(mCamera, mWorld, mInvoker, mSelection, this, EnemyActor.class);
+		super(new EnemyEditorGui(), Config.Editor.PICKING_CIRCLE_RADIUS_EDITOR, EnemyActor.class);
 
 		mPlayerActor = new PlayerActor();
 		mPlayerActor.createBody();
@@ -225,15 +204,6 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 	}
 
 	@Override
-	public boolean isDrawing() {
-		if (mTools[mActiveTool.ordinal()] != null) {
-			return mTools[mActiveTool.ordinal()].isDrawing();
-		} else {
-			return false;
-		}
-	}
-
-	@Override
 	protected void update(float deltaTime) {
 		super.update(deltaTime);
 
@@ -251,9 +221,6 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 		mPlayerActor.update(deltaTime);
 		checkForDeadActors();
 
-		if (mDrawingEnemy != null && mDef.getVisualVars().getShapeType() == ActorShapeTypes.CUSTOM) {
-			mDrawingEnemy.updateEditor();
-		}
 
 		switch (mDef.getMovementType()) {
 		case AI:
@@ -315,12 +282,6 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 			mShapeRenderer.translate(0, 0, -1);
 
 
-			// Drawing enemy
-			if (mDrawingEnemy != null && mDef.getVisualVars().getShapeType() == ActorShapeTypes.CUSTOM) {
-				mDrawingEnemy.render(mShapeRenderer);
-				mDrawingEnemy.renderEditor(mShapeRenderer);
-			}
-
 			// Enemies
 			switch (getMovementType()) {
 			case AI:
@@ -341,10 +302,6 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 
 			mPlayerActor.render(mShapeRenderer);
 			mBulletDestroyer.render(mShapeRenderer);
-
-			if (mVectorBrush != null) {
-				mVectorBrush.renderEditor(mShapeRenderer);
-			}
 
 			mShapeRenderer.translate(0, 0, 1);
 			mShapeRenderer.pop();
@@ -707,70 +664,6 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 		}
 	}
 
-	@Override
-	public void setStartingAngle(float angle) {
-		if (mDef == null) {
-			return;
-		}
-		mDef.setStartAngleDeg(angle);
-		setUnsaved();
-	}
-
-	@Override
-	public float getStartingAngle() {
-		if (mDef != null) {
-			return mDef.getStartAngleDeg();
-		} else {
-			return 0;
-		}
-	}
-
-	@Override
-	public void setRotationSpeed(float rotationSpeed) {
-		if (mDef == null) {
-			return;
-		}
-		mDef.setRotationSpeedDeg(rotationSpeed);
-		setUnsaved();
-	}
-
-	@Override
-	public float getRotationSpeed() {
-		if (mDef != null) {
-			return mDef.getRotationSpeedDeg();
-		} else {
-			return 0;
-		}
-	}
-
-	@Override
-	public void switchTool(Tools tool) {
-		if (mTools[mActiveTool.ordinal()] != null) {
-			mTools[mActiveTool.ordinal()].deactivate();
-
-			// Never remove delete tool
-			if (mActiveTool != Tools.DELETE) {
-				mInputMultiplexer.removeProcessor(mTools[mActiveTool.ordinal()]);
-			}
-		}
-
-		mActiveTool = tool;
-
-		if (mTools[mActiveTool.ordinal()] != null) {
-			mTools[mActiveTool.ordinal()].activate();
-
-			// Never add delete tool
-			if (mActiveTool != Tools.DELETE) {
-				mInputMultiplexer.addProcessor(mTools[mActiveTool.ordinal()]);
-			}
-		}
-	}
-
-	@Override
-	public Tools getActiveTool() {
-		return mActiveTool;
-	}
-
 	/**
 	 * Sets if the enemy shall move randomly using the random spread set through
 	 * #setRandomSpread(float).
@@ -1070,177 +963,7 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 		SceneSwitcher.switchTo(selectionScene);
 	}
 
-	@Override
-	public void setShapeType(ActorShapeTypes shapeType) {
-		if (mDef == null) {
-			return;
-		}
-		mDef.getVisualVars().setShapeType(shapeType);
-	}
 
-	@Override
-	public ActorShapeTypes getShapeType() {
-		if (mDef != null) {
-			return mDef.getVisualVars().getShapeType();
-		} else {
-			return ActorShapeTypes.CIRCLE;
-		}
-	}
-
-	@Override
-	public void setShapeRadius(float radius) {
-		if (mDef == null) {
-			return;
-		}
-		mDef.getVisualVars().setShapeRadius(radius);
-		setUnsaved();
-	}
-
-	@Override
-	public float getShapeRadius() {
-		if (mDef != null) {
-			return mDef.getVisualVars().getShapeRadius();
-		} else {
-			return 0;
-		}
-	}
-
-	@Override
-	public void setShapeWidth(float width) {
-		if (mDef == null) {
-			return;
-		}
-		mDef.getVisualVars().setShapeWidth(width);
-		setUnsaved();
-	}
-
-	@Override
-	public float getShapeWidth() {
-		if (mDef != null) {
-			return mDef.getVisualVars().getShapeWidth();
-		} else {
-			return 0;
-		}
-	}
-
-	@Override
-	public void setShapeHeight(float height) {
-		if (mDef == null) {
-			return;
-		}
-		mDef.getVisualVars().setShapeHeight(height);
-		setUnsaved();
-	}
-
-	@Override
-	public float getShapeHeight() {
-		if (mDef != null) {
-			return mDef.getVisualVars().getShapeHeight();
-		} else {
-			return 0;
-		}
-	}
-
-	@Override
-	public void resetCenterOffset() {
-		if (mDef == null) {
-			return;
-		}
-		// Save diff offset and move the actor in the opposite direction...
-		Vector2 diffOffset = null;
-		if (mDrawingEnemy != null) {
-			mDrawingEnemy.destroyBody();
-
-			diffOffset = Pools.vector2.obtain();
-			diffOffset.set(mDef.getVisualVars().getCenterOffset());
-		}
-
-		mDef.getVisualVars().resetCenterOffset();
-
-		if (mDrawingEnemy != null) {
-			diffOffset.sub(mDef.getVisualVars().getCenterOffset());
-			diffOffset.add(mDrawingEnemy.getPosition());
-			mDrawingEnemy.setPosition(diffOffset);
-			mDrawingEnemy.createBody();
-			Pools.vector2.free(diffOffset);
-		}
-
-		setUnsaved();
-	}
-
-	@Override
-	public void setCenterOffset(Vector2 newCenter) {
-		if (mDef == null) {
-			return;
-		}
-		// Save diff offset and move the actor in the opposite direction...
-		Vector2 diffOffset = null;
-		if (mDrawingEnemy != null) {
-			mDrawingEnemy.destroyBody();
-
-			diffOffset = Pools.vector2.obtain();
-			diffOffset.set(mDef.getVisualVars().getCenterOffset());
-		}
-
-		mDef.getVisualVars().setCenterOffset(newCenter);
-
-		if (mDrawingEnemy != null) {
-			diffOffset.sub(mDef.getVisualVars().getCenterOffset());
-			diffOffset.add(mDrawingEnemy.getPosition());
-			mDrawingEnemy.setPosition(diffOffset);
-			mDrawingEnemy.createBody();
-			Pools.vector2.free(diffOffset);
-		}
-
-		setUnsaved();
-	}
-
-	@Override
-	public Vector2 getCenterOffset() {
-		if (mDef != null) {
-			return mDef.getVisualVars().getCenterOffset();
-		} else {
-			return new Vector2();
-		}
-	}
-
-	@Override
-	public void setName(String name) {
-		if (mDef == null) {
-			return;
-		}
-		mDef.setName(name);
-
-		setUnsaved();
-	}
-
-	@Override
-	public String getName() {
-		if (mDef != null) {
-			return mDef.getName();
-		} else {
-			return "";
-		}
-	}
-
-	@Override
-	public void setDescription(String description) {
-		if (mDef == null) {
-			return;
-		}
-		mDef.setDescription(description);
-
-		setUnsaved();
-	}
-
-	@Override
-	public String getDescription() {
-		if (mDef != null) {
-			return mDef.getDescription();
-		} else {
-			return "";
-		}
-	}
 
 	/**
 	 * Switches scene to load an enemy
@@ -1261,41 +984,6 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 		setEnemyDef((EnemyActorDef) mDef.copy());
 		mGui.resetValues();
 		saveDef();
-	}
-
-	@Override
-	public void onResourceAdded(IResource resource) {
-		if (resource instanceof EnemyActor) {
-			mDrawingEnemy = (EnemyActor) resource;
-
-			// Set position other than center
-			Vector2 worldPosition = Pools.vector2.obtain();
-			screenToWorldCoord(mCamera, Gdx.graphics.getWidth() / 3, Gdx.graphics.getHeight() / 3, worldPosition, false);
-			mDrawingEnemy.setPosition(worldPosition);
-			Pools.vector2.free(worldPosition);
-
-			setUnsaved();
-		}
-		else if (resource instanceof VectorBrush) {
-			mVectorBrush = (VectorBrush) resource;
-		}
-	}
-
-	@Override
-	public void onResourceRemoved(IResource resource) {
-		if (resource instanceof EnemyActor) {
-			mInvoker.execute(new CResourceCornerRemoveAll(mDef.getVisualVars(), this), true);
-			mDrawingEnemy = null;
-			setUnsaved();
-		}
-		else if (resource instanceof VectorBrush) {
-			mVectorBrush = null;
-		}
-	}
-
-	@Override
-	public void onResourceChanged(IResource resource) {
-		// Does nothing
 	}
 
 	/**
@@ -1491,29 +1179,16 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 	 * @param def the new definition to use for the enemies
 	 */
 	private void setEnemyDef(EnemyActorDef def) {
+		setActorDef(def);
+
 		mDef = def;
 		mEnemyActor.setDef(mDef);
 		mEnemyPathOnce.setDef(mDef);
 		mEnemyPathLoop.setDef(mDef);
 		mEnemyPathBackAndForth.setDef(mDef);
-		((DrawAppendTool)mTools[Tools.DRAW_APPEND.ordinal()]).setActorDef(mDef);
+
 		if (mGui.isInitialized()) {
 			mGui.resetValues();
-		}
-
-
-		if (mDef.getVisualVars().getShapeType() == ActorShapeTypes.CUSTOM) {
-			if (mDrawingEnemy == null) {
-				mDrawingEnemy = new EnemyActor();
-				mDrawingEnemy.setDef(mDef);
-				mSelection.selectResource(mDrawingEnemy);
-			}
-		} else {
-			if (mDrawingEnemy != null) {
-				mSelection.deselectResource(mDrawingEnemy);
-				mDrawingEnemy.dispose();
-				mDrawingEnemy = null;
-			}
 		}
 	}
 
@@ -1632,16 +1307,9 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 
 
 
-	/** Active tool */
-	private TouchTool[] mTools = new TouchTool[Tools.values().length];
-	/** Current tool state */
-	private Tools mActiveTool = Tools.NONE;
-	/** Current selection */
-	private Selection mSelection = new Selection();
+
 	/** Current selection action, null if none */
 	private SelectionActions mSelectionAction = null;
-	/** Drawing enemy actor */
-	private EnemyActor mDrawingEnemy = null;
 	/** Current enemy actor */
 	private EnemyActor mEnemyActor = new EnemyActor();
 	/** Enemy actor for path once */
@@ -1666,6 +1334,5 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 	private PlayerActor mPlayerActor = null;
 	/** Listens for collisions */
 	private CollisionResolver mCollisionResolver = new CollisionResolver();
-	/** Vector brush to render when drawing custom shapes */
-	private VectorBrush mVectorBrush = null;
+
 }

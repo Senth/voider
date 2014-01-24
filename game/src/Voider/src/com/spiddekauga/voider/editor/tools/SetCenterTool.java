@@ -36,30 +36,83 @@ public class SetCenterTool extends ActorTool implements ISelectionListener {
 			ArrayList<? extends Actor> selectedActors = mSelection.getSelectedResourcesOfType(mActorType);
 
 			Vector2 centerOffset = Pools.vector2.obtain();
-			boolean chained = false;
+			Vector2 newActorPos = Pools.vector2.obtain();
 			for (Actor actor : selectedActors) {
 				centerOffset.set(actor.getPosition()).sub(mTouchCurrent);
 				centerOffset.add(actor.getDef().getVisualVars().getCenterOffset());
-				Vector2 originalPosition = actor.getDef().getVisualVars().getCenterOffset();
-				mInvoker.execute(new CActorCenterMove(actor.getDef(), centerOffset, originalPosition, mEditor, actor), chained);
-				chained = true;
+				mOriginalCenter.set(actor.getDef().getVisualVars().getCenterOffset());
+				actor.getDef().getVisualVars().setCenterOffset(centerOffset);
+
+				newActorPos.set(mOriginalCenter).sub(centerOffset);
+				newActorPos.add(actor.getPosition());
+				actor.setPosition(newActorPos);
 			}
 
-			Pools.vector2.free(centerOffset);
+			Pools.vector2.freeAll(centerOffset, newActorPos);
 			Pools.arrayList.free(selectedActors);
+
+			return true;
 		}
 		return false;
 	}
 
 	@Override
 	protected boolean dragged() {
-		// Does nothing
+		if (!mSelection.isSelectionChangedDuringDown()) {
+			ArrayList<? extends Actor> selectedActors = mSelection.getSelectedResourcesOfType(mActorType);
+
+			Vector2 centerOffset = Pools.vector2.obtain();
+			Vector2 newActorPos = Pools.vector2.obtain();
+			Vector2 oldCenterOffset = Pools.vector2.obtain();
+			for (Actor actor : selectedActors) {
+				centerOffset.set(actor.getPosition()).sub(mTouchCurrent);
+				centerOffset.add(actor.getDef().getVisualVars().getCenterOffset());
+				oldCenterOffset.set(actor.getDef().getVisualVars().getCenterOffset());
+				actor.getDef().getVisualVars().setCenterOffset(centerOffset);
+
+				newActorPos.set(oldCenterOffset).sub(centerOffset);
+				newActorPos.add(actor.getPosition());
+				actor.setPosition(newActorPos);
+			}
+
+			Pools.vector2.freeAll(centerOffset, newActorPos);
+			Pools.arrayList.free(selectedActors);
+
+			return true;
+		}
 		return false;
 	}
 
 	@Override
 	protected boolean up(int button) {
-		// Does nothing
+		if (!mSelection.isSelectionChangedDuringDown()) {
+			ArrayList<? extends Actor> selectedActors = mSelection.getSelectedResourcesOfType(mActorType);
+
+			Vector2 centerOffset = Pools.vector2.obtain();
+			Vector2 oldCenterOffset = Pools.vector2.obtain();
+			Vector2 oldActorPos = Pools.vector2.obtain();
+			boolean chained = false;
+			for (Actor actor : selectedActors) {
+				centerOffset.set(actor.getPosition()).sub(mTouchCurrent);
+				centerOffset.add(actor.getDef().getVisualVars().getCenterOffset());
+				oldCenterOffset.set(actor.getDef().getVisualVars().getCenterOffset());
+				actor.getDef().getVisualVars().setCenterOffset(mOriginalCenter);
+
+				// Reset player position
+				oldActorPos.set(oldCenterOffset).sub(mOriginalCenter);
+				oldActorPos.add(actor.getPosition());
+				actor.setPosition(oldActorPos);
+
+				mInvoker.execute(new CActorCenterMove(actor.getDef(), centerOffset, mOriginalCenter, mEditor, actor), chained);
+				chained = true;
+			}
+
+			Pools.vector2.freeAll(centerOffset, oldCenterOffset, oldActorPos);
+			Pools.arrayList.free(selectedActors);
+
+			return true;
+		}
+
 		return false;
 	}
 
@@ -94,4 +147,7 @@ public class SetCenterTool extends ActorTool implements ISelectionListener {
 			((Actor)resource).destroyBodyCenter();
 		}
 	}
+
+	/** Original drag position of the center */
+	private Vector2 mOriginalCenter = new Vector2();
 }

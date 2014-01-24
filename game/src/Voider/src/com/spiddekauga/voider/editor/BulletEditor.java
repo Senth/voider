@@ -7,24 +7,11 @@ import com.badlogic.gdx.math.Vector2;
 import com.spiddekauga.utils.Command;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.voider.Config;
-import com.spiddekauga.voider.editor.brushes.VectorBrush;
-import com.spiddekauga.voider.editor.commands.CResourceCornerRemoveAll;
-import com.spiddekauga.voider.editor.tools.AddMoveCornerTool;
-import com.spiddekauga.voider.editor.tools.DeleteTool;
-import com.spiddekauga.voider.editor.tools.DrawAppendTool;
-import com.spiddekauga.voider.editor.tools.DrawEraseTool;
-import com.spiddekauga.voider.editor.tools.MoveTool;
-import com.spiddekauga.voider.editor.tools.RemoveCornerTool;
-import com.spiddekauga.voider.editor.tools.Selection;
-import com.spiddekauga.voider.editor.tools.SetCenterTool;
-import com.spiddekauga.voider.editor.tools.TouchTool;
 import com.spiddekauga.voider.game.Weapon;
 import com.spiddekauga.voider.game.WeaponDef;
 import com.spiddekauga.voider.game.actors.Actor;
-import com.spiddekauga.voider.game.actors.ActorShapeTypes;
 import com.spiddekauga.voider.game.actors.BulletActor;
 import com.spiddekauga.voider.game.actors.BulletActorDef;
-import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceItem;
 import com.spiddekauga.voider.resources.ResourceNames;
@@ -39,12 +26,12 @@ import com.spiddekauga.voider.utils.Pools;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class BulletEditor extends Editor implements IActorEditor, IResourceChangeEditor {
+public class BulletEditor extends ActorEditor {
 	/**
 	 * Creates a bullet editor.
 	 */
 	public BulletEditor() {
-		super(new BulletEditorGui(), Config.Editor.PICKING_CIRCLE_RADIUS_EDITOR);
+		super(new BulletEditorGui(), Config.Editor.PICKING_CIRCLE_RADIUS_EDITOR, BulletActor.class);
 
 		((BulletEditorGui) mGui).setBulletEditor(this);
 
@@ -53,15 +40,6 @@ public class BulletEditor extends Editor implements IActorEditor, IResourceChang
 		screenToWorldCoord(mCamera, Gdx.graphics.getWidth() * 0.1f, Gdx.graphics.getHeight() * 0.7f, weaponPos, true);
 		mWeapon.setPosition(weaponPos);
 		Pools.vector2.free(weaponPos);
-
-		// Initialize tools
-		mTools[Tools.MOVE.ordinal()] = new MoveTool(mCamera, mWorld, mInvoker, mSelection, this);
-		mTools[Tools.DELETE.ordinal()] = new DeleteTool(mCamera, mWorld, mInvoker, mSelection, this);
-		mTools[Tools.DRAW_APPEND.ordinal()] = new DrawAppendTool(mCamera, mWorld, mInvoker, mSelection, this, BulletActor.class);
-		mTools[Tools.DRAW_ERASE.ordinal()] = new DrawEraseTool(mCamera, mWorld, mInvoker, mSelection, this, BulletActor.class);
-		mTools[Tools.ADD_MOVE_CORNER.ordinal()] = new AddMoveCornerTool(mCamera, mWorld, mInvoker, mSelection, this);
-		mTools[Tools.REMOVE_CORNER.ordinal()] = new RemoveCornerTool(mCamera, mWorld, mInvoker, mSelection, this);
-		mTools[Tools.SET_CENTER.ordinal()] = new SetCenterTool(mCamera, mWorld, mInvoker, mSelection, this, BulletActor.class);
 	}
 
 	@Override
@@ -115,16 +93,6 @@ public class BulletEditor extends Editor implements IActorEditor, IResourceChang
 	}
 
 	@Override
-	public boolean isDrawing() {
-		if (mTools[mActiveTool.ordinal()] != null) {
-			return mTools[mActiveTool.ordinal()].isDrawing();
-		}
-		else {
-			return false;
-		}
-	}
-
-	@Override
 	protected void update(float deltaTime) {
 		super.update(deltaTime);
 
@@ -144,10 +112,6 @@ public class BulletEditor extends Editor implements IActorEditor, IResourceChang
 		if (mWeapon.canShoot()) {
 			mWeapon.shoot(SHOOT_DIRECTION);
 		}
-
-		if (mBulletActor != null && mDef.getVisualVars().getShapeType() == ActorShapeTypes.CUSTOM) {
-			mBulletActor.updateEditor();
-		}
 	}
 
 	@Override
@@ -161,15 +125,6 @@ public class BulletEditor extends Editor implements IActorEditor, IResourceChang
 			mShapeRenderer.push(ShapeType.Filled);
 
 			mBulletDestroyer.render(mShapeRenderer);
-
-			if (mBulletActor != null && mDef.getVisualVars().getShapeType() == ActorShapeTypes.CUSTOM) {
-				mBulletActor.render(mShapeRenderer);
-				mBulletActor.renderEditor(mShapeRenderer);
-			}
-
-			if (mVectorBrush != null) {
-				mVectorBrush.renderEditor(mShapeRenderer);
-			}
 
 			mShapeRenderer.pop();
 		}
@@ -260,228 +215,6 @@ public class BulletEditor extends Editor implements IActorEditor, IResourceChang
 		mInvoker.redo();
 	}
 
-	@Override
-	public String getName() {
-		if (mDef != null) {
-			return mDef.getName();
-		} else {
-			return "";
-		}
-	}
-
-	@Override
-	public void setName(String name) {
-		if (mDef == null) {
-			return;
-		}
-		mDef.setName(name);
-		setUnsaved();
-	}
-
-	@Override
-	public void setDescription(String description) {
-		if (mDef == null) {
-			return;
-		}
-		mDef.setDescription(description);
-		setUnsaved();
-	}
-
-	@Override
-	public String getDescription() {
-		if (mDef != null) {
-			return mDef.getDescription();
-		} else {
-			return "";
-		}
-	}
-
-	@Override
-	public void setStartingAngle(float angle) {
-		if (mDef == null) {
-			return;
-		}
-		mDef.setStartAngleDeg(angle);
-		setUnsaved();
-	}
-
-	@Override
-	public float getStartingAngle() {
-		if (mDef != null) {
-			return mDef.getStartAngleDeg();
-		} else {
-			return 0;
-		}
-	}
-
-	@Override
-	public void setRotationSpeed(float rotationSpeed) {
-		if (mDef == null) {
-			return;
-		}
-		mDef.setRotationSpeedDeg(rotationSpeed);
-		setUnsaved();
-	}
-
-	@Override
-	public float getRotationSpeed() {
-		if (mDef != null) {
-			return mDef.getRotationSpeedDeg();
-		} else {
-			return 0;
-		}
-	}
-
-	@Override
-	public void setShapeType(ActorShapeTypes shapeType) {
-		if (mDef == null) {
-			return;
-		}
-
-		mDef.getVisualVars().setShapeType(shapeType);
-		setUnsaved();
-
-		if (shapeType == ActorShapeTypes.CUSTOM) {
-			switchTool(Tools.DRAW_APPEND);
-
-			// Add delete tool to input multiplexer
-			if (!mInputMultiplexer.getProcessors().contains(mTools[Tools.DELETE.ordinal()], true)) {
-				mInputMultiplexer.addProcessor(mTools[Tools.DELETE.ordinal()]);
-			}
-		}
-		else {
-			switchTool(Tools.NONE);
-			mInputMultiplexer.removeProcessor(mTools[Tools.DELETE.ordinal()]);
-		}
-	}
-
-	@Override
-	public ActorShapeTypes getShapeType() {
-		if (mDef != null) {
-			return mDef.getVisualVars().getShapeType();
-		} else {
-			return null;
-		}
-	}
-
-	@Override
-	public void setShapeRadius(float radius) {
-		if (mDef == null) {
-			return;
-		}
-		mDef.getVisualVars().setShapeRadius(radius);
-		setUnsaved();
-	}
-
-	@Override
-	public float getShapeRadius() {
-		if (mDef != null) {
-			return mDef.getVisualVars().getShapeRadius();
-		} else {
-			return 0;
-		}
-	}
-
-	@Override
-	public void setShapeWidth(float width) {
-		if (mDef == null) {
-			return;
-		}
-		mDef.getVisualVars().setShapeWidth(width);
-		setUnsaved();
-	}
-
-	@Override
-	public float getShapeWidth() {
-		if (mDef != null) {
-			return mDef.getVisualVars().getShapeWidth();
-		} else {
-			return 0;
-		}
-	}
-
-	@Override
-	public void setShapeHeight(float height) {
-		if (mDef == null) {
-			return;
-		}
-		mDef.getVisualVars().setShapeHeight(height);
-		setUnsaved();
-	}
-
-	@Override
-	public float getShapeHeight() {
-		if (mDef != null) {
-			return mDef.getVisualVars().getShapeHeight();
-		} else {
-			return 0;
-		}
-	}
-
-	@Override
-	public void resetCenterOffset() {
-		if (mDef == null) {
-			return;
-		}
-		// Save diff offset and move the actor in the opposite direction...
-		Vector2 diffOffset = null;
-		if (mBulletActor != null && mDef.getVisualVars().getShapeType() == ActorShapeTypes.CUSTOM) {
-			mBulletActor.destroyBody();
-
-			diffOffset = Pools.vector2.obtain();
-			diffOffset.set(mDef.getVisualVars().getCenterOffset());
-		}
-
-		mDef.getVisualVars().resetCenterOffset();
-
-		if (mBulletActor != null && mDef.getVisualVars().getShapeType() == ActorShapeTypes.CUSTOM) {
-			diffOffset.sub(mDef.getVisualVars().getCenterOffset());
-			diffOffset.add(mBulletActor.getPosition());
-			mBulletActor.setPosition(diffOffset);
-			mBulletActor.createBody();
-			Pools.vector2.free(diffOffset);
-		}
-
-		setUnsaved();
-	}
-
-	@Override
-	public void setCenterOffset(Vector2 newCenter) {
-		if (mDef == null) {
-			return;
-		}
-
-		// Save diff offset and move the actor in the opposite direction...
-		Vector2 diffOffset = null;
-		if (mBulletActor != null && mDef.getVisualVars().getShapeType() == ActorShapeTypes.CUSTOM) {
-			mBulletActor.destroyBody();
-
-			diffOffset = Pools.vector2.obtain();
-			diffOffset.set(mDef.getVisualVars().getCenterOffset());
-		}
-
-		mDef.getVisualVars().setCenterOffset(newCenter);
-
-		if (mBulletActor != null && mDef.getVisualVars().getShapeType() == ActorShapeTypes.CUSTOM) {
-			diffOffset.sub(mDef.getVisualVars().getCenterOffset());
-			diffOffset.add(mBulletActor.getPosition());
-			mBulletActor.setPosition(diffOffset);
-			mBulletActor.createBody();
-			Pools.vector2.free(diffOffset);
-		}
-
-		setUnsaved();
-	}
-
-	@Override
-	public Vector2 getCenterOffset() {
-		if (mDef != null) {
-			return mDef.getVisualVars().getCenterOffset();
-		} else {
-			return new Vector2();
-		}
-	}
-
 	/**
 	 * Sets colliding damage of the enemy
 	 * 
@@ -533,43 +266,6 @@ public class BulletEditor extends Editor implements IActorEditor, IResourceChang
 			return mDef.isDestroyedOnCollide();
 		} else {
 			return false;
-		}
-	}
-
-	@Override
-	public void onResourceAdded(IResource resource) {
-		if (resource instanceof BulletActor) {
-			mBulletActor = (BulletActor) resource;
-
-			// Set position other than center
-			Vector2 worldPosition = Pools.vector2.obtain();
-			screenToWorldCoord(mCamera, Gdx.graphics.getWidth() / 3, Gdx.graphics.getHeight() / 3, worldPosition, false);
-			mBulletActor.setPosition(worldPosition);
-			Pools.vector2.free(worldPosition);
-
-			setUnsaved();
-		}
-		else if (resource instanceof VectorBrush) {
-			mVectorBrush = (VectorBrush) resource;
-		}
-	}
-
-	@Override
-	public void onResourceRemoved(IResource resource) {
-		if (resource instanceof BulletActor) {
-			mInvoker.execute(new CResourceCornerRemoveAll(mDef.getVisualVars(), this), true);
-			mBulletActor = null;
-			setUnsaved();
-		}
-		else if (resource instanceof VectorBrush) {
-			mVectorBrush = null;
-		}
-	}
-
-	@Override
-	public void onResourceChanged(IResource resource) {
-		if (resource instanceof BulletActor) {
-			setUnsaved();
 		}
 	}
 
@@ -645,68 +341,17 @@ public class BulletEditor extends Editor implements IActorEditor, IResourceChang
 	 *            the new definition to use
 	 */
 	private void setDef(BulletActorDef def) {
+		setActorDef(mDef);
+
 		mDef = def;
-		((DrawAppendTool) mTools[Tools.DRAW_APPEND.ordinal()]).setActorDef(def);
 		mWeapon.getDef().setBulletActorDef(def);
 		setShapeType(mDef.getVisualVars().getShapeType());
 		if (mGui.isInitialized()) {
 			mGui.resetValues();
 		}
-
-		if (mDef.getVisualVars().getShapeType() == ActorShapeTypes.CUSTOM) {
-			if (mBulletActor == null) {
-				mBulletActor = new BulletActor();
-				mBulletActor.setDef(mDef);
-				mSelection.selectResource(mBulletActor);
-			}
-		} else {
-			if (mBulletActor != null) {
-				mSelection.deselectResource(mBulletActor);
-				mBulletActor.dispose();
-				mBulletActor = null;
-			}
-		}
-	}
-
-	/**
-	 * Switch currently selected tool
-	 * 
-	 * @param tool
-	 *            the new tool to use
-	 */
-	public void switchTool(Tools tool) {
-		if (mTools[mActiveTool.ordinal()] != null) {
-			mTools[mActiveTool.ordinal()].deactivate();
-
-			// Never remove delete tool
-			if (mActiveTool != Tools.DELETE) {
-				mInputMultiplexer.removeProcessor(mTools[mActiveTool.ordinal()]);
-			}
-		}
-
-		mActiveTool = tool;
-
-		if (mTools[mActiveTool.ordinal()] != null) {
-			mTools[mActiveTool.ordinal()].activate();
-
-			// Never add delete tool
-			if (mActiveTool != Tools.DELETE) {
-				mInputMultiplexer.addProcessor(mTools[mActiveTool.ordinal()]);
-			}
-		}
-	}
-
-	public Tools getActiveTool() {
-		return mActiveTool;
 	}
 
 
-	/** Active tool */
-	private TouchTool[] mTools = new TouchTool[Tools.values().length];
-	/** Current tool state */
-	private Tools mActiveTool = Tools.NONE;
-	/** Selection */
-	private Selection mSelection = new Selection();
 	/** Current weapon that fires the bullets */
 	private Weapon mWeapon = new Weapon();
 	/** Current bullet definition */
@@ -715,8 +360,4 @@ public class BulletEditor extends Editor implements IActorEditor, IResourceChang
 	private SelectionActions mSelectionAction = null;
 	/** Shoot direction */
 	private final static Vector2 SHOOT_DIRECTION = new Vector2(1, 0);
-	/** Current bullet actor (when drawing) */
-	private BulletActor mBulletActor = null;
-	/** Draw brush to render */
-	private VectorBrush mVectorBrush = null;
 }
