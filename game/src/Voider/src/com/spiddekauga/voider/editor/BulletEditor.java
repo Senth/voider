@@ -341,7 +341,7 @@ public class BulletEditor extends ActorEditor {
 	 *            the new definition to use
 	 */
 	private void setDef(BulletActorDef def) {
-		setActorDef(mDef);
+		setActorDef(def);
 
 		mDef = def;
 		mWeapon.getDef().setBulletActorDef(def);

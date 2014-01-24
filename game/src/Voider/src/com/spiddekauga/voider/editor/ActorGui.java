@@ -69,6 +69,29 @@ public abstract class ActorGui extends EditorGui {
 	public void resetValues() {
 		super.resetValues();
 
+
+		resetVisuals();
+
+		// Options
+		mWidgets.info.name.setText(mActorEditor.getName());
+		mWidgets.info.description.setText(mActorEditor.getDescription());
+		mWidgets.info.description.setTextFieldListener(null);
+
+
+		// Collision
+		// If one variable has been initialized, all has...
+		if (mWidgets.collision.damage != null) {
+			mWidgets.collision.damage.setValue(mActorEditor.getCollisionDamage());
+			mWidgets.collision.destroyOnCollide.setChecked(mActorEditor.isDestroyedOnCollide());
+		}
+
+		resetTools();
+	}
+
+	/**
+	 * Reset the actor's shape
+	 */
+	void resetVisuals() {
 		// Visuals
 		mWidgets.visual.startAngle.setValue(mActorEditor.getStartingAngle());
 		mWidgets.visual.rotationSpeed.setValue(mActorEditor.getRotationSpeed());
@@ -107,20 +130,6 @@ public abstract class ActorGui extends EditorGui {
 				mWidgets.visual.shapeCustom.setChecked(true);
 				break;
 			}
-		}
-
-
-		// Options
-		mWidgets.info.name.setText(mActorEditor.getName());
-		mWidgets.info.description.setText(mActorEditor.getDescription());
-		mWidgets.info.description.setTextFieldListener(null);
-
-
-		// Collision
-		// If one variable has been initialized, all has...
-		if (mWidgets.collision.damage != null) {
-			mWidgets.collision.damage.setValue(mActorEditor.getCollisionDamage());
-			mWidgets.collision.destroyOnCollide.setChecked(mActorEditor.isDestroyedOnCollide());
 		}
 	}
 
@@ -489,6 +498,7 @@ public abstract class ActorGui extends EditorGui {
 		} else {
 			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.MOVE.toString());
 		}
+		mWidgets.tool.move = button;
 		button.addListener(shapeCustomChecker);
 		buttonGroup.add(button);
 		TooltipListener tooltipListener = new TooltipListener(button, "Move", Messages.replaceName(Messages.Tooltip.Tools.MOVE, getResourceTypeName()));
@@ -509,6 +519,7 @@ public abstract class ActorGui extends EditorGui {
 		} else {
 			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.DELETE.toString());
 		}
+		mWidgets.tool.delete = button;
 		button.addListener(shapeCustomChecker);
 		buttonGroup.add(button);
 		tooltipListener = new TooltipListener(button, "Delete", Messages.replaceName(Messages.Tooltip.Tools.DELETE, getResourceTypeName()));
@@ -529,6 +540,7 @@ public abstract class ActorGui extends EditorGui {
 		} else {
 			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.DRAW_APPEND.toString());
 		}
+		mWidgets.tool.drawAppend = button;
 		button.addListener(shapeCustomChecker);
 		buttonGroup.add(button);
 		tooltipListener = new TooltipListener(button, "Draw/Append", Messages.replaceName(Messages.Tooltip.Tools.DRAW_APPEND, getResourceTypeName()));
@@ -549,6 +561,7 @@ public abstract class ActorGui extends EditorGui {
 		} else {
 			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.DRAW_ERASE.toString());
 		}
+		mWidgets.tool.drawErase = button;
 		button.addListener(shapeCustomChecker);
 		buttonGroup.add(button);
 		tooltipListener = new TooltipListener(button, "Draw/Erase", Messages.replaceName(Messages.Tooltip.Tools.DRAW_ERASE, getResourceTypeName()));
@@ -569,6 +582,7 @@ public abstract class ActorGui extends EditorGui {
 		} else {
 			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.ADD_MOVE_CORNER.toString());
 		}
+		mWidgets.tool.addMoveCorner = button;
 		button.addListener(shapeCustomChecker);
 		buttonGroup.add(button);
 		tooltipListener = new TooltipListener(button, "Add/Move corner", Messages.replaceName(Messages.Tooltip.Tools.ADJUST_ADD_MOVE_CORNER, getResourceTypeName()));
@@ -589,6 +603,7 @@ public abstract class ActorGui extends EditorGui {
 		} else {
 			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.REMOVE_CORNER.toString());
 		}
+		mWidgets.tool.removeCorner = button;
 		button.addListener(shapeCustomChecker);
 		buttonGroup.add(button);
 		tooltipListener = new TooltipListener(button, "Remove corner", Messages.replaceName(Messages.Tooltip.Tools.ADJUST_REMOVE_CORNER, getResourceTypeName()));
@@ -609,6 +624,7 @@ public abstract class ActorGui extends EditorGui {
 		} else {
 			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.SET_CENTER.toString());
 		}
+		mWidgets.tool.setCenter = button;
 		button.addListener(shapeCustomChecker);
 		buttonGroup.add(button);
 		tooltipListener = new TooltipListener(button, "Set center", Messages.replaceName(Messages.Tooltip.Tools.SET_CENTER, getResourceTypeName()));
@@ -682,6 +698,60 @@ public abstract class ActorGui extends EditorGui {
 	}
 
 	/**
+	 * @return visual table
+	 */
+	protected AlignTable getVisualTable() {
+		return mWidgets.visual.table;
+	}
+
+	/**
+	 * @return collision table
+	 */
+	protected AlignTable getCollisionTable() {
+		return mWidgets.collision.table;
+	}
+
+	/**
+	 * Reset tool widget selection
+	 */
+	void resetTools() {
+		switch (mActorEditor.getActiveTool()) {
+		case ADD_MOVE_CORNER:
+			mWidgets.tool.addMoveCorner.setChecked(true);
+			break;
+
+		case DELETE:
+			mWidgets.tool.delete.setChecked(true);
+			break;
+
+		case DRAW_APPEND:
+			mWidgets.tool.drawAppend.setChecked(true);
+			break;
+
+		case DRAW_ERASE:
+			mWidgets.tool.drawErase.setChecked(true);
+			break;
+
+		case MOVE:
+			mWidgets.tool.move.setChecked(true);
+			break;
+
+		case REMOVE_CORNER:
+			mWidgets.tool.removeCorner.setChecked(true);
+			break;
+
+		case SET_CENTER:
+			mWidgets.tool.setCenter.setChecked(true);
+			break;
+
+		default:
+			mWidgets.tool.move.setChecked(true);
+			break;
+
+		}
+	}
+
+	/**
 	 * All the widgets which state can be changed and thus reset
 	 */
 	@SuppressWarnings("javadoc")
@@ -690,6 +760,20 @@ public abstract class ActorGui extends EditorGui {
 		InfoWidgets info = new InfoWidgets();
 		CollisionWidgets collision = new CollisionWidgets();
 		VisualToolMenuWidgets visualToolMenu = new VisualToolMenuWidgets();
+		ToolWidgets tool = new ToolWidgets();
+
+		/**
+		 * Tool widgets
+		 */
+		static class ToolWidgets {
+			Button move = null;
+			Button delete = null;
+			Button drawAppend = null;
+			Button drawErase = null;
+			Button addMoveCorner = null;
+			Button removeCorner = null;
+			Button setCenter = null;
+		}
 
 		/**
 		 * Visual widgets
@@ -737,20 +821,6 @@ public abstract class ActorGui extends EditorGui {
 			Button destroyOnCollide = null;
 			protected AlignTable table = new AlignTable();
 		}
-	}
-
-	/**
-	 * @return visual table
-	 */
-	protected AlignTable getVisualTable() {
-		return mWidgets.visual.table;
-	}
-
-	/**
-	 * @return collision table
-	 */
-	protected AlignTable getCollisionTable() {
-		return mWidgets.collision.table;
 	}
 
 	// Hiders

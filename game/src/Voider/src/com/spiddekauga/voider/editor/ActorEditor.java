@@ -107,6 +107,7 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 		// Add tool to input multiplexer
 		if (shapeType == ActorShapeTypes.CUSTOM && previousShapeType != ActorShapeTypes.CUSTOM) {
 			switchTool(Tools.DRAW_APPEND);
+			((ActorGui)mGui).resetTools();
 
 			// Add delete tool to input multiplexer
 			if (!mInputMultiplexer.getProcessors().contains(mTools[Tools.DELETE.ordinal()], true)) {
@@ -332,6 +333,7 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 
 			mDrawingActor.setDef(mActorDef);
 			switchTool(Tools.MOVE);
+			((ActorGui)mGui).resetTools();
 			// Add delete tool to input multiplexer
 			if (!mInputMultiplexer.getProcessors().contains(mTools[Tools.DELETE.ordinal()], true)) {
 				mInputMultiplexer.addProcessor(mTools[Tools.DELETE.ordinal()]);
