@@ -737,10 +737,34 @@ public class Config {
 				shapeRenderer.translate(0, 0, zValue - 0.5f);
 			}
 
+			/**
+			 * Offset the z-value a small amount. Useful when for example a resource
+			 * will render many multiple layers and rendering these so all will be
+			 * shown accordingly.
+			 * @param shapeRenderer the shape renderer to translate
+			 * @see #resetZValueOffset(ShapeRendererEx) to reset all calls to this.
+			 */
+			public static void offsetZValue(ShapeRendererEx shapeRenderer) {
+				shapeRenderer.translate(0, 0, MINOR_STEP_SIZE);
+				mGlobalZValueOffset += MINOR_STEP_SIZE;
+			}
+
+			/**
+			 * Resets the offset value. This will reset all calls to {@link #offsetZValue(ShapeRendererEx)}
+			 * but not from other.
+			 * @param shapeRenderer the shape renderer to reset
+			 */
+			public static void resetZValueOffset(ShapeRendererEx shapeRenderer) {
+				shapeRenderer.translate(0, 0, -mGlobalZValueOffset);
+				mGlobalZValueOffset = 0;
+			}
+
 			/** The z-value */
 			private float mZValue = 0;
-
-
+			/** Current global offset */
+			private static float mGlobalZValueOffset = 0;
+			/** Minor step size */
+			private final static float MINOR_STEP_SIZE = 0.001f;
 		}
 	}
 

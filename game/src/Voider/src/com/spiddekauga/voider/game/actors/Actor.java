@@ -345,6 +345,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 
 
 		// Draw corners?
+		RenderOrders.offsetZValue(shapeRenderer);
 		if (mHasBodyCorners) {
 			shapeRenderer.push(ShapeType.Line);
 
@@ -362,6 +363,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 
 
 		// Draw center body?
+		RenderOrders.offsetZValue(shapeRenderer);
 		if (mHasBodyCenter) {
 			shapeRenderer.push(ShapeType.Line);
 
@@ -374,6 +376,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 
 			shapeRenderer.pop();
 		}
+		RenderOrders.resetZValueOffset(shapeRenderer);
 
 		Pools.vector2.free(offsetPosition);
 
