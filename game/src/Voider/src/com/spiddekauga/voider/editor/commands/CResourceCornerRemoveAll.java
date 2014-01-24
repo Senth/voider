@@ -27,9 +27,7 @@ public class CResourceCornerRemoveAll extends CResourceChange {
 
 	@Override
 	public boolean execute() {
-		while (mResourceCorner.getCornerCount() > 0) {
-			mResourceCorner.removeCorner(0);
-		}
+		mResourceCorner.clearCorners();
 
 		sendOnChange();
 

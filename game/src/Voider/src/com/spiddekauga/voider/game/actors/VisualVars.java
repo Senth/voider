@@ -431,11 +431,13 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 	@Override
 	public void addCorner(Vector2 corner) {
 		addCorner(corner, mCorners.size());
+		mFixtureChangeTime = GameTime.getTotalGlobalTimeElapsed();
 	}
 
 	@Override
 	public void addCorner(Vector2 corner, int index) {
 		mCorners.add(index, Pools.vector2.obtain().set(corner));
+		mFixtureChangeTime = GameTime.getTotalGlobalTimeElapsed();
 	}
 
 	@Override
@@ -451,12 +453,14 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 
 	@Override
 	public Vector2 removeCorner(int index) {
+		mFixtureChangeTime = GameTime.getTotalGlobalTimeElapsed();
 		return mCorners.remove(index);
 	}
 
 	@Override
 	public void moveCorner(int index, Vector2 newPos) {
 		mCorners.get(index).set(newPos);
+		mFixtureChangeTime = GameTime.getTotalGlobalTimeElapsed();
 	}
 
 	@Override
@@ -471,14 +475,13 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 		return mCorners;
 	}
 
-	/**
-	 * Removes all the corners
-	 */
+	@Override
 	public void clearCorners() {
 		Pools.vector2.freeAll(mCorners);
 		mCorners.clear();
 		clearFixtures();
 		clearVertices();
+		mFixtureChangeTime = GameTime.getTotalGlobalTimeElapsed();
 	}
 
 	/**

@@ -730,6 +730,8 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 		if (mBody != null) {
 			destroyFixtures();
 
+			calculateRotatedVertices(true);
+
 			for (FixtureDef fixtureDef : mDef.getVisualVars().getFixtureDefs()) {
 				if (fixtureDef != null && fixtureDef.shape != null) {
 					mBody.createFixture(fixtureDef);
@@ -1151,6 +1153,11 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 	@Override
 	public ArrayList<Vector2> getCorners() {
 		return getDef().getVisualVars().getCorners();
+	}
+
+	@Override
+	public void clearCorners() {
+		getDef().getVisualVars().clearCorners();
 	}
 
 	@Override

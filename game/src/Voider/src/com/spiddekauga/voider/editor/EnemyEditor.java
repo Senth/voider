@@ -21,6 +21,7 @@ import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Editor.Enemy;
 import com.spiddekauga.voider.editor.brushes.VectorBrush;
 import com.spiddekauga.voider.editor.commands.CEnemyBulletDefSelect;
+import com.spiddekauga.voider.editor.commands.CResourceCornerRemoveAll;
 import com.spiddekauga.voider.editor.tools.AddMoveCornerTool;
 import com.spiddekauga.voider.editor.tools.DeleteTool;
 import com.spiddekauga.voider.editor.tools.DrawAppendTool;
@@ -1283,6 +1284,7 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 	@Override
 	public void onResourceRemoved(IResource resource) {
 		if (resource instanceof EnemyActor) {
+			mInvoker.execute(new CResourceCornerRemoveAll(mDef.getVisualVars(), this), true);
 			mDrawingEnemy = null;
 			setUnsaved();
 		}
@@ -1294,19 +1296,6 @@ public class EnemyEditor extends Editor implements IActorEditor, IResourceChange
 	@Override
 	public void onResourceChanged(IResource resource) {
 		// Does nothing
-	}
-
-	/**
-	 * @return name of the bullet actor definition the enemies use, "" if they aren't
-	 * using weapons or has no bullet actor definition set.
-	 */
-	@Deprecated
-	String getBulletName() {
-		if (mDef != null && mDef.getWeaponDef() != null && mDef.getWeaponDef().getBulletActorDef() != null) {
-			return mDef.getWeaponDef().getBulletActorDef().getName();
-		} else {
-			return "";
-		}
 	}
 
 	/**

@@ -52,6 +52,11 @@ public class VectorBrush extends Resource implements IResourceCorner, IResourceE
 	}
 
 	@Override
+	public void clearCorners() {
+		mCorners.clear();
+	}
+
+	@Override
 	public void moveCorner(int index, Vector2 newPos) {
 		mCorners.get(index).set(newPos);
 	}

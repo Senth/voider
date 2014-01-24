@@ -191,6 +191,14 @@ public class Path extends Resource implements Disposable, IResourceCorner, IReso
 	}
 
 	@Override
+	public void clearCorners() {
+		mCorners.clear();
+
+		destroyBodyCorners();
+		updateVerticesBodyFixtures();
+	}
+
+	@Override
 	public void moveCorner(int index, Vector2 newPos) {
 		if (index >= 0 && index < mCorners.size()) {
 			mCorners.get(index).set(newPos);

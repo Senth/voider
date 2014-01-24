@@ -55,10 +55,12 @@ public class EnemyActor extends Actor {
 
 		if (mPolygonOutline != null) {
 			Pools.arrayList.free(mPolygonOutline);
+			mPolygonOutline = null;
 		}
 		if (mPolygonOutlineInnerCorners != null) {
 			Pools.vector2.freeAll(mPolygonOutlineInnerCorners);
 			Pools.arrayList.free(mPolygonOutlineInnerCorners);
+			mPolygonOutlineInnerCorners = null;
 		}
 	}
 
@@ -1067,17 +1069,19 @@ public class EnemyActor extends Actor {
 		if (mEditorActive) {
 			if (mPolygonOutline != null) {
 				Pools.arrayList.free(mPolygonOutline);
+				mPolygonOutline = null;
 			}
 			if (mPolygonOutlineInnerCorners != null) {
 				Pools.vector2.freeAll(mPolygonOutlineInnerCorners);
 				Pools.arrayList.free(mPolygonOutlineInnerCorners);
+				mPolygonOutlineInnerCorners = null;
 			}
 
-			//		mPolygonOutline = Geometry.createLinePolygon(getDef().getVisualVars().getPolygonShape(), (Float) SkinNames.getResource(SkinNames.EditorVars.ENEMY_WILL_ACTIVATE_ON_TEST_RUN_LINE_WIDTH));
-			//		mPolygonOutline = Geometry.createLinePolygon(getDef().getVisualVars().getPolygonShape(), 1);
 			ArrayList<Vector2> corners = getDef().getVisualVars().getPolygonShape();
-			mPolygonOutlineInnerCorners = Geometry.createdBorderCorners(corners, true, 0.25f);
-			mPolygonOutline = Geometry.createBorderVertices(corners, mPolygonOutlineInnerCorners);
+			if (corners != null) {
+				mPolygonOutlineInnerCorners = Geometry.createdBorderCorners(corners, true, 0.25f);
+				mPolygonOutline = Geometry.createBorderVertices(corners, mPolygonOutlineInnerCorners);
+			}
 		}
 	}
 

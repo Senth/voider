@@ -8,6 +8,7 @@ import com.spiddekauga.utils.Command;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.editor.brushes.VectorBrush;
+import com.spiddekauga.voider.editor.commands.CResourceCornerRemoveAll;
 import com.spiddekauga.voider.editor.tools.AddMoveCornerTool;
 import com.spiddekauga.voider.editor.tools.DeleteTool;
 import com.spiddekauga.voider.editor.tools.DrawAppendTool;
@@ -556,6 +557,7 @@ public class BulletEditor extends Editor implements IActorEditor, IResourceChang
 	@Override
 	public void onResourceRemoved(IResource resource) {
 		if (resource instanceof BulletActor) {
+			mInvoker.execute(new CResourceCornerRemoveAll(mDef.getVisualVars(), this), true);
 			mBulletActor = null;
 			setUnsaved();
 		}

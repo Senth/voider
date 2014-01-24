@@ -6,8 +6,10 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.spiddekauga.utils.Invoker;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.editor.IActorEditor;
 import com.spiddekauga.voider.editor.IResourceChangeEditor;
 import com.spiddekauga.voider.editor.commands.CActorDefFixCustomFixtures;
+import com.spiddekauga.voider.editor.commands.CActorEditorCenterReset;
 import com.spiddekauga.voider.editor.commands.CResourceCornerAdd;
 import com.spiddekauga.voider.editor.commands.CResourceCornerRemoveExcessive;
 import com.spiddekauga.voider.game.actors.Actor;
@@ -48,8 +50,7 @@ public class DrawAppendTool extends ActorTool implements ISelectionListener {
 		mSelectedActor = mSelection.getFirstSelectedResourceOfType(mActorType);
 
 		if (mSelectedActor == null) {
-			createNewSelectedActor();
-			mSelectedActor = mSelection.getFirstSelectedResourceOfType(mActorType);
+			mSelectedActor = createNewSelectedActor();
 		} else {
 			mInvoker.execute(new CActorDefFixCustomFixtures(mSelectedActor.getDef(), false));
 			appendCorner(true);
@@ -78,6 +79,14 @@ public class DrawAppendTool extends ActorTool implements ISelectionListener {
 			appendCorner(true);
 
 			mInvoker.execute(new CResourceCornerRemoveExcessive(mSelectedActor.getDef().getVisualVars()), true);
+
+			// Reset center if the actor was just created
+			if (mCreatedActorThisDown) {
+				if (mEditor instanceof IActorEditor) {
+					mInvoker.execute(new CActorEditorCenterReset((IActorEditor) mEditor), true);
+				}
+				mCreatedActorThisDown = false;
+			}
 
 			try {
 				mInvoker.execute(new CActorDefFixCustomFixtures(mSelectedActor.getDef(), true), true);

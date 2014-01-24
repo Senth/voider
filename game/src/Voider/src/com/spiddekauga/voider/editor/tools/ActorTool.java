@@ -72,6 +72,7 @@ abstract public class ActorTool extends TouchTool {
 		actor.setPosition(mTouchOrigin);
 		mInvoker.execute(new CResourceAdd(actor, mEditor));
 		mInvoker.execute(new CSelectionSet(mSelection, actor), true);
+		mCreatedActorThisDown = true;
 		return actor;
 	}
 
@@ -126,6 +127,8 @@ abstract public class ActorTool extends TouchTool {
 		return mActorDef;
 	}
 
+	/** Created an actor this turn */
+	protected boolean mCreatedActorThisDown = false;
 	/** Actor definition */
 	protected ActorDef mActorDef = null;
 	/** Actor type */

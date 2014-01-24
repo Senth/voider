@@ -626,7 +626,7 @@ public abstract class ActorGui extends EditorGui {
 		// Reset center
 		mWidgets.visualToolMenu.table.row();
 		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Reset center", mStyles.textButton.toggle);
+			button = new TextButton("Reset center", mStyles.textButton.press);
 		} else {
 			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.RESET_CENTER.toString());
 		}
