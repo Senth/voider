@@ -17,10 +17,8 @@ import com.spiddekauga.utils.Screens;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Graphics.RenderOrders;
-import com.spiddekauga.voider.editor.commands.CSceneReturn;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.ActorDef;
-import com.spiddekauga.voider.menu.MainMenu;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceNames;
 import com.spiddekauga.voider.resources.SkinNames;
@@ -110,10 +108,11 @@ public abstract class Editor extends WorldScene implements IEditor {
 		// Back - main menu
 		else if (KeyHelper.isBackPressed(keycode)) {
 			if (!mGui.isMsgBoxActive()) {
-				saveDef(new CSceneReturn(MainMenu.class));
+				((EditorGui)mGui).showExitConfirmDialog();
 				return true;
 			} else {
 				/** @todo close message box */
+				return true;
 			}
 		}
 		/** @todo remove test buttons */

@@ -20,6 +20,7 @@ public class CEditorDuplicate extends Command {
 
 	@Override
 	public boolean execute() {
+		mEditor.saveDef();
 		mEditor.duplicateDef();
 		return true;
 	}

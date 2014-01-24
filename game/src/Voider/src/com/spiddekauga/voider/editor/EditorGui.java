@@ -30,6 +30,7 @@ import com.spiddekauga.utils.scene.ui.Label.LabelStyle;
 import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
 import com.spiddekauga.utils.scene.ui.TooltipListener;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.editor.commands.CEditorDuplicate;
 import com.spiddekauga.voider.editor.commands.CEditorLoad;
 import com.spiddekauga.voider.editor.commands.CEditorNew;
 import com.spiddekauga.voider.editor.commands.CEditorSave;
@@ -457,8 +458,13 @@ public abstract class EditorGui extends Gui {
 		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onPressed() {
-				mEditor.saveDef();
-				mEditor.duplicateDef();
+				MsgBoxExecuter msgBox = getFreeMsgBox(true);
+
+				msgBox.setTitle("Duplicate");
+				msgBox.content(Messages.replaceName(Messages.Editor.DUPLICATE_BOX, getResourceTypeName()));
+				msgBox.button("Yes", new CEditorDuplicate(mEditor));
+				msgBox.addCancelButtonAndKeys("No");
+				showMsgBox(msgBox);
 			}
 		};
 
@@ -480,6 +486,23 @@ public abstract class EditorGui extends Gui {
 	}
 
 	/**
+	 * Shows the confirm message box for exiting to main menu
+	 */
+	void showExitConfirmDialog() {
+		//		executeCommandAndCheckSave(new CSceneReturn(MainMenu.class), "Exit to Main Menu", "Save and exit", "Exit", Messages.Editor.EXIT_TO_MAIN_MENU);
+		if (mEditor.isSaved()) {
+			MsgBoxExecuter msgBox = getFreeMsgBox(true);
+			msgBox.setTitle("Exit to Main Menu");
+			msgBox.content(Messages.Editor.EXIT_TO_MAIN_MENU);
+			msgBox.button("Exit", new CSceneReturn(MainMenu.class));
+			msgBox.addCancelButtonAndKeys();
+			showMsgBox(msgBox);
+		} else {
+			switchReturnTo("Main Menu", new CSceneReturn(MainMenu.class), UnsavedActions.MAIN_MENU);
+		}
+	}
+
+	/**
 	 * Shows the information for the resource we're editing
 	 */
 	protected abstract void showInfoDialog();
@@ -493,11 +516,11 @@ public abstract class EditorGui extends Gui {
 	private void switchReturnTo(String switchReturnTo, Command command, UnsavedActions unsavedAction) {
 		boolean switching = command instanceof CSceneSwitch;
 
-		String msgBoxTitle = switching ? "Switch" : "Return";
+		String msgBoxTitle = switching ? "Switch" : "Exit";
 		msgBoxTitle += " to " + switchReturnTo;
 
-		String saveMessage = switching ? "Save then switch" : "Save then return";
-		String justExecuteMessage = switching ? "Switch anyway" : "Return anymay";
+		String saveMessage = switching ? "Save then switch" : "Save then exit";
+		String justExecuteMessage = switching ? "Switch" : "Exit";
 
 		String content = Messages.getUnsavedMessage(getResourceTypeName(), unsavedAction);
 
@@ -514,7 +537,21 @@ public abstract class EditorGui extends Gui {
 	 * @param content the message to be displayed in the message box
 	 */
 	protected void executeCommandAndCheckSave(Command command, String title, String saveButtonText, String withoutSaveButtonText, String content) {
-		if (!mEditor.isSaved()) {
+		executeCommandAndCheckSave(command, title, saveButtonText, withoutSaveButtonText, content, false);
+	}
+
+	/**
+	 * Run a command. Displays a message box that asks the player to either save or discard the resources
+	 * before executing the command.
+	 * @param command the command to run
+	 * @param title message box title
+	 * @param saveButtonText text for the save button then execute the command
+	 * @param withoutSaveButtonText text for the button when to just execute the command without saving
+	 * @param content the message to be displayed in the message box
+	 * @param alwaysShow set to true to always show the message box even if the resource has been saved
+	 */
+	protected void executeCommandAndCheckSave(Command command, String title, String saveButtonText, String withoutSaveButtonText, String content, boolean alwaysShow) {
+		if (!mEditor.isSaved() || alwaysShow) {
 			Button saveThenExecuteButton = new TextButton(saveButtonText, mStyles.textButton.press);
 			Button justExecuteButton = new TextButton(withoutSaveButtonText, mStyles.textButton.press);
 

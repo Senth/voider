@@ -52,17 +52,17 @@ public class Messages {
 		/** When loading another definition */
 		LOAD("loading another UNSAVED_TYPE"),
 		/** When duplicating the existing definition */
-		DUPLICATE("duplicating it"),
+		DUPLICATE("duplicating this UNSAVED_TYPE"),
 		/** Switching to the level editor */
-		LEVEL_EDITOR("switching to the level editor"),
+		LEVEL_EDITOR("switching to Level Editor"),
 		/** Switching to the enemy editor */
-		ENEMY_EDITOR("switching to the enemy editor"),
+		ENEMY_EDITOR("switching to Enemy Editor"),
 		/** Switching to bullet editor */
-		BULLET_EDITOR("switching to the bullet editor"),
+		BULLET_EDITOR("switching to Bullet Editor"),
 		/** Switching to campaign editor */
-		CAMPAIGN_EDITOR("switching to the campaign editor"),
+		CAMPAIGN_EDITOR("switching to Campaign Editor"),
 		/** Returning to main menu */
-		MAIN_MENU("returning to main menu"),
+		MAIN_MENU("exiting to Main Menu"),
 
 		;
 		/**
@@ -112,6 +112,16 @@ public class Messages {
 		public final static String COMPLETED_HEADER = "Congratulations!";
 		/** Header for game over */
 		public final static String GAME_OVER_HEADER = "Game Over!";
+	}
+
+	/**
+	 * Messages for editors
+	 */
+	public static class Editor {
+		/** Text displayed when duplicating the current resource */
+		public final static String DUPLICATE_BOX = "Do you want to duplicate this " + ACTOR_TYPE + "?";
+		/** Text to be displayed when exiting the editor */
+		public final static String EXIT_TO_MAIN_MENU = "Do you want to exit to main menu?";
 	}
 
 	/**

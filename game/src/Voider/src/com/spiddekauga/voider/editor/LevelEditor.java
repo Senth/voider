@@ -52,7 +52,6 @@ import com.spiddekauga.voider.game.actors.StaticTerrainActor;
 import com.spiddekauga.voider.game.triggers.TScreenAt;
 import com.spiddekauga.voider.game.triggers.TriggerAction.Actions;
 import com.spiddekauga.voider.game.triggers.TriggerInfo;
-import com.spiddekauga.voider.menu.MainMenu;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourceBody;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
@@ -474,60 +473,24 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 	@Override
 	public boolean keyDown(int keycode) {
-		// Redo
-		if (KeyHelper.isRedoPressed(keycode)) {
-			redo();
-			return true;
-		}
-		// Undo
-		else if (KeyHelper.isUndoPressed(keycode)) {
-			undo();
-			return true;
-		}
 		// Back - Deselect or go back
-		else if (KeyHelper.isBackPressed(keycode)) {
+		if (KeyHelper.isBackPressed(keycode)) {
 			if (!mGui.isMsgBoxActive()) {
 				if (!mSelection.isEmpty()) {
 					mInvoker.execute(new CSelectionSet(mSelection));
+					return true;
 				}
-				else {
-					saveDef();
-					SceneSwitcher.returnTo(MainMenu.class);
-				}
-			} else {
-				/** @todo close message box */
 			}
 		}
 		/** @todo remove test buttons */
-		// Toggle GUI/text buttons
-		else if (keycode == Input.Keys.F5) {
-			Config.Gui.setUseTextButtons(!Config.Gui.usesTextButtons());
-			mGui.dispose();
-			mGui.initGui();
-			mGui.resetValues();
-			return true;
-		}
 		else if (keycode == Input.Keys.F6) {
 			String message = "This is a longer error message with more text, a lot more text, see if it will wrap correctly later...";
 			mGui.showMessage(message);
 		}
 
-		return false;
+		return super.keyDown(keycode);
 	}
 
-	/**
-	 * Undoes the previous action
-	 */
-	void undo() {
-		mInvoker.undo();
-	}
-
-	/**
-	 * Redo the action
-	 */
-	void redo() {
-		mInvoker.redo();
-	}
 
 	/**
 	 * Switch currently selected tool
