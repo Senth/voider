@@ -323,9 +323,7 @@ public class DrawEraseTool extends ActorTool {
 		// vertices between
 		if (fromIntersection.actorIndex != toIntersection.actorIndex) {
 			// Calculate from before intersection to first between index
-			Vector2 localPos = getLocalPosition(fromIntersection.intersection, fromIntersection.actor);
-			betweenLengthSq += localPos.dst2(vertices.get(fromIntersection.actorIndex + 1));
-			Pools.vector2.free(localPos);
+			betweenLengthSq += fromIntersection.intersection.dst2(vertices.get(fromIntersection.actorIndex + 1));
 
 			// Calculate between
 			for (int i = fromIntersection.actorIndex + 1; i < toIntersection.actorIndex; ++i) {
@@ -333,9 +331,7 @@ public class DrawEraseTool extends ActorTool {
 			}
 
 			// Calculate from last between index to after intersection
-			localPos = getLocalPosition(toIntersection.intersection, toIntersection.actor);
-			betweenLengthSq += vertices.get(toIntersection.actorIndex).dst2(localPos);
-			Pools.vector2.free(localPos);
+			betweenLengthSq += vertices.get(toIntersection.actorIndex).dst2(toIntersection.intersection);
 		}
 		// No vertices between
 		else {
@@ -345,11 +341,12 @@ public class DrawEraseTool extends ActorTool {
 
 		// WRAPPED
 		float wrappedLengthSq = 0;
-		// Calculate from after intersection to first after index
-		Vector2 localPos = getLocalPosition(toIntersection.intersection, toIntersection.actor);
+		// To intersection
 		int nextIndex = Collections.nextIndex(vertices,toIntersection.actorIndex);
-		wrappedLengthSq += localPos.dst2(vertices.get(nextIndex));
-		Pools.vector2.free(localPos);
+		wrappedLengthSq += toIntersection.intersection.dst2(vertices.get(nextIndex));
+
+		// From intersection
+		wrappedLengthSq += fromIntersection.intersection.dst2(vertices.get(fromIntersection.actorIndex));
 
 		// Calculate wrapped indices
 		int i = nextIndex;

@@ -416,8 +416,6 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageUp: reset_center,
 		imageOver: reset_center_over,
 		imageDown: reset_center_down,
-		imageChecked: reset_center_checked,
-		imageCheckedOver: reset_center_checked_over,
 		imageDisabled: reset_center_disabled
 	},
 	
