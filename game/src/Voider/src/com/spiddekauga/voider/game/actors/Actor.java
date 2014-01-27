@@ -1006,7 +1006,15 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 
 			mRotatedVertices = copyVectorArray(mDef.getVisualVars().getTriangleVertices());
 			if (mRotatedVertices != null) {
+				// offset with center first
+				Vector2 centerOffset = Pools.vector2.obtain();
+				centerOffset.set(getDef().getVisualVars().getCenterOffset());
+				Geometry.moveVertices(mRotatedVertices, centerOffset, true);
+
 				Geometry.rotateVertices(mRotatedVertices, rotation, true);
+
+				centerOffset.scl(-1);
+				Geometry.moveVertices(mRotatedVertices, centerOffset, true);
 			}
 		}
 	}

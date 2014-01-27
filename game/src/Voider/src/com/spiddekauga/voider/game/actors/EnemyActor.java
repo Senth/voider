@@ -490,7 +490,7 @@ public class EnemyActor extends Actor {
 		mPathForward = true;
 		mPathOnceReachedEnd = false;
 		if (getBody() != null) {
-			getBody().setAngularVelocity(0);
+			getBody().setAngularVelocity(getDef().getRotationSpeedRad());
 			getBody().setTransform(getPosition(), getDef().getBodyDef().angle);
 		}
 	}
