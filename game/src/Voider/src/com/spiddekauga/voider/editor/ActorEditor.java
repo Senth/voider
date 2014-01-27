@@ -8,7 +8,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.editor.brushes.VectorBrush;
-import com.spiddekauga.voider.editor.commands.CActorDefFixCustomFixtures;
 import com.spiddekauga.voider.editor.commands.CResourceCornerRemoveAll;
 import com.spiddekauga.voider.editor.tools.AddMoveCornerTool;
 import com.spiddekauga.voider.editor.tools.DeleteTool;
@@ -381,7 +380,6 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 	@Override
 	public void onResourceRemoved(IResource resource) {
 		if (resource instanceof Actor) {
-			mInvoker.execute(new CActorDefFixCustomFixtures(((Actor) resource).getDef(), false), true);
 			mInvoker.execute(new CResourceCornerRemoveAll(mActorDef.getVisualVars(), this), true);
 			mDrawingActor = null;
 			setUnsaved();
