@@ -616,12 +616,9 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 					break;
 
 				case INTERSECTS:
-					mShapeComplete = false;
-					handlePolygonComplexException(tempVertices, null);
-					break;
-
 				case INTERSECTS_WITH_LOOP:
 					mShapeComplete = false;
+					handlePolygonComplexException(tempVertices, null);
 					break;
 				}
 
