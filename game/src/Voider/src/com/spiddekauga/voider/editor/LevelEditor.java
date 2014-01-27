@@ -427,6 +427,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 	@Override
 	protected void onDispose() {
+		super.onDispose();
+
 		setLevel(null);
 		Pools.arrayList.free(mAddEnemies);
 	}

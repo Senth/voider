@@ -112,9 +112,11 @@ public class Invoker implements Disposable {
 				chained = true;
 			}
 
-			undoCommand.undo();
-			if (addToRedoStack) {
+			boolean success = undoCommand.undo();
+			if (addToRedoStack && success) {
 				mRedoCommands.push(undoCommand);
+			} else {
+				undoCommand.dispose();
 			}
 		}
 	}
