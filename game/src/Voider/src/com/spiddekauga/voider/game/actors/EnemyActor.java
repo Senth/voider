@@ -136,6 +136,8 @@ public class EnemyActor extends Actor {
 		if (mGroup == null || mGroupLeader) {
 			super.renderEditor(shapeRenderer);
 
+			RenderOrders.offsetZValueEditor(shapeRenderer, this);
+
 			// Draw path to
 			// Activate trigger
 			shapeRenderer.push(ShapeType.Line);
@@ -194,13 +196,15 @@ public class EnemyActor extends Actor {
 						}
 
 						if (mPolygonOutline != null) {
+							RenderOrders.offsetZValue(shapeRenderer);
 							shapeRenderer.triangles(mPolygonOutline, offsetPosition);
 						}
 					}
 				}
 			}
 
-
+			RenderOrders.resetZValueOffset(shapeRenderer);
+			RenderOrders.resetZValueOffsetEditor(shapeRenderer, this);
 		}
 	}
 

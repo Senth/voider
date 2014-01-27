@@ -60,8 +60,8 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 		@SuppressWarnings("unused")
 		int classRevision = input.readInt(true);
 
-		calculateBoundingRadius();
 		createFixtureDef();
+		calculateBoundingRadius();
 	}
 
 	/**
@@ -298,7 +298,7 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 
 			if (farthestAway != null) {
 				Vector2 diffVector = Pools.vector2.obtain();
-				diffVector.set(mCenterOffset).sub(farthestAway);
+				diffVector.set(mCenterOffset).add(farthestAway);
 				mBoundingRadius = diffVector.len();
 				Pools.vector2.free(diffVector);
 			} else {
@@ -774,6 +774,8 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 			Pools.vector2.free(offsetPosition);
 			offsetPosition = null;
 		}
+
+		calculateBoundingRadius();
 	}
 
 	/**
