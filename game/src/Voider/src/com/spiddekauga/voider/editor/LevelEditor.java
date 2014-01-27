@@ -254,6 +254,14 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	}
 
 	@Override
+	protected void reloadResourcesOnActivate(Outcomes outcome, Object message) {
+		super.reloadResourcesOnActivate(outcome, message);
+
+		// Check if we have created any new enemies, load them in that case
+		ResourceCacheFacade.loadAllNotYetLoadedOf(this, EnemyActorDef.class, true);
+	}
+
+	@Override
 	protected void onActivate(Outcomes outcome, Object message) {
 		super.onActivate(outcome, message);
 
