@@ -1,5 +1,6 @@
 package com.spiddekauga.utils.scene.ui;
 
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.spiddekauga.voider.resources.IResourceTexture;
@@ -51,6 +52,25 @@ public class ResourceTextureButton extends ImageButton {
 		return mResource;
 	}
 
+
+	@Override
+	public void draw(SpriteBatch batch, float parentAlpha) {
+		updateImage();
+		super.draw(batch, parentAlpha);
+	}
+
+	/**
+	 * Update the current texture of the image. If the resource was changed the texture
+	 * can be invalid.
+	 */
+	private void updateImage() {
+		ImageButtonStyle imageButtonStyle = getStyle();
+
+		if (imageButtonStyle.imageUp != mResource.getTextureRegionDrawable()) {
+			imageButtonStyle.imageUp = mResource.getTextureRegionDrawable();
+		}
+	}
+
 	/**
 	 * Sets the correct image style
 	 * @param resource the resource to get the texture from
@@ -58,13 +78,7 @@ public class ResourceTextureButton extends ImageButton {
 	private void setTexture(IResourceTexture resource) {
 		mResource = resource;
 
-		ImageButtonStyle imageButtonStyle = getStyle();
-		imageButtonStyle.imageDown = resource.getTextureRegionDrawable();
-		imageButtonStyle.imageUp = resource.getTextureRegionDrawable();
-
-		if (imageButtonStyle.checked != null) {
-			imageButtonStyle.imageChecked = resource.getTextureRegionDrawable();
-		}
+		updateImage();
 	}
 
 	/** The actor definition for the button */

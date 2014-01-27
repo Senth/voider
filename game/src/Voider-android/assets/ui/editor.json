@@ -107,8 +107,6 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageUp: new,
 		imageOver: new_over,
 		imageDown: new_down,
-		imageChecked: new_checked,
-		imageCheckedOver: new_checked_over,
 		imageDisabled: new_disabled
 	},
 
@@ -116,8 +114,6 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageUp: save,
 		imageOver: save_over,
 		imageDown: save_down,
-		imageChecked: save_checked,
-		imageCheckedOver: save_checked_over,
 		imageDisabled: save_disabled
 	},
 
@@ -125,8 +121,6 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageUp: load,
 		imageOver: load_over,
 		imageDown: load_down,
-		imageChecked: load_checked,
-		imageCheckedOver: load_checked_over,
 		imageDisabled: load_disabled
 	},
 	
@@ -134,8 +128,6 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageUp: undo,
 		imageOver: undo_over,
 		imageDown: undo_down,
-		imageChecked: undo_checked,
-		imageCheckedOver: undo_checked_over,
 		imageDisabled: undo_disabled
 	},
 	
@@ -143,8 +135,6 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageUp: redo,
 		imageOver: redo_over,
 		imageDown: redo_down,
-		imageChecked: redo_checked,
-		imageCheckedOver: redo_checked_over,
 		imageDisabled: redo_disabled
 	},
 
@@ -152,8 +142,6 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageUp: duplicate,
 		imageOver: duplicate_over,
 		imageDown: duplicate_down,
-		imageChecked: duplicate_checked,
-		imageCheckedOver: duplicate_checked_over,
 		imageDisabled: duplicate_disabled
 	},
 	
@@ -161,8 +149,6 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageUp: info,
 		imageOver: info_over,
 		imageDown: info_down,
-		imageChecked: info_checked,
-		imageCheckedOver: info_checked_over,
 		imageDisabled: info_disabled
 	},
 	
@@ -170,8 +156,6 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageUp: run,
 		imageOver: run_over,
 		imageDown: run_down,
-		imageChecked: run_checked,
-		imageCheckedOver: run_checked_over,
 		imageDisabled: run_disabled
 	},
 	
@@ -305,8 +289,6 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageUp: enemy_select,
 		imageOver: enemy_select_over,
 		imageDown: enemy_select_down,
-		imageChecked: enemy_select_checked,
-		imageCheckedOver: enemy_select_checked_over,
 		imageDisabled: enemy_select_disabled
 	},
 	
@@ -344,8 +326,6 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageUp: bullet_select,
 		imageOver: bullet_select_over,
 		imageDown: bullet_select_down,
-		imageChecked: bullet_select_checked,
-		imageCheckedOver: bullet_select_checked_over,
 		imageDisabled: bullet_select_disabled
 	},
 	
