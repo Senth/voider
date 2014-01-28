@@ -1,2 +1,0 @@
-serviceClass: com.spiddekauga.client.GreetingService
-path: 5174EA019A2B38B56BA2CBF8728EF056.gwt.rpc
