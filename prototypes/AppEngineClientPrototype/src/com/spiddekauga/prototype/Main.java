@@ -1,14 +1,20 @@
 package com.spiddekauga.prototype;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.entity.mime.content.ContentBody;
+import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
@@ -24,8 +30,9 @@ public class Main {
 	 * @param args
 	 */
 	public static void main(String args[]) {
-		newUser();
-		login();
+		//		newUser();
+		//		login();
+		testEnemy();
 	}
 
 	/**
@@ -130,7 +137,79 @@ public class Main {
 		}
 	}
 
+	/**
+	 * Upload an enemy
+	 */
+	private static void testEnemy() {
+		String uploadUrl = getUploadUrl();
 
+		if (uploadUrl != null) {
+			uploladEnemy(uploadUrl);
+		} else {
+			System.out.print("Could not get upload url!");
+		}
+	}
+
+	/**
+	 * Actually upload the enemy
+	 * @param uploadUrl the upload url
+	 */
+	private static void uploladEnemy(String uploadUrl) {
+		CloseableHttpClient httpClient = HttpClients.createDefault();
+		HttpPost httpPost = new HttpPost(uploadUrl);
+		MultipartEntityBuilder entityBuilder = MultipartEntityBuilder.create();
+		ContentBody contentBody = new FileBody(new File("/home/senth/Voider/actors/enemies/6ad14d07-3f9d-4eda-b622-2cd711590d95/LATEST"));
+		entityBuilder.addPart("fileKey", contentBody);
+		httpPost.setEntity(entityBuilder.build());
+
+		try {
+			CloseableHttpResponse httpResponse = httpClient.execute(httpPost);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * @return upload url
+	 */
+	private static String getUploadUrl() {
+		CloseableHttpClient httpClient = HttpClients.createDefault();
+
+		String uploadUrl = null;
+
+		try {
+			URI uri = new URIBuilder()
+			.setScheme("http")
+			.setHost(mServer)
+			.setPath("getuploadurl")
+			.addParameter("uploadType", "enemy")
+			.build();
+
+			HttpGet httpGet = new HttpGet(uri);
+
+
+			CloseableHttpResponse response = null;
+			try {
+				response = httpClient.execute(httpGet);
+
+
+				Header[] headers = response.getHeaders("uploadUrl");
+				for (Header header : headers) {
+					if (header.getName().equals("uploadUrl")) {
+						uploadUrl = header.getValue();
+					}
+				}
+
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+		}
+
+		return uploadUrl;
+	}
 
 	/** Maximum content string length */
 	private final static long CONTENT_STRING_LENGTH_MAX = 2048;
