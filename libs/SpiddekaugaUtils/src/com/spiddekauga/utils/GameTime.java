@@ -1,7 +1,6 @@
 package com.spiddekauga.utils;
 
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
-import com.spiddekauga.voider.Config;
 
 /**
  * Measures the total game time of the game. If a frame is longer than 0.1s
@@ -15,10 +14,10 @@ public class GameTime {
 	 * @param deltaTime elapsed time since last frame
 	 */
 	public void update(float deltaTime) {
-		if (deltaTime < Config.Graphics.FRAME_LENGTH_MAX) {
+		if (deltaTime < FRAME_LENGTH_MAX) {
 			mDeltaTime = deltaTime;
 		} else {
-			mDeltaTime = Config.Graphics.FRAME_LENGTH_MAX;
+			mDeltaTime = FRAME_LENGTH_MAX;
 		}
 
 		mTotalTimeElapsed += mDeltaTime;
@@ -61,4 +60,6 @@ public class GameTime {
 
 	/** Total global time elapsed since start of game */
 	private static float mTotalGlobalTimeElapsed = 0;
+	/** Maximum time between frames, useful when debugging or lagging so the game doesn't bug out. */
+	private static float FRAME_LENGTH_MAX = 0.1f;
 }

@@ -3,7 +3,7 @@ package com.spiddekauga.voider.editor.commands;
 import java.util.ArrayList;
 
 import com.badlogic.gdx.utils.Disposable;
-import com.spiddekauga.utils.Command;
+import com.spiddekauga.utils.commands.Command;
 import com.spiddekauga.voider.editor.tools.ISelection;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.utils.Pools;

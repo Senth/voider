@@ -1,4 +1,4 @@
-package com.spiddekauga.utils;
+package com.spiddekauga.utils.commands;
 
 /**
  * Interface for a command that is combinable. This means that two commands of

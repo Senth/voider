@@ -8,5 +8,6 @@
 	<classpathentry kind="lib" path="libs/gdx-backend-lwjgl.jar" sourcepath="libs/gdx-backend-lwjgl-sources.jar"/>
 	<classpathentry kind="lib" path="libs/gdx-natives.jar"/>
 	<classpathentry kind="lib" path="/Voider/libs/gdx.jar" sourcepath="/Voider/libs/gdx-sources.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/SpiddekaugaUtils"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

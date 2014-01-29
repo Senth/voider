@@ -11,7 +11,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.spiddekauga.utils.GameTime;
-import com.spiddekauga.utils.Invoker;
+import com.spiddekauga.utils.commands.Invoker;
 import com.spiddekauga.utils.scene.ui.Label.LabelStyle;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.BulletDestroyer;

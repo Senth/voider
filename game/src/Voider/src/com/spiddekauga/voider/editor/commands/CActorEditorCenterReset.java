@@ -1,7 +1,7 @@
 package com.spiddekauga.voider.editor.commands;
 
 import com.badlogic.gdx.math.Vector2;
-import com.spiddekauga.utils.Command;
+import com.spiddekauga.utils.commands.Command;
 import com.spiddekauga.voider.editor.IActorEditor;
 import com.spiddekauga.voider.utils.Pools;
 

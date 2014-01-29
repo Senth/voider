@@ -1,5 +1,7 @@
 package com.spiddekauga.utils;
 
+import com.spiddekauga.utils.commands.Command;
+
 
 /**
  * Only delimits two commands. Useful when commands are made to be combined.

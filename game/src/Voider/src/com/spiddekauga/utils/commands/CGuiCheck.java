@@ -1,4 +1,4 @@
-package com.spiddekauga.voider.editor.commands;
+package com.spiddekauga.utils.commands;
 
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 

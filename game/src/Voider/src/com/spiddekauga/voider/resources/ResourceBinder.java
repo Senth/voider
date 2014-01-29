@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
-import com.spiddekauga.utils.Invoker;
+import com.spiddekauga.utils.commands.Invoker;
 import com.spiddekauga.voider.editor.commands.CResourceBoundRemove;
 import com.spiddekauga.voider.game.Level;
 import com.spiddekauga.voider.scene.SceneSwitcher;

@@ -1,7 +1,6 @@
-package com.spiddekauga.voider.editor.commands;
+package com.spiddekauga.utils.commands;
 
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
-import com.spiddekauga.utils.ICommandCombinable;
 
 /**
  * Changes the value of a slider.

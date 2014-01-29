@@ -2,7 +2,7 @@ package com.spiddekauga.voider.editor.commands;
 
 import java.util.UUID;
 
-import com.spiddekauga.utils.Command;
+import com.spiddekauga.utils.commands.Command;
 import com.spiddekauga.voider.editor.LevelEditor;
 import com.spiddekauga.voider.game.actors.ActorDef;
 

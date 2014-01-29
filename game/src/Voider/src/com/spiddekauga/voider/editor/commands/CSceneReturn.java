@@ -3,7 +3,7 @@ package com.spiddekauga.voider.editor.commands;
 import java.lang.reflect.Constructor;
 
 import com.badlogic.gdx.Gdx;
-import com.spiddekauga.utils.Command;
+import com.spiddekauga.utils.commands.Command;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 

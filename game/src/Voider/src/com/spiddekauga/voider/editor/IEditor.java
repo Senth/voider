@@ -1,6 +1,6 @@
 package com.spiddekauga.voider.editor;
 
-import com.spiddekauga.utils.Command;
+import com.spiddekauga.utils.commands.Command;
 
 /**
  * 

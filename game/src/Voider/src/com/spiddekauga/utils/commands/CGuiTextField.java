@@ -1,7 +1,6 @@
-package com.spiddekauga.voider.editor.commands;
+package com.spiddekauga.utils.commands;
 
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
-import com.spiddekauga.utils.ICommandCombinable;
 import com.spiddekauga.utils.Maths;
 import com.spiddekauga.voider.Config.Gui;
 import com.spiddekauga.voider.scene.SceneSwitcher;

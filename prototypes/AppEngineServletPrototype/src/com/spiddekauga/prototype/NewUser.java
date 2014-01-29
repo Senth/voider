@@ -8,6 +8,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
+
 /**
  * Creates a new user
  * 
@@ -24,5 +27,10 @@ public class NewUser extends HttpServlet {
 
 		out.println("You user is: " + request.getParameter("username") + "\n"
 				+ "Your password is: " + request.getParameter("password"));
+
+
 	}
+
+	/** Datastore service */
+	private static DatastoreService mDatastore = DatastoreServiceFactory.getDatastoreService();
 }

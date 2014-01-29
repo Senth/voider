@@ -1,9 +1,10 @@
-package com.spiddekauga.utils;
+package com.spiddekauga.utils.commands;
 
 import java.util.Iterator;
 import java.util.LinkedList;
 
 import com.badlogic.gdx.utils.Disposable;
+import com.spiddekauga.utils.CDelimiter;
 
 /**
  * Invokes commands, can undo/redo commands as they are stored in

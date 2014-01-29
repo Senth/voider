@@ -1,4 +1,4 @@
-package com.spiddekauga.utils;
+package com.spiddekauga.utils.commands;
 
 import com.badlogic.gdx.utils.Disposable;
 

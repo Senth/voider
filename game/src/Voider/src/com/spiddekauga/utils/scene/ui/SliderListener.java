@@ -13,11 +13,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldFilter;
 import com.badlogic.gdx.scenes.scene2d.utils.FocusListener.FocusEvent;
 import com.spiddekauga.utils.CDelimiter;
-import com.spiddekauga.utils.Invoker;
 import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.utils.Maths;
+import com.spiddekauga.utils.commands.CGuiSlider;
+import com.spiddekauga.utils.commands.Invoker;
 import com.spiddekauga.voider.Config.Gui;
-import com.spiddekauga.voider.editor.commands.CGuiSlider;
 
 /**
  * Listener that binds a slider with a textfield.

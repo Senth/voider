@@ -1,7 +1,7 @@
 package com.spiddekauga.voider.editor;
 
 import com.badlogic.gdx.math.Vector2;
-import com.spiddekauga.utils.Invoker;
+import com.spiddekauga.utils.commands.Invoker;
 import com.spiddekauga.voider.game.actors.ActorShapeTypes;
 
 /**

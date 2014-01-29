@@ -1,4 +1,4 @@
-package com.spiddekauga.utils;
+package com.spiddekauga.utils.commands;
 
 /**
  * Executes the command in sequence.

@@ -2,7 +2,7 @@ package com.spiddekauga.voider.editor.commands;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
-import com.spiddekauga.utils.Command;
+import com.spiddekauga.utils.commands.Command;
 
 /**
  * Sends a bug report to the server

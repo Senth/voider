@@ -1,7 +1,7 @@
 package com.spiddekauga.voider.editor.commands;
 
 import com.badlogic.gdx.Gdx;
-import com.spiddekauga.utils.Command;
+import com.spiddekauga.utils.commands.Command;
 import com.spiddekauga.voider.game.actors.ActorDef;
 import com.spiddekauga.voider.utils.Geometry.PolygonComplexException;
 import com.spiddekauga.voider.utils.Geometry.PolygonCornersTooCloseException;

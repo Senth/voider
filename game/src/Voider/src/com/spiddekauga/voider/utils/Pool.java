@@ -76,6 +76,7 @@ public class Pool<T> extends ReflectionPool<T> {
 	 * Frees all the objects
 	 * @param objects all objects to free
 	 */
+	@SuppressWarnings("unchecked")
 	public void freeAll(T... objects) {
 		for (T object : objects) {
 			free(object);

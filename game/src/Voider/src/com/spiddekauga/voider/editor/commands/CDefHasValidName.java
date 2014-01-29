@@ -1,7 +1,7 @@
 package com.spiddekauga.voider.editor.commands;
 
 import com.badlogic.gdx.scenes.scene2d.ui.MsgBox;
-import com.spiddekauga.utils.Command;
+import com.spiddekauga.utils.commands.Command;
 import com.spiddekauga.utils.Strings;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.editor.IActorEditor;

@@ -8,10 +8,10 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.FocusListener.FocusEvent;
 import com.badlogic.gdx.scenes.scene2d.utils.FocusListener.FocusEvent.Type;
-import com.spiddekauga.utils.Invoker;
 import com.spiddekauga.utils.KeyHelper;
+import com.spiddekauga.utils.commands.CGuiTextField;
+import com.spiddekauga.utils.commands.Invoker;
 import com.spiddekauga.voider.Config.Gui;
-import com.spiddekauga.voider.editor.commands.CGuiTextField;
 
 /**
  * Listens to a text field. When a value has been changed #onChange() is called
