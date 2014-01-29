@@ -1,0 +1,10 @@
+<?xml version="1.0" ?>
+<!-- Configuration of the Ant build system to generate a Jar file --> 
+<project name="SpiddekaugaUtils" default="CreateSpiddekaugaUtilsJar">
+  <target name="CreateSpiddekaugaUtilsJar" description="Create Jar file">
+        <jar jarfile="dist/SpiddekaugaUtils.jar">
+        	<fileset dir="bin" />
+        	<fileset dir="src" includes="**/*.java" />
+        </jar>
+  </target>
+</project>

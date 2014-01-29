@@ -10,58 +10,52 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
 import com.spiddekauga.utils.BCrypt;
 
 /**
- * Creates a new user
+ * Tries to login a user
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
 @SuppressWarnings("serial")
-public class NewUser extends HttpServlet {
+public class Login extends HttpServlet {
+
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// Set response type
 		response.setContentType("application/json");
 
 		PrintWriter out = response.getWriter();
 
-		String salt = BCrypt.gensalt();
-
 		String username = request.getParameter("username");
-		String password = request.getParameter("password");
-		String hashedPassword = BCrypt.hashpw(password, salt);
 
-		boolean createdUser = false;
+		boolean loginSuccess = false;
 
 		Entity entity = DatastoreUtils.getSingleItem("users", "username", username);
-		if (entity == null) {
-			Key key = KeyFactory.createKey("users", username);
-			entity = new Entity(key);
-			entity.setProperty("username", username);
-			entity.setProperty("salt", salt);
-			entity.setProperty("password", hashedPassword);
+		if (entity != null) {
+			String password = request.getParameter("password");
 
-			createdUser = true;
-			DatastoreUtils.mDatastore.put(entity);
+			String hashedPassword = (String) entity.getProperty("password");
 
-			mLogger.info("Created user");
+			// Same password
+			if (BCrypt.checkpw(password, hashedPassword)) {
+				loginSuccess = true;
+			} else {
+				mLogger.info("Wrong password");
+			}
 		} else {
-			mLogger.info("User already exists!");
+			mLogger.info("Did not find any user with that username");
 		}
 
 		String json;
-		if (createdUser) {
+		if (loginSuccess) {
 			json = "{ \"success\": true; }";
 		} else {
 			json = "{ \"success\": false; }";
 		}
-
 		out.print(json);
+		out.flush();
 	}
 
 	/** Logger */
-	private static final Logger mLogger = Logger.getLogger(NewUser.class.getName());
+	private static final Logger mLogger = Logger.getLogger(Login.class.getName());
 }
