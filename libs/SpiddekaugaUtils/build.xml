@@ -4,7 +4,9 @@
   <target name="CreateSpiddekaugaUtilsJar" description="Create Jar file">
         <jar jarfile="dist/SpiddekaugaUtils.jar">
         	<fileset dir="bin" />
-        	<fileset dir="src" includes="**/*.java" />
+        </jar>
+        <jar jarfile="dist/SpiddekaugaUtils-src.jar">
+  			<fileset dir="src" includes="**/*.java" />
         </jar>
   </target>
 </project>
