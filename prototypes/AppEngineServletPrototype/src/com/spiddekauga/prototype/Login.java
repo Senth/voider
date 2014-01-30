@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.google.appengine.api.datastore.Entity;
+import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.utils.BCrypt;
 
 /**

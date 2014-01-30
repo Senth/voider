@@ -1,4 +1,5 @@
-package com.spiddekauga.prototype;
+package com.spiddekauga.appengine;
+
 
 import java.util.List;
 import java.util.logging.Logger;

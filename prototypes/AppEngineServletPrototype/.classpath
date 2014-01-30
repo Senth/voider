@@ -3,8 +3,9 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="com.google.appengine.eclipse.core.GAE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="war/WEB-INF/lib/SpiddekaugaUtils.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/SpiddekaugaUtils.jar" sourcepath="war/WEB-INF/lib/SpiddekaugaUtils-src.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/AppEngineUtils"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/SpiddekaugaUtils"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/AppEngineUtils.jar" sourcepath="war/WEB-INF/lib/AppEngineUtils-src.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>

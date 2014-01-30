@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
+import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.utils.BCrypt;
 
 /**
