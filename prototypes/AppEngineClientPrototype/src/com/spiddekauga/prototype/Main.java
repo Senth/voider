@@ -144,6 +144,7 @@ public class Main {
 		String uploadUrl = getUploadUrl();
 
 		if (uploadUrl != null) {
+			System.out.print("Upload url: " + uploadUrl);
 			uploladEnemy(uploadUrl);
 		} else {
 			System.out.print("Could not get upload url!");
@@ -181,7 +182,7 @@ public class Main {
 			URI uri = new URIBuilder()
 			.setScheme("http")
 			.setHost(mServer)
-			.setPath("getuploadurl")
+			.setPath("/getuploadurl")
 			.addParameter("uploadType", "enemy")
 			.build();
 

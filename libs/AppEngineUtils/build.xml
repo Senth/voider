@@ -1,0 +1,12 @@
+<?xml version="1.0" ?>
+<!-- Configuration of the Ant build system to generate a Jar file --> 
+<project name="AppEngineUtils" default="CreateAppEngineUtilsJar">
+  <target name="CreateAppEngineUtilsJar" description="Create Jar file">
+        <jar jarfile="dist/AppEngineUtils.jar">
+        	<fileset dir="bin" />
+        </jar>
+  		<jar jarfile="dist/AppEngineUtils-src.jar">
+  			<fileset dir="src" includes="**/*.java" />
+  		</jar>
+  </target>
+</project>

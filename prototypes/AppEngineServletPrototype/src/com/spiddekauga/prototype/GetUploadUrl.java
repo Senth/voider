@@ -1,6 +1,7 @@
 package com.spiddekauga.prototype;
 
 import java.io.IOException;
+import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -22,5 +23,10 @@ public class GetUploadUrl extends HttpServlet {
 		BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService();
 		String uploadUrl = blobstoreService.createUploadUrl("/enemyuploadfinished");
 		response.addHeader("uploadUrl", uploadUrl);
+
+		mLogger.info("Got upload url: " + uploadUrl);
 	}
+
+	/** Logger */
+	private static final Logger mLogger = Logger.getLogger(GetUploadUrl.class.getName());
 }
