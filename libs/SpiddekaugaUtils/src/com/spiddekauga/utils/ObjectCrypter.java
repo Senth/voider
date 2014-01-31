@@ -1,4 +1,4 @@
-package com.spiddekauga.voider.utils;
+package com.spiddekauga.utils;
 
 
 import java.io.ByteArrayInputStream;
@@ -27,9 +27,12 @@ import javax.crypto.spec.SecretKeySpec;
 public class ObjectCrypter {
 	/**
 	 * Creates an AES crypter with the specified key
-	 * @param key the key to be used for the cipher
+	 * 
+	 * @param key
+	 *            the key to be used for the cipher
 	 */
-	public ObjectCrypter(SecretKeySpec key) {
+	public ObjectCrypter(
+			SecretKeySpec key) {
 		// create the cipher with the algorithm you choose
 		// see javadoc for Cipher class for more info, e.g.
 		try {
@@ -47,8 +50,11 @@ public class ObjectCrypter {
 
 	/**
 	 * Encrypts an object to a byte array.
-	 * @param <EncryptType> encrypted type
-	 * @param obj the object to encrypt
+	 * 
+	 * @param <EncryptType>
+	 *            encrypted type
+	 * @param obj
+	 *            the object to encrypt
 	 * @return the encrypted object in bytes
 	 * @see #decrypt(byte[],Class)
 	 * @throws InvalidKeyException
@@ -58,11 +64,13 @@ public class ObjectCrypter {
 	 * @throws ShortBufferException
 	 * @throws BadPaddingException
 	 */
-	public <EncryptType> byte[] encrypt(EncryptType obj) throws InvalidKeyException, InvalidAlgorithmParameterException, IOException, IllegalBlockSizeException, ShortBufferException, BadPaddingException {
+	public <EncryptType> byte[] encrypt(EncryptType obj) throws InvalidKeyException, InvalidAlgorithmParameterException, IOException,
+	IllegalBlockSizeException, ShortBufferException, BadPaddingException {
 		byte[] input = null;
 		if (!(obj instanceof byte[])) {
 			input = convertToByteArray(obj);
-		} else {
+		}
+		else {
 			input = (byte[]) obj;
 		}
 		mEnCipher.init(Cipher.ENCRYPT_MODE, mKey);
@@ -73,7 +81,7 @@ public class ObjectCrypter {
 
 		// Includes IV for decrypting
 		// Concatenates both byte arrays to message
-		byte[] ivAndEncrypted = new byte [iv.length + encryptedBytes.length];
+		byte[] ivAndEncrypted = new byte[iv.length + encryptedBytes.length];
 		System.arraycopy(iv, 0, ivAndEncrypted, 0, iv.length);
 		System.arraycopy(encryptedBytes, 0, ivAndEncrypted, iv.length, encryptedBytes.length);
 
@@ -82,9 +90,13 @@ public class ObjectCrypter {
 
 	/**
 	 * Decrypts an array of bytes into an object.
-	 * @param <DecryptedType> the type to decrypt to, must be same as encrypted!
-	 * @param encrypted the encrypted byte array
-	 * @param decryptToType decrypts the message to this type
+	 * 
+	 * @param <DecryptedType>
+	 *            the type to decrypt to, must be same as encrypted!
+	 * @param encrypted
+	 *            the encrypted byte array
+	 * @param decryptToType
+	 *            decrypts the message to this type
 	 * @return The decrypted object
 	 * @see #encrypt(Object)
 	 * @throws InvalidKeyException
@@ -95,13 +107,14 @@ public class ObjectCrypter {
 	 * @throws ClassNotFoundException
 	 */
 	@SuppressWarnings("unchecked")
-	public <DecryptedType> DecryptedType decrypt(byte[] encrypted, Class<DecryptedType> decryptToType) throws InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, IOException, ClassNotFoundException {
+	public <DecryptedType> DecryptedType decrypt(byte[] encrypted, Class<DecryptedType> decryptToType) throws InvalidKeyException,
+	InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, IOException, ClassNotFoundException {
 		// Get the IV from the byte array
-		byte[] iv = new byte [IV_LENGTH];
+		byte[] iv = new byte[IV_LENGTH];
 		System.arraycopy(encrypted, 0, iv, 0, IV_LENGTH);
 
 		// Get the actual encrypted message
-		byte[] encryptedMessage = new byte [encrypted.length - IV_LENGTH];
+		byte[] encryptedMessage = new byte[encrypted.length - IV_LENGTH];
 		System.arraycopy(encrypted, IV_LENGTH, encryptedMessage, 0, encrypted.length - IV_LENGTH);
 
 		mDeCipher.init(Cipher.DECRYPT_MODE, mKey, new IvParameterSpec(iv));
@@ -110,20 +123,21 @@ public class ObjectCrypter {
 
 		if (decryptToType == byte[].class) {
 			return (DecryptedType) decryptedMessage;
-		} else {
+		}
+		else {
 			return (DecryptedType) convertFromByteArray(decryptedMessage);
 		}
 	}
 
 	/**
 	 * Converts a byte array back to the original object
+	 * 
 	 * @param byteObject
 	 * @return object recreated from the byte array
 	 * @throws IOException
 	 * @throws ClassNotFoundException
 	 */
-	private Object convertFromByteArray(byte[] byteObject) throws IOException,
-	ClassNotFoundException {
+	private Object convertFromByteArray(byte[] byteObject) throws IOException, ClassNotFoundException {
 		ByteArrayInputStream bais;
 
 		ObjectInputStream in;
@@ -136,9 +150,9 @@ public class ObjectCrypter {
 	}
 
 
-
 	/**
 	 * Converts an object into a byte array
+	 * 
 	 * @param complexObject
 	 * @return byte array of the converted object
 	 * @throws IOException

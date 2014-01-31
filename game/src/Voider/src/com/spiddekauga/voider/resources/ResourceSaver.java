@@ -9,9 +9,9 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Output;
+import com.spiddekauga.utils.ObjectCrypter;
 import com.spiddekauga.utils.Strings;
 import com.spiddekauga.voider.Config;
-import com.spiddekauga.voider.utils.ObjectCrypter;
 import com.spiddekauga.voider.utils.Pools;
 
 /**

@@ -8,8 +8,8 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Array;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
+import com.spiddekauga.utils.ObjectCrypter;
 import com.spiddekauga.voider.Config;
-import com.spiddekauga.voider.utils.ObjectCrypter;
 import com.spiddekauga.voider.utils.Pools;
 
 /**

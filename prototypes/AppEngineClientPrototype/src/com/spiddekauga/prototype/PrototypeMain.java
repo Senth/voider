@@ -25,7 +25,7 @@ import org.apache.http.util.EntityUtils;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class Main {
+public class PrototypeMain {
 	/**
 	 * @param args
 	 */
@@ -145,7 +145,7 @@ public class Main {
 
 		if (uploadUrl != null) {
 			System.out.print("Upload url: " + uploadUrl);
-			uploladEnemy(uploadUrl);
+			uploadEnemy(uploadUrl);
 		} else {
 			System.out.print("Could not get upload url!");
 		}
@@ -155,11 +155,11 @@ public class Main {
 	 * Actually upload the enemy
 	 * @param uploadUrl the upload url
 	 */
-	private static void uploladEnemy(String uploadUrl) {
+	private static void uploadEnemy(String uploadUrl) {
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 		HttpPost httpPost = new HttpPost(uploadUrl);
 		MultipartEntityBuilder entityBuilder = MultipartEntityBuilder.create();
-		ContentBody contentBody = new FileBody(new File("/home/senth/Voider/actors/enemies/6ad14d07-3f9d-4eda-b622-2cd711590d95/LATEST"));
+		ContentBody contentBody = new FileBody(new File(ENEMY_FILE_MIST));
 		entityBuilder.addPart("fileKey", contentBody);
 		httpPost.setEntity(entityBuilder.build());
 
@@ -169,6 +169,11 @@ public class Main {
 			e.printStackTrace();
 		}
 	}
+
+	/** File for cerina */
+	private static final String ENEMY_FILE_CERINA = "/home/senth/Voider/actors/enemies/6ad14d07-3f9d-4eda-b622-2cd711590d95/LATEST";
+	/** File for mist */
+	private static final String ENEMY_FILE_MIST = "/Users/senth/Voider/actors/enemies/0d001571-c295-48e6-8a7d-0667e763cb5c/LATEST";
 
 	/**
 	 * @return upload url

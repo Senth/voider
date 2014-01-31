@@ -1,7 +1,7 @@
 package com.spiddekauga.prototype;
 
 import java.io.IOException;
-import java.util.Enumeration;
+import java.util.ArrayList;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
@@ -10,6 +10,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import net.magicscroll.server.blobstore.ChainedBlobstoreInputStream;
+
+import com.google.appengine.api.blobstore.BlobKey;
+import com.spiddekauga.appengine.BlobUtils;
 
 /**
  * Enemy has been uploaded
@@ -22,18 +25,10 @@ public class EnemyUploadFinished extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		mLogger.info("Upload done");
 
-		Enumeration<String> attributeNames = request.getAttributeNames();
-		while (attributeNames != null && attributeNames.hasMoreElements()) {
-			String name = attributeNames.nextElement();
-			Object value = request.getAttribute(name);
-			mLogger.info("Attribute: " + name + " (" + value + ")");
-		}
+		ArrayList<BlobKey> uploadedBlobkeys = BlobUtils.getBlobKeysFromUpload(request);
 
+		ChainedBlobstoreInputStream blobInputStream = new ChainedBlobstoreInputStream(uploadedBlobkeys.get(0));
 
-		Object blobkey = request.getAttribute("com.google.appengine.api.blobstore.upload.blobkeys");
-		mLogger.info(blobkey.getClass() + ": " + blobkey);
-
-		ChainedBlobstoreInputStream blobInputStream;
 	}
 
 	/** Logger */
