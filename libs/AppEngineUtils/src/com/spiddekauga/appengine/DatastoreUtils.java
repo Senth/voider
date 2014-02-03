@@ -7,7 +7,10 @@ import java.util.logging.Logger;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.FetchOptions;
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
@@ -35,6 +38,30 @@ public class DatastoreUtils {
 			return results.get(0);
 		}
 		return null;
+	}
+
+	/**
+	 * Searches for an entity with the specified key
+	 * @param idName the key of the entity
+	 * @return entity with specified key, null if not found
+	 */
+	public static Entity getItemByKey(String idName) {
+		Key key = KeyFactory.createKey("__BlobInfo__", idName);
+		return getItemByKey(key);
+	}
+
+	/**
+	 * Searches for an entity with the specified key
+	 * @param idName the key of the entity
+	 * @return entity with specified key, null if not found
+	 */
+	public static Entity getItemByKey(Key idName) {
+		try {
+			return mDatastore.get(idName);
+		} catch (EntityNotFoundException e) {
+			mLogger.warning("Could not find entity with key: " + idName);
+			return null;
+		}
 	}
 
 	/** Datastore service */

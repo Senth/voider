@@ -1,0 +1,9 @@
+<?xml version="1.0" ?>
+<!-- Configuration of the Ant build system to generate a Jar file --> 
+<project name="Voider-network" default="CreateVoiderNetworkJar">
+  <target name="CreateVoiderNetworkJar" description="Create Jar file">
+        <jar jarfile="dist/Voider-network.jar">
+        	<fileset dir="bin" />
+        </jar>
+  </target>
+</project>

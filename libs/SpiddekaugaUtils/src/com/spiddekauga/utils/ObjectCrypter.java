@@ -109,6 +109,10 @@ public class ObjectCrypter {
 	@SuppressWarnings("unchecked")
 	public <DecryptedType> DecryptedType decrypt(byte[] encrypted, Class<DecryptedType> decryptToType) throws InvalidKeyException,
 	InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, IOException, ClassNotFoundException {
+		if (encrypted.length < IV_LENGTH) {
+			throw new IllegalArgumentException("No encryption found");
+		}
+
 		// Get the IV from the byte array
 		byte[] iv = new byte[IV_LENGTH];
 		System.arraycopy(encrypted, 0, iv, 0, IV_LENGTH);

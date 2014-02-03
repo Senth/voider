@@ -41,4 +41,10 @@
 		<nature>com.google.appengine.eclipse.core.gaeNature</nature>
 		<nature>org.eclipse.wst.common.project.facet.core.nature</nature>
 	</natures>
+	<variableList>
+		<variable>
+			<name>GIT_LOC</name>
+			<value>file:/home/senth/repositories/voider-eclipse/voider</value>
+		</variable>
+	</variableList>
 </projectDescription>

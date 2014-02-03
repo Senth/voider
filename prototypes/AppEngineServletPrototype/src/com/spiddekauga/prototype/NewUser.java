@@ -10,8 +10,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
 import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.utils.BCrypt;
 
@@ -39,8 +37,7 @@ public class NewUser extends HttpServlet {
 
 		Entity entity = DatastoreUtils.getSingleItem("users", "username", username);
 		if (entity == null) {
-			Key key = KeyFactory.createKey("users", username);
-			entity = new Entity(key);
+			entity = new Entity("users");
 			entity.setProperty("username", username);
 			entity.setProperty("salt", salt);
 			entity.setProperty("password", hashedPassword);

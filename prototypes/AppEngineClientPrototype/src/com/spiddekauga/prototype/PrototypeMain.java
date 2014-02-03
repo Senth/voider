@@ -31,7 +31,7 @@ public class PrototypeMain {
 	 */
 	public static void main(String args[]) {
 		//		newUser();
-		//		login();
+		//				login();
 		testEnemy();
 	}
 
@@ -97,7 +97,7 @@ public class PrototypeMain {
 			.setScheme("http")
 			.setHost(mServer)
 			.setPath("/newuser")
-			.setParameter("username", "senth")
+			.setParameter("username", "gorbachjow")
 			.setParameter("password", "bajs")
 			.build();
 
@@ -159,7 +159,7 @@ public class PrototypeMain {
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 		HttpPost httpPost = new HttpPost(uploadUrl);
 		MultipartEntityBuilder entityBuilder = MultipartEntityBuilder.create();
-		ContentBody contentBody = new FileBody(new File(ENEMY_FILE_MIST));
+		ContentBody contentBody = new FileBody(new File(ENEMY_FILE_CERINA));
 		entityBuilder.addPart("fileKey", contentBody);
 		httpPost.setEntity(entityBuilder.build());
 
