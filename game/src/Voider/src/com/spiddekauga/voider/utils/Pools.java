@@ -61,5 +61,5 @@ public class Pools {
 		}
 	};
 	/** Kryo */
-	public static KryoPool kryo = new KryoPool(5, 20);
+	public static KryoVoiderPool kryo = new KryoVoiderPool(5, 20);
 }

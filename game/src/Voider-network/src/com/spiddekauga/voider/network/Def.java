@@ -1,12 +1,8 @@
 package com.spiddekauga.voider.network;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 
@@ -17,9 +13,9 @@ import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
  */
 public class Def extends Resource {
 	/** External dependencies */
-	@Tag(1) public Map<UUID, AtomicInteger> externalDependencies = new HashMap<>();
+	@Tag(1) public HashSet<UUID> externalDependencies = new HashSet<>();
 	/** Internal dependencies */
-	@Tag(2) public Set<String> internalDependencies = new HashSet<>();
+	@Tag(2) public HashSet<String> internalDependencies = new HashSet<>();
 	/** Name of the definition */
 	@Tag(3) public String name;
 	/** Original creator (if duplicated the definition) */

@@ -1,4 +1,4 @@
-package com.spiddekauga.utils;
+package com.spiddekauga.utils.kryo;
 
 /**
  * Called after Kryo has written something if the class is serialized by

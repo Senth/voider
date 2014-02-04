@@ -1,4 +1,4 @@
-package com.spiddekauga.utils;
+package com.spiddekauga.utils.kryo;
 
 /**
  * When used together with #SerializableTaggedFieldSerializer which calls

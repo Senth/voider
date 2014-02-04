@@ -1,10 +1,19 @@
 package com.spiddekauga.prototype;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.util.Date;
+import java.util.UUID;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.ShortBufferException;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -12,12 +21,19 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.ContentBody;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.io.Output;
+import com.spiddekauga.utils.ObjectCrypter;
+import com.spiddekauga.voider.network.EnemyDef;
+import com.spiddekauga.voider.network.KryoFactory;
 
 
 /**
@@ -191,12 +207,18 @@ public class PrototypeMain {
 			.addParameter("uploadType", "enemy")
 			.build();
 
-			HttpGet httpGet = new HttpGet(uri);
-
+			HttpPost httpPost = new HttpPost(uri);
+			Kryo kryo = KryoFactory.createKryo();
+			ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+			Output output = new Output(byteArrayOutputStream);
+			kryo.writeClassAndObject(output, newEnemy());
+			ObjectCrypter objectCrypter = CryptConfig.getCrypter();
+			byte[] encrypted = objectCrypter.encrypt(byteArrayOutputStream.toByteArray());
+			httpPost.setEntity(new ByteArrayEntity(encrypted));
 
 			CloseableHttpResponse response = null;
 			try {
-				response = httpClient.execute(httpGet);
+				response = httpClient.execute(httpPost);
 
 
 				Header[] headers = response.getHeaders("uploadUrl");
@@ -210,11 +232,34 @@ public class PrototypeMain {
 				e.printStackTrace();
 			}
 
-		} catch (URISyntaxException e) {
+		} catch (URISyntaxException | InvalidKeyException | InvalidAlgorithmParameterException | IllegalBlockSizeException | ShortBufferException | BadPaddingException | IOException e) {
 			e.printStackTrace();
 		}
 
 		return uploadUrl;
+	}
+
+	/**
+	 * @return a newly created stub enemy
+	 */
+	private static EnemyDef newEnemy() {
+		EnemyDef enemyDef = new EnemyDef();
+
+		enemyDef.creator = "creator";
+		enemyDef.date = new Date();
+		enemyDef.description = "description";
+		enemyDef.externalDependencies.add(UUID.randomUUID());
+		enemyDef.internalDependencies.add("INTERNAL_DEP1");
+		enemyDef.internalDependencies.add("INTERNAL_DEP2");
+		enemyDef.id = UUID.randomUUID();
+		enemyDef.maxLife = 101;
+		enemyDef.movementSpeed = 10;
+		enemyDef.movementType = "movementType";
+		enemyDef.name = "name";
+		enemyDef.originalCreator = "originalCreator";
+		enemyDef.revision = 1337;
+
+		return enemyDef;
 	}
 
 	/** Maximum content string length */

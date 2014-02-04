@@ -27,8 +27,9 @@ import com.esotericsoftware.kryo.serializers.CompatibleFieldSerializer;
 import com.esotericsoftware.kryo.serializers.FieldSerializer;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer;
 import com.spiddekauga.utils.GameTime;
-import com.spiddekauga.utils.SerializableTaggedFieldSerializer;
-import com.spiddekauga.utils.UUIDSerializer;
+import com.spiddekauga.utils.kryo.AtomicIntegerSerializer;
+import com.spiddekauga.utils.kryo.SerializableTaggedFieldSerializer;
+import com.spiddekauga.utils.kryo.UUIDSerializer;
 import com.spiddekauga.voider.game.BulletDestroyer;
 import com.spiddekauga.voider.game.Collectibles;
 import com.spiddekauga.voider.game.GameSave;
@@ -74,21 +75,21 @@ import com.spiddekauga.voider.resources.ResourceNames;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class KryoPool extends Pool<Kryo> {
+public class KryoVoiderPool extends Pool<Kryo> {
 
 	/**
 	 * @param initialCapacity how many initial objects will be created
 	 * @param max maximum stored objects
 	 */
-	public KryoPool(int initialCapacity, int max) {
+	public KryoVoiderPool(int initialCapacity, int max) {
 		super(Kryo.class, initialCapacity, max);
 	}
 
 	/**
 	 * Default constructor.
 	 */
-	public KryoPool() {
-		this(5, 20);
+	public KryoVoiderPool() {
+		this(1, 10);
 	}
 
 	@Override
@@ -515,25 +516,6 @@ public class KryoPool extends Pool<Kryo> {
 			}
 
 			return chainShape;
-		}
-	}
-
-	/**
-	 * Serializes AtomicInteger just as an Integer
-	 */
-	private static class AtomicIntegerSerializer extends Serializer<AtomicInteger> {
-		{
-			setImmutable(true);
-		}
-
-		@Override
-		public void write(Kryo kryo, Output output, AtomicInteger object) {
-			output.writeInt(object.get(), false);
-		}
-
-		@Override
-		public AtomicInteger read(Kryo kryo, Input input, Class<AtomicInteger> type) {
-			return new AtomicInteger(input.readInt(false));
 		}
 	}
 }
