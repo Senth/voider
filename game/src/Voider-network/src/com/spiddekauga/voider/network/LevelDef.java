@@ -20,7 +20,19 @@ public class LevelDef extends Def {
 	 * be changed by triggers */
 	@Tag(14) private float speed = -1;
 	/** End of the map (right screen edge) */
-	@Tag(15) private float mEndXCoord = -1;
+	@Tag(15) private float endXCoord = -1;
 	/** Theme of the level */
-	@Tag(16) private String mThemeName = null;
+	@Tag(16) private String themeName = null;
+
+	@Override
+	public String toString() {
+		return "LevelDef: {\n\t"
+				+ super.toString()
+				+ "\n\tstartXCoord: " + startXCoord
+				+ "\n\tendXCoord: " + endXCoord
+				+ "\n\tcampaignId: " + campaignId
+				+ "\n\tspeed: " + speed
+				+ "\n\tthemeName: " + themeName
+				+ "\n}";
+	}
 }

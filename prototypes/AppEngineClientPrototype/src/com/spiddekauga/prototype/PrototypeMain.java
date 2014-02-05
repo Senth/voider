@@ -21,7 +21,6 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.ContentBody;
 import org.apache.http.entity.mime.content.FileBody;
@@ -172,16 +171,25 @@ public class PrototypeMain {
 	 * @param uploadUrl the upload url
 	 */
 	private static void uploadEnemy(String uploadUrl) {
-		CloseableHttpClient httpClient = HttpClients.createDefault();
-		HttpPost httpPost = new HttpPost(uploadUrl);
-		MultipartEntityBuilder entityBuilder = MultipartEntityBuilder.create();
-		ContentBody contentBody = new FileBody(new File(ENEMY_FILE_CERINA));
-		entityBuilder.addPart("fileKey", contentBody);
-		httpPost.setEntity(entityBuilder.build());
-
 		try {
+			Kryo kryo = KryoFactory.createKryo();
+			ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+			Output output = new Output(byteArrayOutputStream);
+			kryo.writeClassAndObject(output, newEnemy());
+			ObjectCrypter objectCrypter = CryptConfig.getCrypter();
+			byte[] encrypted = objectCrypter.encrypt(output.toBytes());
+
+			CloseableHttpClient httpClient = HttpClients.createDefault();
+			HttpPost httpPost = new HttpPost(uploadUrl);
+			MultipartEntityBuilder entityBuilder = MultipartEntityBuilder.create();
+			ContentBody contentBody = new FileBody(new File(ENEMY_FILE_CERINA));
+			httpPost.setHeader("uploadType", "enemy");
+			entityBuilder.addPart("fileKey", contentBody);
+			entityBuilder.addBinaryBody("resource", encrypted);
+			httpPost.setEntity(entityBuilder.build());
+
 			CloseableHttpResponse httpResponse = httpClient.execute(httpPost);
-		} catch (IOException e) {
+		} catch (IOException | InvalidKeyException | InvalidAlgorithmParameterException | IllegalBlockSizeException | ShortBufferException | BadPaddingException e) {
 			e.printStackTrace();
 		}
 	}
@@ -194,7 +202,7 @@ public class PrototypeMain {
 	/**
 	 * @return upload url
 	 */
-	private static String getUploadUrl() {
+	private static String getUploadUrl()  {
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 
 		String uploadUrl = null;
@@ -208,18 +216,11 @@ public class PrototypeMain {
 			.build();
 
 			HttpPost httpPost = new HttpPost(uri);
-			Kryo kryo = KryoFactory.createKryo();
-			ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-			Output output = new Output(byteArrayOutputStream);
-			kryo.writeClassAndObject(output, newEnemy());
-			ObjectCrypter objectCrypter = CryptConfig.getCrypter();
-			byte[] encrypted = objectCrypter.encrypt(byteArrayOutputStream.toByteArray());
-			httpPost.setEntity(new ByteArrayEntity(encrypted));
+
 
 			CloseableHttpResponse response = null;
 			try {
 				response = httpClient.execute(httpPost);
-
 
 				Header[] headers = response.getHeaders("uploadUrl");
 				for (Header header : headers) {
@@ -232,7 +233,7 @@ public class PrototypeMain {
 				e.printStackTrace();
 			}
 
-		} catch (URISyntaxException | InvalidKeyException | InvalidAlgorithmParameterException | IllegalBlockSizeException | ShortBufferException | BadPaddingException | IOException e) {
+		} catch (URISyntaxException e) {
 			e.printStackTrace();
 		}
 

@@ -30,4 +30,19 @@ public class Def extends Resource {
 	@Tag(8) public int revision;
 	/** When duplicated, this is the id of the resource we duplicated/copied */
 	@Tag(9) public UUID copyParentId = null;
+
+	@Override
+	public String toString() {
+		return "Def: {\n\t"
+				+ super.toString()
+				+ "\n\texternalDependencies: " + externalDependencies
+				+ "\n\tinternalDependencies: " + internalDependencies
+				+ "\n\tname: " + name
+				+ "\n\toriginalCreator: " + originalCreator
+				+ "\n\tdescription: " + description
+				+ "\n\tdate: " + date
+				+ "\n\trevision: " + revision
+				+ "\n\tcopyParentId: " + copyParentId
+				+ "\n}";
+	}
 }

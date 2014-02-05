@@ -64,6 +64,32 @@ public class DatastoreUtils {
 		}
 	}
 
+	/**
+	 * Set property to an entity, but only if it's not null
+	 * @param entity the entity to set the property in
+	 * @param propertyName name of the property
+	 * @param value the object to set as the property value. If null this method
+	 * does nothing.
+	 */
+	public static void setProperty(Entity entity, String propertyName, Object value) {
+		if (value != null) {
+			entity.setProperty(propertyName, value);
+		}
+	}
+
+	/**
+	 * Set an unindex property to an entity, but only if it's not null
+	 * @param entity the entity to set the property in
+	 * @param propertyName name of the property
+	 * @param value the object to set as the property value. If null this method
+	 * does nothing.
+	 */
+	public static void setUnindexedProperty(Entity entity, String propertyName, Object value) {
+		if (value != null) {
+			entity.setUnindexedProperty(propertyName, value);
+		}
+	}
+
 	/** Datastore service */
 	public static DatastoreService mDatastore = DatastoreServiceFactory.getDatastoreService();
 	/** Logger */

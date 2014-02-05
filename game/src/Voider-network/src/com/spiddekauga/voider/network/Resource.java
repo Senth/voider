@@ -12,4 +12,11 @@ import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 public class Resource {
 	/** ID of the resource */
 	@Tag(10) public UUID id;
+
+	@Override
+	public String toString() {
+		return "Resource: {"
+				+ "\n\tid: " + id
+				+ "\n}";
+	}
 }

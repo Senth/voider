@@ -12,4 +12,14 @@ public class ActorDef extends Def {
 	@Tag(17) public float maxLife;
 	/** PNG image of actor */
 	@Tag(18) public byte[] pngBytes = null;
+
+	@Override
+	public String toString() {
+		return
+				"ActorDef: {\n\t"
+				+ super.toString()
+				+ "\n\tmaxLife: " + maxLife
+				+ "\n\tpngBytes (length): " + (pngBytes == null ? "null" : pngBytes.length)
+				+ "\n}";
+	}
 }

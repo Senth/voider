@@ -2,6 +2,7 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry exported="true" kind="lib" path="libs/kryo-debug-2.21-all.jar" sourcepath="libs/kryo-debug-2.21-all-src.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/kryo-2.23.0.jar" sourcepath="libs/kryo-2.23-src.zip"/>
+	<classpathentry kind="lib" path="libs/objenesis-1.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

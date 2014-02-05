@@ -14,4 +14,14 @@ public class EnemyDef extends ActorDef {
 	@Tag(20) public String movementType;
 	/** Movement speed */
 	@Tag(21) public float movementSpeed;
+
+	@Override
+	public String toString() {
+		return "EnemyDef: {\n\t"
+				+ super.toString()
+				+ "\n\t" + weapon
+				+ "\n\tmovementType: " + movementType
+				+ "\n\tmovementSpeed: " + movementSpeed
+				+ "\n}";
+	}
 }

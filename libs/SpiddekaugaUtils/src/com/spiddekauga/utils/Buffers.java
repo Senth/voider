@@ -3,6 +3,7 @@ package com.spiddekauga.utils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.logging.Logger;
 
 /**
  * Buffer utilities
@@ -31,6 +32,9 @@ public class Buffers {
 	public static byte[] readBytes(InputStream inputStream, int tempBufferSize) {
 		ArrayList<byte[]> byteBuffers = new ArrayList<>();
 		int cReadBytesTotal = 0;
+
+		Logger logger = Logger.getLogger(Buffers.class.getName());
+
 		do {
 			byte[] readBytes = new byte[tempBufferSize];
 			int cReadBytes = 0;
@@ -39,17 +43,23 @@ public class Buffers {
 			} catch (IOException e) {
 			}
 
+			logger.info("cReadBytes: " + cReadBytes);
+
 			if (cReadBytes > 0) {
 				cReadBytesTotal += cReadBytes;
 
+				logger.info("cReadBytesTotal: " + cReadBytesTotal);
+
 				// Read less than maximum, end of file
 				if (cReadBytes < tempBufferSize) {
+					logger.info("Copying buffer to a smaller buffer");
 					// Copy value to a smaller buffer and append it to byte buffers
 					byte[] smallBuffer = new byte[cReadBytes];
 					System.arraycopy(readBytes, 0, smallBuffer, 0, cReadBytes);
 					byteBuffers.add(smallBuffer);
 					break;
 				} else {
+					logger.info("Adding whole buffer");
 					byteBuffers.add(readBytes);
 				}
 			} else {
@@ -65,6 +75,7 @@ public class Buffers {
 			System.arraycopy(partBuffer, 0, wholeByteArray, offset, partBuffer.length);
 			offset += partBuffer.length;
 		}
+		logger.info("wholeByteArray length: " + wholeByteArray.length);
 
 		return wholeByteArray;
 	}

@@ -5,5 +5,7 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/AppEngineUtils"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/SpiddekaugaUtils"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/Voider-network"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/cos.jar" sourcepath="libs/cos.zip"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>

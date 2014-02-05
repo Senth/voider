@@ -28,44 +28,11 @@ public class BlobUtils {
 
 		Map<String, List<BlobKey>> map = mBlobstore.getUploads(request);
 		for (Entry<String, List<BlobKey>> entry : map.entrySet()) {
-			mLogger.info("Blob name: " + entry.getKey());
 			blobKeys.addAll(entry.getValue());
 		}
 
-
 		return blobKeys;
 	}
-	//	public static ArrayList<BlobKey> getBlobKeysFromUpload(HttpServletRequest request) {
-	//		ArrayList<BlobKey> returnList = new ArrayList<BlobKey>();
-	//
-	//		// Get file keys from the attribute
-	//		HashMap<?, ?> blobNameMap = (HashMap<?,?>) request.getAttribute(BLOB_KEY_ATTRIBUTE_NAME);
-	//		@SuppressWarnings("unchecked")
-	//		ArrayList<String> blobNames = (ArrayList<String>) blobNameMap.get("fileKey");
-	//
-	//		// Get the actual blob key from the datastore
-	//		for (String blobName : blobNames) {
-	//			Entity entity = DatastoreUtils.getItemByKey(blobName);
-	//			mLogger.info("Entity:\n"
-	//					+ "Key: " + entity.getKey()
-	//					+ "\nKind: " + entity.getKind()
-	//					+ "\nParent: " + entity.getParent()
-	//					+ "\nProperties: " + entity);
-	//
-	//			if (entity != null) {
-	//			} else {
-	//				mLogger.warning("Could not find the blob with name: " + blobName);
-	//			}
-	//		}
-	//
-	//
-	//		//		for (String blobString : blobNames) {
-	//		//			BlobKey blobKey = new BlobKey(blobString);
-	//		//			returnList.add(blobKey);
-	//		//		}
-	//
-	//		return returnList;
-	//	}
 
 	/** Blobstore service */
 	private static final BlobstoreService mBlobstore = BlobstoreServiceFactory.getBlobstoreService();

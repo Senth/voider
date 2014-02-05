@@ -20,4 +20,15 @@ public class WeaponDef {
 	@Tag(25) public float cooldownMin;
 	/** Maximum cooldown */
 	@Tag(26) public float cooldownMax;
+
+	@Override
+	public String toString() {
+		return "WeaponDef: {"
+				+ "\n\tbulletActorId: " + bulletActorId
+				+ "\n\tbulletSpeed: " + bulletSpeed
+				+ "\n\tdamage: " + damage
+				+ "\n\tcooldownMin: " + cooldownMin
+				+ "\n\tcooldownMax: " + cooldownMax
+				+ "\n}";
+	}
 }
