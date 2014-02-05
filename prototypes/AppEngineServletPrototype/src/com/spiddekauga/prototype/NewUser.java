@@ -39,7 +39,7 @@ public class NewUser extends HttpServlet {
 		if (entity == null) {
 			entity = new Entity("users");
 			entity.setProperty("username", username);
-			entity.setProperty("salt", salt);
+			//			entity.setProperty("salt", salt);
 			entity.setProperty("password", hashedPassword);
 
 			createdUser = true;

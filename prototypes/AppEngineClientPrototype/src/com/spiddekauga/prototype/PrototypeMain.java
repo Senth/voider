@@ -45,9 +45,9 @@ public class PrototypeMain {
 	 * @param args
 	 */
 	public static void main(String args[]) {
-		//		newUser();
+		newUser();
 		//				login();
-		testEnemy();
+		//		testEnemy();
 	}
 
 	/**
@@ -112,7 +112,7 @@ public class PrototypeMain {
 			.setScheme("http")
 			.setHost(mServer)
 			.setPath("/newuser")
-			.setParameter("username", "gorbachjow")
+			.setParameter("username", "senth")
 			.setParameter("password", "bajs")
 			.build();
 
