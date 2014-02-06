@@ -9,7 +9,7 @@ import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class Resource {
+public class OldResource {
 	/** ID of the resource */
 	@Tag(10) public UUID id;
 

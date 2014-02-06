@@ -10,6 +10,6 @@
 	<classpathentry kind="lib" path="libs/httpcore-4.3.1.jar"/>
 	<classpathentry kind="lib" path="libs/httpmime-4.3.2.jar" sourcepath="libs/httpmime-src.zip"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/SpiddekaugaUtils"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/Voider-network"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/AppEngineNetworkPrototype"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -9,7 +9,7 @@ import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class LevelDef extends Def {
+public class OldLevelDef extends OldDef {
 	/** Starting coordinate of the level (right screen edge) */
 	@Tag(11) private float startXCoord = 0;
 	/** The actual level id, i.e. not this definition's id */

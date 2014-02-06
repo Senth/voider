@@ -31,8 +31,8 @@ import org.apache.http.util.EntityUtils;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Output;
 import com.spiddekauga.utils.ObjectCrypter;
-import com.spiddekauga.voider.network.EnemyDef;
 import com.spiddekauga.voider.network.KryoFactory;
+import com.spiddekauga.voider.network.OldEnemyDef;
 
 
 /**
@@ -58,7 +58,7 @@ public class PrototypeMain {
 			URI uri = new URIBuilder()
 			.setScheme("http")
 			.setHost(HOST)
-			.setPath("/login")
+			.setPath("/oldlogin")
 			.setParameter("username", "senth")
 			.setParameter("password", "bajs")
 			.build();
@@ -236,8 +236,8 @@ public class PrototypeMain {
 	/**
 	 * @return a newly created stub enemy
 	 */
-	private static EnemyDef newEnemy() {
-		EnemyDef enemyDef = new EnemyDef();
+	private static OldEnemyDef newEnemy() {
+		OldEnemyDef enemyDef = new OldEnemyDef();
 
 		enemyDef.creator = "creator";
 		enemyDef.date = new Date();

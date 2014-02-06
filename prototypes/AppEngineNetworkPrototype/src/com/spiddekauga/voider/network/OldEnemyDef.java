@@ -7,9 +7,9 @@ import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class EnemyDef extends ActorDef {
+public class OldEnemyDef extends OldActorDef {
 	/** Weapon of the enemy, null if it doesn't use one */
-	@Tag(19) public WeaponDef weapon = null;
+	@Tag(19) public OldWeaponDef weapon = null;
 	/** Movement type */
 	@Tag(20) public String movementType;
 	/** Movement speed */

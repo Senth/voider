@@ -28,11 +28,11 @@ import com.oreilly.servlet.multipart.Part;
 import com.spiddekauga.appengine.BlobUtils;
 import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.utils.ObjectCrypter;
-import com.spiddekauga.voider.network.ActorDef;
-import com.spiddekauga.voider.network.Def;
-import com.spiddekauga.voider.network.EnemyDef;
+import com.spiddekauga.voider.network.OldActorDef;
+import com.spiddekauga.voider.network.OldDef;
+import com.spiddekauga.voider.network.OldEnemyDef;
 import com.spiddekauga.voider.network.KryoFactory;
-import com.spiddekauga.voider.network.Resource;
+import com.spiddekauga.voider.network.OldResource;
 import com.spiddekauga.web.VoiderServlet;
 
 /**
@@ -131,20 +131,20 @@ public class EnemyUploadFinished extends VoiderServlet {
 
 		DatastoreUtils.setProperty(entity, "blobKey", blobKey);
 
-		if (resource instanceof EnemyDef) {
-			appendEnemyDef(entity, (EnemyDef) resource);
+		if (resource instanceof OldEnemyDef) {
+			appendEnemyDef(entity, (OldEnemyDef) resource);
 		}
 
-		if (resource instanceof Resource) {
-			appendResource(entity, (Resource) resource);
+		if (resource instanceof OldResource) {
+			appendResource(entity, (OldResource) resource);
 		}
 
-		if (resource instanceof ActorDef) {
-			appendActorDef(entity, (ActorDef) resource);
+		if (resource instanceof OldActorDef) {
+			appendActorDef(entity, (OldActorDef) resource);
 		}
 
-		if (resource instanceof Def) {
-			appendDef(entity, (Def) resource);
+		if (resource instanceof OldDef) {
+			appendDef(entity, (OldDef) resource);
 
 			// TODO add dependencies
 		}
@@ -159,7 +159,7 @@ public class EnemyUploadFinished extends VoiderServlet {
 	 * @param entity the datastore entity to add information to
 	 * @param enemyDef the enemy definition to append to the entity
 	 */
-	private void appendEnemyDef(Entity entity, EnemyDef enemyDef) {
+	private void appendEnemyDef(Entity entity, OldEnemyDef enemyDef) {
 		// TODO append weapon
 		DatastoreUtils.setProperty(entity, "movementType", enemyDef.movementType);
 		DatastoreUtils.setProperty(entity, "movementSpeed", enemyDef.movementSpeed);
@@ -170,7 +170,7 @@ public class EnemyUploadFinished extends VoiderServlet {
 	 * @param entity the datastore entity to add information to
 	 * @param resource the resource to append to the entity
 	 */
-	private void appendResource(Entity entity, Resource resource) {
+	private void appendResource(Entity entity, OldResource resource) {
 		appendUuid(entity, "uuid", resource.id);
 	}
 
@@ -179,7 +179,7 @@ public class EnemyUploadFinished extends VoiderServlet {
 	 * @param entity the datastore entity to add information to
 	 * @param actorDef the actor definition to append to the entity
 	 */
-	private void appendActorDef(Entity entity, ActorDef actorDef) {
+	private void appendActorDef(Entity entity, OldActorDef actorDef) {
 		DatastoreUtils.setProperty(entity, "maxLife", actorDef.maxLife);
 		if (actorDef.pngBytes != null) {
 			Blob png = new Blob(actorDef.pngBytes);
@@ -192,7 +192,7 @@ public class EnemyUploadFinished extends VoiderServlet {
 	 * @param entity the datastore entity to add information to
 	 * @param def the definition to append to the entity
 	 */
-	private void appendDef(Entity entity, Def def) {
+	private void appendDef(Entity entity, OldDef def) {
 		DatastoreUtils.setProperty(entity, "name", def.name);
 		DatastoreUtils.setProperty(entity, "originalCreator", def.originalCreator);
 		DatastoreUtils.setProperty(entity, "creator", def.creator);

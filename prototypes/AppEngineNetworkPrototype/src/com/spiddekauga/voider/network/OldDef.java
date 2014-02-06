@@ -11,7 +11,7 @@ import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class Def extends Resource {
+public class OldDef extends OldResource {
 	/** External dependencies */
 	@Tag(1) public HashSet<UUID> externalDependencies = new HashSet<>();
 	/** Internal dependencies */

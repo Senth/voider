@@ -7,7 +7,7 @@ import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class ActorDef extends Def {
+public class OldActorDef extends OldDef {
 	/** Maximum lif of the actor */
 	@Tag(17) public float maxLife;
 	/** PNG image of actor */

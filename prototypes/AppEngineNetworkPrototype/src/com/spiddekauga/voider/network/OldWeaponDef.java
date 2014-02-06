@@ -9,7 +9,7 @@ import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class WeaponDef {
+public class OldWeaponDef {
 	/** Id of the bullet actor */
 	@Tag(22) public UUID bulletActorId;
 	/** Bullet speed */

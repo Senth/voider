@@ -38,11 +38,11 @@ public class KryoFactory {
 	 */
 	private enum RegisterClasses {
 		/** ActorDef */
-		ACTOR_DEF(ActorDef.class, SerializerType.TAGGED),
+		ACTOR_DEF(OldActorDef.class, SerializerType.TAGGED),
 		/** byte[] */
 		BYTE_ARRAY(byte[].class),
 		/** Def */
-		DEF(Def.class),
+		DEF(OldDef.class),
 		/** HashMap */
 		HASH_MAP(HashMap.class),
 		/** HashSet */
@@ -52,13 +52,13 @@ public class KryoFactory {
 		/** UUID */
 		UUID(UUID.class, new UUIDSerializer()),
 		/** EnemyDef */
-		ENEMY_DEF(EnemyDef.class, SerializerType.TAGGED),
+		ENEMY_DEF(OldEnemyDef.class, SerializerType.TAGGED),
 		/** WeaponDef */
-		WEAPON_DEF(WeaponDef.class, SerializerType.TAGGED),
+		WEAPON_DEF(OldWeaponDef.class, SerializerType.TAGGED),
 		/** LevelDef */
-		LEVEL_DEF(LevelDef.class, SerializerType.TAGGED),
+		LEVEL_DEF(OldLevelDef.class, SerializerType.TAGGED),
 		/** Resource */
-		RESOURCE(Resource.class, SerializerType.TAGGED),
+		RESOURCE(OldResource.class, SerializerType.TAGGED),
 
 
 		;
