@@ -1,6 +1,7 @@
 package com.spiddekauga.prototype;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.util.List;
@@ -10,7 +11,6 @@ import java.util.logging.Logger;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -33,6 +33,7 @@ import com.spiddekauga.voider.network.Def;
 import com.spiddekauga.voider.network.EnemyDef;
 import com.spiddekauga.voider.network.KryoFactory;
 import com.spiddekauga.voider.network.Resource;
+import com.spiddekauga.web.VoiderServlet;
 
 /**
  * Enemy has been uploaded
@@ -40,33 +41,37 @@ import com.spiddekauga.voider.network.Resource;
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
 @SuppressWarnings("serial")
-public class EnemyUploadFinished extends HttpServlet {
+public class EnemyUploadFinished extends VoiderServlet {
 	@Override
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void onRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		mLogger.info("Upload done");
-
 		List<BlobKey> uploadedBlobkeys = BlobUtils.getBlobKeysFromUpload(request);
-
 		BlobKey blobKey = uploadedBlobkeys.get(0);
-
 		mLogger.info("Blobkey: " + blobKey);
 
-		String uploadType = request.getHeader("uploadType");
-
-		mLogger.info("Upload type: " + uploadType);
-
-		Object resource = readDecryptData(request);
-
 		boolean deleteBlob = true;
-		if (resource != null) {
-			boolean resourceAdded = addResourceToDatastore(resource, blobKey);
-			if (!resourceAdded) {
-				mLogger.severe("Resource could not be added to the datastore; deleting blob.");
+
+		if (mUser.isLoggedIn()) {
+			String uploadType = request.getHeader("uploadType");
+			mLogger.info("Upload type: " + uploadType);
+
+			Object resource = readDecryptData(request);
+
+			if (resource != null) {
+				boolean resourceAdded = addResourceToDatastore(resource, blobKey);
+				if (!resourceAdded) {
+					mLogger.severe("Resource could not be added to the datastore; deleting blob.");
+				} else {
+					deleteBlob = false;
+				}
 			} else {
-				deleteBlob = false;
+				mLogger.severe("Could not get resource; deleting blob.");
 			}
 		} else {
-			mLogger.severe("Could not get resource; deleting blob.");
+			mLogger.info("User is not logged in!");
+			PrintWriter out = response.getWriter();
+			out.print("Error: User is not logged in");
+			out.flush();
 		}
 
 		if (deleteBlob) {

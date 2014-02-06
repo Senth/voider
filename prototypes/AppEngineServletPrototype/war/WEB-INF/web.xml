@@ -47,7 +47,4 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 	<welcome-file-list>
 		<welcome-file>index.html</welcome-file>
 	</welcome-file-list>
-	<sessions-enabled>true</sessions-enabled>
-	<async-session-persistance enabled="true" />
-	<auto-id-policy>default</auto-id-policy>
 </web-app>

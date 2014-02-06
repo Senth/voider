@@ -5,14 +5,13 @@ import java.io.PrintWriter;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import com.google.appengine.api.datastore.Entity;
 import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.utils.BCrypt;
+import com.spiddekauga.web.VoiderServlet;
 
 /**
  * Tries to login a user
@@ -20,34 +19,37 @@ import com.spiddekauga.utils.BCrypt;
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
 @SuppressWarnings("serial")
-public class Login extends HttpServlet {
+public class Login extends VoiderServlet {
 
 	@Override
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void onRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		response.setContentType("application/json");
-
-		HttpSession session = request.getSession();
-
-
-		PrintWriter out = response.getWriter();
-		String username = request.getParameter("username");
 
 		boolean loginSuccess = false;
 
-		Entity entity = DatastoreUtils.getSingleItem("users", "username", username);
-		if (entity != null) {
-			String password = request.getParameter("password");
+		// Only log in if we haven't logged in
+		if (!mUser.isLoggedIn()) {
 
-			String hashedPassword = (String) entity.getProperty("password");
+			String username = request.getParameter("username");
 
-			// Same password
-			if (BCrypt.checkpw(password, hashedPassword)) {
-				loginSuccess = true;
+			Entity entity = DatastoreUtils.getSingleItem("users", "username", username);
+			if (entity != null) {
+				String password = request.getParameter("password");
+
+				String hashedPassword = (String) entity.getProperty("password");
+
+				// Same password
+				if (BCrypt.checkpw(password, hashedPassword)) {
+					mUser.login(username);
+					loginSuccess = true;
+				} else {
+					mLogger.info("Wrong password");
+				}
 			} else {
-				mLogger.info("Wrong password");
+				mLogger.info("Did not find any user with that username");
 			}
 		} else {
-			mLogger.info("Did not find any user with that username");
+			mLogger.info("User already logged in");
 		}
 
 		String json;
@@ -56,6 +58,7 @@ public class Login extends HttpServlet {
 		} else {
 			json = "{ \"success\": false; }";
 		}
+		PrintWriter out = response.getWriter();
 		out.print(json);
 		out.flush();
 	}

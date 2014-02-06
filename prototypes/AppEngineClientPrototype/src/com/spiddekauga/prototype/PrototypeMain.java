@@ -45,21 +45,19 @@ public class PrototypeMain {
 	 * @param args
 	 */
 	public static void main(String args[]) {
-		newUser();
-		//				login();
-		//		testEnemy();
+		//		newUser();
+		//		login();
+		testEnemy();
 	}
 
 	/**
 	 * Tries to login with an existing user
 	 */
 	public static void login() {
-		CloseableHttpClient httpClient = HttpClients.createDefault();
-
 		try {
 			URI uri = new URIBuilder()
 			.setScheme("http")
-			.setHost(mServer)
+			.setHost(HOST)
 			.setPath("/login")
 			.setParameter("username", "senth")
 			.setParameter("password", "bajs")
@@ -69,7 +67,7 @@ public class PrototypeMain {
 
 			CloseableHttpResponse response = null;
 			try {
-				response = httpClient.execute(httpGet);
+				response = mHttpClient.execute(httpGet);
 				HttpEntity entity = response.getEntity();
 
 				if (entity != null) {
@@ -105,12 +103,10 @@ public class PrototypeMain {
 	 * Tries to create a new user
 	 */
 	public static void newUser() {
-		CloseableHttpClient httpClient = HttpClients.createDefault();
-
 		try {
 			URI uri = new URIBuilder()
 			.setScheme("http")
-			.setHost(mServer)
+			.setHost(HOST)
 			.setPath("/newuser")
 			.setParameter("username", "senth")
 			.setParameter("password", "bajs")
@@ -120,7 +116,7 @@ public class PrototypeMain {
 
 			CloseableHttpResponse response = null;
 			try {
-				response = httpClient.execute(httpGet);
+				response = mHttpClient.execute(httpGet);
 				HttpEntity entity = response.getEntity();
 
 				if (entity != null) {
@@ -179,7 +175,6 @@ public class PrototypeMain {
 			ObjectCrypter objectCrypter = CryptConfig.getCrypter();
 			byte[] encrypted = objectCrypter.encrypt(output.toBytes());
 
-			CloseableHttpClient httpClient = HttpClients.createDefault();
 			HttpPost httpPost = new HttpPost(uploadUrl);
 			MultipartEntityBuilder entityBuilder = MultipartEntityBuilder.create();
 			ContentBody contentBody = new FileBody(new File(ENEMY_FILE_CERINA));
@@ -188,7 +183,7 @@ public class PrototypeMain {
 			entityBuilder.addBinaryBody("resource", encrypted);
 			httpPost.setEntity(entityBuilder.build());
 
-			CloseableHttpResponse httpResponse = httpClient.execute(httpPost);
+			CloseableHttpResponse httpResponse = mHttpClient.execute(httpPost);
 		} catch (IOException | InvalidKeyException | InvalidAlgorithmParameterException | IllegalBlockSizeException | ShortBufferException | BadPaddingException e) {
 			e.printStackTrace();
 		}
@@ -203,14 +198,12 @@ public class PrototypeMain {
 	 * @return upload url
 	 */
 	private static String getUploadUrl()  {
-		CloseableHttpClient httpClient = HttpClients.createDefault();
-
 		String uploadUrl = null;
 
 		try {
 			URI uri = new URIBuilder()
 			.setScheme("http")
-			.setHost(mServer)
+			.setHost(HOST)
 			.setPath("/getuploadurl")
 			.addParameter("uploadType", "enemy")
 			.build();
@@ -220,7 +213,7 @@ public class PrototypeMain {
 
 			CloseableHttpResponse response = null;
 			try {
-				response = httpClient.execute(httpPost);
+				response = mHttpClient.execute(httpPost);
 
 				Header[] headers = response.getHeaders("uploadUrl");
 				for (Header header : headers) {
@@ -263,8 +256,10 @@ public class PrototypeMain {
 		return enemyDef;
 	}
 
+	/** Closable http client used in all prototypes */
+	private static CloseableHttpClient mHttpClient = HttpClients.createDefault();
 	/** Maximum content string length */
 	private final static long CONTENT_STRING_LENGTH_MAX = 2048;
 	/** Web app location */
-	private static String mServer = "localhost:8888";
+	private final static String HOST = "localhost:8888";
 }

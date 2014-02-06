@@ -5,13 +5,13 @@ import java.io.PrintWriter;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.google.appengine.api.datastore.Entity;
 import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.utils.BCrypt;
+import com.spiddekauga.web.VoiderServlet;
 
 /**
  * Creates a new user
@@ -19,9 +19,9 @@ import com.spiddekauga.utils.BCrypt;
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
 @SuppressWarnings("serial")
-public class NewUser extends HttpServlet {
+public class NewUser extends VoiderServlet {
 	@Override
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void onRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// Set response type
 		response.setContentType("application/json");
 
