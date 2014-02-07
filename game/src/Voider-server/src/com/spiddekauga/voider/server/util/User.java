@@ -2,6 +2,8 @@ package com.spiddekauga.voider.server.util;
 
 import java.io.Serializable;
 
+import com.google.appengine.api.datastore.Key;
+
 /**
  * Logged in user
  * 
@@ -10,10 +12,10 @@ import java.io.Serializable;
 public class User extends SessionVariable implements Serializable {
 	/**
 	 * Login the user and set all parameters
-	 * @param username
+	 * @param userId id/key of the user in the datastore
 	 */
-	public void login(String username) {
-		mUsername = username;
+	public void login(Key userId) {
+		mId = userId;
 		mIsLoggedIn = true;
 		setChanged();
 	}
@@ -22,7 +24,7 @@ public class User extends SessionVariable implements Serializable {
 	 * Logs out the user
 	 */
 	public void logout() {
-		mUsername = null;
+		mId = null;
 		mIsLoggedIn = false;
 		setChanged();
 	}
@@ -35,14 +37,14 @@ public class User extends SessionVariable implements Serializable {
 	}
 
 	/**
-	 * @return user name
+	 * @return user id/key in the datastore
 	 */
-	public String getUsername() {
-		return mUsername;
+	public Key getId() {
+		return mId;
 	}
 
-	/** The user name */
-	private String mUsername = null;
+	/** User identity key */
+	private Key mId = null;
 	/** If the user is logged in */
 	private boolean mIsLoggedIn = false;
 

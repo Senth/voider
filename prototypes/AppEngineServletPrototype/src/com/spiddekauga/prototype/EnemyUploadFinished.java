@@ -215,8 +215,6 @@ public class EnemyUploadFinished extends VoiderServlet {
 		}
 	}
 
-	/** Buffer size, 128kb */
-	private static final int TEMP_BUFFER_SIZE = 128 * 1024;
 	/** Logger */
 	private static final Logger mLogger = Logger.getLogger(EnemyUploadFinished.class.getName());
 }

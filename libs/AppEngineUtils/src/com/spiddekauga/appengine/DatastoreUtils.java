@@ -2,6 +2,7 @@ package com.spiddekauga.appengine;
 
 
 import java.util.List;
+import java.util.UUID;
 import java.util.logging.Logger;
 
 import com.google.appengine.api.datastore.DatastoreService;
@@ -24,20 +25,31 @@ public class DatastoreUtils {
 	/**
 	 * Searches for an existing entity
 	 * @param searchIn what kind of entity to search in
-	 * @param propertyName the property value to search in
-	 * @param searchForItem the value to search for
+	 * @param name the property value to search in
+	 * @param value the value to search for
 	 * @return found entity, null if none was found
 	 */
-	public static Entity getSingleItem(String searchIn, String propertyName, Object searchForItem) {
+	public static Entity getSingleItem(String searchIn, String name, Object value) {
 		Query query = new Query(searchIn);
-		Filter filter = new Query.FilterPredicate(propertyName, FilterOperator.EQUAL, searchForItem);
+		Filter filter = new Query.FilterPredicate(name, FilterOperator.EQUAL, value);
 		query.setFilter(filter);
 		List<Entity> results = mDatastore.prepare(query).asList(FetchOptions.Builder.withDefaults());
-		mLogger.info("Found " + results.size() + " entities in (" + searchIn + ") with property (" + propertyName + ") named (" + searchForItem + ")");
+		mLogger.info("Found " + results.size() + " entities in (" + searchIn + ") with property (" + name + ") named (" + value + ")");
 		if (!results.isEmpty()) {
 			return results.get(0);
 		}
 		return null;
+	}
+
+	/**
+	 * Searches if an entity exists
+	 * @param searchIn what kind of entity to search in
+	 * @param name name of the property (column)
+	 * @param value the value to search for
+	 * @return true if the datastore contains the specified entity
+	 */
+	public static boolean containsEntity(String searchIn, String name, Object value) {
+		return getSingleItem(searchIn, name, value) == null;
 	}
 
 	/**
@@ -88,6 +100,31 @@ public class DatastoreUtils {
 		if (value != null) {
 			entity.setUnindexedProperty(propertyName, value);
 		}
+	}
+
+	/**
+	 * Set a UUID property to an entity.
+	 * @param entity the entity to add the UUID to
+	 * @param propertyName name of the property
+	 * @param uuid the UUID to add to the entity
+	 */
+	public static void setProperty(Entity entity, String propertyName, UUID uuid) {
+		if (uuid != null) {
+			entity.setProperty(propertyName + "-least", uuid.getLeastSignificantBits());
+			entity.setProperty(propertyName + "-most", uuid.getMostSignificantBits());
+		}
+	}
+
+	/**
+	 * Get a UUID property from an entity
+	 * @param entity the entity to get the UUID from
+	 * @param propertyName name of the property
+	 * @return Stored UUID, null if it doesn't exist
+	 */
+	public static UUID getUuidProperty(Entity entity, String propertyName) {
+		int leastBits = (int) entity.getProperty(propertyName + "-least");
+		int mostBits = (int) entity.getProperty(propertyName + "-most");
+		return new UUID(mostBits, leastBits);
 	}
 
 	/** Datastore service */
