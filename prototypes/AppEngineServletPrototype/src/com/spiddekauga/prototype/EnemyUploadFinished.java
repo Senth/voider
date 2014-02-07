@@ -27,12 +27,12 @@ import com.oreilly.servlet.multipart.ParamPart;
 import com.oreilly.servlet.multipart.Part;
 import com.spiddekauga.appengine.BlobUtils;
 import com.spiddekauga.appengine.DatastoreUtils;
+import com.spiddekauga.prototype.network.KryoFactory;
+import com.spiddekauga.prototype.network.OldActorDef;
+import com.spiddekauga.prototype.network.OldDef;
+import com.spiddekauga.prototype.network.OldEnemyDef;
+import com.spiddekauga.prototype.network.OldResource;
 import com.spiddekauga.utils.ObjectCrypter;
-import com.spiddekauga.voider.network.OldActorDef;
-import com.spiddekauga.voider.network.OldDef;
-import com.spiddekauga.voider.network.OldEnemyDef;
-import com.spiddekauga.voider.network.KryoFactory;
-import com.spiddekauga.voider.network.OldResource;
 import com.spiddekauga.web.VoiderServlet;
 
 /**

@@ -28,6 +28,9 @@ public class ServerConfig {
 			return mName;
 		}
 
+		/**
+		 * Name
+		 */
 		private String mName;
 	}
 }

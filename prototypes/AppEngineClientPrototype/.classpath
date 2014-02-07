@@ -2,14 +2,16 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="libs/commons-codec-1.6.jar"/>
-	<classpathentry kind="lib" path="libs/commons-logging-1.1.3.jar"/>
-	<classpathentry kind="lib" path="libs/fluent-hc-4.3.2.jar"/>
-	<classpathentry kind="lib" path="libs/httpclient-4.3.2.jar" sourcepath="libs/httpclient-src.zip"/>
-	<classpathentry kind="lib" path="libs/httpclient-cache-4.3.2.jar" sourcepath="libs/httpclient-cache-src.zip"/>
-	<classpathentry kind="lib" path="libs/httpcore-4.3.1.jar"/>
-	<classpathentry kind="lib" path="libs/httpmime-4.3.2.jar" sourcepath="libs/httpmime-src.zip"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/SpiddekaugaUtils"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/AppEngineNetworkPrototype"/>
+	<classpathentry kind="lib" path="libs/commons-codec-1.6.jar"/>
+	<classpathentry kind="lib" path="libs/commons-logging-1.1.3.jar"/>
+	<classpathentry kind="lib" path="libs/fluent-hc-4.3.2.jar" sourcepath="libs/fluent-hc-src.zip"/>
+	<classpathentry kind="lib" path="libs/httpclient-4.3.2.jar" sourcepath="libs/httpclient-src.zip"/>
+	<classpathentry kind="lib" path="libs/httpclient-cache-4.3.2.jar" sourcepath="libs/httpclient-cache-src.zip"/>
+	<classpathentry kind="lib" path="libs/httpclient-osgi-src.zip"/>
+	<classpathentry kind="lib" path="libs/httpclient-win-src.zip"/>
+	<classpathentry kind="lib" path="libs/httpcore-4.3.1.jar"/>
+	<classpathentry kind="lib" path="libs/httpmime-4.3.2.jar" sourcepath="libs/httpmime-src.zip"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

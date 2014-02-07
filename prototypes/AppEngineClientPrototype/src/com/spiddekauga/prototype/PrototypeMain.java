@@ -10,6 +10,7 @@ import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.util.Date;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
@@ -30,9 +31,10 @@ import org.apache.http.util.EntityUtils;
 
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Output;
+import com.spiddekauga.network.UserRepository;
+import com.spiddekauga.prototype.network.KryoFactory;
+import com.spiddekauga.prototype.network.OldEnemyDef;
 import com.spiddekauga.utils.ObjectCrypter;
-import com.spiddekauga.voider.network.KryoFactory;
-import com.spiddekauga.voider.network.OldEnemyDef;
 
 
 /**
@@ -47,13 +49,23 @@ public class PrototypeMain {
 	public static void main(String args[]) {
 		//		newUser();
 		//		login();
-		testEnemy();
+		//		testEnemy();
+		login();
 	}
 
 	/**
 	 * Tries to login with an existing user
 	 */
 	public static void login() {
+		boolean success = UserRepository.login("senth", "bajs");
+
+		mLogger.info("Login: " + (success ? "success" : "failed"));
+	}
+
+	/**
+	 * Tries to login with an existing user
+	 */
+	public static void oldLogin() {
 		try {
 			URI uri = new URIBuilder()
 			.setScheme("http")
@@ -262,4 +274,7 @@ public class PrototypeMain {
 	private final static long CONTENT_STRING_LENGTH_MAX = 2048;
 	/** Web app location */
 	private final static String HOST = "localhost:8888";
+
+	/** Logger */
+	private static Logger mLogger = Logger.getLogger(PrototypeMain.class.getName());
 }

@@ -1,4 +1,4 @@
-package com.spiddekauga.voider.network;
+package com.spiddekauga.prototype.network;
 
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 

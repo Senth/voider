@@ -1,0 +1,9 @@
+<?xml version="1.0" ?>
+<!-- Configuration of the Ant build system to generate a Jar file --> 
+<project name="AppEngineNetworkPrototype" default="CreateNetworkPrototypeJar">
+  <target name="CreateNetworkPrototypeJar" description="Create Jar file">
+        <jar jarfile="dist/NetworkPrototype.jar">
+        	<fileset dir="bin" />
+        </jar>
+  </target>
+</project>
