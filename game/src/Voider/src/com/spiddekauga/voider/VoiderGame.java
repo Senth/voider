@@ -5,9 +5,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.esotericsoftware.kryo.Kryo;
-import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer;
-import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.esotericsoftware.minlog.Log;
 import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.utils.scene.ui.AlignTable;
@@ -30,8 +27,6 @@ public class VoiderGame implements ApplicationListener {
 
 	@Override
 	public void create() {
-		testKryo();
-
 		Gdx.app.setLogLevel(Config.Debug.LOG_VERBOSITY);
 		Log.ERROR();
 
@@ -48,24 +43,6 @@ public class VoiderGame implements ApplicationListener {
 		testMainMenu();
 		//		testSavePickups();
 		//		testSplashScreen();
-	}
-
-	public static class Base {
-		@Tag(1) public int baseTagged;
-		public int baseUntagged; // This field will make FieldSerializer throw an exception
-	}
-
-	public static class Derived extends Base {
-		@Tag(2) public int derivedTagged;
-		public int derivedUntagged;
-	}
-
-	/**
-	 * Test kryo
-	 */
-	public void testKryo() {
-		Kryo kryo = new Kryo();
-		new TaggedFieldSerializer<Derived>(kryo, Derived.class);
 	}
 
 	/**

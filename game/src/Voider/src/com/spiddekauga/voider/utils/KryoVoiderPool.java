@@ -394,6 +394,14 @@ public class KryoVoiderPool extends Pool<Kryo> {
 			circleShape.setRadius(input.readFloat());
 			return circleShape;
 		}
+
+		@Override
+		public CircleShape copy(Kryo kryo, CircleShape original) {
+			CircleShape circleShape = new CircleShape();
+			circleShape.setPosition(original.getPosition());
+			circleShape.setRadius(original.getRadius());
+			return circleShape;
+		}
 	}
 
 	/**
@@ -403,7 +411,7 @@ public class KryoVoiderPool extends Pool<Kryo> {
 		@Override
 		public void write(Kryo kryo, Output output, PolygonShape object) {
 			Vector2[] vertices = new Vector2[object.getVertexCount()];
-			for (int i = 0; i < vertices.length; i++) {
+			for (int i = 0; i < vertices.length; ++i) {
 				vertices[i] = Pools.vector2.obtain();
 				object.getVertex(i, vertices[i]);
 			}
@@ -420,6 +428,22 @@ public class KryoVoiderPool extends Pool<Kryo> {
 			if (vertices.length > 0) {
 				polygonShape.set(vertices);
 			}
+
+			Pools.vector2.freeAll(vertices);
+
+			return polygonShape;
+		}
+
+		@Override
+		public PolygonShape copy(Kryo kryo, PolygonShape original) {
+			PolygonShape polygonShape = new PolygonShape();
+
+			Vector2[] vertices = new Vector2[original.getVertexCount()];
+			for (int i = 0; i < vertices.length; ++i) {
+				vertices[i] = Pools.vector2.obtain();
+				original.getVertex(i, vertices[i]);
+			}
+			polygonShape.set(vertices);
 
 			Pools.vector2.freeAll(vertices);
 
@@ -457,6 +481,22 @@ public class KryoVoiderPool extends Pool<Kryo> {
 			edgeShape.set(vertex1, vertex2);
 
 			Pools.vector2.freeAll(vertex1, vertex2);
+
+			return edgeShape;
+		}
+
+		@Override
+		public EdgeShape copy(Kryo kryo, EdgeShape original) {
+			EdgeShape edgeShape = new EdgeShape();
+
+			Vector2 v1 = Pools.vector2.obtain();
+			Vector2 v2 = Pools.vector2.obtain();
+
+			original.getVertex1(v1);
+			original.getVertex2(v2);
+			edgeShape.set(v1, v2);
+
+			Pools.vector2.freeAll(v1, v2);
 
 			return edgeShape;
 		}
@@ -512,6 +552,46 @@ public class KryoVoiderPool extends Pool<Kryo> {
 				} else {
 					chainShape.createChain(vertices);
 				}
+				Pools.vector2.freeAll(vertices);
+			}
+
+			return chainShape;
+		}
+
+		@Override
+		public ChainShape copy(Kryo kryo, ChainShape original) {
+			ChainShape chainShape = new ChainShape();
+
+			int cVertices = original.getVertexCount();
+			boolean isLoop;
+
+			if (cVertices > 0) {
+				Vector2 firstVertex = Pools.vector2.obtain();
+				Vector2 lastVertex = Pools.vector2.obtain();
+				original.getVertex(0, firstVertex);
+				original.getVertex(cVertices - 1, lastVertex);
+
+				// Is the chain a loop?
+				if (firstVertex.equals(lastVertex)) {
+					cVertices--;
+					isLoop = true;
+				} else {
+					isLoop = false;
+				}
+
+				// Write vertices
+				Vector2[] vertices = new Vector2[cVertices];
+				for (int i = 0; i < vertices.length; i++) {
+					vertices[i] = Pools.vector2.obtain();
+					original.getVertex(i, vertices[i]);
+				}
+
+				if (isLoop) {
+					chainShape.createLoop(vertices);
+				} else {
+					chainShape.createChain(vertices);
+				}
+
 				Pools.vector2.freeAll(vertices);
 			}
 
