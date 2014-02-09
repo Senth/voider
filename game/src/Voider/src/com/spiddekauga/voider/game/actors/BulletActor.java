@@ -22,8 +22,10 @@ public class BulletActor extends Actor {
 	 * @see #shoot(Vector2,Vector2,float,boolean) to use a velocity of the bullet directly
 	 */
 	public void shoot(Vector2 position, Vector2 direction, float speed, float hitDamage, boolean shotByPlayer) {
+		// Velocity
 		Vector2 velocity = Pools.vector2.obtain();
 		velocity.set(direction).nor().scl(speed);
+
 		//		if (!mEditorActive) {
 		//			velocity.x += mLevel.getSpeed();
 		//		}
@@ -39,18 +41,18 @@ public class BulletActor extends Actor {
 	 * @param shotByPlayer true if the player shot this bullet, false if the enemy shot this bullet
 	 * @see #shoot(Vector2,Vector2,float,float,boolean) to use a direction and speed to calculate the velocity
 	 */
-	public void shoot(Vector2 position, Vector2 velocity, float hitDamage, boolean shotByPlayer) {
+	private void shoot(Vector2 position, Vector2 velocity, float hitDamage, boolean shotByPlayer) {
 		mShotByPlayer = shotByPlayer;
-		setPosition(position);
 
 		activate();
 		createBody();
 
 		// Position and rotate the bullet to face the shooting direction
-		//		double angle = velocity.angle();
-		//		angle = Math.toRadians(angle) + getDef().getBodyDef().angle;
-		//		getBody().setTransform(position, (float) angle);
+		double angle = velocity.angle();
+		angle = Math.toRadians(angle) + getDef().getBodyDef().angle;
+		getBody().setTransform(position, (float) angle);
 		getBody().setLinearVelocity(velocity);
+		setPosition(position);
 
 		mDamage = hitDamage;
 		activate();
