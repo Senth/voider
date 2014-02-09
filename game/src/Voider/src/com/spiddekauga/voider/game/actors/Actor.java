@@ -26,6 +26,7 @@ import com.spiddekauga.utils.kryo.KryoTaggedCopyable;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Graphics.RenderOrders;
 import com.spiddekauga.voider.editor.HitWrapper;
+import com.spiddekauga.voider.editor.LevelEditor;
 import com.spiddekauga.voider.game.Level;
 import com.spiddekauga.voider.game.triggers.ITriggerListener;
 import com.spiddekauga.voider.game.triggers.Trigger;
@@ -638,7 +639,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 	 */
 	public void createBody(BodyDef bodyDef) {
 		if (mWorld != null && mBody == null) {
-			if (mSkipRotate) {
+			if (mSkipRotate || SceneSwitcher.getActiveScene(true) instanceof LevelEditor) {
 				bodyDef.angularVelocity = 0;
 			} else {
 				bodyDef.fixedRotation = true;

@@ -167,7 +167,7 @@ public class KryoVoiderPool extends Pool<Kryo> {
 		/** LevelDef */
 		LEVEL_DEF(LevelDef.class, SerializerType.TAGGED),
 		/** Path */
-		PATH(Path.class, SerializerType.TAGGED),
+		PATH(Path.class, SerializerType.SERIALIZABLE_TAGGED),
 		/** PlayerStats */
 		PLAYER_STATS(PlayerStats.class, SerializerType.TAGGED),
 		/** Weapon */

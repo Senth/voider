@@ -15,6 +15,7 @@ import com.badlogic.gdx.utils.Disposable;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.utils.ShapeRendererEx;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
+import com.spiddekauga.utils.kryo.KryoPostRead;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Graphics.RenderOrders;
 import com.spiddekauga.voider.editor.HitWrapper;
@@ -36,7 +37,7 @@ import com.spiddekauga.voider.utils.Pools;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class Path extends Resource implements Disposable, IResourceCorner, IResourceBody, IResourcePosition, IResourceEditorRender, IResourceSelectable {
+public class Path extends Resource implements Disposable, IResourceCorner, IResourceBody, IResourcePosition, IResourceEditorRender, IResourceSelectable, KryoPostRead {
 	/**
 	 * Default constructor, sets the unique id of the path
 	 */
@@ -77,7 +78,7 @@ public class Path extends Resource implements Disposable, IResourceCorner, IReso
 			updateEnemyPositions();
 		}
 
-		updateRightestCorner();
+		calculateRightestCorner();
 	}
 
 	/**
@@ -112,7 +113,7 @@ public class Path extends Resource implements Disposable, IResourceCorner, IReso
 
 		updateEnemyPositions();
 
-		updateRightestCorner();
+		calculateRightestCorner();
 
 		Pools.vector2.free(diff);
 	}
@@ -183,7 +184,7 @@ public class Path extends Resource implements Disposable, IResourceCorner, IReso
 			}
 
 			if (removedCorner.equals(mRightestCorner)) {
-				updateRightestCorner();
+				calculateRightestCorner();
 			}
 		}
 
@@ -210,7 +211,7 @@ public class Path extends Resource implements Disposable, IResourceCorner, IReso
 			}
 		}
 
-		updateRightestCorner();
+		calculateRightestCorner();
 	}
 
 	@Override
@@ -585,7 +586,7 @@ public class Path extends Resource implements Disposable, IResourceCorner, IReso
 	/**
 	 * Update the corner furthest to the right
 	 */
-	private void updateRightestCorner() {
+	private void calculateRightestCorner() {
 		float xCoordMax = Float.NEGATIVE_INFINITY;
 		mRightestCorner = null;
 
@@ -658,6 +659,11 @@ public class Path extends Resource implements Disposable, IResourceCorner, IReso
 	@Override
 	public boolean isBeingMoved() {
 		return mIsBeingMoved;
+	}
+
+	@Override
+	public void postRead() {
+		calculateRightestCorner();
 	}
 
 

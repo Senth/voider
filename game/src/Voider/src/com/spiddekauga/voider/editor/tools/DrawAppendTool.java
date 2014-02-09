@@ -80,15 +80,15 @@ public class DrawAppendTool extends ActorTool implements ISelectionListener {
 
 			mInvoker.execute(new CResourceCornerRemoveExcessive(mSelectedActor.getDef().getVisualVars()), true);
 
-			// Reset center if the actor was just created
-			if (mCreatedActorThisDown) {
-				if (mEditor instanceof IActorEditor) {
-					mInvoker.execute(new CActorEditorCenterReset((IActorEditor) mEditor), true);
-				}
-				mCreatedActorThisDown = false;
-			}
-
 			try {
+				// Reset center if the actor was just created
+				if (mCreatedActorThisDown) {
+					if (mEditor instanceof IActorEditor) {
+						mInvoker.execute(new CActorEditorCenterReset((IActorEditor) mEditor), true);
+					}
+					mCreatedActorThisDown = false;
+				}
+
 				mInvoker.execute(new CActorDefFixCustomFixtures(mSelectedActor.getDef(), true), true);
 			} catch (PolygonComplexException e) {
 				SceneSwitcher.showErrorMessage(Messages.Error.POLYGON_COMPLEX_DRAW_APPEND);
