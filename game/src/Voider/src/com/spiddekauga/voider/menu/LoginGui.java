@@ -68,7 +68,7 @@ public class LoginGui extends Gui {
 		TextField textField = new TextField("", skin, SkinNames.General.TEXT_FIELD_DEFAULT.toString());
 		mWidgets.login.username = textField;
 		mWidgets.login.table.add(textField);
-		TextFieldListener textFieldListener = new TextFieldListener(textField, "", null) {
+		TextFieldListener textFieldListener = new TextFieldListener(textField, null, null) {
 			@Override
 			protected void onDone(String newText) {
 				if (isLoginFieldsValid(false)) {
@@ -86,9 +86,10 @@ public class LoginGui extends Gui {
 		mWidgets.login.table.row();
 		textField = new TextField("", skin, SkinNames.General.TEXT_FIELD_DEFAULT.toString());
 		textField.setPasswordMode(true);
+		textField.setPasswordCharacter('*');
 		mWidgets.login.password = textField;
 		mWidgets.login.table.add(textField);
-		textFieldListener = new TextFieldListener(textField, "", null) {
+		textFieldListener = new TextFieldListener(textField, null, null) {
 			@Override
 			protected void onDone(String newText) {
 				if (isLoginFieldsValid(false)) {
@@ -240,7 +241,7 @@ public class LoginGui extends Gui {
 		TextField textField = new TextField("", skin, SkinNames.General.TEXT_FIELD_DEFAULT.toString());
 		mWidgets.register.username = textField;
 		mWidgets.register.table.add(textField);
-		TextFieldListener textFieldListener = new TextFieldListener(textField, "", null) {
+		TextFieldListener textFieldListener = new TextFieldListener(textField, null, null) {
 			@Override
 			protected void onDone(String newText) {
 				if (isRegisterFieldsValid(false)) {
@@ -256,11 +257,12 @@ public class LoginGui extends Gui {
 		mWidgets.register.table.add(label);
 
 		mWidgets.register.table.row();
-		textField = new TextField("", skin, SkinNames.General.TEXT_FIELD_DEFAULT.toString());
+		textField = new TextField("Password", skin, SkinNames.General.TEXT_FIELD_DEFAULT.toString());
 		textField.setPasswordMode(true);
+		textField.setPasswordCharacter('*');
 		mWidgets.register.password = textField;
 		mWidgets.register.table.add(textField);
-		textFieldListener = new TextFieldListener(textField, "", null) {
+		textFieldListener = new TextFieldListener(textField, null, null) {
 			@Override
 			protected void onDone(String newText) {
 				if (isRegisterFieldsValid(false)) {
@@ -278,9 +280,10 @@ public class LoginGui extends Gui {
 		mWidgets.register.table.row();
 		textField = new TextField("", skin, SkinNames.General.TEXT_FIELD_DEFAULT.toString());
 		textField.setPasswordMode(true);
+		textField.setPasswordCharacter('*');
 		mWidgets.register.confirmPassword = textField;
 		mWidgets.register.table.add(textField);
-		textFieldListener = new TextFieldListener(textField, "", null) {
+		textFieldListener = new TextFieldListener(textField, null, null) {
 			@Override
 			protected void onDone(String newText) {
 				if (isRegisterFieldsValid(false)) {
@@ -298,7 +301,7 @@ public class LoginGui extends Gui {
 		textField = new TextField("", skin, SkinNames.General.TEXT_FIELD_DEFAULT.toString());
 		mWidgets.register.email = textField;
 		mWidgets.register.table.add(textField);
-		textFieldListener = new TextFieldListener(textField, "", null) {
+		textFieldListener = new TextFieldListener(textField, null, null) {
 			@Override
 			protected void onDone(String newText) {
 				if (isRegisterFieldsValid(false)) {

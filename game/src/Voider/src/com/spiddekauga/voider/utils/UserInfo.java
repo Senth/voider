@@ -12,4 +12,6 @@ public class UserInfo {
 	public String username;
 	/** Private key */
 	public UUID privateKey;
+	/** Email */
+	public String email = null;
 }

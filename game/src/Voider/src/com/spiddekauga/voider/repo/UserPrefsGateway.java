@@ -1,21 +1,22 @@
-package com.spiddekauga.voider.utils;
+package com.spiddekauga.voider.repo;
 
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
+import com.spiddekauga.voider.utils.UserInfo;
 
 /**
- * Local repository for preferences
+ * Local repository for user
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class PreferencesLocalRepo {
+class UserPrefsGateway {
 	/**
-	 * Initializes the preferences
+	 * Initializes the user preferences gateway
 	 */
-	public static void init() {
-		mPreferences = Gdx.app.getPreferences("Voider");
+	public UserPrefsGateway() {
+		mPreferences = Gdx.app.getPreferences(PREFERENCES_NAME);
 	}
 
 	/**
@@ -24,7 +25,7 @@ public class PreferencesLocalRepo {
 	 * @param privateKey the private key which will be used for automatic login
 	 * in the future.
 	 */
-	public static void setLastUser(String username, UUID privateKey) {
+	void setLastUser(String username, UUID privateKey) {
 		mPreferences.putString(LAST_USER__USERNAME, username);
 		mPreferences.putString(LAST_USER__PRIVATE_KEY, privateKey.toString());
 		mPreferences.flush();
@@ -33,7 +34,7 @@ public class PreferencesLocalRepo {
 	/**
 	 * Removes the last logged in user
 	 */
-	public static void removeLastUser() {
+	void removeLastUser() {
 		mPreferences.remove(LAST_USER__USERNAME);
 		mPreferences.remove(LAST_USER__PRIVATE_KEY);
 		mPreferences.flush();
@@ -43,7 +44,7 @@ public class PreferencesLocalRepo {
 	 * Get information of the last user that was logged in
 	 * @return last user logged in, null if not found
 	 */
-	public static UserInfo getLastUser() {
+	UserInfo getLastUser() {
 		UserInfo userInfo = new UserInfo();
 
 		userInfo.username = mPreferences.getString(LAST_USER__USERNAME);
@@ -60,8 +61,9 @@ public class PreferencesLocalRepo {
 	}
 
 	/** Preferences */
-	private static Preferences mPreferences;
-
+	private Preferences mPreferences;
+	/** Preferences name */
+	private static final String PREFERENCES_NAME = "Voider_users";
 
 	// Names
 	/** Username of last user */

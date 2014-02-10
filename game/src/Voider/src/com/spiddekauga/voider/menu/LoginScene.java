@@ -1,14 +1,14 @@
 package com.spiddekauga.voider.menu;
 
 import com.spiddekauga.voider.Config;
-import com.spiddekauga.voider.network.UserRepository;
 import com.spiddekauga.voider.network.entities.LoginMethodResponse;
 import com.spiddekauga.voider.network.entities.RegisterUserMethodResponse;
 import com.spiddekauga.voider.network.entities.RegisterUserMethodResponse.StatusResponses;
+import com.spiddekauga.voider.repo.UserLocalRepo;
+import com.spiddekauga.voider.repo.UserWebRepo;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceNames;
 import com.spiddekauga.voider.scene.Scene;
-import com.spiddekauga.voider.utils.PreferencesLocalRepo;
 import com.spiddekauga.voider.utils.UserInfo;
 
 /**
@@ -46,10 +46,10 @@ public class LoginScene extends Scene {
 	 * Try to login using stored username and private key
 	 */
 	void login() {
-		UserInfo userInfo = PreferencesLocalRepo.getLastUser();
+		UserInfo userInfo = UserLocalRepo.getLastUser();
 
 		if (userInfo != null) {
-			LoginMethodResponse response = UserRepository.login(userInfo.username, userInfo.privateKey);
+			LoginMethodResponse response = UserWebRepo.login(userInfo.username, userInfo.privateKey);
 
 			if (response != null) {
 				if (response.success) {
@@ -57,7 +57,7 @@ public class LoginScene extends Scene {
 					Config.Network.setOnline(true);
 				} else {
 					mGui.showErrorMessage("Could not auto-login " + userInfo.username);
-					PreferencesLocalRepo.removeLastUser();
+					UserLocalRepo.removeLastUser();
 				}
 			}
 			// Failed to auto-login, server could be down. Go offline
@@ -76,12 +76,12 @@ public class LoginScene extends Scene {
 	 * @return true if the user was successfully logged in
 	 */
 	boolean login(String username, String password) {
-		LoginMethodResponse response = UserRepository.login(username, password);
+		LoginMethodResponse response = UserWebRepo.login(username, password);
 
 		if (response != null) {
 			if (response.success) {
 				// Update last user to login for auto-login
-				PreferencesLocalRepo.setLastUser(response.username, response.privateKey);
+				UserLocalRepo.setLastUser(response.username, response.privateKey);
 				Config.User.setUsername(response.username);
 
 				setOutcome(Outcomes.LOGGED_IN);
@@ -109,7 +109,7 @@ public class LoginScene extends Scene {
 	 * @return true if the register was successful
 	 */
 	boolean register(String username, String password, String email) {
-		RegisterUserMethodResponse response = UserRepository.register(username, password, email);
+		RegisterUserMethodResponse response = UserWebRepo.register(username, password, email);
 
 		if (response != null) {
 			if (response.status == StatusResponses.SUCCESS) {

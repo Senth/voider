@@ -1,4 +1,4 @@
-package com.spiddekauga.voider.network;
+package com.spiddekauga.voider.repo;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,7 +21,7 @@ import com.spiddekauga.utils.Buffers;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class NetworkGateway {
+class NetworkGateway {
 	/**
 	 * Sends bytes over HTTP to the specified server
 	 * @param url the server to send the request to

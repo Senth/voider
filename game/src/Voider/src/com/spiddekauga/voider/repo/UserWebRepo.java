@@ -1,4 +1,4 @@
-package com.spiddekauga.voider.network;
+package com.spiddekauga.voider.repo;
 
 import java.util.UUID;
 
@@ -16,7 +16,7 @@ import com.spiddekauga.voider.network.entities.RegisterUserMethodResponse;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class UserRepository {
+public class UserWebRepo {
 	/**
 	 * Tries to login the user
 	 * @param username
