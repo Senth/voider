@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.spiddekauga.utils.KeyHelper;
+import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.app.PrototypeScene;
 import com.spiddekauga.voider.app.TestUiScene;
 import com.spiddekauga.voider.editor.EditorSelectionScene;
@@ -80,6 +81,13 @@ public class MainMenu extends Scene {
 		mGui.dispose();
 		mGui.initGui();
 		mGui.resetValues();
+
+		// Show if logged in online
+		if (Config.Network.isOnline()) {
+			mGui.showSuccessMessage(Config.User.getUsername() + " is now online!");
+		} else {
+			mGui.showHighlightMessage(Config.User.getUsername() + " is now offline!");
+		}
 	}
 
 	@Override

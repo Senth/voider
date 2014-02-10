@@ -41,9 +41,9 @@ public class UserRepository {
 	 * Tries to login the user
 	 * @param username
 	 * @param privateKey Uses the private key to login instead of a password
-	 * @return true if successfully logged in
+	 * @return Login method response, null if something went wrong
 	 */
-	public static boolean login(String username, UUID privateKey) {
+	public static LoginMethodResponse login(String username, UUID privateKey) {
 		LoginMethod loginMethod = new LoginMethod();
 		loginMethod.privateKey = privateKey;
 		loginMethod.username = username;
@@ -51,10 +51,10 @@ public class UserRepository {
 		IEntity entity = serializeAndSend(loginMethod);
 
 		if (entity instanceof LoginMethodResponse) {
-			return ((LoginMethodResponse) entity).success;
+			return ((LoginMethodResponse) entity);
 		}
 
-		return false;
+		return null;
 	}
 
 	/**
@@ -104,8 +104,13 @@ public class UserRepository {
 	 */
 	private static IEntity serializeAndSend(IMethodEntity methodEntity) {
 		byte[] entitySend = NetworkEntitySerializer.serializeEntity(methodEntity);
-		byte[] response = NetworkGateway.sendRequest(methodEntity.getMethodName(), entitySend);
+		if (entitySend != null) {
+			byte[] response = NetworkGateway.sendRequest(methodEntity.getMethodName(), entitySend);
+			if (response != null) {
+				return NetworkEntitySerializer.deserializeEntity(response);
+			}
+		}
 
-		return NetworkEntitySerializer.deserializeEntity(response);
+		return null;
 	}
 }

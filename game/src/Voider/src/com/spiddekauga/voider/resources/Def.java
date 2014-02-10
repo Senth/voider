@@ -12,7 +12,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import com.badlogic.gdx.Gdx;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.voider.Config;
-import com.spiddekauga.voider.User;
 
 /**
  * Base class for all "definitions", e.g. ActorDef, WeaponDef. All definitions
@@ -50,7 +49,7 @@ public abstract class Def extends Resource implements IResourceDependency, IReso
 
 		Def defCopy = (Def)copy;
 		defCopy.mCopyParentId = mUniqueId;
-		defCopy.mCreator = User.getNickName();
+		defCopy.mCreator = Config.User.getUsername();
 		/** @todo create numbering of copy name if already a copy */
 		defCopy.mName = defCopy.mName + " (copy)";
 
@@ -220,9 +219,9 @@ public abstract class Def extends Resource implements IResourceDependency, IReso
 	/** Name of the definition */
 	@Tag(36) private String mName = Config.Actor.NAME_DEFAULT;
 	/** Original creator name */
-	@Tag(41) private String mOriginalCreator = User.getNickName();
+	@Tag(41) private String mOriginalCreator = Config.User.getUsername();
 	/** Creator name */
-	@Tag(39) private String mCreator = User.getNickName();
+	@Tag(39) private String mCreator = Config.User.getUsername();
 	/** Comment of the definition */
 	@Tag(38) private String mDescription = "";
 	/** Saved date for the definition */

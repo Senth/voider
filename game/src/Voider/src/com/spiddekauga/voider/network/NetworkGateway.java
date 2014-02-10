@@ -13,6 +13,7 @@ import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 
+import com.badlogic.gdx.Gdx;
 import com.spiddekauga.utils.Buffers;
 
 /**
@@ -62,7 +63,7 @@ public class NetworkGateway {
 			CloseableHttpResponse httpResponse = mHttpClient.execute(httpPost);
 			return getEntity(httpResponse);
 		} catch (IOException e) {
-			e.printStackTrace();
+			Gdx.app.log("Network", "Could not connect to server");
 		}
 
 		return null;

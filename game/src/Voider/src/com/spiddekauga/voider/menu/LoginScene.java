@@ -1,5 +1,6 @@
 package com.spiddekauga.voider.menu;
 
+import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.network.UserRepository;
 import com.spiddekauga.voider.network.entities.LoginMethodResponse;
 import com.spiddekauga.voider.network.entities.RegisterUserMethodResponse;
@@ -48,13 +49,22 @@ public class LoginScene extends Scene {
 		UserInfo userInfo = PreferencesLocalRepo.getLastUser();
 
 		if (userInfo != null) {
-			boolean success = UserRepository.login(userInfo.username, userInfo.privateKey);
+			LoginMethodResponse response = UserRepository.login(userInfo.username, userInfo.privateKey);
 
-			if (success) {
+			if (response != null) {
+				if (response.success) {
+					setOutcome(Outcomes.LOGGED_IN);
+					Config.Network.setOnline(true);
+				} else {
+					mGui.showErrorMessage("Could not auto-login " + userInfo.username);
+					PreferencesLocalRepo.removeLastUser();
+				}
+			}
+			// Failed to auto-login, server could be down. Go offline
+			else {
 				setOutcome(Outcomes.LOGGED_IN);
-			} else {
-				mGui.showErrorMessage("Could not auto-login " + userInfo.username);
-				PreferencesLocalRepo.removeLastUser();
+				Config.Network.setOnline(false);
+				Config.User.setUsername(userInfo.username);
 			}
 		}
 	}
@@ -71,9 +81,11 @@ public class LoginScene extends Scene {
 		if (response != null) {
 			if (response.success) {
 				// Update last user to login for auto-login
-				PreferencesLocalRepo.setLastUser(username, response.privateKey);
+				PreferencesLocalRepo.setLastUser(response.username, response.privateKey);
+				Config.User.setUsername(response.username);
 
 				setOutcome(Outcomes.LOGGED_IN);
+				Config.Network.setOnline(true);
 				return true;
 			}
 		}

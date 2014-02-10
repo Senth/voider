@@ -7,7 +7,7 @@ import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
-import com.spiddekauga.voider.User;
+import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourceRevision;
@@ -459,7 +459,7 @@ public class SelectDefScene extends WorldScene {
 	 * @return true if the current user is the owner of the definition
 	 */
 	private boolean isOwner(Def def) {
-		return def.getCreator().equals(User.getNickName());
+		return def.getCreator().equals(Config.User.getUsername());
 	}
 
 	/**
