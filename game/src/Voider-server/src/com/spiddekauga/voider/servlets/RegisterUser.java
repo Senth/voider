@@ -79,8 +79,10 @@ public class RegisterUser extends VoiderServlet {
 
 		Key userId = DatastoreUtils.mDatastore.put(datastoreEntity);
 
-		methodResponse.privateKey = privateKey;
-		methodResponse.status = StatusResponses.SUCCESS;
-		mUser.login(userId);
+		if (userId != null) {
+			methodResponse.privateKey = privateKey;
+			methodResponse.status = StatusResponses.SUCCESS;
+			mUser.login(userId);
+		}
 	}
 }

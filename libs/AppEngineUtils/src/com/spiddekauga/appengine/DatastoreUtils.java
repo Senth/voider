@@ -49,7 +49,7 @@ public class DatastoreUtils {
 	 * @return true if the datastore contains the specified entity
 	 */
 	public static boolean containsEntity(String searchIn, String name, Object value) {
-		return getSingleItem(searchIn, name, value) == null;
+		return getSingleItem(searchIn, name, value) != null;
 	}
 
 	/**
@@ -122,8 +122,8 @@ public class DatastoreUtils {
 	 * @return Stored UUID, null if it doesn't exist
 	 */
 	public static UUID getUuidProperty(Entity entity, String propertyName) {
-		int leastBits = (int) entity.getProperty(propertyName + "-least");
-		int mostBits = (int) entity.getProperty(propertyName + "-most");
+		int leastBits = (int) ((long) entity.getProperty(propertyName + "-least"));
+		int mostBits = (int) ((long) entity.getProperty(propertyName + "-most"));
 		return new UUID(mostBits, leastBits);
 	}
 

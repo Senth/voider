@@ -867,6 +867,14 @@ public class Config {
 		public final static float LOADING_TEXT_SCENE_EXIT_TIME = 0.1f;
 	}
 
+	/**
+	 * User
+	 */
+	public static class User {
+		/** Minimum password length */
+		public static final int PASSWORD_LENGTH_MIN = 5;
+	}
+
 	/** Revision of the game, as in code.
 	 * This allows files of older revisions to be loaded into new revisions */
 	public final static int REVISION = 3;

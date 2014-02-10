@@ -327,6 +327,8 @@ public abstract class Scene extends InputAdapter implements IExceptionHandler {
 		LOADING_FAILED_MISSING_FILE,
 		/** Loading failed, corrupt file */
 		LOADING_FAILED_CORRUPT_FILE,
+		/** Logged in */
+		LOGGED_IN,
 
 		/** No outcome when an outcome isn't applicable, e.g. first time */
 		NOT_APPLICAPLE,

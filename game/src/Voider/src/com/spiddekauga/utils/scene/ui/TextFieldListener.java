@@ -33,10 +33,9 @@ public class TextFieldListener implements EventListener {
 		mInvoker = invoker;
 
 		mPrevKeystrokeText = mTextField.getText();
+		mIsPassword = mTextField.isPasswordMode();
 
-		if (mDefaultText != null && isTextFieldEmpty()) {
-			mTextField.setText(mDefaultText);
-		}
+		setDefaultText();
 
 		mTextField.addListener(this);
 	}
@@ -50,13 +49,15 @@ public class TextFieldListener implements EventListener {
 				if (focusEvent.isFocused()) {
 					if (isTextFieldDefault()) {
 						mTextField.setText("");
+
+						if (mIsPassword) {
+							mTextField.setPasswordMode(true);
+						}
 					}
 				} else {
 					onDone(mTextField.getText());
 
-					if (mDefaultText != null && isTextFieldEmpty()) {
-						mTextField.setText(mDefaultText);
-					}
+					setDefaultText();
 				}
 			}
 		}
@@ -122,6 +123,18 @@ public class TextFieldListener implements EventListener {
 	}
 
 	/**
+	 * Sets the default text
+	 */
+	private void setDefaultText() {
+		if (mDefaultText != null && isTextFieldOnlyEmpty()) {
+			if (mIsPassword) {
+				mTextField.setPasswordMode(false);
+			}
+			mTextField.setText(mDefaultText);
+		}
+	}
+
+	/**
 	 * Called when the value inside the text field is changed. This
 	 * is never called when the text is changed to the default text.
 	 * @param newText the new text value for the text field
@@ -141,9 +154,16 @@ public class TextFieldListener implements EventListener {
 	}
 
 	/**
+	 * @return true if the text field is empty or contains the default text
+	 */
+	public boolean isTextFieldEmpty() {
+		return isTextFieldOnlyEmpty() || isTextFieldDefault();
+	}
+
+	/**
 	 * @return true if the text field is empty
 	 */
-	private boolean isTextFieldEmpty() {
+	private boolean isTextFieldOnlyEmpty() {
 		return mTextField.getText().equals("");
 	}
 
@@ -170,6 +190,8 @@ public class TextFieldListener implements EventListener {
 	/** Text field of the text field listener */
 	protected TextField mTextField;
 
+	/** True if the text field is a password field by default */
+	private boolean mIsPassword;
 	/** Default text for the text field when it's empty */
 	private String mDefaultText;
 	/** Old text before previous keystroke */

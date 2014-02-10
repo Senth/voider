@@ -12,11 +12,13 @@ import com.spiddekauga.voider.app.SplashScreen;
 import com.spiddekauga.voider.editor.LevelEditor;
 import com.spiddekauga.voider.game.Collectibles;
 import com.spiddekauga.voider.game.actors.PickupActorDef;
+import com.spiddekauga.voider.menu.LoginScene;
 import com.spiddekauga.voider.menu.MainMenu;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceChecker;
 import com.spiddekauga.voider.resources.ResourceSaver;
 import com.spiddekauga.voider.scene.SceneSwitcher;
+import com.spiddekauga.voider.utils.PreferencesLocalRepo;
 
 /**
  * The main application, i.e. start point
@@ -35,12 +37,14 @@ public class VoiderGame implements ApplicationListener {
 		ResourceSaver.init();
 		ResourceCacheFacade.init();
 		ResourceChecker.checkAndCreateResources();
+		PreferencesLocalRepo.init();
 
 		ShaderProgram.pedantic = false;
 
 		/** @TODO set splash screen as start screen */
 
-		testMainMenu();
+		testLogin();
+		//		testMainMenu();
 		//		testSavePickups();
 		//		testSplashScreen();
 	}
@@ -62,7 +66,14 @@ public class VoiderGame implements ApplicationListener {
 	}
 
 	/**
-	 * Testing the editor
+	 * Test login
+	 */
+	private void testLogin() {
+		SceneSwitcher.switchTo(new LoginScene());
+	}
+
+	/**
+	 * Testing the main menu
 	 */
 	private void testMainMenu() {
 		SceneSwitcher.switchTo(new MainMenu());
