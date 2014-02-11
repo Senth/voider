@@ -7,7 +7,7 @@ import com.badlogic.gdx.Preferences;
 import com.spiddekauga.voider.utils.UserInfo;
 
 /**
- * Local repository for user
+ * Preference gateway for user repository
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
@@ -15,19 +15,34 @@ class UserPrefsGateway {
 	/**
 	 * Initializes the user preferences gateway
 	 */
-	public UserPrefsGateway() {
+	UserPrefsGateway() {
 		mPreferences = Gdx.app.getPreferences(PREFERENCES_NAME);
 	}
 
 	/**
-	 * Set last logged in user
+	 * Set last logged in (online) user
 	 * @param username username or email of the user that was logged in
 	 * @param privateKey the private key which will be used for automatic login
 	 * in the future.
 	 */
 	void setLastUser(String username, UUID privateKey) {
 		mPreferences.putString(LAST_USER__USERNAME, username);
+		mPreferences.putBoolean(LAST_USER__ONLINE, true);
 		mPreferences.putString(LAST_USER__PRIVATE_KEY, privateKey.toString());
+		mPreferences.remove(LAST_USER__PASSWORD);
+		mPreferences.flush();
+	}
+
+	/**
+	 * Set last logged in (offline) user
+	 * @param username username or email of the user that was logged in
+	 * @param password
+	 */
+	void setLastUser(String username, String password) {
+		mPreferences.putString(LAST_USER__USERNAME, username);
+		mPreferences.putBoolean(LAST_USER__ONLINE, false);
+		mPreferences.putString(LAST_USER__PASSWORD, password);
+		mPreferences.remove(LAST_USER__PRIVATE_KEY);
 		mPreferences.flush();
 	}
 
@@ -48,14 +63,26 @@ class UserPrefsGateway {
 		UserInfo userInfo = new UserInfo();
 
 		userInfo.username = mPreferences.getString(LAST_USER__USERNAME);
-		String privateKeyString = mPreferences.getString(LAST_USER__PRIVATE_KEY);
+		userInfo.online = mPreferences.getBoolean(LAST_USER__ONLINE);
 
-		if (userInfo.username == null || userInfo.username.equals("") ||
-				privateKeyString == null || privateKeyString.equals("")) {
+		// Return if missing variables
+		if (userInfo.username == null || userInfo.username.equals("")) {
 			return null;
 		}
 
-		userInfo.privateKey = UUID.fromString(privateKeyString);
+		if (userInfo.online) {
+			String privateKeyString = mPreferences.getString(LAST_USER__PRIVATE_KEY);
+
+			if (privateKeyString != null && !privateKeyString.equals("")) {
+				userInfo.privateKey = UUID.fromString(privateKeyString);
+			}
+		} else {
+			userInfo.password = mPreferences.getString(LAST_USER__PASSWORD);
+		}
+
+		if (userInfo.password == null && userInfo.privateKey == null) {
+			return null;
+		}
 
 		return userInfo;
 	}
@@ -70,4 +97,8 @@ class UserPrefsGateway {
 	private static final String LAST_USER__USERNAME = "lastUser_username";
 	/** Private key of last user */
 	private static final String LAST_USER__PRIVATE_KEY = "lastUser_privateKey";
+	/** If saved last user was online or offline */
+	private static final String LAST_USER__ONLINE = "lastUser_online";
+	/** Password */
+	private static final String LAST_USER__PASSWORD = "lastUser_password";
 }

@@ -13,6 +13,7 @@ import com.spiddekauga.voider.game.Collectibles;
 import com.spiddekauga.voider.game.actors.PickupActorDef;
 import com.spiddekauga.voider.menu.LoginScene;
 import com.spiddekauga.voider.menu.MainMenu;
+import com.spiddekauga.voider.repo.UserLocalRepo;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceChecker;
 import com.spiddekauga.voider.resources.ResourceSaver;
@@ -90,6 +91,7 @@ public class VoiderGame implements ApplicationListener {
 		SceneSwitcher.dispose();
 		ResourceCacheFacade.dispose();
 		Config.dispose();
+		UserLocalRepo.dispose();
 	}
 
 	@Override

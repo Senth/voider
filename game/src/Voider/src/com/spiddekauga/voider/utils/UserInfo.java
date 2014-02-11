@@ -11,7 +11,11 @@ public class UserInfo {
 	/** Username */
 	public String username;
 	/** Private key */
-	public UUID privateKey;
+	public UUID privateKey = null;
+	/** Password */
+	public String password = null;
 	/** Email */
 	public String email = null;
+	/** Online/Offline mode */
+	public boolean online = true;
 }

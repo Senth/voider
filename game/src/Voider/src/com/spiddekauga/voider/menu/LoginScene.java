@@ -3,7 +3,6 @@ package com.spiddekauga.voider.menu;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.network.entities.LoginMethodResponse;
 import com.spiddekauga.voider.network.entities.RegisterUserMethodResponse;
-import com.spiddekauga.voider.network.entities.RegisterUserMethodResponse.StatusResponses;
 import com.spiddekauga.voider.repo.UserLocalRepo;
 import com.spiddekauga.voider.repo.UserWebRepo;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
@@ -48,7 +47,7 @@ public class LoginScene extends Scene {
 	void login() {
 		UserInfo userInfo = UserLocalRepo.getLastUser();
 
-		if (userInfo != null) {
+		if (userInfo != null && userInfo.online) {
 			LoginMethodResponse response = UserWebRepo.login(userInfo.username, userInfo.privateKey);
 
 			if (response != null) {
@@ -66,6 +65,10 @@ public class LoginScene extends Scene {
 				Config.Network.setOnline(false);
 				Config.User.setUsername(userInfo.username);
 			}
+		}
+		// Test offline
+		else if (userInfo != null && !userInfo.online) {
+			loginOffline(userInfo.username, userInfo.password);
 		}
 	}
 
@@ -86,6 +89,29 @@ public class LoginScene extends Scene {
 
 				setOutcome(Outcomes.LOGGED_IN);
 				Config.Network.setOnline(true);
+				return true;
+			}
+		}
+
+		// Try to login offline instead
+		return loginOffline(username, password);
+	}
+
+	/**
+	 * Try to login offline
+	 * @param username
+	 * @param password
+	 * @return true if succeeded
+	 */
+	private boolean loginOffline(String username, String password) {
+		UserInfo foundUser = UserLocalRepo.getTempUser(username);
+
+		if (foundUser != null) {
+			if (password.equals(foundUser.password)) {
+				UserLocalRepo.setLastUser(foundUser.username, password);
+				Config.User.setUsername(foundUser.username);
+				setOutcome(Outcomes.LOGGED_IN);
+				Config.Network.setOnline(false);
 				return true;
 			}
 		}
@@ -112,17 +138,54 @@ public class LoginScene extends Scene {
 		RegisterUserMethodResponse response = UserWebRepo.register(username, password, email);
 
 		if (response != null) {
-			if (response.status == StatusResponses.SUCCESS) {
+			switch (response.status) {
+			case SUCCESS:
 				setOutcome(Outcomes.NOT_APPLICAPLE);
 
-				// TODO set private key
+				UserLocalRepo.setLastUser(username, response.privateKey);
 				// TODO set no register available
 
 				return true;
+
+
+			case FAIL_EMAIL_EXISTS:
+				mGui.showErrorMessage("Email is already registered");
+				break;
+
+
+			case FAIL_USERNAME_EXISTS:
+				mGui.showErrorMessage("Username is occupied");
+				break;
+
+
+				// Connection error, create a local user instead
+			case FAIL_SERVER: {
+				((LoginGui)mGui).showCreateOfflineUser();
+				break;
 			}
+			}
+		} else {
+			((LoginGui)mGui).showCreateOfflineUser();
 		}
 
 		return false;
+	}
+
+	/**
+	 * Creates an offline user
+	 * @param username
+	 * @param password
+	 * @param email
+	 */
+	void createOfflineUser(String username, String password, String email) {
+		boolean success = UserLocalRepo.createTempUser(username, password, email);
+
+		if (success) {
+			UserLocalRepo.setLastUser(username, password);
+			setOutcome(Outcomes.LOGGED_IN);
+		} else {
+			mGui.showErrorMessage("A temporary user with that username or email already exists");
+		}
 	}
 
 	@Override

@@ -8,5 +8,7 @@
 	<classpathentry exported="true" kind="lib" path="libs/gdx-backend-android.jar" sourcepath="libs/gdx-backend-android-sources.jar"/>
 	<classpathentry exported="true" kind="lib" path="/Voider/libs/gdx.jar" sourcepath="/Voider/libs/gdx-sources.jar"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/Voider"/>
+	<classpathentry exported="true" kind="lib" path="libs/gdx-sqlite-android.jar"/>
+	<classpathentry exported="true" kind="lib" path="/Voider/libs/gdx-sqlite.jar" sourcepath="/Voider/libs/gdx-sqlite-src.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

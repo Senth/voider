@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -36,8 +35,6 @@ public class BlobUtils {
 
 	/** Blobstore service */
 	private static final BlobstoreService mBlobstore = BlobstoreServiceFactory.getBlobstoreService();
-	/** Attribute name for blob keys in a request */
-	private static final String BLOB_KEY_ATTRIBUTE_NAME = "com.google.appengine.api.blobstore.upload.blobkeys";
-	/** Logger */
-	private static final Logger mLogger = Logger.getLogger(BlobUtils.class.getName());
+	//	/** Logger */
+	//	private static final Logger mLogger = Logger.getLogger(BlobUtils.class.getName());
 }

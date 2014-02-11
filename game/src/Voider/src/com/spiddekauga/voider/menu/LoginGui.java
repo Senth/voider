@@ -11,6 +11,7 @@ import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.utils.scene.ui.HideManual;
 import com.spiddekauga.utils.scene.ui.Label;
+import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
@@ -257,7 +258,7 @@ public class LoginGui extends Gui {
 		mWidgets.register.table.add(label);
 
 		mWidgets.register.table.row();
-		textField = new TextField("Password", skin, SkinNames.General.TEXT_FIELD_DEFAULT.toString());
+		textField = new TextField("", skin, SkinNames.General.TEXT_FIELD_DEFAULT.toString());
 		textField.setPasswordMode(true);
 		textField.setPasswordCharacter('*');
 		mWidgets.register.password = textField;
@@ -348,7 +349,27 @@ public class LoginGui extends Gui {
 
 		mWidgets.register.window.layout();
 		mWidgets.register.window.setSize(mWidgets.register.table.getWidth() + windowPadding * 2, mWidgets.register.table.getHeight() + windowPadding * 2);
-		//		mMainTable.setSize(mWidgets.register.window.getWidth(), mWidgets.register.window.getHeight());
+	}
+
+	/**
+	 * Show message box for creating an offline user meanwhile.
+	 */
+	void showCreateOfflineUser() {
+		MsgBoxExecuter msgBox = getFreeMsgBox(true);
+
+		msgBox.setTitle("Create offline user");
+		msgBox.content("Could not connect to server!\n\n"
+				+ "Do you want to create an offline user meanwhile?\n"
+				+ "When a connection can be made the offline user\n"
+				+ "will be registered. (If the username and email\n"
+				+ "is free you won't have to do anything)\n\n"
+				+ "To fix this either wait a couple of hours (if\n"
+				+ "server is down) or connect your device to the\n"
+				+ "Internet.");
+
+		msgBox.button("Yes, create offline user", new CCreateOfflineUser(mLoginScene, mWidgets.register.username.getText(), mWidgets.register.password.getText(), mWidgets.register.email.getText()));
+		msgBox.addCancelButtonAndKeys("No");
+		showMsgBox(msgBox);
 	}
 
 	/** The login scene */

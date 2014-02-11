@@ -108,8 +108,8 @@ public class Config {
 		 * Initialization of the config class
 		 */
 		public static void init() {
-			// Create file key
 			try {
+				// Create file key
 				MessageDigest sha;
 				sha = MessageDigest.getInstance("SHA-1");
 				byte[] hashedFileKey = sha.digest(FILE_KEY_BYTES);
@@ -118,26 +118,44 @@ public class Config {
 				hashedFileKey = Arrays.copyOf(hashedFileKey, 16);
 
 				mFileKey = new SecretKeySpec(hashedFileKey, "AES");
+
+				// Create password key
+				sha = MessageDigest.getInstance("SHA-1");
+				byte[] hashedPasswordKey = sha.digest(PASSWORD_KEY_BYTES);
+
+				// Use only the first 128 bits
+				hashedPasswordKey = Arrays.copyOf(hashedPasswordKey, 16);
+
+				mPasswordKey = new SecretKeySpec(hashedPasswordKey, "AES");
 			} catch (NoSuchAlgorithmException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
 
 		/**
-		 * Returns the file key
-		 * 
 		 * @return key for encrypting/decrypting files
 		 */
 		public static SecretKeySpec getFileKey() {
 			return mFileKey;
 		}
 
+		/**
+		 * @return the password key
+		 */
+		public static SecretKeySpec getPasswordKey() {
+			return mPasswordKey;
+		}
+
 		/** Salt for file key */
 		private static final byte[] FILE_KEY_BYTES = { 15, 35, 68, 86, 57, 2, 99, 105, 127, -38, -100, -35, 35, 48, 68, -79, 95, -22, 0, 15, 0, 0,
 			98, 15, 27, 35 };
+		/** Salt for file key */
+		private static final byte[] PASSWORD_KEY_BYTES = { 11, 120, 8, 86, 5, 22, 9, 15, -88, 38, 100, -35, 35, 35, -6, 79, 95, 22, 22, 2, 15, 65,
+			8, -15, -27, -35 };
 		/** The actual file key */
 		private static SecretKeySpec mFileKey = null;
+		/** The actual password key */
+		private static SecretKeySpec mPasswordKey = null;
 	}
 
 	/**

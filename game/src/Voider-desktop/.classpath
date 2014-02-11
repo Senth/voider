@@ -9,5 +9,7 @@
 	<classpathentry kind="lib" path="libs/gdx-natives.jar"/>
 	<classpathentry kind="lib" path="/Voider/libs/gdx.jar" sourcepath="/Voider/libs/gdx-sources.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/SpiddekaugaUtils"/>
+	<classpathentry kind="lib" path="libs/gdx-sqlite-desktop.jar"/>
+	<classpathentry kind="lib" path="libs/sqlite-jdbc-3.7.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
