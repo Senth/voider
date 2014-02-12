@@ -3,8 +3,11 @@ package com.spiddekauga.utils.scene.ui;
 import java.util.ArrayList;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Group;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.Layout;
 import com.badlogic.gdx.utils.Disposable;
+import com.badlogic.gdx.utils.SnapshotArray;
 
 /**
  * Class for hiding GUI elements
@@ -60,6 +63,14 @@ public abstract class GuiHider implements Disposable {
 			for (Actor toggleActor : mToggles) {
 				toggleActor.setVisible(true);
 
+				if (toggleActor instanceof Group) {
+					enableDisableActorTextFields((Group) toggleActor, false);
+				}
+
+				if (toggleActor instanceof TextField) {
+					((TextField) toggleActor).setDisabled(false);
+				}
+
 				if (toggleActor instanceof Layout) {
 					((Layout) toggleActor).invalidateHierarchy();
 				}
@@ -89,6 +100,14 @@ public abstract class GuiHider implements Disposable {
 		for (Actor toggleActor : mToggles) {
 			toggleActor.setVisible(false);
 
+			if (toggleActor instanceof Group) {
+				enableDisableActorTextFields((Group) toggleActor, true);
+			}
+
+			if (toggleActor instanceof TextField) {
+				((TextField) toggleActor).setDisabled(true);
+			}
+
 			if (toggleActor instanceof Layout) {
 				((Layout) toggleActor).invalidateHierarchy();
 			}
@@ -96,6 +115,25 @@ public abstract class GuiHider implements Disposable {
 
 		for (GuiHider hideListener : mChildren) {
 			hideListener.hideAll();
+		}
+	}
+
+	/**
+	 * Enable/Disable the actor's text fields if the actor has any children
+	 * @param actor the actor to enable/disable the text fields of
+	 * @param disable set to true to disable the text fields
+	 */
+	private void enableDisableActorTextFields(Group actor, boolean disable) {
+		SnapshotArray<Actor> children = actor.getChildren();
+
+		for (Actor child : children) {
+			if (child instanceof TextField) {
+				((TextField) child).setDisabled(disable);
+			}
+
+			if (child instanceof Group) {
+				enableDisableActorTextFields((Group) child, disable);
+			}
 		}
 	}
 

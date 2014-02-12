@@ -135,8 +135,11 @@ public class LoginScene extends Scene {
 	 * @return true if register option is available
 	 */
 	boolean isRegisterAvailable() {
-		/** @todo implement register available method */
-		return true;
+		if (Config.Debug.RELEASE) {
+			return UserLocalRepo.isRegisterAvailable();
+		} else {
+			return true;
+		}
 	}
 
 	/**
@@ -155,7 +158,7 @@ public class LoginScene extends Scene {
 				setOutcome(Outcomes.NOT_APPLICAPLE);
 
 				UserLocalRepo.setLastUser(username, response.privateKey);
-				// TODO set no register available
+				UserLocalRepo.setAsRegistered();
 
 				return true;
 
@@ -194,6 +197,8 @@ public class LoginScene extends Scene {
 
 		if (success) {
 			UserLocalRepo.setLastUser(username, password);
+			UserLocalRepo.setAsRegistered();
+			Config.User.setUsername(username);
 			setOutcome(Outcomes.LOGGED_IN);
 		} else {
 			mGui.showErrorMessage("A temporary user with that username or email already exists");

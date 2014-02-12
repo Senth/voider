@@ -87,12 +87,27 @@ class UserPrefsGateway {
 		return userInfo;
 	}
 
+	/**
+	 * Save that this app has registered one user, thus no more users can be registered
+	 */
+	void setAsRegistered() {
+		mPreferences.putBoolean(REGISTER__HAS_REGISTERED, true);
+	}
+
+	/**
+	 * @return true if no user has been registered on this app
+	 */
+	boolean isRegisterAvailable() {
+		return !mPreferences.getBoolean(REGISTER__HAS_REGISTERED, false);
+	}
+
 	/** Preferences */
 	private Preferences mPreferences;
 	/** Preferences name */
 	private static final String PREFERENCES_NAME = "Voider_users";
 
 	// Names
+	// LAST_USER
 	/** Username of last user */
 	private static final String LAST_USER__USERNAME = "lastUser_username";
 	/** Private key of last user */
@@ -101,4 +116,8 @@ class UserPrefsGateway {
 	private static final String LAST_USER__ONLINE = "lastUser_online";
 	/** Password */
 	private static final String LAST_USER__PASSWORD = "lastUser_password";
+
+	// REGISTER
+	/** True if the app has registered one user */
+	private static final String REGISTER__HAS_REGISTERED = "register_hasRegistered";
 }

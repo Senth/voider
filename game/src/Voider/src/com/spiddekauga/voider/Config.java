@@ -178,11 +178,14 @@ public class Config {
 		 * so that none of the checks are broken. */
 		public static boolean DEBUG_TESTS = true;
 		/** Skip loading text */
-		public static boolean SKIP_LOADING_TIME = true;
+		public static final boolean SKIP_LOADING_TIME = true;
 		/** Logging verbosity */
-		public static int LOG_VERBOSITY = Application.LOG_DEBUG;
+		public static final int LOG_VERBOSITY = Application.LOG_DEBUG;
 		/** Set to true to turn on the exception handler */
 		public static boolean EXCEPTION_HANDLER = false;
+		/** Set this variable to be true for releases, this disables many of
+		 * the "special" functionality as multiple registering, test scenes etc. */
+		public static final boolean RELEASE = false;
 	}
 
 	/**

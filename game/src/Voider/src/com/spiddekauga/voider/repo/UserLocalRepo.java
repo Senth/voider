@@ -87,6 +87,20 @@ public class UserLocalRepo {
 		return mSqliteGateway.getTempUser(username);
 	}
 
+	/**
+	 * Save that this app has registered one user, thus no more users can be registered
+	 */
+	public static void setAsRegistered() {
+		mPrefsGateway.setAsRegistered();
+	}
+
+	/**
+	 * @return true if no user has been registered on this app
+	 */
+	public static boolean isRegisterAvailable() {
+		return mPrefsGateway.isRegisterAvailable();
+	}
+
 	/** Preferences gateway */
 	private static UserPrefsGateway mPrefsGateway = new UserPrefsGateway();
 	/** SQLite gateway */
