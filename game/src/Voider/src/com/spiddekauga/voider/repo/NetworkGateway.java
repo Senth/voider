@@ -5,13 +5,16 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.conn.ConnectionKeepAliveStrategy;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.ContentBody;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.protocol.HttpContext;
 
 import com.badlogic.gdx.Gdx;
 import com.spiddekauga.utils.Buffers;
@@ -43,7 +46,10 @@ class NetworkGateway {
 	 */
 	public static byte[] sendRequest(String methodName, byte[] entity, File file) {
 		if (mHttpClient == null) {
-			mHttpClient = HttpClients.createDefault();
+			mHttpClient = HttpClients.custom()
+					.setMaxConnTotal(10)
+					.setMaxConnPerRoute(10)
+					.build();
 		}
 
 		try {
@@ -61,7 +67,9 @@ class NetworkGateway {
 			httpPost.setEntity(entityBuilder.build());
 
 			CloseableHttpResponse httpResponse = mHttpClient.execute(httpPost);
-			return getEntity(httpResponse);
+			byte[] responseEntity = getEntity(httpResponse);
+			httpResponse.close();
+			return responseEntity;
 		} catch (IOException e) {
 			Gdx.app.log("Network", "Could not connect to server");
 		}
@@ -86,6 +94,13 @@ class NetworkGateway {
 			return null;
 		}
 	}
+
+	private static ConnectionKeepAliveStrategy mKeepAliveStrategy = new ConnectionKeepAliveStrategy() {
+		@Override
+		public long getKeepAliveDuration(HttpResponse response, HttpContext context) {
+			return 30 * 1000;
+		}
+	};
 
 	/** Server host */
 	private static final String SERVER_HOST = "http://localhost:8888/";
