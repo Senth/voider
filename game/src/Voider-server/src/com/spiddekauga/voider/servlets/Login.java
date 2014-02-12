@@ -101,6 +101,7 @@ public class Login extends VoiderServlet {
 
 	/**
 	 * Updates last logged in of the user
+	 * @param userEntity the user that logged in
 	 */
 	private void updateLastLoggedIn(Entity userEntity) {
 		userEntity.setProperty("logged-in", new Date());

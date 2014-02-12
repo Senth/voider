@@ -1,5 +1,7 @@
 package com.spiddekauga.voider.menu;
 
+import com.badlogic.gdx.Gdx;
+import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.network.entities.LoginMethodResponse;
 import com.spiddekauga.voider.network.entities.RegisterUserMethodResponse;
@@ -39,6 +41,16 @@ public class LoginScene extends Scene {
 		ResourceCacheFacade.unload(ResourceNames.UI_GENERAL);
 
 		super.unloadResources();
+	}
+
+	@Override
+	public boolean keyDown(int keycode) {
+		if (KeyHelper.isBackPressed(keycode)) {
+			Gdx.app.exit();
+			return true;
+		}
+
+		return false;
 	}
 
 	/**

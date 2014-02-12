@@ -34,9 +34,13 @@ public class MainMenuGui extends MenuGui {
 		mOptionTable.setPreferences(mMainTable);
 		mOptionTable.setTableAlign(Horizontal.RIGHT, Vertical.BOTTOM);
 		mOptionTable.setRowAlign(Horizontal.RIGHT, Vertical.BOTTOM);
+		mLogoutTable.setPreferences(mMainTable);
+		mLogoutTable.setTableAlign(Horizontal.LEFT, Vertical.TOP);
+		mLogoutTable.setRowAlign(Horizontal.LEFT, Vertical.TOP);
 
 		getStage().addActor(mInfoTable);
 		getStage().addActor(mOptionTable);
+		getStage().addActor(mLogoutTable);
 
 		initMainMenu();
 	}
@@ -61,35 +65,38 @@ public class MainMenuGui extends MenuGui {
 		mMainTable.row();
 		Button button = new ImageButton(skin, SkinNames.General.PLAY.toString());
 		mMainTable.add(button);
-		new ButtonListener(button) {
+		TooltipListener tooltipListener = new TooltipListener(button, null, Messages.Tooltip.Menus.Main.PLAY);
+		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onPressed() {
 				mMenuScene.pushMenu(Menus.PLAY);
 			}
 		};
-		new TooltipListener(button, null, Messages.Tooltip.Menus.Main.PLAY);
+
 
 		// Explore
 		button = new ImageButton(skin, SkinNames.General.EXPLORE.toString());
 		mMainTable.add(button);
-		new ButtonListener(button) {
+		tooltipListener = new TooltipListener(button, null, Messages.Tooltip.Menus.Main.EXPLORE);
+		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onPressed() {
 				// TODO go to explore menu
 			}
 		};
-		new TooltipListener(button, null, Messages.Tooltip.Menus.Main.EXPLORE);
+
 
 		// Create
 		button = new ImageButton(skin, SkinNames.General.CREATE.toString());
 		mMainTable.add(button);
-		new ButtonListener(button) {
+		tooltipListener = new TooltipListener(button, null, Messages.Tooltip.Menus.Main.CREATE);
+		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onPressed() {
 				mMenuScene.gotoEditor();
 			}
 		};
-		new TooltipListener(button, null, Messages.Tooltip.Menus.Main.CREATE);
+
 
 
 		// Options
@@ -102,6 +109,7 @@ public class MainMenuGui extends MenuGui {
 			}
 		};
 
+		// Info
 		button = new ImageButton(skin, SkinNames.General.INFO.toString());
 		mInfoTable.add(button);
 		new ButtonListener(button) {
@@ -110,11 +118,24 @@ public class MainMenuGui extends MenuGui {
 				// TODO go to info
 			}
 		};
+
+		// Logout
+		button = new ImageButton(skin, SkinNames.General.LOGOUT.toString());
+		mLogoutTable.add(button);
+		new TooltipListener(button, null, Messages.Tooltip.Menus.Main.LOGOUT);
+		new ButtonListener(button, tooltipListener) {
+			@Override
+			protected void onPressed() {
+				mMenuScene.logout();
+			}
+		};
 	}
 
 	/** Option table */
 	private AlignTable mOptionTable = new AlignTable();
 	/** Info table */
 	private AlignTable mInfoTable = new AlignTable();
+	/** Logout table */
+	private AlignTable mLogoutTable = new AlignTable();
 
 }

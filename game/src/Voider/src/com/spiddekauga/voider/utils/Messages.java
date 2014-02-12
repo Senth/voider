@@ -266,6 +266,8 @@ public class Messages {
 				public final static String PLAY = "Play";
 				public final static String EXPLORE = "Explore new content";
 				public final static String CREATE = "Create your own content";
+
+				public final static String LOGOUT = "Logout";
 			}
 			public static class Editor {
 				public final static String CAMPAIGN = "Campaign editor";

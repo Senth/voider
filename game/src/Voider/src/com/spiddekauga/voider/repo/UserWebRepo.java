@@ -6,6 +6,7 @@ import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.entities.LoginMethod;
 import com.spiddekauga.voider.network.entities.LoginMethodResponse;
+import com.spiddekauga.voider.network.entities.LogoutMethod;
 import com.spiddekauga.voider.network.entities.NetworkEntitySerializer;
 import com.spiddekauga.voider.network.entities.RegisterUserMethod;
 import com.spiddekauga.voider.network.entities.RegisterUserMethodResponse;
@@ -77,6 +78,15 @@ public class UserWebRepo {
 		}
 
 		return null;
+	}
+
+	/**
+	 * Tries to logout the current user
+	 */
+	public static void logout() {
+		LogoutMethod logoutMethod = new LogoutMethod();
+
+		serializeAndSend(logoutMethod);
 	}
 
 	/**

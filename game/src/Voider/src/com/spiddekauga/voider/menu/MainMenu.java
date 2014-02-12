@@ -13,6 +13,8 @@ import com.spiddekauga.voider.editor.EditorSelectionScene;
 import com.spiddekauga.voider.game.GameSaveDef;
 import com.spiddekauga.voider.game.GameScene;
 import com.spiddekauga.voider.game.LevelDef;
+import com.spiddekauga.voider.repo.UserLocalRepo;
+import com.spiddekauga.voider.repo.UserWebRepo;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceItem;
 import com.spiddekauga.voider.resources.ResourceNames;
@@ -94,6 +96,7 @@ public class MainMenu extends Scene {
 	public boolean keyDown(int keycode) {
 		if (KeyHelper.isBackPressed(keycode)) {
 			popMenu();
+			return true;
 		}
 
 		// REMOVE testing
@@ -209,10 +212,28 @@ public class MainMenu extends Scene {
 			mGui = mGuiStack.peek();
 			mInputMultiplexer.addProcessor(0, mGui.getStage());
 		}
-		// Else exit game
+		// Logout
 		else {
 			Gdx.app.exit();
 		}
+	}
+
+	/**
+	 * Logs out the user
+	 */
+	void logout() {
+		// Online
+		if (Config.Network.isOnline()) {
+			UserWebRepo.logout();
+		}
+		// Offline
+		else {
+			Config.User.setUsername("(invalid)");
+		}
+
+		UserLocalRepo.removeLastUser();
+		setNextScene(new LoginScene());
+		setOutcome(Outcomes.LOGGED_OUT);
 	}
 
 	/** GUI stack */

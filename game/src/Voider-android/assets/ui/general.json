@@ -69,8 +69,6 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageUp: play,
 		imageOver: play_over,
 		imageDown: play_down,
-		imageChecked: play_checked,
-		imageCheckedOver: play_checked_over,
 		imageDisabled: play_disabled
 	},
 	
@@ -78,8 +76,6 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageUp: explore,
 		imageOver: explore_over,
 		imageDown: explore_down,
-		imageChecked: explore_checked,
-		imageCheckedOver: explore_checked_over,
 		imageDisabled: explore_disabled
 	},
 	
@@ -87,8 +83,6 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageUp: create,
 		imageOver: create_over,
 		imageDown: create_down,
-		imageChecked: create_checked,
-		imageCheckedOver: create_checked_over,
 		imageDisabled: create_disabled
 	},
 	
@@ -96,8 +90,6 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageUp: info,
 		imageOver: info_over,
 		imageDown: info_down,
-		imageChecked: info_checked,
-		imageCheckedOver: info_checked_over,
 		imageDisabled: info_disabled
 	},
 	
@@ -105,9 +97,14 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageUp: stub,
 		imageOver: stub_over,
 		imageDown: stub_down,
-		imageChecked: stub_checked,
-		imageCheckedOver: stub_checked_over,
 		imageDisabled: stub_disabled
+	},
+	
+	logout: {
+		imageUp: logout,
+		imageOver: logout_over,
+		imageDown: logout_down,
+		imageDisabled: logout_disabled
 	},
 },
 

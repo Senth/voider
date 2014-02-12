@@ -444,6 +444,8 @@ public class SkinNames {
 		LABEL_SUCCESS(LabelStyle.class, "success"),
 		/** List default */
 		LIST_DEFAULT(ListStyle.class, "default"),
+		/** Logout button */
+		LOGOUT(ImageButtonStyle.class),
 		/** Options button on front screen */
 		OPTIONS(ImageButtonStyle.class),
 		/** Padding after label */

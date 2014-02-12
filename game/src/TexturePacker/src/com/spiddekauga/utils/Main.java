@@ -26,13 +26,13 @@ public class Main {
 	/** Set to true to compile packer for dropbox */
 	private static final boolean DROPBOX_PACKER = false;
 	/** UI directory where all the sub-ui directories are located */
-	private static final String UI_PNG_DIR = DROPBOX_PACKER ? "ui-editable" : "../../ui";
+	private static final String UI_PNG_DIR = DROPBOX_PACKER ? "ui-editable" : "ui-editable";
 	/** Output directory where all the atlases should be stored */
-	private static final String UI_ATLAS_DIR = DROPBOX_PACKER ? "ui" : "../Voider-android/assets/ui";
+	private static final String UI_ATLAS_DIR = DROPBOX_PACKER ? "ui" : "ui";
 	/** Theme directory where all the theme png files are located */
-	private static final String THEME_PNG_DIR = DROPBOX_PACKER ? "themes-editable" : "../../themes";
+	private static final String THEME_PNG_DIR = DROPBOX_PACKER ? "themes-editable" : "themes-editable";
 	/** Theme atlas output directory */
-	private static final String THEME_ATLAS_DIR = DROPBOX_PACKER ? "themes" : "../Voider-android/assets/themes";
+	private static final String THEME_ATLAS_DIR = DROPBOX_PACKER ? "themes" : "themes";
 
 	/** All directories to pack */
 	private static ArrayList<TextureInOutWrapper> mDirs = new ArrayList<Main.TextureInOutWrapper>();
@@ -66,7 +66,7 @@ public class Main {
 		String path = getExecDir();
 
 		//		Log.setLogger(new FileLogger(path));
-		Log.NONE();
+		Log.DEBUG();
 		Log.debug(path + "\n\n");
 
 		Settings settings = new Settings();
@@ -177,10 +177,8 @@ public class Main {
 			try {
 				mFileOut = new PrintWriter(logFileString, "UTF-8");
 			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (UnsupportedEncodingException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
