@@ -11,21 +11,26 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox.CheckBoxStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane.ScrollPaneStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider.SliderStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
+import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.spiddekauga.utils.commands.Command;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.utils.scene.ui.DisableListener;
+import com.spiddekauga.utils.scene.ui.Label;
 import com.spiddekauga.utils.scene.ui.Label.LabelStyle;
 import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
 import com.spiddekauga.utils.scene.ui.TooltipListener;
@@ -33,12 +38,15 @@ import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.editor.commands.CEditorDuplicate;
 import com.spiddekauga.voider.editor.commands.CEditorLoad;
 import com.spiddekauga.voider.editor.commands.CEditorNew;
+import com.spiddekauga.voider.editor.commands.CEditorPublish;
 import com.spiddekauga.voider.editor.commands.CEditorSave;
 import com.spiddekauga.voider.editor.commands.CLevelRun;
 import com.spiddekauga.voider.editor.commands.CSceneReturn;
 import com.spiddekauga.voider.editor.commands.CSceneSwitch;
 import com.spiddekauga.voider.game.actors.ActorFilterCategories;
 import com.spiddekauga.voider.menu.MainMenu;
+import com.spiddekauga.voider.resources.Def;
+import com.spiddekauga.voider.resources.IResourceTexture;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceNames;
 import com.spiddekauga.voider.resources.SkinNames;
@@ -417,6 +425,27 @@ public abstract class EditorGui extends Gui {
 			}
 		};
 
+		// Duplicate
+		if (Config.Gui.usesTextButtons()) {
+			button = new TextButton("Duplicate", mStyles.textButton.press);
+		} else {
+			button = new ImageButton(mStyles.skin.editor, EditorIcons.DUPLICATE.toString());
+		}
+		mFileMenu.add(button);
+		tooltipListener = new TooltipListener(button, null, Messages.replaceName(Messages.Tooltip.Menus.File.DUPLICATE, getResourceTypeName()));
+		new ButtonListener(button, tooltipListener) {
+			@Override
+			protected void onPressed() {
+				MsgBoxExecuter msgBox = getFreeMsgBox(true);
+
+				msgBox.setTitle("Duplicate");
+				msgBox.content(Messages.replaceName(Messages.Editor.DUPLICATE_BOX, getResourceTypeName()));
+				msgBox.button("Yes", new CEditorDuplicate(mEditor));
+				msgBox.addCancelButtonAndKeys("No");
+				showMsgBox(msgBox);
+			}
+		};
+
 		// Save
 		if (Config.Gui.usesTextButtons()) {
 			button = new TextButton("Save", mStyles.textButton.press);
@@ -447,27 +476,20 @@ public abstract class EditorGui extends Gui {
 			}
 		};
 
-		// Duplicate
+		// Publish
 		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Duplicate", mStyles.textButton.press);
+			button = new TextButton("Publish", mStyles.textButton.press);
 		} else {
-			button = new ImageButton(mStyles.skin.editor, EditorIcons.DUPLICATE.toString());
+			button = new ImageButton(mStyles.skin.editor, EditorIcons.PUBLISH.toString());
 		}
 		mFileMenu.add(button);
-		tooltipListener = new TooltipListener(button, null, Messages.replaceName(Messages.Tooltip.Menus.File.DUPLICATE, getResourceTypeName()));
+		tooltipListener = new TooltipListener(button, null, Messages.replaceName(Messages.Tooltip.Menus.File.LOAD, getResourceTypeName()));
 		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onPressed() {
-				MsgBoxExecuter msgBox = getFreeMsgBox(true);
-
-				msgBox.setTitle("Duplicate");
-				msgBox.content(Messages.replaceName(Messages.Editor.DUPLICATE_BOX, getResourceTypeName()));
-				msgBox.button("Yes", new CEditorDuplicate(mEditor));
-				msgBox.addCancelButtonAndKeys("No");
-				showMsgBox(msgBox);
+				showPublishDialog();
 			}
 		};
-
 
 		// Info
 		if (Config.Gui.usesTextButtons()) {
@@ -483,6 +505,65 @@ public abstract class EditorGui extends Gui {
 				showInfoDialog();
 			}
 		};
+	}
+
+	/**
+	 * Shows the publish message box
+	 */
+	private void showPublishDialog() {
+		MsgBoxExecuter msgBox = getFreeMsgBox(true);
+		msgBox.setTitle("Publish");
+
+		AlignTable content = new AlignTable();
+		content.setCellPaddingDefault(mStyles.vars.paddingDefault);
+
+		com.spiddekauga.utils.scene.ui.Label label = new com.spiddekauga.utils.scene.ui.Label("", mStyles.label.highlight);
+
+		float width = Gdx.graphics.getWidth() * 0.5f;
+
+		label.setWrap(true);
+		label.setAlignment(Align.center);
+		label.setText("You are about to publish this " + getResourceTypeName() + " online. "
+				+ "This is irreversible! In addition all dependencies below will be publish.\n\n"
+				+ "Once published these cannot be changed or removed; they can however be "
+				+ "duplicated to allow you to continue on a next version.");
+		content.add(label).setWidth(width);
+
+		// Add external dependencies
+		content.row();
+		AlignTable depTable = new AlignTable();
+		depTable.setCellPaddingDefault(mStyles.vars.paddingDefault);
+		depTable.setTableAlign(Horizontal.CENTER, Vertical.MIDDLE);
+		depTable.setRowAlign(Horizontal.LEFT, Vertical.MIDDLE);
+		ArrayList<Def> dependencies = mEditor.getNonPublishedDependencies();
+
+		for (Def dependency : dependencies) {
+			depTable.row();
+
+			// Add image
+			if (dependency instanceof IResourceTexture) {
+				Image image = new Image(((IResourceTexture) dependency).getTextureRegionDrawable());
+				depTable.add(image).setSize(50, 50).setPadRight(mStyles.vars.paddingAfterLabel);
+			} else {
+				depTable.add().setPadRight(50 + mStyles.vars.paddingAfterLabel);
+			}
+
+			// Add name
+			label = new Label(dependency.getName(), mStyles.label.standard);
+			depTable.add(label);
+		}
+
+		Pools.arrayList.free(dependencies);
+		depTable.layout();
+		ScrollPane scrollPane = new ScrollPane(depTable, (ScrollPaneStyle) SkinNames.getResource(SkinNames.General.SCROLL_PANE_WINDOW_BACKGROUND));
+		scrollPane.setTouchable(Touchable.enabled);
+		content.setTouchable(Touchable.childrenOnly);
+		content.add(scrollPane).setSize(width, Gdx.graphics.getHeight() * 0.4f);
+
+		msgBox.content(content);
+		msgBox.button("Publish", new CEditorSave(mEditor, new CEditorPublish(mEditor)));
+		msgBox.addCancelButtonAndKeys();
+		showMsgBox(msgBox);
 	}
 
 	/**

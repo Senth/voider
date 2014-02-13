@@ -1,6 +1,9 @@
 package com.spiddekauga.voider.editor;
 
+import java.util.ArrayList;
+
 import com.spiddekauga.utils.commands.Command;
+import com.spiddekauga.voider.resources.Def;
 
 /**
  * 
@@ -43,4 +46,14 @@ public interface IEditor {
 	 * @return true if the resource is saved
 	 */
 	boolean isSaved();
+
+	/**
+	 * @return all non-published dependencies of the current definition
+	 */
+	ArrayList<Def> getNonPublishedDependencies();
+
+	/**
+	 * Try to publish the resource
+	 */
+	void publishDef();
 }

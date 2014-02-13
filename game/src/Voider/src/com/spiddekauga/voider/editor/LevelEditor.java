@@ -1,6 +1,7 @@
 package com.spiddekauga.voider.editor;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
@@ -10,9 +11,9 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector2;
-import com.spiddekauga.utils.commands.Command;
 import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
+import com.spiddekauga.utils.commands.Command;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Graphics.RenderOrders;
 import com.spiddekauga.voider.editor.commands.CLevelEnemyDefAdd;
@@ -52,6 +53,7 @@ import com.spiddekauga.voider.game.actors.StaticTerrainActor;
 import com.spiddekauga.voider.game.triggers.TScreenAt;
 import com.spiddekauga.voider.game.triggers.TriggerAction.Actions;
 import com.spiddekauga.voider.game.triggers.TriggerInfo;
+import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourceBody;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
@@ -654,6 +656,28 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		mGui.resetValues();
 		mInvoker.dispose();
 		saveDef();
+	}
+
+	@Override
+	public ArrayList<Def> getNonPublishedDependencies() {
+		if (mLevel != null && mLevel.getDef() != null) {
+			@SuppressWarnings("unchecked")
+			HashSet<UUID> uuidDeps = Pools.hashSet.obtain();
+			@SuppressWarnings("unchecked")
+			ArrayList<Def> dependencies = Pools.arrayList.obtain();
+
+			getNonPublishedDependencies(mLevel.getDef(), uuidDeps, dependencies);
+
+			Pools.hashSet.free(uuidDeps);
+			return dependencies;
+		}
+		return null;
+	}
+
+	@Override
+	public void publishDef() {
+		// TODO Auto-generated method stub
+
 	}
 
 	/**

@@ -124,6 +124,13 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageDisabled: load_disabled
 	},
 	
+	publish: {
+		imageUp: publish,
+		imageOver: publish_over,
+		imageDown: publish_down,
+		imageDisabled: publish_disabled
+	},
+	
 	undo: {
 		imageUp: undo,
 		imageOver: undo_over,

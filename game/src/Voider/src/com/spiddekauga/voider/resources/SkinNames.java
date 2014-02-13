@@ -130,6 +130,8 @@ public class SkinNames {
 		PICKUP_ADD,
 		/** Opens a dialog where the player will be able to select which pickup to add */
 		PICKUP_SELECT,
+		/** Publishes a resource */
+		PUBLISH,
 		/** Shape of actor (enemy or bullet) */
 		RECTANGLE_SHAPE,
 		/** Redo */
