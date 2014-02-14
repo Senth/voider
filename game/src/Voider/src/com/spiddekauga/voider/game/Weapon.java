@@ -47,7 +47,8 @@ public class Weapon implements Disposable {
 		Pools.kryo.free(kryo);
 
 		copy.mDef = mDef;
-		calculateCooldown();
+		copy.mCooldown = mCooldown;
+		copy.mPosition.set(mPosition);
 
 		return copy;
 	}

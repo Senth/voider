@@ -689,8 +689,10 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 	@Override
 	public void dispose() {
 		mActive = false;
-		Pools.arrayList.free(mTriggerInfos);
-		mTriggerInfos = null;
+		if (mTriggerInfos != null) {
+			Pools.arrayList.free(mTriggerInfos);
+			mTriggerInfos = null;
+		}
 
 		destroyBody();
 

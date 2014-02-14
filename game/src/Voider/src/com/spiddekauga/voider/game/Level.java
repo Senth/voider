@@ -60,8 +60,6 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 		mUniqueId = levelDef.getLevelId();
 		mSpeed = mLevelDef.getBaseSpeed();
 		mCompletedLevel = false;
-
-		createBackground();
 	}
 
 	@Override
@@ -106,6 +104,10 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 	 * @param deltaTime elapsed seconds since last frame
 	 */
 	public void update(float deltaTime) {
+		if (mBackgroundBottom == null) {
+			createBackground();
+		}
+
 		// Make the map move forward
 		if (mRunning) {
 			mXCoord += mSpeed * deltaTime;
@@ -584,8 +586,6 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 		UUID levelDefId = kryo.readObject(input, UUID.class);
 		int revision = input.readInt(false);
 		mLevelDef = ResourceCacheFacade.get(null, levelDefId, revision);
-
-		createBackground();
 	}
 
 	@Override
@@ -593,7 +593,6 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 		if (fromOriginal instanceof Level) {
 			Level fromLevel = (Level)fromOriginal;
 			mLevelDef = fromLevel.mLevelDef;
-			createBackground();
 		}
 	}
 

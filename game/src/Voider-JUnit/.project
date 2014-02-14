@@ -3,6 +3,9 @@
 	<name>Voider-JUnit</name>
 	<comment></comment>
 	<projects>
+		<project>kryo</project>
+		<project>SpiddekaugaUtils</project>
+		<project>TexturePacker</project>
 		<project>Voider</project>
 		<project>Voider-desktop</project>
 	</projects>

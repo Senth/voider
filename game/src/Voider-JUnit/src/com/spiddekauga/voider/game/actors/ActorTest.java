@@ -132,9 +132,7 @@ public class ActorTest {
 		testActorEquals(actor, copyActor);
 
 		// Need to save and load def
-		ResourceSaver.save(actorDef);
-		ResourceCacheFacade.load(mScene, actorDef.getId(), false, actorDef.getRevision());
-		ResourceCacheFacade.finishLoading();
+		saveAndLoad(actorDef);
 		PickupActorDef loadedActorDef = ResourceCacheFacade.get(mScene, actorDef.getId());
 		actor.setDef(loadedActorDef);
 
@@ -227,6 +225,9 @@ public class ActorTest {
 	 */
 	protected static void saveAndLoad(Def def) {
 		ResourceSaver.save(def);
+		if (ResourceCacheFacade.isLoaded(mScene, def.getId())) {
+			ResourceCacheFacade.unload(mScene, def, false);
+		}
 		ResourceCacheFacade.load(mScene, def.getId(), false, def.getRevision());
 		ResourceCacheFacade.finishLoading();
 	}
