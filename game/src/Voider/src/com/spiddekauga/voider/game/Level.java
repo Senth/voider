@@ -72,7 +72,6 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 		mCompletedLevel = level.mCompletedLevel;
 		mGroupEnemiesSave = level.mGroupEnemiesSave;
 		mLevelDef = level.mLevelDef;
-		// Skip setting player actor
 		mResourceBinder = level.mResourceBinder;
 		mResourceRenders = level.mResourceRenders;
 		mResourceUpdates = level.mResourceUpdates;

@@ -41,6 +41,7 @@ public abstract class Def extends Resource implements IResourceDependency, IReso
 		mName = def.mName;
 		mOriginalCreator = def.mOriginalCreator;
 		mRevision = def.mRevision;
+		mPublished = def.mPublished;
 	}
 
 	@Override
