@@ -36,7 +36,7 @@ import com.spiddekauga.utils.scene.ui.TextFieldListener;
 import com.spiddekauga.voider.editor.commands.CSelectDefSetRevision;
 import com.spiddekauga.voider.game.actors.ActorDef;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
-import com.spiddekauga.voider.resources.ResourceNames;
+import com.spiddekauga.voider.resources.InternalNames;
 import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.scene.SelectDefScene.DefVisible;
 
@@ -98,7 +98,7 @@ public class SelectDefGui extends Gui {
 	 * Initializes the search bar at the top
 	 */
 	private void initSearchBar() {
-		Skin editorSkin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
+		Skin editorSkin = ResourceCacheFacade.get(InternalNames.UI_GENERAL);
 
 		TextFieldStyle textFieldStyle = editorSkin.get("default", TextFieldStyle.class);
 		CheckBoxStyle checkBoxStyle = editorSkin.get("default", CheckBoxStyle.class);

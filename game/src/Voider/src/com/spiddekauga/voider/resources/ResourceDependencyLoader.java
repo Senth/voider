@@ -63,7 +63,7 @@ class ResourceDependencyLoader implements Disposable {
 
 		// Recursive, unload all dependencies first
 		// Internal
-		for (ResourceNames dependency : resource.getInternalDependencies()) {
+		for (InternalNames dependency : resource.getInternalDependencies()) {
 			mAssetManager.unload(dependency.getFilePath());
 		}
 
@@ -130,7 +130,7 @@ class ResourceDependencyLoader implements Disposable {
 					}
 
 					// Internal
-					for (ResourceNames dependency : def.getInternalDependencies()) {
+					for (InternalNames dependency : def.getInternalDependencies()) {
 						mAssetManager.load(dependency.getFilePath(), dependency.type);
 					}
 				} else {

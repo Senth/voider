@@ -3,7 +3,7 @@ package com.spiddekauga.voider.editor;
 import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.voider.menu.MainMenu;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
-import com.spiddekauga.voider.resources.ResourceNames;
+import com.spiddekauga.voider.resources.InternalNames;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 
@@ -25,15 +25,15 @@ public class EditorSelectionScene extends Scene {
 	@Override
 	protected void loadResources() {
 		super.loadResources();
-		ResourceCacheFacade.load(ResourceNames.UI_EDITOR_BUTTONS);
-		ResourceCacheFacade.load(ResourceNames.UI_GENERAL);
+		ResourceCacheFacade.load(InternalNames.UI_EDITOR_BUTTONS);
+		ResourceCacheFacade.load(InternalNames.UI_GENERAL);
 	}
 
 	@Override
 	protected void unloadResources() {
 		super.unloadResources();
-		ResourceCacheFacade.unload(ResourceNames.UI_EDITOR_BUTTONS);
-		ResourceCacheFacade.unload(ResourceNames.UI_GENERAL);
+		ResourceCacheFacade.unload(InternalNames.UI_EDITOR_BUTTONS);
+		ResourceCacheFacade.unload(InternalNames.UI_GENERAL);
 	}
 
 	@Override

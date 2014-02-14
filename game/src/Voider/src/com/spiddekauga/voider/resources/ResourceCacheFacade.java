@@ -77,7 +77,6 @@ public class ResourceCacheFacade {
 		}
 
 		mDependencyLoader = new ResourceDependencyLoader(mAssetManager);
-		ResourceNames.init();
 		ResourceDatabase.init(mAssetManager);
 	}
 
@@ -376,7 +375,7 @@ public class ResourceCacheFacade {
 	 * @note <b>Use with care!</b> This will simply reload the resource, meaning all other previous
 	 * instances that uses the old resource won't work.
 	 */
-	public static void reload(ResourceNames resource) {
+	public static void reload(InternalNames resource) {
 		String filepath = resource.getFilePath();
 
 		// Reload the actual asset
@@ -530,7 +529,7 @@ public class ResourceCacheFacade {
 	 * Unloads a regular resource
 	 * @param resourceName the name of the resource
 	 */
-	public static void unload(ResourceNames resourceName) {
+	public static void unload(InternalNames resourceName) {
 		mAssetManager.unload(resourceName.getFilePath());
 	}
 
@@ -540,7 +539,7 @@ public class ResourceCacheFacade {
 	 * @param resource the name of the resource to load
 	 * Texture, Music, etc.
 	 */
-	public static void load(ResourceNames resource) {
+	public static void load(InternalNames resource) {
 		String fullPath = null;
 		try {
 			fullPath = resource.getFilePath();
@@ -557,7 +556,7 @@ public class ResourceCacheFacade {
 	 * @return the actual resource
 	 */
 	@SuppressWarnings("unchecked")
-	public static <ResourceType> ResourceType get(ResourceNames resource) {
+	public static <ResourceType> ResourceType get(InternalNames resource) {
 		String fullPath = null;
 		try {
 			fullPath = resource.getFilePath();
@@ -572,7 +571,7 @@ public class ResourceCacheFacade {
 	 * @param resource the resource to check if it has been loaded
 	 * @return true if the resource has been loaded
 	 */
-	public static boolean isLoaded(ResourceNames resource) {
+	public static boolean isLoaded(InternalNames resource) {
 		String fullPath = null;
 		try {
 			fullPath = resource.getFilePath();
@@ -655,7 +654,7 @@ public class ResourceCacheFacade {
 	 */
 	public static int getExistingResourcesCount(Class<? extends IResource> resourceType) {
 		try {
-			String resourceDirPath = ResourceNames.getDirPath(resourceType);
+			String resourceDirPath = InternalNames.getDirPath(resourceType);
 
 			FileHandle resourceDir = Gdx.files.external(resourceDirPath);
 

@@ -78,8 +78,8 @@ public class DefTest {
 		}
 		def.addDependency(dependency1);
 		def.addDependency(dependency2);
-		def.addDependency(ResourceNames.PARTICLE_TEST);
-		def.addDependency(ResourceNames.TEXTURE_PLAYER);
+		def.addDependency(InternalNames.PARTICLE_TEST);
+		def.addDependency(InternalNames.TEXTURE_PLAYER);
 
 		Kryo kryo = Pools.kryo.obtain();
 		PlayerActorDef testDef = KryoPrototypeTest.copy(def, PlayerActorDef.class, kryo);
@@ -125,7 +125,7 @@ public class DefTest {
 
 		// Internal dependencies
 		assertEquals(expected.getInternalDependenciesCount(), actual.getInternalDependenciesCount());
-		for (ResourceNames dependency : expected.getInternalDependencies()) {
+		for (InternalNames dependency : expected.getInternalDependencies()) {
 			assertTrue(actual.getInternalDependencies().contains(dependency));
 		}
 	}
@@ -153,14 +153,14 @@ public class DefTest {
 	}
 
 	/**
-	 * Test method for {@link com.spiddekauga.voider.resources.Def#addDependency(com.spiddekauga.voider.resources.ResourceNames)}.
+	 * Test method for {@link com.spiddekauga.voider.resources.Def#addDependency(com.spiddekauga.voider.resources.InternalNames)}.
 	 */
 	@Test
 	public void addDependencyResourceNames() {
 		Def def = new PlayerActorDef();
-		def.addDependency(ResourceNames.PARTICLE_TEST);
-		def.addDependency(ResourceNames.TEXTURE_PLAYER);
-		def.addDependency(ResourceNames.SOUND_TEST);
+		def.addDependency(InternalNames.PARTICLE_TEST);
+		def.addDependency(InternalNames.TEXTURE_PLAYER);
+		def.addDependency(InternalNames.SOUND_TEST);
 
 		assertNotNull("def dependencies null", def.getExternalDependencies());
 		assertEquals("def dependencies", def.getExternalDependencies().size(), 0);
@@ -168,7 +168,7 @@ public class DefTest {
 		assertEquals("res dependencies size", def.getInternalDependencies().size(), 3);
 
 		// Test to add the same dependency again, should remain the same
-		def.addDependency(ResourceNames.TEXTURE_PLAYER);
+		def.addDependency(InternalNames.TEXTURE_PLAYER);
 		assertEquals("res dependencies added twice", def.getInternalDependencies().size(), 3);
 	}
 
@@ -209,14 +209,14 @@ public class DefTest {
 	}
 
 	/**
-	 * Test method for {@link com.spiddekauga.voider.resources.Def#removeDependency(com.spiddekauga.voider.resources.ResourceNames)}.
+	 * Test method for {@link com.spiddekauga.voider.resources.Def#removeDependency(com.spiddekauga.voider.resources.InternalNames)}.
 	 */
 	@Test
 	public void removeDependencyResourceNames() {
 		Def def = new PlayerActorDef();
-		def.addDependency(ResourceNames.PARTICLE_TEST);
-		def.addDependency(ResourceNames.SOUND_TEST);
-		def.removeDependency(ResourceNames.PARTICLE_TEST);
+		def.addDependency(InternalNames.PARTICLE_TEST);
+		def.addDependency(InternalNames.SOUND_TEST);
+		def.removeDependency(InternalNames.PARTICLE_TEST);
 
 		assertNotNull("def dependencies null", def.getExternalDependencies());
 		assertEquals("def dependencies", def.getExternalDependencies().size(), 0);
@@ -224,16 +224,16 @@ public class DefTest {
 		assertEquals("res dependencies size", def.getInternalDependencies().size(), 1);
 
 		// Test to remove a dependency that doesn't exist
-		def.removeDependency(ResourceNames.TEXTURE_PLAYER);
+		def.removeDependency(InternalNames.TEXTURE_PLAYER);
 		assertEquals("res dependencies size removed unknown", def.getInternalDependencies().size(), 1);
 
 		// Remove last dependency
-		def.removeDependency(ResourceNames.SOUND_TEST);
+		def.removeDependency(InternalNames.SOUND_TEST);
 		assertNotNull("res not null afetr all removed", def.getInternalDependencies());
 		assertEquals("res dependencies size all removed", def.getInternalDependencies().size(), 0);
 
 		// Readd a dependency
-		def.addDependency(ResourceNames.PARTICLE_TEST);
+		def.addDependency(InternalNames.PARTICLE_TEST);
 		assertEquals("res dependencies size readded one", def.getInternalDependencies().size(), 1);
 	}
 

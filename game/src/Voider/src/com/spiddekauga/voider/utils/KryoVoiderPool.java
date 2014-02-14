@@ -67,7 +67,7 @@ import com.spiddekauga.voider.game.triggers.TriggerAction;
 import com.spiddekauga.voider.game.triggers.TriggerInfo;
 import com.spiddekauga.voider.resources.ResourceBinder;
 import com.spiddekauga.voider.resources.ResourceItem;
-import com.spiddekauga.voider.resources.ResourceNames;
+import com.spiddekauga.voider.resources.InternalNames;
 
 /**
  * Pool for Kryo instances. When creating a new instance Kryo registers all
@@ -213,7 +213,7 @@ public class KryoVoiderPool extends Pool<Kryo> {
 		/** AimRotateVars */
 		AIM_ROTATE_VARS(AimRotateVars.class, SerializerType.TAGGED),
 		/** ResourceNames */
-		RESOURCE_NAMES(ResourceNames.class),
+		RESOURCE_NAMES(InternalNames.class),
 		/** ResourceItem */
 		RESOURCE_ITEM(ResourceItem.class, SerializerType.TAGGED),
 		/** Class */

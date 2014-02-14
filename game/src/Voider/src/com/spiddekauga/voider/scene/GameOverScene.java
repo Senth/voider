@@ -6,7 +6,7 @@ import com.spiddekauga.voider.game.LevelDef;
 import com.spiddekauga.voider.game.PlayerStats;
 import com.spiddekauga.voider.menu.MainMenu;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
-import com.spiddekauga.voider.resources.ResourceNames;
+import com.spiddekauga.voider.resources.InternalNames;
 import com.spiddekauga.voider.utils.StatSyncer;
 
 /**
@@ -50,14 +50,14 @@ public class GameOverScene extends Scene {
 	@Override
 	protected void loadResources() {
 		super.loadResources();
-		ResourceCacheFacade.load(ResourceNames.UI_GENERAL);
+		ResourceCacheFacade.load(InternalNames.UI_GENERAL);
 		ResourceCacheFacade.load(this, mLevelDef.getId(), false, mLevelDef.getRevision());
 	}
 
 	@Override
 	protected void unloadResources() {
 		super.unloadResources();
-		ResourceCacheFacade.unload(ResourceNames.UI_GENERAL);
+		ResourceCacheFacade.unload(InternalNames.UI_GENERAL);
 		ResourceCacheFacade.unload(this, mLevelDef, false);
 	}
 

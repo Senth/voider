@@ -15,7 +15,7 @@ import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
-import com.spiddekauga.voider.resources.ResourceNames;
+import com.spiddekauga.voider.resources.InternalNames;
 import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.scene.Gui;
 
@@ -59,7 +59,7 @@ public class LoginGui extends Gui {
 	 * Initializes the login table
 	 */
 	private void initLoginTable() {
-		Skin skin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
+		Skin skin = ResourceCacheFacade.get(InternalNames.UI_GENERAL);
 
 		// Username
 		Label label = new Label("Username", skin, SkinNames.General.LABEL_DEFAULT.toString());
@@ -231,7 +231,7 @@ public class LoginGui extends Gui {
 	 * Initializes the register table
 	 */
 	private void initRegisterTable() {
-		Skin skin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
+		Skin skin = ResourceCacheFacade.get(InternalNames.UI_GENERAL);
 
 
 		// Username

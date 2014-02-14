@@ -17,7 +17,7 @@ import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.Label.LabelStyle;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
-import com.spiddekauga.voider.resources.ResourceNames;
+import com.spiddekauga.voider.resources.InternalNames;
 import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.utils.Messages;
 import com.spiddekauga.voider.utils.Pools;
@@ -33,7 +33,7 @@ public class MessageShower {
 	 * @param stage the stage to show the messages in
 	 */
 	public MessageShower(Stage stage) {
-		Skin skin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
+		Skin skin = ResourceCacheFacade.get(InternalNames.UI_GENERAL);
 		mWindow = new Window("", skin);
 		mWidth = (int) (Gdx.graphics.getWidth() * 0.35f);
 		mWindow.setPosition(Gdx.graphics.getWidth() - mWidth, 0);

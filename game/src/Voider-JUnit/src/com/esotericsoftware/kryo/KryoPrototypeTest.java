@@ -32,7 +32,7 @@ import com.esotericsoftware.kryo.serializers.CompatibleFieldSerializer;
 import com.esotericsoftware.kryo.serializers.FieldSerializer.Optional;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
-import com.spiddekauga.voider.resources.ResourceNames;
+import com.spiddekauga.voider.resources.InternalNames;
 import com.spiddekauga.voider.utils.Pools;
 
 /**
@@ -511,15 +511,15 @@ public class KryoPrototypeTest {
 
 
 		// Test Resource Names
-		HashSet<ResourceNames> resourceSet = Pools.hashSet.obtain();
+		HashSet<InternalNames> resourceSet = Pools.hashSet.obtain();
 		resourceSet.clear();
-		resourceSet.add(ResourceNames.UI_EDITOR_BUTTONS);
-		resourceSet.add(ResourceNames.UI_GENERAL);
+		resourceSet.add(InternalNames.UI_EDITOR_BUTTONS);
+		resourceSet.add(InternalNames.UI_GENERAL);
 
-		HashSet<ResourceNames> readReasourceSet = copy(resourceSet, HashSet.class);
+		HashSet<InternalNames> readReasourceSet = copy(resourceSet, HashSet.class);
 		assertEquals(2, readReasourceSet.size());
-		assertTrue(readReasourceSet.contains(ResourceNames.UI_EDITOR_BUTTONS));
-		assertTrue(readReasourceSet.contains(ResourceNames.UI_GENERAL));
+		assertTrue(readReasourceSet.contains(InternalNames.UI_EDITOR_BUTTONS));
+		assertTrue(readReasourceSet.contains(InternalNames.UI_GENERAL));
 	}
 
 	@Test

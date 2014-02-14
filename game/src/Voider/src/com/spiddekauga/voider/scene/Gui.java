@@ -25,7 +25,7 @@ import com.spiddekauga.utils.scene.ui.TextFieldListener;
 import com.spiddekauga.voider.editor.commands.CBugReportSend;
 import com.spiddekauga.voider.editor.commands.CGameQuit;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
-import com.spiddekauga.voider.resources.ResourceNames;
+import com.spiddekauga.voider.resources.InternalNames;
 import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.utils.Messages;
 
@@ -124,7 +124,7 @@ public abstract class Gui implements Disposable {
 			}
 		}
 
-		Skin skin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
+		Skin skin = ResourceCacheFacade.get(InternalNames.UI_GENERAL);
 		// No free found, create new
 		if (msgBox == null) {
 			msgBox = new MsgBoxExecuter(skin, windowStyleName);
@@ -257,7 +257,7 @@ public abstract class Gui implements Disposable {
 	 */
 	public void initGui() {
 		MsgBoxExecuter.fadeDuration = 0.01f;
-		if (ResourceCacheFacade.isLoaded(ResourceNames.UI_GENERAL) && mMessageShower == null) {
+		if (ResourceCacheFacade.isLoaded(InternalNames.UI_GENERAL) && mMessageShower == null) {
 			mMessageShower = new MessageShower(mStage);
 		}
 		mInitialized = true;

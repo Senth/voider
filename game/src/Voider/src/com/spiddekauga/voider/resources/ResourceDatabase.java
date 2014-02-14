@@ -37,7 +37,7 @@ public class ResourceDatabase {
 	static void init(AssetManager assetManager) {
 		mAssetManager = assetManager;
 
-		Map<Class<?>, String> resourcePaths = ResourceNames.getResourcePaths();
+		Map<Class<?>, String> resourcePaths = InternalNames.getResourcePaths();
 
 		for (Map.Entry<Class<?>, String> entry : resourcePaths.entrySet()) {
 			FileHandle dir = Gdx.files.external(entry.getValue());
@@ -170,7 +170,7 @@ public class ResourceDatabase {
 	 * @return file path of the resource
 	 */
 	static String getFilePath(IResource resource) {
-		String filePath = ResourceNames.getDirPath(resource.getClass()) + resource.getId().toString();
+		String filePath = InternalNames.getDirPath(resource.getClass()) + resource.getId().toString();
 
 		if (resource instanceof IResourceRevision) {
 			filePath += "/" + getRevisionFormat(((IResourceRevision) resource).getRevision());
@@ -201,7 +201,7 @@ public class ResourceDatabase {
 	static String getFilePath(UUID resourceId, int revision) {
 		ResourceInfo resourceDb = mResources.get(resourceId);
 
-		String filePath = ResourceNames.getDirPath(resourceDb.type) + resourceId.toString();
+		String filePath = InternalNames.getDirPath(resourceDb.type) + resourceId.toString();
 
 		if (resourceDb != null) {
 			if (resourceDb.revisionDates != null) {
@@ -387,6 +387,7 @@ public class ResourceDatabase {
 	 * @param resourceId resource id to reload
 	 * @param revision specific revision of the resource to reload to
 	 */
+	@Deprecated
 	static void reload(UUID resourceId, int revision) {
 		//		int revisionToUse = getRevisionToUse(resourceId, revision);
 		//		String filepath = getFilePath(resourceId, revision);
@@ -681,7 +682,7 @@ public class ResourceDatabase {
 	 */
 	static void removeAllOf(Class<? extends IResource> type) {
 		// Delete from disk
-		String path = ResourceNames.getDirPath(type);
+		String path = InternalNames.getDirPath(type);
 		FileHandle folder = Gdx.files.external(path);
 
 		if (folder.exists()) {

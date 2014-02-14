@@ -24,7 +24,7 @@ public interface IResourceDependency extends IResource {
 	/**
 	 * Adds an external dependency to the resource
 	 * @param dependency the resource dependency
-	 * @see #addDependency(ResourceNames)
+	 * @see #addDependency(InternalNames)
 	 */
 	public void addDependency(IResource dependency);
 
@@ -33,7 +33,7 @@ public interface IResourceDependency extends IResource {
 	 * @param dependency the resource dependency
 	 * @see #addDependency(IResource)
 	 */
-	public void addDependency(ResourceNames dependency);
+	public void addDependency(InternalNames dependency);
 
 	/**
 	 * Removes an external dependency from the resource
@@ -45,7 +45,7 @@ public interface IResourceDependency extends IResource {
 	 * Removes an internal dependency from the resource
 	 * @param dependency the name of the dependency to remove
 	 */
-	public void removeDependency(ResourceNames dependency);
+	public void removeDependency(InternalNames dependency);
 
 	/**
 	 * @return all external dependencies
@@ -55,5 +55,5 @@ public interface IResourceDependency extends IResource {
 	/**
 	 * @return all internal dependencies
 	 */
-	Set<ResourceNames> getInternalDependencies();
+	Set<InternalNames> getInternalDependencies();
 }

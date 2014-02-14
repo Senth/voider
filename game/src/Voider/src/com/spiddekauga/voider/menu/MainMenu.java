@@ -17,7 +17,7 @@ import com.spiddekauga.voider.repo.UserLocalRepo;
 import com.spiddekauga.voider.repo.UserWebRepo;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceItem;
-import com.spiddekauga.voider.resources.ResourceNames;
+import com.spiddekauga.voider.resources.InternalNames;
 import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
@@ -42,8 +42,8 @@ public class MainMenu extends Scene {
 	@Override
 	protected void loadResources() {
 		super.loadResources();
-		ResourceCacheFacade.load(ResourceNames.UI_GENERAL);
-		ResourceCacheFacade.load(ResourceNames.UI_EDITOR_TOOLTIPS); // REMOVE loading tooltip
+		ResourceCacheFacade.load(InternalNames.UI_GENERAL);
+		ResourceCacheFacade.load(InternalNames.UI_EDITOR_TOOLTIPS); // REMOVE loading tooltip
 		ResourceCacheFacade.loadAllOf(this, LevelDef.class, false);
 		ResourceCacheFacade.loadAllOf(this, GameSaveDef.class, false);
 	}
@@ -51,8 +51,8 @@ public class MainMenu extends Scene {
 	@Override
 	protected void unloadResources() {
 		super.unloadResources();
-		ResourceCacheFacade.unload(ResourceNames.UI_GENERAL);
-		ResourceCacheFacade.unload(ResourceNames.UI_EDITOR_TOOLTIPS); // REMOVE unloading tooltip
+		ResourceCacheFacade.unload(InternalNames.UI_GENERAL);
+		ResourceCacheFacade.unload(InternalNames.UI_EDITOR_TOOLTIPS); // REMOVE unloading tooltip
 		ResourceCacheFacade.unloadAllOf(this, LevelDef.class, false);
 		ResourceCacheFacade.unloadAllOf(this, GameSaveDef.class, false);
 	}

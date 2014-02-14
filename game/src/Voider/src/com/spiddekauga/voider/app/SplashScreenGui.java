@@ -6,7 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
-import com.spiddekauga.voider.resources.ResourceNames;
+import com.spiddekauga.voider.resources.InternalNames;
 import com.spiddekauga.voider.scene.Gui;
 
 /**
@@ -19,8 +19,8 @@ class SplashScreenGui extends Gui {
 	public void initGui() {
 		super.initGui();
 
-		if (ResourceCacheFacade.isLoaded(ResourceNames.IMAGE_SPLASH_SCREEN)) {
-			Texture splashScreenTexture = ResourceCacheFacade.get(ResourceNames.IMAGE_SPLASH_SCREEN);
+		if (ResourceCacheFacade.isLoaded(InternalNames.IMAGE_SPLASH_SCREEN)) {
+			Texture splashScreenTexture = ResourceCacheFacade.get(InternalNames.IMAGE_SPLASH_SCREEN);
 
 			if (splashScreenTexture != null) {
 				mSplashScreenImage = new Image(splashScreenTexture);

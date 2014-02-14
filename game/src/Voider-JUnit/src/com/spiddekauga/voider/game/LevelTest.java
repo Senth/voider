@@ -35,7 +35,6 @@ import com.spiddekauga.voider.game.triggers.TriggerAction.Actions;
 import com.spiddekauga.voider.game.triggers.TriggerInfo;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
-import com.spiddekauga.voider.resources.ResourceNames;
 import com.spiddekauga.voider.resources.ResourceSaver;
 import com.spiddekauga.voider.scene.SceneStub;
 import com.spiddekauga.voider.scene.SceneSwitcher;
@@ -58,7 +57,7 @@ public class LevelTest {
 		Gdx.files = new LwjglFiles();
 		Config.init();
 		ResourceSaver.init();
-		ResourceNames.useTestPath();
+		Config.Debug.JUNIT_TEST = true;
 		ResourceCacheFacade.init();
 		SceneSwitcher.switchTo(mScene);
 

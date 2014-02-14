@@ -186,6 +186,8 @@ public class Config {
 		/** Set this variable to be true for releases, this disables many of
 		 * the "special" functionality as multiple registering, test scenes etc. */
 		public static final boolean RELEASE = false;
+		/** Set to true in JUNIT tests */
+		public static boolean JUNIT_TEST = false;
 	}
 
 	/**
@@ -535,12 +537,15 @@ public class Config {
 	 */
 	public static class File {
 		/** The external directory used for storing game data */
+		@Deprecated
 		public final static String STORAGE = "Voider/";
 		/** The external directory used when storing test game data */
+		@Deprecated
 		public final static String TEST_STORAGE = "Voider-test/";
 		/** Revision number length */
 		public final static int REVISION_LENGTH = 10;
 		/** Name of the latest copy in revision directories */
+		@Deprecated
 		public final static String REVISION_LATEST_NAME = "LATEST";
 		/** Uses external images, etc. instead of internal for resources */
 		public final static boolean USE_EXTERNAL_RESOURCES = false;

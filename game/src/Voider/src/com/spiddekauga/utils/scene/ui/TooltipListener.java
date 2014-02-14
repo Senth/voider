@@ -22,7 +22,7 @@ import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
-import com.spiddekauga.voider.resources.ResourceNames;
+import com.spiddekauga.voider.resources.InternalNames;
 import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.scene.SceneSwitcher;
@@ -66,7 +66,7 @@ public class TooltipListener extends InputAdapter implements EventListener {
 		mGui = SceneSwitcher.getGui();
 
 		if (mWindow == null) {
-			Skin uiSkin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
+			Skin uiSkin = ResourceCacheFacade.get(InternalNames.UI_GENERAL);
 
 			mWindow = new Window("", uiSkin);
 			mWindow.setModal(false);

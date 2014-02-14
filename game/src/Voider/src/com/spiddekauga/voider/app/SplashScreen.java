@@ -2,7 +2,7 @@ package com.spiddekauga.voider.app;
 
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
-import com.spiddekauga.voider.resources.ResourceNames;
+import com.spiddekauga.voider.resources.InternalNames;
 import com.spiddekauga.voider.scene.LoadingScene;
 
 /**
@@ -24,13 +24,13 @@ public class SplashScreen extends LoadingScene {
 	@Override
 	protected void loadResources() {
 		super.loadResources();
-		ResourceCacheFacade.load(ResourceNames.IMAGE_SPLASH_SCREEN);
+		ResourceCacheFacade.load(InternalNames.IMAGE_SPLASH_SCREEN);
 	}
 
 	@Override
 	protected void unloadResources() {
 		super.unloadResources();
-		ResourceCacheFacade.unload(ResourceNames.IMAGE_SPLASH_SCREEN);
+		ResourceCacheFacade.unload(InternalNames.IMAGE_SPLASH_SCREEN);
 	}
 
 	@Override

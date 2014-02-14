@@ -36,8 +36,7 @@ public class ResourceSaverTest {
 		Gdx.files = new LwjglFiles();
 		Config.init();
 		ResourceSaver.init();
-		ResourceNames.useTestPath();
-		ResourceNames.init();
+		Config.Debug.JUNIT_TEST = true;
 		ResourceCacheFacade.init();
 	}
 
@@ -81,7 +80,7 @@ public class ResourceSaverTest {
 
 
 		// Save it again, now a new revision should be created
-		def.addDependency(ResourceNames.TEXTURE_PLAYER);
+		def.addDependency(InternalNames.TEXTURE_PLAYER);
 		ResourceSaver.save(def);
 
 		relativePath = ResourceDatabase.getFilePath(def);

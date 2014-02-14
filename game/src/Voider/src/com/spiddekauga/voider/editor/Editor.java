@@ -26,7 +26,7 @@ import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.ActorDef;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
-import com.spiddekauga.voider.resources.ResourceNames;
+import com.spiddekauga.voider.resources.InternalNames;
 import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.scene.SceneSwitcher;
@@ -70,19 +70,19 @@ public abstract class Editor extends WorldScene implements IEditor {
 	@Override
 	protected void loadResources() {
 		super.loadResources();
-		ResourceCacheFacade.load(ResourceNames.UI_EDITOR_BUTTONS);
-		ResourceCacheFacade.load(ResourceNames.UI_GENERAL);
-		ResourceCacheFacade.load(ResourceNames.SHADER_DEFAULT);
-		ResourceCacheFacade.load(ResourceNames.UI_EDITOR_TOOLTIPS);
+		ResourceCacheFacade.load(InternalNames.UI_EDITOR_BUTTONS);
+		ResourceCacheFacade.load(InternalNames.UI_GENERAL);
+		ResourceCacheFacade.load(InternalNames.SHADER_DEFAULT);
+		ResourceCacheFacade.load(InternalNames.UI_EDITOR_TOOLTIPS);
 	}
 
 	@Override
 	protected void unloadResources() {
 		super.unloadResources();
-		ResourceCacheFacade.unload(ResourceNames.UI_EDITOR_BUTTONS);
-		ResourceCacheFacade.unload(ResourceNames.UI_GENERAL);
-		ResourceCacheFacade.unload(ResourceNames.SHADER_DEFAULT);
-		ResourceCacheFacade.unload(ResourceNames.UI_EDITOR_TOOLTIPS);
+		ResourceCacheFacade.unload(InternalNames.UI_EDITOR_BUTTONS);
+		ResourceCacheFacade.unload(InternalNames.UI_GENERAL);
+		ResourceCacheFacade.unload(InternalNames.SHADER_DEFAULT);
+		ResourceCacheFacade.unload(InternalNames.UI_EDITOR_TOOLTIPS);
 	}
 
 	/**

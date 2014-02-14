@@ -18,7 +18,7 @@ import com.spiddekauga.utils.scene.ui.Label;
 import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
-import com.spiddekauga.voider.resources.ResourceNames;
+import com.spiddekauga.voider.resources.InternalNames;
 import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.scene.Gui;
 
@@ -32,8 +32,8 @@ public class TestUiGui extends Gui {
 	public void initGui() {
 		super.initGui();
 
-		mGeneralSkin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
-		mGameSkin = ResourceCacheFacade.get(ResourceNames.UI_GAME);
+		mGeneralSkin = ResourceCacheFacade.get(InternalNames.UI_GENERAL);
+		mGameSkin = ResourceCacheFacade.get(InternalNames.UI_GAME);
 		mMainTable.setTableAlign(Horizontal.LEFT, Vertical.TOP);
 		mMainTable.setRowAlign(Horizontal.LEFT, Vertical.TOP);
 		mMainTable.setCellPaddingDefault((Float)SkinNames.getResource(SkinNames.General.PADDING_DEFAULT));

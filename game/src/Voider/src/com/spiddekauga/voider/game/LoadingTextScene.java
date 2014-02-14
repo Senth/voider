@@ -3,7 +3,7 @@ package com.spiddekauga.voider.game;
 import com.badlogic.gdx.Gdx;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
-import com.spiddekauga.voider.resources.ResourceNames;
+import com.spiddekauga.voider.resources.InternalNames;
 import com.spiddekauga.voider.scene.LoadingScene;
 import com.spiddekauga.voider.utils.Messages;
 
@@ -55,14 +55,14 @@ public class LoadingTextScene extends LoadingScene {
 	protected void loadResources() {
 		super.loadResources();
 
-		ResourceCacheFacade.load(ResourceNames.UI_GENERAL);
+		ResourceCacheFacade.load(InternalNames.UI_GENERAL);
 	}
 
 	@Override
 	protected void unloadResources() {
 		super.unloadResources();
 
-		ResourceCacheFacade.unload(ResourceNames.UI_GENERAL);
+		ResourceCacheFacade.unload(InternalNames.UI_GENERAL);
 	}
 
 	/**

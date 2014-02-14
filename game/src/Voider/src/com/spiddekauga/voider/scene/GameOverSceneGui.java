@@ -10,7 +10,7 @@ import com.spiddekauga.utils.scene.ui.Label;
 import com.spiddekauga.utils.scene.ui.Label.LabelStyle;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
-import com.spiddekauga.voider.resources.ResourceNames;
+import com.spiddekauga.voider.resources.InternalNames;
 import com.spiddekauga.voider.utils.Messages;
 
 /**
@@ -42,7 +42,7 @@ public class GameOverSceneGui extends Gui {
 		mMainTable.row().setFillHeight(true);
 
 
-		Skin skin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
+		Skin skin = ResourceCacheFacade.get(InternalNames.UI_GENERAL);
 		LabelStyle labelStyle = skin.get("default", LabelStyle.class);
 		TextButtonStyle buttonStyle = skin.get("default", TextButtonStyle.class);
 

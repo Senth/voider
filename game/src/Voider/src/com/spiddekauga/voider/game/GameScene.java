@@ -21,7 +21,7 @@ import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.PlayerActor;
 import com.spiddekauga.voider.game.actors.PlayerActorDef;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
-import com.spiddekauga.voider.resources.ResourceNames;
+import com.spiddekauga.voider.resources.InternalNames;
 import com.spiddekauga.voider.resources.ResourceSaver;
 import com.spiddekauga.voider.resources.UndefinedResourceTypeException;
 import com.spiddekauga.voider.scene.GameOverScene;
@@ -230,7 +230,7 @@ public class GameScene extends WorldScene {
 		super.render();
 
 		if (Config.Graphics.USE_RELEASE_RENDERER) {
-			ShaderProgram defaultShader = ResourceCacheFacade.get(ResourceNames.SHADER_DEFAULT);
+			ShaderProgram defaultShader = ResourceCacheFacade.get(InternalNames.SHADER_DEFAULT);
 			if (defaultShader != null) {
 				mShapeRenderer.setShader(defaultShader);
 			}
@@ -333,9 +333,9 @@ public class GameScene extends WorldScene {
 	protected void loadResources() {
 		super.loadResources();
 
-		ResourceCacheFacade.load(ResourceNames.UI_GENERAL);
-		ResourceCacheFacade.load(ResourceNames.UI_GAME);
-		ResourceCacheFacade.load(ResourceNames.SHADER_DEFAULT);
+		ResourceCacheFacade.load(InternalNames.UI_GENERAL);
+		ResourceCacheFacade.load(InternalNames.UI_GAME);
+		ResourceCacheFacade.load(InternalNames.SHADER_DEFAULT);
 		ResourceCacheFacade.loadAllOf(this, PlayerActorDef.class, true);
 
 		if (mLevelToLoad != null) {
@@ -354,9 +354,9 @@ public class GameScene extends WorldScene {
 	@Override
 	protected void unloadResources() {
 		super.unloadResources();
-		ResourceCacheFacade.unload(ResourceNames.UI_GENERAL);
-		ResourceCacheFacade.unload(ResourceNames.UI_GAME);
-		ResourceCacheFacade.unload(ResourceNames.SHADER_DEFAULT);
+		ResourceCacheFacade.unload(InternalNames.UI_GENERAL);
+		ResourceCacheFacade.unload(InternalNames.UI_GAME);
+		ResourceCacheFacade.unload(InternalNames.SHADER_DEFAULT);
 		ResourceCacheFacade.unloadAllOf(this, PlayerActorDef.class, true);
 
 		// Loaded level

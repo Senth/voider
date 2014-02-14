@@ -23,7 +23,6 @@ import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.DefTest;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
-import com.spiddekauga.voider.resources.ResourceNames;
 import com.spiddekauga.voider.resources.ResourceSaver;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneStub;
@@ -46,7 +45,7 @@ public class ActorTest {
 		Config.init();
 		Config.Debug.DEBUG_TESTS = false;
 		ResourceSaver.init();
-		ResourceNames.useTestPath();
+		Config.Debug.JUNIT_TEST = true;
 		ResourceCacheFacade.init();
 		SceneSwitcher.switchTo(mScene);
 

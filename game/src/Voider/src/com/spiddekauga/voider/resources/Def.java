@@ -123,7 +123,7 @@ public abstract class Def extends Resource implements IResourceDependency, IReso
 	}
 
 	@Override
-	public void addDependency(ResourceNames dependency) {
+	public void addDependency(InternalNames dependency) {
 		mInternalDependencies.add(dependency);
 	}
 
@@ -143,7 +143,7 @@ public abstract class Def extends Resource implements IResourceDependency, IReso
 	}
 
 	@Override
-	public void removeDependency(ResourceNames dependency) {
+	public void removeDependency(InternalNames dependency) {
 		mInternalDependencies.remove(dependency);
 	}
 
@@ -201,7 +201,7 @@ public abstract class Def extends Resource implements IResourceDependency, IReso
 	}
 
 	@Override
-	public Set<ResourceNames> getInternalDependencies() {
+	public Set<InternalNames> getInternalDependencies() {
 		return mInternalDependencies;
 	}
 
@@ -231,7 +231,7 @@ public abstract class Def extends Resource implements IResourceDependency, IReso
 	/** Dependencies for the resource */
 	@Tag(43) private Map<UUID, AtomicInteger> mExternalDependencies = new HashMap<UUID, AtomicInteger>();
 	/** Internal dependencies, such as textures, sound, particle effects */
-	@Tag(42) private Set<ResourceNames> mInternalDependencies = new HashSet<ResourceNames>();
+	@Tag(42) private Set<InternalNames> mInternalDependencies = new HashSet<InternalNames>();
 	/** Name of the definition */
 	@Tag(36) private String mName = Config.Actor.NAME_DEFAULT;
 	/** Original creator name */

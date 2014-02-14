@@ -8,7 +8,7 @@ import com.spiddekauga.voider.network.entities.RegisterUserMethodResponse;
 import com.spiddekauga.voider.repo.UserLocalRepo;
 import com.spiddekauga.voider.repo.UserWebRepo;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
-import com.spiddekauga.voider.resources.ResourceNames;
+import com.spiddekauga.voider.resources.InternalNames;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.utils.UserInfo;
 
@@ -31,14 +31,14 @@ public class LoginScene extends Scene {
 
 	@Override
 	protected void loadResources() {
-		ResourceCacheFacade.load(ResourceNames.UI_GENERAL);
+		ResourceCacheFacade.load(InternalNames.UI_GENERAL);
 
 		super.loadResources();
 	}
 
 	@Override
 	protected void unloadResources() {
-		ResourceCacheFacade.unload(ResourceNames.UI_GENERAL);
+		ResourceCacheFacade.unload(InternalNames.UI_GENERAL);
 
 		super.unloadResources();
 	}

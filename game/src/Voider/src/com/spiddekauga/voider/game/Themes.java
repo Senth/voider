@@ -1,6 +1,6 @@
 package com.spiddekauga.voider.game;
 
-import com.spiddekauga.voider.resources.ResourceNames;
+import com.spiddekauga.voider.resources.InternalNames;
 
 /**
  * All the different themes for the game
@@ -9,13 +9,13 @@ import com.spiddekauga.voider.resources.ResourceNames;
  */
 public enum Themes {
 	/** Space theme */
-	SPACE(ResourceNames.THEME_SPACE),
+	SPACE(InternalNames.THEME_SPACE),
 	/** Surface of the red planet */
-	RED_PLANET_SURFACE(ResourceNames.THEME_RED_PLANET_SURFACE),
+	RED_PLANET_SURFACE(InternalNames.THEME_RED_PLANET_SURFACE),
 	/** Tunnels of the red planet */
-	RED_PLANET_TUNNELS(ResourceNames.THEME_RED_PLANET_TUNNELS),
+	RED_PLANET_TUNNELS(InternalNames.THEME_RED_PLANET_TUNNELS),
 	/** Core of the red planet */
-	RED_PLANET_CORE(ResourceNames.THEME_RED_PLANET_CORE),
+	RED_PLANET_CORE(InternalNames.THEME_RED_PLANET_CORE),
 
 	;
 
@@ -23,7 +23,7 @@ public enum Themes {
 	 * Constructor that sets the skin used with the theme
 	 * @param skin the skin used with the theme
 	 */
-	Themes(ResourceNames skin) {
+	Themes(InternalNames skin) {
 		mSkin = skin;
 
 		createHumanReadableName();
@@ -50,12 +50,12 @@ public enum Themes {
 	/**
 	 * @return skin used with the theme
 	 */
-	public ResourceNames getSkin() {
+	public InternalNames getSkin() {
 		return mSkin;
 	}
 
 	/** The skin used with the theme */
-	ResourceNames mSkin;
+	InternalNames mSkin;
 	/** Human-readable name of the theme */
 	String mName;
 }

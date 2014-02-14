@@ -48,7 +48,7 @@ import com.spiddekauga.voider.menu.MainMenu;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.IResourceTexture;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
-import com.spiddekauga.voider.resources.ResourceNames;
+import com.spiddekauga.voider.resources.InternalNames;
 import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.resources.SkinNames.EditorIcons;
 import com.spiddekauga.voider.scene.Gui;
@@ -125,8 +125,8 @@ public abstract class EditorGui extends Gui {
 	 * Initializes the styles
 	 */
 	private void initStyles() {
-		mStyles.skin.general = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
-		mStyles.skin.editor = ResourceCacheFacade.get(ResourceNames.UI_EDITOR_BUTTONS);
+		mStyles.skin.general = ResourceCacheFacade.get(InternalNames.UI_GENERAL);
+		mStyles.skin.editor = ResourceCacheFacade.get(InternalNames.UI_EDITOR_BUTTONS);
 		mStyles.textButton.press = SkinNames.getResource(SkinNames.General.TEXT_BUTTON_PRESS);
 		mStyles.textButton.toggle = SkinNames.getResource(SkinNames.General.TEXT_BUTTON_TOGGLE);
 		mStyles.textButton.selected = SkinNames.getResource(SkinNames.General.TEXT_BUTTON_SELECTED);

@@ -12,5 +12,8 @@
 	<classpathentry exported="true" kind="lib" path="/Voider-desktop/libs/gdx-natives.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/Voider-desktop"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/SpiddekaugaUtils"/>
+	<classpathentry kind="lib" path="/Voider/libs/gdx-sqlite.jar" sourcepath="/Voider/libs/gdx-sqlite-src.jar"/>
+	<classpathentry kind="lib" path="/Voider-desktop/libs/gdx-sqlite-desktop.jar"/>
+	<classpathentry kind="lib" path="/Voider-desktop/libs/sqlite-jdbc-3.7.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

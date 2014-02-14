@@ -27,7 +27,7 @@ import com.spiddekauga.voider.game.actors.ActorShapeTypes;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
-import com.spiddekauga.voider.resources.ResourceNames;
+import com.spiddekauga.voider.resources.InternalNames;
 import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.utils.Pools;
 
@@ -74,7 +74,7 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 		}
 
 		if (Config.Graphics.USE_RELEASE_RENDERER && !isSaving() && !isDone()) {
-			ShaderProgram defaultShader = ResourceCacheFacade.get(ResourceNames.SHADER_DEFAULT);
+			ShaderProgram defaultShader = ResourceCacheFacade.get(InternalNames.SHADER_DEFAULT);
 			if (defaultShader != null) {
 				mShapeRenderer.setShader(defaultShader);
 			}

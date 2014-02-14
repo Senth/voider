@@ -15,7 +15,7 @@ import com.spiddekauga.voider.resources.IResourceTexture;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceDatabase;
 import com.spiddekauga.voider.resources.ResourceItem;
-import com.spiddekauga.voider.resources.ResourceNames;
+import com.spiddekauga.voider.resources.InternalNames;
 import com.spiddekauga.voider.resources.UndefinedResourceTypeException;
 import com.spiddekauga.voider.utils.Pools;
 
@@ -98,14 +98,14 @@ public class SelectDefScene extends WorldScene {
 	@Override
 	protected void loadResources() {
 		super.loadResources();
-		ResourceCacheFacade.load(ResourceNames.UI_GENERAL);
+		ResourceCacheFacade.load(InternalNames.UI_GENERAL);
 		ResourceCacheFacade.loadAllOf(this, mDefType, true);
 	}
 
 	@Override
 	protected void unloadResources() {
 		super.unloadResources();
-		ResourceCacheFacade.unload(ResourceNames.UI_GENERAL);
+		ResourceCacheFacade.unload(InternalNames.UI_GENERAL);
 		ResourceCacheFacade.unloadAllOf(this, mDefType, true);
 		ResourceCacheFacade.unloadAll(this, mAdditionalLoadedDefs, true);
 	}

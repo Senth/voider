@@ -93,6 +93,13 @@ class SqliteUpgrader {
 		mNotFoundTables.add("new_user");
 		mCreateTableQueries.put("new_user", "CREATE TABLE IF NOT EXISTS new_user (username TEXT, password TEXT, email TEXT);");
 
+		// revisions
+		mNotFoundTables.add("resource_revision");
+		mCreateTableQueries.put("resource_revision", "CREATE TABLE IF NOT EXISTS resource_revision (uuid TEXT PRIMARY KEY, revision INTEGER, date INTEGER);");
+
+		// resources
+		mNotFoundTables.add("resource");
+		mCreateTableQueries.put("resource", "CREATE TABLE IF NOT EXISTS resource (uuid TEXT PRIMARY KEY, type INTEGER);");
 	}
 
 	/**

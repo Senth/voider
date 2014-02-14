@@ -6,6 +6,7 @@ import com.badlogic.gdx.sql.DatabaseFactory;
 import com.badlogic.gdx.sql.SQLiteGdxException;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.GdxRuntimeException;
+import com.spiddekauga.voider.Config;
 
 /**
  * SQLite gateway
@@ -36,7 +37,7 @@ class SqliteGateway implements Disposable {
 		// Get external file location
 		case Desktop:
 			String externalLocation = Gdx.files.getExternalStoragePath();
-			return externalLocation + "/Voider/" + FILENAME;
+			return externalLocation + "Voider" + (Config.Debug.JUNIT_TEST ? "-test/" : "/") + FILENAME;
 
 		case Android:
 			return FILENAME;

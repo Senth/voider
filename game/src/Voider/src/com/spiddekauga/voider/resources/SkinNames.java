@@ -182,8 +182,8 @@ public class SkinNames {
 		}
 
 		@Override
-		public ResourceNames getSkinName() {
-			return ResourceNames.UI_EDITOR_BUTTONS;
+		public InternalNames getSkinName() {
+			return InternalNames.UI_EDITOR_BUTTONS;
 		}
 
 		/**
@@ -357,8 +357,8 @@ public class SkinNames {
 		}
 
 		@Override
-		public ResourceNames getSkinName() {
-			return ResourceNames.UI_EDITOR_BUTTONS;
+		public InternalNames getSkinName() {
+			return InternalNames.UI_EDITOR_BUTTONS;
 		}
 
 		/**
@@ -400,8 +400,8 @@ public class SkinNames {
 		}
 
 		@Override
-		public ResourceNames getSkinName() {
-			return ResourceNames.UI_GAME;
+		public InternalNames getSkinName() {
+			return InternalNames.UI_GAME;
 		}
 
 		/**
@@ -524,8 +524,8 @@ public class SkinNames {
 		}
 
 		@Override
-		public ResourceNames getSkinName() {
-			return ResourceNames.UI_GENERAL;
+		public InternalNames getSkinName() {
+			return InternalNames.UI_GENERAL;
 		}
 
 		/**
@@ -555,7 +555,7 @@ public class SkinNames {
 		/**
 		 * @return skin name
 		 */
-		ResourceNames getSkinName();
+		InternalNames getSkinName();
 	}
 
 	/**
@@ -594,7 +594,7 @@ public class SkinNames {
 		}
 
 		@Override
-		public ResourceNames getSkinName() {
+		public InternalNames getSkinName() {
 			return null;
 		}
 

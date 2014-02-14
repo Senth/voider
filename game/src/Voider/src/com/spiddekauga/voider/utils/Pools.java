@@ -13,9 +13,10 @@ import com.spiddekauga.utils.scene.ui.Cell;
 import com.spiddekauga.utils.scene.ui.Label;
 import com.spiddekauga.utils.scene.ui.Row;
 import com.spiddekauga.voider.game.actors.BulletActor;
+import com.spiddekauga.voider.resources.InternalNames;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceItem;
-import com.spiddekauga.voider.resources.ResourceNames;
+import com.spiddekauga.voider.resources.RevisionInfo;
 
 /**
  * Common pools used in the program
@@ -24,42 +25,44 @@ import com.spiddekauga.voider.resources.ResourceNames;
  */
 public class Pools {
 	/** Vector2 pool */
-	public static Pool<Vector2> vector2 = new Pool<Vector2>(Vector2.class, 16, 500);
+	public static Pool<Vector2> vector2 = new Pool<>(Vector2.class, 16, 500);
 	/** Color pool */
-	public static Pool<Color> color = new Pool<Color>(Color.class, 16, 100);
+	public static Pool<Color> color = new Pool<>(Color.class, 16, 100);
 	/** ArrayList pool */
 	@SuppressWarnings("rawtypes")
-	public static Pool<ArrayList> arrayList = new Pool<ArrayList>(ArrayList.class, 16, 100);
+	public static Pool<ArrayList> arrayList = new Pool<>(ArrayList.class, 16, 100);
 	/** Hash set */
 	@SuppressWarnings("rawtypes")
-	public static Pool<HashSet> hashSet = new Pool<HashSet>(HashSet.class, 16, 100);
+	public static Pool<HashSet> hashSet = new Pool<>(HashSet.class, 16, 100);
 	/** Hash map */
 	@SuppressWarnings("rawtypes")
-	public static Pool<HashMap> hashMap = new Pool<HashMap>(HashMap.class, 16, 100);
+	public static Pool<HashMap> hashMap = new Pool<>(HashMap.class, 16, 100);
 	/** Identity Hash Map */
 	@SuppressWarnings("rawtypes")
-	public static Pool<IdentityMap> identityMap = new Pool<IdentityMap>(IdentityMap.class, 6, 50);
+	public static Pool<IdentityMap> identityMap = new Pool<>(IdentityMap.class, 6, 50);
 	/** Stack */
 	@SuppressWarnings("rawtypes")
-	public static Pool<Stack> stack = new Pool<Stack>(Stack.class, 5, 20);
+	public static Pool<Stack> stack = new Pool<>(Stack.class, 5, 20);
 	/** Cells for tables */
-	public static Pool<Cell> cell = new Pool<Cell>(Cell.class, 50, 250);
+	public static Pool<Cell> cell = new Pool<>(Cell.class, 50, 250);
 	/** Row for tables */
-	public static Pool<Row> row = new Pool<Row>(Row.class, 10, 100);
+	public static Pool<Row> row = new Pool<>(Row.class, 10, 100);
 	/** Resource Items */
-	public static Pool<ResourceItem> resourceItem = new Pool<ResourceItem>(ResourceItem.class, 50, 400);
+	public static Pool<ResourceItem> resourceItem = new Pool<>(ResourceItem.class, 50, 400);
 	/** Bullets */
-	public static Pool<BulletActor> bullet = new Pool<BulletActor>(BulletActor.class, 100, 1000);
+	public static Pool<BulletActor> bullet = new Pool<>(BulletActor.class, 100, 1000);
 	/** Time bullets */
-	public static Pool<TimeBullet> timeBullet = new Pool<TimeBullet>(TimeBullet.class, 100, 1000);
+	public static Pool<TimeBullet> timeBullet = new Pool<>(TimeBullet.class, 100, 1000);
 	/** Label pool */
 	public static Pool<Label> label = new Pool<Label>(Label.class, 10, 100) {
 		@Override
 		protected Label newObject() {
-			Skin skin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
+			Skin skin = ResourceCacheFacade.get(InternalNames.UI_GENERAL);
 			return new Label("", skin);
 		}
 	};
 	/** Kryo */
 	public static KryoVoiderPool kryo = new KryoVoiderPool(5, 20);
+	/** Revision information */
+	public static Pool<RevisionInfo> revisionInfo = new Pool<>(RevisionInfo.class);
 }

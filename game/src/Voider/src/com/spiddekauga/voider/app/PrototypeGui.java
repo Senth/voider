@@ -11,7 +11,7 @@ import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.voider.game.actors.EnemyActorDef;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
-import com.spiddekauga.voider.resources.ResourceNames;
+import com.spiddekauga.voider.resources.InternalNames;
 import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.scene.Gui;
 
@@ -25,7 +25,7 @@ public class PrototypeGui extends Gui {
 	public void initGui() {
 		super.initGui();
 
-		mSkin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
+		mSkin = ResourceCacheFacade.get(InternalNames.UI_GENERAL);
 		mMainTable.setTableAlign(Horizontal.RIGHT, Vertical.BOTTOM);
 		mMainTable.setRowAlign(Horizontal.RIGHT, Vertical.TOP);
 

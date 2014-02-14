@@ -10,7 +10,7 @@ import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.utils.scene.ui.TooltipListener;
 import com.spiddekauga.voider.menu.MainMenu.Menus;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
-import com.spiddekauga.voider.resources.ResourceNames;
+import com.spiddekauga.voider.resources.InternalNames;
 import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.utils.Messages;
 
@@ -56,7 +56,7 @@ public class MainMenuGui extends MenuGui {
 	 * Initializes the main menu
 	 */
 	private void initMainMenu() {
-		Skin skin = ResourceCacheFacade.get(ResourceNames.UI_GENERAL);
+		Skin skin = ResourceCacheFacade.get(InternalNames.UI_GENERAL);
 
 		// Set same size on all buttons
 		//		float maxWidth = Gdx.graphics.getWidth() * 0.66f / 3;

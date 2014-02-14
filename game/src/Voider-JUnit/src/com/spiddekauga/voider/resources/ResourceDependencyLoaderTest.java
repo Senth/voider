@@ -37,7 +37,7 @@ public class ResourceDependencyLoaderTest {
 		Gdx.files = new LwjglFiles();
 		Config.init();
 		ResourceSaver.init();
-		ResourceNames.useTestPath();
+		Config.Debug.JUNIT_TEST = true;
 		ResourceCacheFacade.init();
 
 		try {
