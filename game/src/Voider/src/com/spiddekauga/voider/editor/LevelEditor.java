@@ -54,11 +54,12 @@ import com.spiddekauga.voider.game.triggers.TScreenAt;
 import com.spiddekauga.voider.game.triggers.TriggerAction.Actions;
 import com.spiddekauga.voider.game.triggers.TriggerInfo;
 import com.spiddekauga.voider.resources.Def;
+import com.spiddekauga.voider.resources.ExternalTypes;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourceBody;
+import com.spiddekauga.voider.resources.InternalNames;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceItem;
-import com.spiddekauga.voider.resources.InternalNames;
 import com.spiddekauga.voider.resources.ResourceSaver;
 import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.scene.LoadingScene;
@@ -183,9 +184,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 			}
 
 			// Unload the old level
-			if (ResourceCacheFacade.isLoaded(this, mLevel.getId(), mLevel.getRevision()) && !sameRevision) {
-				ResourceCacheFacade.unload(this, mLevel.getDef(), false);
-				ResourceCacheFacade.unload(this, mLevel, mLevel.getDef());
+			if (ResourceCacheFacade.isLoaded(mLevel.getId()) && !sameRevision) {
+				// TODO unload old level
 			}
 			else {
 				mLevel.dispose();
@@ -232,9 +232,9 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	@Override
 	protected void loadResources() {
 		super.loadResources();
-		ResourceCacheFacade.loadAllOf(this, EnemyActorDef.class, true);
-		ResourceCacheFacade.loadAllOf(this, PickupActorDef.class, true);
-		ResourceCacheFacade.loadAllOf(this, LevelDef.class, false);
+		ResourceCacheFacade.loadAllOf(this, ExternalTypes.ENEMY_DEF, true);
+		ResourceCacheFacade.loadAllOf(this, ExternalTypes.PICKUP_DEF, true);
+		ResourceCacheFacade.loadAllOf(this, ExternalTypes.LEVEL_DEF, false);
 
 		// Load all themes
 		for (Themes theme : Themes.values()) {
@@ -245,9 +245,6 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	@Override
 	protected void unloadResources() {
 		super.unloadResources();
-		ResourceCacheFacade.unloadAllOf(this, EnemyActorDef.class, true);
-		ResourceCacheFacade.unloadAllOf(this, PickupActorDef.class, true);
-		ResourceCacheFacade.unloadAllOf(this, LevelDef.class, false);
 
 		// Unload all themes
 		for (Themes theme : Themes.values()) {
@@ -260,7 +257,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		super.reloadResourcesOnActivate(outcome, message);
 
 		// Check if we have created any new enemies, load them in that case
-		ResourceCacheFacade.loadAllNotYetLoadedOf(this, EnemyActorDef.class, true);
+		ResourceCacheFacade.loadAllOf(this, ExternalTypes.ENEMY_DEF, true);
 	}
 
 	@Override
@@ -275,7 +272,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 			// Loading a level
 			if (mLoadingLevel != null) {
 				Level loadedLevel;
-				loadedLevel = ResourceCacheFacade.get(this, mLoadingLevel.getLevelId(), mLoadingLevel.getRevision());
+				loadedLevel = ResourceCacheFacade.get(mLoadingLevel.getLevelId());
 				if (loadedLevel != null) {
 					setLevel(loadedLevel);
 					mGui.resetValues();
@@ -305,12 +302,12 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 					ResourceItem resourceItem = (ResourceItem) message;
 
-					if (!ResourceCacheFacade.isLoaded(this, resourceItem.id, resourceItem.revision)) {
+					if (!ResourceCacheFacade.isLoaded(resourceItem.id)) {
 						ResourceCacheFacade.load(this, resourceItem.id, true, resourceItem.revision);
 						ResourceCacheFacade.finishLoading();
 					}
 
-					mLoadingLevel = ResourceCacheFacade.get(this, resourceItem.id, resourceItem.revision);
+					mLoadingLevel = ResourceCacheFacade.get(resourceItem.id);
 
 					// Only load level if it's not the current level we selected, or another revision
 					if (mLoadingLevel != null) {
@@ -357,7 +354,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	 */
 	public boolean addEnemyDef(UUID enemyId) {
 		if (enemyId != null) {
-			EnemyActorDef enemyActorDef = ResourceCacheFacade.get(this, enemyId);
+			EnemyActorDef enemyActorDef = ResourceCacheFacade.get(enemyId);
 			if (enemyActorDef != null) {
 				if (!mAddEnemies.contains(enemyActorDef)) {
 					mAddEnemies.add(0, enemyActorDef);
@@ -392,7 +389,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	 */
 	public boolean removeEnemyDef(UUID enemyId) {
 		if (enemyId != null) {
-			EnemyActorDef enemyActorDef = ResourceCacheFacade.get(this, enemyId);
+			EnemyActorDef enemyActorDef = ResourceCacheFacade.get(enemyId);
 			if (enemyActorDef != null) {
 				boolean removed = mAddEnemies.remove(enemyActorDef);
 
@@ -422,7 +419,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		try {
 			PickupActorDef pickupActorDef = null;
 			if (pickupId != null) {
-				pickupActorDef = ResourceCacheFacade.get(this, pickupId);
+				pickupActorDef = ResourceCacheFacade.get(pickupId);
 			}
 			((ActorAddTool) Tools.PICKUP_ADD.getTool()).setActorDef(pickupActorDef);
 			mGui.resetValues();
@@ -608,14 +605,14 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		ResourceSaver.save(mLevel.getDef());
 		ResourceSaver.save(mLevel);
 
-		// Update latest resource if revision was changed by more than one
-		if (oldRevision != mLevel.getDef().getRevision() - 1) {
-			ResourceCacheFacade.setLatestResource(mLevel, oldRevision);
-			ResourceCacheFacade.setLatestResource(mLevel.getDef(), oldRevision);
-		}
+		// TODO Update latest resource if revision was changed by more than one
+		//		if (oldRevision != mLevel.getDef().getRevision() - 1) {
+		//			ResourceCacheFacade.setLatestResource(mLevel, oldRevision);
+		//			ResourceCacheFacade.setLatestResource(mLevel.getDef(), oldRevision);
+		//		}
 
 		// Saved first time? Then load level and def and use loaded versions instead
-		if (!ResourceCacheFacade.isLoaded(this, mLevel.getId())) {
+		if (!ResourceCacheFacade.isLoaded(mLevel.getId())) {
 			ResourceCacheFacade.load(this, mLevel.getDef().getId(), false);
 			ResourceCacheFacade.load(this, mLevel.getId(), mLevel.getDef().getId());
 			ResourceCacheFacade.finishLoading();
@@ -623,7 +620,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 			// Reset the level to old revision
 			mLevel.getDef().setRevision(oldRevision);
 
-			setLevel((Level) ResourceCacheFacade.get(this, mLevel.getId()));
+			setLevel((Level) ResourceCacheFacade.get(mLevel.getId()));
 		}
 
 		setSaved();
@@ -633,7 +630,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	public void loadDef() {
 		mSelectionAction = SelectionActions.LEVEL;
 
-		Scene scene = new SelectDefScene(LevelDef.class, true, true, true);
+		Scene scene = new SelectDefScene(ExternalTypes.LEVEL_DEF, true, true, true);
 		SceneSwitcher.switchTo(scene);
 
 		setSaved();
@@ -1076,7 +1073,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	void selectPickup() {
 		mSelectionAction = SelectionActions.PICKUP;
 
-		Scene scene = new SelectDefScene(PickupActorDef.class, false, false, false);
+		Scene scene = new SelectDefScene(ExternalTypes.PICKUP_DEF, false, false, false);
 		SceneSwitcher.switchTo(scene);
 	}
 
@@ -1086,7 +1083,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	void selectEnemy() {
 		mSelectionAction = SelectionActions.ENEMY;
 
-		Scene scene = new SelectDefScene(EnemyActorDef.class, false, true, false);
+		Scene scene = new SelectDefScene(ExternalTypes.ENEMY_DEF, false, true, false);
 		SceneSwitcher.switchTo(scene);
 	}
 

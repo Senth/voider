@@ -175,9 +175,16 @@ public abstract class Def extends Resource implements IResourceDependency, IReso
 	 * @return date string
 	 */
 	public String getDateString() {
-		// Format date
+		return getDateString(mDate);
+	}
+
+	/**
+	 * @param date the date to return the string of
+	 * @return date string
+	 */
+	public static String getDateString(Date date) {
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy.MM.dd-HH.mm.ss");
-		String dateString = simpleDateFormat.format(mDate);
+		String dateString = simpleDateFormat.format(date);
 		return dateString;
 	}
 

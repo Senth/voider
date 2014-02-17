@@ -288,9 +288,9 @@ class LoadedDb {
 					if (resource != null) {
 						String filepath;
 						if (resource instanceof IResourceRevision) {
-							filepath = ResourceDatabase.getFilePath(resource.getId(), ((IResourceRevision) resource).getRevision());
+							filepath = ResourceDatabaseOld.getFilePath(resource.getId(), ((IResourceRevision) resource).getRevision());
 						} else {
-							filepath = ResourceDatabase.getFilePath(resource);
+							filepath = ResourceDatabaseOld.getFilePath(resource);
 						}
 
 						message += sceneString + ": " + filepath + ", refs: " + revisionEntry.getValue().count + "\n";

@@ -12,9 +12,10 @@ import com.spiddekauga.voider.game.WeaponDef;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.BulletActor;
 import com.spiddekauga.voider.game.actors.BulletActorDef;
+import com.spiddekauga.voider.resources.ExternalTypes;
+import com.spiddekauga.voider.resources.InternalNames;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceItem;
-import com.spiddekauga.voider.resources.InternalNames;
 import com.spiddekauga.voider.resources.ResourceSaver;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
@@ -71,12 +72,12 @@ public class BulletEditor extends ActorEditor {
 				if (message instanceof ResourceItem) {
 					ResourceItem resourceItem = (ResourceItem) message;
 
-					if (!ResourceCacheFacade.isLoaded(this, resourceItem.id, resourceItem.revision)) {
+					if (!ResourceCacheFacade.isLoaded(resourceItem.id)) {
 						ResourceCacheFacade.load(this, resourceItem.id, true, resourceItem.revision);
 						ResourceCacheFacade.finishLoading();
 					}
 
-					BulletActorDef bulletDef = ResourceCacheFacade.get(this, resourceItem.id, resourceItem.revision);
+					BulletActorDef bulletDef = ResourceCacheFacade.get(resourceItem.id);
 					setDef(bulletDef);
 					mGui.resetValues();
 					setSaved();
@@ -133,13 +134,12 @@ public class BulletEditor extends ActorEditor {
 	@Override
 	protected void loadResources() {
 		super.loadResources();
-		ResourceCacheFacade.loadAllOf(this, BulletActorDef.class, true);
+		ResourceCacheFacade.loadAllOf(this, ExternalTypes.BULLET_DEF, true);
 	}
 
 	@Override
 	protected void unloadResources() {
 		super.unloadResources();
-		ResourceCacheFacade.unloadAllOf(this, BulletActorDef.class, true);
 	}
 
 	@Override
@@ -168,17 +168,17 @@ public class BulletEditor extends ActorEditor {
 		ResourceSaver.save(mDef);
 
 		// Saved first time? Then load it and use the loaded version
-		if (!ResourceCacheFacade.isLoaded(this, mDef.getId())) {
+		if (!ResourceCacheFacade.isLoaded(mDef.getId())) {
 			ResourceCacheFacade.load(this, mDef.getId(), true);
 			ResourceCacheFacade.finishLoading();
 
-			setDef((BulletActorDef) ResourceCacheFacade.get(this, mDef.getId()));
+			setDef((BulletActorDef) ResourceCacheFacade.get(mDef.getId()));
 		}
 
-		// Update latest loaded resource
-		if (oldRevision != mDef.getRevision() - 1) {
-			ResourceCacheFacade.setLatestResource(mDef, oldRevision);
-		}
+		// TODO Update latest loaded resource
+		//		if (oldRevision != mDef.getRevision() - 1) {
+		//			ResourceCacheFacade.setLatestResource(mDef, oldRevision);
+		//		}
 
 		setSaved();
 	}
@@ -187,7 +187,7 @@ public class BulletEditor extends ActorEditor {
 	public void loadDef() {
 		mSelectionAction = SelectionActions.LOAD_BULLET;
 
-		Scene selectionScene = new SelectDefScene(BulletActorDef.class, true, true, true);
+		Scene selectionScene = new SelectDefScene(ExternalTypes.BULLET_DEF, true, true, true);
 		SceneSwitcher.switchTo(selectionScene);
 	}
 

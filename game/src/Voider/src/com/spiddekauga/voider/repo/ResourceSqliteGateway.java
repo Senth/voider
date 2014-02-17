@@ -17,6 +17,23 @@ import com.spiddekauga.voider.utils.Pools;
  */
 class ResourceSqliteGateway extends SqliteGateway {
 	/**
+	 * @param uuid resource to test if it exists
+	 * @return true if the resource exists
+	 */
+	boolean exists(UUID uuid) {
+		try {
+			DatabaseCursor cursor = mDatabase.rawQuery("SELECT NULL FROM resource WHERE uuid='" + uuid + "';");
+
+			boolean exists = cursor.next();
+			cursor.close();
+			return exists;
+		} catch (SQLiteGdxException e) {
+			e.printStackTrace();
+			throw new GdxRuntimeException(e);
+		}
+	}
+
+	/**
 	 * Add a resource to the database
 	 * @param uuid unique id of the resource
 	 * @param typeIdentifier the type of resource to add
@@ -38,7 +55,8 @@ class ResourceSqliteGateway extends SqliteGateway {
 	 */
 	void addRevision(UUID uuid, int revision, Date date) {
 		try {
-			mDatabase.execSQL("INSERT INTO resource_revision VALUES ( '" + uuid + "', " + revision + ", " + date.getTime() + ");");
+			String dateValue = date == null ? "0" : String.valueOf(date.getTime());
+			mDatabase.execSQL("INSERT INTO resource_revision VALUES ( '" + uuid + "', " + revision + ", " + dateValue + ");");
 		} catch (SQLiteGdxException e) {
 			e.printStackTrace();
 			throw new GdxRuntimeException(e);
@@ -71,6 +89,8 @@ class ResourceSqliteGateway extends SqliteGateway {
 				String uuid = cursor.getString(RESOURCE__UUID);
 				mDatabase.execSQL("DELETE FROM resource_revision WHERE uuid='" + uuid + "';");
 			}
+
+			cursor.close();
 
 			// Delete all resources
 			mDatabase.execSQL("DELETE FROM resource WHERE type=" + typeIdentifier + ";");
@@ -109,6 +129,7 @@ class ResourceSqliteGateway extends SqliteGateway {
 				String stringUuid = cursor.getString(RESOURCE__UUID);
 				resources.add(UUID.fromString(stringUuid));
 			}
+			cursor.close();
 		} catch (SQLiteGdxException e) {
 			e.printStackTrace();
 			throw new GdxRuntimeException(e);
@@ -155,6 +176,7 @@ class ResourceSqliteGateway extends SqliteGateway {
 				revisionInfo.date.setTime(cursor.getLong(RESOURCE_REVISION__DATE));
 				revisions.add(revisionInfo);
 			}
+			cursor.close();
 		} catch (SQLiteGdxException e) {
 			e.printStackTrace();
 			throw new GdxRuntimeException(e);
@@ -166,12 +188,10 @@ class ResourceSqliteGateway extends SqliteGateway {
 	/**
 	 * Get the latest revision of the specified resource
 	 * @param uuid the resource to get the revision for
-	 * @return latest revision of the specifed resource. If the resource
+	 * @return latest revision of the specified resource. If the resource
 	 * doesn't have any revisions null is returned.
 	 */
 	RevisionInfo getRevisionLatest(UUID uuid) {
-
-
 		try {
 			DatabaseCursor cursor = mDatabase.rawQuery("SELECT * FROM resource_revision WHERE uuid='" + uuid + "' ORDER BY revision DESC LIMIT 1;");
 
@@ -181,12 +201,32 @@ class ResourceSqliteGateway extends SqliteGateway {
 				revisionInfo.date.setTime(cursor.getLong(RESOURCE_REVISION__DATE));
 				return revisionInfo;
 			}
+			cursor.close();
 		} catch (SQLiteGdxException e) {
 			e.printStackTrace();
 			throw new GdxRuntimeException(e);
 		}
 
 		return null;
+	}
+
+	/**
+	 * @param uuid id of the resource to get the type for
+	 * @return type of the resource id, -1 if not found.
+	 */
+	int getType(UUID uuid) {
+		try {
+			DatabaseCursor cursor = mDatabase.rawQuery("SELECT type FROM resource WHERE uuid='" + uuid + "';");
+
+			if (cursor.next()) {
+				return cursor.getInt(0);
+			} else {
+				return -1;
+			}
+		} catch (SQLiteGdxException e) {
+			e.printStackTrace();
+			throw new GdxRuntimeException(e);
+		}
 	}
 
 	/** Column for resource uuid */

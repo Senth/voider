@@ -6,12 +6,13 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.spiddekauga.utils.scene.ui.ResourceTextureButton;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
+import com.spiddekauga.utils.scene.ui.ResourceTextureButton;
 import com.spiddekauga.voider.game.actors.EnemyActorDef;
-import com.spiddekauga.voider.resources.ResourceCacheFacade;
+import com.spiddekauga.voider.resources.ExternalTypes;
 import com.spiddekauga.voider.resources.InternalNames;
+import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.scene.Gui;
 
@@ -62,7 +63,7 @@ public class PrototypeGui extends Gui {
 	 * Add all enemies to the window
 	 */
 	private void initEnemies() {
-		ArrayList<EnemyActorDef> enemyDefs = ResourceCacheFacade.getAll(mScene, EnemyActorDef.class);
+		ArrayList<EnemyActorDef> enemyDefs = ResourceCacheFacade.getAll(ExternalTypes.ENEMY_DEF);
 
 		int multipleCount = 5;
 		int cColumEnemy = 0;

@@ -4,6 +4,7 @@ package com.spiddekauga.voider.resources;
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
@@ -12,6 +13,7 @@ import com.esotericsoftware.kryo.io.Output;
 import com.spiddekauga.utils.ObjectCrypter;
 import com.spiddekauga.utils.Strings;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.repo.ResourceLocalRepo;
 import com.spiddekauga.voider.utils.Pools;
 
 /**
@@ -49,8 +51,12 @@ public class ResourceSaver {
 		if (resource instanceof IResourceRevision) {
 			oldRevision = ((IResourceRevision) resource).getRevision();
 
-			int nextRevision = ResourceDatabase.getLatestRevisionNumber(resource.getId());
-			nextRevision++;
+
+			RevisionInfo revisionInfo = ResourceLocalRepo.getRevisionLatest(resource.getId());
+			int nextRevision = 1;
+			if (revisionInfo != null) {
+				nextRevision = revisionInfo.revision + 1;
+			}
 			((IResourceRevision) resource).setRevision(nextRevision);
 		}
 
@@ -68,9 +74,8 @@ public class ResourceSaver {
 				Gdx.app.debug("ResourceSaver", "Encrypted (" + resource.getClass().getSimpleName() + ") " + resource.getId().toString());
 			}
 
-			ResourceDatabase.addSavedResource(resource);
 
-			String filePath = ResourceDatabase.getFilePath(resource);
+			String filePath = ResourceLocalRepo.getFilepath(resource);
 			FileHandle saveFile = Gdx.files.external(filePath);
 
 			// Create parent paths
@@ -90,13 +95,14 @@ public class ResourceSaver {
 
 			// Save the file
 			saveFile.writeBytes(encryptedDef, false);
+			ResourceLocalRepo.add(resource);
 
 
-			// Create link (or copy for now)
+			// Copy to revision directory
 			if (resource instanceof IResourceRevision) {
-				String latestPath = ResourceDatabase.getFilePath(resource.getId(), -1);
-				FileHandle latestCopy = Gdx.files.external(latestPath);
-				saveFile.copyTo(latestCopy);
+				String revisionPath = ResourceLocalRepo.getRevisionFilepath((IResourceRevision) resource);
+				FileHandle revisionFile = Gdx.files.external(revisionPath);
+				saveFile.copyTo(revisionFile);
 			}
 
 			if (Gdx.app != null) {
@@ -104,7 +110,7 @@ public class ResourceSaver {
 			}
 
 		} catch (Exception e) {
-			ResourceDatabase.removeSavedResource(resource);
+			ResourceLocalRepo.remove(resource.getId());
 
 			if (resource instanceof IResourceRevision) {
 				((IResourceRevision) resource).setRevision(oldRevision);
@@ -120,14 +126,19 @@ public class ResourceSaver {
 	}
 
 	/**
-	 * Removes all resource of the specified type! BEWARE DRAGONS!
-	 * @param resourceType removes all the resources of this type from the folder
+	 * Removes ALL resources! BEWARE DRAGONS!
 	 */
-	public static void clearResources(Class<? extends IResource> resourceType) {
-		ResourceDatabase.removeAllOf(resourceType);
+	public static void clearResources() {
+		String resourcePath = ResourceLocalRepo.getFilepath(UUID.randomUUID());
+		FileHandle resource = Gdx.files.external(resourcePath);
+		FileHandle parent = resource.parent();
+
+		if (parent.exists() && parent.isDirectory()) {
+			parent.deleteDirectory();
+		}
 	}
 
-	/** Private constructor to enfore that no instance exist */
+	/** Private constructor to enforce that no instance exist */
 	private ResourceSaver() {
 		// Does nothing
 	}

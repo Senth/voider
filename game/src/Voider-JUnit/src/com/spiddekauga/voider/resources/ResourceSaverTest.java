@@ -17,6 +17,8 @@ import com.esotericsoftware.kryo.io.Input;
 import com.spiddekauga.utils.ObjectCrypter;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.actors.PickupActorDef;
+import com.spiddekauga.voider.repo.ApplicationStub;
+import com.spiddekauga.voider.repo.ResourceLocalRepo;
 import com.spiddekauga.voider.utils.Pools;
 
 /**
@@ -36,8 +38,8 @@ public class ResourceSaverTest {
 		Gdx.files = new LwjglFiles();
 		Config.init();
 		ResourceSaver.init();
+		Gdx.app = new ApplicationStub();
 		Config.Debug.JUNIT_TEST = true;
-		ResourceCacheFacade.init();
 	}
 
 	/**
@@ -59,7 +61,7 @@ public class ResourceSaverTest {
 		// Test to save it and then load
 		ResourceSaver.save(def);
 
-		String relativePath = ResourceDatabase.getFilePath(def);
+		String relativePath = ResourceLocalRepo.getFilepath(def);
 		FileHandle savedFile = Gdx.files.external(relativePath);
 		assertTrue("saved file exist", savedFile.exists());
 
@@ -83,7 +85,7 @@ public class ResourceSaverTest {
 		def.addDependency(InternalNames.TEXTURE_PLAYER);
 		ResourceSaver.save(def);
 
-		relativePath = ResourceDatabase.getFilePath(def);
+		relativePath = ResourceLocalRepo.getFilepath(def);
 		savedFile = Gdx.files.external(relativePath);
 		encryptedDef = savedFile.readBytes();
 
@@ -99,7 +101,7 @@ public class ResourceSaverTest {
 
 
 		// Delete the files
-		ResourceSaver.clearResources(PickupActorDef.class);
+		ResourceSaver.clearResources();
 	}
 
 }

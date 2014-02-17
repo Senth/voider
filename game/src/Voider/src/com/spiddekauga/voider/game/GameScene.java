@@ -20,8 +20,10 @@ import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.PlayerActor;
 import com.spiddekauga.voider.game.actors.PlayerActorDef;
-import com.spiddekauga.voider.resources.ResourceCacheFacade;
+import com.spiddekauga.voider.repo.ResourceLocalRepo;
+import com.spiddekauga.voider.resources.ExternalTypes;
 import com.spiddekauga.voider.resources.InternalNames;
+import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceSaver;
 import com.spiddekauga.voider.resources.UndefinedResourceTypeException;
 import com.spiddekauga.voider.scene.GameOverScene;
@@ -105,7 +107,7 @@ public class GameScene extends WorldScene {
 			// Load level
 			if (mLevelToLoad != null) {
 				try {
-					Level level = ResourceCacheFacade.get(this, mLevelToLoad.getLevelId(), mLevelToLoad.getRevision());
+					Level level = ResourceCacheFacade.get(mLevelToLoad.getLevelId());
 					level.setStartPosition(level.getDef().getStartXCoord());
 					setLevel(level);
 				} catch (UndefinedResourceTypeException e) {
@@ -116,7 +118,7 @@ public class GameScene extends WorldScene {
 			// Resume a level
 			if (mGameSaveDef != null) {
 				try {
-					mGameSave = ResourceCacheFacade.get(this, mGameSaveDef.getGameSaveId(), mGameSaveDef.getRevision());
+					mGameSave = ResourceCacheFacade.get(mGameSaveDef.getGameSaveId());
 
 					mPlayerActor = mGameSave.getPlayerActor();
 					mBulletDestroyer = mGameSave.getBulletDestroyer();
@@ -149,20 +151,11 @@ public class GameScene extends WorldScene {
 	protected void onDispose() {
 		// Save the level
 		if (!mTesting) {
-			// Resumed game
+			// Remove old saved game
 			if (mGameSave != null) {
-				// Set game save (as it will not be set if the user quits the game while loading)
-				if (mGameSave == null) {
-					mGameSave = ResourceCacheFacade.get(this, mGameSaveDef.getGameSaveId());
-				}
-
-				if (mGameSave != null) {
-					ResourceCacheFacade.unload(this, mGameSave, mGameSaveDef);
-				}
+				ResourceLocalRepo.remove(mGameSave.getId());
+				ResourceLocalRepo.remove(mGameSaveDef.getId());
 			}
-
-			ResourceSaver.clearResources(GameSave.class);
-			ResourceSaver.clearResources(GameSaveDef.class);
 
 			if (getOutcome() == Outcomes.LEVEL_QUIT) {
 				GameSave gameSave = new GameSave(mLevel, mPlayerActor, mBulletDestroyer, getGameTime());
@@ -336,7 +329,7 @@ public class GameScene extends WorldScene {
 		ResourceCacheFacade.load(InternalNames.UI_GENERAL);
 		ResourceCacheFacade.load(InternalNames.UI_GAME);
 		ResourceCacheFacade.load(InternalNames.SHADER_DEFAULT);
-		ResourceCacheFacade.loadAllOf(this, PlayerActorDef.class, true);
+		ResourceCacheFacade.loadAllOf(this, ExternalTypes.PLAYER_DEF, true);
 
 		if (mLevelToLoad != null) {
 			ResourceCacheFacade.load(this, mLevelToLoad.getLevelId(), mLevelToLoad.getId());
@@ -357,26 +350,6 @@ public class GameScene extends WorldScene {
 		ResourceCacheFacade.unload(InternalNames.UI_GENERAL);
 		ResourceCacheFacade.unload(InternalNames.UI_GAME);
 		ResourceCacheFacade.unload(InternalNames.SHADER_DEFAULT);
-		ResourceCacheFacade.unloadAllOf(this, PlayerActorDef.class, true);
-
-		// Loaded level
-		if (mLevelToLoad != null) {
-			// Set level (as it will not be set if the user quits the game while loading)
-			if (mLevel == null) {
-				mLevel = ResourceCacheFacade.get(this, mLevelToLoad.getLevelId());
-			}
-
-			if (mLevel != null) {
-				ResourceCacheFacade.unload(this, mLevel, mLevel.getDef());
-			}
-		}
-
-		// Testing level unload dependencies
-		if (mTesting && mLevel != null) {
-			ResourceCacheFacade.unload(this, mLevel.getDef(), true);
-		}
-
-		// Resumed game is unloaded in #onDispose()...
 	}
 
 	@Override
@@ -510,7 +483,7 @@ public class GameScene extends WorldScene {
 		// Create a new ship when we're not resuming a game
 		if (mGameSaveDef == null) {
 			// Find first available player ship
-			ArrayList<PlayerActorDef> ships = ResourceCacheFacade.getAll(this, PlayerActorDef.class);
+			ArrayList<PlayerActorDef> ships = ResourceCacheFacade.getAll(ExternalTypes.PLAYER_DEF);
 			if (ships.isEmpty()) {
 				setOutcome(Outcomes.LOADING_FAILED_MISSING_FILE, "Could not find any ships");
 				Pools.arrayList.free(ships);

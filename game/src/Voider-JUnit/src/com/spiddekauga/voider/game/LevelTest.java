@@ -28,11 +28,11 @@ import com.spiddekauga.voider.game.actors.EnemyActor;
 import com.spiddekauga.voider.game.actors.EnemyActorDef;
 import com.spiddekauga.voider.game.actors.EnemyGroup;
 import com.spiddekauga.voider.game.actors.PlayerActor;
-import com.spiddekauga.voider.game.actors.PlayerActorDef;
 import com.spiddekauga.voider.game.triggers.TScreenAt;
 import com.spiddekauga.voider.game.triggers.Trigger;
 import com.spiddekauga.voider.game.triggers.TriggerAction.Actions;
 import com.spiddekauga.voider.game.triggers.TriggerInfo;
+import com.spiddekauga.voider.repo.ApplicationStub;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceSaver;
@@ -57,8 +57,8 @@ public class LevelTest {
 		Gdx.files = new LwjglFiles();
 		Config.init();
 		ResourceSaver.init();
+		Gdx.app = new ApplicationStub();
 		Config.Debug.JUNIT_TEST = true;
-		ResourceCacheFacade.init();
 		SceneSwitcher.switchTo(mScene);
 
 		mWorld = new World(new Vector2(), false);
@@ -91,11 +91,7 @@ public class LevelTest {
 	 */
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
-		ResourceCacheFacade.unload(mScene, mLevelDef, false);
-		ResourceCacheFacade.unload(mScene, mPlayerActor.getDef(), false);
-		ResourceCacheFacade.unload(mScene, mEnemyDef, false);
-		ResourceSaver.clearResources(LevelDef.class);
-		ResourceSaver.clearResources(PlayerActorDef.class);
+		ResourceSaver.clearResources();
 
 		mEnemyDef.dispose();
 		mPlayerActor.dispose();

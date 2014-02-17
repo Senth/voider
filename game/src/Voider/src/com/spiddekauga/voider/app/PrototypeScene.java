@@ -2,9 +2,9 @@ package com.spiddekauga.voider.app;
 
 import com.badlogic.gdx.Input;
 import com.spiddekauga.utils.KeyHelper;
-import com.spiddekauga.voider.game.actors.EnemyActorDef;
-import com.spiddekauga.voider.resources.ResourceCacheFacade;
+import com.spiddekauga.voider.resources.ExternalTypes;
 import com.spiddekauga.voider.resources.InternalNames;
+import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.scene.Scene;
 
 /**
@@ -27,14 +27,13 @@ public class PrototypeScene extends Scene {
 	protected void loadResources() {
 		super.loadResources();
 		ResourceCacheFacade.load(InternalNames.UI_GENERAL);
-		ResourceCacheFacade.loadAllOf(this, EnemyActorDef.class, true);
+		ResourceCacheFacade.loadAllOf(this, ExternalTypes.ENEMY_DEF, true);
 	}
 
 	@Override
 	protected void unloadResources() {
 		super.unloadResources();
 		ResourceCacheFacade.unload(InternalNames.UI_GENERAL);
-		ResourceCacheFacade.unloadAllOf(this, EnemyActorDef.class, true);
 	}
 
 	@Override

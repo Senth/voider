@@ -494,7 +494,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 			}
 		} else {
 			UUID defId = kryo.readObject(input, UUID.class);
-			mDef = ResourceCacheFacade.get(null, defId);
+			mDef = ResourceCacheFacade.get(defId);
 		}
 
 		// Read body

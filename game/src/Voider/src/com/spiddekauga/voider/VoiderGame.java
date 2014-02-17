@@ -34,7 +34,6 @@ public class VoiderGame implements ApplicationListener {
 		// Init various classes
 		Config.init();
 		ResourceSaver.init();
-		ResourceCacheFacade.init();
 		ResourceChecker.checkAndCreateResources();
 
 		ShaderProgram.pedantic = false;

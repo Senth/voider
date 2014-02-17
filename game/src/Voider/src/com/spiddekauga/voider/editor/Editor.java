@@ -473,7 +473,7 @@ public abstract class Editor extends WorldScene implements IEditor {
 			if (!def.isPublished() && !foundUuids.contains(entry.getKey())) {
 				foundUuids.add(entry.getKey());
 
-				Def dependency = ResourceCacheFacade.get(this, entry.getKey());
+				Def dependency = ResourceCacheFacade.get(entry.getKey());
 				if (dependency != null) {
 					dependencies.add(dependency);
 

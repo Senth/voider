@@ -18,6 +18,8 @@ import com.esotericsoftware.minlog.Log;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.actors.ActorDef;
 import com.spiddekauga.voider.game.actors.PlayerActorDef;
+import com.spiddekauga.voider.repo.ApplicationStub;
+import com.spiddekauga.voider.repo.ResourceLocalRepo;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneStub;
 
@@ -37,8 +39,8 @@ public class ResourceDependencyLoaderTest {
 		Gdx.files = new LwjglFiles();
 		Config.init();
 		ResourceSaver.init();
+		Gdx.app = new ApplicationStub();
 		Config.Debug.JUNIT_TEST = true;
-		ResourceCacheFacade.init();
 
 		try {
 			Field fAssetManager = ResourceCacheFacade.class.getDeclaredField("mAssetManager");
@@ -87,18 +89,18 @@ public class ResourceDependencyLoaderTest {
 		ResourceCacheFacade.load(scene, loadingDef.getId(), true, loadingDef.getRevision());
 		ResourceCacheFacade.finishLoading();
 
-		assertTrue("def is not loaded", mAssetManager.isLoaded(ResourceDatabase.getFilePath(loadingDef)));
-		assertTrue("dep1 is not loaded", mAssetManager.isLoaded(ResourceDatabase.getFilePath(dep1)));
-		assertTrue("dep2 is not loaded", mAssetManager.isLoaded(ResourceDatabase.getFilePath(dep2)));
-		assertTrue("depdep is not loaded", mAssetManager.isLoaded(ResourceDatabase.getFilePath(depdep)));
+		assertTrue("def is not loaded", mAssetManager.isLoaded(ResourceLocalRepo.getFilepath(loadingDef)));
+		assertTrue("dep1 is not loaded", mAssetManager.isLoaded(ResourceLocalRepo.getFilepath(dep1)));
+		assertTrue("dep2 is not loaded", mAssetManager.isLoaded(ResourceLocalRepo.getFilepath(dep2)));
+		assertTrue("depdep is not loaded", mAssetManager.isLoaded(ResourceLocalRepo.getFilepath(depdep)));
 		assertEquals(mAssetManager.getLoadedAssets(), 4);
 
 		// Unload
-		ResourceCacheFacade.unload(scene, loadingDef, true);
-		assertTrue("def is loaded", !mAssetManager.isLoaded(ResourceDatabase.getFilePath(loadingDef)));
-		assertTrue("dep1 is loaded", !mAssetManager.isLoaded(ResourceDatabase.getFilePath(dep1)));
-		assertTrue("dep2 is loaded", !mAssetManager.isLoaded(ResourceDatabase.getFilePath(dep2)));
-		assertTrue("depdep is loaded", !mAssetManager.isLoaded(ResourceDatabase.getFilePath(depdep)));
+		ResourceCacheFacade.unload(scene);
+		assertTrue("def is loaded", !mAssetManager.isLoaded(ResourceLocalRepo.getFilepath(loadingDef)));
+		assertTrue("dep1 is loaded", !mAssetManager.isLoaded(ResourceLocalRepo.getFilepath(dep1)));
+		assertTrue("dep2 is loaded", !mAssetManager.isLoaded(ResourceLocalRepo.getFilepath(dep2)));
+		assertTrue("depdep is loaded", !mAssetManager.isLoaded(ResourceLocalRepo.getFilepath(depdep)));
 		assertEquals(mAssetManager.getLoadedAssets(), 0);
 
 		delete(loadingDef);
@@ -114,7 +116,7 @@ public class ResourceDependencyLoaderTest {
 	 */
 	public static void delete(IResource resource) {
 		try {
-			FileHandle saveFile = Gdx.files.external(ResourceDatabase.getFilePath(resource));
+			FileHandle saveFile = Gdx.files.external(ResourceLocalRepo.getFilepath(resource));
 
 			saveFile.delete();
 

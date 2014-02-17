@@ -577,15 +577,15 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 		output.writeInt(mLevelDef.getRevision(), false);
 	}
 
+	@SuppressWarnings("unused")
 	@Override
 	public void read(Kryo kryo, Input input) {
-		@SuppressWarnings("unused")
 		int classRevision = input.readInt(true);
 
 		// LevelDef
 		UUID levelDefId = kryo.readObject(input, UUID.class);
 		int revision = input.readInt(false);
-		mLevelDef = ResourceCacheFacade.get(null, levelDefId, revision);
+		mLevelDef = ResourceCacheFacade.get(levelDefId);
 	}
 
 	@Override

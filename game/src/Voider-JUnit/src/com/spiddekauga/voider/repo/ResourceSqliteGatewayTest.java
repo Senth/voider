@@ -1,7 +1,9 @@
 package com.spiddekauga.voider.repo;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -14,9 +16,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglFiles;
 import com.badlogic.gdx.backends.lwjgl.LwjglNativesLoader;
 import com.badlogic.gdx.files.FileHandle;
@@ -29,34 +29,6 @@ import com.spiddekauga.voider.resources.RevisionInfo;
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
 public class ResourceSqliteGatewayTest {
-	/** Stub application listener */
-	private static ApplicationListener applicationListener = new ApplicationListener() {
-
-		@Override
-		public void resume() {
-		}
-
-		@Override
-		public void resize(int width, int height) {
-		}
-
-		@Override
-		public void render() {
-		}
-
-		@Override
-		public void pause() {
-		}
-
-		@Override
-		public void dispose() {
-		}
-
-		@Override
-		public void create() {
-		}
-	};
-
 	/**
 	 * Initializes the database
 	 */
@@ -64,7 +36,7 @@ public class ResourceSqliteGatewayTest {
 	public static void beforeClass() {
 		LwjglNativesLoader.load();
 		Gdx.files = new LwjglFiles();
-		Gdx.app = new LwjglApplication(applicationListener);
+		Gdx.app = new ApplicationStub();
 		Config.Debug.JUNIT_TEST = true;
 	}
 
@@ -104,8 +76,15 @@ public class ResourceSqliteGatewayTest {
 	 */
 	@Test
 	public void testAdd() {
-		mGateway.add(UUID.randomUUID(), 0);
-		mGateway.add(UUID.randomUUID(), 0);
+		UUID first = UUID.randomUUID();
+		UUID second = UUID.randomUUID();
+
+		mGateway.add(first, 0);
+		mGateway.add(second, 0);
+
+		assertTrue(mGateway.exists(first));
+		assertTrue(mGateway.exists(second));
+		assertFalse(mGateway.exists(UUID.randomUUID()));
 
 		assertEquals(2, mGateway.getCount(0));
 
@@ -152,6 +131,26 @@ public class ResourceSqliteGatewayTest {
 
 		mGateway.removeRevisions(second);
 		assertEquals(0, mGateway.getRevisions(second).size());
+	}
+
+	/**
+	 * Test add revisions without a date
+	 */
+	@Test
+	public void testAddRevisionWithoutDate() {
+		UUID uuid = UUID.randomUUID();
+
+		int cRevisions = 5;
+		for (int i = 0; i < cRevisions; ++i) {
+			mGateway.addRevision(uuid, i, null);
+		}
+
+		ArrayList<RevisionInfo> revisions = mGateway.getRevisions(uuid);
+		assertEquals(cRevisions, revisions.size());
+
+		for (int i = 0; i < cRevisions; ++i) {
+			assertEquals(i, revisions.get(i).revision);
+		}
 	}
 
 	/**

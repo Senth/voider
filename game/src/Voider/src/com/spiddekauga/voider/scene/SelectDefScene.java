@@ -2,20 +2,20 @@ package com.spiddekauga.voider.scene;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.repo.ResourceLocalRepo;
 import com.spiddekauga.voider.resources.Def;
-import com.spiddekauga.voider.resources.IResource;
+import com.spiddekauga.voider.resources.ExternalTypes;
 import com.spiddekauga.voider.resources.IResourceRevision;
 import com.spiddekauga.voider.resources.IResourceTexture;
-import com.spiddekauga.voider.resources.ResourceCacheFacade;
-import com.spiddekauga.voider.resources.ResourceDatabase;
-import com.spiddekauga.voider.resources.ResourceItem;
 import com.spiddekauga.voider.resources.InternalNames;
+import com.spiddekauga.voider.resources.ResourceCacheFacade;
+import com.spiddekauga.voider.resources.ResourceItem;
+import com.spiddekauga.voider.resources.RevisionInfo;
 import com.spiddekauga.voider.resources.UndefinedResourceTypeException;
 import com.spiddekauga.voider.utils.Pools;
 
@@ -40,7 +40,7 @@ public class SelectDefScene extends WorldScene {
 	 * @param showMineOnlyCheckbox set to true if you want the scene to show a checkbox
 	 * to only display one's own actors.
 	 */
-	private SelectDefScene(Class<? extends IResource> defType, boolean showMineOnly, boolean showMineOnlyCheckbox) {
+	private SelectDefScene(ExternalTypes defType, boolean showMineOnly, boolean showMineOnlyCheckbox) {
 		super(new SelectDefGui(showMineOnlyCheckbox), 0);
 
 		mShowMineOnly = showMineOnly;
@@ -65,7 +65,7 @@ public class SelectDefScene extends WorldScene {
 	 * @param canChooseRevision set this to true if the player should be able to select
 	 * another revision of the resource.
 	 */
-	public SelectDefScene(Class<? extends IResource> defType, boolean showMineOnly, boolean showMineOnlyCheckbox, boolean canChooseRevision) {
+	public SelectDefScene(ExternalTypes defType, boolean showMineOnly, boolean showMineOnlyCheckbox, boolean canChooseRevision) {
 		this(defType, showMineOnly, showMineOnlyCheckbox);
 
 		mCanChooseRevision = canChooseRevision;
@@ -77,8 +77,7 @@ public class SelectDefScene extends WorldScene {
 
 		if (outcome == Outcomes.LOADING_SUCCEEDED) {
 			try {
-				@SuppressWarnings("unchecked")
-				ArrayList<Def> defs = (ArrayList<Def>) ResourceCacheFacade.getAll(this, mDefType);
+				ArrayList<Def> defs = ResourceCacheFacade.getAll(mDefType);
 
 				for (Def def : defs) {
 					mDefs.add(new DefVisible(def));
@@ -106,8 +105,6 @@ public class SelectDefScene extends WorldScene {
 	protected void unloadResources() {
 		super.unloadResources();
 		ResourceCacheFacade.unload(InternalNames.UI_GENERAL);
-		ResourceCacheFacade.unloadAllOf(this, mDefType, true);
-		ResourceCacheFacade.unloadAll(this, mAdditionalLoadedDefs, true);
 	}
 
 	@Override
@@ -167,7 +164,7 @@ public class SelectDefScene extends WorldScene {
 	 * @param defRevision definition's revision
 	 */
 	void setSelectedDef(UUID defId, int defRevision) {
-		mSelectedDef = (Def) ResourceCacheFacade.get(this, defId, defRevision);
+		mSelectedDef = (Def) ResourceCacheFacade.get(defId);
 		mSelectedRevision = defRevision;
 	}
 
@@ -179,13 +176,13 @@ public class SelectDefScene extends WorldScene {
 		mSelectedRevision = revision;
 
 		// Load the revision
-		if (!ResourceCacheFacade.isLoaded(this, mSelectedDef.getId(), revision)) {
+		if (!ResourceCacheFacade.isLoaded(mSelectedDef.getId())) {
 			ResourceCacheFacade.load(this, mSelectedDef.getId(), true, revision);
 			ResourceCacheFacade.finishLoading();
 		}
 
 		// Set new resource
-		mSelectedDef = ResourceCacheFacade.get(this, mSelectedDef.getId(), revision);
+		mSelectedDef = ResourceCacheFacade.get(mSelectedDef.getId());
 
 		((SelectDefGui)mGui).resetInfoPanel();
 	}
@@ -202,7 +199,7 @@ public class SelectDefScene extends WorldScene {
 	 * they look like
 	 */
 	boolean isDefDrawable() {
-		return IResourceTexture.class.isAssignableFrom(mDefType);
+		return IResourceTexture.class.isAssignableFrom(mDefType.getClass());
 	}
 
 	/**
@@ -294,9 +291,9 @@ public class SelectDefScene extends WorldScene {
 	 * @return map with all revisions and dates of the current selected resource, null
 	 * if none was found.
 	 */
-	Map<Integer, String> getSelectedResourceRevisionsWithDates() {
+	ArrayList<RevisionInfo> getSelectedResourceRevisionsWithDates() {
 		if (mSelectedDef != null) {
-			return ResourceDatabase.getResourceRevisionsWithDate(mSelectedDef.getId());
+			return ResourceLocalRepo.getRevisions(mSelectedDef.getId());
 		}
 		return null;
 	}
@@ -558,8 +555,6 @@ public class SelectDefScene extends WorldScene {
 
 	/** If the player shall be able to choose another revision for the definition */
 	private boolean mCanChooseRevision = false;
-	/** Additional loaded definitions, or rather other revisions */
-	private ArrayList<Def> mAdditionalLoadedDefs = new ArrayList<Def>();
 	/** Currently selected definition */
 	private Def mSelectedDef = null;
 	/** The selected revision for the selected definition */
@@ -576,5 +571,5 @@ public class SelectDefScene extends WorldScene {
 	/** Shows only one's own actors, this is the value of the checkbox */
 	private boolean mShowMineOnly;
 	/** Definition type to select from */
-	private Class<? extends IResource> mDefType;
+	private ExternalTypes mDefType;
 }

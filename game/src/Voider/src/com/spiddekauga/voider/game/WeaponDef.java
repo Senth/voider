@@ -91,7 +91,7 @@ public class WeaponDef {
 	 */
 	public BulletActorDef getBulletActorDef() {
 		if (mBulletActorDef == null && mBulletActorDefId != null) {
-			mBulletActorDef = ResourceCacheFacade.get(null, mBulletActorDefId);
+			mBulletActorDef = ResourceCacheFacade.get(mBulletActorDefId);
 		}
 
 		return mBulletActorDef;

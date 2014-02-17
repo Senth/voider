@@ -27,13 +27,12 @@ import com.spiddekauga.voider.utils.Pools;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class ResourceDatabase {
+@Deprecated
+public class ResourceDatabaseOld {
 	/**
 	 * Builds the resource database
 	 * @param assetManager the asset manager to load files with
 	 */
-	@SuppressWarnings("unchecked")
-	@Deprecated
 	static void init(AssetManager assetManager) {
 		//		mAssetManager = assetManager;
 		//
@@ -199,7 +198,6 @@ public class ResourceDatabase {
 	 * @param revision the revision to get, -1 to use latest revision.
 	 * @return file path of the resource
 	 */
-	@SuppressWarnings("unused")
 	@Deprecated
 	static String getFilePath(UUID resourceId, int revision) {
 		//		ResourceInfo resourceDb = mResources.get(resourceId);
@@ -249,7 +247,7 @@ public class ResourceDatabase {
 			if (mAssetManager.isLoaded(loadingQueueItem.filePath)) {
 				IResource resource = mAssetManager.get(loadingQueueItem.filePath);
 
-				if (!ResourceDatabase.isResourceLoaded(loadingQueueItem.scene, resource.getId(), loadingQueueItem.revision)) {
+				if (!ResourceDatabaseOld.isResourceLoaded(loadingQueueItem.scene, resource.getId(), loadingQueueItem.revision)) {
 
 					mLoadedResources.setLoadedResource(loadingQueueItem.scene, resource, loadingQueueItem.revision);
 
@@ -630,7 +628,7 @@ public class ResourceDatabase {
 				resourceDb.addRevision((IResourceRevision) resource);
 			}
 		}
-		// Create new resource db with revision
+		// Create new resource DB with revision
 		else {
 			resourceDb = new ResourceInfo(resource);
 			mResources.put(resource.getId(), resourceDb);
@@ -759,7 +757,7 @@ public class ResourceDatabase {
 	/**
 	 * Private constructor to enforce singleton usage
 	 */
-	ResourceDatabase() {
+	ResourceDatabaseOld() {
 		// Does nothing
 	}
 
@@ -853,11 +851,11 @@ public class ResourceDatabase {
 	/** Loaded resources */
 	private static LoadedDb mLoadedResources = new LoadedDb();
 	/** All resources and revisions */
-	private static Map<UUID, ResourceInfo> mResources = new HashMap<UUID, ResourceDatabase.ResourceInfo>();
+	private static Map<UUID, ResourceInfo> mResources = new HashMap<UUID, ResourceDatabaseOld.ResourceInfo>();
 	/** Pool for LoadingQueue */
-	private static Pool<LoadingQueueItem> mLoadingQueuePool = new Pool<ResourceDatabase.LoadingQueueItem>(LoadingQueueItem.class, 30, 300);
+	private static Pool<LoadingQueueItem> mLoadingQueuePool = new Pool<ResourceDatabaseOld.LoadingQueueItem>(LoadingQueueItem.class, 30, 300);
 	/** Asset manager */
 	private static AssetManager mAssetManager = null;
 	/** Queue for currently loading assets */
-	private static HashSet<LoadingQueueItem> mLoadingQueue = new HashSet<ResourceDatabase.LoadingQueueItem>();
+	private static HashSet<LoadingQueueItem> mLoadingQueue = new HashSet<ResourceDatabaseOld.LoadingQueueItem>();
 }

@@ -1,8 +1,6 @@
 package com.spiddekauga.voider.editor;
 
 import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
@@ -15,8 +13,8 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.joints.MouseJoint;
 import com.badlogic.gdx.physics.box2d.joints.MouseJointDef;
-import com.spiddekauga.utils.commands.Command;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
+import com.spiddekauga.utils.commands.Command;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Editor.Enemy;
 import com.spiddekauga.voider.editor.commands.CEnemyBulletDefSelect;
@@ -31,9 +29,10 @@ import com.spiddekauga.voider.game.actors.EnemyActorDef;
 import com.spiddekauga.voider.game.actors.EnemyActorDef.AimTypes;
 import com.spiddekauga.voider.game.actors.EnemyActorDef.MovementTypes;
 import com.spiddekauga.voider.game.actors.PlayerActor;
+import com.spiddekauga.voider.resources.ExternalTypes;
+import com.spiddekauga.voider.resources.InternalNames;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceItem;
-import com.spiddekauga.voider.resources.InternalNames;
 import com.spiddekauga.voider.resources.ResourceSaver;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
@@ -107,12 +106,12 @@ public class EnemyEditor extends ActorEditor {
 				case LOAD_ENEMY: {
 					ResourceItem resourceItem = (ResourceItem) message;
 
-					if (!ResourceCacheFacade.isLoaded(this, resourceItem.id, resourceItem.revision)) {
+					if (!ResourceCacheFacade.isLoaded(resourceItem.id)) {
 						ResourceCacheFacade.load(this, resourceItem.id, true, resourceItem.revision);
 						ResourceCacheFacade.finishLoading();
 					}
 
-					setEnemyDef((EnemyActorDef) ResourceCacheFacade.get(this, resourceItem.id, resourceItem.revision));
+					setEnemyDef((EnemyActorDef) ResourceCacheFacade.get(resourceItem.id));
 					setMovementType(mDef.getMovementType());
 					mGui.resetValues();
 					setSaved();
@@ -139,26 +138,18 @@ public class EnemyEditor extends ActorEditor {
 	 */
 	public boolean selectBulletDef(UUID bulletId) {
 		try {
-			BulletActorDef oldBulletDef = mDef.getWeaponDef().getBulletActorDef();
-
 			if (bulletId != null) {
 				// Load it because it is added as a dependency we would try to unload it we would have
 				// one reference too low.
-				if (ResourceCacheFacade.isLoaded(this, mDef.getId())) {
+				if (ResourceCacheFacade.isLoaded(mDef.getId())) {
 					ResourceCacheFacade.load(this, bulletId, true);
 					ResourceCacheFacade.finishLoading();
 				}
 
-				BulletActorDef bulletActorDef = ResourceCacheFacade.get(this, bulletId);
+				BulletActorDef bulletActorDef = ResourceCacheFacade.get(bulletId);
 				setBulletActorDef(bulletActorDef);
 			} else {
 				setBulletActorDef(null);
-			}
-
-			// We need to unload it because it has been loaded as a dependency to this enemy, but now
-			// we remove the dependency. I.e. one loaded reference would be left.
-			if (oldBulletDef != null && ResourceCacheFacade.isLoaded(this, mDef.getId())) {
-				ResourceCacheFacade.unload(this, oldBulletDef, true);
 			}
 
 			mGui.resetValues();
@@ -311,53 +302,24 @@ public class EnemyEditor extends ActorEditor {
 	@Override
 	protected void loadResources() {
 		super.loadResources();
-		ResourceCacheFacade.loadAllOf(this, EnemyActorDef.class, true);
-		ResourceCacheFacade.loadAllOf(this, BulletActorDef.class, true);
+		ResourceCacheFacade.loadAllOf(this, ExternalTypes.ENEMY_DEF, true);
+		ResourceCacheFacade.loadAllOf(this, ExternalTypes.BULLET_DEF, true);
 	}
 
 	@Override
 	protected void unloadResources() {
 		super.unloadResources();
-		ResourceCacheFacade.unloadAllOf(this, EnemyActorDef.class, true);
-		ResourceCacheFacade.unloadAllOf(this, BulletActorDef.class, true);
 	}
 
 	@Override
 	protected void reloadResourcesOnActivate(Outcomes outcome, Object message) {
 		super.reloadResourcesOnActivate(outcome, message);
 
-		// Unload bullets if there was a chance we have edited a bullet in
-		// the bullet editor.
+		// Load newly added bullets if we have created some in the bullet editor
 		if (outcome == Outcomes.NOT_APPLICAPLE) {
-			ResourceCacheFacade.unloadAllOf(this, BulletActorDef.class, true);
-			ResourceCacheFacade.loadAllOf(this, BulletActorDef.class, true, getBulletRevisions());
+			ResourceCacheFacade.loadAllOf(this, ExternalTypes.BULLET_DEF, true);
 			ResourceCacheFacade.finishLoading();
-
-			// Reset bullet definition
-			if (mDef != null && hasWeapon()) {
-				BulletActorDef unloadedBulletActorDef = getBulletActorDef();
-				if (unloadedBulletActorDef != null) {
-					BulletActorDef correctBulletActorDef = ResourceCacheFacade.get(this, unloadedBulletActorDef.getId(), unloadedBulletActorDef.getRevision());
-					setBulletActorDef(correctBulletActorDef);
-				}
-			}
 		}
-	}
-
-	/**
-	 * @return the revision of the currently used bullet if any.
-	 */
-	private Map<UUID, Integer> getBulletRevisions() {
-		Map<UUID, Integer> bulletRevisions = new HashMap<UUID, Integer>();
-
-		if (mDef.hasWeapon()) {
-			BulletActorDef bulletActorDef = mDef.getWeaponDef().getBulletActorDef();
-			if (bulletActorDef != null) {
-				bulletRevisions.put(bulletActorDef.getId(), bulletActorDef.getRevision());
-			}
-		}
-
-		return bulletRevisions;
 	}
 
 	/**
@@ -456,17 +418,18 @@ public class EnemyEditor extends ActorEditor {
 		ResourceSaver.save(mDef);
 
 		// Saved first time? Then load it and use the loaded resource
-		if (!ResourceCacheFacade.isLoaded(this, mDef.getId())) {
+		if (!ResourceCacheFacade.isLoaded(mDef.getId())) {
 			ResourceCacheFacade.load(this, mDef.getId(), true);
 			ResourceCacheFacade.finishLoading();
 
-			setEnemyDef((EnemyActorDef) ResourceCacheFacade.get(this, mDef.getId()));
+			setEnemyDef((EnemyActorDef) ResourceCacheFacade.get(mDef.getId()));
 		}
 
-		// Update latest resource
-		if (oldRevision != mDef.getRevision() - 1) {
-			ResourceCacheFacade.setLatestResource(mDef, oldRevision);
-		}
+
+		// TODO Update latest resource
+		//		if (oldRevision != mDef.getRevision() - 1) {
+		//			ResourceCacheFacade.setLatestResource(mDef, oldRevision);
+		//		}
 
 		setSaved();
 	}
@@ -959,7 +922,7 @@ public class EnemyEditor extends ActorEditor {
 		}
 		mSelectionAction = SelectionActions.BULLET_TYPE;
 
-		Scene selectionScene = new SelectDefScene(BulletActorDef.class, false, false, false);
+		Scene selectionScene = new SelectDefScene(ExternalTypes.BULLET_DEF, false, false, false);
 		SceneSwitcher.switchTo(selectionScene);
 	}
 
@@ -972,7 +935,7 @@ public class EnemyEditor extends ActorEditor {
 	public void loadDef() {
 		mSelectionAction = SelectionActions.LOAD_ENEMY;
 
-		Scene selectionScene = new SelectDefScene(EnemyActorDef.class, true, true, true);
+		Scene selectionScene = new SelectDefScene(ExternalTypes.ENEMY_DEF, true, true, true);
 		SceneSwitcher.switchTo(selectionScene);
 	}
 

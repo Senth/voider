@@ -18,6 +18,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.lwjgl.LwjglNativesLoader;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.ChainShape;
@@ -32,6 +33,8 @@ import com.esotericsoftware.kryo.serializers.CompatibleFieldSerializer;
 import com.esotericsoftware.kryo.serializers.FieldSerializer.Optional;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
+import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.repo.ApplicationStub;
 import com.spiddekauga.voider.resources.InternalNames;
 import com.spiddekauga.voider.utils.Pools;
 
@@ -45,6 +48,8 @@ public class KryoPrototypeTest {
 	@BeforeClass
 	public static void beforeClass() {
 		LwjglNativesLoader.load();
+		Gdx.app = new ApplicationStub();
+		Config.Debug.JUNIT_TEST = true;
 
 		mKryo = Pools.kryo.obtain();
 

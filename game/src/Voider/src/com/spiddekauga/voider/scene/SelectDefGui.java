@@ -1,6 +1,6 @@
 package com.spiddekauga.voider.scene;
 
-import java.util.Map;
+import java.util.ArrayList;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
@@ -35,8 +35,10 @@ import com.spiddekauga.utils.scene.ui.ResourceTextureButton;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
 import com.spiddekauga.voider.editor.commands.CSelectDefSetRevision;
 import com.spiddekauga.voider.game.actors.ActorDef;
-import com.spiddekauga.voider.resources.ResourceCacheFacade;
+import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.InternalNames;
+import com.spiddekauga.voider.resources.ResourceCacheFacade;
+import com.spiddekauga.voider.resources.RevisionInfo;
 import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.scene.SelectDefScene.DefVisible;
 
@@ -342,7 +344,7 @@ public class SelectDefGui extends Gui {
 	 * Updates the revision list
 	 */
 	private void updateRevisionList() {
-		Map<Integer, String> resourceRevisions = mSelectDefScene.getSelectedResourceRevisionsWithDates();
+		ArrayList<RevisionInfo> resourceRevisions = mSelectDefScene.getSelectedResourceRevisionsWithDates();
 
 		String[] revisions;
 		if (resourceRevisions != null) {
@@ -354,7 +356,8 @@ public class SelectDefGui extends Gui {
 
 			for (int i = 0; i < revisions.length; ++i) {
 				int revisionInt = revisions.length - i;
-				revisions[i] = String.format("%0" + revisionStringLength + "d  %s", revisionInt, resourceRevisions.get(revisionInt));
+				RevisionInfo revisionInfo = resourceRevisions.get(i);
+				revisions[i] = String.format("%0" + revisionStringLength + "d  %i - %s", revisionInt, revisionInfo.revision, Def.getDateString(revisionInfo.date));
 			}
 		} else {
 			revisions = new String[0];

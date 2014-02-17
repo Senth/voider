@@ -15,9 +15,10 @@ import com.spiddekauga.voider.game.GameScene;
 import com.spiddekauga.voider.game.LevelDef;
 import com.spiddekauga.voider.repo.UserLocalRepo;
 import com.spiddekauga.voider.repo.UserWebRepo;
+import com.spiddekauga.voider.resources.ExternalTypes;
+import com.spiddekauga.voider.resources.InternalNames;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceItem;
-import com.spiddekauga.voider.resources.InternalNames;
 import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
@@ -44,8 +45,8 @@ public class MainMenu extends Scene {
 		super.loadResources();
 		ResourceCacheFacade.load(InternalNames.UI_GENERAL);
 		ResourceCacheFacade.load(InternalNames.UI_EDITOR_TOOLTIPS); // REMOVE loading tooltip
-		ResourceCacheFacade.loadAllOf(this, LevelDef.class, false);
-		ResourceCacheFacade.loadAllOf(this, GameSaveDef.class, false);
+		ResourceCacheFacade.loadAllOf(this, ExternalTypes.LEVEL_DEF, false);
+		ResourceCacheFacade.loadAllOf(this, ExternalTypes.GAME_SAVE_DEF, false);
 	}
 
 	@Override
@@ -53,8 +54,6 @@ public class MainMenu extends Scene {
 		super.unloadResources();
 		ResourceCacheFacade.unload(InternalNames.UI_GENERAL);
 		ResourceCacheFacade.unload(InternalNames.UI_EDITOR_TOOLTIPS); // REMOVE unloading tooltip
-		ResourceCacheFacade.unloadAllOf(this, LevelDef.class, false);
-		ResourceCacheFacade.unloadAllOf(this, GameSaveDef.class, false);
 	}
 
 	@Override
@@ -70,7 +69,7 @@ public class MainMenu extends Scene {
 			/** @todo handle missing file */
 		} else if (outcome == Outcomes.DEF_SELECTED) {
 			if (message instanceof ResourceItem) {
-				LevelDef loadedLevelDef = ResourceCacheFacade.get(this, ((ResourceItem) message).id, ((ResourceItem) message).revision);
+				LevelDef loadedLevelDef = ResourceCacheFacade.get(((ResourceItem) message).id);
 				GameScene gameScene = new GameScene(false, false);
 				gameScene.setLevelToLoad(loadedLevelDef);
 				SceneSwitcher.switchTo(gameScene);
@@ -112,7 +111,7 @@ public class MainMenu extends Scene {
 	 * @return true if there is a game to resume
 	 */
 	boolean hasResumeGame() {
-		ArrayList<GameSaveDef> gameSaves = ResourceCacheFacade.getAll(this, GameSaveDef.class);
+		ArrayList<GameSaveDef> gameSaves = ResourceCacheFacade.getAll(ExternalTypes.GAME_SAVE_DEF);
 		boolean hasSaves = gameSaves.size() > 0;
 		Pools.arrayList.free(gameSaves);
 		return hasSaves;
@@ -122,7 +121,7 @@ public class MainMenu extends Scene {
 	 * Resumes the current game
 	 */
 	void resumeGame() {
-		ArrayList<GameSaveDef> gameSaves = ResourceCacheFacade.getAll(this, GameSaveDef.class);
+		ArrayList<GameSaveDef> gameSaves = ResourceCacheFacade.getAll(ExternalTypes.GAME_SAVE_DEF);
 
 		if (!gameSaves.isEmpty()) {
 			GameScene gameScene = new GameScene(false, false);
@@ -138,7 +137,7 @@ public class MainMenu extends Scene {
 	 */
 	void newGame() {
 		/** @todo change the simple load level to a more advanced level */
-		SelectDefScene selectLevelScene = new SelectDefScene(LevelDef.class, false, true, false);
+		SelectDefScene selectLevelScene = new SelectDefScene(ExternalTypes.LEVEL_DEF, false, true, false);
 		SceneSwitcher.switchTo(selectLevelScene);
 	}
 

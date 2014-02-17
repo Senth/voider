@@ -5,8 +5,8 @@ import com.spiddekauga.voider.game.GameScene;
 import com.spiddekauga.voider.game.LevelDef;
 import com.spiddekauga.voider.game.PlayerStats;
 import com.spiddekauga.voider.menu.MainMenu;
-import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.InternalNames;
+import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.utils.StatSyncer;
 
 /**
@@ -58,7 +58,6 @@ public class GameOverScene extends Scene {
 	protected void unloadResources() {
 		super.unloadResources();
 		ResourceCacheFacade.unload(InternalNames.UI_GENERAL);
-		ResourceCacheFacade.unload(this, mLevelDef, false);
 	}
 
 	@Override

@@ -291,7 +291,7 @@ public class EnemyActorTest extends ActorTest {
 			fail("Exception thrown!\n " + stringWriter.toString());
 		}
 
-		ResourceSaver.clearResources(EnemyActorDef.class);
+		ResourceSaver.clearResources();
 	}
 
 	/**

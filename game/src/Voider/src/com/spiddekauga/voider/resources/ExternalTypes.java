@@ -2,7 +2,6 @@ package com.spiddekauga.voider.resources;
 
 import java.util.HashMap;
 
-import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.GameSave;
 import com.spiddekauga.voider.game.GameSaveDef;
 import com.spiddekauga.voider.game.Level;
@@ -57,14 +56,16 @@ public enum ExternalTypes {
 	 * @return enumeration of this type
 	 */
 	public static ExternalTypes getEnumFromType(Class<? extends IResource> type) {
-		return mTypeToEnum.get(type);
+		return mClassToEnum.get(type);
 	}
 
 	/**
-	 * @return directory path of the resource
+	 * Converts a integer id type to an enumeration
+	 * @param id the id type to get an enumeration for
+	 * @return enumeration of this id type
 	 */
-	public String getDir() {
-		return Config.Debug.JUNIT_TEST ? "Voider-test/resources/" : "Voider/resources";
+	public static ExternalTypes getEnumFromId(int id) {
+		return mIdToEnum.get(id);
 	}
 
 	/** Unique integer id of the enum */
@@ -72,11 +73,14 @@ public enum ExternalTypes {
 	/** Resource type */
 	private Class<? extends IResource> mType;
 	/** All enumeration types */
-	private static HashMap<Class<? extends IResource>, ExternalTypes> mTypeToEnum = new HashMap<>();
+	private static HashMap<Class<? extends IResource>, ExternalTypes> mClassToEnum = new HashMap<>();
+	/** From id to type */
+	private static HashMap<Integer, ExternalTypes> mIdToEnum = new HashMap<>();
 
 	static {
 		for (ExternalTypes externalTypes : ExternalTypes.values()) {
-			mTypeToEnum.put(externalTypes.mType, externalTypes);
+			mIdToEnum.put(externalTypes.mId, externalTypes);
+			mClassToEnum.put(externalTypes.mType, externalTypes);
 		}
 	}
 }

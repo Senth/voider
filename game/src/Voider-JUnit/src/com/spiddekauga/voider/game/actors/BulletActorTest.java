@@ -59,7 +59,7 @@ public class BulletActorTest extends ActorTest {
 		copyBullet.dispose();
 		bulletDef.dispose();
 
-		ResourceSaver.clearResources(BulletActorDef.class);
+		ResourceSaver.clearResources();
 	}
 
 }

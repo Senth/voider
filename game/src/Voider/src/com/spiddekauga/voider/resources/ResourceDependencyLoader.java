@@ -9,9 +9,7 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.GdxRuntimeException;
-import com.spiddekauga.utils.Strings;
 import com.spiddekauga.voider.Config;
-import com.spiddekauga.voider.resources.ResourceDatabase.ResourceInfo;
 import com.spiddekauga.voider.scene.Scene;
 
 /**
@@ -22,12 +20,17 @@ import com.spiddekauga.voider.scene.Scene;
  */
 class ResourceDependencyLoader implements Disposable {
 	/**
-	 * Constructor that takes an asset manager that is used to load
-	 * the resources.
-	 * @param assetManager used for loading/unloading dependencies
+	 * Default constructor
 	 */
-	ResourceDependencyLoader(AssetManager assetManager) {
-		mAssetManager = assetManager;
+	ResourceDependencyLoader() {
+		mAssetManager = mResourceLoader.getAssetManager();
+	}
+
+	/**
+	 * @return the resource loader
+	 */
+	ResourceLoader getResourceLoader() {
+		return mResourceLoader;
 	}
 
 	/**
@@ -45,42 +48,12 @@ class ResourceDependencyLoader implements Disposable {
 		mLoadingDefs.add(new ResourceItem(scene, resourceId, revision));
 
 		// Load the resource
-		ResourceDatabase.load(scene, resourceId, revision);
+		mResourceLoader.load(scene, resourceId, revision);
 	}
 
 	@Override
 	public void dispose() {
 		mLoadingDefs.clear();
-	}
-
-	/**
-	 * Unloads the definition including all its dependencies.
-	 * @param scene the scene to unload the resource from
-	 * @param resource the definition to unload
-	 */
-	void unload(Scene scene, IResourceDependency resource) {
-		debugLoadUnload(scene, resource, false);
-
-		// Recursive, unload all dependencies first
-		// Internal
-		for (InternalNames dependency : resource.getInternalDependencies()) {
-			mAssetManager.unload(dependency.getFilePath());
-		}
-
-		// External, if the dependency has dependencies, unload its dependencies too
-		for (Map.Entry<UUID, AtomicInteger> entry : resource.getExternalDependencies().entrySet()) {
-			UUID dependencyId = entry.getKey();
-			IResource dependency = ResourceDatabase.getLoadedResource(scene, dependencyId, -1);
-
-			if (dependency instanceof IResourceDependency) {
-				unload(scene, (IResourceDependency) dependency);
-			} else {
-				ResourceDatabase.unload(scene, dependency);
-			}
-		}
-
-		// unload this resource
-		ResourceDatabase.unload(scene, resource);
 	}
 
 	/**
@@ -97,15 +70,15 @@ class ResourceDependencyLoader implements Disposable {
 			return true;
 		}
 
-		ResourceDatabase.update();
+		mResourceLoader.update();
 
 		// If any of the resources we're waiting for been loaded ->
 		// Check for its dependencies and remove from load
 		for (int i = 0; i < mLoadingDefs.size; ++i) {
 			ResourceItem queueItem = mLoadingDefs.get(i);
 
-			if (ResourceDatabase.isResourceLoaded(queueItem.scene, queueItem.id, queueItem.revision)) {
-				IResource resource = ResourceDatabase.getLoadedResource(queueItem.scene, queueItem.id, queueItem.revision);
+			if (mResourceLoader.isResourceLoaded(queueItem.id)) {
+				IResource resource = mResourceLoader.getLoadedResource(queueItem.id);
 
 				if (resource instanceof IResourceDependency) {
 					IResourceDependency def = (IResourceDependency) resource;
@@ -120,7 +93,6 @@ class ResourceDependencyLoader implements Disposable {
 						try {
 							load(queueItem.scene, dependencyId, -1);
 						} catch (UndefinedResourceTypeException e) {
-							// Reset entire loading queue
 							mLoadingDefs.clear();
 							throw e;
 						} catch (GdxRuntimeException e) {
@@ -154,37 +126,37 @@ class ResourceDependencyLoader implements Disposable {
 	 */
 	private static void debugLoadUnload(Scene scene, IResourceDependency resource, boolean load) {
 		if (Config.Debug.Messages.LOAD_UNLOAD && Config.Debug.Messages.LOAD_UNLOAD_DEPENDENCIES) {
-			if (resource.getExternalDependenciesCount() > 0) {
-
-				String resourceName = "";
-				if (resource instanceof Def) {
-					resourceName = ((Def) resource).getName();
-				}
-
-				String resourceType = resource.getClass().getSimpleName();
-
-				String loadUnloadString = "";
-				if (load) {
-					loadUnloadString = "+++";
-				} else {
-					loadUnloadString = "---";
-				}
-
-				String message = Strings.padLeft(loadUnloadString, 6) + "  " +
-						Strings.padRight(scene.getClass().getSimpleName(), 15) +
-						Strings.padRight(resourceType, 18) +
-						Strings.padRight(resourceName, Config.Editor.NAME_LENGTH_MAX + 2) +
-						"---------->>>";
-
-
-				for (Map.Entry<UUID, AtomicInteger> entry : resource.getExternalDependencies().entrySet()) {
-					ResourceInfo resourceInfo = ResourceDatabase.getResourceInfo(entry.getKey());
-
-					message += "\n" + Strings.padLeft("", 49) + Strings.padRight(resourceInfo.type.getSimpleName(), 16) + entry.getKey();
-				}
-
-				Gdx.app.debug("ResourceDependencyLoader", message);
-			}
+			//			if (resource.getExternalDependenciesCount() > 0) {
+			//
+			//				String resourceName = "";
+			//				if (resource instanceof Def) {
+			//					resourceName = ((Def) resource).getName();
+			//				}
+			//
+			//				String resourceType = resource.getClass().getSimpleName();
+			//
+			//				String loadUnloadString = "";
+			//				if (load) {
+			//					loadUnloadString = "+++";
+			//				} else {
+			//					loadUnloadString = "---";
+			//				}
+			//
+			//				String message = Strings.padLeft(loadUnloadString, 6) + "  " +
+			//						Strings.padRight(scene.getClass().getSimpleName(), 15) +
+			//						Strings.padRight(resourceType, 18) +
+			//						Strings.padRight(resourceName, Config.Editor.NAME_LENGTH_MAX + 2) +
+			//						"---------->>>";
+			//
+			//
+			//				for (Map.Entry<UUID, AtomicInteger> entry : resource.getExternalDependencies().entrySet()) {
+			//					ResourceInfo resourceInfo = ResourceDatabaseOld.getResourceInfo(entry.getKey());
+			//
+			//					message += "\n" + Strings.padLeft("", 49) + Strings.padRight(resourceInfo.type.getSimpleName(), 16) + entry.getKey();
+			//				}
+			//
+			//				Gdx.app.debug("ResourceDependencyLoader", message);
+			//			}
 		}
 	}
 
@@ -199,4 +171,6 @@ class ResourceDependencyLoader implements Disposable {
 	private Array<ResourceItem> mLoadingDefs = new Array<ResourceItem>();
 	/** The class actually loading the resources */
 	private AssetManager mAssetManager;
+	/** Resource loader, this actually loads all the external dependencies */
+	private static ResourceLoader mResourceLoader = new ResourceLoader();
 }

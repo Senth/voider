@@ -20,6 +20,7 @@ import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.KryoPrototypeTest;
 import com.spiddekauga.utils.kryo.SerializableTaggedFieldSerializer;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.repo.ApplicationStub;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.DefTest;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
@@ -45,8 +46,8 @@ public class ActorTest {
 		Config.init();
 		Config.Debug.DEBUG_TESTS = false;
 		ResourceSaver.init();
+		Gdx.app = new ApplicationStub();
 		Config.Debug.JUNIT_TEST = true;
-		ResourceCacheFacade.init();
 		SceneSwitcher.switchTo(mScene);
 
 		mWorld = new World(new Vector2(), true);
@@ -132,7 +133,7 @@ public class ActorTest {
 
 		// Need to save and load def
 		saveAndLoad(actorDef);
-		PickupActorDef loadedActorDef = ResourceCacheFacade.get(mScene, actorDef.getId());
+		PickupActorDef loadedActorDef = ResourceCacheFacade.get(actorDef.getId());
 		actor.setDef(loadedActorDef);
 
 		copyActor = KryoPrototypeTest.copy(actor, ActorStub.class, mKryo);
@@ -146,7 +147,7 @@ public class ActorTest {
 		actorDef.dispose();
 		loadedActorDef.dispose();
 
-		ResourceSaver.clearResources(PickupActorDef.class);
+		ResourceSaver.clearResources();
 	}
 
 	/**
@@ -224,8 +225,8 @@ public class ActorTest {
 	 */
 	protected static void saveAndLoad(Def def) {
 		ResourceSaver.save(def);
-		if (ResourceCacheFacade.isLoaded(mScene, def.getId())) {
-			ResourceCacheFacade.unload(mScene, def, false);
+		if (ResourceCacheFacade.isLoaded(def.getId())) {
+			//			ResourceCacheFacade.unload(mScene, def, false);
 		}
 		ResourceCacheFacade.load(mScene, def.getId(), false, def.getRevision());
 		ResourceCacheFacade.finishLoading();

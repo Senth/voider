@@ -1,8 +1,10 @@
 package com.spiddekauga.voider.resources;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 import com.spiddekauga.voider.game.actors.PlayerActorDef;
+import com.spiddekauga.voider.repo.ResourceLocalRepo;
 
 /**
  * Checks if all resources are available.
@@ -16,7 +18,7 @@ public class ResourceChecker {
 	 * are not found, this method will create new type of those resources
 	 */
 	public static void checkAndCreateResources() {
-		if (!checkPlayerShips()) {
+		if (isMissingPlayerShips()) {
 			createPlayerShips();
 		}
 	}
@@ -25,12 +27,14 @@ public class ResourceChecker {
 	 * Checks for player ships
 	 * @return true if a player ship was found
 	 */
-	private static boolean checkPlayerShips() {
-		ArrayList<ResourceItem> ships = ResourceDatabase.getAllExistingResource(PlayerActorDef.class);
+	private static boolean isMissingPlayerShips() {
+		ArrayList<UUID> ships = ResourceLocalRepo.getAll(ExternalTypes.PLAYER_DEF);
 
 		/** @todo check for specific ships */
 
-		return !ships.isEmpty();
+		boolean missing = ships.isEmpty();
+
+		return missing;
 	}
 
 	/**
