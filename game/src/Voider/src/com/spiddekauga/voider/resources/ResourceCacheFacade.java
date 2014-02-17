@@ -10,7 +10,6 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.SkinLoader;
 import com.badlogic.gdx.assets.loaders.resolvers.ExternalFileHandleResolver;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.GdxRuntimeException;
@@ -652,15 +651,16 @@ public class ResourceCacheFacade {
 	 * @return number of existing resources. Note the resources don't have to be
 	 * loaded. It checks all resources of the type, whether loaded or not.
 	 */
+	@Deprecated
 	public static int getExistingResourcesCount(Class<? extends IResource> resourceType) {
 		try {
-			String resourceDirPath = InternalNames.getDirPath(resourceType);
-
-			FileHandle resourceDir = Gdx.files.external(resourceDirPath);
-
-			if (resourceDir.exists() && resourceDir.isDirectory()) {
-				return resourceDir.list().length;
-			}
+			//			String resourceDirPath = InternalNames.getDirPath(resourceType);
+			//
+			//			FileHandle resourceDir = Gdx.files.external(resourceDirPath);
+			//
+			//			if (resourceDir.exists() && resourceDir.isDirectory()) {
+			//				return resourceDir.list().length;
+			//			}
 
 		} catch (UndefinedResourceTypeException e) {
 			Gdx.app.error("ResourceCacheFacade", e.toString());

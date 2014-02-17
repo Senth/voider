@@ -537,10 +537,8 @@ public class Config {
 	 */
 	public static class File {
 		/** The external directory used for storing game data */
-		@Deprecated
 		public final static String STORAGE = "Voider/";
 		/** The external directory used when storing test game data */
-		@Deprecated
 		public final static String TEST_STORAGE = "Voider-test/";
 		/** Revision number length */
 		public final static int REVISION_LENGTH = 10;
@@ -549,6 +547,12 @@ public class Config {
 		public final static String REVISION_LATEST_NAME = "LATEST";
 		/** Uses external images, etc. instead of internal for resources */
 		public final static boolean USE_EXTERNAL_RESOURCES = false;
+		/** Database filename */
+		private final static String DB_FILENAME = "Voider.db";
+		/** Database file */
+		public final static String DB_FILEPATH = STORAGE + DB_FILENAME;
+		/** Database file when testing */
+		public final static String DB_FILEPATH_TEST = TEST_STORAGE + DB_FILENAME;
 	}
 
 	/**

@@ -14,7 +14,6 @@ import com.badlogic.gdx.files.FileHandle;
 import com.esotericsoftware.minlog.Log;
 import com.spiddekauga.utils.Strings;
 import com.spiddekauga.voider.Config;
-import com.spiddekauga.voider.Config.Debug;
 import com.spiddekauga.voider.Config.Debug.Messages;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
@@ -34,27 +33,28 @@ public class ResourceDatabase {
 	 * @param assetManager the asset manager to load files with
 	 */
 	@SuppressWarnings("unchecked")
+	@Deprecated
 	static void init(AssetManager assetManager) {
-		mAssetManager = assetManager;
-
-		Map<Class<?>, String> resourcePaths = InternalNames.getResourcePaths();
-
-		for (Map.Entry<Class<?>, String> entry : resourcePaths.entrySet()) {
-			FileHandle dir = Gdx.files.external(entry.getValue());
-
-			if (!dir.exists() || !dir.isDirectory()) {
-				continue;
-			}
-
-			// Resource revision
-			if (IResourceRevision.class.isAssignableFrom(entry.getKey())) {
-				buildResourceRevisionDb((Class<? extends IResource>) entry.getKey(), dir);
-			}
-			// Simple resource
-			else if (IResource.class.isAssignableFrom(entry.getKey())) {
-				buildResourceDb((Class<? extends IResource>) entry.getKey(), dir);
-			}
-		}
+		//		mAssetManager = assetManager;
+		//
+		//		Map<Class<?>, String> resourcePaths = InternalNames.getResourcePaths();
+		//
+		//		for (Map.Entry<Class<?>, String> entry : resourcePaths.entrySet()) {
+		//			FileHandle dir = Gdx.files.external(entry.getValue());
+		//
+		//			if (!dir.exists() || !dir.isDirectory()) {
+		//				continue;
+		//			}
+		//
+		//			// Resource revision
+		//			if (IResourceRevision.class.isAssignableFrom(entry.getKey())) {
+		//				buildResourceRevisionDb((Class<? extends IResource>) entry.getKey(), dir);
+		//			}
+		//			// Simple resource
+		//			else if (IResource.class.isAssignableFrom(entry.getKey())) {
+		//				buildResourceDb((Class<? extends IResource>) entry.getKey(), dir);
+		//			}
+		//		}
 	}
 
 	/**
@@ -169,18 +169,20 @@ public class ResourceDatabase {
 	 * @param resource the resource to get the file path for
 	 * @return file path of the resource
 	 */
+	@Deprecated
 	static String getFilePath(IResource resource) {
-		String filePath = InternalNames.getDirPath(resource.getClass()) + resource.getId().toString();
-
-		if (resource instanceof IResourceRevision) {
-			filePath += "/" + getRevisionFormat(((IResourceRevision) resource).getRevision());
-
-			if (resource instanceof Def) {
-				String date = ((Def) resource).getDateString();
-				filePath += "_" + date;
-			}
-		}
-		return filePath;
+		//		String filePath = InternalNames.getDirPath(resource.getClass()) + resource.getId().toString();
+		//
+		//		if (resource instanceof IResourceRevision) {
+		//			filePath += "/" + getRevisionFormat(((IResourceRevision) resource).getRevision());
+		//
+		//			if (resource instanceof Def) {
+		//				String date = ((Def) resource).getDateString();
+		//				filePath += "_" + date;
+		//			}
+		//		}
+		//		return filePath;
+		return null;
 	}
 
 	/**
@@ -198,37 +200,39 @@ public class ResourceDatabase {
 	 * @return file path of the resource
 	 */
 	@SuppressWarnings("unused")
+	@Deprecated
 	static String getFilePath(UUID resourceId, int revision) {
-		ResourceInfo resourceDb = mResources.get(resourceId);
-
-		String filePath = InternalNames.getDirPath(resourceDb.type) + resourceId.toString();
-
-		if (resourceDb != null) {
-			if (resourceDb.revisionDates != null) {
-				if (revision > 0) {
-					filePath += "/" + getRevisionFormat(revision);
-
-					// Add date for definitions
-					if (Def.class.isAssignableFrom(resourceDb.type)) {
-						String date = resourceDb.revisionDates.get(revision);
-
-						if (date != null) {
-							filePath += "_" + date;
-						} else {
-							Gdx.app.error("ResourceDatabase", "Could not find revision (" + revision + ") for (" + resourceId + ") in getFilePath");
-							return null;
-						}
-					}
-				} else {
-					filePath += "/" + Config.File.REVISION_LATEST_NAME;
-				}
-			}
-		} else {
-			Gdx.app.error("ResourceDatabase", "Could not find resource when getting file path!");
-			return null;
-		}
-
-		return filePath;
+		//		ResourceInfo resourceDb = mResources.get(resourceId);
+		//
+		//		String filePath = InternalNames.getDirPath(resourceDb.type) + resourceId.toString();
+		//
+		//		if (resourceDb != null) {
+		//			if (resourceDb.revisionDates != null) {
+		//				if (revision > 0) {
+		//					filePath += "/" + getRevisionFormat(revision);
+		//
+		//					// Add date for definitions
+		//					if (Def.class.isAssignableFrom(resourceDb.type)) {
+		//						String date = resourceDb.revisionDates.get(revision);
+		//
+		//						if (date != null) {
+		//							filePath += "_" + date;
+		//						} else {
+		//							Gdx.app.error("ResourceDatabase", "Could not find revision (" + revision + ") for (" + resourceId + ") in getFilePath");
+		//							return null;
+		//						}
+		//					}
+		//				} else {
+		//					filePath += "/" + Config.File.REVISION_LATEST_NAME;
+		//				}
+		//			}
+		//		} else {
+		//			Gdx.app.error("ResourceDatabase", "Could not find resource when getting file path!");
+		//			return null;
+		//		}
+		//
+		//		return filePath;
+		return null;
 	}
 
 	/**
@@ -680,50 +684,51 @@ public class ResourceDatabase {
 	 * before calling this method!
 	 * @param type the type of resource to remove
 	 */
+	@Deprecated
 	static void removeAllOf(Class<? extends IResource> type) {
 		// Delete from disk
-		String path = InternalNames.getDirPath(type);
-		FileHandle folder = Gdx.files.external(path);
-
-		if (folder.exists()) {
-			folder.deleteDirectory();
-		}
-
-
-		// Delete from database
-		if (!Debug.DEBUG_TESTS) {
-			Iterator<Entry<UUID, ResourceInfo>> iterator = mResources.entrySet().iterator();
-			while (iterator.hasNext()) {
-				Entry<UUID, ResourceInfo> entry = iterator.next();
-
-				if (entry.getValue().type == type) {
-					iterator.remove();
-				}
-			}
-		}
-		// Debug test delete from database
-		else {
-			Iterator<Entry<UUID, ResourceInfo>> iterator = mResources.entrySet().iterator();
-			while (iterator.hasNext()) {
-				Entry<UUID, ResourceInfo> entry = iterator.next();
-
-				if (entry.getValue().type == type) {
-					iterator.remove();
-
-					// Check if there is any scene that has this resource loaded!
-					ArrayList<Scene> scenesWithResource = mLoadedResources.getResourceScenes(entry.getKey(), -1);
-
-					if (!scenesWithResource.isEmpty()) {
-						Gdx.app.error("ResourceDatabase", "A resource of (" + type.getSimpleName() + ") was " +
-								"loaded into (" + scenesWithResource.get(0).getClass().getSimpleName() +
-								") when removing all resources of this type!");
-					}
-
-					Pools.arrayList.free(scenesWithResource);
-					scenesWithResource = null;
-				}
-			}
-		}
+		//		String path = InternalNames.getDirPath(type);
+		//		FileHandle folder = Gdx.files.external(path);
+		//
+		//		if (folder.exists()) {
+		//			folder.deleteDirectory();
+		//		}
+		//
+		//
+		//		// Delete from database
+		//		if (!Debug.DEBUG_TESTS) {
+		//			Iterator<Entry<UUID, ResourceInfo>> iterator = mResources.entrySet().iterator();
+		//			while (iterator.hasNext()) {
+		//				Entry<UUID, ResourceInfo> entry = iterator.next();
+		//
+		//				if (entry.getValue().type == type) {
+		//					iterator.remove();
+		//				}
+		//			}
+		//		}
+		//		// Debug test delete from database
+		//		else {
+		//			Iterator<Entry<UUID, ResourceInfo>> iterator = mResources.entrySet().iterator();
+		//			while (iterator.hasNext()) {
+		//				Entry<UUID, ResourceInfo> entry = iterator.next();
+		//
+		//				if (entry.getValue().type == type) {
+		//					iterator.remove();
+		//
+		//					// Check if there is any scene that has this resource loaded!
+		//					ArrayList<Scene> scenesWithResource = mLoadedResources.getResourceScenes(entry.getKey(), -1);
+		//
+		//					if (!scenesWithResource.isEmpty()) {
+		//						Gdx.app.error("ResourceDatabase", "A resource of (" + type.getSimpleName() + ") was " +
+		//								"loaded into (" + scenesWithResource.get(0).getClass().getSimpleName() +
+		//								") when removing all resources of this type!");
+		//					}
+		//
+		//					Pools.arrayList.free(scenesWithResource);
+		//					scenesWithResource = null;
+		//				}
+		//			}
+		//		}
 	}
 
 	/**

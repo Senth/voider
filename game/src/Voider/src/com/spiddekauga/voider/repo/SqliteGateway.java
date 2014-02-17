@@ -37,10 +37,10 @@ class SqliteGateway implements Disposable {
 		// Get external file location
 		case Desktop:
 			String externalLocation = Gdx.files.getExternalStoragePath();
-			return externalLocation + "Voider" + (Config.Debug.JUNIT_TEST ? "-test/" : "/") + FILENAME;
+			return externalLocation + (Config.Debug.JUNIT_TEST ? Config.File.DB_FILEPATH_TEST : Config.File.DB_FILEPATH);
 
 		case Android:
-			return FILENAME;
+			return Config.File.DB_FILEPATH;
 
 		default:
 			throw new GdxRuntimeException("Unsupported application type: " + Gdx.app.getType());
@@ -59,7 +59,8 @@ class SqliteGateway implements Disposable {
 			try {
 				mDatabase.openOrCreateDatabase();
 
-				SqliteUpgrader.initAndUpgrade(mDatabase);
+				SqliteUpgrader upgrader = new SqliteUpgrader(mDatabase);
+				upgrader.initAndUpgrade();
 			} catch (SQLiteGdxException e) {
 				mDatabase = null;
 				e.printStackTrace();
@@ -69,6 +70,4 @@ class SqliteGateway implements Disposable {
 
 	/** The database */
 	protected static Database mDatabase = null;
-	/** Filename of the database */
-	private static final String FILENAME = "Voider.db";
 }

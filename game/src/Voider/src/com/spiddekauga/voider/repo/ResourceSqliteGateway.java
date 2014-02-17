@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import com.badlogic.gdx.sql.DatabaseCursor;
 import com.badlogic.gdx.sql.SQLiteGdxException;
+import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.spiddekauga.voider.resources.RevisionInfo;
 import com.spiddekauga.voider.utils.Pools;
 
@@ -25,6 +26,7 @@ class ResourceSqliteGateway extends SqliteGateway {
 			mDatabase.execSQL("INSERT INTO resource VALUES ( '" + uuid + "', " + typeIdentifier + ");");
 		} catch (SQLiteGdxException e) {
 			e.printStackTrace();
+			throw new GdxRuntimeException(e);
 		}
 	}
 
@@ -36,9 +38,10 @@ class ResourceSqliteGateway extends SqliteGateway {
 	 */
 	void addRevision(UUID uuid, int revision, Date date) {
 		try {
-			mDatabase.execSQL("INSERT INTO resource VALUES ( '" + uuid + "', " + revision + ", " + date.getTime() + ");");
+			mDatabase.execSQL("INSERT INTO resource_revision VALUES ( '" + uuid + "', " + revision + ", " + date.getTime() + ");");
 		} catch (SQLiteGdxException e) {
 			e.printStackTrace();
+			throw new GdxRuntimeException(e);
 		}
 	}
 
@@ -52,6 +55,7 @@ class ResourceSqliteGateway extends SqliteGateway {
 			mDatabase.execSQL("DELETE FROM resource_revision WHERE uuid='" + uuid + "';");
 		} catch (SQLiteGdxException e) {
 			e.printStackTrace();
+			throw new GdxRuntimeException(e);
 		}
 	}
 
@@ -72,6 +76,7 @@ class ResourceSqliteGateway extends SqliteGateway {
 			mDatabase.execSQL("DELETE FROM resource WHERE type=" + typeIdentifier + ";");
 		} catch (SQLiteGdxException e) {
 			e.printStackTrace();
+			throw new GdxRuntimeException(e);
 		}
 	}
 
@@ -84,6 +89,7 @@ class ResourceSqliteGateway extends SqliteGateway {
 			mDatabase.execSQL("DELETE FROM resource_revision WHERE uuid='" + uuid + "';");
 		} catch (SQLiteGdxException e) {
 			e.printStackTrace();
+			throw new GdxRuntimeException(e);
 		}
 	}
 
@@ -105,6 +111,7 @@ class ResourceSqliteGateway extends SqliteGateway {
 			}
 		} catch (SQLiteGdxException e) {
 			e.printStackTrace();
+			throw new GdxRuntimeException(e);
 		}
 
 		return resources;
@@ -124,6 +131,7 @@ class ResourceSqliteGateway extends SqliteGateway {
 			}
 		} catch (SQLiteGdxException e) {
 			e.printStackTrace();
+			throw new GdxRuntimeException(e);
 		}
 
 		return 0;
@@ -149,6 +157,7 @@ class ResourceSqliteGateway extends SqliteGateway {
 			}
 		} catch (SQLiteGdxException e) {
 			e.printStackTrace();
+			throw new GdxRuntimeException(e);
 		}
 
 		return revisions;
@@ -174,6 +183,7 @@ class ResourceSqliteGateway extends SqliteGateway {
 			}
 		} catch (SQLiteGdxException e) {
 			e.printStackTrace();
+			throw new GdxRuntimeException(e);
 		}
 
 		return null;
@@ -181,10 +191,6 @@ class ResourceSqliteGateway extends SqliteGateway {
 
 	/** Column for resource uuid */
 	private static final int RESOURCE__UUID = 0;
-	/** Column for resource type */
-	private static final int RESOURCE__TYPE = 1;
-	/** Column for resource revision uuid */
-	private static final int RESOURCE_REVISION__UUID = 0;
 	/** Column for resource revision revision */
 	private static final int RESOURCE_REVISION__REVISION = 1;
 	/** Column for resource revision date */
