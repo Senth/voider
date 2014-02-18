@@ -21,6 +21,7 @@ import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Actor.Pickup;
+import com.spiddekauga.voider.Config.Debug;
 import com.spiddekauga.voider.Config.Editor.Bullet;
 import com.spiddekauga.voider.Config.Editor.Enemy;
 import com.spiddekauga.voider.resources.IResource;
@@ -47,6 +48,8 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 
 		mActorType = actorType;
 		setDefaultValues();
+
+
 		createFixtureDef();
 	}
 
@@ -337,7 +340,7 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 	 * @param shapeType type of shape the enemy has
 	 */
 	public void setShapeType(ActorShapeTypes shapeType) {
-		if (shapeType == null) {
+		if (shapeType == null || Debug.JUNIT_TEST) {
 			return;
 		}
 

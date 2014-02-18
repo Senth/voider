@@ -16,7 +16,6 @@ import com.spiddekauga.voider.resources.InternalNames;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceItem;
 import com.spiddekauga.voider.resources.RevisionInfo;
-import com.spiddekauga.voider.resources.UndefinedResourceTypeException;
 import com.spiddekauga.voider.utils.Pools;
 
 /**
@@ -76,21 +75,16 @@ public class SelectDefScene extends WorldScene {
 		super.onActivate(outcome, message);
 
 		if (outcome == Outcomes.LOADING_SUCCEEDED) {
-			try {
-				ArrayList<Def> defs = ResourceCacheFacade.getAll(mDefType);
+			ArrayList<Def> defs = ResourceCacheFacade.getAll(mDefType);
 
-				for (Def def : defs) {
-					mDefs.add(new DefVisible(def));
-				}
-
-				mGui.resetValues();
-
-				Pools.arrayList.free(defs);
-				defs = null;
-
-			} catch (UndefinedResourceTypeException e) {
-				Gdx.app.error("SelectDefScene", e.toString());
+			for (Def def : defs) {
+				mDefs.add(new DefVisible(def));
 			}
+
+			mGui.resetValues();
+
+			Pools.arrayList.free(defs);
+			defs = null;
 		}
 	}
 

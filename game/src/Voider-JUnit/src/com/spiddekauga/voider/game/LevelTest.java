@@ -92,6 +92,7 @@ public class LevelTest {
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
 		ResourceSaver.clearResources();
+		ResourceCacheFacade.unload(mScene);
 
 		mEnemyDef.dispose();
 		mPlayerActor.dispose();

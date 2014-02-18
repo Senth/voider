@@ -12,6 +12,7 @@ import com.badlogic.gdx.assets.loaders.resolvers.ExternalFileHandleResolver;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.GameSave;
 import com.spiddekauga.voider.game.GameSaveDef;
@@ -85,15 +86,26 @@ class ResourceLoader {
 
 
 		LoadedResource loadedResource = new LoadedResource();
+		// Only use revision if not latest and a valid revision
 		if (revision > 0) {
-			loadedResource.filepath = ResourceLocalRepo.getRevisionFilepath(resourceId, revision);
-		} else {
+			RevisionInfo latestRevision = ResourceLocalRepo.getRevisionLatest(resourceId);
+			if (latestRevision != null && revision < latestRevision.revision) {
+				loadedResource.filepath = ResourceLocalRepo.getRevisionFilepath(resourceId, revision);
+			}
+		}
+
+		if (loadedResource.filepath == null) {
 			loadedResource.filepath = ResourceLocalRepo.getFilepath(resourceId);
 		}
 
 		loadedResource.scene = scene;
 
-		mAssetManager.load(loadedResource.filepath, ResourceLocalRepo.getType(resourceId).getType());
+		ExternalTypes type = ResourceLocalRepo.getType(resourceId);
+		if (type != null) {
+			mAssetManager.load(loadedResource.filepath, type.getClassType());
+		} else {
+			throw new ResourceNotFoundException(loadedResource.filepath, resourceId);
+		}
 
 		mLoadingQueue.put(resourceId, loadedResource);
 	}
@@ -110,7 +122,7 @@ class ResourceLoader {
 	 * @return true if loading
 	 */
 	boolean isLoading() {
-		return !mLoadingQueue.isEmpty();
+		return !mLoadingQueue.isEmpty() || mAssetManager.getQueuedAssets() > 0;
 	}
 
 	/**
@@ -138,7 +150,7 @@ class ResourceLoader {
 		ArrayList<ResourceType> resources = Pools.arrayList.obtain();
 
 		for (Entry<UUID, LoadedResource> entry : mLoadedResources.entrySet()) {
-			if (type.getType().isAssignableFrom(entry.getValue().resource.getClass())) {
+			if (type.getClassType().isAssignableFrom(entry.getValue().resource.getClass())) {
 				resources.add((ResourceType) entry.getValue().resource);
 			}
 		}
@@ -164,13 +176,45 @@ class ResourceLoader {
 	}
 
 	/**
+	 * Handle exception
+	 * @param exception the exception to handle
+	 */
+	void handleException(GdxRuntimeException exception) {
+		RuntimeException throwException = exception;
+
+		if (exception.getCause() != null && exception.getCause().getCause() != null && exception.getCause().getCause().getCause() != null) {
+			Throwable source = exception.getCause().getCause().getCause();
+			Class<?> type = source.getClass();
+			ResourceException resourceException = null;
+
+			if (type == ResourceNotFoundException.class) {
+				resourceException = new ResourceNotFoundException(source.getMessage());
+			} else if (type == ResourceCorruptException.class) {
+				resourceException = new ResourceCorruptException(source.getMessage());
+			}
+
+			// Remove the loading resource
+			if (resourceException != null) {
+				mLoadingQueue.remove(resourceException.getId());
+				throwException = resourceException;
+			}
+		}
+
+		throw throwException;
+	}
+
+	/**
 	 * Updates the resource loader. This will set the loaded resources correctly
 	 * @return true if all resources has been loaded
 	 */
 	boolean update() {
-		Iterator<Entry<UUID, LoadedResource>> iterator = mLoadingQueue.entrySet().iterator();
+		try {
+			mAssetManager.update();
+		} catch (GdxRuntimeException e) {
+			handleException(e);
+		}
 
-		mAssetManager.update();
+		Iterator<Entry<UUID, LoadedResource>> iterator = mLoadingQueue.entrySet().iterator();
 
 		while (iterator.hasNext()) {
 			LoadedResource loadingResource = iterator.next().getValue();
@@ -185,7 +229,7 @@ class ResourceLoader {
 			}
 		}
 
-		return mLoadingQueue.isEmpty();
+		return !isLoading();
 	}
 
 	/**

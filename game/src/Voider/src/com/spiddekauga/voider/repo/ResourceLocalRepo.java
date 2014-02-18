@@ -152,7 +152,12 @@ public class ResourceLocalRepo {
 	 * @return type of the resource id
 	 */
 	public static ExternalTypes getType(UUID resourceId) {
-		return ExternalTypes.getEnumFromId(mSqliteGateway.getType(resourceId));
+		int type = mSqliteGateway.getType(resourceId);
+		if (type != -1) {
+			return ExternalTypes.getEnumFromId(type);
+		} else {
+			return null;
+		}
 	}
 
 	/** Sqlite gateway */

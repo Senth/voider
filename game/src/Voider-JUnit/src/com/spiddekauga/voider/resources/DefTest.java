@@ -120,7 +120,7 @@ public class DefTest {
 		for (Map.Entry<UUID, AtomicInteger> dependency : expected.getExternalDependencies().entrySet()) {
 			AtomicInteger foundDependency = actual.getExternalDependencies().get(dependency.getKey());
 			assertNotNull(foundDependency);
-			assertEquals(dependency.getValue(), foundDependency);
+			assertEquals(dependency.getValue().get(), foundDependency.get());
 		}
 
 		// Internal dependencies

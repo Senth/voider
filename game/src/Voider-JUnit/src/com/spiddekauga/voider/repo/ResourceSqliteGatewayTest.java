@@ -10,7 +10,6 @@ import java.util.Date;
 import java.util.Random;
 import java.util.UUID;
 
-import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -19,7 +18,6 @@ import org.junit.Test;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.lwjgl.LwjglFiles;
 import com.badlogic.gdx.backends.lwjgl.LwjglNativesLoader;
-import com.badlogic.gdx.files.FileHandle;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.resources.RevisionInfo;
 
@@ -38,6 +36,8 @@ public class ResourceSqliteGatewayTest {
 		Gdx.files = new LwjglFiles();
 		Gdx.app = new ApplicationStub();
 		Config.Debug.JUNIT_TEST = true;
+
+		mGateway = new ResourceSqliteGateway();
 	}
 
 	/**
@@ -45,22 +45,7 @@ public class ResourceSqliteGatewayTest {
 	 */
 	@Before
 	public void before() {
-		mGateway = new ResourceSqliteGateway();
-	}
-
-	/**
-	 * Remove database after each test
-	 */
-	@After
-	public void after() {
-		mGateway.dispose();
-		mGateway = null;
-
-		FileHandle file = Gdx.files.external(Config.File.DB_FILEPATH_TEST);
-
-		if (file.exists()) {
-			file.delete();
-		}
+		SqliteResetter.reset();
 	}
 
 	/**
@@ -268,5 +253,5 @@ public class ResourceSqliteGatewayTest {
 	}
 
 	/** The database */
-	private ResourceSqliteGateway mGateway;
+	private static ResourceSqliteGateway mGateway;
 }

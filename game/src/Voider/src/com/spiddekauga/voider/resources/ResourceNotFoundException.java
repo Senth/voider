@@ -1,5 +1,7 @@
 package com.spiddekauga.voider.resources;
 
+import java.util.UUID;
+
 
 /**
  * An exception that is thrown when the specified resource could
@@ -7,13 +9,22 @@ package com.spiddekauga.voider.resources;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class ResourceNotFoundException extends RuntimeException {
+public class ResourceNotFoundException extends ResourceException {
+	/**
+	 * Constructor that takes the resource which could not be found
+	 * @param filename the resource's filename
+	 * @param resourceId UUID of the resource that wasn't found, can be null
+	 */
+	public ResourceNotFoundException(String filename, UUID resourceId) {
+		super(filename, resourceId);
+	}
+
 	/**
 	 * Constructor that takes the resource which could not be found
 	 * @param filename the resource's filename
 	 */
 	public ResourceNotFoundException(String filename) {
-		super(filename);
+		this(filename, null);
 	}
 
 	/**

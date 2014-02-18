@@ -2,12 +2,16 @@ package com.spiddekauga.voider.game;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.badlogic.gdx.math.Vector2;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.KryoPrototypeTest;
+import com.spiddekauga.voider.Config.Debug;
 import com.spiddekauga.voider.game.actors.BulletActorDef;
 import com.spiddekauga.voider.utils.Pools;
 
@@ -18,6 +22,14 @@ import com.spiddekauga.voider.utils.Pools;
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
 public class WeaponTest {
+	/**
+	 * Before class
+	 */
+	@BeforeClass
+	public static void beforeClass() {
+		Debug.JUNIT_TEST = true;
+	}
+
 	/**
 	 * Test WeaponDef
 	 */
@@ -70,7 +82,7 @@ public class WeaponTest {
 	 */
 	public static void testWeaponDefEquals(WeaponDef expected, WeaponDef actual) {
 		assertNotSame(expected, actual);
-		assertEquals(expected.getBulletActorDef(), actual.getBulletActorDef());
+		assertNull(actual.getBulletActorDef());
 		assertEquals(expected.getBulletSpeed(), actual.getBulletSpeed(), 0);
 		assertEquals(expected.getDamage(), actual.getDamage(), 0);
 		assertEquals(expected.getCooldownMin(), actual.getCooldownMin(), 0);
@@ -84,7 +96,7 @@ public class WeaponTest {
 	 */
 	public static void testWeaponEquals(Weapon expected, Weapon actual) {
 		assertNotSame(expected, actual);
-		testWeaponDefEquals(expected.getDef(), actual.getDef());
+		assertSame(expected.getDef(), actual.getDef());
 		assertEquals(expected.getCooldownTime(), actual.getCooldownTime(), 0);
 		assertEquals(expected.getPosition(), actual.getPosition());
 	}

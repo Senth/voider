@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
 
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -21,6 +22,7 @@ import com.esotericsoftware.kryo.KryoPrototypeTest;
 import com.spiddekauga.utils.kryo.SerializableTaggedFieldSerializer;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.repo.ApplicationStub;
+import com.spiddekauga.voider.repo.SqliteResetter;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.DefTest;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
@@ -65,6 +67,14 @@ public class ActorTest {
 		mWorld.dispose();
 		Config.dispose();
 		Pools.kryo.free(mKryo);
+	}
+
+	/**
+	 * Before all tests
+	 */
+	@Before
+	public void before() {
+		SqliteResetter.reset();
 	}
 
 	/**
@@ -226,7 +236,7 @@ public class ActorTest {
 	protected static void saveAndLoad(Def def) {
 		ResourceSaver.save(def);
 		if (ResourceCacheFacade.isLoaded(def.getId())) {
-			//			ResourceCacheFacade.unload(mScene, def, false);
+			ResourceCacheFacade.unload(mScene);
 		}
 		ResourceCacheFacade.load(mScene, def.getId(), false, def.getRevision());
 		ResourceCacheFacade.finishLoading();

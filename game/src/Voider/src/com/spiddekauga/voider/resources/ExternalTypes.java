@@ -39,7 +39,7 @@ public enum ExternalTypes {
 	/**
 	 * @return type of the resource
 	 */
-	public Class<? extends IResource> getType() {
+	public Class<? extends IResource> getClassType() {
 		return mType;
 	}
 

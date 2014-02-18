@@ -132,6 +132,10 @@ public class SceneSwitcher {
 						mScenesNeedUnloading.add(currentScene);
 					}
 				}
+
+				// Unload current scene
+				ResourceCacheFacade.unload(currentScene);
+
 				currentScene.setOutcome(Outcomes.NOT_APPLICAPLE);
 				currentScene.onDispose();
 			}
@@ -519,6 +523,8 @@ public class SceneSwitcher {
 		if (poppedScene.isResourcesLoaded()) {
 			mScenesNeedUnloading.add(poppedScene);
 		}
+
+		ResourceCacheFacade.unload(poppedScene);
 
 
 		// Go to next scene, or return to the previous?

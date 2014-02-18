@@ -13,13 +13,12 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.backends.lwjgl.LwjglFiles;
 import com.badlogic.gdx.backends.lwjgl.LwjglNativesLoader;
-import com.badlogic.gdx.files.FileHandle;
-import com.esotericsoftware.minlog.Log;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.actors.ActorDef;
 import com.spiddekauga.voider.game.actors.PlayerActorDef;
 import com.spiddekauga.voider.repo.ApplicationStub;
 import com.spiddekauga.voider.repo.ResourceLocalRepo;
+import com.spiddekauga.voider.repo.SqliteResetter;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneStub;
 
@@ -46,6 +45,7 @@ public class ResourceDependencyLoaderTest {
 			Field fAssetManager = ResourceCacheFacade.class.getDeclaredField("mAssetManager");
 			fAssetManager.setAccessible(true);
 			mAssetManager = (AssetManager) fAssetManager.get(null);
+			mAssetManager.clear();
 		} catch (Exception e) {
 			// Does nothing
 		}
@@ -65,6 +65,8 @@ public class ResourceDependencyLoaderTest {
 	 */
 	@Test
 	public void loadUnload() {
+		SqliteResetter.reset();
+
 		ActorDef loadingDef = new PlayerActorDef();
 		loadingDef.setName("loading def");
 		ActorDef dep1 = new PlayerActorDef();
@@ -93,7 +95,7 @@ public class ResourceDependencyLoaderTest {
 		assertTrue("dep1 is not loaded", mAssetManager.isLoaded(ResourceLocalRepo.getFilepath(dep1)));
 		assertTrue("dep2 is not loaded", mAssetManager.isLoaded(ResourceLocalRepo.getFilepath(dep2)));
 		assertTrue("depdep is not loaded", mAssetManager.isLoaded(ResourceLocalRepo.getFilepath(depdep)));
-		assertEquals(mAssetManager.getLoadedAssets(), 4);
+		assertEquals(4, mAssetManager.getLoadedAssets());
 
 		// Unload
 		ResourceCacheFacade.unload(scene);
@@ -101,28 +103,9 @@ public class ResourceDependencyLoaderTest {
 		assertTrue("dep1 is loaded", !mAssetManager.isLoaded(ResourceLocalRepo.getFilepath(dep1)));
 		assertTrue("dep2 is loaded", !mAssetManager.isLoaded(ResourceLocalRepo.getFilepath(dep2)));
 		assertTrue("depdep is loaded", !mAssetManager.isLoaded(ResourceLocalRepo.getFilepath(depdep)));
-		assertEquals(mAssetManager.getLoadedAssets(), 0);
+		assertEquals(0, mAssetManager.getLoadedAssets());
 
-		delete(loadingDef);
-		delete(dep1);
-		delete(dep2);
-		delete(depdep);
-	}
-
-	/**
-	 * Removes the specified definition from the hard drive. We don't want it to take up
-	 * place and be amongst some of the valid actors.
-	 * @param resource the resource to remove from the hard drive.
-	 */
-	public static void delete(IResource resource) {
-		try {
-			FileHandle saveFile = Gdx.files.external(ResourceLocalRepo.getFilepath(resource));
-
-			saveFile.delete();
-
-		} catch (Exception e) {
-			Log.error("Could not delete your file!");
-		}
+		ResourceSaver.clearResources();
 	}
 
 	/** Asset manager for all files */

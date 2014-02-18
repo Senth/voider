@@ -25,7 +25,6 @@ import com.spiddekauga.voider.resources.ExternalTypes;
 import com.spiddekauga.voider.resources.InternalNames;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceSaver;
-import com.spiddekauga.voider.resources.UndefinedResourceTypeException;
 import com.spiddekauga.voider.scene.GameOverScene;
 import com.spiddekauga.voider.scene.LoadingScene;
 import com.spiddekauga.voider.scene.Scene;
@@ -106,34 +105,26 @@ public class GameScene extends WorldScene {
 		if (outcome == Outcomes.LOADING_SUCCEEDED) {
 			// Load level
 			if (mLevelToLoad != null) {
-				try {
-					Level level = ResourceCacheFacade.get(mLevelToLoad.getLevelId());
-					level.setStartPosition(level.getDef().getStartXCoord());
-					setLevel(level);
-				} catch (UndefinedResourceTypeException e) {
-					Gdx.app.error("GameScene", e.toString());
-				}
+				Level level = ResourceCacheFacade.get(mLevelToLoad.getLevelId());
+				level.setStartPosition(level.getDef().getStartXCoord());
+				setLevel(level);
 			}
 
 			// Resume a level
 			if (mGameSaveDef != null) {
-				try {
-					mGameSave = ResourceCacheFacade.get(mGameSaveDef.getGameSaveId());
+				mGameSave = ResourceCacheFacade.get(mGameSaveDef.getGameSaveId());
 
-					mPlayerActor = mGameSave.getPlayerActor();
-					mBulletDestroyer = mGameSave.getBulletDestroyer();
-					setGameTime(mGameSave.getGameTime());
-					setLevel(mGameSave.getLevel());
+				mPlayerActor = mGameSave.getPlayerActor();
+				mBulletDestroyer = mGameSave.getBulletDestroyer();
+				setGameTime(mGameSave.getGameTime());
+				setLevel(mGameSave.getLevel());
 
-					// Get player stats from level
-					ArrayList<PlayerStats> playerStats = mLevel.getResources(PlayerStats.class);
-					if (!playerStats.isEmpty()) {
-						mPlayerStats = playerStats.get(0);
-					} else {
-						Gdx.app.error("GameSave", "Could not find player stats in level!");
-					}
-				} catch (UndefinedResourceTypeException e) {
-					Gdx.app.error("GameScene", e.toString());
+				// Get player stats from level
+				ArrayList<PlayerStats> playerStats = mLevel.getResources(PlayerStats.class);
+				if (!playerStats.isEmpty()) {
+					mPlayerStats = playerStats.get(0);
+				} else {
+					Gdx.app.error("GameSave", "Could not find player stats in level!");
 				}
 			}
 

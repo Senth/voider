@@ -6,7 +6,6 @@ import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.spiddekauga.voider.Config.Debug;
 import com.spiddekauga.voider.repo.ResourceLocalRepo;
 import com.spiddekauga.voider.scene.Scene;
@@ -63,7 +62,7 @@ public class ResourceCacheFacade {
 	 * Unload all resources that were loaded into the specified scene
 	 * @param scene the scene the resources were loaded into
 	 */
-	static void unload(Scene scene) {
+	public static void unload(Scene scene) {
 		mResourceLoader.unload(scene);
 	}
 
@@ -98,11 +97,7 @@ public class ResourceCacheFacade {
 	 * @param defId the definition of the resource we're loading
 	 */
 	public static void load(Scene scene, UUID resourceId, UUID defId) {
-		// Load definition dependencies first
-		load(scene, defId, true, -1);
-
-		// Add the resource to the queue. Load this resource once all dependencies are loaded
-		mLoadQueue.add(new ResourceItem(scene, resourceId, -1));
+		load(scene, resourceId, defId, -1);
 	}
 
 	/**
@@ -212,12 +207,7 @@ public class ResourceCacheFacade {
 	 * Texture, Music, etc.
 	 */
 	public static void load(InternalNames resource) {
-		String fullPath = null;
-		try {
-			fullPath = resource.getFilePath();
-		} catch (UndefinedResourceTypeException e) {
-			Gdx.app.error("UndefinedType", "Undefined resource type for a resource name. This should NEVER happen");
-		}
+		String fullPath = resource.getFilePath();
 		mAssetManager.load(fullPath, resource.type);
 	}
 
@@ -229,12 +219,7 @@ public class ResourceCacheFacade {
 	 */
 	@SuppressWarnings("unchecked")
 	public static <ResourceType> ResourceType get(InternalNames resource) {
-		String fullPath = null;
-		try {
-			fullPath = resource.getFilePath();
-		} catch (UndefinedResourceTypeException e) {
-			Gdx.app.error("UndefinedType", "Undefined resource type for a resource name. This should NEVER happen");
-		}
+		String fullPath = resource.getFilePath();
 		return (ResourceType) mAssetManager.get(fullPath, resource.type);
 	}
 
@@ -244,56 +229,27 @@ public class ResourceCacheFacade {
 	 * @return true if the resource has been loaded
 	 */
 	public static boolean isLoaded(InternalNames resource) {
-		String fullPath = null;
-		try {
-			fullPath = resource.getFilePath();
-		} catch (UndefinedResourceTypeException e) {
-			Gdx.app.error("ResourceCacheFacade", "Undefined resource type for a resource name. This should NEVER happen");
-		}
+		String fullPath = resource.getFilePath();
 		return mAssetManager.isLoaded(fullPath, resource.type);
 	}
 
 	/**
 	 * Checks if everything has loaded and can be used.
 	 * @return true if everything has been loaded
-	 * @throws UndefinedResourceTypeException
 	 */
-	public static boolean update() throws UndefinedResourceTypeException {
+	public static boolean update() {
 		boolean fullyLoaded = true;
 		try {
-			try {
-				if (!mResourceLoader.update()) {
-					fullyLoaded = false;
-				}
-				if (!mDependencyLoader.update()) {
-					fullyLoaded = false;
-				}
-				if (!mAssetManager.update()) {
-					fullyLoaded = false;
-				}
-				if (fullyLoaded && !mLoadQueue.isEmpty()) {
-					fullyLoaded = false;
-					ResourceItem toLoad = mLoadQueue.removeFirst();
-					mResourceLoader.load(toLoad.scene, toLoad.id, toLoad.revision);
-				}
-			} catch (UndefinedResourceTypeException e) {
-				mLoadQueue.clear();
-				throw e;
+			if (!mDependencyLoader.update()) {
+				fullyLoaded = false;
 			}
-		} catch (GdxRuntimeException e) {
-			if (e.getCause() != null && e.getCause().getCause() != null && e.getCause().getCause().getCause() != null) {
-				Throwable source = e.getCause().getCause().getCause();
-				Class<?> type = source.getClass();
-				if (type == ResourceNotFoundException.class) {
-					throw new ResourceNotFoundException(source.getMessage());
-				} else if (type == ResourceCorruptException.class) {
-					throw new ResourceCorruptException(source.getMessage());
-				} else {
-					throw e;
-				}
-			} else {
-				throw e;
+			if (fullyLoaded && !mLoadQueue.isEmpty()) {
+				fullyLoaded = false;
+				ResourceItem toLoad = mLoadQueue.removeFirst();
+				mResourceLoader.load(toLoad.scene, toLoad.id, toLoad.revision);
 			}
+		} catch (ResourceException e) {
+			throw e;
 		}
 
 		return fullyLoaded;
@@ -302,9 +258,8 @@ public class ResourceCacheFacade {
 	/**
 	 * Waits for the cache to finish loading all files into the cache. I.e.
 	 * blocks this thread
-	 * @throws UndefinedResourceTypeException
 	 */
-	public static void finishLoading() throws UndefinedResourceTypeException {
+	public static void finishLoading() {
 		while (!update()) {
 			// Does nothing
 		}

@@ -13,6 +13,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -25,6 +26,7 @@ import com.spiddekauga.voider.game.Weapon;
 import com.spiddekauga.voider.game.WeaponTest;
 import com.spiddekauga.voider.game.actors.EnemyActorDef.AimTypes;
 import com.spiddekauga.voider.game.actors.EnemyActorDef.MovementTypes;
+import com.spiddekauga.voider.repo.SqliteResetter;
 import com.spiddekauga.voider.resources.ResourceSaver;
 
 /**
@@ -76,6 +78,15 @@ public class EnemyActorTest extends ActorTest {
 	@AfterClass
 	public static void afterClass() {
 		ActorTest.afterClass();
+	}
+
+	/**
+	 * Before all tests
+	 */
+	@Override
+	@Before
+	public void before() {
+		SqliteResetter.reset();
 	}
 
 	@Override

@@ -1,16 +1,17 @@
 package com.spiddekauga.voider.resources;
 
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.scene.Scene;
+import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Makes sure that all dependencies to the specified resource is loaded
@@ -41,14 +42,13 @@ class ResourceDependencyLoader implements Disposable {
 	 * @param scene the scene to load this resource into
 	 * @param resourceId the id of the resource which we want to load, including its dependencies
 	 * @param revision the revision of the resource, -1 to use latest revision
-	 * @throws UndefinedResourceTypeException thrown when type is an undefined resource type
 	 */
-	<ResourceType> void load(Scene scene, UUID resourceId, int revision) throws UndefinedResourceTypeException {
-		// Add definition to wait queue
-		mLoadingDefs.add(new ResourceItem(scene, resourceId, revision));
-
+	<ResourceType> void load(Scene scene, UUID resourceId, int revision) {
 		// Load the resource
 		mResourceLoader.load(scene, resourceId, revision);
+
+		// Add definition to wait queue
+		mLoadingDefs.add(new ResourceItem(scene, resourceId, revision));
 	}
 
 	@Override
@@ -61,20 +61,28 @@ class ResourceDependencyLoader implements Disposable {
 	 * has any dependencies that shall be loaded. If so it will add
 	 * these to the queue.
 	 * @return true if it has finished all the loading
-	 * @throws UndefinedResourceTypeException thrown when a resource has an invalid type
 	 */
-	boolean update() throws UndefinedResourceTypeException {
-		// Skip update if we aren't waiting for any definitions to be done loading
-		// I.e. not loading anything
-		if (mLoadingDefs.size == 0) {
-			return true;
+	boolean update() {
+		try {
+			mResourceLoader.update();
+		} catch (ResourceException e) {
+			// Remove the queue item
+			ResourceItem searchResourceItem = Pools.resourceItem.obtain();
+			searchResourceItem.id = e.getId();
+			mLoadingDefs.remove(searchResourceItem);
+
+			throw e;
 		}
 
-		mResourceLoader.update();
+		// Skip update if we aren't waiting for any definitions to be done loading
+		// I.e. not loading anything
+		if (mLoadingDefs.size() == 0) {
+			return mLoadingDefs.size() == 0 && !mResourceLoader.isLoading();
+		}
 
 		// If any of the resources we're waiting for been loaded ->
 		// Check for its dependencies and remove from load
-		for (int i = 0; i < mLoadingDefs.size; ++i) {
+		for (int i = 0; i < mLoadingDefs.size(); ++i) {
 			ResourceItem queueItem = mLoadingDefs.get(i);
 
 			if (mResourceLoader.isResourceLoaded(queueItem.id)) {
@@ -92,9 +100,6 @@ class ResourceDependencyLoader implements Disposable {
 
 						try {
 							load(queueItem.scene, dependencyId, -1);
-						} catch (UndefinedResourceTypeException e) {
-							mLoadingDefs.clear();
-							throw e;
 						} catch (GdxRuntimeException e) {
 							mLoadingDefs.clear();
 							throw e;
@@ -110,12 +115,12 @@ class ResourceDependencyLoader implements Disposable {
 				}
 
 				// Remove element
-				mLoadingDefs.removeIndex(i);
+				mLoadingDefs.remove(i);
 				--i;
 			}
 		}
 
-		return mLoadingDefs.size == 0;
+		return mLoadingDefs.size() == 0 && !mResourceLoader.isLoading();
 	}
 
 	/**
@@ -164,11 +169,11 @@ class ResourceDependencyLoader implements Disposable {
 	 * @return true if this class is loading
 	 */
 	boolean isLoading() {
-		return mLoadingDefs.size != 0;
+		return mLoadingDefs.size() != 0;
 	}
 
 	/** The load queue which we're loading the resources */
-	private Array<ResourceItem> mLoadingDefs = new Array<ResourceItem>();
+	private ArrayList<ResourceItem> mLoadingDefs = new ArrayList<ResourceItem>();
 	/** The class actually loading the resources */
 	private AssetManager mAssetManager;
 	/** Resource loader, this actually loads all the external dependencies */

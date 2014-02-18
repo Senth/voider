@@ -85,16 +85,9 @@ public enum InternalNames {
 	 * Gets the fully qualified folder name the resource should be in
 	 * @param type the class type of the resource. This determines where to look
 	 * @return full path to the resource
-	 * @throws UndefinedResourceTypeException throws this for all undefined resource types
 	 */
-	private static String getDirPath(Class<?> type) throws UndefinedResourceTypeException {
-		String path = mResourcePaths.get(type);
-
-		if (path != null) {
-			return path;
-		} else {
-			throw new UndefinedResourceTypeException(type);
-		}
+	private static String getDirPath(Class<?> type) {
+		return mResourcePaths.get(type);
 	}
 
 	/** Map for all resource paths */
