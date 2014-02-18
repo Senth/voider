@@ -27,7 +27,7 @@ public class ResourceSaver {
 	/**
 	 * Initializes the class with default parameters
 	 */
-	public static void init() {
+	private static void init() {
 		mCrypter = new ObjectCrypter(Config.Crypto.getFileKey());
 	}
 
@@ -145,4 +145,8 @@ public class ResourceSaver {
 
 	/** Crypter used for encrypting/decrypting files */
 	private static ObjectCrypter mCrypter = null;
+
+	static {
+		init();
+	}
 }

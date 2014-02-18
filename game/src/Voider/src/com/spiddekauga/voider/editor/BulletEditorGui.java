@@ -75,7 +75,7 @@ public class BulletEditorGui extends ActorGui {
 		mMainTable.add(button);
 		mVisualHider.addToggleActor(getVisualTable());
 		mVisualHider.setButton(button);
-		new TooltipListener(button, "Visuals", Messages.replaceName(Messages.Tooltip.Actor.Menu.VISUALS, "bullet"));
+		new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Actor.Menu.VISUALS, "bullet"));
 
 		// Weapon
 		if (Config.Gui.usesTextButtons()) {

@@ -45,9 +45,7 @@ public class ActorTest {
 	public static void beforeClass() {
 		LwjglNativesLoader.load();
 		Gdx.files = new LwjglFiles();
-		Config.init();
 		Config.Debug.DEBUG_TESTS = false;
-		ResourceSaver.init();
 		Gdx.app = new ApplicationStub();
 		Config.Debug.JUNIT_TEST = true;
 		SceneSwitcher.switchTo(mScene);

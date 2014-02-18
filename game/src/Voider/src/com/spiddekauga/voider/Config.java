@@ -25,7 +25,7 @@ public class Config {
 	/**
 	 * Initialization of the config class
 	 */
-	public static void init() {
+	private static void init() {
 		Crypto.init();
 	}
 
@@ -956,5 +956,9 @@ public class Config {
 	 */
 	private Config() {
 		// Does nothing
+	}
+
+	static {
+		init();
 	}
 }

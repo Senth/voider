@@ -19,8 +19,6 @@ public class PrototypeScene extends Scene {
 	 */
 	public PrototypeScene() {
 		super(new PrototypeGui());
-
-		((PrototypeGui)mGui).setScene(this);
 	}
 
 	@Override

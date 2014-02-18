@@ -42,8 +42,6 @@ public class ResourceCacheFacadeTest {
 		LwjglNativesLoader.load();
 		Gdx.files = new LwjglFiles();
 		Gdx.app = new ApplicationStub();
-		Config.init();
-		ResourceSaver.init();
 
 		mDepWithDep.addDependency(mUnderDep);
 		mUsingDefDeps.addDependency(mDep);

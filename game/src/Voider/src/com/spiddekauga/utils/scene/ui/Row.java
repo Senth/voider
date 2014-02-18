@@ -49,7 +49,6 @@ public class Row implements Poolable {
 		mHeight = 0;
 
 		mEqualSize = false;
-		mUseCellAlign = false;
 
 		if (mCells != null) {
 			for (Cell cell : mCells) {
@@ -81,11 +80,11 @@ public class Row implements Poolable {
 	 * |————————————————————————————————————|
 	 * \endcode
 	 * Only applicable if equalSpacing is set to true
+	 * @todo useCellAlign has not been implemented yet
 	 * @return This row for chaining
 	 */
 	public Row setEqualCellSize(boolean equalSize, boolean useCellAlign) {
 		mEqualSize = equalSize;
-		mUseCellAlign = useCellAlign;
 
 		// Check if preferred width needs updating
 		if (mEqualSize) {
@@ -510,9 +509,6 @@ public class Row implements Poolable {
 	/** True if the row uses the full width of the parents getPrefWidth() and sets the cell's size
 	 * to equal */
 	private boolean mEqualSize = false;
-	/** If we shall use cells alignment instead of the row's, only applicable if
-	 * #mEqualSpacing is true */
-	private boolean mUseCellAlign = false;
 	/** All the columns in the table */
 	@SuppressWarnings("unchecked")
 	private ArrayList<Cell> mCells = Pools.arrayList.obtain();

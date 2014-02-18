@@ -205,7 +205,7 @@ public abstract class EditorGui extends Gui {
 				button = new ImageButton(mStyles.skin.editor, EditorIcons.CAMPAIGN_EDITOR.toString());
 			}
 		}
-		TooltipListener tooltipListener = new TooltipListener(button, "Campaign Editor", Messages.replaceName(Messages.Tooltip.Menus.Editor.CAMPAIGN,  "level"));
+		TooltipListener tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Menus.Editor.CAMPAIGN,  "level"));
 		mEditorMenu.add(button);
 		if (this.getClass() != LevelEditorGui.class) {
 			new ButtonListener(button, tooltipListener) {
@@ -231,7 +231,7 @@ public abstract class EditorGui extends Gui {
 				button = new ImageButton(mStyles.skin.editor, EditorIcons.LEVEL_EDITOR.toString());
 			}
 		}
-		tooltipListener = new TooltipListener(button, "Level Editor", Messages.replaceName(Messages.Tooltip.Menus.Editor.LEVEL,  "level"));
+		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Menus.Editor.LEVEL,  "level"));
 		mEditorMenu.add(button);
 		if (this.getClass() != LevelEditorGui.class) {
 			new ButtonListener(button, tooltipListener) {
@@ -257,7 +257,7 @@ public abstract class EditorGui extends Gui {
 				button = new ImageButton(mStyles.skin.editor, EditorIcons.ENEMY_EDITOR.toString());
 			}
 		}
-		tooltipListener = new TooltipListener(button, "Enemy Editor", Messages.replaceName(Messages.Tooltip.Menus.Editor.ENEMY,  "enemy"));
+		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Menus.Editor.ENEMY,  "enemy"));
 		mEditorMenu.add(button);
 		if (this.getClass() != EnemyEditorGui.class) {
 			new ButtonListener(button, tooltipListener) {
@@ -283,7 +283,7 @@ public abstract class EditorGui extends Gui {
 				button = new ImageButton(mStyles.skin.editor, EditorIcons.BULLET_EDITOR.toString());
 			}
 		}
-		tooltipListener = new TooltipListener(button, "Bullet Editor", Messages.replaceName(Messages.Tooltip.Menus.Editor.BULLET,  "bullet"));
+		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Menus.Editor.BULLET,  "bullet"));
 		mEditorMenu.add(button).setPadRight(mStyles.vars.paddingSeparator);
 		if (this.getClass() != BulletEditorGui.class) {
 			new ButtonListener(button, tooltipListener) {
@@ -308,7 +308,7 @@ public abstract class EditorGui extends Gui {
 			button = new ImageButton(mStyles.skin.editor, EditorIcons.UNDO.toString());
 		}
 		mFileMenu.add(button);
-		TooltipListener tooltipListener = new TooltipListener(button, null, Messages.replaceName(Messages.Tooltip.Menus.File.UNDO, getResourceTypeName()));
+		TooltipListener tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Menus.File.UNDO, getResourceTypeName()));
 		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onPressed() {
@@ -323,7 +323,7 @@ public abstract class EditorGui extends Gui {
 			button = new ImageButton(mStyles.skin.editor, EditorIcons.REDO.toString());
 		}
 		mFileMenu.add(button);
-		tooltipListener = new TooltipListener(button, null, Messages.replaceName(Messages.Tooltip.Menus.File.REDO, getResourceTypeName()));
+		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Menus.File.REDO, getResourceTypeName()));
 		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onPressed() {
@@ -342,7 +342,7 @@ public abstract class EditorGui extends Gui {
 			}
 			mEnemyHighlight = button;
 			mFileMenu.add(button);
-			tooltipListener = new TooltipListener(button, null, Messages.Tooltip.Menus.File.HIGHLIGHT_ENEMY);
+			tooltipListener = new TooltipListener(button, Messages.Tooltip.Menus.File.HIGHLIGHT_ENEMY);
 			new ButtonListener(button, tooltipListener) {
 				@Override
 				protected void onChecked(boolean checked) {
@@ -357,7 +357,7 @@ public abstract class EditorGui extends Gui {
 				button = new ImageButton(mStyles.skin.editor, EditorIcons.RUN.toString());
 			}
 			mFileMenu.add(button);
-			tooltipListener = new TooltipListener(button, null, Messages.replaceName(Messages.Tooltip.Menus.File.RUN, getResourceTypeName()));
+			tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Menus.File.RUN, getResourceTypeName()));
 			new ButtonListener(button, tooltipListener) {
 				@Override
 				protected void onPressed() {
@@ -384,7 +384,7 @@ public abstract class EditorGui extends Gui {
 			mGridRender = button;
 			DisableListener disableListener = new DisableListener(button);
 			mFileMenu.add(button);
-			tooltipListener = new TooltipListener(button, null, Messages.replaceName(Messages.Tooltip.Menus.File.GRID, getResourceTypeName()));
+			tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Menus.File.GRID, getResourceTypeName()));
 			new ButtonListener(button, tooltipListener) {
 				@Override
 				protected void onChecked(boolean checked) {
@@ -401,7 +401,7 @@ public abstract class EditorGui extends Gui {
 			mGridRenderAbove = button;
 			disableListener.addToggleActor(button);
 			mFileMenu.add(button).setPadRight(mStyles.vars.paddingSeparator);
-			tooltipListener = new TooltipListener(button, null, Messages.replaceName(Messages.Tooltip.Menus.File.GRID_ADOVE, getResourceTypeName()));
+			tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Menus.File.GRID_ADOVE, getResourceTypeName()));
 			new ButtonListener(button, tooltipListener) {
 				@Override
 				protected void onChecked(boolean checked) {
@@ -417,7 +417,7 @@ public abstract class EditorGui extends Gui {
 			button = new ImageButton(mStyles.skin.editor, EditorIcons.NEW.toString());
 		}
 		mFileMenu.add(button);
-		tooltipListener = new TooltipListener(button, null, Messages.replaceName(Messages.Tooltip.Menus.File.NEW, getResourceTypeName()));
+		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Menus.File.NEW, getResourceTypeName()));
 		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onPressed() {
@@ -432,7 +432,7 @@ public abstract class EditorGui extends Gui {
 			button = new ImageButton(mStyles.skin.editor, EditorIcons.DUPLICATE.toString());
 		}
 		mFileMenu.add(button);
-		tooltipListener = new TooltipListener(button, null, Messages.replaceName(Messages.Tooltip.Menus.File.DUPLICATE, getResourceTypeName()));
+		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Menus.File.DUPLICATE, getResourceTypeName()));
 		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onPressed() {
@@ -453,7 +453,7 @@ public abstract class EditorGui extends Gui {
 			button = new ImageButton(mStyles.skin.editor, EditorIcons.SAVE.toString());
 		}
 		mFileMenu.add(button);
-		tooltipListener = new TooltipListener(button, null, Messages.replaceName(Messages.Tooltip.Menus.File.SAVE, getResourceTypeName()));
+		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Menus.File.SAVE, getResourceTypeName()));
 		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onPressed() {
@@ -468,7 +468,7 @@ public abstract class EditorGui extends Gui {
 			button = new ImageButton(mStyles.skin.editor, EditorIcons.LOAD.toString());
 		}
 		mFileMenu.add(button);
-		tooltipListener = new TooltipListener(button, null, Messages.replaceName(Messages.Tooltip.Menus.File.LOAD, getResourceTypeName()));
+		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Menus.File.LOAD, getResourceTypeName()));
 		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onPressed() {
@@ -483,7 +483,7 @@ public abstract class EditorGui extends Gui {
 			button = new ImageButton(mStyles.skin.editor, EditorIcons.PUBLISH.toString());
 		}
 		mFileMenu.add(button);
-		tooltipListener = new TooltipListener(button, null, Messages.replaceName(Messages.Tooltip.Menus.File.LOAD, getResourceTypeName()));
+		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Menus.File.LOAD, getResourceTypeName()));
 		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onPressed() {
@@ -498,7 +498,7 @@ public abstract class EditorGui extends Gui {
 			button = new ImageButton(mStyles.skin.editor, EditorIcons.INFO.toString());
 		}
 		mFileMenu.add(button);
-		tooltipListener = new TooltipListener(button, null, Messages.replaceName(Messages.Tooltip.Menus.File.INFO, getResourceTypeName()));
+		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Menus.File.INFO, getResourceTypeName()));
 		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onPressed() {

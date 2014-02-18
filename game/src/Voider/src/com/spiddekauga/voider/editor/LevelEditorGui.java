@@ -175,7 +175,7 @@ class LevelEditorGui extends EditorGui {
 				mWidgets.enemyAdd.scrollTable.row();
 			}
 
-			TooltipListener tooltipListener = new TooltipListener(button, enemyDef.getName(), enemyDef.getDescription());
+			TooltipListener tooltipListener = new TooltipListener(button, enemyDef.getDescription());
 			new ButtonListener(button, tooltipListener) {
 				@Override
 				protected void onChecked(boolean checked) {
@@ -277,7 +277,7 @@ class LevelEditorGui extends EditorGui {
 		else {
 			button = new ImageButton(mStyles.skin.editor, EditorIcons.SELECT.toString());
 		}
-		TooltipListener tooltipListener = new TooltipListener(button, "Select", Messages.replaceName(Messages.Tooltip.Tools.SELECT,
+		TooltipListener tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Tools.SELECT,
 				getResourceTypeName()));
 		new ButtonListener(button, tooltipListener) {
 			@Override
@@ -296,7 +296,7 @@ class LevelEditorGui extends EditorGui {
 		else {
 			button = new ImageButton(mStyles.skin.editor, EditorIcons.CANCEL.toString());
 		}
-		tooltipListener = new TooltipListener(button, "Cancel", Messages.replaceName(Messages.Tooltip.Tools.CANCEL, getResourceTypeName()));
+		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Tools.CANCEL, getResourceTypeName()));
 		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onChecked(boolean checked) {
@@ -314,7 +314,7 @@ class LevelEditorGui extends EditorGui {
 		else {
 			button = new ImageButton(mStyles.skin.editor, EditorIcons.PAN.toString());
 		}
-		tooltipListener = new TooltipListener(button, null, Messages.replaceName(Messages.Tooltip.Tools.PAN, getResourceTypeName()));
+		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Tools.PAN, getResourceTypeName()));
 		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onChecked(boolean checked) {
@@ -332,7 +332,7 @@ class LevelEditorGui extends EditorGui {
 		else {
 			button = new ImageButton(mStyles.skin.editor, EditorIcons.MOVE.toString());
 		}
-		tooltipListener = new TooltipListener(button, "Move", Messages.replaceName(Messages.Tooltip.Tools.MOVE, getResourceTypeName()));
+		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Tools.MOVE, getResourceTypeName()));
 		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onChecked(boolean checked) {
@@ -350,7 +350,7 @@ class LevelEditorGui extends EditorGui {
 		else {
 			button = new ImageButton(mStyles.skin.editor, EditorIcons.DELETE.toString());
 		}
-		tooltipListener = new TooltipListener(button, "Delete", Messages.replaceName(Messages.Tooltip.Tools.DELETE, getResourceTypeName()));
+		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Tools.DELETE, getResourceTypeName()));
 		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onChecked(boolean checked) {
@@ -368,7 +368,7 @@ class LevelEditorGui extends EditorGui {
 		else {
 			button = new ImageButton(mStyles.skin.editor, EditorIcons.TERRAIN_DRAW_APPEND.toString());
 		}
-		tooltipListener = new TooltipListener(button, "Terrain, append", Messages.replaceName(Messages.Tooltip.Tools.DRAW_APPEND, "terrain"));
+		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Tools.DRAW_APPEND, "terrain"));
 		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onChecked(boolean checked) {
@@ -386,7 +386,7 @@ class LevelEditorGui extends EditorGui {
 		else {
 			button = new ImageButton(mStyles.skin.editor, EditorIcons.TERRAIN_DRAW_ERASE.toString());
 		}
-		tooltipListener = new TooltipListener(button, "Terrain, draw erase", Messages.replaceName(Messages.Tooltip.Tools.DRAW_ERASE, "terrain"));
+		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Tools.DRAW_ERASE, "terrain"));
 		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onChecked(boolean checked) {
@@ -404,7 +404,7 @@ class LevelEditorGui extends EditorGui {
 		else {
 			button = new ImageButton(mStyles.skin.editor, EditorIcons.ADD_MOVE_CORNER.toString());
 		}
-		tooltipListener = new TooltipListener(button, "Add/move corner", Messages.replaceName(Messages.Tooltip.Tools.ADJUST_ADD_MOVE_CORNER,
+		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Tools.ADJUST_ADD_MOVE_CORNER,
 				"terrain"));
 		new ButtonListener(button, tooltipListener) {
 			@Override
@@ -423,7 +423,7 @@ class LevelEditorGui extends EditorGui {
 		else {
 			button = new ImageButton(mStyles.skin.editor, EditorIcons.REMOVE_CORNER.toString());
 		}
-		tooltipListener = new TooltipListener(button, "Remove corner", Messages.replaceName(Messages.Tooltip.Tools.ADJUST_REMOVE_CORNER, "terrain"));
+		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Tools.ADJUST_REMOVE_CORNER, "terrain"));
 		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onChecked(boolean checked) {
@@ -441,7 +441,7 @@ class LevelEditorGui extends EditorGui {
 		else {
 			button = new ImageButton(mStyles.skin.editor, EditorIcons.PATH_ADD.toString());
 		}
-		tooltipListener = new TooltipListener(button, "Add path", Messages.replaceName(Messages.Tooltip.Tools.PATH_ADD, getResourceTypeName()));
+		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Tools.PATH_ADD, getResourceTypeName()));
 		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onChecked(boolean checked) {
@@ -460,7 +460,7 @@ class LevelEditorGui extends EditorGui {
 			button = new ImageButton(mStyles.skin.editor, EditorIcons.ENEMY_ADD.toString());
 		}
 		mWidgets.tool.enemyAdd = button;
-		tooltipListener = new TooltipListener(button, "Add enemy", Messages.replaceName(Messages.Tooltip.Tools.ENEMY_ADD, getResourceTypeName()));
+		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Tools.ENEMY_ADD, getResourceTypeName()));
 		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onChecked(boolean checked) {
@@ -478,7 +478,7 @@ class LevelEditorGui extends EditorGui {
 		else {
 			button = new ImageButton(mStyles.skin.editor, EditorIcons.ENEMY_SET_ACTIVATE_TRIGGER.toString());
 		}
-		tooltipListener = new TooltipListener(button, "Set activate trigger", Messages.replaceName(Messages.Tooltip.Tools.SET_ACTIVATE_TRIGGER,
+		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Tools.SET_ACTIVATE_TRIGGER,
 				getResourceTypeName()));
 		new ButtonListener(button, tooltipListener) {
 			@Override
@@ -497,7 +497,7 @@ class LevelEditorGui extends EditorGui {
 		else {
 			button = new ImageButton(mStyles.skin.editor, EditorIcons.ENEMY_SET_DEACTIVATE_TRIGGER.toString());
 		}
-		tooltipListener = new TooltipListener(button, "Set deactivate trigger", Messages.replaceName(Messages.Tooltip.Tools.SET_DEACTIVATE_DELAY,
+		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Tools.SET_DEACTIVATE_DELAY,
 				getResourceTypeName()));
 		new ButtonListener(button, tooltipListener) {
 			@Override
@@ -597,14 +597,14 @@ class LevelEditorGui extends EditorGui {
 		// Name
 		left.row().setFillWidth(true);
 		Label label = new Label("Name", mStyles.label.standard);
-		new TooltipListener(label, "Name", Messages.Tooltip.Level.Option.NAME);
+		new TooltipListener(label, Messages.Tooltip.Level.Option.NAME);
 		left.add(label).setPadRight(mStyles.vars.paddingAfterLabel);
 
 		TextField textField = new TextField("", mStyles.textField.standard);
 		textField.setMaxLength(Config.Editor.NAME_LENGTH_MAX);
 		left.add(textField).setFillWidth(true);
 		mWidgets.info.name = textField;
-		new TooltipListener(textField, "Name", Messages.Tooltip.Level.Option.NAME);
+		new TooltipListener(textField, Messages.Tooltip.Level.Option.NAME);
 		new TextFieldListener(textField, "Name", mInvoker) {
 			@Override
 			protected void onChange(String newText) {
@@ -615,7 +615,7 @@ class LevelEditorGui extends EditorGui {
 		// Description
 		left.row();
 		label = new Label("Description", mStyles.label.standard);
-		new TooltipListener(label, "Description", Messages.Tooltip.Level.Option.DESCRIPTION);
+		new TooltipListener(label, Messages.Tooltip.Level.Option.DESCRIPTION);
 		left.add(label);
 
 		left.row().setFillWidth(true).setFillHeight(true);
@@ -623,7 +623,7 @@ class LevelEditorGui extends EditorGui {
 		textField.setMaxLength(Config.Editor.DESCRIPTION_LENGTH_MAX);
 		left.add(textField).setFillHeight(true).setFillWidth(true);
 		mWidgets.info.description = textField;
-		new TooltipListener(textField, "Description", Messages.Tooltip.Level.Option.DESCRIPTION);
+		new TooltipListener(textField, Messages.Tooltip.Level.Option.DESCRIPTION);
 		new TextFieldListener(textField, "Set your description...", mInvoker) {
 			@Override
 			protected void onChange(String newText) {
@@ -634,7 +634,7 @@ class LevelEditorGui extends EditorGui {
 		// Speed
 		left.row().setFillWidth(true);
 		label = new Label("Level Speed", mStyles.label.standard);
-		new TooltipListener(label, "Level speed", Messages.Tooltip.Level.Option.LEVEL_SPEED);
+		new TooltipListener(label, Messages.Tooltip.Level.Option.LEVEL_SPEED);
 		left.add(label).setPadRight(mStyles.vars.paddingAfterLabel);
 
 		Slider slider = new Slider(Editor.Level.LEVEL_SPEED_MIN, Editor.Level.LEVEL_SPEED_MAX, Editor.Level.LEVEL_SPEED_STEP_SIZE, false,
@@ -643,7 +643,7 @@ class LevelEditorGui extends EditorGui {
 		mWidgets.info.speed = slider;
 
 		textField = new TextField("", mStyles.textField.standard);
-		new TooltipListener(textField, "Level speed", Messages.Tooltip.Level.Option.LEVEL_SPEED);
+		new TooltipListener(textField, Messages.Tooltip.Level.Option.LEVEL_SPEED);
 		left.add(textField).setWidth(mStyles.vars.textFieldNumberWidth);
 		new SliderListener(slider, textField, mInvoker) {
 			@Override
@@ -670,11 +670,11 @@ class LevelEditorGui extends EditorGui {
 		// Revision
 		left.row().setAlign(Horizontal.LEFT, Vertical.MIDDLE);
 		label = new Label("Revision:", mStyles.label.standard);
-		new TooltipListener(label, "Revision", Messages.Tooltip.Level.Option.REVISION);
+		new TooltipListener(label, Messages.Tooltip.Level.Option.REVISION);
 		left.add(label).setPadRight(mStyles.vars.paddingAfterLabel);
 
 		label = new Label("", mStyles.label.standard);
-		new TooltipListener(label, "Revision", Messages.Tooltip.Level.Option.REVISION);
+		new TooltipListener(label, Messages.Tooltip.Level.Option.REVISION);
 		left.add(label);
 		mWidgets.info.revision = label;
 
@@ -682,7 +682,7 @@ class LevelEditorGui extends EditorGui {
 		// RIGHT
 		right.row();
 		label = new Label("Prologue", mStyles.label.standard);
-		new TooltipListener(label, "Prologue", Messages.Tooltip.Level.Option.PROLOGUE);
+		new TooltipListener(label, Messages.Tooltip.Level.Option.PROLOGUE);
 		right.add(label);
 
 		right.row().setFillWidth(true).setFillHeight(true);
@@ -690,7 +690,7 @@ class LevelEditorGui extends EditorGui {
 		textField.setMaxLength(Config.Editor.STORY_LENGTH_MAX);
 		right.add(textField).setFillWidth(true).setFillHeight(true);
 		mWidgets.info.storyBefore = textField;
-		new TooltipListener(textField, "Prologue", Messages.Tooltip.Level.Option.PROLOGUE);
+		new TooltipListener(textField, Messages.Tooltip.Level.Option.PROLOGUE);
 		new TextFieldListener(textField, "Write a story to be displayed when loading the level (optional)...", mInvoker) {
 			@Override
 			protected void onChange(String newText) {
@@ -701,7 +701,7 @@ class LevelEditorGui extends EditorGui {
 
 		right.row();
 		label = new Label("Epilogue", mStyles.label.standard);
-		new TooltipListener(label, "Epilogue", Messages.Tooltip.Level.Option.EPILOGUE);
+		new TooltipListener(label, Messages.Tooltip.Level.Option.EPILOGUE);
 		right.add(label);
 
 		right.row().setFillWidth(true).setFillHeight(true);
@@ -709,7 +709,7 @@ class LevelEditorGui extends EditorGui {
 		textField.setMaxLength(Config.Editor.STORY_LENGTH_MAX);
 		right.add(textField).setFillWidth(true).setFillHeight(true);
 		mWidgets.info.epilogue = textField;
-		new TooltipListener(textField, "Epilogue", Messages.Tooltip.Level.Option.EPILOGUE);
+		new TooltipListener(textField, Messages.Tooltip.Level.Option.EPILOGUE);
 		new TextFieldListener(textField, "Write the story to be displayed when the level is completed (optional)...", mInvoker) {
 			@Override
 			protected void onChange(String newText) {
@@ -771,7 +771,7 @@ class LevelEditorGui extends EditorGui {
 		}
 		mMainTable.add(button);
 		mHiders.enemyAdd.addToggleActor(button);
-		tooltipListener = new TooltipListener(button, null, Messages.Tooltip.Level.Enemy.ADD);
+		tooltipListener = new TooltipListener(button, Messages.Tooltip.Level.Enemy.ADD);
 		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onPressed() {
@@ -794,7 +794,7 @@ class LevelEditorGui extends EditorGui {
 		// # Enemies
 		mWidgets.enemy.table.row();
 		Label label = new Label("# Enemies", mStyles.label.standard);
-		new TooltipListener(label, "No. of enemies", Messages.Tooltip.Level.Enemy.ENEMY_COUNT);
+		new TooltipListener(label, Messages.Tooltip.Level.Enemy.ENEMY_COUNT);
 		mWidgets.enemy.table.add(label);
 
 		mWidgets.enemy.table.row();
@@ -804,8 +804,8 @@ class LevelEditorGui extends EditorGui {
 		TextField textField = new TextField("", mStyles.textField.standard);
 		textField.setWidth(mStyles.vars.textFieldNumberWidth);
 		mWidgets.enemy.table.add(textField);
-		new TooltipListener(slider, "No. of enemies", Messages.Tooltip.Level.Enemy.ENEMY_COUNT);
-		new TooltipListener(textField, "No. of enemies", Messages.Tooltip.Level.Enemy.ENEMY_COUNT);
+		new TooltipListener(slider, Messages.Tooltip.Level.Enemy.ENEMY_COUNT);
+		new TooltipListener(textField, Messages.Tooltip.Level.Enemy.ENEMY_COUNT);
 		new SliderListener(slider, textField, mInvoker) {
 			@Override
 			protected void onChange(float newValue) {
@@ -819,7 +819,7 @@ class LevelEditorGui extends EditorGui {
 		// Delay
 		mWidgets.enemy.table.row();
 		label = new Label("Spawn delay between enemies", mStyles.label.standard);
-		new TooltipListener(label, "Spawn delay", Messages.Tooltip.Level.Enemy.ENEMY_SPAWN_DELAY);
+		new TooltipListener(label, Messages.Tooltip.Level.Enemy.ENEMY_SPAWN_DELAY);
 		delayHider.addToggleActor(label);
 		mWidgets.enemy.table.add(label);
 
@@ -833,8 +833,8 @@ class LevelEditorGui extends EditorGui {
 		delayHider.addToggleActor(textField);
 		textField.setWidth(mStyles.vars.textFieldNumberWidth);
 		mWidgets.enemy.table.add(textField);
-		new TooltipListener(slider, "Spawn delay", Messages.Tooltip.Level.Enemy.ENEMY_SPAWN_DELAY);
-		new TooltipListener(textField, "Spawn delay", Messages.Tooltip.Level.Enemy.ENEMY_SPAWN_DELAY);
+		new TooltipListener(slider, Messages.Tooltip.Level.Enemy.ENEMY_SPAWN_DELAY);
+		new TooltipListener(textField, Messages.Tooltip.Level.Enemy.ENEMY_SPAWN_DELAY);
 		new SliderListener(slider, textField, mInvoker) {
 			@Override
 			protected void onChange(float newValue) {
@@ -846,7 +846,7 @@ class LevelEditorGui extends EditorGui {
 		// Activation delay
 		mWidgets.enemy.table.row();
 		label = new Label("Activate delay", mStyles.label.standard);
-		new TooltipListener(label, "Activate delay", Messages.Tooltip.Level.Enemy.ACTIVATE_DELAY);
+		new TooltipListener(label, Messages.Tooltip.Level.Enemy.ACTIVATE_DELAY);
 		mHiders.enemyActivateDelay.addToggleActor(label);
 		mWidgets.enemy.table.add(label);
 
@@ -860,8 +860,8 @@ class LevelEditorGui extends EditorGui {
 		mHiders.enemyActivateDelay.addToggleActor(textField);
 		textField.setWidth(mStyles.vars.textFieldNumberWidth);
 		mWidgets.enemy.table.add(textField);
-		new TooltipListener(slider, "Activate delay", Messages.Tooltip.Level.Enemy.ACTIVATE_DELAY);
-		new TooltipListener(textField, "Activate delay", Messages.Tooltip.Level.Enemy.ACTIVATE_DELAY);
+		new TooltipListener(slider, Messages.Tooltip.Level.Enemy.ACTIVATE_DELAY);
+		new TooltipListener(textField, Messages.Tooltip.Level.Enemy.ACTIVATE_DELAY);
 		new SliderListener(slider, textField, mInvoker) {
 			@Override
 			protected void onChange(float newValue) {
@@ -873,7 +873,7 @@ class LevelEditorGui extends EditorGui {
 		// Deactivation delay
 		mWidgets.enemy.table.row();
 		label = new Label("Deactivate delay", mStyles.label.standard);
-		new TooltipListener(label, "Deactivate delay", Messages.Tooltip.Level.Enemy.DEACTIVATE_DELAY);
+		new TooltipListener(label, Messages.Tooltip.Level.Enemy.DEACTIVATE_DELAY);
 		mHiders.enemyDeactivateDelay.addToggleActor(label);
 		mWidgets.enemy.table.add(label);
 
@@ -887,8 +887,8 @@ class LevelEditorGui extends EditorGui {
 		mHiders.enemyDeactivateDelay.addToggleActor(textField);
 		textField.setWidth(mStyles.vars.textFieldNumberWidth);
 		mWidgets.enemy.table.add(textField);
-		new TooltipListener(slider, "Deactivate delay", Messages.Tooltip.Level.Enemy.DEACTIVATE_DELAY);
-		new TooltipListener(textField, "Deactivate delay", Messages.Tooltip.Level.Enemy.DEACTIVATE_DELAY);
+		new TooltipListener(slider, Messages.Tooltip.Level.Enemy.DEACTIVATE_DELAY);
+		new TooltipListener(textField, Messages.Tooltip.Level.Enemy.DEACTIVATE_DELAY);
 		new SliderListener(slider, textField, mInvoker) {
 			@Override
 			protected void onChange(float newValue) {
@@ -921,7 +921,7 @@ class LevelEditorGui extends EditorGui {
 		mWidgets.path.once = button;
 		mWidgets.path.table.add(button);
 		buttonGroup.add(button);
-		TooltipListener tooltipListener = new TooltipListener(button, "Once", Messages.Tooltip.Level.Path.ONCE);
+		TooltipListener tooltipListener = new TooltipListener(button, Messages.Tooltip.Level.Path.ONCE);
 		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onChecked(boolean checked) {
@@ -941,7 +941,7 @@ class LevelEditorGui extends EditorGui {
 		mWidgets.path.loop = button;
 		mWidgets.path.table.add(button);
 		buttonGroup.add(button);
-		tooltipListener = new TooltipListener(button, "Loop", Messages.Tooltip.Level.Path.LOOP);
+		tooltipListener = new TooltipListener(button, Messages.Tooltip.Level.Path.LOOP);
 		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onChecked(boolean checked) {
@@ -961,7 +961,7 @@ class LevelEditorGui extends EditorGui {
 		mWidgets.path.backAndForth = button;
 		mWidgets.path.table.add(button);
 		buttonGroup.add(button);
-		tooltipListener = new TooltipListener(button, "Back and forth", Messages.Tooltip.Level.Path.BACK_AND_FORTH);
+		tooltipListener = new TooltipListener(button, Messages.Tooltip.Level.Path.BACK_AND_FORTH);
 		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onChecked(boolean checked) {

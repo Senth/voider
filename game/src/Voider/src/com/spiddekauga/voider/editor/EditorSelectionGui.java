@@ -45,7 +45,7 @@ public class EditorSelectionGui extends Gui {
 		Skin skin = ResourceCacheFacade.get(InternalNames.UI_EDITOR_BUTTONS);
 
 		Button button = new ImageButton(skin, SkinNames.EditorIcons.CAMPAIGN_EDITOR_BIG.toString());
-		TooltipListener tooltipListener = new TooltipListener(button, "Campaign Editor", Messages.replaceName(Messages.Tooltip.Menus.Editor.CAMPAIGN, "campaign"));
+		TooltipListener tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Menus.Editor.CAMPAIGN, "campaign"));
 		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onPressed() {
@@ -55,7 +55,7 @@ public class EditorSelectionGui extends Gui {
 		mMainTable.add(button);
 
 		button = new ImageButton(skin, SkinNames.EditorIcons.LEVEL_EDITOR_BIG.toString());
-		tooltipListener = new TooltipListener(button, "Level Editor", Messages.replaceName(Messages.Tooltip.Menus.Editor.LEVEL,  "level"));
+		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Menus.Editor.LEVEL,  "level"));
 		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onPressed() {
@@ -65,7 +65,7 @@ public class EditorSelectionGui extends Gui {
 		mMainTable.add(button);
 
 		button = new ImageButton(skin, SkinNames.EditorIcons.ENEMY_EDITOR_BIG.toString());
-		tooltipListener = new TooltipListener(button, "Enemy Editor", Messages.replaceName(Messages.Tooltip.Menus.Editor.ENEMY,  "enemy"));
+		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Menus.Editor.ENEMY,  "enemy"));
 		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onPressed() {
@@ -75,7 +75,7 @@ public class EditorSelectionGui extends Gui {
 		mMainTable.add(button);
 
 		button = new ImageButton(skin, SkinNames.EditorIcons.BULLET_EDITOR_BIG.toString());
-		tooltipListener = new TooltipListener(button, "Bullet Editor", Messages.replaceName(Messages.Tooltip.Menus.Editor.BULLET,  "bullet"));
+		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Menus.Editor.BULLET,  "bullet"));
 		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onPressed() {

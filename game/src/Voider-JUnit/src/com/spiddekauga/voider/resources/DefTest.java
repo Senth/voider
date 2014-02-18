@@ -19,7 +19,6 @@ import com.badlogic.gdx.backends.lwjgl.LwjglFiles;
 import com.badlogic.gdx.backends.lwjgl.LwjglNativesLoader;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.KryoPrototypeTest;
-import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.actors.BulletActorDef;
 import com.spiddekauga.voider.game.actors.PickupActorDef;
 import com.spiddekauga.voider.game.actors.PlayerActorDef;
@@ -41,7 +40,6 @@ public class DefTest {
 	static public void setUpBeforeClass() throws SecurityException, NoSuchFieldException {
 		LwjglNativesLoader.load();
 		Gdx.files = new LwjglFiles();
-		Config.init();
 		mfCreator = Def.class.getDeclaredField("mCreator");
 		mfCreator.setAccessible(true);
 

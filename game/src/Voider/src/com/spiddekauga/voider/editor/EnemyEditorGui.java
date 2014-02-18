@@ -265,7 +265,7 @@ public class EnemyEditorGui extends ActorGui {
 		mMainTable.add(button);
 		mMovementHider.addToggleActor(mMovementTable);
 		mMovementHider.setButton(button);
-		new TooltipListener(button, "", Messages.Tooltip.Enemy.Menu.MOVEMENT);
+		new TooltipListener(button, Messages.Tooltip.Enemy.Menu.MOVEMENT);
 
 		// Weapons
 		if (Config.Gui.usesTextButtons()) {
@@ -278,7 +278,7 @@ public class EnemyEditorGui extends ActorGui {
 		mMainTable.add(button);
 		mWeaponHider.addToggleActor(mWeaponTable);
 		mWeaponHider.setButton(button);
-		new TooltipListener(button, "", Messages.Tooltip.Enemy.Menu.WEAPON);
+		new TooltipListener(button, Messages.Tooltip.Enemy.Menu.WEAPON);
 
 		// Visuals
 		if (Config.Gui.usesTextButtons()) {
@@ -291,7 +291,7 @@ public class EnemyEditorGui extends ActorGui {
 		mMainTable.add(button);
 		mVisualHider.setButton(button);
 		mVisualHider.addToggleActor(getVisualTable());
-		new TooltipListener(button, "Visuals", Messages.replaceName(Messages.Tooltip.Actor.Menu.VISUALS, "enemy"));
+		new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Actor.Menu.VISUALS, "enemy"));
 
 		// Collision
 		if (Config.Gui.usesTextButtons()) {
@@ -304,7 +304,7 @@ public class EnemyEditorGui extends ActorGui {
 		mMainTable.add(button);
 		mCollisionHider.setButton(button);
 		mCollisionHider.addToggleActor(getCollisionTable());
-		new TooltipListener(button, "Collision", Messages.replaceName(Messages.Tooltip.Actor.Menu.COLLISION, "enemy"));
+		new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Actor.Menu.COLLISION, "enemy"));
 
 		mMainTable.row();
 	}
@@ -332,7 +332,7 @@ public class EnemyEditorGui extends ActorGui {
 		mMainTable.row();
 		label = new Label("Min", mStyles.label.standard);
 		mAiHider.addToggleActor(label);
-		new TooltipListener(label, "Minimum distance", Messages.Tooltip.Enemy.Movement.Ai.DISTANCE_MIN);
+		new TooltipListener(label, Messages.Tooltip.Enemy.Movement.Ai.DISTANCE_MIN);
 		mMainTable.add(label).setPadRight(mStyles.vars.paddingAfterLabel);
 		Slider slider = new Slider(Enemy.Movement.AI_DISTANCE_MIN, Enemy.Movement.AI_DISTANCE_MAX, Enemy.Movement.AI_DISTANCE_STEP_SIZE, false, mStyles.slider.standard);
 		mAiHider.addToggleActor(slider);
@@ -342,8 +342,8 @@ public class EnemyEditorGui extends ActorGui {
 		mAiHider.addToggleActor(textField);
 		textField.setWidth(mStyles.vars.textFieldNumberWidth);
 		mMainTable.add(textField);
-		new TooltipListener(slider, "Minimum distance", Messages.Tooltip.Enemy.Movement.Ai.DISTANCE_MIN);
-		new TooltipListener(textField, "Minimum distance", Messages.Tooltip.Enemy.Movement.Ai.DISTANCE_MIN);
+		new TooltipListener(slider, Messages.Tooltip.Enemy.Movement.Ai.DISTANCE_MIN);
+		new TooltipListener(textField, Messages.Tooltip.Enemy.Movement.Ai.DISTANCE_MIN);
 		SliderListener sliderMinListener = new SliderListener(mWidgets.movement.aiDistanceMin, textField, mInvoker) {
 			@Override
 			protected void onChange(float newValue) {
@@ -355,7 +355,7 @@ public class EnemyEditorGui extends ActorGui {
 		mMainTable.row();
 		label = new Label("Max", mStyles.label.standard);
 		mAiHider.addToggleActor(label);
-		new TooltipListener(label, "Maximum distance", Messages.Tooltip.Enemy.Movement.Ai.DISTANCE_MAX);
+		new TooltipListener(label, Messages.Tooltip.Enemy.Movement.Ai.DISTANCE_MAX);
 		mMainTable.add(label).setPadRight(mStyles.vars.paddingAfterLabel);
 		slider = new Slider(Enemy.Movement.AI_DISTANCE_MIN, Enemy.Movement.AI_DISTANCE_MAX, Enemy.Movement.AI_DISTANCE_STEP_SIZE, false, mStyles.slider.standard);
 		mAiHider.addToggleActor(slider);
@@ -365,8 +365,8 @@ public class EnemyEditorGui extends ActorGui {
 		mAiHider.addToggleActor(textField);
 		textField.setWidth(mStyles.vars.textFieldNumberWidth);
 		mMainTable.add(textField);
-		new TooltipListener(slider, "Maximum distance", Messages.Tooltip.Enemy.Movement.Ai.DISTANCE_MAX);
-		new TooltipListener(textField, "Maximum distance", Messages.Tooltip.Enemy.Movement.Ai.DISTANCE_MAX);
+		new TooltipListener(slider, Messages.Tooltip.Enemy.Movement.Ai.DISTANCE_MAX);
+		new TooltipListener(textField, Messages.Tooltip.Enemy.Movement.Ai.DISTANCE_MAX);
 		SliderListener sliderMaxListener = new SliderListener(mWidgets.movement.aiDistanceMax, textField, mInvoker) {
 			@Override
 			protected void onChange(float newValue) {
@@ -396,7 +396,7 @@ public class EnemyEditorGui extends ActorGui {
 		buttonGroup.add(button);
 		mWidgets.movement.aiRandomMovementOn = button;
 		mMainTable.add(button);
-		new TooltipListener(button, "Random Movement", Messages.Tooltip.Enemy.Movement.Ai.RANDOM_MOVEMENT_BUTTON);
+		new TooltipListener(button, Messages.Tooltip.Enemy.Movement.Ai.RANDOM_MOVEMENT_BUTTON);
 		HideListener hideListener = new HideListener(button, true) {
 			@Override
 			protected void onShow() {
@@ -434,7 +434,7 @@ public class EnemyEditorGui extends ActorGui {
 
 		// Min
 		label = new Label("Min", mStyles.label.standard);
-		new TooltipListener(label, "Random movement", Messages.Tooltip.Enemy.Movement.Ai.RANDOM_MOVEMENT);
+		new TooltipListener(label, Messages.Tooltip.Enemy.Movement.Ai.RANDOM_MOVEMENT);
 		mMainTable.row();
 		mMainTable.add(label).setPadRight(mStyles.vars.paddingAfterLabel);
 
@@ -444,8 +444,8 @@ public class EnemyEditorGui extends ActorGui {
 		textField = new TextField("", mStyles.textField.standard);
 		textField.setWidth(mStyles.vars.textFieldNumberWidth);
 		mMainTable.add(textField);
-		new TooltipListener(slider, "Random movement", Messages.Tooltip.Enemy.Movement.Ai.RANDOM_MOVEMENT);
-		new TooltipListener(textField, "Random movement", Messages.Tooltip.Enemy.Movement.Ai.RANDOM_MOVEMENT);
+		new TooltipListener(slider, Messages.Tooltip.Enemy.Movement.Ai.RANDOM_MOVEMENT);
+		new TooltipListener(textField, Messages.Tooltip.Enemy.Movement.Ai.RANDOM_MOVEMENT);
 		sliderMinListener = new SliderListener(mWidgets.movement.aiRandomTimeMin, textField, mInvoker) {
 			@Override
 			protected void onChange(float newValue) {
@@ -458,7 +458,7 @@ public class EnemyEditorGui extends ActorGui {
 
 		// Max
 		label = new Label("Max", mStyles.label.standard);
-		new TooltipListener(label, "Random movement", Messages.Tooltip.Enemy.Movement.Ai.RANDOM_MOVEMENT);
+		new TooltipListener(label, Messages.Tooltip.Enemy.Movement.Ai.RANDOM_MOVEMENT);
 		mMainTable.row();
 		mMainTable.add(label).setPadRight(mStyles.vars.paddingAfterLabel);
 
@@ -468,8 +468,8 @@ public class EnemyEditorGui extends ActorGui {
 		textField = new TextField("", mStyles.textField.standard);
 		textField.setWidth(mStyles.vars.textFieldNumberWidth);
 		mMainTable.add(textField);
-		new TooltipListener(slider, "Random movement", Messages.Tooltip.Enemy.Movement.Ai.RANDOM_MOVEMENT);
-		new TooltipListener(textField, "Random movement", Messages.Tooltip.Enemy.Movement.Ai.RANDOM_MOVEMENT);
+		new TooltipListener(slider, Messages.Tooltip.Enemy.Movement.Ai.RANDOM_MOVEMENT);
+		new TooltipListener(textField, Messages.Tooltip.Enemy.Movement.Ai.RANDOM_MOVEMENT);
 		sliderMaxListener = new SliderListener(mWidgets.movement.aiRandomTimeMax, textField, mInvoker) {
 			@Override
 			protected void onChange(float newValue) {
@@ -492,7 +492,7 @@ public class EnemyEditorGui extends ActorGui {
 		// Movement Speed
 		mMainTable.row();
 		Label label = new Label("Movement speed", mStyles.label.standard);
-		new TooltipListener(label, "Movement speed", Messages.Tooltip.Enemy.Movement.Common.MOVEMENT_SPEED);
+		new TooltipListener(label, Messages.Tooltip.Enemy.Movement.Common.MOVEMENT_SPEED);
 		mMainTable.add(label);
 		mMainTable.row();
 		Slider slider = new Slider(Enemy.Movement.MOVE_SPEED_MIN, Enemy.Movement.MOVE_SPEED_MAX, Enemy.Movement.MOVE_SPEED_STEP_SIZE, false, mStyles.slider.standard);
@@ -500,8 +500,8 @@ public class EnemyEditorGui extends ActorGui {
 		TextField textField = new TextField("", mStyles.textField.standard);
 		textField.setWidth(mStyles.vars.textFieldNumberWidth);
 		mMainTable.add(textField);
-		new TooltipListener(slider, "Movement speed", Messages.Tooltip.Enemy.Movement.Common.MOVEMENT_SPEED);
-		new TooltipListener(textField, "Movement speed", Messages.Tooltip.Enemy.Movement.Common.MOVEMENT_SPEED);
+		new TooltipListener(slider, Messages.Tooltip.Enemy.Movement.Common.MOVEMENT_SPEED);
+		new TooltipListener(textField, Messages.Tooltip.Enemy.Movement.Common.MOVEMENT_SPEED);
 		new SliderListener(slider, textField, mInvoker) {
 			@Override
 			protected void onChange(float newValue) {
@@ -550,7 +550,7 @@ public class EnemyEditorGui extends ActorGui {
 
 		buttonGroup.add(button);
 		mMainTable.add(button);
-		TooltipListener tooltipListener = new TooltipListener(button, "Turning speed", Messages.Tooltip.Enemy.Movement.Common.TURNING_SPEED_BUTTON);
+		TooltipListener tooltipListener = new TooltipListener(button, Messages.Tooltip.Enemy.Movement.Common.TURNING_SPEED_BUTTON);
 		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onChecked(boolean checked) {
@@ -581,8 +581,8 @@ public class EnemyEditorGui extends ActorGui {
 		textField = new TextField("", mStyles.textField.standard);
 		textField.setWidth(mStyles.vars.textFieldNumberWidth);
 		mMainTable.add(textField);
-		new TooltipListener(slider, "Turning speed", Messages.Tooltip.Enemy.Movement.Common.TURNING_SPEED);
-		new TooltipListener(textField, "Turning speed", Messages.Tooltip.Enemy.Movement.Common.TURNING_SPEED);
+		new TooltipListener(slider, Messages.Tooltip.Enemy.Movement.Common.TURNING_SPEED);
+		new TooltipListener(textField, Messages.Tooltip.Enemy.Movement.Common.TURNING_SPEED);
 		new SliderListener(slider, textField, mInvoker) {
 			@Override
 			protected void onChange(float newValue) {
@@ -622,7 +622,7 @@ public class EnemyEditorGui extends ActorGui {
 		mMovementHider.addChild(mPathHider);
 		HideListener hideListener = new HideListener(checkBox, true);
 		hideListener.addToggleActor(mPathLabels);
-		TooltipListener tooltipListener = new TooltipListener(checkBox, "Path", Messages.Tooltip.Enemy.Movement.Menu.PATH);
+		TooltipListener tooltipListener = new TooltipListener(checkBox, Messages.Tooltip.Enemy.Movement.Menu.PATH);
 		new ButtonListener(checkBox, tooltipListener) {
 			@Override
 			protected void onChecked(boolean checked) {
@@ -647,7 +647,7 @@ public class EnemyEditorGui extends ActorGui {
 		checkBox = new CheckBox("Stationary", mStyles.checkBox.radio);
 		checkBox.addListener(movementChecker);
 		mWidgets.movement.stationaryBox = checkBox;
-		tooltipListener = new TooltipListener(checkBox, "Stationary", Messages.Tooltip.Enemy.Movement.Menu.STATIONARY);
+		tooltipListener = new TooltipListener(checkBox, Messages.Tooltip.Enemy.Movement.Menu.STATIONARY);
 		new ButtonListener(checkBox, tooltipListener) {
 			@Override
 			protected void onChecked(boolean checked) {
@@ -666,7 +666,7 @@ public class EnemyEditorGui extends ActorGui {
 		mWidgets.movement.aiBox = checkBox;
 		mAiHider.setButton(checkBox);
 		mMovementHider.addChild(mAiHider);
-		tooltipListener = new TooltipListener(checkBox, "AI", Messages.Tooltip.Enemy.Movement.Menu.AI);
+		tooltipListener = new TooltipListener(checkBox, Messages.Tooltip.Enemy.Movement.Menu.AI);
 		new ButtonListener(checkBox, tooltipListener) {
 			@Override
 			protected void onChecked(boolean checked) {
@@ -704,7 +704,7 @@ public class EnemyEditorGui extends ActorGui {
 		buttonGroup.add(button);
 		mWidgets.weapon.on = button;
 		mWeaponTable.add(button);
-		TooltipListener tooltipListener = new TooltipListener(button, "Weapon", Messages.Tooltip.Enemy.Weapon.WEAPON_BUTTON);
+		TooltipListener tooltipListener = new TooltipListener(button, Messages.Tooltip.Enemy.Weapon.WEAPON_BUTTON);
 		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onChecked(boolean checked) {
@@ -721,7 +721,7 @@ public class EnemyEditorGui extends ActorGui {
 		buttonGroup.add(button);
 		mWidgets.weapon.off = button;
 		mWeaponTable.add(button);
-		new TooltipListener(button, "Weapon", Messages.Tooltip.Enemy.Weapon.WEAPON_BUTTON);
+		new TooltipListener(button, Messages.Tooltip.Enemy.Weapon.WEAPON_BUTTON);
 		mWidgets.weapon.off.setChecked(true);
 
 		// BULLET
@@ -738,7 +738,7 @@ public class EnemyEditorGui extends ActorGui {
 			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.BULLET_SELECT.toString());
 		}
 		mWeaponTable.add(button);
-		tooltipListener = new TooltipListener(button, "Select bullet", Messages.Tooltip.Enemy.Weapon.Bullet.SELECT_BULLET);
+		tooltipListener = new TooltipListener(button, Messages.Tooltip.Enemy.Weapon.Bullet.SELECT_BULLET);
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed() {
@@ -749,7 +749,7 @@ public class EnemyEditorGui extends ActorGui {
 		// Speed
 		mWeaponTable.row();
 		label = new Label("Speed", mStyles.label.standard);
-		new TooltipListener(label, "Speed", Messages.Tooltip.Enemy.Weapon.Bullet.SPEED);
+		new TooltipListener(label, Messages.Tooltip.Enemy.Weapon.Bullet.SPEED);
 		Cell cell = mWeaponTable.add(label);
 		cell.setPadRight(mStyles.vars.paddingAfterLabel);
 		Slider slider = new Slider(Weapon.BULLET_SPEED_MIN, Weapon.BULLET_SPEED_MAX, Weapon.BULLET_SPEED_STEP_SIZE, false, mStyles.slider.standard);
@@ -758,8 +758,8 @@ public class EnemyEditorGui extends ActorGui {
 		TextField textField = new TextField("", mStyles.textField.standard);
 		textField.setWidth(mStyles.vars.textFieldNumberWidth);
 		mWeaponTable.add(textField);
-		new TooltipListener(slider, "Speed", Messages.Tooltip.Enemy.Weapon.Bullet.SPEED);
-		new TooltipListener(textField, "Speed", Messages.Tooltip.Enemy.Weapon.Bullet.SPEED);
+		new TooltipListener(slider, Messages.Tooltip.Enemy.Weapon.Bullet.SPEED);
+		new TooltipListener(textField, Messages.Tooltip.Enemy.Weapon.Bullet.SPEED);
 		new SliderListener(slider, textField, mInvoker) {
 			@Override
 			protected void onChange(float newValue) {
@@ -770,7 +770,7 @@ public class EnemyEditorGui extends ActorGui {
 		// Damage
 		mWeaponTable.row();
 		label = new Label("Damage", mStyles.label.standard);
-		new TooltipListener(label, "Damage", Messages.Tooltip.Enemy.Weapon.Bullet.DAMAGE);
+		new TooltipListener(label, Messages.Tooltip.Enemy.Weapon.Bullet.DAMAGE);
 		cell = mWeaponTable.add(label);
 		cell.setPadRight(mStyles.vars.paddingAfterLabel);
 		slider = new Slider(Weapon.DAMAGE_MIN, Weapon.DAMAGE_MAX, Weapon.DAMAGE_STEP_SIZE, false, mStyles.slider.standard);
@@ -779,8 +779,8 @@ public class EnemyEditorGui extends ActorGui {
 		textField = new TextField("", mStyles.textField.standard);
 		textField.setWidth(mStyles.vars.textFieldNumberWidth);
 		mWeaponTable.add(textField);
-		new TooltipListener(slider, "Damage", Messages.Tooltip.Enemy.Weapon.Bullet.DAMAGE);
-		new TooltipListener(textField, "Damage", Messages.Tooltip.Enemy.Weapon.Bullet.DAMAGE);
+		new TooltipListener(slider, Messages.Tooltip.Enemy.Weapon.Bullet.DAMAGE);
+		new TooltipListener(textField, Messages.Tooltip.Enemy.Weapon.Bullet.DAMAGE);
 		new SliderListener(slider, textField, mInvoker) {
 			@Override
 			protected void onChange(float newValue) {
@@ -790,11 +790,11 @@ public class EnemyEditorGui extends ActorGui {
 
 		// Cooldown
 		label = new Label("Cooldown time", mStyles.label.standard);
-		new TooltipListener(label, "Cooldown", Messages.Tooltip.Enemy.Weapon.Bullet.COOLDOWN);
+		new TooltipListener(label, Messages.Tooltip.Enemy.Weapon.Bullet.COOLDOWN);
 		mWeaponTable.row();
 		mWeaponTable.add(label);
 		label = new Label("Min", mStyles.label.standard);
-		new TooltipListener(label, "Cooldown", Messages.Tooltip.Enemy.Weapon.Bullet.COOLDOWN);
+		new TooltipListener(label, Messages.Tooltip.Enemy.Weapon.Bullet.COOLDOWN);
 		mWeaponTable.row();
 		cell = mWeaponTable.add(label);
 		cell.setPadRight(mStyles.vars.paddingAfterLabel);
@@ -805,8 +805,8 @@ public class EnemyEditorGui extends ActorGui {
 		textField = new TextField("", mStyles.textField.standard);
 		textField.setWidth(mStyles.vars.textFieldNumberWidth);
 		mWeaponTable.add(textField);
-		new TooltipListener(slider, "Cooldown", Messages.Tooltip.Enemy.Weapon.Bullet.COOLDOWN);
-		new TooltipListener(textField, "Cooldown", Messages.Tooltip.Enemy.Weapon.Bullet.COOLDOWN);
+		new TooltipListener(slider, Messages.Tooltip.Enemy.Weapon.Bullet.COOLDOWN);
+		new TooltipListener(textField, Messages.Tooltip.Enemy.Weapon.Bullet.COOLDOWN);
 		SliderListener sliderMinListener = new SliderListener(sliderMin, textField, mInvoker) {
 			@Override
 			protected void onChange(float newValue) {
@@ -816,7 +816,7 @@ public class EnemyEditorGui extends ActorGui {
 
 
 		label = new Label("Max", mStyles.label.standard);
-		new TooltipListener(label, "Cooldown", Messages.Tooltip.Enemy.Weapon.Bullet.COOLDOWN);
+		new TooltipListener(label, Messages.Tooltip.Enemy.Weapon.Bullet.COOLDOWN);
 		mWeaponTable.row();
 		cell = mWeaponTable.add(label);
 		cell.setPadRight(mStyles.vars.paddingAfterLabel);
@@ -827,8 +827,8 @@ public class EnemyEditorGui extends ActorGui {
 		textField = new TextField("", mStyles.textField.standard);
 		textField.setWidth(mStyles.vars.textFieldNumberWidth);
 		mWeaponTable.add(textField);
-		new TooltipListener(slider, "Cooldown", Messages.Tooltip.Enemy.Weapon.Bullet.COOLDOWN);
-		new TooltipListener(textField, "Cooldown", Messages.Tooltip.Enemy.Weapon.Bullet.COOLDOWN);
+		new TooltipListener(slider, Messages.Tooltip.Enemy.Weapon.Bullet.COOLDOWN);
+		new TooltipListener(textField, Messages.Tooltip.Enemy.Weapon.Bullet.COOLDOWN);
 		SliderListener sliderMaxListener = new SliderListener(sliderMax, textField, mInvoker) {
 			@Override
 			protected void onChange(float newValue) {
@@ -855,7 +855,7 @@ public class EnemyEditorGui extends ActorGui {
 		mWeaponTable.add(button);
 		buttonGroup = new ButtonGroup();
 		buttonGroup.add(button);
-		tooltipListener = new TooltipListener(button, "On player", Messages.Tooltip.Enemy.Weapon.Aim.ON_PLAYER);
+		tooltipListener = new TooltipListener(button, Messages.Tooltip.Enemy.Weapon.Aim.ON_PLAYER);
 		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onChecked(boolean checked) {
@@ -876,7 +876,7 @@ public class EnemyEditorGui extends ActorGui {
 		mWidgets.weapon.aimInFrontOfPlayer = button;
 		mWeaponTable.add(button);
 		buttonGroup.add(button);
-		tooltipListener = new TooltipListener(button, "In front of player", Messages.Tooltip.Enemy.Weapon.Aim.IN_FRONT_OF_PLAYER);
+		tooltipListener = new TooltipListener(button, Messages.Tooltip.Enemy.Weapon.Aim.IN_FRONT_OF_PLAYER);
 		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onChecked(boolean checked) {
@@ -896,7 +896,7 @@ public class EnemyEditorGui extends ActorGui {
 		mWidgets.weapon.aimMoveDirection = button;
 		mWeaponTable.add(button);
 		buttonGroup.add(button);
-		tooltipListener = new TooltipListener(button, "Movement direction", Messages.Tooltip.Enemy.Weapon.Aim.MOVE_DIR);
+		tooltipListener = new TooltipListener(button, Messages.Tooltip.Enemy.Weapon.Aim.MOVE_DIR);
 		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onChecked(boolean checked) {
@@ -916,7 +916,7 @@ public class EnemyEditorGui extends ActorGui {
 		mWidgets.weapon.aimDirection = button;
 		mWeaponTable.add(button);
 		buttonGroup.add(button);
-		tooltipListener = new TooltipListener(button, "Direction", Messages.Tooltip.Enemy.Weapon.Aim.DIRECTION);
+		tooltipListener = new TooltipListener(button, Messages.Tooltip.Enemy.Weapon.Aim.DIRECTION);
 		HideListener directionHider = new HideListener(button, true) {
 			@Override
 			protected void onShow() {
@@ -934,7 +934,7 @@ public class EnemyEditorGui extends ActorGui {
 		mWidgets.weapon.aimRotate = button;
 		mWeaponTable.add(button);
 		buttonGroup.add(button);
-		tooltipListener = new TooltipListener(button, "Rotate", Messages.Tooltip.Enemy.Weapon.Aim.ROTATE);
+		tooltipListener = new TooltipListener(button, Messages.Tooltip.Enemy.Weapon.Aim.ROTATE);
 		HideListener rotateHider = new HideListener(button, true) {
 			@Override
 			protected void onShow() {
@@ -951,7 +951,7 @@ public class EnemyEditorGui extends ActorGui {
 		mWeaponTable.add(directionTable);
 
 		label = new Label("Angle", mStyles.label.standard);
-		new TooltipListener(label, "Angle", Messages.Tooltip.Enemy.Weapon.Aim.DIRECTION_ANGLE);
+		new TooltipListener(label, Messages.Tooltip.Enemy.Weapon.Aim.DIRECTION_ANGLE);
 		directionTable.add(label).setPadRight(mStyles.vars.paddingAfterLabel);
 		slider = new Slider(Enemy.Weapon.START_ANGLE_MIN, Enemy.Weapon.START_ANGLE_MAX, Enemy.Weapon.START_ANGLE_STEP_SIZE, false, mStyles.slider.standard);
 		mWidgets.weapon.aimDirectionAngle = slider;
@@ -959,8 +959,8 @@ public class EnemyEditorGui extends ActorGui {
 		textField = new TextField("", mStyles.textField.standard);
 		textField.setWidth(mStyles.vars.textFieldNumberWidth);
 		directionTable.add(textField);
-		new TooltipListener(slider, "Start angle", Messages.Tooltip.Enemy.Weapon.Aim.DIRECTION_ANGLE);
-		new TooltipListener(textField, "Start angle", Messages.Tooltip.Enemy.Weapon.Aim.DIRECTION_ANGLE);
+		new TooltipListener(slider, Messages.Tooltip.Enemy.Weapon.Aim.DIRECTION_ANGLE);
+		new TooltipListener(textField, Messages.Tooltip.Enemy.Weapon.Aim.DIRECTION_ANGLE);
 		new SliderListener(slider, textField, mInvoker) {
 			@Override
 			protected void onChange(float newValue) {
@@ -979,7 +979,7 @@ public class EnemyEditorGui extends ActorGui {
 
 		rotateTable.row();
 		label = new Label("Angle", mStyles.label.standard);
-		new TooltipListener(label, "Start angle", Messages.Tooltip.Enemy.Weapon.Aim.ROTATE_START_ANGLE);
+		new TooltipListener(label, Messages.Tooltip.Enemy.Weapon.Aim.ROTATE_START_ANGLE);
 		rotateTable.add(label).setPadRight(mStyles.vars.paddingAfterLabel);
 		slider = new Slider(Enemy.Weapon.START_ANGLE_MIN, Enemy.Weapon.START_ANGLE_MAX, Enemy.Weapon.START_ANGLE_STEP_SIZE, false, mStyles.slider.standard);
 		mWidgets.weapon.aimRotateStartAngle = slider;
@@ -987,8 +987,8 @@ public class EnemyEditorGui extends ActorGui {
 		textField = new TextField("", mStyles.textField.standard);
 		textField.setWidth(mStyles.vars.textFieldNumberWidth);
 		rotateTable.add(textField);
-		new TooltipListener(slider, "Angle", Messages.Tooltip.Enemy.Weapon.Aim.ROTATE_START_ANGLE);
-		new TooltipListener(textField, "Angle", Messages.Tooltip.Enemy.Weapon.Aim.ROTATE_START_ANGLE);
+		new TooltipListener(slider, Messages.Tooltip.Enemy.Weapon.Aim.ROTATE_START_ANGLE);
+		new TooltipListener(textField, Messages.Tooltip.Enemy.Weapon.Aim.ROTATE_START_ANGLE);
 		new SliderListener(slider, textField, mInvoker) {
 			@Override
 			protected void onChange(float newValue) {
@@ -999,7 +999,7 @@ public class EnemyEditorGui extends ActorGui {
 
 		rotateTable.row();
 		label = new Label("R-Speed", mStyles.label.standard);
-		new TooltipListener(label, "Rotation speed", Messages.Tooltip.Enemy.Weapon.Aim.ROTATE_SPEED);
+		new TooltipListener(label, Messages.Tooltip.Enemy.Weapon.Aim.ROTATE_SPEED);
 		rotateTable.add(label).setPadRight(mStyles.vars.paddingAfterLabel);
 		slider = new Slider(Enemy.Weapon.ROTATE_SPEED_MIN, Enemy.Weapon.ROTATE_SPEED_MAX, Enemy.Weapon.ROTATE_SPEED_STEP_SIZE, false, mStyles.slider.standard);
 		mWidgets.weapon.aimRotateSpeed = slider;
@@ -1007,8 +1007,8 @@ public class EnemyEditorGui extends ActorGui {
 		textField = new TextField("", mStyles.textField.standard);
 		textField.setWidth(mStyles.vars.textFieldNumberWidth);
 		rotateTable.add(textField);
-		new TooltipListener(slider, "Rotation speed", Messages.Tooltip.Enemy.Weapon.Aim.ROTATE_SPEED);
-		new TooltipListener(textField, "Rotation speed", Messages.Tooltip.Enemy.Weapon.Aim.ROTATE_SPEED);
+		new TooltipListener(slider, Messages.Tooltip.Enemy.Weapon.Aim.ROTATE_SPEED);
+		new TooltipListener(textField, Messages.Tooltip.Enemy.Weapon.Aim.ROTATE_SPEED);
 		new SliderListener(slider, textField, mInvoker) {
 			@Override
 			protected void onChange(float newValue) {

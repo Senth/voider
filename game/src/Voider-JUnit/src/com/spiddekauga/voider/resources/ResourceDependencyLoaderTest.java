@@ -36,8 +36,6 @@ public class ResourceDependencyLoaderTest {
 	public static void setUpBeforeClass() throws Exception {
 		LwjglNativesLoader.load();
 		Gdx.files = new LwjglFiles();
-		Config.init();
-		ResourceSaver.init();
 		Gdx.app = new ApplicationStub();
 		Config.Debug.JUNIT_TEST = true;
 

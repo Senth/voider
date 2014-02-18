@@ -40,14 +40,6 @@ public class PrototypeGui extends Gui {
 	}
 
 	/**
-	 * Sets the scene
-	 * @param scene the prototype scene
-	 */
-	void setScene(PrototypeScene scene) {
-		mScene = scene;
-	}
-
-	/**
 	 * Initialize window with enemy buttons
 	 */
 	private void initScrollPane() {
@@ -87,8 +79,6 @@ public class PrototypeGui extends Gui {
 	private Skin mSkin = null;
 	/** Window table */
 	private Table mWindowTable = null;
-	/** Scene of the prototype */
-	private PrototypeScene mScene = null;
 
 	// Constants for testing
 	/** Button size */

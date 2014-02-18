@@ -158,7 +158,7 @@ public abstract class ActorGui extends EditorGui {
 		textField.setMaxLength(Config.Editor.NAME_LENGTH_MAX);
 		mWidgets.info.table.add(textField).setWidth(width);
 		mWidgets.info.name = textField;
-		new TooltipListener(textField, "Name", Messages.replaceName(Messages.Tooltip.Actor.Option.NAME, getResourceTypeName()));
+		new TooltipListener(textField, Messages.replaceName(Messages.Tooltip.Actor.Option.NAME, getResourceTypeName()));
 		new TextFieldListener(textField, "Name", mInvoker) {
 			@Override
 			protected void onChange(String newText) {
@@ -175,7 +175,7 @@ public abstract class ActorGui extends EditorGui {
 		textField.setMaxLength(Config.Editor.DESCRIPTION_LENGTH_MAX);
 		mWidgets.info.table.add(textField).setSize(width, (int) (Gdx.graphics.getHeight()*0.5f));
 		mWidgets.info.description = textField;
-		new TooltipListener(textField, "Description", Messages.replaceName(Messages.Tooltip.Actor.Option.DESCRIPTION, getResourceTypeName()));
+		new TooltipListener(textField, Messages.replaceName(Messages.Tooltip.Actor.Option.DESCRIPTION, getResourceTypeName()));
 		new TextFieldListener(textField, "Write your description here...", mInvoker) {
 			@Override
 			protected void onChange(String newText) {
@@ -203,7 +203,7 @@ public abstract class ActorGui extends EditorGui {
 		// Starting angle
 		Label label = new Label("Starting angle", mStyles.label.standard);
 		mWidgets.visual.table.add(label);
-		new TooltipListener(label, "Starting angle", Messages.replaceName(Messages.Tooltip.Actor.Visuals.STARTING_ANGLE, getResourceTypeName()));
+		new TooltipListener(label, Messages.replaceName(Messages.Tooltip.Actor.Visuals.STARTING_ANGLE, getResourceTypeName()));
 
 		mWidgets.visual.table.row();
 		Slider slider = new Slider(0, 360, 1, false, mStyles.slider.standard);
@@ -212,8 +212,8 @@ public abstract class ActorGui extends EditorGui {
 		TextField textField = new TextField("", mStyles.textField.standard);
 		textField.setWidth(mStyles.vars.textFieldNumberWidth);
 		mWidgets.visual.table.add(textField);
-		new TooltipListener(slider, "Starting angle", Messages.replaceName(Messages.Tooltip.Actor.Visuals.STARTING_ANGLE, getResourceTypeName()));
-		new TooltipListener(textField, "Starting angle", Messages.replaceName(Messages.Tooltip.Actor.Visuals.STARTING_ANGLE, getResourceTypeName()));
+		new TooltipListener(slider, Messages.replaceName(Messages.Tooltip.Actor.Visuals.STARTING_ANGLE, getResourceTypeName()));
+		new TooltipListener(textField, Messages.replaceName(Messages.Tooltip.Actor.Visuals.STARTING_ANGLE, getResourceTypeName()));
 		new SliderListener(slider, textField, mInvoker) {
 			@Override
 			protected void onChange(float newValue) {
@@ -225,7 +225,7 @@ public abstract class ActorGui extends EditorGui {
 		// Rotation speed
 		mWidgets.visual.table.row();
 		label = new Label("Rotation speed", mStyles.label.standard);
-		new TooltipListener(label, "Rotation speed", Messages.replaceName(Messages.Tooltip.Actor.Visuals.ROTATION_SPEED, getResourceTypeName()));
+		new TooltipListener(label, Messages.replaceName(Messages.Tooltip.Actor.Visuals.ROTATION_SPEED, getResourceTypeName()));
 		mWidgets.visual.table.add(label);
 
 		mWidgets.visual.table.row();
@@ -235,8 +235,8 @@ public abstract class ActorGui extends EditorGui {
 		textField = new TextField("", mStyles.textField.standard);
 		textField.setWidth(mStyles.vars.textFieldNumberWidth);
 		mWidgets.visual.table.add(textField);
-		new TooltipListener(slider, "Rotation speed", Messages.replaceName(Messages.Tooltip.Actor.Visuals.ROTATION_SPEED, getResourceTypeName()));
-		new TooltipListener(textField, "Rotation speed", Messages.replaceName(Messages.Tooltip.Actor.Visuals.ROTATION_SPEED, getResourceTypeName()));
+		new TooltipListener(slider, Messages.replaceName(Messages.Tooltip.Actor.Visuals.ROTATION_SPEED, getResourceTypeName()));
+		new TooltipListener(textField, Messages.replaceName(Messages.Tooltip.Actor.Visuals.ROTATION_SPEED, getResourceTypeName()));
 		new SliderListener(slider, textField, mInvoker) {
 			@Override
 			protected void onChange(float newValue) {
@@ -260,7 +260,7 @@ public abstract class ActorGui extends EditorGui {
 		mWidgets.visual.table.add(button);
 		button.addListener(shapeChecker);
 		buttonGroup.add(button);
-		new TooltipListener(button, "Circle", Messages.replaceName(Messages.Tooltip.Actor.Visuals.CIRCLE, getResourceTypeName()));
+		new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Actor.Visuals.CIRCLE, getResourceTypeName()));
 		circleHider = new HideListener(button, true) {
 			@Override
 			protected void onShow() {
@@ -281,7 +281,7 @@ public abstract class ActorGui extends EditorGui {
 		mWidgets.visual.table.add(button);
 		button.addListener(shapeChecker);
 		buttonGroup.add(button);
-		new TooltipListener(button, "Rectangle", Messages.replaceName(Messages.Tooltip.Actor.Visuals.RECTANGLE, getResourceTypeName()));
+		new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Actor.Visuals.RECTANGLE, getResourceTypeName()));
 		rectangleHider = new HideListener(button, true) {
 			@Override
 			protected void onShow() {
@@ -302,7 +302,7 @@ public abstract class ActorGui extends EditorGui {
 		mWidgets.visual.table.add(button);
 		button.addListener(shapeChecker);
 		buttonGroup.add(button);
-		new TooltipListener(button, "Triangle", Messages.replaceName(Messages.Tooltip.Actor.Visuals.TRIANGLE, getResourceTypeName()));
+		new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Actor.Visuals.TRIANGLE, getResourceTypeName()));
 		triangleHider = new HideListener(button, true) {
 			@Override
 			protected void onShow() {
@@ -323,7 +323,7 @@ public abstract class ActorGui extends EditorGui {
 		mWidgets.visual.table.add(button);
 		button.addListener(shapeChecker);
 		buttonGroup.add(button);
-		new TooltipListener(button, "Draw", Messages.replaceName(Messages.Tooltip.Actor.Visuals.DRAW, getResourceTypeName()));
+		new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Actor.Visuals.DRAW, getResourceTypeName()));
 		mDrawToolHider = new HideListener(button, true) {
 			@Override
 			protected void onShow() {
@@ -501,7 +501,7 @@ public abstract class ActorGui extends EditorGui {
 		mWidgets.tool.move = button;
 		button.addListener(shapeCustomChecker);
 		buttonGroup.add(button);
-		TooltipListener tooltipListener = new TooltipListener(button, "Move", Messages.replaceName(Messages.Tooltip.Tools.MOVE, getResourceTypeName()));
+		TooltipListener tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Tools.MOVE, getResourceTypeName()));
 		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onChecked(boolean checked) {
@@ -522,7 +522,7 @@ public abstract class ActorGui extends EditorGui {
 		mWidgets.tool.delete = button;
 		button.addListener(shapeCustomChecker);
 		buttonGroup.add(button);
-		tooltipListener = new TooltipListener(button, "Delete", Messages.replaceName(Messages.Tooltip.Tools.DELETE, getResourceTypeName()));
+		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Tools.DELETE, getResourceTypeName()));
 		new ButtonListener(button) {
 			@Override
 			protected void onChecked(boolean checked) {
@@ -543,7 +543,7 @@ public abstract class ActorGui extends EditorGui {
 		mWidgets.tool.drawAppend = button;
 		button.addListener(shapeCustomChecker);
 		buttonGroup.add(button);
-		tooltipListener = new TooltipListener(button, "Draw/Append", Messages.replaceName(Messages.Tooltip.Tools.DRAW_APPEND, getResourceTypeName()));
+		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Tools.DRAW_APPEND, getResourceTypeName()));
 		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onChecked(boolean checked) {
@@ -564,7 +564,7 @@ public abstract class ActorGui extends EditorGui {
 		mWidgets.tool.drawErase = button;
 		button.addListener(shapeCustomChecker);
 		buttonGroup.add(button);
-		tooltipListener = new TooltipListener(button, "Draw/Erase", Messages.replaceName(Messages.Tooltip.Tools.DRAW_ERASE, getResourceTypeName()));
+		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Tools.DRAW_ERASE, getResourceTypeName()));
 		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onChecked(boolean checked) {
@@ -585,7 +585,7 @@ public abstract class ActorGui extends EditorGui {
 		mWidgets.tool.addMoveCorner = button;
 		button.addListener(shapeCustomChecker);
 		buttonGroup.add(button);
-		tooltipListener = new TooltipListener(button, "Add/Move corner", Messages.replaceName(Messages.Tooltip.Tools.ADJUST_ADD_MOVE_CORNER, getResourceTypeName()));
+		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Tools.ADJUST_ADD_MOVE_CORNER, getResourceTypeName()));
 		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onChecked(boolean checked) {
@@ -606,7 +606,7 @@ public abstract class ActorGui extends EditorGui {
 		mWidgets.tool.removeCorner = button;
 		button.addListener(shapeCustomChecker);
 		buttonGroup.add(button);
-		tooltipListener = new TooltipListener(button, "Remove corner", Messages.replaceName(Messages.Tooltip.Tools.ADJUST_REMOVE_CORNER, getResourceTypeName()));
+		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Tools.ADJUST_REMOVE_CORNER, getResourceTypeName()));
 		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onChecked(boolean checked) {
@@ -627,7 +627,7 @@ public abstract class ActorGui extends EditorGui {
 		mWidgets.tool.setCenter = button;
 		button.addListener(shapeCustomChecker);
 		buttonGroup.add(button);
-		tooltipListener = new TooltipListener(button, "Set center", Messages.replaceName(Messages.Tooltip.Tools.SET_CENTER, getResourceTypeName()));
+		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Tools.SET_CENTER, getResourceTypeName()));
 		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onChecked(boolean checked) {
@@ -646,7 +646,7 @@ public abstract class ActorGui extends EditorGui {
 		} else {
 			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.RESET_CENTER.toString());
 		}
-		tooltipListener = new TooltipListener(button, "Reset center", Messages.replaceName(Messages.Tooltip.Tools.RESET_CENTER, getResourceTypeName()));
+		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Tools.RESET_CENTER, getResourceTypeName()));
 		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onPressed() {
@@ -671,9 +671,9 @@ public abstract class ActorGui extends EditorGui {
 		TextField textField = new TextField("", mStyles.textField.standard);
 		textField.setWidth(mStyles.vars.textFieldNumberWidth);
 		mWidgets.collision.table.add(textField);
-		new TooltipListener(label, "Collision Damage", Messages.replaceName(Messages.Tooltip.Actor.Collision.DAMAGE, getResourceTypeName()));
-		new TooltipListener(textField, "Collision Damage", Messages.replaceName(Messages.Tooltip.Actor.Collision.DAMAGE, getResourceTypeName()));
-		new TooltipListener(slider, "Collision Damage", Messages.replaceName(Messages.Tooltip.Actor.Collision.DAMAGE, getResourceTypeName()));
+		new TooltipListener(label, Messages.replaceName(Messages.Tooltip.Actor.Collision.DAMAGE, getResourceTypeName()));
+		new TooltipListener(textField, Messages.replaceName(Messages.Tooltip.Actor.Collision.DAMAGE, getResourceTypeName()));
+		new TooltipListener(slider, Messages.replaceName(Messages.Tooltip.Actor.Collision.DAMAGE, getResourceTypeName()));
 		new SliderListener(slider, textField, mInvoker) {
 			@Override
 			protected void onChange(float newValue) {
@@ -686,7 +686,7 @@ public abstract class ActorGui extends EditorGui {
 		Button button = new CheckBox("Destroy on collide", mStyles.checkBox.radio);
 		mWidgets.collision.destroyOnCollide = button;
 		mWidgets.collision.table.add(button);
-		TooltipListener tooltipListener = new TooltipListener(button, "Destroy on collide", Messages.replaceName(Messages.Tooltip.Actor.Collision.DESTROY_ON_COLLIDE, getResourceTypeName()));
+		TooltipListener tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Actor.Collision.DESTROY_ON_COLLIDE, getResourceTypeName()));
 		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onChecked(boolean checked) {

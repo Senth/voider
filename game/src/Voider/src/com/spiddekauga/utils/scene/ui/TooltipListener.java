@@ -21,8 +21,8 @@ import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.voider.Config;
-import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.InternalNames;
+import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.scene.SceneSwitcher;
@@ -40,11 +40,10 @@ public class TooltipListener extends InputAdapter implements EventListener {
 	 * actor. This will automatically adds itself as a listener to
 	 * the actor.
 	 * @param actor the GUI actor to listen to
-	 * @param title the title of the tooltip window
 	 * @param message the message in the tooltip
 	 */
-	public TooltipListener(Actor actor, String title, String message) {
-		this(actor, title, message, null);
+	public TooltipListener(Actor actor, String message) {
+		this(actor, message, (String)null);
 	}
 
 	/**
@@ -52,14 +51,12 @@ public class TooltipListener extends InputAdapter implements EventListener {
 	 * Automatically adds itself as a listener to the actor. In addition to showing a
 	 * message a YouTube button will be displayed to link to the tutorial.
 	 * @param actor the GUI actor to listen to
-	 * @param title the title of the tooltip window
 	 * @param message optional text message, set to null if not used.
 	 * @param youtubeUrl optional tutorial URL, set to null if not used.
 	 */
-	public TooltipListener(Actor actor, String title, String message, String youtubeUrl) {
+	public TooltipListener(Actor actor, String message, String youtubeUrl) {
 		mMessage = message;
 		mActor = actor;
-		mTitle = title;
 		mYoutubeUrl = youtubeUrl;
 		mActor.addListener(this);
 
@@ -85,20 +82,6 @@ public class TooltipListener extends InputAdapter implements EventListener {
 
 		mcTooltips++;
 		mWindowName = String.valueOf(mcTooltips);
-
-		//		if (mMessage != null) {
-		//			if (mDescriptiveText.length() > 0) {
-		//				mDescriptiveText += "\n";
-		//			}
-		//			mDescriptiveText += "T = Toggle text";
-		//		}
-
-		//		if (mYoutubeUrl != null) {
-		//			if (mDescriptiveText.length() > 0) {
-		//				mDescriptiveText += "\n";
-		//			}
-		//			mDescriptiveText += "Y = Go to YouTube tutorial";
-		//		}
 
 		mWindow.addListener(this);
 	}
@@ -139,7 +122,7 @@ public class TooltipListener extends InputAdapter implements EventListener {
 	 * @param youtubeUrl the YouTube URL to a tutorial how to use the tool
 	 */
 	public TooltipListener(Actor actor, String title, AnimationWidget animation, String message, String youtubeUrl) {
-		this(actor, title, message, youtubeUrl);
+		this(actor, message, youtubeUrl);
 
 		mAnimation = animation;
 
@@ -184,13 +167,9 @@ public class TooltipListener extends InputAdapter implements EventListener {
 	 * @param youtubeUrl the YouTube URL to a tutorial how to use the tool
 	 */
 	public TooltipListener(Actor actor, String title, Image image, String message, String youtubeUrl) {
-		this(actor, title, message, youtubeUrl);
+		this(actor, message, youtubeUrl);
 
 		mImage = image;
-
-		//		if (mImage != null) {
-		//			mDescriptiveText = "A = Toggle image\n" + mDescriptiveText;
-		//		}
 	}
 
 	/**
@@ -271,11 +250,6 @@ public class TooltipListener extends InputAdapter implements EventListener {
 			toggleAnimationOrImage();
 			return true;
 		}
-		//		// Toggle text
-		//		else if (mMessage != null && KeyHelper.Tooltip.isToggleTextPressed(keycode)) {
-		//			toggleText();
-		//			return true;
-		//		}
 
 		return false;
 	}
@@ -597,8 +571,6 @@ public class TooltipListener extends InputAdapter implements EventListener {
 		}
 	}
 
-	/** Title of the window */
-	private String mTitle = null;
 	/** GUI Actor we're listening to */
 	private Actor mActor;
 	/** Task that shows the window */
