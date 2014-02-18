@@ -164,9 +164,7 @@ public class SceneSwitcher {
 		if (mScenes != null) {
 			for (Scene scene : mScenes) {
 				scene.onDispose();
-				if (scene.isResourcesLoaded()) {
-					scene.unloadResources();
-				}
+				ResourceCacheFacade.unload(scene);
 			}
 			mScenes.clear();
 		}
@@ -523,7 +521,6 @@ public class SceneSwitcher {
 		if (poppedScene.isResourcesLoaded()) {
 			mScenesNeedUnloading.add(poppedScene);
 		}
-
 		ResourceCacheFacade.unload(poppedScene);
 
 

@@ -72,12 +72,12 @@ public class BulletEditor extends ActorEditor {
 				if (message instanceof ResourceItem) {
 					ResourceItem resourceItem = (ResourceItem) message;
 
-					if (!ResourceCacheFacade.isLoaded(resourceItem.id)) {
+					if (!ResourceCacheFacade.isLoaded(resourceItem.id, resourceItem.revision)) {
 						ResourceCacheFacade.load(this, resourceItem.id, true, resourceItem.revision);
 						ResourceCacheFacade.finishLoading();
 					}
 
-					BulletActorDef bulletDef = ResourceCacheFacade.get(resourceItem.id);
+					BulletActorDef bulletDef = ResourceCacheFacade.get(resourceItem.id, resourceItem.revision);
 					setDef(bulletDef);
 					mGui.resetValues();
 					setSaved();

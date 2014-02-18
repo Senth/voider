@@ -85,8 +85,8 @@ class ResourceDependencyLoader implements Disposable {
 		for (int i = 0; i < mLoadingDefs.size(); ++i) {
 			ResourceItem queueItem = mLoadingDefs.get(i);
 
-			if (mResourceLoader.isResourceLoaded(queueItem.id)) {
-				IResource resource = mResourceLoader.getLoadedResource(queueItem.id);
+			if (mResourceLoader.isResourceLoaded(queueItem.id, queueItem.revision)) {
+				IResource resource = mResourceLoader.getLoadedResource(queueItem.id, queueItem.revision);
 
 				if (resource instanceof IResourceDependency) {
 					IResourceDependency def = (IResourceDependency) resource;

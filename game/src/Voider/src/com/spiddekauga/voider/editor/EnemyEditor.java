@@ -106,12 +106,12 @@ public class EnemyEditor extends ActorEditor {
 				case LOAD_ENEMY: {
 					ResourceItem resourceItem = (ResourceItem) message;
 
-					if (!ResourceCacheFacade.isLoaded(resourceItem.id)) {
+					if (!ResourceCacheFacade.isLoaded(resourceItem.id, resourceItem.revision)) {
 						ResourceCacheFacade.load(this, resourceItem.id, true, resourceItem.revision);
 						ResourceCacheFacade.finishLoading();
 					}
 
-					setEnemyDef((EnemyActorDef) ResourceCacheFacade.get(resourceItem.id));
+					setEnemyDef((EnemyActorDef) ResourceCacheFacade.get(resourceItem.id, resourceItem.revision));
 					setMovementType(mDef.getMovementType());
 					mGui.resetValues();
 					setSaved();

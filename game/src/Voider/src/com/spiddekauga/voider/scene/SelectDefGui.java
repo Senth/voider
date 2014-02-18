@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox.CheckBoxStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.List;
 import com.badlogic.gdx.scenes.scene2d.ui.List.ListStyle;
@@ -126,14 +127,13 @@ public class SelectDefGui extends Gui {
 			};
 			mMainTable.add(checkBox);
 		}
-
-		mMainTable.row().setFillWidth(true).setFillHeight(true);
 	}
 
 	/**
 	 * Initializes the definition table
 	 */
 	private void initDefTable() {
+		mMainTable.row().setFillWidth(true).setFillHeight(true);
 		mMainTable.add(mDefTable).setFillHeight(true).setFillWidth(true).setAlign(Horizontal.LEFT, Vertical.TOP);
 	}
 
@@ -141,13 +141,21 @@ public class SelectDefGui extends Gui {
 	 * Initializes info panel to the right
 	 */
 	private void initInfoPanel() {
-		mMainTable.add(mInfoPanel).setFillHeight(true).setWidth((Float)SkinNames.getResource(SkinNames.General.SELECT_DEF_INFO_WIDTH));
+		float panelWidth = (Float)SkinNames.getResource(SkinNames.General.SELECT_DEF_INFO_WIDTH);
+		mMainTable.add(mInfoPanel).setFillHeight(true).setWidth(panelWidth);
 		mInfoPanelHider.addToggleActor(mInfoPanel);
 
 		TextButtonStyle buttonStyle = SkinNames.getResource(SkinNames.General.TEXT_BUTTON_PRESS);
 		LabelStyle labelStyle = SkinNames.getResource(SkinNames.General.LABEL_DEFAULT);
 
+		// Image
+		mInfoPanel.row(Horizontal.CENTER, Vertical.MIDDLE);
+		Image image = new Image();
+		mWidgets.infoPanel.image = image;
+		mInfoPanel.add(image).setSize(panelWidth*0.7f, panelWidth*0.7f);
+
 		// Name
+		mInfoPanel.row();
 		Label label = new Label("", labelStyle);
 		mWidgets.infoPanel.name = label;
 		mInfoPanel.add(label);
@@ -307,6 +315,7 @@ public class SelectDefGui extends Gui {
 	 * Resets the info panel
 	 */
 	void resetInfoPanel() {
+		mWidgets.infoPanel.image.setDrawable(mSelectDefScene.getDrawable());
 		mWidgets.infoPanel.name.setText(mSelectDefScene.getName());
 		mWidgets.infoPanel.date.setText(mSelectDefScene.getDate());
 		mWidgets.infoPanel.description.setText(mSelectDefScene.getDescription());
@@ -324,6 +333,8 @@ public class SelectDefGui extends Gui {
 
 		mInfoPanelHider.show();
 
+		mInfoPanel.layout();
+		mInfoPanel.layout();
 		mInfoPanel.invalidateHierarchy();
 	}
 
@@ -357,7 +368,7 @@ public class SelectDefGui extends Gui {
 			for (int i = 0; i < revisions.length; ++i) {
 				int revisionInt = revisions.length - i;
 				RevisionInfo revisionInfo = resourceRevisions.get(i);
-				revisions[i] = String.format("%0" + revisionStringLength + "d  %i - %s", revisionInt, revisionInfo.revision, Def.getDateString(revisionInfo.date));
+				revisions[i] = String.format("%0" + revisionStringLength + "d  %d - %s", revisionInt, revisionInfo.revision, Def.getDateString(revisionInfo.date));
 			}
 		} else {
 			revisions = new String[0];
@@ -452,6 +463,7 @@ public class SelectDefGui extends Gui {
 		}
 
 		static class InfoPanel {
+			Image image = null;
 			Label name = null;
 			Label date = null;
 			Label description = null;

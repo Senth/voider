@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.repo.ResourceLocalRepo;
 import com.spiddekauga.voider.resources.Def;
@@ -78,7 +79,11 @@ public class SelectDefScene extends WorldScene {
 			ArrayList<Def> defs = ResourceCacheFacade.getAll(mDefType);
 
 			for (Def def : defs) {
-				mDefs.add(new DefVisible(def));
+				// Only show resources with laatest revision
+				RevisionInfo revisionInfo = ResourceLocalRepo.getRevisionLatest(def.getId());
+				if (revisionInfo == null || revisionInfo.revision == def.getRevision()) {
+					mDefs.add(new DefVisible(def));
+				}
 			}
 
 			mGui.resetValues();
@@ -170,13 +175,13 @@ public class SelectDefScene extends WorldScene {
 		mSelectedRevision = revision;
 
 		// Load the revision
-		if (!ResourceCacheFacade.isLoaded(mSelectedDef.getId())) {
+		if (!ResourceCacheFacade.isLoaded(mSelectedDef.getId(), revision)) {
 			ResourceCacheFacade.load(this, mSelectedDef.getId(), true, revision);
 			ResourceCacheFacade.finishLoading();
 		}
 
 		// Set new resource
-		mSelectedDef = ResourceCacheFacade.get(mSelectedDef.getId());
+		mSelectedDef = ResourceCacheFacade.get(mSelectedDef.getId(), revision);
 
 		((SelectDefGui)mGui).resetInfoPanel();
 	}
@@ -193,7 +198,7 @@ public class SelectDefScene extends WorldScene {
 	 * they look like
 	 */
 	boolean isDefDrawable() {
-		return IResourceTexture.class.isAssignableFrom(mDefType.getClass());
+		return IResourceTexture.class.isAssignableFrom(mDefType.getClassType());
 	}
 
 	/**
@@ -213,6 +218,16 @@ public class SelectDefScene extends WorldScene {
 	 */
 	boolean isDefSelected() {
 		return mSelectedDef != null;
+	}
+
+	/**
+	 * @return drawable image of the resource, null if none has been selecte
+	 */
+	Drawable getDrawable() {
+		if (mSelectedDef instanceof IResourceTexture) {
+			return ((IResourceTexture) mSelectedDef).getTextureRegionDrawable();
+		}
+		return null;
 	}
 
 	/**

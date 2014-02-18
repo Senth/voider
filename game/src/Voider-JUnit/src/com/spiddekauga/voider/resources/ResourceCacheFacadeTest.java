@@ -1,7 +1,10 @@
 package com.spiddekauga.voider.resources;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+
+import java.util.UUID;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -93,6 +96,40 @@ public class ResourceCacheFacadeTest {
 		ResourceCacheFacade.unload(mScene);
 
 		assertEquals("number of actor, after unload()", 0, ResourceCacheFacade.getLoadedCount());
+	}
+
+	/**
+	 * Test loading and unloading older revisions
+	 */
+	@Test
+	public void loadDifferentRevisions() {
+		PlayerActorDef playerActorDef = new PlayerActorDef();
+
+		UUID id = playerActorDef.getId();
+
+		ResourceSaver.save(playerActorDef);
+		ResourceSaver.save(playerActorDef);
+		ResourceSaver.save(playerActorDef);
+
+		// Load latest revision
+		ResourceCacheFacade.load(mScene, id, false);
+		ResourceCacheFacade.finishLoading();
+		assertTrue(ResourceCacheFacade.isLoaded(id));
+		assertTrue(ResourceCacheFacade.isLoaded(id, 3));
+
+		// Load an older revision
+		assertFalse(ResourceCacheFacade.isLoaded(id, 2));
+		ResourceCacheFacade.load(mScene, id, false, 2);
+		ResourceCacheFacade.finishLoading();
+		assertTrue(ResourceCacheFacade.isLoaded(id, 2));
+
+		// Unload all and test so that they aren't loaded
+		ResourceCacheFacade.unload(mScene);
+		assertFalse(ResourceCacheFacade.isLoaded(id));
+		assertFalse(ResourceCacheFacade.isLoaded(id, 3));
+		assertFalse(ResourceCacheFacade.isLoaded(id, 2));
+		assertEquals(0, ResourceCacheFacade.getAll(ExternalTypes.PLAYER_DEF).size());
+
 	}
 
 	/**

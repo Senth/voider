@@ -23,13 +23,6 @@ import com.spiddekauga.voider.resources.IResourceRender;
  */
 public class Config {
 	/**
-	 * Initialization of the config class
-	 */
-	private static void init() {
-		Crypto.init();
-	}
-
-	/**
 	 * Dispose all objects that have been initialized
 	 */
 	public static void dispose() {
@@ -156,6 +149,10 @@ public class Config {
 		private static SecretKeySpec mFileKey = null;
 		/** The actual password key */
 		private static SecretKeySpec mPasswordKey = null;
+
+		static {
+			init();
+		}
 	}
 
 	/**
@@ -956,9 +953,5 @@ public class Config {
 	 */
 	private Config() {
 		// Does nothing
-	}
-
-	static {
-		init();
 	}
 }

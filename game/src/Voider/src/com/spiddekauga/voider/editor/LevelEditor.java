@@ -302,12 +302,12 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 					ResourceItem resourceItem = (ResourceItem) message;
 
-					if (!ResourceCacheFacade.isLoaded(resourceItem.id)) {
+					if (!ResourceCacheFacade.isLoaded(resourceItem.id, resourceItem.revision)) {
 						ResourceCacheFacade.load(this, resourceItem.id, true, resourceItem.revision);
 						ResourceCacheFacade.finishLoading();
 					}
 
-					mLoadingLevel = ResourceCacheFacade.get(resourceItem.id);
+					mLoadingLevel = ResourceCacheFacade.get(resourceItem.id, resourceItem.revision);
 
 					// Only load level if it's not the current level we selected, or another revision
 					if (mLoadingLevel != null) {

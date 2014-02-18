@@ -161,6 +161,17 @@ public class ResourceCacheFacade {
 	/**
 	 * Get a resource based on the id and class of resource. Always gets the latest revision
 	 * @param resourceId id of the resource, can be both def and instance resource
+	 * @param revision the specific revision of the resource to get
+	 * @param <ResourceType> type of resource that will be returned
+	 * @return the actual resource, null if not found
+	 */
+	public static <ResourceType extends IResource> ResourceType get(UUID resourceId, int revision) {
+		return mResourceLoader.getLoadedResource(resourceId, revision);
+	}
+
+	/**
+	 * Get a resource based on the id and class of resource. Always gets the latest revision
+	 * @param resourceId id of the resource, can be both def and instance resource
 	 * @param <ResourceType> type of resource that will be returned
 	 * @return the actual resource, null if not found
 	 */
@@ -181,12 +192,22 @@ public class ResourceCacheFacade {
 	}
 
 	/**
-	 * Checks whether a resource has been loaded or not
+	 * Checks whether a resource has been loaded or not. Uses the latest revision
 	 * @param resourceId unique id of the object to test if it's loaded
 	 * @return true if the object has been loaded
 	 */
 	public static boolean isLoaded(UUID resourceId) {
 		return mResourceLoader.isResourceLoaded(resourceId);
+	}
+
+	/**
+	 * Checks whether a resource has been loaded or not
+	 * @param resourceId unique id of the object to test if it's loaded
+	 * @param revision the revision to test if it's loaded
+	 * @return true if the object has been loaded
+	 */
+	public static boolean isLoaded(UUID resourceId, int revision) {
+		return mResourceLoader.isResourceLoaded(resourceId, revision);
 	}
 
 	// -----------------------------

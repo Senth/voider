@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.UUID;
 
 import com.badlogic.gdx.assets.AssetManager;
@@ -13,6 +14,7 @@ import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.GdxRuntimeException;
+import com.badlogic.gdx.utils.Pool.Poolable;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.GameSave;
 import com.spiddekauga.voider.game.GameSaveDef;
@@ -27,6 +29,7 @@ import com.spiddekauga.voider.game.actors.StaticTerrainActorDef;
 import com.spiddekauga.voider.repo.ResourceLocalRepo;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.utils.AbsoluteFileHandleResolver;
+import com.spiddekauga.voider.utils.Pool;
 import com.spiddekauga.voider.utils.Pools;
 
 /**
@@ -68,6 +71,23 @@ class ResourceLoader {
 	}
 
 	/**
+	 * @param resourceId the resource id to get a correct revision for
+	 * @param revision the revision to check
+	 * @return a correct id for the resource, i.e. if it's the latest revision it
+	 * will return the special number LATEST_REVISION instead
+	 */
+	private int getCorrectRevision(UUID resourceId, int revision) {
+		if (revision > 0) {
+			RevisionInfo latestRevision = ResourceLocalRepo.getRevisionLatest(resourceId);
+			if (latestRevision != null && revision < latestRevision.revision) {
+				return revision;
+			}
+		}
+
+		return LATEST_REVISION;
+	}
+
+	/**
 	 * Loads the specified resource. If the resource has been loaded already
 	 * it does nothing.
 	 * @param scene the scene which is loading the resource
@@ -79,35 +99,51 @@ class ResourceLoader {
 	 * another revision of the resource as only one revision is allowed.
 	 */
 	void load(Scene scene, UUID resourceId, int revision) {
+		UuidRevision uuidRevision = mUuidRevisionPool.obtain();
+		uuidRevision.resourceId = resourceId;
+		uuidRevision.revision = getCorrectRevision(resourceId, revision);
+
 		// If loaded or loading -> do nothing
-		if (mLoadedResources.containsKey(resourceId) || mLoadingQueue.containsKey(resourceId)) {
+		if (mLoadedResources.containsKey(uuidRevision) || mLoadingQueue.containsKey(uuidRevision)) {
 			return;
 		}
 
 
-		LoadedResource loadedResource = new LoadedResource();
-		// Only use revision if not latest and a valid revision
-		if (revision > 0) {
-			RevisionInfo latestRevision = ResourceLocalRepo.getRevisionLatest(resourceId);
-			if (latestRevision != null && revision < latestRevision.revision) {
-				loadedResource.filepath = ResourceLocalRepo.getRevisionFilepath(resourceId, revision);
-			}
-		}
 
-		if (loadedResource.filepath == null) {
+		LoadedResource loadedResource = new LoadedResource();
+		loadedResource.scene = scene;
+
+
+		// Set filepath
+		if (uuidRevision.revision > 0) {
+			loadedResource.filepath = ResourceLocalRepo.getRevisionFilepath(resourceId, revision);
+		} else {
 			loadedResource.filepath = ResourceLocalRepo.getFilepath(resourceId);
 		}
 
-		loadedResource.scene = scene;
 
 		ExternalTypes type = ResourceLocalRepo.getType(resourceId);
 		if (type != null) {
 			mAssetManager.load(loadedResource.filepath, type.getClassType());
 		} else {
+			mUuidRevisionPool.free(uuidRevision);
 			throw new ResourceNotFoundException(loadedResource.filepath, resourceId);
 		}
 
-		mLoadingQueue.put(resourceId, loadedResource);
+		mLoadingQueue.put(uuidRevision, loadedResource);
+	}
+
+	/**
+	 * @param resourceId the resource to check if it has been loaded
+	 * @param revision if the specified revision is loaded
+	 * @return true if the resource has been loaded
+	 */
+	boolean isResourceLoaded(UUID resourceId, int revision) {
+		int correctRevision = getCorrectRevision(resourceId, revision);
+		UuidRevision uuidRevision = mUuidRevisionPool.obtain().set(resourceId, correctRevision);
+		boolean found = mLoadedResources.containsKey(uuidRevision);
+		mUuidRevisionPool.free(uuidRevision);
+		return found;
 	}
 
 	/**
@@ -115,7 +151,7 @@ class ResourceLoader {
 	 * @return true if the resource has been loaded
 	 */
 	boolean isResourceLoaded(UUID resourceId) {
-		return mLoadedResources.containsKey(resourceId);
+		return isResourceLoaded(resourceId, LATEST_REVISION);
 	}
 
 	/**
@@ -130,9 +166,22 @@ class ResourceLoader {
 	 * @param resourceId id of the resource to return
 	 * @return the loaded resource with the specified id, null if not loaded
 	 */
-	@SuppressWarnings("unchecked")
 	<ResourceType extends IResource> ResourceType getLoadedResource(UUID resourceId) {
-		LoadedResource loadedResource = mLoadedResources.get(resourceId);
+		return getLoadedResource(resourceId, LATEST_REVISION);
+	}
+
+	/**
+	 * @param <ResourceType> the resource type
+	 * @param resourceId id of the resource to return
+	 * @param revision the resource revision to return
+	 * @return the loaded resource with the specified id, null if not loaded
+	 */
+	@SuppressWarnings("unchecked")
+	<ResourceType extends IResource> ResourceType getLoadedResource(UUID resourceId, int revision) {
+		int correctRevision = getCorrectRevision(resourceId, revision);
+		UuidRevision uuidRevision = mUuidRevisionPool.obtain().set(resourceId, correctRevision);
+		LoadedResource loadedResource = mLoadedResources.get(uuidRevision);
+		mUuidRevisionPool.free(uuidRevision);
 		if (loadedResource != null) {
 			return (ResourceType) loadedResource.resource;
 		} else {
@@ -149,7 +198,7 @@ class ResourceLoader {
 	<ResourceType extends IResource> ArrayList<ResourceType> getAllLoadedResourcesOf(ExternalTypes type) {
 		ArrayList<ResourceType> resources = Pools.arrayList.obtain();
 
-		for (Entry<UUID, LoadedResource> entry : mLoadedResources.entrySet()) {
+		for (Entry<UuidRevision, LoadedResource> entry : mLoadedResources.entrySet()) {
 			if (type.getClassType().isAssignableFrom(entry.getValue().resource.getClass())) {
 				resources.add((ResourceType) entry.getValue().resource);
 			}
@@ -163,14 +212,17 @@ class ResourceLoader {
 	 * @param scene unload all resources in this scene
 	 */
 	void unload(Scene scene) {
-		Iterator<Entry<UUID, LoadedResource>> iterator = mLoadedResources.entrySet().iterator();
+		Set<Entry<UuidRevision, LoadedResource>> entrySet = mLoadedResources.entrySet();
+		Iterator<Entry<UuidRevision, LoadedResource>> iterator = entrySet.iterator();
 
 		while (iterator.hasNext()) {
-			LoadedResource loadedResource = iterator.next().getValue();
+			Entry<UuidRevision, LoadedResource> entry = iterator.next();
 
+			LoadedResource loadedResource = entry.getValue();
 			if (loadedResource.scene == scene) {
 				mAssetManager.unload(loadedResource.filepath);
 				iterator.remove();
+				mUuidRevisionPool.free(entry.getKey());
 			}
 		}
 	}
@@ -195,7 +247,9 @@ class ResourceLoader {
 
 			// Remove the loading resource
 			if (resourceException != null) {
-				mLoadingQueue.remove(resourceException.getId());
+				UuidRevision uuidRevision = mUuidRevisionPool.obtain().set(resourceException.getId(), resourceException.getRevision());
+				mLoadingQueue.remove(uuidRevision);
+				mUuidRevisionPool.free(uuidRevision);
 				throwException = resourceException;
 			}
 		}
@@ -214,16 +268,17 @@ class ResourceLoader {
 			handleException(e);
 		}
 
-		Iterator<Entry<UUID, LoadedResource>> iterator = mLoadingQueue.entrySet().iterator();
+		Iterator<Entry<UuidRevision, LoadedResource>> iterator = mLoadingQueue.entrySet().iterator();
 
 		while (iterator.hasNext()) {
-			LoadedResource loadingResource = iterator.next().getValue();
+			Entry<UuidRevision, LoadedResource> entry = iterator.next();
+			LoadedResource loadingResource = entry.getValue();
 
 			// Add resource if it has been loaded
 			if (mAssetManager.isLoaded(loadingResource.filepath)) {
 				loadingResource.resource = mAssetManager.get(loadingResource.filepath);
 
-				mLoadedResources.put(loadingResource.resource.getId(), loadingResource);
+				mLoadedResources.put(entry.getKey(), loadingResource);
 
 				iterator.remove();
 			}
@@ -240,6 +295,69 @@ class ResourceLoader {
 	}
 
 	/**
+	 * Wrapper for unique UUID together with a revision
+	 */
+	private static class UuidRevision implements Poolable {
+		/**
+		 * Sets the resource and revision
+		 * @param resourceId the resource id
+		 * @param revision the revision to use
+		 * @return this object for chaining
+		 */
+		public UuidRevision set(UUID resourceId, int revision) {
+			this.resourceId = resourceId;
+			this.revision = revision;
+			return this;
+		}
+
+		/** UUID of the resource */
+		UUID resourceId = null;
+		/** revision of the resource */
+		int revision = LATEST_REVISION;
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + ((resourceId == null) ? 0 : resourceId.hashCode());
+			result = prime * result + revision;
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj) {
+				return true;
+			}
+			if (obj == null) {
+				return false;
+			}
+			if (getClass() != obj.getClass()) {
+				return false;
+			}
+			UuidRevision other = (UuidRevision) obj;
+			if (resourceId == null) {
+				if (other.resourceId != null) {
+					return false;
+				}
+			}
+			else if (!resourceId.equals(other.resourceId)) {
+				return false;
+			}
+			if (revision != other.revision) {
+				return false;
+			}
+			return true;
+		}
+
+		@Override
+		public void reset() {
+			resourceId = null;
+			revision = LATEST_REVISION;
+		}
+	}
+
+	/**
 	 * Loaded or loading resources
 	 */
 	private static class LoadedResource {
@@ -251,10 +369,14 @@ class ResourceLoader {
 		IResource resource = null;
 	}
 
+	/** Latest resource */
+	private static final int LATEST_REVISION = -1;
+	/** Pool for UuidRevision */
+	private Pool<UuidRevision> mUuidRevisionPool = new Pool<>(UuidRevision.class, 16);
 	/** All loaded resources */
-	private HashMap<UUID, LoadedResource> mLoadedResources = new HashMap<>();
+	private HashMap<UuidRevision, LoadedResource> mLoadedResources = new HashMap<>();
 	/** All resources that are currently loading */
-	private HashMap<UUID, LoadedResource> mLoadingQueue = new HashMap<>();
+	private HashMap<UuidRevision, LoadedResource> mLoadingQueue = new HashMap<>();
 	/** The asset manager used for actually loading resources */
 	private AssetManager mAssetManager;
 }
