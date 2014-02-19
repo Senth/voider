@@ -821,10 +821,10 @@ public class EnemyActor extends Actor {
 		velocity.set(targetDirection);
 		velocity.nor().scl(getDef(EnemyActorDef.class).getSpeed());
 
-		//		// Increase with level speed
-		//		if (!mEditorActive && getDef(EnemyActorDef.class).getMovementType() == MovementTypes.AI) {
-		//			velocity.x += mLevel.getSpeed();
-		//		}
+		// Increase with level speed
+		if (!mEditorActive && getDef(EnemyActorDef.class).getMovementType() == MovementTypes.AI) {
+			velocity.x += mLevel.getSpeed();
+		}
 
 		getBody().setLinearVelocity(velocity);
 		Pools.vector2.free(velocity);
@@ -839,10 +839,10 @@ public class EnemyActor extends Actor {
 		Vector2 velocity = Pools.vector2.obtain();
 		velocity.set(getBody().getLinearVelocity());
 
-		//		// Decrease with level speed
-		//		if (!mEditorActive && getDef(EnemyActorDef.class).getMovementType() == MovementTypes.AI && !velocity.equals(Vector2.Zero)) {
-		//			velocity.x -= mLevel.getSpeed();
-		//		}
+		// Decrease with level speed
+		if (!mEditorActive && getDef(EnemyActorDef.class).getMovementType() == MovementTypes.AI && !velocity.equals(Vector2.Zero)) {
+			velocity.x -= mLevel.getSpeed();
+		}
 
 		boolean noVelocity = Maths.approxCompare(velocity.len2(), 0.01f);
 
@@ -925,10 +925,10 @@ public class EnemyActor extends Actor {
 				velocity.scl(getDef(EnemyActorDef.class).getSpeed());
 			}
 
-			//			// Increase with level speed
-			//			if (!mEditorActive && getDef(EnemyActorDef.class).getMovementType() == MovementTypes.AI) {
-			//				velocity.x += mLevel.getSpeed();
-			//			}
+			// Increase with level speed
+			if (!mEditorActive && getDef(EnemyActorDef.class).getMovementType() == MovementTypes.AI) {
+				velocity.x += mLevel.getSpeed();
+			}
 
 			getBody().setLinearVelocity(velocity);
 		}

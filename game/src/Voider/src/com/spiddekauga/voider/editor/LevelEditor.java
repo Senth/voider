@@ -605,11 +605,11 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		ResourceSaver.save(mLevel.getDef());
 		ResourceSaver.save(mLevel);
 
-		// TODO Update latest resource if revision was changed by more than one
-		//		if (oldRevision != mLevel.getDef().getRevision() - 1) {
-		//			ResourceCacheFacade.setLatestResource(mLevel, oldRevision);
-		//			ResourceCacheFacade.setLatestResource(mLevel.getDef(), oldRevision);
-		//		}
+		// Update latest resource if revision was changed by more than one
+		if (oldRevision != mLevel.getDef().getRevision() - 1) {
+			ResourceCacheFacade.setLatestResource(mLevel, oldRevision);
+			ResourceCacheFacade.setLatestResource(mLevel.getDef(), oldRevision);
+		}
 
 		// Saved first time? Then load level and def and use loaded versions instead
 		if (!ResourceCacheFacade.isLoaded(mLevel.getId())) {

@@ -132,9 +132,8 @@ public class ResourceCacheFacade {
 	 * @param resource the resource to be set as latest resource
 	 * @param oldRevision old revision that the resource was loaded into
 	 */
-	@Deprecated
 	public static void setLatestResource(Resource resource, int oldRevision) {
-		/** @todo */
+		mResourceLoader.setLatestResource(resource, oldRevision);
 	}
 
 	/**

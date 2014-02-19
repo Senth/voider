@@ -175,10 +175,10 @@ public class BulletEditor extends ActorEditor {
 			setDef((BulletActorDef) ResourceCacheFacade.get(mDef.getId()));
 		}
 
-		// TODO Update latest loaded resource
-		//		if (oldRevision != mDef.getRevision() - 1) {
-		//			ResourceCacheFacade.setLatestResource(mDef, oldRevision);
-		//		}
+		// Update latest loaded resource
+		if (oldRevision != mDef.getRevision() - 1) {
+			ResourceCacheFacade.setLatestResource(mDef, oldRevision);
+		}
 
 		setSaved();
 	}

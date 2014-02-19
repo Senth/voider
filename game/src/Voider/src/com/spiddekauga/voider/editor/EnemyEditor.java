@@ -426,10 +426,10 @@ public class EnemyEditor extends ActorEditor {
 		}
 
 
-		// TODO Update latest resource
-		//		if (oldRevision != mDef.getRevision() - 1) {
-		//			ResourceCacheFacade.setLatestResource(mDef, oldRevision);
-		//		}
+		// Update latest resource
+		if (oldRevision != mDef.getRevision() - 1) {
+			ResourceCacheFacade.setLatestResource(mDef, oldRevision);
+		}
 
 		setSaved();
 	}

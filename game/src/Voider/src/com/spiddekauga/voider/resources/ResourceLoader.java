@@ -7,6 +7,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.SkinLoader;
 import com.badlogic.gdx.assets.loaders.resolvers.ExternalFileHandleResolver;
@@ -224,6 +225,39 @@ class ResourceLoader {
 				iterator.remove();
 				mUuidRevisionPool.free(entry.getKey());
 			}
+		}
+	}
+
+	/**
+	 * Sets the latest resource to the specified resource
+	 * @param resource the resource to be set as latest resource
+	 * @param oldRevision old revision that the resource was loaded into
+	 */
+	void setLatestResource(Resource resource, int oldRevision) {
+		Resource latestResource = getLoadedResource(resource.getId());
+
+		if (latestResource != null) {
+			// Unload old revision
+			String oldRevisionFilepath = ResourceLocalRepo.getRevisionFilepath(resource.getId(), oldRevision);
+			mAssetManager.unload(oldRevisionFilepath);
+
+			// Remove old revision from loaded
+			UuidRevision uuidRevision = mUuidRevisionPool.obtain().set(resource.getId(), oldRevision);
+			mLoadedResources.remove(uuidRevision);
+			mUuidRevisionPool.free(uuidRevision);
+
+			// Reload latest revision
+			String latestFilepath = ResourceLocalRepo.getFilepath(resource);
+			mAssetManager.unload(latestFilepath);
+			mAssetManager.load(latestFilepath, resource.getClass());
+			mAssetManager.finishLoading();
+
+			// Update existing resource to use the new latest resource
+			Resource newLatestResource = mAssetManager.get(latestFilepath);
+			latestResource.set(newLatestResource);
+			resource.set(newLatestResource);
+		} else {
+			Gdx.app.error("ResourceLoader", "Could not find latest resource when setting latest resource");
 		}
 	}
 
