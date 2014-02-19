@@ -286,18 +286,6 @@ public class EnemyActorDef extends ActorDef {
 	}
 
 	/**
-	 * Enumeration for all movement types
-	 */
-	public enum MovementTypes {
-		/** Uses variable values to behave in a certain manner */
-		AI,
-		/** Follows a path */
-		PATH,
-		/** Stationary, cannot move */
-		STATIONARY
-	}
-
-	/**
 	 * Enumeration for how to aim
 	 */
 	public enum AimTypes {

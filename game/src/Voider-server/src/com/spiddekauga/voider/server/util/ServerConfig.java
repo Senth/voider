@@ -13,6 +13,18 @@ public class ServerConfig {
 		BLOB_INFO("__BlobInfo__"),
 		/** All users */
 		USERS("users"),
+		/** Published resources */
+		PUBLISHED("published"),
+		/** Dependencies */
+		DEPENDENCY("dependency"),
+		/** Different revisions of a resource */
+		REVISION("revision"),
+		/** Revision dependencies */
+		REVISION_DEPNDENCY("revision_dependency"),
+		/** Level statistics */
+		LEVEL_STATS("level_stats"),
+		/** Actor stats */
+		ACTOR_STATS("actor_stats")
 
 		;
 		/**

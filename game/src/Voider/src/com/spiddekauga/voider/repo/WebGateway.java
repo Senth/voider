@@ -21,16 +21,16 @@ import com.spiddekauga.utils.Buffers;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-class NetworkGateway {
+class WebGateway {
 	/**
 	 * Sends bytes over HTTP to the specified server
-	 * @param url the server to send the request to
+	 * @param methodName the method name in teh server
 	 * @param entity the entity to send (as bytes)
 	 * @return entity bytes response from the server.
 	 * Length 0 if no response was found. null if an error occurred.
 	 */
-	public static byte[] sendRequest(String url, byte[] entity) {
-		return sendRequest(url, entity, null);
+	public static byte[] sendRequest(String methodName, byte[] entity) {
+		return sendRequest(methodName, entity, null);
 	}
 
 	/**

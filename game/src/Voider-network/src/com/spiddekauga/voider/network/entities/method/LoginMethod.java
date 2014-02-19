@@ -1,4 +1,4 @@
-package com.spiddekauga.voider.network.entities;
+package com.spiddekauga.voider.network.entities.method;
 
 import java.util.UUID;
 

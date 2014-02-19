@@ -1,4 +1,4 @@
-package com.spiddekauga.voider.network.entities;
+package com.spiddekauga.voider.network.entities.method;
 
 
 import java.io.ByteArrayInputStream;
@@ -6,6 +6,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+
+import com.spiddekauga.voider.network.entities.IEntity;
 
 /**
  * Serializes the entity into a byte string or vice versa

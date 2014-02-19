@@ -25,8 +25,8 @@ import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.EnemyActor;
 import com.spiddekauga.voider.game.actors.EnemyActorDef;
-import com.spiddekauga.voider.game.actors.EnemyActorDef.MovementTypes;
 import com.spiddekauga.voider.game.actors.EnemyGroup;
+import com.spiddekauga.voider.game.actors.MovementTypes;
 import com.spiddekauga.voider.game.actors.PlayerActor;
 import com.spiddekauga.voider.game.triggers.TriggerAction.Actions;
 import com.spiddekauga.voider.game.triggers.TriggerInfo;
@@ -448,9 +448,17 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 	}
 
 	/**
+	 * Calculates both start and end positions of the level
+	 */
+	public void calculateStartEndPosition() {
+		calculateStartPosition();
+		calculateEndPosition();
+	}
+
+	/**
 	 * Calculates the starting position of the level
 	 */
-	public void calculateStartPosition() {
+	private void calculateStartPosition() {
 		float startPosition = Float.MAX_VALUE;
 
 		ArrayList<IResourcePosition> resources = mResourceBinder.getResources(IResourcePosition.class);

@@ -2,12 +2,7 @@ package com.spiddekauga.voider.editor;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.UUID;
-import java.util.concurrent.atomic.AtomicInteger;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
@@ -24,9 +19,8 @@ import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Graphics.RenderOrders;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.ActorDef;
-import com.spiddekauga.voider.resources.Def;
-import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.InternalNames;
+import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.scene.SceneSwitcher;
@@ -460,29 +454,6 @@ public abstract class Editor extends WorldScene implements IEditor {
 	 */
 	boolean isGridRenderAboveResources() {
 		return mGridRenderAboveResources;
-	}
-
-	/**
-	 * Gets all the non-published def dependencies of the the specified definition
-	 * @param def the definition to get the external dependencies from
-	 * @param foundUuids all the found dependencies' UUID
-	 * @param dependencies all non-published dependencies
-	 */
-	protected final void getNonPublishedDependencies(Def def, Set<UUID> foundUuids, ArrayList<Def> dependencies) {
-		for (Entry<UUID, AtomicInteger> entry : def.getExternalDependencies().entrySet()) {
-			if (!def.isPublished() && !foundUuids.contains(entry.getKey())) {
-				foundUuids.add(entry.getKey());
-
-				Def dependency = ResourceCacheFacade.get(entry.getKey());
-				if (dependency != null) {
-					dependencies.add(dependency);
-
-					getNonPublishedDependencies(dependency, foundUuids, dependencies);
-				} else {
-					Gdx.app.error("Editor", "Could not find dependency when publishing...");
-				}
-			}
-		}
 	}
 
 	/**

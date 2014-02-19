@@ -3,13 +3,13 @@ package com.spiddekauga.voider.repo;
 import java.util.UUID;
 
 import com.spiddekauga.voider.network.entities.IEntity;
-import com.spiddekauga.voider.network.entities.IMethodEntity;
-import com.spiddekauga.voider.network.entities.LoginMethod;
-import com.spiddekauga.voider.network.entities.LoginMethodResponse;
-import com.spiddekauga.voider.network.entities.LogoutMethod;
-import com.spiddekauga.voider.network.entities.NetworkEntitySerializer;
-import com.spiddekauga.voider.network.entities.RegisterUserMethod;
-import com.spiddekauga.voider.network.entities.RegisterUserMethodResponse;
+import com.spiddekauga.voider.network.entities.method.IMethodEntity;
+import com.spiddekauga.voider.network.entities.method.LoginMethod;
+import com.spiddekauga.voider.network.entities.method.LoginMethodResponse;
+import com.spiddekauga.voider.network.entities.method.LogoutMethod;
+import com.spiddekauga.voider.network.entities.method.NetworkEntitySerializer;
+import com.spiddekauga.voider.network.entities.method.RegisterUserMethod;
+import com.spiddekauga.voider.network.entities.method.RegisterUserMethodResponse;
 
 
 /**
@@ -115,7 +115,7 @@ public class UserWebRepo {
 	private static IEntity serializeAndSend(IMethodEntity methodEntity) {
 		byte[] entitySend = NetworkEntitySerializer.serializeEntity(methodEntity);
 		if (entitySend != null) {
-			byte[] response = NetworkGateway.sendRequest(methodEntity.getMethodName(), entitySend);
+			byte[] response = WebGateway.sendRequest(methodEntity.getMethodName(), entitySend);
 			if (response != null) {
 				return NetworkEntitySerializer.deserializeEntity(response);
 			}

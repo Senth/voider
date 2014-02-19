@@ -3,6 +3,7 @@ package com.spiddekauga.voider.game;
 import java.util.UUID;
 
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
+import com.spiddekauga.utils.kryo.KryoPostRead;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.Resource;
@@ -12,7 +13,7 @@ import com.spiddekauga.voider.resources.Resource;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class LevelDef extends Def {
+public class LevelDef extends Def implements KryoPostRead {
 	/**
 	 * Constructor that create the level id for this definition
 	 */
@@ -35,6 +36,7 @@ public class LevelDef extends Def {
 		mSpeed = def.mSpeed;
 		mStartXCoord = def.mStartXCoord;
 		mTheme = def.mTheme;
+		mLengthInTime = def.mLengthInTime;
 	}
 
 	@Override
@@ -102,6 +104,7 @@ public class LevelDef extends Def {
 	 */
 	public void setEndXCoord(float endXCoord) {
 		mEndXCoord = endXCoord;
+		calculateLength();
 	}
 
 	/**
@@ -141,6 +144,7 @@ public class LevelDef extends Def {
 	 */
 	void setStartXCoord(float startXCoord) {
 		mStartXCoord = startXCoord;
+		calculateLength();
 	}
 
 	/**
@@ -173,6 +177,27 @@ public class LevelDef extends Def {
 		return mTheme;
 	}
 
+	/**
+	 * @return length of the level in seconds
+	 */
+	public float getLengthInTime() {
+		return mLengthInTime;
+	}
+
+	/**
+	 * Calculates the length of the level depending on the start, end, and
+	 * speed of the level.
+	 */
+	private void calculateLength() {
+		float length = mEndXCoord - mStartXCoord;
+		mLengthInTime = length / mSpeed;
+	}
+
+	@Override
+	public void postRead() {
+		calculateLength();
+	}
+
 	/** Starting coordinate of the level (right screen edge) */
 	@Tag(78) private float mStartXCoord = 0;
 	/** The actual level id, i.e. not this definition's id */
@@ -190,5 +215,7 @@ public class LevelDef extends Def {
 	@Tag(84) private float mEndXCoord = 100;
 	/** Theme of the level */
 	@Tag(109) private Themes mTheme = null;
+	/** Length of the level in seconds */
+	private float mLengthInTime = 0;
 
 }

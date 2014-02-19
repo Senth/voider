@@ -1,4 +1,4 @@
-package com.spiddekauga.voider.network.entities;
+package com.spiddekauga.voider.network.entities.method;
 
 /**
  * Registers a new user

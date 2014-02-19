@@ -15,6 +15,7 @@ import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.voider.game.Collectibles;
 import com.spiddekauga.voider.resources.Def;
+import com.spiddekauga.voider.resources.IResourcePng;
 import com.spiddekauga.voider.resources.IResourceTexture;
 import com.spiddekauga.voider.resources.Resource;
 import com.spiddekauga.voider.utils.Pools;
@@ -26,7 +27,7 @@ import com.spiddekauga.voider.utils.Pools;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public abstract class ActorDef extends Def implements Disposable, IResourceTexture {
+public abstract class ActorDef extends Def implements Disposable, IResourceTexture, IResourcePng {
 	/**
 	 * Sets the visual variable to the specified type
 	 * @param actorType the actor type to which set the default values of
@@ -351,11 +352,17 @@ public abstract class ActorDef extends Def implements Disposable, IResourceTextu
 	 * texture for this actor.
 	 * @param pngBytes bytes for the png image
 	 */
+	@Override
 	public void setPngImage(byte[] pngBytes) {
 		mPngBytes = pngBytes;
 
 		disposeTexture();
 		createTexture();
+	}
+
+	@Override
+	public byte[] getPngImage() {
+		return mPngBytes;
 	}
 
 	/**

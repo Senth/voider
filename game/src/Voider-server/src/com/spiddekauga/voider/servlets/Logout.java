@@ -6,8 +6,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.spiddekauga.voider.network.entities.LogoutMethodResponse;
-import com.spiddekauga.voider.network.entities.NetworkEntitySerializer;
+import com.spiddekauga.voider.network.entities.method.LogoutMethodResponse;
+import com.spiddekauga.voider.network.entities.method.NetworkEntitySerializer;
 import com.spiddekauga.voider.server.util.NetworkGateway;
 import com.spiddekauga.voider.server.util.VoiderServlet;
 

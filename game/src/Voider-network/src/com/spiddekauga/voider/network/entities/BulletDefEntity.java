@@ -1,14 +1,11 @@
 package com.spiddekauga.voider.network.entities;
 
 /**
- * Logout method
+ * Bullet Definition entity
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
 @SuppressWarnings("serial")
-public class LogoutMethod implements IMethodEntity {
-	@Override
-	public String getMethodName() {
-		return "logout";
-	}
+public class BulletDefEntity extends DefEntity {
+
 }

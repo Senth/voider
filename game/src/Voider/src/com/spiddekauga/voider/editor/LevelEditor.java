@@ -1,7 +1,6 @@
 package com.spiddekauga.voider.editor;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
@@ -53,6 +52,7 @@ import com.spiddekauga.voider.game.actors.StaticTerrainActor;
 import com.spiddekauga.voider.game.triggers.TScreenAt;
 import com.spiddekauga.voider.game.triggers.TriggerAction.Actions;
 import com.spiddekauga.voider.game.triggers.TriggerInfo;
+import com.spiddekauga.voider.repo.ResourceRepo;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.ExternalTypes;
 import com.spiddekauga.voider.resources.IResource;
@@ -598,8 +598,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 	@Override
 	protected void saveToFile() {
-		mLevel.calculateStartPosition();
-		mLevel.calculateEndPosition();
+		mLevel.calculateStartEndPosition();
 
 		int oldRevision = mLevel.getRevision();
 		ResourceSaver.save(mLevel.getDef());
@@ -658,15 +657,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	@Override
 	public ArrayList<Def> getNonPublishedDependencies() {
 		if (mLevel != null && mLevel.getDef() != null) {
-			@SuppressWarnings("unchecked")
-			HashSet<UUID> uuidDeps = Pools.hashSet.obtain();
-			@SuppressWarnings("unchecked")
-			ArrayList<Def> dependencies = Pools.arrayList.obtain();
-
-			getNonPublishedDependencies(mLevel.getDef(), uuidDeps, dependencies);
-
-			Pools.hashSet.free(uuidDeps);
-			return dependencies;
+			return ResourceRepo.getNonPublishedDependencies(mLevel.getDef());
 		}
 		return null;
 	}

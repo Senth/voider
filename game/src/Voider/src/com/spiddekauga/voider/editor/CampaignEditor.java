@@ -1,12 +1,10 @@
 package com.spiddekauga.voider.editor;
 
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.UUID;
 
 import com.spiddekauga.utils.commands.Command;
+import com.spiddekauga.voider.repo.ResourceRepo;
 import com.spiddekauga.voider.resources.Def;
-import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Campaign editor for combining existing levels into a campaign.
@@ -75,18 +73,8 @@ public class CampaignEditor extends Editor {
 
 	@Override
 	public ArrayList<Def> getNonPublishedDependencies() {
-		if (null != null) {
-			@SuppressWarnings("unchecked")
-			HashSet<UUID> uuidDeps = Pools.hashSet.obtain();
-			@SuppressWarnings("unchecked")
-			ArrayList<Def> dependencies = Pools.arrayList.obtain();
-
-			getNonPublishedDependencies(null, uuidDeps, dependencies);
-
-			Pools.hashSet.free(uuidDeps);
-			return dependencies;
-		}
-		return null;
+		// TODO
+		return ResourceRepo.getNonPublishedDependencies(null);
 	}
 
 	@Override

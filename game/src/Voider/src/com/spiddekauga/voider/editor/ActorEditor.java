@@ -2,8 +2,6 @@ package com.spiddekauga.voider.editor;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
@@ -24,15 +22,16 @@ import com.spiddekauga.voider.editor.tools.TouchTool;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.ActorDef;
 import com.spiddekauga.voider.game.actors.ActorShapeTypes;
+import com.spiddekauga.voider.repo.ResourceRepo;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.IResource;
-import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.InternalNames;
+import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.utils.Pools;
 
 /**
- * 
+ * Comman class for all actor editors
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
@@ -461,22 +460,9 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 		return null;
 	}
 
-
-
 	@Override
 	public ArrayList<Def> getNonPublishedDependencies() {
-		if (mActorDef != null) {
-			@SuppressWarnings("unchecked")
-			HashSet<UUID> uuidDeps = Pools.hashSet.obtain();
-			@SuppressWarnings("unchecked")
-			ArrayList<Def> dependencies = Pools.arrayList.obtain();
-
-			getNonPublishedDependencies(mActorDef, uuidDeps, dependencies);
-
-			Pools.hashSet.free(uuidDeps);
-			return dependencies;
-		}
-		return null;
+		return ResourceRepo.getNonPublishedDependencies(mActorDef);
 	}
 
 	@Override

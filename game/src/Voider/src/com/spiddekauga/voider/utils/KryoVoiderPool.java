@@ -51,9 +51,9 @@ import com.spiddekauga.voider.game.actors.EnemyActorDef;
 import com.spiddekauga.voider.game.actors.EnemyActorDef.AiMovementVars;
 import com.spiddekauga.voider.game.actors.EnemyActorDef.AimRotateVars;
 import com.spiddekauga.voider.game.actors.EnemyActorDef.AimTypes;
-import com.spiddekauga.voider.game.actors.EnemyActorDef.MovementTypes;
 import com.spiddekauga.voider.game.actors.EnemyActorDef.MovementVars;
 import com.spiddekauga.voider.game.actors.EnemyGroup;
+import com.spiddekauga.voider.game.actors.MovementTypes;
 import com.spiddekauga.voider.game.actors.PickupActor;
 import com.spiddekauga.voider.game.actors.PickupActorDef;
 import com.spiddekauga.voider.game.actors.PlayerActor;
@@ -65,9 +65,9 @@ import com.spiddekauga.voider.game.triggers.TActorActivated;
 import com.spiddekauga.voider.game.triggers.TScreenAt;
 import com.spiddekauga.voider.game.triggers.TriggerAction;
 import com.spiddekauga.voider.game.triggers.TriggerInfo;
+import com.spiddekauga.voider.resources.InternalNames;
 import com.spiddekauga.voider.resources.ResourceBinder;
 import com.spiddekauga.voider.resources.ResourceItem;
-import com.spiddekauga.voider.resources.InternalNames;
 
 /**
  * Pool for Kryo instances. When creating a new instance Kryo registers all
@@ -165,7 +165,7 @@ public class KryoVoiderPool extends Pool<Kryo> {
 		/** Level */
 		LEVEL(Level.class, SerializerType.SERIALIZABLE_TAGGED),
 		/** LevelDef */
-		LEVEL_DEF(LevelDef.class, SerializerType.TAGGED),
+		LEVEL_DEF(LevelDef.class, SerializerType.SERIALIZABLE_TAGGED),
 		/** Path */
 		PATH(Path.class, SerializerType.SERIALIZABLE_TAGGED),
 		/** PlayerStats */
