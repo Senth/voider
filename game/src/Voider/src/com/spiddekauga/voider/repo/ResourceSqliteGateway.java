@@ -64,13 +64,12 @@ class ResourceSqliteGateway extends SqliteGateway {
 	}
 
 	/**
-	 * Removes a resource (including all revisions) from the database.
+	 * Removes a resource from the database. Does not delete the resource's revisions!
 	 * @param uuid the unique id of the resource
 	 */
 	void remove(UUID uuid) {
 		try {
 			mDatabase.execSQL("DELETE FROM resource WHERE uuid='" + uuid.toString() + "';");
-			mDatabase.execSQL("DELETE FROM resource_revision WHERE uuid='" + uuid + "';");
 		} catch (SQLiteGdxException e) {
 			e.printStackTrace();
 			throw new GdxRuntimeException(e);

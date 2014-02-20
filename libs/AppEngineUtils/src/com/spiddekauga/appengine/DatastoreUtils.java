@@ -1,6 +1,7 @@
 package com.spiddekauga.appengine;
 
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.logging.Logger;
@@ -13,6 +14,7 @@ import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
 import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 
@@ -33,6 +35,34 @@ public class DatastoreUtils {
 		Query query = new Query(searchIn);
 		Filter filter = new Query.FilterPredicate(name, FilterOperator.EQUAL, value);
 		query.setFilter(filter);
+		List<Entity> results = mDatastore.prepare(query).asList(FetchOptions.Builder.withDefaults());
+		mLogger.info("Found " + results.size() + " entities in (" + searchIn + ") with property (" + name + ") named (" + value + ")");
+		if (!results.isEmpty()) {
+			return results.get(0);
+		}
+		return null;
+	}
+
+	/**
+	 * Searches for an existing entity
+	 * @param searchIn what kind of entity to search in
+	 * @param name the property value to search in
+	 * @param value the value to search for
+	 * @return found entity, null if none was found
+	 */
+	public static Entity getSingleItem(String searchIn, String name, UUID value) {
+		Query query = new Query(searchIn);
+
+		// Filters
+		Filter least = new Query.FilterPredicate(name + "-least", FilterOperator.EQUAL, value.getLeastSignificantBits());
+		Filter most = new Query.FilterPredicate(name + "-most", FilterOperator.EQUAL, value.getMostSignificantBits());
+		ArrayList<Filter> filters = new ArrayList<>();
+		filters.add(least);
+		filters.add(most);
+
+		Filter composite = new Query.CompositeFilter(CompositeFilterOperator.AND, filters);
+		query.setFilter(composite);
+
 		List<Entity> results = mDatastore.prepare(query).asList(FetchOptions.Builder.withDefaults());
 		mLogger.info("Found " + results.size() + " entities in (" + searchIn + ") with property (" + name + ") named (" + value + ")");
 		if (!results.isEmpty()) {

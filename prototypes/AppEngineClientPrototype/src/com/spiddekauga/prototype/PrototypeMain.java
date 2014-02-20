@@ -8,6 +8,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.UUID;
 import java.util.logging.Logger;
@@ -29,12 +30,22 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.backends.lwjgl.LwjglFiles;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Output;
 import com.spiddekauga.network.UserRepository;
 import com.spiddekauga.prototype.network.KryoFactory;
 import com.spiddekauga.prototype.network.OldEnemyDef;
 import com.spiddekauga.utils.ObjectCrypter;
+import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.game.actors.BulletActorDef;
+import com.spiddekauga.voider.game.actors.EnemyActorDef;
+import com.spiddekauga.voider.repo.ResourceRepo;
+import com.spiddekauga.voider.resources.ExternalTypes;
+import com.spiddekauga.voider.resources.IResource;
+import com.spiddekauga.voider.resources.ResourceCacheFacade;
+import com.spiddekauga.voider.resources.ResourceSaver;
 
 
 /**
@@ -47,10 +58,50 @@ public class PrototypeMain {
 	 * @param args
 	 */
 	public static void main(String args[]) {
+		Gdx.app = new ApplicationStub();
+		Gdx.files = new LwjglFiles();
+		Config.Debug.JUNIT_TEST = true;
+
 		//		newUser();
 		//		login();
 		//		testEnemy();
-		login();
+		//		login();
+		publish();
+	}
+
+	/**
+	 * Tries to publish some resources
+	 */
+	public static void publish() {
+
+		// Try to publish one thing first
+		ArrayList<IResource> resources = new ArrayList<>();
+		EnemyActorDef enemyDefFirst = new EnemyActorDef();
+		ResourceSaver.save(enemyDefFirst);
+		resources.add(enemyDefFirst);
+
+		ResourceRepo.publish(enemyDefFirst);
+
+
+		// Try to publish with dependencies
+		BulletActorDef bulletActorDef = new BulletActorDef();
+		EnemyActorDef enemyWithDep = new EnemyActorDef();
+		enemyWithDep.addDependency(bulletActorDef);
+		ResourceSaver.save(bulletActorDef);
+		ResourceSaver.save(enemyWithDep);
+		ResourceCacheFacade.loadAllOf(null, ExternalTypes.ENEMY_DEF, true);
+		ResourceCacheFacade.finishLoading();
+
+
+		ResourceRepo.publish(enemyWithDep);
+
+
+		// Publish new def which has dependency on an already published resource
+		bulletActorDef = new BulletActorDef();
+		bulletActorDef.addDependency(enemyDefFirst);
+		ResourceSaver.save(bulletActorDef);
+
+		ResourceRepo.publish(bulletActorDef);
 	}
 
 	/**
@@ -163,7 +214,7 @@ public class PrototypeMain {
 	/**
 	 * Upload an enemy
 	 */
-	private static void testEnemy() {
+	public static void testEnemy() {
 		String uploadUrl = getUploadUrl();
 
 		if (uploadUrl != null) {
@@ -195,16 +246,16 @@ public class PrototypeMain {
 			entityBuilder.addBinaryBody("resource", encrypted);
 			httpPost.setEntity(entityBuilder.build());
 
-			CloseableHttpResponse httpResponse = mHttpClient.execute(httpPost);
+			mHttpClient.execute(httpPost);
 		} catch (IOException | InvalidKeyException | InvalidAlgorithmParameterException | IllegalBlockSizeException | ShortBufferException | BadPaddingException e) {
 			e.printStackTrace();
 		}
 	}
 
 	/** File for cerina */
-	private static final String ENEMY_FILE_CERINA = "/home/senth/Voider/actors/enemies/6ad14d07-3f9d-4eda-b622-2cd711590d95/LATEST";
+	protected static final String ENEMY_FILE_CERINA = "/home/senth/Voider/actors/enemies/6ad14d07-3f9d-4eda-b622-2cd711590d95/LATEST";
 	/** File for mist */
-	private static final String ENEMY_FILE_MIST = "/Users/senth/Voider/actors/enemies/0d001571-c295-48e6-8a7d-0667e763cb5c/LATEST";
+	protected static final String ENEMY_FILE_MIST = "/Users/senth/Voider/actors/enemies/0d001571-c295-48e6-8a7d-0667e763cb5c/LATEST";
 
 	/**
 	 * @return upload url

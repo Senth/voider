@@ -12,6 +12,7 @@ import com.spiddekauga.voider.game.Level;
 import com.spiddekauga.voider.game.actors.ActorDef;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.IResource;
+import com.spiddekauga.voider.resources.IResourceRevision;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.utils.Pools;
 
@@ -69,13 +70,28 @@ public class ResourceRepo {
 		// Publish to server
 		boolean success = ResourceWebRepo.publish(resources);
 
-		// TODO Remove file revisions if successful
 
-		// TODO Remove SQL revisions
+		// Remove revisions
+		if (success) {
+			for (IResource resource : resources) {
+				if (resource instanceof IResourceRevision) {
+					// Remove from database and files
+					ResourceLocalRepo.removeRevisions(resource.getId());
+				}
+			}
+		}
+		// Unpublish
+		else {
+			for (IResource resource : resources) {
+				if (resource instanceof Def) {
+					((Def) resource).setPublished(false);
+				}
+			}
+		}
 
 		Pools.arrayList.free(resources);
 
-		return false;
+		return success;
 	}
 
 
@@ -117,7 +133,7 @@ public class ResourceRepo {
 
 					getNonPublishedDependencies(dependency, foundUuids, dependencies);
 				} else {
-					Gdx.app.error("Editor", "Could not find dependency when publishing...");
+					Gdx.app.error("ResourceRepo", "Could not find dependency when publishing...");
 				}
 			}
 		}

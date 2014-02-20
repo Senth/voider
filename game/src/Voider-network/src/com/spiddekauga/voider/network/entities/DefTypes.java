@@ -8,11 +8,30 @@ package com.spiddekauga.voider.network.entities;
  */
 public enum DefTypes {
 	/** BulletDef */
-	BULLET,
+	BULLET(1),
 	/** EnemyDef */
-	ENEMY,
+	ENEMY(2),
 	/** LevelDef */
-	LEVEL,
+	LEVEL(3),
 	/** CampaignDef */
-	CAMPAIGN,
+	CAMPAIGN(4),
+
+	;
+	/**
+	 * Id for saving in datastore
+	 * @param id the id saved in datastores
+	 */
+	private DefTypes(int id) {
+		mId = id;
+	}
+
+	/**
+	 * @return id of the movement type
+	 */
+	public int getId() {
+		return mId;
+	}
+
+	/** Id for saving in datastore */
+	private int mId;
 }

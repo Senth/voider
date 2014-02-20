@@ -13,5 +13,13 @@
 	<classpathentry kind="lib" path="libs/httpclient-win-src.zip"/>
 	<classpathentry kind="lib" path="libs/httpcore-4.3.1.jar"/>
 	<classpathentry kind="lib" path="libs/httpmime-4.3.2.jar" sourcepath="libs/httpmime-src.zip"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/Voider-network"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/Voider"/>
+	<classpathentry kind="lib" path="/Voider-desktop/libs/gdx-backend-lwjgl-natives.jar"/>
+	<classpathentry kind="lib" path="/Voider-desktop/libs/gdx-backend-lwjgl-sources.jar"/>
+	<classpathentry kind="lib" path="/Voider-desktop/libs/gdx-backend-lwjgl.jar" sourcepath="/Voider-desktop/libs/gdx-backend-lwjgl-sources.jar"/>
+	<classpathentry kind="lib" path="/Voider-desktop/libs/gdx-natives.jar"/>
+	<classpathentry kind="lib" path="/Voider-desktop/libs/gdx-sqlite-desktop.jar"/>
+	<classpathentry kind="lib" path="/Voider-desktop/libs/sqlite-jdbc-3.7.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

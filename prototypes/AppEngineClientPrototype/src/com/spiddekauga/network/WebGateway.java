@@ -1,9 +1,8 @@
-package com.spiddekauga.voider.repo;
+package com.spiddekauga.network;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -31,34 +30,37 @@ class WebGateway {
 	 * Length 0 if no response was found. null if an error occurred.
 	 */
 	public static byte[] sendRequest(String methodName, byte[] entity) {
-		return sendUploadRequest(SERVER_HOST + methodName, entity, null);
+		return sendRequest(methodName, entity, null);
 	}
 
 	/**
-	 * Sends an entity and optional files over HTTP
-	 * @param uploadUrl where to upload the files
+	 * Sends a file over HTTP to the specified server
+	 * @param methodName the server to send the request to
 	 * @param entity data to send
-	 * @param files optional files to upload
+	 * @param file optional file to send
 	 * @return entity bytes response from the server.
 	 * Length 0 if no response was found. null if an error occurred.
 	 */
-	public static byte[] sendUploadRequest(String uploadUrl, byte[] entity, ArrayList<FieldNameFileWrapper> files) {
-		initHttpClient();
+	public static byte[] sendRequest(String methodName, byte[] entity, File file) {
+		if (mHttpClient == null) {
+			mHttpClient = HttpClients.custom()
+					.setMaxConnTotal(10)
+					.setMaxConnPerRoute(10)
+					.build();
+		}
 
 		try {
 			MultipartEntityBuilder entityBuilder = MultipartEntityBuilder.create();
 			entityBuilder.addBinaryBody(ENTITY_NAME, entity);
 
-			// Add files
-			if (files != null) {
-				for (FieldNameFileWrapper fieldNameFile : files) {
-					ContentBody contentBody = new FileBody(fieldNameFile.file);
-					entityBuilder.addPart(fieldNameFile.fieldName, contentBody);
-				}
+			// Add optional file
+			if (file != null) {
+				ContentBody contentBody = new FileBody(file);
+				entityBuilder.addPart(BLOB_NAME, contentBody);
 			}
 
 
-			HttpPost httpPost = new HttpPost(uploadUrl);
+			HttpPost httpPost = new HttpPost(SERVER_HOST + methodName);
 			httpPost.setEntity(entityBuilder.build());
 
 			CloseableHttpResponse httpResponse = mHttpClient.execute(httpPost);
@@ -90,28 +92,6 @@ class WebGateway {
 		}
 	}
 
-	/**
-	 * Initializes HTTP Client
-	 */
-	private static void initHttpClient() {
-		if (mHttpClient == null) {
-			mHttpClient = HttpClients.custom()
-					.setMaxConnTotal(10)
-					.setMaxConnPerRoute(10)
-					.build();
-		}
-	}
-
-	/**
-	 * Wrapper class for a file and field name
-	 */
-	static class FieldNameFileWrapper {
-		/** Field name in the form */
-		public String fieldName = null;
-		/** The file to upload */
-		public File file = null;
-	}
-
 	/** Server host */
 	private static final String SERVER_HOST = "http://localhost:8888/";
 	/** HTTP Client for the client side */
@@ -119,4 +99,6 @@ class WebGateway {
 
 	/** Entity post name */
 	private static final String ENTITY_NAME = "entity";
+	/** Blob post name */
+	private static final String BLOB_NAME = "fileKey";
 }

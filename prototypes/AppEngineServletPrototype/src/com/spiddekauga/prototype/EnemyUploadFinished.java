@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.logging.Logger;
@@ -25,7 +26,6 @@ import com.google.appengine.api.datastore.Key;
 import com.oreilly.servlet.multipart.MultipartParser;
 import com.oreilly.servlet.multipart.ParamPart;
 import com.oreilly.servlet.multipart.Part;
-import com.spiddekauga.appengine.BlobUtils;
 import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.prototype.network.KryoFactory;
 import com.spiddekauga.prototype.network.OldActorDef;
@@ -45,7 +45,7 @@ public class EnemyUploadFinished extends VoiderServlet {
 	@Override
 	protected void onRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		mLogger.info("Upload done");
-		List<BlobKey> uploadedBlobkeys = BlobUtils.getBlobKeysFromUpload(request);
+		List<BlobKey> uploadedBlobkeys = new ArrayList<>(); // !!! ERROR
 		BlobKey blobKey = uploadedBlobkeys.get(0);
 		mLogger.info("Blobkey: " + blobKey);
 

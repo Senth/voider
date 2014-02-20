@@ -23,7 +23,7 @@ public class UserRepository {
 		loginMethod.username = username;
 
 		byte[] entitySend = NetworkEntitySerializer.serializeEntity(loginMethod);
-		byte[] response = NetworkGateway.sendRequest(loginMethod.getMethodName(), entitySend);
+		byte[] response = WebGateway.sendRequest(loginMethod.getMethodName(), entitySend);
 
 		IEntity entity = NetworkEntitySerializer.deserializeEntity(response);
 

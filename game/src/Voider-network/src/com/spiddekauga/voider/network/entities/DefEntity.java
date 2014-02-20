@@ -1,5 +1,6 @@
 package com.spiddekauga.voider.network.entities;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.UUID;
 
@@ -28,4 +29,6 @@ public class DefEntity implements IEntity {
 	public UUID resourceId = null;
 	/** Date */
 	public Date date = null;
+	/** All dependencies */
+	public ArrayList<UUID> dependencies = new ArrayList<>();
 }

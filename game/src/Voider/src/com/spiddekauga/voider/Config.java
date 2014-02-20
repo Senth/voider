@@ -9,7 +9,6 @@ import javax.crypto.spec.SecretKeySpec;
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.JsonWriter.OutputType;
 import com.spiddekauga.utils.ShapeRendererEx;
 import com.spiddekauga.voider.game.actors.ActorShapeTypes;
 import com.spiddekauga.voider.resources.IResourceEditorRender;
@@ -945,8 +944,6 @@ public class Config {
 	/** Revision of the game, as in code.
 	 * This allows files of older revisions to be loaded into new revisions */
 	public final static int REVISION = 3;
-	/** Output type for JsonWrapper */
-	public final static OutputType JSON_OUTPUT_TYPE = OutputType.json;
 
 	/**
 	 * Private constructor so that no instance can be created

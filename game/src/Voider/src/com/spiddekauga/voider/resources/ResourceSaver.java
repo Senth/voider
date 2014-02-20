@@ -70,9 +70,9 @@ public class ResourceSaver {
 		try {
 			byte[] encryptedDef = mCrypter.encrypt(byteOut.toByteArray());
 
-			if (Gdx.app != null) {
-				Gdx.app.debug("ResourceSaver", "Encrypted (" + resource.getClass().getSimpleName() + ") " + resource.getId().toString());
-			}
+			//			if (Gdx.app != null) {
+			//				Gdx.app.debug("ResourceSaver", "Encrypted (" + resource.getClass().getSimpleName() + ") " + resource.getId().toString());
+			//			}
 
 
 			String filePath = ResourceLocalRepo.getFilepath(resource);

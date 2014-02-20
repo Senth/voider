@@ -1,9 +1,10 @@
 package com.spiddekauga.appengine;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -20,14 +21,14 @@ public class BlobUtils {
 	/**
 	 * Get all uploaded blob keys from a request
 	 * @param request the request send to the servlet
-	 * @return ArrayList with all blob keys that were uploaded
+	 * @return Map with all blob keys mapped to a UUID
 	 */
-	public static List<BlobKey> getBlobKeysFromUpload(HttpServletRequest request) {
-		ArrayList<BlobKey> blobKeys = new ArrayList<BlobKey>();
+	public static Map<UUID, BlobKey> getBlobKeysFromUpload(HttpServletRequest request) {
+		HashMap<UUID, BlobKey> blobKeys = new HashMap<>();
 
 		Map<String, List<BlobKey>> map = mBlobstore.getUploads(request);
 		for (Entry<String, List<BlobKey>> entry : map.entrySet()) {
-			blobKeys.addAll(entry.getValue());
+			blobKeys.put(UUID.fromString(entry.getKey()), entry.getValue().get(0));
 		}
 
 		return blobKeys;

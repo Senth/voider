@@ -1,5 +1,6 @@
 package com.spiddekauga.voider.repo;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import com.badlogic.gdx.Gdx;
@@ -12,12 +13,17 @@ import com.spiddekauga.voider.network.entities.DefTypes;
 import com.spiddekauga.voider.network.entities.EnemyDefEntity;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.LevelDefEntity;
+import com.spiddekauga.voider.network.entities.method.GetUploadUrlMethod;
+import com.spiddekauga.voider.network.entities.method.GetUploadUrlMethodResponse;
+import com.spiddekauga.voider.network.entities.method.IMethodEntity;
 import com.spiddekauga.voider.network.entities.method.NetworkEntitySerializer;
 import com.spiddekauga.voider.network.entities.method.PublishMethod;
 import com.spiddekauga.voider.network.entities.method.PublishMethodResponse;
+import com.spiddekauga.voider.repo.WebGateway.FieldNameFileWrapper;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourcePng;
+import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Web repository for resources
@@ -26,24 +32,79 @@ import com.spiddekauga.voider.resources.IResourcePng;
  */
 public class ResourceWebRepo {
 	/**
+	 * Send all methods that should upload files via this method
+	 * @param method the method that should "called" on the server
+	 * when the upload is finished
+	 * @param files all files that should be uploaded
+	 * @return server method response, null if something went wrong
+	 */
+	private static IEntity upload(IMethodEntity method, ArrayList<FieldNameFileWrapper> files) {
+		// Get upload URL
+		GetUploadUrlMethod uploadMethod = new GetUploadUrlMethod();
+		uploadMethod.redirectMethod = method.getMethodName();
+		byte[] uploadBytes = NetworkEntitySerializer.serializeEntity(uploadMethod);
+
+		byte[] uploadResponseBytes = WebGateway.sendRequest(uploadMethod.getMethodName(), uploadBytes);
+		IEntity uploadResponse = NetworkEntitySerializer.deserializeEntity(uploadResponseBytes);
+
+
+		// Upload files
+		if (uploadResponse instanceof GetUploadUrlMethodResponse) {
+			String uploadUrl = ((GetUploadUrlMethodResponse) uploadResponse).uploadUrl;
+			if (uploadUrl != null) {
+				byte[] methodBytes = NetworkEntitySerializer.serializeEntity(method);
+				byte[] responseBytes = WebGateway.sendUploadRequest(uploadUrl, methodBytes, files);
+				return NetworkEntitySerializer.deserializeEntity(responseBytes);
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * Sets field names and files to upload
+	 * @param resources all the resources to upload
+	 * @return list with all field names and files to upload
+	 */
+	private static ArrayList<FieldNameFileWrapper> createFieldNameFiles(ArrayList<IResource> resources) {
+		@SuppressWarnings("unchecked")
+		ArrayList<FieldNameFileWrapper> files = Pools.arrayList.obtain();
+
+		for (IResource resource : resources) {
+			// Get file
+			String filepath = Gdx.files.getExternalStoragePath();
+			filepath += ResourceLocalRepo.getFilepath(resource);
+			File file = new File(filepath);
+
+			if (file.exists()) {
+				FieldNameFileWrapper fieldNameFile = new FieldNameFileWrapper();
+				fieldNameFile.fieldName = resource.getId().toString();
+				fieldNameFile.file = file;
+
+				files.add(fieldNameFile);
+			} else {
+				Gdx.app.error("ResourceWebRepo", "File does not exist: " + filepath);
+			}
+		}
+
+		return files;
+	}
+
+	/**
 	 * Publish all specified resources
 	 * @param resources all resource to publish
 	 * @return true if successful, false otherwise
 	 */
 	static boolean  publish(ArrayList<IResource> resources) {
-		// Get blob keys and upload def entities
 		PublishMethod method = createPublishMethod(resources);
-		byte[] byteEntity = NetworkEntitySerializer.serializeEntity(method);
+		ArrayList<FieldNameFileWrapper> files = createFieldNameFiles(resources);
 
-		byte[] entityResponse = WebGateway.sendRequest(method.getMethodName(), byteEntity);
+		// Upload the actual files
+		IEntity response = upload(method, files);
+		Pools.arrayList.free(files);
 
-		if (entityResponse != null && entityResponse.length > 0) {
-			IEntity response = NetworkEntitySerializer.deserializeEntity(entityResponse);
-
-			// Upload the actual files
-			if (response instanceof PublishMethodResponse) {
-
-			}
+		if (response instanceof PublishMethodResponse) {
+			return ((PublishMethodResponse) response).success;
 		}
 
 		return false;

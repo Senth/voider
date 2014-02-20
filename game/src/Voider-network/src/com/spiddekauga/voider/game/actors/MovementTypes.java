@@ -7,9 +7,28 @@ package com.spiddekauga.voider.game.actors;
  */
 public enum MovementTypes {
 	/** Uses variable values to behave in a certain manner */
-	AI,
+	AI(1),
 	/** Follows a path */
-	PATH,
+	PATH(2),
 	/** Stationary, cannot move */
-	STATIONARY
+	STATIONARY(3),
+
+	;
+	/**
+	 * Id for saving in datastore
+	 * @param id the id saved in datastores
+	 */
+	private MovementTypes(int id) {
+		mId = id;
+	}
+
+	/**
+	 * @return id of the movement type
+	 */
+	public int getId() {
+		return mId;
+	}
+
+	/** Id for saving in datastore */
+	private int mId;
 }

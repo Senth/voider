@@ -1,7 +1,6 @@
 package com.spiddekauga.prototype;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
@@ -10,6 +9,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.google.appengine.api.blobstore.BlobstoreService;
 import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
+import com.spiddekauga.voider.network.entities.IEntity;
+import com.spiddekauga.voider.network.entities.method.GetUploadUrlMethod;
+import com.spiddekauga.voider.network.entities.method.GetUploadUrlMethodResponse;
+import com.spiddekauga.voider.network.entities.method.NetworkEntitySerializer;
 import com.spiddekauga.web.VoiderServlet;
 
 /**
@@ -21,22 +24,21 @@ import com.spiddekauga.web.VoiderServlet;
 public class GetUploadUrl extends VoiderServlet {
 	@Override
 	protected void onRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		if (!mUser.isLoggedIn()) {
-			mLogger.info("User is not logged in!");
-			PrintWriter out = response.getWriter();
-			out.print("User is not logged in");
-			out.flush();
-			return;
+		GetUploadUrlMethodResponse methodResponse = new GetUploadUrlMethodResponse();
+
+		byte[] byteEntity = NetworkGateway.getEntity(request);
+		IEntity networkEntity = NetworkEntitySerializer.deserializeEntity(byteEntity);
+
+		if (networkEntity instanceof GetUploadUrlMethod) {
+			BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService();
+			methodResponse.uploadUrl = blobstoreService.createUploadUrl("/" + ((GetUploadUrlMethod) networkEntity).redirectMethod);
+			mLogger.info("Upload url: " + methodResponse.uploadUrl);
 		}
 
-
-		BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService();
-		String uploadUrl = blobstoreService.createUploadUrl("/enemyuploadfinished");
-		response.addHeader("uploadUrl", uploadUrl);
-		mLogger.info("Got upload url: " + uploadUrl);
+		byte[] byteResponse = NetworkEntitySerializer.serializeEntity(methodResponse);
+		NetworkGateway.sendResponse(response, byteResponse);
 	}
 
-
 	/** Logger */
-	private static final Logger mLogger = Logger.getLogger(GetUploadUrl.class.getName());
+	private Logger mLogger = Logger.getLogger(GetUploadUrl.class.getName());
 }
