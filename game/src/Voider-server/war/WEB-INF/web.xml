@@ -28,6 +28,22 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 		<servlet-name>Logout</servlet-name>
 		<url-pattern>/logout</url-pattern>
 	</servlet-mapping>
+	<servlet>
+		<servlet-name>GetUploadUrl</servlet-name>
+		<servlet-class>com.spiddekauga.voider.servlets.GetUploadUrl</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>GetUploadUrl</servlet-name>
+		<url-pattern>/getuploadurl</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>Publish</servlet-name>
+		<servlet-class>com.spiddekauga.voider.servlets.Publish</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Publish</servlet-name>
+		<url-pattern>/publish</url-pattern>
+	</servlet-mapping>
 	<welcome-file-list>
 		<welcome-file>index.html</welcome-file>
 	</welcome-file-list>

@@ -664,8 +664,9 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 	@Override
 	public void publishDef() {
-		// TODO Auto-generated method stub
-
+		if (mLevel != null) {
+			ResourceRepo.publish(mLevel);
+		}
 	}
 
 	/**

@@ -467,8 +467,9 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 
 	@Override
 	public void publishDef() {
-		// TODO Auto-generated method stub
-
+		if (mActorDef != null) {
+			ResourceRepo.publish(mActorDef);
+		}
 	}
 
 

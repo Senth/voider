@@ -25,7 +25,6 @@ import com.spiddekauga.voider.game.Path.PathTypes;
 import com.spiddekauga.voider.game.Weapon;
 import com.spiddekauga.voider.game.WeaponTest;
 import com.spiddekauga.voider.game.actors.EnemyActorDef.AimTypes;
-import com.spiddekauga.voider.game.actors.EnemyActorDef.MovementTypes;
 import com.spiddekauga.voider.repo.SqliteResetter;
 import com.spiddekauga.voider.resources.ResourceSaver;
 
