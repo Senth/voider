@@ -11,6 +11,7 @@ import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.ExternalTypes;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourceRevision;
+import com.spiddekauga.voider.resources.ResourceNotFoundException;
 import com.spiddekauga.voider.resources.RevisionInfo;
 
 /**
@@ -187,6 +188,24 @@ public class ResourceLocalRepo {
 		} else {
 			return null;
 		}
+	}
+
+	/**
+	 * @param resourceId the resource to test if it's published
+	 * @return true if the resource is published
+	 * @throws ResourceNotFoundException if the resource wasn't found
+	 */
+	public static boolean isPublished(UUID resourceId) {
+		return mSqliteGateway.isPublished(resourceId);
+	}
+
+	/**
+	 * Set a resource as published / unpublished
+	 * @param resourceId the resource id to set
+	 * @param published true if published, false if unpublished
+	 */
+	static void setPublished(UUID resourceId, boolean published) {
+		mSqliteGateway.setPublished(resourceId, published);
 	}
 
 	/** Sqlite gateway */

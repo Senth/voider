@@ -468,10 +468,15 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 	@Override
 	public void publishDef() {
 		if (mActorDef != null) {
-			ResourceRepo.publish(mActorDef);
+			boolean success =ResourceRepo.publish(mActorDef);
+
+			if (success) {
+				mGui.showSuccessMessage("Publish successful!");
+			} else {
+				mGui.showErrorMessage("Publish failed!");
+			}
 		}
 	}
-
 
 	/** The actor type */
 	private Class<? extends Actor> mActorType;

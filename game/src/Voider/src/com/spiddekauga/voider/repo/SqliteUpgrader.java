@@ -102,7 +102,7 @@ class SqliteUpgrader {
 
 		// resources
 		mNotFoundTables.add("resource");
-		mCreateTableQueries.put("resource", "CREATE TABLE IF NOT EXISTS resource (uuid TEXT PRIMARY KEY, type INTEGER);");
+		mCreateTableQueries.put("resource", "CREATE TABLE IF NOT EXISTS resource (uuid TEXT PRIMARY KEY, type INTEGER, published INTEGER DEFAULT 0);");
 	}
 
 	/**

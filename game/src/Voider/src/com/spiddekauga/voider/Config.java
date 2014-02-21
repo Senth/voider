@@ -7,6 +7,8 @@ import java.util.Arrays;
 import javax.crypto.spec.SecretKeySpec;
 
 import com.badlogic.gdx.Application;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.spiddekauga.utils.ShapeRendererEx;
@@ -533,22 +535,23 @@ public class Config {
 	 */
 	public static class File {
 		/** The external directory used for storing game data */
-		public final static String STORAGE = "Voider/";
-		/** The external directory used when storing test game data */
-		public final static String TEST_STORAGE = "Voider-test/";
+		public final static String STORAGE = Debug.JUNIT_TEST ? "Voider-test/" : "Voider/";
 		/** Revision number length */
 		public final static int REVISION_LENGTH = 10;
-		/** Name of the latest copy in revision directories */
-		@Deprecated
-		public final static String REVISION_LATEST_NAME = "LATEST";
 		/** Uses external images, etc. instead of internal for resources */
 		public final static boolean USE_EXTERNAL_RESOURCES = false;
 		/** Database filename */
-		private final static String DB_FILENAME = "Voider.db";
+		public final static String DB_FILENAME = "Voider.db";
 		/** Database file */
 		public final static String DB_FILEPATH = STORAGE + DB_FILENAME;
-		/** Database file when testing */
-		public final static String DB_FILEPATH_TEST = TEST_STORAGE + DB_FILENAME;
+
+		// Create Voider folder if it doesn't exist
+		static {
+			FileHandle file = Gdx.files.external(STORAGE);
+			if (!file.exists()) {
+				file.mkdirs();
+			}
+		}
 	}
 
 	/**

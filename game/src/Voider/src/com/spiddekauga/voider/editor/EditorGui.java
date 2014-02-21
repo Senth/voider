@@ -47,8 +47,8 @@ import com.spiddekauga.voider.game.actors.ActorFilterCategories;
 import com.spiddekauga.voider.menu.MainMenu;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.IResourceTexture;
-import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.InternalNames;
+import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.resources.SkinNames.EditorIcons;
 import com.spiddekauga.voider.scene.Gui;
@@ -560,8 +560,12 @@ public abstract class EditorGui extends Gui {
 		content.setTouchable(Touchable.childrenOnly);
 		content.add(scrollPane).setSize(width, Gdx.graphics.getHeight() * 0.4f);
 
+		//		Command setAsPublished = new CEditorSetAsPublished(mEditor);
+		//		Command saveAndPublish = new CEditorSave(mEditor, new CEditorPublish(mEditor));
+		//		Command commandSequence = new CommandSequence(setAsPublished, saveAndPublish);
+
 		msgBox.content(content);
-		msgBox.button("Publish", new CEditorSave(mEditor, new CEditorPublish(mEditor)));
+		msgBox.button("Publish", new CEditorPublish(mEditor));
 		msgBox.addCancelButtonAndKeys();
 		showMsgBox(msgBox);
 	}

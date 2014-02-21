@@ -18,9 +18,13 @@ public class NetworkEntitySerializer {
 	/**
 	 * Deserializes an entity from bytes to an entity
 	 * @param bytes all bytes that represents an entity
-	 * @return entity or null if it could not deserialize
+	 * @return entity, or null if it could not deserialize
 	 */
 	public static IEntity deserializeEntity(byte[] bytes) {
+		if (bytes == null || bytes.length == 0) {
+			return null;
+		}
+
 		try {
 			ByteArrayInputStream byteInputStream = new ByteArrayInputStream(bytes);
 			ObjectInputStream objectInputStream = new ObjectInputStream(byteInputStream);

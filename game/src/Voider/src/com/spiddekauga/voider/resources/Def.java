@@ -41,7 +41,6 @@ public abstract class Def extends Resource implements IResourceDependency, IReso
 		mName = def.mName;
 		mOriginalCreator = def.mOriginalCreator;
 		mRevision = def.mRevision;
-		mPublished = def.mPublished;
 	}
 
 	@Override
@@ -220,21 +219,6 @@ public abstract class Def extends Resource implements IResourceDependency, IReso
 		return mCopyParentId;
 	}
 
-	/**
-	 * @return true if the definition has been published
-	 */
-	public boolean isPublished() {
-		return mPublished;
-	}
-
-	/**
-	 * Sets whether this definition has been published or not
-	 * @param published set to true if it has been published
-	 */
-	public void setPublished(boolean published) {
-		mPublished = published;
-	}
-
 	/** Dependencies for the resource */
 	@Tag(43) private Map<UUID, AtomicInteger> mExternalDependencies = new HashMap<UUID, AtomicInteger>();
 	/** Internal dependencies, such as textures, sound, particle effects */
@@ -253,8 +237,6 @@ public abstract class Def extends Resource implements IResourceDependency, IReso
 	@Tag(40) private int mRevision = 0;
 	/** When copied, this is the id of the resource we copied */
 	@Tag(87) private UUID mCopyParentId = null;
-	/** If the definition has been published */
-	@Tag(110) private boolean mPublished = false;
 
 
 	// Don't forget to add to DefTest!

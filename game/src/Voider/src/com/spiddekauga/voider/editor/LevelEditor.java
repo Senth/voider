@@ -665,7 +665,13 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	@Override
 	public void publishDef() {
 		if (mLevel != null) {
-			ResourceRepo.publish(mLevel);
+			boolean success = ResourceRepo.publish(mLevel);
+
+			if (success) {
+				mGui.showSuccessMessage("Publish successful!");
+			} else {
+				mGui.showErrorMessage("Publish failed!");
+			}
 		}
 	}
 

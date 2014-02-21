@@ -28,6 +28,14 @@ public class ResourceNotFoundException extends ResourceException {
 	}
 
 	/**
+	 * Constructor that takes the resource which could not be found
+	 * @param resourceId UUID of the resource that wasn't found, can be null
+	 */
+	public ResourceNotFoundException(UUID resourceId) {
+		super(null, resourceId);
+	}
+
+	/**
 	 * @return the name of the file that couldn't be found
 	 */
 	@Override

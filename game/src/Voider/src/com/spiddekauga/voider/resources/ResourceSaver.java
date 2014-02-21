@@ -52,10 +52,12 @@ public class ResourceSaver {
 			oldRevision = ((IResourceRevision) resource).getRevision();
 
 
-			RevisionInfo revisionInfo = ResourceLocalRepo.getRevisionLatest(resource.getId());
 			int nextRevision = 1;
-			if (revisionInfo != null) {
+			try {
+				RevisionInfo revisionInfo = ResourceLocalRepo.getRevisionLatest(resource.getId());
 				nextRevision = revisionInfo.revision + 1;
+			} catch (ResourceNotFoundException e) {
+				// Do nothing
 			}
 			((IResourceRevision) resource).setRevision(nextRevision);
 		}

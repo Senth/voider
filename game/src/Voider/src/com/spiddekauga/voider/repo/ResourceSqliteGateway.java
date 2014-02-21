@@ -7,6 +7,7 @@ import java.util.UUID;
 import com.badlogic.gdx.sql.DatabaseCursor;
 import com.badlogic.gdx.sql.SQLiteGdxException;
 import com.badlogic.gdx.utils.GdxRuntimeException;
+import com.spiddekauga.voider.resources.ResourceNotFoundException;
 import com.spiddekauga.voider.resources.RevisionInfo;
 import com.spiddekauga.voider.utils.Pools;
 
@@ -40,7 +41,7 @@ class ResourceSqliteGateway extends SqliteGateway {
 	 */
 	void add(UUID uuid, int typeIdentifier) {
 		try {
-			mDatabase.execSQL("INSERT INTO resource VALUES ( '" + uuid + "', " + typeIdentifier + ");");
+			mDatabase.execSQL("INSERT INTO resource (uuid, type) VALUES ( '" + uuid + "', " + typeIdentifier + ");");
 		} catch (SQLiteGdxException e) {
 			e.printStackTrace();
 			throw new GdxRuntimeException(e);
@@ -187,8 +188,8 @@ class ResourceSqliteGateway extends SqliteGateway {
 	/**
 	 * Get the latest revision of the specified resource
 	 * @param uuid the resource to get the revision for
-	 * @return latest revision of the specified resource. If the resource
-	 * doesn't have any revisions null is returned.
+	 * @return latest revision of the specified resource.
+	 * @throws ResourceNotFoundException if the resource wasn't found
 	 */
 	RevisionInfo getRevisionLatest(UUID uuid) {
 		try {
@@ -198,20 +199,22 @@ class ResourceSqliteGateway extends SqliteGateway {
 				RevisionInfo revisionInfo = Pools.revisionInfo.obtain();
 				revisionInfo.revision = cursor.getInt(RESOURCE_REVISION__REVISION);
 				revisionInfo.date.setTime(cursor.getLong(RESOURCE_REVISION__DATE));
+				cursor.close();
 				return revisionInfo;
+			} else {
+				cursor.close();
+				throw new ResourceNotFoundException(uuid);
 			}
-			cursor.close();
 		} catch (SQLiteGdxException e) {
 			e.printStackTrace();
 			throw new GdxRuntimeException(e);
 		}
-
-		return null;
 	}
 
 	/**
 	 * @param uuid id of the resource to get the type for
-	 * @return type of the resource id, -1 if not found.
+	 * @return type of the resource id
+	 * @throws ResourceNotFoundException if the resource wasn't found
 	 */
 	int getType(UUID uuid) {
 		try {
@@ -220,8 +223,42 @@ class ResourceSqliteGateway extends SqliteGateway {
 			if (cursor.next()) {
 				return cursor.getInt(0);
 			} else {
-				return -1;
+				throw new ResourceNotFoundException(uuid);
 			}
+		} catch (SQLiteGdxException e) {
+			e.printStackTrace();
+			throw new GdxRuntimeException(e);
+		}
+	}
+
+	/**
+	 * @param uuid id of the resource to get the type for
+	 * @return true if the resource has been published
+	 * @throws ResourceNotFoundException if the resource wasn't found
+	 */
+	boolean isPublished(UUID uuid) {
+		try {
+			DatabaseCursor cursor = mDatabase.rawQuery("SELECT published FROM resource WHERE uuid='" + uuid + "' LIMIT 1;");
+
+			if (cursor.next()) {
+				return cursor.getInt(0) == 1 ? true : false;
+			} else {
+				throw new ResourceNotFoundException(uuid);
+			}
+		} catch (SQLiteGdxException e) {
+			e.printStackTrace();
+			throw new GdxRuntimeException(e);
+		}
+	}
+
+	/**
+	 * Set a resource as published / unpublished
+	 * @param uuid the resource id to set
+	 * @param published true if published, false if unpublished
+	 */
+	void setPublished(UUID uuid, boolean published) {
+		try {
+			mDatabase.execSQL("UPDATE resource SET published=" + (published ? "1" : "0") + ";");
 		} catch (SQLiteGdxException e) {
 			e.printStackTrace();
 			throw new GdxRuntimeException(e);

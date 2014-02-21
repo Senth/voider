@@ -34,7 +34,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>GetUploadUrl</servlet-name>
-		<url-pattern>/getuploadurl</url-pattern>
+		<url-pattern>/get-upload-url</url-pattern>
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>Publish</servlet-name>

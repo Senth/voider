@@ -71,21 +71,16 @@ public class ResourceRepo {
 		boolean success = ResourceWebRepo.publish(resources);
 
 
-		// Remove revisions
+		// Remove revisions and set as published
 		if (success) {
 			for (IResource resource : resources) {
 				if (resource instanceof IResourceRevision) {
 					// Remove from database and files
 					ResourceLocalRepo.removeRevisions(resource.getId());
 				}
-			}
-		}
-		// Unpublish
-		else {
-			for (IResource resource : resources) {
-				if (resource instanceof Def) {
-					((Def) resource).setPublished(false);
-				}
+
+				// Set as published
+				ResourceLocalRepo.setPublished(resource.getId(), true);
 			}
 		}
 
@@ -124,7 +119,7 @@ public class ResourceRepo {
 	 */
 	private static final void getNonPublishedDependencies(Def def, Set<UUID> foundUuids, ArrayList<Def> dependencies) {
 		for (Entry<UUID, AtomicInteger> entry : def.getExternalDependencies().entrySet()) {
-			if (!def.isPublished() && !foundUuids.contains(entry.getKey())) {
+			if (foundUuids.contains(entry.getKey()) && !ResourceLocalRepo.isPublished(def.getId())) {
 				foundUuids.add(entry.getKey());
 
 				Def dependency = ResourceCacheFacade.get(entry.getKey());

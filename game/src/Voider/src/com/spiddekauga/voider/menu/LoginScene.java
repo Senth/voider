@@ -7,8 +7,8 @@ import com.spiddekauga.voider.network.entities.method.LoginMethodResponse;
 import com.spiddekauga.voider.network.entities.method.RegisterUserMethodResponse;
 import com.spiddekauga.voider.repo.UserLocalRepo;
 import com.spiddekauga.voider.repo.UserWebRepo;
-import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.InternalNames;
+import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.utils.UserInfo;
 
@@ -66,6 +66,7 @@ public class LoginScene extends Scene {
 				if (response.success) {
 					setOutcome(Outcomes.LOGGED_IN);
 					Config.Network.setOnline(true);
+					Config.User.setUsername(userInfo.username);
 				} else {
 					mGui.showErrorMessage("Could not auto-login " + userInfo.username);
 					UserLocalRepo.removeLastUser();

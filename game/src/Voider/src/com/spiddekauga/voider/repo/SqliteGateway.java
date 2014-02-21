@@ -36,11 +36,10 @@ class SqliteGateway implements Disposable {
 		switch (Gdx.app.getType()) {
 		// Get external file location
 		case Desktop:
-			String externalLocation = Gdx.files.getExternalStoragePath();
-			return externalLocation + (Config.Debug.JUNIT_TEST ? Config.File.DB_FILEPATH_TEST : Config.File.DB_FILEPATH);
+			return Gdx.files.getExternalStoragePath() + Config.File.DB_FILEPATH;
 
 		case Android:
-			return Config.File.DB_FILEPATH;
+			return Config.File.DB_FILENAME;
 
 		default:
 			throw new GdxRuntimeException("Unsupported application type: " + Gdx.app.getType());

@@ -9,7 +9,7 @@ package com.spiddekauga.voider.network.entities.method;
 public class GetUploadUrlMethod implements IMethodEntity {
 	@Override
 	public String getMethodName() {
-		return "getuploadurl";
+		return "get-upload-url";
 	}
 
 	/** Redirect method after upload is done */

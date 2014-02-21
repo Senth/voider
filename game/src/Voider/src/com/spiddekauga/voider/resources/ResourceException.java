@@ -19,11 +19,13 @@ public abstract class ResourceException extends RuntimeException {
 
 		mResourceId = resourceId;
 
-		if (mResourceId == null) {
-			mResourceId = getUuidFromFilename(filename);
-		}
+		if (filename != null) {
+			if (mResourceId == null) {
+				mResourceId = getUuidFromFilename(filename);
+			}
 
-		mRevision = getRevisionFromFilename(filename);
+			mRevision = getRevisionFromFilename(filename);
+		}
 	}
 
 	/**
