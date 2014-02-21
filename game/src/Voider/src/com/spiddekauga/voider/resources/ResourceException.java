@@ -15,7 +15,7 @@ public abstract class ResourceException extends RuntimeException {
 	 * will try to get the UUID from the filename
 	 */
 	public ResourceException(String filename, UUID resourceId) {
-		super(filename);
+		super(filename != null ? filename : (resourceId != null ? resourceId.toString() : "null"));
 
 		mResourceId = resourceId;
 

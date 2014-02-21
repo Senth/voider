@@ -47,7 +47,7 @@ public abstract class Editor extends WorldScene implements IEditor {
 	 * @return true if the editor shall try to auto-save the current file
 	 */
 	protected boolean shallAutoSave() {
-		if (!mSaved && !isDrawing()) {
+		if (!mSaved && !isDrawing() && !isPublished()) {
 
 			float totalTimeElapsed = getGameTime().getTotalTimeElapsed();
 			// Save after X seconds of inactivity or always save after Y minutes

@@ -56,4 +56,9 @@ public interface IEditor {
 	 * Try to publish the resource
 	 */
 	void publishDef();
+
+	/**
+	 * @return true if the resource is published
+	 */
+	boolean isPublished();
 }

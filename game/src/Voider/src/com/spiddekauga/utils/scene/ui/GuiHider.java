@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.Layout;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.SnapshotArray;
+import com.spiddekauga.voider.Config;
 
 /**
  * Class for hiding GUI elements
@@ -68,7 +69,9 @@ public abstract class GuiHider implements Disposable {
 				}
 
 				if (toggleActor instanceof TextField) {
-					((TextField) toggleActor).setDisabled(false);
+					if (toggleActor.getName() == null || !toggleActor.getName().equals(Config.Gui.TEXT_FIELD_DISABLED_NAME)) {
+						((TextField) toggleActor).setDisabled(false);
+					}
 				}
 
 				if (toggleActor instanceof Layout) {
@@ -128,7 +131,9 @@ public abstract class GuiHider implements Disposable {
 
 		for (Actor child : children) {
 			if (child instanceof TextField) {
-				((TextField) child).setDisabled(disable);
+				if (disable || child.getName() == null || !child.getName().equals(Config.Gui.TEXT_FIELD_DISABLED_NAME)) {
+					((TextField) child).setDisabled(disable);
+				}
 			}
 
 			if (child instanceof Group) {

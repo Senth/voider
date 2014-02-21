@@ -22,16 +22,18 @@ import com.spiddekauga.voider.editor.tools.TouchTool;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.ActorDef;
 import com.spiddekauga.voider.game.actors.ActorShapeTypes;
+import com.spiddekauga.voider.repo.ResourceLocalRepo;
 import com.spiddekauga.voider.repo.ResourceRepo;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.InternalNames;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
+import com.spiddekauga.voider.resources.ResourceNotFoundException;
 import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.utils.Pools;
 
 /**
- * Comman class for all actor editors
+ * Common class for all actor editors
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
@@ -468,14 +470,27 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 	@Override
 	public void publishDef() {
 		if (mActorDef != null) {
-			boolean success =ResourceRepo.publish(mActorDef);
+			boolean success = ResourceRepo.publish(mActorDef);
 
 			if (success) {
 				mGui.showSuccessMessage("Publish successful!");
+				mGui.resetValues();
 			} else {
 				mGui.showErrorMessage("Publish failed!");
 			}
 		}
+	}
+
+	@Override
+	public boolean isPublished() {
+		if (mActorDef != null) {
+			try {
+				return ResourceLocalRepo.isPublished(mActorDef.getId());
+			} catch (ResourceNotFoundException e) {
+				// Do nothing
+			}
+		}
+		return false;
 	}
 
 	/** The actor type */

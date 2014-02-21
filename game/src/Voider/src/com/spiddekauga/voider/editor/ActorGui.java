@@ -156,6 +156,7 @@ public abstract class ActorGui extends EditorGui {
 		mWidgets.info.table.row();
 		TextField textField = new TextField("", mStyles.textField.standard);
 		textField.setMaxLength(Config.Editor.NAME_LENGTH_MAX);
+		mDisabledWhenPublished.add(textField);
 		mWidgets.info.table.add(textField).setWidth(width);
 		mWidgets.info.name = textField;
 		new TooltipListener(textField, Messages.replaceName(Messages.Tooltip.Actor.Option.NAME, getResourceTypeName()));
@@ -172,6 +173,7 @@ public abstract class ActorGui extends EditorGui {
 
 		mWidgets.info.table.row().setAlign(Horizontal.LEFT, Vertical.TOP);
 		textField = new TextField("", mStyles.textField.standard);
+		mDisabledWhenPublished.add(textField);
 		textField.setMaxLength(Config.Editor.DESCRIPTION_LENGTH_MAX);
 		mWidgets.info.table.add(textField).setSize(width, (int) (Gdx.graphics.getHeight()*0.5f));
 		mWidgets.info.description = textField;
@@ -207,9 +209,11 @@ public abstract class ActorGui extends EditorGui {
 
 		mWidgets.visual.table.row();
 		Slider slider = new Slider(0, 360, 1, false, mStyles.slider.standard);
+		mDisabledWhenPublished.add(slider);
 		mWidgets.visual.startAngle = slider;
 		mWidgets.visual.table.add(slider);
 		TextField textField = new TextField("", mStyles.textField.standard);
+		mDisabledWhenPublished.add(textField);
 		textField.setWidth(mStyles.vars.textFieldNumberWidth);
 		mWidgets.visual.table.add(textField);
 		new TooltipListener(slider, Messages.replaceName(Messages.Tooltip.Actor.Visuals.STARTING_ANGLE, getResourceTypeName()));
@@ -230,9 +234,11 @@ public abstract class ActorGui extends EditorGui {
 
 		mWidgets.visual.table.row();
 		slider = new Slider(Editor.Actor.Visual.ROTATE_SPEED_MIN, Editor.Actor.Visual.ROTATE_SPEED_MAX, Editor.Actor.Visual.ROTATE_SPEED_STEP_SIZE, false, mStyles.slider.standard);
+		mDisabledWhenPublished.add(slider);
 		mWidgets.visual.rotationSpeed = slider;
 		mWidgets.visual.table.add(slider);
 		textField = new TextField("", mStyles.textField.standard);
+		mDisabledWhenPublished.add(textField);
 		textField.setWidth(mStyles.vars.textFieldNumberWidth);
 		mWidgets.visual.table.add(textField);
 		new TooltipListener(slider, Messages.replaceName(Messages.Tooltip.Actor.Visuals.ROTATION_SPEED, getResourceTypeName()));
@@ -256,6 +262,7 @@ public abstract class ActorGui extends EditorGui {
 		} else {
 			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.CIRCLE_SHAPE.toString());
 		}
+		mDisabledWhenPublished.add(button);
 		mWidgets.visual.shapeCircle = button;
 		mWidgets.visual.table.add(button);
 		button.addListener(shapeChecker);
@@ -277,6 +284,7 @@ public abstract class ActorGui extends EditorGui {
 		} else {
 			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.RECTANGLE_SHAPE.toString());
 		}
+		mDisabledWhenPublished.add(button);
 		mWidgets.visual.shapeRectangle = button;
 		mWidgets.visual.table.add(button);
 		button.addListener(shapeChecker);
@@ -298,6 +306,7 @@ public abstract class ActorGui extends EditorGui {
 		} else {
 			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.TRIANGLE_SHAPE.toString());
 		}
+		mDisabledWhenPublished.add(button);
 		mWidgets.visual.shapeTriangle = button;
 		mWidgets.visual.table.add(button);
 		button.addListener(shapeChecker);
@@ -319,6 +328,7 @@ public abstract class ActorGui extends EditorGui {
 		} else {
 			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.DRAW_CUSTOM_SHAPE.toString());
 		}
+		mDisabledWhenPublished.add(button);
 		mWidgets.visual.shapeCustom = button;
 		mWidgets.visual.table.add(button);
 		button.addListener(shapeChecker);
@@ -346,11 +356,13 @@ public abstract class ActorGui extends EditorGui {
 		} else if (this instanceof BulletEditorGui) {
 			slider = new Slider(Bullet.Visual.RADIUS_MIN, Bullet.Visual.RADIUS_MAX, Bullet.Visual.RADIUS_STEP_SIZE, false, mStyles.slider.standard);
 		}
+		mDisabledWhenPublished.add(slider);
 		mWidgets.visual.shapeCircleRadius = slider;
 		mWidgets.visual.table.add(slider);
 		circleHider.addToggleActor(slider);
 
 		textField = new TextField("", mStyles.textField.standard);
+		mDisabledWhenPublished.add(textField);
 		mWidgets.visual.table.add(textField);
 		textField.setWidth(mStyles.vars.textFieldNumberWidth);
 		circleHider.addToggleActor(textField);
@@ -373,11 +385,13 @@ public abstract class ActorGui extends EditorGui {
 		} else if (this instanceof BulletEditorGui) {
 			slider = new Slider(Bullet.Visual.SIZE_MIN, Bullet.Visual.SIZE_MAX, Bullet.Visual.SIZE_STEP_SIZE, false, mStyles.slider.standard);
 		}
+		mDisabledWhenPublished.add(slider);
 		mWidgets.visual.shapeRectangleWidth = slider;
 		mWidgets.visual.table.add(slider);
 		rectangleHider.addToggleActor(slider);
 
 		textField = new TextField("", mStyles.textField.standard);
+		mDisabledWhenPublished.add(textField);
 		mWidgets.visual.table.add(textField);
 		textField.setWidth(mStyles.vars.textFieldNumberWidth);
 		rectangleHider.addToggleActor(textField);
@@ -400,11 +414,13 @@ public abstract class ActorGui extends EditorGui {
 		} else if (this instanceof BulletEditorGui) {
 			slider = new Slider(Bullet.Visual.SIZE_MIN, Bullet.Visual.SIZE_MAX, Bullet.Visual.SIZE_STEP_SIZE, false, mStyles.slider.standard);
 		}
+		mDisabledWhenPublished.add(slider);
 		mWidgets.visual.shapeTriangleWidth = slider;
 		mWidgets.visual.table.add(slider);
 		triangleHider.addToggleActor(slider);
 
 		textField = new TextField("", mStyles.textField.standard);
+		mDisabledWhenPublished.add(textField);
 		mWidgets.visual.table.add(textField);
 		textField.setWidth(mStyles.vars.textFieldNumberWidth);
 		triangleHider.addToggleActor(textField);
@@ -427,11 +443,13 @@ public abstract class ActorGui extends EditorGui {
 		} else if (this instanceof BulletEditorGui) {
 			slider = new Slider(Bullet.Visual.SIZE_MIN, Bullet.Visual.SIZE_MAX, Bullet.Visual.SIZE_STEP_SIZE, false, mStyles.slider.standard);
 		}
+		mDisabledWhenPublished.add(slider);
 		mWidgets.visual.shapeRectangleHeight = slider;
 		mWidgets.visual.table.add(slider);
 		rectangleHider.addToggleActor(slider);
 
 		textField = new TextField("", mStyles.textField.standard);
+		mDisabledWhenPublished.add(textField);
 		mWidgets.visual.table.add(textField);
 		textField.setWidth(mStyles.vars.textFieldNumberWidth);
 		rectangleHider.addToggleActor(textField);
@@ -454,11 +472,13 @@ public abstract class ActorGui extends EditorGui {
 		} else if (this instanceof BulletEditorGui) {
 			slider = new Slider(Bullet.Visual.SIZE_MIN, Bullet.Visual.SIZE_MAX, Bullet.Visual.SIZE_STEP_SIZE, false, mStyles.slider.standard);
 		}
+		mDisabledWhenPublished.add(slider);
 		mWidgets.visual.shapeTriangleHeight = slider;
 		mWidgets.visual.table.add(slider);
 		triangleHider.addToggleActor(slider);
 
 		textField = new TextField("", mStyles.textField.standard);
+		mDisabledWhenPublished.add(textField);
 		mWidgets.visual.table.add(textField);
 		textField.setWidth(mStyles.vars.textFieldNumberWidth);
 		triangleHider.addToggleActor(textField);
@@ -498,6 +518,7 @@ public abstract class ActorGui extends EditorGui {
 		} else {
 			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.MOVE.toString());
 		}
+		mDisabledWhenPublished.add(button);
 		mWidgets.tool.move = button;
 		button.addListener(shapeCustomChecker);
 		buttonGroup.add(button);
@@ -519,6 +540,7 @@ public abstract class ActorGui extends EditorGui {
 		} else {
 			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.DELETE.toString());
 		}
+		mDisabledWhenPublished.add(button);
 		mWidgets.tool.delete = button;
 		button.addListener(shapeCustomChecker);
 		buttonGroup.add(button);
@@ -540,6 +562,7 @@ public abstract class ActorGui extends EditorGui {
 		} else {
 			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.DRAW_APPEND.toString());
 		}
+		mDisabledWhenPublished.add(button);
 		mWidgets.tool.drawAppend = button;
 		button.addListener(shapeCustomChecker);
 		buttonGroup.add(button);
@@ -561,6 +584,7 @@ public abstract class ActorGui extends EditorGui {
 		} else {
 			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.DRAW_ERASE.toString());
 		}
+		mDisabledWhenPublished.add(button);
 		mWidgets.tool.drawErase = button;
 		button.addListener(shapeCustomChecker);
 		buttonGroup.add(button);
@@ -582,6 +606,7 @@ public abstract class ActorGui extends EditorGui {
 		} else {
 			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.ADD_MOVE_CORNER.toString());
 		}
+		mDisabledWhenPublished.add(button);
 		mWidgets.tool.addMoveCorner = button;
 		button.addListener(shapeCustomChecker);
 		buttonGroup.add(button);
@@ -603,6 +628,7 @@ public abstract class ActorGui extends EditorGui {
 		} else {
 			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.REMOVE_CORNER.toString());
 		}
+		mDisabledWhenPublished.add(button);
 		mWidgets.tool.removeCorner = button;
 		button.addListener(shapeCustomChecker);
 		buttonGroup.add(button);
@@ -624,6 +650,7 @@ public abstract class ActorGui extends EditorGui {
 		} else {
 			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.SET_CENTER.toString());
 		}
+		mDisabledWhenPublished.add(button);
 		mWidgets.tool.setCenter = button;
 		button.addListener(shapeCustomChecker);
 		buttonGroup.add(button);
@@ -646,6 +673,7 @@ public abstract class ActorGui extends EditorGui {
 		} else {
 			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.RESET_CENTER.toString());
 		}
+		mDisabledWhenPublished.add(button);
 		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Tools.RESET_CENTER, getResourceTypeName()));
 		new ButtonListener(button, tooltipListener) {
 			@Override
@@ -666,9 +694,11 @@ public abstract class ActorGui extends EditorGui {
 
 		mWidgets.collision.table.row();
 		Slider slider = new Slider(Editor.Actor.Collision.DAMAGE_MIN, Editor.Actor.Collision.DAMAGE_MAX, Editor.Actor.Collision.DAMAGE_STEP_SIZE, false, mStyles.slider.standard);
+		mDisabledWhenPublished.add(slider);
 		mWidgets.collision.damage = slider;
 		mWidgets.collision.table.add(slider);
 		TextField textField = new TextField("", mStyles.textField.standard);
+		mDisabledWhenPublished.add(textField);
 		textField.setWidth(mStyles.vars.textFieldNumberWidth);
 		mWidgets.collision.table.add(textField);
 		new TooltipListener(label, Messages.replaceName(Messages.Tooltip.Actor.Collision.DAMAGE, getResourceTypeName()));
@@ -684,6 +714,7 @@ public abstract class ActorGui extends EditorGui {
 		// Collision destroy
 		mWidgets.collision.table.row();
 		Button button = new CheckBox("Destroy on collide", mStyles.checkBox.radio);
+		mDisabledWhenPublished.add(button);
 		mWidgets.collision.destroyOnCollide = button;
 		mWidgets.collision.table.add(button);
 		TooltipListener tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Actor.Collision.DESTROY_ON_COLLIDE, getResourceTypeName()));

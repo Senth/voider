@@ -52,6 +52,7 @@ import com.spiddekauga.voider.game.actors.StaticTerrainActor;
 import com.spiddekauga.voider.game.triggers.TScreenAt;
 import com.spiddekauga.voider.game.triggers.TriggerAction.Actions;
 import com.spiddekauga.voider.game.triggers.TriggerInfo;
+import com.spiddekauga.voider.repo.ResourceLocalRepo;
 import com.spiddekauga.voider.repo.ResourceRepo;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.ExternalTypes;
@@ -60,6 +61,7 @@ import com.spiddekauga.voider.resources.IResourceBody;
 import com.spiddekauga.voider.resources.InternalNames;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceItem;
+import com.spiddekauga.voider.resources.ResourceNotFoundException;
 import com.spiddekauga.voider.resources.ResourceSaver;
 import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.scene.LoadingScene;
@@ -94,7 +96,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		Tools.ENEMY_SET_DEACTIVATE_TRIGGER.setTool(new TriggerSetTool(mCamera, mWorld, mInvoker, mSelection, this, Actions.ACTOR_DEACTIVATE));
 		Tools.MOVE.setTool(new MoveTool(mCamera, mWorld, mInvoker, mSelection, this));
 		Tools.PAN.setTool(new PanTool(mCamera, mWorld, mInvoker, mSelection, this));
-		Tools.PATH_ADD_CORNER.setTool(new PathAddTool(mCamera, mWorld, mInvoker, mSelection, this));
+		Tools.PATH_ADD.setTool(new PathAddTool(mCamera, mWorld, mInvoker, mSelection, this));
 		Tools.PICKUP_ADD.setTool(new ActorAddTool(mCamera, mWorld, mInvoker, mSelection, this, PickupActor.class));
 		Tools.REMOVE_CORNER.setTool(new RemoveCornerTool(mCamera, mWorld, mInvoker, mSelection, this));
 		Tools.SELECTION.setTool(new SelectionTool(mCamera, mWorld, mInvoker, mSelection, this));
@@ -175,6 +177,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		boolean sameLevel = false;
 		boolean sameRevision = false;
 
+		boolean oldIsPublished = isPublished();
+
 		if (mLevel != null) {
 			if (level != null && mLevel.equals(level.getId())) {
 				sameLevel = true;
@@ -204,7 +208,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 			createResourceBodies();
 
-			// Activate all enemies and add them ot the add enemy list
+			// Activate all enemies and add them to the add enemy list
 			clearEnemyDef();
 			ArrayList<EnemyActor> enemies = mLevel.getResources(EnemyActor.class);
 			for (EnemyActor enemy : enemies) {
@@ -215,9 +219,33 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 			}
 		}
 
+		updateAvailableTools(oldIsPublished, isPublished());
+		mGui.resetValues();
+
 		mInvoker.dispose();
 
 		Actor.setLevel(mLevel);
+	}
+
+	/**
+	 * Updates the available tools depending on if the current level is
+	 * published or not.
+	 * @param oldIsPublished true if the previous level was published
+	 * @param newIsPublished true if the newly loaded level is published
+	 */
+	private void updateAvailableTools(boolean oldIsPublished, boolean newIsPublished) {
+		// Only do something with the tools if they changed
+		if (oldIsPublished != newIsPublished) {
+			// Readd delete tool again
+			if (oldIsPublished) {
+				mInputMultiplexer.addProcessor(Tools.DELETE.getTool());
+			}
+			// Remove delete tool and activate selection tool
+			else {
+				switchTool(Tools.SELECTION);
+				mInputMultiplexer.removeProcessor(Tools.DELETE.getTool());
+			}
+		}
 	}
 
 	// --------------------------------
@@ -275,7 +303,6 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 				loadedLevel = ResourceCacheFacade.get(mLoadingLevel.getLevelId());
 				if (loadedLevel != null) {
 					setLevel(loadedLevel);
-					mGui.resetValues();
 					mGui.hideMsgBoxes();
 					setSaved();
 					mLoadingLevel = null;
@@ -299,7 +326,6 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 			if (message instanceof ResourceItem) {
 				switch (mSelectionAction) {
 				case LEVEL:
-
 					ResourceItem resourceItem = (ResourceItem) message;
 
 					if (!ResourceCacheFacade.isLoaded(resourceItem.id, resourceItem.revision)) {
@@ -532,6 +558,12 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		}
 	}
 
+	/**
+	 * @return selected tool
+	 */
+	Tools getSelectedTool() {
+		return mTool;
+	}
 
 	/**
 	 * Tests to run a game from the current location
@@ -598,28 +630,30 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 	@Override
 	protected void saveToFile() {
-		mLevel.calculateStartEndPosition();
+		if (!isPublished()) {
+			mLevel.calculateStartEndPosition();
 
-		int oldRevision = mLevel.getRevision();
-		ResourceSaver.save(mLevel.getDef());
-		ResourceSaver.save(mLevel);
+			int oldRevision = mLevel.getRevision();
+			ResourceSaver.save(mLevel.getDef());
+			ResourceSaver.save(mLevel);
 
-		// Update latest resource if revision was changed by more than one
-		if (oldRevision != mLevel.getDef().getRevision() - 1) {
-			ResourceCacheFacade.setLatestResource(mLevel, oldRevision);
-			ResourceCacheFacade.setLatestResource(mLevel.getDef(), oldRevision);
-		}
+			// Update latest resource if revision was changed by more than one
+			if (oldRevision != mLevel.getDef().getRevision() - 1) {
+				ResourceCacheFacade.setLatestResource(mLevel, oldRevision);
+				ResourceCacheFacade.setLatestResource(mLevel.getDef(), oldRevision);
+			}
 
-		// Saved first time? Then load level and def and use loaded versions instead
-		if (!ResourceCacheFacade.isLoaded(mLevel.getId())) {
-			ResourceCacheFacade.load(this, mLevel.getDef().getId(), false);
-			ResourceCacheFacade.load(this, mLevel.getId(), mLevel.getDef().getId());
-			ResourceCacheFacade.finishLoading();
+			// Saved first time? Then load level and def and use loaded versions instead
+			if (!ResourceCacheFacade.isLoaded(mLevel.getId())) {
+				ResourceCacheFacade.load(this, mLevel.getDef().getId(), false);
+				ResourceCacheFacade.load(this, mLevel.getId(), mLevel.getDef().getId());
+				ResourceCacheFacade.finishLoading();
 
-			// Reset the level to old revision
-			mLevel.getDef().setRevision(oldRevision);
+				// Reset the level to old revision
+				mLevel.getDef().setRevision(oldRevision);
 
-			setLevel((Level) ResourceCacheFacade.get(mLevel.getId()));
+				setLevel((Level) ResourceCacheFacade.get(mLevel.getId()));
+			}
 		}
 
 		setSaved();
@@ -669,10 +703,25 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 			if (success) {
 				mGui.showSuccessMessage("Publish successful!");
+				updateAvailableTools(false, true);
+				mGui.resetValues();
 			} else {
 				mGui.showErrorMessage("Publish failed!");
 			}
 		}
+	}
+
+	@Override
+	public boolean isPublished() {
+		if (mLevel != null) {
+			try {
+				return ResourceLocalRepo.isPublished(mLevel.getDef().getId());
+			} catch (ResourceNotFoundException e) {
+				// Do nothing
+			}
+		}
+
+		return false;
 	}
 
 	/**
@@ -1291,9 +1340,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		/** Set deactivate trigger for enemies */
 		ENEMY_SET_DEACTIVATE_TRIGGER,
 		/** Add a corner to a path */
-		PATH_ADD_CORNER,
-		/** Path remove corner */
-		PATH_REMOVE_CORNER,
+		PATH_ADD,
 
 		;
 

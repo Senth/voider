@@ -200,6 +200,7 @@ public class ResourceWebRepo {
 
 		levelEntity.levelLength = levelDef.getLengthInTime();
 		levelEntity.levelId = levelDef.getLevelId();
+		levelEntity.type = DefTypes.LEVEL;
 	}
 
 	/**

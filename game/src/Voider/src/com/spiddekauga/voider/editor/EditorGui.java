@@ -22,6 +22,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider.SliderStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.spiddekauga.utils.commands.Command;
@@ -160,6 +161,35 @@ public abstract class EditorGui extends Gui {
 		if (mEnemyHighlight != null) {
 			if (mEditor instanceof LevelEditor) {
 				mEnemyHighlight.setChecked(((LevelEditor) mEditor).isEnemyHighlightOn());
+			}
+		}
+
+		// Disabled / Enable actors if published / unpublished
+		boolean published = mEditor.isPublished();
+		Touchable touchable = published ? Touchable.disabled : Touchable.enabled;
+		for (Actor actor : mDisabledWhenPublished) {
+			// Button
+			if (actor instanceof Button) {
+				((Button) actor).setDisabled(published);
+			}
+
+			// Text field
+			else if (actor instanceof TextField) {
+				if (published) {
+					((TextField) actor).setDisabled(true);
+					actor.setName(Config.Gui.TEXT_FIELD_DISABLED_NAME);
+				} else {
+					if (actor.isVisible()) {
+						((TextField) actor).setDisabled(false);
+					}
+
+					actor.setName(null);
+				}
+			}
+
+			// Other UI types that can't be disabled, make them untouchable
+			else {
+				actor.setTouchable(touchable);
 			}
 		}
 	}
@@ -307,6 +337,7 @@ public abstract class EditorGui extends Gui {
 		} else {
 			button = new ImageButton(mStyles.skin.editor, EditorIcons.UNDO.toString());
 		}
+		mDisabledWhenPublished.add(button);
 		mFileMenu.add(button);
 		TooltipListener tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Menus.File.UNDO, getResourceTypeName()));
 		new ButtonListener(button, tooltipListener) {
@@ -322,6 +353,7 @@ public abstract class EditorGui extends Gui {
 		} else {
 			button = new ImageButton(mStyles.skin.editor, EditorIcons.REDO.toString());
 		}
+		mDisabledWhenPublished.add(button);
 		mFileMenu.add(button);
 		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Menus.File.REDO, getResourceTypeName()));
 		new ButtonListener(button, tooltipListener) {
@@ -452,6 +484,7 @@ public abstract class EditorGui extends Gui {
 		} else {
 			button = new ImageButton(mStyles.skin.editor, EditorIcons.SAVE.toString());
 		}
+		mDisabledWhenPublished.add(button);
 		mFileMenu.add(button);
 		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Menus.File.SAVE, getResourceTypeName()));
 		new ButtonListener(button, tooltipListener) {
@@ -482,6 +515,7 @@ public abstract class EditorGui extends Gui {
 		} else {
 			button = new ImageButton(mStyles.skin.editor, EditorIcons.PUBLISH.toString());
 		}
+		mDisabledWhenPublished.add(button);
 		mFileMenu.add(button);
 		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Menus.File.LOAD, getResourceTypeName()));
 		new ButtonListener(button, tooltipListener) {
@@ -560,12 +594,10 @@ public abstract class EditorGui extends Gui {
 		content.setTouchable(Touchable.childrenOnly);
 		content.add(scrollPane).setSize(width, Gdx.graphics.getHeight() * 0.4f);
 
-		//		Command setAsPublished = new CEditorSetAsPublished(mEditor);
-		//		Command saveAndPublish = new CEditorSave(mEditor, new CEditorPublish(mEditor));
-		//		Command commandSequence = new CommandSequence(setAsPublished, saveAndPublish);
+		Command saveAndPublish = new CEditorSave(mEditor, new CEditorPublish(mEditor));
 
 		msgBox.content(content);
-		msgBox.button("Publish", new CEditorPublish(mEditor));
+		msgBox.button("Publish", saveAndPublish);
 		msgBox.addCancelButtonAndKeys();
 		showMsgBox(msgBox);
 	}
@@ -832,6 +864,8 @@ public abstract class EditorGui extends Gui {
 	/** All skins and styles */
 	protected UiStyles mStyles = new UiStyles();
 
+	/** UI elements that should be disabled during publish */
+	protected ArrayList<Actor> mDisabledWhenPublished = new ArrayList<>();
 	/** Enemy highlight button */
 	private Button mEnemyHighlight = null;
 	/** Grid button */

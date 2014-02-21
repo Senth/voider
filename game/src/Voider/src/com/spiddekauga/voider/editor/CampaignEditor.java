@@ -82,4 +82,10 @@ public class CampaignEditor extends Editor {
 		// TODO Auto-generated method stub
 
 	}
+
+	@Override
+	public boolean isPublished() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

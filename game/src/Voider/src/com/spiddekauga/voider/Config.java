@@ -803,6 +803,8 @@ public class Config {
 	public static class Gui {
 		/** Temporary GUI name when using an invoker */
 		public final static String GUI_INVOKER_TEMP_NAME = "invoker";
+		/** Temporary GUI name when disabling text fields (so GuiHider doesn't reenable them) */
+		public final static String TEXT_FIELD_DISABLED_NAME = "DISABLED";
 		/** Seconds before text field commands aren't combinable */
 		public final static float TEXT_FIELD_COMBINABLE_WITHIN = 1;
 		/** Seconds before tooltip is shown when hovering over */
