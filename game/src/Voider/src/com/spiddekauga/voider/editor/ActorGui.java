@@ -505,11 +505,15 @@ public abstract class ActorGui extends EditorGui {
 	private void initToolMenu() {
 		ButtonGroup buttonGroup = new ButtonGroup();
 		Button button;
-		GuiCheckCommandCreator shapeCustomChecker = new GuiCheckCommandCreator(mInvoker);
 
 		mWidgets.visualToolMenu.table.setPreferences(mToolMenu);
 		mToolMenu.add(mWidgets.visualToolMenu.table);
 		mDrawToolHider.addToggleActor(mWidgets.visualToolMenu.table);
+
+		// None
+		button = new Button();
+		mWidgets.tool.none = button;
+		buttonGroup.add(button);
 
 		// Move
 		mWidgets.visualToolMenu.table.row();
@@ -520,7 +524,6 @@ public abstract class ActorGui extends EditorGui {
 		}
 		mDisabledWhenPublished.add(button);
 		mWidgets.tool.move = button;
-		button.addListener(shapeCustomChecker);
 		buttonGroup.add(button);
 		TooltipListener tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Tools.MOVE, getResourceTypeName()));
 		new ButtonListener(button, tooltipListener) {
@@ -542,7 +545,6 @@ public abstract class ActorGui extends EditorGui {
 		}
 		mDisabledWhenPublished.add(button);
 		mWidgets.tool.delete = button;
-		button.addListener(shapeCustomChecker);
 		buttonGroup.add(button);
 		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Tools.DELETE, getResourceTypeName()));
 		new ButtonListener(button) {
@@ -564,7 +566,6 @@ public abstract class ActorGui extends EditorGui {
 		}
 		mDisabledWhenPublished.add(button);
 		mWidgets.tool.drawAppend = button;
-		button.addListener(shapeCustomChecker);
 		buttonGroup.add(button);
 		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Tools.DRAW_APPEND, getResourceTypeName()));
 		new ButtonListener(button, tooltipListener) {
@@ -586,7 +587,6 @@ public abstract class ActorGui extends EditorGui {
 		}
 		mDisabledWhenPublished.add(button);
 		mWidgets.tool.drawErase = button;
-		button.addListener(shapeCustomChecker);
 		buttonGroup.add(button);
 		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Tools.DRAW_ERASE, getResourceTypeName()));
 		new ButtonListener(button, tooltipListener) {
@@ -608,7 +608,6 @@ public abstract class ActorGui extends EditorGui {
 		}
 		mDisabledWhenPublished.add(button);
 		mWidgets.tool.addMoveCorner = button;
-		button.addListener(shapeCustomChecker);
 		buttonGroup.add(button);
 		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Tools.ADJUST_ADD_MOVE_CORNER, getResourceTypeName()));
 		new ButtonListener(button, tooltipListener) {
@@ -630,7 +629,6 @@ public abstract class ActorGui extends EditorGui {
 		}
 		mDisabledWhenPublished.add(button);
 		mWidgets.tool.removeCorner = button;
-		button.addListener(shapeCustomChecker);
 		buttonGroup.add(button);
 		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Tools.ADJUST_REMOVE_CORNER, getResourceTypeName()));
 		new ButtonListener(button, tooltipListener) {
@@ -652,7 +650,6 @@ public abstract class ActorGui extends EditorGui {
 		}
 		mDisabledWhenPublished.add(button);
 		mWidgets.tool.setCenter = button;
-		button.addListener(shapeCustomChecker);
 		buttonGroup.add(button);
 		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Tools.SET_CENTER, getResourceTypeName()));
 		new ButtonListener(button, tooltipListener) {
@@ -775,10 +772,9 @@ public abstract class ActorGui extends EditorGui {
 			mWidgets.tool.setCenter.setChecked(true);
 			break;
 
-		default:
-			mWidgets.tool.move.setChecked(true);
+		case NONE:
+			mWidgets.tool.none.setChecked(true);
 			break;
-
 		}
 	}
 
@@ -804,6 +800,7 @@ public abstract class ActorGui extends EditorGui {
 			Button addMoveCorner = null;
 			Button removeCorner = null;
 			Button setCenter = null;
+			Button none = null;
 		}
 
 		/**

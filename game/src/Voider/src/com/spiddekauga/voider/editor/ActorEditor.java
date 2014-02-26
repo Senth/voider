@@ -340,7 +340,7 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 			switchTool(Tools.MOVE);
 			((ActorGui)mGui).resetTools();
 			// Add delete tool to input multiplexer
-			if (!mInputMultiplexer.getProcessors().contains(mTools[Tools.DELETE.ordinal()], true)) {
+			if (!isPublished() && !mInputMultiplexer.getProcessors().contains(mTools[Tools.DELETE.ordinal()], true)) {
 				mInputMultiplexer.addProcessor(mTools[Tools.DELETE.ordinal()]);
 			}
 		} else {
@@ -475,6 +475,10 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 			if (success) {
 				mGui.showSuccessMessage("Publish successful!");
 				mGui.resetValues();
+
+				// Remove tools
+				switchTool(Tools.NONE);
+				mInputMultiplexer.removeProcessor(mInputMultiplexer);
 			} else {
 				mGui.showErrorMessage("Publish failed!");
 			}

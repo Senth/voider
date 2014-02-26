@@ -84,10 +84,13 @@ public class MainMenu extends Scene {
 		mGui.resetValues();
 
 		// Show if logged in online
-		if (Config.Network.isOnline()) {
-			mGui.showSuccessMessage(Config.User.getUsername() + " is now online!");
-		} else {
-			mGui.showHighlightMessage(Config.User.getUsername() + " is now offline!");
+		if (mFirstTimeActivation) {
+			if (Config.Network.isOnline()) {
+				mGui.showSuccessMessage(Config.User.getUsername() + " is now online!");
+			} else {
+				mGui.showHighlightMessage(Config.User.getUsername() + " is now offline!");
+			}
+			mFirstTimeActivation = false;
 		}
 	}
 
@@ -235,6 +238,8 @@ public class MainMenu extends Scene {
 		setOutcome(Outcomes.LOGGED_OUT);
 	}
 
+	/** First time we activated the scene */
+	private boolean mFirstTimeActivation = true;
 	/** GUI stack */
 	private LinkedList<Gui> mGuiStack = new LinkedList<Gui>();
 }

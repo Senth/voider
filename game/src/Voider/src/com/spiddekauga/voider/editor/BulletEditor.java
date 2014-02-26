@@ -217,9 +217,7 @@ public class BulletEditor extends ActorEditor {
 
 	/**
 	 * Sets colliding damage of the enemy
-	 * 
-	 * @param damage
-	 *            how much damage the enemy will inflict on a collision
+	 * @param damage how much damage the enemy will inflict on a collision
 	 */
 	@Override
 	public void setCollisionDamage(float damage) {
@@ -244,9 +242,7 @@ public class BulletEditor extends ActorEditor {
 
 	/**
 	 * Sets whether this actor shall be destroyed on collision
-	 * 
-	 * @param destroyOnCollision
-	 *            set to true to destroy the enemy on collision
+	 * @param destroyOnCollision set to true to destroy the enemy on collision
 	 */
 	@Override
 	public void setDestroyOnCollide(boolean destroyOnCollision) {
@@ -271,9 +267,7 @@ public class BulletEditor extends ActorEditor {
 
 	/**
 	 * Sets the minimum cooldown of the weapon
-	 * 
-	 * @param time
-	 *            new cooldown of the weapon
+	 * @param time new cooldown of the weapon
 	 */
 	void setCooldownMin(float time) {
 		mWeapon.getDef().setCooldownMin(time);
@@ -281,7 +275,6 @@ public class BulletEditor extends ActorEditor {
 
 	/**
 	 * Minimum cooldown of the weapon
-	 * 
 	 * @return time in seconds
 	 */
 	float getCooldownMin() {
@@ -290,9 +283,7 @@ public class BulletEditor extends ActorEditor {
 
 	/**
 	 * Sets the maximum cooldown of the weapon
-	 * 
-	 * @param time
-	 *            new cooldown of the weapon
+	 * @param time new cooldown of the weapon
 	 */
 	void setCooldownMax(float time) {
 		mWeapon.getDef().setCooldownMax(time);
@@ -300,7 +291,6 @@ public class BulletEditor extends ActorEditor {
 
 	/**
 	 * Returns maximum cooldown of the weapon
-	 * 
 	 * @return time in seconds
 	 */
 	float getCooldownMax() {
@@ -309,9 +299,7 @@ public class BulletEditor extends ActorEditor {
 
 	/**
 	 * Sets the bullet speed of the weapon
-	 * 
-	 * @param bulletSpeed
-	 *            new bullet speed of the weapon
+	 * @param bulletSpeed new bullet speed of the weapon
 	 */
 	void setBulletSpeed(float bulletSpeed) {
 		mWeapon.getDef().setBulletSpeed(bulletSpeed);
@@ -319,7 +307,6 @@ public class BulletEditor extends ActorEditor {
 
 	/**
 	 * Returns bullet speed of the weapon
-	 * 
 	 * @return how long it travels in a second
 	 */
 	float getBulletSpeed() {
@@ -336,16 +323,13 @@ public class BulletEditor extends ActorEditor {
 
 	/**
 	 * Sets a new definition for the bullet
-	 * 
-	 * @param def
-	 *            the new definition to use
+	 * @param def the new definition to use
 	 */
 	private void setDef(BulletActorDef def) {
 		setActorDef(def);
 
 		mDef = def;
 		mWeapon.getDef().setBulletActorDef(def);
-		setShapeType(mDef.getVisualVars().getShapeType());
 		if (mGui.isInitialized()) {
 			mGui.resetValues();
 		}

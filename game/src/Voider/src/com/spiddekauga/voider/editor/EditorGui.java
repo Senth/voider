@@ -517,7 +517,7 @@ public abstract class EditorGui extends Gui {
 		}
 		mDisabledWhenPublished.add(button);
 		mFileMenu.add(button);
-		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Menus.File.LOAD, getResourceTypeName()));
+		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Menus.File.PUBLISH, getResourceTypeName()));
 		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onPressed() {

@@ -280,6 +280,7 @@ public class Messages {
 				public final static String SAVE = "Save the " + ACTOR_TYPE;
 				public final static String LOAD = "Load another " + ACTOR_TYPE;
 				public final static String DUPLICATE = "Create a duplicate of this " + ACTOR_TYPE;
+				public final static String PUBLISH = "Publish the " + ACTOR_TYPE + " to the Internet";
 				public final static String UNDO = "Undo your previous action";
 				public final static String REDO = "Redo your action";
 				public final static String RUN = "Test run your level";
