@@ -15,6 +15,7 @@ import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.GdxRuntimeException;
+import com.badlogic.gdx.utils.Logger;
 import com.badlogic.gdx.utils.Pool.Poolable;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.GameSave;
@@ -48,6 +49,7 @@ class ResourceLoader {
 		} else {
 			mAssetManager = new AssetManager();
 		}
+		mAssetManager.getLogger().setLevel(Logger.DEBUG);
 
 		// External
 		mAssetManager.setLoader(BulletActorDef.class, new KryoLoaderAsync<BulletActorDef>(new ExternalFileHandleResolver(), BulletActorDef.class));

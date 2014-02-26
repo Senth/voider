@@ -114,8 +114,10 @@ public class ResourceLocalRepo {
 	/**
 	 * Get the latest revision of the specified resource
 	 * @param uuid the resource to get the revision for
-	 * @return latest revision of the specified resource. If the resource
-	 * doesn't have any revisions null is returned.
+	 * @return latest revision of the specified resource.
+	 * @throws ResourceNotFoundException if the resource doesn't got any revisions.
+	 * I.e. it either does not exist, does not contain any revisions because it's either not
+	 * a revision resource or it has been published.
 	 */
 	public static RevisionInfo getRevisionLatest(UUID uuid) {
 		return mSqliteGateway.getRevisionLatest(uuid);

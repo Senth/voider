@@ -16,6 +16,7 @@ import com.spiddekauga.voider.resources.IResourceTexture;
 import com.spiddekauga.voider.resources.InternalNames;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceItem;
+import com.spiddekauga.voider.resources.ResourceNotFoundException;
 import com.spiddekauga.voider.resources.RevisionInfo;
 import com.spiddekauga.voider.utils.Pools;
 
@@ -79,10 +80,14 @@ public class SelectDefScene extends WorldScene {
 			ArrayList<Def> defs = ResourceCacheFacade.getAll(mDefType);
 
 			for (Def def : defs) {
-				// Only show resources with laatest revision
-				RevisionInfo revisionInfo = ResourceLocalRepo.getRevisionLatest(def.getId());
-				if (revisionInfo == null || revisionInfo.revision == def.getRevision()) {
-					mDefs.add(new DefVisible(def));
+				// Only show resources with latest revision
+				try {
+					RevisionInfo revisionInfo = ResourceLocalRepo.getRevisionLatest(def.getId());
+					if (revisionInfo.revision == def.getRevision()) {
+						mDefs.add(new DefVisible(def));
+					}
+				} catch (ResourceNotFoundException e) {
+					// Does nothing
 				}
 			}
 

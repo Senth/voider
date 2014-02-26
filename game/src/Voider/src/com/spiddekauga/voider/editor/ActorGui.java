@@ -510,10 +510,6 @@ public abstract class ActorGui extends EditorGui {
 		mToolMenu.add(mWidgets.visualToolMenu.table);
 		mDrawToolHider.addToggleActor(mWidgets.visualToolMenu.table);
 
-		// None
-		button = new Button();
-		mWidgets.tool.none = button;
-		buttonGroup.add(button);
 
 		// Move
 		mWidgets.visualToolMenu.table.row();
@@ -772,8 +768,8 @@ public abstract class ActorGui extends EditorGui {
 			mWidgets.tool.setCenter.setChecked(true);
 			break;
 
-		case NONE:
-			mWidgets.tool.none.setChecked(true);
+		default:
+			mWidgets.tool.move.setChecked(true);
 			break;
 		}
 	}
@@ -800,7 +796,6 @@ public abstract class ActorGui extends EditorGui {
 			Button addMoveCorner = null;
 			Button removeCorner = null;
 			Button setCenter = null;
-			Button none = null;
 		}
 
 		/**

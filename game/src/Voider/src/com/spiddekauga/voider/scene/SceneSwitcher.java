@@ -474,16 +474,16 @@ public class SceneSwitcher {
 						} else {
 							currentScene.onActivate(Outcomes.LOADING_SUCCEEDED, null);
 						}
-						Gdx.input.setInputProcessor(currentScene.getInputMultiplexer());
 						currentScene.setLoading(false);
 					}
 				} catch (ResourceNotFoundException e) {
 					currentScene.onActivate(Outcomes.LOADING_FAILED_MISSING_FILE, e.toString());
-					Gdx.input.setInputProcessor(currentScene.getInputMultiplexer());
+					e.printStackTrace();
 				} catch (ResourceCorruptException e) {
 					currentScene.onActivate(Outcomes.LOADING_FAILED_CORRUPT_FILE, e.toString());
-					Gdx.input.setInputProcessor(currentScene.getInputMultiplexer());
+					e.printStackTrace();
 				}
+				Gdx.input.setInputProcessor(currentScene.getInputMultiplexer());
 			}
 			// Scene is done, pop it
 			else if (currentScene.isDone()) {
