@@ -16,10 +16,12 @@ public enum DefTypes {
 	/** CampaignDef */
 	CAMPAIGN(4),
 
+	// NEXT ID TO USE => 5
+
 	;
 	/**
 	 * Id for saving in datastore
-	 * @param id the id saved in datastores
+	 * @param id the id saved in the datastore
 	 */
 	private DefTypes(int id) {
 		mId = id;

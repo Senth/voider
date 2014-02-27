@@ -1,0 +1,19 @@
+package com.spiddekauga.voider.network.entities.method;
+
+import java.util.ArrayList;
+
+import com.spiddekauga.voider.network.entities.IEntity;
+import com.spiddekauga.voider.network.entities.LevelInfoEntity;
+
+/**
+ * All levels that matched the query
+ * 
+ * @author Matteus Magnusson <senth.wallace@gmail.com>
+ */
+@SuppressWarnings("serial")
+public class LevelGetAllMethodResponse implements IEntity {
+	/** All levels */
+	public ArrayList<LevelInfoEntity> levels = new ArrayList<>();
+	/** True if no more levels can be fetched */
+	public boolean fetchedAll = false;
+}

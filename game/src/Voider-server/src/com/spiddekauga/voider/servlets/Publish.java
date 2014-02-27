@@ -26,6 +26,7 @@ import com.spiddekauga.voider.network.entities.method.NetworkEntitySerializer;
 import com.spiddekauga.voider.network.entities.method.PublishMethod;
 import com.spiddekauga.voider.network.entities.method.PublishMethodResponse;
 import com.spiddekauga.voider.server.util.NetworkGateway;
+import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
 import com.spiddekauga.voider.server.util.VoiderServlet;
 
 /**
@@ -104,7 +105,7 @@ public class Publish extends VoiderServlet {
 				BlobKey blobKey = getBlobKey(dependency, blobKeys);
 
 				if (blobKey != null) {
-					Entity entity = new Entity("dependency"); // TODO table name
+					Entity entity = new Entity(DatastoreTables.DEPENDENCY.toString());
 					entity.setProperty("def_key", datastoreKey);
 					entity.setProperty("dependency", blobKey);
 					Key key = DatastoreUtils.mDatastore.put(entity);
@@ -135,7 +136,7 @@ public class Publish extends VoiderServlet {
 
 		// Try datastore instead
 		if (blobKey == null) {
-			Entity entity = DatastoreUtils.getSingleItem("published", "resource-id", resourceId); // TODO table name
+			Entity entity = DatastoreUtils.getSingleItem(DatastoreTables.PUBLISHED.toString(), "resource-id", resourceId);
 			blobKey = (BlobKey) entity.getProperty("blob_key");
 
 			if (blobKey != null) {
@@ -155,7 +156,7 @@ public class Publish extends VoiderServlet {
 	 */
 	private boolean addEntityToDatastore(DefEntity defEntity, Map<UUID, BlobKey> blobKeys, Map<UUID, Key> datastoreKeys) {
 		boolean success = false;
-		Entity datastoreEntity = new Entity("published"); // TODO table name
+		Entity datastoreEntity = new Entity(DatastoreTables.PUBLISHED.toString());
 
 		switch (defEntity.type) {
 		case BULLET:
