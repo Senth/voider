@@ -200,6 +200,7 @@ public class ResourceWebRepo {
 
 		levelEntity.levelLength = levelDef.getLengthInTime();
 		levelEntity.levelId = levelDef.getLevelId();
+		levelEntity.levelSpeed = levelDef.getBaseSpeed();
 		levelEntity.type = DefTypes.LEVEL;
 	}
 
@@ -216,6 +217,8 @@ public class ResourceWebRepo {
 		defEntity.copyParentId = def.getCopyParentId();
 		defEntity.resourceId = def.getId();
 		defEntity.date = def.getDate();
+		defEntity.creatorKey = def.getCreatorKey();
+		defEntity.originalCreatorKey = def.getOriginalCreatorKey();
 
 		if (def instanceof IResourcePng) {
 			defEntity.png = ((IResourcePng) def).getPngImage();

@@ -219,6 +219,20 @@ public abstract class Def extends Resource implements IResourceDependency, IReso
 		return mCopyParentId;
 	}
 
+	/**
+	 * @return creator key
+	 */
+	public String getCreatorKey() {
+		return mCreatorKey;
+	}
+
+	/**
+	 * @return original creator key
+	 */
+	public String getOriginalCreatorKey() {
+		return mOriginalCreatorKey;
+	}
+
 	/** Dependencies for the resource */
 	@Tag(43) private Map<UUID, AtomicInteger> mExternalDependencies = new HashMap<UUID, AtomicInteger>();
 	/** Internal dependencies, such as textures, sound, particle effects */

@@ -230,10 +230,10 @@ public class Publish extends VoiderServlet {
 
 		// No-test properties
 		DatastoreUtils.setProperty(datastoreEntity, "name", defEntity.name);
-		DatastoreUtils.setProperty(datastoreEntity, "description", defEntity.description);
 		DatastoreUtils.setProperty(datastoreEntity, "date", defEntity.date);
 		DatastoreUtils.setProperty(datastoreEntity, "copy_parent_id", defEntity.copyParentId);
 		DatastoreUtils.setProperty(datastoreEntity, "resource_id", defEntity.resourceId);
+		DatastoreUtils.setUnindexedProperty(datastoreEntity, "description", defEntity.description);
 
 		// PNG image
 		if (defEntity.png != null) {
@@ -288,7 +288,7 @@ public class Publish extends VoiderServlet {
 
 		// No-test properties
 		DatastoreUtils.setProperty(datastoreEntity, "level_length", LevelDefEntity.levelLength);
-
+		DatastoreUtils.setProperty(datastoreEntity, "level_speed", LevelDefEntity.levelSpeed);
 
 		return appendDefEntity(datastoreEntity, LevelDefEntity, blobKeys);
 	}

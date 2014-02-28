@@ -14,6 +14,10 @@ import com.spiddekauga.voider.network.entities.LevelInfoEntity;
 public class LevelGetAllMethodResponse implements IEntity {
 	/** All levels */
 	public ArrayList<LevelInfoEntity> levels = new ArrayList<>();
+	/** Datastore cursor to continue the query */
+	public String cursor = null;
+	/** Search offset */
+	public int searchOffset = 0;
 	/** True if no more levels can be fetched */
 	public boolean fetchedAll = false;
 }

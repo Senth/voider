@@ -2,7 +2,6 @@ package com.spiddekauga.appengine;
 
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 import java.util.logging.Logger;
 
@@ -10,13 +9,15 @@ import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
-import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.api.datastore.PreparedQuery.TooManyResultsException;
 import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.CompositeFilter;
 import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
 import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
+import com.google.appengine.api.datastore.Query.FilterPredicate;
 
 /**
  * Utilities for Datastore
@@ -27,18 +28,24 @@ public class DatastoreUtils {
 	/**
 	 * Searches for an existing entity
 	 * @param searchIn what kind of entity to search in
-	 * @param name the property value to search in
+	 * @param propertyName the property value to search in
 	 * @param value the value to search for
-	 * @return found entity, null if none was found
+	 * @return found entity, null if none or more than 1 was found
 	 */
-	public static Entity getSingleItem(String searchIn, String name, Object value) {
+	public static Entity getSingleEntity(String searchIn, String propertyName, Object value) {
 		Query query = new Query(searchIn);
-		Filter filter = new Query.FilterPredicate(name, FilterOperator.EQUAL, value);
+		Filter filter = null;
+		if (value instanceof UUID) {
+			filter = createUuidFilter(propertyName, (UUID) value);
+		} else {
+			filter = new Query.FilterPredicate(propertyName, FilterOperator.EQUAL, value);
+		}
 		query.setFilter(filter);
-		List<Entity> results = mDatastore.prepare(query).asList(FetchOptions.Builder.withDefaults());
-		mLogger.info("Found " + results.size() + " entities in (" + searchIn + ") with property (" + name + ") named (" + value + ")");
-		if (!results.isEmpty()) {
-			return results.get(0);
+
+		try {
+			return mDatastore.prepare(query).asSingleEntity();
+		} catch (TooManyResultsException e) {
+			// Does nothing
 		}
 		return null;
 	}
@@ -46,48 +53,77 @@ public class DatastoreUtils {
 	/**
 	 * Searches for an existing entity
 	 * @param searchIn what kind of entity to search in
-	 * @param name the property value to search in
+	 * @param propertyName the property value to search in
 	 * @param value the value to search for
-	 * @return found entity, null if none was found
+	 * @return found key for entity
 	 */
-	public static Entity getSingleItem(String searchIn, String name, UUID value) {
-		Query query = new Query(searchIn);
+	public static Key getSingleKey(String searchIn, String propertyName, Object value) {
+		Query query = new Query(searchIn).setKeysOnly();
+		Filter filter = null;
+		if (value instanceof UUID) {
+			filter = createUuidFilter(propertyName, (UUID) value);
+		} else {
+			filter = new FilterPredicate(propertyName, FilterOperator.EQUAL, value);
+		}
+		query.setFilter(filter);
 
-		// Filters
-		Filter least = new Query.FilterPredicate(name + "-least", FilterOperator.EQUAL, value.getLeastSignificantBits());
-		Filter most = new Query.FilterPredicate(name + "-most", FilterOperator.EQUAL, value.getMostSignificantBits());
-		ArrayList<Filter> filters = new ArrayList<>();
-		filters.add(least);
-		filters.add(most);
-
-		Filter composite = new Query.CompositeFilter(CompositeFilterOperator.AND, filters);
-		query.setFilter(composite);
-
-		List<Entity> results = mDatastore.prepare(query).asList(FetchOptions.Builder.withDefaults());
-		mLogger.info("Found " + results.size() + " entities in (" + searchIn + ") with property (" + name + ") named (" + value + ")");
-		if (!results.isEmpty()) {
-			return results.get(0);
+		try {
+			Entity foundEntity = mDatastore.prepare(query).asSingleEntity();
+			if (foundEntity != null) {
+				return foundEntity.getKey();
+			}
+		} catch (TooManyResultsException e) {
+			// Does nothing
 		}
 		return null;
 	}
 
 	/**
-	 * Searches if an entity exists
-	 * @param searchIn what kind of entity to search in
-	 * @param name name of the property (column)
+	 * Creates an equal UUID search filter
+	 * @param propertyName property name in the entity (column)
 	 * @param value the value to search for
-	 * @return true if the datastore contains the specified entity
+	 * @return equal filter for the UUID value
 	 */
-	public static boolean containsEntity(String searchIn, String name, Object value) {
-		return getSingleItem(searchIn, name, value) != null;
+	public static Filter createUuidFilter(String propertyName, UUID value) {
+		Filter least = new FilterPredicate(propertyName + "-least", FilterOperator.EQUAL, value.getLeastSignificantBits());
+		Filter most = new FilterPredicate(propertyName + "-most", FilterOperator.EQUAL, value.getMostSignificantBits());
+
+		return createCompositeFilter(CompositeFilterOperator.AND, least, most);
 	}
 
 	/**
-	 * Searches for an entity with the specified key
-	 * @param idName the key of the entity
-	 * @return entity with specified key, null if not found
+	 * Creates a composite filter out of the specified filters
+	 * @param operator composite filter operator (AND/OR)
+	 * @param filters all the filters to add
+	 * @return a composite filter with the specified filters
 	 */
-	public static Entity getItemByKey(String idName) {
+	public static Filter createCompositeFilter(CompositeFilterOperator operator, Filter... filters) {
+		ArrayList<Filter> arrayListFilters = new ArrayList<>();
+
+		for (Filter filter : filters) {
+			arrayListFilters.add(filter);
+		}
+
+		return new CompositeFilter(operator, arrayListFilters);
+	}
+
+	/**
+	 * Searches if an entity exists
+	 * @param searchIn what kind of entity to search in
+	 * @param propertyName name of the property (column)
+	 * @param value the value to search for
+	 * @return true if the datastore contains the specified entity
+	 */
+	public static boolean containsEntity(String searchIn, String propertyName, Object value) {
+		return getSingleKey(searchIn, propertyName, value) != null;
+	}
+
+	/**
+	 * Searches for an entity with the specified key in blob info
+	 * @param idName the key of the blob entity to find
+	 * @return blob entity with specified key, null if not found
+	 */
+	public static Entity getBlobEntityByKey(String idName) {
 		Key key = KeyFactory.createKey("__BlobInfo__", idName);
 		return getItemByKey(key);
 	}

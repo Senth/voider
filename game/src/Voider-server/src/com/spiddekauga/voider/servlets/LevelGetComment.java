@@ -66,6 +66,9 @@ public class LevelGetComment extends VoiderServlet {
 				methodResponse.userComment = getUserComment(levelId);
 			}
 		}
+
+		byte[] byteResponse = NetworkEntitySerializer.serializeEntity(methodResponse);
+		NetworkGateway.sendResponse(response, byteResponse);
 	}
 
 	/**
