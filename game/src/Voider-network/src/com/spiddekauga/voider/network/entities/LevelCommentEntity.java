@@ -10,9 +10,9 @@ import java.util.Date;
 @SuppressWarnings("serial")
 public class LevelCommentEntity implements IEntity {
 	/** The actual comment */
-	String comment;
+	public String comment;
 	/** Date of comment */
-	Date date;
+	public Date date;
 	/** Username of commenter */
-	String username;
+	public String username;
 }

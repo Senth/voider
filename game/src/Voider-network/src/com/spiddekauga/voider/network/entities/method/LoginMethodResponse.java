@@ -18,4 +18,6 @@ public class LoginMethodResponse implements IEntity {
 	public boolean success;
 	/** The private key which can be used to login without a password */
 	public UUID privateKey;
+	/** Userkey */
+	public String userKey;
 }

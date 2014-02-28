@@ -11,8 +11,8 @@ import java.util.UUID;
 public class LevelGetCommentMethod implements IMethodEntity {
 	/** Level id */
 	public UUID levelId;
-	/** Offset */
-	public int offset = 0;
+	/** Cursor, continues the query if not null */
+	public String cursor = null;
 
 	@Override
 	public String getMethodName() {

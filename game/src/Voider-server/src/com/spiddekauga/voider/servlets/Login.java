@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.KeyFactory;
 import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.utils.BCrypt;
 import com.spiddekauga.voider.network.entities.IEntity;
@@ -40,10 +41,10 @@ public class Login extends VoiderServlet {
 
 			if (networkEntity instanceof LoginMethod) {
 				// Check username vs username first
-				Entity datastoreEntity = DatastoreUtils.getSingleItem(DatastoreTables.USERS.toString(), "username", ((LoginMethod) networkEntity).username);
+				Entity datastoreEntity = DatastoreUtils.getSingleEntity(DatastoreTables.USERS.toString(), "username", ((LoginMethod) networkEntity).username);
 				// Check username vs email
 				if (datastoreEntity == null) {
-					datastoreEntity = DatastoreUtils.getSingleItem(DatastoreTables.USERS.toString(), "email", ((LoginMethod) networkEntity).username);
+					datastoreEntity = DatastoreUtils.getSingleEntity(DatastoreTables.USERS.toString(), "email", ((LoginMethod) networkEntity).username);
 				}
 
 				if (datastoreEntity != null) {
@@ -56,6 +57,7 @@ public class Login extends VoiderServlet {
 
 					// Login and update last logged in
 					if (methodResponse.success) {
+						methodResponse.userKey = KeyFactory.keyToString(datastoreEntity.getKey());
 						methodResponse.privateKey = DatastoreUtils.getUuidProperty(datastoreEntity, "privateKey");
 						methodResponse.username = (String) datastoreEntity.getProperty("username");
 						mUser.login(datastoreEntity.getKey());

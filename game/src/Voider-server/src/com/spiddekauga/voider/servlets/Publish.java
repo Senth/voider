@@ -14,6 +14,7 @@ import com.google.appengine.api.blobstore.BlobKey;
 import com.google.appengine.api.datastore.Blob;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
 import com.spiddekauga.appengine.BlobUtils;
 import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.voider.network.entities.BulletDefEntity;
@@ -136,7 +137,7 @@ public class Publish extends VoiderServlet {
 
 		// Try datastore instead
 		if (blobKey == null) {
-			Entity entity = DatastoreUtils.getSingleItem(DatastoreTables.PUBLISHED.toString(), "resource-id", resourceId);
+			Entity entity = DatastoreUtils.getSingleEntity(DatastoreTables.PUBLISHED.toString(), "resource-id", resourceId);
 			blobKey = (BlobKey) entity.getProperty("blob_key");
 
 			if (blobKey != null) {
@@ -218,11 +219,17 @@ public class Publish extends VoiderServlet {
 			return false;
 		}
 
+		// Creator key
+		try {
+			DatastoreUtils.setProperty(datastoreEntity, "creator_key", KeyFactory.stringToKey(defEntity.creatorKey));
+			DatastoreUtils.setProperty(datastoreEntity, "original_creator_key", KeyFactory.stringToKey(defEntity.originalCreatorKey));
+		} catch (IllegalArgumentException e) {
+			return false;
+		}
+
 
 		// No-test properties
 		DatastoreUtils.setProperty(datastoreEntity, "name", defEntity.name);
-		DatastoreUtils.setProperty(datastoreEntity, "creator", defEntity.creator);
-		DatastoreUtils.setProperty(datastoreEntity, "original_creator", defEntity.originalCreator);
 		DatastoreUtils.setProperty(datastoreEntity, "description", defEntity.description);
 		DatastoreUtils.setProperty(datastoreEntity, "date", defEntity.date);
 		DatastoreUtils.setProperty(datastoreEntity, "copy_parent_id", defEntity.copyParentId);

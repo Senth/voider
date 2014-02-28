@@ -39,7 +39,7 @@ public class User extends SessionVariable implements Serializable {
 	/**
 	 * @return user id/key in the datastore
 	 */
-	public Key getId() {
+	public Key getKey() {
 		return mId;
 	}
 

@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
 import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.utils.BCrypt;
 import com.spiddekauga.voider.network.entities.IEntity;
@@ -77,12 +78,13 @@ public class RegisterUser extends VoiderServlet {
 		String hashedPassword = BCrypt.hashpw(networkEntity.password, salt);
 		datastoreEntity.setProperty("password", hashedPassword);
 
-		Key userId = DatastoreUtils.mDatastore.put(datastoreEntity);
+		Key userKey = DatastoreUtils.mDatastore.put(datastoreEntity);
 
-		if (userId != null) {
+		if (userKey != null) {
+			methodResponse.userKey = KeyFactory.keyToString(userKey);
 			methodResponse.privateKey = privateKey;
 			methodResponse.status = StatusResponses.SUCCESS;
-			mUser.login(userId);
+			mUser.login(userKey);
 		}
 	}
 }

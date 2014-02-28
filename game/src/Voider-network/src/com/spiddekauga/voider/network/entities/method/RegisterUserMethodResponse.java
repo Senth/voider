@@ -15,6 +15,8 @@ public class RegisterUserMethodResponse implements IEntity {
 	public StatusResponses status;
 	/** Private key, for logging in automatically without password */
 	public UUID privateKey = null;
+	/** User key */
+	public String userKey = null;
 
 	/**
 	 * Response statuses when registering users

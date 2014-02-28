@@ -22,9 +22,18 @@ public class ServerConfig {
 		/** Revision dependencies */
 		REVISION_DEPNDENCY("revision_dependency"),
 		/** Level statistics */
-		LEVEL_STATS("level_stats"),
+		LEVEL_STAT("level_stat"),
 		/** Actor stats */
-		ACTOR_STATS("actor_stats")
+		ACTOR_STAT("actor_stat"),
+		/** User level statistics */
+		USER_LEVEL_STAT("user_level_stat"),
+		/** User level tags */
+		USER_LEVEL_TAG("user_level_tag"),
+		/** Level tags */
+		LEVEL_TAG("level_tag"),
+		/** Level comments */
+		LEVEL_COMMENT("level_comment"),
+
 
 		;
 		/**
@@ -44,5 +53,13 @@ public class ServerConfig {
 		 * Name
 		 */
 		private String mName;
+	}
+
+	/** How many results to send */
+	public static class FetchSizes {
+		/** Number of comments to fetch */
+		public static final int COMMENTS = 20;
+		/** Number of levels to fetch */
+		public static final int LEVELS = 12;
 	}
 }

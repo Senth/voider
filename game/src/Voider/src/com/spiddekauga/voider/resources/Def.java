@@ -225,8 +225,12 @@ public abstract class Def extends Resource implements IResourceDependency, IReso
 	@Tag(42) private Set<InternalNames> mInternalDependencies = new HashSet<InternalNames>();
 	/** Name of the definition */
 	@Tag(36) private String mName = Config.Actor.NAME_DEFAULT;
+	/** Original creator key */
+	@Tag(112) private String mOriginalCreatorKey = null;
 	/** Original creator name */
 	@Tag(41) private String mOriginalCreator = Config.User.getUsername();
+	/** Creator key */
+	@Tag(111) private String mCreatorKey = null;
 	/** Creator name */
 	@Tag(39) private String mCreator = Config.User.getUsername();
 	/** Comment of the definition */
