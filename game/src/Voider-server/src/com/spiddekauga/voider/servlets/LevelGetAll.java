@@ -204,6 +204,10 @@ public class LevelGetAll extends VoiderServlet {
 
 		Query query = new Query(levelKey);
 
+		// Skip tags that only has count of 1.
+		Filter countFilter = new FilterPredicate("count", FilterOperator.GREATER_THAN, 1);
+		query.setFilter(countFilter);
+
 		// Sort
 		query.addSort("count", SortDirection.DESCENDING);
 
