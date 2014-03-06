@@ -1,8 +1,10 @@
 package com.spiddekauga.voider.servlets;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.logging.Logger;
 
@@ -11,12 +13,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.google.appengine.api.blobstore.BlobKey;
-import com.google.appengine.api.datastore.Blob;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.api.search.Document;
+import com.google.appengine.api.search.Document.Builder;
+import com.google.appengine.api.search.Field;
 import com.spiddekauga.appengine.BlobUtils;
 import com.spiddekauga.appengine.DatastoreUtils;
+import com.spiddekauga.appengine.SearchUtils;
 import com.spiddekauga.voider.network.entities.BulletDefEntity;
 import com.spiddekauga.voider.network.entities.CampaignDefEntity;
 import com.spiddekauga.voider.network.entities.DefEntity;
@@ -28,6 +33,7 @@ import com.spiddekauga.voider.network.entities.method.PublishMethod;
 import com.spiddekauga.voider.network.entities.method.PublishMethodResponse;
 import com.spiddekauga.voider.server.util.NetworkGateway;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
+import com.spiddekauga.voider.server.util.UserRepo;
 import com.spiddekauga.voider.server.util.VoiderServlet;
 
 /**
@@ -52,12 +58,17 @@ public class Publish extends VoiderServlet {
 			Map<UUID, BlobKey> blobKeys = BlobUtils.getBlobKeysFromUpload(request);
 			Map<UUID, Key> datastoreKeys = new HashMap<>();
 
-			// Add entities to datastore
+			// Add entities to datastore and search
 			methodResponse.success = true;
 			for (DefEntity defEntity : ((PublishMethod) networkEntity).defs) {
-				methodResponse.success = addEntityToDatastore(defEntity, blobKeys, datastoreKeys);
+				Key datastoreKey = addEntityToDatastore(defEntity, blobKeys, datastoreKeys);
 
-				if (!methodResponse.success) {
+				if (datastoreKey != null) {
+					methodResponse.success = true;
+
+					createSearchDocument(defEntity, datastoreKey);
+				} else {
+					methodResponse.success = false;
 					mLogger.severe("Failed to add all entities to the datastore, removing all");
 					break;
 				}
@@ -73,14 +84,14 @@ public class Publish extends VoiderServlet {
 						break;
 					}
 				}
-
-				// FAILED - TODO remove all dependencies
-				if (!methodResponse.success) {
-
-				}
 			}
 
-			// FAILED - TODO remove all published resources
+			// Add search documents
+			if (methodResponse.success) {
+				methodResponse.success = addSearchDocuments();
+			}
+
+			// FAILED - TODO remove all resources from published, dependencies, and search
 			if (!methodResponse.success) {
 
 			}
@@ -106,8 +117,7 @@ public class Publish extends VoiderServlet {
 				BlobKey blobKey = getBlobKey(dependency, blobKeys);
 
 				if (blobKey != null) {
-					Entity entity = new Entity(DatastoreTables.DEPENDENCY.toString());
-					entity.setProperty("def_key", datastoreKey);
+					Entity entity = new Entity(DatastoreTables.DEPENDENCY.toString(), datastoreKey);
 					entity.setProperty("dependency", blobKey);
 					Key key = DatastoreUtils.mDatastore.put(entity);
 
@@ -153,11 +163,11 @@ public class Publish extends VoiderServlet {
 	 * @param defEntity the entity to add to the datastore
 	 * @param blobKeys all blob keys
 	 * @param datastoreKeys adds the added datastore key to this map
-	 * @return true if successful
+	 * @return datastore key of the def entity
 	 */
-	private boolean addEntityToDatastore(DefEntity defEntity, Map<UUID, BlobKey> blobKeys, Map<UUID, Key> datastoreKeys) {
+	private Key addEntityToDatastore(DefEntity defEntity, Map<UUID, BlobKey> blobKeys, Map<UUID, Key> datastoreKeys) {
 		boolean success = false;
-		Entity datastoreEntity = new Entity(DatastoreTables.PUBLISHED.toString());
+		Entity datastoreEntity = new Entity(DatastoreTables.PUBLISHED.toString(), mUser.getKey());
 
 		switch (defEntity.type) {
 		case BULLET:
@@ -186,12 +196,76 @@ public class Publish extends VoiderServlet {
 
 			if (key != null) {
 				datastoreKeys.put(defEntity.resourceId, key);
-			} else {
-				success = false;
+				return key;
 			}
 		}
 
-		return success;
+		return null;
+	}
+
+	/**
+	 * Add all search documents that were created
+	 * @return true if all search documents were added
+	 */
+	private boolean addSearchDocuments() {
+		boolean success = true;
+
+		for (Entry<String, ArrayList<Document>> entry : mSearchDocumentsToAdd.entrySet()) {
+			String typeName = entry.getKey();
+			ArrayList<Document> documents = entry.getValue();
+
+			success = SearchUtils.indexDocuments(typeName, documents);
+
+			if (!success) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	/**
+	 * Create search document to be added later
+	 * @param defEntity the entity to create search document for
+	 * @param datastoreKey the key of the entity that was added
+	 */
+	private void createSearchDocument(DefEntity defEntity, Key datastoreKey) {
+		Builder builder = Document.newBuilder();
+
+		builder.setId(KeyFactory.keyToString(datastoreKey));
+
+		switch (defEntity.type) {
+		case BULLET:
+			appendBulletDefEntity(builder, (BulletDefEntity) defEntity);
+			break;
+
+		case CAMPAIGN:
+			appendCampaignDefEntity(builder, (CampaignDefEntity) defEntity);
+			break;
+
+		case ENEMY:
+			appendEnemyDefEntity(builder, (EnemyDefEntity) defEntity);
+			break;
+
+		case LEVEL:
+			appendLevelDefEntity(builder, (LevelDefEntity) defEntity);
+			break;
+
+		default:
+			mLogger.severe("Not implemented def type: " + defEntity.type);
+			break;
+
+		}
+
+
+		// Get array list
+		ArrayList<Document> documentList = mSearchDocumentsToAdd.get(defEntity.type.toString());
+		if (documentList == null) {
+			documentList = new ArrayList<>();
+			mSearchDocumentsToAdd.put(defEntity.type.toString(), documentList);
+		}
+
+		documentList.add(builder.build());
 	}
 
 	/**
@@ -219,9 +293,8 @@ public class Publish extends VoiderServlet {
 			return false;
 		}
 
-		// Creator key
+		// Original creator key
 		try {
-			DatastoreUtils.setProperty(datastoreEntity, "creator_key", KeyFactory.stringToKey(defEntity.creatorKey));
 			DatastoreUtils.setProperty(datastoreEntity, "original_creator_key", KeyFactory.stringToKey(defEntity.originalCreatorKey));
 		} catch (IllegalArgumentException e) {
 			return false;
@@ -229,20 +302,31 @@ public class Publish extends VoiderServlet {
 
 
 		// No-test properties
-		DatastoreUtils.setProperty(datastoreEntity, "name", defEntity.name);
 		DatastoreUtils.setProperty(datastoreEntity, "date", defEntity.date);
 		DatastoreUtils.setProperty(datastoreEntity, "copy_parent_id", defEntity.copyParentId);
 		DatastoreUtils.setProperty(datastoreEntity, "resource_id", defEntity.resourceId);
+		DatastoreUtils.setUnindexedProperty(datastoreEntity, "name", defEntity.name);
 		DatastoreUtils.setUnindexedProperty(datastoreEntity, "description", defEntity.description);
-
-		// PNG image
-		if (defEntity.png != null) {
-			Blob blob = new Blob(defEntity.png);
-			DatastoreUtils.setUnindexedProperty(datastoreEntity, "png", blob);
-		}
-
+		DatastoreUtils.setUnindexedProperty(datastoreEntity, "png", defEntity.png);
 
 		return true;
+	}
+
+	/**
+	 * Append DefEntity to the search document
+	 * @param builder the document builder
+	 * @param defEntity the def entity to append to the document builder
+	 */
+	private void appendDefEntity(Builder builder, DefEntity defEntity) {
+		builder.addField(Field.newBuilder().setName("name").setText(defEntity.name).build());
+		//		builder.addField(Field.newBuilder().setName("description").setText(defEntity.description).build());
+		builder.addField(Field.newBuilder().setName("published").setDate(defEntity.date).build());
+
+		// Add name of creators
+		String creatorName = UserRepo.getUsername(KeyFactory.stringToKey(defEntity.creatorKey));
+		builder.addField(Field.newBuilder().setName("creator").setText(creatorName));
+		String originalCreatorName = UserRepo.getUsername(KeyFactory.stringToKey(defEntity.originalCreatorKey));
+		builder.addField(Field.newBuilder().setName("original_creator").setText(originalCreatorName));
 	}
 
 	/**
@@ -266,6 +350,15 @@ public class Publish extends VoiderServlet {
 
 
 		return appendDefEntity(datastoreEntity, enemyDefEntity, blobKeys);
+	}
+
+	/**
+	 * Append EnemyDefEntity to the search document
+	 * @param builder the document builder
+	 * @param enemyDefEntity the enemy def entity to append to the search document
+	 */
+	private void appendEnemyDefEntity(Builder builder, EnemyDefEntity enemyDefEntity) {
+		appendDefEntity(builder, enemyDefEntity);
 	}
 
 	/**
@@ -294,6 +387,15 @@ public class Publish extends VoiderServlet {
 	}
 
 	/**
+	 * Append LevelDefEntity to the search document
+	 * @param builder the document builder
+	 * @param levelDefEntity the level def entity to append to the search document
+	 */
+	private void appendLevelDefEntity(Builder builder, LevelDefEntity levelDefEntity) {
+		appendDefEntity(builder, levelDefEntity);
+	}
+
+	/**
 	 * Append BulletDefEntity to the datastore entity
 	 * @param datastoreEntity datastore entity
 	 * @param bulletDefEntity the def entity to append to the datastore
@@ -302,6 +404,15 @@ public class Publish extends VoiderServlet {
 	 */
 	private boolean appendBulletDefEntity(Entity datastoreEntity, BulletDefEntity bulletDefEntity, Map<UUID, BlobKey> blobKeys) {
 		return appendDefEntity(datastoreEntity, bulletDefEntity, blobKeys);
+	}
+
+	/**
+	 * Append BulletDefEntity to the search document
+	 * @param builder the document builder
+	 * @param bulletDefEntity the def entity to append to the search document
+	 */
+	private void appendBulletDefEntity(Builder builder, BulletDefEntity bulletDefEntity) {
+		appendDefEntity(builder, bulletDefEntity);
 	}
 
 	/**
@@ -315,6 +426,17 @@ public class Publish extends VoiderServlet {
 		return appendDefEntity(datastoreEntity, campaignDefEntity, blobKeys);
 	}
 
+	/**
+	 * Append CampaignDefEntity to the search document
+	 * @param builder document builder
+	 * @param campaignDefEntity the def entity to append to the search document
+	 */
+	private void appendCampaignDefEntity(Builder builder, CampaignDefEntity campaignDefEntity) {
+		appendDefEntity(builder, campaignDefEntity);
+	}
+
 	/** Logger */
 	private Logger mLogger = Logger.getLogger(Publish.class.getName());
+	/** Created search documents */
+	private HashMap<String, ArrayList<Document>> mSearchDocumentsToAdd = new HashMap<>();
 }

@@ -12,7 +12,7 @@ import com.spiddekauga.voider.network.entities.Tags;
 @SuppressWarnings("serial")
 public class LevelGetAllMethod implements IMethodEntity {
 	/** Sorting */
-	public SortTypes sort = null;
+	public SortOrders sort = null;
 	/** Cursor to continue from */
 	public String nextCursor = null;
 	/** All tags that should be included, if empty all tags are used */
@@ -23,9 +23,7 @@ public class LevelGetAllMethod implements IMethodEntity {
 	/**
 	 * Types of levels to get, or rather sort by
 	 */
-	public enum SortTypes {
-		/** Featured */
-		FEATURED,
+	public enum SortOrders {
 		/** Number of likes */
 		LIKES,
 		/** Number of plays */
@@ -34,8 +32,6 @@ public class LevelGetAllMethod implements IMethodEntity {
 		RATING,
 		/** Newest */
 		NEWEST,
-		/** Last played */
-		LAST_PLAYED,
 	}
 
 	@Override

@@ -25,6 +25,12 @@ public enum DefTypes {
 	 */
 	private DefTypes(int id) {
 		mId = id;
+		mName = name().toLowerCase();
+	}
+
+	@Override
+	public String toString() {
+		return mName;
 	}
 
 	/**
@@ -36,4 +42,6 @@ public enum DefTypes {
 
 	/** Id for saving in datastore */
 	private int mId;
+	/** Human readable name for the type */
+	private String mName;
 }

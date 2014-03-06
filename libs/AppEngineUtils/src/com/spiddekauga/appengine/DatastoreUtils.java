@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.UUID;
 import java.util.logging.Logger;
 
+import com.google.appengine.api.datastore.Blob;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
@@ -18,6 +19,7 @@ import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
 import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
+import com.google.appengine.api.datastore.ShortBlob;
 
 /**
  * Utilities for Datastore
@@ -182,19 +184,63 @@ public class DatastoreUtils {
 	}
 
 	/**
+	 * Set a byte array property to an entity
+	 * @param entity the entity to add the byte array to
+	 * @param propertyName name of the property
+	 * @param bytes the byte array to add to the entity
+	 */
+	public static void setUnindexedProperty(Entity entity, String propertyName, byte[] bytes) {
+		if (bytes != null) {
+			if (bytes.length <= SHORT_BLOG_MAX_SIZE) {
+				ShortBlob blob = new ShortBlob(bytes);
+				entity.setProperty(propertyName, blob);
+			} else {
+				Blob blob = new Blob(bytes);
+				entity.setProperty(propertyName, blob);
+			}
+		}
+	}
+
+	/**
 	 * Get a UUID property from an entity
 	 * @param entity the entity to get the UUID from
 	 * @param propertyName name of the property
 	 * @return Stored UUID, null if it doesn't exist
 	 */
 	public static UUID getUuidProperty(Entity entity, String propertyName) {
-		int leastBits = (int) ((long) entity.getProperty(propertyName + "-least"));
-		int mostBits = (int) ((long) entity.getProperty(propertyName + "-most"));
-		return new UUID(mostBits, leastBits);
+		if (entity.hasProperty(propertyName + "-least") && entity.hasProperty(propertyName + "-most")) {
+			int leastBits = (int) ((long) entity.getProperty(propertyName + "-least"));
+			int mostBits = (int) ((long) entity.getProperty(propertyName + "-most"));
+			return new UUID(mostBits, leastBits);
+		}
+
+		return null;
+	}
+
+	/**
+	 * Get a byte array from an entity
+	 * @param entity the entity to get the byte array from
+	 * @param propertyName name of the property
+	 * @return storedy byte array, null if wasn't set
+	 */
+	public static byte[] getByteArrayProperty(Entity entity, String propertyName) {
+		Object blob = entity.getProperty(propertyName);
+
+		if (blob instanceof ShortBlob) {
+			return ((ShortBlob) blob).getBytes();
+		}
+		else if (blob instanceof Blob) {
+			return ((Blob) blob).getBytes();
+		}
+
+		return null;
 	}
 
 	/** Datastore service */
 	public static DatastoreService mDatastore = DatastoreServiceFactory.getDatastoreService();
 	/** Logger */
 	private static final Logger mLogger = Logger.getLogger(DatastoreUtils.class.getName());
+
+	/** Short blob maximum size */
+	private static final int SHORT_BLOG_MAX_SIZE = 500;
 }
