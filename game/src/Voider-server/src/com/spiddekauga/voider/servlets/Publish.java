@@ -381,7 +381,6 @@ public class Publish extends VoiderServlet {
 
 		// No-test properties
 		DatastoreUtils.setProperty(datastoreEntity, "level_length", LevelDefEntity.levelLength);
-		DatastoreUtils.setProperty(datastoreEntity, "level_speed", LevelDefEntity.levelSpeed);
 
 		return appendDefEntity(datastoreEntity, LevelDefEntity, blobKeys);
 	}

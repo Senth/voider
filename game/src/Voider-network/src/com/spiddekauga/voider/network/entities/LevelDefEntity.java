@@ -13,6 +13,4 @@ public class LevelDefEntity extends DefEntity {
 	public float levelLength = 0;
 	/** Level id, not definition */
 	public UUID levelId = null;
-	/** Level speed */
-	public float levelSpeed = 0;
 }

@@ -60,7 +60,7 @@ public enum ExternalTypes {
 	}
 
 	/**
-	 * Converts a integer id type to an enumeration
+	 * Converts an integer id type to an enumeration
 	 * @param id the id type to get an enumeration for
 	 * @return enumeration of this id type
 	 */

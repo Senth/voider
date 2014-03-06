@@ -61,5 +61,7 @@ public class ServerConfig {
 		public static final int COMMENTS = 20;
 		/** Number of levels to fetch */
 		public static final int LEVELS = 12;
+		/** Number of tags to get */
+		public static final int TAGS = 5;
 	}
 }

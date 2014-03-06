@@ -16,5 +16,5 @@ public class LevelInfoEntity implements IEntity {
 	/** User level stats, null if user haven't played these */
 	public UserLevelStatsEntity userStats = null;
 	/** Level tags */
-	public ArrayList<Tags> tags = new ArrayList<>();
+	public ArrayList<Tags> tags = null;
 }

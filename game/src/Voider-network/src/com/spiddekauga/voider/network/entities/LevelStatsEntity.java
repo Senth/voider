@@ -17,4 +17,6 @@ public class LevelStatsEntity implements IEntity {
 	public int cRatings = 0;
 	/** sum of all ratings */
 	public int ratingSum = 0;
+	/** Average rating */
+	public float ratingAverage = 0;
 }

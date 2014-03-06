@@ -30,19 +30,30 @@ public class DatastoreUtils {
 	/**
 	 * Searches for an existing entity
 	 * @param searchIn what kind of entity to search in
-	 * @param propertyName the property value to search in
-	 * @param value the value to search for
+	 * @param propertyName the property value to search in, can be null
+	 * @param value the value to search for, can be null
+	 * @param parent the parent of the entity to find, set to null to skip
 	 * @return found entity, null if none or more than 1 was found
 	 */
-	public static Entity getSingleEntity(String searchIn, String propertyName, Object value) {
+	public static Entity getSingleEntity(String searchIn, String propertyName, Object value, Key parent) {
 		Query query = new Query(searchIn);
-		Filter filter = null;
-		if (value instanceof UUID) {
-			filter = createUuidFilter(propertyName, (UUID) value);
-		} else {
-			filter = new Query.FilterPredicate(propertyName, FilterOperator.EQUAL, value);
+		if (propertyName != null) {
+			Filter filter = null;
+			if (value instanceof UUID) {
+				filter = createUuidFilter(propertyName, (UUID) value);
+			} else if (value != null) {
+				filter = new Query.FilterPredicate(propertyName, FilterOperator.EQUAL, value);
+			}
+
+			if (filter != null) {
+				query.setFilter(filter);
+			}
 		}
-		query.setFilter(filter);
+
+
+		if (parent != null) {
+			query.setAncestor(parent);
+		}
 
 		try {
 			return mDatastore.prepare(query).asSingleEntity();
@@ -57,17 +68,38 @@ public class DatastoreUtils {
 	 * @param searchIn what kind of entity to search in
 	 * @param propertyName the property value to search in
 	 * @param value the value to search for
+	 * @return found entity, null if none or more than 1 was found
+	 */
+	public static Entity getSingleEntity(String searchIn, String propertyName, Object value) {
+		return getSingleEntity(searchIn, propertyName, value, null);
+	}
+
+	/**
+	 * Searches for an existing entity
+	 * @param searchIn what kind of entity to search in
+	 * @param propertyName the property value to search in, can be null
+	 * @param value the value to search for, can be null
+	 * @param parent the parent for the entity, set to null to skip using
 	 * @return found key for entity
 	 */
-	public static Key getSingleKey(String searchIn, String propertyName, Object value) {
+	public static Key getSingleKey(String searchIn, String propertyName, Object value, Key parent) {
 		Query query = new Query(searchIn).setKeysOnly();
-		Filter filter = null;
-		if (value instanceof UUID) {
-			filter = createUuidFilter(propertyName, (UUID) value);
-		} else {
-			filter = new FilterPredicate(propertyName, FilterOperator.EQUAL, value);
+		if (propertyName != null) {
+			Filter filter = null;
+			if (value instanceof UUID) {
+				filter = createUuidFilter(propertyName, (UUID) value);
+			} else if (value != null) {
+				filter = new FilterPredicate(propertyName, FilterOperator.EQUAL, value);
+			}
+
+			if (filter != null) {
+				query.setFilter(filter);
+			}
 		}
-		query.setFilter(filter);
+
+		if (parent != null) {
+			query.setAncestor(parent);
+		}
 
 		try {
 			Entity foundEntity = mDatastore.prepare(query).asSingleEntity();
@@ -78,6 +110,17 @@ public class DatastoreUtils {
 			// Does nothing
 		}
 		return null;
+	}
+
+	/**
+	 * Searches for an existing entity
+	 * @param searchIn what kind of entity to search in
+	 * @param propertyName the property value to search in
+	 * @param value the value to search for
+	 * @return found key for entity
+	 */
+	public static Key getSingleKey(String searchIn, String propertyName, Object value) {
+		return getSingleKey(searchIn, propertyName, value, null);
 	}
 
 	/**
