@@ -30,7 +30,7 @@ import com.spiddekauga.voider.utils.Pools;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class ResourceWebRepo {
+public class ResourceWebRepo extends WebRepo {
 	/**
 	 * Send all methods that should upload files via this method
 	 * @param method the method that should "called" on the server
@@ -95,7 +95,7 @@ public class ResourceWebRepo {
 	 * @param resources all resource to publish
 	 * @return true if successful, false otherwise
 	 */
-	static boolean  publish(ArrayList<IResource> resources) {
+	static boolean publish(ArrayList<IResource> resources) {
 		PublishMethod method = createPublishMethod(resources);
 		ArrayList<FieldNameFileWrapper> files = createFieldNameFiles(resources);
 
@@ -222,5 +222,10 @@ public class ResourceWebRepo {
 		if (def instanceof IResourcePng) {
 			defEntity.png = ((IResourcePng) def).getPngImage();
 		}
+	}
+
+	@Override
+	protected void handleResponse(IMethodEntity methodEntity, IEntity response, ICallerResponseListener callerResponseListener) {
+		// TODO Auto-generated method stub
 	}
 }

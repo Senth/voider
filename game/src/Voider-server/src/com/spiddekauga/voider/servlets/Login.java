@@ -15,6 +15,7 @@ import com.spiddekauga.utils.BCrypt;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.method.LoginMethod;
 import com.spiddekauga.voider.network.entities.method.LoginMethodResponse;
+import com.spiddekauga.voider.network.entities.method.LoginMethodResponse.Statuses;
 import com.spiddekauga.voider.network.entities.method.NetworkEntitySerializer;
 import com.spiddekauga.voider.server.util.NetworkGateway;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
@@ -31,7 +32,7 @@ public class Login extends VoiderServlet {
 	@Override
 	protected void onRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		LoginMethodResponse methodResponse = new LoginMethodResponse();
-		methodResponse.success = false;
+		methodResponse.status = Statuses.FAILED_SERVER_ERROR;
 
 		// Skip if already logged in
 		if (!mUser.isLoggedIn()) {
@@ -50,13 +51,13 @@ public class Login extends VoiderServlet {
 				if (datastoreEntity != null) {
 					// Test password / private key
 					if (isPrivateKeyMatch(datastoreEntity, ((LoginMethod) networkEntity).privateKey)) {
-						methodResponse.success = true;
+						methodResponse.status = Statuses.SUCCESS;
 					} else if (isPasswordMatch(datastoreEntity, ((LoginMethod) networkEntity).password)) {
-						methodResponse.success = true;
+						methodResponse.status = Statuses.SUCCESS;
 					}
 
-					// Login and update last logged in
-					if (methodResponse.success) {
+					// Login and update last logged in date
+					if (methodResponse.status == Statuses.SUCCESS) {
 						methodResponse.userKey = KeyFactory.keyToString(datastoreEntity.getKey());
 						methodResponse.privateKey = DatastoreUtils.getUuidProperty(datastoreEntity, "privateKey");
 						methodResponse.username = (String) datastoreEntity.getProperty("username");

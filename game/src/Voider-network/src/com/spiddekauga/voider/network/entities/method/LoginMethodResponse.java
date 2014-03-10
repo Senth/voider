@@ -13,11 +13,25 @@ import com.spiddekauga.voider.network.entities.IEntity;
 @SuppressWarnings("serial")
 public class LoginMethodResponse implements IEntity {
 	/** Username, the user could log in with email, thus reply with the real username */
-	public String username;
+	public String username = null;
 	/** If the login was successful */
-	public boolean success;
+	public Statuses status = null;
 	/** The private key which can be used to login without a password */
-	public UUID privateKey;
+	public UUID privateKey = null;
 	/** Userkey */
-	public String userKey;
+	public String userKey = null;
+
+	/**
+	 * Response statuses
+	 */
+	public enum Statuses {
+		/** Successfully logged in */
+		SUCCESS,
+		/** Failed due to username password mismatch */
+		FAILED_USERNAME_PASSWORD_MISMATCH,
+		/** Failed due to could not connect to server */
+		FAILED_SERVER_CONNECTION,
+		/** Internal server error */
+		FAILED_SERVER_ERROR,
+	}
 }

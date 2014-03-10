@@ -14,8 +14,8 @@ import com.spiddekauga.utils.scene.ui.Label;
 import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
 import com.spiddekauga.voider.Config;
-import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.InternalNames;
+import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.scene.Gui;
 
@@ -143,11 +143,9 @@ public class LoginGui extends Gui {
 	 * Logins in the the current username and password fields
 	 */
 	private void login() {
-		boolean success = mLoginScene.login(mWidgets.login.username.getText(), mWidgets.login.password.getText());
+		mLoginScene.login(mWidgets.login.username.getText(), mWidgets.login.password.getText());
 
-		if (!success) {
-			// TODO
-		}
+		// TODO show logging in loading gif
 	}
 
 	/**
@@ -179,14 +177,13 @@ public class LoginGui extends Gui {
 	 * Try to register with the specified fields
 	 */
 	private void register() {
-		boolean success = mLoginScene.register(
+		mLoginScene.register(
 				mWidgets.register.username.getText(),
 				mWidgets.register.password.getText(),
 				mWidgets.register.email.getText());
 
-		if (!success) {
-			// TODO
-		}
+
+		// TODO Show registering gif
 	}
 
 	/**

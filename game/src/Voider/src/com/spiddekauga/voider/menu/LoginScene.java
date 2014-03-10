@@ -5,6 +5,7 @@ import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.network.entities.method.LoginMethodResponse;
 import com.spiddekauga.voider.network.entities.method.RegisterUserMethodResponse;
+import com.spiddekauga.voider.repo.ICallerResponseListener;
 import com.spiddekauga.voider.repo.UserLocalRepo;
 import com.spiddekauga.voider.repo.UserWebRepo;
 import com.spiddekauga.voider.resources.InternalNames;
@@ -17,7 +18,7 @@ import com.spiddekauga.voider.utils.UserInfo;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class LoginScene extends Scene {
+public class LoginScene extends Scene implements ICallerResponseListener {
 	/**
 	 * Default constructor
 	 */
@@ -60,24 +61,8 @@ public class LoginScene extends Scene {
 		UserInfo userInfo = UserLocalRepo.getLastUser();
 
 		if (userInfo != null && userInfo.online) {
-			LoginMethodResponse response = UserWebRepo.login(userInfo.username, userInfo.privateKey);
-
-			if (response != null) {
-				if (response.success) {
-					setOutcome(Outcomes.LOGGED_IN);
-					Config.Network.setOnline(true);
-					Config.User.setUsername(userInfo.username);
-				} else {
-					mGui.showErrorMessage("Could not auto-login " + userInfo.username);
-					UserLocalRepo.removeLastUser();
-				}
-			}
-			// Failed to auto-login, server could be down. Go offline
-			else {
-				setOutcome(Outcomes.LOGGED_IN);
-				Config.Network.setOnline(false);
-				Config.User.setUsername(userInfo.username);
-			}
+			mAutoLogin = true;
+			mUserWebRepo.login(this, userInfo.username, userInfo.privateKey);
 		}
 		// Test offline
 		else if (userInfo != null && !userInfo.online) {
@@ -86,28 +71,58 @@ public class LoginScene extends Scene {
 	}
 
 	/**
+	 * Handles a login response
+	 * @param response the login response
+	 */
+	void handleLoginResopnse(LoginMethodResponse response) {
+		UserInfo userInfo = UserLocalRepo.getLastUser();
+
+		switch (response.status) {
+		case SUCCESS:
+			// Update last user to login for auto-login
+			UserLocalRepo.setLastUser(response.username, response.privateKey);
+			Config.User.setUsername(response.username);
+
+			setOutcome(Outcomes.LOGGED_IN);
+			Config.Network.setOnline(true);
+			break;
+
+
+		case FAILED_USERNAME_PASSWORD_MISMATCH:
+			if (mAutoLogin) {
+				mGui.showErrorMessage("Could not auto-login " + userInfo.username);
+				UserLocalRepo.removeLastUser();
+				mAutoLogin = false;
+			} else {
+				loginOffline(mUserName, mPassword);
+				mGui.showErrorMessage("Username/password mismatch");
+			}
+			break;
+
+
+		case FAILED_SERVER_ERROR:
+		case FAILED_SERVER_CONNECTION:
+			// Login offline if tried to auto-login
+			if (mAutoLogin) {
+				setOutcome(Outcomes.LOGGED_IN);
+				Config.Network.setOnline(false);
+				Config.User.setUsername(userInfo.username);
+			} else {
+				mGui.showErrorMessage("Could not connect to server");
+			}
+			break;
+		}
+	}
+
+	/**
 	 * Try to login with the specified username and password
 	 * @param username the username to login with
 	 * @param password the password to login with
-	 * @return true if the user was successfully logged in
 	 */
-	boolean login(String username, String password) {
-		LoginMethodResponse response = UserWebRepo.login(username, password);
-
-		if (response != null) {
-			if (response.success) {
-				// Update last user to login for auto-login
-				UserLocalRepo.setLastUser(response.username, response.privateKey);
-				Config.User.setUsername(response.username);
-
-				setOutcome(Outcomes.LOGGED_IN);
-				Config.Network.setOnline(true);
-				return true;
-			}
-		}
-
-		// Try to login offline instead
-		return loginOffline(username, password);
+	void login(String username, String password) {
+		mUserName = username;
+		mPassword = password;
+		mUserWebRepo.login(this, username, password);
 	}
 
 	/**
@@ -144,47 +159,47 @@ public class LoginScene extends Scene {
 	}
 
 	/**
+	 * Handle register response
+	 * @param response the register response
+	 */
+	void handleRegisterResponse(RegisterUserMethodResponse response) {
+		switch (response.status) {
+		case SUCCESS:
+			setOutcome(Outcomes.NOT_APPLICAPLE);
+
+			UserLocalRepo.setLastUser(mUserName, response.privateKey);
+			UserLocalRepo.setAsRegistered();
+
+			break;
+
+
+		case FAIL_EMAIL_EXISTS:
+			mGui.showErrorMessage("Email is already registered");
+			break;
+
+
+		case FAIL_USERNAME_EXISTS:
+			mGui.showErrorMessage("Username is occupied");
+			break;
+
+
+			// Connection or server error, create a local user instead
+		case FAIL_SERVER_CONNECTION:
+		case FAIL_SERVER_ERROR:
+			((LoginGui)mGui).showCreateOfflineUser();
+			break;
+		}
+	}
+
+	/**
 	 * Try to register a new user with the specified username, password, and email
 	 * @param username the new username
 	 * @param password the new password
 	 * @param email the email to register with the username
-	 * @return true if the register was successful
 	 */
-	boolean register(String username, String password, String email) {
-		RegisterUserMethodResponse response = UserWebRepo.register(username, password, email);
-
-		if (response != null) {
-			switch (response.status) {
-			case SUCCESS:
-				setOutcome(Outcomes.NOT_APPLICAPLE);
-
-				UserLocalRepo.setLastUser(username, response.privateKey);
-				UserLocalRepo.setAsRegistered();
-
-				return true;
-
-
-			case FAIL_EMAIL_EXISTS:
-				mGui.showErrorMessage("Email is already registered");
-				break;
-
-
-			case FAIL_USERNAME_EXISTS:
-				mGui.showErrorMessage("Username is occupied");
-				break;
-
-
-				// Connection error, create a local user instead
-			case FAIL_SERVER: {
-				((LoginGui)mGui).showCreateOfflineUser();
-				break;
-			}
-			}
-		} else {
-			((LoginGui)mGui).showCreateOfflineUser();
-		}
-
-		return false;
+	void register(String username, String password, String email) {
+		mUserName = username;
+		mUserWebRepo.register(this, username, password, email);
 	}
 
 	/**
@@ -211,5 +226,25 @@ public class LoginScene extends Scene {
 		return new MainMenu();
 	}
 
+	@Override
+	public void handleWebResponse(Object webResponse) {
+		// Login
+		if (webResponse instanceof LoginMethodResponse) {
+			handleLoginResopnse((LoginMethodResponse) webResponse);
+		}
+		// Register
+		if (webResponse instanceof RegisterUserMethodResponse) {
+			handleRegisterResponse((RegisterUserMethodResponse) webResponse);
+		}
 
+	}
+
+	/** User web repo */
+	private UserWebRepo mUserWebRepo = UserWebRepo.getInstance();
+	/** Currently auto-logging in? */
+	private boolean mAutoLogin = false;
+	/** Username logging in or registering */
+	private String mUserName = null;
+	/** Password for the user that is logging in */
+	private String mPassword = null;
 }

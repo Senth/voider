@@ -262,14 +262,14 @@ public abstract class Scene extends InputAdapter implements IExceptionHandler {
 	 * @return outcome of the scene, returns null if no outcome has been set (when
 	 * #isDone() returns true.
 	 */
-	protected final Outcomes getOutcome() {
+	protected synchronized final Outcomes getOutcome() {
 		return mOutcome;
 	}
 
 	/**
 	 * @return outcome message of the scene, if none exist it will return null.
 	 */
-	protected final Object getOutcomeMessage() {
+	protected synchronized final Object getOutcomeMessage() {
 		return mOutcomeMessage;
 	}
 
@@ -279,7 +279,7 @@ public abstract class Scene extends InputAdapter implements IExceptionHandler {
 	 * outcome to overwrite the original outcome.
 	 * @param outcome the outcome of the scene
 	 */
-	protected final void setOutcome(Outcomes outcome) {
+	protected synchronized final void setOutcome(Outcomes outcome) {
 		if (mOutcome == null) {
 			mOutcome = outcome;
 		}
@@ -300,7 +300,7 @@ public abstract class Scene extends InputAdapter implements IExceptionHandler {
 	 * @param outcome the outcome of the scene
 	 * @param message a descriptive outcome message.
 	 */
-	protected final void setOutcome(Outcomes outcome, Object message) {
+	protected synchronized final void setOutcome(Outcomes outcome, Object message) {
 		if (mOutcome == null) {
 			setOutcome(outcome);
 			mOutcomeMessage = message;

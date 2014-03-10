@@ -13,6 +13,8 @@ import com.spiddekauga.voider.editor.EditorSelectionScene;
 import com.spiddekauga.voider.game.GameSaveDef;
 import com.spiddekauga.voider.game.GameScene;
 import com.spiddekauga.voider.game.LevelDef;
+import com.spiddekauga.voider.network.entities.method.LogoutMethodResponse;
+import com.spiddekauga.voider.repo.ICallerResponseListener;
 import com.spiddekauga.voider.repo.UserLocalRepo;
 import com.spiddekauga.voider.repo.UserWebRepo;
 import com.spiddekauga.voider.resources.ExternalTypes;
@@ -30,7 +32,7 @@ import com.spiddekauga.voider.utils.Pools;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class MainMenu extends Scene {
+public class MainMenu extends Scene implements ICallerResponseListener {
 	/**
 	 * Default constructor for main menu
 	 */
@@ -226,16 +228,29 @@ public class MainMenu extends Scene {
 	void logout() {
 		// Online
 		if (Config.Network.isOnline()) {
-			UserWebRepo.logout();
+			UserWebRepo.getInstance().logout(this);
 		}
 		// Offline
 		else {
 			Config.User.setUsername("(invalid)");
+			clearCurrentUser();
 		}
+	}
 
+	/**
+	 * Removes saved variables for the current user
+	 */
+	private void clearCurrentUser() {
 		UserLocalRepo.removeLastUser();
 		setNextScene(new LoginScene());
 		setOutcome(Outcomes.LOGGED_OUT);
+	}
+
+	@Override
+	public void handleWebResponse(Object webResponse) {
+		if (webResponse instanceof LogoutMethodResponse) {
+			clearCurrentUser();
+		}
 	}
 
 	/** First time we activated the scene */

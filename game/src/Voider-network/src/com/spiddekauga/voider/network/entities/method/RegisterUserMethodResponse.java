@@ -12,7 +12,7 @@ import com.spiddekauga.voider.network.entities.IEntity;
 @SuppressWarnings("serial")
 public class RegisterUserMethodResponse implements IEntity {
 	/** If the register was a success */
-	public StatusResponses status;
+	public Statuses status = null;
 	/** Private key, for logging in automatically without password */
 	public UUID privateKey = null;
 	/** User key */
@@ -21,7 +21,7 @@ public class RegisterUserMethodResponse implements IEntity {
 	/**
 	 * Response statuses when registering users
 	 */
-	public enum StatusResponses {
+	public enum Statuses {
 		/** Successfully created user */
 		SUCCESS,
 		/** Email already in use */
@@ -29,6 +29,8 @@ public class RegisterUserMethodResponse implements IEntity {
 		/** Username already in use */
 		FAIL_USERNAME_EXISTS,
 		/** Internal server error */
-		FAIL_SERVER
+		FAIL_SERVER_ERROR,
+		/** Server connection error */
+		FAIL_SERVER_CONNECTION
 	}
 }

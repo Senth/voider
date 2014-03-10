@@ -17,7 +17,7 @@ import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.method.NetworkEntitySerializer;
 import com.spiddekauga.voider.network.entities.method.RegisterUserMethod;
 import com.spiddekauga.voider.network.entities.method.RegisterUserMethodResponse;
-import com.spiddekauga.voider.network.entities.method.RegisterUserMethodResponse.StatusResponses;
+import com.spiddekauga.voider.network.entities.method.RegisterUserMethodResponse.Statuses;
 import com.spiddekauga.voider.server.util.NetworkGateway;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
 import com.spiddekauga.voider.server.util.VoiderServlet;
@@ -36,7 +36,7 @@ public class RegisterUser extends VoiderServlet {
 		IEntity networkEntity = NetworkEntitySerializer.deserializeEntity(entityData);
 
 		RegisterUserMethodResponse methodResponse = new RegisterUserMethodResponse();
-		methodResponse.status = StatusResponses.FAIL_SERVER;
+		methodResponse.status = Statuses.FAIL_SERVER_ERROR;
 
 		if (networkEntity instanceof RegisterUserMethod) {
 
@@ -46,10 +46,10 @@ public class RegisterUser extends VoiderServlet {
 				if (!DatastoreUtils.containsEntity(DatastoreTables.USERS.toString(), "email", ((RegisterUserMethod) networkEntity).email)) {
 					createNewUser((RegisterUserMethod) networkEntity, methodResponse);
 				} else {
-					methodResponse.status = StatusResponses.FAIL_EMAIL_EXISTS;
+					methodResponse.status = Statuses.FAIL_EMAIL_EXISTS;
 				}
 			} else {
-				methodResponse.status = StatusResponses.FAIL_USERNAME_EXISTS;
+				methodResponse.status = Statuses.FAIL_USERNAME_EXISTS;
 			}
 		}
 
@@ -83,7 +83,7 @@ public class RegisterUser extends VoiderServlet {
 		if (userKey != null) {
 			methodResponse.userKey = KeyFactory.keyToString(userKey);
 			methodResponse.privateKey = privateKey;
-			methodResponse.status = StatusResponses.SUCCESS;
+			methodResponse.status = Statuses.SUCCESS;
 			mUser.login(userKey);
 		}
 	}
