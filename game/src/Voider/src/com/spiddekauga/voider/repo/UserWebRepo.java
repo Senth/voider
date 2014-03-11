@@ -87,7 +87,7 @@ public class UserWebRepo extends WebRepo {
 	public void logout(ICallerResponseListener responseListener) {
 		LogoutMethod logoutMethod = new LogoutMethod();
 
-		serializeAndSend(logoutMethod);
+		sendInNewThread(logoutMethod, responseListener);
 	}
 
 	@Override

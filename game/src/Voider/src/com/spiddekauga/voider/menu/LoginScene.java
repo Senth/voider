@@ -62,7 +62,9 @@ public class LoginScene extends Scene implements ICallerResponseListener {
 
 		if (userInfo != null && userInfo.online) {
 			mAutoLogin = true;
+			mUserName = userInfo.username;
 			mUserWebRepo.login(this, userInfo.username, userInfo.privateKey);
+			mGui.showWaitWindow("Logging in as last user");
 		}
 		// Test offline
 		else if (userInfo != null && !userInfo.online) {
@@ -95,7 +97,7 @@ public class LoginScene extends Scene implements ICallerResponseListener {
 				mAutoLogin = false;
 			} else {
 				loginOffline(mUserName, mPassword);
-				mGui.showErrorMessage("Username/password mismatch");
+				mGui.showErrorMessage("No username with that password exists");
 			}
 			break;
 
@@ -112,6 +114,8 @@ public class LoginScene extends Scene implements ICallerResponseListener {
 			}
 			break;
 		}
+
+		mGui.hideWaitWindow();
 	}
 
 	/**
@@ -123,6 +127,7 @@ public class LoginScene extends Scene implements ICallerResponseListener {
 		mUserName = username;
 		mPassword = password;
 		mUserWebRepo.login(this, username, password);
+		mGui.showWaitWindow("Logging in");
 	}
 
 	/**
@@ -189,6 +194,8 @@ public class LoginScene extends Scene implements ICallerResponseListener {
 			((LoginGui)mGui).showCreateOfflineUser();
 			break;
 		}
+
+		mGui.hideWaitWindow();
 	}
 
 	/**
@@ -200,6 +207,7 @@ public class LoginScene extends Scene implements ICallerResponseListener {
 	void register(String username, String password, String email) {
 		mUserName = username;
 		mUserWebRepo.register(this, username, password, email);
+		mGui.showWaitWindow("Contacting server");
 	}
 
 	/**

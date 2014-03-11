@@ -19,6 +19,8 @@ java.lang.Float: {
 	select_def_info_width: {value: 240},
 	select_def_text_width_max: {value: 160},
 	select_def_image_width_max: {value: 80},
+	wait_window_fade_in: {value: 0.2},
+	wait_window_fade_out: {value: 0.6},
 },
 
 com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {

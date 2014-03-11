@@ -65,6 +65,10 @@ public class Login extends VoiderServlet {
 						updateLastLoggedIn(datastoreEntity);
 					}
 				}
+
+				if (methodResponse.status != Statuses.SUCCESS) {
+					methodResponse.status = Statuses.FAILED_USERNAME_PASSWORD_MISMATCH;
+				}
 			}
 		}
 

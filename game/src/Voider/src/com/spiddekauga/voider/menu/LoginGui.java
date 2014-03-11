@@ -145,7 +145,7 @@ public class LoginGui extends Gui {
 	private void login() {
 		mLoginScene.login(mWidgets.login.username.getText(), mWidgets.login.password.getText());
 
-		// TODO show logging in loading gif
+		// TODO show logging in loading GIF
 	}
 
 	/**
@@ -183,7 +183,7 @@ public class LoginGui extends Gui {
 				mWidgets.register.email.getText());
 
 
-		// TODO Show registering gif
+		// TODO Show registering GIF
 	}
 
 	/**

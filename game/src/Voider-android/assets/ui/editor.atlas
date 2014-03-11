@@ -1921,21 +1921,7 @@ publish
   orig: 32, 32
   offset: 0, 0
   index: -1
-stub
-  rotate: false
-  xy: 3285, 61
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: -1
-publish_disabled
-  rotate: false
-  xy: 3319, 95
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: -1
-stub_disabled
+publish_checked
   rotate: false
   xy: 3319, 95
   size: 32, 32
@@ -1944,19 +1930,12 @@ stub_disabled
   index: -1
 publish_down
   rotate: false
-  xy: 3319, 61
+  xy: 3319, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-stub_checked
-  rotate: false
-  xy: 3319, 61
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: -1
-stub_down
+publish_checked_over
   rotate: false
   xy: 3319, 61
   size: 32, 32
@@ -1965,19 +1944,12 @@ stub_down
   index: -1
 publish_over
   rotate: false
-  xy: 3353, 95
+  xy: 3319, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-stub_checked_over
-  rotate: false
-  xy: 3353, 95
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: -1
-stub_over
+publish_disabled
   rotate: false
   xy: 3353, 95
   size: 32, 32
@@ -2404,254 +2376,296 @@ set_center_disabled
   orig: 32, 32
   offset: 0, 0
   index: -1
-tooltip
+stub
   rotate: false
   xy: 3965, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-tooltip_checked
+stub_checked
   rotate: false
   xy: 3999, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-tooltip_down
+stub_down
   rotate: false
   xy: 3999, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-tooltip_checked_over
+stub_checked_over
   rotate: false
   xy: 3999, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-tooltip_over
+stub_over
   rotate: false
   xy: 3999, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-tooltip_disabled
+stub_disabled
   rotate: false
   xy: 4033, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-triangle_shape
+tooltip
   rotate: false
   xy: 4033, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-triangle_shape_checked
+tooltip_checked
   rotate: false
   xy: 1293, 13
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-triangle_shape_down
+tooltip_down
   rotate: false
   xy: 1293, 13
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-triangle_shape_checked_over
+tooltip_checked_over
   rotate: false
   xy: 1327, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-triangle_shape_over
+tooltip_over
   rotate: false
   xy: 1327, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-triangle_shape_disabled
+tooltip_disabled
   rotate: false
   xy: 1361, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-trigger_add
+triangle_shape
   rotate: false
   xy: 1395, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-trigger_add_checked
+triangle_shape_checked
   rotate: false
   xy: 1429, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-trigger_add_down
+triangle_shape_down
   rotate: false
   xy: 1429, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-trigger_add_checked_over
+triangle_shape_checked_over
   rotate: false
   xy: 1463, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-trigger_add_over
+triangle_shape_over
   rotate: false
   xy: 1463, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-trigger_add_disabled
+triangle_shape_disabled
   rotate: false
   xy: 1497, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-undo
+trigger_add
   rotate: false
   xy: 1531, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-undo_checked
+trigger_add_checked
   rotate: false
   xy: 1565, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-undo_down
+trigger_add_down
   rotate: false
   xy: 1565, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-undo_checked_over
+trigger_add_checked_over
   rotate: false
   xy: 1599, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-undo_over
+trigger_add_over
   rotate: false
   xy: 1599, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-undo_disabled
+trigger_add_disabled
   rotate: false
   xy: 1633, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-visuals
+undo
   rotate: false
   xy: 1667, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-visuals_checked
+undo_checked
   rotate: false
   xy: 1701, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-visuals_down
+undo_down
   rotate: false
   xy: 1701, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-visuals_checked_over
+undo_checked_over
   rotate: false
   xy: 1735, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-visuals_over
+undo_over
   rotate: false
   xy: 1735, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-visuals_disabled
+undo_disabled
   rotate: false
   xy: 1769, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-weapon
+visuals
   rotate: false
   xy: 1803, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-weapon_checked
+visuals_checked
   rotate: false
   xy: 1837, 27
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+visuals_down
+  rotate: false
+  xy: 1837, 27
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+visuals_checked_over
+  rotate: false
+  xy: 1871, 27
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+visuals_over
+  rotate: false
+  xy: 1871, 27
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+visuals_disabled
+  rotate: false
+  xy: 1905, 27
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+weapon
+  rotate: false
+  xy: 1939, 27
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+weapon_checked
+  rotate: false
+  xy: 1973, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 weapon_down
   rotate: false
-  xy: 1837, 27
+  xy: 1973, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 weapon_checked_over
   rotate: false
-  xy: 1871, 27
+  xy: 2007, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 weapon_over
   rotate: false
-  xy: 1871, 27
+  xy: 2007, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 weapon_disabled
   rotate: false
-  xy: 1905, 27
+  xy: 2041, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0

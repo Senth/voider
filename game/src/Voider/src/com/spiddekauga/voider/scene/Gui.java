@@ -5,13 +5,16 @@ import java.util.Iterator;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.ui.Window.WindowStyle;
 import com.badlogic.gdx.utils.Disposable;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
@@ -24,8 +27,8 @@ import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
 import com.spiddekauga.voider.editor.commands.CBugReportSend;
 import com.spiddekauga.voider.editor.commands.CGameQuit;
-import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.InternalNames;
+import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.utils.Messages;
 
@@ -253,13 +256,57 @@ public abstract class Gui implements Disposable {
 	}
 
 	/**
+	 * Show wait window
+	 * @param message optional message to display
+	 */
+	public void showWaitWindow(String message) {
+		if (mWaitWindow == null) {
+			return;
+		}
+
+		mWaitWindow.clearChildren();
+
+		// TODO add animation image
+
+		mWaitWindow.add(message);
+		mWaitWindow.pack();
+		mStage.addActor(mWaitWindow);
+
+		// Center the window
+		int xPosition = (int) ((Gdx.graphics.getWidth() - mWaitWindow.getWidth()) * 0.5f);
+		int yPosition = (int) ((Gdx.graphics.getHeight() - mWaitWindow.getHeight()) * 0.5f);
+		mWaitWindow.setPosition(xPosition, yPosition);
+
+		float fadeInDuration = (Float) SkinNames.getResource(SkinNames.General.WAIT_WINDOW_FADE_IN);
+		mWaitWindow.addAction(Actions.fadeIn(fadeInDuration, Interpolation.fade));
+	}
+
+	/**
+	 * Hides the wait window
+	 */
+	public void hideWaitWindow() {
+		if (mWaitWindow == null || mWaitWindow.getStage() == null) {
+			return;
+		}
+
+		float fadeOutDuriation = (Float) SkinNames.getResource(SkinNames.General.WAIT_WINDOW_FADE_OUT);
+		mWaitWindow.addAction(Actions.sequence(Actions.fadeOut(fadeOutDuriation, Interpolation.fade), Actions.removeActor()));
+
+	}
+
+	/**
 	 * Initializes the GUI
 	 */
 	public void initGui() {
+		// Message box and wait window
 		MsgBoxExecuter.fadeDuration = 0.01f;
 		if (ResourceCacheFacade.isLoaded(InternalNames.UI_GENERAL) && mMessageShower == null) {
 			mMessageShower = new MessageShower(mStage);
+			mWaitWindow = new Window("", (WindowStyle) SkinNames.getResource(SkinNames.General.WINDOW_MODAL));
+			mWaitWindow.setModal(true);
+			mWaitWindow.setSkin((Skin) ResourceCacheFacade.get(InternalNames.UI_GENERAL));
 		}
+
 		mInitialized = true;
 	}
 
@@ -373,6 +420,9 @@ public abstract class Gui implements Disposable {
 		return mVisible;
 	}
 
+
+	/** Wait window */
+	private Window mWaitWindow = null;
 	/** If the GUI is visible */
 	private boolean mVisible = true;
 	/** Main table for the layout */

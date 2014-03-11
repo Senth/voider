@@ -486,6 +486,10 @@ public class SkinNames {
 		TEXT_FIELD_DEFAULT(TextFieldStyle.class, "default"),
 		/** Width of text fields containing only numbers */
 		TEXT_FIELD_NUMBER_WIDTH(Float.class),
+		/** Wait window fade in time */
+		WAIT_WINDOW_FADE_IN(Float.class),
+		/** Wait window fade out time */
+		WAIT_WINDOW_FADE_OUT(Float.class),
 		/** Window default style without title */
 		WINDOW_DEFAULT(WindowStyle.class, "default"),
 		/** Modal window with no title */
