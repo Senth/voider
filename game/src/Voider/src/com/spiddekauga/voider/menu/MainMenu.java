@@ -13,6 +13,8 @@ import com.spiddekauga.voider.editor.EditorSelectionScene;
 import com.spiddekauga.voider.game.GameSaveDef;
 import com.spiddekauga.voider.game.GameScene;
 import com.spiddekauga.voider.game.LevelDef;
+import com.spiddekauga.voider.network.entities.IEntity;
+import com.spiddekauga.voider.network.entities.method.IMethodEntity;
 import com.spiddekauga.voider.network.entities.method.LogoutMethodResponse;
 import com.spiddekauga.voider.repo.ICallerResponseListener;
 import com.spiddekauga.voider.repo.UserLocalRepo;
@@ -247,8 +249,8 @@ public class MainMenu extends Scene implements ICallerResponseListener {
 	}
 
 	@Override
-	public void handleWebResponse(Object webResponse) {
-		if (webResponse instanceof LogoutMethodResponse) {
+	public void handleWebResponse(IMethodEntity method, IEntity response) {
+		if (response instanceof LogoutMethodResponse) {
 			clearCurrentUser();
 		}
 	}

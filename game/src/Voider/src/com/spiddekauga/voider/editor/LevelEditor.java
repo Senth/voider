@@ -52,6 +52,10 @@ import com.spiddekauga.voider.game.actors.StaticTerrainActor;
 import com.spiddekauga.voider.game.triggers.TScreenAt;
 import com.spiddekauga.voider.game.triggers.TriggerAction.Actions;
 import com.spiddekauga.voider.game.triggers.TriggerInfo;
+import com.spiddekauga.voider.network.entities.IEntity;
+import com.spiddekauga.voider.network.entities.method.IMethodEntity;
+import com.spiddekauga.voider.network.entities.method.PublishMethodResponse;
+import com.spiddekauga.voider.repo.ICallerResponseListener;
 import com.spiddekauga.voider.repo.ResourceLocalRepo;
 import com.spiddekauga.voider.repo.ResourceRepo;
 import com.spiddekauga.voider.resources.Def;
@@ -75,7 +79,7 @@ import com.spiddekauga.voider.utils.Pools;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class LevelEditor extends Editor implements IResourceChangeEditor, ISelectionListener {
+public class LevelEditor extends Editor implements IResourceChangeEditor, ISelectionListener, ICallerResponseListener {
 	/**
 	 * Constructor for the level editor
 	 */
@@ -699,15 +703,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	@Override
 	public void publishDef() {
 		if (mLevel != null) {
-			boolean success = ResourceRepo.publish(mLevel);
-
-			if (success) {
-				mGui.showSuccessMessage("Publish successful!");
-				updateAvailableTools(false, true);
-				mGui.resetValues();
-			} else {
-				mGui.showErrorMessage("Publish failed!");
-			}
+			mResourceRepo.publish(this, mLevel);
 		}
 	}
 
@@ -722,6 +718,19 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		}
 
 		return false;
+	}
+
+	@Override
+	public void handleWebResponse(IMethodEntity method, IEntity response) {
+		if (response instanceof PublishMethodResponse) {
+			if (((PublishMethodResponse) response).status == PublishMethodResponse.Statuses.SUCCESS) {
+				mGui.showSuccessMessage("Publish successful!");
+				updateAvailableTools(false, true);
+				mGui.resetValues();
+			} else {
+				mGui.showErrorMessage("Publish failed!");
+			}
+		}
 	}
 
 	/**
@@ -1481,4 +1490,6 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	private Tools mTool = Tools.SELECTION;
 	/** If enemies should be highlighted if they will be used when test running the level */
 	private boolean mEnemyHighlight = true;
+	/** Resource repository */
+	protected ResourceRepo mResourceRepo = ResourceRepo.getInstance();
 }

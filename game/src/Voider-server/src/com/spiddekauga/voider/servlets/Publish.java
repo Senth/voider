@@ -31,6 +31,7 @@ import com.spiddekauga.voider.network.entities.LevelDefEntity;
 import com.spiddekauga.voider.network.entities.method.NetworkEntitySerializer;
 import com.spiddekauga.voider.network.entities.method.PublishMethod;
 import com.spiddekauga.voider.network.entities.method.PublishMethodResponse;
+import com.spiddekauga.voider.network.entities.method.PublishMethodResponse.Statuses;
 import com.spiddekauga.voider.server.util.NetworkGateway;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
 import com.spiddekauga.voider.server.util.UserRepo;
@@ -50,6 +51,7 @@ public class Publish extends VoiderServlet {
 		}
 
 		PublishMethodResponse methodResponse = new PublishMethodResponse();
+		boolean success = false;
 
 		byte[] byteEntity = NetworkGateway.getEntity(request);
 		IEntity networkEntity = NetworkEntitySerializer.deserializeEntity(byteEntity);
@@ -59,27 +61,26 @@ public class Publish extends VoiderServlet {
 			Map<UUID, Key> datastoreKeys = new HashMap<>();
 
 			// Add entities to datastore and search
-			methodResponse.success = true;
+			success = true;
 			for (DefEntity defEntity : ((PublishMethod) networkEntity).defs) {
 				Key datastoreKey = addEntityToDatastore(defEntity, blobKeys, datastoreKeys);
 
 				if (datastoreKey != null) {
-					methodResponse.success = true;
-
 					createSearchDocument(defEntity, datastoreKey);
 				} else {
-					methodResponse.success = false;
+					success = false;
 					mLogger.severe("Failed to add all entities to the datastore, removing all");
 					break;
 				}
 			}
 
 			// Add dependencies
-			if (methodResponse.success) {
+			if (success) {
 				for (DefEntity defEntity : ((PublishMethod) networkEntity).defs) {
-					methodResponse.success = addDependencies(defEntity, datastoreKeys, blobKeys);
+					success = addDependencies(defEntity, datastoreKeys, blobKeys);
 
-					if (!methodResponse.success) {
+					if (!success) {
+						methodResponse.status = Statuses.FAILED_SERVER_ERROR;
 						mLogger.severe("Failed to add all dependencies");
 						break;
 					}
@@ -87,14 +88,17 @@ public class Publish extends VoiderServlet {
 			}
 
 			// Add search documents
-			if (methodResponse.success) {
-				methodResponse.success = addSearchDocuments();
+			if (methodResponse.status == Statuses.SUCCESS) {
+				success = addSearchDocuments();
 			}
 
 			// FAILED - TODO remove all resources from published, dependencies, and search
-			if (!methodResponse.success) {
+			if (!success) {
 
 			}
+
+			// Set method response status
+			methodResponse.status = success ? Statuses.SUCCESS : Statuses.FAILED_SERVER_ERROR;
 		}
 
 

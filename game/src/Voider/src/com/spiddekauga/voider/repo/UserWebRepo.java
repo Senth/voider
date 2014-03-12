@@ -91,35 +91,45 @@ public class UserWebRepo extends WebRepo {
 	}
 
 	@Override
-	protected void handleResponse(IMethodEntity methodEntity, IEntity response, ICallerResponseListener callerResponseListener) {
+	protected void handleResponse(IMethodEntity methodEntity, IEntity response, ICallerResponseListener[] callerResponseListeners) {
+		IEntity responseToSend = null;
+
 		// Login
 		if (methodEntity instanceof LoginMethod) {
 			if (response instanceof LoginMethodResponse) {
-				callerResponseListener.handleWebResponse(response);
+				responseToSend = response;
 			} else {
 				LoginMethodResponse loginMethodResponse = new LoginMethodResponse();
 				loginMethodResponse.status = LoginMethodResponse.Statuses.FAILED_SERVER_CONNECTION;
-				callerResponseListener.handleWebResponse(loginMethodResponse);
+				responseToSend = loginMethodResponse;
 			}
 		}
 		// Register
 		else if (methodEntity instanceof RegisterUserMethod) {
 			if (response instanceof RegisterUserMethodResponse) {
-				callerResponseListener.handleWebResponse(response);
+				responseToSend = response;
 			} else {
 				RegisterUserMethodResponse registerUserMethodResponse = new RegisterUserMethodResponse();
 				registerUserMethodResponse.status = RegisterUserMethodResponse.Statuses.FAIL_SERVER_CONNECTION;
-				callerResponseListener.handleWebResponse(registerUserMethodResponse);
+				responseToSend = registerUserMethodResponse;
 			}
 		}
 		// Logout
 		else if (methodEntity instanceof LogoutMethod) {
 			if (response instanceof LogoutMethodResponse) {
-				callerResponseListener.handleWebResponse(response);
+				responseToSend = response;
 			} else {
 				LogoutMethodResponse logoutMethodResponse = new LogoutMethodResponse();
 				logoutMethodResponse.status = LogoutMethodResponse.Statuses.FAILED_SERVER_CONNECTION;
-				callerResponseListener.handleWebResponse(logoutMethodResponse);
+				responseToSend = logoutMethodResponse;
+			}
+		}
+
+
+		// Send the actual response
+		if (responseToSend != null) {
+			for (ICallerResponseListener responseListener : callerResponseListeners) {
+				responseListener.handleWebResponse(methodEntity, responseToSend);
 			}
 		}
 	}

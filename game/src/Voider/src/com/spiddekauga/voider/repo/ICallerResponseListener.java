@@ -1,5 +1,8 @@
 package com.spiddekauga.voider.repo;
 
+import com.spiddekauga.voider.network.entities.IEntity;
+import com.spiddekauga.voider.network.entities.method.IMethodEntity;
+
 /**
  * Web response listener for callers
  * 
@@ -8,7 +11,8 @@ package com.spiddekauga.voider.repo;
 public interface ICallerResponseListener {
 	/**
 	 * Handle the web response
-	 * @param webResponse the actual web response
+	 * @param method the method that was called on the server
+	 * @param response the actual web response
 	 */
-	void handleWebResponse(Object webResponse);
+	void handleWebResponse(IMethodEntity method, IEntity response);
 }

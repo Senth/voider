@@ -3,6 +3,8 @@ package com.spiddekauga.voider.menu;
 import com.badlogic.gdx.Gdx;
 import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.network.entities.IEntity;
+import com.spiddekauga.voider.network.entities.method.IMethodEntity;
 import com.spiddekauga.voider.network.entities.method.LoginMethodResponse;
 import com.spiddekauga.voider.network.entities.method.RegisterUserMethodResponse;
 import com.spiddekauga.voider.repo.ICallerResponseListener;
@@ -235,14 +237,14 @@ public class LoginScene extends Scene implements ICallerResponseListener {
 	}
 
 	@Override
-	public void handleWebResponse(Object webResponse) {
+	public void handleWebResponse(IMethodEntity method, IEntity response) {
 		// Login
-		if (webResponse instanceof LoginMethodResponse) {
-			handleLoginResopnse((LoginMethodResponse) webResponse);
+		if (response instanceof LoginMethodResponse) {
+			handleLoginResopnse((LoginMethodResponse) response);
 		}
 		// Register
-		if (webResponse instanceof RegisterUserMethodResponse) {
-			handleRegisterResponse((RegisterUserMethodResponse) webResponse);
+		if (response instanceof RegisterUserMethodResponse) {
+			handleRegisterResponse((RegisterUserMethodResponse) response);
 		}
 
 	}

@@ -22,6 +22,10 @@ import com.spiddekauga.voider.editor.tools.TouchTool;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.ActorDef;
 import com.spiddekauga.voider.game.actors.ActorShapeTypes;
+import com.spiddekauga.voider.network.entities.IEntity;
+import com.spiddekauga.voider.network.entities.method.IMethodEntity;
+import com.spiddekauga.voider.network.entities.method.PublishMethodResponse;
+import com.spiddekauga.voider.repo.ICallerResponseListener;
 import com.spiddekauga.voider.repo.ResourceLocalRepo;
 import com.spiddekauga.voider.repo.ResourceRepo;
 import com.spiddekauga.voider.resources.Def;
@@ -37,7 +41,7 @@ import com.spiddekauga.voider.utils.Pools;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public abstract class ActorEditor extends Editor implements IActorEditor, IResourceChangeEditor {
+public abstract class ActorEditor extends Editor implements IActorEditor, IResourceChangeEditor, ICallerResponseListener {
 	/**
 	 * @param gui all UI elements
 	 * @param pickRadius picking radius
@@ -469,18 +473,7 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 	@Override
 	public void publishDef() {
 		if (mActorDef != null) {
-			boolean success = ResourceRepo.publish(mActorDef);
-
-			if (success) {
-				mGui.showSuccessMessage("Publish successful!");
-				mGui.resetValues();
-
-				// Remove tools
-				switchTool(Tools.MOVE);
-				mInputMultiplexer.removeProcessor(mInputMultiplexer);
-			} else {
-				mGui.showErrorMessage("Publish failed!");
-			}
+			mResourceRepo.publish(this, mActorDef);
 		}
 	}
 
@@ -494,6 +487,22 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 			}
 		}
 		return false;
+	}
+
+	@Override
+	public void handleWebResponse(IMethodEntity method, IEntity response) {
+		if (response instanceof PublishMethodResponse) {
+			if (((PublishMethodResponse) response).status == PublishMethodResponse.Statuses.SUCCESS) {
+				mGui.showSuccessMessage("Publish successful!");
+				mGui.resetValues();
+
+				// Remove tools
+				switchTool(Tools.MOVE);
+				mInputMultiplexer.removeProcessor(mInputMultiplexer);
+			} else {
+				mGui.showErrorMessage("Publish failed!");
+			}
+		}
 	}
 
 	/** The actor type */
@@ -510,4 +519,6 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 	private Tools mActiveTool = Tools.NONE;
 	/** Current selection */
 	protected Selection mSelection = new Selection();
+	/** Resource Repository */
+	protected ResourceRepo mResourceRepo = ResourceRepo.getInstance();
 }

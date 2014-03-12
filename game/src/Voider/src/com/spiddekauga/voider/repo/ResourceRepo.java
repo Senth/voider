@@ -10,9 +10,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 import com.badlogic.gdx.Gdx;
 import com.spiddekauga.voider.game.Level;
 import com.spiddekauga.voider.game.actors.ActorDef;
+import com.spiddekauga.voider.network.entities.DefEntity;
+import com.spiddekauga.voider.network.entities.IEntity;
+import com.spiddekauga.voider.network.entities.LevelDefEntity;
+import com.spiddekauga.voider.network.entities.method.IMethodEntity;
+import com.spiddekauga.voider.network.entities.method.PublishMethod;
+import com.spiddekauga.voider.network.entities.method.PublishMethodResponse;
+import com.spiddekauga.voider.network.entities.method.PublishMethodResponse.Statuses;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.IResource;
-import com.spiddekauga.voider.resources.IResourceRevision;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.utils.Pools;
 
@@ -22,28 +28,46 @@ import com.spiddekauga.voider.utils.Pools;
  * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
-public class ResourceRepo {
+public class ResourceRepo implements ICallerResponseListener {
+	/**
+	 * Protected constructor to enforce singleton usage
+	 */
+	protected ResourceRepo() {
+		// Does nothing
+	}
+
+	/**
+	 * @return singleton instance of ResourceRepo
+	 */
+	public static ResourceRepo getInstance() {
+		if (mInstance == null) {
+			mInstance = new ResourceRepo();
+		}
+
+		return mInstance;
+	}
+
 	/**
 	 * Publish an actor (and its unpublished dependencies) to the server
+	 * @param responseListener listens to the web response
 	 * @param actorDef the actor to publish
-	 * @return true if publish was successful
 	 */
-	public static boolean publish(ActorDef actorDef) {
+	public void publish(ICallerResponseListener responseListener, ActorDef actorDef) {
 		@SuppressWarnings("unchecked")
 		ArrayList<IResource> resources = Pools.arrayList.obtain();
 
 		resources.addAll(getNonPublishedDependencies(actorDef));
 		resources.add(actorDef);
 
-		return publish(resources);
+		publish(responseListener, resources);
 	}
 
 	/**
 	 * Publish a level (and its unpublished dependencies) to the server
+	 * @param responseListener listens to the web response
 	 * @param level the level to publish
-	 * @return true if publish was successful
 	 */
-	public static boolean publish(Level level) {
+	public void publish(ICallerResponseListener responseListener, Level level) {
 		@SuppressWarnings("unchecked")
 		ArrayList<IResource> resources = Pools.arrayList.obtain();
 
@@ -51,45 +75,47 @@ public class ResourceRepo {
 		resources.add(level);
 		resources.add(level.getDef());
 
-		return publish(resources);
+		publish(responseListener, resources);
 	}
 
 	/**
 	 * Publish a campaign (and its levels and unpublished dependencies) to the server
 	 * @param campaignDef the campaign to publish
+	 * @param responseListener listens to the web response
 	 * @return true if publish was successful
 	 */
 	// TODO
 
 	/**
 	 * Publish all the resources. In addition frees the ArrayList
+	 * @param responseListener listens to the web response
 	 * @param resources all resources to publish
-	 * @return true if publish was successful
 	 */
-	private static boolean publish(ArrayList<IResource> resources) {
+	private void publish(ICallerResponseListener responseListener, ArrayList<IResource> resources) {
 		// Publish to server
-		boolean success = ResourceWebRepo.publish(resources);
+		mWebRepo.publish(resources, this, responseListener);
 
+		Pools.arrayList.free(resources);
+	}
 
-		// Remove revisions and set as published
-		if (success) {
-			for (IResource resource : resources) {
-				if (resource instanceof IResourceRevision) {
-					// Remove from database and files
-					ResourceLocalRepo.removeRevisions(resource.getId());
+	@Override
+	public void handleWebResponse(IMethodEntity method, IEntity response) {
+		if (response instanceof PublishMethodResponse) {
+			if (((PublishMethodResponse) response).status == Statuses.SUCCESS) {
+				for (DefEntity defEntity : ((PublishMethod)method).defs) {
+					ResourceLocalRepo.removeRevisions(defEntity.resourceId);
+					ResourceLocalRepo.setPublished(defEntity.resourceId, true);
+
+					// If level set level as published too
+					if (defEntity instanceof LevelDefEntity) {
+						ResourceLocalRepo.removeRevisions(((LevelDefEntity) defEntity).levelId);
+						ResourceLocalRepo.setPublished(((LevelDefEntity) defEntity).levelId, true);
+					}
 				}
-
-				// Set as published
-				ResourceLocalRepo.setPublished(resource.getId(), true);
 			}
 		}
 
-		Pools.arrayList.free(resources);
-
-		return success;
 	}
-
-
 
 	/**
 	 * Get all non published dependencies from the specified definition
@@ -133,4 +159,10 @@ public class ResourceRepo {
 			}
 		}
 	}
+
+
+	/** Instance of this class */
+	private static ResourceRepo mInstance = null;
+	/** ResourceWebRepo */
+	protected ResourceWebRepo mWebRepo = ResourceWebRepo.getInstance();
 }
