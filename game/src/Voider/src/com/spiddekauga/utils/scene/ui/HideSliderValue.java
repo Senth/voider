@@ -7,7 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 /**
  * Hides/shows actors depending on the current slider value
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class HideSliderValue extends GuiHider implements EventListener {
 	/**

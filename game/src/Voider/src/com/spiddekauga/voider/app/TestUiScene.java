@@ -10,7 +10,7 @@ import com.spiddekauga.voider.scene.Scene;
 /**
  * Scene for testing UI elements
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class TestUiScene extends Scene {
 	/**

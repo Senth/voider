@@ -32,7 +32,7 @@ import com.spiddekauga.voider.utils.Pools;
 /**
  * Main menu of the scene
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class MainMenu extends Scene implements ICallerResponseListener {
 	/**

@@ -7,7 +7,7 @@ import com.spiddekauga.voider.Config.Editor.Bullet;
  * Bullet actor definition, does nothing more than specify that
  * the actor is a bullet
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class BulletActorDef extends ActorDef {
 	/**

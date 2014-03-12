@@ -8,7 +8,7 @@ import com.spiddekauga.voider.utils.Pools;
 /**
  * Calls the reset actor in the actor editor.
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class CActorEditorCenterReset extends Command {
 	/**

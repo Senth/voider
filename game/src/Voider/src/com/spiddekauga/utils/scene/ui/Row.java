@@ -14,7 +14,7 @@ import com.spiddekauga.voider.utils.Pools;
  * Wrapper for a row
  * Contains all the actors for the current row
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class Row implements Poolable {
 	/**

@@ -7,7 +7,7 @@ import java.util.UUID;
 /**
  * Common class for def entities
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
 public class DefEntity implements IEntity {

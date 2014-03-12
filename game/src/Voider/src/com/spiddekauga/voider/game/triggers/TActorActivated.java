@@ -25,7 +25,7 @@ import com.spiddekauga.voider.utils.Pools;
 /**
  * Triggered when an actor is activated, or otherwise active
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class TActorActivated extends Trigger implements KryoPostRead, Disposable, IResourceBody, IResourcePrepareWrite, IResourceChangeListener {
 	/**

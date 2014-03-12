@@ -37,7 +37,7 @@ import com.spiddekauga.voider.server.util.VoiderServlet;
 /**
  * Get all level comments
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
 public class LevelGetComment extends VoiderServlet {

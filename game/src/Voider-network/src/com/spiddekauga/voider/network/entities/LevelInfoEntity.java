@@ -5,7 +5,7 @@ import java.util.ArrayList;
 /**
  * Wrapper for all level information
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
 public class LevelInfoEntity implements IEntity {

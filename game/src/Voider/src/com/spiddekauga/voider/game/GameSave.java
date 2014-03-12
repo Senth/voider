@@ -10,7 +10,7 @@ import com.spiddekauga.voider.resources.Resource;
 /**
  * All information from a saved game
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class GameSave extends Resource {
 	/**

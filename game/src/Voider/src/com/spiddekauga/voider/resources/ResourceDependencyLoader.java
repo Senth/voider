@@ -17,7 +17,7 @@ import com.spiddekauga.voider.utils.Pools;
  * Makes sure that all dependencies to the specified resource is loaded
  * and unloaded.
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 class ResourceDependencyLoader implements Disposable {
 	/**

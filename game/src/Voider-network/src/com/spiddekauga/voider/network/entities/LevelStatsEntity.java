@@ -3,7 +3,7 @@ package com.spiddekauga.voider.network.entities;
 /**
  * Level statistics
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
 public class LevelStatsEntity implements IEntity {

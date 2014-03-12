@@ -6,7 +6,7 @@ import java.util.UUID;
 /**
  * Log in method. Can use either private key or password.
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
 public class LoginMethod implements IMethodEntity {

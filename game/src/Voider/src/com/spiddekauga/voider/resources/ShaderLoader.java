@@ -13,7 +13,7 @@ import com.spiddekauga.voider.resources.ShaderLoader.ShaderParameter;
 /**
  * Loads a shader program
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class ShaderLoader extends AsynchronousAssetLoader<ShaderProgram, ShaderParameter> {
 	/**

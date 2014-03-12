@@ -11,7 +11,7 @@ import com.spiddekauga.voider.resources.Resource;
 /**
  * Level definition of a level. I.e. this is the level's header information
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class LevelDef extends Def implements KryoPostRead {
 	/**

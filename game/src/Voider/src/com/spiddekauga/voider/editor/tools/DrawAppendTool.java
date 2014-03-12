@@ -24,7 +24,7 @@ import com.spiddekauga.voider.utils.Pools;
 /**
  * Tool for draw append on the selected actor
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class DrawAppendTool extends ActorTool implements ISelectionListener {
 	/**

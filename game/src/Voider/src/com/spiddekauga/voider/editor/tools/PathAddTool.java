@@ -23,7 +23,7 @@ import com.spiddekauga.voider.utils.Pools;
 /**
  * Tool for adding paths
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class PathAddTool extends TouchTool implements ISelectionListener {
 	/**

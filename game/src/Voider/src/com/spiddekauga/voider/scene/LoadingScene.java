@@ -7,7 +7,7 @@ import com.spiddekauga.voider.resources.ResourceNotFoundException;
 /**
  * Base class for all loading scenes
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public abstract class LoadingScene extends Scene {
 	/**

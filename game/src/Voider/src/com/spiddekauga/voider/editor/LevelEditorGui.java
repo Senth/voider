@@ -50,7 +50,7 @@ import com.spiddekauga.voider.utils.Pools;
 /**
  * GUI for the level editor
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 class LevelEditorGui extends EditorGui {
 	/**

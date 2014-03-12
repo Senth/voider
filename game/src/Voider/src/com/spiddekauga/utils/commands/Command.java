@@ -6,7 +6,7 @@ import com.badlogic.gdx.utils.Disposable;
  * Common interface for commands that can be passed as argument and
  * executed later.
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public abstract class Command implements Disposable {
 	/**

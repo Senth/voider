@@ -18,7 +18,7 @@ import com.spiddekauga.voider.utils.Pools;
  * same, definition, same trigger, same everything. Except they have all have
  * different trigger delays, so they don't start at the same time
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class EnemyGroup extends Resource {
 	/**

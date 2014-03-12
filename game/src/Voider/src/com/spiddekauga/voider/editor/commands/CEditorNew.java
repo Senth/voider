@@ -6,7 +6,7 @@ import com.spiddekauga.voider.editor.IEditor;
 /**
  * Discards the old actor and creates a new one with default values
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class CEditorNew extends Command {
 	/**

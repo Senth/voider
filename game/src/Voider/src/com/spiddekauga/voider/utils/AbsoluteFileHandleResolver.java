@@ -7,7 +7,7 @@ import com.badlogic.gdx.files.FileHandle;
 /**
  * 
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class AbsoluteFileHandleResolver implements FileHandleResolver {
 	@Override

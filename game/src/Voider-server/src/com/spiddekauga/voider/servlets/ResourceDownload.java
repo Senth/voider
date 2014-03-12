@@ -11,7 +11,7 @@ import com.spiddekauga.voider.server.util.VoiderServlet;
 /**
  * Downloads resources
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
 public class ResourceDownload extends VoiderServlet {

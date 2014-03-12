@@ -13,7 +13,7 @@ import com.spiddekauga.utils.scene.ui.Label.LabelStyle;
 /**
  * Message box wrapper for dialog. This allows other content than just text.
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class MsgBox extends Dialog {
 	/**

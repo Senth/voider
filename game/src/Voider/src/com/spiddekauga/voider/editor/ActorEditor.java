@@ -39,7 +39,7 @@ import com.spiddekauga.voider.utils.Pools;
 /**
  * Common class for all actor editors
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public abstract class ActorEditor extends Editor implements IActorEditor, IResourceChangeEditor, ICallerResponseListener {
 	/**

@@ -26,7 +26,7 @@ import com.spiddekauga.voider.utils.Pools;
 /**
  * Common class for all world scenes
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public abstract class WorldScene extends Scene {
 	/**

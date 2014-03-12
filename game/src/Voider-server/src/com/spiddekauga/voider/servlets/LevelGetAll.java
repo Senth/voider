@@ -46,7 +46,7 @@ import com.spiddekauga.voider.server.util.VoiderServlet;
 /**
  * Get all levels with specified filters
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
 public class LevelGetAll extends VoiderServlet {

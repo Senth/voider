@@ -3,7 +3,7 @@ package com.spiddekauga.voider.game.actors;
 /**
  * All filter categories used for deciding who shall collide etc.
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class ActorFilterCategories {
 	/** Category for all enemies */

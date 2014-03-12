@@ -14,7 +14,7 @@ import com.spiddekauga.voider.utils.Pools;
  * Wrapper for a cell.
  * Contains both the actor in the cell and align information
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class Cell implements Poolable {
 	/**

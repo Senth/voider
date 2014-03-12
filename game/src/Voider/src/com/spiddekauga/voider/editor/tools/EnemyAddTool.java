@@ -22,7 +22,7 @@ import com.spiddekauga.voider.utils.Pools;
 /**
  * 
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class EnemyAddTool extends ActorAddTool {
 	/**

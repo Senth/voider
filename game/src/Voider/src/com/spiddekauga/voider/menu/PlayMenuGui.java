@@ -12,7 +12,7 @@ import com.spiddekauga.voider.resources.SkinNames;
 /**
  * GUI for play menu
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class PlayMenuGui extends MenuGui {
 	@Override

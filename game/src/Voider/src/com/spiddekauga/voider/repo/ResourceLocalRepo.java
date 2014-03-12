@@ -17,7 +17,7 @@ import com.spiddekauga.voider.resources.RevisionInfo;
 /**
  * Local repository to all resources
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class ResourceLocalRepo {
 	/**

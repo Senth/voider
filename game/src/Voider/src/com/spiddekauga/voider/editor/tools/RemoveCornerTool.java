@@ -28,7 +28,7 @@ import com.spiddekauga.voider.utils.Messages;
 /**
  * Tool for removing corners of a resource that has corners
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class RemoveCornerTool extends TouchTool implements ISelectionListener {
 	/**

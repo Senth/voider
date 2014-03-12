@@ -5,7 +5,7 @@ import com.spiddekauga.voider.scene.Gui;
 /**
  * Common class for all menus used by Main Menu Scene
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class MenuGui extends Gui {
 	/**

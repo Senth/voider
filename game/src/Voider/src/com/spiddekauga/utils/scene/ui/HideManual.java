@@ -3,7 +3,7 @@ package com.spiddekauga.utils.scene.ui;
 /**
  * Manually hides/shows the toggle actors
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class HideManual extends GuiHider {
 	/**

@@ -6,7 +6,7 @@ import java.io.Serializable;
 /**
  * Wrapper for entitiy classes
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public interface IEntity extends Serializable {
 

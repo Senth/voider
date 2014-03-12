@@ -35,7 +35,7 @@ import com.spiddekauga.voider.utils.Pools;
 /**
  * An enemy actor, these can generally shoot on the player.
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class EnemyActor extends Actor {
 	/**

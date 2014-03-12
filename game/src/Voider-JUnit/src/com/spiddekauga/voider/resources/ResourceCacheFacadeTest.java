@@ -32,7 +32,7 @@ import com.spiddekauga.voider.scene.SceneStub;
 /**
  * Tests whether the cache facade works correctly
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  * @todo implement
  */
 public class ResourceCacheFacadeTest {

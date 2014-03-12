@@ -6,7 +6,7 @@ import com.spiddekauga.voider.Config.Graphics.RenderOrders;
 /**
  * Static terrain actor. This terrain will not move, and cannot be destroyed.
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class StaticTerrainActor extends Actor {
 

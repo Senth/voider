@@ -5,7 +5,7 @@ import com.spiddekauga.voider.resources.InternalNames;
 /**
  * All the different themes for the game
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public enum Themes {
 	/** Space theme */

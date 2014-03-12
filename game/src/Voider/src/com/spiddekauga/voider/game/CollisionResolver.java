@@ -14,7 +14,7 @@ import com.spiddekauga.voider.game.actors.PlayerActor;
  * and something else.
  * @note This does not change the physics of the objects.
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class CollisionResolver implements ContactListener {
 

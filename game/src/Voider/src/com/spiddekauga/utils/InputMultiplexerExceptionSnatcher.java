@@ -7,7 +7,7 @@ import com.spiddekauga.voider.Config;
  * Snatches all exceptions thrown by the input multiplexer and sends them to
  * the appropriate exception handler
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class InputMultiplexerExceptionSnatcher extends InputMultiplexer {
 	/**

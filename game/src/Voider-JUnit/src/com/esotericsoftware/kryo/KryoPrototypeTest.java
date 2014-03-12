@@ -41,7 +41,7 @@ import com.spiddekauga.voider.utils.Pools;
 /**
  * Prototype tests for Kryo
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("javadoc")
 public class KryoPrototypeTest {

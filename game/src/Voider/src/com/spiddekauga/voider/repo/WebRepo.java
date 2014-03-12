@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 
 import com.badlogic.gdx.Gdx;
+import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.method.GetUploadUrlMethod;
 import com.spiddekauga.voider.network.entities.method.GetUploadUrlMethodResponse;
@@ -11,12 +12,13 @@ import com.spiddekauga.voider.network.entities.method.IMethodEntity;
 import com.spiddekauga.voider.network.entities.method.NetworkEntitySerializer;
 import com.spiddekauga.voider.repo.WebGateway.FieldNameFileWrapper;
 import com.spiddekauga.voider.resources.IResource;
+import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Common class for all Web Repositories
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 abstract class WebRepo {
 	/**
@@ -71,7 +73,7 @@ abstract class WebRepo {
 	 * @param files all files that should be uploaded
 	 * @return server method response, null if something went wrong
 	 */
-	protected static IEntity serializeAndUpload(IMethodEntity method, ArrayList<FieldNameFileWrapper> files) {
+	protected static IEntity serializeAndSend(IMethodEntity method, ArrayList<FieldNameFileWrapper> files) {
 		// Get upload URL
 		GetUploadUrlMethod uploadMethod = new GetUploadUrlMethod();
 		uploadMethod.redirectMethod = method.getMethodName();
@@ -143,14 +145,20 @@ abstract class WebRepo {
 
 		@Override
 		public void run() {
-			IEntity response = null;
-			if (mFiles == null || mFiles.isEmpty()) {
-				response = serializeAndSend(mMethodEntity);
-			} else {
-				response = serializeAndUpload(mMethodEntity, mFiles);
-			}
+			try {
+				IEntity response = null;
+				if (mFiles == null || mFiles.isEmpty()) {
+					response = serializeAndSend(mMethodEntity);
+				} else {
+					response = serializeAndSend(mMethodEntity, mFiles);
+				}
 
-			mWebRepo.handleResponse(mMethodEntity, response, mCallerRepsonseListeners);
+				mWebRepo.handleResponse(mMethodEntity, response, mCallerRepsonseListeners);
+			} catch (RuntimeException e) {
+				if (Config.Debug.EXCEPTION_HANDLER) {
+					SceneSwitcher.handleException(e);
+				}
+			}
 		}
 
 		/** The method to call on the server */

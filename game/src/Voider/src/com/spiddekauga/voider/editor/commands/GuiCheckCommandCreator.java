@@ -18,7 +18,7 @@ import com.spiddekauga.voider.Config.Gui;
  * To add buttons to listen to, use Button.addListener(GuiCheckCommandCreator) and it
  * will handle the rest.
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class GuiCheckCommandCreator implements EventListener {
 	/**

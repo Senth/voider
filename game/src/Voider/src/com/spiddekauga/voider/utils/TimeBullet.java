@@ -8,7 +8,7 @@ import com.spiddekauga.voider.game.actors.BulletActor;
 /**
  * Container class for bullet and time
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class TimeBullet implements Json.Serializable {
 

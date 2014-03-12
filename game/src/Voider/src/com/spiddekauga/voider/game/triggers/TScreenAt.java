@@ -25,7 +25,7 @@ import com.spiddekauga.voider.utils.Pools;
  * Triggers when the right side of the screen is at or beyond a specific position.
  * Equal to the level's current x-coordinate
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class TScreenAt extends Trigger implements IResourceBody, IResourcePosition, Disposable {
 	/**

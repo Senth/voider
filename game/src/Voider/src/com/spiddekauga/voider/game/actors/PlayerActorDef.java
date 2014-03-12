@@ -7,7 +7,7 @@ import com.spiddekauga.voider.Config;
  * Player actor definition, does nothing more than specify
  * that the actor is a player
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class PlayerActorDef extends ActorDef {
 	/**

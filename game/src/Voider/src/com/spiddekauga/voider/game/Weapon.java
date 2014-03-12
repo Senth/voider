@@ -10,7 +10,7 @@ import com.spiddekauga.voider.utils.Pools;
 /**
  * Weapon that hadles the shooting and cooldown.
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class Weapon implements Disposable {
 	/**

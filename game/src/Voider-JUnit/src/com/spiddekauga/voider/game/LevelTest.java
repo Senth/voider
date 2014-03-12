@@ -44,7 +44,7 @@ import com.spiddekauga.voider.utils.Pools;
  * Tests the Level implementation. More specifically the write and read to/from
  * json objects. There aren't much more that can be tested in a unit test
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class LevelTest {
 

@@ -9,7 +9,7 @@ import com.spiddekauga.voider.game.triggers.TriggerInfo;
 /**
  * A command that will set the specific trigger for a trigger listener.
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class CTriggerSet extends CResourceChange {
 	/**

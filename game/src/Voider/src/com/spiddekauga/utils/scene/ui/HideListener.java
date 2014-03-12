@@ -7,7 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button;
 /**
  * Hides specified GUI elements when a button is enabled/disabled
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class HideListener extends GuiHider implements EventListener {
 	/**

@@ -8,7 +8,7 @@ import com.spiddekauga.voider.scene.SceneSwitcher;
 /**
  * Command for changing a text field's value
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class CGuiTextField extends CGui implements ICommandCombinable {
 	/**

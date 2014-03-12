@@ -21,7 +21,7 @@ import com.spiddekauga.voider.utils.Pools;
  * 
  * @see ResourceSaver for how to save files
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class ResourceCacheFacade {
 	/**

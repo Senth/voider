@@ -3,7 +3,7 @@ package com.spiddekauga.utils.scene.ui;
 /**
  * Alignment for UI
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class Align {
 	/**

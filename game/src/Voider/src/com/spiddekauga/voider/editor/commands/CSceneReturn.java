@@ -14,7 +14,7 @@ import com.spiddekauga.voider.scene.SceneSwitcher;
  * has a default constructor) and place it at the top
  * of the stack.
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class CSceneReturn extends Command {
 	/**

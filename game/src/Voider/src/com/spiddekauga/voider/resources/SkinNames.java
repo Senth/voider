@@ -18,7 +18,7 @@ import com.spiddekauga.utils.scene.ui.Label.LabelStyle;
 /**
  * All skin names
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class SkinNames {
 	/**

@@ -6,7 +6,7 @@ import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
  * Measures the total game time of the game. If a frame is longer than 0.1s
  * it will clamp the delta time to 0.1s
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class GameTime {
 	/**

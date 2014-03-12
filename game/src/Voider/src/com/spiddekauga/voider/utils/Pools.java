@@ -21,7 +21,7 @@ import com.spiddekauga.voider.resources.RevisionInfo;
 /**
  * Common pools used in the program
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class Pools {
 	/** Vector2 pool */

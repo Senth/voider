@@ -22,7 +22,7 @@ import com.spiddekauga.voider.scene.Gui;
 /**
  * GUI for login
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class LoginGui extends Gui {
 	/**

@@ -8,7 +8,7 @@ import com.spiddekauga.voider.network.entities.LevelCommentEntity;
 /**
  * Returns comments for the specified level
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
 public class LevelGetCommentMethodResponse implements IEntity {

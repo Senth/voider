@@ -25,7 +25,7 @@ import com.spiddekauga.voider.scene.Gui;
 /**
  * All UI elements.
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class TestUiGui extends Gui {
 	@Override

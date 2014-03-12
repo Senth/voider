@@ -35,7 +35,7 @@ import com.spiddekauga.voider.utils.Messages;
 /**
  * Base class for all GUI containing windows
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public abstract class Gui implements Disposable {
 	/**

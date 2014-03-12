@@ -5,7 +5,7 @@ package com.spiddekauga.utils.commands;
  * the same type can be put together as one—useful when executing multiple commands
  * of the same type (such as changing a value via a slider).
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public interface ICommandCombinable {
 	/**

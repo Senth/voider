@@ -4,7 +4,7 @@ package com.spiddekauga.voider.server.util;
 /**
  * Server configuration
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class ServerConfig {
 	/** Database tables */

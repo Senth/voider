@@ -16,7 +16,7 @@ import com.spiddekauga.voider.utils.Messages;
 /**
  * GUI for the game over screen
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class GameOverSceneGui extends Gui {
 	/**

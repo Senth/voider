@@ -9,7 +9,7 @@ import com.spiddekauga.voider.utils.Pools;
 /**
  * Command for moving a camera. This can undo and redo a scroll.
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class CCameraMove extends Command implements ICommandCombinable {
 	/**

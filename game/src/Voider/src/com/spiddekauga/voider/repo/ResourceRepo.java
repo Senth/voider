@@ -26,7 +26,7 @@ import com.spiddekauga.voider.utils.Pools;
  * Common resource repository for both web and local. Handles requests that affects
  * both.
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class ResourceRepo implements ICallerResponseListener {
 	/**

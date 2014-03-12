@@ -13,7 +13,7 @@ import com.oreilly.servlet.multipart.Part;
 /**
  * Gateway for getting entities and sending an entity response
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class NetworkGateway {
 	/**

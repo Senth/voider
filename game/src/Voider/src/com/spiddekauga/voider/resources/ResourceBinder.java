@@ -16,7 +16,7 @@ import com.spiddekauga.voider.utils.Pools;
  * Contains all the resources. Used for example in levels to later bind all
  * resources that have been loaded.
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class ResourceBinder {
 

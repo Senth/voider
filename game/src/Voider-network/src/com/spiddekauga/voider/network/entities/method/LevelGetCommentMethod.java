@@ -5,7 +5,7 @@ import java.util.UUID;
 /**
  * Gets comment for the specified level
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
 public class LevelGetCommentMethod implements IMethodEntity {

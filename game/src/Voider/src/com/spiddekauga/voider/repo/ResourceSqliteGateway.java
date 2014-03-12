@@ -14,7 +14,7 @@ import com.spiddekauga.voider.utils.Pools;
 /**
  * Gateway for handling resource in an SQLite database
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 class ResourceSqliteGateway extends SqliteGateway {
 	/**

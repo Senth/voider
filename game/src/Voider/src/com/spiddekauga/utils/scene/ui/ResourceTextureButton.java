@@ -8,7 +8,7 @@ import com.spiddekauga.voider.resources.IResourceTexture;
 /**
  * Scene2D button that draws a resource in the specified size of the button
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class ResourceTextureButton extends ImageButton {
 	/**

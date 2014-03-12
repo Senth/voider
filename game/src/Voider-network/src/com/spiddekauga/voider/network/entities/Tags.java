@@ -5,7 +5,7 @@ import java.util.HashMap;
 /**
  * All tags
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public enum Tags {
 

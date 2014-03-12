@@ -42,7 +42,7 @@ import com.spiddekauga.voider.utils.Pools;
 /**
  * Editor for creating and editing enemies
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class EnemyEditor extends ActorEditor {
 	/**

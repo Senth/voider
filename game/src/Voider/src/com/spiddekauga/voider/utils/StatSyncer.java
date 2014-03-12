@@ -6,7 +6,7 @@ import com.spiddekauga.voider.resources.ResourceSaver;
 /**
  * Handles sync of all the player statistics
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class StatSyncer {
 	/**

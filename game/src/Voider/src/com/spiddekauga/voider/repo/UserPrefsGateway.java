@@ -9,7 +9,7 @@ import com.spiddekauga.voider.utils.UserInfo;
 /**
  * Preference gateway for user repository
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 class UserPrefsGateway {
 	/**

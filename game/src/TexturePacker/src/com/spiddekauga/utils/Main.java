@@ -20,7 +20,7 @@ import com.esotericsoftware.minlog.Log.Logger;
 /**
  * Packs all the textures in a specified directory to seperate atlases.
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class Main {
 	/** Set to true to compile packer for dropbox */
@@ -141,7 +141,7 @@ public class Main {
 	 * File logger
 	 * 
 	 * 
-	 * @author Matteus Magnusson <senth.wallace@gmail.com>
+	 * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
 	 */
 	static public class FileLogger extends Logger {
 		@Override

@@ -3,7 +3,7 @@ package com.spiddekauga.utils;
 /**
  * Handles exceptions
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public interface IExceptionHandler {
 	/**

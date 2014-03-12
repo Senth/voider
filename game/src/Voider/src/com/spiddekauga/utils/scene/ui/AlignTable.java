@@ -19,7 +19,7 @@ import com.spiddekauga.voider.utils.Pools;
  * Table that allows for aligning inside the widgets.
  * This table also fixes scaling of the widgets inside.
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class AlignTable extends WidgetGroup implements Disposable {
 	/**

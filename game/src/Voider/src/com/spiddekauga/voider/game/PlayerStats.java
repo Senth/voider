@@ -14,7 +14,7 @@ import com.spiddekauga.voider.resources.Resource;
  * Container for all player statistics when playing a level and calculates
  * the score.
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class PlayerStats extends Resource implements IResourceChangeListener {
 	/**

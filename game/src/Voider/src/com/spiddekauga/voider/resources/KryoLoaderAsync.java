@@ -15,7 +15,7 @@ import com.spiddekauga.voider.utils.Pools;
 /**
  * Asynchronously loads resources saved as Kryo objects (that has been encrypted)
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  * @param <StoredType> what type of object is stored in the json file
  */
 public class KryoLoaderAsync<StoredType> extends AsynchronousAssetLoader<StoredType, KryoParameters<StoredType>> {

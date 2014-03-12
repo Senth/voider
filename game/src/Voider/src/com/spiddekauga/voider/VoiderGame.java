@@ -22,7 +22,7 @@ import com.spiddekauga.voider.scene.SceneSwitcher;
 /**
  * The main application, i.e. start point
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class VoiderGame implements ApplicationListener {
 

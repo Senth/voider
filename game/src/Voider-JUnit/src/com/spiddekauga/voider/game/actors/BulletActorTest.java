@@ -11,7 +11,7 @@ import com.spiddekauga.voider.resources.ResourceSaver;
 /**
  * Tests for bullets including the definition.
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class BulletActorTest extends ActorTest {
 	/**

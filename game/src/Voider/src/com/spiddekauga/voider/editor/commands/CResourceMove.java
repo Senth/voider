@@ -8,7 +8,7 @@ import com.spiddekauga.voider.utils.Pools;
 /**
  * Executes a move command on the resource.
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class CResourceMove extends CResourceChange {
 	/**

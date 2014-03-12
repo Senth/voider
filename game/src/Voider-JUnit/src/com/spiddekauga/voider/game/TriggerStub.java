@@ -8,7 +8,7 @@ import com.spiddekauga.voider.game.triggers.TriggerAction.Reasons;
 /**
  * Test trigger that essentially does nothing
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class TriggerStub extends Trigger {
 	@Override

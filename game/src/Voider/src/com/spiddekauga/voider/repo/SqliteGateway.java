@@ -11,7 +11,7 @@ import com.spiddekauga.voider.Config;
 /**
  * SQLite gateway
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 class SqliteGateway implements Disposable {
 	/**

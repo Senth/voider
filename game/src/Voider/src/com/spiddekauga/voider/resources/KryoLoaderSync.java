@@ -16,7 +16,7 @@ import com.spiddekauga.voider.utils.Pools;
  * Synchronously loads resources saved as Kryo objects (that has been encrypted).
  * @param <StoredType> The stored type in the JSON file
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class KryoLoaderSync<StoredType> extends SynchronousAssetLoader<StoredType, KryoParameters<StoredType>> {
 	/**

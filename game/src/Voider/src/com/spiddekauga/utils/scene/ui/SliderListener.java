@@ -23,7 +23,7 @@ import com.spiddekauga.voider.Config.Gui;
  * Listener that binds a slider with a textfield.
  * Override #onChange(float) to implement some action  when the value is changed
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public abstract class SliderListener implements EventListener {
 	/**

@@ -14,7 +14,7 @@ import com.badlogic.gdx.utils.GdxRuntimeException;
 /**
  * Various geometry help functions
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class Geometry {
 	/**

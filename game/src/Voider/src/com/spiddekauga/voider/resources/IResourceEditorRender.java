@@ -5,7 +5,7 @@ import com.spiddekauga.utils.ShapeRendererEx;
 /**
  * A resource that can be rendered when in editor mode
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public interface IResourceEditorRender extends IResourceRenderOrder {
 	/**

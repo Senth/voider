@@ -3,7 +3,7 @@ package com.spiddekauga.voider.network.entities.method;
 /**
  * Registers a new user
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
 public class RegisterUserMethod implements IMethodEntity {

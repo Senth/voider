@@ -8,7 +8,7 @@ import com.spiddekauga.voider.utils.Pools;
 /**
  * Creates a new corner for the specified resource
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class CResourceCornerAdd extends CResourceChange {
 	/**

@@ -12,7 +12,7 @@ import com.spiddekauga.voider.scene.Gui;
 /**
  * GUI for the GameScene
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 class GameSceneGui extends Gui {
 	/**

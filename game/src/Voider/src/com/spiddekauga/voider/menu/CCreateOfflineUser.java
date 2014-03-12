@@ -5,7 +5,7 @@ import com.spiddekauga.utils.commands.Command;
 /**
  * Tries to create an offline user using a LoginScene
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 class CCreateOfflineUser extends Command {
 	/**

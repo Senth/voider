@@ -8,7 +8,7 @@ import com.spiddekauga.voider.editor.LevelEditor;
 /**
  * Adds an enemy definition to the add enemy list
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class CLevelEnemyDefAdd extends Command {
 	/**

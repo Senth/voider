@@ -10,7 +10,7 @@ import com.spiddekauga.voider.scene.SceneSwitcher;
 /**
  * Scene for selecting which editor to go to
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class EditorSelectionScene extends Scene {
 	/**

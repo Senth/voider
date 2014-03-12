@@ -17,7 +17,7 @@ import com.spiddekauga.voider.utils.TimeBullet;
  * To avoid checked each bullet every frame, only some are checked each frame.
  * All new bullets shall be added to this BulletDestroyer.
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class BulletDestroyer implements Disposable {
 	/**

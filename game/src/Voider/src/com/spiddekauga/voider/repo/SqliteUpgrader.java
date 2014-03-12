@@ -12,7 +12,7 @@ import com.badlogic.gdx.sql.SQLiteGdxException;
 /**
  * Upgrades the SQLite database to the latest version
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 class SqliteUpgrader {
 	/**

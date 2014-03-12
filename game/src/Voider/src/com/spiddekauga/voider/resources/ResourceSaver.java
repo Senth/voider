@@ -20,7 +20,7 @@ import com.spiddekauga.voider.utils.Pools;
  * Saves resources into the appropriate place. The saver is also responsible
  * for encrypting the resources.
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class ResourceSaver {
 

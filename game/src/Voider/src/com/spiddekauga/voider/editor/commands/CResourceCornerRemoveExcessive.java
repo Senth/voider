@@ -19,7 +19,7 @@ import com.spiddekauga.voider.utils.Pools;
  * In this case 0,5 does not add anything to the shape, it will only make
  * calculations slower... Also removes corners that are too close.
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class CResourceCornerRemoveExcessive extends Command {
 	/**

@@ -5,7 +5,7 @@ import com.spiddekauga.voider.resources.IResource;
 /**
  * Listens to selection changes
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public interface ISelectionListener {
 	/**

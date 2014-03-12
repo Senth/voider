@@ -22,7 +22,7 @@ import javax.crypto.spec.SecretKeySpec;
  * Encrypts and decrypts objects
  * 
  * @author sherif http://stackoverflow.com/users/446552/sherif
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class ObjectCrypter {
 	/**

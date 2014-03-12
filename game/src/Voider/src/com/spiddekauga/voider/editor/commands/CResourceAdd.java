@@ -8,7 +8,7 @@ import com.spiddekauga.voider.resources.IResourceBody;
 /**
  * Adds a new resource and calls the resource editor about the notification
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class CResourceAdd extends Command {
 	/**

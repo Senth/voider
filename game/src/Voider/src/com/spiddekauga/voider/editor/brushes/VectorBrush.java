@@ -17,7 +17,7 @@ import com.spiddekauga.voider.utils.Pools;
 /**
  * A simple resource that draws a line
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class VectorBrush extends Resource implements IResourceCorner, IResourceEditorRender, Disposable {
 	/**

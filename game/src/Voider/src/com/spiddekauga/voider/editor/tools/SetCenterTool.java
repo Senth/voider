@@ -15,7 +15,7 @@ import com.spiddekauga.voider.utils.Pools;
 /**
  * Tool for setting the center of a specified actor type
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class SetCenterTool extends ActorTool implements ISelectionListener {
 	/**

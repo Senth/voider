@@ -10,7 +10,7 @@ import com.spiddekauga.voider.game.actors.EnemyActor;
  * Creates/Destroys bodies of the actors in the level. When an actor's body
  * is destroyed the actor will also be killed.
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class BodyShepherd {
 

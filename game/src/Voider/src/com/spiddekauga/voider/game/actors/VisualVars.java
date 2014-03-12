@@ -36,7 +36,7 @@ import com.spiddekauga.voider.utils.Pools;
 /**
  * Class for all shape variables
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class VisualVars implements KryoSerializable, Disposable, IResourceCorner {
 	/**

@@ -22,7 +22,7 @@ import com.spiddekauga.voider.utils.Messages;
 /**
  * GUI for the bullet editor
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class BulletEditorGui extends ActorGui {
 

@@ -13,7 +13,7 @@ import com.spiddekauga.voider.scene.Gui;
 /**
  * GUI for the prologue scene
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 class LoadingTextSceneGui extends Gui {
 	/**

@@ -11,7 +11,7 @@ import com.spiddekauga.voider.resources.Resource;
  * Enemy actor definition, does nothing more than specify that the actor is
  * an enemy
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class EnemyActorDef extends ActorDef {
 	/**

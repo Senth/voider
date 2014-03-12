@@ -72,7 +72,7 @@ import com.spiddekauga.voider.utils.Pools;
  * 
  * @author mzechner, stbachmann
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  * A more advanced shape renderer which allows custom shaders and lines
  * with multicolors.
  */

@@ -25,7 +25,7 @@ import com.spiddekauga.voider.server.util.VoiderServlet;
 /**
  * Registers a user
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
 public class RegisterUser extends VoiderServlet {

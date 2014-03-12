@@ -24,7 +24,7 @@ import com.spiddekauga.voider.resources.IResourcePosition;
 /**
  * 
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class TriggerSetTool extends TouchTool {
 

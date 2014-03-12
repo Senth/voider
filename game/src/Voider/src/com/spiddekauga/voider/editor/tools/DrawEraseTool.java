@@ -32,7 +32,7 @@ import com.spiddekauga.voider.utils.Pools;
 /**
  * Tool for adding or removing from a shape
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class DrawEraseTool extends ActorTool {
 	/**

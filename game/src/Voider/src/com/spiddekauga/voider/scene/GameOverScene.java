@@ -15,7 +15,7 @@ import com.spiddekauga.voider.utils.StatSyncer;
  * the player started the campaign and is not playing only this level). If the player
  * failed the game or is only playing this level add buttons for try again and main menu.
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class GameOverScene extends Scene {
 	/**

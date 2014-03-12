@@ -6,7 +6,7 @@ import com.spiddekauga.utils.commands.Command;
 /**
  * Forcibly quit the game
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class CGameQuit extends Command {
 

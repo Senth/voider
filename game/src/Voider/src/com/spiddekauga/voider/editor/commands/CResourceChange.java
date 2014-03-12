@@ -7,7 +7,7 @@ import com.spiddekauga.voider.resources.IResource;
 /**
  * Wrapper class for all commands that changes a resource
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public abstract class CResourceChange extends Command {
 	/**

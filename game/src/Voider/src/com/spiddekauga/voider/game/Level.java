@@ -47,7 +47,7 @@ import com.spiddekauga.voider.utils.Pools;
 /**
  * A game level
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class Level extends Resource implements KryoPreWrite, KryoPostWrite, KryoPostRead, KryoTaggedCopyable, KryoSerializable, Disposable, IResourceRevision {
 	/**

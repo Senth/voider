@@ -7,7 +7,7 @@ import com.badlogic.gdx.math.Vector2;
 /**
  * An AABB box for collision detection
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class AabbBox {
 	/**

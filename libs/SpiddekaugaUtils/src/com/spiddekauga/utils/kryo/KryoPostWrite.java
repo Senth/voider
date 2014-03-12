@@ -4,7 +4,7 @@ package com.spiddekauga.utils.kryo;
  * Called after Kryo has written something if the class is serialized by
  * SerializableTaggedFieldSerializer
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public interface KryoPostWrite {
 	/**

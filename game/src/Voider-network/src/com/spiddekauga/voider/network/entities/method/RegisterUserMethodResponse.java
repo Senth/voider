@@ -7,7 +7,7 @@ import com.spiddekauga.voider.network.entities.IEntity;
 /**
  * Response from registering a new user
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
 public class RegisterUserMethodResponse implements IEntity {

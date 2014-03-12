@@ -5,7 +5,7 @@ import com.spiddekauga.voider.Config.Graphics.RenderOrders;
 /**
  * Stub actor, used for testing
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class ActorStub extends Actor {
 

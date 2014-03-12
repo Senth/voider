@@ -7,7 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 /**
  * Wrapper for rendering an animation in scene2d
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class AnimationWidget extends Image {
 	/**

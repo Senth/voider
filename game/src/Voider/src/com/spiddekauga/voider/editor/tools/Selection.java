@@ -12,7 +12,7 @@ import com.spiddekauga.voider.utils.Pools;
 /**
  * Current selection in the level editor
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class Selection implements ISelection {
 

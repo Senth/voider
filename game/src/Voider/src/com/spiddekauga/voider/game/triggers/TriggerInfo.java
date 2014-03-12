@@ -7,7 +7,7 @@ import com.spiddekauga.voider.game.triggers.TriggerAction.Actions;
  * Information for a trigger listener. This contains all the information
  * to bind the listener to a trigger.
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class TriggerInfo {
 	/** The trigger */

@@ -11,7 +11,7 @@ import com.spiddekauga.voider.utils.Pools;
  * also takes an optional actor which will be moved in the opposite
  * direction; this will cause it to look as it wasn't moved at all.
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class CActorCenterMove extends CResourceChange {
 	/**

@@ -3,7 +3,7 @@ package com.spiddekauga.voider.game.actors;
 /**
  * Enumeration for all enemy movement types
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public enum MovementTypes {
 	/** Uses variable values to behave in a certain manner */

@@ -5,7 +5,7 @@ import com.spiddekauga.voider.network.entities.IEntity;
 /**
  * Logout response
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
 public class LogoutMethodResponse implements IEntity {

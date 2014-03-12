@@ -8,7 +8,7 @@ import com.spiddekauga.voider.resources.IResourceBody;
 /**
  * Removes an resource from the specified resource editor
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class CResourceRemove extends Command {
 	/**

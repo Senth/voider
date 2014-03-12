@@ -17,7 +17,7 @@ import com.spiddekauga.voider.utils.Pools;
 /**
  * Tool for deleting resources
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class DeleteTool extends TouchTool {
 	/**

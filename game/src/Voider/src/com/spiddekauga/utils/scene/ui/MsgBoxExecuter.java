@@ -8,7 +8,7 @@ import com.spiddekauga.utils.commands.Command;
  * Wrapper for the message box. This message box executes the commands passed
  * for the buttons.
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class MsgBoxExecuter extends MsgBox {
 	/**

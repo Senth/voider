@@ -18,7 +18,7 @@ import com.spiddekauga.voider.utils.Messages;
 /**
  * GUI for main menu
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class MainMenuGui extends MenuGui {
 	@Override

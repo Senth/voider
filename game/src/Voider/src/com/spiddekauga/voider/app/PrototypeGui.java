@@ -19,7 +19,7 @@ import com.spiddekauga.voider.scene.Gui;
 /**
  * GUI for the prototype
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class PrototypeGui extends Gui {
 	@Override

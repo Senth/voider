@@ -10,7 +10,7 @@ import com.spiddekauga.voider.repo.ResourceLocalRepo;
  * Checks if all resources are available.
  * @todo download the resource instead of creating them...
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class ResourceChecker {
 	/**

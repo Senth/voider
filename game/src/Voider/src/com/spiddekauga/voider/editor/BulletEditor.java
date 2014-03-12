@@ -25,7 +25,7 @@ import com.spiddekauga.voider.utils.Pools;
 /**
  * Creates bullets for the enemies and player to use.
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class BulletEditor extends ActorEditor {
 	/**

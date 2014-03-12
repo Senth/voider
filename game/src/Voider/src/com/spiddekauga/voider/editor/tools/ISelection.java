@@ -7,7 +7,7 @@ import com.spiddekauga.voider.resources.IResource;
 /**
  * Contains the current selection
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public interface ISelection {
 	/**

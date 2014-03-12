@@ -3,7 +3,7 @@ package com.spiddekauga.utils.commands;
 /**
  * Executes the command in sequence.
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class CommandSequence extends Command {
 	/**

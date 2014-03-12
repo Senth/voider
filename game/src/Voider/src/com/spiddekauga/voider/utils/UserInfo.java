@@ -5,7 +5,7 @@ import java.util.UUID;
 /**
  * Wrapper for user information
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class UserInfo {
 	/** Username */

@@ -8,7 +8,7 @@ import com.spiddekauga.voider.scene.Scene;
 /**
  * Wrapper to simplify the queue. Only available for this pacakage
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class ResourceItem {
 	/**

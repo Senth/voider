@@ -9,7 +9,7 @@ import com.spiddekauga.voider.resources.Def;
 /**
  * Campaign editor for combining existing levels into a campaign.
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class CampaignEditor extends Editor {
 	/**

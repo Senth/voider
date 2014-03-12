@@ -8,7 +8,7 @@ import com.spiddekauga.voider.scene.LoadingScene;
 /**
  * Splash screen, displays Spiddekauga Logo
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class SplashScreen extends LoadingScene {
 

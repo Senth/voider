@@ -8,7 +8,7 @@ import com.spiddekauga.voider.network.entities.IEntity;
 /**
  * Response from the login method
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
 public class LoginMethodResponse implements IEntity {

@@ -24,7 +24,7 @@ import com.spiddekauga.voider.resources.IResource;
 /**
  * Container class for all the selected actors in the level editor
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class SelectionTool extends TouchTool {
 	/**

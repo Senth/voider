@@ -73,7 +73,7 @@ import com.spiddekauga.voider.resources.ResourceItem;
  * Pool for Kryo instances. When creating a new instance Kryo registers all
  * necessary classes used by Voider.
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class KryoVoiderPool extends Pool<Kryo> {
 

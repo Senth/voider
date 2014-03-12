@@ -7,7 +7,7 @@ import com.badlogic.gdx.files.FileHandle;
 /**
  * Class for getting a file handle for a resource that has revisions
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class RevisionFileHandleResolver implements FileHandleResolver {
 	@Override

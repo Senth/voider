@@ -37,7 +37,7 @@ import com.spiddekauga.voider.utils.Pools;
  * <p>
  * The preferred size of the label is determined by the actual text bounds, unless {@link #setWrap(boolean) word wrap} is enabled.
  * @author Nathan Sweet
- * @author Matteus Magnusson <senth.wallace@gmail.com> Added doxygen and changed wrap behavior
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com> Added doxygen and changed wrap behavior
  * */
 public class Label extends Widget {
 

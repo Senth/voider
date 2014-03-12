@@ -12,7 +12,7 @@ import com.spiddekauga.voider.utils.Messages;
  * calculates the amount of time to show the text depending on the length of the
  * text.
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class LoadingTextScene extends LoadingScene {
 	/**

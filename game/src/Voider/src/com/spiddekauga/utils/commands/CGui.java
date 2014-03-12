@@ -7,7 +7,7 @@ import com.spiddekauga.voider.Config.Gui;
 /**
  * Common class for GUI objects
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public abstract class CGui extends Command {
 

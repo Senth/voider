@@ -11,7 +11,7 @@ import com.spiddekauga.voider.scene.Scene;
  * Prototype scene. Mainly for testing new things before implementing
  * them in the game.
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class PrototypeScene extends Scene {
 	/**

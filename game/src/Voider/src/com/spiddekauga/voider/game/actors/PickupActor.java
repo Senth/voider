@@ -8,7 +8,7 @@ import com.spiddekauga.voider.Config.Graphics.RenderOrders;
  * Pickup actors contains a collectible that will be transfered to the player
  * once the player collides with this pickup.
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class PickupActor extends Actor {
 	/**

@@ -7,7 +7,7 @@ import com.spiddekauga.voider.game.actors.EnemyActor;
 /**
  * Sets the enemy's path
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class CEnemySetPath extends CResourceChange {
 	/**

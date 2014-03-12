@@ -34,7 +34,7 @@ import com.spiddekauga.voider.utils.Pools;
 /**
  * Tool for adding or moving a corner
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class AddMoveCornerTool extends TouchTool implements ISelectionListener {
 	/**

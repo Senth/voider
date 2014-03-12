@@ -16,7 +16,7 @@ import com.spiddekauga.voider.scene.SceneSwitcher;
 /**
  * Base class for all triggers
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public abstract class Trigger extends Resource implements IResourceUpdate, IResourceEditorRender, IResourceSelectable {
 	/**

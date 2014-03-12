@@ -11,7 +11,7 @@ import com.spiddekauga.voider.utils.Pools;
 /**
  * Base class for all resources
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public abstract class Resource implements IResource {
 	@Override

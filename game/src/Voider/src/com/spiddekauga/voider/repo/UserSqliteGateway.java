@@ -11,7 +11,7 @@ import com.spiddekauga.voider.utils.UserInfo;
 /**
  * SQLite gateway for user repository
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 class UserSqliteGateway extends SqliteGateway {
 	/**

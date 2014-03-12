@@ -34,7 +34,7 @@ import com.spiddekauga.voider.utils.Messages;
 /**
  * Has some common methods for gui
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public abstract class ActorGui extends EditorGui {
 

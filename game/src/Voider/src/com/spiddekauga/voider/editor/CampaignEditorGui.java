@@ -3,7 +3,7 @@ package com.spiddekauga.voider.editor;
 /**
  * Campaign editor GUI
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class CampaignEditorGui extends EditorGui {
 

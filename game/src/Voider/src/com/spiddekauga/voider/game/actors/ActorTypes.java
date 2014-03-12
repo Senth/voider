@@ -3,7 +3,7 @@ package com.spiddekauga.voider.game.actors;
 /**
  * All Actor types
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public enum ActorTypes {
 	/**

@@ -19,7 +19,7 @@ import com.spiddekauga.voider.scene.SceneSwitcher;
 /**
  * Abstract tool for handling touch events
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public abstract class TouchTool extends InputAdapter {
 	/**

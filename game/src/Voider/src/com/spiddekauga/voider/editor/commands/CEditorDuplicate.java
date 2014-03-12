@@ -6,7 +6,7 @@ import com.spiddekauga.voider.editor.IEditor;
 /**
  * Duplicates the actor in the current editor
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class CEditorDuplicate extends Command {
 	/**

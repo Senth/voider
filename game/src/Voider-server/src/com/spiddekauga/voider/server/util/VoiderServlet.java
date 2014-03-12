@@ -12,7 +12,7 @@ import javax.servlet.http.HttpSession;
 /**
  * Wrapper for the Voider servlet
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public abstract class VoiderServlet extends HttpServlet {
 	/**

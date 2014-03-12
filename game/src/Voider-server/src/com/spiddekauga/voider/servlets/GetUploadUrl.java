@@ -19,7 +19,7 @@ import com.spiddekauga.voider.server.util.VoiderServlet;
 /**
  * Returns a valid upload url
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
 public class GetUploadUrl extends VoiderServlet {

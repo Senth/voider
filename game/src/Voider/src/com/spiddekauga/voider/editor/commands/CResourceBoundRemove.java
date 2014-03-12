@@ -6,7 +6,7 @@ import com.spiddekauga.voider.resources.IResource;
 /**
  * Removes a bound resource from the specified resource
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class CResourceBoundRemove extends Command {
 	/**

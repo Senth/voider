@@ -7,7 +7,7 @@ import com.spiddekauga.voider.game.Collectibles;
  * Pickup actor definition, does nothing more than specify that the actor
  * is a pickup object
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class PickupActorDef extends ActorDef {
 	/**

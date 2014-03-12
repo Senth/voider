@@ -10,7 +10,7 @@ import com.spiddekauga.voider.utils.Geometry.PolygonCornersTooCloseException;
  * Fixes the custom fixes on either execute or undo. The actors doesn't update the fixtures
  * themselves another action needs to do that after it has been changed.
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class CActorDefFixCustomFixtures extends Command {
 	/**

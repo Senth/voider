@@ -6,7 +6,7 @@ import com.spiddekauga.voider.Config;
  * Class containing all messages for voider, including help function
  * for retrieving messages
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class Messages {
 

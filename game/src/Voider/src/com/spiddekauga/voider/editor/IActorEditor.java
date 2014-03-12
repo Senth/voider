@@ -8,7 +8,7 @@ import com.spiddekauga.voider.game.actors.ActorShapeTypes;
  * Interface for actor editors. This interface have some common
  * actions for all actor editors. Such as save, load, new, duplicate.
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public interface IActorEditor extends IEditor {
 	/**

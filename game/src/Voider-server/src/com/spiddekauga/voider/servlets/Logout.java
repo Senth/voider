@@ -15,7 +15,7 @@ import com.spiddekauga.voider.server.util.VoiderServlet;
 /**
  * Called when a user tries to logout
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
 public class Logout extends VoiderServlet {

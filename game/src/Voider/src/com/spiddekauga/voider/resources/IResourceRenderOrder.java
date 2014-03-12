@@ -6,7 +6,7 @@ import com.spiddekauga.voider.Config.Graphics.RenderOrders;
 /**
  * Render order of the resource
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public interface IResourceRenderOrder {
 	/**

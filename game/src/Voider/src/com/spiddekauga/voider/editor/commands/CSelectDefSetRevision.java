@@ -8,7 +8,7 @@ import com.spiddekauga.voider.scene.SelectDefScene;
 /**
  * Sets the revision for the currently selected resource
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class CSelectDefSetRevision extends Command {
 	/**

@@ -3,7 +3,7 @@ package com.spiddekauga.voider.resources;
 /**
  * Calls editor update on the resource
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public interface IResourceEditorUpdate {
 	/**

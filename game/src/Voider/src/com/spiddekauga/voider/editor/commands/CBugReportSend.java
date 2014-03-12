@@ -7,7 +7,7 @@ import com.spiddekauga.utils.commands.Command;
 /**
  * Sends a bug report to the server
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class CBugReportSend extends Command {
 	/**

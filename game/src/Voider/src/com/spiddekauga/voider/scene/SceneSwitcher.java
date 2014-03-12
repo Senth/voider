@@ -23,7 +23,7 @@ import com.spiddekauga.voider.scene.Scene.Outcomes;
 /**
  * Switches between scenes in an game/app.
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class SceneSwitcher {
 	/**
@@ -602,6 +602,16 @@ public class SceneSwitcher {
 			if (previousScene.isResourcesLoaded() && previousScene.unloadResourcesOnDeactivate()) {
 				mScenesNeedUnloading.add(previousScene);
 			}
+		}
+	}
+
+	/**
+	 * Report an exception
+	 * @param exception the exception that was thrown
+	 */
+	public static void handleException(Exception exception) {
+		if (!mScenes.isEmpty()) {
+			mScenes.peek().handleException(exception);
 		}
 	}
 

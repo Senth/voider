@@ -11,7 +11,7 @@ import com.spiddekauga.voider.Config;
 /**
  * A pool of objects that can be reused to avoid allocation
  * @param <T> type of pool
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class Pool<T> extends ReflectionPool<T> {
 

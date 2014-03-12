@@ -7,7 +7,7 @@ import java.util.UUID;
  * An exception that is thrown when the specified resource could
  * not be found
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class ResourceNotFoundException extends ResourceException {
 	/**

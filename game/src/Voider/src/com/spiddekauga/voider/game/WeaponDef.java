@@ -10,7 +10,7 @@ import com.spiddekauga.voider.resources.ResourceCacheFacade;
 /**
  * Holds all the necessary information about a weapon
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class WeaponDef {
 	/**

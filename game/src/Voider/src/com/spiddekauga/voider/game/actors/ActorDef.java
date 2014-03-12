@@ -25,7 +25,7 @@ import com.spiddekauga.voider.utils.Pools;
  * E.g. A specific enemy will have the same variables here. The only thing changed during
  * it's life is the variables in the Actor class.
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public abstract class ActorDef extends Def implements Disposable, IResourceTexture, IResourcePng {
 	/**

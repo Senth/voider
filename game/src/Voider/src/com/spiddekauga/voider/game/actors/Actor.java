@@ -52,7 +52,7 @@ import com.spiddekauga.voider.utils.Pools;
 /**
  * The abstract base class for all actors
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public abstract class Actor extends Resource implements IResourceUpdate, KryoTaggedCopyable, KryoSerializable, Disposable, Poolable, IResourceBody, IResourcePosition, ITriggerListener, IResourceEditorUpdate, IResourceRender, IResourceEditorRender, IResourceSelectable, IResourceCorner {
 	/**

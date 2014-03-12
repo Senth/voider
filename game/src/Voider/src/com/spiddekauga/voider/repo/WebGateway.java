@@ -20,7 +20,7 @@ import com.spiddekauga.utils.Buffers;
 /**
  * Network gateway for sending HTTP request to the server
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 class WebGateway {
 	/**

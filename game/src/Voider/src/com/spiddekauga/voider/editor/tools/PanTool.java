@@ -16,7 +16,7 @@ import com.spiddekauga.voider.utils.Pools;
 /**
  * Pan tool
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class PanTool extends TouchTool {
 

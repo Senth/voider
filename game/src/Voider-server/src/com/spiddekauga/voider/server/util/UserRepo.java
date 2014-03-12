@@ -8,7 +8,7 @@ import com.spiddekauga.appengine.DatastoreUtils;
 /**
  * Helper methods for users
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class UserRepo {
 	/**

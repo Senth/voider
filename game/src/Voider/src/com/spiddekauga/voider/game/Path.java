@@ -35,7 +35,7 @@ import com.spiddekauga.voider.utils.Pools;
 /**
  * A path that enemies and maybe something else can follow
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class Path extends Resource implements Disposable, IResourceCorner, IResourceBody, IResourcePosition, IResourceEditorRender, IResourceSelectable, KryoPostRead {
 	/**

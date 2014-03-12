@@ -9,7 +9,7 @@ import com.spiddekauga.voider.resources.Def;
  * Definition of a saved game. This essentially holds all dependencies
  * and the associated GameSave resource.
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class GameSaveDef extends Def {
 	/**

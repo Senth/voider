@@ -6,7 +6,7 @@ import com.spiddekauga.voider.editor.IEditor;
 /**
  * Opens up the load actor screen for the current editor
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class CEditorLoad extends Command {
 	/**

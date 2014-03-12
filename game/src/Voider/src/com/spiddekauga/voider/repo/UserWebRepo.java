@@ -15,7 +15,7 @@ import com.spiddekauga.voider.network.entities.method.RegisterUserMethodResponse
 /**
  * Repository for handling server calls regarding the user
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class UserWebRepo extends WebRepo {
 	/**

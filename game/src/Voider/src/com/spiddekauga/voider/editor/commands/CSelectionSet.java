@@ -11,7 +11,7 @@ import com.spiddekauga.voider.utils.Pools;
 /**
  * Sets the current selection
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class CSelectionSet extends Command implements Disposable {
 	/**

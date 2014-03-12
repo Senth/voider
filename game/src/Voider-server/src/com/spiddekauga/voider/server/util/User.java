@@ -7,7 +7,7 @@ import com.google.appengine.api.datastore.Key;
 /**
  * Logged in user
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class User extends SessionVariable implements Serializable {
 	/**

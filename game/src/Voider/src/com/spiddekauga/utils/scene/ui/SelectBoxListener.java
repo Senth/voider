@@ -9,7 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
  * onSelectionChanged(int) when the selection has been changed. Override
  * any of these methods.
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class SelectBoxListener implements EventListener {
 	/**

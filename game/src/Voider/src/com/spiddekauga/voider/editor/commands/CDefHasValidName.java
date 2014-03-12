@@ -12,7 +12,7 @@ import com.spiddekauga.voider.scene.Gui;
 /**
  * Cancels the hide of the message box if the definition doesn't got a valid name.
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class CDefHasValidName extends Command {
 	/**

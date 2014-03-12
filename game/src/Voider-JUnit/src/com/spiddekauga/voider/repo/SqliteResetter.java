@@ -6,7 +6,7 @@ import com.badlogic.gdx.sql.SQLiteGdxException;
 /**
  * Reses SQLite database for the next test
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class SqliteResetter extends SqliteGateway {
 

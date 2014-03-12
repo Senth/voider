@@ -17,7 +17,7 @@ import com.spiddekauga.voider.Config;
  * Base class for all "definitions", e.g. ActorDef, WeaponDef. All definitions
  * shall derive from this class.
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public abstract class Def extends Resource implements IResourceDependency, IResourceRevision {
 	/**

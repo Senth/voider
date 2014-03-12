@@ -9,7 +9,7 @@ import com.spiddekauga.voider.game.actors.BulletActorDef;
 /**
  * Selects a bullet definition to be used for the enemies
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class CEnemyBulletDefSelect extends Command {
 	/**

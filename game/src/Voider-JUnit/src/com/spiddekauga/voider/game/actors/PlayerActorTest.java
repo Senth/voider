@@ -11,7 +11,7 @@ import com.spiddekauga.voider.resources.ResourceSaver;
 /**
  * Tests the player actor
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class PlayerActorTest extends ActorTest {
 	/**

@@ -7,7 +7,7 @@ import com.spiddekauga.voider.network.entities.IEntity;
 /**
  * Abstract class for all method entities
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public abstract interface IMethodEntity extends IEntity {
 	/**

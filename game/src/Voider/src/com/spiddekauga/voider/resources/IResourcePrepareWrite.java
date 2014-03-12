@@ -4,7 +4,7 @@ package com.spiddekauga.voider.resources;
  * Prepares writing of a resource. This should be called manually before starting
  * the write. Not to be mixed with KryoPreWrite.
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public interface IResourcePrepareWrite {
 	/**

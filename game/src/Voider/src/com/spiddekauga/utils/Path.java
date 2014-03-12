@@ -6,7 +6,7 @@ import java.net.URLDecoder;
 /**
  * Various path help methods
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class Path {
 	/**

@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * Class for common collection operations
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class Collections {
 	/**

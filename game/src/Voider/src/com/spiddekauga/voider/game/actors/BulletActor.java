@@ -9,7 +9,7 @@ import com.spiddekauga.voider.utils.Pools;
  * Bullet actor, contains necessary information about the bullet.
  * Not only the type of bullet, but speed, etc.
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class BulletActor extends Actor {
 	/**

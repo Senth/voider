@@ -35,7 +35,7 @@ import com.spiddekauga.voider.utils.Pools;
  * The main game. Starts with a level and could either be in regular or
  * testing mode. Testing mode will set the player to unlimited lives.
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class GameScene extends WorldScene {
 	/**

@@ -29,7 +29,7 @@ import com.spiddekauga.voider.utils.Pools;
  * \li DEF_SELECTED selected a definition, the message is the file path for the select
  * \li DEF_SELECT_CANCEL canceled the selection.
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class SelectDefScene extends WorldScene {
 	/**

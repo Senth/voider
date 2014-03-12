@@ -20,7 +20,7 @@ import com.spiddekauga.voider.utils.Pools;
 /**
  * Tool for moving resources that has a position
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class MoveTool extends TouchTool {
 	/**

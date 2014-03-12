@@ -6,7 +6,7 @@ import com.spiddekauga.voider.editor.LevelEditor;
 /**
  * Tests to run a level
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class CLevelRun extends Command {
 	/**

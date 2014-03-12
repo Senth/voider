@@ -12,7 +12,7 @@ import com.badlogic.gdx.graphics.Pixmap.Format;
 /**
  * Screen utilities
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class Screens {
 	/**

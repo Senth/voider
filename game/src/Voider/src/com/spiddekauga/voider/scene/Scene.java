@@ -23,7 +23,7 @@ import com.spiddekauga.voider.game.BulletDestroyer;
  * Game, Menus, Editors. It extends InputAdapter which makes it able to
  * handle all input events through derived classes (if necessary).
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public abstract class Scene extends InputAdapter implements IExceptionHandler {
 	/**
@@ -66,7 +66,7 @@ public abstract class Scene extends InputAdapter implements IExceptionHandler {
 	 * @param exception the exception that was thrown
 	 */
 	@Override
-	public void handleException(Exception exception) {
+	public synchronized void handleException(Exception exception) {
 		mGui.showBugReportWindow(exception);
 	}
 

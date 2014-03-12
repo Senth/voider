@@ -24,7 +24,7 @@ import com.spiddekauga.voider.utils.Pools;
 /**
  * Tests the ResourceSaver if it works to save files.
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class ResourceSaverTest {
 

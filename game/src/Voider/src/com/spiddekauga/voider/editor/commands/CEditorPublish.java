@@ -6,7 +6,7 @@ import com.spiddekauga.voider.editor.IEditor;
 /**
  * Tries to publish the definition.
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class CEditorPublish extends Command {
 	/**

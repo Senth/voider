@@ -7,7 +7,7 @@ import com.badlogic.gdx.math.Vector2;
 /**
  * Common interface for resources with corners (custom vertices)
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public interface IResourceCorner extends IResource {
 	/**

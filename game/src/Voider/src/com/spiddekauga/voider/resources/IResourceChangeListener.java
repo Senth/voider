@@ -4,7 +4,7 @@ package com.spiddekauga.voider.resources;
 /**
  * Listens to resource change events
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public interface IResourceChangeListener extends IResource {
 	/**

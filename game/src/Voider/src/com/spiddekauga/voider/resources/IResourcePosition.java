@@ -5,7 +5,7 @@ import com.badlogic.gdx.math.Vector2;
 /**
  * If the resource has a position
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public interface IResourcePosition extends IResource {
 	/**

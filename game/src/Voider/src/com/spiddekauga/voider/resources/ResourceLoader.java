@@ -37,7 +37,7 @@ import com.spiddekauga.voider.utils.Pools;
 /**
  * Handles loading resources
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 class ResourceLoader {
 	/**

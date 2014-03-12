@@ -11,7 +11,7 @@ import com.spiddekauga.voider.utils.Pools;
  * A virtual scroller, this scroller both scrolls and emulates scrolls when
  * the user "flings".
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class Scroller {
 	/**
@@ -249,7 +249,7 @@ public class Scroller {
 	/**
 	 * Wrapper for pointer location time
 	 * 
-	 * @author Matteus Magnusson <senth.wallace@gmail.com>
+	 * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
 	 */
 	public static class PointerTime {
 		/**

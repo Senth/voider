@@ -25,7 +25,7 @@ import com.spiddekauga.voider.scene.SceneStub;
 /**
  * Tests the resource depnedency loader
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class ResourceDependencyLoaderTest {
 

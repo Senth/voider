@@ -5,7 +5,7 @@ import com.spiddekauga.voider.resources.IResource;
 /**
  * Wraps a resource together with some arbitrary data for handling hits.
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class HitWrapper {
 	/**

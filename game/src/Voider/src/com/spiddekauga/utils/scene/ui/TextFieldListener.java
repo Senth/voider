@@ -16,7 +16,7 @@ import com.spiddekauga.voider.Config.Gui;
 /**
  * Listens to a text field. When a value has been changed #onChange() is called
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class TextFieldListener implements EventListener {
 	/**

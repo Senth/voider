@@ -13,7 +13,7 @@ import com.spiddekauga.voider.Config;
 /**
  * Class for hiding GUI elements
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public abstract class GuiHider implements Disposable {
 	@Override

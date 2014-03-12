@@ -3,7 +3,7 @@ package com.spiddekauga.voider.game.triggers;
 /**
  * Wrapper for trigger actions sent to the listener
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class TriggerAction {
 	/** The action the listener shall take */

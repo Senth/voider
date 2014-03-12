@@ -77,7 +77,7 @@ import com.spiddekauga.voider.utils.Pools;
 /**
  * The level editor scene
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class LevelEditor extends Editor implements IResourceChangeEditor, ISelectionListener, ICallerResponseListener {
 	/**

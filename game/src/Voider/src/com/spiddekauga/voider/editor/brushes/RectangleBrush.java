@@ -13,7 +13,7 @@ import com.spiddekauga.voider.utils.Pools;
 /**
  * A simple resource that draws a rectangle
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class RectangleBrush extends Resource implements IResourceEditorRender, Disposable {
 	/**

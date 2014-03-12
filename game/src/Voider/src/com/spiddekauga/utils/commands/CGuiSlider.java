@@ -5,7 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 /**
  * Changes the value of a slider.
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class CGuiSlider extends CGui implements ICommandCombinable {
 	/**

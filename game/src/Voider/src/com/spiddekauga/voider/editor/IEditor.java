@@ -8,7 +8,7 @@ import com.spiddekauga.voider.resources.Def;
 /**
  * 
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public interface IEditor {
 	/**

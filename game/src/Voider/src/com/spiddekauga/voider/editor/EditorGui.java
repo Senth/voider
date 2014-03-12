@@ -61,7 +61,7 @@ import com.spiddekauga.voider.utils.Pools;
 /**
  * Common methods for all editors
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public abstract class EditorGui extends Gui {
 	/**

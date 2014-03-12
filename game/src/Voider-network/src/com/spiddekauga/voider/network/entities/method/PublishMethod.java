@@ -7,7 +7,7 @@ import com.spiddekauga.voider.network.entities.DefEntity;
 /**
  * Publishes resources
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
 public class PublishMethod implements IMethodEntity {

@@ -18,7 +18,7 @@ import com.spiddekauga.voider.Config.File;
  * \li Music
  * \li Sound
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public enum InternalNames {
 	// UI

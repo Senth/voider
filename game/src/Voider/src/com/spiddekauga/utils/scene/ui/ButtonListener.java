@@ -11,7 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent;
  * Calls the method {@link #onChecked(boolean)} when the button becomes checked/unchecked
  * Calls {@link #onPressed()} when the button has been pressed.
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public abstract class ButtonListener implements EventListener {
 	/**

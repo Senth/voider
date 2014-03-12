@@ -31,7 +31,7 @@ import com.spiddekauga.voider.resources.ResourceSaver;
 /**
  * Tests enemy actor and definition
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class EnemyActorTest extends ActorTest {
 	/**

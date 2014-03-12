@@ -48,7 +48,7 @@ import com.spiddekauga.voider.scene.SelectDefScene.DefVisible;
  * the top for filtering search, and an optionally checkbox for
  * only showing the player's own actors.
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class SelectDefGui extends Gui {
 	/**

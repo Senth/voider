@@ -32,7 +32,7 @@ import com.spiddekauga.voider.utils.Pools;
 /**
  * Listens to a GUI actor to display a tooltip for it.
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class TooltipListener extends InputAdapter implements EventListener {
 	/**

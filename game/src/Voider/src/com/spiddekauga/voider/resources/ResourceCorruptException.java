@@ -7,7 +7,7 @@ import java.util.UUID;
  * An exception that is thrown when the specified resource has
  * been corrupted and cannot be loaded
  * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class ResourceCorruptException extends ResourceException {
 	/**
