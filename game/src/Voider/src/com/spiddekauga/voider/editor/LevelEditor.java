@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector2;
+import com.spiddekauga.utils.IOutstreamProgressListener;
 import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.utils.commands.Command;
@@ -79,7 +80,7 @@ import com.spiddekauga.voider.utils.Pools;
  * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public class LevelEditor extends Editor implements IResourceChangeEditor, ISelectionListener, ICallerResponseListener {
+public class LevelEditor extends Editor implements IResourceChangeEditor, ISelectionListener, ICallerResponseListener, IOutstreamProgressListener {
 	/**
 	 * Constructor for the level editor
 	 */
@@ -703,8 +704,13 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	@Override
 	public void publishDef() {
 		if (mLevel != null) {
-			mResourceRepo.publish(this, mLevel);
+			mResourceRepo.publish(this, this, mLevel);
 		}
+	}
+
+	@Override
+	public void handleWrite(long mcWrittenBytes, long mcTotalBytes) {
+		// TODO Auto-generated method stub
 	}
 
 	@Override

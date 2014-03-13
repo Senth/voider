@@ -4,11 +4,12 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.entity.mime.MultipartEntityWithProgressBuilder;
 import org.apache.http.entity.mime.content.ContentBody;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -16,6 +17,7 @@ import org.apache.http.impl.client.HttpClients;
 
 import com.badlogic.gdx.Gdx;
 import com.spiddekauga.utils.Buffers;
+import com.spiddekauga.utils.IOutstreamProgressListener;
 
 /**
  * Network gateway for sending HTTP request to the server
@@ -31,7 +33,31 @@ class WebGateway {
 	 * Length 0 if no response was found. null if an error occurred.
 	 */
 	public static byte[] sendRequest(String methodName, byte[] entity) {
-		return sendUploadRequest(SERVER_HOST + methodName, entity, null);
+		return sendRequest(SERVER_HOST + methodName, entity, (List<FieldNameFileWrapper>) null, (List<IOutstreamProgressListener>) null);
+	}
+
+	/**
+	 * Sends an entity over HTTP to the specified server
+	 * @param uploadUrl where to upload the files
+	 * @param entity data to send
+	 * @param progressListeners optional progress listeners
+	 * @return entity bytes response from the server.
+	 * Length 0 if no response was found. null if an error occurred.
+	 */
+	public static byte[] sendRequest(String uploadUrl, byte[] entity, List<IOutstreamProgressListener> progressListeners) {
+		return sendRequest(uploadUrl, entity, null, progressListeners);
+	}
+
+	/**
+	 * Sends an entity over HTTP to the specified server
+	 * @param uploadUrl where to upload the files
+	 * @param entity data to send
+	 * @param progressListener optional progress listener
+	 * @return entity bytes response from the server.
+	 * Length 0 if no response was found. null if an error occurred.
+	 */
+	public static byte[] sendRequest(String uploadUrl, byte[] entity, IOutstreamProgressListener progressListener) {
+		return sendRequest(uploadUrl, entity, null, progressListener);
 	}
 
 	/**
@@ -42,11 +68,40 @@ class WebGateway {
 	 * @return entity bytes response from the server.
 	 * Length 0 if no response was found. null if an error occurred.
 	 */
-	public static byte[] sendUploadRequest(String uploadUrl, byte[] entity, ArrayList<FieldNameFileWrapper> files) {
+	public static byte[] sendRequest(String uploadUrl, byte[] entity, ArrayList<FieldNameFileWrapper> files) {
+		return sendRequest(uploadUrl, entity, files);
+	}
+
+	/**
+	 * Sends an entity and optional files over HTTP
+	 * @param uploadUrl where to upload the files
+	 * @param entity data to send
+	 * @param files optional files to upload
+	 * @param progressListener optional progress listeners
+	 * @return entity bytes response from the server.
+	 * Length 0 if no response was found. null if an error occurred.
+	 */
+	public static byte[] sendRequest(String uploadUrl, byte[] entity, List<FieldNameFileWrapper> files, IOutstreamProgressListener progressListener) {
+		ArrayList<IOutstreamProgressListener> progressListenersList = new ArrayList<>();
+		progressListenersList.add(progressListener);
+		return sendRequest(uploadUrl, entity, files, progressListenersList);
+	}
+
+
+	/**
+	 * Sends an entity and optional files over HTTP
+	 * @param uploadUrl where to upload the files
+	 * @param entity data to send
+	 * @param files optional files to upload
+	 * @param progressListeners optional progress listeners
+	 * @return entity bytes response from the server.
+	 * Length 0 if no response was found. null if an error occurred.
+	 */
+	public static byte[] sendRequest(String uploadUrl, byte[] entity, List<FieldNameFileWrapper> files, List<IOutstreamProgressListener> progressListeners) {
 		initHttpClient();
 
 		try {
-			MultipartEntityBuilder entityBuilder = MultipartEntityBuilder.create();
+			MultipartEntityWithProgressBuilder entityBuilder = MultipartEntityWithProgressBuilder.create();
 			entityBuilder.addBinaryBody(ENTITY_NAME, entity);
 
 			// Add files
@@ -55,6 +110,10 @@ class WebGateway {
 					ContentBody contentBody = new FileBody(fieldNameFile.file);
 					entityBuilder.addPart(fieldNameFile.fieldName, contentBody);
 				}
+			}
+
+			if (progressListeners != null) {
+				entityBuilder.addProgressListener(progressListeners);
 			}
 
 

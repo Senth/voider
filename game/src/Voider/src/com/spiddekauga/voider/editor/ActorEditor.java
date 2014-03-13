@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector2;
+import com.spiddekauga.utils.IOutstreamProgressListener;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.editor.brushes.VectorBrush;
@@ -41,7 +42,7 @@ import com.spiddekauga.voider.utils.Pools;
  * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public abstract class ActorEditor extends Editor implements IActorEditor, IResourceChangeEditor, ICallerResponseListener {
+public abstract class ActorEditor extends Editor implements IActorEditor, IResourceChangeEditor, ICallerResponseListener, IOutstreamProgressListener {
 	/**
 	 * @param gui all UI elements
 	 * @param pickRadius picking radius
@@ -473,8 +474,13 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 	@Override
 	public void publishDef() {
 		if (mActorDef != null) {
-			mResourceRepo.publish(this, mActorDef);
+			mResourceRepo.publish(this, this, mActorDef);
 		}
+	}
+
+	@Override
+	public void handleWrite(long mcWrittenBytes, long mcTotalBytes) {
+		// TODO Auto-generated method stub
 	}
 
 	@Override

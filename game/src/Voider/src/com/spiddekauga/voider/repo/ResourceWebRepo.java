@@ -3,6 +3,7 @@ package com.spiddekauga.voider.repo;
 import java.util.ArrayList;
 
 import com.badlogic.gdx.Gdx;
+import com.spiddekauga.utils.IOutstreamProgressListener;
 import com.spiddekauga.voider.game.LevelDef;
 import com.spiddekauga.voider.game.actors.BulletActorDef;
 import com.spiddekauga.voider.game.actors.EnemyActorDef;
@@ -49,9 +50,10 @@ public class ResourceWebRepo extends WebRepo {
 	/**
 	 * Publish all specified resources
 	 * @param resources all resource to publish
+	 * @param progressListener send upload progress to this listener
 	 * @param responseListeners listens to the web response
 	 */
-	void publish(ArrayList<IResource> resources, ICallerResponseListener... responseListeners) {
+	void publish(ArrayList<IResource> resources, IOutstreamProgressListener progressListener, ICallerResponseListener... responseListeners) {
 		PublishMethod method = createPublishMethod(resources);
 		ArrayList<FieldNameFileWrapper> files = createFieldNameFiles(resources);
 

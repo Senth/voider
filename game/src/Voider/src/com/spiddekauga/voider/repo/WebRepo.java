@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 
 import com.badlogic.gdx.Gdx;
+import com.spiddekauga.utils.IOutstreamProgressListener;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.method.GetUploadUrlMethod;
@@ -27,7 +28,17 @@ abstract class WebRepo {
 	 * @param callerResponseListeners class that invoked the WebRepo
 	 */
 	protected void sendInNewThread(IMethodEntity methodEntity, ICallerResponseListener... callerResponseListeners) {
-		sendInNewThread(methodEntity, null, callerResponseListeners);
+		sendInNewThread(methodEntity, null, null, callerResponseListeners);
+	}
+
+	/**
+	 * Creates a new thread that will send and receive a HTTP request
+	 * @param methodEntity the entity to send to the server
+	 * @param progressListener send upload progress to this listener
+	 * @param callerResponseListeners class that invoked the WebRepo
+	 */
+	protected void sendInNewThread(IMethodEntity methodEntity, IOutstreamProgressListener progressListener, ICallerResponseListener... callerResponseListeners) {
+		sendInNewThread(methodEntity, null, progressListener, callerResponseListeners);
 	}
 
 	/**
@@ -37,7 +48,18 @@ abstract class WebRepo {
 	 * @param callerResponseListeners class that invoked the WebRepo
 	 */
 	protected void sendInNewThread(IMethodEntity methodEntity, ArrayList<FieldNameFileWrapper> files, ICallerResponseListener... callerResponseListeners) {
-		Thread thread = new ThreadWrapper(callerResponseListeners, this, methodEntity, files);
+		sendInNewThread(methodEntity, files, null, callerResponseListeners);
+	}
+
+	/**
+	 * Creates a new thread that will send and receive a HTTP request
+	 * @param methodEntity the entity to send to the server
+	 * @param files all the files to upload
+	 * 	 * @param progressListener send upload progress to this listener
+	 * @param callerResponseListeners class that invoked the WebRepo
+	 */
+	protected void sendInNewThread(IMethodEntity methodEntity, ArrayList<FieldNameFileWrapper> files, IOutstreamProgressListener progressListener, ICallerResponseListener... callerResponseListeners) {
+		Thread thread = new ThreadWrapper(callerResponseListeners, this, methodEntity, files, progressListener);
 		thread.start();
 	}
 
@@ -52,9 +74,10 @@ abstract class WebRepo {
 	/**
 	 * Serializes and sends the entity
 	 * @param methodEntity the entity to send
+	 * @param progressListener send upload progress to this listener
 	 * @return response entity, null if something went wrong
 	 */
-	protected static IEntity serializeAndSend(IMethodEntity methodEntity) {
+	protected static IEntity serializeAndSend(IMethodEntity methodEntity, IOutstreamProgressListener progressListener) {
 		byte[] entitySend = NetworkEntitySerializer.serializeEntity(methodEntity);
 		if (entitySend != null) {
 			byte[] response = WebGateway.sendRequest(methodEntity.getMethodName(), entitySend);
@@ -70,10 +93,11 @@ abstract class WebRepo {
 	 * Send all methods that should upload files via this method
 	 * @param method the method that should "called" on the server
 	 * when the upload is finished
+	 * @param progressListener send upload progress to this listener
 	 * @param files all files that should be uploaded
 	 * @return server method response, null if something went wrong
 	 */
-	protected static IEntity serializeAndSend(IMethodEntity method, ArrayList<FieldNameFileWrapper> files) {
+	protected static IEntity serializeAndSend(IMethodEntity method, IOutstreamProgressListener progressListener, ArrayList<FieldNameFileWrapper> files) {
 		// Get upload URL
 		GetUploadUrlMethod uploadMethod = new GetUploadUrlMethod();
 		uploadMethod.redirectMethod = method.getMethodName();
@@ -88,7 +112,7 @@ abstract class WebRepo {
 			String uploadUrl = ((GetUploadUrlMethodResponse) uploadResponse).uploadUrl;
 			if (uploadUrl != null) {
 				byte[] methodBytes = NetworkEntitySerializer.serializeEntity(method);
-				byte[] responseBytes = WebGateway.sendUploadRequest(uploadUrl, methodBytes, files);
+				byte[] responseBytes = WebGateway.sendRequest(uploadUrl, methodBytes, files);
 				return NetworkEntitySerializer.deserializeEntity(responseBytes);
 			}
 		}
@@ -135,12 +159,14 @@ abstract class WebRepo {
 		 * @param webRepo the web repository to send the response to
 		 * @param methodEntity the method to send
 		 * @param files all the files to send, set to null to not send any files
+		 * @param progressListener send upload progress to this listener
 		 */
-		ThreadWrapper(ICallerResponseListener[] callerResponseListeners, WebRepo webRepo, IMethodEntity methodEntity, ArrayList<FieldNameFileWrapper> files) {
+		ThreadWrapper(ICallerResponseListener[] callerResponseListeners, WebRepo webRepo, IMethodEntity methodEntity, ArrayList<FieldNameFileWrapper> files, IOutstreamProgressListener progressListener) {
 			mMethodEntity = methodEntity;
 			mWebRepo = webRepo;
 			mCallerRepsonseListeners = callerResponseListeners;
 			mFiles = files;
+			mProgressListener = progressListener;
 		}
 
 		@Override
@@ -148,9 +174,9 @@ abstract class WebRepo {
 			try {
 				IEntity response = null;
 				if (mFiles == null || mFiles.isEmpty()) {
-					response = serializeAndSend(mMethodEntity);
+					response = serializeAndSend(mMethodEntity, mProgressListener);
 				} else {
-					response = serializeAndSend(mMethodEntity, mFiles);
+					response = serializeAndSend(mMethodEntity, mProgressListener, mFiles);
 				}
 
 				mWebRepo.handleResponse(mMethodEntity, response, mCallerRepsonseListeners);
@@ -169,5 +195,7 @@ abstract class WebRepo {
 		WebRepo mWebRepo;
 		/** Caller instance, i.e. the class that invoked the WebRepo */
 		ICallerResponseListener[] mCallerRepsonseListeners;
+		/** Progress listener */
+		IOutstreamProgressListener mProgressListener;
 	}
 }

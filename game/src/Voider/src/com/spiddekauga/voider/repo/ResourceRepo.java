@@ -8,6 +8,7 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.badlogic.gdx.Gdx;
+import com.spiddekauga.utils.IOutstreamProgressListener;
 import com.spiddekauga.voider.game.Level;
 import com.spiddekauga.voider.game.actors.ActorDef;
 import com.spiddekauga.voider.network.entities.DefEntity;
@@ -50,24 +51,26 @@ public class ResourceRepo implements ICallerResponseListener {
 	/**
 	 * Publish an actor (and its unpublished dependencies) to the server
 	 * @param responseListener listens to the web response
+	 * @param progressListener listen to upload writing
 	 * @param actorDef the actor to publish
 	 */
-	public void publish(ICallerResponseListener responseListener, ActorDef actorDef) {
+	public void publish(ICallerResponseListener responseListener, IOutstreamProgressListener progressListener, ActorDef actorDef) {
 		@SuppressWarnings("unchecked")
 		ArrayList<IResource> resources = Pools.arrayList.obtain();
 
 		resources.addAll(getNonPublishedDependencies(actorDef));
 		resources.add(actorDef);
 
-		publish(responseListener, resources);
+		publish(responseListener, progressListener, resources);
 	}
 
 	/**
 	 * Publish a level (and its unpublished dependencies) to the server
 	 * @param responseListener listens to the web response
+	 * @param progressListener listen to upload writing
 	 * @param level the level to publish
 	 */
-	public void publish(ICallerResponseListener responseListener, Level level) {
+	public void publish(ICallerResponseListener responseListener, IOutstreamProgressListener progressListener, Level level) {
 		@SuppressWarnings("unchecked")
 		ArrayList<IResource> resources = Pools.arrayList.obtain();
 
@@ -75,7 +78,7 @@ public class ResourceRepo implements ICallerResponseListener {
 		resources.add(level);
 		resources.add(level.getDef());
 
-		publish(responseListener, resources);
+		publish(responseListener, progressListener, resources);
 	}
 
 	/**
@@ -89,11 +92,12 @@ public class ResourceRepo implements ICallerResponseListener {
 	/**
 	 * Publish all the resources. In addition frees the ArrayList
 	 * @param responseListener listens to the web response
+	 * @param progressListener listen to upload writing
 	 * @param resources all resources to publish
 	 */
-	private void publish(ICallerResponseListener responseListener, ArrayList<IResource> resources) {
+	private void publish(ICallerResponseListener responseListener, IOutstreamProgressListener progressListener, ArrayList<IResource> resources) {
 		// Publish to server
-		mWebRepo.publish(resources, this, responseListener);
+		mWebRepo.publish(resources, progressListener, this, responseListener);
 
 		Pools.arrayList.free(resources);
 	}
