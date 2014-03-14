@@ -223,7 +223,7 @@ public class LoginScene extends Scene implements ICallerResponseListener {
 		if (success) {
 			UserLocalRepo.setLastUser(username, password);
 			UserLocalRepo.setAsRegistered();
-			mUser.setUsername(username);
+			mUser.login(username, null, false);
 			setOutcome(Outcomes.LOGGED_IN);
 		} else {
 			mGui.showErrorMessage("A temporary user with that username or email already exists");
@@ -245,12 +245,11 @@ public class LoginScene extends Scene implements ICallerResponseListener {
 		if (response instanceof RegisterUserMethodResponse) {
 			handleRegisterResponse((RegisterUserMethodResponse) response);
 		}
-
 	}
 
 	/** Global user */
 	private static final User mUser = User.getGlobalUser();
-	/** User web repo */
+	/** User web repository */
 	private UserWebRepo mUserWebRepo = UserWebRepo.getInstance();
 	/** Currently auto-logging in? */
 	private boolean mAutoLogin = false;

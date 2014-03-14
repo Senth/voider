@@ -54,6 +54,7 @@ public class User {
 	public void login(String username, String serverKey, boolean online) {
 		mUsername = username;
 		mServerKey = serverKey;
+		mOnline = online;
 	}
 
 	/**

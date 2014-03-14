@@ -606,7 +606,6 @@ public abstract class EditorGui extends Gui {
 	 * Shows the confirm message box for exiting to main menu
 	 */
 	void showExitConfirmDialog() {
-		//		executeCommandAndCheckSave(new CSceneReturn(MainMenu.class), "Exit to Main Menu", "Save and exit", "Exit", Messages.Editor.EXIT_TO_MAIN_MENU);
 		if (mEditor.isSaved()) {
 			MsgBoxExecuter msgBox = getFreeMsgBox(true);
 			msgBox.setTitle("Exit to Main Menu");

@@ -713,7 +713,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	public void handleWrite(long mcWrittenBytes, long mcTotalBytes) {
 		float percentage = 0;
 		if (mcTotalBytes != 0) {
-			percentage = (float) (((double) mcWrittenBytes) / mcTotalBytes);
+			percentage = (float) (((double) mcWrittenBytes) / mcTotalBytes) * 100;
 		}
 
 		mGui.updateProgressBar(percentage);

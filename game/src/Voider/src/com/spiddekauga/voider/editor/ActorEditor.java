@@ -483,7 +483,7 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 	public void handleWrite(long mcWrittenBytes, long mcTotalBytes) {
 		float percentage = 0;
 		if (mcTotalBytes != 0) {
-			percentage = (float) (((double) mcWrittenBytes) / mcTotalBytes);
+			percentage = (float) (((double) mcWrittenBytes) / mcTotalBytes) * 100;
 		}
 
 		mGui.updateProgressBar(percentage);

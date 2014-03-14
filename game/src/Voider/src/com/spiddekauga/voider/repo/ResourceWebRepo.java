@@ -57,7 +57,7 @@ public class ResourceWebRepo extends WebRepo {
 		ArrayList<FieldNameFileWrapper> files = createFieldNameFiles(resources);
 
 		// Upload the actual files
-		sendInNewThread(method, files, responseListeners);
+		sendInNewThread(method, files, progressListener, responseListeners);
 	}
 
 	/**
