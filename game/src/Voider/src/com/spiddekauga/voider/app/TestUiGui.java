@@ -1,5 +1,6 @@
 package com.spiddekauga.voider.app;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
@@ -13,12 +14,15 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
+import com.spiddekauga.utils.scene.ui.AlignTable;
+import com.spiddekauga.utils.scene.ui.AnimationWidget;
+import com.spiddekauga.utils.scene.ui.AnimationWidget.AnimationWidgetStyle;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.utils.scene.ui.Label;
 import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
-import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.InternalNames;
+import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.scene.Gui;
 
@@ -37,6 +41,10 @@ public class TestUiGui extends Gui {
 		mMainTable.setTableAlign(Horizontal.LEFT, Vertical.TOP);
 		mMainTable.setRowAlign(Horizontal.LEFT, Vertical.TOP);
 		mMainTable.setCellPaddingDefault((Float)SkinNames.getResource(SkinNames.General.PADDING_DEFAULT));
+		mTopRight.setPreferences(mMainTable);
+		mTopRight.setRowAlign(Horizontal.RIGHT, Vertical.TOP);
+		mTopRight.setTableAlign(Horizontal.RIGHT, Vertical.TOP);
+		getStage().addActor(mTopRight);
 
 		initButtons();
 		initTextFields();
@@ -46,6 +54,30 @@ public class TestUiGui extends Gui {
 		initScrollPane();
 		initList();
 		initSelectionBox();
+		initWaitAnimation();
+	}
+
+	/**
+	 * Initialize wait animation
+	 */
+	private void initWaitAnimation() {
+		AnimationWidgetStyle animationWidgetStyle = SkinNames.getResource(SkinNames.General.ANIMATION_WAIT);
+		mAnimationWidget = new AnimationWidget(animationWidgetStyle);
+		mTopRight.add(mAnimationWidget);
+	}
+
+	@Override
+	public void update() {
+		super.update();
+		mAnimationWidget.act(Gdx.graphics.getDeltaTime());
+	}
+
+	@Override
+	public void dispose() {
+		super.dispose();
+		if (mTopRight != null) {
+			mTopRight.dispose();
+		}
 	}
 
 	/**
@@ -280,6 +312,10 @@ public class TestUiGui extends Gui {
 		mHealthBar.setValue(health);
 	}
 
+	/** Animation widget */
+	AnimationWidget mAnimationWidget = null;
+	/** Top right table */
+	AlignTable mTopRight = new AlignTable();
 	/** Skin for general */
 	Skin mGeneralSkin = null;
 	/** Skin for game */

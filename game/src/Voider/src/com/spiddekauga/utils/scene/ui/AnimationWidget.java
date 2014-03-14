@@ -1,6 +1,7 @@
 package com.spiddekauga.utils.scene.ui;
 
 import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
@@ -14,7 +15,37 @@ public class AnimationWidget extends Image {
 	 * Creates an empty animation
 	 */
 	public AnimationWidget() {
-		this(null);
+		setAnimation(null);
+	}
+
+	/**
+	 * Create an animation widget from a AnimationWidgetStyle
+	 * @param animationStyle the animation style to create a new animation from
+	 */
+	public AnimationWidget(AnimationWidgetStyle animationStyle) {
+		int tileWidth = animationStyle.image.getRegionWidth() / animationStyle.frameColumns;
+		int tileHeight = animationStyle.image.getRegionHeight() / animationStyle.frameRows;
+
+		int cFrames = animationStyle.frames != -1 ? animationStyle.frames : animationStyle.frameColumns * animationStyle.frameRows;
+		TextureRegion[] walkFrames = new TextureRegion[cFrames];
+
+		int frameIndex = 0;
+		for (int row = 0; row < animationStyle.frameRows; ++row) {
+			int y = row * tileHeight;
+			for (int col = 0; col < animationStyle.frameColumns; ++col) {
+				int x = col * tileWidth;
+				walkFrames[frameIndex] = new TextureRegion(animationStyle.image, x, y, tileWidth, tileHeight);
+				frameIndex++;
+
+				if (frameIndex == animationStyle.frames) {
+					break;
+				}
+			}
+		}
+
+		Animation animation = new Animation(animationStyle.secondsPerFrame, walkFrames);
+		animation.setPlayMode(Animation.LOOP);
+		setAnimation(animation);
 	}
 
 	/**
@@ -56,6 +87,30 @@ public class AnimationWidget extends Image {
 			mTimeElapsed += delta;
 			mDrawableTextureRegion.setRegion(mAnimation.getKeyFrame(mTimeElapsed));
 		}
+	}
+
+	/**
+	 * Reset the animation to the start
+	 */
+	public void reset() {
+		setAnimation(mAnimation);
+	}
+
+	/**
+	 * Animation widget style
+	 */
+	public static class AnimationWidgetStyle {
+		/** The texture with all animation frames */
+		public TextureRegion image = null;
+		/** Number of frame columns in the texture */
+		public int frameColumns = 0;
+		/** Number of frame rows in the texture */
+		public int frameRows = 0;
+		/** Number of seconds to show each frame */
+		public float secondsPerFrame = 0;
+		/** Optional total number of frames. Use this when the last row isn't filled with frames,
+		 * otherwise all 'square' frames will be used */
+		public int frames = -1;
 	}
 
 	/** The current animation */

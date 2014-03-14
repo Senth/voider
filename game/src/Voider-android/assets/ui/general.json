@@ -50,6 +50,15 @@ com.spiddekauga.utils.scene.ui.Label$LabelStyle: {
 	},
 },
 
+com.spiddekauga.utils.scene.ui.AnimationWidget$AnimationWidgetStyle:  {
+	wait: {
+		image: wait_animation,
+		frameColumns: 6,
+		frameRows: 4,
+		secondsPerFrame: 0.1,
+	},
+},
+
 com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 	default: {
 		down: button_default_down,

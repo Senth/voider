@@ -28,8 +28,6 @@ public class LoginScene extends Scene implements ICallerResponseListener {
 		super(new LoginGui());
 
 		((LoginGui)mGui).setLoginScene(this);
-
-		login();
 	}
 
 	@Override
@@ -44,6 +42,13 @@ public class LoginScene extends Scene implements ICallerResponseListener {
 		ResourceCacheFacade.unload(InternalNames.UI_GENERAL);
 
 		super.unloadResources();
+	}
+
+	@Override
+	public void onActivate(Outcomes outcome, Object message) {
+		super.onActivate(outcome, message);
+
+		login();
 	}
 
 	@Override
@@ -66,7 +71,7 @@ public class LoginScene extends Scene implements ICallerResponseListener {
 			mAutoLogin = true;
 			mLoggingInUser.set(userInfo);
 			mUserWebRepo.login(this, userInfo.getUsername(), userInfo.getPrivateKey());
-			mGui.showWaitWindow("Logging in as last user");
+			mGui.showWaitWindow("Auto logging in as " + userInfo.getUsername());
 		}
 		// Test offline
 		else if (userInfo != null && !userInfo.isOnline()) {

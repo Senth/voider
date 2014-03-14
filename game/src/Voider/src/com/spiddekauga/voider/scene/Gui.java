@@ -23,6 +23,8 @@ import com.badlogic.gdx.utils.Disposable;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
+import com.spiddekauga.utils.scene.ui.AnimationWidget;
+import com.spiddekauga.utils.scene.ui.AnimationWidget.AnimationWidgetStyle;
 import com.spiddekauga.utils.scene.ui.Label;
 import com.spiddekauga.utils.scene.ui.Label.LabelStyle;
 import com.spiddekauga.utils.scene.ui.MessageShower;
@@ -110,6 +112,10 @@ public abstract class Gui implements Disposable {
 					mActiveMsgBoxes.get(mActiveMsgBoxes.size()-1).show(mStage);
 				}
 			}
+		}
+
+		if (mWaitWindow.getStage() != null) {
+			mWaitAnimation.act(Gdx.graphics.getDeltaTime());
 		}
 	}
 
@@ -269,8 +275,9 @@ public abstract class Gui implements Disposable {
 
 		mWaitWindow.clearChildren();
 
-		// TODO add animation image
+		mWaitAnimation.reset();
 
+		mWaitWindow.add(mWaitAnimation).padRight((Float) SkinNames.getResource(SkinNames.General.PADDING_SEPARATOR));
 		mWaitWindow.add(message);
 		mWaitWindow.pack();
 		mStage.addActor(mWaitWindow);
@@ -365,6 +372,7 @@ public abstract class Gui implements Disposable {
 			mWaitWindow = new Window("", (WindowStyle) SkinNames.getResource(SkinNames.General.WINDOW_MODAL));
 			mWaitWindow.setModal(true);
 			mWaitWindow.setSkin((Skin) ResourceCacheFacade.get(InternalNames.UI_GENERAL));
+			mWaitAnimation = new AnimationWidget((AnimationWidgetStyle) SkinNames.getResource(SkinNames.General.ANIMATION_WAIT));
 
 			// Progress bar
 			mProgressWindow = new Window("", (WindowStyle) SkinNames.getResource(SkinNames.General.WINDOW_MODAL));
@@ -490,7 +498,8 @@ public abstract class Gui implements Disposable {
 		return mVisible;
 	}
 
-
+	/** Wait image */
+	private AnimationWidget mWaitAnimation = null;
 	/** Progress text message */
 	private Label mProgressText = null;
 	/** Progress window */

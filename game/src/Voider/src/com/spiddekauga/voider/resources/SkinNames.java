@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Slider.SliderStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Window.WindowStyle;
+import com.spiddekauga.utils.scene.ui.AnimationWidget.AnimationWidgetStyle;
 import com.spiddekauga.utils.scene.ui.Label.LabelStyle;
 
 
@@ -422,6 +423,8 @@ public class SkinNames {
 	 * General UI elements
 	 */
 	public enum General implements ISkinNames {
+		/** Wait animation texture */
+		ANIMATION_WAIT(AnimationWidgetStyle.class, "wait"),
 		/** Check box that uses check boxes */
 		CHECK_BOX_DEFAULT(CheckBoxStyle.class, "default"),
 		/** Check box that uses the radio button style */
