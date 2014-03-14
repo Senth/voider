@@ -474,13 +474,19 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 	@Override
 	public void publishDef() {
 		if (mActorDef != null) {
+			mGui.showProgressBar();
 			mResourceRepo.publish(this, this, mActorDef);
 		}
 	}
 
 	@Override
 	public void handleWrite(long mcWrittenBytes, long mcTotalBytes) {
-		// TODO Auto-generated method stub
+		float percentage = 0;
+		if (mcTotalBytes != 0) {
+			percentage = (float) (((double) mcWrittenBytes) / mcTotalBytes);
+		}
+
+		mGui.updateProgressBar(percentage);
 	}
 
 	@Override
@@ -499,6 +505,7 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 	public void handleWebResponse(IMethodEntity method, IEntity response) {
 		if (response instanceof PublishMethodResponse) {
 			if (((PublishMethodResponse) response).status == PublishMethodResponse.Statuses.SUCCESS) {
+				mGui.hideProgressBar();
 				mGui.showSuccessMessage("Publish successful!");
 				mGui.resetValues();
 

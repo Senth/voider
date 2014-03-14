@@ -704,13 +704,19 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	@Override
 	public void publishDef() {
 		if (mLevel != null) {
+			mGui.showProgressBar();
 			mResourceRepo.publish(this, this, mLevel);
 		}
 	}
 
 	@Override
 	public void handleWrite(long mcWrittenBytes, long mcTotalBytes) {
-		// TODO Auto-generated method stub
+		float percentage = 0;
+		if (mcTotalBytes != 0) {
+			percentage = (float) (((double) mcWrittenBytes) / mcTotalBytes);
+		}
+
+		mGui.updateProgressBar(percentage);
 	}
 
 	@Override
@@ -730,6 +736,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	public void handleWebResponse(IMethodEntity method, IEntity response) {
 		if (response instanceof PublishMethodResponse) {
 			if (((PublishMethodResponse) response).status == PublishMethodResponse.Statuses.SUCCESS) {
+				mGui.hideProgressBar();
 				mGui.showSuccessMessage("Publish successful!");
 				updateAvailableTools(false, true);
 				mGui.resetValues();

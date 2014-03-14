@@ -12,6 +12,8 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Slider;
+import com.badlogic.gdx.scenes.scene2d.ui.Slider.SliderStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
@@ -291,7 +293,62 @@ public abstract class Gui implements Disposable {
 
 		float fadeOutDuriation = (Float) SkinNames.getResource(SkinNames.General.WAIT_WINDOW_FADE_OUT);
 		mWaitWindow.addAction(Actions.sequence(Actions.fadeOut(fadeOutDuriation, Interpolation.fade), Actions.removeActor()));
+	}
 
+	/**
+	 * Shows the a progress bar for loading/downloading/uploading window
+	 */
+	public void showProgressBar() {
+		if (mProgressWindow == null) {
+			return;
+		}
+
+		mStage.addActor(mProgressWindow);
+		updateProgressBar(0, "");
+
+		float fadeInDuration = (Float) SkinNames.getResource(SkinNames.General.WAIT_WINDOW_FADE_IN);
+		mProgressWindow.addAction(Actions.fadeIn(fadeInDuration, Interpolation.fade));
+	}
+
+	/**
+	 * Hides the progress bar
+	 */
+	public void hideProgressBar() {
+		if (mProgressWindow == null || mProgressWindow.getStage() == null) {
+			return;
+		}
+
+		float fadeOutDuriation = (Float) SkinNames.getResource(SkinNames.General.WAIT_WINDOW_FADE_OUT);
+		mProgressWindow.addAction(Actions.sequence(Actions.fadeOut(fadeOutDuriation, Interpolation.fade), Actions.removeActor()));
+	}
+
+	/**
+	 * Updates the progress bar
+	 * @param percentage how many percentage that has been loaded
+	 */
+	public void updateProgressBar(float percentage) {
+		updateProgressBar(percentage, null);
+	}
+
+	/**
+	 * Updates the progress bar
+	 * @param percentage how many percentage that has been loaded
+	 * @param message optional message, ignored if null
+	 */
+	public void updateProgressBar(float percentage, String message) {
+		if (message != null) {
+			mProgressText.setText(message);
+		} else {
+			mProgressText.setText("");
+		}
+		mProgressBar.setValue(percentage);
+		mProgressText.pack();
+		mProgressWindow.pack();
+
+		// Center the window
+		int xPosition = (int) ((Gdx.graphics.getWidth() - mProgressWindow.getWidth()) * 0.5f);
+		int yPosition = (int) ((Gdx.graphics.getHeight() - mProgressWindow.getHeight()) * 0.5f);
+		mProgressWindow.setPosition(xPosition, yPosition);
 	}
 
 	/**
@@ -302,9 +359,20 @@ public abstract class Gui implements Disposable {
 		MsgBoxExecuter.fadeDuration = 0.01f;
 		if (ResourceCacheFacade.isLoaded(InternalNames.UI_GENERAL) && mMessageShower == null) {
 			mMessageShower = new MessageShower(mStage);
+
+			// Wait window
 			mWaitWindow = new Window("", (WindowStyle) SkinNames.getResource(SkinNames.General.WINDOW_MODAL));
 			mWaitWindow.setModal(true);
 			mWaitWindow.setSkin((Skin) ResourceCacheFacade.get(InternalNames.UI_GENERAL));
+
+			// Progress bar
+			mProgressWindow = new Window("", (WindowStyle) SkinNames.getResource(SkinNames.General.WINDOW_MODAL));
+			mProgressWindow.setModal(true);
+			mProgressBar = new Slider(0, 100, 0.1f, false, (SliderStyle) SkinNames.getResource(SkinNames.General.SLIDER_LOADING_BAR));
+			mProgressText = new Label("", (LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_DEFAULT));
+			mProgressWindow.add(mProgressText);
+			mProgressWindow.row();
+			mProgressWindow.add(mProgressBar);
 		}
 
 		mInitialized = true;
@@ -421,6 +489,12 @@ public abstract class Gui implements Disposable {
 	}
 
 
+	/** Progress text message */
+	private Label mProgressText = null;
+	/** Progress window */
+	private Window mProgressWindow = null;
+	/** Progress bar */
+	private Slider mProgressBar = null;
 	/** Wait window */
 	private Window mWaitWindow = null;
 	/** If the GUI is visible */
