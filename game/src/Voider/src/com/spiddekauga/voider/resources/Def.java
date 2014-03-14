@@ -12,6 +12,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import com.badlogic.gdx.Gdx;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.utils.User;
 
 /**
  * Base class for all "definitions", e.g. ActorDef, WeaponDef. All definitions
@@ -41,6 +42,8 @@ public abstract class Def extends Resource implements IResourceDependency, IReso
 		mName = def.mName;
 		mOriginalCreator = def.mOriginalCreator;
 		mRevision = def.mRevision;
+		mCreatorKey = def.mCreatorKey;
+		mOriginalCreatorKey = def.mOriginalCreatorKey;
 	}
 
 	@Override
@@ -49,7 +52,8 @@ public abstract class Def extends Resource implements IResourceDependency, IReso
 
 		Def defCopy = (Def)copy;
 		defCopy.mCopyParentId = mUniqueId;
-		defCopy.mCreator = Config.User.getUsername();
+		defCopy.mCreator = mUser.getUsername();
+		defCopy.mCreatorKey = mUser.getServerKey();
 		/** @todo create numbering of copy name if already a copy */
 		defCopy.mName = defCopy.mName + " (copy)";
 
@@ -233,6 +237,9 @@ public abstract class Def extends Resource implements IResourceDependency, IReso
 		return mOriginalCreatorKey;
 	}
 
+	/** Global user */
+	private static final User mUser = User.getGlobalUser();
+
 	/** Dependencies for the resource */
 	@Tag(43) private Map<UUID, AtomicInteger> mExternalDependencies = new HashMap<UUID, AtomicInteger>();
 	/** Internal dependencies, such as textures, sound, particle effects */
@@ -240,13 +247,13 @@ public abstract class Def extends Resource implements IResourceDependency, IReso
 	/** Name of the definition */
 	@Tag(36) private String mName = Config.Actor.NAME_DEFAULT;
 	/** Original creator key */
-	@Tag(112) private String mOriginalCreatorKey = null;
+	@Tag(112) private String mOriginalCreatorKey = mUser.getServerKey();
 	/** Original creator name */
-	@Tag(41) private String mOriginalCreator = Config.User.getUsername();
+	@Tag(41) private String mOriginalCreator = mUser.getUsername();
 	/** Creator key */
-	@Tag(111) private String mCreatorKey = null;
+	@Tag(111) private String mCreatorKey = mUser.getServerKey();
 	/** Creator name */
-	@Tag(39) private String mCreator = Config.User.getUsername();
+	@Tag(39) private String mCreator = mUser.getUsername();
 	/** Comment of the definition */
 	@Tag(38) private String mDescription = "";
 	/** Saved date for the definition */

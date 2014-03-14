@@ -21,7 +21,6 @@ import com.spiddekauga.voider.repo.WebGateway.FieldNameFileWrapper;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourcePng;
-import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Web repository for resources
@@ -59,7 +58,6 @@ public class ResourceWebRepo extends WebRepo {
 
 		// Upload the actual files
 		sendInNewThread(method, files, responseListeners);
-		Pools.arrayList.free(files);
 	}
 
 	/**

@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import com.badlogic.gdx.sql.DatabaseCursor;
 import com.badlogic.gdx.sql.SQLiteGdxException;
 import com.spiddekauga.voider.utils.Pools;
-import com.spiddekauga.voider.utils.UserInfo;
+import com.spiddekauga.voider.utils.User;
 
 
 /**
@@ -63,18 +63,18 @@ class UserSqliteGateway extends SqliteGateway {
 	/**
 	 * @return all temporary created users
 	 */
-	ArrayList<UserInfo> getTempUsers() {
+	ArrayList<User> getTempUsers() {
 		@SuppressWarnings("unchecked")
-		ArrayList<UserInfo> users = Pools.arrayList.obtain();
+		ArrayList<User> users = Pools.arrayList.obtain();
 
 		try {
 			DatabaseCursor cursor = mDatabase.rawQuery("SELECT * FROM new_user");
 
 			while (cursor.next()) {
-				UserInfo userInfo = new UserInfo();
-				userInfo.username = cursor.getString(NEW_USER__USERNAME);
-				userInfo.password = cursor.getString(NEW_USER__PASSWORD);
-				userInfo.email = cursor.getString(NEW_USER__EMAIL);
+				User userInfo = new User();
+				userInfo.setUsername(cursor.getString(NEW_USER__USERNAME));
+				userInfo.setPassword(cursor.getString(NEW_USER__PASSWORD));
+				userInfo.setEmail(cursor.getString(NEW_USER__EMAIL));
 
 				users.add(userInfo);
 			}
@@ -90,15 +90,15 @@ class UserSqliteGateway extends SqliteGateway {
 	 * @param username either username or email
 	 * @return user information for the found user, null if not found
 	 */
-	UserInfo getTempUser(String username) {
+	User getTempUser(String username) {
 		try {
 			DatabaseCursor cursor = mDatabase.rawQuery("SELECT * FROM new_user WHERE username LIKE '" + username + "' OR email LIKE '" + username + "';");
 
 			if (cursor.next()) {
-				UserInfo userInfo = new UserInfo();
-				userInfo.username = cursor.getString(NEW_USER__USERNAME);
-				userInfo.password = cursor.getString(NEW_USER__PASSWORD);
-				userInfo.email = cursor.getString(NEW_USER__EMAIL);
+				User userInfo = new User();
+				userInfo.setUsername(cursor.getString(NEW_USER__USERNAME));
+				userInfo.setPassword(cursor.getString(NEW_USER__PASSWORD));
+				userInfo.setEmail(cursor.getString(NEW_USER__EMAIL));
 
 				return userInfo;
 			}

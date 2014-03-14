@@ -899,51 +899,13 @@ public class Config {
 	}
 
 	/**
-	 * Network
-	 */
-	public static class Network {
-		/**
-		 * Set user as online/offline
-		 * @param online true if online, false if offline
-		 */
-		public static void setOnline(boolean online) {
-			mIsOnline = online;
-		}
-
-		/**
-		 * @return true if the user in online mode, false if offline mode
-		 */
-		public static boolean isOnline() {
-			return mIsOnline;
-		}
-
-		/** If we're currently using online/offline mode */
-		private static boolean mIsOnline = false;
-	}
-
-	/**
 	 * User
 	 */
 	public static class User {
 		/** Minimum password length */
 		public static final int PASSWORD_LENGTH_MIN = 5;
-		/**
-		 * Sets the current username
-		 * @param username name of the user
-		 */
-		public static void setUsername(String username) {
-			mUsername = username;
-		}
 
-		/**
-		 * @return current username
-		 */
-		public static String getUsername() {
-			return mUsername;
-		}
 
-		/** Current username */
-		private static String mUsername = "(None)";
 	}
 
 	/** Revision of the game, as in code.

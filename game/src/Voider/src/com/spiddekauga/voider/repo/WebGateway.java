@@ -82,9 +82,11 @@ class WebGateway {
 	 * Length 0 if no response was found. null if an error occurred.
 	 */
 	public static byte[] sendRequest(String uploadUrl, byte[] entity, List<FieldNameFileWrapper> files, IOutstreamProgressListener progressListener) {
-		ArrayList<IOutstreamProgressListener> progressListenersList = new ArrayList<>();
-		progressListenersList.add(progressListener);
-		return sendRequest(uploadUrl, entity, files, progressListenersList);
+		if (progressListener != null) {
+			ArrayList<IOutstreamProgressListener> progressListenersList = new ArrayList<>();
+			progressListenersList.add(progressListener);
+		}
+		return sendRequest(uploadUrl, entity, files, (List<IOutstreamProgressListener>) null);
 	}
 
 

@@ -6,7 +6,6 @@ import java.util.LinkedList;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.spiddekauga.utils.KeyHelper;
-import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.app.PrototypeScene;
 import com.spiddekauga.voider.app.TestUiScene;
 import com.spiddekauga.voider.editor.EditorSelectionScene;
@@ -28,6 +27,7 @@ import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.scene.SelectDefScene;
 import com.spiddekauga.voider.utils.Pools;
+import com.spiddekauga.voider.utils.User;
 
 /**
  * Main menu of the scene
@@ -89,10 +89,10 @@ public class MainMenu extends Scene implements ICallerResponseListener {
 
 		// Show if logged in online
 		if (mFirstTimeActivation) {
-			if (Config.Network.isOnline()) {
-				mGui.showSuccessMessage(Config.User.getUsername() + " is now online!");
+			if (mUser.isOnline()) {
+				mGui.showSuccessMessage(mUser.getUsername() + " is now online!");
 			} else {
-				mGui.showHighlightMessage(Config.User.getUsername() + " is now offline!");
+				mGui.showHighlightMessage(mUser.getUsername() + " is now offline!");
 			}
 			mFirstTimeActivation = false;
 		}
@@ -229,12 +229,12 @@ public class MainMenu extends Scene implements ICallerResponseListener {
 	 */
 	void logout() {
 		// Online
-		if (Config.Network.isOnline()) {
+		if (mUser.isOnline()) {
 			UserWebRepo.getInstance().logout(this);
 		}
 		// Offline
 		else {
-			Config.User.setUsername("(invalid)");
+			mUser.setUsername("(invalid)");
 			clearCurrentUser();
 		}
 	}
@@ -255,6 +255,8 @@ public class MainMenu extends Scene implements ICallerResponseListener {
 		}
 	}
 
+	/** Global user */
+	private static final User mUser = User.getGlobalUser();
 	/** First time we activated the scene */
 	private boolean mFirstTimeActivation = true;
 	/** GUI stack */

@@ -9,6 +9,7 @@ import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -369,6 +370,7 @@ public abstract class Gui implements Disposable {
 			mProgressWindow = new Window("", (WindowStyle) SkinNames.getResource(SkinNames.General.WINDOW_MODAL));
 			mProgressWindow.setModal(true);
 			mProgressBar = new Slider(0, 100, 0.1f, false, (SliderStyle) SkinNames.getResource(SkinNames.General.SLIDER_LOADING_BAR));
+			mProgressBar.setTouchable(Touchable.disabled);
 			mProgressText = new Label("", (LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_DEFAULT));
 			mProgressWindow.add(mProgressText);
 			mProgressWindow.row();

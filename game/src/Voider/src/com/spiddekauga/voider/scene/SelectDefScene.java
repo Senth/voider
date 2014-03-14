@@ -7,7 +7,6 @@ import java.util.UUID;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
-import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.repo.ResourceLocalRepo;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.ExternalTypes;
@@ -19,6 +18,7 @@ import com.spiddekauga.voider.resources.ResourceItem;
 import com.spiddekauga.voider.resources.ResourceNotFoundException;
 import com.spiddekauga.voider.resources.RevisionInfo;
 import com.spiddekauga.voider.utils.Pools;
+import com.spiddekauga.voider.utils.User;
 
 /**
  * Scene for selecting definitions (actors, levels). It will display a scene
@@ -470,7 +470,7 @@ public class SelectDefScene extends WorldScene {
 	 * @return true if the current user is the owner of the definition
 	 */
 	private boolean isOwner(Def def) {
-		return def.getCreator().equals(Config.User.getUsername());
+		return def.getCreator().equals(User.getGlobalUser().getUsername());
 	}
 
 	/**

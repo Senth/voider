@@ -50,7 +50,9 @@ public class OutputStreamProgress extends OutputStream {
 		if (progressListeners.length > 0) {
 			mProgressListeners = new ArrayList<>();
 			for (IOutstreamProgressListener listener : progressListeners) {
-				mProgressListeners.add(listener);
+				if (listener != null) {
+					mProgressListeners.add(listener);
+				}
 			}
 		}
 	}
@@ -80,8 +82,10 @@ public class OutputStreamProgress extends OutputStream {
 	 * Send write event to listeners
 	 */
 	private void sendWriteEvent() {
-		for (IOutstreamProgressListener listener : mProgressListeners) {
-			listener.handleWrite(mcWrittenBytes, mcTotalBytes);
+		if (mProgressListeners != null) {
+			for (IOutstreamProgressListener listener : mProgressListeners) {
+				listener.handleWrite(mcWrittenBytes, mcTotalBytes);
+			}
 		}
 	}
 
@@ -103,5 +107,5 @@ public class OutputStreamProgress extends OutputStream {
 	/** Total bytes */
 	private final long mcTotalBytes;
 	/** Progress listeners */
-	private List<IOutstreamProgressListener> mProgressListeners;
+	private List<IOutstreamProgressListener> mProgressListeners = null;
 }

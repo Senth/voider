@@ -112,7 +112,7 @@ abstract class WebRepo {
 			String uploadUrl = ((GetUploadUrlMethodResponse) uploadResponse).uploadUrl;
 			if (uploadUrl != null) {
 				byte[] methodBytes = NetworkEntitySerializer.serializeEntity(method);
-				byte[] responseBytes = WebGateway.sendRequest(uploadUrl, methodBytes, files);
+				byte[] responseBytes = WebGateway.sendRequest(uploadUrl, methodBytes, files, progressListener);
 				return NetworkEntitySerializer.deserializeEntity(responseBytes);
 			}
 		}
@@ -183,6 +183,8 @@ abstract class WebRepo {
 			} catch (RuntimeException e) {
 				if (Config.Debug.EXCEPTION_HANDLER) {
 					SceneSwitcher.handleException(e);
+				} else {
+					throw e;
 				}
 			}
 		}

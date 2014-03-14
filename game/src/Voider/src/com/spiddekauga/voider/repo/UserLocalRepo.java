@@ -3,7 +3,7 @@ package com.spiddekauga.voider.repo;
 import java.util.ArrayList;
 import java.util.UUID;
 
-import com.spiddekauga.voider.utils.UserInfo;
+import com.spiddekauga.voider.utils.User;
 
 /**
  * Local repository for users
@@ -22,10 +22,11 @@ public class UserLocalRepo {
 	 * Set last logged in (online) user
 	 * @param username username or email of the user that was logged in
 	 * @param privateKey the private key which will be used for automatic login
+	 * @param serverKey user id on the server
 	 * in the future.
 	 */
-	public static void setLastUser(String username, UUID privateKey) {
-		mPrefsGateway.setLastUser(username, privateKey);
+	public static void setLastUser(String username, UUID privateKey, String serverKey) {
+		mPrefsGateway.setLastUser(username, privateKey, serverKey);
 	}
 
 	/**
@@ -48,7 +49,7 @@ public class UserLocalRepo {
 	 * Get information of the last user that was logged in
 	 * @return last user logged in, null if not found
 	 */
-	public static UserInfo getLastUser() {
+	public static User getLastUser() {
 		return mPrefsGateway.getLastUser();
 	}
 
@@ -74,7 +75,7 @@ public class UserLocalRepo {
 	/**
 	 * @return all temporary created users
 	 */
-	public static ArrayList<UserInfo> getTempUsers() {
+	public static ArrayList<User> getTempUsers() {
 		return mSqliteGateway.getTempUsers();
 	}
 
@@ -83,7 +84,7 @@ public class UserLocalRepo {
 	 * @param username either username or email
 	 * @return user information for the found user, null if not found
 	 */
-	public static UserInfo getTempUser(String username) {
+	public static User getTempUser(String username) {
 		return mSqliteGateway.getTempUser(username);
 	}
 

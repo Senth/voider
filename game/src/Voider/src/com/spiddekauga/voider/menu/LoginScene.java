@@ -13,7 +13,7 @@ import com.spiddekauga.voider.repo.UserWebRepo;
 import com.spiddekauga.voider.resources.InternalNames;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.scene.Scene;
-import com.spiddekauga.voider.utils.UserInfo;
+import com.spiddekauga.voider.utils.User;
 
 /**
  * Login scene
@@ -60,17 +60,17 @@ public class LoginScene extends Scene implements ICallerResponseListener {
 	 * Try to login using stored username and private key
 	 */
 	void login() {
-		UserInfo userInfo = UserLocalRepo.getLastUser();
+		User userInfo = UserLocalRepo.getLastUser();
 
-		if (userInfo != null && userInfo.online) {
+		if (userInfo != null && userInfo.isOnline()) {
 			mAutoLogin = true;
-			mUserName = userInfo.username;
-			mUserWebRepo.login(this, userInfo.username, userInfo.privateKey);
+			mLoggingInUser.set(userInfo);
+			mUserWebRepo.login(this, userInfo.getUsername(), userInfo.getPrivateKey());
 			mGui.showWaitWindow("Logging in as last user");
 		}
 		// Test offline
-		else if (userInfo != null && !userInfo.online) {
-			loginOffline(userInfo.username, userInfo.password);
+		else if (userInfo != null && !userInfo.isOnline()) {
+			loginOffline(userInfo.getUsername(), userInfo.getPassword());
 		}
 	}
 
@@ -79,26 +79,25 @@ public class LoginScene extends Scene implements ICallerResponseListener {
 	 * @param response the login response
 	 */
 	void handleLoginResopnse(LoginMethodResponse response) {
-		UserInfo userInfo = UserLocalRepo.getLastUser();
+		User userInfo = UserLocalRepo.getLastUser();
 
 		switch (response.status) {
 		case SUCCESS:
 			// Update last user to login for auto-login
-			UserLocalRepo.setLastUser(response.username, response.privateKey);
-			Config.User.setUsername(response.username);
-
+			UserLocalRepo.setLastUser(response.username, response.privateKey, response.userKey);
+			mUser.login(response.username, response.userKey, true);
 			setOutcome(Outcomes.LOGGED_IN);
-			Config.Network.setOnline(true);
 			break;
 
 
 		case FAILED_USERNAME_PASSWORD_MISMATCH:
 			if (mAutoLogin) {
-				mGui.showErrorMessage("Could not auto-login " + userInfo.username);
+				mGui.showErrorMessage("Could not auto-login " + userInfo.getUsername());
 				UserLocalRepo.removeLastUser();
 				mAutoLogin = false;
+				mUser.setOnline(false);
 			} else {
-				loginOffline(mUserName, mPassword);
+				loginOffline(mLoggingInUser.getUsername(), mLoggingInUser.getPassword());
 				mGui.showErrorMessage("No username with that password exists");
 			}
 			break;
@@ -109,8 +108,7 @@ public class LoginScene extends Scene implements ICallerResponseListener {
 			// Login offline if tried to auto-login
 			if (mAutoLogin) {
 				setOutcome(Outcomes.LOGGED_IN);
-				Config.Network.setOnline(false);
-				Config.User.setUsername(userInfo.username);
+				mUser.login(mLoggingInUser.getUsername(), mLoggingInUser.getServerKey(), false);
 			} else {
 				mGui.showErrorMessage("Could not connect to server");
 			}
@@ -126,8 +124,8 @@ public class LoginScene extends Scene implements ICallerResponseListener {
 	 * @param password the password to login with
 	 */
 	void login(String username, String password) {
-		mUserName = username;
-		mPassword = password;
+		mLoggingInUser.setUsername(username);
+		mLoggingInUser.setPassword(password);
 		mUserWebRepo.login(this, username, password);
 		mGui.showWaitWindow("Logging in");
 	}
@@ -139,14 +137,13 @@ public class LoginScene extends Scene implements ICallerResponseListener {
 	 * @return true if succeeded
 	 */
 	private boolean loginOffline(String username, String password) {
-		UserInfo foundUser = UserLocalRepo.getTempUser(username);
+		User foundUser = UserLocalRepo.getTempUser(username);
 
 		if (foundUser != null) {
-			if (password.equals(foundUser.password)) {
-				UserLocalRepo.setLastUser(foundUser.username, password);
-				Config.User.setUsername(foundUser.username);
+			if (password.equals(foundUser.getPassword())) {
+				UserLocalRepo.setLastUser(foundUser.getUsername(), password);
+				mUser.login(mLoggingInUser.getUsername(), foundUser.getServerKey(), false);
 				setOutcome(Outcomes.LOGGED_IN);
-				Config.Network.setOnline(false);
 				return true;
 			}
 		}
@@ -173,8 +170,8 @@ public class LoginScene extends Scene implements ICallerResponseListener {
 		switch (response.status) {
 		case SUCCESS:
 			setOutcome(Outcomes.NOT_APPLICAPLE);
-
-			UserLocalRepo.setLastUser(mUserName, response.privateKey);
+			mUser.login(mLoggingInUser.getUsername(), response.userKey, true);
+			UserLocalRepo.setLastUser(mLoggingInUser.getUsername(), response.privateKey, response.userKey);
 			UserLocalRepo.setAsRegistered();
 
 			break;
@@ -207,7 +204,9 @@ public class LoginScene extends Scene implements ICallerResponseListener {
 	 * @param email the email to register with the username
 	 */
 	void register(String username, String password, String email) {
-		mUserName = username;
+		mLoggingInUser.setUsername(username);
+		mLoggingInUser.setEmail(email);
+		mLoggingInUser.setPassword(password);
 		mUserWebRepo.register(this, username, password, email);
 		mGui.showWaitWindow("Contacting server");
 	}
@@ -224,7 +223,7 @@ public class LoginScene extends Scene implements ICallerResponseListener {
 		if (success) {
 			UserLocalRepo.setLastUser(username, password);
 			UserLocalRepo.setAsRegistered();
-			Config.User.setUsername(username);
+			mUser.setUsername(username);
 			setOutcome(Outcomes.LOGGED_IN);
 		} else {
 			mGui.showErrorMessage("A temporary user with that username or email already exists");
@@ -249,12 +248,12 @@ public class LoginScene extends Scene implements ICallerResponseListener {
 
 	}
 
+	/** Global user */
+	private static final User mUser = User.getGlobalUser();
 	/** User web repo */
 	private UserWebRepo mUserWebRepo = UserWebRepo.getInstance();
 	/** Currently auto-logging in? */
 	private boolean mAutoLogin = false;
-	/** Username logging in or registering */
-	private String mUserName = null;
-	/** Password for the user that is logging in */
-	private String mPassword = null;
+	/** Logging in user */
+	private User mLoggingInUser = new User();
 }
