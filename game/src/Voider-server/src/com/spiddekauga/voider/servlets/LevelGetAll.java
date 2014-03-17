@@ -36,6 +36,7 @@ import com.spiddekauga.voider.network.entities.Tags;
 import com.spiddekauga.voider.network.entities.UserLevelStatsEntity;
 import com.spiddekauga.voider.network.entities.method.LevelGetAllMethod;
 import com.spiddekauga.voider.network.entities.method.LevelGetAllMethodResponse;
+import com.spiddekauga.voider.network.entities.method.LevelGetAllMethodResponse.Statuses;
 import com.spiddekauga.voider.network.entities.method.NetworkEntitySerializer;
 import com.spiddekauga.voider.server.util.NetworkGateway;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
@@ -50,6 +51,13 @@ import com.spiddekauga.voider.server.util.VoiderServlet;
  */
 @SuppressWarnings("serial")
 public class LevelGetAll extends VoiderServlet {
+	/**
+	 * Default constructor
+	 */
+	public LevelGetAll() {
+		mResponse.status = Statuses.FAILED_SERVER_ERROR;
+	}
+
 	@Override
 	protected void onRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		if (!mUser.isLoggedIn()) {
@@ -89,6 +97,9 @@ public class LevelGetAll extends VoiderServlet {
 		// Just sort, i.e. get the levels
 		else {
 			mResponse.levels = getLevels(FetchSizes.LEVELS);
+			if (mResponse.status != Statuses.SUCCESS_FETCHED_ALL) {
+				mResponse.status = Statuses.SUCCESS_MORE_EXISTS;
+			}
 		}
 	}
 
@@ -188,7 +199,7 @@ public class LevelGetAll extends VoiderServlet {
 
 		// Did we fetch all?
 		if (levels.size() < limit) {
-			mResponse.fetchedAll = true;
+			mResponse.status = Statuses.SUCCESS_FETCHED_ALL;
 		}
 
 		return levels;
@@ -357,7 +368,7 @@ public class LevelGetAll extends VoiderServlet {
 	private void filterByTags() {
 		ArrayList<LevelInfoEntity> foundLevelsWithTags = mResponse.levels;
 
-		while (foundLevelsWithTags.size() < FetchSizes.LEVELS && !mResponse.fetchedAll) {
+		while (foundLevelsWithTags.size() < FetchSizes.LEVELS && mResponse.status != Statuses.SUCCESS_FETCHED_ALL) {
 			ArrayList<LevelInfoEntity> levels = getLevels(FetchSizes.LEVELS * 2);
 
 			// Add OK tags
@@ -366,6 +377,10 @@ public class LevelGetAll extends VoiderServlet {
 					foundLevelsWithTags.add(level);
 				}
 			}
+		}
+
+		if (mResponse.status != Statuses.SUCCESS_FETCHED_ALL) {
+			mResponse.status = Statuses.SUCCESS_MORE_EXISTS;
 		}
 	}
 
@@ -390,7 +405,7 @@ public class LevelGetAll extends VoiderServlet {
 		Results<ScoredDocument> foundDocuments = SearchUtils.search("level", mParameters.searchString, FetchSizes.LEVELS, cursor);
 
 		if (foundDocuments.getNumberReturned() < FetchSizes.LEVELS) {
-			mResponse.fetchedAll = true;
+			mResponse.status = Statuses.SUCCESS_FETCHED_ALL;
 		}
 
 

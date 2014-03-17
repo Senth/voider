@@ -95,6 +95,14 @@ public class Config {
 	}
 
 	/**
+	 * Cache
+	 */
+	public static class Cache {
+		/** How long time resource when browsing should be available after initial fetch, in seconds */
+		public static final int RESOURCE_BROWSE_TIME = 300;
+	}
+
+	/**
 	 * Encryption
 	 */
 	public static class Crypto {

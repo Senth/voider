@@ -16,8 +16,20 @@ public class LevelGetAllMethodResponse implements IEntity {
 	public ArrayList<LevelInfoEntity> levels = new ArrayList<>();
 	/** Datastore cursor to continue the query */
 	public String cursor = null;
-	/** Search offset */
-	public int searchOffset = 0;
-	/** True if no more levels can be fetched */
-	public boolean fetchedAll = false;
+	/** Status of the response */
+	public Statuses status = null;
+
+	/**
+	 * Statuses
+	 */
+	public enum Statuses {
+		/** Successfully fetched levels and there's more */
+		SUCCESS_MORE_EXISTS,
+		/** Successfully fetched levels, fetched all. */
+		SUCCESS_FETCHED_ALL,
+		/** Failed due to some internal server error */
+		FAILED_SERVER_ERROR,
+		/** Failed to connect to the server */
+		FAILED_SERVER_CONNECTION,
+	}
 }
