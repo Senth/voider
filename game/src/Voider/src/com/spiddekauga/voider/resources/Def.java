@@ -10,6 +10,11 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.Disposable;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.utils.User;
@@ -20,7 +25,7 @@ import com.spiddekauga.voider.utils.User;
  * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public abstract class Def extends Resource implements IResourceDependency, IResourceRevision {
+public abstract class Def extends Resource implements IResourceDependency, IResourceRevision, Disposable, IResourceTexture, IResourcePng {
 	/**
 	 * Default constructor for the resource.
 	 */
@@ -40,6 +45,8 @@ public abstract class Def extends Resource implements IResourceDependency, IReso
 		mExternalDependencies = def.mExternalDependencies;
 		mInternalDependencies = def.mInternalDependencies;
 		mName = def.mName;
+		mPngBytes = def.mPngBytes;
+		mTextureDrawable = def.mTextureDrawable;
 		mOriginalCreator = def.mOriginalCreator;
 		mRevision = def.mRevision;
 		mCreatorKey = def.mCreatorKey;
@@ -237,9 +244,69 @@ public abstract class Def extends Resource implements IResourceDependency, IReso
 		return mOriginalCreatorKey;
 	}
 
+	/**
+	 * Sets the PNG image for the actor definition. This will also create a
+	 * texture for this actor.
+	 * @param pngBytes bytes for the png image
+	 */
+	@Override
+	public void setPngImage(byte[] pngBytes) {
+		mPngBytes = pngBytes;
+
+		disposeTexture();
+		createTexture();
+	}
+
+	@Override
+	public byte[] getPngImage() {
+		return mPngBytes;
+	}
+
+	/**
+	 * Create the texture from the PNG file
+	 */
+	private void createTexture() {
+		if (mPngBytes != null) {
+			Pixmap pixmap = new Pixmap(mPngBytes, 0, mPngBytes.length);
+			TextureRegion textureRegion = new TextureRegion(new Texture(pixmap));
+			mTextureDrawable = new TextureRegionDrawable(textureRegion);
+		}
+	}
+
+	@Override
+	public TextureRegionDrawable getTextureRegionDrawable() {
+		if (mPngBytes != null && mTextureDrawable == null) {
+			createTexture();
+		}
+
+		return mTextureDrawable;
+	}
+
+	@Override
+	public void dispose() {
+		disposeTexture();
+	}
+
+	/**
+	 * Disposes the texture
+	 */
+	protected void disposeTexture() {
+		if (mTextureDrawable != null) {
+			mTextureDrawable.getRegion().getTexture().dispose();
+			mTextureDrawable = null;
+		}
+	}
+
 	/** Global user */
 	private static final User mUser = User.getGlobalUser();
 
+	/** The possible texture of the image, used if mPngBytes are set.
+	 * DON'T SAVE THIS as it is automatically generated when this actor def is loaded */
+	private TextureRegionDrawable mTextureDrawable = null;
+
+
+	/** The PNG bytes for the images, null if not used */
+	@Tag(108) private byte[] mPngBytes = null;
 	/** Dependencies for the resource */
 	@Tag(43) private Map<UUID, AtomicInteger> mExternalDependencies = new HashMap<UUID, AtomicInteger>();
 	/** Internal dependencies, such as textures, sound, particle effects */

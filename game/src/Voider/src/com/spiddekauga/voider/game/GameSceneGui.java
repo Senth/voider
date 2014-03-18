@@ -11,6 +11,7 @@ import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.Background;
+import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.utils.scene.ui.Label;
 import com.spiddekauga.utils.scene.ui.Label.LabelStyle;
 import com.spiddekauga.voider.resources.SkinNames;
@@ -69,11 +70,16 @@ class GameSceneGui extends Gui {
 		// Create buttons
 		mOptionBar.setAlign(Horizontal.CENTER, Vertical.TOP);
 		Button button = new ImageButton((ImageButtonStyle) SkinNames.getResource(SkinNames.EditorIcons.SCREENSHOT));
+		new ButtonListener(button) {
+			@Override
+			protected void onPressed() {
+				mGameScene.takeScreenshot();
+			}
+		};
 		mOptionBar.add(button);
 
 		// Set bar background
 		Background background = new Background((Color) SkinNames.getResource(SkinNames.EditorVars.BAR_UPPER_LOWER_COLOR));
-		mWidgets.optionBarBackground = background;
 		float height = SkinNames.getResource(SkinNames.EditorVars.BAR_UPPER_LOWER_HEIGHT);
 		background.setSize(Gdx.graphics.getWidth(), height);
 		background.setPosition(0, Gdx.graphics.getHeight() - height);
@@ -133,6 +139,5 @@ class GameSceneGui extends Gui {
 		Label score = null;
 		Label multiplier = null;
 		Slider health = null;
-		Background optionBarBackground = null;
 	}
 }

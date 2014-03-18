@@ -1,11 +1,14 @@
 package com.spiddekauga.voider.game;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Pixmap.Filter;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector2;
@@ -16,6 +19,8 @@ import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.joints.MouseJoint;
 import com.badlogic.gdx.physics.box2d.joints.MouseJointDef;
 import com.spiddekauga.utils.Maths;
+import com.spiddekauga.utils.PngExport;
+import com.spiddekauga.utils.Screens;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.actors.Actor;
@@ -67,9 +72,8 @@ public class GameScene extends WorldScene {
 			width *= heightScale;
 
 			// Scale height depending on bar height
-			float barHeight = SkinNames.getResource(SkinNames.EditorVars.BAR_UPPER_LOWER_HEIGHT);
-			float barHeightScaled = heightScale * barHeight;
-			float height = (Config.Graphics.HEIGHT_DEFAULT + barHeightScaled) * Config.Graphics.WORLD_SCALE;
+			float barHeight = getBarHeightInWorldCoordinates();
+			float height = (Config.Graphics.HEIGHT_DEFAULT + barHeight) * Config.Graphics.WORLD_SCALE;
 
 
 			if (mCamera != null) {
@@ -79,11 +83,53 @@ public class GameScene extends WorldScene {
 			} else {
 				mCamera = new OrthographicCamera(width , height);
 			}
-			mCamera.position.y += barHeightScaled * Config.Graphics.WORLD_SCALE * 0.5f;
+			mCamera.position.y += barHeight * Config.Graphics.WORLD_SCALE * 0.5f;
 		}
 		// Just use
 		else {
 			super.fixCamera();
+		}
+	}
+
+	/**
+	 * @return height of the option bar in world coordinates
+	 */
+	private float getBarHeightInWorldCoordinates() {
+		if (mBarHeight == -1) {
+			float heightScale = Config.Graphics.HEIGHT_DEFAULT / Gdx.graphics.getHeight();
+			float barHeight = SkinNames.getResource(SkinNames.EditorVars.BAR_UPPER_LOWER_HEIGHT);
+			mBarHeight = heightScale * barHeight;
+
+		}
+		return mBarHeight;
+	}
+
+	/**
+	 * Takes a screenshot of the level
+	 */
+	void takeScreenshot() {
+		int barHeight = SkinNames.getResource(SkinNames.EditorVars.BAR_UPPER_LOWER_HEIGHT);
+
+		// Screenshot size
+		int ssHeight = Gdx.graphics.getHeight() - barHeight;
+		int ssWidth = (int) (ssHeight * Config.Level.SAVE_TEXTURE_RATIO);
+
+		Pixmap ssPixmap = Screens.getScreenshot(0, 0, ssWidth, ssHeight, true);
+
+
+		// Scale image to the appropriate export size
+		Pixmap scaledPixmap = new Pixmap(Config.Level.SAVE_TEXTURE_WIDTH, Config.Level.SAVE_TEXTURE_HEIGHT, ssPixmap.getFormat());
+		Pixmap.setFilter(Filter.BiLinear);
+		scaledPixmap.drawPixmap(ssPixmap, 0, 0, ssPixmap.getWidth(), ssPixmap.getHeight(), 0, 0, scaledPixmap.getWidth(), scaledPixmap.getHeight());
+
+
+		// Convert to PNG
+		try {
+			byte[] pngBytes = PngExport.toPNG(scaledPixmap);
+			mLevel.getDef().setPngImage(pngBytes);
+		} catch (IOException e) {
+			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -602,6 +648,8 @@ public class GameScene extends WorldScene {
 		mBodyShepherdMaxPos.y += getWorldHeight();
 	}
 
+	/** Bar height in world coordinates */
+	private float mBarHeight = -1;
 	/** Sprite renderer */
 	private SpriteBatch mSpriteBatch = null;
 	/** Invalid pointer id */

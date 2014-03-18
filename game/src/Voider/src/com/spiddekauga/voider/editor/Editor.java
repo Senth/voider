@@ -251,6 +251,7 @@ public abstract class Editor extends WorldScene implements IEditor {
 			mSavingActorDef.setPngImage(pngBytes);
 		} catch (IOException e) {
 			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
 		pixmap.dispose();
 

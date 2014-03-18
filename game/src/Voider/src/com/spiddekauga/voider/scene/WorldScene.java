@@ -186,15 +186,7 @@ public abstract class WorldScene extends Scene {
 		}
 
 
-		// Get world coordinates for the screen's corners
-		Vector2[] corners = new Vector2[4];
-		for (int i = 0; i < corners.length; ++i) {
-			corners[i] = Pools.vector2.obtain();
-		}
-		corners[0].set(0, -getWorldHeight() * 0.5f);
-		corners[1].set(-getWorldWidth(), -getWorldHeight() * 0.5f);
-		corners[2].set(-getWorldWidth(), getWorldHeight() * 0.5f);
-		corners[3].set(0, getWorldHeight() * 0.5f);
+		Vector2[] corners = getBorderCorners();
 
 
 		// Create fixture
@@ -212,6 +204,25 @@ public abstract class WorldScene extends Scene {
 		// Free stuff
 		Pools.vector2.freeAll(corners);
 		shape.dispose();
+	}
+
+	/**
+	 * Called when creating a border. Can be overridden to specify other
+	 * border dimensions.
+	 * @return all 4 border corners/vertices
+	 */
+	protected Vector2[] getBorderCorners() {
+		// Get world coordinates for the screen's corners
+		Vector2[] corners = new Vector2[4];
+		for (int i = 0; i < corners.length; ++i) {
+			corners[i] = Pools.vector2.obtain();
+		}
+		corners[0].set(0, -getWorldHeight() * 0.5f);
+		corners[1].set(-getWorldWidth(), -getWorldHeight() * 0.5f);
+		corners[2].set(-getWorldWidth(), getWorldHeight() * 0.5f);
+		corners[3].set(0, getWorldHeight() * 0.5f);
+
+		return corners;
 	}
 
 	@Override

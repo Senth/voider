@@ -869,14 +869,20 @@ public class Config {
 	public static class Level {
 		/** How much offset from the first resource inside the level
 		 * the beginning of the level should be placed */
-		public final static float START_COORD_OFFSET = Graphics.WIDTH_DEFAULT * Graphics.WORLD_SCALE * 0.25f;
+		public final static float START_COORD_OFFSET = Graphics.WIDTH_DEFAULT * Graphics.WORLD_SCALE * 0.1f;
 		/** How much offset from the last resource inside the level the
 		 * x-coordinate should appear */
-		public final static float END_COORD_OFFSET = Graphics.WIDTH_DEFAULT * Graphics.WORLD_SCALE * 1.25f;
+		public final static float END_COORD_OFFSET = Graphics.WIDTH_DEFAULT * Graphics.WORLD_SCALE * 1.1f;
 		/** Speed of the front/top background layer, relative to the level speed */
 		public final static float BACKGROUND_TOP_SPEED = 0.75f;
 		/** Speed of the back/bottom background layer, relative to the level speed */
 		public final static float BACKGROUND_BOTTOM_SPEED = 0.5f;
+		/** Screenshot texture width */
+		public final static int SAVE_TEXTURE_WIDTH = 256;
+		/** Screenshot texture ratio */
+		public final static float SAVE_TEXTURE_RATIO = Graphics.WIDTH_DEFAULT / Graphics.HEIGHT_DEFAULT;
+		/** Screenshot texture height */
+		public final static int SAVE_TEXTURE_HEIGHT = (int) (SAVE_TEXTURE_WIDTH / SAVE_TEXTURE_RATIO);
 	}
 
 	/**

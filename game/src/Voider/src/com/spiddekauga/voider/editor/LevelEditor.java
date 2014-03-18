@@ -372,6 +372,12 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		else if (outcome == Outcomes.NOT_APPLICAPLE) {
 			mGui.hideMsgBoxes();
 		}
+		// Set as unsaved if took screenshot
+		else if (outcome == Outcomes.LEVEL_PLAYER_DIED || outcome == Outcomes.LEVEL_COMPLETED || outcome == Outcomes.LEVEL_QUIT) {
+			if (mPngBytesBeforeTest != mLevel.getDef().getPngImage()) {
+				setUnsaved();
+			}
+		}
 
 		if (mLevel != null) {
 			Actor.setLevel(mLevel);
@@ -575,6 +581,10 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	 * @param invulnerable makes the player invulnerable
 	 */
 	public void runFromHere(boolean invulnerable) {
+		if (!isSaved()) {
+			saveDef();
+		}
+
 		GameScene testGame = new GameScene(true, invulnerable);
 		Level copyLevel = mLevel.copy();
 		// Because of scaling decrease the x position
@@ -583,6 +593,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		copyLevel.calculateEndPosition();
 
 		testGame.setLevel(copyLevel);
+
+		mPngBytesBeforeTest = copyLevel.getDef().getPngImage();
 
 		// Remove screen triggers before the specified coordinate
 		ArrayList<TScreenAt> triggers = copyLevel.getResources(TScreenAt.class);
@@ -1488,6 +1500,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		PICKUP,
 	}
 
+	/** Png bytes before testing the level */
+	private byte[] mPngBytesBeforeTest = null;
 	/** Enemies in the add enemy table */
 	@SuppressWarnings("unchecked")
 	private ArrayList<EnemyActorDef> mAddEnemies = Pools.arrayList.obtain();
