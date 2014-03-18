@@ -27,8 +27,8 @@ public class PrototypeGui extends Gui {
 		super.initGui();
 
 		mSkin = ResourceCacheFacade.get(InternalNames.UI_GENERAL);
-		mMainTable.setTableAlign(Horizontal.RIGHT, Vertical.BOTTOM);
-		mMainTable.setRowAlign(Horizontal.RIGHT, Vertical.TOP);
+		mMainTable.setAlignTable(Horizontal.RIGHT, Vertical.BOTTOM);
+		mMainTable.setAlignRow(Horizontal.RIGHT, Vertical.TOP);
 
 		initScrollPane();
 		initEnemies();

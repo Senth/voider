@@ -636,7 +636,7 @@ class LevelEditorGui extends EditorGui {
 				totalHeight = 0;
 
 				// Only switch to bottom alignment if one row is full
-				mToolMenu.setTableAlign(Horizontal.LEFT, Vertical.BOTTOM);
+				mToolMenu.setAlignTable(Horizontal.LEFT, Vertical.BOTTOM);
 			}
 
 			totalHeight += buttonHeight;
@@ -663,7 +663,7 @@ class LevelEditorGui extends EditorGui {
 	private void initInfo() {
 		AlignTable left = new AlignTable();
 		AlignTable right = new AlignTable();
-		mWidgets.info.table.setRowAlign(Horizontal.LEFT, Vertical.TOP);
+		mWidgets.info.table.setAlignRow(Horizontal.LEFT, Vertical.TOP);
 		left.setPreferences(mWidgets.info.table);
 		right.setPreferences(mWidgets.info.table);
 

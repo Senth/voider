@@ -9,8 +9,8 @@ import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.utils.scene.ui.Label;
 import com.spiddekauga.utils.scene.ui.Label.LabelStyle;
 import com.spiddekauga.voider.Config;
-import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.InternalNames;
+import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.utils.Messages;
 
 /**
@@ -36,8 +36,7 @@ public class GameOverSceneGui extends Gui {
 	public void initGui() {
 		super.initGui();
 
-		mMainTable.setTableAlign(Horizontal.CENTER, Vertical.MIDDLE);
-		mMainTable.setRowAlign(Horizontal.CENTER, Vertical.MIDDLE);
+		mMainTable.setAlign(Horizontal.CENTER, Vertical.MIDDLE);
 		mMainTable.setCellPaddingDefault(2, 2, 2, 2);
 		mMainTable.row().setFillHeight(true);
 
@@ -66,7 +65,7 @@ public class GameOverSceneGui extends Gui {
 		mMainTable.add(label);
 
 		// Score
-		mMainTable.setRowAlign(Horizontal.LEFT, Vertical.MIDDLE);
+		mMainTable.setAlignRow(Horizontal.LEFT, Vertical.MIDDLE);
 		mMainTable.row();
 		label = new Label("Score:", labelStyle);
 		mMainTable.add(label).setWidth(Config.Gui.SCORE_TABLE_FIRST_CELL_WIDTH);

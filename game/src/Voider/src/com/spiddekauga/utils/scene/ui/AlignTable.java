@@ -81,9 +81,10 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	 * @param horizontal horizontal alignment of the table
 	 * @param vertical vertical alignment of the table
 	 * @return this table for chaining
-	 * @see #setRowAlign(Horizontal,Vertical) sets the row alignment instead
+	 * @see #setAlignRow(Horizontal,Vertical) sets the row alignment instead
+	 * @see #setAlign(Horizontal, Vertical) to set both table and row alignment
 	 */
-	public AlignTable setTableAlign(Horizontal horizontal, Vertical vertical) {
+	public AlignTable setAlignTable(Horizontal horizontal, Vertical vertical) {
 		mTableAlign.horizontal = horizontal;
 		mTableAlign.vertical = vertical;
 		return this;
@@ -94,11 +95,27 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	 * @param horizontal default horizontal alignment for new rows
 	 * @param vertical default vertical alignment for new rows
 	 * @return this table for chaining
-	 * @see #setTableAlign(Horizontal,Vertical) sets table alignment instead
+	 * @see #setAlignTable(Horizontal,Vertical) sets table alignment instead
+	 * @see #setAlign(Horizontal, Vertical) to set both table and row alignment
 	 */
-	public AlignTable setRowAlign(Horizontal horizontal, Vertical vertical) {
+	public AlignTable setAlignRow(Horizontal horizontal, Vertical vertical) {
 		mRowAlign.horizontal = horizontal;
 		mRowAlign.vertical = vertical;
+		return this;
+	}
+
+	/**
+	 * Sets both the table and row alignment. I.e. same as calling {@link #setAlignRow(Horizontal, Vertical)}
+	 * and {@link #setAlignTable(Horizontal, Vertical)}
+	 * @param horizontal default horizontal alignment for table and new rows
+	 * @param vertical default vertical alignment for table and new rows
+	 * @return this tabale for chaining
+	 * @see #setAlignRow(Horizontal, Vertical) for only setting row alignment (on new rows)
+	 * @see #setAlignTable(Horizontal, Vertical) for only setting table alignment
+	 */
+	public AlignTable setAlign(Horizontal horizontal, Vertical vertical) {
+		setAlignRow(horizontal, vertical);
+		setAlignTable(horizontal, vertical);
 		return this;
 	}
 
@@ -271,7 +288,7 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	 * Adds another row to the table.
 	 * Uses the default row alignment
 	 * @see #row(Horizontal,Vertical) for adding a new row with the specified alignment
-	 * @see #setRowAlign(Horizontal,Vertical) for setting the default row alignment
+	 * @see #setAlignRow(Horizontal,Vertical) for setting the default row alignment
 	 * @return the created row
 	 */
 	public Row row() {
@@ -284,7 +301,7 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	 * @param horizontal horizontal alignment for this new row
 	 * @param vertical vertical alignment for this new row
 	 * @see #row() for adding a row with the default row alignment
-	 * @see #setRowAlign(Horizontal,Vertical) for setting the default row alignment
+	 * @see #setAlignRow(Horizontal,Vertical) for setting the default row alignment
 	 * @return the created row
 	 */
 	public Row row(Horizontal horizontal, Vertical vertical) {

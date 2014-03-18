@@ -6,8 +6,8 @@ import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.Label;
 import com.spiddekauga.voider.Config;
-import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.InternalNames;
+import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.scene.Gui;
 
 /**
@@ -31,8 +31,7 @@ class LoadingTextSceneGui extends Gui {
 		Skin skin = ResourceCacheFacade.get(InternalNames.UI_GENERAL);
 		mLabel = new Label(mText, skin);
 		mLabel.setWrap(true);
-		mMainTable.setTableAlign(Horizontal.CENTER, Vertical.MIDDLE);
-		mMainTable.setRowAlign(Horizontal.CENTER, Vertical.MIDDLE);
+		mMainTable.setAlign(Horizontal.CENTER, Vertical.MIDDLE);
 		mLabel.setColor(1, 1, 1, 0);
 		mMainTable.add(mLabel);
 

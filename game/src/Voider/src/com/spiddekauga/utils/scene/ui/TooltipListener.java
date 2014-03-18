@@ -76,8 +76,8 @@ public class TooltipListener extends InputAdapter implements EventListener {
 			float leftRightPadding = uiSkin.get(SkinNames.General.PADDING_WINDOW_LEFT_RIGHT.toString(), Float.class);
 			mWindowLeftRightMargin = leftRightPadding;
 			mTable.setRowPaddingDefault(0, leftRightPadding, leftRightPadding, leftRightPadding);
-			mTable.setTableAlign(Horizontal.LEFT, Vertical.MIDDLE);
-			mTable.setRowAlign(Horizontal.LEFT, Vertical.TOP);
+			mTable.setAlignTable(Horizontal.LEFT, Vertical.MIDDLE);
+			mTable.setAlignRow(Horizontal.LEFT, Vertical.TOP);
 		}
 
 		mcTooltips++;

@@ -49,7 +49,7 @@ public abstract class Gui implements Disposable {
 	public Gui() {
 		mStage.addActor(mMainTable);
 		mMainTable.setName("MainTable");
-		mMainTable.setTableAlign(Horizontal.RIGHT, Vertical.TOP);
+		mMainTable.setAlignTable(Horizontal.RIGHT, Vertical.TOP);
 	}
 
 	@Override

@@ -184,7 +184,7 @@ public class SkinNames {
 
 		@Override
 		public InternalNames getSkinName() {
-			return InternalNames.UI_EDITOR_BUTTONS;
+			return InternalNames.UI_EDITOR;
 		}
 
 		/**
@@ -229,6 +229,10 @@ public class SkinNames {
 	 * Editor variables
 	 */
 	public enum EditorVars implements ISkinNames {
+		/** Upper and lower bar colors */
+		BAR_UPPER_LOWER_COLOR(Color.class),
+		/** Upper and lower bar height */
+		BAR_UPPER_LOWER_HEIGHT(Float.class),
 		/** Color of line between enemy and activate trigger */
 		ENEMY_ACTIVATE_TRIGGER_LINE_COLOR(Color.class),
 		/** Color of line between enemy and deactivate trigger */
@@ -266,7 +270,7 @@ public class SkinNames {
 
 		@Override
 		public InternalNames getSkinName() {
-			return InternalNames.UI_EDITOR_BUTTONS;
+			return InternalNames.UI_EDITOR;
 		}
 
 		/**

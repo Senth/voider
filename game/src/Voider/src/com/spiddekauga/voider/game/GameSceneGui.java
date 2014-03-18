@@ -4,6 +4,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider.SliderStyle;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
+import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.Label;
 import com.spiddekauga.utils.scene.ui.Label.LabelStyle;
 import com.spiddekauga.voider.resources.SkinNames;
@@ -27,11 +28,18 @@ class GameSceneGui extends Gui {
 	public void initGui() {
 		super.initGui();
 
-		mMainTable.setTableAlign(Horizontal.RIGHT, Vertical.TOP);
-		mMainTable.setRowAlign(Horizontal.RIGHT, Vertical.TOP);
+		mMainTable.setAlign(Horizontal.RIGHT, Vertical.TOP);
 		mMainTable.setCellPaddingDefault((Float)SkinNames.getResource(SkinNames.General.PADDING_DEFAULT));
-		initHealthBar();
+
+		if (!mGameScene.isPlayerInvulnerable()) {
+			initHealthBar();
+		}
+
 		initScoreMultiplier();
+
+		if (mGameScene.isTestRun()) {
+			initTestRunOptionBar();
+		}
 	}
 
 	@Override
@@ -43,6 +51,13 @@ class GameSceneGui extends Gui {
 		mWidgets.health.setValue(mGameScene.getPercentageHealth());
 
 		mMainTable.pack();
+	}
+
+	/**
+	 * Initializes test run options
+	 */
+	private void initTestRunOptionBar() {
+		mMainTable.setAlign(Horizontal.CENTER, Vertical.TOP);
 	}
 
 	/**
@@ -83,6 +98,8 @@ class GameSceneGui extends Gui {
 
 	/** GameScene object that this GUI acts on */
 	private GameScene mGameScene = null;
+	/** Options bar when test running the level */
+	private AlignTable mOptionBar = new AlignTable();
 	/** All widgets */
 	private InnerWidgets mWidgets = new InnerWidgets();
 

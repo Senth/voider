@@ -25,14 +25,14 @@ public class EditorSelectionScene extends Scene {
 	@Override
 	protected void loadResources() {
 		super.loadResources();
-		ResourceCacheFacade.load(InternalNames.UI_EDITOR_BUTTONS);
+		ResourceCacheFacade.load(InternalNames.UI_EDITOR);
 		ResourceCacheFacade.load(InternalNames.UI_GENERAL);
 	}
 
 	@Override
 	protected void unloadResources() {
 		super.unloadResources();
-		ResourceCacheFacade.unload(InternalNames.UI_EDITOR_BUTTONS);
+		ResourceCacheFacade.unload(InternalNames.UI_EDITOR);
 		ResourceCacheFacade.unload(InternalNames.UI_GENERAL);
 	}
 

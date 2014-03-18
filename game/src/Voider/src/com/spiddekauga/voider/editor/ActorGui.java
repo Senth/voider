@@ -146,7 +146,7 @@ public abstract class ActorGui extends EditorGui {
 	 * Initializes actor options
 	 */
 	protected void initInfoTable() {
-		mWidgets.info.table.setTableAlign(Horizontal.LEFT, Vertical.TOP);
+		mWidgets.info.table.setAlignTable(Horizontal.LEFT, Vertical.TOP);
 
 		Label label = new Label("Name", mStyles.label.standard);
 		mWidgets.info.table.add(label);

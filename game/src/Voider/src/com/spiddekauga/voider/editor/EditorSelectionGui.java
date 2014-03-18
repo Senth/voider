@@ -7,8 +7,8 @@ import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.utils.scene.ui.TooltipListener;
-import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.InternalNames;
+import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.utils.Messages;
@@ -23,8 +23,7 @@ public class EditorSelectionGui extends Gui {
 	public void initGui() {
 		super.initGui();
 
-		mMainTable.setTableAlign(Horizontal.CENTER, Vertical.MIDDLE);
-		mMainTable.setRowAlign(Horizontal.CENTER, Vertical.MIDDLE);
+		mMainTable.setAlign(Horizontal.CENTER, Vertical.MIDDLE);
 		mMainTable.setCellPaddingDefault((Float)SkinNames.getResource(SkinNames.General.PADDING_DEFAULT));
 
 		initMenu();
@@ -42,7 +41,7 @@ public class EditorSelectionGui extends Gui {
 	 * Initializes the menu
 	 */
 	private void initMenu() {
-		Skin skin = ResourceCacheFacade.get(InternalNames.UI_EDITOR_BUTTONS);
+		Skin skin = ResourceCacheFacade.get(InternalNames.UI_EDITOR);
 
 		Button button = new ImageButton(skin, SkinNames.EditorIcons.CAMPAIGN_EDITOR_BIG.toString());
 		TooltipListener tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Menus.Editor.CAMPAIGN, "campaign"));

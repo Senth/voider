@@ -518,12 +518,12 @@ public class KryoPrototypeTest {
 		// Test Resource Names
 		HashSet<InternalNames> resourceSet = Pools.hashSet.obtain();
 		resourceSet.clear();
-		resourceSet.add(InternalNames.UI_EDITOR_BUTTONS);
+		resourceSet.add(InternalNames.UI_EDITOR);
 		resourceSet.add(InternalNames.UI_GENERAL);
 
 		HashSet<InternalNames> readReasourceSet = copy(resourceSet, HashSet.class);
 		assertEquals(2, readReasourceSet.size());
-		assertTrue(readReasourceSet.contains(InternalNames.UI_EDITOR_BUTTONS));
+		assertTrue(readReasourceSet.contains(InternalNames.UI_EDITOR));
 		assertTrue(readReasourceSet.contains(InternalNames.UI_GENERAL));
 	}
 

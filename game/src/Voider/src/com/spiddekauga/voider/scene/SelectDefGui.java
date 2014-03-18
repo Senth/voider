@@ -72,8 +72,7 @@ public class SelectDefGui extends Gui {
 	public void initGui() {
 		super.initGui();
 
-		mMainTable.setTableAlign(Horizontal.LEFT, Vertical.TOP);
-		mMainTable.setRowAlign(Horizontal.LEFT, Vertical.TOP);
+		mMainTable.setAlign(Horizontal.LEFT, Vertical.TOP);
 		mMainTable.setKeepSize(true);
 		mDefTable.setPreferences(mMainTable);
 		mDefTable.setKeepSize(true);

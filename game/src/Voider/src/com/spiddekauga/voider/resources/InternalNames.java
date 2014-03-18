@@ -23,7 +23,7 @@ import com.spiddekauga.voider.Config.File;
 public enum InternalNames {
 	// UI
 	/** Editor button */
-	UI_EDITOR_BUTTONS("ui/editor.json", Skin.class),
+	UI_EDITOR("ui/editor.json", Skin.class),
 	/** General UI */
 	UI_GENERAL("ui/general.json", Skin.class),
 	/** Editor tooltip images */

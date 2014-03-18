@@ -56,6 +56,20 @@ public class GameScene extends WorldScene {
 	}
 
 	/**
+	 * @return true if the level is test running
+	 */
+	boolean isTestRun() {
+		return mTesting;
+	}
+
+	/**
+	 * @return true if the player is invulnerable
+	 */
+	boolean isPlayerInvulnerable() {
+		return mInvulnerable;
+	}
+
+	/**
 	 * Sets the level that shall be played
 	 * @param level level to play
 	 */
@@ -330,8 +344,12 @@ public class GameScene extends WorldScene {
 			ResourceCacheFacade.load(this, mGameSaveDef.getGameSaveId(), mGameSaveDef.getId());
 		}
 
-		if (mTesting && mLevel != null) {
-			ResourceCacheFacade.load(this, mLevel.getDef().getId(), true);
+		if (mTesting) {
+			ResourceCacheFacade.load(InternalNames.UI_EDITOR);
+
+			if (mLevel != null) {
+				ResourceCacheFacade.load(this, mLevel.getDef().getId(), true);
+			}
 		}
 	}
 
@@ -341,6 +359,10 @@ public class GameScene extends WorldScene {
 		ResourceCacheFacade.unload(InternalNames.UI_GENERAL);
 		ResourceCacheFacade.unload(InternalNames.UI_GAME);
 		ResourceCacheFacade.unload(InternalNames.SHADER_DEFAULT);
+
+		if (mTesting) {
+			ResourceCacheFacade.unload(InternalNames.UI_EDITOR);
+		}
 	}
 
 	@Override

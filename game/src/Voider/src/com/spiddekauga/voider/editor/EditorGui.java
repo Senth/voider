@@ -106,12 +106,11 @@ public abstract class EditorGui extends Gui {
 
 		initStyles();
 
-		mEditorMenu.setTableAlign(Horizontal.LEFT, Vertical.TOP);
-		mFileMenu.setTableAlign(Horizontal.RIGHT, Vertical.TOP);
-		mToolMenu.setTableAlign(Horizontal.LEFT, Vertical.TOP);
-		mToolMenu.setRowAlign(Horizontal.LEFT, Vertical.TOP);
-		mMainTable.setTableAlign(Horizontal.RIGHT, Vertical.TOP);
-		mMainTable.setRowAlign(Horizontal.RIGHT, Vertical.MIDDLE);
+		mEditorMenu.setAlignTable(Horizontal.LEFT, Vertical.TOP);
+		mFileMenu.setAlignTable(Horizontal.RIGHT, Vertical.TOP);
+		mToolMenu.setAlign(Horizontal.LEFT, Vertical.TOP);
+		mMainTable.setAlignTable(Horizontal.RIGHT, Vertical.TOP);
+		mMainTable.setAlignRow(Horizontal.RIGHT, Vertical.MIDDLE);
 
 		initEditorMenu();
 		initFileMenu();
@@ -127,7 +126,7 @@ public abstract class EditorGui extends Gui {
 	 */
 	private void initStyles() {
 		mStyles.skin.general = ResourceCacheFacade.get(InternalNames.UI_GENERAL);
-		mStyles.skin.editor = ResourceCacheFacade.get(InternalNames.UI_EDITOR_BUTTONS);
+		mStyles.skin.editor = ResourceCacheFacade.get(InternalNames.UI_EDITOR);
 		mStyles.textButton.press = SkinNames.getResource(SkinNames.General.TEXT_BUTTON_PRESS);
 		mStyles.textButton.toggle = SkinNames.getResource(SkinNames.General.TEXT_BUTTON_TOGGLE);
 		mStyles.textButton.selected = SkinNames.getResource(SkinNames.General.TEXT_BUTTON_SELECTED);
@@ -567,8 +566,8 @@ public abstract class EditorGui extends Gui {
 		content.row();
 		AlignTable depTable = new AlignTable();
 		depTable.setCellPaddingDefault(mStyles.vars.paddingDefault);
-		depTable.setTableAlign(Horizontal.CENTER, Vertical.MIDDLE);
-		depTable.setRowAlign(Horizontal.LEFT, Vertical.MIDDLE);
+		depTable.setAlignTable(Horizontal.CENTER, Vertical.MIDDLE);
+		depTable.setAlignRow(Horizontal.LEFT, Vertical.MIDDLE);
 		ArrayList<Def> dependencies = mEditor.getNonPublishedDependencies();
 
 		for (Def dependency : dependencies) {

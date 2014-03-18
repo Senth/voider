@@ -25,18 +25,14 @@ public class MainMenuGui extends MenuGui {
 	public void initGui() {
 		super.initGui();
 
-		mMainTable.setTableAlign(Horizontal.CENTER, Vertical.MIDDLE);
-		mMainTable.setRowAlign(Horizontal.CENTER, Vertical.MIDDLE);
+		mMainTable.setAlign(Horizontal.CENTER, Vertical.MIDDLE);
 		mMainTable.setCellPaddingDefault((Float) SkinNames.getResource(SkinNames.General.PADDING_DEFAULT));
 		mInfoTable.setPreferences(mMainTable);
-		mInfoTable.setTableAlign(Horizontal.RIGHT, Vertical.TOP);
-		mInfoTable.setRowAlign(Horizontal.RIGHT, Vertical.TOP);
+		mInfoTable.setAlign(Horizontal.RIGHT, Vertical.TOP);
 		mOptionTable.setPreferences(mMainTable);
-		mOptionTable.setTableAlign(Horizontal.RIGHT, Vertical.BOTTOM);
-		mOptionTable.setRowAlign(Horizontal.RIGHT, Vertical.BOTTOM);
+		mOptionTable.setAlign(Horizontal.RIGHT, Vertical.BOTTOM);
 		mLogoutTable.setPreferences(mMainTable);
-		mLogoutTable.setTableAlign(Horizontal.LEFT, Vertical.TOP);
-		mLogoutTable.setRowAlign(Horizontal.LEFT, Vertical.TOP);
+		mLogoutTable.setAlign(Horizontal.LEFT, Vertical.TOP);
 
 		getStage().addActor(mInfoTable);
 		getStage().addActor(mOptionTable);
