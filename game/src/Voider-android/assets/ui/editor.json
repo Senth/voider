@@ -7,7 +7,7 @@ java.lang.Float: {
 },
 
 com.badlogic.gdx.graphics.Color: {
-	bar_upper_lower_color: { r: 0.9, g: 0.9, b: 0,9, a: 1 },
+	bar_upper_lower_color: { r: 0.9, g: 0.9, b: 0.9, a: 1 },
 	grid_color: { r: 1, g: 1, b: 1, a: 0.2 },
 	grid_milestone_color: { r: 1, g: 1, b: 1, a: 0.4 },
 	level_above_below_color: { r: 1, g: 1, b: 1 , a: 0.2 },
@@ -532,6 +532,12 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageChecked: enemy_spawn_highlight_checked,
 		imageCheckedOver: enemy_spawn_highlight_checked_over,
 		imageDisabled: enemy_spawn_highlight_disabled
+	},
+	
+	screenshot:  {
+		imageUp: screenshot,
+		imageOver: screenshot_over,
+		imageDown: screenshot_down,
 	},
 }
 }

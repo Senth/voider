@@ -145,6 +145,8 @@ public class SkinNames {
 		RUN,
 		/** Save the resource */
 		SAVE,
+		/** Screen shot */
+		SCREENSHOT,
 		/** Select one or several actors */
 		SELECT,
 		/** Set the center of the shape (only visible when actor shape is set to draw) */

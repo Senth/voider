@@ -1,10 +1,16 @@
 package com.spiddekauga.voider.game;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider.SliderStyle;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
+import com.spiddekauga.utils.scene.ui.Background;
 import com.spiddekauga.utils.scene.ui.Label;
 import com.spiddekauga.utils.scene.ui.Label.LabelStyle;
 import com.spiddekauga.voider.resources.SkinNames;
@@ -22,6 +28,7 @@ class GameSceneGui extends Gui {
 	 */
 	public void setGameScene(GameScene gameScene) {
 		mGameScene = gameScene;
+		getStage().addActor(mOptionBar);
 	}
 
 	@Override
@@ -48,7 +55,9 @@ class GameSceneGui extends Gui {
 		mWidgets.score.pack();
 		mWidgets.multiplier.setText("X" + mGameScene.getPlayerMultiplier());
 		mWidgets.multiplier.invalidateHierarchy();
-		mWidgets.health.setValue(mGameScene.getPercentageHealth());
+		if (mWidgets.health != null) {
+			mWidgets.health.setValue(mGameScene.getPercentageHealth());
+		}
 
 		mMainTable.pack();
 	}
@@ -57,7 +66,19 @@ class GameSceneGui extends Gui {
 	 * Initializes test run options
 	 */
 	private void initTestRunOptionBar() {
-		mMainTable.setAlign(Horizontal.CENTER, Vertical.TOP);
+		// Create buttons
+		mOptionBar.setAlign(Horizontal.CENTER, Vertical.TOP);
+		Button button = new ImageButton((ImageButtonStyle) SkinNames.getResource(SkinNames.EditorIcons.SCREENSHOT));
+		mOptionBar.add(button);
+
+		// Set bar background
+		Background background = new Background((Color) SkinNames.getResource(SkinNames.EditorVars.BAR_UPPER_LOWER_COLOR));
+		mWidgets.optionBarBackground = background;
+		float height = SkinNames.getResource(SkinNames.EditorVars.BAR_UPPER_LOWER_HEIGHT);
+		background.setSize(Gdx.graphics.getWidth(), height);
+		background.setPosition(0, Gdx.graphics.getHeight() - height);
+		getStage().addActor(background);
+		background.setZIndex(0);
 	}
 
 	/**
@@ -85,6 +106,7 @@ class GameSceneGui extends Gui {
 		mMainTable.add(label).setPadRight((Float)SkinNames.getResource(SkinNames.General.PADDING_SEPARATOR));
 
 		label = new Label("", labelStyle);
+		label.setZIndex(8);
 		mWidgets.score = label;
 		mMainTable.add(label);
 
@@ -111,5 +133,6 @@ class GameSceneGui extends Gui {
 		Label score = null;
 		Label multiplier = null;
 		Slider health = null;
+		Background optionBarBackground = null;
 	}
 }

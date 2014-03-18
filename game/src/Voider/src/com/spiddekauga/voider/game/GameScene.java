@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector2;
@@ -25,6 +26,7 @@ import com.spiddekauga.voider.resources.ExternalTypes;
 import com.spiddekauga.voider.resources.InternalNames;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceSaver;
+import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.scene.GameOverScene;
 import com.spiddekauga.voider.scene.LoadingScene;
 import com.spiddekauga.voider.scene.Scene;
@@ -53,6 +55,36 @@ public class GameScene extends WorldScene {
 		mSpriteBatch = new SpriteBatch();
 
 		mWorld.setContactListener(mCollisionResolver);
+	}
+
+	@Override
+	protected void fixCamera() {
+		if (mTesting) {
+			float width = Gdx.graphics.getWidth() * Config.Graphics.WORLD_SCALE;
+
+			// Decrease scale of width depending on height scaled
+			float heightScale = Config.Graphics.HEIGHT_DEFAULT / Gdx.graphics.getHeight();
+			width *= heightScale;
+
+			// Scale height depending on bar height
+			float barHeight = SkinNames.getResource(SkinNames.EditorVars.BAR_UPPER_LOWER_HEIGHT);
+			float barHeightScaled = heightScale * barHeight;
+			float height = (Config.Graphics.HEIGHT_DEFAULT + barHeightScaled) * Config.Graphics.WORLD_SCALE;
+
+
+			if (mCamera != null) {
+				mCamera.viewportHeight = height;
+				mCamera.viewportWidth = width;
+				mCamera.update();
+			} else {
+				mCamera = new OrthographicCamera(width , height);
+			}
+			mCamera.position.y += barHeightScaled * Config.Graphics.WORLD_SCALE * 0.5f;
+		}
+		// Just use
+		else {
+			super.fixCamera();
+		}
 	}
 
 	/**
@@ -117,6 +149,8 @@ public class GameScene extends WorldScene {
 
 		/** @TODO loading done */
 		if (outcome == Outcomes.LOADING_SUCCEEDED) {
+			fixCamera();
+
 			// Load level
 			if (mLevelToLoad != null) {
 				Level level = ResourceCacheFacade.get(mLevelToLoad.getLevelId());
