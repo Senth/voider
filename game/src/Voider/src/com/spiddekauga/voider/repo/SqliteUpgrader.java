@@ -90,7 +90,7 @@ class SqliteUpgrader {
 	 * Fill tables variable
 	 */
 	private void fillTables() {
-		// DON'T add VERSION to these tables
+		// !!! DON'T add table 'version' to this list
 
 		// new_user
 		mNotFoundTables.add("new_user");

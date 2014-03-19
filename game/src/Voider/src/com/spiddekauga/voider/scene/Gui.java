@@ -212,6 +212,7 @@ public abstract class Gui implements Disposable {
 		LabelStyle labelStyle = SkinNames.getResource(SkinNames.General.LABEL_DEFAULT);
 		LabelStyle errorStyle = SkinNames.getResource(SkinNames.General.LABEL_ERROR);
 		TextFieldStyle textFieldStyle = SkinNames.getResource(SkinNames.General.TEXT_FIELD_DEFAULT);
+		float padSeparator = SkinNames.getResource(SkinNames.General.PADDING_SEPARATOR);
 
 		int fieldWidth = (int) (Gdx.graphics.getWidth() * 0.75f);
 
@@ -222,36 +223,53 @@ public abstract class Gui implements Disposable {
 		errorLabel.setWidth(fieldWidth);
 		errorLabel.setWrap(true);
 		errorLabel.pack();
-		content.add(errorLabel).setPadBottom((Float) SkinNames.getResource(SkinNames.General.PADDING_SEPARATOR));
 		content.row();
+		content.add(errorLabel).setPadBottom(padSeparator);
 
 
+		// Actions
 		TextField lastAction = new TextField("", textFieldStyle);
 		lastAction.setWidth(fieldWidth);
 		new TextFieldListener(lastAction, "Last action you did before the bug occured", null);
-		content.add(lastAction);
 		content.row();
+		content.add(lastAction);
 		TextField secondLastAction = new TextField("", textFieldStyle);
 		secondLastAction.setWidth(fieldWidth);
 		new TextFieldListener(secondLastAction, "Second last action...", null);
-		content.add(secondLastAction);
 		content.row();
+		content.add(secondLastAction);
 		TextField thirdLastAction = new TextField("", textFieldStyle);
 		thirdLastAction.setWidth(fieldWidth);
 		new TextFieldListener(thirdLastAction, "Third last action...", null);
-		content.add(thirdLastAction).setPadBottom((Float) SkinNames.getResource(SkinNames.General.PADDING_SEPARATOR));
 		content.row();
+		content.add(thirdLastAction).setPadBottom(padSeparator);
 
-		Label descriptionLabel = new Label("Detailed description (optional)", labelStyle);
-		content.add(descriptionLabel);
+
+		// Outcomes
+		TextField expectedOutcome = new TextField("", textFieldStyle);
+		expectedOutcome.setWidth(fieldWidth);
+		new TextFieldListener(expectedOutcome, "Expected outcome", null);
 		content.row();
+		content.add(expectedOutcome);
+		TextField actualOutcome = new TextField("", textFieldStyle);
+		actualOutcome.setWidth(fieldWidth);
+		new TextFieldListener(actualOutcome, "Actual outcome", null);
+		content.row();
+		content.add(actualOutcome);
+
+
+		// Description
+		Label descriptionLabel = new Label("Detailed description (optional)", labelStyle);
+		content.row();
+		content.add(descriptionLabel);
 		TextField description = new TextField("", textFieldStyle);
 		description.setWidth(fieldWidth);
 		int height = (int) (Gdx.graphics.getHeight()*0.35f);
 		description.setHeight(height);
+		content.row();
 		content.add(description);
 
-		CBugReportSend bugReportSend = new CBugReportSend(lastAction, secondLastAction, thirdLastAction, description, exception);
+		CBugReportSend bugReportSend = new CBugReportSend(lastAction, secondLastAction, thirdLastAction, expectedOutcome, actualOutcome, description, exception);
 		CGameQuit quit = new CGameQuit();
 
 		msgBox.content(content);

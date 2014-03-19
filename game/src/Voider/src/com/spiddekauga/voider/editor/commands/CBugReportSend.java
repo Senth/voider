@@ -12,9 +12,11 @@ import com.spiddekauga.utils.commands.Command;
 public class CBugReportSend extends Command {
 	/**
 	 * Creates a command that will send a bug report.
-	 * @param lastAction text field for the last action before the bug occured
+	 * @param lastAction text field for the last action before the bug occurred
 	 * @param secondLastAction text field for the second last action
 	 * @param thirdLastAction text field for the third last action
+	 * @param expectedOutcome text field for the expected outcome
+	 * @param actualOutcome text field for the actual outcome
 	 * @param description text field for the description
 	 * @param exception the exception that was thrown
 	 */
@@ -22,30 +24,38 @@ public class CBugReportSend extends Command {
 			TextField lastAction,
 			TextField secondLastAction,
 			TextField thirdLastAction,
+			TextField expectedOutcome,
+			TextField actualOutcome,
 			TextField description,
 			Exception exception
 			) {
 		mLastAction = lastAction;
 		mSecondLastAction = secondLastAction;
 		mThirdLastAction = thirdLastAction;
+		mExpectedOutcome = expectedOutcome;
+		mActualOutcome = actualOutcome;
 		mDescription = description;
 		mException = exception;
 	}
 
 	/**
 	 * Creates a command that will send a bug report.
-	 * @param lastAction text field for the last action before the bug occured
+	 * @param lastAction text field for the last action before the bug occurred
 	 * @param secondLastAction text field for the second last action
 	 * @param thirdLastAction text field for the third last action
+	 * @param expectedOutcome text field for the expected outcome
+	 * @param actualOutcome text field for the actual outcome
 	 * @param description text field for the description
 	 */
 	public CBugReportSend(
 			TextField lastAction,
 			TextField secondLastAction,
 			TextField thirdLastAction,
+			TextField expectedOutcome,
+			TextField actualOutcome,
 			TextField description
 			) {
-		this(lastAction, secondLastAction, thirdLastAction, description, null);
+		this(lastAction, secondLastAction, thirdLastAction, expectedOutcome, actualOutcome, description, null);
 	}
 
 	@Override
@@ -87,6 +97,10 @@ public class CBugReportSend extends Command {
 	TextField mSecondLastAction;
 	/** Third last action text field */
 	TextField mThirdLastAction;
+	/** Expected outcome text field */
+	TextField mExpectedOutcome;
+	/** Actual outcome text field */
+	TextField mActualOutcome;
 	/** Description text field */
 	TextField mDescription;
 	/** Exception that was thrown */

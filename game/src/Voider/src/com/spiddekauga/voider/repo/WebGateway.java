@@ -28,7 +28,7 @@ import com.spiddekauga.voider.Config;
 class WebGateway {
 	/**
 	 * Sends bytes over HTTP to the specified server
-	 * @param methodName the method name in teh server
+	 * @param methodName the method name in the server
 	 * @param entity the entity to send (as bytes)
 	 * @return entity bytes response from the server.
 	 * Length 0 if no response was found. null if an error occurred.

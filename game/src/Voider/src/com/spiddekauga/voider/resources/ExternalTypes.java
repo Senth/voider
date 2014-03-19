@@ -24,6 +24,9 @@ public enum ExternalTypes {
 	LEVEL(6, Level.class),
 	GAME_SAVE(7, GameSave.class),
 	GAME_SAVE_DEF(8, GameSaveDef.class),
+	BUG_REPORT(9, BugReportDef.class),
+
+	// NEXT ID: 10
 
 	;
 	/**
