@@ -6,6 +6,7 @@ import java.util.Iterator;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
@@ -105,6 +106,7 @@ class LevelEditorGui extends EditorGui {
 		resetLevelInfo();
 		resetEnemyAddTable();
 		resetTools();
+		resetImage();
 	}
 
 	/**
@@ -771,6 +773,12 @@ class LevelEditorGui extends EditorGui {
 
 
 		// RIGHT
+		// Screenshot image
+		right.row().setAlign(Horizontal.CENTER, Vertical.MIDDLE);
+		mWidgets.info.image = new Image();
+		right.add(mWidgets.info.image);
+
+		// Prologue
 		right.row();
 		label = new Label("Prologue", mStyles.label.standard);
 		new TooltipListener(label, Messages.Tooltip.Level.Option.PROLOGUE);
@@ -790,7 +798,7 @@ class LevelEditorGui extends EditorGui {
 			}
 		};
 
-
+		// Epilogue
 		right.row();
 		label = new Label("Epilogue", mStyles.label.standard);
 		new TooltipListener(label, Messages.Tooltip.Level.Option.EPILOGUE);
@@ -813,6 +821,16 @@ class LevelEditorGui extends EditorGui {
 		mWidgets.info.table.setTransform(true);
 		mWidgets.info.table.layout();
 		mWidgets.info.table.setKeepSize(true);
+	}
+
+	/**
+	 * Update screenshot image
+	 */
+	void resetImage() {
+		mWidgets.info.image.setDrawable(mLevelEditor.getImage());
+		mWidgets.info.image.setSize(Config.Level.SAVE_TEXTURE_WIDTH, Config.Level.SAVE_TEXTURE_HEIGHT);
+		mWidgets.info.image.setVisible(true);
+		mWidgets.info.image.invalidate();
 	}
 
 	/**
@@ -1226,6 +1244,7 @@ class LevelEditorGui extends EditorGui {
 			Label revision = null;
 			TextField storyBefore = null;
 			TextField epilogue = null;
+			Image image = null;
 		}
 
 		static class PathOptionWidgets {

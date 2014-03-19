@@ -67,7 +67,6 @@ public abstract class Editor extends WorldScene implements IEditor {
 		ResourceCacheFacade.load(InternalNames.UI_EDITOR);
 		ResourceCacheFacade.load(InternalNames.UI_GENERAL);
 		ResourceCacheFacade.load(InternalNames.SHADER_DEFAULT);
-		ResourceCacheFacade.load(InternalNames.UI_EDITOR_TOOLTIPS);
 	}
 
 	@Override
@@ -76,7 +75,6 @@ public abstract class Editor extends WorldScene implements IEditor {
 		ResourceCacheFacade.unload(InternalNames.UI_EDITOR);
 		ResourceCacheFacade.unload(InternalNames.UI_GENERAL);
 		ResourceCacheFacade.unload(InternalNames.SHADER_DEFAULT);
-		ResourceCacheFacade.unload(InternalNames.UI_EDITOR_TOOLTIPS);
 	}
 
 	/**

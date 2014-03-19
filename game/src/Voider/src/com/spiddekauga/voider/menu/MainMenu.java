@@ -48,7 +48,6 @@ public class MainMenu extends Scene implements ICallerResponseListener {
 	protected void loadResources() {
 		super.loadResources();
 		ResourceCacheFacade.load(InternalNames.UI_GENERAL);
-		ResourceCacheFacade.load(InternalNames.UI_EDITOR_TOOLTIPS); // REMOVE loading tooltip
 		ResourceCacheFacade.loadAllOf(this, ExternalTypes.LEVEL_DEF, false);
 		ResourceCacheFacade.loadAllOf(this, ExternalTypes.GAME_SAVE_DEF, false);
 	}
@@ -57,7 +56,6 @@ public class MainMenu extends Scene implements ICallerResponseListener {
 	protected void unloadResources() {
 		super.unloadResources();
 		ResourceCacheFacade.unload(InternalNames.UI_GENERAL);
-		ResourceCacheFacade.unload(InternalNames.UI_EDITOR_TOOLTIPS); // REMOVE unloading tooltip
 	}
 
 	@Override

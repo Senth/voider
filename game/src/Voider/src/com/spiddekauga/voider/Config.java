@@ -191,7 +191,10 @@ public class Config {
 		public static boolean EXCEPTION_HANDLER = false;
 		/** Set this variable to be true for releases, this disables many of
 		 * the "special" functionality as multiple registering, test scenes etc. */
-		public static final boolean RELEASE = false;
+		public static final boolean RELEASE_FINAL = false;
+		/** Set this variable to true for test releases, such as sending this version
+		 * to other developers/designers, etc. */
+		public static final boolean RELEASE_TEST = RELEASE_FINAL || false;
 		/** Set to true in JUNIT tests */
 		public static boolean JUNIT_TEST = false;
 	}
@@ -547,7 +550,7 @@ public class Config {
 		/** Revision number length */
 		public final static int REVISION_LENGTH = 10;
 		/** Uses external images, etc. instead of internal for resources */
-		public final static boolean USE_EXTERNAL_RESOURCES = false;
+		public final static boolean USE_EXTERNAL_RESOURCES = !Debug.RELEASE_FINAL && Debug.RELEASE_TEST;
 		/** Database filename */
 		public final static String DB_FILENAME = "Voider.db";
 		/** Database file */
@@ -602,13 +605,13 @@ public class Config {
 		/** Minimum area of a polygon shape */
 		public final static float POLYGON_AREA_MIN = EPSILON * 1.1f;
 		/** Default width of the graphics */
-		public final static float WIDTH_DEFAULT = 800;
+		public final static int WIDTH_DEFAULT = 800;
 		/** Default height of the graphics */
-		public final static float HEIGHT_DEFAULT = 480;
+		public final static int HEIGHT_DEFAULT = 480;
 		/** Starting width */
-		public final static int WIDTH_START = 1280;
+		public final static int WIDTH_START = Debug.RELEASE_TEST ? WIDTH_DEFAULT : 1280;
 		/** Starting height */
-		public final static int HEIGHT_START = 720;
+		public final static int HEIGHT_START = Debug.RELEASE_TEST ? HEIGHT_DEFAULT : 720;
 		/** World scaling factor */
 		public final static float WORLD_SCALE = 0.1f;
 		/** How much bigger of the screen is shown in height from the regular scale. E.g. 3 will show the same amount of
@@ -880,7 +883,7 @@ public class Config {
 		/** Screenshot texture width */
 		public final static int SAVE_TEXTURE_WIDTH = 256;
 		/** Screenshot texture ratio */
-		public final static float SAVE_TEXTURE_RATIO = Graphics.WIDTH_DEFAULT / Graphics.HEIGHT_DEFAULT;
+		public final static float SAVE_TEXTURE_RATIO = ((float) Graphics.WIDTH_DEFAULT) / Graphics.HEIGHT_DEFAULT;
 		/** Screenshot texture height */
 		public final static int SAVE_TEXTURE_HEIGHT = (int) (SAVE_TEXTURE_WIDTH / SAVE_TEXTURE_RATIO);
 	}
@@ -910,6 +913,24 @@ public class Config {
 		public final static float LOADING_TEXT_SCENE_ENTER_TIME = 0.4f;
 		/** Loading text scene exiting time */
 		public final static float LOADING_TEXT_SCENE_EXIT_TIME = 0.1f;
+	}
+
+	/**
+	 * Network
+	 */
+	public static class Network {
+		/** Server host */
+		public static final String SERVER_HOST;
+
+		static {
+			if (Debug.RELEASE_FINAL) {
+				SERVER_HOST = "http://voider-game.com/";
+			} else if (Debug.RELEASE_TEST) {
+				SERVER_HOST = "http://voider-test.appspot.com/";
+			} else {
+				SERVER_HOST = "http://localhost:8888/";
+			}
+		}
 	}
 
 	/**

@@ -160,7 +160,7 @@ public class LoginScene extends Scene implements ICallerResponseListener {
 	 * @return true if register option is available
 	 */
 	boolean isRegisterAvailable() {
-		if (Config.Debug.RELEASE) {
+		if (Config.Debug.RELEASE_FINAL) {
 			return UserLocalRepo.isRegisterAvailable();
 		} else {
 			return true;

@@ -34,9 +34,10 @@ import com.spiddekauga.utils.scene.ui.Label.LabelStyle;
 import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
 import com.spiddekauga.utils.scene.ui.ResourceTextureButton;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
+import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.editor.commands.CSelectDefSetRevision;
-import com.spiddekauga.voider.game.actors.ActorDef;
 import com.spiddekauga.voider.resources.Def;
+import com.spiddekauga.voider.resources.ExternalTypes;
 import com.spiddekauga.voider.resources.InternalNames;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.RevisionInfo;
@@ -251,15 +252,16 @@ public class SelectDefGui extends Gui {
 	 * Occupate def table with definitions.
 	 */
 	void occupateDefTable() {
-		TextButtonStyle toggleStyle = SkinNames.getResource(SkinNames.General.TEXT_BUTTON_TOGGLE);
 		ImageButtonStyle imageButtonStyle = SkinNames.getResource(SkinNames.General.IMAGE_BUTTON_TOGGLE);
 
-		float floatPerRow = (Gdx.graphics.getWidth() - (Float)SkinNames.getResource(SkinNames.General.SELECT_DEF_INFO_WIDTH));
+		float floatPerRow;
 
-		if (mSelectDefScene.isDefDrawable()) {
-			floatPerRow /= (Float)SkinNames.getResource(SkinNames.General.SELECT_DEF_IMAGE_WIDTH_MAX);
+		if (mSelectDefScene.getDefType() == ExternalTypes.LEVEL_DEF) {
+			floatPerRow = Gdx.graphics.getWidth() - Config.Level.SAVE_TEXTURE_WIDTH;
+			floatPerRow /= Config.Level.SAVE_TEXTURE_WIDTH;
 		} else {
-			floatPerRow /= (Float)SkinNames.getResource(SkinNames.General.SELECT_DEF_TEXT_WIDTH_MAX);
+			floatPerRow = (Gdx.graphics.getWidth() - (Float)SkinNames.getResource(SkinNames.General.SELECT_DEF_INFO_WIDTH));
+			floatPerRow /= (Float)SkinNames.getResource(SkinNames.General.SELECT_DEF_IMAGE_WIDTH_MAX);
 		}
 
 		floatPerRow += 0.5f;
@@ -277,12 +279,7 @@ public class SelectDefGui extends Gui {
 				}
 
 				Button button;
-				if (mSelectDefScene.isDefDrawable()) {
-					button = new ResourceTextureButton((ActorDef) defVisible.def, imageButtonStyle);
-				} else {
-					button = new TextButton(defVisible.def.getName(), toggleStyle);
-					/** @todo cut text if too long */
-				}
+				button = new ResourceTextureButton(defVisible.def, imageButtonStyle);
 				button.setName(defVisible.def.getId().toString() + "_" + defVisible.def.getRevision());
 				button.addListener(mDefListener);
 
@@ -290,7 +287,10 @@ public class SelectDefGui extends Gui {
 				buttonGroup.add(button);
 				Cell cell = mDefTable.add(button).setFillWidth(true);
 
-				if (mSelectDefScene.isDefDrawable()) {
+				// Set as boxed if not level
+				if (mSelectDefScene.getDefType() == ExternalTypes.LEVEL_DEF) {
+					cell.setHeight(Config.Level.SAVE_TEXTURE_HEIGHT);
+				} else {
 					cell.setBoxShaped(true);
 				}
 

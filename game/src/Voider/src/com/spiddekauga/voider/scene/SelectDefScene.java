@@ -199,14 +199,6 @@ public class SelectDefScene extends WorldScene {
 	}
 
 	/**
-	 * @return true if the definitions have textures that show how
-	 * they look like
-	 */
-	boolean isDefDrawable() {
-		return IResourceTexture.class.isAssignableFrom(mDefType.getClassType());
-	}
-
-	/**
 	 * Checks if this resource is currently selected
 	 * @param defId id of the definition to check if it's currently selected
 	 * @return true if it's selected, false if not
@@ -216,6 +208,13 @@ public class SelectDefScene extends WorldScene {
 			return mSelectedDef.equals(defId);
 		}
 		return false;
+	}
+
+	/**
+	 * @return the definition type
+	 */
+	ExternalTypes getDefType() {
+		return mDefType;
 	}
 
 	/**

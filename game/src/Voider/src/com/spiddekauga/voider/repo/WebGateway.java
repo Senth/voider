@@ -18,6 +18,7 @@ import org.apache.http.impl.client.HttpClients;
 import com.badlogic.gdx.Gdx;
 import com.spiddekauga.utils.Buffers;
 import com.spiddekauga.utils.IOutstreamProgressListener;
+import com.spiddekauga.voider.Config;
 
 /**
  * Network gateway for sending HTTP request to the server
@@ -33,7 +34,7 @@ class WebGateway {
 	 * Length 0 if no response was found. null if an error occurred.
 	 */
 	public static byte[] sendRequest(String methodName, byte[] entity) {
-		return sendRequest(SERVER_HOST + methodName, entity, (List<FieldNameFileWrapper>) null, (List<IOutstreamProgressListener>) null);
+		return sendRequest(Config.Network.SERVER_HOST + methodName, entity, (List<FieldNameFileWrapper>) null, (List<IOutstreamProgressListener>) null);
 	}
 
 	/**
@@ -174,8 +175,6 @@ class WebGateway {
 		public File file = null;
 	}
 
-	/** Server host */
-	private static final String SERVER_HOST = "http://localhost:8888/";
 	/** HTTP Client for the client side */
 	private static CloseableHttpClient mHttpClient = null;
 

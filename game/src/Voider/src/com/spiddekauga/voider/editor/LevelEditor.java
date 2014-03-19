@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.spiddekauga.utils.IOutstreamProgressListener;
 import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
@@ -376,6 +377,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		else if (outcome == Outcomes.LEVEL_PLAYER_DIED || outcome == Outcomes.LEVEL_COMPLETED || outcome == Outcomes.LEVEL_QUIT) {
 			if (mPngBytesBeforeTest != mLevel.getDef().getPngImage()) {
 				setUnsaved();
+				((LevelEditorGui)mGui).resetImage();
 			}
 		}
 
@@ -619,7 +621,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	protected void fixCamera() {
 		float width = Gdx.graphics.getWidth() * Config.Graphics.LEVEL_EDITOR_SCALE;
 		// Decrease scale of width depending on height scaled
-		float heightScale = Config.Graphics.HEIGHT_DEFAULT / Gdx.graphics.getHeight();
+		float heightScale = ((float) Config.Graphics.HEIGHT_DEFAULT) / Gdx.graphics.getHeight();
 		width *= heightScale;
 		float height = Config.Graphics.HEIGHT_DEFAULT * Config.Graphics.LEVEL_EDITOR_SCALE;
 
@@ -1485,6 +1487,17 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 			return mLevel.getDef().getTheme();
 		} else {
 			return Themes.SPACE;
+		}
+	}
+
+	/**
+	 * @return drawable image of the level
+	 */
+	Drawable getImage() {
+		if (mLevel != null) {
+			return mLevel.getDef().getTextureRegionDrawable();
+		} else {
+			return null;
 		}
 	}
 
