@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.spiddekauga.utils.KeyHelper;
+import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.app.PrototypeScene;
 import com.spiddekauga.voider.app.TestUiScene;
 import com.spiddekauga.voider.editor.EditorSelectionScene;
@@ -65,6 +66,8 @@ public class MainMenu extends Scene implements ICallerResponseListener {
 
 	@Override
 	protected void onActivate(Outcomes outcome, Object message) {
+		super.onActivate(outcome, message);
+
 		if (outcome == Outcomes.LOADING_FAILED_CORRUPT_FILE) {
 			/** @todo handle corrupt file */
 		} else if (outcome == Outcomes.LOADING_FAILED_MISSING_FILE) {
@@ -81,8 +84,8 @@ public class MainMenu extends Scene implements ICallerResponseListener {
 			}
 		}
 
-		mGui.dispose();
-		mGui.initGui();
+		//		mGui.dispose();
+		//		mGui.initGui();
 		mGui.resetValues();
 
 		// Show if logged in online
@@ -103,11 +106,13 @@ public class MainMenu extends Scene implements ICallerResponseListener {
 			return true;
 		}
 
-		// REMOVE testing
-		else if (keycode == Input.Keys.F5) {
+		// Testing
+		else if (!Config.Debug.RELEASE_FINAL && keycode == Input.Keys.F5) {
 			SceneSwitcher.switchTo(new TestUiScene());
-		} else if (keycode == Input.Keys.F10) {
+		} else if (!Config.Debug.RELEASE_FINAL && keycode == Input.Keys.F10) {
 			SceneSwitcher.switchTo(new PrototypeScene());
+		} else if (!Config.Debug.RELEASE_FINAL && keycode == Input.Keys.F12) {
+			handleException(new RuntimeException());
 		}
 		return false;
 	}

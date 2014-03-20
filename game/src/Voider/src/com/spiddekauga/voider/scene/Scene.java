@@ -33,9 +33,6 @@ public abstract class Scene extends InputAdapter implements IExceptionHandler {
 	protected Scene(Gui gui) {
 		if (gui != null) {
 			mGui = gui;
-			mInputMultiplexer = new InputMultiplexerExceptionSnatcher(this);
-			mInputMultiplexer.addProcessor(0, mGui.getStage());
-			mInputMultiplexer.addProcessor(1, this);
 		}
 	}
 
@@ -217,6 +214,11 @@ public abstract class Scene extends InputAdapter implements IExceptionHandler {
 			if (!mGui.isInitialized()) {
 				mGui.initGui();
 				mGui.resetValues();
+
+				mInputMultiplexer = new InputMultiplexerExceptionSnatcher(this);
+				mInputMultiplexer.addProcessor(0, mGui.getStage());
+				mInputMultiplexer.addProcessor(1, this);
+				new ShapeRendererEx();
 
 				if (getInvoker() != null) {
 					getInvoker().dispose();
@@ -477,7 +479,7 @@ public abstract class Scene extends InputAdapter implements IExceptionHandler {
 	}
 
 	/** Shape Renderer used for rendering stuff */
-	protected ShapeRendererEx mShapeRenderer = new ShapeRendererEx();
+	protected ShapeRendererEx mShapeRenderer = null;
 	/** Input multiplexer */
 	protected InputMultiplexerExceptionSnatcher mInputMultiplexer = null;
 	/** GUI for the scene */

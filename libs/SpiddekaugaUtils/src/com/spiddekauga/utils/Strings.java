@@ -58,6 +58,18 @@ public class Strings {
 		}
 	}
 
+	/**
+	 * Convert an exception to string
+	 * @param throwable the exception
+	 * @return stack trace of throwable as a string
+	 */
+	public static String exceptionToString(Throwable throwable) {
+		StringWriter sw = new StringWriter();
+		PrintWriter pw = new PrintWriter(sw);
+		throwable.printStackTrace(pw);
+		return sw.toString();
+	}
+
 	/** Vowel pattern */
 	private static Pattern mVowelPattern = Pattern.compile("[aeiouAEIOU]");
 }

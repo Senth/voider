@@ -20,6 +20,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.ui.Window.WindowStyle;
 import com.badlogic.gdx.utils.Disposable;
+import com.spiddekauga.utils.Strings;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
@@ -47,9 +48,7 @@ public abstract class Gui implements Disposable {
 	 * Default constructor
 	 */
 	public Gui() {
-		mStage.addActor(mMainTable);
-		mMainTable.setName("MainTable");
-		mMainTable.setAlignTable(Horizontal.RIGHT, Vertical.TOP);
+		// Does nothing
 	}
 
 	@Override
@@ -66,7 +65,9 @@ public abstract class Gui implements Disposable {
 	 * @param height new height of the GUI
 	 */
 	public void resize(int width, int height) {
-		mStage.setViewport(width, height, true);
+		if (mStage != null) {
+			mStage.setViewport(width, height, true);
+		}
 	}
 
 	/**
@@ -227,35 +228,28 @@ public abstract class Gui implements Disposable {
 		content.add(errorLabel).setPadBottom(padSeparator);
 
 
+		// Subject
+		TextField subject = new TextField("", textFieldStyle);
+		subject.setWidth(fieldWidth);
+		subject.setMaxLength(50);
+		new TextFieldListener(subject, "Subject", null);
+		content.row();
+		content.add(subject);
+
+
 		// Actions
 		TextField lastAction = new TextField("", textFieldStyle);
 		lastAction.setWidth(fieldWidth);
+		lastAction.setMaxLength(100);
 		new TextFieldListener(lastAction, "Last action you did before the bug occured", null);
 		content.row();
 		content.add(lastAction);
 		TextField secondLastAction = new TextField("", textFieldStyle);
 		secondLastAction.setWidth(fieldWidth);
+		secondLastAction.setMaxLength(100);
 		new TextFieldListener(secondLastAction, "Second last action...", null);
 		content.row();
 		content.add(secondLastAction);
-		TextField thirdLastAction = new TextField("", textFieldStyle);
-		thirdLastAction.setWidth(fieldWidth);
-		new TextFieldListener(thirdLastAction, "Third last action...", null);
-		content.row();
-		content.add(thirdLastAction).setPadBottom(padSeparator);
-
-
-		// Outcomes
-		TextField expectedOutcome = new TextField("", textFieldStyle);
-		expectedOutcome.setWidth(fieldWidth);
-		new TextFieldListener(expectedOutcome, "Expected outcome", null);
-		content.row();
-		content.add(expectedOutcome);
-		TextField actualOutcome = new TextField("", textFieldStyle);
-		actualOutcome.setWidth(fieldWidth);
-		new TextFieldListener(actualOutcome, "Actual outcome", null);
-		content.row();
-		content.add(actualOutcome);
 
 
 		// Description
@@ -269,7 +263,14 @@ public abstract class Gui implements Disposable {
 		content.row();
 		content.add(description);
 
-		CBugReportSend bugReportSend = new CBugReportSend(null, lastAction, secondLastAction, thirdLastAction, expectedOutcome, actualOutcome, description, exception);
+		String stackTrace = Strings.exceptionToString(exception);
+		CBugReportSend bugReportSend = new CBugReportSend(
+				this,
+				subject.getText(),
+				lastAction.getText(),
+				secondLastAction.getText(),
+				description.getText(),
+				stackTrace);
 		CGameQuit quit = new CGameQuit();
 
 		msgBox.content(content);
@@ -390,6 +391,14 @@ public abstract class Gui implements Disposable {
 	 * Initializes the GUI
 	 */
 	public void initGui() {
+		if (mStage == null) {
+			mStage = new Stage();
+			resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+			mStage.addActor(mMainTable);
+			mMainTable.setName("MainTable");
+			mMainTable.setAlignTable(Horizontal.RIGHT, Vertical.TOP);
+		}
+
 		// Message box and wait window
 		MsgBoxExecuter.fadeDuration = 0.01f;
 		if (ResourceCacheFacade.isLoaded(InternalNames.UI_GENERAL) && mMessageShower == null) {
@@ -542,7 +551,7 @@ public abstract class Gui implements Disposable {
 	/** True if the GUI has been initialized */
 	protected boolean mInitialized = false;
 	/** Stage for the GUI */
-	private Stage mStage = new Stage();
+	private Stage mStage = null;
 	/** Error message shower */
 	private MessageShower mMessageShower = null;
 	/** Active message boxes */

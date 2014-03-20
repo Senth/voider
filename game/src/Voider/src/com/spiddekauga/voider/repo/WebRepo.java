@@ -7,6 +7,7 @@ import com.badlogic.gdx.Gdx;
 import com.spiddekauga.utils.IOutstreamProgressListener;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.network.entities.IEntity;
+import com.spiddekauga.voider.network.entities.method.BugReportMethod;
 import com.spiddekauga.voider.network.entities.method.GetUploadUrlMethod;
 import com.spiddekauga.voider.network.entities.method.GetUploadUrlMethodResponse;
 import com.spiddekauga.voider.network.entities.method.IMethodEntity;
@@ -193,7 +194,7 @@ abstract class WebRepo {
 
 				mWebRepo.handleResponse(mMethodEntity, response, mCallerRepsonseListeners);
 			} catch (RuntimeException e) {
-				if (Config.Debug.EXCEPTION_HANDLER) {
+				if (Config.Debug.EXCEPTION_HANDLER && !(mMethodEntity instanceof BugReportMethod)) {
 					SceneSwitcher.handleException(e);
 				} else {
 					throw e;

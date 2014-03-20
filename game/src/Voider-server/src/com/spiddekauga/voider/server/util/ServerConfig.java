@@ -55,6 +55,10 @@ public class ServerConfig {
 		private String mName;
 	}
 
+	/** Email administrator */
+	public static final String EMAIL_ADMIN = "spiddekauga@voider-game.com";
+
+
 	/** How many results to send */
 	public static class FetchSizes {
 		/** Number of comments to fetch */

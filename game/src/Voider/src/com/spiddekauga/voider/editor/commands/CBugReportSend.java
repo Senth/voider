@@ -2,8 +2,8 @@ package com.spiddekauga.voider.editor.commands;
 
 import java.util.Date;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.spiddekauga.utils.commands.Command;
 import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
 import com.spiddekauga.voider.network.entities.BugReportEntity;
@@ -29,23 +29,19 @@ public class CBugReportSend extends Command implements ICallerResponseListener {
 	/**
 	 * Creates a command that will send a bug report.
 	 * @param gui the GUI to show progress and success on
-	 * @param lastAction text field for the last action before the bug occurred
-	 * @param secondLastAction text field for the second last action
-	 * @param thirdLastAction text field for the third last action
-	 * @param expectedOutcome text field for the expected outcome
-	 * @param actualOutcome text field for the actual outcome
-	 * @param description text field for the description
+	 * @param subject text for the subject
+	 * @param lastAction text for the last action before the bug occurred
+	 * @param secondLastAction text for the second last action
+	 * @param description text for the description
 	 * @param exception the exception that was thrown
 	 */
 	public CBugReportSend(
 			Gui gui,
-			TextField lastAction,
-			TextField secondLastAction,
-			TextField thirdLastAction,
-			TextField expectedOutcome,
-			TextField actualOutcome,
-			TextField description,
-			Exception exception
+			String subject,
+			String lastAction,
+			String secondLastAction,
+			String description,
+			String exception
 			) {
 		mGui = gui;
 
@@ -54,35 +50,65 @@ public class CBugReportSend extends Command implements ICallerResponseListener {
 		// Create network entity
 		mBugReport.userKey = userKey;
 		mBugReport.date = new Date();
-		mBugReport.lastAction = lastAction.getText();
-		mBugReport.secondLastAction = secondLastAction.getText();
-		mBugReport.thirdLastAction = thirdLastAction.getText();
-		mBugReport.expectedOutcome = expectedOutcome.getText();
-		mBugReport.actualOutcome = actualOutcome.getText();
-		mBugReport.description = description.getText();
+		mBugReport.subject = subject;
+		mBugReport.lastAction = lastAction;
+		mBugReport.secondLastAction = secondLastAction;
+		mBugReport.description = description;
 		mBugReport.exception = exception;
+		mBugReport.systemInformation = getSystemInformation();
 	}
 
 	/**
 	 * Creates a command that will send a bug report.
 	 * @param gui GUI to show progress and success on
+	 * @param subject text for the subject
 	 * @param lastAction text field for the last action before the bug occurred
 	 * @param secondLastAction text field for the second last action
-	 * @param thirdLastAction text field for the third last action
-	 * @param expectedOutcome text field for the expected outcome
-	 * @param actualOutcome text field for the actual outcome
 	 * @param description text field for the description
 	 */
 	public CBugReportSend(
 			Gui gui,
-			TextField lastAction,
-			TextField secondLastAction,
-			TextField thirdLastAction,
-			TextField expectedOutcome,
-			TextField actualOutcome,
-			TextField description
+			String subject,
+			String lastAction,
+			String secondLastAction,
+			String description
 			) {
-		this(gui, lastAction, secondLastAction, thirdLastAction, expectedOutcome, actualOutcome, description, null);
+		this(gui, subject, lastAction, secondLastAction, description, null);
+	}
+
+	/**
+	 * @return string with system information
+	 */
+	private static String getSystemInformation() {
+		String systemInformation;
+
+		switch (Gdx.app.getType()) {
+		case Android:
+			systemInformation = "Android v." + Gdx.app.getVersion();
+			break;
+
+		case Applet:
+			systemInformation = "Applet";
+			break;
+
+		case Desktop:
+			systemInformation = "Desktop";
+			break;
+
+		case WebGL:
+			systemInformation = "WebGL";
+			break;
+
+		case iOS:
+			systemInformation = "iOS v." + Gdx.app.getVersion();
+			break;
+
+		default:
+			systemInformation = "";
+			break;
+		}
+
+		return systemInformation;
 	}
 
 	@Override

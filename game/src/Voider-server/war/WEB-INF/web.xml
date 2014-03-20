@@ -37,6 +37,14 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 		<url-pattern>/get-upload-url</url-pattern>
 	</servlet-mapping>
 	<servlet>
+		<servlet-name>BugReport</servlet-name>
+		<servlet-class>com.spiddekauga.voider.servlets.BugReport</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>BugReport</servlet-name>
+		<url-pattern>/bug-report</url-pattern>
+	</servlet-mapping>
+	<servlet>
 		<servlet-name>Publish</servlet-name>
 		<servlet-class>com.spiddekauga.voider.servlets.Publish</servlet-class>
 	</servlet>

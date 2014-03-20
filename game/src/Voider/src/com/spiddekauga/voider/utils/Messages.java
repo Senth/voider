@@ -155,7 +155,7 @@ public class Messages {
 		public final static String POLYGON_DRAW_ERASE_LINE_COMPLEX = "Draw line must not intersect itself.";
 		/** Bug report */
 		public final static String BUG_REPORT_INFO = "The game has crashed due to some unknown bug. "
-				+ "Please describe the last 3 steps you did, the expected and the actual outcome; this helps enormously when debugging :)";
+				+ "Please describe the last 2 steps you did; this helps enormously when debugging :)";
 	}
 
 	/**
