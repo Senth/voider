@@ -210,7 +210,7 @@ public class ResourceLocalRepo {
 		mSqliteGateway.setPublished(resourceId, published);
 	}
 
-	/** Sqlite gateway */
+	/** SQLite gateway */
 	private static ResourceSqliteGateway mSqliteGateway = new ResourceSqliteGateway();
 	/** Revision postfix */
 	private static final String REVISION_DIR_POSTFIX = "_revs/";

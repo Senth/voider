@@ -128,9 +128,7 @@ public class UserWebRepo extends WebRepo {
 
 		// Send the actual response
 		if (responseToSend != null) {
-			for (ICallerResponseListener responseListener : callerResponseListeners) {
-				responseListener.handleWebResponse(methodEntity, responseToSend);
-			}
+			sendResponseToListeners(methodEntity, responseToSend, callerResponseListeners);
 		}
 	}
 

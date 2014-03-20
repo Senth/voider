@@ -95,7 +95,12 @@ public class Messages {
 	 */
 	public static class Info {
 		/** Text displayed when saving */
-		public static String SAVING = "Saving...";
+		public static final String SAVING = "Saving...";
+		/** Bug report was successfully sent */
+		public static final String BUG_REPORT_SENT = "Thank you for sending a bug report! :D";
+		/** Bug report failed, saved locally instead */
+		public static final String BUG_REPORT_SAVED_LOCALLY = "Could not connect to the server, "
+				+ "temporarily saved the bug report locally.";
 	}
 
 	/**

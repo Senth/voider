@@ -24,7 +24,7 @@ public class LoginMethodResponse implements IEntity {
 	/**
 	 * Response statuses
 	 */
-	public enum Statuses {
+	public enum Statuses implements ISuccessStatuses {
 		/** Successfully logged in */
 		SUCCESS,
 		/** Failed due to username password mismatch */
@@ -33,5 +33,11 @@ public class LoginMethodResponse implements IEntity {
 		FAILED_SERVER_CONNECTION,
 		/** Internal server error */
 		FAILED_SERVER_ERROR,
+
+		;
+		@Override
+		public boolean isSuccessful() {
+			return name().contains("SUCCESS");
+		}
 	}
 }

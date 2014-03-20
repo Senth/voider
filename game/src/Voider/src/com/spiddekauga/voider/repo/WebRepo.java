@@ -150,6 +150,18 @@ abstract class WebRepo {
 	}
 
 	/**
+	 * Send responses to caller listeners
+	 * @param methodEntity the method that was called
+	 * @param response the response to send
+	 * @param callerResponseListeners class that invoked the WebRepeo
+	 */
+	protected static void sendResponseToListeners(IMethodEntity methodEntity, IEntity response, ICallerResponseListener[] callerResponseListeners) {
+		for (ICallerResponseListener responseListener : callerResponseListeners) {
+			responseListener.handleWebResponse(methodEntity, response);
+		}
+	}
+
+	/**
 	 * Wrapper class for all threads
 	 */
 	private static class ThreadWrapper extends Thread {

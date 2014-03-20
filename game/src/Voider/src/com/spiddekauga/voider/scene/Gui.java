@@ -114,8 +114,8 @@ public abstract class Gui implements Disposable {
 			}
 		}
 
-		if (mWaitWindow.getStage() != null) {
-			mWaitAnimation.act(Gdx.graphics.getDeltaTime());
+		if (mWidgets.waitWindow.window.getStage() != null) {
+			mWidgets.waitWindow.animation.act(Gdx.graphics.getDeltaTime());
 		}
 	}
 
@@ -269,7 +269,7 @@ public abstract class Gui implements Disposable {
 		content.row();
 		content.add(description);
 
-		CBugReportSend bugReportSend = new CBugReportSend(lastAction, secondLastAction, thirdLastAction, expectedOutcome, actualOutcome, description, exception);
+		CBugReportSend bugReportSend = new CBugReportSend(null, lastAction, secondLastAction, thirdLastAction, expectedOutcome, actualOutcome, description, exception);
 		CGameQuit quit = new CGameQuit();
 
 		msgBox.content(content);
@@ -287,65 +287,74 @@ public abstract class Gui implements Disposable {
 	 * @param message optional message to display
 	 */
 	public void showWaitWindow(String message) {
-		if (mWaitWindow == null) {
+		if (mWidgets.waitWindow.window == null) {
 			return;
 		}
 
-		mWaitWindow.clearChildren();
+		mWidgets.waitWindow.window.clearChildren();
 
-		mWaitAnimation.reset();
+		mWidgets.waitWindow.animation.reset();
 
-		mWaitWindow.add(mWaitAnimation).padRight((Float) SkinNames.getResource(SkinNames.General.PADDING_SEPARATOR));
-		mWaitWindow.add(message);
-		mWaitWindow.pack();
-		mStage.addActor(mWaitWindow);
+		// Set text or empty if null
+		mWidgets.waitWindow.label.setText(message != null ? message : "");
+		mWidgets.waitWindow.window.pack();
+		mStage.addActor(mWidgets.waitWindow.window);
 
 		// Center the window
-		int xPosition = (int) ((Gdx.graphics.getWidth() - mWaitWindow.getWidth()) * 0.5f);
-		int yPosition = (int) ((Gdx.graphics.getHeight() - mWaitWindow.getHeight()) * 0.5f);
-		mWaitWindow.setPosition(xPosition, yPosition);
+		int xPosition = (int) ((Gdx.graphics.getWidth() - mWidgets.waitWindow.window.getWidth()) * 0.5f);
+		int yPosition = (int) ((Gdx.graphics.getHeight() - mWidgets.waitWindow.window.getHeight()) * 0.5f);
+		mWidgets.waitWindow.window.setPosition(xPosition, yPosition);
 
 		float fadeInDuration = (Float) SkinNames.getResource(SkinNames.General.WAIT_WINDOW_FADE_IN);
-		mWaitWindow.addAction(Actions.fadeIn(fadeInDuration, Interpolation.fade));
+		mWidgets.waitWindow.window.addAction(Actions.fadeIn(fadeInDuration, Interpolation.fade));
+	}
+
+	/**
+	 * Sets the wait text
+	 * @param message the wait message to set, null will set it to empty
+	 */
+	public void setWaitWindowText(String message) {
+		mWidgets.waitWindow.label.setText(message != null ? message : "");
+		mWidgets.waitWindow.window.pack();
 	}
 
 	/**
 	 * Hides the wait window
 	 */
 	public void hideWaitWindow() {
-		if (mWaitWindow == null || mWaitWindow.getStage() == null) {
+		if (mWidgets.waitWindow.window == null || mWidgets.waitWindow.window.getStage() == null) {
 			return;
 		}
 
 		float fadeOutDuriation = (Float) SkinNames.getResource(SkinNames.General.WAIT_WINDOW_FADE_OUT);
-		mWaitWindow.addAction(Actions.sequence(Actions.fadeOut(fadeOutDuriation, Interpolation.fade), Actions.removeActor()));
+		mWidgets.waitWindow.window.addAction(Actions.sequence(Actions.fadeOut(fadeOutDuriation, Interpolation.fade), Actions.removeActor()));
 	}
 
 	/**
 	 * Shows the a progress bar for loading/downloading/uploading window
 	 */
 	public void showProgressBar() {
-		if (mProgressWindow == null) {
+		if (mWidgets.progressBar.window == null) {
 			return;
 		}
 
-		mStage.addActor(mProgressWindow);
+		mStage.addActor(mWidgets.progressBar.window);
 		updateProgressBar(0, "");
 
 		float fadeInDuration = (Float) SkinNames.getResource(SkinNames.General.WAIT_WINDOW_FADE_IN);
-		mProgressWindow.addAction(Actions.fadeIn(fadeInDuration, Interpolation.fade));
+		mWidgets.progressBar.window.addAction(Actions.fadeIn(fadeInDuration, Interpolation.fade));
 	}
 
 	/**
 	 * Hides the progress bar
 	 */
 	public void hideProgressBar() {
-		if (mProgressWindow == null || mProgressWindow.getStage() == null) {
+		if (mWidgets.progressBar.window == null || mWidgets.progressBar.window.getStage() == null) {
 			return;
 		}
 
 		float fadeOutDuriation = (Float) SkinNames.getResource(SkinNames.General.WAIT_WINDOW_FADE_OUT);
-		mProgressWindow.addAction(Actions.sequence(Actions.fadeOut(fadeOutDuriation, Interpolation.fade), Actions.removeActor()));
+		mWidgets.progressBar.window.addAction(Actions.sequence(Actions.fadeOut(fadeOutDuriation, Interpolation.fade), Actions.removeActor()));
 	}
 
 	/**
@@ -363,18 +372,18 @@ public abstract class Gui implements Disposable {
 	 */
 	public void updateProgressBar(float percentage, String message) {
 		if (message != null) {
-			mProgressText.setText(message);
+			mWidgets.progressBar.label.setText(message);
 		} else {
-			mProgressText.setText("");
+			mWidgets.progressBar.label.setText("");
 		}
-		mProgressBar.setValue(percentage);
-		mProgressText.pack();
-		mProgressWindow.pack();
+		mWidgets.progressBar.slider.setValue(percentage);
+		mWidgets.progressBar.label.pack();
+		mWidgets.progressBar.window.pack();
 
 		// Center the window
-		int xPosition = (int) ((Gdx.graphics.getWidth() - mProgressWindow.getWidth()) * 0.5f);
-		int yPosition = (int) ((Gdx.graphics.getHeight() - mProgressWindow.getHeight()) * 0.5f);
-		mProgressWindow.setPosition(xPosition, yPosition);
+		int xPosition = (int) ((Gdx.graphics.getWidth() - mWidgets.progressBar.window.getWidth()) * 0.5f);
+		int yPosition = (int) ((Gdx.graphics.getHeight() - mWidgets.progressBar.window.getHeight()) * 0.5f);
+		mWidgets.progressBar.window.setPosition(xPosition, yPosition);
 	}
 
 	/**
@@ -387,20 +396,23 @@ public abstract class Gui implements Disposable {
 			mMessageShower = new MessageShower(mStage);
 
 			// Wait window
-			mWaitWindow = new Window("", (WindowStyle) SkinNames.getResource(SkinNames.General.WINDOW_MODAL));
-			mWaitWindow.setModal(true);
-			mWaitWindow.setSkin((Skin) ResourceCacheFacade.get(InternalNames.UI_GENERAL));
-			mWaitAnimation = new AnimationWidget((AnimationWidgetStyle) SkinNames.getResource(SkinNames.General.ANIMATION_WAIT));
+			mWidgets.waitWindow.window = new Window("", (WindowStyle) SkinNames.getResource(SkinNames.General.WINDOW_MODAL));
+			mWidgets.waitWindow.window.setModal(true);
+			mWidgets.waitWindow.window.setSkin((Skin) ResourceCacheFacade.get(InternalNames.UI_GENERAL));
+			mWidgets.waitWindow.animation = new AnimationWidget((AnimationWidgetStyle) SkinNames.getResource(SkinNames.General.ANIMATION_WAIT));
+			mWidgets.waitWindow.label = new Label("", (LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_DEFAULT));
+			mWidgets.waitWindow.window.add(mWidgets.waitWindow.animation).padRight((Float) SkinNames.getResource(SkinNames.General.PADDING_SEPARATOR));
+			mWidgets.waitWindow.window.add(mWidgets.waitWindow.label);
 
 			// Progress bar
-			mProgressWindow = new Window("", (WindowStyle) SkinNames.getResource(SkinNames.General.WINDOW_MODAL));
-			mProgressWindow.setModal(true);
-			mProgressBar = new Slider(0, 100, 0.1f, false, (SliderStyle) SkinNames.getResource(SkinNames.General.SLIDER_LOADING_BAR));
-			mProgressBar.setTouchable(Touchable.disabled);
-			mProgressText = new Label("", (LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_DEFAULT));
-			mProgressWindow.add(mProgressText);
-			mProgressWindow.row();
-			mProgressWindow.add(mProgressBar);
+			mWidgets.progressBar.window = new Window("", (WindowStyle) SkinNames.getResource(SkinNames.General.WINDOW_MODAL));
+			mWidgets.progressBar.window.setModal(true);
+			mWidgets.progressBar.slider = new Slider(0, 100, 0.1f, false, (SliderStyle) SkinNames.getResource(SkinNames.General.SLIDER_LOADING_BAR));
+			mWidgets.progressBar.slider.setTouchable(Touchable.disabled);
+			mWidgets.progressBar.label = new Label("", (LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_DEFAULT));
+			mWidgets.progressBar.window.add(mWidgets.progressBar.label);
+			mWidgets.progressBar.window.row();
+			mWidgets.progressBar.window.add(mWidgets.progressBar.slider);
 		}
 
 		mInitialized = true;
@@ -440,6 +452,13 @@ public abstract class Gui implements Disposable {
 	 */
 	public boolean isMsgBoxActive() {
 		return !mActiveMsgBoxes.isEmpty();
+	}
+
+	/**
+	 * @return true if wait window is active
+	 */
+	public boolean isWaitWindowActive() {
+		return mWidgets.waitWindow.window != null && mWidgets.waitWindow.window.getStage() != null;
 	}
 
 	/**
@@ -516,16 +535,6 @@ public abstract class Gui implements Disposable {
 		return mVisible;
 	}
 
-	/** Wait image */
-	private AnimationWidget mWaitAnimation = null;
-	/** Progress text message */
-	private Label mProgressText = null;
-	/** Progress window */
-	private Window mProgressWindow = null;
-	/** Progress bar */
-	private Slider mProgressBar = null;
-	/** Wait window */
-	private Window mWaitWindow = null;
 	/** If the GUI is visible */
 	private boolean mVisible = true;
 	/** Main table for the layout */
@@ -542,4 +551,26 @@ public abstract class Gui implements Disposable {
 	private ArrayList<MsgBoxExecuter> mInactiveMsgBoxes = new ArrayList<MsgBoxExecuter>();
 	/** Queued messages box, will be displayed once the active message box has been hidden */
 	private MsgBoxExecuter mQueuedMsgBox = null;
+	/** Various widgets */
+	private InnerWidgets mWidgets = new InnerWidgets();
+
+	/** Inner widgets */
+	@SuppressWarnings("javadoc")
+	private static class InnerWidgets {
+		WaitWindow waitWindow = new WaitWindow();
+		ProgressBar progressBar = new ProgressBar();
+
+		static class WaitWindow {
+			private Window window = null;
+			private Label label = null;
+			private AnimationWidget animation = null;
+		}
+
+		static class ProgressBar {
+			private Slider slider = null;
+			private Window window = null;
+			private Label label = null;
+
+		}
+	}
 }

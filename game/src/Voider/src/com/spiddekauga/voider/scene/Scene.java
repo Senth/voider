@@ -46,7 +46,7 @@ public abstract class Scene extends InputAdapter implements IExceptionHandler {
 		Gdx.gl.glClearColor(mClearColor.r, mClearColor.g, mClearColor.b, mClearColor.a);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
-		if (!mGui.isMsgBoxActive()) {
+		if (!mGui.isMsgBoxActive() && !mGui.isWaitWindowActive()) {
 			mGameTime.update(Gdx.graphics.getDeltaTime());
 			update(mGameTime.getDeltaTime());
 		}
