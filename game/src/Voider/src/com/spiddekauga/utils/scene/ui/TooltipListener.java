@@ -25,6 +25,7 @@ import com.spiddekauga.voider.resources.InternalNames;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.scene.Gui;
+import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.utils.Pools;
 
@@ -428,7 +429,8 @@ public class TooltipListener extends InputAdapter implements EventListener {
 	 */
 	private void showWindow() {
 		Stage stage = mGui.getStage();
-		if (stage != null) {
+		Scene scene = SceneSwitcher.getActiveScene(false);
+		if (stage != null && scene.isInitialized()) {
 			stage.addActor(mWindow);
 			mWindow.clearActions();
 			mWindow.setName(mWindowName);

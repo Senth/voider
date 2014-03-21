@@ -243,9 +243,12 @@ public class SelectDefGui extends Gui {
 
 	@Override
 	public void resetValues() {
-		occupateDefTable();
+		if (mInitialized) {
+			super.resetValues();
+			occupateDefTable();
 
-		resetInfoPanel();
+			resetInfoPanel();
+		}
 	}
 
 	/**

@@ -35,8 +35,8 @@ public class PrototypeScene extends Scene {
 	}
 
 	@Override
-	protected void onActivate(Outcomes outcomes, Object message) {
-		mGui.initGui();
+	protected void onActivate(Outcomes outcome, Object message) {
+		super.onActivate(outcome, message);
 	}
 
 	@Override

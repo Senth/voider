@@ -35,12 +35,20 @@ public abstract class WorldScene extends Scene {
 	 */
 	public WorldScene(Gui gui, float pickRadius) {
 		super(gui);
+
+		mPickingRadius = pickRadius;
+	}
+
+	@Override
+	protected void onInit() {
+		super.onInit();
+
 		fixCamera();
 		mWorld = new World(new Vector2(), true);
 		Actor.setWorld(mWorld);
 
-		if (pickRadius > 0) {
-			initPickingCircle(pickRadius);
+		if (mPickingRadius > 0) {
+			initPickingCircle(mPickingRadius);
 		}
 	}
 
@@ -272,6 +280,8 @@ public abstract class WorldScene extends Scene {
 	/** Bullet destroyer for this scene */
 	protected BulletDestroyer mBulletDestroyer = new BulletDestroyer();
 
+	/** Picking radius */
+	private float mPickingRadius;
 	/** Debug renderer */
 	private Box2DDebugRenderer mDebugRenderer = new Box2DDebugRenderer();
 	/** Picking fixture definition (for body) */

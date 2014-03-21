@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
+import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.utils.User;
 
 /**
@@ -117,7 +118,7 @@ class UserPrefsGateway {
 	/** Preferences */
 	private Preferences mPreferences;
 	/** Preferences name */
-	private static final String PREFERENCES_NAME = "Voider_users";
+	private static final String PREFERENCES_NAME = Config.File.PREFERENCE_PREFIX + "_users";
 
 	// Names
 	// LAST_USER
@@ -135,4 +136,5 @@ class UserPrefsGateway {
 	// REGISTER
 	/** True if the app has registered one user */
 	private static final String REGISTER__HAS_REGISTERED = "register_hasRegistered";
+
 }

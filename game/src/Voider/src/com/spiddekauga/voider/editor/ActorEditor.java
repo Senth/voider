@@ -52,6 +52,11 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 		super(gui, pickRadius);
 
 		mActorType = actorType;
+	}
+
+	@Override
+	protected void onInit() {
+		super.onInit();
 
 		mTools[Tools.MOVE.ordinal()] = new MoveTool(mCamera, mWorld, mInvoker, mSelection, this);
 		mTools[Tools.DELETE.ordinal()] = new DeleteTool(mCamera, mWorld, mInvoker, mSelection, this);

@@ -51,14 +51,25 @@ public class EnemyEditor extends ActorEditor {
 	public EnemyEditor() {
 		super(new EnemyEditorGui(), Config.Editor.PICKING_CIRCLE_RADIUS_EDITOR, EnemyActor.class);
 
+		((EnemyEditorGui)mGui).setEnemyEditor(this);
+	}
+
+	@Override
+	protected void onDeactivate() {
+		((EnemyEditorGui)mGui).clearCollisionBoxes();
+	}
+
+	@Override
+	protected void onInit() {
+		super.onInit();
+
+
 		mPlayerActor = new PlayerActor();
 		mPlayerActor.createBody();
 		resetPlayerPosition();
 		createExamplePaths();
 
 		mWorld.setContactListener(mCollisionResolver);
-
-		((EnemyEditorGui)mGui).setEnemyEditor(this);
 
 		try {
 			mfEnemyOnceReachEnd = EnemyActor.class.getDeclaredField("mPathOnceReachedEnd");
@@ -77,11 +88,6 @@ public class EnemyEditor extends ActorEditor {
 		mMouseJointDef.bodyB = mPlayerActor.getBody();
 		mMouseJointDef.collideConnected = true;
 		mMouseJointDef.maxForce = Config.Game.MouseJoint.FORCE_MAX;
-	}
-
-	@Override
-	protected void onDeactivate() {
-		((EnemyEditorGui)mGui).clearCollisionBoxes();
 	}
 
 	@Override

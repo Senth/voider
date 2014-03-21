@@ -58,6 +58,11 @@ public class GameScene extends WorldScene {
 		mTesting = testing;
 		mInvulnerable = invulnerable;
 		mSpriteBatch = new SpriteBatch();
+	}
+
+	@Override
+	protected void onInit() {
+		super.onInit();
 
 		mWorld.setContactListener(mCollisionResolver);
 	}

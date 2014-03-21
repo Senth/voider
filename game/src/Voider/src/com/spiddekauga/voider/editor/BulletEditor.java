@@ -35,12 +35,6 @@ public class BulletEditor extends ActorEditor {
 		super(new BulletEditorGui(), Config.Editor.PICKING_CIRCLE_RADIUS_EDITOR, BulletActor.class);
 
 		((BulletEditorGui) mGui).setBulletEditor(this);
-
-		mWeapon.setWeaponDef(new WeaponDef());
-		Vector2 weaponPos = Pools.vector2.obtain();
-		screenToWorldCoord(mCamera, Gdx.graphics.getWidth() * 0.1f, Gdx.graphics.getHeight() * 0.7f, weaponPos, true);
-		mWeapon.setPosition(weaponPos);
-		Pools.vector2.free(weaponPos);
 	}
 
 	@Override
@@ -48,6 +42,17 @@ public class BulletEditor extends ActorEditor {
 		super.onResize(width, height);
 		mGui.dispose();
 		mGui.initGui();
+	}
+
+	@Override
+	protected void onInit() {
+		super.onInit();
+
+		mWeapon.setWeaponDef(new WeaponDef());
+		Vector2 weaponPos = Pools.vector2.obtain();
+		screenToWorldCoord(mCamera, Gdx.graphics.getWidth() * 0.1f, Gdx.graphics.getHeight() * 0.7f, weaponPos, true);
+		mWeapon.setPosition(weaponPos);
+		Pools.vector2.free(weaponPos);
 	}
 
 	@Override
@@ -278,7 +283,11 @@ public class BulletEditor extends ActorEditor {
 	 * @return time in seconds
 	 */
 	float getCooldownMin() {
-		return mWeapon.getDef().getCooldownMin();
+		if (mWeapon != null && mWeapon.getDef() != null) {
+			return mWeapon.getDef().getCooldownMin();
+		} else {
+			return 0;
+		}
 	}
 
 	/**
@@ -294,7 +303,11 @@ public class BulletEditor extends ActorEditor {
 	 * @return time in seconds
 	 */
 	float getCooldownMax() {
-		return mWeapon.getDef().getCooldownMax();
+		if (mWeapon != null && mWeapon.getDef() != null) {
+			return mWeapon.getDef().getCooldownMax();
+		} else {
+			return 0;
+		}
 	}
 
 	/**
@@ -310,7 +323,11 @@ public class BulletEditor extends ActorEditor {
 	 * @return how long it travels in a second
 	 */
 	float getBulletSpeed() {
-		return mWeapon.getDef().getBulletSpeed();
+		if (mWeapon != null && mWeapon.getDef() != null) {
+			return mWeapon.getDef().getBulletSpeed();
+		} else {
+			return 0;
+		}
 	}
 
 	/**

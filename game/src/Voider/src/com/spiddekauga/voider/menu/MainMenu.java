@@ -202,11 +202,11 @@ public class MainMenu extends Scene implements ICallerResponseListener {
 		MenuGui newGui = menu.newInstance();
 		if (newGui != null) {
 			newGui.setMenuScene(this);
+			newGui.initGui();
 			mInputMultiplexer.removeProcessor(mGui.getStage());
 			mGui = newGui;
 			mGuiStack.push(newGui);
 			mInputMultiplexer.addProcessor(0, newGui.getStage());
-			newGui.initGui();
 			newGui.resetValues();
 		}
 	}

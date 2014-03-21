@@ -97,13 +97,16 @@ public class LoginScene extends Scene implements ICallerResponseListener {
 
 		case FAILED_USERNAME_PASSWORD_MISMATCH:
 			if (mAutoLogin) {
+				mGui.hideWaitWindow();
 				mGui.showErrorMessage("Could not auto-login " + userInfo.getUsername());
 				UserLocalRepo.removeLastUser();
 				mAutoLogin = false;
 				mUser.setOnline(false);
 			} else {
-				loginOffline(mLoggingInUser.getUsername(), mLoggingInUser.getPassword());
-				mGui.showErrorMessage("No username with that password exists");
+				boolean success = loginOffline(mLoggingInUser.getUsername(), mLoggingInUser.getPassword());
+				if (!success) {
+					mGui.showErrorMessage("No username with that password exists");
+				}
 			}
 			break;
 

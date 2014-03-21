@@ -187,14 +187,14 @@ public class Config {
 		public static final boolean SKIP_LOADING_TIME = true;
 		/** Logging verbosity */
 		public static final int LOG_VERBOSITY = Application.LOG_DEBUG;
-		/** Set to true to turn on the exception handler */
-		public static boolean EXCEPTION_HANDLER = false;
 		/** Set this variable to be true for releases, this disables many of
 		 * the "special" functionality as multiple registering, test scenes etc. */
 		public static final boolean RELEASE_FINAL = false;
 		/** Set this variable to true for test releases, such as sending this version
 		 * to other developers/designers, etc. */
 		public static final boolean RELEASE_TEST = RELEASE_FINAL || false;
+		/** Set to true to turn on the exception handler */
+		public static boolean EXCEPTION_HANDLER = RELEASE_TEST || false;
 		/** Set to true in JUNIT tests */
 		public static boolean JUNIT_TEST = false;
 	}
@@ -545,8 +545,10 @@ public class Config {
 	 * Files
 	 */
 	public static class File {
+		/** Preferences name prefix */
+		public final static String PREFERENCE_PREFIX;
 		/** The external directory used for storing game data */
-		public final static String STORAGE = Debug.JUNIT_TEST ? "Voider-test/" : "Voider/";
+		public final static String STORAGE;
 		/** Revision number length */
 		public final static int REVISION_LENGTH = 10;
 		/** Uses external images, etc. instead of internal for resources */
@@ -554,14 +556,29 @@ public class Config {
 		/** Database filename */
 		public final static String DB_FILENAME = "Voider.db";
 		/** Database file */
-		public final static String DB_FILEPATH = STORAGE + DB_FILENAME;
+		public final static String DB_FILEPATH;
 
-		// Create Voider folder if it doesn't exist
+
 		static {
+			// Set storage
+			if (Debug.JUNIT_TEST) {
+				PREFERENCE_PREFIX = "Voider-JUnit";
+			} else if (Debug.RELEASE_FINAL) {
+				PREFERENCE_PREFIX = "Voider";
+			} else if (Debug.RELEASE_TEST) {
+				PREFERENCE_PREFIX = "Voider-beta";
+			} else {
+				PREFERENCE_PREFIX = "Voider-local";
+			}
+			STORAGE = PREFERENCE_PREFIX + "/";
+
+			// Create Voider folder if it doesn't exist
 			FileHandle file = Gdx.files.external(STORAGE);
 			if (!file.exists()) {
 				file.mkdirs();
 			}
+
+			DB_FILEPATH = STORAGE + DB_FILENAME;
 		}
 	}
 

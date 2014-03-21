@@ -3,8 +3,8 @@ package com.spiddekauga.voider.app;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.spiddekauga.utils.KeyHelper;
-import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.InternalNames;
+import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.scene.Scene;
 
 /**
@@ -36,7 +36,7 @@ public class TestUiScene extends Scene {
 
 	@Override
 	protected void onActivate(Outcomes outcome, Object message) {
-		mGui.initGui();
+		super.onActivate(outcome, message);
 	}
 
 	@Override

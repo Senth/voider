@@ -203,6 +203,37 @@ public abstract class Scene extends InputAdapter implements IExceptionHandler {
 	}
 
 	/**
+	 * Called first time the scene activates, before {@link #onActivate(Outcomes, Object)}.
+	 */
+	protected void onInit() {
+		mInputMultiplexer = new InputMultiplexerExceptionSnatcher(this);
+
+		if (!mGui.isInitialized()) {
+			mGui.initGui();
+			mGui.resetValues();
+			mInputMultiplexer.addProcessor(mGui.getStage());
+		}
+
+		mInputMultiplexer.addProcessor(this);
+
+		mShapeRenderer = new ShapeRendererEx();
+
+		if (getInvoker() != null) {
+			getInvoker().dispose();
+		}
+
+
+		mInitialized = true;
+	}
+
+	/**
+	 * @return true if the scene has been initialized
+	 */
+	public boolean isInitialized() {
+		return mInitialized;
+	}
+
+	/**
 	 * Called just before the scene activates.
 	 * @param outcome the outcome of the previous scene that was on the stack if there was
 	 * any, else null.
@@ -210,21 +241,7 @@ public abstract class Scene extends InputAdapter implements IExceptionHandler {
 	 * was provided.
 	 */
 	protected void onActivate(Outcomes outcome, Object message) {
-		if (outcome == Outcomes.LOADING_SUCCEEDED) {
-			if (!mGui.isInitialized()) {
-				mGui.initGui();
-				mGui.resetValues();
-
-				mInputMultiplexer = new InputMultiplexerExceptionSnatcher(this);
-				mInputMultiplexer.addProcessor(0, mGui.getStage());
-				mInputMultiplexer.addProcessor(1, this);
-				new ShapeRendererEx();
-
-				if (getInvoker() != null) {
-					getInvoker().dispose();
-				}
-			}
-		} else if (!mGui.isInitialized()) {
+		if (!mGui.isInitialized()) {
 			Gdx.app.error("Scene", "Failed to load scene!");
 		}
 	}
@@ -499,6 +516,8 @@ public abstract class Scene extends InputAdapter implements IExceptionHandler {
 	private boolean mResourceLoaded = false;
 	/** The next scene to be run */
 	private Scene mNextScene = null;
+	/** If the scene has been initialized */
+	private boolean mInitialized = false;
 
 	// Temporary variables
 	/** For ray testing on player ship when touching it */

@@ -88,6 +88,11 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	public LevelEditor() {
 		super(new LevelEditorGui(), Config.Editor.PICKING_CIRCLE_RADIUS_LEVEL_EDITOR);
 		((LevelEditorGui) mGui).setLevelEditor(this);
+	}
+
+	@Override
+	protected void onInit() {
+		super.onInit();
 
 		Actor.setEditorActive(true);
 
@@ -516,7 +521,11 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	 * @return true if an enemy is currently selected
 	 */
 	boolean isEnemySelected() {
-		return mSelection.isSelected(EnemyActor.class);
+		if (mSelection != null) {
+			return mSelection.isSelected(EnemyActor.class);
+		} else {
+			return false;
+		}
 	}
 
 	@Override
@@ -1140,7 +1149,11 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	 * @return true if a path is selected
 	 */
 	boolean isPathSelected() {
-		return mSelection.isSelected(Path.class);
+		if (mSelection != null) {
+			return mSelection.isSelected(Path.class);
+		} else {
+			return false;
+		}
 	}
 
 	/**

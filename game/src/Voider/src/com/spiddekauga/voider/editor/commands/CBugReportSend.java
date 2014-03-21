@@ -4,6 +4,8 @@ import java.util.Date;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+import com.spiddekauga.utils.Strings;
 import com.spiddekauga.utils.commands.Command;
 import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
 import com.spiddekauga.voider.network.entities.BugReportEntity;
@@ -37,25 +39,18 @@ public class CBugReportSend extends Command implements ICallerResponseListener {
 	 */
 	public CBugReportSend(
 			Gui gui,
-			String subject,
-			String lastAction,
-			String secondLastAction,
-			String description,
-			String exception
+			TextField subject,
+			TextField lastAction,
+			TextField secondLastAction,
+			TextField description,
+			Exception exception
 			) {
 		mGui = gui;
-
-		String userKey = User.getGlobalUser().getServerKey();
-
-		// Create network entity
-		mBugReport.userKey = userKey;
-		mBugReport.date = new Date();
-		mBugReport.subject = subject;
-		mBugReport.lastAction = lastAction;
-		mBugReport.secondLastAction = secondLastAction;
-		mBugReport.description = description;
-		mBugReport.exception = exception;
-		mBugReport.systemInformation = getSystemInformation();
+		mSubject = subject;
+		mLastAction = lastAction;
+		mSecondLastAction = secondLastAction;
+		mDescription = description;
+		mException = exception;
 	}
 
 	/**
@@ -68,12 +63,36 @@ public class CBugReportSend extends Command implements ICallerResponseListener {
 	 */
 	public CBugReportSend(
 			Gui gui,
-			String subject,
-			String lastAction,
-			String secondLastAction,
-			String description
+			TextField subject,
+			TextField lastAction,
+			TextField secondLastAction,
+			TextField description
 			) {
 		this(gui, subject, lastAction, secondLastAction, description, null);
+	}
+
+	/**
+	 * Creates the bug report entity
+	 */
+	private void createBugReportEntity() {
+		mBugReport = new BugReportEntity();
+
+		String userKey = User.getGlobalUser().getServerKey();
+
+		// Create network entity
+		mBugReport.userKey = userKey;
+		mBugReport.date = new Date();
+		mBugReport.subject = mSubject.getText();
+		mBugReport.lastAction = mLastAction.getText();
+		mBugReport.secondLastAction = mSecondLastAction.getText();
+		mBugReport.description = mDescription.getText();
+		mBugReport.systemInformation = getSystemInformation();
+
+		if (mException != null) {
+			String stackTrace = Strings.exceptionToString(mException);
+			stackTrace = Strings.toHtmlString(stackTrace);
+			mBugReport.exception = stackTrace;
+		}
 	}
 
 	/**
@@ -160,6 +179,8 @@ public class CBugReportSend extends Command implements ICallerResponseListener {
 
 	@Override
 	public boolean execute() {
+		createBugReportEntity();
+
 		mGui.showWaitWindow("");
 		if (User.getGlobalUser().isOnline()) {
 			sendBugReport();
@@ -213,8 +234,18 @@ public class CBugReportSend extends Command implements ICallerResponseListener {
 		return true;
 	}
 
+	/** subject of the bug report */
+	private TextField mSubject;
+	/** Last action the user did */
+	private TextField mLastAction;
+	/** Second last action the user did */
+	private TextField mSecondLastAction;
+	/** Optional description of the bug */
+	private TextField mDescription;
+	/** The exception to send */
+	private Exception mException;
 	/** The network entity to send */
-	private BugReportEntity mBugReport = new BugReportEntity();
+	private BugReportEntity mBugReport = null;
 	/** GUI to show success / progress on */
 	private Gui mGui;
 }

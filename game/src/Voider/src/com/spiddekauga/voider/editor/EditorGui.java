@@ -68,9 +68,7 @@ public abstract class EditorGui extends Gui {
 	 * Default constructor
 	 */
 	public EditorGui() {
-		getStage().addActor(mEditorMenu);
-		getStage().addActor(mFileMenu);
-		getStage().addActor(mToolMenu);
+		// Does nothing
 	}
 
 
@@ -101,6 +99,12 @@ public abstract class EditorGui extends Gui {
 	@Override
 	public void initGui() {
 		super.initGui();
+
+		if (mEditorMenu.getStage() == null) {
+			getStage().addActor(mEditorMenu);
+			getStage().addActor(mFileMenu);
+			getStage().addActor(mToolMenu);
+		}
 
 		mBodies = Pools.arrayList.obtain();
 

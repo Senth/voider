@@ -86,7 +86,7 @@ public class SceneSwitcher {
 				loadActiveSceneResources();
 			} else {
 				foundScene.reloadResourcesOnActivate(Outcomes.NOT_APPLICAPLE, null);
-				foundScene.onActivate(Outcomes.NOT_APPLICAPLE, null);
+				activateCurrentScene(Outcomes.NOT_APPLICAPLE, null);
 				Gdx.input.setInputProcessor(foundScene.getInputMultiplexer());
 			}
 
@@ -149,7 +149,7 @@ public class SceneSwitcher {
 				loadActiveSceneResources();
 			} else {
 				activateScene.reloadResourcesOnActivate(Outcomes.NOT_APPLICAPLE, null);
-				activateScene.onActivate(Outcomes.NOT_APPLICAPLE, null);
+				activateCurrentScene(Outcomes.NOT_APPLICAPLE, null);
 				Gdx.input.setInputProcessor(activateScene.getInputMultiplexer());
 			}
 		}
@@ -468,19 +468,19 @@ public class SceneSwitcher {
 					// Loading done -> Activate scene
 					if (allLoaded) {
 						if (mOutcome != null) {
-							currentScene.onActivate(mOutcome, mOutcomeMessage);
+							activateCurrentScene(mOutcome, mOutcomeMessage);
 							mOutcome = null;
 							mOutcomeMessage = null;
 						} else {
-							currentScene.onActivate(Outcomes.LOADING_SUCCEEDED, null);
+							activateCurrentScene(Outcomes.LOADING_SUCCEEDED, null);
 						}
 						currentScene.setLoading(false);
 					}
 				} catch (ResourceNotFoundException e) {
-					currentScene.onActivate(Outcomes.LOADING_FAILED_MISSING_FILE, e.toString());
+					activateCurrentScene(Outcomes.LOADING_FAILED_MISSING_FILE, e.toString());
 					e.printStackTrace();
 				} catch (ResourceCorruptException e) {
-					currentScene.onActivate(Outcomes.LOADING_FAILED_CORRUPT_FILE, e.toString());
+					activateCurrentScene(Outcomes.LOADING_FAILED_CORRUPT_FILE, e.toString());
 					e.printStackTrace();
 				}
 				Gdx.input.setInputProcessor(currentScene.getInputMultiplexer());
@@ -504,6 +504,21 @@ public class SceneSwitcher {
 				throw e;
 			}
 		}
+	}
+
+	/**
+	 * Activates the current scene
+	 * @param outcome the outcome of the previous scene
+	 * @param message message of the previous scene
+	 */
+	private static void activateCurrentScene(Outcomes outcome, Object message) {
+		Scene currentScene = mScenes.peek();
+
+		if (!currentScene.isInitialized()) {
+			currentScene.onInit();
+		}
+
+		currentScene.onActivate(outcome, message);
 	}
 
 	/**
@@ -550,7 +565,7 @@ public class SceneSwitcher {
 					mOutcomeMessage = null;
 				}
 				previousScene.reloadResourcesOnActivate(outcome, outcomeMessage);
-				previousScene.onActivate(outcome, outcomeMessage);
+				activateCurrentScene(outcome, outcomeMessage);
 				Gdx.input.setInputProcessor(previousScene.getInputMultiplexer());
 			}
 		}

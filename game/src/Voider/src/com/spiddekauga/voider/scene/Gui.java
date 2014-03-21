@@ -20,7 +20,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.ui.Window.WindowStyle;
 import com.badlogic.gdx.utils.Disposable;
-import com.spiddekauga.utils.Strings;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
@@ -263,14 +262,14 @@ public abstract class Gui implements Disposable {
 		content.row();
 		content.add(description);
 
-		String stackTrace = Strings.exceptionToString(exception);
+
 		CBugReportSend bugReportSend = new CBugReportSend(
 				this,
-				subject.getText(),
-				lastAction.getText(),
-				secondLastAction.getText(),
-				description.getText(),
-				stackTrace);
+				subject,
+				lastAction,
+				secondLastAction,
+				description,
+				exception);
 		CGameQuit quit = new CGameQuit();
 
 		msgBox.content(content);
@@ -291,8 +290,6 @@ public abstract class Gui implements Disposable {
 		if (mWidgets.waitWindow.window == null) {
 			return;
 		}
-
-		mWidgets.waitWindow.window.clearChildren();
 
 		mWidgets.waitWindow.animation.reset();
 
