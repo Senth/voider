@@ -16,7 +16,7 @@ public class LevelGetAllMethod implements IMethodEntity {
 	/** Cursor to continue from */
 	public String nextCursor = null;
 	/** All tags that should be included, if empty all tags are used */
-	public ArrayList<Tags> tagFilter = new ArrayList<>();
+	public ArrayList<Tags> tagFilter = null;
 	/** Search string or text filter, if null not used */
 	public String searchString = null;
 

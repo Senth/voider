@@ -231,10 +231,6 @@ public class SkinNames {
 	 * Editor variables
 	 */
 	public enum EditorVars implements ISkinNames {
-		/** Upper and lower bar colors */
-		BAR_UPPER_LOWER_COLOR(Color.class),
-		/** Upper and lower bar height */
-		BAR_UPPER_LOWER_HEIGHT(Float.class),
 		/** Color of line between enemy and activate trigger */
 		ENEMY_ACTIVATE_TRIGGER_LINE_COLOR(Color.class),
 		/** Color of line between enemy and deactivate trigger */
@@ -338,6 +334,10 @@ public class SkinNames {
 	public enum General implements ISkinNames {
 		/** Wait animation texture */
 		ANIMATION_WAIT(AnimationWidgetStyle.class, "wait"),
+		/** Upper and lower bar colors */
+		BAR_UPPER_LOWER_COLOR(Color.class),
+		/** Upper and lower bar height */
+		BAR_UPPER_LOWER_HEIGHT(Float.class),
 		/** Check box that uses check boxes */
 		CHECK_BOX_DEFAULT(CheckBoxStyle.class, "default"),
 		/** Check box that uses the radio button style */

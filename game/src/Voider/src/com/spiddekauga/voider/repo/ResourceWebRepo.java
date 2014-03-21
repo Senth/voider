@@ -46,7 +46,7 @@ public class ResourceWebRepo extends WebRepo {
 	/**
 	 * @return singleton instance of ResourceWebRepo
 	 */
-	static ResourceWebRepo getInstance() {
+	static public ResourceWebRepo getInstance() {
 		if (mInstance == null) {
 			mInstance = new ResourceWebRepo();
 		}
@@ -290,18 +290,14 @@ public class ResourceWebRepo extends WebRepo {
 
 	/**
 	 * Get levels by sorting and specified tags (only definitions)
-	 * @param sort sorting order of the levels to get
 	 * @param callerResponseListener the caller to send the response to
+	 * @param sort sorting order of the levels to get
 	 * @param tags all tags the levels have to have
 	 */
-	public void getLevels(SortOrders sort, ICallerResponseListener callerResponseListener, Tags... tags) {
+	public void getLevels(ICallerResponseListener callerResponseListener, SortOrders sort, ArrayList<Tags> tags) {
 		LevelGetAllMethod method = new LevelGetAllMethod();
 		method.sort = sort;
-
-		// Add tags
-		for (Tags tag : tags) {
-			method.tagFilter.add(tag);
-		}
+		method.tagFilter = tags;
 
 
 		// Continue from cursor?

@@ -4,6 +4,7 @@ com.badlogic.gdx.graphics.g2d.BitmapFont: {
 },
 
 com.badlogic.gdx.graphics.Color: {
+	bar_upper_lower_color: { r: 0.9, g: 0.9, b: 0.9, a: 1 },
 	green: { a: 1, b: 0, g: 1, r: 0 },
 	white: { a: 1, b: 1, g: 1, r: 1 },
 	red: { a: 1, b: 0, g: 0, r: 1 },
@@ -11,6 +12,7 @@ com.badlogic.gdx.graphics.Color: {
 },
 
 java.lang.Float: {
+	bar_upper_lower_height: {value: 32},
 	padding_default: {value: 1},
 	padding_window_left_right: {value: 8},
 	padding_separator: {value: 32},

@@ -78,7 +78,7 @@ public class MainMenuGui extends MenuGui {
 		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onPressed() {
-				// TODO go to explore menu
+				mMenuScene.gotoExplore();
 			}
 		};
 

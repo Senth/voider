@@ -102,7 +102,7 @@ public class GameScene extends WorldScene {
 	private float getBarHeightInWorldCoordinates() {
 		if (mBarHeight == -1) {
 			float heightScale = ((float) Config.Graphics.HEIGHT_DEFAULT) / Gdx.graphics.getHeight();
-			float barHeight = SkinNames.getResource(SkinNames.EditorVars.BAR_UPPER_LOWER_HEIGHT);
+			float barHeight = SkinNames.getResource(SkinNames.General.BAR_UPPER_LOWER_HEIGHT);
 			mBarHeight = heightScale * barHeight;
 
 		}
@@ -113,7 +113,7 @@ public class GameScene extends WorldScene {
 	 * Takes a screenshot of the level
 	 */
 	void takeScreenshot() {
-		int barHeight = ((int) ((float) SkinNames.getResource(SkinNames.EditorVars.BAR_UPPER_LOWER_HEIGHT)));
+		int barHeight = ((int) ((float) SkinNames.getResource(SkinNames.General.BAR_UPPER_LOWER_HEIGHT)));
 
 		// Screenshot size
 		int ssHeight = Gdx.graphics.getHeight() - barHeight;

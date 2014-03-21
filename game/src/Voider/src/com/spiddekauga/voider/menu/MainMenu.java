@@ -160,6 +160,14 @@ public class MainMenu extends Scene implements ICallerResponseListener {
 	}
 
 	/**
+	 * Goes to the explore screen
+	 */
+	void gotoExplore() {
+		Scene scene = new ExploreScene();
+		SceneSwitcher.switchTo(scene);
+	}
+
+	/**
 	 * All different available menus
 	 */
 	enum Menus {
