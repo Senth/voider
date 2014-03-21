@@ -168,7 +168,7 @@ public class ResourceLocalRepo {
 	 * @return resource directory
 	 */
 	private static String getDir() {
-		return Config.Debug.JUNIT_TEST ? "Voider-test/resources/" : "Voider/resources/";
+		return Config.File.STORAGE + "resources/";
 	}
 
 	/**

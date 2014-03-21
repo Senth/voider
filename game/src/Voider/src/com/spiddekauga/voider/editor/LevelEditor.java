@@ -603,7 +603,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		copyLevel.setStartPosition(xPosition);
 		copyLevel.calculateEndPosition();
 
-		testGame.setLevel(copyLevel);
+		testGame.setLevelToRun(copyLevel);
 
 		mPngBytesBeforeTest = copyLevel.getDef().getPngImage();
 

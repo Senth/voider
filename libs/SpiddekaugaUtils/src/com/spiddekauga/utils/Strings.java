@@ -70,6 +70,15 @@ public class Strings {
 		return sw.toString();
 	}
 
+	/**
+	 * text line breaks to HTML line breaks
+	 * @param text regular text
+	 * @return HTML formatted text
+	 */
+	public static String toHtmlString(String text) {
+		return text.replace("\n", "<br />");
+	}
+
 	/** Vowel pattern */
 	private static Pattern mVowelPattern = Pattern.compile("[aeiouAEIOU]");
 }

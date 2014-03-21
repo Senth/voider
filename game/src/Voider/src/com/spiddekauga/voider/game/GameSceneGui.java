@@ -29,12 +29,13 @@ class GameSceneGui extends Gui {
 	 */
 	public void setGameScene(GameScene gameScene) {
 		mGameScene = gameScene;
-		getStage().addActor(mOptionBar);
 	}
 
 	@Override
 	public void initGui() {
 		super.initGui();
+
+		getStage().addActor(mOptionBar);
 
 		mMainTable.setAlign(Horizontal.RIGHT, Vertical.TOP);
 		mMainTable.setCellPaddingDefault((Float)SkinNames.getResource(SkinNames.General.PADDING_DEFAULT));

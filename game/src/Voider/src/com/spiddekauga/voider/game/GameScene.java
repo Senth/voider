@@ -156,23 +156,31 @@ public class GameScene extends WorldScene {
 	 * Sets the level that shall be played
 	 * @param level level to play
 	 */
-	public void setLevel(Level level) {
+	private void setLevel(Level level) {
 		mLevel = level;
 		mLevel.run();
 		mLevel.createDefaultTriggers();
 
 		mBodyShepherd.setActors(mLevel.getResources(Actor.class));
 
-
 		updateCameraPosition();
 		createBorder();
-
 		Actor.setLevel(mLevel);
+	}
+
+	/**
+	 * Sets the level to start running once the game scene is activated
+	 * @param level the level to start running once the scene is activated
+	 * @see #setLevelToLoad(LevelDef)
+	 */
+	public void setLevelToRun(Level level) {
+		mLevelToRun = level;
 	}
 
 	/**
 	 * Sets the level to load
 	 * @param levelDef definition with all the information
+	 * @see #setLevelToRun(Level)
 	 */
 	public void setLevelToLoad(LevelDef levelDef) {
 		mLevelToLoad = levelDef;
@@ -202,15 +210,20 @@ public class GameScene extends WorldScene {
 		if (outcome == Outcomes.LOADING_SUCCEEDED) {
 			fixCamera();
 
+			// Start a level
+			if (mLevelToRun != null) {
+				setLevel(mLevelToRun);
+			}
+
 			// Load level
-			if (mLevelToLoad != null) {
+			else if (mLevelToLoad != null) {
 				Level level = ResourceCacheFacade.get(mLevelToLoad.getLevelId());
 				level.setStartPosition(level.getDef().getStartXCoord());
 				setLevel(level);
 			}
 
 			// Resume a level
-			if (mGameSaveDef != null) {
+			else if (mGameSaveDef != null) {
 				mGameSave = ResourceCacheFacade.get(mGameSaveDef.getGameSaveId());
 
 				mPlayerActor = mGameSave.getPlayerActor();
@@ -233,8 +246,6 @@ public class GameScene extends WorldScene {
 
 		Actor.setPlayerActor(mPlayerActor);
 		Actor.setWorld(mWorld);
-
-		/** @TODO game completed, aborted? */
 	}
 
 	@Override
@@ -420,21 +431,20 @@ public class GameScene extends WorldScene {
 		ResourceCacheFacade.load(InternalNames.UI_GAME);
 		ResourceCacheFacade.load(InternalNames.SHADER_DEFAULT);
 		ResourceCacheFacade.loadAllOf(this, ExternalTypes.PLAYER_DEF, true);
+		if (mTesting) {
+			ResourceCacheFacade.load(InternalNames.UI_EDITOR);
+		}
 
-		if (mLevelToLoad != null) {
+		if (mLevelToRun != null) {
+			ResourceCacheFacade.load(this, mLevelToRun.getDef().getId(), true);
+		}
+
+		else if (mLevelToLoad != null) {
 			ResourceCacheFacade.load(this, mLevelToLoad.getLevelId(), mLevelToLoad.getId());
 		}
 
-		if (mGameSaveDef != null) {
+		else if (mGameSaveDef != null) {
 			ResourceCacheFacade.load(this, mGameSaveDef.getGameSaveId(), mGameSaveDef.getId());
-		}
-
-		if (mTesting) {
-			ResourceCacheFacade.load(InternalNames.UI_EDITOR);
-
-			if (mLevel != null) {
-				ResourceCacheFacade.load(this, mLevel.getDef().getId(), true);
-			}
 		}
 	}
 
@@ -661,6 +671,8 @@ public class GameScene extends WorldScene {
 	private static final int INVALID_POINTER = -1;
 	/** Level to load */
 	private LevelDef mLevelToLoad = null;
+	/** Level to run */
+	private Level mLevelToRun = null;
 	/** The current level used in the game */
 	private Level mLevel = null;
 	/** If we're just testing the level */
