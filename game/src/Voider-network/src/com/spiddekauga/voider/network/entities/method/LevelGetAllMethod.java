@@ -24,14 +24,32 @@ public class LevelGetAllMethod implements IMethodEntity {
 	 * Types of levels to get, or rather sort by
 	 */
 	public enum SortOrders {
-		/** Number of likes */
-		LIKES,
-		/** Number of plays */
-		PLAYS,
-		/** Rating */
-		RATING,
 		/** Newest */
-		NEWEST,
+		NEWEST("New"),
+		/** Rating */
+		RATING("Rating"),
+		/** Number of plays */
+		PLAYS("Plays"),
+		/** Number of likes */
+		LIKES("Likes"),
+
+		;
+
+		/**
+		 * Constructor with a human readable name
+		 * @param name human readable name
+		 */
+		private SortOrders(String name) {
+			mName = name;
+		}
+
+		@Override
+		public String toString() {
+			return mName;
+		}
+
+		/** Human readable name */
+		private String mName;
 	}
 
 	@Override

@@ -3,6 +3,7 @@ package com.spiddekauga.voider.menu;
 import java.util.ArrayList;
 
 import com.spiddekauga.utils.KeyHelper;
+import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.Tags;
 import com.spiddekauga.voider.network.entities.method.IMethodEntity;
@@ -65,6 +66,16 @@ public class ExploreScene extends Scene implements ICallerResponseListener {
 	 */
 	void fetchLevels(SortOrders sort, ArrayList<Tags> tags) {
 		//		mResourceWebRepo.getLevels(this, sort, tags);
+	}
+
+	/**
+	 * Fetch levels from the server by the specified search string
+	 * @param searchString the text to search for
+	 */
+	void fetchLevels(String searchString) {
+		if (searchString.length() >= Config.Actor.NAME_LENGTH_MIN) {
+			//		mResourceWebRepo.getLevels(this, searchString);
+		}
 	}
 
 	/**

@@ -350,6 +350,10 @@ public class SkinNames {
 		IMAGE_BUTTON_DEFAULT(ImageButtonStyle.class, "default"),
 		/** Image button toggle */
 		IMAGE_BUTTON_TOGGLE(ImageButtonStyle.class, "toggle"),
+		/** Stub image button */
+		IMAGE_BUTTON_STUB(ImageButtonStyle.class, "stub"),
+		/** Stub togglable image button */
+		IMAGE_BUTTON_STUB_TOGGLE(ImageButtonStyle.class, "stub_toggle"),
 		/** Info button on front screen */
 		INFO(ImageButtonStyle.class),
 		/** Default label */

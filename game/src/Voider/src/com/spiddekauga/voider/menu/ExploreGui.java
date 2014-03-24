@@ -10,15 +10,19 @@ import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox.CheckBoxStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.Background;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
-import com.spiddekauga.utils.scene.ui.GuiHider;
 import com.spiddekauga.utils.scene.ui.HideListener;
 import com.spiddekauga.utils.scene.ui.Label;
+import com.spiddekauga.utils.scene.ui.TextFieldListener;
+import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.network.entities.Tags;
 import com.spiddekauga.voider.network.entities.method.LevelGetAllMethod.SortOrders;
 import com.spiddekauga.voider.resources.SkinNames;
@@ -48,6 +52,12 @@ public class ExploreGui extends Gui {
 
 		initViewButtons();
 		initSort();
+		initSearchBar();
+		initComments();
+		initInfo();
+		initLevel();
+		initTags();
+		initActions();
 		initTopBar();
 	}
 
@@ -67,73 +77,88 @@ public class ExploreGui extends Gui {
 	 * Initializes different view buttons
 	 */
 	private void initViewButtons() {
-		mWidgets.view.sortHider = new HideListener(true);
-		mWidgets.view.searchHider = new HideListener(true);
+		// Create button menu
+		AlignTable table = mWidgets.view.table;
+		table.dispose(true);
+		table.setAlign(Horizontal.LEFT, Vertical.TOP);
+		getStage().addActor(table);
+		ButtonGroup buttonGroup = new ButtonGroup();
+
+		// Sort
+		// TODO replace stub
+		Button button = new ImageButton((ImageButtonStyle) SkinNames.getResource(SkinNames.General.IMAGE_BUTTON_STUB_TOGGLE));
+		table.add(button);
+		buttonGroup.add(button);
+		mWidgets.view.sort = button;
+		mWidgets.view.sortHider = new HideListener(button, true) {
+			@Override
+			protected void onShow() {
+				SortOrders sortOrder = getSelectedSortOrder();
+				if (sortOrder != null) {
+					mExploreScene.fetchLevels(sortOrder, getSelectedTags());
+				}
+			}
+		};
+
+
+		// Search
+		// TODO replace stub
+		button = new ImageButton((ImageButtonStyle) SkinNames.getResource(SkinNames.General.IMAGE_BUTTON_STUB_TOGGLE));
+		table.add(button);
+		buttonGroup.add(button);
+		mWidgets.view.search = button;
+		mWidgets.view.searchHider = new HideListener(button, true) {
+			@Override
+			protected void onShow() {
+				mExploreScene.fetchLevels(mWidgets.search.field.getText());
+			}
+		};
+	}
+
+	/**
+	 * @return selected sort order
+	 */
+	private SortOrders getSelectedSortOrder() {
+		for (SortOrders sortOrder : SortOrders.values()) {
+			if (mWidgets.sort.buttons[sortOrder.ordinal()] != null) {
+				if (mWidgets.sort.buttons[sortOrder.ordinal()].isChecked()) {
+					return sortOrder;
+				}
+			}
+		}
+
+		return null;
 	}
 
 	/**
 	 * Initializes sort buttons
 	 */
 	private void initSort() {
-		float paddingDefault = SkinNames.getResource(SkinNames.General.PADDING_DEFAULT);
 		float paddingSeparator = SkinNames.getResource(SkinNames.General.PADDING_SEPARATOR);
 
 		AlignTable table = mWidgets.sort.table;
-		table.setCellPaddingDefault(paddingDefault, paddingDefault, paddingDefault, paddingSeparator);
+		table.dispose(true);
+		table.setCellPaddingDefault(0, 0, 0, paddingSeparator);
 		table.setAlign(Horizontal.RIGHT, Vertical.TOP);
-		//		mWidgets.view.sortHider.addToggleActor(table);
+		mWidgets.view.sortHider.addToggleActor(table);
 		getStage().addActor(table);
 
 		CheckBoxStyle radioStyle = SkinNames.getResource(SkinNames.General.CHECK_BOX_RADIO);
 		ButtonGroup buttonGroup = new ButtonGroup();
 
-		// New
-		CheckBox checkBox = new CheckBox("New", radioStyle);
-		mWidgets.sort.newest = checkBox;
-		buttonGroup.add(checkBox);
-		table.add(checkBox);
-		new ButtonListener(checkBox) {
-			@Override
-			protected void onPressed() {
-				mExploreScene.fetchLevels(SortOrders.NEWEST, getSelectedTags());
-			}
-		};
-
-		// Rating
-		checkBox = new CheckBox("Rating", radioStyle);
-		mWidgets.sort.rating = checkBox;
-		buttonGroup.add(checkBox);
-		table.add(checkBox);
-		new ButtonListener(checkBox) {
-			@Override
-			protected void onPressed() {
-				mExploreScene.fetchLevels(SortOrders.RATING, getSelectedTags());
-			}
-		};
-
-		// Likes
-		checkBox = new CheckBox("Likes", radioStyle);
-		mWidgets.sort.likes = checkBox;
-		buttonGroup.add(checkBox);
-		table.add(checkBox);
-		new ButtonListener(checkBox) {
-			@Override
-			protected void onPressed() {
-				mExploreScene.fetchLevels(SortOrders.LIKES, getSelectedTags());
-			}
-		};
-
-		// Plays
-		checkBox = new CheckBox("Plays", radioStyle);
-		mWidgets.sort.plays = checkBox;
-		buttonGroup.add(checkBox);
-		table.add(checkBox);
-		new ButtonListener(checkBox) {
-			@Override
-			protected void onPressed() {
-				mExploreScene.fetchLevels(SortOrders.PLAYS, getSelectedTags());
-			}
-		};
+		// Create buttons
+		for (final SortOrders sortOrder : SortOrders.values()) {
+			CheckBox checkBox = new CheckBox(sortOrder.toString(), radioStyle);
+			mWidgets.sort.buttons[sortOrder.ordinal()] = checkBox;
+			buttonGroup.add(checkBox);
+			table.add(checkBox);
+			new ButtonListener(checkBox) {
+				@Override
+				protected void onPressed() {
+					mExploreScene.fetchLevels(sortOrder, getSelectedTags());
+				}
+			};
+		}
 	}
 
 	/**
@@ -154,7 +179,22 @@ public class ExploreGui extends Gui {
 	 * Initializes search bar
 	 */
 	private void initSearchBar() {
+		AlignTable table = mWidgets.search.table;
+		table.dispose(true);
+		table.setAlign(Horizontal.RIGHT, Vertical.TOP);
+		getStage().addActor(table);
+		mWidgets.view.searchHider.addToggleActor(table);
 
+		TextField textField = new TextField("", (TextFieldStyle) SkinNames.getResource(SkinNames.General.TEXT_FIELD_DEFAULT));
+		textField.setMaxLength(Config.Editor.NAME_LENGTH_MAX);
+		table.add(textField);
+		mWidgets.search.field = textField;
+		new TextFieldListener(textField, "Search", null) {
+			@Override
+			protected void onChange(String newText) {
+				mExploreScene.fetchLevels(newText);
+			}
+		};
 	}
 
 	/**
@@ -214,9 +254,9 @@ public class ExploreGui extends Gui {
 
 		private static class View {
 			Button sort = null;
-			GuiHider sortHider = null;
+			HideListener sortHider = null;
 			Button search = null;
-			GuiHider searchHider = null;
+			HideListener searchHider = null;
 			AlignTable table = new AlignTable();
 		}
 
@@ -225,10 +265,7 @@ public class ExploreGui extends Gui {
 		}
 
 		private static class Sort {
-			Button newest = null;
-			Button plays = null;
-			Button rating = null;
-			Button likes = null;
+			Button[] buttons = new Button[SortOrders.values().length];
 			AlignTable table = new AlignTable();
 		}
 
@@ -265,6 +302,7 @@ public class ExploreGui extends Gui {
 
 		private static class Search {
 			TextField field = null;
+			AlignTable table = new AlignTable();
 		}
 
 		private static class Action {

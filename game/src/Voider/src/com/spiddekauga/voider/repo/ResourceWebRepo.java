@@ -318,10 +318,10 @@ public class ResourceWebRepo extends WebRepo {
 
 	/**
 	 * Get levels by text search
-	 * @param searchString the string to search for in the levels
 	 * @param callerResponseListener the caller to send the response to
+	 * @param searchString the string to search for in the levels
 	 */
-	public void getLevels(String searchString, ICallerResponseListener callerResponseListener) {
+	public void getLevels(ICallerResponseListener callerResponseListener, String searchString) {
 		LevelGetAllMethod method = new LevelGetAllMethod();
 		method.searchString = searchString;
 

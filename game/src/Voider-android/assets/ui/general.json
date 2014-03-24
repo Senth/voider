@@ -119,6 +119,24 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageDown: logout_down,
 		imageDisabled: logout_disabled
 	},
+	
+	stub: {
+		down: button_default_down,
+		up: button_default_up,
+		disabled: button_default_disabled,
+		over: button_default_over,
+		imageUp: stub,
+	},
+	
+	stub_toggle: {
+		down: button_default_down,
+		checked: button_default_checked,
+		up: button_default_up,
+		disabled: button_default_disabled,
+		over: button_default_over,
+		checkedOver: button_default_checked_over,
+		imageUp: stub,
+	},
 },
 
 com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
@@ -164,14 +182,12 @@ com.badlogic.gdx.scenes.scene2d.ui.CheckBox$CheckBoxStyle: {
 	default: {
 		checkboxOn: checkbox_on,
 		checkboxOff: checkbox_off,
-		font: default_font,
-		padBetween: 10,
+		font: default_font
 	},
 	radio: {
 		checkboxOn: radio_button_on,
 		checkboxOff: radio_button_off,
-		font: default_font,
-		padBetween: 10,
+		font: default_font
 	}
 },
 
