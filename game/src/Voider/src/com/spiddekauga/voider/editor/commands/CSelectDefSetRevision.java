@@ -26,7 +26,7 @@ public class CSelectDefSetRevision extends Command {
 	 * @param list the list that contains all the revisions
 	 * @param selectDefScene the scene
 	 */
-	public CSelectDefSetRevision(List list, SelectDefScene selectDefScene) {
+	public CSelectDefSetRevision(List<String> list, SelectDefScene selectDefScene) {
 		mList = list;
 		mScene = selectDefScene;
 	}
@@ -39,7 +39,7 @@ public class CSelectDefSetRevision extends Command {
 		}
 		// Get the current selected revision
 		else if (mList != null) {
-			String revisionDateString = mList.getSelection();
+			String revisionDateString = mList.getSelection().getLastSelected();
 
 			if (revisionDateString != null) {
 				String revisionString[] = revisionDateString.split("  ");
@@ -66,5 +66,5 @@ public class CSelectDefSetRevision extends Command {
 	/** The scene */
 	SelectDefScene mScene;
 	/** List containing all revision */
-	List mList = null;
+	List<String> mList = null;
 }

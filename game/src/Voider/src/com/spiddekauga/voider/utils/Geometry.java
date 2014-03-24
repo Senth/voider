@@ -255,7 +255,7 @@ public class Geometry {
 		float t = (float) ((f + Math.sqrt((f * f) + 4 * g * e )) / (g * 2));
 
 		Vector2 objectVelocity = Pools.vector2.obtain();
-		objectVelocity.set(distanceVector).div(t).add(targetVelocity);
+		objectVelocity.set(distanceVector).scl(1 / t).add(targetVelocity);
 
 		Pools.vector2.free(distanceVector);
 

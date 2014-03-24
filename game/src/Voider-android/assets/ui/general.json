@@ -164,12 +164,14 @@ com.badlogic.gdx.scenes.scene2d.ui.CheckBox$CheckBoxStyle: {
 	default: {
 		checkboxOn: checkbox_on,
 		checkboxOff: checkbox_off,
-		font: default_font
+		font: default_font,
+		padBetween: 10,
 	},
 	radio: {
 		checkboxOn: radio_button_on,
 		checkboxOff: radio_button_off,
-		font: default_font
+		font: default_font,
+		padBetween: 10,
 	}
 },
 

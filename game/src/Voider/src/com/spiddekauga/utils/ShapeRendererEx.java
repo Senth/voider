@@ -6,9 +6,8 @@ import java.util.Stack;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL10;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ImmediateModeRenderer;
-import com.badlogic.gdx.graphics.glutils.ImmediateModeRenderer10;
 import com.badlogic.gdx.graphics.glutils.ImmediateModeRenderer20;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.MathUtils;
@@ -237,11 +236,11 @@ public class ShapeRendererEx implements Disposable {
 	 * @author mzechner, stbachmann */
 	public enum ShapeType {
 		/** Used for drawing points */
-		Point(GL10.GL_POINTS),
+		Point(GL20.GL_POINTS),
 		/** Used for drawing lines */
-		Line(GL10.GL_LINES),
+		Line(GL20.GL_LINES),
 		/** Used for drawing triangles */
-		Filled(GL10.GL_TRIANGLES);
+		Filled(GL20.GL_TRIANGLES);
 
 		/** Type sent to OpenGL */
 		private final int glType;
@@ -274,12 +273,7 @@ public class ShapeRendererEx implements Disposable {
 	 */
 	public ShapeRendererEx(int maxVertices) {
 		if (Gdx.graphics != null) {
-			if (Gdx.graphics.isGL20Available()) {
-				mRenderer = new ImmediateModeRenderer20(maxVertices, false, true, 0);
-			}
-			else {
-				mRenderer = new ImmediateModeRenderer10(maxVertices);
-			}
+			mRenderer = new ImmediateModeRenderer20(maxVertices, false, true, 0);
 			mProjView.setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 			mMatrixDirty = true;
 		}

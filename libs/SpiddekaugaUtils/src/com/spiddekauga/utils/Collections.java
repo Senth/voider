@@ -1,5 +1,6 @@
 package com.spiddekauga.utils;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -50,5 +51,17 @@ public class Collections {
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * Adds all elements to an collection
+	 * @param <CollectionType> the collection type
+	 * @param addFrom the collection to add from
+	 * @param addTo the collection to add to
+	 */
+	public static <CollectionType> void addAll(Iterable<CollectionType> addFrom, Collection<CollectionType> addTo) {
+		for (CollectionType element : addFrom) {
+			addTo.add(element);
+		}
 	}
 }

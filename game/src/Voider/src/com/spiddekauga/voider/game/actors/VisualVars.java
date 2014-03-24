@@ -552,7 +552,7 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 					center.sub(vertex);
 				}
 
-				center.div(mCorners.size());
+				center.scl(1f / mCorners.size());
 			} else {
 				center.set(0,0);
 			}
@@ -897,7 +897,7 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 
 		// Set the center...
 		Vector2 center = Pools.vector2.obtain();
-		center.set(vertices[0]).add(vertices[1]).add(vertices[2]).div(3);
+		center.set(vertices[0]).add(vertices[1]).add(vertices[2]).scl(1f / 3f);
 
 		// Offset all vertices with negative center
 		for (Vector2 vertex : vertices) {

@@ -44,7 +44,7 @@ public class AnimationWidget extends Image {
 		}
 
 		Animation animation = new Animation(animationStyle.secondsPerFrame, walkFrames);
-		animation.setPlayMode(Animation.LOOP);
+		animation.setPlayMode(Animation.PlayMode.LOOP);
 		setAnimation(animation);
 	}
 

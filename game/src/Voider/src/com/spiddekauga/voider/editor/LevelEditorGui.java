@@ -182,8 +182,7 @@ class LevelEditorGui extends EditorGui {
 		mWidgets.info.storyBefore.setText(mLevelEditor.getPrologue());
 		mWidgets.info.epilogue.setText(mLevelEditor.getEpilogue());
 		mWidgets.info.speed.setValue(mLevelEditor.getLevelStartingSpeed());
-		mWidgets.info.theme.setSelection(mLevelEditor.getTheme().ordinal());
-
+		mWidgets.info.theme.setSelectedIndex(mLevelEditor.getTheme().ordinal());
 	}
 
 	/**
@@ -749,7 +748,8 @@ class LevelEditorGui extends EditorGui {
 		label = new Label("Theme", mStyles.label.standard);
 		left.add(label).setPadRight(mStyles.vars.paddingAfterLabel);
 		/** @todo add tooltip for the level's theme */
-		SelectBox selectBox = new SelectBox(Themes.values(), (SelectBoxStyle) SkinNames.getResource(General.SELECT_BOX_DEFAULT));
+		SelectBox<Themes> selectBox = new SelectBox<Themes>((SelectBoxStyle) SkinNames.getResource(General.SELECT_BOX_DEFAULT));
+		selectBox.setItems(Themes.values());
 		mDisabledWhenPublished.add(selectBox);
 		mWidgets.info.theme = selectBox;
 		left.add(selectBox).setFillWidth(true);
@@ -1240,7 +1240,7 @@ class LevelEditorGui extends EditorGui {
 			TextField name = null;
 			TextField description = null;
 			Slider speed = null;
-			SelectBox theme = null;
+			SelectBox<Themes> theme = null;
 			Label revision = null;
 			TextField storyBefore = null;
 			TextField epilogue = null;

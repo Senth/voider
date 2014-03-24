@@ -18,6 +18,7 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.joints.MouseJoint;
 import com.badlogic.gdx.physics.box2d.joints.MouseJointDef;
+import com.badlogic.gdx.utils.Array;
 import com.spiddekauga.utils.Maths;
 import com.spiddekauga.utils.PngExport;
 import com.spiddekauga.utils.Screens;
@@ -639,9 +640,9 @@ public class GameScene extends WorldScene {
 			playerPosition.set(mCamera.position.x - mCamera.viewportWidth * 0.5f, 0);
 
 			// Get radius of player and offset it with the width
-			ArrayList<Fixture> playerFixtures = mPlayerActor.getBody().getFixtureList();
+			Array<Fixture> playerFixtures = mPlayerActor.getBody().getFixtureList();
 
-			if (playerFixtures.size() > 0) {
+			if (playerFixtures.size > 0) {
 				float radius = playerFixtures.get(0).getShape().getRadius();
 				playerPosition.x += radius * 2;
 

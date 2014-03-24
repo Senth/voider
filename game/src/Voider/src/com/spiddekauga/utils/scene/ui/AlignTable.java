@@ -389,37 +389,6 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	}
 
 	@Override
-	@Deprecated
-	public void setScale(float scale) {
-
-	}
-
-	@Override
-	@Deprecated
-	public void setScale(float scaleX, float scaleY) {
-
-	}
-
-	@Override
-	@Deprecated
-	public void scale(float scale) {
-
-	}
-
-	@Override
-	@Deprecated
-	public void setScaleX(float scale) {
-
-	}
-
-	@Override
-	@Deprecated
-	public void setScaleY(float scale) {
-
-	}
-
-
-	@Override
 	public void layout() {
 		calculateSize();
 

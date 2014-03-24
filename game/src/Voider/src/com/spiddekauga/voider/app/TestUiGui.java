@@ -269,13 +269,14 @@ public class TestUiGui extends Gui {
 	 * Initialize list style
 	 */
 	private void initList() {
-		Object[] items = new Object[10];
+		String[] items = new String[10];
 
 		for (int i = 0; i < items.length; ++i) {
 			items[i] = "List item " + (i+1);
 		}
 
-		List list = new List(items, mGeneralSkin);
+		List<String> list = new List<String>(mGeneralSkin);
+		list.setItems(items);
 		ScrollPane scrollPane = new ScrollPane(list, mGeneralSkin, "background");
 		mMainTable.add(scrollPane);
 	}
@@ -284,13 +285,14 @@ public class TestUiGui extends Gui {
 	 * Initialize selection box
 	 */
 	private void initSelectionBox() {
-		Object[] items = new Object[40];
+		String[] items = new String[40];
 
 		for (int i = 0; i < items.length; ++i) {
 			items[i] = "Select item " + (i+1);
 		}
 
-		SelectBox selectBox = new SelectBox(items, mGeneralSkin);
+		SelectBox<String> selectBox = new SelectBox<String>(mGeneralSkin);
+		selectBox.setItems(items);
 		mMainTable.add(selectBox);
 	}
 

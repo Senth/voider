@@ -17,19 +17,18 @@ public class SelectBoxListener implements EventListener {
 	 * listener.
 	 * @param selectBox the selectionBox we should listen to
 	 */
-	public SelectBoxListener(SelectBox selectBox) {
+	public SelectBoxListener(SelectBox<?> selectBox) {
 		mSelectBox = selectBox;
 		mSelectBox.addListener(this);
-		mLastSelectedIndex = mSelectBox.getSelectionIndex();
+		mLastSelectedIndex = mSelectBox.getSelectedIndex();
 	}
 
 	@Override
 	public boolean handle(Event event) {
-		if (mLastSelectedIndex != mSelectBox.getSelectionIndex()) {
-			mLastSelectedIndex = mSelectBox.getSelectionIndex();
+		if (mLastSelectedIndex != mSelectBox.getSelectedIndex()) {
+			mLastSelectedIndex = mSelectBox.getSelectedIndex();
 
 			onSelectionChanged(mLastSelectedIndex);
-			onSelectionChanged(mSelectBox.getSelection());
 
 			return true;
 		}
@@ -37,25 +36,15 @@ public class SelectBoxListener implements EventListener {
 	}
 
 	/**
-	 * Called when the selection has been changed. Override this method
-	 * @param selectedItem the string that was selected
-	 * @see #onSelectionChanged(int)
-	 */
-	protected void onSelectionChanged(String selectedItem) {
-		// Does nothing
-	}
-
-	/**
 	 * Called when the selection has been changed. Override this method.
 	 * @param itemIndex the index of the newly selected item
-	 * @see #onSelectionChanged(String)
 	 */
 	protected void onSelectionChanged(int itemIndex) {
 		// Does nothing.
 	}
 
 	/** The selection box we're listening to */
-	protected SelectBox mSelectBox;
+	protected SelectBox<?> mSelectBox;
 	/** Last selected item */
 	private int mLastSelectedIndex;
 }

@@ -12,6 +12,7 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.Pool.Poolable;
 import com.esotericsoftware.kryo.Kryo;
@@ -963,8 +964,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 	 */
 	protected void destroyFixtures() {
 		if (mBody != null) {
-			@SuppressWarnings("unchecked")
-			ArrayList<Fixture> fixtures = (ArrayList<Fixture>) mBody.getFixtureList().clone();
+			Array<Fixture> fixtures = mBody.getFixtureList();
 			for (Fixture fixture : fixtures) {
 				mBody.destroyFixture(fixture);
 			}

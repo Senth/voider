@@ -344,8 +344,7 @@ public class SelectDefGui extends Gui {
 	 * Initialize select revision
 	 */
 	private void initSelectRevision() {
-		String[] revisions = new String[0];
-		List list = new List(revisions, (ListStyle)SkinNames.getResource(SkinNames.General.LIST_DEFAULT));
+		List<String> list = new List<String>((ListStyle)SkinNames.getResource(SkinNames.General.LIST_DEFAULT));
 		mWidgets.revisionBox.list = list;
 		mWidgets.revisionBox.scrollPane = new ScrollPane(list, (ScrollPaneStyle)SkinNames.getResource(SkinNames.General.SCROLL_PANE_DEFAULT));
 		mRevisionTable.setPreferences(mMainTable);
@@ -394,7 +393,7 @@ public class SelectDefGui extends Gui {
 		updateRevisionList();
 
 		// Get latest revision number
-		int latestRevision = mWidgets.revisionBox.list.getItems().length;
+		int latestRevision = mWidgets.revisionBox.list.getItems().size;
 
 		msgBox.button("Latest", new CSelectDefSetRevision(latestRevision, mSelectDefScene));
 		msgBox.button("Select", new CSelectDefSetRevision(mWidgets.revisionBox.list, mSelectDefScene));
@@ -460,7 +459,7 @@ public class SelectDefGui extends Gui {
 		RevisionBox revisionBox = new RevisionBox();
 
 		static class RevisionBox {
-			List list = null;
+			List<String> list = null;
 			ScrollPane scrollPane = null;
 		}
 

@@ -15,6 +15,7 @@ import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
+import com.spiddekauga.utils.Collections;
 import com.spiddekauga.utils.Maths;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.BulletDestroyer;
@@ -181,7 +182,7 @@ public abstract class WorldScene extends Scene {
 		// If body already exists, just delete existing fixtures
 		if (mBorderBody != null) {
 			ArrayList<Fixture> fixtures = new ArrayList<Fixture>();
-			fixtures.addAll(mBorderBody.getFixtureList());
+			Collections.addAll(mBorderBody.getFixtureList(), fixtures);
 			for (Fixture fixture : fixtures) {
 				mBorderBody.destroyFixture(fixture);
 			}

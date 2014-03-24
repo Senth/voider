@@ -65,7 +65,7 @@ public abstract class Gui implements Disposable {
 	 */
 	public void resize(int width, int height) {
 		if (mStage != null) {
-			mStage.setViewport(width, height, true);
+			mStage.getViewport().update(width, height, true);
 		}
 	}
 

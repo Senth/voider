@@ -61,12 +61,6 @@ public class ApplicationStub implements Application {
 	}
 
 	@Override
-	public void log(String tag, String message, Exception exception) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
 	public void error(String tag, String message) {
 		// TODO Auto-generated method stub
 
@@ -153,6 +147,18 @@ public class ApplicationStub implements Application {
 	public void removeLifecycleListener(LifecycleListener listener) {
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	public void log(String tag, String message, Throwable exception) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public int getLogLevel() {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 }

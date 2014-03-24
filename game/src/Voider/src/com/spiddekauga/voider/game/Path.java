@@ -11,6 +11,7 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.utils.ShapeRendererEx;
@@ -134,7 +135,7 @@ public class Path extends Resource implements Disposable, IResourceCorner, IReso
 		}
 
 		if (!mCorners.isEmpty()) {
-			center.div(mCorners.size());
+			center.scl(1f / mCorners.size());
 		}
 
 		return center;
@@ -480,10 +481,10 @@ public class Path extends Resource implements Disposable, IResourceCorner, IReso
 	/**
 	 * Removes existing body fixture and adds the current fixture
 	 */
-	@SuppressWarnings("unchecked")
 	private void destroyBodyFixture() {
 		if (mBody != null) {
-			ArrayList<Fixture> fixtures = (ArrayList<Fixture>) mBody.getFixtureList().clone();
+			Array<Fixture> originalList = mBody.getFixtureList();
+			Array<Fixture> fixtures = new Array<>(originalList);
 			for (Fixture fixture : fixtures) {
 				mBody.destroyFixture(fixture);
 			}
