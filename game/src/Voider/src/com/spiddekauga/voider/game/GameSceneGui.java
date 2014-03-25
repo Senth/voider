@@ -80,7 +80,7 @@ class GameSceneGui extends Gui {
 		mOptionBar.add(button);
 
 		// Set bar background
-		Background background = new Background((Color) SkinNames.getResource(SkinNames.General.BAR_UPPER_LOWER_COLOR));
+		Background background = new Background((Color) SkinNames.getResource(SkinNames.General.WIDGET_BACKGROUND_COLOR));
 		float height = SkinNames.getResource(SkinNames.General.BAR_UPPER_LOWER_HEIGHT);
 		background.setSize(Gdx.graphics.getWidth(), height);
 		background.setPosition(0, Gdx.graphics.getHeight() - height);

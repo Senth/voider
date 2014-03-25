@@ -273,7 +273,7 @@ public class SelectDefScene extends WorldScene {
 	 */
 	String getCreator() {
 		if (mSelectedDef != null) {
-			return mSelectedDef.getCreator();
+			return mSelectedDef.getRevisedBy();
 		}
 		return "";
 	}
@@ -469,7 +469,7 @@ public class SelectDefScene extends WorldScene {
 	 * @return true if the current user is the owner of the definition
 	 */
 	private boolean isOwner(Def def) {
-		return def.getCreator().equals(User.getGlobalUser().getUsername());
+		return def.getRevisedBy().equals(User.getGlobalUser().getUsername());
 	}
 
 	/**

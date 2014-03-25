@@ -39,7 +39,7 @@ public abstract class Def extends Resource implements IResourceDependency, IReso
 
 		Def def = (Def) resource;
 		mCopyParentId = def.mCopyParentId;
-		mCreator = def.mCreator;
+		mRevisedBy = def.mRevisedBy;
 		mDate = def.mDate;
 		mDescription = def.mDescription;
 		mExternalDependencies = def.mExternalDependencies;
@@ -49,7 +49,7 @@ public abstract class Def extends Resource implements IResourceDependency, IReso
 		mTextureDrawable = def.mTextureDrawable;
 		mOriginalCreator = def.mOriginalCreator;
 		mRevision = def.mRevision;
-		mCreatorKey = def.mCreatorKey;
+		mRevisedByKey = def.mRevisedByKey;
 		mOriginalCreatorKey = def.mOriginalCreatorKey;
 	}
 
@@ -59,8 +59,8 @@ public abstract class Def extends Resource implements IResourceDependency, IReso
 
 		Def defCopy = (Def)copy;
 		defCopy.mCopyParentId = mUniqueId;
-		defCopy.mCreator = mUser.getUsername();
-		defCopy.mCreatorKey = mUser.getServerKey();
+		defCopy.mRevisedBy = mUser.getUsername();
+		defCopy.mRevisedByKey = mUser.getServerKey();
 		/** @todo create numbering of copy name if already a copy */
 		defCopy.mName = defCopy.mName + " (copy)";
 
@@ -93,10 +93,10 @@ public abstract class Def extends Resource implements IResourceDependency, IReso
 	}
 
 	/**
-	 * @return the name of the creator
+	 * @return the name of the user that revised this definition
 	 */
-	public final String getCreator() {
-		return mCreator;
+	public final String getRevisedBy() {
+		return mRevisedBy;
 	}
 
 	/**
@@ -234,7 +234,7 @@ public abstract class Def extends Resource implements IResourceDependency, IReso
 	 * @return creator key
 	 */
 	public String getCreatorKey() {
-		return mCreatorKey;
+		return mRevisedByKey;
 	}
 
 	/**
@@ -318,9 +318,9 @@ public abstract class Def extends Resource implements IResourceDependency, IReso
 	/** Original creator name */
 	@Tag(41) private String mOriginalCreator = mUser.getUsername();
 	/** Creator key */
-	@Tag(111) private String mCreatorKey = mUser.getServerKey();
+	@Tag(111) private String mRevisedByKey = mUser.getServerKey();
 	/** Creator name */
-	@Tag(39) private String mCreator = mUser.getUsername();
+	@Tag(39) private String mRevisedBy = mUser.getUsername();
 	/** Comment of the definition */
 	@Tag(38) private String mDescription = "";
 	/** Saved date for the definition */

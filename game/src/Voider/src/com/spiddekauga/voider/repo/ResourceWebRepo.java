@@ -168,7 +168,7 @@ public class ResourceWebRepo extends WebRepo {
 	 */
 	private static void setDefEntity(Def def, DefEntity defEntity) {
 		defEntity.name = def.getName();
-		defEntity.creator = def.getCreator();
+		defEntity.creator = def.getRevisedBy();
 		defEntity.originalCreator = def.getOriginalCreator();
 		defEntity.description = def.getDescription();
 		defEntity.copyParentId = def.getCopyParentId();

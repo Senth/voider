@@ -6,6 +6,7 @@ import java.util.Iterator;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup;
 import com.badlogic.gdx.scenes.scene2d.utils.Layout;
@@ -414,7 +415,6 @@ public class AlignTable extends WidgetGroup implements Disposable {
 
 
 		// Set custom position if we don't have any table parent
-		//		if (!(getParent() instanceof AlignTable)) {
 		// Horizontal offset
 		// If fill row, the x offset will always be 0
 		if (rowFillWidth) {
@@ -449,11 +449,9 @@ public class AlignTable extends WidgetGroup implements Disposable {
 
 		if (getParent() instanceof AlignTable) {
 			position.x = getX() - position.x;
-			//			position.y = getY() - position.y;
 		}
 
 		setPosition((int)position.x, (int)position.y);
-		//		}
 
 		Vector2 offset = Pools.vector2.obtain();
 		offset.set(0,0);
@@ -482,7 +480,15 @@ public class AlignTable extends WidgetGroup implements Disposable {
 			offset.y += rowSize.y;
 		}
 
+		// Update size as the table can be larger if we have fill height/width
+		// enabled
+		super.setWidth(rowSize.x);
+		super.setHeight(offset.y);
+
+
 		Pools.vector2.freeAll(rowSize, position, offset);
+
+		updateBackgroundSize();
 
 		mValidLayout = true;
 	}
@@ -592,6 +598,35 @@ public class AlignTable extends WidgetGroup implements Disposable {
 		}
 	}
 
+	/**
+	 * Set a background image of the table
+	 * @param image background image of this table, null to remove an existing background image
+	 */
+	public void setBackgroundImage(Image image) {
+		// Remove old background
+		if (mBackground != null) {
+			removeActor(mBackground);
+		}
+
+		mBackground = image;
+
+		if (mBackground != null) {
+			updateBackgroundSize();
+			addActorAt(0, mBackground);
+		}
+	}
+
+	/**
+	 * Updates the background size
+	 */
+	private void updateBackgroundSize() {
+		if (mBackground != null) {
+			mBackground.setSize(getWidth(), getHeight());
+		}
+	}
+
+	/** Background image */
+	private Image mBackground = null;
 	/** Layout is valid, false if the table needs to call layout() */
 	private boolean mValidLayout = true;
 	/** All the rows of the table */

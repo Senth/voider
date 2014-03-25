@@ -5,6 +5,7 @@ import java.util.HashMap;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
@@ -12,8 +13,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.CheckBox.CheckBoxStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
@@ -21,10 +24,14 @@ import com.spiddekauga.utils.scene.ui.Background;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.utils.scene.ui.HideListener;
 import com.spiddekauga.utils.scene.ui.Label;
+import com.spiddekauga.utils.scene.ui.Label.LabelStyle;
+import com.spiddekauga.utils.scene.ui.RatingWidget;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.network.entities.Tags;
 import com.spiddekauga.voider.network.entities.method.LevelGetAllMethod.SortOrders;
+import com.spiddekauga.voider.resources.InternalNames;
+import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.utils.Pools;
@@ -65,7 +72,7 @@ public class ExploreGui extends Gui {
 	 * Initializes the top bar
 	 */
 	private void initTopBar() {
-		mWidgets.topBar = new Background((Color) SkinNames.getResource(SkinNames.General.BAR_UPPER_LOWER_COLOR));
+		mWidgets.topBar = new Background((Color) SkinNames.getResource(SkinNames.General.WIDGET_BACKGROUND_COLOR));
 		mWidgets.topBar.setHeight((Float) SkinNames.getResource(SkinNames.General.BAR_UPPER_LOWER_HEIGHT));
 		mWidgets.topBar.setWidth(Gdx.graphics.getWidth());
 		getStage().addActor(mWidgets.topBar);
@@ -85,7 +92,7 @@ public class ExploreGui extends Gui {
 		ButtonGroup buttonGroup = new ButtonGroup();
 
 		// Sort
-		// TODO replace stub
+		// TODO replace stub with sort button
 		Button button = new ImageButton((ImageButtonStyle) SkinNames.getResource(SkinNames.General.IMAGE_BUTTON_STUB_TOGGLE));
 		table.add(button);
 		buttonGroup.add(button);
@@ -102,7 +109,7 @@ public class ExploreGui extends Gui {
 
 
 		// Search
-		// TODO replace stub
+		// TODO replace stub with search button
 		button = new ImageButton((ImageButtonStyle) SkinNames.getResource(SkinNames.General.IMAGE_BUTTON_STUB_TOGGLE));
 		table.add(button);
 		buttonGroup.add(button);
@@ -201,7 +208,121 @@ public class ExploreGui extends Gui {
 	 * Initializes info panel
 	 */
 	private void initInfo() {
+		LabelStyle labelStyle = SkinNames.getResource(SkinNames.General.LABEL_DEFAULT);
+		Skin generalSkin = ResourceCacheFacade.get(InternalNames.UI_GENERAL);
+		Color widgetBackgroundColor = SkinNames.getResource(SkinNames.General.WIDGET_BACKGROUND_COLOR);
 
+		AlignTable table = mWidgets.info.table;
+		table.setAlignTable(Horizontal.RIGHT, Vertical.TOP);
+		table.setAlignRow(Horizontal.LEFT, Vertical.TOP);
+		table.setBackgroundImage(new Background(widgetBackgroundColor));
+		getStage().addActor(table);
+
+
+		// Name
+		Label label = new Label("", labelStyle);
+		mWidgets.info.name = label;
+		table.row(Horizontal.CENTER, Vertical.TOP);
+		table.add(label);
+
+
+		// Rating
+		// TODO replace rating star icons
+		Drawable filledStar = generalSkin.getDrawable(SkinNames.General.STUB.toString());
+		Drawable emptyStar = generalSkin.getDrawable(SkinNames.General.STUB.toString());
+		RatingWidget rating = new RatingWidget(filledStar, emptyStar, 5, Touchable.disabled);
+		mWidgets.info.rating = rating;
+		table.row(Horizontal.CENTER, Vertical.TOP);
+		table.add(rating);
+
+
+		// Description
+		label = new Label("", labelStyle);
+		mWidgets.info.description = label;
+		label.setWrap(true);
+		table.row(Horizontal.CENTER, Vertical.TOP);
+		table.add(label);
+
+
+		// Created by
+		label = new Label("Created by", labelStyle);
+		table.row();
+		table.add(label);
+
+		// TODO replace player icon
+		Drawable playerIcon = generalSkin.getDrawable(SkinNames.General.STUB.toString());
+		Image image = new Image(playerIcon);
+		table.row();
+		table.add(image);
+
+		label = new Label("", labelStyle);
+		mWidgets.info.createdBy = label;
+		table.add(label);
+
+
+		// Revised by
+		label = new Label("Revised by", labelStyle);
+		table.row();
+		table.add(label);
+
+		image = new Image(playerIcon);
+		table.row();
+		table.add(image);
+
+		label = new Label("", labelStyle);
+		mWidgets.info.revisedBy = label;
+		table.add(label);
+
+
+		// Date
+		// TODO replace date icon
+		Drawable dateIcon = generalSkin.getDrawable(SkinNames.General.STUB.toString());
+		image = new Image(dateIcon);
+		table.row();
+		table.add(image);
+
+		label = new Label("", labelStyle);
+		mWidgets.info.date = label;
+		table.add(label);
+
+
+		// Plays
+		// TODO replace number of plays icon
+		Drawable playsIcon = generalSkin.getDrawable(SkinNames.General.STUB.toString());
+		image = new Image(playsIcon);
+		table.row();
+		table.add(image);
+
+		label = new Label("", labelStyle);
+		mWidgets.info.plays = label;
+		table.add(label);
+
+
+		// Likes
+		// TODO replace number of likes icon
+		Drawable likesIcon = generalSkin.getDrawable(SkinNames.General.STUB.toString());
+		image = new Image(likesIcon);
+		table.row();
+		table.add(image);
+
+		label = new Label("", labelStyle);
+		mWidgets.info.likes = label;
+		table.add(label);
+
+
+		// Tags
+		// TODO replace tag icon
+		Drawable tagIcon = generalSkin.getDrawable(SkinNames.General.STUB.toString());
+		image = new Image(tagIcon);
+		table.row();
+		table.add(image);
+
+		label = new Label("", labelStyle);
+		mWidgets.info.tags = label;
+		table.add(label);
+
+		table.row().setFillHeight(true);
+		table.add().setFillHeight(true);
 	}
 
 	/**
@@ -273,10 +394,9 @@ public class ExploreGui extends Gui {
 			AlignTable table = new AlignTable();
 			Label name = null;
 			Label description = null;
-			Image ratingFilled = null;
-			Image ratingEmpty = null;
-			Label creator = null;
-			Label originalCreator = null;
+			RatingWidget rating = null;
+			Label revisedBy = null;
+			Label createdBy = null;
 			Label date = null;
 			Label plays = null;
 			Label likes = null;

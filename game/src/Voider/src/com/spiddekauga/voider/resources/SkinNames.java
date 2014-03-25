@@ -70,9 +70,6 @@ public class SkinNames {
 		DRAW_ERASE,
 		/** Duplicates the current actor or level */
 		DUPLICATE,
-		/** When checked it shows which enemies will be spawned when testing
-		 * the level from the current position */
-		ENEMY_SPAWN_HIGHLIGHT,
 		/** Add an enemy to the level */
 		ENEMY_ADD,
 		/** Go to the enemy editor */
@@ -87,6 +84,9 @@ public class SkinNames {
 		ENEMY_SET_ACTIVATE_TRIGGER,
 		/** Set deactivate trigger for enemies. I.e. binds the enemy to a trigger */
 		ENEMY_SET_DEACTIVATE_TRIGGER,
+		/** When checked it shows which enemies will be spawned when testing
+		 * the level from the current position */
+		ENEMY_SPAWN_HIGHLIGHT,
 		/** Grid button for turning it on/off */
 		GRID,
 		/** Make the grid to be rendered above all other resources */
@@ -334,8 +334,6 @@ public class SkinNames {
 	public enum General implements ISkinNames {
 		/** Wait animation texture */
 		ANIMATION_WAIT(AnimationWidgetStyle.class, "wait"),
-		/** Upper and lower bar colors */
-		BAR_UPPER_LOWER_COLOR(Color.class),
 		/** Upper and lower bar height */
 		BAR_UPPER_LOWER_HEIGHT(Float.class),
 		/** Check box that uses check boxes */
@@ -348,12 +346,12 @@ public class SkinNames {
 		EXPLORE(ImageButtonStyle.class),
 		/** Image button default */
 		IMAGE_BUTTON_DEFAULT(ImageButtonStyle.class, "default"),
-		/** Image button toggle */
-		IMAGE_BUTTON_TOGGLE(ImageButtonStyle.class, "toggle"),
 		/** Stub image button */
 		IMAGE_BUTTON_STUB(ImageButtonStyle.class, "stub"),
 		/** Stub togglable image button */
 		IMAGE_BUTTON_STUB_TOGGLE(ImageButtonStyle.class, "stub_toggle"),
+		/** Image button toggle */
+		IMAGE_BUTTON_TOGGLE(ImageButtonStyle.class, "toggle"),
 		/** Info button on front screen */
 		INFO(ImageButtonStyle.class),
 		/** Default label */
@@ -396,6 +394,8 @@ public class SkinNames {
 		SLIDER_DEFAULT(SliderStyle.class, "default"),
 		/** Loading bar slider */
 		SLIDER_LOADING_BAR(SliderStyle.class, "loading_bar"),
+		/** Stub image */
+		STUB(null),
 		/** Text button default style */
 		TEXT_BUTTON_PRESS(TextButtonStyle.class, "default"),
 		/** Text button that always is selected */
@@ -410,6 +410,8 @@ public class SkinNames {
 		WAIT_WINDOW_FADE_IN(Float.class),
 		/** Wait window fade out time */
 		WAIT_WINDOW_FADE_OUT(Float.class),
+		/** Background color for various widgets */
+		WIDGET_BACKGROUND_COLOR(Color.class),
 		/** Window default style without title */
 		WINDOW_DEFAULT(WindowStyle.class, "default"),
 		/** Modal window with no title */
