@@ -181,7 +181,7 @@ public class EnemyActor extends Actor {
 					// Enemy will spawn
 					if (levelStartCoord <= enemyActivationCoord) {
 
-						shapeRenderer.setColor((Color) SkinNames.getResource(SkinNames.EditorVars.ENEMY_WILL_ACTIVATE_ON_TEST_RUN_COLOR));
+						shapeRenderer.setColor((Color) SkinNames.getResource(SkinNames.EditorVars.ENEMY_ACTIVATE_ON_TEST_RUN_OUTLINE_COLOR));
 
 						Vector2 offsetPosition = getWorldOffset();
 

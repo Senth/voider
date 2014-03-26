@@ -20,7 +20,6 @@ public class PlayMenuGui extends MenuGui {
 		super.initGui();
 
 		mMainTable.setAlign(Horizontal.CENTER, Vertical.MIDDLE);
-		mMainTable.setCellPaddingDefault((Float)SkinNames.getResource(SkinNames.General.PADDING_DEFAULT));
 
 		initMenu();
 	}

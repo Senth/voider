@@ -26,7 +26,6 @@ public class MainMenuGui extends MenuGui {
 		super.initGui();
 
 		mMainTable.setAlign(Horizontal.CENTER, Vertical.MIDDLE);
-		mMainTable.setCellPaddingDefault((Float) SkinNames.getResource(SkinNames.General.PADDING_DEFAULT));
 		mInfoTable.setPreferences(mMainTable);
 		mInfoTable.setAlign(Horizontal.RIGHT, Vertical.TOP);
 		mOptionTable.setPreferences(mMainTable);

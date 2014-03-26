@@ -1,5 +1,6 @@
 package com.spiddekauga.utils.scene.ui;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -28,6 +29,15 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	 */
 	public AlignTable() {
 		setTouchable(Touchable.childrenOnly);
+
+		try {
+			mfWidth = Actor.class.getDeclaredField("width");
+			mfWidth.setAccessible(true);
+			mfHeight = Actor.class.getDeclaredField("height");
+			mfHeight.setAccessible(true);
+		} catch (NoSuchFieldException | SecurityException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -61,6 +71,7 @@ public class AlignTable extends WidgetGroup implements Disposable {
 		super.invalidateHierarchy();
 
 		mValidLayout = false;
+		mValidCellSizes = false;
 	}
 
 	@Override
@@ -68,6 +79,7 @@ public class AlignTable extends WidgetGroup implements Disposable {
 		super.invalidate();
 
 		mValidLayout = false;
+		mValidCellSizes = false;
 	}
 
 	/**
@@ -131,7 +143,7 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	 * @param left padding to the left
 	 * @return this table for chaining
 	 */
-	public AlignTable setCellPaddingDefault(float top, float right, float bottom, float left) {
+	public AlignTable setPaddingCellDefault(float top, float right, float bottom, float left) {
 		mCellPaddingDefault.top = top;
 		mCellPaddingDefault.right = right;
 		mCellPaddingDefault.bottom = bottom;
@@ -147,7 +159,7 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	 * @param padding padding for all sides
 	 * @return this table for chaining
 	 */
-	public AlignTable setCellPaddingDefault(float padding) {
+	public AlignTable setPaddingCellDefault(float padding) {
 		mCellPaddingDefault.top = padding;
 		mCellPaddingDefault.right = padding;
 		mCellPaddingDefault.bottom = padding;
@@ -164,7 +176,7 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	 * @param left padding to the left
 	 * @return this table for chaining
 	 */
-	public AlignTable setRowPaddingDefault(float top, float right, float bottom, float left) {
+	public AlignTable setPaddingRowDefault(float top, float right, float bottom, float left) {
 		mRowPaddingDefault.top = top;
 		mRowPaddingDefault.right = right;
 		mRowPaddingDefault.bottom = bottom;
@@ -178,11 +190,40 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	 * @param padding padding to the left, right, top, and bottom
 	 * @return this table for chaining
 	 */
-	public AlignTable setRowPaddingDefault(float padding) {
+	public AlignTable setPaddingRowDefault(float padding) {
 		mRowPaddingDefault.top = padding;
 		mRowPaddingDefault.right = padding;
 		mRowPaddingDefault.bottom = padding;
 		mRowPaddingDefault.left = padding;
+		return this;
+	}
+
+	/**
+	 * Sets the margin for this table.
+	 * @param top padding at the top
+	 * @param right padding to the right
+	 * @param bottom padding at the bottom
+	 * @param left padding to the left
+	 * @return this table for chaining
+	 */
+	public AlignTable setMargin(float top, float right, float bottom, float left) {
+		mMargin.top = top;
+		mMargin.right = right;
+		mMargin.bottom = bottom;
+		mMargin.left = left;
+		return this;
+	}
+
+	/**
+	 * Set the margin for this table.
+	 * @param padding padding to the left, right, top, and bottom
+	 * @return this table for chaining
+	 */
+	public AlignTable setMargin(float padding) {
+		mMargin.top = padding;
+		mMargin.right = padding;
+		mMargin.bottom = padding;
+		mMargin.left = padding;
 		return this;
 	}
 
@@ -333,15 +374,44 @@ public class AlignTable extends WidgetGroup implements Disposable {
 		invalidateHierarchy();
 	}
 
+
 	/**
-	 * Sets the width of the table, including scales all the actors inside if necessary
+	 * Set the width of this table silently, i.e. never calls {@link #invalidate()}.
 	 * @param width new width of the table
 	 */
+	void setWidthSilent(float width) {
+		if (mfWidth != null) {
+			try {
+				mfWidth.set(this, width);
+			} catch (IllegalArgumentException | IllegalAccessException e) {
+				e.printStackTrace();
+				setWidth(width);
+			}
+		} else {
+			setWidth(width);
+		}
+	}
+
+	/**
+	 * Sets the height of this table silently, i.e. never calls {@link #invalidate()}.
+	 * @param height new height of the table
+	 */
+	void setHeightSilent(float height) {
+		if (mfHeight != null) {
+			try {
+				mfHeight.set(this, height);
+			} catch (IllegalArgumentException | IllegalAccessException e) {
+				e.printStackTrace();
+				setWidth(height);
+			}
+		} else {
+			setWidth(height);
+		}
+	}
+
 	@Override
 	public void setWidth(float width) {
 		super.setWidth(width);
-
-		invalidate();
 	}
 
 	@Override
@@ -350,15 +420,9 @@ public class AlignTable extends WidgetGroup implements Disposable {
 		setHeight(height);
 	}
 
-	/**
-	 * Sets the height of the table, including scales all the actors inside if necessary
-	 * @param height new height of the table
-	 */
 	@Override
 	public void setHeight(float height) {
 		super.setHeight(height);
-
-		invalidate();
 	}
 
 	@Override
@@ -373,7 +437,7 @@ public class AlignTable extends WidgetGroup implements Disposable {
 
 	@Override
 	public float getPrefHeight() {
-		if (mKeepSize) {
+		if (mKeepHeight) {
 			return getHeight();
 		} else {
 			return mPrefHeight;
@@ -382,188 +446,74 @@ public class AlignTable extends WidgetGroup implements Disposable {
 
 	@Override
 	public float getPrefWidth() {
-		if (mKeepSize) {
+		if (mKeepWidth) {
 			return getWidth();
 		} else {
 			return mPrefWidth;
 		}
 	}
 
-	@Override
-	public void layout() {
-		calculateSize();
-
-		float rowHeight = 0;
-		float rowWidth = 0;
+	/**
+	 * Set the size of rows and cells that should fill height or width
+	 * @param width available width size, if -1 it uses the max row width
+	 * @param height available height size, if -1 it uses the available height
+	 */
+	void updateSize(float width, float height) {
+		// Calculate available extra height
+		float rowHeightTotal = 0;
 		int cRowFillHeight = 0;
-		boolean rowFillWidth = false;
 		for (Row row : mRows) {
-			rowHeight += row.getHeight();
-			if (row.getWidth() > rowWidth) {
-				rowWidth = row.getWidth();
-			}
+			rowHeightTotal += row.getHeight();
 
 			if (row.shallFillHeight()) {
 				cRowFillHeight++;
 			}
-			if (row.shallfillWidth()) {
-				rowFillWidth = true;
-			}
 		}
 
-		Vector2 position = Pools.vector2.obtain();
-
-
-		// Set custom position if we don't have any table parent
-		// Horizontal offset
-		// If fill row, the x offset will always be 0
-		if (rowFillWidth) {
-			position.x = 0;
-		}
-		// Calculate offset depending on alignment
-		else {
-			if (mTableAlign.horizontal == Horizontal.LEFT) {
-				position.x = 0;
-			} else if (mTableAlign.horizontal == Horizontal.RIGHT) {
-				position.x = getAvailableWidth() - rowWidth;
-			} else if (mTableAlign.horizontal == Horizontal.CENTER) {
-				position.x = getAvailableWidth() * 0.5f - rowWidth * 0.5f;
-			}
+		if (height == -1) {
+			height = getAvailableHeight();
 		}
 
-		// Vertical
-		// If fill height, the y offset will always be 0
+		if (width == -1) {
+			width = getWidth();
+		}
+
+
+		float extraHeightPerFillHeightRow = 0;
 		if (cRowFillHeight > 0) {
-			position.y = 0;
-		}
-		// Calculate offset depending on alignment
-		else {
-			if (mTableAlign.vertical == Vertical.BOTTOM) {
-				position.y = 0;
-			} else if (mTableAlign.vertical == Vertical.TOP) {
-				position.y = getAvailableHeight() - rowHeight;
-			} else if (mTableAlign.vertical == Vertical.MIDDLE) {
-				position.y = getAvailableHeight() * 0.5f - rowHeight * 0.5f;
-			}
+			extraHeightPerFillHeightRow = (height - rowHeightTotal) / cRowFillHeight;
 		}
 
-		if (getParent() instanceof AlignTable) {
-			position.x = getX() - position.x;
-		}
 
-		setPosition((int)position.x, (int)position.y);
-
-		Vector2 offset = Pools.vector2.obtain();
-		offset.set(0,0);
-
-		// Layout the rows
-		Vector2 rowSize = Pools.vector2.obtain();
-		if (rowFillWidth) {
-			rowSize.x = getAvailableWidth();
-		} else {
-			rowSize.x = rowWidth < mPrefWidth ? rowWidth : mPrefWidth;
-		}
-		for (int i = mRows.size() - 1; i >= 0; --i) {
-			Row row = mRows.get(i);
-
-
-			// If row shall fill height, give it the extra height
-			if (row.shallFillHeight()) {
-				float fillHeight = getAvailableHeight() - mPrefHeight;
-				fillHeight /= cRowFillHeight;
-				rowSize.y = row.getPrefHeight() + fillHeight;
-			} else {
-				rowSize.y = row.getHeight();
-			}
-
-			row.layout(offset, rowSize);
-			offset.y += rowSize.y;
-		}
-
-		// Update size as the table can be larger if we have fill height/width
-		// enabled
-		super.setWidth(rowSize.x);
-		super.setHeight(offset.y);
-
-
-		Pools.vector2.freeAll(rowSize, position, offset);
-
-		updateBackgroundSize();
-
-		mValidLayout = true;
-	}
-
-	@Override
-	public void setTransform(boolean transform) {
+		// Update sizes of rows and cells
 		for (Row row : mRows) {
-			row.setTransform(transform);
-		}
-	}
-
-	/**
-	 * @return available width of the table
-	 */
-	protected float getAvailableWidth() {
-		if ((getParent() == null || getParent().getParent() == null) && getStage() != null) {
-			return getStage().getWidth();
-		} else {
-			return getWidth();
-		}
-	}
-
-	/**
-	 * @return available height of the table
-	 */
-	protected float getAvailableHeight() {
-		if ((getParent() == null || getParent().getParent() == null) && getStage() != null) {
-			return getStage().getHeight();
-		} else {
-			return getHeight();
-		}
-	}
-
-	/**
-	 * Makes the table keep its size (that was set through #setSize(float,float), #setWidth(float), or
-	 * #setHeight(float)) after the table has been invalidated. I.e. it will not resize the table to fit
-	 * the contents.
-	 * @param keepSize set to true to keep the size of the table. If set to false table will not always be
-	 * the same size as getPrefWidth/Height. If the table's content have been scaled down/up the table size
-	 * will be smaller/larger than the preferred size.
-	 * @return this table for chaining
-	 */
-	public AlignTable setKeepSize(boolean keepSize) {
-		mKeepSize = keepSize;
-		return this;
-	}
-
-	@Override
-	public boolean removeActor(Actor actor) {
-		boolean removed = super.removeActor(actor);
-
-		// Remove the cell the actor was in (not if we're disposing)
-		if (removed && !mDisposing) {
-			Iterator<Row> rowIt = mRows.iterator();
-			while (rowIt.hasNext()) {
-				Row row = rowIt.next();
-
-				row.removeActor(actor);
-
-				if (row.getCellCount() == 0) {
-					rowIt.remove();
-					Pools.row.free(row);
-				}
+			float newRowWidth = row.getWidth();
+			if (row.shallfillWidth()) {
+				newRowWidth = width;
 			}
 
-			layout();
+			float newRowHeight = row.getHeight();
+			if (row.shallFillHeight()) {
+				newRowHeight += extraHeightPerFillHeightRow;
+			}
+
+			row.updateSize(newRowWidth, newRowHeight);
 		}
 
-		return removed;
+		if (!mKeepWidth) {
+			setWidthSilent(width);
+		}
+		if (!mKeepHeight && cRowFillHeight > 0) {
+			setHeightSilent(height);
+		}
+
+		mValidCellSizes = true;
 	}
 
 	/**
 	 * Recalculates the preferred width and height
 	 */
-	private void calculateSize() {
+	void calculateSize() {
 		mPrefHeight = 0;
 		mPrefWidth = 0;
 		mMinHeight = 0;
@@ -592,11 +542,217 @@ public class AlignTable extends WidgetGroup implements Disposable {
 		}
 
 		// Change size of table to fit the content
-		if (!mKeepSize) {
-			super.setWidth(width);
-			super.setHeight(height);
+		if (!mKeepWidth) {
+			setWidthSilent(width);
+		}
+		if (!mKeepHeight) {
+			setHeightSilent(height);
 		}
 	}
+
+	@Override
+	public void layout() {
+		if (!mValidCellSizes) {
+			calculateSize();
+			updateSize(-1, -1);
+		}
+
+		float rowHeight = 0;
+		float rowWidth = 0;
+		int cRowFillHeight = 0;
+		boolean rowFillWidth = false;
+		for (Row row : mRows) {
+			rowHeight += row.getHeight();
+			if (row.getWidth() > rowWidth) {
+				rowWidth = row.getWidth();
+			}
+
+			if (row.shallFillHeight()) {
+				cRowFillHeight++;
+			}
+			if (row.shallfillWidth()) {
+				rowFillWidth = true;
+			}
+		}
+
+		Vector2 position = Pools.vector2.obtain();
+
+
+		// Set custom position if we don't have any table parent
+		// Horizontal offset
+		// If fill row, the x offset will always be the margin
+		if (rowFillWidth) {
+			position.x = mMargin.left;
+		}
+		// Calculate offset depending on alignment
+		else {
+			if (mTableAlign.horizontal == Horizontal.LEFT) {
+				position.x = mMargin.left;
+			} else if (mTableAlign.horizontal == Horizontal.RIGHT) {
+				position.x = getAvailableWidth() - rowWidth;
+			} else if (mTableAlign.horizontal == Horizontal.CENTER) {
+				position.x = getAvailableWidth() * 0.5f - rowWidth * 0.5f;
+			}
+		}
+
+		// Vertical
+		// If fill height, the y offset will always be margin bottom
+		if (cRowFillHeight > 0) {
+			position.y = mMargin.bottom;
+		}
+		// Calculate offset depending on alignment
+		else {
+			if (mTableAlign.vertical == Vertical.BOTTOM) {
+				position.y = mMargin.bottom;
+			} else if (mTableAlign.vertical == Vertical.TOP) {
+				position.y = getAvailableHeight() - rowHeight;
+			} else if (mTableAlign.vertical == Vertical.MIDDLE) {
+				position.y = getAvailableHeight() * 0.5f - rowHeight * 0.5f;
+			}
+		}
+
+		//		if (getParent() instanceof AlignTable) {
+		//			position.x = getX() - position.x;
+		//		}
+
+		setPosition((int)position.x, (int)position.y);
+
+		Vector2 offset = Pools.vector2.obtain();
+		offset.set(0,0);
+
+		// Layout the rows
+		// REMOVE row size has already been calculated and set correctly
+		Vector2 rowSize = Pools.vector2.obtain();
+		if (rowFillWidth) {
+			rowSize.x = getAvailableWidth();
+		} else {
+			rowSize.x = rowWidth < mPrefWidth ? rowWidth : mPrefWidth;
+		}
+		for (int i = mRows.size() - 1; i >= 0; --i) {
+			Row row = mRows.get(i);
+
+			// REMOVE row size has already been calculated and set correctly
+			// If row shall fill height, give it the extra height
+			if (row.shallFillHeight()) {
+				float fillHeight = getAvailableHeight() - mPrefHeight;
+				fillHeight /= cRowFillHeight;
+				rowSize.y = row.getPrefHeight() + fillHeight;
+			} else {
+				rowSize.y = row.getHeight();
+			}
+
+			row.layout(offset, rowSize);
+			offset.y += rowSize.y;
+		}
+
+
+		Pools.vector2.freeAll(rowSize, position, offset);
+
+		updateBackgroundSize();
+
+		mValidLayout = true;
+	}
+
+	@Override
+	public void setTransform(boolean transform) {
+		for (Row row : mRows) {
+			row.setTransform(transform);
+		}
+	}
+
+	/**
+	 * @return available width of the table
+	 */
+	protected float getAvailableWidth() {
+		float availableWidth = 0;
+		if ((getParent() == null || getParent().getParent() == null) && getStage() != null) {
+			availableWidth = getStage().getWidth();
+		} else {
+			availableWidth = getWidth();
+		}
+		availableWidth -= (mMargin.left + mMargin.right);
+		return availableWidth;
+	}
+
+	/**
+	 * @return available height of the table
+	 */
+	protected float getAvailableHeight() {
+		float availableHeight = 0;
+		if ((getParent() == null || getParent().getParent() == null) && getStage() != null) {
+			availableHeight = getStage().getHeight();
+		} else {
+			availableHeight = getHeight();
+		}
+		availableHeight -= (mMargin.top + mMargin.bottom);
+		return availableHeight;
+	}
+
+	/**
+	 * Makes the table keep its size (that was set through #setSize(float,float), #setWidth(float), or
+	 * #setHeight(float)) after the table has been invalidated. I.e. it will not resize the table to fit
+	 * the contents.
+	 * @param keepSize set to true to keep the size of the table. If set to false table will not always be
+	 * the same size as getPrefWidth/Height.
+	 * @return this table for chaining
+	 * @see #setKeepWidth(boolean)
+	 * @see #setKeepHeight(boolean)
+	 */
+	public AlignTable setKeepSize(boolean keepSize) {
+		setKeepWidth(keepSize);
+		setKeepHeight(keepSize);
+		return this;
+	}
+
+	/**
+	 * Makes the table keep its width (that was set through #setSize(float,float) or #setWidth(float) after the table has been invalidated. I.e. it will not resize the table to fit
+	 * the contents.
+	 * @param keepWidth set to true to keep the width of the table. If set to false table will not always be
+	 * the same size as getPrefWidth().
+	 * @return this table for chaining
+	 */
+	public AlignTable setKeepWidth(boolean keepWidth) {
+		mKeepWidth = keepWidth;
+		return this;
+	}
+
+	/**
+	 * Makes the table keep its height (that was set through #setSize(float,float) or #setHeight(float) after the table has been invalidated. I.e. it will not resize the table to fit
+	 * the contents.
+	 * @param keepHeight set to true to keep the height of the table. If set to false table will not always be
+	 * the same size as getPrefHeight().
+	 * @return this table for chaining
+	 */
+	public AlignTable setKeepHeight(boolean keepHeight) {
+		mKeepHeight = keepHeight;
+		return this;
+	}
+
+	@Override
+	public boolean removeActor(Actor actor) {
+		boolean removed = super.removeActor(actor);
+
+		// Remove the cell the actor was in (not if we're disposing)
+		if (removed && !mDisposing) {
+			Iterator<Row> rowIt = mRows.iterator();
+			while (rowIt.hasNext()) {
+				Row row = rowIt.next();
+
+				row.removeActor(actor);
+
+				if (row.getCellCount() == 0) {
+					rowIt.remove();
+					Pools.row.free(row);
+				}
+			}
+
+			layout();
+		}
+
+		return removed;
+	}
+
+
 
 	/**
 	 * Set a background image of the table
@@ -627,6 +783,8 @@ public class AlignTable extends WidgetGroup implements Disposable {
 
 	/** Background image */
 	private Image mBackground = null;
+	/** Valid cell sizes */
+	private boolean mValidCellSizes = true;
 	/** Layout is valid, false if the table needs to call layout() */
 	private boolean mValidLayout = true;
 	/** All the rows of the table */
@@ -643,12 +801,21 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	private float mMinWidth = 0;
 	/** Minimum height, equals all non-scalable cells' height */
 	private float mMinHeight = 0;
-	/** If the table shall keep size after layout, or it shall resize itself */
-	private boolean mKeepSize = false;
+	/** True if the table shall keep it's width after layout, false if it shall resize itself */
+	private boolean mKeepWidth = false;
+	/** True if the table shall keep it's height after layout, false if it shall resize itself */
+	private boolean mKeepHeight = false;
 	/** If we're currently disposing */
 	private boolean mDisposing = false;
 	/** Default cell padding */
 	private Padding mCellPaddingDefault = new Padding();
 	/** Default row padding */
 	private Padding mRowPaddingDefault = new Padding();
+	/** Margin for this table */
+	private Padding mMargin = new Padding();
+	/** Private accessor to width */
+	private Field mfWidth = null;
+	/** Private accessor to height */
+	private Field mfHeight = null;
+
 }

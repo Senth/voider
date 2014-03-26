@@ -40,8 +40,8 @@ public class MessageShower {
 		mWindow.setWidth(mWidth);
 		mWindow.add(mAlignTable);
 		mAlignTable.setAlign(Horizontal.LEFT, Vertical.TOP);
-		float windowPadding = skin.get(SkinNames.General.PADDING_WINDOW_LEFT_RIGHT.toString(), Float.class);
-		mAlignTable.setRowPaddingDefault(0, windowPadding, windowPadding, windowPadding);
+		float windowPadding = skin.get(SkinNames.GeneralVars.PADDING_WINDOW_LEFT_RIGHT.toString(), Float.class);
+		mAlignTable.setPaddingRowDefault(0, windowPadding, windowPadding, windowPadding);
 		mStage = stage;
 	}
 

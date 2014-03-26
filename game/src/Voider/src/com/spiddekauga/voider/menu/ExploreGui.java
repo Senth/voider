@@ -57,6 +57,7 @@ public class ExploreGui extends Gui {
 
 		mWidgets = new Widgets();
 
+		initRightPanel();
 		initViewButtons();
 		initSort();
 		initSearchBar();
@@ -72,8 +73,8 @@ public class ExploreGui extends Gui {
 	 * Initializes the top bar
 	 */
 	private void initTopBar() {
-		mWidgets.topBar = new Background((Color) SkinNames.getResource(SkinNames.General.WIDGET_BACKGROUND_COLOR));
-		mWidgets.topBar.setHeight((Float) SkinNames.getResource(SkinNames.General.BAR_UPPER_LOWER_HEIGHT));
+		mWidgets.topBar = new Background((Color) SkinNames.getResource(SkinNames.GeneralVars.BAR_UPPER_LOWER_COLOR));
+		mWidgets.topBar.setHeight((Float) SkinNames.getResource(SkinNames.GeneralVars.BAR_UPPER_LOWER_HEIGHT));
 		mWidgets.topBar.setWidth(Gdx.graphics.getWidth());
 		getStage().addActor(mWidgets.topBar);
 		mWidgets.topBar.setZIndex(0);
@@ -141,11 +142,11 @@ public class ExploreGui extends Gui {
 	 * Initializes sort buttons
 	 */
 	private void initSort() {
-		float paddingSeparator = SkinNames.getResource(SkinNames.General.PADDING_SEPARATOR);
+		float paddingSeparator = SkinNames.getResource(SkinNames.GeneralVars.PADDING_SEPARATOR);
 
 		AlignTable table = mWidgets.sort.table;
 		table.dispose(true);
-		table.setCellPaddingDefault(0, 0, 0, paddingSeparator);
+		table.setPaddingCellDefault(0, 0, 0, paddingSeparator);
 		table.setAlign(Horizontal.RIGHT, Vertical.TOP);
 		mWidgets.view.sortHider.addToggleActor(table);
 		getStage().addActor(table);
@@ -205,18 +206,37 @@ public class ExploreGui extends Gui {
 	}
 
 	/**
+	 * Initialize the right panel
+	 */
+	private void initRightPanel() {
+		float topBottomMargin = SkinNames.getResource(SkinNames.GeneralVars.BAR_UPPER_LOWER_HEIGHT);
+		topBottomMargin += (Float) SkinNames.getResource(SkinNames.GeneralVars.PADDING_BELOW_ABOVE_BAR);
+
+		AlignTable table = mWidgets.rightPanel;
+		table.setMargin(topBottomMargin, 0, topBottomMargin, 0);
+		table.setAlign(Horizontal.RIGHT, Vertical.TOP);
+		table.setName("right-panel");
+		getStage().addActor(table);
+	}
+
+	/**
 	 * Initializes info panel
 	 */
 	private void initInfo() {
 		LabelStyle labelStyle = SkinNames.getResource(SkinNames.General.LABEL_DEFAULT);
 		Skin generalSkin = ResourceCacheFacade.get(InternalNames.UI_GENERAL);
-		Color widgetBackgroundColor = SkinNames.getResource(SkinNames.General.WIDGET_BACKGROUND_COLOR);
+		Color widgetBackgroundColor = SkinNames.getResource(SkinNames.GeneralVars.WIDGET_BACKGROUND_COLOR);
 
+
+		float infoWidth = SkinNames.getResource(SkinNames.GeneralVars.INFO_BAR_WIDTH);
 		AlignTable table = mWidgets.info.table;
 		table.setAlignTable(Horizontal.RIGHT, Vertical.TOP);
 		table.setAlignRow(Horizontal.LEFT, Vertical.TOP);
 		table.setBackgroundImage(new Background(widgetBackgroundColor));
-		getStage().addActor(table);
+		table.setKeepWidth(true).setWidth(infoWidth);
+		table.setName("info-table");
+		mWidgets.rightPanel.row().setFillHeight(true);
+		mWidgets.rightPanel.add(table).setFillHeight(true);
 
 
 		// Name
@@ -232,6 +252,7 @@ public class ExploreGui extends Gui {
 		Drawable emptyStar = generalSkin.getDrawable(SkinNames.General.STUB.toString());
 		RatingWidget rating = new RatingWidget(filledStar, emptyStar, 5, Touchable.disabled);
 		mWidgets.info.rating = rating;
+		rating.setName("rating");
 		table.row(Horizontal.CENTER, Vertical.TOP);
 		table.add(rating);
 
@@ -321,8 +342,8 @@ public class ExploreGui extends Gui {
 		mWidgets.info.tags = label;
 		table.add(label);
 
-		table.row().setFillHeight(true);
-		table.add().setFillHeight(true);
+		table.row().setFillHeight(true).setFillWidth(true);
+		table.add().setFillHeight(true).setFillWidth(true);
 	}
 
 	/**
@@ -372,6 +393,7 @@ public class ExploreGui extends Gui {
 		Action action = new Action();
 		Level level = new Level();
 		Background topBar = null;
+		AlignTable rightPanel = new AlignTable();
 
 		private static class View {
 			Button sort = null;

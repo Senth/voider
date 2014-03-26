@@ -101,7 +101,6 @@ public class RatingWidget extends WidgetGroup implements Disposable {
 				mStars[i].setDrawable(mEmptyStar);
 			}
 		}
-		mTable.invalidateHierarchy();
 	}
 
 	@Override
@@ -155,6 +154,51 @@ public class RatingWidget extends WidgetGroup implements Disposable {
 		for (IRatingListener ratingListener : mChangeListeners) {
 			ratingListener.onRatingChange(mRatingCurrent);
 		}
+	}
+
+	@Override
+	public void layout() {
+		mTable.layout();
+	}
+
+	@Override
+	public float getHeight() {
+		return mTable.getHeight();
+	}
+
+	@Override
+	public float getWidth() {
+		return mTable.getWidth();
+	}
+
+	@Override
+	public float getMinWidth() {
+		return mTable.getMinWidth();
+	}
+
+	@Override
+	public float getMinHeight() {
+		return mTable.getMinHeight();
+	}
+
+	@Override
+	public float getPrefWidth() {
+		return mTable.getPrefWidth();
+	}
+
+	@Override
+	public float getPrefHeight() {
+		return mTable.getPrefHeight();
+	}
+
+	@Override
+	public float getMaxWidth() {
+		return mTable.getMaxWidth();
+	}
+
+	@Override
+	public float getMaxHeight() {
+		return mTable.getMaxHeight();
 	}
 
 	/**

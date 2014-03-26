@@ -354,6 +354,58 @@ public class Row implements Poolable {
 	}
 
 	/**
+	 * Update row and cell sizes
+	 * @param width new width of the row
+	 * @param height new height of the row
+	 */
+	void updateSize(float width, float height) {
+		boolean changedSize = false;
+		if (width != mWidth) {
+			mWidth = width;
+			changedSize = true;
+		}
+
+		if (height != mHeight) {
+			mHeight = height;
+			changedSize = true;
+		}
+
+
+		if (changedSize) {
+			// Calculate total cell width
+			float cellWidthTotal = 0;
+			float cCellFillWidth = 0;
+			for (Cell cell : mCells) {
+				cellWidthTotal += cell.getWidth();
+
+				if (cell.shallfillWidth()) {
+					cCellFillWidth++;
+				}
+			}
+
+			float extraWidthPerFillWidthCell = 0;
+			if (cCellFillWidth > 0) {
+				extraWidthPerFillWidthCell = (mWidth - cellWidthTotal) / cCellFillWidth;
+			}
+
+			// Update cell sizes
+			for (Cell cell : mCells) {
+				float newCellWidth = cell.getWidth();
+				if (cell.shallfillWidth()) {
+					newCellWidth += extraWidthPerFillWidthCell;
+				}
+
+				float newCellHeight = cell.getHeight();
+				if (cell.shallFillHeight()) {
+					newCellHeight = mHeight;
+				}
+
+				cell.updateSize(newCellWidth, newCellHeight);
+			}
+		}
+	}
+
+	/**
 	 * Call this to layout the row.
 	 * @param startPos starting position of the row
 	 * @param size available size for this row
@@ -411,6 +463,7 @@ public class Row implements Poolable {
 			for (Cell cell : mCells) {
 				if (cell.isVisible()) {
 
+					// REMOVE row width has already been calculated and set correctly
 					// If this cell shall fill the width, add extra width to the cell
 					if (cell.shallfillWidth()) {
 						float fillWidth = size.x - getPrefWidth();

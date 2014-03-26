@@ -4,26 +4,30 @@ com.badlogic.gdx.graphics.g2d.BitmapFont: {
 },
 
 com.badlogic.gdx.graphics.Color: {
-	bar_upper_lower_color: { r: 0.9, g: 0.9, b: 0.9, a: 1 },
-	widget_background_color: { r: 0.4, g: 0.4, b: 0.4, a: 1},
+	bar_upper_lower_color: { r: 0.4, g: 0.4, b: 0.4, a: 1 },
+	widget_background_color: { r: 0.4, g: 0.4, b: 0.4, a: 1 },
 	green: { a: 1, b: 0, g: 1, r: 0 },
 	white: { a: 1, b: 1, g: 1, r: 1 },
 	red: { a: 1, b: 0, g: 0, r: 1 },
-	black: { a: 1, b: 0, g: 0, r: 0 }
+	black: { a: 1, b: 0, g: 0, r: 0 },
 },
 
 java.lang.Float: {
 	bar_upper_lower_height: {value: 32},
+	info_bar_width: {value: 250},
 	padding_default: {value: 1},
 	padding_window_left_right: {value: 8},
 	padding_separator: {value: 32},
 	padding_after_label: {value: 8},
+	padding_below_above_bar: {value: 8},
 	text_field_number_width: {value: 64},
+	wait_window_fade_in: {value: 0.2},
+	wait_window_fade_out: {value: 0.6},
+	load_actor_size_max: {value: 80},
+	
 	select_def_info_width: {value: 240},
 	select_def_text_width_max: {value: 160},
 	select_def_image_width_max: {value: 80},
-	wait_window_fade_in: {value: 0.2},
-	wait_window_fade_out: {value: 0.6},
 },
 
 com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {

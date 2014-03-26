@@ -40,7 +40,7 @@ public class LoginGui extends Gui {
 
 		mMainTable.setFillParent(true);
 		mMainTable.setAlign(Horizontal.CENTER, Vertical.MIDDLE);
-		mMainTable.setCellPaddingDefault((Float) SkinNames.getResource(SkinNames.General.PADDING_DEFAULT));
+		mMainTable.setPaddingCellDefault((Float) SkinNames.getResource(SkinNames.GeneralVars.PADDING_DEFAULT));
 		mWidgets.login.table.setPreferences(mMainTable);
 		mWidgets.login.table.setAlignRow(Horizontal.LEFT, Vertical.MIDDLE);
 		mWidgets.register.table.setPreferences(mMainTable);
@@ -127,7 +127,7 @@ public class LoginGui extends Gui {
 
 		mWidgets.login.table.layout();
 
-		float windowPadding = SkinNames.getResource(SkinNames.General.PADDING_WINDOW_LEFT_RIGHT);
+		float windowPadding = SkinNames.getResource(SkinNames.GeneralVars.PADDING_WINDOW_LEFT_RIGHT);
 		mWidgets.login.window = new Window("", skin, SkinNames.General.WINDOW_NO_TITLE.toString());
 		mWidgets.login.window.add(mWidgets.login.table).pad(windowPadding);
 		mMainTable.add(mWidgets.login.window);
@@ -336,7 +336,7 @@ public class LoginGui extends Gui {
 
 		mWidgets.register.table.layout();
 
-		float windowPadding = SkinNames.getResource(SkinNames.General.PADDING_WINDOW_LEFT_RIGHT);
+		float windowPadding = SkinNames.getResource(SkinNames.GeneralVars.PADDING_WINDOW_LEFT_RIGHT);
 		mWidgets.register.window = new Window("", skin, SkinNames.General.WINDOW_NO_TITLE.toString());
 		mWidgets.register.window.add(mWidgets.register.table).pad(windowPadding);
 		mMainTable.add(mWidgets.register.window);

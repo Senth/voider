@@ -231,14 +231,14 @@ public class SkinNames {
 	 * Editor variables
 	 */
 	public enum EditorVars implements ISkinNames {
+		/** Enemy will be activated when test running from here, line color */
+		ENEMY_ACTIVATE_ON_TEST_RUN_OUTLINE_COLOR(Color.class),
+		/** Line width of outline color when the enemy will be activated */
+		ENEMY_ACTIVATE_ON_TEST_RUN_OUTLINE_WIDTH(Float.class),
 		/** Color of line between enemy and activate trigger */
 		ENEMY_ACTIVATE_TRIGGER_LINE_COLOR(Color.class),
 		/** Color of line between enemy and deactivate trigger */
 		ENEMY_DEACTIVATE_TRIGGER_LINE_COLOR(Color.class),
-		/** Enemy will be activated when test running from here, line color */
-		ENEMY_WILL_ACTIVATE_ON_TEST_RUN_COLOR(Color.class),
-		/** Line width of outline color when the enemy will be activated */
-		ENEMY_WILL_ACTIVATE_ON_TEST_RUN_LINE_WIDTH(Float.class),
 		/** Grid color */
 		GRID_COLOR(Color.class),
 		/** Grid milestone color */
@@ -246,9 +246,15 @@ public class SkinNames {
 		/** Color above and below the level in the editor */
 		LEVEL_ABOVE_BELOW_COLOR(Color.class),
 		/** Padding between editor menu and tools */
-		PADDING_BETWEEN_EDITOR_MENU_AND_TOOLS(Float.class),
-		/** Padding between file menu and and options table */
-		PADDING_BETWEEN_FILE_MENU_AND_OPTIONS(Float.class),
+		PADDING_BETWEEN_BAR_AND_TOOLS(Float.class),
+		/** Width of text fields containing only numbers */
+		TEXT_FIELD_NUMBER_WIDTH(Float.class),
+		/** Wait window fade in time */
+		WAIT_WINDOW_FADE_IN(Float.class),
+		/** Wait window fade out time */
+		WAIT_WINDOW_FADE_OUT(Float.class),
+		/** Background color for various widgets */
+		WIDGET_BACKGROUND_COLOR(Color.class),
 
 		;
 
@@ -292,7 +298,6 @@ public class SkinNames {
 		/** Health bar for the game */
 		HEALTH_BAR(SliderStyle.class),
 
-
 		;
 
 		/**
@@ -329,13 +334,87 @@ public class SkinNames {
 	}
 
 	/**
+	 * General variables
+	 */
+	public enum GeneralVars implements ISkinNames {
+		/** Color of upper and lower bars */
+		BAR_UPPER_LOWER_COLOR(Color.class),
+		/** Upper and lower bar height */
+		BAR_UPPER_LOWER_HEIGHT(Float.class),
+		/** Maximum text width for select def scenes */
+		LOAD_ACTOR_SIZE_MAX(Float.class),
+		/** Padding after label */
+		PADDING_AFTER_LABEL(Float.class),
+		/** Default padding for rows and cells */
+		PADDING_DEFAULT(Float.class),
+		/** Separator padding */
+		PADDING_SEPARATOR(Float.class),
+		/** Left and right window padding */
+		PADDING_WINDOW_LEFT_RIGHT(Float.class),
+		/** Padding above or below the upper or lower bar */
+		PADDING_BELOW_ABOVE_BAR(Float.class),
+		/** Background colors for widgets */
+		WIDGET_BACKGROUND_COLOR(Color.class),
+		/** Info widget in explore and loading screen width */
+		INFO_BAR_WIDTH(Float.class),
+		/** Second of fade in for the wait window */
+		WAIT_WINDOW_FADE_IN(Float.class),
+		/** Seconds of fade out for the wait window */
+		WAIT_WINDOW_FADE_OUT(Float.class),
+		/** Width of text fields with numbers in them */
+		TEXT_FIELD_NUMBER_WIDTH(Float.class),
+
+		;
+
+		/**
+		 * Creates a more user-friendly name for the enumeration
+		 * @param type the class type
+		 */
+		private GeneralVars(Class<?> type) {
+			mType = type;
+			mName = super.toString().toLowerCase();
+		}
+
+		/**
+		 * Create a custom name for the enumeration
+		 * @param type the class type
+		 * @param jsonName name in the json-file
+		 */
+		private GeneralVars(Class<?> type, String jsonName) {
+			mType = type;
+			mName = jsonName;
+		}
+
+		@Override
+		public Class<?> getClassType() {
+			return mType;
+		}
+
+		@Override
+		public InternalNames getSkinName() {
+			return InternalNames.UI_GENERAL;
+		}
+
+		/**
+		 * @return name of the icon inside the skin
+		 */
+		@Override
+		public String toString() {
+			return mName;
+		}
+
+		/** skin name of the icon */
+		private String mName;
+		/** Class type */
+		private Class<?> mType;
+	}
+
+	/**
 	 * General UI elements
 	 */
 	public enum General implements ISkinNames {
 		/** Wait animation texture */
 		ANIMATION_WAIT(AnimationWidgetStyle.class, "wait"),
-		/** Upper and lower bar height */
-		BAR_UPPER_LOWER_HEIGHT(Float.class),
 		/** Check box that uses check boxes */
 		CHECK_BOX_DEFAULT(CheckBoxStyle.class, "default"),
 		/** Check box that uses the radio button style */
@@ -368,14 +447,6 @@ public class SkinNames {
 		LOGOUT(ImageButtonStyle.class),
 		/** Options button on front screen */
 		OPTIONS(ImageButtonStyle.class),
-		/** Padding after label */
-		PADDING_AFTER_LABEL(Float.class),
-		/** Default padding for rows and cells */
-		PADDING_DEFAULT(Float.class),
-		/** Separator padding */
-		PADDING_SEPARATOR(Float.class),
-		/** Left and right window padding */
-		PADDING_WINDOW_LEFT_RIGHT(Float.class),
 		/** Play button */
 		PLAY(ImageButtonStyle.class),
 		/** Scroll pane default, no background */
@@ -384,12 +455,6 @@ public class SkinNames {
 		SCROLL_PANE_WINDOW_BACKGROUND(ScrollPaneStyle.class, "background"),
 		/** Select box default */
 		SELECT_BOX_DEFAULT(SelectBoxStyle.class, "default"),
-		/** Maximum image width for select def scenes */
-		SELECT_DEF_IMAGE_WIDTH_MAX(Float.class),
-		/** Select Def info width */
-		SELECT_DEF_INFO_WIDTH(Float.class),
-		/** Maximum text width for select def scenes */
-		SELECT_DEF_TEXT_WIDTH_MAX(Float.class),
 		/** Slider default */
 		SLIDER_DEFAULT(SliderStyle.class, "default"),
 		/** Loading bar slider */
@@ -404,14 +469,6 @@ public class SkinNames {
 		TEXT_BUTTON_TOGGLE(TextButtonStyle.class, "toggle"),
 		/** Text field default */
 		TEXT_FIELD_DEFAULT(TextFieldStyle.class, "default"),
-		/** Width of text fields containing only numbers */
-		TEXT_FIELD_NUMBER_WIDTH(Float.class),
-		/** Wait window fade in time */
-		WAIT_WINDOW_FADE_IN(Float.class),
-		/** Wait window fade out time */
-		WAIT_WINDOW_FADE_OUT(Float.class),
-		/** Background color for various widgets */
-		WIDGET_BACKGROUND_COLOR(Color.class),
 		/** Window default style without title */
 		WINDOW_DEFAULT(WindowStyle.class, "default"),
 		/** Modal window with no title */

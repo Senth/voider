@@ -146,10 +146,10 @@ public abstract class EditorGui extends Gui {
 		mStyles.scrollPane.windowBackground = SkinNames.getResource(SkinNames.General.SCROLL_PANE_WINDOW_BACKGROUND);
 
 		// Vars
-		mStyles.vars.paddingDefault = SkinNames.getResource(SkinNames.General.PADDING_DEFAULT);
-		mStyles.vars.paddingSeparator = SkinNames.getResource(SkinNames.General.PADDING_SEPARATOR);
-		mStyles.vars.paddingAfterLabel = SkinNames.getResource(SkinNames.General.PADDING_AFTER_LABEL);
-		mStyles.vars.textFieldNumberWidth = SkinNames.getResource(SkinNames.General.TEXT_FIELD_NUMBER_WIDTH);
+		mStyles.vars.paddingDefault = SkinNames.getResource(SkinNames.GeneralVars.PADDING_DEFAULT);
+		mStyles.vars.paddingSeparator = SkinNames.getResource(SkinNames.GeneralVars.PADDING_SEPARATOR);
+		mStyles.vars.paddingAfterLabel = SkinNames.getResource(SkinNames.GeneralVars.PADDING_AFTER_LABEL);
+		mStyles.vars.textFieldNumberWidth = SkinNames.getResource(SkinNames.GeneralVars.TEXT_FIELD_NUMBER_WIDTH);
 	}
 
 	@Override
@@ -552,7 +552,7 @@ public abstract class EditorGui extends Gui {
 		msgBox.setTitle("Publish");
 
 		AlignTable content = new AlignTable();
-		content.setCellPaddingDefault(mStyles.vars.paddingDefault);
+		content.setPaddingCellDefault(mStyles.vars.paddingDefault);
 
 		com.spiddekauga.utils.scene.ui.Label label = new com.spiddekauga.utils.scene.ui.Label("", mStyles.label.highlight);
 
@@ -569,7 +569,7 @@ public abstract class EditorGui extends Gui {
 		// Add external dependencies
 		content.row();
 		AlignTable depTable = new AlignTable();
-		depTable.setCellPaddingDefault(mStyles.vars.paddingDefault);
+		depTable.setPaddingCellDefault(mStyles.vars.paddingDefault);
 		depTable.setAlignTable(Horizontal.CENTER, Vertical.MIDDLE);
 		depTable.setAlignRow(Horizontal.LEFT, Vertical.MIDDLE);
 		ArrayList<Def> dependencies = mEditor.getNonPublishedDependencies();
@@ -779,7 +779,7 @@ public abstract class EditorGui extends Gui {
 	 */
 	protected float getEditorMenuTopPadding() {
 		mEditorMenu.layout();
-		return mEditorMenu.getHeight() + (Float) SkinNames.getResource(SkinNames.EditorVars.PADDING_BETWEEN_EDITOR_MENU_AND_TOOLS);
+		return mEditorMenu.getHeight() + (Float) SkinNames.getResource(SkinNames.EditorVars.PADDING_BETWEEN_BAR_AND_TOOLS);
 	}
 
 	/**
@@ -788,7 +788,7 @@ public abstract class EditorGui extends Gui {
 	 */
 	protected float getFileMenuTopPadding() {
 		mFileMenu.layout();
-		return mFileMenu.getHeight() + (Float) SkinNames.getResource(SkinNames.EditorVars.PADDING_BETWEEN_FILE_MENU_AND_OPTIONS);
+		return mFileMenu.getHeight() + (Float) SkinNames.getResource(SkinNames.GeneralVars.PADDING_BELOW_ABOVE_BAR);
 	}
 
 	/**

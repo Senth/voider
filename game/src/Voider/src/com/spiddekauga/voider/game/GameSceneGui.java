@@ -38,7 +38,6 @@ class GameSceneGui extends Gui {
 		getStage().addActor(mOptionBar);
 
 		mMainTable.setAlign(Horizontal.RIGHT, Vertical.TOP);
-		mMainTable.setCellPaddingDefault((Float)SkinNames.getResource(SkinNames.General.PADDING_DEFAULT));
 
 		if (!mGameScene.isPlayerInvulnerable()) {
 			initHealthBar();
@@ -80,8 +79,8 @@ class GameSceneGui extends Gui {
 		mOptionBar.add(button);
 
 		// Set bar background
-		Background background = new Background((Color) SkinNames.getResource(SkinNames.General.WIDGET_BACKGROUND_COLOR));
-		float height = SkinNames.getResource(SkinNames.General.BAR_UPPER_LOWER_HEIGHT);
+		Background background = new Background((Color) SkinNames.getResource(SkinNames.GeneralVars.BAR_UPPER_LOWER_COLOR));
+		float height = SkinNames.getResource(SkinNames.GeneralVars.BAR_UPPER_LOWER_HEIGHT);
 		background.setSize(Gdx.graphics.getWidth(), height);
 		background.setPosition(0, Gdx.graphics.getHeight() - height);
 		getStage().addActor(background);
@@ -110,7 +109,7 @@ class GameSceneGui extends Gui {
 
 		// Score
 		Label label = new Label("Score: ", labelStyle);
-		mMainTable.add(label).setPadRight((Float)SkinNames.getResource(SkinNames.General.PADDING_SEPARATOR));
+		mMainTable.add(label).setPadRight((Float)SkinNames.getResource(SkinNames.GeneralVars.PADDING_SEPARATOR));
 
 		label = new Label("", labelStyle);
 		label.setZIndex(8);

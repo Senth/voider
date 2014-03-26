@@ -141,7 +141,7 @@ public class SelectDefGui extends Gui {
 	 * Initializes info panel to the right
 	 */
 	private void initInfoPanel() {
-		float panelWidth = (Float)SkinNames.getResource(SkinNames.General.SELECT_DEF_INFO_WIDTH);
+		float panelWidth = (Float)SkinNames.getResource(SkinNames.GeneralVars.INFO_BAR_WIDTH);
 		mMainTable.add(mInfoPanel).setFillHeight(true).setWidth(panelWidth);
 		mInfoPanelHider.addToggleActor(mInfoPanel);
 
@@ -263,8 +263,8 @@ public class SelectDefGui extends Gui {
 			floatPerRow = Gdx.graphics.getWidth() - Config.Level.SAVE_TEXTURE_WIDTH;
 			floatPerRow /= Config.Level.SAVE_TEXTURE_WIDTH;
 		} else {
-			floatPerRow = (Gdx.graphics.getWidth() - (Float)SkinNames.getResource(SkinNames.General.SELECT_DEF_INFO_WIDTH));
-			floatPerRow /= (Float)SkinNames.getResource(SkinNames.General.SELECT_DEF_IMAGE_WIDTH_MAX);
+			floatPerRow = (Gdx.graphics.getWidth() - (Float)SkinNames.getResource(SkinNames.GeneralVars.INFO_BAR_WIDTH));
+			floatPerRow /= (Float)SkinNames.getResource(SkinNames.GeneralVars.LOAD_ACTOR_SIZE_MAX);
 		}
 
 		floatPerRow += 0.5f;

@@ -30,7 +30,7 @@ public class BulletEditorGui extends ActorGui {
 	public void initGui() {
 		super.initGui();
 
-		mMainTable.setCellPaddingDefault(mStyles.vars.paddingDefault);
+		mMainTable.setPaddingCellDefault(mStyles.vars.paddingDefault);
 		mWeaponTable.setPreferences(mMainTable);
 
 		initWeapon();

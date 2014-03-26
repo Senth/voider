@@ -391,6 +391,42 @@ public class Cell implements Poolable {
 	}
 
 	/**
+	 * Updates the size of the cell. Used when setting size depending for fill
+	 * width or height. This does not set it as fixed, in fact it will not update
+	 * the size if the cell is set as fixed.
+	 * @param width new width of the cell
+	 * @param height new height of the cell
+	 */
+	void updateSize(float width, float height) {
+		if (!mFixedSize && mActor != null) {
+			float actorWidth = width - getPadLeft() - getPadRight();
+			float actorHeight = height - getPadBottom() - getPadTop();
+
+			if (mActor instanceof AlignTable) {
+				((AlignTable) mActor).updateSize(actorWidth, actorHeight);
+			} else {
+				setSize(actorWidth, actorHeight);
+
+				if (mActor instanceof Layout) {
+					((Layout) mActor).invalidate();
+				}
+
+				if (mBoxShape && !mFillWidth && !mFillHeight) {
+					mWidthBeforeFill = mActor.getWidth();
+					mHeightBeforeFill = mActor.getHeight();
+
+					if (mActor.getWidth() < mActor.getHeight()) {
+						mActor.setWidth(mActor.getHeight());
+					} else if (mActor.getHeight() < mActor.getWidth()) {
+						mActor.setHeight(mActor.getWidth());
+					}
+				}
+			}
+		}
+	}
+
+
+	/**
 	 * Call this to layout the cell
 	 * @param startPos starting position of the cell
 	 * @param size available size for the cell
@@ -403,40 +439,6 @@ public class Cell implements Poolable {
 		Vector2 offset = Pools.vector2.obtain();
 		offset.set(startPos);
 		offset.x += getPadLeft();
-
-		if (mFillWidth) {
-			mActor.setWidth(size.x - getPadLeft() - getPadRight());
-
-			if (mBoxShape && !mFillHeight) {
-				mActor.setHeight(mActor.getWidth());
-			}
-
-			if (mActor instanceof Layout) {
-				((Layout) mActor).invalidate();
-			}
-		}
-		if (mFillHeight) {
-			mActor.setHeight(size.y - getPadTop() - getPadBottom());
-
-			if (mBoxShape && !mFillWidth) {
-				mActor.setWidth(mActor.getHeight());
-			}
-
-			if (mActor instanceof Layout) {
-				((Layout) mActor).invalidate();
-			}
-		}
-
-		if (mBoxShape && !mFillWidth && !mFillHeight) {
-			mWidthBeforeFill = mActor.getWidth();
-			mHeightBeforeFill = mActor.getHeight();
-
-			if (mActor.getWidth() < mActor.getHeight()) {
-				mActor.setWidth(mActor.getHeight());
-			} else if (mActor.getHeight() < mActor.getWidth()) {
-				mActor.setHeight(mActor.getWidth());
-			}
-		}
 
 		// Horizontal
 		if (mAlign.horizontal == Horizontal.RIGHT) {
@@ -456,6 +458,9 @@ public class Cell implements Poolable {
 
 		mActor.setPosition((int)offset.x, (int)offset.y);
 
+		if (mActor instanceof AlignTable) {
+			((AlignTable) mActor).layout();
+		}
 
 		Pools.vector2.free(offset);
 
@@ -496,7 +501,10 @@ public class Cell implements Poolable {
 			mActor.setHeight(mHeightBeforeFill);
 		}
 
-		if (mActor instanceof Layout) {
+		if (mActor instanceof AlignTable) {
+			((AlignTable)mActor).calculateSize();
+		}
+		else if (mActor instanceof Layout) {
 			((Layout)mActor).validate();
 		}
 	}

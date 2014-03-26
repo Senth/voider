@@ -39,7 +39,7 @@ public class TestUiGui extends Gui {
 		mGeneralSkin = ResourceCacheFacade.get(InternalNames.UI_GENERAL);
 		mGameSkin = ResourceCacheFacade.get(InternalNames.UI_GAME);
 		mMainTable.setAlign(Horizontal.LEFT, Vertical.TOP);
-		mMainTable.setCellPaddingDefault((Float)SkinNames.getResource(SkinNames.General.PADDING_DEFAULT));
+		mMainTable.setPaddingCellDefault((Float)SkinNames.getResource(SkinNames.GeneralVars.PADDING_DEFAULT));
 		mTopRight.setPreferences(mMainTable);
 		mTopRight.setAlign(Horizontal.RIGHT, Vertical.TOP);
 		getStage().addActor(mTopRight);

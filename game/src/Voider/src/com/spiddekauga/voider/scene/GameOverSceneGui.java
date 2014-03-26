@@ -37,7 +37,7 @@ public class GameOverSceneGui extends Gui {
 		super.initGui();
 
 		mMainTable.setAlign(Horizontal.CENTER, Vertical.MIDDLE);
-		mMainTable.setCellPaddingDefault(2, 2, 2, 2);
+		mMainTable.setPaddingCellDefault(2, 2, 2, 2);
 		mMainTable.row().setFillHeight(true);
 
 

@@ -212,12 +212,12 @@ public abstract class Gui implements Disposable {
 		LabelStyle labelStyle = SkinNames.getResource(SkinNames.General.LABEL_DEFAULT);
 		LabelStyle errorStyle = SkinNames.getResource(SkinNames.General.LABEL_ERROR);
 		TextFieldStyle textFieldStyle = SkinNames.getResource(SkinNames.General.TEXT_FIELD_DEFAULT);
-		float padSeparator = SkinNames.getResource(SkinNames.General.PADDING_SEPARATOR);
+		float padSeparator = SkinNames.getResource(SkinNames.GeneralVars.PADDING_SEPARATOR);
 
 		int fieldWidth = (int) (Gdx.graphics.getWidth() * 0.75f);
 
 		AlignTable content = new AlignTable();
-		content.setCellPaddingDefault((Float) SkinNames.getResource(SkinNames.General.PADDING_DEFAULT));
+		content.setPaddingCellDefault((Float) SkinNames.getResource(SkinNames.GeneralVars.PADDING_DEFAULT));
 
 		Label errorLabel = new Label(Messages.Error.BUG_REPORT_INFO, errorStyle);
 		errorLabel.setWidth(fieldWidth);
@@ -303,7 +303,7 @@ public abstract class Gui implements Disposable {
 		int yPosition = (int) ((Gdx.graphics.getHeight() - mWidgets.waitWindow.window.getHeight()) * 0.5f);
 		mWidgets.waitWindow.window.setPosition(xPosition, yPosition);
 
-		float fadeInDuration = (Float) SkinNames.getResource(SkinNames.General.WAIT_WINDOW_FADE_IN);
+		float fadeInDuration = (Float) SkinNames.getResource(SkinNames.GeneralVars.WAIT_WINDOW_FADE_IN);
 		mWidgets.waitWindow.window.addAction(Actions.fadeIn(fadeInDuration, Interpolation.fade));
 	}
 
@@ -324,7 +324,7 @@ public abstract class Gui implements Disposable {
 			return;
 		}
 
-		float fadeOutDuriation = (Float) SkinNames.getResource(SkinNames.General.WAIT_WINDOW_FADE_OUT);
+		float fadeOutDuriation = (Float) SkinNames.getResource(SkinNames.GeneralVars.WAIT_WINDOW_FADE_OUT);
 		mWidgets.waitWindow.window.addAction(Actions.sequence(Actions.fadeOut(fadeOutDuriation, Interpolation.fade), Actions.removeActor()));
 	}
 
@@ -339,7 +339,7 @@ public abstract class Gui implements Disposable {
 		mStage.addActor(mWidgets.progressBar.window);
 		updateProgressBar(0, "");
 
-		float fadeInDuration = (Float) SkinNames.getResource(SkinNames.General.WAIT_WINDOW_FADE_IN);
+		float fadeInDuration = (Float) SkinNames.getResource(SkinNames.GeneralVars.WAIT_WINDOW_FADE_IN);
 		mWidgets.progressBar.window.addAction(Actions.fadeIn(fadeInDuration, Interpolation.fade));
 	}
 
@@ -351,7 +351,7 @@ public abstract class Gui implements Disposable {
 			return;
 		}
 
-		float fadeOutDuriation = (Float) SkinNames.getResource(SkinNames.General.WAIT_WINDOW_FADE_OUT);
+		float fadeOutDuriation = (Float) SkinNames.getResource(SkinNames.GeneralVars.WAIT_WINDOW_FADE_OUT);
 		mWidgets.progressBar.window.addAction(Actions.sequence(Actions.fadeOut(fadeOutDuriation, Interpolation.fade), Actions.removeActor()));
 	}
 
@@ -407,7 +407,7 @@ public abstract class Gui implements Disposable {
 			mWidgets.waitWindow.window.setSkin((Skin) ResourceCacheFacade.get(InternalNames.UI_GENERAL));
 			mWidgets.waitWindow.animation = new AnimationWidget((AnimationWidgetStyle) SkinNames.getResource(SkinNames.General.ANIMATION_WAIT));
 			mWidgets.waitWindow.label = new Label("", (LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_DEFAULT));
-			mWidgets.waitWindow.window.add(mWidgets.waitWindow.animation).padRight((Float) SkinNames.getResource(SkinNames.General.PADDING_SEPARATOR));
+			mWidgets.waitWindow.window.add(mWidgets.waitWindow.animation).padRight((Float) SkinNames.getResource(SkinNames.GeneralVars.PADDING_SEPARATOR));
 			mWidgets.waitWindow.window.add(mWidgets.waitWindow.label);
 
 			// Progress bar
