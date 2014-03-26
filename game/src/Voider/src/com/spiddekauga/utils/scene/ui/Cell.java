@@ -429,9 +429,9 @@ public class Cell implements Poolable {
 	/**
 	 * Call this to layout the cell
 	 * @param startPos starting position of the cell
-	 * @param size available size for the cell
+	 * @param availableSize available size for the cell
 	 */
-	void layout(Vector2 startPos, Vector2 size) {
+	void layout(Vector2 startPos, Vector2 availableSize) {
 		if (mActor == null) {
 			return;
 		}
@@ -442,18 +442,18 @@ public class Cell implements Poolable {
 
 		// Horizontal
 		if (mAlign.horizontal == Horizontal.RIGHT) {
-			offset.x += size.x - getWidth();
+			offset.x += getWidth();
 		} else if (mAlign.horizontal == Horizontal.CENTER) {
-			offset.x += size.x * 0.5f - getWidth() * 0.5f;
+			offset.x += getWidth() * 0.5f;
 		}
 
 		// Vertical
 		if (mAlign.vertical == Vertical.BOTTOM) {
 			offset.y = startPos.y + getPadBottom();
 		} else if (mAlign.vertical == Vertical.TOP) {
-			offset.y = startPos.y + size.y - mActor.getHeight() - getPadTop();
+			offset.y = startPos.y - mActor.getHeight() - getPadTop();
 		} else if (mAlign.vertical == Vertical.MIDDLE) {
-			offset.y = startPos.y + (size.y - mActor.getHeight() + getPadBottom() - getPadTop()) * 0.5f;
+			offset.y = startPos.y + (mActor.getHeight() + getPadBottom() - getPadTop()) * 0.5f;
 		}
 
 		mActor.setPosition((int)offset.x, (int)offset.y);

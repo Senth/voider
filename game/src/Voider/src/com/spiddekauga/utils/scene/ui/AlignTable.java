@@ -471,7 +471,11 @@ public class AlignTable extends WidgetGroup implements Disposable {
 		}
 
 		if (height == -1) {
-			height = getAvailableHeight();
+			if (mKeepHeight) {
+				height = getHeight();
+			} else {
+				height = getAvailableHeight();
+			}
 		}
 
 		if (width == -1) {
@@ -581,7 +585,7 @@ public class AlignTable extends WidgetGroup implements Disposable {
 		// Set custom position if we don't have any table parent
 		// Horizontal offset
 		// If fill row, the x offset will always be the margin
-		if (rowFillWidth) {
+		if (rowFillWidth && !mKeepWidth) {
 			position.x = mMargin.left;
 		}
 		// Calculate offset depending on alignment
@@ -589,7 +593,7 @@ public class AlignTable extends WidgetGroup implements Disposable {
 			if (mTableAlign.horizontal == Horizontal.LEFT) {
 				position.x = mMargin.left;
 			} else if (mTableAlign.horizontal == Horizontal.RIGHT) {
-				position.x = getAvailableWidth() - rowWidth;
+				position.x = getAvailableWidth() - rowWidth + mMargin.left;
 			} else if (mTableAlign.horizontal == Horizontal.CENTER) {
 				position.x = getAvailableWidth() * 0.5f - rowWidth * 0.5f;
 			}
@@ -605,15 +609,11 @@ public class AlignTable extends WidgetGroup implements Disposable {
 			if (mTableAlign.vertical == Vertical.BOTTOM) {
 				position.y = mMargin.bottom;
 			} else if (mTableAlign.vertical == Vertical.TOP) {
-				position.y = getAvailableHeight() - rowHeight;
+				position.y = getAvailableHeight() - rowHeight + mMargin.bottom;
 			} else if (mTableAlign.vertical == Vertical.MIDDLE) {
 				position.y = getAvailableHeight() * 0.5f - rowHeight * 0.5f;
 			}
 		}
-
-		//		if (getParent() instanceof AlignTable) {
-		//			position.x = getX() - position.x;
-		//		}
 
 		setPosition((int)position.x, (int)position.y);
 
@@ -621,32 +621,16 @@ public class AlignTable extends WidgetGroup implements Disposable {
 		offset.set(0,0);
 
 		// Layout the rows
-		// REMOVE row size has already been calculated and set correctly
-		Vector2 rowSize = Pools.vector2.obtain();
-		if (rowFillWidth) {
-			rowSize.x = getAvailableWidth();
-		} else {
-			rowSize.x = rowWidth < mPrefWidth ? rowWidth : mPrefWidth;
-		}
 		for (int i = mRows.size() - 1; i >= 0; --i) {
 			Row row = mRows.get(i);
 
-			// REMOVE row size has already been calculated and set correctly
-			// If row shall fill height, give it the extra height
-			if (row.shallFillHeight()) {
-				float fillHeight = getAvailableHeight() - mPrefHeight;
-				fillHeight /= cRowFillHeight;
-				rowSize.y = row.getPrefHeight() + fillHeight;
-			} else {
-				rowSize.y = row.getHeight();
-			}
-
-			row.layout(offset, rowSize);
-			offset.y += rowSize.y;
+			// TODO available size
+			row.layout(offset, null);
+			offset.y += row.getHeight();
 		}
 
 
-		Pools.vector2.freeAll(rowSize, position, offset);
+		Pools.vector2.freeAll(position, offset);
 
 		updateBackgroundSize();
 

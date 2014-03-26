@@ -13,6 +13,7 @@ import com.spiddekauga.voider.repo.ResourceWebRepo;
 import com.spiddekauga.voider.resources.InternalNames;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.scene.Scene;
+import com.sun.org.apache.bcel.internal.generic.LLOAD;
 
 /**
  * Scene for exploring new content
@@ -83,6 +84,13 @@ public class ExploreScene extends Scene implements ICallerResponseListener {
 	 */
 	void gotoMainMenu() {
 		setOutcome(Outcomes.NOT_APPLICAPLE);
+	}
+
+	/**
+	 * Play the selected level
+	 */
+	void play() {
+		// TODO
 	}
 
 	/** Resource web repository */

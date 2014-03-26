@@ -14,6 +14,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
@@ -211,12 +213,17 @@ public class ExploreGui extends Gui {
 	private void initRightPanel() {
 		float topBottomMargin = SkinNames.getResource(SkinNames.GeneralVars.BAR_UPPER_LOWER_HEIGHT);
 		topBottomMargin += (Float) SkinNames.getResource(SkinNames.GeneralVars.PADDING_BELOW_ABOVE_BAR);
+		float infoWidth = SkinNames.getResource(SkinNames.GeneralVars.INFO_BAR_WIDTH);
 
 		AlignTable table = mWidgets.rightPanel;
+		table.setKeepWidth(true).setWidth(infoWidth);
 		table.setMargin(topBottomMargin, 0, topBottomMargin, 0);
 		table.setAlign(Horizontal.RIGHT, Vertical.TOP);
 		table.setName("right-panel");
 		getStage().addActor(table);
+
+		Label label = new Label("STUB", (LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_DEFAULT));
+		table.add(label);
 	}
 
 	/**
@@ -228,15 +235,13 @@ public class ExploreGui extends Gui {
 		Color widgetBackgroundColor = SkinNames.getResource(SkinNames.GeneralVars.WIDGET_BACKGROUND_COLOR);
 
 
-		float infoWidth = SkinNames.getResource(SkinNames.GeneralVars.INFO_BAR_WIDTH);
 		AlignTable table = mWidgets.info.table;
 		table.setAlignTable(Horizontal.RIGHT, Vertical.TOP);
 		table.setAlignRow(Horizontal.LEFT, Vertical.TOP);
 		table.setBackgroundImage(new Background(widgetBackgroundColor));
-		table.setKeepWidth(true).setWidth(infoWidth);
 		table.setName("info-table");
-		mWidgets.rightPanel.row().setFillHeight(true);
-		mWidgets.rightPanel.add(table).setFillHeight(true);
+		mWidgets.rightPanel.row().setFillHeight(true).setFillWidth(true);
+		mWidgets.rightPanel.add(table).setFillHeight(true).setFillWidth(true);
 
 
 		// Name
@@ -357,7 +362,32 @@ public class ExploreGui extends Gui {
 	 * Initializes action buttons
 	 */
 	private void initActions() {
+		AlignTable table = mWidgets.rightPanel;
+		table.row().setFillWidth(true).setEqualCellSize(true);
 
+		TextButtonStyle textButtonStyle = SkinNames.getResource(SkinNames.General.TEXT_BUTTON_PRESS);
+
+
+		// Menu
+		TextButton button = new TextButton("Menu", textButtonStyle);
+		table.add(button).setFillWidth(true);
+		new ButtonListener(button) {
+			@Override
+			protected void onPressed() {
+				mExploreScene.gotoMainMenu();
+			}
+		};
+
+
+		// Play
+		button = new TextButton("Play", textButtonStyle);
+		table.add(button).setFillWidth(true);
+		new ButtonListener(button) {
+			@Override
+			protected void onPressed() {
+				mExploreScene.play();
+			}
+		};
 	}
 
 	/**
@@ -390,7 +420,6 @@ public class ExploreGui extends Gui {
 		Comments comment = new Comments();
 		Tag tag = new Tag();
 		Search search = new Search();
-		Action action = new Action();
 		Level level = new Level();
 		Background topBar = null;
 		AlignTable rightPanel = new AlignTable();
@@ -445,11 +474,6 @@ public class ExploreGui extends Gui {
 		private static class Search {
 			TextField field = null;
 			AlignTable table = new AlignTable();
-		}
-
-		private static class Action {
-			Button menu = null;
-			Button play = null;
 		}
 	}
 }

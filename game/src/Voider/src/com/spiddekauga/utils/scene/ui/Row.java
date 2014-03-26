@@ -370,8 +370,15 @@ public class Row implements Poolable {
 			changedSize = true;
 		}
 
+		if (mEqualSize && !mCells.isEmpty()) {
+			float equalCellWidth = width / mCells.size();
 
-		if (changedSize) {
+			for (Cell cell : mCells) {
+				cell.updateSize(equalCellWidth, height);
+			}
+
+		}
+		else if (changedSize) {
 			// Calculate total cell width
 			float cellWidthTotal = 0;
 			float cCellFillWidth = 0;
@@ -408,19 +415,14 @@ public class Row implements Poolable {
 	/**
 	 * Call this to layout the row.
 	 * @param startPos starting position of the row
-	 * @param size available size for this row
+	 * @param availableSize available size for the row
+	 * 
 	 */
-	void layout(Vector2 startPos, Vector2 size) {
+	void layout(Vector2 startPos, Vector2 availableSize) {
 		Vector2 offset = Pools.vector2.obtain();
 		offset.set(startPos);
 		offset.x += getPadLeft();
 
-		if (mFillWidth) {
-			mWidth = size.x - getPadLeft() - getPadRight();
-		}
-		if (mFillHeight) {
-			mHeight = size.y - getPadTop() - getPadBottom();
-		}
 
 		// Check if there's a cell that wants to fill the width
 		boolean cellFillWidth = false;
@@ -434,9 +436,9 @@ public class Row implements Poolable {
 		// Horizontal
 		if (!cellFillWidth) {
 			if (mAlign.horizontal == Horizontal.RIGHT) {
-				offset.x += size.x - getWidth();
+				offset.x += getWidth();
 			} else if (mAlign.horizontal == Horizontal.CENTER) {
-				offset.x += size.x * 0.5f - getWidth() * 0.5f;
+				offset.x -= getWidth() * 0.5f;
 			}
 		}
 
@@ -444,41 +446,19 @@ public class Row implements Poolable {
 		if (mAlign.vertical == Vertical.BOTTOM) {
 			offset.y = startPos.y + getPadBottom();
 		} else if (mAlign.vertical == Vertical.TOP) {
-			offset.y = startPos.y + size.y - mHeight - getPadTop();
+			offset.y = startPos.y + mHeight - getPadTop();
 		} else if (mAlign.vertical == Vertical.MIDDLE) {
-			offset.y = startPos.y + (size.y - mHeight + getPadBottom() - getPadTop()) * 0.5f;
+			offset.y = startPos.y + (mHeight + getPadBottom() - getPadTop()) * 0.5f;
 		}
 
-		Vector2 cellSize = Pools.vector2.obtain();
-		if (mEqualSize) {
-			cellSize.y = mHeight;
-			cellSize.x = mWidth / mCells.size();
-
-			for (Cell cell : mCells) {
-				cell.layout(offset, cellSize);
-				offset.x += cellSize.x;
-			}
-		} else {
-			cellSize.y = mHeight;
-			for (Cell cell : mCells) {
-				if (cell.isVisible()) {
-
-					// REMOVE row width has already been calculated and set correctly
-					// If this cell shall fill the width, add extra width to the cell
-					if (cell.shallfillWidth()) {
-						float fillWidth = size.x - getPrefWidth();
-						cellSize.x = cell.getPrefWidth() + fillWidth;
-					} else {
-						cellSize.x = cell.getWidth();
-					}
-
-					cell.layout(offset, cellSize);
-					offset.x += cellSize.x;
-				}
+		for (Cell cell : mCells) {
+			if (cell.isVisible()) {
+				// TODO available size
+				cell.layout(offset, null);
+				offset.x += cell.getWidth();
 			}
 
 		}
-		Pools.vector2.free(cellSize);
 		Pools.vector2.free(offset);
 	}
 
