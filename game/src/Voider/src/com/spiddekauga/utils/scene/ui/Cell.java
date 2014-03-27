@@ -442,18 +442,18 @@ public class Cell implements Poolable {
 
 		// Horizontal
 		if (mAlign.horizontal == Horizontal.RIGHT) {
-			offset.x += getWidth();
+			offset.x += availableSize.x - getWidth();
 		} else if (mAlign.horizontal == Horizontal.CENTER) {
-			offset.x += getWidth() * 0.5f;
+			offset.x += availableSize.x * 0.5f - getWidth() * 0.5f;
 		}
 
 		// Vertical
 		if (mAlign.vertical == Vertical.BOTTOM) {
 			offset.y = startPos.y + getPadBottom();
 		} else if (mAlign.vertical == Vertical.TOP) {
-			offset.y = startPos.y - mActor.getHeight() - getPadTop();
+			offset.y = startPos.y + availableSize.y - mActor.getHeight() - getPadTop();
 		} else if (mAlign.vertical == Vertical.MIDDLE) {
-			offset.y = startPos.y + (mActor.getHeight() + getPadBottom() - getPadTop()) * 0.5f;
+			offset.y = startPos.y + (availableSize.y - mActor.getHeight() + getPadBottom() - getPadTop()) * 0.5f;
 		}
 
 		mActor.setPosition((int)offset.x, (int)offset.y);

@@ -436,9 +436,9 @@ public class Row implements Poolable {
 		// Horizontal
 		if (!cellFillWidth) {
 			if (mAlign.horizontal == Horizontal.RIGHT) {
-				offset.x += getWidth();
+				offset.x += availableSize.x - getWidth();
 			} else if (mAlign.horizontal == Horizontal.CENTER) {
-				offset.x -= getWidth() * 0.5f;
+				offset.x += availableSize.x * 0.5f - getWidth() * 0.5f;
 			}
 		}
 
@@ -446,20 +446,23 @@ public class Row implements Poolable {
 		if (mAlign.vertical == Vertical.BOTTOM) {
 			offset.y = startPos.y + getPadBottom();
 		} else if (mAlign.vertical == Vertical.TOP) {
-			offset.y = startPos.y + mHeight - getPadTop();
+			offset.y = startPos.y + availableSize.y - mHeight - getPadTop();
 		} else if (mAlign.vertical == Vertical.MIDDLE) {
-			offset.y = startPos.y + (mHeight + getPadBottom() - getPadTop()) * 0.5f;
+			offset.y = startPos.y + (availableSize.y - mHeight + getPadBottom() - getPadTop()) * 0.5f;
 		}
+
+		Vector2 availableCellSize = Pools.vector2.obtain();
+		availableCellSize.y = mHeight;
 
 		for (Cell cell : mCells) {
 			if (cell.isVisible()) {
-				// TODO available size
-				cell.layout(offset, null);
+				availableCellSize.x = cell.getWidth();
+				cell.layout(offset, availableCellSize);
 				offset.x += cell.getWidth();
 			}
 
 		}
-		Pools.vector2.free(offset);
+		Pools.vector2.freeAll(offset, availableCellSize);
 	}
 
 	/**
