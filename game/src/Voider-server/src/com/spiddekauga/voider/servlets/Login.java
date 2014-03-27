@@ -59,8 +59,9 @@ public class Login extends VoiderServlet {
 					// Login and update last logged in date
 					if (methodResponse.status == Statuses.SUCCESS) {
 						methodResponse.userKey = KeyFactory.keyToString(datastoreEntity.getKey());
-						methodResponse.privateKey = DatastoreUtils.getUuidProperty(datastoreEntity, "privateKey");
+						methodResponse.privateKey = DatastoreUtils.getUuidProperty(datastoreEntity, "private_key");
 						methodResponse.username = (String) datastoreEntity.getProperty("username");
+						methodResponse.dateFormat = (String) datastoreEntity.getProperty("date_format");
 						mUser.login(datastoreEntity.getKey());
 						updateLastLoggedIn(datastoreEntity);
 					}
@@ -87,7 +88,7 @@ public class Login extends VoiderServlet {
 			return false;
 		}
 
-		UUID datastorePrivateKey = DatastoreUtils.getUuidProperty(datastoreEntity, "privateKey");
+		UUID datastorePrivateKey = DatastoreUtils.getUuidProperty(datastoreEntity, "private_key");
 		return privateKey.equals(datastorePrivateKey);
 	}
 

@@ -72,7 +72,7 @@ public class RegisterUser extends VoiderServlet {
 
 		// Private key
 		UUID privateKey = UUID.randomUUID();
-		DatastoreUtils.setProperty(datastoreEntity, "privateKey", privateKey);
+		DatastoreUtils.setProperty(datastoreEntity, "private_key", privateKey);
 
 		// Hashed password
 		String salt = BCrypt.gensalt();

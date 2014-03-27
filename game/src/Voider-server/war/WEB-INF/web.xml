@@ -29,6 +29,14 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 		<url-pattern>/logout</url-pattern>
 	</servlet-mapping>
 	<servlet>
+		<servlet-name>Upgrade</servlet-name>
+		<servlet-class>com.spiddekauga.voider.servlets.Upgrade</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Upgrade</servlet-name>
+		<url-pattern>/upgrade-secret</url-pattern>
+	</servlet-mapping>
+	<servlet>
 		<servlet-name>GetUploadUrl</servlet-name>
 		<servlet-class>com.spiddekauga.voider.servlets.GetUploadUrl</servlet-class>
 	</servlet>
