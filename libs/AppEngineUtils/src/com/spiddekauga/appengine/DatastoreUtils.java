@@ -264,7 +264,7 @@ public class DatastoreUtils {
 	 * Get a byte array from an entity
 	 * @param entity the entity to get the byte array from
 	 * @param propertyName name of the property
-	 * @return storedy byte array, null if wasn't set
+	 * @return stored byte array, null if wasn't set
 	 */
 	public static byte[] getByteArrayProperty(Entity entity, String propertyName) {
 		Object blob = entity.getProperty(propertyName);

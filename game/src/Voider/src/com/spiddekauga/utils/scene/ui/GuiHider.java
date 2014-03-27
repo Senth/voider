@@ -84,9 +84,11 @@ public abstract class GuiHider implements Disposable {
 				hideListener.updateToggleActors();
 			}
 
+			mVisible = true;
 			onShow();
 		} else {
 			hideAll();
+			mVisible = false;
 			onHide();
 		}
 	}
@@ -143,6 +145,13 @@ public abstract class GuiHider implements Disposable {
 	}
 
 	/**
+	 * @return true if the actors are visible
+	 */
+	public boolean isVisible() {
+		return mVisible;
+	}
+
+	/**
 	 * Sets the name of the hider
 	 * @param name the name of the hider
 	 */
@@ -157,6 +166,8 @@ public abstract class GuiHider implements Disposable {
 		return mName;
 	}
 
+	/** True if the actors are visible */
+	private boolean mVisible = true;
 	/** Name of the hider, used for debugging purposes */
 	private String mName = "";
 	/** List of actors to activate/deactivate */

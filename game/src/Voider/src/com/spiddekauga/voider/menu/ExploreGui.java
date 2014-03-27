@@ -485,7 +485,85 @@ public class ExploreGui extends Gui {
 	 * Initializes tags
 	 */
 	private void initTags() {
+		float topMargin = SkinNames.getResource(SkinNames.GeneralVars.BAR_UPPER_LOWER_HEIGHT);
+		topMargin += (Float) SkinNames.getResource(SkinNames.GeneralVars.PADDING_BELOW_ABOVE_BAR);
+		LabelStyle labelStyle = SkinNames.getResource(SkinNames.General.LABEL_DEFAULT);
+		CheckBoxStyle checkBoxStyle = SkinNames.getResource(SkinNames.General.CHECK_BOX_DEFAULT);
+		Color backgroundColor = SkinNames.getResource(SkinNames.GeneralVars.WIDGET_BACKGROUND_COLOR);
 
+		// This table wraps the tag table with the tab table
+		AlignTable wrapper = new AlignTable();
+		wrapper.setMargin(topMargin, 0, 0, 0);
+		wrapper.setAlign(Horizontal.LEFT, Vertical.TOP);
+		getStage().addActor(wrapper);
+		wrapper.row().setFillHeight(true);
+
+
+		// Tags
+		AlignTable tagTable = new AlignTable();
+		tagTable.setAlign(Horizontal.LEFT, Vertical.TOP);
+		tagTable.setBackgroundImage(new Background(backgroundColor));
+		wrapper.add(tagTable).setFillHeight(true);
+
+		// Filter results
+		Label label = new Label("Filter Results", labelStyle);
+		tagTable.row();
+		tagTable.add(label);
+
+		// Add tags
+		for (Tags tag : Tags.values()) {
+			CheckBox checkBox = new CheckBox(tag.toString(), checkBoxStyle);
+			mWidgets.tag.buttonGroup.add(checkBox);
+			mWidgets.tag.all.add(checkBox);
+			mWidgets.tag.buttonTag.put(checkBox, tag);
+
+			tagTable.row().setFillHeight(true);
+			tagTable.add(checkBox).setFillHeight(true);
+
+			new ButtonListener(checkBox) {
+				@Override
+				protected void onChecked(boolean checked) {
+					if (!mClearingTags) {
+						mExploreScene.fetchLevels(getSelectedSortOrder(), getSelectedTags());
+					}
+				}
+			};
+		}
+
+
+
+		// Tab buttons
+		AlignTable buttonTable = new AlignTable();
+		buttonTable.setAlign(Horizontal.LEFT, Vertical.TOP);
+		wrapper.add(buttonTable);
+
+		// Toggle table
+		// TODO change toggle tag table button
+		Button button = new ImageButton((ImageButtonStyle) SkinNames.getResource(SkinNames.General.IMAGE_BUTTON_STUB_TOGGLE));
+		buttonTable.row();
+		buttonTable.add(button);
+		HideListener hideListener = new HideListener(button, true);
+		hideListener.addToggleActor(tagTable);
+
+		// Clear button
+		// TODO change clear button
+		button = new ImageButton((ImageButtonStyle) SkinNames.getResource(SkinNames.General.IMAGE_BUTTON_STUB));
+		buttonTable.row();
+		buttonTable.add(button);
+		new ButtonListener(button) {
+			@Override
+			protected void onPressed() {
+				boolean tagsChanged = getSelectedTags().size() > 0;
+
+				mClearingTags = true;
+				mWidgets.tag.buttonGroup.uncheckAll();
+				mClearingTags = false;
+
+				if (tagsChanged) {
+					mExploreScene.fetchLevels(getSelectedSortOrder(), getSelectedTags());
+				}
+			}
+		};
 	}
 
 	/**
@@ -495,6 +573,8 @@ public class ExploreGui extends Gui {
 
 	}
 
+	/** If we're currently clearing the tags */
+	private boolean mClearingTags = false;
 	/** The explore scene */
 	private ExploreScene mExploreScene = null;
 	/** Widgets */
@@ -551,8 +631,7 @@ public class ExploreGui extends Gui {
 		}
 
 		private static class Tag {
-			Button toggle = null;
-			Button clear = null;
+			HideListener hider = new HideListener(true);
 			ButtonGroup buttonGroup = new ButtonGroup();
 			ArrayList<Button> all = new ArrayList<>();
 			HashMap<Button, Tags> buttonTag = new HashMap<>();
