@@ -1,6 +1,7 @@
 package com.spiddekauga.voider.menu;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 
 import com.badlogic.gdx.Gdx;
@@ -54,6 +55,38 @@ public class ExploreGui extends Gui {
 	}
 
 	@Override
+	public void resetValues() {
+		super.resetValues();
+
+		resetComments();
+		resetInfo();
+	}
+
+	/**
+	 * Reset info panel
+	 */
+	void resetInfo() {
+		// TODO
+	}
+
+	/**
+	 * Resets the comments
+	 */
+	void resetComments() {
+		// TODO
+	}
+
+	/**
+	 * Adds a new comment to the comment table
+	 * @param username the user that posted the comment
+	 * @param comment the actual comment
+	 * @param date date of the comment
+	 */
+	void addComment(String username, String comment, Date date) {
+		// TODO
+	}
+
+	@Override
 	public void initGui() {
 		super.initGui();
 
@@ -100,7 +133,7 @@ public class ExploreGui extends Gui {
 		table.add(button);
 		buttonGroup.add(button);
 		mWidgets.view.sort = button;
-		mWidgets.view.sortHider = new HideListener(button, true) {
+		mWidgets.sort.hider = new HideListener(button, true) {
 			@Override
 			protected void onShow() {
 				SortOrders sortOrder = getSelectedSortOrder();
@@ -117,7 +150,7 @@ public class ExploreGui extends Gui {
 		table.add(button);
 		buttonGroup.add(button);
 		mWidgets.view.search = button;
-		mWidgets.view.searchHider = new HideListener(button, true) {
+		mWidgets.search.hider = new HideListener(button, true) {
 			@Override
 			protected void onShow() {
 				mExploreScene.fetchLevels(mWidgets.search.field.getText());
@@ -150,7 +183,7 @@ public class ExploreGui extends Gui {
 		table.dispose(true);
 		table.setPaddingCellDefault(0, 0, 0, paddingSeparator);
 		table.setAlign(Horizontal.RIGHT, Vertical.TOP);
-		mWidgets.view.sortHider.addToggleActor(table);
+		mWidgets.sort.hider.addToggleActor(table);
 		getStage().addActor(table);
 
 		CheckBoxStyle radioStyle = SkinNames.getResource(SkinNames.General.CHECK_BOX_RADIO);
@@ -193,7 +226,7 @@ public class ExploreGui extends Gui {
 		table.dispose(true);
 		table.setAlign(Horizontal.RIGHT, Vertical.TOP);
 		getStage().addActor(table);
-		mWidgets.view.searchHider.addToggleActor(table);
+		mWidgets.search.hider.addToggleActor(table);
 
 		TextField textField = new TextField("", (TextFieldStyle) SkinNames.getResource(SkinNames.General.TEXT_FIELD_DEFAULT));
 		textField.setMaxLength(Config.Editor.NAME_LENGTH_MAX);
@@ -211,19 +244,35 @@ public class ExploreGui extends Gui {
 	 * Initialize the right panel
 	 */
 	private void initRightPanel() {
-		float topBottomMargin = SkinNames.getResource(SkinNames.GeneralVars.BAR_UPPER_LOWER_HEIGHT);
-		topBottomMargin += (Float) SkinNames.getResource(SkinNames.GeneralVars.PADDING_BELOW_ABOVE_BAR);
+		float topMargin = SkinNames.getResource(SkinNames.GeneralVars.BAR_UPPER_LOWER_HEIGHT);
+		topMargin += (Float) SkinNames.getResource(SkinNames.GeneralVars.PADDING_BELOW_ABOVE_BAR);
 		float infoWidth = SkinNames.getResource(SkinNames.GeneralVars.INFO_BAR_WIDTH);
 
 		AlignTable table = mWidgets.rightPanel;
 		table.setKeepWidth(true).setWidth(infoWidth);
-		table.setMargin(topBottomMargin, 0, topBottomMargin, 0);
+		table.setMargin(topMargin, 0, 0, 0);
 		table.setAlign(Horizontal.RIGHT, Vertical.TOP);
 		table.setName("right-panel");
 		getStage().addActor(table);
 
-		Label label = new Label("STUB", (LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_DEFAULT));
-		table.add(label);
+
+		// Add tab buttons
+		ButtonGroup buttonGroup = new ButtonGroup();
+		table.row();
+
+		// Info
+		// TODO replace info tab button
+		Button button = new ImageButton((ImageButtonStyle) SkinNames.getResource(SkinNames.General.IMAGE_BUTTON_STUB_TOGGLE));
+		buttonGroup.add(button);
+		table.add(button);
+		mWidgets.info.hider = new HideListener(button, true);
+
+		// Comments
+		// TODO replace comment tab button
+		button = new ImageButton((ImageButtonStyle) SkinNames.getResource(SkinNames.General.IMAGE_BUTTON_STUB_TOGGLE));
+		buttonGroup.add(button);
+		table.add(button);
+		mWidgets.comment.hider = new HideListener(button, true);
 	}
 
 	/**
@@ -239,7 +288,7 @@ public class ExploreGui extends Gui {
 		table.setAlignTable(Horizontal.RIGHT, Vertical.TOP);
 		table.setAlignRow(Horizontal.LEFT, Vertical.TOP);
 		table.setBackgroundImage(new Background(widgetBackgroundColor));
-		table.setName("info-table");
+		mWidgets.info.hider.addToggleActor(table);
 		mWidgets.rightPanel.row().setFillHeight(true).setFillWidth(true);
 		mWidgets.rightPanel.add(table).setFillHeight(true).setFillWidth(true);
 
@@ -355,7 +404,20 @@ public class ExploreGui extends Gui {
 	 * Initializes comments
 	 */
 	private void initComments() {
+		Color widgetBackgroundColor = SkinNames.getResource(SkinNames.GeneralVars.WIDGET_BACKGROUND_COLOR);
 
+		AlignTable table = mWidgets.comment.table;
+
+		table.setAlignTable(Horizontal.RIGHT, Vertical.TOP);
+		table.setAlignRow(Horizontal.LEFT, Vertical.TOP);
+		table.setBackgroundImage(new Background(widgetBackgroundColor));
+		mWidgets.comment.hider.addToggleActor(table);
+		mWidgets.rightPanel.row().setFillHeight(true).setFillWidth(true);
+		mWidgets.rightPanel.add(table).setFillHeight(true).setFillWidth(true);
+
+		Label label = new Label("STUB", (LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_DEFAULT));
+		table.row().setFillHeight(true);
+		table.add(label);
 	}
 
 	/**
@@ -426,9 +488,7 @@ public class ExploreGui extends Gui {
 
 		private static class View {
 			Button sort = null;
-			HideListener sortHider = null;
 			Button search = null;
-			HideListener searchHider = null;
 			AlignTable table = new AlignTable();
 		}
 
@@ -439,10 +499,12 @@ public class ExploreGui extends Gui {
 		private static class Sort {
 			Button[] buttons = new Button[SortOrders.values().length];
 			AlignTable table = new AlignTable();
+			HideListener hider = null;
 		}
 
 		private static class Info {
 			AlignTable table = new AlignTable();
+			HideListener hider = null;
 			Label name = null;
 			Label description = null;
 			RatingWidget rating = null;
@@ -456,6 +518,7 @@ public class ExploreGui extends Gui {
 
 		private static class Comments {
 			AlignTable table = new AlignTable();
+			HideListener hider = null;
 		}
 
 		private static class Tag {
@@ -474,6 +537,7 @@ public class ExploreGui extends Gui {
 		private static class Search {
 			TextField field = null;
 			AlignTable table = new AlignTable();
+			HideListener hider = null;
 		}
 	}
 }

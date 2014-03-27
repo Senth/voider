@@ -354,6 +354,47 @@ public class Row implements Poolable {
 	}
 
 	/**
+	 * @return visible cells in the row
+	 */
+	private int getVisibleCellCount() {
+		int cVisibleCells = 0;
+		for (Cell cell : mCells) {
+			if (cell.isVisible()) {
+				cVisibleCells++;
+			}
+		}
+
+		return cVisibleCells;
+	}
+
+	/**
+	 * Recalculates the preferred width and preferred height
+	 */
+	void calculateSize() {
+		mPrefHeight = 0;
+		mPrefWidth = 0;
+		mMinHeight = 0;
+		mMinWidth = 0;
+		mWidth = 0;
+		mHeight = 0;
+
+		for (Cell cell : mCells) {
+			if (cell.isVisible()) {
+				cell.calculateSize();
+				addSize(cell);
+			}
+		}
+	}
+
+	/**
+	 * @return false if all cells are invisible. If a row exists without a cell or
+	 * with an empty cell it still returs true if the cell is set as visible.
+	 */
+	boolean isVisible() {
+		return mCells.isEmpty() || getVisibleCellCount() > 0;
+	}
+
+	/**
 	 * Update row and cell sizes
 	 * @param width new width of the row
 	 * @param height new height of the row
@@ -370,8 +411,9 @@ public class Row implements Poolable {
 			changedSize = true;
 		}
 
-		if (mEqualSize && !mCells.isEmpty()) {
-			float equalCellWidth = width / mCells.size();
+		int cVisibleCells = getVisibleCellCount();
+		if (mEqualSize && cVisibleCells > 0) {
+			float equalCellWidth = width / cVisibleCells;
 
 			for (Cell cell : mCells) {
 				cell.updateSize(equalCellWidth, height);
@@ -383,10 +425,12 @@ public class Row implements Poolable {
 			float cellWidthTotal = 0;
 			float cCellFillWidth = 0;
 			for (Cell cell : mCells) {
-				cellWidthTotal += cell.getWidth();
+				if (cell.isVisible()) {
+					cellWidthTotal += cell.getWidth();
 
-				if (cell.shallfillWidth()) {
-					cCellFillWidth++;
+					if (cell.shallfillWidth()) {
+						cCellFillWidth++;
+					}
 				}
 			}
 
@@ -397,17 +441,19 @@ public class Row implements Poolable {
 
 			// Update cell sizes
 			for (Cell cell : mCells) {
-				float newCellWidth = cell.getWidth();
-				if (cell.shallfillWidth()) {
-					newCellWidth += extraWidthPerFillWidthCell;
-				}
+				if (cell.isVisible()) {
+					float newCellWidth = cell.getWidth();
+					if (cell.shallfillWidth()) {
+						newCellWidth += extraWidthPerFillWidthCell;
+					}
 
-				float newCellHeight = cell.getHeight();
-				if (cell.shallFillHeight()) {
-					newCellHeight = mHeight;
-				}
+					float newCellHeight = cell.getHeight();
+					if (cell.shallFillHeight()) {
+						newCellHeight = mHeight;
+					}
 
-				cell.updateSize(newCellWidth, newCellHeight);
+					cell.updateSize(newCellWidth, newCellHeight);
+				}
 			}
 		}
 	}
@@ -472,25 +518,6 @@ public class Row implements Poolable {
 	void add(Cell cell) {
 		mCells.add(cell);
 		cell.setAlign(mAlign.horizontal, mAlign.vertical);
-	}
-
-	/**
-	 * Recalculates the preferred width and preferred height
-	 */
-	void calculateSize() {
-		mPrefHeight = 0;
-		mPrefWidth = 0;
-		mMinHeight = 0;
-		mMinWidth = 0;
-		mWidth = 0;
-		mHeight = 0;
-
-		for (Cell cell : mCells) {
-			if (cell.isVisible()) {
-				cell.calculateSize();
-				addSize(cell);
-			}
-		}
 	}
 
 	/**

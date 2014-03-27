@@ -466,21 +466,23 @@ public class AlignTable extends WidgetGroup implements Disposable {
 		float height = 0;
 
 		for (Row row : mRows) {
-			row.calculateSize();
-			mPrefHeight += row.getPrefHeight();
-			mMinHeight += row.getMinHeight();
-			height += row.getHeight();
+			if (row.isVisible()) {
+				row.calculateSize();
+				mPrefHeight += row.getPrefHeight();
+				mMinHeight += row.getMinHeight();
+				height += row.getHeight();
 
-			if (row.getPrefWidth() > mPrefWidth) {
-				mPrefWidth = row.getPrefWidth();
-			}
+				if (row.getPrefWidth() > mPrefWidth) {
+					mPrefWidth = row.getPrefWidth();
+				}
 
-			if (row.getMinWidth() > mMinWidth) {
-				mMinWidth = row.getMinWidth();
-			}
+				if (row.getMinWidth() > mMinWidth) {
+					mMinWidth = row.getMinWidth();
+				}
 
-			if (row.getWidth() > width) {
-				width = row.getWidth();
+				if (row.getWidth() > width) {
+					width = row.getWidth();
+				}
 			}
 		}
 
@@ -503,10 +505,12 @@ public class AlignTable extends WidgetGroup implements Disposable {
 		float rowHeightTotal = 0;
 		int cRowFillHeight = 0;
 		for (Row row : mRows) {
-			rowHeightTotal += row.getHeight();
+			if (row.isVisible()) {
+				rowHeightTotal += row.getHeight();
 
-			if (row.shallFillHeight()) {
-				cRowFillHeight++;
+				if (row.shallFillHeight()) {
+					cRowFillHeight++;
+				}
 			}
 		}
 
@@ -531,17 +535,19 @@ public class AlignTable extends WidgetGroup implements Disposable {
 
 		// Update sizes of rows and cells
 		for (Row row : mRows) {
-			float newRowWidth = row.getWidth();
-			if (row.shallfillWidth()) {
-				newRowWidth = width;
-			}
+			if (row.isVisible()) {
+				float newRowWidth = row.getWidth();
+				if (row.shallfillWidth()) {
+					newRowWidth = width;
+				}
 
-			float newRowHeight = row.getHeight();
-			if (row.shallFillHeight()) {
-				newRowHeight += extraHeightPerFillHeightRow;
-			}
+				float newRowHeight = row.getHeight();
+				if (row.shallFillHeight()) {
+					newRowHeight += extraHeightPerFillHeightRow;
+				}
 
-			row.updateSize(newRowWidth, newRowHeight);
+				row.updateSize(newRowWidth, newRowHeight);
+			}
 		}
 
 		if (!mKeepWidth) {
@@ -632,9 +638,11 @@ public class AlignTable extends WidgetGroup implements Disposable {
 		for (int i = mRows.size() - 1; i >= 0; --i) {
 			Row row = mRows.get(i);
 
-			availableRowSize.y = row.getHeight();
-			row.layout(offset, availableRowSize);
-			offset.y += availableRowSize.y;
+			if (row.isVisible()) {
+				availableRowSize.y = row.getHeight();
+				row.layout(offset, availableRowSize);
+				offset.y += availableRowSize.y;
+			}
 		}
 
 
