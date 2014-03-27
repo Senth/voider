@@ -20,6 +20,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.spiddekauga.utils.Strings;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
@@ -31,6 +32,7 @@ import com.spiddekauga.utils.scene.ui.Label.LabelStyle;
 import com.spiddekauga.utils.scene.ui.RatingWidget;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.network.entities.LevelInfoEntity;
 import com.spiddekauga.voider.network.entities.Tags;
 import com.spiddekauga.voider.network.entities.method.LevelGetAllMethod.SortOrders;
 import com.spiddekauga.voider.resources.InternalNames;
@@ -38,6 +40,7 @@ import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.utils.Pools;
+import com.spiddekauga.voider.utils.User;
 
 /**
  * GUI for explore scene
@@ -66,7 +69,33 @@ public class ExploreGui extends Gui {
 	 * Reset info panel
 	 */
 	void resetInfo() {
-		// TODO
+		LevelInfoEntity level = mExploreScene.getSelectedLevel();
+
+		if (level != null) {
+			mWidgets.info.createdBy.setText(level.defEntity.originalCreator);
+			mWidgets.info.date.setText(User.getGlobalUser().dateToString(level.defEntity.date));
+			mWidgets.info.description.setText(level.defEntity.description);
+			mWidgets.info.name.setText(level.defEntity.name);
+			mWidgets.info.revisedBy.setText(level.defEntity.creator);
+
+			mWidgets.info.likes.setText(String.valueOf(level.stats.cLikes));
+			mWidgets.info.plays.setText(String.valueOf(level.stats.cPlayed));
+			mWidgets.info.rating.setRating((int)(level.stats.ratingAverage + 0.5f));
+
+			// Set tags
+			String tagList = Strings.toStringList(level.tags, ", ");
+			mWidgets.info.tags.setText(tagList);
+		} else {
+			mWidgets.info.createdBy.setText("");
+			mWidgets.info.date.setText("");
+			mWidgets.info.description.setText("");
+			mWidgets.info.name.setText("");
+			mWidgets.info.revisedBy.setText("");
+			mWidgets.info.likes.setText("");
+			mWidgets.info.plays.setText("");
+			mWidgets.info.rating.setRating(0);
+			mWidgets.info.tags.setText("");
+		}
 	}
 
 	/**

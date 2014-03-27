@@ -18,8 +18,10 @@ public class LoginMethodResponse implements IEntity {
 	public Statuses status = null;
 	/** The private key which can be used to login without a password */
 	public UUID privateKey = null;
-	/** Userkey */
+	/** User key */
 	public String userKey = null;
+	/** Date format */
+	public String dateFormat = null;
 
 	/**
 	 * Response statuses

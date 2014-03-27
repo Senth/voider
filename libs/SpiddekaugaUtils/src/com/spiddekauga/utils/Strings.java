@@ -2,6 +2,8 @@ package com.spiddekauga.utils;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Iterator;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -77,6 +79,27 @@ public class Strings {
 	 */
 	public static String toHtmlString(String text) {
 		return text.replace("\n", "<br />");
+	}
+
+	/**
+	 * Create a string list of a list
+	 * @param list the list to create a string list from
+	 * @param delimiter how to delimit the elements
+	 * @return string list seperated by the delimiter
+	 */
+	public static String toStringList(List<?> list, String delimiter) {
+		String stringList = "";
+
+		Iterator<?> iterator = list.iterator();
+		while (iterator.hasNext()) {
+			stringList += iterator.next().toString();
+
+			if (iterator.hasNext()) {
+				stringList += delimiter;
+			}
+		}
+
+		return stringList;
 	}
 
 	/** Vowel pattern */

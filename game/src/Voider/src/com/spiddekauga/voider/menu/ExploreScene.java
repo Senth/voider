@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.network.entities.IEntity;
+import com.spiddekauga.voider.network.entities.LevelInfoEntity;
 import com.spiddekauga.voider.network.entities.Tags;
 import com.spiddekauga.voider.network.entities.method.IMethodEntity;
 import com.spiddekauga.voider.network.entities.method.LevelGetAllMethod.SortOrders;
@@ -13,7 +14,6 @@ import com.spiddekauga.voider.repo.ResourceWebRepo;
 import com.spiddekauga.voider.resources.InternalNames;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.scene.Scene;
-import com.sun.org.apache.bcel.internal.generic.LLOAD;
 
 /**
  * Scene for exploring new content
@@ -93,6 +93,15 @@ public class ExploreScene extends Scene implements ICallerResponseListener {
 		// TODO
 	}
 
+	/**
+	 * @return the selected level, null if none are selected
+	 */
+	LevelInfoEntity getSelectedLevel() {
+		return mSelectedLevel;
+	}
+
+	/** Selected level */
+	LevelInfoEntity mSelectedLevel = null;
 	/** Resource web repository */
 	private ResourceWebRepo mResourceWebRepo = ResourceWebRepo.getInstance();
 }

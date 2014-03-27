@@ -1,5 +1,7 @@
 package com.spiddekauga.voider.utils;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.UUID;
 
 /**
@@ -43,6 +45,7 @@ public class User {
 		mPrivateKey = from.mPrivateKey;
 		mServerKey = from.mServerKey;
 		mUsername = from.mUsername;
+		mDateFormat = from.mDateFormat;
 	}
 
 	/**
@@ -55,6 +58,14 @@ public class User {
 		mUsername = username;
 		mServerKey = serverKey;
 		mOnline = online;
+	}
+
+	/**
+	 * Sets the date format for the user
+	 * @param dateFormat preferred date format for the user
+	 */
+	public void setDateFormat(String dateFormat) {
+		mDateFormat = new SimpleDateFormat(dateFormat);
 	}
 
 	/**
@@ -130,6 +141,17 @@ public class User {
 		return mPrivateKey;
 	}
 
+	/**
+	 * Converts a date to the user's preferred date format
+	 * @param date the date to convert to string
+	 * @return date as string in the user's preferred date format
+	 */
+	public synchronized String dateToString(Date date) {
+		return mDateFormat.format(date);
+	}
+
+	/** Date to string format */
+	private SimpleDateFormat mDateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
 	/** Global user */
 	private static User mGlobalUser = new User();
 	/** Current username */
