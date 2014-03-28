@@ -495,14 +495,26 @@ public class SceneSwitcher {
 			}
 
 		} catch (RuntimeException e) {
-			boolean handleException = Config.Debug.EXCEPTION_HANDLER && !mScenes.isEmpty();
-			if (handleException) {
-				Scene currentScene = mScenes.peek();
+			handleException(e);
+		}
+	}
 
-				currentScene.handleException(e);
+	/**
+	 * Handles the exception
+	 * @param exception the exception to handle
+	 */
+	private static void handleException(RuntimeException exception) {
+		boolean handleException = Config.Debug.EXCEPTION_HANDLER && !mScenes.isEmpty();
+		if (handleException) {
+			Scene currentScene = mScenes.peek();
+
+			if (currentScene.isInitialized()) {
+				currentScene.handleException(exception);
 			} else {
-				throw e;
+				throw exception;
 			}
+		} else {
+			throw exception;
 		}
 	}
 

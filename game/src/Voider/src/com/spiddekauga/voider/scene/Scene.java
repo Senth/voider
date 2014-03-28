@@ -64,7 +64,9 @@ public abstract class Scene extends InputAdapter implements IExceptionHandler {
 	 */
 	@Override
 	public synchronized void handleException(Exception exception) {
-		mGui.showBugReportWindow(exception);
+		if (mGui.isInitialized()) {
+			mGui.showBugReportWindow(exception);
+		}
 	}
 
 	/**

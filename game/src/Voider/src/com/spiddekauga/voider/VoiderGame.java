@@ -1,12 +1,15 @@
 package com.spiddekauga.voider;
 
+import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.esotericsoftware.minlog.Log;
 import com.spiddekauga.utils.GameTime;
+import com.spiddekauga.utils.Strings;
 import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.voider.app.SplashScreen;
 import com.spiddekauga.voider.game.Collectibles;
@@ -98,21 +101,40 @@ public class VoiderGame implements ApplicationListener {
 
 		GameTime.updateGlobal(Gdx.graphics.getDeltaTime());
 
-		if (mStage != null) {
-			mStage.act();
-			mStage.draw();
-		}
+		try {
+			SceneSwitcher.update();
+		} catch (RuntimeException e) {
+			// Print where in the serialization it failed
+			if (Gdx.app.getType() == ApplicationType.Desktop && Config.Debug.RELEASE_TEST) {
+				String stackTrace = Strings.stackTraceToString(e);
 
-		SceneSwitcher.update();
+				// File error
+				int fileIndexStart = stackTrace.indexOf("Error reading file: ");
+				if (fileIndexStart != -1) {
+					int fileIndexEnd = stackTrace.indexOf(".json", fileIndexStart);
+					String fileWithError = stackTrace.substring(fileIndexStart, fileIndexEnd+5);
+
+					// Syntax error
+					String syntaxErrorSearchFor = "GdxRuntimeException: ";
+					int syntaxIndexStart = stackTrace.indexOf(syntaxErrorSearchFor, fileIndexEnd);
+					if (syntaxIndexStart != -1) {
+						int syntaxIndexEnd = stackTrace.indexOf('\n', syntaxIndexStart);
+						String syntaxError = "Error: ";
+						syntaxError += stackTrace.substring(syntaxIndexStart + syntaxErrorSearchFor.length(), syntaxIndexEnd);
+
+						String errorString = fileWithError + "\n" + syntaxError;
+
+						FileHandle file = new FileHandle("json_error.txt");
+						file.writeString(errorString, false);
+					}
+				}
+			}
+			throw e;
+		}
 	}
 
 	@Override
 	public void resize(int width, int height) {
-		if (mStage != null) {
-			mStage.getViewport().update(width, height, true);
-			table.setWidth(width);
-			table.setHeight(height);
-		}
 		SceneSwitcher.resize(width, height);
 	}
 

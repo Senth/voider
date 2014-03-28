@@ -185,8 +185,6 @@ public class Config {
 		public static boolean DEBUG_TESTS = true;
 		/** Skip loading text */
 		public static final boolean SKIP_LOADING_TIME = true;
-		/** Logging verbosity */
-		public static final int LOG_VERBOSITY = Application.LOG_DEBUG;
 		/** Set this variable to be true for releases, this disables many of
 		 * the "special" functionality as multiple registering, test scenes etc. */
 		public static final boolean RELEASE_FINAL = false;
@@ -197,6 +195,8 @@ public class Config {
 		public static boolean EXCEPTION_HANDLER = RELEASE_TEST || false;
 		/** Set to true in JUNIT tests */
 		public static boolean JUNIT_TEST = false;
+		/** Logging verbosity */
+		public static final int LOG_VERBOSITY = RELEASE_FINAL ? Application.LOG_ERROR : Application.LOG_DEBUG;
 	}
 
 	/**

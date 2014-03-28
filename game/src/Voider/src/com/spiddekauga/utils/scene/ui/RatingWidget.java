@@ -20,16 +20,54 @@ import com.spiddekauga.voider.utils.Pools;
 public class RatingWidget extends WidgetGroup implements Disposable {
 
 	/**
+	 * Constructor which sets the style for the rating and number of stars.
+	 * Rating can be changed by pressing on the stars
+	 * @param style how the empty and filled stars will look like
+	 * @param ratingMax number of stars used in the rating
+	 * @see #RatingWidget(Drawable, Drawable, int, Touchable)
+	 */
+	public RatingWidget(RatingWidgetStyle style, int ratingMax) {
+		this(style, ratingMax, Touchable.enabled);
+	}
+
+	/**
+	 * Constructor which sets the style for the rating and number of stars.
+	 * @param style how the empty and filled stars will look like
+	 * @param ratingMax number of stars used in the rating
+	 * @param touchable if the rating can be changed by pressing on the stars
+	 * @see #RatingWidget(Drawable, Drawable, int, Touchable)
+	 */
+	public RatingWidget(RatingWidgetStyle style, int ratingMax, Touchable touchable) {
+		if (style.filledStar == null) {
+			throw new IllegalArgumentException("filledStar cannot be null");
+		} else if (style.emptyStar == null) {
+			throw new IllegalArgumentException("emptyStar cannot be null");
+		} else if (ratingMax <= 0) {
+			throw new IllegalArgumentException("the max rating has to be more than 0");
+		} else if (style.filledStar.getMinWidth() != style.emptyStar.getMinWidth() && style.filledStar.getMinHeight() != style.emptyStar.getMinHeight()) {
+			throw new IllegalArgumentException("filled and empty star should be of the same size");
+		}
+
+		mStyle = style;
+		mStars = new Image[ratingMax];
+		mClickListeners = new ClickListener[ratingMax];
+
+		addActor(mTable);
+		setTouchable(touchable);
+		createImageButtons();
+	}
+
+	/**
 	 * Constructor which sets the filled and empty star drawables and
 	 * the number of stars to show. Rating can be changed by pressing
 	 * on the stars
 	 * @param filledStar how a filled star looks
 	 * @param emptyStar how an empty star looks
-	 * @param stars number of stars used in the rating
+	 * @param ratingMax number of stars used in the rating
 	 * @see #RatingWidget(Drawable, Drawable, int, Touchable)
 	 */
-	public RatingWidget(Drawable filledStar, Drawable emptyStar, int stars) {
-		this(filledStar, emptyStar, stars, Touchable.enabled);
+	public RatingWidget(Drawable filledStar, Drawable emptyStar, int ratingMax) {
+		this(new RatingWidgetStyle(filledStar, emptyStar), ratingMax, Touchable.enabled);
 	}
 
 	/**
@@ -41,24 +79,7 @@ public class RatingWidget extends WidgetGroup implements Disposable {
 	 * @param touchable if the rating can be changed by pressing on the stars
 	 */
 	public RatingWidget(Drawable filledStar, Drawable emptyStar, int ratingMax, Touchable touchable) {
-		if (filledStar == null) {
-			throw new IllegalArgumentException("filledStar cannot be null");
-		} else if (emptyStar == null) {
-			throw new IllegalArgumentException("emptyStar cannot be null");
-		} else if (ratingMax <= 0) {
-			throw new IllegalArgumentException("the max rating has to be more than 0");
-		} else if (filledStar.getMinWidth() != emptyStar.getMinWidth() && filledStar.getMinHeight() != emptyStar.getMinHeight()) {
-			throw new IllegalArgumentException("filled and empty star should be of the same size");
-		}
-
-		mFilledStar = filledStar;
-		mEmptyStar = emptyStar;
-		mStars = new Image[ratingMax];
-		mClickListeners = new ClickListener[ratingMax];
-
-		addActor(mTable);
-		setTouchable(touchable);
-		createImageButtons();
+		this(new RatingWidgetStyle(filledStar, emptyStar), ratingMax, touchable);
 	}
 
 	@Override
@@ -96,9 +117,9 @@ public class RatingWidget extends WidgetGroup implements Disposable {
 	private void updateFilledStars(int cFilledStars) {
 		for (int i = 0; i < mStars.length; ++i) {
 			if (i < cFilledStars) {
-				mStars[i].setDrawable(mFilledStar);
+				mStars[i].setDrawable(mStyle.filledStar);
 			} else {
-				mStars[i].setDrawable(mEmptyStar);
+				mStars[i].setDrawable(mStyle.emptyStar);
 			}
 		}
 	}
@@ -156,6 +177,21 @@ public class RatingWidget extends WidgetGroup implements Disposable {
 		}
 	}
 
+	/**
+	 * Set the style
+	 * @param style new style of this rating widget
+	 */
+	public void setStyle(RatingWidgetStyle style) {
+		mStyle = style;
+	}
+
+	/**
+	 * @return current style of this rating widget
+	 */
+	public RatingWidgetStyle getStyle() {
+		return mStyle;
+	}
+
 	@Override
 	public void layout() {
 		mTable.layout();
@@ -207,7 +243,7 @@ public class RatingWidget extends WidgetGroup implements Disposable {
 	private void createImageButtons() {
 		for (int i = 0; i < mStars.length; ++i) {
 			mStars[i] = new Image();
-			mStars[i].setSize(mFilledStar.getMinWidth(), mFilledStar.getMinHeight());
+			mStars[i].setSize(mStyle.filledStar.getMinWidth(), mStyle.filledStar.getMinHeight());
 			mTable.add(mStars[i]);
 			mClickListeners[i] = new ClickListenerImage(i+1);
 		}
@@ -233,12 +269,10 @@ public class RatingWidget extends WidgetGroup implements Disposable {
 		int mRating;
 	}
 
+	/** Rating style */
+	private RatingWidgetStyle mStyle = null;
 	/** Current rating */
 	private int mRatingCurrent = 0;
-	/** Drawable used for filled stars */
-	private Drawable mFilledStar = null;
-	/** Drawable used for empty stars */
-	private Drawable mEmptyStar = null;
 	/** All stars */
 	private Image[] mStars = null;
 	/** Click listeners for determining hover over and clicking on a star */
@@ -248,4 +282,31 @@ public class RatingWidget extends WidgetGroup implements Disposable {
 	/** Rating listeners */
 	@SuppressWarnings("unchecked")
 	private ArrayList<IRatingListener> mChangeListeners = Pools.arrayList.obtain();
+
+	/**
+	 * Style for rating widget
+	 */
+	public static class RatingWidgetStyle {
+		/**
+		 * Default constructor
+		 */
+		public RatingWidgetStyle() {
+			// Does nothing
+		}
+
+		/**
+		 * Sets the filled and empty star
+		 * @param filledStar drawable for filled stars
+		 * @param emptyStar drawable for empty stars
+		 */
+		public RatingWidgetStyle(Drawable filledStar, Drawable emptyStar) {
+			this.filledStar = filledStar;
+			this.emptyStar = emptyStar;
+		}
+
+		/** Drawable used for filled stars */
+		private Drawable filledStar = null;
+		/** Drawable used for empty stars */
+		private Drawable emptyStar = null;
+	}
 }
