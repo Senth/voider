@@ -1137,28 +1137,35 @@ star
   orig: 32, 32
   offset: 0, 0
   index: -1
+star_checked
+  rotate: false
+  xy: 1081, 85
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+star_down
+  rotate: false
+  xy: 1081, 85
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
 star_checked_over
-  rotate: false
-  xy: 1081, 85
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: -1
-star_over
-  rotate: false
-  xy: 1081, 85
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: -1
-star_disabled
   rotate: false
   xy: 1115, 119
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-star_down
+star_over
+  rotate: false
+  xy: 1115, 119
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+star_disabled
   rotate: false
   xy: 1149, 153
   size: 32, 32
@@ -1235,7 +1242,7 @@ tags_down
   orig: 32, 32
   offset: 0, 0
   index: -1
-tags_disabled
+tags_checked_over
   rotate: false
   xy: 1217, 119
   size: 32, 32
@@ -1244,12 +1251,12 @@ tags_disabled
   index: -1
 tags_over
   rotate: false
-  xy: 1251, 153
+  xy: 1217, 119
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-tags_over_checked
+tags_disabled
   rotate: false
   xy: 1251, 153
   size: 32, 32

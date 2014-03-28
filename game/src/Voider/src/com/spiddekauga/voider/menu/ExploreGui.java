@@ -517,8 +517,10 @@ public class ExploreGui extends Gui {
 			mWidgets.tag.all.add(checkBox);
 			mWidgets.tag.buttonTag.put(checkBox, tag);
 
-			tagTable.row().setFillHeight(true);
-			tagTable.add(checkBox).setFillHeight(true);
+
+			tagTable.row();
+			tagTable.add(checkBox);
+
 
 			new ButtonListener(checkBox) {
 				@Override
@@ -530,6 +532,8 @@ public class ExploreGui extends Gui {
 			};
 		}
 
+		// Fill out the space
+		tagTable.row().setFillHeight(true);
 
 
 		// Tab buttons

@@ -2460,128 +2460,170 @@ triangle_shape_disabled
   orig: 32, 32
   offset: 0, 0
   index: -1
-undo
+trigger_add
   rotate: false
   xy: 1667, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-undo_checked
+trigger_add_checked
   rotate: false
   xy: 1701, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-undo_down
+trigger_add_down
   rotate: false
   xy: 1701, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-undo_checked_over
+trigger_add_checked_over
   rotate: false
   xy: 1735, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-undo_over
+trigger_add_over
   rotate: false
   xy: 1735, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-undo_disabled
+trigger_add_disabled
   rotate: false
   xy: 1769, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-visuals
+undo
   rotate: false
   xy: 1803, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-visuals_checked
+undo_checked
   rotate: false
   xy: 1837, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-visuals_down
+undo_down
   rotate: false
   xy: 1837, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-visuals_checked_over
+undo_checked_over
   rotate: false
   xy: 1871, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-visuals_over
+undo_over
   rotate: false
   xy: 1871, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-visuals_disabled
+undo_disabled
   rotate: false
   xy: 1905, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-weapon
+visuals
   rotate: false
   xy: 1939, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-weapon_checked
+visuals_checked
   rotate: false
   xy: 1973, 27
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+visuals_down
+  rotate: false
+  xy: 1973, 27
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+visuals_checked_over
+  rotate: false
+  xy: 2007, 27
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+visuals_over
+  rotate: false
+  xy: 2007, 27
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+visuals_disabled
+  rotate: false
+  xy: 2041, 27
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+weapon
+  rotate: false
+  xy: 2075, 27
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+weapon_checked
+  rotate: false
+  xy: 2109, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 weapon_down
   rotate: false
-  xy: 1973, 27
+  xy: 2109, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 weapon_checked_over
   rotate: false
-  xy: 2007, 27
+  xy: 2143, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 weapon_over
   rotate: false
-  xy: 2007, 27
+  xy: 2143, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 weapon_disabled
   rotate: false
-  xy: 2041, 27
+  xy: 2177, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
