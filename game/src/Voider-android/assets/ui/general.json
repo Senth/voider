@@ -83,6 +83,8 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		checkedOver: button_default_checked_over,
 	},
 	
+	
+	
 	play: {
 		imageUp: play,
 		imageOver: play_over,
@@ -104,6 +106,8 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageDisabled: create_disabled
 	},
 	
+	
+	
 	info: {
 		imageUp: info,
 		imageOver: info_over,
@@ -124,6 +128,223 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageDown: logout_down,
 		imageDisabled: logout_disabled
 	},
+	
+	
+	
+	featured_big: {
+		imageUp: featured_big,
+		imageOver: featured_big_over,
+		imageDown: featured_big_down,
+		imageChecked: featured_big_checked,
+		imageCheckedOver: featured_big_checked_over,
+		imageDisabled: featured_big_disabled 
+	},
+	
+	featured: {
+		imageUp: featured,
+		imageOver: featured_over,
+		imageDown: featured_down,
+		imageChecked: featured_checked,
+		imageCheckedOver: featured_checked_over,
+		imageDisabled: featured_disabled
+	},
+	
+	browse_big: {
+		imageUp: browse_big,
+		imageOver: browse_big_over,
+		imageDown: browse_big_down,
+		imageChecked: browse_big_checked,
+		imageCheckedOver: browse_big_checked_over,
+		imageDisabled: browse_big_disabled 
+	},
+	
+	browse: {
+		imageUp: browse,
+		imageOver: browse_over,
+		imageDown: browse_down,
+		imageChecked: browse_checked,
+		imageCheckedOver: browse_checked_over,
+		imageDisabled: browse_disabled
+	},
+	
+	search_big: {
+		imageUp: search_big,
+		imageOver: search_big_over,
+		imageDown: search_big_down,
+		imageChecked: search_big_checked,
+		imageCheckedOver: search_big_checked_over,
+		imageDisabled: search_big_disabled 
+	},
+	
+	search: {
+		imageUp: search,
+		imageOver: search_over,
+		imageDown: search_down,
+		imageChecked: search_checked,
+		imageCheckedOver: search_checked_over,
+		imageDisabled: search_disabled
+	},
+	
+	
+	
+	game_continue: {
+		imageUp: game_continue,
+		imageOver: game_continue_over,
+		imageDown: game_continue_down,
+		imageChecked: game_continue_checked,
+		imageCheckedOver: game_continue_checked_over,
+		imageDisabled: game_continue_disabled
+	},
+	
+	replay: {
+		imageUp: replay,
+		imageOver: replay_over,
+		imageDown: replay_down,
+		imageChecked: replay_checked,
+		imageCheckedOver: replay_checked_over,
+		imageDisabled: replay_disabled
+	},
+	
+	info_big: {
+		imageUp: info_big,
+		imageOver: info_big_over,
+		imageDown: info_big_down,
+		imageChecked: info_big_checked,
+		imageCheckedOver: info_big_checked_over,
+		imageDisabled: info_big_disabled
+	},
+	
+	login_big: {
+		imageUp: login_big,
+		imageOver: login_big_over,
+		imageDown: login_big_down,
+		imageChecked: login_big_checked,
+		imageCheckedOver: login_big_checked_over,
+		imageDisabled: login_big_disabled
+	},
+	
+	player_big: {
+		imageUp: player_big,
+		imageOver: player_big_over,
+		imageDown: player_big_down,
+		imageChecked: player_big_checked,
+		imageCheckedOver: player_big_checked_over,
+		imageDisabled: player_big_disabled
+	},
+	
+	settings_big: {
+		imageUp: settings_big,
+		imageOver: settings_big_over,
+		imageDown: settings_big_down,
+		imageChecked: settings_big_checked,
+		imageCheckedOver: settings_big_checked_over,
+		imageDisabled: settings_big_disabled
+	},
+	
+	
+	
+	comments: {
+		imageUp: comments,
+		imageOver: comments_over,
+		imageDown: comments_down,
+		imageChecked: comments_checked,
+		imageCheckedOver: comments_checked_over,
+		imageDisabled: comments_disabled
+	},
+	
+	images: {
+		imageUp: images,
+		imageOver: images_over,
+		imageDown: images_down,
+		imageChecked: images_checked,
+		imageCheckedOver: images_checked_over,
+		imageDisabled: images_disabled
+	},
+	
+	overview: {
+		imageUp: overview,
+		imageOver: overview_over,
+		imageDown: overview_down,
+		imageChecked: overview_checked,
+		imageCheckedOver: overview_checked_over,
+		imageDisabled: overview_disabled
+	},
+	
+	tags: {
+		imageUp: tags,
+		imageOver: tags_over,
+		imageDown: tags_down,
+		imageChecked: tags_checked,
+		imageCheckedOver: tags_checked_over,
+		imageDisabled: tags_disabled
+	},
+	
+	
+	
+	date: {
+		imageUp: date,
+		imageOver: date_over,
+		imageDown: date_down,
+		imageChecked: date_checked,
+		imageCheckedOver: date_checked_over,
+		imageDisabled: date_disabled
+	},
+	
+	edit: {
+		imageUp: edit,
+		imageOver: edit_over,
+		imageDown: edit_down,
+		imageChecked: edit_checked,
+		imageCheckedOver: edit_checked_over,
+		imageDisabled: edit_disabled
+	},
+	
+	player: {
+		imageUp: player,
+		imageOver: player_over,
+		imageDown: player_down,
+		imageChecked: player_checked,
+		imageCheckedOver: player_checked_over,
+		imageDisabled: player_disabled
+	},
+	
+	plays: {
+		imageUp: plays,
+		imageOver: plays_over,
+		imageDown: plays_down,
+		imageChecked: plays_checked,
+		imageCheckedOver: plays_checked_over,
+		imageDisabled: plays_disabled
+	},
+	
+	star: {
+		imageUp: star,
+		imageOver: star_over,
+		imageDown: star_down,
+		imageChecked: star_checked,
+		imageCheckedOver: star_checked_over,
+		imageDisabled: star_disabled
+	},
+	
+	tag: {
+		imageUp: tag,
+		imageOver: tag_over,
+		imageDown: tag_down,
+		imageChecked: tag_checked,
+		imageCheckedOver: tag_checked_over,
+		imageDisabled: tag_disabled
+	},
+	
+	like: {
+		imageUp: like,
+		imageOver: like_over,
+		imageDown: like_down,
+		imageChecked: like_checked,
+		imageCheckedOver: like_checked_over,
+		imageDisabled: like_disabled
+	},
+	
+	
 	
 	stub: {
 		down: button_default_down,

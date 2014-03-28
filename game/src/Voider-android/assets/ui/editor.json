@@ -46,6 +46,8 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageDisabled: stub_disabled
 	},	
 	
+	
+	
 	bullet_editor: {
 		imageDown: bullet_editor_down,
 		imageOver: bullet_editor_over,
@@ -110,6 +112,8 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageUp: enemy_editor_down
 	},
 	
+	
+	
 	new: {
 		imageUp: new,
 		imageOver: new_over,
@@ -173,6 +177,41 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageDisabled: run_disabled
 	},
 	
+	grid:  {
+		imageUp: grid,
+		imageOver: grid_over,
+		imageDown: grid_down,
+		imageChecked: grid_checked,
+		imageCheckedOver: grid_checked_over,
+		imageDisabled: grid_disabled
+	},
+	
+	grid_above: {
+		imageUp: grid_above,
+		imageOver: grid_above_over,
+		imageDown: grid_above_down,
+		imageChecked: grid_above_checked,
+		imageCheckedOver: grid_above_checked_over,
+		imageDisabled: grid_above_disabled
+	},
+	
+	enemy_spawn_highlight:  {
+		imageUp: enemy_spawn_highlight,
+		imageOver: enemy_spawn_highlight_over,
+		imageDown: enemy_spawn_highlight_down,
+		imageChecked: enemy_spawn_highlight_checked,
+		imageCheckedOver: enemy_spawn_highlight_checked_over,
+		imageDisabled: enemy_spawn_highlight_disabled
+	},
+	
+	screenshot:  {
+		imageUp: screenshot,
+		imageOver: screenshot_over,
+		imageDown: screenshot_down,
+	},
+	
+	
+	
 	delete: {
 		imageUp: delete,
 		imageOver: delete_over,
@@ -216,42 +255,6 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageChecked: cancel_checked,
 		imageCheckedOver: cancel_checked_over,
 		imageDisabled: cancel_disabled
-	},
-	
-	circle_shape: {
-		imageUp: circle_shape,
-		imageOver: circle_shape_over,
-		imageDown: circle_shape_down,
-		imageChecked: circle_shape_checked,
-		imageCheckedOver: circle_shape_checked_over,
-		imageDisabled: circle_shape_disabled
-	},
-	
-	rectangle_shape: {
-		imageUp: rectangle_shape,
-		imageOver: rectangle_shape_over,
-		imageDown: rectangle_shape_down,
-		imageChecked: rectangle_shape_checked,
-		imageCheckedOver: rectangle_shape_checked_over,
-		imageDisabled: rectangle_shape_disabled
-	},
-	
-	triangle_shape: {
-		imageUp: triangle_shape,
-		imageOver: triangle_shape_over,
-		imageDown: triangle_shape_down,
-		imageChecked: triangle_shape_checked,
-		imageCheckedOver: triangle_shape_checked_over,
-		imageDisabled: triangle_shape_disabled
-	},
-	
-	draw_custom_shape: {
-		imageUp: draw_custom_shape,
-		imageOver: draw_custom_shape_over,
-		imageDown: draw_custom_shape_down,
-		imageChecked: draw_custom_shape_checked,
-		imageCheckedOver: draw_custom_shape_checked_over,
-		imageDisabled: draw_custom_shape_disabled
 	},
 	
 	pickup_add: {
@@ -313,34 +316,6 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageChecked: path_add_checked,
 		imageCheckedOver: path_add_checked_over,
 		imageDisabled: path_add_disabled
-	},
-	
-	path_once: {
-		imageUp: path_once
-	},
-	
-	path_back_and_forth: {
-		imageUp: path_back_and_forth
-	},
-	
-	path_loop: {
-		imageUp: path_loop
-	},
-	
-	trigger_add: {
-		imageUp: trigger_add,
-		imageOver: trigger_add_over,
-		imageDown: trigger_add_down,
-		imageChecked: trigger_add_checked,
-		imageCheckedOver: trigger_add_checked_over,
-		imageDisabled: trigger_add_disabled
-	},
-	
-	bullet_select: {
-		imageUp: bullet_select,
-		imageOver: bullet_select_over,
-		imageDown: bullet_select_down,
-		imageDisabled: bullet_select_disabled
 	},
 	
 	draw_append: {
@@ -413,40 +388,75 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageDisabled: reset_center_disabled
 	},
 	
-	visuals: {
-		imageUp: visuals,
-		imageOver: visuals_over,
-		imageDown: visuals_down,
-		imageChecked: visuals_checked,
-		imageCheckedOver: visuals_checked_over,
-		imageDisabled: visuals_disabled
+	trigger_add: {
+		imageUp: trigger_add,
+		imageOver: trigger_add_over,
+		imageDown: trigger_add_down,
+		imageDisabled: trigger_add_disabled
 	},
 	
-	weapon: {
-		imageUp: weapon,
-		imageOver: weapon_over,
-		imageDown: weapon_down,
-		imageChecked: weapon_checked,
-		imageCheckedOver: weapon_checked_over,
-		imageDisabled: weapon_disabled
+	tooltip: {
+		imageUp: tooltip,
+		imageOver: tooltip_over,
+		imageDown: tooltip_down,
+		imageDisabled: tooltip_disabled
 	},
 	
-	collision: {
-		imageUp: collision,
-		imageOver: collision_over,
-		imageDown: collision_down,
-		imageChecked: collision_checked,
-		imageCheckedOver: collision_checked_over,
-		imageDisabled: collision_disabled
+	
+	
+	circle_shape: {
+		imageUp: circle_shape,
+		imageOver: circle_shape_over,
+		imageDown: circle_shape_down,
+		imageChecked: circle_shape_checked,
+		imageCheckedOver: circle_shape_checked_over,
+		imageDisabled: circle_shape_disabled
 	},
 	
-	movement: {
-		imageUp: movement,
-		imageOver: movement_over,
-		imageDown: movement_down,
-		imageChecked: movement_checked,
-		imageCheckedOver: movement_checked_over,
-		imageDisabled: movement_disabled
+	rectangle_shape: {
+		imageUp: rectangle_shape,
+		imageOver: rectangle_shape_over,
+		imageDown: rectangle_shape_down,
+		imageChecked: rectangle_shape_checked,
+		imageCheckedOver: rectangle_shape_checked_over,
+		imageDisabled: rectangle_shape_disabled
+	},
+	
+	triangle_shape: {
+		imageUp: triangle_shape,
+		imageOver: triangle_shape_over,
+		imageDown: triangle_shape_down,
+		imageChecked: triangle_shape_checked,
+		imageCheckedOver: triangle_shape_checked_over,
+		imageDisabled: triangle_shape_disabled
+	},
+	
+	draw_custom_shape: {
+		imageUp: draw_custom_shape,
+		imageOver: draw_custom_shape_over,
+		imageDown: draw_custom_shape_down,
+		imageChecked: draw_custom_shape_checked,
+		imageCheckedOver: draw_custom_shape_checked_over,
+		imageDisabled: draw_custom_shape_disabled
+	},
+	
+	path_once: {
+		imageUp: path_once
+	},
+	
+	path_back_and_forth: {
+		imageUp: path_back_and_forth
+	},
+	
+	path_loop: {
+		imageUp: path_loop
+	},
+	
+	bullet_select: {
+		imageUp: bullet_select,
+		imageOver: bullet_select_over,
+		imageDown: bullet_select_down,
+		imageDisabled: bullet_select_disabled
 	},
 	
 	aim_direction: {
@@ -512,37 +522,61 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageDisabled: off_disabled
 	},
 	
-	grid:  {
-		imageUp: grid,
-		imageOver: grid_over,
-		imageDown: grid_down,
-		imageChecked: grid_checked,
-		imageCheckedOver: grid_checked_over,
-		imageDisabled: grid_disabled
+	
+	
+	visuals: {
+		imageUp: visuals,
+		imageOver: visuals_over,
+		imageDown: visuals_down,
+		imageChecked: visuals_checked,
+		imageCheckedOver: visuals_checked_over,
+		imageDisabled: visuals_disabled
 	},
 	
-	grid_above: {
-		imageUp: grid_above,
-		imageOver: grid_above_over,
-		imageDown: grid_above_down,
-		imageChecked: grid_above_checked,
-		imageCheckedOver: grid_above_checked_over,
-		imageDisabled: grid_above_disabled
+	weapon: {
+		imageUp: weapon,
+		imageOver: weapon_over,
+		imageDown: weapon_down,
+		imageChecked: weapon_checked,
+		imageCheckedOver: weapon_checked_over,
+		imageDisabled: weapon_disabled
 	},
 	
-	enemy_spawn_highlight:  {
-		imageUp: enemy_spawn_highlight,
-		imageOver: enemy_spawn_highlight_over,
-		imageDown: enemy_spawn_highlight_down,
-		imageChecked: enemy_spawn_highlight_checked,
-		imageCheckedOver: enemy_spawn_highlight_checked_over,
-		imageDisabled: enemy_spawn_highlight_disabled
+	collision: {
+		imageUp: collision,
+		imageOver: collision_over,
+		imageDown: collision_down,
+		imageChecked: collision_checked,
+		imageCheckedOver: collision_checked_over,
+		imageDisabled: collision_disabled
 	},
 	
-	screenshot:  {
-		imageUp: screenshot,
-		imageOver: screenshot_over,
-		imageDown: screenshot_down,
+	movement: {
+		imageUp: movement,
+		imageOver: movement_over,
+		imageDown: movement_down,
+		imageChecked: movement_checked,
+		imageCheckedOver: movement_checked_over,
+		imageDisabled: movement_disabled
 	},
+	
+	enemy_info: {
+		imageUp: enemy_info,
+		imageOver: enemy_info_over,
+		imageDown: enemy_info_down,
+		imageChecked: enemy_info_checked,
+		imageCheckedOver: enemy_info_checked_over,
+		imageDisabled: enemy_info_disabled
+	},
+	
+	color: {
+		imageUp: color,
+		imageOver: color_over,
+		imageDown: color_down,
+		imageChecked: color_checked,
+		imageCheckedOver: color_checked_over,
+		imageDisabled: color_disabled
+	},
+	
 }
 }

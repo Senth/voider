@@ -8,16 +8,61 @@ import java.util.HashMap;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public enum Tags {
+	/** Easy */
+	EASY(1),
+	/** Challenging to play */
+	CHALLENGING(2),
+	/** Contains some sort of story */
+	STORY(3),
+	/** Complicated */
+	COMPLICATED(4),
+	/** Artistically made */
+	ARTISTIC(5),
+	/** Bullet storm */
+	BULLET_STORM(6),
+	/** No enemies */
+	ENEMYLESS(7, "Enemy-less"),
+	/** Short */
+	SHORT(8),
+	/** Long */
+	LONG(9),
+	/** Lots of colors */
+	COLORFUL(10),
+	/** Narrow terrain */
+	NARROW(11),
+	/** Surprises */
+	SURPRISE(12, "Surprise!"),
+	/** Weird */
+	WEIRD(13),
+	/** Boring */
+	BORING(14),
+	/** Fun */
+	FUN(15),
+
 
 
 	// NEXT ID TO USE =>
 
 	;
 	/**
-	 * @param name Human readable name of the tag
 	 * @param id unique id of the tag, used for storing in datastore
 	 */
-	Tags(String name, int id) {
+	Tags(int id) {
+		mId = id;
+
+		// Convert name to lower case except first letter
+		mName = String.valueOf(name().charAt(0));
+		mName += name().substring(1).toLowerCase();
+
+		// Replace underscore with space
+		mName = mName.replace('_', ' ');
+	}
+
+	/**
+	 * @param id unique id of the tag, used for storing in datastore
+	 * @param name Human readable name of the tag
+	 */
+	Tags(int id, String name) {
 		mName = name;
 		mId = id;
 	}
