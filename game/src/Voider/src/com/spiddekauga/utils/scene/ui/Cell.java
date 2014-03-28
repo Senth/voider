@@ -535,12 +535,10 @@ public class Cell implements Poolable {
 		return mActor;
 	}
 
-
 	/** Actor in the cell */
 	private Actor mActor = null;
 	/** Alignment of the cell */
 	private Align mAlign = new Align(Horizontal.LEFT, Vertical.MIDDLE);
-	/** If the cell is scalable */
 	/** If the cell shall fill the width of the row */
 	private boolean mFillWidth = false;
 	/** Old width before filling the width */

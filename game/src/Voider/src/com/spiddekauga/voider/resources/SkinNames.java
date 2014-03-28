@@ -14,6 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Window.WindowStyle;
 import com.spiddekauga.utils.scene.ui.AnimationWidget.AnimationWidgetStyle;
 import com.spiddekauga.utils.scene.ui.Label.LabelStyle;
+import com.spiddekauga.utils.scene.ui.RatingWidget.RatingWidgetStyle;
 
 
 /**
@@ -169,6 +170,18 @@ public class SkinNames {
 		VISUALS,
 		/** Weapon options for enemies and bullets */
 		WEAPON,
+		/** Featured big (explore) */
+		FEATURED_BIG,
+		/** Search (explore) */
+		SEARCH_BIG,
+		/** Browse big (explore) */
+		BROWSE_BIG,
+		/** Featured (explore) */
+		FEATURED,
+		/** Search (explore) */
+		SEARCH,
+		/** Browse (explore) */
+		BROWSE,
 
 		;
 
@@ -410,6 +423,59 @@ public class SkinNames {
 	}
 
 	/**
+	 * General images
+	 */
+	public enum GeneralImages implements IImageNames {
+		/** Date */
+		DATE,
+		/** Edited */
+		EDIT,
+		/** Player */
+		PLAYER,
+		/** Number of plays */
+		PLAYS,
+		/** Star */
+		STAR,
+		/** Tag */
+		TAG,
+		/** Like */
+		LIKE,
+
+		;
+
+		/**
+		 * Used default JSON name for enum
+		 */
+		private GeneralImages() {
+			mName = name().toLowerCase();
+		}
+
+		/**
+		 * Create a custom name for the enumeration
+		 * @param jsonName name in the json-file
+		 */
+		private GeneralImages(String jsonName) {
+			mName = jsonName;
+		}
+
+		@Override
+		public InternalNames getSkinName() {
+			return InternalNames.UI_GENERAL;
+		}
+
+		/**
+		 * @return name of the icon inside the skin
+		 */
+		@Override
+		public String toString() {
+			return mName;
+		}
+
+		/** skin name of the icon */
+		private String mName;
+	}
+
+	/**
 	 * General UI elements
 	 */
 	public enum General implements ISkinNames {
@@ -449,6 +515,8 @@ public class SkinNames {
 		OPTIONS(ImageButtonStyle.class),
 		/** Play button */
 		PLAY(ImageButtonStyle.class),
+		/** Rating widget default */
+		RATING_DEFAULT(RatingWidgetStyle.class, "default"),
 		/** Scroll pane default, no background */
 		SCROLL_PANE_DEFAULT(ScrollPaneStyle.class, "default"),
 		/** Scroll pane with background */
@@ -479,6 +547,32 @@ public class SkinNames {
 		WINDOW_NO_TITLE(WindowStyle.class, "default"),
 		/** Window with title */
 		WINDOW_TITLE(WindowStyle.class, "title"),
+		/** Color tab */
+		COLOR(ImageButtonStyle.class),
+		/** Game continue */
+		GAME_CONTINUE(ImageButtonStyle.class),
+		/** Replay the level */
+		REPLAY(ImageButtonStyle.class),
+		/** Spiddekauga info big */
+		SPIDDEKAUGA_INFO(ImageButtonStyle.class, "info_big"),
+		/** Login big */
+		LOGIN_BIG(ImageButtonStyle.class),
+		/** Player big */
+		PLAYER_BIG(ImageButtonStyle.class),
+		/** Settings big */
+		SETTINGS_BIG(ImageButtonStyle.class),
+		/** Comments tab */
+		COMMENTS(ImageButtonStyle.class),
+		/** Image tab */
+		IMAGES(ImageButtonStyle.class),
+		/** Overview tab */
+		OVERVIEW(ImageButtonStyle.class),
+		/** Tags tab */
+		TAGS(ImageButtonStyle.class),
+		/** Tag button */
+		TAG(ImageButtonStyle.class),
+		/** Like button */
+		LIKE(ImageButtonStyle.class),
 
 		;
 
@@ -535,6 +629,16 @@ public class SkinNames {
 		 */
 		Class<?> getClassType();
 
+		/**
+		 * @return skin name
+		 */
+		InternalNames getSkinName();
+	}
+
+	/**
+	 * Interface for image names
+	 */
+	public interface IImageNames {
 		/**
 		 * @return skin name
 		 */

@@ -10,13 +10,11 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Disposable;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.utils.Graphics;
 import com.spiddekauga.voider.utils.User;
 
 /**
@@ -267,9 +265,7 @@ public abstract class Def extends Resource implements IResourceDependency, IReso
 	 */
 	private void createTexture() {
 		if (mPngBytes != null) {
-			Pixmap pixmap = new Pixmap(mPngBytes, 0, mPngBytes.length);
-			TextureRegion textureRegion = new TextureRegion(new Texture(pixmap));
-			mTextureDrawable = new TextureRegionDrawable(textureRegion);
+			mTextureDrawable = Graphics.pngToDrawable(mPngBytes);
 		}
 	}
 

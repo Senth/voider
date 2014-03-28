@@ -2,6 +2,7 @@ package com.spiddekauga.voider.repo;
 
 import java.util.ArrayList;
 
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Disposable;
 import com.spiddekauga.voider.network.entities.LevelInfoEntity;
 import com.spiddekauga.voider.utils.Pools;
@@ -21,6 +22,15 @@ class LevelCache extends Cache implements Disposable {
 	@Override
 	public void dispose() {
 		if (levels != null) {
+			// Dispose drawables
+			for (LevelInfoEntity levelInfoEntity : levels) {
+				if (levelInfoEntity.defEntity.drawable instanceof TextureRegionDrawable) {
+					((TextureRegionDrawable) levelInfoEntity.defEntity.drawable).getRegion().getTexture().dispose();
+				}
+				levelInfoEntity.defEntity.drawable = null;
+			}
+
+
 			Pools.arrayList.free(levels);
 		}
 	}

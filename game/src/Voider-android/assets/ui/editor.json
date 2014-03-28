@@ -1,24 +1,25 @@
 {
 java.lang.Float: {
+	// Padding between upper bar and tools in various editors
 	padding_between_bar_and_tools: {value: 40},
+	// Outline width for enemies that are displayed as 'will activate' when test
+	// running the level. See Color.enemy_activate_test_run_outline_color
 	enemy_activate_on_test_run_outline_width: {value: 0.25},
-	
-	bar_upper_lower_height: {value: 32},
-	padding_between_editor_menu_and_tools: {value: 8},
-	padding_between_file_menu_and_options: {value: 8},
-	enemy_will_activate_on_test_run_line_width: {value: 0.25},
 },
 
 com.badlogic.gdx.graphics.Color: {
+	// Color of minor grid lines
 	grid_color: { r: 1, g: 1, b: 1, a: 0.2 },
+	// Color of major (every 5th) grid line
 	grid_milestone_color: { r: 1, g: 1, b: 1, a: 0.4 },
+	// Color above and below the level. Used to show that these parts are outside the level
 	level_above_below_color: { r: 1, g: 1, b: 1 , a: 0.2 },
+	// Line color between enemy and trigger. This line shows what trigger the enemy is bound to
 	enemy_activate_trigger_line_color: { r: 0.25, g: 1, b: 0.25, a: 0.4 },
 	enemy_deactivate_trigger_line_color: { r: 1, g: 0.25, b: 0.6, a: 0.4 },
+	// Outline color for enemies that are displayed as 'will activate' when test
+	// running the level. See Float.enemy_activate_on_test_run_outline_width
 	enemy_activate_on_test_run_color: { r: 1, g: 1, b: 1, a: 1},
-	
-	bar_upper_lower_color: { r: 0.9, g: 0.9, b: 0.9, a: 1 },
-	enemy_will_activate_on_test_run_color: { r: 1, g: 1, b: 1, a: 1},
 },
 
 com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
@@ -46,7 +47,7 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageDisabled: stub_disabled
 	},	
 	
-	
+	/* Editors */
 	
 	bullet_editor: {
 		imageDown: bullet_editor_down,
@@ -112,7 +113,7 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageUp: enemy_editor_down
 	},
 	
-	
+	/* Files */
 	
 	new: {
 		imageUp: new,
@@ -210,7 +211,7 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageDown: screenshot_down,
 	},
 	
-	
+	/* Tools */
 	
 	delete: {
 		imageUp: delete,
@@ -388,13 +389,6 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageDisabled: reset_center_disabled
 	},
 	
-	trigger_add: {
-		imageUp: trigger_add,
-		imageOver: trigger_add_over,
-		imageDown: trigger_add_down,
-		imageDisabled: trigger_add_disabled
-	},
-	
 	tooltip: {
 		imageUp: tooltip,
 		imageOver: tooltip_over,
@@ -402,7 +396,7 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageDisabled: tooltip_disabled
 	},
 	
-	
+	/* Properties */
 	
 	circle_shape: {
 		imageUp: circle_shape,
@@ -441,15 +435,30 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 	},
 	
 	path_once: {
-		imageUp: path_once
+		imageUp: path_once,
+		imageOver: path_once_over,
+		imageDown: path_once_down,
+		imageChecked: path_once_checked,
+		imageCheckedOver: path_once_checked_over,
+		imageDisabled: path_once_disabled,
 	},
 	
 	path_back_and_forth: {
-		imageUp: path_back_and_forth
+		imageUp: path_back_and_forth,
+		imageOver: path_back_and_forth_over,
+		imageDown: path_back_and_forth_down,
+		imageChecked: path_back_and_forth_checked,
+		imageCheckedOver: path_back_and_forth_checked_over,
+		imageDisabled: path_back_and_forth_disabled,
 	},
 	
 	path_loop: {
-		imageUp: path_loop
+		imageUp: path_loop,
+		imageOver: path_loop_over,
+		imageDown: path_loop_down,
+		imageChecked: path_loop_checked,
+		imageCheckedOver: path_loop_checked_over,
+		imageDisabled: path_loop_disabled,
 	},
 	
 	bullet_select: {
@@ -522,7 +531,7 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageDisabled: off_disabled
 	},
 	
-	
+	/* Tabs */
 	
 	visuals: {
 		imageUp: visuals,

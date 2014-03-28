@@ -17,6 +17,7 @@ import com.spiddekauga.voider.network.entities.DefTypes;
 import com.spiddekauga.voider.network.entities.EnemyDefEntity;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.LevelDefEntity;
+import com.spiddekauga.voider.network.entities.LevelInfoEntity;
 import com.spiddekauga.voider.network.entities.Tags;
 import com.spiddekauga.voider.network.entities.method.IMethodEntity;
 import com.spiddekauga.voider.network.entities.method.LevelGetAllMethod;
@@ -29,6 +30,7 @@ import com.spiddekauga.voider.repo.WebGateway.FieldNameFileWrapper;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourcePng;
+import com.spiddekauga.voider.utils.Graphics;
 
 /**
  * Web repository for resources
@@ -263,6 +265,10 @@ public class ResourceWebRepo extends WebRepo {
 			// Update cursor
 			levelCache.serverCursor = ((LevelGetAllMethodResponse) response).cursor;
 
+			// Create drawables
+			for (LevelInfoEntity levelInfoEntity : ((LevelGetAllMethodResponse) response).levels) {
+				createDrawable(levelInfoEntity.defEntity);
+			}
 
 			// Set response to include cached levels
 			levelCache.levels.addAll(((LevelGetAllMethodResponse) response).levels);
@@ -273,6 +279,16 @@ public class ResourceWebRepo extends WebRepo {
 			LevelGetAllMethodResponse levelGetAllMethodResponse = new LevelGetAllMethodResponse();
 			levelGetAllMethodResponse.status = LevelGetAllMethodResponse.Statuses.FAILED_SERVER_CONNECTION;
 			return levelGetAllMethodResponse;
+		}
+	}
+
+	/**
+	 * Create drawables for the specified def entity
+	 * @param defEntity the def entity to create a drawable for
+	 */
+	private void createDrawable(DefEntity defEntity) {
+		if (defEntity.png != null) {
+			defEntity.drawable = Graphics.pngToDrawable(defEntity.png);
 		}
 	}
 

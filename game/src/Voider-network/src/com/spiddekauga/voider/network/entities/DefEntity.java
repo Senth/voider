@@ -27,6 +27,8 @@ public class DefEntity implements IEntity {
 	public String description = null;
 	/** PNG-bytes (optional) */
 	public byte[] png = null;
+	/** drawable texture, only used on client */
+	public Object drawable = null;
 	/** Copy parent id, if copied from another definition. Should be null otherwise */
 	public UUID copyParentId = null;
 	/** resource id */

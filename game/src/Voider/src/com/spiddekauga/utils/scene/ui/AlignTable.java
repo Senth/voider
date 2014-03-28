@@ -228,6 +228,34 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	}
 
 	/**
+	 * @return top margin
+	 */
+	public float getMarginTop() {
+		return mMargin.top;
+	}
+
+	/**
+	 * @return right margin
+	 */
+	public float getMarginRight() {
+		return mMargin.right;
+	}
+
+	/**
+	 * @return bottom margin
+	 */
+	public float getMarginBottom() {
+		return mMargin.bottom;
+	}
+
+	/**
+	 * @return left margin
+	 */
+	public float getMarginLeft() {
+		return mMargin.left;
+	}
+
+	/**
 	 * Gets all actors in the table
 	 * @param onlyVisible set to true to get visible actors, false to get all
 	 * @return array with all actors. Don't forget to free the ArrayList after
@@ -409,20 +437,18 @@ public class AlignTable extends WidgetGroup implements Disposable {
 		}
 	}
 
-	@Override
-	public void setWidth(float width) {
-		super.setWidth(width);
+	/**
+	 * @return table width including horizontal margin
+	 */
+	public float getWidthWithMargin() {
+		return getWidth() + mMargin.left + mMargin.right;
 	}
 
-	@Override
-	public void setSize(float width, float height) {
-		setWidth(width);
-		setHeight(height);
-	}
-
-	@Override
-	public void setHeight(float height) {
-		super.setHeight(height);
+	/**
+	 * @return table height including vertical margin
+	 */
+	public float getHeightWithMargin() {
+		return getHeight() + mMargin.top + mMargin.bottom;
 	}
 
 	@Override

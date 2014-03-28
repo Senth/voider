@@ -94,10 +94,27 @@ public class ExploreScene extends Scene implements ICallerResponseListener {
 	}
 
 	/**
+	 * @return all fetched levels
+	 */
+	ArrayList<LevelInfoEntity> getLevels() {
+		// TODO
+		ArrayList<LevelInfoEntity> stub = new ArrayList<>();
+		return stub;
+	}
+
+	/**
 	 * @return the selected level, null if none are selected
 	 */
 	LevelInfoEntity getSelectedLevel() {
 		return mSelectedLevel;
+	}
+
+	/**
+	 * Sets the selected level
+	 * @param level new selected level
+	 */
+	void setSelectedLevel(LevelInfoEntity level) {
+		mSelectedLevel = level;
 	}
 
 	/** Selected level */

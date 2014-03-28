@@ -38,13 +38,13 @@ public class RatingWidget extends WidgetGroup implements Disposable {
 	 * @see #RatingWidget(Drawable, Drawable, int, Touchable)
 	 */
 	public RatingWidget(RatingWidgetStyle style, int ratingMax, Touchable touchable) {
-		if (style.filledStar == null) {
+		if (style.checked == null) {
 			throw new IllegalArgumentException("filledStar cannot be null");
-		} else if (style.emptyStar == null) {
+		} else if (style.empty == null) {
 			throw new IllegalArgumentException("emptyStar cannot be null");
 		} else if (ratingMax <= 0) {
 			throw new IllegalArgumentException("the max rating has to be more than 0");
-		} else if (style.filledStar.getMinWidth() != style.emptyStar.getMinWidth() && style.filledStar.getMinHeight() != style.emptyStar.getMinHeight()) {
+		} else if (style.checked.getMinWidth() != style.empty.getMinWidth() && style.checked.getMinHeight() != style.empty.getMinHeight()) {
 			throw new IllegalArgumentException("filled and empty star should be of the same size");
 		}
 
@@ -61,25 +61,25 @@ public class RatingWidget extends WidgetGroup implements Disposable {
 	 * Constructor which sets the filled and empty star drawables and
 	 * the number of stars to show. Rating can be changed by pressing
 	 * on the stars
-	 * @param filledStar how a filled star looks
-	 * @param emptyStar how an empty star looks
+	 * @param checked how a filled star looks
+	 * @param empty how an empty star looks
 	 * @param ratingMax number of stars used in the rating
 	 * @see #RatingWidget(Drawable, Drawable, int, Touchable)
 	 */
-	public RatingWidget(Drawable filledStar, Drawable emptyStar, int ratingMax) {
-		this(new RatingWidgetStyle(filledStar, emptyStar), ratingMax, Touchable.enabled);
+	public RatingWidget(Drawable checked, Drawable empty, int ratingMax) {
+		this(new RatingWidgetStyle(checked, empty), ratingMax, Touchable.enabled);
 	}
 
 	/**
 	 * Constructor which sets the filled and empty star drawables and
 	 * the number of stars to show
-	 * @param filledStar how a filled star looks
-	 * @param emptyStar how an empty star looks
+	 * @param checked how a filled star looks
+	 * @param empty how an empty star looks
 	 * @param ratingMax number of stars used in the rating
 	 * @param touchable if the rating can be changed by pressing on the stars
 	 */
-	public RatingWidget(Drawable filledStar, Drawable emptyStar, int ratingMax, Touchable touchable) {
-		this(new RatingWidgetStyle(filledStar, emptyStar), ratingMax, touchable);
+	public RatingWidget(Drawable checked, Drawable empty, int ratingMax, Touchable touchable) {
+		this(new RatingWidgetStyle(checked, empty), ratingMax, touchable);
 	}
 
 	@Override
@@ -117,9 +117,9 @@ public class RatingWidget extends WidgetGroup implements Disposable {
 	private void updateFilledStars(int cFilledStars) {
 		for (int i = 0; i < mStars.length; ++i) {
 			if (i < cFilledStars) {
-				mStars[i].setDrawable(mStyle.filledStar);
+				mStars[i].setDrawable(mStyle.checked);
 			} else {
-				mStars[i].setDrawable(mStyle.emptyStar);
+				mStars[i].setDrawable(mStyle.empty);
 			}
 		}
 	}
@@ -243,7 +243,7 @@ public class RatingWidget extends WidgetGroup implements Disposable {
 	private void createImageButtons() {
 		for (int i = 0; i < mStars.length; ++i) {
 			mStars[i] = new Image();
-			mStars[i].setSize(mStyle.filledStar.getMinWidth(), mStyle.filledStar.getMinHeight());
+			mStars[i].setSize(mStyle.checked.getMinWidth(), mStyle.checked.getMinHeight());
 			mTable.add(mStars[i]);
 			mClickListeners[i] = new ClickListenerImage(i+1);
 		}
@@ -296,17 +296,17 @@ public class RatingWidget extends WidgetGroup implements Disposable {
 
 		/**
 		 * Sets the filled and empty star
-		 * @param filledStar drawable for filled stars
-		 * @param emptyStar drawable for empty stars
+		 * @param checked drawable for filled stars
+		 * @param empty drawable for empty stars
 		 */
-		public RatingWidgetStyle(Drawable filledStar, Drawable emptyStar) {
-			this.filledStar = filledStar;
-			this.emptyStar = emptyStar;
+		public RatingWidgetStyle(Drawable checked, Drawable empty) {
+			this.checked = checked;
+			this.empty = empty;
 		}
 
 		/** Drawable used for filled stars */
-		private Drawable filledStar = null;
+		private Drawable checked = null;
 		/** Drawable used for empty stars */
-		private Drawable emptyStar = null;
+		private Drawable empty = null;
 	}
 }

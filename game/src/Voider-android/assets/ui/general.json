@@ -4,8 +4,11 @@ com.badlogic.gdx.graphics.g2d.BitmapFont: {
 },
 
 com.badlogic.gdx.graphics.Color: {
-	bar_upper_lower_color: { r: 0.4, g: 0.4, b: 0.4, a: 1 },
-	widget_background_color: { r: 0.4, g: 0.4, b: 0.4, a: 1 },
+	// Color of the upper and lower bars, see Float.bar_upper_lower_height for height
+	bar_upper_lower_color: { r: 0.77, g: 0.77, b: 0.77, a: 1 },
+	// Color used as background for various widgets
+	widget_background_color: { r: 0.77, g: 0.77, b: 0.77, a: 1 },
+	
 	green: { a: 1, b: 0, g: 1, r: 0 },
 	white: { a: 1, b: 1, g: 1, r: 1 },
 	red: { a: 1, b: 0, g: 0, r: 1 },
@@ -13,21 +16,37 @@ com.badlogic.gdx.graphics.Color: {
 },
 
 java.lang.Float: {
-	bar_upper_lower_height: {value: 32},
+	/* Explore / Load */
+	
+	// Width of info bar in explore and load screen. Info bar displays name, creator, etc.
 	info_bar_width: {value: 250},
-	padding_default: {value: 1},
-	padding_window_left_right: {value: 8},
-	padding_separator: {value: 32},
-	padding_after_label: {value: 8},
-	padding_below_above_bar: {value: 8},
-	text_field_number_width: {value: 64},
-	wait_window_fade_in: {value: 0.2},
-	wait_window_fade_out: {value: 0.6},
+	// Maximum size of enemies/bullets on load screen (i.e. the image button) 
 	load_actor_size_max: {value: 80},
 	
-	select_def_info_width: {value: 240},
-	select_def_text_width_max: {value: 160},
-	select_def_image_width_max: {value: 80},
+	
+	/* Padding */
+	
+	// Currently used on each element in tab content
+	padding_default: {value: 1},
+	// Padding in windows so that the content doesn't start directly at margin
+	padding_window_left_right: {value: 8},
+	// Used to separate group of widgets, e.g. tool groups
+	padding_separator: {value: 32},
+	// Padding after a label before other text, slider, or text field. E.g. between : and [ in Name: [___]
+	padding_after_label: {value: 8},
+	// Padding below/above the upper/lower bar.
+	padding_below_above_bar: {value: 8},
+	
+	
+	/* Other */
+	
+	// Height of upper and lower bars. See Color.bar_upper_lower_color for setting color
+	bar_upper_lower_height: {value: 32},
+	// Width of numeric text fields (e.g. after a slider)
+	text_field_number_width: {value: 64},
+	// Fade in/out duration for wait window. Wait window displays loading icon or progress bar
+	wait_window_fade_in: {value: 0.2},
+	wait_window_fade_out: {value: 0.6},
 },
 
 com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
@@ -66,6 +85,13 @@ com.spiddekauga.utils.scene.ui.AnimationWidget$AnimationWidgetStyle:  {
 	},
 },
 
+com.spiddekauga.utils.scene.ui.RatingWidget$RatingWidgetStyle:  {
+	default: {
+		checked: stub,
+		empty: stub,
+	},
+},
+
 com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 	default: {
 		down: button_default_down,
@@ -83,7 +109,7 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		checkedOver: button_default_checked_over,
 	},
 	
-	
+	/* Main - Primary */
 	
 	play: {
 		imageUp: play,
@@ -106,7 +132,7 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageDisabled: create_disabled
 	},
 	
-	
+	/* Main - Secondary */
 	
 	info: {
 		imageUp: info,
@@ -129,7 +155,7 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageDisabled: logout_disabled
 	},
 	
-	
+	/* Explore */
 	
 	featured_big: {
 		imageUp: featured_big,
@@ -185,7 +211,7 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageDisabled: search_disabled
 	},
 	
-	
+	/* Buttons */
 	
 	game_continue: {
 		imageUp: game_continue,
@@ -241,7 +267,7 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageDisabled: settings_big_disabled
 	},
 	
-	
+	/* Tabs */
 	
 	comments: {
 		imageUp: comments,
@@ -279,7 +305,7 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageDisabled: tags_disabled
 	},
 	
-	
+	/* Icons */
 	
 	date: {
 		imageUp: date,
@@ -344,7 +370,7 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageDisabled: like_disabled
 	},
 	
-	
+	/* Placeholders */
 	
 	stub: {
 		down: button_default_down,

@@ -14,6 +14,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.CheckBox.CheckBoxStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane.ScrollPaneStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
@@ -30,6 +32,7 @@ import com.spiddekauga.utils.scene.ui.HideListener;
 import com.spiddekauga.utils.scene.ui.Label;
 import com.spiddekauga.utils.scene.ui.Label.LabelStyle;
 import com.spiddekauga.utils.scene.ui.RatingWidget;
+import com.spiddekauga.utils.scene.ui.RatingWidget.RatingWidgetStyle;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.network.entities.LevelInfoEntity;
@@ -127,10 +130,10 @@ public class ExploreGui extends Gui {
 		initSearchBar();
 		initComments();
 		initInfo();
-		initLevel();
 		initTags();
 		initActions();
 		initTopBar();
+		initContent();
 	}
 
 	/**
@@ -161,7 +164,6 @@ public class ExploreGui extends Gui {
 		Button button = new ImageButton((ImageButtonStyle) SkinNames.getResource(SkinNames.General.IMAGE_BUTTON_STUB_TOGGLE));
 		table.add(button);
 		buttonGroup.add(button);
-		mWidgets.view.sort = button;
 		mWidgets.sort.hider = new HideListener(button, true) {
 			@Override
 			protected void onShow() {
@@ -178,7 +180,6 @@ public class ExploreGui extends Gui {
 		button = new ImageButton((ImageButtonStyle) SkinNames.getResource(SkinNames.General.IMAGE_BUTTON_STUB_TOGGLE));
 		table.add(button);
 		buttonGroup.add(button);
-		mWidgets.view.search = button;
 		mWidgets.search.hider = new HideListener(button, true) {
 			@Override
 			protected void onShow() {
@@ -330,10 +331,8 @@ public class ExploreGui extends Gui {
 
 
 		// Rating
-		// TODO replace rating star icons
-		Drawable filledStar = generalSkin.getDrawable(SkinNames.General.STUB.toString());
-		Drawable emptyStar = generalSkin.getDrawable(SkinNames.General.STUB.toString());
-		RatingWidget rating = new RatingWidget(filledStar, emptyStar, 5, Touchable.disabled);
+		RatingWidgetStyle ratingStyle = SkinNames.getResource(SkinNames.General.RATING_DEFAULT);
+		RatingWidget rating = new RatingWidget(ratingStyle, 5, Touchable.disabled);
 		mWidgets.info.rating = rating;
 		rating.setName("rating");
 		table.row(Horizontal.CENTER, Vertical.TOP);
@@ -492,7 +491,7 @@ public class ExploreGui extends Gui {
 		Color backgroundColor = SkinNames.getResource(SkinNames.GeneralVars.WIDGET_BACKGROUND_COLOR);
 
 		// This table wraps the tag table with the tab table
-		AlignTable wrapper = new AlignTable();
+		AlignTable wrapper = mWidgets.tag.wrapper;
 		wrapper.setMargin(topMargin, 0, 0, 0);
 		wrapper.setAlign(Horizontal.LEFT, Vertical.TOP);
 		getStage().addActor(wrapper);
@@ -546,7 +545,17 @@ public class ExploreGui extends Gui {
 		Button button = new ImageButton((ImageButtonStyle) SkinNames.getResource(SkinNames.General.IMAGE_BUTTON_STUB_TOGGLE));
 		buttonTable.row();
 		buttonTable.add(button);
-		HideListener hideListener = new HideListener(button, true);
+		HideListener hideListener = new HideListener(button, true) {
+			@Override
+			protected void onShow() {
+				resetContentMargins();
+			}
+
+			@Override
+			protected void onHide() {
+				resetContentMargins();
+			}
+		};
 		hideListener.addToggleActor(tagTable);
 
 		// Clear button
@@ -573,8 +582,119 @@ public class ExploreGui extends Gui {
 	/**
 	 * Initialize level
 	 */
-	private void initLevel() {
+	private void initContent() {
+		// TODO change scroll pane style to no visible scroll bars
+		ScrollPaneStyle scrollPaneStyle = SkinNames.getResource(SkinNames.General.SCROLL_PANE_DEFAULT);
+		AlignTable table = mWidgets.content.table;
+		mWidgets.content.scrollPane = new ScrollPane(table, scrollPaneStyle);
 
+
+		table.setAlign(Horizontal.LEFT, Vertical.TOP);
+
+
+		resetContentMargins();
+	}
+
+	/**
+	 * Reset content margins
+	 */
+	private void resetContentMargins() {
+		if (mWidgets.content.scrollPane != null) {
+			float screenWidth = Gdx.graphics.getWidth();
+			float screenHeight = Gdx.graphics.getHeight();
+			float marginLeft = mWidgets.tag.wrapper.getWidthWithMargin();
+			float marginRight = mWidgets.rightPanel.getWidthWithMargin();
+			float marginTop = mWidgets.tag.wrapper.getMarginTop();
+			float marginBottom = mWidgets.tag.wrapper.getMarginBottom();
+
+
+			ScrollPane scrollPane = mWidgets.content.scrollPane;
+			scrollPane.setWidth(screenWidth - marginLeft - marginRight);
+			scrollPane.setHeight(screenHeight - marginTop - marginBottom);
+			scrollPane.setPosition(marginLeft, marginBottom);
+		}
+	}
+
+	/**
+	 * Reset content
+	 */
+	void resetContent() {
+		resetContentMargins();
+
+		// Calculate how many levels per row
+		float floatLevelsPerRow = mWidgets.content.scrollPane.getWidth() / Config.Level.SAVE_TEXTURE_WIDTH;
+		int levelsPerRow = (int) floatLevelsPerRow;
+		if (floatLevelsPerRow != levelsPerRow) {
+			levelsPerRow++;
+		}
+
+
+		// Populate table
+		AlignTable table = mWidgets.content.table;
+		ArrayList<LevelInfoEntity> levels = mExploreScene.getLevels();
+
+		int columnIndex = levelsPerRow;
+		for (LevelInfoEntity level : levels) {
+			AlignTable levelTable = createLevelTable(level);
+
+			if (columnIndex == levelsPerRow) {
+				table.row().setFillWidth(true);
+				columnIndex = 0;
+			}
+
+			table.add(levelTable).setFillWidth(true);
+
+			columnIndex++;
+		}
+
+		// Pad with empty cells
+		if (columnIndex > 0 && columnIndex < levelsPerRow) {
+			int columnsToPad = levelsPerRow - columnIndex;
+			for (int i = 0; i < columnsToPad; ++i) {
+				table.add().setFillWidth(true);
+			}
+		}
+
+	}
+
+	/**
+	 * Create level image table
+	 * @param level the level to create an image table for
+	 * @return table with level image, name and rating
+	 */
+	private AlignTable createLevelTable(final LevelInfoEntity level) {
+		AlignTable table = new AlignTable();
+		table.setAlign(Horizontal.CENTER, Vertical.MIDDLE);
+
+		// Image button
+		ImageButtonStyle defaultImageStyle = SkinNames.getResource(SkinNames.General.IMAGE_BUTTON_TOGGLE);
+		ImageButtonStyle imageButtonStyle = new ImageButtonStyle(defaultImageStyle);
+		imageButtonStyle.imageUp = (Drawable) level.defEntity.drawable;
+
+		Button button = new ImageButton(imageButtonStyle);
+		table.row().setFillWidth(true);
+		table.add(button).setFillWidth(true);
+		new ButtonListener(button) {
+			@Override
+			protected void onChecked(boolean checked) {
+				if (checked) {
+					mExploreScene.setSelectedLevel(level);
+				}
+			}
+		};
+
+		// Level name
+		Label label = new Label(level.defEntity.name, (LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_DEFAULT));
+		table.row();
+		table.add(label);
+
+		// Rating
+		RatingWidgetStyle ratingStyle = SkinNames.getResource(SkinNames.General.RATING_DEFAULT);
+		RatingWidget ratingWidget = new RatingWidget(ratingStyle, 5, Touchable.disabled);
+		table.row();
+		table.add(ratingWidget);
+
+		return table;
 	}
 
 	/** If we're currently clearing the tags */
@@ -595,17 +715,16 @@ public class ExploreGui extends Gui {
 		Comments comment = new Comments();
 		Tag tag = new Tag();
 		Search search = new Search();
-		Level level = new Level();
 		Background topBar = null;
+		Content content = new Content();
 		AlignTable rightPanel = new AlignTable();
 
-		private static class View {
-			Button sort = null;
-			Button search = null;
+		private static class Content {
 			AlignTable table = new AlignTable();
+			ScrollPane scrollPane = null;
 		}
 
-		private static class Level {
+		private static class View {
 			AlignTable table = new AlignTable();
 		}
 
@@ -635,7 +754,7 @@ public class ExploreGui extends Gui {
 		}
 
 		private static class Tag {
-			HideListener hider = new HideListener(true);
+			AlignTable wrapper = new AlignTable();
 			ButtonGroup buttonGroup = new ButtonGroup();
 			ArrayList<Button> all = new ArrayList<>();
 			HashMap<Button, Tags> buttonTag = new HashMap<>();
