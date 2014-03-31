@@ -758,11 +758,12 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	@Override
 	public void handleWebResponse(IMethodEntity method, IEntity response) {
 		if (response instanceof PublishMethodResponse) {
+			mGui.hideProgressBar();
 			if (((PublishMethodResponse) response).status == PublishMethodResponse.Statuses.SUCCESS) {
-				mGui.hideProgressBar();
 				mGui.showSuccessMessage("Publish successful!");
 				updateAvailableTools(false, true);
 				mGui.resetValues();
+				mInvoker.dispose();
 			} else {
 				mGui.showErrorMessage("Publish failed!");
 			}

@@ -2,11 +2,9 @@ package com.spiddekauga.voider.repo;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.mime.MultipartEntityWithProgressBuilder;
@@ -14,9 +12,9 @@ import org.apache.http.entity.mime.content.ContentBody;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 
 import com.badlogic.gdx.Gdx;
-import com.spiddekauga.utils.Buffers;
 import com.spiddekauga.utils.IOutstreamProgressListener;
 import com.spiddekauga.voider.Config;
 
@@ -143,9 +141,7 @@ class WebGateway {
 	 */
 	private static byte[] getEntity(CloseableHttpResponse response) {
 		try {
-			HttpEntity httpEntity = response.getEntity();
-			InputStream entityStream = httpEntity.getContent();
-			return Buffers.readBytes(entityStream);
+			return EntityUtils.toByteArray(response.getEntity());
 
 		} catch (IOException e) {
 			e.printStackTrace();

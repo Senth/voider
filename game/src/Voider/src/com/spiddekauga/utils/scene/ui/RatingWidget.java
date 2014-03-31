@@ -242,7 +242,7 @@ public class RatingWidget extends WidgetGroup implements Disposable {
 	 */
 	private void createImageButtons() {
 		for (int i = 0; i < mStars.length; ++i) {
-			mStars[i] = new Image();
+			mStars[i] = new Image(mStyle.empty);
 			mStars[i].setSize(mStyle.checked.getMinWidth(), mStyle.checked.getMinHeight());
 			mTable.add(mStars[i]);
 			mClickListeners[i] = new ClickListenerImage(i+1);

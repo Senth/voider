@@ -16,7 +16,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane.ScrollPaneStyle;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
@@ -38,8 +37,6 @@ import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.network.entities.LevelInfoEntity;
 import com.spiddekauga.voider.network.entities.Tags;
 import com.spiddekauga.voider.network.entities.method.LevelGetAllMethod.SortOrders;
-import com.spiddekauga.voider.resources.InternalNames;
-import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.utils.Pools;
@@ -134,6 +131,8 @@ public class ExploreGui extends Gui {
 		initActions();
 		initTopBar();
 		initContent();
+
+		mExploreScene.fetchLevels(getSelectedSortOrder(), getSelectedTags());
 	}
 
 	/**
@@ -160,8 +159,7 @@ public class ExploreGui extends Gui {
 		ButtonGroup buttonGroup = new ButtonGroup();
 
 		// Sort
-		// TODO replace stub with sort button
-		Button button = new ImageButton((ImageButtonStyle) SkinNames.getResource(SkinNames.General.IMAGE_BUTTON_STUB_TOGGLE));
+		Button button = new ImageButton((ImageButtonStyle) SkinNames.getResource(SkinNames.General.BROWSE));
 		table.add(button);
 		buttonGroup.add(button);
 		mWidgets.sort.hider = new HideListener(button, true) {
@@ -176,8 +174,7 @@ public class ExploreGui extends Gui {
 
 
 		// Search
-		// TODO replace stub with search button
-		button = new ImageButton((ImageButtonStyle) SkinNames.getResource(SkinNames.General.IMAGE_BUTTON_STUB_TOGGLE));
+		button = new ImageButton((ImageButtonStyle) SkinNames.getResource(SkinNames.General.SEARCH));
 		table.add(button);
 		buttonGroup.add(button);
 		mWidgets.search.hider = new HideListener(button, true) {
@@ -291,15 +288,13 @@ public class ExploreGui extends Gui {
 		table.row();
 
 		// Info
-		// TODO replace info tab button
-		Button button = new ImageButton((ImageButtonStyle) SkinNames.getResource(SkinNames.General.IMAGE_BUTTON_STUB_TOGGLE));
+		Button button = new ImageButton((ImageButtonStyle) SkinNames.getResource(SkinNames.General.OVERVIEW));
 		buttonGroup.add(button);
 		table.add(button);
 		mWidgets.info.hider = new HideListener(button, true);
 
 		// Comments
-		// TODO replace comment tab button
-		button = new ImageButton((ImageButtonStyle) SkinNames.getResource(SkinNames.General.IMAGE_BUTTON_STUB_TOGGLE));
+		button = new ImageButton((ImageButtonStyle) SkinNames.getResource(SkinNames.General.COMMENTS));
 		buttonGroup.add(button);
 		table.add(button);
 		mWidgets.comment.hider = new HideListener(button, true);
@@ -310,7 +305,6 @@ public class ExploreGui extends Gui {
 	 */
 	private void initInfo() {
 		LabelStyle labelStyle = SkinNames.getResource(SkinNames.General.LABEL_DEFAULT);
-		Skin generalSkin = ResourceCacheFacade.get(InternalNames.UI_GENERAL);
 		Color widgetBackgroundColor = SkinNames.getResource(SkinNames.GeneralVars.WIDGET_BACKGROUND_COLOR);
 
 
@@ -352,8 +346,7 @@ public class ExploreGui extends Gui {
 		table.row();
 		table.add(label);
 
-		// TODO replace player icon
-		Drawable playerIcon = generalSkin.getDrawable(SkinNames.General.STUB.toString());
+		Drawable playerIcon = SkinNames.getDrawable(SkinNames.GeneralImages.PLAYER);
 		Image image = new Image(playerIcon);
 		table.row();
 		table.add(image);
@@ -378,8 +371,7 @@ public class ExploreGui extends Gui {
 
 
 		// Date
-		// TODO replace date icon
-		Drawable dateIcon = generalSkin.getDrawable(SkinNames.General.STUB.toString());
+		Drawable dateIcon = SkinNames.getDrawable(SkinNames.GeneralImages.DATE);
 		image = new Image(dateIcon);
 		table.row();
 		table.add(image);
@@ -390,8 +382,7 @@ public class ExploreGui extends Gui {
 
 
 		// Plays
-		// TODO replace number of plays icon
-		Drawable playsIcon = generalSkin.getDrawable(SkinNames.General.STUB.toString());
+		Drawable playsIcon = SkinNames.getDrawable(SkinNames.GeneralImages.PLAYS);
 		image = new Image(playsIcon);
 		table.row();
 		table.add(image);
@@ -402,8 +393,7 @@ public class ExploreGui extends Gui {
 
 
 		// Likes
-		// TODO replace number of likes icon
-		Drawable likesIcon = generalSkin.getDrawable(SkinNames.General.STUB.toString());
+		Drawable likesIcon = SkinNames.getDrawable(SkinNames.GeneralImages.LIKE);
 		image = new Image(likesIcon);
 		table.row();
 		table.add(image);
@@ -414,8 +404,7 @@ public class ExploreGui extends Gui {
 
 
 		// Tags
-		// TODO replace tag icon
-		Drawable tagIcon = generalSkin.getDrawable(SkinNames.General.STUB.toString());
+		Drawable tagIcon = SkinNames.getDrawable(SkinNames.GeneralImages.TAG);
 		image = new Image(tagIcon);
 		table.row();
 		table.add(image);
@@ -541,8 +530,7 @@ public class ExploreGui extends Gui {
 		wrapper.add(buttonTable);
 
 		// Toggle table
-		// TODO change toggle tag table button
-		Button button = new ImageButton((ImageButtonStyle) SkinNames.getResource(SkinNames.General.IMAGE_BUTTON_STUB_TOGGLE));
+		Button button = new ImageButton((ImageButtonStyle) SkinNames.getResource(SkinNames.General.TAGS));
 		buttonTable.row();
 		buttonTable.add(button);
 		HideListener hideListener = new HideListener(button, true) {
@@ -586,8 +574,9 @@ public class ExploreGui extends Gui {
 		// TODO change scroll pane style to no visible scroll bars
 		ScrollPaneStyle scrollPaneStyle = SkinNames.getResource(SkinNames.General.SCROLL_PANE_DEFAULT);
 		AlignTable table = mWidgets.content.table;
+		table.setName("content");
 		mWidgets.content.scrollPane = new ScrollPane(table, scrollPaneStyle);
-
+		getStage().addActor(mWidgets.content.scrollPane);
 
 		table.setAlign(Horizontal.LEFT, Vertical.TOP);
 
@@ -609,16 +598,37 @@ public class ExploreGui extends Gui {
 
 
 			ScrollPane scrollPane = mWidgets.content.scrollPane;
-			scrollPane.setWidth(screenWidth - marginLeft - marginRight);
+			float width = screenWidth - marginLeft - marginRight;
+			scrollPane.setWidth(width);
 			scrollPane.setHeight(screenHeight - marginTop - marginBottom);
 			scrollPane.setPosition(marginLeft, marginBottom);
+			mWidgets.content.table.setWidth(width);
+			mWidgets.content.table.setKeepWidth(true);
 		}
 	}
 
 	/**
-	 * Reset content
+	 * Reset the content
 	 */
 	void resetContent() {
+		resetContent(mExploreScene.getLevels());
+	}
+
+	/**
+	 * Reset content
+	 * @param levels level to update
+	 */
+	synchronized void resetContent(ArrayList<LevelInfoEntity> levels) {
+		// Populate table
+		AlignTable table = mWidgets.content.table;
+		table.dispose();
+
+		if (levels.isEmpty()) {
+			return;
+		}
+
+		mWidgets.content.buttonGroup = new ButtonGroup();
+
 		resetContentMargins();
 
 		// Calculate how many levels per row
@@ -628,17 +638,12 @@ public class ExploreGui extends Gui {
 			levelsPerRow++;
 		}
 
-
-		// Populate table
-		AlignTable table = mWidgets.content.table;
-		ArrayList<LevelInfoEntity> levels = mExploreScene.getLevels();
-
 		int columnIndex = levelsPerRow;
 		for (LevelInfoEntity level : levels) {
 			AlignTable levelTable = createLevelTable(level);
 
 			if (columnIndex == levelsPerRow) {
-				table.row().setFillWidth(true);
+				table.row().setFillWidth(true).setEqualCellSize(true);
 				columnIndex = 0;
 			}
 
@@ -655,6 +660,7 @@ public class ExploreGui extends Gui {
 			}
 		}
 
+		table.invalidate();
 	}
 
 	/**
@@ -672,6 +678,7 @@ public class ExploreGui extends Gui {
 		imageButtonStyle.imageUp = (Drawable) level.defEntity.drawable;
 
 		Button button = new ImageButton(imageButtonStyle);
+		mWidgets.content.buttonGroup.add(button);
 		table.row().setFillWidth(true);
 		table.add(button).setFillWidth(true);
 		new ButtonListener(button) {
@@ -679,6 +686,7 @@ public class ExploreGui extends Gui {
 			protected void onChecked(boolean checked) {
 				if (checked) {
 					mExploreScene.setSelectedLevel(level);
+					resetInfo();
 				}
 			}
 		};
@@ -722,6 +730,7 @@ public class ExploreGui extends Gui {
 		private static class Content {
 			AlignTable table = new AlignTable();
 			ScrollPane scrollPane = null;
+			ButtonGroup buttonGroup = null;
 		}
 
 		private static class View {

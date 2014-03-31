@@ -30,7 +30,6 @@ import com.spiddekauga.voider.repo.WebGateway.FieldNameFileWrapper;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourcePng;
-import com.spiddekauga.voider.utils.Graphics;
 
 /**
  * Web repository for resources
@@ -195,11 +194,11 @@ public class ResourceWebRepo extends WebRepo {
 
 		// Get Levels
 		if (methodEntity instanceof LevelGetAllMethod) {
-			responseToSend = handleLevelGetResponse((LevelGetAllMethod) methodEntity, responseToSend);
+			responseToSend = handleLevelGetResponse((LevelGetAllMethod) methodEntity, response);
 		}
 
 		// Send the actual response
-		if (response != null) {
+		if (responseToSend != null) {
 			for (ICallerResponseListener responseListener : callerResponseListeners) {
 				responseListener.handleWebResponse(methodEntity, responseToSend);
 			}
@@ -251,6 +250,7 @@ public class ResourceWebRepo extends WebRepo {
 				// Create new tag caches
 				if (tagCaches == null) {
 					tagCaches = new HashMap<>();
+					mSortCache.put(methodEntity.sort, tagCaches);
 				}
 
 				// Level cache
@@ -265,11 +265,6 @@ public class ResourceWebRepo extends WebRepo {
 			// Update cursor
 			levelCache.serverCursor = ((LevelGetAllMethodResponse) response).cursor;
 
-			// Create drawables
-			for (LevelInfoEntity levelInfoEntity : ((LevelGetAllMethodResponse) response).levels) {
-				createDrawable(levelInfoEntity.defEntity);
-			}
-
 			// Set response to include cached levels
 			levelCache.levels.addAll(((LevelGetAllMethodResponse) response).levels);
 			((LevelGetAllMethodResponse) response).levels = levelCache.levels;
@@ -279,16 +274,6 @@ public class ResourceWebRepo extends WebRepo {
 			LevelGetAllMethodResponse levelGetAllMethodResponse = new LevelGetAllMethodResponse();
 			levelGetAllMethodResponse.status = LevelGetAllMethodResponse.Statuses.FAILED_SERVER_CONNECTION;
 			return levelGetAllMethodResponse;
-		}
-	}
-
-	/**
-	 * Create drawables for the specified def entity
-	 * @param defEntity the def entity to create a drawable for
-	 */
-	private void createDrawable(DefEntity defEntity) {
-		if (defEntity.png != null) {
-			defEntity.drawable = Graphics.pngToDrawable(defEntity.png);
 		}
 	}
 
@@ -309,8 +294,9 @@ public class ResourceWebRepo extends WebRepo {
 	 * @param callerResponseListener the caller to send the response to
 	 * @param sort sorting order of the levels to get
 	 * @param tags all tags the levels have to have
+	 * @return method that was created and sent
 	 */
-	public void getLevels(ICallerResponseListener callerResponseListener, SortOrders sort, ArrayList<Tags> tags) {
+	public LevelGetAllMethod getLevels(ICallerResponseListener callerResponseListener, SortOrders sort, ArrayList<Tags> tags) {
 		LevelGetAllMethod method = new LevelGetAllMethod();
 		method.sort = sort;
 		method.tagFilter = tags;
@@ -330,16 +316,45 @@ public class ResourceWebRepo extends WebRepo {
 				}
 			}
 		}
+
+		sendInNewThread(method, callerResponseListener);
+		return method;
+	}
+
+	/**
+	 * Get level cache from the a sort order
+	 * @param sort sort order
+	 * @param tags selected tags
+	 * @return level cache for this sort order, null if none exists
+	 */
+	private LevelCache getLevelCache(SortOrders sort, ArrayList<Tags> tags) {
+		HashMap<ArrayList<Tags>, LevelCache> tagCaches = mSortCache.get(sort);
+		if (tagCaches != null) {
+			return tagCaches.get(tags);
+		}
+
+		return null;
+	}
+
+	/**
+	 * Get level cache from the a sort order
+	 * @param searchString the text to search for
+	 * @return level cache for this search, null if none exists
+	 */
+	private LevelCache getLevelCache(String searchString) {
+		return mSearchCache.get(searchString);
 	}
 
 	/**
 	 * Get levels by text search
 	 * @param callerResponseListener the caller to send the response to
 	 * @param searchString the string to search for in the levels
+	 * @return method that was created and sent
 	 */
-	public void getLevels(ICallerResponseListener callerResponseListener, String searchString) {
+	public LevelGetAllMethod getLevels(ICallerResponseListener callerResponseListener, String searchString) {
 		LevelGetAllMethod method = new LevelGetAllMethod();
 		method.searchString = searchString;
+		method.tagFilter = new ArrayList<>();
 
 		// Continue from cursor?
 		LevelCache levelCache = mSearchCache.get(searchString);
@@ -354,7 +369,60 @@ public class ResourceWebRepo extends WebRepo {
 		}
 
 		sendInNewThread(method, callerResponseListener);
+		return method;
 	}
+
+	/**
+	 * Get cached levels
+	 * @param method the method that was sent
+	 * @return all cached levels this method has
+	 */
+	public ArrayList<LevelInfoEntity> getCachedLevels(LevelGetAllMethod method) {
+		// Search
+		if (method.searchString != null && !method.searchString.equals("")) {
+			return getCachedLevels(method.searchString);
+		}
+		// Sort
+		else if (method.sort != null) {
+			return getCachedLevels(method.sort, method.tagFilter);
+		}
+		// None
+		else {
+			return new ArrayList<>();
+		}
+	}
+
+	/**
+	 * Get cached levels
+	 * @param sort sort order to get cached levels from
+	 * @param tags all tags that are checked
+	 * @return all cached levels that match the above criteria
+	 */
+	public ArrayList<LevelInfoEntity> getCachedLevels(SortOrders sort, ArrayList<Tags> tags) {
+		LevelCache levelCache = getLevelCache(sort, tags);
+
+		if (levelCache != null) {
+			return levelCache.levels;
+		} else {
+			return new ArrayList<>();
+		}
+	}
+
+	/**
+	 * Get cached levels
+	 * @param searchString the string to search for
+	 * @return all cached levels that match the above criteria, empty if no cache waas found
+	 */
+	public ArrayList<LevelInfoEntity> getCachedLevels(String searchString) {
+		LevelCache levelCache = getLevelCache(searchString);
+
+		if (levelCache != null) {
+			return levelCache.levels;
+		} else {
+			return new ArrayList<>();
+		}
+	}
+
 
 	/**
 	 * Checks if a cache is outdated
@@ -372,7 +440,7 @@ public class ResourceWebRepo extends WebRepo {
 
 	// CACHE
 	/** String search cache */
-	Map<String, LevelCache> mSearchCache = new HashMap<>();
+	private Map<String, LevelCache> mSearchCache = new HashMap<>();
 	/** Sort cache */
-	Map<SortOrders, HashMap<ArrayList<Tags>, LevelCache>> mSortCache = new HashMap<>();
+	private Map<SortOrders, HashMap<ArrayList<Tags>, LevelCache>> mSortCache = new HashMap<>();
 }

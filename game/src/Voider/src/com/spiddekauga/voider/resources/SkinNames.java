@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Slider.SliderStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Window.WindowStyle;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.spiddekauga.utils.scene.ui.AnimationWidget.AnimationWidgetStyle;
 import com.spiddekauga.utils.scene.ui.Label.LabelStyle;
 import com.spiddekauga.utils.scene.ui.RatingWidget.RatingWidgetStyle;
@@ -170,18 +171,6 @@ public class SkinNames {
 		VISUALS,
 		/** Weapon options for enemies and bullets */
 		WEAPON,
-		/** Featured big (explore) */
-		FEATURED_BIG,
-		/** Search (explore) */
-		SEARCH_BIG,
-		/** Browse big (explore) */
-		BROWSE_BIG,
-		/** Featured (explore) */
-		FEATURED,
-		/** Search (explore) */
-		SEARCH,
-		/** Browse (explore) */
-		BROWSE,
 
 		;
 
@@ -573,6 +562,18 @@ public class SkinNames {
 		TAG(ImageButtonStyle.class),
 		/** Like button */
 		LIKE(ImageButtonStyle.class),
+		/** Featured big (explore) */
+		FEATURED_BIG(ImageButtonStyle.class),
+		/** Search (explore) */
+		SEARCH_BIG(ImageButtonStyle.class),
+		/** Browse big (explore) */
+		BROWSE_BIG(ImageButtonStyle.class),
+		/** Featured (explore) */
+		FEATURED(ImageButtonStyle.class),
+		/** Search (explore) */
+		SEARCH(ImageButtonStyle.class),
+		/** Browse (explore) */
+		BROWSE(ImageButtonStyle.class),
 
 		;
 
@@ -697,6 +698,16 @@ public class SkinNames {
 		private String mName;
 		/** Class type */
 		private Class<?> mType;
+	}
+
+	/**
+	 * Method for getting drawables
+	 * @param imageName name of the drawable to get
+	 * @return drawable image
+	 */
+	public static Drawable getDrawable(IImageNames imageName) {
+		Skin skin = ResourceCacheFacade.get(imageName.getSkinName());
+		return skin.getDrawable(imageName.toString());
 	}
 
 	/**

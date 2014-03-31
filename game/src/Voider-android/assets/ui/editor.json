@@ -436,29 +436,14 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 	
 	path_once: {
 		imageUp: path_once,
-		imageOver: path_once_over,
-		imageDown: path_once_down,
-		imageChecked: path_once_checked,
-		imageCheckedOver: path_once_checked_over,
-		imageDisabled: path_once_disabled,
 	},
 	
 	path_back_and_forth: {
 		imageUp: path_back_and_forth,
-		imageOver: path_back_and_forth_over,
-		imageDown: path_back_and_forth_down,
-		imageChecked: path_back_and_forth_checked,
-		imageCheckedOver: path_back_and_forth_checked_over,
-		imageDisabled: path_back_and_forth_disabled,
 	},
 	
 	path_loop: {
 		imageUp: path_loop,
-		imageOver: path_loop_over,
-		imageDown: path_loop_down,
-		imageChecked: path_loop_checked,
-		imageCheckedOver: path_loop_checked_over,
-		imageDisabled: path_loop_disabled,
 	},
 	
 	bullet_select: {

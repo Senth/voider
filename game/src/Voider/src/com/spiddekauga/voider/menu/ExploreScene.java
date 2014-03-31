@@ -1,6 +1,7 @@
 package com.spiddekauga.voider.menu;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.voider.Config;
@@ -8,12 +9,16 @@ import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.LevelInfoEntity;
 import com.spiddekauga.voider.network.entities.Tags;
 import com.spiddekauga.voider.network.entities.method.IMethodEntity;
+import com.spiddekauga.voider.network.entities.method.LevelGetAllMethod;
 import com.spiddekauga.voider.network.entities.method.LevelGetAllMethod.SortOrders;
+import com.spiddekauga.voider.network.entities.method.LevelGetAllMethodResponse;
 import com.spiddekauga.voider.repo.ICallerResponseListener;
 import com.spiddekauga.voider.repo.ResourceWebRepo;
+import com.spiddekauga.voider.repo.WebWrapper;
 import com.spiddekauga.voider.resources.InternalNames;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.scene.Scene;
+import com.spiddekauga.voider.utils.Graphics;
 
 /**
  * Scene for exploring new content
@@ -45,6 +50,13 @@ public class ExploreScene extends Scene implements ICallerResponseListener {
 	}
 
 	@Override
+	public void update(float deltaTime) {
+		super.update(deltaTime);
+
+		handleWepResponses();
+	}
+
+	@Override
 	public boolean keyDown(int keycode) {
 		super.keyDown(keycode);
 
@@ -56,8 +68,52 @@ public class ExploreScene extends Scene implements ICallerResponseListener {
 	}
 
 	@Override
-	public void handleWebResponse(IMethodEntity method, IEntity response) {
-		// TODO Auto-generated method stub
+	public synchronized void handleWebResponse(IMethodEntity method, IEntity response) {
+		mWebResponses.add(new WebWrapper(method, response));
+	}
+
+	/**
+	 * Handles existing web responses
+	 */
+	private synchronized void handleWepResponses() {
+		Iterator<WebWrapper> webIt = mWebResponses.iterator();
+
+		while (webIt.hasNext()) {
+			WebWrapper webWrapper = webIt.next();
+			IEntity response = webWrapper.response;
+
+			if (response instanceof LevelGetAllMethodResponse) {
+				switch (((LevelGetAllMethodResponse) response).status) {
+				case FAILED_SERVER_CONNECTION:
+					mGui.showErrorMessage("Failed to connect to the server");
+					break;
+
+				case FAILED_SERVER_ERROR:
+					mGui.showErrorMessage("Internal server error");
+					break;
+
+				case SUCCESS_FETCHED_ALL:
+				case SUCCESS_MORE_EXISTS:
+					createDrawables(((LevelGetAllMethodResponse) response).levels);
+					((ExploreGui)mGui).resetContent(((LevelGetAllMethodResponse) response).levels);
+					break;
+				}
+			}
+
+			webIt.remove();
+		}
+	}
+
+	/**
+	 * Creates drawables for all levels that are missing the drawables
+	 * @param levels all levels to create a drawable for
+	 */
+	private void createDrawables(ArrayList<LevelInfoEntity> levels) {
+		for (LevelInfoEntity level : levels) {
+			if (level.defEntity.drawable == null && level.defEntity.png != null) {
+				level.defEntity.drawable = Graphics.pngToDrawable(level.defEntity.png);
+			}
+		}
 	}
 
 	/**
@@ -66,7 +122,9 @@ public class ExploreScene extends Scene implements ICallerResponseListener {
 	 * @param tags selected tags
 	 */
 	void fetchLevels(SortOrders sort, ArrayList<Tags> tags) {
-		//		mResourceWebRepo.getLevels(this, sort, tags);
+		mLastMethod = mResourceWebRepo.getLevels(this, sort, tags);
+
+		((ExploreGui)mGui).resetContent();
 	}
 
 	/**
@@ -75,7 +133,9 @@ public class ExploreScene extends Scene implements ICallerResponseListener {
 	 */
 	void fetchLevels(String searchString) {
 		if (searchString.length() >= Config.Actor.NAME_LENGTH_MIN) {
-			//		mResourceWebRepo.getLevels(this, searchString);
+			mLastMethod = mResourceWebRepo.getLevels(this, searchString);
+
+			((ExploreGui)mGui).resetContent();
 		}
 	}
 
@@ -97,9 +157,7 @@ public class ExploreScene extends Scene implements ICallerResponseListener {
 	 * @return all fetched levels
 	 */
 	ArrayList<LevelInfoEntity> getLevels() {
-		// TODO
-		ArrayList<LevelInfoEntity> stub = new ArrayList<>();
-		return stub;
+		return mResourceWebRepo.getCachedLevels(mLastMethod);
 	}
 
 	/**
@@ -121,4 +179,8 @@ public class ExploreScene extends Scene implements ICallerResponseListener {
 	LevelInfoEntity mSelectedLevel = null;
 	/** Resource web repository */
 	private ResourceWebRepo mResourceWebRepo = ResourceWebRepo.getInstance();
+	/** Synchronized web responses */
+	private ArrayList<WebWrapper> mWebResponses = new ArrayList<>();
+	/** Last method that was called */
+	private LevelGetAllMethod mLastMethod = null;
 }
