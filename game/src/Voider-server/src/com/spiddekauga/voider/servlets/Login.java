@@ -113,6 +113,6 @@ public class Login extends VoiderServlet {
 	 */
 	private void updateLastLoggedIn(Entity userEntity) {
 		userEntity.setProperty("logged-in", new Date());
-		DatastoreUtils.mDatastore.put(userEntity);
+		DatastoreUtils.put(userEntity);
 	}
 }

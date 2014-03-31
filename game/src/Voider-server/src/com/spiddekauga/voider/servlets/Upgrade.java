@@ -24,7 +24,7 @@ public class Upgrade extends VoiderServlet {
 	protected void onRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// Update private key in user entities
 		Query query = new Query("users");
-		Iterator<Entity> entityIt = DatastoreUtils.mDatastore.prepare(query).asIterator();
+		Iterator<Entity> entityIt = DatastoreUtils.prepare(query).asIterator();
 
 		while (entityIt.hasNext()) {
 			Entity entity = entityIt.next();
@@ -35,7 +35,7 @@ public class Upgrade extends VoiderServlet {
 				DatastoreUtils.setProperty(entity, "private_key", privateKey);
 				entity.removeProperty("privateKey-most");
 				entity.removeProperty("privateKey-least");
-				DatastoreUtils.mDatastore.put(entity);
+				DatastoreUtils.put(entity);
 			}
 		}
 	}

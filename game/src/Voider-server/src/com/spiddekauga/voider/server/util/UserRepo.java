@@ -1,7 +1,6 @@
 package com.spiddekauga.voider.server.util;
 
 import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.Key;
 import com.spiddekauga.appengine.DatastoreUtils;
 
@@ -17,10 +16,10 @@ public class UserRepo {
 	 * @return username of the user, null if not found
 	 */
 	public static String getUsername(Key userKey) {
-		try {
-			Entity userEntity = DatastoreUtils.mDatastore.get(userKey);
+		Entity userEntity = DatastoreUtils.getItemByKey(userKey);
+		if (userEntity != null) {
 			return (String) userEntity.getProperty("username");
-		} catch (EntityNotFoundException e) {
+		} else {
 			return null;
 		}
 	}

@@ -96,7 +96,7 @@ public class LevelGetComment extends VoiderServlet {
 		query.addSort("date", SortDirection.DESCENDING);
 
 
-		PreparedQuery preparedQuery = DatastoreUtils.mDatastore.prepare(query);
+		PreparedQuery preparedQuery = DatastoreUtils.prepare(query);
 
 		// Limit
 		FetchOptions fetchOptions = FetchOptions.Builder.withLimit(FetchSizes.COMMENTS);
@@ -143,7 +143,7 @@ public class LevelGetComment extends VoiderServlet {
 		query.setFilter(compositeFilter);
 
 		try {
-			Entity entity = DatastoreUtils.mDatastore.prepare(query).asSingleEntity();
+			Entity entity = DatastoreUtils.prepare(query).asSingleEntity();
 
 			if (entity != null) {
 				return createLevelCommentEntity(entity);

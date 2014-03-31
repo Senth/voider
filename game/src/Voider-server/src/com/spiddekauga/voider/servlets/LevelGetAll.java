@@ -11,13 +11,13 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.PropertyProjection;
 import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
 import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
@@ -152,7 +152,7 @@ public class LevelGetAll extends VoiderServlet {
 		}
 
 
-		PreparedQuery preparedQuery = DatastoreUtils.mDatastore.prepare(query);
+		PreparedQuery preparedQuery = DatastoreUtils.prepare(query);
 
 		// Limit
 		FetchOptions fetchOptions = FetchOptions.Builder.withLimit(limit);
@@ -213,19 +213,21 @@ public class LevelGetAll extends VoiderServlet {
 	private static ArrayList<Tags> getLevelTags(Key levelKey) {
 		ArrayList<Tags> tags = new ArrayList<>();
 
-		Query query = new Query(levelKey);
+		Query query = new Query("level_tag");
 
 		// Skip tags that only has count of 1.
+		Filter keyFilter = new FilterPredicate("publish_key", FilterOperator.EQUAL, levelKey);
 		Filter countFilter = new FilterPredicate("count", FilterOperator.GREATER_THAN, 1);
-		query.setFilter(countFilter);
+		Filter compositeFilter = DatastoreUtils.createCompositeFilter(CompositeFilterOperator.AND, keyFilter, countFilter);
+		query.setFilter(compositeFilter);
 
 		// Sort
 		query.addSort("count", SortDirection.DESCENDING);
 
 		// Only get tag type
-		query.addProjection(new PropertyProjection("tag", int.class));
+		query.addProjection(new PropertyProjection("tag", Long.class));
 
-		PreparedQuery preparedQuery = DatastoreUtils.mDatastore.prepare(query);
+		PreparedQuery preparedQuery = DatastoreUtils.prepare(query);
 
 		// Limit
 		FetchOptions fetchOptions = FetchOptions.Builder.withLimit(FetchSizes.TAGS);
@@ -263,16 +265,16 @@ public class LevelGetAll extends VoiderServlet {
 	 * Get user stats for a specified level
 	 * @param levelKey key of the level to get the stats from
 	 * @param userKey key of the user to get stats from
-	 * @return new user level stats (network) entity, null if not found
+	 * @return new user level stats (network) entity, new empty if not found
 	 */
 	private static UserLevelStatsEntity getUserLevelStats(Key levelKey, Key userKey) {
 		Entity entity = DatastoreUtils.getSingleEntity("user_level_stat", "level_key", levelKey, userKey);
 
 		if (entity != null) {
 			return convertDatastoreToUserLevelStatsEntity(entity);
+		} else {
+			return new UserLevelStatsEntity();
 		}
-
-		return null;
 	}
 
 	/**
@@ -281,13 +283,9 @@ public class LevelGetAll extends VoiderServlet {
 	 * @return new level def (network) entity, null if not found
 	 */
 	private static LevelDefEntity getLevelDefEntity(Key levelKey) {
-		try {
-			Entity entity = DatastoreUtils.mDatastore.get(levelKey);
-			if (entity != null) {
-				return convertDatastoreToLevelDefEntity(entity);
-			}
-		} catch (EntityNotFoundException e) {
-			e.printStackTrace();
+		Entity entity = DatastoreUtils.getItemByKey(levelKey);
+		if (entity != null) {
+			return convertDatastoreToLevelDefEntity(entity);
 		}
 
 		return null;
@@ -318,12 +316,12 @@ public class LevelGetAll extends VoiderServlet {
 	private static LevelStatsEntity convertDatastoreToLevelStatsEntity(Entity datastoreEntity) {
 		LevelStatsEntity levelStatsEntity = new LevelStatsEntity();
 
-		levelStatsEntity.cCleared = (int) datastoreEntity.getProperty("clear_count");
-		levelStatsEntity.cLikes = (int) datastoreEntity.getProperty("likes");
-		levelStatsEntity.cPlayed = (int) datastoreEntity.getProperty("play_count");
-		levelStatsEntity.cRatings = (int) datastoreEntity.getProperty("ratings");
-		levelStatsEntity.ratingAverage = (float) datastoreEntity.getProperty("rating_avg");
-		levelStatsEntity.ratingSum = (int) datastoreEntity.getProperty("rating_sum");
+		levelStatsEntity.cCleared = ((Long) datastoreEntity.getProperty("clear_count")).intValue();
+		levelStatsEntity.cLikes = ((Long) datastoreEntity.getProperty("likes")).intValue();
+		levelStatsEntity.cPlayed = ((Long) datastoreEntity.getProperty("play_count")).intValue();
+		levelStatsEntity.cRatings = ((Long) datastoreEntity.getProperty("ratings")).intValue();
+		levelStatsEntity.ratingAverage = ((Double) datastoreEntity.getProperty("rating_avg")).floatValue();
+		levelStatsEntity.ratingSum = ((Long) datastoreEntity.getProperty("rating_sum")).intValue();
 
 		return levelStatsEntity;
 	}
@@ -341,7 +339,7 @@ public class LevelGetAll extends VoiderServlet {
 		networkEntity.date = (Date) datastoreEntity.getProperty("date");
 		networkEntity.description = (String) datastoreEntity.getProperty("description");
 		networkEntity.levelId = DatastoreUtils.getUuidProperty(datastoreEntity, "level_id");
-		networkEntity.levelLength = (float) datastoreEntity.getProperty("level_length");
+		networkEntity.levelLength = ((Double) datastoreEntity.getProperty("level_length")).floatValue();
 		networkEntity.name = (String) datastoreEntity.getProperty("name");
 		networkEntity.resourceId = DatastoreUtils.getUuidProperty(datastoreEntity, "resource_id");
 		networkEntity.png = DatastoreUtils.getByteArrayProperty(datastoreEntity, "png");
@@ -352,9 +350,9 @@ public class LevelGetAll extends VoiderServlet {
 		Key creatorKey = datastoreEntity.getParent();
 		Key originalCreatorKey = (Key) datastoreEntity.getProperty("original_creator_key");
 		networkEntity.creatorKey = KeyFactory.keyToString(creatorKey);
-		networkEntity.originalCreator = KeyFactory.keyToString(originalCreatorKey);
+		networkEntity.originalCreatorKey = KeyFactory.keyToString(originalCreatorKey);
 		networkEntity.creator = UserRepo.getUsername(creatorKey);
-		networkEntity.originalCreatorKey = UserRepo.getUsername(originalCreatorKey);
+		networkEntity.originalCreator = UserRepo.getUsername(originalCreatorKey);
 
 
 		// Skip dependencies, no need for the player to know about them

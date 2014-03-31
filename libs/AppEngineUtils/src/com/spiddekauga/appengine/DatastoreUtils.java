@@ -2,6 +2,7 @@ package com.spiddekauga.appengine;
 
 
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 import java.util.UUID;
 import java.util.logging.Logger;
 
@@ -12,6 +13,7 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.PreparedQuery.TooManyResultsException;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.CompositeFilter;
@@ -27,6 +29,26 @@ import com.google.appengine.api.datastore.ShortBlob;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class DatastoreUtils {
+	/**
+	 * Puts an entity to the datastore. This checks for concurrent modifications
+	 * @param entity the entity to put to the datastore
+	 * @return key of the entity if put was successful, null otherwise
+	 */
+	public static Key put(Entity entity) {
+		Exception exception;
+		Key key = null;
+		do {
+			exception = null;
+			try {
+				key = mDatastore.put(entity);
+			} catch (ConcurrentModificationException e) {
+				exception = e;
+			}
+		} while (exception != null);
+
+		return key;
+	}
+
 	/**
 	 * Searches for an existing entity
 	 * @param searchIn what kind of entity to search in
@@ -279,8 +301,18 @@ public class DatastoreUtils {
 		return null;
 	}
 
+	/**
+	 * Prepare a query
+	 * @param query the query to prepare
+	 * @return prepared query
+	 */
+	public static PreparedQuery prepare(Query query) {
+		return mDatastore.prepare(query);
+	}
+
+
 	/** Datastore service */
-	public static DatastoreService mDatastore = DatastoreServiceFactory.getDatastoreService();
+	private static DatastoreService mDatastore = DatastoreServiceFactory.getDatastoreService();
 	/** Logger */
 	private static final Logger mLogger = Logger.getLogger(DatastoreUtils.class.getName());
 

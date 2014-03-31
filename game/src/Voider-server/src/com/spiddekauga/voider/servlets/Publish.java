@@ -66,6 +66,10 @@ public class Publish extends VoiderServlet {
 				Key datastoreKey = addEntityToDatastore(defEntity, blobKeys, datastoreKeys);
 
 				if (datastoreKey != null) {
+					if (defEntity instanceof LevelDefEntity) {
+						success = createEmptyLevelStatistics(datastoreKey);
+					}
+
 					createSearchDocument(defEntity, datastoreKey);
 				} else {
 					success = false;
@@ -123,7 +127,7 @@ public class Publish extends VoiderServlet {
 				if (blobKey != null) {
 					Entity entity = new Entity(DatastoreTables.DEPENDENCY.toString(), datastoreKey);
 					entity.setProperty("dependency", blobKey);
-					Key key = DatastoreUtils.mDatastore.put(entity);
+					Key key = DatastoreUtils.put(entity);
 
 					if (key == null) {
 						mLogger.severe("Could not add dependency for " + dependency);
@@ -163,6 +167,26 @@ public class Publish extends VoiderServlet {
 	}
 
 	/**
+	 * Create empty level statistics
+	 * @param key datastore key of the level entity to add empty statistics for
+	 * @return true if successful, false otherwise
+	 */
+	private boolean createEmptyLevelStatistics(Key key) {
+		Entity entity = new Entity(DatastoreTables.LEVEL_STAT.toString(), key);
+
+		entity.setProperty("play_count", 0);
+		entity.setProperty("likes", 0);
+		entity.setProperty("rating_sum", 0);
+		entity.setProperty("ratings", 0);
+		entity.setProperty("rating_avg", 0.0);
+		entity.setProperty("clear_count", 0);
+
+		Key statKey = DatastoreUtils.put(entity);
+
+		return statKey != null;
+	}
+
+	/**
 	 * Add an entity to the datastore
 	 * @param defEntity the entity to add to the datastore
 	 * @param blobKeys all blob keys
@@ -196,7 +220,7 @@ public class Publish extends VoiderServlet {
 		}
 
 		if (success) {
-			Key key = DatastoreUtils.mDatastore.put(datastoreEntity);
+			Key key = DatastoreUtils.put(datastoreEntity);
 
 			if (key != null) {
 				datastoreKeys.put(defEntity.resourceId, key);

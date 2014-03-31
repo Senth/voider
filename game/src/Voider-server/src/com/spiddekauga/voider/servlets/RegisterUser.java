@@ -79,7 +79,7 @@ public class RegisterUser extends VoiderServlet {
 		String hashedPassword = BCrypt.hashpw(networkEntity.password, salt);
 		datastoreEntity.setProperty("password", hashedPassword);
 
-		Key userKey = DatastoreUtils.mDatastore.put(datastoreEntity);
+		Key userKey = DatastoreUtils.put(datastoreEntity);
 
 		if (userKey != null) {
 			methodResponse.userKey = KeyFactory.keyToString(userKey);
