@@ -579,6 +579,7 @@ public class ExploreGui extends Gui {
 		ScrollPaneStyle scrollPaneStyle = SkinNames.getResource(SkinNames.General.SCROLL_PANE_DEFAULT);
 		AlignTable table = mWidgets.content.table;
 		table.setName("content");
+		table.setAlign(Horizontal.LEFT, Vertical.TOP);
 		table.setHasPreferredHeight(false).setHasPreferredWidth(false);
 		mWidgets.content.scrollPane = new ScrollPane(table, scrollPaneStyle);
 		getStage().addActor(mWidgets.content.scrollPane);
@@ -616,7 +617,9 @@ public class ExploreGui extends Gui {
 	 * Reset the content
 	 */
 	void resetContent() {
-		resetContent(mExploreScene.getLevels());
+		ArrayList<LevelInfoEntity> levels = mExploreScene.getLevels();
+		resetContent(levels);
+		Pools.arrayList.free(levels);
 	}
 
 	/**

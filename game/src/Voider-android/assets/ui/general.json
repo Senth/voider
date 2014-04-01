@@ -3,11 +3,16 @@ com.badlogic.gdx.graphics.g2d.BitmapFont: {
 	default_font: { file: default.fnt }
 },
 
+/*
+ * Colors are in RGBA where the values are in the range of 0.0 to 1.0 i.e. R value of 1 is 255
+ * and value 0.5 is 127). If you want to convert the color original RBG value to the range of 0-1
+ * just divide it with 255. I.e. 70 / 255 = ~0.275
+ */
 com.badlogic.gdx.graphics.Color: {
 	// Color of the upper and lower bars, see Float.bar_upper_lower_height for height
-	bar_upper_lower_color: { r: 0.77, g: 0.77, b: 0.77, a: 1 },
+	bar_upper_lower_color: { r: 0.314, g: 0.314, b: 0.314, a: 1 },
 	// Color used as background for various widgets
-	widget_background_color: { r: 0.77, g: 0.77, b: 0.77, a: 1 },
+	widget_background_color: { r: 0.314, g: 0.314, b: 0.314, a: 1 },
 	
 	green: { a: 1, b: 0, g: 1, r: 0 },
 	white: { a: 1, b: 1, g: 1, r: 1 },
@@ -27,7 +32,7 @@ java.lang.Float: {
 	/* Padding */
 	
 	// Currently used on each element in tab content
-	padding_default: {value: 1},
+	padding_default: {value: 4},
 	// Padding in windows so that the content doesn't start directly at margin
 	padding_window_left_right: {value: 8},
 	// Used to separate group of widgets, e.g. tool groups
@@ -41,7 +46,7 @@ java.lang.Float: {
 	/* Other */
 	
 	// Height of upper and lower bars. See Color.bar_upper_lower_color for setting color
-	bar_upper_lower_height: {value: 32},
+	bar_upper_lower_height: {value: 40},
 	// Width of numeric text fields (e.g. after a slider)
 	text_field_number_width: {value: 64},
 	// Fade in/out duration for wait window. Wait window displays loading icon or progress bar
@@ -87,8 +92,8 @@ com.spiddekauga.utils.scene.ui.AnimationWidget$AnimationWidgetStyle:  {
 
 com.spiddekauga.utils.scene.ui.RatingWidget$RatingWidgetStyle:  {
 	default: {
-		checked: stub,
-		empty: stub,
+		checked: star_checked,
+		empty: star,
 	},
 },
 

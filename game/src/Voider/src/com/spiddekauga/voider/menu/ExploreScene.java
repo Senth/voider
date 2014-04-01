@@ -19,6 +19,7 @@ import com.spiddekauga.voider.resources.InternalNames;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.utils.Graphics;
+import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Scene for exploring new content
@@ -163,11 +164,12 @@ public class ExploreScene extends Scene implements ICallerResponseListener {
 	/**
 	 * @return all fetched levels
 	 */
+	@SuppressWarnings("unchecked")
 	ArrayList<LevelInfoEntity> getLevels() {
 		if (mLastMethod != null) {
 			return mResourceWebRepo.getCachedLevels(mLastMethod);
 		} else {
-			return new ArrayList<>();
+			return Pools.arrayList.obtain();
 		}
 	}
 

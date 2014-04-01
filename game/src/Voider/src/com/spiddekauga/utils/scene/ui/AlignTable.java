@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup;
 import com.badlogic.gdx.scenes.scene2d.utils.Layout;
@@ -539,6 +540,9 @@ public class AlignTable extends WidgetGroup implements Disposable {
 			}
 		}
 
+		mActualHeight = height;
+		mActualWidth = width;
+
 		// Change size of table to fit the content
 		if (!mKeepWidth) {
 			setWidthSilent(width);
@@ -678,7 +682,7 @@ public class AlignTable extends WidgetGroup implements Disposable {
 				}
 			}
 
-			setPosition((int)position.x, (int)position.y);
+			super.setPosition((int)position.x, (int)position.y);
 			Pools.vector2.free(position);
 		}
 
@@ -715,6 +719,24 @@ public class AlignTable extends WidgetGroup implements Disposable {
 		}
 	}
 
+	@Override
+	public void setPosition(float x, float y) {
+		// Skip setting position if the height of this table is
+		if (getParent() instanceof ScrollPane) {
+			float xToUse = getX();
+			float yToUse = getY();
+			if (mActualHeight >= getParent().getHeight()) {
+				yToUse = y;
+			}
+			if (mActualWidth >= getParent().getWidth()) {
+				xToUse = x;
+			}
+			super.setPosition(xToUse, yToUse);
+		} else {
+			super.setPosition(x, y);
+		}
+	}
+
 	/**
 	 * @return available width of the table
 	 */
@@ -722,6 +744,8 @@ public class AlignTable extends WidgetGroup implements Disposable {
 		float availableWidth = 0;
 		if ((getParent() == null || getParent().getParent() == null) && getStage() != null) {
 			availableWidth = getStage().getWidth();
+		} else if (getParent() instanceof ScrollPane) {
+			availableWidth = getParent().getWidth();
 		} else {
 			availableWidth = getWidth();
 		}
@@ -736,6 +760,8 @@ public class AlignTable extends WidgetGroup implements Disposable {
 		float availableHeight = 0;
 		if ((getParent() == null || getParent().getParent() == null) && getStage() != null) {
 			availableHeight = getStage().getHeight();
+		} else if (getParent() instanceof ScrollPane) {
+			availableHeight = getParent().getHeight();
 		} else {
 			availableHeight = getHeight();
 		}
@@ -880,6 +906,10 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	private float mMinWidth = 0;
 	/** Minimum height, equals all non-scalable cells' height */
 	private float mMinHeight = 0;
+	/** Actual height of table */
+	private float mActualHeight = 0;
+	/** Actual width of table */
+	private float mActualWidth = 0;
 	/** True if the table shall keep it's width after layout, false if it shall resize itself */
 	private boolean mKeepWidth = false;
 	/** True if the table shall keep it's height after layout, false if it shall resize itself */
