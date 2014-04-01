@@ -368,9 +368,17 @@ public class Row implements Poolable {
 	}
 
 	/**
+	 * @return false if all cells are invisible. If a row exists without a cell or
+	 * with an empty cell it still returs true if the cell is set as visible.
+	 */
+	boolean isVisible() {
+		return mCells.isEmpty() || getVisibleCellCount() > 0;
+	}
+
+	/**
 	 * Recalculates the preferred width and preferred height
 	 */
-	void calculateSize() {
+	void calculatePreferredSize() {
 		mPrefHeight = 0;
 		mPrefWidth = 0;
 		mMinHeight = 0;
@@ -380,18 +388,36 @@ public class Row implements Poolable {
 
 		for (Cell cell : mCells) {
 			if (cell.isVisible()) {
-				cell.calculateSize();
+				cell.calculatePreferredSize();
 				addSize(cell);
 			}
 		}
 	}
 
 	/**
-	 * @return false if all cells are invisible. If a row exists without a cell or
-	 * with an empty cell it still returs true if the cell is set as visible.
+	 * Calculates the actual size
 	 */
-	boolean isVisible() {
-		return mCells.isEmpty() || getVisibleCellCount() > 0;
+	void calculateActualSize() {
+		if (!mFillWidth) {
+			mWidth = 0;
+		}
+		if (!mFillHeight) {
+			mHeight = 0;
+		}
+
+		for (Cell cell : mCells) {
+			if (cell.isVisible()) {
+				cell.calculateActualSize();
+
+				if (!mFillWidth) {
+					mWidth += cell.getWidth();
+				}
+
+				if (!mFillHeight && cell.getHeight() > mHeight) {
+					mHeight = cell.getHeight();
+				}
+			}
+		}
 	}
 
 	/**

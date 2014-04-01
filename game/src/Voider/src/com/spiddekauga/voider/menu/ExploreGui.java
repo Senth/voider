@@ -579,6 +579,7 @@ public class ExploreGui extends Gui {
 		ScrollPaneStyle scrollPaneStyle = SkinNames.getResource(SkinNames.General.SCROLL_PANE_DEFAULT);
 		AlignTable table = mWidgets.content.table;
 		table.setName("content");
+		table.setHasPreferredHeight(false).setHasPreferredWidth(false);
 		mWidgets.content.scrollPane = new ScrollPane(table, scrollPaneStyle);
 		getStage().addActor(mWidgets.content.scrollPane);
 
@@ -685,7 +686,7 @@ public class ExploreGui extends Gui {
 		Button button = new ImageButton(imageButtonStyle);
 		mWidgets.content.buttonGroup.add(button);
 		table.row().setFillWidth(true);
-		table.add(button).setFillWidth(true);
+		table.add(button).setFillWidth(true).setKeepAspectRatio(true);
 		new ButtonListener(button) {
 			@Override
 			protected void onChecked(boolean checked) {

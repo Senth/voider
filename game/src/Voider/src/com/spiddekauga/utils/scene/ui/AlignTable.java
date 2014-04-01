@@ -463,7 +463,7 @@ public class AlignTable extends WidgetGroup implements Disposable {
 
 	@Override
 	public float getPrefHeight() {
-		if (mKeepHeight) {
+		if (mKeepHeight || !mHasPreferredHeight) {
 			return getHeight();
 		} else {
 			return mPrefHeight;
@@ -472,7 +472,7 @@ public class AlignTable extends WidgetGroup implements Disposable {
 
 	@Override
 	public float getPrefWidth() {
-		if (mKeepWidth) {
+		if (mKeepWidth || !mHasPreferredWidth) {
 			return getWidth();
 		} else {
 			return mPrefWidth;
@@ -482,7 +482,7 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	/**
 	 * Recalculates the preferred width and height
 	 */
-	void calculateSize() {
+	void calculatePreferredSize() {
 		mPrefHeight = 0;
 		mPrefWidth = 0;
 		mMinHeight = 0;
@@ -493,7 +493,7 @@ public class AlignTable extends WidgetGroup implements Disposable {
 
 		for (Row row : mRows) {
 			if (row.isVisible()) {
-				row.calculateSize();
+				row.calculatePreferredSize();
 				mPrefHeight += row.getPrefHeight();
 				mMinHeight += row.getMinHeight();
 				height += row.getHeight();
@@ -519,6 +519,35 @@ public class AlignTable extends WidgetGroup implements Disposable {
 		if (!mKeepHeight) {
 			setHeightSilent(height);
 		}
+	}
+
+	/**
+	 * Calculates the actual size after cells have updated their sizes
+	 */
+	void calculateActualSize() {
+		float width = 0;
+		float height = 0;
+
+		for (Row row : mRows) {
+			if (row.isVisible()) {
+				row.calculateActualSize();
+				height += row.getHeight();
+
+				if (row.getWidth() > width) {
+					width = row.getWidth();
+				}
+			}
+		}
+
+		// Change size of table to fit the content
+		if (!mKeepWidth) {
+			setWidthSilent(width);
+		}
+		if (!mKeepHeight) {
+			setHeightSilent(height);
+		}
+
+		mValidCellSizes = true;
 	}
 
 	/**
@@ -582,15 +611,14 @@ public class AlignTable extends WidgetGroup implements Disposable {
 		if (!mKeepHeight && cRowFillHeight > 0) {
 			setHeightSilent(height);
 		}
-
-		mValidCellSizes = true;
 	}
 
 	@Override
 	public void layout() {
 		if (!mValidCellSizes) {
-			calculateSize();
+			calculatePreferredSize();
 			updateSize(-1, -1);
+			calculateActualSize();
 		}
 
 		float rowHeight = 0;
@@ -678,10 +706,6 @@ public class AlignTable extends WidgetGroup implements Disposable {
 		updateBackgroundSize();
 
 		mValidLayout = true;
-
-		//		if (getParent() instanceof ScrollPane) {
-		//			((ScrollPane)getParent()).layout();
-		//		}
 	}
 
 	@Override
@@ -756,6 +780,30 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	 */
 	public AlignTable setKeepHeight(boolean keepHeight) {
 		mKeepHeight = keepHeight;
+		return this;
+	}
+
+	/**
+	 * Makes this table's {@link #getPrefWidth()} call {@link #getWidth()} if
+	 * hasPreferredWidth is set to false. Useful when this table is inside
+	 * a ScrollPane.
+	 * @param hasPreferredWidth if set to false {@link #getPrefWidth()} will return {@link #getWidth()} instead.
+	 * @return this table for chaining
+	 */
+	public AlignTable setHasPreferredWidth(boolean hasPreferredWidth) {
+		mHasPreferredWidth = hasPreferredWidth;
+		return this;
+	}
+
+	/**
+	 * Makes this table's {@link #getPrefHeight()} call {@link #getHeight()} if
+	 * hasPreferredHeight is set to false. Useful when this table is inside
+	 * a ScrollPane.
+	 * @param hasPreferredHeight if set to false {@link #getPrefHeight()} will return {@link #getHeight()} instead.
+	 * @return this table for chaining
+	 */
+	public AlignTable setHasPreferredHeight(boolean hasPreferredHeight) {
+		mHasPreferredHeight = hasPreferredHeight;
 		return this;
 	}
 
@@ -838,6 +886,10 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	private boolean mKeepHeight = false;
 	/** If we're currently disposing */
 	private boolean mDisposing = false;
+	/** If this table has a preferred height */
+	private boolean mHasPreferredHeight = true;
+	/** If this table has a preferred width */
+	private boolean mHasPreferredWidth = true;
 	/** Default cell padding */
 	private Padding mCellPaddingDefault = new Padding();
 	/** Default row padding */

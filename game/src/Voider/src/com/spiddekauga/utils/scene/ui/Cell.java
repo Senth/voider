@@ -66,8 +66,15 @@ public class Cell implements Poolable {
 	 * Sets if the cell should be of box shape
 	 * @param boxShaped set to true to make the actor be shaped as a box
 	 * @return this cell for chaining
+	 * @throw UnsupportedOperationException if {@link #setKeepAspectRatio(boolean)} is used
 	 */
 	public Cell setBoxShaped(boolean boxShaped) {
+		if (mKeepAspectRatio) {
+			throw new UnsupportedOperationException("box shape cannot be used together with keep aspect ratio!");
+		} else if (mFillHeight && mFillWidth) {
+			throw new UnsupportedOperationException("box shape cannot be used when both fill height and fill width is used");
+		}
+
 		mBoxShape = boxShaped;
 		return this;
 	}
@@ -282,11 +289,16 @@ public class Cell implements Poolable {
 
 	/**
 	 * Sets if the cell shall fill the remaining width of the row.
-	 * @todo only works with on cell per row for now.
 	 * @param fillWidth set to true if the cell shall fill the remaining width of the row
 	 * @return this cell for chaining
 	 */
 	public Cell setFillWidth(boolean fillWidth) {
+		if (mKeepAspectRatio && mFillHeight) {
+			throw new UnsupportedOperationException("Cannot use fill width while both fill height and keep aspect ratio is used");
+		} else if (mBoxShape && mFillHeight) {
+			throw new UnsupportedOperationException("Cannot use fill width while both fill height and box shape is used");
+		}
+
 		mFillWidth = true;
 
 		if (mFillWidth && mActor != null) {
@@ -310,6 +322,12 @@ public class Cell implements Poolable {
 	 * @return this cell for chaining
 	 */
 	public Cell setFillHeight(boolean fillHeight) {
+		if (mKeepAspectRatio && mFillWidth) {
+			throw new UnsupportedOperationException("Cannot use fill height while both fill width and keep aspect ratio is used");
+		} else if (mBoxShape && mFillWidth) {
+			throw new UnsupportedOperationException("Cannot use fill height while both fill width and box shape is used");
+		}
+
 		mFillHeight = fillHeight;
 
 		if (mFillHeight && mActor != null) {
@@ -391,6 +409,66 @@ public class Cell implements Poolable {
 	}
 
 	/**
+	 * Sets the cell to keep it's aspect ratio
+	 * @param keepAspectRatio true if the cell should keep it's aspect ratio, false otherwise
+	 * @return this for chaining
+	 * @throw UnsupportedOperationExecption if {@link #setBoxShaped(boolean)}, or both {@link #setFillHeight(boolean)}
+	 * and {@link #setFillWidth(boolean)} is enabled.
+	 */
+	public Cell setKeepAspectRatio(boolean keepAspectRatio) {
+		if (mBoxShape) {
+			throw new UnsupportedOperationException("Cannot keep aspect ratio while box shape is enabled");
+		} else if (mFillHeight && mFillWidth) {
+			throw new UnsupportedOperationException("Cannot keep aspect ratio while both fill height and fill width is enabled");
+		}
+
+		mKeepAspectRatio = keepAspectRatio;
+		return this;
+	}
+
+	/**
+	 * Calculates the size of the cell
+	 */
+	void calculatePreferredSize() {
+		if (mActor == null) {
+			return;
+		}
+
+		if (mActor instanceof AlignTable) {
+			((AlignTable)mActor).calculatePreferredSize();
+		}
+		else if (mActor instanceof Layout) {
+			((Layout)mActor).validate();
+		}
+
+		if (mBoxShape && !mFillWidth && !mFillHeight) {
+			mActor.setWidth(mWidthBeforeFill);
+			mActor.setHeight(mHeightBeforeFill);
+		}
+
+		if (mKeepAspectRatio) {
+			if (mActor instanceof Layout) {
+				mAspectRatio = ((Layout) mActor).getPrefWidth() / ((Layout)mActor).getPrefHeight();
+			} else {
+				mAspectRatio = mActor.getWidth() / mActor.getHeight();
+			}
+		}
+	}
+
+	/**
+	 * Calculates the actual size
+	 */
+	void calculateActualSize() {
+		if (mActor == null) {
+			return;
+		}
+
+		if (mActor instanceof AlignTable) {
+			((AlignTable) mActor).calculateActualSize();
+		}
+	}
+
+	/**
 	 * Updates the size of the cell. Used when setting size depending for fill
 	 * width or height. This does not set it as fixed, in fact it will not update
 	 * the size if the cell is set as fixed.
@@ -405,11 +483,7 @@ public class Cell implements Poolable {
 			if (mActor instanceof AlignTable) {
 				((AlignTable) mActor).updateSize(actorWidth, actorHeight);
 			} else {
-				setSize(actorWidth, actorHeight);
-
-				if (mActor instanceof Layout) {
-					((Layout) mActor).invalidate();
-				}
+				mActor.setSize(actorWidth, actorHeight);
 
 				if (mBoxShape && !mFillWidth && !mFillHeight) {
 					mWidthBeforeFill = mActor.getWidth();
@@ -420,6 +494,34 @@ public class Cell implements Poolable {
 					} else if (mActor.getHeight() < mActor.getWidth()) {
 						mActor.setHeight(mActor.getWidth());
 					}
+				}
+
+				else if (mKeepAspectRatio) {
+					mWidthBeforeFill = mActor.getWidth();
+					mHeightBeforeFill = mActor.getHeight();
+
+					float correctWidth = width;
+					float correctHeight = height;
+
+					float newAspectRatio = width / height;
+
+					// Correct height
+					if (mFillWidth) {
+						// Wider than it should be
+						if (newAspectRatio < mAspectRatio || newAspectRatio > mAspectRatio) {
+							correctHeight = correctWidth / mAspectRatio;
+						}
+					}
+					// Correct width
+					else if (mFillHeight) {
+						// Wider than it should be
+						if (newAspectRatio < mAspectRatio || newAspectRatio > mAspectRatio) {
+							correctWidth = mAspectRatio * correctHeight;
+						}
+					}
+
+					mActor.setWidth(correctWidth);
+					mActor.setHeight(correctHeight);
 				}
 			}
 		}
@@ -489,27 +591,6 @@ public class Cell implements Poolable {
 	}
 
 	/**
-	 * Calculates the size of the cell
-	 */
-	void calculateSize() {
-		if (mActor == null) {
-			return;
-		}
-
-		if (mBoxShape && !mFillWidth && !mFillHeight) {
-			mActor.setWidth(mWidthBeforeFill);
-			mActor.setHeight(mHeightBeforeFill);
-		}
-
-		if (mActor instanceof AlignTable) {
-			((AlignTable)mActor).calculateSize();
-		}
-		else if (mActor instanceof Layout) {
-			((Layout)mActor).validate();
-		}
-	}
-
-	/**
 	 * @return the name of the actor inside, null if no actor is inside or no name has been set
 	 */
 	String getName() {
@@ -551,8 +632,10 @@ public class Cell implements Poolable {
 	private boolean mFixedSize = false;
 	/** If the cell should be of box shape */
 	private boolean mBoxShape = false;
-
-	// Padding
+	/** If the cell should keep the aspect ratio when resizing */
+	private boolean mKeepAspectRatio = false;
+	/** Aspect ratio of the cell */
+	private float mAspectRatio = 1f;
 	/** Padding for this cell */
 	private Padding mPadding = new Padding();
 }
