@@ -9,6 +9,7 @@ import com.google.appengine.api.search.Index;
 import com.google.appengine.api.search.IndexSpec;
 import com.google.appengine.api.search.PutException;
 import com.google.appengine.api.search.Query;
+import com.google.appengine.api.search.Query.Builder;
 import com.google.appengine.api.search.QueryOptions;
 import com.google.appengine.api.search.Results;
 import com.google.appengine.api.search.ScoredDocument;
@@ -132,9 +133,9 @@ public class SearchUtils {
 			optionsBuilder.setCursor(cursor);
 		}
 
-		Query query = Query.newBuilder().setOptions(optionsBuilder).build(searchQuery);
+		Builder queryBuilder = Query.newBuilder().setOptions(optionsBuilder);
 
-		return index.search(query);
+		return index.search(queryBuilder.build(searchQuery));
 	}
 
 	/** Put limit */

@@ -51,10 +51,9 @@ import com.spiddekauga.voider.server.util.VoiderServlet;
  */
 @SuppressWarnings("serial")
 public class LevelGetAll extends VoiderServlet {
-	/**
-	 * Default constructor
-	 */
-	public LevelGetAll() {
+	@Override
+	public void init() {
+		mResponse = new LevelGetAllMethodResponse();
 		mResponse.status = Statuses.FAILED_SERVER_ERROR;
 	}
 
@@ -63,6 +62,8 @@ public class LevelGetAll extends VoiderServlet {
 		if (!mUser.isLoggedIn()) {
 			return;
 		}
+
+		init();
 
 		byte[] byteEntity = NetworkGateway.getEntity(request);
 		IEntity networkEntity = NetworkEntitySerializer.deserializeEntity(byteEntity);
@@ -421,11 +422,13 @@ public class LevelGetAll extends VoiderServlet {
 		}
 
 		// Set cursor
-		mResponse.cursor = foundDocuments.getCursor().toWebSafeString();
+		if (foundDocuments.getCursor() != null) {
+			mResponse.cursor = foundDocuments.getCursor().toWebSafeString();
+		}
 	}
 
 	/** Method parameters */
 	private LevelGetAllMethod mParameters = null;
 	/** Method response */
-	private LevelGetAllMethodResponse mResponse = new LevelGetAllMethodResponse();
+	private LevelGetAllMethodResponse mResponse = null;
 }

@@ -92,7 +92,7 @@ public class Publish extends VoiderServlet {
 			}
 
 			// Add search documents
-			if (methodResponse.status == Statuses.SUCCESS) {
+			if (success) {
 				success = addSearchDocuments();
 			}
 
