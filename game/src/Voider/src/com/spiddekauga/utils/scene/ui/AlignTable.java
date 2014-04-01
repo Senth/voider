@@ -677,8 +677,11 @@ public class AlignTable extends WidgetGroup implements Disposable {
 
 		updateBackgroundSize();
 
-
 		mValidLayout = true;
+
+		//		if (getParent() instanceof ScrollPane) {
+		//			((ScrollPane)getParent()).layout();
+		//		}
 	}
 
 	@Override

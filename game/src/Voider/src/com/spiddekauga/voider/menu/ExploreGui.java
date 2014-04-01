@@ -536,12 +536,14 @@ public class ExploreGui extends Gui {
 		HideListener hideListener = new HideListener(button, true) {
 			@Override
 			protected void onShow() {
-				resetContentMargins();
+				mWidgets.tag.wrapper.layout();
+				resetContent();
 			}
 
 			@Override
 			protected void onHide() {
-				resetContentMargins();
+				mWidgets.tag.wrapper.layout();
+				resetContent();
 			}
 		};
 		hideListener.addToggleActor(tagTable);
@@ -565,6 +567,8 @@ public class ExploreGui extends Gui {
 				}
 			}
 		};
+
+		wrapper.layout();
 	}
 
 	/**
@@ -660,7 +664,8 @@ public class ExploreGui extends Gui {
 			}
 		}
 
-		table.invalidate();
+		table.layout();
+		mWidgets.content.scrollPane.invalidate();
 	}
 
 	/**

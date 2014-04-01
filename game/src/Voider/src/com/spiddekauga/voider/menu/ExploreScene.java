@@ -36,6 +36,13 @@ public class ExploreScene extends Scene implements ICallerResponseListener {
 	}
 
 	@Override
+	public void onResize(int width, int height) {
+		super.onResize(width, height);
+
+		mGui.resetValues();
+	}
+
+	@Override
 	protected void loadResources() {
 		super.loadResources();
 
@@ -157,7 +164,11 @@ public class ExploreScene extends Scene implements ICallerResponseListener {
 	 * @return all fetched levels
 	 */
 	ArrayList<LevelInfoEntity> getLevels() {
-		return mResourceWebRepo.getCachedLevels(mLastMethod);
+		if (mLastMethod != null) {
+			return mResourceWebRepo.getCachedLevels(mLastMethod);
+		} else {
+			return new ArrayList<>();
+		}
 	}
 
 	/**
