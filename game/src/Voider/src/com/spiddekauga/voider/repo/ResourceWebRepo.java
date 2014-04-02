@@ -230,49 +230,56 @@ public class ResourceWebRepo extends WebRepo {
 	private synchronized IEntity handleLevelGetResponse(LevelGetAllMethod methodEntity, IEntity response) {
 		// Update cache
 		if (response instanceof LevelGetAllMethodResponse) {
-			// Get or create cache
-			LevelCache levelCache = null;
-			boolean newCache = false;
+			if (((LevelGetAllMethodResponse) response).status.isSuccessful()) {
+				// Get or create cache
+				LevelCache levelCache = null;
+				boolean newCache = false;
 
-			// Search string
-			if (methodEntity.searchString != null && !methodEntity.searchString.equals("")) {
-				levelCache = mSearchCache.get(methodEntity.searchString);
+				// Search string
+				if (methodEntity.searchString != null && !methodEntity.searchString.equals("")) {
+					levelCache = mSearchCache.get(methodEntity.searchString);
 
-				// Create new
-				if (levelCache == null) {
-					levelCache = createNewLevelCache((LevelGetAllMethodResponse) response);
-					mSearchCache.put(methodEntity.searchString, levelCache);
-					newCache = true;
+					// Create new
+					if (levelCache == null) {
+						levelCache = createNewLevelCache((LevelGetAllMethodResponse) response);
+						mSearchCache.put(methodEntity.searchString, levelCache);
+						newCache = true;
+					}
 				}
-			}
-			// Sorting with or without tags
-			else {
-				// Tag list
-				HashMap<ArrayList<Tags>, LevelCache> tagCaches = mSortCache.get(methodEntity.sort);
+				// Sorting with or without tags
+				else {
+					// Tag list
+					HashMap<ArrayList<Tags>, LevelCache> tagCaches = mSortCache.get(methodEntity.sort);
 
-				// Create new tag caches
-				if (tagCaches == null) {
-					tagCaches = new HashMap<>();
-					mSortCache.put(methodEntity.sort, tagCaches);
+					// Create new tag caches
+					if (tagCaches == null) {
+						tagCaches = new HashMap<>();
+						mSortCache.put(methodEntity.sort, tagCaches);
+					}
+
+					// Level cache
+					levelCache = tagCaches.get(methodEntity.tagFilter);
+
+					if (levelCache == null) {
+						levelCache = createNewLevelCache((LevelGetAllMethodResponse) response);
+						tagCaches.put(methodEntity.tagFilter, levelCache);
+						newCache  = true;
+					}
 				}
 
-				// Level cache
-				levelCache = tagCaches.get(methodEntity.tagFilter);
-
-				if (levelCache == null) {
-					levelCache = createNewLevelCache((LevelGetAllMethodResponse) response);
-					tagCaches.put(methodEntity.tagFilter, levelCache);
-					newCache  = true;
+				// Fetched all?
+				if (((LevelGetAllMethodResponse) response).status == LevelGetAllMethodResponse.Statuses.SUCCESS_FETCHED_ALL) {
+					levelCache.fetchedAll = true;
 				}
-			}
 
-			// Update cursor
-			levelCache.serverCursor = ((LevelGetAllMethodResponse) response).cursor;
+				// Update cursor
+				levelCache.serverCursor = ((LevelGetAllMethodResponse) response).cursor;
 
-			// Set response to include cached levels
-			if (!newCache) {
-				levelCache.levels.addAll(((LevelGetAllMethodResponse) response).levels);
-				((LevelGetAllMethodResponse) response).levels = levelCache.levels;
+				// Set response to include cached levels
+				if (!newCache) {
+					levelCache.levels.addAll(((LevelGetAllMethodResponse) response).levels);
+					((LevelGetAllMethodResponse) response).levels = levelCache.levels;
+				}
 			}
 
 			return response;
@@ -341,7 +348,13 @@ public class ResourceWebRepo extends WebRepo {
 				if (isCacheOutdated(levelCache)) {
 					levelCache.dispose();
 					tagCaches.remove(method.tagFilter);
-				} else {
+				}
+				// Fetched all, no need to query server, just return
+				else if (levelCache.fetchedAll) {
+					return method;
+				}
+				// Continue from cursor
+				else {
 					method.nextCursor = levelCache.serverCursor;
 				}
 			}
@@ -369,7 +382,13 @@ public class ResourceWebRepo extends WebRepo {
 			if (isCacheOutdated(levelCache)) {
 				levelCache.dispose();
 				mSearchCache.remove(searchString);
-			} else {
+			}
+			// Fetched all, no need to query server
+			else if (levelCache.fetchedAll) {
+				return method;
+			}
+			// Continue from cursor
+			else {
 				method.nextCursor = levelCache.serverCursor;
 			}
 		}

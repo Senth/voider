@@ -15,12 +15,18 @@ public class PublishMethodResponse implements IEntity {
 	/**
 	 * Return statuses of the method
 	 */
-	public enum Statuses {
+	public enum Statuses implements ISuccessStatuses {
 		/** Successfully publish the resources */
 		SUCCESS,
 		/** Failed internal server error */
 		FAILED_SERVER_ERROR,
 		/** Failed could not connect to the server */
 		FAILED_SERVER_CONNECTION,
+
+		;
+		@Override
+		public boolean isSuccessful() {
+			return name().contains("SUCCESS");
+		}
 	}
 }

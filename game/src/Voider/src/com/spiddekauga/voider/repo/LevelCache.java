@@ -18,6 +18,8 @@ class LevelCache extends Cache implements Disposable {
 	public ArrayList<LevelInfoEntity> levels = Pools.arrayList.obtain();
 	/** Server cursor to continue the cache with */
 	public String serverCursor = null;
+	/** True if we have fetched all */
+	public boolean fetchedAll = false;
 
 	@Override
 	public void dispose() {

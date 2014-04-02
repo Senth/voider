@@ -22,7 +22,7 @@ public class LevelGetAllMethodResponse implements IEntity {
 	/**
 	 * Statuses
 	 */
-	public enum Statuses {
+	public enum Statuses implements ISuccessStatuses {
 		/** Successfully fetched levels and there's more */
 		SUCCESS_MORE_EXISTS,
 		/** Successfully fetched levels, fetched all. */
@@ -31,5 +31,11 @@ public class LevelGetAllMethodResponse implements IEntity {
 		FAILED_SERVER_ERROR,
 		/** Failed to connect to the server */
 		FAILED_SERVER_CONNECTION,
+
+		;
+		@Override
+		public boolean isSuccessful() {
+			return name().contains("SUCCESS");
+		}
 	}
 }

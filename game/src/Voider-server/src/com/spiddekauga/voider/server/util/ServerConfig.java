@@ -61,7 +61,7 @@ public class ServerConfig {
 	/** Public Search tokenize sizes */
 	public static class TokenSizes {
 		/** Minimum token size for resources */
-		public static final int RESOURCE = 2;
+		public static final int RESOURCE = 1;
 	}
 
 	/** How many results to send */

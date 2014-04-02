@@ -15,7 +15,7 @@ public class LogoutMethodResponse implements IEntity {
 	/**
 	 * Logout statuses
 	 */
-	public enum Statuses {
+	public enum Statuses implements ISuccessStatuses {
 		/** Logout successful */
 		SUCCESS,
 		/** Failed to connect to server, might be offline */
@@ -24,5 +24,11 @@ public class LogoutMethodResponse implements IEntity {
 		FAILED_SERVER_ERROR,
 		/** Already logged out */
 		FAILED_NOT_LOGGED_IN,
+
+		;
+		@Override
+		public boolean isSuccessful() {
+			return name().contains("SUCCESS");
+		}
 	}
 }

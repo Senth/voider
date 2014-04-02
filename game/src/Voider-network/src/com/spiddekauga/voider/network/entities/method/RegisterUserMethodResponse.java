@@ -21,7 +21,7 @@ public class RegisterUserMethodResponse implements IEntity {
 	/**
 	 * Response statuses when registering users
 	 */
-	public enum Statuses {
+	public enum Statuses implements ISuccessStatuses {
 		/** Successfully created user */
 		SUCCESS,
 		/** Email already in use */
@@ -31,6 +31,12 @@ public class RegisterUserMethodResponse implements IEntity {
 		/** Internal server error */
 		FAIL_SERVER_ERROR,
 		/** Server connection error */
-		FAIL_SERVER_CONNECTION
+		FAIL_SERVER_CONNECTION,
+
+		;
+		@Override
+		public boolean isSuccessful() {
+			return name().contains("SUCCESS");
+		}
 	}
 }
