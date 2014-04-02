@@ -58,6 +58,11 @@ public class ServerConfig {
 	/** Email administrator */
 	public static final String EMAIL_ADMIN = "spiddekauga@voider-game.com";
 
+	/** Public Search tokenize sizes */
+	public static class TokenSizes {
+		/** Minimum token size for resources */
+		public static final int RESOURCE = 2;
+	}
 
 	/** How many results to send */
 	public static class FetchSizes {

@@ -13,6 +13,7 @@ import com.google.appengine.api.search.Query.Builder;
 import com.google.appengine.api.search.QueryOptions;
 import com.google.appengine.api.search.Results;
 import com.google.appengine.api.search.ScoredDocument;
+import com.google.appengine.api.search.SearchQueryException;
 import com.google.appengine.api.search.SearchServiceFactory;
 import com.google.appengine.api.search.StatusCode;
 
@@ -135,7 +136,52 @@ public class SearchUtils {
 
 		Builder queryBuilder = Query.newBuilder().setOptions(optionsBuilder);
 
-		return index.search(queryBuilder.build(searchQuery));
+		Results<ScoredDocument> foundDocuments = null;
+		try {
+			foundDocuments = index.search(queryBuilder.build(searchQuery));
+		} catch (SearchQueryException e) {
+			// Do nothing
+		}
+
+		return foundDocuments;
+	}
+
+	/**
+	 * Split words into smaller parts so these can be auto-completed
+	 * @param text the text to tokenize
+	 * @param minSize the minimum size of the tokens/auto-complete, if a word is
+	 * shorter than this size it will still be added as a token.
+	 * @return auto-complete compatible tokenized text
+	 */
+	public static String tokenizeAutocomplete(String text, int minSize) {
+		if (minSize <= 0) {
+			throw new IllegalArgumentException("minSize has to be higher than 0");
+		}
+
+		String[] words = splitTextToWords(text);
+		String tokens = "";
+		for (String word : words) {
+			if (word.length() > minSize) {
+				for (int i = 0; i <= word.length() - minSize; ++i) {
+					for (int currentLength = minSize; currentLength <= word.length() - i; ++currentLength) {
+						tokens += word.substring(i, i + currentLength) + " ";
+					}
+				}
+			} else {
+				tokens += word + " ";
+			}
+		}
+
+		return tokens;
+	}
+
+	/**
+	 * Splits a text into words.
+	 * @param text the text to split into words
+	 * @return all words in the text
+	 */
+	public static String[] splitTextToWords(String text) {
+		return text.split("[^0-9a-zA-Z']+");
 	}
 
 	/** Put limit */

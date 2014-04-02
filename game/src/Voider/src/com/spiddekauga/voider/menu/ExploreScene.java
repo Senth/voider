@@ -142,9 +142,10 @@ public class ExploreScene extends Scene implements ICallerResponseListener {
 	void fetchLevels(String searchString) {
 		if (searchString.length() >= Config.Actor.NAME_LENGTH_MIN) {
 			mLastMethod = mResourceWebRepo.getLevels(this, searchString);
-
-			((ExploreGui)mGui).resetContent();
+		} else {
+			mLastMethod = null;
 		}
+		((ExploreGui)mGui).resetContent();
 	}
 
 	/**

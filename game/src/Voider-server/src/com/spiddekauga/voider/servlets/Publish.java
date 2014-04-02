@@ -34,6 +34,7 @@ import com.spiddekauga.voider.network.entities.method.PublishMethodResponse;
 import com.spiddekauga.voider.network.entities.method.PublishMethodResponse.Statuses;
 import com.spiddekauga.voider.server.util.NetworkGateway;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
+import com.spiddekauga.voider.server.util.ServerConfig.TokenSizes;
 import com.spiddekauga.voider.server.util.UserRepo;
 import com.spiddekauga.voider.server.util.VoiderServlet;
 
@@ -346,15 +347,17 @@ public class Publish extends VoiderServlet {
 	 * @param defEntity the def entity to append to the document builder
 	 */
 	private void appendDefEntity(Builder builder, DefEntity defEntity) {
-		builder.addField(Field.newBuilder().setName("name").setText(defEntity.name).build());
-		//		builder.addField(Field.newBuilder().setName("description").setText(defEntity.description).build());
+		String nameTokens = SearchUtils.tokenizeAutocomplete(defEntity.name.toLowerCase(), TokenSizes.RESOURCE);
+		builder.addField(Field.newBuilder().setName("name").setText(nameTokens).build());
 		builder.addField(Field.newBuilder().setName("published").setDate(defEntity.date).build());
 
 		// Add name of creators
 		String creatorName = UserRepo.getUsername(KeyFactory.stringToKey(defEntity.creatorKey));
-		builder.addField(Field.newBuilder().setName("creator").setText(creatorName));
+		String creatorNameTokens = SearchUtils.tokenizeAutocomplete(creatorName.toLowerCase(), TokenSizes.RESOURCE);
+		builder.addField(Field.newBuilder().setName("creator").setText(creatorNameTokens));
 		String originalCreatorName = UserRepo.getUsername(KeyFactory.stringToKey(defEntity.originalCreatorKey));
-		builder.addField(Field.newBuilder().setName("original_creator").setText(originalCreatorName));
+		String originalCreatorNameTokens = SearchUtils.tokenizeAutocomplete(originalCreatorName.toLowerCase(), TokenSizes.RESOURCE);
+		builder.addField(Field.newBuilder().setName("original_creator").setText(originalCreatorNameTokens));
 	}
 
 	/**

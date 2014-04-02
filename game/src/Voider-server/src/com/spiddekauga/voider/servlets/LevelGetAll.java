@@ -401,29 +401,30 @@ public class LevelGetAll extends VoiderServlet {
 			cursor = com.google.appengine.api.search.Cursor.newBuilder().build(mParameters.nextCursor);
 		}
 
-		Results<ScoredDocument> foundDocuments = SearchUtils.search("level", mParameters.searchString, FetchSizes.LEVELS, cursor);
+		Results<ScoredDocument> foundDocuments = SearchUtils.search("level", mParameters.searchString.toLowerCase(), FetchSizes.LEVELS, cursor);
 
-		if (foundDocuments.getNumberReturned() < FetchSizes.LEVELS) {
+		if (foundDocuments == null || foundDocuments.getNumberReturned() < FetchSizes.LEVELS) {
 			mResponse.status = Statuses.SUCCESS_FETCHED_ALL;
 		}
 
+		if (foundDocuments != null) {
+			// Get the actual published levels from the search
+			for (ScoredDocument document : foundDocuments) {
+				Key levelKey = KeyFactory.stringToKey(document.getId());
 
-		// Get the actual published levels from the search
-		for (ScoredDocument document : foundDocuments) {
-			Key levelKey = KeyFactory.stringToKey(document.getId());
+				LevelInfoEntity infoEntity = new LevelInfoEntity();
+				infoEntity.defEntity = getLevelDefEntity(levelKey);
+				infoEntity.stats = getLevelStatsEntity(levelKey);
+				infoEntity.userStats = getUserLevelStats(levelKey, mUser.getKey());
+				infoEntity.tags = getLevelTags(levelKey);
 
-			LevelInfoEntity infoEntity = new LevelInfoEntity();
-			infoEntity.defEntity = getLevelDefEntity(levelKey);
-			infoEntity.stats = getLevelStatsEntity(levelKey);
-			infoEntity.userStats = getUserLevelStats(levelKey, mUser.getKey());
-			infoEntity.tags = getLevelTags(levelKey);
+				mResponse.levels.add(infoEntity);
+			}
 
-			mResponse.levels.add(infoEntity);
-		}
-
-		// Set cursor
-		if (foundDocuments.getCursor() != null) {
-			mResponse.cursor = foundDocuments.getCursor().toWebSafeString();
+			// Set cursor
+			if (foundDocuments.getCursor() != null) {
+				mResponse.cursor = foundDocuments.getCursor().toWebSafeString();
+			}
 		}
 	}
 
