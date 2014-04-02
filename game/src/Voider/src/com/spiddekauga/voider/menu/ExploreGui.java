@@ -32,6 +32,7 @@ import com.spiddekauga.utils.scene.ui.Label;
 import com.spiddekauga.utils.scene.ui.Label.LabelStyle;
 import com.spiddekauga.utils.scene.ui.RatingWidget;
 import com.spiddekauga.utils.scene.ui.RatingWidget.RatingWidgetStyle;
+import com.spiddekauga.utils.scene.ui.ScrollPaneListener;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.network.entities.LevelInfoEntity;
@@ -165,10 +166,7 @@ public class ExploreGui extends Gui {
 		mWidgets.sort.hider = new HideListener(button, true) {
 			@Override
 			protected void onShow() {
-				SortOrders sortOrder = getSelectedSortOrder();
-				if (sortOrder != null) {
-					mExploreScene.fetchLevels(sortOrder, getSelectedTags());
-				}
+				resetContent();
 			}
 		};
 
@@ -180,7 +178,7 @@ public class ExploreGui extends Gui {
 		mWidgets.search.hider = new HideListener(button, true) {
 			@Override
 			protected void onShow() {
-				mExploreScene.fetchLevels(mWidgets.search.field.getText());
+				resetContent();
 			}
 		};
 	}
@@ -249,6 +247,8 @@ public class ExploreGui extends Gui {
 	 * Initializes search bar
 	 */
 	private void initSearchBar() {
+		float infoWidth = SkinNames.getResource(SkinNames.GeneralVars.INFO_BAR_WIDTH);
+
 		AlignTable table = mWidgets.search.table;
 		table.dispose(true);
 		table.setAlign(Horizontal.RIGHT, Vertical.TOP);
@@ -256,8 +256,7 @@ public class ExploreGui extends Gui {
 		mWidgets.search.hider.addToggleActor(table);
 
 		TextField textField = new TextField("", (TextFieldStyle) SkinNames.getResource(SkinNames.General.TEXT_FIELD_DEFAULT));
-		textField.setMaxLength(Config.Editor.NAME_LENGTH_MAX);
-		table.add(textField);
+		table.add(textField).setWidth(infoWidth);
 		mWidgets.search.field = textField;
 		new TextFieldListener(textField, "Search", null) {
 			@Override
@@ -583,8 +582,9 @@ public class ExploreGui extends Gui {
 		table.setHasPreferredHeight(false).setHasPreferredWidth(false);
 		mWidgets.content.scrollPane = new ScrollPane(table, scrollPaneStyle);
 		getStage().addActor(mWidgets.content.scrollPane);
-
 		table.setAlign(Horizontal.LEFT, Vertical.TOP);
+
+		new ScrollPaneListener(mWidgets.content.scrollPane);
 
 
 		resetContentMargins();
@@ -660,6 +660,19 @@ public class ExploreGui extends Gui {
 			columnIndex++;
 		}
 
+		for (LevelInfoEntity level : levels) {
+			AlignTable levelTable = createLevelTable(level);
+
+			if (columnIndex == levelsPerRow) {
+				table.row().setFillWidth(true).setEqualCellSize(true);
+				columnIndex = 0;
+			}
+
+			table.add(levelTable).setFillWidth(true);
+
+			columnIndex++;
+		}
+
 		// Pad with empty cells
 		if (columnIndex > 0 && columnIndex < levelsPerRow) {
 			int columnsToPad = levelsPerRow - columnIndex;
@@ -667,6 +680,8 @@ public class ExploreGui extends Gui {
 				table.add().setFillWidth(true);
 			}
 		}
+
+		resetInfo();
 
 		table.layout();
 		mWidgets.content.scrollPane.invalidate();
@@ -687,7 +702,6 @@ public class ExploreGui extends Gui {
 		imageButtonStyle.imageUp = (Drawable) level.defEntity.drawable;
 
 		Button button = new ImageButton(imageButtonStyle);
-		mWidgets.content.buttonGroup.add(button);
 		table.row().setFillWidth(true);
 		table.add(button).setFillWidth(true).setKeepAspectRatio(true);
 		new ButtonListener(button) {
@@ -699,6 +713,7 @@ public class ExploreGui extends Gui {
 				}
 			}
 		};
+		mWidgets.content.buttonGroup.add(button);
 
 		// Level name
 		Label label = new Label(level.defEntity.name, (LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_DEFAULT));

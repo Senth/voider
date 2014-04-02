@@ -70,6 +70,10 @@ public class TextFieldListener implements EventListener {
 						inputEvent.getKeyCode() == Keys.ESCAPE ||
 						inputEvent.getKeyCode() == Keys.BACK) {
 					mTextField.getStage().setKeyboardFocus(null);
+
+					if (inputEvent.getKeyCode() == Keys.ENTER) {
+						onEnter(mTextField.getText());
+					}
 				}
 				// Erase previous word
 				else if (inputEvent.getKeyCode() == Keys.BACKSPACE) {
@@ -150,6 +154,14 @@ public class TextFieldListener implements EventListener {
 	 * @param newText the new text value for the text field
 	 */
 	protected void onDone(String newText) {
+		// Does nothing
+	}
+
+	/**
+	 * Called when enter is pressed
+	 * @param newText the new text value for the text field
+	 */
+	protected void onEnter(String newText) {
 		// Does nothing
 	}
 
