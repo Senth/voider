@@ -66,10 +66,10 @@ class ResourceLoader {
 		// Internal
 		if (Config.File.USE_EXTERNAL_RESOURCES) {
 			mAssetManager.setLoader(ShaderProgram.class, new ShaderLoader(new AbsoluteFileHandleResolver()));
-			mAssetManager.setLoader(Skin.class, new SkinLoader(new AbsoluteFileHandleResolver(), true));
+			mAssetManager.setLoader(Skin.class, new SkinLoader(new AbsoluteFileHandleResolver()));
 		} else {
 			mAssetManager.setLoader(ShaderProgram.class, new ShaderLoader(new InternalFileHandleResolver()));
-			mAssetManager.setLoader(Skin.class, new SkinLoader(new InternalFileHandleResolver(), true));
+			mAssetManager.setLoader(Skin.class, new SkinLoader(new InternalFileHandleResolver()));
 		}
 	}
 
