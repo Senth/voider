@@ -16,16 +16,10 @@ Options:
 	--name
 		Name of the project
 
-	--package
-		Package of the project
-
 	--project-dir
 		Base location of project directories, i.e. where all
 		Project, Project-desktop, Project-android directories
 		are located.
-
-	--sdk-dir
-		Location of the android sdk
 
 	-h, --help
 		Displays this text
@@ -47,27 +41,14 @@ while [ -n "$*" ]; do
 		shift
 		GDX_DIR="$1"
 		;;
-	--class)
-		shift
-		CLASS="$1"
-		;;
 	--name)
 		shift
 		NAME="$1"
-		;;
-	--package)
-		shift
-		PACKAGE="$1"
 		;;
 	--project-dir)
 		shift
 		PROJECT_DIR="$1"
 		;;
-	--sdk-dir)
-		shift
-		SDK_DIR="$1"
-		;;
-
 	esac
 
 	shift
@@ -78,24 +59,12 @@ if [ "$GDX_DIR" = "" ]; then
 	echo "No gdx-dir set!"
 	usage
 	exit
-elif [ "$CLASS" = "" ]; then
-	echo "No class set!"
-	usage
-	exit
 elif [ "$NAME" = "" ]; then
 	echo "No name set!"
 	usage
 	exit
-elif [ "$PACKAGE" = "" ]; then
-	echo "No package set!"
-	usage
-	exit
 elif [ "$PROJECT_DIR" = "" ]; then
 	echo "No project dir set!"
-	usage
-	exit
-elif [ "$SDK_DIR" = "" ]; then
-	echo "No Android SDK dir set!"
 	usage
 	exit
 fi
@@ -104,6 +73,23 @@ fi
 #Program
 OLD_PWD=$PWD
 cd "$GDX_DIR"
+ant
 cd "dist"
-java -jar gdx-setup.jar --dir "$PROJECT_DIR" --name "$NAME" --package "$PACKAGE" --mainClass "$CLASS" --sdkLocation "$SDK_DIR"
+
+# Main project
+MAIN_DIR_LIBS="$PROJECT_DIR/$NAME/libs"
+cp -v gdx.jar "$MAIN_DIR_LIBS"
+cp -v sources/gdx-sources.jar "$MAIN_DIR_LIBS"
+
+# Android
+ANDROID_DIR_LIBS="$PROJECT_DIR/$NAME-android/libs"
+cp -v gdx-backend-android.jar "$ANDROID_DIR_LIBS"
+cp -v sources/gdx-backend-android-sources.jar "$ANDROID_DIR_LIBS"
+
+# Desktop
+DESKTOP_DIR_LIBS="$PROJECT_DIR/$NAME-desktop/libs"
+cp -v gdx-backend-lwjgl-natives.jar "$DESKTOP_DIR_LIBS"
+cp -v gdx-backend-lwjgl.jar "$DESKTOP_DIR_LIBS"
+cp -v sources/gdx-backend-lwjgl-sources.jar "$DESKTOP_DIR_LIBS"
+
 cd "$OLD_PWD"
