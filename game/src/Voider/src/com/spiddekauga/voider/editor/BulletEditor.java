@@ -12,6 +12,7 @@ import com.spiddekauga.voider.game.WeaponDef;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.BulletActor;
 import com.spiddekauga.voider.game.actors.BulletActorDef;
+import com.spiddekauga.voider.menu.SelectDefScene;
 import com.spiddekauga.voider.resources.ExternalTypes;
 import com.spiddekauga.voider.resources.InternalNames;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
@@ -19,7 +20,6 @@ import com.spiddekauga.voider.resources.ResourceItem;
 import com.spiddekauga.voider.resources.ResourceSaver;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
-import com.spiddekauga.voider.scene.SelectDefScene;
 import com.spiddekauga.voider.utils.Pools;
 
 /**

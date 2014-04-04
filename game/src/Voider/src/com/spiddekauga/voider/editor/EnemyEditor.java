@@ -29,6 +29,7 @@ import com.spiddekauga.voider.game.actors.EnemyActorDef;
 import com.spiddekauga.voider.game.actors.EnemyActorDef.AimTypes;
 import com.spiddekauga.voider.game.actors.MovementTypes;
 import com.spiddekauga.voider.game.actors.PlayerActor;
+import com.spiddekauga.voider.menu.SelectDefScene;
 import com.spiddekauga.voider.resources.ExternalTypes;
 import com.spiddekauga.voider.resources.InternalNames;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
@@ -36,7 +37,6 @@ import com.spiddekauga.voider.resources.ResourceItem;
 import com.spiddekauga.voider.resources.ResourceSaver;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
-import com.spiddekauga.voider.scene.SelectDefScene;
 import com.spiddekauga.voider.utils.Pools;
 
 /**

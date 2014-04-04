@@ -3,7 +3,7 @@ package com.spiddekauga.voider.editor.commands;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.ui.List;
 import com.spiddekauga.utils.commands.Command;
-import com.spiddekauga.voider.scene.SelectDefScene;
+import com.spiddekauga.voider.menu.SelectDefScene;
 
 /**
  * Sets the revision for the currently selected resource

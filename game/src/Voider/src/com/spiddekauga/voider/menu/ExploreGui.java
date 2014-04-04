@@ -66,6 +66,7 @@ public class ExploreGui extends Gui {
 		super.resetValues();
 
 		resetComments();
+		resetContent();
 		resetInfo();
 	}
 
@@ -138,6 +139,27 @@ public class ExploreGui extends Gui {
 
 		mExploreScene.fetchInitialLevels(getSelectedSortOrder(), getSelectedTags());
 		getStage().setScrollFocus(mWidgets.content.scrollPane);
+	}
+
+	@Override
+	public void resize(int width, int height) {
+		super.resize(width, height);
+		dispose();
+		initGui();
+	}
+
+	@Override
+	public void dispose() {
+		super.dispose();
+
+		mWidgets.comment.table.dispose();
+		mWidgets.content.table.dispose();
+		mWidgets.info.table.dispose();
+		mWidgets.rightPanel.dispose();
+		mWidgets.search.table.dispose();
+		mWidgets.sort.table.dispose();
+		mWidgets.tag.wrapper.dispose();
+		mWidgets.view.table.dispose();
 	}
 
 	/**

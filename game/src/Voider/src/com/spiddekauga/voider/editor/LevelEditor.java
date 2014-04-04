@@ -54,6 +54,7 @@ import com.spiddekauga.voider.game.actors.StaticTerrainActor;
 import com.spiddekauga.voider.game.triggers.TScreenAt;
 import com.spiddekauga.voider.game.triggers.TriggerAction.Actions;
 import com.spiddekauga.voider.game.triggers.TriggerInfo;
+import com.spiddekauga.voider.menu.SelectDefScene;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.method.IMethodEntity;
 import com.spiddekauga.voider.network.entities.method.PublishMethodResponse;
@@ -73,7 +74,6 @@ import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.scene.LoadingScene;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
-import com.spiddekauga.voider.scene.SelectDefScene;
 import com.spiddekauga.voider.utils.Pools;
 
 /**

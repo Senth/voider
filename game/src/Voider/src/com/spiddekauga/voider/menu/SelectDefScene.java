@@ -1,4 +1,4 @@
-package com.spiddekauga.voider.scene;
+package com.spiddekauga.voider.menu;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -17,6 +17,7 @@ import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceItem;
 import com.spiddekauga.voider.resources.ResourceNotFoundException;
 import com.spiddekauga.voider.resources.RevisionInfo;
+import com.spiddekauga.voider.scene.WorldScene;
 import com.spiddekauga.voider.utils.Pools;
 import com.spiddekauga.voider.utils.User;
 

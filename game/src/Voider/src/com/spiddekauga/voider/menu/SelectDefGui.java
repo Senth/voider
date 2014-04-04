@@ -1,4 +1,4 @@
-package com.spiddekauga.voider.scene;
+package com.spiddekauga.voider.menu;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -36,13 +36,14 @@ import com.spiddekauga.utils.scene.ui.ResourceTextureButton;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.editor.commands.CSelectDefSetRevision;
+import com.spiddekauga.voider.menu.SelectDefScene.DefVisible;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.ExternalTypes;
 import com.spiddekauga.voider.resources.InternalNames;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.RevisionInfo;
 import com.spiddekauga.voider.resources.SkinNames;
-import com.spiddekauga.voider.scene.SelectDefScene.DefVisible;
+import com.spiddekauga.voider.scene.Gui;
 
 /**
  * GUI for Select Definition Scene. This creates a border at

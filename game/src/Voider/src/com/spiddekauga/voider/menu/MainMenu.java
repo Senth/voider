@@ -26,7 +26,6 @@ import com.spiddekauga.voider.resources.ResourceItem;
 import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
-import com.spiddekauga.voider.scene.SelectDefScene;
 import com.spiddekauga.voider.utils.Pools;
 import com.spiddekauga.voider.utils.User;
 
