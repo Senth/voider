@@ -403,7 +403,7 @@ public class LevelGetAll extends VoiderServlet {
 
 		Results<ScoredDocument> foundDocuments = SearchUtils.search("level", mParameters.searchString.toLowerCase(), FetchSizes.LEVELS, cursor);
 
-		if (foundDocuments == null || foundDocuments.getNumberReturned() < FetchSizes.LEVELS) {
+		if (foundDocuments == null || foundDocuments.getCursor() == null || foundDocuments.getNumberReturned() < FetchSizes.LEVELS) {
 			mResponse.status = Statuses.SUCCESS_FETCHED_ALL;
 		}
 
@@ -424,6 +424,10 @@ public class LevelGetAll extends VoiderServlet {
 			// Set cursor
 			if (foundDocuments.getCursor() != null) {
 				mResponse.cursor = foundDocuments.getCursor().toWebSafeString();
+			}
+
+			if (mResponse.status != Statuses.SUCCESS_FETCHED_ALL) {
+				mResponse.status = Statuses.SUCCESS_MORE_EXISTS;
 			}
 		}
 	}

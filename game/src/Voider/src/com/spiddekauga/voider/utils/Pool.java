@@ -34,7 +34,7 @@ public class Pool<T> extends ReflectionPool<T> {
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public T obtain() {
+	public synchronized T obtain() {
 		T object = super.obtain();
 
 		// Debug tests for checking duplicate frees
@@ -55,7 +55,7 @@ public class Pool<T> extends ReflectionPool<T> {
 	}
 
 	@Override
-	public void free(T object) {
+	public synchronized void free(T object) {
 		if (Config.Debug.DEBUG_TESTS) {
 			assert !mFreeObjects.containsKey(object);
 			mFreeObjects.put(object, object);

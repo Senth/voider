@@ -227,6 +227,7 @@ public class ResourceWebRepo extends WebRepo {
 	 * @param response server response, null if not valid
 	 * @return a correct response for getting levels
 	 */
+	@SuppressWarnings("unchecked")
 	private synchronized IEntity handleLevelGetResponse(LevelGetAllMethod methodEntity, IEntity response) {
 		// Update cache
 		if (response instanceof LevelGetAllMethodResponse) {
@@ -242,6 +243,7 @@ public class ResourceWebRepo extends WebRepo {
 					// Create new
 					if (levelCache == null) {
 						levelCache = createNewLevelCache((LevelGetAllMethodResponse) response);
+						((LevelGetAllMethodResponse) response).levels = (ArrayList<LevelInfoEntity>) levelCache.levels.clone();
 						mSearchCache.put(methodEntity.searchString, levelCache);
 						newCache = true;
 					}
@@ -275,10 +277,9 @@ public class ResourceWebRepo extends WebRepo {
 				// Update cursor
 				levelCache.serverCursor = ((LevelGetAllMethodResponse) response).cursor;
 
-				// Set response to include cached levels
+				// Add to cache
 				if (!newCache) {
 					levelCache.levels.addAll(((LevelGetAllMethodResponse) response).levels);
-					((LevelGetAllMethodResponse) response).levels = levelCache.levels;
 				}
 			}
 
@@ -454,6 +455,91 @@ public class ResourceWebRepo extends WebRepo {
 		}
 	}
 
+	/**
+	 * Check if the server has more levels
+	 * @param method the method that was sent
+	 * @return true if the server has more levels
+	 */
+	public boolean hasMoreLevels(LevelGetAllMethod method) {
+		// Search
+		if (method.searchString != null && !method.searchString.equals("")) {
+			return hasMoreLevels(method.searchString);
+		}
+		// Sort
+		else if (method.sort != null) {
+			return hasMoreLevels(method.sort, method.tagFilter);
+		}
+		// None
+		else {
+			return false;
+		}
+	}
+
+	/**
+	 * Check if the server has more levels for this sort order and these tags.
+	 * @param sort sort order to get cached levels from
+	 * @param tags all tags that are checked
+	 * @return true if the server has more levels
+	 */
+	public synchronized boolean hasMoreLevels(SortOrders sort, ArrayList<Tags> tags) {
+		LevelCache levelCache = getLevelCache(sort, tags);
+
+		return levelCache != null && !levelCache.fetchedAll;
+	}
+
+	/**
+	 * Check if the server has more levels for this search string
+	 * @param searchString the string to search for
+	 * @return true if the server has more levels
+	 */
+	public synchronized boolean hasMoreLevels(String searchString) {
+		LevelCache levelCache = getLevelCache(searchString);
+
+		return levelCache != null && !levelCache.fetchedAll;
+	}
+
+	/**
+	 * Check if we have cached levels
+	 * @param method the method that was sent
+	 * @return true if we have cached levels
+	 */
+	public boolean hasCachedLevels(LevelGetAllMethod method) {
+		// Search
+		if (method.searchString != null && !method.searchString.equals("")) {
+			return hasCachedLevels(method.searchString);
+		}
+		// Sort
+		else if (method.sort != null) {
+			return hasCachedLevels(method.sort, method.tagFilter);
+		}
+		// None
+		else {
+			return false;
+		}
+	}
+
+	/**
+	 * Check if we have cached levels for this sort order and these tags.
+	 * @param sort sort order to get cached levels from
+	 * @param tags all tags that are checked
+	 * @return true if we have cached levels
+	 */
+	public synchronized boolean hasCachedLevels(SortOrders sort, ArrayList<Tags> tags) {
+		LevelCache levelCache = getLevelCache(sort, tags);
+
+		return levelCache != null;
+	}
+
+	/**
+	 * Check if we have cached levels for this search string
+	 * @param searchString the string to search for
+	 * @return true if we have cached levels
+	 */
+	public synchronized boolean hasCachedLevels(String searchString) {
+		LevelCache levelCache = getLevelCache(searchString);
+
+		return levelCache != null;
+	}
 
 	/**
 	 * Checks if a cache is outdated

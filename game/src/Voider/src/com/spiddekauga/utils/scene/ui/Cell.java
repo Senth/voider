@@ -616,6 +616,13 @@ public class Cell implements Poolable {
 		return mActor;
 	}
 
+	/**
+	 * @return true if this cell is empty, i.e. doesn't have any actor
+	 */
+	boolean isEmpty() {
+		return mActor == null;
+	}
+
 	/** Actor in the cell */
 	private Actor mActor = null;
 	/** Alignment of the cell */

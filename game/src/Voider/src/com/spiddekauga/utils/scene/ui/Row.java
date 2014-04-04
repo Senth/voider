@@ -340,9 +340,23 @@ public class Row implements Poolable {
 	}
 
 	/**
+	 * Removes all empty cells
+	 */
+	public void removeEmptyCells() {
+		Iterator<Cell> cellIt = mCells.iterator();
+		while (cellIt.hasNext()) {
+			Cell cell = cellIt.next();
+
+			if (cell.isEmpty()) {
+				cellIt.remove();
+			}
+		}
+	}
+
+	/**
 	 * @return number of cells in the row
 	 */
-	int getCellCount() {
+	public int getCellCount() {
 		return mCells.size();
 	}
 

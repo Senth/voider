@@ -542,6 +542,14 @@ public class Config {
 	}
 
 	/**
+	 * Explore options
+	 */
+	public static class Explore {
+		/** Minimum number of string characters for search to begin */
+		public static final int SEARCH_LENGTH_MIN = 3;
+	}
+
+	/**
 	 * Files
 	 */
 	public static class File {

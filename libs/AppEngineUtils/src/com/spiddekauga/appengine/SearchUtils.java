@@ -128,11 +128,14 @@ public class SearchUtils {
 
 		QueryOptions.Builder optionsBuilder = QueryOptions.newBuilder();
 
-		optionsBuilder.setLimit(limit);
-
-		if (cursor != null) {
-			optionsBuilder.setCursor(cursor);
+		// Create cursor if not exists
+		Cursor cursorToUse = cursor;
+		if (cursor == null) {
+			cursorToUse = Cursor.newBuilder().build();
 		}
+
+		optionsBuilder.setLimit(limit);
+		optionsBuilder.setCursor(cursorToUse);
 
 		Builder queryBuilder = Query.newBuilder().setOptions(optionsBuilder);
 

@@ -857,7 +857,24 @@ public class AlignTable extends WidgetGroup implements Disposable {
 		return removed;
 	}
 
+	/**
+	 * Removes a whole row including its actors
+	 * @param row the row to remove
+	 * @param disposeActors true if we shall call dispose on the cell's actors
+	 */
+	public void removeRow(Row row, boolean disposeActors) {
+		mRows.remove(row);
+		row.dispose(disposeActors);
+		Pools.row.free(row);
+	}
 
+	/**
+	 * Get all rows. USE WITH CAUTION, never add anything to the row outside of AlignTable
+	 * @return all rows
+	 */
+	public ArrayList<Row> getRows() {
+		return mRows;
+	}
 
 	/**
 	 * Set a background image of the table

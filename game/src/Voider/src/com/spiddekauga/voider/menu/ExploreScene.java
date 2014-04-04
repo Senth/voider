@@ -90,6 +90,10 @@ public class ExploreScene extends Scene implements ICallerResponseListener {
 			WebWrapper webWrapper = webIt.next();
 			IEntity response = webWrapper.response;
 
+			if (webWrapper.method == mLastMethod) {
+				mFetchingLevels = false;
+			}
+
 			if (response instanceof LevelGetAllMethodResponse) {
 				switch (((LevelGetAllMethodResponse) response).status) {
 				case FAILED_SERVER_CONNECTION:
@@ -103,7 +107,7 @@ public class ExploreScene extends Scene implements ICallerResponseListener {
 				case SUCCESS_FETCHED_ALL:
 				case SUCCESS_MORE_EXISTS:
 					createDrawables(((LevelGetAllMethodResponse) response).levels);
-					((ExploreGui)mGui).resetContent(((LevelGetAllMethodResponse) response).levels);
+					((ExploreGui)mGui).addContent(((LevelGetAllMethodResponse) response).levels);
 					break;
 				}
 			}
@@ -125,27 +129,76 @@ public class ExploreScene extends Scene implements ICallerResponseListener {
 	}
 
 	/**
-	 * Fetch levels from the server by the specified sort
+	 * @return true if the server has more levels
+	 */
+	boolean hasMoreLevels() {
+		if (mLastMethod != null) {
+			return mResourceWebRepo.hasMoreLevels(mLastMethod);
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * Fetch more levels of the currently displayed type
+	 */
+	void fetchMoreLevels() {
+		if (mLastMethod != null) {
+			if (mResourceWebRepo.hasMoreLevels(mLastMethod)) {
+				if (mLastMethod.searchString != null) {
+					mLastMethod = mResourceWebRepo.getLevels(this, mLastMethod.searchString);
+				} else {
+					mLastMethod = mResourceWebRepo.getLevels(this, mLastMethod.sort, mLastMethod.tagFilter);
+				}
+
+				mFetchingLevels = true;
+			}
+		}
+	}
+
+	/**
+	 * Fetch initial levels from the server by the specified sort
 	 * @param sort sorting order to get levels by
 	 * @param tags selected tags
 	 */
-	void fetchLevels(SortOrders sort, ArrayList<Tags> tags) {
-		mLastMethod = mResourceWebRepo.getLevels(this, sort, tags);
+	void fetchInitialLevels(SortOrders sort, ArrayList<Tags> tags) {
+		if (sort != null) {
+			ArrayList<LevelInfoEntity> cachedLevels = mResourceWebRepo.getCachedLevels(sort, tags);
 
-		((ExploreGui)mGui).resetContent();
+			if (cachedLevels.isEmpty()) {
+				mLastMethod = mResourceWebRepo.getLevels(this, sort, tags);
+				mFetchingLevels = true;
+				((ExploreGui)mGui).resetContent();
+			} else {
+				mLastMethod = new LevelGetAllMethod();
+				mLastMethod.sort = sort;
+				mLastMethod.tagFilter = tags;
+				((ExploreGui)mGui).resetContent(cachedLevels);
+			}
+		}
 	}
 
 	/**
 	 * Fetch levels from the server by the specified search string
 	 * @param searchString the text to search for
 	 */
-	void fetchLevels(String searchString) {
-		if (searchString.length() >= Config.Actor.NAME_LENGTH_MIN) {
-			mLastMethod = mResourceWebRepo.getLevels(this, searchString);
+	void fetchInitialLevels(String searchString) {
+		if (searchString.length() >= Config.Explore.SEARCH_LENGTH_MIN) {
+			ArrayList<LevelInfoEntity> cachedLevels = mResourceWebRepo.getCachedLevels(searchString);
+
+			if (cachedLevels.isEmpty()) {
+				mLastMethod = mResourceWebRepo.getLevels(this, searchString);
+				mFetchingLevels = true;
+				((ExploreGui)mGui).resetContent();
+			} else {
+				mLastMethod = new LevelGetAllMethod();
+				mLastMethod.searchString = searchString;
+				((ExploreGui)mGui).resetContent(cachedLevels);
+			}
 		} else {
-			mLastMethod = null;
+			mLastMethod = new LevelGetAllMethod();
+			((ExploreGui)mGui).resetContent();
 		}
-		((ExploreGui)mGui).resetContent();
 	}
 
 	/**
@@ -189,12 +242,21 @@ public class ExploreScene extends Scene implements ICallerResponseListener {
 		mSelectedLevel = level;
 	}
 
+	/**
+	 * @return true if we're currently fetching levels
+	 */
+	boolean isFetchingLevels() {
+		return mFetchingLevels;
+	}
+
 	/** Selected level */
 	LevelInfoEntity mSelectedLevel = null;
 	/** Resource web repository */
 	private ResourceWebRepo mResourceWebRepo = ResourceWebRepo.getInstance();
 	/** Synchronized web responses */
 	private ArrayList<WebWrapper> mWebResponses = new ArrayList<>();
-	/** Last method that was called */
+	/** Last method parameters that was used */
 	private LevelGetAllMethod mLastMethod = null;
+	/** If we're fetching levels */
+	private boolean mFetchingLevels = false;
 }

@@ -21,10 +21,13 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.ScrollPaneEdgeListener;
 import com.spiddekauga.utils.Strings;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
+import com.spiddekauga.utils.scene.ui.AnimationWidget;
+import com.spiddekauga.utils.scene.ui.AnimationWidget.AnimationWidgetStyle;
 import com.spiddekauga.utils.scene.ui.Background;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.utils.scene.ui.HideListener;
@@ -32,7 +35,7 @@ import com.spiddekauga.utils.scene.ui.Label;
 import com.spiddekauga.utils.scene.ui.Label.LabelStyle;
 import com.spiddekauga.utils.scene.ui.RatingWidget;
 import com.spiddekauga.utils.scene.ui.RatingWidget.RatingWidgetStyle;
-import com.spiddekauga.utils.scene.ui.ScrollPaneListener;
+import com.spiddekauga.utils.scene.ui.Row;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.network.entities.LevelInfoEntity;
@@ -133,7 +136,8 @@ public class ExploreGui extends Gui {
 		initTopBar();
 		initContent();
 
-		mExploreScene.fetchLevels(getSelectedSortOrder(), getSelectedTags());
+		mExploreScene.fetchInitialLevels(getSelectedSortOrder(), getSelectedTags());
+		getStage().setScrollFocus(mWidgets.content.scrollPane);
 	}
 
 	/**
@@ -166,7 +170,7 @@ public class ExploreGui extends Gui {
 		mWidgets.sort.hider = new HideListener(button, true) {
 			@Override
 			protected void onShow() {
-				resetContent();
+				mExploreScene.fetchInitialLevels(getSelectedSortOrder(), getSelectedTags());
 			}
 		};
 
@@ -178,7 +182,7 @@ public class ExploreGui extends Gui {
 		mWidgets.search.hider = new HideListener(button, true) {
 			@Override
 			protected void onShow() {
-				resetContent();
+				mExploreScene.fetchInitialLevels(mWidgets.search.field.getText());
 			}
 		};
 	}
@@ -222,8 +226,10 @@ public class ExploreGui extends Gui {
 			table.add(checkBox);
 			new ButtonListener(checkBox) {
 				@Override
-				protected void onPressed() {
-					mExploreScene.fetchLevels(sortOrder, getSelectedTags());
+				protected void onChecked(boolean checked) {
+					if (checked) {
+						mExploreScene.fetchInitialLevels(sortOrder, getSelectedTags());
+					}
 				}
 			};
 		}
@@ -261,7 +267,7 @@ public class ExploreGui extends Gui {
 		new TextFieldListener(textField, "Search", null) {
 			@Override
 			protected void onChange(String newText) {
-				mExploreScene.fetchLevels(newText);
+				mExploreScene.fetchInitialLevels(newText);
 			}
 		};
 	}
@@ -484,7 +490,7 @@ public class ExploreGui extends Gui {
 		wrapper.setAlign(Horizontal.LEFT, Vertical.TOP);
 		getStage().addActor(wrapper);
 		wrapper.row().setFillHeight(true);
-
+		mWidgets.sort.hider.addToggleActor(wrapper);
 
 		// Tags
 		AlignTable tagTable = new AlignTable();
@@ -513,7 +519,7 @@ public class ExploreGui extends Gui {
 				@Override
 				protected void onChecked(boolean checked) {
 					if (!mClearingTags) {
-						mExploreScene.fetchLevels(getSelectedSortOrder(), getSelectedTags());
+						mExploreScene.fetchInitialLevels(getSelectedSortOrder(), getSelectedTags());
 					}
 				}
 			};
@@ -562,7 +568,7 @@ public class ExploreGui extends Gui {
 				mClearingTags = false;
 
 				if (tagsChanged) {
-					mExploreScene.fetchLevels(getSelectedSortOrder(), getSelectedTags());
+					mExploreScene.fetchInitialLevels(getSelectedSortOrder(), getSelectedTags());
 				}
 			}
 		};
@@ -584,8 +590,21 @@ public class ExploreGui extends Gui {
 		getStage().addActor(mWidgets.content.scrollPane);
 		table.setAlign(Horizontal.LEFT, Vertical.TOP);
 
-		new ScrollPaneListener(mWidgets.content.scrollPane);
+		ScrollPaneEdgeListener listener = new ScrollPaneEdgeListener() {
+			@Override
+			public void hitEdge(ScrollPane scrollPane, Edges edge) {
+				if (edge == Edges.BOTTOM) {
+					if (!mExploreScene.isFetchingLevels() && mExploreScene.hasMoreLevels()) {
+						mExploreScene.fetchMoreLevels();
 
+						// Add wait icon
+						addWaitIconToTable(mWidgets.content.table);
+						mWidgets.content.scrollPane.invalidate();
+					}
+				}
+			}
+		};
+		mWidgets.content.scrollPane.addScrollPaneEdgeListener(listener);
 
 		resetContentMargins();
 	}
@@ -635,9 +654,30 @@ public class ExploreGui extends Gui {
 			return;
 		}
 
+		resetContentMargins();
+
 		mWidgets.content.buttonGroup = new ButtonGroup();
 
-		resetContentMargins();
+
+		addContent(levels);
+
+		resetInfo();
+
+		if (mWidgets.content.scrollPane != null) {
+			mWidgets.content.scrollPane.setScrollPercentY(0);
+		}
+
+		if (mExploreScene.isFetchingLevels()) {
+			addWaitIconToTable(mWidgets.content.table);
+		}
+	}
+
+	/**
+	 * Adds more levels to the existing content
+	 * @param levels the levels to add
+	 */
+	void addContent(ArrayList<LevelInfoEntity> levels) {
+		AlignTable table = mWidgets.content.table;
 
 		// Calculate how many levels per row
 		float floatLevelsPerRow = mWidgets.content.scrollPane.getWidth() / Config.Level.SAVE_TEXTURE_WIDTH;
@@ -647,6 +687,22 @@ public class ExploreGui extends Gui {
 		}
 
 		int columnIndex = levelsPerRow;
+
+		// Remove wait icon and empty cells
+		if (mWidgets.content.waitIconRow != null) {
+			table.removeRow(mWidgets.content.waitIconRow, true);
+			mWidgets.content.waitIconRow = null;
+
+			ArrayList<Row> rows = table.getRows();
+			if (!rows.isEmpty()) {
+				Row lastRow = rows.get(rows.size()-1);
+				lastRow.removeEmptyCells();
+				columnIndex = lastRow.getCellCount();
+			}
+		}
+
+
+		//		for (int i = 0; i < 15; ++i) {
 		for (LevelInfoEntity level : levels) {
 			AlignTable levelTable = createLevelTable(level);
 
@@ -657,21 +713,10 @@ public class ExploreGui extends Gui {
 
 			table.add(levelTable).setFillWidth(true);
 
-			columnIndex++;
-		}
-
-		for (LevelInfoEntity level : levels) {
-			AlignTable levelTable = createLevelTable(level);
-
-			if (columnIndex == levelsPerRow) {
-				table.row().setFillWidth(true).setEqualCellSize(true);
-				columnIndex = 0;
-			}
-
-			table.add(levelTable).setFillWidth(true);
 
 			columnIndex++;
 		}
+		//		}
 
 		// Pad with empty cells
 		if (columnIndex > 0 && columnIndex < levelsPerRow) {
@@ -681,10 +726,16 @@ public class ExploreGui extends Gui {
 			}
 		}
 
-		resetInfo();
-
+		table.invalidate();
 		table.layout();
 		mWidgets.content.scrollPane.invalidate();
+
+
+		// If content view is not full, fetch more content...
+		if (mExploreScene.hasMoreLevels() && table.getHeight() < mWidgets.content.scrollPane.getHeight()) {
+			addWaitIconToTable(table);
+			mExploreScene.fetchMoreLevels();
+		}
 	}
 
 	/**
@@ -729,6 +780,19 @@ public class ExploreGui extends Gui {
 		return table;
 	}
 
+	/**
+	 * Add a wait icon to a new row for the specified table
+	 * @param table the table to add the animation wait widget to
+	 */
+	private void addWaitIconToTable(AlignTable table) {
+		AnimationWidgetStyle waitIconStyle = SkinNames.getResource(SkinNames.General.ANIMATION_WAIT);
+		AnimationWidget waitIcon = new AnimationWidget(waitIconStyle);
+
+		mWidgets.content.waitIconRow = table.row(Horizontal.CENTER, Vertical.MIDDLE);
+		table.add(waitIcon);
+		table.invalidate();
+	}
+
 	/** If we're currently clearing the tags */
 	private boolean mClearingTags = false;
 	/** The explore scene */
@@ -754,7 +818,8 @@ public class ExploreGui extends Gui {
 		private static class Content {
 			AlignTable table = new AlignTable();
 			ScrollPane scrollPane = null;
-			ButtonGroup buttonGroup = null;
+			ButtonGroup buttonGroup = new ButtonGroup();
+			Row waitIconRow = null;
 		}
 
 		private static class View {
