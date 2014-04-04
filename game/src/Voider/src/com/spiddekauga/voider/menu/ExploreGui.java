@@ -483,6 +483,7 @@ public class ExploreGui extends Gui {
 		LabelStyle labelStyle = SkinNames.getResource(SkinNames.General.LABEL_DEFAULT);
 		CheckBoxStyle checkBoxStyle = SkinNames.getResource(SkinNames.General.CHECK_BOX_DEFAULT);
 		Color backgroundColor = SkinNames.getResource(SkinNames.GeneralVars.WIDGET_BACKGROUND_COLOR);
+		TextButtonStyle textButtonStyle = SkinNames.getResource(SkinNames.General.TEXT_BUTTON_PRESS);
 
 		// This table wraps the tag table with the tab table
 		AlignTable wrapper = mWidgets.tag.wrapper;
@@ -529,16 +530,10 @@ public class ExploreGui extends Gui {
 		tagTable.row().setFillHeight(true);
 
 
-		// Tab buttons
-		AlignTable buttonTable = new AlignTable();
-		buttonTable.setAlign(Horizontal.LEFT, Vertical.TOP);
-		wrapper.add(buttonTable);
-
 		// Toggle table
-		Button button = new ImageButton((ImageButtonStyle) SkinNames.getResource(SkinNames.General.TAGS));
-		buttonTable.row();
-		buttonTable.add(button);
-		HideListener hideListener = new HideListener(button, true) {
+		ImageButton imageButton = new ImageButton((ImageButtonStyle) SkinNames.getResource(SkinNames.General.TAGS));
+		wrapper.add(imageButton);
+		HideListener hideListener = new HideListener(imageButton, true) {
 			@Override
 			protected void onShow() {
 				mWidgets.tag.wrapper.layout();
@@ -553,12 +548,12 @@ public class ExploreGui extends Gui {
 		};
 		hideListener.addToggleActor(tagTable);
 
+
 		// Clear button
-		// TODO change clear button
-		button = new ImageButton((ImageButtonStyle) SkinNames.getResource(SkinNames.General.IMAGE_BUTTON_STUB));
-		buttonTable.row();
-		buttonTable.add(button);
-		new ButtonListener(button) {
+		Button clearbutton = new TextButton("Clear tags", textButtonStyle);
+		wrapper.row().setFillWidth(true);
+		wrapper.add(clearbutton).setFillWidth(true).setPadRight(imageButton.getWidth());
+		new ButtonListener(clearbutton) {
 			@Override
 			protected void onPressed() {
 				boolean tagsChanged = getSelectedTags().size() > 0;
@@ -572,6 +567,7 @@ public class ExploreGui extends Gui {
 				}
 			}
 		};
+		hideListener.addToggleActor(clearbutton);
 
 		wrapper.layout();
 	}
