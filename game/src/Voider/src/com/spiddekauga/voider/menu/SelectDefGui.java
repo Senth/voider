@@ -37,13 +37,13 @@ import com.spiddekauga.utils.scene.ui.TextFieldListener;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.editor.commands.CSelectDefSetRevision;
 import com.spiddekauga.voider.menu.SelectDefScene.DefVisible;
-import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.ExternalTypes;
 import com.spiddekauga.voider.resources.InternalNames;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.RevisionInfo;
 import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.scene.Gui;
+import com.spiddekauga.voider.utils.User;
 
 /**
  * GUI for Select Definition Scene. This creates a border at
@@ -370,7 +370,8 @@ public class SelectDefGui extends Gui {
 			for (int i = 0; i < revisions.length; ++i) {
 				int revisionInt = revisions.length - i;
 				RevisionInfo revisionInfo = resourceRevisions.get(i);
-				revisions[i] = String.format("%0" + revisionStringLength + "d  %d - %s", revisionInt, revisionInfo.revision, Def.getDateString(revisionInfo.date));
+				String dateString = User.getGlobalUser().dateToString(revisionInfo.date);
+				revisions[i] = String.format("%0" + revisionStringLength + "d  %d - %s", revisionInt, revisionInfo.revision, dateString);
 			}
 		} else {
 			revisions = new String[0];

@@ -36,20 +36,21 @@ public class SelectDefScene extends WorldScene {
 	/**
 	 * Private common constructor
 	 * @param defType the definition type that the player want to select.
+	 * @param buttonText text for the load/play button
 	 * @param showMineOnly set as true if the player only shall see his/her own
 	 * definitions by default, if showMineOnlyCheckbox is set to true the player can
 	 * change this value.
 	 * @param showMineOnlyCheckbox set to true if you want the scene to show a checkbox
 	 * to only display one's own actors.
 	 */
-	private SelectDefScene(ExternalTypes defType, boolean showMineOnly, boolean showMineOnlyCheckbox) {
-		super(new SelectDefGui(showMineOnlyCheckbox), 0);
+	private SelectDefScene(ExternalTypes defType, String buttonText, boolean showMineOnly, boolean showMineOnlyCheckbox) {
+		super(new SelectDefNewGui(showMineOnlyCheckbox, buttonText), 0);
 
 		mShowMineOnly = showMineOnly;
 		mDefType = defType;
 
 
-		((SelectDefGui)mGui).setSelectDefScene(this);
+		((SelectDefNewGui)mGui).setSelectDefScene(this);
 
 		for (int i = 0; i < mCategoryFilters.length; ++i) {
 			mCategoryFilters[i] = new ArrayList<String>();
@@ -59,6 +60,7 @@ public class SelectDefScene extends WorldScene {
 	/**
 	 * Creates a selector scene with the latest revisions of the specified definition type.
 	 * @param defType the definition type that the player want to select.
+	 * @param buttonText text for the load/play button
 	 * @param showMineOnly set as true if the player only shall see his/her own
 	 * definitions by default, if showMineOnlyCheckbox is set to true the player can
 	 * change this value.
@@ -67,8 +69,8 @@ public class SelectDefScene extends WorldScene {
 	 * @param canChooseRevision set this to true if the player should be able to select
 	 * another revision of the resource.
 	 */
-	public SelectDefScene(ExternalTypes defType, boolean showMineOnly, boolean showMineOnlyCheckbox, boolean canChooseRevision) {
-		this(defType, showMineOnly, showMineOnlyCheckbox);
+	public SelectDefScene(ExternalTypes defType, String buttonText, boolean showMineOnly, boolean showMineOnlyCheckbox, boolean canChooseRevision) {
+		this(defType, buttonText, showMineOnly, showMineOnlyCheckbox);
 
 		mCanChooseRevision = canChooseRevision;
 	}
@@ -81,14 +83,18 @@ public class SelectDefScene extends WorldScene {
 			ArrayList<Def> defs = ResourceCacheFacade.getAll(mDefType);
 
 			for (Def def : defs) {
-				// Only show resources with latest revision
-				try {
-					RevisionInfo revisionInfo = ResourceLocalRepo.getRevisionLatest(def.getId());
-					if (revisionInfo.revision == def.getRevision()) {
-						mDefs.add(new DefVisible(def));
+				// Only show published or resources with latest revision
+				if (ResourceLocalRepo.isPublished(def.getId())) {
+					mDefs.add(new DefVisible(def));
+				} else {
+					try {
+						RevisionInfo revisionInfo = ResourceLocalRepo.getRevisionLatest(def.getId());
+						if (revisionInfo.revision == def.getRevision()) {
+							mDefs.add(new DefVisible(def));
+						}
+					} catch (ResourceNotFoundException e) {
+						// Does nothing
 					}
-				} catch (ResourceNotFoundException e) {
-					// Does nothing
 				}
 			}
 
@@ -103,7 +109,7 @@ public class SelectDefScene extends WorldScene {
 	protected void loadResources() {
 		super.loadResources();
 		ResourceCacheFacade.load(InternalNames.UI_GENERAL);
-		ResourceCacheFacade.loadAllOf(this, mDefType, true);
+		ResourceCacheFacade.loadAllOf(this, mDefType, false);
 	}
 
 	@Override
@@ -168,9 +174,18 @@ public class SelectDefScene extends WorldScene {
 	 * @param defId id of the definition
 	 * @param defRevision definition's revision
 	 */
+	@Deprecated
 	void setSelectedDef(UUID defId, int defRevision) {
 		mSelectedDef = (Def) ResourceCacheFacade.get(defId);
 		mSelectedRevision = defRevision;
+	}
+
+	/**
+	 * Sets the selected definition
+	 * @param def the selected definition
+	 */
+	void setSelectedDef(Def def) {
+		mSelectedDef = def;
 	}
 
 	/**
@@ -189,7 +204,7 @@ public class SelectDefScene extends WorldScene {
 		// Set new resource
 		mSelectedDef = ResourceCacheFacade.get(mSelectedDef.getId(), revision);
 
-		((SelectDefGui)mGui).resetInfoPanel();
+		((SelectDefNewGui)mGui).resetInfo();
 	}
 
 	/**
@@ -226,7 +241,7 @@ public class SelectDefScene extends WorldScene {
 	}
 
 	/**
-	 * @return drawable image of the resource, null if none has been selecte
+	 * @return drawable image of the resource, null if none has been selected
 	 */
 	Drawable getDrawable() {
 		if (mSelectedDef instanceof IResourceTexture) {
@@ -258,7 +273,7 @@ public class SelectDefScene extends WorldScene {
 	}
 
 	/**
-	 * @return description of the definiton. An empty string if no
+	 * @return description of the definition. An empty string if no
 	 * definition has been selected
 	 */
 	String getDescription() {
@@ -302,6 +317,16 @@ public class SelectDefScene extends WorldScene {
 	}
 
 	/**
+	 * @return true if the selected definition is published
+	 */
+	boolean isSelectedPublished() {
+		if (mSelectedDef != null) {
+			return ResourceLocalRepo.isPublished(mSelectedDef.getId());
+		}
+		return false;
+	}
+
+	/**
 	 * @return map with all revisions and dates of the current selected resource, null
 	 * if none was found.
 	 */
@@ -333,7 +358,7 @@ public class SelectDefScene extends WorldScene {
 
 			setOutcome(Outcomes.DEF_SELECTED, resourceItem);
 		} else {
-			/** @todo print an error message */
+			mGui.showErrorMessage("No resource selected");
 		}
 	}
 
@@ -514,9 +539,9 @@ public class SelectDefScene extends WorldScene {
 	 */
 	@SuppressWarnings("javadoc")
 	enum CategoryFilterTypes {
-		CREATOR("creator", "getCreator"),
+		CREATOR("revised", "getRevisedBy"),
 		NAME("name", "getName"),
-		ORIGINAL_CREATOR("originalcreator", "getOriginalCreator");
+		ORIGINAL_CREATOR("creator", "getOriginalCreator");
 
 		/**
 		 * Constructor, binds a keyword to the category filter

@@ -192,7 +192,7 @@ public class BulletEditor extends ActorEditor {
 	public void loadDef() {
 		mSelectionAction = SelectionActions.LOAD_BULLET;
 
-		Scene selectionScene = new SelectDefScene(ExternalTypes.BULLET_DEF, true, true, true);
+		Scene selectionScene = new SelectDefScene(ExternalTypes.BULLET_DEF, "Load", true, true, true);
 		SceneSwitcher.switchTo(selectionScene);
 	}
 

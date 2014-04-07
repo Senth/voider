@@ -691,7 +691,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	public void loadDef() {
 		mSelectionAction = SelectionActions.LEVEL;
 
-		Scene scene = new SelectDefScene(ExternalTypes.LEVEL_DEF, true, true, true);
+		Scene scene = new SelectDefScene(ExternalTypes.LEVEL_DEF, "Load", true, true, true);
 		SceneSwitcher.switchTo(scene);
 
 		setSaved();
@@ -1170,7 +1170,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	void selectPickup() {
 		mSelectionAction = SelectionActions.PICKUP;
 
-		Scene scene = new SelectDefScene(ExternalTypes.PICKUP_DEF, false, false, false);
+		Scene scene = new SelectDefScene(ExternalTypes.PICKUP_DEF, "Select", false, false, false);
 		SceneSwitcher.switchTo(scene);
 	}
 
@@ -1180,7 +1180,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	void selectEnemy() {
 		mSelectionAction = SelectionActions.ENEMY;
 
-		Scene scene = new SelectDefScene(ExternalTypes.ENEMY_DEF, false, true, false);
+		Scene scene = new SelectDefScene(ExternalTypes.ENEMY_DEF, "Select", false, true, false);
 		SceneSwitcher.switchTo(scene);
 	}
 

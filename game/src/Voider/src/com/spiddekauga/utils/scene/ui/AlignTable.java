@@ -582,7 +582,11 @@ public class AlignTable extends WidgetGroup implements Disposable {
 		}
 
 		if (width == -1) {
-			width = getWidth();
+			if (mKeepWidth) {
+				width = getWidth();
+			} else {
+				width = getAvailableWidth();
+			}
 		}
 
 

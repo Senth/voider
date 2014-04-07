@@ -781,6 +781,21 @@ public class ExploreGui extends Gui {
 					resetInfo();
 				}
 			}
+
+			@Override
+			protected void onDown() {
+				mWasCheckedOnDown = mButton.isChecked();
+			}
+
+			@Override
+			protected void onUp() {
+				if (mWasCheckedOnDown) {
+					mExploreScene.play();
+				}
+			}
+
+			/** If this level was selected before */
+			private boolean mWasCheckedOnDown = false;
 		};
 		mWidgets.content.buttonGroup.add(button);
 

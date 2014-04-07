@@ -145,8 +145,7 @@ public class MainMenu extends Scene implements ICallerResponseListener {
 	 * Goes to new game
 	 */
 	void newGame() {
-		/** @todo change the simple load level to a more advanced level */
-		SelectDefScene selectLevelScene = new SelectDefScene(ExternalTypes.LEVEL_DEF, false, true, false);
+		SelectDefScene selectLevelScene = new SelectDefScene(ExternalTypes.LEVEL_DEF, "Play", false, true, false);
 		SceneSwitcher.switchTo(selectLevelScene);
 	}
 

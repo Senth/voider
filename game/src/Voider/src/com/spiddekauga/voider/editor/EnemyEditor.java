@@ -928,7 +928,7 @@ public class EnemyEditor extends ActorEditor {
 		}
 		mSelectionAction = SelectionActions.BULLET_TYPE;
 
-		Scene selectionScene = new SelectDefScene(ExternalTypes.BULLET_DEF, false, false, false);
+		Scene selectionScene = new SelectDefScene(ExternalTypes.BULLET_DEF, "Select", false, false, false);
 		SceneSwitcher.switchTo(selectionScene);
 	}
 
@@ -941,7 +941,7 @@ public class EnemyEditor extends ActorEditor {
 	public void loadDef() {
 		mSelectionAction = SelectionActions.LOAD_ENEMY;
 
-		Scene selectionScene = new SelectDefScene(ExternalTypes.ENEMY_DEF, true, true, true);
+		Scene selectionScene = new SelectDefScene(ExternalTypes.ENEMY_DEF, "Load", true, true, true);
 		SceneSwitcher.switchTo(selectionScene);
 	}
 

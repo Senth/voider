@@ -176,7 +176,7 @@ public class ResourceWebRepo extends WebRepo {
 		defEntity.copyParentId = def.getCopyParentId();
 		defEntity.resourceId = def.getId();
 		defEntity.date = def.getDate();
-		defEntity.creatorKey = def.getCreatorKey();
+		defEntity.creatorKey = def.getRevisedByKey();
 		defEntity.originalCreatorKey = def.getOriginalCreatorKey();
 
 		if (def instanceof IResourcePng) {
