@@ -155,8 +155,8 @@ class WebGateway {
 	private static void initHttpClient() {
 		if (mHttpClient == null) {
 			mHttpClient = HttpClients.custom()
-					.setMaxConnTotal(10)
-					.setMaxConnPerRoute(10)
+					.setMaxConnTotal(2)
+					.setMaxConnPerRoute(2)
 					.build();
 		}
 	}

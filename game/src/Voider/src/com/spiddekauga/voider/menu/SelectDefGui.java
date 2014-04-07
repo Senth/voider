@@ -1,45 +1,38 @@
 package com.spiddekauga.voider.menu;
 
 import java.util.ArrayList;
-import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.scenes.scene2d.Event;
-import com.badlogic.gdx.scenes.scene2d.EventListener;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.InputEvent.Type;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox.CheckBoxStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.List;
 import com.badlogic.gdx.scenes.scene2d.ui.List.ListStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane.ScrollPaneStyle;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
+import com.spiddekauga.utils.scene.ui.Background;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
-import com.spiddekauga.utils.scene.ui.Cell;
 import com.spiddekauga.utils.scene.ui.HideManual;
 import com.spiddekauga.utils.scene.ui.Label;
 import com.spiddekauga.utils.scene.ui.Label.LabelStyle;
 import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
-import com.spiddekauga.utils.scene.ui.ResourceTextureButton;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.editor.commands.CSelectDefSetRevision;
 import com.spiddekauga.voider.menu.SelectDefScene.DefVisible;
-import com.spiddekauga.voider.resources.ExternalTypes;
-import com.spiddekauga.voider.resources.InternalNames;
-import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.RevisionInfo;
 import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.scene.Gui;
@@ -57,9 +50,11 @@ public class SelectDefGui extends Gui {
 	 * Creates the GUI (but does not init it) for the select actor
 	 * @param showMineOnlyCheckbox set to true if you want the scene to show a checkbox
 	 * to only display one's own actors.
+	 * @param buttonText what text to display on load/play ?
 	 */
-	public SelectDefGui(boolean showMineOnlyCheckbox) {
+	public SelectDefGui(boolean showMineOnlyCheckbox, String buttonText) {
 		mShowMineOnlyCheckbox = showMineOnlyCheckbox;
+		mButtonText = buttonText;
 	}
 
 	/**
@@ -74,283 +69,510 @@ public class SelectDefGui extends Gui {
 	public void initGui() {
 		super.initGui();
 
-		mMainTable.setAlign(Horizontal.LEFT, Vertical.TOP);
-		mMainTable.setKeepSize(true);
-		mDefTable.setPreferences(mMainTable);
-		mDefTable.setKeepSize(true);
-		mDefTable.setName("DefTable");
-		mInfoPanel.setPreferences(mMainTable);
-		mInfoPanel.setKeepSize(true);
-		mInfoPanel.setName("InfoPanel");
-
 		initSearchBar();
-		initDefTable();
-		initInfoPanel();
+		initRightPanel();
+		initInfo();
+		initActions();
+		initTopBar();
+		initContent();
 		initSelectRevision();
 
-		resetValues();
+		mWidgets.info.hider.hide();
+
+		getStage().setScrollFocus(mWidgets.content.scrollPane);
+	}
+
+	@Override
+	public void dispose() {
+		super.dispose();
 	}
 
 	@Override
 	public void resize(int width, int height) {
 		super.resize(width, height);
-		mMainTable.setSize(width, height);
-		resetValues();
+		dispose();
+		initGui();
+		mWidgets.info.table.dispose();
+		mWidgets.search.table.dispose();
+		mWidgets.rightPanel.dispose();
+		mWidgets.content.table.dispose();
+	}
+
+	@Override
+	public void resetValues() {
+		super.resetValues();
+
+		resetContent(mSelectDefScene.getDefs());
 	}
 
 	/**
-	 * Initializes the search bar at the top
+	 * Initializes the top bar
+	 */
+	private void initTopBar() {
+		mWidgets.topBar = new Background((Color) SkinNames.getResource(SkinNames.GeneralVars.BAR_UPPER_LOWER_COLOR));
+		mWidgets.topBar.setHeight((Float) SkinNames.getResource(SkinNames.GeneralVars.BAR_UPPER_LOWER_HEIGHT));
+		mWidgets.topBar.setWidth(Gdx.graphics.getWidth());
+		getStage().addActor(mWidgets.topBar);
+		mWidgets.topBar.setZIndex(0);
+		mWidgets.topBar.setPosition(0, Gdx.graphics.getHeight() - mWidgets.topBar.getHeight());
+	}
+
+	/**
+	 * Initializes search bar
 	 */
 	private void initSearchBar() {
-		Skin editorSkin = ResourceCacheFacade.get(InternalNames.UI_GENERAL);
+		AlignTable table = mWidgets.search.table;
+		table.setName("search");
+		table.dispose(true);
+		table.setAlign(Horizontal.RIGHT, Vertical.TOP);
+		getStage().addActor(table);
 
-		TextFieldStyle textFieldStyle = editorSkin.get("default", TextFieldStyle.class);
-		CheckBoxStyle checkBoxStyle = editorSkin.get("default", CheckBoxStyle.class);
-
-		TextField textField = new TextField("", textFieldStyle);
-		mMainTable.row().setFillWidth(true);
-		mMainTable.add(textField).setFillWidth(true);
-		new TextFieldListener(textField, "Filter", null) {
+		TextField textField = new TextField("", (TextFieldStyle) SkinNames.getResource(SkinNames.General.TEXT_FIELD_DEFAULT));
+		table.row().setFillWidth(true);
+		table.add(textField).setFillWidth(true);
+		new TextFieldListener(textField, "Search", null) {
 			@Override
 			protected void onChange(String newText) {
-				mSelectDefScene.setFilter(newText);
+				if (newText.equals("Search")) {
+					mSelectDefScene.setFilter("");
+				} else {
+					mSelectDefScene.setFilter(newText);
+				}
 			}
 		};
 
 		if (mShowMineOnlyCheckbox) {
-			CheckBox checkBox = new CheckBox("Only mine", checkBoxStyle);
-			checkBox.setChecked(mSelectDefScene.shallShowMineOnly());
-			new ButtonListener(checkBox) {
+			ButtonGroup buttonGroup = new ButtonGroup();
+
+			CheckBoxStyle radioButtonStyle = SkinNames.getResource(SkinNames.General.CHECK_BOX_RADIO);
+			Button button = new CheckBox("All", radioButtonStyle);
+			buttonGroup.add(button);
+			table.add(button);
+
+			button = new CheckBox("Mine", radioButtonStyle);
+			new ButtonListener(button) {
 				@Override
 				protected void onChecked(boolean checked) {
 					mSelectDefScene.setShowMineOnly(checked);
 				}
 			};
-			mMainTable.add(checkBox);
+			buttonGroup.add(button);
+			table.add(button);
 		}
 	}
 
 	/**
-	 * Initializes the definition table
+	 * Initializes info panel
 	 */
-	private void initDefTable() {
-		mMainTable.row().setFillWidth(true).setFillHeight(true);
-		mMainTable.add(mDefTable).setFillHeight(true).setFillWidth(true).setAlign(Horizontal.LEFT, Vertical.TOP);
+	private void initInfo() {
+		LabelStyle labelStyle = SkinNames.getResource(SkinNames.General.LABEL_DEFAULT);
+		Color widgetBackgroundColor = SkinNames.getResource(SkinNames.GeneralVars.WIDGET_BACKGROUND_COLOR);
+		mWidgets.info.hider = new HideManual();
+
+		AlignTable table = mWidgets.info.table;
+		table.setAlignTable(Horizontal.RIGHT, Vertical.TOP);
+		table.setAlignRow(Horizontal.LEFT, Vertical.TOP);
+		table.setBackgroundImage(new Background(widgetBackgroundColor));
+		mWidgets.rightPanel.row().setFillHeight(true).setFillWidth(true);
+		mWidgets.rightPanel.add(table).setFillHeight(true).setFillWidth(true);
+
+		// Name
+		Label label = new Label("", labelStyle);
+		mWidgets.info.name = label;
+		table.row(Horizontal.CENTER, Vertical.TOP);
+		table.add(label);
+
+
+		// Rating
+		//		RatingWidgetStyle ratingStyle = SkinNames.getResource(SkinNames.General.RATING_DEFAULT);
+		//		RatingWidget rating = new RatingWidget(ratingStyle, 5, Touchable.disabled);
+		//		mWidgets.info.rating = rating;
+		//		rating.setName("rating");
+		//		table.row(Horizontal.CENTER, Vertical.TOP);
+		//		table.add(rating);
+
+
+		// Description
+		label = new Label("", labelStyle);
+		mWidgets.info.description = label;
+		label.setWrap(true);
+		table.row(Horizontal.CENTER, Vertical.TOP);
+		table.add(label);
+
+
+		// Created by
+		label = new Label("Created by", labelStyle);
+		table.row();
+		table.add(label);
+
+		Drawable playerIcon = SkinNames.getDrawable(SkinNames.GeneralImages.PLAYER);
+		Image image = new Image(playerIcon);
+		table.row();
+		table.add(image);
+
+		label = new Label("", labelStyle);
+		mWidgets.info.createdBy = label;
+		table.add(label);
+
+
+		// Revised by
+		label = new Label("Revised by", labelStyle);
+		table.row();
+		table.add(label);
+
+		image = new Image(playerIcon);
+		table.row();
+		table.add(image);
+
+		label = new Label("", labelStyle);
+		mWidgets.info.revisedBy = label;
+		table.add(label);
+
+
+		// Date
+		Drawable dateIcon = SkinNames.getDrawable(SkinNames.GeneralImages.DATE);
+		image = new Image(dateIcon);
+		table.row();
+		table.add(image);
+
+		label = new Label("", labelStyle);
+		mWidgets.info.date = label;
+		table.add(label);
+
+
+		// Revision
+		if (mSelectDefScene.canChooseRevision()) {
+			Drawable revisionIcon = SkinNames.getDrawable(SkinNames.GeneralImages.EDIT);
+			image = new Image(revisionIcon);
+			table.row();
+			table.add(image);
+			mWidgets.info.hider.addToggleActor(image);
+
+			label = new Label("", labelStyle);
+			mWidgets.info.revision = label;
+			table.add(label);
+			mWidgets.info.hider.addToggleActor(label);
+		}
+
+
+		// Plays
+		//		Drawable playsIcon = SkinNames.getDrawable(SkinNames.GeneralImages.PLAYS);
+		//		image = new Image(playsIcon);
+		//		table.row();
+		//		table.add(image);
+		//
+		//		label = new Label("", labelStyle);
+		//		mWidgets.info.plays = label;
+		//		table.add(label);
+
+
+		// Likes
+		//		Drawable likesIcon = SkinNames.getDrawable(SkinNames.GeneralImages.LIKE);
+		//		image = new Image(likesIcon);
+		//		table.row();
+		//		table.add(image);
+		//
+		//		label = new Label("", labelStyle);
+		//		mWidgets.info.likes = label;
+		//		table.add(label);
+
+
+		// Tags
+		//		Drawable tagIcon = SkinNames.getDrawable(SkinNames.GeneralImages.TAG);
+		//		image = new Image(tagIcon);
+		//		table.row();
+		//		table.add(image);
+		//
+		//		label = new Label("", labelStyle);
+		//		mWidgets.info.tags = label;
+		//		table.add(label);
+
+		table.row().setFillHeight(true).setFillWidth(true);
+		table.add().setFillHeight(true).setFillWidth(true);
 	}
 
 	/**
-	 * Initializes info panel to the right
+	 * Initialize the right panel
 	 */
-	private void initInfoPanel() {
-		float panelWidth = (Float)SkinNames.getResource(SkinNames.GeneralVars.INFO_BAR_WIDTH);
-		mMainTable.add(mInfoPanel).setFillHeight(true).setWidth(panelWidth);
-		mInfoPanelHider.addToggleActor(mInfoPanel);
+	private void initRightPanel() {
+		float topMargin = SkinNames.getResource(SkinNames.GeneralVars.BAR_UPPER_LOWER_HEIGHT);
+		topMargin += (Float) SkinNames.getResource(SkinNames.GeneralVars.PADDING_BELOW_ABOVE_BAR);
+		float infoWidth = SkinNames.getResource(SkinNames.GeneralVars.INFO_BAR_WIDTH);
 
-		TextButtonStyle buttonStyle = SkinNames.getResource(SkinNames.General.TEXT_BUTTON_PRESS);
-		LabelStyle labelStyle = SkinNames.getResource(SkinNames.General.LABEL_DEFAULT);
+		AlignTable table = mWidgets.rightPanel;
+		table.setKeepWidth(true).setWidth(infoWidth);
+		table.setMargin(topMargin, 0, 0, 0);
+		table.setAlign(Horizontal.RIGHT, Vertical.TOP);
+		table.setName("right-panel");
+		getStage().addActor(table);
+	}
 
-		// Image
-		mInfoPanel.row(Horizontal.CENTER, Vertical.MIDDLE);
-		Image image = new Image();
-		mWidgets.infoPanel.image = image;
-		mInfoPanel.add(image).setSize(panelWidth*0.7f, panelWidth*0.7f);
+	/**
+	 * Initializes action buttons
+	 */
+	private void initActions() {
+		AlignTable table = mWidgets.rightPanel;
 
-		// Name
-		mInfoPanel.row();
-		Label label = new Label("", labelStyle);
-		mWidgets.infoPanel.name = label;
-		mInfoPanel.add(label);
+		TextButtonStyle textButtonStyle = SkinNames.getResource(SkinNames.General.TEXT_BUTTON_PRESS);
 
-		// Date
-		mInfoPanel.row();
-		label = new Label("", labelStyle);
-		mWidgets.infoPanel.date = label;
-		mInfoPanel.add(label);
-
-		// Description
-		mInfoPanel.row();
-		label = new Label("Description", labelStyle);
-		mInfoPanel.add(label);
-		mInfoPanel.row();
-		label = new Label("", labelStyle);
-		label.setWrap(true);
-		mWidgets.infoPanel.description = label;
-		mInfoPanel.add(label);
-
-		// Author
-		mInfoPanel.row();
-		label = new Label("Creator", labelStyle);
-		mInfoPanel.add(label);
-		label = new Label("", labelStyle);
-		mWidgets.infoPanel.creator = label;
-		mInfoPanel.add(label);
-
-		// Original author
-		mInfoPanel.row();
-		label = new Label("Orig. Creator", labelStyle);
-		mInfoPanel.add(label);
-		label = new Label("", labelStyle);
-		mWidgets.infoPanel.originalCreator = label;
-		mInfoPanel.add(label);
-
-		// Revision
-		mInfoPanel.row();
-		label = new Label("Revision", labelStyle);
-		mInfoPanel.add(label);
-		label = new Label("", labelStyle);
-		mWidgets.infoPanel.revision = label;
-		mInfoPanel.add(label);
-
-		// Padding
-		mInfoPanel.row().setFillHeight(true);
-
-
-		// Select another revision
-		mInfoPanel.row(Horizontal.RIGHT, Vertical.BOTTOM).setFillWidth(true);
+		// Open older revision
 		if (mSelectDefScene.canChooseRevision()) {
-			TextButton button = new TextButton("Select rev.", buttonStyle);
-			mWidgets.infoPanel.selectRevision = button;
+			table.row().setFillWidth(true).setEqualCellSize(true);
+			TextButton button = new TextButton("Load older version", textButtonStyle);
+			table.add(button).setFillWidth(true);
 			new ButtonListener(button) {
 				@Override
 				protected void onPressed() {
 					showSelectRevisionMsgBox();
 				}
 			};
-			mInfoPanel.add(button);
-			mInfoPanel.add().setFillWidth(true);
+			mWidgets.info.hider.addToggleActor(button);
 		}
 
 
-		// Load
-		TextButton button = new TextButton("Load", buttonStyle);
-		new ButtonListener(button) {
-			@Override
-			protected void onPressed() {
-				mSelectDefScene.loadDef();
-			}
-		};
-		mInfoPanel.add(button);
-
-		// Cancel
-		button = new TextButton("Cancel", buttonStyle);
+		// Menu
+		table.row().setFillWidth(true).setEqualCellSize(true);
+		TextButton button = new TextButton("Back", textButtonStyle);
+		table.add(button).setFillWidth(true);
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed() {
 				mSelectDefScene.cancel();
 			}
 		};
-		mInfoPanel.add(button);
+
+
+		// Play
+		button = new TextButton(mButtonText, textButtonStyle);
+		table.add(button).setFillWidth(true);
+		new ButtonListener(button) {
+			@Override
+			protected void onPressed() {
+				mSelectDefScene.loadDef();
+			}
+		};
 	}
 
-	@Override
-	public void resetValues() {
-		if (mInitialized) {
-			super.resetValues();
-			occupateDefTable();
+	/**
+	 * Initialize level
+	 */
+	private void initContent() {
+		// TODO change scroll pane style to no visible scroll bars
+		ScrollPaneStyle scrollPaneStyle = SkinNames.getResource(SkinNames.General.SCROLL_PANE_DEFAULT);
+		AlignTable table = mWidgets.content.table;
+		table.setName("content");
+		table.setAlign(Horizontal.LEFT, Vertical.TOP);
+		table.setHasPreferredHeight(false).setHasPreferredWidth(false);
+		mWidgets.content.scrollPane = new ScrollPane(table, scrollPaneStyle);
+		getStage().addActor(mWidgets.content.scrollPane);
+		table.setAlign(Horizontal.LEFT, Vertical.TOP);
 
-			resetInfoPanel();
+		resetContentMargins();
+	}
+
+	/**
+	 * Reset content margins
+	 */
+	private void resetContentMargins() {
+		if (mWidgets.content.scrollPane != null) {
+			float screenWidth = Gdx.graphics.getWidth();
+			float screenHeight = Gdx.graphics.getHeight();
+			float marginLeft = 0;
+			float marginRight = mWidgets.rightPanel.getWidthWithMargin();
+			float marginTop = mWidgets.rightPanel.getMarginTop();
+			float marginBottom = mWidgets.rightPanel.getMarginBottom();
+
+
+			ScrollPane scrollPane = mWidgets.content.scrollPane;
+			float width = screenWidth - marginLeft - marginRight;
+			scrollPane.setWidth(width);
+			scrollPane.setHeight(screenHeight - marginTop - marginBottom);
+			scrollPane.setPosition(marginLeft, marginBottom);
+			mWidgets.content.table.setWidth(width);
+			mWidgets.content.table.setKeepWidth(true);
 		}
 	}
 
 	/**
-	 * Occupate def table with definitions.
+	 * Reset content
+	 * @param levels level to update
 	 */
-	void occupateDefTable() {
-		ImageButtonStyle imageButtonStyle = SkinNames.getResource(SkinNames.General.IMAGE_BUTTON_TOGGLE);
+	synchronized void resetContent(ArrayList<DefVisible> levels) {
+		// Populate table
+		AlignTable table = mWidgets.content.table;
+		table.dispose();
 
-		float floatPerRow;
-
-		if (mSelectDefScene.getDefType() == ExternalTypes.LEVEL_DEF) {
-			floatPerRow = Gdx.graphics.getWidth() - Config.Level.SAVE_TEXTURE_WIDTH;
-			floatPerRow /= Config.Level.SAVE_TEXTURE_WIDTH;
-		} else {
-			floatPerRow = (Gdx.graphics.getWidth() - (Float)SkinNames.getResource(SkinNames.GeneralVars.INFO_BAR_WIDTH));
-			floatPerRow /= (Float)SkinNames.getResource(SkinNames.GeneralVars.LOAD_ACTOR_SIZE_MAX);
+		if (levels.isEmpty()) {
+			return;
 		}
 
-		floatPerRow += 0.5f;
-		int cellsPerRow = (int) floatPerRow;
+		resetContentMargins();
 
-		mDefTable.dispose();
-
-		int cellCount = 0;
-		ButtonGroup buttonGroup = new ButtonGroup();
-		buttonGroup.setMinCheckCount(0);
-		for (DefVisible defVisible : mSelectDefScene.getDefs()) {
-			if (defVisible.visible) {
-				if (cellCount == 0) {
-					mDefTable.row().setEqualCellSize(true).setFillWidth(true);
-				}
-
-				Button button;
-				button = new ResourceTextureButton(defVisible.def, imageButtonStyle);
-				button.setName(defVisible.def.getId().toString() + "_" + defVisible.def.getRevision());
-				button.addListener(mDefListener);
+		mWidgets.content.buttonGroup = new ButtonGroup();
 
 
-				buttonGroup.add(button);
-				Cell cell = mDefTable.add(button).setFillWidth(true);
+		addContent(levels);
 
-				// Set as boxed if not level
-				if (mSelectDefScene.getDefType() == ExternalTypes.LEVEL_DEF) {
-					cell.setHeight(Config.Level.SAVE_TEXTURE_HEIGHT);
-				} else {
-					cell.setBoxShaped(true);
-				}
+		resetInfo();
 
-				++cellCount;
+		if (mWidgets.content.scrollPane != null) {
+			mWidgets.content.scrollPane.setScrollPercentY(0);
+		}
+	}
 
-				if (cellCount == cellsPerRow) {
-					cellCount = 0;
-				}
+	/**
+	 * Adds more levels to the existing content
+	 * @param levels the levels to add
+	 */
+	void addContent(ArrayList<DefVisible> levels) {
+		AlignTable table = mWidgets.content.table;
+
+		// Calculate how many levels per row
+		float floatLevelsPerRow = mWidgets.content.scrollPane.getWidth() / Config.Level.SAVE_TEXTURE_WIDTH;
+		int levelsPerRow = (int) floatLevelsPerRow;
+		if (floatLevelsPerRow != levelsPerRow) {
+			levelsPerRow++;
+		}
+
+		int columnIndex = levelsPerRow;
+
+		// Populate table
+		for (DefVisible level : levels) {
+			AlignTable levelTable = createLevelTable(level);
+
+			if (columnIndex == levelsPerRow) {
+				table.row().setFillWidth(true).setEqualCellSize(true);
+				columnIndex = 0;
+			}
+
+			table.add(levelTable).setFillWidth(true);
+
+
+			columnIndex++;
+		}
+
+		// Pad with empty cells
+		if (columnIndex > 0 && columnIndex < levelsPerRow) {
+			int columnsToPad = levelsPerRow - columnIndex;
+			for (int i = 0; i < columnsToPad; ++i) {
+				table.add().setFillWidth(true);
 			}
 		}
 
-		// Add empty cells to create equal spacing
-		if (cellCount != 0) {
-			mDefTable.add(cellsPerRow - cellCount);
-		}
-
-		mDefTable.invalidateHierarchy();
+		table.invalidate();
+		table.layout();
+		mWidgets.content.scrollPane.invalidate();
 	}
 
 	/**
-	 * Resets the info panel
+	 * Create level image table
+	 * @param level the level to create an image table for
+	 * @return table with level image, name and rating
 	 */
-	void resetInfoPanel() {
-		mWidgets.infoPanel.image.setDrawable(mSelectDefScene.getDrawable());
-		mWidgets.infoPanel.name.setText(mSelectDefScene.getName());
-		mWidgets.infoPanel.date.setText(mSelectDefScene.getDate());
-		mWidgets.infoPanel.description.setText(mSelectDefScene.getDescription());
-		mWidgets.infoPanel.creator.setText(mSelectDefScene.getCreator());
-		mWidgets.infoPanel.originalCreator.setText(mSelectDefScene.getOriginalCreator());
-		mWidgets.infoPanel.revision.setText(mSelectDefScene.getRevisionString());
+	private AlignTable createLevelTable(final DefVisible level) {
+		AlignTable table = new AlignTable();
+		table.setAlign(Horizontal.CENTER, Vertical.MIDDLE);
 
-		if (mWidgets.infoPanel.selectRevision != null) {
-			if (mSelectDefScene.isDefSelected()) {
-				mWidgets.infoPanel.selectRevision.setDisabled(false);
-			} else {
-				mWidgets.infoPanel.selectRevision.setDisabled(true);
+		// Image button
+		ImageButtonStyle defaultImageStyle = SkinNames.getResource(SkinNames.General.IMAGE_BUTTON_TOGGLE);
+		ImageButtonStyle imageButtonStyle = new ImageButtonStyle(defaultImageStyle);
+		imageButtonStyle.imageUp = level.def.getTextureRegionDrawable();
+
+		Button button = new ImageButton(imageButtonStyle);
+		table.row().setFillWidth(true);
+		table.add(button).setFillWidth(true).setKeepAspectRatio(true);
+		new ButtonListener(button) {
+			@Override
+			protected void onChecked(boolean checked) {
+				if (checked) {
+					mSelectDefScene.setSelectedDef(level.def);
+
+					if (mSelectDefScene.isSelectedPublished()) {
+						mWidgets.info.hider.hide();
+						mWidgets.rightPanel.invalidate();
+					} else {
+						mWidgets.info.hider.show();
+						mWidgets.rightPanel.invalidate();
+					}
+
+					resetInfo();
+				}
 			}
-		}
 
-		mInfoPanelHider.show();
+			@Override
+			protected void onDown() {
+				mWasCheckedOnDown = mButton.isChecked();
+			}
 
-		mInfoPanel.layout();
-		mInfoPanel.layout();
-		mInfoPanel.invalidateHierarchy();
+			@Override
+			protected void onUp() {
+				if (mWasCheckedOnDown) {
+					mSelectDefScene.loadDef();
+				}
+			}
+
+			/** If this level was selected before */
+			private boolean mWasCheckedOnDown = false;
+		};
+		mWidgets.content.buttonGroup.add(button);
+
+		// Level name
+		Label label = new Label(level.def.getName(), (LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_DEFAULT));
+		table.row();
+		table.add(label);
+
+		// Rating
+		//		RatingWidgetStyle ratingStyle = SkinNames.getResource(SkinNames.General.RATING_DEFAULT);
+		//		RatingWidget ratingWidget = new RatingWidget(ratingStyle, 5, Touchable.disabled);
+		//		table.row();
+		//		table.add(ratingWidget);
+
+		return table;
 	}
 
 	/**
-	 * Initialize select revision
+	 * Reset info panel
 	 */
-	private void initSelectRevision() {
-		List<String> list = new List<String>((ListStyle)SkinNames.getResource(SkinNames.General.LIST_DEFAULT));
-		mWidgets.revisionBox.list = list;
-		mWidgets.revisionBox.scrollPane = new ScrollPane(list, (ScrollPaneStyle)SkinNames.getResource(SkinNames.General.SCROLL_PANE_DEFAULT));
-		mRevisionTable.setPreferences(mMainTable);
-		mRevisionTable.row().setFillHeight(true).setFillWidth(true);
-		mRevisionTable.add(mWidgets.revisionBox.scrollPane).setSize(100,100).setFillHeight(true).setFillWidth(true);
+	void resetInfo() {
+		mWidgets.info.createdBy.setText(mSelectDefScene.getOriginalCreator());
+		mWidgets.info.date.setText(mSelectDefScene.getDate());
+		mWidgets.info.description.setText(mSelectDefScene.getDescription());
+		mWidgets.info.name.setText(mSelectDefScene.getName());
+		mWidgets.info.revisedBy.setText(mSelectDefScene.getCreator());
+
+		if (mWidgets.info.revision != null) {
+			mWidgets.info.revision.setText(mSelectDefScene.getRevisionString());
+		}
+
+		//			mWidgets.info.likes.setText(String.valueOf(level.stats.cLikes));
+		//			mWidgets.info.plays.setText(String.valueOf(level.stats.cPlayed));
+		//			mWidgets.info.rating.setRating((int)(level.stats.ratingAverage + 0.5f));
+	}
+
+	/**
+	 * Show select revision message box
+	 */
+	private void showSelectRevisionMsgBox() {
+		MsgBoxExecuter msgBox = getFreeMsgBox(true);
+
+		msgBox.setTitle("Select another revision");
+		msgBox.content(mWidgets.revision.table);
+
+		mWidgets.revision.table.setKeepSize(true);
+		mWidgets.revision.table.setSize(Gdx.graphics.getWidth() * 0.6f, Gdx.graphics.getHeight() * 0.6f);
+
+		updateRevisionList();
+
+		// Get latest revision number
+		int latestRevision = mWidgets.revision.list.getItems().size;
+
+		msgBox.button("Latest", new CSelectDefSetRevision(latestRevision, mSelectDefScene));
+		msgBox.button("Select", new CSelectDefSetRevision(mWidgets.revision.list, mSelectDefScene));
+		msgBox.addCancelButtonAndKeys();
+
+		showMsgBox(msgBox);
+
+		getStage().setScrollFocus(mWidgets.revision.list);
 	}
 
 	/**
@@ -368,112 +590,77 @@ public class SelectDefGui extends Gui {
 			int revisionStringLength = latestRevision.length();
 
 			for (int i = 0; i < revisions.length; ++i) {
-				int revisionInt = revisions.length - i;
+				int revisionInt = revisions.length -1 - i;
 				RevisionInfo revisionInfo = resourceRevisions.get(i);
 				String dateString = User.getGlobalUser().dateToString(revisionInfo.date);
-				revisions[i] = String.format("%0" + revisionStringLength + "d  %d - %s", revisionInt, revisionInfo.revision, dateString);
+				revisions[revisionInt] = String.format("%0" + revisionStringLength + "d - %s", revisionInfo.revision, dateString);
 			}
 		} else {
 			revisions = new String[0];
 		}
 
-		mWidgets.revisionBox.list.setItems(revisions);
+		mWidgets.revision.list.setItems(revisions);
 	}
 
 	/**
-	 * Show select revision message box
+	 * Initialize select revision
 	 */
-	private void showSelectRevisionMsgBox() {
-		MsgBoxExecuter msgBox = getFreeMsgBox(true);
-
-		msgBox.setTitle("Select another revision");
-		msgBox.content(mRevisionTable);
-
-		mRevisionTable.setKeepSize(true);
-		mRevisionTable.setSize(Gdx.graphics.getWidth() * 0.6f, Gdx.graphics.getHeight() * 0.6f);
-
-		updateRevisionList();
-
-		// Get latest revision number
-		int latestRevision = mWidgets.revisionBox.list.getItems().size;
-
-		msgBox.button("Latest", new CSelectDefSetRevision(latestRevision, mSelectDefScene));
-		msgBox.button("Select", new CSelectDefSetRevision(mWidgets.revisionBox.list, mSelectDefScene));
-		msgBox.addCancelButtonAndKeys();
-
-		showMsgBox(msgBox);
-
-		getStage().setScrollFocus(mWidgets.revisionBox.list);
+	private void initSelectRevision() {
+		List<String> list = new List<String>((ListStyle)SkinNames.getResource(SkinNames.General.LIST_DEFAULT));
+		mWidgets.revision.list = list;
+		mWidgets.revision.scrollPane = new ScrollPane(list, (ScrollPaneStyle)SkinNames.getResource(SkinNames.General.SCROLL_PANE_DEFAULT));
+		mWidgets.revision.table.setAlign(Horizontal.LEFT, Vertical.TOP);
+		mWidgets.revision.table.row().setFillHeight(true).setFillWidth(true);
+		mWidgets.revision.table.add(mWidgets.revision.scrollPane).setFillHeight(true).setFillWidth(true);
 	}
 
-	/**
-	 * Event listener for buttons
-	 */
-	private EventListener mDefListener = new EventListener() {
-		@Override
-		public boolean handle(Event event) {
-			if (event.getListenerActor() != null && event instanceof InputEvent) {
-				InputEvent inputEvent = (InputEvent)event;
-				if (inputEvent.getType() == Type.touchDown) {
-					String defName = event.getListenerActor().getName();
-
-					UUID id = null;
-					int revision = -1;
-					String[] splitStrings = defName.split("_");
-					if (splitStrings.length == 2) {
-						id = UUID.fromString(splitStrings[0]);
-						revision = Integer.parseInt(splitStrings[1]);
-					} else {
-						Gdx.app.error("SelectDefGui", "Split string does not contain one _");
-					}
-
-					// Pressed same twice -> select this
-					if (mSelectDefScene.isDefSelected(id)) {
-						mSelectDefScene.loadDef();
-					} else {
-						mSelectDefScene.setSelectedDef(id, revision);
-						resetInfoPanel();
-					}
-				}
-			}
-			return true;
-		}
-	};
-
-	/** Info panel */
-	private AlignTable mInfoPanel = new AlignTable();
-	/** Info panel hider */
-	private HideManual mInfoPanelHider = new HideManual();
-	/** Msgbox table */
-	private AlignTable mRevisionTable = new AlignTable();
-	/** Table for all the definitions */
-	private AlignTable mDefTable = new AlignTable();
 	/** If the checkbox that only shows one's own actors shall be shown */
 	private boolean mShowMineOnlyCheckbox;
 	/** SelectDefScene this GUI is bound to */
 	private SelectDefScene mSelectDefScene = null;
+	/** Text to display on play/load button */
+	private String mButtonText = "";
 	/** Inner widgets */
-	private InnerWidgets mWidgets = new InnerWidgets();
+	private Widgets mWidgets = new Widgets();
 
 	@SuppressWarnings("javadoc")
-	private static class InnerWidgets {
-		InfoPanel infoPanel = new InfoPanel();
-		RevisionBox revisionBox = new RevisionBox();
+	private static class Widgets {
+		Background topBar = null;
+		Search search = new Search();
+		Info info = new Info();
+		AlignTable rightPanel = new AlignTable();
+		Content content = new Content();
+		Revision revision = new Revision();
 
-		static class RevisionBox {
+		private static class Revision {
+			AlignTable table = new AlignTable();
 			List<String> list = null;
 			ScrollPane scrollPane = null;
 		}
 
-		static class InfoPanel {
-			Image image = null;
+		private static class Search {
+			AlignTable table = new AlignTable();
+		}
+
+		private static class Info {
+			AlignTable table = new AlignTable();
 			Label name = null;
-			Label date = null;
 			Label description = null;
-			Label creator = null;
-			Label originalCreator = null;
+			//			RatingWidget rating = null;
+			Label revisedBy = null;
+			Label createdBy = null;
+			Label date = null;
 			Label revision = null;
-			Button selectRevision = null;
+			//			Label plays = null;
+			//			Label likes = null;
+			//			Label tags = null;
+			HideManual hider = null;
+		}
+
+		private static class Content {
+			AlignTable table = new AlignTable();
+			ScrollPane scrollPane = null;
+			ButtonGroup buttonGroup = new ButtonGroup();
 		}
 	}
 }

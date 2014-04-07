@@ -27,7 +27,7 @@ public class ResourceLocalRepo {
 	public static void add(IResource resource) {
 		// Add if resource doesn't exist
 		if (!mSqliteGateway.exists(resource.getId())) {
-			mSqliteGateway.add(resource.getId(), ExternalTypes.getEnumFromType(resource.getClass()).getId());
+			mSqliteGateway.add(resource.getId(), ExternalTypes.fromType(resource.getClass()).getId());
 		}
 
 		// Add revision
@@ -186,7 +186,7 @@ public class ResourceLocalRepo {
 	public static ExternalTypes getType(UUID resourceId) {
 		int type = mSqliteGateway.getType(resourceId);
 		if (type != -1) {
-			return ExternalTypes.getEnumFromId(type);
+			return ExternalTypes.fromId(type);
 		} else {
 			return null;
 		}

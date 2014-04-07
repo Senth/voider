@@ -17,7 +17,6 @@ import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.PropertyProjection;
 import com.google.appengine.api.datastore.Query;
-import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
 import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
@@ -27,7 +26,7 @@ import com.google.appengine.api.search.Results;
 import com.google.appengine.api.search.ScoredDocument;
 import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.appengine.SearchUtils;
-import com.spiddekauga.voider.network.entities.DefTypes;
+import com.spiddekauga.voider.network.entities.UploadTypes;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.LevelDefEntity;
 import com.spiddekauga.voider.network.entities.LevelInfoEntity;
@@ -139,7 +138,7 @@ public class LevelGetAll extends VoiderServlet {
 		case NEWEST:
 			query.addSort("date", SortDirection.DESCENDING);
 			// Only search for levels
-			Filter levelFilter = new FilterPredicate("type", FilterOperator.EQUAL, DefTypes.LEVEL.getId());
+			Filter levelFilter = new FilterPredicate("type", FilterOperator.EQUAL, UploadTypes.LEVEL_DEF.getId());
 			query.setFilter(levelFilter);
 			break;
 
@@ -214,13 +213,11 @@ public class LevelGetAll extends VoiderServlet {
 	private static ArrayList<Tags> getLevelTags(Key levelKey) {
 		ArrayList<Tags> tags = new ArrayList<>();
 
-		Query query = new Query("level_tag");
+		Query query = new Query("level_tag", levelKey);
 
 		// Skip tags that only has count of 1.
-		Filter keyFilter = new FilterPredicate("publish_key", FilterOperator.EQUAL, levelKey);
 		Filter countFilter = new FilterPredicate("count", FilterOperator.GREATER_THAN, 1);
-		Filter compositeFilter = DatastoreUtils.createCompositeFilter(CompositeFilterOperator.AND, keyFilter, countFilter);
-		query.setFilter(compositeFilter);
+		query.setFilter(countFilter);
 
 		// Sort
 		query.addSort("count", SortDirection.DESCENDING);
@@ -284,7 +281,7 @@ public class LevelGetAll extends VoiderServlet {
 	 * @return new level def (network) entity, null if not found
 	 */
 	private static LevelDefEntity getLevelDefEntity(Key levelKey) {
-		Entity entity = DatastoreUtils.getItemByKey(levelKey);
+		Entity entity = DatastoreUtils.getEntityByKey(levelKey);
 		if (entity != null) {
 			return convertDatastoreToLevelDefEntity(entity);
 		}
@@ -344,7 +341,7 @@ public class LevelGetAll extends VoiderServlet {
 		networkEntity.name = (String) datastoreEntity.getProperty("name");
 		networkEntity.resourceId = DatastoreUtils.getUuidProperty(datastoreEntity, "resource_id");
 		networkEntity.png = DatastoreUtils.getByteArrayProperty(datastoreEntity, "png");
-		networkEntity.type = DefTypes.LEVEL;
+		networkEntity.type = UploadTypes.LEVEL_DEF;
 
 
 		// Set creators

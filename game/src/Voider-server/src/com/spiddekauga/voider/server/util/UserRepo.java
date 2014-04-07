@@ -16,7 +16,7 @@ public class UserRepo {
 	 * @return username of the user, null if not found
 	 */
 	public static String getUsername(Key userKey) {
-		Entity userEntity = DatastoreUtils.getItemByKey(userKey);
+		Entity userEntity = DatastoreUtils.getEntityByKey(userKey);
 		if (userEntity != null) {
 			return (String) userEntity.getProperty("username");
 		} else {

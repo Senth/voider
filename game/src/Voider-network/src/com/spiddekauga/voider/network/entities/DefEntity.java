@@ -14,7 +14,7 @@ public class DefEntity implements IEntity {
 	/** Def name */
 	public String name = null;
 	/** Definition type */
-	public DefTypes type = null;
+	public UploadTypes type = null;
 	/** Creator key */
 	public String creatorKey = null;
 	/** Creator name */

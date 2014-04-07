@@ -44,13 +44,13 @@ public class SelectDefScene extends WorldScene {
 	 * to only display one's own actors.
 	 */
 	private SelectDefScene(ExternalTypes defType, String buttonText, boolean showMineOnly, boolean showMineOnlyCheckbox) {
-		super(new SelectDefNewGui(showMineOnlyCheckbox, buttonText), 0);
+		super(new SelectDefGui(showMineOnlyCheckbox, buttonText), 0);
 
 		mShowMineOnly = showMineOnly;
 		mDefType = defType;
 
 
-		((SelectDefNewGui)mGui).setSelectDefScene(this);
+		((SelectDefGui)mGui).setSelectDefScene(this);
 
 		for (int i = 0; i < mCategoryFilters.length; ++i) {
 			mCategoryFilters[i] = new ArrayList<String>();
@@ -204,7 +204,7 @@ public class SelectDefScene extends WorldScene {
 		// Set new resource
 		mSelectedDef = ResourceCacheFacade.get(mSelectedDef.getId(), revision);
 
-		((SelectDefNewGui)mGui).resetInfo();
+		((SelectDefGui)mGui).resetInfo();
 	}
 
 	/**

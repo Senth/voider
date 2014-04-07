@@ -85,7 +85,7 @@ public enum Tags {
 	 * @return enumeration of the tag id
 	 */
 	public static Tags getEnumFromId(int id) {
-		return mIdToEnum.get(mIdToEnum);
+		return mIdToEnum.get(id);
 	}
 
 	/** Human readable name */

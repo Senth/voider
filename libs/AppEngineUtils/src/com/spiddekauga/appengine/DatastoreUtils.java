@@ -3,6 +3,7 @@ package com.spiddekauga.appengine;
 
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
+import java.util.List;
 import java.util.UUID;
 import java.util.logging.Logger;
 
@@ -11,6 +12,7 @@ import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
+import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.PreparedQuery;
@@ -47,6 +49,51 @@ public class DatastoreUtils {
 		} while (exception != null);
 
 		return key;
+	}
+
+	/**
+	 * Get all entities with the specified parent
+	 * @param searchIn what kind of entity (table) to search in
+	 * @param parent search for all entities with this parent
+	 * @return a list of all found entities with the specified parent
+	 */
+	public static List<Entity> getEntities(String searchIn, Key parent) {
+		Query query = new Query(searchIn, parent);
+		PreparedQuery preparedQuery = mDatastore.prepare(query);
+
+		FetchOptions fetchOptions = FetchOptions.Builder.withDefaults();
+		return preparedQuery.asList(fetchOptions);
+	}
+
+	/**
+	 * Get all keys with the specified parent
+	 * @param searchIn what kind of entity (table) to search in
+	 * @param parent search for all entities with this parent
+	 * @return a list of all found keys with the specified parent
+	 */
+	public static List<Key> getKeys(String searchIn, Key parent) {
+		Query query = new Query(searchIn, parent);
+		query.setKeysOnly();
+		PreparedQuery preparedQuery = mDatastore.prepare(query);
+
+		FetchOptions fetchOptions = FetchOptions.Builder.withDefaults();
+
+		ArrayList<Key> keys = new ArrayList<>();
+		for (Entity entity : preparedQuery.asList(fetchOptions)) {
+			keys.add(entity.getKey());
+		}
+
+		return keys;
+	}
+
+	/**
+	 * Searches for an existing entity
+	 * @param searchIn what kind of entity to search in
+	 * @param parent the parent of the entity to find
+	 * @return found entity, null if none or more than 1 was found
+	 */
+	public static Entity getSingleEntity(String searchIn, Key parent) {
+		return getSingleEntity(searchIn, null, null, parent);
 	}
 
 	/**
@@ -192,7 +239,7 @@ public class DatastoreUtils {
 	 */
 	public static Entity getBlobEntityByKey(String idName) {
 		Key key = KeyFactory.createKey("__BlobInfo__", idName);
-		return getItemByKey(key);
+		return getEntityByKey(key);
 	}
 
 	/**
@@ -200,7 +247,7 @@ public class DatastoreUtils {
 	 * @param idName the key of the entity
 	 * @return entity with specified key, null if not found
 	 */
-	public static Entity getItemByKey(Key idName) {
+	public static Entity getEntityByKey(Key idName) {
 		try {
 			return mDatastore.get(idName);
 		} catch (EntityNotFoundException e) {

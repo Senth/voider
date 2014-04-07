@@ -6,11 +6,9 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.esotericsoftware.minlog.Log;
 import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.utils.Strings;
-import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.voider.app.SplashScreen;
 import com.spiddekauga.voider.game.Collectibles;
 import com.spiddekauga.voider.game.actors.PickupActorDef;
@@ -145,9 +143,4 @@ public class VoiderGame implements ApplicationListener {
 	@Override
 	public void resume() {
 	}
-
-	/** Testing stage */
-	private Stage mStage = null;
-	/** Testing table */
-	private AlignTable table = null;
 }

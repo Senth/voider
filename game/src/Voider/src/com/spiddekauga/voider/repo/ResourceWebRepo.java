@@ -13,7 +13,7 @@ import com.spiddekauga.voider.game.actors.BulletActorDef;
 import com.spiddekauga.voider.game.actors.EnemyActorDef;
 import com.spiddekauga.voider.network.entities.BulletDefEntity;
 import com.spiddekauga.voider.network.entities.DefEntity;
-import com.spiddekauga.voider.network.entities.DefTypes;
+import com.spiddekauga.voider.network.entities.UploadTypes;
 import com.spiddekauga.voider.network.entities.EnemyDefEntity;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.LevelDefEntity;
@@ -136,7 +136,7 @@ public class ResourceWebRepo extends WebRepo {
 
 		enemyEntity.enemyHasWeapon = enemyDef.hasWeapon();
 		enemyEntity.enemyMovementType = enemyDef.getMovementType();
-		enemyEntity.type = DefTypes.ENEMY;
+		enemyEntity.type = UploadTypes.ENEMY_DEF;
 	}
 
 	/**
@@ -147,7 +147,7 @@ public class ResourceWebRepo extends WebRepo {
 	private static void setBulletDefEntity(BulletActorDef bulletDef, BulletDefEntity bulletEntity) {
 		setDefEntity(bulletDef, bulletEntity);
 
-		bulletEntity.type = DefTypes.BULLET;
+		bulletEntity.type = UploadTypes.BULLET_DEF;
 	}
 
 	/**
@@ -160,7 +160,7 @@ public class ResourceWebRepo extends WebRepo {
 
 		levelEntity.levelLength = levelDef.getLengthInTime();
 		levelEntity.levelId = levelDef.getLevelId();
-		levelEntity.type = DefTypes.LEVEL;
+		levelEntity.type = UploadTypes.LEVEL_DEF;
 	}
 
 	/**

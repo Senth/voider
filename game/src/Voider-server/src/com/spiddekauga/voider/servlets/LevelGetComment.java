@@ -16,10 +16,6 @@ import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.PreparedQuery.TooManyResultsException;
 import com.google.appengine.api.datastore.PropertyProjection;
 import com.google.appengine.api.datastore.Query;
-import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
-import com.google.appengine.api.datastore.Query.Filter;
-import com.google.appengine.api.datastore.Query.FilterOperator;
-import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.appengine.api.datastore.QueryResultList;
 import com.spiddekauga.appengine.DatastoreUtils;
@@ -57,13 +53,16 @@ public class LevelGetComment extends VoiderServlet {
 			UUID levelId = ((LevelGetCommentMethod) networkEntity).levelId;
 			String cursor = ((LevelGetCommentMethod) networkEntity).cursor;
 
-			QueryResultList<Entity> comments = getComments(levelId, cursor);
+			// Get level key
+			Key levelKey = DatastoreUtils.getSingleKey(DatastoreTables.PUBLISHED.toString(), "resource_id", levelId);
+
+			QueryResultList<Entity> comments = getComments(levelKey, cursor);
 			addCommentsToResponse(comments, methodResponse);
 
 
 			// Get player's comment for first query
 			if (cursor == null) {
-				methodResponse.userComment = getUserComment(levelId);
+				methodResponse.userComment = getUserComment(levelKey);
 			}
 		}
 
@@ -73,17 +72,12 @@ public class LevelGetComment extends VoiderServlet {
 
 	/**
 	 * Gets comments from the datastore
-	 * @param levelId id of the level to get comments from
+	 * @param levelKey key of the level to get comments from
 	 * @param startCursor where to start getting comments from
 	 * @return list of all comment entities
 	 */
-	private QueryResultList<Entity> getComments(UUID levelId, String startCursor) {
-		Query query = new Query(DatastoreTables.LEVEL_COMMENT.toString());
-
-
-		// Only search for the specified level
-		Filter levelIdFilter = DatastoreUtils.createUuidFilter("level_id", levelId);
-		query.setFilter(levelIdFilter);
+	private QueryResultList<Entity> getComments(Key levelKey, String startCursor) {
+		Query query = new Query(DatastoreTables.LEVEL_COMMENT.toString(), levelKey);
 
 
 		// Only get certain properties
@@ -130,20 +124,12 @@ public class LevelGetComment extends VoiderServlet {
 
 	/**
 	 * Get user comment for the specified level
-	 * @param levelId the level to get the user comment from
+	 * @param levelKey the level to get the user comment from
 	 * @return the user comment, null if not found.
 	 */
-	private LevelCommentEntity getUserComment(UUID levelId) {
-		Query query = new Query(DatastoreTables.LEVEL_COMMENT.toString());
-
-		Filter userFilter = new FilterPredicate("user_key", FilterOperator.EQUAL, mUser.getKey());
-		Filter levelFilter = DatastoreUtils.createUuidFilter("level_id", levelId);
-		Filter compositeFilter = DatastoreUtils.createCompositeFilter(CompositeFilterOperator.AND, userFilter, levelFilter);
-
-		query.setFilter(compositeFilter);
-
+	private LevelCommentEntity getUserComment(Key levelKey) {
 		try {
-			Entity entity = DatastoreUtils.prepare(query).asSingleEntity();
+			Entity entity = DatastoreUtils.getSingleEntity(DatastoreTables.LEVEL_COMMENT.toString(), "user_key", mUser.getKey(), levelKey);
 
 			if (entity != null) {
 				return createLevelCommentEntity(entity);

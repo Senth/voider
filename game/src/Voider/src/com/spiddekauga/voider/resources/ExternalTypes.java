@@ -58,7 +58,7 @@ public enum ExternalTypes {
 	 * @param type the type to get an enumeration for
 	 * @return enumeration of this type
 	 */
-	public static ExternalTypes getEnumFromType(Class<? extends IResource> type) {
+	public static ExternalTypes fromType(Class<? extends IResource> type) {
 		return mClassToEnum.get(type);
 	}
 
@@ -67,7 +67,7 @@ public enum ExternalTypes {
 	 * @param id the id type to get an enumeration for
 	 * @return enumeration of this id type
 	 */
-	public static ExternalTypes getEnumFromId(int id) {
+	public static ExternalTypes fromId(int id) {
 		return mIdToEnum.get(id);
 	}
 

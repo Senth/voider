@@ -57,6 +57,8 @@ public class Publish extends VoiderServlet {
 		byte[] byteEntity = NetworkGateway.getEntity(request);
 		IEntity networkEntity = NetworkEntitySerializer.deserializeEntity(byteEntity);
 
+		mSearchDocumentsToAdd.clear();
+
 		if (networkEntity instanceof PublishMethod) {
 			Map<UUID, BlobKey> blobKeys = BlobUtils.getBlobKeysFromUpload(request);
 			Map<UUID, Key> datastoreKeys = new HashMap<>();
@@ -123,11 +125,11 @@ public class Publish extends VoiderServlet {
 			Key datastoreKey = datastoreKeys.get(defEntity.resourceId);
 
 			for (UUID dependency : defEntity.dependencies) {
-				BlobKey blobKey = getBlobKey(dependency, blobKeys);
+				Key dependencyKey = getResourceKey(dependency, datastoreKeys);
 
-				if (blobKey != null) {
+				if (dependencyKey != null) {
 					Entity entity = new Entity(DatastoreTables.DEPENDENCY.toString(), datastoreKey);
-					entity.setProperty("dependency", blobKey);
+					entity.setProperty("dependency", dependencyKey);
 					Key key = DatastoreUtils.put(entity);
 
 					if (key == null) {
@@ -135,7 +137,7 @@ public class Publish extends VoiderServlet {
 						return false;
 					}
 				} else {
-					mLogger.severe("Could not find blob key for " + dependency);
+					mLogger.severe("Could not find dependency key for " + dependency);
 					return false;
 				}
 			}
@@ -145,26 +147,25 @@ public class Publish extends VoiderServlet {
 	}
 
 	/**
-	 * Tries to find the blob key, if it doesn't exist in the map it will
-	 * try to find it in the Datastore instead and insert it to blobKeys
+	 * Tries to find the resource key, if it doesn't exist in the map it will
+	 * try to find it in the Datastore instead and insert it to datastoreKeys
 	 * @param resourceId the resource to get the blob key from
-	 * @param blobKeys all current known blob keys
-	 * @return Blob key for the resource, null if not found
+	 * @param resourceKeys all current known resource keys
+	 * @return Entity key for the resource, null if not found
 	 */
-	private BlobKey getBlobKey(UUID resourceId, Map<UUID, BlobKey> blobKeys) {
-		BlobKey blobKey = blobKeys.get(resourceId);
+	private Key getResourceKey(UUID resourceId, Map<UUID, Key> resourceKeys) {
+		Key resourceKey = resourceKeys.get(resourceId);
 
-		// Try datastore instead
-		if (blobKey == null) {
-			Entity entity = DatastoreUtils.getSingleEntity(DatastoreTables.PUBLISHED.toString(), "resource-id", resourceId);
-			blobKey = (BlobKey) entity.getProperty("blob_key");
+		// Search in datastore
+		if (resourceKey == null) {
+			resourceKey = DatastoreUtils.getSingleKey(DatastoreTables.PUBLISHED.toString(), "resource_id", resourceId);
 
-			if (blobKey != null) {
-				blobKeys.put(resourceId, blobKey);
+			if (resourceKey != null) {
+				resourceKeys.put(resourceId, resourceKey);
 			}
 		}
 
-		return blobKey;
+		return resourceKey;
 	}
 
 	/**
@@ -199,19 +200,19 @@ public class Publish extends VoiderServlet {
 		Entity datastoreEntity = new Entity(DatastoreTables.PUBLISHED.toString(), mUser.getKey());
 
 		switch (defEntity.type) {
-		case BULLET:
+		case BULLET_DEF:
 			success = appendBulletDefEntity(datastoreEntity, (BulletDefEntity) defEntity, blobKeys);
 			break;
 
-		case CAMPAIGN:
+		case CAMPAIG_DEF:
 			success = appendCampaignDefEntity(datastoreEntity, (CampaignDefEntity) defEntity, blobKeys);
 			break;
 
-		case ENEMY:
+		case ENEMY_DEF:
 			success = appendEnemyDefEntity(datastoreEntity, (EnemyDefEntity) defEntity, blobKeys);
 			break;
 
-		case LEVEL:
+		case LEVEL_DEF:
 			success = appendLevelDefEntity(datastoreEntity, (LevelDefEntity) defEntity, blobKeys);
 			break;
 
@@ -264,19 +265,19 @@ public class Publish extends VoiderServlet {
 		builder.setId(KeyFactory.keyToString(datastoreKey));
 
 		switch (defEntity.type) {
-		case BULLET:
+		case BULLET_DEF:
 			appendBulletDefEntity(builder, (BulletDefEntity) defEntity);
 			break;
 
-		case CAMPAIGN:
+		case CAMPAIG_DEF:
 			appendCampaignDefEntity(builder, (CampaignDefEntity) defEntity);
 			break;
 
-		case ENEMY:
+		case ENEMY_DEF:
 			appendEnemyDefEntity(builder, (EnemyDefEntity) defEntity);
 			break;
 
-		case LEVEL:
+		case LEVEL_DEF:
 			appendLevelDefEntity(builder, (LevelDefEntity) defEntity);
 			break;
 
