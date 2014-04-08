@@ -8,19 +8,20 @@ import java.util.HashMap;
  * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
+@SuppressWarnings("javadoc")
 public enum UploadTypes {
-	/** BulletDef */
 	BULLET_DEF(1),
-	/** EnemyDef */
 	ENEMY_DEF(2),
-	/** LevelDef */
-	LEVEL_DEF(3),
-	/** CampaignDef */
-	CAMPAIG_DEF(4),
-	/** Level */
-	LEVEL(5),
+	PICKUP_DEF(3),
+	PLAYER_DEF(4),
+	LEVEL_DEF(5),
+	LEVEL(6),
+	GAME_SAVE(7),
+	GAME_SAVE_DEF(8),
+	BUG_REPORT(9),
+	CAMPAIGN_DEF(10),
 
-	// NEXT ID TO USE => 6
+	// NEXT ID: 11
 
 	;
 	/**

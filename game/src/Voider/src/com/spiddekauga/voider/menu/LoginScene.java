@@ -3,6 +3,7 @@ package com.spiddekauga.voider.menu;
 import com.badlogic.gdx.Gdx;
 import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.Config.Debug.Builds;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.method.IMethodEntity;
 import com.spiddekauga.voider.network.entities.method.LoginMethodResponse;
@@ -163,7 +164,7 @@ public class LoginScene extends Scene implements ICallerResponseListener {
 	 * @return true if register option is available
 	 */
 	boolean isRegisterAvailable() {
-		if (Config.Debug.RELEASE_FINAL) {
+		if (Config.Debug.isBuildOrAbove(Builds.BETA)) {
 			return UserLocalRepo.isRegisterAvailable();
 		} else {
 			return true;

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
 import com.spiddekauga.utils.IOutstreamProgressListener;
@@ -13,12 +14,14 @@ import com.spiddekauga.voider.game.actors.BulletActorDef;
 import com.spiddekauga.voider.game.actors.EnemyActorDef;
 import com.spiddekauga.voider.network.entities.BulletDefEntity;
 import com.spiddekauga.voider.network.entities.DefEntity;
-import com.spiddekauga.voider.network.entities.UploadTypes;
 import com.spiddekauga.voider.network.entities.EnemyDefEntity;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.LevelDefEntity;
 import com.spiddekauga.voider.network.entities.LevelInfoEntity;
+import com.spiddekauga.voider.network.entities.ResourceBlobEntity;
 import com.spiddekauga.voider.network.entities.Tags;
+import com.spiddekauga.voider.network.entities.UploadTypes;
+import com.spiddekauga.voider.network.entities.method.BlobDownloadMethod;
 import com.spiddekauga.voider.network.entities.method.IMethodEntity;
 import com.spiddekauga.voider.network.entities.method.LevelGetAllMethod;
 import com.spiddekauga.voider.network.entities.method.LevelGetAllMethod.SortOrders;
@@ -26,6 +29,8 @@ import com.spiddekauga.voider.network.entities.method.LevelGetAllMethodResponse;
 import com.spiddekauga.voider.network.entities.method.PublishMethod;
 import com.spiddekauga.voider.network.entities.method.PublishMethodResponse;
 import com.spiddekauga.voider.network.entities.method.PublishMethodResponse.Statuses;
+import com.spiddekauga.voider.network.entities.method.ResourceDownloadMethod;
+import com.spiddekauga.voider.network.entities.method.ResourceDownloadMethodResponse;
 import com.spiddekauga.voider.repo.WebGateway.FieldNameFileWrapper;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.IResource;
@@ -54,6 +59,18 @@ public class ResourceWebRepo extends WebRepo {
 		}
 
 		return mInstance;
+	}
+
+	/**
+	 * Downloads all the specified resources
+	 * @param resourceId id of the resource to download
+	 * @param responseListeners listens to the web response
+	 */
+	void download(UUID resourceId, ICallerResponseListener... responseListeners) {
+		ResourceDownloadMethod method = new ResourceDownloadMethod();
+		method.resourceId = resourceId;
+
+		sendInNewThread(method, responseListeners);
 	}
 
 	/**
@@ -198,11 +215,49 @@ public class ResourceWebRepo extends WebRepo {
 			responseToSend = handleLevelGetResponse((LevelGetAllMethod) methodEntity, response);
 		}
 
+		// Download resources
+		if (methodEntity instanceof ResourceDownloadMethod) {
+			responseToSend = handleResourceDownloadResponse(response);
+		}
+
 		// Send the actual response
 		if (responseToSend != null) {
 			for (ICallerResponseListener responseListener : callerResponseListeners) {
 				responseListener.handleWebResponse(methodEntity, responseToSend);
 			}
+		}
+	}
+
+	/**
+	 * Handle response from downloading a resource
+	 * @param response the response from the server
+	 * @return a correct response for downloading a resource and its dependencies
+	 */
+	private IEntity handleResourceDownloadResponse(IEntity response) {
+		// Download all levels
+		if (response instanceof ResourceDownloadMethodResponse) {
+
+			for (ResourceBlobEntity resourceInfo : ((ResourceDownloadMethodResponse) response).resources) {
+				BlobDownloadMethod blobDownloadMethod = new BlobDownloadMethod();
+				blobDownloadMethod.blobKey = resourceInfo.blobKey;
+				String filePath = Gdx.files.getExternalStoragePath();
+				filePath += ResourceLocalRepo.getFilepath(resourceInfo.resourceId);
+
+				resourceInfo.downloaded = serializeAndDownload(blobDownloadMethod, filePath);
+
+				if (!resourceInfo.downloaded)  {
+					((ResourceDownloadMethodResponse) response).status = ResourceDownloadMethodResponse.Statuses.FAILED_DOWNLOAD;
+					break;
+				}
+			}
+
+			return response;
+		}
+		// Error connecting to server
+		else  {
+			ResourceDownloadMethodResponse methodResponse = new ResourceDownloadMethodResponse();
+			methodResponse.status = ResourceDownloadMethodResponse.Statuses.FAILED_CONNECTION;
+			return methodResponse;
 		}
 	}
 

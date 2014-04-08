@@ -53,6 +53,14 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 		<url-pattern>/bug-report</url-pattern>
 	</servlet-mapping>
 	<servlet>
+		<servlet-name>BlobDownload</servlet-name>
+		<servlet-class>com.spiddekauga.voider.servlets.BlobDownload</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>BlobDownload</servlet-name>
+		<url-pattern>/blob-download</url-pattern>
+	</servlet-mapping>
+	<servlet>
 		<servlet-name>Publish</servlet-name>
 		<servlet-class>com.spiddekauga.voider.servlets.Publish</servlet-class>
 	</servlet>

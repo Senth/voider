@@ -9,11 +9,12 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.appengine.api.blobstore.BlobKey;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.voider.network.entities.IEntity;
-import com.spiddekauga.voider.network.entities.ResourceFileEntity;
+import com.spiddekauga.voider.network.entities.ResourceBlobEntity;
 import com.spiddekauga.voider.network.entities.UploadTypes;
 import com.spiddekauga.voider.network.entities.method.NetworkEntitySerializer;
 import com.spiddekauga.voider.network.entities.method.ResourceDownloadMethod;
@@ -86,7 +87,7 @@ public class ResourceDownload extends VoiderServlet {
 			}
 
 			// Information
-			ResourceFileEntity information = getInformation(resource);
+			ResourceBlobEntity information = getInformation(resource);
 			if (information == null) {
 				return false;
 			}
@@ -119,11 +120,11 @@ public class ResourceDownload extends VoiderServlet {
 	 * @param levelDef the level def to get information from
 	 * @return information about the actual level
 	 */
-	private ResourceFileEntity getLevelInformation(Entity levelDef) {
-		ResourceFileEntity information = new ResourceFileEntity();
+	private ResourceBlobEntity getLevelInformation(Entity levelDef) {
+		ResourceBlobEntity information = new ResourceBlobEntity();
 
 		information.resourceId = DatastoreUtils.getUuidProperty(levelDef, "level_id");
-		information.blobKey = (String) levelDef.getProperty("level_blob_key");
+		information.blobKey = ((BlobKey) levelDef.getProperty("level_blob_key")).getKeyString();
 		information.uploadType = UploadTypes.LEVEL;
 
 		return information;
@@ -133,11 +134,11 @@ public class ResourceDownload extends VoiderServlet {
 	 * @param resource get information from the specified resource
 	 * @return information about the resource
 	 */
-	private ResourceFileEntity getInformation(Entity resource) {
-		ResourceFileEntity information = new ResourceFileEntity();
+	private ResourceBlobEntity getInformation(Entity resource) {
+		ResourceBlobEntity information = new ResourceBlobEntity();
 
 		information.resourceId = DatastoreUtils.getUuidProperty(resource, "resource_id");
-		information.blobKey = (String) resource.getProperty("blob_key");
+		information.blobKey = ((BlobKey) resource.getProperty("blob_key")).getKeyString();
 		long defTypeId = (long) resource.getProperty("type");
 		information.uploadType = UploadTypes.fromId((int) defTypeId);
 

@@ -321,8 +321,8 @@ public class DatastoreUtils {
 	 */
 	public static UUID getUuidProperty(Entity entity, String propertyName) {
 		if (entity.hasProperty(propertyName + "-least") && entity.hasProperty(propertyName + "-most")) {
-			int leastBits = (int) ((long) entity.getProperty(propertyName + "-least"));
-			int mostBits = (int) ((long) entity.getProperty(propertyName + "-most"));
+			long leastBits =(long) entity.getProperty(propertyName + "-least");
+			long mostBits = (long) entity.getProperty(propertyName + "-most");
 			return new UUID(mostBits, leastBits);
 		}
 

@@ -204,7 +204,7 @@ public class Publish extends VoiderServlet {
 			success = appendBulletDefEntity(datastoreEntity, (BulletDefEntity) defEntity, blobKeys);
 			break;
 
-		case CAMPAIG_DEF:
+		case CAMPAIGN_DEF:
 			success = appendCampaignDefEntity(datastoreEntity, (CampaignDefEntity) defEntity, blobKeys);
 			break;
 
@@ -269,7 +269,7 @@ public class Publish extends VoiderServlet {
 			appendBulletDefEntity(builder, (BulletDefEntity) defEntity);
 			break;
 
-		case CAMPAIG_DEF:
+		case CAMPAIGN_DEF:
 			appendCampaignDefEntity(builder, (CampaignDefEntity) defEntity);
 			break;
 
@@ -412,6 +412,7 @@ public class Publish extends VoiderServlet {
 
 
 		// No-test properties
+		DatastoreUtils.setProperty(datastoreEntity, "level_id", LevelDefEntity.levelId);
 		DatastoreUtils.setProperty(datastoreEntity, "level_length", LevelDefEntity.levelLength);
 
 		return appendDefEntity(datastoreEntity, LevelDefEntity, blobKeys);

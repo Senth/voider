@@ -12,6 +12,7 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.spiddekauga.utils.ShapeRendererEx;
+import com.spiddekauga.voider.Config.Debug.Builds;
 import com.spiddekauga.voider.game.actors.ActorShapeTypes;
 import com.spiddekauga.voider.resources.IResourceEditorRender;
 import com.spiddekauga.voider.resources.IResourcePosition;
@@ -185,18 +186,48 @@ public class Config {
 		public static boolean DEBUG_TESTS = true;
 		/** Skip loading text */
 		public static final boolean SKIP_LOADING_TIME = true;
-		/** Set this variable to be true for releases, this disables many of
-		 * the "special" functionality as multiple registering, test scenes etc. */
-		public static final boolean RELEASE_FINAL = false;
-		/** Set this variable to true for test releases, such as sending this version
-		 * to other developers/designers, etc. */
-		public static final boolean RELEASE_TEST = RELEASE_FINAL || false;
+		/** Build level */
+		public static final Builds BUILD = Builds.DEVELOPMENT;
 		/** Set to true to turn on the exception handler */
-		public static boolean EXCEPTION_HANDLER = RELEASE_TEST || false;
+		public static boolean EXCEPTION_HANDLER = isBuildOrAbove(Builds.NIGHTLY) || false;
 		/** Set to true in JUNIT tests */
 		public static boolean JUNIT_TEST = false;
 		/** Logging verbosity */
-		public static final int LOG_VERBOSITY = RELEASE_FINAL ? Application.LOG_ERROR : Application.LOG_DEBUG;
+		public static final int LOG_VERBOSITY = isBuildOrAbove(Builds.BETA) ? Application.LOG_ERROR : Application.LOG_DEBUG;
+
+
+		/**
+		 * All different builds
+		 */
+		public enum Builds {
+			// Front placement is development, later -> more release ready
+			/** Local development */
+			DEVELOPMENT,
+			/** Released to co-developers */
+			NIGHTLY,
+			/** Beta tests */
+			BETA,
+			/** Release to public, i.e. google play */
+			RELEASE,
+		}
+
+		/**
+		 * @param build the build to check if we're at or above
+		 * @return true if the current build is equal to or above (later) than
+		 * the specified build
+		 */
+		public static boolean isBuildOrAbove(Builds build) {
+			return BUILD.ordinal() >= build.ordinal();
+		}
+
+		/**
+		 * @param build the build to check if we're at or below
+		 * @return true if the current build is equal to or below (development) than
+		 * the specified build
+		 */
+		public static boolean isBuildOrBelow(Builds build) {
+			return BUILD.ordinal() <= build.ordinal();
+		}
 	}
 
 	/**
@@ -560,7 +591,7 @@ public class Config {
 		/** Revision number length */
 		public final static int REVISION_LENGTH = 10;
 		/** Uses external images, etc. instead of internal for resources */
-		public final static boolean USE_EXTERNAL_RESOURCES = !Debug.RELEASE_FINAL && Debug.RELEASE_TEST;
+		public final static boolean USE_EXTERNAL_RESOURCES = Debug.BUILD == Builds.NIGHTLY;
 		/** Database filename */
 		public final static String DB_FILENAME = "Voider.db";
 		/** Database file */
@@ -571,12 +602,16 @@ public class Config {
 			// Set storage
 			if (Debug.JUNIT_TEST) {
 				PREFERENCE_PREFIX = "Voider-JUnit";
-			} else if (Debug.RELEASE_FINAL) {
+			} else if (Debug.BUILD == Builds.RELEASE) {
 				PREFERENCE_PREFIX = "Voider";
-			} else if (Debug.RELEASE_TEST) {
+			} else if (Debug.BUILD == Builds.BETA) {
 				PREFERENCE_PREFIX = "Voider-beta";
-			} else {
+			} else if (Debug.BUILD == Builds.NIGHTLY) {
+				PREFERENCE_PREFIX = "Voider-nightly";
+			} else if (Debug.BUILD == Builds.DEVELOPMENT) {
 				PREFERENCE_PREFIX = "Voider-local";
+			} else {
+				PREFERENCE_PREFIX = "Voider-unknown";
 			}
 			STORAGE = PREFERENCE_PREFIX + "/";
 
@@ -634,9 +669,9 @@ public class Config {
 		/** Default height of the graphics */
 		public final static int HEIGHT_DEFAULT = 480;
 		/** Starting width */
-		public final static int WIDTH_START = Debug.RELEASE_TEST ? WIDTH_DEFAULT : 1280;
+		public final static int WIDTH_START;
 		/** Starting height */
-		public final static int HEIGHT_START = Debug.RELEASE_TEST ? HEIGHT_DEFAULT : 720;
+		public final static int HEIGHT_START;
 		/** World scaling factor */
 		public final static float WORLD_SCALE = 0.1f;
 		/** How much bigger of the screen is shown in height from the regular scale. E.g. 3 will show the same amount of
@@ -651,6 +686,16 @@ public class Config {
 		public final static float FRAME_LENGTH_MAX = 0.1f;
 		/** Depth level step size */
 		public final static float DEPTH_STEP_SIZE = 0.001f;
+
+		static {
+			if (Debug.BUILD == Builds.NIGHTLY) {
+				WIDTH_START = WIDTH_DEFAULT;
+				HEIGHT_START = HEIGHT_DEFAULT;
+			} else {
+				WIDTH_START = 1280;
+				HEIGHT_START = 800;
+			}
+		}
 
 		/**
 		 * Z-value for rendering objects. The further up the enumeration
@@ -948,12 +993,16 @@ public class Config {
 		public static final String SERVER_HOST;
 
 		static {
-			if (Debug.RELEASE_FINAL) {
+			if (Debug.BUILD == Builds.RELEASE) {
 				SERVER_HOST = "http://voider-game.com/";
-			} else if (Debug.RELEASE_TEST) {
-				SERVER_HOST = "http://voider-test.appspot.com/";
-			} else {
+			} else if (Debug.BUILD == Builds.BETA) {
+				SERVER_HOST = "http://voider-beta.appspot.com/";
+			} else if (Debug.BUILD == Builds.NIGHTLY) {
+				SERVER_HOST = "http://voider-nightly.appspot.com";
+			} else if (Debug.BUILD == Builds.DEVELOPMENT) {
 				SERVER_HOST = "http://localhost:8888/";
+			} else {
+				SERVER_HOST = "http://unkown";
 			}
 		}
 	}

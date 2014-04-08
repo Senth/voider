@@ -14,11 +14,14 @@ import com.spiddekauga.voider.game.actors.ActorDef;
 import com.spiddekauga.voider.network.entities.DefEntity;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.LevelDefEntity;
+import com.spiddekauga.voider.network.entities.ResourceBlobEntity;
 import com.spiddekauga.voider.network.entities.method.IMethodEntity;
 import com.spiddekauga.voider.network.entities.method.PublishMethod;
 import com.spiddekauga.voider.network.entities.method.PublishMethodResponse;
-import com.spiddekauga.voider.network.entities.method.PublishMethodResponse.Statuses;
+import com.spiddekauga.voider.network.entities.method.ResourceDownloadMethod;
+import com.spiddekauga.voider.network.entities.method.ResourceDownloadMethodResponse;
 import com.spiddekauga.voider.resources.Def;
+import com.spiddekauga.voider.resources.ExternalTypes;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.utils.Pools;
@@ -103,18 +106,63 @@ public class ResourceRepo implements ICallerResponseListener {
 	@Override
 	public void handleWebResponse(IMethodEntity method, IEntity response) {
 		if (response instanceof PublishMethodResponse) {
-			if (((PublishMethodResponse) response).status == Statuses.SUCCESS) {
-				for (DefEntity defEntity : ((PublishMethod)method).defs) {
-					ResourceLocalRepo.removeRevisions(defEntity.resourceId);
-					ResourceLocalRepo.setPublished(defEntity.resourceId, true);
+			handlePublishResponse((PublishMethod) method, (PublishMethodResponse) response);
+		} else if (response instanceof ResourceDownloadMethodResponse) {
+			handleDownloadResponse((ResourceDownloadMethod) method, (ResourceDownloadMethodResponse) response);
+		}
+	}
 
-					// If level set level as published too
-					if (defEntity instanceof LevelDefEntity) {
-						ResourceLocalRepo.removeRevisions(((LevelDefEntity) defEntity).levelId);
-						ResourceLocalRepo.setPublished(((LevelDefEntity) defEntity).levelId, true);
-					}
+	/**
+	 * Handles a download response
+	 * @param method the download method
+	 * @param response the download response
+	 */
+	private void handleDownloadResponse(ResourceDownloadMethod method, ResourceDownloadMethodResponse response) {
+		// Add all downloaded resources to the local database
+		if (response.status.isSuccessful()) {
+			for (ResourceBlobEntity resourceInfo : response.resources) {
+				ResourceLocalRepo.addDownloaded(resourceInfo.resourceId, ExternalTypes.fromUploadType(resourceInfo.uploadType));
+			}
+		}
+	}
+
+	/**
+	 * Handles a publish response
+	 * @param method the publish method
+	 * @param response the publish response
+	 */
+	private void handlePublishResponse(PublishMethod method, PublishMethodResponse response) {
+		if (response.status.isSuccessful()) {
+			for (DefEntity defEntity : method.defs) {
+				ResourceLocalRepo.removeRevisions(defEntity.resourceId);
+				ResourceLocalRepo.setPublished(defEntity.resourceId, true);
+
+				// If level set level as published too
+				if (defEntity instanceof LevelDefEntity) {
+					ResourceLocalRepo.removeRevisions(((LevelDefEntity) defEntity).levelId);
+					ResourceLocalRepo.setPublished(((LevelDefEntity) defEntity).levelId, true);
 				}
 			}
+		}
+	}
+
+	/**
+	 * Download a resource and its dependencies
+	 * @param responseListener listens to the web response
+	 * @param resourceId the resource to download
+	 */
+	public void download(ICallerResponseListener responseListener, UUID resourceId) {
+		// Download if we don't have the resource already
+		if (!ResourceLocalRepo.exists(resourceId)) {
+			mWebRepo.download(resourceId, this, responseListener);
+		}
+		// Already downloaded -> send response
+		else {
+			ResourceDownloadMethodResponse response = new ResourceDownloadMethodResponse();
+			response.status = ResourceDownloadMethodResponse.Statuses.SUCCESS;
+			ResourceDownloadMethod method = new ResourceDownloadMethod();
+			method.resourceId = resourceId;
+			responseListener.handleWebResponse(method, response);
 		}
 	}
 

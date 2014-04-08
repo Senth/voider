@@ -2,7 +2,6 @@ package com.spiddekauga.voider.servlets;
 
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.UUID;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -23,18 +22,15 @@ public class Upgrade extends VoiderServlet {
 	@Override
 	protected void onRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// Update private key in user entities
-		Query query = new Query("users");
+		Query query = new Query("published");
 		Iterator<Entity> entityIt = DatastoreUtils.prepare(query).asIterator();
 
 		while (entityIt.hasNext()) {
 			Entity entity = entityIt.next();
 
-			// Update private key
-			if (entity.hasProperty("privateKey-most")) {
-				UUID privateKey = DatastoreUtils.getUuidProperty(entity, "privateKey");
-				DatastoreUtils.setProperty(entity, "private_key", privateKey);
-				entity.removeProperty("privateKey-most");
-				entity.removeProperty("privateKey-least");
+			// Level def type
+			if (entity.hasProperty("type")) {
+				DatastoreUtils.setProperty(entity, "type", 5);
 				DatastoreUtils.put(entity);
 			}
 		}

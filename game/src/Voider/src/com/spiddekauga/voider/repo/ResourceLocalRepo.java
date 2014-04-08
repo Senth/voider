@@ -13,6 +13,7 @@ import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourceRevision;
 import com.spiddekauga.voider.resources.ResourceNotFoundException;
 import com.spiddekauga.voider.resources.RevisionInfo;
+import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Local repository to all resources
@@ -42,6 +43,19 @@ public class ResourceLocalRepo {
 	}
 
 	/**
+	 * Add a downloaded / published resource
+	 * @param resourceId the id of the downloaded resource
+	 * @param type the type of resource
+	 */
+	public static void addDownloaded(UUID resourceId, ExternalTypes type) {
+		// Only add the resource if it doesn't exist
+		if (!mSqliteGateway.exists(resourceId)) {
+			mSqliteGateway.add(resourceId, type.getId());
+			mSqliteGateway.setPublished(resourceId, true);
+		}
+	}
+
+	/**
 	 * Removes a resource (including all revisions) from the database and physically
 	 * @param resourceId the unique id of the resource
 	 */
@@ -49,22 +63,51 @@ public class ResourceLocalRepo {
 		// Remove from database
 		mSqliteGateway.remove(resourceId);
 
+		removeFile(resourceId);
+
+		removeRevisions(resourceId);
+	}
+
+	/**
+	 * Removes a file
+	 * @param resourceId the resource to physically remove
+	 */
+	private static void removeFile(UUID resourceId) {
 		// Remove file
 		String filepath = getFilepath(resourceId);
 		FileHandle file = Gdx.files.external(filepath);
 		if (file.exists()) {
 			file.delete();
 		}
+	}
 
-		// Remove revisions
-		removeRevisions(resourceId);
+	/**
+	 * Removes a revision directory if it exists
+	 * @param resourceId the resource to remove all revisions for on the disk
+	 */
+	private static void removeRevisionFiles(UUID resourceId) {
+		String revisionDir = getRevisionDir(resourceId);
+		FileHandle dir = Gdx.files.external(revisionDir);
+		if (dir.exists() && dir.isDirectory()) {
+			dir.deleteDirectory();
+		}
 	}
 
 	/**
 	 * Removes all resources of the specified type (including all revisions)
 	 * @param externalType the resource type to remove
 	 */
-	void removeAll(ExternalTypes externalType) {
+	public static void removeAll(ExternalTypes externalType) {
+		// File
+		ArrayList<UUID> resources = mSqliteGateway.getAll(externalType.getId());
+		for (UUID resource : resources) {
+			removeFile(resource);
+			removeRevisionFiles(resource);
+		}
+		Pools.arrayList.free(resources);
+
+
+		// Database
 		mSqliteGateway.removeAll(externalType.getId());
 	}
 
@@ -77,17 +120,13 @@ public class ResourceLocalRepo {
 		mSqliteGateway.removeRevisions(resourceId);
 
 		// File
-		String revisionDir = getRevisionDir(resourceId);
-		FileHandle dir = Gdx.files.external(revisionDir);
-		if (dir.exists() && dir.isDirectory()) {
-			dir.deleteDirectory();
-		}
+		removeRevisionFiles(resourceId);
 	}
 
 	/**
 	 * Get all of the specified type
 	 * @param externalType the resource type to get all resource of
-	 * @return all resources of the specified type. Don't forget to free the arraylist!
+	 * @return all resources of the specified type. Don't forget to free the ArrayList!
 	 */
 	public static ArrayList<UUID> getAll(ExternalTypes externalType) {
 		return mSqliteGateway.getAll(externalType.getId());
@@ -190,6 +229,14 @@ public class ResourceLocalRepo {
 		} else {
 			return null;
 		}
+	}
+
+	/**
+	 * @param resourceId checks if this resource exists
+	 * @return true if the resource exists
+	 */
+	public static boolean exists(UUID resourceId) {
+		return mSqliteGateway.exists(resourceId);
 	}
 
 	/**

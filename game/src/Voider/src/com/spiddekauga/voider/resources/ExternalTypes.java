@@ -10,32 +10,32 @@ import com.spiddekauga.voider.game.actors.BulletActorDef;
 import com.spiddekauga.voider.game.actors.EnemyActorDef;
 import com.spiddekauga.voider.game.actors.PickupActorDef;
 import com.spiddekauga.voider.game.actors.PlayerActorDef;
+import com.spiddekauga.voider.network.entities.UploadTypes;
 
 /**
  * All the different external resource types
  */
 @SuppressWarnings("javadoc")
 public enum ExternalTypes {
-	BULLET_DEF(1, BulletActorDef.class),
-	ENEMY_DEF(2, EnemyActorDef.class),
-	PICKUP_DEF(3, PickupActorDef.class),
-	PLAYER_DEF(4, PlayerActorDef.class),
-	LEVEL_DEF(5, LevelDef.class),
-	LEVEL(6, Level.class),
-	GAME_SAVE(7, GameSave.class),
-	GAME_SAVE_DEF(8, GameSaveDef.class),
-	BUG_REPORT(9, BugReportDef.class),
-
-	// NEXT ID: 10
+	BULLET_DEF(UploadTypes.BULLET_DEF, BulletActorDef.class),
+	ENEMY_DEF(UploadTypes.ENEMY_DEF, EnemyActorDef.class),
+	PICKUP_DEF(UploadTypes.PICKUP_DEF, PickupActorDef.class),
+	PLAYER_DEF(UploadTypes.PLAYER_DEF, PlayerActorDef.class),
+	LEVEL_DEF(UploadTypes.LEVEL_DEF, LevelDef.class),
+	LEVEL(UploadTypes.LEVEL, Level.class),
+	GAME_SAVE(UploadTypes.GAME_SAVE, GameSave.class),
+	GAME_SAVE_DEF(UploadTypes.GAME_SAVE_DEF, GameSaveDef.class),
+	BUG_REPORT(UploadTypes.BUG_REPORT, BugReportDef.class),
+	CAMPAIGN_DEF(UploadTypes.CAMPAIGN_DEF, null), // TODO
 
 	;
 	/**
 	 * Constructor which sets the type
-	 * @param id unique id of the enumeration
+	 * @param uploadType the connected upload type for this external type
 	 * @param type the class type of resource
 	 */
-	private ExternalTypes(int id, Class<? extends IResource> type) {
-		mId = id;
+	private ExternalTypes(UploadTypes uploadType, Class<? extends IResource> type) {
+		mId = uploadType.getId();
 		mType = type;
 	}
 
@@ -69,6 +69,15 @@ public enum ExternalTypes {
 	 */
 	public static ExternalTypes fromId(int id) {
 		return mIdToEnum.get(id);
+	}
+
+	/**
+	 * Converts an upload type enumeration to an external type enumeration
+	 * @param uploadType the upload type to get an external type for
+	 * @return external type enumeration of uploadType
+	 */
+	public static ExternalTypes fromUploadType(UploadTypes uploadType) {
+		return mIdToEnum.get(uploadType.getId());
 	}
 
 	/** Unique integer id of the enum */

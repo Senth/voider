@@ -144,8 +144,10 @@ public class ExploreGui extends Gui {
 	@Override
 	public void resize(int width, int height) {
 		super.resize(width, height);
-		dispose();
-		initGui();
+		if (isInitialized()) {
+			dispose();
+			initGui();
+		}
 	}
 
 	@Override

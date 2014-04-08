@@ -3,7 +3,7 @@ package com.spiddekauga.voider.network.entities.method;
 import java.util.ArrayList;
 
 import com.spiddekauga.voider.network.entities.IEntity;
-import com.spiddekauga.voider.network.entities.ResourceFileEntity;
+import com.spiddekauga.voider.network.entities.ResourceBlobEntity;
 
 /**
  * Response for downloading a resource
@@ -15,7 +15,7 @@ public class ResourceDownloadMethodResponse implements IEntity {
 	/** Status of the response */
 	public Statuses status = null;
 	/** All files to download */
-	public ArrayList<ResourceFileEntity> resources = new ArrayList<>();
+	public ArrayList<ResourceBlobEntity> resources = new ArrayList<>();
 
 
 	/**
@@ -27,7 +27,11 @@ public class ResourceDownloadMethodResponse implements IEntity {
 		/** Failed by internal server error */
 		FAILED_SERVER_INTERAL,
 		/** Failed to connect to the server */
-		FAILED_CONNECTION,;
+		FAILED_CONNECTION,
+		/** Failed during download */
+		FAILED_DOWNLOAD,
+
+		;
 
 		@Override
 		public boolean isSuccessful() {

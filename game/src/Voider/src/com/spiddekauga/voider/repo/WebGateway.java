@@ -1,12 +1,16 @@
 package com.spiddekauga.voider.repo;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.MultipartEntityWithProgressBuilder;
 import org.apache.http.entity.mime.content.ContentBody;
 import org.apache.http.entity.mime.content.FileBody;
@@ -131,6 +135,55 @@ class WebGateway {
 		}
 
 		return null;
+	}
+
+	/**
+	 * Send a download request to the server
+	 * @param methodName name of method to call on the server
+	 * @param entity data to send, i.e. the method parameters
+	 * @param filePath path to write the downloaded file to
+	 * @return true if file was written successfully, false if an error occurred
+	 */
+	public static boolean downloadRequest(String methodName, byte[] entity, String filePath) {
+		initHttpClient();
+
+		CloseableHttpResponse httpResponse = null;
+
+		try {
+			String url = Config.Network.SERVER_HOST + methodName;
+			MultipartEntityBuilder entityBuilder = MultipartEntityBuilder.create();
+			entityBuilder.addBinaryBody(ENTITY_NAME, entity);
+
+			HttpPost httpPost = new HttpPost(url);
+			httpPost.setEntity(entityBuilder.build());
+
+			httpResponse = mHttpClient.execute(httpPost);
+		} catch (IOException e) {
+			Gdx.app.log("Network", "Could not connect to server");
+			e.printStackTrace();
+		}
+
+		if (httpResponse != null) {
+			try {
+				BufferedInputStream bis = new BufferedInputStream(httpResponse.getEntity().getContent());
+				BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(new File(filePath)));
+				int inByte;
+				while((inByte = bis.read()) != -1) {
+					bos.write(inByte);
+				}
+				bis.close();
+				bos.close();
+
+				httpResponse.close();
+				return true;
+			} catch (IOException e) {
+				Gdx.app.log("Network", "Error downloading file");
+				e.printStackTrace();
+			}
+		}
+
+
+		return false;
 	}
 
 	/**

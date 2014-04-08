@@ -7,6 +7,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.Config.Debug.Builds;
 import com.spiddekauga.voider.app.PrototypeScene;
 import com.spiddekauga.voider.app.TestUiScene;
 import com.spiddekauga.voider.editor.EditorSelectionScene;
@@ -17,6 +18,7 @@ import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.method.IMethodEntity;
 import com.spiddekauga.voider.network.entities.method.LogoutMethodResponse;
 import com.spiddekauga.voider.repo.ICallerResponseListener;
+import com.spiddekauga.voider.repo.ResourceLocalRepo;
 import com.spiddekauga.voider.repo.UserLocalRepo;
 import com.spiddekauga.voider.repo.UserWebRepo;
 import com.spiddekauga.voider.resources.ExternalTypes;
@@ -106,12 +108,19 @@ public class MainMenu extends Scene implements ICallerResponseListener {
 		}
 
 		// Testing
-		else if (!Config.Debug.RELEASE_FINAL && keycode == Input.Keys.F5) {
+		else if (Config.Debug.isBuildOrBelow(Builds.NIGHTLY) && keycode == Input.Keys.F5) {
 			SceneSwitcher.switchTo(new TestUiScene());
-		} else if (!Config.Debug.RELEASE_FINAL && keycode == Input.Keys.F10) {
+		} else if (Config.Debug.isBuildOrBelow(Builds.NIGHTLY) && keycode == Input.Keys.F10) {
 			SceneSwitcher.switchTo(new PrototypeScene());
-		} else if (!Config.Debug.RELEASE_FINAL && keycode == Input.Keys.F12) {
+		} else if (Config.Debug.isBuildOrBelow(Builds.NIGHTLY) && keycode == Input.Keys.F12) {
 			handleException(new RuntimeException());
+		} else if (Config.Debug.isBuildOrBelow(Builds.NIGHTLY) && keycode == Input.Keys.INSERT) {
+			ResourceLocalRepo.removeAll(ExternalTypes.LEVEL);
+			ResourceLocalRepo.removeAll(ExternalTypes.BULLET_DEF);
+			ResourceLocalRepo.removeAll(ExternalTypes.LEVEL_DEF);
+			ResourceLocalRepo.removeAll(ExternalTypes.ENEMY_DEF);
+			ResourceLocalRepo.removeAll(ExternalTypes.GAME_SAVE);
+			ResourceLocalRepo.removeAll(ExternalTypes.GAME_SAVE_DEF);
 		}
 		return false;
 	}

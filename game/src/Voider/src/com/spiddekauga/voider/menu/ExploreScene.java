@@ -5,6 +5,8 @@ import java.util.Iterator;
 
 import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.game.GameScene;
+import com.spiddekauga.voider.game.LevelDef;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.LevelInfoEntity;
 import com.spiddekauga.voider.network.entities.Tags;
@@ -12,12 +14,17 @@ import com.spiddekauga.voider.network.entities.method.IMethodEntity;
 import com.spiddekauga.voider.network.entities.method.LevelGetAllMethod;
 import com.spiddekauga.voider.network.entities.method.LevelGetAllMethod.SortOrders;
 import com.spiddekauga.voider.network.entities.method.LevelGetAllMethodResponse;
+import com.spiddekauga.voider.network.entities.method.ResourceDownloadMethod;
+import com.spiddekauga.voider.network.entities.method.ResourceDownloadMethodResponse;
 import com.spiddekauga.voider.repo.ICallerResponseListener;
+import com.spiddekauga.voider.repo.ResourceLocalRepo;
+import com.spiddekauga.voider.repo.ResourceRepo;
 import com.spiddekauga.voider.repo.ResourceWebRepo;
 import com.spiddekauga.voider.repo.WebWrapper;
 import com.spiddekauga.voider.resources.InternalNames;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.scene.Scene;
+import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.utils.Graphics;
 import com.spiddekauga.voider.utils.Pools;
 
@@ -90,29 +97,67 @@ public class ExploreScene extends Scene implements ICallerResponseListener {
 			WebWrapper webWrapper = webIt.next();
 			IEntity response = webWrapper.response;
 
-			if (webWrapper.method == mLastMethod) {
-				mFetchingLevels = false;
-			}
 
 			if (response instanceof LevelGetAllMethodResponse) {
-				switch (((LevelGetAllMethodResponse) response).status) {
-				case FAILED_SERVER_CONNECTION:
-					mGui.showErrorMessage("Failed to connect to the server");
-					break;
-
-				case FAILED_SERVER_ERROR:
-					mGui.showErrorMessage("Internal server error");
-					break;
-
-				case SUCCESS_FETCHED_ALL:
-				case SUCCESS_MORE_EXISTS:
-					createDrawables(((LevelGetAllMethodResponse) response).levels);
-					((ExploreGui)mGui).addContent(((LevelGetAllMethodResponse) response).levels);
-					break;
-				}
+				handleLevelGetAllResponse((LevelGetAllMethod) webWrapper.method, (LevelGetAllMethodResponse) response);
+			} else if (response instanceof ResourceDownloadMethodResponse) {
+				handleResourceDownloadResponse((ResourceDownloadMethod)webWrapper.method, (ResourceDownloadMethodResponse) response);
 			}
 
 			webIt.remove();
+		}
+	}
+
+	/**
+	 * Handles a response from downloading a level
+	 * @param method parameters to the server method that was called
+	 * @param response server response
+	 */
+	private void handleResourceDownloadResponse(ResourceDownloadMethod method, ResourceDownloadMethodResponse response) {
+		mGui.hideWaitWindow();
+		if (response.status.isSuccessful()) {
+			runLevel();
+		} else {
+			switch (response.status) {
+			case FAILED_CONNECTION:
+				mGui.showErrorMessage("Could not connect to the server");
+				break;
+			case FAILED_DOWNLOAD:
+				mGui.showErrorMessage("Download failed, please retry");
+				break;
+			case FAILED_SERVER_INTERAL:
+				mGui.showErrorMessage("Internal server error, please file a bug report");
+				break;
+			default:
+				break;
+			}
+		}
+	}
+
+	/**
+	 * Handles a level get response (fetched level info)
+	 * @param method the method that was called
+	 * @param response response from the server
+	 */
+	private void handleLevelGetAllResponse(LevelGetAllMethod method, LevelGetAllMethodResponse response) {
+		if (method == mLastFetchMethod) {
+			mFetchingLevels = false;
+		}
+
+		switch (response.status) {
+		case FAILED_SERVER_CONNECTION:
+			mGui.showErrorMessage("Failed to connect to the server");
+			break;
+
+		case FAILED_SERVER_ERROR:
+			mGui.showErrorMessage("Internal server error");
+			break;
+
+		case SUCCESS_FETCHED_ALL:
+		case SUCCESS_MORE_EXISTS:
+			createDrawables(response.levels);
+			((ExploreGui)mGui).addContent(response.levels);
+			break;
 		}
 	}
 
@@ -132,8 +177,8 @@ public class ExploreScene extends Scene implements ICallerResponseListener {
 	 * @return true if the server has more levels
 	 */
 	boolean hasMoreLevels() {
-		if (mLastMethod != null) {
-			return mResourceWebRepo.hasMoreLevels(mLastMethod);
+		if (mLastFetchMethod != null) {
+			return mResourceWebRepo.hasMoreLevels(mLastFetchMethod);
 		} else {
 			return false;
 		}
@@ -143,12 +188,12 @@ public class ExploreScene extends Scene implements ICallerResponseListener {
 	 * Fetch more levels of the currently displayed type
 	 */
 	void fetchMoreLevels() {
-		if (mLastMethod != null) {
-			if (mResourceWebRepo.hasMoreLevels(mLastMethod)) {
-				if (mLastMethod.searchString != null) {
-					mLastMethod = mResourceWebRepo.getLevels(this, mLastMethod.searchString);
+		if (mLastFetchMethod != null) {
+			if (mResourceWebRepo.hasMoreLevels(mLastFetchMethod)) {
+				if (mLastFetchMethod.searchString != null) {
+					mLastFetchMethod = mResourceWebRepo.getLevels(this, mLastFetchMethod.searchString);
 				} else {
-					mLastMethod = mResourceWebRepo.getLevels(this, mLastMethod.sort, mLastMethod.tagFilter);
+					mLastFetchMethod = mResourceWebRepo.getLevels(this, mLastFetchMethod.sort, mLastFetchMethod.tagFilter);
 				}
 
 				mFetchingLevels = true;
@@ -166,13 +211,13 @@ public class ExploreScene extends Scene implements ICallerResponseListener {
 			ArrayList<LevelInfoEntity> cachedLevels = mResourceWebRepo.getCachedLevels(sort, tags);
 
 			if (cachedLevels.isEmpty()) {
-				mLastMethod = mResourceWebRepo.getLevels(this, sort, tags);
+				mLastFetchMethod = mResourceWebRepo.getLevels(this, sort, tags);
 				mFetchingLevels = true;
 				((ExploreGui)mGui).resetContent();
 			} else {
-				mLastMethod = new LevelGetAllMethod();
-				mLastMethod.sort = sort;
-				mLastMethod.tagFilter = tags;
+				mLastFetchMethod = new LevelGetAllMethod();
+				mLastFetchMethod.sort = sort;
+				mLastFetchMethod.tagFilter = tags;
 				((ExploreGui)mGui).resetContent(cachedLevels);
 			}
 		}
@@ -187,16 +232,16 @@ public class ExploreScene extends Scene implements ICallerResponseListener {
 			ArrayList<LevelInfoEntity> cachedLevels = mResourceWebRepo.getCachedLevels(searchString);
 
 			if (cachedLevels.isEmpty()) {
-				mLastMethod = mResourceWebRepo.getLevels(this, searchString);
+				mLastFetchMethod = mResourceWebRepo.getLevels(this, searchString);
 				mFetchingLevels = true;
 				((ExploreGui)mGui).resetContent();
 			} else {
-				mLastMethod = new LevelGetAllMethod();
-				mLastMethod.searchString = searchString;
+				mLastFetchMethod = new LevelGetAllMethod();
+				mLastFetchMethod.searchString = searchString;
 				((ExploreGui)mGui).resetContent(cachedLevels);
 			}
 		} else {
-			mLastMethod = new LevelGetAllMethod();
+			mLastFetchMethod = new LevelGetAllMethod();
 			((ExploreGui)mGui).resetContent();
 		}
 	}
@@ -212,7 +257,31 @@ public class ExploreScene extends Scene implements ICallerResponseListener {
 	 * Play the selected level
 	 */
 	void play() {
-		// TODO
+		if (mSelectedLevel != null) {
+			// Already exists just start playing
+			if (ResourceLocalRepo.exists(mSelectedLevel.defEntity.resourceId)) {
+				runLevel();
+			} else {
+				mResourceRepo.download(this, mSelectedLevel.defEntity.resourceId);
+				mGui.showWaitWindow("Downloading level...");
+			}
+		}
+	}
+
+	/**
+	 * Run the actual level
+	 */
+	private void runLevel() {
+		GameScene gameScene = new GameScene(false, false);
+		ResourceCacheFacade.load(gameScene, mSelectedLevel.defEntity.resourceId, false);
+		ResourceCacheFacade.finishLoading();
+		LevelDef levelDef = ResourceCacheFacade.get(mSelectedLevel.defEntity.resourceId);
+		if (levelDef != null) {
+			gameScene.setLevelToLoad(levelDef);
+			SceneSwitcher.switchTo(gameScene);
+		} else {
+			mGui.showErrorMessage("Could not load level, please send a bug report :)");
+		}
 	}
 
 	/**
@@ -220,8 +289,8 @@ public class ExploreScene extends Scene implements ICallerResponseListener {
 	 */
 	@SuppressWarnings("unchecked")
 	ArrayList<LevelInfoEntity> getLevels() {
-		if (mLastMethod != null) {
-			return mResourceWebRepo.getCachedLevels(mLastMethod);
+		if (mLastFetchMethod != null) {
+			return mResourceWebRepo.getCachedLevels(mLastFetchMethod);
 		} else {
 			return Pools.arrayList.obtain();
 		}
@@ -253,10 +322,12 @@ public class ExploreScene extends Scene implements ICallerResponseListener {
 	LevelInfoEntity mSelectedLevel = null;
 	/** Resource web repository */
 	private ResourceWebRepo mResourceWebRepo = ResourceWebRepo.getInstance();
+	/** Resource repository */
+	private ResourceRepo mResourceRepo = ResourceRepo.getInstance();
 	/** Synchronized web responses */
 	private ArrayList<WebWrapper> mWebResponses = new ArrayList<>();
 	/** Last method parameters that was used */
-	private LevelGetAllMethod mLastMethod = null;
+	private LevelGetAllMethod mLastFetchMethod = null;
 	/** If we're fetching levels */
 	private boolean mFetchingLevels = false;
 }

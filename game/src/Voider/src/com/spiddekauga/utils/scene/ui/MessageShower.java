@@ -72,6 +72,7 @@ public class MessageShower {
 		messageLabel.setText(message);
 		messageLabel.setWidth(Gdx.graphics.getWidth() * 0.3f);
 		messageLabel.setWrap(true);
+		messageLabel.invalidate();
 		mcMessages++;
 		mAlignTable.row();
 		mAlignTable.add(messageLabel);

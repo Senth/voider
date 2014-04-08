@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.esotericsoftware.minlog.Log;
 import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.utils.Strings;
+import com.spiddekauga.voider.Config.Debug.Builds;
 import com.spiddekauga.voider.app.SplashScreen;
 import com.spiddekauga.voider.game.Collectibles;
 import com.spiddekauga.voider.game.actors.PickupActorDef;
@@ -103,7 +104,7 @@ public class VoiderGame implements ApplicationListener {
 			SceneSwitcher.update();
 		} catch (RuntimeException e) {
 			// Print where in the serialization it failed
-			if (Gdx.app.getType() == ApplicationType.Desktop && Config.Debug.RELEASE_TEST) {
+			if (Gdx.app.getType() == ApplicationType.Desktop && Config.Debug.isBuildOrAbove(Builds.NIGHTLY)) {
 				String stackTrace = Strings.stackTraceToString(e);
 
 				// File error

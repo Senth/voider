@@ -122,6 +122,17 @@ abstract class WebRepo {
 	}
 
 	/**
+	 * Serializes and sends the method. Used for downloading files from the server
+	 * @param method the method that should be "called" on the server
+	 * @param filePath path to write the file
+	 * @return true if file was written successfully, false if an error occurred.
+	 */
+	protected static boolean serializeAndDownload(IMethodEntity method, String filePath) {
+		byte[] methodBytes = NetworkEntitySerializer.serializeEntity(method);
+		return WebGateway.downloadRequest(method.getMethodName(), methodBytes, filePath);
+	}
+
+	/**
 	 * Sets field names and files to upload
 	 * @param resources all the resources to upload
 	 * @return list with all field names and files to upload
