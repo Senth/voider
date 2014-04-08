@@ -1,6 +1,7 @@
 package com.spiddekauga.voider.server.util;
 
 import java.io.IOException;
+import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -78,9 +79,19 @@ public abstract class VoiderServlet extends HttpServlet {
 	 * @throws ServletException if the request for the GET/POST could not be handled
 	 */
 	private void handleRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		initLogger();
 		initSession(request);
 		onRequest(request, response);
 		saveSession();
+	}
+
+	/**
+	 * Initializes the logger
+	 */
+	private void initLogger() {
+		if (mLogger == null) {
+			mLogger = Logger.getLogger(getClass().getName());
+		}
 	}
 
 	/**
@@ -113,6 +124,8 @@ public abstract class VoiderServlet extends HttpServlet {
 	private HttpSession mSession = null;
 	/** Current user */
 	protected User mUser = null;
+	/** Logger */
+	protected Logger mLogger = null;
 
 	/** Serialized version id */
 	private static final long serialVersionUID = 6754888059125843132L;

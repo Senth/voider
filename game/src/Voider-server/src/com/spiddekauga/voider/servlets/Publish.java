@@ -51,6 +51,9 @@ public class Publish extends VoiderServlet {
 			return;
 		}
 
+		mLogger.fine("TESTING FINE MESSAGE");
+		mLogger.info("Publish method called");
+
 		PublishMethodResponse methodResponse = new PublishMethodResponse();
 		boolean success = false;
 
@@ -60,10 +63,12 @@ public class Publish extends VoiderServlet {
 		mSearchDocumentsToAdd.clear();
 
 		if (networkEntity instanceof PublishMethod) {
+			mLogger.info("Is a publish method");
 			Map<UUID, BlobKey> blobKeys = BlobUtils.getBlobKeysFromUpload(request);
 			Map<UUID, Key> datastoreKeys = new HashMap<>();
 
 			// Add entities to datastore and search
+			mLogger.info("Add entities to datastore");
 			success = true;
 			for (DefEntity defEntity : ((PublishMethod) networkEntity).defs) {
 				Key datastoreKey = addEntityToDatastore(defEntity, blobKeys, datastoreKeys);
@@ -73,6 +78,7 @@ public class Publish extends VoiderServlet {
 						success = createEmptyLevelStatistics(datastoreKey);
 					}
 
+					mLogger.info("Create search document");
 					createSearchDocument(defEntity, datastoreKey);
 				} else {
 					success = false;
@@ -83,6 +89,7 @@ public class Publish extends VoiderServlet {
 
 			// Add dependencies
 			if (success) {
+				mLogger.info("Adding resource dependencies");
 				for (DefEntity defEntity : ((PublishMethod) networkEntity).defs) {
 					success = addDependencies(defEntity, datastoreKeys, blobKeys);
 
@@ -96,6 +103,7 @@ public class Publish extends VoiderServlet {
 
 			// Add search documents
 			if (success) {
+				mLogger.info("Adding search documents");
 				success = addSearchDocuments();
 			}
 
@@ -106,6 +114,12 @@ public class Publish extends VoiderServlet {
 
 			// Set method response status
 			methodResponse.status = success ? Statuses.SUCCESS : Statuses.FAILED_SERVER_ERROR;
+
+			if (success) {
+				mLogger.info("Successfully published resource");
+			} else {
+				mLogger.severe("Failed to publish resource");
+			}
 		}
 
 
