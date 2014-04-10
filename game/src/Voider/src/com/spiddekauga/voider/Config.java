@@ -991,18 +991,27 @@ public class Config {
 	public static class Network {
 		/** Server host */
 		public static final String SERVER_HOST;
+		/** Set this variable to a specific build to override the current server host
+		 * to point to this build instead */
+		public static final Builds OVERRIDE_HOST = null;
 
 		static {
-			if (Debug.BUILD == Builds.RELEASE) {
+			Builds build = Debug.BUILD;
+			if (OVERRIDE_HOST != null) {
+				build = OVERRIDE_HOST;
+			}
+
+			// END URL WITH A SLASH /
+			if (build == Builds.RELEASE) {
 				SERVER_HOST = "http://voider-game.com/";
-			} else if (Debug.BUILD == Builds.BETA) {
+			} else if (build == Builds.BETA) {
 				SERVER_HOST = "http://voider-beta.appspot.com/";
-			} else if (Debug.BUILD == Builds.NIGHTLY) {
-				SERVER_HOST = "http://voider-nightly.appspot.com";
-			} else if (Debug.BUILD == Builds.DEVELOPMENT) {
+			} else if (build == Builds.NIGHTLY) {
+				SERVER_HOST = "http://voider-nightly.appspot.com/";
+			} else if (build == Builds.DEVELOPMENT) {
 				SERVER_HOST = "http://localhost:8888/";
 			} else {
-				SERVER_HOST = "http://unkown";
+				SERVER_HOST = "http://unkown/";
 			}
 		}
 	}

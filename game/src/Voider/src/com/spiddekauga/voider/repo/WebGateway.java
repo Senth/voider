@@ -5,11 +5,15 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.bind.DatatypeConverter;
+
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.MultipartEntityWithProgressBuilder;
 import org.apache.http.entity.mime.content.ContentBody;
@@ -108,7 +112,10 @@ class WebGateway {
 
 		try {
 			MultipartEntityWithProgressBuilder entityBuilder = MultipartEntityWithProgressBuilder.create();
-			entityBuilder.addBinaryBody(ENTITY_NAME, entity);
+			Charset charset = Charset.forName("UTF-8");
+			entityBuilder.setCharset(charset);
+			entityBuilder.addTextBody("Text", "This is my text", ContentType.TEXT_PLAIN);
+
 
 			// Add files
 			if (files != null) {
@@ -116,6 +123,14 @@ class WebGateway {
 					ContentBody contentBody = new FileBody(fieldNameFile.file);
 					entityBuilder.addPart(fieldNameFile.fieldName, contentBody);
 				}
+
+				// Add binary body as BASE64
+				String base64 = DatatypeConverter.printBase64Binary(entity);
+				entityBuilder.addTextBody(ENTITY_NAME, base64, ContentType.TEXT_PLAIN);
+			}
+			// Add usual binary body
+			else {
+				entityBuilder.addBinaryBody(ENTITY_NAME, entity, ContentType.DEFAULT_BINARY, null);
 			}
 
 			if (progressListeners != null) {

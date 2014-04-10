@@ -99,7 +99,6 @@ public class ResourceRepo implements ICallerResponseListener {
 	 * @param resources all resources to publish
 	 */
 	private void publish(ICallerResponseListener responseListener, IOutstreamProgressListener progressListener, ArrayList<IResource> resources) {
-		// Publish to server
 		mWebRepo.publish(resources, progressListener, this, responseListener);
 	}
 

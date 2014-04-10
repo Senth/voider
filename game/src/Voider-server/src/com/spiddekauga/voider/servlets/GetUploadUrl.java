@@ -37,7 +37,7 @@ public class GetUploadUrl extends VoiderServlet {
 		if (networkEntity instanceof GetUploadUrlMethod) {
 			BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService();
 			methodResponse.uploadUrl = blobstoreService.createUploadUrl("/" + ((GetUploadUrlMethod) networkEntity).redirectMethod);
-			mLogger.info("Upload url: " + methodResponse.uploadUrl);
+			mLogger.finest("Upload url: " + methodResponse.uploadUrl);
 		}
 
 		byte[] byteResponse = NetworkEntitySerializer.serializeEntity(methodResponse);
