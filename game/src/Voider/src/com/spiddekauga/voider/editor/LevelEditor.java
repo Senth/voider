@@ -894,9 +894,17 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		if (mLevel != null) {
 			return mLevel.getDef().getEpilogue();
 		}
-		else {
-			return "";
+		return "";
+	}
+
+	/**
+	 * @return true if screenshot has been taken for the level
+	 */
+	boolean hasScreenshot() {
+		if (mLevel != null) {
+			return mLevel.getDef().getPngImage() != null;
 		}
+		return false;
 	}
 
 	/**

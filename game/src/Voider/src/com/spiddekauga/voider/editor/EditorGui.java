@@ -3,6 +3,7 @@ package com.spiddekauga.voider.editor;
 import java.util.ArrayList;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -29,6 +30,7 @@ import com.spiddekauga.utils.commands.Command;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
+import com.spiddekauga.utils.scene.ui.Background;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.utils.scene.ui.DisableListener;
 import com.spiddekauga.utils.scene.ui.Label;
@@ -57,6 +59,7 @@ import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.utils.Messages;
 import com.spiddekauga.voider.utils.Messages.UnsavedActions;
 import com.spiddekauga.voider.utils.Pools;
+import com.spiddekauga.voider.utils.User;
 
 /**
  * Common methods for all editors
@@ -123,6 +126,7 @@ public abstract class EditorGui extends Gui {
 		mMainTable.row().setPadTop(getFileMenuTopPadding());
 
 		initSettingsMenu();
+		initTopBar();
 	}
 
 	/**
@@ -150,6 +154,18 @@ public abstract class EditorGui extends Gui {
 		mStyles.vars.paddingSeparator = SkinNames.getResource(SkinNames.GeneralVars.PADDING_SEPARATOR);
 		mStyles.vars.paddingAfterLabel = SkinNames.getResource(SkinNames.GeneralVars.PADDING_AFTER_LABEL);
 		mStyles.vars.textFieldNumberWidth = SkinNames.getResource(SkinNames.GeneralVars.TEXT_FIELD_NUMBER_WIDTH);
+	}
+
+	/**
+	 * Initializes the top bar
+	 */
+	private void initTopBar() {
+		mTopBar = new Background((Color)SkinNames.getResource(SkinNames.GeneralVars.BAR_UPPER_LOWER_COLOR));
+		float height = SkinNames.getResource(SkinNames.GeneralVars.BAR_UPPER_LOWER_HEIGHT);
+		mTopBar.setSize(Gdx.graphics.getWidth(), height);
+		mTopBar.setPosition(0, Gdx.graphics.getHeight() - height);
+		getStage().addActor(mTopBar);
+		mTopBar.setZIndex(0);
 	}
 
 	@Override
@@ -335,11 +351,7 @@ public abstract class EditorGui extends Gui {
 		Button button;
 
 		// Undo
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Undo", mStyles.textButton.press);
-		} else {
-			button = new ImageButton(mStyles.skin.editor, EditorIcons.UNDO.toString());
-		}
+		button = new ImageButton(mStyles.skin.editor, EditorIcons.UNDO.toString());
 		mDisabledWhenPublished.add(button);
 		mFileMenu.add(button);
 		TooltipListener tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Menus.File.UNDO, getResourceTypeName()));
@@ -351,11 +363,7 @@ public abstract class EditorGui extends Gui {
 		};
 
 		// Redo
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Redo", mStyles.textButton.press);
-		} else {
-			button = new ImageButton(mStyles.skin.editor, EditorIcons.REDO.toString());
-		}
+		button = new ImageButton(mStyles.skin.editor, EditorIcons.REDO.toString());
 		mDisabledWhenPublished.add(button);
 		mFileMenu.add(button);
 		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Menus.File.REDO, getResourceTypeName()));
@@ -370,11 +378,7 @@ public abstract class EditorGui extends Gui {
 		if (mEditor instanceof LevelEditor) {
 			// Highlight enemy if it will spawn when test running the level from
 			// the current position
-			if (Config.Gui.usesTextButtons()) {
-				button = new TextButton("Highlight enemies", mStyles.textButton.press);
-			} else {
-				button = new ImageButton(mStyles.skin.editor, EditorIcons.ENEMY_SPAWN_HIGHLIGHT.toString());
-			}
+			button = new ImageButton(mStyles.skin.editor, EditorIcons.ENEMY_SPAWN_HIGHLIGHT.toString());
 			mEnemyHighlight = button;
 			mFileMenu.add(button);
 			tooltipListener = new TooltipListener(button, Messages.Tooltip.Menus.File.HIGHLIGHT_ENEMY);
@@ -386,11 +390,7 @@ public abstract class EditorGui extends Gui {
 			};
 
 			// Run
-			if (Config.Gui.usesTextButtons()) {
-				button = new TextButton("Run", mStyles.textButton.press);
-			} else {
-				button = new ImageButton(mStyles.skin.editor, EditorIcons.RUN.toString());
-			}
+			button = new ImageButton(mStyles.skin.editor, EditorIcons.RUN.toString());
 			mFileMenu.add(button);
 			tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Menus.File.RUN, getResourceTypeName()));
 			new ButtonListener(button, tooltipListener) {
@@ -411,11 +411,7 @@ public abstract class EditorGui extends Gui {
 		// Grid stuff
 		if (getClass() != CampaignEditorGui.class) {
 			// Grid
-			if (Config.Gui.usesTextButtons()) {
-				button = new TextButton("Grid", mStyles.textButton.toggle);
-			} else {
-				button = new ImageButton(mStyles.skin.editor, EditorIcons.GRID.toString());
-			}
+			button = new ImageButton(mStyles.skin.editor, EditorIcons.GRID.toString());
 			mGridRender = button;
 			DisableListener disableListener = new DisableListener(button);
 			mFileMenu.add(button);
@@ -428,11 +424,7 @@ public abstract class EditorGui extends Gui {
 			};
 
 			// Grid above
-			if (Config.Gui.usesTextButtons()) {
-				button = new TextButton("Grid Above", mStyles.textButton.toggle);
-			} else {
-				button = new ImageButton(mStyles.skin.editor, EditorIcons.GRID_ABOVE.toString());
-			}
+			button = new ImageButton(mStyles.skin.editor, EditorIcons.GRID_ABOVE.toString());
 			mGridRenderAbove = button;
 			disableListener.addToggleActor(button);
 			mFileMenu.add(button).setPadRight(mStyles.vars.paddingSeparator);
@@ -446,11 +438,7 @@ public abstract class EditorGui extends Gui {
 		}
 
 		// New
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("New", mStyles.textButton.press);
-		} else {
-			button = new ImageButton(mStyles.skin.editor, EditorIcons.NEW.toString());
-		}
+		button = new ImageButton(mStyles.skin.editor, EditorIcons.NEW.toString());
 		mFileMenu.add(button);
 		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Menus.File.NEW, getResourceTypeName()));
 		new ButtonListener(button, tooltipListener) {
@@ -461,11 +449,7 @@ public abstract class EditorGui extends Gui {
 		};
 
 		// Duplicate
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Duplicate", mStyles.textButton.press);
-		} else {
-			button = new ImageButton(mStyles.skin.editor, EditorIcons.DUPLICATE.toString());
-		}
+		button = new ImageButton(mStyles.skin.editor, EditorIcons.DUPLICATE.toString());
 		mFileMenu.add(button);
 		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Menus.File.DUPLICATE, getResourceTypeName()));
 		new ButtonListener(button, tooltipListener) {
@@ -482,11 +466,7 @@ public abstract class EditorGui extends Gui {
 		};
 
 		// Save
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Save", mStyles.textButton.press);
-		} else {
-			button = new ImageButton(mStyles.skin.editor, EditorIcons.SAVE.toString());
-		}
+		button = new ImageButton(mStyles.skin.editor, EditorIcons.SAVE.toString());
 		mDisabledWhenPublished.add(button);
 		mFileMenu.add(button);
 		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Menus.File.SAVE, getResourceTypeName()));
@@ -498,11 +478,7 @@ public abstract class EditorGui extends Gui {
 		};
 
 		// Load
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Load", mStyles.textButton.press);
-		} else {
-			button = new ImageButton(mStyles.skin.editor, EditorIcons.LOAD.toString());
-		}
+		button = new ImageButton(mStyles.skin.editor, EditorIcons.LOAD.toString());
 		mFileMenu.add(button);
 		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Menus.File.LOAD, getResourceTypeName()));
 		new ButtonListener(button, tooltipListener) {
@@ -513,27 +489,59 @@ public abstract class EditorGui extends Gui {
 		};
 
 		// Publish
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Publish", mStyles.textButton.press);
-		} else {
-			button = new ImageButton(mStyles.skin.editor, EditorIcons.PUBLISH.toString());
-		}
+		button = new ImageButton(mStyles.skin.editor, EditorIcons.PUBLISH.toString());
 		mDisabledWhenPublished.add(button);
 		mFileMenu.add(button);
 		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Menus.File.PUBLISH, getResourceTypeName()));
 		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onPressed() {
-				showPublishDialog();
+				boolean showPublish = true;
+
+				// For level, make sure level has screen shot before publishing
+				if (mEditor instanceof LevelEditor) {
+					if (!((LevelEditor) mEditor).hasScreenshot()) {
+						showPublish = false;
+
+						MsgBoxExecuter msgBox = getFreeMsgBox(true);
+						msgBox.setTitle("No screenshot taken");
+						String text = "Please take a screenshot of this level before publishing it. "
+								+ "You can do this by test running the level and click on the camera "
+								+ "icon in the top bar.";
+						Label label = new Label(text, mStyles.label.standard);
+						msgBox.content(label);
+						msgBox.addCancelButtonAndKeys("OK");
+						label.setWrap(true);
+						label.setWidth(Gdx.graphics.getWidth() * 0.5f);
+						showMsgBox(msgBox);
+					}
+				}
+
+				// Check if online
+				if (!User.getGlobalUser().isOnline()) {
+					showPublish = false;
+
+					MsgBoxExecuter msgBox = getFreeMsgBox(true);
+					msgBox.setTitle("Offline");
+					String text = "You need to go online to publish the level. Currently this is "
+							+ "only possible by either logging out and logging in or restarting "
+							+ "the game.";
+					Label label = new Label(text, mStyles.label.standard);
+					msgBox.content(label);
+					msgBox.addCancelButtonAndKeys("OK");
+					label.setWrap(true);
+					label.setWidth(Gdx.graphics.getWidth() * 0.5f);
+					showMsgBox(msgBox);
+				}
+
+				if (showPublish) {
+					showPublishDialog();
+				}
 			}
 		};
 
 		// Info
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Info", mStyles.textButton.press);
-		} else {
-			button = new ImageButton(mStyles.skin.editor, EditorIcons.INFO.toString());
-		}
+		button = new ImageButton(mStyles.skin.editor, EditorIcons.INFO.toString());
 		mFileMenu.add(button);
 		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Menus.File.INFO, getResourceTypeName()));
 		new ButtonListener(button, tooltipListener) {
@@ -887,4 +895,6 @@ public abstract class EditorGui extends Gui {
 	private boolean mLayoutWasValid = false;
 	/** All UI-bodies for collision */
 	private ArrayList<Body> mBodies = null;
+	/** The top bar */
+	private Background mTopBar = null;
 }

@@ -60,6 +60,10 @@ class GameSceneGui extends Gui {
 			mWidgets.health.setValue(mGameScene.getPercentageHealth());
 		}
 
+		if (mWidgets.screenShot != null) {
+			mWidgets.screenShot.setDisabled(mGameScene.isPublished());
+		}
+
 		mMainTable.pack();
 	}
 
@@ -70,6 +74,7 @@ class GameSceneGui extends Gui {
 		// Create buttons
 		mOptionBar.setAlign(Horizontal.CENTER, Vertical.TOP);
 		Button button = new ImageButton((ImageButtonStyle) SkinNames.getResource(SkinNames.EditorIcons.SCREENSHOT));
+		mWidgets.screenShot = button;
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed() {
@@ -77,6 +82,9 @@ class GameSceneGui extends Gui {
 			}
 		};
 		mOptionBar.add(button);
+		if (mGameScene.isPublished()) {
+			button.setDisabled(true);
+		}
 
 		// Set bar background
 		Background background = new Background((Color) SkinNames.getResource(SkinNames.GeneralVars.BAR_UPPER_LOWER_COLOR));
@@ -139,5 +147,6 @@ class GameSceneGui extends Gui {
 		Label score = null;
 		Label multiplier = null;
 		Slider health = null;
+		Button screenShot = null;
 	}
 }

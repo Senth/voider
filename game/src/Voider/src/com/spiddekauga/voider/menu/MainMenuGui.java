@@ -54,9 +54,6 @@ public class MainMenuGui extends MenuGui {
 	private void initMainMenu() {
 		Skin skin = ResourceCacheFacade.get(InternalNames.UI_GENERAL);
 
-		// Set same size on all buttons
-		//		float maxWidth = Gdx.graphics.getWidth() * 0.66f / 3;
-
 		// Play
 		mMainTable.row();
 		Button button = new ImageButton(skin, SkinNames.General.PLAY.toString());

@@ -61,11 +61,6 @@ public class MainMenu extends Scene implements ICallerResponseListener {
 	}
 
 	@Override
-	protected boolean unloadResourcesOnDeactivate() {
-		return true;
-	}
-
-	@Override
 	protected void onActivate(Outcomes outcome, Object message) {
 		super.onActivate(outcome, message);
 
@@ -85,8 +80,8 @@ public class MainMenu extends Scene implements ICallerResponseListener {
 			}
 		}
 
-		//		mGui.dispose();
-		//		mGui.initGui();
+		mGui.dispose();
+		mGui.initGui();
 		mGui.resetValues();
 
 		// Show if logged in online
@@ -122,6 +117,9 @@ public class MainMenu extends Scene implements ICallerResponseListener {
 			ResourceLocalRepo.removeAll(ExternalTypes.GAME_SAVE);
 			ResourceLocalRepo.removeAll(ExternalTypes.GAME_SAVE_DEF);
 			ResourceLocalRepo.removeAll(ExternalTypes.PLAYER_DEF);
+		} else if (Config.Debug.isBuildOrBelow(Builds.NIGHTLY) && keycode == Input.Keys.HOME) {
+			mGui.dispose();
+			mGui.initGui();
 		}
 		return false;
 	}

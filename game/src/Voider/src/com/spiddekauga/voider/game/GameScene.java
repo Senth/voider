@@ -2,6 +2,7 @@ package com.spiddekauga.voider.game;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
@@ -147,6 +148,27 @@ public class GameScene extends WorldScene {
 	}
 
 	/**
+	 * @return true if the level is published.
+	 */
+	boolean isPublished() {
+		UUID levelDefId = null;
+
+		if (mLevel != null) {
+			levelDefId = mLevel.getDef().getId();
+		} else if (mLevelToLoad != null) {
+			levelDefId = mLevelToLoad.getId();
+		} else if (mLevelToRun != null) {
+			levelDefId = mLevelToRun.getDef().getId();
+		}
+
+		if (levelDefId != null) {
+			return ResourceLocalRepo.isPublished(levelDefId);
+		} else {
+			return false;
+		}
+	}
+
+	/**
 	 * @return true if the player is invulnerable
 	 */
 	boolean isPlayerInvulnerable() {
@@ -243,6 +265,7 @@ public class GameScene extends WorldScene {
 
 			createPlayerShip();
 			createMouseJoint();
+			mGui.resetValues();
 		}
 
 		Actor.setPlayerActor(mPlayerActor);
