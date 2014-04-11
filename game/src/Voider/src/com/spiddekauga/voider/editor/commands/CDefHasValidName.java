@@ -1,8 +1,8 @@
 package com.spiddekauga.voider.editor.commands;
 
 import com.badlogic.gdx.scenes.scene2d.ui.MsgBox;
-import com.spiddekauga.utils.commands.Command;
 import com.spiddekauga.utils.Strings;
+import com.spiddekauga.utils.commands.Command;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.editor.IActorEditor;
 import com.spiddekauga.voider.editor.IEditor;
@@ -53,6 +53,10 @@ public class CDefHasValidName extends Command {
 		} else if (name.length() < Config.Actor.NAME_LENGTH_MIN) {
 			mGui.showErrorMessage("Name must contain at least " + Config.Actor.NAME_LENGTH_MIN + " characters");
 			mMsgBox.cancel();
+		}
+		// OK was pressed and valid name, save the actor
+		else {
+			mEditor.saveDef();
 		}
 
 		return true;

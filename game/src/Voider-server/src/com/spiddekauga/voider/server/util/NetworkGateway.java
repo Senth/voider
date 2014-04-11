@@ -41,7 +41,7 @@ public class NetworkGateway {
 					FileItemStream item = itemIt.next();
 					mLogger.finest("Found field: " + item.getFieldName());
 
-					if (item.getFieldName().equals(ENTITY_NAME)) {
+					if (item.getContentType().equals("application/octet-stream") && item.getFieldName().equals(ENTITY_NAME)) {
 						mLogger.finer("Found entity");
 						InputStream inputStream = item.openStream();
 						return IOUtils.toByteArray(inputStream);

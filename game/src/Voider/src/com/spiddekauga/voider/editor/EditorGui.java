@@ -570,8 +570,7 @@ public abstract class EditorGui extends Gui {
 		content.row();
 		AlignTable depTable = new AlignTable();
 		depTable.setPaddingCellDefault(mStyles.vars.paddingDefault);
-		depTable.setAlignTable(Horizontal.CENTER, Vertical.MIDDLE);
-		depTable.setAlignRow(Horizontal.LEFT, Vertical.MIDDLE);
+		depTable.setAlign(Horizontal.LEFT, Vertical.TOP);
 		ArrayList<Def> dependencies = mEditor.getNonPublishedDependencies();
 
 		for (Def dependency : dependencies) {
@@ -591,11 +590,12 @@ public abstract class EditorGui extends Gui {
 		}
 
 		Pools.arrayList.free(dependencies);
-		depTable.layout();
 		ScrollPane scrollPane = new ScrollPane(depTable, (ScrollPaneStyle) SkinNames.getResource(SkinNames.General.SCROLL_PANE_WINDOW_BACKGROUND));
 		scrollPane.setTouchable(Touchable.enabled);
 		content.setTouchable(Touchable.childrenOnly);
 		content.add(scrollPane).setSize(width, Gdx.graphics.getHeight() * 0.4f);
+		depTable.invalidate();
+		depTable.layout();
 
 		Command saveAndPublish = new CEditorSave(mEditor, new CEditorPublish(mEditor));
 

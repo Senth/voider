@@ -114,7 +114,6 @@ class WebGateway {
 			MultipartEntityWithProgressBuilder entityBuilder = MultipartEntityWithProgressBuilder.create();
 			Charset charset = Charset.forName("UTF-8");
 			entityBuilder.setCharset(charset);
-			entityBuilder.addTextBody("Text", "This is my text", ContentType.TEXT_PLAIN);
 
 
 			// Add files
@@ -130,7 +129,7 @@ class WebGateway {
 			}
 			// Add usual binary body
 			else {
-				entityBuilder.addBinaryBody(ENTITY_NAME, entity, ContentType.DEFAULT_BINARY, null);
+				entityBuilder.addBinaryBody(ENTITY_NAME, entity, ContentType.APPLICATION_OCTET_STREAM, null);
 			}
 
 			if (progressListeners != null) {

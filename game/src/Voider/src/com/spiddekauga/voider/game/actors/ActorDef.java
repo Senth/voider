@@ -44,11 +44,11 @@ public abstract class ActorDef extends Def {
 			break;
 
 		case PLAYER:
-			mVisualVars.setColor(new Color(0.25f, 1, 0.25f, 1));
+			mVisualVars.setColor(new Color(1, 1, 1, 1));
 			break;
 
 		case STATIC_TERRAIN:
-			mVisualVars.setColor(new Color(0, 0.5f, 0.1f, 1));
+			mVisualVars.setColor(new Color(1, 1, 1, 0.5f));
 			break;
 
 		default:

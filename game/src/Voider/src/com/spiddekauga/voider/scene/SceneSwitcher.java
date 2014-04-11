@@ -477,11 +477,11 @@ public class SceneSwitcher {
 						currentScene.setLoading(false);
 					}
 				} catch (ResourceNotFoundException e) {
+					e.printStackTrace();
 					activateCurrentScene(Outcomes.LOADING_FAILED_MISSING_FILE, e.toString());
-					e.printStackTrace();
 				} catch (ResourceCorruptException e) {
-					activateCurrentScene(Outcomes.LOADING_FAILED_CORRUPT_FILE, e.toString());
 					e.printStackTrace();
+					activateCurrentScene(Outcomes.LOADING_FAILED_CORRUPT_FILE, e.toString());
 				}
 				Gdx.input.setInputProcessor(currentScene.getInputMultiplexer());
 			}

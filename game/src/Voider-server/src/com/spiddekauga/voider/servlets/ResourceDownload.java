@@ -1,6 +1,7 @@
 package com.spiddekauga.voider.servlets;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
@@ -81,6 +82,7 @@ public class ResourceDownload extends VoiderServlet {
 	 */
 	private boolean setInformationAndDependenciesToResponse(Key resourceKey) {
 		if (!mAddedResources.contains(resourceKey)) {
+			mAddedResources.add(resourceKey);
 			Entity resource = DatastoreUtils.getEntityByKey(resourceKey);
 			if (resource == null) {
 				return false;
@@ -150,7 +152,14 @@ public class ResourceDownload extends VoiderServlet {
 	 * @return all dependencies of the specified resource
 	 */
 	private List<Key> getDependencies(Key resourceKey) {
-		return DatastoreUtils.getKeys(DatastoreTables.DEPENDENCY.toString(), resourceKey);
+		List<Entity> dependencies = DatastoreUtils.getEntities(DatastoreTables.DEPENDENCY.toString(), resourceKey);
+		ArrayList<Key> keys = new ArrayList<>();
+
+		for (Entity dependency : dependencies) {
+			keys.add((Key)dependency.getProperty("dependency"));
+		}
+
+		return keys;
 	}
 
 	/** Method response */

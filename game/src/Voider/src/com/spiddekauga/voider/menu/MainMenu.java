@@ -121,6 +121,7 @@ public class MainMenu extends Scene implements ICallerResponseListener {
 			ResourceLocalRepo.removeAll(ExternalTypes.ENEMY_DEF);
 			ResourceLocalRepo.removeAll(ExternalTypes.GAME_SAVE);
 			ResourceLocalRepo.removeAll(ExternalTypes.GAME_SAVE_DEF);
+			ResourceLocalRepo.removeAll(ExternalTypes.PLAYER_DEF);
 		}
 		return false;
 	}

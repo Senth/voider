@@ -19,7 +19,7 @@ com.badlogic.gdx.graphics.Color: {
 	enemy_deactivate_trigger_line_color: { r: 1, g: 0.25, b: 0.6, a: 0.4 },
 	// Outline color for enemies that are displayed as 'will activate' when test
 	// running the level. See Float.enemy_activate_on_test_run_outline_width
-	enemy_activate_on_test_run_color: { r: 1, g: 1, b: 1, a: 1},
+	enemy_activate_on_test_run_outline_color: { r: 1, g: 1, b: 1, a: 1},
 },
 
 com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {

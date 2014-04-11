@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import com.badlogic.gdx.Gdx;
 import com.spiddekauga.utils.IOutstreamProgressListener;
@@ -198,6 +200,11 @@ public class ResourceWebRepo extends WebRepo {
 
 		if (def instanceof IResourcePng) {
 			defEntity.png = ((IResourcePng) def).getPngImage();
+		}
+
+		// Set dependencies
+		for (Entry<UUID, AtomicInteger> entry : def.getExternalDependencies().entrySet()) {
+			defEntity.dependencies.add(entry.getKey());
 		}
 	}
 

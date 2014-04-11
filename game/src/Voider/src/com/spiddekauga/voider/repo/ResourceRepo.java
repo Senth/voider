@@ -193,7 +193,7 @@ public class ResourceRepo implements ICallerResponseListener {
 	 */
 	private static final void getNonPublishedDependencies(Def def, Set<UUID> foundUuids, ArrayList<Def> dependencies) {
 		for (Entry<UUID, AtomicInteger> entry : def.getExternalDependencies().entrySet()) {
-			if (foundUuids.contains(entry.getKey()) && !ResourceLocalRepo.isPublished(def.getId())) {
+			if (!foundUuids.contains(entry.getKey()) && !ResourceLocalRepo.isPublished(def.getId())) {
 				foundUuids.add(entry.getKey());
 
 				Def dependency = ResourceCacheFacade.get(entry.getKey());
