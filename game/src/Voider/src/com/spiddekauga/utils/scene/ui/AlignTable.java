@@ -686,7 +686,7 @@ public class AlignTable extends WidgetGroup implements Disposable {
 			if (row.isVisible()) {
 				float newRowWidth = row.getWidth();
 				if (row.shallfillWidth()) {
-					newRowWidth = width;
+					newRowWidth = width - (mPadding.left + mPadding.right);
 				}
 
 				float newRowHeight = row.getHeight();
@@ -725,7 +725,7 @@ public class AlignTable extends WidgetGroup implements Disposable {
 		}
 
 		float rowHeight = 0;
-		float rowWidthMax = getWidth();
+		float rowWidthMax = super.getWidth();
 		int cRowFillHeight = 0;
 		boolean rowFillWidth = false;
 		for (Row row : mRows) {

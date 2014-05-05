@@ -834,13 +834,13 @@ public class ExploreGui extends Gui {
 		// Level name
 		Label label = new Label(level.defEntity.name, (LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_DEFAULT));
 		table.row();
-		table.add(label);
+		table.add(label).setHeight(mWidgets.var.rowHeight);
 
 		// Rating
 		RatingWidgetStyle ratingStyle = SkinNames.getResource(SkinNames.General.RATING_DEFAULT);
 		RatingWidget ratingWidget = new RatingWidget(ratingStyle, 5, Touchable.disabled);
 		table.row();
-		table.add(ratingWidget);
+		table.add(ratingWidget).setHeight(mWidgets.var.rowHeight);
 
 		return table;
 	}
