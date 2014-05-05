@@ -439,6 +439,22 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	}
 
 	/**
+	 * Sets the maximum width
+	 * @param width maximum width of the table, set to -1 for infinite width
+	 */
+	public void setMaxWidth(float width) {
+		mMaxWidth = width;
+	}
+
+	/**
+	 * Sets the maximum height
+	 * @param height maximum height of the table, set to -1 for infinite height
+	 */
+	public void setMaxHeight(float height) {
+		mMaxHeight = height;
+	}
+
+	/**
 	 * @return table width including horizontal margin
 	 */
 	public float getWidthWithMargin() {
@@ -746,7 +762,9 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	 */
 	protected float getAvailableWidth() {
 		float availableWidth = 0;
-		if ((getParent() == null || getParent().getParent() == null) && getStage() != null) {
+		if (mMaxWidth != -1) {
+			availableWidth = mMaxWidth;
+		} else if ((getParent() == null || getParent().getParent() == null) && getStage() != null) {
 			availableWidth = getStage().getWidth();
 		} else if (getParent() instanceof ScrollPane) {
 			availableWidth = getParent().getWidth();
@@ -762,7 +780,9 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	 */
 	protected float getAvailableHeight() {
 		float availableHeight = 0;
-		if ((getParent() == null || getParent().getParent() == null) && getStage() != null) {
+		if (mMaxHeight != -1) {
+			availableHeight = mMaxHeight;
+		} else if ((getParent() == null || getParent().getParent() == null) && getStage() != null) {
 			availableHeight = getStage().getHeight();
 		} else if (getParent() instanceof ScrollPane) {
 			availableHeight = getParent().getHeight();
@@ -931,6 +951,10 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	private float mActualHeight = 0;
 	/** Actual width of table */
 	private float mActualWidth = 0;
+	/** Maximum height */
+	private float mMaxHeight = -1;
+	/** Maximum width */
+	private float mMaxWidth = -1;
 	/** True if the table shall keep it's width after layout, false if it shall resize itself */
 	private boolean mKeepWidth = false;
 	/** True if the table shall keep it's height after layout, false if it shall resize itself */

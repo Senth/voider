@@ -513,15 +513,16 @@ public class ExploreGui extends Gui {
 		AlignTable wrapper = mWidgets.tag.wrapper;
 		wrapper.setMargin(topMargin, 0, 0, 0);
 		wrapper.setAlign(Horizontal.LEFT, Vertical.TOP);
+		wrapper.setName("wrapper");
 		getStage().addActor(wrapper);
-		wrapper.row().setFillHeight(true);
+		wrapper.row().setFillHeight(true).setFillWidth(true);
 		mWidgets.sort.hider.addToggleActor(wrapper);
 
 		// Tags
 		AlignTable tagTable = new AlignTable();
 		tagTable.setAlign(Horizontal.LEFT, Vertical.TOP);
 		tagTable.setBackgroundImage(new Background(backgroundColor));
-		wrapper.add(tagTable).setFillHeight(true);
+		wrapper.add(tagTable).setFillHeight(true).setFillWidth(true);
 
 		// Filter results
 		Label label = new Label("Filter Results", labelStyle);
@@ -557,15 +558,19 @@ public class ExploreGui extends Gui {
 		// Toggle table
 		ImageButton imageButton = new ImageButton((ImageButtonStyle) SkinNames.getResource(SkinNames.General.TAGS));
 		wrapper.add(imageButton);
+		float imageWidth = imageButton.getWidth();
+		final float tableWidth = ((float) SkinNames.getResource(SkinNames.GeneralVars.INFO_BAR_WIDTH)) + imageWidth;
 		HideListener hideListener = new HideListener(imageButton, true) {
 			@Override
 			protected void onShow() {
+				mWidgets.tag.wrapper.setMaxWidth(tableWidth);
 				mWidgets.tag.wrapper.layout();
 				resetContent();
 			}
 
 			@Override
 			protected void onHide() {
+				mWidgets.tag.wrapper.setMaxWidth(-1);
 				mWidgets.tag.wrapper.layout();
 				resetContent();
 			}

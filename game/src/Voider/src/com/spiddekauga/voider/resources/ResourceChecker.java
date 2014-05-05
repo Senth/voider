@@ -3,6 +3,9 @@ package com.spiddekauga.voider.resources;
 import java.util.ArrayList;
 import java.util.UUID;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
+import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.actors.PlayerActorDef;
 import com.spiddekauga.voider.repo.ResourceLocalRepo;
 
@@ -18,8 +21,21 @@ public class ResourceChecker {
 	 * are not found, this method will create new type of those resources
 	 */
 	public static void checkAndCreateResources() {
+		createFolders();
+
 		if (isMissingPlayerShips()) {
 			createPlayerShips();
+		}
+	}
+
+	/**
+	 * Create folders
+	 */
+	private static void createFolders() {
+		FileHandle folder = Gdx.files.external(Config.File.STORAGE);
+
+		if (!folder.exists()) {
+			folder.mkdirs();
 		}
 	}
 
