@@ -295,13 +295,14 @@ public class SelectDefGui extends Gui {
 	 * Initialize the right panel
 	 */
 	private void initRightPanel() {
+		float outerMargin = SkinNames.getResource(SkinNames.GeneralVars.PADDING_OUTER);
 		float topMargin = SkinNames.getResource(SkinNames.GeneralVars.BAR_UPPER_LOWER_HEIGHT);
-		topMargin += (Float) SkinNames.getResource(SkinNames.GeneralVars.PADDING_BELOW_ABOVE_BAR);
+		topMargin += outerMargin;
 		float infoWidth = SkinNames.getResource(SkinNames.GeneralVars.INFO_BAR_WIDTH);
 
 		AlignTable table = mWidgets.rightPanel;
 		table.setKeepWidth(true).setWidth(infoWidth);
-		table.setMargin(topMargin, 0, 0, 0);
+		table.setMargin(topMargin, outerMargin, outerMargin, outerMargin);
 		table.setAlign(Horizontal.RIGHT, Vertical.TOP);
 		table.setName("right-panel");
 		getStage().addActor(table);

@@ -352,13 +352,20 @@ public class SkinNames {
 		/** Separator padding */
 		PADDING_SEPARATOR(Float.class),
 		/** Left and right window padding */
+		@Deprecated
 		PADDING_WINDOW_LEFT_RIGHT(Float.class),
-		/** Padding above or below the upper or lower bar */
-		PADDING_BELOW_ABOVE_BAR(Float.class),
+		/** Outer padding of panels */
+		PADDING_OUTER(Float.class),
+		/** Inside padding of panels */
+		PADDING_INSIDE(Float.class),
 		/** Background colors for widgets */
 		WIDGET_BACKGROUND_COLOR(Color.class),
 		/** Info widget in explore and loading screen width */
 		INFO_BAR_WIDTH(Float.class),
+		/** Tag widget in explore and loading screen */
+		TAG_BAR_WIDTH(Float.class),
+		/** Stardard icon and thus row height */
+		ICON_ROW_HEIGHT(Float.class),
 		/** Second of fade in for the wait window */
 		WAIT_WINDOW_FADE_IN(Float.class),
 		/** Seconds of fade out for the wait window */

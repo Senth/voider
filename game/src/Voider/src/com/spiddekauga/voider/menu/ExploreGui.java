@@ -126,6 +126,7 @@ public class ExploreGui extends Gui {
 
 		mWidgets = new Widgets();
 
+		initVars();
 		initRightPanel();
 		initViewButtons();
 		initSort();
@@ -139,6 +140,15 @@ public class ExploreGui extends Gui {
 
 		mExploreScene.fetchInitialLevels(getSelectedSortOrder(), getSelectedTags());
 		getStage().setScrollFocus(mWidgets.content.scrollPane);
+	}
+
+	/**
+	 * Initialize variables
+	 */
+	private void initVars() {
+		mWidgets.var.outerMargin = SkinNames.getResource(SkinNames.GeneralVars.PADDING_OUTER);
+		mWidgets.var.rowHeight = SkinNames.getResource(SkinNames.GeneralVars.ICON_ROW_HEIGHT);
+		mWidgets.var.insidePadding = SkinNames.getResource(SkinNames.GeneralVars.PADDING_INSIDE);
 	}
 
 	@Override
@@ -183,6 +193,7 @@ public class ExploreGui extends Gui {
 		// Create button menu
 		AlignTable table = mWidgets.view.table;
 		table.dispose(true);
+		table.setMargin(mWidgets.var.outerMargin);
 		table.setAlign(Horizontal.LEFT, Vertical.TOP);
 		getStage().addActor(table);
 		ButtonGroup buttonGroup = new ButtonGroup();
@@ -236,6 +247,7 @@ public class ExploreGui extends Gui {
 		table.dispose(true);
 		table.setPaddingCellDefault(0, 0, 0, paddingSeparator);
 		table.setAlign(Horizontal.RIGHT, Vertical.TOP);
+		table.setMargin(mWidgets.var.outerMargin);
 		mWidgets.sort.hider.addToggleActor(table);
 		getStage().addActor(table);
 
@@ -247,7 +259,7 @@ public class ExploreGui extends Gui {
 			CheckBox checkBox = new CheckBox(sortOrder.toString(), radioStyle);
 			mWidgets.sort.buttons[sortOrder.ordinal()] = checkBox;
 			buttonGroup.add(checkBox);
-			table.add(checkBox);
+			table.add(checkBox).setHeight(mWidgets.var.rowHeight);
 			new ButtonListener(checkBox) {
 				@Override
 				protected void onChecked(boolean checked) {
@@ -301,12 +313,12 @@ public class ExploreGui extends Gui {
 	 */
 	private void initRightPanel() {
 		float topMargin = SkinNames.getResource(SkinNames.GeneralVars.BAR_UPPER_LOWER_HEIGHT);
-		topMargin += (Float) SkinNames.getResource(SkinNames.GeneralVars.PADDING_BELOW_ABOVE_BAR);
+		topMargin += mWidgets.var.outerMargin;
 		float infoWidth = SkinNames.getResource(SkinNames.GeneralVars.INFO_BAR_WIDTH);
 
 		AlignTable table = mWidgets.rightPanel;
 		table.setKeepWidth(true).setWidth(infoWidth);
-		table.setMargin(topMargin, 0, 0, 0);
+		table.setMargin(topMargin, mWidgets.var.outerMargin, mWidgets.var.outerMargin, mWidgets.var.outerMargin);
 		table.setAlign(Horizontal.RIGHT, Vertical.TOP);
 		table.setName("right-panel");
 		getStage().addActor(table);
@@ -341,6 +353,8 @@ public class ExploreGui extends Gui {
 		table.setAlignTable(Horizontal.RIGHT, Vertical.TOP);
 		table.setAlignRow(Horizontal.LEFT, Vertical.TOP);
 		table.setBackgroundImage(new Background(widgetBackgroundColor));
+		table.setPadding(mWidgets.var.insidePadding);
+		table.setName("info");
 		mWidgets.info.hider.addToggleActor(table);
 		mWidgets.rightPanel.row().setFillHeight(true).setFillWidth(true);
 		mWidgets.rightPanel.add(table).setFillHeight(true).setFillWidth(true);
@@ -372,6 +386,7 @@ public class ExploreGui extends Gui {
 
 		// Created by
 		label = new Label("Created by", labelStyle);
+		table.setAlignRow(Horizontal.LEFT, Vertical.MIDDLE);
 		table.row();
 		table.add(label);
 
@@ -503,31 +518,42 @@ public class ExploreGui extends Gui {
 	 */
 	private void initTags() {
 		float topMargin = SkinNames.getResource(SkinNames.GeneralVars.BAR_UPPER_LOWER_HEIGHT);
-		topMargin += (Float) SkinNames.getResource(SkinNames.GeneralVars.PADDING_BELOW_ABOVE_BAR);
+		topMargin += mWidgets.var.outerMargin;
 		LabelStyle labelStyle = SkinNames.getResource(SkinNames.General.LABEL_DEFAULT);
 		CheckBoxStyle checkBoxStyle = SkinNames.getResource(SkinNames.General.CHECK_BOX_DEFAULT);
 		Color backgroundColor = SkinNames.getResource(SkinNames.GeneralVars.WIDGET_BACKGROUND_COLOR);
 		TextButtonStyle textButtonStyle = SkinNames.getResource(SkinNames.General.TEXT_BUTTON_PRESS);
 
+
+
+
 		// This table wraps the tag table with the tab table
 		AlignTable wrapper = mWidgets.tag.wrapper;
-		wrapper.setMargin(topMargin, 0, 0, 0);
+		wrapper.setMargin(topMargin, mWidgets.var.outerMargin, mWidgets.var.outerMargin, mWidgets.var.outerMargin);
 		wrapper.setAlign(Horizontal.LEFT, Vertical.TOP);
 		wrapper.setName("wrapper");
 		getStage().addActor(wrapper);
-		wrapper.row().setFillHeight(true).setFillWidth(true);
+		wrapper.row().setFillHeight(true);
 		mWidgets.sort.hider.addToggleActor(wrapper);
 
 		// Tags
+		float tagTableWidth = SkinNames.getResource(SkinNames.GeneralVars.TAG_BAR_WIDTH);
 		AlignTable tagTable = new AlignTable();
 		tagTable.setAlign(Horizontal.LEFT, Vertical.TOP);
 		tagTable.setBackgroundImage(new Background(backgroundColor));
-		wrapper.add(tagTable).setFillHeight(true).setFillWidth(true);
+		tagTable.setPadding(mWidgets.var.insidePadding);
+		tagTable.setName("tags");
+		tagTable.setKeepWidth(true);
+		tagTable.setWidth(tagTableWidth - mWidgets.var.insidePadding * 2);
+		wrapper.add(tagTable).setFillHeight(true);
 
 		// Filter results
 		Label label = new Label("Filter Results", labelStyle);
 		tagTable.row();
 		tagTable.add(label);
+
+		// Height of rows
+		float rowHeight = SkinNames.getResource(SkinNames.GeneralVars.ICON_ROW_HEIGHT);
 
 		// Add tags
 		for (Tags tag : Tags.values()) {
@@ -538,7 +564,7 @@ public class ExploreGui extends Gui {
 
 
 			tagTable.row();
-			tagTable.add(checkBox);
+			tagTable.add(checkBox).setHeight(rowHeight);
 
 
 			new ButtonListener(checkBox) {
@@ -555,33 +581,32 @@ public class ExploreGui extends Gui {
 		tagTable.row().setFillHeight(true);
 
 
-		// Toggle table
+		// Toggle image
 		ImageButton imageButton = new ImageButton((ImageButtonStyle) SkinNames.getResource(SkinNames.General.TAGS));
-		wrapper.add(imageButton);
-		float imageWidth = imageButton.getWidth();
-		final float tableWidth = ((float) SkinNames.getResource(SkinNames.GeneralVars.INFO_BAR_WIDTH)) + imageWidth;
+		final float imageWidth = imageButton.getWidth();
 		HideListener hideListener = new HideListener(imageButton, true) {
 			@Override
 			protected void onShow() {
-				mWidgets.tag.wrapper.setMaxWidth(tableWidth);
+				//				mWidgets.tag.wrapper.setWidth(tableWidth);
 				mWidgets.tag.wrapper.layout();
 				resetContent();
 			}
 
 			@Override
 			protected void onHide() {
-				mWidgets.tag.wrapper.setMaxWidth(-1);
+				//				mWidgets.tag.wrapper.setWidth(imageWidth);
 				mWidgets.tag.wrapper.layout();
 				resetContent();
 			}
 		};
+		wrapper.add(imageButton);
 		hideListener.addToggleActor(tagTable);
 
 
 		// Clear button
 		Button clearbutton = new TextButton("Clear tags", textButtonStyle);
-		wrapper.row().setFillWidth(true);
-		wrapper.add(clearbutton).setFillWidth(true).setPadRight(imageButton.getWidth());
+		wrapper.row();
+		wrapper.add(clearbutton).setWidth(tagTableWidth).setPadRight(imageWidth);
 		new ButtonListener(clearbutton) {
 			@Override
 			protected void onPressed() {
@@ -854,6 +879,7 @@ public class ExploreGui extends Gui {
 		Background topBar = null;
 		Content content = new Content();
 		AlignTable rightPanel = new AlignTable();
+		Vars var = new Vars();
 
 		private static class Content {
 			AlignTable table = new AlignTable();
@@ -907,6 +933,12 @@ public class ExploreGui extends Gui {
 			TextField field = null;
 			AlignTable table = new AlignTable();
 			HideListener hider = null;
+		}
+
+		private static class Vars {
+			float outerMargin = 0;
+			float insidePadding = 0;
+			float rowHeight = 0;
 		}
 	}
 }

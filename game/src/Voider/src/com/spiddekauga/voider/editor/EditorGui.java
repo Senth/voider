@@ -796,7 +796,7 @@ public abstract class EditorGui extends Gui {
 	 */
 	protected float getFileMenuTopPadding() {
 		mFileMenu.layout();
-		return mFileMenu.getHeight() + (Float) SkinNames.getResource(SkinNames.GeneralVars.PADDING_BELOW_ABOVE_BAR);
+		return mFileMenu.getHeight() + (Float) SkinNames.getResource(SkinNames.GeneralVars.PADDING_OUTER);
 	}
 
 	/**

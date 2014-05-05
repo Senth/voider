@@ -200,11 +200,11 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	}
 
 	/**
-	 * Sets the margin for this table.
-	 * @param top padding at the top
-	 * @param right padding to the right
-	 * @param bottom padding at the bottom
-	 * @param left padding to the left
+	 * Sets the margin (outside) for this table.
+	 * @param top margin at the top
+	 * @param right margin to the right
+	 * @param bottom margin at the bottom
+	 * @param left margin to the left
 	 * @return this table for chaining
 	 */
 	public AlignTable setMargin(float top, float right, float bottom, float left) {
@@ -216,15 +216,15 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	}
 
 	/**
-	 * Set the margin for this table.
-	 * @param padding padding to the left, right, top, and bottom
+	 * Set the margin (outside) for this table.
+	 * @param margin margin to the left, right, top, and bottom
 	 * @return this table for chaining
 	 */
-	public AlignTable setMargin(float padding) {
-		mMargin.top = padding;
-		mMargin.right = padding;
-		mMargin.bottom = padding;
-		mMargin.left = padding;
+	public AlignTable setMargin(float margin) {
+		mMargin.top = margin;
+		mMargin.right = margin;
+		mMargin.bottom = margin;
+		mMargin.left = margin;
 		return this;
 	}
 
@@ -254,6 +254,63 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	 */
 	public float getMarginLeft() {
 		return mMargin.left;
+	}
+
+	/**
+	 * Sets the padding (inside) for this table.
+	 * @param top padding at the top
+	 * @param right padding to the right
+	 * @param bottom padding at the bottom
+	 * @param left padding to the left
+	 * @return this table for chaining
+	 */
+	public AlignTable setPadding(float top, float right, float bottom, float left) {
+		mPadding.top = top;
+		mPadding.right = right;
+		mPadding.bottom = bottom;
+		mPadding.left = left;
+		return this;
+	}
+
+	/**
+	 * Set the padding (inside) for this table.
+	 * @param padding padding to the left, right, top, and bottom
+	 * @return this table for chaining
+	 */
+	public AlignTable setPadding(float padding) {
+		mPadding.top = padding;
+		mPadding.right = padding;
+		mPadding.bottom = padding;
+		mPadding.left = padding;
+		return this;
+	}
+
+	/**
+	 * @return top padding
+	 */
+	public float getPaddingTop() {
+		return mPadding.top;
+	}
+
+	/**
+	 * @return right padding
+	 */
+	public float getPaddingRight() {
+		return mPadding.right;
+	}
+
+	/**
+	 * @return bottom padding
+	 */
+	public float getPaddingBottom() {
+		return mPadding.bottom;
+	}
+
+	/**
+	 * @return left padding
+	 */
+	public float getPaddingLeft() {
+		return mPadding.left;
 	}
 
 	/**
@@ -440,7 +497,7 @@ public class AlignTable extends WidgetGroup implements Disposable {
 
 	/**
 	 * Sets the maximum width
-	 * @param width maximum width of the table, set to -1 for infinite width
+	 * @param width maximum width of the table, set to 0 for infinite width
 	 */
 	public void setMaxWidth(float width) {
 		mMaxWidth = width;
@@ -448,7 +505,7 @@ public class AlignTable extends WidgetGroup implements Disposable {
 
 	/**
 	 * Sets the maximum height
-	 * @param height maximum height of the table, set to -1 for infinite height
+	 * @param height maximum height of the table, set to 0 for infinite height
 	 */
 	public void setMaxHeight(float height) {
 		mMaxHeight = height;
@@ -529,6 +586,14 @@ public class AlignTable extends WidgetGroup implements Disposable {
 			}
 		}
 
+
+		// Add padding
+		mPrefHeight += mPadding.top + mPadding.bottom;
+		mPrefWidth += mPadding.left + mPadding.right;
+		mMinHeight += mPadding.top + mPadding.bottom;
+		mMinWidth += mPadding.left + mPadding.right;
+
+
 		// Change size of table to fit the content
 		if (!mKeepWidth) {
 			setWidthSilent(width);
@@ -595,6 +660,8 @@ public class AlignTable extends WidgetGroup implements Disposable {
 			} else {
 				height = getAvailableHeight();
 			}
+		} else {
+			height -= mMargin.top + mMargin.bottom;
 		}
 
 		if (width == -1) {
@@ -603,12 +670,14 @@ public class AlignTable extends WidgetGroup implements Disposable {
 			} else {
 				width = getAvailableWidth();
 			}
+		} else {
+			width -= mMargin.left + mMargin.right;
 		}
 
 
 		float extraHeightPerFillHeightRow = 0;
 		if (cRowFillHeight > 0) {
-			extraHeightPerFillHeightRow = (height - rowHeightTotal) / cRowFillHeight;
+			extraHeightPerFillHeightRow = (height - mPadding.top - mPadding.bottom - rowHeightTotal) / cRowFillHeight;
 		}
 
 
@@ -638,6 +707,16 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	}
 
 	@Override
+	public float getHeight() {
+		return super.getHeight() + mPadding.top + mPadding.bottom;
+	}
+
+	@Override
+	public float getWidth() {
+		return super.getWidth() + mPadding.left + mPadding.right;
+	}
+
+	@Override
 	public void layout() {
 		if (!mValidCellSizes) {
 			calculatePreferredSize();
@@ -646,7 +725,7 @@ public class AlignTable extends WidgetGroup implements Disposable {
 		}
 
 		float rowHeight = 0;
-		float rowWidthMax = 0;
+		float rowWidthMax = getWidth();
 		int cRowFillHeight = 0;
 		boolean rowFillWidth = false;
 		for (Row row : mRows) {
@@ -673,14 +752,14 @@ public class AlignTable extends WidgetGroup implements Disposable {
 			// Horizontal offset
 			// If fill row, the x offset will always be the margin
 			if (rowFillWidth && !mKeepWidth) {
-				position.x = mMargin.left;
+				position.x = mMargin.left + mPadding.left;
 			}
 			// Calculate offset depending on alignment
 			else {
 				if (mTableAlign.horizontal == Horizontal.LEFT) {
-					position.x = mMargin.left;
+					position.x = mMargin.left + mPadding.left;
 				} else if (mTableAlign.horizontal == Horizontal.RIGHT) {
-					position.x = getAvailableWidth() - rowWidthMax + mMargin.left;
+					position.x = getAvailableWidth() - rowWidthMax + mMargin.left + mPadding.left;
 				} else if (mTableAlign.horizontal == Horizontal.CENTER) {
 					position.x = getAvailableWidth() * 0.5f - rowWidthMax * 0.5f;
 				}
@@ -689,14 +768,14 @@ public class AlignTable extends WidgetGroup implements Disposable {
 			// Vertical
 			// If fill height, the y offset will always be margin bottom
 			if (cRowFillHeight > 0 && !mKeepHeight) {
-				position.y = mMargin.bottom;
+				position.y = mMargin.bottom + mPadding.bottom;
 			}
 			// Calculate offset depending on alignment
 			else {
 				if (mTableAlign.vertical == Vertical.BOTTOM) {
-					position.y = mMargin.bottom;
+					position.y = mMargin.bottom + mPadding.bottom;
 				} else if (mTableAlign.vertical == Vertical.TOP) {
-					position.y = getAvailableHeight() - rowHeight + mMargin.bottom;
+					position.y = getAvailableHeight() - rowHeight + mMargin.bottom + mPadding.bottom;
 				} else if (mTableAlign.vertical == Vertical.MIDDLE) {
 					position.y = getAvailableHeight() * 0.5f - rowHeight * 0.5f;
 				}
@@ -709,7 +788,7 @@ public class AlignTable extends WidgetGroup implements Disposable {
 
 		// Layout the rows
 		Vector2 offset = Pools.vector2.obtain();
-		offset.set(0,0);
+		offset.set(mPadding.left, mPadding.top);
 		Vector2 availableRowSize = Pools.vector2.obtain();
 		availableRowSize.x = rowWidthMax;
 
@@ -726,7 +805,7 @@ public class AlignTable extends WidgetGroup implements Disposable {
 
 		Pools.vector2.freeAll(offset, availableRowSize);
 
-
+		updateBackgroundPosition();
 		updateBackgroundSize();
 
 		mValidLayout = true;
@@ -762,8 +841,8 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	 */
 	protected float getAvailableWidth() {
 		float availableWidth = 0;
-		if (mMaxWidth != -1) {
-			availableWidth = mMaxWidth;
+		if (mMaxWidth > 0) {
+			return mMaxWidth - (mPadding.left + mPadding.right);
 		} else if ((getParent() == null || getParent().getParent() == null) && getStage() != null) {
 			availableWidth = getStage().getWidth();
 		} else if (getParent() instanceof ScrollPane) {
@@ -772,6 +851,7 @@ public class AlignTable extends WidgetGroup implements Disposable {
 			availableWidth = getWidth();
 		}
 		availableWidth -= (mMargin.left + mMargin.right);
+		availableWidth -= (mPadding.left + mPadding.right);
 		return availableWidth;
 	}
 
@@ -780,8 +860,8 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	 */
 	protected float getAvailableHeight() {
 		float availableHeight = 0;
-		if (mMaxHeight != -1) {
-			availableHeight = mMaxHeight;
+		if (mMaxHeight > 0) {
+			return mMaxHeight - (mPadding.top + mPadding.bottom);
 		} else if ((getParent() == null || getParent().getParent() == null) && getStage() != null) {
 			availableHeight = getStage().getHeight();
 		} else if (getParent() instanceof ScrollPane) {
@@ -790,6 +870,7 @@ public class AlignTable extends WidgetGroup implements Disposable {
 			availableHeight = getHeight();
 		}
 		availableHeight -= (mMargin.top + mMargin.bottom);
+		availableHeight -= (mPadding.top + mPadding.bottom);
 		return availableHeight;
 	}
 
@@ -919,6 +1000,15 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	}
 
 	/**
+	 * Updates the background position
+	 */
+	private void updateBackgroundPosition() {
+		if (mBackground != null) {
+			//			mBackground.setPosition(-mPadding.left, -mPadding.bottom);
+		}
+	}
+
+	/**
 	 * Updates the background size
 	 */
 	private void updateBackgroundSize() {
@@ -952,9 +1042,9 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	/** Actual width of table */
 	private float mActualWidth = 0;
 	/** Maximum height */
-	private float mMaxHeight = -1;
+	private float mMaxHeight = 0;
 	/** Maximum width */
-	private float mMaxWidth = -1;
+	private float mMaxWidth = 0;
 	/** True if the table shall keep it's width after layout, false if it shall resize itself */
 	private boolean mKeepWidth = false;
 	/** True if the table shall keep it's height after layout, false if it shall resize itself */
@@ -969,8 +1059,10 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	private Padding mCellPaddingDefault = new Padding();
 	/** Default row padding */
 	private Padding mRowPaddingDefault = new Padding();
-	/** Margin for this table */
+	/** Outside margin for this table */
 	private Padding mMargin = new Padding();
+	/** Inside margin for this table */
+	private Padding mPadding = new Padding();
 	/** Private accessor to width */
 	private Field mfWidth = null;
 	/** Private accessor to height */

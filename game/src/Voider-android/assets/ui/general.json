@@ -31,7 +31,9 @@ java.lang.Float: {
 	/* Explore / Load */
 	
 	// Width of info bar in explore and load screen. Info bar displays name, creator, etc.
-	info_bar_width: {value: 250},
+	info_bar_width: {value: 240},
+	// Tag bar width
+	tag_bar_width: {value: 144},
 	// Maximum size of enemies/bullets on load screen (i.e. the image button) 
 	load_actor_size_max: {value: 80},
 	
@@ -46,12 +48,16 @@ java.lang.Float: {
 	padding_separator: {value: 32},
 	// Padding after a label before other text, slider, or text field. E.g. between : and [ in Name: [___]
 	padding_after_label: {value: 8},
-	// Padding below/above the upper/lower bar.
-	padding_below_above_bar: {value: 8},
+	// Outer padding
+	padding_outer: {value: 4},
+	// Inside padding
+	padding_inside: {value: 12},
 	
 	
 	/* Other */
 	
+	// Stardard icon and row height
+	icon_row_height: {value: 32},
 	// Height of upper and lower bars. See Color.bar_upper_lower_color for setting color
 	bar_upper_lower_height: {value: 40},
 	// Width of numeric text fields (e.g. after a slider)
@@ -403,6 +409,8 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 	},
 },
 
+/* TextButtonStyle */
+
 com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
 	default: {
 		down: button_default_down,
@@ -441,6 +449,47 @@ com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
 		font: default_font,
 	}
 },
+
+/* FlatButtonStyle 
+
+	default: {
+		up: button_flat_up,
+		down: button_flat_down,
+		over: button_flat_over,
+		disabled: button_flat_disabled,
+		font: default_font,
+	},
+	toggle: {
+		up: button_flat_up,
+		over: button_flat_over,
+		down: button_flat_down,
+		disabled: button_flat_disabled,
+		checked: button_flat_checked,
+		checkedOver: button_flat_checked_over,
+		font: default_font,
+	},
+	selected: {
+		up: button_flat_checked,
+		down: button_flat_checked,
+		font: default_font,
+	},
+	up: {
+		up: button_flat_up,
+		down: button_flat_up,
+		font: default_font,
+	},
+	down: {
+		up: button_flat_down,
+		down: button_flat_down,
+		font: default_font,
+	},
+	over: {
+		up: button_flat_over,
+		down: button_flat_over,
+		font: default_font,
+	}
+
+*/
 
 com.badlogic.gdx.scenes.scene2d.ui.CheckBox$CheckBoxStyle: {
 	default: {
