@@ -451,7 +451,7 @@ public class TooltipListener extends InputAdapter implements EventListener {
 
 			SceneSwitcher.addListener(this);
 		} else {
-			Gdx.app.error("TooltipListener", "Stage is not when showing window!");
+			Gdx.app.error("TooltipListener", "Stage is null when showing window!");
 		}
 	}
 
