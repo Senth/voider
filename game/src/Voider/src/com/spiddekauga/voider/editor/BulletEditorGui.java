@@ -1,23 +1,15 @@
 package com.spiddekauga.voider.editor;
 
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
-import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
-import com.spiddekauga.utils.scene.ui.HideListener;
 import com.spiddekauga.utils.scene.ui.Label;
 import com.spiddekauga.utils.scene.ui.SliderListener;
-import com.spiddekauga.utils.scene.ui.TooltipListener;
-import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Editor.Weapon;
-import com.spiddekauga.voider.editor.commands.GuiCheckCommandCreator;
 import com.spiddekauga.voider.resources.SkinNames;
-import com.spiddekauga.voider.utils.Messages;
 
 /**
  * GUI for the bullet editor
@@ -30,8 +22,8 @@ public class BulletEditorGui extends ActorGui {
 	public void initGui() {
 		super.initGui();
 
-		mMainTable.setPaddingCellDefault(mStyles.vars.paddingDefault);
-		mWeaponTable.setPreferences(mMainTable);
+		mWeaponTable.setAlignTable(Horizontal.LEFT, Vertical.TOP);
+		mWeaponTable.setAlignRow(Horizontal.LEFT, Vertical.MIDDLE);
 
 		initWeapon();
 		resetValues();
@@ -41,8 +33,6 @@ public class BulletEditorGui extends ActorGui {
 	public void dispose() {
 		mMainTable.dispose();
 		mWeaponTable.dispose();
-
-		mWeaponHider.dispose();
 
 		super.dispose();
 	}
@@ -62,34 +52,12 @@ public class BulletEditorGui extends ActorGui {
 		super.initSettingsMenu();
 
 		// Visual
-		GuiCheckCommandCreator menuChecker = new GuiCheckCommandCreator(mInvoker);
-		Button button;
-		ButtonGroup buttonGroup = new ButtonGroup();
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Visuals", mStyles.textButton.toggle);
-		} else {
-			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.VISUALS.toString());
-		}
-		button.addListener(menuChecker);
-		buttonGroup.add(button);
-		mMainTable.add(button);
-		mVisualHider.addToggleActor(getVisualTable());
-		mVisualHider.setButton(button);
-		new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Actor.Menu.VISUALS, "bullet"));
+		ImageButtonStyle buttonStyle = SkinNames.getResource(SkinNames.EditorIcons.VISUALS);
+		mSettingTabs.addTab(buttonStyle, getVisualTable(), getVisualHider());
 
 		// Weapon
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Weapon", mStyles.textButton.toggle);
-		} else {
-			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.WEAPON.toString());
-		}
-		button.addListener(menuChecker);
-		buttonGroup.add(button);
-		mMainTable.add(button);
-		mWeaponHider.addToggleActor(mWeaponTable);
-		mWeaponHider.setButton(button);
-
-		mMainTable.row();
+		buttonStyle = SkinNames.getResource(SkinNames.EditorIcons.WEAPON);
+		mSettingTabs.addTab(buttonStyle, mWeaponTable);
 	}
 
 	/**
@@ -116,16 +84,16 @@ public class BulletEditorGui extends ActorGui {
 						"current bullet. They are only here to " +
 						"test how the bullet will appear on " +
 						"different weapons.";
+		//		String warningText = "warning";
 
 		Label label = new Label(warningText, mStyles.label.highlight);
 		label.setWrap(true);
 		label.setName("warning");
-		label.setWidth(10);
-		label.setHeight(label.getHeight() * 4);
+		label.setWidth(200);
+		//		label.setHeight(label.getHeight() * 4);
 		mWeaponTable.setName("weapon");
 		mWeaponTable.row().setFillWidth(true).setAlign(Horizontal.CENTER, Vertical.TOP);
 		mWeaponTable.add(label).setFillWidth(true).setAlign(Horizontal.CENTER, Vertical.TOP);
-		mMainTable.add(mWeaponTable);
 
 
 
@@ -192,11 +160,6 @@ public class BulletEditorGui extends ActorGui {
 	// Tables
 	/** Container for testing bullet */
 	private AlignTable mWeaponTable = new AlignTable();
-
-	// Hiders
-	/** Hider for weapon table */
-	private HideListener mWeaponHider = new HideListener(true);
-
 
 	/** Bullet editor scene this GUI is bound to */
 	private BulletEditor mBulletEditor = null;

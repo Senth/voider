@@ -148,7 +148,7 @@ public class ExploreGui extends Gui {
 	private void initVars() {
 		mWidgets.var.outerMargin = SkinNames.getResource(SkinNames.GeneralVars.PADDING_OUTER);
 		mWidgets.var.rowHeight = SkinNames.getResource(SkinNames.GeneralVars.ICON_ROW_HEIGHT);
-		mWidgets.var.insidePadding = SkinNames.getResource(SkinNames.GeneralVars.PADDING_INSIDE);
+		mWidgets.var.insidePadding = SkinNames.getResource(SkinNames.GeneralVars.PADDING_INNER);
 	}
 
 	@Override
@@ -178,7 +178,7 @@ public class ExploreGui extends Gui {
 	 * Initializes the top bar
 	 */
 	private void initTopBar() {
-		mWidgets.topBar = new Background((Color) SkinNames.getResource(SkinNames.GeneralVars.BAR_UPPER_LOWER_COLOR));
+		mWidgets.topBar = new Background((Color) SkinNames.getResource(SkinNames.GeneralVars.WIDGET_BACKGROUND_COLOR));
 		mWidgets.topBar.setHeight((Float) SkinNames.getResource(SkinNames.GeneralVars.BAR_UPPER_LOWER_HEIGHT));
 		mWidgets.topBar.setWidth(Gdx.graphics.getWidth());
 		getStage().addActor(mWidgets.topBar);

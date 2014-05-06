@@ -87,7 +87,7 @@ class GameSceneGui extends Gui {
 		}
 
 		// Set bar background
-		Background background = new Background((Color) SkinNames.getResource(SkinNames.GeneralVars.BAR_UPPER_LOWER_COLOR));
+		Background background = new Background((Color) SkinNames.getResource(SkinNames.GeneralVars.WIDGET_BACKGROUND_COLOR));
 		float height = SkinNames.getResource(SkinNames.GeneralVars.BAR_UPPER_LOWER_HEIGHT);
 		background.setSize(Gdx.graphics.getWidth(), height);
 		background.setPosition(0, Gdx.graphics.getHeight() - height);

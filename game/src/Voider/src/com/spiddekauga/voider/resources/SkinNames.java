@@ -339,8 +339,6 @@ public class SkinNames {
 	 * General variables
 	 */
 	public enum GeneralVars implements ISkinNames {
-		/** Color of upper and lower bars */
-		BAR_UPPER_LOWER_COLOR(Color.class),
 		/** Upper and lower bar height */
 		BAR_UPPER_LOWER_HEIGHT(Float.class),
 		/** Maximum text width for select def scenes */
@@ -357,7 +355,7 @@ public class SkinNames {
 		/** Outer padding of panels */
 		PADDING_OUTER(Float.class),
 		/** Inside padding of panels */
-		PADDING_INSIDE(Float.class),
+		PADDING_INNER(Float.class),
 		/** Background colors for widgets */
 		WIDGET_BACKGROUND_COLOR(Color.class),
 		/** Info widget in explore and loading screen width */

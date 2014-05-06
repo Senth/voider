@@ -122,10 +122,9 @@ public abstract class EditorGui extends Gui {
 		initEditorMenu();
 		initFileMenu();
 
-		mToolMenu.row().setPadTop(getEditorMenuTopPadding());
-		mMainTable.row().setPadTop(getFileMenuTopPadding());
+		float paddingOuter = mStyles.vars.paddingOuter;
+		mToolMenu.setMargin(getTopBottomPadding(), paddingOuter, getTopBottomPadding(), paddingOuter);
 
-		initSettingsMenu();
 		initTopBar();
 	}
 
@@ -149,21 +148,26 @@ public abstract class EditorGui extends Gui {
 		mStyles.scrollPane.noBackground = SkinNames.getResource(SkinNames.General.SCROLL_PANE_DEFAULT);
 		mStyles.scrollPane.windowBackground = SkinNames.getResource(SkinNames.General.SCROLL_PANE_WINDOW_BACKGROUND);
 
+		// Colors
+		mStyles.colors.widgetBackground = SkinNames.getResource(SkinNames.GeneralVars.WIDGET_BACKGROUND_COLOR);
+
 		// Vars
 		mStyles.vars.paddingDefault = SkinNames.getResource(SkinNames.GeneralVars.PADDING_DEFAULT);
 		mStyles.vars.paddingSeparator = SkinNames.getResource(SkinNames.GeneralVars.PADDING_SEPARATOR);
 		mStyles.vars.paddingAfterLabel = SkinNames.getResource(SkinNames.GeneralVars.PADDING_AFTER_LABEL);
+		mStyles.vars.paddingOuter = SkinNames.getResource(SkinNames.GeneralVars.PADDING_OUTER);
+		mStyles.vars.paddingInner = SkinNames.getResource(SkinNames.GeneralVars.PADDING_INNER);
 		mStyles.vars.textFieldNumberWidth = SkinNames.getResource(SkinNames.GeneralVars.TEXT_FIELD_NUMBER_WIDTH);
+		mStyles.vars.barUpperLowerHeight = SkinNames.getResource(SkinNames.GeneralVars.BAR_UPPER_LOWER_HEIGHT);
 	}
 
 	/**
 	 * Initializes the top bar
 	 */
 	private void initTopBar() {
-		mTopBar = new Background((Color)SkinNames.getResource(SkinNames.GeneralVars.BAR_UPPER_LOWER_COLOR));
-		float height = SkinNames.getResource(SkinNames.GeneralVars.BAR_UPPER_LOWER_HEIGHT);
-		mTopBar.setSize(Gdx.graphics.getWidth(), height);
-		mTopBar.setPosition(0, Gdx.graphics.getHeight() - height);
+		mTopBar = new Background(mStyles.colors.widgetBackground);
+		mTopBar.setSize(Gdx.graphics.getWidth(), mStyles.vars.barUpperLowerHeight);
+		mTopBar.setPosition(0, Gdx.graphics.getHeight() - mStyles.vars.barUpperLowerHeight);
 		getStage().addActor(mTopBar);
 		mTopBar.setZIndex(0);
 	}
@@ -214,14 +218,6 @@ public abstract class EditorGui extends Gui {
 	}
 
 	/**
-	 * An optional settings menu for the editor. E.g. to switch between visuals and weapon
-	 * settings in enemy editor.
-	 */
-	protected void initSettingsMenu() {
-		// Does nothing
-	}
-
-	/**
 	 * Shows the first time menu
 	 */
 	void showFirstTimeMenu() {
@@ -241,18 +237,10 @@ public abstract class EditorGui extends Gui {
 		Button button;
 
 		// Campaign editor
-		if (Config.Gui.usesTextButtons()) {
-			if (this.getClass() == CampaignEditorGui.class) {
-				button = new TextButton("Level", mStyles.textButton.selected);
-			} else {
-				button = new TextButton("Level", mStyles.textButton.press);
-			}
+		if (this.getClass() == CampaignEditorGui.class) {
+			button = new ImageButton(mStyles.skin.editor, EditorIcons.CAMPAIGN_EDITOR_SELECTED.toString());
 		} else {
-			if (this.getClass() == CampaignEditorGui.class) {
-				button = new ImageButton(mStyles.skin.editor, EditorIcons.CAMPAIGN_EDITOR_SELECTED.toString());
-			} else {
-				button = new ImageButton(mStyles.skin.editor, EditorIcons.CAMPAIGN_EDITOR.toString());
-			}
+			button = new ImageButton(mStyles.skin.editor, EditorIcons.CAMPAIGN_EDITOR.toString());
 		}
 		TooltipListener tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Menus.Editor.CAMPAIGN,  "level"));
 		mEditorMenu.add(button);
@@ -267,18 +255,10 @@ public abstract class EditorGui extends Gui {
 
 
 		// Level editor
-		if (Config.Gui.usesTextButtons()) {
-			if (this.getClass() == LevelEditorGui.class) {
-				button = new TextButton("Level", mStyles.textButton.selected);
-			} else {
-				button = new TextButton("Level", mStyles.textButton.press);
-			}
+		if (this.getClass() == LevelEditorGui.class) {
+			button = new ImageButton(mStyles.skin.editor, EditorIcons.LEVEL_EDITOR_SELECTED.toString());
 		} else {
-			if (this.getClass() == LevelEditorGui.class) {
-				button = new ImageButton(mStyles.skin.editor, EditorIcons.LEVEL_EDITOR_SELECTED.toString());
-			} else {
-				button = new ImageButton(mStyles.skin.editor, EditorIcons.LEVEL_EDITOR.toString());
-			}
+			button = new ImageButton(mStyles.skin.editor, EditorIcons.LEVEL_EDITOR.toString());
 		}
 		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Menus.Editor.LEVEL,  "level"));
 		mEditorMenu.add(button);
@@ -293,18 +273,10 @@ public abstract class EditorGui extends Gui {
 
 
 		// Enemy editor
-		if (Config.Gui.usesTextButtons()) {
-			if (this.getClass() == EnemyEditorGui.class) {
-				button = new TextButton("Enemy", mStyles.textButton.selected);
-			} else {
-				button = new TextButton("Enemy", mStyles.textButton.press);
-			}
+		if (this.getClass() == EnemyEditorGui.class) {
+			button = new ImageButton(mStyles.skin.editor, EditorIcons.ENEMY_EDITOR_SELECTED.toString());
 		} else {
-			if (this.getClass() == EnemyEditorGui.class) {
-				button = new ImageButton(mStyles.skin.editor, EditorIcons.ENEMY_EDITOR_SELECTED.toString());
-			} else {
-				button = new ImageButton(mStyles.skin.editor, EditorIcons.ENEMY_EDITOR.toString());
-			}
+			button = new ImageButton(mStyles.skin.editor, EditorIcons.ENEMY_EDITOR.toString());
 		}
 		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Menus.Editor.ENEMY,  "enemy"));
 		mEditorMenu.add(button);
@@ -319,18 +291,10 @@ public abstract class EditorGui extends Gui {
 
 
 		// Bullet editor
-		if (Config.Gui.usesTextButtons()) {
-			if (this.getClass() == BulletEditorGui.class) {
-				button = new TextButton("Bullet", mStyles.textButton.selected);
-			} else {
-				button = new TextButton("Bullet", mStyles.textButton.press);
-			}
+		if (this.getClass() == BulletEditorGui.class) {
+			button = new ImageButton(mStyles.skin.editor, EditorIcons.BULLET_EDITOR_SELECTED.toString());
 		} else {
-			if (this.getClass() == BulletEditorGui.class) {
-				button = new ImageButton(mStyles.skin.editor, EditorIcons.BULLET_EDITOR_SELECTED.toString());
-			} else {
-				button = new ImageButton(mStyles.skin.editor, EditorIcons.BULLET_EDITOR.toString());
-			}
+			button = new ImageButton(mStyles.skin.editor, EditorIcons.BULLET_EDITOR.toString());
 		}
 		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Menus.Editor.BULLET,  "bullet"));
 		mEditorMenu.add(button).setPadRight(mStyles.vars.paddingSeparator);
@@ -782,35 +746,20 @@ public abstract class EditorGui extends Gui {
 	}
 
 	/**
-	 * Calculate top editor menu padding
-	 * @return pixel top padding for other menus that start from the top
+	 * Calculate top and bottom margin
+	 * @pre initStyles() have to be called before using this method
+	 * @return number of pixels to pad above and below the bars
 	 */
-	protected float getEditorMenuTopPadding() {
-		mEditorMenu.layout();
-		return mEditorMenu.getHeight() + (Float) SkinNames.getResource(SkinNames.EditorVars.PADDING_BETWEEN_BAR_AND_TOOLS);
-	}
-
-	/**
-	 * Calculate padding for the main table below the file menu. I.e. file menu padding
-	 * @return number of pixels to pad the main table with.
-	 */
-	protected float getFileMenuTopPadding() {
-		mFileMenu.layout();
-		return mFileMenu.getHeight() + (Float) SkinNames.getResource(SkinNames.GeneralVars.PADDING_OUTER);
-	}
-
-	/**
-	 * Calculate maximum tool menu height. Uses editor menu top padding.
-	 * @return maximum tool menu height
-	 */
-	protected float getMaximumToolMenuHeight() {
-		return Gdx.graphics.getHeight() - getEditorMenuTopPadding();
+	protected float getTopBottomPadding() {
+		return mStyles.vars.barUpperLowerHeight + mStyles.vars.paddingOuter;
 	}
 
 	/**
 	 * @return resource type name
 	 */
 	protected abstract String getResourceTypeName();
+
+
 
 	/**
 	 * Container for all ui styles
@@ -825,12 +774,20 @@ public abstract class EditorGui extends Gui {
 		CheckBox checkBox = new CheckBox();
 		ScrollPane scrollPane = new ScrollPane();
 		Variables vars = new Variables();
+		Colors colors = new Colors();
 
 		static class Variables {
 			float paddingDefault = 0;
 			float paddingSeparator = 0;
 			float paddingAfterLabel = 0;
+			float paddingOuter = 0;
+			float paddingInner = 0;
+			float barUpperLowerHeight = 0;
 			float textFieldNumberWidth = 0;
+		}
+
+		static class Colors {
+			Color widgetBackground = null;
 		}
 
 		static class TextButton {

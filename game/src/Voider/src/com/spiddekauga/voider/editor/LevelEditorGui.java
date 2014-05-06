@@ -617,7 +617,7 @@ class LevelEditorGui extends EditorGui {
 
 
 		// Add buttons to tool
-		float maximumToolMenuHeight = getMaximumToolMenuHeight();
+		float maximumToolMenuHeight = mToolMenu.getAvailableHeight();
 		float totalHeight = 0;
 
 		AlignTable column = new AlignTable();

@@ -839,11 +839,13 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	/**
 	 * @return available width of the table
 	 */
-	protected float getAvailableWidth() {
+	public float getAvailableWidth() {
 		float availableWidth = 0;
 		if (mMaxWidth > 0) {
 			return mMaxWidth - (mPadding.left + mPadding.right);
 		} else if ((getParent() == null || getParent().getParent() == null) && getStage() != null) {
+			availableWidth = getStage().getWidth();
+		} else if (getParent() instanceof TabWidget) {
 			availableWidth = getStage().getWidth();
 		} else if (getParent() instanceof ScrollPane) {
 			availableWidth = getParent().getWidth();
@@ -858,11 +860,13 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	/**
 	 * @return available height of the table
 	 */
-	protected float getAvailableHeight() {
+	public float getAvailableHeight() {
 		float availableHeight = 0;
 		if (mMaxHeight > 0) {
 			return mMaxHeight - (mPadding.top + mPadding.bottom);
 		} else if ((getParent() == null || getParent().getParent() == null) && getStage() != null) {
+			availableHeight = getStage().getHeight();
+		} else if (getParent() instanceof TabWidget) {
 			availableHeight = getStage().getHeight();
 		} else if (getParent() instanceof ScrollPane) {
 			availableHeight = getParent().getHeight();

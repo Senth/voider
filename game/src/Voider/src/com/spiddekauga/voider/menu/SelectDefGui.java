@@ -109,7 +109,7 @@ public class SelectDefGui extends Gui {
 	 * Initializes the top bar
 	 */
 	private void initTopBar() {
-		mWidgets.topBar = new Background((Color) SkinNames.getResource(SkinNames.GeneralVars.BAR_UPPER_LOWER_COLOR));
+		mWidgets.topBar = new Background((Color) SkinNames.getResource(SkinNames.GeneralVars.WIDGET_BACKGROUND_COLOR));
 		mWidgets.topBar.setHeight((Float) SkinNames.getResource(SkinNames.GeneralVars.BAR_UPPER_LOWER_HEIGHT));
 		mWidgets.topBar.setWidth(Gdx.graphics.getWidth());
 		getStage().addActor(mWidgets.topBar);

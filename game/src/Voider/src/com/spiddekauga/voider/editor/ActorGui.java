@@ -12,11 +12,13 @@ import com.spiddekauga.utils.commands.Invoker;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
+import com.spiddekauga.utils.scene.ui.Background;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.utils.scene.ui.HideListener;
 import com.spiddekauga.utils.scene.ui.Label;
 import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
 import com.spiddekauga.utils.scene.ui.SliderListener;
+import com.spiddekauga.utils.scene.ui.TabWidget;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
 import com.spiddekauga.utils.scene.ui.TooltipListener;
 import com.spiddekauga.voider.Config;
@@ -46,8 +48,8 @@ public abstract class ActorGui extends EditorGui {
 		mWidgets.visualToolMenu.table.dispose();
 
 		mDrawToolHider.dispose();
-		mCollisionHider.dispose();
-		mVisualHider.dispose();
+		mWidgets.collision.hider.dispose();
+		mWidgets.visual.hider.dispose();
 
 		super.dispose();
 	}
@@ -56,13 +58,17 @@ public abstract class ActorGui extends EditorGui {
 	public void initGui() {
 		super.initGui();
 
-		mWidgets.collision.table.setPreferences(mMainTable);
-		mWidgets.visual.table.setPreferences(mMainTable);
 		mWidgets.visualToolMenu.table.setPreferences(mToolMenu);
+
+		// Tabs
+		mWidgets.collision.table.setAlignTable(Horizontal.LEFT, Vertical.TOP);
+		mWidgets.collision.table.setAlignRow(Horizontal.LEFT, Vertical.MIDDLE);
+		mWidgets.visual.table.setPreferences(mWidgets.collision.table);
 
 		initVisual();
 		initToolMenu();
 		initInfoTable();
+		initSettingsMenu();
 	}
 
 	@Override
@@ -86,6 +92,22 @@ public abstract class ActorGui extends EditorGui {
 		}
 
 		resetTools();
+	}
+
+	/**
+	 * An optional settings menu for the editor. E.g. to switch between visuals and weapon
+	 * settings in enemy editor.
+	 */
+	protected void initSettingsMenu() {
+		mSettingTabs.setMargin(getTopBottomPadding(), mStyles.vars.paddingOuter, getTopBottomPadding(), mStyles.vars.paddingOuter)
+		.setAlign(Horizontal.RIGHT, Vertical.TOP)
+		.setTabAlign(Horizontal.RIGHT)
+		.setFillHeight(true)
+		.setBackground(new Background(mStyles.colors.widgetBackground))
+		.setPaddingContent(mStyles.vars.paddingInner)
+		.setContentWidth((Float) SkinNames.getResource(SkinNames.GeneralVars.INFO_BAR_WIDTH));
+
+		getStage().addActor(mSettingTabs);
 	}
 
 	/**
@@ -199,7 +221,7 @@ public abstract class ActorGui extends EditorGui {
 	 * Initializes visual options
 	 */
 	protected void initVisual() {
-		mVisualHider.addToggleActor(mWidgets.visual.table);
+		mWidgets.visual.hider.addToggleActor(mWidgets.visual.table);
 
 
 		// Starting angle
@@ -491,12 +513,10 @@ public abstract class ActorGui extends EditorGui {
 		};
 
 
-		mVisualHider.addChild(circleHider);
-		mVisualHider.addChild(rectangleHider);
-		mVisualHider.addChild(triangleHider);
-		mVisualHider.addChild(mDrawToolHider);
-
-		mMainTable.add(mWidgets.visual.table);
+		mWidgets.visual.hider.addChild(circleHider);
+		mWidgets.visual.hider.addChild(rectangleHider);
+		mWidgets.visual.hider.addChild(triangleHider);
+		mWidgets.visual.hider.addChild(mDrawToolHider);
 	}
 
 	/**
@@ -717,8 +737,6 @@ public abstract class ActorGui extends EditorGui {
 				mActorEditor.setDestroyOnCollide(checked);
 			}
 		};
-
-		mMainTable.add(mWidgets.collision.table);
 	}
 
 	/**
@@ -726,6 +744,13 @@ public abstract class ActorGui extends EditorGui {
 	 */
 	protected AlignTable getVisualTable() {
 		return mWidgets.visual.table;
+	}
+
+	/**
+	 * @return visual hider
+	 */
+	protected HideListener getVisualHider() {
+		return mWidgets.visual.hider;
 	}
 
 	/**
@@ -803,6 +828,7 @@ public abstract class ActorGui extends EditorGui {
 		 */
 		static class VisualWidgets {
 			AlignTable table = new AlignTable();
+			HideListener hider = new HideListener(true);
 
 			Slider startAngle = null;
 			Slider rotationSpeed = null;
@@ -842,19 +868,17 @@ public abstract class ActorGui extends EditorGui {
 		static class CollisionWidgets {
 			Slider damage = null;
 			Button destroyOnCollide = null;
-			protected AlignTable table = new AlignTable();
+			AlignTable table = new AlignTable();
+			HideListener hider = new HideListener(true);
 		}
 	}
 
-	// Hiders
-	/** Hides visual table */
-	protected HideListener mVisualHider = new HideListener(true);
-	/** Hides collision options */
-	protected HideListener mCollisionHider = new HideListener(true);
 	/** Hides custom draw tool menu */
 	private HideListener mDrawToolHider = null;
 	/** Invoker */
 	protected Invoker mInvoker = null;
+	/** Setting widget */
+	protected TabWidget mSettingTabs = new TabWidget();
 
 	/** All widget variables */
 	private InnerWidgets mWidgets = new InnerWidgets();
