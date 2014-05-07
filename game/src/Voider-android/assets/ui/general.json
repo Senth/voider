@@ -9,7 +9,7 @@ com.badlogic.gdx.graphics.g2d.BitmapFont: {
  * just divide it with 255. I.e. 70 / 255 = ~0.275
  */
 com.badlogic.gdx.graphics.Color: {
-	// Color of the upper and lower bars, see Float.bar_upper_lower_height for height
+	// DEPRECATED, use widget background color. Color of the upper and lower bars, see Float.bar_upper_lower_height for height
 	bar_upper_lower_color: { r: 0.3, g: 0.3, b: 0.3, a: 1 },
 	// Color used as background for various widgets
 	widget_background_color: { r: 0.3, g: 0.3, b: 0.3, a: 1 },
@@ -42,6 +42,7 @@ java.lang.Float: {
 	
 	// Currently used on each element in tab content
 	padding_default: {value: 4},
+	// DEPRECATED 'padding_inside will be used instead'
 	// Padding in windows so that the content doesn't start directly at margin
 	padding_window_left_right: {value: 8},
 	// Used to separate group of widgets, e.g. tool groups
@@ -50,15 +51,18 @@ java.lang.Float: {
 	padding_after_label: {value: 8},
 	// Outer padding
 	padding_outer: {value: 4},
+	// DEPRECATED!!! Changed name to padding_inner
 	// Inside padding
 	padding_inside: {value: 12},
+	// Inner padding
+	padding_inner: {value: 12},
 	
 	
 	/* Other */
 	
 	// Stardard icon and row height
 	icon_row_height: {value: 32},
-	// Height of upper and lower bars. See Color.bar_upper_lower_color for setting color
+	// Height of upper and lower bars.
 	bar_upper_lower_height: {value: 40},
 	// Width of numeric text fields (e.g. after a slider)
 	text_field_number_width: {value: 64},
