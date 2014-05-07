@@ -141,7 +141,6 @@ public class BulletEditorGui extends ActorGui {
 		label.setWrap(true);
 		label.setWidth(240);
 		label.layout();
-		label.layout();
 		mWeaponTable.setName("weapon");
 		mWeaponTable.row().setFillWidth(true).setAlign(Horizontal.CENTER, Vertical.TOP);
 		mWeaponTable.add(label).setFillWidth(true).setAlign(Horizontal.CENTER, Vertical.TOP);

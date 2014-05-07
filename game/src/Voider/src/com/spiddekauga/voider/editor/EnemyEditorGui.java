@@ -1087,7 +1087,6 @@ public class EnemyEditorGui extends ActorGui {
 			Slider aiRandomTimeMax = null;
 		}
 
-
 		static class WeaponWidgets {
 			Button on = null;
 			Button off = null;

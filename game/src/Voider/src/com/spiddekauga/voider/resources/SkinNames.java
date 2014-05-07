@@ -537,6 +537,10 @@ public class SkinNames {
 		TEXT_BUTTON_SELECTED(TextButtonStyle.class, "selected"),
 		/** Text button that can toggle */
 		TEXT_BUTTON_TOGGLE(TextButtonStyle.class, "toggle"),
+		/** Flat text button */
+		TEXT_BUTTON_FLAT_PRESS(TextButtonStyle.class, "flat_press"),
+		/** Flat toggleable text button */
+		TEXT_BUTTON_FLAT_TOGGLE(TextButtonStyle.class, "flat_toggle"),
 		/** Text field default */
 		TEXT_FIELD_DEFAULT(TextFieldStyle.class, "default"),
 		/** Window default style without title */

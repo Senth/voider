@@ -15,6 +15,14 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent;
  */
 public abstract class ButtonListener implements EventListener {
 	/**
+	 * Creates an empty button listener. You need to call {@link #setButton(Button)}
+	 * before you can use this listener appropriately
+	 */
+	public ButtonListener() {
+		// Does nothing
+	}
+
+	/**
 	 * Creates a button listener for the specified button. Always
 	 * calls onChange. Adds this class to the button automatically as a listener.
 	 * @param button the button to listen to
@@ -32,10 +40,26 @@ public abstract class ButtonListener implements EventListener {
 	 * @param tooltipListener the GUI to check if the button shall be pressed.
 	 */
 	public ButtonListener(Button button, TooltipListener tooltipListener) {
+		setButton(button);
+		mTooltipListener = tooltipListener;
+	}
+
+	/**
+	 * Sets the button for this listener.
+	 * @param button the button to listen to
+	 */
+	public void setButton(Button button) {
+		if (button == null) {
+			throw new IllegalArgumentException("button cannot be null");
+		}
+
+		if (mButton != null) {
+			mButton.removeListener(this);
+		}
+
 		mButton = button;
 		mButton.addListener(this);
 		mCheckedLast = mButton.isChecked();
-		mTooltipListener = tooltipListener;
 	}
 
 	@Override

@@ -37,7 +37,7 @@ import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.utils.scene.ui.DisableListener;
 import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
 import com.spiddekauga.utils.scene.ui.TooltipListener;
-import com.spiddekauga.utils.scene.ui.UiFactory;
+import com.spiddekauga.utils.scene.ui.UiPanelFactory;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.editor.commands.CEditorDuplicate;
 import com.spiddekauga.voider.editor.commands.CEditorLoad;
@@ -834,7 +834,7 @@ public abstract class EditorGui extends Gui {
 	/** All skins and styles */
 	protected UiStyles mStyles = new UiStyles();
 	/** UI Factory for creating UI elements */
-	protected UiFactory mUiFactory = new UiFactory();
+	protected UiPanelFactory mUiFactory = new UiPanelFactory();
 
 	/** UI elements that should be disabled during publish */
 	protected ArrayList<Actor> mDisabledWhenPublished = new ArrayList<>();

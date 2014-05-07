@@ -4,20 +4,22 @@ import java.util.ArrayList;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
+import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox.CheckBoxStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
-import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane.ScrollPaneStyle;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider.SliderStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
 import com.spiddekauga.utils.commands.Invoker;
-import com.spiddekauga.voider.resources.InternalNames;
-import com.spiddekauga.voider.resources.ResourceCacheFacade;
+import com.spiddekauga.voider.editor.commands.GuiCheckCommandCreator;
 import com.spiddekauga.voider.resources.SkinNames;
+import com.spiddekauga.voider.resources.SkinNames.ISkinNames;
 import com.spiddekauga.voider.utils.Pools;
 
 /**
@@ -26,12 +28,12 @@ import com.spiddekauga.voider.utils.Pools;
  * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public class UiFactory {
+public class UiPanelFactory {
 	/**
 	 * Creates an empty UI Factory. Call {@link #init()} to initialize
 	 * all styles
 	 */
-	public UiFactory() {
+	public UiPanelFactory() {
 		// Does nothing
 	}
 
@@ -46,8 +48,8 @@ public class UiFactory {
 	 * @param maxSliderListener slider listener for the max slider
 	 * @param table adds all UI elements to this table
 	 * @param tooltipText optional tooltip message for all elements (if not null)
-	 * @param hider optional hider to add the elments to (if not null)
-	 * @param actorList optional adds all elements to this list (if not null)
+	 * @param hider optional hider to add the elements to (if not null)
+	 * @param createdActors optional adds all created elements to this list (if not null)
 	 * @param invoker optional adds the ability to undo changes (if not null)
 	 * @return Min and max sliders in an array in that order.
 	 */
@@ -61,25 +63,19 @@ public class UiFactory {
 			AlignTable table,
 			String tooltipText,
 			GuiHider hider,
-			ArrayList<Actor> actorList,
+			ArrayList<Actor> createdActors,
 			Invoker invoker
 			) {
 		@SuppressWarnings("unchecked")
 		ArrayList<Slider> sliders = Pools.arrayList.obtain();
 
 		// Label
-		Label label = addLabelSection(text, table, hider);
+		Label label = addLabelSection(text, table, null);
+		doExtraActionsOnActors(tooltipText, hider, createdActors, label);
 
-		if (actorList != null) {
-			actorList.add(label);
-		}
-
-		if (tooltipText != null) {
-			new TooltipListener(label, tooltipText);
-		}
-
-		Slider minSlider = addSlider("Min", min, max, stepSize, minSliderListener, table, tooltipText, hider, actorList, invoker);
-		Slider maxSlider = addSlider("Max", min, max, stepSize, maxSliderListener, table, tooltipText, hider, actorList, invoker);
+		// Sliders
+		Slider minSlider = addSlider("Min", min, max, stepSize, minSliderListener, table, tooltipText, hider, createdActors, invoker);
+		Slider maxSlider = addSlider("Max", min, max, stepSize, maxSliderListener, table, tooltipText, hider, createdActors, invoker);
 		sliders.add(minSlider);
 		sliders.add(maxSlider);
 
@@ -99,7 +95,7 @@ public class UiFactory {
 	 * @param table adds all UI elements to this table
 	 * @param tooltipText optional tooltip message for all elements (if not null)
 	 * @param hider optional hider to add the elements to (if not null)
-	 * @param actorList optional adds all elements to this list (if not null)
+	 * @param createdActors optional adds all created elements to this list (if not null)
 	 * @param invoker optional adds the ability to undo changes (if not null)
 	 * @return created slider element
 	 */
@@ -112,7 +108,7 @@ public class UiFactory {
 			AlignTable table,
 			String tooltipText,
 			GuiHider hider,
-			ArrayList<Actor> actorList,
+			ArrayList<Actor> createdActors,
 			Invoker invoker
 			) {
 		if (mStyles == null) {
@@ -143,31 +139,10 @@ public class UiFactory {
 		// Set slider listener
 		sliderListener.init(slider, textField, invoker);
 
-		// Add tooltip
-		if (tooltipText != null) {
-			if (label != null) {
-				new TooltipListener(label, tooltipText);
-			}
-			new TooltipListener(slider, tooltipText);
-			new TooltipListener(textField, tooltipText);
-		}
-
-		// Add to hider
-		if (hider != null) {
-			if (label != null) {
-				hider.addToggleActor(label);
-			}
-			hider.addToggleActor(slider);
-			hider.addToggleActor(textField);
-		}
-
-		// Add to actor list
-		if (actorList != null) {
-			if (label != null) {
-				actorList.add(label);
-			}
-			actorList.add(slider);
-			actorList.add(textField);
+		if (label != null) {
+			doExtraActionsOnActors(tooltipText, hider, createdActors, label, slider, textField);
+		} else {
+			doExtraActionsOnActors(tooltipText, hider, createdActors, slider, textField);
 		}
 
 		return slider;
@@ -193,41 +168,164 @@ public class UiFactory {
 	}
 
 	/**
+	 * Adds a single checkbox with text before the checkbox
+	 * @param text the text to display before the checkbox
+	 * @param listener button listener that listens when it's checked etc
+	 * @param table the table to add the checkbox to
+	 * @param tooltipText optional tooltip message for all elements (if not null)
+	 * @param hider optional hider to add the elements to (if not null)
+	 * @param createdActors optional adds all created elements to this list (if not null)
+	 * @return created checkbox
+	 */
+	public CheckBox addCheckBox(
+			String text,
+			ButtonListener listener,
+			AlignTable table,
+			String tooltipText,
+			GuiHider hider,
+			ArrayList<Actor> createdActors
+			) {
+
+		table.row().setFillWidth(true);
+		Label label = new Label(text, mStyles.label.standard);
+		table.add(label).setFillWidth(true);
+
+		CheckBox checkBox = new CheckBox("", mStyles.checkBox.checkBox);
+		table.add(checkBox);
+
+		listener.setButton(checkBox);
+
+		doExtraActionsOnActors(tooltipText, hider, createdActors, label, checkBox);
+
+		return checkBox;
+	}
+
+	/**
+	 * Create tabs inside an panel.
+	 * @param table adds the tabs to this table
+	 * @param parentHider parent hider for all tab hiders
+	 * @param tabs tab information for all tabs to create, will set the button for these
+	 * @param createdActors optional adds all tabs to this list (if not null)
+	 * @param invoker optional ability to undo which tab is selected (if not null)
+	 */
+	public void addTabs(AlignTable table, GuiHider parentHider, ArrayList<TabWrapper> tabs, ArrayList<Actor> createdActors, Invoker invoker) {
+		GuiCheckCommandCreator checkCommandCreator = null;
+		if (invoker != null) {
+			checkCommandCreator = new GuiCheckCommandCreator(invoker);
+		}
+		ButtonGroup buttonGroup = new ButtonGroup();
+
+		table.row();
+
+		for (TabWrapper tab : tabs) {
+			tab.button = new ImageButton((ImageButtonStyle) SkinNames.getResource(tab.imageName));
+			table.add(tab.button);
+			buttonGroup.add(tab.button);
+			tab.hider.setButton(tab.button);
+			parentHider.addChild(tab.hider);
+
+			if (checkCommandCreator != null) {
+				tab.button.addListener(checkCommandCreator);
+			}
+
+			if (createdActors != null) {
+				createdActors.add(tab.button);
+			}
+
+			if (tab.tooltipText != null) {
+				new TooltipListener(tab.button, tab.tooltipText);
+			}
+		}
+	}
+
+	/**
+	 * Set tooltip, add actors to hider, add to created actors, or any combination.
+	 * @param tooltipText creates a tooltip for all actors (if not null)
+	 * @param hider add all actors to the hider (if not null)
+	 * @param createdActors add all actors to this list (if not null)
+	 * @param actors all actors that should be processed
+	 */
+	private void doExtraActionsOnActors(String tooltipText, GuiHider hider, ArrayList<Actor> createdActors, Actor... actors) {
+		// Tooltip
+		if (tooltipText != null) {
+			for (Actor actor : actors) {
+				new TooltipListener(actor, tooltipText);
+			}
+		}
+
+		// Hider
+		if (hider != null) {
+			for (Actor actor : actors) {
+				hider.addToggleActor(actor);
+			}
+		}
+
+		// Add created actors
+		if (createdActors != null) {
+			for (Actor actor : actors) {
+				createdActors.add(actor);
+			}
+		}
+	}
+
+	/**
 	 * Initializes the UiFactory
 	 */
 	public void init() {
 		mStyles = new UiStyles();
 
-		mStyles.skin.general = ResourceCacheFacade.get(InternalNames.UI_GENERAL);
-		mStyles.skin.editor = ResourceCacheFacade.get(InternalNames.UI_EDITOR);
 		mStyles.textButton.press = SkinNames.getResource(SkinNames.General.TEXT_BUTTON_PRESS);
 		mStyles.textButton.toggle = SkinNames.getResource(SkinNames.General.TEXT_BUTTON_TOGGLE);
 		mStyles.textButton.selected = SkinNames.getResource(SkinNames.General.TEXT_BUTTON_SELECTED);
 		mStyles.slider.standard = SkinNames.getResource(SkinNames.General.SLIDER_DEFAULT);
 		mStyles.textField.standard = SkinNames.getResource(SkinNames.General.TEXT_FIELD_DEFAULT);
 		mStyles.label.standard = SkinNames.getResource(SkinNames.General.LABEL_DEFAULT);
-		mStyles.label.error = SkinNames.getResource(SkinNames.General.LABEL_ERROR);
-		mStyles.label.highlight = SkinNames.getResource(SkinNames.General.LABEL_HIGHLIGHT);
-		mStyles.label.success = SkinNames.getResource(SkinNames.General.LABEL_SUCCESS);
 		mStyles.label.panelSection = SkinNames.getResource(SkinNames.General.LABEL_PANEL_SECTION);
 		mStyles.checkBox.checkBox = SkinNames.getResource(SkinNames.General.CHECK_BOX_DEFAULT);
 		mStyles.checkBox.radio = SkinNames.getResource(SkinNames.General.CHECK_BOX_RADIO);
-		mStyles.scrollPane.noBackground = SkinNames.getResource(SkinNames.General.SCROLL_PANE_DEFAULT);
-		mStyles.scrollPane.windowBackground = SkinNames.getResource(SkinNames.General.SCROLL_PANE_WINDOW_BACKGROUND);
 
 		// Colors
 		mStyles.colors.widgetBackground = SkinNames.getResource(SkinNames.GeneralVars.WIDGET_BACKGROUND_COLOR);
 
 		// Vars
-		mStyles.vars.paddingDefault = SkinNames.getResource(SkinNames.GeneralVars.PADDING_DEFAULT);
-		mStyles.vars.paddingSeparator = SkinNames.getResource(SkinNames.GeneralVars.PADDING_SEPARATOR);
-		mStyles.vars.paddingAfterLabel = SkinNames.getResource(SkinNames.GeneralVars.PADDING_AFTER_LABEL);
-		mStyles.vars.paddingOuter = SkinNames.getResource(SkinNames.GeneralVars.PADDING_OUTER);
 		mStyles.vars.paddingInner = SkinNames.getResource(SkinNames.GeneralVars.PADDING_INNER);
 		mStyles.vars.textFieldNumberWidth = SkinNames.getResource(SkinNames.GeneralVars.TEXT_FIELD_NUMBER_WIDTH);
-		mStyles.vars.barUpperLowerHeight = SkinNames.getResource(SkinNames.GeneralVars.BAR_UPPER_LOWER_HEIGHT);
 		mStyles.vars.sliderWidth = SkinNames.getResource(SkinNames.GeneralVars.SLIDER_WIDTH);
 		mStyles.vars.sliderLabelWidth = SkinNames.getResource(SkinNames.GeneralVars.SLIDER_LABEL_WIDTH);
+
+	}
+
+	/**
+	 * Tab information wrapper
+	 */
+	public static class TabWrapper {
+		/**
+		 * Creates empty (and invalid) tab information wrapper
+		 */
+		public TabWrapper() {
+			// Does nothing
+		}
+
+		/**
+		 * Initializes a correct TabWrapper
+		 * @param imageName name of the button image
+		 * @param hider hideListener for this button
+		 * @param tooltipText optional tooltip message (if not null)
+		 */
+		public TabWrapper(ISkinNames imageName, HideListener hider, String tooltipText) {
+			this.imageName = imageName;
+			this.hider = hider;
+			this.tooltipText = tooltipText;
+		}
+
+		/** Image name */
+		public ISkinNames imageName = null;
+		/** Optional tooltip text */
+		public String tooltipText = null;
+		/** Hider for the tab */
+		public HideListener hider = null;
+		/** Button that was created for this tab */
+		public ImageButton button = null;
 	}
 
 	/**
@@ -238,20 +336,13 @@ public class UiFactory {
 		TextButtons textButton = new TextButtons();
 		Sliders slider = new Sliders();
 		TextFields textField = new TextFields();
-		Skins skin = new Skins();
 		Labels label = new Labels();
 		CheckBoxes checkBox = new CheckBoxes();
-		ScrollPanes scrollPane = new ScrollPanes();
 		Variables vars = new Variables();
 		Colors colors = new Colors();
 
 		static class Variables {
-			float paddingDefault = 0;
-			float paddingSeparator = 0;
-			float paddingAfterLabel = 0;
-			float paddingOuter = 0;
 			float paddingInner = 0;
-			float barUpperLowerHeight = 0;
 			float textFieldNumberWidth = 0;
 			float sliderWidth = 0;
 			float sliderLabelWidth = 0;
@@ -275,27 +366,14 @@ public class UiFactory {
 			TextFieldStyle standard = null;
 		}
 
-		static class Skins {
-			Skin general = null;
-			Skin editor = null;
-		}
-
 		static class Labels {
 			LabelStyle standard = null;
-			LabelStyle error = null;
-			LabelStyle highlight = null;
-			LabelStyle success = null;
 			LabelStyle panelSection = null;
 		}
 
 		static class CheckBoxes {
 			CheckBoxStyle radio = null;
 			CheckBoxStyle checkBox = null;
-		}
-
-		static class ScrollPanes {
-			ScrollPaneStyle noBackground;
-			ScrollPaneStyle windowBackground;
 		}
 	}
 
