@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox.CheckBoxStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.List.ListStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane.ScrollPaneStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox.SelectBoxStyle;
@@ -14,7 +15,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Window.WindowStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.spiddekauga.utils.scene.ui.AnimationWidget.AnimationWidgetStyle;
-import com.spiddekauga.utils.scene.ui.Label.LabelStyle;
 import com.spiddekauga.utils.scene.ui.RatingWidget.RatingWidgetStyle;
 
 
@@ -358,8 +358,6 @@ public class SkinNames {
 		PADDING_INNER(Float.class),
 		/** Background colors for widgets */
 		WIDGET_BACKGROUND_COLOR(Color.class),
-		/** Info widget in explore and loading screen width */
-		INFO_BAR_WIDTH(Float.class),
 		/** Tag widget in explore and loading screen */
 		TAG_BAR_WIDTH(Float.class),
 		/** Stardard icon and thus row height */
@@ -370,6 +368,14 @@ public class SkinNames {
 		WAIT_WINDOW_FADE_OUT(Float.class),
 		/** Width of text fields with numbers in them */
 		TEXT_FIELD_NUMBER_WIDTH(Float.class),
+		/** Width of right panel */
+		RIGHT_PANEL_WIDTH(Float.class),
+		/** Width of sliders */
+		SLIDER_WIDTH(Float.class),
+		/** Width of text/labels before sliders */
+		SLIDER_LABEL_WIDTH(Float.class),
+		/** Dark text */
+		TEXT_DARK(Color.class),
 
 		;
 
@@ -501,6 +507,8 @@ public class SkinNames {
 		LABEL_HIGHLIGHT(LabelStyle.class, "highlight"),
 		/** Success messages */
 		LABEL_SUCCESS(LabelStyle.class, "success"),
+		/** Panel section label style */
+		LABEL_PANEL_SECTION(LabelStyle.class, "panel_section"),
 		/** List default */
 		LIST_DEFAULT(ListStyle.class, "default"),
 		/** Logout button */

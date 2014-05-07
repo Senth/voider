@@ -39,11 +39,12 @@ import com.spiddekauga.voider.utils.Pools;
  * @author Nathan Sweet
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com> Added doxygen and changed wrap behavior
  * */
-public class Label extends Widget {
+@Deprecated
+public class LabelOld extends Widget {
 	/**
 	 * Default constructor
 	 */
-	public Label() {
+	public LabelOld() {
 
 	}
 
@@ -52,8 +53,8 @@ public class Label extends Widget {
 	 * @param text this will be displayed on the label
 	 * @param skin the skin to use for the text
 	 */
-	public Label (CharSequence text, Skin skin) {
-		this(text, skin.get(LabelStyle.class));
+	public LabelOld (CharSequence text, Skin skin) {
+		this(text, skin.get(LabelOldStyle.class));
 	}
 
 	/**
@@ -62,32 +63,32 @@ public class Label extends Widget {
 	 * @param skin skin to use for the text
 	 * @param styleName name of the LabelStyle to use for the label
 	 */
-	public Label (CharSequence text, Skin skin, String styleName) {
-		this(text, skin.get(styleName, LabelStyle.class));
+	public LabelOld (CharSequence text, Skin skin, String styleName) {
+		this(text, skin.get(styleName, LabelOldStyle.class));
 	}
 
 	/**
-	 * Creates a label, using a {@link LabelStyle} that has a BitmapFont with
+	 * Creates a label, using a {@link LabelOldStyle} that has a BitmapFont with
 	 * the specified name from the skin and the specified color.
 	 * @param text this will be displayed on the label
 	 * @param skin skin to use for the text, uses default LabelStyle
 	 * @param fontName the font to use for the label
 	 * @param color color to use on the text
 	 */
-	public Label (CharSequence text, Skin skin, String fontName, Color color) {
-		this(text, new LabelStyle(skin.getFont(fontName), color));
+	public LabelOld (CharSequence text, Skin skin, String fontName, Color color) {
+		this(text, new LabelOldStyle(skin.getFont(fontName), color));
 	}
 
 	/**
-	 * Creates a label, using a {@link LabelStyle} that has a BitmapFont with
+	 * Creates a label, using a {@link LabelOldStyle} that has a BitmapFont with
 	 * the specified name and the specified color from the skin.
 	 * @param text this will be displayed on the label
 	 * @param skin skin to use for the text, uses default LabelStyle
 	 * @param fontName the font to use for the label
 	 * @param colorName name of the color to use on the text
 	 */
-	public Label (CharSequence text, Skin skin, String fontName, String colorName) {
-		this(text, new LabelStyle(skin.getFont(fontName), skin.getColor(colorName)));
+	public LabelOld (CharSequence text, Skin skin, String fontName, String colorName) {
+		this(text, new LabelOldStyle(skin.getFont(fontName), skin.getColor(colorName)));
 	}
 
 	/**
@@ -96,7 +97,7 @@ public class Label extends Widget {
 	 * @param text this will be displayed on the label
 	 * @param style label style to use for the label, this determines the font and its color
 	 */
-	public Label (CharSequence text, LabelStyle style) {
+	public LabelOld (CharSequence text, LabelOldStyle style) {
 		if (text != null) {
 			this.mText.append(text);
 		}
@@ -109,7 +110,7 @@ public class Label extends Widget {
 	 * Sets another style for the label
 	 * @param style new label style for the label
 	 */
-	public void setStyle (LabelStyle style) {
+	public void setStyle (LabelOldStyle style) {
 		if (style == null) {
 			throw new IllegalArgumentException("style cannot be null.");
 		}
@@ -123,9 +124,9 @@ public class Label extends Widget {
 
 	/**
 	 * @return the label's style. Modifying the returned style may not have an
-	 * effect until {@link #setStyle(LabelStyle)} is called.
+	 * effect until {@link #setStyle(LabelOldStyle)} is called.
 	 */
-	public LabelStyle getStyle () {
+	public LabelOldStyle getStyle () {
 		return mStyle;
 	}
 
@@ -414,9 +415,9 @@ public class Label extends Widget {
 		invalidateHierarchy();
 	}
 
-	/** The style for a label, see {@link Label}.
+	/** The style for a label, see {@link LabelOld}.
 	 * @author Nathan Sweet */
-	static public class LabelStyle {
+	static public class LabelOldStyle {
 		/** Font of the label */
 		public BitmapFont font;
 		/** Color, optional. */
@@ -427,7 +428,7 @@ public class Label extends Widget {
 		/**
 		 * Default constructor
 		 */
-		public LabelStyle () {
+		public LabelOldStyle () {
 		}
 
 		/**
@@ -435,7 +436,7 @@ public class Label extends Widget {
 		 * @param font font to use for the style
 		 * @param fontColor color of the font
 		 */
-		public LabelStyle (BitmapFont font, Color fontColor) {
+		public LabelOldStyle (BitmapFont font, Color fontColor) {
 			this.font = font;
 			this.fontColor = fontColor;
 		}
@@ -444,7 +445,7 @@ public class Label extends Widget {
 		 * Copies the style from another label style
 		 * @param style other label style to copy values from
 		 */
-		public LabelStyle (LabelStyle style) {
+		public LabelOldStyle (LabelOldStyle style) {
 			this.font = style.font;
 			if (style.fontColor != null) {
 				this.fontColor = new Color(style.fontColor);
@@ -453,7 +454,7 @@ public class Label extends Widget {
 	}
 
 	/** Style for the label */
-	private LabelStyle mStyle;
+	private LabelOldStyle mStyle;
 	/** Outer bounds */
 	private final TextBounds mBounds = new TextBounds();
 	/** The actual text to be displayed */

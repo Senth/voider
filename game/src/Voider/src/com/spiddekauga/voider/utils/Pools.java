@@ -7,10 +7,10 @@ import java.util.Stack;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.IdentityMap;
 import com.spiddekauga.utils.scene.ui.Cell;
-import com.spiddekauga.utils.scene.ui.Label;
 import com.spiddekauga.utils.scene.ui.Row;
 import com.spiddekauga.voider.game.actors.BulletActor;
 import com.spiddekauga.voider.resources.InternalNames;
@@ -54,7 +54,7 @@ public class Pools {
 	/** Time bullets */
 	public static Pool<TimeBullet> timeBullet = new Pool<>(TimeBullet.class, 100, 1000);
 	/** Label pool */
-	public static Pool<Label> label = new Pool<Label>(Label.class, 10, 100) {
+	public static com.badlogic.gdx.utils.Pool<Label> label = new com.badlogic.gdx.utils.Pool<Label>(10, 100) {
 		@Override
 		protected Label newObject() {
 			Skin skin = ResourceCacheFacade.get(InternalNames.UI_GENERAL);

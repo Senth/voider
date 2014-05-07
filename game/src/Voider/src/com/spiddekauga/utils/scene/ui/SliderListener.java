@@ -27,12 +27,30 @@ import com.spiddekauga.voider.Config.Gui;
  */
 public abstract class SliderListener implements EventListener {
 	/**
-	 * Constructor which sets the slider and text field.
+	 * Constructor which automatically calls {@link #init(Slider, TextField, Invoker)}
 	 * @param slider slider to bind with textField
 	 * @param textField textField to bind with slider, set to null to skip
 	 * @param invoker used for undoing commands, set to null to skip
 	 */
 	public SliderListener(Slider slider, TextField textField, Invoker invoker) {
+		init(slider, textField, invoker);
+	}
+
+	/**
+	 * Default constructor, call {@link #init(Slider, TextField, Invoker)} to initialize
+	 * the slider listener.
+	 */
+	public SliderListener() {
+		// Does nothing
+	}
+
+	/**
+	 * Initializes the SliderListener with the specified slider and text field.
+	 * @param slider slider to bind with textField
+	 * @param textField textField to bind with slider, set to null to skip
+	 * @param invoker used for undoing commands, set to null to skip
+	 */
+	public void init(Slider slider, TextField textField, Invoker invoker) {
 		mSlider = slider;
 		mInvoker = invoker;
 		mTextField = textField;

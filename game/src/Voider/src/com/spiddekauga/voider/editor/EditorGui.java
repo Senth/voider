@@ -17,6 +17,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox.CheckBoxStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane.ScrollPaneStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -33,10 +35,9 @@ import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.Background;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.utils.scene.ui.DisableListener;
-import com.spiddekauga.utils.scene.ui.Label;
-import com.spiddekauga.utils.scene.ui.Label.LabelStyle;
 import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
 import com.spiddekauga.utils.scene.ui.TooltipListener;
+import com.spiddekauga.utils.scene.ui.UiFactory;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.editor.commands.CEditorDuplicate;
 import com.spiddekauga.voider.editor.commands.CEditorLoad;
@@ -102,6 +103,8 @@ public abstract class EditorGui extends Gui {
 	@Override
 	public void initGui() {
 		super.initGui();
+
+		mUiFactory.init();
 
 		if (mEditorMenu.getStage() == null) {
 			getStage().addActor(mEditorMenu);
@@ -526,7 +529,7 @@ public abstract class EditorGui extends Gui {
 		AlignTable content = new AlignTable();
 		content.setPaddingCellDefault(mStyles.vars.paddingDefault);
 
-		com.spiddekauga.utils.scene.ui.Label label = new com.spiddekauga.utils.scene.ui.Label("", mStyles.label.highlight);
+		Label label = new Label("", mStyles.label.highlight);
 
 		float width = Gdx.graphics.getWidth() * 0.5f;
 
@@ -766,12 +769,12 @@ public abstract class EditorGui extends Gui {
 	 */
 	@SuppressWarnings("javadoc")
 	protected static class UiStyles {
-		TextButton textButton = new TextButton();
-		Slider slider = new Slider();
-		TextField textField = new TextField();
+		TextButtons textButton = new TextButtons();
+		Sliders slider = new Sliders();
+		TextFields textField = new TextFields();
 		Skins skin = new Skins();
-		Label label = new Label();
-		CheckBox checkBox = new CheckBox();
+		Labels label = new Labels();
+		CheckBoxes checkBox = new CheckBoxes();
 		ScrollPane scrollPane = new ScrollPane();
 		Variables vars = new Variables();
 		Colors colors = new Colors();
@@ -790,17 +793,17 @@ public abstract class EditorGui extends Gui {
 			Color widgetBackground = null;
 		}
 
-		static class TextButton {
+		static class TextButtons {
 			TextButtonStyle press = null;
 			TextButtonStyle toggle = null;
 			TextButtonStyle selected = null;
 		}
 
-		static class Slider {
+		static class Sliders {
 			SliderStyle standard = null;
 		}
 
-		static class TextField {
+		static class TextFields {
 			TextFieldStyle standard = null;
 		}
 
@@ -809,14 +812,14 @@ public abstract class EditorGui extends Gui {
 			Skin editor = null;
 		}
 
-		static class Label {
+		static class Labels {
 			LabelStyle standard = null;
 			LabelStyle error = null;
 			LabelStyle highlight = null;
 			LabelStyle success = null;
 		}
 
-		static class CheckBox {
+		static class CheckBoxes {
 			CheckBoxStyle radio = null;
 			CheckBoxStyle checkBox = null;
 		}
@@ -830,6 +833,8 @@ public abstract class EditorGui extends Gui {
 
 	/** All skins and styles */
 	protected UiStyles mStyles = new UiStyles();
+	/** UI Factory for creating UI elements */
+	protected UiFactory mUiFactory = new UiFactory();
 
 	/** UI elements that should be disabled during publish */
 	protected ArrayList<Actor> mDisabledWhenPublished = new ArrayList<>();
