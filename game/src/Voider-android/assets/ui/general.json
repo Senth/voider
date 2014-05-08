@@ -57,6 +57,8 @@ java.lang.Float: {
 	padding_outer: {value: 4},
 	// Inner padding
 	padding_inner: {value: 12},
+	// Padding between radio or checkbox buttons
+	padding_checkbox: {value: 12},
 	
 	
 	/* General UI sizes */
@@ -469,7 +471,9 @@ com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
 		font: default_font,
 	},
 	
-	// Flat button
+	
+	/* Flat Button */
+	
 	flat_press: {
 		up: button_flat_up,
 		down: button_flat_down,
@@ -487,7 +491,9 @@ com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
 		font: default_font,
 	},
 	
-	// Testing
+	
+	/* Testing */
+	
 	selected: {
 		down: button_default_checked,
 		up: button_default_checked,

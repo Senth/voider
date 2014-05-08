@@ -210,8 +210,7 @@ public class Messages {
 					public final static String TURNING_SPEED = "How fast the enemy turns";
 				}
 				public static class Ai {
-					public final static String DISTANCE_MIN = "Min distance to player";
-					public final static String DISTANCE_MAX = "Max distance to player";
+					public final static String DISTANCE = "Distance to keep to player";
 					public final static String RANDOM_MOVEMENT_BUTTON = "Moves randomly when between min & max distance";
 					public final static String RANDOM_MOVEMENT = "Delay until next random direction";
 				}

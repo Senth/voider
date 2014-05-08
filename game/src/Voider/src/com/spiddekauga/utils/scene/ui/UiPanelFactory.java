@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox.CheckBoxStyle;
@@ -20,7 +21,6 @@ import com.spiddekauga.utils.commands.Invoker;
 import com.spiddekauga.voider.editor.commands.GuiCheckCommandCreator;
 import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.resources.SkinNames.ISkinNames;
-import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Factory for creating UI objects, more specifically combined UI objects.
@@ -40,7 +40,7 @@ public class UiPanelFactory {
 	/**
 	 * Adds a min and max slider with section text to a table.
 	 * These sliders are synchronized.
-	 * @param text section text for the sliders
+	 * @param text optional section text for the sliders
 	 * @param min minimum value of the sliders
 	 * @param max maximum value of the sliders
 	 * @param stepSize step size of the sliders
@@ -51,9 +51,9 @@ public class UiPanelFactory {
 	 * @param hider optional hider to add the elements to (if not null)
 	 * @param createdActors optional adds all created elements to this list (if not null)
 	 * @param invoker optional adds the ability to undo changes (if not null)
-	 * @return Min and max sliders in an array in that order.
+	 * @return Created min and max sliders;
 	 */
-	public ArrayList<Slider> addSliderMinMax(
+	public SliderMinMaxWrapper addSliderMinMax(
 			String text,
 			float min,
 			float max,
@@ -66,23 +66,24 @@ public class UiPanelFactory {
 			ArrayList<Actor> createdActors,
 			Invoker invoker
 			) {
-		@SuppressWarnings("unchecked")
-		ArrayList<Slider> sliders = Pools.arrayList.obtain();
-
 		// Label
-		Label label = addLabelSection(text, table, null);
-		doExtraActionsOnActors(tooltipText, hider, createdActors, label);
+		if (text != null) {
+			Label label = addLabelSection(text, table, null);
+			doExtraActionsOnActors(tooltipText, hider, createdActors, label);
+		}
 
 		// Sliders
 		Slider minSlider = addSlider("Min", min, max, stepSize, minSliderListener, table, tooltipText, hider, createdActors, invoker);
 		Slider maxSlider = addSlider("Max", min, max, stepSize, maxSliderListener, table, tooltipText, hider, createdActors, invoker);
-		sliders.add(minSlider);
-		sliders.add(maxSlider);
 
 		minSliderListener.setGreaterSlider(maxSlider);
 		maxSliderListener.setLesserSlider(minSlider);
 
-		return sliders;
+		SliderMinMaxWrapper minMaxWrapper = new SliderMinMaxWrapper();
+		minMaxWrapper.min = minSlider;
+		minMaxWrapper.max = maxSlider;
+
+		return minMaxWrapper;
 	}
 
 	/**
@@ -134,6 +135,7 @@ public class UiPanelFactory {
 
 		// Text field
 		TextField textField = new TextField("", mStyles.textField.standard);
+		textField.setMaxLength(4);
 		table.add(textField).setWidth(mStyles.vars.textFieldNumberWidth);
 
 		// Set slider listener
@@ -188,7 +190,9 @@ public class UiPanelFactory {
 
 		table.row().setFillWidth(true);
 		Label label = new Label(text, mStyles.label.standard);
-		table.add(label).setFillWidth(true);
+		table.add(label);
+
+		table.add().setFillWidth(true);
 
 		CheckBox checkBox = new CheckBox("", mStyles.checkBox.checkBox);
 		table.add(checkBox);
@@ -201,7 +205,7 @@ public class UiPanelFactory {
 	}
 
 	/**
-	 * Create tabs inside an panel.
+	 * Create generic tabs for a table.
 	 * @param table adds the tabs to this table
 	 * @param parentHider parent hider for all tab hiders
 	 * @param tabs tab information for all tabs to create, will set the button for these
@@ -214,15 +218,20 @@ public class UiPanelFactory {
 			checkCommandCreator = new GuiCheckCommandCreator(invoker);
 		}
 		ButtonGroup buttonGroup = new ButtonGroup();
+		buttonGroup.setMinCheckCount(1);
+		buttonGroup.setMaxCheckCount(1);
 
 		table.row();
 
 		for (TabWrapper tab : tabs) {
-			tab.button = new ImageButton((ImageButtonStyle) SkinNames.getResource(tab.imageName));
-			table.add(tab.button);
+			tab.createButton();
+			Cell cell = table.add(tab.button);
 			buttonGroup.add(tab.button);
-			tab.hider.setButton(tab.button);
-			parentHider.addChild(tab.hider);
+			parentHider.addToggleActor(tab.button);
+			if (tab.hider != null) {
+				tab.hider.setButton(tab.button);
+				parentHider.addChild(tab.hider);
+			}
 
 			if (checkCommandCreator != null) {
 				tab.button.addListener(checkCommandCreator);
@@ -234,6 +243,16 @@ public class UiPanelFactory {
 
 			if (tab.tooltipText != null) {
 				new TooltipListener(tab.button, tab.tooltipText);
+			}
+
+
+			// Special tab handling
+			// Radio button - padding
+			if (tab instanceof TabRadioWrapper) {
+				// Add padding if not last button
+				if (tabs.indexOf(tab) != tabs.size() - 1) {
+					cell.setPadRight(mStyles.vars.paddingCheckBox);
+				}
 			}
 		}
 	}
@@ -288,44 +307,77 @@ public class UiPanelFactory {
 		mStyles.colors.widgetBackground = SkinNames.getResource(SkinNames.GeneralVars.WIDGET_BACKGROUND_COLOR);
 
 		// Vars
-		mStyles.vars.paddingInner = SkinNames.getResource(SkinNames.GeneralVars.PADDING_INNER);
+		mStyles.vars.paddingCheckBox = SkinNames.getResource(SkinNames.GeneralVars.PADDING_CHECKBOX);
 		mStyles.vars.textFieldNumberWidth = SkinNames.getResource(SkinNames.GeneralVars.TEXT_FIELD_NUMBER_WIDTH);
 		mStyles.vars.sliderWidth = SkinNames.getResource(SkinNames.GeneralVars.SLIDER_WIDTH);
 		mStyles.vars.sliderLabelWidth = SkinNames.getResource(SkinNames.GeneralVars.SLIDER_LABEL_WIDTH);
+	}
 
+	/**
+	 * @return a new radio tab wrapper instance
+	 */
+	public TabRadioWrapper createTabRadioWrapper() {
+		return new TabRadioWrapper();
+	}
+
+	/**
+	 * @return a new image tab wrapper instance
+	 */
+	public TabImageWrapper createTabImageWrapper() {
+		return new TabImageWrapper();
+	}
+
+	/**
+	 * Wrapper for min and max sliders
+	 */
+	public class SliderMinMaxWrapper {
+		/** Minimum slider */
+		public Slider min;
+		/** Maximum slider */
+		public Slider max;
+	}
+
+	/**
+	 * Interface for creating tab-like buttons
+	 */
+	public abstract class TabWrapper {
+		/**
+		 * Creates the button for the tab.
+		 */
+		abstract void createButton();
+
+		/** Tab button */
+		public Button button = null;
+		/** Optional Hider for the tab */
+		public HideListener hider = null;
+		/** Optional tooltip text */
+		public String tooltipText = null;
 	}
 
 	/**
 	 * Tab information wrapper
 	 */
-	public static class TabWrapper {
-		/**
-		 * Creates empty (and invalid) tab information wrapper
-		 */
-		public TabWrapper() {
-			// Does nothing
-		}
-
-		/**
-		 * Initializes a correct TabWrapper
-		 * @param imageName name of the button image
-		 * @param hider hideListener for this button
-		 * @param tooltipText optional tooltip message (if not null)
-		 */
-		public TabWrapper(ISkinNames imageName, HideListener hider, String tooltipText) {
-			this.imageName = imageName;
-			this.hider = hider;
-			this.tooltipText = tooltipText;
+	public class TabImageWrapper extends TabWrapper {
+		@Override
+		public void createButton() {
+			button = new ImageButton((ImageButtonStyle) SkinNames.getResource(imageName));
 		}
 
 		/** Image name */
 		public ISkinNames imageName = null;
-		/** Optional tooltip text */
-		public String tooltipText = null;
-		/** Hider for the tab */
-		public HideListener hider = null;
-		/** Button that was created for this tab */
-		public ImageButton button = null;
+	}
+
+	/**
+	 * Radio button information wrapper
+	 */
+	public class TabRadioWrapper extends TabWrapper {
+		@Override
+		public void createButton() {
+			button = new CheckBox(text, mStyles.checkBox.radio);
+		}
+
+		/** Button text */
+		public String text = null;
 	}
 
 	/**
@@ -342,10 +394,10 @@ public class UiPanelFactory {
 		Colors colors = new Colors();
 
 		static class Variables {
-			float paddingInner = 0;
 			float textFieldNumberWidth = 0;
 			float sliderWidth = 0;
 			float sliderLabelWidth = 0;
+			float paddingCheckBox = 0;
 		}
 
 		static class Colors {

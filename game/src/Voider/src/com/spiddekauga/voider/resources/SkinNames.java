@@ -356,6 +356,8 @@ public class SkinNames {
 		PADDING_OUTER(Float.class),
 		/** Inside padding of panels */
 		PADDING_INNER(Float.class),
+		/** Padding between radio or checkbox buttons */
+		PADDING_CHECKBOX(Float.class),
 		/** Background colors for widgets */
 		WIDGET_BACKGROUND_COLOR(Color.class),
 		/** Tag widget in explore and loading screen */

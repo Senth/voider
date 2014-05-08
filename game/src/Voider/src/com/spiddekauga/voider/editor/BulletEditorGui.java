@@ -1,7 +1,5 @@
 package com.spiddekauga.voider.editor;
 
-import java.util.ArrayList;
-
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
@@ -9,6 +7,7 @@ import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.SliderListener;
+import com.spiddekauga.utils.scene.ui.UiPanelFactory.SliderMinMaxWrapper;
 import com.spiddekauga.voider.Config.Editor.Weapon;
 import com.spiddekauga.voider.resources.SkinNames;
 
@@ -114,7 +113,7 @@ public class BulletEditorGui extends ActorGui {
 				mBulletEditor.setCooldownMax(newValue);
 			}
 		};
-		ArrayList<Slider> sliders = mUiFactory.addSliderMinMax(
+		SliderMinMaxWrapper sliders = mUiFactory.addSliderMinMax(
 				"Cooldown Time",
 				Weapon.COOLDOWN_MIN,
 				Weapon.COOLDOWN_MAX,
@@ -126,8 +125,8 @@ public class BulletEditorGui extends ActorGui {
 				null,
 				mInvoker);
 
-		mWidgets.weapon.cooldownMin = sliders.get(0);
-		mWidgets.weapon.cooldownMax = sliders.get(1);
+		mWidgets.weapon.cooldownMin = sliders.min;
+		mWidgets.weapon.cooldownMax = sliders.max;
 
 
 		String warningText =

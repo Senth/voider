@@ -30,6 +30,14 @@ public abstract class GuiHider implements Disposable {
 	 */
 	public void addChild(GuiHider child) {
 		mChildren.add(child);
+		child.setParent(this);
+
+		if (isVisible()) {
+			child.updateToggleActors();
+		} else {
+			child.mVisible = false;
+			child.hideAll();
+		}
 	}
 
 	/**
@@ -39,7 +47,7 @@ public abstract class GuiHider implements Disposable {
 	 */
 	public void addToggleActor(Actor toggleActor) {
 		mToggles.add(toggleActor);
-		toggleActor.setVisible(shallShowActors());
+		toggleActor.setVisible(mVisible);
 	}
 
 	/**
@@ -60,7 +68,9 @@ public abstract class GuiHider implements Disposable {
 	 * Updates all toggle actors
 	 */
 	protected void updateToggleActors() {
-		if (shallShowActors()) {
+		if (shallShowActors() && (mParent == null || mParent.isVisible())) {
+			mVisible = true;
+
 			for (Actor toggleActor : mToggles) {
 				toggleActor.setVisible(true);
 
@@ -84,11 +94,11 @@ public abstract class GuiHider implements Disposable {
 				hideListener.updateToggleActors();
 			}
 
-			mVisible = true;
+
 			onShow();
 		} else {
-			hideAll();
 			mVisible = false;
+			hideAll();
 			onHide();
 		}
 	}
@@ -166,6 +176,14 @@ public abstract class GuiHider implements Disposable {
 		return mName;
 	}
 
+	/**
+	 * Sets the parent hider
+	 * @param parent parent hider
+	 */
+	private void setParent(GuiHider parent) {
+		mParent = parent;
+	}
+
 	/** True if the actors are visible */
 	private boolean mVisible = true;
 	/** Name of the hider, used for debugging purposes */
@@ -174,4 +192,6 @@ public abstract class GuiHider implements Disposable {
 	protected ArrayList<Actor> mToggles = new ArrayList<Actor>();
 	/** Children */
 	private ArrayList<GuiHider> mChildren = new ArrayList<GuiHider>();
+	/** Parent hider */
+	private GuiHider mParent = null;
 }

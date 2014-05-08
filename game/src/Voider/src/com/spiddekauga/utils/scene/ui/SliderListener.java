@@ -264,7 +264,11 @@ public abstract class SliderListener implements EventListener {
 	private void setTextFieldFromSlider() {
 		int cursorPosition = mTextField.getCursorPosition();
 		float rounded = (float) Maths.round(mSlider.getValue(), mPrecision, BigDecimal.ROUND_HALF_UP);
-		mTextField.setText(Float.toString(rounded));
+		if (mPrecision > 0) {
+			mTextField.setText(Float.toString(rounded));
+		} else {
+			mTextField.setText(Integer.toString((int)rounded));
+		}
 		mTextField.setCursorPosition(cursorPosition);
 		mOldText = mTextField.getText();
 	}

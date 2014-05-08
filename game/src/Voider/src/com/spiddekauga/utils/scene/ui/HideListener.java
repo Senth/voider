@@ -46,8 +46,8 @@ public class HideListener extends GuiHider implements EventListener {
 
 		if (mButton != null) {
 			mButton.addListener(this);
-			mCheckedLast = mButton.isChecked();
 			updateToggleActors();
+			mCheckedLast = mButton.isChecked();
 		}
 	}
 

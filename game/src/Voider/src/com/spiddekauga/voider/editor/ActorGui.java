@@ -22,6 +22,7 @@ import com.spiddekauga.utils.scene.ui.SliderListener;
 import com.spiddekauga.utils.scene.ui.TabWidget;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
 import com.spiddekauga.utils.scene.ui.TooltipListener;
+import com.spiddekauga.utils.scene.ui.UiPanelFactory.TabImageWrapper;
 import com.spiddekauga.utils.scene.ui.UiPanelFactory.TabWrapper;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Editor;
@@ -269,7 +270,7 @@ public abstract class ActorGui extends EditorGui {
 
 		// Different shape tabs
 		// Circle
-		TabWrapper circleTab = new TabWrapper();
+		TabImageWrapper circleTab = mUiFactory.createTabImageWrapper();
 		circleTab.imageName = SkinNames.EditorIcons.CIRCLE_SHAPE;
 		circleTab.tooltipText = Messages.replaceName(Messages.Tooltip.Actor.Visuals.CIRCLE, getResourceTypeName());
 		circleTab.hider = new HideListener(true) {
@@ -283,7 +284,7 @@ public abstract class ActorGui extends EditorGui {
 		};
 
 		// Rectangle
-		TabWrapper rectangleTab = new TabWrapper();
+		TabImageWrapper rectangleTab = mUiFactory.createTabImageWrapper();
 		rectangleTab.imageName = SkinNames.EditorIcons.RECTANGLE_SHAPE;
 		rectangleTab.tooltipText = Messages.replaceName(Messages.Tooltip.Actor.Visuals.RECTANGLE, getResourceTypeName());
 		rectangleTab.hider = new HideListener(true) {
@@ -297,7 +298,7 @@ public abstract class ActorGui extends EditorGui {
 		};
 
 		// Triangle
-		TabWrapper triangleTab = new TabWrapper();
+		TabImageWrapper triangleTab = mUiFactory.createTabImageWrapper();
 		triangleTab.imageName = SkinNames.EditorIcons.TRIANGLE_SHAPE;
 		triangleTab.tooltipText = Messages.replaceName(Messages.Tooltip.Actor.Visuals.TRIANGLE, getResourceTypeName());
 		triangleTab.hider = new HideListener(true) {
@@ -311,7 +312,7 @@ public abstract class ActorGui extends EditorGui {
 		};
 
 		// Custom (draw)
-		TabWrapper customTab = new TabWrapper();
+		TabImageWrapper customTab = mUiFactory.createTabImageWrapper();
 		customTab.imageName = SkinNames.EditorIcons.DRAW_CUSTOM_SHAPE;
 		customTab.tooltipText = Messages.replaceName(Messages.Tooltip.Actor.Visuals.DRAW, getResourceTypeName());
 		customTab.hider = new HideListener(true) {
@@ -332,7 +333,7 @@ public abstract class ActorGui extends EditorGui {
 		tabs.add(rectangleTab);
 		tabs.add(triangleTab);
 		tabs.add(customTab);
-		mUiFactory.addTabs(table, mWidgets.visual.hider, tabs, null, mInvoker);
+		mUiFactory.addTabs(table, mWidgets.visual.hider, tabs, mDisabledWhenPublished, mInvoker);
 		Pools.arrayList.free(tabs);
 		tabs = null;
 
