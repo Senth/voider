@@ -1,12 +1,14 @@
 {
 com.badlogic.gdx.graphics.g2d.BitmapFont: {
-	default_font: { file: default.fnt }
+	default_font: { file: default16.fnt },
+	default16: { file: default16.fnt },
+	default12: { file: default12.fnt },
 },
 
 /*
  * Colors are in RGBA where the values are in the range of 0.0 to 1.0 i.e. R value of 1 is 255
- * and value 0.5 is 127). If you want to convert the color original RBG value to the range of 0-1
- * just divide it with 255. I.e. 70 / 255 = ~0.275
+ * and value 0.5 is 127). Use http://www.corecoding.com/utilities/rgb-or-hex-to-float.php
+ * to convert RGB or HEX values to float.
  */
 com.badlogic.gdx.graphics.Color: {
 	// DEPRECATED, use widget background color. Color of the upper and lower bars, see Float.bar_upper_lower_height for height
@@ -24,14 +26,16 @@ com.badlogic.gdx.graphics.Color: {
 	grey_light: { a: 1, b: 0.8, g: 0.8, r: 0.8 },
 	grey_dark: { a: 1, b: 0.2, g: 0.2, r: 0.2 },
 	
+	// Highlight color
 	highlight: { a: 1, b: 1, g: 1, r: 0 },
+	
+	// Dark text
+	text_dark: { r: 0.1, g: 0.1, b: 0.1, a: 1},
 },
 
 java.lang.Float: {
 	/* Explore / Load */
 	
-	// Width of info bar in explore and load screen. Info bar displays name, creator, etc.
-	info_bar_width: {value: 240},
 	// Tag bar width
 	tag_bar_width: {value: 144},
 	// Maximum size of enemies/bullets on load screen (i.e. the image button) 
@@ -51,33 +55,34 @@ java.lang.Float: {
 	padding_after_label: {value: 8},
 	// Outer padding
 	padding_outer: {value: 4},
-	// DEPRECATED!!! Changed name to padding_inner
-	// Inside padding
-	padding_inside: {value: 12},
 	// Inner padding
 	padding_inner: {value: 12},
 	
 	
+	/* General UI sizes */
+	right_panel_width: {value: 240},
+	// NOTE: the three widths below (text field, slider, label) should add
+	// upp to right_panel_width for it to be shown correctly.
+	// Width of numeric text fields (e.g. after a slider)
+	text_field_number_width: {value: 48},
+	// Slider width
+	slider_width: {value: 122},
+	// Slider tex width/max size
+	slider_label_width: {value: 70},
+	
+	
 	/* Other */
 	
-	// Stardard icon and row height
+	// Standard icon and row height
 	icon_row_height: {value: 32},
 	// Height of upper and lower bars.
 	bar_upper_lower_height: {value: 40},
-	// Width of numeric text fields (e.g. after a slider)
-	text_field_number_width: {value: 64},
 	// Fade in/out duration for wait window. Wait window displays loading icon or progress bar
 	wait_window_fade_in: {value: 0.2},
 	wait_window_fade_out: {value: 0.6},
 },
 
 com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
-	default: {
-		font: default_font,
-	}
-},
-
-com.spiddekauga.utils.scene.ui.Label$LabelStyle: {
 	default: {
 		font: default_font,
 	},
@@ -96,7 +101,38 @@ com.spiddekauga.utils.scene.ui.Label$LabelStyle: {
 		font: default_font,
 		fontColor: green
 	},
+	
+	panel_section: {
+		font: default12,
+		fontColor: grey_dark
+	},
 },
+
+//com.spiddekauga.utils.scene.ui.Label$LabelStyle: {
+//	default: {
+//		font: default_font,
+//	},
+//	
+//	highlight: {
+//		font: default_font,
+//		fontColor: red
+//	},
+//	
+//	error: {
+//		font: default_font,
+//		fontColor: red
+//	},
+//	
+//	success: {
+//		font: default_font,
+//		fontColor: green
+//	},
+//	
+//	panel_section: {
+//		font: default12,
+//		fontColor: text_dark
+//	},
+//},
 
 com.spiddekauga.utils.scene.ui.AnimationWidget$AnimationWidgetStyle:  {
 	wait: {
@@ -432,6 +468,26 @@ com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
 		checkedOver: button_default_checked_over,
 		font: default_font,
 	},
+	
+	// Flat button
+	flat_press: {
+		up: button_flat_up,
+		down: button_flat_down,
+		over: button_flat_over,
+		disabled: button_flat_disabled,
+		font: default_font,
+	},
+	flat_toggle: {
+		up: button_flat_up,
+		over: button_flat_over,
+		down: button_flat_down,
+		disabled: button_flat_disabled,
+		checked: button_flat_checked,
+		checkedOver: button_flat_checked_over,
+		font: default_font,
+	},
+	
+	// Testing
 	selected: {
 		down: button_default_checked,
 		up: button_default_checked,
@@ -453,47 +509,6 @@ com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
 		font: default_font,
 	}
 },
-
-/* FlatButtonStyle 
-
-	default: {
-		up: button_flat_up,
-		down: button_flat_down,
-		over: button_flat_over,
-		disabled: button_flat_disabled,
-		font: default_font,
-	},
-	toggle: {
-		up: button_flat_up,
-		over: button_flat_over,
-		down: button_flat_down,
-		disabled: button_flat_disabled,
-		checked: button_flat_checked,
-		checkedOver: button_flat_checked_over,
-		font: default_font,
-	},
-	selected: {
-		up: button_flat_checked,
-		down: button_flat_checked,
-		font: default_font,
-	},
-	up: {
-		up: button_flat_up,
-		down: button_flat_up,
-		font: default_font,
-	},
-	down: {
-		up: button_flat_down,
-		down: button_flat_down,
-		font: default_font,
-	},
-	over: {
-		up: button_flat_over,
-		down: button_flat_over,
-		font: default_font,
-	}
-
-*/
 
 com.badlogic.gdx.scenes.scene2d.ui.CheckBox$CheckBoxStyle: {
 	default: {
