@@ -228,8 +228,20 @@ public class DatastoreUtils {
 	 * @param value the value to search for
 	 * @return true if the datastore contains the specified entity
 	 */
-	public static boolean containsEntity(String searchIn, String propertyName, Object value) {
-		return getSingleKey(searchIn, propertyName, value) != null;
+	public static boolean exists(String searchIn, String propertyName, Object value) {
+		return exists(searchIn, propertyName, value, null);
+	}
+
+	/**
+	 * Searches if an entity exists
+	 * @param searchIn what kind of entity to search in
+	 * @param propertyName name of the property (column)
+	 * @param value the value to search for
+	 * @param parent the parent for the entity, set to null to skip using
+	 * @return true if the datastore contains the specified entity
+	 */
+	public static boolean exists(String searchIn, String propertyName, Object value, Key parent) {
+		return getSingleKey(searchIn, propertyName, value, parent) != null;
 	}
 
 	/**
