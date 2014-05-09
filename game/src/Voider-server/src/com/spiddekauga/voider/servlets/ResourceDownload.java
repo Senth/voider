@@ -2,6 +2,7 @@ package com.spiddekauga.voider.servlets;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
@@ -46,17 +47,38 @@ public class ResourceDownload extends VoiderServlet {
 
 		init();
 
-		if (networkEntity instanceof ResourceDownloadMethod) {
-			setInformationAndDependenciesToResponse(((ResourceDownloadMethod) networkEntity).resourceId);
-		}
+		if (mUser.isLoggedIn()) {
+			boolean success = false;
+			if (networkEntity instanceof ResourceDownloadMethod) {
+				success = setInformationAndDependenciesToResponse(((ResourceDownloadMethod) networkEntity).resourceId);
+			}
 
-		if (!mResponse.resources.isEmpty()) {
-			mResponse.status = Statuses.SUCCESS;
+			// Set download date for syncing resources
+			if (success && !mAddedResources.isEmpty()) {
+				setUserDownloadDate();
+				mResponse.status = Statuses.SUCCESS;
+			}
 		}
-
 
 		byte[] byteResponse = NetworkEntitySerializer.serializeEntity(mResponse);
 		NetworkGateway.sendResponse(response, byteResponse);
+	}
+
+	/**
+	 * Set download date for the specified user so these resources can be synchronized
+	 * between devices.
+	 */
+	private void setUserDownloadDate() {
+		for (Key key : mAddedResources) {
+			// Create entity if user hasn't downloaded the resource before
+			if (!DatastoreUtils.exists("sync_published", "published_key", key, mUser.getKey())) {
+				Entity entity = new Entity("sync_published", mUser.getKey());
+				entity.setProperty("published_key", key);
+				entity.setProperty("download_date", new Date());
+
+				DatastoreUtils.put(entity);
+			}
+		}
 	}
 
 	/**

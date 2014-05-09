@@ -41,9 +41,9 @@ public class RegisterUser extends VoiderServlet {
 		if (networkEntity instanceof RegisterUserMethod) {
 
 			// Check if username is free
-			if (!DatastoreUtils.containsEntity(DatastoreTables.USERS.toString(), "username", ((RegisterUserMethod) networkEntity).username)) {
+			if (!DatastoreUtils.exists(DatastoreTables.USERS.toString(), "username", ((RegisterUserMethod) networkEntity).username)) {
 				// Check email
-				if (!DatastoreUtils.containsEntity(DatastoreTables.USERS.toString(), "email", ((RegisterUserMethod) networkEntity).email)) {
+				if (!DatastoreUtils.exists(DatastoreTables.USERS.toString(), "email", ((RegisterUserMethod) networkEntity).email)) {
 					createNewUser((RegisterUserMethod) networkEntity, methodResponse);
 				} else {
 					methodResponse.status = Statuses.FAIL_EMAIL_EXISTS;
