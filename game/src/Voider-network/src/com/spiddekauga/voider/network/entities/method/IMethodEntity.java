@@ -4,6 +4,7 @@ import com.spiddekauga.voider.network.entities.IEntity;
 
 
 
+
 /**
  * Abstract class for all method entities
  * 

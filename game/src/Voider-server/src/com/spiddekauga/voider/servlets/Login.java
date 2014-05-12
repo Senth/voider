@@ -5,19 +5,16 @@ import java.util.Date;
 import java.util.UUID;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.utils.BCrypt;
 import com.spiddekauga.voider.network.entities.IEntity;
+import com.spiddekauga.voider.network.entities.method.IMethodEntity;
 import com.spiddekauga.voider.network.entities.method.LoginMethod;
 import com.spiddekauga.voider.network.entities.method.LoginMethodResponse;
 import com.spiddekauga.voider.network.entities.method.LoginMethodResponse.Statuses;
-import com.spiddekauga.voider.network.entities.method.NetworkEntitySerializer;
-import com.spiddekauga.voider.server.util.NetworkGateway;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
 import com.spiddekauga.voider.server.util.VoiderServlet;
 
@@ -30,29 +27,25 @@ import com.spiddekauga.voider.server.util.VoiderServlet;
 public class Login extends VoiderServlet {
 
 	@Override
-	protected void onRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected IEntity onRequest(IMethodEntity methodEntity) throws ServletException, IOException {
 		LoginMethodResponse methodResponse = new LoginMethodResponse();
 		methodResponse.status = Statuses.FAILED_SERVER_ERROR;
 
 		// Skip if already logged in
 		if (!mUser.isLoggedIn()) {
-
-			byte[] entityData = NetworkGateway.getEntity(request);
-			IEntity networkEntity = NetworkEntitySerializer.deserializeEntity(entityData);
-
-			if (networkEntity instanceof LoginMethod) {
+			if (methodEntity instanceof LoginMethod) {
 				// Check username vs username first
-				Entity datastoreEntity = DatastoreUtils.getSingleEntity(DatastoreTables.USERS.toString(), "username", ((LoginMethod) networkEntity).username);
+				Entity datastoreEntity = DatastoreUtils.getSingleEntity(DatastoreTables.USERS.toString(), "username", ((LoginMethod) methodEntity).username);
 				// Check username vs email
 				if (datastoreEntity == null) {
-					datastoreEntity = DatastoreUtils.getSingleEntity(DatastoreTables.USERS.toString(), "email", ((LoginMethod) networkEntity).username);
+					datastoreEntity = DatastoreUtils.getSingleEntity(DatastoreTables.USERS.toString(), "email", ((LoginMethod) methodEntity).username);
 				}
 
 				if (datastoreEntity != null) {
 					// Test password / private key
-					if (isPrivateKeyMatch(datastoreEntity, ((LoginMethod) networkEntity).privateKey)) {
+					if (isPrivateKeyMatch(datastoreEntity, ((LoginMethod) methodEntity).privateKey)) {
 						methodResponse.status = Statuses.SUCCESS;
-					} else if (isPasswordMatch(datastoreEntity, ((LoginMethod) networkEntity).password)) {
+					} else if (isPasswordMatch(datastoreEntity, ((LoginMethod) methodEntity).password)) {
 						methodResponse.status = Statuses.SUCCESS;
 					}
 
@@ -73,8 +66,7 @@ public class Login extends VoiderServlet {
 			}
 		}
 
-		byte[] byteResponse = NetworkEntitySerializer.serializeEntity(methodResponse);
-		NetworkGateway.sendResponse(response, byteResponse);
+		return methodResponse;
 	}
 
 	/**

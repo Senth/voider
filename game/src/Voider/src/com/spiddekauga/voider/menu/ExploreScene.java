@@ -10,9 +10,9 @@ import com.spiddekauga.voider.game.LevelDef;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.LevelInfoEntity;
 import com.spiddekauga.voider.network.entities.Tags;
-import com.spiddekauga.voider.network.entities.method.IMethodEntity;
 import com.spiddekauga.voider.network.entities.method.LevelGetAllMethod;
 import com.spiddekauga.voider.network.entities.method.LevelGetAllMethod.SortOrders;
+import com.spiddekauga.voider.network.entities.method.IMethodEntity;
 import com.spiddekauga.voider.network.entities.method.LevelGetAllMethodResponse;
 import com.spiddekauga.voider.network.entities.method.ResourceDownloadMethod;
 import com.spiddekauga.voider.network.entities.method.ResourceDownloadMethodResponse;
@@ -151,6 +151,10 @@ public class ExploreScene extends Scene implements ICallerResponseListener {
 
 		case FAILED_SERVER_ERROR:
 			mGui.showErrorMessage("Internal server error");
+			break;
+
+		case FAILED_USER_NOT_LOGGED_IN:
+			mGui.showErrorMessage("You are not logged in to the server");
 			break;
 
 		case SUCCESS_FETCHED_ALL:

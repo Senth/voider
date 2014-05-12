@@ -3,6 +3,8 @@
 	<name>Voider-server</name>
 	<comment></comment>
 	<projects>
+		<project>AppEngineUtils</project>
+		<project>Voider-network</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

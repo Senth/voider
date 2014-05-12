@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -21,14 +22,19 @@ public class BlobUtils {
 	/**
 	 * Get all uploaded blob keys from a request
 	 * @param request the request send to the servlet
-	 * @return Map with all blob keys mapped to a UUID
+	 * @return Map with all blob keys mapped to a UUID, null if no uploads were made
 	 */
 	public static Map<UUID, BlobKey> getBlobKeysFromUpload(HttpServletRequest request) {
 		HashMap<UUID, BlobKey> blobKeys = new HashMap<>();
 
-		Map<String, List<BlobKey>> map = mBlobstore.getUploads(request);
-		for (Entry<String, List<BlobKey>> entry : map.entrySet()) {
-			blobKeys.put(UUID.fromString(entry.getKey()), entry.getValue().get(0));
+		try {
+			Map<String, List<BlobKey>> map = mBlobstore.getUploads(request);
+			for (Entry<String, List<BlobKey>> entry : map.entrySet()) {
+				blobKeys.put(UUID.fromString(entry.getKey()), entry.getValue().get(0));
+			}
+		} catch (IllegalStateException e) {
+			mLogger.warning("No blob uploads found");
+			return null;
 		}
 
 		return blobKeys;
@@ -36,6 +42,6 @@ public class BlobUtils {
 
 	/** Blobstore service */
 	private static final BlobstoreService mBlobstore = BlobstoreServiceFactory.getBlobstoreService();
-	//	/** Logger */
-	//	private static final Logger mLogger = Logger.getLogger(BlobUtils.class.getName());
+	/** Logger */
+	private static final Logger mLogger = Logger.getLogger(BlobUtils.class.getName());
 }

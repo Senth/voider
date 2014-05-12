@@ -5,8 +5,6 @@ import java.util.Date;
 import java.util.UUID;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
@@ -14,11 +12,10 @@ import com.google.appengine.api.datastore.KeyFactory;
 import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.utils.BCrypt;
 import com.spiddekauga.voider.network.entities.IEntity;
-import com.spiddekauga.voider.network.entities.method.NetworkEntitySerializer;
+import com.spiddekauga.voider.network.entities.method.IMethodEntity;
 import com.spiddekauga.voider.network.entities.method.RegisterUserMethod;
 import com.spiddekauga.voider.network.entities.method.RegisterUserMethodResponse;
 import com.spiddekauga.voider.network.entities.method.RegisterUserMethodResponse.Statuses;
-import com.spiddekauga.voider.server.util.NetworkGateway;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
 import com.spiddekauga.voider.server.util.VoiderServlet;
 
@@ -31,20 +28,16 @@ import com.spiddekauga.voider.server.util.VoiderServlet;
 public class RegisterUser extends VoiderServlet {
 
 	@Override
-	protected void onRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		byte[] entityData = NetworkGateway.getEntity(request);
-		IEntity networkEntity = NetworkEntitySerializer.deserializeEntity(entityData);
-
+	protected IEntity onRequest(IMethodEntity methodEntity) throws ServletException, IOException {
 		RegisterUserMethodResponse methodResponse = new RegisterUserMethodResponse();
 		methodResponse.status = Statuses.FAIL_SERVER_ERROR;
 
-		if (networkEntity instanceof RegisterUserMethod) {
-
+		if (methodEntity instanceof RegisterUserMethod) {
 			// Check if username is free
-			if (!DatastoreUtils.exists(DatastoreTables.USERS.toString(), "username", ((RegisterUserMethod) networkEntity).username)) {
+			if (!DatastoreUtils.exists(DatastoreTables.USERS.toString(), "username", ((RegisterUserMethod) methodEntity).username)) {
 				// Check email
-				if (!DatastoreUtils.exists(DatastoreTables.USERS.toString(), "email", ((RegisterUserMethod) networkEntity).email)) {
-					createNewUser((RegisterUserMethod) networkEntity, methodResponse);
+				if (!DatastoreUtils.exists(DatastoreTables.USERS.toString(), "email", ((RegisterUserMethod) methodEntity).email)) {
+					createNewUser((RegisterUserMethod) methodEntity, methodResponse);
 				} else {
 					methodResponse.status = Statuses.FAIL_EMAIL_EXISTS;
 				}
@@ -53,8 +46,7 @@ public class RegisterUser extends VoiderServlet {
 			}
 		}
 
-		byte[] byteResponse = NetworkEntitySerializer.serializeEntity(methodResponse);
-		NetworkGateway.sendResponse(response, byteResponse);
+		return methodResponse;
 	}
 
 	/**

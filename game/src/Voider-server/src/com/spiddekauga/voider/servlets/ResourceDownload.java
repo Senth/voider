@@ -8,8 +8,6 @@ import java.util.List;
 import java.util.UUID;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import com.google.appengine.api.blobstore.BlobKey;
 import com.google.appengine.api.datastore.Entity;
@@ -18,11 +16,11 @@ import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.ResourceBlobEntity;
 import com.spiddekauga.voider.network.entities.UploadTypes;
-import com.spiddekauga.voider.network.entities.method.NetworkEntitySerializer;
+import com.spiddekauga.voider.network.entities.method.IMethodEntity;
 import com.spiddekauga.voider.network.entities.method.ResourceDownloadMethod;
 import com.spiddekauga.voider.network.entities.method.ResourceDownloadMethodResponse;
 import com.spiddekauga.voider.network.entities.method.ResourceDownloadMethodResponse.Statuses;
-import com.spiddekauga.voider.server.util.NetworkGateway;
+import com.spiddekauga.voider.server.util.ResourceUtils;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
 import com.spiddekauga.voider.server.util.VoiderServlet;
 
@@ -41,16 +39,13 @@ public class ResourceDownload extends VoiderServlet {
 	}
 
 	@Override
-	protected void onRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		byte[] byteEntity = NetworkGateway.getEntity(request);
-		IEntity networkEntity = NetworkEntitySerializer.deserializeEntity(byteEntity);
-
+	protected IEntity onRequest(IMethodEntity methodEntity) throws ServletException, IOException {
 		init();
 
 		if (mUser.isLoggedIn()) {
 			boolean success = false;
-			if (networkEntity instanceof ResourceDownloadMethod) {
-				success = setInformationAndDependenciesToResponse(((ResourceDownloadMethod) networkEntity).resourceId);
+			if (methodEntity instanceof ResourceDownloadMethod) {
+				success = setInformationAndDependenciesToResponse(((ResourceDownloadMethod) methodEntity).resourceId);
 			}
 
 			// Set download date for syncing resources
@@ -58,10 +53,11 @@ public class ResourceDownload extends VoiderServlet {
 				setUserDownloadDate();
 				mResponse.status = Statuses.SUCCESS;
 			}
+		} else {
+			mResponse.status = Statuses.FAILED_USER_NOT_LOGGED_IN;
 		}
 
-		byte[] byteResponse = NetworkEntitySerializer.serializeEntity(mResponse);
-		NetworkGateway.sendResponse(response, byteResponse);
+		return mResponse;
 	}
 
 	/**
@@ -111,7 +107,7 @@ public class ResourceDownload extends VoiderServlet {
 			}
 
 			// Information
-			ResourceBlobEntity information = getInformation(resource);
+			ResourceBlobEntity information = ResourceUtils.getBlobInformation(resource);
 			if (information == null) {
 				return false;
 			}
@@ -119,7 +115,7 @@ public class ResourceDownload extends VoiderServlet {
 
 			// Level def? Then add level resource
 			if (information.uploadType == UploadTypes.LEVEL_DEF) {
-				mResponse.resources.add(getLevelInformation(resource));
+				mResponse.resources.add(ResourceUtils.getBlobLevelInformation(resource));
 			}
 
 			// Dependencies
@@ -140,34 +136,7 @@ public class ResourceDownload extends VoiderServlet {
 		return true;
 	}
 
-	/**
-	 * @param levelDef the level def to get information from
-	 * @return information about the actual level
-	 */
-	private ResourceBlobEntity getLevelInformation(Entity levelDef) {
-		ResourceBlobEntity information = new ResourceBlobEntity();
 
-		information.resourceId = DatastoreUtils.getUuidProperty(levelDef, "level_id");
-		information.blobKey = ((BlobKey) levelDef.getProperty("level_blob_key")).getKeyString();
-		information.uploadType = UploadTypes.LEVEL;
-
-		return information;
-	}
-
-	/**
-	 * @param resource get information from the specified resource
-	 * @return information about the resource
-	 */
-	private ResourceBlobEntity getInformation(Entity resource) {
-		ResourceBlobEntity information = new ResourceBlobEntity();
-
-		information.resourceId = DatastoreUtils.getUuidProperty(resource, "resource_id");
-		information.blobKey = ((BlobKey) resource.getProperty("blob_key")).getKeyString();
-		long defTypeId = (long) resource.getProperty("type");
-		information.uploadType = UploadTypes.fromId((int) defTypeId);
-
-		return information;
-	}
 
 	/**
 	 * @param resourceKey get all dependencies of the specified key

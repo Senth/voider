@@ -6,35 +6,29 @@ import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.ResourceBlobEntity;
 
 /**
- * Response for downloading a resource
+ * All resources that should be downloaded (synced) from the server
  * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
-public class ResourceDownloadMethodResponse implements IEntity {
-	/** Status of the response */
+public class SyncPublishMethodResponse implements IEntity {
+	/** All published resources to download */
+	public ArrayList<ResourceBlobEntity> resources = null;
+	/** Status of the sync */
 	public Statuses status = null;
-	/** All files to download */
-	public ArrayList<ResourceBlobEntity> resources = new ArrayList<>();
 
-
-	/**
-	 * Response statuses
-	 */
+	/** Response statuses */
 	public enum Statuses implements ISuccessStatuses {
-		/** Found resource and its dependencies */
+		/** Successfully tested */
 		SUCCESS,
-		/** Failed by internal server error */
-		FAILED_SERVER_INTERAL,
-		/** Failed to connect to the server */
-		FAILED_CONNECTION,
-		/** Failed during download */
-		FAILED_DOWNLOAD,
-		/** User is not logged in */
+		/** User not logged in */
 		FAILED_USER_NOT_LOGGED_IN,
+		/** Failed internal server error */
+		FAILED_INTERNAL,
+		/** Connection failed */
+		FAILED_CONNECTION,
 
 		;
-
 		@Override
 		public boolean isSuccessful() {
 			return name().contains("SUCCESS");

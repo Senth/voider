@@ -1,6 +1,8 @@
 package com.spiddekauga.voider.server.util;
 
 import java.io.IOException;
+import java.util.Map;
+import java.util.UUID;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
@@ -8,6 +10,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+
+import com.google.appengine.api.blobstore.BlobKey;
+import com.spiddekauga.appengine.BlobUtils;
+import com.spiddekauga.voider.network.entities.IEntity;
+import com.spiddekauga.voider.network.entities.method.IMethodEntity;
+import com.spiddekauga.voider.network.entities.method.NetworkEntitySerializer;
 
 
 /**
@@ -18,12 +26,12 @@ import javax.servlet.http.HttpSession;
 public abstract class VoiderServlet extends HttpServlet {
 	/**
 	 * Called by the server to handle a post or get call.
-	 * @param request the server request
-	 * @param response the response to send to the client
+	 * @param methodEntity the entity that was sent to the method
+	 * @return response entity
 	 * @throws IOException if an input or output error is detected when the servlet handles the GET/POST request
 	 * @throws ServletException if the request for the GET/POST could not be handled
 	 */
-	protected abstract void onRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException;
+	protected abstract IEntity onRequest(IMethodEntity methodEntity) throws ServletException, IOException;
 
 	/**
 	 * Initializes the session and all it's variables
@@ -79,9 +87,23 @@ public abstract class VoiderServlet extends HttpServlet {
 	 * @throws ServletException if the request for the GET/POST could not be handled
 	 */
 	private void handleRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		mRequest = request;
+		mResponse = response;
+
+		// Initialize
 		initLogger();
 		initSession(request);
-		onRequest(request, response);
+
+		// Handle request
+		byte[] byteEntity = NetworkGateway.getEntity(mRequest);
+		IMethodEntity methodEntity = (IMethodEntity) NetworkEntitySerializer.deserializeEntity(byteEntity);
+		IEntity responseEntity = onRequest(methodEntity);
+		if (responseEntity != null) {
+			byte[] responseBytes = NetworkEntitySerializer.serializeEntity(responseEntity);
+			NetworkGateway.sendResponse(mResponse, responseBytes);
+		}
+
+		// Save
 		saveSession();
 	}
 
@@ -113,6 +135,21 @@ public abstract class VoiderServlet extends HttpServlet {
 	}
 
 	/**
+	 * @return get blob information from the current requset, null if no uploads
+	 * were made.
+	 */
+	protected Map<UUID, BlobKey> getUploadedBlobs() {
+		return BlobUtils.getBlobKeysFromUpload(mRequest);
+	}
+
+	/**
+	 * @return response of the current request
+	 */
+	protected HttpServletResponse getResponse() {
+		return mResponse;
+	}
+
+	/**
 	 * All session variable enumerations
 	 */
 	protected enum SessionVariableNames {
@@ -120,6 +157,10 @@ public abstract class VoiderServlet extends HttpServlet {
 		USER,
 	}
 
+	/** Current request */
+	private HttpServletRequest mRequest;
+	/** Current response */
+	private HttpServletResponse mResponse;
 	/** Current session */
 	private HttpSession mSession = null;
 	/** Current user */

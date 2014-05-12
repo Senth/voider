@@ -31,6 +31,8 @@ public class LevelGetAllMethodResponse implements IEntity {
 		FAILED_SERVER_ERROR,
 		/** Failed to connect to the server */
 		FAILED_SERVER_CONNECTION,
+		/** User not logged in */
+		FAILED_USER_NOT_LOGGED_IN,
 
 		;
 		@Override

@@ -22,6 +22,8 @@ public class PublishMethodResponse implements IEntity {
 		FAILED_SERVER_ERROR,
 		/** Failed could not connect to the server */
 		FAILED_SERVER_CONNECTION,
+		/** User is not logged in */
+		FAILED_USER_NOT_LOGGED_IN,
 
 		;
 		@Override

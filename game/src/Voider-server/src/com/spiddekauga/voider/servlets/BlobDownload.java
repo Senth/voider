@@ -3,16 +3,13 @@ package com.spiddekauga.voider.servlets;
 import java.io.IOException;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import com.google.appengine.api.blobstore.BlobKey;
 import com.google.appengine.api.blobstore.BlobstoreService;
 import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.method.BlobDownloadMethod;
-import com.spiddekauga.voider.network.entities.method.NetworkEntitySerializer;
-import com.spiddekauga.voider.server.util.NetworkGateway;
+import com.spiddekauga.voider.network.entities.method.IMethodEntity;
 import com.spiddekauga.voider.server.util.VoiderServlet;
 
 /**
@@ -23,14 +20,13 @@ import com.spiddekauga.voider.server.util.VoiderServlet;
 @SuppressWarnings("serial")
 public class BlobDownload extends VoiderServlet {
 	@Override
-	protected void onRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		byte[] byteEntity = NetworkGateway.getEntity(request);
-		IEntity networkEntity = NetworkEntitySerializer.deserializeEntity(byteEntity);
-
-		if (networkEntity instanceof BlobDownloadMethod) {
-			BlobKey blobKey = new BlobKey(((BlobDownloadMethod) networkEntity).blobKey);
-			mBlobstoreService.serve(blobKey, response);
+	protected IEntity onRequest(IMethodEntity methodEntity) throws ServletException, IOException {
+		if (methodEntity instanceof BlobDownloadMethod) {
+			BlobKey blobKey = new BlobKey(((BlobDownloadMethod) methodEntity).blobKey);
+			mBlobstoreService.serve(blobKey, getResponse());
 		}
+
+		return null;
 	}
 
 	/** Blob store service */

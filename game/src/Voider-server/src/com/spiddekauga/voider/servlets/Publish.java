@@ -3,15 +3,12 @@ package com.spiddekauga.voider.servlets;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import com.google.appengine.api.blobstore.BlobKey;
 import com.google.appengine.api.datastore.Entity;
@@ -20,7 +17,6 @@ import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.search.Document;
 import com.google.appengine.api.search.Document.Builder;
 import com.google.appengine.api.search.Field;
-import com.spiddekauga.appengine.BlobUtils;
 import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.appengine.SearchUtils;
 import com.spiddekauga.voider.network.entities.BulletDefEntity;
@@ -29,11 +25,10 @@ import com.spiddekauga.voider.network.entities.DefEntity;
 import com.spiddekauga.voider.network.entities.EnemyDefEntity;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.LevelDefEntity;
-import com.spiddekauga.voider.network.entities.method.NetworkEntitySerializer;
+import com.spiddekauga.voider.network.entities.method.IMethodEntity;
 import com.spiddekauga.voider.network.entities.method.PublishMethod;
 import com.spiddekauga.voider.network.entities.method.PublishMethodResponse;
 import com.spiddekauga.voider.network.entities.method.PublishMethodResponse.Statuses;
-import com.spiddekauga.voider.server.util.NetworkGateway;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
 import com.spiddekauga.voider.server.util.ServerConfig.TokenSizes;
 import com.spiddekauga.voider.server.util.UserRepo;
@@ -47,39 +42,28 @@ import com.spiddekauga.voider.server.util.VoiderServlet;
 @SuppressWarnings("serial")
 public class Publish extends VoiderServlet {
 	@Override
-	protected void onRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		if (!mUser.isLoggedIn()) {
-			return;
-		}
-
-		mLogger.fine("Publish method called");
-
-		mLogger.finer("Content-Type: " + request.getHeader("Content-Type"));
-
-		Map<?, ?> params = request.getParameterMap();
-		Iterator<?> it = params.entrySet().iterator();
-		while (it.hasNext()) {
-			mLogger.fine(it.next().toString());
-		}
-
+	protected IEntity onRequest(IMethodEntity methodEntity) throws ServletException, IOException {
 		PublishMethodResponse methodResponse = new PublishMethodResponse();
 		methodResponse.status = Statuses.FAILED_SERVER_ERROR;
-		boolean success = false;
 
-		byte[] byteEntity = NetworkGateway.getEntity(request);
-		IEntity networkEntity = NetworkEntitySerializer.deserializeEntity(byteEntity);
+		if (!mUser.isLoggedIn()) {
+			methodResponse.status = Statuses.FAILED_USER_NOT_LOGGED_IN;
+			return methodResponse;
+		}
+
+		boolean success = false;
 
 		mSearchDocumentsToAdd.clear();
 
-		if (networkEntity instanceof PublishMethod) {
+		if (methodEntity instanceof PublishMethod) {
 			mLogger.fine("Is a publish method");
-			Map<UUID, BlobKey> blobKeys = BlobUtils.getBlobKeysFromUpload(request);
+			Map<UUID, BlobKey> blobKeys = getUploadedBlobs();
 			Map<UUID, Key> datastoreKeys = new HashMap<>();
 
 			// Add entities to datastore and search
 			mLogger.fine("Add entities to datastore");
 			success = true;
-			for (DefEntity defEntity : ((PublishMethod) networkEntity).defs) {
+			for (DefEntity defEntity : ((PublishMethod) methodEntity).defs) {
 				Key datastoreKey = addEntityToDatastore(defEntity, blobKeys, datastoreKeys);
 
 				if (datastoreKey != null) {
@@ -99,7 +83,7 @@ public class Publish extends VoiderServlet {
 			// Add dependencies
 			if (success) {
 				mLogger.fine("Adding resource dependencies");
-				for (DefEntity defEntity : ((PublishMethod) networkEntity).defs) {
+				for (DefEntity defEntity : ((PublishMethod) methodEntity).defs) {
 					success = addDependencies(defEntity, datastoreKeys, blobKeys);
 
 					if (!success) {
@@ -130,9 +114,7 @@ public class Publish extends VoiderServlet {
 			}
 		}
 
-
-		byte[] byteResponse = NetworkEntitySerializer.serializeEntity(methodResponse);
-		NetworkGateway.sendResponse(response, byteResponse);
+		return methodResponse;
 	}
 
 	/**

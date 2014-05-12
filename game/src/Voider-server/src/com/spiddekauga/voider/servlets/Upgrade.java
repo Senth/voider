@@ -5,12 +5,12 @@ import java.util.Iterator;
 import java.util.UUID;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Query;
 import com.spiddekauga.appengine.DatastoreUtils;
+import com.spiddekauga.voider.network.entities.IEntity;
+import com.spiddekauga.voider.network.entities.method.IMethodEntity;
 import com.spiddekauga.voider.server.util.VoiderServlet;
 
 /**
@@ -21,7 +21,7 @@ import com.spiddekauga.voider.server.util.VoiderServlet;
 @SuppressWarnings("serial")
 public class Upgrade extends VoiderServlet {
 	@Override
-	protected void onRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected IEntity onRequest(IMethodEntity methodEntity) throws ServletException, IOException {
 		// Update private key in user entities
 		Query query = new Query("users");
 		Iterator<Entity> entityIt = DatastoreUtils.prepare(query).asIterator();
@@ -34,5 +34,7 @@ public class Upgrade extends VoiderServlet {
 			DatastoreUtils.setProperty(entity, "private_key", uuid);
 			DatastoreUtils.put(entity);
 		}
+
+		return null;
 	}
 }

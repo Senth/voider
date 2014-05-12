@@ -21,4 +21,24 @@ public class LevelGetCommentMethodResponse implements IEntity {
 	public String cursor = null;
 	/** True if no more comments exists */
 	public boolean fetchedAll = false;
+	/** Response status */
+	public Statuses status = null;
+
+	/** Response statuses */
+	public enum Statuses implements ISuccessStatuses {
+		/** SUCCESS */
+		SUCCESS,
+		/** Failed internal error */
+		FAILED_INTERNAL,
+		/** Failed to connect to server */
+		FAILED_CONNECTION,
+		/** Failed user is not logged in */
+		FAILED_USER_NOT_LOGGED_IN,
+
+		;
+		@Override
+		public boolean isSuccessful() {
+			return name().contains("SUCCESS");
+		}
+	}
 }

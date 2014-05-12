@@ -13,8 +13,6 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
@@ -24,9 +22,8 @@ import com.spiddekauga.voider.network.entities.BugReportEntity;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.method.BugReportMethod;
 import com.spiddekauga.voider.network.entities.method.BugReportMethodResponse;
+import com.spiddekauga.voider.network.entities.method.IMethodEntity;
 import com.spiddekauga.voider.network.entities.method.BugReportMethodResponse.Statuses;
-import com.spiddekauga.voider.network.entities.method.NetworkEntitySerializer;
-import com.spiddekauga.voider.server.util.NetworkGateway;
 import com.spiddekauga.voider.server.util.ServerConfig;
 import com.spiddekauga.voider.server.util.VoiderServlet;
 
@@ -38,19 +35,14 @@ import com.spiddekauga.voider.server.util.VoiderServlet;
 @SuppressWarnings("serial")
 public class BugReport extends VoiderServlet {
 	@Override
-	protected void onRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected IEntity onRequest(IMethodEntity methodEntity) throws ServletException, IOException {
 		BugReportMethodResponse methodResponse = new BugReportMethodResponse();
 		methodResponse.status = Statuses.FAILED_SERVER_ERROR;
 
-
-		// Get method entity
-		byte[] entityData = NetworkGateway.getEntity(request);
-		IEntity networkEntity = NetworkEntitySerializer.deserializeEntity(entityData);
-
-		if (networkEntity instanceof BugReportMethod) {
+		if (methodEntity instanceof BugReportMethod) {
 			methodResponse.status = Statuses.SUCCESS;
 
-			for (BugReportEntity bugReportEntity : ((BugReportMethod) networkEntity).bugs) {
+			for (BugReportEntity bugReportEntity : ((BugReportMethod) methodEntity).bugs) {
 				boolean success = sendBugReport(bugReportEntity);
 
 				if (!success) {
@@ -60,8 +52,7 @@ public class BugReport extends VoiderServlet {
 			}
 		}
 
-		byte[] byteResponse = NetworkEntitySerializer.serializeEntity(methodResponse);
-		NetworkGateway.sendResponse(response, byteResponse);
+		return methodResponse;
 	}
 
 	/**

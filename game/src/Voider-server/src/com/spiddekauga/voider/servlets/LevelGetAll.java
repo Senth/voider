@@ -6,8 +6,6 @@ import java.util.Date;
 import java.util.List;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.Entity;
@@ -26,18 +24,17 @@ import com.google.appengine.api.search.Results;
 import com.google.appengine.api.search.ScoredDocument;
 import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.appengine.SearchUtils;
-import com.spiddekauga.voider.network.entities.UploadTypes;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.LevelDefEntity;
 import com.spiddekauga.voider.network.entities.LevelInfoEntity;
 import com.spiddekauga.voider.network.entities.LevelStatsEntity;
 import com.spiddekauga.voider.network.entities.Tags;
+import com.spiddekauga.voider.network.entities.UploadTypes;
 import com.spiddekauga.voider.network.entities.UserLevelStatsEntity;
+import com.spiddekauga.voider.network.entities.method.IMethodEntity;
 import com.spiddekauga.voider.network.entities.method.LevelGetAllMethod;
 import com.spiddekauga.voider.network.entities.method.LevelGetAllMethodResponse;
 import com.spiddekauga.voider.network.entities.method.LevelGetAllMethodResponse.Statuses;
-import com.spiddekauga.voider.network.entities.method.NetworkEntitySerializer;
-import com.spiddekauga.voider.server.util.NetworkGateway;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
 import com.spiddekauga.voider.server.util.ServerConfig.FetchSizes;
 import com.spiddekauga.voider.server.util.UserRepo;
@@ -57,26 +54,20 @@ public class LevelGetAll extends VoiderServlet {
 	}
 
 	@Override
-	protected void onRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		if (!mUser.isLoggedIn()) {
-			return;
-		}
-
+	protected IEntity onRequest(IMethodEntity methodEntity) throws ServletException, IOException {
 		init();
 
-		byte[] byteEntity = NetworkGateway.getEntity(request);
-		IEntity networkEntity = NetworkEntitySerializer.deserializeEntity(byteEntity);
+		if (mUser.isLoggedIn()) {
+			if (methodEntity instanceof LevelGetAllMethod) {
+				mParameters = (LevelGetAllMethod) methodEntity;
 
-
-		if (networkEntity instanceof LevelGetAllMethod) {
-			mParameters = (LevelGetAllMethod) networkEntity;
-
-			getAndSetLevelResponse();
+				getAndSetLevelResponse();
+			}
+		} else {
+			mResponse.status = Statuses.FAILED_USER_NOT_LOGGED_IN;
 		}
 
-
-		byte[] byteResponse = NetworkEntitySerializer.serializeEntity(mResponse);
-		NetworkGateway.sendResponse(response, byteResponse);
+		return mResponse;
 	}
 
 	/**

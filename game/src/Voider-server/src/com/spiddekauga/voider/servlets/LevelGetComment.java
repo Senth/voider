@@ -5,8 +5,6 @@ import java.util.Date;
 import java.util.UUID;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.Entity;
@@ -21,10 +19,10 @@ import com.google.appengine.api.datastore.QueryResultList;
 import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.LevelCommentEntity;
+import com.spiddekauga.voider.network.entities.method.IMethodEntity;
 import com.spiddekauga.voider.network.entities.method.LevelGetCommentMethod;
 import com.spiddekauga.voider.network.entities.method.LevelGetCommentMethodResponse;
-import com.spiddekauga.voider.network.entities.method.NetworkEntitySerializer;
-import com.spiddekauga.voider.server.util.NetworkGateway;
+import com.spiddekauga.voider.network.entities.method.LevelGetCommentMethodResponse.Statuses;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
 import com.spiddekauga.voider.server.util.ServerConfig.FetchSizes;
 import com.spiddekauga.voider.server.util.UserRepo;
@@ -39,35 +37,35 @@ import com.spiddekauga.voider.server.util.VoiderServlet;
 public class LevelGetComment extends VoiderServlet {
 
 	@Override
-	protected void onRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		if (!mUser.isLoggedIn()) {
-			return;
-		}
+	protected IEntity onRequest(IMethodEntity methodEntity) throws ServletException, IOException {
 
 		LevelGetCommentMethodResponse methodResponse = new LevelGetCommentMethodResponse();
+		methodResponse.status = Statuses.FAILED_INTERNAL;
 
-		byte[] byteEntity = NetworkGateway.getEntity(request);
-		IEntity networkEntity = NetworkEntitySerializer.deserializeEntity(byteEntity);
+		if (mUser.isLoggedIn()) {
+			if (methodEntity instanceof LevelGetCommentMethod) {
+				UUID levelId = ((LevelGetCommentMethod) methodEntity).levelId;
+				String cursor = ((LevelGetCommentMethod) methodEntity).cursor;
 
-		if (networkEntity instanceof LevelGetCommentMethod) {
-			UUID levelId = ((LevelGetCommentMethod) networkEntity).levelId;
-			String cursor = ((LevelGetCommentMethod) networkEntity).cursor;
+				// Get level key
+				Key levelKey = DatastoreUtils.getSingleKey(DatastoreTables.PUBLISHED.toString(), "resource_id", levelId);
 
-			// Get level key
-			Key levelKey = DatastoreUtils.getSingleKey(DatastoreTables.PUBLISHED.toString(), "resource_id", levelId);
-
-			QueryResultList<Entity> comments = getComments(levelKey, cursor);
-			addCommentsToResponse(comments, methodResponse);
+				QueryResultList<Entity> comments = getComments(levelKey, cursor);
+				addCommentsToResponse(comments, methodResponse);
 
 
-			// Get player's comment for first query
-			if (cursor == null) {
-				methodResponse.userComment = getUserComment(levelKey);
+				// Get player's comment for first query
+				if (cursor == null) {
+					methodResponse.userComment = getUserComment(levelKey);
+				}
+
+				methodResponse.status = Statuses.SUCCESS;
 			}
+		} else {
+			methodResponse.status = Statuses.FAILED_USER_NOT_LOGGED_IN;
 		}
 
-		byte[] byteResponse = NetworkEntitySerializer.serializeEntity(methodResponse);
-		NetworkGateway.sendResponse(response, byteResponse);
+		return methodResponse;
 	}
 
 	/**
