@@ -24,15 +24,16 @@ import com.spiddekauga.voider.network.entities.ResourceBlobEntity;
 import com.spiddekauga.voider.network.entities.Tags;
 import com.spiddekauga.voider.network.entities.UploadTypes;
 import com.spiddekauga.voider.network.entities.method.BlobDownloadMethod;
+import com.spiddekauga.voider.network.entities.method.IMethodEntity;
 import com.spiddekauga.voider.network.entities.method.LevelGetAllMethod;
 import com.spiddekauga.voider.network.entities.method.LevelGetAllMethod.SortOrders;
-import com.spiddekauga.voider.network.entities.method.IMethodEntity;
 import com.spiddekauga.voider.network.entities.method.LevelGetAllMethodResponse;
 import com.spiddekauga.voider.network.entities.method.PublishMethod;
 import com.spiddekauga.voider.network.entities.method.PublishMethodResponse;
 import com.spiddekauga.voider.network.entities.method.PublishMethodResponse.Statuses;
 import com.spiddekauga.voider.network.entities.method.ResourceDownloadMethod;
 import com.spiddekauga.voider.network.entities.method.ResourceDownloadMethodResponse;
+import com.spiddekauga.voider.network.entities.method.SyncPublishMethod;
 import com.spiddekauga.voider.repo.WebGateway.FieldNameFileWrapper;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.IResource;
@@ -61,6 +62,19 @@ public class ResourceWebRepo extends WebRepo {
 		}
 
 		return mInstance;
+	}
+
+	/**
+	 * Sync all downloaded levels. I.e. download all publish levels that have
+	 * been downloaded on other devices
+	 * @param lastSync last syncronized date
+	 * @param responseListeners listens to the web response.
+	 */
+	void syncDownloaded(Date lastSync, ICallerResponseListener... responseListeners) {
+		SyncPublishMethod method = new SyncPublishMethod();
+		method.lastSync = lastSync;
+
+		sendInNewThread(method, responseListeners);
 	}
 
 	/**
