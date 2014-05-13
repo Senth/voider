@@ -26,7 +26,6 @@ import com.spiddekauga.voider.network.entities.UploadTypes;
 import com.spiddekauga.voider.network.entities.method.BlobDownloadMethod;
 import com.spiddekauga.voider.network.entities.method.IMethodEntity;
 import com.spiddekauga.voider.network.entities.method.LevelGetAllMethod;
-import com.spiddekauga.voider.network.entities.method.SyncDownloadMethodResponse;
 import com.spiddekauga.voider.network.entities.method.LevelGetAllMethod.SortOrders;
 import com.spiddekauga.voider.network.entities.method.LevelGetAllMethodResponse;
 import com.spiddekauga.voider.network.entities.method.PublishMethod;
@@ -35,6 +34,7 @@ import com.spiddekauga.voider.network.entities.method.PublishMethodResponse.Stat
 import com.spiddekauga.voider.network.entities.method.ResourceDownloadMethod;
 import com.spiddekauga.voider.network.entities.method.ResourceDownloadMethodResponse;
 import com.spiddekauga.voider.network.entities.method.SyncDownloadMethod;
+import com.spiddekauga.voider.network.entities.method.SyncDownloadMethodResponse;
 import com.spiddekauga.voider.repo.WebGateway.FieldNameFileWrapper;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.IResource;
@@ -287,13 +287,18 @@ public class ResourceWebRepo extends WebRepo {
 		for (ResourceBlobEntity resourceInfo : resources) {
 			BlobDownloadMethod blobDownloadMethod = new BlobDownloadMethod();
 			blobDownloadMethod.blobKey = resourceInfo.blobKey;
-			String filePath = Gdx.files.getExternalStoragePath();
-			filePath += ResourceLocalRepo.getFilepath(resourceInfo.resourceId);
 
-			resourceInfo.downloaded = serializeAndDownload(blobDownloadMethod, filePath);
+			String resourceFileName = ResourceLocalRepo.getFilepath(resourceInfo.resourceId);
 
-			if (!resourceInfo.downloaded)  {
-				return false;
+			// Only download if we don't have it
+			if (!Gdx.files.external(resourceFileName).exists()) {
+				String filePath = Gdx.files.getExternalStoragePath() + resourceFileName;
+
+				resourceInfo.downloaded = serializeAndDownload(blobDownloadMethod, filePath);
+
+				if (!resourceInfo.downloaded)  {
+					return false;
+				}
 			}
 		}
 

@@ -1,18 +1,19 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-    <classpathentry kind="src" path="src"/>
-    <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-    <classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
-    <classpathentry combineaccessrules="false" exported="true" kind="src" path="/SpiddekaugaUtils"/>
-    <classpathentry combineaccessrules="false" exported="true" kind="src" path="/Voider-network"/>
-    <classpathentry kind="output" path="bin"/>
-    <classpathentry exported="true" kind="lib" path="libs/commons-codec-1.6.jar"/>
-    <classpathentry exported="true" kind="lib" path="libs/commons-logging-1.1.3.jar"/>
-    <classpathentry exported="true" kind="lib" path="libs/fluent-hc-4.3.2.jar" sourcepath="libs/fluent-hc-src.zip"/>
-    <classpathentry kind="lib" path="libs/gdx-sqlite.jar" sourcepath="libs/gdx-sqlite-src.jar"/>
-    <classpathentry exported="true" kind="lib" path="libs/gdx.jar" sourcepath="libs/gdx-sources.jar"/>
-    <classpathentry kind="lib" path="libs/httpclient-4.3.2.jar" sourcepath="libs/httpclient-src.zip"/>
-    <classpathentry exported="true" kind="lib" path="libs/httpclient-cache-4.3.2.jar" sourcepath="libs/httpclient-cache-src.zip"/>
-    <classpathentry exported="true" kind="lib" path="libs/httpcore-4.3.1.jar"/>
-    <classpathentry exported="true" kind="lib" path="libs/httpmime-4.3.2.jar" sourcepath="libs/httpmime-src.zip"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/SpiddekaugaUtils"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/Voider-network"/>
+	<classpathentry exported="true" kind="lib" path="libs/commons-codec-1.6.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/commons-logging-1.1.3.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/fluent-hc-4.3.2.jar" sourcepath="libs/fluent-hc-src.zip"/>
+	<classpathentry kind="lib" path="libs/gdx-sqlite.jar" sourcepath="libs/gdx-sqlite-src.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/gdx.jar" sourcepath="libs/gdx-sources.jar"/>
+	<classpathentry kind="lib" path="libs/httpclient-4.3.2.jar" sourcepath="libs/httpclient-src.zip"/>
+	<classpathentry exported="true" kind="lib" path="libs/httpclient-cache-4.3.2.jar" sourcepath="libs/httpclient-cache-src.zip"/>
+	<classpathentry exported="true" kind="lib" path="libs/httpcore-4.3.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/httpmime-4.3.2.jar" sourcepath="libs/httpmime-src.zip"/>
+	<classpathentry kind="lib" path="libs/jacc.jar" sourcepath="libs/jacc-src.zip"/>
+	<classpathentry kind="output" path="bin"/>
 </classpath>

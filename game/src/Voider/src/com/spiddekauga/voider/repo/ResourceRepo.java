@@ -132,9 +132,7 @@ public class ResourceRepo implements ICallerResponseListener {
 	 */
 	private void handleSyncDownloadResponse(SyncDownloadMethod method, SyncDownloadMethodResponse response) {
 		if (response.status.isSuccessful()) {
-			for (ResourceBlobEntity resourceInfo : response.resources) {
-				ResourceLocalRepo.addDownloaded(resourceInfo.resourceId, ExternalTypes.fromUploadType(resourceInfo.uploadType));
-			}
+			addDownloaded(response.resources);
 
 			ResourceLocalRepo.setDownloadSyncDate(response.syncTime);
 		}
@@ -148,9 +146,17 @@ public class ResourceRepo implements ICallerResponseListener {
 	private void handleDownloadResponse(ResourceDownloadMethod method, ResourceDownloadMethodResponse response) {
 		// Add all downloaded resources to the local database
 		if (response.status.isSuccessful()) {
-			for (ResourceBlobEntity resourceInfo : response.resources) {
-				ResourceLocalRepo.addDownloaded(resourceInfo.resourceId, ExternalTypes.fromUploadType(resourceInfo.uploadType));
-			}
+			addDownloaded(response.resources);
+		}
+	}
+
+	/**
+	 * Add downloaded resources to the database
+	 * @param resources all resources that could've been downloaded
+	 */
+	private void addDownloaded(ArrayList<ResourceBlobEntity> resources) {
+		for (ResourceBlobEntity resourceInfo : resources) {
+			ResourceLocalRepo.addDownloaded(resourceInfo.resourceId, ExternalTypes.fromUploadType(resourceInfo.uploadType));
 		}
 	}
 
