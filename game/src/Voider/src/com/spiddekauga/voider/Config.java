@@ -596,7 +596,39 @@ public class Config {
 		public final static String DB_FILENAME = "Voider.db";
 		/** Database file */
 		public final static String DB_FILEPATH;
+		/** User storage */
+		private static String mUserStorage;
+		/** User preferences prefix */
+		private static String mUserPreferencesPrefix;
 
+		/**
+		 * @return user preferences prefix
+		 */
+		public static String getUserPreferencesPrefix() {
+			return mUserPreferencesPrefix;
+		}
+
+		/**
+		 * @return user storage path
+		 */
+		public static String getUserStorage() {
+			return mUserStorage;
+		}
+
+		/**
+		 * Set the user paths
+		 * @param username username of the user to get the path
+		 */
+		public static void setUserPaths(String username) {
+			mUserStorage = STORAGE + username + "/";
+			mUserPreferencesPrefix = PREFERENCE_PREFIX + "_" + username + "_";
+
+			// Create folder if it doesn't exist
+			FileHandle folder = Gdx.files.external(mUserStorage);
+			if (!folder.exists()) {
+				folder.mkdirs();
+			}
+		}
 
 		static {
 			// Set storage
@@ -614,13 +646,15 @@ public class Config {
 				PREFERENCE_PREFIX = "Voider-unknown";
 			}
 			STORAGE = PREFERENCE_PREFIX + "/";
+			setUserPaths("(None)");
 
-			// Create Voider folder if it doesn't exist
-			FileHandle file = Gdx.files.external(STORAGE);
-			if (!file.exists()) {
-				file.mkdirs();
-			}
+			//			// Create Voider folder if it doesn't exist
+			//			FileHandle file = Gdx.files.external(STORAGE);
+			//			if (!file.exists()) {
+			//				file.mkdirs();
+			//			}
 
+			/** @todo update DB filepath on user login */
 			DB_FILEPATH = STORAGE + DB_FILENAME;
 		}
 	}

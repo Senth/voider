@@ -18,9 +18,9 @@ import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.ResourceBlobEntity;
 import com.spiddekauga.voider.network.entities.UploadTypes;
 import com.spiddekauga.voider.network.entities.method.IMethodEntity;
-import com.spiddekauga.voider.network.entities.method.SyncPublishMethod;
-import com.spiddekauga.voider.network.entities.method.SyncPublishMethodResponse;
-import com.spiddekauga.voider.network.entities.method.SyncPublishMethodResponse.Statuses;
+import com.spiddekauga.voider.network.entities.method.SyncDownloadMethod;
+import com.spiddekauga.voider.network.entities.method.SyncDownloadMethodResponse;
+import com.spiddekauga.voider.network.entities.method.SyncDownloadMethodResponse.Statuses;
 import com.spiddekauga.voider.server.util.ResourceUtils;
 import com.spiddekauga.voider.server.util.VoiderServlet;
 
@@ -31,15 +31,16 @@ import com.spiddekauga.voider.server.util.VoiderServlet;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
-public class SyncPublish extends VoiderServlet {
+public class SyncDownload extends VoiderServlet {
 	@Override
 	protected IEntity onRequest(IMethodEntity methodEntity) throws ServletException, IOException {
-		SyncPublishMethodResponse response = new SyncPublishMethodResponse();
+		SyncDownloadMethodResponse response = new SyncDownloadMethodResponse();
 		response.status = Statuses.FAILED_INTERNAL;
 
 		if (mUser.isLoggedIn()) {
-			if (methodEntity instanceof SyncPublishMethod) {
-				response.resources = getResourcesToSync(((SyncPublishMethod) methodEntity).lastSync);
+			if (methodEntity instanceof SyncDownloadMethod) {
+				response.syncTime = new Date();
+				response.resources = getResourcesToSync(((SyncDownloadMethod) methodEntity).lastSync);
 				response.status = Statuses.SUCCESS;
 			}
 		} else {

@@ -2,14 +2,17 @@ package com.spiddekauga.voider.utils;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Observable;
 import java.util.UUID;
+
+import com.spiddekauga.voider.Config;
 
 /**
  * User information class
  * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public class User {
+public class User extends Observable {
 	/**
 	 * @return global instance of this user, logged in or logged out.
 	 * @note Users can still be created, this is not a singleton class
@@ -32,6 +35,27 @@ public class User {
 	 */
 	public void setUsername(String username) {
 		mUsername = username;
+	}
+
+	/**
+	 * Logs out the user
+	 */
+	public void logout() {
+		mEmail = null;
+		mOnline = false;
+		mPassword = null;
+		mPrivateKey = null;
+		mServerKey = null;
+		mUsername = "(None)";
+		mDateFormat = DATE_FORMAT_DEFAULT;
+
+		// Update user path
+		if (this == mGlobalUser) {
+			Config.File.setUserPaths(mUsername);
+		}
+
+		setChanged();
+		notifyObservers(UserEvents.LOGOUT);
 	}
 
 	/**
@@ -58,6 +82,14 @@ public class User {
 		mUsername = username;
 		mServerKey = serverKey;
 		mOnline = online;
+
+		// Update user path
+		if (this == mGlobalUser) {
+			Config.File.setUserPaths(mUsername);
+		}
+
+		setChanged();
+		notifyObservers(UserEvents.LOGIN);
 	}
 
 	/**
@@ -150,8 +182,20 @@ public class User {
 		return mDateFormat.format(date);
 	}
 
+	/**
+	 * Observer events
+	 */
+	public enum UserEvents {
+		/** User has logged in */
+		LOGIN,
+		/** User has logged out */
+		LOGOUT,
+	}
+
+	/** Default datetime format */
+	private final static SimpleDateFormat DATE_FORMAT_DEFAULT = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
 	/** Date to string format */
-	private SimpleDateFormat mDateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+	private SimpleDateFormat mDateFormat = DATE_FORMAT_DEFAULT;
 	/** Global user */
 	private static User mGlobalUser = new User();
 	/** Current username */

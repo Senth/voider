@@ -1,6 +1,7 @@
 package com.spiddekauga.voider.network.entities.method;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.ResourceBlobEntity;
@@ -11,9 +12,11 @@ import com.spiddekauga.voider.network.entities.ResourceBlobEntity;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
-public class SyncPublishMethodResponse implements IEntity {
+public class SyncDownloadMethodResponse implements IEntity {
 	/** All published resources to download */
 	public ArrayList<ResourceBlobEntity> resources = null;
+	/** Sync time */
+	public Date syncTime = null;
 	/** Status of the sync */
 	public Statuses status = null;
 
@@ -27,6 +30,8 @@ public class SyncPublishMethodResponse implements IEntity {
 		FAILED_INTERNAL,
 		/** Connection failed */
 		FAILED_CONNECTION,
+		/** Failed to download resources */
+		FAILED_DOWNLOAD,
 
 		;
 		@Override

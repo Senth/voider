@@ -26,6 +26,7 @@ import com.spiddekauga.voider.network.entities.UploadTypes;
 import com.spiddekauga.voider.network.entities.method.BlobDownloadMethod;
 import com.spiddekauga.voider.network.entities.method.IMethodEntity;
 import com.spiddekauga.voider.network.entities.method.LevelGetAllMethod;
+import com.spiddekauga.voider.network.entities.method.SyncDownloadMethodResponse;
 import com.spiddekauga.voider.network.entities.method.LevelGetAllMethod.SortOrders;
 import com.spiddekauga.voider.network.entities.method.LevelGetAllMethodResponse;
 import com.spiddekauga.voider.network.entities.method.PublishMethod;
@@ -33,7 +34,7 @@ import com.spiddekauga.voider.network.entities.method.PublishMethodResponse;
 import com.spiddekauga.voider.network.entities.method.PublishMethodResponse.Statuses;
 import com.spiddekauga.voider.network.entities.method.ResourceDownloadMethod;
 import com.spiddekauga.voider.network.entities.method.ResourceDownloadMethodResponse;
-import com.spiddekauga.voider.network.entities.method.SyncPublishMethod;
+import com.spiddekauga.voider.network.entities.method.SyncDownloadMethod;
 import com.spiddekauga.voider.repo.WebGateway.FieldNameFileWrapper;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.IResource;
@@ -67,11 +68,11 @@ public class ResourceWebRepo extends WebRepo {
 	/**
 	 * Sync all downloaded levels. I.e. download all publish levels that have
 	 * been downloaded on other devices
-	 * @param lastSync last syncronized date
+	 * @param lastSync last synchronized date
 	 * @param responseListeners listens to the web response.
 	 */
 	void syncDownloaded(Date lastSync, ICallerResponseListener... responseListeners) {
-		SyncPublishMethod method = new SyncPublishMethod();
+		SyncDownloadMethod method = new SyncDownloadMethod();
 		method.lastSync = lastSync;
 
 		sendInNewThread(method, responseListeners);
@@ -232,13 +233,18 @@ public class ResourceWebRepo extends WebRepo {
 		}
 
 		// Get Levels
-		if (methodEntity instanceof LevelGetAllMethod) {
+		else if (methodEntity instanceof LevelGetAllMethod) {
 			responseToSend = handleLevelGetResponse((LevelGetAllMethod) methodEntity, response);
 		}
 
 		// Download resources
-		if (methodEntity instanceof ResourceDownloadMethod) {
+		else if (methodEntity instanceof ResourceDownloadMethod) {
 			responseToSend = handleResourceDownloadResponse(response);
+		}
+
+		// Sync downloaded
+		else if (methodEntity instanceof SyncDownloadMethod) {
+			responseToSend = handleSyncDownloadResponse(response);
 		}
 
 		// Send the actual response
@@ -250,26 +256,63 @@ public class ResourceWebRepo extends WebRepo {
 	}
 
 	/**
+	 * Handle response from sync downloaded
+	 * @param response the response from the server
+	 * @return a correct response for syncing downloaded resources
+	 */
+	private IEntity handleSyncDownloadResponse(IEntity response) {
+		// Download all resources
+		if (response instanceof SyncDownloadMethodResponse) {
+
+			boolean success = downloadResources(((SyncDownloadMethodResponse) response).resources);
+
+			if (!success) {
+				((SyncDownloadMethodResponse) response).status = SyncDownloadMethodResponse.Statuses.FAILED_DOWNLOAD;
+			}
+
+			return response;
+		} else {
+			SyncDownloadMethodResponse methodResponse = new SyncDownloadMethodResponse();
+			methodResponse.status = SyncDownloadMethodResponse.Statuses.FAILED_CONNECTION;
+			return methodResponse;
+		}
+	}
+
+	/**
+	 * Download all specified resources
+	 * @param resources all resources to download.
+	 * @return true if all resources were downloaded.
+	 */
+	private boolean downloadResources(ArrayList<ResourceBlobEntity> resources) {
+		for (ResourceBlobEntity resourceInfo : resources) {
+			BlobDownloadMethod blobDownloadMethod = new BlobDownloadMethod();
+			blobDownloadMethod.blobKey = resourceInfo.blobKey;
+			String filePath = Gdx.files.getExternalStoragePath();
+			filePath += ResourceLocalRepo.getFilepath(resourceInfo.resourceId);
+
+			resourceInfo.downloaded = serializeAndDownload(blobDownloadMethod, filePath);
+
+			if (!resourceInfo.downloaded)  {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	/**
 	 * Handle response from downloading a resource
 	 * @param response the response from the server
 	 * @return a correct response for downloading a resource and its dependencies
 	 */
 	private IEntity handleResourceDownloadResponse(IEntity response) {
-		// Download all levels
+		// Download all resources
 		if (response instanceof ResourceDownloadMethodResponse) {
 
-			for (ResourceBlobEntity resourceInfo : ((ResourceDownloadMethodResponse) response).resources) {
-				BlobDownloadMethod blobDownloadMethod = new BlobDownloadMethod();
-				blobDownloadMethod.blobKey = resourceInfo.blobKey;
-				String filePath = Gdx.files.getExternalStoragePath();
-				filePath += ResourceLocalRepo.getFilepath(resourceInfo.resourceId);
+			boolean success = downloadResources(((ResourceDownloadMethodResponse) response).resources);
 
-				resourceInfo.downloaded = serializeAndDownload(blobDownloadMethod, filePath);
-
-				if (!resourceInfo.downloaded)  {
-					((ResourceDownloadMethodResponse) response).status = ResourceDownloadMethodResponse.Statuses.FAILED_DOWNLOAD;
-					break;
-				}
+			if (!success) {
+				((ResourceDownloadMethodResponse) response).status = ResourceDownloadMethodResponse.Statuses.FAILED_DOWNLOAD;
 			}
 
 			return response;

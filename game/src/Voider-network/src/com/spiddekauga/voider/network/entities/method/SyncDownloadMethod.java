@@ -8,13 +8,13 @@ import java.util.Date;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
-public class SyncPublishMethod implements IMethodEntity {
+public class SyncDownloadMethod implements IMethodEntity {
 	/** Date of last sync */
 	public Date lastSync = null;
 
 	@Override
 	public String getMethodName() {
-		return "sync-publish";
+		return "sync-download";
 	}
 
 }

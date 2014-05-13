@@ -257,6 +257,23 @@ public class ResourceLocalRepo {
 		mSqliteGateway.setPublished(resourceId, published);
 	}
 
+	/**
+	 * Set last sync date of published/downloaded resources
+	 * @param lastSync date when synced published/downloaded resources the last time
+	 */
+	public static void setDownloadSyncDate(Date lastSync) {
+		mPrefsGateway.setDownloadSyncDate(lastSync);
+	}
+
+	/**
+	 * @return last sync date of published/downloaded resources
+	 */
+	public static Date getSyncDownloadDate() {
+		return mPrefsGateway.getDownloadSyncDate();
+	}
+
+	/** Preferences gateway */
+	private static ResourcePrefsGateway mPrefsGateway = new ResourcePrefsGateway();
 	/** SQLite gateway */
 	private static ResourceSqliteGateway mSqliteGateway = new ResourceSqliteGateway();
 	/** Revision postfix */

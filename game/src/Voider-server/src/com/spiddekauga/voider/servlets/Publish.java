@@ -2,6 +2,7 @@ package com.spiddekauga.voider.servlets;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -71,6 +72,8 @@ public class Publish extends VoiderServlet {
 						success = createEmptyLevelStatistics(datastoreKey);
 					}
 
+					setSyncDownloadDate(datastoreKey);
+
 					mLogger.fine("Create search document");
 					createSearchDocument(defEntity, datastoreKey);
 				} else {
@@ -115,6 +118,17 @@ public class Publish extends VoiderServlet {
 		}
 
 		return methodResponse;
+	}
+
+	/**
+	 * Set sync download time
+	 */
+	private void setSyncDownloadDate(Key publishKey) {
+		Entity entity = new Entity("sync_publish", mUser.getKey());
+		entity.setProperty("published_key", publishKey);
+		entity.setProperty("download_date", new Date());
+
+		DatastoreUtils.put(entity);
 	}
 
 	/**

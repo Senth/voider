@@ -1,6 +1,7 @@
 package com.spiddekauga.voider.repo;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -20,6 +21,8 @@ import com.spiddekauga.voider.network.entities.method.PublishMethod;
 import com.spiddekauga.voider.network.entities.method.PublishMethodResponse;
 import com.spiddekauga.voider.network.entities.method.ResourceDownloadMethod;
 import com.spiddekauga.voider.network.entities.method.ResourceDownloadMethodResponse;
+import com.spiddekauga.voider.network.entities.method.SyncDownloadMethod;
+import com.spiddekauga.voider.network.entities.method.SyncDownloadMethodResponse;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.ExternalTypes;
 import com.spiddekauga.voider.resources.IResource;
@@ -49,6 +52,15 @@ public class ResourceRepo implements ICallerResponseListener {
 		}
 
 		return mInstance;
+	}
+
+	/**
+	 * Synchronize downloaded/published resources
+	 * @param responseListener listens to the web response (when syncing is done)
+	 */
+	public void syncDownload(ICallerResponseListener responseListener) {
+		Date lastSync = ResourceLocalRepo.getSyncDownloadDate();
+		mWebRepo.syncDownloaded(lastSync, this, responseListener);
 	}
 
 	/**
@@ -108,6 +120,23 @@ public class ResourceRepo implements ICallerResponseListener {
 			handlePublishResponse((PublishMethod) method, (PublishMethodResponse) response);
 		} else if (response instanceof ResourceDownloadMethodResponse) {
 			handleDownloadResponse((ResourceDownloadMethod) method, (ResourceDownloadMethodResponse) response);
+		} else if (response instanceof SyncDownloadMethodResponse) {
+			handleSyncDownloadResponse((SyncDownloadMethod) method, (SyncDownloadMethodResponse) response);
+		}
+	}
+
+	/**
+	 * Handles sync downloaded response
+	 * @param method the sync download method
+	 * @param response sync download response
+	 */
+	private void handleSyncDownloadResponse(SyncDownloadMethod method, SyncDownloadMethodResponse response) {
+		if (response.status.isSuccessful()) {
+			for (ResourceBlobEntity resourceInfo : response.resources) {
+				ResourceLocalRepo.addDownloaded(resourceInfo.resourceId, ExternalTypes.fromUploadType(resourceInfo.uploadType));
+			}
+
+			ResourceLocalRepo.setDownloadSyncDate(response.syncTime);
 		}
 	}
 

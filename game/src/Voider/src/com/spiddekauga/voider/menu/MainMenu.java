@@ -1,6 +1,7 @@
 package com.spiddekauga.voider.menu;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedList;
 
 import com.badlogic.gdx.Gdx;
@@ -17,8 +18,10 @@ import com.spiddekauga.voider.game.LevelDef;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.method.IMethodEntity;
 import com.spiddekauga.voider.network.entities.method.LogoutMethodResponse;
+import com.spiddekauga.voider.network.entities.method.SyncDownloadMethodResponse;
 import com.spiddekauga.voider.repo.ICallerResponseListener;
 import com.spiddekauga.voider.repo.ResourceLocalRepo;
+import com.spiddekauga.voider.repo.ResourceRepo;
 import com.spiddekauga.voider.repo.UserLocalRepo;
 import com.spiddekauga.voider.repo.UserWebRepo;
 import com.spiddekauga.voider.resources.ExternalTypes;
@@ -86,13 +89,26 @@ public class MainMenu extends Scene implements ICallerResponseListener {
 
 		// Show if logged in online
 		if (mFirstTimeActivation) {
+			// Synchronize
 			if (mUser.isOnline()) {
 				mGui.showSuccessMessage(mUser.getUsername() + " is now online!");
+				synchronize();
 			} else {
 				mGui.showHighlightMessage(mUser.getUsername() + " is now offline!");
 			}
+
 			mFirstTimeActivation = false;
 		}
+	}
+
+	/**
+	 * Synchronize various things
+	 */
+	private void synchronize() {
+		ResourceRepo resourceRepo = ResourceRepo.getInstance();
+
+		resourceRepo.syncDownload(this);
+		mGui.showWaitWindow("Synchronizing resources");
 	}
 
 	@Override
@@ -117,6 +133,7 @@ public class MainMenu extends Scene implements ICallerResponseListener {
 			ResourceLocalRepo.removeAll(ExternalTypes.GAME_SAVE);
 			ResourceLocalRepo.removeAll(ExternalTypes.GAME_SAVE_DEF);
 			ResourceLocalRepo.removeAll(ExternalTypes.PLAYER_DEF);
+			ResourceLocalRepo.setDownloadSyncDate(new Date(0));
 		} else if (Config.Debug.isBuildOrBelow(Builds.NIGHTLY) && keycode == Input.Keys.HOME) {
 			mGui.dispose();
 			mGui.initGui();
@@ -251,9 +268,9 @@ public class MainMenu extends Scene implements ICallerResponseListener {
 		}
 		// Offline
 		else {
-			mUser.setUsername("(invalid)");
 			clearCurrentUser();
 		}
+		mUser.logout();
 	}
 
 	/**
@@ -269,6 +286,42 @@ public class MainMenu extends Scene implements ICallerResponseListener {
 	public void handleWebResponse(IMethodEntity method, IEntity response) {
 		if (response instanceof LogoutMethodResponse) {
 			clearCurrentUser();
+		} else if (response instanceof SyncDownloadMethodResponse) {
+			handleSyncDownloadResponse((SyncDownloadMethodResponse) response);
+		}
+	}
+
+	/**
+	 * Handle sync download response
+	 * @param response web response
+	 */
+	private void handleSyncDownloadResponse(SyncDownloadMethodResponse response) {
+		mGui.hideWaitWindow();
+		switch (response.status) {
+		case FAILED_CONNECTION:
+			mGui.showErrorMessage("Sync failed. Couldn't connect to server");
+			break;
+
+		case FAILED_DOWNLOAD:
+			mGui.showErrorMessage("Sync failed. Couldn't download resources");
+			break;
+
+		case FAILED_INTERNAL:
+			mGui.showErrorMessage("Sync failed. Server error");
+			break;
+
+		case FAILED_USER_NOT_LOGGED_IN:
+			mGui.showErrorMessage("Sync failed. User not logged in on server");
+			break;
+
+		case SUCCESS:
+			if (response.resources.isEmpty()) {
+				mGui.showSuccessMessage("Nothing to sync");
+			} else {
+				mGui.showSuccessMessage("Synchronize successful");
+				ResourceCacheFacade.loadAllOf(this, ExternalTypes.LEVEL_DEF, false);
+			}
+			break;
 		}
 	}
 
