@@ -122,6 +122,7 @@ public class Publish extends VoiderServlet {
 
 	/**
 	 * Set sync download time
+	 * @param publishKey key of the published resource
 	 */
 	private void setSyncDownloadDate(Key publishKey) {
 		Entity entity = new Entity("sync_publish", mUser.getKey());

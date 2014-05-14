@@ -20,6 +20,7 @@ import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceChecker;
 import com.spiddekauga.voider.resources.ResourceSaver;
 import com.spiddekauga.voider.scene.SceneSwitcher;
+import com.spiddekauga.voider.server.MessageGateway;
 
 /**
  * The main application, i.e. start point
@@ -32,6 +33,7 @@ public class VoiderGame implements ApplicationListener {
 	public void create() {
 		Gdx.app.setLogLevel(Config.Debug.LOG_VERBOSITY);
 		Log.ERROR();
+		MessageGateway.getInstance();
 
 		// Init various classes
 		ResourceChecker.checkAndCreateResources();

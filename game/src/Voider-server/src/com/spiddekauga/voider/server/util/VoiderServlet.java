@@ -96,7 +96,11 @@ public abstract class VoiderServlet extends HttpServlet {
 
 		// Handle request
 		byte[] byteEntity = NetworkGateway.getEntity(mRequest);
-		IMethodEntity methodEntity = (IMethodEntity) NetworkEntitySerializer.deserializeEntity(byteEntity);
+		IMethodEntity methodEntity = null;
+		if (byteEntity != null) {
+			methodEntity = (IMethodEntity) NetworkEntitySerializer.deserializeEntity(byteEntity);
+		}
+
 		IEntity responseEntity = onRequest(methodEntity);
 		if (responseEntity != null) {
 			byte[] responseBytes = NetworkEntitySerializer.serializeEntity(responseEntity);
@@ -147,6 +151,13 @@ public abstract class VoiderServlet extends HttpServlet {
 	 */
 	protected HttpServletResponse getResponse() {
 		return mResponse;
+	}
+
+	/**
+	 * @return current request
+	 */
+	protected HttpServletRequest getRequest() {
+		return mRequest;
 	}
 
 	/**
