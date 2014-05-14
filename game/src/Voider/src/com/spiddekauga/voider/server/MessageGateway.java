@@ -110,7 +110,6 @@ public class MessageGateway implements ChannelService, Observer {
 
 	@Override
 	public void onMessage(String message) {
-		// TODO
 		Gdx.app.debug("MessageGateway", "Message: " + message);
 	}
 

@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.google.appengine.api.blobstore.BlobKey;
+import com.google.appengine.api.channel.ChannelService;
 import com.spiddekauga.appengine.BlobUtils;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.method.IMethodEntity;
@@ -23,6 +24,7 @@ import com.spiddekauga.voider.network.entities.method.NetworkEntitySerializer;
  * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
+@SuppressWarnings("serial")
 public abstract class VoiderServlet extends HttpServlet {
 	/**
 	 * Called by the server to handle a post or get call.
@@ -179,6 +181,6 @@ public abstract class VoiderServlet extends HttpServlet {
 	/** Logger */
 	protected Logger mLogger = null;
 
-	/** Serialized version id */
-	private static final long serialVersionUID = 6754888059125843132L;
+	/** Channel service for sending messages */
+	private static ChannelService mChannelService = null;
 }

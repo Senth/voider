@@ -108,7 +108,7 @@ public class Publish extends VoiderServlet {
 
 			}
 
-			// Set method response status
+			// Set method response status and send sync message
 			if (success) {
 				methodResponse.status = Statuses.SUCCESS;
 				mLogger.fine("Successfully published resource");
