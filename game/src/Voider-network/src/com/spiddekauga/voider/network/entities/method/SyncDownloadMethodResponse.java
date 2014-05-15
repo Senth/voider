@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import com.spiddekauga.voider.network.entities.IEntity;
+import com.spiddekauga.voider.network.entities.ISuccessStatuses;
 import com.spiddekauga.voider.network.entities.ResourceBlobEntity;
 
 /**
@@ -12,13 +13,18 @@ import com.spiddekauga.voider.network.entities.ResourceBlobEntity;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
-public class SyncDownloadMethodResponse implements IEntity {
+public class SyncDownloadMethodResponse implements IEntity, ISuccessStatuses {
 	/** All published resources to download */
 	public ArrayList<ResourceBlobEntity> resources = null;
 	/** Sync time */
 	public Date syncTime = null;
 	/** Status of the sync */
 	public Statuses status = null;
+
+	@Override
+	public boolean isSuccessful() {
+		return status != null && status.isSuccessful();
+	}
 
 	/** Response statuses */
 	public enum Statuses implements ISuccessStatuses {

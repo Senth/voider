@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.spiddekauga.voider.network.entities.BugReportEntity;
 import com.spiddekauga.voider.network.entities.IEntity;
+import com.spiddekauga.voider.network.entities.ISuccessStatuses;
 ;
 
 /**
@@ -12,11 +13,16 @@ import com.spiddekauga.voider.network.entities.IEntity;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
-public class BugReportMethodResponse implements IEntity {
+public class BugReportMethodResponse implements IEntity, ISuccessStatuses {
 	/** Bug reports that failed to send */
 	public ArrayList<BugReportEntity> failedBugReports = new ArrayList<>();
 	/** Response status */
 	public Statuses status = null;
+
+	@Override
+	public boolean isSuccessful() {
+		return status != null && status.isSuccessful();
+	}
 
 	/**
 	 * Different response statuses

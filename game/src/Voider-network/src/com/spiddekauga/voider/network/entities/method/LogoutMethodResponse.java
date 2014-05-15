@@ -1,6 +1,7 @@
 package com.spiddekauga.voider.network.entities.method;
 
 import com.spiddekauga.voider.network.entities.IEntity;
+import com.spiddekauga.voider.network.entities.ISuccessStatuses;
 
 /**
  * Logout response
@@ -8,9 +9,14 @@ import com.spiddekauga.voider.network.entities.IEntity;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
-public class LogoutMethodResponse implements IEntity {
+public class LogoutMethodResponse implements IEntity, ISuccessStatuses {
 	/** Logout status */
 	public Statuses status = null;
+
+	@Override
+	public boolean isSuccessful() {
+		return status != null && status.isSuccessful();
+	}
 
 	/**
 	 * Logout statuses

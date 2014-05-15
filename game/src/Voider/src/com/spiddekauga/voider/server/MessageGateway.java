@@ -1,11 +1,15 @@
 package com.spiddekauga.voider.server;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
 import com.badlogic.gdx.Gdx;
+import com.google.gson.Gson;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.network.entities.ChatMessage;
+import com.spiddekauga.voider.repo.UserLocalRepo;
 import com.spiddekauga.voider.utils.User;
 import com.spiddekauga.voider.utils.User.UserEvents;
 
@@ -103,6 +107,22 @@ public class MessageGateway implements ChannelService, Observer {
 		return mChannel != null;
 	}
 
+	/**
+	 * Add a listener that will listen to messages
+	 * @param listener
+	 */
+	public void addListener(IMessageListener listener) {
+		mListeners.add(listener);
+	}
+
+	/**
+	 * Removes a listener
+	 * @param listener the listener to remove
+	 */
+	public void removeListener(IMessageListener listener) {
+		mListeners.remove(listener);
+	}
+
 	@Override
 	public void onOpen() {
 		Gdx.app.debug("MessageGateway", "Channel opened");
@@ -111,6 +131,15 @@ public class MessageGateway implements ChannelService, Observer {
 	@Override
 	public void onMessage(String message) {
 		Gdx.app.debug("MessageGateway", "Message: " + message);
+
+		ChatMessage<?> chatMessage = mGson.fromJson(message, ChatMessage.class);
+		if (chatMessage != null) {
+			if (chatMessage.skipClient == null || !chatMessage.skipClient.equals(UserLocalRepo.getClientId())) {
+				for (IMessageListener listener : mListeners) {
+					listener.onMessage(chatMessage);
+				}
+			}
+		}
 	}
 
 	@Override
@@ -123,8 +152,12 @@ public class MessageGateway implements ChannelService, Observer {
 		Gdx.app.error("MessageGateway", "Error code: " + errorCode + ", desc: " + description);
 	}
 
+	/** Message listeners */
+	private ArrayList<IMessageListener> mListeners = new ArrayList<>();
 	/** Channel API */
 	private ChannelAPI mChannel = null;
+	/** Gson object */
+	private Gson mGson = new Gson();
 
 	/** Singleton instance of this class */
 	private static MessageGateway mInstance = null;

@@ -416,6 +416,25 @@ public class SceneSwitcher {
 	}
 
 	/**
+	 * Show wait window
+	 * @param message optional message to display
+	 */
+	public static void showWaitWindow(String message) {
+		if (!mScenes.isEmpty()) {
+			mScenes.peek().mGui.showWaitWindow(message);
+		}
+	}
+
+	/**
+	 * Hides the wait window
+	 */
+	public static void hideWaitWindow() {
+		if (!mScenes.isEmpty()) {
+			mScenes.peek().mGui.hideWaitWindow();
+		}
+	}
+
+	/**
 	 * Add a listener to the scene's input multiplexor
 	 * @param processor the listener to add
 	 */

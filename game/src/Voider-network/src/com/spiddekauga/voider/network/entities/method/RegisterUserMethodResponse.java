@@ -3,6 +3,7 @@ package com.spiddekauga.voider.network.entities.method;
 import java.util.UUID;
 
 import com.spiddekauga.voider.network.entities.IEntity;
+import com.spiddekauga.voider.network.entities.ISuccessStatuses;
 
 /**
  * Response from registering a new user
@@ -10,13 +11,18 @@ import com.spiddekauga.voider.network.entities.IEntity;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
-public class RegisterUserMethodResponse implements IEntity {
+public class RegisterUserMethodResponse implements IEntity, ISuccessStatuses {
 	/** If the register was a success */
 	public Statuses status = null;
 	/** Private key, for logging in automatically without password */
 	public UUID privateKey = null;
 	/** User key */
 	public String userKey = null;
+
+	@Override
+	public boolean isSuccessful() {
+		return status != null && status.isSuccessful();
+	}
 
 	/**
 	 * Response statuses when registering users

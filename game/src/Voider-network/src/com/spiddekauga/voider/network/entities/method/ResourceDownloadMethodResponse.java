@@ -3,6 +3,7 @@ package com.spiddekauga.voider.network.entities.method;
 import java.util.ArrayList;
 
 import com.spiddekauga.voider.network.entities.IEntity;
+import com.spiddekauga.voider.network.entities.ISuccessStatuses;
 import com.spiddekauga.voider.network.entities.ResourceBlobEntity;
 
 /**
@@ -11,12 +12,16 @@ import com.spiddekauga.voider.network.entities.ResourceBlobEntity;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
-public class ResourceDownloadMethodResponse implements IEntity {
+public class ResourceDownloadMethodResponse implements IEntity, ISuccessStatuses {
 	/** Status of the response */
 	public Statuses status = null;
 	/** All files to download */
 	public ArrayList<ResourceBlobEntity> resources = new ArrayList<>();
 
+	@Override
+	public boolean isSuccessful() {
+		return status != null && status.isSuccessful();
+	}
 
 	/**
 	 * Response statuses

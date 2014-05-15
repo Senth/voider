@@ -3,6 +3,7 @@ package com.spiddekauga.voider.network.entities.method;
 import java.util.ArrayList;
 
 import com.spiddekauga.voider.network.entities.IEntity;
+import com.spiddekauga.voider.network.entities.ISuccessStatuses;
 import com.spiddekauga.voider.network.entities.LevelInfoEntity;
 
 /**
@@ -11,13 +12,18 @@ import com.spiddekauga.voider.network.entities.LevelInfoEntity;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
-public class LevelGetAllMethodResponse implements IEntity {
+public class LevelGetAllMethodResponse implements IEntity, ISuccessStatuses {
 	/** All levels */
 	public ArrayList<LevelInfoEntity> levels = new ArrayList<>();
 	/** Datastore cursor to continue the query */
 	public String cursor = null;
 	/** Status of the response */
 	public Statuses status = null;
+
+	@Override
+	public boolean isSuccessful() {
+		return status != null && status.isSuccessful();
+	}
 
 	/**
 	 * Statuses

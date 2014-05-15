@@ -1,6 +1,7 @@
 package com.spiddekauga.voider.network.entities.method;
 
 import com.spiddekauga.voider.network.entities.IEntity;
+import com.spiddekauga.voider.network.entities.ISuccessStatuses;
 
 /**
  * Response of publish method.
@@ -8,9 +9,14 @@ import com.spiddekauga.voider.network.entities.IEntity;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
-public class PublishMethodResponse implements IEntity {
+public class PublishMethodResponse implements IEntity, ISuccessStatuses {
 	/** If publish was successful */
 	public Statuses status = null;
+
+	@Override
+	public boolean isSuccessful() {
+		return status != null && status.isSuccessful();
+	}
 
 	/**
 	 * Return statuses of the method

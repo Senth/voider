@@ -3,6 +3,7 @@ package com.spiddekauga.voider.network.entities.method;
 import java.util.UUID;
 
 import com.spiddekauga.voider.network.entities.IEntity;
+import com.spiddekauga.voider.network.entities.ISuccessStatuses;
 
 
 /**
@@ -11,7 +12,7 @@ import com.spiddekauga.voider.network.entities.IEntity;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
-public class LoginMethodResponse implements IEntity {
+public class LoginMethodResponse implements IEntity, ISuccessStatuses {
 	/** Username, the user could log in with email, thus reply with the real username */
 	public String username = null;
 	/** If the login was successful */
@@ -22,6 +23,11 @@ public class LoginMethodResponse implements IEntity {
 	public String userKey = null;
 	/** Date format */
 	public String dateFormat = null;
+
+	@Override
+	public boolean isSuccessful() {
+		return status != null && status.isSuccessful();
+	}
 
 	/**
 	 * Response statuses

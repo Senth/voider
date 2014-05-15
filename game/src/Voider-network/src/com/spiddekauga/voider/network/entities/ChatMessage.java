@@ -11,11 +11,11 @@ import java.util.UUID;
 @SuppressWarnings("serial")
 public class ChatMessage<DataType> implements IEntity {
 	/** Type of messasge */
-	MessageTypes type = null;
+	public MessageTypes type = null;
 	/** This client will skip processing the message */
-	UUID skipClient = null;
+	public UUID skipClient = null;
 	/** Optional data */
-	DataType data = null;
+	public DataType data = null;
 
 	/**
 	 * Creates an empty and invalid chat message
