@@ -187,7 +187,7 @@ public class Config {
 		/** Skip loading text */
 		public static final boolean SKIP_LOADING_TIME = true;
 		/** Build level */
-		public static final Builds BUILD = Builds.DEVELOPMENT;
+		public static final Builds BUILD = Builds.DEV_LOCAL;
 		/** Set to true to turn on the exception handler */
 		public static boolean EXCEPTION_HANDLER = isBuildOrAbove(Builds.NIGHTLY) || false;
 		/** Set to true in JUNIT tests */
@@ -202,7 +202,9 @@ public class Config {
 		public enum Builds {
 			// Front placement is development, later -> more release ready
 			/** Local development */
-			DEVELOPMENT,
+			DEV_LOCAL,
+			/** Server development */
+			DEV_SERVER,
 			/** Released to co-developers */
 			NIGHTLY,
 			/** Beta tests */
@@ -634,16 +636,32 @@ public class Config {
 			// Set storage
 			if (Debug.JUNIT_TEST) {
 				PREFERENCE_PREFIX = "Voider-JUnit";
-			} else if (Debug.BUILD == Builds.RELEASE) {
-				PREFERENCE_PREFIX = "Voider";
-			} else if (Debug.BUILD == Builds.BETA) {
-				PREFERENCE_PREFIX = "Voider-beta";
-			} else if (Debug.BUILD == Builds.NIGHTLY) {
-				PREFERENCE_PREFIX = "Voider-nightly";
-			} else if (Debug.BUILD == Builds.DEVELOPMENT) {
-				PREFERENCE_PREFIX = "Voider-local";
 			} else {
-				PREFERENCE_PREFIX = "Voider-unknown";
+				switch (Debug.BUILD) {
+				case RELEASE:
+					PREFERENCE_PREFIX = "Voider";
+					break;
+
+				case BETA:
+					PREFERENCE_PREFIX = "Voider-beta";
+					break;
+
+				case NIGHTLY:
+					PREFERENCE_PREFIX = "Voider-nightly";
+					break;
+
+				case DEV_SERVER:
+					PREFERENCE_PREFIX = "Voider-dev-server";
+					break;
+
+				case DEV_LOCAL:
+					PREFERENCE_PREFIX = "Voider-local";
+					break;
+
+				default:
+					PREFERENCE_PREFIX = "Voider-unknown";
+					break;
+				}
 			}
 			STORAGE = PREFERENCE_PREFIX + "/";
 			setUserPaths("(None)");
@@ -1036,16 +1054,29 @@ public class Config {
 			}
 
 			// END URL WITH A SLASH /
-			if (build == Builds.RELEASE) {
+			switch (build) {
+			case RELEASE:
 				SERVER_HOST = "http://voider-game.com/";
-			} else if (build == Builds.BETA) {
+				break;
+
+			case BETA:
 				SERVER_HOST = "http://voider-beta.appspot.com/";
-			} else if (build == Builds.NIGHTLY) {
+				break;
+
+			case NIGHTLY:
 				SERVER_HOST = "http://voider-nightly.appspot.com/";
-			} else if (build == Builds.DEVELOPMENT) {
+				break;
+
+			case DEV_SERVER:
+				SERVER_HOST = "http://voider-dev.appspot.com/";
+				break;
+
+			case DEV_LOCAL:
 				SERVER_HOST = "http://localhost:8888/";
-			} else {
-				SERVER_HOST = "http://unkown/";
+				break;
+
+			default:
+				SERVER_HOST = "invalid";
 			}
 		}
 	}
