@@ -125,7 +125,7 @@ public class MainMenu extends Scene implements ICallerResponseListener {
 			SceneSwitcher.switchTo(new PrototypeScene());
 		} else if (Config.Debug.isBuildOrBelow(Builds.NIGHTLY) && keycode == Input.Keys.F12) {
 			handleException(new RuntimeException());
-		} else if (Config.Debug.isBuildOrBelow(Builds.NIGHTLY) && keycode == Input.Keys.INSERT) {
+		} else if (Config.Debug.isBuildOrBelow(Builds.NIGHTLY) && KeyHelper.isDeletePressed(keycode) && KeyHelper.isCtrlPressed()) {
 			ResourceLocalRepo.removeAll(ExternalTypes.LEVEL);
 			ResourceLocalRepo.removeAll(ExternalTypes.BULLET_DEF);
 			ResourceLocalRepo.removeAll(ExternalTypes.LEVEL_DEF);

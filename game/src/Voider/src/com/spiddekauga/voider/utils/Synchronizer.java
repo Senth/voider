@@ -29,6 +29,16 @@ public class Synchronizer implements IMessageListener, Observer, ICallerResponse
 		MessageGateway.getInstance().addListener(this);
 	}
 
+	/**
+	 * @return singleton instance of this Synchronizer
+	 */
+	public static Synchronizer getInstance() {
+		if (mInstance == null) {
+			mInstance = new Synchronizer();
+		}
+		return mInstance;
+	}
+
 	@Override
 	public void onMessage(ChatMessage<?> message) {
 		switch (message.type) {
@@ -68,4 +78,7 @@ public class Synchronizer implements IMessageListener, Observer, ICallerResponse
 
 	/** Resource repository */
 	private ResourceRepo mResourceRepo = ResourceRepo.getInstance();
+
+	/** Instance of this class */
+	private static Synchronizer mInstance = null;
 }
