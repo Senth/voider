@@ -21,6 +21,26 @@ class UserPrefsGateway {
 	}
 
 	/**
+	 * Sets the client id
+	 * @param clientId new client id
+	 */
+	void setClientId(UUID clientId) {
+		mPreferences.putString(CLIENT__ID, clientId.toString());
+	}
+
+	/**
+	 * @return clientId, null if none exists
+	 */
+	UUID getClientId() {
+		String stringUuid = mPreferences.getString(CLIENT__ID, null);
+		if (stringUuid != null) {
+			return UUID.fromString(stringUuid);
+		} else {
+			return null;
+		}
+	}
+
+	/**
 	 * Set last logged in (online) user
 	 * @param username username or email of the user that was logged in
 	 * @param privateKey the private key which will be used for automatic login
@@ -132,6 +152,8 @@ class UserPrefsGateway {
 	private static final String LAST_USER__PASSWORD = "lastUser_password";
 	/** User id on the server */
 	private static final String LAST_USER__SERVER_KEY = "lastUser_serverKey";
+	/** Client id */
+	private static final String CLIENT__ID = "client_id";
 
 	// REGISTER
 	/** True if the app has registered one user */

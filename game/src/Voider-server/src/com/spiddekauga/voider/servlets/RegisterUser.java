@@ -77,7 +77,7 @@ public class RegisterUser extends VoiderServlet {
 			methodResponse.userKey = KeyFactory.keyToString(userKey);
 			methodResponse.privateKey = privateKey;
 			methodResponse.status = Statuses.SUCCESS;
-			mUser.login(userKey);
+			mUser.login(userKey, networkEntity.clientId);
 		}
 	}
 }

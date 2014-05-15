@@ -1,5 +1,7 @@
 package com.spiddekauga.voider.network.entities.method;
 
+import java.util.UUID;
+
 /**
  * Registers a new user
  * 
@@ -18,4 +20,6 @@ public class RegisterUserMethod implements IMethodEntity {
 	public String password;
 	/** email */
 	public String email;
+	/** Client id */
+	public UUID clientId;
 }

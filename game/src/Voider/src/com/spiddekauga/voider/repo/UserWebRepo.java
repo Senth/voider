@@ -41,11 +41,13 @@ public class UserWebRepo extends WebRepo {
 	 * @param responseListener listens to the web response
 	 * @param username
 	 * @param password
+	 * @param clientId unique client id
 	 */
-	public void login(ICallerResponseListener responseListener, String username, String password) {
+	public void login(ICallerResponseListener responseListener, String username, String password, UUID clientId) {
 		LoginMethod loginMethod = new LoginMethod();
 		loginMethod.password = password;
 		loginMethod.username = username;
+		loginMethod.clientId = clientId;
 
 		sendInNewThread(loginMethod, responseListener);
 	}
@@ -55,11 +57,13 @@ public class UserWebRepo extends WebRepo {
 	 * @param responseListener listens to the web response
 	 * @param username
 	 * @param privateKey Uses the private key to login instead of a password
+	 * @param clientId unique client id
 	 */
-	public void login(ICallerResponseListener responseListener, String username, UUID privateKey) {
+	public void login(ICallerResponseListener responseListener, String username, UUID privateKey, UUID clientId) {
 		LoginMethod loginMethod = new LoginMethod();
 		loginMethod.privateKey = privateKey;
 		loginMethod.username = username;
+		loginMethod.clientId = clientId;
 
 		sendInNewThread(loginMethod, responseListener);
 	}
@@ -70,8 +74,9 @@ public class UserWebRepo extends WebRepo {
 	 * @param username
 	 * @param password
 	 * @param email
+	 * @param clientId unique client id
 	 */
-	public void register(ICallerResponseListener responseListener, String username, String password, String email) {
+	public void register(ICallerResponseListener responseListener, String username, String password, String email, UUID clientId) {
 		RegisterUserMethod registerMethod = new RegisterUserMethod();
 		registerMethod.email = email;
 		registerMethod.username = username;

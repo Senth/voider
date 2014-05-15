@@ -71,7 +71,7 @@ public class LoginScene extends Scene implements ICallerResponseListener {
 		if (userInfo != null && userInfo.isOnline()) {
 			mAutoLogin = true;
 			mLoggingInUser.set(userInfo);
-			mUserWebRepo.login(this, userInfo.getUsername(), userInfo.getPrivateKey());
+			mUserWebRepo.login(this, userInfo.getUsername(), userInfo.getPrivateKey(), UserLocalRepo.getClientId());
 			mGui.showWaitWindow("Auto logging in as " + userInfo.getUsername());
 		}
 		// Test offline
@@ -135,7 +135,7 @@ public class LoginScene extends Scene implements ICallerResponseListener {
 	void login(String username, String password) {
 		mLoggingInUser.setUsername(username);
 		mLoggingInUser.setPassword(password);
-		mUserWebRepo.login(this, username, password);
+		mUserWebRepo.login(this, username, password, UserLocalRepo.getClientId());
 		mGui.showWaitWindow("Logging in");
 	}
 
@@ -216,7 +216,7 @@ public class LoginScene extends Scene implements ICallerResponseListener {
 		mLoggingInUser.setUsername(username);
 		mLoggingInUser.setEmail(email);
 		mLoggingInUser.setPassword(password);
-		mUserWebRepo.register(this, username, password, email);
+		mUserWebRepo.register(this, username, password, email, UserLocalRepo.getClientId());
 		mGui.showWaitWindow("Contacting server");
 	}
 

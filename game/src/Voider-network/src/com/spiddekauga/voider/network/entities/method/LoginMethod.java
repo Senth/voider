@@ -15,6 +15,8 @@ public class LoginMethod implements IMethodEntity {
 		return MethodNames.LOGIN.toString();
 	}
 
+	/** Client id */
+	public UUID clientId = null;
 	/** Username */
 	public String username;
 	/** Password */

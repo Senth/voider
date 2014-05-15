@@ -15,6 +15,7 @@ import com.spiddekauga.voider.network.entities.method.IMethodEntity;
 import com.spiddekauga.voider.network.entities.method.LoginMethodResponse;
 import com.spiddekauga.voider.repo.BugReportWebRepo;
 import com.spiddekauga.voider.repo.ICallerResponseListener;
+import com.spiddekauga.voider.repo.UserLocalRepo;
 import com.spiddekauga.voider.repo.UserWebRepo;
 import com.spiddekauga.voider.resources.BugReportDef;
 import com.spiddekauga.voider.resources.ResourceSaver;
@@ -197,7 +198,7 @@ public class CBugReportSend extends Command implements ICallerResponseListener {
 	private void goOnline() {
 		mGui.setWaitWindowText("Going online");
 		User user = User.getGlobalUser();
-		UserWebRepo.getInstance().login(this, user.getUsername(), user.getPrivateKey());
+		UserWebRepo.getInstance().login(this, user.getUsername(), user.getPrivateKey(), UserLocalRepo.getClientId());
 	}
 
 	/**

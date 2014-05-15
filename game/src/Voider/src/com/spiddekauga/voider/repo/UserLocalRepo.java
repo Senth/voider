@@ -54,6 +54,19 @@ public class UserLocalRepo {
 	}
 
 	/**
+	 * @return client id, creates a new client id if one doesn't exist
+	 */
+	public static UUID getClientId() {
+		UUID clientId = mPrefsGateway.getClientId();
+		if (clientId == null) {
+			clientId = UUID.randomUUID();
+			mPrefsGateway.setClientId(clientId);
+		}
+
+		return clientId;
+	}
+
+	/**
 	 * Remove a temporary user (usually done when syncing has been done or the player decided to remove it)
 	 * @param username name of the user to remove
 	 */
