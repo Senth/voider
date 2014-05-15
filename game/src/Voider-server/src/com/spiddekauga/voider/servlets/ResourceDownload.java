@@ -9,10 +9,11 @@ import java.util.UUID;
 
 import javax.servlet.ServletException;
 
-import com.google.appengine.api.blobstore.BlobKey;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.spiddekauga.appengine.DatastoreUtils;
+import com.spiddekauga.voider.network.entities.ChatMessage;
+import com.spiddekauga.voider.network.entities.ChatMessage.MessageTypes;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.ResourceBlobEntity;
 import com.spiddekauga.voider.network.entities.UploadTypes;
@@ -48,10 +49,11 @@ public class ResourceDownload extends VoiderServlet {
 				success = setInformationAndDependenciesToResponse(((ResourceDownloadMethod) methodEntity).resourceId);
 			}
 
-			// Set download date for syncing resources
+			// Set download date and send sync message
 			if (success && !mAddedResources.isEmpty()) {
 				setUserDownloadDate();
 				mResponse.status = Statuses.SUCCESS;
+				sendMessage(new ChatMessage<>(MessageTypes.SYNC_DOWNLOAD, mUser.getClientId()));
 			}
 		} else {
 			mResponse.status = Statuses.FAILED_USER_NOT_LOGGED_IN;

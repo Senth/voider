@@ -22,6 +22,8 @@ import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.appengine.SearchUtils;
 import com.spiddekauga.voider.network.entities.BulletDefEntity;
 import com.spiddekauga.voider.network.entities.CampaignDefEntity;
+import com.spiddekauga.voider.network.entities.ChatMessage;
+import com.spiddekauga.voider.network.entities.ChatMessage.MessageTypes;
 import com.spiddekauga.voider.network.entities.DefEntity;
 import com.spiddekauga.voider.network.entities.EnemyDefEntity;
 import com.spiddekauga.voider.network.entities.IEntity;
@@ -112,6 +114,9 @@ public class Publish extends VoiderServlet {
 			if (success) {
 				methodResponse.status = Statuses.SUCCESS;
 				mLogger.fine("Successfully published resource");
+
+				sendMessage(new ChatMessage<>(MessageTypes.SYNC_DOWNLOAD, mUser.getClientId()));
+				sendMessage(new ChatMessage<>(MessageTypes.SYNC_USER_RESOURCES, mUser.getClientId()));
 			} else {
 				mLogger.severe("Failed to publish resource");
 			}

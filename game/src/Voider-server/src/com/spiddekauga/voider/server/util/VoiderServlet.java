@@ -12,8 +12,12 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.google.appengine.api.blobstore.BlobKey;
+import com.google.appengine.api.channel.ChannelMessage;
 import com.google.appengine.api.channel.ChannelService;
+import com.google.appengine.api.channel.ChannelServiceFactory;
+import com.google.gson.Gson;
 import com.spiddekauga.appengine.BlobUtils;
+import com.spiddekauga.voider.network.entities.ChatMessage;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.method.IMethodEntity;
 import com.spiddekauga.voider.network.entities.method.NetworkEntitySerializer;
@@ -163,6 +167,22 @@ public abstract class VoiderServlet extends HttpServlet {
 	}
 
 	/**
+	 * Sends a message to all clients. If skipClient has been set
+	 * the client with that id will not act on the message.
+	 * @param chatMessage sends the specified chat message
+	 */
+	protected void sendMessage(ChatMessage<?> chatMessage) {
+		Gson gson = new Gson();
+		String json = gson.toJson(chatMessage);
+
+		mLogger.finer("Message to send: " + json);
+
+		ChannelMessage channelMessage = new ChannelMessage(mUser.getUsername(), json);
+		mChannelService.sendMessage(channelMessage);
+	}
+
+
+	/**
 	 * All session variable enumerations
 	 */
 	protected enum SessionVariableNames {
@@ -182,5 +202,5 @@ public abstract class VoiderServlet extends HttpServlet {
 	protected Logger mLogger = null;
 
 	/** Channel service for sending messages */
-	private static ChannelService mChannelService = null;
+	private static ChannelService mChannelService = ChannelServiceFactory.getChannelService();
 }

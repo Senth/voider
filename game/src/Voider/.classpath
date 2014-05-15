@@ -18,5 +18,6 @@
 	<classpathentry exported="true" kind="lib" path="libs/org.json.jar" sourcepath="libs/org.json.zip"/>
 	<classpathentry exported="true" kind="lib" path="libs/commons-io-2.4.jar" sourcepath="libs/commons-io-2.4-sources.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/commons-lang-2.6.jar" sourcepath="libs/commons-lang-2.6-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/gson-2.2.4.jar" sourcepath="libs/gson-2.2.4-sources.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

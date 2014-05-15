@@ -55,7 +55,7 @@ public class Login extends VoiderServlet {
 						methodResponse.privateKey = DatastoreUtils.getUuidProperty(datastoreEntity, "private_key");
 						methodResponse.username = (String) datastoreEntity.getProperty("username");
 						methodResponse.dateFormat = (String) datastoreEntity.getProperty("date_format");
-						mUser.login(datastoreEntity.getKey(), ((LoginMethod) methodEntity).clientId);
+						mUser.login(datastoreEntity.getKey(), methodResponse.username, ((LoginMethod) methodEntity).clientId);
 						updateLastLoggedIn(datastoreEntity);
 					}
 				}
