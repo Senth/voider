@@ -207,7 +207,7 @@ public class ResourceLocalRepo {
 	 * @return resource directory
 	 */
 	private static String getDir() {
-		return Config.File.STORAGE + "resources/";
+		return Config.File.getUserStorage() + "resources/";
 	}
 
 	/**

@@ -24,6 +24,10 @@ class ResourcePrefsGateway implements Observer {
 		// appropriate file
 		User user = User.getGlobalUser();
 		user.addObserver(this);
+
+		if (user.isLoggedIn()) {
+			open();
+		}
 	}
 
 	@Override

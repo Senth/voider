@@ -34,11 +34,12 @@ public class VoiderGame implements ApplicationListener {
 	public void create() {
 		Gdx.app.setLogLevel(Config.Debug.LOG_VERBOSITY);
 		Log.ERROR();
-		MessageGateway.getInstance();
-		Synchronizer.getInstance();
 
 		// Init various classes
-		ResourceChecker.checkAndCreateResources();
+		MessageGateway.getInstance();
+		Synchronizer.getInstance();
+		ResourceChecker.init();
+
 
 		ShaderProgram.pedantic = false;
 
@@ -95,6 +96,7 @@ public class VoiderGame implements ApplicationListener {
 		ResourceCacheFacade.dispose();
 		Config.dispose();
 		UserLocalRepo.dispose();
+		ResourceChecker.dispose();
 	}
 
 	@Override

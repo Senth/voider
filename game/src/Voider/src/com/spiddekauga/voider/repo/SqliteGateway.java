@@ -1,5 +1,8 @@
 package com.spiddekauga.voider.repo;
 
+import java.util.Observable;
+import java.util.Observer;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.sql.Database;
 import com.badlogic.gdx.sql.DatabaseFactory;
@@ -7,13 +10,15 @@ import com.badlogic.gdx.sql.SQLiteGdxException;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.utils.User;
+import com.spiddekauga.voider.utils.User.UserEvents;
 
 /**
  * SQLite gateway
  * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-class SqliteGateway implements Disposable {
+abstract class SqliteGateway implements Disposable, Observer {
 	/**
 	 * Closes the database connection to SQLite
 	 */
@@ -36,10 +41,10 @@ class SqliteGateway implements Disposable {
 		switch (Gdx.app.getType()) {
 		// Get external file location
 		case Desktop:
-			return Gdx.files.getExternalStoragePath() + Config.File.DB_FILEPATH;
+			return Gdx.files.getExternalStoragePath() + Config.File.getUserStorage() + Config.File.DB_FILENAME;
 
 		case Android:
-			return Config.File.DB_FILENAME;
+			return User.getGlobalUser().getUsername() + "_" + Config.File.DB_FILENAME;
 
 		default:
 			throw new GdxRuntimeException("Unsupported application type: " + Gdx.app.getType());
@@ -50,6 +55,13 @@ class SqliteGateway implements Disposable {
 	 * Default constructor
 	 */
 	protected SqliteGateway() {
+		User.getGlobalUser().addObserver(this);
+	}
+
+	/**
+	 * Connects to the database
+	 */
+	private void connect() {
 		if (mDatabase == null) {
 			mDatabase = DatabaseFactory.getNewDatabase(getDatabaseLocation(), SqliteUpgrader.getDbVersion(), null, null);
 
@@ -63,6 +75,23 @@ class SqliteGateway implements Disposable {
 			} catch (SQLiteGdxException e) {
 				mDatabase = null;
 				e.printStackTrace();
+			}
+		}
+	}
+
+	@Override
+	public void update(Observable object, Object arg) {
+		if (object instanceof User) {
+			if (arg instanceof UserEvents) {
+				switch ((UserEvents)arg) {
+				case LOGIN:
+					connect();
+					break;
+
+				case LOGOUT:
+					dispose();
+					break;
+				}
 			}
 		}
 	}

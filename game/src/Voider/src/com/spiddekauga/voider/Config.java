@@ -596,8 +596,6 @@ public class Config {
 		public final static boolean USE_EXTERNAL_RESOURCES = Debug.BUILD == Builds.NIGHTLY;
 		/** Database filename */
 		public final static String DB_FILENAME = "Voider.db";
-		/** Database file */
-		public final static String DB_FILEPATH;
 		/** User storage */
 		private static String mUserStorage;
 		/** User preferences prefix */
@@ -665,15 +663,6 @@ public class Config {
 			}
 			STORAGE = PREFERENCE_PREFIX + "/";
 			setUserPaths("(None)");
-
-			//			// Create Voider folder if it doesn't exist
-			//			FileHandle file = Gdx.files.external(STORAGE);
-			//			if (!file.exists()) {
-			//				file.mkdirs();
-			//			}
-
-			/** @todo update DB filepath on user login */
-			DB_FILEPATH = STORAGE + DB_FILENAME;
 		}
 	}
 

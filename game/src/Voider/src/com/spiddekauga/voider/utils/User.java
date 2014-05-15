@@ -46,6 +46,7 @@ public class User extends Observable {
 		mPassword = null;
 		mPrivateKey = null;
 		mServerKey = null;
+		mLoggedIn = false;
 		mUsername = "(None)";
 		mDateFormat = DATE_FORMAT_DEFAULT;
 
@@ -82,6 +83,7 @@ public class User extends Observable {
 		mUsername = username;
 		mServerKey = serverKey;
 		mOnline = online;
+		mLoggedIn = true;
 
 		// Update user path
 		if (this == mGlobalUser) {
@@ -90,6 +92,13 @@ public class User extends Observable {
 
 		setChanged();
 		notifyObservers(UserEvents.LOGIN);
+	}
+
+	/**
+	 * @return true if the user is logged in
+	 */
+	public boolean isLoggedIn() {
+		return mLoggedIn;
 	}
 
 	/**
@@ -210,4 +219,6 @@ public class User extends Observable {
 	private String mEmail = null;
 	/** Private login key */
 	private UUID mPrivateKey = null;
+	/** User is logged in */
+	private boolean mLoggedIn = false;
 }
