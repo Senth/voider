@@ -13,10 +13,10 @@ import com.badlogic.gdx.utils.IdentityMap;
 import com.spiddekauga.utils.scene.ui.Cell;
 import com.spiddekauga.utils.scene.ui.Row;
 import com.spiddekauga.voider.game.actors.BulletActor;
+import com.spiddekauga.voider.network.entities.RevisionEntity;
 import com.spiddekauga.voider.resources.InternalNames;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceItem;
-import com.spiddekauga.voider.resources.RevisionInfo;
 
 /**
  * Common pools used in the program
@@ -64,5 +64,5 @@ public class Pools {
 	/** Kryo */
 	public static KryoVoiderPool kryo = new KryoVoiderPool(5, 20);
 	/** Revision information */
-	public static Pool<RevisionInfo> revisionInfo = new Pool<>(RevisionInfo.class);
+	public static Pool<RevisionEntity> revisionInfo = new Pool<>(RevisionEntity.class);
 }

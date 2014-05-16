@@ -1,4 +1,4 @@
-package com.spiddekauga.voider.resources;
+package com.spiddekauga.voider.network.entities;
 
 import java.util.Date;
 
@@ -7,7 +7,8 @@ import java.util.Date;
  * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public class RevisionInfo {
+@SuppressWarnings("serial")
+public class RevisionEntity implements IEntity {
 	/** The revision */
 	public int revision;
 	/** Date the revision was created */

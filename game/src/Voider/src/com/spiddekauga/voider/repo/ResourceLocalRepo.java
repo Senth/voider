@@ -2,17 +2,20 @@ package com.spiddekauga.voider.repo;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.game.Level;
+import com.spiddekauga.voider.network.entities.ResourceRevisionEntity;
+import com.spiddekauga.voider.network.entities.RevisionEntity;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.ExternalTypes;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourceRevision;
 import com.spiddekauga.voider.resources.ResourceNotFoundException;
-import com.spiddekauga.voider.resources.RevisionInfo;
 import com.spiddekauga.voider.utils.Pools;
 
 /**
@@ -44,7 +47,7 @@ public class ResourceLocalRepo {
 
 			int nextRevision = 1;
 			try {
-				RevisionInfo revisionInfo = getRevisionLatest(resource.getId());
+				RevisionEntity revisionInfo = getRevisionLatest(resource.getId());
 				nextRevision = revisionInfo.revision + 1;
 			} catch (ResourceNotFoundException e) {
 				// Do nothing
@@ -103,6 +106,9 @@ public class ResourceLocalRepo {
 			Date date = null;
 			if (resource instanceof Def) {
 				date = ((Def) resource).getDate();
+			}
+			if (resource instanceof Level) {
+				date = ((Level) resource).getDef().getDate();
 			}
 
 			mSqliteGateway.addRevision(resource.getId(), ((IResourceRevision) resource).getRevision(), date);
@@ -213,7 +219,7 @@ public class ResourceLocalRepo {
 	 * @param resourceId the resource to get the revisions for
 	 * @return all revisions
 	 */
-	public static ArrayList<RevisionInfo> getRevisions(UUID resourceId) {
+	public static ArrayList<RevisionEntity> getRevisions(UUID resourceId) {
 		return mSqliteGateway.getRevisions(resourceId);
 	}
 
@@ -225,7 +231,7 @@ public class ResourceLocalRepo {
 	 * I.e. it either does not exist, does not contain any revisions because it's either not
 	 * a revision resource or it has been published.
 	 */
-	public static RevisionInfo getRevisionLatest(UUID uuid) {
+	public static RevisionEntity getRevisionLatest(UUID uuid) {
 		return mSqliteGateway.getRevisionLatest(uuid);
 	}
 
@@ -337,6 +343,14 @@ public class ResourceLocalRepo {
 	 */
 	public static Date getSyncDownloadDate() {
 		return mPrefsGateway.getDownloadSyncDate();
+	}
+
+	/**
+	 * @return all user resource revisions that haven't been uploaded/synced to
+	 * the server.
+	 */
+	static HashMap<UUID, ResourceRevisionEntity> getUnsyncedUserResources() {
+		return mSqliteGateway.getUnsyncedUserResources();
 	}
 
 	/** File gateway */

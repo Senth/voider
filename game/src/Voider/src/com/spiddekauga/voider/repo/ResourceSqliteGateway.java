@@ -2,13 +2,16 @@ package com.spiddekauga.voider.repo;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.UUID;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.sql.DatabaseCursor;
 import com.badlogic.gdx.sql.SQLiteGdxException;
 import com.badlogic.gdx.utils.GdxRuntimeException;
+import com.spiddekauga.voider.network.entities.ResourceRevisionEntity;
+import com.spiddekauga.voider.network.entities.RevisionEntity;
 import com.spiddekauga.voider.resources.ResourceNotFoundException;
-import com.spiddekauga.voider.resources.RevisionInfo;
 import com.spiddekauga.voider.utils.Pools;
 
 /**
@@ -57,7 +60,7 @@ class ResourceSqliteGateway extends SqliteGateway {
 	void addRevision(UUID uuid, int revision, Date date) {
 		try {
 			String dateValue = date == null ? "0" : String.valueOf(date.getTime());
-			mDatabase.execSQL("INSERT INTO resource_revision VALUES ( '" + uuid + "', " + revision + ", " + dateValue + ");");
+			mDatabase.execSQL("INSERT INTO resource_revision (uuid, revision, date) VALUES ( '" + uuid + "', " + revision + ", " + dateValue + ");");
 		} catch (SQLiteGdxException e) {
 			e.printStackTrace();
 			throw new GdxRuntimeException(e);
@@ -163,15 +166,15 @@ class ResourceSqliteGateway extends SqliteGateway {
 	 * @param uuid the resource to get the revisions for
 	 * @return all revisions
 	 */
-	ArrayList<RevisionInfo> getRevisions(UUID uuid) {
+	ArrayList<RevisionEntity> getRevisions(UUID uuid) {
 		@SuppressWarnings("unchecked")
-		ArrayList<RevisionInfo> revisions = Pools.arrayList.obtain();
+		ArrayList<RevisionEntity> revisions = Pools.arrayList.obtain();
 
 		try {
 			DatabaseCursor cursor = mDatabase.rawQuery("SELECT * FROM resource_revision WHERE uuid='" + uuid + "';");
 
 			while (cursor.next()) {
-				RevisionInfo revisionInfo = Pools.revisionInfo.obtain();
+				RevisionEntity revisionInfo = Pools.revisionInfo.obtain();
 				revisionInfo.revision = cursor.getInt(RESOURCE_REVISION__REVISION);
 				revisionInfo.date.setTime(cursor.getLong(RESOURCE_REVISION__DATE));
 				revisions.add(revisionInfo);
@@ -191,12 +194,12 @@ class ResourceSqliteGateway extends SqliteGateway {
 	 * @return latest revision of the specified resource.
 	 * @throws ResourceNotFoundException if the resource wasn't found
 	 */
-	RevisionInfo getRevisionLatest(UUID uuid) {
+	RevisionEntity getRevisionLatest(UUID uuid) {
 		try {
 			DatabaseCursor cursor = mDatabase.rawQuery("SELECT * FROM resource_revision WHERE uuid='" + uuid + "' ORDER BY revision DESC LIMIT 1;");
 
 			if (cursor.next()) {
-				RevisionInfo revisionInfo = Pools.revisionInfo.obtain();
+				RevisionEntity revisionInfo = Pools.revisionInfo.obtain();
 				revisionInfo.revision = cursor.getInt(RESOURCE_REVISION__REVISION);
 				revisionInfo.date.setTime(cursor.getLong(RESOURCE_REVISION__DATE));
 				cursor.close();
@@ -263,6 +266,45 @@ class ResourceSqliteGateway extends SqliteGateway {
 			e.printStackTrace();
 			throw new GdxRuntimeException(e);
 		}
+	}
+
+	/**
+	 * @return all user resource revisions that haven't been uploaded/synced to
+	 * the server.
+	 */
+	HashMap<UUID, ResourceRevisionEntity> getUnsyncedUserResources() {
+		HashMap<UUID, ResourceRevisionEntity> resources = new HashMap<>();
+
+		try {
+			DatabaseCursor cursor = mDatabase.rawQuery("SELECT uuid, revision, date FROM resource_revision WHERE uploaded=0;");
+
+			while (cursor.next()) {
+				String uuidString = cursor.getString(0);
+				if (uuidString == null) {
+					Gdx.app.error("ResourceSqlitGateway", "uuid is null when getting resource revision");
+					continue;
+				}
+				UUID uuid = UUID.fromString(uuidString);
+
+				ResourceRevisionEntity resource = resources.get(uuid);
+
+				if (resource == null) {
+					resource = new ResourceRevisionEntity();
+					resource.resourceId = uuid;
+					resources.put(uuid, resource);
+				}
+
+				RevisionEntity revisionEntity = new RevisionEntity();
+				revisionEntity.revision = cursor.getInt(1);
+				revisionEntity.date = new Date(cursor.getLong(2));
+				resource.revisions.add(revisionEntity);
+			}
+		} catch (SQLiteGdxException e) {
+			e.printStackTrace();
+			throw new GdxRuntimeException(e);
+		}
+
+		return resources;
 	}
 
 	/** Column for resource uuid */

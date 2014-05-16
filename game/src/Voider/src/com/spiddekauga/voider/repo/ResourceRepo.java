@@ -69,15 +69,34 @@ public class ResourceRepo implements ICallerResponseListener {
 	 * Save the specified resources. If the resource contains revisions it
 	 * will try to upload it to the server if the user is currently online.
 	 * @param responseListener listens to the web response
-	 * @param resource the resource to save.
+	 * @param resources all the resource to save.
 	 */
-	public void save(ICallerResponseListener responseListener, IResource resource) {
-		boolean success = ResourceLocalRepo.save(resource);
+	public void save(ICallerResponseListener responseListener, IResource... resources) {
 
+		boolean upload = false;
 
-		if (success && resource instanceof IResourceRevision && User.getGlobalUser().isOnline()) {
-			// TODO upload
+		for (IResource resource : resources) {
+			boolean success = ResourceLocalRepo.save(resource);
+
+			if (success && resource instanceof IResourceRevision) {
+				upload = true;
+			}
 		}
+
+		if (upload) {
+			if (User.getGlobalUser().isOnline()) {
+				syncUserResources(responseListener);
+			}
+		}
+
+	}
+
+	/**
+	 * Synchronizes the user resource revisions, both upload and download
+	 * @param responseListener listens to the web response (when syncing is done)
+	 */
+	public void syncUserResources(ICallerResponseListener responseListener) {
+
 	}
 
 	/**

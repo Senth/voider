@@ -28,6 +28,7 @@ import com.spiddekauga.voider.game.actors.EnemyActorDef;
 import com.spiddekauga.voider.game.actors.PickupActorDef;
 import com.spiddekauga.voider.game.actors.PlayerActorDef;
 import com.spiddekauga.voider.game.actors.StaticTerrainActorDef;
+import com.spiddekauga.voider.network.entities.RevisionEntity;
 import com.spiddekauga.voider.repo.ResourceLocalRepo;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.utils.AbsoluteFileHandleResolver;
@@ -81,7 +82,7 @@ class ResourceLoader {
 	 */
 	private int getCorrectRevision(UUID resourceId, int revision) {
 		if (revision > 0) {
-			RevisionInfo latestRevision = ResourceLocalRepo.getRevisionLatest(resourceId);
+			RevisionEntity latestRevision = ResourceLocalRepo.getRevisionLatest(resourceId);
 			if (latestRevision != null && revision < latestRevision.revision) {
 				return revision;
 			}

@@ -33,7 +33,7 @@ import com.spiddekauga.utils.scene.ui.TextFieldListener;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.editor.commands.CSelectDefSetRevision;
 import com.spiddekauga.voider.menu.SelectDefScene.DefVisible;
-import com.spiddekauga.voider.resources.RevisionInfo;
+import com.spiddekauga.voider.network.entities.RevisionEntity;
 import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.utils.User;
@@ -580,7 +580,7 @@ public class SelectDefGui extends Gui {
 	 * Updates the revision list
 	 */
 	private void updateRevisionList() {
-		ArrayList<RevisionInfo> resourceRevisions = mSelectDefScene.getSelectedResourceRevisionsWithDates();
+		ArrayList<RevisionEntity> resourceRevisions = mSelectDefScene.getSelectedResourceRevisionsWithDates();
 
 		String[] revisions;
 		if (resourceRevisions != null) {
@@ -592,7 +592,7 @@ public class SelectDefGui extends Gui {
 
 			for (int i = 0; i < revisions.length; ++i) {
 				int revisionInt = revisions.length -1 - i;
-				RevisionInfo revisionInfo = resourceRevisions.get(i);
+				RevisionEntity revisionInfo = resourceRevisions.get(i);
 				String dateString = User.getGlobalUser().dateToString(revisionInfo.date);
 				revisions[revisionInt] = String.format("%0" + revisionStringLength + "d - %s", revisionInfo.revision, dateString);
 			}

@@ -68,9 +68,15 @@ class SqliteUpgrader {
 	 * Upgrade a table
 	 * @param table name of the table to upgrade
 	 * @param fromVersion the version to upgrade from
+	 * @throws SQLiteGdxException
 	 */
-	private void upgradeTable(String table, int fromVersion) {
-		// TODO not yet implemented
+	private void upgradeTable(String table, int fromVersion) throws SQLiteGdxException {
+		// 1 -> 2
+		if (fromVersion == 1) {
+			if (table.equals("resource_revision")) {
+				mDatabase.execSQL("ALTER TABLE resource_revision ADD COLUMN uploaded INTEGER DEFAULT 0;");
+			}
+		}
 	}
 
 	/**
@@ -98,7 +104,7 @@ class SqliteUpgrader {
 
 		// revisions
 		mNotFoundTables.add("resource_revision");
-		mCreateTableQueries.put("resource_revision", "CREATE TABLE IF NOT EXISTS resource_revision (uuid TEXT, revision INTEGER, date INTEGER);");
+		mCreateTableQueries.put("resource_revision", "CREATE TABLE IF NOT EXISTS resource_revision (uuid TEXT, revision INTEGER, date INTEGER, uploaded INTEGER DEFALT 0);");
 
 		// resources
 		mNotFoundTables.add("resource");
@@ -127,7 +133,7 @@ class SqliteUpgrader {
 	/** Create table queries for all tables */
 	private Map<String, String> mCreateTableQueries = new HashMap<String, String>();
 	/** DB version */
-	private static final int DB_VERSION = 1;
+	private static final int DB_VERSION = 2;
 	/** Create version table */
 	private static final String TABLE_VERSION_CREATE = "CREATE TABLE IF NOT EXISTS version (version INTEGER, table_name TEXT);";
 }

@@ -19,7 +19,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.lwjgl.LwjglFiles;
 import com.badlogic.gdx.backends.lwjgl.LwjglNativesLoader;
 import com.spiddekauga.voider.Config;
-import com.spiddekauga.voider.resources.RevisionInfo;
+import com.spiddekauga.voider.network.entities.RevisionEntity;
 
 /**
  * Test for resource sqlite database
@@ -130,7 +130,7 @@ public class ResourceSqliteGatewayTest {
 			mGateway.addRevision(uuid, i, null);
 		}
 
-		ArrayList<RevisionInfo> revisions = mGateway.getRevisions(uuid);
+		ArrayList<RevisionEntity> revisions = mGateway.getRevisions(uuid);
 		assertEquals(cRevisions, revisions.size());
 
 		for (int i = 0; i < cRevisions; ++i) {
@@ -166,11 +166,11 @@ public class ResourceSqliteGatewayTest {
 	private void equalsRevisions(UUID uuid, int initial, int cRevisions, Date[] dates) {
 		assertEquals("Latest revision", initial + cRevisions - 1, mGateway.getRevisionLatest(uuid).revision);
 
-		ArrayList<RevisionInfo> revisionInfos = mGateway.getRevisions(uuid);
+		ArrayList<RevisionEntity> revisionInfos = mGateway.getRevisions(uuid);
 		assertEquals("# Revisions", cRevisions, revisionInfos.size());
 
 		for (int i = 0; i < cRevisions; ++i) {
-			RevisionInfo currentInfo = revisionInfos.get(i);
+			RevisionEntity currentInfo = revisionInfos.get(i);
 
 			assertEquals(i + initial, currentInfo.revision);
 			assertEquals(dates[i], currentInfo.date);

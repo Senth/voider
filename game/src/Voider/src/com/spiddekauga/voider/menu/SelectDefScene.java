@@ -7,6 +7,7 @@ import java.util.UUID;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.spiddekauga.voider.network.entities.RevisionEntity;
 import com.spiddekauga.voider.repo.ResourceLocalRepo;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.ExternalTypes;
@@ -16,7 +17,6 @@ import com.spiddekauga.voider.resources.InternalNames;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceItem;
 import com.spiddekauga.voider.resources.ResourceNotFoundException;
-import com.spiddekauga.voider.resources.RevisionInfo;
 import com.spiddekauga.voider.scene.WorldScene;
 import com.spiddekauga.voider.utils.Pools;
 import com.spiddekauga.voider.utils.User;
@@ -88,7 +88,7 @@ public class SelectDefScene extends WorldScene {
 					mDefs.add(new DefVisible(def));
 				} else {
 					try {
-						RevisionInfo revisionInfo = ResourceLocalRepo.getRevisionLatest(def.getId());
+						RevisionEntity revisionInfo = ResourceLocalRepo.getRevisionLatest(def.getId());
 						if (revisionInfo.revision == def.getRevision()) {
 							mDefs.add(new DefVisible(def));
 						}
@@ -330,7 +330,7 @@ public class SelectDefScene extends WorldScene {
 	 * @return map with all revisions and dates of the current selected resource, null
 	 * if none was found.
 	 */
-	ArrayList<RevisionInfo> getSelectedResourceRevisionsWithDates() {
+	ArrayList<RevisionEntity> getSelectedResourceRevisionsWithDates() {
 		if (mSelectedDef != null) {
 			return ResourceLocalRepo.getRevisions(mSelectedDef.getId());
 		}
