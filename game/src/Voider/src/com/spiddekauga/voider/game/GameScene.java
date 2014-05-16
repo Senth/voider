@@ -33,7 +33,6 @@ import com.spiddekauga.voider.repo.ResourceLocalRepo;
 import com.spiddekauga.voider.resources.ExternalTypes;
 import com.spiddekauga.voider.resources.InternalNames;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
-import com.spiddekauga.voider.resources.ResourceSaver;
 import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.scene.LoadingScene;
 import com.spiddekauga.voider.scene.Scene;
@@ -285,8 +284,8 @@ public class GameScene extends WorldScene {
 			if (getOutcome() == Outcomes.LEVEL_QUIT) {
 				GameSave gameSave = new GameSave(mLevel, mPlayerActor, mBulletDestroyer, getGameTime());
 				GameSaveDef gameSaveDef = new GameSaveDef(gameSave);
-				ResourceSaver.save(gameSave);
-				ResourceSaver.save(gameSaveDef);
+				//				ResourceSaver.save(gameSave);
+				//				ResourceSaver.save(gameSaveDef);
 			}
 		}
 

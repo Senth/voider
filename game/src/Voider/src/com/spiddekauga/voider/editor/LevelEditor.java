@@ -69,7 +69,6 @@ import com.spiddekauga.voider.resources.InternalNames;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceItem;
 import com.spiddekauga.voider.resources.ResourceNotFoundException;
-import com.spiddekauga.voider.resources.ResourceSaver;
 import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.scene.LoadingScene;
 import com.spiddekauga.voider.scene.Scene;
@@ -662,8 +661,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 			mLevel.calculateStartEndPosition();
 
 			int oldRevision = mLevel.getRevision();
-			ResourceSaver.save(mLevel.getDef());
-			ResourceSaver.save(mLevel);
+			mResourceRepo.save(this, mLevel.getDef());
+			mResourceRepo.save(this, mLevel);
 
 			// Update latest resource if revision was changed by more than one
 			if (oldRevision != mLevel.getDef().getRevision() - 1) {

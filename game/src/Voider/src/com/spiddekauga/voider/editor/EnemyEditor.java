@@ -34,7 +34,6 @@ import com.spiddekauga.voider.resources.ExternalTypes;
 import com.spiddekauga.voider.resources.InternalNames;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceItem;
-import com.spiddekauga.voider.resources.ResourceSaver;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.utils.Pools;
@@ -421,7 +420,7 @@ public class EnemyEditor extends ActorEditor {
 	protected void saveToFile() {
 		int oldRevision = mDef.getRevision();
 
-		ResourceSaver.save(mDef);
+		//		ResourceSaver.save(mDef);
 
 		// Saved first time? Then load it and use the loaded resource
 		if (!ResourceCacheFacade.isLoaded(mDef.getId())) {

@@ -22,6 +22,73 @@ import com.spiddekauga.voider.utils.Pools;
  */
 public class ResourceLocalRepo {
 	/**
+	 * Saves a resource
+	 * @param resource the resource to save
+	 * @return true if the resource was saved
+	 */
+	public static boolean save(IResource resource) {
+		// Save old values if save is unsuccessful
+		Date oldDate = null;
+		int oldRevision = -1;
+		String revisionFilePath = null;
+
+		// Update date
+		if (resource instanceof Def) {
+			oldDate = ((Def) resource).getDate();
+			((Def) resource).updateDate();
+		}
+
+		// Update revision
+		if (resource instanceof IResourceRevision) {
+			oldRevision = ((IResourceRevision) resource).getRevision();
+
+			int nextRevision = 1;
+			try {
+				RevisionInfo revisionInfo = getRevisionLatest(resource.getId());
+				nextRevision = revisionInfo.revision + 1;
+			} catch (ResourceNotFoundException e) {
+				// Do nothing
+			}
+			((IResourceRevision) resource).setRevision(nextRevision);
+
+			revisionFilePath = getRevisionFilepath((IResourceRevision) resource);
+		}
+
+		// Get filepath
+		String filePath = getFilepath(resource);
+
+
+		// Try to save
+		boolean success = mFileGateway.save(resource, filePath);
+
+		// Copy to revision
+		if (success && resource instanceof IResourceRevision) {
+			success = mFileGateway.copy(filePath, revisionFilePath);
+
+			if (!success) {
+				mFileGateway.delete(filePath);
+			}
+		}
+
+		// Add to the database
+		if (success) {
+			add(resource);
+		}
+		// Failed -> reset date and revision
+		else {
+			if (resource instanceof Def) {
+				((Def) resource).setDate(oldDate);
+			}
+
+			if (resource instanceof IResourceRevision) {
+				((IResourceRevision) resource).setRevision(oldRevision);
+			}
+		}
+
+		return success;
+	}
+
+	/**
 	 * Add a resource
 	 * @param resource the resource to add
 	 */
@@ -272,6 +339,8 @@ public class ResourceLocalRepo {
 		return mPrefsGateway.getDownloadSyncDate();
 	}
 
+	/** File gateway */
+	private static ResourceFileGateway mFileGateway = new ResourceFileGateway();
 	/** Preferences gateway */
 	private static ResourcePrefsGateway mPrefsGateway = new ResourcePrefsGateway();
 	/** SQLite gateway */

@@ -66,12 +66,12 @@ public class ResourceCacheFacadeTest {
 	public void setUp() {
 		SqliteResetter.reset();
 
-		ResourceSaver.save(mDef1);
-		ResourceSaver.save(mDef2);
-		ResourceSaver.save(mDep);
-		ResourceSaver.save(mDepWithDep);
-		ResourceSaver.save(mUnderDep);
-		ResourceSaver.save(mUsingDefDeps);
+		//		ResourceSaver.save(mDef1);
+		//		ResourceSaver.save(mDef2);
+		//		ResourceSaver.save(mDep);
+		//		ResourceSaver.save(mDepWithDep);
+		//		ResourceSaver.save(mUnderDep);
+		//		ResourceSaver.save(mUsingDefDeps);
 	}
 
 	/**
@@ -80,7 +80,7 @@ public class ResourceCacheFacadeTest {
 	@After
 	public void tearDown() {
 		ResourceCacheFacade.unload(mScene);
-		ResourceSaver.clearResources();
+		//		ResourceSaver.clearResources();
 	}
 
 	/**
@@ -107,9 +107,9 @@ public class ResourceCacheFacadeTest {
 
 		UUID id = playerActorDef.getId();
 
-		ResourceSaver.save(playerActorDef);
-		ResourceSaver.save(playerActorDef);
-		ResourceSaver.save(playerActorDef);
+		//		ResourceSaver.save(playerActorDef);
+		//		ResourceSaver.save(playerActorDef);
+		//		ResourceSaver.save(playerActorDef);
 
 		// Load latest revision
 		ResourceCacheFacade.load(mScene, id, false);
@@ -141,8 +141,8 @@ public class ResourceCacheFacadeTest {
 		levelDef.removeDependency(InternalNames.THEME_SPACE);
 		Level level = new Level(levelDef);
 
-		ResourceSaver.save(level);
-		ResourceSaver.save(levelDef);
+		//		ResourceSaver.save(level);
+		//		ResourceSaver.save(levelDef);
 
 		ResourceCacheFacade.load(mScene, levelDef.getLevelId(), levelDef.getId());
 		ResourceCacheFacade.finishLoading();
@@ -170,7 +170,7 @@ public class ResourceCacheFacadeTest {
 	@Test(expected = ResourceCorruptException.class)
 	public void loadCorruptResource() {
 		ActorDef tempDef = new PlayerActorDef();
-		ResourceSaver.save(tempDef);
+		//		ResourceSaver.save(tempDef);
 
 		FileHandle file = Gdx.files.external(ResourceLocalRepo.getFilepath(tempDef));
 		file.writeString("Corrupting the actor HAHAHAHA!", false);

@@ -23,7 +23,7 @@ abstract class SqliteGateway implements Disposable, Observer {
 	 * Closes the database connection to SQLite
 	 */
 	@Override
-	public void dispose() {
+	public synchronized void dispose() {
 		if (mDatabase != null) {
 			try {
 				mDatabase.closeDatabase();
@@ -56,12 +56,17 @@ abstract class SqliteGateway implements Disposable, Observer {
 	 */
 	protected SqliteGateway() {
 		User.getGlobalUser().addObserver(this);
+
+		// Connect if logged in already
+		if (User.getGlobalUser().isLoggedIn()) {
+			connect();
+		}
 	}
 
 	/**
 	 * Connects to the database
 	 */
-	private void connect() {
+	private synchronized void connect() {
 		if (mDatabase == null) {
 			mDatabase = DatabaseFactory.getNewDatabase(getDatabaseLocation(), SqliteUpgrader.getDbVersion(), null, null);
 

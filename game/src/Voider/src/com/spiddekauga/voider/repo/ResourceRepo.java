@@ -26,8 +26,10 @@ import com.spiddekauga.voider.network.entities.method.SyncDownloadMethodResponse
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.ExternalTypes;
 import com.spiddekauga.voider.resources.IResource;
+import com.spiddekauga.voider.resources.IResourceRevision;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.utils.Pools;
+import com.spiddekauga.voider.utils.User;
 
 /**
  * Common resource repository for both web and local. Handles requests that affects
@@ -64,6 +66,21 @@ public class ResourceRepo implements ICallerResponseListener {
 	}
 
 	/**
+	 * Save the specified resources. If the resource contains revisions it
+	 * will try to upload it to the server if the user is currently online.
+	 * @param responseListener listens to the web response
+	 * @param resource the resource to save.
+	 */
+	public void save(ICallerResponseListener responseListener, IResource resource) {
+		boolean success = ResourceLocalRepo.save(resource);
+
+
+		if (success && resource instanceof IResourceRevision && User.getGlobalUser().isOnline()) {
+			// TODO upload
+		}
+	}
+
+	/**
 	 * Publish an actor (and its unpublished dependencies) to the server
 	 * @param responseListener listens to the web response
 	 * @param progressListener listen to upload writing
@@ -95,14 +112,6 @@ public class ResourceRepo implements ICallerResponseListener {
 
 		publish(responseListener, progressListener, resources);
 	}
-
-	/**
-	 * Publish a campaign (and its levels and unpublished dependencies) to the server
-	 * @param campaignDef the campaign to publish
-	 * @param responseListener listens to the web response
-	 * @return true if publish was successful
-	 */
-	// TODO
 
 	/**
 	 * Publish all the resources. In addition frees the ArrayList

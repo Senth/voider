@@ -19,6 +19,7 @@ import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Graphics.RenderOrders;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.ActorDef;
+import com.spiddekauga.voider.repo.ResourceRepo;
 import com.spiddekauga.voider.resources.InternalNames;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.SkinNames;
@@ -460,6 +461,8 @@ public abstract class Editor extends WorldScene implements IEditor {
 	 */
 	protected abstract void saveToFile();
 
+	/** Resource repo */
+	protected ResourceRepo mResourceRepo = ResourceRepo.getInstance();
 	/** Invoker */
 	protected Invoker mInvoker = new Invoker();
 	/** Is the resource currently saved? */

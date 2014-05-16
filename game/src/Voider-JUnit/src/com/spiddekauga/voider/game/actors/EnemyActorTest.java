@@ -26,7 +26,6 @@ import com.spiddekauga.voider.game.Weapon;
 import com.spiddekauga.voider.game.WeaponTest;
 import com.spiddekauga.voider.game.actors.EnemyActorDef.AimTypes;
 import com.spiddekauga.voider.repo.SqliteResetter;
-import com.spiddekauga.voider.resources.ResourceSaver;
 
 /**
  * Tests enemy actor and definition
@@ -301,7 +300,7 @@ public class EnemyActorTest extends ActorTest {
 			fail("Exception thrown!\n " + stringWriter.toString());
 		}
 
-		ResourceSaver.clearResources();
+		//		ResourceSaver.clearResources();
 	}
 
 	/**

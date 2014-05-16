@@ -116,8 +116,8 @@ public class LoginScene extends Scene implements ICallerResponseListener {
 		case FAILED_SERVER_CONNECTION:
 			// Login offline if tried to auto-login
 			if (mAutoLogin) {
-				setOutcome(Outcomes.LOGGED_IN);
 				mUser.login(mLoggingInUser.getUsername(), mLoggingInUser.getServerKey(), false);
+				setOutcome(Outcomes.LOGGED_IN);
 			} else {
 				mGui.showErrorMessage("Could not connect to server");
 			}

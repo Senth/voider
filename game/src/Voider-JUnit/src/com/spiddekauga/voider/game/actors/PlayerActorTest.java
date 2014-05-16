@@ -6,7 +6,6 @@ import org.junit.Test;
 
 import com.esotericsoftware.kryo.KryoPrototypeTest;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
-import com.spiddekauga.voider.resources.ResourceSaver;
 
 /**
  * Tests the player actor
@@ -49,7 +48,7 @@ public class PlayerActorTest extends ActorTest {
 		PlayerActorDef playerDef = new PlayerActorDef();
 		player.setDef(playerDef);
 
-		ResourceSaver.save(playerDef);
+		//		ResourceSaver.save(playerDef);
 		ResourceCacheFacade.load(mScene, playerDef.getId(), false, playerDef.getRevision());
 		ResourceCacheFacade.finishLoading();
 

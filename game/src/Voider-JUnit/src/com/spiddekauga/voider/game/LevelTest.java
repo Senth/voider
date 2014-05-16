@@ -35,7 +35,6 @@ import com.spiddekauga.voider.game.triggers.TriggerInfo;
 import com.spiddekauga.voider.repo.ApplicationStub;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
-import com.spiddekauga.voider.resources.ResourceSaver;
 import com.spiddekauga.voider.scene.SceneStub;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.utils.Pools;
@@ -64,9 +63,9 @@ public class LevelTest {
 		mPlayerActor = new PlayerActor();
 		mEnemyDef = new EnemyActorDef();
 
-		ResourceSaver.save(mLevelDef);
-		ResourceSaver.save(mPlayerActor.getDef());
-		ResourceSaver.save(mEnemyDef);
+		//		ResourceSaver.save(mLevelDef);
+		//		ResourceSaver.save(mPlayerActor.getDef());
+		//		ResourceSaver.save(mEnemyDef);
 		ResourceCacheFacade.load(mScene, mPlayerActor.getDef().getId(), false, mPlayerActor.getDef().getRevision());
 		ResourceCacheFacade.load(mScene, mLevelDef.getId(), false, mLevelDef.getRevision());
 		ResourceCacheFacade.load(mScene, mEnemyDef.getId(), false, mEnemyDef.getRevision());
@@ -89,7 +88,7 @@ public class LevelTest {
 	 */
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
-		ResourceSaver.clearResources();
+		//		ResourceSaver.clearResources();
 		ResourceCacheFacade.unload(mScene);
 
 		mEnemyDef.dispose();

@@ -1,7 +1,7 @@
 package com.spiddekauga.voider.utils;
 
 import com.spiddekauga.voider.game.PlayerStats;
-import com.spiddekauga.voider.resources.ResourceSaver;
+import com.spiddekauga.voider.repo.ResourceLocalRepo;
 
 /**
  * Handles sync of all the player statistics
@@ -25,7 +25,7 @@ public class StatSyncer {
 		}
 		// Save the statistics
 		else {
-			ResourceSaver.save(playerStats);
+			ResourceLocalRepo.save(playerStats);
 		}
 	}
 

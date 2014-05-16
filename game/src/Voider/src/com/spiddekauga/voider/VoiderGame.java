@@ -15,10 +15,10 @@ import com.spiddekauga.voider.game.Collectibles;
 import com.spiddekauga.voider.game.actors.PickupActorDef;
 import com.spiddekauga.voider.menu.LoginScene;
 import com.spiddekauga.voider.menu.MainMenu;
+import com.spiddekauga.voider.repo.ResourceLocalRepo;
 import com.spiddekauga.voider.repo.UserLocalRepo;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceChecker;
-import com.spiddekauga.voider.resources.ResourceSaver;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.server.MessageGateway;
 import com.spiddekauga.voider.utils.Synchronizer;
@@ -59,12 +59,12 @@ public class VoiderGame implements ApplicationListener {
 		PickupActorDef def = new PickupActorDef();
 		def.setCollectible(Collectibles.HEALTH_25);
 		def.setName("+25 Health");
-		ResourceSaver.save(def);
+		ResourceLocalRepo.save(def);
 
 		def = new PickupActorDef();
 		def.setCollectible(Collectibles.HEALTH_50);
 		def.setName("+50 Health");
-		ResourceSaver.save(def);
+		ResourceLocalRepo.save(def);
 	}
 
 	/**

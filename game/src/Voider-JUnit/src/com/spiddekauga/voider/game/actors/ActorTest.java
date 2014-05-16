@@ -26,7 +26,6 @@ import com.spiddekauga.voider.repo.SqliteResetter;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.DefTest;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
-import com.spiddekauga.voider.resources.ResourceSaver;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneStub;
 import com.spiddekauga.voider.scene.SceneSwitcher;
@@ -155,7 +154,7 @@ public class ActorTest {
 		actorDef.dispose();
 		loadedActorDef.dispose();
 
-		ResourceSaver.clearResources();
+		//		ResourceSaver.clearResources();
 	}
 
 	/**
@@ -232,14 +231,13 @@ public class ActorTest {
 	 * @param def the definition to save and load
 	 */
 	protected static void saveAndLoad(Def def) {
-		ResourceSaver.save(def);
+		//		ResourceSaver.save(def);
 		if (ResourceCacheFacade.isLoaded(def.getId())) {
 			ResourceCacheFacade.unload(mScene);
 		}
 		ResourceCacheFacade.load(mScene, def.getId(), false, def.getRevision());
 		ResourceCacheFacade.finishLoading();
 	}
-
 
 	/** World used by actors */
 	private static World mWorld = null;

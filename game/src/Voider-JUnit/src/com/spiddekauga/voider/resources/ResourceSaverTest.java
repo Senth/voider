@@ -57,7 +57,7 @@ public class ResourceSaverTest {
 		Def def = new PickupActorDef();
 
 		// Test to save it and then load
-		ResourceSaver.save(def);
+		//		ResourceSaver.save(def);
 
 		String relativePath = ResourceLocalRepo.getFilepath(def);
 		FileHandle savedFile = Gdx.files.external(relativePath);
@@ -81,7 +81,7 @@ public class ResourceSaverTest {
 
 		// Save it again, now a new revision should be created
 		def.addDependency(InternalNames.TEXTURE_PLAYER);
-		ResourceSaver.save(def);
+		//		ResourceSaver.save(def);
 
 		relativePath = ResourceLocalRepo.getFilepath(def);
 		savedFile = Gdx.files.external(relativePath);
@@ -99,7 +99,7 @@ public class ResourceSaverTest {
 
 
 		// Delete the files
-		ResourceSaver.clearResources();
+		//		ResourceSaver.clearResources();
 	}
 
 }

@@ -6,7 +6,6 @@ import org.junit.Test;
 
 import com.esotericsoftware.kryo.KryoPrototypeTest;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
-import com.spiddekauga.voider.resources.ResourceSaver;
 
 /**
  * Tests for bullets including the definition.
@@ -49,7 +48,7 @@ public class BulletActorTest extends ActorTest {
 		BulletActorDef bulletDef = new BulletActorDef();
 		bullet.setDef(bulletDef);
 
-		ResourceSaver.save(bulletDef);
+		//		ResourceSaver.save(bulletDef);
 		ResourceCacheFacade.load(mScene, bulletDef.getId(), false, bulletDef.getRevision());
 		ResourceCacheFacade.finishLoading();
 
@@ -59,7 +58,7 @@ public class BulletActorTest extends ActorTest {
 		copyBullet.dispose();
 		bulletDef.dispose();
 
-		ResourceSaver.clearResources();
+		//		ResourceSaver.clearResources();
 	}
 
 }

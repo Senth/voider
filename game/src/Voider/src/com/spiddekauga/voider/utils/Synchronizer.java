@@ -59,6 +59,13 @@ public class Synchronizer implements IMessageListener, Observer, ICallerResponse
 
 	}
 
+	/**
+	 * Synchronize everything
+	 */
+	public void synchronize() {
+
+	}
+
 	@Override
 	public void update(Observable o, Object arg) {
 		// TODO Auto-generated method stub

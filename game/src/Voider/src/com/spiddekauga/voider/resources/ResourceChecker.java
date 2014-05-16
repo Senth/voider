@@ -74,7 +74,7 @@ public class ResourceChecker implements Observer {
 	private void createPlayerShips() {
 		PlayerActorDef playerActorDef = new PlayerActorDef();
 		playerActorDef.setRevision(1);
-		ResourceSaver.save(playerActorDef);
+		ResourceLocalRepo.save(playerActorDef);
 	}
 
 	@Override

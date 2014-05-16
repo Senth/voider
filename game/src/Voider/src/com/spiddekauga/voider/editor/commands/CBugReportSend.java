@@ -17,8 +17,6 @@ import com.spiddekauga.voider.repo.BugReportWebRepo;
 import com.spiddekauga.voider.repo.ICallerResponseListener;
 import com.spiddekauga.voider.repo.UserLocalRepo;
 import com.spiddekauga.voider.repo.UserWebRepo;
-import com.spiddekauga.voider.resources.BugReportDef;
-import com.spiddekauga.voider.resources.ResourceSaver;
 import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.utils.Messages;
 import com.spiddekauga.voider.utils.User;
@@ -205,7 +203,7 @@ public class CBugReportSend extends Command implements ICallerResponseListener {
 	 * Save the bug report locally
 	 */
 	private void saveBugReportLocally() {
-		ResourceSaver.save(new BugReportDef(mBugReport));
+		//		ResourceSaver.save(new BugReportDef(mBugReport));
 		mGui.hideWaitWindow();
 
 
