@@ -21,6 +21,7 @@ import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.LevelDefEntity;
 import com.spiddekauga.voider.network.entities.LevelInfoEntity;
 import com.spiddekauga.voider.network.entities.ResourceBlobEntity;
+import com.spiddekauga.voider.network.entities.ResourceRevisionEntity;
 import com.spiddekauga.voider.network.entities.Tags;
 import com.spiddekauga.voider.network.entities.UploadTypes;
 import com.spiddekauga.voider.network.entities.method.BlobDownloadMethod;
@@ -35,6 +36,7 @@ import com.spiddekauga.voider.network.entities.method.ResourceDownloadMethod;
 import com.spiddekauga.voider.network.entities.method.ResourceDownloadMethodResponse;
 import com.spiddekauga.voider.network.entities.method.SyncDownloadMethod;
 import com.spiddekauga.voider.network.entities.method.SyncDownloadMethodResponse;
+import com.spiddekauga.voider.network.entities.method.SyncUserResourcesMethod;
 import com.spiddekauga.voider.repo.WebGateway.FieldNameFileWrapper;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.IResource;
@@ -76,6 +78,20 @@ public class ResourceWebRepo extends WebRepo {
 		method.lastSync = lastSync;
 
 		sendInNewThread(method, responseListeners);
+	}
+
+	/**
+	 * Sync all user resource revisions, both upload and download
+	 * @param uploadResources all resources that should be uploaded
+	 * @param responseListeners listens to the web response
+	 */
+	void syncUserResources(HashMap<UUID, ResourceRevisionEntity> uploadResources, ICallerResponseListener... responseListeners) {
+		SyncUserResourcesMethod method = new SyncUserResourcesMethod();
+		method.resources = uploadResources;
+
+		ArrayList<FieldNameFileWrapper> files = createFieldNameFiles(uploadResources);
+
+		sendInNewThread(method, files, null, responseListeners);
 	}
 
 	/**

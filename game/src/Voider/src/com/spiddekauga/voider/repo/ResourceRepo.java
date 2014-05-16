@@ -23,6 +23,8 @@ import com.spiddekauga.voider.network.entities.method.ResourceDownloadMethod;
 import com.spiddekauga.voider.network.entities.method.ResourceDownloadMethodResponse;
 import com.spiddekauga.voider.network.entities.method.SyncDownloadMethod;
 import com.spiddekauga.voider.network.entities.method.SyncDownloadMethodResponse;
+import com.spiddekauga.voider.network.entities.method.SyncUserResourcesMethod;
+import com.spiddekauga.voider.network.entities.method.SyncUserResourcesMethodResponse;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.ExternalTypes;
 import com.spiddekauga.voider.resources.IResource;
@@ -96,7 +98,7 @@ public class ResourceRepo implements ICallerResponseListener {
 	 * @param responseListener listens to the web response (when syncing is done)
 	 */
 	public void syncUserResources(ICallerResponseListener responseListener) {
-
+		mWebRepo.syncUserResources(ResourceLocalRepo.getUnsyncedUserResources(), this, responseListener);
 	}
 
 	/**
@@ -150,7 +152,18 @@ public class ResourceRepo implements ICallerResponseListener {
 			handleDownloadResponse((ResourceDownloadMethod) method, (ResourceDownloadMethodResponse) response);
 		} else if (response instanceof SyncDownloadMethodResponse) {
 			handleSyncDownloadResponse((SyncDownloadMethod) method, (SyncDownloadMethodResponse) response);
+		} else if (response instanceof SyncUserResourcesMethodResponse) {
+			handleSyncUserResourcesResponse((SyncUserResourcesMethod) method, (SyncUserResourcesMethodResponse) response);
 		}
+	}
+
+	/**
+	 * Handles sync user resource revisions response
+	 * @param method
+	 * @param response
+	 */
+	private void handleSyncUserResourcesResponse(SyncUserResourcesMethod method, SyncUserResourcesMethodResponse response) {
+		// TODO
 	}
 
 	/**

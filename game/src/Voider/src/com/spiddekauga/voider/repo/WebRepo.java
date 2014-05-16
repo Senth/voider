@@ -2,11 +2,16 @@ package com.spiddekauga.voider.repo;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map.Entry;
+import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
 import com.spiddekauga.utils.IOutstreamProgressListener;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.network.entities.IEntity;
+import com.spiddekauga.voider.network.entities.ResourceRevisionEntity;
+import com.spiddekauga.voider.network.entities.RevisionEntity;
 import com.spiddekauga.voider.network.entities.method.BugReportMethod;
 import com.spiddekauga.voider.network.entities.method.GetUploadUrlMethod;
 import com.spiddekauga.voider.network.entities.method.GetUploadUrlMethodResponse;
@@ -130,6 +135,40 @@ abstract class WebRepo {
 	protected static boolean serializeAndDownload(IMethodEntity method, String filePath) {
 		byte[] methodBytes = NetworkEntitySerializer.serializeEntity(method);
 		return WebGateway.downloadRequest(method.getMethodName(), methodBytes, filePath);
+	}
+
+	/**
+	 * Sets field names and files to upload from various resource revisions
+	 * @param resources all resources to upload
+	 * @return list with all field names and files to upload
+	 */
+	protected static ArrayList<FieldNameFileWrapper> createFieldNameFiles(HashMap<UUID, ResourceRevisionEntity> resources) {
+		@SuppressWarnings("unchecked")
+		ArrayList<FieldNameFileWrapper> files = Pools.arrayList.obtain();
+
+		for (Entry<UUID, ResourceRevisionEntity> entry : resources.entrySet()) {
+			ResourceRevisionEntity entity = entry.getValue();
+			String resourceName = entity.resourceId.toString();
+
+			// Create files for all revisions
+			for (RevisionEntity revisionEntity : entity.revisions) {
+				String filepath = Gdx.files.getExternalStoragePath();
+				filepath += ResourceLocalRepo.getRevisionFilepath(entity.resourceId, revisionEntity.revision);
+				File file = new File(filepath);
+
+				if (file.exists()) {
+					FieldNameFileWrapper fieldNameFile = new FieldNameFileWrapper();
+					fieldNameFile.fieldName = resourceName + "_" + revisionEntity.revision;
+					fieldNameFile.file = file;
+
+					files.add(fieldNameFile);
+				} else {
+					Gdx.app.error("WebRepo", "File does not exist: " + filepath);
+				}
+			}
+		}
+
+		return files;
 	}
 
 	/**
