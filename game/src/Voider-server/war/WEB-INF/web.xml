@@ -108,6 +108,14 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 		<servlet-name>ChatCreate</servlet-name>
 		<url-pattern>/token/*</url-pattern>
 	</servlet-mapping>
+	<servlet>
+		<servlet-name>SyncUserResources</servlet-name>
+		<servlet-class>com.spiddekauga.voider.servlets.SyncUserResources</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>SyncUserResources</servlet-name>
+		<url-pattern>/sync-user-resources</url-pattern>
+	</servlet-mapping>
 	<welcome-file-list>
 		<welcome-file>index.html</welcome-file>
 	</welcome-file-list>

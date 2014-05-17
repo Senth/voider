@@ -1,7 +1,6 @@
 package com.spiddekauga.voider.network.entities.method;
 
-import java.util.HashMap;
-import java.util.UUID;
+import java.util.ArrayList;
 
 import com.spiddekauga.voider.network.entities.ResourceRevisionEntity;
 
@@ -13,7 +12,7 @@ import com.spiddekauga.voider.network.entities.ResourceRevisionEntity;
 @SuppressWarnings("serial")
 public class SyncUserResourcesMethod implements IMethodEntity {
 	/** All resource revisions that were uploaded */
-	public HashMap<UUID, ResourceRevisionEntity> resources;
+	public ArrayList<ResourceRevisionEntity> resources = new ArrayList<>();
 
 	@Override
 	public String getMethodName() {

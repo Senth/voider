@@ -10,6 +10,7 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.spiddekauga.appengine.DatastoreUtils;
+import com.spiddekauga.appengine.DatastoreUtils.PropertyWrapper;
 import com.spiddekauga.utils.BCrypt;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.method.IMethodEntity;
@@ -34,9 +35,11 @@ public class RegisterUser extends VoiderServlet {
 
 		if (methodEntity instanceof RegisterUserMethod) {
 			// Check if username is free
-			if (!DatastoreUtils.exists(DatastoreTables.USERS.toString(), "username", ((RegisterUserMethod) methodEntity).username)) {
+			PropertyWrapper property = new PropertyWrapper("username", ((RegisterUserMethod) methodEntity).username);
+			if (!DatastoreUtils.exists(DatastoreTables.USERS.toString(), property)) {
 				// Check email
-				if (!DatastoreUtils.exists(DatastoreTables.USERS.toString(), "email", ((RegisterUserMethod) methodEntity).email)) {
+				property = new PropertyWrapper("email", ((RegisterUserMethod) methodEntity).email);
+				if (!DatastoreUtils.exists(DatastoreTables.USERS.toString(), property)) {
 					createNewUser((RegisterUserMethod) methodEntity, methodResponse);
 				} else {
 					methodResponse.status = Statuses.FAIL_EMAIL_EXISTS;

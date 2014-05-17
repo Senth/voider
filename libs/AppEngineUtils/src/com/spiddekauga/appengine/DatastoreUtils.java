@@ -32,6 +32,22 @@ import com.google.appengine.api.datastore.ShortBlob;
  */
 public class DatastoreUtils {
 	/**
+	 * Deletes the specified keys
+	 * @param keys deletes all the specified keys
+	 */
+	public static void delete(Key... keys) {
+		mDatastore.delete(keys);
+	}
+
+	/**
+	 * Deletes the specified keys
+	 * @param keys deletes all the specified keys
+	 */
+	public static void delete(Iterable<Key> keys) {
+		mDatastore.delete(keys);
+	}
+
+	/**
 	 * Puts an entity to the datastore. This checks for concurrent modifications
 	 * @param entity the entity to put to the datastore
 	 * @return key of the entity if put was successful, null otherwise
@@ -89,33 +105,48 @@ public class DatastoreUtils {
 	/**
 	 * Searches for an existing entity
 	 * @param searchIn what kind of entity to search in
-	 * @param parent the parent of the entity to find
+	 * @param parent the parent of the entity to find, set to null to skip
+	 * @param includes property name and values to search for
 	 * @return found entity, null if none or more than 1 was found
 	 */
-	public static Entity getSingleEntity(String searchIn, Key parent) {
-		return getSingleEntity(searchIn, null, null, parent);
+	public static Entity getSingleEntity(String searchIn, Key parent, PropertyWrapper... includes) {
+		return getSingleEntity(searchIn, parent, false, includes);
 	}
 
 	/**
 	 * Searches for an existing entity
 	 * @param searchIn what kind of entity to search in
-	 * @param propertyName the property value to search in, can be null
-	 * @param value the value to search for, can be null
 	 * @param parent the parent of the entity to find, set to null to skip
+	 * @param onlyKeys will only retrieve keys for the found entity
+	 * @param includes property name and values to search for
 	 * @return found entity, null if none or more than 1 was found
 	 */
-	public static Entity getSingleEntity(String searchIn, String propertyName, Object value, Key parent) {
+	private static Entity getSingleEntity(String searchIn, Key parent, boolean onlyKeys, PropertyWrapper... includes) {
 		Query query = new Query(searchIn);
-		if (propertyName != null) {
-			Filter filter = null;
-			if (value instanceof UUID) {
-				filter = createUuidFilter(propertyName, (UUID) value);
-			} else if (value != null) {
-				filter = new Query.FilterPredicate(propertyName, FilterOperator.EQUAL, value);
+
+		if (onlyKeys) {
+			query.setKeysOnly();
+		}
+
+		if (includes != null) {
+			ArrayList<Filter> filters = new ArrayList<>();
+			for (PropertyWrapper property : includes) {
+				Filter filter = null;
+				if (property.value instanceof UUID) {
+					filter = createUuidFilter(property.name, (UUID)property.value);
+				} else if (property.value != null) {
+					filter = new Query.FilterPredicate(property.name, FilterOperator.EQUAL, property.value);
+				}
+
+				if (filter != null) {
+					filters.add(filter);
+				}
 			}
 
-			if (filter != null) {
-				query.setFilter(filter);
+			if (filters.size() == 1) {
+				query.setFilter(filters.get(0));
+			} else if (filters.size() > 1) {
+				query.setFilter(new Query.CompositeFilter(CompositeFilterOperator.AND, filters));
 			}
 		}
 
@@ -135,48 +166,24 @@ public class DatastoreUtils {
 	/**
 	 * Searches for an existing entity
 	 * @param searchIn what kind of entity to search in
-	 * @param propertyName the property value to search in
-	 * @param value the value to search for
+	 * @param includes property name and values to search for
 	 * @return found entity, null if none or more than 1 was found
 	 */
-	public static Entity getSingleEntity(String searchIn, String propertyName, Object value) {
-		return getSingleEntity(searchIn, propertyName, value, null);
+	public static Entity getSingleEntity(String searchIn, PropertyWrapper... includes) {
+		return getSingleEntity(searchIn, null, includes);
 	}
 
 	/**
 	 * Searches for an existing entity
 	 * @param searchIn what kind of entity to search in
-	 * @param propertyName the property value to search in, can be null
-	 * @param value the value to search for, can be null
 	 * @param parent the parent for the entity, set to null to skip using
+	 * @param includes the values to search for
 	 * @return found key for entity
 	 */
-	public static Key getSingleKey(String searchIn, String propertyName, Object value, Key parent) {
-		Query query = new Query(searchIn).setKeysOnly();
-		if (propertyName != null) {
-			Filter filter = null;
-			if (value instanceof UUID) {
-				filter = createUuidFilter(propertyName, (UUID) value);
-			} else if (value != null) {
-				filter = new FilterPredicate(propertyName, FilterOperator.EQUAL, value);
-			}
-
-			if (filter != null) {
-				query.setFilter(filter);
-			}
-		}
-
-		if (parent != null) {
-			query.setAncestor(parent);
-		}
-
-		try {
-			Entity foundEntity = mDatastore.prepare(query).asSingleEntity();
-			if (foundEntity != null) {
-				return foundEntity.getKey();
-			}
-		} catch (TooManyResultsException e) {
-			// Does nothing
+	public static Key getSingleKey(String searchIn, Key parent, PropertyWrapper... includes) {
+		Entity foundEntity = getSingleEntity(searchIn, parent, true, includes);
+		if (foundEntity != null) {
+			return foundEntity.getKey();
 		}
 		return null;
 	}
@@ -184,12 +191,11 @@ public class DatastoreUtils {
 	/**
 	 * Searches for an existing entity
 	 * @param searchIn what kind of entity to search in
-	 * @param propertyName the property value to search in
-	 * @param value the value to search for
+	 * @param includes the values to search for
 	 * @return found key for entity
 	 */
-	public static Key getSingleKey(String searchIn, String propertyName, Object value) {
-		return getSingleKey(searchIn, propertyName, value, null);
+	public static Key getSingleKey(String searchIn, PropertyWrapper... includes) {
+		return getSingleKey(searchIn, null, includes);
 	}
 
 	/**
@@ -224,24 +230,22 @@ public class DatastoreUtils {
 	/**
 	 * Searches if an entity exists
 	 * @param searchIn what kind of entity to search in
-	 * @param propertyName name of the property (column)
-	 * @param value the value to search for
+	 * @param includes the values to search for
 	 * @return true if the datastore contains the specified entity
 	 */
-	public static boolean exists(String searchIn, String propertyName, Object value) {
-		return exists(searchIn, propertyName, value, null);
+	public static boolean exists(String searchIn, PropertyWrapper... includes) {
+		return exists(searchIn, null, includes);
 	}
 
 	/**
 	 * Searches if an entity exists
 	 * @param searchIn what kind of entity to search in
-	 * @param propertyName name of the property (column)
-	 * @param value the value to search for
 	 * @param parent the parent for the entity, set to null to skip using
+	 * @param includes the values to search for
 	 * @return true if the datastore contains the specified entity
 	 */
-	public static boolean exists(String searchIn, String propertyName, Object value, Key parent) {
-		return getSingleKey(searchIn, propertyName, value, parent) != null;
+	public static boolean exists(String searchIn, Key parent, PropertyWrapper... includes) {
+		return getSingleKey(searchIn, parent, includes) != null;
 	}
 
 	/**
@@ -369,6 +373,32 @@ public class DatastoreUtils {
 		return mDatastore.prepare(query);
 	}
 
+	/**
+	 * Property wrapper. Contains the property name and value
+	 */
+	public static class PropertyWrapper {
+		/**
+		 * Default constructor
+		 */
+		public PropertyWrapper() {
+			// Does nothing
+		}
+
+		/**
+		 * Sets the name and value of the property
+		 * @param name
+		 * @param value
+		 */
+		public PropertyWrapper(String name, Object value) {
+			this.name = name;
+			this.value = value;
+		}
+
+		/** Property name */
+		public String name = null;
+		/** Property value */
+		public Object value = null;
+	}
 
 	/** Datastore service */
 	private static DatastoreService mDatastore = DatastoreServiceFactory.getDatastoreService();

@@ -40,6 +40,50 @@ public class BlobUtils {
 		return blobKeys;
 	}
 
+	/**
+	 * Get all uploaded blob keys from a request. The resource uploaded are resource revisions
+	 * @param request the request send to the servlet
+	 * @return Map with all blob keys mapped to a revision that is mapped to a UUID.
+	 */
+	public static Map<UUID, Map<Integer, BlobKey>> getBlobKeysFromUploadRevision(HttpServletRequest request) {
+		Map<UUID, Map<Integer, BlobKey>> resources = new HashMap<>();
+
+		try {
+			Map<String, List<BlobKey>> map = mBlobstore.getUploads(request);
+			for (Entry<String, List<BlobKey>> entry : map.entrySet()) {
+
+				String fieldName = entry.getKey();
+				String[] splitFieldName = fieldName.split("_");
+
+				if (splitFieldName.length == 2) {
+					try {
+						UUID uuid = UUID.fromString(splitFieldName[0]);
+						Integer revision = Integer.valueOf(splitFieldName[1]);
+
+						// Get resource id
+						Map<Integer, BlobKey> blobKeys = resources.get(uuid);
+
+						if (blobKeys == null) {
+							blobKeys = new HashMap<>();
+							resources.put(uuid, blobKeys);
+						}
+
+						blobKeys.put(revision, entry.getValue().get(0));
+
+					} catch (Exception e) {
+						mLogger.severe("Failed to convert field name");
+						e.printStackTrace();
+					}
+				}
+			}
+		} catch (IllegalStateException e) {
+			mLogger.warning("No blob uploads found");
+			return null;
+		}
+
+		return resources;
+	}
+
 	/** Blobstore service */
 	private static final BlobstoreService mBlobstore = BlobstoreServiceFactory.getBlobstoreService();
 	/** Logger */

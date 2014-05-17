@@ -19,6 +19,7 @@ import com.google.appengine.api.search.Document;
 import com.google.appengine.api.search.Document.Builder;
 import com.google.appengine.api.search.Field;
 import com.spiddekauga.appengine.DatastoreUtils;
+import com.spiddekauga.appengine.DatastoreUtils.PropertyWrapper;
 import com.spiddekauga.appengine.SearchUtils;
 import com.spiddekauga.voider.network.entities.BulletDefEntity;
 import com.spiddekauga.voider.network.entities.CampaignDefEntity;
@@ -59,7 +60,6 @@ public class Publish extends VoiderServlet {
 		mSearchDocumentsToAdd.clear();
 
 		if (methodEntity instanceof PublishMethod) {
-			mLogger.fine("Is a publish method");
 			Map<UUID, BlobKey> blobKeys = getUploadedBlobs();
 			Map<UUID, Key> datastoreKeys = new HashMap<>();
 
@@ -182,7 +182,7 @@ public class Publish extends VoiderServlet {
 
 		// Search in datastore
 		if (resourceKey == null) {
-			resourceKey = DatastoreUtils.getSingleKey(DatastoreTables.PUBLISHED.toString(), "resource_id", resourceId);
+			resourceKey = DatastoreUtils.getSingleKey(DatastoreTables.PUBLISHED.toString(), new PropertyWrapper("resource_id", resourceId));
 
 			if (resourceKey != null) {
 				resourceKeys.put(resourceId, resourceKey);

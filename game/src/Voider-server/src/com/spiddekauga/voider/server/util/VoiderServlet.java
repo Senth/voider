@@ -145,11 +145,19 @@ public abstract class VoiderServlet extends HttpServlet {
 	}
 
 	/**
-	 * @return get blob information from the current requset, null if no uploads
+	 * @return get blob information from the current request, null if no uploads
 	 * were made.
 	 */
 	protected Map<UUID, BlobKey> getUploadedBlobs() {
 		return BlobUtils.getBlobKeysFromUpload(mRequest);
+	}
+
+	/**
+	 * @return get blob information from the current request where the uploaded
+	 * resources contains revisions, null if no uploads were made.
+	 */
+	protected Map<UUID, Map<Integer, BlobKey>> getUploadedRevisionBlobs() {
+		return BlobUtils.getBlobKeysFromUploadRevision(mRequest);
 	}
 
 	/**

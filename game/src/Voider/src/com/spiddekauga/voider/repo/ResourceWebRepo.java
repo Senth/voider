@@ -87,7 +87,10 @@ public class ResourceWebRepo extends WebRepo {
 	 */
 	void syncUserResources(HashMap<UUID, ResourceRevisionEntity> uploadResources, ICallerResponseListener... responseListeners) {
 		SyncUserResourcesMethod method = new SyncUserResourcesMethod();
-		method.resources = uploadResources;
+
+		for (Entry<UUID, ResourceRevisionEntity> entry : uploadResources.entrySet()) {
+			method.resources.add(entry.getValue());
+		}
 
 		ArrayList<FieldNameFileWrapper> files = createFieldNameFiles(uploadResources);
 
