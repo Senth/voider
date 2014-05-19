@@ -1,6 +1,8 @@
 package com.spiddekauga.voider.menu;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.sql.SQLiteGdxException;
+import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Debug.Builds;
@@ -75,8 +77,8 @@ public class LoginScene extends Scene implements ICallerResponseListener {
 			mGui.showWaitWindow("Auto logging in as " + userInfo.getUsername());
 		}
 		// Test offline
-		else if (userInfo != null && !userInfo.isOnline()) {
-			loginOffline(userInfo.getUsername(), userInfo.getPassword());
+		else {
+			((LoginGui)mGui).focusUsernameField();
 		}
 	}
 
@@ -104,11 +106,9 @@ public class LoginScene extends Scene implements ICallerResponseListener {
 				mAutoLogin = false;
 				mUser.setOnline(false);
 			} else {
-				boolean success = loginOffline(mLoggingInUser.getUsername(), mLoggingInUser.getPassword());
-				if (!success) {
-					mGui.showErrorMessage("No username with that password exists");
-				}
+				mGui.showErrorMessage("No username with that password exists");
 			}
+			((LoginGui)mGui).focusUsernameField();
 			break;
 
 
@@ -116,10 +116,19 @@ public class LoginScene extends Scene implements ICallerResponseListener {
 		case FAILED_SERVER_CONNECTION:
 			// Login offline if tried to auto-login
 			if (mAutoLogin) {
-				mUser.login(mLoggingInUser.getUsername(), mLoggingInUser.getServerKey(), false);
-				setOutcome(Outcomes.LOGGED_IN);
+				try {
+					mUser.login(mLoggingInUser.getUsername(), mLoggingInUser.getServerKey(), false);
+					setOutcome(Outcomes.LOGGED_IN);
+				} catch (GdxRuntimeException e) {
+					// Error with connection
+					if (e.getCause() instanceof SQLiteGdxException) {
+						mGui.showErrorMessage("Another instance with this user is already running");
+					}
+					((LoginGui)mGui).focusUsernameField();
+				}
 			} else {
 				mGui.showErrorMessage("Could not connect to server");
+				((LoginGui)mGui).focusUsernameField();
 			}
 			break;
 		}
@@ -199,7 +208,7 @@ public class LoginScene extends Scene implements ICallerResponseListener {
 			// Connection or server error, create a local user instead
 		case FAIL_SERVER_CONNECTION:
 		case FAIL_SERVER_ERROR:
-			((LoginGui)mGui).showCreateOfflineUser();
+			((LoginGui)mGui).showCouldNotCreateUser();
 			break;
 		}
 
@@ -218,25 +227,6 @@ public class LoginScene extends Scene implements ICallerResponseListener {
 		mLoggingInUser.setPassword(password);
 		mUserWebRepo.register(this, username, password, email, UserLocalRepo.getClientId());
 		mGui.showWaitWindow("Contacting server");
-	}
-
-	/**
-	 * Creates an offline user
-	 * @param username
-	 * @param password
-	 * @param email
-	 */
-	void createOfflineUser(String username, String password, String email) {
-		boolean success = UserLocalRepo.createTempUser(username, password, email);
-
-		if (success) {
-			UserLocalRepo.setLastUser(username, password);
-			UserLocalRepo.setAsRegistered();
-			mUser.login(username, null, false);
-			setOutcome(Outcomes.LOGGED_IN);
-		} else {
-			mGui.showErrorMessage("A temporary user with that username or email already exists");
-		}
 	}
 
 	@Override

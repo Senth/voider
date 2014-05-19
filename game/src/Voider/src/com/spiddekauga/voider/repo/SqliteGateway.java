@@ -79,7 +79,7 @@ abstract class SqliteGateway implements Disposable, Observer {
 				upgrader.initAndUpgrade();
 			} catch (SQLiteGdxException e) {
 				mDatabase = null;
-				e.printStackTrace();
+				throw new GdxRuntimeException(e);
 			}
 		}
 	}

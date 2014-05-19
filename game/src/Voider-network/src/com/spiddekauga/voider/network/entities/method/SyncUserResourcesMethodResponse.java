@@ -1,7 +1,10 @@
 package com.spiddekauga.voider.network.entities.method;
 
+import java.util.ArrayList;
+
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.ISuccessStatuses;
+import com.spiddekauga.voider.network.entities.ResourceConflictEntity;
 
 /**
  * Response from when syncing user resource revisions
@@ -12,6 +15,8 @@ import com.spiddekauga.voider.network.entities.ISuccessStatuses;
 public class SyncUserResourcesMethodResponse implements IEntity, ISuccessStatuses {
 	/** Response status */
 	public Statuses status = null;
+	/** All conflicting resources */
+	public ArrayList<ResourceConflictEntity> conflicts = new ArrayList<>();
 
 
 	@Override

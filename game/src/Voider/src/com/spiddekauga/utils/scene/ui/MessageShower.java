@@ -41,8 +41,8 @@ public class MessageShower {
 		mWindow.setWidth(mWidth);
 		mWindow.add(mAlignTable);
 		mAlignTable.setAlign(Horizontal.LEFT, Vertical.TOP);
-		float windowPadding = skin.get(SkinNames.GeneralVars.PADDING_WINDOW_LEFT_RIGHT.toString(), Float.class);
-		mAlignTable.setPaddingRowDefault(0, windowPadding, windowPadding, windowPadding);
+		float windowPadding = skin.get(SkinNames.GeneralVars.PADDING_INNER.toString(), Float.class);
+		mAlignTable.setPaddingRowDefault(windowPadding);
 		mStage = stage;
 	}
 
@@ -51,39 +51,46 @@ public class MessageShower {
 	 * @param message the message to display on the screen
 	 * @param style the label style to use for the message
 	 */
-	public void addMessage(String message, LabelStyle style) {
-		// Add window to stage, if it's not in the stage
-		if (mWindow.getStage() == null) {
-			mStage.addActor(mWindow);
-			mWindow.addAction(fadeIn(Config.Gui.MESSAGE_FADE_IN_DURATION));
-		}
-		// Make sure window isn't fading out and set it to correct alpha
-		else if (mWindow.getActions().size > 0) {
-			mWindow.clearActions();
-			if (mWindow.getColor().a < 1) {
-				mWindow.addAction(fadeIn(Config.Gui.MESSAGE_FADE_IN_DURATION));
+	public void addMessage(final String message, final LabelStyle style) {
+		Gdx.app.postRunnable(new Runnable() {
+
+			@Override
+			public void run() {
+				// Add window to stage, if it's not in the stage
+				if (mWindow.getStage() == null) {
+					mStage.addActor(mWindow);
+					mWindow.addAction(fadeIn(Config.Gui.MESSAGE_FADE_IN_DURATION));
+				}
+				// Make sure window isn't fading out and set it to correct alpha
+				else if (mWindow.getActions().size > 0) {
+					mWindow.clearActions();
+					if (mWindow.getColor().a < 1) {
+						mWindow.addAction(fadeIn(Config.Gui.MESSAGE_FADE_IN_DURATION));
+					}
+				}
+
+				// Get free label
+				Label messageLabel = Pools.label.obtain();
+
+				// Reset label
+				messageLabel.setStyle(style);
+				messageLabel.setText(message);
+				messageLabel.setWidth(Gdx.graphics.getWidth() * 0.3f);
+				messageLabel.setWrap(true);
+				mcMessages++;
+				mAlignTable.row();
+				mAlignTable.add(messageLabel);
+				messageLabel.invalidate();
+				messageLabel.layout();
+				packAndPlaceWindow();
+
+				// Set timer for fadeIn - display - fadeOut - remove - free
+				float showDuration = Messages.calculateTimeToShowMessage(message);
+				Action fadeOutAction = Actions.parallel(fadeOut(Config.Gui.MESSAGE_FADE_OUT_DURATION), Actions.run(mWindowFadeOut));
+				messageLabel.addAction(sequence(fadeIn(Config.Gui.MESSAGE_FADE_IN_DURATION), delay(showDuration), fadeOutAction, removeActor(), Actions.run(new FreeLabel(messageLabel))));
+
 			}
-		}
-
-		// Get free label
-		Label messageLabel = Pools.label.obtain();
-
-		// Reset label
-		messageLabel.setStyle(style);
-		messageLabel.setText(message);
-		messageLabel.setWidth(Gdx.graphics.getWidth() * 0.3f);
-		messageLabel.setWrap(true);
-		mcMessages++;
-		mAlignTable.row();
-		mAlignTable.add(messageLabel);
-		messageLabel.invalidate();
-		messageLabel.layout();
-		packAndPlaceWindow();
-
-		// Set timer for fadeIn - display - fadeOut - remove - free
-		float showDuration = Messages.calculateTimeToShowMessage(message);
-		Action fadeOutAction = Actions.parallel(fadeOut(Config.Gui.MESSAGE_FADE_OUT_DURATION), Actions.run(mWindowFadeOut));
-		messageLabel.addAction(sequence(fadeIn(Config.Gui.MESSAGE_FADE_IN_DURATION), delay(showDuration), fadeOutAction, removeActor(), Actions.run(new FreeLabel(messageLabel))));
+		});
 	}
 
 	/**

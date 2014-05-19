@@ -55,6 +55,14 @@ public class LoginGui extends Gui {
 	}
 
 	/**
+	 * Focus username field
+	 */
+	void focusUsernameField() {
+		getStage().setKeyboardFocus(mWidgets.login.username);
+		mWidgets.login.username.selectAll();
+	}
+
+	/**
 	 * Initializes the login table
 	 */
 	private void initLoginTable() {
@@ -336,7 +344,7 @@ public class LoginGui extends Gui {
 
 		mWidgets.register.table.layout();
 
-		float windowPadding = SkinNames.getResource(SkinNames.GeneralVars.PADDING_WINDOW_LEFT_RIGHT);
+		float windowPadding = SkinNames.getResource(SkinNames.GeneralVars.PADDING_INNER);
 		mWidgets.register.window = new Window("", skin, SkinNames.General.WINDOW_NO_TITLE.toString());
 		mWidgets.register.window.add(mWidgets.register.table).pad(windowPadding);
 		mMainTable.add(mWidgets.register.window);
@@ -350,21 +358,16 @@ public class LoginGui extends Gui {
 	/**
 	 * Show message box for creating an offline user meanwhile.
 	 */
-	void showCreateOfflineUser() {
+	void showCouldNotCreateUser() {
 		MsgBoxExecuter msgBox = getFreeMsgBox(true);
 
-		msgBox.setTitle("Create offline user");
-		msgBox.content("Could not connect to server!\n\n"
-				+ "Do you want to create an offline user meanwhile?\n"
-				+ "When a connection can be made the offline user\n"
-				+ "will be registered. (If the username and email\n"
-				+ "is free you won't have to do anything)\n\n"
-				+ "To fix this either wait a couple of hours (if\n"
+		msgBox.setTitle("Could not connect to server!");
+		msgBox.content("To fix this either wait a couple of hours (if\n"
 				+ "server is down) or connect your device to the\n"
-				+ "Internet.");
+				+ "Internet.\n\n"
+				+ "Sorry for your incovenience.");
 
-		msgBox.button("Yes, create offline user", new CCreateOfflineUser(mLoginScene, mWidgets.register.username.getText(), mWidgets.register.password.getText(), mWidgets.register.email.getText()));
-		msgBox.addCancelButtonAndKeys("No");
+		msgBox.addCancelButtonAndKeys("OK");
 		showMsgBox(msgBox);
 	}
 

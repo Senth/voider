@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -13,10 +13,16 @@ import javax.servlet.ServletException;
 
 import com.google.appengine.api.blobstore.BlobKey;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.PropertyProjection;
+import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.SortDirection;
 import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.appengine.DatastoreUtils.PropertyWrapper;
 import com.spiddekauga.voider.network.entities.IEntity;
+import com.spiddekauga.voider.network.entities.ResourceConflictEntity;
 import com.spiddekauga.voider.network.entities.ResourceRevisionEntity;
 import com.spiddekauga.voider.network.entities.RevisionEntity;
 import com.spiddekauga.voider.network.entities.method.IMethodEntity;
@@ -54,11 +60,11 @@ public class SyncUserResources extends VoiderServlet {
 				ArrayList<Key> revisions = new ArrayList<>();
 				Collections.sort(entity.revisions);
 
-				Iterator<RevisionEntity> it = entity.revisions.iterator();
-				boolean success = true;
+				int i = 0;
+				int failedRevision = -1;
 				// Add uploaded blob revisions to the datastore
-				while (it.hasNext()) {
-					RevisionEntity revisionEntity = it.next();
+				while (i < entity.revisions.size() && failedRevision != -1) {
+					RevisionEntity revisionEntity = entity.revisions.get(i);
 
 					PropertyWrapper revisionProp = new PropertyWrapper("revision", revisionEntity.revision);
 					if (!DatastoreUtils.exists("user_resources", mUser.getKey(), resourceProp, revisionProp)) {
@@ -66,30 +72,71 @@ public class SyncUserResources extends VoiderServlet {
 					}
 					// Revision already exist add resource to conflict
 					else {
-						success = false;
+						failedRevision = i;
 					}
 
+					++i;
 				}
 
 
-				if (success) {
+				if (failedRevision != -1) {
 					successRevisions.put(entity.resourceId, revisions);
 				}
-				// TODO Add resource conflict
+				// Add resource conflict
 				else {
 					// From what revision is the conflict?
+					ResourceConflictEntity conflict = new ResourceConflictEntity();
+					conflict.resourceId = entity.resourceId;
+					conflict.fromRevision = failedRevision;
 
 					// When was that?
+					PropertyWrapper revisionProp = new PropertyWrapper("revision", failedRevision);
+					Entity datastoreEntity = DatastoreUtils.getSingleEntity("user_resources", mUser.getKey(), resourceProp, revisionProp);
+					conflict.fromDate = (Date) datastoreEntity.getProperty("created");
+					conflict.latestDate = getLatestRevisionDate(entity.resourceId);
 
-					// What is the latest server revision
+					response.conflicts.add(conflict);
 
 					// Remove added revision of that resource
 					DatastoreUtils.delete(revisions);
+
+					response.status = Statuses.SUCCESS_PARTIAL;
 				}
+			}
+
+			if (response.status != Statuses.SUCCESS_PARTIAL) {
+				response.status = Statuses.SUCCESS_ALL;
 			}
 		}
 
 		return response;
+	}
+
+	/**
+	 * Get latest revision creation date from the specified resource
+	 * @param resourceId
+	 * @return latest revision creation date of this resource
+	 */
+	private Date getLatestRevisionDate(UUID resourceId) {
+		Query query = new Query("user_resources", mUser.getKey());
+
+		query.setFilter(DatastoreUtils.createUuidFilter("resource_id", resourceId));
+		query.addProjection(new PropertyProjection("created", Date.class));
+		query.addSort("created", SortDirection.DESCENDING);
+
+		PreparedQuery preparedQuery = DatastoreUtils.prepare(query);
+
+		FetchOptions fetchOptions = FetchOptions.Builder.withLimit(1);
+
+		List<Entity> entities = preparedQuery.asList(fetchOptions);
+
+		// Get date from entity
+		if (!entities.isEmpty()) {
+			return (Date) entities.get(0).getProperty("created");
+		} else {
+			mLogger.severe("Could not find latest revision");
+			return null;
+		}
 	}
 
 
