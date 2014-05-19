@@ -16,6 +16,7 @@ import com.spiddekauga.voider.network.entities.DefEntity;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.LevelDefEntity;
 import com.spiddekauga.voider.network.entities.ResourceBlobEntity;
+import com.spiddekauga.voider.network.entities.ResourceRevisionEntity;
 import com.spiddekauga.voider.network.entities.method.IMethodEntity;
 import com.spiddekauga.voider.network.entities.method.PublishMethod;
 import com.spiddekauga.voider.network.entities.method.PublishMethodResponse;
@@ -63,7 +64,7 @@ public class ResourceRepo implements ICallerResponseListener {
 	 * @param responseListener listens to the web response (when syncing is done)
 	 */
 	public void syncDownload(ICallerResponseListener responseListener) {
-		Date lastSync = ResourceLocalRepo.getSyncDownloadDate();
+		Date lastSync = ResourceLocalRepo.getDownloadSyncDate();
 		mWebRepo.syncDownloaded(lastSync, this, responseListener);
 	}
 
@@ -158,12 +159,25 @@ public class ResourceRepo implements ICallerResponseListener {
 	}
 
 	/**
-	 * Handles sync user resource revisions response
+	 * Handles sync user resource revisions response.
 	 * @param method
 	 * @param response
 	 */
 	private void handleSyncUserResourcesResponse(SyncUserResourcesMethod method, SyncUserResourcesMethodResponse response) {
-		// TODO
+		// Set the successful revisions as uploaded/synced
+		if (response.status.isSuccessful()) {
+			for (ResourceRevisionEntity resource : method.resources) {
+				if (!response.conflicts.contains(resource) && !resource.revisions.isEmpty()) {
+					int fromRevision = resource.revisions.get(0).revision;
+					int toRevision = resource.revisions.get(resource.revisions.size() - 1).revision;
+
+					// Same amount of revisions
+					assert(toRevision - fromRevision == resource.revisions.size() - 1);
+
+					ResourceLocalRepo.setSyncedUserResource(resource.resourceId, fromRevision, toRevision);
+				}
+			}
+		}
 	}
 
 	/**

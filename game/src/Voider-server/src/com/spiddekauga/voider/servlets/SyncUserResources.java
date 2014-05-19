@@ -2,7 +2,6 @@ package com.spiddekauga.voider.servlets;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -58,7 +57,6 @@ public class SyncUserResources extends VoiderServlet {
 				Map<Integer, BlobKey> blobKeys = blobResources.get(entity.resourceId);
 				PropertyWrapper resourceProp = new PropertyWrapper("resource_id", entity.resourceId);
 				ArrayList<Key> revisions = new ArrayList<>();
-				Collections.sort(entity.revisions);
 
 				int i = 0;
 				int failedRevision = -1;

@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.IdentityMap;
+import com.spiddekauga.utils.IOutstreamProgressListener;
 import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.utils.PngExport;
 import com.spiddekauga.utils.Screens;
@@ -19,6 +20,11 @@ import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Graphics.RenderOrders;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.ActorDef;
+import com.spiddekauga.voider.network.entities.IEntity;
+import com.spiddekauga.voider.network.entities.method.IMethodEntity;
+import com.spiddekauga.voider.network.entities.method.PublishMethodResponse;
+import com.spiddekauga.voider.network.entities.method.SyncUserResourcesMethodResponse;
+import com.spiddekauga.voider.repo.ICallerResponseListener;
 import com.spiddekauga.voider.repo.ResourceRepo;
 import com.spiddekauga.voider.resources.InternalNames;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
@@ -34,7 +40,7 @@ import com.spiddekauga.voider.utils.Pools;
  * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public abstract class Editor extends WorldScene implements IEditor {
+public abstract class Editor extends WorldScene implements IEditor, ICallerResponseListener, IOutstreamProgressListener {
 
 	/**
 	 * @param gui GUI to be used with the editor
@@ -300,6 +306,36 @@ public abstract class Editor extends WorldScene implements IEditor {
 	@Override
 	public Invoker getInvoker() {
 		return mInvoker;
+	}
+
+	@Override
+	public void handleWrite(long mcWrittenBytes, long mcTotalBytes) {
+		float percentage = 0;
+		if (mcTotalBytes != 0) {
+			percentage = (float) (((double) mcWrittenBytes) / mcTotalBytes) * 100;
+		}
+
+		mGui.updateProgressBar(percentage);
+	}
+
+	@Override
+	public void handleWebResponse(IMethodEntity method, IEntity response) {
+		// Publish
+		if (response instanceof PublishMethodResponse) {
+			mGui.hideProgressBar();
+			if (((PublishMethodResponse) response).status == PublishMethodResponse.Statuses.SUCCESS) {
+				mGui.showSuccessMessage("Publish successful!");
+				mGui.resetValues();
+				mInvoker.dispose();
+			} else {
+				mGui.showErrorMessage("Publish failed!");
+			}
+		}
+
+		// Sync revisions
+		else if (response instanceof SyncUserResourcesMethodResponse) {
+			// TODO
+		}
 	}
 
 	/**

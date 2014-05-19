@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector2;
-import com.spiddekauga.utils.IOutstreamProgressListener;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.editor.brushes.VectorBrush;
@@ -26,7 +25,6 @@ import com.spiddekauga.voider.game.actors.ActorShapeTypes;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.method.IMethodEntity;
 import com.spiddekauga.voider.network.entities.method.PublishMethodResponse;
-import com.spiddekauga.voider.repo.ICallerResponseListener;
 import com.spiddekauga.voider.repo.ResourceLocalRepo;
 import com.spiddekauga.voider.repo.ResourceRepo;
 import com.spiddekauga.voider.resources.Def;
@@ -42,7 +40,7 @@ import com.spiddekauga.voider.utils.Pools;
  * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public abstract class ActorEditor extends Editor implements IActorEditor, IResourceChangeEditor, ICallerResponseListener, IOutstreamProgressListener {
+public abstract class ActorEditor extends Editor implements IActorEditor, IResourceChangeEditor {
 	/**
 	 * @param gui all UI elements
 	 * @param pickRadius picking radius
@@ -485,16 +483,6 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 	}
 
 	@Override
-	public void handleWrite(long mcWrittenBytes, long mcTotalBytes) {
-		float percentage = 0;
-		if (mcTotalBytes != 0) {
-			percentage = (float) (((double) mcWrittenBytes) / mcTotalBytes) * 100;
-		}
-
-		mGui.updateProgressBar(percentage);
-	}
-
-	@Override
 	public boolean isPublished() {
 		if (mActorDef != null) {
 			try {
@@ -508,17 +496,13 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 
 	@Override
 	public void handleWebResponse(IMethodEntity method, IEntity response) {
+		super.handleWebResponse(method, response);
+
+		// Publish -> Remove tools
 		if (response instanceof PublishMethodResponse) {
 			if (((PublishMethodResponse) response).status == PublishMethodResponse.Statuses.SUCCESS) {
-				mGui.hideProgressBar();
-				mGui.showSuccessMessage("Publish successful!");
-				mGui.resetValues();
-
-				// Remove tools
 				switchTool(Tools.MOVE);
-				mInputMultiplexer.removeProcessor(mInputMultiplexer);
-			} else {
-				mGui.showErrorMessage("Publish failed!");
+				mInputMultiplexer.removeProcessor(mTools[Tools.DELETE.ordinal()]);
 			}
 		}
 	}

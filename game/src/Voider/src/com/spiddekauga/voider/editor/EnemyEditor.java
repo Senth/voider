@@ -420,7 +420,7 @@ public class EnemyEditor extends ActorEditor {
 	protected void saveToFile() {
 		int oldRevision = mDef.getRevision();
 
-		//		ResourceSaver.save(mDef);
+		mResourceRepo.save(this, mDef);
 
 		// Saved first time? Then load it and use the loaded resource
 		if (!ResourceCacheFacade.isLoaded(mDef.getId())) {

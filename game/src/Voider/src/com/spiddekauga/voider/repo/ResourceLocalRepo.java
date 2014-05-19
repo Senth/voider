@@ -341,7 +341,7 @@ public class ResourceLocalRepo {
 	/**
 	 * @return last sync date of published/downloaded resources
 	 */
-	public static Date getSyncDownloadDate() {
+	public static Date getDownloadSyncDate() {
 		return mPrefsGateway.getDownloadSyncDate();
 	}
 
@@ -351,6 +351,25 @@ public class ResourceLocalRepo {
 	 */
 	static HashMap<UUID, ResourceRevisionEntity> getUnsyncedUserResources() {
 		return mSqliteGateway.getUnsyncedUserResources();
+	}
+
+	/**
+	 * Set the user resource revision as synced/uploaded
+	 * @param resourceId the resource to set
+	 * @param revision the specific revision to set as synced/uploaded
+	 */
+	static void setSyncedUserResource(UUID resourceId, int revision) {
+		mSqliteGateway.setSyncedUserResource(resourceId, revision);
+	}
+
+	/**
+	 * Set the user resource revision as synced/uploaded
+	 * @param resourceId the resource to set
+	 * @param from from this revision
+	 * @param to to and including this revision
+	 */
+	static void setSyncedUserResource(UUID resourceId, int from, int to) {
+		mSqliteGateway.setSyncedUserResource(resourceId, from, to);
 	}
 
 	/** File gateway */

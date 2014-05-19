@@ -276,7 +276,7 @@ class ResourceSqliteGateway extends SqliteGateway {
 		HashMap<UUID, ResourceRevisionEntity> resources = new HashMap<>();
 
 		try {
-			DatabaseCursor cursor = mDatabase.rawQuery("SELECT uuid, revision, date FROM resource_revision WHERE uploaded=0;");
+			DatabaseCursor cursor = mDatabase.rawQuery("SELECT uuid, revision, date FROM resource_revision WHERE uploaded=0 ORDER BY revision");
 
 			while (cursor.next()) {
 				String uuidString = cursor.getString(0);
@@ -305,6 +305,35 @@ class ResourceSqliteGateway extends SqliteGateway {
 		}
 
 		return resources;
+	}
+
+	/**
+	 * Set the user resource revision as synced/uploaded
+	 * @param resourceId the resource to set
+	 * @param revision the specific revision to set as synced/uploaded
+	 */
+	void setSyncedUserResource(UUID resourceId, int revision) {
+		try {
+			mDatabase.execSQL("UPDATE resource_revision SET uploaded=1 WHERE uuid='" + resourceId + "' AND revision=" + revision + ";");
+		} catch (SQLiteGdxException e) {
+			e.printStackTrace();
+			throw new GdxRuntimeException(e);
+		}
+	}
+
+	/**
+	 * Set the user resource revision as synced/uploaded
+	 * @param resourceId the resource to set
+	 * @param from from this revision
+	 * @param to to and including this revision
+	 */
+	void setSyncedUserResource(UUID resourceId, int from, int to) {
+		try {
+			mDatabase.execSQL("UPDATE resource_revision SET uploaded=1 WHERE uuid='" + resourceId + "' AND revision>=" + from + " AND revision<=" + to + ";");
+		} catch (SQLiteGdxException e) {
+			e.printStackTrace();
+			throw new GdxRuntimeException(e);
+		}
 	}
 
 	/** Column for resource uuid */

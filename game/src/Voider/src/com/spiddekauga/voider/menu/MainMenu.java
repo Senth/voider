@@ -45,7 +45,7 @@ public class MainMenu extends Scene implements ICallerResponseListener {
 	 */
 	public MainMenu() {
 		super(new MainMenuGui());
-		((MainMenuGui)mGui).setMenuScene(this);
+		((MainMenuGui) mGui).setMenuScene(this);
 		mGuiStack.add(mGui);
 	}
 
@@ -77,7 +77,7 @@ public class MainMenu extends Scene implements ICallerResponseListener {
 				GameScene gameScene = new GameScene(false, false);
 				gameScene.setLevelToLoad(loadedLevelDef);
 				SceneSwitcher.switchTo(gameScene);
-				Pools.resourceItem.free((ResourceItem)message);
+				Pools.resourceItem.free((ResourceItem) message);
 			} else {
 				Gdx.app.error("MainMenu", "When seleting def, message was not a ResourceItem but a " + message.getClass().getName());
 			}
@@ -121,6 +121,9 @@ public class MainMenu extends Scene implements ICallerResponseListener {
 		// Testing
 		else if (Config.Debug.isBuildOrBelow(Builds.NIGHTLY) && keycode == Input.Keys.F5) {
 			SceneSwitcher.switchTo(new TestUiScene());
+		} else if (Config.Debug.isBuildOrBelow(Builds.NIGHTLY) && keycode == Input.Keys.F6) {
+			String message = "This is a longer error message with more text, a lot more text, see if it will wrap correctly later...";
+			mGui.showMessage(message);
 		} else if (Config.Debug.isBuildOrBelow(Builds.NIGHTLY) && keycode == Input.Keys.F10) {
 			SceneSwitcher.switchTo(new PrototypeScene());
 		} else if (Config.Debug.isBuildOrBelow(Builds.NIGHTLY) && keycode == Input.Keys.F12) {
@@ -215,9 +218,12 @@ public class MainMenu extends Scene implements ICallerResponseListener {
 
 		/**
 		 * Creates the enumeration with a GUI class
-		 * @param gui the GUI class to create for this menu
+		 * 
+		 * @param gui
+		 *            the GUI class to create for this menu
 		 */
-		private Menus(Class<? extends MenuGui> gui) {
+		private Menus(
+				Class<? extends MenuGui> gui) {
 			mGuiType = gui;
 		}
 
@@ -227,7 +233,9 @@ public class MainMenu extends Scene implements ICallerResponseListener {
 
 	/**
 	 * Pushes another GUI menu to the stack
-	 * @param menu the menu to push to the stack
+	 * 
+	 * @param menu
+	 *            the menu to push to the stack
 	 */
 	void pushMenu(Menus menu) {
 		MenuGui newGui = menu.newInstance();
@@ -293,7 +301,9 @@ public class MainMenu extends Scene implements ICallerResponseListener {
 
 	/**
 	 * Handle sync download response
-	 * @param response web response
+	 * 
+	 * @param response
+	 *            web response
 	 */
 	private void handleSyncDownloadResponse(SyncDownloadMethodResponse response) {
 		mGui.hideWaitWindow();
