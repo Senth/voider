@@ -24,7 +24,6 @@ import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Common class for all Web Repositories
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 abstract class WebRepo {
@@ -43,7 +42,8 @@ abstract class WebRepo {
 	 * @param progressListener send upload progress to this listener
 	 * @param callerResponseListeners class that invoked the WebRepo
 	 */
-	protected void sendInNewThread(IMethodEntity methodEntity, IOutstreamProgressListener progressListener, ICallerResponseListener... callerResponseListeners) {
+	protected void sendInNewThread(IMethodEntity methodEntity, IOutstreamProgressListener progressListener,
+			ICallerResponseListener... callerResponseListeners) {
 		sendInNewThread(methodEntity, null, progressListener, callerResponseListeners);
 	}
 
@@ -53,18 +53,19 @@ abstract class WebRepo {
 	 * @param files all the files to upload
 	 * @param callerResponseListeners class that invoked the WebRepo
 	 */
-	protected void sendInNewThread(IMethodEntity methodEntity, ArrayList<FieldNameFileWrapper> files, ICallerResponseListener... callerResponseListeners) {
+	protected void sendInNewThread(IMethodEntity methodEntity, ArrayList<FieldNameFileWrapper> files,
+			ICallerResponseListener... callerResponseListeners) {
 		sendInNewThread(methodEntity, files, null, callerResponseListeners);
 	}
 
 	/**
 	 * Creates a new thread that will send and receive a HTTP request
 	 * @param methodEntity the entity to send to the server
-	 * @param files all the files to upload
-	 * 	 * @param progressListener send upload progress to this listener
+	 * @param files all the files to upload * @param progressListener send upload progress to this listener
 	 * @param callerResponseListeners class that invoked the WebRepo
 	 */
-	protected void sendInNewThread(IMethodEntity methodEntity, ArrayList<FieldNameFileWrapper> files, IOutstreamProgressListener progressListener, ICallerResponseListener... callerResponseListeners) {
+	protected void sendInNewThread(IMethodEntity methodEntity, ArrayList<FieldNameFileWrapper> files, IOutstreamProgressListener progressListener,
+			ICallerResponseListener... callerResponseListeners) {
 		Thread thread = new ThreadWrapper(callerResponseListeners, this, methodEntity, files, progressListener);
 		thread.start();
 	}
@@ -97,8 +98,7 @@ abstract class WebRepo {
 
 	/**
 	 * Send all methods that should upload files via this method
-	 * @param method the method that should "called" on the server
-	 * when the upload is finished
+	 * @param method the method that should "called" on the server when the upload is finished
 	 * @param progressListener send upload progress to this listener
 	 * @param files all files that should be uploaded
 	 * @return server method response, null if something went wrong
@@ -116,7 +116,15 @@ abstract class WebRepo {
 		// Upload files
 		if (uploadResponse instanceof GetUploadUrlMethodResponse) {
 			String uploadUrl = ((GetUploadUrlMethodResponse) uploadResponse).uploadUrl;
+			Gdx.app.debug("WebRepo", "Upload URL: " + uploadUrl);
 			if (uploadUrl != null) {
+				// Fix upload URL
+				int portIndex = uploadUrl.indexOf(":8888");
+				if (portIndex > 0) {
+					uploadUrl = Config.Network.SERVER_HOST + uploadUrl.substring(portIndex + 6);
+					Gdx.app.debug("WebRepo", "Fixed URL: " + uploadUrl);
+				}
+
 				byte[] methodBytes = NetworkEntitySerializer.serializeEntity(method);
 				byte[] responseBytes = WebGateway.sendRequest(uploadUrl, methodBytes, files, progressListener);
 				return NetworkEntitySerializer.deserializeEntity(responseBytes);
@@ -224,7 +232,9 @@ abstract class WebRepo {
 		 * @param files all the files to send, set to null to not send any files
 		 * @param progressListener send upload progress to this listener
 		 */
-		ThreadWrapper(ICallerResponseListener[] callerResponseListeners, WebRepo webRepo, IMethodEntity methodEntity, ArrayList<FieldNameFileWrapper> files, IOutstreamProgressListener progressListener) {
+		ThreadWrapper(
+				ICallerResponseListener[] callerResponseListeners, WebRepo webRepo, IMethodEntity methodEntity,
+				ArrayList<FieldNameFileWrapper> files, IOutstreamProgressListener progressListener) {
 			mMethodEntity = methodEntity;
 			mWebRepo = webRepo;
 			mCallerRepsonseListeners = callerResponseListeners;

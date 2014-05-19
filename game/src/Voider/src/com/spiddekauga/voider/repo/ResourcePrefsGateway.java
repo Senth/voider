@@ -12,7 +12,6 @@ import com.spiddekauga.voider.utils.User.UserEvents;
 
 /**
  * Gateway for reading and writing to the resource preferences file
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 class ResourcePrefsGateway implements Observer {
@@ -34,7 +33,7 @@ class ResourcePrefsGateway implements Observer {
 	public void update(Observable object, Object arg) {
 		if (object instanceof User) {
 			if (arg instanceof UserEvents) {
-				switch ((UserEvents)arg) {
+				switch ((UserEvents) arg) {
 				case LOGIN:
 					open();
 					break;
@@ -65,7 +64,7 @@ class ResourcePrefsGateway implements Observer {
 	 * Set last sync date of published/downloaded resources
 	 * @param lastSync date when synced published/downloaded resources the last time
 	 */
-	void setDownloadSyncDate(Date lastSync) {
+	void setSyncDownloadDate(Date lastSync) {
 		mPreferences.putLong(SYNC_DOWNLOADED, lastSync.getTime());
 		mPreferences.flush();
 	}
@@ -73,8 +72,25 @@ class ResourcePrefsGateway implements Observer {
 	/**
 	 * @return last sync date of published/downloaded resources
 	 */
-	Date getDownloadSyncDate() {
+	Date getSyncDownloadDate() {
 		long dateTime = mPreferences.getLong(SYNC_DOWNLOADED, 0);
+		return new Date(dateTime);
+	}
+
+	/**
+	 * Set last sync date of user resource revisions
+	 * @param lastSync date when synced user resource revisions
+	 */
+	void setSyncUserResourceDate(Date lastSync) {
+		mPreferences.putLong(SYNC_USER_RESOURCES, lastSync.getTime());
+		mPreferences.flush();
+	}
+
+	/**
+	 * @return last sync date of user resource revisions
+	 */
+	Date getSyncUserResourceDate() {
+		long dateTime = mPreferences.getLong(SYNC_USER_RESOURCES, 0);
 		return new Date(dateTime);
 	}
 
@@ -87,4 +103,6 @@ class ResourcePrefsGateway implements Observer {
 	// SYNC
 	/** Downloaded sync date */
 	private static final String SYNC_DOWNLOADED = "sync_downloaded";
+	/** User resource revision sync date */
+	private static final String SYNC_USER_RESOURCES = "sync_user_resources";
 }

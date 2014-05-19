@@ -76,7 +76,6 @@ import com.spiddekauga.voider.utils.Pools;
 
 /**
  * The level editor scene
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class LevelEditor extends Editor implements IResourceChangeEditor, ISelectionListener, ICallerResponseListener, IOutstreamProgressListener {
@@ -180,9 +179,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 	/**
 	 * Sets the level that shall be played and resets tools, invoker, etc.
-	 * 
-	 * @param level
-	 *            level to play
+	 * @param level level to play
 	 */
 	private void setLevel(Level level) {
 		boolean sameLevel = false;
@@ -201,8 +198,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 			// Unload the old level
 			if (ResourceCacheFacade.isLoaded(mLevel.getId()) && !sameRevision) {
 				// TODO unload old level
-			}
-			else {
+			} else {
 				mLevel.dispose();
 			}
 		}
@@ -240,11 +236,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 	/**
 	 * Updates the available tools depending on if the current level is published or not.
-	 * 
-	 * @param oldIsPublished
-	 *            true if the previous level was published
-	 * @param newIsPublished
-	 *            true if the newly loaded level is published
+	 * @param oldIsPublished true if the previous level was published
+	 * @param newIsPublished true if the newly loaded level is published
 	 */
 	private void updateAvailableTools(boolean oldIsPublished, boolean newIsPublished) {
 		// Only do something with the tools if they changed
@@ -319,21 +312,17 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 					mGui.hideMsgBoxes();
 					setSaved();
 					mLoadingLevel = null;
-				}
-				else {
+				} else {
 					Gdx.app.error("LevelEditor", "Could not find level (" + mLoadingLevel.getLevelId() + ")");
 				}
 			}
-		}
-		else if (outcome == Outcomes.LOADING_FAILED_CORRUPT_FILE) {
+		} else if (outcome == Outcomes.LOADING_FAILED_CORRUPT_FILE) {
 			/** @todo loading failed, load backup? */
 			mLoadingLevel = null;
-		}
-		else if (outcome == Outcomes.LOADING_FAILED_MISSING_FILE) {
+		} else if (outcome == Outcomes.LOADING_FAILED_MISSING_FILE) {
 			/** @todo loading failed, missing file */
 			mLoadingLevel = null;
-		}
-		else if (outcome == Outcomes.DEF_SELECTED) {
+		} else if (outcome == Outcomes.DEF_SELECTED) {
 			mGui.hideMsgBoxes();
 
 			if (message instanceof ResourceItem) {
@@ -356,8 +345,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 							if (scene != null) {
 								SceneSwitcher.switchTo(scene);
 							}
-						}
-						else {
+						} else {
 							mLoadingLevel = null;
 						}
 					}
@@ -372,12 +360,10 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 					mInvoker.execute(new CLevelEnemyDefAdd(((ResourceItem) message).id, this));
 					break;
 				}
-			}
-			else {
+			} else {
 				Gdx.app.error(getClass().getSimpleName(), "When seleting def, message was not a ResourceItem but a " + message.getClass().getName());
 			}
-		}
-		else if (outcome == Outcomes.NOT_APPLICAPLE) {
+		} else if (outcome == Outcomes.NOT_APPLICAPLE) {
 			mGui.hideMsgBoxes();
 		}
 		// Set as unsaved if took screenshot
@@ -395,9 +381,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 	/**
 	 * Adds a new enemy to the add enemy table
-	 * 
-	 * @param enemyId
-	 *            the enemy id to add
+	 * @param enemyId the enemy id to add
 	 * @return true if enemy was selected successfully, false if unsuccessful
 	 */
 	public boolean addEnemyDef(UUID enemyId) {
@@ -408,8 +392,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 					mAddEnemies.add(0, enemyActorDef);
 					((LevelEditorGui) mGui).resetEnemyAddTable();
 					return true;
-				}
-				else {
+				} else {
 					mGui.showMessage("This enemy has already been added.");
 				}
 			}
@@ -420,9 +403,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 	/**
 	 * Adds a new enemy to the add enemy table
-	 * 
-	 * @param enemyDef
-	 *            the enemy definition to add to the add list
+	 * @param enemyDef the enemy definition to add to the add list
 	 */
 	private void addEnemyDef(EnemyActorDef enemyDef) {
 		if (enemyDef != null) {
@@ -435,9 +416,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 	/**
 	 * Removes an enemy from teh add enemy table
-	 * 
-	 * @param enemyId
-	 *            the enemy id to remove.
+	 * @param enemyId the enemy id to remove.
 	 * @return true if the enemy was successfully removed, false if it was not found.
 	 */
 	public boolean removeEnemyDef(UUID enemyId) {
@@ -465,9 +444,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 	/**
 	 * Selects the specified pickup definition. This pickup will be used when adding new pickups
-	 * 
-	 * @param pickupId
-	 *            the pickup id to select
+	 * @param pickupId the pickup id to select
 	 * @return true if the pickup was selected successfully, false if unsuccessful
 	 */
 	public boolean selectPickupDef(UUID pickupId) {
@@ -534,8 +511,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	boolean isEnemySelected() {
 		if (mSelection != null) {
 			return mSelection.isSelected(EnemyActor.class);
-		}
-		else {
+		} else {
 			return false;
 		}
 	}
@@ -558,9 +534,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 	/**
 	 * Switch currently selected tool
-	 * 
-	 * @param tool
-	 *            the new tool to use
+	 * @param tool the new tool to use
 	 */
 	void switchTool(Tools tool) {
 		if (mTool.getTool() != null) {
@@ -599,9 +573,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 	/**
 	 * Tests to run a game from the current location
-	 * 
-	 * @param invulnerable
-	 *            makes the player invulnerable
+	 * @param invulnerable makes the player invulnerable
 	 */
 	public void runFromHere(boolean invulnerable) {
 		if (!isSaved()) {
@@ -632,7 +604,6 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 	/**
 	 * Calculates the current starting position when test running
-	 * 
 	 * @return start position of the level when test running from here
 	 */
 	public float getRunFromHerePosition() {
@@ -651,8 +622,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 			mCamera.viewportHeight = height;
 			mCamera.viewportWidth = width;
 			mCamera.update();
-		}
-		else {
+		} else {
 			mCamera = new OrthographicCamera(width, height);
 		}
 	}
@@ -677,6 +647,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 			int oldRevision = mLevel.getRevision();
 			mResourceRepo.save(this, mLevel.getDef(), mLevel);
+			showSyncMessage();
 
 			// Update latest resource if revision was changed by more than one
 			if (oldRevision != mLevel.getDef().getRevision() - 1) {
@@ -782,9 +753,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 	/**
 	 * Sets the starting speed of the current level
-	 * 
-	 * @param speed
-	 *            starting speed of the current level
+	 * @param speed starting speed of the current level
 	 */
 	void setLevelStartingSpeed(float speed) {
 		if (mLevel != null) {
@@ -799,8 +768,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	float getLevelStartingSpeed() {
 		if (mLevel != null) {
 			return mLevel.getSpeed();
-		}
-		else {
+		} else {
 			return -1;
 		}
 	}
@@ -811,17 +779,14 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	String getLevelRevision() {
 		if (mLevel != null) {
 			return String.valueOf(mLevel.getRevision());
-		}
-		else {
+		} else {
 			return "";
 		}
 	}
 
 	/**
 	 * Sets the name of the level
-	 * 
-	 * @param name
-	 *            name of the level
+	 * @param name name of the level
 	 */
 	void setLevelName(String name) {
 		if (mLevel != null) {
@@ -836,17 +801,14 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	public String getLevelName() {
 		if (mLevel != null) {
 			return mLevel.getDef().getName();
-		}
-		else {
+		} else {
 			return "";
 		}
 	}
 
 	/**
 	 * Sets the description of the level
-	 * 
-	 * @param description
-	 *            text description of the level
+	 * @param description text description of the level
 	 */
 	void setLevelDescription(String description) {
 		if (mLevel != null) {
@@ -861,17 +823,14 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	String getLevelDescription() {
 		if (mLevel != null) {
 			return mLevel.getDef().getDescription();
-		}
-		else {
+		} else {
 			return "";
 		}
 	}
 
 	/**
 	 * Sets the story before the level
-	 * 
-	 * @param storyText
-	 *            the story that will be displayed before the level
+	 * @param storyText the story that will be displayed before the level
 	 */
 	void setPrologue(String storyText) {
 		if (mLevel != null) {
@@ -886,17 +845,14 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	String getPrologue() {
 		if (mLevel != null) {
 			return mLevel.getDef().getPrologue();
-		}
-		else {
+		} else {
 			return "";
 		}
 	}
 
 	/**
 	 * Sets the story after completing the level
-	 * 
-	 * @param storyText
-	 *            the story that will be displayed after the level
+	 * @param storyText the story that will be displayed after the level
 	 */
 	void setEpilogue(String storyText) {
 		if (mLevel != null) {
@@ -933,8 +889,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 		if (actorDef != null) {
 			return actorDef.getName();
-		}
-		else {
+		} else {
 			return null;
 		}
 	}
@@ -947,17 +902,14 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 		if (actorDef != null) {
 			return actorDef.getName();
-		}
-		else {
+		} else {
 			return null;
 		}
 	}
 
 	/**
 	 * Sets the number of enemies in one group
-	 * 
-	 * @param cEnemies
-	 *            number of enemies in the group
+	 * @param cEnemies number of enemies in the group
 	 */
 	void setEnemyCount(int cEnemies) {
 		ArrayList<EnemyActor> selectedEnemies = mSelection.getSelectedResourcesOfType(EnemyActor.class);
@@ -1056,8 +1008,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 					if (cEnemies != enemyGroup.getEnemyCount()) {
 						return -1;
 					}
-				}
-				else if (cEnemies != 1) {
+				} else if (cEnemies != 1) {
 					return -1;
 				}
 			}
@@ -1079,9 +1030,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 	/**
 	 * Sets the spawn delay between actors in the same group.
-	 * 
-	 * @param delay
-	 *            seconds of delay between actors are activated.
+	 * @param delay seconds of delay between actors are activated.
 	 */
 	void setEnemySpawnDelay(float delay) {
 		ArrayList<EnemyActor> selectedEnemies = mSelection.getSelectedResourcesOfType(EnemyActor.class);
@@ -1118,9 +1067,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 	/**
 	 * Sets the path type of the selected path
-	 * 
-	 * @param pathType
-	 *            type of the path
+	 * @param pathType type of the path
 	 */
 	void setPathType(Path.PathTypes pathType) {
 		ArrayList<Path> selectedPaths = mSelection.getSelectedResourcesOfType(Path.class);
@@ -1167,11 +1114,9 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		// Only allow one to be above 0
 		if (cOnce > 0 && cLoop == 0 && cBackAndForth == 0) {
 			return PathTypes.ONCE;
-		}
-		else if (cLoop > 0 && cOnce == 0 && cBackAndForth == 0) {
+		} else if (cLoop > 0 && cOnce == 0 && cBackAndForth == 0) {
 			return PathTypes.LOOP;
-		}
-		else if (cBackAndForth > 0 && cOnce == 0 && cLoop == 0) {
+		} else if (cBackAndForth > 0 && cOnce == 0 && cLoop == 0) {
 			return PathTypes.BACK_AND_FORTH;
 		}
 
@@ -1184,8 +1129,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	boolean isPathSelected() {
 		if (mSelection != null) {
 			return mSelection.isSelected(Path.class);
-		}
-		else {
+		} else {
 			return false;
 		}
 	}
@@ -1267,9 +1211,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 	/**
 	 * Sets the delay of the activation trigger
-	 * 
-	 * @param delay
-	 *            seconds of delay
+	 * @param delay seconds of delay
 	 */
 	void setSelectedEnemyActivateTriggerDelay(float delay) {
 		ArrayList<EnemyActor> selectedEnemies = mSelection.getSelectedResourcesOfType(EnemyActor.class);
@@ -1338,9 +1280,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 	/**
 	 * Sets the delay of the deactivate trigger
-	 * 
-	 * @param delay
-	 *            seconds of delay
+	 * @param delay seconds of delay
 	 */
 	void setSelectedEnemyDeactivateTriggerDelay(float delay) {
 		ArrayList<EnemyActor> selectedEnemies = mSelection.getSelectedResourcesOfType(EnemyActor.class);
@@ -1361,9 +1301,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 	/**
 	 * Sets if enemies that will be used when test running the level from here should be highlighted.
-	 * 
-	 * @param highlight
-	 *            set to true to highlight the enemies
+	 * @param highlight set to true to highlight the enemies
 	 */
 	void setEnemyHighlight(boolean highlight) {
 		mEnemyHighlight = highlight;
@@ -1434,9 +1372,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 		/**
 		 * Sets the actual tool
-		 * 
-		 * @param tool
-		 *            the actual tool that is used
+		 * @param tool the actual tool that is used
 		 */
 		public void setTool(TouchTool tool) {
 			mTool = tool;
@@ -1466,11 +1402,9 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 					if (((EnemyActor) resourceBody).getEnemyGroup() == null || ((EnemyActor) resourceBody).isGroupLeader()) {
 						resourceBody.createBody();
 					}
-				}
-				else if (resourceBody instanceof Path) {
+				} else if (resourceBody instanceof Path) {
 					((Path) resourceBody).setWorld(mWorld);
-				}
-				else {
+				} else {
 					resourceBody.createBody();
 				}
 			}
@@ -1514,9 +1448,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 	/**
 	 * Called when selecting the enemy type
-	 * 
-	 * @param enemyDef
-	 *            the enemy type to create
+	 * @param enemyDef the enemy type to create
 	 */
 	void createNewEnemy(EnemyActorDef enemyDef) {
 		((EnemyAddTool) Tools.ENEMY_ADD.mTool).setActorDef(enemyDef);
@@ -1524,9 +1456,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 	/**
 	 * Set the theme for the level
-	 * 
-	 * @param theme
-	 *            the theme for the level
+	 * @param theme the theme for the level
 	 */
 	void setTheme(Themes theme) {
 		if (mLevel != null) {
@@ -1543,8 +1473,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	Themes getTheme() {
 		if (mLevel != null) {
 			return mLevel.getDef().getTheme();
-		}
-		else {
+		} else {
 			return Themes.SPACE;
 		}
 	}
@@ -1555,8 +1484,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	Drawable getImage() {
 		if (mLevel != null) {
 			return mLevel.getDef().getTextureRegionDrawable();
-		}
-		else {
+		} else {
 			return null;
 		}
 	}

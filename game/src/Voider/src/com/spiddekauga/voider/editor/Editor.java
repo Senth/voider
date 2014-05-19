@@ -34,10 +34,11 @@ import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.scene.WorldScene;
 import com.spiddekauga.voider.utils.Messages;
 import com.spiddekauga.voider.utils.Pools;
+import com.spiddekauga.voider.utils.Synchronizer;
+import com.spiddekauga.voider.utils.User;
 
 /**
  * Common class for all editors
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public abstract class Editor extends WorldScene implements IEditor, ICallerResponseListener, IOutstreamProgressListener {
@@ -46,7 +47,8 @@ public abstract class Editor extends WorldScene implements IEditor, ICallerRespo
 	 * @param gui GUI to be used with the editor
 	 * @param pickRadius picking radius of the editor
 	 */
-	public Editor(Gui gui, float pickRadius) {
+	public Editor(
+			Gui gui, float pickRadius) {
 		super(gui, pickRadius);
 	}
 
@@ -113,7 +115,7 @@ public abstract class Editor extends WorldScene implements IEditor, ICallerRespo
 		// Back - main menu
 		else if (KeyHelper.isBackPressed(keycode)) {
 			if (!mGui.isMsgBoxActive()) {
-				((EditorGui)mGui).showExitConfirmDialog();
+				((EditorGui) mGui).showExitConfirmDialog();
 				return true;
 			} else {
 				/** @todo close message box */
@@ -139,8 +141,7 @@ public abstract class Editor extends WorldScene implements IEditor, ICallerRespo
 		// Render saving actor
 		if (mSaving) {
 			saveResourceScreenshot();
-		}
-		else {
+		} else {
 			// Render grid
 			if (mGridRender) {
 				renderGrid();
@@ -318,6 +319,15 @@ public abstract class Editor extends WorldScene implements IEditor, ICallerRespo
 		mGui.updateProgressBar(percentage);
 	}
 
+	/**
+	 * Shows syncing message
+	 */
+	protected void showSyncMessage() {
+		if (User.getGlobalUser().isOnline()) {
+			mGui.showMessage("Syncing...");
+		}
+	}
+
 	@Override
 	public void handleWebResponse(IMethodEntity method, IEntity response) {
 		// Publish
@@ -334,13 +344,12 @@ public abstract class Editor extends WorldScene implements IEditor, ICallerRespo
 
 		// Sync revisions
 		else if (response instanceof SyncUserResourcesMethodResponse) {
-			// TODO
+			Synchronizer.getInstance().handleWebResponse(method, response);
 		}
 	}
 
 	/**
-	 * Creates a texture out of the specified actor definition and sets it
-	 * for the actor definition.
+	 * Creates a texture out of the specified actor definition and sets it for the actor definition.
 	 */
 	private void createActorDefTexture() {
 		float width = mSavingActorDef.getWidth();
@@ -366,7 +375,7 @@ public abstract class Editor extends WorldScene implements IEditor, ICallerRespo
 		}
 
 		// Normalize width and height vertices to use 200px
-		copy.getVisualVars().setCenterOffset(0,0);
+		copy.getVisualVars().setCenterOffset(0, 0);
 		ArrayList<Vector2> triangleVertices = copy.getVisualVars().getTriangleVertices();
 		@SuppressWarnings("unchecked")
 		IdentityMap<Vector2, Vector2> scaledVertices = Pools.identityMap.obtain();
@@ -418,7 +427,6 @@ public abstract class Editor extends WorldScene implements IEditor, ICallerRespo
 		offset.set(minScreenPos.sub(offset));
 
 
-
 		// Set actor def
 		mSavingActor.setDef(copy);
 
@@ -438,8 +446,8 @@ public abstract class Editor extends WorldScene implements IEditor, ICallerRespo
 	}
 
 	/**
-	 * Set the actor as saving. This will create an image of the actor.
-	 * After the resource is saved the command will be executed
+	 * Set the actor as saving. This will create an image of the actor. After the resource is saved the command will be
+	 * executed
 	 * @param actorDef the actor definition to save
 	 * @param actor a new empty actor to use for creating a screen shot
 	 * @param command the command to be executed after the resource has been saved
@@ -455,8 +463,7 @@ public abstract class Editor extends WorldScene implements IEditor, ICallerRespo
 	}
 
 	/**
-	 * @return true if the editor is currently saving an actor. I.e. creating
-	 * a texture file for it.
+	 * @return true if the editor is currently saving an actor. I.e. creating a texture file for it.
 	 */
 	public boolean isSaving() {
 		return mSaving;

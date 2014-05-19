@@ -20,7 +20,6 @@ import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Local repository to all resources
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class ResourceLocalRepo {
@@ -227,9 +226,8 @@ public class ResourceLocalRepo {
 	 * Get the latest revision of the specified resource
 	 * @param uuid the resource to get the revision for
 	 * @return latest revision of the specified resource.
-	 * @throws ResourceNotFoundException if the resource doesn't got any revisions.
-	 * I.e. it either does not exist, does not contain any revisions because it's either not
-	 * a revision resource or it has been published.
+	 * @throws ResourceNotFoundException if the resource doesn't got any revisions. I.e. it either does not exist, does
+	 *             not contain any revisions because it's either not a revision resource or it has been published.
 	 */
 	public static RevisionEntity getRevisionLatest(UUID uuid) {
 		return mSqliteGateway.getRevisionLatest(uuid);
@@ -334,20 +332,34 @@ public class ResourceLocalRepo {
 	 * Set last sync date of published/downloaded resources
 	 * @param lastSync date when synced published/downloaded resources the last time
 	 */
-	public static void setDownloadSyncDate(Date lastSync) {
-		mPrefsGateway.setDownloadSyncDate(lastSync);
+	public static void setSyncDownloadDate(Date lastSync) {
+		mPrefsGateway.setSyncDownloadDate(lastSync);
 	}
 
 	/**
 	 * @return last sync date of published/downloaded resources
 	 */
-	public static Date getDownloadSyncDate() {
-		return mPrefsGateway.getDownloadSyncDate();
+	public static Date getSyncDownloadDate() {
+		return mPrefsGateway.getSyncDownloadDate();
 	}
 
 	/**
-	 * @return all user resource revisions that haven't been uploaded/synced to
-	 * the server.
+	 * Set last sync date of user resource revisions
+	 * @param lastSync date when synced user resource revisions
+	 */
+	public static void setSyncUserResourceDate(Date lastSync) {
+		mPrefsGateway.setSyncUserResourceDate(lastSync);
+	}
+
+	/**
+	 * @return last sync date of user resource revisions
+	 */
+	public static Date getSyncUserResourceDate() {
+		return mPrefsGateway.getSyncUserResourceDate();
+	}
+
+	/**
+	 * @return all user resource revisions that haven't been uploaded/synced to the server.
 	 */
 	static HashMap<UUID, ResourceRevisionEntity> getUnsyncedUserResources() {
 		return mSqliteGateway.getUnsyncedUserResources();

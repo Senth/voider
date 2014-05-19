@@ -3,6 +3,7 @@ package com.spiddekauga.voider.repo;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map.Entry;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
@@ -11,12 +12,12 @@ import com.badlogic.gdx.sql.SQLiteGdxException;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.spiddekauga.voider.network.entities.ResourceRevisionEntity;
 import com.spiddekauga.voider.network.entities.RevisionEntity;
+import com.spiddekauga.voider.network.entities.UploadTypes;
 import com.spiddekauga.voider.resources.ResourceNotFoundException;
 import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Gateway for handling resource in an SQLite database
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 class ResourceSqliteGateway extends SqliteGateway {
@@ -269,8 +270,7 @@ class ResourceSqliteGateway extends SqliteGateway {
 	}
 
 	/**
-	 * @return all user resource revisions that haven't been uploaded/synced to
-	 * the server.
+	 * @return all user resource revisions that haven't been uploaded/synced to the server.
 	 */
 	HashMap<UUID, ResourceRevisionEntity> getUnsyncedUserResources() {
 		HashMap<UUID, ResourceRevisionEntity> resources = new HashMap<>();
@@ -299,6 +299,16 @@ class ResourceSqliteGateway extends SqliteGateway {
 				revisionEntity.date = new Date(cursor.getLong(2));
 				resource.revisions.add(revisionEntity);
 			}
+
+			for (Entry<UUID, ResourceRevisionEntity> entry : resources.entrySet()) {
+				cursor = mDatabase.rawQuery("SELECT type FROM resource WHERE uuid='" + entry.getValue().resourceId + "' LIMIT 1;");
+
+				if (cursor.next()) {
+					int typeId = cursor.getInt(0);
+					entry.getValue().type = UploadTypes.fromId(typeId);
+				}
+			}
+
 		} catch (SQLiteGdxException e) {
 			e.printStackTrace();
 			throw new GdxRuntimeException(e);
@@ -329,7 +339,8 @@ class ResourceSqliteGateway extends SqliteGateway {
 	 */
 	void setSyncedUserResource(UUID resourceId, int from, int to) {
 		try {
-			mDatabase.execSQL("UPDATE resource_revision SET uploaded=1 WHERE uuid='" + resourceId + "' AND revision>=" + from + " AND revision<=" + to + ";");
+			mDatabase.execSQL("UPDATE resource_revision SET uploaded=1 WHERE uuid='" + resourceId + "' AND revision>=" + from + " AND revision<="
+					+ to + ";");
 		} catch (SQLiteGdxException e) {
 			e.printStackTrace();
 			throw new GdxRuntimeException(e);

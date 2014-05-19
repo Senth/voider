@@ -37,6 +37,7 @@ import com.spiddekauga.voider.network.entities.method.ResourceDownloadMethodResp
 import com.spiddekauga.voider.network.entities.method.SyncDownloadMethod;
 import com.spiddekauga.voider.network.entities.method.SyncDownloadMethodResponse;
 import com.spiddekauga.voider.network.entities.method.SyncUserResourcesMethod;
+import com.spiddekauga.voider.network.entities.method.SyncUserResourcesMethodResponse;
 import com.spiddekauga.voider.repo.WebGateway.FieldNameFileWrapper;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.IResource;
@@ -45,7 +46,6 @@ import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Web repository for resources
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class ResourceWebRepo extends WebRepo {
@@ -68,8 +68,7 @@ public class ResourceWebRepo extends WebRepo {
 	}
 
 	/**
-	 * Sync all downloaded levels. I.e. download all publish levels that have
-	 * been downloaded on other devices
+	 * Sync all downloaded levels. I.e. download all publish levels that have been downloaded on other devices
 	 * @param lastSync last synchronized date
 	 * @param responseListeners listens to the web response.
 	 */
@@ -83,10 +82,12 @@ public class ResourceWebRepo extends WebRepo {
 	/**
 	 * Sync all user resource revisions, both upload and download
 	 * @param uploadResources all resources that should be uploaded
+	 * @param lastSync laast synchronized date
 	 * @param responseListeners listens to the web response
 	 */
-	void syncUserResources(HashMap<UUID, ResourceRevisionEntity> uploadResources, ICallerResponseListener... responseListeners) {
+	void syncUserResources(HashMap<UUID, ResourceRevisionEntity> uploadResources, Date lastSync, ICallerResponseListener... responseListeners) {
 		SyncUserResourcesMethod method = new SyncUserResourcesMethod();
+		method.lastSync = lastSync;
 
 		for (Entry<UUID, ResourceRevisionEntity> entry : uploadResources.entrySet()) {
 			method.resources.add(entry.getValue());
@@ -266,11 +267,30 @@ public class ResourceWebRepo extends WebRepo {
 			responseToSend = handleSyncDownloadResponse(response);
 		}
 
+		else if (methodEntity instanceof SyncUserResourcesMethod) {
+			responseToSend = handleSyncUserResourcesResponse(response);
+		}
+
 		// Send the actual response
 		if (responseToSend != null) {
 			for (ICallerResponseListener responseListener : callerResponseListeners) {
 				responseListener.handleWebResponse(methodEntity, responseToSend);
 			}
+		}
+	}
+
+	/**
+	 * Handle response from sync user resource revisions
+	 * @param response the response from the server
+	 * @return a correct response for syncing user resource revisions
+	 */
+	private IEntity handleSyncUserResourcesResponse(IEntity response) {
+		if (response instanceof SyncUserResourcesMethodResponse) {
+			return response;
+		} else {
+			SyncUserResourcesMethodResponse methodResponse = new SyncUserResourcesMethodResponse();
+			methodResponse.status = SyncUserResourcesMethodResponse.Statuses.FAILED_CONNECTION;
+			return methodResponse;
 		}
 	}
 
@@ -315,7 +335,7 @@ public class ResourceWebRepo extends WebRepo {
 
 				resourceInfo.downloaded = serializeAndDownload(blobDownloadMethod, filePath);
 
-				if (!resourceInfo.downloaded)  {
+				if (!resourceInfo.downloaded) {
 					return false;
 				}
 			}
@@ -342,7 +362,7 @@ public class ResourceWebRepo extends WebRepo {
 			return response;
 		}
 		// Error connecting to server
-		else  {
+		else {
 			ResourceDownloadMethodResponse methodResponse = new ResourceDownloadMethodResponse();
 			methodResponse.status = ResourceDownloadMethodResponse.Statuses.FAILED_CONNECTION;
 			return methodResponse;
@@ -408,7 +428,7 @@ public class ResourceWebRepo extends WebRepo {
 					if (levelCache == null) {
 						levelCache = createNewLevelCache((LevelGetAllMethodResponse) response);
 						tagCaches.put(methodEntity.tagFilter, levelCache);
-						newCache  = true;
+						newCache = true;
 					}
 				}
 

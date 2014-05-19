@@ -37,7 +37,6 @@ import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Common class for all actor editors
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public abstract class ActorEditor extends Editor implements IActorEditor, IResourceChangeEditor {
@@ -46,7 +45,8 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 	 * @param pickRadius picking radius
 	 * @param actorType the actor type used in this editor
 	 */
-	public ActorEditor(Gui gui, float pickRadius, Class<? extends Actor> actorType) {
+	public ActorEditor(
+			Gui gui, float pickRadius, Class<? extends Actor> actorType) {
 		super(gui, pickRadius);
 
 		mActorType = actorType;
@@ -120,7 +120,7 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 		// Add tool to input multiplexer
 		if (shapeType == ActorShapeTypes.CUSTOM && previousShapeType != ActorShapeTypes.CUSTOM) {
 			switchTool(Tools.DRAW_APPEND);
-			((ActorGui)mGui).resetTools();
+			((ActorGui) mGui).resetTools();
 
 			// Add delete tool to input multiplexer
 			if (!mInputMultiplexer.getProcessors().contains(mTools[Tools.DELETE.ordinal()], true)) {
@@ -335,7 +335,7 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 	protected void setActorDef(ActorDef actorDef) {
 		mActorDef = actorDef;
 
-		((DrawAppendTool)mTools[Tools.DRAW_APPEND.ordinal()]).setActorDef(mActorDef);
+		((DrawAppendTool) mTools[Tools.DRAW_APPEND.ordinal()]).setActorDef(mActorDef);
 
 		if (mActorDef.getVisualVars().getShapeType() == ActorShapeTypes.CUSTOM) {
 			if (mDrawingActor == null) {
@@ -346,7 +346,7 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 
 			mDrawingActor.setDef(mActorDef);
 			switchTool(Tools.MOVE);
-			((ActorGui)mGui).resetTools();
+			((ActorGui) mGui).resetTools();
 			// Add delete tool to input multiplexer
 			if (!isPublished() && !mInputMultiplexer.getProcessors().contains(mTools[Tools.DELETE.ordinal()], true)) {
 				mInputMultiplexer.addProcessor(mTools[Tools.DELETE.ordinal()]);
@@ -377,14 +377,14 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 			mDrawingActor = (Actor) resource;
 
 			// Set position other than center
-			//			Vector2 worldPosition = Pools.vector2.obtain();
-			//			screenToWorldCoord(mCamera, Gdx.graphics.getWidth() / 3, Gdx.graphics.getHeight() / 3, worldPosition, false);
-			//			mDrawingActor.setPosition(worldPosition);
-			//			Pools.vector2.free(worldPosition);
+			// Vector2 worldPosition = Pools.vector2.obtain();
+			// screenToWorldCoord(mCamera, Gdx.graphics.getWidth() / 3, Gdx.graphics.getHeight() / 3, worldPosition,
+			// false);
+			// mDrawingActor.setPosition(worldPosition);
+			// Pools.vector2.free(worldPosition);
 
 			setUnsaved();
-		}
-		else if (resource instanceof VectorBrush) {
+		} else if (resource instanceof VectorBrush) {
 			mVectorBrush = (VectorBrush) resource;
 		}
 	}
@@ -395,8 +395,7 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 			mInvoker.execute(new CResourceCornerRemoveAll(mActorDef.getVisualVars(), this), true);
 			mDrawingActor = null;
 			setUnsaved();
-		}
-		else if (resource instanceof VectorBrush) {
+		} else if (resource instanceof VectorBrush) {
 			mVectorBrush = null;
 		}
 	}
@@ -443,10 +442,9 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 	}
 
 	/**
-	 * Creates a new actor of the current actor type via the default constructor.
-	 * If an actor definition has been set, this will also set that definition,
-	 * else you need to set this manually if it hasn't been set through the
-	 * actor's default constructor.
+	 * Creates a new actor of the current actor type via the default constructor. If an actor definition has been set,
+	 * this will also set that definition, else you need to set this manually if it hasn't been set through the actor's
+	 * default constructor.
 	 * @return new actor of the current actor type.
 	 */
 	protected Actor newActor() {

@@ -20,7 +20,6 @@ import com.spiddekauga.voider.resources.IResourceRender;
 
 /**
  * Game configuration
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class Config {
@@ -151,10 +150,10 @@ public class Config {
 
 		/** Salt for file key */
 		private static final byte[] FILE_KEY_BYTES = { 15, 35, 68, 86, 57, 2, 99, 105, 127, -38, -100, -35, 35, 48, 68, -79, 95, -22, 0, 15, 0, 0,
-			98, 15, 27, 35 };
+				98, 15, 27, 35 };
 		/** Salt for file key */
-		private static final byte[] PASSWORD_KEY_BYTES = { 11, 120, 8, 86, 5, 22, 9, 15, -88, 38, 100, -35, 35, 35, -6, 79, 95, 22, 22, 2, 15, 65,
-			8, -15, -27, -35 };
+		private static final byte[] PASSWORD_KEY_BYTES = { 11, 120, 8, 86, 5, 22, 9, 15, -88, 38, 100, -35, 35, 35, -6, 79, 95, 22, 22, 2, 15, 65, 8,
+				-15, -27, -35 };
 		/** The actual file key */
 		private static SecretKeySpec mFileKey = null;
 		/** The actual password key */
@@ -181,8 +180,10 @@ public class Config {
 			public static final boolean LOAD_UNLOAD_DEPENDENCIES = true;
 		}
 
-		/** If debugging tests shall be activate. This causes extra runtime, but checks
-		 * so that none of the checks are broken. */
+		/**
+		 * If debugging tests shall be activate. This causes extra runtime, but checks so that none of the checks are
+		 * broken.
+		 */
 		public static boolean DEBUG_TESTS = true;
 		/** Skip loading text */
 		public static final boolean SKIP_LOADING_TIME = true;
@@ -215,8 +216,7 @@ public class Config {
 
 		/**
 		 * @param build the build to check if we're at or above
-		 * @return true if the current build is equal to or above (later) than
-		 * the specified build
+		 * @return true if the current build is equal to or above (later) than the specified build
 		 */
 		public static boolean isBuildOrAbove(Builds build) {
 			return BUILD.ordinal() >= build.ordinal();
@@ -224,8 +224,7 @@ public class Config {
 
 		/**
 		 * @param build the build to check if we're at or below
-		 * @return true if the current build is equal to or below (development) than
-		 * the specified build
+		 * @return true if the current build is equal to or below (development) than the specified build
 		 */
 		public static boolean isBuildOrBelow(Builds build) {
 			return BUILD.ordinal() <= build.ordinal();
@@ -680,8 +679,9 @@ public class Config {
 			public final static float FORCE_MAX = 10000;
 		}
 
-		/** How many characters the score should contain, i.e. number
-		 * of leading zeros */
+		/**
+		 * How many characters the score should contain, i.e. number of leading zeros
+		 */
 		public final static int SCORE_CHARACTERS = 10;
 		/** Score multiplier, used to create a greater score */
 		public final static float SCORE_MULTIPLIER = 10;
@@ -715,8 +715,10 @@ public class Config {
 		public final static int HEIGHT_START;
 		/** World scaling factor */
 		public final static float WORLD_SCALE = 0.1f;
-		/** How much bigger of the screen is shown in height from the regular scale. E.g. 3 will show the same amount of
-		 * free space above and below the level */
+		/**
+		 * How much bigger of the screen is shown in height from the regular scale. E.g. 3 will show the same amount of
+		 * free space above and below the level
+		 */
 		public final static float LEVEL_EDITOR_HEIGHT_SCALE = 2;
 		/** Amount of extra space that has been added to the level */
 		public final static float LEVEL_EDITOR_HEIGHT_SCALE_INVERT = (LEVEL_EDITOR_HEIGHT_SCALE - 1) / LEVEL_EDITOR_HEIGHT_SCALE;
@@ -739,8 +741,8 @@ public class Config {
 		}
 
 		/**
-		 * Z-value for rendering objects. The further up the enumeration
-		 * is located the more in front the object will be rendered.
+		 * Z-value for rendering objects. The further up the enumeration is located the more in front the object will be
+		 * rendered.
 		 */
 		public enum RenderOrders {
 			/** Moving objects */
@@ -775,8 +777,7 @@ public class Config {
 			;
 
 			/**
-			 * @return the render order determining in what order to render
-			 * the objects
+			 * @return the render order determining in what order to render the objects
 			 */
 			public int getOrder() {
 				return ordinal();
@@ -889,9 +890,8 @@ public class Config {
 			}
 
 			/**
-			 * Offset the z-value a small amount. Useful when for example a resource
-			 * will render many multiple layers and rendering these so all will be
-			 * shown accordingly.
+			 * Offset the z-value a small amount. Useful when for example a resource will render many multiple layers
+			 * and rendering these so all will be shown accordingly.
 			 * @param shapeRenderer the shape renderer to translate
 			 * @see #resetZValueOffset(ShapeRendererEx) to reset all calls to this.
 			 */
@@ -901,8 +901,8 @@ public class Config {
 			}
 
 			/**
-			 * Resets the offset value. This will reset all calls to {@link #offsetZValue(ShapeRendererEx)}
-			 * but not from other.
+			 * Resets the offset value. This will reset all calls to {@link #offsetZValue(ShapeRendererEx)} but not from
+			 * other.
 			 * @param shapeRenderer the shape renderer to reset
 			 */
 			public static void resetZValueOffset(ShapeRendererEx shapeRenderer) {
@@ -957,9 +957,7 @@ public class Config {
 
 		/**
 		 * Sets if we want to display text or image buttons
-		 * 
-		 * @param usesText
-		 *            set to true to use text buttons, false for image buttons
+		 * @param usesText set to true to use text buttons, false for image buttons
 		 */
 		public static void setUseTextButtons(boolean usesText) {
 			mUseTextButtons = usesText;
@@ -981,11 +979,13 @@ public class Config {
 	 * Level
 	 */
 	public static class Level {
-		/** How much offset from the first resource inside the level
-		 * the beginning of the level should be placed */
+		/**
+		 * How much offset from the first resource inside the level the beginning of the level should be placed
+		 */
 		public final static float START_COORD_OFFSET = Graphics.WIDTH_DEFAULT * Graphics.WORLD_SCALE * 0.1f;
-		/** How much offset from the last resource inside the level the
-		 * x-coordinate should appear */
+		/**
+		 * How much offset from the last resource inside the level the x-coordinate should appear
+		 */
 		public final static float END_COORD_OFFSET = Graphics.WIDTH_DEFAULT * Graphics.WORLD_SCALE * 1.1f;
 		/** Speed of the front/top background layer, relative to the level speed */
 		public final static float BACKGROUND_TOP_SPEED = 0.75f;
@@ -1032,8 +1032,9 @@ public class Config {
 	public static class Network {
 		/** Server host */
 		public static final String SERVER_HOST;
-		/** Set this variable to a specific build to override the current server host
-		 * to point to this build instead */
+		/**
+		 * Set this variable to a specific build to override the current server host to point to this build instead
+		 */
 		public static final Builds OVERRIDE_HOST = null;
 
 		static {
@@ -1080,8 +1081,9 @@ public class Config {
 
 	}
 
-	/** Revision of the game, as in code.
-	 * This allows files of older revisions to be loaded into new revisions */
+	/**
+	 * Revision of the game, as in code. This allows files of older revisions to be loaded into new revisions
+	 */
 	public final static int REVISION = 3;
 
 	/**

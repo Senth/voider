@@ -32,82 +32,103 @@ import com.spiddekauga.voider.server.util.VoiderServlet;
 
 /**
  * Synchronizes user resource revisions
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
 public class SyncUserResources extends VoiderServlet {
 
 	@Override
-	protected IEntity onRequest(IMethodEntity methodEntity) throws ServletException, IOException {
-		SyncUserResourcesMethodResponse response = new SyncUserResourcesMethodResponse();
-		response.status = Statuses.FAILED_INTERNAL;
+	public void init() {
+		mResponse = new SyncUserResourcesMethodResponse();
+		mResponse.status = Statuses.FAILED_INTERNAL;
+	}
 
+	@Override
+	protected IEntity onRequest(IMethodEntity methodEntity) throws ServletException, IOException {
 		if (!mUser.isLoggedIn()) {
-			response.status = Statuses.FAILED_USER_NOT_LOGGED_IN;
-			return response;
+			mResponse.status = Statuses.FAILED_USER_NOT_LOGGED_IN;
+			return mResponse;
 		}
 
 		if (methodEntity instanceof SyncUserResourcesMethod) {
-			Map<UUID, Map<Integer, BlobKey>> blobResources = getUploadedRevisionBlobs();
-			Map<UUID, ArrayList<Key>> successRevisions = new HashMap<>();
+			syncToServer((SyncUserResourcesMethod) methodEntity);
+			syncToClient((SyncUserResourcesMethod) methodEntity);
+		}
 
-			// Iterate through each resource id
-			for (ResourceRevisionEntity entity : ((SyncUserResourcesMethod) methodEntity).resources) {
-				Map<Integer, BlobKey> blobKeys = blobResources.get(entity.resourceId);
-				PropertyWrapper resourceProp = new PropertyWrapper("resource_id", entity.resourceId);
-				ArrayList<Key> revisions = new ArrayList<>();
+		return mResponse;
+	}
 
-				int i = 0;
-				int failedRevision = -1;
-				// Add uploaded blob revisions to the datastore
-				while (i < entity.revisions.size() && failedRevision != -1) {
-					RevisionEntity revisionEntity = entity.revisions.get(i);
+	/**
+	 * Synchronize the upload
+	 * @param methodEntity parameters sent to the server
+	 */
+	private void syncToServer(SyncUserResourcesMethod methodEntity) {
+		Map<UUID, Map<Integer, BlobKey>> blobResources = getUploadedRevisionBlobs();
+		Map<UUID, ArrayList<Key>> successRevisions = new HashMap<>();
 
-					PropertyWrapper revisionProp = new PropertyWrapper("revision", revisionEntity.revision);
-					if (!DatastoreUtils.exists("user_resources", mUser.getKey(), resourceProp, revisionProp)) {
-						revisions.add(createUserResourceRevision(entity, revisionEntity, blobKeys));
-					}
-					// Revision already exist add resource to conflict
-					else {
-						failedRevision = i;
-					}
+		// Iterate through each resource id
+		for (ResourceRevisionEntity entity : methodEntity.resources) {
+			Map<Integer, BlobKey> blobKeys = blobResources.get(entity.resourceId);
+			PropertyWrapper resourceProp = new PropertyWrapper("resource_id", entity.resourceId);
+			ArrayList<Key> revisions = new ArrayList<>();
 
-					++i;
+			int i = 0;
+			int failedRevision = -1;
+			boolean success = true;
+			// Add uploaded blob revisions to the datastore
+			while (i < entity.revisions.size() && success) {
+				RevisionEntity revisionEntity = entity.revisions.get(i);
+
+				PropertyWrapper revisionProp = new PropertyWrapper("revision", revisionEntity.revision);
+				if (!DatastoreUtils.exists("user_resources", mUser.getKey(), resourceProp, revisionProp)) {
+					revisions.add(createUserResourceRevision(entity, revisionEntity, blobKeys));
 				}
-
-
-				if (failedRevision != -1) {
-					successRevisions.put(entity.resourceId, revisions);
-				}
-				// Add resource conflict
+				// Revision already exist add resource to conflict
 				else {
-					// From what revision is the conflict?
-					ResourceConflictEntity conflict = new ResourceConflictEntity();
-					conflict.resourceId = entity.resourceId;
-					conflict.fromRevision = failedRevision;
-
-					// When was that?
-					PropertyWrapper revisionProp = new PropertyWrapper("revision", failedRevision);
-					Entity datastoreEntity = DatastoreUtils.getSingleEntity("user_resources", mUser.getKey(), resourceProp, revisionProp);
-					conflict.fromDate = (Date) datastoreEntity.getProperty("created");
-					conflict.latestDate = getLatestRevisionDate(entity.resourceId);
-
-					response.conflicts.add(conflict);
-
-					// Remove added revision of that resource
-					DatastoreUtils.delete(revisions);
-
-					response.status = Statuses.SUCCESS_PARTIAL;
+					success = false;
+					failedRevision = revisionEntity.revision;
 				}
+
+				++i;
 			}
 
-			if (response.status != Statuses.SUCCESS_PARTIAL) {
-				response.status = Statuses.SUCCESS_ALL;
+
+			if (success) {
+				successRevisions.put(entity.resourceId, revisions);
+			}
+			// Add resource conflict
+			else {
+				// From what revision is the conflict?
+				ResourceConflictEntity conflict = new ResourceConflictEntity();
+				conflict.resourceId = entity.resourceId;
+				conflict.fromRevision = failedRevision;
+
+				// When was that?
+				PropertyWrapper revisionProp = new PropertyWrapper("revision", failedRevision);
+				Entity datastoreEntity = DatastoreUtils.getSingleEntity("user_resources", mUser.getKey(), resourceProp, revisionProp);
+				conflict.fromDate = (Date) datastoreEntity.getProperty("created");
+				conflict.latestDate = getLatestRevisionDate(entity.resourceId);
+
+				mResponse.conflicts.add(conflict);
+
+				// Remove added revision of that resource
+				DatastoreUtils.delete(revisions);
+
+				mResponse.status = Statuses.SUCCESS_PARTIAL;
 			}
 		}
 
-		return response;
+		if (mResponse.status != Statuses.SUCCESS_PARTIAL) {
+			mResponse.status = Statuses.SUCCESS_ALL;
+		}
+	}
+
+	/**
+	 * Add resources that should be downloaded
+	 * @param methodEntity parameters sent to the server
+	 */
+	private void syncToClient(SyncUserResourcesMethod methodEntity) {
+		// TODO
 	}
 
 	/**
@@ -145,7 +166,8 @@ public class SyncUserResources extends VoiderServlet {
 	 * @param blobKeys all revision blobs
 	 * @return datastore key for the user resource revision
 	 */
-	private Key createUserResourceRevision(ResourceRevisionEntity resourceRevisionEntity, RevisionEntity revisionEntity, Map<Integer, BlobKey> blobKeys) {
+	private Key createUserResourceRevision(ResourceRevisionEntity resourceRevisionEntity, RevisionEntity revisionEntity,
+			Map<Integer, BlobKey> blobKeys) {
 		Entity entity = new Entity("user_resources", mUser.getKey());
 		DatastoreUtils.setProperty(entity, "resource_id", resourceRevisionEntity.resourceId);
 		entity.setProperty("revision", revisionEntity.revision);
@@ -156,4 +178,7 @@ public class SyncUserResources extends VoiderServlet {
 
 		return DatastoreUtils.put(entity);
 	}
+
+	/** Response */
+	private SyncUserResourcesMethodResponse mResponse = null;
 }

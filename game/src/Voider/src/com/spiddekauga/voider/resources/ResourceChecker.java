@@ -14,7 +14,6 @@ import com.spiddekauga.voider.utils.User.UserEvents;
  * Checks if all resources are available.
  * @todo download the resource instead of creating them...
  * @todo copy them from the local storage instead...
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class ResourceChecker implements Observer {
@@ -45,8 +44,8 @@ public class ResourceChecker implements Observer {
 	}
 
 	/**
-	 * Check for all necessary resources, like player ships. If these resources
-	 * are not found, this method will create new type of those resources
+	 * Check for all necessary resources, like player ships. If these resources are not found, this method will create
+	 * new type of those resources
 	 */
 	private void checkAndCreateResources() {
 		if (isMissingPlayerShips()) {
@@ -75,13 +74,14 @@ public class ResourceChecker implements Observer {
 		PlayerActorDef playerActorDef = new PlayerActorDef();
 		playerActorDef.setRevision(1);
 		ResourceLocalRepo.save(playerActorDef);
+		ResourceLocalRepo.removeRevisions(playerActorDef.getId());
 	}
 
 	@Override
 	public void update(Observable object, Object arg) {
 		if (object instanceof User) {
 			if (arg instanceof UserEvents) {
-				switch ((UserEvents)arg) {
+				switch ((UserEvents) arg) {
 				case LOGIN:
 					checkAndCreateResources();
 					break;

@@ -35,9 +35,7 @@ import com.spiddekauga.voider.utils.Pools;
 import com.spiddekauga.voider.utils.User;
 
 /**
- * Common resource repository for both web and local. Handles requests that affects
- * both.
- * 
+ * Common resource repository for both web and local. Handles requests that affects both.
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class ResourceRepo implements ICallerResponseListener {
@@ -61,16 +59,16 @@ public class ResourceRepo implements ICallerResponseListener {
 
 	/**
 	 * Synchronize downloaded/published resources
-	 * @param responseListener listens to the web response (when syncing is done)
+	 * @param responseListeners listens to the web response (when syncing is done)
 	 */
-	public void syncDownload(ICallerResponseListener responseListener) {
-		Date lastSync = ResourceLocalRepo.getDownloadSyncDate();
-		mWebRepo.syncDownloaded(lastSync, this, responseListener);
+	public void syncDownload(ICallerResponseListener... responseListeners) {
+		Date lastSync = ResourceLocalRepo.getSyncDownloadDate();
+		mWebRepo.syncDownloaded(lastSync, addToFront(responseListeners, this));
 	}
 
 	/**
-	 * Save the specified resources. If the resource contains revisions it
-	 * will try to upload it to the server if the user is currently online.
+	 * Save the specified resources. If the resource contains revisions it will try to upload it to the server if the
+	 * user is currently online.
 	 * @param responseListener listens to the web response
 	 * @param resources all the resource to save.
 	 */
@@ -96,11 +94,26 @@ public class ResourceRepo implements ICallerResponseListener {
 
 	/**
 	 * Synchronizes the user resource revisions, both upload and download
-	 * @param responseListener listens to the web response (when syncing is done)
+	 * @param responseListeners listens to the web response (when syncing is done)
 	 */
-	public void syncUserResources(ICallerResponseListener responseListener) {
-		mWebRepo.syncUserResources(ResourceLocalRepo.getUnsyncedUserResources(), this, responseListener);
+	public void syncUserResources(ICallerResponseListener... responseListeners) {
+		mWebRepo.syncUserResources(ResourceLocalRepo.getUnsyncedUserResources(), ResourceLocalRepo.getSyncUserResourceDate(),
+				addToFront(responseListeners, this));
 	}
+
+	/**
+	 * Add add an element to the front of an array
+	 * @param array the original array
+	 * @param element the element to add
+	 * @return new array with the element at the front
+	 */
+	private static ICallerResponseListener[] addToFront(ICallerResponseListener[] array, ICallerResponseListener element) {
+		ICallerResponseListener[] newArray = new ICallerResponseListener[array.length + 1];
+		newArray[0] = element;
+		System.arraycopy(array, 0, newArray, 1, array.length);
+		return newArray;
+	}
+
 
 	/**
 	 * Publish an actor (and its unpublished dependencies) to the server
@@ -172,7 +185,7 @@ public class ResourceRepo implements ICallerResponseListener {
 					int toRevision = resource.revisions.get(resource.revisions.size() - 1).revision;
 
 					// Same amount of revisions
-					assert(toRevision - fromRevision == resource.revisions.size() - 1);
+					assert (toRevision - fromRevision == resource.revisions.size() - 1);
 
 					ResourceLocalRepo.setSyncedUserResource(resource.resourceId, fromRevision, toRevision);
 				}
@@ -189,7 +202,7 @@ public class ResourceRepo implements ICallerResponseListener {
 		if (response.status.isSuccessful()) {
 			addDownloaded(response.resources);
 
-			ResourceLocalRepo.setDownloadSyncDate(response.syncTime);
+			ResourceLocalRepo.setSyncDownloadDate(response.syncTime);
 		}
 	}
 

@@ -23,7 +23,6 @@ import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Creates bullets for the enemies and player to use.
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class BulletEditor extends ActorEditor {
@@ -69,8 +68,7 @@ public class BulletEditor extends ActorEditor {
 			if (defaultShader != null) {
 				mShapeRenderer.setShader(defaultShader);
 			}
-		}
-		else if (outcome == Outcomes.DEF_SELECTED) {
+		} else if (outcome == Outcomes.DEF_SELECTED) {
 			switch (mSelectionAction) {
 			case LOAD_BULLET:
 				if (message instanceof ResourceItem) {
@@ -86,13 +84,11 @@ public class BulletEditor extends ActorEditor {
 					mGui.resetValues();
 					setSaved();
 					mInvoker.dispose();
-				}
-				else {
+				} else {
 					Gdx.app.error("MainMenu", "When seleting def, message was not a ResourceItem but a " + message.getClass().getName());
 				}
 			}
-		}
-		else if (outcome == Outcomes.NOT_APPLICAPLE) {
+		} else if (outcome == Outcomes.NOT_APPLICAPLE) {
 			mGui.hideMsgBoxes();
 		}
 	}
@@ -102,13 +98,13 @@ public class BulletEditor extends ActorEditor {
 		super.update(deltaTime);
 
 		if (mDef == null) {
-			((EditorGui)mGui).showFirstTimeMenu();
+			((EditorGui) mGui).showFirstTimeMenu();
 			return;
 		}
 
 		// Force the player to set a name
 		if (mDef.getName().equals(Config.Actor.NAME_DEFAULT)) {
-			((ActorGui)mGui).showInfoDialog();
+			((ActorGui) mGui).showInfoDialog();
 			mGui.showHighlightMessage("Please enter a bullet name");
 		}
 
@@ -170,6 +166,7 @@ public class BulletEditor extends ActorEditor {
 		int oldRevision = mDef.getRevision();
 
 		mResourceRepo.save(this, mDef);
+		showSyncMessage();
 
 		// Saved first time? Then load it and use the loaded version
 		if (!ResourceCacheFacade.isLoaded(mDef.getId())) {

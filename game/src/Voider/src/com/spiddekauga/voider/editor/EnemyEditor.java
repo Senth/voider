@@ -40,7 +40,6 @@ import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Editor for creating and editing enemies
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class EnemyEditor extends ActorEditor {
@@ -50,12 +49,12 @@ public class EnemyEditor extends ActorEditor {
 	public EnemyEditor() {
 		super(new EnemyEditorGui(), Config.Editor.PICKING_CIRCLE_RADIUS_EDITOR, EnemyActor.class);
 
-		((EnemyEditorGui)mGui).setEnemyEditor(this);
+		((EnemyEditorGui) mGui).setEnemyEditor(this);
 	}
 
 	@Override
 	protected void onDeactivate() {
-		((EnemyEditorGui)mGui).clearCollisionBoxes();
+		((EnemyEditorGui) mGui).clearCollisionBoxes();
 	}
 
 	@Override
@@ -100,8 +99,7 @@ public class EnemyEditor extends ActorEditor {
 
 		if (outcome == Outcomes.LOADING_SUCCEEDED) {
 			// Does nothing
-		}
-		else if (outcome == Outcomes.DEF_SELECTED) {
+		} else if (outcome == Outcomes.DEF_SELECTED) {
 			if (message instanceof ResourceItem) {
 				switch (mSelectionAction) {
 				case BULLET_TYPE:
@@ -130,8 +128,7 @@ public class EnemyEditor extends ActorEditor {
 			}
 
 			mSelectionAction = null;
-		}
-		else if (outcome == Outcomes.NOT_APPLICAPLE) {
+		} else if (outcome == Outcomes.NOT_APPLICAPLE) {
 			mGui.hideMsgBoxes();
 		}
 	}
@@ -185,7 +182,7 @@ public class EnemyEditor extends ActorEditor {
 		super.onResize(width, height);
 		mGui.dispose();
 		mGui.initGui();
-		((EnemyEditorGui)mGui).scalePathLabels();
+		((EnemyEditorGui) mGui).scalePathLabels();
 	}
 
 	@Override
@@ -204,13 +201,13 @@ public class EnemyEditor extends ActorEditor {
 		super.update(deltaTime);
 
 		if (mDef == null) {
-			((EditorGui)mGui).showFirstTimeMenu();
+			((EditorGui) mGui).showFirstTimeMenu();
 			return;
 		}
 
 		// Force the player to set a name
 		if (mDef.getName().equals(Config.Actor.NAME_DEFAULT)) {
-			((ActorGui)mGui).showInfoDialog();
+			((ActorGui) mGui).showInfoDialog();
 			mGui.showHighlightMessage("Please enter an enemy name");
 		}
 
@@ -236,9 +233,10 @@ public class EnemyEditor extends ActorEditor {
 			// Reset Once enemy ever 4 seconds
 			if (mfEnemyOnceReachEnd != null) {
 				try {
-					if ((Boolean)mfEnemyOnceReachEnd.get(mEnemyPathOnce)) {
+					if ((Boolean) mfEnemyOnceReachEnd.get(mEnemyPathOnce)) {
 						if (mEnemyPathOnceOutOfBoundsTime != 0.0f) {
-							if (mEnemyPathOnceOutOfBoundsTime + Enemy.Movement.PATH_ONCE_RESET_TIME <= SceneSwitcher.getGameTime().getTotalTimeElapsed()) {
+							if (mEnemyPathOnceOutOfBoundsTime + Enemy.Movement.PATH_ONCE_RESET_TIME <= SceneSwitcher.getGameTime()
+									.getTotalTimeElapsed()) {
 								mEnemyPathOnce.resetPathMovement();
 								mEnemyPathOnceOutOfBoundsTime = 0.0f;
 							}
@@ -255,7 +253,7 @@ public class EnemyEditor extends ActorEditor {
 
 		checkAndResetPlayerPosition();
 
-		((EnemyEditorGui)mGui).resetCollisionBoxes();
+		((EnemyEditorGui) mGui).resetCollisionBoxes();
 	}
 
 	@Override
@@ -328,8 +326,7 @@ public class EnemyEditor extends ActorEditor {
 	}
 
 	/**
-	 * Resets the player if necessary. This happens if the player gets stuck
-	 * behind something.
+	 * Resets the player if necessary. This happens if the player gets stuck behind something.
 	 */
 	private void checkAndResetPlayerPosition() {
 		// Skip if moving player
@@ -347,7 +344,8 @@ public class EnemyEditor extends ActorEditor {
 
 		// Test hit UI
 		float playerRadius = mPlayerActor.getDef().getVisualVars().getBoundingRadius();
-		mWorld.QueryAABB(mCallbackUiHit, mPlayerLastPosition.x - playerRadius, mPlayerLastPosition.y - playerRadius, mPlayerLastPosition.x + playerRadius, mPlayerLastPosition.y + playerRadius);
+		mWorld.QueryAABB(mCallbackUiHit, mPlayerLastPosition.x - playerRadius, mPlayerLastPosition.y - playerRadius, mPlayerLastPosition.x
+				+ playerRadius, mPlayerLastPosition.y + playerRadius);
 
 		// Player can be stuck -> Reset player position
 		if (mPlayerHitUi) {
@@ -356,7 +354,7 @@ public class EnemyEditor extends ActorEditor {
 	}
 
 	// --------------------------------
-	//		INPUT EVENTS (not gui)
+	// INPUT EVENTS (not gui)
 	// --------------------------------
 	@Override
 	public boolean touchDown(int x, int y, int pointer, int button) {
@@ -364,7 +362,8 @@ public class EnemyEditor extends ActorEditor {
 		if (mPlayerPointer == INVALID_POINTER) {
 			screenToWorldCoord(mCamera, x, y, mCursorWorld, true);
 
-			mWorld.QueryAABB(mCallbackPlayerHit, mCursorWorld.x - 0.0001f, mCursorWorld.y - 0.0001f, mCursorWorld.x + 0.0001f, mCursorWorld.y + 0.0001f);
+			mWorld.QueryAABB(mCallbackPlayerHit, mCursorWorld.x - 0.0001f, mCursorWorld.y - 0.0001f, mCursorWorld.x + 0.0001f,
+					mCursorWorld.y + 0.0001f);
 
 			if (mMovingPlayer) {
 				mPlayerPointer = pointer;
@@ -421,6 +420,7 @@ public class EnemyEditor extends ActorEditor {
 		int oldRevision = mDef.getRevision();
 
 		mResourceRepo.save(this, mDef);
+		showSyncMessage();
 
 		// Saved first time? Then load it and use the loaded resource
 		if (!ResourceCacheFacade.isLoaded(mDef.getId())) {
@@ -633,8 +633,7 @@ public class EnemyEditor extends ActorEditor {
 	}
 
 	/**
-	 * Sets if the enemy shall move randomly using the random spread set through
-	 * #setRandomSpread(float).
+	 * Sets if the enemy shall move randomly using the random spread set through #setRandomSpread(float).
 	 * @param moveRandomly true if the enemy shall move randomly.
 	 */
 	void setMoveRandomly(boolean moveRandomly) {
@@ -658,8 +657,7 @@ public class EnemyEditor extends ActorEditor {
 	}
 
 	/**
-	 * Sets the minimum time that must have passed until the enemy will decide
-	 * on another direction.
+	 * Sets the minimum time that must have passed until the enemy will decide on another direction.
 	 * @param minTime how many degrees it will can move
 	 * @see #setMoveRandomly(boolean) to activate/deactivate the random movement
 	 */
@@ -683,8 +681,7 @@ public class EnemyEditor extends ActorEditor {
 	}
 
 	/**
-	 * Sets the maximum time that must have passed until the enemy will decide
-	 * on another direction.
+	 * Sets the maximum time that must have passed until the enemy will decide on another direction.
 	 * @param maxTime how many degrees it will can move
 	 * @see #setMoveRandomly(boolean) to activate/deactivate the random movement
 	 */
@@ -795,9 +792,8 @@ public class EnemyEditor extends ActorEditor {
 	}
 
 	/**
-	 * Sets the minimum weapon cooldown. If this is equal to the max value set
-	 * through #setCooldownMax(float) it will always have the same cooldown; if not
-	 * it will get a random cooldown between min and max time.
+	 * Sets the minimum weapon cooldown. If this is equal to the max value set through #setCooldownMax(float) it will
+	 * always have the same cooldown; if not it will get a random cooldown between min and max time.
 	 * @param minCooldown minimum cooldown.
 	 */
 	void setCooldownMin(float minCooldown) {
@@ -820,9 +816,8 @@ public class EnemyEditor extends ActorEditor {
 	}
 
 	/**
-	 * Sets the maximum weapon cooldown. If this is equal to the min value set
-	 * through #setCooldownMin(float) it will always have the same cooldown; if not
-	 * it will get a random cooldown between min and max time.
+	 * Sets the maximum weapon cooldown. If this is equal to the min value set through #setCooldownMin(float) it will
+	 * always have the same cooldown; if not it will get a random cooldown between min and max time.
 	 * @param maxCooldown maximum cooldown.
 	 */
 	void setCooldownMax(float maxCooldown) {
@@ -895,8 +890,7 @@ public class EnemyEditor extends ActorEditor {
 	}
 
 	/**
-	 * Sets the aim's rotation speed. Only applicable when aim is set
-	 * to rotating.
+	 * Sets the aim's rotation speed. Only applicable when aim is set to rotating.
 	 * @param rotateSpeed new rotation speed
 	 */
 	void setAimRotateSpeed(float rotateSpeed) {
@@ -930,7 +924,6 @@ public class EnemyEditor extends ActorEditor {
 		Scene selectionScene = new SelectDefScene(ExternalTypes.BULLET_DEF, "Select", false, false, false);
 		SceneSwitcher.switchTo(selectionScene);
 	}
-
 
 
 	/**
@@ -1066,7 +1059,7 @@ public class EnemyEditor extends ActorEditor {
 
 		// Create a shape like this:
 		// 2 ------- 1
-		// 3 |     | 0
+		// 3 | | 0
 		Vector2[] nodes = new Vector2[4];
 		Vector2[] screenPos = new Vector2[4];
 		for (int i = 0; i < nodes.length; ++i) {
@@ -1247,8 +1240,6 @@ public class EnemyEditor extends ActorEditor {
 		}
 
 
-
-
 	}
 
 	/**
@@ -1272,8 +1263,6 @@ public class EnemyEditor extends ActorEditor {
 		/** Load an existing enemy */
 		LOAD_ENEMY,
 	}
-
-
 
 
 	/** Current selection action, null if none */

@@ -39,7 +39,6 @@ import com.spiddekauga.voider.utils.Messages;
 
 /**
  * Base class for all GUI containing windows
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public abstract class Gui implements Disposable {
@@ -78,8 +77,8 @@ public abstract class Gui implements Disposable {
 	}
 
 	/**
-	 * Resets the GUI and adds the main table again. This
-	 * will remove any actors that have been added manually through #addActor(Actor)
+	 * Resets the GUI and adds the main table again. This will remove any actors that have been added manually through
+	 * #addActor(Actor)
 	 */
 	public void reset() {
 		mStage.clear();
@@ -92,7 +91,7 @@ public abstract class Gui implements Disposable {
 	public void update() {
 		// Remove active message box if it has been hidden
 		if (!mActiveMsgBoxes.isEmpty()) {
-			MsgBoxExecuter activeMsgBox = mActiveMsgBoxes.get(mActiveMsgBoxes.size()-1);
+			MsgBoxExecuter activeMsgBox = mActiveMsgBoxes.get(mActiveMsgBoxes.size() - 1);
 
 			// Has queue, waiting for active message box to be hidden
 			if (mQueuedMsgBox != null) {
@@ -104,12 +103,12 @@ public abstract class Gui implements Disposable {
 			}
 			// Else if the active message box becomes hidden. Show the previous one
 			else if (activeMsgBox.isHidden()) {
-				mActiveMsgBoxes.remove(mActiveMsgBoxes.size()-1);
+				mActiveMsgBoxes.remove(mActiveMsgBoxes.size() - 1);
 				mInactiveMsgBoxes.add(activeMsgBox);
 
 				// Show the previous message box if one exists
 				if (!mActiveMsgBoxes.isEmpty()) {
-					mActiveMsgBoxes.get(mActiveMsgBoxes.size()-1).show(mStage);
+					mActiveMsgBoxes.get(mActiveMsgBoxes.size() - 1).show(mStage);
 				}
 			}
 		}
@@ -176,10 +175,8 @@ public abstract class Gui implements Disposable {
 	}
 
 	/**
-	 * Shows the specified message box.
-	 * This will hide any active message box, remove the specified message box from the
-	 * inactive list, and then show the specified active box (once the currently active box
-	 * has been fully hidden).
+	 * Shows the specified message box. This will hide any active message box, remove the specified message box from the
+	 * inactive list, and then show the specified active box (once the currently active box has been fully hidden).
 	 * @param msgBox the message box to show
 	 */
 	public void showMsgBox(MsgBoxExecuter msgBox) {
@@ -257,19 +254,13 @@ public abstract class Gui implements Disposable {
 		content.add(descriptionLabel);
 		TextField description = new TextField("", textFieldStyle);
 		description.setWidth(fieldWidth);
-		int height = (int) (Gdx.graphics.getHeight()*0.35f);
+		int height = (int) (Gdx.graphics.getHeight() * 0.35f);
 		description.setHeight(height);
 		content.row();
 		content.add(description);
 
 
-		CBugReportSend bugReportSend = new CBugReportSend(
-				this,
-				subject,
-				lastAction,
-				secondLastAction,
-				description,
-				exception);
+		CBugReportSend bugReportSend = new CBugReportSend(this, subject, lastAction, secondLastAction, description, exception);
 		CGameQuit quit = new CGameQuit();
 
 		msgBox.content(content);
@@ -317,7 +308,7 @@ public abstract class Gui implements Disposable {
 	}
 
 	/**
-	 * Hides the wait window
+	 * Hides the wait window. Does nothing if the wait window isn't shown
 	 */
 	public void hideWaitWindow() {
 		if (mWidgets.waitWindow.window == null || mWidgets.waitWindow.window.getStage() == null) {
@@ -407,7 +398,8 @@ public abstract class Gui implements Disposable {
 			mWidgets.waitWindow.window.setSkin((Skin) ResourceCacheFacade.get(InternalNames.UI_GENERAL));
 			mWidgets.waitWindow.animation = new AnimationWidget((AnimationWidgetStyle) SkinNames.getResource(SkinNames.General.ANIMATION_WAIT));
 			mWidgets.waitWindow.label = new Label("", (LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_DEFAULT));
-			mWidgets.waitWindow.window.add(mWidgets.waitWindow.animation).padRight((Float) SkinNames.getResource(SkinNames.GeneralVars.PADDING_SEPARATOR));
+			mWidgets.waitWindow.window.add(mWidgets.waitWindow.animation).padRight(
+					(Float) SkinNames.getResource(SkinNames.GeneralVars.PADDING_SEPARATOR));
 			mWidgets.waitWindow.window.add(mWidgets.waitWindow.label);
 
 			// Progress bar
@@ -513,12 +505,11 @@ public abstract class Gui implements Disposable {
 	/**
 	 * Checks if a button is checked (from the event).
 	 * @param event checks if the target inside the event is a button and it's checked
-	 * @return checked button. If the target isn't a button or the button isn't checked
-	 * it returns null.
+	 * @return checked button. If the target isn't a button or the button isn't checked it returns null.
 	 */
 	protected static Button getCheckedButton(Event event) {
 		if (event.getTarget() instanceof Button) {
-			Button button  = (Button)event.getTarget();
+			Button button = (Button) event.getTarget();
 			if (button.isChecked()) {
 				return button;
 			}

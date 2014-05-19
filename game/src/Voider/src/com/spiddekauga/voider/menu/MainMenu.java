@@ -21,7 +21,6 @@ import com.spiddekauga.voider.network.entities.method.LogoutMethodResponse;
 import com.spiddekauga.voider.network.entities.method.SyncDownloadMethodResponse;
 import com.spiddekauga.voider.repo.ICallerResponseListener;
 import com.spiddekauga.voider.repo.ResourceLocalRepo;
-import com.spiddekauga.voider.repo.ResourceRepo;
 import com.spiddekauga.voider.repo.UserLocalRepo;
 import com.spiddekauga.voider.repo.UserWebRepo;
 import com.spiddekauga.voider.resources.ExternalTypes;
@@ -32,11 +31,11 @@ import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.utils.Pools;
+import com.spiddekauga.voider.utils.Synchronizer;
 import com.spiddekauga.voider.utils.User;
 
 /**
  * Main menu of the scene
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class MainMenu extends Scene implements ICallerResponseListener {
@@ -92,23 +91,13 @@ public class MainMenu extends Scene implements ICallerResponseListener {
 			// Synchronize
 			if (mUser.isOnline()) {
 				mGui.showSuccessMessage(mUser.getUsername() + " is now online!");
-				synchronize();
+				Synchronizer.getInstance().synchronizeAll(this);
 			} else {
 				mGui.showHighlightMessage(mUser.getUsername() + " is now offline!");
 			}
 
 			mFirstTimeActivation = false;
 		}
-	}
-
-	/**
-	 * Synchronize various things
-	 */
-	private void synchronize() {
-		ResourceRepo resourceRepo = ResourceRepo.getInstance();
-
-		resourceRepo.syncDownload(this);
-		mGui.showWaitWindow("Synchronizing resources");
 	}
 
 	@Override
@@ -136,10 +125,9 @@ public class MainMenu extends Scene implements ICallerResponseListener {
 			ResourceLocalRepo.removeAll(ExternalTypes.GAME_SAVE);
 			ResourceLocalRepo.removeAll(ExternalTypes.GAME_SAVE_DEF);
 			ResourceLocalRepo.removeAll(ExternalTypes.PLAYER_DEF);
-			ResourceLocalRepo.setDownloadSyncDate(new Date(0));
+			ResourceLocalRepo.setSyncDownloadDate(new Date(0));
 		} else if (Config.Debug.isBuildOrBelow(Builds.NIGHTLY) && keycode == Input.Keys.HOME) {
-			mGui.dispose();
-			mGui.initGui();
+			Synchronizer.getInstance().synchronizeAll(this);
 		}
 		return false;
 	}
@@ -218,9 +206,7 @@ public class MainMenu extends Scene implements ICallerResponseListener {
 
 		/**
 		 * Creates the enumeration with a GUI class
-		 * 
-		 * @param gui
-		 *            the GUI class to create for this menu
+		 * @param gui the GUI class to create for this menu
 		 */
 		private Menus(
 				Class<? extends MenuGui> gui) {
@@ -233,9 +219,7 @@ public class MainMenu extends Scene implements ICallerResponseListener {
 
 	/**
 	 * Pushes another GUI menu to the stack
-	 * 
-	 * @param menu
-	 *            the menu to push to the stack
+	 * @param menu the menu to push to the stack
 	 */
 	void pushMenu(Menus menu) {
 		MenuGui newGui = menu.newInstance();
@@ -301,37 +285,13 @@ public class MainMenu extends Scene implements ICallerResponseListener {
 
 	/**
 	 * Handle sync download response
-	 * 
-	 * @param response
-	 *            web response
+	 * @param response web response
 	 */
 	private void handleSyncDownloadResponse(SyncDownloadMethodResponse response) {
-		mGui.hideWaitWindow();
-		switch (response.status) {
-		case FAILED_CONNECTION:
-			mGui.showErrorMessage("Sync failed. Couldn't connect to server");
-			break;
-
-		case FAILED_DOWNLOAD:
-			mGui.showErrorMessage("Sync failed. Couldn't download resources");
-			break;
-
-		case FAILED_INTERNAL:
-			mGui.showErrorMessage("Sync failed. Server error");
-			break;
-
-		case FAILED_USER_NOT_LOGGED_IN:
-			mGui.showErrorMessage("Sync failed. User not logged in on server");
-			break;
-
-		case SUCCESS:
-			if (response.resources.isEmpty()) {
-				mGui.showSuccessMessage("Nothing to sync");
-			} else {
-				mGui.showSuccessMessage("Synchronize successful");
+		if (response.isSuccessful()) {
+			if (!response.resources.isEmpty()) {
 				ResourceCacheFacade.loadAllOf(this, ExternalTypes.LEVEL_DEF, false);
 			}
-			break;
 		}
 	}
 
