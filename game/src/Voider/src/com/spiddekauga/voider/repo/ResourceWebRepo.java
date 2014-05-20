@@ -288,9 +288,6 @@ public class ResourceWebRepo extends WebRepo {
 	 */
 	private IEntity handleSyncUserResourcesResponse(IEntity response) {
 		if (response instanceof SyncUserResourcesMethodResponse) {
-
-			((SyncUserResourcesMethodResponse) response).downloadStatus = downloadResources(((SyncUserResourcesMethodResponse) response).blobsToDownload);
-
 			return response;
 		} else {
 			SyncUserResourcesMethodResponse methodResponse = new SyncUserResourcesMethodResponse();
@@ -327,7 +324,7 @@ public class ResourceWebRepo extends WebRepo {
 	 * @param resources all resources to download.
 	 * @return true if all resources were downloaded.
 	 */
-	private boolean downloadResources(ArrayList<ResourceBlobEntity> resources) {
+	boolean downloadResources(ArrayList<ResourceBlobEntity> resources) {
 		for (ResourceBlobEntity resourceInfo : resources) {
 			BlobDownloadMethod blobDownloadMethod = new BlobDownloadMethod();
 			blobDownloadMethod.blobKey = resourceInfo.blobKey;

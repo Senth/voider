@@ -118,6 +118,20 @@ class ResourceSqliteGateway extends SqliteGateway {
 	}
 
 	/**
+	 * Remove the specified revision and all later ones for the specified resource
+	 * @param uuid unique id of the resource
+	 * @param fromRevision remove all revisions from this one
+	 */
+	void removeRevisions(UUID uuid, int fromRevision) {
+		try {
+			mDatabase.execSQL("DELETE FROM resource_revision WHERE uuid='" + uuid + "' AND revision>=" + fromRevision + ";");
+		} catch (SQLiteGdxException e) {
+			e.printStackTrace();
+			throw new GdxRuntimeException(e);
+		}
+	}
+
+	/**
 	 * Get all of the specified type
 	 * @param typeIdentifier the resource type to get all resource of
 	 * @return all resources of the specified type. Don't forget to free the arraylist!

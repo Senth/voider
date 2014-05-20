@@ -344,9 +344,9 @@ public class DatastoreUtils {
 	 * @return Stored UUID, null if it doesn't exist
 	 */
 	public static UUID getUuidProperty(Entity entity, String propertyName) {
-		if (entity.hasProperty(propertyName + "-least") && entity.hasProperty(propertyName + "-most")) {
-			long leastBits = (long) entity.getProperty(propertyName + "-least");
-			long mostBits = (long) entity.getProperty(propertyName + "-most");
+		if (entity.hasProperty(propertyName + UUID_LEAST_POSTFIX) && entity.hasProperty(propertyName + UUID_MOST_POSTFIX)) {
+			long leastBits = (long) entity.getProperty(propertyName + UUID_LEAST_POSTFIX);
+			long mostBits = (long) entity.getProperty(propertyName + UUID_MOST_POSTFIX);
 			return new UUID(mostBits, leastBits);
 		}
 

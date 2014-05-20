@@ -5,9 +5,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.UUID;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.files.FileHandle;
-import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.Level;
 import com.spiddekauga.voider.network.entities.ResourceRevisionEntity;
 import com.spiddekauga.voider.network.entities.RevisionEntity;
@@ -32,7 +29,6 @@ public class ResourceLocalRepo {
 		// Save old values if save is unsuccessful
 		Date oldDate = null;
 		int oldRevision = -1;
-		String revisionFilePath = null;
 
 		// Update date
 		if (resource instanceof Def) {
@@ -52,25 +48,12 @@ public class ResourceLocalRepo {
 				// Do nothing
 			}
 			((IResourceRevision) resource).setRevision(nextRevision);
-
-			revisionFilePath = getRevisionFilepath((IResourceRevision) resource);
 		}
 
-		// Get filepath
-		String filePath = getFilepath(resource);
 
+		// File
+		boolean success = mFileGateway.save(resource);
 
-		// Try to save
-		boolean success = mFileGateway.save(resource, filePath);
-
-		// Copy to revision
-		if (success && resource instanceof IResourceRevision) {
-			success = mFileGateway.copy(filePath, revisionFilePath);
-
-			if (!success) {
-				mFileGateway.delete(filePath);
-			}
-		}
 
 		// Add to the database
 		if (success) {
@@ -115,6 +98,28 @@ public class ResourceLocalRepo {
 	}
 
 	/**
+	 * Add user resource revisions. Automatically updates the latest revision file location.
+	 * @param resourceId id of the user resource revision to add
+	 * @param type the resource type
+	 * @param revisions new revisions to add
+	 */
+	public static void addRevisions(UUID resourceId, ExternalTypes type, ArrayList<RevisionEntity> revisions) {
+		// Add resource if it doesn't exist
+		if (!exists(resourceId)) {
+			mSqliteGateway.add(resourceId, type.getId());
+		}
+
+		// Add revisions
+		for (RevisionEntity revisionEntity : revisions) {
+			mSqliteGateway.addRevision(resourceId, revisionEntity.revision, revisionEntity.date);
+		}
+
+		// Update latest revision location
+		int latestRevision = mSqliteGateway.getRevisionLatest(resourceId).revision;
+		mFileGateway.copyFromRevisionToResource(resourceId, latestRevision);
+	}
+
+	/**
 	 * Add a downloaded / published resource
 	 * @param resourceId the id of the downloaded resource
 	 * @param type the type of resource
@@ -132,37 +137,10 @@ public class ResourceLocalRepo {
 	 * @param resourceId the unique id of the resource
 	 */
 	public static void remove(UUID resourceId) {
-		// Remove from database
 		mSqliteGateway.remove(resourceId);
-
-		removeFile(resourceId);
+		mFileGateway.remove(resourceId);
 
 		removeRevisions(resourceId);
-	}
-
-	/**
-	 * Removes a file
-	 * @param resourceId the resource to physically remove
-	 */
-	private static void removeFile(UUID resourceId) {
-		// Remove file
-		String filepath = getFilepath(resourceId);
-		FileHandle file = Gdx.files.external(filepath);
-		if (file.exists()) {
-			file.delete();
-		}
-	}
-
-	/**
-	 * Removes a revision directory if it exists
-	 * @param resourceId the resource to remove all revisions for on the disk
-	 */
-	private static void removeRevisionFiles(UUID resourceId) {
-		String revisionDir = getRevisionDir(resourceId);
-		FileHandle dir = Gdx.files.external(revisionDir);
-		if (dir.exists() && dir.isDirectory()) {
-			dir.deleteDirectory();
-		}
 	}
 
 	/**
@@ -173,8 +151,8 @@ public class ResourceLocalRepo {
 		// File
 		ArrayList<UUID> resources = mSqliteGateway.getAll(externalType.getId());
 		for (UUID resource : resources) {
-			removeFile(resource);
-			removeRevisionFiles(resource);
+			mFileGateway.remove(resource);
+			mFileGateway.removeRevisionDir(resource);
 		}
 		Pools.arrayList.free(resources);
 
@@ -188,11 +166,18 @@ public class ResourceLocalRepo {
 	 * @param resourceId unique id of the resource
 	 */
 	public static void removeRevisions(UUID resourceId) {
-		// Database
 		mSqliteGateway.removeRevisions(resourceId);
+		mFileGateway.removeRevisionDir(resourceId);
+	}
 
-		// File
-		removeRevisionFiles(resourceId);
+	/**
+	 * Remove the specified revision and all later ones for the specified resource
+	 * @param resourceId the resource to remove revisions from
+	 * @param fromRevision remove all revisions from this one
+	 */
+	public static void removeRevisions(UUID resourceId, int fromRevision) {
+		mSqliteGateway.removeRevisions(resourceId, fromRevision);
+		mFileGateway.removeRevisions(resourceId, fromRevision);
 	}
 
 	/**
@@ -246,7 +231,7 @@ public class ResourceLocalRepo {
 	 * @return filepath of the resource
 	 */
 	public static String getFilepath(UUID resourceId) {
-		return getDir() + resourceId;
+		return mFileGateway.getFilepath(resourceId);
 	}
 
 	/**
@@ -254,7 +239,7 @@ public class ResourceLocalRepo {
 	 * @return directory where the resource's revisions are located
 	 */
 	private static String getRevisionDir(UUID resourceId) {
-		return getDir() + resourceId + REVISION_DIR_POSTFIX;
+		return mFileGateway.getRevisionDir(resourceId);
 	}
 
 	/**
@@ -271,22 +256,7 @@ public class ResourceLocalRepo {
 	 * @return filepath to the specific revision
 	 */
 	public static String getRevisionFilepath(UUID resourceId, int revision) {
-		return getRevisionDir(resourceId) + getRevisionFormat(revision);
-	}
-
-	/**
-	 * @return resource directory
-	 */
-	private static String getDir() {
-		return Config.File.getUserStorage() + "resources/";
-	}
-
-	/**
-	 * @param revision the revision to get the format of
-	 * @return revision file format from the revision
-	 */
-	private static String getRevisionFormat(int revision) {
-		return String.format("%010d", revision);
+		return mFileGateway.getRevisionFilepath(resourceId, revision);
 	}
 
 	/**
@@ -390,6 +360,4 @@ public class ResourceLocalRepo {
 	private static ResourcePrefsGateway mPrefsGateway = new ResourcePrefsGateway();
 	/** SQLite gateway */
 	private static ResourceSqliteGateway mSqliteGateway = new ResourceSqliteGateway();
-	/** Revision postfix */
-	private static final String REVISION_DIR_POSTFIX = "_revs/";
 }

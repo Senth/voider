@@ -16,7 +16,9 @@ import com.spiddekauga.voider.network.entities.DefEntity;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.LevelDefEntity;
 import com.spiddekauga.voider.network.entities.ResourceBlobEntity;
+import com.spiddekauga.voider.network.entities.ResourceRevisionBlobEntity;
 import com.spiddekauga.voider.network.entities.ResourceRevisionEntity;
+import com.spiddekauga.voider.network.entities.RevisionEntity;
 import com.spiddekauga.voider.network.entities.method.IMethodEntity;
 import com.spiddekauga.voider.network.entities.method.PublishMethod;
 import com.spiddekauga.voider.network.entities.method.PublishMethodResponse;
@@ -191,6 +193,52 @@ public class ResourceRepo implements ICallerResponseListener {
 				}
 			}
 		}
+
+		// Download resources, but remove local first if there exists any revision of those.
+		// I.e. the server's sync was replaced, thus the local should also be
+		for (Entry<UUID, ArrayList<ResourceBlobEntity>> entry : response.blobsToDownload.entrySet()) {
+			UUID resourceId = entry.getKey();
+			ArrayList<ResourceBlobEntity> revisions = entry.getValue();
+
+			// Remove existing revisions
+			int firstRevision = ((ResourceRevisionBlobEntity) revisions.get(0)).revision;
+			ResourceLocalRepo.removeRevisions(resourceId, firstRevision);
+
+			// Download resources
+			response.downloadStatus = mWebRepo.downloadResources(revisions);
+
+			if (!response.downloadStatus) {
+				break;
+			}
+		}
+
+		// Add resource locally
+		if (response.downloadStatus) {
+			@SuppressWarnings("unchecked")
+			ArrayList<RevisionEntity> revisions = Pools.arrayList.obtain();
+
+			for (Entry<UUID, ArrayList<ResourceBlobEntity>> entry : response.blobsToDownload.entrySet()) {
+				UUID resourceId = entry.getKey();
+				ExternalTypes type = ExternalTypes.fromUploadType(entry.getValue().get(0).uploadType);
+				revisions.clear();
+
+				for (ResourceBlobEntity blobEntity : entry.getValue()) {
+					if (blobEntity instanceof ResourceRevisionBlobEntity) {
+						ResourceRevisionBlobEntity revisionBlobEntity = (ResourceRevisionBlobEntity) blobEntity;
+						RevisionEntity revisionEntity = new RevisionEntity();
+						revisionEntity.date = revisionBlobEntity.created;
+						revisionEntity.revision = revisionBlobEntity.revision;
+						revisions.add(revisionEntity);
+					}
+				}
+
+				ResourceLocalRepo.addRevisions(resourceId, type, revisions);
+			}
+
+			Pools.arrayList.free(revisions);
+		}
+
+		// TODO Set sync time
 	}
 
 	/**

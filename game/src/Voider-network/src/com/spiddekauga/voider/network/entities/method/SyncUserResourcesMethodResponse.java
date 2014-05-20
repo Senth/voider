@@ -23,7 +23,7 @@ public class SyncUserResourcesMethodResponse implements IEntity, ISuccessStatuse
 	/** All conflicting resources */
 	public HashMap<UUID, ResourceConflictEntity> conflicts = new HashMap<>();
 	/** Resources to download */
-	public ArrayList<ResourceBlobEntity> blobsToDownload = new ArrayList<>();
+	public HashMap<UUID, ArrayList<ResourceBlobEntity>> blobsToDownload = new HashMap<>();
 	/** Latest sync time */
 	public Date syncTime;
 
