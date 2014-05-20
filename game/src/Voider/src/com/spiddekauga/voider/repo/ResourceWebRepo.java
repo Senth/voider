@@ -9,6 +9,7 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
 import com.spiddekauga.utils.IOutstreamProgressListener;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.LevelDef;
@@ -21,6 +22,7 @@ import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.LevelDefEntity;
 import com.spiddekauga.voider.network.entities.LevelInfoEntity;
 import com.spiddekauga.voider.network.entities.ResourceBlobEntity;
+import com.spiddekauga.voider.network.entities.ResourceRevisionBlobEntity;
 import com.spiddekauga.voider.network.entities.ResourceRevisionEntity;
 import com.spiddekauga.voider.network.entities.Tags;
 import com.spiddekauga.voider.network.entities.UploadTypes;
@@ -286,10 +288,13 @@ public class ResourceWebRepo extends WebRepo {
 	 */
 	private IEntity handleSyncUserResourcesResponse(IEntity response) {
 		if (response instanceof SyncUserResourcesMethodResponse) {
+
+			((SyncUserResourcesMethodResponse) response).downloadStatus = downloadResources(((SyncUserResourcesMethodResponse) response).blobsToDownload);
+
 			return response;
 		} else {
 			SyncUserResourcesMethodResponse methodResponse = new SyncUserResourcesMethodResponse();
-			methodResponse.status = SyncUserResourcesMethodResponse.Statuses.FAILED_CONNECTION;
+			methodResponse.uploadStatus = SyncUserResourcesMethodResponse.UploadStatuses.FAILED_CONNECTION;
 			return methodResponse;
 		}
 	}
@@ -327,10 +332,26 @@ public class ResourceWebRepo extends WebRepo {
 			BlobDownloadMethod blobDownloadMethod = new BlobDownloadMethod();
 			blobDownloadMethod.blobKey = resourceInfo.blobKey;
 
-			String resourceFileName = ResourceLocalRepo.getFilepath(resourceInfo.resourceId);
+			String resourceFileName = null;
+			if (resourceInfo instanceof ResourceRevisionBlobEntity) {
+				resourceFileName = ResourceLocalRepo.getRevisionFilepath(resourceInfo.resourceId,
+						((ResourceRevisionBlobEntity) resourceInfo).revision);
+			} else {
+				resourceFileName = ResourceLocalRepo.getFilepath(resourceInfo.resourceId);
+			}
 
 			// Only download if we don't have it
-			if (!Gdx.files.external(resourceFileName).exists()) {
+			FileHandle file = Gdx.files.external(resourceFileName);
+			if (!file.exists()) {
+				// Create revision directory if it doesn't exist
+				if (resourceInfo instanceof ResourceRevisionBlobEntity) {
+					FileHandle parentDir = file.parent();
+
+					if (!parentDir.exists()) {
+						parentDir.mkdirs();
+					}
+				}
+
 				String filePath = Gdx.files.getExternalStoragePath() + resourceFileName;
 
 				resourceInfo.downloaded = serializeAndDownload(blobDownloadMethod, filePath);

@@ -126,6 +126,7 @@ public class MainMenu extends Scene implements ICallerResponseListener {
 			ResourceLocalRepo.removeAll(ExternalTypes.GAME_SAVE_DEF);
 			ResourceLocalRepo.removeAll(ExternalTypes.PLAYER_DEF);
 			ResourceLocalRepo.setSyncDownloadDate(new Date(0));
+			ResourceLocalRepo.setSyncUserResourceDate(new Date(0));
 		} else if (Config.Debug.isBuildOrBelow(Builds.NIGHTLY) && keycode == Input.Keys.HOME) {
 			Synchronizer.getInstance().synchronizeAll(this);
 		}

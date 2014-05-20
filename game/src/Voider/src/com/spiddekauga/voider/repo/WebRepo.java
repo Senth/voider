@@ -62,6 +62,7 @@ abstract class WebRepo {
 	 * Creates a new thread that will send and receive a HTTP request
 	 * @param methodEntity the entity to send to the server
 	 * @param files all the files to upload * @param progressListener send upload progress to this listener
+	 * @param progressListener send upload progress to this listener
 	 * @param callerResponseListeners class that invoked the WebRepo
 	 */
 	protected void sendInNewThread(IMethodEntity methodEntity, ArrayList<FieldNameFileWrapper> files, IOutstreamProgressListener progressListener,

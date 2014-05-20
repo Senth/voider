@@ -178,9 +178,9 @@ public class ResourceRepo implements ICallerResponseListener {
 	 */
 	private void handleSyncUserResourcesResponse(SyncUserResourcesMethod method, SyncUserResourcesMethodResponse response) {
 		// Set the successful revisions as uploaded/synced
-		if (response.status.isSuccessful()) {
+		if (response.uploadStatus.isSuccessful()) {
 			for (ResourceRevisionEntity resource : method.resources) {
-				if (!response.conflicts.contains(resource) && !resource.revisions.isEmpty()) {
+				if (!response.conflicts.containsKey(resource.resourceId) && !resource.revisions.isEmpty()) {
 					int fromRevision = resource.revisions.get(0).revision;
 					int toRevision = resource.revisions.get(resource.revisions.size() - 1).revision;
 

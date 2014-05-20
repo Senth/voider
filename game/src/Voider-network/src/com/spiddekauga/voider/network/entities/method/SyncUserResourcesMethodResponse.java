@@ -1,34 +1,43 @@
 package com.spiddekauga.voider.network.entities.method;
 
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.UUID;
 
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.ISuccessStatuses;
+import com.spiddekauga.voider.network.entities.ResourceBlobEntity;
 import com.spiddekauga.voider.network.entities.ResourceConflictEntity;
 
 /**
  * Response from when syncing user resource revisions
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
 public class SyncUserResourcesMethodResponse implements IEntity, ISuccessStatuses {
-	/** Response status */
-	public Statuses status = null;
+	/** Upload status */
+	public UploadStatuses uploadStatus = null;
+	/** Download status */
+	public boolean downloadStatus = false;
 	/** All conflicting resources */
-	public ArrayList<ResourceConflictEntity> conflicts = new ArrayList<>();
+	public HashMap<UUID, ResourceConflictEntity> conflicts = new HashMap<>();
+	/** Resources to download */
+	public ArrayList<ResourceBlobEntity> blobsToDownload = new ArrayList<>();
+	/** Latest sync time */
+	public Date syncTime;
 
 
 	@Override
 	public boolean isSuccessful() {
-		return status != null && status.isSuccessful();
+		return uploadStatus != null && downloadStatus && uploadStatus.isSuccessful();
 	}
 
 	/** Success statuses */
-	public enum Statuses implements ISuccessStatuses {
+	public enum UploadStatuses implements ISuccessStatuses {
 		/** Successfully uploaded and synced all resources */
 		SUCCESS_ALL,
-		/** Successfylly uploaded some resources */
+		/** Successfully uploaded some resources */
 		SUCCESS_PARTIAL,
 		/** Failed internal server error */
 		FAILED_INTERNAL,

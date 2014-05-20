@@ -17,6 +17,7 @@ import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.PreparedQuery.TooManyResultsException;
+import com.google.appengine.api.datastore.PropertyProjection;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.CompositeFilter;
 import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
@@ -27,7 +28,6 @@ import com.google.appengine.api.datastore.ShortBlob;
 
 /**
  * Utilities for Datastore
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class DatastoreUtils {
@@ -133,7 +133,7 @@ public class DatastoreUtils {
 			for (PropertyWrapper property : includes) {
 				Filter filter = null;
 				if (property.value instanceof UUID) {
-					filter = createUuidFilter(property.name, (UUID)property.value);
+					filter = createUuidFilter(property.name, (UUID) property.value);
 				} else if (property.value != null) {
 					filter = new Query.FilterPredicate(property.name, FilterOperator.EQUAL, property.value);
 				}
@@ -205,10 +205,20 @@ public class DatastoreUtils {
 	 * @return equal filter for the UUID value
 	 */
 	public static Filter createUuidFilter(String propertyName, UUID value) {
-		Filter least = new FilterPredicate(propertyName + "-least", FilterOperator.EQUAL, value.getLeastSignificantBits());
-		Filter most = new FilterPredicate(propertyName + "-most", FilterOperator.EQUAL, value.getMostSignificantBits());
+		Filter least = new FilterPredicate(propertyName + UUID_LEAST_POSTFIX, FilterOperator.EQUAL, value.getLeastSignificantBits());
+		Filter most = new FilterPredicate(propertyName + UUID_MOST_POSTFIX, FilterOperator.EQUAL, value.getMostSignificantBits());
 
 		return createCompositeFilter(CompositeFilterOperator.AND, least, most);
+	}
+
+	/**
+	 * Creates a UUID property projection
+	 * @param query the query to add the projection to
+	 * @param propertyName property name in the entity (column)
+	 */
+	public static void createUuidProjection(Query query, String propertyName) {
+		query.addProjection(new PropertyProjection(propertyName + UUID_LEAST_POSTFIX, Long.class));
+		query.addProjection(new PropertyProjection(propertyName + UUID_MOST_POSTFIX, Long.class));
 	}
 
 	/**
@@ -276,8 +286,7 @@ public class DatastoreUtils {
 	 * Set property to an entity, but only if it's not null
 	 * @param entity the entity to set the property in
 	 * @param propertyName name of the property
-	 * @param value the object to set as the property value. If null this method
-	 * does nothing.
+	 * @param value the object to set as the property value. If null this method does nothing.
 	 */
 	public static void setProperty(Entity entity, String propertyName, Object value) {
 		if (value != null) {
@@ -289,8 +298,7 @@ public class DatastoreUtils {
 	 * Set an unindex property to an entity, but only if it's not null
 	 * @param entity the entity to set the property in
 	 * @param propertyName name of the property
-	 * @param value the object to set as the property value. If null this method
-	 * does nothing.
+	 * @param value the object to set as the property value. If null this method does nothing.
 	 */
 	public static void setUnindexedProperty(Entity entity, String propertyName, Object value) {
 		if (value != null) {
@@ -306,8 +314,8 @@ public class DatastoreUtils {
 	 */
 	public static void setProperty(Entity entity, String propertyName, UUID uuid) {
 		if (uuid != null) {
-			entity.setProperty(propertyName + "-least", uuid.getLeastSignificantBits());
-			entity.setProperty(propertyName + "-most", uuid.getMostSignificantBits());
+			entity.setProperty(propertyName + UUID_LEAST_POSTFIX, uuid.getLeastSignificantBits());
+			entity.setProperty(propertyName + UUID_MOST_POSTFIX, uuid.getMostSignificantBits());
 		}
 	}
 
@@ -337,12 +345,28 @@ public class DatastoreUtils {
 	 */
 	public static UUID getUuidProperty(Entity entity, String propertyName) {
 		if (entity.hasProperty(propertyName + "-least") && entity.hasProperty(propertyName + "-most")) {
-			long leastBits =(long) entity.getProperty(propertyName + "-least");
+			long leastBits = (long) entity.getProperty(propertyName + "-least");
 			long mostBits = (long) entity.getProperty(propertyName + "-most");
 			return new UUID(mostBits, leastBits);
 		}
 
 		return null;
+	}
+
+	/**
+	 * Get an integer property
+	 * @param entity the entity to get the integer from
+	 * @param propertyName name of the property
+	 * @return stored integer, 0 if it doesn't exist
+	 */
+	public static int getIntProperty(Entity entity, String propertyName) {
+		Long longValue = (Long) entity.getProperty(propertyName);
+
+		if (longValue != null) {
+			return longValue.intValue();
+		}
+
+		return 0;
 	}
 
 	/**
@@ -356,8 +380,7 @@ public class DatastoreUtils {
 
 		if (blob instanceof ShortBlob) {
 			return ((ShortBlob) blob).getBytes();
-		}
-		else if (blob instanceof Blob) {
+		} else if (blob instanceof Blob) {
 			return ((Blob) blob).getBytes();
 		}
 
@@ -389,7 +412,8 @@ public class DatastoreUtils {
 		 * @param name
 		 * @param value
 		 */
-		public PropertyWrapper(String name, Object value) {
+		public PropertyWrapper(
+				String name, Object value) {
 			this.name = name;
 			this.value = value;
 		}
@@ -400,6 +424,10 @@ public class DatastoreUtils {
 		public Object value = null;
 	}
 
+	/** UUID least postfix */
+	private static final String UUID_LEAST_POSTFIX = "-least";
+	/** UUID most postfix */
+	private static final String UUID_MOST_POSTFIX = "-most";
 	/** Datastore service */
 	private static DatastoreService mDatastore = DatastoreServiceFactory.getDatastoreService();
 	/** Logger */

@@ -71,12 +71,12 @@ public class Synchronizer implements IMessageListener, ICallerResponseListener {
 		switch (type) {
 		case SYNC_DOWNLOAD:
 			mResourceRepo.syncDownload(responseListeners);
-			SceneSwitcher.showWaitWindow("Synchronizing downloaded resources");
+			SceneSwitcher.showWaitWindow("Synchronizing downloaded resources\nThis may take a while...");
 
 			break;
 		case SYNC_USER_RESOURCES:
 			mResourceRepo.syncUserResources(responseListeners);
-			SceneSwitcher.showWaitWindow("Synchronizing user resources");
+			SceneSwitcher.showWaitWindow("Synchronizing user resources\nThis may take a while...");
 			break;
 
 		default:
@@ -93,7 +93,7 @@ public class Synchronizer implements IMessageListener, ICallerResponseListener {
 	public void synchronizeAll(ICallerResponseListener responseListener) {
 		mResponseListener = responseListener;
 
-		// mSyncQueue.add(MessageTypes.SYNC_DOWNLOAD);
+		mSyncQueue.add(MessageTypes.SYNC_DOWNLOAD);
 		mSyncQueue.add(MessageTypes.SYNC_USER_RESOURCES);
 
 		syncNextInQueue();
@@ -134,21 +134,25 @@ public class Synchronizer implements IMessageListener, ICallerResponseListener {
 	 * @param response response from the server
 	 */
 	private void handleSyncUserResourceResponse(SyncUserResourcesMethod method, SyncUserResourcesMethodResponse response) {
-		switch (response.status) {
-		case FAILED_CONNECTION:
-		case FAILED_INTERNAL:
-		case FAILED_USER_NOT_LOGGED_IN:
+		if (response.downloadStatus) {
+			switch (response.uploadStatus) {
+			case FAILED_CONNECTION:
+			case FAILED_INTERNAL:
+			case FAILED_USER_NOT_LOGGED_IN:
+				SceneSwitcher.showErrorMessage("Sync failed");
+				break;
+
+			case SUCCESS_ALL:
+				SceneSwitcher.showSuccessMessage("Sync complete");
+				break;
+
+			case SUCCESS_PARTIAL:
+				SceneSwitcher.showHighlightMessage("Sync conflict");
+				// TODO handle conflict
+				break;
+			}
+		} else {
 			SceneSwitcher.showErrorMessage("Sync failed");
-			break;
-
-		case SUCCESS_ALL:
-			SceneSwitcher.showSuccessMessage("Sync complete");
-			break;
-
-		case SUCCESS_PARTIAL:
-			SceneSwitcher.showHighlightMessage("Sync conflict");
-			// TODO handle conflict
-			break;
 		}
 	}
 
