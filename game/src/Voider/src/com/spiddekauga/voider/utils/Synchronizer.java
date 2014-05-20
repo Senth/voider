@@ -134,25 +134,29 @@ public class Synchronizer implements IMessageListener, ICallerResponseListener {
 	 * @param response response from the server
 	 */
 	private void handleSyncUserResourceResponse(SyncUserResourcesMethod method, SyncUserResourcesMethodResponse response) {
-		if (response.downloadStatus) {
-			switch (response.uploadStatus) {
-			case FAILED_CONNECTION:
-			case FAILED_INTERNAL:
-			case FAILED_USER_NOT_LOGGED_IN:
+		switch (response.uploadStatus) {
+		case FAILED_CONNECTION:
+		case FAILED_INTERNAL:
+		case FAILED_USER_NOT_LOGGED_IN:
+			if (response.downloadStatus) {
+				SceneSwitcher.showErrorMessage("Sync: Only downloaded resources, failed to upload");
+			} else {
 				SceneSwitcher.showErrorMessage("Sync failed");
-				break;
-
-			case SUCCESS_ALL:
-				SceneSwitcher.showSuccessMessage("Sync complete");
-				break;
-
-			case SUCCESS_PARTIAL:
-				SceneSwitcher.showHighlightMessage("Sync conflict");
-				// TODO handle conflict
-				break;
 			}
-		} else {
-			SceneSwitcher.showErrorMessage("Sync failed");
+			break;
+
+		case SUCCESS_ALL:
+			if (response.downloadStatus) {
+				SceneSwitcher.showSuccessMessage("Sync complete");
+			} else {
+				SceneSwitcher.showErrorMessage("Sync: Only uploaded resources to server");
+			}
+			break;
+
+		case SUCCESS_PARTIAL:
+			SceneSwitcher.showHighlightMessage("Sync conflict");
+			// TODO handle conflict
+			break;
 		}
 	}
 

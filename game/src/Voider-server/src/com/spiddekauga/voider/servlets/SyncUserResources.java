@@ -3,7 +3,6 @@ package com.spiddekauga.voider.servlets;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -22,6 +21,8 @@ import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.SortDirection;
 import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.appengine.DatastoreUtils.PropertyWrapper;
+import com.spiddekauga.voider.network.entities.ChatMessage;
+import com.spiddekauga.voider.network.entities.ChatMessage.MessageTypes;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.ResourceConflictEntity;
 import com.spiddekauga.voider.network.entities.ResourceRevisionBlobEntity;
@@ -70,7 +71,8 @@ public class SyncUserResources extends VoiderServlet {
 	 */
 	private void syncToServer(SyncUserResourcesMethod methodEntity) {
 		Map<UUID, Map<Integer, BlobKey>> blobResources = getUploadedRevisionBlobs();
-		Map<UUID, ArrayList<Key>> successRevisions = new HashMap<>();
+
+		boolean uploadedSomething = false;
 
 		// Iterate through each resource id
 		for (ResourceRevisionEntity entity : methodEntity.resources) {
@@ -100,7 +102,7 @@ public class SyncUserResources extends VoiderServlet {
 
 
 			if (success) {
-				successRevisions.put(entity.resourceId, revisions);
+				uploadedSomething = true;
 			}
 			// Add resource conflict
 			else {
@@ -126,6 +128,14 @@ public class SyncUserResources extends VoiderServlet {
 
 		if (mResponse.uploadStatus != UploadStatuses.SUCCESS_PARTIAL) {
 			mResponse.uploadStatus = UploadStatuses.SUCCESS_ALL;
+		}
+
+		// Send sync message
+		if (uploadedSomething) {
+			ChatMessage<Object> chatMessage = new ChatMessage<>();
+			chatMessage.skipClient = mUser.getClientId();
+			chatMessage.type = MessageTypes.SYNC_USER_RESOURCES;
+			sendMessage(chatMessage);
 		}
 	}
 
