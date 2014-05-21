@@ -1,4 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
-<datastore-indexes
-  autoGenerate="true">
+<datastore-indexes autoGenerate="true">
+  <!-- Used 17 times in query history -->
+    <datastore-index kind="sync_published" ancestor="true" source="auto">
+        <property name="download_date" direction="asc"/>
+        <property name="published_key" direction="asc"/>
+    </datastore-index>
+
+    <!-- Used 10 times in query history -->
+    <datastore-index kind="user_resources" ancestor="true" source="auto">
+        <property name="uploaded" direction="asc"/>
+        <property name="resource_id" direction="asc"/>
+        <property name="revision" direction="asc"/>
+        <property name="blob_key" direction="asc"/>
+        <property name="created" direction="asc"/>
+        <property name="resource_id-least" direction="asc"/>
+        <property name="resource_id-most" direction="asc"/>
+        <property name="type" direction="asc"/>
+    </datastore-index>
+
+    <!-- Used 1 time in query history -->
+    <datastore-index kind="user_resources" ancestor="true" source="auto">
+        <property name="uploaded" direction="asc"/>
+    </datastore-index>
+
+    <!-- Used 4 times in query history -->
+    <datastore-index kind="user_resources" ancestor="true" source="auto">
+        <property name="uploaded" direction="asc"/>
+        <property name="blob_key" direction="asc"/>
+        <property name="created" direction="asc"/>
+        <property name="resource_id-least" direction="asc"/>
+        <property name="resource_id-most" direction="asc"/>
+        <property name="revision" direction="asc"/>
+        <property name="type" direction="asc"/>
+    </datastore-index>
+
+    <!-- Used 1 time in query history -->
+    <datastore-index kind="user_resources" ancestor="true" source="auto">
+        <property name="uploaded" direction="asc"/>
+        <property name="resource_id" direction="asc"/>
+        <property name="blob_key" direction="asc"/>
+        <property name="created" direction="asc"/>
+        <property name="resource_id-least" direction="asc"/>
+        <property name="resource_id-most" direction="asc"/>
+        <property name="revision" direction="asc"/>
+        <property name="type" direction="asc"/>
+    </datastore-index>
+
+    <!-- Used 1 time in query history -->
+    <datastore-index kind="user_resources" ancestor="true" source="auto">
+        <property name="uploaded" direction="asc"/>
+        <property name="revision" direction="asc"/>
+        <property name="blob_key" direction="asc"/>
+        <property name="created" direction="asc"/>
+        <property name="resource_id-least" direction="asc"/>
+        <property name="resource_id-most" direction="asc"/>
+        <property name="type" direction="asc"/>
+    </datastore-index>
+
+    <!-- Used 1 time in query history -->
+    <datastore-index kind="user_resources" ancestor="true" source="auto">
+        <property name="uploaded" direction="asc"/>
+        <property name="resource_id-least" direction="asc"/>
+        <property name="reosurce_id-most" direction="asc"/>
+        <property name="revision" direction="asc"/>
+        <property name="blob_key" direction="asc"/>
+        <property name="created" direction="asc"/>
+        <property name="resource_id-most" direction="asc"/>
+        <property name="type" direction="asc"/>
+    </datastore-index>
+
 </datastore-indexes>

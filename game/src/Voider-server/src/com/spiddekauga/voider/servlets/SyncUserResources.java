@@ -43,8 +43,10 @@ import com.spiddekauga.voider.server.util.VoiderServlet;
 @SuppressWarnings("serial")
 public class SyncUserResources extends VoiderServlet {
 
-	@Override
-	public void init() {
+	/**
+	 * Initializes the sync
+	 */
+	private void initialize() {
 		mResponse = new SyncUserResourcesMethodResponse();
 		mResponse.uploadStatus = UploadStatuses.FAILED_INTERNAL;
 		mSyncDate = new Date();
@@ -52,6 +54,8 @@ public class SyncUserResources extends VoiderServlet {
 
 	@Override
 	protected IEntity onRequest(IMethodEntity methodEntity) throws ServletException, IOException {
+		initialize();
+
 		if (!mUser.isLoggedIn()) {
 			mResponse.uploadStatus = UploadStatuses.FAILED_USER_NOT_LOGGED_IN;
 			return mResponse;
@@ -170,6 +174,8 @@ public class SyncUserResources extends VoiderServlet {
 
 			// Only add if resource isn't in conflict
 			if (!mResponse.conflicts.containsKey(resourceId)) {
+				mLogger.fine("Found sync resource: " + resourceId);
+
 				ResourceRevisionBlobEntity blobEntity = new ResourceRevisionBlobEntity();
 				blobEntity.resourceId = resourceId;
 				blobEntity.revision = DatastoreUtils.getIntProperty(entity, "revision");
