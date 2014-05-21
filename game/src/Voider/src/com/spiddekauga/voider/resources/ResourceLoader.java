@@ -271,12 +271,12 @@ class ResourceLoader {
 	 * @param resourceId id of the resource to reload
 	 */
 	void reload(UUID resourceId) {
-		Resource oldResource = getLoadedResource(resourceId);
+		final Resource oldResource = getLoadedResource(resourceId);
 
 		if (oldResource != null) {
 			// Reload latest revision
-			String latestFilepath = ResourceLocalRepo.getFilepath(resourceId);
-			mReloadQueue.add(new ReloadResource(latestFilepath, oldResource.getClass()));
+			final String latestFilepath = ResourceLocalRepo.getFilepath(resourceId);
+			mReloadQueue.add(new ReloadResource(latestFilepath, oldResource));
 
 			// Wait until the resource has been reloaded in the main thread
 			while (isLoading()) {
@@ -286,10 +286,6 @@ class ResourceLoader {
 					// Do nothing
 				}
 			}
-
-			// Update old resource with reloaded latest resource
-			Resource reloadedResource = mAssetManager.get(latestFilepath);
-			oldResource.set(reloadedResource);
 		} else {
 			Gdx.app.error("ResourceLoader", "Latest resource was not loaded while trying to reload it");
 		}
@@ -341,16 +337,20 @@ class ResourceLoader {
 		while (unloadIt.hasNext()) {
 			ReloadResource reloadResource = unloadIt.next();
 
-			// Check if it has been loaded
+			// Check if it has been loaded and set the new resource
 			if (reloadResource.unloaded) {
 				if (mAssetManager.isLoaded(reloadResource.filepath)) {
+
+					Resource newResource = mAssetManager.get(reloadResource.filepath);
+					reloadResource.oldResource.set(newResource);
+
 					unloadIt.remove();
 				}
 			}
 			// Unload the resource
 			else {
 				mAssetManager.unload(reloadResource.filepath);
-				mAssetManager.load(reloadResource.filepath, reloadResource.type);
+				mAssetManager.load(reloadResource.filepath, reloadResource.oldResource.getClass());
 				reloadResource.unloaded = true;
 			}
 		}
@@ -463,18 +463,18 @@ class ResourceLoader {
 		/**
 		 * Constructor
 		 * @param filepath the file path of the resource to unload
-		 * @param type class type of the resource to reload
+		 * @param oldResource the old loaded resource
 		 */
 		ReloadResource(
-				String filepath, Class<? extends IResource> type) {
+				String filepath, Resource oldResource) {
 			this.filepath = filepath;
-			this.type = type;
+			this.oldResource = oldResource;
 		}
 
 		/** File path of the resource */
 		String filepath;
-		/** Class of the resource */
-		Class<? extends IResource> type;
+		/** Old loaded resource */
+		Resource oldResource;
 		/** True if the resource has been unloaded */
 		boolean unloaded = false;
 	}
