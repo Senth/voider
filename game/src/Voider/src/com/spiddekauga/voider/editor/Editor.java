@@ -88,11 +88,13 @@ public abstract class Editor extends WorldScene implements IEditor, ICallerRespo
 
 	@Override
 	protected void onInit() {
+		super.onInit();
 		mSynchronizer.addObserver(this);
 	}
 
 	@Override
 	protected void onDispose() {
+		super.onDispose();
 		mSynchronizer.deleteObserver(this);
 	}
 
