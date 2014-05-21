@@ -9,7 +9,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox.CheckBoxStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
@@ -29,6 +28,7 @@ import com.spiddekauga.utils.scene.ui.Background;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.utils.scene.ui.HideManual;
 import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
+import com.spiddekauga.utils.scene.ui.ResourceTextureButton;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.editor.commands.CSelectDefSetRevision;
@@ -39,20 +39,19 @@ import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.utils.User;
 
 /**
- * GUI for Select Definition Scene. This creates a border at
- * the top for filtering search, and an optionally checkbox for
- * only showing the player's own actors.
- * 
+ * GUI for Select Definition Scene. This creates a border at the top for filtering search,
+ * and an optionally checkbox for only showing the player's own actors.
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class SelectDefGui extends Gui {
 	/**
 	 * Creates the GUI (but does not init it) for the select actor
-	 * @param showMineOnlyCheckbox set to true if you want the scene to show a checkbox
-	 * to only display one's own actors.
+	 * @param showMineOnlyCheckbox set to true if you want the scene to show a checkbox to
+	 *        only display one's own actors.
 	 * @param buttonText what text to display on load/play ?
 	 */
-	public SelectDefGui(boolean showMineOnlyCheckbox, String buttonText) {
+	public SelectDefGui(
+			boolean showMineOnlyCheckbox, String buttonText) {
 		mShowMineOnlyCheckbox = showMineOnlyCheckbox;
 		mButtonText = buttonText;
 	}
@@ -184,12 +183,13 @@ public class SelectDefGui extends Gui {
 
 
 		// Rating
-		//		RatingWidgetStyle ratingStyle = SkinNames.getResource(SkinNames.General.RATING_DEFAULT);
-		//		RatingWidget rating = new RatingWidget(ratingStyle, 5, Touchable.disabled);
-		//		mWidgets.info.rating = rating;
-		//		rating.setName("rating");
-		//		table.row(Horizontal.CENTER, Vertical.TOP);
-		//		table.add(rating);
+		// RatingWidgetStyle ratingStyle =
+		// SkinNames.getResource(SkinNames.General.RATING_DEFAULT);
+		// RatingWidget rating = new RatingWidget(ratingStyle, 5, Touchable.disabled);
+		// mWidgets.info.rating = rating;
+		// rating.setName("rating");
+		// table.row(Horizontal.CENTER, Vertical.TOP);
+		// table.add(rating);
 
 
 		// Description
@@ -256,36 +256,36 @@ public class SelectDefGui extends Gui {
 
 
 		// Plays
-		//		Drawable playsIcon = SkinNames.getDrawable(SkinNames.GeneralImages.PLAYS);
-		//		image = new Image(playsIcon);
-		//		table.row();
-		//		table.add(image);
+		// Drawable playsIcon = SkinNames.getDrawable(SkinNames.GeneralImages.PLAYS);
+		// image = new Image(playsIcon);
+		// table.row();
+		// table.add(image);
 		//
-		//		label = new Label("", labelStyle);
-		//		mWidgets.info.plays = label;
-		//		table.add(label);
+		// label = new Label("", labelStyle);
+		// mWidgets.info.plays = label;
+		// table.add(label);
 
 
 		// Likes
-		//		Drawable likesIcon = SkinNames.getDrawable(SkinNames.GeneralImages.LIKE);
-		//		image = new Image(likesIcon);
-		//		table.row();
-		//		table.add(image);
+		// Drawable likesIcon = SkinNames.getDrawable(SkinNames.GeneralImages.LIKE);
+		// image = new Image(likesIcon);
+		// table.row();
+		// table.add(image);
 		//
-		//		label = new Label("", labelStyle);
-		//		mWidgets.info.likes = label;
-		//		table.add(label);
+		// label = new Label("", labelStyle);
+		// mWidgets.info.likes = label;
+		// table.add(label);
 
 
 		// Tags
-		//		Drawable tagIcon = SkinNames.getDrawable(SkinNames.GeneralImages.TAG);
-		//		image = new Image(tagIcon);
-		//		table.row();
-		//		table.add(image);
+		// Drawable tagIcon = SkinNames.getDrawable(SkinNames.GeneralImages.TAG);
+		// image = new Image(tagIcon);
+		// table.row();
+		// table.add(image);
 		//
-		//		label = new Label("", labelStyle);
-		//		mWidgets.info.tags = label;
-		//		table.add(label);
+		// label = new Label("", labelStyle);
+		// mWidgets.info.tags = label;
+		// table.add(label);
 
 		table.row().setFillHeight(true).setFillWidth(true);
 		table.add().setFillHeight(true).setFillWidth(true);
@@ -466,27 +466,28 @@ public class SelectDefGui extends Gui {
 	}
 
 	/**
-	 * Create level image table
-	 * @param level the level to create an image table for
-	 * @return table with level image, name and rating
+	 * Create definition image table
+	 * @param def the definition to create an image for
+	 * @return table with definition image and name
 	 */
-	private AlignTable createLevelTable(final DefVisible level) {
+	private AlignTable createLevelTable(final DefVisible def) {
 		AlignTable table = new AlignTable();
 		table.setAlign(Horizontal.CENTER, Vertical.MIDDLE);
 
 		// Image button
 		ImageButtonStyle defaultImageStyle = SkinNames.getResource(SkinNames.General.IMAGE_BUTTON_TOGGLE);
-		ImageButtonStyle imageButtonStyle = new ImageButtonStyle(defaultImageStyle);
-		imageButtonStyle.imageUp = level.def.getTextureRegionDrawable();
+		// ImageButtonStyle imageButtonStyle = new ImageButtonStyle(defaultImageStyle);
+		//
+		// imageButtonStyle.imageUp = def.def.getTextureRegionDrawable();
 
-		Button button = new ImageButton(imageButtonStyle);
+		Button button = new ResourceTextureButton(def.def, defaultImageStyle);
 		table.row().setFillWidth(true);
 		table.add(button).setFillWidth(true).setKeepAspectRatio(true);
 		new ButtonListener(button) {
 			@Override
 			protected void onChecked(boolean checked) {
 				if (checked) {
-					mSelectDefScene.setSelectedDef(level.def);
+					mSelectDefScene.setSelectedDef(def.def);
 
 					if (mSelectDefScene.isSelectedPublished()) {
 						mWidgets.info.hider.hide();
@@ -518,15 +519,17 @@ public class SelectDefGui extends Gui {
 		mWidgets.content.buttonGroup.add(button);
 
 		// Level name
-		Label label = new Label(level.def.getName(), (LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_DEFAULT));
+		Label label = new Label(def.def.getName(), (LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_DEFAULT));
 		table.row();
 		table.add(label);
 
 		// Rating
-		//		RatingWidgetStyle ratingStyle = SkinNames.getResource(SkinNames.General.RATING_DEFAULT);
-		//		RatingWidget ratingWidget = new RatingWidget(ratingStyle, 5, Touchable.disabled);
-		//		table.row();
-		//		table.add(ratingWidget);
+		// RatingWidgetStyle ratingStyle =
+		// SkinNames.getResource(SkinNames.General.RATING_DEFAULT);
+		// RatingWidget ratingWidget = new RatingWidget(ratingStyle, 5,
+		// Touchable.disabled);
+		// table.row();
+		// table.add(ratingWidget);
 
 		return table;
 	}
@@ -545,9 +548,9 @@ public class SelectDefGui extends Gui {
 			mWidgets.info.revision.setText(mSelectDefScene.getRevisionString());
 		}
 
-		//			mWidgets.info.likes.setText(String.valueOf(level.stats.cLikes));
-		//			mWidgets.info.plays.setText(String.valueOf(level.stats.cPlayed));
-		//			mWidgets.info.rating.setRating((int)(level.stats.ratingAverage + 0.5f));
+		// mWidgets.info.likes.setText(String.valueOf(level.stats.cLikes));
+		// mWidgets.info.plays.setText(String.valueOf(level.stats.cPlayed));
+		// mWidgets.info.rating.setRating((int)(level.stats.ratingAverage + 0.5f));
 	}
 
 	/**
@@ -591,7 +594,7 @@ public class SelectDefGui extends Gui {
 			int revisionStringLength = latestRevision.length();
 
 			for (int i = 0; i < revisions.length; ++i) {
-				int revisionInt = revisions.length -1 - i;
+				int revisionInt = revisions.length - 1 - i;
 				RevisionEntity revisionInfo = resourceRevisions.get(i);
 				String dateString = User.getGlobalUser().dateToString(revisionInfo.date);
 				revisions[revisionInt] = String.format("%0" + revisionStringLength + "d - %s", revisionInfo.revision, dateString);
@@ -607,9 +610,9 @@ public class SelectDefGui extends Gui {
 	 * Initialize select revision
 	 */
 	private void initSelectRevision() {
-		List<String> list = new List<String>((ListStyle)SkinNames.getResource(SkinNames.General.LIST_DEFAULT));
+		List<String> list = new List<String>((ListStyle) SkinNames.getResource(SkinNames.General.LIST_DEFAULT));
 		mWidgets.revision.list = list;
-		mWidgets.revision.scrollPane = new ScrollPane(list, (ScrollPaneStyle)SkinNames.getResource(SkinNames.General.SCROLL_PANE_DEFAULT));
+		mWidgets.revision.scrollPane = new ScrollPane(list, (ScrollPaneStyle) SkinNames.getResource(SkinNames.General.SCROLL_PANE_DEFAULT));
 		mWidgets.revision.table.setAlign(Horizontal.LEFT, Vertical.TOP);
 		mWidgets.revision.table.row().setFillHeight(true).setFillWidth(true);
 		mWidgets.revision.table.add(mWidgets.revision.scrollPane).setFillHeight(true).setFillWidth(true);
@@ -647,14 +650,14 @@ public class SelectDefGui extends Gui {
 			AlignTable table = new AlignTable();
 			Label name = null;
 			Label description = null;
-			//			RatingWidget rating = null;
+			// RatingWidget rating = null;
 			Label revisedBy = null;
 			Label createdBy = null;
 			Label date = null;
 			Label revision = null;
-			//			Label plays = null;
-			//			Label likes = null;
-			//			Label tags = null;
+			// Label plays = null;
+			// Label likes = null;
+			// Label tags = null;
 			HideManual hider = null;
 		}
 
