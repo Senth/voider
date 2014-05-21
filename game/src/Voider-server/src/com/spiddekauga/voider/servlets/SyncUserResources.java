@@ -160,7 +160,6 @@ public class SyncUserResources extends VoiderServlet {
 		query.addProjection(new PropertyProjection("created", Date.class));
 
 		query.addSort("uploaded");
-		query.addSort("resource_id");
 		query.addSort("revision");
 
 		PreparedQuery preparedQuery = DatastoreUtils.prepare(query);

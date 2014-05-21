@@ -196,6 +196,7 @@ public class ResourceRepo implements ICallerResponseListener {
 
 		// Download resources, but remove local first if there exists any revision of those.
 		// I.e. the server's sync was replaced, thus the local should also be
+		response.downloadStatus = true;
 		for (Entry<UUID, ArrayList<ResourceBlobEntity>> entry : response.blobsToDownload.entrySet()) {
 			UUID resourceId = entry.getKey();
 			ArrayList<ResourceBlobEntity> revisions = entry.getValue();
@@ -236,9 +237,10 @@ public class ResourceRepo implements ICallerResponseListener {
 			}
 
 			Pools.arrayList.free(revisions);
-		}
 
-		// TODO Set sync time
+			// Set sync time
+			ResourceLocalRepo.setSyncUserResourceDate(response.syncTime);
+		}
 	}
 
 	/**
