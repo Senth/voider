@@ -112,6 +112,7 @@ public class ResourceLocalRepo {
 		// Add revisions
 		for (RevisionEntity revisionEntity : revisions) {
 			mSqliteGateway.addRevision(resourceId, revisionEntity.revision, revisionEntity.date);
+			mSqliteGateway.setSyncedUserResource(resourceId, revisionEntity.revision);
 		}
 
 		// Update latest revision location
