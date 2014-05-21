@@ -37,7 +37,6 @@ import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Handles loading resources
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 class ResourceLoader {
@@ -57,7 +56,8 @@ class ResourceLoader {
 		mAssetManager.setLoader(EnemyActorDef.class, new KryoLoaderAsync<EnemyActorDef>(new ExternalFileHandleResolver(), EnemyActorDef.class));
 		mAssetManager.setLoader(PickupActorDef.class, new KryoLoaderAsync<PickupActorDef>(new ExternalFileHandleResolver(), PickupActorDef.class));
 		mAssetManager.setLoader(PlayerActorDef.class, new KryoLoaderAsync<PlayerActorDef>(new ExternalFileHandleResolver(), PlayerActorDef.class));
-		mAssetManager.setLoader(StaticTerrainActorDef.class, new KryoLoaderAsync<StaticTerrainActorDef>(new ExternalFileHandleResolver(), StaticTerrainActorDef.class));
+		mAssetManager.setLoader(StaticTerrainActorDef.class, new KryoLoaderAsync<StaticTerrainActorDef>(new ExternalFileHandleResolver(),
+				StaticTerrainActorDef.class));
 		mAssetManager.setLoader(LevelDef.class, new KryoLoaderAsync<LevelDef>(new ExternalFileHandleResolver(), LevelDef.class));
 		mAssetManager.setLoader(Level.class, new KryoLoaderAsync<Level>(new ExternalFileHandleResolver(), Level.class));
 		mAssetManager.setLoader(GameSave.class, new KryoLoaderSync<GameSave>(new ExternalFileHandleResolver(), GameSave.class));
@@ -77,8 +77,8 @@ class ResourceLoader {
 	/**
 	 * @param resourceId the resource id to get a correct revision for
 	 * @param revision the revision to check
-	 * @return a correct id for the resource, i.e. if it's the latest revision it
-	 * will return the special number LATEST_REVISION instead
+	 * @return a correct id for the resource, i.e. if it's the latest revision it will
+	 *         return the special number LATEST_REVISION instead
 	 */
 	private int getCorrectRevision(UUID resourceId, int revision) {
 		if (revision > 0) {
@@ -92,15 +92,15 @@ class ResourceLoader {
 	}
 
 	/**
-	 * Loads the specified resource. If the resource has been loaded already
-	 * it does nothing.
+	 * Loads the specified resource. If the resource has been loaded already it does
+	 * nothing.
 	 * @param scene the scene which is loading the resource
 	 * @param resourceId the resource that should be loaded
-	 * @param revision the revision to load. Set to -1 if the resource doesn't
-	 * have revisions or if you want to load the latest revision.
-	 * Note that if the resource already has been loaded, this variable
-	 * will have no effect. I.e. it will not load
-	 * another revision of the resource as only one revision is allowed.
+	 * @param revision the revision to load. Set to -1 if the resource doesn't have
+	 *        revisions or if you want to load the latest revision. Note that if the
+	 *        resource already has been loaded, this variable will have no effect. I.e. it
+	 *        will not load another revision of the resource as only one revision is
+	 *        allowed.
 	 */
 	void load(Scene scene, UUID resourceId, int revision) {
 		UuidRevision uuidRevision = mUuidRevisionPool.obtain();
@@ -111,7 +111,6 @@ class ResourceLoader {
 		if (mLoadedResources.containsKey(uuidRevision) || mLoadingQueue.containsKey(uuidRevision)) {
 			return;
 		}
-
 
 
 		LoadedResource loadedResource = new LoadedResource();
@@ -166,6 +165,8 @@ class ResourceLoader {
 	}
 
 	/**
+	 * Get the latest revision of the resource, or simple the resource if it doesn't have
+	 * any revisions
 	 * @param <ResourceType> the resource type
 	 * @param resourceId id of the resource to return
 	 * @return the loaded resource with the specified id, null if not loaded
@@ -261,6 +262,29 @@ class ResourceLoader {
 			resource.set(newLatestResource);
 		} else {
 			Gdx.app.error("ResourceLoader", "Could not find latest resource when setting latest resource");
+		}
+	}
+
+	/**
+	 * Reloads the latest resource. Useful when a new revision has been added of the
+	 * resource during sync.
+	 * @param resourceId id of the resource to reload
+	 */
+	void reload(UUID resourceId) {
+		Resource oldLoadedResource = getLoadedResource(resourceId);
+
+		if (oldLoadedResource != null) {
+			// Reload latest revision
+			String latestFilepath = ResourceLocalRepo.getFilepath(resourceId);
+			mAssetManager.unload(latestFilepath);
+			mAssetManager.load(latestFilepath, oldLoadedResource.getClass());
+			mAssetManager.finishLoading();
+
+			// Update old resource with reloaded latest resource
+			Resource reloadedResource = mAssetManager.get(latestFilepath);
+			oldLoadedResource.set(reloadedResource);
+		} else {
+			Gdx.app.error("ResourceLoader", "Latest resource was not loaded while trying to reload it");
 		}
 	}
 
@@ -377,8 +401,7 @@ class ResourceLoader {
 				if (other.resourceId != null) {
 					return false;
 				}
-			}
-			else if (!resourceId.equals(other.resourceId)) {
+			} else if (!resourceId.equals(other.resourceId)) {
 				return false;
 			}
 			if (revision != other.revision) {

@@ -54,7 +54,6 @@ public class CampaignEditor extends Editor {
 	@Override
 	public void duplicateDef() {
 		// TODO Auto-generated method stub
-
 	}
 
 	@Override

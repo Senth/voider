@@ -98,7 +98,8 @@ public class ResourceLocalRepo {
 	}
 
 	/**
-	 * Add user resource revisions. Automatically updates the latest revision file location.
+	 * Add user resource revisions. Automatically updates the latest revision file
+	 * location.
 	 * @param resourceId id of the user resource revision to add
 	 * @param type the resource type
 	 * @param revisions new revisions to add
@@ -115,7 +116,7 @@ public class ResourceLocalRepo {
 			mSqliteGateway.setSyncedUserResource(resourceId, revisionEntity.revision);
 		}
 
-		// Update latest revision location
+		// Update latest revision file location
 		int latestRevision = mSqliteGateway.getRevisionLatest(resourceId).revision;
 		mFileGateway.copyFromRevisionToResource(resourceId, latestRevision);
 	}
@@ -212,8 +213,9 @@ public class ResourceLocalRepo {
 	 * Get the latest revision of the specified resource
 	 * @param uuid the resource to get the revision for
 	 * @return latest revision of the specified resource.
-	 * @throws ResourceNotFoundException if the resource doesn't got any revisions. I.e. it either does not exist, does
-	 *             not contain any revisions because it's either not a revision resource or it has been published.
+	 * @throws ResourceNotFoundException if the resource doesn't got any revisions. I.e.
+	 *         it either does not exist, does not contain any revisions because it's
+	 *         either not a revision resource or it has been published.
 	 */
 	public static RevisionEntity getRevisionLatest(UUID uuid) {
 		return mSqliteGateway.getRevisionLatest(uuid);
@@ -233,14 +235,6 @@ public class ResourceLocalRepo {
 	 */
 	public static String getFilepath(UUID resourceId) {
 		return mFileGateway.getFilepath(resourceId);
-	}
-
-	/**
-	 * @param resourceId id of the resource to get resource revision directory for
-	 * @return directory where the resource's revisions are located
-	 */
-	private static String getRevisionDir(UUID resourceId) {
-		return mFileGateway.getRevisionDir(resourceId);
 	}
 
 	/**
@@ -330,7 +324,8 @@ public class ResourceLocalRepo {
 	}
 
 	/**
-	 * @return all user resource revisions that haven't been uploaded/synced to the server.
+	 * @return all user resource revisions that haven't been uploaded/synced to the
+	 *         server.
 	 */
 	static HashMap<UUID, ResourceRevisionEntity> getUnsyncedUserResources() {
 		return mSqliteGateway.getUnsyncedUserResources();

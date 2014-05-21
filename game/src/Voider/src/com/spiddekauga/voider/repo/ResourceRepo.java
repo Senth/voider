@@ -101,9 +101,9 @@ public class ResourceRepo implements ICallerResponseListener {
 				// Don't sync via the synchronizer as a wait window will appear, instead
 				// just add the synchronizer as a listener
 				if (responseListener != null) {
-					syncUserResources(mSynchronizer, responseListener);
+					syncUserResources(Synchronizer.getInstance(), responseListener);
 				} else {
-					syncUserResources(mSynchronizer);
+					syncUserResources(Synchronizer.getInstance());
 				}
 			}
 		}
@@ -251,6 +251,12 @@ public class ResourceRepo implements ICallerResponseListener {
 				}
 
 				ResourceLocalRepo.addRevisions(resourceId, type, revisions);
+
+
+				// Reload resource if latest already has been loaded
+				if (ResourceCacheFacade.isLoaded(resourceId)) {
+					ResourceCacheFacade.reload(resourceId);
+				}
 			}
 
 			Pools.arrayList.free(revisions);
@@ -381,8 +387,6 @@ public class ResourceRepo implements ICallerResponseListener {
 
 	/** Instance of this class */
 	private static ResourceRepo mInstance = null;
-	/** Synchronizer */
-	private Synchronizer mSynchronizer = Synchronizer.getInstance();
 	/** ResourceWebRepo */
 	protected ResourceWebRepo mWebRepo = ResourceWebRepo.getInstance();
 }

@@ -98,7 +98,10 @@ public class Config {
 	 * Cache
 	 */
 	public static class Cache {
-		/** How long time resource when browsing should be available after initial fetch, in seconds */
+		/**
+		 * How long time resource when browsing should be available after initial fetch,
+		 * in seconds
+		 */
 		public static final int RESOURCE_BROWSE_TIME = 300;
 	}
 
@@ -174,15 +177,18 @@ public class Config {
 		public static class Messages {
 			/** If loading/unloading debug messages should be turned on/off */
 			public static final boolean LOAD_UNLOAD = true;
-			/** If loading/unloading including number of times a resource has been loaded into a scene */
+			/**
+			 * If loading/unloading including number of times a resource has been loaded
+			 * into a scene
+			 */
 			public static final boolean LOAD_UNLOAD_EVERY_TIME = true;
 			/** If loading/unloading dependencies should be displayed */
 			public static final boolean LOAD_UNLOAD_DEPENDENCIES = true;
 		}
 
 		/**
-		 * If debugging tests shall be activate. This causes extra runtime, but checks so that none of the checks are
-		 * broken.
+		 * If debugging tests shall be activate. This causes extra runtime, but checks so
+		 * that none of the checks are broken.
 		 */
 		public static boolean DEBUG_TESTS = true;
 		/** Skip loading text */
@@ -216,7 +222,8 @@ public class Config {
 
 		/**
 		 * @param build the build to check if we're at or above
-		 * @return true if the current build is equal to or above (later) than the specified build
+		 * @return true if the current build is equal to or above (later) than the
+		 *         specified build
 		 */
 		public static boolean isBuildOrAbove(Builds build) {
 			return BUILD.ordinal() >= build.ordinal();
@@ -224,7 +231,8 @@ public class Config {
 
 		/**
 		 * @param build the build to check if we're at or below
-		 * @return true if the current build is equal to or below (development) than the specified build
+		 * @return true if the current build is equal to or below (development) than the
+		 *         specified build
 		 */
 		public static boolean isBuildOrBelow(Builds build) {
 			return BUILD.ordinal() <= build.ordinal();
@@ -254,7 +262,10 @@ public class Config {
 
 				/** Minimum distance for new corners when drawing */
 				public final static float DRAW_NEW_CORNER_MIN_DIST_SQ = 0.75f * 0.75f;
-				/** Minimum angle between corners, if less than this, the corner will be removed */
+				/**
+				 * Minimum angle between corners, if less than this, the corner will be
+				 * removed
+				 */
 				public final static float DRAW_CORNER_ANGLE_MIN = 9;
 				/** Maximum squared distance a new corners might be from a line segment */
 				public final static float NEW_CORNER_DIST_MAX_SQ = 3 * 3;
@@ -304,7 +315,10 @@ public class Config {
 
 				/** Minimum distance for new corners when drawing */
 				public final static float DRAW_NEW_CORNER_MIN_DIST_SQ = 0.25f * 0.25f;
-				/** Minimum angle between corners, if less than this, the corner will be removed */
+				/**
+				 * Minimum angle between corners, if less than this, the corner will be
+				 * removed
+				 */
 				public final static float DRAW_CORNER_ANGLE_MIN = 5;
 			}
 		}
@@ -319,7 +333,8 @@ public class Config {
 			 */
 			public static class Movement {
 				/**
-				 * How long time ONCE enemy should have reached the goal before it is reset. In EnemyEditor
+				 * How long time ONCE enemy should have reached the goal before it is
+				 * reset. In EnemyEditor
 				 */
 				public final static float PATH_ONCE_RESET_TIME = 2;
 				/** Minimum speed of enemies */
@@ -695,7 +710,10 @@ public class Config {
 	 * All graphical options
 	 */
 	public static class Graphics {
-		/** If we shall use debug_renderer to display graphics instead of sprites (where applicable) */
+		/**
+		 * If we shall use debug_renderer to display graphics instead of sprites (where
+		 * applicable)
+		 */
 		public final static boolean USE_DEBUG_RENDERER = false;
 		/** Renders regular graphics */
 		public final static boolean USE_RELEASE_RENDERER = true;
@@ -716,8 +734,8 @@ public class Config {
 		/** World scaling factor */
 		public final static float WORLD_SCALE = 0.1f;
 		/**
-		 * How much bigger of the screen is shown in height from the regular scale. E.g. 3 will show the same amount of
-		 * free space above and below the level
+		 * How much bigger of the screen is shown in height from the regular scale. E.g. 3
+		 * will show the same amount of free space above and below the level
 		 */
 		public final static float LEVEL_EDITOR_HEIGHT_SCALE = 2;
 		/** Amount of extra space that has been added to the level */
@@ -741,8 +759,8 @@ public class Config {
 		}
 
 		/**
-		 * Z-value for rendering objects. The further up the enumeration is located the more in front the object will be
-		 * rendered.
+		 * Z-value for rendering objects. The further up the enumeration is located the
+		 * more in front the object will be rendered.
 		 */
 		public enum RenderOrders {
 			/** Moving objects */
@@ -890,8 +908,9 @@ public class Config {
 			}
 
 			/**
-			 * Offset the z-value a small amount. Useful when for example a resource will render many multiple layers
-			 * and rendering these so all will be shown accordingly.
+			 * Offset the z-value a small amount. Useful when for example a resource will
+			 * render many multiple layers and rendering these so all will be shown
+			 * accordingly.
 			 * @param shapeRenderer the shape renderer to translate
 			 * @see #resetZValueOffset(ShapeRendererEx) to reset all calls to this.
 			 */
@@ -901,8 +920,8 @@ public class Config {
 			}
 
 			/**
-			 * Resets the offset value. This will reset all calls to {@link #offsetZValue(ShapeRendererEx)} but not from
-			 * other.
+			 * Resets the offset value. This will reset all calls to
+			 * {@link #offsetZValue(ShapeRendererEx)} but not from other.
 			 * @param shapeRenderer the shape renderer to reset
 			 */
 			public static void resetZValueOffset(ShapeRendererEx shapeRenderer) {
@@ -925,7 +944,10 @@ public class Config {
 	public static class Gui {
 		/** Temporary GUI name when using an invoker */
 		public final static String GUI_INVOKER_TEMP_NAME = "invoker";
-		/** Temporary GUI name when disabling text fields (so GuiHider doesn't reenable them) */
+		/**
+		 * Temporary GUI name when disabling text fields (so GuiHider doesn't reenable
+		 * them)
+		 */
 		public final static String TEXT_FIELD_DISABLED_NAME = "DISABLED";
 		/** Seconds before text field commands aren't combinable */
 		public final static float TEXT_FIELD_COMBINABLE_WITHIN = 1;
@@ -980,11 +1002,13 @@ public class Config {
 	 */
 	public static class Level {
 		/**
-		 * How much offset from the first resource inside the level the beginning of the level should be placed
+		 * How much offset from the first resource inside the level the beginning of the
+		 * level should be placed
 		 */
 		public final static float START_COORD_OFFSET = Graphics.WIDTH_DEFAULT * Graphics.WORLD_SCALE * 0.1f;
 		/**
-		 * How much offset from the last resource inside the level the x-coordinate should appear
+		 * How much offset from the last resource inside the level the x-coordinate should
+		 * appear
 		 */
 		public final static float END_COORD_OFFSET = Graphics.WIDTH_DEFAULT * Graphics.WORLD_SCALE * 1.1f;
 		/** Speed of the front/top background layer, relative to the level speed */
@@ -1033,7 +1057,8 @@ public class Config {
 		/** Server host */
 		public static final String SERVER_HOST;
 		/**
-		 * Set this variable to a specific build to override the current server host to point to this build instead
+		 * Set this variable to a specific build to override the current server host to
+		 * point to this build instead
 		 */
 		public static final Builds OVERRIDE_HOST = null;
 
@@ -1082,7 +1107,8 @@ public class Config {
 	}
 
 	/**
-	 * Revision of the game, as in code. This allows files of older revisions to be loaded into new revisions
+	 * Revision of the game, as in code. This allows files of older revisions to be loaded
+	 * into new revisions
 	 */
 	public final static int REVISION = 3;
 
