@@ -11,14 +11,14 @@ import com.badlogic.gdx.sql.SQLiteGdxException;
 
 /**
  * Upgrades the SQLite database to the latest version
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 class SqliteUpgrader {
 	/**
 	 * @param database the database to do upgrading on
 	 */
-	SqliteUpgrader(Database database) {
+	SqliteUpgrader(
+			Database database) {
 		mDatabase = database;
 
 		fillTables();
@@ -104,11 +104,13 @@ class SqliteUpgrader {
 
 		// revisions
 		mNotFoundTables.add("resource_revision");
-		mCreateTableQueries.put("resource_revision", "CREATE TABLE IF NOT EXISTS resource_revision (uuid TEXT, revision INTEGER, date INTEGER, uploaded INTEGER DEFALT 0);");
+		mCreateTableQueries.put("resource_revision",
+				"CREATE TABLE IF NOT EXISTS resource_revision (uuid TEXT, revision INTEGER, date INTEGER, uploaded INTEGER DEFAULT 0);");
 
 		// resources
 		mNotFoundTables.add("resource");
-		mCreateTableQueries.put("resource", "CREATE TABLE IF NOT EXISTS resource (uuid TEXT PRIMARY KEY, type INTEGER, published INTEGER DEFAULT 0);");
+		mCreateTableQueries
+				.put("resource", "CREATE TABLE IF NOT EXISTS resource (uuid TEXT PRIMARY KEY, type INTEGER, published INTEGER DEFAULT 0);");
 	}
 
 	/**
