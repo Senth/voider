@@ -160,8 +160,8 @@ class ResourceLoader {
 	/**
 	 * @return true if loading
 	 */
-	boolean isLoading() {
-		return !mLoadingQueue.isEmpty() || mAssetManager.getQueuedAssets() > 0;
+	synchronized boolean isLoading() {
+		return !mLoadingQueue.isEmpty() || !mReloadQueue.isEmpty() || mAssetManager.getQueuedAssets() > 0;
 	}
 
 	/**
@@ -271,18 +271,25 @@ class ResourceLoader {
 	 * @param resourceId id of the resource to reload
 	 */
 	void reload(UUID resourceId) {
-		Resource oldLoadedResource = getLoadedResource(resourceId);
+		Resource oldResource = getLoadedResource(resourceId);
 
-		if (oldLoadedResource != null) {
+		if (oldResource != null) {
 			// Reload latest revision
 			String latestFilepath = ResourceLocalRepo.getFilepath(resourceId);
-			mAssetManager.unload(latestFilepath);
-			mAssetManager.load(latestFilepath, oldLoadedResource.getClass());
-			mAssetManager.finishLoading();
+			mReloadQueue.add(new ReloadResource(latestFilepath, oldResource.getClass()));
+
+			// Wait until the resource has been reloaded in the main thread
+			while (isLoading()) {
+				try {
+					Thread.sleep(20);
+				} catch (InterruptedException e) {
+					// Do nothing
+				}
+			}
 
 			// Update old resource with reloaded latest resource
 			Resource reloadedResource = mAssetManager.get(latestFilepath);
-			oldLoadedResource.set(reloadedResource);
+			oldResource.set(reloadedResource);
 		} else {
 			Gdx.app.error("ResourceLoader", "Latest resource was not loaded while trying to reload it");
 		}
@@ -322,17 +329,37 @@ class ResourceLoader {
 	 * Updates the resource loader. This will set the loaded resources correctly
 	 * @return true if all resources has been loaded
 	 */
-	boolean update() {
+	synchronized boolean update() {
 		try {
 			mAssetManager.update();
 		} catch (GdxRuntimeException e) {
 			handleException(e);
 		}
 
-		Iterator<Entry<UuidRevision, LoadedResource>> iterator = mLoadingQueue.entrySet().iterator();
+		// Reload queue
+		Iterator<ReloadResource> unloadIt = mReloadQueue.iterator();
+		while (unloadIt.hasNext()) {
+			ReloadResource reloadResource = unloadIt.next();
 
-		while (iterator.hasNext()) {
-			Entry<UuidRevision, LoadedResource> entry = iterator.next();
+			// Check if it has been loaded
+			if (reloadResource.unloaded) {
+				if (mAssetManager.isLoaded(reloadResource.filepath)) {
+					unloadIt.remove();
+				}
+			}
+			// Unload the resource
+			else {
+				mAssetManager.unload(reloadResource.filepath);
+				mAssetManager.load(reloadResource.filepath, reloadResource.type);
+				reloadResource.unloaded = true;
+			}
+		}
+
+		// Loading queue
+		Iterator<Entry<UuidRevision, LoadedResource>> loadIt = mLoadingQueue.entrySet().iterator();
+
+		while (loadIt.hasNext()) {
+			Entry<UuidRevision, LoadedResource> entry = loadIt.next();
 			LoadedResource loadingResource = entry.getValue();
 
 			// Add resource if it has been loaded
@@ -341,7 +368,7 @@ class ResourceLoader {
 
 				mLoadedResources.put(entry.getKey(), loadingResource);
 
-				iterator.remove();
+				loadIt.remove();
 			}
 		}
 
@@ -429,6 +456,29 @@ class ResourceLoader {
 		IResource resource = null;
 	}
 
+	/**
+	 * Reload queue class
+	 */
+	private static class ReloadResource {
+		/**
+		 * Constructor
+		 * @param filepath the file path of the resource to unload
+		 * @param type class type of the resource to reload
+		 */
+		ReloadResource(
+				String filepath, Class<? extends IResource> type) {
+			this.filepath = filepath;
+			this.type = type;
+		}
+
+		/** File path of the resource */
+		String filepath;
+		/** Class of the resource */
+		Class<? extends IResource> type;
+		/** True if the resource has been unloaded */
+		boolean unloaded = false;
+	}
+
 	/** Latest resource */
 	private static final int LATEST_REVISION = -1;
 	/** Pool for UuidRevision */
@@ -437,6 +487,9 @@ class ResourceLoader {
 	private HashMap<UuidRevision, LoadedResource> mLoadedResources = new HashMap<>();
 	/** All resources that are currently loading */
 	private HashMap<UuidRevision, LoadedResource> mLoadingQueue = new HashMap<>();
+	/** Unload queue */
+	private ArrayList<ReloadResource> mReloadQueue = new ArrayList<>();
+
 	/** The asset manager used for actually loading resources */
 	private AssetManager mAssetManager;
 }
