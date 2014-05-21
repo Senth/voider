@@ -476,9 +476,6 @@ public class SelectDefGui extends Gui {
 
 		// Image button
 		ImageButtonStyle defaultImageStyle = SkinNames.getResource(SkinNames.General.IMAGE_BUTTON_TOGGLE);
-		// ImageButtonStyle imageButtonStyle = new ImageButtonStyle(defaultImageStyle);
-		//
-		// imageButtonStyle.imageUp = def.def.getTextureRegionDrawable();
 
 		Button button = new ResourceTextureButton(def.def, defaultImageStyle);
 		table.row().setFillWidth(true);
