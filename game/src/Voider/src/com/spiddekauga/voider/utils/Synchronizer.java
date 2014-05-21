@@ -62,11 +62,13 @@ public class Synchronizer implements IMessageListener, ICallerResponseListener {
 		ICallerResponseListener[] responseListeners = null;
 		if (responseListener != null) {
 			responseListeners = new ICallerResponseListener[2];
+			responseListeners[0] = this;
+			responseListeners[1] = responseListener;
 		} else {
 			responseListeners = new ICallerResponseListener[1];
+			responseListeners[0] = this;
 		}
-		responseListeners[0] = this;
-		responseListeners[1] = responseListener;
+
 
 		switch (type) {
 		case SYNC_DOWNLOAD:
