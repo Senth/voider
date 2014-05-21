@@ -3,11 +3,12 @@ package com.spiddekauga.voider.utils;
 import java.util.LinkedList;
 import java.util.Queue;
 
+import com.spiddekauga.utils.Observable;
 import com.spiddekauga.voider.network.entities.ChatMessage;
 import com.spiddekauga.voider.network.entities.ChatMessage.MessageTypes;
 import com.spiddekauga.voider.network.entities.IEntity;
-import com.spiddekauga.voider.network.entities.ISuccessStatuses;
 import com.spiddekauga.voider.network.entities.method.IMethodEntity;
+import com.spiddekauga.voider.network.entities.method.SyncDownloadMethodResponse;
 import com.spiddekauga.voider.network.entities.method.SyncUserResourcesMethod;
 import com.spiddekauga.voider.network.entities.method.SyncUserResourcesMethodResponse;
 import com.spiddekauga.voider.repo.ICallerResponseListener;
@@ -17,10 +18,11 @@ import com.spiddekauga.voider.server.IMessageListener;
 import com.spiddekauga.voider.server.MessageGateway;
 
 /**
- * Listens to server synchronize events when to synchronize. Also checks synchronize everything when user logs in
+ * Listens to server synchronize events when to synchronize. Also checks synchronize
+ * everything when user logs in
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public class Synchronizer implements IMessageListener, ICallerResponseListener {
+public class Synchronizer extends Observable implements IMessageListener, ICallerResponseListener {
 	/**
 	 * Initializes the synchronizer. Private constructor to enforce singleton usage
 	 */
@@ -90,7 +92,15 @@ public class Synchronizer implements IMessageListener, ICallerResponseListener {
 
 	/**
 	 * Synchronize everything
-	 * @param responseListener the listener that also should get the web response
+	 */
+	public void synchronizeAll() {
+		synchronizeAll(null);
+	}
+
+	/**
+	 * Synchronize everything
+	 * @param responseListener the listener that also should get the web response, may be
+	 *            null
 	 */
 	public void synchronizeAll(ICallerResponseListener responseListener) {
 		mResponseListener = responseListener;
@@ -109,13 +119,16 @@ public class Synchronizer implements IMessageListener, ICallerResponseListener {
 
 		if (response instanceof SyncUserResourcesMethodResponse) {
 			handleSyncUserResourceResponse((SyncUserResourcesMethod) method, (SyncUserResourcesMethodResponse) response);
-		} else if (response instanceof ISuccessStatuses) {
-			if (((ISuccessStatuses) response).isSuccessful()) {
-				SceneSwitcher.showSuccessMessage("Sync complete");
+		} else if (response instanceof SyncDownloadMethodResponse) {
+			if (((SyncDownloadMethodResponse) response).isSuccessful()) {
+				notifyObservers(SyncEvents.COMMUNITY_DOWNLOAD_SUCCESS);
+				SceneSwitcher.showSuccessMessage("Sync community resources complete");
 			} else {
-				SceneSwitcher.showErrorMessage("Sync failed");
+				notifyObservers(SyncEvents.COMMUNITY_DOWNLOAD_FAILED);
+				SceneSwitcher.showErrorMessage("Sync community resources failed");
 			}
 		}
+
 
 		syncNextInQueue();
 	}
@@ -145,21 +158,52 @@ public class Synchronizer implements IMessageListener, ICallerResponseListener {
 			} else {
 				SceneSwitcher.showErrorMessage("Sync failed");
 			}
+			notifyObservers(SyncEvents.USER_RESOURCES_UPLOAD_FAILED);
 			break;
 
 		case SUCCESS_ALL:
 			if (response.downloadStatus) {
 				SceneSwitcher.showSuccessMessage("Sync complete");
 			} else {
-				SceneSwitcher.showErrorMessage("Sync: Only uploaded resources to server");
+				SceneSwitcher.showErrorMessage("Sync: Only uploaded resources to server, failed to download");
 			}
+			notifyObservers(SyncEvents.USER_RESOURCES_UPLOAD_SUCCESS);
 			break;
 
 		case SUCCESS_PARTIAL:
 			SceneSwitcher.showHighlightMessage("Sync conflict");
 			// TODO handle conflict
+
+			notifyObservers(SyncEvents.USER_RESOURCES_UPLOAD_CONFLICT);
 			break;
 		}
+
+		// Send sync messages
+		if (response.downloadStatus) {
+			notifyObservers(SyncEvents.USER_RESOURCES_DOWNLOAD_SUCCESS);
+		} else {
+			notifyObservers(SyncEvents.USER_RESOURCES_DOWNLOAD_FAILED);
+		}
+	}
+
+	/**
+	 * Sync event enumerations
+	 */
+	public enum SyncEvents {
+		/** Successfully downloaded user resources */
+		USER_RESOURCES_DOWNLOAD_SUCCESS,
+		/** Failed to download user resources */
+		USER_RESOURCES_DOWNLOAD_FAILED,
+		/** Successfully uploaded and synced ALL user resources */
+		USER_RESOURCES_UPLOAD_SUCCESS,
+		/** Failed to upload user resources */
+		USER_RESOURCES_UPLOAD_FAILED,
+		/** Conflict when uploading user resources */
+		USER_RESOURCES_UPLOAD_CONFLICT,
+		/** Downloaded new community resources */
+		COMMUNITY_DOWNLOAD_SUCCESS,
+		/** Failed to download community resources */
+		COMMUNITY_DOWNLOAD_FAILED,
 	}
 
 	/** Queue for what to synchronize */

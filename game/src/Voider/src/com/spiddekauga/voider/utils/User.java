@@ -2,14 +2,13 @@ package com.spiddekauga.voider.utils;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Observable;
 import java.util.UUID;
 
+import com.spiddekauga.utils.Observable;
 import com.spiddekauga.voider.Config;
 
 /**
  * User information class
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class User extends Observable {

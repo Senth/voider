@@ -1,6 +1,7 @@
 package com.spiddekauga.voider.editor;
 
 import java.util.ArrayList;
+import java.util.Observable;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
@@ -73,6 +74,7 @@ import com.spiddekauga.voider.scene.LoadingScene;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.utils.Pools;
+import com.spiddekauga.voider.utils.Synchronizer.SyncEvents;
 
 /**
  * The level editor scene
@@ -287,6 +289,23 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	}
 
 	@Override
+	public void update(Observable observable, Object arg) {
+		if (arg instanceof SyncEvents) {
+			switch ((SyncEvents) arg) {
+			case USER_RESOURCES_DOWNLOAD_SUCCESS:
+				ResourceCacheFacade.loadAllOf(this, ExternalTypes.ENEMY_DEF, true);
+				ResourceCacheFacade.loadAllOf(this, ExternalTypes.LEVEL_DEF, false);
+				ResourceCacheFacade.finishLoading();
+				break;
+
+			default:
+				// Does nothing
+				break;
+			}
+		}
+	}
+
+	@Override
 	protected void reloadResourcesOnActivate(Outcomes outcome, Object message) {
 		super.reloadResourcesOnActivate(outcome, message);
 
@@ -337,7 +356,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 					mLoadingLevel = ResourceCacheFacade.get(resourceItem.id, resourceItem.revision);
 
-					// Only load level if it's not the current level we selected, or another revision
+					// Only load level if it's not the current level we selected, or
+					// another revision
 					if (mLoadingLevel != null) {
 						if (mLevel == null || !mLoadingLevel.equals(mLevel.getDef()) || mLoadingLevel.getRevision() != mLevel.getRevision()) {
 							ResourceCacheFacade.load(this, mLoadingLevel.getLevelId(), mLoadingLevel.getId(), mLoadingLevel.getRevision());
@@ -443,7 +463,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	}
 
 	/**
-	 * Selects the specified pickup definition. This pickup will be used when adding new pickups
+	 * Selects the specified pickup definition. This pickup will be used when adding new
+	 * pickups
 	 * @param pickupId the pickup id to select
 	 * @return true if the pickup was selected successfully, false if unsuccessful
 	 */
@@ -642,11 +663,11 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 	@Override
 	protected void saveToFile() {
-		if (!isPublished()) {
+		if (!isPublished() && !isSaved()) {
 			mLevel.calculateStartEndPosition();
 
 			int oldRevision = mLevel.getRevision();
-			mResourceRepo.save(this, mLevel.getDef(), mLevel);
+			mResourceRepo.save(mLevel.getDef(), mLevel);
 			showSyncMessage();
 
 			// Update latest resource if revision was changed by more than one
@@ -840,7 +861,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	}
 
 	/**
-	 * @return story that will be displayed before the level, empty string if no level is available
+	 * @return story that will be displayed before the level, empty string if no level is
+	 *         available
 	 */
 	String getPrologue() {
 		if (mLevel != null) {
@@ -862,7 +884,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	}
 
 	/**
-	 * @return story that will be displayed after completing the level, empty string if no level is available
+	 * @return story that will be displayed after completing the level, empty string if no
+	 *         level is available
 	 */
 	String getEpilogue() {
 		if (mLevel != null) {
@@ -1049,7 +1072,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	}
 
 	/**
-	 * @return spawn delay between actors in the same group, negative value if no group exist
+	 * @return spawn delay between actors in the same group, negative value if no group
+	 *         exist
 	 */
 	float getEnemySpawnDelay() {
 		if (getEnemyCount() > 1) {
@@ -1082,8 +1106,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	}
 
 	/**
-	 * @return current path type. If several paths are selected and they have different path types null is return. If no
-	 *         path is selected null is also returned.
+	 * @return current path type. If several paths are selected and they have different
+	 *         path types null is return. If no path is selected null is also returned.
 	 */
 	PathTypes getPathType() {
 		int cOnce = 0;
@@ -1162,7 +1186,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	}
 
 	/**
-	 * @return true if the selected enemy has an activation trigger, false if not or if no enemy is selected
+	 * @return true if the selected enemy has an activation trigger, false if not or if no
+	 *         enemy is selected
 	 */
 	boolean hasSelectedEnemyActivateTrigger() {
 		ArrayList<EnemyActor> selectedEnemies = mSelection.getSelectedResourcesOfType(EnemyActor.class);
@@ -1182,7 +1207,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	}
 
 	/**
-	 * @return delay of the activation trigger, negative if no activation trigger has been set.
+	 * @return delay of the activation trigger, negative if no activation trigger has been
+	 *         set.
 	 */
 	float getSelectedEnemyActivateTriggerDelay() {
 		ArrayList<EnemyActor> selectedEnemies = mSelection.getSelectedResourcesOfType(EnemyActor.class);
@@ -1231,7 +1257,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	}
 
 	/**
-	 * @return true if the selected enemy has an deactivation trigger, false if not or if no enemy is selected
+	 * @return true if the selected enemy has an deactivation trigger, false if not or if
+	 *         no enemy is selected
 	 */
 	boolean hasSelectedEnemyDeactivateTrigger() {
 		ArrayList<EnemyActor> selectedEnemies = mSelection.getSelectedResourcesOfType(EnemyActor.class);
@@ -1251,7 +1278,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	}
 
 	/**
-	 * @return delay of the deactivation trigger, negative if no deactivation trigger has been set.
+	 * @return delay of the deactivation trigger, negative if no deactivation trigger has
+	 *         been set.
 	 */
 	float getSelectedEnemyDeactivateTriggerDelay() {
 		ArrayList<EnemyActor> selectedEnemies = mSelection.getSelectedResourcesOfType(EnemyActor.class);
@@ -1300,7 +1328,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	}
 
 	/**
-	 * Sets if enemies that will be used when test running the level from here should be highlighted.
+	 * Sets if enemies that will be used when test running the level from here should be
+	 * highlighted.
 	 * @param highlight set to true to highlight the enemies
 	 */
 	void setEnemyHighlight(boolean highlight) {
@@ -1308,8 +1337,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	}
 
 	/**
-	 * @return true if the enemy should be highlighted if the will be used when test running a level from the current
-	 *         position
+	 * @return true if the enemy should be highlighted if the will be used when test
+	 *         running a level from the current position
 	 */
 	public boolean isEnemyHighlightOn() {
 		return mEnemyHighlight;

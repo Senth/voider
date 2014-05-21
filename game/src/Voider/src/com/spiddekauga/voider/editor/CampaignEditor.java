@@ -1,6 +1,7 @@
 package com.spiddekauga.voider.editor;
 
 import java.util.ArrayList;
+import java.util.Observable;
 
 import com.spiddekauga.utils.commands.Command;
 import com.spiddekauga.voider.repo.ResourceRepo;
@@ -8,7 +9,6 @@ import com.spiddekauga.voider.resources.Def;
 
 /**
  * Campaign editor for combining existing levels into a campaign.
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class CampaignEditor extends Editor {
@@ -18,7 +18,7 @@ public class CampaignEditor extends Editor {
 	public CampaignEditor() {
 		super(new CampaignEditorGui(), 0);
 
-		((EditorGui)mGui).setEditor(this);
+		((EditorGui) mGui).setEditor(this);
 	}
 
 	@Override
@@ -44,6 +44,11 @@ public class CampaignEditor extends Editor {
 	public void loadDef() {
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	public void update(Observable observable, Object arg) {
+		// TODO
 	}
 
 	@Override

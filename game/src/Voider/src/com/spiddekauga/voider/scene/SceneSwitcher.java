@@ -22,13 +22,11 @@ import com.spiddekauga.voider.scene.Scene.Outcomes;
 
 /**
  * Switches between scenes in an game/app.
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class SceneSwitcher {
 	/**
-	 * Switches to the specified scene. This scene will not be removed
-	 * until it self has decided that it has finished.
+	 * Switches to the specified scene. This scene will not be removed until it self has decided that it has finished.
 	 * @param scene the scene to switch to.
 	 * @see #switchTo(Class) for switching to a scene that already exists.
 	 * @see #switchTo(Scene, LoadingScene) for forcing another loading scene
@@ -38,12 +36,11 @@ public class SceneSwitcher {
 	}
 
 	/**
-	 * Switches to the specified scene. This scene will not be removed until
-	 * it self has decided that it has finished.
+	 * Switches to the specified scene. This scene will not be removed until it self has decided that it has finished.
 	 * @param scene the scene to switch to.
-	 * @param loadingScene this scene will override any other loading scene, i.e.
-	 * while the scene is loading the loading scene will be displayed in its place.
-	 * If loadingScene is null, it works exactly as {@link #switchTo(Scene)}.
+	 * @param loadingScene this scene will override any other loading scene, i.e. while the scene is loading the loading
+	 *            scene will be displayed in its place. If loadingScene is null, it works exactly as
+	 *            {@link #switchTo(Scene)}.
 	 * @see #switchTo(Scene)
 	 * @see #switchTo(Class) for switching to a scene that already exists.
 	 */
@@ -55,11 +52,11 @@ public class SceneSwitcher {
 	}
 
 	/**
-	 * Tries to switch to a scene that already exists. If a scene of the specified
-	 * type exist it will move that scene to the top of the stack.
+	 * Tries to switch to a scene that already exists. If a scene of the specified type exist it will move that scene to
+	 * the top of the stack.
 	 * @param sceneType the type of scene to switch to
-	 * @return true if found the scene of the specified type and switched to it,
-	 * false if no scene of the specified type was found.
+	 * @return true if found the scene of the specified type and switched to it, false if no scene of the specified type
+	 *         was found.
 	 * @see #switchTo(Scene, LoadingScene)
 	 * @see #switchTo(Scene)
 	 * @see #returnTo(Class)
@@ -97,11 +94,9 @@ public class SceneSwitcher {
 	}
 
 	/**
-	 * Tries to return to a scene that already exists. Will pop all scenes that
-	 * are above the specified scene type.
+	 * Tries to return to a scene that already exists. Will pop all scenes that are above the specified scene type.
 	 * @param sceneType the type of scene to return to
-	 * @return true if the scene was found and was returned to, false if no scene of
-	 * this type was found.
+	 * @return true if the scene was found and was returned to, false if no scene of this type was found.
 	 * @see #switchTo(Class)
 	 * @see #switchTo(Scene)
 	 * @see #switchTo(Scene, LoadingScene)
@@ -195,8 +190,7 @@ public class SceneSwitcher {
 
 	/**
 	 * Gets the Bullet destroyer for the scene at the top of the stack.
-	 * @return bullet destroy, null if the scene doesn't have a bullet destroyer or if
-	 * no scenes are on the stack.
+	 * @return bullet destroy, null if the scene doesn't have a bullet destroyer or if no scenes are on the stack.
 	 */
 	public static BulletDestroyer getBulletDestroyer() {
 		if (mScenes.isEmpty()) {
@@ -207,8 +201,8 @@ public class SceneSwitcher {
 	}
 
 	/**
-	 * @param skipLoadingScenes Set to true to return the scene to be activated after a loading
-	 * scene is done (if one is active)
+	 * @param skipLoadingScenes Set to true to return the scene to be activated after a loading scene is done (if one is
+	 *            active)
 	 * @return current active scene
 	 */
 	public static Scene getActiveScene(boolean skipLoadingScenes) {
@@ -238,8 +232,7 @@ public class SceneSwitcher {
 	}
 
 	/**
-	 * Return screen width in world coordinates, but only if the current scene
-	 * is a world scene.
+	 * Return screen width in world coordinates, but only if the current scene is a world scene.
 	 * @return screen width in world coordinates, if scene is not a world it return 0.
 	 */
 	public static float getWorldWidth() {
@@ -251,8 +244,7 @@ public class SceneSwitcher {
 	}
 
 	/**
-	 * Return screen height in world coordinates, but only if the current scene is
-	 * a world scene.
+	 * Return screen height in world coordinates, but only if the current scene is a world scene.
 	 * @return screen height in world coordinates, if scene is not a world it return 0.
 	 */
 	public static float getWorldHeight() {
@@ -264,9 +256,8 @@ public class SceneSwitcher {
 	}
 
 	/**
-	 * @return 0,0 of screen in world coordinates, null if current scene isn't a world
-	 * scene. Remember to free the returned vector with
-	 * Pools.vector2.free(returnedVector);
+	 * @return 0,0 of screen in world coordinates, null if current scene isn't a world scene. Remember to free the
+	 *         returned vector with Pools.vector2.free(returnedVector);
 	 */
 	public static Vector2 getWorldMinCoordinates() {
 		if (mScenes.isEmpty()) {
@@ -277,9 +268,8 @@ public class SceneSwitcher {
 	}
 
 	/**
-	 * @return screenWidth,screenHeight in world coordinates, null if current scene
-	 * isn't a world scene. Remember to free the returned vector with
-	 * Pools.vector2.free(returnedVector);
+	 * @return screenWidth,screenHeight in world coordinates, null if current scene isn't a world scene. Remember to
+	 *         free the returned vector with Pools.vector2.free(returnedVector);
 	 */
 	public static Vector2 getWorldMaxCoordinates() {
 		if (mScenes.isEmpty()) {
@@ -290,8 +280,8 @@ public class SceneSwitcher {
 	}
 
 	/**
-	 * @return world:screen ratio, i.e. how many worlds it goes to fill the screen,
-	 * or screen / world. 0 if the scene isn't a world scene.
+	 * @return world:screen ratio, i.e. how many worlds it goes to fill the screen, or screen / world. 0 if the scene
+	 *         isn't a world scene.
 	 */
 	public static float getWorldScreenRatio() {
 		if (mScenes.isEmpty()) {
@@ -307,8 +297,7 @@ public class SceneSwitcher {
 	}
 
 	/**
-	 * @return invoker of the current scene, null if the scene doesn't have an invoker or if
-	 * no scene exists
+	 * @return invoker of the current scene, null if the scene doesn't have an invoker or if no scene exists
 	 */
 	public static Invoker getInvoker() {
 		if (mScenes.isEmpty()) {
@@ -319,8 +308,8 @@ public class SceneSwitcher {
 	}
 
 	/**
-	 * @return picking fixture for current editor scene, null if the scene doesn't have
-	 * a picking fixture definition or no scene exists
+	 * @return picking fixture for current editor scene, null if the scene doesn't have a picking fixture definition or
+	 *         no scene exists
 	 */
 	public static FixtureDef getPickingFixtureDef() {
 		if (mScenes.isEmpty()) {
@@ -331,8 +320,7 @@ public class SceneSwitcher {
 	}
 
 	/**
-	 * @return picking vertices for editor scenes, null if the scene doesn't have
-	 * picking vertices or no scene exists.
+	 * @return picking vertices for editor scenes, null if the scene doesn't have picking vertices or no scene exists.
 	 */
 	public static ArrayList<Vector2> getPickingVertices() {
 		if (mScenes.isEmpty()) {

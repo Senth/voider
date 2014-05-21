@@ -3,6 +3,8 @@ package com.spiddekauga.voider.menu;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
+import java.util.Observable;
+import java.util.Observer;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -18,7 +20,6 @@ import com.spiddekauga.voider.game.LevelDef;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.method.IMethodEntity;
 import com.spiddekauga.voider.network.entities.method.LogoutMethodResponse;
-import com.spiddekauga.voider.network.entities.method.SyncDownloadMethodResponse;
 import com.spiddekauga.voider.repo.ICallerResponseListener;
 import com.spiddekauga.voider.repo.ResourceLocalRepo;
 import com.spiddekauga.voider.repo.UserLocalRepo;
@@ -32,13 +33,14 @@ import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.utils.Pools;
 import com.spiddekauga.voider.utils.Synchronizer;
+import com.spiddekauga.voider.utils.Synchronizer.SyncEvents;
 import com.spiddekauga.voider.utils.User;
 
 /**
  * Main menu of the scene
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public class MainMenu extends Scene implements ICallerResponseListener {
+public class MainMenu extends Scene implements ICallerResponseListener, Observer {
 	/**
 	 * Default constructor for main menu
 	 */
@@ -60,6 +62,35 @@ public class MainMenu extends Scene implements ICallerResponseListener {
 	protected void unloadResources() {
 		super.unloadResources();
 		ResourceCacheFacade.unload(InternalNames.UI_GENERAL);
+	}
+
+	@Override
+	public void update(Observable observable, Object arg) {
+		if (arg instanceof SyncEvents) {
+			switch ((SyncEvents) arg) {
+			case COMMUNITY_DOWNLOAD_SUCCESS:
+			case USER_RESOURCES_DOWNLOAD_SUCCESS:
+				ResourceCacheFacade.loadAllOf(this, ExternalTypes.LEVEL_DEF, false);
+				ResourceCacheFacade.finishLoading();
+				break;
+
+			default:
+				break;
+
+			}
+		}
+	}
+
+	@Override
+	protected void onInit() {
+		super.onInit();
+		mSynchronizer.addObserver(this);
+	}
+
+	@Override
+	protected void onDispose() {
+		super.onDispose();
+		mSynchronizer.deleteObserver(this);
 	}
 
 	@Override
@@ -91,7 +122,7 @@ public class MainMenu extends Scene implements ICallerResponseListener {
 			// Synchronize
 			if (mUser.isOnline()) {
 				mGui.showSuccessMessage(mUser.getUsername() + " is now online!");
-				Synchronizer.getInstance().synchronizeAll(this);
+				Synchronizer.getInstance().synchronizeAll();
 			} else {
 				mGui.showHighlightMessage(mUser.getUsername() + " is now offline!");
 			}
@@ -128,7 +159,7 @@ public class MainMenu extends Scene implements ICallerResponseListener {
 			ResourceLocalRepo.setSyncDownloadDate(new Date(0));
 			ResourceLocalRepo.setSyncUserResourceDate(new Date(0));
 		} else if (Config.Debug.isBuildOrBelow(Builds.NIGHTLY) && keycode == Input.Keys.HOME) {
-			Synchronizer.getInstance().synchronizeAll(this);
+			mSynchronizer.synchronizeAll();
 		}
 		return false;
 	}
@@ -279,25 +310,28 @@ public class MainMenu extends Scene implements ICallerResponseListener {
 	public void handleWebResponse(IMethodEntity method, IEntity response) {
 		if (response instanceof LogoutMethodResponse) {
 			clearCurrentUser();
-		} else if (response instanceof SyncDownloadMethodResponse) {
-			handleSyncDownloadResponse((SyncDownloadMethodResponse) response);
 		}
+		// else if (response instanceof SyncDownloadMethodResponse) {
+		// handleSyncDownloadResponse((SyncDownloadMethodResponse) response);
+		// }
 	}
 
-	/**
-	 * Handle sync download response
-	 * @param response web response
-	 */
-	private void handleSyncDownloadResponse(SyncDownloadMethodResponse response) {
-		if (response.isSuccessful()) {
-			if (!response.resources.isEmpty()) {
-				ResourceCacheFacade.loadAllOf(this, ExternalTypes.LEVEL_DEF, false);
-			}
-		}
-	}
+	// /**
+	// * Handle sync download response
+	// * @param response web response
+	// */
+	// private void handleSyncDownloadResponse(SyncDownloadMethodResponse response) {
+	// if (response.isSuccessful()) {
+	// if (!response.resources.isEmpty()) {
+	// ResourceCacheFacade.loadAllOf(this, ExternalTypes.LEVEL_DEF, false);
+	// }
+	// }
+	// }
 
 	/** Global user */
 	private static final User mUser = User.getGlobalUser();
+	/** Synchronizer */
+	private static Synchronizer mSynchronizer = Synchronizer.getInstance();
 	/** First time we activated the scene */
 	private boolean mFirstTimeActivation = true;
 	/** GUI stack */

@@ -1,6 +1,7 @@
 package com.spiddekauga.voider.editor;
 
 import java.lang.reflect.Field;
+import java.util.Observable;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
@@ -37,6 +38,7 @@ import com.spiddekauga.voider.resources.ResourceItem;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.utils.Pools;
+import com.spiddekauga.voider.utils.Synchronizer.SyncEvents;
 
 /**
  * Editor for creating and editing enemies
@@ -141,7 +143,8 @@ public class EnemyEditor extends ActorEditor {
 	public boolean selectBulletDef(UUID bulletId) {
 		try {
 			if (bulletId != null) {
-				// Load it because it is added as a dependency we would try to unload it we would have
+				// Load it because it is added as a dependency we would try to unload it
+				// we would have
 				// one reference too low.
 				if (ResourceCacheFacade.isLoaded(mDef.getId())) {
 					ResourceCacheFacade.load(this, bulletId, true);
@@ -165,7 +168,8 @@ public class EnemyEditor extends ActorEditor {
 	}
 
 	/**
-	 * @return selected bullet definition, null if none are selected, or if no weapon is available
+	 * @return selected bullet definition, null if none are selected, or if no weapon is
+	 *         available
 	 */
 	public BulletActorDef getSelectedBulletDef() {
 		BulletActorDef selectedBulletDef = null;
@@ -303,6 +307,22 @@ public class EnemyEditor extends ActorEditor {
 	}
 
 	@Override
+	public void update(Observable observable, Object arg) {
+		if (arg instanceof SyncEvents) {
+			switch ((SyncEvents) arg) {
+			case USER_RESOURCES_DOWNLOAD_SUCCESS:
+				ResourceCacheFacade.loadAllOf(this, ExternalTypes.ENEMY_DEF, true);
+				ResourceCacheFacade.loadAllOf(this, ExternalTypes.BULLET_DEF, true);
+				ResourceCacheFacade.finishLoading();
+				break;
+
+			default:
+				break;
+			}
+		}
+	}
+
+	@Override
 	protected void loadResources() {
 		super.loadResources();
 		ResourceCacheFacade.loadAllOf(this, ExternalTypes.ENEMY_DEF, true);
@@ -326,7 +346,8 @@ public class EnemyEditor extends ActorEditor {
 	}
 
 	/**
-	 * Resets the player if necessary. This happens if the player gets stuck behind something.
+	 * Resets the player if necessary. This happens if the player gets stuck behind
+	 * something.
 	 */
 	private void checkAndResetPlayerPosition() {
 		// Skip if moving player
@@ -419,7 +440,7 @@ public class EnemyEditor extends ActorEditor {
 	protected void saveToFile() {
 		int oldRevision = mDef.getRevision();
 
-		mResourceRepo.save(this, mDef);
+		mResourceRepo.save(mDef);
 		showSyncMessage();
 
 		// Saved first time? Then load it and use the loaded resource
@@ -633,7 +654,8 @@ public class EnemyEditor extends ActorEditor {
 	}
 
 	/**
-	 * Sets if the enemy shall move randomly using the random spread set through #setRandomSpread(float).
+	 * Sets if the enemy shall move randomly using the random spread set through
+	 * #setRandomSpread(float).
 	 * @param moveRandomly true if the enemy shall move randomly.
 	 */
 	void setMoveRandomly(boolean moveRandomly) {
@@ -657,7 +679,8 @@ public class EnemyEditor extends ActorEditor {
 	}
 
 	/**
-	 * Sets the minimum time that must have passed until the enemy will decide on another direction.
+	 * Sets the minimum time that must have passed until the enemy will decide on another
+	 * direction.
 	 * @param minTime how many degrees it will can move
 	 * @see #setMoveRandomly(boolean) to activate/deactivate the random movement
 	 */
@@ -681,7 +704,8 @@ public class EnemyEditor extends ActorEditor {
 	}
 
 	/**
-	 * Sets the maximum time that must have passed until the enemy will decide on another direction.
+	 * Sets the maximum time that must have passed until the enemy will decide on another
+	 * direction.
 	 * @param maxTime how many degrees it will can move
 	 * @see #setMoveRandomly(boolean) to activate/deactivate the random movement
 	 */
@@ -792,8 +816,9 @@ public class EnemyEditor extends ActorEditor {
 	}
 
 	/**
-	 * Sets the minimum weapon cooldown. If this is equal to the max value set through #setCooldownMax(float) it will
-	 * always have the same cooldown; if not it will get a random cooldown between min and max time.
+	 * Sets the minimum weapon cooldown. If this is equal to the max value set through
+	 * #setCooldownMax(float) it will always have the same cooldown; if not it will get a
+	 * random cooldown between min and max time.
 	 * @param minCooldown minimum cooldown.
 	 */
 	void setCooldownMin(float minCooldown) {
@@ -816,8 +841,9 @@ public class EnemyEditor extends ActorEditor {
 	}
 
 	/**
-	 * Sets the maximum weapon cooldown. If this is equal to the min value set through #setCooldownMin(float) it will
-	 * always have the same cooldown; if not it will get a random cooldown between min and max time.
+	 * Sets the maximum weapon cooldown. If this is equal to the min value set through
+	 * #setCooldownMin(float) it will always have the same cooldown; if not it will get a
+	 * random cooldown between min and max time.
 	 * @param maxCooldown maximum cooldown.
 	 */
 	void setCooldownMax(float maxCooldown) {
@@ -1067,7 +1093,8 @@ public class EnemyEditor extends ActorEditor {
 			nodes[i] = Pools.vector2.obtain();
 		}
 		// X-area: From middle of screen to 1/6 of the screen width
-		// Y-area: Height of each path should be 1/5. Offset it with 1/20 so it doesn't touch the borders
+		// Y-area: Height of each path should be 1/5. Offset it with 1/20 so it doesn't
+		// touch the borders
 		float spaceBetween = Gdx.graphics.getHeight() * 0.1f;
 		float height = Gdx.graphics.getHeight() * 0.2f;
 		float heightOffset = height + spaceBetween;

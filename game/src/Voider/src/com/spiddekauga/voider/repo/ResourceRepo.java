@@ -34,6 +34,7 @@ import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourceRevision;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.utils.Pools;
+import com.spiddekauga.voider.utils.Synchronizer;
 import com.spiddekauga.voider.utils.User;
 
 /**
@@ -69,9 +70,18 @@ public class ResourceRepo implements ICallerResponseListener {
 	}
 
 	/**
-	 * Save the specified resources. If the resource contains revisions it will try to upload it to the server if the
-	 * user is currently online.
-	 * @param responseListener listens to the web response
+	 * Save the specified resources. If the resource contains revisions it will try to
+	 * upload it to the server if the user is currently online.
+	 * @param resources all the resource to save.
+	 */
+	public void save(IResource... resources) {
+		save(null, resources);
+	}
+
+	/**
+	 * Save the specified resources. If the resource contains revisions it will try to
+	 * upload it to the server if the user is currently online.
+	 * @param responseListener listens to the sync web response, may be null
 	 * @param resources all the resource to save.
 	 */
 	public void save(ICallerResponseListener responseListener, IResource... resources) {
@@ -88,7 +98,13 @@ public class ResourceRepo implements ICallerResponseListener {
 
 		if (upload) {
 			if (User.getGlobalUser().isOnline()) {
-				syncUserResources(responseListener);
+				// Don't sync via the synchronizer as a wait window will appear, instead
+				// just add the synchronizer as a listener
+				if (responseListener != null) {
+					syncUserResources(mSynchronizer, responseListener);
+				} else {
+					syncUserResources(mSynchronizer);
+				}
 			}
 		}
 
@@ -194,7 +210,8 @@ public class ResourceRepo implements ICallerResponseListener {
 			}
 		}
 
-		// Download resources, but remove local first if there exists any revision of those.
+		// Download resources, but remove local first if there exists any revision of
+		// those.
 		// I.e. the server's sync was replaced, thus the local should also be
 		response.downloadStatus = true;
 		for (Entry<UUID, ArrayList<ResourceBlobEntity>> entry : response.blobsToDownload.entrySet()) {
@@ -364,6 +381,8 @@ public class ResourceRepo implements ICallerResponseListener {
 
 	/** Instance of this class */
 	private static ResourceRepo mInstance = null;
+	/** Synchronizer */
+	private Synchronizer mSynchronizer = Synchronizer.getInstance();
 	/** ResourceWebRepo */
 	protected ResourceWebRepo mWebRepo = ResourceWebRepo.getInstance();
 }

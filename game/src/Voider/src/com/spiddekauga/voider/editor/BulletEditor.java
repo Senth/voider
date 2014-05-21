@@ -1,5 +1,7 @@
 package com.spiddekauga.voider.editor;
 
+import java.util.Observable;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
@@ -20,6 +22,7 @@ import com.spiddekauga.voider.resources.ResourceItem;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.utils.Pools;
+import com.spiddekauga.voider.utils.Synchronizer.SyncEvents;
 
 /**
  * Creates bullets for the enemies and player to use.
@@ -128,6 +131,21 @@ public class BulletEditor extends ActorEditor {
 			mBulletDestroyer.render(mShapeRenderer);
 
 			mShapeRenderer.pop();
+		}
+	}
+
+	@Override
+	public void update(Observable observable, Object arg) {
+		if (arg instanceof SyncEvents) {
+			switch ((SyncEvents) arg) {
+			case USER_RESOURCES_DOWNLOAD_SUCCESS:
+				ResourceCacheFacade.loadAllOf(this, ExternalTypes.BULLET_DEF, true);
+				ResourceCacheFacade.finishLoading();
+				break;
+
+			default:
+				break;
+			}
 		}
 	}
 

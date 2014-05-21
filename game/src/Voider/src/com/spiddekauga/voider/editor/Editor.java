@@ -2,6 +2,7 @@ package com.spiddekauga.voider.editor;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Observer;
 
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
@@ -23,7 +24,6 @@ import com.spiddekauga.voider.game.actors.ActorDef;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.method.IMethodEntity;
 import com.spiddekauga.voider.network.entities.method.PublishMethodResponse;
-import com.spiddekauga.voider.network.entities.method.SyncUserResourcesMethodResponse;
 import com.spiddekauga.voider.repo.ICallerResponseListener;
 import com.spiddekauga.voider.repo.ResourceRepo;
 import com.spiddekauga.voider.resources.InternalNames;
@@ -41,7 +41,7 @@ import com.spiddekauga.voider.utils.User;
  * Common class for all editors
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public abstract class Editor extends WorldScene implements IEditor, ICallerResponseListener, IOutstreamProgressListener {
+public abstract class Editor extends WorldScene implements IEditor, ICallerResponseListener, IOutstreamProgressListener, Observer {
 
 	/**
 	 * @param gui GUI to be used with the editor
@@ -84,6 +84,16 @@ public abstract class Editor extends WorldScene implements IEditor, ICallerRespo
 		ResourceCacheFacade.unload(InternalNames.UI_EDITOR);
 		ResourceCacheFacade.unload(InternalNames.UI_GENERAL);
 		ResourceCacheFacade.unload(InternalNames.SHADER_DEFAULT);
+	}
+
+	@Override
+	protected void onInit() {
+		mSynchronizer.addObserver(this);
+	}
+
+	@Override
+	protected void onDispose() {
+		mSynchronizer.deleteObserver(this);
 	}
 
 	/**
@@ -341,15 +351,11 @@ public abstract class Editor extends WorldScene implements IEditor, ICallerRespo
 				mGui.showErrorMessage("Publish failed!");
 			}
 		}
-
-		// Sync revisions
-		else if (response instanceof SyncUserResourcesMethodResponse) {
-			Synchronizer.getInstance().handleWebResponse(method, response);
-		}
 	}
 
 	/**
-	 * Creates a texture out of the specified actor definition and sets it for the actor definition.
+	 * Creates a texture out of the specified actor definition and sets it for the actor
+	 * definition.
 	 */
 	private void createActorDefTexture() {
 		float width = mSavingActorDef.getWidth();
@@ -446,8 +452,8 @@ public abstract class Editor extends WorldScene implements IEditor, ICallerRespo
 	}
 
 	/**
-	 * Set the actor as saving. This will create an image of the actor. After the resource is saved the command will be
-	 * executed
+	 * Set the actor as saving. This will create an image of the actor. After the resource
+	 * is saved the command will be executed
 	 * @param actorDef the actor definition to save
 	 * @param actor a new empty actor to use for creating a screen shot
 	 * @param command the command to be executed after the resource has been saved
@@ -463,7 +469,8 @@ public abstract class Editor extends WorldScene implements IEditor, ICallerRespo
 	}
 
 	/**
-	 * @return true if the editor is currently saving an actor. I.e. creating a texture file for it.
+	 * @return true if the editor is currently saving an actor. I.e. creating a texture
+	 *         file for it.
 	 */
 	public boolean isSaving() {
 		return mSaving;
@@ -486,7 +493,8 @@ public abstract class Editor extends WorldScene implements IEditor, ICallerRespo
 
 	/**
 	 * Make the grid render above all resources
-	 * @param above set to true to render the grid above all resources, false to render below
+	 * @param above set to true to render the grid above all resources, false to render
+	 *        below
 	 */
 	void setGridRenderAboveResources(boolean above) {
 		mGridRenderAboveResources = above;
@@ -510,7 +518,7 @@ public abstract class Editor extends WorldScene implements IEditor, ICallerRespo
 	protected Invoker mInvoker = new Invoker();
 	/** Is the resource currently saved? */
 	private boolean mSaved = false;
-	/** Is the resource currently saving, this generally means it takes a screenshot of the image */
+	/** Is the resource currently saving, this means it takes a screenshot of the image */
 	private boolean mSaving = false;
 	/** Saving actor definition */
 	private ActorDef mSavingActorDef = null;
@@ -527,6 +535,8 @@ public abstract class Editor extends WorldScene implements IEditor, ICallerRespo
 	/** If grid shall be rendered in front of the resources */
 	private boolean mGridRenderAboveResources = false;
 
+	/** Synchronizer */
+	protected static Synchronizer mSynchronizer = Synchronizer.getInstance();
 	/** Transparent color */
 	private static final int COLOR_TRANSPARENT = 0x00000000;
 	/** Black color */
