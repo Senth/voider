@@ -94,6 +94,13 @@ public class User extends Observable {
 	}
 
 	/**
+	 * Make the user offline
+	 */
+	public void makeOffline() {
+		mOnline = false;
+	}
+
+	/**
 	 * @return true if the user is logged in
 	 */
 	public boolean isLoggedIn() {

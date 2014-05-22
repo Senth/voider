@@ -132,6 +132,7 @@ public class Synchronizer extends Observable implements IMessageListener, ICalle
 
 		if (!bugsToSend.isEmpty()) {
 			webRepo.sendBugReport(bugsToSend, responseListeners);
+			SceneSwitcher.showWaitWindow("Uploading saved bug reports");
 		}
 		// Hide message window if it has been shown
 		else if (mSyncQueue.isEmpty()) {

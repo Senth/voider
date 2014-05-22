@@ -165,10 +165,10 @@ public class LoginScene extends Scene implements ICallerResponseListener {
 	void handleRegisterResponse(RegisterUserMethodResponse response) {
 		switch (response.status) {
 		case SUCCESS:
-			setOutcome(Outcomes.NOT_APPLICAPLE);
 			mUser.login(mLoggingInUser.getUsername(), response.userKey, true);
 			UserLocalRepo.setLastUser(mLoggingInUser.getUsername(), response.privateKey, response.userKey);
 			UserLocalRepo.setAsRegistered();
+			setOutcome(Outcomes.NOT_APPLICAPLE);
 
 			break;
 

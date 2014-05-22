@@ -15,7 +15,6 @@ import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
 
 /**
  * Various utilities for handling blobs
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class BlobUtils {
@@ -33,7 +32,7 @@ public class BlobUtils {
 				blobKeys.put(UUID.fromString(entry.getKey()), entry.getValue().get(0));
 			}
 		} catch (IllegalStateException e) {
-			mLogger.warning("No blob uploads found");
+			mLogger.fine("No blob uploads found");
 			return null;
 		}
 
@@ -41,7 +40,8 @@ public class BlobUtils {
 	}
 
 	/**
-	 * Get all uploaded blob keys from a request. The resource uploaded are resource revisions
+	 * Get all uploaded blob keys from a request. The resource uploaded are resource
+	 * revisions
 	 * @param request the request send to the servlet
 	 * @return Map with all blob keys mapped to a revision that is mapped to a UUID.
 	 */
@@ -77,7 +77,7 @@ public class BlobUtils {
 				}
 			}
 		} catch (IllegalStateException e) {
-			mLogger.warning("No blob uploads found");
+			mLogger.fine("No blob uploads found");
 			return null;
 		}
 

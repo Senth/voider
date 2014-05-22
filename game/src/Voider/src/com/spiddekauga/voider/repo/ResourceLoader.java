@@ -29,6 +29,7 @@ import com.spiddekauga.voider.game.actors.PickupActorDef;
 import com.spiddekauga.voider.game.actors.PlayerActorDef;
 import com.spiddekauga.voider.game.actors.StaticTerrainActorDef;
 import com.spiddekauga.voider.network.entities.RevisionEntity;
+import com.spiddekauga.voider.resources.BugReportDef;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.KryoLoaderAsync;
 import com.spiddekauga.voider.resources.KryoLoaderSync;
@@ -56,17 +57,17 @@ class ResourceLoader {
 		mAssetManager.getLogger().setLevel(Logger.DEBUG);
 
 		// External
-		mAssetManager.setLoader(BulletActorDef.class, new KryoLoaderAsync<BulletActorDef>(new ExternalFileHandleResolver(), BulletActorDef.class));
-		mAssetManager.setLoader(EnemyActorDef.class, new KryoLoaderAsync<EnemyActorDef>(new ExternalFileHandleResolver(), EnemyActorDef.class));
-		mAssetManager.setLoader(PickupActorDef.class, new KryoLoaderAsync<PickupActorDef>(new ExternalFileHandleResolver(), PickupActorDef.class));
-		mAssetManager.setLoader(PlayerActorDef.class, new KryoLoaderAsync<PlayerActorDef>(new ExternalFileHandleResolver(), PlayerActorDef.class));
-		mAssetManager.setLoader(StaticTerrainActorDef.class, new KryoLoaderAsync<StaticTerrainActorDef>(new ExternalFileHandleResolver(),
-				StaticTerrainActorDef.class));
-		mAssetManager.setLoader(LevelDef.class, new KryoLoaderAsync<LevelDef>(new ExternalFileHandleResolver(), LevelDef.class));
-		mAssetManager.setLoader(Level.class, new KryoLoaderAsync<Level>(new ExternalFileHandleResolver(), Level.class));
-		mAssetManager.setLoader(GameSave.class, new KryoLoaderSync<GameSave>(new ExternalFileHandleResolver(), GameSave.class));
-		mAssetManager.setLoader(GameSaveDef.class, new KryoLoaderAsync<GameSaveDef>(new ExternalFileHandleResolver(), GameSaveDef.class));
-		mAssetManager.setLoader(PlayerStats.class, new KryoLoaderAsync<PlayerStats>(new ExternalFileHandleResolver(), PlayerStats.class));
+		mAssetManager.setLoader(BulletActorDef.class, new KryoLoaderAsync<>(new ExternalFileHandleResolver(), BulletActorDef.class));
+		mAssetManager.setLoader(EnemyActorDef.class, new KryoLoaderAsync<>(new ExternalFileHandleResolver(), EnemyActorDef.class));
+		mAssetManager.setLoader(PickupActorDef.class, new KryoLoaderAsync<>(new ExternalFileHandleResolver(), PickupActorDef.class));
+		mAssetManager.setLoader(PlayerActorDef.class, new KryoLoaderAsync<>(new ExternalFileHandleResolver(), PlayerActorDef.class));
+		mAssetManager.setLoader(StaticTerrainActorDef.class, new KryoLoaderAsync<>(new ExternalFileHandleResolver(), StaticTerrainActorDef.class));
+		mAssetManager.setLoader(LevelDef.class, new KryoLoaderAsync<>(new ExternalFileHandleResolver(), LevelDef.class));
+		mAssetManager.setLoader(Level.class, new KryoLoaderAsync<>(new ExternalFileHandleResolver(), Level.class));
+		mAssetManager.setLoader(GameSave.class, new KryoLoaderSync<>(new ExternalFileHandleResolver(), GameSave.class));
+		mAssetManager.setLoader(GameSaveDef.class, new KryoLoaderAsync<>(new ExternalFileHandleResolver(), GameSaveDef.class));
+		mAssetManager.setLoader(PlayerStats.class, new KryoLoaderAsync<>(new ExternalFileHandleResolver(), PlayerStats.class));
+		mAssetManager.setLoader(BugReportDef.class, new KryoLoaderAsync<>(new ExternalFileHandleResolver(), BugReportDef.class));
 
 		// Internal
 		if (Config.File.USE_EXTERNAL_RESOURCES) {

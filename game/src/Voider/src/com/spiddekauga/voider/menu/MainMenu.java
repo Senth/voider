@@ -148,6 +148,8 @@ public class MainMenu extends Scene implements ICallerResponseListener, Observer
 			mGui.showMessage(message);
 		} else if (Config.Debug.isBuildOrBelow(Builds.NIGHTLY) && keycode == Input.Keys.F10) {
 			SceneSwitcher.switchTo(new PrototypeScene());
+		} else if (Config.Debug.isBuildOrBelow(Builds.NIGHTLY) && keycode == Input.Keys.F11) {
+			User.getGlobalUser().makeOffline();
 		} else if (Config.Debug.isBuildOrBelow(Builds.NIGHTLY) && keycode == Input.Keys.F12) {
 			handleException(new RuntimeException());
 		} else if (Config.Debug.isBuildOrBelow(Builds.NIGHTLY) && KeyHelper.isDeletePressed(keycode) && KeyHelper.isCtrlPressed()) {
