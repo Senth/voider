@@ -81,6 +81,57 @@ class ResourceSqliteGateway extends SqliteGateway {
 	}
 
 	/**
+	 * Add the resource as removed to the database
+	 * @param uuid unique id of the resource
+	 */
+	void addAsRemoved(UUID uuid) {
+		try {
+			mDatabase.execSQL("INSERT INTO resource_removed VALUES ( '" + uuid + "' )");
+		} catch (SQLiteGdxException e) {
+			e.printStackTrace();
+			throw new GdxRuntimeException(e);
+		}
+	}
+
+	/**
+	 * Remove the resource from the removed resource table. I.e. a table that holds all
+	 * resources that have been removed
+	 * @param uuid unique id of the resource to remove
+	 */
+	void removeFromRemoved(UUID uuid) {
+		try {
+			mDatabase.execSQL("DELETE FROM resource_removed WHERE uuid='" + uuid + "';");
+		} catch (SQLiteGdxException e) {
+			e.printStackTrace();
+			throw new GdxRuntimeException(e);
+		}
+	}
+
+	/**
+	 * @return all resources from the removed resource table. I.e. the table that holds
+	 *         all resources that have been removed
+	 */
+	ArrayList<UUID> getRemovedResources() {
+		@SuppressWarnings("unchecked")
+		ArrayList<UUID> resources = Pools.arrayList.obtain();
+
+		try {
+			DatabaseCursor cursor = mDatabase.rawQuery("SELECT * FROM resource_removed;");
+
+			while (cursor.next()) {
+				String stringUuid = cursor.getString(0);
+				resources.add(UUID.fromString(stringUuid));
+			}
+			cursor.close();
+		} catch (SQLiteGdxException e) {
+			e.printStackTrace();
+			throw new GdxRuntimeException(e);
+		}
+
+		return resources;
+	}
+
+	/**
 	 * Removes all resources of the specified type (including all revisions)
 	 * @param typeIdentifier the resource type to remove
 	 */
@@ -89,7 +140,7 @@ class ResourceSqliteGateway extends SqliteGateway {
 			// Delete revisions first
 			DatabaseCursor cursor = mDatabase.rawQuery("SELECT uuid FROM resource WHERE type=" + typeIdentifier + ";");
 			while (cursor.next()) {
-				String uuid = cursor.getString(RESOURCE__UUID);
+				String uuid = cursor.getString(0);
 				mDatabase.execSQL("DELETE FROM resource_revision WHERE uuid='" + uuid + "';");
 			}
 
@@ -283,7 +334,8 @@ class ResourceSqliteGateway extends SqliteGateway {
 	}
 
 	/**
-	 * @return all user resource revisions that haven't been uploaded/synced to the server.
+	 * @return all user resource revisions that haven't been uploaded/synced to the
+	 *         server.
 	 */
 	HashMap<UUID, ResourceRevisionEntity> getUnsyncedUserResources() {
 		HashMap<UUID, ResourceRevisionEntity> resources = new HashMap<>();

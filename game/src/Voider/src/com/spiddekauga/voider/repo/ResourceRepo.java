@@ -112,11 +112,10 @@ public class ResourceRepo implements ICallerResponseListener {
 	 * @param resourceId the resource to remove
 	 */
 	public void remove(UUID resourceId) {
-		// Unload first
-		ResourceCacheFacade.unload(resourceId);
-
 		// Remove it from the database and physically
 		ResourceLocalRepo.remove(resourceId);
+
+		// TODO send sync ?
 	}
 
 	/**
@@ -218,6 +217,9 @@ public class ResourceRepo implements ICallerResponseListener {
 				}
 			}
 		}
+
+		// TODO delete resources that should be deleted
+
 
 		// Download resources, but remove local first if there exists any revision of
 		// those.

@@ -18,6 +18,7 @@ import com.spiddekauga.voider.repo.BugReportWebRepo;
 import com.spiddekauga.voider.repo.ExternalTypes;
 import com.spiddekauga.voider.repo.ICallerResponseListener;
 import com.spiddekauga.voider.repo.ResourceCacheFacade;
+import com.spiddekauga.voider.repo.ResourceLocalRepo;
 import com.spiddekauga.voider.repo.ResourceRepo;
 import com.spiddekauga.voider.resources.BugReportDef;
 import com.spiddekauga.voider.scene.SceneSwitcher;
@@ -215,7 +216,7 @@ public class Synchronizer extends Observable implements IMessageListener, ICalle
 			for (BugReportEntity bugReport : method.bugs) {
 				// Check if successful
 				if (!response.failedBugReports.contains(bugReport.id)) {
-					mResourceRepo.remove(bugReport.id);
+					ResourceLocalRepo.remove(bugReport.id);
 				}
 			}
 		}

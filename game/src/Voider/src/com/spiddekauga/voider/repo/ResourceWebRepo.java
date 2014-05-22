@@ -29,17 +29,17 @@ import com.spiddekauga.voider.network.entities.UploadTypes;
 import com.spiddekauga.voider.network.entities.method.BlobDownloadMethod;
 import com.spiddekauga.voider.network.entities.method.IMethodEntity;
 import com.spiddekauga.voider.network.entities.method.LevelGetAllMethod;
+import com.spiddekauga.voider.network.entities.method.LevelGetAllMethod.SortOrders;
 import com.spiddekauga.voider.network.entities.method.LevelGetAllMethodResponse;
 import com.spiddekauga.voider.network.entities.method.PublishMethod;
 import com.spiddekauga.voider.network.entities.method.PublishMethodResponse;
+import com.spiddekauga.voider.network.entities.method.PublishMethodResponse.Statuses;
 import com.spiddekauga.voider.network.entities.method.ResourceDownloadMethod;
 import com.spiddekauga.voider.network.entities.method.ResourceDownloadMethodResponse;
 import com.spiddekauga.voider.network.entities.method.SyncDownloadMethod;
 import com.spiddekauga.voider.network.entities.method.SyncDownloadMethodResponse;
 import com.spiddekauga.voider.network.entities.method.SyncUserResourcesMethod;
 import com.spiddekauga.voider.network.entities.method.SyncUserResourcesMethodResponse;
-import com.spiddekauga.voider.network.entities.method.LevelGetAllMethod.SortOrders;
-import com.spiddekauga.voider.network.entities.method.PublishMethodResponse.Statuses;
 import com.spiddekauga.voider.repo.WebGateway.FieldNameFileWrapper;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.IResource;
@@ -70,7 +70,8 @@ public class ResourceWebRepo extends WebRepo {
 	}
 
 	/**
-	 * Sync all downloaded levels. I.e. download all publish levels that have been downloaded on other devices
+	 * Sync all downloaded levels. I.e. download all publish levels that have been
+	 * downloaded on other devices
 	 * @param lastSync last synchronized date
 	 * @param responseListeners listens to the web response.
 	 */
@@ -84,7 +85,7 @@ public class ResourceWebRepo extends WebRepo {
 	/**
 	 * Sync all user resource revisions, both upload and download
 	 * @param uploadResources all resources that should be uploaded
-	 * @param lastSync laast synchronized date
+	 * @param lastSync last synchronized date
 	 * @param responseListeners listens to the web response
 	 */
 	void syncUserResources(HashMap<UUID, ResourceRevisionEntity> uploadResources, Date lastSync, ICallerResponseListener... responseListeners) {
@@ -603,7 +604,8 @@ public class ResourceWebRepo extends WebRepo {
 	 * Get cached levels
 	 * @param sort sort order to get cached levels from
 	 * @param tags all tags that are checked
-	 * @return all cached levels that match the above criteria, empty if no cache was found
+	 * @return all cached levels that match the above criteria, empty if no cache was
+	 *         found
 	 */
 	@SuppressWarnings("unchecked")
 	public synchronized ArrayList<LevelInfoEntity> getCachedLevels(SortOrders sort, ArrayList<Tags> tags) {
@@ -621,7 +623,8 @@ public class ResourceWebRepo extends WebRepo {
 	/**
 	 * Get cached levels
 	 * @param searchString the string to search for
-	 * @return all cached levels that match the above criteria, empty if no cache was found
+	 * @return all cached levels that match the above criteria, empty if no cache was
+	 *         found
 	 */
 	@SuppressWarnings("unchecked")
 	public synchronized ArrayList<LevelInfoEntity> getCachedLevels(String searchString) {

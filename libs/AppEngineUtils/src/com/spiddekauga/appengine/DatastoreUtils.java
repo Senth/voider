@@ -68,17 +68,61 @@ public class DatastoreUtils {
 	}
 
 	/**
-	 * Get all entities with the specified parent
+	 * Get all keys with the specified properties
+	 * @param searchIn what kind of entity (table) to search in
+	 * @param properties all properties to search for
+	 * @return an array list of all found entities with the specified parent
+	 */
+	public static ArrayList<Key> getKeys(String searchIn, PropertyWrapper... properties) {
+		return getKeys(searchIn, null, properties);
+	}
+
+	/**
+	 * Get all entities (with only keys) with the specified parent and properties
 	 * @param searchIn what kind of entity (table) to search in
 	 * @param parent search for all entities with this parent
-	 * @return a list of all found entities with the specified parent
+	 * @param properties all properties to search for
+	 * @return an array list of all found entities with the specified parent
 	 */
-	public static List<Entity> getEntities(String searchIn, Key parent) {
+	public static ArrayList<Key> getKeys(String searchIn, Key parent, PropertyWrapper... properties) {
+		// TODO parent is optional
 		Query query = new Query(searchIn, parent);
+
+		// TODO search for properties
+
 		PreparedQuery preparedQuery = mDatastore.prepare(query);
 
-		FetchOptions fetchOptions = FetchOptions.Builder.withDefaults();
-		return preparedQuery.asList(fetchOptions);
+		// TODO convert to keys
+
+		return null;
+	}
+
+	/**
+	 * Get all entities with the specified properties
+	 * @param searchIn what kind of entity (table) to search in
+	 * @param properties all properties to search for
+	 * @return an iterable of all found entities with the specified parent
+	 */
+	public static Iterable<Entity> getEntities(String searchIn, PropertyWrapper... properties) {
+		return getEntities(searchIn, null, properties);
+	}
+
+	/**
+	 * Get all entities with the specified parent and properties
+	 * @param searchIn what kind of entity (table) to search in
+	 * @param parent search for all entities with this parent
+	 * @param properties all properties to search for
+	 * @return an iterable of all found entities with the specified parent
+	 */
+	public static Iterable<Entity> getEntities(String searchIn, Key parent, PropertyWrapper... properties) {
+		// TODO parent is optional
+		Query query = new Query(searchIn, parent);
+
+		// TODO search for properties
+
+		PreparedQuery preparedQuery = mDatastore.prepare(query);
+
+		return preparedQuery.asIterable();
 	}
 
 	/**
@@ -95,7 +139,7 @@ public class DatastoreUtils {
 		FetchOptions fetchOptions = FetchOptions.Builder.withDefaults();
 
 		ArrayList<Key> keys = new ArrayList<>();
-		for (Entity entity : preparedQuery.asList(fetchOptions)) {
+		for (Entity entity : preparedQuery.asIterable(fetchOptions)) {
 			keys.add(entity.getKey());
 		}
 
@@ -106,11 +150,11 @@ public class DatastoreUtils {
 	 * Searches for an existing entity
 	 * @param searchIn what kind of entity to search in
 	 * @param parent the parent of the entity to find, set to null to skip
-	 * @param includes property name and values to search for
+	 * @param properties property name and values to search for
 	 * @return found entity, null if none or more than 1 was found
 	 */
-	public static Entity getSingleEntity(String searchIn, Key parent, PropertyWrapper... includes) {
-		return getSingleEntity(searchIn, parent, false, includes);
+	public static Entity getSingleEntity(String searchIn, Key parent, PropertyWrapper... properties) {
+		return getSingleEntity(searchIn, parent, false, properties);
 	}
 
 	/**
@@ -118,19 +162,19 @@ public class DatastoreUtils {
 	 * @param searchIn what kind of entity to search in
 	 * @param parent the parent of the entity to find, set to null to skip
 	 * @param onlyKeys will only retrieve keys for the found entity
-	 * @param includes property name and values to search for
+	 * @param properties property name and values to search for
 	 * @return found entity, null if none or more than 1 was found
 	 */
-	private static Entity getSingleEntity(String searchIn, Key parent, boolean onlyKeys, PropertyWrapper... includes) {
+	private static Entity getSingleEntity(String searchIn, Key parent, boolean onlyKeys, PropertyWrapper... properties) {
 		Query query = new Query(searchIn);
 
 		if (onlyKeys) {
 			query.setKeysOnly();
 		}
 
-		if (includes != null) {
+		if (properties != null) {
 			ArrayList<Filter> filters = new ArrayList<>();
-			for (PropertyWrapper property : includes) {
+			for (PropertyWrapper property : properties) {
 				Filter filter = null;
 				if (property.value instanceof UUID) {
 					filter = createUuidFilter(property.name, (UUID) property.value);
@@ -166,22 +210,22 @@ public class DatastoreUtils {
 	/**
 	 * Searches for an existing entity
 	 * @param searchIn what kind of entity to search in
-	 * @param includes property name and values to search for
+	 * @param properties property name and values to search for
 	 * @return found entity, null if none or more than 1 was found
 	 */
-	public static Entity getSingleEntity(String searchIn, PropertyWrapper... includes) {
-		return getSingleEntity(searchIn, null, includes);
+	public static Entity getSingleEntity(String searchIn, PropertyWrapper... properties) {
+		return getSingleEntity(searchIn, null, properties);
 	}
 
 	/**
 	 * Searches for an existing entity
 	 * @param searchIn what kind of entity to search in
 	 * @param parent the parent for the entity, set to null to skip using
-	 * @param includes the values to search for
+	 * @param properties the values to search for
 	 * @return found key for entity
 	 */
-	public static Key getSingleKey(String searchIn, Key parent, PropertyWrapper... includes) {
-		Entity foundEntity = getSingleEntity(searchIn, parent, true, includes);
+	public static Key getSingleKey(String searchIn, Key parent, PropertyWrapper... properties) {
+		Entity foundEntity = getSingleEntity(searchIn, parent, true, properties);
 		if (foundEntity != null) {
 			return foundEntity.getKey();
 		}
@@ -191,11 +235,11 @@ public class DatastoreUtils {
 	/**
 	 * Searches for an existing entity
 	 * @param searchIn what kind of entity to search in
-	 * @param includes the values to search for
+	 * @param properties the values to search for
 	 * @return found key for entity
 	 */
-	public static Key getSingleKey(String searchIn, PropertyWrapper... includes) {
-		return getSingleKey(searchIn, null, includes);
+	public static Key getSingleKey(String searchIn, PropertyWrapper... properties) {
+		return getSingleKey(searchIn, null, properties);
 	}
 
 	/**
@@ -286,7 +330,8 @@ public class DatastoreUtils {
 	 * Set property to an entity, but only if it's not null
 	 * @param entity the entity to set the property in
 	 * @param propertyName name of the property
-	 * @param value the object to set as the property value. If null this method does nothing.
+	 * @param value the object to set as the property value. If null this method does
+	 *        nothing.
 	 */
 	public static void setProperty(Entity entity, String propertyName, Object value) {
 		if (value != null) {
@@ -298,7 +343,8 @@ public class DatastoreUtils {
 	 * Set an unindex property to an entity, but only if it's not null
 	 * @param entity the entity to set the property in
 	 * @param propertyName name of the property
-	 * @param value the object to set as the property value. If null this method does nothing.
+	 * @param value the object to set as the property value. If null this method does
+	 *        nothing.
 	 */
 	public static void setUnindexedProperty(Entity entity, String propertyName, Object value) {
 		if (value != null) {

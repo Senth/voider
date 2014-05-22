@@ -133,14 +133,31 @@ public class ResourceLocalRepo {
 	}
 
 	/**
-	 * Removes a resource (including all revisions) from the database and physically
+	 * Removes a resource (including all revisions) from the database and physically.
+	 * Equivalent of calling remove(resourceId, false)
 	 * @param resourceId the unique id of the resource
 	 */
 	public static void remove(UUID resourceId) {
+		remove(resourceId, false);
+	}
+
+	/**
+	 * Removes a resource (including all revisions) from the database and physically
+	 * @param resourceId the unique id of the resource
+	 * @param addToRemovedDb set to true to add this resources to the removed DB
+	 */
+	public static void remove(UUID resourceId, boolean addToRemovedDb) {
+		// Unload first
+		ResourceCacheFacade.unload(resourceId);
+
 		mSqliteGateway.remove(resourceId);
 		mFileGateway.remove(resourceId);
 
 		removeRevisions(resourceId);
+
+		if (addToRemovedDb) {
+			mSqliteGateway.addAsRemoved(resourceId);
+		}
 	}
 
 	/**

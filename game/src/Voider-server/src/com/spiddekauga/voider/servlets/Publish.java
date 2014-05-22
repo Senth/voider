@@ -24,11 +24,11 @@ import com.spiddekauga.appengine.SearchUtils;
 import com.spiddekauga.voider.network.entities.BulletDefEntity;
 import com.spiddekauga.voider.network.entities.CampaignDefEntity;
 import com.spiddekauga.voider.network.entities.ChatMessage;
+import com.spiddekauga.voider.network.entities.ChatMessage.MessageTypes;
 import com.spiddekauga.voider.network.entities.DefEntity;
 import com.spiddekauga.voider.network.entities.EnemyDefEntity;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.LevelDefEntity;
-import com.spiddekauga.voider.network.entities.ChatMessage.MessageTypes;
 import com.spiddekauga.voider.network.entities.method.IMethodEntity;
 import com.spiddekauga.voider.network.entities.method.PublishMethod;
 import com.spiddekauga.voider.network.entities.method.PublishMethodResponse;
@@ -40,7 +40,6 @@ import com.spiddekauga.voider.server.util.VoiderServlet;
 
 /**
  * Tries to publish one or more definitions
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
@@ -105,8 +104,12 @@ public class Publish extends VoiderServlet {
 				success = addSearchDocuments();
 			}
 
+			// TODO remove all user resources
+			if (success) {
+
+			}
 			// FAILED - TODO remove all resources from published, dependencies, and search
-			if (!success) {
+			else {
 
 			}
 
@@ -171,8 +174,8 @@ public class Publish extends VoiderServlet {
 	}
 
 	/**
-	 * Tries to find the resource key, if it doesn't exist in the map it will
-	 * try to find it in the Datastore instead and insert it to datastoreKeys
+	 * Tries to find the resource key, if it doesn't exist in the map it will try to find
+	 * it in the Datastore instead and insert it to datastoreKeys
 	 * @param resourceId the resource to get the blob key from
 	 * @param resourceKeys all current known resource keys
 	 * @return Entity key for the resource, null if not found

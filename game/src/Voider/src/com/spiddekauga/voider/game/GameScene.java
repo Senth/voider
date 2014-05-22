@@ -280,10 +280,11 @@ public class GameScene extends WorldScene {
 		if (!mTesting) {
 			// Remove old saved game
 			if (mGameSave != null) {
-				ResourceLocalRepo.remove(mGameSave.getId());
-				ResourceLocalRepo.remove(mGameSaveDef.getId());
+				ResourceLocalRepo.remove(mGameSave.getId(), true);
+				ResourceLocalRepo.remove(mGameSaveDef.getId(), true);
 			}
 
+			// We quit -> Save the game state
 			if (getOutcome() == Outcomes.LEVEL_QUIT) {
 				GameSave gameSave = new GameSave(mLevel, mPlayerActor, mBulletDestroyer, getGameTime());
 				GameSaveDef gameSaveDef = new GameSaveDef(gameSave);

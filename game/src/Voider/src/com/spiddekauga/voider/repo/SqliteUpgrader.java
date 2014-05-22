@@ -98,10 +98,6 @@ class SqliteUpgrader {
 	private void fillTables() {
 		// !!! DON'T add table 'version' to this list
 
-		// new_user
-		mNotFoundTables.add("new_user");
-		mCreateTableQueries.put("new_user", "CREATE TABLE IF NOT EXISTS new_user (username TEXT, password TEXT, email TEXT);");
-
 		// revisions
 		mNotFoundTables.add("resource_revision");
 		mCreateTableQueries.put("resource_revision",
@@ -111,6 +107,10 @@ class SqliteUpgrader {
 		mNotFoundTables.add("resource");
 		mCreateTableQueries
 				.put("resource", "CREATE TABLE IF NOT EXISTS resource (uuid TEXT PRIMARY KEY, type INTEGER, published INTEGER DEFAULT 0);");
+
+		// Removed resources
+		mNotFoundTables.add("resource_removed");
+		mCreateTableQueries.put("resource_removed", "CREATE TABLE IF NOT EXISTS resource_removed (uuid TEXT PRIMARY KEY);");
 	}
 
 	/**
@@ -135,7 +135,7 @@ class SqliteUpgrader {
 	/** Create table queries for all tables */
 	private Map<String, String> mCreateTableQueries = new HashMap<String, String>();
 	/** DB version */
-	private static final int DB_VERSION = 2;
+	private static final int DB_VERSION = 3;
 	/** Create version table */
 	private static final String TABLE_VERSION_CREATE = "CREATE TABLE IF NOT EXISTS version (version INTEGER, table_name TEXT);";
 }

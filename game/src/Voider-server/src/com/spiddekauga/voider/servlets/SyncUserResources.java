@@ -63,8 +63,8 @@ public class SyncUserResources extends VoiderServlet {
 
 		if (methodEntity instanceof SyncUserResourcesMethod) {
 			checkForConflicts((SyncUserResourcesMethod) methodEntity);
-			syncToClient((SyncUserResourcesMethod) methodEntity);
-			syncToServer((SyncUserResourcesMethod) methodEntity);
+			syncNewToClient((SyncUserResourcesMethod) methodEntity);
+			syncNewToServer((SyncUserResourcesMethod) methodEntity);
 			mResponse.syncTime = mSyncDate;
 		}
 
@@ -104,10 +104,29 @@ public class SyncUserResources extends VoiderServlet {
 	}
 
 	/**
+	 * Delete the resources sent from the server
+	 * @param methodEntity parameters sent to the server
+	 */
+	private void syncDeletedToServer(SyncUserResourcesMethod methodEntity) {
+		// Find all revisions of the resources and delete them
+		for (UUID removeId : methodEntity.resourceToRemove) {
+			// TODO
+		}
+	}
+
+	/**
+	 * Send deleted resources to the client
+	 * @param methodEntity parameters sent to the server
+	 */
+	private void syncDeletedToClient(SyncUserResourcesMethod methodEntity) {
+
+	}
+
+	/**
 	 * Synchronize the upload
 	 * @param methodEntity parameters sent to the server
 	 */
-	private void syncToServer(SyncUserResourcesMethod methodEntity) {
+	private void syncNewToServer(SyncUserResourcesMethod methodEntity) {
 		Map<UUID, Map<Integer, BlobKey>> blobResources = getUploadedRevisionBlobs();
 
 		boolean uploadedSomething = false;
@@ -148,7 +167,7 @@ public class SyncUserResources extends VoiderServlet {
 	 * Add resources that should be downloaded
 	 * @param methodEntity parameters sent to the server
 	 */
-	private void syncToClient(SyncUserResourcesMethod methodEntity) {
+	private void syncNewToClient(SyncUserResourcesMethod methodEntity) {
 		// Get all resources that were uploaded after latest sync
 		Query query = new Query("user_resources", mUser.getKey());
 

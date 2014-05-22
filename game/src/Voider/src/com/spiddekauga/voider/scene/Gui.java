@@ -473,7 +473,9 @@ public abstract class Gui implements Disposable {
 	 * @see #showMessage(String, LabelStyle)
 	 */
 	public void showMessage(String message) {
-		mMessageShower.addMessage(message);
+		if (mMessageShower != null) {
+			mMessageShower.addMessage(message);
+		}
 	}
 
 	/**
@@ -483,7 +485,9 @@ public abstract class Gui implements Disposable {
 	 * @see #showMessage(String)
 	 */
 	public void showMessage(String message, LabelStyle style) {
-		mMessageShower.addMessage(message, style);
+		if (mMessageShower != null) {
+			mMessageShower.addMessage(message, style);
+		}
 	}
 
 	/**
@@ -491,7 +495,9 @@ public abstract class Gui implements Disposable {
 	 * @param message the message to display as highlighted
 	 */
 	public void showHighlightMessage(String message) {
-		mMessageShower.addMessage(message, (LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_HIGHLIGHT));
+		if (mMessageShower != null) {
+			mMessageShower.addMessage(message, (LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_HIGHLIGHT));
+		}
 	}
 
 	/**
@@ -499,7 +505,9 @@ public abstract class Gui implements Disposable {
 	 * @param message the message to display as an error
 	 */
 	public void showErrorMessage(String message) {
-		mMessageShower.addMessage(message, (LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_ERROR));
+		if (mMessageShower != null) {
+			mMessageShower.addMessage(message, (LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_ERROR));
+		}
 	}
 
 	/**
@@ -507,7 +515,9 @@ public abstract class Gui implements Disposable {
 	 * @param message the message to display as successful
 	 */
 	public void showSuccessMessage(String message) {
-		mMessageShower.addMessage(message, (LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_SUCCESS));
+		if (mMessageShower != null) {
+			mMessageShower.addMessage(message, (LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_SUCCESS));
+		}
 	}
 
 	/**

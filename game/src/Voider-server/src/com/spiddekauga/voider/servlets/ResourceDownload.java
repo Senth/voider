@@ -14,10 +14,10 @@ import com.google.appengine.api.datastore.Key;
 import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.appengine.DatastoreUtils.PropertyWrapper;
 import com.spiddekauga.voider.network.entities.ChatMessage;
+import com.spiddekauga.voider.network.entities.ChatMessage.MessageTypes;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.ResourceBlobEntity;
 import com.spiddekauga.voider.network.entities.UploadTypes;
-import com.spiddekauga.voider.network.entities.ChatMessage.MessageTypes;
 import com.spiddekauga.voider.network.entities.method.IMethodEntity;
 import com.spiddekauga.voider.network.entities.method.ResourceDownloadMethod;
 import com.spiddekauga.voider.network.entities.method.ResourceDownloadMethodResponse;
@@ -28,7 +28,6 @@ import com.spiddekauga.voider.server.util.VoiderServlet;
 
 /**
  * Downloads resources
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
@@ -82,8 +81,8 @@ public class ResourceDownload extends VoiderServlet {
 
 	/**
 	 * Get information about the specified resource and its dependencies
-	 * @param resourceId id of the resource to get information from and set
-	 * to the response
+	 * @param resourceId id of the resource to get information from and set to the
+	 *        response
 	 * @return true if successfully added information and dependencies
 	 */
 	private boolean setInformationAndDependenciesToResponse(UUID resourceId) {
@@ -97,8 +96,8 @@ public class ResourceDownload extends VoiderServlet {
 
 	/**
 	 * Get information about the specified resource and its dependencies
-	 * @param resourceKey key of the resource to get information from and set
-	 * to the response
+	 * @param resourceKey key of the resource to get information from and set to the
+	 *        response
 	 * @return true if successfully added information and dependencies
 	 */
 	private boolean setInformationAndDependenciesToResponse(Key resourceKey) {
@@ -140,17 +139,16 @@ public class ResourceDownload extends VoiderServlet {
 	}
 
 
-
 	/**
 	 * @param resourceKey get all dependencies of the specified key
 	 * @return all dependencies of the specified resource
 	 */
 	private List<Key> getDependencies(Key resourceKey) {
-		List<Entity> dependencies = DatastoreUtils.getEntities(DatastoreTables.DEPENDENCY.toString(), resourceKey);
+		Iterable<Entity> dependencies = DatastoreUtils.getEntities(DatastoreTables.DEPENDENCY.toString(), resourceKey);
 		ArrayList<Key> keys = new ArrayList<>();
 
 		for (Entity dependency : dependencies) {
-			keys.add((Key)dependency.getProperty("dependency"));
+			keys.add((Key) dependency.getProperty("dependency"));
 		}
 
 		return keys;
