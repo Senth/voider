@@ -9,10 +9,8 @@ import com.spiddekauga.voider.game.Level;
 import com.spiddekauga.voider.network.entities.ResourceRevisionEntity;
 import com.spiddekauga.voider.network.entities.RevisionEntity;
 import com.spiddekauga.voider.resources.Def;
-import com.spiddekauga.voider.resources.ExternalTypes;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourceRevision;
-import com.spiddekauga.voider.resources.ResourceNotFoundException;
 import com.spiddekauga.voider.utils.Pools;
 
 /**

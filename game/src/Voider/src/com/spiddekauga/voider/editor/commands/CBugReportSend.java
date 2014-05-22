@@ -15,15 +15,16 @@ import com.spiddekauga.voider.network.entities.method.IMethodEntity;
 import com.spiddekauga.voider.network.entities.method.LoginMethodResponse;
 import com.spiddekauga.voider.repo.BugReportWebRepo;
 import com.spiddekauga.voider.repo.ICallerResponseListener;
+import com.spiddekauga.voider.repo.ResourceRepo;
 import com.spiddekauga.voider.repo.UserLocalRepo;
 import com.spiddekauga.voider.repo.UserWebRepo;
+import com.spiddekauga.voider.resources.BugReportDef;
 import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.utils.Messages;
 import com.spiddekauga.voider.utils.User;
 
 /**
  * Sends a bug report to the server
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class CBugReportSend extends Command implements ICallerResponseListener {
@@ -37,13 +38,7 @@ public class CBugReportSend extends Command implements ICallerResponseListener {
 	 * @param exception the exception that was thrown
 	 */
 	public CBugReportSend(
-			Gui gui,
-			TextField subject,
-			TextField lastAction,
-			TextField secondLastAction,
-			TextField description,
-			Exception exception
-			) {
+			Gui gui, TextField subject, TextField lastAction, TextField secondLastAction, TextField description, Exception exception) {
 		mGui = gui;
 		mSubject = subject;
 		mLastAction = lastAction;
@@ -61,12 +56,7 @@ public class CBugReportSend extends Command implements ICallerResponseListener {
 	 * @param description text field for the description
 	 */
 	public CBugReportSend(
-			Gui gui,
-			TextField subject,
-			TextField lastAction,
-			TextField secondLastAction,
-			TextField description
-			) {
+			Gui gui, TextField subject, TextField lastAction, TextField secondLastAction, TextField description) {
 		this(gui, subject, lastAction, secondLastAction, description, null);
 	}
 
@@ -203,7 +193,7 @@ public class CBugReportSend extends Command implements ICallerResponseListener {
 	 * Save the bug report locally
 	 */
 	private void saveBugReportLocally() {
-		//		ResourceSaver.save(new BugReportDef(mBugReport));
+		mResourceRepo.save(new BugReportDef(mBugReport));
 		mGui.hideWaitWindow();
 
 
@@ -224,7 +214,7 @@ public class CBugReportSend extends Command implements ICallerResponseListener {
 	 */
 	private void sendBugReport() {
 		mGui.setWaitWindowText("Sending bug report");
-		BugReportWebRepo.getInstance().sendBugReport(this, mBugReport);
+		BugReportWebRepo.getInstance().sendBugReport(mBugReport, this);
 	}
 
 	@Override
@@ -233,6 +223,8 @@ public class CBugReportSend extends Command implements ICallerResponseListener {
 		return true;
 	}
 
+	/** Resource repository */
+	private ResourceRepo mResourceRepo = ResourceRepo.getInstance();
 	/** subject of the bug report */
 	private TextField mSubject;
 	/** Last action the user did */

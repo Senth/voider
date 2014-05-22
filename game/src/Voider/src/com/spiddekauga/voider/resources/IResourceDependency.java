@@ -5,6 +5,8 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.spiddekauga.voider.repo.InternalNames;
+
 /**
  * This resource has dependencies
  * 

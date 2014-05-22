@@ -35,7 +35,7 @@ import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.repo.ApplicationStub;
-import com.spiddekauga.voider.resources.InternalNames;
+import com.spiddekauga.voider.repo.InternalNames;
 import com.spiddekauga.voider.utils.Pools;
 
 /**

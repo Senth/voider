@@ -2,8 +2,8 @@ package com.spiddekauga.voider.game;
 
 import com.badlogic.gdx.Gdx;
 import com.spiddekauga.voider.Config;
-import com.spiddekauga.voider.resources.ResourceCacheFacade;
-import com.spiddekauga.voider.resources.InternalNames;
+import com.spiddekauga.voider.repo.InternalNames;
+import com.spiddekauga.voider.repo.ResourceCacheFacade;
 import com.spiddekauga.voider.scene.LoadingScene;
 import com.spiddekauga.voider.utils.Messages;
 

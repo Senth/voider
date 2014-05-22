@@ -15,9 +15,9 @@ import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.utils.commands.Invoker;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.BulletDestroyer;
-import com.spiddekauga.voider.resources.ResourceCacheFacade;
-import com.spiddekauga.voider.resources.ResourceCorruptException;
-import com.spiddekauga.voider.resources.ResourceNotFoundException;
+import com.spiddekauga.voider.repo.ResourceCacheFacade;
+import com.spiddekauga.voider.repo.ResourceCorruptException;
+import com.spiddekauga.voider.repo.ResourceNotFoundException;
 import com.spiddekauga.voider.scene.Scene.Outcomes;
 
 /**

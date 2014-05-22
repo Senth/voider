@@ -6,6 +6,7 @@ import java.util.Observer;
 import java.util.UUID;
 
 import com.spiddekauga.voider.game.actors.PlayerActorDef;
+import com.spiddekauga.voider.repo.ExternalTypes;
 import com.spiddekauga.voider.repo.ResourceLocalRepo;
 import com.spiddekauga.voider.utils.User;
 import com.spiddekauga.voider.utils.User.UserEvents;

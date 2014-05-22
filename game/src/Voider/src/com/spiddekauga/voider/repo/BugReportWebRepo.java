@@ -1,5 +1,7 @@
 package com.spiddekauga.voider.repo;
 
+import java.util.ArrayList;
+
 import com.spiddekauga.voider.network.entities.BugReportEntity;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.method.BugReportMethod;
@@ -8,7 +10,6 @@ import com.spiddekauga.voider.network.entities.method.IMethodEntity;
 
 /**
  * Send bug reports to the server
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class BugReportWebRepo extends WebRepo {
@@ -33,14 +34,26 @@ public class BugReportWebRepo extends WebRepo {
 
 	/**
 	 * Send a bug report to the server
-	 * @param responseListener listens to the web response
 	 * @param bugReport the bug report to send to the server
+	 * @param responseListeners listens to the web response
 	 */
-	public void sendBugReport(ICallerResponseListener responseListener, BugReportEntity bugReport) {
+	public void sendBugReport(BugReportEntity bugReport, ICallerResponseListener... responseListeners) {
 		BugReportMethod bugReportMethod = new BugReportMethod();
 		bugReportMethod.bugs.add(bugReport);
 
-		sendInNewThread(bugReportMethod, responseListener);
+		sendInNewThread(bugReportMethod, responseListeners);
+	}
+
+	/**
+	 * Send several bug reports to the server
+	 * @param bugReports all bug report to send to the server
+	 * @param responseListeners listens to the web response
+	 */
+	public void sendBugReport(ArrayList<BugReportEntity> bugReports, ICallerResponseListener... responseListeners) {
+		BugReportMethod bugReportMethod = new BugReportMethod();
+		bugReportMethod.bugs = bugReports;
+
+		sendInNewThread(bugReportMethod, responseListeners);
 	}
 
 	/**

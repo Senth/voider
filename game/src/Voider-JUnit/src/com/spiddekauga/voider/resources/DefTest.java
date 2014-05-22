@@ -22,6 +22,7 @@ import com.esotericsoftware.kryo.KryoPrototypeTest;
 import com.spiddekauga.voider.game.actors.BulletActorDef;
 import com.spiddekauga.voider.game.actors.PickupActorDef;
 import com.spiddekauga.voider.game.actors.PlayerActorDef;
+import com.spiddekauga.voider.repo.InternalNames;
 import com.spiddekauga.voider.utils.Pools;
 
 /**
@@ -151,7 +152,7 @@ public class DefTest {
 	}
 
 	/**
-	 * Test method for {@link com.spiddekauga.voider.resources.Def#addDependency(com.spiddekauga.voider.resources.InternalNames)}.
+	 * Test method for {@link com.spiddekauga.voider.resources.Def#addDependency(com.spiddekauga.voider.repo.InternalNames)}.
 	 */
 	@Test
 	public void addDependencyResourceNames() {
@@ -207,7 +208,7 @@ public class DefTest {
 	}
 
 	/**
-	 * Test method for {@link com.spiddekauga.voider.resources.Def#removeDependency(com.spiddekauga.voider.resources.InternalNames)}.
+	 * Test method for {@link com.spiddekauga.voider.resources.Def#removeDependency(com.spiddekauga.voider.repo.InternalNames)}.
 	 */
 	@Test
 	public void removeDependencyResourceNames() {

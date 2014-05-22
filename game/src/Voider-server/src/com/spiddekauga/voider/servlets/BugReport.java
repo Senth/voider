@@ -22,14 +22,13 @@ import com.spiddekauga.voider.network.entities.BugReportEntity;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.method.BugReportMethod;
 import com.spiddekauga.voider.network.entities.method.BugReportMethodResponse;
-import com.spiddekauga.voider.network.entities.method.IMethodEntity;
 import com.spiddekauga.voider.network.entities.method.BugReportMethodResponse.Statuses;
+import com.spiddekauga.voider.network.entities.method.IMethodEntity;
 import com.spiddekauga.voider.server.util.ServerConfig;
 import com.spiddekauga.voider.server.util.VoiderServlet;
 
 /**
  * Takes bug reports and reports these
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
@@ -39,6 +38,11 @@ public class BugReport extends VoiderServlet {
 		BugReportMethodResponse methodResponse = new BugReportMethodResponse();
 		methodResponse.status = Statuses.FAILED_SERVER_ERROR;
 
+		if (!mUser.isLoggedIn()) {
+			methodResponse.status = Statuses.FAILED_USER_NOT_LOGGED_IN;
+			return methodResponse;
+		}
+
 		if (methodEntity instanceof BugReportMethod) {
 			methodResponse.status = Statuses.SUCCESS;
 
@@ -47,7 +51,7 @@ public class BugReport extends VoiderServlet {
 
 				if (!success) {
 					methodResponse.status = Statuses.SUCCESS_WITH_ERRORS;
-					methodResponse.failedBugReports.add(bugReportEntity);
+					methodResponse.failedBugReports.add(bugReportEntity.id);
 				}
 			}
 		}

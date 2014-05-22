@@ -1,18 +1,25 @@
 package com.spiddekauga.voider.utils;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
 
 import com.spiddekauga.utils.Observable;
+import com.spiddekauga.voider.network.entities.BugReportEntity;
 import com.spiddekauga.voider.network.entities.ChatMessage;
-import com.spiddekauga.voider.network.entities.ChatMessage.MessageTypes;
 import com.spiddekauga.voider.network.entities.IEntity;
+import com.spiddekauga.voider.network.entities.method.BugReportMethod;
+import com.spiddekauga.voider.network.entities.method.BugReportMethodResponse;
 import com.spiddekauga.voider.network.entities.method.IMethodEntity;
 import com.spiddekauga.voider.network.entities.method.SyncDownloadMethodResponse;
 import com.spiddekauga.voider.network.entities.method.SyncUserResourcesMethod;
 import com.spiddekauga.voider.network.entities.method.SyncUserResourcesMethodResponse;
+import com.spiddekauga.voider.repo.BugReportWebRepo;
+import com.spiddekauga.voider.repo.ExternalTypes;
 import com.spiddekauga.voider.repo.ICallerResponseListener;
+import com.spiddekauga.voider.repo.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.ResourceRepo;
+import com.spiddekauga.voider.resources.BugReportDef;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.server.IMessageListener;
 import com.spiddekauga.voider.server.MessageGateway;
@@ -42,7 +49,20 @@ public class Synchronizer extends Observable implements IMessageListener, ICalle
 
 	@Override
 	public void onMessage(ChatMessage<?> message) {
-		synchronize(message.type);
+		switch (message.type) {
+		case SYNC_COMMUNITY_DOWNLOAD:
+			synchronize(SyncTypes.COMMUNITY_RESOURCES);
+			break;
+
+		case SYNC_USER_RESOURCES:
+			synchronize(SyncTypes.USER_RESOURCES);
+			break;
+
+		default:
+			// Does nothing
+			break;
+
+		}
 	}
 
 	/**
@@ -50,7 +70,7 @@ public class Synchronizer extends Observable implements IMessageListener, ICalle
 	 * @param type the synchronize type to synchronize
 	 * @return true if the type was handled
 	 */
-	public boolean synchronize(MessageTypes type) {
+	public boolean synchronize(SyncTypes type) {
 		return synchronize(type, null);
 	}
 
@@ -60,7 +80,11 @@ public class Synchronizer extends Observable implements IMessageListener, ICalle
 	 * @param responseListener use a specified response listener, set to null to skip
 	 * @return true if the type was handled
 	 */
-	public boolean synchronize(MessageTypes type, ICallerResponseListener responseListener) {
+	public boolean synchronize(SyncTypes type, ICallerResponseListener responseListener) {
+		if (!User.getGlobalUser().isOnline()) {
+			return false;
+		}
+
 		ICallerResponseListener[] responseListeners = null;
 		if (responseListener != null) {
 			responseListeners = new ICallerResponseListener[2];
@@ -73,21 +97,46 @@ public class Synchronizer extends Observable implements IMessageListener, ICalle
 
 
 		switch (type) {
-		case SYNC_DOWNLOAD:
+		case COMMUNITY_RESOURCES:
 			mResourceRepo.syncDownload(responseListeners);
 			SceneSwitcher.showWaitWindow("Synchronizing downloaded resources\nThis may take a while...");
 
 			break;
-		case SYNC_USER_RESOURCES:
+		case USER_RESOURCES:
 			mResourceRepo.syncUserResources(responseListeners);
 			SceneSwitcher.showWaitWindow("Synchronizing user resources\nThis may take a while...");
 			break;
 
-		default:
-			return false;
+		case BUG_REPORTS:
+			uploadBugReports(responseListeners);
+			break;
 		}
 
 		return true;
+	}
+
+	/**
+	 * Upload bug reports
+	 * @param responseListeners all response listener
+	 */
+	private void uploadBugReports(ICallerResponseListener[] responseListeners) {
+		BugReportWebRepo webRepo = BugReportWebRepo.getInstance();
+
+		// Get all existing bug reports
+		ArrayList<BugReportDef> bugReportDefs = ResourceCacheFacade.getAll(ExternalTypes.BUG_REPORT);
+		ArrayList<BugReportEntity> bugsToSend = new ArrayList<>();
+
+		for (BugReportDef bugReportDef : bugReportDefs) {
+			bugsToSend.add(bugReportDef.toNetworkEntity());
+		}
+
+		if (!bugsToSend.isEmpty()) {
+			webRepo.sendBugReport(bugsToSend, responseListeners);
+		}
+		// Hide message window if it has been shown
+		else if (mSyncQueue.isEmpty()) {
+			SceneSwitcher.hideWaitWindow();
+		}
 	}
 
 	/**
@@ -100,13 +149,14 @@ public class Synchronizer extends Observable implements IMessageListener, ICalle
 	/**
 	 * Synchronize everything
 	 * @param responseListener the listener that also should get the web response, may be
-	 *            null
+	 *        null
 	 */
 	public void synchronizeAll(ICallerResponseListener responseListener) {
 		mResponseListener = responseListener;
 
-		mSyncQueue.add(MessageTypes.SYNC_DOWNLOAD);
-		mSyncQueue.add(MessageTypes.SYNC_USER_RESOURCES);
+		mSyncQueue.add(SyncTypes.COMMUNITY_RESOURCES);
+		mSyncQueue.add(SyncTypes.USER_RESOURCES);
+		mSyncQueue.add(SyncTypes.BUG_REPORTS);
 
 		syncNextInQueue();
 	}
@@ -122,15 +172,52 @@ public class Synchronizer extends Observable implements IMessageListener, ICalle
 		} else if (response instanceof SyncDownloadMethodResponse) {
 			if (((SyncDownloadMethodResponse) response).isSuccessful()) {
 				notifyObservers(SyncEvents.COMMUNITY_DOWNLOAD_SUCCESS);
-				SceneSwitcher.showSuccessMessage("Sync community resources complete");
+				SceneSwitcher.showSuccessMessage("Successfully synced community resources");
 			} else {
 				notifyObservers(SyncEvents.COMMUNITY_DOWNLOAD_FAILED);
-				SceneSwitcher.showErrorMessage("Sync community resources failed");
+				SceneSwitcher.showErrorMessage("Failed to sync community resources");
 			}
+		} else if (response instanceof BugReportMethodResponse) {
+			handlePostBugReport((BugReportMethod) method, (BugReportMethodResponse) response);
 		}
 
 
 		syncNextInQueue();
+	}
+
+	/**
+	 * Handle upload bug reports
+	 * @param method parameters to the server
+	 * @param response response from the server
+	 */
+	private void handlePostBugReport(BugReportMethod method, BugReportMethodResponse response) {
+		// Show message
+		switch (response.status) {
+		case FAILED_CONNECTION:
+		case FAILED_SERVER_ERROR:
+		case FAILED_USER_NOT_LOGGED_IN:
+			SceneSwitcher.showErrorMessage("Failed to upload saved bug reports");
+			break;
+
+		case SUCCESS:
+			SceneSwitcher.showSuccessMessage("Successfully sent saved bug reports");
+			break;
+
+		case SUCCESS_WITH_ERRORS:
+			SceneSwitcher.showHighlightMessage("Failed to sent some bug reports");
+			break;
+		}
+
+
+		// Remove successful bug reports from local database
+		if (response.isSuccessful()) {
+			for (BugReportEntity bugReport : method.bugs) {
+				// Check if successful
+				if (!response.failedBugReports.contains(bugReport.id)) {
+					mResourceRepo.remove(bugReport.id);
+				}
+			}
+		}
 	}
 
 	/**
@@ -154,24 +241,24 @@ public class Synchronizer extends Observable implements IMessageListener, ICalle
 		case FAILED_INTERNAL:
 		case FAILED_USER_NOT_LOGGED_IN:
 			if (response.downloadStatus) {
-				SceneSwitcher.showErrorMessage("Sync: Only downloaded resources, failed to upload");
+				SceneSwitcher.showErrorMessage("Failed to upload user resources, only downloaded");
 			} else {
-				SceneSwitcher.showErrorMessage("Sync failed");
+				SceneSwitcher.showErrorMessage("Failed to sync user resources");
 			}
 			notifyObservers(SyncEvents.USER_RESOURCES_UPLOAD_FAILED);
 			break;
 
 		case SUCCESS_ALL:
 			if (response.downloadStatus) {
-				SceneSwitcher.showSuccessMessage("Sync complete");
+				SceneSwitcher.showSuccessMessage("Successfully synced user resources");
 			} else {
-				SceneSwitcher.showErrorMessage("Sync: Only uploaded resources to server, failed to download");
+				SceneSwitcher.showErrorMessage("Failed to download user resources, only uploaded");
 			}
 			notifyObservers(SyncEvents.USER_RESOURCES_UPLOAD_SUCCESS);
 			break;
 
 		case SUCCESS_PARTIAL:
-			SceneSwitcher.showHighlightMessage("Sync conflict");
+			SceneSwitcher.showHighlightMessage("Synced user resources, but found conflicts");
 			// TODO handle conflict
 
 			notifyObservers(SyncEvents.USER_RESOURCES_UPLOAD_CONFLICT);
@@ -184,6 +271,18 @@ public class Synchronizer extends Observable implements IMessageListener, ICalle
 		} else {
 			notifyObservers(SyncEvents.USER_RESOURCES_DOWNLOAD_FAILED);
 		}
+	}
+
+	/**
+	 * Synchronization types
+	 */
+	public enum SyncTypes {
+		/** Synchronized community downloaded resources */
+		COMMUNITY_RESOURCES,
+		/** Synchronize user resources */
+		USER_RESOURCES,
+		/** Upload bug reports */
+		BUG_REPORTS
 	}
 
 	/**
@@ -207,7 +306,7 @@ public class Synchronizer extends Observable implements IMessageListener, ICalle
 	}
 
 	/** Queue for what to synchronize */
-	private Queue<MessageTypes> mSyncQueue = new LinkedList<>();
+	private Queue<SyncTypes> mSyncQueue = new LinkedList<>();
 	/** Current response listener */
 	private ICallerResponseListener mResponseListener = null;
 	/** Resource repository */

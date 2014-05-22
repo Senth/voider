@@ -20,13 +20,13 @@ import com.spiddekauga.voider.game.LevelDef;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.method.IMethodEntity;
 import com.spiddekauga.voider.network.entities.method.LogoutMethodResponse;
+import com.spiddekauga.voider.repo.ExternalTypes;
 import com.spiddekauga.voider.repo.ICallerResponseListener;
+import com.spiddekauga.voider.repo.InternalNames;
+import com.spiddekauga.voider.repo.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.ResourceLocalRepo;
 import com.spiddekauga.voider.repo.UserLocalRepo;
 import com.spiddekauga.voider.repo.UserWebRepo;
-import com.spiddekauga.voider.resources.ExternalTypes;
-import com.spiddekauga.voider.resources.InternalNames;
-import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceItem;
 import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.scene.Scene;
@@ -56,6 +56,7 @@ public class MainMenu extends Scene implements ICallerResponseListener, Observer
 		ResourceCacheFacade.load(InternalNames.UI_GENERAL);
 		ResourceCacheFacade.loadAllOf(this, ExternalTypes.LEVEL_DEF, false);
 		ResourceCacheFacade.loadAllOf(this, ExternalTypes.GAME_SAVE_DEF, false);
+		ResourceCacheFacade.loadAllOf(this, ExternalTypes.BUG_REPORT, true);
 	}
 
 	@Override
@@ -70,6 +71,7 @@ public class MainMenu extends Scene implements ICallerResponseListener, Observer
 			switch ((SyncEvents) arg) {
 			case COMMUNITY_DOWNLOAD_SUCCESS:
 			case USER_RESOURCES_DOWNLOAD_SUCCESS:
+				ResourceCacheFacade.loadAllOf(this, ExternalTypes.GAME_SAVE_DEF, false);
 				ResourceCacheFacade.loadAllOf(this, ExternalTypes.LEVEL_DEF, false);
 				ResourceCacheFacade.finishLoading();
 				break;

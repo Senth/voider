@@ -29,10 +29,8 @@ import com.spiddekauga.voider.network.entities.method.SyncDownloadMethodResponse
 import com.spiddekauga.voider.network.entities.method.SyncUserResourcesMethod;
 import com.spiddekauga.voider.network.entities.method.SyncUserResourcesMethodResponse;
 import com.spiddekauga.voider.resources.Def;
-import com.spiddekauga.voider.resources.ExternalTypes;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourceRevision;
-import com.spiddekauga.voider.resources.ResourceCacheFacade;
 import com.spiddekauga.voider.utils.Pools;
 import com.spiddekauga.voider.utils.Synchronizer;
 import com.spiddekauga.voider.utils.User;
@@ -107,7 +105,18 @@ public class ResourceRepo implements ICallerResponseListener {
 				}
 			}
 		}
+	}
 
+	/**
+	 * Removes the specified resource, will unload it if it is currently loaded
+	 * @param resourceId the resource to remove
+	 */
+	public void remove(UUID resourceId) {
+		// Unload first
+		ResourceCacheFacade.unload(resourceId);
+
+		// Remove it from the database and physically
+		ResourceLocalRepo.remove(resourceId);
 	}
 
 	/**

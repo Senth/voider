@@ -16,6 +16,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Window.WindowStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.spiddekauga.utils.scene.ui.AnimationWidget.AnimationWidgetStyle;
 import com.spiddekauga.utils.scene.ui.RatingWidget.RatingWidgetStyle;
+import com.spiddekauga.voider.repo.InternalNames;
+import com.spiddekauga.voider.repo.ResourceCacheFacade;
 
 
 /**

@@ -65,8 +65,8 @@ import com.spiddekauga.voider.game.triggers.TActorActivated;
 import com.spiddekauga.voider.game.triggers.TScreenAt;
 import com.spiddekauga.voider.game.triggers.TriggerAction;
 import com.spiddekauga.voider.game.triggers.TriggerInfo;
+import com.spiddekauga.voider.repo.InternalNames;
 import com.spiddekauga.voider.resources.BugReportDef;
-import com.spiddekauga.voider.resources.InternalNames;
 import com.spiddekauga.voider.resources.ResourceBinder;
 import com.spiddekauga.voider.resources.ResourceItem;
 

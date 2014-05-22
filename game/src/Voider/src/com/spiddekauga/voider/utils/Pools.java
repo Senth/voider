@@ -14,8 +14,8 @@ import com.spiddekauga.utils.scene.ui.Cell;
 import com.spiddekauga.utils.scene.ui.Row;
 import com.spiddekauga.voider.game.actors.BulletActor;
 import com.spiddekauga.voider.network.entities.RevisionEntity;
-import com.spiddekauga.voider.resources.InternalNames;
-import com.spiddekauga.voider.resources.ResourceCacheFacade;
+import com.spiddekauga.voider.repo.InternalNames;
+import com.spiddekauga.voider.repo.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceItem;
 
 /**

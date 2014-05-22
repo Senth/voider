@@ -115,7 +115,7 @@ public class Publish extends VoiderServlet {
 				methodResponse.status = Statuses.SUCCESS;
 				mLogger.fine("Successfully published resource");
 
-				sendMessage(new ChatMessage<>(MessageTypes.SYNC_DOWNLOAD, mUser.getClientId()));
+				sendMessage(new ChatMessage<>(MessageTypes.SYNC_COMMUNITY_DOWNLOAD, mUser.getClientId()));
 				sendMessage(new ChatMessage<>(MessageTypes.SYNC_USER_RESOURCES, mUser.getClientId()));
 			} else {
 				mLogger.severe("Failed to publish resource");

@@ -1,4 +1,4 @@
-package com.spiddekauga.voider.resources;
+package com.spiddekauga.voider.repo;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -7,8 +7,10 @@ import java.util.UUID;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.spiddekauga.voider.Config.Debug;
-import com.spiddekauga.voider.repo.ResourceLocalRepo;
-import com.spiddekauga.voider.repo.ResourceRepo;
+import com.spiddekauga.voider.resources.IResource;
+import com.spiddekauga.voider.resources.Resource;
+import com.spiddekauga.voider.resources.ResourceException;
+import com.spiddekauga.voider.resources.ResourceItem;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.utils.Pools;
 
@@ -219,6 +221,23 @@ public class ResourceCacheFacade {
 	 */
 	public static boolean isLoaded(UUID resourceId, int revision) {
 		return mResourceLoader.isResourceLoaded(resourceId, revision);
+	}
+
+	/**
+	 * Unload a specific resource. Does nothing if the resource isn't loaded
+	 * @param resourceId unique id of the object to unload
+	 */
+	public static void unload(UUID resourceId) {
+		mResourceLoader.unload(resourceId);
+	}
+
+	/**
+	 * Unload a specific resource. Does nothing if the resource isn't loaded
+	 * @param resourceId unique id of the object to unload
+	 * @param revision the specific revision to unload
+	 */
+	public static void unload(UUID resourceId, int revision) {
+		mResourceLoader.unload(resourceId, revision);
 	}
 
 	// -----------------------------

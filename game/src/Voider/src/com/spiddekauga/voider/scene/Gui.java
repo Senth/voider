@@ -32,8 +32,8 @@ import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
 import com.spiddekauga.voider.editor.commands.CBugReportSend;
 import com.spiddekauga.voider.editor.commands.CGameQuit;
-import com.spiddekauga.voider.resources.InternalNames;
-import com.spiddekauga.voider.resources.ResourceCacheFacade;
+import com.spiddekauga.voider.repo.InternalNames;
+import com.spiddekauga.voider.repo.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.utils.Messages;
 
@@ -77,8 +77,8 @@ public abstract class Gui implements Disposable {
 	}
 
 	/**
-	 * Resets the GUI and adds the main table again. This will remove any actors that have been added manually through
-	 * #addActor(Actor)
+	 * Resets the GUI and adds the main table again. This will remove any actors that have
+	 * been added manually through #addActor(Actor)
 	 */
 	public void reset() {
 		mStage.clear();
@@ -175,8 +175,9 @@ public abstract class Gui implements Disposable {
 	}
 
 	/**
-	 * Shows the specified message box. This will hide any active message box, remove the specified message box from the
-	 * inactive list, and then show the specified active box (once the currently active box has been fully hidden).
+	 * Shows the specified message box. This will hide any active message box, remove the
+	 * specified message box from the inactive list, and then show the specified active
+	 * box (once the currently active box has been fully hidden).
 	 * @param msgBox the message box to show
 	 */
 	public void showMsgBox(MsgBoxExecuter msgBox) {
@@ -282,20 +283,27 @@ public abstract class Gui implements Disposable {
 			return;
 		}
 
-		mWidgets.waitWindow.animation.reset();
+		// Show window if it doesn't belong to a stage
+		if (mWidgets.waitWindow.window.getStage() == null) {
 
-		// Set text or empty if null
-		mWidgets.waitWindow.label.setText(message != null ? message : "");
-		mWidgets.waitWindow.window.pack();
-		mStage.addActor(mWidgets.waitWindow.window);
+			mWidgets.waitWindow.animation.reset();
 
-		// Center the window
-		int xPosition = (int) ((Gdx.graphics.getWidth() - mWidgets.waitWindow.window.getWidth()) * 0.5f);
-		int yPosition = (int) ((Gdx.graphics.getHeight() - mWidgets.waitWindow.window.getHeight()) * 0.5f);
-		mWidgets.waitWindow.window.setPosition(xPosition, yPosition);
+			// Set text or empty if null
+			setWaitWindowText(message);
+			mStage.addActor(mWidgets.waitWindow.window);
 
-		float fadeInDuration = (Float) SkinNames.getResource(SkinNames.GeneralVars.WAIT_WINDOW_FADE_IN);
-		mWidgets.waitWindow.window.addAction(Actions.fadeIn(fadeInDuration, Interpolation.fade));
+			// Center the window
+			int xPosition = (int) ((Gdx.graphics.getWidth() - mWidgets.waitWindow.window.getWidth()) * 0.5f);
+			int yPosition = (int) ((Gdx.graphics.getHeight() - mWidgets.waitWindow.window.getHeight()) * 0.5f);
+			mWidgets.waitWindow.window.setPosition(xPosition, yPosition);
+
+			float fadeInDuration = (Float) SkinNames.getResource(SkinNames.GeneralVars.WAIT_WINDOW_FADE_IN);
+			mWidgets.waitWindow.window.addAction(Actions.fadeIn(fadeInDuration, Interpolation.fade));
+		}
+		// Else just change the text
+		else {
+			setWaitWindowText(message);
+		}
 	}
 
 	/**
@@ -505,7 +513,8 @@ public abstract class Gui implements Disposable {
 	/**
 	 * Checks if a button is checked (from the event).
 	 * @param event checks if the target inside the event is a button and it's checked
-	 * @return checked button. If the target isn't a button or the button isn't checked it returns null.
+	 * @return checked button. If the target isn't a button or the button isn't checked it
+	 *         returns null.
 	 */
 	protected static Button getCheckedButton(Event event) {
 		if (event.getTarget() instanceof Button) {

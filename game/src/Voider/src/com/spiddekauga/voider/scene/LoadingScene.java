@@ -1,8 +1,8 @@
 package com.spiddekauga.voider.scene;
 
-import com.spiddekauga.voider.resources.ResourceCacheFacade;
-import com.spiddekauga.voider.resources.ResourceCorruptException;
-import com.spiddekauga.voider.resources.ResourceNotFoundException;
+import com.spiddekauga.voider.repo.ResourceCacheFacade;
+import com.spiddekauga.voider.repo.ResourceCorruptException;
+import com.spiddekauga.voider.repo.ResourceNotFoundException;
 
 /**
  * Base class for all loading scenes

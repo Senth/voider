@@ -1,4 +1,4 @@
-package com.spiddekauga.voider.resources;
+package com.spiddekauga.voider.repo;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,7 +29,11 @@ import com.spiddekauga.voider.game.actors.PickupActorDef;
 import com.spiddekauga.voider.game.actors.PlayerActorDef;
 import com.spiddekauga.voider.game.actors.StaticTerrainActorDef;
 import com.spiddekauga.voider.network.entities.RevisionEntity;
-import com.spiddekauga.voider.repo.ResourceLocalRepo;
+import com.spiddekauga.voider.resources.IResource;
+import com.spiddekauga.voider.resources.KryoLoaderAsync;
+import com.spiddekauga.voider.resources.KryoLoaderSync;
+import com.spiddekauga.voider.resources.Resource;
+import com.spiddekauga.voider.resources.ResourceException;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.utils.AbsoluteFileHandleResolver;
 import com.spiddekauga.voider.utils.Pool;
@@ -158,10 +162,10 @@ class ResourceLoader {
 	}
 
 	/**
-	 * @return true if loading
+	 * @return true if loading, unloading, or reloading
 	 */
 	synchronized boolean isLoading() {
-		return !mLoadingQueue.isEmpty() || !mReloadQueue.isEmpty() || mAssetManager.getQueuedAssets() > 0;
+		return !mLoadingQueue.isEmpty() || !mReloadQueue.isEmpty() || !mUnloadQueue.isEmpty() || mAssetManager.getQueuedAssets() > 0;
 	}
 
 	/**
@@ -233,6 +237,33 @@ class ResourceLoader {
 	}
 
 	/**
+	 * Unloads the resource, does nothing if the resource isn't loaded.
+	 * @param resourceId the resource to unload
+	 */
+	void unload(UUID resourceId) {
+		unload(resourceId, LATEST_REVISION);
+	}
+
+	/**
+	 * Unloads the specified resource, does nothing if the resource isn't loaded.
+	 * @param resourceId the resource to unload
+	 * @param revision the revision of the resource to unload
+	 */
+	void unload(UUID resourceId, int revision) {
+		UuidRevision uuidRevision = mUuidRevisionPool.obtain().set(resourceId, revision);
+		LoadedResource loadedResource = mLoadedResources.get(uuidRevision);
+
+		// Unload if the resource is loaded
+		if (loadedResource != null) {
+			mUnloadQueue.add(loadedResource.filepath);
+
+			waitTillLoadingIsDone();
+
+			mLoadedResources.remove(uuidRevision);
+		}
+	}
+
+	/**
 	 * Sets the latest resource to the specified resource
 	 * @param resource the resource to be set as latest resource
 	 * @param oldRevision old revision that the resource was loaded into
@@ -278,16 +309,22 @@ class ResourceLoader {
 			final String latestFilepath = ResourceLocalRepo.getFilepath(resourceId);
 			mReloadQueue.add(new ReloadResource(latestFilepath, oldResource));
 
-			// Wait until the resource has been reloaded in the main thread
-			while (isLoading()) {
-				try {
-					Thread.sleep(20);
-				} catch (InterruptedException e) {
-					// Do nothing
-				}
-			}
+			waitTillLoadingIsDone();
 		} else {
 			Gdx.app.error("ResourceLoader", "Latest resource was not loaded while trying to reload it");
+		}
+	}
+
+	/**
+	 * Waits until the loading is done
+	 */
+	void waitTillLoadingIsDone() {
+		while (isLoading()) {
+			try {
+				Thread.sleep(20);
+			} catch (InterruptedException e) {
+				// Do nothing
+			}
 		}
 	}
 
@@ -332,10 +369,21 @@ class ResourceLoader {
 			handleException(e);
 		}
 
-		// Reload queue
-		Iterator<ReloadResource> unloadIt = mReloadQueue.iterator();
+		// Unload queue
+		Iterator<String> unloadIt = mUnloadQueue.iterator();
 		while (unloadIt.hasNext()) {
-			ReloadResource reloadResource = unloadIt.next();
+			String filepath = unloadIt.next();
+			if (mAssetManager.isLoaded(filepath)) {
+				mAssetManager.unload(filepath);
+			}
+
+			unloadIt.remove();
+		}
+
+		// Reload queue
+		Iterator<ReloadResource> reloadIt = mReloadQueue.iterator();
+		while (reloadIt.hasNext()) {
+			ReloadResource reloadResource = reloadIt.next();
 
 			// Check if it has been loaded and set the new resource
 			if (reloadResource.unloaded) {
@@ -344,7 +392,7 @@ class ResourceLoader {
 					Resource newResource = mAssetManager.get(reloadResource.filepath);
 					reloadResource.oldResource.set(newResource);
 
-					unloadIt.remove();
+					reloadIt.remove();
 				}
 			}
 			// Unload the resource
@@ -489,6 +537,8 @@ class ResourceLoader {
 	private HashMap<UuidRevision, LoadedResource> mLoadingQueue = new HashMap<>();
 	/** Unload queue */
 	private ArrayList<ReloadResource> mReloadQueue = new ArrayList<>();
+	/** Unload queue */
+	private ArrayList<String> mUnloadQueue = new ArrayList<>();
 
 	/** The asset manager used for actually loading resources */
 	private AssetManager mAssetManager;

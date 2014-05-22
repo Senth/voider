@@ -1,8 +1,8 @@
 package com.spiddekauga.voider.app;
 
 import com.spiddekauga.voider.Config;
-import com.spiddekauga.voider.resources.ResourceCacheFacade;
-import com.spiddekauga.voider.resources.InternalNames;
+import com.spiddekauga.voider.repo.InternalNames;
+import com.spiddekauga.voider.repo.ResourceCacheFacade;
 import com.spiddekauga.voider.scene.LoadingScene;
 
 /**

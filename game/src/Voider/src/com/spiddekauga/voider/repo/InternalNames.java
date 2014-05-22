@@ -1,4 +1,4 @@
-package com.spiddekauga.voider.resources;
+package com.spiddekauga.voider.repo;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -1,7 +1,6 @@
 package com.spiddekauga.voider.resources;
 
 import java.util.Date;
-import java.util.UUID;
 
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.voider.network.entities.BugReportEntity;
@@ -9,7 +8,6 @@ import com.spiddekauga.voider.network.entities.BugReportEntity;
 
 /**
  * Bug report to store locally
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class BugReportDef extends Resource {
@@ -17,9 +15,8 @@ public class BugReportDef extends Resource {
 	 * Creates a bug report resource from a network entity and store it locally
 	 * @param bugReportEntity entity to set the resource from
 	 */
-	public BugReportDef(BugReportEntity bugReportEntity) {
-		this();
-
+	public BugReportDef(
+			BugReportEntity bugReportEntity) {
 		mUserKey = bugReportEntity.userKey;
 		mSubject = bugReportEntity.subject;
 		mLastAction = bugReportEntity.lastAction;
@@ -28,13 +25,15 @@ public class BugReportDef extends Resource {
 		mDate = bugReportEntity.date;
 		mException = bugReportEntity.exception;
 		mSystemInformation = bugReportEntity.systemInformation;
+		mUniqueId = bugReportEntity.id;
 	}
 
 	/**
-	 * Default constructor, sets UUID
+	 * Default constructor for kryo
 	 */
+	@SuppressWarnings("unused")
 	private BugReportDef() {
-		mUniqueId = UUID.randomUUID();
+		// For kryo
 	}
 
 	/**
@@ -51,24 +50,33 @@ public class BugReportDef extends Resource {
 		entity.exception = mException;
 		entity.date = mDate;
 		entity.systemInformation = mSystemInformation;
+		entity.id = mUniqueId;
 
 		return entity;
 	}
 
 	/** User that's reporting */
-	@Tag(113) private String mUserKey;
+	@Tag(113)
+	private String mUserKey;
 	/** Last action */
-	@Tag(114) private String mLastAction;
+	@Tag(114)
+	private String mLastAction;
 	/** Second last action */
-	@Tag(115) private String mSecondLastAction;
+	@Tag(115)
+	private String mSecondLastAction;
 	/** Additional description */
-	@Tag(119) private String mDescription;
+	@Tag(119)
+	private String mDescription;
 	/** Date of the report */
-	@Tag(120) private Date mDate = new Date();
+	@Tag(120)
+	private Date mDate = new Date();
 	/** The exception that was thrown, optional */
-	@Tag(121) private String mException = null;
+	@Tag(121)
+	private String mException = null;
 	/** Subject */
-	@Tag(122) private String mSubject;
+	@Tag(122)
+	private String mSubject;
 	/** System information */
-	@Tag(123) private String mSystemInformation;
+	@Tag(123)
+	private String mSystemInformation;
 }

@@ -1,6 +1,6 @@
 package com.spiddekauga.voider.game;
 
-import com.spiddekauga.voider.resources.InternalNames;
+import com.spiddekauga.voider.repo.InternalNames;
 
 /**
  * All the different themes for the game

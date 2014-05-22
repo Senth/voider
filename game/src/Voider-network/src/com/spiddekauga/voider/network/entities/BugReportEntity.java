@@ -1,10 +1,10 @@
 package com.spiddekauga.voider.network.entities;
 
 import java.util.Date;
+import java.util.UUID;
 
 /**
  * Bug report information
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
@@ -25,4 +25,6 @@ public class BugReportEntity implements IEntity {
 	public String exception = "";
 	/** System information */
 	public String systemInformation;
+	/** id of the report, only used locally */
+	public UUID id = UUID.randomUUID();
 }

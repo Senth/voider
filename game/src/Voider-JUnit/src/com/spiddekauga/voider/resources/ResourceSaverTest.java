@@ -18,6 +18,7 @@ import com.spiddekauga.utils.ObjectCrypter;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.actors.PickupActorDef;
 import com.spiddekauga.voider.repo.ApplicationStub;
+import com.spiddekauga.voider.repo.InternalNames;
 import com.spiddekauga.voider.repo.ResourceLocalRepo;
 import com.spiddekauga.voider.utils.Pools;
 

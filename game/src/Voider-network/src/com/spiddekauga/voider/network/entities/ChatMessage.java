@@ -69,7 +69,7 @@ public class ChatMessage<DataType> implements IEntity {
 	 */
 	public enum MessageTypes {
 		/** Synchronize downloaded resources */
-		SYNC_DOWNLOAD,
+		SYNC_COMMUNITY_DOWNLOAD,
 		/** Synchronize user resources */
 		SYNC_USER_RESOURCES,
 	}

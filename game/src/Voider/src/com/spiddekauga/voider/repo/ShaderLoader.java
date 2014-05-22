@@ -1,4 +1,4 @@
-package com.spiddekauga.voider.resources;
+package com.spiddekauga.voider.repo;
 
 import com.badlogic.gdx.assets.AssetDescriptor;
 import com.badlogic.gdx.assets.AssetLoaderParameters;
@@ -8,7 +8,7 @@ import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.utils.Array;
-import com.spiddekauga.voider.resources.ShaderLoader.ShaderParameter;
+import com.spiddekauga.voider.repo.ShaderLoader.ShaderParameter;
 
 /**
  * Loads a shader program

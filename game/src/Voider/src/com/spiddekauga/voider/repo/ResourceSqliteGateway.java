@@ -13,7 +13,6 @@ import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.spiddekauga.voider.network.entities.ResourceRevisionEntity;
 import com.spiddekauga.voider.network.entities.RevisionEntity;
 import com.spiddekauga.voider.network.entities.UploadTypes;
-import com.spiddekauga.voider.resources.ResourceNotFoundException;
 import com.spiddekauga.voider.utils.Pools;
 
 /**

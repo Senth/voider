@@ -54,7 +54,7 @@ public class ResourceDownload extends VoiderServlet {
 			if (success && !mAddedResources.isEmpty()) {
 				setUserDownloadDate();
 				mResponse.status = Statuses.SUCCESS;
-				sendMessage(new ChatMessage<>(MessageTypes.SYNC_DOWNLOAD, mUser.getClientId()));
+				sendMessage(new ChatMessage<>(MessageTypes.SYNC_COMMUNITY_DOWNLOAD, mUser.getClientId()));
 			}
 		} else {
 			mResponse.status = Statuses.FAILED_USER_NOT_LOGGED_IN;

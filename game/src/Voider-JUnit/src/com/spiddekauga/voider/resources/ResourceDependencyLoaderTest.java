@@ -17,6 +17,7 @@ import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.actors.ActorDef;
 import com.spiddekauga.voider.game.actors.PlayerActorDef;
 import com.spiddekauga.voider.repo.ApplicationStub;
+import com.spiddekauga.voider.repo.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.ResourceLocalRepo;
 import com.spiddekauga.voider.repo.SqliteResetter;
 import com.spiddekauga.voider.scene.Scene;
@@ -59,7 +60,7 @@ public class ResourceDependencyLoaderTest {
 	}
 
 	/**
-	 * Test method for {@link com.spiddekauga.voider.resources.ResourceDependencyLoader#load(com.spiddekauga.voider.scene.Scene, java.util.UUID, int)}.
+	 * Test method for {@link com.spiddekauga.voider.repo.ResourceDependencyLoader#load(com.spiddekauga.voider.scene.Scene, java.util.UUID, int)}.
 	 */
 	@Test
 	public void loadUnload() {

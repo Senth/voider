@@ -1,4 +1,4 @@
-package com.spiddekauga.voider.resources;
+package com.spiddekauga.voider.repo;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -10,6 +10,10 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.resources.IResource;
+import com.spiddekauga.voider.resources.IResourceDependency;
+import com.spiddekauga.voider.resources.ResourceException;
+import com.spiddekauga.voider.resources.ResourceItem;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.utils.Pools;
 

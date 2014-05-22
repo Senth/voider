@@ -1,4 +1,4 @@
-package com.spiddekauga.voider.resources;
+package com.spiddekauga.voider.repo;
 
 import java.util.HashMap;
 
@@ -11,6 +11,8 @@ import com.spiddekauga.voider.game.actors.EnemyActorDef;
 import com.spiddekauga.voider.game.actors.PickupActorDef;
 import com.spiddekauga.voider.game.actors.PlayerActorDef;
 import com.spiddekauga.voider.network.entities.UploadTypes;
+import com.spiddekauga.voider.resources.BugReportDef;
+import com.spiddekauga.voider.resources.IResource;
 
 /**
  * All the different external resource types
