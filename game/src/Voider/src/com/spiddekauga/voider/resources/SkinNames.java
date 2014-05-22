@@ -20,7 +20,6 @@ import com.spiddekauga.utils.scene.ui.RatingWidget.RatingWidgetStyle;
 
 /**
  * All skin names
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class SkinNames {
@@ -32,13 +31,17 @@ public class SkinNames {
 		ADD_MOVE_CORNER,
 		/** Enemy shoot in one specific direction */
 		AIM_DIRECTION,
-		/** The enemy will shoot in front of the player (i.e. where
-		 * the player will be if s/he continues to move in the same direction) */
+		/**
+		 * The enemy will shoot in front of the player (i.e. where the player will be if
+		 * s/he continues to move in the same direction)
+		 */
 		AIM_IN_FRONT_PLAYER,
 		/** The enemy will shoot in its moving direction */
 		AIM_MOVEMENT,
-		/** The enemy will shoot on the player, or rather
-		 * in the direction where the player is currently located */
+		/**
+		 * The enemy will shoot on the player, or rather in the direction where the player
+		 * is currently located
+		 */
 		AIM_ON_PLAYER,
 		/** The enemy will shoot in a circle (or in a straight line) */
 		AIM_ROTATE,
@@ -48,7 +51,10 @@ public class SkinNames {
 		BULLET_EDITOR_BIG,
 		/** When the bullet editor is selected, i.e. we're in the bullet editor */
 		BULLET_EDITOR_SELECTED,
-		/** Opens a dialog where the player will be able to select which bullet the enemy should use */
+		/**
+		 * Opens a dialog where the player will be able to select which bullet the enemy
+		 * should use
+		 */
 		BULLET_SELECT,
 		/** Go to the campaign editor */
 		CAMPAIGN_EDITOR,
@@ -86,8 +92,10 @@ public class SkinNames {
 		ENEMY_SET_ACTIVATE_TRIGGER,
 		/** Set deactivate trigger for enemies. I.e. binds the enemy to a trigger */
 		ENEMY_SET_DEACTIVATE_TRIGGER,
-		/** When checked it shows which enemies will be spawned when testing
-		 * the level from the current position */
+		/**
+		 * When checked it shows which enemies will be spawned when testing the level from
+		 * the current position
+		 */
 		ENEMY_SPAWN_HIGHLIGHT,
 		/** Grid button for turning it on/off */
 		GRID,
@@ -117,15 +125,21 @@ public class SkinNames {
 		PAN,
 		/** Add or continue on a path in the level (can move corners too) */
 		PATH_ADD,
-		/** How enemies should move in the path. Back and forth means once it reached
-		 * the end it will move backwards on the path */
+		/**
+		 * How enemies should move in the path. Back and forth means once it reached the
+		 * end it will move backwards on the path
+		 */
 		PATH_BACK_AND_FORTH,
-		/** How enemies should move in the path. Loop means once the enemy reaches the end
-		 * it will go directly (i.e. not along the path) to the start and go through
-		 * the path again and again... */
+		/**
+		 * How enemies should move in the path. Loop means once the enemy reaches the end
+		 * it will go directly (i.e. not along the path) to the start and go through the
+		 * path again and again...
+		 */
 		PATH_LOOP,
-		/** How enemies should move in the path ONCE means just once.
-		 * Then it will just continue in a straight line when it reaches the end of the path */
+		/**
+		 * How enemies should move in the path ONCE means just once. Then it will just
+		 * continue in a straight line when it reaches the end of the path
+		 */
 		PATH_ONCE,
 		/** Remove corner from a path */
 		PATH_REMOVE_CORNER,
@@ -264,7 +278,8 @@ public class SkinNames {
 		 * Creates a more user-friendly name for the enumeration
 		 * @param type the class type
 		 */
-		private EditorVars(Class<?> type) {
+		private EditorVars(
+				Class<?> type) {
 			mName = super.toString().toLowerCase();
 			mType = type;
 		}
@@ -306,7 +321,8 @@ public class SkinNames {
 		 * Creates a more user-friendly name for the enumeration
 		 * @param type class type
 		 */
-		private Game(Class<?> type) {
+		private Game(
+				Class<?> type) {
 			mName = super.toString().toLowerCase();
 			mType = type;
 		}
@@ -385,7 +401,8 @@ public class SkinNames {
 		 * Creates a more user-friendly name for the enumeration
 		 * @param type the class type
 		 */
-		private GeneralVars(Class<?> type) {
+		private GeneralVars(
+				Class<?> type) {
 			mType = type;
 			mName = super.toString().toLowerCase();
 		}
@@ -395,7 +412,8 @@ public class SkinNames {
 		 * @param type the class type
 		 * @param jsonName name in the json-file
 		 */
-		private GeneralVars(Class<?> type, String jsonName) {
+		private GeneralVars(
+				Class<?> type, String jsonName) {
 			mType = type;
 			mName = jsonName;
 		}
@@ -442,6 +460,8 @@ public class SkinNames {
 		TAG,
 		/** Like */
 		LIKE,
+		/** Screenshot placeholder for levels */
+		SCREENSHOT_PLACEHOLDER,
 
 		;
 
@@ -456,7 +476,8 @@ public class SkinNames {
 		 * Create a custom name for the enumeration
 		 * @param jsonName name in the json-file
 		 */
-		private GeneralImages(String jsonName) {
+		private GeneralImages(
+				String jsonName) {
 			mName = jsonName;
 		}
 
@@ -600,7 +621,8 @@ public class SkinNames {
 		 * Creates a more user-friendly name for the enumeration
 		 * @param type the class type
 		 */
-		private General(Class<?> type) {
+		private General(
+				Class<?> type) {
 			mType = type;
 			mName = super.toString().toLowerCase();
 		}
@@ -610,7 +632,8 @@ public class SkinNames {
 		 * @param type the class type
 		 * @param jsonName name in the json-file
 		 */
-		private General(Class<?> type, String jsonName) {
+		private General(
+				Class<?> type, String jsonName) {
 			mType = type;
 			mName = jsonName;
 		}
@@ -680,7 +703,8 @@ public class SkinNames {
 		 * Creates a more user-friendly name for the enumeration
 		 * @param type the class type
 		 */
-		private Theme(Class<?> type) {
+		private Theme(
+				Class<?> type) {
 			mType = type;
 			mName = super.toString().toLowerCase();
 		}
@@ -690,7 +714,8 @@ public class SkinNames {
 		 * @param type the class type
 		 * @param jsonName name in the json-file
 		 */
-		private Theme(Class<?> type, String jsonName) {
+		private Theme(
+				Class<?> type, String jsonName) {
 			mType = type;
 			mName = jsonName;
 		}

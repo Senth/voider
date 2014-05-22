@@ -71,14 +71,13 @@ java.lang.Float: {
 	slider_width: {value: 122},
 	// Slider tex width/max size
 	slider_label_width: {value: 70},
-	
-	
-	/* Other */
-	
 	// Standard icon and row height
 	icon_row_height: {value: 32},
 	// Height of upper and lower bars.
-	bar_upper_lower_height: {value: 40},
+	bar_upper_lower_height: {value: 40},	
+	
+	/* Other */
+
 	// Fade in/out duration for wait window. Wait window displays loading icon or progress bar
 	wait_window_fade_in: {value: 0.2},
 	wait_window_fade_out: {value: 0.6},

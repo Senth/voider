@@ -355,7 +355,7 @@ public class SelectDefGui extends Gui {
 	}
 
 	/**
-	 * Initialize level
+	 * Initialize content
 	 */
 	private void initContent() {
 		// TODO change scroll pane style to no visible scroll bars
@@ -396,14 +396,14 @@ public class SelectDefGui extends Gui {
 
 	/**
 	 * Reset content
-	 * @param levels level to update
+	 * @param defs definitions to update
 	 */
-	synchronized void resetContent(ArrayList<DefVisible> levels) {
+	synchronized void resetContent(ArrayList<DefVisible> defs) {
 		// Populate table
 		AlignTable table = mWidgets.content.table;
 		table.dispose();
 
-		if (levels.isEmpty()) {
+		if (defs.isEmpty()) {
 			return;
 		}
 
@@ -412,7 +412,7 @@ public class SelectDefGui extends Gui {
 		mWidgets.content.buttonGroup = new ButtonGroup();
 
 
-		addContent(levels);
+		addContent(defs);
 
 		resetInfo();
 
@@ -422,10 +422,10 @@ public class SelectDefGui extends Gui {
 	}
 
 	/**
-	 * Adds more levels to the existing content
-	 * @param levels the levels to add
+	 * Adds more definitions to the existing content
+	 * @param defs the definitions to add
 	 */
-	void addContent(ArrayList<DefVisible> levels) {
+	void addContent(ArrayList<DefVisible> defs) {
 		AlignTable table = mWidgets.content.table;
 
 		// Calculate how many levels per row
@@ -438,8 +438,8 @@ public class SelectDefGui extends Gui {
 		int columnIndex = levelsPerRow;
 
 		// Populate table
-		for (DefVisible level : levels) {
-			AlignTable levelTable = createLevelTable(level);
+		for (DefVisible level : defs) {
+			AlignTable levelTable = createDefTable(level);
 
 			if (columnIndex == levelsPerRow) {
 				table.row().setFillWidth(true).setEqualCellSize(true);
@@ -470,7 +470,7 @@ public class SelectDefGui extends Gui {
 	 * @param def the definition to create an image for
 	 * @return table with definition image and name
 	 */
-	private AlignTable createLevelTable(final DefVisible def) {
+	private AlignTable createDefTable(final DefVisible def) {
 		AlignTable table = new AlignTable();
 		table.setAlign(Horizontal.CENTER, Vertical.MIDDLE);
 
@@ -515,7 +515,7 @@ public class SelectDefGui extends Gui {
 		};
 		mWidgets.content.buttonGroup.add(button);
 
-		// Level name
+		// Def name
 		Label label = new Label(def.def.getName(), (LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_DEFAULT));
 		table.row();
 		table.add(label);

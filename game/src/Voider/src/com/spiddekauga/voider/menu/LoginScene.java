@@ -20,7 +20,6 @@ import com.spiddekauga.voider.utils.User;
 
 /**
  * Login scene
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class LoginScene extends Scene implements ICallerResponseListener {
@@ -30,7 +29,7 @@ public class LoginScene extends Scene implements ICallerResponseListener {
 	public LoginScene() {
 		super(new LoginGui());
 
-		((LoginGui)mGui).setLoginScene(this);
+		((LoginGui) mGui).setLoginScene(this);
 	}
 
 	@Override
@@ -78,7 +77,7 @@ public class LoginScene extends Scene implements ICallerResponseListener {
 		}
 		// Test offline
 		else {
-			((LoginGui)mGui).focusUsernameField();
+			((LoginGui) mGui).focusUsernameField();
 		}
 	}
 
@@ -108,7 +107,7 @@ public class LoginScene extends Scene implements ICallerResponseListener {
 			} else {
 				mGui.showErrorMessage("No username with that password exists");
 			}
-			((LoginGui)mGui).focusUsernameField();
+			((LoginGui) mGui).focusUsernameField();
 			break;
 
 
@@ -124,11 +123,11 @@ public class LoginScene extends Scene implements ICallerResponseListener {
 					if (e.getCause() instanceof SQLiteGdxException) {
 						mGui.showErrorMessage("Another instance with this user is already running");
 					}
-					((LoginGui)mGui).focusUsernameField();
+					((LoginGui) mGui).focusUsernameField();
 				}
 			} else {
 				mGui.showErrorMessage("Could not connect to server");
-				((LoginGui)mGui).focusUsernameField();
+				((LoginGui) mGui).focusUsernameField();
 			}
 			break;
 		}
@@ -146,27 +145,6 @@ public class LoginScene extends Scene implements ICallerResponseListener {
 		mLoggingInUser.setPassword(password);
 		mUserWebRepo.login(this, username, password, UserLocalRepo.getClientId());
 		mGui.showWaitWindow("Logging in");
-	}
-
-	/**
-	 * Try to login offline
-	 * @param username
-	 * @param password
-	 * @return true if succeeded
-	 */
-	private boolean loginOffline(String username, String password) {
-		User foundUser = UserLocalRepo.getTempUser(username);
-
-		if (foundUser != null) {
-			if (password.equals(foundUser.getPassword())) {
-				UserLocalRepo.setLastUser(foundUser.getUsername(), password);
-				mUser.login(mLoggingInUser.getUsername(), foundUser.getServerKey(), false);
-				setOutcome(Outcomes.LOGGED_IN);
-				return true;
-			}
-		}
-
-		return false;
 	}
 
 	/**
@@ -205,10 +183,10 @@ public class LoginScene extends Scene implements ICallerResponseListener {
 			break;
 
 
-			// Connection or server error, create a local user instead
+		// Connection or server error, create a local user instead
 		case FAIL_SERVER_CONNECTION:
 		case FAIL_SERVER_ERROR:
-			((LoginGui)mGui).showCouldNotCreateUser();
+			((LoginGui) mGui).showCouldNotCreateUser();
 			break;
 		}
 

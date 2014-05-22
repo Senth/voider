@@ -21,7 +21,6 @@ import com.spiddekauga.voider.scene.Gui;
 
 /**
  * GUI for login
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class LoginGui extends Gui {
@@ -80,7 +79,7 @@ public class LoginGui extends Gui {
 			@Override
 			protected void onDone(String newText) {
 				if (isLoginFieldsValid(false)) {
-					//					login();
+					// login();
 				}
 			}
 		};
@@ -101,7 +100,7 @@ public class LoginGui extends Gui {
 			@Override
 			protected void onDone(String newText) {
 				if (isLoginFieldsValid(false)) {
-					//					login();
+					// login();
 				}
 			}
 		};
@@ -135,7 +134,7 @@ public class LoginGui extends Gui {
 
 		mWidgets.login.table.layout();
 
-		float windowPadding = SkinNames.getResource(SkinNames.GeneralVars.PADDING_WINDOW_LEFT_RIGHT);
+		float windowPadding = SkinNames.getResource(SkinNames.GeneralVars.PADDING_INNER);
 		mWidgets.login.window = new Window("", skin, SkinNames.General.WINDOW_NO_TITLE.toString());
 		mWidgets.login.window.add(mWidgets.login.table).pad(windowPadding);
 		mMainTable.add(mWidgets.login.window);
@@ -184,10 +183,7 @@ public class LoginGui extends Gui {
 	 * Try to register with the specified fields
 	 */
 	private void register() {
-		mLoginScene.register(
-				mWidgets.register.username.getText(),
-				mWidgets.register.password.getText(),
-				mWidgets.register.email.getText());
+		mLoginScene.register(mWidgets.register.username.getText(), mWidgets.register.password.getText(), mWidgets.register.email.getText());
 
 
 		// TODO Show registering GIF
@@ -250,7 +246,7 @@ public class LoginGui extends Gui {
 			@Override
 			protected void onDone(String newText) {
 				if (isRegisterFieldsValid(false)) {
-					//					register();
+					// register();
 				}
 			}
 		};
@@ -271,7 +267,7 @@ public class LoginGui extends Gui {
 			@Override
 			protected void onDone(String newText) {
 				if (isRegisterFieldsValid(false)) {
-					//					register();
+					// register();
 				}
 			}
 		};
@@ -292,7 +288,7 @@ public class LoginGui extends Gui {
 			@Override
 			protected void onDone(String newText) {
 				if (isRegisterFieldsValid(false)) {
-					//					register();
+					// register();
 				}
 			}
 		};
@@ -310,7 +306,7 @@ public class LoginGui extends Gui {
 			@Override
 			protected void onDone(String newText) {
 				if (isRegisterFieldsValid(false)) {
-					//					register();
+					// register();
 				}
 			}
 		};
@@ -352,7 +348,8 @@ public class LoginGui extends Gui {
 
 
 		mWidgets.register.window.layout();
-		mWidgets.register.window.setSize(mWidgets.register.table.getWidth() + windowPadding * 2, mWidgets.register.table.getHeight() + windowPadding * 2);
+		mWidgets.register.window.setSize(mWidgets.register.table.getWidth() + windowPadding * 2, mWidgets.register.table.getHeight() + windowPadding
+				* 2);
 	}
 
 	/**
@@ -362,9 +359,7 @@ public class LoginGui extends Gui {
 		MsgBoxExecuter msgBox = getFreeMsgBox(true);
 
 		msgBox.setTitle("Could not connect to server!");
-		msgBox.content("To fix this either wait a couple of hours (if\n"
-				+ "server is down) or connect your device to the\n"
-				+ "Internet.\n\n"
+		msgBox.content("To fix this either wait a couple of hours (if\n" + "server is down) or connect your device to the\n" + "Internet.\n\n"
 				+ "Sorry for your incovenience.");
 
 		msgBox.addCancelButtonAndKeys("OK");

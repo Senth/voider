@@ -33,30 +33,30 @@ import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Listens to a GUI actor to display a tooltip for it.
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class TooltipListener extends InputAdapter implements EventListener {
 	/**
-	 * Creates a tooltip listener that will listen to the specified
-	 * actor. This will automatically adds itself as a listener to
-	 * the actor.
+	 * Creates a tooltip listener that will listen to the specified actor. This will
+	 * automatically adds itself as a listener to the actor.
 	 * @param actor the GUI actor to listen to
 	 * @param message the message in the tooltip
 	 */
-	public TooltipListener(Actor actor, String message) {
-		this(actor, message, (String)null);
+	public TooltipListener(
+			Actor actor, String message) {
+		this(actor, message, (String) null);
 	}
 
 	/**
-	 * Creates a tooltip listener that will listen to the specified actor.
-	 * Automatically adds itself as a listener to the actor. In addition to showing a
-	 * message a YouTube button will be displayed to link to the tutorial.
+	 * Creates a tooltip listener that will listen to the specified actor. Automatically
+	 * adds itself as a listener to the actor. In addition to showing a message a YouTube
+	 * button will be displayed to link to the tutorial.
 	 * @param actor the GUI actor to listen to
 	 * @param message optional text message, set to null if not used.
 	 * @param youtubeUrl optional tutorial URL, set to null if not used.
 	 */
-	public TooltipListener(Actor actor, String message, String youtubeUrl) {
+	public TooltipListener(
+			Actor actor, String message, String youtubeUrl) {
 		mMessage = message;
 		mActor = actor;
 		mYoutubeUrl = youtubeUrl;
@@ -71,13 +71,13 @@ public class TooltipListener extends InputAdapter implements EventListener {
 			mWindow.setModal(false);
 			mMessageLabel = new Label("", uiSkin);
 			mMessageLabel.setWrap(true);
-			//			mDescriptiveLabel = new Label("", uiSkin);
+			// mDescriptiveLabel = new Label("", uiSkin);
 			mTable = new AlignTable();
 			mWindow.add(mTable);
 
-			float leftRightPadding = uiSkin.get(SkinNames.GeneralVars.PADDING_WINDOW_LEFT_RIGHT.toString(), Float.class);
-			mWindowLeftRightMargin = leftRightPadding;
-			mTable.setPaddingRowDefault(0, leftRightPadding, leftRightPadding, leftRightPadding);
+			float windowPadding = uiSkin.get(SkinNames.GeneralVars.PADDING_INNER.toString(), Float.class);
+			mWindowPadding = windowPadding;
+			mTable.setPaddingRowDefault(windowPadding);
 			mTable.setAlignTable(Horizontal.LEFT, Vertical.MIDDLE);
 			mTable.setAlignRow(Horizontal.LEFT, Vertical.TOP);
 		}
@@ -89,86 +89,91 @@ public class TooltipListener extends InputAdapter implements EventListener {
 	}
 
 	/**
-	 * Creates a tooltip listener that will listen to the specified actor.
-	 * This will automatically adds itself as a listener to the actor.
-	 * Shows an animation as a tooltip.
+	 * Creates a tooltip listener that will listen to the specified actor. This will
+	 * automatically adds itself as a listener to the actor. Shows an animation as a
+	 * tooltip.
 	 * @param actor the GUI actor to listen to
 	 * @param title the title of the tooltip window
 	 * @param animation the animation to show as a tooltip
 	 */
-	public TooltipListener(Actor actor, String title, AnimationWidget animation) {
+	public TooltipListener(
+			Actor actor, String title, AnimationWidget animation) {
 		this(actor, title, animation, null, null);
 	}
 
 	/**
-	 * Creates a tooltip listener that will listen to the specified actor.
-	 * This will automatically adds itself as a listener to the actor.
-	 * Shows an animation as a tooltip and a message.
+	 * Creates a tooltip listener that will listen to the specified actor. This will
+	 * automatically adds itself as a listener to the actor. Shows an animation as a
+	 * tooltip and a message.
 	 * @param actor the GUI actor to listen to
 	 * @param title the title of the tooltip window
 	 * @param animation the animation to show as a tooltip
 	 * @param message the text message to show in addition to the animation
 	 */
-	public TooltipListener(Actor actor, String title, AnimationWidget animation, String message) {
+	public TooltipListener(
+			Actor actor, String title, AnimationWidget animation, String message) {
 		this(actor, title, animation, message, null);
 	}
 
 	/**
-	 * Creates a tooltip listener that will listen to the specified actor.
-	 * This will automatically adds itself as a listener to the actor.
-	 * Shows an animation as a tooltip and a message.
+	 * Creates a tooltip listener that will listen to the specified actor. This will
+	 * automatically adds itself as a listener to the actor. Shows an animation as a
+	 * tooltip and a message.
 	 * @param actor the GUI actor to listen to
 	 * @param title the title of the tooltip window
 	 * @param animation the animation to show as a tooltip
 	 * @param message the text message to show in addition to the animation
 	 * @param youtubeUrl the YouTube URL to a tutorial how to use the tool
 	 */
-	public TooltipListener(Actor actor, String title, AnimationWidget animation, String message, String youtubeUrl) {
+	public TooltipListener(
+			Actor actor, String title, AnimationWidget animation, String message, String youtubeUrl) {
 		this(actor, message, youtubeUrl);
 
 		mAnimation = animation;
 
-		//		if (mAnimation != null) {
-		//			mDescriptiveText = "A = Toggle animation\n" + mDescriptiveText;
-		//		}
+		// if (mAnimation != null) {
+		// mDescriptiveText = "A = Toggle animation\n" + mDescriptiveText;
+		// }
 	}
 
 	/**
-	 * Creates a tooltip listener that will listen to the specified actor.
-	 * This will automatically adds itself as a listener to the actor.
-	 * Shows an image as a tooltip.
+	 * Creates a tooltip listener that will listen to the specified actor. This will
+	 * automatically adds itself as a listener to the actor. Shows an image as a tooltip.
 	 * @param actor the GUI actor to listen to
 	 * @param title the title of the tooltip window
 	 * @param image the image to show as a tooltip
 	 */
-	public TooltipListener(Actor actor, String title, Image image) {
+	public TooltipListener(
+			Actor actor, String title, Image image) {
 		this(actor, title, image, null, null);
 	}
 
 	/**
-	 * Creates a tooltip listener that will listen to the specified actor.
-	 * This will automatically adds itself as a listener to the actor.
-	 * Shows an image as a tooltip and a message.
+	 * Creates a tooltip listener that will listen to the specified actor. This will
+	 * automatically adds itself as a listener to the actor. Shows an image as a tooltip
+	 * and a message.
 	 * @param actor the GUI actor to listen to
 	 * @param title the title of the tooltip window
 	 * @param image the image to show as a tooltip
 	 * @param message the text message to show in addition to the image
 	 */
-	public TooltipListener(Actor actor, String title, Image image, String message) {
+	public TooltipListener(
+			Actor actor, String title, Image image, String message) {
 		this(actor, title, image, message, null);
 	}
 
 	/**
-	 * Creates a tooltip listener that will listen to the specified actor.
-	 * This will automatically adds itself as a listener to the actor.
-	 * Shows an image as a tooltip and a message.
+	 * Creates a tooltip listener that will listen to the specified actor. This will
+	 * automatically adds itself as a listener to the actor. Shows an image as a tooltip
+	 * and a message.
 	 * @param actor the GUI actor to listen to
 	 * @param title the title of the tooltip window
 	 * @param image the image to show as a tooltip
 	 * @param message the text message to show in addition to the image
 	 * @param youtubeUrl the YouTube URL to a tutorial how to use the tool
 	 */
-	public TooltipListener(Actor actor, String title, Image image, String message, String youtubeUrl) {
+	public TooltipListener(
+			Actor actor, String title, Image image, String message, String youtubeUrl) {
 		this(actor, message, youtubeUrl);
 
 		mImage = image;
@@ -225,8 +230,7 @@ public class TooltipListener extends InputAdapter implements EventListener {
 					scheduleShowMsgBoxTask();
 				}
 				return true;
-			}
-			else if (inputEvent.getType() == Type.touchUp) {
+			} else if (inputEvent.getType() == Type.touchUp) {
 				cancelShowMsgBoxTask();
 				return true;
 			}
@@ -335,14 +339,11 @@ public class TooltipListener extends InputAdapter implements EventListener {
 	}
 
 	/**
-	 * Updates the window position to the current cursor position. The position
-	 * will be one of the corners of the window. The ordering is as follows
-	 * \li Lower right corner
-	 * \li Lower left corner
-	 * \li Upper right corner
-	 * \li Upper left corner
-	 * If the window would be outside of the screen, it will chose a position with
-	 * a lower priority until it finds one where the whole window is inside the screen.
+	 * Updates the window position to the current cursor position. The position will be
+	 * one of the corners of the window. The ordering is as follows \li Lower right corner
+	 * \li Lower left corner \li Upper right corner \li Upper left corner If the window
+	 * would be outside of the screen, it will chose a position with a lower priority
+	 * until it finds one where the whole window is inside the screen.
 	 */
 	private static void updateWindowPosition() {
 		if (mWindow.getStage() != null) {
@@ -410,8 +411,8 @@ public class TooltipListener extends InputAdapter implements EventListener {
 		Vector2 min = Pools.vector2.obtain().set(0, 0);
 		mActor.localToStageCoordinates(min);
 
-		int width = (int)mActor.getWidth();
-		int height = (int)mActor.getHeight();
+		int width = (int) mActor.getWidth();
+		int height = (int) mActor.getHeight();
 
 		int minX = (int) (min.x);
 		int minY = (int) (min.y);
@@ -480,10 +481,10 @@ public class TooltipListener extends InputAdapter implements EventListener {
 			mTable.add(mMessageLabel);
 		}
 
-		//		// Add descriptive text
-		//		mDescriptiveLabel.setText(mDescriptiveText);
-		//		mTable.row().setPadTop(separatorPadding);
-		//		mTable.add(mDescriptiveLabel);
+		// // Add descriptive text
+		// mDescriptiveLabel.setText(mDescriptiveText);
+		// mTable.row().setPadTop(separatorPadding);
+		// mTable.add(mDescriptiveLabel);
 
 		setWrapWidth();
 		mTable.layout();
@@ -494,8 +495,8 @@ public class TooltipListener extends InputAdapter implements EventListener {
 	 * Shows the message box
 	 */
 	private void showMsgBox() {
-		//		mMsgBox = mGui.getFreeMsgBox(mTitle != null && mTitle.length() > 0);
-		//		mMsgBox.setTitle(mTitle);
+		// mMsgBox = mGui.getFreeMsgBox(mTitle != null && mTitle.length() > 0);
+		// mMsgBox.setTitle(mTitle);
 		mMsgBox = mGui.getFreeMsgBox(false);
 		mMsgBox.addCancelButtonAndKeys("OK");
 		mMessageLabel.setText(mMessage);
@@ -514,7 +515,7 @@ public class TooltipListener extends InputAdapter implements EventListener {
 
 		int wrapWidth = (int) (Math.sqrt(prefHeight * prefWidth) * 1.5f);
 
-		float windowMargin = mWindowLeftRightMargin * 2;
+		float windowMargin = mWindowPadding * 2;
 		if (wrapWidth > Gdx.graphics.getWidth() - windowMargin) {
 			wrapWidth = (int) (Gdx.graphics.getWidth() - windowMargin);
 		}
@@ -597,22 +598,24 @@ public class TooltipListener extends InputAdapter implements EventListener {
 	private boolean mShowMessage = false;
 	/** YouTube URL, optional */
 	private String mYoutubeUrl = null;
-	//	/** Descriptive text of button uses */
-	//	private String mDescriptiveText = "";
+	// /** Descriptive text of button uses */
+	// private String mDescriptiveText = "";
 	/** Window name */
 	private String mWindowName = null;
 
-	/** Window for all tooltip listeners (as only one tooltip can be
-	 * displayed at the same time this is static */
+	/**
+	 * Window for all tooltip listeners (as only one tooltip can be displayed at the same
+	 * time this is static
+	 */
 	private static Window mWindow = null;
 	/** Label inside the window */
 	private static Label mMessageLabel = null;
-	//	/** Descriptive text for window how to use control */
-	//	private static Label mDescriptiveLabel = null;
+	// /** Descriptive text for window how to use control */
+	// private static Label mDescriptiveLabel = null;
 	/** The table to show everything in */
 	private static AlignTable mTable = null;
 	/** Window left/right margin */
-	private static float mWindowLeftRightMargin = 0;
+	private static float mWindowPadding = 0;
 	/** Window id counter */
 	private static int mcTooltips = 0;
 }

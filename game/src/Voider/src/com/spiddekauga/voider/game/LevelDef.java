@@ -2,15 +2,16 @@ package com.spiddekauga.voider.game;
 
 import java.util.UUID;
 
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.utils.kryo.KryoPostRead;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.Resource;
+import com.spiddekauga.voider.resources.SkinNames;
 
 /**
  * Level definition of a level. I.e. this is the level's header information
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class LevelDef extends Def implements KryoPostRead {
@@ -43,7 +44,7 @@ public class LevelDef extends Def implements KryoPostRead {
 	public <ResourceType> ResourceType copyNewResource() {
 		ResourceType copy = super.copyNewResource();
 
-		LevelDef defCopy = (LevelDef)copy;
+		LevelDef defCopy = (LevelDef) copy;
 		defCopy.mLevelId = UUID.randomUUID();
 		defCopy.mCampaignId = null;
 
@@ -60,8 +61,8 @@ public class LevelDef extends Def implements KryoPostRead {
 
 	/**
 	 * Sets the campaign id the level belongs to
-	 * @param campaignId the campaign id the level belongs to, set to null
-	 * if the level don't belong to any campaign
+	 * @param campaignId the campaign id the level belongs to, set to null if the level
+	 *        don't belong to any campaign
 	 */
 	public void setCampaignId(UUID campaignId) {
 		mCampaignId = campaignId;
@@ -90,8 +91,8 @@ public class LevelDef extends Def implements KryoPostRead {
 	}
 
 	/**
-	 * Sets a new story that is displayed after the level ends, i.e. the player
-	 * clears the map.
+	 * Sets a new story that is displayed after the level ends, i.e. the player clears the
+	 * map.
 	 * @param epilogue the new story to be displayed after the level ends.
 	 */
 	public void setStoryAfter(String epilogue) {
@@ -115,9 +116,9 @@ public class LevelDef extends Def implements KryoPostRead {
 	}
 
 	/**
-	 * Sets the base speed of the level. This should only be changed when
-	 * editing the map, and for the whole level. To change the level's current
-	 * speed see #Level.setSpeed(float)
+	 * Sets the base speed of the level. This should only be changed when editing the map,
+	 * and for the whole level. To change the level's current speed see
+	 * #Level.setSpeed(float)
 	 * @param speed the new base speed
 	 */
 	public void setBaseSpeed(float speed) {
@@ -185,8 +186,8 @@ public class LevelDef extends Def implements KryoPostRead {
 	}
 
 	/**
-	 * Calculates the length of the level depending on the start, end, and
-	 * speed of the level.
+	 * Calculates the length of the level depending on the start, end, and speed of the
+	 * level.
 	 */
 	private void calculateLength() {
 		float length = mEndXCoord - mStartXCoord;
@@ -198,23 +199,48 @@ public class LevelDef extends Def implements KryoPostRead {
 		calculateLength();
 	}
 
+	/**
+	 * Use placeholder image if no screenshot has been taken
+	 * @return placeholder image of screenshot
+	 */
+	@Override
+	public TextureRegionDrawable getTextureRegionDrawable() {
+		TextureRegionDrawable drawable = super.getTextureRegionDrawable();
+
+		if (drawable == null) {
+			drawable = (TextureRegionDrawable) SkinNames.getDrawable(SkinNames.GeneralImages.SCREENSHOT_PLACEHOLDER);
+		}
+
+		return drawable;
+	}
+
 	/** Starting coordinate of the level (right screen edge) */
-	@Tag(78) private float mStartXCoord = 0;
+	@Tag(78)
+	private float mStartXCoord = 0;
 	/** The actual level id, i.e. not this definition's id */
-	@Tag(79) private UUID mLevelId = null;
+	@Tag(79)
+	private UUID mLevelId = null;
 	/** Campaign id the level belongs to, null if it doesn't belong to any */
-	@Tag(80) private UUID mCampaignId = null;
+	@Tag(80)
+	private UUID mCampaignId = null;
 	/** Story before the level, set to null to not show */
-	@Tag(81) private String mPrologue = "";
+	@Tag(81)
+	private String mPrologue = "";
 	/** Story after the level, set to null to not show */
-	@Tag(82) private String mEpilogue = "";
-	/** Base speed of the level, the actual level speed may vary as it can
-	 * be changed by triggers */
-	@Tag(83) private float mSpeed = Config.Editor.Level.LEVEL_SPEED_DEFAULT;
+	@Tag(82)
+	private String mEpilogue = "";
+	/**
+	 * Base speed of the level, the actual level speed may vary as it can be changed by
+	 * triggers
+	 */
+	@Tag(83)
+	private float mSpeed = Config.Editor.Level.LEVEL_SPEED_DEFAULT;
 	/** End of the map (right screen edge) */
-	@Tag(84) private float mEndXCoord = 100;
+	@Tag(84)
+	private float mEndXCoord = 100;
 	/** Theme of the level */
-	@Tag(109) private Themes mTheme = null;
+	@Tag(109)
+	private Themes mTheme = null;
 	/** Length of the level in seconds */
 	private float mLengthInTime = 0;
 

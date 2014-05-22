@@ -8,6 +8,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.spiddekauga.voider.Config.Debug;
 import com.spiddekauga.voider.repo.ResourceLocalRepo;
+import com.spiddekauga.voider.repo.ResourceRepo;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.utils.Pools;
 
@@ -18,7 +19,7 @@ import com.spiddekauga.voider.utils.Pools;
  * it can be used. This can be done with the various load() methods. To read (and get an
  * object) from the cache, use one of the get() methods. To unload cache use one of the
  * appropriate unload() methods.
- * @see ResourceSaver for how to save files
+ * @see ResourceRepo for how to save files
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class ResourceCacheFacade {

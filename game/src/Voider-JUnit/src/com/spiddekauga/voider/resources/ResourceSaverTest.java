@@ -23,7 +23,6 @@ import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Tests the ResourceSaver if it works to save files.
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class ResourceSaverTest {
@@ -50,14 +49,16 @@ public class ResourceSaverTest {
 	}
 
 	/**
-	 * Test method for {@link com.spiddekauga.voider.resources.ResourceSaver#save(com.spiddekauga.voider.resources.IResource)}.
+	 * Test method for
+	 * {@link com.spiddekauga.voider.repo.ResourceRepo#save(com.spiddekauga.voider.resources.IResource[])}
+	 * .
 	 */
 	@Test
 	public void testSave() {
 		Def def = new PickupActorDef();
 
 		// Test to save it and then load
-		//		ResourceSaver.save(def);
+		// ResourceSaver.save(def);
 
 		String relativePath = ResourceLocalRepo.getFilepath(def);
 		FileHandle savedFile = Gdx.files.external(relativePath);
@@ -81,7 +82,7 @@ public class ResourceSaverTest {
 
 		// Save it again, now a new revision should be created
 		def.addDependency(InternalNames.TEXTURE_PLAYER);
-		//		ResourceSaver.save(def);
+		// ResourceSaver.save(def);
 
 		relativePath = ResourceLocalRepo.getFilepath(def);
 		savedFile = Gdx.files.external(relativePath);
@@ -99,7 +100,7 @@ public class ResourceSaverTest {
 
 
 		// Delete the files
-		//		ResourceSaver.clearResources();
+		// ResourceSaver.clearResources();
 	}
 
 }

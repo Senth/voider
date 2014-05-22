@@ -30,6 +30,7 @@ import com.spiddekauga.voider.game.actors.PlayerActor;
 import com.spiddekauga.voider.game.actors.PlayerActorDef;
 import com.spiddekauga.voider.menu.GameOverScene;
 import com.spiddekauga.voider.repo.ResourceLocalRepo;
+import com.spiddekauga.voider.repo.ResourceRepo;
 import com.spiddekauga.voider.resources.ExternalTypes;
 import com.spiddekauga.voider.resources.InternalNames;
 import com.spiddekauga.voider.resources.ResourceCacheFacade;
@@ -39,22 +40,24 @@ import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.scene.WorldScene;
 import com.spiddekauga.voider.utils.Pools;
+
 /**
- * The main game. Starts with a level and could either be in regular or
- * testing mode. Testing mode will set the player to unlimited lives.
- * 
+ * The main game. Starts with a level and could either be in regular or testing mode.
+ * Testing mode will set the player to unlimited lives.
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class GameScene extends WorldScene {
 	/**
 	 * Initializes the game scene.
-	 * @param testing if we're testing the level. This allows the player to go back using ESC or BACK key
+	 * @param testing if we're testing the level. This allows the player to go back using
+	 *        ESC or BACK key
 	 * @param invulnerable set to true to make the player invulnerable while testing.
-	 * Scoring will still be used (player could be testing scoring.
+	 *        Scoring will still be used (player could be testing scoring.
 	 */
-	public GameScene(boolean testing, boolean invulnerable) {
+	public GameScene(
+			boolean testing, boolean invulnerable) {
 		super(new GameSceneGui(), Config.Editor.PICKING_CIRCLE_RADIUS_EDITOR);
-		((GameSceneGui)mGui).setGameScene(this);
+		((GameSceneGui) mGui).setGameScene(this);
 
 		mTesting = testing;
 		mInvulnerable = invulnerable;
@@ -87,7 +90,7 @@ public class GameScene extends WorldScene {
 				mCamera.viewportWidth = width;
 				mCamera.update();
 			} else {
-				mCamera = new OrthographicCamera(width , height);
+				mCamera = new OrthographicCamera(width, height);
 			}
 			mCamera.position.y += barHeight * Config.Graphics.WORLD_SCALE * 0.5f;
 		}
@@ -284,8 +287,7 @@ public class GameScene extends WorldScene {
 			if (getOutcome() == Outcomes.LEVEL_QUIT) {
 				GameSave gameSave = new GameSave(mLevel, mPlayerActor, mBulletDestroyer, getGameTime());
 				GameSaveDef gameSaveDef = new GameSaveDef(gameSave);
-				//				ResourceSaver.save(gameSave);
-				//				ResourceSaver.save(gameSaveDef);
+				mResourceRepo.save(gameSaveDef, gameSave);
 			}
 		}
 
@@ -352,7 +354,7 @@ public class GameScene extends WorldScene {
 				mShapeRenderer.setShader(defaultShader);
 			}
 			mSpriteBatch.setShader(SpriteBatch.createDefaultShader());
-			//			mSpriteBatch.setProjectionMatrix(mCamera.combined);
+			// mSpriteBatch.setProjectionMatrix(mCamera.combined);
 			mShapeRenderer.setProjectionMatrix(mCamera.combined);
 
 			// Render sprites
@@ -393,10 +395,10 @@ public class GameScene extends WorldScene {
 	private void updateLifePosition() {
 		Vector2 position = Pools.vector2.obtain();
 		position.x = mLevel.getXCoord() - mPlayerActor.getBoundingRadius() - Config.Game.LIVES_OFFSET_POSITION;
-		position.y = -SceneSwitcher.getWorldHeight()/2 + Config.Game.LIVES_OFFSET_POSITION + mPlayerActor.getBoundingRadius();
+		position.y = -SceneSwitcher.getWorldHeight() / 2 + Config.Game.LIVES_OFFSET_POSITION + mPlayerActor.getBoundingRadius();
 		for (PlayerActor lifeActor : mPlayerLifeShips) {
 			lifeActor.setPosition(position);
-			position.y += mPlayerActor.getBoundingRadius()*2 + Config.Game.LIVES_OFFSET_POSITION;
+			position.y += mPlayerActor.getBoundingRadius() * 2 + Config.Game.LIVES_OFFSET_POSITION;
 		}
 		Pools.vector2.free(position);
 	}
@@ -444,7 +446,7 @@ public class GameScene extends WorldScene {
 	}
 
 	// --------------------------------
-	//		Resource loading etc.
+	// Resource loading etc.
 	// --------------------------------
 	@Override
 	protected void loadResources() {
@@ -500,7 +502,7 @@ public class GameScene extends WorldScene {
 	}
 
 	// --------------------------------
-	//				EVENTS
+	// EVENTS
 	// --------------------------------
 	@Override
 	public boolean touchDown(int x, int y, int pointer, int button) {
@@ -686,6 +688,8 @@ public class GameScene extends WorldScene {
 		mBodyShepherdMaxPos.y += getWorldHeight();
 	}
 
+	/** Resource repository */
+	private ResourceRepo mResourceRepo = ResourceRepo.getInstance();
 	/** Bar height in world coordinates */
 	private float mBarHeight = -1;
 	/** Sprite renderer */
