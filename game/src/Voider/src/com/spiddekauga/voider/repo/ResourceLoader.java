@@ -18,6 +18,7 @@ import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.Logger;
 import com.badlogic.gdx.utils.Pool.Poolable;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.VoiderGame;
 import com.spiddekauga.voider.game.GameSave;
 import com.spiddekauga.voider.game.GameSaveDef;
 import com.spiddekauga.voider.game.Level;
@@ -256,9 +257,17 @@ class ResourceLoader {
 
 		// Unload if the resource is loaded
 		if (loadedResource != null) {
+
 			mUnloadQueue.add(loadedResource.filepath);
 
-			waitTillLoadingIsDone();
+			// Unload directly if main thread
+			if (VoiderGame.isMainThread()) {
+				do {
+					update();
+				} while (isLoading());
+			} else {
+				waitTillLoadingIsDone();
+			}
 
 			mLoadedResources.remove(uuidRevision);
 		}
@@ -310,7 +319,14 @@ class ResourceLoader {
 			final String latestFilepath = ResourceLocalRepo.getFilepath(resourceId);
 			mReloadQueue.add(new ReloadResource(latestFilepath, oldResource));
 
-			waitTillLoadingIsDone();
+			// Reload directly if main thread
+			if (VoiderGame.isMainThread()) {
+				do {
+					update();
+				} while (isLoading());
+			} else {
+				waitTillLoadingIsDone();
+			}
 		} else {
 			Gdx.app.error("ResourceLoader", "Latest resource was not loaded while trying to reload it");
 		}
@@ -514,8 +530,7 @@ class ResourceLoader {
 		 * @param filepath the file path of the resource to unload
 		 * @param oldResource the old loaded resource
 		 */
-		ReloadResource(
-				String filepath, Resource oldResource) {
+		ReloadResource(String filepath, Resource oldResource) {
 			this.filepath = filepath;
 			this.oldResource = oldResource;
 		}

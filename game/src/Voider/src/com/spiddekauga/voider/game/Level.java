@@ -31,9 +31,11 @@ import com.spiddekauga.voider.game.actors.PlayerActor;
 import com.spiddekauga.voider.game.triggers.TriggerAction.Actions;
 import com.spiddekauga.voider.game.triggers.TriggerInfo;
 import com.spiddekauga.voider.repo.ResourceCacheFacade;
+import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourceEditorRender;
 import com.spiddekauga.voider.resources.IResourceEditorUpdate;
+import com.spiddekauga.voider.resources.IResourceHasDef;
 import com.spiddekauga.voider.resources.IResourcePosition;
 import com.spiddekauga.voider.resources.IResourcePrepareWrite;
 import com.spiddekauga.voider.resources.IResourceRender;
@@ -46,13 +48,12 @@ import com.spiddekauga.voider.utils.Pools;
 
 /**
  * A game level
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public class Level extends Resource implements KryoPreWrite, KryoPostWrite, KryoPostRead, KryoTaggedCopyable, KryoSerializable, Disposable, IResourceRevision {
+public class Level extends Resource implements KryoPreWrite, KryoPostWrite, KryoPostRead, KryoTaggedCopyable, KryoSerializable, Disposable,
+		IResourceRevision, IResourceHasDef {
 	/**
-	 * Constructor which creates an new empty level with the bound
-	 * level definition
+	 * Constructor which creates an new empty level with the bound level definition
 	 * @param levelDef the level definition of this level
 	 */
 	public Level(LevelDef levelDef) {
@@ -154,8 +155,7 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 	}
 
 	/**
-	 * To easily get all the resources of a specific type after they have
-	 * been read.
+	 * To easily get all the resources of a specific type after they have been read.
 	 * @param <ResourceType> type of resources to return
 	 * @param resourceType the resource type (including derived) to return
 	 * @return a list of resources that are instances of the specified type.
@@ -173,8 +173,8 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 	}
 
 	/**
-	 * Sets the x-coordinate of the level. This makes the level jump to or start
-	 * at the specific place.
+	 * Sets the x-coordinate of the level. This makes the level jump to or start at the
+	 * specific place.
 	 * @param x the current x-coordinate of the level
 	 */
 	public void setStartPosition(float x) {
@@ -205,8 +205,8 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 	}
 
 	/**
-	 * Makes the level run, this will optimize the update and render processes.
-	 * Also makes the map move forward
+	 * Makes the level run, this will optimize the update and render processes. Also makes
+	 * the map move forward
 	 */
 	public void run() {
 		mRunning = true;
@@ -249,8 +249,8 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 		spriteBatch.draw(background, -layerOffset, 0, width, Gdx.graphics.getHeight());
 
 		// Do we need to draw second time (i.e. we draw beyond the border)
-		if (layerOffset-width < Gdx.graphics.getWidth()) {
-			spriteBatch.draw(background, -layerOffset+width, 0, width, Gdx.graphics.getHeight());
+		if (layerOffset - width < Gdx.graphics.getWidth()) {
+			spriteBatch.draw(background, -layerOffset + width, 0, width, Gdx.graphics.getHeight());
 		}
 	}
 
@@ -348,9 +348,8 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 	}
 
 	/**
-	 * Create default triggers for the enemies that doesn't have
-	 * an activate trigger yet—if they are in the group they
-	 * need to be the leader.
+	 * Create default triggers for the enemies that doesn't have an activate trigger
+	 * yet—if they are in the group they need to be the leader.
 	 */
 	public void createDefaultTriggers() {
 		ArrayList<EnemyActor> enemies = mResourceBinder.getResources(EnemyActor.class);
@@ -443,7 +442,16 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 	/**
 	 * @return the level definition
 	 */
-	public LevelDef getDef() {
+	@SuppressWarnings("unchecked")
+	@Override
+	public <DefType extends Def> DefType getDef() {
+		return (DefType) mLevelDef;
+	}
+
+	/**
+	 * @return level definition
+	 */
+	public LevelDef getLevelDef() {
 		return mLevelDef;
 	}
 
@@ -503,7 +511,7 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 		if (endPosition != Float.MIN_VALUE) {
 			endPosition += Config.Level.END_COORD_OFFSET;
 			mLevelDef.setEndXCoord(endPosition);
-		} else  {
+		} else {
 			mLevelDef.setEndXCoord(100);
 		}
 
@@ -520,8 +528,7 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 
 		// Remove multiple enemies from the group, i.e. only save the leader.
 		if (Actor.isEditorActive()) {
-			@SuppressWarnings("unchecked")
-			ArrayList<EnemyActor> removeEnemies = Pools.arrayList.obtain();
+			@SuppressWarnings("unchecked") ArrayList<EnemyActor> removeEnemies = Pools.arrayList.obtain();
 
 			for (EnemyActor enemyActor : mResourceBinder.getResources(EnemyActor.class)) {
 				int cEnemiesBefore = removeEnemies.size();
@@ -556,8 +563,7 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 	public void postRead() {
 		// Add all the removed enemies again
 		if (!mGroupEnemiesSave.isEmpty()) {
-			@SuppressWarnings("unchecked")
-			ArrayList<EnemyActor> addEnemies = Pools.arrayList.obtain();
+			@SuppressWarnings("unchecked") ArrayList<EnemyActor> addEnemies = Pools.arrayList.obtain();
 
 			for (Entry<EnemyGroup, Integer> entry : mGroupEnemiesSave.entrySet()) {
 				EnemyGroup enemyGroup = entry.getKey();
@@ -599,7 +605,7 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 	@Override
 	public void copy(Object fromOriginal) {
 		if (fromOriginal instanceof Level) {
-			Level fromLevel = (Level)fromOriginal;
+			Level fromLevel = (Level) fromOriginal;
 			mLevelDef = fromLevel.mLevelDef;
 		}
 	}
@@ -608,7 +614,7 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 	public <ResourceType> ResourceType copyNewResource() {
 		ResourceType copy = copy();
 
-		Level copyLevel = (Level)copy;
+		Level copyLevel = (Level) copy;
 
 		// Create a copy of the level definition too
 		LevelDef levelDef = (LevelDef) mLevelDef.copyNewResource();
@@ -631,26 +637,31 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 	/** Bottom layer background */
 	private TextureRegion mBackgroundBottom = null;
 	/** Contains all the resources used in this level */
-	@Tag(13) private ResourceBinder mResourceBinder = new ResourceBinder();
+	@Tag(13)
+	private ResourceBinder mResourceBinder = new ResourceBinder();
 	/** All resources that needs updating */
 	private ArrayList<IResourceUpdate> mResourceUpdates = null;
 	/** All resources that shall be rendered */
 	private ArrayList<IResourceRender> mResourceRenders = null;
 	/** Current x coordinate (of the screen's left edge) */
-	@Tag(14) private float mXCoord = 0.0f;
+	@Tag(14)
+	private float mXCoord = 0.0f;
 	/** Level definition for this level */
 	private LevelDef mLevelDef = null;
 	/** Current speed of the level */
-	@Tag(15) private float mSpeed;
+	@Tag(15)
+	private float mSpeed;
 	/** If the level has been completed */
-	@Tag(16) private boolean mCompletedLevel;
+	@Tag(16)
+	private boolean mCompletedLevel;
 	/** True if the level is running */
 	private boolean mRunning = false;
 	/** The player actor */
 	private PlayerActor mPlayerActor = null;
 	/** Multiple enemies in a group, but just save the leader and number of enemies */
-	@Tag(103) private Map<EnemyGroup, Integer> mGroupEnemiesSave = new HashMap<EnemyGroup, Integer>();
+	@Tag(103)
+	private Map<EnemyGroup, Integer> mGroupEnemiesSave = new HashMap<EnemyGroup, Integer>();
 
 	/** Revision of the actor */
-	protected final int CLASS_REVISION = 1;
+	protected static final int CLASS_REVISION = 1;
 }

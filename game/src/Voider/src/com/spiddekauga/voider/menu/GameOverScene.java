@@ -8,14 +8,12 @@ import com.spiddekauga.voider.repo.InternalNames;
 import com.spiddekauga.voider.repo.ResourceCacheFacade;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
-import com.spiddekauga.voider.utils.StatSyncer;
 
 /**
- * Score and game over scene. Displayed whether the player completed or failed a level.
- * If the level belongs to a campaign the player will continue to the next level (and
- * the player started the campaign and is not playing only this level). If the player
- * failed the game or is only playing this level add buttons for try again and main menu.
- * 
+ * Score and game over scene. Displayed whether the player completed or failed a level. If
+ * the level belongs to a campaign the player will continue to the next level (and the
+ * player started the campaign and is not playing only this level). If the player failed
+ * the game or is only playing this level add buttons for try again and main menu.
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class GameOverScene extends Scene {
@@ -30,7 +28,7 @@ public class GameOverScene extends Scene {
 		mPlayerStats = playerStats;
 		mLevelDef = levelDef;
 
-		((GameOverSceneGui)mGui).setGameOverScene(this);
+		((GameOverSceneGui) mGui).setGameOverScene(this);
 	}
 
 	/**
@@ -45,7 +43,8 @@ public class GameOverScene extends Scene {
 	protected void onActivate(Outcomes outcome, Object message) {
 		super.onActivate(outcome, message);
 
-		StatSyncer.uploadStats(mPlayerStats);
+		// TODO upload stats
+		// StatSyncer.uploadStats(mPlayerStats);
 	}
 
 	@Override

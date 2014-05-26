@@ -6,9 +6,8 @@ import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.voider.resources.Def;
 
 /**
- * Definition of a saved game. This essentially holds all dependencies
- * and the associated GameSave resource.
- * 
+ * Definition of a saved game. This essentially holds all dependencies and the associated
+ * GameSave resource.
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class GameSaveDef extends Def {
@@ -24,7 +23,7 @@ public class GameSaveDef extends Def {
 	}
 
 	/**
-	 * Default constructor for JSON
+	 * Default constructor for Kryo
 	 */
 	public GameSaveDef() {
 		// Does nothing
@@ -38,5 +37,6 @@ public class GameSaveDef extends Def {
 	}
 
 	/** Associated GameSave resource */
-	@Tag(77) private UUID mGameSaveId = null;
+	@Tag(77)
+	private UUID mGameSaveId = null;
 }

@@ -85,12 +85,15 @@ public class ResourceWebRepo extends WebRepo {
 	/**
 	 * Sync all user resource revisions, both upload and download
 	 * @param uploadResources all resources that should be uploaded
+	 * @param removeResources these will be deleted on the server
 	 * @param lastSync last synchronized date
 	 * @param responseListeners listens to the web response
 	 */
-	void syncUserResources(HashMap<UUID, ResourceRevisionEntity> uploadResources, Date lastSync, ICallerResponseListener... responseListeners) {
+	void syncUserResources(HashMap<UUID, ResourceRevisionEntity> uploadResources, ArrayList<UUID> removeResources, Date lastSync,
+			ICallerResponseListener... responseListeners) {
 		SyncUserResourcesMethod method = new SyncUserResourcesMethod();
 		method.lastSync = lastSync;
+		method.resourceToRemove = removeResources;
 
 		for (Entry<UUID, ResourceRevisionEntity> entry : uploadResources.entrySet()) {
 			method.resources.add(entry.getValue());

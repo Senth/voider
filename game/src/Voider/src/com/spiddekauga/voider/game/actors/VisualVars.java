@@ -35,7 +35,6 @@ import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Class for all shape variables
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class VisualVars implements KryoSerializable, Disposable, IResourceCorner {
@@ -60,8 +59,7 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 
 	@Override
 	public void read(Kryo kryo, Input input) {
-		@SuppressWarnings("unused")
-		int classRevision = input.readInt(true);
+		@SuppressWarnings("unused") int classRevision = input.readInt(true);
 
 		createFixtureDef();
 		calculateBoundingRadius();
@@ -335,8 +333,8 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 	}
 
 	/**
-	 * Sets the shape type of the enemy. This will clear the existing fixture shape
-	 * for the enemy and created another one with default values.
+	 * Sets the shape type of the enemy. This will clear the existing fixture shape for
+	 * the enemy and created another one with default values.
 	 * @param shapeType type of shape the enemy has
 	 */
 	public void setShapeType(ActorShapeTypes shapeType) {
@@ -494,10 +492,11 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 	public void setCenterOffset(Vector2 centerOffset) {
 		mCenterOffset.set(centerOffset);
 
-		//		// Special case for draw and circle...
-		//		if (mShapeType == ActorShapeTypes.CUSTOM && mCorners.size() > 0 && mCorners.size() <= 2) {
-		//			mCenterOffset.add(mCorners.get(0));
-		//		}
+		// // Special case for draw and circle...
+		// if (mShapeType == ActorShapeTypes.CUSTOM && mCorners.size() > 0 &&
+		// mCorners.size() <= 2) {
+		// mCenterOffset.add(mCorners.get(0));
+		// }
 
 		// Create new fixtures on the right place
 		setShapeType(mShapeType);
@@ -511,19 +510,20 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 	public void setCenterOffset(float x, float y) {
 		mCenterOffset.set(x, y);
 
-		//		// Special case for draw and circle...
-		//		if (mShapeType == ActorShapeTypes.CUSTOM && mCorners.size() > 0 && mCorners.size() <= 2) {
-		//			mCenterOffset.add(mCorners.get(0));
-		//		}
+		// // Special case for draw and circle...
+		// if (mShapeType == ActorShapeTypes.CUSTOM && mCorners.size() > 0 &&
+		// mCorners.size() <= 2) {
+		// mCenterOffset.add(mCorners.get(0));
+		// }
 
 		// Create new fixtures on the right place
 		setShapeType(mShapeType);
 	}
 
 	/**
-	 * Center the offset. This will set the offset to the middle of
-	 * the fixture(s). It will NOT set the center to (0,0) (only if the actual
-	 * center of the fixtures are there.
+	 * Center the offset. This will set the offset to the middle of the fixture(s). It
+	 * will NOT set the center to (0,0) (only if the actual center of the fixtures are
+	 * there.
 	 */
 	public void resetCenterOffset() {
 		Vector2 center = Pools.vector2.obtain();
@@ -554,7 +554,7 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 
 				center.scl(1f / mCorners.size());
 			} else {
-				center.set(0,0);
+				center.set(0, 0);
 			}
 			break;
 		}
@@ -580,11 +580,12 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 	}
 
 	/**
-	 * Readjusts/fixes the fixtures for the custom shape
-	 * would become too small. NOTE: When this exception is thrown all fixtures
-	 * have been removed and some might have been added. Fix the faulty corner
-	 * and call #fixCustomShapeFixtures() again to fix this.
-	 * @throws PolygonComplexException if the method failed to make the polygon non-complex
+	 * Readjusts/fixes the fixtures for the custom shape would become too small. NOTE:
+	 * When this exception is thrown all fixtures have been removed and some might have
+	 * been added. Fix the faulty corner and call #fixCustomShapeFixtures() again to fix
+	 * this.
+	 * @throws PolygonComplexException if the method failed to make the polygon
+	 *         non-complex
 	 * @throws PolygonCornersTooCloseException if some corners are too close
 	 */
 	@SuppressWarnings("unchecked")
@@ -740,7 +741,7 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 			CircleShape circle = new CircleShape();
 
 			Vector2 offsetPosition = Pools.vector2.obtain();
-			offsetPosition.set(0,0).sub(mCenterOffset).sub(mCorners.get(0));
+			offsetPosition.set(0, 0).sub(mCenterOffset).sub(mCorners.get(0));
 
 			float radius = 0;
 
@@ -782,7 +783,8 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 	}
 
 	/**
-	 * @return triangle vertices for the current shape. Grouped together in groups of three to form a triangle.
+	 * @return triangle vertices for the current shape. Grouped together in groups of
+	 *         three to form a triangle.
 	 */
 	public ArrayList<Vector2> getTriangleVertices() {
 		return mVertices;
@@ -799,7 +801,7 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 		CircleShape circleShape = new CircleShape();
 		circleShape.setRadius(mShapeCircleRadius);
 		/** @todo use center for all shapes */
-		//		circleShape.setPosition(centerOffset);
+		// circleShape.setPosition(centerOffset);
 
 		// Create vertices for the circle
 		ArrayList<Vector2> circleVertices = Geometry.createCircle(mShapeCircleRadius);
@@ -826,7 +828,7 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 		float halfHeight = mShapeHeight * 0.5f;
 
 		/** @todo use center for all shapes */
-		//		rectangleShape.setAsBox(halfWidth, halfHeight, centerOffset, 0);
+		// rectangleShape.setAsBox(halfWidth, halfHeight, centerOffset, 0);
 		rectangleShape.setAsBox(halfWidth, halfHeight);
 
 		clearVertices();
@@ -879,12 +881,12 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 
 		// It will look something like this:
 		// | \
-		// |   >
+		// | >
 		// | /
 
 		// Lower left corner
-		vertices[0].x = - mShapeWidth * 0.5f;
-		vertices[0].y = - mShapeHeight * 0.5f;
+		vertices[0].x = -mShapeWidth * 0.5f;
+		vertices[0].y = -mShapeHeight * 0.5f;
 
 		// Middle right corner
 		vertices[1].x = mShapeWidth * 0.5f;
@@ -892,7 +894,7 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 
 		// Upper left corner
 		vertices[2].x = vertices[0].x;
-		vertices[2].y = - vertices[0].y;
+		vertices[2].y = -vertices[0].y;
 
 
 		// Set the center...
@@ -903,7 +905,7 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 		for (Vector2 vertex : vertices) {
 			vertex.sub(center);
 			/** @todo use center for all shapes */
-			//			vertex.add(centerOffset);
+			// vertex.add(centerOffset);
 		}
 
 		PolygonShape polygonShape = new PolygonShape();
@@ -926,7 +928,8 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 	}
 
 	/**
-	 * Gets the first fixture definition. Prints an error if there are more or less fixtures than 1
+	 * Gets the first fixture definition. Prints an error if there are more or less
+	 * fixtures than 1
 	 * @return first fixture definition, null if none is found
 	 */
 	private FixtureDef getFirstFixtureDef() {
@@ -996,8 +999,7 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 	 * @return new array list with a copy of the vertices
 	 */
 	private ArrayList<Vector2> createCopy(ArrayList<Vector2> vertices) {
-		@SuppressWarnings("unchecked")
-		ArrayList<Vector2> copy = Pools.arrayList.obtain();
+		@SuppressWarnings("unchecked") ArrayList<Vector2> copy = Pools.arrayList.obtain();
 
 		for (Vector2 vertex : vertices) {
 			copy.add(Pools.vector2.obtain().set(vertex));
@@ -1009,8 +1011,8 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 	/**
 	 * Handles PolygonComplexException for #fixCustomShapeFixtures()
 	 * @param tempVertices
-	 * @param exception if null it will throw a new exception, else it will re-throw
-	 * the exception.
+	 * @param exception if null it will throw a new exception, else it will re-throw the
+	 *        exception.
 	 */
 	private void handlePolygonComplexException(ArrayList<Vector2> tempVertices, PolygonComplexException exception) {
 		Pools.vector2.freeAll(tempVertices);
@@ -1047,6 +1049,11 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 	}
 
 	@Override
+	public void setId(UUID id) {
+		// Does nothing
+	}
+
+	@Override
 	public boolean removeBoundResource(IResource boundResource) {
 		return false;
 	}
@@ -1068,26 +1075,36 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 
 
 	/** Color of the actor */
-	@Tag(52) private Color mColor = new Color();
+	@Tag(52)
+	private Color mColor = new Color();
 	/** Current shape of the enemy */
-	@Tag(49) private ActorShapeTypes mShapeType = null;
+	@Tag(49)
+	private ActorShapeTypes mShapeType = null;
 	/** radius of circle */
-	@Tag(60) private float mShapeCircleRadius;
+	@Tag(60)
+	private float mShapeCircleRadius;
 	/** width of rectangle/triangle */
-	@Tag(61) private float mShapeWidth;
+	@Tag(61)
+	private float mShapeWidth;
 	/** height of rectangle/triangle */
-	@Tag(62) private float mShapeHeight;
+	@Tag(62)
+	private float mShapeHeight;
 	/** Center offset for fixtures */
-	@Tag(51) private Vector2 mCenterOffset = Pools.vector2.obtain().set(0,0);
+	@Tag(51)
+	private Vector2 mCenterOffset = Pools.vector2.obtain().set(0, 0);
 	/** Corners of polygon, used for custom shapes */
 	@SuppressWarnings("unchecked")
-	@Tag(63) private ArrayList<Vector2> mCorners = Pools.arrayList.obtain();
-	/** Array list of the polygon figure, this contains the vertices but not
-	 * in triangles. Used for when creating a border of some kind */
+	@Tag(63)
+	private ArrayList<Vector2> mCorners = Pools.arrayList.obtain();
+	/**
+	 * Array list of the polygon figure, this contains the vertices but not in triangles.
+	 * Used for when creating a border of some kind
+	 */
 	private ArrayList<Vector2> mPolygon = null;
-	/** Triangle vertices.
-	 * To easier render the shape. No optimization has been done to reduce
-	 * the number of vertices. */
+	/**
+	 * Triangle vertices. To easier render the shape. No optimization has been done to
+	 * reduce the number of vertices.
+	 */
 	private ArrayList<Vector2> mVertices = null;
 	/** True if shape is drawable/complete */
 	private boolean mShapeComplete = true;
@@ -1097,7 +1114,8 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 	/** Radius of the actor, or rather circle bounding box */
 	private float mBoundingRadius = 0;
 	/** Actor type, used for setting default values */
-	@Tag(50) private ActorTypes mActorType = null;
+	@Tag(50)
+	private ActorTypes mActorType = null;
 	/** Time when the fixture was changed last time */
 	protected float mFixtureChangeTime = 0;
 	/** Class structure revision */

@@ -63,6 +63,8 @@ public class SyncUserResources extends VoiderServlet {
 
 		if (methodEntity instanceof SyncUserResourcesMethod) {
 			checkForConflicts((SyncUserResourcesMethod) methodEntity);
+			syncDeletedToClient((SyncUserResourcesMethod) methodEntity);
+			syncDeletedToServer((SyncUserResourcesMethod) methodEntity);
 			syncNewToClient((SyncUserResourcesMethod) methodEntity);
 			syncNewToServer((SyncUserResourcesMethod) methodEntity);
 			mResponse.syncTime = mSyncDate;
@@ -110,15 +112,17 @@ public class SyncUserResources extends VoiderServlet {
 	private void syncDeletedToServer(SyncUserResourcesMethod methodEntity) {
 		// Find all revisions of the resources and delete them
 		for (UUID removeId : methodEntity.resourceToRemove) {
-			// TODO
-		}
-	}
+			// Delete the revisions
+			PropertyWrapper idProperty = new PropertyWrapper("resource_id", removeId);
+			List<Key> entitiesToRemove = DatastoreUtils.getKeys("user_resources", mUser.getKey(), idProperty);
+			DatastoreUtils.delete(entitiesToRemove);
 
-	/**
-	 * Send deleted resources to the client
-	 * @param methodEntity parameters sent to the server
-	 */
-	private void syncDeletedToClient(SyncUserResourcesMethod methodEntity) {
+			// Add the resource to the deleted table
+			Entity entity = new Entity("user_resources_deleted", mUser.getKey());
+			DatastoreUtils.setProperty(entity, "resource_id", removeId);
+			DatastoreUtils.setProperty(entity, "date", mResponse.syncTime);
+			DatastoreUtils.put(entity);
+		}
 
 	}
 
@@ -164,6 +168,30 @@ public class SyncUserResources extends VoiderServlet {
 	}
 
 	/**
+	 * Send deleted resources to the client
+	 * @param methodEntity parameters sent to the server
+	 */
+	private void syncDeletedToClient(SyncUserResourcesMethod methodEntity) {
+		// Get all resources that were deleted after sync
+		Query query = new Query("user_resources_deleted", mUser.getKey());
+
+		// Only older than latest sync
+		Filter filter = new Query.FilterPredicate("date", FilterOperator.GREATER_THAN, methodEntity.lastSync);
+		query.setFilter(filter);
+
+		// Only retrieve resource id
+		DatastoreUtils.createUuidProjection(query, "resource_id");
+
+		PreparedQuery preparedQuery = DatastoreUtils.prepare(query);
+
+		for (Entity entity : preparedQuery.asIterable()) {
+			UUID resourceId = DatastoreUtils.getUuidProperty(entity, "resource_id");
+
+			mResponse.resourcesToRemove.add(resourceId);
+		}
+	}
+
+	/**
 	 * Add resources that should be downloaded
 	 * @param methodEntity parameters sent to the server
 	 */
@@ -186,13 +214,12 @@ public class SyncUserResources extends VoiderServlet {
 		query.addSort("revision");
 
 		PreparedQuery preparedQuery = DatastoreUtils.prepare(query);
-		Iterable<Entity> entities = preparedQuery.asIterable();
 
-		for (Entity entity : entities) {
+		for (Entity entity : preparedQuery.asIterable()) {
 			UUID resourceId = DatastoreUtils.getUuidProperty(entity, "resource_id");
 
 			// Only add if resource isn't in conflict
-			if (!mResponse.conflicts.containsKey(resourceId)) {
+			if (!mResponse.conflicts.containsKey(resourceId) && !mResponse.resourcesToRemove.contains(resourceId)) {
 				mLogger.fine("Found sync resource: " + resourceId);
 
 				ResourceRevisionBlobEntity blobEntity = new ResourceRevisionBlobEntity();

@@ -5,11 +5,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.UUID;
 
-import com.spiddekauga.voider.game.Level;
 import com.spiddekauga.voider.network.entities.ResourceRevisionEntity;
 import com.spiddekauga.voider.network.entities.RevisionEntity;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.IResource;
+import com.spiddekauga.voider.resources.IResourceHasDef;
 import com.spiddekauga.voider.resources.IResourceRevision;
 import com.spiddekauga.voider.utils.Pools;
 
@@ -75,7 +75,7 @@ public class ResourceLocalRepo {
 	 * Add a resource
 	 * @param resource the resource to add
 	 */
-	public static void add(IResource resource) {
+	private static void add(IResource resource) {
 		// Add if resource doesn't exist
 		if (!mSqliteGateway.exists(resource.getId())) {
 			mSqliteGateway.add(resource.getId(), ExternalTypes.fromType(resource.getClass()).getId());
@@ -86,9 +86,8 @@ public class ResourceLocalRepo {
 			Date date = null;
 			if (resource instanceof Def) {
 				date = ((Def) resource).getDate();
-			}
-			if (resource instanceof Level) {
-				date = ((Level) resource).getDef().getDate();
+			} else if (resource instanceof IResourceHasDef) {
+				date = ((IResourceHasDef) resource).getDef().getDate();
 			}
 
 			mSqliteGateway.addRevision(resource.getId(), ((IResourceRevision) resource).getRevision(), date);
@@ -102,7 +101,7 @@ public class ResourceLocalRepo {
 	 * @param type the resource type
 	 * @param revisions new revisions to add
 	 */
-	public static void addRevisions(UUID resourceId, ExternalTypes type, ArrayList<RevisionEntity> revisions) {
+	static void addRevisions(UUID resourceId, ExternalTypes type, ArrayList<RevisionEntity> revisions) {
 		// Add resource if it doesn't exist
 		if (!exists(resourceId)) {
 			mSqliteGateway.add(resourceId, type.getId());
@@ -124,7 +123,7 @@ public class ResourceLocalRepo {
 	 * @param resourceId the id of the downloaded resource
 	 * @param type the type of resource
 	 */
-	public static void addDownloaded(UUID resourceId, ExternalTypes type) {
+	static void addDownloaded(UUID resourceId, ExternalTypes type) {
 		// Only add the resource if it doesn't exist
 		if (!mSqliteGateway.exists(resourceId)) {
 			mSqliteGateway.add(resourceId, type.getId());
@@ -134,7 +133,8 @@ public class ResourceLocalRepo {
 
 	/**
 	 * Removes a resource (including all revisions) from the database and physically.
-	 * Equivalent of calling remove(resourceId, false)
+	 * Equivalent of calling remove(resourceId, false), i.e. does not add the resource to
+	 * the removed DB
 	 * @param resourceId the unique id of the resource
 	 */
 	public static void remove(UUID resourceId) {
@@ -161,13 +161,42 @@ public class ResourceLocalRepo {
 	}
 
 	/**
+	 * @return all resources from the removed resource table. I.e. the table that holds
+	 *         all resources that have been removed
+	 */
+	static ArrayList<UUID> getRemovedResources() {
+		return mSqliteGateway.getRemovedResources();
+	}
+
+	/**
+	 * Remove the resource from the removed resource table. I.e. a table that holds all
+	 * resources that have been removed
+	 * @param resourceId unique id of the resource to remove
+	 */
+	static void removeFromRemoved(UUID resourceId) {
+		mSqliteGateway.removeFromRemoved(resourceId);
+	}
+
+	/**
 	 * Removes all resources of the specified type (including all revisions)
 	 * @param externalType the resource type to remove
 	 */
 	public static void removeAll(ExternalTypes externalType) {
+		removeAll(externalType, false);
+	}
+
+	/**
+	 * Removes all resources of the specified type (including all revisions)
+	 * @param externalType the resource type to remove
+	 * @param addToRemovedDb set to true if the resources should be set as removed
+	 */
+	public static void removeAll(ExternalTypes externalType, final boolean addToRemovedDb) {
 		// File
 		ArrayList<UUID> resources = mSqliteGateway.getAll(externalType.getId());
 		for (UUID resource : resources) {
+			// Unload
+			ResourceCacheFacade.unload(resource);
+
 			mFileGateway.remove(resource);
 			mFileGateway.removeRevisionDir(resource);
 		}
@@ -175,14 +204,14 @@ public class ResourceLocalRepo {
 
 
 		// Database
-		mSqliteGateway.removeAll(externalType.getId());
+		mSqliteGateway.removeAll(externalType.getId(), addToRemovedDb);
 	}
 
 	/**
 	 * Remove all revisions of a resource
 	 * @param resourceId unique id of the resource
 	 */
-	public static void removeRevisions(UUID resourceId) {
+	static void removeRevisions(UUID resourceId) {
 		mSqliteGateway.removeRevisions(resourceId);
 		mFileGateway.removeRevisionDir(resourceId);
 	}
@@ -192,7 +221,7 @@ public class ResourceLocalRepo {
 	 * @param resourceId the resource to remove revisions from
 	 * @param fromRevision remove all revisions from this one
 	 */
-	public static void removeRevisions(UUID resourceId, int fromRevision) {
+	static void removeRevisions(UUID resourceId, int fromRevision) {
 		mSqliteGateway.removeRevisions(resourceId, fromRevision);
 		mFileGateway.removeRevisions(resourceId, fromRevision);
 	}

@@ -123,8 +123,8 @@ public class ResourceRepo implements ICallerResponseListener {
 	 * @param responseListeners listens to the web response (when syncing is done)
 	 */
 	public void syncUserResources(ICallerResponseListener... responseListeners) {
-		mWebRepo.syncUserResources(ResourceLocalRepo.getUnsyncedUserResources(), ResourceLocalRepo.getSyncUserResourceDate(),
-				addToFront(responseListeners, this));
+		mWebRepo.syncUserResources(ResourceLocalRepo.getUnsyncedUserResources(), ResourceLocalRepo.getRemovedResources(),
+				ResourceLocalRepo.getSyncUserResourceDate(), addToFront(responseListeners, this));
 	}
 
 	/**
@@ -148,8 +148,7 @@ public class ResourceRepo implements ICallerResponseListener {
 	 * @param actorDef the actor to publish
 	 */
 	public void publish(ICallerResponseListener responseListener, IOutstreamProgressListener progressListener, ActorDef actorDef) {
-		@SuppressWarnings("unchecked")
-		ArrayList<IResource> resources = Pools.arrayList.obtain();
+		@SuppressWarnings("unchecked") ArrayList<IResource> resources = Pools.arrayList.obtain();
 
 		resources.addAll(getNonPublishedDependencies(actorDef));
 		resources.add(actorDef);
@@ -164,8 +163,7 @@ public class ResourceRepo implements ICallerResponseListener {
 	 * @param level the level to publish
 	 */
 	public void publish(ICallerResponseListener responseListener, IOutstreamProgressListener progressListener, Level level) {
-		@SuppressWarnings("unchecked")
-		ArrayList<IResource> resources = Pools.arrayList.obtain();
+		@SuppressWarnings("unchecked") ArrayList<IResource> resources = Pools.arrayList.obtain();
 
 		resources.addAll(getNonPublishedDependencies(level.getDef()));
 		resources.add(level);
@@ -203,8 +201,9 @@ public class ResourceRepo implements ICallerResponseListener {
 	 * @param response
 	 */
 	private void handleSyncUserResourcesResponse(SyncUserResourcesMethod method, SyncUserResourcesMethodResponse response) {
-		// Set the successful revisions as uploaded/synced
 		if (response.uploadStatus.isSuccessful()) {
+
+			// Set the successful revisions as uploaded/synced
 			for (ResourceRevisionEntity resource : method.resources) {
 				if (!response.conflicts.containsKey(resource.resourceId) && !resource.revisions.isEmpty()) {
 					int fromRevision = resource.revisions.get(0).revision;
@@ -216,14 +215,23 @@ public class ResourceRepo implements ICallerResponseListener {
 					ResourceLocalRepo.setSyncedUserResource(resource.resourceId, fromRevision, toRevision);
 				}
 			}
-		}
 
-		// TODO delete resources that should be deleted
+
+			// Delete resources that should be deleted
+			for (UUID removedId : response.resourcesToRemove) {
+				ResourceLocalRepo.remove(removedId);
+			}
+
+
+			// Remove resources that were synced as removed from this client to the server
+			for (UUID removedId : method.resourceToRemove) {
+				ResourceLocalRepo.removeFromRemoved(removedId);
+			}
+		}
 
 
 		// Download resources, but remove local first if there exists any revision of
-		// those.
-		// I.e. the server's sync was replaced, thus the local should also be
+		// those. I.e. the server's sync was replaced, thus the local should also be
 		response.downloadStatus = true;
 		for (Entry<UUID, ArrayList<ResourceBlobEntity>> entry : response.blobsToDownload.entrySet()) {
 			UUID resourceId = entry.getKey();
@@ -243,8 +251,7 @@ public class ResourceRepo implements ICallerResponseListener {
 
 		// Add resource locally
 		if (response.downloadStatus) {
-			@SuppressWarnings("unchecked")
-			ArrayList<RevisionEntity> revisions = Pools.arrayList.obtain();
+			@SuppressWarnings("unchecked") ArrayList<RevisionEntity> revisions = Pools.arrayList.obtain();
 
 			for (Entry<UUID, ArrayList<ResourceBlobEntity>> entry : response.blobsToDownload.entrySet()) {
 				UUID resourceId = entry.getKey();
@@ -359,10 +366,8 @@ public class ResourceRepo implements ICallerResponseListener {
 	 */
 	public static ArrayList<Def> getNonPublishedDependencies(Def def) {
 		if (def != null) {
-			@SuppressWarnings("unchecked")
-			HashSet<UUID> uuidDeps = Pools.hashSet.obtain();
-			@SuppressWarnings("unchecked")
-			ArrayList<Def> dependencies = Pools.arrayList.obtain();
+			@SuppressWarnings("unchecked") HashSet<UUID> uuidDeps = Pools.hashSet.obtain();
+			@SuppressWarnings("unchecked") ArrayList<Def> dependencies = Pools.arrayList.obtain();
 
 			getNonPublishedDependencies(def, uuidDeps, dependencies);
 

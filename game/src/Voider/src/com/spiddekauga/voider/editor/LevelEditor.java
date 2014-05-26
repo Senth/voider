@@ -199,7 +199,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 			// Unload the old level
 			if (ResourceCacheFacade.isLoaded(mLevel.getId()) && !sameRevision) {
-				// TODO unload old level
+				ResourceCacheFacade.unload(mLevel.getId(), mLevel.getRevision());
 			} else {
 				mLevel.dispose();
 			}
@@ -210,7 +210,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		if (mLevel != null) {
 			// Reset camera position to the start
 			if (!sameLevel) {
-				mCamera.position.x = mLevel.getDef().getStartXCoord() + mCamera.viewportWidth * 0.5f;
+				mCamera.position.x = mLevel.getLevelDef().getStartXCoord() + mCamera.viewportWidth * 0.5f;
 				mCamera.update();
 			}
 			((PanTool) Tools.PAN.getTool()).stop();
@@ -707,7 +707,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		LevelDef levelDef = new LevelDef();
 		Level level = new Level(levelDef);
 		setLevel(level);
-		saveDef();
+		setSaved();
 	}
 
 	@Override
@@ -855,7 +855,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	 */
 	void setPrologue(String storyText) {
 		if (mLevel != null) {
-			mLevel.getDef().setPrologue(storyText);
+			mLevel.getLevelDef().setPrologue(storyText);
 			setUnsaved();
 		}
 	}
@@ -866,7 +866,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	 */
 	String getPrologue() {
 		if (mLevel != null) {
-			return mLevel.getDef().getPrologue();
+			return mLevel.getLevelDef().getPrologue();
 		} else {
 			return "";
 		}
@@ -878,7 +878,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	 */
 	void setEpilogue(String storyText) {
 		if (mLevel != null) {
-			mLevel.getDef().setStoryAfter(storyText);
+			mLevel.getLevelDef().setStoryAfter(storyText);
 			setUnsaved();
 		}
 	}
@@ -889,7 +889,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	 */
 	String getEpilogue() {
 		if (mLevel != null) {
-			return mLevel.getDef().getEpilogue();
+			return mLevel.getLevelDef().getEpilogue();
 		}
 		return "";
 	}
@@ -946,10 +946,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 				if (enemyGroup != null) {
 					// Just change amount of enemies
 					if (cEnemies > 1) {
-						@SuppressWarnings("unchecked")
-						ArrayList<EnemyActor> addedEnemies = Pools.arrayList.obtain();
-						@SuppressWarnings("unchecked")
-						ArrayList<EnemyActor> removedEnemies = Pools.arrayList.obtain();
+						@SuppressWarnings("unchecked") ArrayList<EnemyActor> addedEnemies = Pools.arrayList.obtain();
+						@SuppressWarnings("unchecked") ArrayList<EnemyActor> removedEnemies = Pools.arrayList.obtain();
 
 						enemyGroup.setEnemyCount(cEnemies, addedEnemies, removedEnemies);
 
@@ -987,8 +985,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 					enemyGroup.setLeaderEnemy(selectedEnemy);
 
-					@SuppressWarnings("unchecked")
-					ArrayList<EnemyActor> addedEnemies = Pools.arrayList.obtain();
+					@SuppressWarnings("unchecked") ArrayList<EnemyActor> addedEnemies = Pools.arrayList.obtain();
 					enemyGroup.setEnemyCount(cEnemies, addedEnemies, null);
 
 					for (EnemyActor addedEnemy : addedEnemies) {
@@ -1489,9 +1486,9 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	 */
 	void setTheme(Themes theme) {
 		if (mLevel != null) {
-			ResourceCacheFacade.unload(mLevel.getDef().getTheme().getSkin());
-			mLevel.getDef().setTheme(theme);
-			ResourceCacheFacade.load(mLevel.getDef().getTheme().getSkin());
+			ResourceCacheFacade.unload(mLevel.getLevelDef().getTheme().getSkin());
+			mLevel.getLevelDef().setTheme(theme);
+			ResourceCacheFacade.load(mLevel.getLevelDef().getTheme().getSkin());
 			setUnsaved();
 		}
 	}
@@ -1501,7 +1498,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	 */
 	Themes getTheme() {
 		if (mLevel != null) {
-			return mLevel.getDef().getTheme();
+			return mLevel.getLevelDef().getTheme();
 		} else {
 			return Themes.SPACE;
 		}

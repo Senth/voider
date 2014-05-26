@@ -468,7 +468,7 @@ public class EnemyEditor extends ActorEditor {
 		setEnemyDef(new EnemyActorDef());
 		mGui.resetValues();
 		setMovementType(MovementTypes.PATH);
-		saveDef();
+		setSaved();
 	}
 
 	/**

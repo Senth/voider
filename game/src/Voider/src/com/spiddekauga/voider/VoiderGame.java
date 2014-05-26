@@ -16,16 +16,15 @@ import com.spiddekauga.voider.game.actors.PickupActorDef;
 import com.spiddekauga.voider.menu.LoginScene;
 import com.spiddekauga.voider.menu.MainMenu;
 import com.spiddekauga.voider.repo.ResourceCacheFacade;
+import com.spiddekauga.voider.repo.ResourceChecker;
 import com.spiddekauga.voider.repo.ResourceLocalRepo;
 import com.spiddekauga.voider.repo.UserLocalRepo;
-import com.spiddekauga.voider.resources.ResourceChecker;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.server.MessageGateway;
 import com.spiddekauga.voider.utils.Synchronizer;
 
 /**
  * The main application, i.e. start point
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class VoiderGame implements ApplicationListener {
@@ -40,15 +39,24 @@ public class VoiderGame implements ApplicationListener {
 		Synchronizer.getInstance();
 		ResourceChecker.init();
 
+		// Set main thread id
+		mMainThreadId = Thread.currentThread().getId();
 
 		ShaderProgram.pedantic = false;
 
 		/** @TODO set splash screen as start screen */
 
 		testLogin();
-		//		testMainMenu();
-		//		testSavePickups();
-		//		testSplashScreen();
+		// testMainMenu();
+		// testSavePickups();
+		// testSplashScreen();
+	}
+
+	/**
+	 * @return true if the current thread is the main thread
+	 */
+	public static boolean isMainThread() {
+		return Thread.currentThread().getId() == mMainThreadId;
 	}
 
 	/**
@@ -117,7 +125,7 @@ public class VoiderGame implements ApplicationListener {
 				int fileIndexStart = stackTrace.indexOf("Error reading file: ");
 				if (fileIndexStart != -1) {
 					int fileIndexEnd = stackTrace.indexOf(".json", fileIndexStart);
-					String fileWithError = stackTrace.substring(fileIndexStart, fileIndexEnd+5);
+					String fileWithError = stackTrace.substring(fileIndexStart, fileIndexEnd + 5);
 
 					// Syntax error
 					String syntaxErrorSearchFor = "GdxRuntimeException: ";
@@ -150,4 +158,7 @@ public class VoiderGame implements ApplicationListener {
 	@Override
 	public void resume() {
 	}
+
+	/** Main thread id */
+	private static long mMainThreadId = 0;
 }

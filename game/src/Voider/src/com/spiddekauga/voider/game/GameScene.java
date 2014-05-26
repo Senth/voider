@@ -54,8 +54,7 @@ public class GameScene extends WorldScene {
 	 * @param invulnerable set to true to make the player invulnerable while testing.
 	 *        Scoring will still be used (player could be testing scoring.
 	 */
-	public GameScene(
-			boolean testing, boolean invulnerable) {
+	public GameScene(boolean testing, boolean invulnerable) {
 		super(new GameSceneGui(), Config.Editor.PICKING_CIRCLE_RADIUS_EDITOR);
 		((GameSceneGui) mGui).setGameScene(this);
 
@@ -243,7 +242,7 @@ public class GameScene extends WorldScene {
 			// Load level
 			else if (mLevelToLoad != null) {
 				Level level = ResourceCacheFacade.get(mLevelToLoad.getLevelId());
-				level.setStartPosition(level.getDef().getStartXCoord());
+				level.setStartPosition(level.getLevelDef().getStartXCoord());
 				setLevel(level);
 			}
 
@@ -279,15 +278,14 @@ public class GameScene extends WorldScene {
 		// Save the level
 		if (!mTesting) {
 			// Remove old saved game
-			if (mGameSave != null) {
-				ResourceLocalRepo.remove(mGameSave.getId(), true);
-				ResourceLocalRepo.remove(mGameSaveDef.getId(), true);
-			}
+			ResourceLocalRepo.removeAll(ExternalTypes.GAME_SAVE, true);
+			ResourceLocalRepo.removeAll(ExternalTypes.GAME_SAVE_DEF, true);
 
 			// We quit -> Save the game state
 			if (getOutcome() == Outcomes.LEVEL_QUIT) {
 				GameSave gameSave = new GameSave(mLevel, mPlayerActor, mBulletDestroyer, getGameTime());
 				GameSaveDef gameSaveDef = new GameSaveDef(gameSave);
+				gameSave.setDef(gameSaveDef);
 				mResourceRepo.save(gameSaveDef, gameSave);
 			}
 		}
@@ -419,7 +417,7 @@ public class GameScene extends WorldScene {
 			return null;
 		}
 
-		GameOverScene gameOverScene = new GameOverScene(mPlayerStats, mLevel.getDef());
+		GameOverScene gameOverScene = new GameOverScene(mPlayerStats, mLevel.getLevelDef());
 
 		switch (getOutcome()) {
 		case LEVEL_COMPLETED:
@@ -629,7 +627,7 @@ public class GameScene extends WorldScene {
 			mPlayerActor.createBody();
 			resetPlayerPosition();
 
-			mPlayerStats = new PlayerStats(mLevel.getDef().getStartXCoord(), mLevel.getSpeed(), mPlayerActor);
+			mPlayerStats = new PlayerStats(mLevel.getLevelDef().getStartXCoord(), mLevel.getSpeed(), mPlayerActor);
 			mLevel.addResource(mPlayerStats);
 
 			Pools.arrayList.free(ships);

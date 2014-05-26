@@ -66,6 +66,13 @@ public class MainMenu extends Scene implements ICallerResponseListener, Observer
 	}
 
 	@Override
+	protected void reloadResourcesOnActivate(Outcomes outcome, Object message) {
+		super.reloadResourcesOnActivate(outcome, message);
+		ResourceCacheFacade.loadAllOf(this, ExternalTypes.GAME_SAVE_DEF, false);
+		ResourceCacheFacade.finishLoading();
+	}
+
+	@Override
 	public void update(Observable observable, Object arg) {
 		if (arg instanceof SyncEvents) {
 			switch ((SyncEvents) arg) {
@@ -244,8 +251,7 @@ public class MainMenu extends Scene implements ICallerResponseListener, Observer
 		 * Creates the enumeration with a GUI class
 		 * @param gui the GUI class to create for this menu
 		 */
-		private Menus(
-				Class<? extends MenuGui> gui) {
+		private Menus(Class<? extends MenuGui> gui) {
 			mGuiType = gui;
 		}
 

@@ -112,8 +112,7 @@ class ResourceSqliteGateway extends SqliteGateway {
 	 *         all resources that have been removed
 	 */
 	ArrayList<UUID> getRemovedResources() {
-		@SuppressWarnings("unchecked")
-		ArrayList<UUID> resources = Pools.arrayList.obtain();
+		@SuppressWarnings("unchecked") ArrayList<UUID> resources = Pools.arrayList.obtain();
 
 		try {
 			DatabaseCursor cursor = mDatabase.rawQuery("SELECT * FROM resource_removed;");
@@ -136,12 +135,26 @@ class ResourceSqliteGateway extends SqliteGateway {
 	 * @param typeIdentifier the resource type to remove
 	 */
 	void removeAll(int typeIdentifier) {
+		removeAll(typeIdentifier, false);
+	}
+
+	/**
+	 * Removes all resources of the specified type (including all revisions)
+	 * @param typeIdentifier the resource type to remove
+	 * @param addToRemovedDb set to true if the resource should be added to the removed DB
+	 */
+	void removeAll(int typeIdentifier, final boolean addToRemovedDb) {
 		try {
 			// Delete revisions first
 			DatabaseCursor cursor = mDatabase.rawQuery("SELECT uuid FROM resource WHERE type=" + typeIdentifier + ";");
 			while (cursor.next()) {
 				String uuid = cursor.getString(0);
 				mDatabase.execSQL("DELETE FROM resource_revision WHERE uuid='" + uuid + "';");
+
+				// Add as removed
+				if (addToRemovedDb) {
+					mDatabase.execSQL("INSERT INTO resource_removed VALUES ( '" + uuid + "' );");
+				}
 			}
 
 			cursor.close();
@@ -187,8 +200,7 @@ class ResourceSqliteGateway extends SqliteGateway {
 	 * @return all resources of the specified type. Don't forget to free the arraylist!
 	 */
 	ArrayList<UUID> getAll(int typeIdentifier) {
-		@SuppressWarnings("unchecked")
-		ArrayList<UUID> resources = Pools.arrayList.obtain();
+		@SuppressWarnings("unchecked") ArrayList<UUID> resources = Pools.arrayList.obtain();
 
 		try {
 			DatabaseCursor cursor = mDatabase.rawQuery("SELECT uuid FROM resource WHERE type=" + typeIdentifier + ";");
@@ -232,8 +244,7 @@ class ResourceSqliteGateway extends SqliteGateway {
 	 * @return all revisions
 	 */
 	ArrayList<RevisionEntity> getRevisions(UUID uuid) {
-		@SuppressWarnings("unchecked")
-		ArrayList<RevisionEntity> revisions = Pools.arrayList.obtain();
+		@SuppressWarnings("unchecked") ArrayList<RevisionEntity> revisions = Pools.arrayList.obtain();
 
 		try {
 			DatabaseCursor cursor = mDatabase.rawQuery("SELECT * FROM resource_revision WHERE uuid='" + uuid + "';");

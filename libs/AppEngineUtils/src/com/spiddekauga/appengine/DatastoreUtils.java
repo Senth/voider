@@ -12,7 +12,6 @@ import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
-import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.PreparedQuery;
@@ -73,7 +72,7 @@ public class DatastoreUtils {
 	 * @param properties all properties to search for
 	 * @return an array list of all found entities with the specified parent
 	 */
-	public static ArrayList<Key> getKeys(String searchIn, PropertyWrapper... properties) {
+	public static List<Key> getKeys(String searchIn, PropertyWrapper... properties) {
 		return getKeys(searchIn, null, properties);
 	}
 
@@ -84,17 +83,48 @@ public class DatastoreUtils {
 	 * @param properties all properties to search for
 	 * @return an array list of all found entities with the specified parent
 	 */
-	public static ArrayList<Key> getKeys(String searchIn, Key parent, PropertyWrapper... properties) {
-		// TODO parent is optional
-		Query query = new Query(searchIn, parent);
+	public static List<Key> getKeys(String searchIn, Key parent, PropertyWrapper... properties) {
+		Query query = new Query(searchIn);
 
-		// TODO search for properties
+		query.setKeysOnly();
+
+		// Parent
+		if (parent != null) {
+			query.setAncestor(parent);
+		}
+
+		// Search by properties
+		if (properties != null) {
+			ArrayList<Filter> filters = new ArrayList<>();
+			for (PropertyWrapper property : properties) {
+				Filter filter = null;
+				if (property.value instanceof UUID) {
+					filter = createUuidFilter(property.name, (UUID) property.value);
+				} else if (property.value != null) {
+					filter = new Query.FilterPredicate(property.name, FilterOperator.EQUAL, property.value);
+				}
+
+				if (filter != null) {
+					filters.add(filter);
+				}
+			}
+
+			if (filters.size() == 1) {
+				query.setFilter(filters.get(0));
+			} else if (filters.size() > 1) {
+				query.setFilter(new Query.CompositeFilter(CompositeFilterOperator.AND, filters));
+			}
+		}
+
 
 		PreparedQuery preparedQuery = mDatastore.prepare(query);
 
-		// TODO convert to keys
+		ArrayList<Key> keys = new ArrayList<>();
+		for (Entity entity : preparedQuery.asIterable()) {
+			keys.add(entity.getKey());
+		}
 
-		return null;
+		return keys;
 	}
 
 	/**
@@ -115,35 +145,39 @@ public class DatastoreUtils {
 	 * @return an iterable of all found entities with the specified parent
 	 */
 	public static Iterable<Entity> getEntities(String searchIn, Key parent, PropertyWrapper... properties) {
-		// TODO parent is optional
-		Query query = new Query(searchIn, parent);
+		Query query = new Query(searchIn);
 
-		// TODO search for properties
+		// Parent
+		if (parent != null) {
+			query.setAncestor(parent);
+		}
+
+		// Search by properties
+		if (properties != null) {
+			ArrayList<Filter> filters = new ArrayList<>();
+			for (PropertyWrapper property : properties) {
+				Filter filter = null;
+				if (property.value instanceof UUID) {
+					filter = createUuidFilter(property.name, (UUID) property.value);
+				} else if (property.value != null) {
+					filter = new Query.FilterPredicate(property.name, FilterOperator.EQUAL, property.value);
+				}
+
+				if (filter != null) {
+					filters.add(filter);
+				}
+			}
+
+			if (filters.size() == 1) {
+				query.setFilter(filters.get(0));
+			} else if (filters.size() > 1) {
+				query.setFilter(new Query.CompositeFilter(CompositeFilterOperator.AND, filters));
+			}
+		}
 
 		PreparedQuery preparedQuery = mDatastore.prepare(query);
 
 		return preparedQuery.asIterable();
-	}
-
-	/**
-	 * Get all keys with the specified parent
-	 * @param searchIn what kind of entity (table) to search in
-	 * @param parent search for all entities with this parent
-	 * @return a list of all found keys with the specified parent
-	 */
-	public static List<Key> getKeys(String searchIn, Key parent) {
-		Query query = new Query(searchIn, parent);
-		query.setKeysOnly();
-		PreparedQuery preparedQuery = mDatastore.prepare(query);
-
-		FetchOptions fetchOptions = FetchOptions.Builder.withDefaults();
-
-		ArrayList<Key> keys = new ArrayList<>();
-		for (Entity entity : preparedQuery.asIterable(fetchOptions)) {
-			keys.add(entity.getKey());
-		}
-
-		return keys;
 	}
 
 	/**
@@ -179,7 +213,7 @@ public class DatastoreUtils {
 				if (property.value instanceof UUID) {
 					filter = createUuidFilter(property.name, (UUID) property.value);
 				} else if (property.value != null) {
-					filter = new Query.FilterPredicate(property.name, FilterOperator.EQUAL, property.value);
+					filter = new Query.FilterPredicate(property.name, property.operator, property.value);
 				}
 
 				if (filter != null) {
@@ -450,24 +484,37 @@ public class DatastoreUtils {
 		 * Default constructor
 		 */
 		public PropertyWrapper() {
-			// Does nothing
+			this(null, null);
+		}
+
+		/**
+		 * Sets the name and value of the property. Uses default operator
+		 * FilterOperator.EQUAL
+		 * @param name
+		 * @param value
+		 */
+		public PropertyWrapper(String name, Object value) {
+			this(name, FilterOperator.EQUAL, value);
 		}
 
 		/**
 		 * Sets the name and value of the property
 		 * @param name
+		 * @param operator the operator to use
 		 * @param value
 		 */
-		public PropertyWrapper(
-				String name, Object value) {
+		public PropertyWrapper(String name, FilterOperator operator, Object value) {
 			this.name = name;
 			this.value = value;
+			this.operator = operator;
 		}
 
 		/** Property name */
-		public String name = null;
+		public String name;
 		/** Property value */
-		public Object value = null;
+		public Object value;;
+		/** Property operator */
+		public FilterOperator operator;
 	}
 
 	/** UUID least postfix */

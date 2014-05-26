@@ -1,4 +1,4 @@
-package com.spiddekauga.voider.resources;
+package com.spiddekauga.voider.repo;
 
 import java.util.ArrayList;
 import java.util.Observable;
@@ -6,8 +6,6 @@ import java.util.Observer;
 import java.util.UUID;
 
 import com.spiddekauga.voider.game.actors.PlayerActorDef;
-import com.spiddekauga.voider.repo.ExternalTypes;
-import com.spiddekauga.voider.repo.ResourceLocalRepo;
 import com.spiddekauga.voider.utils.User;
 import com.spiddekauga.voider.utils.User.UserEvents;
 
@@ -45,8 +43,8 @@ public class ResourceChecker implements Observer {
 	}
 
 	/**
-	 * Check for all necessary resources, like player ships. If these resources are not found, this method will create
-	 * new type of those resources
+	 * Check for all necessary resources, like player ships. If these resources are not
+	 * found, this method will create new type of those resources
 	 */
 	private void checkAndCreateResources() {
 		if (isMissingPlayerShips()) {
@@ -73,7 +71,7 @@ public class ResourceChecker implements Observer {
 	 */
 	private void createPlayerShips() {
 		PlayerActorDef playerActorDef = new PlayerActorDef();
-		playerActorDef.setRevision(1);
+		playerActorDef.setId(SHIP_REGULAR_ID);
 		ResourceLocalRepo.save(playerActorDef);
 		ResourceLocalRepo.removeRevisions(playerActorDef.getId());
 	}
@@ -94,7 +92,9 @@ public class ResourceChecker implements Observer {
 		}
 	}
 
-
+	// Player ships
+	/** Regular ship */
+	private static final UUID SHIP_REGULAR_ID = UUID.fromString("6d5f7bd4-e947-4d91-9c57-ce982f0542d0");
 	/** This instance */
 	private static ResourceChecker mInstance = null;
 }
