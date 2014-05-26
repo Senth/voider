@@ -42,8 +42,7 @@ public class TooltipListener extends InputAdapter implements EventListener {
 	 * @param actor the GUI actor to listen to
 	 * @param message the message in the tooltip
 	 */
-	public TooltipListener(
-			Actor actor, String message) {
+	public TooltipListener(Actor actor, String message) {
 		this(actor, message, (String) null);
 	}
 
@@ -55,8 +54,7 @@ public class TooltipListener extends InputAdapter implements EventListener {
 	 * @param message optional text message, set to null if not used.
 	 * @param youtubeUrl optional tutorial URL, set to null if not used.
 	 */
-	public TooltipListener(
-			Actor actor, String message, String youtubeUrl) {
+	public TooltipListener(Actor actor, String message, String youtubeUrl) {
 		mMessage = message;
 		mActor = actor;
 		mYoutubeUrl = youtubeUrl;
@@ -71,7 +69,6 @@ public class TooltipListener extends InputAdapter implements EventListener {
 			mWindow.setModal(false);
 			mMessageLabel = new Label("", uiSkin);
 			mMessageLabel.setWrap(true);
-			// mDescriptiveLabel = new Label("", uiSkin);
 			mTable = new AlignTable();
 			mWindow.add(mTable);
 
@@ -96,8 +93,7 @@ public class TooltipListener extends InputAdapter implements EventListener {
 	 * @param title the title of the tooltip window
 	 * @param animation the animation to show as a tooltip
 	 */
-	public TooltipListener(
-			Actor actor, String title, AnimationWidget animation) {
+	public TooltipListener(Actor actor, String title, AnimationWidget animation) {
 		this(actor, title, animation, null, null);
 	}
 
@@ -110,8 +106,7 @@ public class TooltipListener extends InputAdapter implements EventListener {
 	 * @param animation the animation to show as a tooltip
 	 * @param message the text message to show in addition to the animation
 	 */
-	public TooltipListener(
-			Actor actor, String title, AnimationWidget animation, String message) {
+	public TooltipListener(Actor actor, String title, AnimationWidget animation, String message) {
 		this(actor, title, animation, message, null);
 	}
 
@@ -125,15 +120,10 @@ public class TooltipListener extends InputAdapter implements EventListener {
 	 * @param message the text message to show in addition to the animation
 	 * @param youtubeUrl the YouTube URL to a tutorial how to use the tool
 	 */
-	public TooltipListener(
-			Actor actor, String title, AnimationWidget animation, String message, String youtubeUrl) {
+	public TooltipListener(Actor actor, String title, AnimationWidget animation, String message, String youtubeUrl) {
 		this(actor, message, youtubeUrl);
 
 		mAnimation = animation;
-
-		// if (mAnimation != null) {
-		// mDescriptiveText = "A = Toggle animation\n" + mDescriptiveText;
-		// }
 	}
 
 	/**
@@ -143,8 +133,7 @@ public class TooltipListener extends InputAdapter implements EventListener {
 	 * @param title the title of the tooltip window
 	 * @param image the image to show as a tooltip
 	 */
-	public TooltipListener(
-			Actor actor, String title, Image image) {
+	public TooltipListener(Actor actor, String title, Image image) {
 		this(actor, title, image, null, null);
 	}
 
@@ -157,8 +146,7 @@ public class TooltipListener extends InputAdapter implements EventListener {
 	 * @param image the image to show as a tooltip
 	 * @param message the text message to show in addition to the image
 	 */
-	public TooltipListener(
-			Actor actor, String title, Image image, String message) {
+	public TooltipListener(Actor actor, String title, Image image, String message) {
 		this(actor, title, image, message, null);
 	}
 
@@ -172,8 +160,7 @@ public class TooltipListener extends InputAdapter implements EventListener {
 	 * @param message the text message to show in addition to the image
 	 * @param youtubeUrl the YouTube URL to a tutorial how to use the tool
 	 */
-	public TooltipListener(
-			Actor actor, String title, Image image, String message, String youtubeUrl) {
+	public TooltipListener(Actor actor, String title, Image image, String message, String youtubeUrl) {
 		this(actor, message, youtubeUrl);
 
 		mImage = image;
@@ -481,12 +468,9 @@ public class TooltipListener extends InputAdapter implements EventListener {
 			mTable.add(mMessageLabel);
 		}
 
-		// // Add descriptive text
-		// mDescriptiveLabel.setText(mDescriptiveText);
-		// mTable.row().setPadTop(separatorPadding);
-		// mTable.add(mDescriptiveLabel);
-
+		mMessageLabel.layout();
 		setWrapWidth();
+		mMessageLabel.layout();
 		mTable.layout();
 		mWindow.pack();
 	}
@@ -495,8 +479,6 @@ public class TooltipListener extends InputAdapter implements EventListener {
 	 * Shows the message box
 	 */
 	private void showMsgBox() {
-		// mMsgBox = mGui.getFreeMsgBox(mTitle != null && mTitle.length() > 0);
-		// mMsgBox.setTitle(mTitle);
 		mMsgBox = mGui.getFreeMsgBox(false);
 		mMsgBox.addCancelButtonAndKeys("OK");
 		mMessageLabel.setText(mMessage);
@@ -581,7 +563,7 @@ public class TooltipListener extends InputAdapter implements EventListener {
 	private Task mShowWindowTask = null;
 	/** Task that show the message box */
 	private Task mShowMsgBoxTask = null;
-	/** Gui for the current scene */
+	/** GUI for the current scene */
 	private Gui mGui;
 	/** Message box for mobile devices */
 	private MsgBoxExecuter mMsgBox = null;
@@ -598,8 +580,6 @@ public class TooltipListener extends InputAdapter implements EventListener {
 	private boolean mShowMessage = false;
 	/** YouTube URL, optional */
 	private String mYoutubeUrl = null;
-	// /** Descriptive text of button uses */
-	// private String mDescriptiveText = "";
 	/** Window name */
 	private String mWindowName = null;
 
@@ -610,8 +590,6 @@ public class TooltipListener extends InputAdapter implements EventListener {
 	private static Window mWindow = null;
 	/** Label inside the window */
 	private static Label mMessageLabel = null;
-	// /** Descriptive text for window how to use control */
-	// private static Label mDescriptiveLabel = null;
 	/** The table to show everything in */
 	private static AlignTable mTable = null;
 	/** Window left/right margin */
