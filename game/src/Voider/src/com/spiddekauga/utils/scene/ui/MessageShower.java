@@ -25,7 +25,6 @@ import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Shows error messages on the screen
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class MessageShower {
@@ -87,7 +86,8 @@ public class MessageShower {
 				// Set timer for fadeIn - display - fadeOut - remove - free
 				float showDuration = Messages.calculateTimeToShowMessage(message);
 				Action fadeOutAction = Actions.parallel(fadeOut(Config.Gui.MESSAGE_FADE_OUT_DURATION), Actions.run(mWindowFadeOut));
-				messageLabel.addAction(sequence(fadeIn(Config.Gui.MESSAGE_FADE_IN_DURATION), delay(showDuration), fadeOutAction, removeActor(), Actions.run(new FreeLabel(messageLabel))));
+				messageLabel.addAction(sequence(fadeIn(Config.Gui.MESSAGE_FADE_IN_DURATION), delay(showDuration), fadeOutAction, removeActor(),
+						Actions.run(new FreeLabel(messageLabel))));
 
 			}
 		});
@@ -114,15 +114,15 @@ public class MessageShower {
 	}
 
 	/**
-	 * A runnable that tests whether only one label is left in the message window
-	 * when its about to fade out. If true, the window will also fade out.
+	 * A runnable that tests whether only one label is left in the message window when its
+	 * about to fade out. If true, the window will also fade out.
 	 */
 	private Runnable mWindowFadeOut = new Runnable() {
 		@Override
 		public void run() {
 			mcMessages--;
 			if (mcMessages == 0) {
-				mWindow.addAction(sequence(fadeOut(Config.Gui.MESSAGE_FADE_OUT_DURATION),delay(0.1f),Actions.run(mWindowReset),removeActor()));
+				mWindow.addAction(sequence(fadeOut(Config.Gui.MESSAGE_FADE_OUT_DURATION), delay(0.1f), Actions.run(mWindowReset), removeActor()));
 				// Pack the window...
 			} else {
 				mWindow.addAction(sequence(delay(Config.Gui.MESSAGE_FADE_OUT_DURATION), Actions.run(mWindowPack)));

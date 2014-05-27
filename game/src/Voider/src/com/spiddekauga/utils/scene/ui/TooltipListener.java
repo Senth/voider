@@ -70,11 +70,13 @@ public class TooltipListener extends InputAdapter implements EventListener {
 			mMessageLabel = new Label("", uiSkin);
 			mMessageLabel.setWrap(true);
 			mTable = new AlignTable();
+			mTable.setName("tooltip");
 			mWindow.add(mTable);
+			mWindow.pad(0);
 
 			float windowPadding = uiSkin.get(SkinNames.GeneralVars.PADDING_INNER.toString(), Float.class);
 			mWindowPadding = windowPadding;
-			mTable.setPaddingRowDefault(windowPadding);
+			// mTable.setPaddingRowDefault(windowPadding);
 			mTable.setAlignTable(Horizontal.LEFT, Vertical.MIDDLE);
 			mTable.setAlignRow(Horizontal.LEFT, Vertical.TOP);
 		}
