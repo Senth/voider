@@ -1,6 +1,6 @@
 {
 com.badlogic.gdx.graphics.g2d.BitmapFont: {
-	default_font: { file: default16.fnt },
+	default_font: { file: default.fnt },
 	default16: { file: default16.fnt },
 	default12: { file: default12.fnt },
 },
@@ -28,9 +28,6 @@ com.badlogic.gdx.graphics.Color: {
 	
 	// Highlight color
 	highlight: { a: 1, b: 1, g: 1, r: 0 },
-	
-	// Dark text
-	text_dark: { r: 0.1, g: 0.1, b: 0.1, a: 1},
 },
 
 java.lang.Float: {
@@ -90,50 +87,29 @@ com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
 	
 	highlight: {
 		font: default_font,
-		fontColor: red
+		fontColor: red,
 	},
 	
 	error: {
 		font: default_font,
-		fontColor: red
+		fontColor: red,
 	},
 	
 	success: {
 		font: default_font,
-		fontColor: green
+		fontColor: green,
 	},
 	
 	panel_section: {
 		font: default12,
-		fontColor: grey_dark
+		fontColor: grey_dark,
+	},
+	
+	editor_name: {
+		font: default_font,
+		fontColor: grey_light,
 	},
 },
-
-//com.spiddekauga.utils.scene.ui.Label$LabelStyle: {
-//	default: {
-//		font: default_font,
-//	},
-//	
-//	highlight: {
-//		font: default_font,
-//		fontColor: red
-//	},
-//	
-//	error: {
-//		font: default_font,
-//		fontColor: red
-//	},
-//	
-//	success: {
-//		font: default_font,
-//		fontColor: green
-//	},
-//	
-//	panel_section: {
-//		font: default12,
-//		fontColor: text_dark
-//	},
-//},
 
 com.spiddekauga.utils.scene.ui.AnimationWidget$AnimationWidgetStyle:  {
 	wait: {

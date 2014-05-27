@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Observer;
 
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.math.MathUtils;
@@ -47,8 +46,7 @@ public abstract class Editor extends WorldScene implements IEditor, ICallerRespo
 	 * @param gui GUI to be used with the editor
 	 * @param pickRadius picking radius of the editor
 	 */
-	public Editor(
-			Gui gui, float pickRadius) {
+	public Editor(Gui gui, float pickRadius) {
 		super(gui, pickRadius);
 	}
 
@@ -133,14 +131,6 @@ public abstract class Editor extends WorldScene implements IEditor, ICallerRespo
 				/** @todo close message box */
 				return true;
 			}
-		}
-		/** @todo remove test buttons */
-		else if (keycode == Input.Keys.F5) {
-			Config.Gui.setUseTextButtons(!Config.Gui.usesTextButtons());
-			mGui.dispose();
-			mGui.initGui();
-			mGui.resetValues();
-			return true;
 		}
 
 		return false;
@@ -385,8 +375,7 @@ public abstract class Editor extends WorldScene implements IEditor, ICallerRespo
 		// Normalize width and height vertices to use 200px
 		copy.getVisualVars().setCenterOffset(0, 0);
 		ArrayList<Vector2> triangleVertices = copy.getVisualVars().getTriangleVertices();
-		@SuppressWarnings("unchecked")
-		IdentityMap<Vector2, Vector2> scaledVertices = Pools.identityMap.obtain();
+		@SuppressWarnings("unchecked") IdentityMap<Vector2, Vector2> scaledVertices = Pools.identityMap.obtain();
 		for (Vector2 vertex : triangleVertices) {
 			if (!scaledVertices.containsKey(vertex)) {
 				vertex.scl(normalizeLength);

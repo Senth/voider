@@ -969,24 +969,6 @@ public class Config {
 		public final static float MESSAGE_TIME_PER_CHARACTER = 0.08f;
 		/** Width of the score table's first cells */
 		public final static int SCORE_TABLE_FIRST_CELL_WIDTH = 100;
-
-		/**
-		 * @return true if we want to display text buttons instead of image buttons
-		 */
-		public static boolean usesTextButtons() {
-			return mUseTextButtons;
-		}
-
-		/**
-		 * Sets if we want to display text or image buttons
-		 * @param usesText set to true to use text buttons, false for image buttons
-		 */
-		public static void setUseTextButtons(boolean usesText) {
-			mUseTextButtons = usesText;
-		}
-
-		/** If we're using text buttons instead of images */
-		private static boolean mUseTextButtons = false;
 	}
 
 	/**

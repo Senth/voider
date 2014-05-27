@@ -45,8 +45,7 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 	 * @param pickRadius picking radius
 	 * @param actorType the actor type used in this editor
 	 */
-	public ActorEditor(
-			Gui gui, float pickRadius, Class<? extends Actor> actorType) {
+	public ActorEditor(Gui gui, float pickRadius, Class<? extends Actor> actorType) {
 		super(gui, pickRadius);
 
 		mActorType = actorType;
@@ -268,6 +267,7 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 			return;
 		}
 		mActorDef.setName(name);
+		((EditorGui) mGui).resetName();
 
 		setUnsaved();
 	}
@@ -378,7 +378,8 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 
 			// Set position other than center
 			// Vector2 worldPosition = Pools.vector2.obtain();
-			// screenToWorldCoord(mCamera, Gdx.graphics.getWidth() / 3, Gdx.graphics.getHeight() / 3, worldPosition,
+			// screenToWorldCoord(mCamera, Gdx.graphics.getWidth() / 3,
+			// Gdx.graphics.getHeight() / 3, worldPosition,
 			// false);
 			// mDrawingActor.setPosition(worldPosition);
 			// Pools.vector2.free(worldPosition);
@@ -442,9 +443,9 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 	}
 
 	/**
-	 * Creates a new actor of the current actor type via the default constructor. If an actor definition has been set,
-	 * this will also set that definition, else you need to set this manually if it hasn't been set through the actor's
-	 * default constructor.
+	 * Creates a new actor of the current actor type via the default constructor. If an
+	 * actor definition has been set, this will also set that definition, else you need to
+	 * set this manually if it hasn't been set through the actor's default constructor.
 	 * @return new actor of the current actor type.
 	 */
 	protected Actor newActor() {

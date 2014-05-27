@@ -64,7 +64,6 @@ import com.spiddekauga.voider.utils.User;
 
 /**
  * Common methods for all editors
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public abstract class EditorGui extends Gui {
@@ -81,6 +80,8 @@ public abstract class EditorGui extends Gui {
 		mEditorMenu.dispose();
 		mFileMenu.dispose();
 		mToolMenu.dispose();
+		mEditMenu.dispose();
+		mNameTable.dispose();
 
 		if (mBodies != null) {
 			clearCollisionBoxes();
@@ -108,6 +109,7 @@ public abstract class EditorGui extends Gui {
 
 		if (mEditorMenu.getStage() == null) {
 			getStage().addActor(mEditorMenu);
+			getStage().addActor(mEditMenu);
 			getStage().addActor(mFileMenu);
 			getStage().addActor(mToolMenu);
 		}
@@ -117,18 +119,29 @@ public abstract class EditorGui extends Gui {
 		initStyles();
 
 		mEditorMenu.setAlignTable(Horizontal.LEFT, Vertical.TOP);
+		mEditMenu.setAlignTable(Horizontal.CENTER, Vertical.TOP);
 		mFileMenu.setAlignTable(Horizontal.RIGHT, Vertical.TOP);
 		mToolMenu.setAlign(Horizontal.LEFT, Vertical.TOP);
 		mMainTable.setAlignTable(Horizontal.RIGHT, Vertical.TOP);
 		mMainTable.setAlignRow(Horizontal.RIGHT, Vertical.MIDDLE);
+		mNameTable.setAlignTable(Horizontal.LEFT, Vertical.TOP);
+		mNameTable.setAlignRow(Horizontal.LEFT, Vertical.MIDDLE);
+
+		mEditorMenu.setMargin(mStyles.vars.paddingOuter);
+		mEditMenu.setMargin(mStyles.vars.paddingOuter);
+		mFileMenu.setMargin(mStyles.vars.paddingOuter);
 
 		initEditorMenu();
+		initEditMenu();
 		initFileMenu();
+		initNameTable();
 
-		float paddingOuter = mStyles.vars.paddingOuter;
-		mToolMenu.setMargin(getTopBottomPadding(), paddingOuter, getTopBottomPadding(), paddingOuter);
+		float marginOuter = mStyles.vars.paddingOuter;
+		float marginTop = mStyles.vars.barUpperLowerHeight * 2 + marginOuter;
+		float marginBottom = getTopBottomPadding();
+		mToolMenu.setMargin(marginTop, marginOuter, marginBottom, marginOuter);
 
-		initTopBar();
+		initTopBottomBar();
 	}
 
 	/**
@@ -146,6 +159,7 @@ public abstract class EditorGui extends Gui {
 		mStyles.label.error = SkinNames.getResource(SkinNames.General.LABEL_ERROR);
 		mStyles.label.highlight = SkinNames.getResource(SkinNames.General.LABEL_HIGHLIGHT);
 		mStyles.label.success = SkinNames.getResource(SkinNames.General.LABEL_SUCCESS);
+		mStyles.label.name = SkinNames.getResource(SkinNames.General.LABEL_EDITOR_NAME);
 		mStyles.checkBox.checkBox = SkinNames.getResource(SkinNames.General.CHECK_BOX_DEFAULT);
 		mStyles.checkBox.radio = SkinNames.getResource(SkinNames.General.CHECK_BOX_RADIO);
 		mStyles.scrollPane.noBackground = SkinNames.getResource(SkinNames.General.SCROLL_PANE_DEFAULT);
@@ -165,14 +179,44 @@ public abstract class EditorGui extends Gui {
 	}
 
 	/**
-	 * Initializes the top bar
+	 * Initializes the top bar and bottom bar
 	 */
-	private void initTopBar() {
+	private void initTopBottomBar() {
 		mTopBar = new Background(mStyles.colors.widgetBackground);
 		mTopBar.setSize(Gdx.graphics.getWidth(), mStyles.vars.barUpperLowerHeight);
 		mTopBar.setPosition(0, Gdx.graphics.getHeight() - mStyles.vars.barUpperLowerHeight);
 		getStage().addActor(mTopBar);
 		mTopBar.setZIndex(0);
+
+		mBottomBar = new Background(mStyles.colors.widgetBackground);
+		mBottomBar.setSize(Gdx.graphics.getWidth(), mStyles.vars.barUpperLowerHeight);
+		mBottomBar.setPosition(0, 0);
+		getStage().addActor(mBottomBar);
+		mBottomBar.setZIndex(0);
+	}
+
+	/**
+	 * Initializes the name table
+	 */
+	private void initNameTable() {
+		float margin = mStyles.vars.paddingOuter;
+		mNameTable.setMargin(getTopBottomPadding(), margin, margin, margin);
+		getStage().addActor(mNameTable);
+		mNameTable.setKeepHeight(true);
+		mNameTable.setHeight(mStyles.vars.barUpperLowerHeight - margin * 2);
+
+		mNameLabel = new Label("", mStyles.label.name);
+		mNameTable.row().setFillHeight(true);
+		mNameTable.add(mNameLabel).setFillHeight(true);
+	}
+
+	/**
+	 * Reset name
+	 */
+	void resetName() {
+		if (mNameLabel != null) {
+			mNameLabel.setText(mEditor.getName());
+		}
 	}
 
 	@Override
@@ -189,6 +233,9 @@ public abstract class EditorGui extends Gui {
 				mEnemyHighlight.setChecked(((LevelEditor) mEditor).isEnemyHighlightOn());
 			}
 		}
+
+		// Name
+		resetName();
 
 		// Disabled / Enable actors if published / unpublished
 		boolean published = mEditor.isPublished();
@@ -245,7 +292,7 @@ public abstract class EditorGui extends Gui {
 		} else {
 			button = new ImageButton(mStyles.skin.editor, EditorIcons.CAMPAIGN_EDITOR.toString());
 		}
-		TooltipListener tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Menus.Editor.CAMPAIGN,  "level"));
+		TooltipListener tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Menus.Editor.CAMPAIGN, "level"));
 		mEditorMenu.add(button);
 		if (this.getClass() != LevelEditorGui.class) {
 			new ButtonListener(button, tooltipListener) {
@@ -263,7 +310,7 @@ public abstract class EditorGui extends Gui {
 		} else {
 			button = new ImageButton(mStyles.skin.editor, EditorIcons.LEVEL_EDITOR.toString());
 		}
-		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Menus.Editor.LEVEL,  "level"));
+		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Menus.Editor.LEVEL, "level"));
 		mEditorMenu.add(button);
 		if (this.getClass() != LevelEditorGui.class) {
 			new ButtonListener(button, tooltipListener) {
@@ -281,7 +328,7 @@ public abstract class EditorGui extends Gui {
 		} else {
 			button = new ImageButton(mStyles.skin.editor, EditorIcons.ENEMY_EDITOR.toString());
 		}
-		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Menus.Editor.ENEMY,  "enemy"));
+		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Menus.Editor.ENEMY, "enemy"));
 		mEditorMenu.add(button);
 		if (this.getClass() != EnemyEditorGui.class) {
 			new ButtonListener(button, tooltipListener) {
@@ -299,7 +346,7 @@ public abstract class EditorGui extends Gui {
 		} else {
 			button = new ImageButton(mStyles.skin.editor, EditorIcons.BULLET_EDITOR.toString());
 		}
-		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Menus.Editor.BULLET,  "bullet"));
+		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Menus.Editor.BULLET, "bullet"));
 		mEditorMenu.add(button).setPadRight(mStyles.vars.paddingSeparator);
 		if (this.getClass() != BulletEditorGui.class) {
 			new ButtonListener(button, tooltipListener) {
@@ -312,15 +359,13 @@ public abstract class EditorGui extends Gui {
 	}
 
 	/**
-	 * Initializes the file menu
+	 * Initializes the edit menu
 	 */
-	protected void initFileMenu() {
-		Button button;
-
+	private void initEditMenu() {
 		// Undo
-		button = new ImageButton(mStyles.skin.editor, EditorIcons.UNDO.toString());
+		Button button = new ImageButton(mStyles.skin.editor, EditorIcons.UNDO.toString());
 		mDisabledWhenPublished.add(button);
-		mFileMenu.add(button);
+		mEditMenu.add(button);
 		TooltipListener tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Menus.File.UNDO, getResourceTypeName()));
 		new ButtonListener(button, tooltipListener) {
 			@Override
@@ -332,7 +377,7 @@ public abstract class EditorGui extends Gui {
 		// Redo
 		button = new ImageButton(mStyles.skin.editor, EditorIcons.REDO.toString());
 		mDisabledWhenPublished.add(button);
-		mFileMenu.add(button);
+		mEditMenu.add(button);
 		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Menus.File.REDO, getResourceTypeName()));
 		new ButtonListener(button, tooltipListener) {
 			@Override
@@ -347,7 +392,7 @@ public abstract class EditorGui extends Gui {
 			// the current position
 			button = new ImageButton(mStyles.skin.editor, EditorIcons.ENEMY_SPAWN_HIGHLIGHT.toString());
 			mEnemyHighlight = button;
-			mFileMenu.add(button);
+			mEditMenu.add(button);
 			tooltipListener = new TooltipListener(button, Messages.Tooltip.Menus.File.HIGHLIGHT_ENEMY);
 			new ButtonListener(button, tooltipListener) {
 				@Override
@@ -358,7 +403,7 @@ public abstract class EditorGui extends Gui {
 
 			// Run
 			button = new ImageButton(mStyles.skin.editor, EditorIcons.RUN.toString());
-			mFileMenu.add(button);
+			mEditMenu.add(button);
 			tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Menus.File.RUN, getResourceTypeName()));
 			new ButtonListener(button, tooltipListener) {
 				@Override
@@ -367,8 +412,8 @@ public abstract class EditorGui extends Gui {
 
 					msgBox.setTitle(Messages.Level.RUN_INVULNERABLE_TITLE);
 					msgBox.content(Messages.Level.RUN_INVULNERABLE_CONTENT);
-					msgBox.button("Can die", new CLevelRun(false, (LevelEditor)mEditor));
-					msgBox.button("Invulnerable", new CLevelRun(true, (LevelEditor)mEditor));
+					msgBox.button("Can die", new CLevelRun(false, (LevelEditor) mEditor));
+					msgBox.button("Invulnerable", new CLevelRun(true, (LevelEditor) mEditor));
 					msgBox.addCancelButtonAndKeys();
 					showMsgBox(msgBox);
 				}
@@ -381,7 +426,7 @@ public abstract class EditorGui extends Gui {
 			button = new ImageButton(mStyles.skin.editor, EditorIcons.GRID.toString());
 			mGridRender = button;
 			DisableListener disableListener = new DisableListener(button);
-			mFileMenu.add(button);
+			mEditMenu.add(button);
 			tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Menus.File.GRID, getResourceTypeName()));
 			new ButtonListener(button, tooltipListener) {
 				@Override
@@ -394,7 +439,7 @@ public abstract class EditorGui extends Gui {
 			button = new ImageButton(mStyles.skin.editor, EditorIcons.GRID_ABOVE.toString());
 			mGridRenderAbove = button;
 			disableListener.addToggleActor(button);
-			mFileMenu.add(button).setPadRight(mStyles.vars.paddingSeparator);
+			mEditMenu.add(button).setPadRight(mStyles.vars.paddingSeparator);
 			tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Menus.File.GRID_ADOVE, getResourceTypeName()));
 			new ButtonListener(button, tooltipListener) {
 				@Override
@@ -403,15 +448,21 @@ public abstract class EditorGui extends Gui {
 				}
 			};
 		}
+	}
 
+	/**
+	 * Initializes the file menu
+	 */
+	private void initFileMenu() {
 		// New
-		button = new ImageButton(mStyles.skin.editor, EditorIcons.NEW.toString());
+		Button button = new ImageButton(mStyles.skin.editor, EditorIcons.NEW.toString());
 		mFileMenu.add(button);
-		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Menus.File.NEW, getResourceTypeName()));
+		TooltipListener tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Menus.File.NEW, getResourceTypeName()));
 		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onPressed() {
-				executeCommandAndCheckSave(new CEditorNew(mEditor), "New " + getResourceTypeName(), "Save first", "Discard current", Messages.getUnsavedMessage(getResourceTypeName(), UnsavedActions.NEW));
+				executeCommandAndCheckSave(new CEditorNew(mEditor), "New " + getResourceTypeName(), "Save first", "Discard current",
+						Messages.getUnsavedMessage(getResourceTypeName(), UnsavedActions.NEW));
 			}
 		};
 
@@ -451,7 +502,8 @@ public abstract class EditorGui extends Gui {
 		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onPressed() {
-				executeCommandAndCheckSave(new CEditorLoad(mEditor), "Load another " + getResourceTypeName(), "Save first", "Discard current", Messages.getUnsavedMessage(getResourceTypeName(), UnsavedActions.LOAD));
+				executeCommandAndCheckSave(new CEditorLoad(mEditor), "Load another " + getResourceTypeName(), "Save first", "Discard current",
+						Messages.getUnsavedMessage(getResourceTypeName(), UnsavedActions.LOAD));
 			}
 		};
 
@@ -473,8 +525,7 @@ public abstract class EditorGui extends Gui {
 						MsgBoxExecuter msgBox = getFreeMsgBox(true);
 						msgBox.setTitle("No screenshot taken");
 						String text = "Please take a screenshot of this level before publishing it. "
-								+ "You can do this by test running the level and click on the camera "
-								+ "icon in the top bar.";
+								+ "You can do this by test running the level and click on the camera " + "icon in the top bar.";
 						Label label = new Label(text, mStyles.label.standard);
 						msgBox.content(label);
 						msgBox.addCancelButtonAndKeys("OK");
@@ -491,8 +542,7 @@ public abstract class EditorGui extends Gui {
 					MsgBoxExecuter msgBox = getFreeMsgBox(true);
 					msgBox.setTitle("Offline");
 					String text = "You need to go online to publish the level. Currently this is "
-							+ "only possible by either logging out and logging in or restarting "
-							+ "the game.";
+							+ "only possible by either logging out and logging in or restarting " + "the game.";
 					Label label = new Label(text, mStyles.label.standard);
 					msgBox.content(label);
 					msgBox.addCancelButtonAndKeys("OK");
@@ -622,12 +672,13 @@ public abstract class EditorGui extends Gui {
 	}
 
 	/**
-	 * Run a command. If the editor isn't saved a message box is displayed that asks the player
-	 * to either save or discard the resource before executing the command.
+	 * Run a command. If the editor isn't saved a message box is displayed that asks the
+	 * player to either save or discard the resource before executing the command.
 	 * @param command the command to run
 	 * @param title message box title
 	 * @param saveButtonText text for the save button then execute the command
-	 * @param withoutSaveButtonText text for the button when to just execute the command without saving
+	 * @param withoutSaveButtonText text for the button when to just execute the command
+	 *        without saving
 	 * @param content the message to be displayed in the message box
 	 */
 	protected void executeCommandAndCheckSave(Command command, String title, String saveButtonText, String withoutSaveButtonText, String content) {
@@ -635,16 +686,19 @@ public abstract class EditorGui extends Gui {
 	}
 
 	/**
-	 * Run a command. Displays a message box that asks the player to either save or discard the resources
-	 * before executing the command.
+	 * Run a command. Displays a message box that asks the player to either save or
+	 * discard the resources before executing the command.
 	 * @param command the command to run
 	 * @param title message box title
 	 * @param saveButtonText text for the save button then execute the command
-	 * @param withoutSaveButtonText text for the button when to just execute the command without saving
+	 * @param withoutSaveButtonText text for the button when to just execute the command
+	 *        without saving
 	 * @param content the message to be displayed in the message box
-	 * @param alwaysShow set to true to always show the message box even if the resource has been saved
+	 * @param alwaysShow set to true to always show the message box even if the resource
+	 *        has been saved
 	 */
-	protected void executeCommandAndCheckSave(Command command, String title, String saveButtonText, String withoutSaveButtonText, String content, boolean alwaysShow) {
+	protected void executeCommandAndCheckSave(Command command, String title, String saveButtonText, String withoutSaveButtonText, String content,
+			boolean alwaysShow) {
 		if (!mEditor.isSaved() || alwaysShow) {
 			Button saveThenExecuteButton = new TextButton(saveButtonText, mStyles.textButton.press);
 			Button justExecuteButton = new TextButton(withoutSaveButtonText, mStyles.textButton.press);
@@ -666,8 +720,8 @@ public abstract class EditorGui extends Gui {
 	}
 
 	/**
-	 * Reset and add collision boxes for all UI-elements. Should be called
-	 * every frame, will reset only when necessary.
+	 * Reset and add collision boxes for all UI-elements. Should be called every frame,
+	 * will reset only when necessary.
 	 */
 	void resetCollisionBoxes() {
 		if (mEditor == null) {
@@ -763,9 +817,8 @@ public abstract class EditorGui extends Gui {
 	protected abstract String getResourceTypeName();
 
 
-
 	/**
-	 * Container for all ui styles
+	 * Container for all UI styles
 	 */
 	@SuppressWarnings("javadoc")
 	protected static class UiStyles {
@@ -817,6 +870,7 @@ public abstract class EditorGui extends Gui {
 			LabelStyle error = null;
 			LabelStyle highlight = null;
 			LabelStyle success = null;
+			LabelStyle name = null;
 		}
 
 		static class CheckBoxes {
@@ -850,13 +904,23 @@ public abstract class EditorGui extends Gui {
 	private AlignTable mEditorMenu = new AlignTable();
 	/** File menu table (upper right) */
 	private AlignTable mFileMenu = new AlignTable();
+	/** Edit menu table (upper center) */
+	private AlignTable mEditMenu = new AlignTable();
 	/** Tool table (left) */
 	protected AlignTable mToolMenu = new AlignTable();
-	/** If the main table has a valid layout, false means the collision boxes
-	 * will be updated once the main table has a valid layout again */
+	/** Table with the name */
+	private AlignTable mNameTable = new AlignTable();
+	/** Name label */
+	private Label mNameLabel = null;
+	/**
+	 * If the main table has a valid layout, false means the collision boxes will be
+	 * updated once the main table has a valid layout again
+	 */
 	private boolean mLayoutWasValid = false;
 	/** All UI-bodies for collision */
 	private ArrayList<Body> mBodies = null;
 	/** The top bar */
 	private Background mTopBar = null;
+	/** Bottom bar */
+	private Background mBottomBar = null;
 }

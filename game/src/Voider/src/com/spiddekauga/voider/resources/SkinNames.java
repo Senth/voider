@@ -280,8 +280,7 @@ public class SkinNames {
 		 * Creates a more user-friendly name for the enumeration
 		 * @param type the class type
 		 */
-		private EditorVars(
-				Class<?> type) {
+		private EditorVars(Class<?> type) {
 			mName = super.toString().toLowerCase();
 			mType = type;
 		}
@@ -323,8 +322,7 @@ public class SkinNames {
 		 * Creates a more user-friendly name for the enumeration
 		 * @param type class type
 		 */
-		private Game(
-				Class<?> type) {
+		private Game(Class<?> type) {
 			mName = super.toString().toLowerCase();
 			mType = type;
 		}
@@ -403,8 +401,7 @@ public class SkinNames {
 		 * Creates a more user-friendly name for the enumeration
 		 * @param type the class type
 		 */
-		private GeneralVars(
-				Class<?> type) {
+		private GeneralVars(Class<?> type) {
 			mType = type;
 			mName = super.toString().toLowerCase();
 		}
@@ -414,8 +411,7 @@ public class SkinNames {
 		 * @param type the class type
 		 * @param jsonName name in the json-file
 		 */
-		private GeneralVars(
-				Class<?> type, String jsonName) {
+		private GeneralVars(Class<?> type, String jsonName) {
 			mType = type;
 			mName = jsonName;
 		}
@@ -478,8 +474,7 @@ public class SkinNames {
 		 * Create a custom name for the enumeration
 		 * @param jsonName name in the json-file
 		 */
-		private GeneralImages(
-				String jsonName) {
+		private GeneralImages(String jsonName) {
 			mName = jsonName;
 		}
 
@@ -534,6 +529,8 @@ public class SkinNames {
 		LABEL_SUCCESS(LabelStyle.class, "success"),
 		/** Panel section label style */
 		LABEL_PANEL_SECTION(LabelStyle.class, "panel_section"),
+		/** Editor name label style */
+		LABEL_EDITOR_NAME(LabelStyle.class, "editor_name"),
 		/** List default */
 		LIST_DEFAULT(ListStyle.class, "default"),
 		/** Logout button */
@@ -623,8 +620,7 @@ public class SkinNames {
 		 * Creates a more user-friendly name for the enumeration
 		 * @param type the class type
 		 */
-		private General(
-				Class<?> type) {
+		private General(Class<?> type) {
 			mType = type;
 			mName = super.toString().toLowerCase();
 		}
@@ -634,8 +630,7 @@ public class SkinNames {
 		 * @param type the class type
 		 * @param jsonName name in the json-file
 		 */
-		private General(
-				Class<?> type, String jsonName) {
+		private General(Class<?> type, String jsonName) {
 			mType = type;
 			mName = jsonName;
 		}
@@ -705,8 +700,7 @@ public class SkinNames {
 		 * Creates a more user-friendly name for the enumeration
 		 * @param type the class type
 		 */
-		private Theme(
-				Class<?> type) {
+		private Theme(Class<?> type) {
 			mType = type;
 			mName = super.toString().toLowerCase();
 		}
@@ -716,8 +710,7 @@ public class SkinNames {
 		 * @param type the class type
 		 * @param jsonName name in the json-file
 		 */
-		private Theme(
-				Class<?> type, String jsonName) {
+		private Theme(Class<?> type, String jsonName) {
 			mType = type;
 			mName = jsonName;
 		}

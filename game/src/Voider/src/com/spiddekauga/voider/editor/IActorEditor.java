@@ -5,9 +5,8 @@ import com.spiddekauga.utils.commands.Invoker;
 import com.spiddekauga.voider.game.actors.ActorShapeTypes;
 
 /**
- * Interface for actor editors. This interface have some common
- * actions for all actor editors. Such as save, load, new, duplicate.
- * 
+ * Interface for actor editors. This interface have some common actions for all actor
+ * editors. Such as save, load, new, duplicate.
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public interface IActorEditor extends IEditor {
@@ -32,29 +31,6 @@ public interface IActorEditor extends IEditor {
 	 * Redoes the undone command
 	 */
 	void redo();
-
-	// ------------ Definition -----------------
-	/**
-	 * @return name of the actor
-	 */
-	String getName();
-
-	/**
-	 * Sets the name of the actor
-	 * @param name new name of the actor
-	 */
-	void setName(String name);
-
-	/**
-	 * Sets the description of the actor
-	 * @param description description text of the actor
-	 */
-	void setDescription(String description);
-
-	/**
-	 * @return description of the actor
-	 */
-	String getDescription();
 
 	// --------------- Visuals ----------------
 	/**

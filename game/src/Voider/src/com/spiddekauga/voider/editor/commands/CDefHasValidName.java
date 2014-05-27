@@ -40,7 +40,7 @@ public class CDefHasValidName extends Command {
 	public boolean execute() {
 		String name = null;
 		if (mEditor instanceof LevelEditor) {
-			name = ((LevelEditor) mEditor).getLevelName();
+			name = ((LevelEditor) mEditor).getName();
 		}
 		else if (mEditor instanceof IActorEditor) {
 			name = ((IActorEditor) mEditor).getName();

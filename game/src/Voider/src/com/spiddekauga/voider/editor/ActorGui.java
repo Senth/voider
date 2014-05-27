@@ -8,7 +8,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.spiddekauga.utils.commands.Invoker;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
@@ -37,7 +36,6 @@ import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Has some common methods for gui
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public abstract class ActorGui extends EditorGui {
@@ -102,12 +100,9 @@ public abstract class ActorGui extends EditorGui {
 	 */
 	protected void initSettingsMenu() {
 		mSettingTabs.setMargin(getTopBottomPadding(), mStyles.vars.paddingOuter, getTopBottomPadding(), mStyles.vars.paddingOuter)
-		.setAlign(Horizontal.RIGHT, Vertical.TOP)
-		.setTabAlign(Horizontal.RIGHT)
-		.setFillHeight(true)
-		.setBackground(new Background(mStyles.colors.widgetBackground))
-		.setPaddingContent(mStyles.vars.paddingInner)
-		.setContentWidth((Float) SkinNames.getResource(SkinNames.GeneralVars.RIGHT_PANEL_WIDTH));
+				.setAlign(Horizontal.RIGHT, Vertical.TOP).setTabAlign(Horizontal.RIGHT).setFillHeight(true)
+				.setBackground(new Background(mStyles.colors.widgetBackground)).setPaddingContent(mStyles.vars.paddingInner)
+				.setContentWidth((Float) SkinNames.getResource(SkinNames.GeneralVars.RIGHT_PANEL_WIDTH));
 
 		getStage().addActor(mSettingTabs);
 	}
@@ -175,7 +170,7 @@ public abstract class ActorGui extends EditorGui {
 		Label label = new Label("Name", mStyles.label.standard);
 		mWidgets.info.table.add(label);
 
-		int width = (int) (Gdx.graphics.getWidth()*0.4f);
+		int width = (int) (Gdx.graphics.getWidth() * 0.4f);
 
 		mWidgets.info.table.row();
 		TextField textField = new TextField("", mStyles.textField.standard);
@@ -199,7 +194,7 @@ public abstract class ActorGui extends EditorGui {
 		textField = new TextField("", mStyles.textField.standard);
 		mDisabledWhenPublished.add(textField);
 		textField.setMaxLength(Config.Editor.DESCRIPTION_LENGTH_MAX);
-		mWidgets.info.table.add(textField).setSize(width, (int) (Gdx.graphics.getHeight()*0.5f));
+		mWidgets.info.table.add(textField).setSize(width, (int) (Gdx.graphics.getHeight() * 0.5f));
 		mWidgets.info.description = textField;
 		new TooltipListener(textField, Messages.replaceName(Messages.Tooltip.Actor.Option.DESCRIPTION, getResourceTypeName()));
 		new TextFieldListener(textField, "Write your description here...", mInvoker) {
@@ -234,17 +229,8 @@ public abstract class ActorGui extends EditorGui {
 				mActorEditor.setStartingAngle(newValue);
 			}
 		};
-		mWidgets.visual.startAngle = mUiFactory.addSlider(
-				"Angle",
-				0,
-				360,
-				1,
-				sliderListener,
-				table,
-				Messages.replaceName(Messages.Tooltip.Actor.Visuals.STARTING_ANGLE, getResourceTypeName()),
-				null,
-				mDisabledWhenPublished,
-				mInvoker);
+		mWidgets.visual.startAngle = mUiFactory.addSlider("Angle", 0, 360, 1, sliderListener, table,
+				Messages.replaceName(Messages.Tooltip.Actor.Visuals.STARTING_ANGLE, getResourceTypeName()), null, mDisabledWhenPublished, mInvoker);
 
 
 		// Rotation speed
@@ -255,17 +241,9 @@ public abstract class ActorGui extends EditorGui {
 				mActorEditor.setRotationSpeed(newValue);
 			}
 		};
-		mWidgets.visual.rotationSpeed = mUiFactory.addSlider(
-				"Speed",
-				Editor.Actor.Visual.ROTATE_SPEED_MIN,
-				Editor.Actor.Visual.ROTATE_SPEED_MAX,
-				Editor.Actor.Visual.ROTATE_SPEED_STEP_SIZE,
-				sliderListener,
-				table,
-				Messages.replaceName(Messages.Tooltip.Actor.Visuals.ROTATION_SPEED, getResourceTypeName()),
-				null,
-				mDisabledWhenPublished,
-				mInvoker);
+		mWidgets.visual.rotationSpeed = mUiFactory.addSlider("Speed", Editor.Actor.Visual.ROTATE_SPEED_MIN, Editor.Actor.Visual.ROTATE_SPEED_MAX,
+				Editor.Actor.Visual.ROTATE_SPEED_STEP_SIZE, sliderListener, table,
+				Messages.replaceName(Messages.Tooltip.Actor.Visuals.ROTATION_SPEED, getResourceTypeName()), null, mDisabledWhenPublished, mInvoker);
 
 
 		// Different shape tabs
@@ -327,8 +305,7 @@ public abstract class ActorGui extends EditorGui {
 		mDrawToolHider = customTab.hider;
 
 		// Create tabs
-		@SuppressWarnings("unchecked")
-		ArrayList<TabWrapper> tabs = Pools.arrayList.obtain();
+		@SuppressWarnings("unchecked") ArrayList<TabWrapper> tabs = Pools.arrayList.obtain();
 		tabs.add(circleTab);
 		tabs.add(rectangleTab);
 		tabs.add(triangleTab);
@@ -352,17 +329,8 @@ public abstract class ActorGui extends EditorGui {
 				mActorEditor.setShapeRadius(newValue);
 			}
 		};
-		mWidgets.visual.shapeCircleRadius = mUiFactory.addSlider(
-				"Radius",
-				Enemy.Visual.RADIUS_MIN,
-				Enemy.Visual.RADIUS_MAX,
-				Enemy.Visual.RADIUS_STEP_SIZE,
-				sliderListener,
-				table,
-				null,
-				circleTab.hider,
-				mDisabledWhenPublished,
-				mInvoker);
+		mWidgets.visual.shapeCircleRadius = mUiFactory.addSlider("Radius", Enemy.Visual.RADIUS_MIN, Enemy.Visual.RADIUS_MAX,
+				Enemy.Visual.RADIUS_STEP_SIZE, sliderListener, table, null, circleTab.hider, mDisabledWhenPublished, mInvoker);
 
 
 		// Rectangle
@@ -374,17 +342,8 @@ public abstract class ActorGui extends EditorGui {
 				mWidgets.visual.shapeTriangleWidth.setValue(newValue);
 			}
 		};
-		mWidgets.visual.shapeRectangleWidth = mUiFactory.addSlider(
-				"Width",
-				Enemy.Visual.SIZE_MIN,
-				Enemy.Visual.SIZE_MAX,
-				Enemy.Visual.SIZE_STEP_SIZE,
-				sliderListener,
-				table,
-				null,
-				rectangleTab.hider,
-				mDisabledWhenPublished,
-				mInvoker);
+		mWidgets.visual.shapeRectangleWidth = mUiFactory.addSlider("Width", Enemy.Visual.SIZE_MIN, Enemy.Visual.SIZE_MAX,
+				Enemy.Visual.SIZE_STEP_SIZE, sliderListener, table, null, rectangleTab.hider, mDisabledWhenPublished, mInvoker);
 
 		// Height
 		sliderListener = new SliderListener() {
@@ -394,17 +353,8 @@ public abstract class ActorGui extends EditorGui {
 				mWidgets.visual.shapeTriangleHeight.setValue(newValue);
 			}
 		};
-		mWidgets.visual.shapeRectangleHeight = mUiFactory.addSlider(
-				"Height",
-				Enemy.Visual.SIZE_MIN,
-				Enemy.Visual.SIZE_MAX,
-				Enemy.Visual.SIZE_STEP_SIZE,
-				sliderListener,
-				table,
-				null,
-				rectangleTab.hider,
-				mDisabledWhenPublished,
-				mInvoker);
+		mWidgets.visual.shapeRectangleHeight = mUiFactory.addSlider("Height", Enemy.Visual.SIZE_MIN, Enemy.Visual.SIZE_MAX,
+				Enemy.Visual.SIZE_STEP_SIZE, sliderListener, table, null, rectangleTab.hider, mDisabledWhenPublished, mInvoker);
 
 
 		// Triangle
@@ -416,17 +366,8 @@ public abstract class ActorGui extends EditorGui {
 				mWidgets.visual.shapeRectangleWidth.setValue(newValue);
 			}
 		};
-		mWidgets.visual.shapeTriangleWidth = mUiFactory.addSlider(
-				"Width",
-				Enemy.Visual.SIZE_MIN,
-				Enemy.Visual.SIZE_MAX,
-				Enemy.Visual.SIZE_STEP_SIZE,
-				sliderListener,
-				table,
-				null,
-				triangleTab.hider,
-				mDisabledWhenPublished,
-				mInvoker);
+		mWidgets.visual.shapeTriangleWidth = mUiFactory.addSlider("Width", Enemy.Visual.SIZE_MIN, Enemy.Visual.SIZE_MAX, Enemy.Visual.SIZE_STEP_SIZE,
+				sliderListener, table, null, triangleTab.hider, mDisabledWhenPublished, mInvoker);
 
 		// Height
 		sliderListener = new SliderListener() {
@@ -436,17 +377,8 @@ public abstract class ActorGui extends EditorGui {
 				mWidgets.visual.shapeRectangleHeight.setValue(newValue);
 			}
 		};
-		mWidgets.visual.shapeTriangleHeight = mUiFactory.addSlider(
-				"Height",
-				Enemy.Visual.SIZE_MIN,
-				Enemy.Visual.SIZE_MAX,
-				Enemy.Visual.SIZE_STEP_SIZE,
-				sliderListener,
-				table,
-				null,
-				triangleTab.hider,
-				mDisabledWhenPublished,
-				mInvoker);
+		mWidgets.visual.shapeTriangleHeight = mUiFactory.addSlider("Height", Enemy.Visual.SIZE_MIN, Enemy.Visual.SIZE_MAX,
+				Enemy.Visual.SIZE_STEP_SIZE, sliderListener, table, null, triangleTab.hider, mDisabledWhenPublished, mInvoker);
 	}
 
 	/**
@@ -463,11 +395,7 @@ public abstract class ActorGui extends EditorGui {
 
 		// Move
 		mWidgets.visualToolMenu.table.row();
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Move", mStyles.textButton.toggle);
-		} else {
-			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.MOVE.toString());
-		}
+		button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.MOVE.toString());
 		mDisabledWhenPublished.add(button);
 		mWidgets.tool.move = button;
 		buttonGroup.add(button);
@@ -484,11 +412,7 @@ public abstract class ActorGui extends EditorGui {
 
 		// Delete
 		mWidgets.visualToolMenu.table.row();
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Delete", mStyles.textButton.toggle);
-		} else {
-			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.DELETE.toString());
-		}
+		button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.DELETE.toString());
 		mDisabledWhenPublished.add(button);
 		mWidgets.tool.delete = button;
 		buttonGroup.add(button);
@@ -505,11 +429,7 @@ public abstract class ActorGui extends EditorGui {
 
 		// Append
 		mWidgets.visualToolMenu.table.row();
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Draw/Append", mStyles.textButton.toggle);
-		} else {
-			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.DRAW_APPEND.toString());
-		}
+		button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.DRAW_APPEND.toString());
 		mDisabledWhenPublished.add(button);
 		mWidgets.tool.drawAppend = button;
 		buttonGroup.add(button);
@@ -526,11 +446,7 @@ public abstract class ActorGui extends EditorGui {
 
 		// Add Remove (draw/erase)
 		mWidgets.visualToolMenu.table.row();
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Draw/Erase", mStyles.textButton.toggle);
-		} else {
-			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.DRAW_ERASE.toString());
-		}
+		button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.DRAW_ERASE.toString());
 		mDisabledWhenPublished.add(button);
 		mWidgets.tool.drawErase = button;
 		buttonGroup.add(button);
@@ -547,11 +463,7 @@ public abstract class ActorGui extends EditorGui {
 
 		// Add corner
 		mWidgets.visualToolMenu.table.row();
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Add/Move corner", mStyles.textButton.toggle);
-		} else {
-			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.ADD_MOVE_CORNER.toString());
-		}
+		button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.ADD_MOVE_CORNER.toString());
 		mDisabledWhenPublished.add(button);
 		mWidgets.tool.addMoveCorner = button;
 		buttonGroup.add(button);
@@ -568,11 +480,7 @@ public abstract class ActorGui extends EditorGui {
 
 		// Remove corner
 		mWidgets.visualToolMenu.table.row();
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Remove corner", mStyles.textButton.toggle);
-		} else {
-			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.REMOVE_CORNER.toString());
-		}
+		button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.REMOVE_CORNER.toString());
 		mDisabledWhenPublished.add(button);
 		mWidgets.tool.removeCorner = button;
 		buttonGroup.add(button);
@@ -589,11 +497,7 @@ public abstract class ActorGui extends EditorGui {
 
 		// Set center
 		mWidgets.visualToolMenu.table.row();
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Set center", mStyles.textButton.toggle);
-		} else {
-			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.SET_CENTER.toString());
-		}
+		button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.SET_CENTER.toString());
 		mDisabledWhenPublished.add(button);
 		mWidgets.tool.setCenter = button;
 		buttonGroup.add(button);
@@ -611,11 +515,7 @@ public abstract class ActorGui extends EditorGui {
 
 		// Reset center
 		mWidgets.visualToolMenu.table.row();
-		if (Config.Gui.usesTextButtons()) {
-			button = new TextButton("Reset center", mStyles.textButton.press);
-		} else {
-			button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.RESET_CENTER.toString());
-		}
+		button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.RESET_CENTER.toString());
 		mDisabledWhenPublished.add(button);
 		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Tools.RESET_CENTER, getResourceTypeName()));
 		new ButtonListener(button, tooltipListener) {
@@ -639,17 +539,9 @@ public abstract class ActorGui extends EditorGui {
 				mActorEditor.setCollisionDamage(newValue);
 			}
 		};
-		mWidgets.collision.damage = mUiFactory.addSlider(
-				null,
-				Editor.Actor.Collision.DAMAGE_MIN,
-				Editor.Actor.Collision.DAMAGE_MAX,
-				Editor.Actor.Collision.DAMAGE_STEP_SIZE,
-				sliderListener,
-				mWidgets.collision.table,
-				Messages.Tooltip.Actor.Collision.DAMAGE,
-				null,
-				mDisabledWhenPublished,
-				mInvoker);
+		mWidgets.collision.damage = mUiFactory.addSlider(null, Editor.Actor.Collision.DAMAGE_MIN, Editor.Actor.Collision.DAMAGE_MAX,
+				Editor.Actor.Collision.DAMAGE_STEP_SIZE, sliderListener, mWidgets.collision.table, Messages.Tooltip.Actor.Collision.DAMAGE, null,
+				mDisabledWhenPublished, mInvoker);
 
 
 		// Collision destroy
@@ -660,13 +552,8 @@ public abstract class ActorGui extends EditorGui {
 				mActorEditor.setDestroyOnCollide(checked);
 			}
 		};
-		mWidgets.collision.destroyOnCollide = mUiFactory.addCheckBox(
-				"Destroy",
-				buttonListener,
-				mWidgets.collision.table,
-				Messages.replaceName(Messages.Tooltip.Actor.Collision.DESTROY_ON_COLLIDE, getResourceTypeName()),
-				null,
-				mDisabledWhenPublished);
+		mWidgets.collision.destroyOnCollide = mUiFactory.addCheckBox("Destroy", buttonListener, mWidgets.collision.table,
+				Messages.replaceName(Messages.Tooltip.Actor.Collision.DESTROY_ON_COLLIDE, getResourceTypeName()), null, mDisabledWhenPublished);
 	}
 
 	/**

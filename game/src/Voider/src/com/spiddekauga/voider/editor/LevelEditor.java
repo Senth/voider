@@ -809,9 +809,11 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	 * Sets the name of the level
 	 * @param name name of the level
 	 */
-	void setLevelName(String name) {
+	@Override
+	public void setName(String name) {
 		if (mLevel != null) {
 			mLevel.getDef().setName(name);
+			((EditorGui) mGui).resetName();
 			setUnsaved();
 		}
 	}
@@ -819,7 +821,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	/**
 	 * @return name of the level, empty string if no level is available
 	 */
-	public String getLevelName() {
+	@Override
+	public String getName() {
 		if (mLevel != null) {
 			return mLevel.getDef().getName();
 		} else {
@@ -831,7 +834,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	 * Sets the description of the level
 	 * @param description text description of the level
 	 */
-	void setLevelDescription(String description) {
+	@Override
+	public void setDescription(String description) {
 		if (mLevel != null) {
 			mLevel.getDef().setDescription(description);
 			setUnsaved();
@@ -841,7 +845,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	/**
 	 * @return description of the level, empty string if no level is available
 	 */
-	String getLevelDescription() {
+	@Override
+	public String getDescription() {
 		if (mLevel != null) {
 			return mLevel.getDef().getDescription();
 		} else {
