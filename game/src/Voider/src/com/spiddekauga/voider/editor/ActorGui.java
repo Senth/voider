@@ -45,7 +45,6 @@ public abstract class ActorGui extends EditorGui {
 		mWidgets.visual.table.dispose();
 		mWidgets.collision.table.dispose();
 		mWidgets.info.table.dispose();
-		mWidgets.visualToolMenu.table.dispose();
 
 		mDrawToolHider.dispose();
 		mWidgets.collision.hider.dispose();
@@ -57,8 +56,6 @@ public abstract class ActorGui extends EditorGui {
 	@Override
 	public void initGui() {
 		super.initGui();
-
-		mWidgets.visualToolMenu.table.setPreferences(mToolMenu);
 
 		// Tabs
 		mWidgets.collision.table.setAlignTable(Horizontal.LEFT, Vertical.TOP);
@@ -385,38 +382,20 @@ public abstract class ActorGui extends EditorGui {
 	 * Initializes the toolbox
 	 */
 	private void initToolMenu() {
+		float separatorPadding = mStyles.vars.paddingOuter;
 		ButtonGroup buttonGroup = new ButtonGroup();
 		Button button;
 
-		mWidgets.visualToolMenu.table.setPreferences(mToolMenu);
-		mToolMenu.add(mWidgets.visualToolMenu.table);
-		mDrawToolHider.addToggleActor(mWidgets.visualToolMenu.table);
+		mDrawToolHider.addToggleActor(mToolMenu);
 
-
-		// Move
-		mWidgets.visualToolMenu.table.row();
-		button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.MOVE.toString());
-		mDisabledWhenPublished.add(button);
-		mWidgets.tool.move = button;
-		buttonGroup.add(button);
-		TooltipListener tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Tools.MOVE, getResourceTypeName()));
-		new ButtonListener(button, tooltipListener) {
-			@Override
-			protected void onChecked(boolean checked) {
-				if (checked) {
-					mActorEditor.switchTool(Tools.MOVE);
-				}
-			}
-		};
-		mWidgets.visualToolMenu.table.add(button);
 
 		// Delete
-		mWidgets.visualToolMenu.table.row();
+		mToolMenu.row();
 		button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.DELETE.toString());
 		mDisabledWhenPublished.add(button);
 		mWidgets.tool.delete = button;
 		buttonGroup.add(button);
-		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Tools.DELETE, getResourceTypeName()));
+		TooltipListener tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Tools.DELETE, getResourceTypeName()));
 		new ButtonListener(button) {
 			@Override
 			protected void onChecked(boolean checked) {
@@ -425,10 +404,31 @@ public abstract class ActorGui extends EditorGui {
 				}
 			}
 		};
-		mWidgets.visualToolMenu.table.add(button);
+		mToolMenu.add(button);
+
+		// Move
+		button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.MOVE.toString());
+		mDisabledWhenPublished.add(button);
+		mWidgets.tool.move = button;
+		buttonGroup.add(button);
+		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Tools.MOVE, getResourceTypeName()));
+		new ButtonListener(button, tooltipListener) {
+			@Override
+			protected void onChecked(boolean checked) {
+				if (checked) {
+					mActorEditor.switchTool(Tools.MOVE);
+				}
+			}
+		};
+		mToolMenu.add(button);
+
+		// --------- SEPARATOR -----------
+		mToolMenu.row();
+		mToolMenu.add().setPadBottom(separatorPadding);
+		mToolMenu.row();
 
 		// Append
-		mWidgets.visualToolMenu.table.row();
+		mToolMenu.row();
 		button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.DRAW_APPEND.toString());
 		mDisabledWhenPublished.add(button);
 		mWidgets.tool.drawAppend = button;
@@ -442,10 +442,9 @@ public abstract class ActorGui extends EditorGui {
 				}
 			}
 		};
-		mWidgets.visualToolMenu.table.add(button);
+		mToolMenu.add(button);
 
 		// Add Remove (draw/erase)
-		mWidgets.visualToolMenu.table.row();
 		button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.DRAW_ERASE.toString());
 		mDisabledWhenPublished.add(button);
 		mWidgets.tool.drawErase = button;
@@ -459,10 +458,10 @@ public abstract class ActorGui extends EditorGui {
 				}
 			}
 		};
-		mWidgets.visualToolMenu.table.add(button);
+		mToolMenu.add(button);
 
 		// Add corner
-		mWidgets.visualToolMenu.table.row();
+		mToolMenu.row();
 		button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.ADD_MOVE_CORNER.toString());
 		mDisabledWhenPublished.add(button);
 		mWidgets.tool.addMoveCorner = button;
@@ -476,10 +475,9 @@ public abstract class ActorGui extends EditorGui {
 				}
 			}
 		};
-		mWidgets.visualToolMenu.table.add(button);
+		mToolMenu.add(button);
 
 		// Remove corner
-		mWidgets.visualToolMenu.table.row();
 		button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.REMOVE_CORNER.toString());
 		mDisabledWhenPublished.add(button);
 		mWidgets.tool.removeCorner = button;
@@ -493,10 +491,17 @@ public abstract class ActorGui extends EditorGui {
 				}
 			}
 		};
-		mWidgets.visualToolMenu.table.add(button);
+		mToolMenu.add(button);
+
+
+		// --------- SEPARATOR -----------
+		mToolMenu.row();
+		mToolMenu.add().setPadBottom(separatorPadding);
+		mToolMenu.row();
+
 
 		// Set center
-		mWidgets.visualToolMenu.table.row();
+		mToolMenu.row();
 		button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.SET_CENTER.toString());
 		mDisabledWhenPublished.add(button);
 		mWidgets.tool.setCenter = button;
@@ -510,11 +515,10 @@ public abstract class ActorGui extends EditorGui {
 				}
 			}
 		};
-		mWidgets.visualToolMenu.table.add(button);
+		mToolMenu.add(button);
 
 
 		// Reset center
-		mWidgets.visualToolMenu.table.row();
 		button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.RESET_CENTER.toString());
 		mDisabledWhenPublished.add(button);
 		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Tools.RESET_CENTER, getResourceTypeName()));
@@ -524,7 +528,7 @@ public abstract class ActorGui extends EditorGui {
 				mInvoker.execute(new CActorEditorCenterReset(mActorEditor));
 			}
 		};
-		mWidgets.visualToolMenu.table.add(button);
+		mToolMenu.add(button);
 	}
 
 	/**
@@ -624,7 +628,6 @@ public abstract class ActorGui extends EditorGui {
 		VisualWidgets visual = new VisualWidgets();
 		InfoWidgets info = new InfoWidgets();
 		CollisionWidgets collision = new CollisionWidgets();
-		VisualToolMenuWidgets visualToolMenu = new VisualToolMenuWidgets();
 		ToolWidgets tool = new ToolWidgets();
 
 		/**
@@ -661,13 +664,6 @@ public abstract class ActorGui extends EditorGui {
 			Slider shapeTriangleHeight = null;
 			Slider shapeRectangleWidth = null;
 			Slider shapeRectangleHeight = null;
-		}
-
-		/**
-		 * Visual tool box/menu
-		 */
-		static class VisualToolMenuWidgets {
-			AlignTable table = new AlignTable();
 		}
 
 		/**

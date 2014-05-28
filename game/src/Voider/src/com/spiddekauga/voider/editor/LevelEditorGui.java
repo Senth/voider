@@ -1,7 +1,6 @@
 package com.spiddekauga.voider.editor;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
@@ -45,7 +44,6 @@ import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.resources.SkinNames.EditorIcons;
 import com.spiddekauga.voider.resources.SkinNames.General;
 import com.spiddekauga.voider.utils.Messages;
-import com.spiddekauga.voider.utils.Pools;
 
 /**
  * GUI for the level editor
@@ -322,9 +320,10 @@ class LevelEditorGui extends EditorGui {
 	 * Initializes the tool menu
 	 */
 	private void initToolMenu() {
-		@SuppressWarnings("unchecked") ArrayList<Button> toolButtons = Pools.arrayList.obtain();
+		float separatorPadding = mStyles.vars.paddingOuter;
 
 		// Select
+		mToolMenu.row();
 		Button button = new ImageButton(mStyles.skin.editor, EditorIcons.SELECT.toString());
 		mWidgets.tool.select = button;
 		TooltipListener tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Tools.SELECT, getResourceTypeName()));
@@ -336,20 +335,14 @@ class LevelEditorGui extends EditorGui {
 				}
 			}
 		};
-		toolButtons.add(button);
+		mToolMenu.add(button);
 
-		// Cancel
-		button = new ImageButton(mStyles.skin.editor, EditorIcons.CANCEL.toString());
-		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Tools.CANCEL, getResourceTypeName()));
-		new ButtonListener(button, tooltipListener) {
-			@Override
-			protected void onChecked(boolean checked) {
-				if (checked) {
-					mLevelEditor.clearSelection();
-				}
-			}
-		};
-		toolButtons.add(button);
+
+		// --------- SEPARATOR -----------
+		mToolMenu.row();
+		mToolMenu.add().setPadBottom(separatorPadding);
+		mToolMenu.row();
+
 
 		// Pan
 		button = new ImageButton(mStyles.skin.editor, EditorIcons.PAN.toString());
@@ -363,7 +356,7 @@ class LevelEditorGui extends EditorGui {
 				}
 			}
 		};
-		toolButtons.add(button);
+		mToolMenu.add(button);
 
 		// Move
 		button = new ImageButton(mStyles.skin.editor, EditorIcons.MOVE.toString());
@@ -378,9 +371,10 @@ class LevelEditorGui extends EditorGui {
 				}
 			}
 		};
-		toolButtons.add(button);
+		mToolMenu.add(button);
 
 		// Delete
+		mToolMenu.row();
 		button = new ImageButton(mStyles.skin.editor, EditorIcons.DELETE.toString());
 		mWidgets.tool.delete = button;
 		mDisabledWhenPublished.add(button);
@@ -393,7 +387,27 @@ class LevelEditorGui extends EditorGui {
 				}
 			}
 		};
-		toolButtons.add(button);
+		mToolMenu.add(button);
+
+		// Cancel
+		button = new ImageButton(mStyles.skin.editor, EditorIcons.CANCEL.toString());
+		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Tools.CANCEL, getResourceTypeName()));
+		new ButtonListener(button, tooltipListener) {
+			@Override
+			protected void onChecked(boolean checked) {
+				if (checked) {
+					mLevelEditor.clearSelection();
+				}
+			}
+		};
+		mToolMenu.add(button);
+
+
+		// --------- SEPARATOR -----------
+		mToolMenu.row();
+		mToolMenu.add().setPadBottom(separatorPadding);
+		mToolMenu.row();
+
 
 		// Terrain draw_append
 		button = new ImageButton(mStyles.skin.editor, EditorIcons.TERRAIN_DRAW_APPEND.toString());
@@ -408,7 +422,7 @@ class LevelEditorGui extends EditorGui {
 				}
 			}
 		};
-		toolButtons.add(button);
+		mToolMenu.add(button);
 
 		// Terrain draw_erase
 		button = new ImageButton(mStyles.skin.editor, EditorIcons.TERRAIN_DRAW_ERASE.toString());
@@ -423,9 +437,10 @@ class LevelEditorGui extends EditorGui {
 				}
 			}
 		};
-		toolButtons.add(button);
+		mToolMenu.add(button);
 
 		// add_move_corner
+		mToolMenu.row();
 		button = new ImageButton(mStyles.skin.editor, EditorIcons.ADD_MOVE_CORNER.toString());
 		mWidgets.tool.cornerAdd = button;
 		mDisabledWhenPublished.add(button);
@@ -438,7 +453,7 @@ class LevelEditorGui extends EditorGui {
 				}
 			}
 		};
-		toolButtons.add(button);
+		mToolMenu.add(button);
 
 		// remove_corner
 		button = new ImageButton(mStyles.skin.editor, EditorIcons.REMOVE_CORNER.toString());
@@ -453,22 +468,14 @@ class LevelEditorGui extends EditorGui {
 				}
 			}
 		};
-		toolButtons.add(button);
+		mToolMenu.add(button);
 
-		// Path add
-		button = new ImageButton(mStyles.skin.editor, EditorIcons.PATH_ADD.toString());
-		mWidgets.tool.pathAdd = button;
-		mDisabledWhenPublished.add(button);
-		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Tools.PATH_ADD, getResourceTypeName()));
-		new ButtonListener(button, tooltipListener) {
-			@Override
-			protected void onChecked(boolean checked) {
-				if (checked) {
-					mLevelEditor.switchTool(Tools.PATH_ADD);
-				}
-			}
-		};
-		toolButtons.add(button);
+
+		// --------- SEPARATOR -----------
+		mToolMenu.row();
+		mToolMenu.add().setPadBottom(separatorPadding);
+		mToolMenu.row();
+
 
 		// Enemy add
 		button = new ImageButton(mStyles.skin.editor, EditorIcons.ENEMY_ADD.toString());
@@ -484,9 +491,26 @@ class LevelEditorGui extends EditorGui {
 				}
 			}
 		};
-		toolButtons.add(button);
+		mToolMenu.add(button);
+
+		// Path add
+		button = new ImageButton(mStyles.skin.editor, EditorIcons.PATH_ADD.toString());
+		mWidgets.tool.pathAdd = button;
+		mDisabledWhenPublished.add(button);
+		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Tools.PATH_ADD, getResourceTypeName()));
+		new ButtonListener(button, tooltipListener) {
+			@Override
+			protected void onChecked(boolean checked) {
+				if (checked) {
+					mLevelEditor.switchTool(Tools.PATH_ADD);
+				}
+			}
+		};
+		mToolMenu.add(button);
+
 
 		// Enemy - set activate trigger
+		mToolMenu.row();
 		button = new ImageButton(mStyles.skin.editor, EditorIcons.ENEMY_SET_ACTIVATE_TRIGGER.toString());
 		mWidgets.tool.triggerActivate = button;
 		mDisabledWhenPublished.add(button);
@@ -499,7 +523,7 @@ class LevelEditorGui extends EditorGui {
 				}
 			}
 		};
-		toolButtons.add(button);
+		mToolMenu.add(button);
 
 		// Enemy - set deactivate trigger
 		button = new ImageButton(mStyles.skin.editor, EditorIcons.ENEMY_SET_DEACTIVATE_TRIGGER.toString());
@@ -514,7 +538,7 @@ class LevelEditorGui extends EditorGui {
 				}
 			}
 		};
-		toolButtons.add(button);
+		mToolMenu.add(button);
 
 
 		/** @todo readd pickup */
@@ -530,44 +554,7 @@ class LevelEditorGui extends EditorGui {
 		// }
 		// }
 		// };
-		// toolButtons.add(button);
-
-
-		// Add buttons to tool
-		float maximumToolMenuHeight = mToolMenu.getAvailableHeight();
-		float totalHeight = 0;
-
-		AlignTable column = new AlignTable();
-		column.setPreferences(mToolMenu);
-		ButtonGroup buttonGroup = new ButtonGroup();
-
-		Iterator<Button> iterator = toolButtons.iterator();
-		while (iterator.hasNext()) {
-			Button nextButton = iterator.next();
-
-			float buttonHeight = nextButton.getHeight();
-
-			if (totalHeight + buttonHeight > maximumToolMenuHeight) {
-				mToolMenu.add(column);
-				column = new AlignTable();
-				column.setPreferences(mToolMenu);
-				totalHeight = 0;
-
-				// Only switch to bottom alignment if one row is full
-				mToolMenu.setAlignTable(Horizontal.LEFT, Vertical.BOTTOM);
-			}
-
-			totalHeight += buttonHeight;
-
-			column.row();
-			column.add(nextButton);
-			buttonGroup.add(nextButton);
-		}
-
-		// Add last column
-		mToolMenu.add(column);
-
-		Pools.arrayList.free(toolButtons);
+		// mToolMenu.add(button);
 	}
 
 	@Override
