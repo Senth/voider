@@ -23,23 +23,21 @@ import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.resources.SkinNames.ISkinNames;
 
 /**
- * Factory for creating UI objects, more specifically combined UI objects.
- * This factory class gets its default settings from general.json
- * 
+ * Factory for creating UI objects, more specifically combined UI objects. This factory
+ * class gets its default settings from general.json
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class UiPanelFactory {
 	/**
-	 * Creates an empty UI Factory. Call {@link #init()} to initialize
-	 * all styles
+	 * Creates an empty UI Factory. Call {@link #init()} to initialize all styles
 	 */
 	public UiPanelFactory() {
 		// Does nothing
 	}
 
 	/**
-	 * Adds a min and max slider with section text to a table.
-	 * These sliders are synchronized.
+	 * Adds a min and max slider with section text to a table. These sliders are
+	 * synchronized.
 	 * @param text optional section text for the sliders
 	 * @param min minimum value of the sliders
 	 * @param max maximum value of the sliders
@@ -53,19 +51,8 @@ public class UiPanelFactory {
 	 * @param invoker optional adds the ability to undo changes (if not null)
 	 * @return Created min and max sliders;
 	 */
-	public SliderMinMaxWrapper addSliderMinMax(
-			String text,
-			float min,
-			float max,
-			float stepSize,
-			SliderListener minSliderListener,
-			SliderListener maxSliderListener,
-			AlignTable table,
-			String tooltipText,
-			GuiHider hider,
-			ArrayList<Actor> createdActors,
-			Invoker invoker
-			) {
+	public SliderMinMaxWrapper addSliderMinMax(String text, float min, float max, float stepSize, SliderListener minSliderListener,
+			SliderListener maxSliderListener, AlignTable table, String tooltipText, GuiHider hider, ArrayList<Actor> createdActors, Invoker invoker) {
 		// Label
 		if (text != null) {
 			Label label = addLabelSection(text, table, null);
@@ -100,18 +87,8 @@ public class UiPanelFactory {
 	 * @param invoker optional adds the ability to undo changes (if not null)
 	 * @return created slider element
 	 */
-	public Slider addSlider(
-			String text,
-			float min,
-			float max,
-			float stepSize,
-			SliderListener sliderListener,
-			AlignTable table,
-			String tooltipText,
-			GuiHider hider,
-			ArrayList<Actor> createdActors,
-			Invoker invoker
-			) {
+	public Slider addSlider(String text, float min, float max, float stepSize, SliderListener sliderListener, AlignTable table, String tooltipText,
+			GuiHider hider, ArrayList<Actor> createdActors, Invoker invoker) {
 		if (mStyles == null) {
 			throw new IllegalStateException("init() has not been called!");
 		}
@@ -170,6 +147,38 @@ public class UiPanelFactory {
 	}
 
 	/**
+	 * Adds a tool icon to the specified table
+	 * @param icon icon for the tool
+	 * @param listener button listener that listens when the button is checked etc
+	 * @param group the button group the tools belong to
+	 * @param table the table to add the tool to
+	 * @param tooltipText optional tooltip message for all elements (if not null)
+	 * @param createdActors optional adds the tool button to this list (if not null)
+	 * @return created tool icon button
+	 */
+	public ImageButton addToolButton(ISkinNames icon, ButtonListener listener, ButtonGroup group, AlignTable table, String tooltipText,
+			ArrayList<Actor> createdActors) {
+		ImageButton button = new ImageButton((ImageButtonStyle) SkinNames.getResource(icon));
+
+		listener.setButton(button);
+		group.add(button);
+
+		doExtraActionsOnActors(tooltipText, null, createdActors, button);
+
+		return button;
+	}
+
+	/**
+	 * Adds a tool separator to the specified table
+	 * @param table add tool separator
+	 */
+	public void addToolSeparator(AlignTable table) {
+		table.row();
+		table.add().setPadBottom(mStyles.vars.paddingOuter);
+		table.row();
+	}
+
+	/**
 	 * Adds a single checkbox with text before the checkbox
 	 * @param text the text to display before the checkbox
 	 * @param listener button listener that listens when it's checked etc
@@ -179,14 +188,8 @@ public class UiPanelFactory {
 	 * @param createdActors optional adds all created elements to this list (if not null)
 	 * @return created checkbox
 	 */
-	public CheckBox addCheckBox(
-			String text,
-			ButtonListener listener,
-			AlignTable table,
-			String tooltipText,
-			GuiHider hider,
-			ArrayList<Actor> createdActors
-			) {
+	public CheckBox addCheckBox(String text, ButtonListener listener, AlignTable table, String tooltipText, GuiHider hider,
+			ArrayList<Actor> createdActors) {
 
 		table.row().setFillWidth(true);
 		Label label = new Label(text, mStyles.label.standard);
@@ -308,6 +311,7 @@ public class UiPanelFactory {
 
 		// Vars
 		mStyles.vars.paddingCheckBox = SkinNames.getResource(SkinNames.GeneralVars.PADDING_CHECKBOX);
+		mStyles.vars.paddingOuter = SkinNames.getResource(SkinNames.GeneralVars.PADDING_OUTER);
 		mStyles.vars.textFieldNumberWidth = SkinNames.getResource(SkinNames.GeneralVars.TEXT_FIELD_NUMBER_WIDTH);
 		mStyles.vars.sliderWidth = SkinNames.getResource(SkinNames.GeneralVars.SLIDER_WIDTH);
 		mStyles.vars.sliderLabelWidth = SkinNames.getResource(SkinNames.GeneralVars.SLIDER_LABEL_WIDTH);
@@ -398,6 +402,7 @@ public class UiPanelFactory {
 			float sliderWidth = 0;
 			float sliderLabelWidth = 0;
 			float paddingCheckBox = 0;
+			float paddingOuter = 0;
 		}
 
 		static class Colors {

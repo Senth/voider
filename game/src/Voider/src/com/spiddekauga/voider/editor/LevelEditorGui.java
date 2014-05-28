@@ -320,14 +320,12 @@ class LevelEditorGui extends EditorGui {
 	 * Initializes the tool menu
 	 */
 	private void initToolMenu() {
-		float separatorPadding = mStyles.vars.paddingOuter;
+		ButtonListener buttonListener;
+		ButtonGroup buttonGroup = new ButtonGroup();
 
 		// Select
 		mToolMenu.row();
-		Button button = new ImageButton(mStyles.skin.editor, EditorIcons.SELECT.toString());
-		mWidgets.tool.select = button;
-		TooltipListener tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Tools.SELECT, getResourceTypeName()));
-		new ButtonListener(button, tooltipListener) {
+		buttonListener = new ButtonListener() {
 			@Override
 			protected void onChecked(boolean checked) {
 				if (checked) {
@@ -335,20 +333,16 @@ class LevelEditorGui extends EditorGui {
 				}
 			}
 		};
-		mToolMenu.add(button);
+		mWidgets.tool.select = mUiFactory.addToolButton(EditorIcons.SELECT, buttonListener, buttonGroup, mToolMenu,
+				Messages.replaceName(Messages.Tooltip.Tools.SELECT, getResourceTypeName()), mDisabledWhenPublished);
 
 
 		// --------- SEPARATOR -----------
-		mToolMenu.row();
-		mToolMenu.add().setPadBottom(separatorPadding);
-		mToolMenu.row();
+		mUiFactory.addToolSeparator(mToolMenu);
 
 
 		// Pan
-		button = new ImageButton(mStyles.skin.editor, EditorIcons.PAN.toString());
-		mWidgets.tool.pan = button;
-		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Tools.PAN, getResourceTypeName()));
-		new ButtonListener(button, tooltipListener) {
+		buttonListener = new ButtonListener() {
 			@Override
 			protected void onChecked(boolean checked) {
 				if (checked) {
@@ -356,14 +350,11 @@ class LevelEditorGui extends EditorGui {
 				}
 			}
 		};
-		mToolMenu.add(button);
+		mWidgets.tool.pan = mUiFactory.addToolButton(EditorIcons.PAN, buttonListener, buttonGroup, mToolMenu,
+				Messages.replaceName(Messages.Tooltip.Tools.PAN, getResourceTypeName()), mDisabledWhenPublished);
 
 		// Move
-		button = new ImageButton(mStyles.skin.editor, EditorIcons.MOVE.toString());
-		mWidgets.tool.move = button;
-		mDisabledWhenPublished.add(button);
-		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Tools.MOVE, getResourceTypeName()));
-		new ButtonListener(button, tooltipListener) {
+		buttonListener = new ButtonListener() {
 			@Override
 			protected void onChecked(boolean checked) {
 				if (checked) {
@@ -371,15 +362,13 @@ class LevelEditorGui extends EditorGui {
 				}
 			}
 		};
-		mToolMenu.add(button);
+		mWidgets.tool.move = mUiFactory.addToolButton(EditorIcons.MOVE, buttonListener, buttonGroup, mToolMenu,
+				Messages.replaceName(Messages.Tooltip.Tools.MOVE, getResourceTypeName()), mDisabledWhenPublished);
+
 
 		// Delete
 		mToolMenu.row();
-		button = new ImageButton(mStyles.skin.editor, EditorIcons.DELETE.toString());
-		mWidgets.tool.delete = button;
-		mDisabledWhenPublished.add(button);
-		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Tools.DELETE, getResourceTypeName()));
-		new ButtonListener(button, tooltipListener) {
+		buttonListener = new ButtonListener() {
 			@Override
 			protected void onChecked(boolean checked) {
 				if (checked) {
@@ -387,12 +376,11 @@ class LevelEditorGui extends EditorGui {
 				}
 			}
 		};
-		mToolMenu.add(button);
+		mWidgets.tool.delete = mUiFactory.addToolButton(EditorIcons.DELETE, buttonListener, buttonGroup, mToolMenu,
+				Messages.replaceName(Messages.Tooltip.Tools.DELETE, getResourceTypeName()), mDisabledWhenPublished);
 
 		// Cancel
-		button = new ImageButton(mStyles.skin.editor, EditorIcons.CANCEL.toString());
-		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Tools.CANCEL, getResourceTypeName()));
-		new ButtonListener(button, tooltipListener) {
+		buttonListener = new ButtonListener() {
 			@Override
 			protected void onChecked(boolean checked) {
 				if (checked) {
@@ -400,21 +388,16 @@ class LevelEditorGui extends EditorGui {
 				}
 			}
 		};
-		mToolMenu.add(button);
+		mUiFactory.addToolButton(EditorIcons.CANCEL, buttonListener, buttonGroup, mToolMenu,
+				Messages.replaceName(Messages.Tooltip.Tools.CANCEL, getResourceTypeName()), mDisabledWhenPublished);
 
 
 		// --------- SEPARATOR -----------
-		mToolMenu.row();
-		mToolMenu.add().setPadBottom(separatorPadding);
-		mToolMenu.row();
+		mUiFactory.addToolSeparator(mToolMenu);
 
 
 		// Terrain draw_append
-		button = new ImageButton(mStyles.skin.editor, EditorIcons.TERRAIN_DRAW_APPEND.toString());
-		mWidgets.tool.drawAppend = button;
-		mDisabledWhenPublished.add(button);
-		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Tools.DRAW_APPEND, "terrain"));
-		new ButtonListener(button, tooltipListener) {
+		buttonListener = new ButtonListener() {
 			@Override
 			protected void onChecked(boolean checked) {
 				if (checked) {
@@ -422,14 +405,12 @@ class LevelEditorGui extends EditorGui {
 				}
 			}
 		};
-		mToolMenu.add(button);
+		mWidgets.tool.drawAppend = mUiFactory.addToolButton(EditorIcons.TERRAIN_DRAW_APPEND, buttonListener, buttonGroup, mToolMenu,
+				Messages.replaceName(Messages.Tooltip.Tools.DRAW_APPEND, "terrain"), mDisabledWhenPublished);
+
 
 		// Terrain draw_erase
-		button = new ImageButton(mStyles.skin.editor, EditorIcons.TERRAIN_DRAW_ERASE.toString());
-		mWidgets.tool.drawErase = button;
-		mDisabledWhenPublished.add(button);
-		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Tools.DRAW_ERASE, "terrain"));
-		new ButtonListener(button, tooltipListener) {
+		buttonListener = new ButtonListener() {
 			@Override
 			protected void onChecked(boolean checked) {
 				if (checked) {
@@ -437,15 +418,12 @@ class LevelEditorGui extends EditorGui {
 				}
 			}
 		};
-		mToolMenu.add(button);
+		mWidgets.tool.drawErase = mUiFactory.addToolButton(EditorIcons.DRAW_ERASE, buttonListener, buttonGroup, mToolMenu,
+				Messages.replaceName(Messages.Tooltip.Tools.DRAW_ERASE, "terrain"), mDisabledWhenPublished);
 
 		// add_move_corner
 		mToolMenu.row();
-		button = new ImageButton(mStyles.skin.editor, EditorIcons.ADD_MOVE_CORNER.toString());
-		mWidgets.tool.cornerAdd = button;
-		mDisabledWhenPublished.add(button);
-		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Tools.ADJUST_ADD_MOVE_CORNER, "terrain"));
-		new ButtonListener(button, tooltipListener) {
+		buttonListener = new ButtonListener() {
 			@Override
 			protected void onChecked(boolean checked) {
 				if (checked) {
@@ -453,14 +431,11 @@ class LevelEditorGui extends EditorGui {
 				}
 			}
 		};
-		mToolMenu.add(button);
+		mWidgets.tool.cornerAdd = mUiFactory.addToolButton(EditorIcons.ADD_MOVE_CORNER, buttonListener, buttonGroup, mToolMenu,
+				Messages.replaceName(Messages.Tooltip.Tools.ADJUST_ADD_MOVE_CORNER, "terrain"), mDisabledWhenPublished);
 
 		// remove_corner
-		button = new ImageButton(mStyles.skin.editor, EditorIcons.REMOVE_CORNER.toString());
-		mWidgets.tool.cornerRemove = button;
-		mDisabledWhenPublished.add(button);
-		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Tools.ADJUST_REMOVE_CORNER, "terrain"));
-		new ButtonListener(button, tooltipListener) {
+		buttonListener = new ButtonListener() {
 			@Override
 			protected void onChecked(boolean checked) {
 				if (checked) {
@@ -468,22 +443,16 @@ class LevelEditorGui extends EditorGui {
 				}
 			}
 		};
-		mToolMenu.add(button);
+		mWidgets.tool.cornerRemove = mUiFactory.addToolButton(EditorIcons.REMOVE_CORNER, buttonListener, buttonGroup, mToolMenu,
+				Messages.replaceName(Messages.Tooltip.Tools.ADJUST_REMOVE_CORNER, "terrain"), mDisabledWhenPublished);
 
 
 		// --------- SEPARATOR -----------
-		mToolMenu.row();
-		mToolMenu.add().setPadBottom(separatorPadding);
-		mToolMenu.row();
+		mUiFactory.addToolSeparator(mToolMenu);
 
 
 		// Enemy add
-		button = new ImageButton(mStyles.skin.editor, EditorIcons.ENEMY_ADD.toString());
-		mWidgets.tool.enemyAdd = button;
-		mDisabledWhenPublished.add(button);
-		mWidgets.toolOptions.enemyAdd = button;
-		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Tools.ENEMY_ADD, getResourceTypeName()));
-		new ButtonListener(button, tooltipListener) {
+		buttonListener = new ButtonListener() {
 			@Override
 			protected void onChecked(boolean checked) {
 				if (checked) {
@@ -491,14 +460,11 @@ class LevelEditorGui extends EditorGui {
 				}
 			}
 		};
-		mToolMenu.add(button);
+		mWidgets.tool.enemyAdd = mUiFactory.addToolButton(EditorIcons.ENEMY_ADD, buttonListener, buttonGroup, mToolMenu,
+				Messages.replaceName(Messages.Tooltip.Tools.ENEMY_ADD, getResourceTypeName()), mDisabledWhenPublished);
 
 		// Path add
-		button = new ImageButton(mStyles.skin.editor, EditorIcons.PATH_ADD.toString());
-		mWidgets.tool.pathAdd = button;
-		mDisabledWhenPublished.add(button);
-		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Tools.PATH_ADD, getResourceTypeName()));
-		new ButtonListener(button, tooltipListener) {
+		buttonListener = new ButtonListener() {
 			@Override
 			protected void onChecked(boolean checked) {
 				if (checked) {
@@ -506,16 +472,13 @@ class LevelEditorGui extends EditorGui {
 				}
 			}
 		};
-		mToolMenu.add(button);
+		mWidgets.tool.pathAdd = mUiFactory.addToolButton(EditorIcons.PATH_ADD, buttonListener, buttonGroup, mToolMenu,
+				Messages.replaceName(Messages.Tooltip.Tools.PATH_ADD, getResourceTypeName()), mDisabledWhenPublished);
 
 
 		// Enemy - set activate trigger
 		mToolMenu.row();
-		button = new ImageButton(mStyles.skin.editor, EditorIcons.ENEMY_SET_ACTIVATE_TRIGGER.toString());
-		mWidgets.tool.triggerActivate = button;
-		mDisabledWhenPublished.add(button);
-		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Tools.SET_ACTIVATE_TRIGGER, getResourceTypeName()));
-		new ButtonListener(button, tooltipListener) {
+		buttonListener = new ButtonListener() {
 			@Override
 			protected void onChecked(boolean checked) {
 				if (checked) {
@@ -523,14 +486,11 @@ class LevelEditorGui extends EditorGui {
 				}
 			}
 		};
-		mToolMenu.add(button);
+		mWidgets.tool.triggerActivate = mUiFactory.addToolButton(EditorIcons.ENEMY_SET_ACTIVATE_TRIGGER, buttonListener, buttonGroup, mToolMenu,
+				Messages.replaceName(Messages.Tooltip.Tools.SET_ACTIVATE_TRIGGER, getResourceTypeName()), mDisabledWhenPublished);
 
 		// Enemy - set deactivate trigger
-		button = new ImageButton(mStyles.skin.editor, EditorIcons.ENEMY_SET_DEACTIVATE_TRIGGER.toString());
-		mWidgets.tool.triggerDeactivate = button;
-		mDisabledWhenPublished.add(button);
-		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Tools.SET_DEACTIVATE_DELAY, getResourceTypeName()));
-		new ButtonListener(button, tooltipListener) {
+		buttonListener = new ButtonListener() {
 			@Override
 			protected void onChecked(boolean checked) {
 				if (checked) {
@@ -538,23 +498,11 @@ class LevelEditorGui extends EditorGui {
 				}
 			}
 		};
-		mToolMenu.add(button);
+		mWidgets.tool.triggerDeactivate = mUiFactory.addToolButton(EditorIcons.ENEMY_SET_DEACTIVATE_TRIGGER, buttonListener, buttonGroup, mToolMenu,
+				Messages.replaceName(Messages.Tooltip.Tools.SET_DEACTIVATE_DELAY, getResourceTypeName()), mDisabledWhenPublished);
 
 
 		/** @todo readd pickup */
-		// // Pickup add
-		// button = new ImageButton(mStyles.skin.editor,
-		// EditorIcons.PICKUP_ADD.toString());
-		// mDisabledWhenPublished.add(button);
-		// new ButtonListener(button) {
-		// @Override
-		// protected void onChecked(boolean checked) {
-		// if (checked) {
-		// mLevelEditor.switchTool(Tools.PICKUP_ADD);
-		// }
-		// }
-		// };
-		// mToolMenu.add(button);
 	}
 
 	@Override
@@ -756,7 +704,7 @@ class LevelEditorGui extends EditorGui {
 	 * Init add enemy options
 	 */
 	private void initEnemyAddOptions() {
-		mHiders.enemyAdd.setButton(mWidgets.toolOptions.enemyAdd);
+		mHiders.enemyAdd.setButton(mWidgets.tool.enemyAdd);
 
 		Button button;
 		TooltipListener tooltipListener;
@@ -1085,7 +1033,6 @@ class LevelEditorGui extends EditorGui {
 		PathOptionWidgets path = new PathOptionWidgets();
 		InfoWidgets info = new InfoWidgets();
 		EnemyAddWidgets enemyAdd = new EnemyAddWidgets();
-		ToolOptionWidgets toolOptions = new ToolOptionWidgets();
 		ToolWidgets tool = new ToolWidgets();
 
 		static class ToolWidgets {
@@ -1101,10 +1048,6 @@ class LevelEditorGui extends EditorGui {
 			Button enemyAdd = null;
 			Button triggerActivate = null;
 			Button triggerDeactivate = null;
-		}
-
-		static class ToolOptionWidgets {
-			Button enemyAdd = null;
 		}
 
 		static class EnemyOptionWidgets {

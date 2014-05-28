@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
@@ -31,6 +30,7 @@ import com.spiddekauga.voider.editor.commands.CActorEditorCenterReset;
 import com.spiddekauga.voider.editor.commands.CDefHasValidName;
 import com.spiddekauga.voider.game.actors.ActorShapeTypes;
 import com.spiddekauga.voider.resources.SkinNames;
+import com.spiddekauga.voider.resources.SkinNames.EditorIcons;
 import com.spiddekauga.voider.utils.Messages;
 import com.spiddekauga.voider.utils.Pools;
 
@@ -176,7 +176,7 @@ public abstract class ActorGui extends EditorGui {
 		mWidgets.info.table.add(textField).setWidth(width);
 		mWidgets.info.name = textField;
 		new TooltipListener(textField, Messages.replaceName(Messages.Tooltip.Actor.Option.NAME, getResourceTypeName()));
-		new TextFieldListener(textField, "Name", mInvoker) {
+		new TextFieldListener(textField, "Give your " + getResourceTypeName() + " a name...", mInvoker) {
 			@Override
 			protected void onChange(String newText) {
 				mActorEditor.setName(newText);
@@ -194,7 +194,7 @@ public abstract class ActorGui extends EditorGui {
 		mWidgets.info.table.add(textField).setSize(width, (int) (Gdx.graphics.getHeight() * 0.5f));
 		mWidgets.info.description = textField;
 		new TooltipListener(textField, Messages.replaceName(Messages.Tooltip.Actor.Option.DESCRIPTION, getResourceTypeName()));
-		new TextFieldListener(textField, "Write your description here...", mInvoker) {
+		new TextFieldListener(textField, "Write a short description about the " + getResourceTypeName() + "...", mInvoker) {
 			@Override
 			protected void onChange(String newText) {
 				mActorEditor.setDescription(newText);
@@ -382,21 +382,15 @@ public abstract class ActorGui extends EditorGui {
 	 * Initializes the toolbox
 	 */
 	private void initToolMenu() {
-		float separatorPadding = mStyles.vars.paddingOuter;
 		ButtonGroup buttonGroup = new ButtonGroup();
-		Button button;
+		ButtonListener buttonListener;
 
 		mDrawToolHider.addToggleActor(mToolMenu);
 
 
 		// Delete
 		mToolMenu.row();
-		button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.DELETE.toString());
-		mDisabledWhenPublished.add(button);
-		mWidgets.tool.delete = button;
-		buttonGroup.add(button);
-		TooltipListener tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Tools.DELETE, getResourceTypeName()));
-		new ButtonListener(button) {
+		buttonListener = new ButtonListener() {
 			@Override
 			protected void onChecked(boolean checked) {
 				if (checked) {
@@ -404,15 +398,12 @@ public abstract class ActorGui extends EditorGui {
 				}
 			}
 		};
-		mToolMenu.add(button);
+		mWidgets.tool.delete = mUiFactory.addToolButton(EditorIcons.DELETE, buttonListener, buttonGroup, mToolMenu,
+				Messages.replaceName(Messages.Tooltip.Tools.DELETE, getResourceTypeName()), mDisabledWhenPublished);
+
 
 		// Move
-		button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.MOVE.toString());
-		mDisabledWhenPublished.add(button);
-		mWidgets.tool.move = button;
-		buttonGroup.add(button);
-		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Tools.MOVE, getResourceTypeName()));
-		new ButtonListener(button, tooltipListener) {
+		buttonListener = new ButtonListener() {
 			@Override
 			protected void onChecked(boolean checked) {
 				if (checked) {
@@ -420,21 +411,16 @@ public abstract class ActorGui extends EditorGui {
 				}
 			}
 		};
-		mToolMenu.add(button);
+		mWidgets.tool.move = mUiFactory.addToolButton(EditorIcons.MOVE, buttonListener, buttonGroup, mToolMenu,
+				Messages.replaceName(Messages.Tooltip.Tools.MOVE, getResourceTypeName()), mDisabledWhenPublished);
+
 
 		// --------- SEPARATOR -----------
-		mToolMenu.row();
-		mToolMenu.add().setPadBottom(separatorPadding);
-		mToolMenu.row();
+		mUiFactory.addToolSeparator(mToolMenu);
 
-		// Append
-		mToolMenu.row();
-		button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.DRAW_APPEND.toString());
-		mDisabledWhenPublished.add(button);
-		mWidgets.tool.drawAppend = button;
-		buttonGroup.add(button);
-		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Tools.DRAW_APPEND, getResourceTypeName()));
-		new ButtonListener(button, tooltipListener) {
+
+		// Terrain draw_append
+		buttonListener = new ButtonListener() {
 			@Override
 			protected void onChecked(boolean checked) {
 				if (checked) {
@@ -442,15 +428,12 @@ public abstract class ActorGui extends EditorGui {
 				}
 			}
 		};
-		mToolMenu.add(button);
+		mWidgets.tool.drawAppend = mUiFactory.addToolButton(EditorIcons.TERRAIN_DRAW_APPEND, buttonListener, buttonGroup, mToolMenu,
+				Messages.replaceName(Messages.Tooltip.Tools.DRAW_APPEND, "terrain"), mDisabledWhenPublished);
 
-		// Add Remove (draw/erase)
-		button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.DRAW_ERASE.toString());
-		mDisabledWhenPublished.add(button);
-		mWidgets.tool.drawErase = button;
-		buttonGroup.add(button);
-		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Tools.DRAW_ERASE, getResourceTypeName()));
-		new ButtonListener(button, tooltipListener) {
+
+		// Terrain draw_erase
+		buttonListener = new ButtonListener() {
 			@Override
 			protected void onChecked(boolean checked) {
 				if (checked) {
@@ -458,16 +441,12 @@ public abstract class ActorGui extends EditorGui {
 				}
 			}
 		};
-		mToolMenu.add(button);
+		mWidgets.tool.drawErase = mUiFactory.addToolButton(EditorIcons.DRAW_ERASE, buttonListener, buttonGroup, mToolMenu,
+				Messages.replaceName(Messages.Tooltip.Tools.DRAW_ERASE, "terrain"), mDisabledWhenPublished);
 
-		// Add corner
+		// add_move_corner
 		mToolMenu.row();
-		button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.ADD_MOVE_CORNER.toString());
-		mDisabledWhenPublished.add(button);
-		mWidgets.tool.addMoveCorner = button;
-		buttonGroup.add(button);
-		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Tools.ADJUST_ADD_MOVE_CORNER, getResourceTypeName()));
-		new ButtonListener(button, tooltipListener) {
+		buttonListener = new ButtonListener() {
 			@Override
 			protected void onChecked(boolean checked) {
 				if (checked) {
@@ -475,15 +454,11 @@ public abstract class ActorGui extends EditorGui {
 				}
 			}
 		};
-		mToolMenu.add(button);
+		mWidgets.tool.addMoveCorner = mUiFactory.addToolButton(EditorIcons.ADD_MOVE_CORNER, buttonListener, buttonGroup, mToolMenu,
+				Messages.replaceName(Messages.Tooltip.Tools.ADJUST_ADD_MOVE_CORNER, "terrain"), mDisabledWhenPublished);
 
-		// Remove corner
-		button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.REMOVE_CORNER.toString());
-		mDisabledWhenPublished.add(button);
-		mWidgets.tool.removeCorner = button;
-		buttonGroup.add(button);
-		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Tools.ADJUST_REMOVE_CORNER, getResourceTypeName()));
-		new ButtonListener(button, tooltipListener) {
+		// remove_corner
+		buttonListener = new ButtonListener() {
 			@Override
 			protected void onChecked(boolean checked) {
 				if (checked) {
@@ -491,23 +466,16 @@ public abstract class ActorGui extends EditorGui {
 				}
 			}
 		};
-		mToolMenu.add(button);
+		mWidgets.tool.removeCorner = mUiFactory.addToolButton(EditorIcons.REMOVE_CORNER, buttonListener, buttonGroup, mToolMenu,
+				Messages.replaceName(Messages.Tooltip.Tools.ADJUST_REMOVE_CORNER, "terrain"), mDisabledWhenPublished);
 
 
 		// --------- SEPARATOR -----------
-		mToolMenu.row();
-		mToolMenu.add().setPadBottom(separatorPadding);
-		mToolMenu.row();
+		mUiFactory.addToolSeparator(mToolMenu);
 
 
 		// Set center
-		mToolMenu.row();
-		button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.SET_CENTER.toString());
-		mDisabledWhenPublished.add(button);
-		mWidgets.tool.setCenter = button;
-		buttonGroup.add(button);
-		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Tools.SET_CENTER, getResourceTypeName()));
-		new ButtonListener(button, tooltipListener) {
+		buttonListener = new ButtonListener() {
 			@Override
 			protected void onChecked(boolean checked) {
 				if (checked) {
@@ -515,20 +483,18 @@ public abstract class ActorGui extends EditorGui {
 				}
 			}
 		};
-		mToolMenu.add(button);
-
+		mWidgets.tool.setCenter = mUiFactory.addToolButton(EditorIcons.SET_CENTER, buttonListener, buttonGroup, mToolMenu,
+				Messages.replaceName(Messages.Tooltip.Tools.SET_CENTER, getResourceTypeName()), mDisabledWhenPublished);
 
 		// Reset center
-		button = new ImageButton(mStyles.skin.editor, SkinNames.EditorIcons.RESET_CENTER.toString());
-		mDisabledWhenPublished.add(button);
-		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Tools.RESET_CENTER, getResourceTypeName()));
-		new ButtonListener(button, tooltipListener) {
+		buttonListener = new ButtonListener() {
 			@Override
 			protected void onPressed() {
 				mInvoker.execute(new CActorEditorCenterReset(mActorEditor));
 			}
 		};
-		mToolMenu.add(button);
+		mUiFactory.addToolButton(EditorIcons.RESET_CENTER, buttonListener, buttonGroup, mToolMenu,
+				Messages.replaceName(Messages.Tooltip.Tools.RESET_CENTER, getResourceTypeName()), mDisabledWhenPublished);
 	}
 
 	/**
