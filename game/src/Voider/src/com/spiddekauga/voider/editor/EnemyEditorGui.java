@@ -310,7 +310,7 @@ public class EnemyEditorGui extends ActorGui {
 
 
 		// Random movement
-		mUiFactory.addLabelSection("Random Movement", table, hider);
+		mUiFactory.addPanelSection("Random Movement", table, hider);
 
 		// ON/OFF tabs
 		// ON
@@ -406,7 +406,7 @@ public class EnemyEditorGui extends ActorGui {
 
 
 		// Movement Speed
-		mUiFactory.addLabelSection("Movement Speed", table, hider);
+		mUiFactory.addPanelSection("Movement Speed", table, hider);
 		SliderListener sliderListener = new SliderListener() {
 			@Override
 			protected void onChange(float newValue) {
@@ -434,7 +434,7 @@ public class EnemyEditorGui extends ActorGui {
 
 
 		// Turning
-		mUiFactory.addLabelSection("Turning Speed", table, hider);
+		mUiFactory.addPanelSection("Turning Speed", table, hider);
 
 		// Create ON/OFF tabs
 		// ON
@@ -595,7 +595,7 @@ public class EnemyEditorGui extends ActorGui {
 	private void initWeapon() {
 		AlignTable table = mWeaponTable;
 
-		mUiFactory.addLabelSection("Enemy Weapon", table, mWeaponHider);
+		mUiFactory.addPanelSection("Enemy Weapon", table, mWeaponHider);
 
 		// Toggle weapon ON/OFF
 		// ON
@@ -631,7 +631,7 @@ public class EnemyEditorGui extends ActorGui {
 
 
 		// Select bullet type
-		mUiFactory.addLabelSection("Select Bullet Type", table, onTab.hider);
+		mUiFactory.addPanelSection("Select Bullet Type", table, onTab.hider);
 
 		// Bullet image
 		ImageButton imageButton = new ImageButton((ImageButtonStyle) SkinNames.getResource(SkinNames.EditorIcons.BULLET_SELECT));
@@ -649,7 +649,7 @@ public class EnemyEditorGui extends ActorGui {
 
 
 		// Bullet settings
-		mUiFactory.addLabelSection("Bullet Settings", table, onTab.hider);
+		mUiFactory.addPanelSection("Bullet Settings", table, onTab.hider);
 
 		// Speed
 		SliderListener sliderListener = new SliderListener() {
@@ -797,19 +797,19 @@ public class EnemyEditorGui extends ActorGui {
 
 		// Labels
 		// On Player
-		mUiFactory.addLabelSection("On Player", table, onPlayerTab.hider);
+		mUiFactory.addPanelSection("On Player", table, onPlayerTab.hider);
 
 		// In front of player
-		mUiFactory.addLabelSection("In Front Of Player", table, inFrontPlayerTab.hider);
+		mUiFactory.addPanelSection("In Front Of Player", table, inFrontPlayerTab.hider);
 
 		// Movement direction
-		mUiFactory.addLabelSection("Enemy Movement Direction", table, moveDirTab.hider);
+		mUiFactory.addPanelSection("Enemy Movement Direction", table, moveDirTab.hider);
 
 		// Specific direction
-		mUiFactory.addLabelSection("Fixed Direction", table, directionTab.hider);
+		mUiFactory.addPanelSection("Fixed Direction", table, directionTab.hider);
 
 		// Rotate
-		mUiFactory.addLabelSection("Rotate", table, rotateTab.hider);
+		mUiFactory.addPanelSection("Rotate", table, rotateTab.hider);
 
 
 		// Specific settings

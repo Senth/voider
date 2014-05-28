@@ -14,6 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider.SliderStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.TextArea;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
@@ -36,6 +37,65 @@ public class UiPanelFactory {
 	}
 
 	/**
+	 * Adds a text field with an optional label header
+	 * @param labelText optional text for the label, if null no label is added
+	 * @param defaultText default text in the text field
+	 * @param listener text field listener
+	 * @param table the table to add the text field to
+	 * @param createdActors optional adds all created elements to this list (if not null)
+	 * @return Created text field
+	 */
+	public TextField addTextField(String labelText, String defaultText, TextFieldListener listener, AlignTable table, ArrayList<Actor> createdActors) {
+		// Label
+		if (labelText != null) {
+			Label label = addSection(labelText, table, null);
+			doExtraActionsOnActors(null, null, createdActors, label);
+			table.row();
+		}
+
+		TextField textField = new TextField(defaultText, mStyles.textField.standard);
+		listener.setTextField(textField);
+		listener.setDefaultText(defaultText);
+
+		// Set width and height
+		table.add(textField).setSize(mStyles.vars.textFieldWidth, mStyles.vars.rowHeight);
+
+		doExtraActionsOnActors(null, null, createdActors, textField);
+
+		return textField;
+	}
+
+	/**
+	 * Adds a text area with an optional label header
+	 * @param labelText optional text for the label, if null no label is added
+	 * @param defaultText default text in the text field
+	 * @param listener text field listener
+	 * @param table the table to add the text field to
+	 * @param createdActors optional adds all created elements to this list (if not null)
+	 * @return Created text field
+	 */
+	public TextArea addTextArea(String labelText, String defaultText, TextFieldListener listener, AlignTable table, ArrayList<Actor> createdActors) {
+		// Label
+		if (labelText != null) {
+			Label label = addSection(labelText, table, null);
+			doExtraActionsOnActors(null, null, createdActors, label);
+			table.row();
+		}
+
+		TextArea textArea = new TextArea(defaultText, mStyles.textField.standard);
+		listener.setTextField(textArea);
+		listener.setDefaultText(defaultText);
+
+		// Set width and height
+		table.add(textArea).setSize(mStyles.vars.textFieldWidth, mStyles.vars.textAreaHeight);
+
+		doExtraActionsOnActors(null, null, createdActors, textArea);
+
+		return textArea;
+	}
+
+
+	/**
 	 * Adds a min and max slider with section text to a table. These sliders are
 	 * synchronized.
 	 * @param text optional section text for the sliders
@@ -55,7 +115,7 @@ public class UiPanelFactory {
 			SliderListener maxSliderListener, AlignTable table, String tooltipText, GuiHider hider, ArrayList<Actor> createdActors, Invoker invoker) {
 		// Label
 		if (text != null) {
-			Label label = addLabelSection(text, table, null);
+			Label label = addPanelSection(text, table, null);
 			doExtraActionsOnActors(tooltipText, hider, createdActors, label);
 		}
 
@@ -128,13 +188,13 @@ public class UiPanelFactory {
 	}
 
 	/**
-	 * Add a section label
+	 * Add a panel section label
 	 * @param text section label text
 	 * @param table the table to add the text to
 	 * @param hider optional hider to hide the label
 	 * @return label that was created
 	 */
-	public Label addLabelSection(String text, AlignTable table, GuiHider hider) {
+	public Label addPanelSection(String text, AlignTable table, GuiHider hider) {
 		Label label = new Label(text, mStyles.label.panelSection);
 		table.row();
 		table.add(label);
@@ -145,6 +205,26 @@ public class UiPanelFactory {
 
 		return label;
 	}
+
+	/**
+	 * Add a section label
+	 * @param text section label text
+	 * @param table the table to add the text to
+	 * @param hider optional hider to hide the label
+	 * @return label that was created
+	 */
+	public Label addSection(String text, AlignTable table, GuiHider hider) {
+		Label label = new Label(text, mStyles.label.standard);
+		table.row();
+		table.add(label).setHeight(mStyles.vars.rowHeight);
+
+		if (hider != null) {
+			hider.addToggleActor(label);
+		}
+
+		return label;
+	}
+
 
 	/**
 	 * Adds a tool icon to the specified table
@@ -313,8 +393,11 @@ public class UiPanelFactory {
 		mStyles.vars.paddingCheckBox = SkinNames.getResource(SkinNames.GeneralVars.PADDING_CHECKBOX);
 		mStyles.vars.paddingOuter = SkinNames.getResource(SkinNames.GeneralVars.PADDING_OUTER);
 		mStyles.vars.textFieldNumberWidth = SkinNames.getResource(SkinNames.GeneralVars.TEXT_FIELD_NUMBER_WIDTH);
+		mStyles.vars.textFieldWidth = SkinNames.getResource(SkinNames.GeneralVars.TEXT_FIELD_WIDTH);
 		mStyles.vars.sliderWidth = SkinNames.getResource(SkinNames.GeneralVars.SLIDER_WIDTH);
 		mStyles.vars.sliderLabelWidth = SkinNames.getResource(SkinNames.GeneralVars.SLIDER_LABEL_WIDTH);
+		mStyles.vars.rowHeight = SkinNames.getResource(SkinNames.GeneralVars.ICON_ROW_HEIGHT);
+		mStyles.vars.textAreaHeight = SkinNames.getResource(SkinNames.GeneralVars.TEXT_AREA_HEIGHT);
 	}
 
 	/**
@@ -403,6 +486,9 @@ public class UiPanelFactory {
 			float sliderLabelWidth = 0;
 			float paddingCheckBox = 0;
 			float paddingOuter = 0;
+			float rowHeight = 0;
+			float textAreaHeight = 0;
+			float textFieldWidth = 0;
 		}
 
 		static class Colors {

@@ -80,7 +80,7 @@ public class BulletEditorGui extends ActorGui {
 	 */
 	private void initWeapon() {
 		// Speed
-		mUiFactory.addLabelSection("Bullet Properties", mWeaponTable, null);
+		mUiFactory.addPanelSection("Bullet Properties", mWeaponTable, null);
 		SliderListener sliderListener = new SliderListener() {
 			@Override
 			protected void onChange(float newValue) {

@@ -19,9 +19,8 @@ import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.voider.utils.Pools;
 
 /**
- * Table that allows for aligning inside the widgets.
- * This table also fixes scaling of the widgets inside.
- * 
+ * Table that allows for aligning inside the widgets. This table also fixes scaling of the
+ * widgets inside.
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class AlignTable extends WidgetGroup implements Disposable {
@@ -52,8 +51,7 @@ public class AlignTable extends WidgetGroup implements Disposable {
 
 	/**
 	 * Disposes the rows and cells of the table, the actors can be saved
-	 * @param disposeActors true if you want to call dispose() on
-	 * the actors.
+	 * @param disposeActors true if you want to call dispose() on the actors.
 	 */
 	public void dispose(boolean disposeActors) {
 		mDisposing = true;
@@ -119,12 +117,14 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	}
 
 	/**
-	 * Sets both the table and row alignment. I.e. same as calling {@link #setAlignRow(Horizontal, Vertical)}
-	 * and {@link #setAlignTable(Horizontal, Vertical)}
+	 * Sets both the table and row alignment. I.e. same as calling
+	 * {@link #setAlignRow(Horizontal, Vertical)} and
+	 * {@link #setAlignTable(Horizontal, Vertical)}
 	 * @param horizontal default horizontal alignment for table and new rows
 	 * @param vertical default vertical alignment for table and new rows
 	 * @return this tabale for chaining
-	 * @see #setAlignRow(Horizontal, Vertical) for only setting row alignment (on new rows)
+	 * @see #setAlignRow(Horizontal, Vertical) for only setting row alignment (on new
+	 *      rows)
 	 * @see #setAlignTable(Horizontal, Vertical) for only setting table alignment
 	 */
 	public AlignTable setAlign(Horizontal horizontal, Vertical vertical) {
@@ -134,10 +134,10 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	}
 
 	/**
-	 * Sets the default padding for all new cells in the table. By default this is
-	 * 0 for all sides. This only affects new cells added to the table.
-	 * To change the padding of a Cell, you need to retrieve it from the {@link #add(Actor)}
-	 * method and then call the appropriate padding method.
+	 * Sets the default padding for all new cells in the table. By default this is 0 for
+	 * all sides. This only affects new cells added to the table. To change the padding of
+	 * a Cell, you need to retrieve it from the {@link #add(Actor)} method and then call
+	 * the appropriate padding method.
 	 * @param top padding at the top
 	 * @param right padding to the right
 	 * @param bottom padding at the bottom
@@ -153,10 +153,10 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	}
 
 	/**
-	 * Sets the default padding for all new cells in the table. By default this is
-	 * 0 for all sides. This only affects new cells added to the table.
-	 * To change the padding of a Cell, you need to retrieve it from the {@link #add(Actor)}
-	 * method and then call the appropriate padding method.
+	 * Sets the default padding for all new cells in the table. By default this is 0 for
+	 * all sides. This only affects new cells added to the table. To change the padding of
+	 * a Cell, you need to retrieve it from the {@link #add(Actor)} method and then call
+	 * the appropriate padding method.
 	 * @param padding padding for all sides
 	 * @return this table for chaining
 	 */
@@ -169,8 +169,8 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	}
 
 	/**
-	 * Sets the default padding for all new rows in the table. By default this
-	 * is 0 for all sides. Only affects new rows created after this call.
+	 * Sets the default padding for all new rows in the table. By default this is 0 for
+	 * all sides. Only affects new rows created after this call.
 	 * @param top padding at the top
 	 * @param right padding to the right
 	 * @param bottom padding at the bottom
@@ -186,8 +186,8 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	}
 
 	/**
-	 * Sets the default padding for all new rows in the table. By default this
-	 * is 0 for all sides. Only affects new rows created after this call.
+	 * Sets the default padding for all new rows in the table. By default this is 0 for
+	 * all sides. Only affects new rows created after this call.
 	 * @param padding padding to the left, right, top, and bottom
 	 * @return this table for chaining
 	 */
@@ -316,12 +316,11 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	/**
 	 * Gets all actors in the table
 	 * @param onlyVisible set to true to get visible actors, false to get all
-	 * @return array with all actors. Don't forget to free the ArrayList after
-	 * it has been used.
+	 * @return array with all actors. Don't forget to free the ArrayList after it has been
+	 *         used.
 	 */
 	public ArrayList<Actor> getActors(boolean onlyVisible) {
-		@SuppressWarnings("unchecked")
-		ArrayList<Actor> actors = Pools.arrayList.obtain();
+		@SuppressWarnings("unchecked") ArrayList<Actor> actors = Pools.arrayList.obtain();
 
 		getActors(onlyVisible, actors);
 
@@ -381,7 +380,7 @@ public class AlignTable extends WidgetGroup implements Disposable {
 		Cell newCell = Pools.cell.obtain().setActor(actor);
 		newCell.setPadding(mCellPaddingDefault);
 
-		Row row = mRows.get(mRows.size() -1);
+		Row row = mRows.get(mRows.size() - 1);
 		row.add(newCell);
 
 		if (actor != null) {
@@ -413,8 +412,7 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	}
 
 	/**
-	 * Adds another row to the table.
-	 * Uses the default row alignment
+	 * Adds another row to the table. Uses the default row alignment
 	 * @see #row(Horizontal,Vertical) for adding a new row with the specified alignment
 	 * @see #setAlignRow(Horizontal,Vertical) for setting the default row alignment
 	 * @return the created row
@@ -424,8 +422,8 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	}
 
 	/**
-	 * Adds another row to the table with a specified layout. This does not set
-	 * the default row alignment.
+	 * Adds another row to the table with a specified layout. This does not set the
+	 * default row alignment.
 	 * @param horizontal horizontal alignment for this new row
 	 * @param vertical vertical alignment for this new row
 	 * @see #row() for adding a row with the default row alignment
@@ -743,7 +741,8 @@ public class AlignTable extends WidgetGroup implements Disposable {
 		}
 
 		// Set position of this table.
-		// If parent is an AlignTable it has already set the correct position for this table
+		// If parent is an AlignTable it has already set the correct position for this
+		// table
 		if (!(getParent() instanceof AlignTable)) {
 			Vector2 position = Pools.vector2.obtain();
 
@@ -752,14 +751,14 @@ public class AlignTable extends WidgetGroup implements Disposable {
 			// Horizontal offset
 			// If fill row, the x offset will always be the margin
 			if (rowFillWidth && !mKeepWidth) {
-				position.x = mMargin.left + mPadding.left;
+				position.x = mMargin.left;
 			}
 			// Calculate offset depending on alignment
 			else {
 				if (mTableAlign.horizontal == Horizontal.LEFT) {
-					position.x = mMargin.left + mPadding.left;
+					position.x = mMargin.left;
 				} else if (mTableAlign.horizontal == Horizontal.RIGHT) {
-					position.x = getAvailableWidth() - rowWidthMax + mMargin.left + mPadding.left;
+					position.x = getAvailableWidth() - rowWidthMax + mMargin.left;
 				} else if (mTableAlign.horizontal == Horizontal.CENTER) {
 					position.x = getAvailableWidth() * 0.5f - rowWidthMax * 0.5f;
 				}
@@ -768,20 +767,20 @@ public class AlignTable extends WidgetGroup implements Disposable {
 			// Vertical
 			// If fill height, the y offset will always be margin bottom
 			if (cRowFillHeight > 0 && !mKeepHeight) {
-				position.y = mMargin.bottom + mPadding.bottom;
+				position.y = mMargin.bottom;
 			}
 			// Calculate offset depending on alignment
 			else {
 				if (mTableAlign.vertical == Vertical.BOTTOM) {
-					position.y = mMargin.bottom + mPadding.bottom;
+					position.y = mMargin.bottom;
 				} else if (mTableAlign.vertical == Vertical.TOP) {
-					position.y = getAvailableHeight() - rowHeight + mMargin.bottom + mPadding.bottom;
+					position.y = getAvailableHeight() - rowHeight + mMargin.bottom;
 				} else if (mTableAlign.vertical == Vertical.MIDDLE) {
 					position.y = getAvailableHeight() * 0.5f - rowHeight * 0.5f;
 				}
 			}
 
-			super.setPosition((int)position.x, (int)position.y);
+			super.setPosition((int) position.x, (int) position.y);
 			Pools.vector2.free(position);
 		}
 
@@ -879,11 +878,11 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	}
 
 	/**
-	 * Makes the table keep its size (that was set through #setSize(float,float), #setWidth(float), or
-	 * #setHeight(float)) after the table has been invalidated. I.e. it will not resize the table to fit
-	 * the contents.
-	 * @param keepSize set to true to keep the size of the table. If set to false table will not always be
-	 * the same size as getPrefWidth/Height.
+	 * Makes the table keep its size (that was set through #setSize(float,float),
+	 * #setWidth(float), or #setHeight(float)) after the table has been invalidated. I.e.
+	 * it will not resize the table to fit the contents.
+	 * @param keepSize set to true to keep the size of the table. If set to false table
+	 *        will not always be the same size as getPrefWidth/Height.
 	 * @return this table for chaining
 	 * @see #setKeepWidth(boolean)
 	 * @see #setKeepHeight(boolean)
@@ -895,10 +894,11 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	}
 
 	/**
-	 * Makes the table keep its width (that was set through #setSize(float,float) or #setWidth(float) after the table has been invalidated. I.e. it will not resize the table to fit
-	 * the contents.
-	 * @param keepWidth set to true to keep the width of the table. If set to false table will not always be
-	 * the same size as getPrefWidth().
+	 * Makes the table keep its width (that was set through #setSize(float,float) or
+	 * #setWidth(float) after the table has been invalidated. I.e. it will not resize the
+	 * table to fit the contents.
+	 * @param keepWidth set to true to keep the width of the table. If set to false table
+	 *        will not always be the same size as getPrefWidth().
 	 * @return this table for chaining
 	 */
 	public AlignTable setKeepWidth(boolean keepWidth) {
@@ -907,10 +907,11 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	}
 
 	/**
-	 * Makes the table keep its height (that was set through #setSize(float,float) or #setHeight(float) after the table has been invalidated. I.e. it will not resize the table to fit
-	 * the contents.
-	 * @param keepHeight set to true to keep the height of the table. If set to false table will not always be
-	 * the same size as getPrefHeight().
+	 * Makes the table keep its height (that was set through #setSize(float,float) or
+	 * #setHeight(float) after the table has been invalidated. I.e. it will not resize the
+	 * table to fit the contents.
+	 * @param keepHeight set to true to keep the height of the table. If set to false
+	 *        table will not always be the same size as getPrefHeight().
 	 * @return this table for chaining
 	 */
 	public AlignTable setKeepHeight(boolean keepHeight) {
@@ -920,9 +921,9 @@ public class AlignTable extends WidgetGroup implements Disposable {
 
 	/**
 	 * Makes this table's {@link #getPrefWidth()} call {@link #getWidth()} if
-	 * hasPreferredWidth is set to false. Useful when this table is inside
-	 * a ScrollPane.
-	 * @param hasPreferredWidth if set to false {@link #getPrefWidth()} will return {@link #getWidth()} instead.
+	 * hasPreferredWidth is set to false. Useful when this table is inside a ScrollPane.
+	 * @param hasPreferredWidth if set to false {@link #getPrefWidth()} will return
+	 *        {@link #getWidth()} instead.
 	 * @return this table for chaining
 	 */
 	public AlignTable setHasPreferredWidth(boolean hasPreferredWidth) {
@@ -932,9 +933,9 @@ public class AlignTable extends WidgetGroup implements Disposable {
 
 	/**
 	 * Makes this table's {@link #getPrefHeight()} call {@link #getHeight()} if
-	 * hasPreferredHeight is set to false. Useful when this table is inside
-	 * a ScrollPane.
-	 * @param hasPreferredHeight if set to false {@link #getPrefHeight()} will return {@link #getHeight()} instead.
+	 * hasPreferredHeight is set to false. Useful when this table is inside a ScrollPane.
+	 * @param hasPreferredHeight if set to false {@link #getPrefHeight()} will return
+	 *        {@link #getHeight()} instead.
 	 * @return this table for chaining
 	 */
 	public AlignTable setHasPreferredHeight(boolean hasPreferredHeight) {
@@ -987,7 +988,8 @@ public class AlignTable extends WidgetGroup implements Disposable {
 
 	/**
 	 * Set a background image of the table
-	 * @param image background image of this table, null to remove an existing background image
+	 * @param image background image of this table, null to remove an existing background
+	 *        image
 	 */
 	public void setBackgroundImage(Image image) {
 		// Remove old background
@@ -1008,7 +1010,7 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	 */
 	private void updateBackgroundPosition() {
 		if (mBackground != null) {
-			//			mBackground.setPosition(-mPadding.left, -mPadding.bottom);
+			// mBackground.setPosition(-mPadding.left, -mPadding.bottom);
 		}
 	}
 
@@ -1049,9 +1051,15 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	private float mMaxHeight = 0;
 	/** Maximum width */
 	private float mMaxWidth = 0;
-	/** True if the table shall keep it's width after layout, false if it shall resize itself */
+	/**
+	 * True if the table shall keep it's width after layout, false if it shall resize
+	 * itself
+	 */
 	private boolean mKeepWidth = false;
-	/** True if the table shall keep it's height after layout, false if it shall resize itself */
+	/**
+	 * True if the table shall keep it's height after layout, false if it shall resize
+	 * itself
+	 */
 	private boolean mKeepHeight = false;
 	/** If we're currently disposing */
 	private boolean mDisposing = false;

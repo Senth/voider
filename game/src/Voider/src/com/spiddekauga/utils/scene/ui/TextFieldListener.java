@@ -15,30 +15,85 @@ import com.spiddekauga.voider.Config.Gui;
 
 /**
  * Listens to a text field. When a value has been changed #onChange() is called
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class TextFieldListener implements EventListener {
 	/**
-	 * Creates a text field listener for the specified text field. This automatically
-	 * adds this listener as a listener to text field.
+	 * Creates an invalid text field listener. Be sure to call
+	 * {@link #setTextField(TextField)} to use this listener
+	 */
+	public TextFieldListener() {
+		this(null, null, null);
+	}
+
+	/**
+	 * Creates an invalid text field listener. Be sure to call
+	 * {@link #setTextField(TextField)} to use this listener
+	 * @param invoker used for undoing commands, set to null to skip
+	 */
+	public TextFieldListener(Invoker invoker) {
+		this(null, null, invoker);
+	}
+
+	/**
+	 * Creates a text field listener for the specified text field. This automatically adds
+	 * this listener as a listener to text field.
+	 * @param textField the text field to listen to. whenever the field is empty and not
+	 *        focused.
+	 * @param invoker used for undoing commands, set to null to skip
+	 */
+	public TextFieldListener(TextField textField, Invoker invoker) {
+		this(textField, null, invoker);
+	}
+
+	/**
+	 * Creates a text field listener for the specified text field. This automatically adds
+	 * this listener as a listener to text field.
 	 * @param textField the text field to listen to.
 	 * @param defaultText if not set as null it will display this text in the text field
-	 * whenever the field is empty and not focused.
+	 *        whenever the field is empty and not focused.
 	 * @param invoker used for undoing commands, set to null to skip
 	 */
 	public TextFieldListener(TextField textField, String defaultText, Invoker invoker) {
-		mTextField = textField;
 		mDefaultText = defaultText;
 		mInvoker = invoker;
 
-		mPrevKeystrokeText = mTextField.getText();
-		mIsPassword = mTextField.isPasswordMode();
-
-		setDefaultText();
-
-		mTextField.addListener(this);
+		setTextField(textField);
 	}
+
+	/**
+	 * Sets the text field to listen to
+	 * @param textField the text field to listen to, to remove a text field pass a null
+	 *        value.
+	 */
+	public void setTextField(TextField textField) {
+		if (mTextField != null) {
+			mTextField.removeListener(this);
+		}
+
+		mTextField = textField;
+
+		if (mTextField != null) {
+			mPrevKeystrokeText = mTextField.getText();
+			mIsPassword = mTextField.isPasswordMode();
+			setDefaultText();
+			mTextField.addListener(this);
+		} else {
+			mPrevKeystrokeText = "";
+			mIsPassword = false;
+		}
+	}
+
+	/**
+	 * Sets the default text of the text field listener
+	 * @param defaultText the default text to show when the text field is empty. Set to
+	 *        null to disable this functionality
+	 */
+	public void setDefaultText(String defaultText) {
+		mDefaultText = defaultText;
+		setDefaultText();
+	}
+
 
 	@Override
 	public boolean handle(Event event) {
@@ -60,15 +115,12 @@ public class TextFieldListener implements EventListener {
 					setDefaultText();
 				}
 			}
-		}
-		else if (event instanceof InputEvent) {
-			InputEvent inputEvent = (InputEvent)event;
+		} else if (event instanceof InputEvent) {
+			InputEvent inputEvent = (InputEvent) event;
 
 			if (inputEvent.getType() == InputEvent.Type.keyDown) {
 				// Enter, Esc, Back -> Unfocus
-				if (inputEvent.getKeyCode() == Keys.ENTER ||
-						inputEvent.getKeyCode() == Keys.ESCAPE ||
-						inputEvent.getKeyCode() == Keys.BACK) {
+				if (inputEvent.getKeyCode() == Keys.ENTER || inputEvent.getKeyCode() == Keys.ESCAPE || inputEvent.getKeyCode() == Keys.BACK) {
 					mTextField.getStage().setKeyboardFocus(null);
 
 					if (inputEvent.getKeyCode() == Keys.ENTER) {
@@ -113,9 +165,8 @@ public class TextFieldListener implements EventListener {
 				// Thus if the text is change manually through setText(...) this
 				// will catch that change.
 				mPrevKeystrokeText = mTextField.getText();
-			}
-			else if (inputEvent.getType() == InputEvent.Type.keyTyped) {
-				if (!mTextField.getText().equals(mPrevKeystrokeText)){
+			} else if (inputEvent.getType() == InputEvent.Type.keyTyped) {
+				if (!mTextField.getText().equals(mPrevKeystrokeText)) {
 					onChange(mTextField.getText());
 					sendCommand();
 					mPrevKeystrokeText = mTextField.getText();
@@ -139,8 +190,8 @@ public class TextFieldListener implements EventListener {
 	}
 
 	/**
-	 * Called when the value inside the text field is changed. This
-	 * is never called when the text is changed to the default text.
+	 * Called when the value inside the text field is changed. This is never called when
+	 * the text is changed to the default text.
 	 * @param newText the new text value for the text field
 	 */
 	protected void onChange(String newText) {
@@ -148,9 +199,9 @@ public class TextFieldListener implements EventListener {
 	}
 
 	/**
-	 * Called when the text field looses focus, or when enter is pressed.
-	 * If the text field is empty when this happens, it is called <b>before</b>
-	 * the field is set to the default text.
+	 * Called when the text field looses focus, or when enter is pressed. If the text
+	 * field is empty when this happens, it is called <b>before</b> the field is set to
+	 * the default text.
 	 * @param newText the new text value for the text field
 	 */
 	protected void onDone(String newText) {

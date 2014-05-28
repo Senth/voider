@@ -365,9 +365,6 @@ public class SkinNames {
 		PADDING_DEFAULT(Float.class),
 		/** Separator padding */
 		PADDING_SEPARATOR(Float.class),
-		/** Left and right window padding */
-		@Deprecated
-		PADDING_WINDOW_LEFT_RIGHT(Float.class),
 		/** Outer padding of panels */
 		PADDING_OUTER(Float.class),
 		/** Inside padding of panels */
@@ -384,8 +381,12 @@ public class SkinNames {
 		WAIT_WINDOW_FADE_IN(Float.class),
 		/** Seconds of fade out for the wait window */
 		WAIT_WINDOW_FADE_OUT(Float.class),
+		/** Text area height */
+		TEXT_AREA_HEIGHT(Float.class),
 		/** Width of text fields with numbers in them */
 		TEXT_FIELD_NUMBER_WIDTH(Float.class),
+		/** Default text field width */
+		TEXT_FIELD_WIDTH(Float.class),
 		/** Width of right panel */
 		RIGHT_PANEL_WIDTH(Float.class),
 		/** Width of sliders */

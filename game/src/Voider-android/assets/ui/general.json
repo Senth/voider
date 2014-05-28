@@ -59,6 +59,7 @@ java.lang.Float: {
 	
 	
 	/* General UI sizes */
+	
 	right_panel_width: {value: 240},
 	// NOTE: the three widths below (text field, slider, label) should add
 	// upp to right_panel_width for it to be shown correctly.
@@ -66,8 +67,12 @@ java.lang.Float: {
 	text_field_number_width: {value: 48},
 	// Slider width
 	slider_width: {value: 122},
-	// Slider tex width/max size
+	// Slider text width/max size
 	slider_label_width: {value: 70},
+	// Text field default width
+	text_field_width: {value: 240},
+	// Text area height
+	text_area_height: {value: 80},
 	// Standard icon and row height
 	icon_row_height: {value: 32},
 	// Height of upper and lower bars.

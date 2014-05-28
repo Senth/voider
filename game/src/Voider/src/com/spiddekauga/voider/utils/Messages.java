@@ -3,17 +3,15 @@ package com.spiddekauga.voider.utils;
 import com.spiddekauga.voider.Config;
 
 /**
- * Class containing all messages for voider, including help function
- * for retrieving messages
- * 
+ * Class containing all messages for voider, including help function for retrieving
+ * messages
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class Messages {
 
 	/**
 	 * Print this string when no definition is selected
-	 * @param defTypeName name of the definition, this will be inserted into
-	 * the message
+	 * @param defTypeName name of the definition, this will be inserted into the message
 	 * @return text when no definition has been selected.
 	 */
 	public static String getNoDefSelected(String defTypeName) {
@@ -27,14 +25,12 @@ public class Messages {
 	 * @return message for the unsaved type with the specified action
 	 */
 	public static String getUnsavedMessage(String unsavedType, UnsavedActions action) {
-		String message = "Your current " + unsavedType + " is unsaved.\n" +
-				"Do you want to save it before " + action.getMessage(unsavedType) + "?";
+		String message = "Your current " + unsavedType + " is unsaved.\n" + "Do you want to save it before " + action.getMessage(unsavedType) + "?";
 		return message;
 	}
 
 	/**
-	 * Calculates the amount of time to show a specific message depending
-	 * on its length
+	 * Calculates the amount of time to show a specific message depending on its length
 	 * @param message the message to calculate how long time to display
 	 * @return seconds to display the message
 	 */
@@ -66,8 +62,8 @@ public class Messages {
 
 		;
 		/**
-		 * @param unsavedType the unsaved type, which will replace any
-		 * instance of UNSAVED_TYPE within the message.
+		 * @param unsavedType the unsaved type, which will replace any instance of
+		 *        UNSAVED_TYPE within the message.
 		 * @return the message of the action
 		 */
 		public String getMessage(String unsavedType) {
@@ -76,9 +72,8 @@ public class Messages {
 
 		/**
 		 * Creates an unsaved action with the message
-		 * @param message the message to use for the action. Any instance
-		 * of UNSAVED_TYPE in the message will later be replaced with the actual
-		 * unsaved type.
+		 * @param message the message to use for the action. Any instance of UNSAVED_TYPE
+		 *        in the message will later be replaced with the actual unsaved type.
 		 */
 		private UnsavedActions(String message) {
 			mMessage = message;
@@ -99,20 +94,24 @@ public class Messages {
 		/** Bug report was successfully sent */
 		public static final String BUG_REPORT_SENT = "Thank you for sending a bug report! :D";
 		/** Bug report failed, saved locally instead */
-		public static final String BUG_REPORT_SAVED_LOCALLY = "Could not connect to the server, "
-				+ "temporarily saved the bug report locally.";
+		public static final String BUG_REPORT_SAVED_LOCALLY = "Could not connect to the server, " + "temporarily saved the bug report locally.";
 	}
 
 	/**
 	 * Messages for level editor
 	 */
 	public static class Level {
-		/** Title of message box when player is asked to select if s/he shall be invulnerable */
+		/**
+		 * Title of message box when player is asked to select if s/he shall be
+		 * invulnerable
+		 */
 		public final static String RUN_INVULNERABLE_TITLE = "Test run the level";
-		/** Message when the player is asked to select if s/he shall be invulnerable when testing the level.*/
-		public final static String RUN_INVULNERABLE_CONTENT = "Do you want to be invulnerable when " +
-				"you're testing the level?\n\n" +
-				"Hit Escape or Back when you want to stop the test.";
+		/**
+		 * Message when the player is asked to select if s/he shall be invulnerable when
+		 * testing the level.
+		 */
+		public final static String RUN_INVULNERABLE_CONTENT = "Do you want to be invulnerable when " + "you're testing the level?\n\n"
+				+ "Hit Escape or Back when you want to stop the test.";
 		/** Header for successfully completing the level */
 		public final static String COMPLETED_HEADER = "Congratulations!";
 		/** Header for game over */
@@ -127,6 +126,10 @@ public class Messages {
 		public final static String DUPLICATE_BOX = "Do you want to duplicate this " + ACTOR_TYPE + "?";
 		/** Text to be displayed when exiting the editor */
 		public final static String EXIT_TO_MAIN_MENU = "Do you want to exit to main menu?";
+		/** Default text for description field */
+		public final static String DESCRIPTION_FIELD_DEFAULT = "Write a short description about the " + ACTOR_TYPE + "...";
+		/** Default text for name field */
+		public final static String NAME_FIELD_DEFAULT = "Give your " + ACTOR_TYPE + " a name...";
 	}
 
 	/**
@@ -173,14 +176,17 @@ public class Messages {
 				public final static String DRAW = "Draw your own shape";
 
 			}
+
 			public static class Option {
 				public final static String NAME = "Name of the " + ACTOR_TYPE;
 				public final static String DESCRIPTION = "Short description of your " + ACTOR_TYPE;
 			}
+
 			public static class Collision {
 				public final static String DAMAGE = "Damage caused on player when colliding";
 				public final static String DESTROY_ON_COLLIDE = "Destroys the " + ACTOR_TYPE + " when it collides";
 			}
+
 			public static class Menu {
 				public final static String VISUALS = "Change visuals; shape and rotation";
 				public final static String OPTIONS = ACTOR_TYPE + "'s name and description";
@@ -193,28 +199,33 @@ public class Messages {
 				public final static String MOVEMENT = "Enemy movement";
 				public final static String WEAPON = "Enemy weapon";
 			}
+
 			public static class Movement {
 				public static class Menu {
 					public final static String PATH = "Enemy follows a path";
 					public final static String STATIONARY = "Stationary";
 					public final static String AI = "AI. Setup your own movement rules";
 				}
+
 				public static class Path {
 					public final static String BACK_AND_FORTH = "Back and forth";
 					public final static String LOOP = "Loop";
 					public final static String ONCE = "Follow once only";
 				}
+
 				public static class Common {
 					public final static String MOVEMENT_SPEED = "Movement speed";
 					public final static String TURNING_SPEED_BUTTON = "Turns when changing direction";
 					public final static String TURNING_SPEED = "How fast the enemy turns";
 				}
+
 				public static class Ai {
 					public final static String DISTANCE = "Distance to keep to player";
 					public final static String RANDOM_MOVEMENT_BUTTON = "Moves randomly when between min & max distance";
 					public final static String RANDOM_MOVEMENT = "Delay until next random direction";
 				}
 			}
+
 			public static class Weapon {
 				public final static String WEAPON_BUTTON = "Turn on/off enemy weapon";
 
@@ -224,6 +235,7 @@ public class Messages {
 					public final static String DAMAGE = "Bullet damage";
 					public final static String COOLDOWN = "Weapon cooldown";
 				}
+
 				public static class Aim {
 					public final static String DIRECTION = "Shoot in one direction";
 					public final static String DIRECTION_ANGLE = "Angle to shoot in";
@@ -243,6 +255,7 @@ public class Messages {
 				public final static String SELECT_NAME = "Pickup name";
 				public final static String SELECT_TYPE = "Select a pickup type";
 			}
+
 			public static class Enemy {
 				public final static String ENEMY_COUNT = "Copies of the selected enemy";
 				public final static String ENEMY_SPAWN_DELAY = "Enemy spawn delay";
@@ -250,11 +263,13 @@ public class Messages {
 				public final static String DEACTIVATE_DELAY = "Deactivation delay";
 				public final static String ADD = "Add enemy to the list";
 			}
+
 			public static class Path {
 				public final static String ONCE = "Follows path once only";
 				public final static String LOOP = "Loops in the path";
 				public final static String BACK_AND_FORTH = "Back and forth in the path";
 			}
+
 			public static class Option {
 				public final static String NAME = "Level name";
 				public final static String DESCRIPTION = "Short description";
@@ -273,12 +288,14 @@ public class Messages {
 
 				public final static String LOGOUT = "Logout";
 			}
+
 			public static class Editor {
 				public final static String CAMPAIGN = "Campaign editor";
 				public final static String LEVEL = "Level editor";
 				public final static String ENEMY = "Enemy editor";
 				public final static String BULLET = "Bullet editor";
 			}
+
 			public static class File {
 				public final static String NEW = "Create a new " + ACTOR_TYPE;
 				public final static String SAVE = "Save the " + ACTOR_TYPE;

@@ -2,10 +2,8 @@ package com.spiddekauga.voider.editor;
 
 import java.util.ArrayList;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.spiddekauga.utils.commands.Invoker;
@@ -19,10 +17,8 @@ import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
 import com.spiddekauga.utils.scene.ui.SliderListener;
 import com.spiddekauga.utils.scene.ui.TabWidget;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
-import com.spiddekauga.utils.scene.ui.TooltipListener;
 import com.spiddekauga.utils.scene.ui.UiPanelFactory.TabImageWrapper;
 import com.spiddekauga.utils.scene.ui.UiPanelFactory.TabWrapper;
-import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Editor;
 import com.spiddekauga.voider.Config.Editor.Enemy;
 import com.spiddekauga.voider.editor.IActorEditor.Tools;
@@ -162,44 +158,34 @@ public abstract class ActorGui extends EditorGui {
 	 * Initializes actor options
 	 */
 	protected void initInfoTable() {
+		mWidgets.info.table.setName("info-table");
 		mWidgets.info.table.setAlignTable(Horizontal.LEFT, Vertical.TOP);
+		mWidgets.info.table.setAlignRow(Horizontal.LEFT, Vertical.MIDDLE);
+		mWidgets.info.table.setPadding(mStyles.vars.paddingInner);
+		TextFieldListener listener;
 
-		Label label = new Label("Name", mStyles.label.standard);
-		mWidgets.info.table.add(label);
 
-		int width = (int) (Gdx.graphics.getWidth() * 0.4f);
-
-		mWidgets.info.table.row();
-		TextField textField = new TextField("", mStyles.textField.standard);
-		textField.setMaxLength(Config.Editor.NAME_LENGTH_MAX);
-		mDisabledWhenPublished.add(textField);
-		mWidgets.info.table.add(textField).setWidth(width);
-		mWidgets.info.name = textField;
-		new TooltipListener(textField, Messages.replaceName(Messages.Tooltip.Actor.Option.NAME, getResourceTypeName()));
-		new TextFieldListener(textField, "Give your " + getResourceTypeName() + " a name...", mInvoker) {
+		// Name
+		listener = new TextFieldListener(mInvoker) {
 			@Override
 			protected void onChange(String newText) {
 				mActorEditor.setName(newText);
 			}
 		};
+		mWidgets.info.name = mUiFactory.addTextField("Name", Messages.replaceName(Messages.Editor.NAME_FIELD_DEFAULT, getResourceTypeName()),
+				listener, mWidgets.info.table, mDisabledWhenPublished);
 
-		mWidgets.info.table.row();
-		label = new Label("Description", mStyles.label.standard);
-		mWidgets.info.table.add(label);
 
-		mWidgets.info.table.row().setAlign(Horizontal.LEFT, Vertical.TOP);
-		textField = new TextField("", mStyles.textField.standard);
-		mDisabledWhenPublished.add(textField);
-		textField.setMaxLength(Config.Editor.DESCRIPTION_LENGTH_MAX);
-		mWidgets.info.table.add(textField).setSize(width, (int) (Gdx.graphics.getHeight() * 0.5f));
-		mWidgets.info.description = textField;
-		new TooltipListener(textField, Messages.replaceName(Messages.Tooltip.Actor.Option.DESCRIPTION, getResourceTypeName()));
-		new TextFieldListener(textField, "Write a short description about the " + getResourceTypeName() + "...", mInvoker) {
+		// Description
+		listener = new TextFieldListener(mInvoker) {
 			@Override
 			protected void onChange(String newText) {
 				mActorEditor.setDescription(newText);
 			}
 		};
+		mWidgets.info.description = mUiFactory.addTextArea("Description",
+				Messages.replaceName(Messages.Editor.DESCRIPTION_FIELD_DEFAULT, getResourceTypeName()), listener, mWidgets.info.table,
+				mDisabledWhenPublished);
 	}
 
 	@Override
@@ -219,7 +205,7 @@ public abstract class ActorGui extends EditorGui {
 		AlignTable table = mWidgets.visual.table;
 
 		// Starting angle
-		mUiFactory.addLabelSection("Starting Direction", table, null);
+		mUiFactory.addPanelSection("Starting Direction", table, null);
 		SliderListener sliderListener = new SliderListener() {
 			@Override
 			protected void onChange(float newValue) {
@@ -231,7 +217,7 @@ public abstract class ActorGui extends EditorGui {
 
 
 		// Rotation speed
-		mUiFactory.addLabelSection("Rotation", table, null);
+		mUiFactory.addPanelSection("Rotation", table, null);
 		sliderListener = new SliderListener() {
 			@Override
 			protected void onChange(float newValue) {
@@ -502,7 +488,7 @@ public abstract class ActorGui extends EditorGui {
 	 */
 	protected void initCollision() {
 		// Collision damage
-		mUiFactory.addLabelSection("Collision Damage", mWidgets.collision.table, null);
+		mUiFactory.addPanelSection("Collision Damage", mWidgets.collision.table, null);
 		SliderListener sliderListener = new SliderListener() {
 			@Override
 			protected void onChange(float newValue) {
@@ -515,7 +501,7 @@ public abstract class ActorGui extends EditorGui {
 
 
 		// Collision destroy
-		mUiFactory.addLabelSection("Collision Destruction", mWidgets.collision.table, null);
+		mUiFactory.addPanelSection("Collision Destruction", mWidgets.collision.table, null);
 		ButtonListener buttonListener = new ButtonListener() {
 			@Override
 			protected void onChecked(boolean checked) {
