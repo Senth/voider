@@ -11,9 +11,7 @@ import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.voider.utils.Pools;
 
 /**
- * Wrapper for a cell.
- * Contains both the actor in the cell and align information
- * 
+ * Wrapper for a cell. Contains both the actor in the cell and align information
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class Cell implements Poolable {
@@ -66,7 +64,8 @@ public class Cell implements Poolable {
 	 * Sets if the cell should be of box shape
 	 * @param boxShaped set to true to make the actor be shaped as a box
 	 * @return this cell for chaining
-	 * @throw UnsupportedOperationException if {@link #setKeepAspectRatio(boolean)} is used
+	 * @throw UnsupportedOperationException if {@link #setKeepAspectRatio(boolean)} is
+	 *        used
 	 */
 	public Cell setBoxShaped(boolean boxShaped) {
 		if (mKeepAspectRatio) {
@@ -167,32 +166,32 @@ public class Cell implements Poolable {
 	}
 
 	/**
-	 * @return padding to the left of this cell. If dynamic padding is on this
-	 * will return the scaled padding instead.
+	 * @return padding to the left of this cell. If dynamic padding is on this will return
+	 *         the scaled padding instead.
 	 */
 	public float getPadLeft() {
 		return mPadding.left;
 	}
 
 	/**
-	 * @return padding to the right of this cell. If dynamic padding is on this
-	 * will return the scaled padding instead.
+	 * @return padding to the right of this cell. If dynamic padding is on this will
+	 *         return the scaled padding instead.
 	 */
 	public float getPadRight() {
 		return mPadding.right;
 	}
 
 	/**
-	 * @return padding to the top of this cell. If dynamic padding is on this
-	 * will return the scaled padding instead.
+	 * @return padding to the top of this cell. If dynamic padding is on this will return
+	 *         the scaled padding instead.
 	 */
 	public float getPadTop() {
 		return mPadding.top;
 	}
 
 	/**
-	 * @return padding to the bottom of this cell. If dynamic padding is on this
-	 * will return the scaled padding instead.
+	 * @return padding to the bottom of this cell. If dynamic padding is on this will
+	 *         return the scaled padding instead.
 	 */
 	public float getPadBottom() {
 		return mPadding.bottom;
@@ -200,8 +199,8 @@ public class Cell implements Poolable {
 
 	/**
 	 * Sets the size of the cell.
-	 * @note That this will change the preferred size of the cell. Use #resetSize() to reset
-	 * the size to the actual preferred size
+	 * @note That this will change the preferred size of the cell. Use #resetSize() to
+	 *       reset the size to the actual preferred size
 	 * @param width new fixed width of the cell
 	 * @param height new fixed height of the cell
 	 * @return this cell for chaining
@@ -210,16 +209,15 @@ public class Cell implements Poolable {
 	 * @see #resetSize()
 	 */
 	public Cell setSize(float width, float height) {
-		mActor.setSize(width, height);
-		mFixedSize = true;
+		setWidth(width);
+		setHeight(height);
 		return this;
 	}
 
 	/**
-	 * Sets the width of the cell.
-	 * Does not change the preferred width.
-	 * @note That this will change the preferred size of the cell. Use #resetSize() to reset
-	 * the size to the actual preferred size
+	 * Sets the width of the cell. Does not change the preferred width.
+	 * @note That this will change the preferred size of the cell. Use #resetSize() to
+	 *       reset the size to the actual preferred size
 	 * @param width new width of the cell.
 	 * @return this cell for chaining.
 	 * @see #setSize(float, float)
@@ -229,16 +227,16 @@ public class Cell implements Poolable {
 	public Cell setWidth(float width) {
 		if (mActor != null) {
 			mActor.setWidth(width);
-			mFixedSize = true;
+			mFixedWidth = true;
 		}
 		return this;
 	}
 
 	/**
-	 * Sets the height of the cell. Don't use this together with scaling!
-	 * Does not change the preferred height.
-	 * @note That this will change the preferred size of the cell. Use #resetSize() to reset
-	 * the size to the actual preferred size
+	 * Sets the height of the cell. Don't use this together with scaling! Does not change
+	 * the preferred height.
+	 * @note That this will change the preferred size of the cell. Use #resetSize() to
+	 *       reset the size to the actual preferred size
 	 * @param height new height of the cell.
 	 * @return this cell for chaining
 	 * @see #setSize(float, float)
@@ -248,7 +246,7 @@ public class Cell implements Poolable {
 	public Cell setHeight(float height) {
 		if (mActor != null) {
 			mActor.setHeight(height);
-			mFixedSize = true;
+			mFixedHeight = true;
 		}
 		return this;
 	}
@@ -261,19 +259,49 @@ public class Cell implements Poolable {
 	 * @see #setHeight(float)
 	 */
 	public Cell resetSize() {
-		mFixedSize = false;
+		resetHeight();
+		resetWidth();
+		return this;
+	}
+
+	/**
+	 * Resets the height of the cell to the original preferred size
+	 * @return this cell for chaining
+	 */
+	public Cell resetHeight() {
+		mFixedHeight = false;
 		if (mActor instanceof Layout) {
-			mActor.setSize(((Layout) mActor).getPrefWidth(), ((Layout) mActor).getPrefHeight());
+			mActor.setHeight(((Layout) mActor).getPrefHeight());
 		}
 		return this;
 	}
 
 	/**
-	 * @return true if this cell is of fixed size. I.e. it has changed
-	 * its size externally.
+	 * Resets the width of the cell to the original preferred size
+	 * @return this cell for chaining
 	 */
-	boolean isFixedSize() {
-		return mFixedSize;
+	public Cell resetWidth() {
+		mFixedWidth = false;
+		if (mActor instanceof Layout) {
+			mActor.setWidth(((Layout) mActor).getPrefWidth());
+		}
+		return this;
+	}
+
+	/**
+	 * @return true if this cell has fixed width. I.e. it has changed its width
+	 *         externally.
+	 */
+	boolean isFixedWidth() {
+		return mFixedWidth;
+	}
+
+	/**
+	 * @return true if this cell has fixed height. I.e. it has changed its height
+	 *         externally.
+	 */
+	boolean isFixedHeight() {
+		return mFixedHeight;
 	}
 
 	/**
@@ -316,8 +344,8 @@ public class Cell implements Poolable {
 	}
 
 	/**
-	 * Sets if the cell shall fill the remaining height of the row.
-	 * This works for all cells in the row.
+	 * Sets if the cell shall fill the remaining height of the row. This works for all
+	 * cells in the row.
 	 * @param fillHeight true if the cell shall fill the remaining height of the row.
 	 * @return this cell for chaining
 	 */
@@ -357,8 +385,8 @@ public class Cell implements Poolable {
 	}
 
 	/**
-	 * Sets the actor for the cell. Resizes the actor to the preferred
-	 * size if its of size 0.
+	 * Sets the actor for the cell. Resizes the actor to the preferred size if its of size
+	 * 0.
 	 * @param actor the actor for the cell
 	 * @return this cell for chaining
 	 */
@@ -382,10 +410,10 @@ public class Cell implements Poolable {
 	 */
 	float getPrefWidth() {
 		if (mActor instanceof Layout) {
-			if (mFixedSize) {
+			if (mFixedWidth) {
 				return mActor.getWidth() + mPadding.left + mPadding.right;
 			} else {
-				return ((Layout)mActor).getPrefWidth() + mPadding.left + mPadding.right;
+				return ((Layout) mActor).getPrefWidth() + mPadding.left + mPadding.right;
 			}
 		} else {
 			return mPadding.left + mPadding.right;
@@ -397,11 +425,10 @@ public class Cell implements Poolable {
 	 */
 	float getPrefHeight() {
 		if (mActor instanceof Layout) {
-			if (mFixedSize) {
+			if (mFixedHeight) {
 				return mActor.getHeight() + mPadding.top + mPadding.bottom;
-			}
-			else {
-				return ((Layout)mActor).getPrefHeight() + mPadding.top + mPadding.bottom;
+			} else {
+				return ((Layout) mActor).getPrefHeight() + mPadding.top + mPadding.bottom;
 			}
 		} else {
 			return mPadding.top + mPadding.bottom;
@@ -410,10 +437,12 @@ public class Cell implements Poolable {
 
 	/**
 	 * Sets the cell to keep it's aspect ratio
-	 * @param keepAspectRatio true if the cell should keep it's aspect ratio, false otherwise
+	 * @param keepAspectRatio true if the cell should keep it's aspect ratio, false
+	 *        otherwise
 	 * @return this for chaining
-	 * @throw UnsupportedOperationExecption if {@link #setBoxShaped(boolean)}, or both {@link #setFillHeight(boolean)}
-	 * and {@link #setFillWidth(boolean)} is enabled.
+	 * @throw UnsupportedOperationExecption if {@link #setBoxShaped(boolean)}, or both
+	 *        {@link #setFillHeight(boolean)} and {@link #setFillWidth(boolean)} is
+	 *        enabled.
 	 */
 	public Cell setKeepAspectRatio(boolean keepAspectRatio) {
 		if (mBoxShape) {
@@ -435,10 +464,9 @@ public class Cell implements Poolable {
 		}
 
 		if (mActor instanceof AlignTable) {
-			((AlignTable)mActor).calculatePreferredSize();
-		}
-		else if (mActor instanceof Layout) {
-			((Layout)mActor).validate();
+			((AlignTable) mActor).calculatePreferredSize();
+		} else if (mActor instanceof Layout) {
+			((Layout) mActor).validate();
 		}
 
 		if (mBoxShape && !mFillWidth && !mFillHeight) {
@@ -448,7 +476,7 @@ public class Cell implements Poolable {
 
 		if (mKeepAspectRatio) {
 			if (mActor instanceof Layout) {
-				mAspectRatio = ((Layout) mActor).getPrefWidth() / ((Layout)mActor).getPrefHeight();
+				mAspectRatio = ((Layout) mActor).getPrefWidth() / ((Layout) mActor).getPrefHeight();
 			} else {
 				mAspectRatio = mActor.getWidth() / mActor.getHeight();
 			}
@@ -469,16 +497,16 @@ public class Cell implements Poolable {
 	}
 
 	/**
-	 * Updates the size of the cell. Used when setting size depending for fill
-	 * width or height. This does not set it as fixed, in fact it will not update
-	 * the size if the cell is set as fixed.
+	 * Updates the size of the cell. Used when setting size depending for fill width or
+	 * height. This does not set it as fixed, in fact it will not update the size if the
+	 * cell is set as fixed.
 	 * @param width new width of the cell
 	 * @param height new height of the cell
 	 */
 	void updateSize(float width, float height) {
-		if (!mFixedSize && mActor != null) {
-			float actorWidth = width - getPadLeft() - getPadRight();
-			float actorHeight = height - getPadBottom() - getPadTop();
+		if (mActor != null) {
+			float actorWidth = mFixedWidth ? mActor.getWidth() : width - getPadLeft() - getPadRight();
+			float actorHeight = mFixedHeight ? mActor.getHeight() : height - getPadBottom() - getPadTop();
 
 			if (mActor instanceof AlignTable) {
 				((AlignTable) mActor).updateSize(actorWidth, actorHeight);
@@ -558,7 +586,7 @@ public class Cell implements Poolable {
 			offset.y = startPos.y + (availableSize.y - mActor.getHeight() + getPadBottom() - getPadTop()) * 0.5f;
 		}
 
-		mActor.setPosition((int)offset.x, (int)offset.y);
+		mActor.setPosition((int) offset.x, (int) offset.y);
 
 		if (mActor instanceof AlignTable) {
 			((AlignTable) mActor).layout();
@@ -591,7 +619,8 @@ public class Cell implements Poolable {
 	}
 
 	/**
-	 * @return the name of the actor inside, null if no actor is inside or no name has been set
+	 * @return the name of the actor inside, null if no actor is inside or no name has
+	 *         been set
 	 */
 	String getName() {
 		if (mActor != null) {
@@ -612,7 +641,7 @@ public class Cell implements Poolable {
 	/**
 	 * @return actor of the cell
 	 */
-	Actor getActor() {
+	public Actor getActor() {
 		return mActor;
 	}
 
@@ -635,8 +664,10 @@ public class Cell implements Poolable {
 	private boolean mFillHeight = false;
 	/** Old height before filling the height */
 	private float mHeightBeforeFill = 0;
-	/** If the cell uses fixed size */
-	private boolean mFixedSize = false;
+	/** If the cell uses fixed height */
+	private boolean mFixedHeight = false;
+	/** If the cell uses fixed width */
+	private boolean mFixedWidth = false;
 	/** If the cell should be of box shape */
 	private boolean mBoxShape = false;
 	/** If the cell should keep the aspect ratio when resizing */

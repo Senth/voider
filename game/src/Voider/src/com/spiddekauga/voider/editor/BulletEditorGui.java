@@ -7,7 +7,7 @@ import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.SliderListener;
-import com.spiddekauga.utils.scene.ui.UiPanelFactory.SliderMinMaxWrapper;
+import com.spiddekauga.utils.scene.ui.UiFactory.SliderMinMaxWrapper;
 import com.spiddekauga.voider.Config.Editor.Weapon;
 import com.spiddekauga.voider.resources.SkinNames;
 

@@ -2,7 +2,6 @@ package com.spiddekauga.utils.scene.ui;
 
 import java.util.ArrayList;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
@@ -15,6 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider.SliderStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.TextArea;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
@@ -28,12 +28,46 @@ import com.spiddekauga.voider.resources.SkinNames.ISkinNames;
  * class gets its default settings from general.json
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public class UiPanelFactory {
+public class UiFactory {
 	/**
 	 * Creates an empty UI Factory. Call {@link #init()} to initialize all styles
 	 */
-	public UiPanelFactory() {
-		// Does nothing
+	private UiFactory() {
+		// does nothing
+	}
+
+	/**
+	 * @return instance of the UiFactory
+	 */
+	public static UiFactory getInstance() {
+		if (mInstance == null) {
+			mInstance = new UiFactory();
+		}
+		return mInstance;
+	}
+
+	/**
+	 * Add a text button to a table and set it to the default size
+	 * @param text the text that should be shown in the text button
+	 * @param style which button style to use
+	 * @param table the table to add the text button to
+	 * @param listener optional button listener
+	 * @param createdActors optional adds the button to this list (if not null)
+	 * @return created text button cell
+	 */
+	public Cell addTextButton(String text, TextButtonStyles style, AlignTable table, ButtonListener listener, ArrayList<Actor> createdActors) {
+		TextButton button = new TextButton(text, style.getStyle());
+
+		Cell cell = table.add(button);
+		cell.setSize(mStyles.vars.textButtonWidth, mStyles.vars.textButtonHeight);
+
+		if (listener != null) {
+			listener.setButton(button);
+		}
+
+		doExtraActionsOnActors(null, null, createdActors, button);
+
+		return cell;
 	}
 
 	/**
@@ -371,23 +405,28 @@ public class UiPanelFactory {
 	}
 
 	/**
+	 * @return true if the UiFactory has been initialized
+	 */
+	public boolean isInitialized() {
+		return mInitialized;
+	}
+
+	/**
 	 * Initializes the UiFactory
 	 */
 	public void init() {
+		if (mInitialized) {
+			return;
+		}
+
 		mStyles = new UiStyles();
 
-		mStyles.textButton.press = SkinNames.getResource(SkinNames.General.TEXT_BUTTON_PRESS);
-		mStyles.textButton.toggle = SkinNames.getResource(SkinNames.General.TEXT_BUTTON_TOGGLE);
-		mStyles.textButton.selected = SkinNames.getResource(SkinNames.General.TEXT_BUTTON_SELECTED);
 		mStyles.slider.standard = SkinNames.getResource(SkinNames.General.SLIDER_DEFAULT);
 		mStyles.textField.standard = SkinNames.getResource(SkinNames.General.TEXT_FIELD_DEFAULT);
 		mStyles.label.standard = SkinNames.getResource(SkinNames.General.LABEL_DEFAULT);
 		mStyles.label.panelSection = SkinNames.getResource(SkinNames.General.LABEL_PANEL_SECTION);
 		mStyles.checkBox.checkBox = SkinNames.getResource(SkinNames.General.CHECK_BOX_DEFAULT);
 		mStyles.checkBox.radio = SkinNames.getResource(SkinNames.General.CHECK_BOX_RADIO);
-
-		// Colors
-		mStyles.colors.widgetBackground = SkinNames.getResource(SkinNames.GeneralVars.WIDGET_BACKGROUND_COLOR);
 
 		// Vars
 		mStyles.vars.paddingCheckBox = SkinNames.getResource(SkinNames.GeneralVars.PADDING_CHECKBOX);
@@ -398,6 +437,42 @@ public class UiPanelFactory {
 		mStyles.vars.sliderLabelWidth = SkinNames.getResource(SkinNames.GeneralVars.SLIDER_LABEL_WIDTH);
 		mStyles.vars.rowHeight = SkinNames.getResource(SkinNames.GeneralVars.ICON_ROW_HEIGHT);
 		mStyles.vars.textAreaHeight = SkinNames.getResource(SkinNames.GeneralVars.TEXT_AREA_HEIGHT);
+		mStyles.vars.textButtonHeight = SkinNames.getResource(SkinNames.GeneralVars.TEXT_BUTTON_HEIGHT);
+		mStyles.vars.textButtonWidth = SkinNames.getResource(SkinNames.GeneralVars.TEXT_BUTTON_WIDTH);
+
+		// Text buttons
+		TextButtonStyles.PRESS.setStyle((TextButtonStyle) SkinNames.getResource(SkinNames.General.TEXT_BUTTON_FLAT_PRESS));
+		TextButtonStyles.TOGGLE.setStyle((TextButtonStyle) SkinNames.getResource(SkinNames.General.TEXT_BUTTON_FLAT_TOGGLE));
+	}
+
+	/**
+	 * Different text button styles
+	 */
+	public enum TextButtonStyles {
+		/** Can be pressed */
+		PRESS,
+		/** Can be toggled/checked */
+		TOGGLE,
+
+		;
+
+		/**
+		 * Set the Scene2D text button style
+		 * @param style the text button style
+		 */
+		private void setStyle(TextButtonStyle style) {
+			mStyle = style;
+		}
+
+		/**
+		 * @return get the text button style associated with this enumeration
+		 */
+		private TextButtonStyle getStyle() {
+			return mStyle;
+		}
+
+		/** The style variable */
+		private TextButtonStyle mStyle = null;
 	}
 
 	/**
@@ -472,13 +547,11 @@ public class UiPanelFactory {
 	 */
 	@SuppressWarnings("javadoc")
 	private static class UiStyles {
-		TextButtons textButton = new TextButtons();
 		Sliders slider = new Sliders();
 		TextFields textField = new TextFields();
 		Labels label = new Labels();
 		CheckBoxes checkBox = new CheckBoxes();
 		Variables vars = new Variables();
-		Colors colors = new Colors();
 
 		static class Variables {
 			float textFieldNumberWidth = 0;
@@ -489,16 +562,8 @@ public class UiPanelFactory {
 			float rowHeight = 0;
 			float textAreaHeight = 0;
 			float textFieldWidth = 0;
-		}
-
-		static class Colors {
-			Color widgetBackground = null;
-		}
-
-		static class TextButtons {
-			TextButtonStyle press = null;
-			TextButtonStyle toggle = null;
-			TextButtonStyle selected = null;
+			float textButtonHeight = 0;
+			float textButtonWidth = 0;
 		}
 
 		static class Sliders {
@@ -520,6 +585,10 @@ public class UiPanelFactory {
 		}
 	}
 
+	/** If the factory has been initialized */
+	private boolean mInitialized = false;
 	/** All skins and styles */
 	private UiStyles mStyles = null;
+	/** Instance of the Ui Factory */
+	private static UiFactory mInstance = null;
 }

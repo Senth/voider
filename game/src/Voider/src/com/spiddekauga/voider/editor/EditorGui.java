@@ -37,7 +37,6 @@ import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.utils.scene.ui.DisableListener;
 import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
 import com.spiddekauga.utils.scene.ui.TooltipListener;
-import com.spiddekauga.utils.scene.ui.UiPanelFactory;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.editor.commands.CEditorDuplicate;
 import com.spiddekauga.voider.editor.commands.CEditorLoad;
@@ -104,8 +103,6 @@ public abstract class EditorGui extends Gui {
 	@Override
 	public void initGui() {
 		super.initGui();
-
-		mUiFactory.init();
 
 		if (mEditorMenu.getStage() == null) {
 			getStage().addActor(mEditorMenu);
@@ -887,9 +884,6 @@ public abstract class EditorGui extends Gui {
 
 	/** All skins and styles */
 	protected UiStyles mStyles = new UiStyles();
-	/** UI Factory for creating UI elements */
-	protected UiPanelFactory mUiFactory = new UiPanelFactory();
-
 	/** UI elements that should be disabled during publish */
 	protected ArrayList<Actor> mDisabledWhenPublished = new ArrayList<>();
 	/** Enemy highlight button */

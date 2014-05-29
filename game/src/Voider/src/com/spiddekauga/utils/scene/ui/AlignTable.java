@@ -387,6 +387,8 @@ public class AlignTable extends WidgetGroup implements Disposable {
 			addActor(actor);
 		}
 
+		invalidateHierarchy();
+
 		return newCell;
 	}
 

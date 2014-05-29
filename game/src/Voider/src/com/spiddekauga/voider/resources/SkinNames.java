@@ -375,7 +375,7 @@ public class SkinNames {
 		WIDGET_BACKGROUND_COLOR(Color.class),
 		/** Tag widget in explore and loading screen */
 		TAG_BAR_WIDTH(Float.class),
-		/** Stardard icon and thus row height */
+		/** Standard icon and thus row height */
 		ICON_ROW_HEIGHT(Float.class),
 		/** Second of fade in for the wait window */
 		WAIT_WINDOW_FADE_IN(Float.class),
@@ -383,6 +383,10 @@ public class SkinNames {
 		WAIT_WINDOW_FADE_OUT(Float.class),
 		/** Text area height */
 		TEXT_AREA_HEIGHT(Float.class),
+		/** Defult text button height */
+		TEXT_BUTTON_HEIGHT(Float.class),
+		/** Default text button width */
+		TEXT_BUTTON_WIDTH(Float.class),
 		/** Width of text fields with numbers in them */
 		TEXT_FIELD_NUMBER_WIDTH(Float.class),
 		/** Default text field width */

@@ -77,6 +77,10 @@ java.lang.Float: {
 	icon_row_height: {value: 32},
 	// Height of upper and lower bars.
 	bar_upper_lower_height: {value: 40},	
+	// Text button height
+	text_button_height: {value: 40},
+	// Default text button width
+	text_button_width: {value: 120},
 	
 	/* Other */
 

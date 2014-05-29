@@ -30,6 +30,7 @@ import com.spiddekauga.utils.scene.ui.AnimationWidget.AnimationWidgetStyle;
 import com.spiddekauga.utils.scene.ui.MessageShower;
 import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
+import com.spiddekauga.utils.scene.ui.UiFactory;
 import com.spiddekauga.voider.editor.commands.CBugReportSend;
 import com.spiddekauga.voider.editor.commands.CGameQuit;
 import com.spiddekauga.voider.repo.InternalNames;
@@ -395,6 +396,10 @@ public abstract class Gui implements Disposable {
 			mMainTable.setAlignTable(Horizontal.RIGHT, Vertical.TOP);
 		}
 
+		if (!mUiFactory.isInitialized() && ResourceCacheFacade.isLoaded(InternalNames.UI_GENERAL)) {
+			mUiFactory.init();
+		}
+
 		// Message box and wait window
 		MsgBoxExecuter.fadeDuration = 0.01f;
 		if (ResourceCacheFacade.isLoaded(InternalNames.UI_GENERAL) && mMessageShower == null) {
@@ -551,6 +556,8 @@ public abstract class Gui implements Disposable {
 		return mVisible;
 	}
 
+	/** UI Factory for creating UI elements */
+	protected static UiFactory mUiFactory = UiFactory.getInstance();
 	/** If the GUI is visible */
 	private boolean mVisible = true;
 	/** Main table for the layout */

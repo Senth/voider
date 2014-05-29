@@ -6,12 +6,15 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.spiddekauga.utils.commands.Command;
 import com.spiddekauga.utils.scene.ui.AlignTable;
+import com.spiddekauga.utils.scene.ui.Cell;
+import com.spiddekauga.utils.scene.ui.UiFactory;
+import com.spiddekauga.utils.scene.ui.UiFactory.TextButtonStyles;
 
 /**
  * Message box wrapper for dialog. This allows other content than just text.
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class MsgBox extends Dialog {
@@ -22,17 +25,18 @@ public class MsgBox extends Dialog {
 	public MsgBox(Skin skin) {
 		super("", skin);
 		mSkin = skin;
+		init();
 	}
 
 	/**
-	 * Creates a message box with a window style to use from
-	 * the specified skin
+	 * Creates a message box with a window style to use from the specified skin
 	 * @param skin the skin to find the window style in.
 	 * @param windowStyleName name of the window style found in skin
 	 */
 	public MsgBox(Skin skin, String windowStyleName) {
 		super("", skin, windowStyleName);
 		mSkin = skin;
+		init();
 	}
 
 	/**
@@ -41,11 +45,37 @@ public class MsgBox extends Dialog {
 	 */
 	public MsgBox(WindowStyle windowStyle) {
 		super("", windowStyle);
+		init();
 	}
 
 	/**
-	 * Clears the content and button tables.
-	 * Sets message box as modal, non-movable, and keep within stage.
+	 * Initializes the MsgBox
+	 */
+	private void init() {
+		buttonTable.add(mButtonTable);
+
+		defaults().space(0);
+		contentTable.defaults().space(0);
+		buttonTable.defaults().space(0);
+
+		mButtonTable.addListener(new ChangeListener() {
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				if (!values.containsKey(actor)) {
+					return;
+				}
+				result(values.get(actor));
+				if (!cancelHide) {
+					hide();
+				}
+				cancelHide = false;
+			}
+		});
+	}
+
+	/**
+	 * Clears the content and button tables. Sets message box as modal, non-movable, and
+	 * keep within stage.
 	 */
 	@Override
 	public void clear() {
@@ -55,7 +85,8 @@ public class MsgBox extends Dialog {
 		setTitle("");
 		setTitleAlignment(Align.center);
 		contentTable.clearChildren();
-		buttonTable.clearChildren();
+		mButtonTable.dispose();
+		values.clear();
 		clearActions();
 	}
 
@@ -80,8 +111,8 @@ public class MsgBox extends Dialog {
 	}
 
 	/**
-	 * Adds a label to the content table.
-	 * The dialog must have been constructed with a skin to use this method.
+	 * Adds a label to the content table. The dialog must have been constructed with a
+	 * skin to use this method.
 	 * @param text the text to write in the content
 	 * @see #text(String) does exactly the same thing
 	 * @return this message box for chaining
@@ -113,31 +144,32 @@ public class MsgBox extends Dialog {
 	}
 
 	/**
-	 * Adds a label to the content table.
-	 * The dialog must have been constructed with a skin to use this method.
+	 * Invalid, don't call this. Throws an exception. Use {@link #content(String)}
+	 * instead.
 	 */
 	@Override
 	@Deprecated
-	public MsgBox text (String text) {
-		return content(text);
+	public MsgBox text(String text) {
+		throw new IllegalAccessError("This method should never be called, use context() instead");
 	}
 
 	/**
-	 * Invalid, don't call this. Throws an exception
+	 * Invalid, don't call this. Throws an exception. Use
+	 * {@link #content(String, LabelStyle)} instead
 	 */
 	@Override
 	@Deprecated
-	public MsgBox text (String text, com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle labelStyle) {
-		throw new IllegalAccessError("This method should never be called");
+	public MsgBox text(String text, com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle labelStyle) {
+		throw new IllegalAccessError("This method should never be called, use context() instead");
 	}
 
 	/**
-	 * Invalid, don't call this. Throws an exception
+	 * Invalid, don't call this. Throws an exception. Use {@link #content(Actor)} instead
 	 */
 	@Override
 	@Deprecated
-	public MsgBox text (com.badlogic.gdx.scenes.scene2d.ui.Label label) {
-		throw new IllegalAccessError("This method should never be called");
+	public MsgBox text(com.badlogic.gdx.scenes.scene2d.ui.Label label) {
+		throw new IllegalAccessError("This method should never be called, use context() instead");
 	}
 
 	/**
@@ -145,50 +177,65 @@ public class MsgBox extends Dialog {
 	 * @return this message box for chaining
 	 */
 	public MsgBox buttonRow() {
-		buttonTable.row();
+		mButtonTable.row();
 		return this;
 	}
 
 
-	/** Adds a text button to the button table. Null will be passed to {@link #result(Object)} if this button is clicked. The dialog
-	 * must have been constructed with a skin to use this method. */
+	/**
+	 * Adds a text button to the button table. Null will be passed to
+	 * {@link #result(Object)} if this button is clicked. Will use UiFactory to create the
+	 * button
+	 */
 	@Override
-	public MsgBox button (String text) {
+	public MsgBox button(String text) {
 		return button(text, null);
 	}
 
-	/** Adds a text button to the button table. The dialog must have been constructed with a skin to use this method.
-	 * @param object The object that will be passed to {@link #result(Object)} if this button is clicked. May be null. */
+	/**
+	 * Adds a text button to the button table. Will use UiFactory to create the button
+	 * @param object The object that will be passed to {@link #result(Object)} if this
+	 *        button is clicked. May be null.
+	 */
 	@Override
-	public MsgBox button (String text, Object object) {
-		super.button(text, object);
+	public MsgBox button(String text, Object object) {
+		Cell cell = mUiFactory.addTextButton(text, TextButtonStyles.PRESS, mButtonTable, null, null);
+		setObject(cell.getActor(), object);
 		return this;
 	}
 
-	/** Adds a text button to the button table.
-	 * @param object The object that will be passed to {@link #result(Object)} if this button is clicked. May be null. */
+	/**
+	 * Adds a text button to the button table.
+	 * @param object The object that will be passed to {@link #result(Object)} if this
+	 *        button is clicked. May be null.
+	 */
 	@Override
-	public MsgBox button (String text, Object object, TextButtonStyle buttonStyle) {
+	public MsgBox button(String text, Object object, TextButtonStyle buttonStyle) {
 		return button(new TextButton(text, buttonStyle), object);
 	}
 
 	/** Adds the given button to the button table. */
 	@Override
-	public MsgBox button (Button button) {
+	public MsgBox button(Button button) {
 		return button(button, null);
 	}
 
-	/** Adds the given button to the button table.
-	 * @param object The object that will be passed to {@link #result(Object)} if this button is clicked. May be null. */
+	/**
+	 * Adds the given button to the button table.
+	 * @param object The object that will be passed to {@link #result(Object)} if this
+	 *        button is clicked. May be null.
+	 */
 	@Override
-	public MsgBox button (Button button, Object object) {
-		super.button(button, object);
+	public MsgBox button(Button button, Object object) {
+		mButtonTable.add(button);
+		setObject(button, object);
 		return this;
 	}
 
 	/** {@link #pack() Packs} the dialog and adds it to the stage, centered. */
 	@Override
-	public MsgBox show (Stage stage) {
+	public MsgBox show(Stage stage) {
+		mButtonTable.layout();
 		super.show(stage);
 		mHiding = false;
 		return this;
@@ -223,7 +270,7 @@ public class MsgBox extends Dialog {
 	 * Add a cancel button and keys.
 	 * @param buttonText text for the cancel button
 	 * @param cancelCommand this command shall return true in execute if the message box
-	 * is allowed to cancel.
+	 *        is allowed to cancel.
 	 * @return this message box for chaining
 	 * @see #addCancelButtonAndKeys()
 	 */
@@ -238,7 +285,7 @@ public class MsgBox extends Dialog {
 	 * Add a cancel button and keys.
 	 * @param buttonText text for the cancel button
 	 * @param cancelCommand this command shall return true in execute if the message box
-	 * is allowed to cancel.
+	 *        is allowed to cancel.
 	 * @return this message box for chaining
 	 * @see #addCancelButtonAndKeys()
 	 */
@@ -266,8 +313,12 @@ public class MsgBox extends Dialog {
 		}
 	}
 
+	/** Button table */
+	private AlignTable mButtonTable = new AlignTable();
 	/** If the message box is hiding */
 	protected boolean mHiding = false;
 	/** Skin of the message box */
 	protected Skin mSkin = null;
+	/** UiFactory */
+	private static UiFactory mUiFactory = UiFactory.getInstance();
 }
