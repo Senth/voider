@@ -12,7 +12,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldFilter;
 import com.badlogic.gdx.scenes.scene2d.utils.FocusListener.FocusEvent;
-import com.spiddekauga.utils.CDelimiter;
 import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.utils.Maths;
 import com.spiddekauga.utils.commands.CGuiSlider;
@@ -20,9 +19,8 @@ import com.spiddekauga.utils.commands.Invoker;
 import com.spiddekauga.voider.Config.Gui;
 
 /**
- * Listener that binds a slider with a textfield.
- * Override #onChange(float) to implement some action  when the value is changed
- * 
+ * Listener that binds a slider with a textfield. Override #onChange(float) to implement
+ * some action when the value is changed
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public abstract class SliderListener implements EventListener {
@@ -66,7 +64,7 @@ public abstract class SliderListener implements EventListener {
 
 		mSlider.addListener(this);
 
-		if(mTextField != null) {
+		if (mTextField != null) {
 			mTextField.setText(Float.toString(mSlider.getValue()));
 			mOldText = mTextField.getText();
 
@@ -97,10 +95,8 @@ public abstract class SliderListener implements EventListener {
 
 		// Skip certain input events
 		if (event instanceof InputEvent) {
-			InputEvent inputEvent = (InputEvent)event;
-			if (inputEvent.getType() == Type.mouseMoved ||
-					inputEvent.getType() == Type.enter ||
-					inputEvent.getType() == Type.exit) {
+			InputEvent inputEvent = (InputEvent) event;
+			if (inputEvent.getType() == Type.mouseMoved || inputEvent.getType() == Type.enter || inputEvent.getType() == Type.exit) {
 				return true;
 			}
 
@@ -108,7 +104,7 @@ public abstract class SliderListener implements EventListener {
 			// changes at the same time
 			if (mInvoker != null) {
 				if (inputEvent.getType() == Type.touchUp) {
-					mInvoker.execute(new CDelimiter());
+					mInvoker.pushDelimiter();
 				}
 			}
 		}
@@ -134,12 +130,11 @@ public abstract class SliderListener implements EventListener {
 				}
 				// key was was pressed
 				else if (event instanceof InputEvent) {
-					InputEvent inputEvent = (InputEvent)event;
+					InputEvent inputEvent = (InputEvent) event;
 					if (inputEvent.getType() == Type.keyDown) {
 						// ESC, BACK, ENTER -> Unfocus
-						if (inputEvent.getKeyCode() == Input.Keys.ENTER ||
-								inputEvent.getKeyCode() == Input.Keys.ESCAPE ||
-								inputEvent.getKeyCode() == Input.Keys.BACK) {
+						if (inputEvent.getKeyCode() == Input.Keys.ENTER || inputEvent.getKeyCode() == Input.Keys.ESCAPE
+								|| inputEvent.getKeyCode() == Input.Keys.BACK) {
 							setTextFieldFromSlider();
 							mTextField.getStage().setKeyboardFocus(null);
 							return true;
@@ -163,7 +158,6 @@ public abstract class SliderListener implements EventListener {
 				else if (mOldText.equals(mTextField.getText())) {
 					return true;
 				}
-
 
 
 				mEditingText = true;
@@ -226,17 +220,20 @@ public abstract class SliderListener implements EventListener {
 	}
 
 	/**
-	 * Sets another slider that always should be less or equal to this slider.
-	 * This will change the other slider's value if this condition isn't met
-	 * @param lesserSlider slider that always shall be less or equal to the internal slider.
+	 * Sets another slider that always should be less or equal to this slider. This will
+	 * change the other slider's value if this condition isn't met
+	 * @param lesserSlider slider that always shall be less or equal to the internal
+	 *        slider.
 	 */
 	public void setLesserSlider(Slider lesserSlider) {
 		mLesserSlider = lesserSlider;
 	}
 
-	/** Sets another slider that always should be greater or equal to this slider.
-	 * This will change the other slider's value if this condition isn't met
-	 * @param greaterSlider slider that always shall be greater or equal to the internal slider.
+	/**
+	 * Sets another slider that always should be greater or equal to this slider. This
+	 * will change the other slider's value if this condition isn't met
+	 * @param greaterSlider slider that always shall be greater or equal to the internal
+	 *        slider.
 	 */
 	public void setGreaterSlider(Slider greaterSlider) {
 		mGreaterSlider = greaterSlider;
@@ -248,8 +245,9 @@ public abstract class SliderListener implements EventListener {
 	 */
 	protected abstract void onChange(float newValue);
 
-	/** Called before the new value is set, this validates the new value
-	 * one extra time. The value has already been clamped and rounded
+	/**
+	 * Called before the new value is set, this validates the new value one extra time.
+	 * The value has already been clamped and rounded
 	 * @param newValue the new value that is to be validated
 	 * @return true if the new range is valid
 	 * @see #setValidatingObject(Object)
@@ -267,7 +265,7 @@ public abstract class SliderListener implements EventListener {
 		if (mPrecision > 0) {
 			mTextField.setText(Float.toString(rounded));
 		} else {
-			mTextField.setText(Integer.toString((int)rounded));
+			mTextField.setText(Integer.toString((int) rounded));
 		}
 		mTextField.setCursorPosition(cursorPosition);
 		mOldText = mTextField.getText();
@@ -275,7 +273,7 @@ public abstract class SliderListener implements EventListener {
 
 	/** Extra optional object used for validating the change */
 	protected Object mValidingObject = null;
-	/**	The slider that was bound */
+	/** The slider that was bound */
 	protected Slider mSlider = null;
 	/** The text the value is bound with */
 	protected TextField mTextField = null;

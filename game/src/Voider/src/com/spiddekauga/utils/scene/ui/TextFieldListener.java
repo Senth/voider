@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent;
 import com.badlogic.gdx.scenes.scene2d.utils.FocusListener.FocusEvent;
 import com.badlogic.gdx.scenes.scene2d.utils.FocusListener.FocusEvent.Type;
 import com.spiddekauga.utils.KeyHelper;
@@ -172,6 +173,9 @@ public class TextFieldListener implements EventListener {
 					mPrevKeystrokeText = mTextField.getText();
 				}
 			}
+		} else if (event instanceof ChangeEvent) {
+			onChange(mTextField.getText());
+			mPrevKeystrokeText = mTextField.getText();
 		}
 
 		return true;

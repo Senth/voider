@@ -1281,6 +1281,11 @@ public class EnemyEditor extends ActorEditor {
 		}
 	}
 
+	@Override
+	public void undoJustCreated() {
+		setEnemyDef(null);
+	}
+
 	/**
 	 * Which selection action we're currently using (when a SelectDefScene is active)
 	 */

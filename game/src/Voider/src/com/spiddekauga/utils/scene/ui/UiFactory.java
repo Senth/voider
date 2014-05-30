@@ -71,20 +71,70 @@ public class UiFactory {
 	}
 
 	/**
+	 * @return last created error label
+	 */
+	public Label getLastCreatedErrorLabel() {
+		return mCreatedErrorLabelLast;
+	}
+
+	/**
+	 * Create an error label.
+	 * @param labelText text to display before the error
+	 * @param labelIsSection set to true if the label is a section (different styles are
+	 *        used for true/false).
+	 * @param table the table to add the error text to
+	 * @param createdActors optional adds all created elements to this list (if not null)
+	 * @return created error label. Can also be accessed via
+	 *         {@link #getLastCreatedErrorLabel()} directly after calling this method.
+	 */
+	public Label addErrorLabel(String labelText, boolean labelIsSection, AlignTable table, ArrayList<Actor> createdActors) {
+		AlignTable wrapTable = new AlignTable();
+		table.add(wrapTable);
+		wrapTable.setMaxWidth(mStyles.vars.textFieldWidth);
+		wrapTable.row().setFillWidth(true);
+
+		Label label = addSection(labelText, wrapTable, null);
+		// Change style to error info
+		if (!labelIsSection) {
+			label.setStyle(mStyles.label.errorSectionInfo);
+		}
+
+		// Add error label
+		mCreatedErrorLabelLast = new Label("", mStyles.label.error);
+		wrapTable.add(mCreatedErrorLabelLast).setFillWidth(true);
+
+		doExtraActionsOnActors(null, null, createdActors, label, mCreatedErrorLabelLast);
+
+		return mCreatedErrorLabelLast;
+	}
+
+	/**
 	 * Adds a text field with an optional label header
-	 * @param labelText optional text for the label, if null no label is added
+	 * @param sectionText optional text for the label, if null no label is added
 	 * @param defaultText default text in the text field
 	 * @param listener text field listener
 	 * @param table the table to add the text field to
 	 * @param createdActors optional adds all created elements to this list (if not null)
+	 * @param errorLabel set to true to create an error label (only works if sectionText
+	 *        isn't null). This label can be accesssed by calling
+	 *        {@link #getLastCreatedErrorLabel()} directly after this method.
 	 * @return Created text field
 	 */
-	public TextField addTextField(String labelText, String defaultText, TextFieldListener listener, AlignTable table, ArrayList<Actor> createdActors) {
+	public TextField addTextField(String sectionText, boolean errorLabel, String defaultText, TextFieldListener listener, AlignTable table,
+			ArrayList<Actor> createdActors) {
 		// Label
-		if (labelText != null) {
-			Label label = addSection(labelText, table, null);
-			doExtraActionsOnActors(null, null, createdActors, label);
+		if (sectionText != null) {
+
+			// If error label, wrap the both labels in another table with fixed width
+			if (errorLabel) {
+				addErrorLabel(sectionText, true, table, createdActors);
+			} else {
+				Label label = addSection(sectionText, table, null);
+				doExtraActionsOnActors(null, null, createdActors, label);
+
+			}
 			table.row();
+
 		}
 
 		TextField textField = new TextField(defaultText, mStyles.textField.standard);
@@ -101,17 +151,17 @@ public class UiFactory {
 
 	/**
 	 * Adds a text area with an optional label header
-	 * @param labelText optional text for the label, if null no label is added
+	 * @param sectionText optional text for the label, if null no label is added
 	 * @param defaultText default text in the text field
 	 * @param listener text field listener
 	 * @param table the table to add the text field to
 	 * @param createdActors optional adds all created elements to this list (if not null)
 	 * @return Created text field
 	 */
-	public TextArea addTextArea(String labelText, String defaultText, TextFieldListener listener, AlignTable table, ArrayList<Actor> createdActors) {
+	public TextArea addTextArea(String sectionText, String defaultText, TextFieldListener listener, AlignTable table, ArrayList<Actor> createdActors) {
 		// Label
-		if (labelText != null) {
-			Label label = addSection(labelText, table, null);
+		if (sectionText != null) {
+			Label label = addSection(sectionText, table, null);
 			doExtraActionsOnActors(null, null, createdActors, label);
 			table.row();
 		}
@@ -425,6 +475,8 @@ public class UiFactory {
 		mStyles.textField.standard = SkinNames.getResource(SkinNames.General.TEXT_FIELD_DEFAULT);
 		mStyles.label.standard = SkinNames.getResource(SkinNames.General.LABEL_DEFAULT);
 		mStyles.label.panelSection = SkinNames.getResource(SkinNames.General.LABEL_PANEL_SECTION);
+		mStyles.label.errorSectionInfo = SkinNames.getResource(SkinNames.General.LABEL_ERROR_SECTION_INFO);
+		mStyles.label.error = SkinNames.getResource(SkinNames.General.LABEL_ERROR);
 		mStyles.checkBox.checkBox = SkinNames.getResource(SkinNames.General.CHECK_BOX_DEFAULT);
 		mStyles.checkBox.radio = SkinNames.getResource(SkinNames.General.CHECK_BOX_RADIO);
 
@@ -577,6 +629,8 @@ public class UiFactory {
 		static class Labels {
 			LabelStyle standard = null;
 			LabelStyle panelSection = null;
+			LabelStyle errorSectionInfo = null;
+			LabelStyle error = null;
 		}
 
 		static class CheckBoxes {
@@ -585,6 +639,8 @@ public class UiFactory {
 		}
 	}
 
+	/** Last created error label */
+	private Label mCreatedErrorLabelLast = null;
 	/** If the factory has been initialized */
 	private boolean mInitialized = false;
 	/** All skins and styles */

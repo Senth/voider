@@ -68,6 +68,10 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 	protected void update(float deltaTime) {
 		super.update(deltaTime);
 
+		if (mActorDef == null) {
+			return;
+		}
+
 		if (mDrawingActor != null && mActorDef.getVisualVars().getShapeType() == ActorShapeTypes.CUSTOM) {
 			mDrawingActor.updateEditor();
 		}
@@ -335,6 +339,10 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 	protected void setActorDef(ActorDef actorDef) {
 		mActorDef = actorDef;
 
+		if (mActorDef == null) {
+			return;
+		}
+
 		((DrawAppendTool) mTools[Tools.DRAW_APPEND.ordinal()]).setActorDef(mActorDef);
 
 		if (mActorDef.getVisualVars().getShapeType() == ActorShapeTypes.CUSTOM) {
@@ -504,6 +512,11 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 				mInputMultiplexer.removeProcessor(mTools[Tools.DELETE.ordinal()]);
 			}
 		}
+	}
+
+	@Override
+	public Def getDef() {
+		return mActorDef;
 	}
 
 	/** The actor type */

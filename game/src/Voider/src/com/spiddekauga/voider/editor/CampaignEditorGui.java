@@ -2,7 +2,6 @@ package com.spiddekauga.voider.editor;
 
 /**
  * Campaign editor GUI
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class CampaignEditorGui extends EditorGui {
@@ -22,6 +21,12 @@ public class CampaignEditorGui extends EditorGui {
 	@Override
 	protected String getResourceTypeName() {
 		return "campaign";
+	}
+
+	@Override
+	public void setInfoNameError(String errorText) {
+		// TODO Auto-generated method stub
+
 	}
 
 }

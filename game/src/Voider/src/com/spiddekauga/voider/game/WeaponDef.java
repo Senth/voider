@@ -9,7 +9,6 @@ import com.spiddekauga.voider.repo.ResourceCacheFacade;
 
 /**
  * Holds all the necessary information about a weapon
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class WeaponDef {
@@ -44,9 +43,9 @@ public class WeaponDef {
 	}
 
 	/**
-	 * Sets the minimum weapon cooldown. If this is equal to the max value set
-	 * through #setCooldownMax(float) it will always have the same cooldown; if not
-	 * it will get a random cooldown between min and max time.
+	 * Sets the minimum weapon cooldown. If this is equal to the max value set through
+	 * #setCooldownMax(float) it will always have the same cooldown; if not it will get a
+	 * random cooldown between min and max time.
 	 * @param minCooldown minimum cooldown.
 	 */
 	public void setCooldownMin(float minCooldown) {
@@ -61,9 +60,9 @@ public class WeaponDef {
 	}
 
 	/**
-	 * Sets the maximum weapon cooldown. If this is equal to the min value set
-	 * through #setCooldownMin(float) it will always have the same cooldown; if not
-	 * it will get a random cooldown between min and max time.
+	 * Sets the maximum weapon cooldown. If this is equal to the min value set through
+	 * #setCooldownMin(float) it will always have the same cooldown; if not it will get a
+	 * random cooldown between min and max time.
 	 * @param maxCooldown maximum cooldown.
 	 */
 	public void setCooldownMax(float maxCooldown) {
@@ -83,7 +82,11 @@ public class WeaponDef {
 	 */
 	public void setBulletActorDef(BulletActorDef bulletActorDef) {
 		mBulletActorDef = bulletActorDef;
-		mBulletActorDefId = bulletActorDef.getId();
+		if (mBulletActorDef != null) {
+			mBulletActorDefId = bulletActorDef.getId();
+		} else {
+			mBulletActorDefId = null;
+		}
 	}
 
 	/**
@@ -125,8 +128,7 @@ public class WeaponDef {
 			if (other.mBulletActorDef != null) {
 				return false;
 			}
-		}
-		else if (!mBulletActorDef.equals(other.mBulletActorDef)) {
+		} else if (!mBulletActorDef.equals(other.mBulletActorDef)) {
 			return false;
 		}
 		if (Float.floatToIntBits(mBulletSpeed) != Float.floatToIntBits(other.mBulletSpeed)) {
@@ -147,13 +149,18 @@ public class WeaponDef {
 	/** Type and visuals of the bullet */
 	private BulletActorDef mBulletActorDef = null;
 	/** Id of the bullet actor */
-	@Tag(104) private UUID mBulletActorDefId = null;
+	@Tag(104)
+	private UUID mBulletActorDefId = null;
 	/** Bullet speed */
-	@Tag(92) private float mBulletSpeed = Editor.Weapon.BULLET_SPEED_DEFAULT;
+	@Tag(92)
+	private float mBulletSpeed = Editor.Weapon.BULLET_SPEED_DEFAULT;
 	/** Damage when bullet hits */
-	@Tag(93) private float mDamage = Editor.Weapon.DAMAGE_DEFAULT;
+	@Tag(93)
+	private float mDamage = Editor.Weapon.DAMAGE_DEFAULT;
 	/** Minimum weapon cooldown */
-	@Tag(94) private float mCooldownMin = Editor.Weapon.COOLDOWN_MIN_DEFAULT;
+	@Tag(94)
+	private float mCooldownMin = Editor.Weapon.COOLDOWN_MIN_DEFAULT;
 	/** Maximum weapon cooldown */
-	@Tag(95) private float mCooldownMax = Editor.Weapon.COOLDOWN_MAX_DEFAULT;
+	@Tag(95)
+	private float mCooldownMax = Editor.Weapon.COOLDOWN_MAX_DEFAULT;
 }

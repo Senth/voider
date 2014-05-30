@@ -1,7 +1,6 @@
 package com.spiddekauga.voider.editor;
 
 import com.badlogic.gdx.math.Vector2;
-import com.spiddekauga.utils.commands.Invoker;
 import com.spiddekauga.voider.game.actors.ActorShapeTypes;
 
 /**
@@ -10,11 +9,6 @@ import com.spiddekauga.voider.game.actors.ActorShapeTypes;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public interface IActorEditor extends IEditor {
-	/**
-	 * @return Invoker for undo/redo
-	 */
-	Invoker getInvoker();
-
 	// ------------- File Menu ----------------
 
 	/**

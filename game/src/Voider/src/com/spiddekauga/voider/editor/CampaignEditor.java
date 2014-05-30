@@ -116,4 +116,16 @@ public class CampaignEditor extends Editor {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public void undoJustCreated() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public Def getDef() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

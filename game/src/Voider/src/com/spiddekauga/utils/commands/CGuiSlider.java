@@ -1,10 +1,10 @@
 package com.spiddekauga.utils.commands;
 
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 
 /**
  * Changes the value of a slider.
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class CGuiSlider extends CGui implements ICommandCombinable {
@@ -42,6 +42,7 @@ public class CGuiSlider extends CGui implements ICommandCombinable {
 		boolean success = setTemporaryName(mSlider);
 		if (success) {
 			mSlider.setValue(mNewValue);
+			mSlider.fire(new ChangeListener.ChangeEvent());
 			setOriginalName(mSlider);
 			return true;
 		} else {

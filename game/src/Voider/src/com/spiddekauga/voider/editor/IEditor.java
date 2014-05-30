@@ -2,13 +2,21 @@ package com.spiddekauga.voider.editor;
 
 import java.util.ArrayList;
 
+import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.physics.box2d.World;
 import com.spiddekauga.utils.commands.Command;
+import com.spiddekauga.utils.commands.Invoker;
 import com.spiddekauga.voider.resources.Def;
 
 /**
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public interface IEditor {
+	/**
+	 * @return Invoker for undo/redo
+	 */
+	Invoker getInvoker();
+
 	/**
 	 * Creates a new definition in the current editor
 	 */
@@ -60,6 +68,17 @@ public interface IEditor {
 	 */
 	boolean isPublished();
 
+	/**
+	 * @return true if the resource was just created (i.e. it hasn't been saved at all
+	 *         yet)
+	 */
+	boolean isJustCreated();
+
+	/**
+	 * Undo the just created resource, this will show the menu again
+	 */
+	void undoJustCreated();
+
 
 	// ------------ Definition --------------
 	/**
@@ -83,4 +102,44 @@ public interface IEditor {
 	 * @return description of the actor
 	 */
 	String getDescription();
+
+	/**
+	 * @return definition
+	 */
+	Def getDef();
+
+	// ------------ Camera/World ----------------
+	/**
+	 * @return world of the current scene
+	 */
+	World getWorld();
+
+	/**
+	 * @return camera of the current scene
+	 */
+	Camera getCamera();
+
+	// ------------ Grid ----------------
+	/**
+	 * Make the grid render above all resources
+	 * @param above set to true to render the grid above all resources, false to render
+	 *        below
+	 */
+	void setGridRenderAboveResources(boolean above);
+
+	/**
+	 * @return true if the grid is rendered above all resources, false if below
+	 */
+	boolean isGridRenderAboveResources();
+
+	/**
+	 * Turn on or off the grid
+	 * @param on true if the grid shall be turned on, false if turned off
+	 */
+	void setGrid(boolean on);
+
+	/**
+	 * @return true if the grid is turned on, false if off.
+	 */
+	boolean isGridOn();
 }

@@ -4,26 +4,25 @@ import java.util.ArrayList;
 
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
-import com.spiddekauga.utils.commands.Invoker;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.Background;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.utils.scene.ui.HideListener;
-import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
 import com.spiddekauga.utils.scene.ui.SliderListener;
 import com.spiddekauga.utils.scene.ui.TabWidget;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
 import com.spiddekauga.utils.scene.ui.UiFactory.TabImageWrapper;
 import com.spiddekauga.utils.scene.ui.UiFactory.TabWrapper;
+import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Editor;
 import com.spiddekauga.voider.Config.Editor.Enemy;
 import com.spiddekauga.voider.editor.IActorEditor.Tools;
 import com.spiddekauga.voider.editor.commands.CActorEditorCenterReset;
-import com.spiddekauga.voider.editor.commands.CDefHasValidName;
 import com.spiddekauga.voider.game.actors.ActorShapeTypes;
 import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.resources.SkinNames.EditorIcons;
@@ -40,7 +39,7 @@ public abstract class ActorGui extends EditorGui {
 	public void dispose() {
 		mWidgets.visual.table.dispose();
 		mWidgets.collision.table.dispose();
-		mWidgets.info.table.dispose();
+		mInfoTable.dispose();
 
 		mDrawToolHider.dispose();
 		mWidgets.collision.hider.dispose();
@@ -150,18 +149,18 @@ public abstract class ActorGui extends EditorGui {
 	 * @param actorEditor editor bound to this GUI
 	 */
 	protected void setActorEditor(IActorEditor actorEditor) {
+		setEditor(actorEditor);
 		mActorEditor = actorEditor;
-		mInvoker = mActorEditor.getInvoker();
 	}
 
 	/**
 	 * Initializes actor options
 	 */
 	protected void initInfoTable() {
-		mWidgets.info.table.setName("info-table");
-		mWidgets.info.table.setAlignTable(Horizontal.LEFT, Vertical.TOP);
-		mWidgets.info.table.setAlignRow(Horizontal.LEFT, Vertical.MIDDLE);
-		mWidgets.info.table.setPadding(mStyles.vars.paddingInner);
+		mInfoTable.setName("info-table");
+		mInfoTable.setAlignTable(Horizontal.LEFT, Vertical.TOP);
+		mInfoTable.setAlignRow(Horizontal.LEFT, Vertical.MIDDLE);
+		mInfoTable.setPadding(mStyles.vars.paddingInner);
 		TextFieldListener listener;
 
 
@@ -172,8 +171,10 @@ public abstract class ActorGui extends EditorGui {
 				mActorEditor.setName(newText);
 			}
 		};
-		mWidgets.info.name = mUiFactory.addTextField("Name", Messages.replaceName(Messages.Editor.NAME_FIELD_DEFAULT, getResourceTypeName()),
-				listener, mWidgets.info.table, mDisabledWhenPublished);
+		mWidgets.info.name = mUiFactory.addTextField("Name", true, Messages.replaceName(Messages.Editor.NAME_FIELD_DEFAULT, getResourceTypeName()),
+				listener, mInfoTable, mDisabledWhenPublished);
+		mWidgets.info.name.setMaxLength(Config.Editor.NAME_LENGTH_MAX);
+		mWidgets.info.nameError = mUiFactory.getLastCreatedErrorLabel();
 
 
 		// Description
@@ -184,17 +185,7 @@ public abstract class ActorGui extends EditorGui {
 			}
 		};
 		mWidgets.info.description = mUiFactory.addTextArea("Description",
-				Messages.replaceName(Messages.Editor.DESCRIPTION_FIELD_DEFAULT, getResourceTypeName()), listener, mWidgets.info.table,
-				mDisabledWhenPublished);
-	}
-
-	@Override
-	protected void showInfoDialog() {
-		MsgBoxExecuter msgBox = getFreeMsgBox(true);
-		msgBox.setTitle("Info");
-		msgBox.content(mWidgets.info.table);
-		msgBox.addCancelOkButtonAndKeys("OK", new CDefHasValidName(msgBox, this, mActorEditor, getResourceTypeName()));
-		showMsgBox(msgBox);
+				Messages.replaceName(Messages.Editor.DESCRIPTION_FIELD_DEFAULT, getResourceTypeName()), listener, mInfoTable, mDisabledWhenPublished);
 	}
 
 	/**
@@ -533,6 +524,11 @@ public abstract class ActorGui extends EditorGui {
 		return mWidgets.collision.table;
 	}
 
+	@Override
+	public void setInfoNameError(String errorText) {
+		mWidgets.info.nameError.setText(errorText);
+	}
+
 	/**
 	 * Reset tool widget selection
 	 */
@@ -622,7 +618,7 @@ public abstract class ActorGui extends EditorGui {
 		 * General options
 		 */
 		static class InfoWidgets {
-			AlignTable table = new AlignTable();
+			Label nameError = null;
 			TextField name = null;
 			TextField description = null;
 		}
@@ -640,8 +636,6 @@ public abstract class ActorGui extends EditorGui {
 
 	/** Hides custom draw tool menu */
 	private HideListener mDrawToolHider = null;
-	/** Invoker */
-	protected Invoker mInvoker = null;
 	/** Setting widget */
 	protected TabWidget mSettingTabs = new TabWidget();
 

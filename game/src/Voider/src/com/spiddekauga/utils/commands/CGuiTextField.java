@@ -1,13 +1,13 @@
 package com.spiddekauga.utils.commands;
 
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.spiddekauga.utils.Maths;
 import com.spiddekauga.voider.Config.Gui;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 
 /**
  * Command for changing a text field's value
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class CGuiTextField extends CGui implements ICommandCombinable {
@@ -32,12 +32,12 @@ public class CGuiTextField extends CGui implements ICommandCombinable {
 		if (otherCommand instanceof CGuiTextField) {
 			// Must be same text field
 			if (((CGuiTextField) otherCommand).mTextField == mTextField) {
-				if (Maths.approxCompare(mCreatedTime,((CGuiTextField)otherCommand).mCreatedTime, Gui.TEXT_FIELD_COMBINABLE_WITHIN)) {
+				if (Maths.approxCompare(mCreatedTime, ((CGuiTextField) otherCommand).mCreatedTime, Gui.TEXT_FIELD_COMBINABLE_WITHIN)) {
 					executeSuccess = ((CGuiTextField) otherCommand).execute();
 
 					if (executeSuccess) {
-						mAfter = ((CGuiTextField)otherCommand).mAfter;
-						mCreatedTime = ((CGuiTextField)otherCommand).mCreatedTime;
+						mAfter = ((CGuiTextField) otherCommand).mAfter;
+						mCreatedTime = ((CGuiTextField) otherCommand).mCreatedTime;
 					}
 				}
 			}
@@ -78,6 +78,7 @@ public class CGuiTextField extends CGui implements ICommandCombinable {
 		} else {
 			mTextField.setCursorPosition(cursorPosition);
 		}
+		mTextField.fire(new ChangeListener.ChangeEvent());
 		setOriginalName(mTextField);
 		return true;
 	}

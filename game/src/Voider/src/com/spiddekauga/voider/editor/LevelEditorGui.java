@@ -25,7 +25,6 @@ import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.utils.scene.ui.HideListener;
 import com.spiddekauga.utils.scene.ui.HideManual;
 import com.spiddekauga.utils.scene.ui.HideSliderValue;
-import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
 import com.spiddekauga.utils.scene.ui.ResourceTextureButton;
 import com.spiddekauga.utils.scene.ui.SelectBoxListener;
 import com.spiddekauga.utils.scene.ui.SliderListener;
@@ -35,7 +34,6 @@ import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Editor;
 import com.spiddekauga.voider.Config.Editor.Level;
 import com.spiddekauga.voider.editor.LevelEditor.Tools;
-import com.spiddekauga.voider.editor.commands.CDefHasValidName;
 import com.spiddekauga.voider.editor.commands.GuiCheckCommandCreator;
 import com.spiddekauga.voider.game.Path.PathTypes;
 import com.spiddekauga.voider.game.Themes;
@@ -68,7 +66,7 @@ class LevelEditorGui extends EditorGui {
 
 		mPickupTable.setPreferences(mMainTable);
 		mWidgets.enemy.table.setPreferences(mMainTable);
-		mWidgets.info.table.setPreferences(mMainTable);
+		mInfoTable.setPreferences(mMainTable);
 
 		mHiders = new Hiders();
 
@@ -84,7 +82,7 @@ class LevelEditorGui extends EditorGui {
 	public void dispose() {
 		mWidgets.enemy.table.dispose();
 		mWidgets.path.table.dispose();
-		mWidgets.info.table.dispose();
+		mInfoTable.dispose();
 
 		mHiders.dispose();
 
@@ -306,16 +304,6 @@ class LevelEditorGui extends EditorGui {
 		}
 	}
 
-	@Override
-	protected void showInfoDialog() {
-		resetLevelInfo();
-		MsgBoxExecuter msgBox = getFreeMsgBox(true);
-		msgBox.setTitle("Level options");
-		msgBox.content(mWidgets.info.table);
-		msgBox.addCancelOkButtonAndKeys("OK", new CDefHasValidName(msgBox, this, mLevelEditor, getResourceTypeName()));
-		showMsgBox(msgBox);
-	}
-
 	/**
 	 * Initializes the tool menu
 	 */
@@ -516,51 +504,45 @@ class LevelEditorGui extends EditorGui {
 	private void initInfo() {
 		AlignTable left = new AlignTable();
 		AlignTable right = new AlignTable();
-		mWidgets.info.table.setAlignRow(Horizontal.LEFT, Vertical.TOP);
-		left.setPreferences(mWidgets.info.table);
-		right.setPreferences(mWidgets.info.table);
+		mInfoTable.setAlignRow(Horizontal.LEFT, Vertical.TOP);
+		left.setPreferences(mInfoTable);
+		right.setPreferences(mInfoTable);
 
 		float halfWidth = Gdx.graphics.getWidth() * Config.Editor.Level.OPTIONS_WIDTH * 0.5f;
 		float height = Gdx.graphics.getHeight() * Config.Editor.Level.OPTIONS_HEIGHT;
 
-		mWidgets.info.table.row().setPadTop(10);
-		mWidgets.info.table.add(left);
-		mWidgets.info.table.add(right);
+		mInfoTable.row().setPadTop(10);
+		mInfoTable.add(left);
+		mInfoTable.add(right);
 
 		left.setSize(halfWidth, height);
 		right.setSize(halfWidth, height);
 		left.setKeepSize(true);
 		right.setKeepSize(true);
 
+		TextFieldListener textFieldListener;
 
 		// Left side
 		// Name
-		left.row().setFillWidth(true);
-		Label label = new Label("Name", mStyles.label.standard);
-		new TooltipListener(label, Messages.Tooltip.Level.Option.NAME);
-		left.add(label).setPadRight(mStyles.vars.paddingAfterLabel);
-
-		TextField textField = new TextField("", mStyles.textField.standard);
-		mDisabledWhenPublished.add(textField);
-		textField.setMaxLength(Config.Editor.NAME_LENGTH_MAX);
-		left.add(textField).setFillWidth(true);
-		mWidgets.info.name = textField;
-		new TooltipListener(textField, Messages.Tooltip.Level.Option.NAME);
-		new TextFieldListener(textField, "Name", mInvoker) {
+		textFieldListener = new TextFieldListener(mInvoker) {
 			@Override
 			protected void onChange(String newText) {
 				mLevelEditor.setName(newText);
 			}
 		};
+		mWidgets.info.name = mUiFactory.addTextField("Name", true, Messages.replaceName(Messages.Editor.NAME_FIELD_DEFAULT, getResourceTypeName()),
+				textFieldListener, left, mDisabledWhenPublished);
+		mWidgets.info.name.setMaxLength(Config.Editor.NAME_LENGTH_MAX);
+		mWidgets.info.nameError = mUiFactory.getLastCreatedErrorLabel();
 
 		// Description
 		left.row();
-		label = new Label("Description", mStyles.label.standard);
+		Label label = new Label("Description", mStyles.label.standard);
 		new TooltipListener(label, Messages.Tooltip.Level.Option.DESCRIPTION);
 		left.add(label);
 
 		left.row().setFillWidth(true).setFillHeight(true);
-		textField = new TextField("", mStyles.textField.standard);
+		TextField textField = new TextField("", mStyles.textField.standard);
 		mDisabledWhenPublished.add(textField);
 		textField.setMaxLength(Config.Editor.DESCRIPTION_LENGTH_MAX);
 		left.add(textField).setFillHeight(true).setFillWidth(true);
@@ -670,9 +652,9 @@ class LevelEditorGui extends EditorGui {
 			}
 		};
 
-		mWidgets.info.table.setTransform(true);
-		mWidgets.info.table.layout();
-		mWidgets.info.table.setKeepSize(true);
+		mInfoTable.setTransform(true);
+		mInfoTable.layout();
+		mInfoTable.setKeepSize(true);
 	}
 
 	/**
@@ -962,6 +944,11 @@ class LevelEditorGui extends EditorGui {
 		// mPickupTable.invalidate();
 	}
 
+	@Override
+	public void setInfoNameError(String errorText) {
+		mWidgets.info.nameError.setText(errorText);
+	}
+
 	/** Pickup table */
 	private AlignTable mPickupTable = new AlignTable();
 	/** Level editor the GUI will act on */
@@ -1064,7 +1051,7 @@ class LevelEditorGui extends EditorGui {
 		}
 
 		static class InfoWidgets {
-			AlignTable table = new AlignTable();
+			Label nameError = null;
 			TextField name = null;
 			TextField description = null;
 			Slider speed = null;

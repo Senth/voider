@@ -4,14 +4,14 @@ import com.badlogic.gdx.scenes.scene2d.ui.MsgBox;
 import com.spiddekauga.utils.Strings;
 import com.spiddekauga.utils.commands.Command;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.editor.EditorGui;
 import com.spiddekauga.voider.editor.IActorEditor;
 import com.spiddekauga.voider.editor.IEditor;
 import com.spiddekauga.voider.editor.LevelEditor;
-import com.spiddekauga.voider.scene.Gui;
+import com.spiddekauga.voider.utils.Messages;
 
 /**
  * Cancels the hide of the message box if the definition doesn't got a valid name.
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class CDefHasValidName extends Command {
@@ -22,12 +22,12 @@ public class CDefHasValidName extends Command {
 	 * @param editor the editor to if the definition got a name in
 	 * @param defTypeName the definition type name
 	 */
-	public CDefHasValidName(MsgBox msgBox, Gui gui, IEditor editor, String defTypeName) {
+	public CDefHasValidName(MsgBox msgBox, EditorGui gui, IEditor editor, String defTypeName) {
 		mMsgBox = msgBox;
 		mGui = gui;
 		mEditor = editor;
 
-		mEnterNameMessage = "Please enter a";
+		mEnterNameMessage = "* Please enter a";
 		if (Strings.beginsWithWovel(defTypeName)) {
 			mEnterNameMessage += "n";
 		}
@@ -41,20 +41,19 @@ public class CDefHasValidName extends Command {
 		String name = null;
 		if (mEditor instanceof LevelEditor) {
 			name = ((LevelEditor) mEditor).getName();
-		}
-		else if (mEditor instanceof IActorEditor) {
+		} else if (mEditor instanceof IActorEditor) {
 			name = ((IActorEditor) mEditor).getName();
 		}
 
 		// Force the player to set a name
 		if (name.equals(Config.Actor.NAME_DEFAULT)) {
-			mGui.showHighlightMessage(mEnterNameMessage);
+			mGui.setInfoNameError(mEnterNameMessage);
 			mMsgBox.cancel();
 		} else if (name.length() < Config.Actor.NAME_LENGTH_MIN) {
-			mGui.showErrorMessage("Name must contain at least " + Config.Actor.NAME_LENGTH_MIN + " characters");
+			mGui.setInfoNameError(Messages.Error.NAME_CHARACTERS_MIN);
 			mMsgBox.cancel();
 		}
-		// OK was pressed and valid name, save the actor
+		// Save was pressed and valid name, save the actor
 		else {
 			mEditor.saveDef();
 		}
@@ -74,6 +73,6 @@ public class CDefHasValidName extends Command {
 	MsgBox mMsgBox;
 	/** The editor */
 	IEditor mEditor;
-	/** The gui to print the info messages in */
-	Gui mGui;
+	/** The GUI to print the info messages in */
+	EditorGui mGui;
 }

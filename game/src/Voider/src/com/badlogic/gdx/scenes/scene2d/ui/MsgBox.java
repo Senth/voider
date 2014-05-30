@@ -253,7 +253,7 @@ public class MsgBox extends Dialog {
 	 * @see #addCancelButtonAndKeys(String) for using a custom text for the cancel button
 	 */
 	public MsgBox addCancelButtonAndKeys() {
-		return addCancelButtonAndKeys("Cancel");
+		return addCancelButtonAndKeys(CANCEL_TEXT);
 	}
 
 	/**
@@ -264,6 +264,20 @@ public class MsgBox extends Dialog {
 	 */
 	public MsgBox addCancelButtonAndKeys(String buttonText) {
 		return addCancelButtonAndKeys(buttonText, null);
+	}
+
+	/**
+	 * Add a cancel button and keys.
+	 * @param cancelCommand this command shall return true in execute if the message box
+	 *        is allowed to cancel.
+	 * @return this message box for chaining
+	 * @see #addCancelButtonAndKeys()
+	 * @see #addCancelButtonAndKeys(String)
+	 * @see #addCancelButtonAndKeys(String, Command)
+	 * @see #addCancelOkButtonAndKeys(String, Command)
+	 */
+	public MsgBox addCancelButtonAndKeys(Command cancelCommand) {
+		return addCancelButtonAndKeys(CANCEL_TEXT, cancelCommand);
 	}
 
 	/**
@@ -313,6 +327,8 @@ public class MsgBox extends Dialog {
 		}
 	}
 
+	/** Default cancel text */
+	private static final String CANCEL_TEXT = "Cancel";
 	/** Button table */
 	private AlignTable mButtonTable = new AlignTable();
 	/** If the message box is hiding */

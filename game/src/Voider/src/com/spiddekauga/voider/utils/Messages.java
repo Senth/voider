@@ -145,20 +145,22 @@ public class Messages {
 	 */
 	public static class Error {
 		/** Polygon complex append */
-		public final static String POLYGON_COMPLEX_DRAW_APPEND = "Can't draw a polygon with an intersection!";
+		public final static String POLYGON_COMPLEX_DRAW_APPEND = "Lines are not allowed to intersect";
 		/** Polygon complex add corner */
-		public final static String POLYGON_COMPLEX_ADD = "Can't add a corner here, would create an intersection.";
+		public final static String POLYGON_COMPLEX_ADD = "Can't add a corner here, would create an intersection";
 		/** Polygon complex remove corner */
-		public final static String POLYGON_COMPLEX_REMOVE = "Can't remove this corner, would create an intersection.";
+		public final static String POLYGON_COMPLEX_REMOVE = "Can't remove this corner, would create an intersection";
 		/** Polygon complex move corner */
-		public final static String POLYGON_COMPLEX_MOVE = "Can't move here, would create an intersection.";
+		public final static String POLYGON_COMPLEX_MOVE = "Can't move here, would create an intersection";
 		/** Polygon complex draw/erase */
-		public final static String POLYGON_COMPLEX_DRAW_ERASE = "Can't draw a polygon with an intersection!";
+		public final static String POLYGON_COMPLEX_DRAW_ERASE = POLYGON_COMPLEX_DRAW_APPEND;
 		/** Polygon draw/erase line is complex */
-		public final static String POLYGON_DRAW_ERASE_LINE_COMPLEX = "Draw line must not intersect itself.";
+		public final static String POLYGON_DRAW_ERASE_LINE_COMPLEX = POLYGON_COMPLEX_DRAW_APPEND;
 		/** Bug report */
 		public final static String BUG_REPORT_INFO = "The game has crashed due to some unknown bug. "
 				+ "Please describe the last 2 steps you did; this helps enormously when debugging :)";
+		/** Name must contain X characters */
+		public final static String NAME_CHARACTERS_MIN = "* Must contain at least " + Config.Actor.NAME_LENGTH_MIN + " characters";
 	}
 
 	/**

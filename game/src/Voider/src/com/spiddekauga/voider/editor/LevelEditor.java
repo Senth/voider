@@ -134,12 +134,6 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 			return;
 		}
 
-		// Force the player to set a name
-		if (mLevel.getDef().getName().equals(Config.Actor.NAME_DEFAULT)) {
-			((LevelEditorGui) mGui).showInfoDialog();
-			mGui.showHighlightMessage("Please enter a level name");
-		}
-
 		mLevel.update(deltaTime);
 
 		((PanTool) Tools.PAN.getTool()).update(deltaTime);
@@ -1518,6 +1512,19 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		} else {
 			return null;
 		}
+	}
+
+	@Override
+	public void undoJustCreated() {
+		setLevel(null);
+	}
+
+	@Override
+	public Def getDef() {
+		if (mLevel != null) {
+			return mLevel.getDef();
+		}
+		return null;
 	}
 
 	/**

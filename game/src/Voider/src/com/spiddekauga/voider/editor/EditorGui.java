@@ -2,7 +2,10 @@ package com.spiddekauga.voider.editor;
 
 import java.util.ArrayList;
 
+import org.apache.commons.lang.WordUtils;
+
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -28,7 +31,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
+import com.spiddekauga.utils.commands.CInvokerUndoToDelimiter;
 import com.spiddekauga.utils.commands.Command;
+import com.spiddekauga.utils.commands.Invoker;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
@@ -38,11 +43,13 @@ import com.spiddekauga.utils.scene.ui.DisableListener;
 import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
 import com.spiddekauga.utils.scene.ui.TooltipListener;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.editor.commands.CDefHasValidName;
 import com.spiddekauga.voider.editor.commands.CEditorDuplicate;
 import com.spiddekauga.voider.editor.commands.CEditorLoad;
 import com.spiddekauga.voider.editor.commands.CEditorNew;
 import com.spiddekauga.voider.editor.commands.CEditorPublish;
 import com.spiddekauga.voider.editor.commands.CEditorSave;
+import com.spiddekauga.voider.editor.commands.CEditorUndoJustCreated;
 import com.spiddekauga.voider.editor.commands.CLevelRun;
 import com.spiddekauga.voider.editor.commands.CSceneReturn;
 import com.spiddekauga.voider.editor.commands.CSceneSwitch;
@@ -95,8 +102,9 @@ public abstract class EditorGui extends Gui {
 	 * Sets the editor bound to this GUI
 	 * @param editor the editor bound to this GUI
 	 */
-	public void setEditor(Editor editor) {
+	public void setEditor(IEditor editor) {
 		mEditor = editor;
+		mInvoker = mEditor.getInvoker();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -646,7 +654,22 @@ public abstract class EditorGui extends Gui {
 	/**
 	 * Shows the information for the resource we're editing
 	 */
-	protected abstract void showInfoDialog();
+	protected void showInfoDialog() {
+		setInfoNameError("");
+		mInvoker.pushDelimiter("option-dialog");
+		MsgBoxExecuter msgBox = getFreeMsgBox(true);
+		msgBox.setTitle(getResourceTypeNameCapital() + " Options");
+		msgBox.content(mInfoTable);
+		if (mEditor.isJustCreated()) {
+			msgBox.addCancelButtonAndKeys(new CEditorUndoJustCreated(mEditor));
+		} else {
+			msgBox.addCancelButtonAndKeys(new CInvokerUndoToDelimiter(mInvoker, "option-dialog", false));
+		}
+		Command save = new CDefHasValidName(msgBox, this, mEditor, getResourceTypeName());
+		msgBox.button("Save", save);
+		msgBox.key(Input.Keys.ENTER, save);
+		showMsgBox(msgBox);
+	}
 
 	/**
 	 * Switches or returns to the specified editor or menu.
@@ -813,6 +836,18 @@ public abstract class EditorGui extends Gui {
 	 */
 	protected abstract String getResourceTypeName();
 
+	/**
+	 * @return resource type name with capital first letters
+	 */
+	protected String getResourceTypeNameCapital() {
+		return WordUtils.capitalize(getResourceTypeName());
+	}
+
+	/**
+	 * Set the info name error label text
+	 * @param errorText the error text to display
+	 */
+	public abstract void setInfoNameError(String errorText);
 
 	/**
 	 * Container for all UI styles
@@ -882,6 +917,8 @@ public abstract class EditorGui extends Gui {
 
 	}
 
+	/** Invoker */
+	protected Invoker mInvoker = null;
 	/** All skins and styles */
 	protected UiStyles mStyles = new UiStyles();
 	/** UI elements that should be disabled during publish */
@@ -893,7 +930,7 @@ public abstract class EditorGui extends Gui {
 	/** Grid above button */
 	private Button mGridRenderAbove = null;
 	/** Editor scene */
-	protected Editor mEditor = null;
+	protected IEditor mEditor = null;
 	/** Editor menu table (upper left) */
 	private AlignTable mEditorMenu = new AlignTable();
 	/** File menu table (upper right) */
@@ -904,6 +941,8 @@ public abstract class EditorGui extends Gui {
 	protected AlignTable mToolMenu = new AlignTable();
 	/** Table with the name */
 	private AlignTable mNameTable = new AlignTable();
+	/** Info table */
+	protected AlignTable mInfoTable = new AlignTable();
 	/** Name label */
 	private Label mNameLabel = null;
 	/**

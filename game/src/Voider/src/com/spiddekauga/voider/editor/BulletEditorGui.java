@@ -13,7 +13,6 @@ import com.spiddekauga.voider.resources.SkinNames;
 
 /**
  * GUI for the bullet editor
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class BulletEditorGui extends ActorGui {
@@ -67,7 +66,6 @@ public class BulletEditorGui extends ActorGui {
 	public void setBulletEditor(BulletEditor bulletEditor) {
 		mBulletEditor = bulletEditor;
 		setActorEditor(mBulletEditor);
-		setEditor(bulletEditor);
 	}
 
 	@Override
@@ -87,17 +85,8 @@ public class BulletEditorGui extends ActorGui {
 				mBulletEditor.setBulletSpeed(newValue);
 			}
 		};
-		mWidgets.weapon.bulletSpeed = mUiFactory.addSlider(
-				"Speed",
-				Weapon.BULLET_SPEED_MIN,
-				Weapon.BULLET_SPEED_MAX,
-				Weapon.BULLET_SPEED_STEP_SIZE,
-				sliderListener,
-				mWeaponTable,
-				null,
-				null,
-				null,
-				mInvoker);
+		mWidgets.weapon.bulletSpeed = mUiFactory.addSlider("Speed", Weapon.BULLET_SPEED_MIN, Weapon.BULLET_SPEED_MAX, Weapon.BULLET_SPEED_STEP_SIZE,
+				sliderListener, mWeaponTable, null, null, null, mInvoker);
 
 
 		// Cooldown
@@ -113,27 +102,15 @@ public class BulletEditorGui extends ActorGui {
 				mBulletEditor.setCooldownMax(newValue);
 			}
 		};
-		SliderMinMaxWrapper sliders = mUiFactory.addSliderMinMax(
-				"Cooldown Time",
-				Weapon.COOLDOWN_MIN,
-				Weapon.COOLDOWN_MAX,
-				Weapon.COOLDOWN_STEP_SIZE,
-				sliderMinListener, sliderMaxListener,
-				mWeaponTable,
-				null,
-				null,
-				null,
-				mInvoker);
+		SliderMinMaxWrapper sliders = mUiFactory.addSliderMinMax("Cooldown Time", Weapon.COOLDOWN_MIN, Weapon.COOLDOWN_MAX,
+				Weapon.COOLDOWN_STEP_SIZE, sliderMinListener, sliderMaxListener, mWeaponTable, null, null, null, mInvoker);
 
 		mWidgets.weapon.cooldownMin = sliders.min;
 		mWidgets.weapon.cooldownMax = sliders.max;
 
 
-		String warningText =
-				"These properties are not bound to the " +
-						"current bullet. They are only here to " +
-						"test how the bullet will appear on " +
-						"different weapons.";
+		String warningText = "These properties are not bound to the " + "current bullet. They are only here to "
+				+ "test how the bullet will appear on " + "different weapons.";
 
 
 		Label label = new Label(warningText, mStyles.label.highlight);

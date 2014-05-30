@@ -4,12 +4,9 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 import com.badlogic.gdx.utils.Disposable;
-import com.spiddekauga.utils.CDelimiter;
 
 /**
- * Invokes commands, can undo/redo commands as they are stored in
- * a list
- * 
+ * Invokes commands, can undo/redo commands as they are stored in a list
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class Invoker implements Disposable {
@@ -24,8 +21,8 @@ public class Invoker implements Disposable {
 	}
 
 	/**
-	 * Executes the specified action. Only pushes this command onto the undo
-	 * stack if it was successful.
+	 * Executes the specified action. Only pushes this command onto the undo stack if it
+	 * was successful.
 	 * @param command the command to execute
 	 * @return true if the command was executed successfully
 	 * @see #execute(Command,boolean) if you want to make the command chained
@@ -35,13 +32,12 @@ public class Invoker implements Disposable {
 	}
 
 	/**
-	 * Executes the specified action. Only pushes this command onto the undo
-	 * stack if it was successful. Can set the commandn as chained. Chained
-	 * commands will also execute the previous command on an undo(), and if there
-	 * exist a chained command directly after a redo() that will also be redone until
-	 * the next redo isn't a chained command. If this command is an instance of
-	 * #ICommandStackable and is the same type of command as the last executed command
-	 * it will combine these two.
+	 * Executes the specified action. Only pushes this command onto the undo stack if it
+	 * was successful. Can set the commandn as chained. Chained commands will also execute
+	 * the previous command on an undo(), and if there exist a chained command directly
+	 * after a redo() that will also be redone until the next redo isn't a chained
+	 * command. If this command is an instance of #ICommandStackable and is the same type
+	 * of command as the last executed command it will combine these two.
 	 * @param command the command to execute
 	 * @param chained true if the command shall be chained
 	 * @return true if the command was executed successfully
@@ -58,7 +54,7 @@ public class Invoker implements Disposable {
 				combinedCommand = iterator.next();
 
 				if (command.getClass() == combinedCommand.getClass()) {
-					combined = ((ICommandCombinable)combinedCommand).combine((ICommandCombinable) command);
+					combined = ((ICommandCombinable) combinedCommand).combine((ICommandCombinable) command);
 				}
 
 				// Shall we check next?
@@ -89,8 +85,57 @@ public class Invoker implements Disposable {
 	}
 
 	/**
-	 * Undoes the last executed command. The commands are on a stack so this can
-	 * be called multiple times in a row. This adds the command to the redo stack
+	 * Push a delimiter onto the execute (undo) stack
+	 */
+	public void pushDelimiter() {
+		mUndoCommands.push(new CDelimiter());
+	}
+
+	/**
+	 * Push a delimiter onto the execute (undo) stack
+	 * @param name the name of the delimiter. Useful when undoing to a specific delimiter
+	 *        using
+	 */
+	public void pushDelimiter(String name) {
+		mUndoCommands.push(new CDelimiter(name));
+	}
+
+	/**
+	 * Undo all commands to and including the specified delimiter. This method adds all
+	 * undone commands to the redo stack.
+	 * @param name delimiter name to undo to and including
+	 */
+	public void undoToDelimiter(String name) {
+		undoToDelimiter(name, true);
+	}
+
+	/**
+	 * Undo all commands to and including the specified delimiter.
+	 * @param name delimiter name to undo to and including
+	 * @param addToRedoStack set to true to add all undone commands to the redo stack
+	 */
+	public void undoToDelimiter(String name, boolean addToRedoStack) {
+		boolean foundDelimiter = false;
+		while (canUndo() && !foundDelimiter) {
+			Command undoCommand = mUndoCommands.pop();
+
+			boolean success = undoCommand.undo();
+			if (addToRedoStack && success) {
+				mRedoCommands.push(undoCommand);
+			} else {
+				undoCommand.dispose();
+			}
+
+			// Check if found
+			if (undoCommand instanceof CDelimiter) {
+				foundDelimiter = ((CDelimiter) undoCommand).getDelimeterName().equals(name);
+			}
+		}
+	}
+
+	/**
+	 * Undoes the last executed command. The commands are on a stack so this can be called
+	 * multiple times in a row. This adds the command to the redo stack
 	 * @see #undo(boolean) for undoing a command and not add it to the redo stack
 	 */
 	public void undo() {
@@ -99,19 +144,13 @@ public class Invoker implements Disposable {
 
 	/**
 	 * Undoes the last command.
-	 * @param addToRedoStack if set to false the command will NOT be added to the
-	 * redo stack.
+	 * @param addToRedoStack set to true to add all undone commands to the redo stack
 	 */
 	public void undo(boolean addToRedoStack) {
 		boolean chained = true;
 		while (canUndo() && chained) {
 			Command undoCommand = mUndoCommands.pop();
 			chained = undoCommand.isChained();
-
-			// Special case for delimiter. Always treat it as chained
-			if (undoCommand instanceof CDelimiter) {
-				chained = true;
-			}
 
 			boolean success = undoCommand.undo();
 			if (addToRedoStack && success) {
@@ -123,8 +162,8 @@ public class Invoker implements Disposable {
 	}
 
 	/**
-	 * Redoes the last undone command. The commands are on a stack so this can
-	 * be called multiple times in a row.
+	 * Redoes the last undone command. The commands are on a stack so this can be called
+	 * multiple times in a row.
 	 */
 	public void redo() {
 		boolean chained = true;
@@ -137,12 +176,7 @@ public class Invoker implements Disposable {
 			if (canRedo()) {
 				Command nextRedo = mRedoCommands.getFirst();
 
-				// Special case for delimiter. Always treat it as chained
-				if (nextRedo.isChained() || nextRedo instanceof CDelimiter) {
-					chained = true;
-				} else {
-					chained = false;
-				}
+				chained = nextRedo.isChained();
 			}
 		}
 	}

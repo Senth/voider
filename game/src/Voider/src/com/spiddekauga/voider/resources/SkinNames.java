@@ -536,6 +536,8 @@ public class SkinNames {
 		LABEL_PANEL_SECTION(LabelStyle.class, "panel_section"),
 		/** Editor name label style */
 		LABEL_EDITOR_NAME(LabelStyle.class, "editor_name"),
+		/** In front of error (usually above/below text fields). */
+		LABEL_ERROR_SECTION_INFO(LabelStyle.class, "error_section_info"),
 		/** List default */
 		LIST_DEFAULT(ListStyle.class, "default"),
 		/** Logout button */

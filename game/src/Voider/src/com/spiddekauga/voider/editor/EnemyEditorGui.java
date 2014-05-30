@@ -35,7 +35,6 @@ import com.spiddekauga.voider.utils.Pools;
 
 /**
  * GUI for the enemy editor
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class EnemyEditorGui extends ActorGui {
@@ -46,7 +45,6 @@ public class EnemyEditorGui extends ActorGui {
 	public void setEnemyEditor(EnemyEditor enemyEditor) {
 		mEnemyEditor = enemyEditor;
 		setActorEditor(mEnemyEditor);
-		setEditor(enemyEditor);
 	}
 
 	@Override
@@ -291,18 +289,9 @@ public class EnemyEditorGui extends ActorGui {
 				mEnemyEditor.setPlayerDistanceMax(newValue);
 			}
 		};
-		SliderMinMaxWrapper sliders = mUiFactory.addSliderMinMax(
-				"Distance From Player",
-				Enemy.Movement.AI_DISTANCE_MIN,
-				Enemy.Movement.AI_DISTANCE_MAX,
-				Enemy.Movement.AI_DISTANCE_STEP_SIZE,
-				minSliderListener,
-				maxSliderListener,
-				table,
-				Messages.Tooltip.Enemy.Movement.Ai.DISTANCE,
-				hider,
-				mDisabledWhenPublished,
-				mInvoker);
+		SliderMinMaxWrapper sliders = mUiFactory.addSliderMinMax("Distance From Player", Enemy.Movement.AI_DISTANCE_MIN,
+				Enemy.Movement.AI_DISTANCE_MAX, Enemy.Movement.AI_DISTANCE_STEP_SIZE, minSliderListener, maxSliderListener, table,
+				Messages.Tooltip.Enemy.Movement.Ai.DISTANCE, hider, mDisabledWhenPublished, mInvoker);
 
 		// Set sliders
 		mWidgets.movement.aiDistanceMin = sliders.min;
@@ -348,8 +337,7 @@ public class EnemyEditorGui extends ActorGui {
 		offTab.tooltipText = Messages.Tooltip.Enemy.Movement.Ai.RANDOM_MOVEMENT;
 
 		// Create tabs
-		@SuppressWarnings("unchecked")
-		ArrayList<TabWrapper> tabs = Pools.arrayList.obtain();
+		@SuppressWarnings("unchecked") ArrayList<TabWrapper> tabs = Pools.arrayList.obtain();
 		tabs.add(onTab);
 		tabs.add(offTab);
 		mUiFactory.addTabs(table, hider, tabs, mDisabledWhenPublished, mInvoker);
@@ -373,18 +361,9 @@ public class EnemyEditorGui extends ActorGui {
 				mEnemyEditor.setRandomTimeMax(newValue);
 			}
 		};
-		sliders = mUiFactory.addSliderMinMax(
-				null,
-				Enemy.Movement.RANDOM_MOVEMENT_TIME_MIN,
-				Enemy.Movement.RANDOM_MOVEMENT_TIME_MAX,
-				Enemy.Movement.RANDOM_MOVEMENT_TIME_STEP_SIZE,
-				minSliderListener,
-				maxSliderListener,
-				table,
-				Messages.Tooltip.Enemy.Movement.Ai.RANDOM_MOVEMENT,
-				onTab.hider,
-				mDisabledWhenPublished,
-				mInvoker);
+		sliders = mUiFactory.addSliderMinMax(null, Enemy.Movement.RANDOM_MOVEMENT_TIME_MIN, Enemy.Movement.RANDOM_MOVEMENT_TIME_MAX,
+				Enemy.Movement.RANDOM_MOVEMENT_TIME_STEP_SIZE, minSliderListener, maxSliderListener, table,
+				Messages.Tooltip.Enemy.Movement.Ai.RANDOM_MOVEMENT, onTab.hider, mDisabledWhenPublished, mInvoker);
 
 		// Set sliders
 		mWidgets.movement.aiRandomTimeMin = sliders.min;
@@ -392,7 +371,8 @@ public class EnemyEditorGui extends ActorGui {
 	}
 
 	/**
-	 * Initializes standard movement variables such as speed and turning for the specified table
+	 * Initializes standard movement variables such as speed and turning for the specified
+	 * table
 	 * @param movementType which table to add the movement UI elements to
 	 */
 	private void createMovementUi(final MovementTypes movementType) {
@@ -415,17 +395,8 @@ public class EnemyEditorGui extends ActorGui {
 				mWidgets.movement.aiSpeedSlider.setValue(newValue);
 			}
 		};
-		Slider slider = mUiFactory.addSlider(
-				null,
-				Enemy.Movement.MOVE_SPEED_MIN,
-				Enemy.Movement.MOVE_SPEED_MAX,
-				Enemy.Movement.MOVE_SPEED_STEP_SIZE,
-				sliderListener,
-				table,
-				Messages.Tooltip.Enemy.Movement.Common.MOVEMENT_SPEED,
-				hider,
-				mDisabledWhenPublished,
-				mInvoker);
+		Slider slider = mUiFactory.addSlider(null, Enemy.Movement.MOVE_SPEED_MIN, Enemy.Movement.MOVE_SPEED_MAX, Enemy.Movement.MOVE_SPEED_STEP_SIZE,
+				sliderListener, table, Messages.Tooltip.Enemy.Movement.Common.MOVEMENT_SPEED, hider, mDisabledWhenPublished, mInvoker);
 		if (movementType == MovementTypes.PATH) {
 			mWidgets.movement.pathSpeedSlider = slider;
 		} else if (movementType == MovementTypes.AI) {
@@ -473,8 +444,7 @@ public class EnemyEditorGui extends ActorGui {
 		offTab.tooltipText = Messages.Tooltip.Enemy.Movement.Common.TURNING_SPEED;
 
 		// Create tabs
-		@SuppressWarnings("unchecked")
-		ArrayList<TabWrapper> tabs = Pools.arrayList.obtain();
+		@SuppressWarnings("unchecked") ArrayList<TabWrapper> tabs = Pools.arrayList.obtain();
 		tabs.add(onTab);
 		tabs.add(offTab);
 		mUiFactory.addTabs(table, hider, tabs, mDisabledWhenPublished, mInvoker);
@@ -499,17 +469,8 @@ public class EnemyEditorGui extends ActorGui {
 				mWidgets.movement.aiTurnSpeedSlider.setValue(newValue);
 			}
 		};
-		slider = mUiFactory.addSlider(
-				null,
-				Movement.TURN_SPEED_MIN,
-				Movement.TURN_SPEED_MAX,
-				Movement.TURN_SPEED_STEP_SIZE,
-				sliderListener,
-				table,
-				Messages.Tooltip.Enemy.Movement.Common.TURNING_SPEED,
-				onTab.hider,
-				mDisabledWhenPublished,
-				mInvoker);
+		slider = mUiFactory.addSlider(null, Movement.TURN_SPEED_MIN, Movement.TURN_SPEED_MAX, Movement.TURN_SPEED_STEP_SIZE, sliderListener, table,
+				Messages.Tooltip.Enemy.Movement.Common.TURNING_SPEED, onTab.hider, mDisabledWhenPublished, mInvoker);
 		if (movementType == MovementTypes.PATH) {
 			mWidgets.movement.pathTurnSpeedSlider = slider;
 		} else if (movementType == MovementTypes.AI) {
@@ -530,13 +491,14 @@ public class EnemyEditorGui extends ActorGui {
 			protected void onShow() {
 				mEnemyEditor.setMovementType(MovementTypes.PATH);
 
-				//				if (mWidgets.movement.pathTurnSpeedOn != null && mWidgets.movement.pathTurnSpeedOff != null) {
-				//					if (mEnemyEditor.isTurning()) {
-				//						mWidgets.movement.pathTurnSpeedOn.setChecked(true);
-				//					} else {
-				//						mWidgets.movement.pathTurnSpeedOff.setChecked(true);
-				//					}
-				//				}
+				// if (mWidgets.movement.pathTurnSpeedOn != null &&
+				// mWidgets.movement.pathTurnSpeedOff != null) {
+				// if (mEnemyEditor.isTurning()) {
+				// mWidgets.movement.pathTurnSpeedOn.setChecked(true);
+				// } else {
+				// mWidgets.movement.pathTurnSpeedOff.setChecked(true);
+				// }
+				// }
 			}
 		};
 		mPathHider = pathTab.hider;
@@ -560,21 +522,21 @@ public class EnemyEditorGui extends ActorGui {
 			protected void onShow() {
 				mEnemyEditor.setMovementType(MovementTypes.AI);
 
-				//				if (mWidgets.movement.aiTurnSpeedOn != null && mWidgets.movement.aiTurnSpeedOff != null) {
-				//					if (mEnemyEditor.isTurning()) {
-				//						mWidgets.movement.aiTurnSpeedOn.setChecked(true);
-				//					} else {
-				//						mWidgets.movement.aiTurnSpeedOff.setChecked(true);
-				//					}
-				//				}
+				// if (mWidgets.movement.aiTurnSpeedOn != null &&
+				// mWidgets.movement.aiTurnSpeedOff != null) {
+				// if (mEnemyEditor.isTurning()) {
+				// mWidgets.movement.aiTurnSpeedOn.setChecked(true);
+				// } else {
+				// mWidgets.movement.aiTurnSpeedOff.setChecked(true);
+				// }
+				// }
 			}
 		};
 		mAiHider = aiTab.hider;
 
 
 		// Create buttons
-		@SuppressWarnings("unchecked")
-		ArrayList<TabWrapper> tabs = Pools.arrayList.obtain();
+		@SuppressWarnings("unchecked") ArrayList<TabWrapper> tabs = Pools.arrayList.obtain();
 		tabs.add(pathTab);
 		tabs.add(aiTab);
 		tabs.add(stationaryTab);
@@ -658,17 +620,8 @@ public class EnemyEditorGui extends ActorGui {
 				mEnemyEditor.setBulletSpeed(newValue);
 			}
 		};
-		mWidgets.weapon.bulletSpeed = mUiFactory.addSlider(
-				"Speed",
-				Weapon.BULLET_SPEED_MIN,
-				Weapon.BULLET_SPEED_MAX,
-				Weapon.BULLET_SPEED_STEP_SIZE,
-				sliderListener,
-				table,
-				Messages.Tooltip.Enemy.Weapon.Bullet.SPEED,
-				onTab.hider,
-				mDisabledWhenPublished,
-				mInvoker);
+		mWidgets.weapon.bulletSpeed = mUiFactory.addSlider("Speed", Weapon.BULLET_SPEED_MIN, Weapon.BULLET_SPEED_MAX, Weapon.BULLET_SPEED_STEP_SIZE,
+				sliderListener, table, Messages.Tooltip.Enemy.Weapon.Bullet.SPEED, onTab.hider, mDisabledWhenPublished, mInvoker);
 
 		// Damage
 		sliderListener = new SliderListener() {
@@ -677,17 +630,8 @@ public class EnemyEditorGui extends ActorGui {
 				mEnemyEditor.setWeaponDamage(newValue);
 			}
 		};
-		mWidgets.weapon.damage = mUiFactory.addSlider(
-				"Damage",
-				Weapon.DAMAGE_MIN,
-				Weapon.DAMAGE_MAX,
-				Weapon.DAMAGE_STEP_SIZE,
-				sliderListener,
-				table,
-				Messages.Tooltip.Enemy.Weapon.Bullet.DAMAGE,
-				onTab.hider,
-				mDisabledWhenPublished,
-				mInvoker);
+		mWidgets.weapon.damage = mUiFactory.addSlider("Damage", Weapon.DAMAGE_MIN, Weapon.DAMAGE_MAX, Weapon.DAMAGE_STEP_SIZE, sliderListener, table,
+				Messages.Tooltip.Enemy.Weapon.Bullet.DAMAGE, onTab.hider, mDisabledWhenPublished, mInvoker);
 
 
 		// Cooldown
@@ -703,18 +647,9 @@ public class EnemyEditorGui extends ActorGui {
 				mEnemyEditor.setCooldownMax(newValue);
 			}
 		};
-		SliderMinMaxWrapper sliders = mUiFactory.addSliderMinMax(
-				"Weapon Cooldown Time",
-				Weapon.COOLDOWN_MIN,
-				Weapon.COOLDOWN_MAX,
-				Weapon.COOLDOWN_STEP_SIZE,
-				minSliderListener,
-				maxSliderListener,
-				table,
-				Messages.Tooltip.Enemy.Weapon.Bullet.COOLDOWN,
-				onTab.hider,
-				mDisabledWhenPublished,
-				mInvoker);
+		SliderMinMaxWrapper sliders = mUiFactory.addSliderMinMax("Weapon Cooldown Time", Weapon.COOLDOWN_MIN, Weapon.COOLDOWN_MAX,
+				Weapon.COOLDOWN_STEP_SIZE, minSliderListener, maxSliderListener, table, Messages.Tooltip.Enemy.Weapon.Bullet.COOLDOWN, onTab.hider,
+				mDisabledWhenPublished, mInvoker);
 
 		// Set sliders
 		mWidgets.weapon.cooldownMin = sliders.min;
@@ -821,17 +756,9 @@ public class EnemyEditorGui extends ActorGui {
 				mWidgets.weapon.aimRotateStartAngle.setValue(newValue);
 			}
 		};
-		mWidgets.weapon.aimDirectionAngle = mUiFactory.addSlider(
-				"Angle",
-				Enemy.Weapon.START_ANGLE_MIN,
-				Enemy.Weapon.START_ANGLE_MAX,
-				Enemy.Weapon.START_ANGLE_STEP_SIZE,
-				sliderListener,
-				table,
-				Messages.Tooltip.Enemy.Weapon.Aim.DIRECTION_ANGLE,
-				directionTab.hider,
-				mDisabledWhenPublished,
-				mInvoker);
+		mWidgets.weapon.aimDirectionAngle = mUiFactory.addSlider("Angle", Enemy.Weapon.START_ANGLE_MIN, Enemy.Weapon.START_ANGLE_MAX,
+				Enemy.Weapon.START_ANGLE_STEP_SIZE, sliderListener, table, Messages.Tooltip.Enemy.Weapon.Aim.DIRECTION_ANGLE, directionTab.hider,
+				mDisabledWhenPublished, mInvoker);
 
 		// Rotate options
 		// Angle
@@ -842,17 +769,9 @@ public class EnemyEditorGui extends ActorGui {
 				mWidgets.weapon.aimDirectionAngle.setValue(newValue);
 			}
 		};
-		mWidgets.weapon.aimRotateStartAngle = mUiFactory.addSlider(
-				"Angle",
-				Enemy.Weapon.START_ANGLE_MIN,
-				Enemy.Weapon.START_ANGLE_MAX,
-				Enemy.Weapon.START_ANGLE_STEP_SIZE,
-				sliderListener,
-				table,
-				Messages.Tooltip.Enemy.Weapon.Aim.ROTATE_START_ANGLE,
-				rotateTab.hider,
-				mDisabledWhenPublished,
-				mInvoker);
+		mWidgets.weapon.aimRotateStartAngle = mUiFactory.addSlider("Angle", Enemy.Weapon.START_ANGLE_MIN, Enemy.Weapon.START_ANGLE_MAX,
+				Enemy.Weapon.START_ANGLE_STEP_SIZE, sliderListener, table, Messages.Tooltip.Enemy.Weapon.Aim.ROTATE_START_ANGLE, rotateTab.hider,
+				mDisabledWhenPublished, mInvoker);
 
 		// Rotation speed
 		sliderListener = new SliderListener() {
@@ -861,17 +780,9 @@ public class EnemyEditorGui extends ActorGui {
 				mEnemyEditor.setAimRotateSpeed(newValue);
 			}
 		};
-		mWidgets.weapon.aimRotateSpeed = mUiFactory.addSlider(
-				"Speed",
-				Enemy.Weapon.ROTATE_SPEED_MIN,
-				Enemy.Weapon.ROTATE_SPEED_MAX,
-				Enemy.Weapon.ROTATE_SPEED_STEP_SIZE,
-				sliderListener,
-				table,
-				Messages.Tooltip.Enemy.Weapon.Aim.ROTATE_SPEED,
-				rotateTab.hider,
-				mDisabledWhenPublished,
-				mInvoker);
+		mWidgets.weapon.aimRotateSpeed = mUiFactory.addSlider("Speed", Enemy.Weapon.ROTATE_SPEED_MIN, Enemy.Weapon.ROTATE_SPEED_MAX,
+				Enemy.Weapon.ROTATE_SPEED_STEP_SIZE, sliderListener, table, Messages.Tooltip.Enemy.Weapon.Aim.ROTATE_SPEED, rotateTab.hider,
+				mDisabledWhenPublished, mInvoker);
 	}
 
 	// Tables

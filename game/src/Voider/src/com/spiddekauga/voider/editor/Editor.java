@@ -26,6 +26,7 @@ import com.spiddekauga.voider.network.entities.method.PublishMethodResponse;
 import com.spiddekauga.voider.repo.ICallerResponseListener;
 import com.spiddekauga.voider.repo.InternalNames;
 import com.spiddekauga.voider.repo.ResourceCacheFacade;
+import com.spiddekauga.voider.repo.ResourceLocalRepo;
 import com.spiddekauga.voider.repo.ResourceRepo;
 import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.scene.Gui;
@@ -103,6 +104,16 @@ public abstract class Editor extends WorldScene implements IEditor, ICallerRespo
 	@Override
 	protected void update(float deltaTime) {
 		super.update(deltaTime);
+
+		if (getDef() == null) {
+			((EditorGui) mGui).showFirstTimeMenu();
+			return;
+		}
+
+		// Show info dialog after the resource has been created
+		if (getDef().getName().equals(Config.Actor.NAME_DEFAULT)) {
+			((EditorGui) mGui).showInfoDialog();
+		}
 
 		if (shallAutoSave()) {
 			saveDef();
@@ -467,35 +478,29 @@ public abstract class Editor extends WorldScene implements IEditor, ICallerRespo
 		return mSaving;
 	}
 
-	/**
-	 * Turn on or off the grid
-	 * @param on true if the grid shall be turned on, false if turned off
-	 */
-	void setGrid(boolean on) {
+	@Override
+	public void setGrid(boolean on) {
 		mGridRender = on;
 	}
 
-	/**
-	 * @return true if the grid is turned on, false if off.
-	 */
-	boolean isGridOn() {
+	@Override
+	public boolean isGridOn() {
 		return mGridRender;
 	}
 
-	/**
-	 * Make the grid render above all resources
-	 * @param above set to true to render the grid above all resources, false to render
-	 *        below
-	 */
-	void setGridRenderAboveResources(boolean above) {
+	@Override
+	public void setGridRenderAboveResources(boolean above) {
 		mGridRenderAboveResources = above;
 	}
 
-	/**
-	 * @return true if the grid is rendered above all resources, false if below
-	 */
-	boolean isGridRenderAboveResources() {
+	@Override
+	public boolean isGridRenderAboveResources() {
 		return mGridRenderAboveResources;
+	}
+
+	@Override
+	public boolean isJustCreated() {
+		return getDef() == null || !ResourceLocalRepo.exists(getDef().getId());
 	}
 
 	/**

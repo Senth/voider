@@ -96,7 +96,7 @@ com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
 	
 	highlight: {
 		font: default_font,
-		fontColor: red,
+		fontColor: highlight,
 	},
 	
 	error: {
@@ -115,6 +115,13 @@ com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
 	},
 	
 	editor_name: {
+		font: default_font,
+		fontColor: grey_light,
+	},
+	
+	// In front of error (usually above/below text fields)
+	// E.g. When trying to register and passwords don't match
+	error_section_info: {
 		font: default_font,
 		fontColor: grey_light,
 	},
