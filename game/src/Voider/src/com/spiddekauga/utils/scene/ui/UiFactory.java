@@ -11,6 +11,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
+import com.badlogic.gdx.scenes.scene2d.ui.SelectBox.SelectBoxStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider.SliderStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.TextArea;
@@ -19,6 +21,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
 import com.spiddekauga.utils.commands.Invoker;
+import com.spiddekauga.utils.scene.ui.Align.Horizontal;
+import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.voider.editor.commands.GuiCheckCommandCreator;
 import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.resources.SkinNames.ISkinNames;
@@ -90,6 +94,7 @@ public class UiFactory {
 	public Label addErrorLabel(String labelText, boolean labelIsSection, AlignTable table, ArrayList<Actor> createdActors) {
 		AlignTable wrapTable = new AlignTable();
 		table.add(wrapTable);
+		table.row();
 		wrapTable.setMaxWidth(mStyles.vars.textFieldWidth);
 		wrapTable.row().setFillWidth(true);
 
@@ -100,8 +105,8 @@ public class UiFactory {
 		}
 
 		// Add error label
-		mCreatedErrorLabelLast = new Label("", mStyles.label.error);
-		wrapTable.add(mCreatedErrorLabelLast).setFillWidth(true);
+		mCreatedErrorLabelLast = new Label("", mStyles.label.errorSection);
+		wrapTable.add(mCreatedErrorLabelLast).setAlign(Horizontal.RIGHT, Vertical.MIDDLE);
 
 		doExtraActionsOnActors(null, null, createdActors, label, mCreatedErrorLabelLast);
 
@@ -124,17 +129,12 @@ public class UiFactory {
 			ArrayList<Actor> createdActors) {
 		// Label
 		if (sectionText != null) {
-
 			// If error label, wrap the both labels in another table with fixed width
 			if (errorLabel) {
 				addErrorLabel(sectionText, true, table, createdActors);
 			} else {
-				Label label = addSection(sectionText, table, null);
-				doExtraActionsOnActors(null, null, createdActors, label);
-
+				addSection(sectionText, table, null, createdActors);
 			}
-			table.row();
-
 		}
 
 		TextField textField = new TextField(defaultText, mStyles.textField.standard);
@@ -142,6 +142,7 @@ public class UiFactory {
 		listener.setDefaultText(defaultText);
 
 		// Set width and height
+		table.row();
 		table.add(textField).setSize(mStyles.vars.textFieldWidth, mStyles.vars.rowHeight);
 
 		doExtraActionsOnActors(null, null, createdActors, textField);
@@ -160,17 +161,14 @@ public class UiFactory {
 	 */
 	public TextArea addTextArea(String sectionText, String defaultText, TextFieldListener listener, AlignTable table, ArrayList<Actor> createdActors) {
 		// Label
-		if (sectionText != null) {
-			Label label = addSection(sectionText, table, null);
-			doExtraActionsOnActors(null, null, createdActors, label);
-			table.row();
-		}
+		addSection(sectionText, table, null, createdActors);
 
 		TextArea textArea = new TextArea(defaultText, mStyles.textField.standard);
 		listener.setTextField(textArea);
 		listener.setDefaultText(defaultText);
 
 		// Set width and height
+		table.row();
 		table.add(textArea).setSize(mStyles.vars.textFieldWidth, mStyles.vars.textAreaHeight);
 
 		doExtraActionsOnActors(null, null, createdActors, textArea);
@@ -178,6 +176,31 @@ public class UiFactory {
 		return textArea;
 	}
 
+	/**
+	 * Adds a selection box with optional label header
+	 * @param <SelectType> Type that's stored in the select box
+	 * @param sectionText optional text for the label (if not null)
+	 * @param items all selectable items
+	 * @param listener selection box listener
+	 * @param table the table to add the selection box to
+	 * @param createdActors optional adds all created elements to this list
+	 * @return created selection box
+	 */
+	public <SelectType> SelectBox<SelectType> addSelectBox(String sectionText, SelectType[] items, SelectBoxListener listener, AlignTable table,
+			ArrayList<Actor> createdActors) {
+		addSection(sectionText, table, null, createdActors);
+
+		SelectBox<SelectType> selectBox = new SelectBox<>(mStyles.select.standard);
+		selectBox.setItems(items);
+
+
+		table.row();
+		table.add(selectBox).setSize(mStyles.vars.textFieldWidth, mStyles.vars.rowHeight);
+
+		doExtraActionsOnActors(null, null, createdActors, selectBox);
+
+		return selectBox;
+	}
 
 	/**
 	 * Adds a min and max slider with section text to a table. These sliders are
@@ -283,9 +306,7 @@ public class UiFactory {
 		table.row();
 		table.add(label);
 
-		if (hider != null) {
-			hider.addToggleActor(label);
-		}
+		doExtraActionsOnActors(null, hider, null, label);
 
 		return label;
 	}
@@ -298,15 +319,28 @@ public class UiFactory {
 	 * @return label that was created
 	 */
 	public Label addSection(String text, AlignTable table, GuiHider hider) {
-		Label label = new Label(text, mStyles.label.standard);
-		table.row();
-		table.add(label).setHeight(mStyles.vars.rowHeight);
+		return addSection(text, table, hider, null);
+	}
 
-		if (hider != null) {
-			hider.addToggleActor(label);
+	/**
+	 * Add a section label
+	 * @param text section label text, if null this method does nothing
+	 * @param table the table to add the text to
+	 * @param hider optional hider to hide the label
+	 * @param createdActors optional adds the created label to this array
+	 * @return label that was created
+	 */
+	private Label addSection(String text, AlignTable table, GuiHider hider, ArrayList<Actor> createdActors) {
+		if (text != null) {
+			Label label = new Label(text, mStyles.label.standard);
+			table.row();
+			table.add(label).setHeight(mStyles.vars.rowHeight);
+
+			doExtraActionsOnActors(null, hider, createdActors, label);
+			return label;
+		} else {
+			return null;
 		}
-
-		return label;
 	}
 
 
@@ -476,13 +510,16 @@ public class UiFactory {
 		mStyles.label.standard = SkinNames.getResource(SkinNames.General.LABEL_DEFAULT);
 		mStyles.label.panelSection = SkinNames.getResource(SkinNames.General.LABEL_PANEL_SECTION);
 		mStyles.label.errorSectionInfo = SkinNames.getResource(SkinNames.General.LABEL_ERROR_SECTION_INFO);
+		mStyles.label.errorSection = SkinNames.getResource(SkinNames.General.LABEL_ERROR_SECTION);
 		mStyles.label.error = SkinNames.getResource(SkinNames.General.LABEL_ERROR);
 		mStyles.checkBox.checkBox = SkinNames.getResource(SkinNames.General.CHECK_BOX_DEFAULT);
 		mStyles.checkBox.radio = SkinNames.getResource(SkinNames.General.CHECK_BOX_RADIO);
+		mStyles.select.standard = SkinNames.getResource(SkinNames.General.SELECT_BOX_DEFAULT);
 
 		// Vars
 		mStyles.vars.paddingCheckBox = SkinNames.getResource(SkinNames.GeneralVars.PADDING_CHECKBOX);
 		mStyles.vars.paddingOuter = SkinNames.getResource(SkinNames.GeneralVars.PADDING_OUTER);
+		mStyles.vars.paddingInner = SkinNames.getResource(SkinNames.GeneralVars.PADDING_INNER);
 		mStyles.vars.textFieldNumberWidth = SkinNames.getResource(SkinNames.GeneralVars.TEXT_FIELD_NUMBER_WIDTH);
 		mStyles.vars.textFieldWidth = SkinNames.getResource(SkinNames.GeneralVars.TEXT_FIELD_WIDTH);
 		mStyles.vars.sliderWidth = SkinNames.getResource(SkinNames.GeneralVars.SLIDER_WIDTH);
@@ -595,47 +632,61 @@ public class UiFactory {
 	}
 
 	/**
+	 * @return UiStyles
+	 */
+	public UiStyles getStyles() {
+		return mStyles;
+	}
+
+	/**
 	 * Container for all ui styles
 	 */
 	@SuppressWarnings("javadoc")
-	private static class UiStyles {
-		Sliders slider = new Sliders();
-		TextFields textField = new TextFields();
-		Labels label = new Labels();
-		CheckBoxes checkBox = new CheckBoxes();
-		Variables vars = new Variables();
+	public static class UiStyles {
+		public Sliders slider = new Sliders();
+		public TextFields textField = new TextFields();
+		public Labels label = new Labels();
+		public CheckBoxes checkBox = new CheckBoxes();
+		public Variables vars = new Variables();
+		public SelectBoxes select = new SelectBoxes();
 
-		static class Variables {
-			float textFieldNumberWidth = 0;
-			float sliderWidth = 0;
-			float sliderLabelWidth = 0;
-			float paddingCheckBox = 0;
-			float paddingOuter = 0;
-			float rowHeight = 0;
-			float textAreaHeight = 0;
-			float textFieldWidth = 0;
-			float textButtonHeight = 0;
-			float textButtonWidth = 0;
+		public static class SelectBoxes {
+			public SelectBoxStyle standard = null;
+		}
+
+		public static class Variables {
+			public float textFieldNumberWidth = 0;
+			public float sliderWidth = 0;
+			public float sliderLabelWidth = 0;
+			public float paddingCheckBox = 0;
+			public float paddingOuter = 0;
+			public float paddingInner = 0;
+			public float rowHeight = 0;
+			public float textAreaHeight = 0;
+			public float textFieldWidth = 0;
+			public float textButtonHeight = 0;
+			public float textButtonWidth = 0;
 		}
 
 		static class Sliders {
-			SliderStyle standard = null;
+			public SliderStyle standard = null;
 		}
 
 		static class TextFields {
-			TextFieldStyle standard = null;
+			public TextFieldStyle standard = null;
 		}
 
 		static class Labels {
-			LabelStyle standard = null;
-			LabelStyle panelSection = null;
-			LabelStyle errorSectionInfo = null;
-			LabelStyle error = null;
+			public LabelStyle standard = null;
+			public LabelStyle panelSection = null;
+			public LabelStyle errorSectionInfo = null;
+			public LabelStyle errorSection = null;
+			public LabelStyle error = null;
 		}
 
 		static class CheckBoxes {
-			CheckBoxStyle radio = null;
-			CheckBoxStyle checkBox = null;
+			public CheckBoxStyle radio = null;
+			public CheckBoxStyle checkBox = null;
 		}
 	}
 

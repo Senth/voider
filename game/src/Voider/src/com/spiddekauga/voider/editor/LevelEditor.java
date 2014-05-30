@@ -130,7 +130,6 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		super.update(deltaTime);
 
 		if (mLevel == null) {
-			((EditorGui) mGui).showFirstTimeMenu();
 			return;
 		}
 

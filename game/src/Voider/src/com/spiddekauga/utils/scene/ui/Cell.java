@@ -547,6 +547,14 @@ public class Cell implements Poolable {
 							correctWidth = mAspectRatio * correctHeight;
 						}
 					}
+					// Correct height
+					else if (mFixedWidth) {
+						correctHeight = mActor.getWidth() / mAspectRatio;
+					}
+					// Correct width
+					else if (mFixedHeight) {
+						correctWidth = mActor.getHeight() * mAspectRatio;
+					}
 
 					mActor.setWidth(correctWidth);
 					mActor.setHeight(correctHeight);

@@ -538,6 +538,8 @@ public class SkinNames {
 		LABEL_EDITOR_NAME(LabelStyle.class, "editor_name"),
 		/** In front of error (usually above/below text fields). */
 		LABEL_ERROR_SECTION_INFO(LabelStyle.class, "error_section_info"),
+		/** Section error message (usually above/below text fields). */
+		LABEL_ERROR_SECTION(LabelStyle.class, "error_section"),
 		/** List default */
 		LIST_DEFAULT(ListStyle.class, "default"),
 		/** Logout button */

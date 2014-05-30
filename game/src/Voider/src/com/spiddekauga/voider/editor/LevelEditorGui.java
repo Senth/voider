@@ -10,7 +10,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
-import com.badlogic.gdx.scenes.scene2d.ui.SelectBox.SelectBoxStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
@@ -40,7 +39,6 @@ import com.spiddekauga.voider.game.Themes;
 import com.spiddekauga.voider.game.actors.EnemyActorDef;
 import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.resources.SkinNames.EditorIcons;
-import com.spiddekauga.voider.resources.SkinNames.General;
 import com.spiddekauga.voider.utils.Messages;
 
 /**
@@ -170,8 +168,7 @@ class LevelEditorGui extends EditorGui {
 	void resetLevelInfo() {
 		mWidgets.info.description.setText(mLevelEditor.getDescription());
 		mWidgets.info.name.setText(mLevelEditor.getName());
-		mWidgets.info.revision.setText(mLevelEditor.getLevelRevision());
-		mWidgets.info.storyBefore.setText(mLevelEditor.getPrologue());
+		mWidgets.info.prologue.setText(mLevelEditor.getPrologue());
 		mWidgets.info.epilogue.setText(mLevelEditor.getEpilogue());
 		mWidgets.info.speed.setValue(mLevelEditor.getLevelStartingSpeed());
 		mWidgets.info.theme.setSelectedIndex(mLevelEditor.getTheme().ordinal());
@@ -502,27 +499,24 @@ class LevelEditorGui extends EditorGui {
 	 * Initializes level info content for message box
 	 */
 	private void initInfo() {
+		mInfoTable.setAlignTable(Horizontal.CENTER, Vertical.MIDDLE);
+		mInfoTable.setAlignRow(Horizontal.LEFT, Vertical.TOP);
+
+		float paddingInner = mUiFactory.getStyles().vars.paddingInner;
+		mInfoTable.setPadding(0, paddingInner, 0, paddingInner);
+
 		AlignTable left = new AlignTable();
 		AlignTable right = new AlignTable();
-		mInfoTable.setAlignRow(Horizontal.LEFT, Vertical.TOP);
-		left.setPreferences(mInfoTable);
-		right.setPreferences(mInfoTable);
-
-		float halfWidth = Gdx.graphics.getWidth() * Config.Editor.Level.OPTIONS_WIDTH * 0.5f;
-		float height = Gdx.graphics.getHeight() * Config.Editor.Level.OPTIONS_HEIGHT;
-
-		mInfoTable.row().setPadTop(10);
-		mInfoTable.add(left);
+		left.setAlign(Horizontal.LEFT, Vertical.MIDDLE);
+		right.setAlign(Horizontal.LEFT, Vertical.MIDDLE);
+		mInfoTable.add(left).setPadRight(mStyles.vars.paddingInner);
 		mInfoTable.add(right);
 
-		left.setSize(halfWidth, height);
-		right.setSize(halfWidth, height);
-		left.setKeepSize(true);
-		right.setKeepSize(true);
 
 		TextFieldListener textFieldListener;
 
-		// Left side
+
+		// --- Left side ---
 		// Name
 		textFieldListener = new TextFieldListener(mInvoker) {
 			@Override
@@ -535,134 +529,78 @@ class LevelEditorGui extends EditorGui {
 		mWidgets.info.name.setMaxLength(Config.Editor.NAME_LENGTH_MAX);
 		mWidgets.info.nameError = mUiFactory.getLastCreatedErrorLabel();
 
-		// Description
-		left.row();
-		Label label = new Label("Description", mStyles.label.standard);
-		new TooltipListener(label, Messages.Tooltip.Level.Option.DESCRIPTION);
-		left.add(label);
-
-		left.row().setFillWidth(true).setFillHeight(true);
-		TextField textField = new TextField("", mStyles.textField.standard);
-		mDisabledWhenPublished.add(textField);
-		textField.setMaxLength(Config.Editor.DESCRIPTION_LENGTH_MAX);
-		left.add(textField).setFillHeight(true).setFillWidth(true);
-		mWidgets.info.description = textField;
-		new TooltipListener(textField, Messages.Tooltip.Level.Option.DESCRIPTION);
-		new TextFieldListener(textField, "Set your description...", mInvoker) {
-			@Override
-			protected void onChange(String newText) {
-				mLevelEditor.setDescription(newText);
-			}
-		};
-
-		// Speed
-		left.row().setFillWidth(true);
-		label = new Label("Level Speed", mStyles.label.standard);
-		new TooltipListener(label, Messages.Tooltip.Level.Option.LEVEL_SPEED);
-		left.add(label).setPadRight(mStyles.vars.paddingAfterLabel);
-
-		Slider slider = new Slider(Editor.Level.LEVEL_SPEED_MIN, Editor.Level.LEVEL_SPEED_MAX, Editor.Level.LEVEL_SPEED_STEP_SIZE, false,
-				mStyles.slider.standard);
-		left.add(slider).setFillWidth(true);
-		mWidgets.info.speed = slider;
-
-		textField = new TextField("", mStyles.textField.standard);
-		mDisabledWhenPublished.add(textField);
-		new TooltipListener(textField, Messages.Tooltip.Level.Option.LEVEL_SPEED);
-		left.add(textField).setWidth(mStyles.vars.textFieldNumberWidth);
-		new SliderListener(slider, textField, mInvoker) {
-			@Override
-			protected void onChange(float newValue) {
-				mLevelEditor.setLevelStartingSpeed(newValue);
-			}
-		};
-
 		// Theme
-		left.row().setFillWidth(true);
-		label = new Label("Theme", mStyles.label.standard);
-		left.add(label).setPadRight(mStyles.vars.paddingAfterLabel);
-		/** @todo add tooltip for the level's theme */
-		SelectBox<Themes> selectBox = new SelectBox<Themes>((SelectBoxStyle) SkinNames.getResource(General.SELECT_BOX_DEFAULT));
-		selectBox.setItems(Themes.values());
-		mDisabledWhenPublished.add(selectBox);
-		mWidgets.info.theme = selectBox;
-		left.add(selectBox).setFillWidth(true);
-		new SelectBoxListener(selectBox) {
+		SelectBoxListener selectBoxListener = new SelectBoxListener() {
 			@Override
 			protected void onSelectionChanged(int itemIndex) {
 				mLevelEditor.setTheme(Themes.values()[itemIndex]);
 			}
 		};
+		mWidgets.info.theme = mUiFactory.addSelectBox("Theme", Themes.values(), selectBoxListener, left, mDisabledWhenPublished);
 
-		// Revision
-		left.row().setAlign(Horizontal.LEFT, Vertical.MIDDLE);
-		label = new Label("Revision:", mStyles.label.standard);
-		new TooltipListener(label, Messages.Tooltip.Level.Option.REVISION);
-		left.add(label).setPadRight(mStyles.vars.paddingAfterLabel);
+		// Speed
+		mUiFactory.addSection("Level Speed", left, null);
+		SliderListener sliderListener = new SliderListener() {
+			@Override
+			protected void onChange(float newValue) {
+				mLevelEditor.setLevelStartingSpeed(newValue);
+			}
+		};
+		mWidgets.info.speed = mUiFactory.addSlider(null, Editor.Level.LEVEL_SPEED_MIN, Editor.Level.LEVEL_SPEED_MAX,
+				Editor.Level.LEVEL_SPEED_STEP_SIZE, sliderListener, left, null, null, mDisabledWhenPublished, mInvoker);
 
-		label = new Label("", mStyles.label.standard);
-		new TooltipListener(label, Messages.Tooltip.Level.Option.REVISION);
-		left.add(label);
-		mWidgets.info.revision = label;
-
-
-		// RIGHT
 		// Screenshot image
-		right.row().setAlign(Horizontal.CENTER, Vertical.MIDDLE);
+		mUiFactory.addSection("Level/Screenshot Image", left, null);
+		left.row().setAlign(Horizontal.CENTER, Vertical.MIDDLE);
 		mWidgets.info.image = new Image();
-		right.add(mWidgets.info.image);
+		left.add(mWidgets.info.image).setWidth(mUiFactory.getStyles().vars.textFieldWidth);
+
+
+		// --- Right side ---
+		// Description
+		textFieldListener = new TextFieldListener(mInvoker) {
+			@Override
+			protected void onChange(String newText) {
+				mLevelEditor.setDescription(newText);
+			}
+		};
+		mWidgets.info.description = mUiFactory.addTextArea("Description",
+				Messages.replaceName(Messages.Editor.DESCRIPTION_FIELD_DEFAULT, getResourceTypeName()), textFieldListener, right,
+				mDisabledWhenPublished);
+
 
 		// Prologue
-		right.row();
-		label = new Label("Prologue", mStyles.label.standard);
-		new TooltipListener(label, Messages.Tooltip.Level.Option.PROLOGUE);
-		right.add(label);
-
-		right.row().setFillWidth(true).setFillHeight(true);
-		textField = new TextField("", mStyles.textField.standard);
-		mDisabledWhenPublished.add(textField);
-		textField.setMaxLength(Config.Editor.STORY_LENGTH_MAX);
-		right.add(textField).setFillWidth(true).setFillHeight(true);
-		mWidgets.info.storyBefore = textField;
-		new TooltipListener(textField, Messages.Tooltip.Level.Option.PROLOGUE);
-		new TextFieldListener(textField, "Write a story to be displayed when loading the level (optional)...", mInvoker) {
+		textFieldListener = new TextFieldListener(mInvoker) {
 			@Override
 			protected void onChange(String newText) {
 				mLevelEditor.setPrologue(newText);
 			}
 		};
+		mWidgets.info.prologue = mUiFactory
+				.addTextArea("Prologue", Messages.Level.PROLOGUE_DEFAULT, textFieldListener, right, mDisabledWhenPublished);
 
 		// Epilogue
-		right.row();
-		label = new Label("Epilogue", mStyles.label.standard);
-		new TooltipListener(label, Messages.Tooltip.Level.Option.EPILOGUE);
-		right.add(label);
-
-		right.row().setFillWidth(true).setFillHeight(true);
-		textField = new TextField("", mStyles.textField.standard);
-		mDisabledWhenPublished.add(textField);
-		textField.setMaxLength(Config.Editor.STORY_LENGTH_MAX);
-		right.add(textField).setFillWidth(true).setFillHeight(true);
-		mWidgets.info.epilogue = textField;
-		new TooltipListener(textField, Messages.Tooltip.Level.Option.EPILOGUE);
-		new TextFieldListener(textField, "Write the story to be displayed when the level is completed (optional)...", mInvoker) {
+		textFieldListener = new TextFieldListener(mInvoker) {
 			@Override
 			protected void onChange(String newText) {
 				mLevelEditor.setEpilogue(newText);
 			}
 		};
+		mWidgets.info.epilogue = mUiFactory
+				.addTextArea("Epilogue", Messages.Level.EPILOGUE_DEFAULT, textFieldListener, right, mDisabledWhenPublished);
 
-		mInfoTable.setTransform(true);
 		mInfoTable.layout();
-		mInfoTable.setKeepSize(true);
 	}
 
 	/**
 	 * Update screenshot image
 	 */
 	void resetImage() {
+		float width = mStyles.vars.textFieldWidth;
+		float height = width / Config.Level.SAVE_TEXTURE_RATIO;
+
 		mWidgets.info.image.setDrawable(mLevelEditor.getImage());
-		mWidgets.info.image.setSize(Config.Level.SAVE_TEXTURE_WIDTH, Config.Level.SAVE_TEXTURE_HEIGHT);
+		mWidgets.info.image.setSize(width, height);
 		mWidgets.info.image.setVisible(true);
 		mWidgets.info.image.invalidate();
 	}
@@ -947,6 +885,7 @@ class LevelEditorGui extends EditorGui {
 	@Override
 	public void setInfoNameError(String errorText) {
 		mWidgets.info.nameError.setText(errorText);
+		mWidgets.info.nameError.invalidateHierarchy();
 	}
 
 	/** Pickup table */
@@ -1056,8 +995,7 @@ class LevelEditorGui extends EditorGui {
 			TextField description = null;
 			Slider speed = null;
 			SelectBox<Themes> theme = null;
-			Label revision = null;
-			TextField storyBefore = null;
+			TextField prologue = null;
 			TextField epilogue = null;
 			Image image = null;
 		}

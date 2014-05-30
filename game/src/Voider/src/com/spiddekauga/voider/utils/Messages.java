@@ -116,6 +116,10 @@ public class Messages {
 		public final static String COMPLETED_HEADER = "Congratulations!";
 		/** Header for game over */
 		public final static String GAME_OVER_HEADER = "Game Over!";
+		/** Prologue default field */
+		public final static String PROLOGUE_DEFAULT = "Write a short prologue to be displayed at the start of the level...";
+		/** Epilogue default field */
+		public final static String EPILOGUE_DEFAULT = "Write a short epilogue to be displayed at the end of the level...";
 	}
 
 	/**
@@ -160,7 +164,7 @@ public class Messages {
 		public final static String BUG_REPORT_INFO = "The game has crashed due to some unknown bug. "
 				+ "Please describe the last 2 steps you did; this helps enormously when debugging :)";
 		/** Name must contain X characters */
-		public final static String NAME_CHARACTERS_MIN = "* Must contain at least " + Config.Actor.NAME_LENGTH_MIN + " characters";
+		public final static String NAME_CHARACTERS_MIN = "must contain at least " + Config.Actor.NAME_LENGTH_MIN + " characters";
 	}
 
 	/**

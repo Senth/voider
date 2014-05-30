@@ -1,8 +1,8 @@
 package com.spiddekauga.voider.editor.commands;
 
-import com.badlogic.gdx.scenes.scene2d.ui.MsgBox;
 import com.spiddekauga.utils.Strings;
 import com.spiddekauga.utils.commands.Command;
+import com.spiddekauga.utils.scene.ui.MsgBox;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.editor.EditorGui;
 import com.spiddekauga.voider.editor.IActorEditor;
@@ -27,7 +27,7 @@ public class CDefHasValidName extends Command {
 		mGui = gui;
 		mEditor = editor;
 
-		mEnterNameMessage = "* Please enter a";
+		mEnterNameMessage = "please enter a";
 		if (Strings.beginsWithWovel(defTypeName)) {
 			mEnterNameMessage += "n";
 		}

@@ -181,6 +181,7 @@ public abstract class EditorGui extends Gui {
 		mStyles.vars.paddingInner = SkinNames.getResource(SkinNames.GeneralVars.PADDING_INNER);
 		mStyles.vars.textFieldNumberWidth = SkinNames.getResource(SkinNames.GeneralVars.TEXT_FIELD_NUMBER_WIDTH);
 		mStyles.vars.barUpperLowerHeight = SkinNames.getResource(SkinNames.GeneralVars.BAR_UPPER_LOWER_HEIGHT);
+		mStyles.vars.textFieldWidth = SkinNames.getResource(SkinNames.GeneralVars.TEXT_FIELD_WIDTH);
 	}
 
 	/**
@@ -872,6 +873,7 @@ public abstract class EditorGui extends Gui {
 			float paddingInner = 0;
 			float barUpperLowerHeight = 0;
 			float textFieldNumberWidth = 0;
+			float textFieldWidth = 0;
 		}
 
 		static class Colors {

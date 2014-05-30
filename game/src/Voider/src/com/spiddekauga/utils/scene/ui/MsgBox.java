@@ -1,16 +1,23 @@
-package com.badlogic.gdx.scenes.scene2d.ui;
+package com.spiddekauga.utils.scene.ui;
 
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.utils.GdxRuntimeException;
+import com.badlogic.gdx.utils.ObjectMap;
+import com.badlogic.gdx.utils.reflect.ClassReflection;
+import com.badlogic.gdx.utils.reflect.Field;
+import com.badlogic.gdx.utils.reflect.ReflectionException;
 import com.spiddekauga.utils.commands.Command;
-import com.spiddekauga.utils.scene.ui.AlignTable;
-import com.spiddekauga.utils.scene.ui.Cell;
-import com.spiddekauga.utils.scene.ui.UiFactory;
 import com.spiddekauga.utils.scene.ui.UiFactory.TextButtonStyles;
 
 /**
@@ -52,25 +59,51 @@ public class MsgBox extends Dialog {
 	 * Initializes the MsgBox
 	 */
 	private void init() {
-		buttonTable.add(mButtonTable);
+		float paddingInner = mUiFactory.getStyles().vars.paddingInner;
+
+		getButtonTable().add(mButtonTable);
+		mButtonTable.setPadding(paddingInner);
 
 		defaults().space(0);
-		contentTable.defaults().space(0);
-		buttonTable.defaults().space(0);
+		defaults().pad(0);
+		getContentTable().defaults().space(0);
+		getContentTable().defaults().pad(0);
+		getButtonTable().defaults().space(0);
+		getButtonTable().defaults().pad(0);
 
+		try {
+			mfCancelHide = ClassReflection.getDeclaredField(Dialog.class, "cancelHide");
+			mfCancelHide.setAccessible(true);
+		} catch (ReflectionException e) {
+			e.printStackTrace();
+			throw new GdxRuntimeException(e);
+		}
+
+
+		final MsgBox msgBox = this;
 		mButtonTable.addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
-				if (!values.containsKey(actor)) {
+				if (!mValues.containsKey(actor)) {
 					return;
 				}
-				result(values.get(actor));
-				if (!cancelHide) {
-					hide();
+				result(mValues.get(actor));
+				try {
+					if (!(boolean) mfCancelHide.get(msgBox)) {
+						hide();
+					}
+					mfCancelHide.set(msgBox, false);
+				} catch (ReflectionException e) {
+					e.printStackTrace();
+					throw new GdxRuntimeException(e);
 				}
-				cancelHide = false;
 			}
 		});
+	}
+
+	@Override
+	public void setObject(Actor actor, Object object) {
+		mValues.put(actor, object);
 	}
 
 	/**
@@ -84,9 +117,9 @@ public class MsgBox extends Dialog {
 		setKeepWithinStage(true);
 		setTitle("");
 		setTitleAlignment(Align.center);
-		contentTable.clearChildren();
+		getContentTable().clearChildren();
 		mButtonTable.dispose();
-		values.clear();
+		mValues.clear();
 		clearActions();
 	}
 
@@ -94,7 +127,7 @@ public class MsgBox extends Dialog {
 	 * Clears the content
 	 */
 	public void clearContent() {
-		contentTable.clearChildren();
+		getContentTable().clearChildren();
 	}
 
 	/**
@@ -103,7 +136,7 @@ public class MsgBox extends Dialog {
 	 * @return this message box for chaining
 	 */
 	public MsgBox content(Actor actor) {
-		contentTable.add(actor);
+		getContentTable().add(actor);
 		if (actor instanceof AlignTable) {
 			((AlignTable) actor).layout();
 		}
@@ -139,7 +172,7 @@ public class MsgBox extends Dialog {
 	 * @return this message box for chaining
 	 */
 	public MsgBox contentRow() {
-		contentTable.row();
+		getContentTable().row();
 		return this;
 	}
 
@@ -327,6 +360,10 @@ public class MsgBox extends Dialog {
 		}
 	}
 
+	/** Pointer to cancelHide in Dialog */
+	Field mfCancelHide = null;
+	/** Objects associated with a button */
+	ObjectMap<Actor, Object> mValues = new ObjectMap<>();
 	/** Default cancel text */
 	private static final String CANCEL_TEXT = "Cancel";
 	/** Button table */

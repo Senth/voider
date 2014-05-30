@@ -1,6 +1,5 @@
 package com.spiddekauga.utils.scene.ui;
 
-import com.badlogic.gdx.scenes.scene2d.ui.MsgBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.spiddekauga.utils.commands.Command;
 

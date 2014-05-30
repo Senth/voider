@@ -125,6 +125,11 @@ com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
 		font: default_font,
 		fontColor: grey_light,
 	},
+	// The error message in the section
+	error_section: {
+		font: default12,
+		fontColor: red,
+	}
 },
 
 com.spiddekauga.utils.scene.ui.AnimationWidget$AnimationWidgetStyle:  {
