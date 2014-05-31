@@ -6,6 +6,13 @@
         <property name="published_key" direction="asc"/>
     </datastore-index>
 
+    <!-- Used 1 time in query history -->
+    <datastore-index kind="user_resources_deleted" ancestor="true" source="auto">
+        <property name="date" direction="asc"/>
+        <property name="resource_id-least" direction="asc"/>
+        <property name="resource_id-most" direction="asc"/>
+    </datastore-index>
+
     <!-- Used 10 times in query history -->
     <datastore-index kind="user_resources" ancestor="true" source="auto">
         <property name="uploaded" direction="asc"/>
@@ -67,6 +74,12 @@
         <property name="created" direction="asc"/>
         <property name="resource_id-most" direction="asc"/>
         <property name="type" direction="asc"/>
+    </datastore-index>
+    
+        <!-- Used 1 time in query history -->
+    <datastore-index kind="published" ancestor="false" source="auto">
+        <property name="type" direction="asc"/>
+        <property name="date" direction="desc"/>
     </datastore-index>
 
 </datastore-indexes>
