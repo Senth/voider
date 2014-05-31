@@ -527,6 +527,7 @@ public abstract class ActorGui extends EditorGui {
 	@Override
 	public void setInfoNameError(String errorText) {
 		mWidgets.info.nameError.setText(errorText);
+		mWidgets.info.nameError.pack();
 	}
 
 	/**

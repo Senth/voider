@@ -205,14 +205,7 @@ public class EnemyEditor extends ActorEditor {
 		super.update(deltaTime);
 
 		if (mDef == null) {
-			((EditorGui) mGui).showFirstTimeMenu();
 			return;
-		}
-
-		// Force the player to set a name
-		if (mDef.getName().equals(Config.Actor.NAME_DEFAULT)) {
-			((ActorGui) mGui).showInfoDialog();
-			mGui.showHighlightMessage("Please enter an enemy name");
 		}
 
 		mPlayerActor.update(deltaTime);

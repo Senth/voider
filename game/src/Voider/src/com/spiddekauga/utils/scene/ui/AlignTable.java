@@ -339,16 +339,18 @@ public class AlignTable extends WidgetGroup implements Disposable {
 					Actor actor = cell.getActor();
 					if (actor instanceof AlignTable) {
 						((AlignTable) actor).getActors(onlyVisible, actors);
-					} else if (actor.getClass() == Table.class) {
-						SnapshotArray<Actor> tableActors = ((Table) actor).getChildren();
-						for (int i = 0; i < tableActors.size; ++i) {
-							Actor tableActor = tableActors.get(i);
-							if (!onlyVisible || cell.isVisible()) {
-								actors.add(tableActor);
-							}
-						}
 					} else if (actor != null) {
-						actors.add(actor);
+						if (actor.getClass() == Table.class) {
+							SnapshotArray<Actor> tableActors = ((Table) actor).getChildren();
+							for (int i = 0; i < tableActors.size; ++i) {
+								Actor tableActor = tableActors.get(i);
+								if (!onlyVisible || cell.isVisible()) {
+									actors.add(tableActor);
+								}
+							}
+						} else {
+							actors.add(actor);
+						}
 					}
 				}
 			}
