@@ -232,7 +232,7 @@ public class MsgBox extends Dialog {
 	 */
 	@Override
 	public MsgBox button(String text, Object object) {
-		Cell cell = mUiFactory.addTextButton(text, TextButtonStyles.PRESS, mButtonTable, null, null);
+		Cell cell = mUiFactory.addTextButton(text, TextButtonStyles.PRESS, mButtonTable, null, null, null);
 		setObject(cell.getActor(), object);
 		return this;
 	}

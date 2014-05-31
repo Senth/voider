@@ -56,10 +56,12 @@ public class UiFactory {
 	 * @param style which button style to use
 	 * @param table the table to add the text button to
 	 * @param listener optional button listener
+	 * @param hider optional GUI hider
 	 * @param createdActors optional adds the button to this list (if not null)
 	 * @return created text button cell
 	 */
-	public Cell addTextButton(String text, TextButtonStyles style, AlignTable table, ButtonListener listener, ArrayList<Actor> createdActors) {
+	public Cell addTextButton(String text, TextButtonStyles style, AlignTable table, ButtonListener listener, GuiHider hider,
+			ArrayList<Actor> createdActors) {
 		TextButton button = new TextButton(text, style.getStyle());
 
 		Cell cell = table.add(button);
@@ -69,7 +71,7 @@ public class UiFactory {
 			listener.setButton(button);
 		}
 
-		doExtraActionsOnActors(null, null, createdActors, button);
+		doExtraActionsOnActors(null, hider, createdActors, button);
 
 		return cell;
 	}

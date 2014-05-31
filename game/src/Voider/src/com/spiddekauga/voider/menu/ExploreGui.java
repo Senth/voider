@@ -18,8 +18,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane.ScrollPaneStyle;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
@@ -32,11 +30,13 @@ import com.spiddekauga.utils.scene.ui.AnimationWidget;
 import com.spiddekauga.utils.scene.ui.AnimationWidget.AnimationWidgetStyle;
 import com.spiddekauga.utils.scene.ui.Background;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
+import com.spiddekauga.utils.scene.ui.Cell;
 import com.spiddekauga.utils.scene.ui.HideListener;
 import com.spiddekauga.utils.scene.ui.RatingWidget;
 import com.spiddekauga.utils.scene.ui.RatingWidget.RatingWidgetStyle;
 import com.spiddekauga.utils.scene.ui.Row;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
+import com.spiddekauga.utils.scene.ui.UiFactory.TextButtonStyles;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.network.entities.LevelInfoEntity;
 import com.spiddekauga.voider.network.entities.Tags;
@@ -48,7 +48,6 @@ import com.spiddekauga.voider.utils.User;
 
 /**
  * GUI for explore scene
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class ExploreGui extends Gui {
@@ -85,7 +84,7 @@ public class ExploreGui extends Gui {
 
 			mWidgets.info.likes.setText(String.valueOf(level.stats.cLikes));
 			mWidgets.info.plays.setText(String.valueOf(level.stats.cPlayed));
-			mWidgets.info.rating.setRating((int)(level.stats.ratingAverage + 0.5f));
+			mWidgets.info.rating.setRating((int) (level.stats.ratingAverage + 0.5f));
 
 			// Set tags
 			String tagList = Strings.toStringList(level.tags, ", ");
@@ -275,8 +274,7 @@ public class ExploreGui extends Gui {
 	 * @return all selected tags
 	 */
 	private ArrayList<Tags> getSelectedTags() {
-		@SuppressWarnings("unchecked")
-		ArrayList<Tags> tags = Pools.arrayList.obtain();
+		@SuppressWarnings("unchecked") ArrayList<Tags> tags = Pools.arrayList.obtain();
 
 		for (Button selectedButton : mWidgets.tag.buttonGroup.getAllChecked()) {
 			tags.add(mWidgets.tag.buttonTag.get(selectedButton));
@@ -488,29 +486,26 @@ public class ExploreGui extends Gui {
 		AlignTable table = mWidgets.rightPanel;
 		table.row().setFillWidth(true).setEqualCellSize(true);
 
-		TextButtonStyle textButtonStyle = SkinNames.getResource(SkinNames.General.TEXT_BUTTON_PRESS);
-
-
 		// Menu
-		TextButton button = new TextButton("Menu", textButtonStyle);
-		table.add(button).setFillWidth(true);
-		new ButtonListener(button) {
+		ButtonListener buttonListener = new ButtonListener() {
 			@Override
 			protected void onPressed() {
 				mExploreScene.gotoMainMenu();
 			}
 		};
+		Cell cell = mUiFactory.addTextButton("Menu", TextButtonStyles.PRESS, table, buttonListener, null, null);
+		cell.resetWidth().setFillWidth(true);
 
 
 		// Play
-		button = new TextButton("Play", textButtonStyle);
-		table.add(button).setFillWidth(true);
-		new ButtonListener(button) {
+		buttonListener = new ButtonListener() {
 			@Override
 			protected void onPressed() {
 				mExploreScene.play();
 			}
 		};
+		cell = mUiFactory.addTextButton("Play", TextButtonStyles.PRESS, table, buttonListener, null, null);
+		cell.resetWidth().setFillWidth(true);
 	}
 
 	/**
@@ -522,9 +517,6 @@ public class ExploreGui extends Gui {
 		LabelStyle labelStyle = SkinNames.getResource(SkinNames.General.LABEL_DEFAULT);
 		CheckBoxStyle checkBoxStyle = SkinNames.getResource(SkinNames.General.CHECK_BOX_DEFAULT);
 		Color backgroundColor = SkinNames.getResource(SkinNames.GeneralVars.WIDGET_BACKGROUND_COLOR);
-		TextButtonStyle textButtonStyle = SkinNames.getResource(SkinNames.General.TEXT_BUTTON_PRESS);
-
-
 
 
 		// This table wraps the tag table with the tab table
@@ -587,14 +579,13 @@ public class ExploreGui extends Gui {
 		HideListener hideListener = new HideListener(imageButton, true) {
 			@Override
 			protected void onShow() {
-				//				mWidgets.tag.wrapper.setWidth(tableWidth);
+				// mWidgets.tag.wrapper.setWidth(tableWidth);
 				mWidgets.tag.wrapper.layout();
 				resetContent();
 			}
 
 			@Override
 			protected void onHide() {
-				//				mWidgets.tag.wrapper.setWidth(imageWidth);
 				mWidgets.tag.wrapper.layout();
 				resetContent();
 			}
@@ -604,10 +595,7 @@ public class ExploreGui extends Gui {
 
 
 		// Clear button
-		Button clearbutton = new TextButton("Clear tags", textButtonStyle);
-		wrapper.row();
-		wrapper.add(clearbutton).setWidth(tagTableWidth).setPadRight(imageWidth);
-		new ButtonListener(clearbutton) {
+		ButtonListener buttonListener = new ButtonListener() {
 			@Override
 			protected void onPressed() {
 				boolean tagsChanged = getSelectedTags().size() > 0;
@@ -621,7 +609,9 @@ public class ExploreGui extends Gui {
 				}
 			}
 		};
-		hideListener.addToggleActor(clearbutton);
+		wrapper.row();
+		Cell cell = mUiFactory.addTextButton("Clear Tags", TextButtonStyles.PRESS, wrapper, buttonListener, hideListener, null);
+		cell.setWidth(tagTableWidth).setPadRight(imageWidth);
 
 		wrapper.layout();
 	}
@@ -700,11 +690,11 @@ public class ExploreGui extends Gui {
 		AlignTable table = mWidgets.content.table;
 		table.dispose();
 
+		resetContentMargins();
+
 		if (levels.isEmpty()) {
 			return;
 		}
-
-		resetContentMargins();
 
 		mWidgets.content.buttonGroup = new ButtonGroup();
 
@@ -745,14 +735,14 @@ public class ExploreGui extends Gui {
 
 			ArrayList<Row> rows = table.getRows();
 			if (!rows.isEmpty()) {
-				Row lastRow = rows.get(rows.size()-1);
+				Row lastRow = rows.get(rows.size() - 1);
 				lastRow.removeEmptyCells();
 				columnIndex = lastRow.getCellCount();
 			}
 		}
 
 
-		//		for (int i = 0; i < 15; ++i) {
+		// for (int i = 0; i < 15; ++i) {
 		for (LevelInfoEntity level : levels) {
 			AlignTable levelTable = createLevelTable(level);
 
@@ -766,7 +756,7 @@ public class ExploreGui extends Gui {
 
 			columnIndex++;
 		}
-		//		}
+		// }
 
 		// Pad with empty cells
 		if (columnIndex > 0 && columnIndex < levelsPerRow) {
