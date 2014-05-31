@@ -885,7 +885,7 @@ class LevelEditorGui extends EditorGui {
 	@Override
 	public void setInfoNameError(String errorText) {
 		mWidgets.info.nameError.setText(errorText);
-		mWidgets.info.nameError.invalidateHierarchy();
+		mWidgets.info.nameError.setWidth(mWidgets.info.nameError.getPrefWidth());
 	}
 
 	/** Pickup table */

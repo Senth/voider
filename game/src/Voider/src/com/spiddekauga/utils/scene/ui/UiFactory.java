@@ -93,20 +93,21 @@ public class UiFactory {
 	 */
 	public Label addErrorLabel(String labelText, boolean labelIsSection, AlignTable table, ArrayList<Actor> createdActors) {
 		AlignTable wrapTable = new AlignTable();
-		table.add(wrapTable);
+		wrapTable.setName("error-table");
+		table.add(wrapTable).setWidth(mStyles.vars.textFieldWidth);
 		table.row();
-		wrapTable.setMaxWidth(mStyles.vars.textFieldWidth);
-		wrapTable.row().setFillWidth(true);
+		// wrapTable.setMaxWidth(mStyles.vars.textFieldWidth);
 
 		Label label = addSection(labelText, wrapTable, null);
 		// Change style to error info
 		if (!labelIsSection) {
 			label.setStyle(mStyles.label.errorSectionInfo);
 		}
+		wrapTable.getRows().get(0).setFillWidth(true);
 
 		// Add error label
 		mCreatedErrorLabelLast = new Label("", mStyles.label.errorSection);
-		wrapTable.add(mCreatedErrorLabelLast).setAlign(Horizontal.RIGHT, Vertical.MIDDLE);
+		wrapTable.add(mCreatedErrorLabelLast).setAlign(Horizontal.RIGHT, Vertical.MIDDLE).setFillWidth(true).setFixedWidth(true);
 
 		doExtraActionsOnActors(null, null, createdActors, label, mCreatedErrorLabelLast);
 

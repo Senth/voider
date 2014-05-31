@@ -228,6 +228,10 @@ public class Cell implements Poolable {
 		if (mActor != null) {
 			mActor.setWidth(width);
 			mFixedWidth = true;
+
+			if (mActor instanceof AlignTable) {
+				((AlignTable) mActor).setKeepWidth(true);
+			}
 		}
 		return this;
 	}
@@ -247,6 +251,10 @@ public class Cell implements Poolable {
 		if (mActor != null) {
 			mActor.setHeight(height);
 			mFixedHeight = true;
+
+			if (mActor instanceof AlignTable) {
+				((AlignTable) mActor).setKeepHeight(true);
+			}
 		}
 		return this;
 	}
@@ -272,6 +280,10 @@ public class Cell implements Poolable {
 		mFixedHeight = false;
 		if (mActor instanceof Layout) {
 			mActor.setHeight(((Layout) mActor).getPrefHeight());
+
+			if (mActor instanceof AlignTable) {
+				((AlignTable) mActor).setKeepHeight(false);
+			}
 		}
 		return this;
 	}
@@ -284,7 +296,35 @@ public class Cell implements Poolable {
 		mFixedWidth = false;
 		if (mActor instanceof Layout) {
 			mActor.setWidth(((Layout) mActor).getPrefWidth());
+
+			if (mActor instanceof AlignTable) {
+				((AlignTable) mActor).setKeepWidth(false);
+			}
 		}
+		return this;
+	}
+
+	/**
+	 * Sets the cell as fixed width. Can be used together with
+	 * {@link #setFillWidth(boolean)} so that the cell is actually bigger than the actor
+	 * inside it.
+	 * @param fixedWidth set to true to make it fixed width
+	 * @return this for chaining
+	 */
+	public Cell setFixedWidth(boolean fixedWidth) {
+		mFixedWidth = fixedWidth;
+		return this;
+	}
+
+	/**
+	 * Sets the cell as fixed height. Can be used together with
+	 * {@link #setFillHeight(boolean)} so that the cell is actually bigger than the actor
+	 * inside it.
+	 * @param fixedHeight set to true to make it fixed height
+	 * @return this for chaining
+	 */
+	public Cell setFixedHeight(boolean fixedHeight) {
+		mFixedHeight = fixedHeight;
 		return this;
 	}
 
@@ -505,8 +545,18 @@ public class Cell implements Poolable {
 	 */
 	void updateSize(float width, float height) {
 		if (mActor != null) {
-			float actorWidth = mFixedWidth ? mActor.getWidth() : width - getPadLeft() - getPadRight();
-			float actorHeight = mFixedHeight ? mActor.getHeight() : height - getPadBottom() - getPadTop();
+			float availableWidth = width - getPadLeft() - getPadRight();
+			float availableHeight = height - getPadBottom() - getPadTop();
+			float actorWidth = mFixedWidth ? mActor.getWidth() : availableWidth;
+			float actorHeight = mFixedHeight ? mActor.getHeight() : availableHeight;
+
+			// When cell is larger than the actual actor
+			if (mFixedWidth && mFillWidth) {
+				mCellWidth = availableWidth;
+			}
+			if (mFixedHeight && mFillHeight) {
+				mCellHeight = availableHeight;
+			}
 
 			if (mActor instanceof AlignTable) {
 				((AlignTable) mActor).updateSize(actorWidth, actorHeight);
@@ -576,13 +626,14 @@ public class Cell implements Poolable {
 
 		Vector2 offset = Pools.vector2.obtain();
 		offset.set(startPos);
-		offset.x += getPadLeft();
 
 		// Horizontal
-		if (mAlign.horizontal == Horizontal.RIGHT) {
-			offset.x += availableSize.x - getWidth();
+		if (mAlign.horizontal == Horizontal.LEFT) {
+			offset.x += getPadLeft();
+		} else if (mAlign.horizontal == Horizontal.RIGHT) {
+			offset.x += availableSize.x - mActor.getWidth() - getPadRight();
 		} else if (mAlign.horizontal == Horizontal.CENTER) {
-			offset.x += availableSize.x * 0.5f - getWidth() * 0.5f;
+			offset.x += (availableSize.x - mActor.getWidth() - getPadLeft() + getPadRight()) * 0.5f;
 		}
 
 		// Vertical
@@ -608,7 +659,9 @@ public class Cell implements Poolable {
 	 * @return width of the cell
 	 */
 	public float getWidth() {
-		if (mActor != null) {
+		if (mFillWidth && mFixedWidth) {
+			return mCellWidth;
+		} else if (mActor != null) {
 			return mActor.getWidth() + getPadLeft() + getPadRight();
 		} else {
 			return getPadLeft() + getPadRight();
@@ -619,7 +672,9 @@ public class Cell implements Poolable {
 	 * @return height of the cell
 	 */
 	public float getHeight() {
-		if (mActor != null) {
+		if (mFillHeight && mFixedHeight) {
+			return mCellHeight;
+		} else if (mActor != null) {
 			return mActor.getHeight() + getPadTop() + getPadBottom();
 		} else {
 			return getPadTop() + getPadBottom();
@@ -680,6 +735,10 @@ public class Cell implements Poolable {
 	private boolean mBoxShape = false;
 	/** If the cell should keep the aspect ratio when resizing */
 	private boolean mKeepAspectRatio = false;
+	/** Width of the cell, only used when mFillWidth and mFixedWidth is true */
+	private float mCellWidth = 0;
+	/** Height of the cell, only used when mFillHeight and mFixedHeight is true */
+	private float mCellHeight = 0;
 	/** Aspect ratio of the cell */
 	private float mAspectRatio = 1f;
 	/** Padding for this cell */

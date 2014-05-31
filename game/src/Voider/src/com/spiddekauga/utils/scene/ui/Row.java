@@ -11,9 +11,7 @@ import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.voider.utils.Pools;
 
 /**
- * Wrapper for a row
- * Contains all the actors for the current row
- * 
+ * Wrapper for a row Contains all the actors for the current row
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class Row implements Poolable {
@@ -73,13 +71,10 @@ public class Row implements Poolable {
 	 * Sets the cells to equal size
 	 * @param equalSize set to true to use equal spacing
 	 * @param useCellAlign set this to true if you want to use the cell's alignment
-	 * instead of the row's alignment. With this you can accomplish a layout like this:
-	 * \code
-	 * |————————————————————————————————————|
-	 * |Left       |      Right|   Center   |
-	 * |————————————————————————————————————|
-	 * \endcode
-	 * Only applicable if equalSpacing is set to true
+	 *        instead of the row's alignment. With this you can accomplish a layout like
+	 *        this: \code |————————————————————————————————————| |Left | Right| Center |
+	 *        |————————————————————————————————————| \endcode Only applicable if
+	 *        equalSpacing is set to true
 	 * @todo useCellAlign has not been implemented yet
 	 * @return This row for chaining
 	 */
@@ -213,32 +208,32 @@ public class Row implements Poolable {
 	}
 
 	/**
-	 * @return padding to the left of this row. If dynamic padding is on this
-	 * will return the scaled padding instead.
+	 * @return padding to the left of this row. If dynamic padding is on this will return
+	 *         the scaled padding instead.
 	 */
 	public float getPadLeft() {
 		return mPadding.left;
 	}
 
 	/**
-	 * @return padding to the right of this row. If dynamic padding is on this
-	 * will return the scaled padding instead.
+	 * @return padding to the right of this row. If dynamic padding is on this will return
+	 *         the scaled padding instead.
 	 */
 	public float getPadRight() {
 		return mPadding.right;
 	}
 
 	/**
-	 * @return padding to the top of this row. If dynamic padding is on this
-	 * will return the scaled padding instead.
+	 * @return padding to the top of this row. If dynamic padding is on this will return
+	 *         the scaled padding instead.
 	 */
 	public float getPadTop() {
 		return mPadding.top;
 	}
 
 	/**
-	 * @return padding to the bottom of this row. If dynamic padding is on this
-	 * will return the scaled padding instead.
+	 * @return padding to the bottom of this row. If dynamic padding is on this will
+	 *         return the scaled padding instead.
 	 */
 	public float getPadBottom() {
 		return mPadding.bottom;
@@ -259,8 +254,8 @@ public class Row implements Poolable {
 	}
 
 	/**
-	 * Sets if the row shall fill the remaining width of the table.
-	 * This works for all rows in the table.
+	 * Sets if the row shall fill the remaining width of the table. This works for all
+	 * rows in the table.
 	 * @param fillWidth set to true if the row shall fill the remaining width of the table
 	 * @return this row for chaining
 	 */
@@ -382,8 +377,8 @@ public class Row implements Poolable {
 	}
 
 	/**
-	 * @return false if all cells are invisible. If a row exists without a cell or
-	 * with an empty cell it still returs true if the cell is set as visible.
+	 * @return false if all cells are invisible. If a row exists without a cell or with an
+	 *         empty cell it still returs true if the cell is set as visible.
 	 */
 	boolean isVisible() {
 		return mCells.isEmpty() || getVisibleCellCount() > 0;
@@ -459,8 +454,7 @@ public class Row implements Poolable {
 				cell.updateSize(equalCellWidth, height);
 			}
 
-		}
-		else if (changedSize) {
+		} else if (changedSize) {
 			// Calculate total cell width
 			float cellWidthTotal = 0;
 			float cCellFillWidth = 0;
@@ -495,6 +489,10 @@ public class Row implements Poolable {
 					cell.updateSize(newCellWidth, newCellHeight);
 				}
 			}
+		} else {
+			for (Cell cell : mCells) {
+				cell.updateSize(cell.getWidth(), cell.getHeight());
+			}
 		}
 	}
 
@@ -502,7 +500,6 @@ public class Row implements Poolable {
 	 * Call this to layout the row.
 	 * @param startPos starting position of the row
 	 * @param availableSize available size for the row
-	 * 
 	 */
 	void layout(Vector2 startPos, Vector2 availableSize) {
 		Vector2 offset = Pools.vector2.obtain();
@@ -573,8 +570,7 @@ public class Row implements Poolable {
 	}
 
 	/**
-	 * Adds the width/height, preferred width/height to the total count of
-	 * this rows size.
+	 * Adds the width/height, preferred width/height to the total count of this rows size.
 	 * @param cell the cell which width/height we want to add
 	 */
 	private void addSize(Cell cell) {
@@ -609,16 +605,20 @@ public class Row implements Poolable {
 		}
 	}
 
-	/** True if the row uses the full width of the parents getPrefWidth() and sets the cell's size
-	 * to equal */
+	/**
+	 * True if the row uses the full width of the parents getPrefWidth() and sets the
+	 * cell's size to equal
+	 */
 	private boolean mEqualSize = false;
 	/** All the columns in the table */
 	@SuppressWarnings("unchecked")
 	private ArrayList<Cell> mCells = Pools.arrayList.obtain();
 	/** Total preferred width of the actors in this row */
 	private float mPrefWidth = 0;
-	/** Preferred height of the actors in this row, this is set to the actor
-	 * with most preferred height. */
+	/**
+	 * Preferred height of the actors in this row, this is set to the actor with most
+	 * preferred height.
+	 */
 	private float mPrefHeight = 0;
 	/** Width of the row, calculated from the cells */
 	private float mWidth = 0;
