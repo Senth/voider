@@ -360,9 +360,7 @@ public class SkinNames {
 		/** Maximum text width for select def scenes */
 		LOAD_ACTOR_SIZE_MAX(Float.class),
 		/** Padding after label */
-		PADDING_AFTER_LABEL(Float.class),
-		/** Default padding for rows and cells */
-		PADDING_DEFAULT(Float.class),
+		PADDING_LABEL_AFTER(Float.class),
 		/** Separator padding */
 		PADDING_SEPARATOR(Float.class),
 		/** Outer padding of panels */
@@ -371,6 +369,8 @@ public class SkinNames {
 		PADDING_INNER(Float.class),
 		/** Padding between radio or checkbox buttons */
 		PADDING_CHECKBOX(Float.class),
+		/** Padding between rows in Explore/Load scenes */
+		PADDING_EXPLORE(Float.class),
 		/** Background colors for widgets */
 		WIDGET_BACKGROUND_COLOR(Color.class),
 		/** Tag widget in explore and loading screen */
@@ -399,6 +399,8 @@ public class SkinNames {
 		SLIDER_LABEL_WIDTH(Float.class),
 		/** Dark text */
 		TEXT_DARK(Color.class),
+		/** Scene background color */
+		SCENE_BACKGROUND_COLOR(Color.class),
 
 		;
 

@@ -28,7 +28,6 @@ import com.spiddekauga.voider.scene.Gui;
 
 /**
  * All UI elements.
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class TestUiGui extends Gui {
@@ -39,7 +38,6 @@ public class TestUiGui extends Gui {
 		mGeneralSkin = ResourceCacheFacade.get(InternalNames.UI_GENERAL);
 		mGameSkin = ResourceCacheFacade.get(InternalNames.UI_GAME);
 		mMainTable.setAlign(Horizontal.LEFT, Vertical.TOP);
-		mMainTable.setPaddingCellDefault((Float)SkinNames.getResource(SkinNames.GeneralVars.PADDING_DEFAULT));
 		mTopRight.setPreferences(mMainTable);
 		mTopRight.setAlign(Horizontal.RIGHT, Vertical.TOP);
 		getStage().addActor(mTopRight);
@@ -233,32 +231,18 @@ public class TestUiGui extends Gui {
 		mMainTable.row();
 
 		Label label = new Label("", mGeneralSkin);
-		label.setText("Scroll pane\n"
-				+ "With background\n"
-				+ "Uses same background as window\n"
-				+ "aeu aseus a saosuaheu aseou\n"
-				+ "aoseuthaoes ase atoeuh saoseuhaoesn auh\n"
-				+ "aoeusah  sTHUenuhoeusSNusoruc.sjkbkt \n"
-				+ "aoesuasoe tuo uasouarnc.uhoa.ucasuasoethu .usao.cuh.\n"
-				+ "aoseunat hao.uh.cuchasoetu\n"
-				+ "aoneuthaose .ruca,huaosetuhaoetkmaenkh\n"
-				+ "aoneu.sa,oc  sa has rh.usa,o.ucas c  u-e-isk\n"
-				+ "aoseutah a.ruchktqjhk-soeu\n");
+		label.setText("Scroll pane\n" + "With background\n" + "Uses same background as window\n" + "aeu aseus a saosuaheu aseou\n"
+				+ "aoseuthaoes ase atoeuh saoseuhaoesn auh\n" + "aoeusah  sTHUenuhoeusSNusoruc.sjkbkt \n"
+				+ "aoesuasoe tuo uasouarnc.uhoa.ucasuasoethu .usao.cuh.\n" + "aoseunat hao.uh.cuchasoetu\n"
+				+ "aoneuthaose .ruca,huaosetuhaoetkmaenkh\n" + "aoneu.sa,oc  sa has rh.usa,o.ucas c  u-e-isk\n" + "aoseutah a.ruchktqjhk-soeu\n");
 		ScrollPane scrollPane = new ScrollPane(label, mGeneralSkin, "background");
 		mMainTable.add(scrollPane);
 
 		label = new Label("", mGeneralSkin);
-		label.setText("Scroll pane\n"
-				+ "Force scrollbars\n"
-				+ "Without background\n"
-				+ "aeu aseus a saosuaheu aseou\n"
-				+ "aoseuthaoes ase atoeuh saoseuhaoesn auh\n"
-				+ "aoeusah  sTHUenuhoeusSNusoruc.sjkbkt \n"
-				+ "aoesuasoe tuo uasouarnc.uhoa.ucasuasoethu .usao.cuh.\n"
-				+ "aoseunat hao.uh.cuchasoetu\n"
-				+ "aoneuthaose .ruca,huaosetuhaoetkmaenkh\n"
-				+ "aoneu.sa,oc  sa has rh.usa,o.ucas c  u-e-isk\n"
-				+ "aoseutah a.ruchktqjhk-soeu\n");
+		label.setText("Scroll pane\n" + "Force scrollbars\n" + "Without background\n" + "aeu aseus a saosuaheu aseou\n"
+				+ "aoseuthaoes ase atoeuh saoseuhaoesn auh\n" + "aoeusah  sTHUenuhoeusSNusoruc.sjkbkt \n"
+				+ "aoesuasoe tuo uasouarnc.uhoa.ucasuasoethu .usao.cuh.\n" + "aoseunat hao.uh.cuchasoetu\n"
+				+ "aoneuthaose .ruca,huaosetuhaoetkmaenkh\n" + "aoneu.sa,oc  sa has rh.usa,o.ucas c  u-e-isk\n" + "aoseutah a.ruchktqjhk-soeu\n");
 		scrollPane = new ScrollPane(label, mGeneralSkin);
 		scrollPane.setForceScroll(true, true);
 		scrollPane.setFadeScrollBars(false);
@@ -272,7 +256,7 @@ public class TestUiGui extends Gui {
 		String[] items = new String[10];
 
 		for (int i = 0; i < items.length; ++i) {
-			items[i] = "List item " + (i+1);
+			items[i] = "List item " + (i + 1);
 		}
 
 		List<String> list = new List<String>(mGeneralSkin);
@@ -288,7 +272,7 @@ public class TestUiGui extends Gui {
 		String[] items = new String[40];
 
 		for (int i = 0; i < items.length; ++i) {
-			items[i] = "Select item " + (i+1);
+			items[i] = "Select item " + (i + 1);
 		}
 
 		SelectBox<String> selectBox = new SelectBox<String>(mGeneralSkin);

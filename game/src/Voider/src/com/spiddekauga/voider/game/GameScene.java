@@ -72,7 +72,7 @@ public class GameScene extends WorldScene {
 
 	@Override
 	protected void fixCamera() {
-		if (mTesting) {
+		if (isTestRun()) {
 			float width = Gdx.graphics.getWidth() * Config.Graphics.WORLD_SCALE;
 
 			// Decrease scale of width depending on height scaled

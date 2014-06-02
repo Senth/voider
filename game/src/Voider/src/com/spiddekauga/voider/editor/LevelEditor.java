@@ -353,7 +353,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 					// another revision
 					if (mLoadingLevel != null) {
 						if (mLevel == null || !mLoadingLevel.equals(mLevel.getDef()) || mLoadingLevel.getRevision() != mLevel.getRevision()) {
-							ResourceCacheFacade.load(this, mLoadingLevel.getLevelId(), mLoadingLevel.getId(), mLoadingLevel.getRevision());
+							ResourceCacheFacade.load(this, mLoadingLevel.getLevelId(), mLoadingLevel.getId(), resourceItem.revision);
 							Scene scene = getLoadingScene();
 							if (scene != null) {
 								SceneSwitcher.switchTo(scene);
@@ -594,7 +594,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 			saveDef();
 		}
 
-		GameScene testGame = new GameScene(true, invulnerable);
+		boolean testRun = !ResourceLocalRepo.isPublished(mLevel.getId());
+		GameScene testGame = new GameScene(testRun, invulnerable);
 		Level copyLevel = mLevel.copy();
 		// Because of scaling decrease the x position
 		float xPosition = getRunFromHerePosition();

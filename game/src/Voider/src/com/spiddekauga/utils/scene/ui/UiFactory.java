@@ -2,11 +2,14 @@ package com.spiddekauga.utils.scene.ui;
 
 import java.util.ArrayList;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox.CheckBoxStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -23,8 +26,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
 import com.spiddekauga.utils.commands.Invoker;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
+import com.spiddekauga.utils.scene.ui.RatingWidget.RatingWidgetStyle;
 import com.spiddekauga.voider.editor.commands.GuiCheckCommandCreator;
 import com.spiddekauga.voider.resources.SkinNames;
+import com.spiddekauga.voider.resources.SkinNames.IImageNames;
 import com.spiddekauga.voider.resources.SkinNames.ISkinNames;
 
 /**
@@ -299,6 +304,64 @@ public class UiFactory {
 	}
 
 	/**
+	 * Add rating widget to the table
+	 * @param touchable if the rating can be changed
+	 * @param table the table to add the rating widget to
+	 * @param hider optional hider for the widget
+	 * @return created rating widget
+	 */
+	public RatingWidget addRatingWidget(Touchable touchable, AlignTable table, GuiHider hider) {
+		RatingWidget rating = new RatingWidget(mStyles.rating.stardard, 5, touchable);
+
+		table.add(rating);
+
+		doExtraActionsOnActors(null, hider, null, rating);
+
+		return rating;
+	}
+
+	/**
+	 * Add a label
+	 * @param text the text of the label
+	 * @param wrap if the label should be wrapped
+	 * @param table the table to add the label to
+	 * @return created label
+	 */
+	public Label addLabel(String text, boolean wrap, AlignTable table) {
+		Label label = new Label(text, mStyles.label.standard);
+		label.setWrap(wrap);
+
+		table.add(label);
+
+		return label;
+	}
+
+	/**
+	 * Add an icon with a label
+	 * @param icon the icon to show
+	 * @param text text after the icon
+	 * @param table the table to add the icon to
+	 * @param hider optional hider for icon and label
+	 * @return created label for the text after the icon
+	 */
+	public Label addIconLabel(IImageNames icon, String text, AlignTable table, GuiHider hider) {
+		table.row().setAlign(Horizontal.LEFT, Vertical.MIDDLE);
+
+		// Image
+		Image image = new Image(SkinNames.getDrawable(icon));
+		table.add(image);
+
+		// Label
+		Label label = new Label(text, mStyles.label.standard);
+		table.add(label);
+
+		doExtraActionsOnActors(null, hider, null, image, label);
+
+		return label;
+
+	}
+
+	/**
 	 * Add a panel section label
 	 * @param text section label text
 	 * @param table the table to add the text to
@@ -520,11 +583,17 @@ public class UiFactory {
 		mStyles.checkBox.checkBox = SkinNames.getResource(SkinNames.General.CHECK_BOX_DEFAULT);
 		mStyles.checkBox.radio = SkinNames.getResource(SkinNames.General.CHECK_BOX_RADIO);
 		mStyles.select.standard = SkinNames.getResource(SkinNames.General.SELECT_BOX_DEFAULT);
+		mStyles.rating.stardard = SkinNames.getResource(SkinNames.General.RATING_DEFAULT);
+
+
+		// Colors
+		mStyles.color.sceneBackgroundColor = SkinNames.getResource(SkinNames.GeneralVars.SCENE_BACKGROUND_COLOR);
 
 		// Vars
 		mStyles.vars.paddingCheckBox = SkinNames.getResource(SkinNames.GeneralVars.PADDING_CHECKBOX);
 		mStyles.vars.paddingOuter = SkinNames.getResource(SkinNames.GeneralVars.PADDING_OUTER);
 		mStyles.vars.paddingInner = SkinNames.getResource(SkinNames.GeneralVars.PADDING_INNER);
+		mStyles.vars.paddingExplore = SkinNames.getResource(SkinNames.GeneralVars.PADDING_EXPLORE);
 		mStyles.vars.textFieldNumberWidth = SkinNames.getResource(SkinNames.GeneralVars.TEXT_FIELD_NUMBER_WIDTH);
 		mStyles.vars.textFieldWidth = SkinNames.getResource(SkinNames.GeneralVars.TEXT_FIELD_WIDTH);
 		mStyles.vars.sliderWidth = SkinNames.getResource(SkinNames.GeneralVars.SLIDER_WIDTH);
@@ -654,9 +723,19 @@ public class UiFactory {
 		public CheckBoxes checkBox = new CheckBoxes();
 		public Variables vars = new Variables();
 		public SelectBoxes select = new SelectBoxes();
+		public Colors color = new Colors();
+		public Ratings rating = new Ratings();
+
+		public static class Ratings {
+			public RatingWidgetStyle stardard = null;
+		}
 
 		public static class SelectBoxes {
 			public SelectBoxStyle standard = null;
+		}
+
+		public static class Colors {
+			public Color sceneBackgroundColor = null;
 		}
 
 		public static class Variables {
@@ -666,6 +745,7 @@ public class UiFactory {
 			public float paddingCheckBox = 0;
 			public float paddingOuter = 0;
 			public float paddingInner = 0;
+			public float paddingExplore = 0;
 			public float rowHeight = 0;
 			public float textAreaHeight = 0;
 			public float textFieldWidth = 0;

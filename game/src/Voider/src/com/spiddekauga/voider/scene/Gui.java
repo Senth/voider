@@ -216,7 +216,6 @@ public abstract class Gui implements Disposable {
 		int fieldWidth = (int) (Gdx.graphics.getWidth() * 0.75f);
 
 		AlignTable content = new AlignTable();
-		content.setPaddingCellDefault((Float) SkinNames.getResource(SkinNames.GeneralVars.PADDING_DEFAULT));
 
 		Label errorLabel = new Label(Messages.Error.BUG_REPORT_INFO, errorStyle);
 		errorLabel.setWidth(fieldWidth);

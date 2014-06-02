@@ -11,23 +11,26 @@ com.badlogic.gdx.graphics.g2d.BitmapFont: {
  * to convert RGB or HEX values to float.
  */
 com.badlogic.gdx.graphics.Color: {
-	// DEPRECATED, use widget background color. Color of the upper and lower bars, see Float.bar_upper_lower_height for height
-	bar_upper_lower_color: { r: 0.3, g: 0.3, b: 0.3, a: 1 },
-	// Color used as background for various widgets
-	widget_background_color: { r: 0.3, g: 0.3, b: 0.3, a: 1 },
+	/* Palette */
 	
-	red: { a: 1, b: 0, g: 0, r: 1 },
-	green: { a: 1, b: 0, g: 1, r: 0 },
+	red: { r: 1, b: 0, g: 0, a: 1 },
+	green: { r: 0, b: 0, g: 1, a: 1 },
+	black: { r: 0, b: 0, g: 0, a: 1 },
+	white: { r: 1, b: 1, g: 1, a: 1 },
+	grey: { r: 0.3, b: 0.3, g: 0.3, a: 1 },
+	grey_light: { r: 0.8, b: 0.8, g: 0.8, a: 1 },
+	grey_dark: { r: 0.2, g: 0.2, b: 0.2, a: 1 },
+	turquoise: { r: 0, g: 1, b: 1, a: 1 },
 	
-	black: { a: 1, b: 0, g: 0, r: 0 },
-	white: { a: 1, b: 1, g: 1, r: 1 },
 	
-	grey: { a: 1, b: 0.3, g: 0.3, r: 0.3 },
-	grey_light: { a: 1, b: 0.8, g: 0.8, r: 0.8 },
-	grey_dark: { a: 1, b: 0.2, g: 0.2, r: 0.2 },
+	/* Specific colors */
 	
 	// Highlight color
-	highlight: { a: 1, b: 1, g: 1, r: 0 },
+	highlight: turquoise,
+	// Color used as background for various widgets
+	widget_background_color: grey,
+	// Background color for some scenes
+	scene_background_color: grey_dark,
 },
 
 java.lang.Float: {
@@ -39,23 +42,27 @@ java.lang.Float: {
 	load_actor_size_max: {value: 80},
 	
 	
-	/* Padding */
+	/* Padding - General UI */
 	
-	// Currently used on each element in tab content
+	// DEPRECATED!!! Not used
 	padding_default: {value: 4},
-	// DEPRECATED 'padding_inside will be used instead'
-	// Padding in windows so that the content doesn't start directly at margin
-	padding_window_left_right: {value: 8},
 	// Used to separate group of widgets, e.g. tool groups
 	padding_separator: {value: 32},
-	// Padding after a label before other text, slider, or text field. E.g. between : and [ in Name: [___]
+	// DEPRECATED, changed name to padding_label_after
 	padding_after_label: {value: 8},
+	// Padding after a label before other text, slider, or text field.
+	// E.g. between : and [ in Name: [___]
+	padding_label_after: {value: 8},
 	// Outer padding
 	padding_outer: {value: 4},
 	// Inner padding
 	padding_inner: {value: 12},
 	// Padding between radio or checkbox buttons
 	padding_checkbox: {value: 12},
+	
+	/* Padding - Explore/Load */
+	// Padding between rows
+	padding_explore: {value: 16},
 	
 	
 	/* General UI sizes */

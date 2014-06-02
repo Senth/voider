@@ -991,6 +991,17 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	}
 
 	/**
+	 * Get the last added row
+	 * @return get last added row, null if no row has been added
+	 */
+	public Row getRow() {
+		if (!mRows.isEmpty()) {
+			return mRows.get(mRows.size() - 1);
+		}
+		return null;
+	}
+
+	/**
 	 * Set a background image of the table
 	 * @param image background image of this table, null to remove an existing background
 	 *        image

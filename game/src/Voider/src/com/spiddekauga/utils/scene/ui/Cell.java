@@ -3,6 +3,7 @@ package com.spiddekauga.utils.scene.ui;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.utils.Layout;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.Pool.Poolable;
@@ -669,6 +670,10 @@ public class Cell implements Poolable {
 	public float getWidth() {
 		if (mFillWidth && mFixedWidth) {
 			return mCellWidth;
+		}
+		// Special case for labels as they need to be packed
+		else if (mActor instanceof Label) {
+			return ((Label) mActor).getPrefWidth() + getPadLeft() + getPadRight();
 		} else if (mActor != null) {
 			return mActor.getWidth() + getPadLeft() + getPadRight();
 		} else {
@@ -682,6 +687,10 @@ public class Cell implements Poolable {
 	public float getHeight() {
 		if (mFillHeight && mFixedHeight) {
 			return mCellHeight;
+		}
+		// Special case for labels as they need to be packed
+		else if (mActor instanceof Label) {
+			return ((Label) mActor).getPrefHeight() + getPadTop() + getPadBottom();
 		} else if (mActor != null) {
 			return mActor.getHeight() + getPadTop() + getPadBottom();
 		} else {

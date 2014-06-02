@@ -39,7 +39,6 @@ public class LoginGui extends Gui {
 
 		mMainTable.setFillParent(true);
 		mMainTable.setAlign(Horizontal.CENTER, Vertical.MIDDLE);
-		mMainTable.setPaddingCellDefault((Float) SkinNames.getResource(SkinNames.GeneralVars.PADDING_DEFAULT));
 		mWidgets.login.table.setPreferences(mMainTable);
 		mWidgets.login.table.setAlignRow(Horizontal.LEFT, Vertical.MIDDLE);
 		mWidgets.register.table.setPreferences(mMainTable);

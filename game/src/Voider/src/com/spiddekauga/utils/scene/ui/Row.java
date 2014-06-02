@@ -585,7 +585,6 @@ public class Row implements Poolable {
 		} else {
 			mPrefWidth += cell.getPrefWidth();
 			mWidth += cell.getWidth();
-
 			mMinWidth += cell.getPrefWidth() > cell.getWidth() ? cell.getPrefWidth() : cell.getWidth();
 		}
 

@@ -8,7 +8,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox.CheckBoxStyle;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
@@ -20,12 +19,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
-import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.Background;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
+import com.spiddekauga.utils.scene.ui.Cell;
 import com.spiddekauga.utils.scene.ui.HideManual;
 import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
 import com.spiddekauga.utils.scene.ui.ResourceTextureButton;
@@ -50,8 +49,7 @@ public class SelectDefGui extends Gui {
 	 *        only display one's own actors.
 	 * @param buttonText what text to display on load/play ?
 	 */
-	public SelectDefGui(
-			boolean showMineOnlyCheckbox, String buttonText) {
+	public SelectDefGui(boolean showMineOnlyCheckbox, String buttonText) {
 		mShowMineOnlyCheckbox = showMineOnlyCheckbox;
 		mButtonText = buttonText;
 	}
@@ -176,116 +174,35 @@ public class SelectDefGui extends Gui {
 		mWidgets.rightPanel.add(table).setFillHeight(true).setFillWidth(true);
 
 		// Name
+		mWidgets.info.name = mUiFactory.addPanelSection("", table, null);
+		table.getRow().setAlign(Horizontal.CENTER, Vertical.TOP);
+
+		// Name
 		Label label = new Label("", labelStyle);
 		mWidgets.info.name = label;
 		table.row(Horizontal.CENTER, Vertical.TOP);
 		table.add(label);
 
-
-		// Rating
-		// RatingWidgetStyle ratingStyle =
-		// SkinNames.getResource(SkinNames.General.RATING_DEFAULT);
-		// RatingWidget rating = new RatingWidget(ratingStyle, 5, Touchable.disabled);
-		// mWidgets.info.rating = rating;
-		// rating.setName("rating");
-		// table.row(Horizontal.CENTER, Vertical.TOP);
-		// table.add(rating);
-
-
 		// Description
-		label = new Label("", labelStyle);
-		mWidgets.info.description = label;
-		label.setWrap(true);
 		table.row(Horizontal.CENTER, Vertical.TOP);
-		table.add(label);
-
+		mWidgets.info.description = mUiFactory.addLabel("", true, table);
 
 		// Created by
-		label = new Label("Created by", labelStyle);
-		table.row();
-		table.add(label);
-
-		Drawable playerIcon = SkinNames.getDrawable(SkinNames.GeneralImages.PLAYER);
-		Image image = new Image(playerIcon);
-		table.row();
-		table.add(image);
-
-		label = new Label("", labelStyle);
-		mWidgets.info.createdBy = label;
-		table.add(label);
-
+		mUiFactory.addPanelSection("Created by", table, null);
+		mWidgets.info.createdBy = mUiFactory.addIconLabel(SkinNames.GeneralImages.PLAYER, "", table, null);
 
 		// Revised by
-		label = new Label("Revised by", labelStyle);
-		table.row();
-		table.add(label);
-
-		image = new Image(playerIcon);
-		table.row();
-		table.add(image);
-
-		label = new Label("", labelStyle);
-		mWidgets.info.revisedBy = label;
-		table.add(label);
-
+		mUiFactory.addPanelSection("Revised by", table, null);
+		mWidgets.info.revisedBy = mUiFactory.addIconLabel(SkinNames.GeneralImages.PLAYER, "", table, null);
 
 		// Date
-		Drawable dateIcon = SkinNames.getDrawable(SkinNames.GeneralImages.DATE);
-		image = new Image(dateIcon);
-		table.row();
-		table.add(image);
-
-		label = new Label("", labelStyle);
-		mWidgets.info.date = label;
-		table.add(label);
+		mWidgets.info.date = mUiFactory.addIconLabel(SkinNames.GeneralImages.DATE, "", table, null);
 
 
 		// Revision
 		if (mSelectDefScene.canChooseRevision()) {
-			Drawable revisionIcon = SkinNames.getDrawable(SkinNames.GeneralImages.EDIT);
-			image = new Image(revisionIcon);
-			table.row();
-			table.add(image);
-			mWidgets.info.hider.addToggleActor(image);
-
-			label = new Label("", labelStyle);
-			mWidgets.info.revision = label;
-			table.add(label);
-			mWidgets.info.hider.addToggleActor(label);
+			mWidgets.info.revision = mUiFactory.addIconLabel(SkinNames.GeneralImages.EDIT, "", table, mWidgets.info.hider);
 		}
-
-
-		// Plays
-		// Drawable playsIcon = SkinNames.getDrawable(SkinNames.GeneralImages.PLAYS);
-		// image = new Image(playsIcon);
-		// table.row();
-		// table.add(image);
-		//
-		// label = new Label("", labelStyle);
-		// mWidgets.info.plays = label;
-		// table.add(label);
-
-
-		// Likes
-		// Drawable likesIcon = SkinNames.getDrawable(SkinNames.GeneralImages.LIKE);
-		// image = new Image(likesIcon);
-		// table.row();
-		// table.add(image);
-		//
-		// label = new Label("", labelStyle);
-		// mWidgets.info.likes = label;
-		// table.add(label);
-
-
-		// Tags
-		// Drawable tagIcon = SkinNames.getDrawable(SkinNames.GeneralImages.TAG);
-		// image = new Image(tagIcon);
-		// table.row();
-		// table.add(image);
-		//
-		// label = new Label("", labelStyle);
-		// mWidgets.info.tags = label;
-		// table.add(label);
 
 		table.row().setFillHeight(true).setFillWidth(true);
 		table.add().setFillHeight(true).setFillWidth(true);
@@ -437,20 +354,29 @@ public class SelectDefGui extends Gui {
 
 		int columnIndex = levelsPerRow;
 
+		float paddingExplore = mUiFactory.getStyles().vars.paddingExplore;
+
 		// Populate table
 		for (DefVisible level : defs) {
 			AlignTable levelTable = createDefTable(level);
 
 			if (columnIndex == levelsPerRow) {
-				table.row().setFillWidth(true).setEqualCellSize(true);
+				table.row().setFillWidth(true).setEqualCellSize(true).setPadTop(paddingExplore);
 				columnIndex = 0;
 			}
 
-			table.add(levelTable).setFillWidth(true);
-
+			Cell cell = table.add(levelTable).setFillWidth(true);
 
 			columnIndex++;
+
+			// Add pad right for last cell
+			if (columnIndex == levelsPerRow) {
+				cell.setPadRight(paddingExplore);
+			}
 		}
+
+		// Set pad bottom for last row
+		table.getRow().setPadBottom(paddingExplore);
 
 		// Pad with empty cells
 		if (columnIndex > 0 && columnIndex < levelsPerRow) {

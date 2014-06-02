@@ -11,7 +11,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox.CheckBoxStyle;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -343,7 +342,6 @@ public class ExploreGui extends Gui {
 	 * Initializes info panel
 	 */
 	private void initInfo() {
-		LabelStyle labelStyle = SkinNames.getResource(SkinNames.General.LABEL_DEFAULT);
 		Color widgetBackgroundColor = SkinNames.getResource(SkinNames.GeneralVars.WIDGET_BACKGROUND_COLOR);
 
 
@@ -359,102 +357,39 @@ public class ExploreGui extends Gui {
 
 
 		// Name
-		Label label = new Label("", labelStyle);
-		mWidgets.info.name = label;
-		table.row(Horizontal.CENTER, Vertical.TOP);
-		table.add(label);
-
+		mWidgets.info.name = mUiFactory.addPanelSection("", table, null);
+		table.getRow().setAlign(Horizontal.CENTER, Vertical.TOP);
 
 		// Rating
-		RatingWidgetStyle ratingStyle = SkinNames.getResource(SkinNames.General.RATING_DEFAULT);
-		RatingWidget rating = new RatingWidget(ratingStyle, 5, Touchable.disabled);
-		mWidgets.info.rating = rating;
-		rating.setName("rating");
 		table.row(Horizontal.CENTER, Vertical.TOP);
-		table.add(rating);
-
+		mWidgets.info.rating = mUiFactory.addRatingWidget(Touchable.disabled, table, null);
 
 		// Description
-		label = new Label("", labelStyle);
-		mWidgets.info.description = label;
-		label.setWrap(true);
 		table.row(Horizontal.CENTER, Vertical.TOP);
-		table.add(label);
-
+		mWidgets.info.description = mUiFactory.addLabel("", true, table);
 
 		// Created by
-		label = new Label("Created by", labelStyle);
-		table.setAlignRow(Horizontal.LEFT, Vertical.MIDDLE);
-		table.row();
-		table.add(label);
-
-		Drawable playerIcon = SkinNames.getDrawable(SkinNames.GeneralImages.PLAYER);
-		Image image = new Image(playerIcon);
-		table.row();
-		table.add(image);
-
-		label = new Label("", labelStyle);
-		mWidgets.info.createdBy = label;
-		table.add(label);
-
+		mUiFactory.addPanelSection("Created by", table, null);
+		mWidgets.info.createdBy = mUiFactory.addIconLabel(SkinNames.GeneralImages.PLAYER, "", table, null);
 
 		// Revised by
-		label = new Label("Revised by", labelStyle);
-		table.row();
-		table.add(label);
-
-		image = new Image(playerIcon);
-		table.row();
-		table.add(image);
-
-		label = new Label("", labelStyle);
-		mWidgets.info.revisedBy = label;
-		table.add(label);
-
+		mUiFactory.addPanelSection("Revised by", table, null);
+		mWidgets.info.revisedBy = mUiFactory.addIconLabel(SkinNames.GeneralImages.PLAYER, "", table, null);
 
 		// Date
-		Drawable dateIcon = SkinNames.getDrawable(SkinNames.GeneralImages.DATE);
-		image = new Image(dateIcon);
-		table.row();
-		table.add(image);
-
-		label = new Label("", labelStyle);
-		mWidgets.info.date = label;
-		table.add(label);
-
+		mWidgets.info.date = mUiFactory.addIconLabel(SkinNames.GeneralImages.DATE, "", table, null);
 
 		// Plays
-		Drawable playsIcon = SkinNames.getDrawable(SkinNames.GeneralImages.PLAYS);
-		image = new Image(playsIcon);
-		table.row();
-		table.add(image);
-
-		label = new Label("", labelStyle);
-		mWidgets.info.plays = label;
-		table.add(label);
-
+		mWidgets.info.plays = mUiFactory.addIconLabel(SkinNames.GeneralImages.PLAYS, "", table, null);
 
 		// Likes
-		Drawable likesIcon = SkinNames.getDrawable(SkinNames.GeneralImages.LIKE);
-		image = new Image(likesIcon);
-		table.row();
-		table.add(image);
-
-		label = new Label("", labelStyle);
-		mWidgets.info.likes = label;
-		table.add(label);
-
+		mWidgets.info.likes = mUiFactory.addIconLabel(SkinNames.GeneralImages.LIKE, "", table, null);
 
 		// Tags
-		Drawable tagIcon = SkinNames.getDrawable(SkinNames.GeneralImages.TAG);
-		image = new Image(tagIcon);
-		table.row();
-		table.add(image);
+		mWidgets.info.tags = mUiFactory.addIconLabel(SkinNames.GeneralImages.TAG, "", table, null);
 
-		label = new Label("", labelStyle);
-		mWidgets.info.tags = label;
-		table.add(label);
 
+		// Fill down
 		table.row().setFillHeight(true).setFillWidth(true);
 		table.add().setFillHeight(true).setFillWidth(true);
 	}
@@ -741,22 +676,28 @@ public class ExploreGui extends Gui {
 			}
 		}
 
+		float paddingExplore = mUiFactory.getStyles().vars.paddingExplore;
 
-		// for (int i = 0; i < 15; ++i) {
 		for (LevelInfoEntity level : levels) {
 			AlignTable levelTable = createLevelTable(level);
 
 			if (columnIndex == levelsPerRow) {
-				table.row().setFillWidth(true).setEqualCellSize(true);
+				table.row().setFillWidth(true).setEqualCellSize(true).setPadTop(paddingExplore);
 				columnIndex = 0;
 			}
 
-			table.add(levelTable).setFillWidth(true);
-
+			Cell cell = table.add(levelTable).setFillWidth(true).setPadLeft(paddingExplore);
 
 			columnIndex++;
+
+			// Add pad right for last cell
+			if (columnIndex == levelsPerRow) {
+				cell.setPadRight(paddingExplore);
+			}
 		}
-		// }
+
+		// Set pad bottom for last row
+		table.getRow().setPadBottom(paddingExplore);
 
 		// Pad with empty cells
 		if (columnIndex > 0 && columnIndex < levelsPerRow) {

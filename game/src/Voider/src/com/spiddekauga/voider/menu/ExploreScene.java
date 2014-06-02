@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import com.spiddekauga.utils.KeyHelper;
+import com.spiddekauga.utils.scene.ui.UiFactory;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.GameScene;
 import com.spiddekauga.voider.game.LevelDef;
@@ -12,10 +13,10 @@ import com.spiddekauga.voider.network.entities.LevelInfoEntity;
 import com.spiddekauga.voider.network.entities.Tags;
 import com.spiddekauga.voider.network.entities.method.IMethodEntity;
 import com.spiddekauga.voider.network.entities.method.LevelGetAllMethod;
+import com.spiddekauga.voider.network.entities.method.LevelGetAllMethod.SortOrders;
 import com.spiddekauga.voider.network.entities.method.LevelGetAllMethodResponse;
 import com.spiddekauga.voider.network.entities.method.ResourceDownloadMethod;
 import com.spiddekauga.voider.network.entities.method.ResourceDownloadMethodResponse;
-import com.spiddekauga.voider.network.entities.method.LevelGetAllMethod.SortOrders;
 import com.spiddekauga.voider.repo.ICallerResponseListener;
 import com.spiddekauga.voider.repo.InternalNames;
 import com.spiddekauga.voider.repo.ResourceCacheFacade;
@@ -30,7 +31,6 @@ import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Scene for exploring new content
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class ExploreScene extends Scene implements ICallerResponseListener {
@@ -40,7 +40,9 @@ public class ExploreScene extends Scene implements ICallerResponseListener {
 	public ExploreScene() {
 		super(new ExploreGui());
 
-		((ExploreGui)mGui).setExploreScene(this);
+		setClearColor(UiFactory.getInstance().getStyles().color.sceneBackgroundColor);
+
+		((ExploreGui) mGui).setExploreScene(this);
 	}
 
 	@Override
@@ -101,7 +103,7 @@ public class ExploreScene extends Scene implements ICallerResponseListener {
 			if (response instanceof LevelGetAllMethodResponse) {
 				handleLevelGetAllResponse((LevelGetAllMethod) webWrapper.method, (LevelGetAllMethodResponse) response);
 			} else if (response instanceof ResourceDownloadMethodResponse) {
-				handleResourceDownloadResponse((ResourceDownloadMethod)webWrapper.method, (ResourceDownloadMethodResponse) response);
+				handleResourceDownloadResponse((ResourceDownloadMethod) webWrapper.method, (ResourceDownloadMethodResponse) response);
 			}
 
 			webIt.remove();
@@ -160,7 +162,7 @@ public class ExploreScene extends Scene implements ICallerResponseListener {
 		case SUCCESS_FETCHED_ALL:
 		case SUCCESS_MORE_EXISTS:
 			createDrawables(response.levels);
-			((ExploreGui)mGui).addContent(response.levels);
+			((ExploreGui) mGui).addContent(response.levels);
 			break;
 		}
 	}
@@ -217,12 +219,12 @@ public class ExploreScene extends Scene implements ICallerResponseListener {
 			if (cachedLevels.isEmpty()) {
 				mLastFetchMethod = mResourceWebRepo.getLevels(this, sort, tags);
 				mFetchingLevels = true;
-				((ExploreGui)mGui).resetContent();
+				((ExploreGui) mGui).resetContent();
 			} else {
 				mLastFetchMethod = new LevelGetAllMethod();
 				mLastFetchMethod.sort = sort;
 				mLastFetchMethod.tagFilter = tags;
-				((ExploreGui)mGui).resetContent(cachedLevels);
+				((ExploreGui) mGui).resetContent(cachedLevels);
 			}
 		}
 	}
@@ -238,15 +240,15 @@ public class ExploreScene extends Scene implements ICallerResponseListener {
 			if (cachedLevels.isEmpty()) {
 				mLastFetchMethod = mResourceWebRepo.getLevels(this, searchString);
 				mFetchingLevels = true;
-				((ExploreGui)mGui).resetContent();
+				((ExploreGui) mGui).resetContent();
 			} else {
 				mLastFetchMethod = new LevelGetAllMethod();
 				mLastFetchMethod.searchString = searchString;
-				((ExploreGui)mGui).resetContent(cachedLevels);
+				((ExploreGui) mGui).resetContent(cachedLevels);
 			}
 		} else {
 			mLastFetchMethod = new LevelGetAllMethod();
-			((ExploreGui)mGui).resetContent();
+			((ExploreGui) mGui).resetContent();
 		}
 	}
 
