@@ -40,7 +40,7 @@ public class ExploreScene extends Scene implements ICallerResponseListener {
 	public ExploreScene() {
 		super(new ExploreGui());
 
-		setClearColor(UiFactory.getInstance().getStyles().color.sceneBackgroundColor);
+		setClearColor(UiFactory.getInstance().getStyles().color.sceneBackground);
 
 		((ExploreGui) mGui).setExploreScene(this);
 	}

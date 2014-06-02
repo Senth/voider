@@ -6,29 +6,23 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
-import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
-import com.badlogic.gdx.scenes.scene2d.ui.CheckBox.CheckBoxStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.List;
 import com.badlogic.gdx.scenes.scene2d.ui.List.ListStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane.ScrollPaneStyle;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
-import com.badlogic.gdx.scenes.scene2d.ui.TextField;
-import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.Background;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
-import com.spiddekauga.utils.scene.ui.Cell;
 import com.spiddekauga.utils.scene.ui.HideManual;
 import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
 import com.spiddekauga.utils.scene.ui.ResourceTextureButton;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
+import com.spiddekauga.utils.scene.ui.UiFactory.CheckBoxStyles;
+import com.spiddekauga.utils.scene.ui.UiFactory.TextButtonStyles;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.editor.commands.CSelectDefSetRevision;
 import com.spiddekauga.voider.menu.SelectDefScene.DefVisible;
@@ -121,13 +115,12 @@ public class SelectDefGui extends Gui {
 		AlignTable table = mWidgets.search.table;
 		table.setName("search");
 		table.dispose(true);
-		table.setAlign(Horizontal.RIGHT, Vertical.TOP);
+		table.setAlignTable(Horizontal.LEFT, Vertical.TOP);
+		table.setAlignRow(Horizontal.LEFT, Vertical.MIDDLE);
+		table.setMargin(mUiFactory.getStyles().vars.paddingOuter);
 		getStage().addActor(table);
 
-		TextField textField = new TextField("", (TextFieldStyle) SkinNames.getResource(SkinNames.General.TEXT_FIELD_DEFAULT));
-		table.row().setFillWidth(true);
-		table.add(textField).setFillWidth(true);
-		new TextFieldListener(textField, "Search", null) {
+		TextFieldListener textFieldListener = new TextFieldListener() {
 			@Override
 			protected void onChange(String newText) {
 				if (newText.equals("Search")) {
@@ -137,24 +130,24 @@ public class SelectDefGui extends Gui {
 				}
 			}
 		};
+		mUiFactory.addTextField(null, false, "Search", textFieldListener, table, null);
+		table.getRow().setFillWidth(true);
+		table.getCell().resetWidth().setFillWidth(true);
+		mUiFactory.addCheckboxPadding(table);
 
 		if (mShowMineOnlyCheckbox) {
 			ButtonGroup buttonGroup = new ButtonGroup();
 
-			CheckBoxStyle radioButtonStyle = SkinNames.getResource(SkinNames.General.CHECK_BOX_RADIO);
-			Button button = new CheckBox("All", radioButtonStyle);
-			buttonGroup.add(button);
-			table.add(button);
-
-			button = new CheckBox("Mine", radioButtonStyle);
-			new ButtonListener(button) {
+			mUiFactory.addCheckBox("All", CheckBoxStyles.RADIO, null, buttonGroup, table);
+			mUiFactory.addCheckboxPadding(table);
+			ButtonListener buttonListener = new ButtonListener() {
 				@Override
 				protected void onChecked(boolean checked) {
 					mSelectDefScene.setShowMineOnly(checked);
 				}
 			};
-			buttonGroup.add(button);
-			table.add(button);
+			mUiFactory.addCheckBox("Mine", CheckBoxStyles.RADIO, buttonListener, buttonGroup, table);
+			mUiFactory.addCheckboxPadding(table);
 		}
 	}
 
@@ -162,26 +155,18 @@ public class SelectDefGui extends Gui {
 	 * Initializes info panel
 	 */
 	private void initInfo() {
-		LabelStyle labelStyle = SkinNames.getResource(SkinNames.General.LABEL_DEFAULT);
-		Color widgetBackgroundColor = SkinNames.getResource(SkinNames.GeneralVars.WIDGET_BACKGROUND_COLOR);
 		mWidgets.info.hider = new HideManual();
 
 		AlignTable table = mWidgets.info.table;
 		table.setAlignTable(Horizontal.RIGHT, Vertical.TOP);
 		table.setAlignRow(Horizontal.LEFT, Vertical.TOP);
-		table.setBackgroundImage(new Background(widgetBackgroundColor));
+		table.setBackgroundImage(new Background(mUiFactory.getStyles().color.widgetBackground));
 		mWidgets.rightPanel.row().setFillHeight(true).setFillWidth(true);
 		mWidgets.rightPanel.add(table).setFillHeight(true).setFillWidth(true);
 
 		// Name
 		mWidgets.info.name = mUiFactory.addPanelSection("", table, null);
 		table.getRow().setAlign(Horizontal.CENTER, Vertical.TOP);
-
-		// Name
-		Label label = new Label("", labelStyle);
-		mWidgets.info.name = label;
-		table.row(Horizontal.CENTER, Vertical.TOP);
-		table.add(label);
 
 		// Description
 		table.row(Horizontal.CENTER, Vertical.TOP);
@@ -231,44 +216,42 @@ public class SelectDefGui extends Gui {
 	private void initActions() {
 		AlignTable table = mWidgets.rightPanel;
 
-		TextButtonStyle textButtonStyle = SkinNames.getResource(SkinNames.General.TEXT_BUTTON_PRESS);
+		ButtonListener buttonListener;
 
 		// Open older revision
 		if (mSelectDefScene.canChooseRevision()) {
 			table.row().setFillWidth(true).setEqualCellSize(true);
-			TextButton button = new TextButton("Load older version", textButtonStyle);
-			table.add(button).setFillWidth(true);
-			new ButtonListener(button) {
+			buttonListener = new ButtonListener() {
 				@Override
 				protected void onPressed() {
 					showSelectRevisionMsgBox();
 				}
 			};
-			mWidgets.info.hider.addToggleActor(button);
+			mUiFactory.addTextButton("Load older version", TextButtonStyles.PRESS, table, buttonListener, mWidgets.info.hider, null);
+			table.getCell().setFillWidth(true);
 		}
 
 
 		// Menu
 		table.row().setFillWidth(true).setEqualCellSize(true);
-		TextButton button = new TextButton("Back", textButtonStyle);
-		table.add(button).setFillWidth(true);
-		new ButtonListener(button) {
+		buttonListener = new ButtonListener() {
 			@Override
 			protected void onPressed() {
 				mSelectDefScene.cancel();
 			}
 		};
+		mUiFactory.addTextButton("Back", TextButtonStyles.PRESS, table, buttonListener, null, null);
+		table.getCell().resetWidth().setFillWidth(true);
 
-
-		// Play
-		button = new TextButton(mButtonText, textButtonStyle);
-		table.add(button).setFillWidth(true);
-		new ButtonListener(button) {
+		// Load/Open
+		buttonListener = new ButtonListener() {
 			@Override
 			protected void onPressed() {
 				mSelectDefScene.loadDef();
 			}
 		};
+		mUiFactory.addTextButton(mButtonText, TextButtonStyles.PRESS, table, buttonListener, null, null);
+		table.getCell().resetWidth().setFillWidth(true);
 	}
 
 	/**
@@ -361,18 +344,13 @@ public class SelectDefGui extends Gui {
 			AlignTable levelTable = createDefTable(level);
 
 			if (columnIndex == levelsPerRow) {
-				table.row().setFillWidth(true).setEqualCellSize(true).setPadTop(paddingExplore);
+				table.row().setFillWidth(true).setEqualCellSize(true).setPadTop(paddingExplore).setPadRight(paddingExplore);
 				columnIndex = 0;
 			}
 
-			Cell cell = table.add(levelTable).setFillWidth(true);
+			table.add(levelTable).setFillWidth(true).setPadLeft(paddingExplore);
 
 			columnIndex++;
-
-			// Add pad right for last cell
-			if (columnIndex == levelsPerRow) {
-				cell.setPadRight(paddingExplore);
-			}
 		}
 
 		// Set pad bottom for last row
@@ -442,17 +420,9 @@ public class SelectDefGui extends Gui {
 		mWidgets.content.buttonGroup.add(button);
 
 		// Def name
-		Label label = new Label(def.def.getName(), (LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_DEFAULT));
 		table.row();
-		table.add(label);
-
-		// Rating
-		// RatingWidgetStyle ratingStyle =
-		// SkinNames.getResource(SkinNames.General.RATING_DEFAULT);
-		// RatingWidget ratingWidget = new RatingWidget(ratingStyle, 5,
-		// Touchable.disabled);
-		// table.row();
-		// table.add(ratingWidget);
+		mUiFactory.addLabel(def.def.getName(), false, table);
+		table.getCell().setHeight(mUiFactory.getStyles().vars.rowHeight);
 
 		return table;
 	}
@@ -470,10 +440,6 @@ public class SelectDefGui extends Gui {
 		if (mWidgets.info.revision != null) {
 			mWidgets.info.revision.setText(mSelectDefScene.getRevisionString());
 		}
-
-		// mWidgets.info.likes.setText(String.valueOf(level.stats.cLikes));
-		// mWidgets.info.plays.setText(String.valueOf(level.stats.cPlayed));
-		// mWidgets.info.rating.setRating((int)(level.stats.ratingAverage + 0.5f));
 	}
 
 	/**

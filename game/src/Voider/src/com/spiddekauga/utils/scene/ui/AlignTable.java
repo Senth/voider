@@ -991,7 +991,6 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	}
 
 	/**
-	 * Get the last added row
 	 * @return get last added row, null if no row has been added
 	 */
 	public Row getRow() {
@@ -999,6 +998,13 @@ public class AlignTable extends WidgetGroup implements Disposable {
 			return mRows.get(mRows.size() - 1);
 		}
 		return null;
+	}
+
+	/**
+	 * @return last added cell, null if no cell has been added in the last row
+	 */
+	public Cell getCell() {
+		return getRow().getCell();
 	}
 
 	/**

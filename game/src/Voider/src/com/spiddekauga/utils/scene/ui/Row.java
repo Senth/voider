@@ -359,6 +359,16 @@ public class Row implements Poolable {
 	}
 
 	/**
+	 * @return last added cell for this row
+	 */
+	Cell getCell() {
+		if (!mCells.isEmpty()) {
+			return mCells.get(mCells.size() - 1);
+		}
+		return null;
+	}
+
+	/**
 	 * @return visible cells in the row
 	 */
 	private int getVisibleCellCount() {
@@ -432,22 +442,24 @@ public class Row implements Poolable {
 	 */
 	void updateSize(float width, float height) {
 		boolean changedSize = false;
-		if (width != mWidth) {
-			mWidth = width;
+		float realWidth = width - getPadLeft() - getPadRight();
+		if (realWidth != mWidth) {
+			mWidth = realWidth;
 			changedSize = true;
 		}
 
-		if (height != mHeight) {
-			mHeight = height;
+		float realHeight = height - getPadLeft() - getPadRight();
+		if (realHeight != mHeight) {
+			mHeight = realHeight;
 			changedSize = true;
 		}
 
 		int cVisibleCells = getVisibleCellCount();
 		if (mEqualSize && cVisibleCells > 0) {
-			float equalCellWidth = width / cVisibleCells;
+			float equalCellWidth = mWidth / cVisibleCells;
 
 			for (Cell cell : mCells) {
-				cell.updateSize(equalCellWidth, height);
+				cell.updateSize(equalCellWidth, mHeight);
 			}
 
 		} else if (changedSize) {
@@ -500,7 +512,6 @@ public class Row implements Poolable {
 	void layout(Vector2 startPos, Vector2 availableSize) {
 		Vector2 offset = Pools.vector2.obtain();
 		offset.set(startPos);
-		offset.x += getPadLeft();
 
 
 		// Check if there's a cell that wants to fill the width
@@ -514,10 +525,12 @@ public class Row implements Poolable {
 
 		// Horizontal
 		if (!cellFillWidth) {
-			if (mAlign.horizontal == Horizontal.RIGHT) {
-				offset.x += availableSize.x - getWidth();
+			if (mAlign.horizontal == Horizontal.LEFT) {
+				offset.x += getPadLeft();
+			} else if (mAlign.horizontal == Horizontal.RIGHT) {
+				offset.x += getPadLeft() + availableSize.x - getWidth();
 			} else if (mAlign.horizontal == Horizontal.CENTER) {
-				offset.x += availableSize.x * 0.5f - getWidth() * 0.5f;
+				offset.x += (availableSize.x - getWidth()) * 0.5f;
 			}
 		}
 
@@ -527,7 +540,7 @@ public class Row implements Poolable {
 		} else if (mAlign.vertical == Vertical.TOP) {
 			offset.y = startPos.y + availableSize.y - mHeight - getPadTop();
 		} else if (mAlign.vertical == Vertical.MIDDLE) {
-			offset.y = startPos.y + (availableSize.y - mHeight + getPadBottom() - getPadTop()) * 0.5f;
+			offset.y = startPos.y + (availableSize.y - mHeight - getPadBottom() - getPadTop()) * 0.5f;
 		}
 
 		Vector2 availableCellSize = Pools.vector2.obtain();

@@ -445,6 +445,14 @@ public class UiFactory {
 	}
 
 	/**
+	 * Adds checkbox padding for the newly added cell
+	 * @param table the table the checkbox was added to
+	 */
+	public void addCheckboxPadding(AlignTable table) {
+		table.getCell().setPadRight(mStyles.vars.paddingCheckBox);
+	}
+
+	/**
 	 * Adds a single checkbox with text before the checkbox
 	 * @param text the text to display before the checkbox
 	 * @param listener button listener that listens when it's checked etc
@@ -454,7 +462,7 @@ public class UiFactory {
 	 * @param createdActors optional adds all created elements to this list (if not null)
 	 * @return created checkbox
 	 */
-	public CheckBox addCheckBox(String text, ButtonListener listener, AlignTable table, String tooltipText, GuiHider hider,
+	public CheckBox addPanelCheckBox(String text, ButtonListener listener, AlignTable table, String tooltipText, GuiHider hider,
 			ArrayList<Actor> createdActors) {
 
 		table.row().setFillWidth(true);
@@ -463,7 +471,7 @@ public class UiFactory {
 
 		table.add().setFillWidth(true);
 
-		CheckBox checkBox = new CheckBox("", mStyles.checkBox.checkBox);
+		CheckBox checkBox = new CheckBox("", CheckBoxStyles.CHECK_BOX.getStyle());
 		table.add(checkBox);
 
 		listener.setButton(checkBox);
@@ -471,6 +479,82 @@ public class UiFactory {
 		doExtraActionsOnActors(tooltipText, hider, createdActors, label, checkBox);
 
 		return checkBox;
+	}
+
+	/**
+	 * Add a checkbox
+	 * @param text the text to display on the checkbox
+	 * @param style which checkbox style to use
+	 * @param listener listens when the checkbox is checked
+	 * @param group button group the checkbox belongs to
+	 * @param table the table to add the checkbox to
+	 * @return created checkbox
+	 */
+	public CheckBox addCheckBox(String text, CheckBoxStyles style, ButtonListener listener, ButtonGroup group, AlignTable table) {
+		CheckBox checkBox = new CheckBox(text, style.getStyle());
+
+		table.add(checkBox);
+		group.add(checkBox);
+		if (listener != null) {
+			listener.setButton(checkBox);
+		}
+
+		return checkBox;
+	}
+
+	/**
+	 * Add a separate checkbox row
+	 * @param text the text to display on the checkbox
+	 * @param style which checkbox style to use
+	 * @param listener listens when the checkbox is checked
+	 * @param group button group the checkbox belongs to
+	 * @param table the table to add the checkbox to
+	 * @return created checkbox
+	 */
+	public CheckBox addCheckBoxRow(String text, CheckBoxStyles style, ButtonListener listener, ButtonGroup group, AlignTable table) {
+		table.row();
+
+		CheckBox checkBox = addCheckBox(text, style, listener, group, table);
+		table.getCell().setHeight(mStyles.vars.rowHeight);
+
+		return checkBox;
+	}
+
+	/**
+	 * Add an empty tab widget. Lets you add tabs to widget by calling
+	 * @param table where to add the tab widget
+	 * @return the created tab widget
+	 */
+	public TabWidget startTabWidget(AlignTable table) {
+		table.row();
+		mTabWidget = new TabWidget();
+		mTabWidget.setFillHeight(true);
+		mTabWidget.setBackground(new Background(mStyles.color.widgetBackground));
+		mTabWidget.setContentWidth(mStyles.vars.rightPanelWidth);
+		table.add(mTabWidget);
+		return mTabWidget;
+	}
+
+	/**
+	 * Ends the current tab widget
+	 */
+	public void endTabWidget() {
+		mTabWidget = null;
+	}
+
+	/**
+	 * Add a tab to the created tab widget
+	 * @param icon the image of the tab
+	 * @param table will show this table when this tab is selected
+	 * @param hider optional listens to the hider.
+	 */
+	public void addTab(ISkinNames icon, AlignTable table, HideListener hider) {
+		ImageButtonStyle style = SkinNames.getResource(icon);
+
+		if (hider == null) {
+			hider = new HideListener(true);
+		}
+		mTabWidget.addTab(style, table, hider);
 	}
 
 	/**
@@ -580,14 +664,17 @@ public class UiFactory {
 		mStyles.label.errorSectionInfo = SkinNames.getResource(SkinNames.General.LABEL_ERROR_SECTION_INFO);
 		mStyles.label.errorSection = SkinNames.getResource(SkinNames.General.LABEL_ERROR_SECTION);
 		mStyles.label.error = SkinNames.getResource(SkinNames.General.LABEL_ERROR);
-		mStyles.checkBox.checkBox = SkinNames.getResource(SkinNames.General.CHECK_BOX_DEFAULT);
-		mStyles.checkBox.radio = SkinNames.getResource(SkinNames.General.CHECK_BOX_RADIO);
+		// mStyles.checkBox.checkBox =
+		// SkinNames.getResource(SkinNames.General.CHECK_BOX_DEFAULT);
+		// mStyles.checkBox.radio =
+		// SkinNames.getResource(SkinNames.General.CHECK_BOX_RADIO);
 		mStyles.select.standard = SkinNames.getResource(SkinNames.General.SELECT_BOX_DEFAULT);
 		mStyles.rating.stardard = SkinNames.getResource(SkinNames.General.RATING_DEFAULT);
 
 
 		// Colors
-		mStyles.color.sceneBackgroundColor = SkinNames.getResource(SkinNames.GeneralVars.SCENE_BACKGROUND_COLOR);
+		mStyles.color.sceneBackground = SkinNames.getResource(SkinNames.GeneralVars.SCENE_BACKGROUND_COLOR);
+		mStyles.color.widgetBackground = SkinNames.getResource(SkinNames.GeneralVars.WIDGET_BACKGROUND_COLOR);
 
 		// Vars
 		mStyles.vars.paddingCheckBox = SkinNames.getResource(SkinNames.GeneralVars.PADDING_CHECKBOX);
@@ -602,10 +689,45 @@ public class UiFactory {
 		mStyles.vars.textAreaHeight = SkinNames.getResource(SkinNames.GeneralVars.TEXT_AREA_HEIGHT);
 		mStyles.vars.textButtonHeight = SkinNames.getResource(SkinNames.GeneralVars.TEXT_BUTTON_HEIGHT);
 		mStyles.vars.textButtonWidth = SkinNames.getResource(SkinNames.GeneralVars.TEXT_BUTTON_WIDTH);
+		mStyles.vars.rightPanelWidth = SkinNames.getResource(SkinNames.GeneralVars.RIGHT_PANEL_WIDTH);
 
 		// Text buttons
 		TextButtonStyles.PRESS.setStyle((TextButtonStyle) SkinNames.getResource(SkinNames.General.TEXT_BUTTON_FLAT_PRESS));
 		TextButtonStyles.TOGGLE.setStyle((TextButtonStyle) SkinNames.getResource(SkinNames.General.TEXT_BUTTON_FLAT_TOGGLE));
+
+		// Checkbox styles
+		CheckBoxStyles.CHECK_BOX.setStyle((CheckBoxStyle) SkinNames.getResource(SkinNames.General.CHECK_BOX_DEFAULT));
+		CheckBoxStyles.RADIO.setStyle((CheckBoxStyle) SkinNames.getResource(SkinNames.General.CHECK_BOX_RADIO));
+	}
+
+	/**
+	 * Different check box styles
+	 */
+	public enum CheckBoxStyles {
+		/** Regular check box */
+		CHECK_BOX,
+		/** Radio button */
+		RADIO,
+
+		;
+
+		/**
+		 * Set the Scene2D text button style
+		 * @param style the text button style
+		 */
+		private void setStyle(CheckBoxStyle style) {
+			mStyle = style;
+		}
+
+		/**
+		 * @return get the text button style associated with this enumeration
+		 */
+		private CheckBoxStyle getStyle() {
+			return mStyle;
+		}
+
+		/** The style variable */
+		private CheckBoxStyle mStyle = null;
 	}
 
 	/**
@@ -698,7 +820,7 @@ public class UiFactory {
 	public class TabRadioWrapper extends TabWrapper {
 		@Override
 		public void createButton() {
-			button = new CheckBox(text, mStyles.checkBox.radio);
+			button = new CheckBox(text, CheckBoxStyles.RADIO.getStyle());
 		}
 
 		/** Button text */
@@ -735,7 +857,8 @@ public class UiFactory {
 		}
 
 		public static class Colors {
-			public Color sceneBackgroundColor = null;
+			public Color sceneBackground = null;
+			public Color widgetBackground = null;
 		}
 
 		public static class Variables {
@@ -751,6 +874,7 @@ public class UiFactory {
 			public float textFieldWidth = 0;
 			public float textButtonHeight = 0;
 			public float textButtonWidth = 0;
+			public float rightPanelWidth = 0;
 		}
 
 		static class Sliders {
@@ -770,11 +894,13 @@ public class UiFactory {
 		}
 
 		static class CheckBoxes {
-			public CheckBoxStyle radio = null;
-			public CheckBoxStyle checkBox = null;
+			// public CheckBoxStyle radio = null;
+			// public CheckBoxStyle checkBox = null;
 		}
 	}
 
+	/** Current tab widget */
+	private TabWidget mTabWidget = null;
 	/** Last created error label */
 	private Label mCreatedErrorLabelLast = null;
 	/** If the factory has been initialized */

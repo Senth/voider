@@ -126,7 +126,7 @@ public class SelectDefScene extends WorldScene {
 	public boolean keyDown(int keycode) {
 		// Set level as complete if we want to go back while testing
 		if (keycode == Keys.ESCAPE || keycode == Keys.BACK) {
-			setOutcome(Outcomes.DEF_SELECT_CANCEL);
+			cancel();
 		}
 
 		return false;
