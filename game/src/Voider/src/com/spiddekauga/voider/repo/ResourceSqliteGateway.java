@@ -337,7 +337,7 @@ class ResourceSqliteGateway extends SqliteGateway {
 	 */
 	void setPublished(UUID uuid, boolean published) {
 		try {
-			mDatabase.execSQL("UPDATE resource SET published=" + (published ? "1" : "0") + ";");
+			mDatabase.execSQL("UPDATE resource SET published=" + (published ? "1" : "0") + " WHERE uuid='" + uuid + "';");
 		} catch (SQLiteGdxException e) {
 			e.printStackTrace();
 			throw new GdxRuntimeException(e);

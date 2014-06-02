@@ -196,6 +196,7 @@ public class UiFactory {
 		SelectBox<SelectType> selectBox = new SelectBox<>(mStyles.select.standard);
 		selectBox.setItems(items);
 
+		listener.setSelectBox(selectBox);
 
 		table.row();
 		table.add(selectBox).setSize(mStyles.vars.textFieldWidth, mStyles.vars.rowHeight);

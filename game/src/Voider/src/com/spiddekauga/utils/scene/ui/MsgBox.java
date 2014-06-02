@@ -121,6 +121,7 @@ public class MsgBox extends Dialog {
 		mButtonTable.dispose();
 		mValues.clear();
 		clearActions();
+		clearListeners();
 	}
 
 	/**
