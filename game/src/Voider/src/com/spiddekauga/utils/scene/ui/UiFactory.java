@@ -363,6 +363,7 @@ public class UiFactory {
 
 		listener.setButton(button);
 		group.add(button);
+		table.add(button);
 
 		doExtraActionsOnActors(tooltipText, null, createdActors, button);
 

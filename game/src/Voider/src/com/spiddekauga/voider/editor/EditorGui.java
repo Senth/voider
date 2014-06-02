@@ -26,7 +26,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane.ScrollPaneStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider.SliderStyle;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
@@ -117,6 +116,11 @@ public abstract class EditorGui extends Gui {
 			getStage().addActor(mEditMenu);
 			getStage().addActor(mFileMenu);
 			getStage().addActor(mToolMenu);
+
+			mEditorMenu.setName("EditorMenu");
+			mEditMenu.setName("EditMenu");
+			mFileMenu.setName("FileMenu");
+			mToolMenu.setName("ToolMenu");
 		}
 
 		mBodies = Pools.arrayList.obtain();
@@ -721,9 +725,6 @@ public abstract class EditorGui extends Gui {
 	protected void executeCommandAndCheckSave(Command command, String title, String saveButtonText, String withoutSaveButtonText, String content,
 			boolean alwaysShow) {
 		if (!mEditor.isSaved() || alwaysShow) {
-			Button saveThenExecuteButton = new TextButton(saveButtonText, mStyles.textButton.press);
-			Button justExecuteButton = new TextButton(withoutSaveButtonText, mStyles.textButton.press);
-
 			Command saveAndExecute = new CEditorSave(mEditor, command);
 
 			MsgBoxExecuter msgBox = getFreeMsgBox(true);
@@ -731,8 +732,8 @@ public abstract class EditorGui extends Gui {
 			msgBox.clear();
 			msgBox.setTitle(title);
 			msgBox.content(content);
-			msgBox.button(saveThenExecuteButton, saveAndExecute);
-			msgBox.button(justExecuteButton, command);
+			msgBox.button(saveButtonText, saveAndExecute);
+			msgBox.button(withoutSaveButtonText, command);
 			msgBox.addCancelButtonAndKeys();
 			showMsgBox(msgBox);
 		} else {

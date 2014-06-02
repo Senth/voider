@@ -45,8 +45,12 @@ public class Row implements Poolable {
 		mMinWidth = 0;
 		mWidth = 0;
 		mHeight = 0;
-
+		mFillHeight = false;
+		mFillWidth = false;
 		mEqualSize = false;
+		mAlign.horizontal = Horizontal.LEFT;
+		mAlign.vertical = Vertical.MIDDLE;
+		mPadding.reset();
 
 		if (mCells != null) {
 			for (Cell cell : mCells) {
@@ -57,14 +61,6 @@ public class Row implements Poolable {
 		} else {
 			mCells = Pools.arrayList.obtain();
 		}
-
-		mAlign.horizontal = Horizontal.LEFT;
-		mAlign.vertical = Vertical.MIDDLE;
-
-		mPadding.reset();
-
-		mFillHeight = false;
-		mFillWidth = false;
 	}
 
 	/**

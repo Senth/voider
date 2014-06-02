@@ -58,6 +58,14 @@ public class Cell implements Poolable {
 		mFillWidth = false;
 		mWidthBeforeFill = 0;
 		mHeightBeforeFill = 0;
+		mFixedHeight = false;
+		mFixedWidth = false;
+		mKeepAspectRatio = false;
+		mBoxShape = false;
+		mCellHeight = 0;
+		mCellWidth = 0;
+		mAspectRatio = 1;
+		mActor = null;
 	}
 
 	/**
@@ -743,4 +751,5 @@ public class Cell implements Poolable {
 	private float mAspectRatio = 1f;
 	/** Padding for this cell */
 	private Padding mPadding = new Padding();
+	// !!! Don't forget to add to reset() !!!
 }

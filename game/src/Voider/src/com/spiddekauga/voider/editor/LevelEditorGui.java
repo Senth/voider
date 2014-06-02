@@ -70,7 +70,7 @@ class LevelEditorGui extends EditorGui {
 
 		initToolMenu();
 		initInfo();
-		// initPickup();
+		initPickup();
 		initPathOptions();
 		initEnemyOptions();
 		initEnemyAddOptions();
@@ -849,6 +849,7 @@ class LevelEditorGui extends EditorGui {
 
 	/**
 	 * Initializes Pickup tool GUI
+	 * @todo create pickup table
 	 */
 	private void initPickup() {
 		// mHiders.pickups.addToggleActor(mPickupTable);
