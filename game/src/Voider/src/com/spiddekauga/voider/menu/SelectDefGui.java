@@ -20,6 +20,7 @@ import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.utils.scene.ui.HideManual;
 import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
 import com.spiddekauga.utils.scene.ui.ResourceTextureButton;
+import com.spiddekauga.utils.scene.ui.Row;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
 import com.spiddekauga.utils.scene.ui.UiFactory.CheckBoxStyles;
 import com.spiddekauga.utils.scene.ui.UiFactory.TextButtonStyles;
@@ -354,7 +355,10 @@ public class SelectDefGui extends Gui {
 		}
 
 		// Set pad bottom for last row
-		table.getRow().setPadBottom(paddingExplore);
+		Row lastRow = table.getRow();
+		if (lastRow != null) {
+			lastRow.setPadBottom(paddingExplore);
+		}
 
 		// Pad with empty cells
 		if (columnIndex > 0 && columnIndex < levelsPerRow) {

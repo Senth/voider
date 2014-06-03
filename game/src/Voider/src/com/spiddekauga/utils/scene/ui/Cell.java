@@ -672,7 +672,7 @@ public class Cell implements Poolable {
 			return mCellWidth;
 		}
 		// Special case for labels as they need to be packed
-		else if (mActor instanceof Label) {
+		else if (mActor instanceof Label && !mFixedWidth) {
 			return ((Label) mActor).getPrefWidth() + getPadLeft() + getPadRight();
 		} else if (mActor != null) {
 			return mActor.getWidth() + getPadLeft() + getPadRight();
@@ -689,7 +689,7 @@ public class Cell implements Poolable {
 			return mCellHeight;
 		}
 		// Special case for labels as they need to be packed
-		else if (mActor instanceof Label) {
+		else if (mActor instanceof Label && !mFixedHeight) {
 			return ((Label) mActor).getPrefHeight() + getPadTop() + getPadBottom();
 		} else if (mActor != null) {
 			return mActor.getHeight() + getPadTop() + getPadBottom();

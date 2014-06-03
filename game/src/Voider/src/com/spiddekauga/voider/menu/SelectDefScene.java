@@ -2,6 +2,8 @@ package com.spiddekauga.voider.menu;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
@@ -19,6 +21,8 @@ import com.spiddekauga.voider.resources.IResourceTexture;
 import com.spiddekauga.voider.resources.ResourceItem;
 import com.spiddekauga.voider.scene.WorldScene;
 import com.spiddekauga.voider.utils.Pools;
+import com.spiddekauga.voider.utils.Synchronizer;
+import com.spiddekauga.voider.utils.Synchronizer.SyncEvents;
 import com.spiddekauga.voider.utils.User;
 
 /**
@@ -29,7 +33,7 @@ import com.spiddekauga.voider.utils.User;
  *          for the select \li DEF_SELECT_CANCEL canceled the selection.
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public class SelectDefScene extends WorldScene {
+public class SelectDefScene extends WorldScene implements Observer {
 	/**
 	 * Private common constructor
 	 * @param defType the definition type that the player want to select.
@@ -45,8 +49,7 @@ public class SelectDefScene extends WorldScene {
 
 		mShowMineOnly = showMineOnly;
 		mDefType = defType;
-
-
+		Synchronizer.getInstance().addObserver(this);
 		((SelectDefGui) mGui).setSelectDefScene(this);
 
 		for (int i = 0; i < mCategoryFilters.length; ++i) {
@@ -78,30 +81,40 @@ public class SelectDefScene extends WorldScene {
 		super.onActivate(outcome, message);
 
 		if (outcome == Outcomes.LOADING_SUCCEEDED) {
-			ArrayList<Def> defs = ResourceCacheFacade.getAll(mDefType);
-
-			for (Def def : defs) {
-				// Only show published or resources with latest revision
-				if (ResourceLocalRepo.isPublished(def.getId())) {
-					mDefs.add(new DefVisible(def));
-				} else {
-					try {
-						RevisionEntity revisionInfo = ResourceLocalRepo.getRevisionLatest(def.getId());
-						if (revisionInfo.revision == def.getRevision()) {
-							mDefs.add(new DefVisible(def));
-						}
-					} catch (ResourceNotFoundException e) {
-						// Does nothing
-					}
-				}
-			}
+			reloadDefinitions();
 
 			mGui.resetValues();
-
-			Pools.arrayList.free(defs);
-			defs = null;
 		}
 	}
+
+	/**
+	 * reload definitions
+	 */
+	private void reloadDefinitions() {
+		mDefs.clear();
+
+		ArrayList<Def> defs = ResourceCacheFacade.getAll(mDefType);
+
+		for (Def def : defs) {
+			// Only show published or resources with latest revision
+			if (ResourceLocalRepo.isPublished(def.getId())) {
+				mDefs.add(new DefVisible(def));
+			} else {
+				try {
+					RevisionEntity revisionInfo = ResourceLocalRepo.getRevisionLatest(def.getId());
+					if (revisionInfo.revision == def.getRevision()) {
+						mDefs.add(new DefVisible(def));
+					}
+				} catch (ResourceNotFoundException e) {
+					// Does nothing
+				}
+			}
+		}
+
+		Pools.arrayList.free(defs);
+		defs = null;
+	}
+
 
 	@Override
 	protected void loadResources() {
@@ -114,6 +127,26 @@ public class SelectDefScene extends WorldScene {
 	protected void unloadResources() {
 		super.unloadResources();
 		ResourceCacheFacade.unload(InternalNames.UI_GENERAL);
+	}
+
+	@Override
+	public void update(Observable observable, Object arg) {
+		if (observable instanceof Synchronizer) {
+			if (arg instanceof SyncEvents) {
+				switch ((SyncEvents) arg) {
+				case USER_RESOURCES_DOWNLOAD_SUCCESS:
+				case COMMUNITY_DOWNLOAD_SUCCESS:
+					ResourceCacheFacade.loadAllOf(this, mDefType, false);
+					reloadDefinitions();
+					mGui.resetValues();
+					break;
+
+				default:
+					// Does nothing
+					break;
+				}
+			}
+		}
 	}
 
 	@Override

@@ -278,8 +278,10 @@ public class ResourceRepo implements ICallerResponseListener {
 			}
 
 			Pools.arrayList.free(revisions);
+		}
 
-			// Set sync time
+		// Set sync time
+		if (response.isSuccessful()) {
 			ResourceLocalRepo.setSyncUserResourceDate(response.syncTime);
 		}
 	}

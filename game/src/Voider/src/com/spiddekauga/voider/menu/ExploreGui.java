@@ -279,6 +279,7 @@ public class ExploreGui extends Gui {
 
 		AlignTable table = mWidgets.search.table;
 		table.dispose(true);
+		table.setMargin(mUiFactory.getStyles().vars.paddingOuter);
 		table.setAlign(Horizontal.RIGHT, Vertical.TOP);
 		getStage().addActor(table);
 		mWidgets.search.hider.addToggleActor(table);
@@ -671,7 +672,10 @@ public class ExploreGui extends Gui {
 		// }
 
 		// Set pad bottom for last row
-		table.getRow().setPadBottom(paddingExplore);
+		Row lastRow = table.getRow();
+		if (lastRow != null) {
+			lastRow.setPadBottom(paddingExplore);
+		}
 
 		// Pad with empty cells
 		if (columnIndex > 0 && columnIndex < levelsPerRow) {
