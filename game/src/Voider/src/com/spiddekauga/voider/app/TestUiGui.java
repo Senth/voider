@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.List;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane.ScrollPaneListener;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
@@ -237,6 +238,13 @@ public class TestUiGui extends Gui {
 				+ "aoneuthaose .ruca,huaosetuhaoetkmaenkh\n" + "aoneu.sa,oc  sa has rh.usa,o.ucas c  u-e-isk\n" + "aoseutah a.ruchktqjhk-soeu\n");
 		ScrollPane scrollPane = new ScrollPane(label, mGeneralSkin, "background");
 		mMainTable.add(scrollPane);
+		ScrollPaneListener listener = new ScrollPaneListener() {
+			@Override
+			public void hitEdge(ScrollPane scrollPane, Edge edge) {
+				showMessage(edge.toString());
+			}
+		};
+		scrollPane.addListener(listener);
 
 		label = new Label("", mGeneralSkin);
 		label.setText("Scroll pane\n" + "Force scrollbars\n" + "Without background\n" + "aeu aseus a saosuaheu aseou\n"

@@ -16,11 +16,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane.ScrollPaneListener;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane.ScrollPaneStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
-import com.badlogic.gdx.scenes.scene2d.utils.ScrollPaneEdgeListener;
 import com.spiddekauga.utils.Strings;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
@@ -542,10 +542,10 @@ public class ExploreGui extends Gui {
 		getStage().addActor(mWidgets.content.scrollPane);
 		table.setAlign(Horizontal.LEFT, Vertical.TOP);
 
-		ScrollPaneEdgeListener listener = new ScrollPaneEdgeListener() {
+		ScrollPaneListener listener = new ScrollPaneListener() {
 			@Override
-			public void hitEdge(ScrollPane scrollPane, Edges edge) {
-				if (edge == Edges.BOTTOM) {
+			public void hitEdge(ScrollPane scrollPane, Edge edge) {
+				if (edge == Edge.BOTTOM) {
 					if (!mExploreScene.isFetchingLevels() && mExploreScene.hasMoreLevels()) {
 						mExploreScene.fetchMoreLevels();
 
@@ -556,7 +556,7 @@ public class ExploreGui extends Gui {
 				}
 			}
 		};
-		mWidgets.content.scrollPane.addScrollPaneEdgeListener(listener);
+		mWidgets.content.scrollPane.addListener(listener);
 
 		resetContentMargins();
 	}
