@@ -48,6 +48,8 @@ public class Row implements Poolable {
 		mFillHeight = false;
 		mFillWidth = false;
 		mEqualSize = false;
+		mFixedHeight = false;
+		mFixedWidth = false;
 		mAlign.horizontal = Horizontal.LEFT;
 		mAlign.vertical = Vertical.MIDDLE;
 		mPadding.reset();
@@ -112,6 +114,26 @@ public class Row implements Poolable {
 	 */
 	public Row setAlign(Horizontal horizontal, Vertical vertical) {
 		mAlign.horizontal = horizontal;
+		mAlign.vertical = vertical;
+		return this;
+	}
+
+	/**
+	 * Sets the horizontal alignment of this row
+	 * @param horizontal the horizontal alignment
+	 * @return this row for chaining
+	 */
+	public Row setAlign(Horizontal horizontal) {
+		mAlign.horizontal = horizontal;
+		return this;
+	}
+
+	/**
+	 * Sets the vertical alignment of this row
+	 * @param vertical the vertical alignment
+	 * @return this row for chaining
+	 */
+	public Row setAlign(Vertical vertical) {
 		mAlign.vertical = vertical;
 		return this;
 	}
@@ -247,6 +269,67 @@ public class Row implements Poolable {
 	 */
 	public float getMinWidth() {
 		return mMinWidth;
+	}
+
+	/**
+	 * Sets the height of the row, will automatically set it as fixed height
+	 * @param height
+	 * @return this Row for chaining
+	 */
+	public Row setHeight(float height) {
+		mHeight = height;
+		mFixedHeight = true;
+		return this;
+	}
+
+	/**
+	 * Sets the width of the row, will automatically set it as fixed width
+	 * @param width
+	 * @return this Row for chaining
+	 */
+	public Row setWidth(float width) {
+		mWidth = width;
+		mFixedWidth = true;
+		return this;
+	}
+
+	/**
+	 * Sets the row as fixed width. Can be used together with
+	 * {@link #setFillWidth(boolean)} so that the row is actually bigger than the cells
+	 * inside it.
+	 * @param fixedWidth set to true to make it fixed width
+	 * @return this for chaining
+	 */
+	public Row setFixedWidth(boolean fixedWidth) {
+		mFixedWidth = fixedWidth;
+		return this;
+	}
+
+	/**
+	 * Sets the row as fixed height. Can be used together with
+	 * {@link #setFillHeight(boolean)} so that the row is actually bigger than the cells
+	 * inside it.
+	 * @param fixedHeight set to true to make it fixed height
+	 * @return this for chaining
+	 */
+	public Row setFixedHeight(boolean fixedHeight) {
+		mFixedHeight = fixedHeight;
+		return this;
+	}
+
+	/**
+	 * @return true if this row has fixed width. I.e. it has changed its width externally.
+	 */
+	boolean isFixedWidth() {
+		return mFixedWidth;
+	}
+
+	/**
+	 * @return true if this row has fixed height. I.e. it has changed its height
+	 *         externally.
+	 */
+	boolean isFixedHeight() {
+		return mFixedHeight;
 	}
 
 	/**
@@ -398,8 +481,12 @@ public class Row implements Poolable {
 		mPrefWidth = 0;
 		mMinHeight = 0;
 		mMinWidth = 0;
-		mWidth = 0;
-		mHeight = 0;
+		if (!mFixedWidth) {
+			mWidth = 0;
+		}
+		if (!mFixedHeight) {
+			mHeight = 0;
+		}
 
 		for (Cell cell : mCells) {
 			if (cell.isVisible()) {
@@ -413,10 +500,10 @@ public class Row implements Poolable {
 	 * Calculates the actual size
 	 */
 	void calculateActualSize() {
-		if (!mFillWidth) {
+		if (!mFillWidth && !mFixedWidth) {
 			mWidth = 0;
 		}
-		if (!mFillHeight) {
+		if (!mFillHeight && !mFixedHeight) {
 			mHeight = 0;
 		}
 
@@ -424,11 +511,11 @@ public class Row implements Poolable {
 			if (cell.isVisible()) {
 				cell.calculateActualSize();
 
-				if (!mFillWidth) {
+				if (!mFillWidth && !mFixedWidth) {
 					mWidth += cell.getWidth();
 				}
 
-				if (!mFillHeight && cell.getHeight() > mHeight) {
+				if (!mFillHeight && !mFixedHeight && cell.getHeight() > mHeight) {
 					mHeight = cell.getHeight();
 				}
 			}
@@ -443,13 +530,13 @@ public class Row implements Poolable {
 	void updateSize(float width, float height) {
 		boolean changedSize = false;
 		float realWidth = width - getPadLeft() - getPadRight();
-		if (realWidth != mWidth) {
+		if (!mFixedWidth && realWidth != mWidth) {
 			mWidth = realWidth;
 			changedSize = true;
 		}
 
 		float realHeight = height - getPadLeft() - getPadRight();
-		if (realHeight != mHeight) {
+		if (!mFixedHeight && realHeight != mHeight) {
 			mHeight = realHeight;
 			changedSize = true;
 		}
@@ -597,7 +684,9 @@ public class Row implements Poolable {
 			}
 		} else {
 			mPrefWidth += cell.getPrefWidth();
-			mWidth += cell.getWidth();
+			if (!mFixedWidth) {
+				mWidth += cell.getWidth();
+			}
 			mMinWidth += cell.getPrefWidth() > cell.getWidth() ? cell.getPrefWidth() : cell.getWidth();
 		}
 
@@ -608,7 +697,7 @@ public class Row implements Poolable {
 		if (minHeight > mMinHeight) {
 			mMinHeight = minHeight;
 		}
-		if (cell.getHeight() > mHeight) {
+		if (!mFixedHeight && cell.getHeight() > mHeight) {
 			mHeight = cell.getHeight();
 		}
 	}
@@ -636,6 +725,10 @@ public class Row implements Poolable {
 	private float mMinWidth = 0;
 	/** Minimum height, equals all non-scalable cells' height */
 	private float mMinHeight = 0;
+	/** If the row should have fixed width */
+	private boolean mFixedWidth = false;
+	/** If the row should have fixed height */
+	private boolean mFixedHeight = false;
 	/** Row alignment */
 	private Align mAlign = new Align(Horizontal.LEFT, Vertical.MIDDLE);
 	/** If the row shall fill the width of the table */

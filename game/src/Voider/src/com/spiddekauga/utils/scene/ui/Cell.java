@@ -29,6 +29,26 @@ public class Cell implements Poolable {
 	}
 
 	/**
+	 * Sets the horizontal alignment of this cell
+	 * @param horizontal the horizontal alignment
+	 * @return this cell for chaining
+	 */
+	public Cell setAlign(Horizontal horizontal) {
+		mAlign.horizontal = horizontal;
+		return this;
+	}
+
+	/**
+	 * Sets the vertical alignment of this cell
+	 * @param vertical the vertical alignment
+	 * @return this cell for chaining
+	 */
+	public Cell setAlign(Vertical vertical) {
+		mAlign.vertical = vertical;
+		return this;
+	}
+
+	/**
 	 * Disposes the cell, the actor can be saved
 	 * @param disposeActor true if you want to call dispose() on the actor
 	 */
@@ -246,8 +266,7 @@ public class Cell implements Poolable {
 	}
 
 	/**
-	 * Sets the height of the cell. Don't use this together with scaling! Does not change
-	 * the preferred height.
+	 * Sets the height of the cell. Does not change the preferred height.
 	 * @note That this will change the preferred size of the cell. Use #resetSize() to
 	 *       reset the size to the actual preferred size
 	 * @param height new height of the cell.

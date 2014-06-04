@@ -19,7 +19,7 @@ import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.IResourceRevision;
 import com.spiddekauga.voider.resources.IResourceTexture;
 import com.spiddekauga.voider.resources.ResourceItem;
-import com.spiddekauga.voider.scene.WorldScene;
+import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.utils.Pools;
 import com.spiddekauga.voider.utils.Synchronizer;
 import com.spiddekauga.voider.utils.Synchronizer.SyncEvents;
@@ -33,7 +33,7 @@ import com.spiddekauga.voider.utils.User;
  *          for the select \li DEF_SELECT_CANCEL canceled the selection.
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public class SelectDefScene extends WorldScene implements Observer {
+public class SelectDefScene extends Scene implements Observer {
 	/**
 	 * Private common constructor
 	 * @param defType the definition type that the player want to select.
@@ -45,11 +45,10 @@ public class SelectDefScene extends WorldScene implements Observer {
 	 *        only display one's own actors.
 	 */
 	private SelectDefScene(ExternalTypes defType, String buttonText, boolean showMineOnly, boolean showMineOnlyCheckbox) {
-		super(new SelectDefGui(showMineOnlyCheckbox, buttonText), 0);
+		super(new SelectDefGui(showMineOnlyCheckbox, buttonText));
 
 		mShowMineOnly = showMineOnly;
 		mDefType = defType;
-		Synchronizer.getInstance().addObserver(this);
 		((SelectDefGui) mGui).setSelectDefScene(this);
 
 		for (int i = 0; i < mCategoryFilters.length; ++i) {
@@ -85,6 +84,18 @@ public class SelectDefScene extends WorldScene implements Observer {
 
 			mGui.resetValues();
 		}
+	}
+
+	@Override
+	protected void onInit() {
+		super.onInit();
+		Synchronizer.getInstance().addObserver(this);
+	}
+
+	@Override
+	protected void onDispose() {
+		super.onDispose();
+		Synchronizer.getInstance().deleteObserver(this);
 	}
 
 	/**
@@ -137,8 +148,26 @@ public class SelectDefScene extends WorldScene implements Observer {
 				case USER_RESOURCES_DOWNLOAD_SUCCESS:
 				case COMMUNITY_DOWNLOAD_SUCCESS:
 					ResourceCacheFacade.loadAllOf(this, mDefType, false);
-					reloadDefinitions();
-					mGui.resetValues();
+
+					new Thread() {
+						@Override
+						public void run() {
+							// Wait until loaded
+							while (ResourceCacheFacade.isLoading()) {
+								;
+							}
+
+							Gdx.app.postRunnable(new Runnable() {
+
+								@Override
+								public void run() {
+									reloadDefinitions();
+									mGui.resetValues();
+								}
+							});
+						}
+					}.start();
+
 					break;
 
 				default:

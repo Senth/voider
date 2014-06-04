@@ -159,6 +159,8 @@ public class SelectDefGui extends Gui {
 		mWidgets.info.hider = new HideManual();
 
 		AlignTable table = mWidgets.info.table;
+		table.setName("info-table");
+		table.setPadding(mUiFactory.getStyles().vars.paddingInner);
 		table.setAlignTable(Horizontal.RIGHT, Vertical.TOP);
 		table.setAlignRow(Horizontal.LEFT, Vertical.TOP);
 		table.setBackgroundImage(new Background(mUiFactory.getStyles().color.widgetBackground));
@@ -168,6 +170,8 @@ public class SelectDefGui extends Gui {
 		// Name
 		mWidgets.info.name = mUiFactory.addPanelSection("", table, null);
 		table.getRow().setAlign(Horizontal.CENTER, Vertical.TOP);
+		table.getCell().setAlign(Vertical.TOP);
+		mWidgets.info.name.setName("info-name");
 
 		// Description
 		table.row(Horizontal.CENTER, Vertical.TOP);
@@ -327,6 +331,8 @@ public class SelectDefGui extends Gui {
 	 * @param defs the definitions to add
 	 */
 	void addContent(ArrayList<DefVisible> defs) {
+		mAddingContent = true;
+
 		AlignTable table = mWidgets.content.table;
 
 		// Calculate how many levels per row
@@ -341,15 +347,15 @@ public class SelectDefGui extends Gui {
 		float paddingExplore = mUiFactory.getStyles().vars.paddingExplore;
 
 		// Populate table
-		for (DefVisible level : defs) {
-			AlignTable levelTable = createDefTable(level);
+		for (DefVisible def : defs) {
+			AlignTable defTable = createDefTable(def);
 
 			if (columnIndex == levelsPerRow) {
 				table.row().setFillWidth(true).setEqualCellSize(true).setPadTop(paddingExplore).setPadRight(paddingExplore);
 				columnIndex = 0;
 			}
 
-			table.add(levelTable).setFillWidth(true).setPadLeft(paddingExplore);
+			table.add(defTable).setFillWidth(true).setPadLeft(paddingExplore);
 
 			columnIndex++;
 		}
@@ -371,6 +377,8 @@ public class SelectDefGui extends Gui {
 		table.invalidate();
 		table.layout();
 		mWidgets.content.scrollPane.invalidate();
+
+		mAddingContent = false;
 	}
 
 	/**
@@ -392,17 +400,32 @@ public class SelectDefGui extends Gui {
 			@Override
 			protected void onChecked(boolean checked) {
 				if (checked) {
-					mSelectDefScene.setSelectedDef(def.def);
-
-					if (mSelectDefScene.isSelectedPublished()) {
-						mWidgets.info.hider.hide();
-						mWidgets.rightPanel.invalidate();
+					boolean selectDef = false;
+					if (mAddingContent) {
+						if (!mSelectDefScene.isDefSelected()) {
+							selectDef = true;
+						} else if (mSelectDefScene.isDefSelected(def.def.getId())) {
+							selectDef = true;
+							mWasCheckedOnDown = true;
+						}
 					} else {
-						mWidgets.info.hider.show();
-						mWidgets.rightPanel.invalidate();
+						selectDef = true;
 					}
 
-					resetInfo();
+					// Select def when not adding content
+					if (selectDef) {
+						mSelectDefScene.setSelectedDef(def.def);
+
+						if (mSelectDefScene.isSelectedPublished()) {
+							mWidgets.info.hider.hide();
+							mWidgets.rightPanel.invalidate();
+						} else {
+							mWidgets.info.hider.show();
+							mWidgets.rightPanel.invalidate();
+						}
+
+						resetInfo();
+					}
 				}
 			}
 
@@ -422,6 +445,9 @@ public class SelectDefGui extends Gui {
 			private boolean mWasCheckedOnDown = false;
 		};
 		mWidgets.content.buttonGroup.add(button);
+		if (mSelectDefScene.isDefSelected(def.def.getId())) {
+			button.setChecked(true);
+		}
 
 		// Def name
 		table.row();
@@ -511,6 +537,8 @@ public class SelectDefGui extends Gui {
 		mWidgets.revision.table.add(mWidgets.revision.scrollPane).setFillHeight(true).setFillWidth(true);
 	}
 
+	/** True while populating table */
+	private boolean mAddingContent = false;
 	/** If the checkbox that only shows one's own actors shall be shown */
 	private boolean mShowMineOnlyCheckbox;
 	/** SelectDefScene this GUI is bound to */

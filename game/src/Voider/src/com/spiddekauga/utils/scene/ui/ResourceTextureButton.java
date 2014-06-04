@@ -18,7 +18,7 @@ public class ResourceTextureButton extends ImageButton {
 	public ResourceTextureButton(
 			IResourceTexture resource, ImageButtonStyle buttonStyle) {
 		super(new ImageButtonStyle(buttonStyle));
-		setTexture(resource);
+		setResource(resource);
 	}
 
 	/**
@@ -30,7 +30,7 @@ public class ResourceTextureButton extends ImageButton {
 	public ResourceTextureButton(
 			IResourceTexture resource, Skin skin) {
 		super(new ImageButtonStyle(skin.get(ImageButtonStyle.class)));
-		setTexture(resource);
+		setResource(resource);
 	}
 
 	/**
@@ -42,7 +42,7 @@ public class ResourceTextureButton extends ImageButton {
 	public ResourceTextureButton(
 			IResourceTexture resource, Skin skin, String styleName) {
 		super(new ImageButtonStyle(skin.get(styleName, ImageButtonStyle.class)));
-		setTexture(resource);
+		setResource(resource);
 	}
 
 	/**
@@ -75,7 +75,7 @@ public class ResourceTextureButton extends ImageButton {
 	 * Sets the correct image style
 	 * @param resource the resource to get the texture from
 	 */
-	private void setTexture(IResourceTexture resource) {
+	private void setResource(IResourceTexture resource) {
 		mResource = resource;
 
 		updateImage();

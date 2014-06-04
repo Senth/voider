@@ -68,6 +68,14 @@ public class SyncUserResources extends VoiderServlet {
 			syncNewToClient((SyncUserResourcesMethod) methodEntity);
 			syncNewToServer((SyncUserResourcesMethod) methodEntity);
 			mResponse.syncTime = mSyncDate;
+
+			// Send sync message
+			if (mResponse.isSuccessful()) {
+				ChatMessage<Object> chatMessage = new ChatMessage<>();
+				chatMessage.skipClient = mUser.getClientId();
+				chatMessage.type = MessageTypes.SYNC_USER_RESOURCES;
+				sendMessage(chatMessage);
+			}
 		}
 
 		return mResponse;
@@ -155,15 +163,6 @@ public class SyncUserResources extends VoiderServlet {
 			mResponse.uploadStatus = UploadStatuses.SUCCESS_ALL;
 		} else {
 			mResponse.uploadStatus = UploadStatuses.SUCCESS_PARTIAL;
-		}
-
-
-		// Send sync message
-		if (uploadedSomething) {
-			ChatMessage<Object> chatMessage = new ChatMessage<>();
-			chatMessage.skipClient = mUser.getClientId();
-			chatMessage.type = MessageTypes.SYNC_USER_RESOURCES;
-			sendMessage(chatMessage);
 		}
 	}
 

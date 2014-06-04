@@ -330,7 +330,6 @@ public class UiFactory {
 	public Label addLabel(String text, boolean wrap, AlignTable table) {
 		Label label = new Label(text, mStyles.label.standard);
 		label.setWrap(wrap);
-
 		table.add(label);
 
 		return label;
@@ -370,8 +369,8 @@ public class UiFactory {
 	 */
 	public Label addPanelSection(String text, AlignTable table, GuiHider hider) {
 		Label label = new Label(text, mStyles.label.panelSection);
-		table.row();
-		table.add(label);
+		table.row().setHeight(mStyles.vars.rowHeightSection);
+		table.add(label).setAlign(Vertical.MIDDLE);
 
 		doExtraActionsOnActors(null, hider, null, label);
 
@@ -685,7 +684,8 @@ public class UiFactory {
 		mStyles.vars.textFieldWidth = SkinNames.getResource(SkinNames.GeneralVars.TEXT_FIELD_WIDTH);
 		mStyles.vars.sliderWidth = SkinNames.getResource(SkinNames.GeneralVars.SLIDER_WIDTH);
 		mStyles.vars.sliderLabelWidth = SkinNames.getResource(SkinNames.GeneralVars.SLIDER_LABEL_WIDTH);
-		mStyles.vars.rowHeight = SkinNames.getResource(SkinNames.GeneralVars.ICON_ROW_HEIGHT);
+		mStyles.vars.rowHeight = SkinNames.getResource(SkinNames.GeneralVars.ROW_HEIGHT);
+		mStyles.vars.rowHeightSection = SkinNames.getResource(SkinNames.GeneralVars.ROW_HEIGHT_SECTION);
 		mStyles.vars.textAreaHeight = SkinNames.getResource(SkinNames.GeneralVars.TEXT_AREA_HEIGHT);
 		mStyles.vars.textButtonHeight = SkinNames.getResource(SkinNames.GeneralVars.TEXT_BUTTON_HEIGHT);
 		mStyles.vars.textButtonWidth = SkinNames.getResource(SkinNames.GeneralVars.TEXT_BUTTON_WIDTH);
@@ -870,6 +870,7 @@ public class UiFactory {
 			public float paddingInner = 0;
 			public float paddingExplore = 0;
 			public float rowHeight = 0;
+			public float rowHeightSection = 0;
 			public float textAreaHeight = 0;
 			public float textFieldWidth = 0;
 			public float textButtonHeight = 0;

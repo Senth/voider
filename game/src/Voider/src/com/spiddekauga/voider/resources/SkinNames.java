@@ -376,7 +376,9 @@ public class SkinNames {
 		/** Tag widget in explore and loading screen */
 		TAG_BAR_WIDTH(Float.class),
 		/** Standard icon and thus row height */
-		ICON_ROW_HEIGHT(Float.class),
+		ROW_HEIGHT(Float.class),
+		/** Row height for panel section (smaller text) */
+		ROW_HEIGHT_SECTION(Float.class),
 		/** Second of fade in for the wait window */
 		WAIT_WINDOW_FADE_IN(Float.class),
 		/** Seconds of fade out for the wait window */
