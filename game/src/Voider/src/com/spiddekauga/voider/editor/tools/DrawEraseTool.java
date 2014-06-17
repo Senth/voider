@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -31,7 +32,6 @@ import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Tool for adding or removing from a shape
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class DrawEraseTool extends ActorTool {
@@ -43,7 +43,8 @@ public class DrawEraseTool extends ActorTool {
 	 * @param editor editor this tool is bound to
 	 * @param actorType the type of actor to draw
 	 */
-	public DrawEraseTool(Camera camera, World world, Invoker invoker, ISelection selection, IResourceChangeEditor editor, Class<? extends Actor> actorType) {
+	public DrawEraseTool(Camera camera, World world, Invoker invoker, ISelection selection, IResourceChangeEditor editor,
+			Class<? extends Actor> actorType) {
 		super(camera, world, invoker, selection, editor, actorType);
 	}
 
@@ -107,8 +108,9 @@ public class DrawEraseTool extends ActorTool {
 	/**
 	 * Split intersections by actor.
 	 * @param intersections all intersections
-	 * @return hash map of array of intersections. Where each inner array has intersections for the same
-	 * actor. Don't forget to free both the hash map and all inner arrays
+	 * @return hash map of array of intersections. Where each inner array has
+	 *         intersections for the same actor. Don't forget to free both the hash map
+	 *         and all inner arrays
 	 */
 	@SuppressWarnings("unchecked")
 	private HashMap<Actor, ArrayList<BrushActorIntersection>> splitIntersectionsByActor(ArrayList<BrushActorIntersection> intersections) {
@@ -307,17 +309,31 @@ public class DrawEraseTool extends ActorTool {
 			}
 		}
 
+		// Remove all excess corners until the amount of corners doesn't change
+		int cCorners = 0;
+		do {
+			cCorners = actorCorners.getCornerCount();
+			mInvoker.execute(new CResourceCornerRemoveExcessive(actorCorners), true);
+
+			if (cCorners != actorCorners.getCornerCount()) {
+				Gdx.app.debug("DrawEraseTool", "Removed excessive corners");
+			}
+		} while (cCorners != actorCorners.getCornerCount());
+
 		mInvoker.execute(new CActorDefFixCustomFixtures(actor.getDef(), true), true);
 	}
 
 	/**
-	 * Calculate if shortest path between to actorIndices are between the indices and not wrapped.
+	 * Calculate if shortest path between to actorIndices are between the indices and not
+	 * wrapped.
 	 * @param vertices current vertices of the actor
 	 * @param fromIntersection the intersection to calculate from
 	 * @param toIntersection the intersection to calculate to
-	 * @return true if the shortest length between two actorIndices are between the indices, false if wrapped
+	 * @return true if the shortest length between two actorIndices are between the
+	 *         indices, false if wrapped
 	 */
-	private boolean isShortestBetweenIndices(ArrayList<Vector2> vertices, BrushActorIntersection fromIntersection, BrushActorIntersection toIntersection) {
+	private boolean isShortestBetweenIndices(ArrayList<Vector2> vertices, BrushActorIntersection fromIntersection,
+			BrushActorIntersection toIntersection) {
 		// BETWEEN
 		float betweenLengthSq = 0;
 		// vertices between
@@ -327,7 +343,7 @@ public class DrawEraseTool extends ActorTool {
 
 			// Calculate between
 			for (int i = fromIntersection.actorIndex + 1; i < toIntersection.actorIndex; ++i) {
-				betweenLengthSq += vertices.get(i).dst2(vertices.get(i+1));
+				betweenLengthSq += vertices.get(i).dst2(vertices.get(i + 1));
 			}
 
 			// Calculate from last between index to after intersection
@@ -342,7 +358,7 @@ public class DrawEraseTool extends ActorTool {
 		// WRAPPED
 		float wrappedLengthSq = 0;
 		// To intersection
-		int nextIndex = Collections.nextIndex(vertices,toIntersection.actorIndex);
+		int nextIndex = Collections.nextIndex(vertices, toIntersection.actorIndex);
 		wrappedLengthSq += toIntersection.intersection.dst2(vertices.get(nextIndex));
 
 		// From intersection
@@ -374,8 +390,8 @@ public class DrawEraseTool extends ActorTool {
 
 	/**
 	 * Checks for intersections between selected actor and draw erase brush
-	 * @return array list with all intersections including indices for both
-	 * actor and brush.
+	 * @return array list with all intersections including indices for both actor and
+	 *         brush.
 	 */
 	@SuppressWarnings("unchecked")
 	private ArrayList<BrushActorIntersection> getBrushActorIntersections() {
@@ -426,7 +442,6 @@ public class DrawEraseTool extends ActorTool {
 			Pools.vector2.freeAll(actorCornerss);
 			actorCornerss.clear();
 		}
-
 
 
 		Pools.arrayList.freeAll(actorCornerss, selectedActors);
@@ -504,7 +519,7 @@ public class DrawEraseTool extends ActorTool {
 			Body body = fixture.getBody();
 			// Hit an actor
 			if (body.getUserData() != null && body.getUserData().getClass() == mActorType) {
-				if (mSelection.isSelected((IResource)body.getUserData())) {
+				if (mSelection.isSelected((IResource) body.getUserData())) {
 					mHitActor = (Actor) body.getUserData();
 					return false;
 				}

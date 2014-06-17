@@ -9,7 +9,8 @@ import java.util.List;
  */
 public class Collections {
 	/**
-	 * Computes the previous index of an array, i.e. it wraps the index from the front to back if needed.
+	 * Computes the previous index of an array, i.e. it wraps the index from the front to
+	 * back if needed.
 	 * @param array the array to wrap
 	 * @param index calculates the previous index of this
 	 * @return previous index
@@ -19,7 +20,8 @@ public class Collections {
 	}
 
 	/**
-	 * Computes the next index of an array, i.e. it wraps the index from back to front if needed.
+	 * Computes the next index of an array, i.e. it wraps the index from back to front if
+	 * needed.
 	 * @param array the array to wrap
 	 * @param index calculates the next index of this
 	 * @return next index
@@ -32,7 +34,8 @@ public class Collections {
 	 * Checks if a list contains the specified item. Uses linear search
 	 * @param list the list to search in
 	 * @param object the object to search for
-	 * @param identity set to true to test "object == list.get(i)", false to test "object.equals(list.get(i))"
+	 * @param identity set to true to test "object == list.get(i)", false to test
+	 *        "object.equals(list.get(i))"
 	 * @return true if list contains object.
 	 */
 	public static boolean listContains(List<? extends Object> list, Object object, boolean identity) {
@@ -54,12 +57,12 @@ public class Collections {
 
 	/**
 	 * Adds all elements to an collection
-	 * @param <CollectionType> the collection type
+	 * @param <ElementType> the element type
 	 * @param addFrom the collection to add from
 	 * @param addTo the collection to add to
 	 */
-	public static <CollectionType> void addAll(Iterable<CollectionType> addFrom, Collection<CollectionType> addTo) {
-		for (CollectionType element : addFrom) {
+	public static <ElementType> void addAll(Iterable<ElementType> addFrom, Collection<ElementType> addTo) {
+		for (ElementType element : addFrom) {
 			addTo.add(element);
 		}
 	}

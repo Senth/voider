@@ -13,27 +13,24 @@ import com.badlogic.gdx.utils.GdxRuntimeException;
 
 /**
  * Various geometry help functions
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class Geometry {
 	/**
-	 * Checks if two lines intersects, but skips the vertex points of the lines (i.e. if
-	 * a point is the same, it simply skips the calculation. Note that the lines might still
+	 * Checks if two lines intersects, but skips the vertex points of the lines (i.e. if a
+	 * point is the same, it simply skips the calculation. Note that the lines might still
 	 * intersect, e.g. LINE1: (0,0) - (5,0), LINE2: (0,0) - (2,0).
 	 * @param line1a first vertex point for line 1
 	 * @param line1b second vertex point for line 1
 	 * @param line2a first vertex point for line 2
 	 * @param line2b second vertex point for line 2
 	 * @return true if the lines intersect within the lines' range.
-	 * 
 	 * @see #linesIntersect(Vector2,Vector2,Vector2,Vector2)
-	 * @see #getLineLineIntersection(Vector2, Vector2, Vector2, Vector2) to get the line intersection
+	 * @see #getLineLineIntersection(Vector2, Vector2, Vector2, Vector2) to get the line
+	 *      intersection
 	 */
 	public static boolean linesIntersectNoCorners(Vector2 line1a, Vector2 line1b, Vector2 line2a, Vector2 line2b) {
-		if (line1a.equals(line2a) || line1a.equals(line2b) ||
-				line1b.equals(line2a) || line1b.equals(line2b))
-		{
+		if (line1a.equals(line2a) || line1a.equals(line2b) || line1b.equals(line2a) || line1b.equals(line2b)) {
 			return false;
 		}
 
@@ -41,69 +38,71 @@ public class Geometry {
 	}
 
 	/**
-	 * Checks if two lines intersects. They only intersect if the intersection
-	 * point is within the lines' range (i.e. these are not infinite lines)
+	 * Checks if two lines intersects. They only intersect if the intersection point is
+	 * within the lines' range (i.e. these are not infinite lines)
 	 * @param line1a first vertex point for line 1
 	 * @param line1b second vertex point for line 1
 	 * @param line2a first vertex point for line 2
 	 * @param line2b second vertex point for line 2
 	 * @return true if the lines intersect within the lines' range.
-	 * 
 	 * @author CommanderKeith on http://Java-Gaming.org
-	 * 
 	 * @see #linesIntersectNoCorners(Vector2,Vector2,Vector2,Vector2)
-	 * @see #getLineLineIntersection(Vector2, Vector2, Vector2, Vector2) to get the point of intersection
+	 * @see #getLineLineIntersection(Vector2, Vector2, Vector2, Vector2) to get the point
+	 *      of intersection
 	 */
 	public static boolean linesIntersect(Vector2 line1a, Vector2 line1b, Vector2 line2a, Vector2 line2b) {
 		// Return false if either of the lines have zero length
-		if ((line1a.x == line1b.x && line1a.y == line1b.y) ||
-				(line2a.x == line2b.x && line2a.y == line2b.y)){
+		if ((line1a.x == line1b.x && line1a.y == line1b.y) || (line2a.x == line2b.x && line2a.y == line2b.y)) {
 			return false;
 		}
-		// Fastest method, based on Franklin Antonio's "Faster Line Segment Intersection" topic "in Graphics Gems III" book (http://www.graphicsgems.org/)
-		float ax = line1b.x-line1a.x;
-		float ay = line1b.y-line1a.y;
-		float bx = line2a.x-line2b.x;
-		float by = line2a.y-line2b.y;
-		float cx = line1a.x-line2a.x;
-		float cy = line1a.y-line2a.y;
+		// Fastest method, based on Franklin Antonio's "Faster Line Segment Intersection"
+		// topic "in Graphics Gems III" book (http://www.graphicsgems.org/)
+		float ax = line1b.x - line1a.x;
+		float ay = line1b.y - line1a.y;
+		float bx = line2a.x - line2b.x;
+		float by = line2a.y - line2b.y;
+		float cx = line1a.x - line2a.x;
+		float cy = line1a.y - line2a.y;
 
-		float alphaNumerator = by*cx - bx*cy;
-		float commonDenominator = ay*bx - ax*by;
-		if (commonDenominator > 0){
-			if (alphaNumerator < 0 || alphaNumerator > commonDenominator){
+		float alphaNumerator = by * cx - bx * cy;
+		float commonDenominator = ay * bx - ax * by;
+		if (commonDenominator > 0) {
+			if (alphaNumerator < 0 || alphaNumerator > commonDenominator) {
 				return false;
 			}
-		}else if (commonDenominator < 0){
-			if (alphaNumerator > 0 || alphaNumerator < commonDenominator){
-				return false;
-			}
-		}
-		float betaNumerator = ax*cy - ay*cx;
-		if (commonDenominator > 0){
-			if (betaNumerator < 0 || betaNumerator > commonDenominator){
-				return false;
-			}
-		}else if (commonDenominator < 0){
-			if (betaNumerator > 0 || betaNumerator < commonDenominator){
+		} else if (commonDenominator < 0) {
+			if (alphaNumerator > 0 || alphaNumerator < commonDenominator) {
 				return false;
 			}
 		}
-		if (commonDenominator == 0){
-			// This code wasn't in Franklin Antonio's method. It was added by Keith Woodward.
+		float betaNumerator = ax * cy - ay * cx;
+		if (commonDenominator > 0) {
+			if (betaNumerator < 0 || betaNumerator > commonDenominator) {
+				return false;
+			}
+		} else if (commonDenominator < 0) {
+			if (betaNumerator > 0 || betaNumerator < commonDenominator) {
+				return false;
+			}
+		}
+		if (commonDenominator == 0) {
+			// This code wasn't in Franklin Antonio's method. It was added by Keith
+			// Woodward.
 			// The lines are parallel.
 			// Check if they're collinear.
-			float y3LessY1 = line2a.y-line1a.y;
-			float collinearityTestForP3 = line1a.x*(line1b.y-line2a.y) + line1b.x*(y3LessY1) + line2a.x*(line1a.y-line1b.y);   // see http://mathworld.wolfram.com/Collinear.html
-			// If p3 is collinear with p1 and p2 then p4 will also be collinear, since p1-p2 is parallel with p3-p4
-			if (collinearityTestForP3 == 0){
+			float y3LessY1 = line2a.y - line1a.y;
+			float collinearityTestForP3 = line1a.x * (line1b.y - line2a.y) + line1b.x * (y3LessY1) + line2a.x * (line1a.y - line1b.y); // see
+																																		// http://mathworld.wolfram.com/Collinear.html
+			// If p3 is collinear with p1 and p2 then p4 will also be collinear, since
+			// p1-p2 is parallel with p3-p4
+			if (collinearityTestForP3 == 0) {
 				// The lines are collinear. Now check if they overlap.
-				if (line1a.x >= line2a.x && line1a.x <= line2b.x || line1a.x <= line2a.x && line1a.x >= line2b.x ||
-						line1b.x >= line2a.x && line1b.x <= line2b.x || line1b.x <= line2a.x && line1b.x >= line2b.x ||
-						line2a.x >= line1a.x && line2a.x <= line1b.x || line2a.x <= line1a.x && line2a.x >= line1b.x){
-					if (line1a.y >= line2a.y && line1a.y <= line2b.y || line1a.y <= line2a.y && line1a.y >= line2b.y ||
-							line1b.y >= line2a.y && line1b.y <= line2b.y || line1b.y <= line2a.y && line1b.y >= line2b.y ||
-							line2a.y >= line1a.y && line2a.y <= line1b.y || line2a.y <= line1a.y && line2a.y >= line1b.y){
+				if (line1a.x >= line2a.x && line1a.x <= line2b.x || line1a.x <= line2a.x && line1a.x >= line2b.x || line1b.x >= line2a.x
+						&& line1b.x <= line2b.x || line1b.x <= line2a.x && line1b.x >= line2b.x || line2a.x >= line1a.x && line2a.x <= line1b.x
+						|| line2a.x <= line1a.x && line2a.x >= line1b.x) {
+					if (line1a.y >= line2a.y && line1a.y <= line2b.y || line1a.y <= line2a.y && line1a.y >= line2b.y || line1b.y >= line2a.y
+							&& line1b.y <= line2b.y || line1b.y <= line2a.y && line1b.y >= line2b.y || line2a.y >= line1a.y && line2a.y <= line1b.y
+							|| line2a.y <= line1a.y && line2a.y >= line1b.y) {
 						return true;
 					}
 				}
@@ -114,17 +113,16 @@ public class Geometry {
 	}
 
 	/**
-	 * Calculates the point of intersection between two lines. Note that the lines
-	 * are treated as infinite, so the lines don't have to intersect.
+	 * Calculates the point of intersection between two lines. Note that the lines are
+	 * treated as infinite, so the lines don't have to intersect.
 	 * @param line1Start starting position of line 1
 	 * @param line1End end position of line 1
 	 * @param line2Start starting position of line 2
 	 * @param line2End end position of line 2
 	 * @return point of intersection, null if lines are parallel.
-	 * 
 	 * @author CommanderKeith on http://Java-Gaming.org
-	 *
-	 * @see #linesIntersect(Vector2, Vector2, Vector2, Vector2) if the point is actually inside the lines
+	 * @see #linesIntersect(Vector2, Vector2, Vector2, Vector2) if the point is actually
+	 *      inside the lines
 	 * @see #linesIntersectNoCorners(Vector2, Vector2, Vector2, Vector2)
 	 */
 	public static Vector2 getLineLineIntersection(Vector2 line1Start, Vector2 line1End, Vector2 line2Start, Vector2 line2End) {
@@ -135,8 +133,9 @@ public class Geometry {
 		float x3LessX4 = line2Start.x - line2End.x;
 		float y3LessY4 = line2Start.y - line2End.y;
 		float det1Less2And3Less4 = det(x1LessX2, y1LessY2, x3LessX4, y3LessY4);
-		if (det1Less2And3Less4 == 0){
-			// the denominator is zero so the lines are parallel and there's either no solution (or multiple solutions if the lines overlap) so return null.
+		if (det1Less2And3Less4 == 0) {
+			// the denominator is zero so the lines are parallel and there's either no
+			// solution (or multiple solutions if the lines overlap) so return null.
 			return null;
 		}
 		float x = (det(det1And2, x1LessX2, det3And4, x3LessX4) / det1Less2And3Less4);
@@ -149,9 +148,7 @@ public class Geometry {
 	 * @param vectorA first vector
 	 * @param vectorB second vector
 	 * @return determinant between two vectors
-	 * 
 	 * @author CommanderKeith on http://Java-Gaming.org
-	 * 
 	 * @see #det(float, float, float, float)
 	 */
 	protected static float det(Vector2 vectorA, Vector2 vectorB) {
@@ -165,9 +162,7 @@ public class Geometry {
 	 * @param x2 x value of vector 2
 	 * @param y2 y value of vector 2
 	 * @return determinant between two vectors
-	 * 
 	 * @author CommanderKeith on http://Java-Gaming.org
-	 * 
 	 * @see #det(Vector2, Vector2)
 	 */
 	protected static float det(float x1, float y1, float x2, float y2) {
@@ -200,6 +195,7 @@ public class Geometry {
 		}
 	}
 
+	// @formatter:off
 	/**
 	 * Calculates the triangle area. Uses this algorithm:
 	 * \code
@@ -208,32 +204,40 @@ public class Geometry {
 	 * area = | ——————————————————————————————————————— |
 	 *        |                    2                    |
 	 * \endcode
-	 * @param vertex1
-	 * @param vertex2
-	 * @param vertex3
+	 * @param vertices array with the triangle vertices
 	 * @return positive value if the triangle is counter-clockwise, negative for clockwise triangle.
 	 */
-	public static float calculateTriangleArea(final Vector2 vertex1, final Vector2 vertex2, final Vector2 vertex3) {
-		float a = vertex1.x * (vertex2.y - vertex3.y);
-		float b = vertex2.x * (vertex3.y - vertex1.y);
-		float c = vertex3.x * (vertex1.y - vertex2.y);
-		return (a + b + c) * 0.5f;
+	// @formatter:on
+	public static float calculateTriangleArea(final Vector2[] vertices) {
+		assert (vertices.length == 3);
+		// float a = vertices[0].x * (vertices[1].y - vertices[2].y);
+		// float b = vertices[1].x * (vertices[2].y - vertices[0].y);
+		// float c = vertices[2].x * (vertices[0].y - vertices[1].y);
+		// return (a + b + c) * 0.5f;
+
+		Vector2 e1 = Pools.vector2.obtain().set(vertices[1]).sub(vertices[0]);
+		Vector2 e2 = Pools.vector2.obtain().set(vertices[2]).sub(vertices[0]);
+
+		float crossProduct = e1.crs(e2);
+		return crossProduct * 0.5f;
 	}
 
 	/**
 	 * Calculates the area of a polygon
 	 * @param vertices all vertices of the polygon
-	 * @return positive value if the polygon is counter-clockwise, negative for clockwise polygons.
+	 * @return positive value if the polygon is counter-clockwise, negative for clockwise
+	 *         polygons.
 	 */
 	public static float calculatePolygonArea(final List<Vector2> vertices) {
 		float area = 0;
 		for (int i = 0; i < vertices.size(); i++) {
-			final Vector2 p1 = vertices.get(i);
-			final Vector2 p2 = vertices.get(com.spiddekauga.utils.Collections.nextIndex(vertices, i));
-			area += p1.x * p2.y - p2.x * p1.y;
+			final Vector2 current = vertices.get(i);
+			final Vector2 next = vertices.get(com.spiddekauga.utils.Collections.nextIndex(vertices, i));
+			// area += current.x * next.y - next.x * current.y;
+			area += (current.x + next.x) * (current.y - next.y);
 		}
 
-		return area;
+		return area * 0.5f;
 	}
 
 	/**
@@ -242,9 +246,10 @@ public class Geometry {
 	 * @param objectSpeed object speed
 	 * @param targetPosition current position of the target
 	 * @param targetVelocity current velocity of the target
-	 * @return velocity of the object needed to intercept the object. Returns Vector2(NaN,NaN)
-	 * if the object cannot intercept the target (because of speed).
-	 * Be sure to free the returning variable using Pools.vector2.free(velocity);
+	 * @return velocity of the object needed to intercept the object. Returns
+	 *         Vector2(NaN,NaN) if the object cannot intercept the target (because of
+	 *         speed). Be sure to free the returning variable using
+	 *         Pools.vector2.free(velocity);
 	 */
 	public static Vector2 interceptTarget(Vector2 objectPosition, float objectSpeed, Vector2 targetPosition, Vector2 targetVelocity) {
 		Vector2 distanceVector = Pools.vector2.obtain();
@@ -252,7 +257,7 @@ public class Geometry {
 		float e = distanceVector.dot(distanceVector);
 		float f = 2 * targetVelocity.dot(distanceVector);
 		float g = (objectSpeed * objectSpeed) - targetVelocity.dot(targetVelocity);
-		float t = (float) ((f + Math.sqrt((f * f) + 4 * g * e )) / (g * 2));
+		float t = (float) ((f + Math.sqrt((f * f) + 4 * g * e)) / (g * 2));
 
 		Vector2 objectVelocity = Pools.vector2.obtain();
 		objectVelocity.set(distanceVector).scl(1 / t).add(targetVelocity);
@@ -265,11 +270,11 @@ public class Geometry {
 	/**
 	 * Creates a circle, or rather returns vertices that can be created as a circle.
 	 * @param radius the radius of the circle
-	 * @return array with the vertices of the circle, all vertices are created from Vector2Pool
+	 * @return array with the vertices of the circle, all vertices are created from
+	 *         Vector2Pool
 	 */
 	public static ArrayList<Vector2> createCircle(float radius) {
-		@SuppressWarnings("unchecked")
-		ArrayList<Vector2> polygon = Pools.arrayList.obtain();
+		@SuppressWarnings("unchecked") ArrayList<Vector2> polygon = Pools.arrayList.obtain();
 
 		int segments = calculateCircleSegments(radius);
 
@@ -295,7 +300,7 @@ public class Geometry {
 	 * @param corners all the positions of the line
 	 * @param width width of the line
 	 * @return list with all the vertices for the line. These have been created with
-	 * Vector2Pool, make sure to free them afterwards :)
+	 *         Vector2Pool, make sure to free them afterwards :)
 	 */
 	public static ArrayList<Vector2> createLinePolygon(ArrayList<Vector2> corners, float width) {
 		// Do nothing if only one or zero corners. Cannot draw a line from this...
@@ -303,8 +308,7 @@ public class Geometry {
 			return null;
 		}
 
-		@SuppressWarnings("unchecked")
-		ArrayList<Vector2> vertices = Pools.arrayList.obtain();
+		@SuppressWarnings("unchecked") ArrayList<Vector2> vertices = Pools.arrayList.obtain();
 
 		Vector2 directionBefore = Pools.vector2.obtain();
 		Vector2 directionAfter = Pools.vector2.obtain();
@@ -377,8 +381,7 @@ public class Geometry {
 			}
 		}
 
-		@SuppressWarnings("unchecked")
-		ArrayList<Vector2> triangles = Pools.arrayList.obtain();
+		@SuppressWarnings("unchecked") ArrayList<Vector2> triangles = Pools.arrayList.obtain();
 
 		// Create triangles from the positions
 		if (Geometry.isPolygonCounterClockwise(corners)) {
@@ -386,14 +389,14 @@ public class Geometry {
 				// Even - counter clockwise use correct order
 				if ((i & 1) == 0) {
 					triangles.add(vertices.get(i));
-					triangles.add(vertices.get(i+1));
-					triangles.add(vertices.get(i+2));
+					triangles.add(vertices.get(i + 1));
+					triangles.add(vertices.get(i + 2));
 				}
 				// Odd - clockwise, use different order
 				else {
 					triangles.add(vertices.get(i));
-					triangles.add(vertices.get(i+2));
-					triangles.add(vertices.get(i+1));
+					triangles.add(vertices.get(i + 2));
+					triangles.add(vertices.get(i + 1));
 				}
 			}
 		} else {
@@ -401,14 +404,14 @@ public class Geometry {
 				// Even - clockwise, use different order
 				if ((i & 1) == 0) {
 					triangles.add(vertices.get(i));
-					triangles.add(vertices.get(i+2));
-					triangles.add(vertices.get(i+1));
+					triangles.add(vertices.get(i + 2));
+					triangles.add(vertices.get(i + 1));
 				}
 				// Odd - counter clockwise use correct order
 				else {
 					triangles.add(vertices.get(i));
-					triangles.add(vertices.get(i+1));
-					triangles.add(vertices.get(i+2));
+					triangles.add(vertices.get(i + 1));
+					triangles.add(vertices.get(i + 2));
 				}
 			}
 		}
@@ -437,7 +440,7 @@ public class Geometry {
 	 * @return number of segments of the circle
 	 */
 	public static int calculateCircleSegments(float radius) {
-		return (int)(10 * (float)Math.cbrt(radius));
+		return (int) (10 * (float) Math.cbrt(radius));
 	}
 
 	/**
@@ -453,26 +456,29 @@ public class Geometry {
 	}
 
 	/**
-	 * Calculates the direction between two points. Reuses an old Vector2 instead
-	 * of creating a new one.
+	 * Calculates the direction between two points. Reuses an old Vector2 instead of
+	 * creating a new one.
 	 * @param fromPoint from this point
 	 * @param toPoint to this point
 	 * @param direction sets the direction to this
-	 * 
-	 * @see #getDirection(Vector2, Vector2) instead creates a new Vector2 instead of reusing it
+	 * @see #getDirection(Vector2, Vector2) instead creates a new Vector2 instead of
+	 *      reusing it
 	 */
 	public static void getDirection(Vector2 fromPoint, Vector2 toPoint, Vector2 direction) {
 		direction.set(toPoint).sub(fromPoint).nor();
 	}
 
 	/**
-	 * Checks whether the specified point is within the triangle. Uses Barycentric coordinates.
+	 * Checks whether the specified point is within the triangle. Uses Barycentric
+	 * coordinates.
 	 * @param point the point to test whether it inside the triangle or not
 	 * @param triangle three vertices that makes triangle
-	 * @param triangleStartIndex starting index of the triangle this can be used when the triangle already
-	 * is within another larger list.
+	 * @param triangleStartIndex starting index of the triangle this can be used when the
+	 *        triangle already is within another larger list.
 	 * @return true if the point is inside the triangle
-	 * @author andreasdr http://stackoverflow.com/questions/2049582/how-to-determine-a-point-in-a-triangle
+	 * @author andreasdr
+	 *         http://stackoverflow.com/questions/2049582/how-to-determine-a-point
+	 *         -in-a-triangle
 	 */
 	public static boolean isPointWithinTriangle(final Vector2 point, final ArrayList<Vector2> triangle, int triangleStartIndex) {
 		int index0 = triangleStartIndex;
@@ -481,18 +487,16 @@ public class Geometry {
 
 		// s = p0y*p2x - p0x*p2y + (p2y - p0y)*px + (p0x - p2x)*py;
 		// t = p0x*p1y - p0y*p1x + (p0y - p1y)*px + (p1x - p0x)*py;
-		float s = triangle.get(index0).y * triangle.get(index2).x - triangle.get(index0).x * triangle.get(index2).y +
-				(triangle.get(index2).y - triangle.get(index0).y) * point.x +
-				(triangle.get(index0).x - triangle.get(index2).x) * point.y;
+		float s = triangle.get(index0).y * triangle.get(index2).x - triangle.get(index0).x * triangle.get(index2).y
+				+ (triangle.get(index2).y - triangle.get(index0).y) * point.x + (triangle.get(index0).x - triangle.get(index2).x) * point.y;
 
 		// Fast return
 		if (s < 0) {
 			return false;
 		}
 
-		float t = triangle.get(index0).x * triangle.get(index1).y - triangle.get(index0).y * triangle.get(index1).x +
-				(triangle.get(index0).y - triangle.get(index1).y) * point.x +
-				(triangle.get(index1).x - triangle.get(index0).x) * point.y;
+		float t = triangle.get(index0).x * triangle.get(index1).y - triangle.get(index0).y * triangle.get(index1).x
+				+ (triangle.get(index0).y - triangle.get(index1).y) * point.x + (triangle.get(index1).x - triangle.get(index0).x) * point.y;
 
 		// Fast return
 		if (t < 0) {
@@ -501,26 +505,29 @@ public class Geometry {
 
 		// Calculate the area
 		// A = 1/2*(-p1y*p2x + p0y*(p2x - p1x) + p0x*(p1y - p2y) + p1x*p2y);
-		float area = 0.5f * (-triangle.get(index1).y * triangle.get(index2).x +
-				triangle.get(index0).y * (triangle.get(index2).x - triangle.get(index1).x) +
-				triangle.get(index0).x * (triangle.get(index1).y - triangle.get(index2).y) +
-				triangle.get(index1).x * triangle.get(index2).y);
+		float area = 0.5f * (-triangle.get(index1).y * triangle.get(index2).x + triangle.get(index0).y
+				* (triangle.get(index2).x - triangle.get(index1).x) + triangle.get(index0).x * (triangle.get(index1).y - triangle.get(index2).y) + triangle
+				.get(index1).x * triangle.get(index2).y);
 
 		if (area < 0) {
 			area = -area;
 		}
 
-		// Check for 1 - s - t > 0. But as area is not included in s and t, we check against
+		// Check for 1 - s - t > 0. But as area is not included in s and t, we check
+		// against
 		// s' + t' < 2*area
 		return s + t < 2 * area;
 	}
 
 	/**
-	 * Checks whether the specified point is within the triangle. Uses Barycentric coordinates.
+	 * Checks whether the specified point is within the triangle. Uses Barycentric
+	 * coordinates.
 	 * @param point the point to test whether it inside the triangle or not
 	 * @param triangle three vertices that makes triangle
 	 * @return true if the point is inside the triangle
-	 * @author andreasdr http://stackoverflow.com/questions/2049582/how-to-determine-a-point-in-a-triangle
+	 * @author andreasdr
+	 *         http://stackoverflow.com/questions/2049582/how-to-determine-a-point
+	 *         -in-a-triangle
 	 */
 	public static boolean isPointWithinTriangle(final Vector2 point, final ArrayList<Vector2> triangle) {
 		return isPointWithinTriangle(point, triangle, 0);
@@ -596,11 +603,11 @@ public class Geometry {
 	}
 
 	/**
-	 * Creates border vertices that will be in pair of triangles to be easily
-	 * rendered.
+	 * Creates border vertices that will be in pair of triangles to be easily rendered.
 	 * @param corners the regular corners of the actor
 	 * @param borderCorners the border corners of the actor
-	 * @return vector with all border vertices, null if corner size and border corner size isn't the same
+	 * @return vector with all border vertices, null if corner size and border corner size
+	 *         isn't the same
 	 */
 	public static ArrayList<Vector2> createBorderVertices(ArrayList<Vector2> corners, ArrayList<Vector2> borderCorners) {
 		if (corners.size() != borderCorners.size()) {
@@ -618,7 +625,7 @@ public class Geometry {
 		// | /| /| /|
 		// |/ |/ |/ |
 		// ——————————
-		// 0  1  2  3 = corners
+		// 0 1 2 3 = corners
 
 		if (Geometry.isPolygonCounterClockwise(corners)) {
 			for (int i = 0; i < corners.size(); ++i) {
@@ -657,13 +664,12 @@ public class Geometry {
 	 * Rotates all vertices
 	 * @param vertices the vertices to rotate
 	 * @param degrees how many degrees to rotate the vertices
-	 * @param containsReferences set to true if the vertices contains references
-	 * thus we don't have to recalculate all vertices
+	 * @param containsReferences set to true if the vertices contains references thus we
+	 *        don't have to recalculate all vertices
 	 */
 	public static void rotateVertices(ArrayList<Vector2> vertices, float degrees, boolean containsReferences) {
 		if (containsReferences) {
-			@SuppressWarnings("unchecked")
-			HashSet<Vector2> rotatedVertices = Pools.hashSet.obtain();
+			@SuppressWarnings("unchecked") HashSet<Vector2> rotatedVertices = Pools.hashSet.obtain();
 			for (Vector2 vertex : vertices) {
 				if (!rotatedVertices.contains(vertex)) {
 					vertex.rotate(degrees);
@@ -679,15 +685,16 @@ public class Geometry {
 	}
 
 	/**
-	 * Moves all the vertices. If the array duplicates of same vertex set containReferences to true
+	 * Moves all the vertices. If the array duplicates of same vertex set
+	 * containReferences to true
 	 * @param vertices all vertices to move
 	 * @param offset the offset to move all vertices with
-	 * @param containsReferences true if the array contains duplicates of the same vertex reference
+	 * @param containsReferences true if the array contains duplicates of the same vertex
+	 *        reference
 	 */
 	public static void moveVertices(ArrayList<Vector2> vertices, Vector2 offset, boolean containsReferences) {
 		if (containsReferences) {
-			@SuppressWarnings("unchecked")
-			HashSet<Vector2> movedVertices = Pools.hashSet.obtain();
+			@SuppressWarnings("unchecked") HashSet<Vector2> movedVertices = Pools.hashSet.obtain();
 			for (Vector2 vertex : vertices) {
 				if (!movedVertices.contains(vertex)) {
 					vertex.add(offset);
@@ -705,8 +712,8 @@ public class Geometry {
 	 * Calculates the vertex farthest away from the specified point
 	 * @param point the point to check the vertices against
 	 * @param vertices the vertices to check
-	 * @return vertex farthest away from the specified point, if vertices are empty
-	 * a null vertex will be returned.
+	 * @return vertex farthest away from the specified point, if vertices are empty a null
+	 *         vertex will be returned.
 	 */
 	public static Vector2 vertexFarthestAway(Vector2 point, ArrayList<Vector2> vertices) {
 		if (point == null || vertices == null) {
@@ -734,8 +741,8 @@ public class Geometry {
 	}
 
 	/**
-	 * Tests whether the polygon shape with intersections only contains simple intersections,
-	 * i.e. intersections that won't make a hole inside the polygon.
+	 * Tests whether the polygon shape with intersections only contains simple
+	 * intersections, i.e. intersections that won't make a hole inside the polygon.
 	 * @param vertices all the vertices of the polygon
 	 * @param intersections all intersection points
 	 * @return true if the polygon shape only contains simple intersections.
@@ -745,8 +752,7 @@ public class Geometry {
 			return true;
 		}
 
-		@SuppressWarnings("unchecked")
-		Stack<Vector2> stack = Pools.stack.obtain();
+		@SuppressWarnings("unchecked") Stack<Vector2> stack = Pools.stack.obtain();
 
 		// This method will iterate through vertices and push the intersection
 		// if the intersection isn't at the top of the stack, in that case it will
@@ -775,19 +781,20 @@ public class Geometry {
 	}
 
 	/**
-	 * Makes a polygon non-complex, i.e. it will create new vertices so that it doesn't intersect
-	 * itself. Will only work for simple intersections, i.e. intersections that won't make a hole
-	 * inside the polygon. To try if it's valid use
-	 * @param vertices all the corner vertices of the polygon, this array will be modified if
-	 * an intersection exists {@link #arePolygonIntersectionsSimple(ArrayList, ArrayList)}
+	 * Makes a polygon non-complex, i.e. it will create new vertices so that it doesn't
+	 * intersect itself. Will only work for simple intersections, i.e. intersections that
+	 * won't make a hole inside the polygon. To try if it's valid use
+	 * @param vertices all the corner vertices of the polygon, this array will be modified
+	 *        if an intersection exists
+	 *        {@link #arePolygonIntersectionsSimple(ArrayList, ArrayList)}
 	 * @param testLoop this will include a test from end to begin vertices. If the polygon
-	 * isn't complete you might not want to test this.
-	 * @return newly created vertices, these have been created from Pools.vector2 be sure to free
-	 * them after their use. Same goes for the ArrayList. Null if no vertices were created.
+	 *        isn't complete you might not want to test this.
+	 * @return newly created vertices, these have been created from Pools.vector2 be sure
+	 *         to free them after their use. Same goes for the ArrayList. Null if no
+	 *         vertices were created.
 	 */
 	public static ArrayList<Vector2> makePolygonNonComplex(ArrayList<Vector2> vertices, boolean testLoop) {
-		@SuppressWarnings("unchecked")
-		ArrayList<Vector2> newVertices = Pools.arrayList.obtain();
+		@SuppressWarnings("unchecked") ArrayList<Vector2> newVertices = Pools.arrayList.obtain();
 
 		int end = testLoop ? vertices.size() : vertices.size() - 1;
 
@@ -806,9 +813,12 @@ public class Geometry {
 
 
 					// Reorder...
-					// If let say we have indices with 1 2 3 4 5 6 7 and there is an intersection
-					// between 3-4 and 5-6 the new order will be (X is the intersectionPoint)
-					// 1 2 3 X 5 4 X 6 7. The order is always reversed between i (3) and intersectionIndex + 1 (6).
+					// If let say we have indices with 1 2 3 4 5 6 7 and there is an
+					// intersection
+					// between 3-4 and 5-6 the new order will be (X is the
+					// intersectionPoint)
+					// 1 2 3 X 5 4 X 6 7. The order is always reversed between i (3) and
+					// intersectionIndex + 1 (6).
 
 					// First reverse
 					for (int forwardIndex = i + 1, backwardIndex = intersectionIndexEnd; forwardIndex < backwardIndex; ++forwardIndex, --backwardIndex) {
@@ -833,20 +843,18 @@ public class Geometry {
 	}
 
 	/**
-	 * Splits a polygon with intersections into smaller polygons. This only works
-	 * if the polygon contains simple intersections, i.e. test it with
+	 * Splits a polygon with intersections into smaller polygons. This only works if the
+	 * polygon contains simple intersections, i.e. test it with
 	 * @param vertices all the vertices of the polygon (including intersections)
 	 * @param intersections all intersections of the polygon
-	 * @return list of polygons that were split from the original polygon.
-	 * Don't forget to free the array lists!
+	 * @return list of polygons that were split from the original polygon. Don't forget to
+	 *         free the array lists!
 	 */
 	public static ArrayList<ArrayList<Vector2>> splitPolygonWithIntersections(ArrayList<Vector2> vertices, ArrayList<Vector2> intersections) {
-		@SuppressWarnings("unchecked")
-		ArrayList<ArrayList<Vector2>> polygons = Pools.arrayList.obtain();
+		@SuppressWarnings("unchecked") ArrayList<ArrayList<Vector2>> polygons = Pools.arrayList.obtain();
 
 		// Add original list
-		@SuppressWarnings("unchecked")
-		ArrayList<Vector2> tempPolygon = Pools.arrayList.obtain();
+		@SuppressWarnings("unchecked") ArrayList<Vector2> tempPolygon = Pools.arrayList.obtain();
 		tempPolygon.addAll(vertices);
 		polygons.add(tempPolygon);
 
@@ -867,8 +875,7 @@ public class Geometry {
 					int splitEndIndex = currentPolygon.lastIndexOf(intersection);
 
 					// Move to new polygon
-					@SuppressWarnings("unchecked")
-					ArrayList<Vector2> newPolygon = Pools.arrayList.obtain();
+					@SuppressWarnings("unchecked") ArrayList<Vector2> newPolygon = Pools.arrayList.obtain();
 
 					// Add to new polygon
 					for (int vertex = splitStartIndex; vertex < splitEndIndex; ++vertex) {
@@ -927,10 +934,12 @@ public class Geometry {
 	 * Checks if an intersection exists from a line that starts from the specified index
 	 * @param vertices all vertices to check the intersection with
 	 * @param lineIndex which vertex the line start from
-	 * @param testFromIndex only tests from the specified index (lines before this index is not tested)
-	 * @param testToIndex only tests to the specified index (lines after and including this is not tested)
-	 * @return index of the other line that intersects with lineIndex, -1 if no intersection
-	 * exists.
+	 * @param testFromIndex only tests from the specified index (lines before this index
+	 *        is not tested)
+	 * @param testToIndex only tests to the specified index (lines after and including
+	 *        this is not tested)
+	 * @return index of the other line that intersects with lineIndex, -1 if no
+	 *         intersection exists.
 	 */
 	public static int intersectionExists(ArrayList<Vector2> vertices, int lineIndex, int testFromIndex, int testToIndex) {
 		if (vertices.size() < 3) {
@@ -977,8 +986,9 @@ public class Geometry {
 	 * @param lineEnd end of line segment
 	 * @param point the point to find the minimum distance to
 	 * @return minimum squared distance between the point and the line segment
-	 * @author Grumdrig http://stackoverflow.com/167531/grumdrig
-	 * Question: http://stackoverflow.com/questions/849211/shortest-distance-between-a-point-and-a-line-segment
+	 * @author Grumdrig http://stackoverflow.com/167531/grumdrig Question:
+	 *         http://stackoverflow
+	 *         .com/questions/849211/shortest-distance-between-a-point-and-a-line-segment
 	 */
 	public static float distBetweenPointLineSegmentSq(Vector2 lineStart, Vector2 lineEnd, Vector2 point) {
 		// LineStart == LineEnd

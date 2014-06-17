@@ -722,7 +722,7 @@ public class Config {
 		/** Minimum length between two corners in a polygon */
 		public final static float EDGE_LENGTH_MIN = EPSILON * 1.1f;
 		/** Minimum area of a polygon shape */
-		public final static float POLYGON_AREA_MIN = EPSILON * 1.1f;
+		public final static float POLYGON_AREA_MIN = EPSILON * 10f;
 		/** Default width of the graphics */
 		public final static int WIDTH_DEFAULT = 800;
 		/** Default height of the graphics */
