@@ -12,6 +12,14 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 		<servlet-name>AppEngineServletPrototype</servlet-name>
 		<url-pattern>/appengineservletprototype</url-pattern>
 	</servlet-mapping>
+		<servlet>
+		<servlet-name>Publish</servlet-name>
+		<servlet-class>com.spiddekauga.prototype.Publish</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Publish</servlet-name>
+		<url-pattern>/publish</url-pattern>
+	</servlet-mapping>
 	<servlet>
 		<servlet-name>NewUser</servlet-name>
 		<servlet-class>com.spiddekauga.prototype.NewUser</servlet-class>

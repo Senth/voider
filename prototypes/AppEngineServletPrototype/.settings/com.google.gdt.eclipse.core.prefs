@@ -1,3 +1,4 @@
 eclipse.preferences.version=1
+jarsExcludedFromWebInfLib=/home/senth/repositories/voider-eclipse/voider/prototypes/AppEngineServletPrototype/libs/servlet-api.jar
 warSrcDir=war
 warSrcDirIsOutput=true
