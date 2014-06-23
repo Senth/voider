@@ -52,13 +52,13 @@ import com.spiddekauga.voider.utils.Pools;
 
 /**
  * The abstract base class for all actors
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public abstract class Actor extends Resource implements IResourceUpdate, KryoTaggedCopyable, KryoSerializable, Disposable, Poolable, IResourceBody, IResourcePosition, ITriggerListener, IResourceEditorUpdate, IResourceRender, IResourceEditorRender, IResourceSelectable, IResourceCorner {
+public abstract class Actor extends Resource implements IResourceUpdate, KryoTaggedCopyable, KryoSerializable, Disposable, Poolable, IResourceBody,
+		IResourcePosition, ITriggerListener, IResourceEditorUpdate, IResourceRender, IResourceEditorRender, IResourceSelectable, IResourceCorner {
 	/**
-	 * Sets the texture of the actor including the actor definition.
-	 * Automatically creates a body for the actor.
+	 * Sets the texture of the actor including the actor definition. Automatically creates
+	 * a body for the actor.
 	 * @param def actor definition
 	 */
 	public Actor(ActorDef def) {
@@ -111,8 +111,8 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 	}
 
 	/**
-	 * Updates the actor's body position, fixture sizes, fixture shapes etc. if they
-	 * have been changed since the actor was created.
+	 * Updates the actor's body position, fixture sizes, fixture shapes etc. if they have
+	 * been changed since the actor was created.
 	 */
 	@Override
 	public void updateEditor() {
@@ -238,12 +238,12 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 	 * @param <DefType> derived definition type to get instead
 	 * @param defType the derived definition type to get instead of default ActorDef
 	 * @return if the actor's definition is an instance of type it will return this type
-	 * instead, if not null is returned
+	 *         instead, if not null is returned
 	 */
 	@SuppressWarnings("unchecked")
 	public <DefType> DefType getDef(Class<DefType> defType) {
 		if (mDef.getClass() == defType) {
-			return (DefType)mDef;
+			return (DefType) mDef;
 		}
 		return null;
 	}
@@ -269,15 +269,16 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 	}
 
 	/**
-	 * @return actor offset, i.e. local to world coordinates. Don't forget to free
-	 * the returned offset.
+	 * @return actor offset, i.e. local to world coordinates. Don't forget to free the
+	 *         returned offset.
 	 */
 	public Vector2 getWorldOffset() {
 		Vector2 offsetPosition = Pools.vector2.obtain();
 		offsetPosition.set(mPosition);
 
 		// Offset for circle
-		if (mDef.getVisualVars().getShapeType() == ActorShapeTypes.CUSTOM && mDef.getVisualVars().getCornerCount() >= 1 && mDef.getVisualVars().getCornerCount() <= 2) {
+		if (mDef.getVisualVars().getShapeType() == ActorShapeTypes.CUSTOM && mDef.getVisualVars().getCornerCount() >= 1
+				&& mDef.getVisualVars().getCornerCount() <= 2) {
 			offsetPosition.add(mDef.getVisualVars().getCorners().get(0));
 		}
 
@@ -314,7 +315,8 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 			// Close the shape
 			if (mDef.getVisualVars().getCornerCount() >= 3) {
 				shapeRenderer.setColor(Config.Actor.OUTLINE_CLOSE_COLOR);
-				shapeRenderer.line(mDef.getVisualVars().getCorners().get(mDef.getVisualVars().getCornerCount()-1), mDef.getVisualVars().getCorners().get(0), offsetPosition);
+				shapeRenderer.line(mDef.getVisualVars().getCorners().get(mDef.getVisualVars().getCornerCount() - 1), mDef.getVisualVars()
+						.getCorners().get(0), offsetPosition);
 			}
 
 			shapeRenderer.pop();
@@ -395,7 +397,8 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 
 	/**
 	 * Removes a colliding actor from this actor
-	 * @param actorDef the actor definition this actor is colliding with, but to now remove
+	 * @param actorDef the actor definition this actor is colliding with, but to now
+	 *        remove
 	 */
 	public void removeCollidingActor(ActorDef actorDef) {
 		boolean removeSuccess = mCollidingActors.remove(actorDef);
@@ -437,8 +440,8 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 
 	/**
 	 * Sets if the actor shall only draw its outline
-	 * @param drawOnlyOutline set to true if the actor shall only draw its
-	 * shape's outline.
+	 * @param drawOnlyOutline set to true if the actor shall only draw its shape's
+	 *        outline.
 	 */
 	public void setDrawOnlyOutline(boolean drawOnlyOutline) {
 		mDrawOnlyOutline = drawOnlyOutline;
@@ -476,8 +479,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 
 	@Override
 	public void read(Kryo kryo, Input input) {
-		@SuppressWarnings("unused")
-		int classRevision = input.readInt(true);
+		@SuppressWarnings("unused") int classRevision = input.readInt(true);
 
 		// Load active state
 		boolean editorWasActive = input.readBoolean();
@@ -628,7 +630,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 	}
 
 	@Override
-	public void createBody(){
+	public void createBody() {
 		BodyDef bodyDef = mDef.getBodyDefCopy();
 		bodyDef.position.set(mPosition);
 		createBody(bodyDef);
@@ -684,8 +686,8 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 	}
 
 	/**
-	 * Disables the actor fully. Removes the body from the world and a level will
-	 * not render it as it has been disposed.
+	 * Disables the actor fully. Removes the body from the world and a level will not
+	 * render it as it has been disposed.
 	 */
 	@Override
 	public void dispose() {
@@ -710,7 +712,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 		destroyBody();
 		mBody = null;
 		mDef = null;
-		mPosition.set(0,0);
+		mPosition.set(0, 0);
 		mCollidingActors.clear();
 		mDestroyBody = false;
 
@@ -728,22 +730,26 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 	}
 
 	/**
-	 * Reload fixtures. This destroys all the existing fixtures and creates
-	 * new fixtures from the actor definition. Does nothing if the actor
-	 * doesn't have a body.
-	 * This also resets the body corners if we have any
+	 * Reload fixtures. This destroys all the existing fixtures and creates new fixtures
+	 * from the actor definition. Does nothing if the actor doesn't have a body. This also
+	 * resets the body corners if we have any
 	 */
 	public void reloadFixtures() {
 		if (mBody != null) {
+			Gdx.app.debug("Actor.reloadFixtures()", "Fixtures before: " + mBody.getFixtureList().size);
 			destroyFixtures();
+			Gdx.app.debug("Actor.reloadFixtures()", "After destroyed: " + mBody.getFixtureList().size);
 
 			calculateRotatedVertices(true);
+
+			Gdx.app.debug("Actor.reloadFixtures()", "Def fixtures: " + mDef.getVisualVars().getFixtureDefs().size());
 
 			for (FixtureDef fixtureDef : mDef.getVisualVars().getFixtureDefs()) {
 				if (fixtureDef != null && fixtureDef.shape != null) {
 					mBody.createFixture(fixtureDef);
 				}
 			}
+			Gdx.app.debug("Actor.reloadFixtures()", "After creaated: " + mBody.getFixtureList().size);
 
 			// Do we have body corners? Reset those in that case
 			if (mHasBodyCorners) {
@@ -761,9 +767,9 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 	}
 
 	/**
-	 * @return true if this actor saves its def, i.e. #ResourceCacheFacade will not
-	 * handle the def. This is true for terrain actors, as there is only one actor
-	 * per definition, defaults to false.
+	 * @return true if this actor saves its def, i.e. #ResourceCacheFacade will not handle
+	 *         the def. This is true for terrain actors, as there is only one actor per
+	 *         definition, defaults to false.
 	 */
 	public boolean savesDef() {
 		return false;
@@ -804,8 +810,8 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 	}
 
 	/**
-	 * Creates body corners for the actor. Only applicable if actor is using a custom shape
-	 * and in an editor.
+	 * Creates body corners for the actor. Only applicable if actor is using a custom
+	 * shape and in an editor.
 	 */
 	@Override
 	public void createBodyCorners() {
@@ -871,8 +877,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 	}
 
 	/**
-	 * @return activation time of the actor, negative value if the actor is
-	 * inactive.
+	 * @return activation time of the actor, negative value if the actor is inactive.
 	 */
 	public float getActivationTime() {
 		return mActivationTime;
@@ -893,8 +898,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 	}
 
 	/**
-	 * Deactivates the actor. This resets the activation time to a negative
-	 * value.
+	 * Deactivates the actor. This resets the activation time to a negative value.
 	 */
 	public void deactivate() {
 		mActivationTime = -1;
@@ -964,7 +968,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 	 */
 	protected void destroyFixtures() {
 		if (mBody != null) {
-			Array<Fixture> fixtures = mBody.getFixtureList();
+			Array<Fixture> fixtures = new Array<>(mBody.getFixtureList());
 			for (Fixture fixture : fixtures) {
 				mBody.destroyFixture(fixture);
 			}
@@ -977,8 +981,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 	protected abstract short getFilterCategory();
 
 	/**
-	 * @return the mask bit used for determining who the actor
-	 * can collide with
+	 * @return the mask bit used for determining who the actor can collide with
 	 */
 	protected abstract short getFilterCollidingCategories();
 
@@ -1018,6 +1021,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 
 				centerOffset.scl(-1);
 				Geometry.moveVertices(mRotatedVertices, centerOffset, true);
+				Pools.vector2.free(centerOffset);
 			}
 		}
 	}
@@ -1051,8 +1055,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 			return null;
 		}
 
-		@SuppressWarnings("unchecked")
-		ArrayList<Vector2> verticesCopy = Pools.arrayList.obtain();
+		@SuppressWarnings("unchecked") ArrayList<Vector2> verticesCopy = Pools.arrayList.obtain();
 
 		for (Vector2 vertex : array) {
 			int foundIndex = verticesCopy.indexOf(vertex);
@@ -1186,12 +1189,15 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 
 	// Kryo variables
 	/** Current life */
-	@Tag(3) private float mLife = 0;
+	@Tag(3)
+	private float mLife = 0;
 	/** Body position, remember even when we don't have a body */
-	@Tag(4) private Vector2 mPosition = Pools.vector2.obtain().set(0, 0);
+	@Tag(4)
+	private Vector2 mPosition = Pools.vector2.obtain().set(0, 0);
 	/** Trigger informations */
 	@SuppressWarnings("unchecked")
-	@Tag(5) private ArrayList<TriggerInfo> mTriggerInfos = Pools.arrayList.obtain();
+	@Tag(5)
+	private ArrayList<TriggerInfo> mTriggerInfos = Pools.arrayList.obtain();
 
 	// Kryo special variables
 	/** Revision of the actor */

@@ -660,17 +660,17 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 				// Check so that the length between two corners isn't too small
 				// 0 - 1
 				lengthTest.set(triangleVertices[0]).sub(triangleVertices[1]);
-				if (lengthTest.len2() <= Config.Graphics.EDGE_LENGTH_MIN) {
+				if (lengthTest.len2() <= Config.Graphics.EDGE_LENGTH_MIN_SQUARED) {
 					cornerTooClose = true;
 				} else {
 					// 0 - 2
 					lengthTest.set(triangleVertices[0]).sub(triangleVertices[2]);
-					if (lengthTest.len2() <= Config.Graphics.EDGE_LENGTH_MIN) {
+					if (lengthTest.len2() <= Config.Graphics.EDGE_LENGTH_MIN_SQUARED) {
 						cornerTooClose = true;
 					} else {
 						// 1 - 2
 						lengthTest.set(triangleVertices[1]).sub(triangleVertices[2]);
-						if (lengthTest.len2() <= Config.Graphics.EDGE_LENGTH_MIN) {
+						if (lengthTest.len2() <= Config.Graphics.EDGE_LENGTH_MIN_SQUARED) {
 							cornerTooClose = true;
 						}
 					}
@@ -711,7 +711,8 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 				FixtureDef fixtureDef = new FixtureDef();
 				copyFixtureDef(savedFixtureProperties, fixtureDef);
 				PolygonShape polygonShape = new PolygonShape();
-				Gdx.app.debug("VisualVars", "Area of triangle(" + triangle + "): " + Geometry.calculateTriangleArea(triangleVertices));
+				// Gdx.app.debug("VisualVars", "Area of triangle(" + triangle + "): " +
+				// Geometry.calculateTriangleArea(triangleVertices));
 				polygonShape.set(triangleVertices);
 				fixtureDef.shape = polygonShape;
 				addFixtureDef(fixtureDef);
@@ -722,57 +723,6 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 			Pools.vector2.free(lengthTest);
 			triangleVertices = null;
 			lengthTest = null;
-
-			// ArrayList<Vector2> vertices = createCopy(mCorners);
-			// if (!Geometry.isPolygonCounterClockwise(vertices)) {
-			// Collections.reverse(vertices);
-			// }
-			//
-			//
-			// // Check for exceptions
-			// String throwMessage = null;
-			//
-			// // Corners are too close
-			// Vector2 lengthTest = Pools.vector2.obtain();
-			// for (int i = 0; i < vertices.size(); ++i) {
-			// Vector2 vertex = vertices.get(i);
-			// Vector2 vertexAfter =
-			// vertices.get(com.spiddekauga.utils.Collections.nextIndex(vertices, i));
-			//
-			// lengthTest.set(vertexAfter).sub(vertex);
-			// if (lengthTest.len2() <= Config.Graphics.EDGE_LENGTH_MIN) {
-			// throwMessage = "Corners too close, skipping (" + lengthTest.len() + ")";
-			// }
-			// }
-			// Pools.vector2.free(lengthTest);
-			// lengthTest = null;
-			//
-			// // Area
-			// float area = Geometry.calculatePolygonArea(vertices);
-			// if (area <= Config.Graphics.POLYGON_AREA_MIN) {
-			// // Make counter-clockwise
-			// if (area < 0) {
-			// Gdx.app.error("VisualVars", "Area is less than 0, should never happen!");
-			// }
-			//
-			// throwMessage = "Area too small: (" + area + ")";
-			// }
-			//
-			// // Throw exception
-			// if (throwMessage != null) {
-			// throw new PolygonCornersTooCloseException(throwMessage);
-			// }
-			//
-			//
-			// // Create polygon
-			// Vector2[] vertexArray = vertices.toArray(new Vector2[vertices.size()]);
-			// FixtureDef fixtureDef = new FixtureDef();
-			// copyFixtureDef(savedFixtureProperties, fixtureDef);
-			// PolygonShape polygonShape = new PolygonShape();
-			// polygonShape.set(vertexArray);
-			// fixtureDef.shape = polygonShape;
-			// addFixtureDef(fixtureDef);
-
 
 			mVertices = triangles;
 

@@ -57,9 +57,9 @@ public final class EarClippingTriangulator {
 
 		/*
 		 * ESpitz: For the sake of performance, we only need to test for eartips while the
-		 * polygon has more than three verts. If there are only three verts left to test,
-		 * or there were only three verts to begin with, there is no need to continue with
-		 * this loop.
+		 * polygon has more than three vertices. If there are only three vertices left to
+		 * test, or there were only three vertices to begin with, there is no need to
+		 * continue with this loop.
 		 */
 		while (vertices.size() > 3) {
 			int beforeSize = vertices.size();
