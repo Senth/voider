@@ -6,19 +6,18 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Pool;
 import com.spiddekauga.utils.Collections;
-import com.spiddekauga.utils.commands.Command;
 import com.spiddekauga.utils.Maths;
+import com.spiddekauga.utils.commands.Command;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.actors.BulletActorDef;
 import com.spiddekauga.voider.resources.IResourceCorner;
 import com.spiddekauga.voider.utils.Pools;
 
 /**
- * Removes excessive corners from the resource. I.e. corners that have almost
- * no angle difference between them. E.g. three corners > 0,0 -> 0,5 -> 0,10.
- * In this case 0,5 does not add anything to the shape, it will only make
- * calculations slower... Also removes corners that are too close.
- * 
+ * Removes excessive corners from the resource. I.e. corners that have almost no angle
+ * difference between them. E.g. three corners > 0,0 -> 0,5 -> 0,10. In this case 0,5 does
+ * not add anything to the shape, it will only make calculations slower... Also removes
+ * corners that are too close.
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class CResourceCornerRemoveExcessive extends Command {
@@ -44,70 +43,75 @@ public class CResourceCornerRemoveExcessive extends Command {
 		}
 
 		Vector2 afterVector = Pools.vector2.obtain();
-		float beforeAngle = 0;
-		float afterAngle = 0;
 		ArrayList<Vector2> corners = mResource.getCorners();
-		afterVector.set(corners.get(1)).sub(corners.get(0));
-		afterAngle = afterVector.angle();
-		for (int i = 1; i < corners.size() - 1; ++i) {
-			beforeAngle = afterAngle;
 
-			boolean removeCorner = false;
 
-			// Test distance
-			if (afterVector.len2() < drawNewCornerMinDistanceSq) {
-				removeCorner = true;
-			}
-			// Test angle
-			else {
-				// Calculate after vector
-				afterVector.set(corners.get(Collections.nextIndex(corners, i))).sub(corners.get(i));
-				afterAngle = afterVector.angle();
+		// Iterate through several times until no corners are removed
+		boolean removeCorner = false;
+		do {
+			afterVector.set(corners.get(1)).sub(corners.get(0));
+			float beforeAngle = 0;
+			float afterAngle = afterVector.angle();
 
-				if (Maths.approxCompare(beforeAngle, afterAngle, drawCornerAngleMin)) {
+			for (int i = 1; i < corners.size() - 1; ++i) {
+				beforeAngle = afterAngle;
+				removeCorner = false;
+
+				// Test distance
+				if (afterVector.len2() < drawNewCornerMinDistanceSq) {
 					removeCorner = true;
-				} else if (beforeAngle < afterAngle) {
-					if (Maths.approxCompare(beforeAngle + 360, afterAngle, drawCornerAngleMin)) {
-						removeCorner = true;
-					}
-				} else {
-					if (Maths.approxCompare(beforeAngle - 360, afterAngle, drawCornerAngleMin)) {
-						removeCorner = true;
-					}
 				}
-			}
-
-			// Too low difference in degrees between angles...
-			if (removeCorner) {
-				removeCorner(i);
-
-				// Before vector will have changed again
-				if (i < corners.size() - 1) {
-					afterVector.set(corners.get(i)).sub(corners.get(i-1));
+				// Test angle
+				else {
+					// Calculate after vector
+					afterVector.set(corners.get(Collections.nextIndex(corners, i))).sub(corners.get(i));
 					afterAngle = afterVector.angle();
 
-					--i;
+					if (Maths.approxCompare(beforeAngle, afterAngle, drawCornerAngleMin)) {
+						removeCorner = true;
+					} else if (beforeAngle < afterAngle) {
+						if (Maths.approxCompare(beforeAngle + 360, afterAngle, drawCornerAngleMin)) {
+							removeCorner = true;
+						}
+					} else {
+						if (Maths.approxCompare(beforeAngle - 360, afterAngle, drawCornerAngleMin)) {
+							removeCorner = true;
+						}
+					}
+				}
+
+				// Too low difference in degrees between angles...
+				if (removeCorner) {
+					removeCorner(i);
+
+					// Before vector will have changed again
+					if (i < corners.size() - 1) {
+						afterVector.set(corners.get(i)).sub(corners.get(i - 1));
+						afterAngle = afterVector.angle();
+
+						--i;
+					}
 				}
 			}
-		}
 
-
-		// Test length between last corners, i.e. end-1 -> end & end -> begin
-		// end-1 -> end.
-		if (corners.size() > 1) {
-			afterVector.set(corners.get(corners.size() - 1)).sub(corners.get(corners.size() - 2));
-			if (afterVector.len2() < drawNewCornerMinDistanceSq) {
-				removeCorner(corners.size()-1);
+			// Test length between last corners, i.e. end-1 -> end & end -> begin
+			// end-1 -> end.
+			if (corners.size() > 1) {
+				afterVector.set(corners.get(corners.size() - 1)).sub(corners.get(corners.size() - 2));
+				if (afterVector.len2() < drawNewCornerMinDistanceSq) {
+					removeCorner(corners.size() - 1);
+				}
 			}
-		}
 
-		// end -> begin
-		if (corners.size() > 1) {
-			afterVector.set(corners.get(corners.size() - 1)).sub(corners.get(0));
-			if (afterVector.len2() < drawNewCornerMinDistanceSq) {
-				removeCorner(corners.size()-1);
+			// end -> begin
+			if (corners.size() > 1) {
+				afterVector.set(corners.get(corners.size() - 1)).sub(corners.get(0));
+				if (afterVector.len2() < drawNewCornerMinDistanceSq) {
+					removeCorner(corners.size() - 1);
+				}
 			}
-		}
+
+		} while (removeCorner && corners.size() > 2);
 
 		Pools.vector2.free(afterVector);
 

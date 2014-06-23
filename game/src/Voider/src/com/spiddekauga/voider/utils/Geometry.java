@@ -10,6 +10,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.GdxRuntimeException;
+import com.spiddekauga.voider.Config;
 
 /**
  * Various geometry help functions
@@ -220,6 +221,196 @@ public class Geometry {
 
 		float crossProduct = e1.crs(e2);
 		return crossProduct * 0.5f;
+	}
+
+	/**
+	 * Tries to fix a polygon so that a sub-triangle polygon doesn't have a too small area
+	 * @param corners all polygon corners
+	 * @param errorCorners the vertices where the triangle was created
+	 * @return indices of the corners to remove to fix the area problem, empty if no
+	 *         solution was found
+	 */
+	public static ArrayList<Integer> fixPolygonArea(final ArrayList<Vector2> corners, final Vector2[] errorCorners) {
+		if (errorCorners.length != 3) {
+			throw new IllegalArgumentException("errorCorners is not of length 3, but of length " + errorCorners.length);
+		}
+
+		// Find the indices
+		int[] indices = new int[errorCorners.length];
+
+		for (int errorIndex = 0; errorIndex < errorCorners.length; ++errorIndex) {
+			Vector2 error = errorCorners[errorIndex];
+			indices[errorIndex] = corners.indexOf(error);
+		}
+
+
+		// Which two corners are neighbors?
+		int lowIndex = -1;
+		int highIndex = -1;
+		int otherIndex = -1;
+
+		// 0 - 1
+		if (Math.abs(indices[0] - indices[1]) == 1) {
+			lowIndex = indices[0] - indices[1] < 0 ? indices[0] : indices[1];
+			highIndex = lowIndex + 1;
+			otherIndex = indices[2];
+		}
+		// 1 - 2
+		else if (Math.abs(indices[1] - indices[2]) == 1) {
+			lowIndex = indices[1] - indices[2] < 0 ? indices[1] : indices[2];
+			highIndex = lowIndex + 1;
+			otherIndex = indices[0];
+		}
+		// 0 - 2
+		else if (Math.abs(indices[0] - indices[2]) == 1) {
+			lowIndex = indices[0] - indices[2] < 0 ? indices[0] : indices[2];
+			highIndex = lowIndex + 1;
+			otherIndex = indices[1];
+		}
+		// None found -> Index is wrapped
+		else {
+			highIndex = 0;
+			lowIndex = corners.size() - 1;
+
+			for (int i = 0; i < indices.length; ++i) {
+				if (indices[i] != 0 && indices[i] != corners.size() - 1) {
+					otherIndex = indices[i];
+				}
+			}
+		}
+
+
+		// Try to figure out which corner we can remove to get the least effect
+		FixAreaWrapper fixedIndices = calculateLowestPolygonArea(corners, otherIndex, lowIndex, highIndex);
+
+		// Add corners to remove
+		ArrayList<Integer> removeCorners = null;
+		if (fixedIndices.lowIndex != -1) {
+			removeCorners = com.spiddekauga.utils.Collections.getIndicesBetween(corners.size(), lowIndex, false, highIndex, false);
+		} else {
+			removeCorners = new ArrayList<>();
+		}
+
+		return removeCorners;
+	}
+
+	/**
+	 * Calculates the indices between the speci
+	 */
+
+	/**
+	 * Calculate indices for the lowest possible polygon area while still valid
+	 * @param corners all the corners
+	 * @param otherIndex the other index to use
+	 * @param lowIndex the current low index
+	 * @param highIndex the current high index
+	 * @return area and indices of the fixed polygon. Indices will be -1 if this method
+	 *         failed to find any solutions
+	 */
+	private static FixAreaWrapper calculateLowestPolygonArea(final ArrayList<Vector2> corners, int otherIndex, int lowIndex, int highIndex) {
+		Vector2[] testVertices = new Vector2[3];
+		testVertices[0] = corners.get(otherIndex);
+
+
+		// Low
+		FixAreaWrapper lowIndices = null;
+		int nextLowIndex = com.spiddekauga.utils.Collections.previousIndex(corners, lowIndex);
+		if (nextLowIndex != otherIndex) {
+			testVertices[1] = corners.get(nextLowIndex);
+			testVertices[2] = corners.get(highIndex);
+
+			float area = calculateTriangleArea(testVertices);
+
+			if (area < 0) {
+				area = -area;
+			}
+
+			// Still lower than the allowed, call again recursively
+			if (!isTriangleAreaOk(area)) {
+				lowIndices = calculateLowestPolygonArea(corners, otherIndex, nextLowIndex, highIndex);
+			} else {
+				float wholeArea = calculatePolygonArea(corners, nextLowIndex, highIndex);
+				lowIndices = new FixAreaWrapper(wholeArea, nextLowIndex, highIndex);
+			}
+		} else {
+			lowIndices = new FixAreaWrapper();
+		}
+
+		// High
+		FixAreaWrapper highIndices = null;
+		int nextHighIndex = com.spiddekauga.utils.Collections.nextIndex(corners, highIndex);
+		if (nextHighIndex != otherIndex) {
+			testVertices[1] = corners.get(lowIndex);
+			testVertices[2] = corners.get(nextHighIndex);
+
+			float area = calculateTriangleArea(testVertices);
+
+			if (area < 0) {
+				area = -area;
+			}
+
+			// Still lower than the allowed, call again recursively
+			if (!isTriangleAreaOk(area)) {
+				highIndices = calculateLowestPolygonArea(corners, otherIndex, lowIndex, nextHighIndex);
+			} else {
+				float wholeArea = calculatePolygonArea(corners, lowIndex, nextHighIndex);
+				highIndices = new FixAreaWrapper(wholeArea, lowIndex, nextHighIndex);
+			}
+		} else {
+			highIndices = new FixAreaWrapper();
+		}
+
+
+		// Return the one with lowest area
+		return lowIndices.area < highIndices.area ? lowIndices : highIndices;
+	}
+
+	/**
+	 * Check if a triangle area is large enough
+	 * @param vertices array with the triangle vertices to check if the area is large
+	 * @return true if the area is large enough
+	 */
+	public static boolean isTriangleAreaOk(final Vector2[] vertices) {
+		assert (vertices.length == 3);
+
+		float area = calculateTriangleArea(vertices);
+		return isTriangleAreaOk(area);
+	}
+
+	/**
+	 * Check if a triangle area is large enough
+	 * @param area the area to test
+	 * @return true if the area is large enough
+	 */
+	public static boolean isTriangleAreaOk(float area) {
+		return area > Config.Graphics.POLYGON_AREA_MIN;
+	}
+
+	/**
+	 * Calculates the area of a polygon but skips all between low and high indices (not
+	 * including)
+	 * @param vertices all vertices of the polygon
+	 * @param lowIndex from the next index
+	 * @param highIndex to the index before this
+	 * @return positive value if the polygon is counter-clockwise, negative for clockwise
+	 *         polygons.
+	 */
+	private static float calculatePolygonArea(final List<Vector2> vertices, int lowIndex, int highIndex) {
+		@SuppressWarnings("unchecked") ArrayList<Vector2> copy = Pools.arrayList.obtain();
+		copy.addAll(vertices);
+
+		// Remove all between the specified indices
+		ArrayList<Integer> removeIndices = com.spiddekauga.utils.Collections.getIndicesBetween(vertices.size(), lowIndex, false, highIndex, false);
+		Collections.sort(removeIndices);
+		for (int i = removeIndices.size() - 1; i >= 0; --i) {
+			copy.remove(i);
+		}
+
+		float area = calculatePolygonArea(copy);
+
+		Pools.arrayList.free(copy);
+
+		return area;
 	}
 
 	/**
@@ -1022,6 +1213,36 @@ public class Geometry {
 	}
 
 	/**
+	 * Wrapper class for calculating lowest possible triangle when fixing area
+	 */
+	@SuppressWarnings("javadoc")
+	private static class FixAreaWrapper {
+		/**
+		 * Default constructor sets invalid values
+		 */
+		FixAreaWrapper() {
+			area = Float.MAX_VALUE;
+			lowIndex = -1;
+			highIndex = -1;
+		}
+
+		/**
+		 * @param area
+		 * @param lowIndex
+		 * @param highIndex
+		 */
+		FixAreaWrapper(float area, int lowIndex, int highIndex) {
+			this.area = area;
+			this.lowIndex = lowIndex;
+			this.highIndex = highIndex;
+		}
+
+		float area;
+		int lowIndex;
+		int highIndex;
+	}
+
+	/**
 	 * Polygon complex exception
 	 */
 	public static class PolygonComplexException extends GdxRuntimeException {
@@ -1042,13 +1263,46 @@ public class Geometry {
 	public static class PolygonCornersTooCloseException extends GdxRuntimeException {
 		/**
 		 * Writes a message to the exception
-		 * @param message
+		 * @param distance distance between the corners
 		 */
-		public PolygonCornersTooCloseException(String message) {
-			super(message);
+		public PolygonCornersTooCloseException(float distance) {
+			super("Corners too close: " + distance);
 		}
 
 		/** serialize id */
 		private static final long serialVersionUID = -3852020475614942724L;
+	}
+
+	/**
+	 * Polygon area is too small (usually triangles)
+	 */
+	public static class PolygonAreaTooSmallException extends GdxRuntimeException {
+		/**
+		 * Writes a message to the exception
+		 * @param area the area of the polygon
+		 * @param vertices all the vertices of the polygon
+		 */
+		public PolygonAreaTooSmallException(float area, Vector2... vertices) {
+			super("Area too small: " + area);
+			mVertices = vertices;
+		}
+
+		@Override
+		protected void finalize() throws Throwable {
+			Pools.vector2.freeAll(mVertices);
+		}
+
+		/**
+		 * @return all vertices of the polygon
+		 */
+		public Vector2[] getVertices() {
+			return mVertices;
+		}
+
+		/** Array of all vertices */
+		private Vector2[] mVertices = null;
+
+		/** serialize id */
+		private static final long serialVersionUID = -2110883869735208187L;
 	}
 }

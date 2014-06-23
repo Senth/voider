@@ -16,6 +16,7 @@ import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.BulletActorDef;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.scene.SceneSwitcher;
+import com.spiddekauga.voider.utils.Geometry.PolygonAreaTooSmallException;
 import com.spiddekauga.voider.utils.Geometry.PolygonComplexException;
 import com.spiddekauga.voider.utils.Geometry.PolygonCornersTooCloseException;
 import com.spiddekauga.voider.utils.Messages;
@@ -23,7 +24,6 @@ import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Tool for draw append on the selected actor
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class DrawAppendTool extends ActorTool implements ISelectionListener {
@@ -35,7 +35,8 @@ public class DrawAppendTool extends ActorTool implements ISelectionListener {
 	 * @param editor the actual editor
 	 * @param actorType the actor to draw
 	 */
-	public DrawAppendTool(Camera camera, World world, Invoker invoker, ISelection selection, IResourceChangeEditor editor, Class<? extends Actor> actorType) {
+	public DrawAppendTool(Camera camera, World world, Invoker invoker, ISelection selection, IResourceChangeEditor editor,
+			Class<? extends Actor> actorType) {
 		super(camera, world, invoker, selection, editor, actorType);
 		mActorType = actorType;
 	}
@@ -96,6 +97,9 @@ public class DrawAppendTool extends ActorTool implements ISelectionListener {
 			} catch (PolygonCornersTooCloseException e) {
 				Gdx.app.error("DrawActorTool", "PolygonCornersTooClose! Should never happen!");
 				handleBadCornerPosition(null);
+			} catch (PolygonAreaTooSmallException e) {
+				SceneSwitcher.showErrorMessage(Messages.Error.POLYGON_AREA_TOO_SMALL);
+				handleBadCornerPosition(null);
 			}
 		}
 		return false;
@@ -124,14 +128,14 @@ public class DrawAppendTool extends ActorTool implements ISelectionListener {
 	@Override
 	public void onResourceSelected(IResource resource) {
 		if (resource.getClass() == mActorType) {
-			((Actor)resource).setDrawOnlyOutline(true);
+			((Actor) resource).setDrawOnlyOutline(true);
 		}
 	}
 
 	@Override
 	public void onResourceDeselected(IResource resource) {
 		if (resource.getClass() == mActorType) {
-			((Actor)resource).setDrawOnlyOutline(false);
+			((Actor) resource).setDrawOnlyOutline(false);
 		}
 
 		if (mSelectedActor == resource) {

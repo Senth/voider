@@ -76,6 +76,7 @@ public final class EarClippingTriangulator {
 			}
 
 			if (beforeSize == vertices.size()) {
+				Pools.arrayList.freeAll(triangles, vertices);
 				throw new Geometry.PolygonComplexException();
 			}
 		}
@@ -87,6 +88,7 @@ public final class EarClippingTriangulator {
 		if (vertices.size() == 3) {
 			triangles.addAll(vertices);
 		}
+		Pools.arrayList.free(vertices);
 
 		return triangles;
 	}

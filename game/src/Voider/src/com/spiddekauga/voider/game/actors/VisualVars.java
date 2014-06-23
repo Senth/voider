@@ -29,6 +29,7 @@ import com.spiddekauga.voider.resources.IResourceChangeListener;
 import com.spiddekauga.voider.resources.IResourceCorner;
 import com.spiddekauga.voider.utils.EarClippingTriangulator;
 import com.spiddekauga.voider.utils.Geometry;
+import com.spiddekauga.voider.utils.Geometry.PolygonAreaTooSmallException;
 import com.spiddekauga.voider.utils.Geometry.PolygonComplexException;
 import com.spiddekauga.voider.utils.Geometry.PolygonCornersTooCloseException;
 import com.spiddekauga.voider.utils.Pools;
@@ -675,9 +676,9 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 					}
 				}
 
-				String throwMessage = null;
+				RuntimeException throwException = null;
 				if (cornerTooClose) {
-					throwMessage = "Corners too close, skipping (" + lengthTest.len() + ")";
+					throwException = new PolygonCornersTooCloseException(lengthTest.len());
 				}
 				// Check area
 				else {
@@ -690,22 +691,20 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 						Gdx.app.log("ActorDef", "Fixture triangle negative area, reversing order...");
 					}
 
-					if (triangleArea <= Config.Graphics.POLYGON_AREA_MIN) {
-						throwMessage = "Area too small: (" + triangleArea + ")";
+					if (!Geometry.isTriangleAreaOk(triangleArea)) {
+						throw new PolygonAreaTooSmallException(triangleArea, triangleVertices);
 					}
 				}
 
-				if (throwMessage != null) {
-					Gdx.app.error("ActorDef", throwMessage);
+				if (throwException != null) {
+					Gdx.app.error("ActorDef", throwException.getMessage());
 					Pools.vector2.freeDuplicates(triangles);
 					Pools.arrayList.free(triangles);
 					triangles = null;
 					Pools.vector2.free(lengthTest);
 					lengthTest = null;
-					Pools.vector2.freeAll(triangleVertices);
-					triangleVertices = null;
 
-					throw new PolygonCornersTooCloseException(throwMessage);
+					throw throwException;
 				}
 
 

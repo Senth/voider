@@ -150,6 +150,8 @@ public class Messages {
 	public static class Error {
 		/** Polygon complex append */
 		public final static String POLYGON_COMPLEX_DRAW_APPEND = "Lines are not allowed to intersect";
+		/** Polygon area too small */
+		public final static String POLYGON_AREA_TOO_SMALL = "Sorry, something went wrong :'( Try again :D";
 		/** Polygon complex add corner */
 		public final static String POLYGON_COMPLEX_ADD = "Can't add a corner here, would create an intersection";
 		/** Polygon complex remove corner */

@@ -26,8 +26,13 @@ import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.BulletActorDef;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourceCorner;
+import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.utils.Geometry;
 import com.spiddekauga.voider.utils.Geometry.Intersections;
+import com.spiddekauga.voider.utils.Geometry.PolygonAreaTooSmallException;
+import com.spiddekauga.voider.utils.Geometry.PolygonComplexException;
+import com.spiddekauga.voider.utils.Geometry.PolygonCornersTooCloseException;
+import com.spiddekauga.voider.utils.Messages;
 import com.spiddekauga.voider.utils.Pools;
 
 /**
@@ -94,7 +99,18 @@ public class DrawEraseTool extends ActorTool {
 			if (Geometry.intersectionExists(mDrawEraseBrush.getCorners()) != Intersections.INTERSECTS) {
 				ArrayList<BrushActorIntersection> intersections = getBrushActorIntersections();
 
-				updateShapesForAllIntersectionActors(intersections);
+				try {
+					updateShapesForAllIntersectionActors(intersections);
+				} catch (PolygonComplexException e) {
+					SceneSwitcher.showErrorMessage(Messages.Error.POLYGON_COMPLEX_DRAW_APPEND);
+					handleBadCornerPosition(null);
+				} catch (PolygonCornersTooCloseException e) {
+					Gdx.app.error("DrawEraseTool", "PolygonCornersTooClose! Should never happen!");
+					handleBadCornerPosition(null);
+				} catch (PolygonAreaTooSmallException e) {
+					SceneSwitcher.showErrorMessage(Messages.Error.POLYGON_AREA_TOO_SMALL);
+					handleBadCornerPosition(null);
+				}
 			}
 
 			mEditor.onResourceRemoved(mDrawEraseBrush);
@@ -103,6 +119,15 @@ public class DrawEraseTool extends ActorTool {
 			setDrawing(false);
 		}
 		return false;
+	}
+
+	/**
+	 * Handles a bad corner position
+	 * @param message the message to print
+	 */
+	private void handleBadCornerPosition(String message) {
+		mInvoker.undo(false);
+		mInvoker.clearRedo();
 	}
 
 	/**
@@ -309,18 +334,43 @@ public class DrawEraseTool extends ActorTool {
 			}
 		}
 
-		// Remove all excess corners until the amount of corners doesn't change
-		int cCorners = 0;
+
+		// Remove all excess corners
+		mInvoker.execute(new CResourceCornerRemoveExcessive(actorCorners), true);
+
+
+		// Create fixtures (and maybe fix area)
+		boolean success = true;
 		do {
-			cCorners = actorCorners.getCornerCount();
-			mInvoker.execute(new CResourceCornerRemoveExcessive(actorCorners), true);
+			try {
+				mInvoker.execute(new CActorDefFixCustomFixtures(actor.getDef(), true), true);
+				success = true;
+			} catch (PolygonAreaTooSmallException e) {
+				success = false;
 
-			if (cCorners != actorCorners.getCornerCount()) {
-				Gdx.app.debug("DrawEraseTool", "Removed excessive corners");
+				// Fix area, remove corners
+				ArrayList<Integer> indicesToRemove = Geometry.fixPolygonArea(actorCorners.getCorners(), e.getVertices());
+
+				if (!indicesToRemove.isEmpty()) {
+					// Sort so we remove highest index first (otherwise the indices aren't
+					// correct)
+					java.util.Collections.sort(indicesToRemove);
+
+					for (int i = indicesToRemove.size() - 1; i >= 0; --i) {
+						int indexToRemove = indicesToRemove.get(i);
+						mInvoker.execute(new CResourceCornerRemove(actorCorners, indexToRemove, mEditor), true);
+					}
+
+					Pools.arrayList.free(indicesToRemove);
+				}
+				// Didn't find any solution, throw again
+				else {
+					Pools.arrayList.free(indicesToRemove);
+					throw e;
+				}
+
 			}
-		} while (cCorners != actorCorners.getCornerCount());
-
-		mInvoker.execute(new CActorDefFixCustomFixtures(actor.getDef(), true), true);
+		} while (!success);
 	}
 
 	/**
