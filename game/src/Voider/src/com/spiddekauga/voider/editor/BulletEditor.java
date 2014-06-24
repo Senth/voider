@@ -21,6 +21,7 @@ import com.spiddekauga.voider.repo.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceItem;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
+import com.spiddekauga.voider.utils.Messages;
 import com.spiddekauga.voider.utils.Pools;
 import com.spiddekauga.voider.utils.Synchronizer.SyncEvents;
 
@@ -177,6 +178,7 @@ public class BulletEditor extends ActorEditor {
 		int oldRevision = mDef.getRevision();
 
 		mResourceRepo.save(this, mDef);
+		mGui.showSuccessMessage(Messages.Info.SAVED);
 		showSyncMessage();
 
 		// Saved first time? Then load it and use the loaded version

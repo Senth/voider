@@ -32,7 +32,6 @@ import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.scene.WorldScene;
-import com.spiddekauga.voider.utils.Messages;
 import com.spiddekauga.voider.utils.Pools;
 import com.spiddekauga.voider.utils.Synchronizer;
 import com.spiddekauga.voider.utils.User;
@@ -117,7 +116,6 @@ public abstract class Editor extends WorldScene implements IEditor, ICallerRespo
 
 		if (shallAutoSave()) {
 			saveDef();
-			mGui.showSuccessMessage(Messages.Info.SAVING);
 		}
 	}
 
@@ -461,13 +459,15 @@ public abstract class Editor extends WorldScene implements IEditor, ICallerRespo
 	 * @param command the command to be executed after the resource has been saved
 	 */
 	protected void setSaving(ActorDef actorDef, Actor actor, Command command) {
-		mSavingActorDef = actorDef;
-		mSavingActor = actor;
-		mSaving = true;
-		mExecutedAfterSaved = command;
+		if (!isPublished() && !isSaved()) {
+			mSavingActorDef = actorDef;
+			mSavingActor = actor;
+			mSaving = true;
+			mExecutedAfterSaved = command;
 
-		mGui.setVisible(false);
-		createActorDefTexture();
+			mGui.setVisible(false);
+			createActorDefTexture();
+		}
 	}
 
 	/**

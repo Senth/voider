@@ -73,6 +73,7 @@ import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.scene.LoadingScene;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
+import com.spiddekauga.voider.utils.Messages;
 import com.spiddekauga.voider.utils.Pools;
 import com.spiddekauga.voider.utils.Synchronizer.SyncEvents;
 
@@ -662,6 +663,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 			int oldRevision = mLevel.getRevision();
 			mResourceRepo.save(mLevel.getDef(), mLevel);
+			mGui.showSuccessMessage(Messages.Info.SAVED);
 			showSyncMessage();
 
 			// Update latest resource if revision was changed by more than one
