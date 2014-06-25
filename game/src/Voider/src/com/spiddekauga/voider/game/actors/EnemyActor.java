@@ -66,10 +66,10 @@ public class EnemyActor extends Actor {
 	public void update(float deltaTime) {
 		super.update(deltaTime);
 
-		if (isActive()) {
-			// Update movement
-			EnemyActorDef def = getDef(EnemyActorDef.class);
-			if (def != null && def.getMovementType() != null && getBody() != null) {
+		EnemyActorDef def = getDef(EnemyActorDef.class);
+		if (def != null && def.getMovementType() != null && getBody() != null) {
+			if (isActive()) {
+				// Update movement
 				switch (def.getMovementType()) {
 				case PATH:
 					if (mPath != null) {
@@ -99,13 +99,37 @@ public class EnemyActor extends Actor {
 					}
 					break;
 				}
-			}
 
-			// Update weapon
-			if (def.hasWeapon()) {
-				updateWeapon(deltaTime);
+				// Update weapon
+				if (def.hasWeapon()) {
+					updateWeapon(deltaTime);
+				}
 			}
+			// Not active -> Slow down for AI
+			else {
+				if (def.getMovementType() == MovementTypes.AI) {
+					slowDown(deltaTime);
+				}
+			}
+		}
+	}
 
+	/**
+	 * Slows down the enemy
+	 * @param deltaTime time elapsed since last frame
+	 */
+	private void slowDown(float deltaTime) {
+		if (getBody() != null) {
+			Vector2 velocity = Pools.vector2.obtain().set(getBody().getLinearVelocity());
+			Vector2 dampVelocity = Pools.vector2.obtain().set(velocity);
+
+			float dampening = Config.Actor.Enemy.LINEAR_DAMPENING * deltaTime;
+			dampVelocity.scl(dampening);
+			velocity.sub(dampVelocity);
+
+			getBody().setLinearVelocity(velocity);
+
+			Pools.vector2.freeAll(velocity, dampVelocity);
 		}
 	}
 

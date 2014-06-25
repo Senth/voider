@@ -54,6 +54,8 @@ public class Config {
 			public final static float TURN_ANGLE_MIN = 0.5f;
 			/** Default deactivate time for AI enemies */
 			public final static float DEACTIVATE_TIME_DEFAULT = 20;
+			/** Linear dampening when enemy is deactivated */
+			public final static float LINEAR_DAMPENING = 0.2f;
 		}
 
 		/**
