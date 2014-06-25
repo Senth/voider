@@ -396,7 +396,8 @@ public class Geometry {
 	 *         polygons.
 	 */
 	private static float calculatePolygonArea(final List<Vector2> vertices, int lowIndex, int highIndex) {
-		@SuppressWarnings("unchecked") ArrayList<Vector2> copy = Pools.arrayList.obtain();
+		@SuppressWarnings("unchecked")
+		ArrayList<Vector2> copy = Pools.arrayList.obtain();
 		copy.addAll(vertices);
 
 		// Remove all between the specified indices
@@ -465,7 +466,8 @@ public class Geometry {
 	 *         Vector2Pool
 	 */
 	public static ArrayList<Vector2> createCircle(float radius) {
-		@SuppressWarnings("unchecked") ArrayList<Vector2> polygon = Pools.arrayList.obtain();
+		@SuppressWarnings("unchecked")
+		ArrayList<Vector2> polygon = Pools.arrayList.obtain();
 
 		int segments = calculateCircleSegments(radius);
 
@@ -499,7 +501,8 @@ public class Geometry {
 			return null;
 		}
 
-		@SuppressWarnings("unchecked") ArrayList<Vector2> vertices = Pools.arrayList.obtain();
+		@SuppressWarnings("unchecked")
+		ArrayList<Vector2> vertices = Pools.arrayList.obtain();
 
 		Vector2 directionBefore = Pools.vector2.obtain();
 		Vector2 directionAfter = Pools.vector2.obtain();
@@ -572,7 +575,8 @@ public class Geometry {
 			}
 		}
 
-		@SuppressWarnings("unchecked") ArrayList<Vector2> triangles = Pools.arrayList.obtain();
+		@SuppressWarnings("unchecked")
+		ArrayList<Vector2> triangles = Pools.arrayList.obtain();
 
 		// Create triangles from the positions
 		if (Geometry.isPolygonCounterClockwise(corners)) {
@@ -745,7 +749,8 @@ public class Geometry {
 		Vector2 borderAfter1 = Pools.vector2.obtain();
 		Vector2 borderAfter2 = Pools.vector2.obtain();
 
-		ArrayList<Vector2> borderCorners = new ArrayList<Vector2>();
+		@SuppressWarnings("unchecked")
+		ArrayList<Vector2> borderCorners = Pools.arrayList.obtain();
 		for (int i = 0; i < corners.size(); ++i) {
 			// Get direction of lines that uses this vertex (i.e. that has it
 			// as its end (line before) or start (line after) position.
@@ -806,7 +811,8 @@ public class Geometry {
 			return null;
 		}
 
-		ArrayList<Vector2> vertices = new ArrayList<Vector2>();
+		@SuppressWarnings("unchecked")
+		ArrayList<Vector2> vertices = Pools.arrayList.obtain();
 
 		// Create the two triangle in front of the index
 		// For example if we're at index 1 we will create the triangles
@@ -852,6 +858,25 @@ public class Geometry {
 	}
 
 	/**
+	 * Rotates all vertices after temporarily moving it to another place (usually the
+	 * center)
+	 * @param vertices the vertices to rotate
+	 * @param degrees how many degrees to rotate the vertices
+	 * @param containsReferences set to true if the vertices contains references thus we
+	 *        don't have to recalculate all vertices
+	 * @param offset move the vertices temporarily here before rotating (this offset is
+	 *        never changed)
+	 */
+	public static void rotateVertices(ArrayList<Vector2> vertices, float degrees, boolean containsReferences, final Vector2 offset) {
+		Vector2 copyOffset = Pools.vector2.obtain().set(offset);
+		moveVertices(vertices, copyOffset, containsReferences);
+		rotateVertices(vertices, degrees, containsReferences);
+		copyOffset.scl(-1);
+		moveVertices(vertices, copyOffset, containsReferences);
+		Pools.vector2.free(copyOffset);
+	}
+
+	/**
 	 * Rotates all vertices
 	 * @param vertices the vertices to rotate
 	 * @param degrees how many degrees to rotate the vertices
@@ -860,7 +885,8 @@ public class Geometry {
 	 */
 	public static void rotateVertices(ArrayList<Vector2> vertices, float degrees, boolean containsReferences) {
 		if (containsReferences) {
-			@SuppressWarnings("unchecked") HashSet<Vector2> rotatedVertices = Pools.hashSet.obtain();
+			@SuppressWarnings("unchecked")
+			HashSet<Vector2> rotatedVertices = Pools.hashSet.obtain();
 			for (Vector2 vertex : vertices) {
 				if (!rotatedVertices.contains(vertex)) {
 					vertex.rotate(degrees);
@@ -885,7 +911,8 @@ public class Geometry {
 	 */
 	public static void moveVertices(ArrayList<Vector2> vertices, Vector2 offset, boolean containsReferences) {
 		if (containsReferences) {
-			@SuppressWarnings("unchecked") HashSet<Vector2> movedVertices = Pools.hashSet.obtain();
+			@SuppressWarnings("unchecked")
+			HashSet<Vector2> movedVertices = Pools.hashSet.obtain();
 			for (Vector2 vertex : vertices) {
 				if (!movedVertices.contains(vertex)) {
 					vertex.add(offset);
@@ -943,7 +970,8 @@ public class Geometry {
 			return true;
 		}
 
-		@SuppressWarnings("unchecked") Stack<Vector2> stack = Pools.stack.obtain();
+		@SuppressWarnings("unchecked")
+		Stack<Vector2> stack = Pools.stack.obtain();
 
 		// This method will iterate through vertices and push the intersection
 		// if the intersection isn't at the top of the stack, in that case it will
@@ -985,7 +1013,8 @@ public class Geometry {
 	 *         vertices were created.
 	 */
 	public static ArrayList<Vector2> makePolygonNonComplex(ArrayList<Vector2> vertices, boolean testLoop) {
-		@SuppressWarnings("unchecked") ArrayList<Vector2> newVertices = Pools.arrayList.obtain();
+		@SuppressWarnings("unchecked")
+		ArrayList<Vector2> newVertices = Pools.arrayList.obtain();
 
 		int end = testLoop ? vertices.size() : vertices.size() - 1;
 
@@ -1042,10 +1071,12 @@ public class Geometry {
 	 *         free the array lists!
 	 */
 	public static ArrayList<ArrayList<Vector2>> splitPolygonWithIntersections(ArrayList<Vector2> vertices, ArrayList<Vector2> intersections) {
-		@SuppressWarnings("unchecked") ArrayList<ArrayList<Vector2>> polygons = Pools.arrayList.obtain();
+		@SuppressWarnings("unchecked")
+		ArrayList<ArrayList<Vector2>> polygons = Pools.arrayList.obtain();
 
 		// Add original list
-		@SuppressWarnings("unchecked") ArrayList<Vector2> tempPolygon = Pools.arrayList.obtain();
+		@SuppressWarnings("unchecked")
+		ArrayList<Vector2> tempPolygon = Pools.arrayList.obtain();
 		tempPolygon.addAll(vertices);
 		polygons.add(tempPolygon);
 
@@ -1066,7 +1097,8 @@ public class Geometry {
 					int splitEndIndex = currentPolygon.lastIndexOf(intersection);
 
 					// Move to new polygon
-					@SuppressWarnings("unchecked") ArrayList<Vector2> newPolygon = Pools.arrayList.obtain();
+					@SuppressWarnings("unchecked")
+					ArrayList<Vector2> newPolygon = Pools.arrayList.obtain();
 
 					// Add to new polygon
 					for (int vertex = splitStartIndex; vertex < splitEndIndex; ++vertex) {

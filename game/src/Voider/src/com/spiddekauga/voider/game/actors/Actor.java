@@ -479,7 +479,8 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 
 	@Override
 	public void read(Kryo kryo, Input input) {
-		@SuppressWarnings("unused") int classRevision = input.readInt(true);
+		@SuppressWarnings("unused")
+		int classRevision = input.readInt(true);
 
 		// Load active state
 		boolean editorWasActive = input.readBoolean();
@@ -1012,16 +1013,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 
 			mRotatedVertices = copyVectorArray(mDef.getVisualVars().getTriangleVertices());
 			if (mRotatedVertices != null) {
-				// offset with center first
-				Vector2 centerOffset = Pools.vector2.obtain();
-				centerOffset.set(getDef().getVisualVars().getCenterOffset());
-				Geometry.moveVertices(mRotatedVertices, centerOffset, true);
-
-				Geometry.rotateVertices(mRotatedVertices, rotation, true);
-
-				centerOffset.scl(-1);
-				Geometry.moveVertices(mRotatedVertices, centerOffset, true);
-				Pools.vector2.free(centerOffset);
+				Geometry.rotateVertices(mRotatedVertices, rotation, true, getDef().getVisualVars().getCenterOffset());
 			}
 		}
 	}
@@ -1055,7 +1047,8 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 			return null;
 		}
 
-		@SuppressWarnings("unchecked") ArrayList<Vector2> verticesCopy = Pools.arrayList.obtain();
+		@SuppressWarnings("unchecked")
+		ArrayList<Vector2> verticesCopy = Pools.arrayList.obtain();
 
 		for (Vector2 vertex : array) {
 			int foundIndex = verticesCopy.indexOf(vertex);
@@ -1189,15 +1182,11 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 
 	// Kryo variables
 	/** Current life */
-	@Tag(3)
-	private float mLife = 0;
+	@Tag(3) private float mLife = 0;
 	/** Body position, remember even when we don't have a body */
-	@Tag(4)
-	private Vector2 mPosition = Pools.vector2.obtain().set(0, 0);
+	@Tag(4) private Vector2 mPosition = Pools.vector2.obtain().set(0, 0);
 	/** Trigger informations */
-	@SuppressWarnings("unchecked")
-	@Tag(5)
-	private ArrayList<TriggerInfo> mTriggerInfos = Pools.arrayList.obtain();
+	@SuppressWarnings("unchecked") @Tag(5) private ArrayList<TriggerInfo> mTriggerInfos = Pools.arrayList.obtain();
 
 	// Kryo special variables
 	/** Revision of the actor */

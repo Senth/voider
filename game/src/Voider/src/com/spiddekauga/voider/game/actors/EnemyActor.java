@@ -34,7 +34,6 @@ import com.spiddekauga.voider.utils.Pools;
 
 /**
  * An enemy actor, these can generally shoot on the player.
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class EnemyActor extends Actor {
@@ -52,15 +51,7 @@ public class EnemyActor extends Actor {
 		mTargetDirection = null;
 		mRandomMoveDirection = null;
 
-		if (mPolygonOutline != null) {
-			Pools.arrayList.free(mPolygonOutline);
-			mPolygonOutline = null;
-		}
-		if (mPolygonOutlineInnerCorners != null) {
-			Pools.vector2.freeAll(mPolygonOutlineInnerCorners);
-			Pools.arrayList.free(mPolygonOutlineInnerCorners);
-			mPolygonOutlineInnerCorners = null;
-		}
+		clearPolygonOutline();
 	}
 
 	@Override
@@ -143,14 +134,14 @@ public class EnemyActor extends Actor {
 			TriggerInfo activateTrigger = TriggerInfo.getTriggerInfoByAction(this, Actions.ACTOR_ACTIVATE);
 			if (activateTrigger != null && activateTrigger.trigger instanceof IResourcePosition) {
 				shapeRenderer.setColor((Color) SkinNames.getResource(SkinNames.EditorVars.ENEMY_ACTIVATE_TRIGGER_LINE_COLOR));
-				shapeRenderer.line(getPosition(), ((IResourcePosition)activateTrigger.trigger).getPosition());
+				shapeRenderer.line(getPosition(), ((IResourcePosition) activateTrigger.trigger).getPosition());
 			}
 
 			// Deactivate trigger
 			TriggerInfo deactivateTrigger = TriggerInfo.getTriggerInfoByAction(this, Actions.ACTOR_DEACTIVATE);
 			if (deactivateTrigger != null && deactivateTrigger.trigger instanceof IResourcePosition) {
 				shapeRenderer.setColor((Color) SkinNames.getResource(SkinNames.EditorVars.ENEMY_DEACTIVATE_TRIGGER_LINE_COLOR));
-				shapeRenderer.line(getPosition(), ((IResourcePosition)deactivateTrigger.trigger).getPosition());
+				shapeRenderer.line(getPosition(), ((IResourcePosition) deactivateTrigger.trigger).getPosition());
 			}
 
 			shapeRenderer.pop();
@@ -169,7 +160,7 @@ public class EnemyActor extends Actor {
 					TriggerInfo triggerInfo = TriggerInfo.getTriggerInfoByAction(this, Actions.ACTOR_ACTIVATE);
 					if (triggerInfo != null) {
 						if (triggerInfo.trigger instanceof TScreenAt) {
-							enemyActivationCoord = ((TScreenAt)triggerInfo.trigger).getPosition().x;
+							enemyActivationCoord = ((TScreenAt) triggerInfo.trigger).getPosition().x;
 						}
 					}
 
@@ -190,9 +181,9 @@ public class EnemyActor extends Actor {
 							offsetPosition.sub(getDef().getVisualVars().getCenterOffset());
 						}
 
-						if (mPolygonOutline == null) {
-							reloadPolygonOutline();
-						}
+						// if (mPolygonOutline == null) {
+						reloadPolygonOutline();
+						// }
 
 						if (mPolygonOutline != null) {
 							RenderOrders.offsetZValue(shapeRenderer);
@@ -232,8 +223,8 @@ public class EnemyActor extends Actor {
 	}
 
 	/**
-	 * Sets the speed of the actor, although not the definition, so this is
-	 * just a temporary speed
+	 * Sets the speed of the actor, although not the definition, so this is just a
+	 * temporary speed
 	 * @param speed new temporary speed.
 	 */
 	public void setSpeed(float speed) {
@@ -449,9 +440,9 @@ public class EnemyActor extends Actor {
 	public <ResourceType> ResourceType copyNewResource() {
 		ResourceType copy = super.copyNewResource();
 
-		EnemyActor enemyCopy = (EnemyActor)copy;
-		//		enemyCopy.mPath = mPath;
-		//		enemyCopy.mGroup = mGroup;
+		EnemyActor enemyCopy = (EnemyActor) copy;
+		// enemyCopy.mPath = mPath;
+		// enemyCopy.mGroup = mGroup;
 
 		// Never make a copy a group leader?
 		enemyCopy.mGroupLeader = false;
@@ -467,7 +458,7 @@ public class EnemyActor extends Actor {
 	public void copy(Object fromOriginal) {
 		super.copy(fromOriginal);
 
-		EnemyActor fromEnemy = (EnemyActor)fromOriginal;
+		EnemyActor fromEnemy = (EnemyActor) fromOriginal;
 
 		mGroupLeader = fromEnemy.mGroupLeader;
 		mWeapon = fromEnemy.mWeapon.copy();
@@ -485,8 +476,8 @@ public class EnemyActor extends Actor {
 	}
 
 	/**
-	 * Resets the movement. This resets the movement to start from the beginning of the path.
-	 * Only applicable for path movement
+	 * Resets the movement. This resets the movement to start from the beginning of the
+	 * path. Only applicable for path movement
 	 */
 	public void resetPathMovement() {
 		mPathIndexNext = -1;
@@ -567,8 +558,7 @@ public class EnemyActor extends Actor {
 
 	/**
 	 * Sets the group of this enemy
-	 * @param enemyGroup the enemy group, set as null to "remove" it from
-	 * any group
+	 * @param enemyGroup the enemy group, set as null to "remove" it from any group
 	 */
 	void setEnemyGroup(EnemyGroup enemyGroup) {
 		mGroup = enemyGroup;
@@ -602,8 +592,8 @@ public class EnemyActor extends Actor {
 	}
 
 	/**
-	 * @return direction which we want to shoot in. Be sure to free this
-	 * vector using Pools.vector2.free(vector);.
+	 * @return direction which we want to shoot in. Be sure to free this vector using
+	 *         Pools.vector2.free(vector);.
 	 */
 	private Vector2 getShootDirection() {
 		Vector2 shootDirection = Pools.vector2.obtain();
@@ -615,7 +605,7 @@ public class EnemyActor extends Actor {
 
 		case DIRECTION:
 			// Shoot in current direction
-			shootDirection.set(1,0);
+			shootDirection.set(1, 0);
 			shootDirection.rotate(getDef(EnemyActorDef.class).getAimStartAngle());
 			break;
 
@@ -629,7 +619,7 @@ public class EnemyActor extends Actor {
 
 			// If we're still, shoot in actor's "look" direction
 			if (shootDirection.len2() == 0) {
-				shootDirection.set(1,0);
+				shootDirection.set(1, 0);
 
 				if (getBody() != null) {
 					shootDirection.rotate(MathUtils.radiansToDegrees * getBody().getAngle());
@@ -641,11 +631,11 @@ public class EnemyActor extends Actor {
 
 		case IN_FRONT_OF_PLAYER: {
 			Vector2 playerVelocity = mPlayerActor.getBody().getLinearVelocity();
-			//			float levelSpeed = 0;
-			//			if (!mEditorActive) {
-			//				levelSpeed = mLevel.getSpeed();
-			//			}
-			//			playerVelocity.x -= levelSpeed;
+			// float levelSpeed = 0;
+			// if (!mEditorActive) {
+			// levelSpeed = mLevel.getSpeed();
+			// }
+			// playerVelocity.x -= levelSpeed;
 
 			boolean targetPlayerInstead = false;
 
@@ -656,7 +646,11 @@ public class EnemyActor extends Actor {
 			}
 			// Calculate where the bullet would intersect with the player
 			else {
-				Vector2 bulletVelocity = Geometry.interceptTarget(getPosition(), mWeapon.getDef().getBulletSpeed() /*+ levelSpeed*/, mPlayerActor.getPosition(), playerVelocity);
+				Vector2 bulletVelocity = Geometry.interceptTarget(getPosition(), mWeapon.getDef().getBulletSpeed() /*
+																													 * +
+																													 * levelSpeed
+																													 */, mPlayerActor.getPosition(),
+						playerVelocity);
 				shootDirection.set(bulletVelocity);
 				Pools.vector2.free(bulletVelocity);
 				bulletVelocity = null;
@@ -675,7 +669,7 @@ public class EnemyActor extends Actor {
 
 		case ROTATE:
 			// Shoot in current direction
-			shootDirection.set(1,0);
+			shootDirection.set(1, 0);
 			shootDirection.rotate(mShootAngle);
 			break;
 		}
@@ -701,7 +695,7 @@ public class EnemyActor extends Actor {
 
 			// Set angle
 			if (getDef(EnemyActorDef.class).isTurning()) {
-				getBody().setTransform(getPosition(), (float)Math.toRadians(mTargetDirection.angle()));
+				getBody().setTransform(getPosition(), (float) Math.toRadians(mTargetDirection.angle()));
 			}
 
 			moveToTarget(mTargetDirection, deltaTime);
@@ -721,8 +715,7 @@ public class EnemyActor extends Actor {
 			// No turning, change direction directly
 			mTargetDirection.set(mPath.getCornerPosition(mPathIndexNext)).sub(getPosition());
 			moveToTarget(mTargetDirection, deltaTime);
-		}
-		else if (getDef(EnemyActorDef.class).isTurning()) {
+		} else if (getDef(EnemyActorDef.class).isTurning()) {
 			mTargetDirection.set(mPath.getCornerPosition(mPathIndexNext)).sub(getPosition());
 			moveToTarget(mTargetDirection, deltaTime);
 		}
@@ -847,7 +840,7 @@ public class EnemyActor extends Actor {
 
 		// Calculate angle between the vectors
 		boolean counterClockwise = false;
-		float bodyAngle = (float)Math.toDegrees(getBody().getAngle()) % 360;
+		float bodyAngle = (float) Math.toDegrees(getBody().getAngle()) % 360;
 		if (bodyAngle < 0) {
 			bodyAngle += 360;
 		}
@@ -940,8 +933,7 @@ public class EnemyActor extends Actor {
 
 
 	/**
-	 * Sets the next index to move to, takes into account what type
-	 * the path is.
+	 * Sets the next index to move to, takes into account what type the path is.
 	 */
 	private void calculateNextPathIndex() {
 		if (mPathForward) {
@@ -999,8 +991,8 @@ public class EnemyActor extends Actor {
 	}
 
 	/**
-	 * Checks if the enemy shall be deactivated and destroyed when following an path.
-	 * It will destroy the enemy when it never can reach go onto the screen again.
+	 * Checks if the enemy shall be deactivated and destroyed when following an path. It
+	 * will destroy the enemy when it never can reach go onto the screen again.
 	 * @note Will do nothing if the enemy has a deactivate trigger.
 	 */
 	private void checkPathDeactivate() {
@@ -1045,8 +1037,8 @@ public class EnemyActor extends Actor {
 	}
 
 	/**
-	 * Checks if the enemy shall be deactivated and destroyed when it is stationary.
-	 * It will destroy the enemy once it's outside of the screen.
+	 * Checks if the enemy shall be deactivated and destroyed when it is stationary. It
+	 * will destroy the enemy once it's outside of the screen.
 	 * @note Will do nothing if the enemy has a deactivate trigger.
 	 */
 	private void checkStationaryDeactivate() {
@@ -1066,24 +1058,36 @@ public class EnemyActor extends Actor {
 	}
 
 	/**
+	 * Clears the polygon outline
+	 */
+	private void clearPolygonOutline() {
+		if (mPolygonOutline != null) {
+			Pools.arrayList.free(mPolygonOutline);
+			Pools.vector2.freeDuplicates(mPolygonOutline);
+			mPolygonOutline = null;
+		}
+	}
+
+	/**
 	 * Reloads the polygon outline for the enemy
 	 */
 	private void reloadPolygonOutline() {
 		if (mEditorActive) {
-			if (mPolygonOutline != null) {
-				Pools.arrayList.free(mPolygonOutline);
-				mPolygonOutline = null;
-			}
-			if (mPolygonOutlineInnerCorners != null) {
-				Pools.vector2.freeAll(mPolygonOutlineInnerCorners);
-				Pools.arrayList.free(mPolygonOutlineInnerCorners);
-				mPolygonOutlineInnerCorners = null;
-			}
+			clearPolygonOutline();
 
-			ArrayList<Vector2> corners = getDef().getVisualVars().getPolygonShape();
+			ArrayList<Vector2> corners = copyVectorArray(getDef().getVisualVars().getPolygonShape());
 			if (corners != null) {
-				mPolygonOutlineInnerCorners = Geometry.createdBorderCorners(corners, true, 0.25f);
-				mPolygonOutline = Geometry.createBorderVertices(corners, mPolygonOutlineInnerCorners);
+				ArrayList<Vector2> outerCorners = Geometry.createdBorderCorners(corners, true, 0.25f);
+				mPolygonOutline = Geometry.createBorderVertices(corners, outerCorners);
+
+				// Rotate outline
+				float rotation = getDef().getBodyDef().angle;
+				if (getBody() != null) {
+					rotation = getBody().getAngle();
+				}
+				rotation *= MathUtils.radDeg;
+
+				Geometry.rotateVertices(mPolygonOutline, rotation, true, getDef().getVisualVars().getCenterOffset());
 			}
 		}
 	}
@@ -1095,8 +1099,6 @@ public class EnemyActor extends Actor {
 
 	/** Polygon line for drawing wider outline */
 	private ArrayList<Vector2> mPolygonOutline = null;
-	/** Polygon border corners, saved for releasing */
-	private ArrayList<Vector2> mPolygonOutlineInnerCorners = null;
 	/** Enemy weapon */
 	private Weapon mWeapon = new Weapon();
 	/** Shooting angle (used when rotating) */
@@ -1112,7 +1114,7 @@ public class EnemyActor extends Actor {
 	/** Next random move time */
 	private float mRandomMoveNext = 0;
 	/** Direction of the current random move */
-	private Vector2 mRandomMoveDirection = Pools.vector2.obtain().set(0,0);
+	private Vector2 mRandomMoveDirection = Pools.vector2.obtain().set(0, 0);
 
 
 	// PATH MOVEMENT
@@ -1126,5 +1128,5 @@ public class EnemyActor extends Actor {
 	/** ONCE path reach end */
 	private boolean mPathOnceReachedEnd = false;
 	/** Last direction */
-	private Vector2 mTargetDirection = Pools.vector2.obtain().set(0,0);
+	private Vector2 mTargetDirection = Pools.vector2.obtain().set(0, 0);
 }

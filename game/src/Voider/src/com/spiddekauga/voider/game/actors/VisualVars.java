@@ -60,7 +60,8 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 
 	@Override
 	public void read(Kryo kryo, Input input) {
-		@SuppressWarnings("unused") int classRevision = input.readInt(true);
+		@SuppressWarnings("unused")
+		int classRevision = input.readInt(true);
 
 		createFixtureDef();
 		calculateBoundingRadius();
@@ -1001,7 +1002,8 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 	 * @return new array list with a copy of the vertices
 	 */
 	private ArrayList<Vector2> createCopy(ArrayList<Vector2> vertices) {
-		@SuppressWarnings("unchecked") ArrayList<Vector2> copy = Pools.arrayList.obtain();
+		@SuppressWarnings("unchecked")
+		ArrayList<Vector2> copy = Pools.arrayList.obtain();
 
 		for (Vector2 vertex : vertices) {
 			copy.add(Pools.vector2.obtain().set(vertex));
@@ -1077,27 +1079,19 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 
 
 	/** Color of the actor */
-	@Tag(52)
-	private Color mColor = new Color();
+	@Tag(52) private Color mColor = new Color();
 	/** Current shape of the enemy */
-	@Tag(49)
-	private ActorShapeTypes mShapeType = null;
+	@Tag(49) private ActorShapeTypes mShapeType = null;
 	/** radius of circle */
-	@Tag(60)
-	private float mShapeCircleRadius;
+	@Tag(60) private float mShapeCircleRadius;
 	/** width of rectangle/triangle */
-	@Tag(61)
-	private float mShapeWidth;
+	@Tag(61) private float mShapeWidth;
 	/** height of rectangle/triangle */
-	@Tag(62)
-	private float mShapeHeight;
+	@Tag(62) private float mShapeHeight;
 	/** Center offset for fixtures */
-	@Tag(51)
-	private Vector2 mCenterOffset = Pools.vector2.obtain().set(0, 0);
+	@Tag(51) private Vector2 mCenterOffset = Pools.vector2.obtain().set(0, 0);
 	/** Corners of polygon, used for custom shapes */
-	@SuppressWarnings("unchecked")
-	@Tag(63)
-	private ArrayList<Vector2> mCorners = Pools.arrayList.obtain();
+	@SuppressWarnings("unchecked") @Tag(63) private ArrayList<Vector2> mCorners = Pools.arrayList.obtain();
 	/**
 	 * Array list of the polygon figure, this contains the vertices but not in triangles.
 	 * Used for when creating a border of some kind
@@ -1111,13 +1105,11 @@ public class VisualVars implements KryoSerializable, Disposable, IResourceCorner
 	/** True if shape is drawable/complete */
 	private boolean mShapeComplete = true;
 	/** Defines the mass, shape, etc. */
-	@SuppressWarnings("unchecked")
-	private ArrayList<FixtureDef> mFixtureDefs = Pools.arrayList.obtain();
+	@SuppressWarnings("unchecked") private ArrayList<FixtureDef> mFixtureDefs = Pools.arrayList.obtain();
 	/** Radius of the actor, or rather circle bounding box */
 	private float mBoundingRadius = 0;
 	/** Actor type, used for setting default values */
-	@Tag(50)
-	private ActorTypes mActorType = null;
+	@Tag(50) private ActorTypes mActorType = null;
 	/** Time when the fixture was changed last time */
 	protected float mFixtureChangeTime = 0;
 	/** Class structure revision */
