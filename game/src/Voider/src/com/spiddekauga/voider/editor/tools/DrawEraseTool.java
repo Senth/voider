@@ -385,19 +385,19 @@ public class DrawEraseTool extends ActorTool {
 	private boolean isShortestBetweenIndices(ArrayList<Vector2> vertices, BrushActorIntersection fromIntersection,
 			BrushActorIntersection toIntersection) {
 		// BETWEEN
-		float betweenLengthSq = 0;
+		float betweenLength = 0;
 		// vertices between
 		if (fromIntersection.actorIndex != toIntersection.actorIndex) {
 			// Calculate from before intersection to first between index
-			betweenLengthSq += fromIntersection.intersection.dst2(vertices.get(fromIntersection.actorIndex + 1));
+			betweenLength += fromIntersection.intersection.dst(vertices.get(fromIntersection.actorIndex + 1));
 
 			// Calculate between
 			for (int i = fromIntersection.actorIndex + 1; i < toIntersection.actorIndex; ++i) {
-				betweenLengthSq += vertices.get(i).dst2(vertices.get(i + 1));
+				betweenLength += vertices.get(i).dst(vertices.get(i + 1));
 			}
 
 			// Calculate from last between index to after intersection
-			betweenLengthSq += vertices.get(toIntersection.actorIndex).dst2(toIntersection.intersection);
+			betweenLength += vertices.get(toIntersection.actorIndex).dst(toIntersection.intersection);
 		}
 		// No vertices between
 		else {
@@ -406,24 +406,24 @@ public class DrawEraseTool extends ActorTool {
 
 
 		// WRAPPED
-		float wrappedLengthSq = 0;
+		float wrappedLength = 0;
 		// To intersection
 		int nextIndex = Collections.nextIndex(vertices, toIntersection.actorIndex);
-		wrappedLengthSq += toIntersection.intersection.dst2(vertices.get(nextIndex));
+		wrappedLength += toIntersection.intersection.dst(vertices.get(nextIndex));
 
 		// From intersection
-		wrappedLengthSq += fromIntersection.intersection.dst2(vertices.get(fromIntersection.actorIndex));
+		wrappedLength += fromIntersection.intersection.dst(vertices.get(fromIntersection.actorIndex));
 
 		// Calculate wrapped indices
 		int i = nextIndex;
-		while (i != fromIntersection.actorIndex && wrappedLengthSq <= betweenLengthSq) {
+		while (i != fromIntersection.actorIndex && wrappedLength <= betweenLength) {
 			nextIndex = Collections.nextIndex(vertices, i);
-			wrappedLengthSq += vertices.get(i).dst2(vertices.get(nextIndex));
+			wrappedLength += vertices.get(i).dst(vertices.get(nextIndex));
 
 			i = nextIndex;
 		}
 
-		return betweenLengthSq <= wrappedLengthSq;
+		return betweenLength <= wrappedLength;
 	}
 
 	/**

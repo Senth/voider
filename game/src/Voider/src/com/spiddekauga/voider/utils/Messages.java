@@ -90,7 +90,7 @@ public class Messages {
 	 */
 	public static class Info {
 		/** Text displayed when saving */
-		public static final String SAVING = "Saving...";
+		public static final String SAVED = "Saved...";
 		/** Bug report was successfully sent */
 		public static final String BUG_REPORT_SENT = "Thank you for sending a bug report! :D";
 		/** Bug report failed, saved locally instead */

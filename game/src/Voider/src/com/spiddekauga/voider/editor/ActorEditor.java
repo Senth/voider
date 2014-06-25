@@ -37,15 +37,20 @@ import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Common class for all actor editors
+ * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public abstract class ActorEditor extends Editor implements IActorEditor, IResourceChangeEditor {
 	/**
-	 * @param gui all UI elements
-	 * @param pickRadius picking radius
-	 * @param actorType the actor type used in this editor
+	 * @param gui
+	 *            all UI elements
+	 * @param pickRadius
+	 *            picking radius
+	 * @param actorType
+	 *            the actor type used in this editor
 	 */
-	public ActorEditor(Gui gui, float pickRadius, Class<? extends Actor> actorType) {
+	public ActorEditor(
+			Gui gui, float pickRadius, Class<? extends Actor> actorType) {
 		super(gui, pickRadius);
 
 		mActorType = actorType;
@@ -143,7 +148,8 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 	public ActorShapeTypes getShapeType() {
 		if (mActorDef != null) {
 			return mActorDef.getVisualVars().getShapeType();
-		} else {
+		}
+		else {
 			return ActorShapeTypes.CIRCLE;
 		}
 	}
@@ -161,7 +167,8 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 	public float getShapeRadius() {
 		if (mActorDef != null) {
 			return mActorDef.getVisualVars().getShapeRadius();
-		} else {
+		}
+		else {
 			return 0;
 		}
 	}
@@ -179,7 +186,8 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 	public float getShapeWidth() {
 		if (mActorDef != null) {
 			return mActorDef.getVisualVars().getShapeWidth();
-		} else {
+		}
+		else {
 			return 0;
 		}
 	}
@@ -197,7 +205,8 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 	public float getShapeHeight() {
 		if (mActorDef != null) {
 			return mActorDef.getVisualVars().getShapeHeight();
-		} else {
+		}
+		else {
 			return 0;
 		}
 	}
@@ -260,7 +269,8 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 	public Vector2 getCenterOffset() {
 		if (mActorDef != null) {
 			return mActorDef.getVisualVars().getCenterOffset();
-		} else {
+		}
+		else {
 			return new Vector2();
 		}
 	}
@@ -280,7 +290,8 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 	public String getName() {
 		if (mActorDef != null) {
 			return mActorDef.getName();
-		} else {
+		}
+		else {
 			return "";
 		}
 	}
@@ -299,7 +310,8 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 	public String getDescription() {
 		if (mActorDef != null) {
 			return mActorDef.getDescription();
-		} else {
+		}
+		else {
 			return "";
 		}
 	}
@@ -334,7 +346,9 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 
 	/**
 	 * Sets the actor definition
-	 * @param actorDef the actor definition
+	 * 
+	 * @param actorDef
+	 *            the actor definition
 	 */
 	protected void setActorDef(ActorDef actorDef) {
 		mActorDef = actorDef;
@@ -359,7 +373,8 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 			if (!isPublished() && !mInputMultiplexer.getProcessors().contains(mTools[Tools.DELETE.ordinal()], true)) {
 				mInputMultiplexer.addProcessor(mTools[Tools.DELETE.ordinal()]);
 			}
-		} else {
+		}
+		else {
 			if (mDrawingActor != null) {
 				mSelection.deselectResource(mDrawingActor);
 				mDrawingActor.dispose();
@@ -374,7 +389,8 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 	public boolean isDrawing() {
 		if (mTools[mActiveTool.ordinal()] != null) {
 			return mTools[mActiveTool.ordinal()].isDrawing();
-		} else {
+		}
+		else {
 			return false;
 		}
 	}
@@ -393,7 +409,8 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 			// Pools.vector2.free(worldPosition);
 
 			setUnsaved();
-		} else if (resource instanceof VectorBrush) {
+		}
+		else if (resource instanceof VectorBrush) {
 			mVectorBrush = (VectorBrush) resource;
 		}
 	}
@@ -404,7 +421,8 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 			mInvoker.execute(new CResourceCornerRemoveAll(mActorDef.getVisualVars(), this), true);
 			mDrawingActor = null;
 			setUnsaved();
-		} else if (resource instanceof VectorBrush) {
+		}
+		else if (resource instanceof VectorBrush) {
 			mVectorBrush = null;
 		}
 	}
@@ -427,7 +445,8 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 	public float getStartingAngle() {
 		if (mActorDef != null) {
 			return mActorDef.getStartAngleDeg();
-		} else {
+		}
+		else {
 			return 0;
 		}
 	}
@@ -445,15 +464,17 @@ public abstract class ActorEditor extends Editor implements IActorEditor, IResou
 	public float getRotationSpeed() {
 		if (mActorDef != null) {
 			return mActorDef.getRotationSpeedDeg();
-		} else {
+		}
+		else {
 			return 0;
 		}
 	}
 
 	/**
-	 * Creates a new actor of the current actor type via the default constructor. If an
-	 * actor definition has been set, this will also set that definition, else you need to
-	 * set this manually if it hasn't been set through the actor's default constructor.
+	 * Creates a new actor of the current actor type via the default constructor. If an actor definition has been set,
+	 * this will also set that definition, else you need to set this manually if it hasn't been set through the actor's
+	 * default constructor.
+	 * 
 	 * @return new actor of the current actor type.
 	 */
 	protected Actor newActor() {
