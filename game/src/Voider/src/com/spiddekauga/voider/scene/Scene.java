@@ -29,8 +29,7 @@ public abstract class Scene extends InputAdapter implements IExceptionHandler {
 	 * Creates the input multiplexer. UI always has priority over everything else.
 	 * @param gui the GUI to use for the scene
 	 */
-	protected Scene(
-			Gui gui) {
+	protected Scene(Gui gui) {
 		if (gui != null) {
 			mGui = gui;
 		}
@@ -188,7 +187,7 @@ public abstract class Scene extends InputAdapter implements IExceptionHandler {
 	 * gets called if {@link #unloadResourcesOnDeactivate()} returns false.
 	 * @param outcome the outcome of the previous scene
 	 * @param message the outcome message provided with the outcome, null if none was
-	 *            provided
+	 *        provided
 	 */
 	protected void reloadResourcesOnActivate(Outcomes outcome, Object message) {
 		// Dose nothing
@@ -237,9 +236,9 @@ public abstract class Scene extends InputAdapter implements IExceptionHandler {
 	/**
 	 * Called just before the scene activates.
 	 * @param outcome the outcome of the previous scene that was on the stack if there was
-	 *            any, else null.
+	 *        any, else null.
 	 * @param message the outcome message provided with the outcome, null if none was
-	 *            provided.
+	 *        provided.
 	 */
 	protected void onActivate(Outcomes outcome, Object message) {
 		if (!mGui.isInitialized()) {
@@ -462,7 +461,7 @@ public abstract class Scene extends InputAdapter implements IExceptionHandler {
 	/**
 	 * Sets the next scene to be run after this scene has been completed
 	 * @param nextScene if not null nextScene will be run after this scene has completed.
-	 *            If null SceneSwitcher will return to the previous scene
+	 *        If null SceneSwitcher will return to the previous scene
 	 */
 	public final void setNextScene(Scene nextScene) {
 		mNextScene = nextScene;
@@ -514,7 +513,7 @@ public abstract class Scene extends InputAdapter implements IExceptionHandler {
 	/** Message of the outcome */
 	private Object mOutcomeMessage = null;
 	/** Clear color */
-	private Color mClearColor = new Color(0, 0, 0, 0);
+	private Color mClearColor = new Color(0, 0, 0, 1);
 	/** If resource has been loaded */
 	private boolean mResourceLoaded = false;
 	/** The next scene to be run */

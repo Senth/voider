@@ -11,7 +11,6 @@ import com.badlogic.gdx.graphics.Pixmap.Format;
 
 /**
  * Screen utilities
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class Screens {
@@ -33,7 +32,7 @@ public class Screens {
 	 * @param width width
 	 * @param height height
 	 * @param flipY if we shall flip Y, use sparingly as it takes up quite a lot of
-	 * working memory.
+	 *        working memory.
 	 * @return PNG image in bytes
 	 */
 	public static byte[] getScreenshotInPng(int x, int y, int width, int height, boolean flipY) {
@@ -57,20 +56,20 @@ public class Screens {
 	 * @param width width
 	 * @param height height
 	 * @param flipY if we shall flip Y, use sparingly as it takes up quite a lot of
-	 * working memory.
+	 *        working memory.
 	 * @return pixmap
 	 */
 	public static Pixmap getScreenshot(int x, int y, int width, int height, boolean flipY) {
 		Gdx.gl.glPixelStorei(GL20.GL_PACK_ALIGNMENT, 1);
 
-		final Pixmap pixmap = new Pixmap(width, height, Format.RGBA8888);
+		final Pixmap pixmap = new Pixmap(width, height, Format.RGB888);
 		ByteBuffer pixels = pixmap.getPixels();
-		Gdx.gl.glReadPixels(x, y, width, height, GL20.GL_RGBA, GL20.GL_UNSIGNED_BYTE, pixels);
+		Gdx.gl.glReadPixels(x, y, width, height, GL20.GL_RGB, GL20.GL_UNSIGNED_BYTE, pixels);
 
-		final int numBytes = width * height * 4;
+		final int numBytes = width * height * 3;
 		byte[] lines = new byte[numBytes];
 		if (flipY) {
-			final int numBytesPerLine = width * 4;
+			final int numBytesPerLine = width * 3;
 			for (int i = 0; i < height; i++) {
 				pixels.position((height - i - 1) * numBytesPerLine);
 				pixels.get(lines, i * numBytesPerLine, numBytesPerLine);

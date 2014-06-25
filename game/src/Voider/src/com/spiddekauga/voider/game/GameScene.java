@@ -116,6 +116,15 @@ public class GameScene extends WorldScene {
 	 * Takes a screenshot of the level
 	 */
 	void takeScreenshot() {
+		mTakeScreenshot = true;
+	}
+
+	/**
+	 * Takes the actual screenshot of the level
+	 */
+	private void takeScreenshotNow() {
+		mTakeScreenshot = false;
+
 		int barHeight = ((int) ((float) SkinNames.getResource(SkinNames.GeneralVars.BAR_UPPER_LOWER_HEIGHT)));
 
 		// Screenshot size
@@ -353,7 +362,6 @@ public class GameScene extends WorldScene {
 				mShapeRenderer.setShader(defaultShader);
 			}
 			mSpriteBatch.setShader(SpriteBatch.createDefaultShader());
-			// mSpriteBatch.setProjectionMatrix(mCamera.combined);
 			mShapeRenderer.setProjectionMatrix(mCamera.combined);
 
 			// Render sprites
@@ -371,8 +379,11 @@ public class GameScene extends WorldScene {
 			mLevel.render(mShapeRenderer);
 			mBulletDestroyer.render(mShapeRenderer);
 
+			if (mTakeScreenshot) {
+				takeScreenshotNow();
+			}
 
-			// GUI
+			// REMOVE GUI
 			renderLives();
 
 
@@ -727,6 +738,8 @@ public class GameScene extends WorldScene {
 	private PlayerStats mPlayerStats = null;
 	/** Player life ships */
 	private ArrayList<PlayerActor> mPlayerLifeShips = new ArrayList<PlayerActor>();
+	/** Take screenshot */
+	private boolean mTakeScreenshot = false;
 
 	// MOUSE JOINT
 	/** Screen coordinate for the cursor */
