@@ -3,14 +3,12 @@ package com.spiddekauga.voider.repo;
 import java.util.ArrayList;
 
 import com.badlogic.gdx.sql.DatabaseCursor;
-import com.badlogic.gdx.sql.SQLiteGdxException;
 import com.spiddekauga.voider.utils.Pools;
 import com.spiddekauga.voider.utils.User;
 
 
 /**
  * SQLite gateway for user repository
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 class UserSqliteGateway extends SqliteGateway {
@@ -26,11 +24,7 @@ class UserSqliteGateway extends SqliteGateway {
 	 * @param username the user with the specified username to remove
 	 */
 	void removeTempUser(String username) {
-		try {
-			mDatabase.execSQL("DELETE FROM new_user WHERE username LIKE '" + username + "';");
-		} catch (SQLiteGdxException e) {
-			e.printStackTrace();
-		}
+		execSQL("DELETE FROM new_user WHERE username LIKE '" + username + "';");
 	}
 
 	/**
@@ -38,23 +32,19 @@ class UserSqliteGateway extends SqliteGateway {
 	 * @param username new username
 	 * @param password the password for the user
 	 * @param email the email of the user
-	 * @return true if the user was created successfully, false if email or username already exists
+	 * @return true if the user was created successfully, false if email or username
+	 *         already exists
 	 */
 	boolean createTempUser(String username, String password, String email) {
 		boolean success = false;
 
-		try {
-			DatabaseCursor cursor = mDatabase.rawQuery("SELECT username FROM new_user WHERE username LIKE '" + username + "' OR "
-					+ "email LIKE '" + email + "';");
+		DatabaseCursor cursor = rawQuery("SELECT username FROM new_user WHERE username LIKE '" + username + "' OR " + "email LIKE '" + email + "';");
 
 
-			// No user with that email or name exists -> continue creating
-			if (!cursor.next()) {
-				mDatabase.execSQL("INSERT INTO new_user VALUES ( '" + username + "', '" + password + "', '" + email + "' );");
-				return true;
-			}
-		} catch (SQLiteGdxException e) {
-			e.printStackTrace();
+		// No user with that email or name exists -> continue creating
+		if (!cursor.next()) {
+			execSQL("INSERT INTO new_user VALUES ( '" + username + "', '" + password + "', '" + email + "' );");
+			return true;
 		}
 
 		return success;
@@ -67,19 +57,15 @@ class UserSqliteGateway extends SqliteGateway {
 		@SuppressWarnings("unchecked")
 		ArrayList<User> users = Pools.arrayList.obtain();
 
-		try {
-			DatabaseCursor cursor = mDatabase.rawQuery("SELECT * FROM new_user");
+		DatabaseCursor cursor = rawQuery("SELECT * FROM new_user");
 
-			while (cursor.next()) {
-				User userInfo = new User();
-				userInfo.setUsername(cursor.getString(NEW_USER__USERNAME));
-				userInfo.setPassword(cursor.getString(NEW_USER__PASSWORD));
-				userInfo.setEmail(cursor.getString(NEW_USER__EMAIL));
+		while (cursor.next()) {
+			User userInfo = new User();
+			userInfo.setUsername(cursor.getString(NEW_USER__USERNAME));
+			userInfo.setPassword(cursor.getString(NEW_USER__PASSWORD));
+			userInfo.setEmail(cursor.getString(NEW_USER__EMAIL));
 
-				users.add(userInfo);
-			}
-		} catch (SQLiteGdxException e) {
-			e.printStackTrace();
+			users.add(userInfo);
 		}
 
 		return users;
@@ -91,19 +77,15 @@ class UserSqliteGateway extends SqliteGateway {
 	 * @return user information for the found user, null if not found
 	 */
 	User getTempUser(String username) {
-		try {
-			DatabaseCursor cursor = mDatabase.rawQuery("SELECT * FROM new_user WHERE username LIKE '" + username + "' OR email LIKE '" + username + "';");
+		DatabaseCursor cursor = rawQuery("SELECT * FROM new_user WHERE username LIKE '" + username + "' OR email LIKE '" + username + "';");
 
-			if (cursor.next()) {
-				User userInfo = new User();
-				userInfo.setUsername(cursor.getString(NEW_USER__USERNAME));
-				userInfo.setPassword(cursor.getString(NEW_USER__PASSWORD));
-				userInfo.setEmail(cursor.getString(NEW_USER__EMAIL));
+		if (cursor.next()) {
+			User userInfo = new User();
+			userInfo.setUsername(cursor.getString(NEW_USER__USERNAME));
+			userInfo.setPassword(cursor.getString(NEW_USER__PASSWORD));
+			userInfo.setEmail(cursor.getString(NEW_USER__EMAIL));
 
-				return userInfo;
-			}
-		} catch (SQLiteGdxException e) {
-			e.printStackTrace();
+			return userInfo;
 		}
 
 		return null;

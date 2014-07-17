@@ -5,6 +5,7 @@ import java.util.Observer;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.sql.Database;
+import com.badlogic.gdx.sql.DatabaseCursor;
 import com.badlogic.gdx.sql.DatabaseFactory;
 import com.badlogic.gdx.sql.SQLiteGdxException;
 import com.badlogic.gdx.utils.Disposable;
@@ -15,7 +16,6 @@ import com.spiddekauga.voider.utils.User.UserEvents;
 
 /**
  * SQLite gateway
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 abstract class SqliteGateway implements Disposable, Observer {
@@ -88,7 +88,7 @@ abstract class SqliteGateway implements Disposable, Observer {
 	public void update(Observable object, Object arg) {
 		if (object instanceof User) {
 			if (arg instanceof UserEvents) {
-				switch ((UserEvents)arg) {
+				switch ((UserEvents) arg) {
 				case LOGIN:
 					connect();
 					break;
@@ -101,6 +101,62 @@ abstract class SqliteGateway implements Disposable, Observer {
 		}
 	}
 
+	/**
+	 * Execute a single SQL statement that is NOT a SELECT or any other SQL statement that
+	 * returns data.
+	 * @param sql the SQL statement to be executed. Multiple statements separated by
+	 *        semicolons are not supported.
+	 */
+	protected static synchronized void execSQL(String sql) {
+		try {
+			mDatabase.execSQL(sql);
+		} catch (SQLiteGdxException e) {
+			e.printStackTrace();
+			throw new GdxRuntimeException(e);
+		}
+	}
+
+	/**
+	 * Runs the provided SQL and returns a {@link DatabaseCursor} over the result set.
+	 * @param sql the SQL query. The SQL string must not be ; terminated
+	 * @return {@link DatabaseCursor}
+	 */
+	protected static synchronized DatabaseCursor rawQuery(String sql) {
+		try {
+			return mDatabase.rawQuery(sql);
+		} catch (SQLiteGdxException e) {
+			e.printStackTrace();
+			throw new GdxRuntimeException(e);
+		}
+	}
+
+	/**
+	 * Runs the provided SQL and returns the same {@link DatabaseCursor} that was passed
+	 * to this method. Use this method when you want to avoid reallocation of
+	 * {@link DatabaseCursor} object. Note that you shall only pass the
+	 * {@link DatabaseCursor} object that was previously returned by a rawQuery method.
+	 * Creating your own {@link DatabaseCursor} and then passing it as an object will not
+	 * work.
+	 * @param cursor existing {@link DatabaseCursor} object
+	 * @param sql the SQL query. The SQL string must not be ; terminated
+	 * @return the passed {@link DatabaseCursor}.
+	 */
+	protected static synchronized DatabaseCursor rawQuery(DatabaseCursor cursor, String sql) {
+		try {
+			return mDatabase.rawQuery(cursor, sql);
+		} catch (SQLiteGdxException e) {
+			e.printStackTrace();
+			throw new GdxRuntimeException(e);
+		}
+	}
+
+	/**
+	 * @return the database
+	 */
+	protected static Database getDatabase() {
+		return mDatabase;
+	}
+
 	/** The database */
-	protected static Database mDatabase = null;
+	private static Database mDatabase = null;
 }

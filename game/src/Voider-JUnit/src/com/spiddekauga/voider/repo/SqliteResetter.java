@@ -5,7 +5,6 @@ import com.badlogic.gdx.sql.SQLiteGdxException;
 
 /**
  * Reses SQLite database for the next test
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class SqliteResetter extends SqliteGateway {
@@ -14,10 +13,10 @@ public class SqliteResetter extends SqliteGateway {
 	 * Resets/Clears the database
 	 */
 	public static void reset() {
-		if (mDatabase != null) {
+		if (getDatabase() != null) {
 			try {
-				mDatabase.execSQL("PRAGMA writable_schema = 1; delete from sqlite_master where type = 'table'; PRAGMA writable_schema = 0; VACUUM;");
-				SqliteUpgrader sqliteUpgrader = new SqliteUpgrader(mDatabase);
+				execSQL("PRAGMA writable_schema = 1; delete from sqlite_master where type = 'table'; PRAGMA writable_schema = 0; VACUUM;");
+				SqliteUpgrader sqliteUpgrader = new SqliteUpgrader(getDatabase());
 				sqliteUpgrader.initAndUpgrade();
 			} catch (SQLiteGdxException e) {
 				e.printStackTrace();

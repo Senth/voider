@@ -196,7 +196,7 @@ public class Config {
 		/** Skip loading text */
 		public static final boolean SKIP_LOADING_TIME = true;
 		/** Build level */
-		public static final Builds BUILD = Builds.DEV_SERVER;
+		public static final Builds BUILD = Builds.DEV_LOCAL;
 		/** Set to true to turn on the exception handler */
 		public static boolean EXCEPTION_HANDLER = isBuildOrAbove(Builds.NIGHTLY) || false;
 		/** Set to true in JUNIT tests */
