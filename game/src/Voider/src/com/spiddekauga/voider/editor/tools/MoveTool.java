@@ -8,10 +8,12 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.World;
 import com.spiddekauga.utils.commands.Invoker;
+import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.editor.IResourceChangeEditor;
 import com.spiddekauga.voider.editor.LevelEditor;
 import com.spiddekauga.voider.editor.commands.CResourceMove;
 import com.spiddekauga.voider.game.actors.EnemyActor;
+import com.spiddekauga.voider.game.triggers.Trigger;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourcePosition;
 import com.spiddekauga.voider.utils.Pool;
@@ -19,7 +21,6 @@ import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Tool for moving resources that has a position
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class MoveTool extends TouchTool {
@@ -38,7 +39,13 @@ public class MoveTool extends TouchTool {
 
 	@Override
 	protected boolean down(int button) {
-		testPickPoint(mCallback);
+		// Test all
+		testPickPoint(mCallbackResource);
+
+		// If we didn't hit anything, test triggers
+		if (!mHitResource) {
+			testPickAabb(mCallbackTrigger, Config.Editor.PICK_TRIGGER_SIZE);
+		}
 
 		if (mHitResource) {
 			ArrayList<IResourcePosition> selectedResources = mSelection.getSelectedResourcesOfType(IResourcePosition.class);
@@ -68,7 +75,7 @@ public class MoveTool extends TouchTool {
 				Vector2 newPosition = Pools.vector2.obtain();
 				newPosition.set(mTouchCurrent).sub(mTouchOrigin);
 				newPosition.add(mMovingResources.get(0).originalPos);
-				EnemyAddTool.setSnapPosition((EnemyActor)mMovingResources.get(0).resource, newPosition, (LevelEditor)mEditor, null);
+				EnemyAddTool.setSnapPosition((EnemyActor) mMovingResources.get(0).resource, newPosition, (LevelEditor) mEditor, null);
 
 				Pools.vector2.free(newPosition);
 			}
@@ -98,7 +105,7 @@ public class MoveTool extends TouchTool {
 				Vector2 newPosition = Pools.vector2.obtain();
 				newPosition.set(mTouchCurrent).sub(mTouchOrigin);
 				newPosition.add(mMovingResources.get(0).originalPos);
-				EnemyAddTool.setSnapPosition((EnemyActor)mMovingResources.get(0).resource, newPosition, (LevelEditor)mEditor, mInvoker);
+				EnemyAddTool.setSnapPosition((EnemyActor) mMovingResources.get(0).resource, newPosition, (LevelEditor) mEditor, mInvoker);
 
 				mMovingResources.get(0).resource.setIsBeingMoved(false);
 
@@ -143,15 +150,29 @@ public class MoveTool extends TouchTool {
 	}
 
 	/** Query callback for moving actors */
-	private QueryCallback mCallback = new QueryCallback() {
+	private QueryCallback mCallbackResource = new QueryCallback() {
 		@Override
 		public boolean reportFixture(Fixture fixture) {
 			Object userData = fixture.getBody().getUserData();
 
 			if (userData instanceof IResourcePosition) {
 				mHitResource = true;
+				return false;
 			}
 
+			return true;
+		}
+	};
+
+	/** Query callback for picking triggers */
+	private QueryCallback mCallbackTrigger = new QueryCallback() {
+		@Override
+		public boolean reportFixture(Fixture fixture) {
+			Object userData = fixture.getBody().getUserData();
+			if (userData instanceof Trigger) {
+				mHitResource = true;
+				return false;
+			}
 			return true;
 		}
 	};

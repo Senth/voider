@@ -767,6 +767,8 @@ public class Config {
 		 * more in front the object will be rendered.
 		 */
 		public enum RenderOrders {
+			/** Stub, just sets some offset */
+			STUB,
 			/** Moving objects */
 			MOVING_OBJECTS,
 			/** Level upper lower borders */
