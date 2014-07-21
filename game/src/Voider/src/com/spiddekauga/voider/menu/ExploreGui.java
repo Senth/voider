@@ -419,7 +419,7 @@ public class ExploreGui extends Gui {
 				mExploreScene.gotoMainMenu();
 			}
 		};
-		mUiFactory.addTextButton("Menu", TextButtonStyles.PRESS, table, buttonListener, null, null);
+		mUiFactory.addTextButton("Menu", TextButtonStyles.FILLED_PRESS, table, buttonListener, null, null);
 		table.getCell().resetWidth().setFillWidth(true);
 
 
@@ -430,7 +430,7 @@ public class ExploreGui extends Gui {
 				mExploreScene.play();
 			}
 		};
-		mUiFactory.addTextButton("Play", TextButtonStyles.PRESS, table, buttonListener, null, null);
+		mUiFactory.addTextButton("Play", TextButtonStyles.FILLED_PRESS, table, buttonListener, null, null);
 		table.getCell().resetWidth().setFillWidth(true);
 	}
 
@@ -523,7 +523,7 @@ public class ExploreGui extends Gui {
 			}
 		};
 		wrapper.row();
-		mUiFactory.addTextButton("Clear Tags", TextButtonStyles.PRESS, wrapper, buttonListener, hideListener, null);
+		mUiFactory.addTextButton("Clear Tags", TextButtonStyles.FILLED_PRESS, wrapper, buttonListener, hideListener, null);
 		wrapper.getCell().setWidth(tagTableWidth).setPadRight(imageWidth);
 
 		wrapper.layout();

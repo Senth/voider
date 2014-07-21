@@ -232,7 +232,7 @@ public class SelectDefGui extends Gui {
 					showSelectRevisionMsgBox();
 				}
 			};
-			mUiFactory.addTextButton("Load older version", TextButtonStyles.PRESS, table, buttonListener, mWidgets.info.hider, null);
+			mUiFactory.addTextButton("Load older version", TextButtonStyles.FILLED_PRESS, table, buttonListener, mWidgets.info.hider, null);
 			table.getCell().setFillWidth(true);
 		}
 
@@ -245,7 +245,7 @@ public class SelectDefGui extends Gui {
 				mSelectDefScene.cancel();
 			}
 		};
-		mUiFactory.addTextButton("Back", TextButtonStyles.PRESS, table, buttonListener, null, null);
+		mUiFactory.addTextButton("Back", TextButtonStyles.FILLED_PRESS, table, buttonListener, null, null);
 		table.getCell().resetWidth().setFillWidth(true);
 
 		// Load/Open
@@ -255,7 +255,7 @@ public class SelectDefGui extends Gui {
 				mSelectDefScene.loadDef();
 			}
 		};
-		mUiFactory.addTextButton(mButtonText, TextButtonStyles.PRESS, table, buttonListener, null, null);
+		mUiFactory.addTextButton(mButtonText, TextButtonStyles.FILLED_PRESS, table, buttonListener, null, null);
 		table.getCell().resetWidth().setFillWidth(true);
 	}
 

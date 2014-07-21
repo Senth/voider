@@ -59,6 +59,9 @@ java.lang.Float: {
 	padding_inner: {value: 12},
 	// Padding between radio or checkbox buttons
 	padding_checkbox: {value: 12},
+	// Transparent button padding (so text doesn't touch the borders)
+	// This is padding on all sides
+	padding_transparent_text_button: {value: 2},
 	
 	/* Padding - Explore/Load */
 	// Padding between rows
@@ -92,6 +95,7 @@ java.lang.Float: {
 	text_button_height: {value: 40},
 	// Default text button width
 	text_button_width: {value: 120},
+	
 	
 	/* Other */
 

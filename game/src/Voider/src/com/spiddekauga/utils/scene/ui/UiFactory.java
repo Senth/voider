@@ -70,7 +70,40 @@ public class UiFactory {
 		TextButton button = new TextButton(text, style.getStyle());
 
 		Cell cell = table.add(button);
-		cell.setSize(mStyles.vars.textButtonWidth, mStyles.vars.textButtonHeight);
+
+		// Fitting text, height padding
+		if (style.isFitText()) {
+			button.layout();
+
+			// Set padding around text so it doesn't touch the border
+			float cellHeightDefault = cell.getPrefHeight();
+			float cellWidthDefault = cell.getPrefWidth();
+
+			float padding = mStyles.vars.paddingTransparentTextButton * 2;
+			cell.setSize(cellWidthDefault + padding, cellHeightDefault + padding);
+
+
+			// Height padding
+			float padHeight = (mStyles.vars.rowHeight - cellHeightDefault - padding) * 0.5f;
+
+			// Check for uneven height, then pad extra at the top
+			boolean padExtra = false;
+			if (padHeight != ((int) padHeight)) {
+				padExtra = true;
+				padHeight = (int) padHeight;
+			}
+
+			float padTop = padExtra ? padHeight + 1 : padHeight;
+			float padBottom = padHeight;
+
+			cell.setPadTop(padTop);
+			cell.setPadBottom(padBottom);
+		}
+		// Else - Use default button size
+		else {
+			cell.setSize(mStyles.vars.textButtonWidth, mStyles.vars.textButtonHeight);
+		}
+
 
 		if (listener != null) {
 			listener.setButton(button);
@@ -663,10 +696,6 @@ public class UiFactory {
 		mStyles.label.errorSectionInfo = SkinNames.getResource(SkinNames.General.LABEL_ERROR_SECTION_INFO);
 		mStyles.label.errorSection = SkinNames.getResource(SkinNames.General.LABEL_ERROR_SECTION);
 		mStyles.label.error = SkinNames.getResource(SkinNames.General.LABEL_ERROR);
-		// mStyles.checkBox.checkBox =
-		// SkinNames.getResource(SkinNames.General.CHECK_BOX_DEFAULT);
-		// mStyles.checkBox.radio =
-		// SkinNames.getResource(SkinNames.General.CHECK_BOX_RADIO);
 		mStyles.select.standard = SkinNames.getResource(SkinNames.General.SELECT_BOX_DEFAULT);
 		mStyles.rating.stardard = SkinNames.getResource(SkinNames.General.RATING_DEFAULT);
 
@@ -680,6 +709,7 @@ public class UiFactory {
 		mStyles.vars.paddingOuter = SkinNames.getResource(SkinNames.GeneralVars.PADDING_OUTER);
 		mStyles.vars.paddingInner = SkinNames.getResource(SkinNames.GeneralVars.PADDING_INNER);
 		mStyles.vars.paddingExplore = SkinNames.getResource(SkinNames.GeneralVars.PADDING_EXPLORE);
+		mStyles.vars.paddingTransparentTextButton = SkinNames.getResource(SkinNames.GeneralVars.PADDING_TRANSPARENT_TEXT_BUTTON);
 		mStyles.vars.textFieldNumberWidth = SkinNames.getResource(SkinNames.GeneralVars.TEXT_FIELD_NUMBER_WIDTH);
 		mStyles.vars.textFieldWidth = SkinNames.getResource(SkinNames.GeneralVars.TEXT_FIELD_WIDTH);
 		mStyles.vars.sliderWidth = SkinNames.getResource(SkinNames.GeneralVars.SLIDER_WIDTH);
@@ -692,8 +722,11 @@ public class UiFactory {
 		mStyles.vars.rightPanelWidth = SkinNames.getResource(SkinNames.GeneralVars.RIGHT_PANEL_WIDTH);
 
 		// Text buttons
-		TextButtonStyles.PRESS.setStyle((TextButtonStyle) SkinNames.getResource(SkinNames.General.TEXT_BUTTON_FLAT_PRESS));
-		TextButtonStyles.TOGGLE.setStyle((TextButtonStyle) SkinNames.getResource(SkinNames.General.TEXT_BUTTON_FLAT_TOGGLE));
+		TextButtonStyles.FILLED_PRESS.setStyle((TextButtonStyle) SkinNames.getResource(SkinNames.General.TEXT_BUTTON_FLAT_PRESS));
+		TextButtonStyles.FILLED_TOGGLE.setStyle((TextButtonStyle) SkinNames.getResource(SkinNames.General.TEXT_BUTTON_FLAT_TOGGLE));
+		TextButtonStyles.TRANSPARENT_PRESS.setStyle((TextButtonStyle) SkinNames.getResource(SkinNames.General.TEXT_BUTTON_PRESS));
+		TextButtonStyles.TRANSPARENT_TOGGLE.setStyle((TextButtonStyle) SkinNames.getResource(SkinNames.General.TEXT_BUTTON_TOGGLE));
+
 
 		// Checkbox styles
 		CheckBoxStyles.CHECK_BOX.setStyle((CheckBoxStyle) SkinNames.getResource(SkinNames.General.CHECK_BOX_DEFAULT));
@@ -734,12 +767,31 @@ public class UiFactory {
 	 * Different text button styles
 	 */
 	public enum TextButtonStyles {
-		/** Can be pressed */
-		PRESS,
-		/** Can be toggled/checked */
-		TOGGLE,
+		/** Filled with default color, can be pressed */
+		FILLED_PRESS,
+		/** Filled with default color, can be toggled/checked */
+		FILLED_TOGGLE,
+		/** Transparent (only text is visible), can be pressed */
+		TRANSPARENT_PRESS(true),
+		/** Transparent (only text is visible), can be toggled/checked */
+		TRANSPARENT_TOGGLE(true),
 
 		;
+
+		/**
+		 * Default constructor
+		 */
+		private TextButtonStyles() {
+			// Does nothing
+		}
+
+		/**
+		 * Sets if the button should fit the text
+		 * @param fitText true if the button should fit the text
+		 */
+		private TextButtonStyles(boolean fitText) {
+			mFitText = fitText;
+		}
 
 		/**
 		 * Set the Scene2D text button style
@@ -756,8 +808,17 @@ public class UiFactory {
 			return mStyle;
 		}
 
+		/**
+		 * @return true if the button should fit the text
+		 */
+		private boolean isFitText() {
+			return mFitText;
+		}
+
 		/** The style variable */
 		private TextButtonStyle mStyle = null;
+		/** Button should fit the text */
+		private boolean mFitText = false;
 	}
 
 	/**
@@ -869,6 +930,7 @@ public class UiFactory {
 			public float paddingOuter = 0;
 			public float paddingInner = 0;
 			public float paddingExplore = 0;
+			public float paddingTransparentTextButton = 0;
 			public float rowHeight = 0;
 			public float rowHeightSection = 0;
 			public float textAreaHeight = 0;

@@ -371,6 +371,11 @@ public class SkinNames {
 		PADDING_CHECKBOX(Float.class),
 		/** Padding between rows in Explore/Load scenes */
 		PADDING_EXPLORE(Float.class),
+		/**
+		 * Transparent button padding (so text doesn't touch the borders) This is padding
+		 * on all sides
+		 */
+		PADDING_TRANSPARENT_TEXT_BUTTON(Float.class),
 		/** Background colors for widgets */
 		WIDGET_BACKGROUND_COLOR(Color.class),
 		/** Tag widget in explore and loading screen */

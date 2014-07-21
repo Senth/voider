@@ -1,5 +1,6 @@
 package com.spiddekauga.voider.menu;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -13,6 +14,7 @@ import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.utils.scene.ui.HideManual;
 import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
+import com.spiddekauga.utils.scene.ui.UiFactory.TextButtonStyles;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.repo.InternalNames;
 import com.spiddekauga.voider.repo.ResourceCacheFacade;
@@ -64,72 +66,73 @@ public class LoginGui extends Gui {
 	 * Initializes the login table
 	 */
 	private void initLoginTable() {
-		Skin skin = ResourceCacheFacade.get(InternalNames.UI_GENERAL);
+		AlignTable table = mWidgets.login.table;
 
 		// Username
-		Label label = new Label("Username", skin, SkinNames.General.LABEL_DEFAULT.toString());
-		mWidgets.login.table.add(label);
-
-		mWidgets.login.table.row();
-		TextField textField = new TextField("", skin, SkinNames.General.TEXT_FIELD_DEFAULT.toString());
-		mWidgets.login.username = textField;
-		mWidgets.login.table.add(textField);
-		TextFieldListener textFieldListener = new TextFieldListener(textField, null, null) {
+		mWidgets.login.usernameListener = new TextFieldListener() {
 			@Override
-			protected void onDone(String newText) {
-				if (isLoginFieldsValid(false)) {
-					// login();
-				}
+			protected void onEnter(String newText) {
+				login();
 			}
 		};
-		mWidgets.login.usernameListener = textFieldListener;
+		mWidgets.login.username = mUiFactory.addTextField(null, false, "Username", mWidgets.login.usernameListener, table, null);
 
 		// Password
-		mWidgets.login.table.row();
-		label = new Label("Password", skin, SkinNames.General.LABEL_DEFAULT.toString());
-		mWidgets.login.table.add(label);
-
-		mWidgets.login.table.row();
-		textField = new TextField("", skin, SkinNames.General.TEXT_FIELD_DEFAULT.toString());
-		textField.setPasswordMode(true);
-		textField.setPasswordCharacter('*');
-		mWidgets.login.password = textField;
-		mWidgets.login.table.add(textField);
-		textFieldListener = new TextFieldListener(textField, null, null) {
+		mWidgets.login.passwordListener = new TextFieldListener() {
 			@Override
-			protected void onDone(String newText) {
-				if (isLoginFieldsValid(false)) {
-					// login();
-				}
+			protected void onEnter(String newText) {
+				login();
 			}
 		};
-		mWidgets.login.passwordListener = textFieldListener;
+		mWidgets.login.password = mUiFactory.addTextField(null, false, "Password", mWidgets.login.passwordListener, table, null);
 
-		// Login
-		mWidgets.login.table.row();
-		Button button = new TextButton("Login", skin, SkinNames.General.TEXT_BUTTON_PRESS.toString());
-		mWidgets.login.table.add(button);
-		new ButtonListener(button) {
+		Skin skin = ResourceCacheFacade.get(InternalNames.UI_GENERAL);
+
+		// Forgot password
+		table.row();
+		ButtonListener buttonListener = new ButtonListener() {
 			@Override
 			protected void onPressed() {
-				if (isLoginFieldsValid(true)) {
-					login();
-				}
+				/** @todo forgot password -> send to another GUI screen */
 			}
 		};
+		mUiFactory.addTextButton("Forgot Password", TextButtonStyles.TRANSPARENT_PRESS, table, buttonListener, null, null);
 
 		// Register
 		if (mLoginScene.isRegisterAvailable()) {
-			button = new TextButton("Register", skin, SkinNames.General.TEXT_BUTTON_PRESS.toString());
-			mWidgets.login.table.add(button);
-			new ButtonListener(button) {
+			table.row();
+			buttonListener = new ButtonListener() {
 				@Override
 				protected void onPressed() {
 					mLoginHider.hide();
 					mRegisterHider.show();
 				}
 			};
+			mUiFactory.addTextButton("Register", TextButtonStyles.TRANSPARENT_PRESS, table, buttonListener, null, null);
 		}
+
+
+		// Buttons
+		table.row().setFillWidth(true).setEqualCellSize(true);
+
+		// Exit game
+		buttonListener = new ButtonListener() {
+			@Override
+			protected void onPressed() {
+				Gdx.app.exit();
+			}
+		};
+		mUiFactory.addTextButton("Exit", TextButtonStyles.FILLED_PRESS, table, buttonListener, null, null);
+
+		// Login
+		buttonListener = new ButtonListener() {
+			@Override
+			protected void onPressed() {
+				login();
+			}
+		};
+		mUiFactory.addTextButton("Login", TextButtonStyles.FILLED_PRESS, table, buttonListener, null, null);
+
 
 		mWidgets.login.table.layout();
 
@@ -148,9 +151,9 @@ public class LoginGui extends Gui {
 	 * Logins in the the current username and password fields
 	 */
 	private void login() {
-		mLoginScene.login(mWidgets.login.username.getText(), mWidgets.login.password.getText());
-
-		// TODO show logging in loading GIF
+		if (isLoginFieldsValid(true)) {
+			mLoginScene.login(mWidgets.login.username.getText(), mWidgets.login.password.getText());
+		}
 	}
 
 	/**
