@@ -310,7 +310,7 @@ public class SkinNames {
 	}
 
 	/**
-	 * Game names
+	 * Game UI
 	 */
 	public enum Game implements ISkinNames {
 		/** Health bar for the game */
@@ -349,6 +349,49 @@ public class SkinNames {
 		private String mName;
 		/** The class type */
 		private Class<?> mType;
+	}
+
+	/**
+	 * Game Images
+	 */
+	public enum GameImages implements IImageNames {
+		/** Filled life shuttle, to show how many lives the player has */
+		LIFE_FILLED("shuttle_lives_yes"),
+		/** Empty shuttle life */
+		LIFE_EMPTY("shuttle_lives_no"),
+
+		;
+
+		/**
+		 * Used default JSON name for enum
+		 */
+		private GameImages() {
+			mName = name().toLowerCase();
+		}
+
+		/**
+		 * Create a custom name for the enumeration
+		 * @param jsonName name in the json-file
+		 */
+		private GameImages(String jsonName) {
+			mName = jsonName;
+		}
+
+		@Override
+		public InternalNames getSkinName() {
+			return InternalNames.UI_GAME;
+		}
+
+		/**
+		 * @return name of the icon inside the skin
+		 */
+		@Override
+		public String toString() {
+			return mName;
+		}
+
+		/** skin name of the icon */
+		private String mName;
 	}
 
 	/**
@@ -474,6 +517,10 @@ public class SkinNames {
 		LIKE,
 		/** Screenshot placeholder for levels */
 		SCREENSHOT_PLACEHOLDER,
+		/** Successfull message */
+		MESSAGE_SUCCESSFUL,
+		/** Failed message */
+		MESSAGE_UNSUCCESSFUL,
 
 		;
 
