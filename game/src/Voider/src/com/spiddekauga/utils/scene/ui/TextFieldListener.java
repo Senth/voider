@@ -75,7 +75,8 @@ public class TextFieldListener implements EventListener {
 		mTextField = textField;
 
 		if (mTextField != null) {
-			mPrevKeystrokeText = mTextField.getText();
+			mTextField.setText("");
+			mPrevKeystrokeText = "";
 			mIsPassword = mTextField.isPasswordMode();
 			setDefaultText();
 			mTextField.addListener(this);

@@ -162,7 +162,7 @@ public class UiFactory {
 	 * @param table the table to add the text field to
 	 * @param createdActors optional adds all created elements to this list (if not null)
 	 * @param errorLabel set to true to create an error label (only works if sectionText
-	 *        isn't null). This label can be accesssed by calling
+	 *        isn't null). This label can be accessed by calling
 	 *        {@link #getLastCreatedErrorLabel()} directly after this method.
 	 * @return Created text field
 	 */
@@ -188,6 +188,27 @@ public class UiFactory {
 
 		doExtraActionsOnActors(null, null, createdActors, textField);
 
+		return textField;
+	}
+
+	/**
+	 * Adds a password text field with an optional label header
+	 * @param sectionText optional text for the label, if null no label is added
+	 * @param defaultText default text in the text field
+	 * @param listener text field listener
+	 * @param table the table to add the text field to
+	 * @param createdActors optional adds all created elements to this list (if not null)
+	 * @param errorLabel set to true to create an error label (only works if sectionText
+	 *        isn't null). This label can be accessed by calling
+	 *        {@link #getLastCreatedErrorLabel()} directly after this method.
+	 * @return Created text field
+	 */
+	public TextField addPasswordField(String sectionText, boolean errorLabel, String defaultText, TextFieldListener listener, AlignTable table,
+			ArrayList<Actor> createdActors) {
+		TextField textField = addTextField(sectionText, errorLabel, defaultText, listener, table, createdActors);
+		textField.setPasswordMode(true);
+		textField.setPasswordCharacter('*');
+		listener.setTextField(textField);
 		return textField;
 	}
 

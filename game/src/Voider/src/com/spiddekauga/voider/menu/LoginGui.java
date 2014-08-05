@@ -84,7 +84,8 @@ public class LoginGui extends Gui {
 				login();
 			}
 		};
-		mWidgets.login.password = mUiFactory.addTextField(null, false, "Password", mWidgets.login.passwordListener, table, null);
+		mWidgets.login.password = mUiFactory.addPasswordField(null, false, "Password", mWidgets.login.passwordListener, table, null);
+		mWidgets.login.password.setName("password");
 
 		Skin skin = ResourceCacheFacade.get(InternalNames.UI_GENERAL);
 
