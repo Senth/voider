@@ -23,6 +23,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.Window;
+import com.badlogic.gdx.scenes.scene2d.ui.Window.WindowStyle;
 import com.spiddekauga.utils.commands.Invoker;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
@@ -53,6 +55,38 @@ public class UiFactory {
 			mInstance = new UiFactory();
 		}
 		return mInstance;
+	}
+
+	/**
+	 * Adds a window to a table
+	 * @param title title of the table. When setting the title it will use the window skin
+	 *        with a title, if null it will instead use a default window skin without a
+	 *        title
+	 * @param innerTable the inner table of the window
+	 * @param table the table to add the window to
+	 * @param hider optional GUI hider
+	 * @param createdActors optional adds the window to this list (if not null)
+	 * @return created window
+	 */
+	public Window addWindow(String title, AlignTable innerTable, AlignTable table, GuiHider hider, ArrayList<Actor> createdActors) {
+		WindowStyle windowStyle;
+		if (title != null) {
+			windowStyle = mStyles.window.title;
+		} else {
+			windowStyle = mStyles.window.noTitle;
+			title = "";
+		}
+
+		float windowPadding = mStyles.vars.paddingInner;
+
+		Window window = new Window(title, windowStyle);
+		window.add(innerTable).pad(windowPadding);
+		window.layout();
+		table.add(window).setSize(innerTable.getWidth() + windowPadding * 2, innerTable.getHeight() + windowPadding * 2);
+
+		doExtraActionsOnActors(null, hider, createdActors, window);
+
+		return window;
 	}
 
 	/**
@@ -134,9 +168,8 @@ public class UiFactory {
 	public Label addErrorLabel(String labelText, boolean labelIsSection, AlignTable table, ArrayList<Actor> createdActors) {
 		AlignTable wrapTable = new AlignTable();
 		wrapTable.setName("error-table");
-		table.add(wrapTable).setWidth(mStyles.vars.textFieldWidth);
 		table.row();
-		// wrapTable.setMaxWidth(mStyles.vars.textFieldWidth);
+		table.add(wrapTable).setWidth(mStyles.vars.textFieldWidth);
 
 		Label label = addSection(labelText, wrapTable, null);
 		// Change style to error info
@@ -719,7 +752,8 @@ public class UiFactory {
 		mStyles.label.error = SkinNames.getResource(SkinNames.General.LABEL_ERROR);
 		mStyles.select.standard = SkinNames.getResource(SkinNames.General.SELECT_BOX_DEFAULT);
 		mStyles.rating.stardard = SkinNames.getResource(SkinNames.General.RATING_DEFAULT);
-
+		mStyles.window.title = SkinNames.getResource(SkinNames.General.WINDOW_TITLE);
+		mStyles.window.noTitle = SkinNames.getResource(SkinNames.General.WINDOW_NO_TITLE);
 
 		// Colors
 		mStyles.color.sceneBackground = SkinNames.getResource(SkinNames.GeneralVars.SCENE_BACKGROUND_COLOR);
@@ -929,6 +963,7 @@ public class UiFactory {
 		public SelectBoxes select = new SelectBoxes();
 		public Colors color = new Colors();
 		public Ratings rating = new Ratings();
+		public Windows window = new Windows();
 
 		public static class Ratings {
 			public RatingWidgetStyle stardard = null;
@@ -980,6 +1015,11 @@ public class UiFactory {
 		static class CheckBoxes {
 			// public CheckBoxStyle radio = null;
 			// public CheckBoxStyle checkBox = null;
+		}
+
+		static class Windows {
+			public WindowStyle title = null;
+			public WindowStyle noTitle = null;
 		}
 	}
 

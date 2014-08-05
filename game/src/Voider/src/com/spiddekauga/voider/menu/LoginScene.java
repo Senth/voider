@@ -174,12 +174,12 @@ public class LoginScene extends Scene implements ICallerResponseListener {
 
 
 		case FAIL_EMAIL_EXISTS:
-			mGui.showErrorMessage("Email is already registered");
+			((LoginGui) mGui).setRegisterEmailError("is already registered");
 			break;
 
 
 		case FAIL_USERNAME_EXISTS:
-			mGui.showErrorMessage("Username is occupied");
+			((LoginGui) mGui).setRegisterUsernameError("Name is occupied");
 			break;
 
 
@@ -200,6 +200,8 @@ public class LoginScene extends Scene implements ICallerResponseListener {
 	 * @param email the email to register with the username
 	 */
 	void register(String username, String password, String email) {
+		((LoginGui) mGui).emptyRegisterErrors();
+
 		mLoggingInUser.setUsername(username);
 		mLoggingInUser.setEmail(email);
 		mLoggingInUser.setPassword(password);

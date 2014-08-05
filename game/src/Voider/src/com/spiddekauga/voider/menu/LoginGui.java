@@ -1,12 +1,8 @@
 package com.spiddekauga.voider.menu;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
-import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
@@ -16,9 +12,6 @@ import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
 import com.spiddekauga.utils.scene.ui.UiFactory.TextButtonStyles;
 import com.spiddekauga.voider.Config;
-import com.spiddekauga.voider.repo.InternalNames;
-import com.spiddekauga.voider.repo.ResourceCacheFacade;
-import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.scene.Gui;
 
 /**
@@ -87,8 +80,6 @@ public class LoginGui extends Gui {
 		mWidgets.login.password = mUiFactory.addPasswordField(null, false, "Password", mWidgets.login.passwordListener, table, null);
 		mWidgets.login.password.setName("password");
 
-		Skin skin = ResourceCacheFacade.get(InternalNames.UI_GENERAL);
-
 		// Forgot password
 		table.row();
 		ButtonListener buttonListener = new ButtonListener() {
@@ -133,19 +124,10 @@ public class LoginGui extends Gui {
 			}
 		};
 		mUiFactory.addTextButton("Login", TextButtonStyles.FILLED_PRESS, table, buttonListener, null, null);
-
-
 		mWidgets.login.table.layout();
 
-		float windowPadding = SkinNames.getResource(SkinNames.GeneralVars.PADDING_INNER);
-		mWidgets.login.window = new Window("", skin, SkinNames.General.WINDOW_NO_TITLE.toString());
-		mWidgets.login.window.add(mWidgets.login.table).pad(windowPadding);
-		mMainTable.add(mWidgets.login.window);
-		mLoginHider.addToggleActor(mWidgets.login.window);
-
-
-		mWidgets.login.window.layout();
-		mWidgets.login.window.setSize(mWidgets.login.table.getPrefWidth() + windowPadding * 2, mWidgets.login.table.getHeight() + windowPadding * 2);
+		// Wrapper window
+		mUiFactory.addWindow(null, mWidgets.login.table, mMainTable, mLoginHider, null);
 	}
 
 	/**
@@ -183,13 +165,45 @@ public class LoginGui extends Gui {
 	}
 
 	/**
+	 * Empty register error fields
+	 */
+	void emptyRegisterErrors() {
+		mWidgets.register.usernameError.setText("");
+		mWidgets.register.passwordError.setText("");
+		mWidgets.register.emailError.setText("");
+	}
+
+	/**
+	 * Set register username error
+	 * @param text error text
+	 */
+	void setRegisterUsernameError(String text) {
+		mWidgets.register.usernameError.setText(text);
+	}
+
+	/**
+	 * Set register password error
+	 * @param text error text
+	 */
+	void setRegisterPasswordError(String text) {
+		mWidgets.register.passwordError.setText(text);
+	}
+
+	/**
+	 * Set register email error
+	 * @param text error text
+	 */
+	void setRegisterEmailError(String text) {
+		mWidgets.register.emailError.setText(text);
+	}
+
+	/**
 	 * Try to register with the specified fields
 	 */
 	private void register() {
-		mLoginScene.register(mWidgets.register.username.getText(), mWidgets.register.password.getText(), mWidgets.register.email.getText());
-
-
-		// TODO Show registering GIF
+		if (isRegisterFieldsValid(true)) {
+			mLoginScene.register(mWidgets.register.username.getText(), mWidgets.register.password.getText(), mWidgets.register.email.getText());
+		}
 	}
 
 	/**
@@ -197,130 +211,106 @@ public class LoginGui extends Gui {
 	 * @return true if all register fields are filled and the passwords match
 	 */
 	private boolean isRegisterFieldsValid(boolean showErrors) {
-		String errorMessage = null;
+		boolean failed = false;
 
 		// Test that fields are filled in
 		if (mWidgets.register.usernameListener.isTextFieldEmpty()) {
-			errorMessage = "Username is empty";
+			mWidgets.register.usernameError.setText("is empty");
+			failed = true;
 		}
 		// Password empty
-		else if (mWidgets.register.passwordListener.isTextFieldEmpty()) {
-			errorMessage = "Password is empty";
+		if (mWidgets.register.passwordListener.isTextFieldEmpty()) {
+			mWidgets.register.passwordError.setText("is empty");
+			failed = true;
 		}
 		// Password length
 		else if (mWidgets.register.password.getText().length() < Config.User.PASSWORD_LENGTH_MIN) {
-			errorMessage = "Password needs to contain at least " + Config.User.PASSWORD_LENGTH_MIN + " characters.";
+			mWidgets.register.passwordError.setText("Should contain at least " + Config.User.PASSWORD_LENGTH_MIN + " chars");
+			failed = true;
 		}
 		// Test that passwords match
 		else if (!mWidgets.register.password.getText().equals(mWidgets.register.confirmPassword.getText())) {
-			errorMessage = "Passwords don't match!";
+			mWidgets.register.passwordError.setText("Passwords don't match!");
+			failed = true;
 		}
 		// Email
-		else if (mWidgets.register.emailListener.isTextFieldEmpty()) {
-			errorMessage = "Email is empty";
+		if (mWidgets.register.emailListener.isTextFieldEmpty()) {
+			mWidgets.register.emailError.setText("is empty");
+			failed = true;
 		}
 
-		if (errorMessage != null) {
-			if (showErrors) {
-				showErrorMessage(errorMessage);
-			}
-			return false;
-		} else {
-			return true;
-		}
+		return !failed;
 	}
 
 	/**
 	 * Initializes the register table
 	 */
 	private void initRegisterTable() {
-		Skin skin = ResourceCacheFacade.get(InternalNames.UI_GENERAL);
+		AlignTable table = mWidgets.register.table;
 
 
 		// Username
-		Label label = new Label("Username", skin, SkinNames.General.LABEL_DEFAULT.toString());
-		mWidgets.register.table.add(label);
-
-		mWidgets.register.table.row();
-		TextField textField = new TextField("", skin, SkinNames.General.TEXT_FIELD_DEFAULT.toString());
-		mWidgets.register.username = textField;
-		mWidgets.register.table.add(textField);
-		TextFieldListener textFieldListener = new TextFieldListener(textField, null, null) {
+		mWidgets.register.usernameListener = new TextFieldListener() {
 			@Override
-			protected void onDone(String newText) {
+			protected void onEnter(String newText) {
 				if (isRegisterFieldsValid(false)) {
-					// register();
+					register();
 				}
 			}
 		};
-		mWidgets.register.usernameListener = textFieldListener;
+		mWidgets.register.username = mUiFactory.addTextField("Username", true, "Username", mWidgets.register.usernameListener, table, null);
+		mWidgets.register.usernameError = mUiFactory.getLastCreatedErrorLabel();
 
 		// Password
-		mWidgets.register.table.row();
-		label = new Label("Password", skin, SkinNames.General.LABEL_DEFAULT.toString());
-		mWidgets.register.table.add(label);
-
-		mWidgets.register.table.row();
-		textField = new TextField("", skin, SkinNames.General.TEXT_FIELD_DEFAULT.toString());
-		textField.setPasswordMode(true);
-		textField.setPasswordCharacter('*');
-		mWidgets.register.password = textField;
-		mWidgets.register.table.add(textField);
-		textFieldListener = new TextFieldListener(textField, null, null) {
+		mWidgets.register.passwordListener = new TextFieldListener() {
 			@Override
-			protected void onDone(String newText) {
+			protected void onEnter(String newText) {
 				if (isRegisterFieldsValid(false)) {
-					// register();
+					register();
 				}
 			}
 		};
-		mWidgets.register.passwordListener = textFieldListener;
+		mWidgets.register.password = mUiFactory.addPasswordField("Password", true, "Password", mWidgets.register.passwordListener, table, null);
+		mWidgets.register.passwordError = mUiFactory.getLastCreatedErrorLabel();
 
 		// Confirm password
-		mWidgets.register.table.row();
-		label = new Label("Confirm password", skin, SkinNames.General.LABEL_DEFAULT.toString());
-		mWidgets.register.table.add(label);
-
-		mWidgets.register.table.row();
-		textField = new TextField("", skin, SkinNames.General.TEXT_FIELD_DEFAULT.toString());
-		textField.setPasswordMode(true);
-		textField.setPasswordCharacter('*');
-		mWidgets.register.confirmPassword = textField;
-		mWidgets.register.table.add(textField);
-		textFieldListener = new TextFieldListener(textField, null, null) {
+		TextFieldListener textFieldListener = new TextFieldListener() {
 			@Override
-			protected void onDone(String newText) {
+			protected void onEnter(String newText) {
 				if (isRegisterFieldsValid(false)) {
-					// register();
+					register();
 				}
 			}
 		};
+		mWidgets.register.confirmPassword = mUiFactory
+				.addPasswordField("Confirm password", false, "Confirm password", textFieldListener, table, null);
 
 		// Email
-		mWidgets.register.table.row();
-		label = new Label("Email", skin, SkinNames.General.LABEL_DEFAULT.toString());
-		mWidgets.register.table.add(label);
-
-		mWidgets.register.table.row();
-		textField = new TextField("", skin, SkinNames.General.TEXT_FIELD_DEFAULT.toString());
-		mWidgets.register.email = textField;
-		mWidgets.register.table.add(textField);
-		textFieldListener = new TextFieldListener(textField, null, null) {
+		mWidgets.register.emailListener = new TextFieldListener() {
 			@Override
-			protected void onDone(String newText) {
+			protected void onEnter(String newText) {
 				if (isRegisterFieldsValid(false)) {
-					// register();
+					register();
 				}
 			}
 		};
-		mWidgets.register.emailListener = textFieldListener;
+		mWidgets.register.email = mUiFactory.addTextField("Email", true, "your@email.com", mWidgets.register.emailListener, table, null);
+		mWidgets.register.emailError = mUiFactory.getLastCreatedErrorLabel();
 
+
+		// Back
+		table.row().setFillWidth(true).setEqualCellSize(true);
+		ButtonListener buttonListener = new ButtonListener() {
+			@Override
+			protected void onPressed() {
+				mRegisterHider.hide();
+				mLoginHider.show();
+			}
+		};
+		mUiFactory.addTextButton("Back", TextButtonStyles.FILLED_PRESS, table, buttonListener, null, null);
 
 		// Register
-		mWidgets.register.table.row();
-		Button button = new TextButton("Register", skin, SkinNames.General.TEXT_BUTTON_PRESS.toString());
-		mWidgets.register.table.add(button);
-		new ButtonListener(button) {
+		buttonListener = new ButtonListener() {
 			@Override
 			protected void onPressed() {
 				if (isRegisterFieldsValid(true)) {
@@ -328,31 +318,12 @@ public class LoginGui extends Gui {
 				}
 			}
 		};
-
-		// Back
-		button = new TextButton("Back", skin, SkinNames.General.TEXT_BUTTON_PRESS.toString());
-		mWidgets.register.table.add(button);
-		new ButtonListener(button) {
-			@Override
-			protected void onPressed() {
-				mRegisterHider.hide();
-				mLoginHider.show();
-			}
-		};
-
-
+		mUiFactory.addTextButton("Register", TextButtonStyles.FILLED_PRESS, table, buttonListener, null, null);
+		mWidgets.register.table.row();
 		mWidgets.register.table.layout();
 
-		float windowPadding = SkinNames.getResource(SkinNames.GeneralVars.PADDING_INNER);
-		mWidgets.register.window = new Window("", skin, SkinNames.General.WINDOW_NO_TITLE.toString());
-		mWidgets.register.window.add(mWidgets.register.table).pad(windowPadding);
-		mMainTable.add(mWidgets.register.window);
-		mRegisterHider.addToggleActor(mWidgets.register.window);
-
-
-		mWidgets.register.window.layout();
-		mWidgets.register.window.setSize(mWidgets.register.table.getWidth() + windowPadding * 2, mWidgets.register.table.getHeight() + windowPadding
-				* 2);
+		// Wrapper window
+		mUiFactory.addWindow(null, mWidgets.register.table, mMainTable, mRegisterHider, null);
 	}
 
 	/**
@@ -387,7 +358,6 @@ public class LoginGui extends Gui {
 		Register register = new Register();
 
 		private static class Login {
-			Window window = null;
 			AlignTable table = new AlignTable();
 			TextField username = null;
 			TextField password = null;
@@ -399,7 +369,6 @@ public class LoginGui extends Gui {
 
 		private static class Register {
 			AlignTable table = new AlignTable();
-			Window window = null;
 			TextField username = null;
 			TextField password = null;
 			TextField confirmPassword = null;
@@ -409,6 +378,11 @@ public class LoginGui extends Gui {
 			TextFieldListener usernameListener = null;
 			TextFieldListener passwordListener = null;
 			TextFieldListener emailListener = null;
+
+			// Error labels
+			Label usernameError = null;
+			Label passwordError = null;
+			Label emailError = null;
 		}
 	}
 }
