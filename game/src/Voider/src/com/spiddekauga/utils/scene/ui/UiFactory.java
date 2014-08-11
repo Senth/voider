@@ -176,11 +176,14 @@ public class UiFactory {
 		if (!labelIsSection) {
 			label.setStyle(mStyles.label.errorSectionInfo);
 		}
+
+		// Fill width
 		wrapTable.getRows().get(0).setFillWidth(true);
+		wrapTable.add().setFillWidth(true);
 
 		// Add error label
 		mCreatedErrorLabelLast = new Label("", mStyles.label.errorSection);
-		wrapTable.add(mCreatedErrorLabelLast).setAlign(Horizontal.RIGHT, Vertical.MIDDLE).setFillWidth(true).setFixedWidth(true);
+		wrapTable.add(mCreatedErrorLabelLast).setAlign(Horizontal.RIGHT, Vertical.MIDDLE);
 
 		doExtraActionsOnActors(null, null, createdActors, label, mCreatedErrorLabelLast);
 

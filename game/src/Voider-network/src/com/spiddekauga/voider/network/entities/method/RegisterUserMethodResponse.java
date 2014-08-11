@@ -7,7 +7,6 @@ import com.spiddekauga.voider.network.entities.ISuccessStatuses;
 
 /**
  * Response from registering a new user
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
@@ -34,6 +33,10 @@ public class RegisterUserMethodResponse implements IEntity, ISuccessStatuses {
 		FAIL_EMAIL_EXISTS,
 		/** Username already in use */
 		FAIL_USERNAME_EXISTS,
+		/** Username too short */
+		FAIL_USERNAME_TOO_SHORT,
+		/** Password too short */
+		FAIL_PASSWORD_TOO_SHORT,
 		/** Internal server error */
 		FAIL_SERVER_ERROR,
 		/** Server connection error */

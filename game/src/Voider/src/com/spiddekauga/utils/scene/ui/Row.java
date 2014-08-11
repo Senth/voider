@@ -528,17 +528,14 @@ public class Row implements Poolable {
 	 * @param height new height of the row
 	 */
 	void updateSize(float width, float height) {
-		boolean changedSize = false;
 		float realWidth = width - getPadLeft() - getPadRight();
-		if (!mFixedWidth && realWidth != mWidth) {
+		if (!mFixedWidth) {
 			mWidth = realWidth;
-			changedSize = true;
 		}
 
 		float realHeight = height - getPadLeft() - getPadRight();
-		if (!mFixedHeight && realHeight != mHeight) {
+		if (!mFixedHeight) {
 			mHeight = realHeight;
-			changedSize = true;
 		}
 
 		int cVisibleCells = getVisibleCellCount();
@@ -548,8 +545,7 @@ public class Row implements Poolable {
 			for (Cell cell : mCells) {
 				cell.updateSize(equalCellWidth, mHeight);
 			}
-
-		} else if (changedSize) {
+		} else {
 			// Calculate total cell width
 			float cellWidthTotal = 0;
 			float cCellFillWidth = 0;
@@ -583,10 +579,6 @@ public class Row implements Poolable {
 
 					cell.updateSize(newCellWidth, newCellHeight);
 				}
-			}
-		} else {
-			for (Cell cell : mCells) {
-				cell.updateSize(cell.getWidth(), cell.getHeight());
 			}
 		}
 	}
@@ -708,8 +700,7 @@ public class Row implements Poolable {
 	 */
 	private boolean mEqualSize = false;
 	/** All the columns in the table */
-	@SuppressWarnings("unchecked")
-	private ArrayList<Cell> mCells = Pools.arrayList.obtain();
+	@SuppressWarnings("unchecked") private ArrayList<Cell> mCells = Pools.arrayList.obtain();
 	/** Total preferred width of the actors in this row */
 	private float mPrefWidth = 0;
 	/**

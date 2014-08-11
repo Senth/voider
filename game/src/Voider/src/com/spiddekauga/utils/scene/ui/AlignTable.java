@@ -320,7 +320,8 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	 *         used.
 	 */
 	public ArrayList<Actor> getActors(boolean onlyVisible) {
-		@SuppressWarnings("unchecked") ArrayList<Actor> actors = Pools.arrayList.obtain();
+		@SuppressWarnings("unchecked")
+		ArrayList<Actor> actors = Pools.arrayList.obtain();
 
 		getActors(onlyVisible, actors);
 
@@ -882,9 +883,9 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	}
 
 	/**
-	 * Makes the table keep its size (that was set through #setSize(float,float),
-	 * #setWidth(float), or #setHeight(float)) after the table has been invalidated. I.e.
-	 * it will not resize the table to fit the contents.
+	 * Makes the table keep its size (that was set through {@link #setSize(float, float)},
+	 * {@link #setWidth(float)}, or {@link #setHeight(float)}) after the table has been
+	 * invalidated. I.e. it will not resize the table to fit the contents.
 	 * @param keepSize set to true to keep the size of the table. If set to false table
 	 *        will not always be the same size as getPrefWidth/Height.
 	 * @return this table for chaining
@@ -898,9 +899,9 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	}
 
 	/**
-	 * Makes the table keep its width (that was set through #setSize(float,float) or
-	 * #setWidth(float) after the table has been invalidated. I.e. it will not resize the
-	 * table to fit the contents.
+	 * Makes the table keep its width (that was set through {@link #setSize(float, float)}
+	 * or {@link #setWidth(float)} after the table has been invalidated. I.e. it will not
+	 * resize the table to fit the contents.
 	 * @param keepWidth set to true to keep the width of the table. If set to false table
 	 *        will not always be the same size as getPrefWidth().
 	 * @return this table for chaining
@@ -911,9 +912,9 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	}
 
 	/**
-	 * Makes the table keep its height (that was set through #setSize(float,float) or
-	 * #setHeight(float) after the table has been invalidated. I.e. it will not resize the
-	 * table to fit the contents.
+	 * Makes the table keep its height (that was set through
+	 * {@link #setSize(float, float)} or {@link #setHeight(float)} after the table has
+	 * been invalidated. I.e. it will not resize the table to fit the contents.
 	 * @param keepHeight set to true to keep the height of the table. If set to false
 	 *        table will not always be the same size as getPrefHeight().
 	 * @return this table for chaining

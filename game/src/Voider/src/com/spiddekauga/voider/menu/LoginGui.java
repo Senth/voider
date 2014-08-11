@@ -32,11 +32,9 @@ public class LoginGui extends Gui {
 	public void initGui() {
 		super.initGui();
 
-		mMainTable.setFillParent(true);
-		mMainTable.setAlign(Horizontal.CENTER, Vertical.MIDDLE);
-		mWidgets.login.table.setPreferences(mMainTable);
+		mWidgets.login.table.setAlignTable(Horizontal.CENTER, Vertical.MIDDLE);
 		mWidgets.login.table.setAlignRow(Horizontal.LEFT, Vertical.MIDDLE);
-		mWidgets.register.table.setPreferences(mMainTable);
+		mWidgets.register.table.setAlignTable(Horizontal.CENTER, Vertical.MIDDLE);
 		mWidgets.register.table.setAlignRow(Horizontal.LEFT, Vertical.MIDDLE);
 
 		initLoginTable();
@@ -60,6 +58,7 @@ public class LoginGui extends Gui {
 	 */
 	private void initLoginTable() {
 		AlignTable table = mWidgets.login.table;
+		mLoginHider.addToggleActor(table);
 
 		// Username
 		mWidgets.login.usernameListener = new TextFieldListener() {
@@ -104,6 +103,11 @@ public class LoginGui extends Gui {
 		}
 
 
+		// Set fixed width
+		table.layout();
+		table.setKeepWidth(true);
+
+
 		// Buttons
 		table.row().setFillWidth(true).setEqualCellSize(true);
 
@@ -126,8 +130,8 @@ public class LoginGui extends Gui {
 		mUiFactory.addTextButton("Login", TextButtonStyles.FILLED_PRESS, table, buttonListener, null, null);
 		mWidgets.login.table.layout();
 
-		// Wrapper window
-		mUiFactory.addWindow(null, mWidgets.login.table, mMainTable, mLoginHider, null);
+		// Add to stage
+		getStage().addActor(mWidgets.login.table);
 	}
 
 	/**
@@ -167,7 +171,7 @@ public class LoginGui extends Gui {
 	/**
 	 * Empty register error fields
 	 */
-	void emptyRegisterErrors() {
+	void clearRegisterErrors() {
 		mWidgets.register.usernameError.setText("");
 		mWidgets.register.passwordError.setText("");
 		mWidgets.register.emailError.setText("");
@@ -201,6 +205,7 @@ public class LoginGui extends Gui {
 	 * Try to register with the specified fields
 	 */
 	private void register() {
+		clearRegisterErrors();
 		if (isRegisterFieldsValid(true)) {
 			mLoginScene.register(mWidgets.register.username.getText(), mWidgets.register.password.getText(), mWidgets.register.email.getText());
 		}
@@ -214,28 +219,34 @@ public class LoginGui extends Gui {
 		boolean failed = false;
 
 		// Test that fields are filled in
+		// Username empty
 		if (mWidgets.register.usernameListener.isTextFieldEmpty()) {
-			mWidgets.register.usernameError.setText("is empty");
+			setRegisterUsernameError("is empty");
+			failed = true;
+		}
+		// Username length
+		if (mWidgets.register.username.getText().length() < Config.User.NAME_LENGTH_MIN) {
+			setRegisterUsernameError("must contain at least " + Config.User.NAME_LENGTH_MIN + " chars");
 			failed = true;
 		}
 		// Password empty
 		if (mWidgets.register.passwordListener.isTextFieldEmpty()) {
-			mWidgets.register.passwordError.setText("is empty");
+			setRegisterPasswordError("is empty");
 			failed = true;
 		}
 		// Password length
 		else if (mWidgets.register.password.getText().length() < Config.User.PASSWORD_LENGTH_MIN) {
-			mWidgets.register.passwordError.setText("Should contain at least " + Config.User.PASSWORD_LENGTH_MIN + " chars");
+			setRegisterPasswordError("must contain at least " + Config.User.PASSWORD_LENGTH_MIN + " chars");
 			failed = true;
 		}
 		// Test that passwords match
 		else if (!mWidgets.register.password.getText().equals(mWidgets.register.confirmPassword.getText())) {
-			mWidgets.register.passwordError.setText("Passwords don't match!");
+			setRegisterPasswordError("passwords don't match!");
 			failed = true;
 		}
 		// Email
 		if (mWidgets.register.emailListener.isTextFieldEmpty()) {
-			mWidgets.register.emailError.setText("is empty");
+			setRegisterEmailError("is empty");
 			failed = true;
 		}
 
@@ -247,15 +258,15 @@ public class LoginGui extends Gui {
 	 */
 	private void initRegisterTable() {
 		AlignTable table = mWidgets.register.table;
+		table.setName("register-table");
+		mRegisterHider.addToggleActor(table);
 
 
 		// Username
 		mWidgets.register.usernameListener = new TextFieldListener() {
 			@Override
 			protected void onEnter(String newText) {
-				if (isRegisterFieldsValid(false)) {
-					register();
-				}
+				register();
 			}
 		};
 		mWidgets.register.username = mUiFactory.addTextField("Username", true, "Username", mWidgets.register.usernameListener, table, null);
@@ -265,9 +276,7 @@ public class LoginGui extends Gui {
 		mWidgets.register.passwordListener = new TextFieldListener() {
 			@Override
 			protected void onEnter(String newText) {
-				if (isRegisterFieldsValid(false)) {
-					register();
-				}
+				register();
 			}
 		};
 		mWidgets.register.password = mUiFactory.addPasswordField("Password", true, "Password", mWidgets.register.passwordListener, table, null);
@@ -277,25 +286,25 @@ public class LoginGui extends Gui {
 		TextFieldListener textFieldListener = new TextFieldListener() {
 			@Override
 			protected void onEnter(String newText) {
-				if (isRegisterFieldsValid(false)) {
-					register();
-				}
+				register();
 			}
 		};
-		mWidgets.register.confirmPassword = mUiFactory
-				.addPasswordField("Confirm password", false, "Confirm password", textFieldListener, table, null);
+		mWidgets.register.confirmPassword = mUiFactory.addPasswordField(null, false, "Confirm password", textFieldListener, table, null);
 
 		// Email
 		mWidgets.register.emailListener = new TextFieldListener() {
 			@Override
 			protected void onEnter(String newText) {
-				if (isRegisterFieldsValid(false)) {
-					register();
-				}
+				register();
 			}
 		};
 		mWidgets.register.email = mUiFactory.addTextField("Email", true, "your@email.com", mWidgets.register.emailListener, table, null);
 		mWidgets.register.emailError = mUiFactory.getLastCreatedErrorLabel();
+
+
+		// Set fixed width
+		table.layout();
+		table.setKeepWidth(true);
 
 
 		// Back
@@ -313,17 +322,15 @@ public class LoginGui extends Gui {
 		buttonListener = new ButtonListener() {
 			@Override
 			protected void onPressed() {
-				if (isRegisterFieldsValid(true)) {
-					register();
-				}
+				register();
 			}
 		};
 		mUiFactory.addTextButton("Register", TextButtonStyles.FILLED_PRESS, table, buttonListener, null, null);
 		mWidgets.register.table.row();
 		mWidgets.register.table.layout();
 
-		// Wrapper window
-		mUiFactory.addWindow(null, mWidgets.register.table, mMainTable, mRegisterHider, null);
+		// Add to stage
+		getStage().addActor(mWidgets.register.table);
 	}
 
 	/**

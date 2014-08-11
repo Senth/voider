@@ -3,7 +3,6 @@ package com.spiddekauga.voider.server.util;
 
 /**
  * Server configuration
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class ServerConfig {
@@ -72,5 +71,13 @@ public class ServerConfig {
 		public static final int LEVELS = 12;
 		/** Number of tags to get */
 		public static final int TAGS = 5;
+	}
+
+	/** User information */
+	public static class UserInfo {
+		/** Minimum name length */
+		public static final int NAME_LENGTH_MIN = 3;
+		/** Minimum password length */
+		public static final int PASSWORD_LENGTH_MIN = 5;
 	}
 }

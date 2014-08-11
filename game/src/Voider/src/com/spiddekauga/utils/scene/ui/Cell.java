@@ -638,6 +638,9 @@ public class Cell implements Poolable {
 					mActor.setHeight(correctHeight);
 				}
 			}
+		} else {
+			mCellWidth = width;
+			mCellHeight = height;
 		}
 	}
 
@@ -696,7 +699,7 @@ public class Cell implements Poolable {
 		} else if (mActor != null) {
 			return mActor.getWidth() + getPadLeft() + getPadRight();
 		} else {
-			return getPadLeft() + getPadRight();
+			return mCellWidth + getPadLeft() + getPadRight();
 		}
 	}
 
@@ -713,7 +716,7 @@ public class Cell implements Poolable {
 		} else if (mActor != null) {
 			return mActor.getHeight() + getPadTop() + getPadBottom();
 		} else {
-			return getPadTop() + getPadBottom();
+			return mCellHeight + getPadTop() + getPadBottom();
 		}
 	}
 

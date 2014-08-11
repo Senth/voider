@@ -17,12 +17,12 @@ import com.spiddekauga.voider.network.entities.method.IMethodEntity;
 import com.spiddekauga.voider.network.entities.method.RegisterUserMethod;
 import com.spiddekauga.voider.network.entities.method.RegisterUserMethodResponse;
 import com.spiddekauga.voider.network.entities.method.RegisterUserMethodResponse.Statuses;
+import com.spiddekauga.voider.server.util.ServerConfig;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
 import com.spiddekauga.voider.server.util.VoiderServlet;
 
 /**
  * Registers a user
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
@@ -34,18 +34,28 @@ public class RegisterUser extends VoiderServlet {
 		methodResponse.status = Statuses.FAIL_SERVER_ERROR;
 
 		if (methodEntity instanceof RegisterUserMethod) {
+			PropertyWrapper usernameProperty = new PropertyWrapper("username", ((RegisterUserMethod) methodEntity).username);
+			PropertyWrapper emailProperty = new PropertyWrapper("email", ((RegisterUserMethod) methodEntity).email);
+
+			// Check username length
+			if (!isUsernameLengthValid(((RegisterUserMethod) methodEntity).username)) {
+				methodResponse.status = Statuses.FAIL_USERNAME_TOO_SHORT;
+			}
+			// Check password length
+			else if (!isPasswordLengthValid(((RegisterUserMethod) methodEntity).password)) {
+				methodResponse.status = Statuses.FAIL_PASSWORD_TOO_SHORT;
+			}
 			// Check if username is free
-			PropertyWrapper property = new PropertyWrapper("username", ((RegisterUserMethod) methodEntity).username);
-			if (!DatastoreUtils.exists(DatastoreTables.USERS.toString(), property)) {
-				// Check email
-				property = new PropertyWrapper("email", ((RegisterUserMethod) methodEntity).email);
-				if (!DatastoreUtils.exists(DatastoreTables.USERS.toString(), property)) {
-					createNewUser((RegisterUserMethod) methodEntity, methodResponse);
-				} else {
-					methodResponse.status = Statuses.FAIL_EMAIL_EXISTS;
-				}
-			} else {
+			else if (DatastoreUtils.exists(DatastoreTables.USERS.toString(), usernameProperty)) {
 				methodResponse.status = Statuses.FAIL_USERNAME_EXISTS;
+			}
+			// Check email
+			else if (DatastoreUtils.exists(DatastoreTables.USERS.toString(), emailProperty)) {
+				methodResponse.status = Statuses.FAIL_EMAIL_EXISTS;
+			}
+			// All valid
+			else {
+				createNewUser((RegisterUserMethod) methodEntity, methodResponse);
 			}
 		}
 
@@ -53,11 +63,29 @@ public class RegisterUser extends VoiderServlet {
 	}
 
 	/**
+	 * Checks minimum password length
+	 * @param password the user's password
+	 * @return true if the password has the minimum required characters in the password
+	 */
+	private boolean isPasswordLengthValid(String password) {
+		return password.length() >= ServerConfig.UserInfo.PASSWORD_LENGTH_MIN;
+	}
+
+	/**
+	 * Checks minimum username length
+	 * @param username the user's name
+	 * @return true if the password has the minimum required characters in the username
+	 */
+	private boolean isUsernameLengthValid(String username) {
+		return username.length() >= ServerConfig.UserInfo.NAME_LENGTH_MIN;
+	}
+
+	/**
 	 * Adds the new user to the datastore
 	 * @param networkEntity the network entity
 	 * @param methodResponse entity to respond with
 	 */
-	private void createNewUser(RegisterUserMethod networkEntity, RegisterUserMethodResponse methodResponse){
+	private void createNewUser(RegisterUserMethod networkEntity, RegisterUserMethodResponse methodResponse) {
 		Entity datastoreEntity = new Entity(DatastoreTables.USERS.toString());
 
 		datastoreEntity.setProperty("username", networkEntity.username);

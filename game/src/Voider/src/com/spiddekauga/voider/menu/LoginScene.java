@@ -60,6 +60,12 @@ public class LoginScene extends Scene implements ICallerResponseListener {
 			return true;
 		}
 
+
+		// Debug tests
+		if (Config.Debug.isBuildOrBelow(Builds.DEV_SERVER)) {
+
+		}
+
 		return false;
 	}
 
@@ -179,11 +185,17 @@ public class LoginScene extends Scene implements ICallerResponseListener {
 
 
 		case FAIL_USERNAME_EXISTS:
-			((LoginGui) mGui).setRegisterUsernameError("Name is occupied");
+			((LoginGui) mGui).setRegisterUsernameError("name is occupied");
 			break;
 
+		case FAIL_USERNAME_TOO_SHORT:
+			((LoginGui) mGui).setRegisterUsernameError("too short");
+			break;
 
-		// Connection or server error, create a local user instead
+		case FAIL_PASSWORD_TOO_SHORT:
+			((LoginGui) mGui).setRegisterPasswordError("too short");
+
+			// Connection or server error, create a local user instead
 		case FAIL_SERVER_CONNECTION:
 		case FAIL_SERVER_ERROR:
 			((LoginGui) mGui).showCouldNotCreateUser();
@@ -200,7 +212,7 @@ public class LoginScene extends Scene implements ICallerResponseListener {
 	 * @param email the email to register with the username
 	 */
 	void register(String username, String password, String email) {
-		((LoginGui) mGui).emptyRegisterErrors();
+		// ((LoginGui) mGui).clearRegisterErrors();
 
 		mLoggingInUser.setUsername(username);
 		mLoggingInUser.setEmail(email);

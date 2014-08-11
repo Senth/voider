@@ -1090,6 +1090,8 @@ public class Config {
 	public static class User {
 		/** Minimum password length */
 		public static final int PASSWORD_LENGTH_MIN = 5;
+		/** Minimum username lengeth */
+		public static final int NAME_LENGTH_MIN = 3;
 
 
 	}
