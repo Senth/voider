@@ -211,12 +211,6 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageDown: screenshot_down
 	},
 	
-	bugs:  {
-		imageUp: bugs,
-		imageOver: bugs_over,
-		imageDown: bugs_down
-	},
-	
 	/* Tools */
 	
 	delete: {

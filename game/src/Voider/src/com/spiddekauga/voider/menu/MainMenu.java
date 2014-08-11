@@ -148,29 +148,31 @@ public class MainMenu extends Scene implements ICallerResponseListener, Observer
 		}
 
 		// Testing
-		else if (Config.Debug.isBuildOrBelow(Builds.NIGHTLY) && keycode == Input.Keys.F5) {
-			SceneSwitcher.switchTo(new TestUiScene());
-		} else if (Config.Debug.isBuildOrBelow(Builds.NIGHTLY) && keycode == Input.Keys.F6) {
-			String message = "This is a longer error message with more text, a lot more text, see if it will wrap correctly later...";
-			mGui.showMessage(message);
-		} else if (Config.Debug.isBuildOrBelow(Builds.NIGHTLY) && keycode == Input.Keys.F10) {
-			SceneSwitcher.switchTo(new PrototypeScene());
-		} else if (Config.Debug.isBuildOrBelow(Builds.NIGHTLY) && keycode == Input.Keys.F11) {
-			User.getGlobalUser().makeOffline();
-		} else if (Config.Debug.isBuildOrBelow(Builds.NIGHTLY) && keycode == Input.Keys.F12) {
-			handleException(new RuntimeException());
-		} else if (Config.Debug.isBuildOrBelow(Builds.NIGHTLY) && KeyHelper.isDeletePressed(keycode) && KeyHelper.isCtrlPressed()) {
-			ResourceLocalRepo.removeAll(ExternalTypes.LEVEL);
-			ResourceLocalRepo.removeAll(ExternalTypes.BULLET_DEF);
-			ResourceLocalRepo.removeAll(ExternalTypes.LEVEL_DEF);
-			ResourceLocalRepo.removeAll(ExternalTypes.ENEMY_DEF);
-			ResourceLocalRepo.removeAll(ExternalTypes.GAME_SAVE);
-			ResourceLocalRepo.removeAll(ExternalTypes.GAME_SAVE_DEF);
-			ResourceLocalRepo.removeAll(ExternalTypes.PLAYER_DEF);
-			ResourceLocalRepo.setSyncDownloadDate(new Date(0));
-			ResourceLocalRepo.setSyncUserResourceDate(new Date(0));
-		} else if (Config.Debug.isBuildOrBelow(Builds.NIGHTLY) && keycode == Input.Keys.HOME) {
-			mSynchronizer.synchronizeAll();
+		if (Config.Debug.isBuildOrBelow(Builds.NIGHTLY)) {
+			if (keycode == Input.Keys.F5) {
+				SceneSwitcher.switchTo(new TestUiScene());
+			} else if (keycode == Input.Keys.F6) {
+				String message = "This is a longer error message with more text, a lot more text, see if it will wrap correctly later...";
+				mGui.showMessage(message);
+			} else if (keycode == Input.Keys.F10) {
+				SceneSwitcher.switchTo(new PrototypeScene());
+			} else if (keycode == Input.Keys.F11) {
+				User.getGlobalUser().makeOffline();
+			} else if (keycode == Input.Keys.F12) {
+				handleException(new RuntimeException());
+			} else if (KeyHelper.isDeletePressed(keycode) && KeyHelper.isCtrlPressed()) {
+				ResourceLocalRepo.removeAll(ExternalTypes.LEVEL);
+				ResourceLocalRepo.removeAll(ExternalTypes.BULLET_DEF);
+				ResourceLocalRepo.removeAll(ExternalTypes.LEVEL_DEF);
+				ResourceLocalRepo.removeAll(ExternalTypes.ENEMY_DEF);
+				ResourceLocalRepo.removeAll(ExternalTypes.GAME_SAVE);
+				ResourceLocalRepo.removeAll(ExternalTypes.GAME_SAVE_DEF);
+				ResourceLocalRepo.removeAll(ExternalTypes.PLAYER_DEF);
+				ResourceLocalRepo.setSyncDownloadDate(new Date(0));
+				ResourceLocalRepo.setSyncUserResourceDate(new Date(0));
+			} else if (keycode == Input.Keys.HOME) {
+				mSynchronizer.synchronizeAll();
+			}
 		}
 		return false;
 	}

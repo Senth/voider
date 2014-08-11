@@ -12,6 +12,7 @@ import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
 import com.spiddekauga.utils.scene.ui.UiFactory.TextButtonStyles;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.scene.Gui;
 
 /**
@@ -43,6 +44,8 @@ public class LoginGui extends Gui {
 			initRegisterTable();
 			mRegisterHider.hide();
 		}
+
+		setBackground(SkinNames.GeneralImages.BACKGROUND_SPACE, true);
 	}
 
 	/**
@@ -131,7 +134,7 @@ public class LoginGui extends Gui {
 		mWidgets.login.table.layout();
 
 		// Add to stage
-		getStage().addActor(mWidgets.login.table);
+		addActor(mWidgets.login.table);
 	}
 
 	/**
@@ -330,7 +333,7 @@ public class LoginGui extends Gui {
 		mWidgets.register.table.layout();
 
 		// Add to stage
-		getStage().addActor(mWidgets.register.table);
+		addActor(mWidgets.register.table);
 	}
 
 	/**

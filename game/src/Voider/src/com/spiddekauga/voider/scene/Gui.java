@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -21,6 +22,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.ui.Window.WindowStyle;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Disposable;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
@@ -36,6 +39,7 @@ import com.spiddekauga.voider.editor.commands.CGameQuit;
 import com.spiddekauga.voider.repo.InternalNames;
 import com.spiddekauga.voider.repo.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.SkinNames;
+import com.spiddekauga.voider.resources.SkinNames.IImageNames;
 import com.spiddekauga.voider.utils.Messages;
 
 /**
@@ -66,6 +70,74 @@ public abstract class Gui implements Disposable {
 	public void resize(int width, int height) {
 		if (mStage != null) {
 			mStage.getViewport().update(width, height, true);
+			updateBackground();
+		}
+	}
+
+	/**
+	 * Sets a background for this GUI
+	 * @param imageName a background image
+	 * @param wrap true if the background should wrapped
+	 */
+	protected void setBackground(IImageNames imageName, boolean wrap) {
+		Drawable drawable = SkinNames.getDrawable(imageName);
+
+		if (drawable instanceof TextureRegionDrawable) {
+			mWidgets.background.drawable = (TextureRegionDrawable) drawable;
+			mWidgets.background.wrap = wrap;
+		} else {
+			mWidgets.background.drawable = null;
+		}
+		updateBackground();
+	}
+
+	/**
+	 * Update background images. Should be called when setting a new background or
+	 * resizing the window
+	 */
+	private void updateBackground() {
+		if (mWidgets.background.drawable == null) {
+			return;
+		}
+
+		// Remove and clear old images
+		for (Image image : mWidgets.background.images) {
+			image.remove();
+		}
+		mWidgets.background.images.clear();
+
+
+		// # repeat-x
+		int cRepeatX = 1;
+		float backgroundWidth = mWidgets.background.drawable.getRegion().getRegionWidth();
+		if (mWidgets.background.wrap) {
+			float xTimes = Gdx.graphics.getWidth() / backgroundWidth;
+			cRepeatX = (int) xTimes;
+			if (xTimes - cRepeatX != 0f) {
+				cRepeatX++;
+			}
+		}
+
+		// # repeat-y
+		int cRepeatY = 1;
+		float backgroundHeight = mWidgets.background.drawable.getRegion().getRegionHeight();
+		if (mWidgets.background.wrap) {
+			float yTimes = Gdx.graphics.getHeight() / backgroundHeight;
+			cRepeatY = (int) yTimes;
+			if (yTimes - cRepeatY != 0f) {
+				cRepeatY++;
+			}
+		}
+
+
+		// Allocate images in the correct position
+		for (int x = 0; x < cRepeatX; ++x) {
+			for (int y = 0; y < cRepeatY; ++y) {
+				Image image = new Image(mWidgets.background.drawable);
+				image.setPosition(x * backgroundWidth, y * backgroundHeight);
+				addActor(image);
+				image.setZIndex(0);
+			}
 		}
 	}
 
@@ -581,17 +653,24 @@ public abstract class Gui implements Disposable {
 	private static class InnerWidgets {
 		WaitWindow waitWindow = new WaitWindow();
 		ProgressBar progressBar = new ProgressBar();
+		Background background = new Background();
+
+		static class Background {
+			TextureRegionDrawable drawable = null;
+			boolean wrap = false;
+			ArrayList<Image> images = new ArrayList<>();
+		}
 
 		static class WaitWindow {
-			private Window window = null;
-			private Label label = null;
-			private AnimationWidget animation = null;
+			Window window = null;
+			Label label = null;
+			AnimationWidget animation = null;
 		}
 
 		static class ProgressBar {
-			private Slider slider = null;
-			private Window window = null;
-			private Label label = null;
+			Slider slider = null;
+			Window window = null;
+			Label label = null;
 
 		}
 	}

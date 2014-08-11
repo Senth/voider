@@ -517,10 +517,12 @@ public class SkinNames {
 		LIKE,
 		/** Screenshot placeholder for levels */
 		SCREENSHOT_PLACEHOLDER,
-		/** Successfull message */
+		/** Successful message */
 		MESSAGE_SUCCESSFUL,
 		/** Failed message */
 		MESSAGE_UNSUCCESSFUL,
+		/** Space background */
+		BACKGROUND_SPACE,
 
 		;
 

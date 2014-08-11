@@ -152,7 +152,7 @@ com.spiddekauga.utils.scene.ui.AnimationWidget$AnimationWidgetStyle:  {
 		image: wait_animation,
 		frameColumns: 6,
 		frameRows: 4,
-		secondsPerFrame: 0.1,
+		secondsPerFrame: 0.05,
 	},
 },
 
@@ -439,6 +439,14 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageChecked: like_checked,
 		imageCheckedOver: like_checked_over,
 		imageDisabled: like_disabled
+	},
+	
+	/* Miscellaneous */
+	
+	bugs:  {
+		imageUp: bugs,
+		imageOver: bugs_over,
+		imageDown: bugs_down
 	},
 	
 	/* Placeholders */

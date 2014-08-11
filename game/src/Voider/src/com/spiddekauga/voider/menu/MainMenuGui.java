@@ -17,7 +17,6 @@ import com.spiddekauga.voider.utils.Messages;
 
 /**
  * GUI for main menu
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class MainMenuGui extends MenuGui {
@@ -33,9 +32,9 @@ public class MainMenuGui extends MenuGui {
 		mLogoutTable.setPreferences(mMainTable);
 		mLogoutTable.setAlign(Horizontal.LEFT, Vertical.TOP);
 
-		getStage().addActor(mInfoTable);
-		getStage().addActor(mOptionTable);
-		getStage().addActor(mLogoutTable);
+		addActor(mInfoTable);
+		addActor(mOptionTable);
+		addActor(mLogoutTable);
 
 		initMainMenu();
 	}
@@ -89,7 +88,6 @@ public class MainMenuGui extends MenuGui {
 				mMenuScene.gotoEditor();
 			}
 		};
-
 
 
 		// Options
