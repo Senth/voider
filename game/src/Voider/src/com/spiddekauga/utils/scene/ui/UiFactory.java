@@ -786,6 +786,7 @@ public class UiFactory {
 		mStyles.label.errorSectionInfo = SkinNames.getResource(SkinNames.General.LABEL_ERROR_SECTION_INFO);
 		mStyles.label.errorSection = SkinNames.getResource(SkinNames.General.LABEL_ERROR_SECTION);
 		mStyles.label.error = SkinNames.getResource(SkinNames.General.LABEL_ERROR);
+		mStyles.label.highlight = SkinNames.getResource(SkinNames.General.LABEL_HIGHLIGHT);
 		mStyles.select.standard = SkinNames.getResource(SkinNames.General.SELECT_BOX_DEFAULT);
 		mStyles.rating.stardard = SkinNames.getResource(SkinNames.General.RATING_DEFAULT);
 		mStyles.window.title = SkinNames.getResource(SkinNames.General.WINDOW_TITLE);
@@ -1058,28 +1059,29 @@ public class UiFactory {
 			public float rightPanelWidth = 0;
 		}
 
-		static class Sliders {
+		public static class Sliders {
 			public SliderStyle standard = null;
 		}
 
-		static class TextFields {
+		public static class TextFields {
 			public TextFieldStyle standard = null;
 		}
 
-		static class Labels {
+		public static class Labels {
 			public LabelStyle standard = null;
 			public LabelStyle panelSection = null;
 			public LabelStyle errorSectionInfo = null;
 			public LabelStyle errorSection = null;
 			public LabelStyle error = null;
+			public LabelStyle highlight = null;
 		}
 
-		static class CheckBoxes {
+		public static class CheckBoxes {
 			// public CheckBoxStyle radio = null;
 			// public CheckBoxStyle checkBox = null;
 		}
 
-		static class Windows {
+		public static class Windows {
 			public WindowStyle title = null;
 			public WindowStyle noTitle = null;
 		}

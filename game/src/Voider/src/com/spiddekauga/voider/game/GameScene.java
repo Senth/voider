@@ -37,7 +37,6 @@ import com.spiddekauga.voider.repo.ResourceRepo;
 import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.scene.LoadingScene;
 import com.spiddekauga.voider.scene.Scene;
-import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.scene.WorldScene;
 import com.spiddekauga.voider.utils.Pools;
 
@@ -349,7 +348,6 @@ public class GameScene extends WorldScene {
 
 		// GUI
 		mGui.resetValues();
-		updateLifePosition();
 	}
 
 	@Override
@@ -383,10 +381,6 @@ public class GameScene extends WorldScene {
 				takeScreenshotNow();
 			}
 
-			// REMOVE GUI
-			renderLives();
-
-
 			mShapeRenderer.pop();
 		}
 	}
@@ -396,29 +390,6 @@ public class GameScene extends WorldScene {
 		float borderDiffPosition = border.getPosition().x - mLevel.getXCoord();
 		if (!Maths.approxCompare(borderDiffPosition, Config.Game.BORDER_SYNC_THRESHOLD)) {
 			border.setTransform(mLevel.getXCoord(), border.getPosition().y, 0);
-		}
-	}
-
-	/**
-	 * Update life positions
-	 */
-	private void updateLifePosition() {
-		Vector2 position = Pools.vector2.obtain();
-		position.x = mLevel.getXCoord() - mPlayerActor.getBoundingRadius() - Config.Game.LIVES_OFFSET_POSITION;
-		position.y = -SceneSwitcher.getWorldHeight() / 2 + Config.Game.LIVES_OFFSET_POSITION + mPlayerActor.getBoundingRadius();
-		for (PlayerActor lifeActor : mPlayerLifeShips) {
-			lifeActor.setPosition(position);
-			position.y += mPlayerActor.getBoundingRadius() * 2 + Config.Game.LIVES_OFFSET_POSITION;
-		}
-		Pools.vector2.free(position);
-	}
-
-	/**
-	 * Render lives
-	 */
-	private void renderLives() {
-		for (PlayerActor lifeActor : mPlayerLifeShips) {
-			lifeActor.render(mShapeRenderer);
 		}
 	}
 

@@ -112,10 +112,10 @@ public abstract class EditorGui extends Gui {
 		super.initGui();
 
 		if (mEditorMenu.getStage() == null) {
-			getStage().addActor(mEditorMenu);
-			getStage().addActor(mEditMenu);
-			getStage().addActor(mFileMenu);
-			getStage().addActor(mToolMenu);
+			addActor(mEditorMenu);
+			addActor(mEditMenu);
+			addActor(mFileMenu);
+			addActor(mToolMenu);
 
 			mEditorMenu.setName("EditorMenu");
 			mEditMenu.setName("EditMenu");
@@ -192,19 +192,6 @@ public abstract class EditorGui extends Gui {
 	 */
 	private void initTopBottomBar() {
 		mUiFactory.addBar(BarLocations.TOP_BOTTOM, getStage());
-
-		// mTopBar = new Background(mStyles.colors.widgetBackground);
-		// mTopBar.setSize(Gdx.graphics.getWidth(), mStyles.vars.barUpperLowerHeight);
-		// mTopBar.setPosition(0, Gdx.graphics.getHeight() -
-		// mStyles.vars.barUpperLowerHeight);
-		// getStage().addActor(mTopBar);
-		// mTopBar.setZIndex(0);
-		//
-		// mBottomBar = new Background(mStyles.colors.widgetBackground);
-		// mBottomBar.setSize(Gdx.graphics.getWidth(), mStyles.vars.barUpperLowerHeight);
-		// mBottomBar.setPosition(0, 0);
-		// getStage().addActor(mBottomBar);
-		// mBottomBar.setZIndex(0);
 	}
 
 	/**

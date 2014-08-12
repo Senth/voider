@@ -1,6 +1,9 @@
 package com.spiddekauga.voider.game;
 
+import java.util.ArrayList;
+
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -34,7 +37,11 @@ class GameSceneGui extends Gui {
 
 		getStage().addActor(mOptionBar);
 
+		mMainTable.setMargin(mUiFactory.getStyles().vars.paddingOuter);
+		mLifeTable.setMargin(mUiFactory.getStyles().vars.paddingOuter);
 		mMainTable.setAlign(Horizontal.RIGHT, Vertical.TOP);
+		mLifeTable.setAlign(Horizontal.LEFT, Vertical.TOP);
+		addActor(mLifeTable);
 
 		if (!mGameScene.isPlayerInvulnerable()) {
 			initHealthBar();
@@ -51,7 +58,7 @@ class GameSceneGui extends Gui {
 	public void resetValues() {
 		mWidgets.score.setText(mGameScene.getPlayerScore());
 		mWidgets.score.pack();
-		mWidgets.multiplier.setText("X" + mGameScene.getPlayerMultiplier());
+		mWidgets.multiplier.setText("(X " + mGameScene.getPlayerMultiplier() + ")");
 		mWidgets.multiplier.invalidateHierarchy();
 		if (mWidgets.health != null) {
 			mWidgets.health.setValue(mGameScene.getPercentageHealth());
@@ -62,6 +69,13 @@ class GameSceneGui extends Gui {
 		}
 
 		mMainTable.pack();
+	}
+
+	/**
+	 * Initializes the lives
+	 */
+	public void initLives() {
+		// TODO
 	}
 
 	/**
@@ -95,7 +109,6 @@ class GameSceneGui extends Gui {
 
 		Slider slider = new Slider(0, 1, 0.01f, false, healthBarStyle);
 		mWidgets.health = slider;
-		mMainTable.row();
 		mMainTable.add(slider);
 	}
 
@@ -103,25 +116,15 @@ class GameSceneGui extends Gui {
 	 * Initializes the score and multiplier
 	 */
 	public void initScoreMultiplier() {
-		LabelStyle labelStyle = SkinNames.getResource(SkinNames.General.LABEL_DEFAULT);
-
-		mMainTable.row();
+		LabelStyle labelStyle = mUiFactory.getStyles().label.highlight;
 
 		// Score
-		Label label = new Label("Score: ", labelStyle);
-		mMainTable.add(label).setPadRight((Float) SkinNames.getResource(SkinNames.GeneralVars.PADDING_SEPARATOR));
-
-		label = new Label("", labelStyle);
-		label.setZIndex(8);
-		mWidgets.score = label;
-		mMainTable.add(label);
-
+		mWidgets.score = new Label("", labelStyle);
+		mMainTable.add(mWidgets.score).setPadRight(mUiFactory.getStyles().vars.paddingInner);
 
 		// Multiplier
-		mMainTable.row();
-		label = new Label("X1", labelStyle);
-		mWidgets.multiplier = label;
-		mMainTable.add(label);
+		mWidgets.multiplier = new Label("(X 1)", labelStyle);
+		mMainTable.add(mWidgets.multiplier);
 	}
 
 	/** GameScene object that this GUI acts on */
@@ -130,6 +133,8 @@ class GameSceneGui extends Gui {
 	private AlignTable mOptionBar = new AlignTable();
 	/** All widgets */
 	private InnerWidgets mWidgets = new InnerWidgets();
+	/** Life table */
+	private AlignTable mLifeTable = new AlignTable();
 
 	/**
 	 * All the widgets which state can be changed and thus reset
@@ -140,5 +145,6 @@ class GameSceneGui extends Gui {
 		Label multiplier = null;
 		Slider health = null;
 		Button screenShot = null;
+		ArrayList<Image> lives = new ArrayList<>();
 	}
 }
