@@ -61,7 +61,7 @@ public class GameOverScene extends Scene {
 	}
 
 	@Override
-	public boolean keyDown(int keycode) {
+	public boolean onKeyDown(int keycode) {
 		if (KeyHelper.isBackPressed(keycode)) {
 			gotoMainMenu();
 			return true;

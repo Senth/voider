@@ -564,7 +564,7 @@ public class GameScene extends WorldScene {
 	}
 
 	@Override
-	public boolean keyDown(int keycode) {
+	public boolean onKeyDown(int keycode) {
 		// Set level as complete if we want to go back while testing
 		if (keycode == Keys.ESCAPE || keycode == Keys.BACK) {
 			setOutcome(Outcomes.LEVEL_QUIT);

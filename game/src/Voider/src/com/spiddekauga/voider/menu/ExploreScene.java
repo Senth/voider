@@ -74,7 +74,7 @@ public class ExploreScene extends Scene implements ICallerResponseListener {
 	}
 
 	@Override
-	public boolean keyDown(int keycode) {
+	public boolean onKeyDown(int keycode) {
 		super.keyDown(keycode);
 
 		if (KeyHelper.isBackPressed(keycode)) {

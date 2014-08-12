@@ -8,9 +8,7 @@ import com.spiddekauga.voider.repo.ResourceCacheFacade;
 import com.spiddekauga.voider.scene.Scene;
 
 /**
- * Prototype scene. Mainly for testing new things before implementing
- * them in the game.
- * 
+ * Prototype scene. Mainly for testing new things before implementing them in the game.
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class PrototypeScene extends Scene {
@@ -40,7 +38,7 @@ public class PrototypeScene extends Scene {
 	}
 
 	@Override
-	public boolean keyDown(int keycode) {
+	public boolean onKeyDown(int keycode) {
 		if (KeyHelper.isBackPressed(keycode)) {
 			setOutcome(Outcomes.NOT_APPLICAPLE);
 			return true;

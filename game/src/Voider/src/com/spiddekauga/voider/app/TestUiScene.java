@@ -9,7 +9,6 @@ import com.spiddekauga.voider.scene.Scene;
 
 /**
  * Scene for testing UI elements
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class TestUiScene extends Scene {
@@ -40,7 +39,7 @@ public class TestUiScene extends Scene {
 	}
 
 	@Override
-	public boolean keyDown(int keycode) {
+	public boolean onKeyDown(int keycode) {
 		if (keycode == Input.Keys.F5) {
 			reloadUi();
 		} else if (KeyHelper.isBackPressed(keycode)) {
@@ -57,8 +56,8 @@ public class TestUiScene extends Scene {
 			mLoadingValue = 0;
 		}
 
-		((TestUiGui)mGui).setLoadingBar(mLoadingValue);
-		((TestUiGui)mGui).setHealthBar(100-mLoadingValue);
+		((TestUiGui) mGui).setLoadingBar(mLoadingValue);
+		((TestUiGui) mGui).setHealthBar(100 - mLoadingValue);
 	}
 
 	/**

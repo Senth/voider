@@ -7,7 +7,10 @@ import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
+import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
 import com.spiddekauga.utils.scene.ui.TooltipListener;
+import com.spiddekauga.voider.editor.commands.CGameQuit;
+import com.spiddekauga.voider.editor.commands.CUserLogout;
 import com.spiddekauga.voider.menu.MainMenu.Menus;
 import com.spiddekauga.voider.repo.InternalNames;
 import com.spiddekauga.voider.repo.ResourceCacheFacade;
@@ -48,6 +51,19 @@ public class MainMenuGui extends MenuGui {
 	}
 
 	/**
+	 * Show quit main menu dialog
+	 */
+	void showQuitMsgBox() {
+		MsgBoxExecuter msgBox = getFreeMsgBox(true);
+		msgBox.setTitle("Quit game?");
+		msgBox.content("\nDo you want to quit the game?");
+		msgBox.button("Quit", new CGameQuit());
+		msgBox.button("Logout", new CUserLogout());
+		msgBox.addCancelButtonAndKeys();
+		showMsgBox(msgBox);
+	}
+
+	/**
 	 * Initializes the main menu
 	 */
 	private void initMainMenu() {
@@ -85,7 +101,7 @@ public class MainMenuGui extends MenuGui {
 		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onPressed() {
-				mMenuScene.gotoEditor();
+				mMenuScene.pushMenu(Menus.EDITOR);
 			}
 		};
 
@@ -117,7 +133,7 @@ public class MainMenuGui extends MenuGui {
 		new ButtonListener(button, tooltipListener) {
 			@Override
 			protected void onPressed() {
-				mMenuScene.logout();
+				new CUserLogout().execute();
 			}
 		};
 	}

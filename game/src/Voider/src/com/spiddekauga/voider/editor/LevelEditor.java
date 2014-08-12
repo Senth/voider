@@ -532,14 +532,12 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	}
 
 	@Override
-	public boolean keyDown(int keycode) {
+	public boolean onKeyDown(int keycode) {
 		// Back - Deselect or go back
 		if (KeyHelper.isBackPressed(keycode)) {
-			if (!mGui.isMsgBoxActive()) {
-				if (!mSelection.isEmpty()) {
-					mInvoker.execute(new CSelectionSet(mSelection));
-					return true;
-				}
+			if (!mSelection.isEmpty()) {
+				mInvoker.execute(new CSelectionSet(mSelection));
+				return true;
 			}
 		}
 
@@ -947,8 +945,10 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 				if (enemyGroup != null) {
 					// Just change amount of enemies
 					if (cEnemies > 1) {
-						@SuppressWarnings("unchecked") ArrayList<EnemyActor> addedEnemies = Pools.arrayList.obtain();
-						@SuppressWarnings("unchecked") ArrayList<EnemyActor> removedEnemies = Pools.arrayList.obtain();
+						@SuppressWarnings("unchecked")
+						ArrayList<EnemyActor> addedEnemies = Pools.arrayList.obtain();
+						@SuppressWarnings("unchecked")
+						ArrayList<EnemyActor> removedEnemies = Pools.arrayList.obtain();
 
 						enemyGroup.setEnemyCount(cEnemies, addedEnemies, removedEnemies);
 
@@ -986,7 +986,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 					enemyGroup.setLeaderEnemy(selectedEnemy);
 
-					@SuppressWarnings("unchecked") ArrayList<EnemyActor> addedEnemies = Pools.arrayList.obtain();
+					@SuppressWarnings("unchecked")
+					ArrayList<EnemyActor> addedEnemies = Pools.arrayList.obtain();
 					enemyGroup.setEnemyCount(cEnemies, addedEnemies, null);
 
 					for (EnemyActor addedEnemy : addedEnemies) {
@@ -1544,8 +1545,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	/** Png bytes before testing the level */
 	private byte[] mPngBytesBeforeTest = null;
 	/** Enemies in the add enemy table */
-	@SuppressWarnings("unchecked")
-	private ArrayList<EnemyActorDef> mAddEnemies = Pools.arrayList.obtain();
+	@SuppressWarnings("unchecked") private ArrayList<EnemyActorDef> mAddEnemies = Pools.arrayList.obtain();
 	/** Level we're currently editing */
 	private Level mLevel = null;
 	/** Which definition we're currently selecting */

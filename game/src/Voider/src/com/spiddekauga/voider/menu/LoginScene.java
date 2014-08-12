@@ -54,7 +54,7 @@ public class LoginScene extends Scene implements ICallerResponseListener {
 	}
 
 	@Override
-	public boolean keyDown(int keycode) {
+	public boolean onKeyDown(int keycode) {
 		if (KeyHelper.isBackPressed(keycode)) {
 			Gdx.app.exit();
 			return true;

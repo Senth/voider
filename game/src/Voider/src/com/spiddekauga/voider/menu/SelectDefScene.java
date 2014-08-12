@@ -185,7 +185,7 @@ public class SelectDefScene extends Scene implements Observer {
 	}
 
 	@Override
-	public boolean keyDown(int keycode) {
+	public boolean onKeyDown(int keycode) {
 		// Set level as complete if we want to go back while testing
 		if (keycode == Keys.ESCAPE || keycode == Keys.BACK) {
 			cancel();
@@ -654,8 +654,7 @@ public class SelectDefScene extends Scene implements Observer {
 	/** Filter for the definitions, which to show and which to hide */
 	private String mFilter = "";
 	/** Category filters, all these must be found */
-	@SuppressWarnings("unchecked")
-	private ArrayList<String>[] mCategoryFilters = new ArrayList[CategoryFilterTypes.values().length];
+	@SuppressWarnings("unchecked") private ArrayList<String>[] mCategoryFilters = new ArrayList[CategoryFilterTypes.values().length];
 	/** Word filters for all categories */
 	private ArrayList<String> mAnyFilters = new ArrayList<String>();
 	/** Shows only one's own actors, this is the value of the checkbox */

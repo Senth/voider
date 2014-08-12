@@ -120,7 +120,7 @@ public abstract class Editor extends WorldScene implements IEditor, ICallerRespo
 	}
 
 	@Override
-	public boolean keyDown(int keycode) {
+	public boolean onKeyDown(int keycode) {
 		// Redo
 		if (KeyHelper.isRedoPressed(keycode)) {
 			mInvoker.redo();
@@ -384,7 +384,8 @@ public abstract class Editor extends WorldScene implements IEditor, ICallerRespo
 		// Normalize width and height vertices to use 200px
 		copy.getVisualVars().setCenterOffset(0, 0);
 		ArrayList<Vector2> triangleVertices = copy.getVisualVars().getTriangleVertices();
-		@SuppressWarnings("unchecked") IdentityMap<Vector2, Vector2> scaledVertices = Pools.identityMap.obtain();
+		@SuppressWarnings("unchecked")
+		IdentityMap<Vector2, Vector2> scaledVertices = Pools.identityMap.obtain();
 		for (Vector2 vertex : triangleVertices) {
 			if (!scaledVertices.containsKey(vertex)) {
 				vertex.scl(normalizeLength);

@@ -13,7 +13,10 @@ import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Debug.Builds;
 import com.spiddekauga.voider.app.PrototypeScene;
 import com.spiddekauga.voider.app.TestUiScene;
-import com.spiddekauga.voider.editor.EditorSelectionScene;
+import com.spiddekauga.voider.editor.BulletEditor;
+import com.spiddekauga.voider.editor.CampaignEditor;
+import com.spiddekauga.voider.editor.EnemyEditor;
+import com.spiddekauga.voider.editor.LevelEditor;
 import com.spiddekauga.voider.game.GameSaveDef;
 import com.spiddekauga.voider.game.GameScene;
 import com.spiddekauga.voider.game.LevelDef;
@@ -141,7 +144,7 @@ public class MainMenu extends Scene implements ICallerResponseListener, Observer
 	}
 
 	@Override
-	public boolean keyDown(int keycode) {
+	public boolean onKeyDown(int keycode) {
 		if (KeyHelper.isBackPressed(keycode)) {
 			popMenu();
 			return true;
@@ -177,6 +180,7 @@ public class MainMenu extends Scene implements ICallerResponseListener, Observer
 		return false;
 	}
 
+	// -- Play --
 	/**
 	 * @return true if there is a game to resume
 	 */
@@ -210,20 +214,41 @@ public class MainMenu extends Scene implements ICallerResponseListener, Observer
 		SceneSwitcher.switchTo(selectLevelScene);
 	}
 
-	/**
-	 * Goes to the editor
-	 */
-	void gotoEditor() {
-		Scene scene = new EditorSelectionScene();
-		SceneSwitcher.switchTo(scene);
-	}
-
+	// -- Explore --
 	/**
 	 * Goes to the explore screen
 	 */
 	void gotoExplore() {
-		Scene scene = new ExploreScene();
-		SceneSwitcher.switchTo(scene);
+		SceneSwitcher.switchTo(new ExploreScene());
+	}
+
+	// -- Create/Editors --
+	/**
+	 * Go to campaign editor
+	 */
+	void gotoCampaignEditor() {
+		SceneSwitcher.switchTo(new CampaignEditor());
+	}
+
+	/**
+	 * Go to level editor
+	 */
+	void gotoLevelEditor() {
+		SceneSwitcher.switchTo(new LevelEditor());
+	}
+
+	/**
+	 * Go to enemy editor
+	 */
+	void gotoEnemyEditor() {
+		SceneSwitcher.switchTo(new EnemyEditor());
+	}
+
+	/**
+	 * Go to bullet editor
+	 */
+	void gotoBulletEditor() {
+		SceneSwitcher.switchTo(new BulletEditor());
 	}
 
 	/**
@@ -234,6 +259,8 @@ public class MainMenu extends Scene implements ICallerResponseListener, Observer
 		MAIN(MainMenuGui.class),
 		/** Play menu, visible after clicking play in main menu */
 		PLAY(PlayMenuGui.class),
+		/** Editor menu */
+		EDITOR(EditorSelectionGui.class, InternalNames.UI_EDITOR),
 
 		;
 
@@ -250,15 +277,38 @@ public class MainMenu extends Scene implements ICallerResponseListener, Observer
 		}
 
 		/**
+		 * Load resources for this menu
+		 */
+		void loadResources() {
+			for (InternalNames resource : mResources) {
+				ResourceCacheFacade.load(resource);
+			}
+			ResourceCacheFacade.finishLoading();
+		}
+
+		/**
+		 * Unload resources for this menu
+		 */
+		void unloadResources() {
+			for (InternalNames resource : mResources) {
+				ResourceCacheFacade.unload(resource);
+			}
+		}
+
+		/**
 		 * Creates the enumeration with a GUI class
 		 * @param gui the GUI class to create for this menu
+		 * @param resources extra resources to load for the menu
 		 */
-		private Menus(Class<? extends MenuGui> gui) {
+		private Menus(Class<? extends MenuGui> gui, InternalNames... resources) {
 			mGuiType = gui;
+			mResources = resources;
 		}
 
 		/** The GUI class to create for this menu */
-		Class<? extends MenuGui> mGuiType;
+		private Class<? extends MenuGui> mGuiType;
+		/** Resources to load/unload for this menu */
+		private InternalNames[] mResources;
 	}
 
 	/**
@@ -268,6 +318,7 @@ public class MainMenu extends Scene implements ICallerResponseListener, Observer
 	void pushMenu(Menus menu) {
 		MenuGui newGui = menu.newInstance();
 		if (newGui != null) {
+			menu.loadResources();
 			newGui.setMenuScene(this);
 			newGui.initGui();
 			mInputMultiplexer.removeProcessor(mGui.getStage());
@@ -288,9 +339,9 @@ public class MainMenu extends Scene implements ICallerResponseListener, Observer
 			mGui = mGuiStack.peek();
 			mInputMultiplexer.addProcessor(0, mGui.getStage());
 		}
-		// Logout
+		// Quit game
 		else {
-			Gdx.app.exit();
+			((MainMenuGui) mGui).showQuitMsgBox();
 		}
 	}
 

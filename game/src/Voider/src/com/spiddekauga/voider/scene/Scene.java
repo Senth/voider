@@ -35,6 +35,60 @@ public abstract class Scene extends InputAdapter implements IExceptionHandler {
 		}
 	}
 
+	@Override
+	public final boolean keyDown(int keycode) {
+		if (!mGui.isMsgBoxActive()) {
+			return onKeyDown(keycode);
+		} else {
+			return false;
+		}
+	}
+
+	@Override
+	public final boolean keyUp(int keycode) {
+		if (!mGui.isMsgBoxActive()) {
+			return onKeyUp(keycode);
+		} else {
+			return false;
+		}
+	}
+
+	@Override
+	public final boolean keyTyped(char character) {
+		if (!mGui.isMsgBoxActive()) {
+			return onKeyTyped(character);
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * Called when a key was pressed if no message box is active.
+	 * @param keycode the key that was pressed
+	 * @return true if handled, otherwise false
+	 */
+	protected boolean onKeyDown(int keycode) {
+		return false;
+	}
+
+	/**
+	 * Called when a key was released if no message box is active.
+	 * @param keycode the key that was released
+	 * @return true if handled, otherwise false
+	 */
+	protected boolean onKeyUp(int keycode) {
+		return false;
+	}
+
+	/**
+	 * Called when a character was type if no message box is active
+	 * @param character the characted that was type
+	 * @return true if handled, false if not
+	 */
+	protected boolean onKeyTyped(char character) {
+		return false;
+	}
+
 	/**
 	 * Runs the scene. Clears the screen, renders it, and updates the scene elements.
 	 */
