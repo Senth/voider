@@ -1,7 +1,5 @@
 package com.spiddekauga.voider.game;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
@@ -12,14 +10,13 @@ import com.badlogic.gdx.scenes.scene2d.ui.Slider.SliderStyle;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
-import com.spiddekauga.utils.scene.ui.Background;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
+import com.spiddekauga.utils.scene.ui.UiFactory.BarLocations;
 import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.scene.Gui;
 
 /**
  * GUI for the GameScene
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 class GameSceneGui extends Gui {
@@ -87,12 +84,7 @@ class GameSceneGui extends Gui {
 		}
 
 		// Set bar background
-		Background background = new Background((Color) SkinNames.getResource(SkinNames.GeneralVars.WIDGET_BACKGROUND_COLOR));
-		float height = SkinNames.getResource(SkinNames.GeneralVars.BAR_UPPER_LOWER_HEIGHT);
-		background.setSize(Gdx.graphics.getWidth(), height);
-		background.setPosition(0, Gdx.graphics.getHeight() - height);
-		getStage().addActor(background);
-		background.setZIndex(0);
+		mUiFactory.addBar(BarLocations.TOP, getStage());
 	}
 
 	/**
@@ -117,7 +109,7 @@ class GameSceneGui extends Gui {
 
 		// Score
 		Label label = new Label("Score: ", labelStyle);
-		mMainTable.add(label).setPadRight((Float)SkinNames.getResource(SkinNames.GeneralVars.PADDING_SEPARATOR));
+		mMainTable.add(label).setPadRight((Float) SkinNames.getResource(SkinNames.GeneralVars.PADDING_SEPARATOR));
 
 		label = new Label("", labelStyle);
 		label.setZIndex(8);

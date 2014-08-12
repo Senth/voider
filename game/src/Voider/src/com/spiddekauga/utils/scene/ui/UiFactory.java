@@ -2,8 +2,10 @@ package com.spiddekauga.utils.scene.ui;
 
 import java.util.ArrayList;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
@@ -55,6 +57,37 @@ public class UiFactory {
 			mInstance = new UiFactory();
 		}
 		return mInstance;
+	}
+
+	/**
+	 * Add top, bottom, or both bars to the scene
+	 * @param barLocation where the bar should be located
+	 * @param stage the stage to add the bar to
+	 */
+	public void addBar(BarLocations barLocation, Stage stage) {
+		// Top
+		if (barLocation.contains(BarLocations.TOP)) {
+			addBar(Gdx.graphics.getHeight() - mStyles.vars.barUpperLowerHeight, stage);
+		}
+
+		// Bottom
+		if (barLocation.contains(BarLocations.BOTTOM)) {
+			addBar(0, stage);
+		}
+	}
+
+	/**
+	 * Adds a bar at the specified coordinate
+	 * @param y
+	 * @param stage the stage to add the bar to
+	 */
+	private void addBar(float y, Stage stage) {
+		Background background = new Background(mStyles.color.widgetBackground);
+		float height = mStyles.vars.barUpperLowerHeight;
+		background.setSize(Gdx.graphics.getWidth(), height);
+		background.setPosition(0, y);
+		stage.addActor(background);
+		background.setZIndex(0);
 	}
 
 	/**
@@ -763,6 +796,7 @@ public class UiFactory {
 		mStyles.color.widgetBackground = SkinNames.getResource(SkinNames.GeneralVars.WIDGET_BACKGROUND_COLOR);
 
 		// Vars
+		mStyles.vars.barUpperLowerHeight = SkinNames.getResource(SkinNames.GeneralVars.BAR_UPPER_LOWER_HEIGHT);
 		mStyles.vars.paddingCheckBox = SkinNames.getResource(SkinNames.GeneralVars.PADDING_CHECKBOX);
 		mStyles.vars.paddingOuter = SkinNames.getResource(SkinNames.GeneralVars.PADDING_OUTER);
 		mStyles.vars.paddingInner = SkinNames.getResource(SkinNames.GeneralVars.PADDING_INNER);
@@ -789,6 +823,30 @@ public class UiFactory {
 		// Checkbox styles
 		CheckBoxStyles.CHECK_BOX.setStyle((CheckBoxStyle) SkinNames.getResource(SkinNames.General.CHECK_BOX_DEFAULT));
 		CheckBoxStyles.RADIO.setStyle((CheckBoxStyle) SkinNames.getResource(SkinNames.General.CHECK_BOX_RADIO));
+	}
+
+	/**
+	 * Different bar locations
+	 */
+	public enum BarLocations {
+		/** Top of the screen */
+		TOP,
+		/** Bottom of the screen */
+		BOTTOM,
+		/** Both top and bottom */
+		TOP_BOTTOM,
+
+		;
+		/**
+		 * If the location contains the specified enumeration name. E.g. if singleLocation
+		 * is TOP it will return true for the TOP and TOP_BOTTOM enumerations.
+		 * @param singleLocation should be either TOP or BOTTOM.
+		 * @return true if the location contains the specified location.
+		 */
+		private boolean contains(BarLocations singleLocation) {
+			return name().contains(singleLocation.name());
+		}
+
 	}
 
 	/**
@@ -982,6 +1040,7 @@ public class UiFactory {
 		}
 
 		public static class Variables {
+			public float barUpperLowerHeight = 0;
 			public float textFieldNumberWidth = 0;
 			public float sliderWidth = 0;
 			public float sliderLabelWidth = 0;

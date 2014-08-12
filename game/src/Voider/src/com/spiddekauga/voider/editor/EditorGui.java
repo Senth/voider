@@ -36,11 +36,11 @@ import com.spiddekauga.utils.commands.Invoker;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
-import com.spiddekauga.utils.scene.ui.Background;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.utils.scene.ui.DisableListener;
 import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
 import com.spiddekauga.utils.scene.ui.TooltipListener;
+import com.spiddekauga.utils.scene.ui.UiFactory.BarLocations;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.editor.commands.CDefHasValidName;
 import com.spiddekauga.voider.editor.commands.CEditorDuplicate;
@@ -191,17 +191,20 @@ public abstract class EditorGui extends Gui {
 	 * Initializes the top bar and bottom bar
 	 */
 	private void initTopBottomBar() {
-		mTopBar = new Background(mStyles.colors.widgetBackground);
-		mTopBar.setSize(Gdx.graphics.getWidth(), mStyles.vars.barUpperLowerHeight);
-		mTopBar.setPosition(0, Gdx.graphics.getHeight() - mStyles.vars.barUpperLowerHeight);
-		getStage().addActor(mTopBar);
-		mTopBar.setZIndex(0);
+		mUiFactory.addBar(BarLocations.TOP_BOTTOM, getStage());
 
-		mBottomBar = new Background(mStyles.colors.widgetBackground);
-		mBottomBar.setSize(Gdx.graphics.getWidth(), mStyles.vars.barUpperLowerHeight);
-		mBottomBar.setPosition(0, 0);
-		getStage().addActor(mBottomBar);
-		mBottomBar.setZIndex(0);
+		// mTopBar = new Background(mStyles.colors.widgetBackground);
+		// mTopBar.setSize(Gdx.graphics.getWidth(), mStyles.vars.barUpperLowerHeight);
+		// mTopBar.setPosition(0, Gdx.graphics.getHeight() -
+		// mStyles.vars.barUpperLowerHeight);
+		// getStage().addActor(mTopBar);
+		// mTopBar.setZIndex(0);
+		//
+		// mBottomBar = new Background(mStyles.colors.widgetBackground);
+		// mBottomBar.setSize(Gdx.graphics.getWidth(), mStyles.vars.barUpperLowerHeight);
+		// mBottomBar.setPosition(0, 0);
+		// getStage().addActor(mBottomBar);
+		// mBottomBar.setZIndex(0);
 	}
 
 	/**
@@ -954,8 +957,4 @@ public abstract class EditorGui extends Gui {
 	private boolean mLayoutWasValid = false;
 	/** All UI-bodies for collision */
 	private ArrayList<Body> mBodies = null;
-	/** The top bar */
-	private Background mTopBar = null;
-	/** Bottom bar */
-	private Background mBottomBar = null;
 }
