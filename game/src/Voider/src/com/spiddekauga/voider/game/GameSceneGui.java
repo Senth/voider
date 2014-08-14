@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider.SliderStyle;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
@@ -35,20 +36,30 @@ class GameSceneGui extends Gui {
 	public void initGui() {
 		super.initGui();
 
-		getStage().addActor(mOptionBar);
-
-		mMainTable.setMargin(mUiFactory.getStyles().vars.paddingOuter);
-		mLifeTable.setMargin(mUiFactory.getStyles().vars.paddingOuter);
-		mMainTable.setAlign(Horizontal.RIGHT, Vertical.TOP);
-		mLifeTable.setAlign(Horizontal.LEFT, Vertical.TOP);
 		addActor(mLifeTable);
+		addActor(mOptionBar);
 
+
+		// Top left - lives
+		mLifeTable.setMargin(mUiFactory.getStyles().vars.paddingOuter);
+		mLifeTable.setAlign(Horizontal.LEFT, Vertical.TOP);
+		mLifeTable.setPaddingCellDefault(0, mUiFactory.getStyles().vars.paddingInner, 0, 0);
+
+		initLives();
+
+
+		// Top right - score, health
+		mMainTable.setMargin(mUiFactory.getStyles().vars.paddingOuter);
+		mMainTable.setAlign(Horizontal.RIGHT, Vertical.TOP);
+		mMainTable.setAlignRow(Horizontal.RIGHT, Vertical.MIDDLE);
+		mMainTable.setPaddingCellDefault(0, 0, 0, mUiFactory.getStyles().vars.paddingInner);
+		initScoreMultiplier();
 		if (!mGameScene.isPlayerInvulnerable()) {
 			initHealthBar();
 		}
 
-		initScoreMultiplier();
 
+		// Top debug bar
 		if (mGameScene.isTestRun()) {
 			initTestRunOptionBar();
 		}
@@ -58,7 +69,7 @@ class GameSceneGui extends Gui {
 	public void resetValues() {
 		mWidgets.score.setText(mGameScene.getPlayerScore());
 		mWidgets.score.pack();
-		mWidgets.multiplier.setText("(X " + mGameScene.getPlayerMultiplier() + ")");
+		mWidgets.multiplier.setText("(X" + mGameScene.getPlayerMultiplier() + ")");
 		mWidgets.multiplier.invalidateHierarchy();
 		if (mWidgets.health != null) {
 			mWidgets.health.setValue(mGameScene.getPercentageHealth());
@@ -74,8 +85,49 @@ class GameSceneGui extends Gui {
 	/**
 	 * Initializes the lives
 	 */
-	public void initLives() {
-		// TODO
+	private void initLives() {
+		mWidgets.lifeFull = SkinNames.getDrawable(SkinNames.GameImages.LIFE_FILLED);
+		mWidgets.lifeEmpty = SkinNames.getDrawable(SkinNames.GameImages.LIFE_EMPTY);
+	}
+
+	/**
+	 * Updates the number of extra lives
+	 * @param current current number of extra lives
+	 * @param max maximum number of lives
+	 */
+	void updateLives(int current, int max) {
+		boolean updateTableSize = false;
+
+		// Create images if not enough lives
+		while (mWidgets.lives.size() < max) {
+			Image image = new Image(mWidgets.lifeEmpty);
+			mWidgets.lives.add(image);
+			updateTableSize = true;
+		}
+
+		// Remove if too many
+		while (mWidgets.lives.size() > max) {
+			mWidgets.lives.remove(mWidgets.lives.size() - 1);
+			updateTableSize = true;
+		}
+
+		if (updateTableSize) {
+			mLifeTable.dispose();
+			for (Image image : mWidgets.lives) {
+				mLifeTable.add(image);
+			}
+		}
+
+		// Set filled lives
+		for (int filledIndex = 0; filledIndex < current; ++filledIndex) {
+			mWidgets.lives.get(filledIndex).setDrawable(mWidgets.lifeFull);
+			mWidgets.lives.get(filledIndex).setVisible(true);
+		}
+
+		// Set empty lives
+		for (int emptyIndex = current; emptyIndex < max; emptyIndex++) {
+			mWidgets.lives.get(emptyIndex).setDrawable(mWidgets.lifeEmpty);
+		}
 	}
 
 	/**
@@ -99,6 +151,12 @@ class GameSceneGui extends Gui {
 
 		// Set bar background
 		mUiFactory.addBar(BarLocations.TOP, getStage());
+
+
+		// Offset score and lives table
+		float offsetHeight = mUiFactory.getStyles().vars.barUpperLowerHeight;
+		mMainTable.setPadTop(offsetHeight);
+		mLifeTable.setPadTop(offsetHeight);
 	}
 
 	/**
@@ -118,12 +176,13 @@ class GameSceneGui extends Gui {
 	public void initScoreMultiplier() {
 		LabelStyle labelStyle = mUiFactory.getStyles().label.highlight;
 
+
 		// Score
 		mWidgets.score = new Label("", labelStyle);
-		mMainTable.add(mWidgets.score).setPadRight(mUiFactory.getStyles().vars.paddingInner);
+		mMainTable.add(mWidgets.score);
 
 		// Multiplier
-		mWidgets.multiplier = new Label("(X 1)", labelStyle);
+		mWidgets.multiplier = new Label("(X1)", labelStyle);
 		mMainTable.add(mWidgets.multiplier);
 	}
 
@@ -146,5 +205,7 @@ class GameSceneGui extends Gui {
 		Slider health = null;
 		Button screenShot = null;
 		ArrayList<Image> lives = new ArrayList<>();
+		Drawable lifeFull = null;
+		Drawable lifeEmpty = null;
 	}
 }

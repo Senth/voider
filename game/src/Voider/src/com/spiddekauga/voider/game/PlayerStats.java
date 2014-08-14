@@ -1,5 +1,7 @@
 package com.spiddekauga.voider.game;
 
+import java.text.NumberFormat;
+import java.util.Locale;
 import java.util.UUID;
 
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
@@ -11,16 +13,14 @@ import com.spiddekauga.voider.resources.Resource;
 
 
 /**
- * Container for all player statistics when playing a level and calculates
- * the score.
- * 
+ * Container for all player statistics when playing a level and calculates the score.
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class PlayerStats extends Resource implements IResourceChangeListener {
 	/**
 	 * Create a new PlayerStats and sets the starting position of the level
-	 * @param startCoordinate starting coordinate of the level, this is used
-	 * for calculating the multiplier.
+	 * @param startCoordinate starting coordinate of the level, this is used for
+	 *        calculating the multiplier.
 	 * @param levelSpeed speed of the level, used for calculating the multiplier
 	 * @param playerActor binds these stats to listen to the player
 	 */
@@ -86,7 +86,7 @@ public class PlayerStats extends Resource implements IResourceChangeListener {
 	 * @param coordinate number of coordinates to calculate the score on
 	 * @return score for these coordinates
 	 * @note Does not wrap if the coordinates would increase the multiplier, this is
-	 * instead done by #update(float).
+	 *       instead done by #update(float).
 	 */
 	private float getScoreMultiplied(float coordinate) {
 		return coordinate / mLevelSpeed * mMultiplier * Config.Game.SCORE_MULTIPLIER;
@@ -96,13 +96,16 @@ public class PlayerStats extends Resource implements IResourceChangeListener {
 	 * @return current score as String
 	 */
 	public String getScoreString() {
-		return Long.toString((long)(mScore + 0.5));
+		// return Long.toString((long) (mScore + 0.5));
+		NumberFormat decimalFormat = NumberFormat.getInstance(Locale.getDefault());
+
+		return decimalFormat.format((int) (mScore + 0.5f));
 	}
 
 	/**
-	 * @return a formatted version of #getScoreString() that includes leading
-	 * zeros
+	 * @return a formatted version of #getScoreString() that includes leading zeros
 	 */
+	@Deprecated
 	public String getScoreStringLeadingZero() {
 		String score = getScoreString();
 		StringBuilder stringBuilder = new StringBuilder();
@@ -134,6 +137,13 @@ public class PlayerStats extends Resource implements IResourceChangeListener {
 		--mExtraLives;
 	}
 
+	/**
+	 * @return starting number of lives
+	 */
+	public static int getStartLives() {
+		return STARTING_LIVES;
+	}
+
 	@Override
 	public void onResourceChanged(IResource resource, EventTypes type) {
 		if (type == EventTypes.LIFE_DECREASED) {
@@ -141,8 +151,10 @@ public class PlayerStats extends Resource implements IResourceChangeListener {
 		}
 	}
 
+	/** Number of starting lives */
+	private static final int STARTING_LIVES = 3;
 	/** Number of lives left */
-	@Tag(20) private int mExtraLives = 2;
+	@Tag(20) private int mExtraLives = STARTING_LIVES - 1;
 	/** Speed of the level, used for calculating multiplier values */
 	@Tag(21) private float mLevelSpeed;
 	/** Current multiplier */
@@ -153,4 +165,7 @@ public class PlayerStats extends Resource implements IResourceChangeListener {
 	@Tag(24) private float mHitCoordinateLast;
 	/** Score of the level */
 	@Tag(25) private double mScore = 0;
+
+	/** Decimal formatter */
+	private static final NumberFormat mNumberFormat = NumberFormat.getInstance(Locale.getDefault());
 }

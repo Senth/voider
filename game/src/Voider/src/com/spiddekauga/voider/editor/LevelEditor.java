@@ -541,7 +541,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 			}
 		}
 
-		return super.keyDown(keycode);
+		return super.onKeyDown(keycode);
 	}
 
 

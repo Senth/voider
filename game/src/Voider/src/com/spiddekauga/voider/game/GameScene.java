@@ -332,7 +332,7 @@ public class GameScene extends WorldScene {
 			if (mPlayerStats.getExtraLives() > 0) {
 				mPlayerActor.resetLife();
 				mPlayerStats.decreaseExtraLives();
-				mPlayerLifeShips.remove(mPlayerLifeShips.size() - 1).dispose();
+				updateLives();
 			} else {
 				setOutcome(Outcomes.LEVEL_PLAYER_DIED);
 			}
@@ -347,6 +347,7 @@ public class GameScene extends WorldScene {
 
 
 		// GUI
+
 		mGui.resetValues();
 	}
 
@@ -383,6 +384,13 @@ public class GameScene extends WorldScene {
 
 			mShapeRenderer.pop();
 		}
+	}
+
+	/**
+	 * Updates the lives
+	 */
+	private void updateLives() {
+		((GameSceneGui) mGui).updateLives(mPlayerStats.getExtraLives(), PlayerStats.getStartLives());
 	}
 
 	@Override
@@ -549,7 +557,7 @@ public class GameScene extends WorldScene {
 	 */
 	String getPlayerScore() {
 		if (mPlayerStats != null) {
-			return mPlayerStats.getScoreStringLeadingZero();
+			return mPlayerStats.getScoreString();
 		} else {
 			return "";
 		}
@@ -620,12 +628,8 @@ public class GameScene extends WorldScene {
 
 		// Set lives
 		mLevel.setPlayer(mPlayerActor);
+		updateLives();
 		mGui.resetValues();
-
-		// Create life ships
-		for (int i = 0; i < mPlayerStats.getExtraLives(); ++i) {
-			mPlayerLifeShips.add((PlayerActor) mPlayerActor.copy());
-		}
 	}
 
 	/**
@@ -707,8 +711,6 @@ public class GameScene extends WorldScene {
 	private Vector2 mBodyShepherdMaxPos = new Vector2();
 	/** Player score */
 	private PlayerStats mPlayerStats = null;
-	/** Player life ships */
-	private ArrayList<PlayerActor> mPlayerLifeShips = new ArrayList<PlayerActor>();
 	/** Take screenshot */
 	private boolean mTakeScreenshot = false;
 

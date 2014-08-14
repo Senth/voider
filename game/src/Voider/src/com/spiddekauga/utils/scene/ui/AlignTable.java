@@ -229,6 +229,94 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	}
 
 	/**
+	 * Sets the top margin (outside) for the table
+	 * @param marginLeft margin to the left
+	 * @return this table for chaining
+	 */
+	public AlignTable setMarginLeft(float marginLeft) {
+		mPadding.left = marginLeft;
+
+		return this;
+	}
+
+	/**
+	 * Sets the top margin (outside) for the table
+	 * @param marginRight margin to the right
+	 * @return this table for chaining
+	 */
+	public AlignTable setMarginRight(float marginRight) {
+		mPadding.right = marginRight;
+
+		return this;
+	}
+
+	/**
+	 * Sets the top margin (outside) for the table
+	 * @param marginTop margin to the top
+	 * @return this table for chaining
+	 */
+	public AlignTable setMarginTop(float marginTop) {
+		mPadding.top = marginTop;
+
+		return this;
+	}
+
+	/**
+	 * Sets the top margin (outside) for the table
+	 * @param marginBottom margin to the bottom
+	 * @return this table for chaining
+	 */
+	public AlignTable setMarginBottom(float marginBottom) {
+		mPadding.bottom = marginBottom;
+
+		return this;
+	}
+
+	/**
+	 * Sets the padding to the left of the table
+	 * @param padLeft how much padding should be to the left of the table
+	 * @return this table for chaining
+	 */
+	public AlignTable setPadLeft(float padLeft) {
+		mPadding.left = padLeft;
+
+		return this;
+	}
+
+	/**
+	 * Sets the padding to the right of the table
+	 * @param padRight how much padding should be on the right of the table
+	 * @return this table for chaining
+	 */
+	public AlignTable setPadRight(float padRight) {
+		mPadding.right = padRight;
+
+		return this;
+	}
+
+	/**
+	 * Sets the padding at the top of the table
+	 * @param padTop how much padding should be at the top of the table
+	 * @return this table for chaining
+	 */
+	public AlignTable setPadTop(float padTop) {
+		mPadding.top = padTop;
+
+		return this;
+	}
+
+	/**
+	 * Sets the padding at teh bottom of the table
+	 * @param padBottom how much padding should be at the bottom of the table
+	 * @return this table for chaining
+	 */
+	public AlignTable setPadBottom(float padBottom) {
+		mPadding.bottom = padBottom;
+
+		return this;
+	}
+
+	/**
 	 * @return top margin
 	 */
 	public float getMarginTop() {
