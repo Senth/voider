@@ -134,6 +134,11 @@ com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
 		fontColor: grey_light,
 	},
 	
+	tooltip: {
+		font: default_font,
+		fontColor: grey_dark,
+	},
+	
 	// In front of error (usually above/below text fields)
 	// E.g. When trying to register and passwords don't match
 	error_section_info: {

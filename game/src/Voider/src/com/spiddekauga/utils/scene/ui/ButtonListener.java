@@ -10,7 +10,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent;
 /**
  * Calls the method {@link #onChecked(boolean)} when the button becomes checked/unchecked
  * Calls {@link #onPressed()} when the button has been pressed.
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public abstract class ButtonListener implements EventListener {
@@ -23,25 +22,12 @@ public abstract class ButtonListener implements EventListener {
 	}
 
 	/**
-	 * Creates a button listener for the specified button. Always
-	 * calls onChange. Adds this class to the button automatically as a listener.
+	 * Creates a button listener for the specified button. Always calls onChange. Adds
+	 * this class to the button automatically as a listener.
 	 * @param button the button to listen to
 	 */
 	public ButtonListener(Button button) {
-		this(button, null);
-	}
-
-	/**
-	 * Creates a button listener for the specified button. Always
-	 * calls onChange. Adds this class to the button automatically as a listener.
-	 * When adding the tooltip listener this will make sure the tooltip message box
-	 * isn't active when calling the {@link #onPressed()} method.
-	 * @param button the button to listen to
-	 * @param tooltipListener the GUI to check if the button shall be pressed.
-	 */
-	public ButtonListener(Button button, TooltipListener tooltipListener) {
 		setButton(button);
-		mTooltipListener = tooltipListener;
 	}
 
 	/**
@@ -68,10 +54,7 @@ public abstract class ButtonListener implements EventListener {
 			if (mButton.isChecked() != mCheckedLast) {
 				mCheckedLast = mButton.isChecked();
 				onChecked(mCheckedLast);
-
-				if (mTooltipListener == null || !mTooltipListener.isMsgBoxActive()) {
-					onPressed();
-				}
+				onPressed();
 			}
 		}
 		if (event instanceof InputEvent) {
@@ -93,8 +76,8 @@ public abstract class ButtonListener implements EventListener {
 	}
 
 	/**
-	 * Called when the button is pressed, or actually released. Will not be called if the tooltip message box
-	 * is active even if the button is pressed.
+	 * Called when the button is pressed, or actually released. Will not be called if the
+	 * tooltip message box is active even if the button is pressed.
 	 */
 	protected void onPressed() {
 		// Does nothing
@@ -118,6 +101,4 @@ public abstract class ButtonListener implements EventListener {
 	protected Button mButton;
 	/** Last known state of the button */
 	private boolean mCheckedLast;
-	/** The Tooltip to check if the tooltip message box is being displayed */
-	private TooltipListener mTooltipListener;
 }

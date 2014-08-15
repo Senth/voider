@@ -171,2648 +171,2655 @@ level_editor_big_disabled
   orig: 80, 80
   offset: 0, 0
   index: -1
-add_move_corner
+youtube
   rotate: false
   xy: 1, 13
+  size: 76, 32
+  orig: 76, 32
+  offset: 0, 0
+  index: -1
+add_move_corner
+  rotate: false
+  xy: 1313, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 terrain_add_move_corner
   rotate: false
-  xy: 1, 13
+  xy: 1313, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 add_move_corner_checked
   rotate: false
-  xy: 1313, 95
+  xy: 79, 13
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 add_move_corner_down
   rotate: false
-  xy: 1313, 95
+  xy: 79, 13
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 terrain_add_move_corner_checked
   rotate: false
-  xy: 1313, 95
+  xy: 79, 13
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 terrain_add_move_corner_down
   rotate: false
-  xy: 1313, 95
+  xy: 79, 13
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 add_move_corner_checked_over
   rotate: false
-  xy: 35, 13
+  xy: 1313, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 add_move_corner_over
   rotate: false
-  xy: 35, 13
+  xy: 1313, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 terrain_add_move_corner_checked_over
   rotate: false
-  xy: 35, 13
+  xy: 1313, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 terrain_add_move_corner_over
   rotate: false
-  xy: 35, 13
+  xy: 1313, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 add_move_corner_disabled
   rotate: false
-  xy: 1313, 61
+  xy: 1347, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 aim_direction
   rotate: false
-  xy: 1347, 95
+  xy: 113, 13
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 aim_direction_checked
   rotate: false
-  xy: 69, 13
+  xy: 1347, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 aim_direction_down
   rotate: false
-  xy: 69, 13
+  xy: 1347, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 aim_direction_checked_over
   rotate: false
-  xy: 1347, 61
+  xy: 1381, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 aim_direction_over
   rotate: false
-  xy: 1347, 61
+  xy: 1381, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 aim_direction_disabled
   rotate: false
-  xy: 1381, 95
+  xy: 147, 13
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 aim_in_front_player
   rotate: false
-  xy: 103, 13
+  xy: 1381, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 aim_in_front_player_checked
   rotate: false
-  xy: 1381, 61
+  xy: 1415, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 aim_in_front_player_down
   rotate: false
-  xy: 1381, 61
+  xy: 1415, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 aim_in_front_player_checked_over
   rotate: false
-  xy: 1415, 95
+  xy: 181, 13
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 aim_in_front_player_over
   rotate: false
-  xy: 1415, 95
+  xy: 181, 13
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 aim_in_front_player_disabled
   rotate: false
-  xy: 137, 13
+  xy: 1415, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 aim_movement
   rotate: false
-  xy: 1415, 61
+  xy: 1449, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 aim_movement_checked
   rotate: false
-  xy: 1449, 95
+  xy: 215, 13
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 aim_movement_down
   rotate: false
-  xy: 1449, 95
+  xy: 215, 13
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 aim_movement_checked_over
   rotate: false
-  xy: 171, 13
+  xy: 1449, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 aim_movement_over
   rotate: false
-  xy: 171, 13
+  xy: 1449, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 aim_movement_disabled
   rotate: false
-  xy: 1449, 61
+  xy: 1483, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 aim_on_player
   rotate: false
-  xy: 1483, 95
+  xy: 249, 13
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 aim_on_player_checked
   rotate: false
-  xy: 205, 13
+  xy: 1483, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 aim_on_player_down
   rotate: false
-  xy: 205, 13
+  xy: 1483, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 aim_on_player_checked_over
   rotate: false
-  xy: 1483, 61
+  xy: 1517, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 aim_on_player_over
   rotate: false
-  xy: 1483, 61
+  xy: 1517, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 aim_on_player_disabled
   rotate: false
-  xy: 1517, 95
+  xy: 283, 13
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 aim_rotate
   rotate: false
-  xy: 239, 13
+  xy: 1517, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 aim_rotate_checked
   rotate: false
-  xy: 1517, 61
+  xy: 1551, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 aim_rotate_down
   rotate: false
-  xy: 1517, 61
+  xy: 1551, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 aim_rotate_checked_over
   rotate: false
-  xy: 1551, 95
+  xy: 317, 13
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 aim_rotate_over
   rotate: false
-  xy: 1551, 95
+  xy: 317, 13
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 aim_rotate_disabled
   rotate: false
-  xy: 273, 13
+  xy: 1551, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 bullet_editor
   rotate: false
-  xy: 1551, 61
+  xy: 1585, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 bullet_editor_checked
   rotate: false
-  xy: 1585, 95
+  xy: 351, 13
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 bullet_editor_down
   rotate: false
-  xy: 1585, 95
+  xy: 351, 13
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 bullet_editor_checked_over
   rotate: false
-  xy: 307, 13
+  xy: 1585, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 bullet_editor_over
   rotate: false
-  xy: 307, 13
+  xy: 1585, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 bullet_editor_disabled
   rotate: false
-  xy: 1585, 61
+  xy: 1619, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 bullet_select
   rotate: false
-  xy: 1619, 95
+  xy: 385, 13
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 bullet_select_checked
   rotate: false
-  xy: 341, 13
+  xy: 1619, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 bullet_select_down
   rotate: false
-  xy: 341, 13
+  xy: 1619, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 bullet_select_checked_over
   rotate: false
-  xy: 1619, 61
+  xy: 1653, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 bullet_select_over
   rotate: false
-  xy: 1619, 61
+  xy: 1653, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 bullet_select_disabled
   rotate: false
-  xy: 1653, 95
+  xy: 419, 13
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 weapon_disabled
   rotate: false
-  xy: 1653, 95
+  xy: 419, 13
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 campaign_editor
   rotate: false
-  xy: 375, 13
+  xy: 1653, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 campaign_editor_checked
   rotate: false
-  xy: 1653, 61
+  xy: 1687, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 campaign_editor_down
   rotate: false
-  xy: 1653, 61
+  xy: 1687, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 campaign_editor_checked_over
   rotate: false
-  xy: 1687, 95
+  xy: 453, 13
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 campaign_editor_over
   rotate: false
-  xy: 1687, 95
+  xy: 453, 13
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 campaign_editor_disabled
   rotate: false
-  xy: 409, 13
+  xy: 1687, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 cancel
   rotate: false
-  xy: 1687, 61
+  xy: 1721, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 cancel_checked
   rotate: false
-  xy: 1721, 95
+  xy: 487, 13
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 cancel_down
   rotate: false
-  xy: 1721, 95
+  xy: 487, 13
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 cancel_checked_over
   rotate: false
-  xy: 443, 13
+  xy: 1721, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 cancel_over
   rotate: false
-  xy: 443, 13
+  xy: 1721, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 cancel_disabled
   rotate: false
-  xy: 1721, 61
+  xy: 1755, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 circle_shape
   rotate: false
-  xy: 1755, 95
+  xy: 521, 13
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 circle_shape_checked
   rotate: false
-  xy: 477, 13
+  xy: 1755, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 circle_shape_down
   rotate: false
-  xy: 477, 13
+  xy: 1755, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 circle_shape_checked_over
   rotate: false
-  xy: 1755, 61
+  xy: 1789, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 circle_shape_over
   rotate: false
-  xy: 1755, 61
+  xy: 1789, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 circle_shape_disabled
   rotate: false
-  xy: 1789, 95
+  xy: 555, 13
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 collision
   rotate: false
-  xy: 511, 13
+  xy: 1789, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 collision_checked
   rotate: false
-  xy: 1789, 61
+  xy: 1823, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 collision_down
   rotate: false
-  xy: 1789, 61
+  xy: 1823, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 collision_checked_over
   rotate: false
-  xy: 1823, 95
+  xy: 589, 13
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 collision_over
   rotate: false
-  xy: 1823, 95
+  xy: 589, 13
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 collision_disabled
   rotate: false
-  xy: 545, 13
+  xy: 1823, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 color
   rotate: false
-  xy: 1823, 61
+  xy: 1857, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 color_checked
   rotate: false
-  xy: 1857, 95
+  xy: 623, 13
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 color_down
   rotate: false
-  xy: 1857, 95
+  xy: 623, 13
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 color_checked_over
   rotate: false
-  xy: 579, 13
+  xy: 1857, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 color_over
   rotate: false
-  xy: 579, 13
+  xy: 1857, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 color_disabled
   rotate: false
-  xy: 1857, 61
+  xy: 1891, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 delete
   rotate: false
-  xy: 1891, 95
+  xy: 657, 13
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 delete_checked
   rotate: false
-  xy: 613, 13
+  xy: 1891, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 delete_down
   rotate: false
-  xy: 613, 13
+  xy: 1891, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 delete_checked_over
   rotate: false
-  xy: 1891, 61
+  xy: 1925, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 delete_over
   rotate: false
-  xy: 1891, 61
+  xy: 1925, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 delete_disabled
   rotate: false
-  xy: 1925, 95
+  xy: 691, 13
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 draw_append
   rotate: false
-  xy: 647, 13
+  xy: 1925, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 terrain_draw_append
   rotate: false
-  xy: 647, 13
+  xy: 1925, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 draw_append_checked
   rotate: false
-  xy: 1925, 61
+  xy: 1959, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 draw_append_down
   rotate: false
-  xy: 1925, 61
+  xy: 1959, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 terrain_draw_append_checked
   rotate: false
-  xy: 1925, 61
+  xy: 1959, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 terrain_draw_append_down
   rotate: false
-  xy: 1925, 61
+  xy: 1959, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 draw_append_checked_over
   rotate: false
-  xy: 1959, 95
+  xy: 725, 13
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 draw_append_over
   rotate: false
-  xy: 1959, 95
+  xy: 725, 13
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 terrain_draw_append_checked_over
   rotate: false
-  xy: 1959, 95
+  xy: 725, 13
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 terrain_draw_append_over
   rotate: false
-  xy: 1959, 95
+  xy: 725, 13
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 draw_append_disabled
   rotate: false
-  xy: 681, 13
+  xy: 1959, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 terrain_draw_append_disabled
   rotate: false
-  xy: 681, 13
+  xy: 1959, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 draw_custom_shape
   rotate: false
-  xy: 1959, 61
+  xy: 1993, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 draw_custom_shape_checked
   rotate: false
-  xy: 1993, 95
+  xy: 759, 13
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 draw_custom_shape_down
   rotate: false
-  xy: 1993, 95
+  xy: 759, 13
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 draw_custom_shape_checked_over
   rotate: false
-  xy: 715, 13
+  xy: 1993, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 draw_custom_shape_over
   rotate: false
-  xy: 715, 13
+  xy: 1993, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 draw_custom_shape_disabled
   rotate: false
-  xy: 1993, 61
+  xy: 2027, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 draw_erase
   rotate: false
-  xy: 2027, 95
+  xy: 793, 13
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 terrain_draw_erase
   rotate: false
-  xy: 2027, 95
+  xy: 793, 13
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 draw_erase_checked
   rotate: false
-  xy: 749, 13
+  xy: 2027, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 draw_erase_down
   rotate: false
-  xy: 749, 13
+  xy: 2027, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 terrain_draw_erase_checked
   rotate: false
-  xy: 749, 13
+  xy: 2027, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 terrain_draw_erase_down
   rotate: false
-  xy: 749, 13
+  xy: 2027, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 draw_erase_checked_over
   rotate: false
-  xy: 2027, 61
+  xy: 2061, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 draw_erase_over
   rotate: false
-  xy: 2027, 61
+  xy: 2061, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 terrain_draw_erase_checked_over
   rotate: false
-  xy: 2027, 61
+  xy: 2061, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 terrain_draw_erase_over
   rotate: false
-  xy: 2027, 61
+  xy: 2061, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 draw_erase_disabled
   rotate: false
-  xy: 2061, 95
+  xy: 827, 13
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 terrain_draw_erase_disabled
   rotate: false
-  xy: 2061, 95
+  xy: 827, 13
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 duplicate
   rotate: false
-  xy: 783, 13
+  xy: 2061, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 duplicate_checked
   rotate: false
-  xy: 2061, 61
+  xy: 2095, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 duplicate_checked_over
   rotate: false
-  xy: 2095, 95
+  xy: 861, 13
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 duplicate_over
   rotate: false
-  xy: 2095, 95
+  xy: 861, 13
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 duplicate_disabled
   rotate: false
-  xy: 817, 13
+  xy: 2095, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 duplicate_down
   rotate: false
-  xy: 2095, 61
+  xy: 2129, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 enemy_add
   rotate: false
-  xy: 2129, 95
+  xy: 895, 13
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 enemy_add_checked
   rotate: false
-  xy: 851, 13
+  xy: 2129, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 enemy_add_down
   rotate: false
-  xy: 851, 13
+  xy: 2129, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 enemy_add_checked_over
   rotate: false
-  xy: 2129, 61
+  xy: 2163, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 enemy_add_over
   rotate: false
-  xy: 2129, 61
+  xy: 2163, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 enemy_add_disabled
   rotate: false
-  xy: 2163, 95
+  xy: 929, 13
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 enemy_editor
   rotate: false
-  xy: 885, 13
+  xy: 2163, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 enemy_editor_checked
   rotate: false
-  xy: 2163, 61
+  xy: 2197, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 enemy_editor_down
   rotate: false
-  xy: 2163, 61
+  xy: 2197, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 enemy_editor_checked_over
   rotate: false
-  xy: 2197, 95
+  xy: 963, 13
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 enemy_editor_over
   rotate: false
-  xy: 2197, 95
+  xy: 963, 13
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 enemy_editor_disabled
   rotate: false
-  xy: 919, 13
+  xy: 2197, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 enemy_info
   rotate: false
-  xy: 2197, 61
+  xy: 2231, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 enemy_info_checked
   rotate: false
-  xy: 2231, 95
+  xy: 997, 13
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 enemy_info_down
   rotate: false
-  xy: 2231, 95
+  xy: 997, 13
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 enemy_info_checked_over
   rotate: false
-  xy: 953, 13
+  xy: 2231, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 enemy_info_over
   rotate: false
-  xy: 953, 13
+  xy: 2231, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 enemy_info_disabled
   rotate: false
-  xy: 2231, 61
+  xy: 2265, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 enemy_select
   rotate: false
-  xy: 2265, 95
+  xy: 1031, 13
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 enemy_select_checked
   rotate: false
-  xy: 987, 13
+  xy: 2265, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 enemy_select_down
   rotate: false
-  xy: 987, 13
+  xy: 2265, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 enemy_select_checked_over
   rotate: false
-  xy: 2265, 61
+  xy: 2299, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 enemy_select_over
   rotate: false
-  xy: 2265, 61
+  xy: 2299, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 enemy_select_disabled
   rotate: false
-  xy: 2299, 95
+  xy: 1065, 13
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 enemy_set_activate_trigger
   rotate: false
-  xy: 1021, 13
+  xy: 2299, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 enemy_set_activate_trigger_checked
   rotate: false
-  xy: 2299, 61
+  xy: 2333, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 enemy_set_activate_trigger_down
   rotate: false
-  xy: 2299, 61
+  xy: 2333, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 enemy_set_activate_trigger_checked_over
   rotate: false
-  xy: 2333, 95
+  xy: 1099, 13
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 enemy_set_activate_trigger_over
   rotate: false
-  xy: 2333, 95
+  xy: 1099, 13
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 enemy_set_activate_trigger_disabled
   rotate: false
-  xy: 1055, 13
+  xy: 2333, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 enemy_set_deactivate_trigger
   rotate: false
-  xy: 2333, 61
+  xy: 2367, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 enemy_set_deactivate_trigger_checked
   rotate: false
-  xy: 2367, 95
+  xy: 1133, 13
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 enemy_set_deactivate_trigger_down
   rotate: false
-  xy: 2367, 95
+  xy: 1133, 13
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 enemy_set_deactivate_trigger_checked_over
   rotate: false
-  xy: 1089, 13
+  xy: 2367, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 enemy_set_deactivate_trigger_over
   rotate: false
-  xy: 1089, 13
+  xy: 2367, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 enemy_set_deactivate_trigger_disabled
   rotate: false
-  xy: 2367, 61
+  xy: 2401, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 enemy_spawn_highlight
   rotate: false
-  xy: 2401, 95
+  xy: 1167, 13
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 enemy_spawn_highlight_checked
   rotate: false
-  xy: 1123, 13
+  xy: 2401, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 enemy_spawn_highlight_down
   rotate: false
-  xy: 1123, 13
+  xy: 2401, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 enemy_spawn_highlight_checked_over
   rotate: false
-  xy: 2401, 61
+  xy: 2435, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 enemy_spawn_highlight_over
   rotate: false
-  xy: 2401, 61
+  xy: 2435, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 enemy_spawn_highlight_disabled
   rotate: false
-  xy: 2435, 95
+  xy: 1201, 13
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 grid
   rotate: false
-  xy: 1157, 13
+  xy: 2435, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 grid_above
   rotate: false
-  xy: 2435, 61
+  xy: 2469, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 grid_above_checked
   rotate: false
-  xy: 2469, 95
+  xy: 1235, 13
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 grid_above_down
   rotate: false
-  xy: 2469, 95
+  xy: 1235, 13
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 grid_above_checked_over
   rotate: false
-  xy: 1191, 13
+  xy: 2469, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 grid_above_over
   rotate: false
-  xy: 1191, 13
+  xy: 2469, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 grid_above_disabled
   rotate: false
-  xy: 2469, 61
+  xy: 2503, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 grid_checked
   rotate: false
-  xy: 2503, 95
+  xy: 1269, 13
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 grid_down
   rotate: false
-  xy: 2503, 95
+  xy: 1269, 13
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 grid_checked_over
   rotate: false
-  xy: 1225, 13
+  xy: 2503, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 grid_over
   rotate: false
-  xy: 1225, 13
+  xy: 2503, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 grid_disabled
   rotate: false
-  xy: 2503, 61
+  xy: 2537, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 info
   rotate: false
-  xy: 2537, 95
+  xy: 2537, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 info_checked
   rotate: false
-  xy: 1259, 13
+  xy: 2571, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 info_down
   rotate: false
-  xy: 1259, 13
+  xy: 2571, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 info_checked_over
   rotate: false
-  xy: 2537, 61
+  xy: 2571, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 info_over
   rotate: false
-  xy: 2537, 61
+  xy: 2571, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 info_disabled
   rotate: false
-  xy: 2571, 95
+  xy: 2605, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 level_editor
   rotate: false
-  xy: 2571, 61
+  xy: 2605, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 level_editor_checked
   rotate: false
-  xy: 2605, 95
+  xy: 2639, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 level_editor_down
   rotate: false
-  xy: 2605, 95
+  xy: 2639, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 level_editor_checked_over
   rotate: false
-  xy: 2605, 61
+  xy: 2639, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 level_editor_over
   rotate: false
-  xy: 2605, 61
+  xy: 2639, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 level_editor_disabled
   rotate: false
-  xy: 2639, 95
+  xy: 2673, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 load
   rotate: false
-  xy: 2639, 61
+  xy: 2673, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 load_checked
   rotate: false
-  xy: 2673, 95
+  xy: 2707, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 load_down
   rotate: false
-  xy: 2673, 95
+  xy: 2707, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 load_checked_over
   rotate: false
-  xy: 2673, 61
+  xy: 2707, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 load_over
   rotate: false
-  xy: 2673, 61
+  xy: 2707, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 load_disabled
   rotate: false
-  xy: 2707, 95
+  xy: 2741, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 move
   rotate: false
-  xy: 2707, 61
+  xy: 2741, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 move_checked
   rotate: false
-  xy: 2741, 95
+  xy: 2775, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 move_down
   rotate: false
-  xy: 2741, 95
+  xy: 2775, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 move_checked_over
   rotate: false
-  xy: 2741, 61
+  xy: 2775, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 move_over
   rotate: false
-  xy: 2741, 61
+  xy: 2775, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 move_disabled
   rotate: false
-  xy: 2775, 95
+  xy: 2809, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 movement
   rotate: false
-  xy: 2775, 61
+  xy: 2809, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 movement_checked
   rotate: false
-  xy: 2809, 95
+  xy: 2843, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 movement_down
   rotate: false
-  xy: 2809, 95
+  xy: 2843, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 movement_checked_over
   rotate: false
-  xy: 2809, 61
+  xy: 2843, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 movement_over
   rotate: false
-  xy: 2809, 61
+  xy: 2843, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 movement_disabled
   rotate: false
-  xy: 2843, 95
+  xy: 2877, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 new
   rotate: false
-  xy: 2843, 61
+  xy: 2877, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 new_checked
   rotate: false
-  xy: 2877, 95
+  xy: 2911, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 new_down
   rotate: false
-  xy: 2877, 95
+  xy: 2911, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 new_checked_over
   rotate: false
-  xy: 2877, 61
+  xy: 2911, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 new_over
   rotate: false
-  xy: 2877, 61
+  xy: 2911, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 new_disabled
   rotate: false
-  xy: 2911, 95
+  xy: 2945, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 off
   rotate: false
-  xy: 2911, 61
+  xy: 2945, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 off_checked
   rotate: false
-  xy: 2945, 95
+  xy: 2979, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 off_down
   rotate: false
-  xy: 2945, 95
+  xy: 2979, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 off_checked_over
   rotate: false
-  xy: 2945, 61
+  xy: 2979, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 off_over
   rotate: false
-  xy: 2945, 61
+  xy: 2979, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 off_disabled
   rotate: false
-  xy: 2979, 95
+  xy: 3013, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 on
   rotate: false
-  xy: 2979, 61
+  xy: 3013, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 on_checked
   rotate: false
-  xy: 3013, 95
+  xy: 3047, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 on_down
   rotate: false
-  xy: 3013, 95
+  xy: 3047, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 on_checked_over
   rotate: false
-  xy: 3013, 61
+  xy: 3047, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 on_over
   rotate: false
-  xy: 3013, 61
+  xy: 3047, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 on_disabled
   rotate: false
-  xy: 3047, 95
+  xy: 3081, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 pan
   rotate: false
-  xy: 3047, 61
+  xy: 3081, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 pan_checked
   rotate: false
-  xy: 3081, 95
+  xy: 3115, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 pan_down
   rotate: false
-  xy: 3081, 95
+  xy: 3115, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 pan_checked_over
   rotate: false
-  xy: 3081, 61
+  xy: 3115, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 pan_over
   rotate: false
-  xy: 3081, 61
+  xy: 3115, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 pan_disabled
   rotate: false
-  xy: 3115, 95
+  xy: 3149, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 path_add
   rotate: false
-  xy: 3115, 61
+  xy: 3149, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 path_add_checked
   rotate: false
-  xy: 3149, 95
+  xy: 3183, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 path_add_down
   rotate: false
-  xy: 3149, 95
+  xy: 3183, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 path_add_checked_over
   rotate: false
-  xy: 3149, 61
+  xy: 3183, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 path_add_over
   rotate: false
-  xy: 3149, 61
+  xy: 3183, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 path_add_disabled
   rotate: false
-  xy: 3183, 95
+  xy: 3217, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 path_back_and_forth
   rotate: false
-  xy: 3183, 61
+  xy: 3217, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 path_back_and_forth_checked
   rotate: false
-  xy: 3217, 95
+  xy: 3251, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 path_back_and_forth_down
   rotate: false
-  xy: 3217, 95
+  xy: 3251, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 path_back_and_forth_checked_over
   rotate: false
-  xy: 3217, 61
+  xy: 3251, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 path_back_and_forth_over
   rotate: false
-  xy: 3217, 61
+  xy: 3251, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 path_back_and_forth_disabled
   rotate: false
-  xy: 3251, 95
+  xy: 3285, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 path_loop
   rotate: false
-  xy: 3251, 61
+  xy: 3285, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 path_loop_checked
   rotate: false
-  xy: 3285, 95
+  xy: 3319, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 path_loop_down
   rotate: false
-  xy: 3285, 95
+  xy: 3319, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 path_loop_checked_over
   rotate: false
-  xy: 3285, 61
+  xy: 3319, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 path_loop_over
   rotate: false
-  xy: 3285, 61
+  xy: 3319, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 path_loop_disabled
   rotate: false
-  xy: 3319, 95
+  xy: 3353, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 path_once
   rotate: false
-  xy: 3319, 61
+  xy: 3353, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 path_once_checked
   rotate: false
-  xy: 3353, 95
+  xy: 3387, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 path_once_down
   rotate: false
-  xy: 3353, 95
+  xy: 3387, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 path_once_checked_over
   rotate: false
-  xy: 3353, 61
+  xy: 3387, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 path_once_over
   rotate: false
-  xy: 3353, 61
+  xy: 3387, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 path_once_disabled
   rotate: false
-  xy: 3387, 95
+  xy: 3421, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 pickup_add
   rotate: false
-  xy: 3387, 61
+  xy: 3421, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 pickup_add_checked
   rotate: false
-  xy: 3421, 95
+  xy: 3455, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 pickup_add_down
   rotate: false
-  xy: 3421, 95
+  xy: 3455, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 pickup_add_checked_over
   rotate: false
-  xy: 3421, 61
+  xy: 3455, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 pickup_add_over
   rotate: false
-  xy: 3421, 61
+  xy: 3455, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 pickup_add_disabled
   rotate: false
-  xy: 3455, 95
+  xy: 3489, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 pickup_select
   rotate: false
-  xy: 3455, 61
+  xy: 3489, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 pickup_select_checked
   rotate: false
-  xy: 3489, 95
+  xy: 3523, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 pickup_select_down
   rotate: false
-  xy: 3489, 95
+  xy: 3523, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 pickup_select_checked_over
   rotate: false
-  xy: 3489, 61
+  xy: 3523, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 pickup_select_over
   rotate: false
-  xy: 3489, 61
+  xy: 3523, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 pickup_select_disabled
   rotate: false
-  xy: 3523, 95
+  xy: 3557, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 publish
   rotate: false
-  xy: 3523, 61
+  xy: 3557, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 publish_checked
   rotate: false
-  xy: 3557, 95
+  xy: 3591, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 publish_down
   rotate: false
-  xy: 3557, 95
+  xy: 3591, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 publish_checked_over
   rotate: false
-  xy: 3557, 61
+  xy: 3591, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 publish_over
   rotate: false
-  xy: 3557, 61
+  xy: 3591, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 publish_disabled
   rotate: false
-  xy: 3591, 95
+  xy: 3625, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 rectangle_shape
   rotate: false
-  xy: 3591, 61
+  xy: 3625, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 rectangle_shape_checked
   rotate: false
-  xy: 3625, 95
+  xy: 3659, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 rectangle_shape_down
   rotate: false
-  xy: 3625, 95
+  xy: 3659, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 rectangle_shape_checked_over
   rotate: false
-  xy: 3625, 61
+  xy: 3659, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 rectangle_shape_over
   rotate: false
-  xy: 3625, 61
+  xy: 3659, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 rectangle_shape_disabled
   rotate: false
-  xy: 3659, 95
+  xy: 3693, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 redo
   rotate: false
-  xy: 3659, 61
+  xy: 3693, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 redo_checked
   rotate: false
-  xy: 3693, 95
+  xy: 3727, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 redo_down
   rotate: false
-  xy: 3693, 95
+  xy: 3727, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 redo_checked_over
   rotate: false
-  xy: 3693, 61
+  xy: 3727, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 redo_over
   rotate: false
-  xy: 3693, 61
+  xy: 3727, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 redo_disabled
   rotate: false
-  xy: 3727, 95
+  xy: 3761, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 remove_corner
   rotate: false
-  xy: 3727, 61
+  xy: 3761, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 terrain_remove_corner
   rotate: false
-  xy: 3727, 61
+  xy: 3761, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 remove_corner_checked
   rotate: false
-  xy: 3761, 95
+  xy: 3795, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 remove_corner_down
   rotate: false
-  xy: 3761, 95
+  xy: 3795, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 terrain_remove_corner_checked
   rotate: false
-  xy: 3761, 95
+  xy: 3795, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 terrain_remove_corner_down
   rotate: false
-  xy: 3761, 95
+  xy: 3795, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 remove_corner_checked_over
   rotate: false
-  xy: 3761, 61
+  xy: 3795, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 remove_corner_over
   rotate: false
-  xy: 3761, 61
+  xy: 3795, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 terrain_remove_corner_checked_over
   rotate: false
-  xy: 3761, 61
+  xy: 3795, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 terrain_remove_corner_over
   rotate: false
-  xy: 3761, 61
+  xy: 3795, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 remove_corner_disabled
   rotate: false
-  xy: 3795, 95
+  xy: 3829, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 reset_center
   rotate: false
-  xy: 3795, 61
+  xy: 3829, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 reset_center_checked
   rotate: false
-  xy: 3829, 95
+  xy: 3863, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 reset_center_down
   rotate: false
-  xy: 3829, 95
+  xy: 3863, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 reset_center_checked_over
   rotate: false
-  xy: 3829, 61
+  xy: 3863, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 reset_center_over
   rotate: false
-  xy: 3829, 61
+  xy: 3863, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 reset_center_disabled
   rotate: false
-  xy: 3863, 95
+  xy: 3897, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 run
   rotate: false
-  xy: 3863, 61
+  xy: 3897, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 run_checked
   rotate: false
-  xy: 3897, 95
+  xy: 3931, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 run_down
   rotate: false
-  xy: 3897, 95
+  xy: 3931, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 run_checked_over
   rotate: false
-  xy: 3897, 61
+  xy: 3931, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 run_over
   rotate: false
-  xy: 3897, 61
+  xy: 3931, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 run_disabled
   rotate: false
-  xy: 3931, 95
+  xy: 3965, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 save
   rotate: false
-  xy: 3931, 61
+  xy: 3965, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 save_checked
   rotate: false
-  xy: 3965, 95
+  xy: 3999, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 save_down
   rotate: false
-  xy: 3965, 95
+  xy: 3999, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 save_checked_over
   rotate: false
-  xy: 3965, 61
+  xy: 3999, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 save_over
   rotate: false
-  xy: 3965, 61
+  xy: 3999, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 save_disabled
   rotate: false
-  xy: 3999, 95
+  xy: 4033, 95
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 screenshot
   rotate: false
-  xy: 3999, 61
+  xy: 4033, 61
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 screenshot_checked
   rotate: false
-  xy: 4033, 95
+  xy: 1313, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 screenshot_down
   rotate: false
-  xy: 4033, 95
+  xy: 1313, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 screenshot_checked_over
   rotate: false
-  xy: 4033, 61
+  xy: 1347, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 screenshot_over
   rotate: false
-  xy: 4033, 61
+  xy: 1347, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 screenshot_disabled
   rotate: false
-  xy: 1293, 13
+  xy: 1381, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 select
   rotate: false
-  xy: 1327, 27
+  xy: 1415, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 select_checked
   rotate: false
-  xy: 1361, 27
+  xy: 1449, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 select_down
   rotate: false
-  xy: 1361, 27
+  xy: 1449, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 select_checked_over
   rotate: false
-  xy: 1395, 27
+  xy: 1483, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 select_over
   rotate: false
-  xy: 1395, 27
+  xy: 1483, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 select_disabled
   rotate: false
-  xy: 1429, 27
+  xy: 1517, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 set_center
   rotate: false
-  xy: 1463, 27
+  xy: 1551, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 set_center_checked
   rotate: false
-  xy: 1497, 27
+  xy: 1585, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 set_center_down
   rotate: false
-  xy: 1497, 27
+  xy: 1585, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 set_center_checked_over
   rotate: false
-  xy: 1531, 27
+  xy: 1619, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 set_center_over
   rotate: false
-  xy: 1531, 27
+  xy: 1619, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 set_center_disabled
   rotate: false
-  xy: 1565, 27
+  xy: 1653, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 stub
   rotate: false
-  xy: 1599, 27
+  xy: 1687, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 stub_checked
   rotate: false
-  xy: 1633, 27
+  xy: 1721, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 stub_down
   rotate: false
-  xy: 1633, 27
+  xy: 1721, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 stub_checked_over
   rotate: false
-  xy: 1667, 27
+  xy: 1755, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 stub_over
   rotate: false
-  xy: 1667, 27
+  xy: 1755, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 stub_disabled
   rotate: false
-  xy: 1701, 27
+  xy: 1789, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 terrain_add_move_corner_disabled
   rotate: false
-  xy: 1735, 27
+  xy: 1823, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 terrain_remove_corner_disabled
   rotate: false
-  xy: 1769, 27
+  xy: 1857, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 tooltip
   rotate: false
-  xy: 1803, 27
+  xy: 1891, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 tooltip_checked
   rotate: false
-  xy: 1837, 27
+  xy: 1925, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 tooltip_down
   rotate: false
-  xy: 1837, 27
+  xy: 1925, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 tooltip_checked_over
   rotate: false
-  xy: 1871, 27
+  xy: 1959, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 tooltip_over
   rotate: false
-  xy: 1871, 27
+  xy: 1959, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 tooltip_disabled
   rotate: false
-  xy: 1905, 27
+  xy: 1993, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 triangle_shape
   rotate: false
-  xy: 1939, 27
+  xy: 2027, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 triangle_shape_checked
   rotate: false
-  xy: 1973, 27
+  xy: 2061, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 triangle_shape_down
   rotate: false
-  xy: 1973, 27
+  xy: 2061, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 triangle_shape_checked_over
   rotate: false
-  xy: 2007, 27
+  xy: 2095, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 triangle_shape_over
   rotate: false
-  xy: 2007, 27
+  xy: 2095, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 triangle_shape_disabled
   rotate: false
-  xy: 2041, 27
+  xy: 2129, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 trigger_add
   rotate: false
-  xy: 2075, 27
+  xy: 2163, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 trigger_add_checked
   rotate: false
-  xy: 2109, 27
+  xy: 2197, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 trigger_add_down
   rotate: false
-  xy: 2109, 27
+  xy: 2197, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 trigger_add_checked_over
   rotate: false
-  xy: 2143, 27
+  xy: 2231, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 trigger_add_over
   rotate: false
-  xy: 2143, 27
+  xy: 2231, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 trigger_add_disabled
   rotate: false
-  xy: 2177, 27
+  xy: 2265, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 undo
   rotate: false
-  xy: 2211, 27
+  xy: 2299, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 undo_checked
   rotate: false
-  xy: 2245, 27
+  xy: 2333, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 undo_down
   rotate: false
-  xy: 2245, 27
+  xy: 2333, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 undo_checked_over
   rotate: false
-  xy: 2279, 27
+  xy: 2367, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 undo_over
   rotate: false
-  xy: 2279, 27
+  xy: 2367, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 undo_disabled
   rotate: false
-  xy: 2313, 27
+  xy: 2401, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 visuals
   rotate: false
-  xy: 2347, 27
+  xy: 2435, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 visuals_checked
   rotate: false
-  xy: 2381, 27
+  xy: 2469, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 visuals_down
   rotate: false
-  xy: 2381, 27
+  xy: 2469, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 visuals_checked_over
   rotate: false
-  xy: 2415, 27
+  xy: 2503, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 visuals_over
   rotate: false
-  xy: 2415, 27
+  xy: 2503, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 visuals_disabled
   rotate: false
-  xy: 2449, 27
+  xy: 2537, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 weapon
   rotate: false
-  xy: 2483, 27
+  xy: 2571, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 weapon_checked
   rotate: false
-  xy: 2517, 27
+  xy: 2605, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 weapon_down
   rotate: false
-  xy: 2517, 27
+  xy: 2605, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 weapon_checked_over
   rotate: false
-  xy: 2551, 27
+  xy: 2639, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 weapon_over
   rotate: false
-  xy: 2551, 27
+  xy: 2639, 27
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
@@ -2851,7 +2858,7 @@ button_default_over
   index: -1
 button_default_disabled
   rotate: false
-  xy: 1313, 52
+  xy: 1303, 38
   size: 7, 7
   split: 3, 3, 3, 3
   orig: 7, 7
@@ -2859,7 +2866,7 @@ button_default_disabled
   index: -1
 button_default_up
   rotate: false
-  xy: 1327, 18
+  xy: 2673, 52
   size: 7, 7
   split: 3, 3, 3, 3
   orig: 7, 7

@@ -19,6 +19,7 @@ import com.spiddekauga.utils.scene.ui.GuiHider;
 import com.spiddekauga.utils.scene.ui.HideListener;
 import com.spiddekauga.utils.scene.ui.SliderListener;
 import com.spiddekauga.utils.scene.ui.TooltipListener;
+import com.spiddekauga.utils.scene.ui.TooltipWidget.ITooltip;
 import com.spiddekauga.utils.scene.ui.UiFactory.SliderMinMaxWrapper;
 import com.spiddekauga.utils.scene.ui.UiFactory.TabImageWrapper;
 import com.spiddekauga.utils.scene.ui.UiFactory.TabRadioWrapper;
@@ -180,19 +181,19 @@ public class EnemyEditorGui extends ActorGui {
 	 * Initializes the path labels
 	 */
 	private void initPathLabels() {
-		Label label = new Label("Back and Forth", mStyles.label.standard);
+		Label label = new Label("Back and Forth", mUiFactory.getStyles().label.standard);
 		Table wrapTable = new Table();
 		wrapTable.add(label);
 		mPathLabels.add(wrapTable);
 		mPathLabels.row();
 
-		label = new Label("Loop", mStyles.label.standard);
+		label = new Label("Loop", mUiFactory.getStyles().label.standard);
 		wrapTable = new Table();
 		wrapTable.add(label);
 		mPathLabels.add(wrapTable);
 		mPathLabels.row();
 
-		label = new Label("Once", mStyles.label.standard);
+		label = new Label("Once", mUiFactory.getStyles().label.standard);
 		wrapTable = new Table();
 		wrapTable.add(label);
 		mPathLabels.add(wrapTable);
@@ -337,7 +338,8 @@ public class EnemyEditorGui extends ActorGui {
 		offTab.tooltipText = Messages.Tooltip.Enemy.Movement.Ai.RANDOM_MOVEMENT;
 
 		// Create tabs
-		@SuppressWarnings("unchecked") ArrayList<TabWrapper> tabs = Pools.arrayList.obtain();
+		@SuppressWarnings("unchecked")
+		ArrayList<TabWrapper> tabs = Pools.arrayList.obtain();
 		tabs.add(onTab);
 		tabs.add(offTab);
 		mUiFactory.addTabs(table, hider, tabs, mDisabledWhenPublished, mInvoker);
@@ -444,7 +446,8 @@ public class EnemyEditorGui extends ActorGui {
 		offTab.tooltipText = Messages.Tooltip.Enemy.Movement.Common.TURNING_SPEED;
 
 		// Create tabs
-		@SuppressWarnings("unchecked") ArrayList<TabWrapper> tabs = Pools.arrayList.obtain();
+		@SuppressWarnings("unchecked")
+		ArrayList<TabWrapper> tabs = Pools.arrayList.obtain();
 		tabs.add(onTab);
 		tabs.add(offTab);
 		mUiFactory.addTabs(table, hider, tabs, mDisabledWhenPublished, mInvoker);
@@ -536,7 +539,8 @@ public class EnemyEditorGui extends ActorGui {
 
 
 		// Create buttons
-		@SuppressWarnings("unchecked") ArrayList<TabWrapper> tabs = Pools.arrayList.obtain();
+		@SuppressWarnings("unchecked")
+		ArrayList<TabWrapper> tabs = Pools.arrayList.obtain();
 		tabs.add(pathTab);
 		tabs.add(aiTab);
 		tabs.add(stationaryTab);
@@ -783,6 +787,26 @@ public class EnemyEditorGui extends ActorGui {
 		mWidgets.weapon.aimRotateSpeed = mUiFactory.addSlider("Speed", Enemy.Weapon.ROTATE_SPEED_MIN, Enemy.Weapon.ROTATE_SPEED_MAX,
 				Enemy.Weapon.ROTATE_SPEED_STEP_SIZE, sliderListener, table, Messages.Tooltip.Enemy.Weapon.Aim.ROTATE_SPEED, rotateTab.hider,
 				mDisabledWhenPublished, mInvoker);
+	}
+
+	@Override
+	ITooltip getFileNewTooltip() {
+		return Messages.EditorTooltips.FILE_NEW_ENEMY;
+	}
+
+	@Override
+	ITooltip getFileDuplicateTooltip() {
+		return Messages.EditorTooltips.FILE_DUPLICATE_ENEMY;
+	}
+
+	@Override
+	ITooltip getFilePublishTooltip() {
+		return Messages.EditorTooltips.FILE_PUBLISH_ENEMY;
+	}
+
+	@Override
+	ITooltip getFileInfoTooltip() {
+		return Messages.EditorTooltips.FILE_INFO_ENEMY;
 	}
 
 	// Tables

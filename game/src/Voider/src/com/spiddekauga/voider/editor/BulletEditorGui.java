@@ -7,9 +7,11 @@ import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.SliderListener;
+import com.spiddekauga.utils.scene.ui.TooltipWidget.ITooltip;
 import com.spiddekauga.utils.scene.ui.UiFactory.SliderMinMaxWrapper;
 import com.spiddekauga.voider.Config.Editor.Weapon;
 import com.spiddekauga.voider.resources.SkinNames;
+import com.spiddekauga.voider.utils.Messages;
 
 /**
  * GUI for the bullet editor
@@ -113,13 +115,33 @@ public class BulletEditorGui extends ActorGui {
 				+ "test how the bullet will appear on " + "different weapons.";
 
 
-		Label label = new Label(warningText, mStyles.label.highlight);
+		Label label = new Label(warningText, mUiFactory.getStyles().label.highlight);
 		label.setWrap(true);
 		label.setWidth(240);
 		label.layout();
 		mWeaponTable.setName("weapon");
 		mWeaponTable.row().setFillWidth(true).setAlign(Horizontal.CENTER, Vertical.TOP);
 		mWeaponTable.add(label).setFillWidth(true).setAlign(Horizontal.CENTER, Vertical.TOP);
+	}
+
+	@Override
+	ITooltip getFileNewTooltip() {
+		return Messages.EditorTooltips.FILE_NEW_BULLET;
+	}
+
+	@Override
+	ITooltip getFileDuplicateTooltip() {
+		return Messages.EditorTooltips.FILE_DUPLICATE_BULLET;
+	}
+
+	@Override
+	ITooltip getFilePublishTooltip() {
+		return Messages.EditorTooltips.FILE_PUBLISH_BULLET;
+	}
+
+	@Override
+	ITooltip getFileInfoTooltip() {
+		return Messages.EditorTooltips.FILE_INFO_BULLET;
 	}
 
 	// Tables
@@ -144,4 +166,5 @@ public class BulletEditorGui extends ActorGui {
 			Slider cooldownMax = null;
 		}
 	}
+
 }

@@ -11,6 +11,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
+import javax.swing.JOptionPane;
+
 import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.tools.imagepacker.TexturePacker2;
 import com.badlogic.gdx.tools.imagepacker.TexturePacker2.Settings;
@@ -19,7 +21,6 @@ import com.esotericsoftware.minlog.Log.Logger;
 
 /**
  * Packs all the textures in a specified directory to seperate atlases.
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class Main {
@@ -65,7 +66,7 @@ public class Main {
 
 		String path = getExecDir();
 
-		//		Log.setLogger(new FileLogger(path));
+		// Log.setLogger(new FileLogger(path));
 		Log.DEBUG();
 		Log.debug(path + "\n\n");
 
@@ -94,16 +95,18 @@ public class Main {
 			if (folder.exists()) {
 				File[] listOfFiles = folder.listFiles();
 
-				for (int i = 0; i < listOfFiles.length; i++)
-				{
-					if (listOfFiles[i].isDirectory())
-					{
+				for (int i = 0; i < listOfFiles.length; i++) {
+					if (listOfFiles[i].isDirectory()) {
 						String filename = listOfFiles[i].getName();
 						String fullPath = listOfFiles[i].getAbsolutePath();
 						TexturePacker2.processIfModified(settings, fullPath, atlasDir, filename);
 					}
 				}
 			}
+		}
+
+		if (DROPBOX_PACKER) {
+			JOptionPane.showMessageDialog(null, "All images have been packed!", "Done!", JOptionPane.INFORMATION_MESSAGE);
 		}
 	}
 
@@ -139,13 +142,11 @@ public class Main {
 
 	/**
 	 * File logger
-	 * 
-	 * 
 	 * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
 	 */
 	static public class FileLogger extends Logger {
 		@Override
-		public void log (int level, String category, String message, Throwable ex) {
+		public void log(int level, String category, String message, Throwable ex) {
 			StringBuilder builder = new StringBuilder(256);
 			builder.append(mDateFormat.format(new Date()));
 			builder.append(' ');

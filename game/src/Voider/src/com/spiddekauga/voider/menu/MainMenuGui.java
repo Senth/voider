@@ -73,8 +73,8 @@ public class MainMenuGui extends MenuGui {
 		mMainTable.row();
 		Button button = new ImageButton(skin, SkinNames.General.PLAY.toString());
 		mMainTable.add(button);
-		TooltipListener tooltipListener = new TooltipListener(button, Messages.Tooltip.Menus.Main.PLAY);
-		new ButtonListener(button, tooltipListener) {
+		new TooltipListener(button, Messages.Tooltip.Menus.Main.PLAY);
+		new ButtonListener(button) {
 			@Override
 			protected void onPressed() {
 				mMenuScene.pushMenu(Menus.PLAY);
@@ -85,8 +85,8 @@ public class MainMenuGui extends MenuGui {
 		// Explore
 		button = new ImageButton(skin, SkinNames.General.EXPLORE.toString());
 		mMainTable.add(button);
-		tooltipListener = new TooltipListener(button, Messages.Tooltip.Menus.Main.EXPLORE);
-		new ButtonListener(button, tooltipListener) {
+		new TooltipListener(button, Messages.Tooltip.Menus.Main.EXPLORE);
+		new ButtonListener(button) {
 			@Override
 			protected void onPressed() {
 				mMenuScene.gotoExplore();
@@ -97,8 +97,8 @@ public class MainMenuGui extends MenuGui {
 		// Create
 		button = new ImageButton(skin, SkinNames.General.CREATE.toString());
 		mMainTable.add(button);
-		tooltipListener = new TooltipListener(button, Messages.Tooltip.Menus.Main.CREATE);
-		new ButtonListener(button, tooltipListener) {
+		new TooltipListener(button, Messages.Tooltip.Menus.Main.CREATE);
+		new ButtonListener(button) {
 			@Override
 			protected void onPressed() {
 				mMenuScene.pushMenu(Menus.EDITOR);
@@ -130,7 +130,7 @@ public class MainMenuGui extends MenuGui {
 		button = new ImageButton(skin, SkinNames.General.LOGOUT.toString());
 		mLogoutTable.add(button);
 		new TooltipListener(button, Messages.Tooltip.Menus.Main.LOGOUT);
-		new ButtonListener(button, tooltipListener) {
+		new ButtonListener(button) {
 			@Override
 			protected void onPressed() {
 				new CUserLogout().execute();

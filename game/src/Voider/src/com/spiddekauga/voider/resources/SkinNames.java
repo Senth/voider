@@ -220,17 +220,29 @@ public class SkinNames {
 	}
 
 	/**
-	 * Editor tooltips
+	 * Editor images
 	 */
-	public enum EditorTooltips {
+	public enum EditorImages implements IImageNames {
+		/** Youtube icon */
+		YOUTUBE,
+		/** Tooltip */
+		TOOLTIP,
 
 		;
 
 		/**
-		 * Creates a more user-friendly name for the enumeration
+		 * Used default JSON name for enum
 		 */
-		private EditorTooltips() {
-			mName = super.toString().toLowerCase();
+		private EditorImages() {
+			mName = name().toLowerCase();
+		}
+
+		/**
+		 * Create a custom name for the enumeration
+		 * @param jsonName name in the json-file
+		 */
+		private EditorImages(String jsonName) {
+			mName = jsonName;
 		}
 
 		/**
@@ -241,6 +253,11 @@ public class SkinNames {
 			return mName;
 		}
 
+		@Override
+		public InternalNames getSkinName() {
+			return InternalNames.UI_EDITOR;
+		}
+
 		/** skin name of the icon */
 		private String mName;
 	}
@@ -248,6 +265,7 @@ public class SkinNames {
 	/**
 	 * Editor variables
 	 */
+
 	public enum EditorVars implements ISkinNames {
 		/** Enemy will be activated when test running from here, line color */
 		ENEMY_ACTIVATE_ON_TEST_RUN_OUTLINE_COLOR(Color.class),
@@ -598,6 +616,8 @@ public class SkinNames {
 		LABEL_ERROR_SECTION_INFO(LabelStyle.class, "error_section_info"),
 		/** Section error message (usually above/below text fields). */
 		LABEL_ERROR_SECTION(LabelStyle.class, "error_section"),
+		/** Tooltip label */
+		LABEL_TOOLTIP(LabelStyle.class, "tooltip"),
 		/** List default */
 		LIST_DEFAULT(ListStyle.class, "default"),
 		/** Logout button */

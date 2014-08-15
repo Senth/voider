@@ -6,7 +6,6 @@ import org.apache.commons.lang.WordUtils;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -17,18 +16,12 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
-import com.badlogic.gdx.scenes.scene2d.ui.CheckBox.CheckBoxStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane.ScrollPaneStyle;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Slider.SliderStyle;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
-import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.spiddekauga.utils.commands.CInvokerUndoToDelimiter;
 import com.spiddekauga.utils.commands.Command;
@@ -39,7 +32,8 @@ import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.utils.scene.ui.DisableListener;
 import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
-import com.spiddekauga.utils.scene.ui.TooltipListener;
+import com.spiddekauga.utils.scene.ui.TooltipWidget;
+import com.spiddekauga.utils.scene.ui.TooltipWidget.ITooltip;
 import com.spiddekauga.utils.scene.ui.UiFactory.BarLocations;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.editor.commands.CDefHasValidName;
@@ -54,8 +48,6 @@ import com.spiddekauga.voider.editor.commands.CSceneReturn;
 import com.spiddekauga.voider.editor.commands.CSceneSwitch;
 import com.spiddekauga.voider.game.actors.ActorFilterCategories;
 import com.spiddekauga.voider.menu.MainMenu;
-import com.spiddekauga.voider.repo.InternalNames;
-import com.spiddekauga.voider.repo.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.IResourceTexture;
 import com.spiddekauga.voider.resources.SkinNames;
@@ -121,11 +113,11 @@ public abstract class EditorGui extends Gui {
 			mEditMenu.setName("EditMenu");
 			mFileMenu.setName("FileMenu");
 			mToolMenu.setName("ToolMenu");
+
+			initTooltipBar();
 		}
 
 		mBodies = Pools.arrayList.obtain();
-
-		initStyles();
 
 		mEditorMenu.setAlignTable(Horizontal.LEFT, Vertical.TOP);
 		mEditMenu.setAlignTable(Horizontal.CENTER, Vertical.TOP);
@@ -136,55 +128,21 @@ public abstract class EditorGui extends Gui {
 		mNameTable.setAlignTable(Horizontal.LEFT, Vertical.TOP);
 		mNameTable.setAlignRow(Horizontal.LEFT, Vertical.MIDDLE);
 
-		mEditorMenu.setMargin(mStyles.vars.paddingOuter);
-		mEditMenu.setMargin(mStyles.vars.paddingOuter);
-		mFileMenu.setMargin(mStyles.vars.paddingOuter);
+		mEditorMenu.setMargin(mUiFactory.getStyles().vars.paddingOuter);
+		mEditMenu.setMargin(mUiFactory.getStyles().vars.paddingOuter);
+		mFileMenu.setMargin(mUiFactory.getStyles().vars.paddingOuter);
 
 		initEditorMenu();
 		initEditMenu();
 		initFileMenu();
 		initNameTable();
 
-		float marginOuter = mStyles.vars.paddingOuter;
-		float marginTop = mStyles.vars.barUpperLowerHeight * 2 + marginOuter;
+		float marginOuter = mUiFactory.getStyles().vars.paddingOuter;
+		float marginTop = mUiFactory.getStyles().vars.barUpperLowerHeight * 2 + marginOuter;
 		float marginBottom = getTopBottomPadding();
 		mToolMenu.setMargin(marginTop, marginOuter, marginBottom, marginOuter);
 
 		initTopBottomBar();
-	}
-
-	/**
-	 * Initializes the styles
-	 */
-	private void initStyles() {
-		mStyles.skin.general = ResourceCacheFacade.get(InternalNames.UI_GENERAL);
-		mStyles.skin.editor = ResourceCacheFacade.get(InternalNames.UI_EDITOR);
-		mStyles.textButton.press = SkinNames.getResource(SkinNames.General.TEXT_BUTTON_PRESS);
-		mStyles.textButton.toggle = SkinNames.getResource(SkinNames.General.TEXT_BUTTON_TOGGLE);
-		mStyles.textButton.selected = SkinNames.getResource(SkinNames.General.TEXT_BUTTON_SELECTED);
-		mStyles.slider.standard = SkinNames.getResource(SkinNames.General.SLIDER_DEFAULT);
-		mStyles.textField.standard = SkinNames.getResource(SkinNames.General.TEXT_FIELD_DEFAULT);
-		mStyles.label.standard = SkinNames.getResource(SkinNames.General.LABEL_DEFAULT);
-		mStyles.label.error = SkinNames.getResource(SkinNames.General.LABEL_ERROR);
-		mStyles.label.highlight = SkinNames.getResource(SkinNames.General.LABEL_HIGHLIGHT);
-		mStyles.label.success = SkinNames.getResource(SkinNames.General.LABEL_SUCCESS);
-		mStyles.label.name = SkinNames.getResource(SkinNames.General.LABEL_EDITOR_NAME);
-		mStyles.checkBox.checkBox = SkinNames.getResource(SkinNames.General.CHECK_BOX_DEFAULT);
-		mStyles.checkBox.radio = SkinNames.getResource(SkinNames.General.CHECK_BOX_RADIO);
-		mStyles.scrollPane.noBackground = SkinNames.getResource(SkinNames.General.SCROLL_PANE_DEFAULT);
-		mStyles.scrollPane.windowBackground = SkinNames.getResource(SkinNames.General.SCROLL_PANE_WINDOW_BACKGROUND);
-
-		// Colors
-		mStyles.colors.widgetBackground = SkinNames.getResource(SkinNames.GeneralVars.WIDGET_BACKGROUND_COLOR);
-
-		// Vars
-		mStyles.vars.paddingSeparator = SkinNames.getResource(SkinNames.GeneralVars.PADDING_SEPARATOR);
-		mStyles.vars.paddingAfterLabel = SkinNames.getResource(SkinNames.GeneralVars.PADDING_LABEL_AFTER);
-		mStyles.vars.paddingOuter = SkinNames.getResource(SkinNames.GeneralVars.PADDING_OUTER);
-		mStyles.vars.paddingInner = SkinNames.getResource(SkinNames.GeneralVars.PADDING_INNER);
-		mStyles.vars.textFieldNumberWidth = SkinNames.getResource(SkinNames.GeneralVars.TEXT_FIELD_NUMBER_WIDTH);
-		mStyles.vars.barUpperLowerHeight = SkinNames.getResource(SkinNames.GeneralVars.BAR_UPPER_LOWER_HEIGHT);
-		mStyles.vars.textFieldWidth = SkinNames.getResource(SkinNames.GeneralVars.TEXT_FIELD_WIDTH);
 	}
 
 	/**
@@ -195,16 +153,24 @@ public abstract class EditorGui extends Gui {
 	}
 
 	/**
+	 * Initializes the tooltip bottom bar
+	 */
+	private void initTooltipBar() {
+		mTooltip = mUiFactory.createTooltipWidget();
+		addActor(mTooltip);
+	}
+
+	/**
 	 * Initializes the name table
 	 */
 	private void initNameTable() {
-		float margin = mStyles.vars.paddingOuter;
+		float margin = mUiFactory.getStyles().vars.paddingOuter;
 		mNameTable.setMargin(getTopBottomPadding(), margin, margin, margin);
 		getStage().addActor(mNameTable);
 		mNameTable.setKeepHeight(true);
-		mNameTable.setHeight(mStyles.vars.barUpperLowerHeight - margin * 2);
+		mNameTable.setHeight(mUiFactory.getStyles().vars.barUpperLowerHeight - margin * 2);
 
-		mNameLabel = new Label("", mStyles.label.name);
+		mNameLabel = new Label("", (LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_EDITOR_NAME));
 		mNameTable.row().setFillHeight(true);
 		mNameTable.add(mNameLabel).setFillHeight(true);
 	}
@@ -287,86 +253,82 @@ public abstract class EditorGui extends Gui {
 
 		// Campaign editor
 		if (this.getClass() == CampaignEditorGui.class) {
-			button = new ImageButton(mStyles.skin.editor, EditorIcons.CAMPAIGN_EDITOR_SELECTED.toString());
+			button = mUiFactory.addImageButton(EditorIcons.CAMPAIGN_EDITOR_SELECTED, mEditorMenu, null, null);
 		} else {
-			button = new ImageButton(mStyles.skin.editor, EditorIcons.CAMPAIGN_EDITOR.toString());
+			button = mUiFactory.addImageButton(EditorIcons.CAMPAIGN_EDITOR, mEditorMenu, null, null);
 		}
-		TooltipListener tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Menus.Editor.CAMPAIGN, "level"));
-		mEditorMenu.add(button);
-		if (this.getClass() != LevelEditorGui.class) {
-			new ButtonListener(button, tooltipListener) {
+		if (this.getClass() != CampaignEditorGui.class) {
+			new ButtonListener(button) {
 				@Override
 				protected void onPressed() {
 					switchReturnTo("Campaign Editor", new CSceneSwitch(CampaignEditor.class), UnsavedActions.CAMPAIGN_EDITOR);
 				}
 			};
 		}
+		mTooltip.add(button, Messages.EditorTooltips.EDITOR_CAMPAIGN);
 
 
 		// Level editor
 		if (this.getClass() == LevelEditorGui.class) {
-			button = new ImageButton(mStyles.skin.editor, EditorIcons.LEVEL_EDITOR_SELECTED.toString());
+			button = mUiFactory.addImageButton(EditorIcons.LEVEL_EDITOR_SELECTED, mEditorMenu, null, null);
 		} else {
-			button = new ImageButton(mStyles.skin.editor, EditorIcons.LEVEL_EDITOR.toString());
+			button = mUiFactory.addImageButton(EditorIcons.LEVEL_EDITOR, mEditorMenu, null, null);
 		}
-		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Menus.Editor.LEVEL, "level"));
-		mEditorMenu.add(button);
 		if (this.getClass() != LevelEditorGui.class) {
-			new ButtonListener(button, tooltipListener) {
+			new ButtonListener(button) {
 				@Override
 				protected void onPressed() {
 					switchReturnTo("Level Editor", new CSceneSwitch(LevelEditor.class), UnsavedActions.LEVEL_EDITOR);
 				}
 			};
 		}
+		mTooltip.add(button, Messages.EditorTooltips.EDITOR_LEVEL);
 
 
 		// Enemy editor
 		if (this.getClass() == EnemyEditorGui.class) {
-			button = new ImageButton(mStyles.skin.editor, EditorIcons.ENEMY_EDITOR_SELECTED.toString());
+			button = mUiFactory.addImageButton(EditorIcons.ENEMY_EDITOR_SELECTED, mEditorMenu, null, null);
 		} else {
-			button = new ImageButton(mStyles.skin.editor, EditorIcons.ENEMY_EDITOR.toString());
+			button = mUiFactory.addImageButton(EditorIcons.ENEMY_EDITOR, mEditorMenu, null, null);
 		}
-		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Menus.Editor.ENEMY, "enemy"));
-		mEditorMenu.add(button);
 		if (this.getClass() != EnemyEditorGui.class) {
-			new ButtonListener(button, tooltipListener) {
+			new ButtonListener(button) {
 				@Override
 				protected void onPressed() {
 					switchReturnTo("Enemy Editor", new CSceneSwitch(EnemyEditor.class), UnsavedActions.ENEMY_EDITOR);
 				}
 			};
 		}
+		mTooltip.add(button, Messages.EditorTooltips.EDITOR_ENEMY);
 
 
 		// Bullet editor
 		if (this.getClass() == BulletEditorGui.class) {
-			button = new ImageButton(mStyles.skin.editor, EditorIcons.BULLET_EDITOR_SELECTED.toString());
+			button = mUiFactory.addImageButton(EditorIcons.BULLET_EDITOR_SELECTED, mEditorMenu, null, null);
 		} else {
-			button = new ImageButton(mStyles.skin.editor, EditorIcons.BULLET_EDITOR.toString());
+			button = mUiFactory.addImageButton(EditorIcons.BULLET_EDITOR, mEditorMenu, null, null);
 		}
-		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Menus.Editor.BULLET, "bullet"));
-		mEditorMenu.add(button).setPadRight(mStyles.vars.paddingSeparator);
 		if (this.getClass() != BulletEditorGui.class) {
-			new ButtonListener(button, tooltipListener) {
+			new ButtonListener(button) {
 				@Override
 				protected void onPressed() {
-					switchReturnTo("Bullet Editor", new CSceneSwitch(BulletEditor.class), UnsavedActions.ENEMY_EDITOR);
+					switchReturnTo("Bullet Editor", new CSceneSwitch(BulletEditor.class), UnsavedActions.BULLET_EDITOR);
 				}
 			};
 		}
+		mTooltip.add(button, Messages.EditorTooltips.EDITOR_BULLET);
 	}
 
 	/**
 	 * Initializes the edit menu
 	 */
 	private void initEditMenu() {
+		Button button;
+
 		// Undo
-		Button button = new ImageButton(mStyles.skin.editor, EditorIcons.UNDO.toString());
-		mDisabledWhenPublished.add(button);
-		mEditMenu.add(button);
-		TooltipListener tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Menus.File.UNDO, getResourceTypeName()));
-		new ButtonListener(button, tooltipListener) {
+		button = mUiFactory.addImageButton(EditorIcons.UNDO, mEditMenu, null, mDisabledWhenPublished);
+		mTooltip.add(button, Messages.EditorTooltips.ACTION_UNDO);
+		new ButtonListener(button) {
 			@Override
 			protected void onPressed() {
 				mEditor.getInvoker().undo();
@@ -374,26 +336,50 @@ public abstract class EditorGui extends Gui {
 		};
 
 		// Redo
-		button = new ImageButton(mStyles.skin.editor, EditorIcons.REDO.toString());
-		mDisabledWhenPublished.add(button);
-		mEditMenu.add(button);
-		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Menus.File.REDO, getResourceTypeName()));
-		new ButtonListener(button, tooltipListener) {
+		button = mUiFactory.addImageButton(EditorIcons.REDO, mEditMenu, null, mDisabledWhenPublished);
+		mTooltip.add(button, Messages.EditorTooltips.ACTION_REDO);
+		new ButtonListener(button) {
 			@Override
 			protected void onPressed() {
 				mEditor.getInvoker().redo();
 			}
 		};
 
+		// Grid stuff
+		if (getClass() != CampaignEditorGui.class) {
+			// Grid
+			button = mUiFactory.addImageButton(EditorIcons.GRID, mEditMenu, null, null);
+			mTooltip.add(button, Messages.EditorTooltips.ACTION_GRID_TOGGLE);
+			mGridRender = button;
+			DisableListener disableListener = new DisableListener(button);
+			new ButtonListener(button) {
+				@Override
+				protected void onChecked(boolean checked) {
+					mEditor.setGrid(checked);
+				}
+			};
+
+			// Grid above
+			button = mUiFactory.addImageButton(EditorIcons.GRID_ABOVE, mEditMenu, null, null);
+			mTooltip.add(button, Messages.EditorTooltips.ACTION_GRID_ABOVE);
+			mGridRenderAbove = button;
+			disableListener.addToggleActor(button);
+			new ButtonListener(button) {
+				@Override
+				protected void onChecked(boolean checked) {
+					mEditor.setGridRenderAboveResources(checked);
+				}
+			};
+		}
+
 		// Run & Enemy highlight (for level editor)
 		if (mEditor instanceof LevelEditor) {
 			// Highlight enemy if it will spawn when test running the level from
 			// the current position
-			button = new ImageButton(mStyles.skin.editor, EditorIcons.ENEMY_SPAWN_HIGHLIGHT.toString());
+			button = mUiFactory.addImageButton(EditorIcons.ENEMY_SPAWN_HIGHLIGHT, mEditMenu, null, null);
+			mTooltip.add(button, Messages.EditorTooltips.ACTION_ENEMY_SPAWN);
 			mEnemyHighlight = button;
-			mEditMenu.add(button);
-			tooltipListener = new TooltipListener(button, Messages.Tooltip.Menus.File.HIGHLIGHT_ENEMY);
-			new ButtonListener(button, tooltipListener) {
+			new ButtonListener(button) {
 				@Override
 				protected void onChecked(boolean checked) {
 					((LevelEditor) mEditor).setEnemyHighlight(checked);
@@ -401,10 +387,9 @@ public abstract class EditorGui extends Gui {
 			};
 
 			// Run
-			button = new ImageButton(mStyles.skin.editor, EditorIcons.RUN.toString());
-			mEditMenu.add(button);
-			tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Menus.File.RUN, getResourceTypeName()));
-			new ButtonListener(button, tooltipListener) {
+			button = mUiFactory.addImageButton(EditorIcons.RUN, mEditMenu, null, null);
+			mTooltip.add(button, Messages.EditorTooltips.ACTION_PLAY);
+			new ButtonListener(button) {
 				@Override
 				protected void onPressed() {
 					MsgBoxExecuter msgBox = getFreeMsgBox(true);
@@ -419,45 +404,42 @@ public abstract class EditorGui extends Gui {
 			};
 		}
 
-		// Grid stuff
-		if (getClass() != CampaignEditorGui.class) {
-			// Grid
-			button = new ImageButton(mStyles.skin.editor, EditorIcons.GRID.toString());
-			mGridRender = button;
-			DisableListener disableListener = new DisableListener(button);
-			mEditMenu.add(button);
-			tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Menus.File.GRID, getResourceTypeName()));
-			new ButtonListener(button, tooltipListener) {
-				@Override
-				protected void onChecked(boolean checked) {
-					mEditor.setGrid(checked);
-				}
-			};
 
-			// Grid above
-			button = new ImageButton(mStyles.skin.editor, EditorIcons.GRID_ABOVE.toString());
-			mGridRenderAbove = button;
-			disableListener.addToggleActor(button);
-			mEditMenu.add(button).setPadRight(mStyles.vars.paddingSeparator);
-			tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Menus.File.GRID_ADOVE, getResourceTypeName()));
-			new ButtonListener(button, tooltipListener) {
-				@Override
-				protected void onChecked(boolean checked) {
-					mEditor.setGridRenderAboveResources(checked);
-				}
-			};
-		}
 	}
+
+	/**
+	 * @return get file new tooltip
+	 */
+	abstract ITooltip getFileNewTooltip();
+
+	/**
+	 * @return get file duplicate tooltip
+	 */
+	abstract ITooltip getFileDuplicateTooltip();
+
+	/**
+	 * @return get file publish tooltip
+	 */
+	abstract ITooltip getFilePublishTooltip();
+
+	/**
+	 * @return get file info tooltip
+	 */
+	abstract ITooltip getFileInfoTooltip();
 
 	/**
 	 * Initializes the file menu
 	 */
 	private void initFileMenu() {
+		Button button;
+
 		// New
-		Button button = new ImageButton(mStyles.skin.editor, EditorIcons.NEW.toString());
-		mFileMenu.add(button);
-		TooltipListener tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Menus.File.NEW, getResourceTypeName()));
-		new ButtonListener(button, tooltipListener) {
+		button = mUiFactory.addImageButton(EditorIcons.NEW, mFileMenu, null, null);
+		ITooltip tooltip = getFileNewTooltip();
+		if (tooltip != null) {
+			mTooltip.add(button, tooltip);
+		}
+		new ButtonListener(button) {
 			@Override
 			protected void onPressed() {
 				executeCommandAndCheckSave(new CEditorNew(mEditor), "New " + getResourceTypeName(), "Save first", "Discard current",
@@ -466,10 +448,12 @@ public abstract class EditorGui extends Gui {
 		};
 
 		// Duplicate
-		button = new ImageButton(mStyles.skin.editor, EditorIcons.DUPLICATE.toString());
-		mFileMenu.add(button);
-		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Menus.File.DUPLICATE, getResourceTypeName()));
-		new ButtonListener(button, tooltipListener) {
+		button = mUiFactory.addImageButton(EditorIcons.DUPLICATE, mFileMenu, null, null);
+		tooltip = getFileDuplicateTooltip();
+		if (tooltip != null) {
+			mTooltip.add(button, tooltip);
+		}
+		new ButtonListener(button) {
 			@Override
 			protected void onPressed() {
 				MsgBoxExecuter msgBox = getFreeMsgBox(true);
@@ -483,11 +467,9 @@ public abstract class EditorGui extends Gui {
 		};
 
 		// Save
-		button = new ImageButton(mStyles.skin.editor, EditorIcons.SAVE.toString());
-		mDisabledWhenPublished.add(button);
-		mFileMenu.add(button);
-		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Menus.File.SAVE, getResourceTypeName()));
-		new ButtonListener(button, tooltipListener) {
+		button = mUiFactory.addImageButton(EditorIcons.SAVE, mFileMenu, null, mDisabledWhenPublished);
+		mTooltip.add(button, Messages.EditorTooltips.FILE_SAVE);
+		new ButtonListener(button) {
 			@Override
 			protected void onPressed() {
 				mEditor.saveDef();
@@ -495,10 +477,9 @@ public abstract class EditorGui extends Gui {
 		};
 
 		// Load
-		button = new ImageButton(mStyles.skin.editor, EditorIcons.LOAD.toString());
-		mFileMenu.add(button);
-		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Menus.File.LOAD, getResourceTypeName()));
-		new ButtonListener(button, tooltipListener) {
+		button = mUiFactory.addImageButton(EditorIcons.LOAD, mFileMenu, null, null);
+		mTooltip.add(button, Messages.EditorTooltips.FILE_OPEN);
+		new ButtonListener(button) {
 			@Override
 			protected void onPressed() {
 				executeCommandAndCheckSave(new CEditorLoad(mEditor), "Load another " + getResourceTypeName(), "Save first", "Discard current",
@@ -507,11 +488,12 @@ public abstract class EditorGui extends Gui {
 		};
 
 		// Publish
-		button = new ImageButton(mStyles.skin.editor, EditorIcons.PUBLISH.toString());
-		mDisabledWhenPublished.add(button);
-		mFileMenu.add(button);
-		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Menus.File.PUBLISH, getResourceTypeName()));
-		new ButtonListener(button, tooltipListener) {
+		button = mUiFactory.addImageButton(EditorIcons.PUBLISH, mFileMenu, null, mDisabledWhenPublished);
+		tooltip = getFilePublishTooltip();
+		if (tooltip != null) {
+			mTooltip.add(button, tooltip);
+		}
+		new ButtonListener(button) {
 			@Override
 			protected void onPressed() {
 				boolean showPublish = true;
@@ -525,7 +507,7 @@ public abstract class EditorGui extends Gui {
 						msgBox.setTitle("No screenshot taken");
 						String text = "Please take a screenshot of this level before publishing it. "
 								+ "You can do this by test running the level and click on the camera " + "icon in the top bar.";
-						Label label = new Label(text, mStyles.label.standard);
+						Label label = new Label(text, mUiFactory.getStyles().label.standard);
 						msgBox.content(label);
 						msgBox.addCancelButtonAndKeys("OK");
 						label.setWrap(true);
@@ -542,7 +524,7 @@ public abstract class EditorGui extends Gui {
 					msgBox.setTitle("Offline");
 					String text = "You need to go online to publish the level. Currently this is "
 							+ "only possible by either logging out and logging in or restarting " + "the game.";
-					Label label = new Label(text, mStyles.label.standard);
+					Label label = new Label(text, mUiFactory.getStyles().label.standard);
 					msgBox.content(label);
 					msgBox.addCancelButtonAndKeys("OK");
 					label.setWrap(true);
@@ -557,10 +539,12 @@ public abstract class EditorGui extends Gui {
 		};
 
 		// Info
-		button = new ImageButton(mStyles.skin.editor, EditorIcons.INFO.toString());
-		mFileMenu.add(button);
-		tooltipListener = new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Menus.File.INFO, getResourceTypeName()));
-		new ButtonListener(button, tooltipListener) {
+		button = mUiFactory.addImageButton(EditorIcons.INFO, mFileMenu, null, null);
+		tooltip = getFileInfoTooltip();
+		if (tooltip != null) {
+			mTooltip.add(button, tooltip);
+		}
+		new ButtonListener(button) {
 			@Override
 			protected void onPressed() {
 				showInfoDialog();
@@ -576,9 +560,7 @@ public abstract class EditorGui extends Gui {
 		msgBox.setTitle("Publish");
 
 		AlignTable content = new AlignTable();
-		content.setPaddingCellDefault(mStyles.vars.paddingDefault);
-
-		Label label = new Label("", mStyles.label.highlight);
+		Label label = new Label("", mUiFactory.getStyles().label.highlight);
 
 		float width = Gdx.graphics.getWidth() * 0.5f;
 
@@ -593,7 +575,6 @@ public abstract class EditorGui extends Gui {
 		// Add external dependencies
 		content.row();
 		AlignTable depTable = new AlignTable();
-		depTable.setPaddingCellDefault(mStyles.vars.paddingDefault);
 		depTable.setAlign(Horizontal.LEFT, Vertical.TOP);
 		ArrayList<Def> dependencies = mEditor.getNonPublishedDependencies();
 
@@ -603,13 +584,13 @@ public abstract class EditorGui extends Gui {
 			// Add image
 			if (dependency instanceof IResourceTexture) {
 				Image image = new Image(((IResourceTexture) dependency).getTextureRegionDrawable());
-				depTable.add(image).setSize(50, 50).setPadRight(mStyles.vars.paddingAfterLabel);
+				depTable.add(image).setSize(50, 50).setPadRight(mUiFactory.getStyles().vars.paddingInner);
 			} else {
-				depTable.add().setPadRight(50 + mStyles.vars.paddingAfterLabel);
+				depTable.add().setPadRight(50 + mUiFactory.getStyles().vars.paddingInner);
 			}
 
 			// Add name
-			label = new Label(dependency.getName(), mStyles.label.standard);
+			label = new Label(dependency.getName(), mUiFactory.getStyles().label.standard);
 			depTable.add(label);
 		}
 
@@ -819,7 +800,7 @@ public abstract class EditorGui extends Gui {
 	 * @return number of pixels to pad above and below the bars
 	 */
 	protected float getTopBottomPadding() {
-		return mStyles.vars.barUpperLowerHeight + mStyles.vars.paddingOuter;
+		return mUiFactory.getStyles().vars.barUpperLowerHeight + mUiFactory.getStyles().vars.paddingOuter;
 	}
 
 	/**
@@ -840,79 +821,11 @@ public abstract class EditorGui extends Gui {
 	 */
 	public abstract void setInfoNameError(String errorText);
 
-	/**
-	 * Container for all UI styles
-	 */
-	@SuppressWarnings("javadoc")
-	protected static class UiStyles {
-		TextButtons textButton = new TextButtons();
-		Sliders slider = new Sliders();
-		TextFields textField = new TextFields();
-		Skins skin = new Skins();
-		Labels label = new Labels();
-		CheckBoxes checkBox = new CheckBoxes();
-		ScrollPane scrollPane = new ScrollPane();
-		Variables vars = new Variables();
-		Colors colors = new Colors();
 
-		static class Variables {
-			float paddingDefault = 0;
-			float paddingSeparator = 0;
-			float paddingAfterLabel = 0;
-			float paddingOuter = 0;
-			float paddingInner = 0;
-			float barUpperLowerHeight = 0;
-			float textFieldNumberWidth = 0;
-			float textFieldWidth = 0;
-		}
-
-		static class Colors {
-			Color widgetBackground = null;
-		}
-
-		static class TextButtons {
-			TextButtonStyle press = null;
-			TextButtonStyle toggle = null;
-			TextButtonStyle selected = null;
-		}
-
-		static class Sliders {
-			SliderStyle standard = null;
-		}
-
-		static class TextFields {
-			TextFieldStyle standard = null;
-		}
-
-		static class Skins {
-			Skin general = null;
-			Skin editor = null;
-		}
-
-		static class Labels {
-			LabelStyle standard = null;
-			LabelStyle error = null;
-			LabelStyle highlight = null;
-			LabelStyle success = null;
-			LabelStyle name = null;
-		}
-
-		static class CheckBoxes {
-			CheckBoxStyle radio = null;
-			CheckBoxStyle checkBox = null;
-		}
-
-		static class ScrollPane {
-			ScrollPaneStyle noBackground;
-			ScrollPaneStyle windowBackground;
-		}
-
-	}
-
+	/** Tooltip widget */
+	protected TooltipWidget mTooltip = null;
 	/** Invoker */
 	protected Invoker mInvoker = null;
-	/** All skins and styles */
-	protected UiStyles mStyles = new UiStyles();
 	/** UI elements that should be disabled during publish */
 	protected ArrayList<Actor> mDisabledWhenPublished = new ArrayList<>();
 	/** Enemy highlight button */

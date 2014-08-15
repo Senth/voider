@@ -91,9 +91,11 @@ public abstract class ActorGui extends EditorGui {
 	 * settings in enemy editor.
 	 */
 	protected void initSettingsMenu() {
-		mSettingTabs.setMargin(getTopBottomPadding(), mStyles.vars.paddingOuter, getTopBottomPadding(), mStyles.vars.paddingOuter)
-				.setAlign(Horizontal.RIGHT, Vertical.TOP).setTabAlign(Horizontal.RIGHT).setFillHeight(true)
-				.setBackground(new Background(mStyles.colors.widgetBackground)).setPaddingContent(mStyles.vars.paddingInner)
+		mSettingTabs
+		.setMargin(getTopBottomPadding(), mUiFactory.getStyles().vars.paddingOuter, getTopBottomPadding(),
+				mUiFactory.getStyles().vars.paddingOuter).setAlign(Horizontal.RIGHT, Vertical.TOP).setTabAlign(Horizontal.RIGHT)
+				.setFillHeight(true).setBackground(new Background(mUiFactory.getStyles().color.widgetBackground))
+				.setPaddingContent(mUiFactory.getStyles().vars.paddingInner)
 				.setContentWidth((Float) SkinNames.getResource(SkinNames.GeneralVars.RIGHT_PANEL_WIDTH));
 
 		getStage().addActor(mSettingTabs);
@@ -160,7 +162,7 @@ public abstract class ActorGui extends EditorGui {
 		mInfoTable.setName("info-table");
 		mInfoTable.setAlignTable(Horizontal.LEFT, Vertical.TOP);
 		mInfoTable.setAlignRow(Horizontal.LEFT, Vertical.MIDDLE);
-		mInfoTable.setPadding(mStyles.vars.paddingInner);
+		mInfoTable.setPadding(mUiFactory.getStyles().vars.paddingInner);
 		TextFieldListener listener;
 
 
@@ -279,7 +281,8 @@ public abstract class ActorGui extends EditorGui {
 		mDrawToolHider = customTab.hider;
 
 		// Create tabs
-		@SuppressWarnings("unchecked") ArrayList<TabWrapper> tabs = Pools.arrayList.obtain();
+		@SuppressWarnings("unchecked")
+		ArrayList<TabWrapper> tabs = Pools.arrayList.obtain();
 		tabs.add(circleTab);
 		tabs.add(rectangleTab);
 		tabs.add(triangleTab);

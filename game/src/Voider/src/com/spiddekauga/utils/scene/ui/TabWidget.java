@@ -10,7 +10,6 @@ import com.spiddekauga.utils.scene.ui.Align.Vertical;
 
 /**
  * Widget that allows for tab functionality.
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class TabWidget extends WidgetGroup {
@@ -18,9 +17,9 @@ public class TabWidget extends WidgetGroup {
 	 * Default constructor.
 	 * <ul>
 	 * <li>Widget alignment to top left</li>
-	 * <li>Tab alignment to left<li>
+	 * <li>Tab alignment to left</li>
 	 * <li>No margin</li>
-	 * <li>No padding<li>
+	 * <li>No padding</li>
 	 * <li>No background and fill height</li>
 	 * </ul>
 	 */
@@ -170,7 +169,7 @@ public class TabWidget extends WidgetGroup {
 	 * @return left margin
 	 */
 	public float getMarginLeft() {
-		return  mWrapperTable.getMarginLeft();
+		return mWrapperTable.getMarginLeft();
 	}
 
 	/**

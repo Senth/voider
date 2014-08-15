@@ -16,6 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane.ScrollPaneStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox.SelectBoxStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
@@ -27,6 +28,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.ui.Window.WindowStyle;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.spiddekauga.utils.commands.Invoker;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
@@ -57,6 +59,37 @@ public class UiFactory {
 			mInstance = new UiFactory();
 		}
 		return mInstance;
+	}
+
+	/**
+	 * Create a tooltip widget
+	 * @return new tooltip widget
+	 */
+	public TooltipWidget createTooltipWidget() {
+		Drawable tooltipImage = SkinNames.getDrawable(SkinNames.EditorImages.TOOLTIP);
+		Drawable youtubeImage = SkinNames.getDrawable(SkinNames.EditorImages.YOUTUBE);
+
+		TooltipWidget tooltipWidget = new TooltipWidget(tooltipImage, youtubeImage, mStyles.label.tooltip, mStyles.vars.paddingInner);
+		tooltipWidget.setMargin(mStyles.vars.paddingOuter);
+
+		return tooltipWidget;
+	}
+
+	/**
+	 * Add an image button to the specified table
+	 * @param icon name of the image icon
+	 * @param table the table to add the image to
+	 * @param hider optional hider for the image
+	 * @param createdActors adds the image button to this list if not null
+	 * @return created image button
+	 */
+	public ImageButton addImageButton(ISkinNames icon, AlignTable table, GuiHider hider, ArrayList<Actor> createdActors) {
+		ImageButton imageButton = new ImageButton((ImageButtonStyle) SkinNames.getResource(icon));
+		table.add(imageButton);
+
+		doExtraActionsOnActors(hider, createdActors, imageButton);
+
+		return imageButton;
 	}
 
 	/**
@@ -739,6 +772,7 @@ public class UiFactory {
 	 * @param createdActors add all actors to this list (if not null)
 	 * @param actors all actors that should be processed
 	 */
+	@Deprecated
 	private void doExtraActionsOnActors(String tooltipText, GuiHider hider, ArrayList<Actor> createdActors, Actor... actors) {
 		// Tooltip
 		if (tooltipText != null) {
@@ -747,6 +781,28 @@ public class UiFactory {
 			}
 		}
 
+		// Hider
+		if (hider != null) {
+			for (Actor actor : actors) {
+				hider.addToggleActor(actor);
+			}
+		}
+
+		// Add created actors
+		if (createdActors != null) {
+			for (Actor actor : actors) {
+				createdActors.add(actor);
+			}
+		}
+	}
+
+	/**
+	 * Set tooltip, add actors to hider, add to created actors, or any combination.
+	 * @param hider add all actors to the hider (if not null)
+	 * @param createdActors add all actors to this list (if not null)
+	 * @param actors all actors that should be processed
+	 */
+	private void doExtraActionsOnActors(GuiHider hider, ArrayList<Actor> createdActors, Actor... actors) {
 		// Hider
 		if (hider != null) {
 			for (Actor actor : actors) {
@@ -787,10 +843,12 @@ public class UiFactory {
 		mStyles.label.errorSection = SkinNames.getResource(SkinNames.General.LABEL_ERROR_SECTION);
 		mStyles.label.error = SkinNames.getResource(SkinNames.General.LABEL_ERROR);
 		mStyles.label.highlight = SkinNames.getResource(SkinNames.General.LABEL_HIGHLIGHT);
+		mStyles.label.tooltip = SkinNames.getResource(SkinNames.General.LABEL_TOOLTIP);
 		mStyles.select.standard = SkinNames.getResource(SkinNames.General.SELECT_BOX_DEFAULT);
 		mStyles.rating.stardard = SkinNames.getResource(SkinNames.General.RATING_DEFAULT);
 		mStyles.window.title = SkinNames.getResource(SkinNames.General.WINDOW_TITLE);
 		mStyles.window.noTitle = SkinNames.getResource(SkinNames.General.WINDOW_NO_TITLE);
+		mStyles.scrollPane.windowBackground = SkinNames.getResource(SkinNames.General.SCROLL_PANE_WINDOW_BACKGROUND);
 
 		// Colors
 		mStyles.color.sceneBackground = SkinNames.getResource(SkinNames.GeneralVars.SCENE_BACKGROUND_COLOR);
@@ -1026,6 +1084,11 @@ public class UiFactory {
 		public Colors color = new Colors();
 		public Ratings rating = new Ratings();
 		public Windows window = new Windows();
+		public ScrollPanes scrollPane = new ScrollPanes();
+
+		public static class ScrollPanes {
+			public ScrollPaneStyle windowBackground = null;
+		}
 
 		public static class Ratings {
 			public RatingWidgetStyle stardard = null;
@@ -1074,6 +1137,7 @@ public class UiFactory {
 			public LabelStyle errorSection = null;
 			public LabelStyle error = null;
 			public LabelStyle highlight = null;
+			public LabelStyle tooltip = null;
 		}
 
 		public static class CheckBoxes {
