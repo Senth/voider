@@ -106,27 +106,58 @@ public abstract class Gui implements Disposable {
 		}
 		mWidgets.background.images.clear();
 
-
-		// # repeat-x
-		int cRepeatX = 1;
-		float backgroundWidth = mWidgets.background.drawable.getRegion().getRegionWidth();
 		if (mWidgets.background.wrap) {
-			float xTimes = Gdx.graphics.getWidth() / backgroundWidth;
-			cRepeatX = (int) xTimes;
-			if (xTimes - cRepeatX != 0f) {
-				cRepeatX++;
+			updateWrappedBackground();
+		} else {
+			Image image = new Image(mWidgets.background.drawable);
+			image.setPosition(0, 0);
+			image.setWidth(Gdx.graphics.getWidth());
+			image.setHeight(Gdx.graphics.getHeight());
+			addActor(image);
+			image.setZIndex(0);
+		}
+	}
+
+	/**
+	 * Update wrapped (thus centered) background images
+	 */
+	private void updateWrappedBackground() {
+		// Calculate where the centered image should start
+		float backgroundHeight = mWidgets.background.drawable.getRegion().getRegionHeight();
+		float centerYStart = (int) ((Gdx.graphics.getHeight() / 2) - (backgroundHeight / 2));
+
+		// Repeat above
+		int cRepeatY = 1;
+		float diffHeight = Gdx.graphics.getHeight() - centerYStart - backgroundHeight;
+		if (diffHeight > 0) {
+			float yTimes = diffHeight / backgroundHeight;
+			int tempRepeat = (int) yTimes;
+			if (yTimes - tempRepeat != 0f) {
+				tempRepeat++;
 			}
+			cRepeatY += tempRepeat;
 		}
 
-		// # repeat-y
-		int cRepeatY = 1;
-		float backgroundHeight = mWidgets.background.drawable.getRegion().getRegionHeight();
-		if (mWidgets.background.wrap) {
-			float yTimes = Gdx.graphics.getHeight() / backgroundHeight;
-			cRepeatY = (int) yTimes;
-			if (yTimes - cRepeatY != 0f) {
-				cRepeatY++;
+		// Repeat below
+		diffHeight = centerYStart;
+		float lowYStart = centerYStart;
+		if (diffHeight > 0) {
+			float yTimes = diffHeight / backgroundHeight;
+			int tempRepeat = (int) yTimes;
+			if (yTimes - tempRepeat != 0f) {
+				tempRepeat++;
 			}
+			cRepeatY += tempRepeat;
+			lowYStart -= tempRepeat * backgroundHeight;
+		}
+
+		// Repeat right
+		int cRepeatX = 1;
+		float backgroundWidth = mWidgets.background.drawable.getRegion().getRegionWidth();
+		float xTimes = Gdx.graphics.getWidth() / backgroundWidth;
+		cRepeatX = (int) xTimes;
+		if (xTimes - cRepeatX != 0f) {
+			cRepeatX++;
 		}
 
 
@@ -134,7 +165,7 @@ public abstract class Gui implements Disposable {
 		for (int x = 0; x < cRepeatX; ++x) {
 			for (int y = 0; y < cRepeatY; ++y) {
 				Image image = new Image(mWidgets.background.drawable);
-				image.setPosition(x * backgroundWidth, y * backgroundHeight);
+				image.setPosition(x * backgroundWidth, lowYStart + (y * backgroundHeight));
 				addActor(image);
 				image.setZIndex(0);
 			}
