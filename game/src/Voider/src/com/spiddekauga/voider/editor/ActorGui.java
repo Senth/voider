@@ -2,6 +2,7 @@ package com.spiddekauga.voider.editor;
 
 import java.util.ArrayList;
 
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -188,8 +189,7 @@ public abstract class ActorGui extends EditorGui {
 				mActorEditor.setStartingAngle(newValue);
 			}
 		};
-		mWidgets.visual.startAngle = mUiFactory.addSlider("Angle", 0, 360, 1, sliderListener, table,
-				Messages.replaceName(Messages.Tooltip.Actor.Visuals.STARTING_ANGLE, getResourceTypeName()), null, mDisabledWhenPublished, mInvoker);
+		mWidgets.visual.startAngle = mUiFactory.addSlider("Angle", 0, 360, 1, sliderListener, table, null, mDisabledWhenPublished, mInvoker);
 
 
 		// Rotation speed
@@ -201,15 +201,13 @@ public abstract class ActorGui extends EditorGui {
 			}
 		};
 		mWidgets.visual.rotationSpeed = mUiFactory.addSlider("Speed", Editor.Actor.Visual.ROTATE_SPEED_MIN, Editor.Actor.Visual.ROTATE_SPEED_MAX,
-				Editor.Actor.Visual.ROTATE_SPEED_STEP_SIZE, sliderListener, table,
-				Messages.replaceName(Messages.Tooltip.Actor.Visuals.ROTATION_SPEED, getResourceTypeName()), null, mDisabledWhenPublished, mInvoker);
+				Editor.Actor.Visual.ROTATE_SPEED_STEP_SIZE, sliderListener, table, null, mDisabledWhenPublished, mInvoker);
 
 
 		// Different shape tabs
 		// Circle
 		TabImageWrapper circleTab = mUiFactory.createTabImageWrapper();
 		circleTab.imageName = SkinNames.EditorIcons.CIRCLE_SHAPE;
-		circleTab.tooltipText = Messages.replaceName(Messages.Tooltip.Actor.Visuals.CIRCLE, getResourceTypeName());
 		circleTab.hider = new HideListener(true) {
 			@Override
 			protected void onShow() {
@@ -223,7 +221,6 @@ public abstract class ActorGui extends EditorGui {
 		// Rectangle
 		TabImageWrapper rectangleTab = mUiFactory.createTabImageWrapper();
 		rectangleTab.imageName = SkinNames.EditorIcons.RECTANGLE_SHAPE;
-		rectangleTab.tooltipText = Messages.replaceName(Messages.Tooltip.Actor.Visuals.RECTANGLE, getResourceTypeName());
 		rectangleTab.hider = new HideListener(true) {
 			@Override
 			protected void onShow() {
@@ -237,7 +234,6 @@ public abstract class ActorGui extends EditorGui {
 		// Triangle
 		TabImageWrapper triangleTab = mUiFactory.createTabImageWrapper();
 		triangleTab.imageName = SkinNames.EditorIcons.TRIANGLE_SHAPE;
-		triangleTab.tooltipText = Messages.replaceName(Messages.Tooltip.Actor.Visuals.TRIANGLE, getResourceTypeName());
 		triangleTab.hider = new HideListener(true) {
 			@Override
 			protected void onShow() {
@@ -251,7 +247,6 @@ public abstract class ActorGui extends EditorGui {
 		// Custom (draw)
 		TabImageWrapper customTab = mUiFactory.createTabImageWrapper();
 		customTab.imageName = SkinNames.EditorIcons.DRAW_CUSTOM_SHAPE;
-		customTab.tooltipText = Messages.replaceName(Messages.Tooltip.Actor.Visuals.DRAW, getResourceTypeName());
 		customTab.hider = new HideListener(true) {
 			@Override
 			protected void onShow() {
@@ -280,6 +275,9 @@ public abstract class ActorGui extends EditorGui {
 		mWidgets.visual.shapeTriangle = triangleTab.button;
 		mWidgets.visual.shapeCustom = customTab.button;
 
+		// Set tooltip
+		mTooltip.add(customTab.button, Messages.EditorTooltips.VISUAL_CUSTOM);
+
 
 		// Circle
 		// Radius
@@ -290,7 +288,7 @@ public abstract class ActorGui extends EditorGui {
 			}
 		};
 		mWidgets.visual.shapeCircleRadius = mUiFactory.addSlider("Radius", Enemy.Visual.RADIUS_MIN, Enemy.Visual.RADIUS_MAX,
-				Enemy.Visual.RADIUS_STEP_SIZE, sliderListener, table, null, circleTab.hider, mDisabledWhenPublished, mInvoker);
+				Enemy.Visual.RADIUS_STEP_SIZE, sliderListener, table, circleTab.hider, mDisabledWhenPublished, mInvoker);
 
 
 		// Rectangle
@@ -303,7 +301,7 @@ public abstract class ActorGui extends EditorGui {
 			}
 		};
 		mWidgets.visual.shapeRectangleWidth = mUiFactory.addSlider("Width", Enemy.Visual.SIZE_MIN, Enemy.Visual.SIZE_MAX,
-				Enemy.Visual.SIZE_STEP_SIZE, sliderListener, table, null, rectangleTab.hider, mDisabledWhenPublished, mInvoker);
+				Enemy.Visual.SIZE_STEP_SIZE, sliderListener, table, rectangleTab.hider, mDisabledWhenPublished, mInvoker);
 
 		// Height
 		sliderListener = new SliderListener() {
@@ -314,7 +312,7 @@ public abstract class ActorGui extends EditorGui {
 			}
 		};
 		mWidgets.visual.shapeRectangleHeight = mUiFactory.addSlider("Height", Enemy.Visual.SIZE_MIN, Enemy.Visual.SIZE_MAX,
-				Enemy.Visual.SIZE_STEP_SIZE, sliderListener, table, null, rectangleTab.hider, mDisabledWhenPublished, mInvoker);
+				Enemy.Visual.SIZE_STEP_SIZE, sliderListener, table, rectangleTab.hider, mDisabledWhenPublished, mInvoker);
 
 
 		// Triangle
@@ -327,7 +325,7 @@ public abstract class ActorGui extends EditorGui {
 			}
 		};
 		mWidgets.visual.shapeTriangleWidth = mUiFactory.addSlider("Width", Enemy.Visual.SIZE_MIN, Enemy.Visual.SIZE_MAX, Enemy.Visual.SIZE_STEP_SIZE,
-				sliderListener, table, null, triangleTab.hider, mDisabledWhenPublished, mInvoker);
+				sliderListener, table, triangleTab.hider, mDisabledWhenPublished, mInvoker);
 
 		// Height
 		sliderListener = new SliderListener() {
@@ -338,7 +336,7 @@ public abstract class ActorGui extends EditorGui {
 			}
 		};
 		mWidgets.visual.shapeTriangleHeight = mUiFactory.addSlider("Height", Enemy.Visual.SIZE_MIN, Enemy.Visual.SIZE_MAX,
-				Enemy.Visual.SIZE_STEP_SIZE, sliderListener, table, null, triangleTab.hider, mDisabledWhenPublished, mInvoker);
+				Enemy.Visual.SIZE_STEP_SIZE, sliderListener, table, triangleTab.hider, mDisabledWhenPublished, mInvoker);
 	}
 
 	/**
@@ -366,7 +364,7 @@ public abstract class ActorGui extends EditorGui {
 
 		// Move
 		mWidgets.tool.move = mUiFactory.addToolButton(EditorIcons.MOVE, buttonGroup, mToolMenu, mDisabledWhenPublished);
-		mTooltip.add(mWidgets.tool.move, Messages.EditorTooltips.TOOL_MOVE);
+		mTooltip.add(mWidgets.tool.move, Messages.EditorTooltips.TOOL_MOVE_ACTOR);
 		new ButtonListener(mWidgets.tool.move) {
 			@Override
 			protected void onChecked(boolean checked) {
@@ -464,20 +462,21 @@ public abstract class ActorGui extends EditorGui {
 	 */
 	protected void initCollision() {
 		// Collision damage
-		mUiFactory.addPanelSection("Collision Damage", mWidgets.collision.table, null);
+		mUiFactory.addPanelSection("Collision", mWidgets.collision.table, null);
 		SliderListener sliderListener = new SliderListener() {
 			@Override
 			protected void onChange(float newValue) {
 				mActorEditor.setCollisionDamage(newValue);
 			}
 		};
-		mWidgets.collision.damage = mUiFactory.addSlider(null, Editor.Actor.Collision.DAMAGE_MIN, Editor.Actor.Collision.DAMAGE_MAX,
-				Editor.Actor.Collision.DAMAGE_STEP_SIZE, sliderListener, mWidgets.collision.table, Messages.Tooltip.Actor.Collision.DAMAGE, null,
-				mDisabledWhenPublished, mInvoker);
+		mWidgets.collision.damage = mUiFactory.addSlider("Damage", Editor.Actor.Collision.DAMAGE_MIN, Editor.Actor.Collision.DAMAGE_MAX,
+				Editor.Actor.Collision.DAMAGE_STEP_SIZE, sliderListener, mWidgets.collision.table, null, mDisabledWhenPublished, mInvoker);
 
 
 		// Collision destroy
-		mUiFactory.addPanelSection("Collision Destruction", mWidgets.collision.table, null);
+		@SuppressWarnings("unchecked")
+		ArrayList<Actor> createdActors = Pools.arrayList.obtain();
+		createdActors.add(mUiFactory.addPanelSection("Collision Destruction", mWidgets.collision.table, null));
 		ButtonListener buttonListener = new ButtonListener() {
 			@Override
 			protected void onChecked(boolean checked) {
@@ -485,7 +484,9 @@ public abstract class ActorGui extends EditorGui {
 			}
 		};
 		mWidgets.collision.destroyOnCollide = mUiFactory.addPanelCheckBox("Destroy", buttonListener, mWidgets.collision.table,
-				Messages.replaceName(Messages.Tooltip.Actor.Collision.DESTROY_ON_COLLIDE, getResourceTypeName()), null, mDisabledWhenPublished);
+				Messages.replaceName(Messages.Tooltip.Actor.Collision.DESTROY_ON_COLLIDE, getResourceTypeName()), null, createdActors);
+		mTooltip.add(createdActors, Messages.EditorTooltips.COLLISION_DESTROY);
+		mDisabledWhenPublished.addAll(createdActors);
 	}
 
 	/**

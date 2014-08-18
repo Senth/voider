@@ -380,23 +380,22 @@ public class UiFactory {
 	 * @param minSliderListener slider listener for the min slider
 	 * @param maxSliderListener slider listener for the max slider
 	 * @param table adds all UI elements to this table
-	 * @param tooltipText optional tooltip message for all elements (if not null)
 	 * @param hider optional hider to add the elements to (if not null)
 	 * @param createdActors optional adds all created elements to this list (if not null)
 	 * @param invoker optional adds the ability to undo changes (if not null)
 	 * @return Created min and max sliders;
 	 */
 	public SliderMinMaxWrapper addSliderMinMax(String text, float min, float max, float stepSize, SliderListener minSliderListener,
-			SliderListener maxSliderListener, AlignTable table, String tooltipText, GuiHider hider, ArrayList<Actor> createdActors, Invoker invoker) {
+			SliderListener maxSliderListener, AlignTable table, GuiHider hider, ArrayList<Actor> createdActors, Invoker invoker) {
 		// Label
 		if (text != null) {
 			Label label = addPanelSection(text, table, null);
-			doExtraActionsOnActors(tooltipText, hider, createdActors, label);
+			doExtraActionsOnActors(hider, createdActors, label);
 		}
 
 		// Sliders
-		Slider minSlider = addSlider("Min", min, max, stepSize, minSliderListener, table, tooltipText, hider, createdActors, invoker);
-		Slider maxSlider = addSlider("Max", min, max, stepSize, maxSliderListener, table, tooltipText, hider, createdActors, invoker);
+		Slider minSlider = addSlider("Min", min, max, stepSize, minSliderListener, table, hider, createdActors, invoker);
+		Slider maxSlider = addSlider("Max", min, max, stepSize, maxSliderListener, table, hider, createdActors, invoker);
 
 		minSliderListener.setGreaterSlider(maxSlider);
 		maxSliderListener.setLesserSlider(minSlider);
@@ -416,14 +415,13 @@ public class UiFactory {
 	 * @param stepSize step size of the slider
 	 * @param sliderListener listens to slider changes
 	 * @param table adds all UI elements to this table
-	 * @param tooltipText optional tooltip message for all elements (if not null)
 	 * @param hider optional hider to add the elements to (if not null)
 	 * @param createdActors optional adds all created elements to this list (if not null)
 	 * @param invoker optional adds the ability to undo changes (if not null)
 	 * @return created slider element
 	 */
-	public Slider addSlider(String text, float min, float max, float stepSize, SliderListener sliderListener, AlignTable table, String tooltipText,
-			GuiHider hider, ArrayList<Actor> createdActors, Invoker invoker) {
+	public Slider addSlider(String text, float min, float max, float stepSize, SliderListener sliderListener, AlignTable table, GuiHider hider,
+			ArrayList<Actor> createdActors, Invoker invoker) {
 		if (mStyles == null) {
 			throw new IllegalStateException("init() has not been called!");
 		}
@@ -454,9 +452,9 @@ public class UiFactory {
 		sliderListener.init(slider, textField, invoker);
 
 		if (label != null) {
-			doExtraActionsOnActors(tooltipText, hider, createdActors, label, slider, textField);
+			doExtraActionsOnActors(hider, createdActors, label, slider, textField);
 		} else {
-			doExtraActionsOnActors(tooltipText, hider, createdActors, slider, textField);
+			doExtraActionsOnActors(hider, createdActors, slider, textField);
 		}
 
 		return slider;
@@ -750,10 +748,6 @@ public class UiFactory {
 				createdActors.add(tab.button);
 			}
 
-			if (tab.tooltipText != null) {
-				new TooltipListener(tab.button, tab.tooltipText);
-			}
-
 
 			// Special tab handling
 			// Radio button - padding
@@ -1034,8 +1028,6 @@ public class UiFactory {
 		public Button button = null;
 		/** Optional Hider for the tab */
 		public HideListener hider = null;
-		/** Optional tooltip text */
-		public String tooltipText = null;
 	}
 
 	/**

@@ -81,15 +81,13 @@ public class TooltipWidget extends WidgetGroup {
 
 		// Youtube
 		mYoutubeLabel = new Label("", labelStyle);
+		mYoutubeLabel.addListener(mUrlListener);
 		mTable.add(mYoutubeLabel);
 
 		mYoutubeImage.setDrawable(youtubeImage);
+		mYoutubeImage.addListener(mUrlListener);
 		mTable.add(mYoutubeImage).setPadRight(0);
 		mYoutubeImage.setVisible(false);
-
-		// TODO press action and change pointer
-
-		// TODO listen to press events
 	}
 
 	/**
@@ -101,6 +99,19 @@ public class TooltipWidget extends WidgetGroup {
 	public void add(Actor actor, ITooltip tooltip) {
 		mTooltips.put(actor, tooltip);
 		actor.addListener(mActorListener);
+	}
+
+	/**
+	 * Add a tooltip for several actors
+	 * @param actors the actors the tooltip is bound to
+	 * @param tooltip the tooltip to display when the actor is hovered, active (depends on
+	 *        tooltip settings)
+	 */
+	public void add(ArrayList<Actor> actors, ITooltip tooltip) {
+		for (Actor actor : actors) {
+			mTooltips.put(actor, tooltip);
+			actor.addListener(mActorListener);
+		}
 	}
 
 	/**
@@ -237,9 +248,10 @@ public class TooltipWidget extends WidgetGroup {
 	 * @param tooltip the tooltip to display the youtube link for
 	 */
 	private void setYoutubeLink(ITooltip tooltip) {
-		// TODO
-
+		mUrlListener.setUrl(tooltip.getYoutubeLink());
+		mYoutubeLabel.setText(tooltip.getText());
 		mYoutubeImage.setVisible(true);
+		mYoutubeImage.invalidateHierarchy();
 	}
 
 	/**
@@ -410,7 +422,55 @@ public class TooltipWidget extends WidgetGroup {
 	private Image mYoutubeImage = new Image();
 	/** Tooltip image button */
 	private Image mTooltipImage = new Image();
+	/** Url listener */
+	private GotoUrlListener mUrlListener = new GotoUrlListener();
 
+	/**
+	 * Listens to actors and opens the specified urls when pressed.
+	 */
+	private class GotoUrlListener implements EventListener {
+		@Override
+		public boolean handle(Event event) {
+			// Pressed for buttons
+			Actor actor = event.getTarget();
+			if (actor instanceof Button) {
+				if (event instanceof ChangeEvent) {
+					if (((Button) actor).isChecked()) {
+						openUrl();
+					}
+				}
+			}
+			// Not button
+			else {
+				if (event instanceof InputEvent) {
+					if (((InputEvent) event).getType() == Type.touchDown) {
+						openUrl();
+					}
+				}
+			}
+			return false;
+		}
+
+		/**
+		 * Opens the current url
+		 */
+		private void openUrl() {
+			if (mUrl != null && !mUrl.isEmpty()) {
+				Gdx.app.getNet().openURI(mUrl);
+			}
+		}
+
+		/**
+		 * Set the url to open when the actors are pressed
+		 * @param url the url to go to when any of the actors are pressed
+		 */
+		public void setUrl(String url) {
+			mUrl = url;
+		}
+
+		/** Current link to open */
+		private String mUrl = "";
+	}
 
 	/**
 	 * Interface for tooltips. Tip! Use this as an interface for enumerations for all

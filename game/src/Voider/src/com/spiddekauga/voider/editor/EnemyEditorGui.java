@@ -3,6 +3,7 @@ package com.spiddekauga.voider.editor;
 import java.util.ArrayList;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
@@ -14,11 +15,9 @@ import com.badlogic.gdx.utils.SnapshotArray;
 import com.spiddekauga.utils.commands.CGuiCheck;
 import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
-import com.spiddekauga.utils.scene.ui.Cell;
 import com.spiddekauga.utils.scene.ui.GuiHider;
 import com.spiddekauga.utils.scene.ui.HideListener;
 import com.spiddekauga.utils.scene.ui.SliderListener;
-import com.spiddekauga.utils.scene.ui.TooltipListener;
 import com.spiddekauga.utils.scene.ui.TooltipWidget.ITooltip;
 import com.spiddekauga.utils.scene.ui.UiFactory.SliderMinMaxWrapper;
 import com.spiddekauga.utils.scene.ui.UiFactory.TabImageWrapper;
@@ -244,19 +243,23 @@ public class EnemyEditorGui extends ActorGui {
 
 		// Movement
 		ImageButtonStyle buttonStyle = SkinNames.getResource(SkinNames.EditorIcons.MOVEMENT);
-		mSettingTabs.addTab(buttonStyle, mMovementTable, mMovementHider);
+		Button button = mSettingTabs.addTab(buttonStyle, mMovementTable, mMovementHider);
+		mTooltip.add(button, Messages.EditorTooltips.TAB_MOVEMENT);
 
 		// Weapons
 		buttonStyle = SkinNames.getResource(SkinNames.EditorIcons.WEAPON);
-		mSettingTabs.addTab(buttonStyle, mWeaponTable, mWeaponHider);
+		button = mSettingTabs.addTab(buttonStyle, mWeaponTable, mWeaponHider);
+		mTooltip.add(button, Messages.EditorTooltips.TAB_WEAPON);
 
 		// Visual
 		buttonStyle = SkinNames.getResource(SkinNames.EditorIcons.VISUALS);
-		mSettingTabs.addTab(buttonStyle, getVisualTable(), getVisualHider());
+		button = mSettingTabs.addTab(buttonStyle, getVisualTable(), getVisualHider());
+		mTooltip.add(button, Messages.EditorTooltips.TAB_VISUAL);
 
 		// Collision
 		buttonStyle = SkinNames.getResource(SkinNames.EditorIcons.COLLISION);
-		mSettingTabs.addTab(buttonStyle, getCollisionTable());
+		button = mSettingTabs.addTab(buttonStyle, getCollisionTable());
+		mTooltip.add(button, Messages.EditorTooltips.TAB_COLLISION);
 	}
 
 	/**
@@ -291,8 +294,8 @@ public class EnemyEditorGui extends ActorGui {
 			}
 		};
 		SliderMinMaxWrapper sliders = mUiFactory.addSliderMinMax("Distance From Player", Enemy.Movement.AI_DISTANCE_MIN,
-				Enemy.Movement.AI_DISTANCE_MAX, Enemy.Movement.AI_DISTANCE_STEP_SIZE, minSliderListener, maxSliderListener, table,
-				Messages.Tooltip.Enemy.Movement.Ai.DISTANCE, hider, mDisabledWhenPublished, mInvoker);
+				Enemy.Movement.AI_DISTANCE_MAX, Enemy.Movement.AI_DISTANCE_STEP_SIZE, minSliderListener, maxSliderListener, table, hider,
+				mDisabledWhenPublished, mInvoker);
 
 		// Set sliders
 		mWidgets.movement.aiDistanceMin = sliders.min;
@@ -306,7 +309,6 @@ public class EnemyEditorGui extends ActorGui {
 		// ON
 		TabImageWrapper onTab = mUiFactory.createTabImageWrapper();
 		onTab.imageName = SkinNames.EditorIcons.ON;
-		onTab.tooltipText = Messages.Tooltip.Enemy.Movement.Ai.RANDOM_MOVEMENT;
 		onTab.hider = new HideListener(true) {
 			@Override
 			protected void onShow() {
@@ -335,7 +337,6 @@ public class EnemyEditorGui extends ActorGui {
 		// OFF
 		TabImageWrapper offTab = mUiFactory.createTabImageWrapper();
 		offTab.imageName = SkinNames.EditorIcons.OFF;
-		offTab.tooltipText = Messages.Tooltip.Enemy.Movement.Ai.RANDOM_MOVEMENT;
 
 		// Create tabs
 		@SuppressWarnings("unchecked")
@@ -351,6 +352,8 @@ public class EnemyEditorGui extends ActorGui {
 		mWidgets.movement.aiRandomMovementOff = offTab.button;
 
 		// Sliders
+		@SuppressWarnings("unchecked")
+		ArrayList<Actor> createdActors = Pools.arrayList.obtain();
 		minSliderListener = new SliderListener() {
 			@Override
 			protected void onChange(float newValue) {
@@ -364,8 +367,9 @@ public class EnemyEditorGui extends ActorGui {
 			}
 		};
 		sliders = mUiFactory.addSliderMinMax(null, Enemy.Movement.RANDOM_MOVEMENT_TIME_MIN, Enemy.Movement.RANDOM_MOVEMENT_TIME_MAX,
-				Enemy.Movement.RANDOM_MOVEMENT_TIME_STEP_SIZE, minSliderListener, maxSliderListener, table,
-				Messages.Tooltip.Enemy.Movement.Ai.RANDOM_MOVEMENT, onTab.hider, mDisabledWhenPublished, mInvoker);
+				Enemy.Movement.RANDOM_MOVEMENT_TIME_STEP_SIZE, minSliderListener, maxSliderListener, table, onTab.hider, createdActors, mInvoker);
+		mTooltip.add(createdActors, Messages.EditorTooltips.MOVEMENT_AI_RANDOM_COOLDOWN);
+		mDisabledWhenPublished.addAll(createdActors);
 
 		// Set sliders
 		mWidgets.movement.aiRandomTimeMin = sliders.min;
@@ -398,7 +402,7 @@ public class EnemyEditorGui extends ActorGui {
 			}
 		};
 		Slider slider = mUiFactory.addSlider(null, Enemy.Movement.MOVE_SPEED_MIN, Enemy.Movement.MOVE_SPEED_MAX, Enemy.Movement.MOVE_SPEED_STEP_SIZE,
-				sliderListener, table, Messages.Tooltip.Enemy.Movement.Common.MOVEMENT_SPEED, hider, mDisabledWhenPublished, mInvoker);
+				sliderListener, table, hider, mDisabledWhenPublished, mInvoker);
 		if (movementType == MovementTypes.PATH) {
 			mWidgets.movement.pathSpeedSlider = slider;
 		} else if (movementType == MovementTypes.AI) {
@@ -413,7 +417,6 @@ public class EnemyEditorGui extends ActorGui {
 		// ON
 		TabImageWrapper onTab = mUiFactory.createTabImageWrapper();
 		onTab.imageName = SkinNames.EditorIcons.ON;
-		onTab.tooltipText = Messages.Tooltip.Enemy.Movement.Common.TURNING_SPEED;
 		onTab.hider = new HideListener(true) {
 			@Override
 			protected void onShow() {
@@ -443,7 +446,6 @@ public class EnemyEditorGui extends ActorGui {
 		// OFF
 		TabImageWrapper offTab = mUiFactory.createTabImageWrapper();
 		offTab.imageName = SkinNames.EditorIcons.OFF;
-		offTab.tooltipText = Messages.Tooltip.Enemy.Movement.Common.TURNING_SPEED;
 
 		// Create tabs
 		@SuppressWarnings("unchecked")
@@ -473,7 +475,7 @@ public class EnemyEditorGui extends ActorGui {
 			}
 		};
 		slider = mUiFactory.addSlider(null, Movement.TURN_SPEED_MIN, Movement.TURN_SPEED_MAX, Movement.TURN_SPEED_STEP_SIZE, sliderListener, table,
-				Messages.Tooltip.Enemy.Movement.Common.TURNING_SPEED, onTab.hider, mDisabledWhenPublished, mInvoker);
+				onTab.hider, mDisabledWhenPublished, mInvoker);
 		if (movementType == MovementTypes.PATH) {
 			mWidgets.movement.pathTurnSpeedSlider = slider;
 		} else if (movementType == MovementTypes.AI) {
@@ -552,6 +554,11 @@ public class EnemyEditorGui extends ActorGui {
 		mWidgets.movement.pathBox = (CheckBox) pathTab.button;
 		mWidgets.movement.stationaryBox = (CheckBox) stationaryTab.button;
 		mWidgets.movement.aiBox = (CheckBox) aiTab.button;
+
+		// Set tooltips
+		mTooltip.add(pathTab.button, Messages.EditorTooltips.MOVEMENT_PATH);
+		mTooltip.add(aiTab.button, Messages.EditorTooltips.MOVEMENT_AI);
+		mTooltip.add(stationaryTab.button, Messages.EditorTooltips.MOVEMENT_STATIONARY);
 	}
 
 	/**
@@ -600,12 +607,8 @@ public class EnemyEditorGui extends ActorGui {
 		mUiFactory.addPanelSection("Select Bullet Type", table, onTab.hider);
 
 		// Bullet image
-		ImageButton imageButton = new ImageButton((ImageButtonStyle) SkinNames.getResource(SkinNames.EditorIcons.BULLET_SELECT));
 		table.row();
-		onTab.hider.addToggleActor(imageButton);
-		mWidgets.weapon.bulletImage = table.add(imageButton);
-		mDisabledWhenPublished.add(imageButton);
-		new TooltipListener(imageButton, Messages.Tooltip.Enemy.Weapon.Bullet.SELECT_BULLET);
+		ImageButton imageButton = mUiFactory.addImageButton(SkinNames.EditorIcons.BULLET_SELECT, table, onTab.hider, mDisabledWhenPublished);
 		new ButtonListener(imageButton) {
 			@Override
 			protected void onPressed() {
@@ -625,7 +628,7 @@ public class EnemyEditorGui extends ActorGui {
 			}
 		};
 		mWidgets.weapon.bulletSpeed = mUiFactory.addSlider("Speed", Weapon.BULLET_SPEED_MIN, Weapon.BULLET_SPEED_MAX, Weapon.BULLET_SPEED_STEP_SIZE,
-				sliderListener, table, Messages.Tooltip.Enemy.Weapon.Bullet.SPEED, onTab.hider, mDisabledWhenPublished, mInvoker);
+				sliderListener, table, onTab.hider, mDisabledWhenPublished, mInvoker);
 
 		// Damage
 		sliderListener = new SliderListener() {
@@ -635,7 +638,7 @@ public class EnemyEditorGui extends ActorGui {
 			}
 		};
 		mWidgets.weapon.damage = mUiFactory.addSlider("Damage", Weapon.DAMAGE_MIN, Weapon.DAMAGE_MAX, Weapon.DAMAGE_STEP_SIZE, sliderListener, table,
-				Messages.Tooltip.Enemy.Weapon.Bullet.DAMAGE, onTab.hider, mDisabledWhenPublished, mInvoker);
+				onTab.hider, mDisabledWhenPublished, mInvoker);
 
 
 		// Cooldown
@@ -652,8 +655,7 @@ public class EnemyEditorGui extends ActorGui {
 			}
 		};
 		SliderMinMaxWrapper sliders = mUiFactory.addSliderMinMax("Weapon Cooldown Time", Weapon.COOLDOWN_MIN, Weapon.COOLDOWN_MAX,
-				Weapon.COOLDOWN_STEP_SIZE, minSliderListener, maxSliderListener, table, Messages.Tooltip.Enemy.Weapon.Bullet.COOLDOWN, onTab.hider,
-				mDisabledWhenPublished, mInvoker);
+				Weapon.COOLDOWN_STEP_SIZE, minSliderListener, maxSliderListener, table, onTab.hider, mDisabledWhenPublished, mInvoker);
 
 		// Set sliders
 		mWidgets.weapon.cooldownMin = sliders.min;
@@ -664,7 +666,6 @@ public class EnemyEditorGui extends ActorGui {
 		// On Player
 		TabImageWrapper onPlayerTab = mUiFactory.createTabImageWrapper();
 		onPlayerTab.imageName = SkinNames.EditorIcons.AIM_ON_PLAYER;
-		onPlayerTab.tooltipText = Messages.Tooltip.Enemy.Weapon.Aim.ON_PLAYER;
 		onPlayerTab.hider = new HideListener(true) {
 			@Override
 			protected void onShow() {
@@ -675,7 +676,6 @@ public class EnemyEditorGui extends ActorGui {
 		// In front of player
 		TabImageWrapper inFrontPlayerTab = mUiFactory.createTabImageWrapper();
 		inFrontPlayerTab.imageName = SkinNames.EditorIcons.AIM_IN_FRONT_PLAYER;
-		inFrontPlayerTab.tooltipText = Messages.Tooltip.Enemy.Weapon.Aim.IN_FRONT_OF_PLAYER;
 		inFrontPlayerTab.hider = new HideListener(true) {
 			@Override
 			protected void onShow() {
@@ -686,7 +686,6 @@ public class EnemyEditorGui extends ActorGui {
 		// Movement direction
 		TabImageWrapper moveDirTab = mUiFactory.createTabImageWrapper();
 		moveDirTab.imageName = SkinNames.EditorIcons.AIM_MOVEMENT;
-		moveDirTab.tooltipText = Messages.Tooltip.Enemy.Weapon.Aim.MOVE_DIR;
 		moveDirTab.hider = new HideListener(true) {
 			@Override
 			protected void onShow() {
@@ -697,7 +696,6 @@ public class EnemyEditorGui extends ActorGui {
 		// Direction
 		TabImageWrapper directionTab = mUiFactory.createTabImageWrapper();
 		directionTab.imageName = SkinNames.EditorIcons.AIM_DIRECTION;
-		directionTab.tooltipText = Messages.Tooltip.Enemy.Weapon.Aim.DIRECTION;
 		directionTab.hider = new HideListener(true) {
 			@Override
 			protected void onShow() {
@@ -708,7 +706,6 @@ public class EnemyEditorGui extends ActorGui {
 		// Rotate
 		TabImageWrapper rotateTab = mUiFactory.createTabImageWrapper();
 		rotateTab.imageName = SkinNames.EditorIcons.AIM_ROTATE;
-		rotateTab.tooltipText = Messages.Tooltip.Enemy.Weapon.Aim.ROTATE;
 		rotateTab.hider = new HideListener(true) {
 			@Override
 			protected void onShow() {
@@ -733,22 +730,30 @@ public class EnemyEditorGui extends ActorGui {
 		mWidgets.weapon.aimDirection = directionTab.button;
 		mWidgets.weapon.aimRotate = rotateTab.button;
 
+		// Set tooltips
+		mTooltip.add(onPlayerTab.button, Messages.EditorTooltips.AIM_ON_PLAYER);
+		mTooltip.add(inFrontPlayerTab.button, Messages.EditorTooltips.AIM_IN_FRONT_OF_PLAYER);
+		mTooltip.add(moveDirTab.button, Messages.EditorTooltips.AIM_MOVEMENT_DIRECTION);
+		mTooltip.add(directionTab.button, Messages.EditorTooltips.AIM_DIRECTION);
+		mTooltip.add(rotateTab.button, Messages.EditorTooltips.AIM_ROTATE);
 
-		// Labels
-		// On Player
-		mUiFactory.addPanelSection("On Player", table, onPlayerTab.hider);
-
-		// In front of player
-		mUiFactory.addPanelSection("In Front Of Player", table, inFrontPlayerTab.hider);
-
-		// Movement direction
-		mUiFactory.addPanelSection("Enemy Movement Direction", table, moveDirTab.hider);
-
-		// Specific direction
-		mUiFactory.addPanelSection("Fixed Direction", table, directionTab.hider);
-
-		// Rotate
-		mUiFactory.addPanelSection("Rotate", table, rotateTab.hider);
+		// // Labels
+		// // On Player
+		// mUiFactory.addPanelSection("On Player", table, onPlayerTab.hider);
+		//
+		// // In front of player
+		// mUiFactory.addPanelSection("In Front Of Player", table,
+		// inFrontPlayerTab.hider);
+		//
+		// // Movement direction
+		// mUiFactory.addPanelSection("Enemy Movement Direction", table,
+		// moveDirTab.hider);
+		//
+		// // Specific direction
+		// mUiFactory.addPanelSection("Fixed Direction", table, directionTab.hider);
+		//
+		// // Rotate
+		// mUiFactory.addPanelSection("Rotate", table, rotateTab.hider);
 
 
 		// Specific settings
@@ -761,8 +766,7 @@ public class EnemyEditorGui extends ActorGui {
 			}
 		};
 		mWidgets.weapon.aimDirectionAngle = mUiFactory.addSlider("Angle", Enemy.Weapon.START_ANGLE_MIN, Enemy.Weapon.START_ANGLE_MAX,
-				Enemy.Weapon.START_ANGLE_STEP_SIZE, sliderListener, table, Messages.Tooltip.Enemy.Weapon.Aim.DIRECTION_ANGLE, directionTab.hider,
-				mDisabledWhenPublished, mInvoker);
+				Enemy.Weapon.START_ANGLE_STEP_SIZE, sliderListener, table, directionTab.hider, mDisabledWhenPublished, mInvoker);
 
 		// Rotate options
 		// Angle
@@ -774,8 +778,7 @@ public class EnemyEditorGui extends ActorGui {
 			}
 		};
 		mWidgets.weapon.aimRotateStartAngle = mUiFactory.addSlider("Angle", Enemy.Weapon.START_ANGLE_MIN, Enemy.Weapon.START_ANGLE_MAX,
-				Enemy.Weapon.START_ANGLE_STEP_SIZE, sliderListener, table, Messages.Tooltip.Enemy.Weapon.Aim.ROTATE_START_ANGLE, rotateTab.hider,
-				mDisabledWhenPublished, mInvoker);
+				Enemy.Weapon.START_ANGLE_STEP_SIZE, sliderListener, table, rotateTab.hider, mDisabledWhenPublished, mInvoker);
 
 		// Rotation speed
 		sliderListener = new SliderListener() {
@@ -785,8 +788,7 @@ public class EnemyEditorGui extends ActorGui {
 			}
 		};
 		mWidgets.weapon.aimRotateSpeed = mUiFactory.addSlider("Speed", Enemy.Weapon.ROTATE_SPEED_MIN, Enemy.Weapon.ROTATE_SPEED_MAX,
-				Enemy.Weapon.ROTATE_SPEED_STEP_SIZE, sliderListener, table, Messages.Tooltip.Enemy.Weapon.Aim.ROTATE_SPEED, rotateTab.hider,
-				mDisabledWhenPublished, mInvoker);
+				Enemy.Weapon.ROTATE_SPEED_STEP_SIZE, sliderListener, table, rotateTab.hider, mDisabledWhenPublished, mInvoker);
 	}
 
 	@Override
@@ -872,7 +874,7 @@ public class EnemyEditorGui extends ActorGui {
 			Button off = null;
 
 			// Bullet
-			Cell bulletImage = null;
+			// Cell bulletImage = null;
 			Slider bulletSpeed = null;
 			Slider damage = null;
 			Slider cooldownMin = null;

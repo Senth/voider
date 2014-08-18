@@ -360,15 +360,16 @@ public class Messages {
 		TAB_COLLISION("Collision settings", "https://www.youtube.com/watch?v=ZbKIrmIbrjk", true),
 
 		// Bullet tabs
-		TAB_BULLET("Test bullet on weapons", null, true),
+		TAB_BULLET_TEST("Test bullet on weapons", null, true),
 
 		// Tools
 		TOOL_SELECTION("Selection tool", "https://www.youtube.com/watch?v=7R1rK2b8jaU", true),
 		TOOL_PAN_LEVEL("Pan tool", "https://www.youtube.com/watch?v=WThGYvHQSHU", true),
 		TOOL_PAN_ACTOR("Pan tool", "https://www.youtube.com/watch?v=WThGYvHQSHU", TAB_VISUAL, true),
-		TOOL_MOVE("Move tool", "https://www.youtube.com/watch?v=UFmqy6YWMRk", true),
+		TOOL_MOVE_LEVEL("Move tool", "https://www.youtube.com/watch?v=UFmqy6YWMRk", true),
+		TOOL_MOVE_ACTOR("Move tool", "https://www.youtube.com/watch?v=UFmqy6YWMRk", TAB_VISUAL, true),
 		TOOL_DELETE_LEVEL("Delete tool", "https://www.youtube.com/watch?v=96S2M17STaI", true),
-		TOOL_DELETE_ACTOR("Delete tool", "https://www.youtube.com/watch?v=96S2M17STaI", true),
+		TOOL_DELETE_ACTOR("Delete tool", "https://www.youtube.com/watch?v=96S2M17STaI", TAB_VISUAL, true),
 		TOOL_CLEAR_SELECTION("Clear selection"),
 		TOOL_DRAW_APPEND_TERRAIN("Draw terrain", "https://www.youtube.com/watch?v=UbOF_KgpLzI", true),
 		TOOL_DRAW_ERASE_TERRAIN("Add/Remove area to/from terrain", "https://www.youtube.com/watch?v=UbOF_KgpLzI", true),
@@ -429,12 +430,13 @@ public class Messages {
 		// Enemy settings tab (level editor)
 		ENEMY_SPAWN_DELAY("Spawn time between copies", "https://www.youtube.com/watch?v=tzHQkAxrx94", TAB_ENEMY),
 		ENEMY_ACTIVATION_DELAY("Delay for first spawn", "https://www.youtube.com/watch?v=tzHQkAxrx94", TAB_ENEMY),
+		ENEMY_DEACTIVATION_DELAY("Deactivate delay after triggered", "https://www.youtube.com/watch?v=tzHQkAxrx94", TAB_ENEMY),
 
 		// Enemy movement tab (enemy editor)
-		MOVEMENT_PATH("Path movement", "https://www.youtube.com/watch?v=whL_LQK64PA", TAB_MOVEMENT, false, null, true),
-		MOVEMENT_STATIONARY("Stationary enemy", "https://www.youtube.com/watch?v=whL_LQK64PA", TAB_MOVEMENT, false, null, true),
-		MOVEMENT_AI("AI movement", "https://www.youtube.com/watch?v=whL_LQK64PA", TAB_MOVEMENT, false, null, true),
-		MOVEMENT_AI_RANDOM_COOLDOWN("Cooldown for new movement direction", "https://www.youtube.com/watch?v=whL_LQK64PA", TAB_MOVEMENT),
+		MOVEMENT_PATH("Path movement", "https://www.youtube.com/watch?v=whL_LQK64PA", TAB_MOVEMENT, true),
+		MOVEMENT_STATIONARY("Stationary enemy", "https://www.youtube.com/watch?v=whL_LQK64PA", TAB_MOVEMENT, true),
+		MOVEMENT_AI("AI movement", "https://www.youtube.com/watch?v=whL_LQK64PA", TAB_MOVEMENT, true),
+		MOVEMENT_AI_RANDOM_COOLDOWN("Cooldown for new movement direction", "https://www.youtube.com/watch?v=whL_LQK64PA", MOVEMENT_AI),
 
 		// Enemy weapon tab (enemy editor)
 		AIM_ON_PLAYER("Aim on player", "https://www.youtube.com/watch?v=SxzoVL5YTHc", TAB_WEAPON),
@@ -504,6 +506,7 @@ public class Messages {
 		 */
 		private EditorTooltips(String text, String youtubeLink, ITooltip parent, boolean permanent) {
 			mText = text;
+			mYoutubeLink = youtubeLink;
 			mPermanent = permanent;
 			mParent = parent;
 		}

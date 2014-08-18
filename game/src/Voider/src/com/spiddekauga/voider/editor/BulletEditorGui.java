@@ -1,5 +1,6 @@
 package com.spiddekauga.voider.editor;
 
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
@@ -54,11 +55,13 @@ public class BulletEditorGui extends ActorGui {
 
 		// Visual
 		ImageButtonStyle buttonStyle = SkinNames.getResource(SkinNames.EditorIcons.VISUALS);
-		mSettingTabs.addTab(buttonStyle, getVisualTable(), getVisualHider());
+		Button button = mSettingTabs.addTab(buttonStyle, getVisualTable(), getVisualHider());
+		mTooltip.add(button, Messages.EditorTooltips.TAB_VISUAL);
 
 		// Weapon
 		buttonStyle = SkinNames.getResource(SkinNames.EditorIcons.WEAPON);
-		mSettingTabs.addTab(buttonStyle, mWeaponTable);
+		button = mSettingTabs.addTab(buttonStyle, mWeaponTable);
+		mTooltip.add(button, Messages.EditorTooltips.TAB_BULLET_TEST);
 	}
 
 	/**
@@ -88,7 +91,7 @@ public class BulletEditorGui extends ActorGui {
 			}
 		};
 		mWidgets.weapon.bulletSpeed = mUiFactory.addSlider("Speed", Weapon.BULLET_SPEED_MIN, Weapon.BULLET_SPEED_MAX, Weapon.BULLET_SPEED_STEP_SIZE,
-				sliderListener, mWeaponTable, null, null, null, mInvoker);
+				sliderListener, mWeaponTable, null, null, mInvoker);
 
 
 		// Cooldown
@@ -105,7 +108,7 @@ public class BulletEditorGui extends ActorGui {
 			}
 		};
 		SliderMinMaxWrapper sliders = mUiFactory.addSliderMinMax("Cooldown Time", Weapon.COOLDOWN_MIN, Weapon.COOLDOWN_MAX,
-				Weapon.COOLDOWN_STEP_SIZE, sliderMinListener, sliderMaxListener, mWeaponTable, null, null, null, mInvoker);
+				Weapon.COOLDOWN_STEP_SIZE, sliderMinListener, sliderMaxListener, mWeaponTable, null, null, mInvoker);
 
 		mWidgets.weapon.cooldownMin = sliders.min;
 		mWidgets.weapon.cooldownMax = sliders.max;

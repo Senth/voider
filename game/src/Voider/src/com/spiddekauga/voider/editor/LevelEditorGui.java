@@ -2,6 +2,7 @@ package com.spiddekauga.voider.editor;
 
 import java.util.ArrayList;
 
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -27,7 +28,6 @@ import com.spiddekauga.utils.scene.ui.ResourceTextureButton;
 import com.spiddekauga.utils.scene.ui.SelectBoxListener;
 import com.spiddekauga.utils.scene.ui.SliderListener;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
-import com.spiddekauga.utils.scene.ui.TooltipListener;
 import com.spiddekauga.utils.scene.ui.TooltipWidget.ITooltip;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Editor;
@@ -40,6 +40,7 @@ import com.spiddekauga.voider.game.actors.EnemyActorDef;
 import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.resources.SkinNames.EditorIcons;
 import com.spiddekauga.voider.utils.Messages;
+import com.spiddekauga.voider.utils.Pools;
 
 /**
  * GUI for the level editor
@@ -341,7 +342,7 @@ class LevelEditorGui extends EditorGui {
 
 		// Move
 		mWidgets.tool.move = mUiFactory.addToolButton(EditorIcons.MOVE, buttonGroup, mToolMenu, mDisabledWhenPublished);
-		mTooltip.add(mWidgets.tool.move, Messages.EditorTooltips.TOOL_MOVE);
+		mTooltip.add(mWidgets.tool.move, Messages.EditorTooltips.TOOL_MOVE_LEVEL);
 		new ButtonListener(mWidgets.tool.move) {
 			@Override
 			protected void onChecked(boolean checked) {
@@ -544,7 +545,7 @@ class LevelEditorGui extends EditorGui {
 			}
 		};
 		mWidgets.info.speed = mUiFactory.addSlider(null, Editor.Level.LEVEL_SPEED_MIN, Editor.Level.LEVEL_SPEED_MAX,
-				Editor.Level.LEVEL_SPEED_STEP_SIZE, sliderListener, left, null, null, mDisabledWhenPublished, mInvoker);
+				Editor.Level.LEVEL_SPEED_STEP_SIZE, sliderListener, left, null, mDisabledWhenPublished, mInvoker);
 
 		// Screenshot image
 		mUiFactory.addSection("Level/Screenshot Image", left, null);
@@ -611,12 +612,16 @@ class LevelEditorGui extends EditorGui {
 		Button button = mSettingTabs.addTab(buttonStyle, mWidgets.enemyAdd.table, mWidgets.enemyAdd.hider);
 		mHiders.enemyAdd.addToggleActor(button);
 		mHiders.enemyAdd.addChild(mWidgets.enemyAdd.hider);
+		mTooltip.add(button, Messages.EditorTooltips.TAB_ENEMY_ADD);
 
 		// Enemy settings
 		buttonStyle = SkinNames.getResource(SkinNames.EditorIcons.ENEMY_INFO);
 		button = mSettingTabs.addTab(buttonStyle, mWidgets.enemy.table, mWidgets.enemy.hider);
 		mHiders.enemyOptions.addToggleActor(button);
 		mHiders.enemyOptions.addChild(mWidgets.enemy.hider);
+		mTooltip.add(button, Messages.EditorTooltips.TAB_ENEMY);
+
+		// TODO fix tabs
 	}
 
 	/**
@@ -652,134 +657,76 @@ class LevelEditorGui extends EditorGui {
 	}
 
 	/**
-	 * Initializes Enemy Tool GUI
+	 * Initializes Enemy Options tab
 	 */
 	private void initEnemyOptions() {
-		// TODO Change to UiFactory
-		// TODO Use tabs
-
-		mWidgets.enemy.table.setPreferences(mMainTable);
-		mMainTable.row();
-		mMainTable.add(mWidgets.enemy.table);
-		mHiders.enemyOptions.addToggleActor(mWidgets.enemy.table);
+		AlignTable table = mWidgets.enemy.table;
+		@SuppressWarnings("unchecked")
+		ArrayList<Actor> createdActors = Pools.arrayList.obtain();
 
 
-		// Enemy options when an enemy is selected
-		// # Enemies
-		mWidgets.enemy.table.row();
-		Label label = new Label("# Enemies", mUiFactory.getStyles().label.standard);
-		new TooltipListener(label, Messages.Tooltip.Level.Enemy.ENEMY_COUNT);
-		mWidgets.enemy.table.add(label);
-
-		mWidgets.enemy.table.row();
-		Slider slider = new Slider(Level.Enemy.ENEMIES_MIN, Level.Enemy.ENEMIES_MAX, Level.Enemy.ENEMIES_STEP_SIZE, false,
-				mUiFactory.getStyles().slider.standard);
-		mDisabledWhenPublished.add(slider);
-		mWidgets.enemy.cEnemies = slider;
-		mWidgets.enemy.table.add(slider);
-		TextField textField = new TextField("", mUiFactory.getStyles().textField.standard);
-		mDisabledWhenPublished.add(textField);
-		textField.setWidth(mUiFactory.getStyles().vars.textFieldNumberWidth);
-		mWidgets.enemy.table.add(textField);
-		new TooltipListener(slider, Messages.Tooltip.Level.Enemy.ENEMY_COUNT);
-		new TooltipListener(textField, Messages.Tooltip.Level.Enemy.ENEMY_COUNT);
-		new SliderListener(slider, textField, mInvoker) {
+		// Enemy count
+		SliderListener sliderListener = new SliderListener() {
 			@Override
 			protected void onChange(float newValue) {
 				mLevelEditor.setEnemyCount((int) (newValue + 0.5f));
 			}
 		};
-		HideSliderValue delayHider = new HideSliderValue(slider, 2, Float.MAX_VALUE);
+		mUiFactory.addPanelSection("Enemy count", table, null);
+		mWidgets.enemy.cEnemies = mUiFactory.addSlider(null, Level.Enemy.ENEMIES_MIN, Level.Enemy.ENEMIES_MAX, Level.Enemy.ENEMIES_STEP_SIZE,
+				sliderListener, table, null, mDisabledWhenPublished, mInvoker);
+
+		HideSliderValue delayHider = new HideSliderValue(mWidgets.enemy.cEnemies, 2, Float.MAX_VALUE);
 		mHiders.enemyOptions.addChild(delayHider);
 
 
-		// Delay
-		mWidgets.enemy.table.row();
-		label = new Label("Spawn delay between enemies", mUiFactory.getStyles().label.standard);
-		new TooltipListener(label, Messages.Tooltip.Level.Enemy.ENEMY_SPAWN_DELAY);
-		delayHider.addToggleActor(label);
-		mWidgets.enemy.table.add(label);
-
-		mWidgets.enemy.table.row();
-		slider = new Slider(Level.Enemy.DELAY_BETWEEN_MIN, Level.Enemy.DELAY_BETWEEN_MAX, Level.Enemy.DELAY_BETWEEN_STEP_SIZE, false,
-				mUiFactory.getStyles().slider.standard);
-		mDisabledWhenPublished.add(slider);
-		delayHider.addToggleActor(slider);
-		mWidgets.enemy.betweenDelay = slider;
-		mWidgets.enemy.table.add(slider);
-		textField = new TextField("", mUiFactory.getStyles().textField.standard);
-		mDisabledWhenPublished.add(textField);
-		delayHider.addToggleActor(textField);
-		textField.setWidth(mUiFactory.getStyles().vars.textFieldNumberWidth);
-		mWidgets.enemy.table.add(textField);
-		new TooltipListener(slider, Messages.Tooltip.Level.Enemy.ENEMY_SPAWN_DELAY);
-		new TooltipListener(textField, Messages.Tooltip.Level.Enemy.ENEMY_SPAWN_DELAY);
-		new SliderListener(slider, textField, mInvoker) {
+		// Spawn delay between enemies
+		sliderListener = new SliderListener() {
 			@Override
 			protected void onChange(float newValue) {
 				mLevelEditor.setEnemySpawnDelay(newValue);
 			}
 		};
+		mUiFactory.addPanelSection("Spawn delay", table, delayHider);
+		mWidgets.enemy.betweenDelay = mUiFactory.addSlider(null, Level.Enemy.DELAY_BETWEEN_MIN, Level.Enemy.DELAY_BETWEEN_MAX,
+				Level.Enemy.DELAY_BETWEEN_STEP_SIZE, sliderListener, table, delayHider, createdActors, mInvoker);
+		mTooltip.add(createdActors, Messages.EditorTooltips.ENEMY_SPAWN_DELAY);
+		mDisabledWhenPublished.addAll(createdActors);
+		createdActors.clear();
 
 
 		// Activation delay
-		mWidgets.enemy.table.row();
-		label = new Label("Activate delay", mUiFactory.getStyles().label.standard);
-		new TooltipListener(label, Messages.Tooltip.Level.Enemy.ACTIVATE_DELAY);
-		mHiders.enemyActivateDelay.addToggleActor(label);
-		mWidgets.enemy.table.add(label);
-
-		mWidgets.enemy.table.row();
-		slider = new Slider(Level.Enemy.TRIGGER_ACTIVATE_DELAY_MIN, Level.Enemy.TRIGGER_ACTIVATE_DELAY_MAX,
-				Level.Enemy.TRIGGER_ACTIVATE_DELAY_STEP_SIZE, false, mUiFactory.getStyles().slider.standard);
-		mDisabledWhenPublished.add(slider);
-		mHiders.enemyActivateDelay.addToggleActor(slider);
-		mWidgets.enemy.activateDelay = slider;
-		mWidgets.enemy.table.add(slider);
-		textField = new TextField("", mUiFactory.getStyles().textField.standard);
-		mDisabledWhenPublished.add(textField);
-		mHiders.enemyActivateDelay.addToggleActor(textField);
-		textField.setWidth(mUiFactory.getStyles().vars.textFieldNumberWidth);
-		mWidgets.enemy.table.add(textField);
-		new TooltipListener(slider, Messages.Tooltip.Level.Enemy.ACTIVATE_DELAY);
-		new TooltipListener(textField, Messages.Tooltip.Level.Enemy.ACTIVATE_DELAY);
-		new SliderListener(slider, textField, mInvoker) {
+		sliderListener = new SliderListener() {
 			@Override
 			protected void onChange(float newValue) {
 				mLevelEditor.setSelectedEnemyActivateTriggerDelay(newValue);
 			}
 		};
+		mUiFactory.addPanelSection("Activation delay", table, mHiders.enemyActivateDelay);
+		mWidgets.enemy.activateDelay = mUiFactory.addSlider(null, Level.Enemy.TRIGGER_ACTIVATE_DELAY_MIN, Level.Enemy.TRIGGER_ACTIVATE_DELAY_MAX,
+				Level.Enemy.TRIGGER_ACTIVATE_DELAY_STEP_SIZE, sliderListener, table, mHiders.enemyActivateDelay, createdActors, mInvoker);
+		mTooltip.add(createdActors, Messages.EditorTooltips.ENEMY_ACTIVATION_DELAY);
+		mDisabledWhenPublished.addAll(createdActors);
+		createdActors.clear();
 
 
-		// Deactivation delay
-		mWidgets.enemy.table.row();
-		label = new Label("Deactivate delay", mUiFactory.getStyles().label.standard);
-		new TooltipListener(label, Messages.Tooltip.Level.Enemy.DEACTIVATE_DELAY);
-		mHiders.enemyDeactivateDelay.addToggleActor(label);
-		mWidgets.enemy.table.add(label);
-
-		mWidgets.enemy.table.row();
-		slider = new Slider(Level.Enemy.TRIGGER_DEACTIVATE_DELAY_MIN, Level.Enemy.TRIGGER_DEACTIVATE_DELAY_MAX,
-				Level.Enemy.TRIGGER_DEACTIVATE_DELAY_STEP_SIZE, false, mUiFactory.getStyles().slider.standard);
-		mDisabledWhenPublished.add(slider);
-		mHiders.enemyDeactivateDelay.addToggleActor(slider);
-		mWidgets.enemy.deactivateDelay = slider;
-		mWidgets.enemy.table.add(slider);
-		textField = new TextField("", mUiFactory.getStyles().textField.standard);
-		mDisabledWhenPublished.add(textField);
-		mHiders.enemyDeactivateDelay.addToggleActor(textField);
-		textField.setWidth(mUiFactory.getStyles().vars.textFieldNumberWidth);
-		mWidgets.enemy.table.add(textField);
-		new TooltipListener(slider, Messages.Tooltip.Level.Enemy.DEACTIVATE_DELAY);
-		new TooltipListener(textField, Messages.Tooltip.Level.Enemy.DEACTIVATE_DELAY);
-		new SliderListener(slider, textField, mInvoker) {
+		// Deactivation delay;
+		sliderListener = new SliderListener() {
 			@Override
 			protected void onChange(float newValue) {
 				mLevelEditor.setSelectedEnemyDeactivateTriggerDelay(newValue);
 			}
 		};
+		mUiFactory.addPanelSection("Deactivation delay", table, mHiders.enemyDeactivateDelay);
+		mWidgets.enemy.deactivateDelay = mUiFactory.addSlider(null, Level.Enemy.TRIGGER_DEACTIVATE_DELAY_MIN,
+				Level.Enemy.TRIGGER_DEACTIVATE_DELAY_MAX, Level.Enemy.TRIGGER_ACTIVATE_DELAY_STEP_SIZE, sliderListener, table,
+				mHiders.enemyDeactivateDelay, createdActors, mInvoker);
+		mTooltip.add(createdActors, Messages.EditorTooltips.ENEMY_DEACTIVATION_DELAY);
+		mDisabledWhenPublished.addAll(createdActors);
+		createdActors.clear();
 
-		mWidgets.enemy.table.row();
+
+		Pools.arrayList.free(createdActors);
 	}
 
 	/**
