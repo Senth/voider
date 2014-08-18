@@ -253,8 +253,6 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageUp: cancel,
 		imageOver: cancel_over,
 		imageDown: cancel_down,
-		imageChecked: cancel_checked,
-		imageCheckedOver: cancel_checked_over,
 		imageDisabled: cancel_disabled
 	},
 	

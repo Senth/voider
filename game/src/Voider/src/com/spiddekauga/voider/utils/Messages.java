@@ -364,7 +364,7 @@ public class Messages {
 
 		// Tools
 		TOOL_SELECTION("Selection tool", "https://www.youtube.com/watch?v=7R1rK2b8jaU", true),
-		TOOL_PAN_TERRAIN("Pan tool", "https://www.youtube.com/watch?v=WThGYvHQSHU", true),
+		TOOL_PAN_LEVEL("Pan tool", "https://www.youtube.com/watch?v=WThGYvHQSHU", true),
 		TOOL_PAN_ACTOR("Pan tool", "https://www.youtube.com/watch?v=WThGYvHQSHU", TAB_VISUAL, true),
 		TOOL_MOVE("Move tool", "https://www.youtube.com/watch?v=UFmqy6YWMRk", true),
 		TOOL_DELETE_LEVEL("Delete tool", "https://www.youtube.com/watch?v=96S2M17STaI", true),
@@ -372,7 +372,7 @@ public class Messages {
 		TOOL_CLEAR_SELECTION("Clear selection"),
 		TOOL_DRAW_APPEND_TERRAIN("Draw terrain", "https://www.youtube.com/watch?v=UbOF_KgpLzI", true),
 		TOOL_DRAW_ERASE_TERRAIN("Add/Remove area to/from terrain", "https://www.youtube.com/watch?v=UbOF_KgpLzI", true),
-		TOOL_DRAW_ORNER_ADD_TERRAIN("Add/Move terrain corners", "https://www.youtube.com/watch?v=UbOF_KgpLzI", true),
+		TOOL_DRAW_CORNER_ADD_TERRAIN("Add/Move terrain corners", "https://www.youtube.com/watch?v=UbOF_KgpLzI", true),
 		TOOL_DRAW_CORNER_REMOVE_TERRAIN("Remove terrain corners", "https://www.youtube.com/watch?v=UbOF_KgpLzI", true),
 		TOOL_DRAW_APPEND_ACTOR("Draw shape", "https://www.youtube.com/watch?v=q9BmR6E5JvM", TAB_VISUAL, true),
 		TOOL_DRAW_ERASE_ACTOR("Add/Remove area to/from shape", "https://www.youtube.com/watch?v=q9BmR6E5JvM", TAB_VISUAL, true),

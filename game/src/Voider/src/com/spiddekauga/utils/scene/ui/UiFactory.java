@@ -72,6 +72,9 @@ public class UiFactory {
 		TooltipWidget tooltipWidget = new TooltipWidget(tooltipImage, youtubeImage, mStyles.label.tooltip, mStyles.vars.paddingInner);
 		tooltipWidget.setMargin(mStyles.vars.paddingOuter);
 
+		float width = Gdx.graphics.getWidth() - mStyles.vars.paddingOuter * 2;
+		tooltipWidget.setWidth(width);
+
 		return tooltipWidget;
 	}
 
@@ -569,22 +572,20 @@ public class UiFactory {
 	/**
 	 * Adds a tool icon to the specified table
 	 * @param icon icon for the tool
-	 * @param listener button listener that listens when the button is checked etc
 	 * @param group the button group the tools belong to
 	 * @param table the table to add the tool to
-	 * @param tooltipText optional tooltip message for all elements (if not null)
 	 * @param createdActors optional adds the tool button to this list (if not null)
 	 * @return created tool icon button
 	 */
-	public ImageButton addToolButton(ISkinNames icon, ButtonListener listener, ButtonGroup group, AlignTable table, String tooltipText,
-			ArrayList<Actor> createdActors) {
+	public ImageButton addToolButton(ISkinNames icon, ButtonGroup group, AlignTable table, ArrayList<Actor> createdActors) {
 		ImageButton button = new ImageButton((ImageButtonStyle) SkinNames.getResource(icon));
 
-		listener.setButton(button);
-		group.add(button);
+		if (group != null) {
+			group.add(button);
+		}
 		table.add(button);
 
-		doExtraActionsOnActors(tooltipText, null, createdActors, button);
+		doExtraActionsOnActors(null, createdActors, button);
 
 		return button;
 	}

@@ -3,15 +3,18 @@ package com.spiddekauga.utils.scene.ui;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputEvent.Type;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
@@ -32,6 +35,8 @@ public class TooltipWidget extends WidgetGroup {
 		addActor(mTable);
 		mTable.setAlignTable(Horizontal.LEFT, Vertical.BOTTOM);
 		mTable.setAlignRow(Horizontal.LEFT, Vertical.MIDDLE);
+		mTable.setKeepWidth(true);
+		mTable.setWidth(Gdx.graphics.getWidth());
 
 		// Populate table
 		mTable.setPaddingCellDefault(0, padding, 0, 0);
@@ -167,7 +172,7 @@ public class TooltipWidget extends WidgetGroup {
 	 * @param tooltip the temporary tooltip must be this tooltip to work
 	 */
 	private void clearTemporaryTooltip(ITooltip tooltip) {
-		if (tooltip == mTemporaryTooltips.get(mTemporaryTooltips.size() - 1)) {
+		if (mTemporaryTooltips.size() > 0 && tooltip == mTemporaryTooltips.get(mTemporaryTooltips.size() - 1)) {
 			mTemporaryTooltips.clear();
 			setLabels(mPermanentTooltips);
 		}
@@ -289,6 +294,17 @@ public class TooltipWidget extends WidgetGroup {
 	}
 
 	@Override
+	@Deprecated
+	public void setHeight(float height) {
+		throw new IllegalAccessError("Cannot change height of tooltip widget!");
+	};
+
+	@Override
+	public void setWidth(float width) {
+		mTable.setWidth(width);
+	}
+
+	@Override
 	public void layout() {
 		mTable.layout();
 	}
@@ -337,6 +353,7 @@ public class TooltipWidget extends WidgetGroup {
 	private EventListener mActorListener = new EventListener() {
 		@Override
 		public boolean handle(Event event) {
+			// Hover
 			if (event instanceof InputEvent) {
 				InputEvent inputEvent = (InputEvent) event;
 
@@ -349,22 +366,31 @@ public class TooltipWidget extends WidgetGroup {
 				}
 				// Exit
 				else if (inputEvent.getType() == Type.exit) {
-					ITooltip tooltip = getTooltipFromEvent(event);
-					if (tooltip != null) {
-						handleExit(tooltip);
+					// Only exit if mouse actually left
+					Actor actor = event.getTarget();
+					if (!SceneUtils.isStagePointInsideActor(actor, inputEvent.getStageX(), inputEvent.getStageY())) {
+						ITooltip tooltip = getTooltipFromEvent(event);
+						if (tooltip != null) {
+							handleExit(tooltip);
+						}
 					}
 				}
-				// Pressed
-				else if (inputEvent.getType() == Type.touchUp) {
-					ITooltip tooltip = getTooltipFromEvent(event);
-					if (tooltip != null) {
+			}
+			// Pressed
+			else if (event instanceof ChangeEvent) {
+				Actor actor = event.getTarget();
+				if (actor instanceof Button) {
+					if (((Button) actor).isChecked()) {
+						ITooltip tooltip = getTooltipFromEvent(event);
 						handlePressed(tooltip);
 					}
 				}
 			}
+
 			return false;
 		}
 	};
+
 
 	/** Table where the tooltips are located */
 	private AlignTable mTable = new AlignTable();
