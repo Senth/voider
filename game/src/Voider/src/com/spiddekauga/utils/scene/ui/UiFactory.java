@@ -153,7 +153,7 @@ public class UiFactory {
 		window.layout();
 		table.add(window).setSize(innerTable.getWidth() + windowPadding * 2, innerTable.getHeight() + windowPadding * 2);
 
-		doExtraActionsOnActors(null, hider, createdActors, window);
+		doExtraActionsOnActors(hider, createdActors, window);
 
 		return window;
 	}
@@ -212,7 +212,7 @@ public class UiFactory {
 			listener.setButton(button);
 		}
 
-		doExtraActionsOnActors(null, hider, createdActors, button);
+		doExtraActionsOnActors(hider, createdActors, button);
 
 		return cell;
 	}
@@ -254,7 +254,7 @@ public class UiFactory {
 		mCreatedErrorLabelLast = new Label("", mStyles.label.errorSection);
 		wrapTable.add(mCreatedErrorLabelLast).setAlign(Horizontal.RIGHT, Vertical.MIDDLE);
 
-		doExtraActionsOnActors(null, null, createdActors, label, mCreatedErrorLabelLast);
+		doExtraActionsOnActors(null, createdActors, label, mCreatedErrorLabelLast);
 
 		return mCreatedErrorLabelLast;
 	}
@@ -291,7 +291,7 @@ public class UiFactory {
 		table.row();
 		table.add(textField).setSize(mStyles.vars.textFieldWidth, mStyles.vars.rowHeight);
 
-		doExtraActionsOnActors(null, null, createdActors, textField);
+		doExtraActionsOnActors(null, createdActors, textField);
 
 		return textField;
 	}
@@ -338,7 +338,7 @@ public class UiFactory {
 		table.row();
 		table.add(textArea).setSize(mStyles.vars.textFieldWidth, mStyles.vars.textAreaHeight);
 
-		doExtraActionsOnActors(null, null, createdActors, textArea);
+		doExtraActionsOnActors(null, createdActors, textArea);
 
 		return textArea;
 	}
@@ -365,7 +365,7 @@ public class UiFactory {
 		table.row();
 		table.add(selectBox).setSize(mStyles.vars.textFieldWidth, mStyles.vars.rowHeight);
 
-		doExtraActionsOnActors(null, null, createdActors, selectBox);
+		doExtraActionsOnActors(null, createdActors, selectBox);
 
 		return selectBox;
 	}
@@ -474,7 +474,7 @@ public class UiFactory {
 
 		table.add(rating);
 
-		doExtraActionsOnActors(null, hider, null, rating);
+		doExtraActionsOnActors(hider, null, rating);
 
 		return rating;
 	}
@@ -513,7 +513,7 @@ public class UiFactory {
 		Label label = new Label(text, mStyles.label.standard);
 		table.add(label);
 
-		doExtraActionsOnActors(null, hider, null, image, label);
+		doExtraActionsOnActors(hider, null, image, label);
 
 		return label;
 
@@ -531,7 +531,7 @@ public class UiFactory {
 		table.row().setHeight(mStyles.vars.rowHeightSection);
 		table.add(label).setAlign(Vertical.MIDDLE);
 
-		doExtraActionsOnActors(null, hider, null, label);
+		doExtraActionsOnActors(hider, null, label);
 
 		return label;
 	}
@@ -561,7 +561,7 @@ public class UiFactory {
 			table.row();
 			table.add(label).setHeight(mStyles.vars.rowHeight);
 
-			doExtraActionsOnActors(null, hider, createdActors, label);
+			doExtraActionsOnActors(hider, createdActors, label);
 			return label;
 		} else {
 			return null;

@@ -82,6 +82,10 @@ public class SkinNames {
 		DUPLICATE,
 		/** Add an enemy to the level */
 		ENEMY_ADD,
+		/** enemy add tab */
+		ENEMY_ADD_TAB,
+		/** Enemy settings tab */
+		ENEMY_INFO,
 		/** Go to the enemy editor */
 		ENEMY_EDITOR,
 		/** Used in editor selection menu */

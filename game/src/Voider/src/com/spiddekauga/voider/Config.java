@@ -467,9 +467,11 @@ public class Config {
 				/** Step size of deactivation trigger delay */
 				public final static float TRIGGER_DEACTIVATE_DELAY_STEP_SIZE = 1;
 				/** Size of enemy buttons in the scroll list */
-				public final static int ADD_BUTTON_SIZE = 60;
+				@Deprecated public final static int ADD_BUTTON_SIZE = 60;
 				/** Maximum percentage of width the add enemy table is allowed for */
-				public final static float ADD_ENEMY_TABLE_MAX_WIDTH = 0.25f;
+				@Deprecated public final static float ADD_ENEMY_TABLE_MAX_WIDTH = 0.25f;
+				/** Number of enemies per row when adding enemies */
+				public final static int LIST_COLUMNS = 3;
 			}
 
 			/**

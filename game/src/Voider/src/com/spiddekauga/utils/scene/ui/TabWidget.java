@@ -1,5 +1,6 @@
 package com.spiddekauga.utils.scene.ui;
 
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
@@ -46,23 +47,26 @@ public class TabWidget extends WidgetGroup {
 	 * @param imageButtonStyle the style to use for the tab
 	 * @param table the table to display in this tab
 	 * @param hider the hider that will hide the table
+	 * @return create tab button
 	 */
-	public void addTab(ImageButtonStyle imageButtonStyle, AlignTable table, HideListener hider) {
+	public Button addTab(ImageButtonStyle imageButtonStyle, AlignTable table, HideListener hider) {
 		ImageButton button = new ImageButton(imageButtonStyle);
 		mButtonGroup.add(button);
 		mTabTable.add(button);
 		hider.addToggleActor(table);
 		hider.setButton(button);
 		mContentInnerTable.add(table);
+		return button;
 	}
 
 	/**
 	 * Adds a new content tab, automatically creates an anonymous hider
 	 * @param imageButtonStyle the style to use for the tab
 	 * @param table the table to display in this tab
+	 * @return created tab button
 	 */
-	public void addTab(ImageButtonStyle imageButtonStyle, AlignTable table) {
-		addTab(imageButtonStyle, table, new HideListener(true));
+	public Button addTab(ImageButtonStyle imageButtonStyle, AlignTable table) {
+		return addTab(imageButtonStyle, table, new HideListener(true));
 	}
 
 	@Override

@@ -2,7 +2,6 @@ package com.spiddekauga.voider.editor;
 
 import java.util.ArrayList;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -69,6 +68,7 @@ class LevelEditorGui extends EditorGui {
 
 		mHiders = new Hiders();
 
+		initSettingsMenu();
 		initToolMenu();
 		initInfo();
 		initPathOptions();
@@ -218,10 +218,11 @@ class LevelEditorGui extends EditorGui {
 		int cColumEnemy = 0;
 		GuiCheckCommandCreator guiCheckCommandCreator = new GuiCheckCommandCreator(mInvoker);
 		ButtonGroup buttonGroup = new ButtonGroup();
+		int enemiesPerColumn = Config.Editor.Level.Enemy.LIST_COLUMNS;
+
 		for (EnemyActorDef enemyDef : enemyDefs) {
 			Button button = new ResourceTextureButton(enemyDef, (ImageButtonStyle) SkinNames.getResource(SkinNames.General.IMAGE_BUTTON_TOGGLE));
 
-			int enemiesPerColumn = getEnemiesPerColumnInAddTable();
 
 			if (cColumEnemy == enemiesPerColumn) {
 				cColumEnemy = 0;
@@ -248,12 +249,13 @@ class LevelEditorGui extends EditorGui {
 	 * Resets enemy option values
 	 */
 	void resetEnemyOptions() {
-		// Scroll pane width
-		int scrollPaneWidth = Config.Editor.Level.Enemy.ADD_BUTTON_SIZE * getEnemiesPerColumnInAddTable();
-		mWidgets.enemyAdd.scrollTable.setWidth(scrollPaneWidth);
-		// Add margin
-		scrollPaneWidth += 10;
-		mWidgets.enemyAdd.scrollPane.setWidth(scrollPaneWidth);
+		// // Scroll pane width
+		// int scrollPaneWidth = Config.Editor.Level.Enemy.ADD_BUTTON_SIZE *
+		// getEnemiesPerColumnInAddTable();
+		// mWidgets.enemyAdd.scrollTable.setWidth(scrollPaneWidth);
+		// // Add margin
+		// scrollPaneWidth += 10;
+		// mWidgets.enemyAdd.scrollPane.setWidth(scrollPaneWidth);
 
 		// Show/Hide options
 		if (mLevelEditor.isEnemySelected()) {
@@ -600,47 +602,46 @@ class LevelEditorGui extends EditorGui {
 		mWidgets.info.image.invalidate();
 	}
 
-	/**
-	 * Calculates the amount of enemies per column in the add enemy scroll pane. Uses
-	 * Config.Editor.Level.Enemy.ADD_ENEMY_TABLE_MAX_WIDTH for determining the maximum
-	 * amount of width on the scroll pane.
-	 * @return maximum number of buttons
-	 */
-	private int getEnemiesPerColumnInAddTable() {
-		float maxWidth = Gdx.graphics.getWidth() * Config.Editor.Level.Enemy.ADD_ENEMY_TABLE_MAX_WIDTH;
+	@Override
+	protected void initSettingsMenu() {
+		super.initSettingsMenu();
 
-		// How many buttons can we have for this width?
-		int maxButtons = (int) (maxWidth / Config.Editor.Level.Enemy.ADD_BUTTON_SIZE);
+		// Add enemy list
+		ImageButtonStyle buttonStyle = SkinNames.getResource(SkinNames.EditorIcons.ENEMY_ADD_TAB);
+		Button button = mSettingTabs.addTab(buttonStyle, mWidgets.enemyAdd.table, mWidgets.enemyAdd.hider);
+		mHiders.enemyAdd.addToggleActor(button);
+		mHiders.enemyAdd.addChild(mWidgets.enemyAdd.hider);
 
-		return maxButtons;
+		// Enemy settings
+		buttonStyle = SkinNames.getResource(SkinNames.EditorIcons.ENEMY_INFO);
+		button = mSettingTabs.addTab(buttonStyle, mWidgets.enemy.table, mWidgets.enemy.hider);
+		mHiders.enemyOptions.addToggleActor(button);
+		mHiders.enemyOptions.addChild(mWidgets.enemy.hider);
 	}
 
 	/**
 	 * Init add enemy options
 	 */
 	private void initEnemyAddOptions() {
-		// TODO Use tabs
+		AlignTable table = mWidgets.enemyAdd.table;
+		table.row().setFillHeight(true);
 
+		// Hiders
 		mHiders.enemyAdd.setButton(mWidgets.tool.enemyAdd);
 
 		Button button;
 
 		// Scroll pane
-		mMainTable.row().setFillHeight(true);
 		mWidgets.enemyAdd.scrollTable.align(Align.left | Align.top);
 		ScrollPane scrollPane = new ScrollPane(mWidgets.enemyAdd.scrollTable, mUiFactory.getStyles().scrollPane.windowBackground);
 		mWidgets.enemyAdd.scrollPane = scrollPane;
 
-		int scrollPaneWidth = Config.Editor.Level.Enemy.ADD_BUTTON_SIZE * getEnemiesPerColumnInAddTable();
-		mWidgets.enemyAdd.scrollTable.setWidth(scrollPaneWidth);
-		// Add margin
-		mMainTable.add(scrollPane).setFillHeight(true).setWidth(scrollPaneWidth);
-		mHiders.enemyAdd.addToggleActor(scrollPane);
-
+		float scrollPaneWidth = mUiFactory.getStyles().vars.rightPanelWidth - mUiFactory.getStyles().vars.paddingOuter * 2;
+		table.add(scrollPane).setFillHeight(true).setWidth(scrollPaneWidth);
 
 		// Add enemy button
-		mMainTable.row();
-		button = mUiFactory.addImageButton(SkinNames.EditorIcons.ENEMY_ADD, mMainTable, mHiders.enemyAdd, mDisabledWhenPublished);
+		table.row();
+		button = mUiFactory.addImageButton(SkinNames.EditorIcons.ENEMY_ADD, table, null, mDisabledWhenPublished);
 		mTooltip.add(button, Messages.EditorTooltips.ENEMY_ADD);
 		new ButtonListener(button) {
 			@Override
@@ -960,6 +961,7 @@ class LevelEditorGui extends EditorGui {
 
 		static class EnemyOptionWidgets {
 			AlignTable table = new AlignTable();
+			HideListener hider = new HideListener(true);
 			Slider cEnemies = null;
 			Slider betweenDelay = null;
 			Slider activateDelay = null;
@@ -969,6 +971,8 @@ class LevelEditorGui extends EditorGui {
 		static class EnemyAddWidgets {
 			ScrollPane scrollPane = null;
 			Table scrollTable = new Table();
+			AlignTable table = new AlignTable();
+			HideListener hider = new HideListener(true);
 		}
 
 		static class InfoWidgets {
