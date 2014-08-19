@@ -425,7 +425,7 @@ public class Messages {
 		PATH_BACK_AND_FORTH("Enemies goes back and forth", "https://www.youtube.com/watch?v=DWeUECW8o2w", TAB_PATH),
 
 		// Enemy add tab (level editor)
-		ENEMY_ADD("Add enemy to list"),
+		ENEMY_ADD_TO_LIST("Add enemy to list"),
 
 		// Enemy settings tab (level editor)
 		ENEMY_SPAWN_DELAY("Spawn time between copies", "https://www.youtube.com/watch?v=tzHQkAxrx94", TAB_ENEMY),

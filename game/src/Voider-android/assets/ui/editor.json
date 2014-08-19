@@ -529,6 +529,13 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageDisabled: off_disabled
 	},
 	
+	enemy_add_to_list: {
+		imageUp: enemy_add,
+		imageOver: enemy_add_over,
+		imageDown: enemy_add_down,
+		imageDisabled: enemy_add_disabled,
+	},
+	
 	/* Tabs */
 	
 	visuals: {

@@ -84,6 +84,8 @@ public class SkinNames {
 		ENEMY_ADD,
 		/** enemy add tab */
 		ENEMY_ADD_TAB,
+		/** Button to add another enemy to the list */
+		ENEMY_ADD_TO_LIST,
 		/** Enemy settings tab */
 		ENEMY_INFO,
 		/** Go to the enemy editor */

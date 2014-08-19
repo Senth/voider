@@ -527,7 +527,7 @@ public class TooltipWidget extends WidgetGroup {
 		 * /** Constructs a costum tooltip
 		 * @param text tooltip text to display
 		 */
-		private CustomTooltip(String text) {
+		public CustomTooltip(String text) {
 			mText = text;
 		}
 
@@ -536,7 +536,7 @@ public class TooltipWidget extends WidgetGroup {
 		 * @param text tooltip text to display
 		 * @param youtubeLink link to youtube tutorial
 		 */
-		private CustomTooltip(String text, String youtubeLink) {
+		public CustomTooltip(String text, String youtubeLink) {
 			mText = text;
 			mYoutubeLink = youtubeLink;
 		}
@@ -547,7 +547,7 @@ public class TooltipWidget extends WidgetGroup {
 		 * @param youtubeLink link to youtube tutorial
 		 * @param parent parent tooltip. Set to null if this is a root tooltip
 		 */
-		private CustomTooltip(String text, String youtubeLink, ITooltip parent) {
+		public CustomTooltip(String text, String youtubeLink, ITooltip parent) {
 			mText = text;
 			mYoutubeLink = youtubeLink;
 			mParent = parent;
@@ -561,8 +561,9 @@ public class TooltipWidget extends WidgetGroup {
 		 * @param permanent set to true if the tooltip should stay after being clicked,
 		 *        i.e. not only hover
 		 */
-		private CustomTooltip(String text, String youtubeLink, ITooltip parent, boolean permanent) {
+		public CustomTooltip(String text, String youtubeLink, ITooltip parent, boolean permanent) {
 			mText = text;
+			mYoutubeLink = youtubeLink;
 			mPermanent = permanent;
 			mParent = parent;
 		}
@@ -573,7 +574,7 @@ public class TooltipWidget extends WidgetGroup {
 		 * @param youtubeLink link to youtube tutorial
 		 * @param permanent true if permanent
 		 */
-		private CustomTooltip(String text, String youtubeLink, boolean permanent) {
+		public CustomTooltip(String text, String youtubeLink, boolean permanent) {
 			mText = text;
 			mYoutubeLink = youtubeLink;
 			mPermanent = permanent;
@@ -591,7 +592,7 @@ public class TooltipWidget extends WidgetGroup {
 		 * @param youtubeOnly set to true to only show the youtube link and no hover
 		 *        messages.
 		 */
-		private CustomTooltip(String text, String youtubeLink, ITooltip parent, boolean permanent, String hotkey, boolean youtubeOnly) {
+		public CustomTooltip(String text, String youtubeLink, ITooltip parent, boolean permanent, String hotkey, boolean youtubeOnly) {
 			mText = text;
 			mPermanent = permanent;
 			mParent = parent;

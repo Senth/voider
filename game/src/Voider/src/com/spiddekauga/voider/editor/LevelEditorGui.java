@@ -28,12 +28,12 @@ import com.spiddekauga.utils.scene.ui.ResourceTextureButton;
 import com.spiddekauga.utils.scene.ui.SelectBoxListener;
 import com.spiddekauga.utils.scene.ui.SliderListener;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
+import com.spiddekauga.utils.scene.ui.TooltipWidget.CustomTooltip;
 import com.spiddekauga.utils.scene.ui.TooltipWidget.ITooltip;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Editor;
 import com.spiddekauga.voider.Config.Editor.Level;
 import com.spiddekauga.voider.editor.LevelEditor.Tools;
-import com.spiddekauga.voider.editor.commands.GuiCheckCommandCreator;
 import com.spiddekauga.voider.game.Path.PathTypes;
 import com.spiddekauga.voider.game.Themes;
 import com.spiddekauga.voider.game.actors.EnemyActorDef;
@@ -217,13 +217,17 @@ class LevelEditorGui extends EditorGui {
 		mWidgets.enemyAdd.scrollTable.clear();
 
 		int cColumEnemy = 0;
-		GuiCheckCommandCreator guiCheckCommandCreator = new GuiCheckCommandCreator(mInvoker);
+		// GuiCheckCommandCreator guiCheckCommandCreator = new
+		// GuiCheckCommandCreator(mInvoker);
 		ButtonGroup buttonGroup = new ButtonGroup();
 		int enemiesPerColumn = Config.Editor.Level.Enemy.LIST_COLUMNS;
 
 		for (EnemyActorDef enemyDef : enemyDefs) {
 			Button button = new ResourceTextureButton(enemyDef, (ImageButtonStyle) SkinNames.getResource(SkinNames.General.IMAGE_BUTTON_TOGGLE));
 
+			// Create tooltip
+			CustomTooltip tooltip = new CustomTooltip(enemyDef.getName(), null, Messages.EditorTooltips.TOOL_ENEMY_ADD, true);
+			mTooltip.add(button, tooltip);
 
 			if (cColumEnemy == enemiesPerColumn) {
 				cColumEnemy = 0;
@@ -238,7 +242,7 @@ class LevelEditorGui extends EditorGui {
 					}
 				}
 			};
-			button.addListener(guiCheckCommandCreator);
+			// button.addListener(guiCheckCommandCreator);
 			buttonGroup.add(button);
 
 			mWidgets.enemyAdd.scrollTable.add(button).size(Config.Editor.Level.Enemy.ADD_BUTTON_SIZE);
@@ -250,14 +254,6 @@ class LevelEditorGui extends EditorGui {
 	 * Resets enemy option values
 	 */
 	void resetEnemyOptions() {
-		// // Scroll pane width
-		// int scrollPaneWidth = Config.Editor.Level.Enemy.ADD_BUTTON_SIZE *
-		// getEnemiesPerColumnInAddTable();
-		// mWidgets.enemyAdd.scrollTable.setWidth(scrollPaneWidth);
-		// // Add margin
-		// scrollPaneWidth += 10;
-		// mWidgets.enemyAdd.scrollPane.setWidth(scrollPaneWidth);
-
 		// Show/Hide options
 		if (mLevelEditor.isEnemySelected()) {
 			mHiders.enemyOptions.show();
@@ -641,19 +637,25 @@ class LevelEditorGui extends EditorGui {
 		ScrollPane scrollPane = new ScrollPane(mWidgets.enemyAdd.scrollTable, mUiFactory.getStyles().scrollPane.windowBackground);
 		mWidgets.enemyAdd.scrollPane = scrollPane;
 
-		float scrollPaneWidth = mUiFactory.getStyles().vars.rightPanelWidth - mUiFactory.getStyles().vars.paddingOuter * 2;
-		table.add(scrollPane).setFillHeight(true).setWidth(scrollPaneWidth);
+		table.add(scrollPane).setFillHeight(true).setWidth(getInnerRightPanelWidth());
 
 		// Add enemy button
 		table.row();
-		button = mUiFactory.addImageButton(SkinNames.EditorIcons.ENEMY_ADD, table, null, mDisabledWhenPublished);
-		mTooltip.add(button, Messages.EditorTooltips.ENEMY_ADD);
+		button = mUiFactory.addImageButton(SkinNames.EditorIcons.ENEMY_ADD_TO_LIST, table, null, mDisabledWhenPublished);
+		mTooltip.add(button, Messages.EditorTooltips.ENEMY_ADD_TO_LIST);
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed() {
 				mLevelEditor.selectEnemy();
 			}
 		};
+	}
+
+	/**
+	 * @return available width inside the right panel
+	 */
+	private float getInnerRightPanelWidth() {
+		return mUiFactory.getStyles().vars.rightPanelWidth - mUiFactory.getStyles().vars.paddingOuter * 2;
 	}
 
 	/**
