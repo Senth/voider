@@ -494,7 +494,7 @@ public class TooltipWidget extends WidgetGroup {
 
 		/**
 		 * @return true if the tooltip should only display the youtube link, i.e. no hover
-		 *         or active state
+		 *         or permanent state
 		 */
 		boolean isYoutubeOnly();
 

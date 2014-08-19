@@ -217,8 +217,6 @@ class LevelEditorGui extends EditorGui {
 		mWidgets.enemyAdd.scrollTable.clear();
 
 		int cColumEnemy = 0;
-		// GuiCheckCommandCreator guiCheckCommandCreator = new
-		// GuiCheckCommandCreator(mInvoker);
 		ButtonGroup buttonGroup = new ButtonGroup();
 		int enemiesPerColumn = Config.Editor.Level.Enemy.LIST_COLUMNS;
 
@@ -226,7 +224,7 @@ class LevelEditorGui extends EditorGui {
 			Button button = new ResourceTextureButton(enemyDef, (ImageButtonStyle) SkinNames.getResource(SkinNames.General.IMAGE_BUTTON_TOGGLE));
 
 			// Create tooltip
-			CustomTooltip tooltip = new CustomTooltip(enemyDef.getName(), null, Messages.EditorTooltips.TOOL_ENEMY_ADD, true);
+			CustomTooltip tooltip = new CustomTooltip(getEnemyTooltip(enemyDef), null, Messages.EditorTooltips.TOOL_ENEMY_ADD, true);
 			mTooltip.add(button, tooltip);
 
 			if (cColumEnemy == enemiesPerColumn) {
@@ -242,12 +240,22 @@ class LevelEditorGui extends EditorGui {
 					}
 				}
 			};
-			// button.addListener(guiCheckCommandCreator);
 			buttonGroup.add(button);
 
 			mWidgets.enemyAdd.scrollTable.add(button).size(Config.Editor.Level.Enemy.ADD_BUTTON_SIZE);
 			cColumEnemy++;
 		}
+	}
+
+	/**
+	 * Get tooltip text for an enemy
+	 * @param enemyDef definition of the enemy
+	 * @return get tooltip of the specified enemy
+	 */
+	private String getEnemyTooltip(EnemyActorDef enemyDef) {
+		String text = "Click on the level to add (" + enemyDef.getName() + ")";
+
+		return text;
 	}
 
 	/**
