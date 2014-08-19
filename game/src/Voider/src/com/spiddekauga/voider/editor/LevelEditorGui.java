@@ -224,7 +224,8 @@ class LevelEditorGui extends EditorGui {
 			Button button = new ResourceTextureButton(enemyDef, (ImageButtonStyle) SkinNames.getResource(SkinNames.General.IMAGE_BUTTON_TOGGLE));
 
 			// Create tooltip
-			CustomTooltip tooltip = new CustomTooltip(getEnemyTooltip(enemyDef), null, Messages.EditorTooltips.TOOL_ENEMY_ADD, true);
+			CustomTooltip tooltip = new CustomTooltip(getEnemyTooltip(enemyDef), null, Messages.EditorTooltips.TOOL_ENEMY_ADD, 3);
+			tooltip.setHideWhenHidden(false);
 			mTooltip.add(button, tooltip);
 
 			if (cColumEnemy == enemiesPerColumn) {

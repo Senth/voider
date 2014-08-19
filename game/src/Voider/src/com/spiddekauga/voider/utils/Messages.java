@@ -355,36 +355,36 @@ public class Messages {
 		TAB_VISUAL("Visual settings"),
 
 		// Enemy tabs
-		TAB_MOVEMENT("Movement settings", null, true),
-		TAB_WEAPON("Weapon settings", "https://www.youtube.com/watch?v=SxzoVL5YTHc", true),
-		TAB_COLLISION("Collision settings", "https://www.youtube.com/watch?v=ZbKIrmIbrjk", true),
+		TAB_MOVEMENT("Movement settings", null, 1),
+		TAB_WEAPON("Weapon settings", "https://www.youtube.com/watch?v=SxzoVL5YTHc", 1),
+		TAB_COLLISION("Collision settings", "https://www.youtube.com/watch?v=ZbKIrmIbrjk", 1),
 
 		// Bullet tabs
-		TAB_BULLET_TEST("Test bullet on weapons", null, true),
+		TAB_BULLET_TEST("Test bullet on weapons", null, 1),
 
 		// Tools
-		TOOL_SELECTION("Selection tool", "https://www.youtube.com/watch?v=7R1rK2b8jaU", true),
-		TOOL_PAN_LEVEL("Pan tool", "https://www.youtube.com/watch?v=WThGYvHQSHU", true),
-		TOOL_PAN_ACTOR("Pan tool", "https://www.youtube.com/watch?v=WThGYvHQSHU", TAB_VISUAL, true),
-		TOOL_MOVE_LEVEL("Move tool", "https://www.youtube.com/watch?v=UFmqy6YWMRk", true),
-		TOOL_MOVE_ACTOR("Move tool", "https://www.youtube.com/watch?v=UFmqy6YWMRk", TAB_VISUAL, true),
-		TOOL_DELETE_LEVEL("Delete tool", "https://www.youtube.com/watch?v=96S2M17STaI", true),
-		TOOL_DELETE_ACTOR("Delete tool", "https://www.youtube.com/watch?v=96S2M17STaI", TAB_VISUAL, true),
+		TOOL_SELECTION("Selection tool", "https://www.youtube.com/watch?v=7R1rK2b8jaU", 1),
+		TOOL_PAN_LEVEL("Pan tool", "https://www.youtube.com/watch?v=WThGYvHQSHU", 1),
+		TOOL_PAN_ACTOR("Pan tool", "https://www.youtube.com/watch?v=WThGYvHQSHU", TAB_VISUAL, 2),
+		TOOL_MOVE_LEVEL("Move tool", "https://www.youtube.com/watch?v=UFmqy6YWMRk", 1),
+		TOOL_MOVE_ACTOR("Move tool", "https://www.youtube.com/watch?v=UFmqy6YWMRk", TAB_VISUAL, 2),
+		TOOL_DELETE_LEVEL("Delete tool", "https://www.youtube.com/watch?v=96S2M17STaI", 1),
+		TOOL_DELETE_ACTOR("Delete tool", "https://www.youtube.com/watch?v=96S2M17STaI", TAB_VISUAL, 2),
 		TOOL_CLEAR_SELECTION("Clear selection"),
-		TOOL_DRAW_APPEND_TERRAIN("Draw terrain", "https://www.youtube.com/watch?v=UbOF_KgpLzI", true),
-		TOOL_DRAW_ERASE_TERRAIN("Add/Remove area to/from terrain", "https://www.youtube.com/watch?v=UbOF_KgpLzI", true),
-		TOOL_DRAW_CORNER_ADD_TERRAIN("Add/Move terrain corners", "https://www.youtube.com/watch?v=UbOF_KgpLzI", true),
-		TOOL_DRAW_CORNER_REMOVE_TERRAIN("Remove terrain corners", "https://www.youtube.com/watch?v=UbOF_KgpLzI", true),
-		TOOL_DRAW_APPEND_ACTOR("Draw shape", "https://www.youtube.com/watch?v=q9BmR6E5JvM", TAB_VISUAL, true),
-		TOOL_DRAW_ERASE_ACTOR("Add/Remove area to/from shape", "https://www.youtube.com/watch?v=q9BmR6E5JvM", TAB_VISUAL, true),
-		TOOL_DRAW_CORNER_ADD_ACTOR("Add/Move shape corners", "https://www.youtube.com/watch?v=q9BmR6E5JvM", TAB_VISUAL, true),
-		TOOL_DRAW_CORNER_REMOVE_ACTOR("Remove shape corners", "https://www.youtube.com/watch?v=q9BmR6E5JvM", TAB_VISUAL, true),
-		TOOL_ENEMY_ADD("Add enemies", "https://www.youtube.com/watch?v=n3d31c4gaf8", true),
-		TOOL_PATH("Add paths for enemies", "https://www.youtube.com/watch?v=DWeUECW8o2w", true),
-		TOOL_TRIGGER_ACTIVATE("Set enemy activate triggers", "https://www.youtube.com/watch?v=eCTuQdG3v98", true),
-		TOOL_TRIGGER_DEACTIVATE("Set enemy deactivate triggers", "https://www.youtube.com/watch?v=eCTuQdG3v98", true),
-		TOOL_CENTER_SET("Set center", "https://www.youtube.com/watch?v=q9BmR6E5JvM", TAB_VISUAL, true),
-		TOOL_CENTER_RESET("Reset center", "https://www.youtube.com/watch?v=q9BmR6E5JvM", TAB_VISUAL, true),
+		TOOL_DRAW_APPEND_TERRAIN("Draw terrain", "https://www.youtube.com/watch?v=UbOF_KgpLzI", 1),
+		TOOL_DRAW_ERASE_TERRAIN("Add/Remove area to/from terrain", "https://www.youtube.com/watch?v=UbOF_KgpLzI", 1),
+		TOOL_DRAW_CORNER_ADD_TERRAIN("Add/Move terrain corners", "https://www.youtube.com/watch?v=UbOF_KgpLzI", 1),
+		TOOL_DRAW_CORNER_REMOVE_TERRAIN("Remove terrain corners", "https://www.youtube.com/watch?v=UbOF_KgpLzI", 1),
+		TOOL_DRAW_APPEND_ACTOR("Draw shape", "https://www.youtube.com/watch?v=q9BmR6E5JvM", TAB_VISUAL, 2),
+		TOOL_DRAW_ERASE_ACTOR("Add/Remove area to/from shape", "https://www.youtube.com/watch?v=q9BmR6E5JvM", TAB_VISUAL, 2),
+		TOOL_DRAW_CORNER_ADD_ACTOR("Add/Move shape corners", "https://www.youtube.com/watch?v=q9BmR6E5JvM", TAB_VISUAL, 2),
+		TOOL_DRAW_CORNER_REMOVE_ACTOR("Remove shape corners", "https://www.youtube.com/watch?v=q9BmR6E5JvM", TAB_VISUAL, 2),
+		TOOL_ENEMY_ADD("Add enemies", "https://www.youtube.com/watch?v=n3d31c4gaf8", 1),
+		TOOL_PATH("Add paths for enemies", "https://www.youtube.com/watch?v=DWeUECW8o2w", 1),
+		TOOL_TRIGGER_ACTIVATE("Set enemy activate triggers", "https://www.youtube.com/watch?v=eCTuQdG3v98", 1),
+		TOOL_TRIGGER_DEACTIVATE("Set enemy deactivate triggers", "https://www.youtube.com/watch?v=eCTuQdG3v98", 1),
+		TOOL_CENTER_SET("Set center", "https://www.youtube.com/watch?v=q9BmR6E5JvM", TAB_VISUAL, 2),
+		TOOL_CENTER_RESET("Reset center", "https://www.youtube.com/watch?v=q9BmR6E5JvM", TAB_VISUAL, 2),
 
 		// File
 		FILE_NEW_CAMPAIGN("New campaign"),
@@ -433,9 +433,9 @@ public class Messages {
 		ENEMY_DEACTIVATION_DELAY("Deactivate delay after triggered", "https://www.youtube.com/watch?v=tzHQkAxrx94", TAB_ENEMY),
 
 		// Enemy movement tab (enemy editor)
-		MOVEMENT_PATH("Path movement", "https://www.youtube.com/watch?v=whL_LQK64PA", TAB_MOVEMENT, true),
-		MOVEMENT_STATIONARY("Stationary enemy", "https://www.youtube.com/watch?v=whL_LQK64PA", TAB_MOVEMENT, true),
-		MOVEMENT_AI("AI movement", "https://www.youtube.com/watch?v=whL_LQK64PA", TAB_MOVEMENT, true),
+		MOVEMENT_PATH("Path movement", "https://www.youtube.com/watch?v=whL_LQK64PA", TAB_MOVEMENT, 2),
+		MOVEMENT_STATIONARY("Stationary enemy", "https://www.youtube.com/watch?v=whL_LQK64PA", TAB_MOVEMENT, 2),
+		MOVEMENT_AI("AI movement", "https://www.youtube.com/watch?v=whL_LQK64PA", TAB_MOVEMENT, 2),
 		MOVEMENT_AI_RANDOM_COOLDOWN("Cooldown for new movement direction", "https://www.youtube.com/watch?v=whL_LQK64PA", MOVEMENT_AI),
 
 		// Enemy weapon tab (enemy editor)
@@ -487,28 +487,29 @@ public class Messages {
 		/**
 		 * Constructs a costum tooltip
 		 * @param text tooltip text to display
-		 * @param youtubeLink link to youtube tutorial
-		 * @param permanent true if permanent
+		 * @param youtubeLink link to youtube totorial
+		 * @param parent parent tooltip. Set to null if this is a root tooltip
+		 * @param permanentLevel set to the level of priority the permanent should have.
+		 *        Set to null if you don't want this tooltip to be a permanent
 		 */
-		private EditorTooltips(String text, String youtubeLink, boolean permanent) {
+		private EditorTooltips(String text, String youtubeLink, ITooltip parent, Integer permanentLevel) {
 			mText = text;
 			mYoutubeLink = youtubeLink;
-			mPermanent = permanent;
+			mPermanentLevel = permanentLevel;
+			mParent = parent;
 		}
 
 		/**
 		 * Constructs a costum tooltip
 		 * @param text tooltip text to display
-		 * @param youtubeLink link to youtube totorial
-		 * @param parent parent tooltip. Set to null if this is a root tooltip
-		 * @param permanent set to true if the tooltip should stay after being clicked,
-		 *        i.e. not only hover
+		 * @param youtubeLink link to youtube tutorial
+		 * @param permanentLevel set to the level of priority the permanent should have.
+		 *        Set to null if you don't want this tooltip to be a permanent
 		 */
-		private EditorTooltips(String text, String youtubeLink, ITooltip parent, boolean permanent) {
+		private EditorTooltips(String text, String youtubeLink, Integer permanentLevel) {
 			mText = text;
 			mYoutubeLink = youtubeLink;
-			mPermanent = permanent;
-			mParent = parent;
+			mPermanentLevel = permanentLevel;
 		}
 
 		/**
@@ -516,20 +517,25 @@ public class Messages {
 		 * @param text tooltip text to display
 		 * @param youtubeLink link to youtube tutorial, may be null
 		 * @param parent parent tooltip. Set to null if this is a root tooltip
-		 * @param permanent set to true if the tooltip should stay after being clicked,
-		 *        i.e. not only hover
+		 * @param permanentLevel set to the level of priority the permanent should have.
+		 *        Set to null if you don't want this tooltip to be a permanent
 		 * @param hotkey a hotkey for the tooltip, may be null @param youtubeLink link to
 		 *        youtube tutorial, may be null
 		 * @param youtubeOnly set to true to only show the youtube link and no hover
 		 *        messages.
+		 * @param hideWhenHidden true (default) to hide the tooltip if the actor is
+		 *        hidden. If false the tooltip will be shown even though the actor is
+		 *        hidden.
 		 */
-		private EditorTooltips(String text, String youtubeLink, ITooltip parent, boolean permanent, String hotkey, boolean youtubeOnly) {
+		private EditorTooltips(String text, String youtubeLink, ITooltip parent, Integer permanentLevel, String hotkey, boolean youtubeOnly,
+				boolean hideWhenHidden) {
 			mText = text;
-			mPermanent = permanent;
+			mPermanentLevel = permanentLevel;
 			mParent = parent;
 			mHotkey = hotkey;
 			mYoutubeLink = youtubeLink;
 			mYoutubeOnly = youtubeOnly;
+			mHideWhenHidden = hideWhenHidden;
 		}
 
 		@Override
@@ -554,7 +560,7 @@ public class Messages {
 
 		@Override
 		public boolean isPermanent() {
-			return mPermanent;
+			return mPermanentLevel != null;
 		}
 
 		@Override
@@ -572,10 +578,18 @@ public class Messages {
 			return mHotkey != null;
 		}
 
+		@Override
+		public int getLevel() {
+			return mPermanentLevel;
+		}
+
+		@Override
+		public boolean shouldHideWhenHidden() {
+			return mHideWhenHidden;
+		}
+
 		/** Text for the tooltip */
 		private String mText;
-		/** True if tooltip is permanent, will stay after pressed button */
-		private boolean mPermanent = false;
 		/** Hotkey for tooltip */
 		private String mHotkey = null;
 		/** YouTube link */
@@ -584,6 +598,10 @@ public class Messages {
 		private boolean mYoutubeOnly = false;
 		/** Parent tooltip */
 		private ITooltip mParent;
+		/** Level of the tooltip */
+		private Integer mPermanentLevel = null;
+		/** Should hide when hidden */
+		private boolean mHideWhenHidden = true;
 	}
 
 	/**

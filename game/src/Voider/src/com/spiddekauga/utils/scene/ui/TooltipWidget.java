@@ -1,7 +1,12 @@
 package com.spiddekauga.utils.scene.ui;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map.Entry;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -98,7 +103,19 @@ public class TooltipWidget extends WidgetGroup {
 	 */
 	public void add(Actor actor, ITooltip tooltip) {
 		mTooltips.put(actor, tooltip);
+		mActors.put(tooltip, actor);
 		actor.addListener(mActorListener);
+
+		if (tooltip.isPermanent()) {
+			ArrayList<Actor> permanents = mSortedPermanents.get(tooltip.getLevel());
+
+			if (permanents == null) {
+				permanents = new ArrayList<>();
+				mSortedPermanents.put(tooltip.getLevel(), permanents);
+			}
+
+			permanents.add(actor);
+		}
 	}
 
 	/**
@@ -109,8 +126,7 @@ public class TooltipWidget extends WidgetGroup {
 	 */
 	public void add(ArrayList<Actor> actors, ITooltip tooltip) {
 		for (Actor actor : actors) {
-			mTooltips.put(actor, tooltip);
-			actor.addListener(mActorListener);
+			add(actor, tooltip);
 		}
 	}
 
@@ -169,6 +185,58 @@ public class TooltipWidget extends WidgetGroup {
 	}
 
 	/**
+	 * Handle invisible event for the current permanent tooltip
+	 */
+	private void handleInvisible() {
+		// Remove current, get parent
+		mPermanentTooltips.remove(mPermanentTooltips.size() - 1);
+		ITooltip parentTooltip = null;
+
+		if (!mPermanentTooltips.isEmpty()) {
+			parentTooltip = mPermanentTooltips.get(mPermanentTooltips.size() - 1);
+		}
+
+		// Parent available
+		if (parentTooltip != null) {
+			Actor actor = mActors.get(parentTooltip);
+
+			// Visible -> Set labels
+			if (actor != null && actor.isVisible()) {
+				setLabels(mPermanentTooltips);
+			}
+			// Invisible -> Recursive
+			else {
+				handleInvisible();
+			}
+		}
+		// Search all permanents for a visible and selected one
+		else {
+			Actor foundVisibleCheckedActor = null;
+			Iterator<Entry<Integer, ArrayList<Actor>>> permanentIt = mSortedPermanents.entrySet().iterator();
+			while (permanentIt.hasNext() && foundVisibleCheckedActor == null) {
+				ArrayList<Actor> actors = permanentIt.next().getValue();
+
+				Iterator<Actor> actorIt = actors.iterator();
+				while (actorIt.hasNext() && foundVisibleCheckedActor == null) {
+					Actor actor = actorIt.next();
+
+					if (actor instanceof Button) {
+						if (((Button) actor).isChecked() && actor.isVisible()) {
+							foundVisibleCheckedActor = actor;
+						}
+					}
+				}
+			}
+
+			// Set new permanent tooltip
+			if (foundVisibleCheckedActor != null) {
+				ITooltip tooltip = mTooltips.get(foundVisibleCheckedActor);
+				setPermanentTooltip(tooltip);
+			}
+		}
+	}
+
+	/**
 	 * Set a temporary tooltip
 	 * @param tooltip the tooltip to set as a temporary
 	 */
@@ -183,10 +251,28 @@ public class TooltipWidget extends WidgetGroup {
 	 * @param tooltip the temporary tooltip must be this tooltip to work
 	 */
 	private void clearTemporaryTooltip(ITooltip tooltip) {
-		if (mTemporaryTooltips.size() > 0 && tooltip == mTemporaryTooltips.get(mTemporaryTooltips.size() - 1)) {
+		if (isCurrentTemporaryTooltip(tooltip)) {
 			mTemporaryTooltips.clear();
 			setLabels(mPermanentTooltips);
 		}
+	}
+
+	/**
+	 * Checks if this is the current temporary tooltip
+	 * @param tooltip the tooltip to check
+	 * @return true if the tooltip is the current temporary tooltip
+	 */
+	private boolean isCurrentTemporaryTooltip(ITooltip tooltip) {
+		return mTemporaryTooltips.size() > 0 && tooltip == mTemporaryTooltips.get(mTemporaryTooltips.size() - 1);
+	}
+
+	/**
+	 * Checks if this is the current permanent tooltip
+	 * @param tooltip the tooltip to check
+	 * @return true if the tooltip is the current permanent tooltip
+	 */
+	private boolean isCurrentPermanentTooltip(ITooltip tooltip) {
+		return mPermanentTooltips.size() > 0 && tooltip == mPermanentTooltips.get(mPermanentTooltips.size() - 1);
 	}
 
 	/**
@@ -388,13 +474,22 @@ public class TooltipWidget extends WidgetGroup {
 					}
 				}
 			}
-			// Pressed
+			// Pressed or visible/invisible
 			else if (event instanceof ChangeEvent) {
 				Actor actor = event.getTarget();
 				if (actor instanceof Button) {
+					// Pressed
 					if (((Button) actor).isChecked()) {
 						ITooltip tooltip = getTooltipFromEvent(event);
 						handlePressed(tooltip);
+					}
+
+					// Invisible and current
+					if (event instanceof VisibilityChangeEvent && !actor.isVisible()) {
+						ITooltip tooltip = getTooltipFromEvent(event);
+						if (tooltip.shouldHideWhenHidden() && isCurrentPermanentTooltip(tooltip)) {
+							handleInvisible();
+						}
 					}
 				}
 			}
@@ -408,6 +503,15 @@ public class TooltipWidget extends WidgetGroup {
 	private AlignTable mTable = new AlignTable();
 	/** Tooltips bound to specific actors */
 	private HashMap<Actor, ITooltip> mTooltips = new HashMap<>();
+	/** Actors bound to the tooltips */
+	private HashMap<ITooltip, Actor> mActors = new HashMap<>();
+	/** All permanents sorted with by levels, higher level first */
+	private SortedMap<Integer, ArrayList<Actor>> mSortedPermanents = new TreeMap<>(new Comparator<Integer>() {
+		@Override
+		public int compare(Integer o1, Integer o2) {
+			return o1.intValue() - o2.intValue();
+		}
+	});
 	/** Temporary tooltips */
 	private ArrayList<ITooltip> mTemporaryTooltips = new ArrayList<>();
 	/** Permanent tooltips */
@@ -517,6 +621,18 @@ public class TooltipWidget extends WidgetGroup {
 		 * @return parent tooltip. If null this is a root tooltip
 		 */
 		ITooltip getParent();
+
+		/**
+		 * @return permanent level for the tooltip. Higher value is higher priority. Only
+		 *         valid if the tooltip is permanent.
+		 */
+		int getLevel();
+
+		/**
+		 * @return true if the tooltip should be hide when the tooltips is hidden. Only
+		 *         valid for permanents
+		 */
+		boolean shouldHideWhenHidden();
 	}
 
 	/**
@@ -524,7 +640,7 @@ public class TooltipWidget extends WidgetGroup {
 	 */
 	public static class CustomTooltip implements ITooltip {
 		/**
-		 * /** Constructs a costum tooltip
+		 * Constructs a costum tooltip. Not a permament.
 		 * @param text tooltip text to display
 		 */
 		public CustomTooltip(String text) {
@@ -532,7 +648,7 @@ public class TooltipWidget extends WidgetGroup {
 		}
 
 		/**
-		 * Constructs a costum tooltip
+		 * Constructs a costum tooltip. Not a permanent.
 		 * @param text tooltip text to display
 		 * @param youtubeLink link to youtube tutorial
 		 */
@@ -542,7 +658,7 @@ public class TooltipWidget extends WidgetGroup {
 		}
 
 		/**
-		 * Constructs a costum tooltip
+		 * Constructs a costum tooltip. Not a permanent.
 		 * @param text tooltip text to display
 		 * @param youtubeLink link to youtube tutorial
 		 * @param parent parent tooltip. Set to null if this is a root tooltip
@@ -558,13 +674,13 @@ public class TooltipWidget extends WidgetGroup {
 		 * @param text tooltip text to display
 		 * @param youtubeLink link to youtube totorial
 		 * @param parent parent tooltip. Set to null if this is a root tooltip
-		 * @param permanent set to true if the tooltip should stay after being clicked,
-		 *        i.e. not only hover
+		 * @param permanentLevel set to the level of priority the permanent should have.
+		 *        Set to null if you don't want this tooltip to be a permanent
 		 */
-		public CustomTooltip(String text, String youtubeLink, ITooltip parent, boolean permanent) {
+		public CustomTooltip(String text, String youtubeLink, ITooltip parent, Integer permanentLevel) {
 			mText = text;
 			mYoutubeLink = youtubeLink;
-			mPermanent = permanent;
+			mPermanentLevel = permanentLevel;
 			mParent = parent;
 		}
 
@@ -572,12 +688,13 @@ public class TooltipWidget extends WidgetGroup {
 		 * Constructs a costum tooltip
 		 * @param text tooltip text to display
 		 * @param youtubeLink link to youtube tutorial
-		 * @param permanent true if permanent
+		 * @param permanentLevel set to the level of priority the permanent should have.
+		 *        Set to null if you don't want this tooltip to be a permanent
 		 */
-		public CustomTooltip(String text, String youtubeLink, boolean permanent) {
+		public CustomTooltip(String text, String youtubeLink, Integer permanentLevel) {
 			mText = text;
 			mYoutubeLink = youtubeLink;
-			mPermanent = permanent;
+			mPermanentLevel = permanentLevel;
 		}
 
 		/**
@@ -585,20 +702,35 @@ public class TooltipWidget extends WidgetGroup {
 		 * @param text tooltip text to display
 		 * @param youtubeLink link to youtube tutorial, may be null
 		 * @param parent parent tooltip. Set to null if this is a root tooltip
-		 * @param permanent set to true if the tooltip should stay after being clicked,
-		 *        i.e. not only hover
+		 * @param permanentLevel set to the level of priority the permanent should have.
+		 *        Set to null if you don't want this tooltip to be a permanent
 		 * @param hotkey a hotkey for the tooltip, may be null @param youtubeLink link to
 		 *        youtube tutorial, may be null
 		 * @param youtubeOnly set to true to only show the youtube link and no hover
 		 *        messages.
+		 * @param hideWhenHidden true (default) to hide the tooltip if the actor is
+		 *        hidden. If false the tooltip will be shown even though the actor is
+		 *        hidden.
 		 */
-		public CustomTooltip(String text, String youtubeLink, ITooltip parent, boolean permanent, String hotkey, boolean youtubeOnly) {
+		public CustomTooltip(String text, String youtubeLink, ITooltip parent, Integer permanentLevel, String hotkey, boolean youtubeOnly,
+				boolean hideWhenHidden) {
 			mText = text;
-			mPermanent = permanent;
+			mPermanentLevel = permanentLevel;
 			mParent = parent;
 			mHotkey = hotkey;
 			mYoutubeLink = youtubeLink;
 			mYoutubeOnly = youtubeOnly;
+			mHideWhenHidden = hideWhenHidden;
+		}
+
+		/**
+		 * Sets hide when hidden
+		 * @param hideWhenHidden true (default) to hide the tooltip if the actor is
+		 *        hidden. If false the tooltip will be shown even though the actor is
+		 *        hidden.
+		 */
+		public void setHideWhenHidden(boolean hideWhenHidden) {
+			mHideWhenHidden = hideWhenHidden;
 		}
 
 		@Override
@@ -623,7 +755,7 @@ public class TooltipWidget extends WidgetGroup {
 
 		@Override
 		public boolean isPermanent() {
-			return mPermanent;
+			return mPermanentLevel != null;
 		}
 
 		@Override
@@ -641,10 +773,18 @@ public class TooltipWidget extends WidgetGroup {
 			return mHotkey != null;
 		}
 
+		@Override
+		public int getLevel() {
+			return mPermanentLevel;
+		}
+
+		@Override
+		public boolean shouldHideWhenHidden() {
+			return mHideWhenHidden;
+		}
+
 		/** Text for the tooltip */
 		private String mText;
-		/** True if tooltip is permanent, will stay after pressed button */
-		private boolean mPermanent;
 		/** Hotkey for tooltip */
 		private String mHotkey = null;
 		/** YouTube link */
@@ -653,7 +793,10 @@ public class TooltipWidget extends WidgetGroup {
 		private boolean mYoutubeOnly = false;
 		/** Parent tooltip */
 		private ITooltip mParent;
-
+		/** Level of the tooltip */
+		private Integer mPermanentLevel = null;
+		/** Should hide when hidden */
+		private boolean mHideWhenHidden = true;
 	}
 
 }

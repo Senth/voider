@@ -593,8 +593,8 @@ public class UiFactory {
 	 * @param table add tool separator
 	 */
 	public void addToolSeparator(AlignTable table) {
-		table.row();
-		table.add().setPadBottom(mStyles.vars.paddingOuter);
+		table.row().setPadBottom(mStyles.vars.paddingOuter);
+		// table.add().setPadBottom(mStyles.vars.paddingOuter);
 		table.row();
 	}
 

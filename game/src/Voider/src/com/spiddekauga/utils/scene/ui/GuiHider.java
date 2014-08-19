@@ -12,7 +12,6 @@ import com.spiddekauga.voider.Config;
 
 /**
  * Class for hiding GUI elements
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public abstract class GuiHider implements Disposable {
@@ -23,10 +22,10 @@ public abstract class GuiHider implements Disposable {
 	}
 
 	/**
-	 * Adds a child hide listener. This allows child hide listeners
-	 * to remain hidden when this listener is shown.
-	 * @param child hide listener, its button shall be either a toggle actor
-	 * in this class or a child of ones toggle actor.
+	 * Adds a child hide listener. This allows child hide listeners to remain hidden when
+	 * this listener is shown.
+	 * @param child hide listener, its button shall be either a toggle actor in this class
+	 *        or a child of ones toggle actor.
 	 */
 	public void addChild(GuiHider child) {
 		mChildren.add(child);
@@ -36,13 +35,13 @@ public abstract class GuiHider implements Disposable {
 			child.updateToggleActors();
 		} else {
 			child.mVisible = false;
-			child.hideAll();
+			child.updateActorVisibility();
 		}
 	}
 
 	/**
-	 * Adds an actor to show/hide when the button is checked/unchecked
-	 * (depending on how the listener was created (showWhenChecked)).
+	 * Adds an actor to show/hide when the button is checked/unchecked (depending on how
+	 * the listener was created (showWhenChecked)).
 	 * @param toggleActor the actor to show/hide
 	 */
 	public void addToggleActor(Actor toggleActor) {
@@ -70,35 +69,11 @@ public abstract class GuiHider implements Disposable {
 	protected void updateToggleActors() {
 		if (shallShowActors() && (mParent == null || mParent.isVisible())) {
 			mVisible = true;
-
-			for (Actor toggleActor : mToggles) {
-				toggleActor.setVisible(true);
-
-				if (toggleActor instanceof Group) {
-					enableDisableActorTextFields((Group) toggleActor, false);
-				}
-
-				if (toggleActor instanceof TextField) {
-					if (toggleActor.getName() == null || !toggleActor.getName().equals(Config.Gui.TEXT_FIELD_DISABLED_NAME)) {
-						((TextField) toggleActor).setDisabled(false);
-					}
-				}
-
-				if (toggleActor instanceof Layout) {
-					((Layout) toggleActor).invalidateHierarchy();
-				}
-			}
-
-			// Shall children remain hidden?
-			for (GuiHider hideListener : mChildren) {
-				hideListener.updateToggleActors();
-			}
-
-
+			updateActorVisibility();
 			onShow();
 		} else {
 			mVisible = false;
-			hideAll();
+			updateActorVisibility();
 			onHide();
 		}
 	}
@@ -108,36 +83,63 @@ public abstract class GuiHider implements Disposable {
 	 */
 	protected abstract boolean shallShowActors();
 
+
 	/**
-	 * Hides all actors including children's actors
+	 * Hide/show all toggle actors and children, including GuiHider children
 	 */
-	protected void hideAll() {
+	protected void updateActorVisibility() {
 		for (Actor toggleActor : mToggles) {
-			toggleActor.setVisible(false);
-
-			if (toggleActor instanceof Group) {
-				enableDisableActorTextFields((Group) toggleActor, true);
-			}
-
-			if (toggleActor instanceof TextField) {
-				((TextField) toggleActor).setDisabled(true);
-			}
-
-			if (toggleActor instanceof Layout) {
-				((Layout) toggleActor).invalidateHierarchy();
-			}
+			// toggleActor.setVisible(mVisible);
+			updateActorVisibility(toggleActor);
 		}
 
 		for (GuiHider hideListener : mChildren) {
-			hideListener.hideAll();
+			hideListener.updateToggleActors();
 		}
 	}
+
+	/**
+	 * Hide/Show the specified actor
+	 * @param actor the actor to hide/show (depends on the state of the hider)
+	 */
+	private void updateActorVisibility(Actor actor) {
+		actor.setVisible(mVisible);
+		fireVisiblilityEvent(actor);
+
+		if (actor instanceof Group) {
+			for (Actor child : ((Group) actor).getChildren()) {
+				if (!isActorInChild(child)) {
+					updateActorVisibility(child);
+				}
+			}
+		}
+
+		if (actor instanceof TextField) {
+			if (!mVisible || actor.getName() == null || !actor.getName().equals(Config.Gui.TEXT_FIELD_DISABLED_NAME)) {
+				((TextField) actor).setDisabled(!mVisible);
+			}
+		}
+
+		if (actor instanceof Layout) {
+			((Layout) actor).invalidateHierarchy();
+		}
+	}
+
+	/**
+	 * Fire event for the specified actor and all children
+	 * @param actor the actor to fire the event for
+	 */
+	private void fireVisiblilityEvent(Actor actor) {
+		actor.fire(new VisibilityChangeEvent());
+	}
+
 
 	/**
 	 * Enable/Disable the actor's text fields if the actor has any children
 	 * @param actor the actor to enable/disable the text fields of
 	 * @param disable set to true to disable the text fields
 	 */
+	@Deprecated
 	private void enableDisableActorTextFields(Group actor, boolean disable) {
 		SnapshotArray<Actor> children = actor.getChildren();
 
@@ -152,6 +154,22 @@ public abstract class GuiHider implements Disposable {
 				enableDisableActorTextFields((Group) child, disable);
 			}
 		}
+	}
+
+	/**
+	 * @param actor test if the actor is in a child hider (not recursive, no need)
+	 * @return true if the actor is in a child hider
+	 */
+	private boolean isActorInChild(Actor actor) {
+		for (GuiHider hideChild : mChildren) {
+			for (Actor actorChild : hideChild.mToggles) {
+				if (actor == actorChild) {
+					return true;
+				}
+			}
+		}
+
+		return false;
 	}
 
 	/**
