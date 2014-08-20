@@ -317,6 +317,15 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageDisabled: path_add_disabled
 	},
 	
+	path_tab: {
+		imageUp: path_tab,
+		imageOver: path_tab_over,
+		imageDown: path_tab_down,
+		imageChecked: path_tab_checked,
+		imageCheckedOver: path_tab_checked_over,
+		imageDisabled: path_tab_disabled
+	},
+	
 	draw_append: {
 		imageUp: draw_append,
 		imageOver: draw_append_over,

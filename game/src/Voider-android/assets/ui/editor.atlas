@@ -1865,6 +1865,13 @@ path_add
   orig: 32, 32
   offset: 0, 0
   index: -1
+path_tab
+  rotate: false
+  xy: 3149, 61
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
 path_add_checked
   rotate: false
   xy: 3183, 95
@@ -1873,6 +1880,20 @@ path_add_checked
   offset: 0, 0
   index: -1
 path_add_down
+  rotate: false
+  xy: 3183, 95
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+path_tab_checked
+  rotate: false
+  xy: 3183, 95
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+path_tab_down
   rotate: false
   xy: 3183, 95
   size: 32, 32
@@ -1893,7 +1914,28 @@ path_add_over
   orig: 32, 32
   offset: 0, 0
   index: -1
+path_tab_checked_over
+  rotate: false
+  xy: 3183, 61
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+path_tab_over
+  rotate: false
+  xy: 3183, 61
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
 path_add_disabled
+  rotate: false
+  xy: 3217, 95
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+path_tab_disabled
   rotate: false
   xy: 3217, 95
   size: 32, 32

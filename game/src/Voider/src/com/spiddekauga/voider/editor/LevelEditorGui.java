@@ -34,6 +34,7 @@ import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Editor;
 import com.spiddekauga.voider.Config.Editor.Level;
 import com.spiddekauga.voider.editor.LevelEditor.Tools;
+import com.spiddekauga.voider.editor.commands.GuiCheckCommandCreator;
 import com.spiddekauga.voider.game.Path.PathTypes;
 import com.spiddekauga.voider.game.Themes;
 import com.spiddekauga.voider.game.actors.EnemyActorDef;
@@ -176,7 +177,7 @@ class LevelEditorGui extends EditorGui {
 	 */
 	void resetPathOptions() {
 		if (mLevelEditor.isPathSelected()) {
-			// mHiders.pathOptions.show();
+			mWidgets.path.hiderTab.show();
 
 			if (mLevelEditor.getPathType() != null) {
 				switch (mLevelEditor.getPathType()) {
@@ -200,7 +201,7 @@ class LevelEditorGui extends EditorGui {
 				mWidgets.path.once.setChecked(false);
 			}
 		} else {
-			// mHiders.pathOptions.hide();
+			mWidgets.path.hiderTab.hide();
 		}
 	}
 
@@ -670,7 +671,11 @@ class LevelEditorGui extends EditorGui {
 		mWidgets.enemy.hiderTab.addToggleActor(button);
 		mTooltip.add(button, Messages.EditorTooltips.TAB_ENEMY);
 
-		// TODO fix tabs
+		// Path settings
+		buttonStyle = SkinNames.getResource(SkinNames.EditorIcons.PATH_ADD);
+		button = mSettingTabs.addTab(buttonStyle, mWidgets.path.table, mWidgets.path.hiderTable);
+		mWidgets.path.hiderTab.addToggleActor(button);
+		mTooltip.add(button, Messages.EditorTooltips.TAB_PATH);
 	}
 
 	/**
@@ -793,25 +798,24 @@ class LevelEditorGui extends EditorGui {
 	 * Initializes path tool GUI
 	 */
 	private void initPathOptions() {
-		// TODO Use tabs
-
-		// mHiders.pathOptions.addToggleActor(mWidgets.path.table);
-		mMainTable.row();
-		mMainTable.add(mWidgets.path.table);
-		mWidgets.path.table.setPreferences(mMainTable);
-
 		AlignTable table = mWidgets.path.table;
+		table.setAlignRow(Horizontal.LEFT, Vertical.MIDDLE);
 
-		// Path options
+		mUiFactory.addPanelSection("Enemy path movement", table, null);
+
+		// Buttons
 		Button button;
 		ButtonGroup buttonGroup = new ButtonGroup();
 		buttonGroup.setMinCheckCount(0);
 
+		GuiCheckCommandCreator checkCommandCreator = new GuiCheckCommandCreator(mInvoker);
+
 		// Once
-		button = mUiFactory.addImageButton(SkinNames.EditorIcons.PATH_ONCE, table, null, mDisabledWhenPublished);
+		button = mUiFactory.addImageButtonLabel(SkinNames.EditorIcons.PATH_ONCE, "Once", table, null, mDisabledWhenPublished);
 		mTooltip.add(button, Messages.EditorTooltips.PATH_ONCE);
 		mWidgets.path.once = button;
 		buttonGroup.add(button);
+		button.addListener(checkCommandCreator);
 		new ButtonListener(button) {
 			@Override
 			protected void onChecked(boolean checked) {
@@ -822,10 +826,11 @@ class LevelEditorGui extends EditorGui {
 		};
 
 		// Loop
-		button = mUiFactory.addImageButton(SkinNames.EditorIcons.PATH_LOOP, table, null, mDisabledWhenPublished);
+		button = mUiFactory.addImageButtonLabel(SkinNames.EditorIcons.PATH_LOOP, "Loop", table, null, mDisabledWhenPublished);
 		mTooltip.add(button, Messages.EditorTooltips.PATH_LOOP);
 		mWidgets.path.loop = button;
 		buttonGroup.add(button);
+		button.addListener(checkCommandCreator);
 		new ButtonListener(button) {
 			@Override
 			protected void onChecked(boolean checked) {
@@ -836,10 +841,11 @@ class LevelEditorGui extends EditorGui {
 		};
 
 		// Back and forth
-		button = mUiFactory.addImageButton(SkinNames.EditorIcons.PATH_BACK_AND_FORTH, table, null, mDisabledWhenPublished);
+		button = mUiFactory.addImageButtonLabel(SkinNames.EditorIcons.PATH_BACK_AND_FORTH, "Back and Forth", table, null, mDisabledWhenPublished);
 		mTooltip.add(button, Messages.EditorTooltips.PATH_BACK_AND_FORTH);
 		mWidgets.path.backAndForth = button;
 		buttonGroup.add(button);
+		button.addListener(checkCommandCreator);
 		new ButtonListener(button) {
 			@Override
 			protected void onChecked(boolean checked) {
@@ -848,8 +854,6 @@ class LevelEditorGui extends EditorGui {
 				}
 			}
 		};
-
-		mWidgets.path.table.row();
 	}
 
 	@Override
@@ -999,9 +1003,22 @@ class LevelEditorGui extends EditorGui {
 			Button loop = null;
 			Button backAndForth = null;
 
+			// Hiders
+			HideListener hiderTable = new HideListener(true);
+			HideManual hiderTab = new HideManual();
+
+			/**
+			 * Set hider children
+			 */
+			PathOptionWidgets() {
+				hiderTab.addChild(hiderTable);
+			}
+
 			@Override
 			public void dispose() {
 				table.dispose();
+				hiderTab.dispose();
+				hiderTable.dispose();
 			}
 		}
 	}

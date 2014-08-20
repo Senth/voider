@@ -514,7 +514,31 @@ public class UiFactory {
 		doExtraActionsOnActors(hider, null, image, label);
 
 		return label;
+	}
 
+	/**
+	 * Add an image button with a label
+	 * @param icon the icon to show
+	 * @param text text after the icon
+	 * @param table the table to add the icon to
+	 * @param hider optional hider for icon and label
+	 * @param createdActors all created actors
+	 * @return created button
+	 */
+	public ImageButton addImageButtonLabel(ISkinNames icon, String text, AlignTable table, GuiHider hider, ArrayList<Actor> createdActors) {
+		table.row().setAlign(Horizontal.LEFT, Vertical.MIDDLE);
+
+		// Image
+		ImageButton imageButton = new ImageButton((ImageButtonStyle) SkinNames.getResource(icon));
+		table.add(imageButton).setPadRight(mStyles.vars.paddingInner);
+
+		// Label
+		Label label = new Label(text, mStyles.label.standard);
+		table.add(label);
+
+		doExtraActionsOnActors(hider, createdActors, imageButton, label);
+
+		return imageButton;
 	}
 
 	/**

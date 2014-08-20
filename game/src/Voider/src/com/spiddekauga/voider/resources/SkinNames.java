@@ -133,6 +133,8 @@ public class SkinNames {
 		PAN,
 		/** Add or continue on a path in the level (can move corners too) */
 		PATH_ADD,
+		/** Path tab in level editor */
+		PATH_TAB,
 		/**
 		 * How enemies should move in the path. Back and forth means once it reached the
 		 * end it will move backwards on the path
