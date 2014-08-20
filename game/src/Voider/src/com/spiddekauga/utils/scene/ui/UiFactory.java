@@ -844,10 +844,12 @@ public class UiFactory {
 		mStyles.window.title = SkinNames.getResource(SkinNames.General.WINDOW_TITLE);
 		mStyles.window.noTitle = SkinNames.getResource(SkinNames.General.WINDOW_NO_TITLE);
 		mStyles.scrollPane.windowBackground = SkinNames.getResource(SkinNames.General.SCROLL_PANE_WINDOW_BACKGROUND);
+		mStyles.scrollPane.noBackground = SkinNames.getResource(SkinNames.General.SCROLL_PANE_DEFAULT);
 
 		// Colors
 		mStyles.color.sceneBackground = SkinNames.getResource(SkinNames.GeneralVars.SCENE_BACKGROUND_COLOR);
 		mStyles.color.widgetBackground = SkinNames.getResource(SkinNames.GeneralVars.WIDGET_BACKGROUND_COLOR);
+		mStyles.color.widgetInnerBackground = SkinNames.getResource(SkinNames.GeneralVars.WIDGET_INNER_BACKGROUND_COLOR);
 
 		// Vars
 		mStyles.vars.barUpperLowerHeight = SkinNames.getResource(SkinNames.GeneralVars.BAR_UPPER_LOWER_HEIGHT);
@@ -1080,6 +1082,7 @@ public class UiFactory {
 		public ScrollPanes scrollPane = new ScrollPanes();
 
 		public static class ScrollPanes {
+			public ScrollPaneStyle noBackground = null;
 			public ScrollPaneStyle windowBackground = null;
 		}
 
@@ -1094,6 +1097,7 @@ public class UiFactory {
 		public static class Colors {
 			public Color sceneBackground = null;
 			public Color widgetBackground = null;
+			public Color widgetInnerBackground = null;
 		}
 
 		public static class Variables {

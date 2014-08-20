@@ -11,16 +11,16 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
-import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.utils.Disposable;
 import com.spiddekauga.utils.commands.CGuiSlider;
 import com.spiddekauga.utils.commands.Invoker;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
+import com.spiddekauga.utils.scene.ui.Background;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
+import com.spiddekauga.utils.scene.ui.Cell;
 import com.spiddekauga.utils.scene.ui.HideListener;
 import com.spiddekauga.utils.scene.ui.HideManual;
 import com.spiddekauga.utils.scene.ui.HideSliderValue;
@@ -63,27 +63,23 @@ class LevelEditorGui extends EditorGui {
 		super.initGui();
 
 
-		mPickupTable.setPreferences(mMainTable);
-		mWidgets.enemy.table.setPreferences(mMainTable);
 		mInfoTable.setPreferences(mMainTable);
 
-		mHiders = new Hiders();
-
-		initSettingsMenu();
 		initToolMenu();
 		initInfo();
 		initPathOptions();
 		initEnemyOptions();
 		initEnemyAddOptions();
+		initSettingsMenu();
 	}
 
 	@Override
 	public void dispose() {
 		mWidgets.enemy.table.dispose();
+		mWidgets.enemyAdd.table.dispose();
+		mWidgets.enemyAdd.scrollTable.dispose();
 		mWidgets.path.table.dispose();
 		mInfoTable.dispose();
-
-		mHiders.dispose();
 
 		super.dispose();
 	}
@@ -180,7 +176,7 @@ class LevelEditorGui extends EditorGui {
 	 */
 	void resetPathOptions() {
 		if (mLevelEditor.isPathSelected()) {
-			mHiders.pathOptions.show();
+			// mHiders.pathOptions.show();
 
 			if (mLevelEditor.getPathType() != null) {
 				switch (mLevelEditor.getPathType()) {
@@ -204,7 +200,7 @@ class LevelEditorGui extends EditorGui {
 				mWidgets.path.once.setChecked(false);
 			}
 		} else {
-			mHiders.pathOptions.hide();
+			// mHiders.pathOptions.hide();
 		}
 	}
 
@@ -212,13 +208,23 @@ class LevelEditorGui extends EditorGui {
 	 * Reset enemy add table
 	 */
 	void resetEnemyAddTable() {
+		// Skip if invisible or not initialized
+		if (!mWidgets.enemyAdd.hiderTable.isVisible() && mWidgets.enemyAdd.scrollTable == null) {
+			return;
+		}
+
 		ArrayList<EnemyActorDef> enemyDefs = mLevelEditor.getAddEnemies();
 
-		mWidgets.enemyAdd.scrollTable.clear();
 
-		int cColumEnemy = 0;
+		mWidgets.enemyAdd.scrollTable.dispose(true);
+
+
 		ButtonGroup buttonGroup = new ButtonGroup();
 		int enemiesPerColumn = Config.Editor.Level.Enemy.LIST_COLUMNS;
+		int cColumEnemy = enemiesPerColumn;
+		float maxScrollPaneHeight = getEnemyScrollListMaxHeight();
+
+		Cell enemyButtonCell = null;
 
 		for (EnemyActorDef enemyDef : enemyDefs) {
 			Button button = new ResourceTextureButton(enemyDef, (ImageButtonStyle) SkinNames.getResource(SkinNames.General.IMAGE_BUTTON_TOGGLE));
@@ -230,7 +236,7 @@ class LevelEditorGui extends EditorGui {
 
 			if (cColumEnemy == enemiesPerColumn) {
 				cColumEnemy = 0;
-				mWidgets.enemyAdd.scrollTable.row();
+				mWidgets.enemyAdd.scrollTable.row().setFillWidth(true).setEqualCellSize(true);
 			}
 
 			new ButtonListener(button) {
@@ -243,9 +249,49 @@ class LevelEditorGui extends EditorGui {
 			};
 			buttonGroup.add(button);
 
-			mWidgets.enemyAdd.scrollTable.add(button).size(Config.Editor.Level.Enemy.ADD_BUTTON_SIZE);
+			enemyButtonCell = mWidgets.enemyAdd.scrollTable.add(button).setKeepAspectRatio(true).setFillWidth(true);
 			cColumEnemy++;
 		}
+
+		// Fill rest of row with empty cell
+		if (cColumEnemy > 0 && cColumEnemy < enemiesPerColumn) {
+			mWidgets.enemyAdd.scrollTable.add(enemiesPerColumn - cColumEnemy);
+		}
+
+		// Fix height of scroll pane
+		mWidgets.enemyAdd.table.layout();
+		float innerHeight = mWidgets.enemyAdd.scrollTable.getHeight();
+		// OK height
+		if (innerHeight < maxScrollPaneHeight) {
+			mWidgets.enemyAdd.scrollPane.setHeight(innerHeight);
+		} else {
+			// Calculate maximum number of rows
+			if (enemyButtonCell != null) {
+				int rows = (int) (maxScrollPaneHeight / enemyButtonCell.getHeight());
+				mWidgets.enemyAdd.scrollPane.setHeight(rows * enemyButtonCell.getHeight());
+			}
+		}
+	}
+
+	/**
+	 * @return calculate and get max scroll table height for the enemy list.
+	 * @note scrollPane needs to be set to height 0 and wrapper table must call layout()
+	 *       as it calculates the height of the rest of the widgets.
+	 */
+	private float getEnemyScrollListMaxHeight() {
+		mWidgets.enemyAdd.scrollPane.setHeight(0);
+		mWidgets.enemyAdd.table.invalidate();
+		mSettingTabs.invalidate();
+		mSettingTabs.layout();
+
+
+		// Calculate maximum size
+		float availableHeight = mSettingTabs.getAvailableHeight();
+
+		// Decrease with other widgets in the tab
+		availableHeight -= mWidgets.enemyAdd.table.getHeight();
+
+		return availableHeight;
 	}
 
 	/**
@@ -254,7 +300,7 @@ class LevelEditorGui extends EditorGui {
 	 * @return get tooltip of the specified enemy
 	 */
 	private String getEnemyTooltip(EnemyActorDef enemyDef) {
-		String text = "Click on the level to add (" + enemyDef.getName() + ")";
+		String text = "Click on level to add enemy '" + enemyDef.getName() + "'";
 
 		return text;
 	}
@@ -265,7 +311,7 @@ class LevelEditorGui extends EditorGui {
 	void resetEnemyOptions() {
 		// Show/Hide options
 		if (mLevelEditor.isEnemySelected()) {
-			mHiders.enemyOptions.show();
+			mWidgets.enemy.hiderTab.show();
 
 			// Update enemy count slider values
 			if (mWidgets.enemy.cEnemies.getValue() != mLevelEditor.getEnemyCount()) {
@@ -280,31 +326,31 @@ class LevelEditorGui extends EditorGui {
 
 			// Has activate trigger -> Show trigger delay
 			if (mLevelEditor.hasSelectedEnemyActivateTrigger()) {
-				mHiders.enemyActivateDelay.show();
+				mWidgets.enemy.hiderActivateDelay.show();
 
 				float activateDelay = mLevelEditor.getSelectedEnemyActivateTriggerDelay();
 				if (activateDelay >= 0 && activateDelay != mWidgets.enemy.activateDelay.getValue()) {
 					mInvoker.execute(new CGuiSlider(mWidgets.enemy.activateDelay, activateDelay, mWidgets.enemy.activateDelay.getValue()));
 				}
 			} else {
-				mHiders.enemyActivateDelay.hide();
+				mWidgets.enemy.hiderActivateDelay.hide();
 			}
 
 
 			// Has deactivate trigger -> Show trigger delay
 			if (mLevelEditor.hasSelectedEnemyDeactivateTrigger()) {
-				mHiders.enemyDeactivateDelay.show();
+				mWidgets.enemy.hiderDeactivateDelay.show();
 
 				float deactivateDelay = mLevelEditor.getSelectedEnemyDeactivateTriggerDelay();
 				if (deactivateDelay >= 0 && deactivateDelay != mWidgets.enemy.deactivateDelay.getValue()) {
 					mInvoker.execute(new CGuiSlider(mWidgets.enemy.deactivateDelay, deactivateDelay, mWidgets.enemy.deactivateDelay.getValue()));
 				}
 			} else {
-				mHiders.enemyDeactivateDelay.hide();
+				mWidgets.enemy.hiderDeactivateDelay.hide();
 			}
 
 		} else {
-			mHiders.enemyOptions.hide();
+			mWidgets.enemy.hiderTab.hide();
 		}
 	}
 
@@ -614,16 +660,14 @@ class LevelEditorGui extends EditorGui {
 
 		// Add enemy list
 		ImageButtonStyle buttonStyle = SkinNames.getResource(SkinNames.EditorIcons.ENEMY_ADD_TAB);
-		Button button = mSettingTabs.addTab(buttonStyle, mWidgets.enemyAdd.table, mWidgets.enemyAdd.hider);
-		mHiders.enemyAdd.addToggleActor(button);
-		mHiders.enemyAdd.addChild(mWidgets.enemyAdd.hider);
+		Button button = mSettingTabs.addTab(buttonStyle, mWidgets.enemyAdd.table, mWidgets.enemyAdd.hiderTable);
+		mWidgets.enemyAdd.hiderTab.addToggleActor(button);
 		mTooltip.add(button, Messages.EditorTooltips.TAB_ENEMY_ADD);
 
 		// Enemy settings
 		buttonStyle = SkinNames.getResource(SkinNames.EditorIcons.ENEMY_INFO);
-		button = mSettingTabs.addTab(buttonStyle, mWidgets.enemy.table, mWidgets.enemy.hider);
-		mHiders.enemyOptions.addToggleActor(button);
-		mHiders.enemyOptions.addChild(mWidgets.enemy.hider);
+		button = mSettingTabs.addTab(buttonStyle, mWidgets.enemy.table, mWidgets.enemy.hiderTable);
+		mWidgets.enemy.hiderTab.addToggleActor(button);
 		mTooltip.add(button, Messages.EditorTooltips.TAB_ENEMY);
 
 		// TODO fix tabs
@@ -633,29 +677,31 @@ class LevelEditorGui extends EditorGui {
 	 * Init add enemy options
 	 */
 	private void initEnemyAddOptions() {
+		mWidgets.enemyAdd.scrollTable.setHasPreferredWidth(false).setHasPreferredHeight(false);
+		mWidgets.enemyAdd.scrollTable.setName("scroll-table");
+		mWidgets.enemyAdd.scrollTable.setBackgroundImage(new Background(mUiFactory.getStyles().color.widgetInnerBackground));
 		AlignTable table = mWidgets.enemyAdd.table;
 		table.row().setFillHeight(true);
 
 		// Hiders
-		mHiders.enemyAdd.setButton(mWidgets.tool.enemyAdd);
+		mWidgets.enemyAdd.hiderTab.setButton(mWidgets.tool.enemyAdd);
 
 		Button button;
 
 		// Scroll pane
-		mWidgets.enemyAdd.scrollTable.align(Align.left | Align.top);
-		ScrollPane scrollPane = new ScrollPane(mWidgets.enemyAdd.scrollTable, mUiFactory.getStyles().scrollPane.windowBackground);
+		mWidgets.enemyAdd.scrollTable.setAlign(Horizontal.LEFT, Vertical.TOP);
+		ScrollPane scrollPane = new ScrollPane(mWidgets.enemyAdd.scrollTable, mUiFactory.getStyles().scrollPane.noBackground);
 		mWidgets.enemyAdd.scrollPane = scrollPane;
-
-		table.add(scrollPane).setFillHeight(true).setWidth(getInnerRightPanelWidth());
+		table.add(scrollPane).setWidth(getInnerRightPanelWidth()).setFixedHeight(true);
 
 		// Add enemy button
-		table.row();
+		table.row().setAlign(Horizontal.RIGHT).setPadTop(mUiFactory.getStyles().vars.paddingInner);
 		button = mUiFactory.addImageButton(SkinNames.EditorIcons.ENEMY_ADD_TO_LIST, table, null, mDisabledWhenPublished);
 		mTooltip.add(button, Messages.EditorTooltips.ENEMY_ADD_TO_LIST);
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed() {
-				mLevelEditor.selectEnemy();
+				mLevelEditor.addEnemyToList();
 			}
 		};
 	}
@@ -664,7 +710,9 @@ class LevelEditorGui extends EditorGui {
 	 * @return available width inside the right panel
 	 */
 	private float getInnerRightPanelWidth() {
-		return mUiFactory.getStyles().vars.rightPanelWidth - mUiFactory.getStyles().vars.paddingOuter * 2;
+		return mUiFactory.getStyles().vars.rightPanelWidth;// -
+		// mUiFactory.getStyles().vars.paddingOuter
+		// * 2;
 	}
 
 	/**
@@ -672,6 +720,7 @@ class LevelEditorGui extends EditorGui {
 	 */
 	private void initEnemyOptions() {
 		AlignTable table = mWidgets.enemy.table;
+		table.setAlignRow(Horizontal.LEFT, Vertical.MIDDLE);
 		@SuppressWarnings("unchecked")
 		ArrayList<Actor> createdActors = Pools.arrayList.obtain();
 
@@ -683,12 +732,12 @@ class LevelEditorGui extends EditorGui {
 				mLevelEditor.setEnemyCount((int) (newValue + 0.5f));
 			}
 		};
-		mUiFactory.addPanelSection("Enemy count", table, null);
-		mWidgets.enemy.cEnemies = mUiFactory.addSlider(null, Level.Enemy.ENEMIES_MIN, Level.Enemy.ENEMIES_MAX, Level.Enemy.ENEMIES_STEP_SIZE,
+		mUiFactory.addPanelSection("Enemy", table, null);
+		mWidgets.enemy.cEnemies = mUiFactory.addSlider("Copies", Level.Enemy.ENEMIES_MIN, Level.Enemy.ENEMIES_MAX, Level.Enemy.ENEMIES_STEP_SIZE,
 				sliderListener, table, null, mDisabledWhenPublished, mInvoker);
 
 		HideSliderValue delayHider = new HideSliderValue(mWidgets.enemy.cEnemies, 2, Float.MAX_VALUE);
-		mHiders.enemyOptions.addChild(delayHider);
+		mWidgets.enemy.hiderTable.addChild(delayHider);
 
 
 		// Spawn delay between enemies
@@ -698,8 +747,8 @@ class LevelEditorGui extends EditorGui {
 				mLevelEditor.setEnemySpawnDelay(newValue);
 			}
 		};
-		mUiFactory.addPanelSection("Spawn delay", table, delayHider);
-		mWidgets.enemy.betweenDelay = mUiFactory.addSlider(null, Level.Enemy.DELAY_BETWEEN_MIN, Level.Enemy.DELAY_BETWEEN_MAX,
+		mUiFactory.addPanelSection("Spawn", table, delayHider);
+		mWidgets.enemy.betweenDelay = mUiFactory.addSlider("Delay", Level.Enemy.DELAY_BETWEEN_MIN, Level.Enemy.DELAY_BETWEEN_MAX,
 				Level.Enemy.DELAY_BETWEEN_STEP_SIZE, sliderListener, table, delayHider, createdActors, mInvoker);
 		mTooltip.add(createdActors, Messages.EditorTooltips.ENEMY_SPAWN_DELAY);
 		mDisabledWhenPublished.addAll(createdActors);
@@ -713,9 +762,9 @@ class LevelEditorGui extends EditorGui {
 				mLevelEditor.setSelectedEnemyActivateTriggerDelay(newValue);
 			}
 		};
-		mUiFactory.addPanelSection("Activation delay", table, mHiders.enemyActivateDelay);
-		mWidgets.enemy.activateDelay = mUiFactory.addSlider(null, Level.Enemy.TRIGGER_ACTIVATE_DELAY_MIN, Level.Enemy.TRIGGER_ACTIVATE_DELAY_MAX,
-				Level.Enemy.TRIGGER_ACTIVATE_DELAY_STEP_SIZE, sliderListener, table, mHiders.enemyActivateDelay, createdActors, mInvoker);
+		mUiFactory.addPanelSection("Activation", table, mWidgets.enemy.hiderActivateDelay);
+		mWidgets.enemy.activateDelay = mUiFactory.addSlider("Delay", Level.Enemy.TRIGGER_ACTIVATE_DELAY_MIN, Level.Enemy.TRIGGER_ACTIVATE_DELAY_MAX,
+				Level.Enemy.TRIGGER_ACTIVATE_DELAY_STEP_SIZE, sliderListener, table, mWidgets.enemy.hiderActivateDelay, createdActors, mInvoker);
 		mTooltip.add(createdActors, Messages.EditorTooltips.ENEMY_ACTIVATION_DELAY);
 		mDisabledWhenPublished.addAll(createdActors);
 		createdActors.clear();
@@ -728,10 +777,10 @@ class LevelEditorGui extends EditorGui {
 				mLevelEditor.setSelectedEnemyDeactivateTriggerDelay(newValue);
 			}
 		};
-		mUiFactory.addPanelSection("Deactivation delay", table, mHiders.enemyDeactivateDelay);
-		mWidgets.enemy.deactivateDelay = mUiFactory.addSlider(null, Level.Enemy.TRIGGER_DEACTIVATE_DELAY_MIN,
+		mUiFactory.addPanelSection("Deactivation", table, mWidgets.enemy.hiderDeactivateDelay);
+		mWidgets.enemy.deactivateDelay = mUiFactory.addSlider("Delay", Level.Enemy.TRIGGER_DEACTIVATE_DELAY_MIN,
 				Level.Enemy.TRIGGER_DEACTIVATE_DELAY_MAX, Level.Enemy.TRIGGER_ACTIVATE_DELAY_STEP_SIZE, sliderListener, table,
-				mHiders.enemyDeactivateDelay, createdActors, mInvoker);
+				mWidgets.enemy.hiderDeactivateDelay, createdActors, mInvoker);
 		mTooltip.add(createdActors, Messages.EditorTooltips.ENEMY_DEACTIVATION_DELAY);
 		mDisabledWhenPublished.addAll(createdActors);
 		createdActors.clear();
@@ -746,7 +795,7 @@ class LevelEditorGui extends EditorGui {
 	private void initPathOptions() {
 		// TODO Use tabs
 
-		mHiders.pathOptions.addToggleActor(mWidgets.path.table);
+		// mHiders.pathOptions.addToggleActor(mWidgets.path.table);
 		mMainTable.row();
 		mMainTable.add(mWidgets.path.table);
 		mWidgets.path.table.setPreferences(mMainTable);
@@ -837,72 +886,27 @@ class LevelEditorGui extends EditorGui {
 	private Invoker mInvoker = null;
 	/** Inner widgets */
 	private InnerWidgets mWidgets = new InnerWidgets();
-	/** All hiders */
-	private Hiders mHiders = null;
 
-
-	/**
-	 * Container for all hiders
-	 */
-	private static class Hiders implements Disposable {
-		/**
-		 * Sets correct children etc.
-		 */
-		public Hiders() {
-			enemyOptions.addChild(enemyActivateDelay);
-			enemyOptions.addChild(enemyDeactivateDelay);
-			trigger.addChild(triggerActorActivate);
-			trigger.addChild(triggerScreenAt);
-		}
-
-		/**
-		 * Dispose
-		 */
-		@Override
-		public void dispose() {
-			enemyAdd.dispose();
-			enemyOptions.dispose();
-			enemyActivateDelay.dispose();
-			enemyDeactivateDelay.dispose();
-			pathOptions.dispose();
-			trigger.dispose();
-			triggerScreenAt.dispose();
-			triggerActorActivate.dispose();
-			pickups.dispose();
-		}
-
-		/** Enemy hider */
-		HideListener enemyAdd = new HideListener(true);
-		/** Hides enemy options */
-		HideManual enemyOptions = new HideManual();
-		/** Hides trigger delay for trigger */
-		HideManual enemyActivateDelay = new HideManual();
-		/** Hides trigger deactivate delay */
-		HideManual enemyDeactivateDelay = new HideManual();
-		/** Hides path options */
-		HideManual pathOptions = new HideManual();
-		/** Trigger hider */
-		HideListener trigger = new HideListener(true);
-		/** Hides trigger screen at options */
-		HideManual triggerScreenAt = new HideManual();
-		/** Hides trigger actor activate options */
-		HideManual triggerActorActivate = new HideManual();
-		/** Hides pickups */
-		HideListener pickups = new HideListener(true);
-	}
 
 	/**
 	 * Container for inner widgets
 	 */
 	@SuppressWarnings("javadoc")
-	private static class InnerWidgets {
+	private class InnerWidgets implements Disposable {
 		EnemyOptionWidgets enemy = new EnemyOptionWidgets();
 		PathOptionWidgets path = new PathOptionWidgets();
 		InfoWidgets info = new InfoWidgets();
 		EnemyAddWidgets enemyAdd = new EnemyAddWidgets();
 		ToolWidgets tool = new ToolWidgets();
 
-		static class ToolWidgets {
+		@Override
+		public void dispose() {
+			enemy.dispose();
+			enemyAdd.dispose();
+			path.dispose();
+		}
+
+		class ToolWidgets {
 			Button select = null;
 			Button pan = null;
 			Button move = null;
@@ -917,23 +921,68 @@ class LevelEditorGui extends EditorGui {
 			Button triggerDeactivate = null;
 		}
 
-		static class EnemyOptionWidgets {
+		class EnemyOptionWidgets implements Disposable {
 			AlignTable table = new AlignTable();
-			HideListener hider = new HideListener(true);
 			Slider cEnemies = null;
 			Slider betweenDelay = null;
 			Slider activateDelay = null;
 			Slider deactivateDelay = null;
+
+			// Hiders
+			HideListener hiderTable = new HideListener(true);
+			HideManual hiderTab = new HideManual();
+			HideManual hiderActivateDelay = new HideManual();
+			HideManual hiderDeactivateDelay = new HideManual();
+
+			/**
+			 * Set hider children
+			 */
+			EnemyOptionWidgets() {
+				hiderTab.addChild(hiderTable);
+				hiderTable.addChild(hiderActivateDelay);
+				hiderTable.addChild(hiderDeactivateDelay);
+			}
+
+			@Override
+			public void dispose() {
+				table.dispose();
+				hiderActivateDelay.dispose();
+				hiderTab.dispose();
+				hiderActivateDelay.dispose();
+				hiderDeactivateDelay.dispose();
+			}
 		}
 
-		static class EnemyAddWidgets {
+		class EnemyAddWidgets implements Disposable {
 			ScrollPane scrollPane = null;
-			Table scrollTable = new Table();
+			AlignTable scrollTable = new AlignTable();
 			AlignTable table = new AlignTable();
-			HideListener hider = new HideListener(true);
+
+			// Hiders
+			HideListener hiderTable = new HideListener(true) {
+				@Override
+				protected void onShow() {
+					resetEnemyAddTable();
+				}
+			};
+			HideListener hiderTab = new HideListener(true);
+
+			/**
+			 * Set hider children
+			 */
+			EnemyAddWidgets() {
+				hiderTab.addChild(hiderTable);
+			}
+
+			@Override
+			public void dispose() {
+				table.dispose();
+				hiderTab.dispose();
+				hiderTable.dispose();
+			}
 		}
 
-		static class InfoWidgets {
+		class InfoWidgets {
 			Label nameError = null;
 			TextField name = null;
 			TextField description = null;
@@ -944,13 +993,17 @@ class LevelEditorGui extends EditorGui {
 			Image image = null;
 		}
 
-		static class PathOptionWidgets {
+		class PathOptionWidgets implements Disposable {
 			AlignTable table = new AlignTable();
 			Button once = null;
 			Button loop = null;
 			Button backAndForth = null;
-		}
 
+			@Override
+			public void dispose() {
+				table.dispose();
+			}
+		}
 	}
 
 }

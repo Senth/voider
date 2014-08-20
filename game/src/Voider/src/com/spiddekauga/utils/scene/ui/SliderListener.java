@@ -187,8 +187,6 @@ public abstract class SliderListener implements EventListener {
 		}
 
 		if (mOldValue != mSlider.getValue()) {
-			onChange(mSlider.getValue());
-
 			// Execute slider command if not an invoker changed the slider's value
 			if (mInvoker != null) {
 				if (!Gui.GUI_INVOKER_TEMP_NAME.equals(mSlider.getName())) {
@@ -213,6 +211,8 @@ public abstract class SliderListener implements EventListener {
 			}
 
 			mOldValue = mSlider.getValue();
+
+			onChange(mSlider.getValue());
 		}
 
 

@@ -7,7 +7,6 @@ import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.Layout;
 import com.badlogic.gdx.utils.Disposable;
-import com.badlogic.gdx.utils.SnapshotArray;
 import com.spiddekauga.voider.Config;
 
 /**
@@ -89,7 +88,6 @@ public abstract class GuiHider implements Disposable {
 	 */
 	protected void updateActorVisibility() {
 		for (Actor toggleActor : mToggles) {
-			// toggleActor.setVisible(mVisible);
 			updateActorVisibility(toggleActor);
 		}
 
@@ -131,29 +129,6 @@ public abstract class GuiHider implements Disposable {
 	 */
 	private void fireVisiblilityEvent(Actor actor) {
 		actor.fire(new VisibilityChangeEvent());
-	}
-
-
-	/**
-	 * Enable/Disable the actor's text fields if the actor has any children
-	 * @param actor the actor to enable/disable the text fields of
-	 * @param disable set to true to disable the text fields
-	 */
-	@Deprecated
-	private void enableDisableActorTextFields(Group actor, boolean disable) {
-		SnapshotArray<Actor> children = actor.getChildren();
-
-		for (Actor child : children) {
-			if (child instanceof TextField) {
-				if (disable || child.getName() == null || !child.getName().equals(Config.Gui.TEXT_FIELD_DISABLED_NAME)) {
-					((TextField) child).setDisabled(disable);
-				}
-			}
-
-			if (child instanceof Group) {
-				enableDisableActorTextFields((Group) child, disable);
-			}
-		}
 	}
 
 	/**

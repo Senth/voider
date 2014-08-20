@@ -115,6 +115,20 @@ public class TabWidget extends WidgetGroup {
 	}
 
 	/**
+	 * @return available height inside the tab
+	 */
+	public float getAvailableHeight() {
+		return mContentOuterTable.getAvailableHeight();
+	}
+
+	/**
+	 * @return available width inside the tab
+	 */
+	public float getAvailableWidth() {
+		return mContentOuterTable.getAvailableWidth();
+	}
+
+	/**
 	 * Set content width
 	 * @param width width of the content
 	 * @return this for chaining

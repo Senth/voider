@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Event;
@@ -312,7 +313,9 @@ public class TooltipWidget extends WidgetGroup {
 			if (i < tooltips.size()) {
 				ITooltip tooltip = tooltips.get(i);
 				tooltipText = tooltip.getText();
-				if (tooltip.hasHotkey()) {
+
+				// Set hotkey on Desktop
+				if (tooltip.hasHotkey() && Gdx.app.getType() == ApplicationType.Desktop) {
 					hotkey = "(" + tooltip.getHotkey() + ") ";
 				}
 			}

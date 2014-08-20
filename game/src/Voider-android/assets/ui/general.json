@@ -31,6 +31,9 @@ com.badlogic.gdx.graphics.Color: {
 	widget_background_color: grey,
 	// Background color for some scenes
 	scene_background_color: grey_dark,
+	// Inner widget background color. I.e. if there is a table inside a widget.
+	// E.g. enemy list in level editor
+	widget_inner_background_color: grey_dark,
 },
 
 java.lang.Float: {

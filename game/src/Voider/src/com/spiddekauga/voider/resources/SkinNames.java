@@ -445,6 +445,11 @@ public class SkinNames {
 		PADDING_TRANSPARENT_TEXT_BUTTON(Float.class),
 		/** Background colors for widgets */
 		WIDGET_BACKGROUND_COLOR(Color.class),
+		/**
+		 * Inner widget background color. I.e. if there is a table inside a widget. E.g.
+		 * enemy list in level editor.
+		 */
+		WIDGET_INNER_BACKGROUND_COLOR(Color.class),
 		/** Tag widget in explore and loading screen */
 		TAG_BAR_WIDTH(Float.class),
 		/** Standard icon and thus row height */

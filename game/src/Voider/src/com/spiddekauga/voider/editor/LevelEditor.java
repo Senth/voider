@@ -1177,7 +1177,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	/**
 	 * Select enemy
 	 */
-	void selectEnemy() {
+	void addEnemyToList() {
 		mSelectionAction = SelectionActions.ENEMY;
 
 		Scene scene = new SelectDefScene(ExternalTypes.ENEMY_DEF, "Select", false, true, false);
