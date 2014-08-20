@@ -1,5 +1,9 @@
 package com.spiddekauga.utils.scene.ui;
 
+import java.util.ArrayList;
+
+import com.badlogic.gdx.scenes.scene2d.Event;
+import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -53,6 +57,8 @@ public class TabWidget extends WidgetGroup {
 		ImageButton button = new ImageButton(imageButtonStyle);
 		mButtonGroup.add(button);
 		mTabTable.add(button);
+		mTabButtons.add(button);
+		button.addListener(mTabVisibilityListener);
 		hider.addToggleActor(table);
 		hider.setButton(button);
 		mContentInnerTable.add(table);
@@ -288,6 +294,79 @@ public class TabWidget extends WidgetGroup {
 		return this;
 	}
 
+	/**
+	 * Handle visibility change on specified tab
+	 * @param tab tab button that change visibility
+	 */
+	private void handleVisibilityChange(Button tab) {
+		// Visible
+		if (tab.isVisible()) {
+			// Show and select tab
+			if (!isVisible()) {
+				setVisible(true);
+				tab.setChecked(true);
+			}
+		}
+		// Hidden
+		else {
+			// Hide entire widget
+			if (isAllTabsHidden()) {
+				setVisible(false);
+			}
+			// Select another tab
+			else {
+				for (Button button : mTabButtons) {
+					if (button.isVisible()) {
+						button.setChecked(true);
+						break;
+					}
+				}
+			}
+		}
+	}
+
+	// /**
+	// * @return true if all tabs are hidden
+	// */
+	// @Override
+	// public boolean isVisible() {
+	// return mWrapperTable.isVisible();
+	// }
+	//
+	// public void setVisible(boolean visible) {
+	// mWrapperTable.setVisible(true);
+	// };
+
+	/**
+	 * @return true if all tabs are hidden
+	 */
+	private boolean isAllTabsHidden() {
+		for (Button button : mTabButtons) {
+			if (button.isVisible()) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	/**
+	 * Listens to visibily change events for tab buttons. I.e. entire tabs are hidden
+	 */
+	private EventListener mTabVisibilityListener = new EventListener() {
+		@Override
+		public boolean handle(Event event) {
+			if (event instanceof VisibilityChangeEvent) {
+				if (event.getTarget() instanceof Button) {
+					handleVisibilityChange((Button) event.getTarget());
+				}
+			}
+			return false;
+		}
+	};
+
+	/** All tab buttons */
+	private ArrayList<Button> mTabButtons = new ArrayList<>();
 	/** Tab row, for setting alignment */
 	private Row mTabRow = null;
 	/** Wrapper table */
