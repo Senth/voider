@@ -17,8 +17,7 @@ class SqliteUpgrader {
 	/**
 	 * @param database the database to do upgrading on
 	 */
-	SqliteUpgrader(
-			Database database) {
+	SqliteUpgrader(Database database) {
 		mDatabase = database;
 
 		fillTables();
@@ -106,11 +105,16 @@ class SqliteUpgrader {
 		// resources
 		mNotFoundTables.add("resource");
 		mCreateTableQueries
-				.put("resource", "CREATE TABLE IF NOT EXISTS resource (uuid TEXT PRIMARY KEY, type INTEGER, published INTEGER DEFAULT 0);");
+		.put("resource", "CREATE TABLE IF NOT EXISTS resource (uuid TEXT PRIMARY KEY, type INTEGER, published INTEGER DEFAULT 0);");
 
 		// Removed resources
 		mNotFoundTables.add("resource_removed");
 		mCreateTableQueries.put("resource_removed", "CREATE TABLE IF NOT EXISTS resource_removed (uuid TEXT PRIMARY KEY);");
+
+		// Highscores
+		mNotFoundTables.add("highscore");
+		mCreateTableQueries.put("highscore",
+				"CREATE TABLE IF NOT EXISTS highscore (uuid TEXT PRIMARY KEY, score INTEGER, date INTEGER, synced INTEGER DEFAULT 0);");
 	}
 
 	/**
@@ -135,7 +139,7 @@ class SqliteUpgrader {
 	/** Create table queries for all tables */
 	private Map<String, String> mCreateTableQueries = new HashMap<String, String>();
 	/** DB version */
-	private static final int DB_VERSION = 3;
+	private static final int DB_VERSION = 4;
 	/** Create version table */
 	private static final String TABLE_VERSION_CREATE = "CREATE TABLE IF NOT EXISTS version (version INTEGER, table_name TEXT);";
 }

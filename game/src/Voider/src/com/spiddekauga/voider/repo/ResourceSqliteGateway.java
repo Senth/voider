@@ -46,8 +46,7 @@ class ResourceSqliteGateway extends SqliteGateway {
 	 * @param date the date of the resource
 	 */
 	void addRevision(UUID uuid, int revision, Date date) {
-		String dateValue = date == null ? "0" : String.valueOf(date.getTime());
-		execSQL("INSERT INTO resource_revision (uuid, revision, date) VALUES ( '" + uuid + "', " + revision + ", " + dateValue + ");");
+		execSQL("INSERT INTO resource_revision (uuid, revision, date) VALUES ( '" + uuid + "', " + revision + ", " + dateToString(date) + ");");
 	}
 
 	/**

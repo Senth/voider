@@ -1,5 +1,6 @@
 package com.spiddekauga.voider.repo;
 
+import java.util.Date;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -148,6 +149,15 @@ abstract class SqliteGateway implements Disposable, Observer {
 			e.printStackTrace();
 			throw new GdxRuntimeException(e);
 		}
+	}
+
+	/**
+	 * Date to string
+	 * @param date the date to string.
+	 * @return date in string format, 0 if date is null.
+	 */
+	protected static String dateToString(Date date) {
+		return date == null ? "0" : String.valueOf(date.getTime());
 	}
 
 	/**

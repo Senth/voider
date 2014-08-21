@@ -19,6 +19,13 @@ import com.spiddekauga.voider.utils.Pools;
  */
 public class ResourceLocalRepo {
 	/**
+	 * Private constructor to enforce singleton usage
+	 */
+	private ResourceLocalRepo() {
+		// Does nothing
+	}
+
+	/**
 	 * Saves a resource
 	 * @param resource the resource to save
 	 * @return true if the resource was saved

@@ -11,11 +11,15 @@ import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.method.BugReportMethod;
 import com.spiddekauga.voider.network.entities.method.BugReportMethodResponse;
 import com.spiddekauga.voider.network.entities.method.IMethodEntity;
+import com.spiddekauga.voider.network.entities.method.SyncDownloadMethod;
 import com.spiddekauga.voider.network.entities.method.SyncDownloadMethodResponse;
+import com.spiddekauga.voider.network.entities.method.SyncHighscoreMethod;
+import com.spiddekauga.voider.network.entities.method.SyncHighscoreMethodResponse;
 import com.spiddekauga.voider.network.entities.method.SyncUserResourcesMethod;
 import com.spiddekauga.voider.network.entities.method.SyncUserResourcesMethodResponse;
 import com.spiddekauga.voider.repo.BugReportWebRepo;
 import com.spiddekauga.voider.repo.ExternalTypes;
+import com.spiddekauga.voider.repo.HighscoreRepo;
 import com.spiddekauga.voider.repo.ICallerResponseListener;
 import com.spiddekauga.voider.repo.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.ResourceLocalRepo;
@@ -58,6 +62,9 @@ public class Synchronizer extends Observable implements IMessageListener, ICalle
 		case SYNC_USER_RESOURCES:
 			synchronize(SyncTypes.USER_RESOURCES);
 			break;
+
+		case SYNC_HIGHSCORE:
+			synchronize(SyncTypes.HIGHSCORES);
 
 		default:
 			// Does nothing
@@ -111,6 +118,10 @@ public class Synchronizer extends Observable implements IMessageListener, ICalle
 		case BUG_REPORTS:
 			uploadBugReports(responseListeners);
 			break;
+
+		case HIGHSCORES:
+			mHighscoreRepo.sync(responseListeners);
+			break;
 		}
 
 		return true;
@@ -158,6 +169,7 @@ public class Synchronizer extends Observable implements IMessageListener, ICalle
 
 		mSyncQueue.add(SyncTypes.COMMUNITY_RESOURCES);
 		mSyncQueue.add(SyncTypes.USER_RESOURCES);
+		mSyncQueue.add(SyncTypes.HIGHSCORES);
 		mSyncQueue.add(SyncTypes.BUG_REPORTS);
 
 		syncNextInQueue();
@@ -172,19 +184,43 @@ public class Synchronizer extends Observable implements IMessageListener, ICalle
 		if (response instanceof SyncUserResourcesMethodResponse) {
 			handleSyncUserResourceResponse((SyncUserResourcesMethod) method, (SyncUserResourcesMethodResponse) response);
 		} else if (response instanceof SyncDownloadMethodResponse) {
-			if (((SyncDownloadMethodResponse) response).isSuccessful()) {
-				notifyObservers(SyncEvents.COMMUNITY_DOWNLOAD_SUCCESS);
-				SceneSwitcher.showSuccessMessage("Successfully synced community resources");
-			} else {
-				notifyObservers(SyncEvents.COMMUNITY_DOWNLOAD_FAILED);
-				SceneSwitcher.showErrorMessage("Failed to sync community resources");
-			}
+			handleSyncDownloadResponse((SyncDownloadMethod) method, (SyncDownloadMethodResponse) response);
 		} else if (response instanceof BugReportMethodResponse) {
 			handlePostBugReport((BugReportMethod) method, (BugReportMethodResponse) response);
+		} else if (response instanceof SyncHighscoreMethodResponse) {
+			handleSyncHighscoreResponse((SyncHighscoreMethod) method, (SyncHighscoreMethodResponse) response);
 		}
 
 
 		syncNextInQueue();
+	}
+
+	/**
+	 * Handle sync highscore responses
+	 * @param method parameters to the server
+	 * @param response server response
+	 */
+	private void handleSyncHighscoreResponse(SyncHighscoreMethod method, SyncHighscoreMethodResponse response) {
+		if (response.isSuccessful()) {
+			SceneSwitcher.showSuccessMessage("Successfully synced player highscores");
+		} else {
+			SceneSwitcher.showErrorMessage("Failed to sync player highscores");
+		}
+	}
+
+	/**
+	 * Handle sync download responses
+	 * @param method parameters to the server
+	 * @param response server response
+	 */
+	private void handleSyncDownloadResponse(SyncDownloadMethod method, SyncDownloadMethodResponse response) {
+		if (response.isSuccessful()) {
+			notifyObservers(SyncEvents.COMMUNITY_DOWNLOAD_SUCCESS);
+			SceneSwitcher.showSuccessMessage("Successfully synced community resources");
+		} else {
+			notifyObservers(SyncEvents.COMMUNITY_DOWNLOAD_FAILED);
+			SceneSwitcher.showErrorMessage("Failed to sync community resources");
+		}
 	}
 
 	/**
@@ -284,7 +320,9 @@ public class Synchronizer extends Observable implements IMessageListener, ICalle
 		/** Synchronize user resources */
 		USER_RESOURCES,
 		/** Upload bug reports */
-		BUG_REPORTS
+		BUG_REPORTS,
+		/** Highscores */
+		HIGHSCORES,
 	}
 
 	/**
@@ -313,6 +351,8 @@ public class Synchronizer extends Observable implements IMessageListener, ICalle
 	private ICallerResponseListener mResponseListener = null;
 	/** Resource repository */
 	private ResourceRepo mResourceRepo = ResourceRepo.getInstance();
+	/** Highscore repository */
+	private HighscoreRepo mHighscoreRepo = HighscoreRepo.getInstance();
 
 	/** Instance of this class */
 	private static Synchronizer mInstance = null;

@@ -39,11 +39,11 @@ import com.spiddekauga.voider.utils.User;
  * Common resource repository for both web and local. Handles requests that affects both.
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public class ResourceRepo implements ICallerResponseListener {
+public class ResourceRepo extends Repo {
 	/**
-	 * Protected constructor to enforce singleton usage
+	 * Private constructor to enforce singleton usage
 	 */
-	protected ResourceRepo() {
+	private ResourceRepo() {
 		// Does nothing
 	}
 
@@ -128,27 +128,14 @@ public class ResourceRepo implements ICallerResponseListener {
 	}
 
 	/**
-	 * Add add an element to the front of an array
-	 * @param array the original array
-	 * @param element the element to add
-	 * @return new array with the element at the front
-	 */
-	private static ICallerResponseListener[] addToFront(ICallerResponseListener[] array, ICallerResponseListener element) {
-		ICallerResponseListener[] newArray = new ICallerResponseListener[array.length + 1];
-		newArray[0] = element;
-		System.arraycopy(array, 0, newArray, 1, array.length);
-		return newArray;
-	}
-
-
-	/**
 	 * Publish an actor (and its unpublished dependencies) to the server
 	 * @param responseListener listens to the web response
 	 * @param progressListener listen to upload writing
 	 * @param actorDef the actor to publish
 	 */
 	public void publish(ICallerResponseListener responseListener, IOutstreamProgressListener progressListener, ActorDef actorDef) {
-		@SuppressWarnings("unchecked") ArrayList<IResource> resources = Pools.arrayList.obtain();
+		@SuppressWarnings("unchecked")
+		ArrayList<IResource> resources = Pools.arrayList.obtain();
 
 		resources.addAll(getNonPublishedDependencies(actorDef));
 		resources.add(actorDef);
@@ -163,7 +150,8 @@ public class ResourceRepo implements ICallerResponseListener {
 	 * @param level the level to publish
 	 */
 	public void publish(ICallerResponseListener responseListener, IOutstreamProgressListener progressListener, Level level) {
-		@SuppressWarnings("unchecked") ArrayList<IResource> resources = Pools.arrayList.obtain();
+		@SuppressWarnings("unchecked")
+		ArrayList<IResource> resources = Pools.arrayList.obtain();
 
 		resources.addAll(getNonPublishedDependencies(level.getDef()));
 		resources.add(level);
@@ -251,7 +239,8 @@ public class ResourceRepo implements ICallerResponseListener {
 
 		// Add resource locally
 		if (response.downloadStatus) {
-			@SuppressWarnings("unchecked") ArrayList<RevisionEntity> revisions = Pools.arrayList.obtain();
+			@SuppressWarnings("unchecked")
+			ArrayList<RevisionEntity> revisions = Pools.arrayList.obtain();
 
 			for (Entry<UUID, ArrayList<ResourceBlobEntity>> entry : response.blobsToDownload.entrySet()) {
 				UUID resourceId = entry.getKey();
@@ -306,7 +295,7 @@ public class ResourceRepo implements ICallerResponseListener {
 	 */
 	private void handleDownloadResponse(ResourceDownloadMethod method, ResourceDownloadMethodResponse response) {
 		// Add all downloaded resources to the local database
-		if (response.status.isSuccessful()) {
+		if (response.isSuccessful()) {
 			addDownloaded(response.resources);
 		}
 	}
@@ -368,8 +357,10 @@ public class ResourceRepo implements ICallerResponseListener {
 	 */
 	public static ArrayList<Def> getNonPublishedDependencies(Def def) {
 		if (def != null) {
-			@SuppressWarnings("unchecked") HashSet<UUID> uuidDeps = Pools.hashSet.obtain();
-			@SuppressWarnings("unchecked") ArrayList<Def> dependencies = Pools.arrayList.obtain();
+			@SuppressWarnings("unchecked")
+			HashSet<UUID> uuidDeps = Pools.hashSet.obtain();
+			@SuppressWarnings("unchecked")
+			ArrayList<Def> dependencies = Pools.arrayList.obtain();
 
 			getNonPublishedDependencies(def, uuidDeps, dependencies);
 

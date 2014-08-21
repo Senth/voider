@@ -52,9 +52,9 @@ import com.spiddekauga.voider.utils.Pools;
  */
 public class ResourceWebRepo extends WebRepo {
 	/**
-	 * Protected constructor to enforce singleton usage
+	 * Private constructor to enforce singleton usage
 	 */
-	protected ResourceWebRepo() {
+	private ResourceWebRepo() {
 		// Does nothing
 	}
 
@@ -277,12 +277,8 @@ public class ResourceWebRepo extends WebRepo {
 			responseToSend = handleSyncUserResourcesResponse(response);
 		}
 
-		// Send the actual response
-		if (responseToSend != null) {
-			for (ICallerResponseListener responseListener : callerResponseListeners) {
-				responseListener.handleWebResponse(methodEntity, responseToSend);
-			}
-		}
+
+		sendResponseToListeners(methodEntity, responseToSend, callerResponseListeners);
 	}
 
 	/**
