@@ -17,7 +17,7 @@ import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.appengine.api.datastore.QueryResultList;
 import com.spiddekauga.appengine.DatastoreUtils;
-import com.spiddekauga.appengine.DatastoreUtils.PropertyWrapper;
+import com.spiddekauga.appengine.DatastoreUtils.FilterWrapper;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.LevelCommentEntity;
 import com.spiddekauga.voider.network.entities.method.IMethodEntity;
@@ -49,7 +49,7 @@ public class LevelGetComment extends VoiderServlet {
 				String cursor = ((LevelGetCommentMethod) methodEntity).cursor;
 
 				// Get level key
-				Key levelKey = DatastoreUtils.getSingleKey(DatastoreTables.PUBLISHED.toString(), new PropertyWrapper("resuorce_id", levelId));
+				Key levelKey = DatastoreUtils.getSingleKey(DatastoreTables.PUBLISHED.toString(), new FilterWrapper("resuorce_id", levelId));
 
 				QueryResultList<Entity> comments = getComments(levelKey, cursor);
 				addCommentsToResponse(comments, methodResponse);
@@ -128,7 +128,7 @@ public class LevelGetComment extends VoiderServlet {
 	 */
 	private LevelCommentEntity getUserComment(Key levelKey) {
 		try {
-			Entity entity = DatastoreUtils.getSingleEntity(DatastoreTables.LEVEL_COMMENT.toString(), levelKey, new PropertyWrapper("user_key", mUser.getKey()));
+			Entity entity = DatastoreUtils.getSingleEntity(DatastoreTables.LEVEL_COMMENT.toString(), levelKey, new FilterWrapper("user_key", mUser.getKey()));
 
 			if (entity != null) {
 				return createLevelCommentEntity(entity);

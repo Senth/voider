@@ -23,7 +23,7 @@ import com.google.appengine.api.datastore.QueryResultList;
 import com.google.appengine.api.search.Results;
 import com.google.appengine.api.search.ScoredDocument;
 import com.spiddekauga.appengine.DatastoreUtils;
-import com.spiddekauga.appengine.DatastoreUtils.PropertyWrapper;
+import com.spiddekauga.appengine.DatastoreUtils.FilterWrapper;
 import com.spiddekauga.appengine.SearchUtils;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.LevelDefEntity;
@@ -258,7 +258,7 @@ public class LevelGetAll extends VoiderServlet {
 	 * @return new user level stats (network) entity, new empty if not found
 	 */
 	private static UserLevelStatsEntity getUserLevelStats(Key levelKey, Key userKey) {
-		Entity entity = DatastoreUtils.getSingleEntity("user_level_stat", new PropertyWrapper("level_key", levelKey));
+		Entity entity = DatastoreUtils.getSingleEntity("user_level_stat", new FilterWrapper("level_key", levelKey));
 
 		if (entity != null) {
 			return convertDatastoreToUserLevelStatsEntity(entity);

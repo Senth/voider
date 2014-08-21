@@ -10,7 +10,7 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.spiddekauga.appengine.DatastoreUtils;
-import com.spiddekauga.appengine.DatastoreUtils.PropertyWrapper;
+import com.spiddekauga.appengine.DatastoreUtils.FilterWrapper;
 import com.spiddekauga.utils.BCrypt;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.method.IMethodEntity;
@@ -34,8 +34,8 @@ public class RegisterUser extends VoiderServlet {
 		methodResponse.status = Statuses.FAIL_SERVER_ERROR;
 
 		if (methodEntity instanceof RegisterUserMethod) {
-			PropertyWrapper usernameProperty = new PropertyWrapper("username", ((RegisterUserMethod) methodEntity).username);
-			PropertyWrapper emailProperty = new PropertyWrapper("email", ((RegisterUserMethod) methodEntity).email);
+			FilterWrapper usernameProperty = new FilterWrapper("username", ((RegisterUserMethod) methodEntity).username);
+			FilterWrapper emailProperty = new FilterWrapper("email", ((RegisterUserMethod) methodEntity).email);
 
 			// Check username length
 			if (!isUsernameLengthValid(((RegisterUserMethod) methodEntity).username)) {

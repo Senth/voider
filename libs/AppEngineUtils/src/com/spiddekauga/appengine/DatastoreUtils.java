@@ -69,21 +69,21 @@ public class DatastoreUtils {
 	/**
 	 * Get all keys with the specified properties
 	 * @param searchIn what kind of entity (table) to search in
-	 * @param properties all properties to search for
+	 * @param filters all properties to search for
 	 * @return an array list of all found entities with the specified parent
 	 */
-	public static List<Key> getKeys(String searchIn, PropertyWrapper... properties) {
-		return getKeys(searchIn, null, properties);
+	public static List<Key> getKeys(String searchIn, FilterWrapper... filters) {
+		return getKeys(searchIn, null, filters);
 	}
 
 	/**
 	 * Get all entities (with only keys) with the specified parent and properties
 	 * @param searchIn what kind of entity (table) to search in
 	 * @param parent search for all entities with this parent
-	 * @param properties all properties to search for
+	 * @param filters all properties to search for
 	 * @return an array list of all found entities with the specified parent
 	 */
-	public static List<Key> getKeys(String searchIn, Key parent, PropertyWrapper... properties) {
+	public static List<Key> getKeys(String searchIn, Key parent, FilterWrapper... filters) {
 		Query query = new Query(searchIn);
 
 		query.setKeysOnly();
@@ -94,27 +94,7 @@ public class DatastoreUtils {
 		}
 
 		// Search by properties
-		if (properties != null) {
-			ArrayList<Filter> filters = new ArrayList<>();
-			for (PropertyWrapper property : properties) {
-				Filter filter = null;
-				if (property.value instanceof UUID) {
-					filter = createUuidFilter(property.name, (UUID) property.value);
-				} else if (property.value != null) {
-					filter = new Query.FilterPredicate(property.name, FilterOperator.EQUAL, property.value);
-				}
-
-				if (filter != null) {
-					filters.add(filter);
-				}
-			}
-
-			if (filters.size() == 1) {
-				query.setFilter(filters.get(0));
-			} else if (filters.size() > 1) {
-				query.setFilter(new Query.CompositeFilter(CompositeFilterOperator.AND, filters));
-			}
-		}
+		setFilterProperties(query, filters);
 
 
 		PreparedQuery preparedQuery = mDatastore.prepare(query);
@@ -130,21 +110,21 @@ public class DatastoreUtils {
 	/**
 	 * Get all entities with the specified properties
 	 * @param searchIn what kind of entity (table) to search in
-	 * @param properties all properties to search for
+	 * @param filters all properties to search for
 	 * @return an iterable of all found entities with the specified parent
 	 */
-	public static Iterable<Entity> getEntities(String searchIn, PropertyWrapper... properties) {
-		return getEntities(searchIn, null, properties);
+	public static Iterable<Entity> getEntities(String searchIn, FilterWrapper... filters) {
+		return getEntities(searchIn, null, filters);
 	}
 
 	/**
 	 * Get all entities with the specified parent and properties
 	 * @param searchIn what kind of entity (table) to search in
 	 * @param parent search for all entities with this parent
-	 * @param properties all properties to search for
+	 * @param filters all properties to search for
 	 * @return an iterable of all found entities with the specified parent
 	 */
-	public static Iterable<Entity> getEntities(String searchIn, Key parent, PropertyWrapper... properties) {
+	public static Iterable<Entity> getEntities(String searchIn, Key parent, FilterWrapper... filters) {
 		Query query = new Query(searchIn);
 
 		// Parent
@@ -152,28 +132,7 @@ public class DatastoreUtils {
 			query.setAncestor(parent);
 		}
 
-		// Search by properties
-		if (properties != null) {
-			ArrayList<Filter> filters = new ArrayList<>();
-			for (PropertyWrapper property : properties) {
-				Filter filter = null;
-				if (property.value instanceof UUID) {
-					filter = createUuidFilter(property.name, (UUID) property.value);
-				} else if (property.value != null) {
-					filter = new Query.FilterPredicate(property.name, FilterOperator.EQUAL, property.value);
-				}
-
-				if (filter != null) {
-					filters.add(filter);
-				}
-			}
-
-			if (filters.size() == 1) {
-				query.setFilter(filters.get(0));
-			} else if (filters.size() > 1) {
-				query.setFilter(new Query.CompositeFilter(CompositeFilterOperator.AND, filters));
-			}
-		}
+		setFilterProperties(query, filters);
 
 		PreparedQuery preparedQuery = mDatastore.prepare(query);
 
@@ -181,34 +140,14 @@ public class DatastoreUtils {
 	}
 
 	/**
-	 * Searches for an existing entity
-	 * @param searchIn what kind of entity to search in
-	 * @param parent the parent of the entity to find, set to null to skip
-	 * @param properties property name and values to search for
-	 * @return found entity, null if none or more than 1 was found
+	 * Set filters for a query
+	 * @param query the query to set the filters for
+	 * @param properties filter properties
 	 */
-	public static Entity getSingleEntity(String searchIn, Key parent, PropertyWrapper... properties) {
-		return getSingleEntity(searchIn, parent, false, properties);
-	}
-
-	/**
-	 * Searches for an existing entity
-	 * @param searchIn what kind of entity to search in
-	 * @param parent the parent of the entity to find, set to null to skip
-	 * @param onlyKeys will only retrieve keys for the found entity
-	 * @param properties property name and values to search for
-	 * @return found entity, null if none or more than 1 was found
-	 */
-	private static Entity getSingleEntity(String searchIn, Key parent, boolean onlyKeys, PropertyWrapper... properties) {
-		Query query = new Query(searchIn);
-
-		if (onlyKeys) {
-			query.setKeysOnly();
-		}
-
+	private static void setFilterProperties(Query query, FilterWrapper[] properties) {
 		if (properties != null) {
 			ArrayList<Filter> filters = new ArrayList<>();
-			for (PropertyWrapper property : properties) {
+			for (FilterWrapper property : properties) {
 				Filter filter = null;
 				if (property.value instanceof UUID) {
 					filter = createUuidFilter(property.name, (UUID) property.value);
@@ -227,7 +166,35 @@ public class DatastoreUtils {
 				query.setFilter(new Query.CompositeFilter(CompositeFilterOperator.AND, filters));
 			}
 		}
+	}
 
+	/**
+	 * Searches for an existing entity
+	 * @param searchIn what kind of entity to search in
+	 * @param parent the parent of the entity to find, set to null to skip
+	 * @param filters property name and values to search for
+	 * @return found entity, null if none or more than 1 was found
+	 */
+	public static Entity getSingleEntity(String searchIn, Key parent, FilterWrapper... filters) {
+		return getSingleEntity(searchIn, parent, false, filters);
+	}
+
+	/**
+	 * Searches for an existing entity
+	 * @param searchIn what kind of entity to search in
+	 * @param parent the parent of the entity to find, set to null to skip
+	 * @param onlyKeys will only retrieve keys for the found entity
+	 * @param filters property name and values to search for
+	 * @return found entity, null if none or more than 1 was found
+	 */
+	private static Entity getSingleEntity(String searchIn, Key parent, boolean onlyKeys, FilterWrapper... filters) {
+		Query query = new Query(searchIn);
+
+		if (onlyKeys) {
+			query.setKeysOnly();
+		}
+
+		setFilterProperties(query, filters);
 
 		if (parent != null) {
 			query.setAncestor(parent);
@@ -244,22 +211,22 @@ public class DatastoreUtils {
 	/**
 	 * Searches for an existing entity
 	 * @param searchIn what kind of entity to search in
-	 * @param properties property name and values to search for
+	 * @param filters property name and values to search for
 	 * @return found entity, null if none or more than 1 was found
 	 */
-	public static Entity getSingleEntity(String searchIn, PropertyWrapper... properties) {
-		return getSingleEntity(searchIn, null, properties);
+	public static Entity getSingleEntity(String searchIn, FilterWrapper... filters) {
+		return getSingleEntity(searchIn, null, filters);
 	}
 
 	/**
 	 * Searches for an existing entity
 	 * @param searchIn what kind of entity to search in
 	 * @param parent the parent for the entity, set to null to skip using
-	 * @param properties the values to search for
+	 * @param filters the values to search for
 	 * @return found key for entity
 	 */
-	public static Key getSingleKey(String searchIn, Key parent, PropertyWrapper... properties) {
-		Entity foundEntity = getSingleEntity(searchIn, parent, true, properties);
+	public static Key getSingleKey(String searchIn, Key parent, FilterWrapper... filters) {
+		Entity foundEntity = getSingleEntity(searchIn, parent, true, filters);
 		if (foundEntity != null) {
 			return foundEntity.getKey();
 		}
@@ -269,11 +236,11 @@ public class DatastoreUtils {
 	/**
 	 * Searches for an existing entity
 	 * @param searchIn what kind of entity to search in
-	 * @param properties the values to search for
+	 * @param filters the values to search for
 	 * @return found key for entity
 	 */
-	public static Key getSingleKey(String searchIn, PropertyWrapper... properties) {
-		return getSingleKey(searchIn, null, properties);
+	public static Key getSingleKey(String searchIn, FilterWrapper... filters) {
+		return getSingleKey(searchIn, null, filters);
 	}
 
 	/**
@@ -321,7 +288,7 @@ public class DatastoreUtils {
 	 * @param includes the values to search for
 	 * @return true if the datastore contains the specified entity
 	 */
-	public static boolean exists(String searchIn, PropertyWrapper... includes) {
+	public static boolean exists(String searchIn, FilterWrapper... includes) {
 		return exists(searchIn, null, includes);
 	}
 
@@ -332,7 +299,7 @@ public class DatastoreUtils {
 	 * @param includes the values to search for
 	 * @return true if the datastore contains the specified entity
 	 */
-	public static boolean exists(String searchIn, Key parent, PropertyWrapper... includes) {
+	public static boolean exists(String searchIn, Key parent, FilterWrapper... includes) {
 		return getSingleKey(searchIn, parent, includes) != null;
 	}
 
@@ -479,11 +446,11 @@ public class DatastoreUtils {
 	/**
 	 * Property wrapper. Contains the property name and value
 	 */
-	public static class PropertyWrapper {
+	public static class FilterWrapper {
 		/**
 		 * Default constructor
 		 */
-		public PropertyWrapper() {
+		public FilterWrapper() {
 			this(null, null);
 		}
 
@@ -493,7 +460,7 @@ public class DatastoreUtils {
 		 * @param name
 		 * @param value
 		 */
-		public PropertyWrapper(String name, Object value) {
+		public FilterWrapper(String name, Object value) {
 			this(name, FilterOperator.EQUAL, value);
 		}
 
@@ -503,7 +470,7 @@ public class DatastoreUtils {
 		 * @param operator the operator to use
 		 * @param value
 		 */
-		public PropertyWrapper(String name, FilterOperator operator, Object value) {
+		public FilterWrapper(String name, FilterOperator operator, Object value) {
 			this.name = name;
 			this.value = value;
 			this.operator = operator;
@@ -512,7 +479,7 @@ public class DatastoreUtils {
 		/** Property name */
 		public String name;
 		/** Property value */
-		public Object value;;
+		public Object value;
 		/** Property operator */
 		public FilterOperator operator;
 	}

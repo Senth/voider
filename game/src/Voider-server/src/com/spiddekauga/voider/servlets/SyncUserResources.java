@@ -20,7 +20,7 @@ import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.SortDirection;
 import com.spiddekauga.appengine.DatastoreUtils;
-import com.spiddekauga.appengine.DatastoreUtils.PropertyWrapper;
+import com.spiddekauga.appengine.DatastoreUtils.FilterWrapper;
 import com.spiddekauga.voider.network.entities.ChatMessage;
 import com.spiddekauga.voider.network.entities.ChatMessage.MessageTypes;
 import com.spiddekauga.voider.network.entities.IEntity;
@@ -88,12 +88,12 @@ public class SyncUserResources extends VoiderServlet {
 	private void checkForConflicts(SyncUserResourcesMethod methodEntity) {
 		// Iterate through each resource id
 		for (ResourceRevisionEntity entity : methodEntity.resources) {
-			PropertyWrapper resourceProp = new PropertyWrapper("resource_id", entity.resourceId);
+			FilterWrapper resourceProp = new FilterWrapper("resource_id", entity.resourceId);
 
 			// Add uploaded blob revisions to the datastore
 			if (entity.revisions.isEmpty()) {
 				RevisionEntity revisionEntity = entity.revisions.get(0);
-				PropertyWrapper revisionProp = new PropertyWrapper("revision", revisionEntity.revision);
+				FilterWrapper revisionProp = new FilterWrapper("revision", revisionEntity.revision);
 
 				// Check for conflicts
 				if (DatastoreUtils.exists("user_resources", mUser.getKey(), resourceProp, revisionProp)) {
@@ -121,7 +121,7 @@ public class SyncUserResources extends VoiderServlet {
 		// Find all revisions of the resources and delete them
 		for (UUID removeId : methodEntity.resourceToRemove) {
 			// Delete the revisions
-			PropertyWrapper idProperty = new PropertyWrapper("resource_id", removeId);
+			FilterWrapper idProperty = new FilterWrapper("resource_id", removeId);
 			List<Key> entitiesToRemove = DatastoreUtils.getKeys("user_resources", mUser.getKey(), idProperty);
 			DatastoreUtils.delete(entitiesToRemove);
 
@@ -130,8 +130,9 @@ public class SyncUserResources extends VoiderServlet {
 			DatastoreUtils.setProperty(entity, "resource_id", removeId);
 			DatastoreUtils.setProperty(entity, "date", mResponse.syncTime);
 			DatastoreUtils.put(entity);
-		}
 
+			// TODO delete highscore for this resource if level
+		}
 	}
 
 	/**
@@ -140,8 +141,6 @@ public class SyncUserResources extends VoiderServlet {
 	 */
 	private void syncNewToServer(SyncUserResourcesMethod methodEntity) {
 		Map<UUID, Map<Integer, BlobKey>> blobResources = getUploadedRevisionBlobs();
-
-		boolean uploadedSomething = false;
 
 		// Iterate through each resource id
 		for (ResourceRevisionEntity entity : methodEntity.resources) {
@@ -152,7 +151,6 @@ public class SyncUserResources extends VoiderServlet {
 			for (RevisionEntity revisionEntity : entity.revisions) {
 				if (!mResponse.conflicts.containsKey(entity.resourceId)) {
 					revisions.add(insertUserResourceRevision(entity, revisionEntity, blobKeys));
-					uploadedSomething = true;
 				} else {
 					break;
 				}

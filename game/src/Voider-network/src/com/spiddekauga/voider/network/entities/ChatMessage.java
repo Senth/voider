@@ -4,7 +4,6 @@ import java.util.UUID;
 
 /**
  * Chat messages from server to client, or vice versa
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  * @param <DataType> type of data to store
  */
@@ -72,5 +71,7 @@ public class ChatMessage<DataType> implements IEntity {
 		SYNC_COMMUNITY_DOWNLOAD,
 		/** Synchronize user resources */
 		SYNC_USER_RESOURCES,
+		/** Synchronize highscores */
+		SYNC_HIGHSCORE,
 	}
 }

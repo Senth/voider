@@ -12,7 +12,7 @@ import javax.servlet.ServletException;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.spiddekauga.appengine.DatastoreUtils;
-import com.spiddekauga.appengine.DatastoreUtils.PropertyWrapper;
+import com.spiddekauga.appengine.DatastoreUtils.FilterWrapper;
 import com.spiddekauga.voider.network.entities.ChatMessage;
 import com.spiddekauga.voider.network.entities.ChatMessage.MessageTypes;
 import com.spiddekauga.voider.network.entities.IEntity;
@@ -69,7 +69,7 @@ public class ResourceDownload extends VoiderServlet {
 	private void setUserDownloadDate() {
 		for (Key key : mAddedResources) {
 			// Create entity if user hasn't downloaded the resource before
-			if (!DatastoreUtils.exists("sync_published", mUser.getKey(), new PropertyWrapper("published_key", key))) {
+			if (!DatastoreUtils.exists("sync_published", mUser.getKey(), new FilterWrapper("published_key", key))) {
 				Entity entity = new Entity("sync_published", mUser.getKey());
 				entity.setProperty("published_key", key);
 				entity.setProperty("download_date", new Date());
@@ -87,7 +87,7 @@ public class ResourceDownload extends VoiderServlet {
 	 */
 	private boolean setInformationAndDependenciesToResponse(UUID resourceId) {
 		// Get resource key
-		Key resourceKey = DatastoreUtils.getSingleKey(DatastoreTables.PUBLISHED.toString(), new PropertyWrapper("resource_id", resourceId));
+		Key resourceKey = DatastoreUtils.getSingleKey(DatastoreTables.PUBLISHED.toString(), new FilterWrapper("resource_id", resourceId));
 		if (resourceKey != null) {
 			return setInformationAndDependenciesToResponse(resourceKey);
 		}

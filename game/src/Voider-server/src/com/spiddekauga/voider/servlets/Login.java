@@ -9,7 +9,7 @@ import javax.servlet.ServletException;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.spiddekauga.appengine.DatastoreUtils;
-import com.spiddekauga.appengine.DatastoreUtils.PropertyWrapper;
+import com.spiddekauga.appengine.DatastoreUtils.FilterWrapper;
 import com.spiddekauga.utils.BCrypt;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.method.IMethodEntity;
@@ -36,11 +36,11 @@ public class Login extends VoiderServlet {
 		if (!mUser.isLoggedIn()) {
 			if (methodEntity instanceof LoginMethod) {
 				// Check username vs username first
-				PropertyWrapper property = new PropertyWrapper("username", ((LoginMethod) methodEntity).username);
+				FilterWrapper property = new FilterWrapper("username", ((LoginMethod) methodEntity).username);
 				Entity datastoreEntity = DatastoreUtils.getSingleEntity(DatastoreTables.USERS.toString(), property);
 				// Check username vs email
 				if (datastoreEntity == null) {
-					property = new PropertyWrapper("email", ((LoginMethod) methodEntity).username);
+					property = new FilterWrapper("email", ((LoginMethod) methodEntity).username);
 					datastoreEntity = DatastoreUtils.getSingleEntity(DatastoreTables.USERS.toString(), property);
 				}
 
