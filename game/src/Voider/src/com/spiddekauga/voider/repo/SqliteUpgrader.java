@@ -114,7 +114,7 @@ class SqliteUpgrader {
 		// Highscores
 		mNotFoundTables.add("highscore");
 		mCreateTableQueries.put("highscore",
-				"CREATE TABLE IF NOT EXISTS highscore (uuid TEXT PRIMARY KEY, score INTEGER, date INTEGER, synced INTEGER DEFAULT 0);");
+				"CREATE TABLE IF NOT EXISTS highscore (level_id TEXT PRIMARY KEY, score INTEGER, date INTEGER, synced INTEGER DEFAULT 0);");
 	}
 
 	/**
