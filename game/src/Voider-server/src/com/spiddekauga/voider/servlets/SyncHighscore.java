@@ -25,7 +25,6 @@ import com.spiddekauga.voider.network.entities.method.IMethodEntity;
 import com.spiddekauga.voider.network.entities.method.SyncHighscoreMethod;
 import com.spiddekauga.voider.network.entities.method.SyncHighscoreMethodResponse;
 import com.spiddekauga.voider.network.entities.method.SyncHighscoreMethodResponse.Statuses;
-import com.spiddekauga.voider.network.entities.method.SyncUserResourcesMethod;
 import com.spiddekauga.voider.server.util.VoiderServlet;
 
 /**
@@ -53,7 +52,7 @@ public class SyncHighscore extends VoiderServlet {
 			return mResponse;
 		}
 
-		if (methodEntity instanceof SyncUserResourcesMethod) {
+		if (methodEntity instanceof SyncHighscoreMethod) {
 			setHighscoresToSyncToClient((SyncHighscoreMethod) methodEntity);
 			checkForConflictsAndResolve((SyncHighscoreMethod) methodEntity);
 			syncNewToClient();
