@@ -22,9 +22,7 @@ public class PrototypeMain {
 		Gdx.app = new ApplicationStub();
 		Gdx.files = new LwjglFiles();
 		Config.Debug.JUNIT_TEST = true;
-
 	}
-
 
 	/** Closable http client used in all prototypes */
 	private static CloseableHttpClient mHttpClient = HttpClients.createDefault();
