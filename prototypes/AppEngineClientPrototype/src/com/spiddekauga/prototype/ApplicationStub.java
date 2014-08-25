@@ -12,8 +12,6 @@ import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.utils.Clipboard;
 
 /**
- * 
- * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
 public class ApplicationStub implements Application {
@@ -56,12 +54,6 @@ public class ApplicationStub implements Application {
 
 	@Override
 	public void log(String tag, String message) {
-		System.out.println(tag + ": " + message);
-
-	}
-
-	@Override
-	public void log(String tag, String message, Exception exception) {
 		System.out.println(tag + ": " + message);
 
 	}
@@ -153,6 +145,18 @@ public class ApplicationStub implements Application {
 	public void removeLifecycleListener(LifecycleListener listener) {
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	public void log(String tag, String message, Throwable exception) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public int getLogLevel() {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 }

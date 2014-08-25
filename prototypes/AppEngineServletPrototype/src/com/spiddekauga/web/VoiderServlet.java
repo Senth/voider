@@ -1,6 +1,9 @@
 package com.spiddekauga.web;
 
 import java.io.IOException;
+import java.util.Map;
+import java.util.UUID;
+import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -8,22 +11,31 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.spiddekauga.prototype.User;
+import com.google.appengine.api.blobstore.BlobKey;
+import com.google.appengine.api.channel.ChannelService;
+import com.google.appengine.api.channel.ChannelServiceFactory;
+import com.spiddekauga.appengine.BlobUtils;
+import com.spiddekauga.prototype.NetworkGateway;
+import com.spiddekauga.voider.network.entities.IEntity;
+import com.spiddekauga.voider.network.entities.method.IMethodEntity;
+import com.spiddekauga.voider.network.entities.method.NetworkEntitySerializer;
+
 
 /**
  * Wrapper for the Voider servlet
- * 
- * @author Matteus Magnusson <senth.wallace@gmail.com>
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
+@SuppressWarnings("serial")
 public abstract class VoiderServlet extends HttpServlet {
 	/**
 	 * Called by the server to handle a post or get call.
-	 * @param request the server request
-	 * @param response the response to send to the client
-	 * @throws IOException if an input or output error is detected when the servlet handles the GET/POST request
+	 * @param methodEntity the entity that was sent to the method
+	 * @return response entity
+	 * @throws IOException if an input or output error is detected when the servlet
+	 *         handles the GET/POST request
 	 * @throws ServletException if the request for the GET/POST could not be handled
 	 */
-	protected abstract void onRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException;
+	protected abstract IEntity onRequest(IMethodEntity methodEntity) throws ServletException, IOException;
 
 	/**
 	 * Initializes the session and all it's variables
@@ -75,13 +87,42 @@ public abstract class VoiderServlet extends HttpServlet {
 	 * Wrapper for handling do/get
 	 * @param request the server request from the client
 	 * @param response the response to send to the client
-	 * @throws IOException if an input or output error is detected when the servlet handles the GET/POST request
+	 * @throws IOException if an input or output error is detected when the servlet
+	 *         handles the GET/POST request
 	 * @throws ServletException if the request for the GET/POST could not be handled
 	 */
 	private void handleRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		mRequest = request;
+		mResponse = response;
+
+		// Initialize
+		initLogger();
 		initSession(request);
-		onRequest(request, response);
+
+		// Handle request
+		byte[] byteEntity = NetworkGateway.getEntity(mRequest);
+		IMethodEntity methodEntity = null;
+		if (byteEntity != null) {
+			methodEntity = (IMethodEntity) NetworkEntitySerializer.deserializeEntity(byteEntity);
+		}
+
+		IEntity responseEntity = onRequest(methodEntity);
+		if (responseEntity != null) {
+			byte[] responseBytes = NetworkEntitySerializer.serializeEntity(responseEntity);
+			NetworkGateway.sendResponse(mResponse, responseBytes);
+		}
+
+		// Save
 		saveSession();
+	}
+
+	/**
+	 * Initializes the logger
+	 */
+	private void initLogger() {
+		if (mLogger == null) {
+			mLogger = Logger.getLogger(getClass().getName());
+		}
 	}
 
 	/**
@@ -103,6 +144,36 @@ public abstract class VoiderServlet extends HttpServlet {
 	}
 
 	/**
+	 * @return get blob information from the current request, null if no uploads were
+	 *         made.
+	 */
+	protected Map<UUID, BlobKey> getUploadedBlobs() {
+		return BlobUtils.getBlobKeysFromUpload(mRequest);
+	}
+
+	/**
+	 * @return get blob information from the current request where the uploaded resources
+	 *         contains revisions, null if no uploads were made.
+	 */
+	protected Map<UUID, Map<Integer, BlobKey>> getUploadedRevisionBlobs() {
+		return BlobUtils.getBlobKeysFromUploadRevision(mRequest);
+	}
+
+	/**
+	 * @return response of the current request
+	 */
+	protected HttpServletResponse getResponse() {
+		return mResponse;
+	}
+
+	/**
+	 * @return current request
+	 */
+	protected HttpServletRequest getRequest() {
+		return mRequest;
+	}
+
+	/**
 	 * All session variable enumerations
 	 */
 	protected enum SessionVariableNames {
@@ -110,11 +181,17 @@ public abstract class VoiderServlet extends HttpServlet {
 		USER,
 	}
 
+	/** Current request */
+	private HttpServletRequest mRequest;
+	/** Current response */
+	private HttpServletResponse mResponse;
 	/** Current session */
 	private HttpSession mSession = null;
 	/** Current user */
 	protected User mUser = null;
+	/** Logger */
+	protected Logger mLogger = null;
 
-	/** Serialized version id */
-	private static final long serialVersionUID = 6754888059125843132L;
+	/** Channel service for sending messages */
+	private static ChannelService mChannelService = ChannelServiceFactory.getChannelService();
 }
