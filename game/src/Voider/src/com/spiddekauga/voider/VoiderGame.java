@@ -11,13 +11,9 @@ import com.spiddekauga.utils.GameTime;
 import com.spiddekauga.utils.Strings;
 import com.spiddekauga.voider.Config.Debug.Builds;
 import com.spiddekauga.voider.app.SplashScreen;
-import com.spiddekauga.voider.game.Collectibles;
-import com.spiddekauga.voider.game.actors.PickupActorDef;
 import com.spiddekauga.voider.menu.LoginScene;
-import com.spiddekauga.voider.menu.MainMenu;
 import com.spiddekauga.voider.repo.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.ResourceChecker;
-import com.spiddekauga.voider.repo.ResourceLocalRepo;
 import com.spiddekauga.voider.repo.UserLocalRepo;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.server.MessageGateway;
@@ -47,8 +43,6 @@ public class VoiderGame implements ApplicationListener {
 		/** @TODO set splash screen as start screen */
 
 		testLogin();
-		// testMainMenu();
-		// testSavePickups();
 		// testSplashScreen();
 	}
 
@@ -60,22 +54,6 @@ public class VoiderGame implements ApplicationListener {
 	}
 
 	/**
-	 * Testing to save pickups
-	 */
-	@SuppressWarnings({ "unused" })
-	private void testSavePickups() {
-		PickupActorDef def = new PickupActorDef();
-		def.setCollectible(Collectibles.HEALTH_25);
-		def.setName("+25 Health");
-		ResourceLocalRepo.save(def);
-
-		def = new PickupActorDef();
-		def.setCollectible(Collectibles.HEALTH_50);
-		def.setName("+50 Health");
-		ResourceLocalRepo.save(def);
-	}
-
-	/**
 	 * Test login
 	 */
 	private void testLogin() {
@@ -83,19 +61,11 @@ public class VoiderGame implements ApplicationListener {
 	}
 
 	/**
-	 * Testing the main menu
-	 */
-	@SuppressWarnings("unused")
-	private void testMainMenu() {
-		SceneSwitcher.switchTo(new MainMenu());
-	}
-
-	/**
 	 * Test splash screen
 	 */
 	@SuppressWarnings("unused")
 	private void testSplashScreen() {
-		SceneSwitcher.switchTo(new MainMenu(), new SplashScreen());
+		SceneSwitcher.switchTo(new LoginScene(), new SplashScreen());
 	}
 
 	@Override

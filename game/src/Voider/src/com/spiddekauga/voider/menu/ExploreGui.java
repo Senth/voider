@@ -374,7 +374,7 @@ public class ExploreGui extends Gui {
 		mWidgets.info.plays = mUiFactory.addIconLabel(SkinNames.GeneralImages.PLAYS, "", table, null);
 
 		// Likes
-		mWidgets.info.likes = mUiFactory.addIconLabel(SkinNames.GeneralImages.LIKE, "", table, null);
+		mWidgets.info.likes = mUiFactory.addIconLabel(SkinNames.GeneralImages.BOOKMARK, "", table, null);
 
 		// Tags
 		mWidgets.info.tags = mUiFactory.addIconLabel(SkinNames.GeneralImages.TAG, "", table, null);

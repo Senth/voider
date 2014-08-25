@@ -40,7 +40,7 @@ class HighscoreSqliteGateway extends SqliteGateway {
 	 * @return player highscore of this level, null if no highscore exists for this level
 	 */
 	HighscoreEntity get(UUID levelId) {
-		DatabaseCursor cursor = rawQuery("SELECT score, date FROM highscore WHERE level_id='" + levelId + "");
+		DatabaseCursor cursor = rawQuery("SELECT score, date FROM highscore WHERE level_id='" + levelId + "';");
 
 		HighscoreEntity highscore = null;
 

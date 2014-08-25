@@ -430,6 +430,8 @@ public class SkinNames {
 		LOAD_ACTOR_SIZE_MAX(Float.class),
 		/** Padding after label */
 		PADDING_LABEL_AFTER(Float.class),
+		/** Padding between buttons */
+		PADDING_BUTTONS(Float.class),
 		/** Separator padding */
 		PADDING_SEPARATOR(Float.class),
 		/** Outer padding of panels */
@@ -482,6 +484,10 @@ public class SkinNames {
 		TEXT_DARK(Color.class),
 		/** Scene background color */
 		SCENE_BACKGROUND_COLOR(Color.class),
+		/** Table width for score screen */
+		SCORE_SCREEN_WIDTH(Float.class),
+		/** Row height of "My Score" and "My Highscore" */
+		SCORE_LABEL_HEIGHT(Float.class),
 
 		;
 
@@ -544,8 +550,8 @@ public class SkinNames {
 		STAR,
 		/** Tag */
 		TAG,
-		/** Like */
-		LIKE,
+		/** Bookmark */
+		BOOKMARK,
 		/** Screenshot placeholder for levels */
 		SCREENSHOT_PLACEHOLDER,
 		/** Successful message */
@@ -631,6 +637,10 @@ public class SkinNames {
 		LABEL_ERROR_SECTION(LabelStyle.class, "error_section"),
 		/** Tooltip label */
 		LABEL_TOOLTIP(LabelStyle.class, "tooltip"),
+		/** Label for my score */
+		LABEL_MY_SCORE(LabelStyle.class, "my_score"),
+		/** Label for top score */
+		LABEL_TOP_SCORE(LabelStyle.class, "top_score"),
 		/** List default */
 		LIST_DEFAULT(ListStyle.class, "default"),
 		/** Logout button */
@@ -679,6 +689,8 @@ public class SkinNames {
 		COLOR(ImageButtonStyle.class),
 		/** Game continue */
 		GAME_CONTINUE(ImageButtonStyle.class),
+		/** New game */
+		GAME_NEW(ImageButtonStyle.class),
 		/** Replay the level */
 		REPLAY(ImageButtonStyle.class),
 		/** Spiddekauga info big */
@@ -700,7 +712,7 @@ public class SkinNames {
 		/** Tag button */
 		TAG(ImageButtonStyle.class),
 		/** Like button */
-		LIKE(ImageButtonStyle.class),
+		BOOKMARK(ImageButtonStyle.class),
 		/** Featured big (explore) */
 		FEATURED_BIG(ImageButtonStyle.class),
 		/** Search (explore) */

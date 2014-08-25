@@ -1,34 +1,37 @@
 package com.spiddekauga.voider.menu;
 
+import java.util.ArrayList;
+
 import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.voider.game.GameScene;
 import com.spiddekauga.voider.game.LevelDef;
 import com.spiddekauga.voider.game.PlayerStats;
+import com.spiddekauga.voider.network.entities.HighscoreEntity;
+import com.spiddekauga.voider.network.entities.Tags;
+import com.spiddekauga.voider.repo.HighscoreRepo;
 import com.spiddekauga.voider.repo.InternalNames;
 import com.spiddekauga.voider.repo.ResourceCacheFacade;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 
 /**
- * Score and game over scene. Displayed whether the player completed or failed a level. If
- * the level belongs to a campaign the player will continue to the next level (and the
- * player started the campaign and is not playing only this level). If the player failed
- * the game or is only playing this level add buttons for try again and main menu.
+ * Displays the player score and adds the ability for the player to rate, tag, and
+ * bookmark the level if s/he is online.
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public class GameOverScene extends Scene {
+public class ScoreScene extends Scene {
 	/**
 	 * Creates a new game over scene with statistics and a heading
 	 * @param playerStats all the player stats from the level
 	 * @param levelDef the level that was completed
 	 */
-	public GameOverScene(PlayerStats playerStats, LevelDef levelDef) {
-		super(new GameOverSceneGui());
+	public ScoreScene(PlayerStats playerStats, LevelDef levelDef) {
+		super(new ScoreSceneGui());
 
 		mPlayerStats = playerStats;
 		mLevelDef = levelDef;
 
-		((GameOverSceneGui) mGui).setGameOverScene(this);
+		((ScoreSceneGui) mGui).setScoreScene(this);
 	}
 
 	/**
@@ -37,14 +40,6 @@ public class GameOverScene extends Scene {
 	 */
 	public void setLevelCompleted(boolean completed) {
 		mLevelCompleted = completed;
-	}
-
-	@Override
-	protected void onActivate(Outcomes outcome, Object message) {
-		super.onActivate(outcome, message);
-
-		// TODO upload stats
-		// StatSyncer.uploadStats(mPlayerStats);
 	}
 
 	@Override
@@ -88,9 +83,59 @@ public class GameOverScene extends Scene {
 	}
 
 	/**
-	 * @todo Continue with the next level
+	 * Set the rating for the level
+	 * @param rating new rating for the level
 	 */
-	void continueWithNextLevel() {
+	void setRating(int rating) {
+		// TODO set rating
+	}
+
+	/**
+	 * @return player rating of the level
+	 */
+	int getRating() {
+		// TODO
+		return 0;
+	}
+
+	/**
+	 * Set tags for the level
+	 * @param tags list of selected tags
+	 */
+	void setTags(ArrayList<Tags> tags) {
+		// TODO set tags
+	}
+
+	/**
+	 * Bookmark the level
+	 * @param bookmark true if the level should be bookmarked, false removes the bookmark
+	 */
+	void setBookmark(boolean bookmark) {
+		// TODO set bookmark
+	}
+
+	/**
+	 * @return true if the player has bookmarked the level
+	 */
+	boolean isBookmarked() {
+		// TODO
+		return true;
+	}
+
+	/**
+	 * Set comment for level
+	 * @param comment new comment for this level
+	 */
+	void setComment(String comment) {
+		// TODO set comment
+	}
+
+	/**
+	 * @return player comment for the level
+	 */
+	String getComment() {
+		// TODO
+		return "";
 	}
 
 	/**
@@ -107,6 +152,21 @@ public class GameOverScene extends Scene {
 		return mPlayerStats.getScoreString();
 	}
 
+	/**
+	 * @return player highscore string
+	 */
+	String getPlayerHighscore() {
+		HighscoreEntity highscoreEntity = mHighscoreRepo.getPlayerHighscore(mLevelDef.getId());
+
+		if (highscoreEntity != null) {
+			return PlayerStats.formatScore(highscoreEntity.score);
+		} else {
+			return "0";
+		}
+	}
+
+	/** Highscore repository */
+	private HighscoreRepo mHighscoreRepo = HighscoreRepo.getInstance();
 	/** True if the level was completed, false if player died */
 	private boolean mLevelCompleted = false;
 	/** Player statistics from the level */

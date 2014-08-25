@@ -34,7 +34,7 @@ public class PlayerStats extends Resource implements IResourceChangeListener {
 	}
 
 	/**
-	 * Default constructor for Json
+	 * Default constructor for Kryo
 	 */
 	@SuppressWarnings("unused")
 	private PlayerStats() {
@@ -96,24 +96,23 @@ public class PlayerStats extends Resource implements IResourceChangeListener {
 	 * @return current score as String
 	 */
 	public String getScoreString() {
-		// return Long.toString((long) (mScore + 0.5));
-		NumberFormat decimalFormat = NumberFormat.getInstance(Locale.getDefault());
-
-		return decimalFormat.format((int) (mScore + 0.5f));
+		return formatScore((int) (mScore + 0.5f));
 	}
 
 	/**
-	 * @return a formatted version of #getScoreString() that includes leading zeros
+	 * Formats a score to a correct string
+	 * @param score the score to format to a string
+	 * @return formatted score string
 	 */
-	@Deprecated
-	public String getScoreStringLeadingZero() {
-		String score = getScoreString();
-		StringBuilder stringBuilder = new StringBuilder();
-		for (int i = 0; i < 10 - score.length(); ++i) {
-			stringBuilder.append('0');
-		}
-		stringBuilder.append(score);
-		return stringBuilder.toString();
+	public static String formatScore(int score) {
+		return NUMBER_FORMAT.format(score);
+	}
+
+	/**
+	 * @return score of the player
+	 */
+	public int getScore() {
+		return (int) (mScore + 0.5);
 	}
 
 	/**
@@ -144,6 +143,21 @@ public class PlayerStats extends Resource implements IResourceChangeListener {
 		return STARTING_LIVES;
 	}
 
+	/**
+	 * Sets whether or not the score is a new highscore
+	 * @param newHighscore true if the score is a new highscore
+	 */
+	public void setIsNewHighscore(boolean newHighscore) {
+		mNewHighscore = newHighscore;
+	}
+
+	/**
+	 * @return true if the score is a new highscore
+	 */
+	public boolean isNewHighscore() {
+		return mNewHighscore;
+	}
+
 	@Override
 	public void onResourceChanged(IResource resource, EventTypes type) {
 		if (type == EventTypes.LIFE_DECREASED) {
@@ -165,7 +179,8 @@ public class PlayerStats extends Resource implements IResourceChangeListener {
 	@Tag(24) private float mHitCoordinateLast;
 	/** Score of the level */
 	@Tag(25) private double mScore = 0;
-
-	/** Decimal formatter */
-	private static final NumberFormat mNumberFormat = NumberFormat.getInstance(Locale.getDefault());
+	/** New highscore for the player */
+	private boolean mNewHighscore = false;
+	/** Number format */
+	private static final NumberFormat NUMBER_FORMAT = NumberFormat.getInstance(Locale.getDefault());
 }

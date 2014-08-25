@@ -698,14 +698,8 @@ public class Config {
 			public final static float FORCE_MAX = 10000;
 		}
 
-		/**
-		 * How many characters the score should contain, i.e. number of leading zeros
-		 */
-		public final static int SCORE_CHARACTERS = 10;
 		/** Score multiplier, used to create a greater score */
-		public final static float SCORE_MULTIPLIER = 10;
-		/** Lives offset */
-		public final static float LIVES_OFFSET_POSITION = 1;
+		@Deprecated public final static float SCORE_MULTIPLIER = 10;
 		/** Border threshold, when border is too out of sync, it will get synced */
 		public final static float BORDER_SYNC_THRESHOLD = 0.1f;
 	}
@@ -972,11 +966,9 @@ public class Config {
 		/** Fade out duration of the label and window for error messages */
 		public final static float MESSAGE_FADE_OUT_DURATION = 1.0f;
 		/** Minimum time shown */
-		public final static float MESSAGE_TIME_SHOWN_MIN = 2.0f;
+		public final static float MESSAGE_TIME_SHOWN_MIN = 7.0f;
 		/** Time to display error message per character */
-		public final static float MESSAGE_TIME_PER_CHARACTER = 0.08f;
-		/** Width of the score table's first cells */
-		public final static int SCORE_TABLE_FIRST_CELL_WIDTH = 100;
+		@Deprecated public final static float MESSAGE_TIME_PER_CHARACTER = 0f;
 	}
 
 	/**
@@ -1094,8 +1086,6 @@ public class Config {
 		public static final int PASSWORD_LENGTH_MIN = 5;
 		/** Minimum username lengeth */
 		public static final int NAME_LENGTH_MIN = 3;
-
-
 	}
 
 	/**

@@ -28,8 +28,9 @@ import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.PlayerActor;
 import com.spiddekauga.voider.game.actors.PlayerActorDef;
-import com.spiddekauga.voider.menu.GameOverScene;
+import com.spiddekauga.voider.menu.ScoreScene;
 import com.spiddekauga.voider.repo.ExternalTypes;
+import com.spiddekauga.voider.repo.HighscoreRepo;
 import com.spiddekauga.voider.repo.InternalNames;
 import com.spiddekauga.voider.repo.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.ResourceLocalRepo;
@@ -345,9 +346,16 @@ public class GameScene extends WorldScene {
 
 		mPlayerStats.updateScore(mLevel.getXCoord());
 
+		// End of level, try to set player highscore
+		if (isDone()) {
+			HighscoreRepo highscoreRepo = HighscoreRepo.getInstance();
+			if (highscoreRepo.isNewHighscore(mLevel.getDef().getId(), mPlayerStats.getScore())) {
+				highscoreRepo.setHighscoreAndSync(mLevel.getDef().getId(), mPlayerStats.getScore());
+				mPlayerStats.setIsNewHighscore(true);
+			}
+		}
 
 		// GUI
-
 		mGui.resetValues();
 	}
 
@@ -407,7 +415,7 @@ public class GameScene extends WorldScene {
 			return null;
 		}
 
-		GameOverScene gameOverScene = new GameOverScene(mPlayerStats, mLevel.getLevelDef());
+		ScoreScene gameOverScene = new ScoreScene(mPlayerStats, mLevel.getLevelDef());
 
 		switch (getOutcome()) {
 		case LEVEL_COMPLETED:

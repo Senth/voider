@@ -30,6 +30,7 @@ import com.spiddekauga.utils.scene.ui.SliderListener;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
 import com.spiddekauga.utils.scene.ui.TooltipWidget.CustomTooltip;
 import com.spiddekauga.utils.scene.ui.TooltipWidget.ITooltip;
+import com.spiddekauga.utils.scene.ui.UiFactory.Positions;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Editor;
 import com.spiddekauga.voider.Config.Editor.Level;
@@ -811,7 +812,7 @@ class LevelEditorGui extends EditorGui {
 		GuiCheckCommandCreator checkCommandCreator = new GuiCheckCommandCreator(mInvoker);
 
 		// Once
-		button = mUiFactory.addImageButtonLabel(SkinNames.EditorIcons.PATH_ONCE, "Once", table, null, mDisabledWhenPublished);
+		button = mUiFactory.addImageButtonLabel(SkinNames.EditorIcons.PATH_ONCE, "Once", Positions.RIGHT, table, null, mDisabledWhenPublished);
 		mTooltip.add(button, Messages.EditorTooltips.PATH_ONCE);
 		mWidgets.path.once = button;
 		buttonGroup.add(button);
@@ -826,7 +827,7 @@ class LevelEditorGui extends EditorGui {
 		};
 
 		// Loop
-		button = mUiFactory.addImageButtonLabel(SkinNames.EditorIcons.PATH_LOOP, "Loop", table, null, mDisabledWhenPublished);
+		button = mUiFactory.addImageButtonLabel(SkinNames.EditorIcons.PATH_LOOP, "Loop", Positions.RIGHT, table, null, mDisabledWhenPublished);
 		mTooltip.add(button, Messages.EditorTooltips.PATH_LOOP);
 		mWidgets.path.loop = button;
 		buttonGroup.add(button);
@@ -841,7 +842,8 @@ class LevelEditorGui extends EditorGui {
 		};
 
 		// Back and forth
-		button = mUiFactory.addImageButtonLabel(SkinNames.EditorIcons.PATH_BACK_AND_FORTH, "Back and Forth", table, null, mDisabledWhenPublished);
+		button = mUiFactory.addImageButtonLabel(SkinNames.EditorIcons.PATH_BACK_AND_FORTH, "Back and Forth", Positions.RIGHT, table, null,
+				mDisabledWhenPublished);
 		mTooltip.add(button, Messages.EditorTooltips.PATH_BACK_AND_FORTH);
 		mWidgets.path.backAndForth = button;
 		buttonGroup.add(button);
@@ -882,8 +884,6 @@ class LevelEditorGui extends EditorGui {
 		return Messages.EditorTooltips.FILE_INFO_LEVEL;
 	}
 
-	/** Pickup table */
-	private AlignTable mPickupTable = new AlignTable();
 	/** Level editor the GUI will act on */
 	private LevelEditor mLevelEditor = null;
 	/** Invoker for level editor */

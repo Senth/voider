@@ -3,6 +3,7 @@ com.badlogic.gdx.graphics.g2d.BitmapFont: {
 	default_font: { file: default.fnt },
 	default16: { file: default16.fnt },
 	default12: { file: default12.fnt },
+	default36: { file: default36.fnt },
 },
 
 /*
@@ -11,7 +12,7 @@ com.badlogic.gdx.graphics.g2d.BitmapFont: {
  * to convert RGB or HEX values to float.
  */
 com.badlogic.gdx.graphics.Color: {
-	/* Palette */
+	/** Palette */
 	
 	red: { r: 1, b: 0, g: 0, a: 1 },
 	green: { r: 0, b: 0, g: 1, a: 1 },
@@ -23,7 +24,7 @@ com.badlogic.gdx.graphics.Color: {
 	turquoise: { r: 0, g: 1, b: 1, a: 1 },
 	
 	
-	/* Specific colors */
+	/** Specific colors */
 	
 	// Highlight color
 	highlight: turquoise,
@@ -37,7 +38,7 @@ com.badlogic.gdx.graphics.Color: {
 },
 
 java.lang.Float: {
-	/* Explore / Load */
+	/** Explore / Load */
 	
 	// Tag bar width
 	tag_bar_width: {value: 144},
@@ -45,14 +46,12 @@ java.lang.Float: {
 	load_actor_size_max: {value: 80},
 	
 	
-	/* Padding - General UI */
+	/** Padding - General UI */
 	
-	// DEPRECATED!!! Not used
-	padding_default: {value: 4},
+	// Padding between some buttons
+	padding_buttons: {value: 1},
 	// Used to separate group of widgets, e.g. tool groups
 	padding_separator: {value: 32},
-	// DEPRECATED, changed name to padding_label_after
-	padding_after_label: {value: 8},
 	// Padding after a label before other text, slider, or text field.
 	// E.g. between : and [ in Name: [___]
 	padding_label_after: {value: 8},
@@ -66,12 +65,13 @@ java.lang.Float: {
 	// This is padding on all sides
 	padding_transparent_text_button: {value: 2},
 	
-	/* Padding - Explore/Load */
+	
+	/** Padding - Explore/Load */
 	// Padding between rows
 	padding_explore: {value: 16},
 	
 	
-	/* General UI sizes */
+	/** General UI sizes */
 	
 	right_panel_width: {value: 240},
 	// NOTE: the three widths below (text field, slider, label) should add
@@ -86,8 +86,6 @@ java.lang.Float: {
 	text_field_width: {value: 240},
 	// Text area height
 	text_area_height: {value: 80},
-	// DEPRECATED!!! use row_height instead
-	icon_row_height: {value: 32},
 	// Standard icon and row height
 	row_height: {value: 32},
 	// Row height for label sections
@@ -100,7 +98,14 @@ java.lang.Float: {
 	text_button_width: {value: 120},
 	
 	
-	/* Other */
+	/** Score screen */
+	
+	score_screen_width: {value: 360},
+	// Row height of "My Score" and "My Highscore" text
+	score_label_height: {value: 40},
+	
+	
+	/** Other */
 
 	// Fade in/out duration for wait window. Wait window displays loading icon or progress bar
 	wait_window_fade_in: {value: 0.2},
@@ -132,6 +137,9 @@ com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
 		fontColor: grey_dark,
 	},
 	
+	
+	/** Editor */
+	
 	editor_name: {
 		font: default_font,
 		fontColor: grey_light,
@@ -141,6 +149,22 @@ com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
 		font: default_font,
 		fontColor: grey_dark,
 	},
+	
+	
+	/** Highscore - My Score */
+	
+	my_score: {
+		font: default36,
+		fontColor: highlight,
+	},
+	
+	top_score: {
+		font: default36,
+		fontColor: white,
+	},
+	
+	
+	/** Errors */
 	
 	// In front of error (usually above/below text fields)
 	// E.g. When trying to register and passwords don't match
@@ -188,7 +212,7 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		checkedOver: button_default_checked_over,
 	},
 	
-	/* Main - Primary */
+	/** Main - Primary */
 	
 	play: {
 		imageUp: play,
@@ -211,7 +235,7 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageDisabled: create_disabled
 	},
 	
-	/* Main - Secondary */
+	/** Main - Secondary */
 	
 	info: {
 		imageUp: info,
@@ -234,7 +258,7 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageDisabled: logout_disabled
 	},
 	
-	/* Explore */
+	/** Explore */
 	
 	featured_big: {
 		imageUp: featured_big,
@@ -290,7 +314,16 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageDisabled: search_disabled
 	},
 	
-	/* Buttons */
+	/** Buttons */
+	
+	game_new: {
+		imageUp: game_new,
+		imageOver: game_new_over,
+		imageDown: game_new_down,
+		imageChecked: game_new_checked,
+		imageCheckedOver: game_new_checked_over,
+		imageDisabled: game_new_disabled
+	},
 	
 	game_continue: {
 		imageUp: game_continue,
@@ -346,7 +379,7 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageDisabled: settings_big_disabled
 	},
 	
-	/* Tabs */
+	/** Tabs */
 	
 	comments: {
 		imageUp: comments,
@@ -384,7 +417,7 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageDisabled: tags_disabled
 	},
 	
-	/* Icons */
+	/** Icons */
 	
 	date: {
 		imageUp: date,
@@ -435,12 +468,10 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageUp: tag,
 		imageOver: tag_over,
 		imageDown: tag_down,
-		imageChecked: tag_checked,
-		imageCheckedOver: tag_checked_over,
 		imageDisabled: tag_disabled
 	},
 	
-	like: {
+	bookmark: {
 		imageUp: like,
 		imageOver: like_over,
 		imageDown: like_down,
@@ -449,7 +480,7 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageDisabled: like_disabled
 	},
 	
-	/* Miscellaneous */
+	/** Miscellaneous */
 	
 	bugs:  {
 		imageUp: bugs,
@@ -457,7 +488,7 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageDown: bugs_down
 	},
 	
-	/* Placeholders */
+	/** Placeholders */
 	
 	stub: {
 		down: button_default_down,
@@ -478,7 +509,7 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 	},
 },
 
-/* TextButtonStyle */
+/** TextButtonStyle */
 
 com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
 	default: {
@@ -499,7 +530,7 @@ com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
 	},
 	
 	
-	/* Flat Button */
+	/** Flat Button */
 	
 	flat_press: {
 		up: button_flat_up,
@@ -519,7 +550,7 @@ com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
 	},
 	
 	
-	/* Testing */
+	/** Testing */
 	
 	selected: {
 		down: button_default_checked,

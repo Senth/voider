@@ -11,7 +11,6 @@ import com.badlogic.gdx.Input;
 import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Debug.Builds;
-import com.spiddekauga.voider.app.PrototypeScene;
 import com.spiddekauga.voider.app.TestUiScene;
 import com.spiddekauga.voider.editor.BulletEditor;
 import com.spiddekauga.voider.editor.CampaignEditor;
@@ -20,6 +19,8 @@ import com.spiddekauga.voider.editor.LevelEditor;
 import com.spiddekauga.voider.game.GameSaveDef;
 import com.spiddekauga.voider.game.GameScene;
 import com.spiddekauga.voider.game.LevelDef;
+import com.spiddekauga.voider.game.PlayerStats;
+import com.spiddekauga.voider.game.actors.PlayerActor;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.method.IMethodEntity;
 import com.spiddekauga.voider.network.entities.method.LogoutMethodResponse;
@@ -158,7 +159,9 @@ public class MainMenu extends Scene implements ICallerResponseListener, Observer
 				String message = "This is a longer error message with more text, a lot more text, see if it will wrap correctly later...";
 				mGui.showMessage(message);
 			} else if (keycode == Input.Keys.F10) {
-				SceneSwitcher.switchTo(new PrototypeScene());
+				PlayerStats playerStats = new PlayerStats(0, 1, new PlayerActor());
+				LevelDef levelDef = (LevelDef) ResourceCacheFacade.getAll(ExternalTypes.LEVEL_DEF).get(0);
+				SceneSwitcher.switchTo(new ScoreScene(playerStats, levelDef));
 			} else if (keycode == Input.Keys.F11) {
 				User.getGlobalUser().makeOffline();
 			} else if (keycode == Input.Keys.F12) {

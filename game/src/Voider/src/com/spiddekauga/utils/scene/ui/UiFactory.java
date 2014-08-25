@@ -327,6 +327,21 @@ public class UiFactory {
 	 * @return Created text field
 	 */
 	public TextArea addTextArea(String sectionText, String defaultText, TextFieldListener listener, AlignTable table, ArrayList<Actor> createdActors) {
+		return addTextArea(sectionText, defaultText, mStyles.vars.textFieldWidth, listener, table, createdActors);
+	}
+
+	/**
+	 * Adds a text area with an optional label header
+	 * @param sectionText optional text for the label, if null no label is added
+	 * @param defaultText default text in the text field
+	 * @param width set the width of the text area
+	 * @param listener text field listener
+	 * @param table the table to add the text field to
+	 * @param createdActors optional adds all created elements to this list (if not null)
+	 * @return Created text field
+	 */
+	public TextArea addTextArea(String sectionText, String defaultText, float width, TextFieldListener listener, AlignTable table,
+			ArrayList<Actor> createdActors) {
 		// Label
 		addSection(sectionText, table, null, createdActors);
 
@@ -336,7 +351,7 @@ public class UiFactory {
 
 		// Set width and height
 		table.row();
-		table.add(textArea).setSize(mStyles.vars.textFieldWidth, mStyles.vars.textAreaHeight);
+		table.add(textArea).setSize(width, mStyles.vars.textAreaHeight);
 
 		doExtraActionsOnActors(null, createdActors, textArea);
 
@@ -517,28 +532,76 @@ public class UiFactory {
 	}
 
 	/**
-	 * Add an image button with a label
+	 * Add an image button with a label after the button
 	 * @param icon the icon to show
-	 * @param text text after the icon
+	 * @param text text to display somewhere
+	 * @param textPosition location of the text relative to the button
 	 * @param table the table to add the icon to
 	 * @param hider optional hider for icon and label
 	 * @param createdActors all created actors
 	 * @return created button
 	 */
-	public ImageButton addImageButtonLabel(ISkinNames icon, String text, AlignTable table, GuiHider hider, ArrayList<Actor> createdActors) {
-		table.row().setAlign(Horizontal.LEFT, Vertical.MIDDLE);
+	public ImageButton addImageButtonLabel(ISkinNames icon, String text, Positions textPosition, AlignTable table, GuiHider hider,
+			ArrayList<Actor> createdActors) {
+		if (textPosition == Positions.LEFT || textPosition == Positions.RIGHT) {
+			table.row().setAlign(Horizontal.LEFT, Vertical.MIDDLE);
+		}
 
-		// Image
+		// Actors
 		ImageButton imageButton = new ImageButton((ImageButtonStyle) SkinNames.getResource(icon));
-		table.add(imageButton).setPadRight(mStyles.vars.paddingInner);
-
-		// Label
 		Label label = new Label(text, mStyles.label.standard);
-		table.add(label);
+
+		float buttonWidth = imageButton.getPrefWidth();
+
+		// Layout correctly
+		switch (textPosition) {
+		case BOTTOM: {
+			AlignTable innerTable = new AlignTable();
+			innerTable.setKeepWidth(true).setWidth(buttonWidth);
+			innerTable.setAlignRow(Horizontal.CENTER, Vertical.MIDDLE);
+			innerTable.add(imageButton);
+			innerTable.row().setHeight(mStyles.vars.rowHeight);
+			innerTable.add(label);
+			table.add(innerTable);
+			doExtraActionsOnActors(hider, createdActors, innerTable);
+			break;
+		}
+
+		case LEFT:
+			table.add(label).setPadRight(mStyles.vars.paddingInner);
+			table.add(label);
+			break;
+
+		case RIGHT:
+			table.add(imageButton).setPadRight(mStyles.vars.paddingInner);
+			table.add(label);
+			break;
+
+		case TOP: {
+			AlignTable innerTable = new AlignTable();
+			innerTable.setKeepWidth(true).setWidth(buttonWidth);
+			innerTable.setAlignRow(Horizontal.CENTER, Vertical.MIDDLE);
+			innerTable.row().setHeight(mStyles.vars.rowHeight);
+			innerTable.add(label);
+			innerTable.row();
+			innerTable.add(imageButton);
+			table.add(innerTable);
+			doExtraActionsOnActors(hider, createdActors, innerTable);
+			break;
+		}
+		}
 
 		doExtraActionsOnActors(hider, createdActors, imageButton, label);
 
 		return imageButton;
+	}
+
+	/**
+	 * Add button padding to the table
+	 * @param table table to add the button padding to
+	 */
+	public void addButtonPadding(AlignTable table) {
+		table.getCell().setPadRight(mStyles.vars.paddingButton);
 	}
 
 	/**
@@ -877,6 +940,7 @@ public class UiFactory {
 
 		// Vars
 		mStyles.vars.barUpperLowerHeight = SkinNames.getResource(SkinNames.GeneralVars.BAR_UPPER_LOWER_HEIGHT);
+		mStyles.vars.paddingButton = SkinNames.getResource(SkinNames.GeneralVars.PADDING_BUTTONS);
 		mStyles.vars.paddingCheckBox = SkinNames.getResource(SkinNames.GeneralVars.PADDING_CHECKBOX);
 		mStyles.vars.paddingOuter = SkinNames.getResource(SkinNames.GeneralVars.PADDING_OUTER);
 		mStyles.vars.paddingInner = SkinNames.getResource(SkinNames.GeneralVars.PADDING_INNER);
@@ -903,6 +967,17 @@ public class UiFactory {
 		// Checkbox styles
 		CheckBoxStyles.CHECK_BOX.setStyle((CheckBoxStyle) SkinNames.getResource(SkinNames.General.CHECK_BOX_DEFAULT));
 		CheckBoxStyles.RADIO.setStyle((CheckBoxStyle) SkinNames.getResource(SkinNames.General.CHECK_BOX_RADIO));
+	}
+
+	/**
+	 * Different positions
+	 */
+	@SuppressWarnings("javadoc")
+	public enum Positions {
+		LEFT,
+		RIGHT,
+		TOP,
+		BOTTOM,
 	}
 
 	/**
@@ -1129,6 +1204,7 @@ public class UiFactory {
 			public float textFieldNumberWidth = 0;
 			public float sliderWidth = 0;
 			public float sliderLabelWidth = 0;
+			public float paddingButton = 0;
 			public float paddingCheckBox = 0;
 			public float paddingOuter = 0;
 			public float paddingInner = 0;
