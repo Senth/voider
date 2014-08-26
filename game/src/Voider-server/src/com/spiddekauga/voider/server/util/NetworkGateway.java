@@ -19,7 +19,6 @@ import com.spiddekauga.utils.Strings;
 
 /**
  * Gateway for getting entities and sending an entity response
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class NetworkGateway {
@@ -61,23 +60,6 @@ public class NetworkGateway {
 		} else {
 			mLogger.warning("No multipart found");
 		}
-
-		//		try {
-		//			MultipartParser multipartParser = new MultipartParser(request, request.getContentLength(), true, true, "UTF-8");
-		//			if (multipartParser != null) {
-		//				Part part;
-		//				while ((part = multipartParser.readNextPart()) != null) {
-		//					if (part.getName().equals(ENTITY_NAME)) {
-		//						if (part instanceof ParamPart) {
-		//							return ((ParamPart) part).getValue();
-		//						}
-		//					}
-		//				}
-		//			}
-		//		} catch (IOException e) {
-		//			String exceptionString = Strings.exceptionToString(e);
-		//			mLogger.severe(exceptionString);
-		//		}
 
 		return null;
 	}

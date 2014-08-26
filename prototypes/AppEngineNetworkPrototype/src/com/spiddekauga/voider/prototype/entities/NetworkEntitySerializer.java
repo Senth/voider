@@ -8,7 +8,6 @@ import java.io.ObjectOutputStream;
 
 /**
  * Serializes the entity into a byte string or vice versa
- * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
 public class NetworkEntitySerializer {
@@ -18,6 +17,10 @@ public class NetworkEntitySerializer {
 	 * @return entity or null if it could not deserialize
 	 */
 	public static IEntity deserializeEntity(byte[] bytes) {
+		if (bytes == null || bytes.length == 0) {
+			return null;
+		}
+
 		try {
 			ByteArrayInputStream byteInputStream = new ByteArrayInputStream(bytes);
 			ObjectInputStream objectInputStream = new ObjectInputStream(byteInputStream);

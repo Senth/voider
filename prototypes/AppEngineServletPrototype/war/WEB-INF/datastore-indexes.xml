@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<datastore-indexes autoGenerate="false">
+
+    <!-- HIGHSCORE -->
+    <!-- Order by score -->
+    <datastore-index kind="highscore" ancestor="true" source="auto">
+        <property name="score" direction="asc"/>
+    </datastore-index>
+
+</datastore-indexes>

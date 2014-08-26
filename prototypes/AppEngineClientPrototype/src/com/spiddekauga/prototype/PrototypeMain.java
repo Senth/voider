@@ -1,13 +1,14 @@
 package com.spiddekauga.prototype;
 
+import java.util.ArrayList;
+import java.util.UUID;
 import java.util.logging.Logger;
 
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.backends.lwjgl.LwjglFiles;
-import com.spiddekauga.voider.Config;
+import com.spiddekauga.network.WebGateway;
+import com.spiddekauga.voider.prototype.entities.HighscoreGetMethod;
+import com.spiddekauga.voider.prototype.entities.HighscoreGetMethodResponse;
+import com.spiddekauga.voider.prototype.entities.IEntity;
+import com.spiddekauga.voider.prototype.entities.NetworkEntitySerializer;
 
 
 /**
@@ -19,17 +20,55 @@ public class PrototypeMain {
 	 * @param args
 	 */
 	public static void main(String args[]) {
-		Gdx.app = new ApplicationStub();
-		Gdx.files = new LwjglFiles();
-		Config.Debug.JUNIT_TEST = true;
+		// Gdx.app = new ApplicationStub();
+		// Gdx.files = new LwjglFiles();
+		// Config.Debug.JUNIT_TEST = true;
+
+		getHighscores();
 	}
 
-	/** Closable http client used in all prototypes */
-	private static CloseableHttpClient mHttpClient = HttpClients.createDefault();
-	/** Maximum content string length */
-	private final static long CONTENT_STRING_LENGTH_MAX = 2048;
-	/** Web app location */
-	private final static String HOST = "localhost:8888";
+	/**
+	 * Get highscores
+	 */
+	private static void getHighscores() {
+		getHighscores(mLevelIds.get(0), "1,000 highscores");
+		getHighscores(mLevelIds.get(1), "10,000 highscores");
+	}
+
+	/**
+	 * Get a highscore from a specific level
+	 * @param levelId id of the level
+	 * @param debugIdentifier text for identifying this test
+	 */
+	private static void getHighscores(UUID levelId, String debugIdentifier) {
+		HighscoreGetMethod method = new HighscoreGetMethod();
+		method.levelId = levelId;
+
+		long startTime = System.nanoTime();
+
+		byte[] entitySend = NetworkEntitySerializer.serializeEntity(method);
+		byte[] responseGet = WebGateway.sendRequest(method.getMethodName(), entitySend);
+
+		long endTime = System.nanoTime();
+		long diffTime = endTime - startTime;
+
+		IEntity response = NetworkEntitySerializer.deserializeEntity(responseGet);
+
+		if (response instanceof HighscoreGetMethodResponse) {
+			mLogger.info("[" + debugIdentifier + "] Time ms: " + (diffTime / 1000000));
+		}
+	}
+
+	/** Level ids */
+	private static ArrayList<UUID> mLevelIds = new ArrayList<>();
+
+	/**
+	 * Initialize levels
+	 */
+	static {
+		mLevelIds.add(UUID.fromString("d0b97b20-2cef-11e4-8c21-0800200c9a66"));
+		mLevelIds.add(UUID.fromString("d0b97b21-2cef-11e4-8c21-0800200c9a66"));
+	}
 
 	/** Logger */
 	private static Logger mLogger = Logger.getLogger(PrototypeMain.class.getName());

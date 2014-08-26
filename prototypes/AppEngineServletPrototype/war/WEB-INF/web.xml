@@ -13,8 +13,8 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 		<url-pattern>/appengineservletprototype</url-pattern>
 	</servlet-mapping>
 	<servlet>
-		<servlet-name>NewUser</servlet-name>
-		<servlet-class>com.spiddekauga.prototype.NewUser</servlet-class>
+		<servlet-name>NewUsers</servlet-name>
+		<servlet-class>com.spiddekauga.prototype.NewUsers</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>NewUsers</servlet-name>
@@ -29,12 +29,12 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 		<url-pattern>/create-highscores</url-pattern>
 	</servlet-mapping>
 	<servlet>
-		<servlet-name>GetUploadUrl</servlet-name>
-		<servlet-class>com.spiddekauga.prototype.GetUploadUrl</servlet-class>
+		<servlet-name>HighscoresGet</servlet-name>
+		<servlet-class>com.spiddekauga.prototype.HighscoresGet</servlet-class>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>GetUploadUrl</servlet-name>
-		<url-pattern>/getuploadurl</url-pattern>
+		<servlet-name>HighscoresGet</servlet-name>
+		<url-pattern>/highscores-get</url-pattern>
 	</servlet-mapping>
 	<welcome-file-list>
 		<welcome-file>index.html</welcome-file>

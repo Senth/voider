@@ -1,18 +1,21 @@
 package com.spiddekauga.prototype;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.bind.DatatypeConverter;
 
-import com.oreilly.servlet.multipart.MultipartParser;
-import com.oreilly.servlet.multipart.ParamPart;
-import com.oreilly.servlet.multipart.Part;
+import org.apache.commons.fileupload.FileItemIterator;
+import org.apache.commons.fileupload.FileItemStream;
+import org.apache.commons.fileupload.FileUploadException;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.io.IOUtils;
 
 /**
  * Gateway for getting entities and sending an entity response
- * 
  * @author Matteus Magnusson <senth.wallace@gmail.com>
  */
 public class NetworkGateway {
@@ -22,20 +25,30 @@ public class NetworkGateway {
 	 * @return entity bytes. null if none was found.
 	 */
 	public static byte[] getEntity(HttpServletRequest request) {
-		try {
-			MultipartParser multipartParser = new MultipartParser(request, request.getContentLength());
-			if (multipartParser != null) {
-				Part part;
-				while ((part = multipartParser.readNextPart()) != null) {
-					if (part.getName().equals(ENTITY_NAME)) {
-						if (part instanceof ParamPart) {
-							return ((ParamPart) part).getValue();
-						}
+		boolean isMultipart = ServletFileUpload.isMultipartContent(request);
+
+		if (isMultipart) {
+			ServletFileUpload upload = new ServletFileUpload();
+			try {
+				FileItemIterator itemIt = upload.getItemIterator(request);
+
+				while (itemIt.hasNext()) {
+					FileItemStream item = itemIt.next();
+
+					if (item.getContentType().equals("application/octet-stream") && item.getFieldName().equals(ENTITY_NAME)) {
+						InputStream inputStream = item.openStream();
+						return IOUtils.toByteArray(inputStream);
 					}
 				}
+
+				// If we're here we haven't found the entity, try base64 instead
+				String base64Entity = request.getParameter(ENTITY_NAME);
+				if (base64Entity != null) {
+					return DatatypeConverter.parseBase64Binary(base64Entity);
+				}
+			} catch (FileUploadException | IOException e) {
+				e.printStackTrace();
 			}
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
 
 		return null;

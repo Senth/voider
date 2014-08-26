@@ -12,13 +12,11 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.google.appengine.api.blobstore.BlobKey;
-import com.google.appengine.api.channel.ChannelService;
-import com.google.appengine.api.channel.ChannelServiceFactory;
 import com.spiddekauga.appengine.BlobUtils;
 import com.spiddekauga.prototype.NetworkGateway;
-import com.spiddekauga.voider.network.entities.IEntity;
-import com.spiddekauga.voider.network.entities.method.IMethodEntity;
-import com.spiddekauga.voider.network.entities.method.NetworkEntitySerializer;
+import com.spiddekauga.voider.prototype.entities.IEntity;
+import com.spiddekauga.voider.prototype.entities.IMethodEntity;
+import com.spiddekauga.voider.prototype.entities.NetworkEntitySerializer;
 
 
 /**
@@ -109,7 +107,10 @@ public abstract class VoiderServlet extends HttpServlet {
 		IEntity responseEntity = onRequest(methodEntity);
 		if (responseEntity != null) {
 			byte[] responseBytes = NetworkEntitySerializer.serializeEntity(responseEntity);
+			mResponse.setContentType("application/octet-stream");
+			mResponse.setContentLength(responseBytes.length);
 			NetworkGateway.sendResponse(mResponse, responseBytes);
+
 		}
 
 		// Save
@@ -191,7 +192,4 @@ public abstract class VoiderServlet extends HttpServlet {
 	protected User mUser = null;
 	/** Logger */
 	protected Logger mLogger = null;
-
-	/** Channel service for sending messages */
-	private static ChannelService mChannelService = ChannelServiceFactory.getChannelService();
 }
