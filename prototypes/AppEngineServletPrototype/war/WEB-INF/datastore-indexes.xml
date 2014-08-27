@@ -5,6 +5,7 @@
     <!-- Order by score -->
     <datastore-index kind="highscore" ancestor="true" source="auto">
         <property name="score" direction="asc"/>
+        <property name="username" direction="asc"/>
     </datastore-index>
 
 </datastore-indexes>

@@ -1,7 +1,10 @@
 package com.spiddekauga.prototype;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.servlet.ServletException;
@@ -35,11 +38,58 @@ public class HighscoresGet extends VoiderServlet {
 			Key levelKey = getLevelKey(((HighscoreGetMethod) methodEntity).levelId);
 
 			if (levelKey != null) {
-				getHighscores(levelKey);
+				if (((HighscoreGetMethod) methodEntity).oneBatch) {
+					getHighscoresOneBatch(levelKey);
+				} else {
+					getHighscores(levelKey);
+				}
 			}
 		}
 
 		return mResponse;
+	}
+
+	/**
+	 * Get all highscores for the level, fetch and set all users in one batch
+	 * @param levelKey level key identifier
+	 */
+	private void getHighscoresOneBatch(Key levelKey) {
+		Query query = new Query("highscore", levelKey);
+
+		query.addProjection(new PropertyProjection("score", Long.class));
+		query.addProjection(new PropertyProjection("user_key", Key.class));
+
+		PreparedQuery preparedQuery = DatastoreUtils.prepare(query);
+
+		FetchOptions fetchOptions = FetchOptions.Builder.withChunkSize(100);
+
+		// Temporary list for keys
+		ArrayList<Key> userKeys = new ArrayList<>();
+		Map<Key, HighscoreEntity> highscores = new HashMap<>();
+
+		for (Entity entity : preparedQuery.asIterable(fetchOptions)) {
+			HighscoreEntity highscoreEntity = new HighscoreEntity();
+			highscoreEntity.score = ((Long) entity.getProperty("score")).intValue();
+			Key userKey = (Key) entity.getProperty("user_key");
+			userKeys.add(userKey);
+			highscores.put(userKey, highscoreEntity);
+		}
+
+
+		// Get users
+		Map<Key, Entity> users = DatastoreUtils.getEntities(userKeys);
+
+		if (users != null) {
+			for (Map.Entry<Key, Entity> userEntry : users.entrySet()) {
+				HighscoreEntity highscore = highscores.get(userEntry.getKey());
+
+				if (highscore != null) {
+					highscore.playerName = (String) userEntry.getValue().getProperty("username");
+					mResponse.highscores.add(highscore);
+					highscores.remove(userEntry.getKey());
+				}
+			}
+		}
 	}
 
 	/**
@@ -93,7 +143,7 @@ public class HighscoresGet extends VoiderServlet {
 	 * @return username of the user, null if user wasn't found or hasn't any username set.
 	 */
 	private String getUsername(Key userKey) {
-		Entity entity = DatastoreUtils.getEntityByKey(userKey);
+		Entity entity = DatastoreUtils.getEntity(userKey);
 
 		if (entity != null && entity.hasProperty("username")) {
 			return (String) entity.getProperty("username");

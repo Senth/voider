@@ -103,7 +103,7 @@ public class ResourceDownload extends VoiderServlet {
 	private boolean setInformationAndDependenciesToResponse(Key resourceKey) {
 		if (!mAddedResources.contains(resourceKey)) {
 			mAddedResources.add(resourceKey);
-			Entity resource = DatastoreUtils.getEntityByKey(resourceKey);
+			Entity resource = DatastoreUtils.getEntity(resourceKey);
 			if (resource == null) {
 				return false;
 			}

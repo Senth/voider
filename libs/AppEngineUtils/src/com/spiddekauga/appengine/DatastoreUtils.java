@@ -4,10 +4,12 @@ package com.spiddekauga.appengine;
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Logger;
 
 import com.google.appengine.api.datastore.Blob;
+import com.google.appengine.api.datastore.DatastoreFailureException;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
@@ -310,7 +312,7 @@ public class DatastoreUtils {
 	 */
 	public static Entity getBlobEntityByKey(String idName) {
 		Key key = KeyFactory.createKey("__BlobInfo__", idName);
-		return getEntityByKey(key);
+		return getEntity(key);
 	}
 
 	/**
@@ -318,11 +320,25 @@ public class DatastoreUtils {
 	 * @param idName the key of the entity
 	 * @return entity with specified key, null if not found
 	 */
-	public static Entity getEntityByKey(Key idName) {
+	public static Entity getEntity(Key idName) {
 		try {
 			return mDatastore.get(idName);
 		} catch (EntityNotFoundException e) {
 			mLogger.warning("Could not find entity with key: " + idName);
+			return null;
+		}
+	}
+
+	/**
+	 * Gets all entities for this key as long as they exist in the datastore
+	 * @param keys all entity keys
+	 * @return all entities that were found with the specified keys
+	 */
+	public static Map<Key, Entity> getEntities(Iterable<Key> keys) {
+		try {
+			return mDatastore.get(keys);
+		} catch (IllegalArgumentException | DatastoreFailureException e) {
+			e.printStackTrace();
 			return null;
 		}
 	}

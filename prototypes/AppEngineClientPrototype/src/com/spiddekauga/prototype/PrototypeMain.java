@@ -20,10 +20,6 @@ public class PrototypeMain {
 	 * @param args
 	 */
 	public static void main(String args[]) {
-		// Gdx.app = new ApplicationStub();
-		// Gdx.files = new LwjglFiles();
-		// Config.Debug.JUNIT_TEST = true;
-
 		getHighscores();
 	}
 
@@ -31,18 +27,24 @@ public class PrototypeMain {
 	 * Get highscores
 	 */
 	private static void getHighscores() {
-		getHighscores(mLevelIds.get(0), "1,000 highscores");
-		getHighscores(mLevelIds.get(1), "10,000 highscores");
+		getHighscores(mLevelIds.get(0), false, "preparing");
+		getHighscores(mLevelIds.get(0), false, "1,000 highscores");
+		getHighscores(mLevelIds.get(0), false, "1,000 highscores [one fetch]");
+		getHighscores(mLevelIds.get(1), false, "10,000 highscores");
+		getHighscores(mLevelIds.get(1), false, "10,000 highscores [one fetch]");
 	}
 
 	/**
 	 * Get a highscore from a specific level
 	 * @param levelId id of the level
 	 * @param debugIdentifier text for identifying this test
+	 * @param fetchUsersInOneBatch true if we should fetch users in one batch in the
+	 *        server
 	 */
-	private static void getHighscores(UUID levelId, String debugIdentifier) {
+	private static void getHighscores(UUID levelId, boolean fetchUsersInOneBatch, String debugIdentifier) {
 		HighscoreGetMethod method = new HighscoreGetMethod();
 		method.levelId = levelId;
+		method.oneBatch = fetchUsersInOneBatch;
 
 		long startTime = System.nanoTime();
 

@@ -128,7 +128,7 @@ public class BugReport extends VoiderServlet {
 			Key userKey = KeyFactory.stringToKey(userKeyString);
 
 			if (userKey != null) {
-				user = DatastoreUtils.getEntityByKey(userKey);
+				user = DatastoreUtils.getEntity(userKey);
 
 				if (user != null) {
 					mUsersCached.put(userKeyString, user);

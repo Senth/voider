@@ -69,7 +69,7 @@ public class SyncDownload extends VoiderServlet {
 		ArrayList<ResourceBlobEntity> resources = new ArrayList<>();
 
 		for (Key key : publishedKeys) {
-			Entity entity = DatastoreUtils.getEntityByKey(key);
+			Entity entity = DatastoreUtils.getEntity(key);
 
 			if (entity != null) {
 				ResourceBlobEntity blobEntity = ResourceUtils.getBlobInformation(entity);

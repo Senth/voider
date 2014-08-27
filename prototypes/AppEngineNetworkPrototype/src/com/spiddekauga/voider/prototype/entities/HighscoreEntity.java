@@ -7,7 +7,7 @@ package com.spiddekauga.voider.prototype.entities;
 @SuppressWarnings("serial")
 public class HighscoreEntity implements IEntity {
 	/** Player name */
-	public String playerName;
+	public String playerName = null;
 	/** Score */
 	public int score;
 }

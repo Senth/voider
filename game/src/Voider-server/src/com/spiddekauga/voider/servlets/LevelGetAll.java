@@ -43,7 +43,6 @@ import com.spiddekauga.voider.server.util.VoiderServlet;
 
 /**
  * Get all levels with specified filters
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
@@ -72,7 +71,7 @@ public class LevelGetAll extends VoiderServlet {
 	}
 
 	/**
-	 * Get land set the levels to send back in response
+	 * Get and set the levels to send back in response
 	 */
 	private void getAndSetLevelResponse() {
 		// Tag filter
@@ -111,7 +110,7 @@ public class LevelGetAll extends VoiderServlet {
 			table = DatastoreTables.LEVEL_STAT;
 			break;
 
-			// Published table
+		// Published table
 		case NEWEST:
 			table = DatastoreTables.PUBLISHED;
 			break;
@@ -273,7 +272,7 @@ public class LevelGetAll extends VoiderServlet {
 	 * @return new level def (network) entity, null if not found
 	 */
 	private static LevelDefEntity getLevelDefEntity(Key levelKey) {
-		Entity entity = DatastoreUtils.getEntityByKey(levelKey);
+		Entity entity = DatastoreUtils.getEntity(levelKey);
 		if (entity != null) {
 			return convertDatastoreToLevelDefEntity(entity);
 		}

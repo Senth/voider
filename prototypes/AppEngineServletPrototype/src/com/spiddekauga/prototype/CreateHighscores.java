@@ -3,6 +3,7 @@ package com.spiddekauga.prototype;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
@@ -14,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.spiddekauga.appengine.DatastoreUtils;
+import com.spiddekauga.appengine.DatastoreUtils.FilterWrapper;
 
 /**
  * Creates lots of highscores and two levels for the highscores
@@ -23,8 +25,12 @@ import com.spiddekauga.appengine.DatastoreUtils;
 public class CreateHighscores extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		getAndSetUsers();
-		createLevels();
+		if (!DatastoreUtils.exists("published", new FilterWrapper("resource_id", mLevelIds.get(0)))) {
+			createLevels();
+		} else {
+			getLevels();
+		}
+		deleteHighscores();
 		createHighscores(mLevelKeys.get(0), 1000);
 		createHighscores(mLevelKeys.get(1), 10000);
 
@@ -33,13 +39,20 @@ public class CreateHighscores extends HttpServlet {
 	}
 
 	/**
-	 * Get all users
+	 * Delete all highscores
 	 */
-	private void getAndSetUsers() {
-		Iterable<Key> keys = DatastoreUtils.getKeys("users");
+	private void deleteHighscores() {
+		List<Key> keys = DatastoreUtils.getKeys("highscore");
+		DatastoreUtils.delete(keys);
+	}
 
-		for (Key key : keys) {
-			mUserKeys.add(key);
+	/**
+	 * Get levels
+	 */
+	private void getLevels() {
+		for (UUID levelId : mLevelIds) {
+			Key levelKey = DatastoreUtils.getSingleKey("published", new FilterWrapper("resource_id", levelId));
+			mLevelKeys.add(levelKey);
 		}
 	}
 
@@ -48,10 +61,10 @@ public class CreateHighscores extends HttpServlet {
 	 */
 	private void createLevels() {
 		for (UUID levelId : mLevelIds) {
-			Entity entity = new Entity("published", mUserKeys.get(0));
+			Entity entity = new Entity("published");
 			entity.setProperty("type", "level");
 			entity.setUnindexedProperty("name", "my name");
-			entity.setProperty("original_creator_key", mUserKeys.get(0));
+			entity.setProperty("original_creator_key", "userkey");
 			entity.setUnindexedProperty("description", "This should be quite a long description, but this is probably enough.");
 			entity.setProperty("date", new Date());
 			DatastoreUtils.setProperty(entity, "copy_parent_id", UUID.randomUUID());
@@ -72,11 +85,11 @@ public class CreateHighscores extends HttpServlet {
 		Random random = new Random(1);
 		Date date = new Date();
 
-		for (int i = 0; i < count && i < mUserKeys.size(); ++i) {
+		for (int i = 0; i < count; ++i) {
 			int randomScore = random.nextInt(100000000) + 1;
 
 			Entity entity = new Entity("highscore", levelKey);
-			entity.setProperty("user_key", mUserKeys.get(i));
+			entity.setProperty("username", "username_" + i);
 			entity.setProperty("score", randomScore);
 			entity.setProperty("created", new Date(randomScore));
 			entity.setProperty("uploaded", date);
@@ -85,8 +98,6 @@ public class CreateHighscores extends HttpServlet {
 		}
 	}
 
-	/** User keys */
-	private ArrayList<Key> mUserKeys = new ArrayList<>();
 	/** Level ids */
 	private static ArrayList<UUID> mLevelIds = new ArrayList<>();
 	/** Created levels */
