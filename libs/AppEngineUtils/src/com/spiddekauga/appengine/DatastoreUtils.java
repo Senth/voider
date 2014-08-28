@@ -14,6 +14,7 @@ import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
+import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.PreparedQuery;
@@ -168,6 +169,38 @@ public class DatastoreUtils {
 				query.setFilter(new Query.CompositeFilter(CompositeFilterOperator.AND, filters));
 			}
 		}
+	}
+
+	/**
+	 * Counts the rows of the specified table
+	 * @param searchIn the kind of entity (table) to search in
+	 * @param filters all properties to search for
+	 * @return number of rows
+	 */
+	public static int count(String searchIn, FilterWrapper... filters) {
+		return count(searchIn, null, filters);
+	}
+
+	/**
+	 * Counts the rows of the specified table
+	 * @param searchIn the kind of entity (table) to search in
+	 * @param parent search for all entities with this parent
+	 * @param filters all properties to search for
+	 * @return number of rows
+	 */
+	public static int count(String searchIn, Key parent, FilterWrapper... filters) {
+		Query query = new Query(searchIn);
+		query.setKeysOnly();
+
+		if (parent != null) {
+			query.setAncestor(parent);
+		}
+
+		setFilterProperties(query, filters);
+
+
+		PreparedQuery preparedQuery = mDatastore.prepare(query);
+		return preparedQuery.countEntities(FetchOptions.Builder.withDefaults());
 	}
 
 	/**
