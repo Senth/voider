@@ -29,6 +29,11 @@ import com.spiddekauga.voider.server.util.VoiderServlet;
 public class RegisterUser extends VoiderServlet {
 
 	@Override
+	protected void onInit() {
+		// Does nothing
+	}
+
+	@Override
 	protected IEntity onRequest(IMethodEntity methodEntity) throws ServletException, IOException {
 		RegisterUserMethodResponse methodResponse = new RegisterUserMethodResponse();
 		methodResponse.status = Statuses.FAIL_SERVER_ERROR;

@@ -13,11 +13,15 @@ import com.spiddekauga.voider.server.util.VoiderServlet;
 
 /**
  * Does an upgrade for the server
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
 public class Upgrade extends VoiderServlet {
+	@Override
+	protected void onInit() {
+		// Does nothing
+	}
+
 	@Override
 	protected IEntity onRequest(IMethodEntity methodEntity) throws ServletException, IOException {
 		ChannelService channelService = ChannelServiceFactory.getChannelService();

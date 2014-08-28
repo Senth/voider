@@ -25,7 +25,6 @@ import com.spiddekauga.voider.network.entities.method.NetworkEntitySerializer;
 
 /**
  * Wrapper for the Voider servlet
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
@@ -34,10 +33,16 @@ public abstract class VoiderServlet extends HttpServlet {
 	 * Called by the server to handle a post or get call.
 	 * @param methodEntity the entity that was sent to the method
 	 * @return response entity
-	 * @throws IOException if an input or output error is detected when the servlet handles the GET/POST request
+	 * @throws IOException if an input or output error is detected when the servlet
+	 *         handles the GET/POST request
 	 * @throws ServletException if the request for the GET/POST could not be handled
 	 */
 	protected abstract IEntity onRequest(IMethodEntity methodEntity) throws ServletException, IOException;
+
+	/**
+	 * Initializes the servlet
+	 */
+	protected abstract void onInit();
 
 	/**
 	 * Initializes the session and all it's variables
@@ -89,7 +94,8 @@ public abstract class VoiderServlet extends HttpServlet {
 	 * Wrapper for handling do/get
 	 * @param request the server request from the client
 	 * @param response the response to send to the client
-	 * @throws IOException if an input or output error is detected when the servlet handles the GET/POST request
+	 * @throws IOException if an input or output error is detected when the servlet
+	 *         handles the GET/POST request
 	 * @throws ServletException if the request for the GET/POST could not be handled
 	 */
 	private void handleRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -145,16 +151,16 @@ public abstract class VoiderServlet extends HttpServlet {
 	}
 
 	/**
-	 * @return get blob information from the current request, null if no uploads
-	 * were made.
+	 * @return get blob information from the current request, null if no uploads were
+	 *         made.
 	 */
 	protected Map<UUID, BlobKey> getUploadedBlobs() {
 		return BlobUtils.getBlobKeysFromUpload(mRequest);
 	}
 
 	/**
-	 * @return get blob information from the current request where the uploaded
-	 * resources contains revisions, null if no uploads were made.
+	 * @return get blob information from the current request where the uploaded resources
+	 *         contains revisions, null if no uploads were made.
 	 */
 	protected Map<UUID, Map<Integer, BlobKey>> getUploadedRevisionBlobs() {
 		return BlobUtils.getBlobKeysFromUploadRevision(mRequest);
@@ -175,8 +181,8 @@ public abstract class VoiderServlet extends HttpServlet {
 	}
 
 	/**
-	 * Sends a message to all clients. If skipClient has been set
-	 * the client with that id will not act on the message.
+	 * Sends a message to all clients. If skipClient has been set the client with that id
+	 * will not act on the message.
 	 * @param chatMessage sends the specified chat message
 	 */
 	protected void sendMessage(ChatMessage<?> chatMessage) {

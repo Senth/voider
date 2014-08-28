@@ -1,10 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <datastore-indexes autoGenerate="true">
-	<!-- Highscores -->
-	<datastore-index kind="highscore" ancestor="true">
-		<property name="username" direction="asc"/>
-		<property name="score" direction="asc"/>
-	</datastore-index>
+	<!-- HIGHSCORE -->
+    <!-- Score ASC -->
+    <datastore-index kind="highscore" ancestor="true" source="manual">
+        <property name="score" direction="asc"/>
+        <property name="username" direction="asc"/>
+    </datastore-index>
+    
+     <datastore-index kind="highscore" ancestor="true" source="manual">
+        <property name="score" direction="asc"/>
+    </datastore-index>
+    
+    <!-- Score DESC -->
+    <datastore-index kind="highscore" ancestor="true" source="manual">
+        <property name="score" direction="desc"/>
+        <property name="username" direction="asc"/>
+    </datastore-index>
 
 
 	<!-- TODO -->

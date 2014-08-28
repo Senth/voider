@@ -15,11 +15,15 @@ import com.spiddekauga.voider.server.util.VoiderServlet;
 
 /**
  * Returns a valid upload url
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
 public class GetUploadUrl extends VoiderServlet {
+	@Override
+	protected void onInit() {
+		// Does nothing
+	}
+
 	@Override
 	protected IEntity onRequest(IMethodEntity methodEntity) throws ServletException, IOException {
 		if (!mUser.isLoggedIn()) {

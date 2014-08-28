@@ -3,7 +3,7 @@ package com.spiddekauga.voider.repo;
 import java.util.ArrayList;
 import java.util.UUID;
 
-import com.spiddekauga.voider.network.entities.HighscoreEntity;
+import com.spiddekauga.voider.network.entities.HighscoreSyncEntity;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.method.IMethodEntity;
 import com.spiddekauga.voider.network.entities.method.SyncHighscoreMethod;
@@ -38,7 +38,7 @@ public class HighscoreRepo extends Repo {
 	 * @param responseListeners listens to the web responce (when syncing is done)
 	 */
 	public void sync(ICallerResponseListener... responseListeners) {
-		ArrayList<HighscoreEntity> unsyncedHighscores = mLocalRepo.getUnsynced();
+		ArrayList<HighscoreSyncEntity> unsyncedHighscores = mLocalRepo.getUnsynced();
 		mWebRepo.sync(mLocalRepo.getSyncDate(), unsyncedHighscores, addToFront(responseListeners, this));
 	}
 
@@ -62,7 +62,7 @@ public class HighscoreRepo extends Repo {
 	 * @param levelId level to get player highscore from
 	 * @return highscore for this level, null if no highscore was found
 	 */
-	public HighscoreEntity getPlayerHighscore(UUID levelId) {
+	public HighscoreSyncEntity getPlayerHighscore(UUID levelId) {
 		return mLocalRepo.getHighscore(levelId);
 	}
 

@@ -3,7 +3,7 @@ package com.spiddekauga.voider.repo;
 import java.util.ArrayList;
 import java.util.Date;
 
-import com.spiddekauga.voider.network.entities.HighscoreEntity;
+import com.spiddekauga.voider.network.entities.HighscoreSyncEntity;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.method.IMethodEntity;
 import com.spiddekauga.voider.network.entities.method.SyncHighscoreMethod;
@@ -37,7 +37,7 @@ class HighscoreWebRepo extends WebRepo {
 	 * @param highscores all highscores to synchronize
 	 * @param responseListeners listens to the web response
 	 */
-	void sync(Date lastSync, ArrayList<HighscoreEntity> highscores, ICallerResponseListener... responseListeners) {
+	void sync(Date lastSync, ArrayList<HighscoreSyncEntity> highscores, ICallerResponseListener... responseListeners) {
 		SyncHighscoreMethod method = new SyncHighscoreMethod();
 		method.lastSync = lastSync;
 		method.highscores = highscores;

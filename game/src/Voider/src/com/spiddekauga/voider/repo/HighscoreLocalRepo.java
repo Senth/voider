@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.UUID;
 
-import com.spiddekauga.voider.network.entities.HighscoreEntity;
+import com.spiddekauga.voider.network.entities.HighscoreSyncEntity;
 
 /**
  * Local repository of highscores
@@ -43,7 +43,7 @@ class HighscoreLocalRepo {
 	 * @return highscore of the specified level id, null if no highscore exists for this
 	 *         level
 	 */
-	HighscoreEntity getHighscore(UUID levelId) {
+	HighscoreSyncEntity getHighscore(UUID levelId) {
 		return mSqliteGateway.get(levelId);
 	}
 
@@ -51,7 +51,7 @@ class HighscoreLocalRepo {
 	 * Sets a new highscore as synced
 	 * @param highscore the highscore to set as synced
 	 */
-	void setHighscoreAndSynced(HighscoreEntity highscore) {
+	void setHighscoreAndSynced(HighscoreSyncEntity highscore) {
 		mSqliteGateway.set(highscore.levelId, highscore.score, highscore.created, true);
 	}
 
@@ -67,8 +67,8 @@ class HighscoreLocalRepo {
 	 * Sets all specified highscores as synced
 	 * @param highscores all highscores to set as synced
 	 */
-	void setSynced(ArrayList<HighscoreEntity> highscores) {
-		for (HighscoreEntity highscore : highscores) {
+	void setSynced(ArrayList<HighscoreSyncEntity> highscores) {
+		for (HighscoreSyncEntity highscore : highscores) {
 			setSynced(highscore.levelId);
 		}
 	}
@@ -87,7 +87,7 @@ class HighscoreLocalRepo {
 	/**
 	 * @return all unsynced highscores
 	 */
-	ArrayList<HighscoreEntity> getUnsynced() {
+	ArrayList<HighscoreSyncEntity> getUnsynced() {
 		return mSqliteGateway.getUnsynced();
 	}
 

@@ -33,7 +33,7 @@ import com.spiddekauga.voider.server.util.VoiderServlet;
 @SuppressWarnings("serial")
 public class ResourceDownload extends VoiderServlet {
 	@Override
-	public void init() {
+	protected void onInit() {
 		mResponse.status = Statuses.FAILED_SERVER_INTERAL;
 		mResponse.resources.clear();
 		mAddedResources.clear();
@@ -41,8 +41,6 @@ public class ResourceDownload extends VoiderServlet {
 
 	@Override
 	protected IEntity onRequest(IMethodEntity methodEntity) throws ServletException, IOException {
-		init();
-
 		if (mUser.isLoggedIn()) {
 			boolean success = false;
 			if (methodEntity instanceof ResourceDownloadMethod) {

@@ -48,15 +48,13 @@ import com.spiddekauga.voider.server.util.VoiderServlet;
 @SuppressWarnings("serial")
 public class LevelGetAll extends VoiderServlet {
 	@Override
-	public void init() {
+	protected void onInit() {
 		mResponse = new LevelGetAllMethodResponse();
 		mResponse.status = Statuses.FAILED_SERVER_ERROR;
 	}
 
 	@Override
 	protected IEntity onRequest(IMethodEntity methodEntity) throws ServletException, IOException {
-		init();
-
 		if (mUser.isLoggedIn()) {
 			if (methodEntity instanceof LevelGetAllMethod) {
 				mParameters = (LevelGetAllMethod) methodEntity;
@@ -110,7 +108,7 @@ public class LevelGetAll extends VoiderServlet {
 			table = DatastoreTables.LEVEL_STAT;
 			break;
 
-		// Published table
+			// Published table
 		case NEWEST:
 			table = DatastoreTables.PUBLISHED;
 			break;

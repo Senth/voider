@@ -3,7 +3,7 @@ package com.spiddekauga.voider.network.entities.method;
 import java.util.ArrayList;
 import java.util.Date;
 
-import com.spiddekauga.voider.network.entities.HighscoreEntity;
+import com.spiddekauga.voider.network.entities.HighscoreSyncEntity;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.ISuccessStatuses;
 
@@ -16,7 +16,7 @@ public class SyncHighscoreMethodResponse implements IEntity, ISuccessStatuses {
 	/** Upload status */
 	public Statuses status = null;
 	/** Highscores to update/set */
-	public ArrayList<HighscoreEntity> highscores = new ArrayList<>();
+	public ArrayList<HighscoreSyncEntity> highscores = new ArrayList<>();
 	/** Latest sync time (to set) */
 	public Date syncTime;
 

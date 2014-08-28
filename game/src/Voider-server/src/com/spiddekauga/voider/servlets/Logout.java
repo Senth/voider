@@ -12,11 +12,15 @@ import com.spiddekauga.voider.server.util.VoiderServlet;
 
 /**
  * Called when a user tries to logout
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
 public class Logout extends VoiderServlet {
+	@Override
+	protected void onInit() {
+		// Does nothing
+	}
+
 	@Override
 	protected IEntity onRequest(IMethodEntity methodEntity) throws ServletException, IOException {
 		LogoutMethodResponse logoutMethodResponse = new LogoutMethodResponse();

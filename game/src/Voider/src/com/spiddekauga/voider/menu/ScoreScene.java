@@ -6,7 +6,7 @@ import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.voider.game.GameScene;
 import com.spiddekauga.voider.game.LevelDef;
 import com.spiddekauga.voider.game.PlayerStats;
-import com.spiddekauga.voider.network.entities.HighscoreEntity;
+import com.spiddekauga.voider.network.entities.HighscoreSyncEntity;
 import com.spiddekauga.voider.network.entities.Tags;
 import com.spiddekauga.voider.repo.HighscoreRepo;
 import com.spiddekauga.voider.repo.InternalNames;
@@ -156,7 +156,7 @@ public class ScoreScene extends Scene {
 	 * @return player highscore string
 	 */
 	String getPlayerHighscore() {
-		HighscoreEntity highscoreEntity = mHighscoreRepo.getPlayerHighscore(mLevelDef.getId());
+		HighscoreSyncEntity highscoreEntity = mHighscoreRepo.getPlayerHighscore(mLevelDef.getId());
 
 		if (highscoreEntity != null) {
 			return PlayerStats.formatScore(highscoreEntity.score);

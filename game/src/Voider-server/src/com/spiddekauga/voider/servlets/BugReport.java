@@ -34,6 +34,11 @@ import com.spiddekauga.voider.server.util.VoiderServlet;
 @SuppressWarnings("serial")
 public class BugReport extends VoiderServlet {
 	@Override
+	protected void onInit() {
+		// Does nothing
+	}
+
+	@Override
 	protected IEntity onRequest(IMethodEntity methodEntity) throws ServletException, IOException {
 		BugReportMethodResponse methodResponse = new BugReportMethodResponse();
 		methodResponse.status = Statuses.FAILED_SERVER_ERROR;

@@ -31,11 +31,15 @@ import com.spiddekauga.voider.server.util.VoiderServlet;
 
 /**
  * Get all level comments
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
 public class LevelGetComment extends VoiderServlet {
+
+	@Override
+	protected void onInit() {
+		// Does nothing
+	}
 
 	@Override
 	protected IEntity onRequest(IMethodEntity methodEntity) throws ServletException, IOException {
@@ -128,7 +132,8 @@ public class LevelGetComment extends VoiderServlet {
 	 */
 	private LevelCommentEntity getUserComment(Key levelKey) {
 		try {
-			Entity entity = DatastoreUtils.getSingleEntity(DatastoreTables.LEVEL_COMMENT.toString(), levelKey, new FilterWrapper("user_key", mUser.getKey()));
+			Entity entity = DatastoreUtils.getSingleEntity(DatastoreTables.LEVEL_COMMENT.toString(), levelKey,
+					new FilterWrapper("user_key", mUser.getKey()));
 
 			if (entity != null) {
 				return createLevelCommentEntity(entity);

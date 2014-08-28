@@ -21,11 +21,15 @@ import com.spiddekauga.voider.server.util.VoiderServlet;
 
 /**
  * Tries to login to the server
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
 public class Login extends VoiderServlet {
+
+	@Override
+	protected void onInit() {
+		// Does nothing
+	}
 
 	@Override
 	protected IEntity onRequest(IMethodEntity methodEntity) throws ServletException, IOException {
@@ -98,7 +102,7 @@ public class Login extends VoiderServlet {
 			return false;
 		}
 
-		String hashedPassword = (String)datastoreEntity.getProperty("password");
+		String hashedPassword = (String) datastoreEntity.getProperty("password");
 		return BCrypt.checkpw(password, hashedPassword);
 	}
 

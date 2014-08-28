@@ -1,18 +1,13 @@
 package com.spiddekauga.voider.network.entities;
 
-import java.util.Date;
-import java.util.UUID;
-
 /**
- * Highscore of a player
+ * Contains highscore information
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
 public class HighscoreEntity implements IEntity {
-	/** Level id */
-	public UUID levelId;
+	/** Player name */
+	public String playerName = null;
 	/** Score */
 	public int score;
-	/** Created date */
-	public Date created = null;
 }

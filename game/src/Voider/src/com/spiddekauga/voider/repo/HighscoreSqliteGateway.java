@@ -5,7 +5,7 @@ import java.util.Date;
 import java.util.UUID;
 
 import com.badlogic.gdx.sql.DatabaseCursor;
-import com.spiddekauga.voider.network.entities.HighscoreEntity;
+import com.spiddekauga.voider.network.entities.HighscoreSyncEntity;
 import com.spiddekauga.voider.utils.Pools;
 
 /**
@@ -39,13 +39,13 @@ class HighscoreSqliteGateway extends SqliteGateway {
 	 * @param levelId id of the level
 	 * @return player highscore of this level, null if no highscore exists for this level
 	 */
-	HighscoreEntity get(UUID levelId) {
+	HighscoreSyncEntity get(UUID levelId) {
 		DatabaseCursor cursor = rawQuery("SELECT score, date FROM highscore WHERE level_id='" + levelId + "';");
 
-		HighscoreEntity highscore = null;
+		HighscoreSyncEntity highscore = null;
 
 		if (cursor.next()) {
-			highscore = new HighscoreEntity();
+			highscore = new HighscoreSyncEntity();
 			highscore.levelId = levelId;
 			highscore.score = cursor.getInt(0);
 			highscore.created = new Date(cursor.getLong(1));
@@ -57,14 +57,14 @@ class HighscoreSqliteGateway extends SqliteGateway {
 	/**
 	 * @return all unsynced highscores
 	 */
-	ArrayList<HighscoreEntity> getUnsynced() {
+	ArrayList<HighscoreSyncEntity> getUnsynced() {
 		@SuppressWarnings("unchecked")
-		ArrayList<HighscoreEntity> highscores = Pools.arrayList.obtain();
+		ArrayList<HighscoreSyncEntity> highscores = Pools.arrayList.obtain();
 
 		DatabaseCursor cursor = rawQuery("SELECT level_id, score, date FROM highscore WHERE synced=0;");
 
 		while (cursor.next()) {
-			HighscoreEntity highscore = new HighscoreEntity();
+			HighscoreSyncEntity highscore = new HighscoreSyncEntity();
 			highscore.levelId = UUID.fromString(cursor.getString(0));
 			highscore.score = cursor.getInt(1);
 			highscore.created = new Date(cursor.getLong(2));

@@ -19,7 +19,7 @@ import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.appengine.DatastoreUtils.FilterWrapper;
 import com.spiddekauga.voider.network.entities.ChatMessage;
 import com.spiddekauga.voider.network.entities.ChatMessage.MessageTypes;
-import com.spiddekauga.voider.network.entities.HighscoreEntity;
+import com.spiddekauga.voider.network.entities.HighscoreSyncEntity;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.method.IMethodEntity;
 import com.spiddekauga.voider.network.entities.method.SyncHighscoreMethod;
@@ -37,7 +37,8 @@ public class SyncHighscore extends VoiderServlet {
 	/**
 	 * Initializes the sync
 	 */
-	private void initialize() {
+	@Override
+	protected void onInit() {
 		mResponse = new SyncHighscoreMethodResponse();
 		mResponse.status = Statuses.FAILED_INTERNAL;
 		mResponse.syncTime = new Date();
@@ -45,8 +46,6 @@ public class SyncHighscore extends VoiderServlet {
 
 	@Override
 	protected IEntity onRequest(IMethodEntity methodEntity) throws ServletException, IOException {
-		initialize();
-
 		if (!mUser.isLoggedIn()) {
 			mResponse.status = Statuses.FAILED_USER_NOT_LOGGED_IN;
 			return mResponse;
@@ -85,7 +84,7 @@ public class SyncHighscore extends VoiderServlet {
 		PreparedQuery preparedQuery = DatastoreUtils.prepare(query);
 
 		for (Entity serverEntity : preparedQuery.asIterable()) {
-			HighscoreEntity networkEntity = serverToNetworkEntity(serverEntity);
+			HighscoreSyncEntity networkEntity = serverToNetworkEntity(serverEntity);
 			mHighscoresToClient.put(networkEntity.levelId, networkEntity);
 		}
 	}
@@ -96,10 +95,10 @@ public class SyncHighscore extends VoiderServlet {
 	 * @param methodEntity parameters sent to the server
 	 */
 	private void checkForConflictsAndResolve(SyncHighscoreMethod methodEntity) {
-		Iterator<HighscoreEntity> fromClientIt = methodEntity.highscores.iterator();
+		Iterator<HighscoreSyncEntity> fromClientIt = methodEntity.highscores.iterator();
 		while (fromClientIt.hasNext()) {
-			HighscoreEntity clientHighscore = fromClientIt.next();
-			HighscoreEntity serverHighscore = mHighscoresToClient.get(clientHighscore.levelId);
+			HighscoreSyncEntity clientHighscore = fromClientIt.next();
+			HighscoreSyncEntity serverHighscore = mHighscoresToClient.get(clientHighscore.levelId);
 
 			// Found conflict -> Resolve
 			if (serverHighscore != null) {
@@ -124,7 +123,7 @@ public class SyncHighscore extends VoiderServlet {
 	 * Sync new highscores to the client
 	 */
 	private void syncNewToClient() {
-		Iterator<Entry<UUID, HighscoreEntity>> entityIt = mHighscoresToClient.entrySet().iterator();
+		Iterator<Entry<UUID, HighscoreSyncEntity>> entityIt = mHighscoresToClient.entrySet().iterator();
 		while (entityIt.hasNext()) {
 			mResponse.highscores.add(entityIt.next().getValue());
 		}
@@ -136,7 +135,7 @@ public class SyncHighscore extends VoiderServlet {
 	 */
 	private void syncNewToServer(SyncHighscoreMethod methodEntity) {
 		// Check if we should update existing entity?
-		for (HighscoreEntity networkEntity : methodEntity.highscores) {
+		for (HighscoreSyncEntity networkEntity : methodEntity.highscores) {
 
 			FilterWrapper filter = new FilterWrapper("level_id", networkEntity.levelId);
 			Entity entity = DatastoreUtils.getSingleEntity("highscore", mUser.getKey(), filter);
@@ -174,8 +173,8 @@ public class SyncHighscore extends VoiderServlet {
 	 * @param serverEntity entity from datastore
 	 * @return entity that can be sent over the network
 	 */
-	private static HighscoreEntity serverToNetworkEntity(Entity serverEntity) {
-		HighscoreEntity networkEntity = new HighscoreEntity();
+	private static HighscoreSyncEntity serverToNetworkEntity(Entity serverEntity) {
+		HighscoreSyncEntity networkEntity = new HighscoreSyncEntity();
 		networkEntity.levelId = DatastoreUtils.getUuidProperty(serverEntity, "level_id");
 		networkEntity.score = DatastoreUtils.getIntProperty(serverEntity, "score");
 		networkEntity.created = (Date) serverEntity.getProperty("created");
@@ -185,7 +184,7 @@ public class SyncHighscore extends VoiderServlet {
 
 
 	/** Highscores to sync to the client */
-	private HashMap<UUID, HighscoreEntity> mHighscoresToClient = new HashMap<>();
+	private HashMap<UUID, HighscoreSyncEntity> mHighscoresToClient = new HashMap<>();
 	/** Response */
 	private SyncHighscoreMethodResponse mResponse;
 }

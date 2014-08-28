@@ -46,7 +46,8 @@ public class SyncUserResources extends VoiderServlet {
 	/**
 	 * Initializes the sync
 	 */
-	private void initialize() {
+	@Override
+	protected void onInit() {
 		mResponse = new SyncUserResourcesMethodResponse();
 		mResponse.uploadStatus = UploadStatuses.FAILED_INTERNAL;
 		mSyncDate = new Date();
@@ -54,8 +55,6 @@ public class SyncUserResources extends VoiderServlet {
 
 	@Override
 	protected IEntity onRequest(IMethodEntity methodEntity) throws ServletException, IOException {
-		initialize();
-
 		if (!mUser.isLoggedIn()) {
 			mResponse.uploadStatus = UploadStatuses.FAILED_USER_NOT_LOGGED_IN;
 			return mResponse;

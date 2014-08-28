@@ -3,7 +3,7 @@ package com.spiddekauga.voider.network.entities.method;
 import java.util.ArrayList;
 import java.util.Date;
 
-import com.spiddekauga.voider.network.entities.HighscoreEntity;
+import com.spiddekauga.voider.network.entities.HighscoreSyncEntity;
 
 /**
  * Method for syncronizing highscore
@@ -12,7 +12,7 @@ import com.spiddekauga.voider.network.entities.HighscoreEntity;
 @SuppressWarnings("serial")
 public class SyncHighscoreMethod implements IMethodEntity {
 	/** Highscores to syncronize */
-	public ArrayList<HighscoreEntity> highscores = new ArrayList<>();
+	public ArrayList<HighscoreSyncEntity> highscores = new ArrayList<>();
 	/** Last sync time */
 	public Date lastSync;
 

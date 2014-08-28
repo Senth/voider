@@ -45,6 +45,11 @@ import com.spiddekauga.voider.server.util.VoiderServlet;
 @SuppressWarnings("serial")
 public class Publish extends VoiderServlet {
 	@Override
+	protected void onInit() {
+		// Does nothing
+	}
+
+	@Override
 	protected IEntity onRequest(IMethodEntity methodEntity) throws ServletException, IOException {
 		PublishMethodResponse methodResponse = new PublishMethodResponse();
 		methodResponse.status = Statuses.FAILED_SERVER_ERROR;

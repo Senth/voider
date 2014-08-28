@@ -25,13 +25,17 @@ import com.spiddekauga.voider.server.util.ResourceUtils;
 import com.spiddekauga.voider.server.util.VoiderServlet;
 
 /**
- * Checks if there are new published resources to sync to the client depending on
- * the time of last sync.
- * 
+ * Checks if there are new published resources to sync to the client depending on the time
+ * of last sync.
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
 public class SyncDownload extends VoiderServlet {
+	@Override
+	protected void onInit() {
+		// Does nothing
+	}
+
 	@Override
 	protected IEntity onRequest(IMethodEntity methodEntity) throws ServletException, IOException {
 		SyncDownloadMethodResponse response = new SyncDownloadMethodResponse();
