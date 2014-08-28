@@ -18,14 +18,27 @@
     </datastore-index>
 
 
-	<!-- TODO -->
-    <datastore-index kind="sync_published" ancestor="true" source="auto">
+	<!-- SYNC PUBLISHED -->
+    <datastore-index kind="sync_published" ancestor="true" source="manual">
         <property name="download_date" direction="asc"/>
-        <property name="published_key" direction="asc"/>
     </datastore-index>
 
 
-    <!-- Used 1 time in query history -->
+    <!-- USER RESOURCE SYNC -->
+    <!-- Check for conflicts, i.e. if the revision for the resource exists -->
+    <datastore-index kind="user_resources" ancestor="false" source="manual">
+    	<property name="resource_id-least" direction="asc"/>
+    	<property name="resource_id-most" direction="asc"/>
+    	<property name="revision" direction="asc"/>
+    </datastore-index>
+    
+    <!-- Get all blobs for specific resource, used when deleting -->
+    <datastore-index kind="user_resources" ancestor="false" source="manual">
+    	<property name="resource_id-least" direction="asc"/>
+    	<property name="resource_id-most" direction="asc"/>
+    	<property name="blob_key" direction="asc"/>
+    </datastore-index>
+    
     <datastore-index kind="user_resources_deleted" ancestor="true" source="auto">
         <property name="date" direction="asc"/>
         <property name="resource_id-least" direction="asc"/>

@@ -8,12 +8,9 @@ import javax.servlet.ServletException;
 
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.PreparedQuery;
-import com.google.appengine.api.datastore.PropertyProjection;
-import com.google.appengine.api.datastore.Query;
-import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.spiddekauga.appengine.DatastoreUtils;
+import com.spiddekauga.appengine.DatastoreUtils.FilterWrapper;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.ResourceBlobEntity;
 import com.spiddekauga.voider.network.entities.UploadTypes;
@@ -95,19 +92,10 @@ public class SyncDownload extends VoiderServlet {
 	 * @return list of all published keys to sync
 	 */
 	private ArrayList<Key> getPublishedKeysToSync(Date lastSync) {
-		// Get all entities which date is later than last sync date
-		Query query = new Query("sync_published", mUser.getKey());
-
-		// Only get resource UUID
-		query.addProjection(new PropertyProjection("published_key", Key.class));
-
 		// Qualify by date
-		Filter filter = new Query.FilterPredicate("download_date", FilterOperator.GREATER_THAN, lastSync);
-		query.setFilter(filter);
+		FilterWrapper filterWrapper = new FilterWrapper("download_date", FilterOperator.GREATER_THAN, lastSync);
 
-		PreparedQuery preparedQuery = DatastoreUtils.prepare(query);
-
-		Iterable<Entity> entities = preparedQuery.asIterable();
+		Iterable<Entity> entities = DatastoreUtils.getEntities("sync_published", mUser.getKey(), filterWrapper);
 		ArrayList<Key> publishedKeys = new ArrayList<>();
 
 		for (Entity entity : entities) {

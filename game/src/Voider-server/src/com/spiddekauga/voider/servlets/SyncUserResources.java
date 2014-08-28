@@ -89,13 +89,12 @@ public class SyncUserResources extends VoiderServlet {
 		for (ResourceRevisionEntity entity : methodEntity.resources) {
 			FilterWrapper resourceProp = new FilterWrapper("resource_id", entity.resourceId);
 
-			// Add uploaded blob revisions to the datastore
-			if (entity.revisions.isEmpty()) {
+			if (!entity.revisions.isEmpty()) {
 				RevisionEntity revisionEntity = entity.revisions.get(0);
 				FilterWrapper revisionProp = new FilterWrapper("revision", revisionEntity.revision);
 
 				// Check for conflicts
-				if (DatastoreUtils.exists("user_resources", mUser.getKey(), resourceProp, revisionProp)) {
+				if (DatastoreUtils.exists("user_resources", resourceProp, revisionProp)) {
 					// From what revision is the conflict?
 					ResourceConflictEntity conflict = new ResourceConflictEntity();
 					conflict.resourceId = entity.resourceId;
@@ -122,6 +121,7 @@ public class SyncUserResources extends VoiderServlet {
 			// Delete the revisions
 			FilterWrapper idProperty = new FilterWrapper("resource_id", removeId);
 			List<Key> entitiesToRemove = DatastoreUtils.getKeys("user_resources", mUser.getKey(), idProperty);
+			// TODO delete blobs
 			DatastoreUtils.delete(entitiesToRemove);
 
 			// Add the resource to the deleted table
@@ -129,8 +129,6 @@ public class SyncUserResources extends VoiderServlet {
 			DatastoreUtils.setProperty(entity, "resource_id", removeId);
 			DatastoreUtils.setProperty(entity, "date", mResponse.syncTime);
 			DatastoreUtils.put(entity);
-
-			// TODO delete highscore for this resource if level
 		}
 	}
 
