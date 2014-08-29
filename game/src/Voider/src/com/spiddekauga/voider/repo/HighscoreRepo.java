@@ -63,7 +63,7 @@ public class HighscoreRepo extends Repo {
 	 * @param levelId id of the level
 	 * @param responseListeners listens to the web response
 	 */
-	void getFirstPlace(UUID levelId, IResponseListener... responseListeners) {
+	public void getFirstPlace(UUID levelId, IResponseListener... responseListeners) {
 		mWebRepo.get(levelId, Fetch.FIRST_PLACE, responseListeners);
 	}
 
@@ -72,7 +72,7 @@ public class HighscoreRepo extends Repo {
 	 * @param levelId id of the level
 	 * @param responseListeners listens to the web response
 	 */
-	void getTopScores(UUID levelId, IResponseListener... responseListeners) {
+	public void getTopScores(UUID levelId, IResponseListener... responseListeners) {
 		mWebRepo.get(levelId, Fetch.TOP_SCORES, responseListeners);
 	}
 
@@ -81,7 +81,7 @@ public class HighscoreRepo extends Repo {
 	 * @param levelId id of the level
 	 * @param responseListeners listens to the web response
 	 */
-	void getPlayerServerScore(UUID levelId, IResponseListener... responseListeners) {
+	public void getPlayerServerScore(UUID levelId, IResponseListener... responseListeners) {
 		mWebRepo.get(levelId, Fetch.USER_SCORE, responseListeners);
 	}
 

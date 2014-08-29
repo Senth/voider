@@ -105,6 +105,12 @@ java.lang.Float: {
 	score_label_height: {value: 40},
 	
 	
+	/** Highscore screen */
+	
+	highscore_screen_width: {value: 420},
+	highscore_placement_width: {value: 64},
+	
+	
 	/** Other */
 
 	// Fade in/out duration for wait window. Wait window displays loading icon or progress bar
@@ -135,6 +141,11 @@ com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
 	panel_section: {
 		font: default12,
 		fontColor: grey_dark,
+	},
+	
+	header: {
+		font: default36,
+		fontColor: white,
 	},
 	
 	
@@ -320,8 +331,6 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageUp: game_new,
 		imageOver: game_new_over,
 		imageDown: game_new_down,
-		imageChecked: game_new_checked,
-		imageCheckedOver: game_new_checked_over,
 		imageDisabled: game_new_disabled
 	},
 	
@@ -329,8 +338,6 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageUp: game_continue,
 		imageOver: game_continue_over,
 		imageDown: game_continue_down,
-		imageChecked: game_continue_checked,
-		imageCheckedOver: game_continue_checked_over,
 		imageDisabled: game_continue_disabled
 	},
 	
@@ -338,8 +345,6 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageUp: replay,
 		imageOver: replay_over,
 		imageDown: replay_down,
-		imageChecked: replay_checked,
-		imageCheckedOver: replay_checked_over,
 		imageDisabled: replay_disabled
 	},
 	
@@ -347,8 +352,6 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageUp: info_big,
 		imageOver: info_big_over,
 		imageDown: info_big_down,
-		imageChecked: info_big_checked,
-		imageCheckedOver: info_big_checked_over,
 		imageDisabled: info_big_disabled
 	},
 	
@@ -356,8 +359,6 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageUp: login_big,
 		imageOver: login_big_over,
 		imageDown: login_big_down,
-		imageChecked: login_big_checked,
-		imageCheckedOver: login_big_checked_over,
 		imageDisabled: login_big_disabled
 	},
 	
@@ -365,8 +366,6 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageUp: player_big,
 		imageOver: player_big_over,
 		imageDown: player_big_down,
-		imageChecked: player_big_checked,
-		imageCheckedOver: player_big_checked_over,
 		imageDisabled: player_big_disabled
 	},
 	
@@ -374,8 +373,6 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageUp: settings_big,
 		imageOver: settings_big_over,
 		imageDown: settings_big_down,
-		imageChecked: settings_big_checked,
-		imageCheckedOver: settings_big_checked_over,
 		imageDisabled: settings_big_disabled
 	},
 	

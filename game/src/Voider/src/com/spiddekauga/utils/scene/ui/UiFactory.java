@@ -508,6 +508,20 @@ public class UiFactory {
 	}
 
 	/**
+	 * Add a header label
+	 * @param text the text of the header
+	 * @param table the table to add the header to
+	 * @return created label
+	 */
+	public Label addHeader(String text, AlignTable table) {
+		Label label = new Label(text, mStyles.label.header);
+		table.row().setAlign(Horizontal.CENTER);
+		table.add(label);
+
+		return label;
+	}
+
+	/**
 	 * Add an icon with a label
 	 * @param icon the icon to show
 	 * @param text text after the icon
@@ -926,6 +940,7 @@ public class UiFactory {
 		mStyles.label.error = SkinNames.getResource(SkinNames.General.LABEL_ERROR);
 		mStyles.label.highlight = SkinNames.getResource(SkinNames.General.LABEL_HIGHLIGHT);
 		mStyles.label.tooltip = SkinNames.getResource(SkinNames.General.LABEL_TOOLTIP);
+		mStyles.label.header = SkinNames.getResource(SkinNames.General.LABEL_HEADER);
 		mStyles.select.standard = SkinNames.getResource(SkinNames.General.SELECT_BOX_DEFAULT);
 		mStyles.rating.stardard = SkinNames.getResource(SkinNames.General.RATING_DEFAULT);
 		mStyles.window.title = SkinNames.getResource(SkinNames.General.WINDOW_TITLE);
@@ -1235,6 +1250,7 @@ public class UiFactory {
 			public LabelStyle error = null;
 			public LabelStyle highlight = null;
 			public LabelStyle tooltip = null;
+			public LabelStyle header = null;
 		}
 
 		public static class CheckBoxes {

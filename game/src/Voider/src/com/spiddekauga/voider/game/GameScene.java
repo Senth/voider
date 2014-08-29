@@ -28,6 +28,7 @@ import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.PlayerActor;
 import com.spiddekauga.voider.game.actors.PlayerActorDef;
+import com.spiddekauga.voider.menu.HighscoreScene;
 import com.spiddekauga.voider.menu.ScoreScene;
 import com.spiddekauga.voider.repo.ExternalTypes;
 import com.spiddekauga.voider.repo.HighscoreRepo;
@@ -40,6 +41,7 @@ import com.spiddekauga.voider.scene.LoadingScene;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.WorldScene;
 import com.spiddekauga.voider.utils.Pools;
+import com.spiddekauga.voider.utils.User;
 
 /**
  * The main game. Starts with a level and could either be in regular or testing mode.
@@ -347,7 +349,7 @@ public class GameScene extends WorldScene {
 		mPlayerStats.updateScore(mLevel.getXCoord());
 
 		// End of level, try to set player highscore
-		if (isDone()) {
+		if (isDone() && ResourceLocalRepo.isPublished(mLevel.getDef().getId())) {
 			HighscoreRepo highscoreRepo = HighscoreRepo.getInstance();
 			if (highscoreRepo.isNewHighscore(mLevel.getDef().getId(), mPlayerStats.getScore())) {
 				highscoreRepo.setHighscoreAndSync(mLevel.getDef().getId(), mPlayerStats.getScore());
@@ -415,31 +417,41 @@ public class GameScene extends WorldScene {
 			return null;
 		}
 
-		ScoreScene gameOverScene = new ScoreScene(mPlayerStats, mLevel.getLevelDef());
+		ScoreScene scoreScene = new ScoreScene(mPlayerStats, mLevel.getLevelDef());
+		Scene nextScene = scoreScene;
+
+		// Get highscores if online
+		if (ResourceLocalRepo.isPublished(mLevel.getDef().getId()) && User.getGlobalUser().isOnline()) {
+			HighscoreScene highscoreScene = new HighscoreScene();
+			HighscoreRepo.getInstance().getPlayerServerScore(mLevel.getDef().getId(), highscoreScene);
+			highscoreScene.setNextScene(scoreScene);
+			nextScene = highscoreScene;
+		}
 
 		switch (getOutcome()) {
 		case LEVEL_COMPLETED:
-			gameOverScene.setLevelCompleted(true);
+			scoreScene.setLevelCompleted(true);
 			LevelDef levelDef = null;
 			if (mLevelToLoad != null || mGameSave != null) {
 				levelDef = mLevel.getDef();
 				if (levelDef != null && !levelDef.getEpilogue().equals("")) {
-					Scene nextScene = new LoadingTextScene(levelDef.getEpilogue());
-					nextScene.setNextScene(gameOverScene);
-					return nextScene;
+					Scene epilogeScene = new LoadingTextScene(levelDef.getEpilogue());
+					epilogeScene.setNextScene(nextScene);
+					nextScene = epilogeScene;
 				}
 			}
-			// Continues ->
+			break;
+
 		case LEVEL_PLAYER_DIED:
-			// TODO switch to score scene
-			return gameOverScene;
+			// Does nothing
+			break;
 
 		case LEVEL_QUIT:
-			return null;
-
 		default:
-			return null;
+			nextScene = null;
 		}
+
+		return nextScene;
 	}
 
 	// --------------------------------

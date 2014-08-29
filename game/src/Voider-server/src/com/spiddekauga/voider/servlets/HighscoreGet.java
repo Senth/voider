@@ -40,6 +40,11 @@ public class HighscoreGet extends VoiderServlet {
 
 	@Override
 	protected IEntity onRequest(IMethodEntity methodEntity) throws ServletException, IOException {
+		if (!mUser.isLoggedIn()) {
+			mResponse.status = Statuses.FAILED_USER_NOT_LOGGED_IN;
+			return mResponse;
+		}
+
 		if (methodEntity instanceof HighscoreGetMethod) {
 			if (((HighscoreGetMethod) methodEntity).levelId != null) {
 				mParameters = (HighscoreGetMethod) methodEntity;

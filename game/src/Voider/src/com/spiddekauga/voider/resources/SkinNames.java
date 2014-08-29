@@ -488,6 +488,10 @@ public class SkinNames {
 		SCORE_SCREEN_WIDTH(Float.class),
 		/** Row height of "My Score" and "My Highscore" */
 		SCORE_LABEL_HEIGHT(Float.class),
+		/** Table width for highscore */
+		HIGHSCORE_SCREEN_WIDTH(Float.class),
+		/** Width for highscore placement */
+		HIGHSCORE_PLACEMENT_WIDTH(Float.class),
 
 		;
 
@@ -641,6 +645,8 @@ public class SkinNames {
 		LABEL_MY_SCORE(LabelStyle.class, "my_score"),
 		/** Label for top score */
 		LABEL_TOP_SCORE(LabelStyle.class, "top_score"),
+		/** Header label */
+		LABEL_HEADER(LabelStyle.class, "header"),
 		/** List default */
 		LIST_DEFAULT(ListStyle.class, "default"),
 		/** Logout button */
