@@ -43,7 +43,7 @@ public class UserWebRepo extends WebRepo {
 	 * @param password
 	 * @param clientId unique client id
 	 */
-	public void login(ICallerResponseListener responseListener, String username, String password, UUID clientId) {
+	public void login(IResponseListener responseListener, String username, String password, UUID clientId) {
 		LoginMethod loginMethod = new LoginMethod();
 		loginMethod.password = password;
 		loginMethod.username = username;
@@ -59,7 +59,7 @@ public class UserWebRepo extends WebRepo {
 	 * @param privateKey Uses the private key to login instead of a password
 	 * @param clientId unique client id
 	 */
-	public void login(ICallerResponseListener responseListener, String username, UUID privateKey, UUID clientId) {
+	public void login(IResponseListener responseListener, String username, UUID privateKey, UUID clientId) {
 		LoginMethod loginMethod = new LoginMethod();
 		loginMethod.privateKey = privateKey;
 		loginMethod.username = username;
@@ -76,7 +76,7 @@ public class UserWebRepo extends WebRepo {
 	 * @param email
 	 * @param clientId unique client id
 	 */
-	public void register(ICallerResponseListener responseListener, String username, String password, String email, UUID clientId) {
+	public void register(IResponseListener responseListener, String username, String password, String email, UUID clientId) {
 		RegisterUserMethod registerMethod = new RegisterUserMethod();
 		registerMethod.email = email;
 		registerMethod.username = username;
@@ -89,14 +89,14 @@ public class UserWebRepo extends WebRepo {
 	 * Tries to logout the current user
 	 * @param responseListener listens to the web response
 	 */
-	public void logout(ICallerResponseListener responseListener) {
+	public void logout(IResponseListener responseListener) {
 		LogoutMethod logoutMethod = new LogoutMethod();
 
 		sendInNewThread(logoutMethod, responseListener);
 	}
 
 	@Override
-	protected void handleResponse(IMethodEntity methodEntity, IEntity response, ICallerResponseListener[] callerResponseListeners) {
+	protected void handleResponse(IMethodEntity methodEntity, IEntity response, IResponseListener[] callerResponseListeners) {
 		IEntity responseToSend = null;
 
 		// Login
@@ -141,7 +141,7 @@ public class UserWebRepo extends WebRepo {
 	 * @param responseListener listens to the web response
 	 * @param username checks if this username is registered already
 	 */
-	public void isUsernameExists(ICallerResponseListener responseListener, String username) {
+	public void isUsernameExists(IResponseListener responseListener, String username) {
 		// TODO
 	}
 
@@ -149,7 +149,7 @@ public class UserWebRepo extends WebRepo {
 	 * @param responseListener listens to the web response
 	 * @param email checks if this email is registered already
 	 */
-	public void isEmailExists(ICallerResponseListener responseListener, String email) {
+	public void isEmailExists(IResponseListener responseListener, String email) {
 		// TODO
 	}
 

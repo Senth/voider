@@ -20,7 +20,7 @@ import com.spiddekauga.voider.network.entities.method.UserResourcesSyncMethodRes
 import com.spiddekauga.voider.repo.BugReportWebRepo;
 import com.spiddekauga.voider.repo.ExternalTypes;
 import com.spiddekauga.voider.repo.HighscoreRepo;
-import com.spiddekauga.voider.repo.ICallerResponseListener;
+import com.spiddekauga.voider.repo.IResponseListener;
 import com.spiddekauga.voider.repo.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.ResourceLocalRepo;
 import com.spiddekauga.voider.repo.ResourceRepo;
@@ -34,7 +34,7 @@ import com.spiddekauga.voider.server.MessageGateway;
  * everything when user logs in
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public class Synchronizer extends Observable implements IMessageListener, ICallerResponseListener {
+public class Synchronizer extends Observable implements IMessageListener, IResponseListener {
 	/**
 	 * Initializes the synchronizer. Private constructor to enforce singleton usage
 	 */
@@ -88,18 +88,18 @@ public class Synchronizer extends Observable implements IMessageListener, ICalle
 	 * @param responseListener use a specified response listener, set to null to skip
 	 * @return true if the type was handled
 	 */
-	public boolean synchronize(SyncTypes type, ICallerResponseListener responseListener) {
+	public boolean synchronize(SyncTypes type, IResponseListener responseListener) {
 		if (!User.getGlobalUser().isOnline()) {
 			return false;
 		}
 
-		ICallerResponseListener[] responseListeners = null;
+		IResponseListener[] responseListeners = null;
 		if (responseListener != null) {
-			responseListeners = new ICallerResponseListener[2];
+			responseListeners = new IResponseListener[2];
 			responseListeners[0] = this;
 			responseListeners[1] = responseListener;
 		} else {
-			responseListeners = new ICallerResponseListener[1];
+			responseListeners = new IResponseListener[1];
 			responseListeners[0] = this;
 		}
 
@@ -131,7 +131,7 @@ public class Synchronizer extends Observable implements IMessageListener, ICalle
 	 * Upload bug reports
 	 * @param responseListeners all response listener
 	 */
-	private void uploadBugReports(ICallerResponseListener[] responseListeners) {
+	private void uploadBugReports(IResponseListener[] responseListeners) {
 		BugReportWebRepo webRepo = BugReportWebRepo.getInstance();
 
 		// Get all existing bug reports
@@ -164,7 +164,7 @@ public class Synchronizer extends Observable implements IMessageListener, ICalle
 	 * @param responseListener the listener that also should get the web response, may be
 	 *        null
 	 */
-	public void synchronizeAll(ICallerResponseListener responseListener) {
+	public void synchronizeAll(IResponseListener responseListener) {
 		mResponseListener = responseListener;
 
 		mSyncQueue.add(SyncTypes.COMMUNITY_RESOURCES);
@@ -348,7 +348,7 @@ public class Synchronizer extends Observable implements IMessageListener, ICalle
 	/** Queue for what to synchronize */
 	private Queue<SyncTypes> mSyncQueue = new LinkedList<>();
 	/** Current response listener */
-	private ICallerResponseListener mResponseListener = null;
+	private IResponseListener mResponseListener = null;
 	/** Resource repository */
 	private ResourceRepo mResourceRepo = ResourceRepo.getInstance();
 	/** Highscore repository */

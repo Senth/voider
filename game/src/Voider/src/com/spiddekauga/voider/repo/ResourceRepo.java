@@ -62,7 +62,7 @@ public class ResourceRepo extends Repo {
 	 * Synchronize downloaded/published resources
 	 * @param responseListeners listens to the web response (when syncing is done)
 	 */
-	public void syncDownload(ICallerResponseListener... responseListeners) {
+	public void syncDownload(IResponseListener... responseListeners) {
 		Date lastSync = ResourceLocalRepo.getSyncDownloadDate();
 		mWebRepo.syncDownloaded(lastSync, addToFront(responseListeners, this));
 	}
@@ -82,7 +82,7 @@ public class ResourceRepo extends Repo {
 	 * @param responseListener listens to the sync web response, may be null
 	 * @param resources all the resource to save.
 	 */
-	public void save(ICallerResponseListener responseListener, IResource... resources) {
+	public void save(IResponseListener responseListener, IResource... resources) {
 
 		boolean upload = false;
 
@@ -122,7 +122,7 @@ public class ResourceRepo extends Repo {
 	 * Synchronizes the user resource revisions, both upload and download
 	 * @param responseListeners listens to the web response (when syncing is done)
 	 */
-	public void syncUserResources(ICallerResponseListener... responseListeners) {
+	public void syncUserResources(IResponseListener... responseListeners) {
 		mWebRepo.syncUserResources(ResourceLocalRepo.getUnsyncedUserResources(), ResourceLocalRepo.getRemovedResources(),
 				ResourceLocalRepo.getSyncUserResourceDate(), addToFront(responseListeners, this));
 	}
@@ -133,7 +133,7 @@ public class ResourceRepo extends Repo {
 	 * @param progressListener listen to upload writing
 	 * @param actorDef the actor to publish
 	 */
-	public void publish(ICallerResponseListener responseListener, IOutstreamProgressListener progressListener, ActorDef actorDef) {
+	public void publish(IResponseListener responseListener, IOutstreamProgressListener progressListener, ActorDef actorDef) {
 		@SuppressWarnings("unchecked")
 		ArrayList<IResource> resources = Pools.arrayList.obtain();
 
@@ -149,7 +149,7 @@ public class ResourceRepo extends Repo {
 	 * @param progressListener listen to upload writing
 	 * @param level the level to publish
 	 */
-	public void publish(ICallerResponseListener responseListener, IOutstreamProgressListener progressListener, Level level) {
+	public void publish(IResponseListener responseListener, IOutstreamProgressListener progressListener, Level level) {
 		@SuppressWarnings("unchecked")
 		ArrayList<IResource> resources = Pools.arrayList.obtain();
 
@@ -166,7 +166,7 @@ public class ResourceRepo extends Repo {
 	 * @param progressListener listen to upload writing
 	 * @param resources all resources to publish
 	 */
-	private void publish(ICallerResponseListener responseListener, IOutstreamProgressListener progressListener, ArrayList<IResource> resources) {
+	private void publish(IResponseListener responseListener, IOutstreamProgressListener progressListener, ArrayList<IResource> resources) {
 		mWebRepo.publish(resources, progressListener, this, responseListener);
 	}
 
@@ -335,7 +335,7 @@ public class ResourceRepo extends Repo {
 	 * @param responseListener listens to the web response
 	 * @param resourceId the resource to download
 	 */
-	public void download(ICallerResponseListener responseListener, UUID resourceId) {
+	public void download(IResponseListener responseListener, UUID resourceId) {
 		// Download if we don't have the resource already
 		if (!ResourceLocalRepo.exists(resourceId)) {
 			mWebRepo.download(resourceId, this, responseListener);

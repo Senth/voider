@@ -14,7 +14,7 @@ import com.spiddekauga.voider.network.entities.method.IMethodEntity;
  */
 public class BugReportWebRepo extends WebRepo {
 	@Override
-	protected void handleResponse(IMethodEntity methodEntity, IEntity response, ICallerResponseListener[] callerResponseListeners) {
+	protected void handleResponse(IMethodEntity methodEntity, IEntity response, IResponseListener[] callerResponseListeners) {
 		IEntity responseToSend = null;
 
 		if (methodEntity instanceof BugReportMethod) {
@@ -37,7 +37,7 @@ public class BugReportWebRepo extends WebRepo {
 	 * @param bugReport the bug report to send to the server
 	 * @param responseListeners listens to the web response
 	 */
-	public void sendBugReport(BugReportEntity bugReport, ICallerResponseListener... responseListeners) {
+	public void sendBugReport(BugReportEntity bugReport, IResponseListener... responseListeners) {
 		BugReportMethod bugReportMethod = new BugReportMethod();
 		bugReportMethod.bugs.add(bugReport);
 
@@ -49,7 +49,7 @@ public class BugReportWebRepo extends WebRepo {
 	 * @param bugReports all bug report to send to the server
 	 * @param responseListeners listens to the web response
 	 */
-	public void sendBugReport(ArrayList<BugReportEntity> bugReports, ICallerResponseListener... responseListeners) {
+	public void sendBugReport(ArrayList<BugReportEntity> bugReports, IResponseListener... responseListeners) {
 		BugReportMethod bugReportMethod = new BugReportMethod();
 		bugReportMethod.bugs = bugReports;
 

@@ -8,7 +8,7 @@ import com.spiddekauga.voider.network.entities.method.IMethodEntity;
  * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public interface ICallerResponseListener {
+public interface IResponseListener {
 	/**
 	 * Handle the web response
 	 * @param method the method that was called on the server

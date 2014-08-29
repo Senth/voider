@@ -23,7 +23,7 @@ import com.spiddekauga.voider.game.actors.ActorDef;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.method.IMethodEntity;
 import com.spiddekauga.voider.network.entities.method.PublishMethodResponse;
-import com.spiddekauga.voider.repo.ICallerResponseListener;
+import com.spiddekauga.voider.repo.IResponseListener;
 import com.spiddekauga.voider.repo.InternalNames;
 import com.spiddekauga.voider.repo.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.ResourceLocalRepo;
@@ -40,7 +40,7 @@ import com.spiddekauga.voider.utils.User;
  * Common class for all editors
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public abstract class Editor extends WorldScene implements IEditor, ICallerResponseListener, IOutstreamProgressListener, Observer {
+public abstract class Editor extends WorldScene implements IEditor, IResponseListener, IOutstreamProgressListener, Observer {
 
 	/**
 	 * @param gui GUI to be used with the editor

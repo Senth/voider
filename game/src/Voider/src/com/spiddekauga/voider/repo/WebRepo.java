@@ -30,32 +30,30 @@ abstract class WebRepo {
 	/**
 	 * Creates a new thread that will send and receive a HTTP request
 	 * @param methodEntity the entity to send to the server
-	 * @param callerResponseListeners class that invoked the WebRepo
+	 * @param responseListeners class that invoked the WebRepo
 	 */
-	protected void sendInNewThread(IMethodEntity methodEntity, ICallerResponseListener... callerResponseListeners) {
-		sendInNewThread(methodEntity, null, null, callerResponseListeners);
+	protected void sendInNewThread(IMethodEntity methodEntity, IResponseListener... responseListeners) {
+		sendInNewThread(methodEntity, null, null, responseListeners);
 	}
 
 	/**
 	 * Creates a new thread that will send and receive a HTTP request
 	 * @param methodEntity the entity to send to the server
 	 * @param progressListener send upload progress to this listener
-	 * @param callerResponseListeners class that invoked the WebRepo
+	 * @param responseListeners class that invoked the WebRepo
 	 */
-	protected void sendInNewThread(IMethodEntity methodEntity, IOutstreamProgressListener progressListener,
-			ICallerResponseListener... callerResponseListeners) {
-		sendInNewThread(methodEntity, null, progressListener, callerResponseListeners);
+	protected void sendInNewThread(IMethodEntity methodEntity, IOutstreamProgressListener progressListener, IResponseListener... responseListeners) {
+		sendInNewThread(methodEntity, null, progressListener, responseListeners);
 	}
 
 	/**
 	 * Creates a new thread that will send and receive a HTTP request
 	 * @param methodEntity the entity to send to the server
 	 * @param files all the files to upload
-	 * @param callerResponseListeners class that invoked the WebRepo
+	 * @param responseListeners class that invoked the WebRepo
 	 */
-	protected void sendInNewThread(IMethodEntity methodEntity, ArrayList<FieldNameFileWrapper> files,
-			ICallerResponseListener... callerResponseListeners) {
-		sendInNewThread(methodEntity, files, null, callerResponseListeners);
+	protected void sendInNewThread(IMethodEntity methodEntity, ArrayList<FieldNameFileWrapper> files, IResponseListener... responseListeners) {
+		sendInNewThread(methodEntity, files, null, responseListeners);
 	}
 
 	/**
@@ -64,11 +62,11 @@ abstract class WebRepo {
 	 * @param files all the files to upload * @param progressListener send upload progress
 	 *        to this listener
 	 * @param progressListener send upload progress to this listener
-	 * @param callerResponseListeners class that invoked the WebRepo
+	 * @param responseListeners class that invoked the WebRepo
 	 */
 	protected void sendInNewThread(IMethodEntity methodEntity, ArrayList<FieldNameFileWrapper> files, IOutstreamProgressListener progressListener,
-			ICallerResponseListener... callerResponseListeners) {
-		Thread thread = new ThreadWrapper(callerResponseListeners, this, methodEntity, files, progressListener);
+			IResponseListener... responseListeners) {
+		Thread thread = new ThreadWrapper(responseListeners, this, methodEntity, files, progressListener);
 		thread.start();
 	}
 
@@ -76,9 +74,9 @@ abstract class WebRepo {
 	 * Handle the response from a thread
 	 * @param methodEntity the method that was called
 	 * @param response the response from the thread
-	 * @param callerResponseListeners class that invoked the command
+	 * @param responseListeners class that invoked the command
 	 */
-	protected abstract void handleResponse(IMethodEntity methodEntity, IEntity response, ICallerResponseListener[] callerResponseListeners);
+	protected abstract void handleResponse(IMethodEntity methodEntity, IEntity response, IResponseListener[] responseListeners);
 
 	/**
 	 * Serializes and sends the entity
@@ -215,11 +213,11 @@ abstract class WebRepo {
 	 * Send responses to caller listeners
 	 * @param methodEntity the method that was called
 	 * @param response the response to send
-	 * @param callerResponseListeners class that invoked the WebRepeo
+	 * @param responseListeners class that invoked the WebRepeo
 	 */
-	protected static void sendResponseToListeners(IMethodEntity methodEntity, IEntity response, ICallerResponseListener[] callerResponseListeners) {
+	protected static void sendResponseToListeners(IMethodEntity methodEntity, IEntity response, IResponseListener[] responseListeners) {
 		if (response != null) {
-			for (ICallerResponseListener responseListener : callerResponseListeners) {
+			for (IResponseListener responseListener : responseListeners) {
 				responseListener.handleWebResponse(methodEntity, response);
 			}
 		}
@@ -231,17 +229,17 @@ abstract class WebRepo {
 	private static class ThreadWrapper extends Thread {
 		/**
 		 * Constructs a web thread
-		 * @param callerResponseListeners class that invoked the WebRepeo
+		 * @param responseListeners class that invoked the WebRepeo
 		 * @param webRepo the web repository to send the response to
 		 * @param methodEntity the method to send
 		 * @param files all the files to send, set to null to not send any files
 		 * @param progressListener send upload progress to this listener
 		 */
-		ThreadWrapper(ICallerResponseListener[] callerResponseListeners, WebRepo webRepo, IMethodEntity methodEntity,
-				ArrayList<FieldNameFileWrapper> files, IOutstreamProgressListener progressListener) {
+		ThreadWrapper(IResponseListener[] responseListeners, WebRepo webRepo, IMethodEntity methodEntity, ArrayList<FieldNameFileWrapper> files,
+				IOutstreamProgressListener progressListener) {
 			mMethodEntity = methodEntity;
 			mWebRepo = webRepo;
-			mCallerRepsonseListeners = callerResponseListeners;
+			mResponseListeners = responseListeners;
 			mFiles = files;
 			mProgressListener = progressListener;
 		}
@@ -256,7 +254,7 @@ abstract class WebRepo {
 					response = serializeAndSend(mMethodEntity, mProgressListener, mFiles);
 				}
 
-				mWebRepo.handleResponse(mMethodEntity, response, mCallerRepsonseListeners);
+				mWebRepo.handleResponse(mMethodEntity, response, mResponseListeners);
 			} catch (RuntimeException e) {
 				if (Config.Debug.EXCEPTION_HANDLER && !(mMethodEntity instanceof BugReportMethod)) {
 					SceneSwitcher.handleException(e);
@@ -273,7 +271,7 @@ abstract class WebRepo {
 		/** The web repository to send the response to */
 		WebRepo mWebRepo;
 		/** Caller instance, i.e. the class that invoked the WebRepo */
-		ICallerResponseListener[] mCallerRepsonseListeners;
+		IResponseListener[] mResponseListeners;
 		/** Progress listener */
 		IOutstreamProgressListener mProgressListener;
 	}

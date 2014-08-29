@@ -5,7 +5,7 @@ import com.spiddekauga.voider.menu.LoginScene;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.method.IMethodEntity;
 import com.spiddekauga.voider.network.entities.method.LogoutMethodResponse;
-import com.spiddekauga.voider.repo.ICallerResponseListener;
+import com.spiddekauga.voider.repo.IResponseListener;
 import com.spiddekauga.voider.repo.UserLocalRepo;
 import com.spiddekauga.voider.repo.UserWebRepo;
 import com.spiddekauga.voider.scene.SceneSwitcher;
@@ -15,7 +15,7 @@ import com.spiddekauga.voider.utils.User;
  * Logs out the user and returns to the login screen.
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public class CUserLogout extends Command implements ICallerResponseListener {
+public class CUserLogout extends Command implements IResponseListener {
 	@Override
 	public boolean execute() {
 		User user = User.getGlobalUser();

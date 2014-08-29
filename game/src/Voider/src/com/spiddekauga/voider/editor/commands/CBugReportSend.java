@@ -14,7 +14,7 @@ import com.spiddekauga.voider.network.entities.method.BugReportMethodResponse;
 import com.spiddekauga.voider.network.entities.method.IMethodEntity;
 import com.spiddekauga.voider.network.entities.method.LoginMethodResponse;
 import com.spiddekauga.voider.repo.BugReportWebRepo;
-import com.spiddekauga.voider.repo.ICallerResponseListener;
+import com.spiddekauga.voider.repo.IResponseListener;
 import com.spiddekauga.voider.repo.ResourceRepo;
 import com.spiddekauga.voider.repo.UserLocalRepo;
 import com.spiddekauga.voider.repo.UserWebRepo;
@@ -27,7 +27,7 @@ import com.spiddekauga.voider.utils.User;
  * Sends a bug report to the server
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public class CBugReportSend extends Command implements ICallerResponseListener {
+public class CBugReportSend extends Command implements IResponseListener {
 	/**
 	 * Creates a command that will send a bug report.
 	 * @param gui the GUI to show progress and success on

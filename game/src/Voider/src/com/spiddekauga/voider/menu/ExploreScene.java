@@ -17,7 +17,7 @@ import com.spiddekauga.voider.network.entities.method.LevelGetAllMethod.SortOrde
 import com.spiddekauga.voider.network.entities.method.LevelGetAllMethodResponse;
 import com.spiddekauga.voider.network.entities.method.ResourceDownloadMethod;
 import com.spiddekauga.voider.network.entities.method.ResourceDownloadMethodResponse;
-import com.spiddekauga.voider.repo.ICallerResponseListener;
+import com.spiddekauga.voider.repo.IResponseListener;
 import com.spiddekauga.voider.repo.InternalNames;
 import com.spiddekauga.voider.repo.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.ResourceLocalRepo;
@@ -33,7 +33,7 @@ import com.spiddekauga.voider.utils.Pools;
  * Scene for exploring new content
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public class ExploreScene extends Scene implements ICallerResponseListener {
+public class ExploreScene extends Scene implements IResponseListener {
 	/**
 	 * Default constructor
 	 */

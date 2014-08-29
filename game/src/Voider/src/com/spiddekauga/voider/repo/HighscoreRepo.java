@@ -5,9 +5,10 @@ import java.util.UUID;
 
 import com.spiddekauga.voider.network.entities.HighscoreSyncEntity;
 import com.spiddekauga.voider.network.entities.IEntity;
-import com.spiddekauga.voider.network.entities.method.IMethodEntity;
+import com.spiddekauga.voider.network.entities.method.HighscoreGetMethod.Fetch;
 import com.spiddekauga.voider.network.entities.method.HighscoreSyncMethod;
 import com.spiddekauga.voider.network.entities.method.HighscoreSyncMethodResponse;
+import com.spiddekauga.voider.network.entities.method.IMethodEntity;
 import com.spiddekauga.voider.utils.Synchronizer;
 import com.spiddekauga.voider.utils.User;
 
@@ -37,7 +38,7 @@ public class HighscoreRepo extends Repo {
 	 * Synchronize highscores. Should preferably only be called from Synchronizer
 	 * @param responseListeners listens to the web responce (when syncing is done)
 	 */
-	public void sync(ICallerResponseListener... responseListeners) {
+	public void sync(IResponseListener... responseListeners) {
 		ArrayList<HighscoreSyncEntity> unsyncedHighscores = mLocalRepo.getUnsynced();
 		mWebRepo.sync(mLocalRepo.getSyncDate(), unsyncedHighscores, addToFront(responseListeners, this));
 	}
@@ -55,6 +56,33 @@ public class HighscoreRepo extends Repo {
 				sync(Synchronizer.getInstance());
 			}
 		}
+	}
+
+	/**
+	 * Get first place highscore from the server
+	 * @param levelId id of the level
+	 * @param responseListeners listens to the web response
+	 */
+	void getFirstPlace(UUID levelId, IResponseListener... responseListeners) {
+		mWebRepo.get(levelId, Fetch.FIRST_PLACE, responseListeners);
+	}
+
+	/**
+	 * Get top scores from the server
+	 * @param levelId id of the level
+	 * @param responseListeners listens to the web response
+	 */
+	void getTopScores(UUID levelId, IResponseListener... responseListeners) {
+		mWebRepo.get(levelId, Fetch.TOP_SCORES, responseListeners);
+	}
+
+	/**
+	 * Get player highscore and those before and after the user, including the first place
+	 * @param levelId id of the level
+	 * @param responseListeners listens to the web response
+	 */
+	void getPlayerServerScore(UUID levelId, IResponseListener... responseListeners) {
+		mWebRepo.get(levelId, Fetch.USER_SCORE, responseListeners);
 	}
 
 	/**

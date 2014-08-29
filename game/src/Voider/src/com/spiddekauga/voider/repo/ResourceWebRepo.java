@@ -10,6 +10,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.Disposable;
 import com.spiddekauga.utils.IOutstreamProgressListener;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.LevelDef;
@@ -27,6 +29,8 @@ import com.spiddekauga.voider.network.entities.ResourceRevisionEntity;
 import com.spiddekauga.voider.network.entities.Tags;
 import com.spiddekauga.voider.network.entities.UploadTypes;
 import com.spiddekauga.voider.network.entities.method.BlobDownloadMethod;
+import com.spiddekauga.voider.network.entities.method.DownloadSyncMethod;
+import com.spiddekauga.voider.network.entities.method.DownloadSyncMethodResponse;
 import com.spiddekauga.voider.network.entities.method.IMethodEntity;
 import com.spiddekauga.voider.network.entities.method.LevelGetAllMethod;
 import com.spiddekauga.voider.network.entities.method.LevelGetAllMethod.SortOrders;
@@ -36,8 +40,6 @@ import com.spiddekauga.voider.network.entities.method.PublishMethodResponse;
 import com.spiddekauga.voider.network.entities.method.PublishMethodResponse.Statuses;
 import com.spiddekauga.voider.network.entities.method.ResourceDownloadMethod;
 import com.spiddekauga.voider.network.entities.method.ResourceDownloadMethodResponse;
-import com.spiddekauga.voider.network.entities.method.DownloadSyncMethod;
-import com.spiddekauga.voider.network.entities.method.DownloadSyncMethodResponse;
 import com.spiddekauga.voider.network.entities.method.UserResourcesSyncMethod;
 import com.spiddekauga.voider.network.entities.method.UserResourcesSyncMethodResponse;
 import com.spiddekauga.voider.repo.WebGateway.FieldNameFileWrapper;
@@ -75,7 +77,7 @@ public class ResourceWebRepo extends WebRepo {
 	 * @param lastSync last synchronized date
 	 * @param responseListeners listens to the web response.
 	 */
-	void syncDownloaded(Date lastSync, ICallerResponseListener... responseListeners) {
+	void syncDownloaded(Date lastSync, IResponseListener... responseListeners) {
 		DownloadSyncMethod method = new DownloadSyncMethod();
 		method.lastSync = lastSync;
 
@@ -90,7 +92,7 @@ public class ResourceWebRepo extends WebRepo {
 	 * @param responseListeners listens to the web response
 	 */
 	void syncUserResources(HashMap<UUID, ResourceRevisionEntity> uploadResources, ArrayList<UUID> removeResources, Date lastSync,
-			ICallerResponseListener... responseListeners) {
+			IResponseListener... responseListeners) {
 		UserResourcesSyncMethod method = new UserResourcesSyncMethod();
 		method.lastSync = lastSync;
 		method.resourceToRemove = removeResources;
@@ -109,7 +111,7 @@ public class ResourceWebRepo extends WebRepo {
 	 * @param resourceId id of the resource to download
 	 * @param responseListeners listens to the web response
 	 */
-	void download(UUID resourceId, ICallerResponseListener... responseListeners) {
+	void download(UUID resourceId, IResponseListener... responseListeners) {
 		ResourceDownloadMethod method = new ResourceDownloadMethod();
 		method.resourceId = resourceId;
 
@@ -122,7 +124,7 @@ public class ResourceWebRepo extends WebRepo {
 	 * @param progressListener send upload progress to this listener
 	 * @param responseListeners listens to the web response
 	 */
-	void publish(ArrayList<IResource> resources, IOutstreamProgressListener progressListener, ICallerResponseListener... responseListeners) {
+	void publish(ArrayList<IResource> resources, IOutstreamProgressListener progressListener, IResponseListener... responseListeners) {
 		PublishMethod method = createPublishMethod(resources);
 		ArrayList<FieldNameFileWrapper> files = createFieldNameFiles(resources);
 
@@ -250,7 +252,7 @@ public class ResourceWebRepo extends WebRepo {
 	}
 
 	@Override
-	protected void handleResponse(IMethodEntity methodEntity, IEntity response, ICallerResponseListener[] callerResponseListeners) {
+	protected void handleResponse(IMethodEntity methodEntity, IEntity response, IResponseListener[] callerResponseListeners) {
 		IEntity responseToSend = null;
 
 		// Publish
@@ -515,7 +517,7 @@ public class ResourceWebRepo extends WebRepo {
 	 * @param tags all tags the levels have to have
 	 * @return method that was created and sent
 	 */
-	public synchronized LevelGetAllMethod getLevels(ICallerResponseListener callerResponseListener, SortOrders sort, ArrayList<Tags> tags) {
+	public synchronized LevelGetAllMethod getLevels(IResponseListener callerResponseListener, SortOrders sort, ArrayList<Tags> tags) {
 		LevelGetAllMethod method = new LevelGetAllMethod();
 		method.sort = sort;
 		method.tagFilter = tags;
@@ -527,7 +529,7 @@ public class ResourceWebRepo extends WebRepo {
 			LevelCache levelCache = tagCaches.get(method.tagFilter);
 			if (levelCache != null) {
 				// Remove cache if outdated
-				if (isCacheOutdated(levelCache)) {
+				if (levelCache.isOutdated()) {
 					levelCache.dispose();
 					tagCaches.remove(method.tagFilter);
 				}
@@ -552,7 +554,7 @@ public class ResourceWebRepo extends WebRepo {
 	 * @param searchString the string to search for in the levels
 	 * @return method that was created and sent
 	 */
-	public synchronized LevelGetAllMethod getLevels(ICallerResponseListener callerResponseListener, String searchString) {
+	public synchronized LevelGetAllMethod getLevels(IResponseListener callerResponseListener, String searchString) {
 		LevelGetAllMethod method = new LevelGetAllMethod();
 		method.searchString = searchString;
 		method.tagFilter = new ArrayList<>();
@@ -561,7 +563,7 @@ public class ResourceWebRepo extends WebRepo {
 		LevelCache levelCache = mSearchCache.get(searchString);
 		if (levelCache != null) {
 			// Remove cache if outdated
-			if (isCacheOutdated(levelCache)) {
+			if (levelCache.isOutdated()) {
 				levelCache.dispose();
 				mSearchCache.remove(searchString);
 			}
@@ -724,17 +726,6 @@ public class ResourceWebRepo extends WebRepo {
 		return levelCache != null;
 	}
 
-	/**
-	 * Checks if a cache is outdated
-	 * @param cache check if this cache is outdated
-	 * @return true if the cache is outdated
-	 */
-	private boolean isCacheOutdated(Cache cache) {
-		long currentTime = new Date().getTime();
-		long createdTime = cache.created.getTime();
-		return createdTime + Config.Cache.RESOURCE_BROWSE_TIME * 1000 < currentTime;
-	}
-
 	/** Instance of this class */
 	private static ResourceWebRepo mInstance = null;
 
@@ -743,4 +734,40 @@ public class ResourceWebRepo extends WebRepo {
 	private Map<String, LevelCache> mSearchCache = new HashMap<>();
 	/** Sort cache */
 	private Map<SortOrders, HashMap<ArrayList<Tags>, LevelCache>> mSortCache = new HashMap<>();
+
+	/**
+	 * Level cache when getting levels
+	 * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+	 */
+	private class LevelCache extends CacheEntity implements Disposable {
+		/**
+		 * Create level cache with default cache time
+		 */
+		LevelCache() {
+			super(Config.Cache.RESOURCE_BROWSE_TIME);
+		}
+
+		/** All the levels in the cache */
+		@SuppressWarnings("unchecked") ArrayList<LevelInfoEntity> levels = Pools.arrayList.obtain();
+		/** Server cursor to continue the cache with */
+		String serverCursor = null;
+		/** True if we have fetched all */
+		boolean fetchedAll = false;
+
+		@Override
+		public void dispose() {
+			if (levels != null) {
+				// Dispose drawables
+				for (LevelInfoEntity levelInfoEntity : levels) {
+					if (levelInfoEntity.defEntity.drawable instanceof TextureRegionDrawable) {
+						((TextureRegionDrawable) levelInfoEntity.defEntity.drawable).getRegion().getTexture().dispose();
+					}
+					levelInfoEntity.defEntity.drawable = null;
+				}
+
+
+				Pools.arrayList.free(levels);
+			}
+		}
+	}
 }

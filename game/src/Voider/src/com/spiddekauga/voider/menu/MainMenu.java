@@ -25,7 +25,7 @@ import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.method.IMethodEntity;
 import com.spiddekauga.voider.network.entities.method.LogoutMethodResponse;
 import com.spiddekauga.voider.repo.ExternalTypes;
-import com.spiddekauga.voider.repo.ICallerResponseListener;
+import com.spiddekauga.voider.repo.IResponseListener;
 import com.spiddekauga.voider.repo.InternalNames;
 import com.spiddekauga.voider.repo.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.ResourceLocalRepo;
@@ -44,7 +44,7 @@ import com.spiddekauga.voider.utils.User;
  * Main menu of the scene
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public class MainMenu extends Scene implements ICallerResponseListener, Observer {
+public class MainMenu extends Scene implements IResponseListener, Observer {
 	/**
 	 * Default constructor for main menu
 	 */

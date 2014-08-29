@@ -59,7 +59,7 @@ import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.method.IMethodEntity;
 import com.spiddekauga.voider.network.entities.method.PublishMethodResponse;
 import com.spiddekauga.voider.repo.ExternalTypes;
-import com.spiddekauga.voider.repo.ICallerResponseListener;
+import com.spiddekauga.voider.repo.IResponseListener;
 import com.spiddekauga.voider.repo.InternalNames;
 import com.spiddekauga.voider.repo.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.ResourceLocalRepo;
@@ -81,7 +81,7 @@ import com.spiddekauga.voider.utils.Synchronizer.SyncEvents;
  * The level editor scene
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public class LevelEditor extends Editor implements IResourceChangeEditor, ISelectionListener, ICallerResponseListener, IOutstreamProgressListener {
+public class LevelEditor extends Editor implements IResourceChangeEditor, ISelectionListener, IResponseListener, IOutstreamProgressListener {
 	/**
 	 * Constructor for the level editor
 	 */

@@ -105,6 +105,10 @@ public class Config {
 		 * in seconds
 		 */
 		public static final int RESOURCE_BROWSE_TIME = 300;
+		/**
+		 * Highscore cache, in seconds
+		 */
+		public static final int HIGHSCORE_TIME = 45;
 	}
 
 	/**
