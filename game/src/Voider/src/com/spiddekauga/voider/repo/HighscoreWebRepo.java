@@ -6,8 +6,8 @@ import java.util.Date;
 import com.spiddekauga.voider.network.entities.HighscoreSyncEntity;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.method.IMethodEntity;
-import com.spiddekauga.voider.network.entities.method.SyncHighscoreMethod;
-import com.spiddekauga.voider.network.entities.method.SyncHighscoreMethodResponse;
+import com.spiddekauga.voider.network.entities.method.HighscoreSyncMethod;
+import com.spiddekauga.voider.network.entities.method.HighscoreSyncMethodResponse;
 
 /**
  * Web repository for highscores
@@ -38,7 +38,7 @@ class HighscoreWebRepo extends WebRepo {
 	 * @param responseListeners listens to the web response
 	 */
 	void sync(Date lastSync, ArrayList<HighscoreSyncEntity> highscores, ICallerResponseListener... responseListeners) {
-		SyncHighscoreMethod method = new SyncHighscoreMethod();
+		HighscoreSyncMethod method = new HighscoreSyncMethod();
 		method.lastSync = lastSync;
 		method.highscores = highscores;
 
@@ -49,7 +49,7 @@ class HighscoreWebRepo extends WebRepo {
 	protected void handleResponse(IMethodEntity methodEntity, IEntity response, ICallerResponseListener[] callerResponseListeners) {
 		IEntity responseToSend = null;
 
-		if (methodEntity instanceof SyncHighscoreMethod) {
+		if (methodEntity instanceof HighscoreSyncMethod) {
 			responseToSend = handleSyncResponse(response);
 		}
 
@@ -63,11 +63,11 @@ class HighscoreWebRepo extends WebRepo {
 	 * @return a correct response for syncing highscores
 	 */
 	private IEntity handleSyncResponse(IEntity response) {
-		if (response instanceof SyncHighscoreMethodResponse) {
+		if (response instanceof HighscoreSyncMethodResponse) {
 			return response;
 		} else {
-			SyncHighscoreMethodResponse methodResponse = new SyncHighscoreMethodResponse();
-			methodResponse.status = SyncHighscoreMethodResponse.Statuses.FAILED_CONNECTION;
+			HighscoreSyncMethodResponse methodResponse = new HighscoreSyncMethodResponse();
+			methodResponse.status = HighscoreSyncMethodResponse.Statuses.FAILED_CONNECTION;
 			return methodResponse;
 		}
 	}

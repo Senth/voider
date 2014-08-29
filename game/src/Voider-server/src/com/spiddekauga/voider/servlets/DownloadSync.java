@@ -15,9 +15,9 @@ import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.ResourceBlobEntity;
 import com.spiddekauga.voider.network.entities.UploadTypes;
 import com.spiddekauga.voider.network.entities.method.IMethodEntity;
-import com.spiddekauga.voider.network.entities.method.SyncDownloadMethod;
-import com.spiddekauga.voider.network.entities.method.SyncDownloadMethodResponse;
-import com.spiddekauga.voider.network.entities.method.SyncDownloadMethodResponse.Statuses;
+import com.spiddekauga.voider.network.entities.method.DownloadSyncMethod;
+import com.spiddekauga.voider.network.entities.method.DownloadSyncMethodResponse;
+import com.spiddekauga.voider.network.entities.method.DownloadSyncMethodResponse.Statuses;
 import com.spiddekauga.voider.server.util.ResourceUtils;
 import com.spiddekauga.voider.server.util.VoiderServlet;
 
@@ -27,7 +27,7 @@ import com.spiddekauga.voider.server.util.VoiderServlet;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
-public class SyncDownload extends VoiderServlet {
+public class DownloadSync extends VoiderServlet {
 	@Override
 	protected void onInit() {
 		// Does nothing
@@ -35,13 +35,13 @@ public class SyncDownload extends VoiderServlet {
 
 	@Override
 	protected IEntity onRequest(IMethodEntity methodEntity) throws ServletException, IOException {
-		SyncDownloadMethodResponse response = new SyncDownloadMethodResponse();
+		DownloadSyncMethodResponse response = new DownloadSyncMethodResponse();
 		response.status = Statuses.FAILED_INTERNAL;
 
 		if (mUser.isLoggedIn()) {
-			if (methodEntity instanceof SyncDownloadMethod) {
+			if (methodEntity instanceof DownloadSyncMethod) {
 				response.syncTime = new Date();
-				response.resources = getResourcesToSync(((SyncDownloadMethod) methodEntity).lastSync);
+				response.resources = getResourcesToSync(((DownloadSyncMethod) methodEntity).lastSync);
 				response.status = Statuses.SUCCESS;
 			}
 		} else {

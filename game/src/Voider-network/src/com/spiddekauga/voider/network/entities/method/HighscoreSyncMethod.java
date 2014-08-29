@@ -10,7 +10,7 @@ import com.spiddekauga.voider.network.entities.HighscoreSyncEntity;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
-public class SyncHighscoreMethod implements IMethodEntity {
+public class HighscoreSyncMethod implements IMethodEntity {
 	/** Highscores to syncronize */
 	public ArrayList<HighscoreSyncEntity> highscores = new ArrayList<>();
 	/** Last sync time */
@@ -18,6 +18,6 @@ public class SyncHighscoreMethod implements IMethodEntity {
 
 	@Override
 	public String getMethodName() {
-		return "sync-highscore";
+		return "highscore-sync";
 	}
 }

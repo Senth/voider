@@ -13,7 +13,7 @@ import com.spiddekauga.voider.network.entities.ResourceBlobEntity;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
-public class SyncDownloadMethodResponse implements IEntity, ISuccessStatuses {
+public class DownloadSyncMethodResponse implements IEntity, ISuccessStatuses {
 	/** All published resources to download */
 	public ArrayList<ResourceBlobEntity> resources = null;
 	/** Sync time */

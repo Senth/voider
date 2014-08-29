@@ -15,7 +15,7 @@ import com.spiddekauga.voider.network.entities.ResourceConflictEntity;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
-public class SyncUserResourcesMethodResponse implements IEntity, ISuccessStatuses {
+public class UserResourcesSyncMethodResponse implements IEntity, ISuccessStatuses {
 	/** Upload status */
 	public UploadStatuses uploadStatus = null;
 	/** Download status */

@@ -93,12 +93,12 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 		<url-pattern>/resource-download</url-pattern>
 	</servlet-mapping>
 	<servlet>
-		<servlet-name>SyncDownload</servlet-name>
-		<servlet-class>com.spiddekauga.voider.servlets.SyncDownload</servlet-class>
+		<servlet-name>DownloadSync</servlet-name>
+		<servlet-class>com.spiddekauga.voider.servlets.DownloadSync</servlet-class>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>SyncDownload</servlet-name>
-		<url-pattern>/sync-download</url-pattern>
+		<servlet-name>DownloadSync</servlet-name>
+		<url-pattern>/download-sync</url-pattern>
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>ChatCreate</servlet-name>
@@ -117,20 +117,20 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 		<url-pattern>/_ah/channel/connected/</url-pattern>
 	</servlet-mapping>
 	<servlet>
-		<servlet-name>SyncUserResources</servlet-name>
-		<servlet-class>com.spiddekauga.voider.servlets.SyncUserResources</servlet-class>
+		<servlet-name>UserResourcesSync</servlet-name>
+		<servlet-class>com.spiddekauga.voider.servlets.UserResourcesSync</servlet-class>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>SyncUserResources</servlet-name>
-		<url-pattern>/sync-user-resources</url-pattern>
+		<servlet-name>UserResourcesSync</servlet-name>
+		<url-pattern>/user-resources-sync</url-pattern>
 	</servlet-mapping>
 	<servlet>
-		<servlet-name>SyncHighscore</servlet-name>
-		<servlet-class>com.spiddekauga.voider.servlets.SyncHighscore</servlet-class>
+		<servlet-name>HighscoreSync</servlet-name>
+		<servlet-class>com.spiddekauga.voider.servlets.HighscoreSync</servlet-class>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>SyncHighscore</servlet-name>
-		<url-pattern>/sync-highscore</url-pattern>
+		<servlet-name>HighscoreSync</servlet-name>
+		<url-pattern>/highscore-sync</url-pattern>
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>HighscoreGet</servlet-name>

@@ -31,9 +31,9 @@ import com.spiddekauga.voider.network.entities.ResourceRevisionEntity;
 import com.spiddekauga.voider.network.entities.RevisionEntity;
 import com.spiddekauga.voider.network.entities.UploadTypes;
 import com.spiddekauga.voider.network.entities.method.IMethodEntity;
-import com.spiddekauga.voider.network.entities.method.SyncUserResourcesMethod;
-import com.spiddekauga.voider.network.entities.method.SyncUserResourcesMethodResponse;
-import com.spiddekauga.voider.network.entities.method.SyncUserResourcesMethodResponse.UploadStatuses;
+import com.spiddekauga.voider.network.entities.method.UserResourcesSyncMethod;
+import com.spiddekauga.voider.network.entities.method.UserResourcesSyncMethodResponse;
+import com.spiddekauga.voider.network.entities.method.UserResourcesSyncMethodResponse.UploadStatuses;
 import com.spiddekauga.voider.server.util.VoiderServlet;
 
 /**
@@ -41,14 +41,14 @@ import com.spiddekauga.voider.server.util.VoiderServlet;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
-public class SyncUserResources extends VoiderServlet {
+public class UserResourcesSync extends VoiderServlet {
 
 	/**
 	 * Initializes the sync
 	 */
 	@Override
 	protected void onInit() {
-		mResponse = new SyncUserResourcesMethodResponse();
+		mResponse = new UserResourcesSyncMethodResponse();
 		mResponse.uploadStatus = UploadStatuses.FAILED_INTERNAL;
 		mSyncDate = new Date();
 	}
@@ -60,12 +60,12 @@ public class SyncUserResources extends VoiderServlet {
 			return mResponse;
 		}
 
-		if (methodEntity instanceof SyncUserResourcesMethod) {
-			checkForConflicts((SyncUserResourcesMethod) methodEntity);
-			syncDeletedToClient((SyncUserResourcesMethod) methodEntity);
-			syncDeletedToServer((SyncUserResourcesMethod) methodEntity);
-			syncNewToClient((SyncUserResourcesMethod) methodEntity);
-			syncNewToServer((SyncUserResourcesMethod) methodEntity);
+		if (methodEntity instanceof UserResourcesSyncMethod) {
+			checkForConflicts((UserResourcesSyncMethod) methodEntity);
+			syncDeletedToClient((UserResourcesSyncMethod) methodEntity);
+			syncDeletedToServer((UserResourcesSyncMethod) methodEntity);
+			syncNewToClient((UserResourcesSyncMethod) methodEntity);
+			syncNewToServer((UserResourcesSyncMethod) methodEntity);
 			mResponse.syncTime = mSyncDate;
 
 			// Send sync message
@@ -84,7 +84,7 @@ public class SyncUserResources extends VoiderServlet {
 	 * Check for conflicts
 	 * @param methodEntity parameters sent to the server
 	 */
-	private void checkForConflicts(SyncUserResourcesMethod methodEntity) {
+	private void checkForConflicts(UserResourcesSyncMethod methodEntity) {
 		// Iterate through each resource id
 		for (ResourceRevisionEntity entity : methodEntity.resources) {
 			FilterWrapper resourceProp = new FilterWrapper("resource_id", entity.resourceId);
@@ -115,7 +115,7 @@ public class SyncUserResources extends VoiderServlet {
 	 * Delete the resources sent from the server
 	 * @param methodEntity parameters sent to the server
 	 */
-	private void syncDeletedToServer(SyncUserResourcesMethod methodEntity) {
+	private void syncDeletedToServer(UserResourcesSyncMethod methodEntity) {
 		// Find all revisions of the resources and delete them
 		for (UUID removeId : methodEntity.resourceToRemove) {
 			// Delete the revisions
@@ -136,7 +136,7 @@ public class SyncUserResources extends VoiderServlet {
 	 * Synchronize the upload
 	 * @param methodEntity parameters sent to the server
 	 */
-	private void syncNewToServer(SyncUserResourcesMethod methodEntity) {
+	private void syncNewToServer(UserResourcesSyncMethod methodEntity) {
 		Map<UUID, Map<Integer, BlobKey>> blobResources = getUploadedRevisionBlobs();
 
 		// Iterate through each resource id
@@ -165,7 +165,7 @@ public class SyncUserResources extends VoiderServlet {
 	 * Send deleted resources to the client
 	 * @param methodEntity parameters sent to the server
 	 */
-	private void syncDeletedToClient(SyncUserResourcesMethod methodEntity) {
+	private void syncDeletedToClient(UserResourcesSyncMethod methodEntity) {
 		// Get all resources that were deleted after sync
 		Query query = new Query("user_resources_deleted", mUser.getKey());
 
@@ -189,7 +189,7 @@ public class SyncUserResources extends VoiderServlet {
 	 * Add resources that should be downloaded
 	 * @param methodEntity parameters sent to the server
 	 */
-	private void syncNewToClient(SyncUserResourcesMethod methodEntity) {
+	private void syncNewToClient(UserResourcesSyncMethod methodEntity) {
 		// Get all resources that were uploaded after latest sync
 		Query query = new Query("user_resources", mUser.getKey());
 
@@ -284,5 +284,5 @@ public class SyncUserResources extends VoiderServlet {
 	/** Sync date */
 	private Date mSyncDate = null;
 	/** Response */
-	private SyncUserResourcesMethodResponse mResponse = null;
+	private UserResourcesSyncMethodResponse mResponse = null;
 }

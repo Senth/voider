@@ -10,10 +10,7 @@ import java.util.UUID;
 import javax.servlet.ServletException;
 
 import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.PreparedQuery;
-import com.google.appengine.api.datastore.PropertyProjection;
-import com.google.appengine.api.datastore.Query;
-import com.google.appengine.api.datastore.Query.Filter;
+import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.appengine.DatastoreUtils.FilterWrapper;
@@ -21,10 +18,10 @@ import com.spiddekauga.voider.network.entities.ChatMessage;
 import com.spiddekauga.voider.network.entities.ChatMessage.MessageTypes;
 import com.spiddekauga.voider.network.entities.HighscoreSyncEntity;
 import com.spiddekauga.voider.network.entities.IEntity;
+import com.spiddekauga.voider.network.entities.method.HighscoreSyncMethod;
+import com.spiddekauga.voider.network.entities.method.HighscoreSyncMethodResponse;
+import com.spiddekauga.voider.network.entities.method.HighscoreSyncMethodResponse.Statuses;
 import com.spiddekauga.voider.network.entities.method.IMethodEntity;
-import com.spiddekauga.voider.network.entities.method.SyncHighscoreMethod;
-import com.spiddekauga.voider.network.entities.method.SyncHighscoreMethodResponse;
-import com.spiddekauga.voider.network.entities.method.SyncHighscoreMethodResponse.Statuses;
 import com.spiddekauga.voider.server.util.VoiderServlet;
 
 /**
@@ -32,14 +29,14 @@ import com.spiddekauga.voider.server.util.VoiderServlet;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
-public class SyncHighscore extends VoiderServlet {
+public class HighscoreSync extends VoiderServlet {
 
 	/**
 	 * Initializes the sync
 	 */
 	@Override
 	protected void onInit() {
-		mResponse = new SyncHighscoreMethodResponse();
+		mResponse = new HighscoreSyncMethodResponse();
 		mResponse.status = Statuses.FAILED_INTERNAL;
 		mResponse.syncTime = new Date();
 	}
@@ -51,14 +48,14 @@ public class SyncHighscore extends VoiderServlet {
 			return mResponse;
 		}
 
-		if (methodEntity instanceof SyncHighscoreMethod) {
-			setHighscoresToSyncToClient((SyncHighscoreMethod) methodEntity);
-			checkForConflictsAndResolve((SyncHighscoreMethod) methodEntity);
+		if (methodEntity instanceof HighscoreSyncMethod) {
+			setHighscoresToSyncToClient((HighscoreSyncMethod) methodEntity);
+			checkForConflictsAndResolve((HighscoreSyncMethod) methodEntity);
 			syncNewToClient();
-			syncNewToServer((SyncHighscoreMethod) methodEntity);
+			syncNewToServer((HighscoreSyncMethod) methodEntity);
 			mResponse.status = Statuses.SUCCESS;
 
-			sendSyncMessage((SyncHighscoreMethod) methodEntity);
+			sendSyncMessage((HighscoreSyncMethod) methodEntity);
 		}
 
 		return mResponse;
@@ -68,22 +65,14 @@ public class SyncHighscore extends VoiderServlet {
 	 * Set highscores to sync from server to client
 	 * @param methodEntity parameters sent to the server
 	 */
-	private void setHighscoresToSyncToClient(SyncHighscoreMethod methodEntity) {
-		// Get all highscore with later upload date then last sync
-		Query query = new Query("highscore", mUser.getKey());
+	private void setHighscoresToSyncToClient(HighscoreSyncMethod methodEntity) {
+		// Only newer than last sync
+		FilterWrapper filterUploaded = new FilterWrapper("uploaded", FilterOperator.GREATER_THAN, methodEntity.lastSync);
+		FilterWrapper filterUsername = new FilterWrapper("username", mUser.getUsername());
 
-		// Only older than last sync
-		Filter filter = new Query.FilterPredicate("uploaded", FilterOperator.GREATER_THAN, methodEntity.lastSync);
-		query.setFilter(filter);
+		Iterable<Entity> entities = DatastoreUtils.getEntities("highscore", filterUploaded, filterUsername);
 
-		// Only retrieve necessary element (skip uploaded)
-		DatastoreUtils.createUuidProjection(query, "level_id");
-		query.addProjection(new PropertyProjection("score", Long.class));
-		query.addProjection(new PropertyProjection("created", Date.class));
-
-		PreparedQuery preparedQuery = DatastoreUtils.prepare(query);
-
-		for (Entity serverEntity : preparedQuery.asIterable()) {
+		for (Entity serverEntity : entities) {
 			HighscoreSyncEntity networkEntity = serverToNetworkEntity(serverEntity);
 			mHighscoresToClient.put(networkEntity.levelId, networkEntity);
 		}
@@ -94,7 +83,7 @@ public class SyncHighscore extends VoiderServlet {
 	 * server (i.e. from and to the client).
 	 * @param methodEntity parameters sent to the server
 	 */
-	private void checkForConflictsAndResolve(SyncHighscoreMethod methodEntity) {
+	private void checkForConflictsAndResolve(HighscoreSyncMethod methodEntity) {
 		Iterator<HighscoreSyncEntity> fromClientIt = methodEntity.highscores.iterator();
 		while (fromClientIt.hasNext()) {
 			HighscoreSyncEntity clientHighscore = fromClientIt.next();
@@ -133,16 +122,19 @@ public class SyncHighscore extends VoiderServlet {
 	 * Sync new highscores to the server
 	 * @param methodEntity parameters sent to the server
 	 */
-	private void syncNewToServer(SyncHighscoreMethod methodEntity) {
+	private void syncNewToServer(HighscoreSyncMethod methodEntity) {
 		// Check if we should update existing entity?
 		for (HighscoreSyncEntity networkEntity : methodEntity.highscores) {
 
-			FilterWrapper filter = new FilterWrapper("level_id", networkEntity.levelId);
-			Entity entity = DatastoreUtils.getSingleEntity("highscore", mUser.getKey(), filter);
+			FilterWrapper levelFilter = new FilterWrapper("level_id", networkEntity.levelId);
+			FilterWrapper usernameFilter = new FilterWrapper("username", mUser.getUsername());
+
+			Entity entity = DatastoreUtils.getSingleEntity("highscore", mUser.getKey(), levelFilter, usernameFilter);
 
 			if (entity == null) {
-				entity = new Entity("highscore", mUser.getKey());
+				entity = new Entity("highscore", getLevelKey(networkEntity.levelId));
 				DatastoreUtils.setProperty(entity, "level_id", networkEntity.levelId);
+				entity.setProperty("username", mUser.getUsername());
 			}
 
 			entity.setProperty("score", networkEntity.score);
@@ -153,10 +145,19 @@ public class SyncHighscore extends VoiderServlet {
 	}
 
 	/**
+	 * Get level key for the specified level_id
+	 * @param levelId id for the level
+	 * @return level key from the level
+	 */
+	private static Key getLevelKey(UUID levelId) {
+		return DatastoreUtils.getSingleKey("resource_id", new FilterWrapper("resource_id", levelId));
+	}
+
+	/**
 	 * Sends a sync message to all connected clients
 	 * @param methodEntity parameters sent to the server
 	 */
-	private void sendSyncMessage(SyncHighscoreMethod methodEntity) {
+	private void sendSyncMessage(HighscoreSyncMethod methodEntity) {
 		if (mResponse.isSuccessful()) {
 			// Only send sync message if something was updated in the server
 			if (!methodEntity.highscores.isEmpty()) {
@@ -186,5 +187,5 @@ public class SyncHighscore extends VoiderServlet {
 	/** Highscores to sync to the client */
 	private HashMap<UUID, HighscoreSyncEntity> mHighscoresToClient = new HashMap<>();
 	/** Response */
-	private SyncHighscoreMethodResponse mResponse;
+	private HighscoreSyncMethodResponse mResponse;
 }

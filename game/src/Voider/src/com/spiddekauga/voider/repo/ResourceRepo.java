@@ -24,10 +24,10 @@ import com.spiddekauga.voider.network.entities.method.PublishMethod;
 import com.spiddekauga.voider.network.entities.method.PublishMethodResponse;
 import com.spiddekauga.voider.network.entities.method.ResourceDownloadMethod;
 import com.spiddekauga.voider.network.entities.method.ResourceDownloadMethodResponse;
-import com.spiddekauga.voider.network.entities.method.SyncDownloadMethod;
-import com.spiddekauga.voider.network.entities.method.SyncDownloadMethodResponse;
-import com.spiddekauga.voider.network.entities.method.SyncUserResourcesMethod;
-import com.spiddekauga.voider.network.entities.method.SyncUserResourcesMethodResponse;
+import com.spiddekauga.voider.network.entities.method.DownloadSyncMethod;
+import com.spiddekauga.voider.network.entities.method.DownloadSyncMethodResponse;
+import com.spiddekauga.voider.network.entities.method.UserResourcesSyncMethod;
+import com.spiddekauga.voider.network.entities.method.UserResourcesSyncMethodResponse;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourceRevision;
@@ -176,10 +176,10 @@ public class ResourceRepo extends Repo {
 			handlePublishResponse((PublishMethod) method, (PublishMethodResponse) response);
 		} else if (response instanceof ResourceDownloadMethodResponse) {
 			handleDownloadResponse((ResourceDownloadMethod) method, (ResourceDownloadMethodResponse) response);
-		} else if (response instanceof SyncDownloadMethodResponse) {
-			handleSyncDownloadResponse((SyncDownloadMethod) method, (SyncDownloadMethodResponse) response);
-		} else if (response instanceof SyncUserResourcesMethodResponse) {
-			handleSyncUserResourcesResponse((SyncUserResourcesMethod) method, (SyncUserResourcesMethodResponse) response);
+		} else if (response instanceof DownloadSyncMethodResponse) {
+			handleSyncDownloadResponse((DownloadSyncMethod) method, (DownloadSyncMethodResponse) response);
+		} else if (response instanceof UserResourcesSyncMethodResponse) {
+			handleSyncUserResourcesResponse((UserResourcesSyncMethod) method, (UserResourcesSyncMethodResponse) response);
 		}
 	}
 
@@ -188,7 +188,7 @@ public class ResourceRepo extends Repo {
 	 * @param method
 	 * @param response
 	 */
-	private void handleSyncUserResourcesResponse(SyncUserResourcesMethod method, SyncUserResourcesMethodResponse response) {
+	private void handleSyncUserResourcesResponse(UserResourcesSyncMethod method, UserResourcesSyncMethodResponse response) {
 		if (response.uploadStatus.isSuccessful()) {
 
 			// Set the successful revisions as uploaded/synced
@@ -280,7 +280,7 @@ public class ResourceRepo extends Repo {
 	 * @param method the sync download method
 	 * @param response sync download response
 	 */
-	private void handleSyncDownloadResponse(SyncDownloadMethod method, SyncDownloadMethodResponse response) {
+	private void handleSyncDownloadResponse(DownloadSyncMethod method, DownloadSyncMethodResponse response) {
 		if (response.status.isSuccessful()) {
 			addDownloaded(response.resources);
 

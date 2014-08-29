@@ -12,7 +12,7 @@ import com.spiddekauga.voider.network.entities.ISuccessStatuses;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
-public class SyncHighscoreMethodResponse implements IEntity, ISuccessStatuses {
+public class HighscoreSyncMethodResponse implements IEntity, ISuccessStatuses {
 	/** Upload status */
 	public Statuses status = null;
 	/** Highscores to update/set */

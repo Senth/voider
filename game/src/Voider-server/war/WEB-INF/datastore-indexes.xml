@@ -16,9 +16,21 @@
         <property name="score" direction="desc"/>
         <property name="username" direction="asc"/>
     </datastore-index>
+    
+	<!-- Get new uploaded highscores -->
+	<datastore-index kind="highscore" ancestor="false" source="manual">
+		<property name="username" direction="asc"/>
+		<property name="uploaded" direction="asc"/>
+	</datastore-index>
+	
+	<!-- Get old highscore and update it -->
+	<datastore-index kind="highscore" ancestor="false" source="manual">
+		<property name="level_id-least" direction="asc"/>
+		<property name="level_id-most" direction="asc"/>
+		<property name="username" direction="asc"/>
+	</datastore-index>
 
-
-	<!-- SYNC PUBLISHED -->
+	<!-- PUBLISHED/DOWNLOADED SYNC -->
     <datastore-index kind="sync_published" ancestor="true" source="manual">
         <property name="download_date" direction="asc"/>
     </datastore-index>
@@ -39,13 +51,14 @@
     	<property name="blob_key" direction="asc"/>
     </datastore-index>
     
+    <!-- TODO -->
     <datastore-index kind="user_resources_deleted" ancestor="true" source="auto">
         <property name="date" direction="asc"/>
         <property name="resource_id-least" direction="asc"/>
         <property name="resource_id-most" direction="asc"/>
     </datastore-index>
 
-    <!-- Used 10 times in query history -->
+    <!-- TODO -->
     <datastore-index kind="user_resources" ancestor="true" source="auto">
         <property name="uploaded" direction="asc"/>
         <property name="resource_id" direction="asc"/>
@@ -57,12 +70,12 @@
         <property name="type" direction="asc"/>
     </datastore-index>
 
-    <!-- Used 1 time in query history -->
+    <!-- TODO -->
     <datastore-index kind="user_resources" ancestor="true" source="auto">
         <property name="uploaded" direction="asc"/>
     </datastore-index>
 
-    <!-- Used 4 times in query history -->
+    <!-- TODO -->
     <datastore-index kind="user_resources" ancestor="true" source="auto">
         <property name="uploaded" direction="asc"/>
         <property name="blob_key" direction="asc"/>
@@ -73,7 +86,7 @@
         <property name="type" direction="asc"/>
     </datastore-index>
 
-    <!-- Used 1 time in query history -->
+    <!-- TODO -->
     <datastore-index kind="user_resources" ancestor="true" source="auto">
         <property name="uploaded" direction="asc"/>
         <property name="resource_id" direction="asc"/>
@@ -85,7 +98,7 @@
         <property name="type" direction="asc"/>
     </datastore-index>
 
-    <!-- Used 1 time in query history -->
+    <!-- TODO-->
     <datastore-index kind="user_resources" ancestor="true" source="auto">
         <property name="uploaded" direction="asc"/>
         <property name="revision" direction="asc"/>
@@ -96,7 +109,7 @@
         <property name="type" direction="asc"/>
     </datastore-index>
 
-    <!-- Used 1 time in query history -->
+    <!-- TODO -->
     <datastore-index kind="user_resources" ancestor="true" source="auto">
         <property name="uploaded" direction="asc"/>
         <property name="resource_id-least" direction="asc"/>
@@ -108,7 +121,7 @@
         <property name="type" direction="asc"/>
     </datastore-index>
     
-        <!-- Used 1 time in query history -->
+        <!-- TODO -->
     <datastore-index kind="published" ancestor="false" source="auto">
         <property name="type" direction="asc"/>
         <property name="date" direction="desc"/>

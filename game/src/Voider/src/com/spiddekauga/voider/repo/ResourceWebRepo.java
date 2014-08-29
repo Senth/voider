@@ -36,10 +36,10 @@ import com.spiddekauga.voider.network.entities.method.PublishMethodResponse;
 import com.spiddekauga.voider.network.entities.method.PublishMethodResponse.Statuses;
 import com.spiddekauga.voider.network.entities.method.ResourceDownloadMethod;
 import com.spiddekauga.voider.network.entities.method.ResourceDownloadMethodResponse;
-import com.spiddekauga.voider.network.entities.method.SyncDownloadMethod;
-import com.spiddekauga.voider.network.entities.method.SyncDownloadMethodResponse;
-import com.spiddekauga.voider.network.entities.method.SyncUserResourcesMethod;
-import com.spiddekauga.voider.network.entities.method.SyncUserResourcesMethodResponse;
+import com.spiddekauga.voider.network.entities.method.DownloadSyncMethod;
+import com.spiddekauga.voider.network.entities.method.DownloadSyncMethodResponse;
+import com.spiddekauga.voider.network.entities.method.UserResourcesSyncMethod;
+import com.spiddekauga.voider.network.entities.method.UserResourcesSyncMethodResponse;
 import com.spiddekauga.voider.repo.WebGateway.FieldNameFileWrapper;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.IResource;
@@ -76,7 +76,7 @@ public class ResourceWebRepo extends WebRepo {
 	 * @param responseListeners listens to the web response.
 	 */
 	void syncDownloaded(Date lastSync, ICallerResponseListener... responseListeners) {
-		SyncDownloadMethod method = new SyncDownloadMethod();
+		DownloadSyncMethod method = new DownloadSyncMethod();
 		method.lastSync = lastSync;
 
 		sendInNewThread(method, responseListeners);
@@ -91,7 +91,7 @@ public class ResourceWebRepo extends WebRepo {
 	 */
 	void syncUserResources(HashMap<UUID, ResourceRevisionEntity> uploadResources, ArrayList<UUID> removeResources, Date lastSync,
 			ICallerResponseListener... responseListeners) {
-		SyncUserResourcesMethod method = new SyncUserResourcesMethod();
+		UserResourcesSyncMethod method = new UserResourcesSyncMethod();
 		method.lastSync = lastSync;
 		method.resourceToRemove = removeResources;
 
@@ -269,11 +269,11 @@ public class ResourceWebRepo extends WebRepo {
 		}
 
 		// Sync downloaded
-		else if (methodEntity instanceof SyncDownloadMethod) {
+		else if (methodEntity instanceof DownloadSyncMethod) {
 			responseToSend = handleSyncDownloadResponse(response);
 		}
 
-		else if (methodEntity instanceof SyncUserResourcesMethod) {
+		else if (methodEntity instanceof UserResourcesSyncMethod) {
 			responseToSend = handleSyncUserResourcesResponse(response);
 		}
 
@@ -287,11 +287,11 @@ public class ResourceWebRepo extends WebRepo {
 	 * @return a correct response for syncing user resource revisions
 	 */
 	private IEntity handleSyncUserResourcesResponse(IEntity response) {
-		if (response instanceof SyncUserResourcesMethodResponse) {
+		if (response instanceof UserResourcesSyncMethodResponse) {
 			return response;
 		} else {
-			SyncUserResourcesMethodResponse methodResponse = new SyncUserResourcesMethodResponse();
-			methodResponse.uploadStatus = SyncUserResourcesMethodResponse.UploadStatuses.FAILED_CONNECTION;
+			UserResourcesSyncMethodResponse methodResponse = new UserResourcesSyncMethodResponse();
+			methodResponse.uploadStatus = UserResourcesSyncMethodResponse.UploadStatuses.FAILED_CONNECTION;
 			return methodResponse;
 		}
 	}
@@ -303,18 +303,18 @@ public class ResourceWebRepo extends WebRepo {
 	 */
 	private IEntity handleSyncDownloadResponse(IEntity response) {
 		// Download all resources
-		if (response instanceof SyncDownloadMethodResponse) {
+		if (response instanceof DownloadSyncMethodResponse) {
 
-			boolean success = downloadResources(((SyncDownloadMethodResponse) response).resources);
+			boolean success = downloadResources(((DownloadSyncMethodResponse) response).resources);
 
 			if (!success) {
-				((SyncDownloadMethodResponse) response).status = SyncDownloadMethodResponse.Statuses.FAILED_DOWNLOAD;
+				((DownloadSyncMethodResponse) response).status = DownloadSyncMethodResponse.Statuses.FAILED_DOWNLOAD;
 			}
 
 			return response;
 		} else {
-			SyncDownloadMethodResponse methodResponse = new SyncDownloadMethodResponse();
-			methodResponse.status = SyncDownloadMethodResponse.Statuses.FAILED_CONNECTION;
+			DownloadSyncMethodResponse methodResponse = new DownloadSyncMethodResponse();
+			methodResponse.status = DownloadSyncMethodResponse.Statuses.FAILED_CONNECTION;
 			return methodResponse;
 		}
 	}

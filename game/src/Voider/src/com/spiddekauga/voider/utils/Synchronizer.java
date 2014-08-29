@@ -11,12 +11,12 @@ import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.method.BugReportMethod;
 import com.spiddekauga.voider.network.entities.method.BugReportMethodResponse;
 import com.spiddekauga.voider.network.entities.method.IMethodEntity;
-import com.spiddekauga.voider.network.entities.method.SyncDownloadMethod;
-import com.spiddekauga.voider.network.entities.method.SyncDownloadMethodResponse;
-import com.spiddekauga.voider.network.entities.method.SyncHighscoreMethod;
-import com.spiddekauga.voider.network.entities.method.SyncHighscoreMethodResponse;
-import com.spiddekauga.voider.network.entities.method.SyncUserResourcesMethod;
-import com.spiddekauga.voider.network.entities.method.SyncUserResourcesMethodResponse;
+import com.spiddekauga.voider.network.entities.method.DownloadSyncMethod;
+import com.spiddekauga.voider.network.entities.method.DownloadSyncMethodResponse;
+import com.spiddekauga.voider.network.entities.method.HighscoreSyncMethod;
+import com.spiddekauga.voider.network.entities.method.HighscoreSyncMethodResponse;
+import com.spiddekauga.voider.network.entities.method.UserResourcesSyncMethod;
+import com.spiddekauga.voider.network.entities.method.UserResourcesSyncMethodResponse;
 import com.spiddekauga.voider.repo.BugReportWebRepo;
 import com.spiddekauga.voider.repo.ExternalTypes;
 import com.spiddekauga.voider.repo.HighscoreRepo;
@@ -181,14 +181,14 @@ public class Synchronizer extends Observable implements IMessageListener, ICalle
 			SceneSwitcher.hideWaitWindow();
 		}
 
-		if (response instanceof SyncUserResourcesMethodResponse) {
-			handleSyncUserResourceResponse((SyncUserResourcesMethod) method, (SyncUserResourcesMethodResponse) response);
-		} else if (response instanceof SyncDownloadMethodResponse) {
-			handleSyncDownloadResponse((SyncDownloadMethod) method, (SyncDownloadMethodResponse) response);
+		if (response instanceof UserResourcesSyncMethodResponse) {
+			handleSyncUserResourceResponse((UserResourcesSyncMethod) method, (UserResourcesSyncMethodResponse) response);
+		} else if (response instanceof DownloadSyncMethodResponse) {
+			handleSyncDownloadResponse((DownloadSyncMethod) method, (DownloadSyncMethodResponse) response);
 		} else if (response instanceof BugReportMethodResponse) {
 			handlePostBugReport((BugReportMethod) method, (BugReportMethodResponse) response);
-		} else if (response instanceof SyncHighscoreMethodResponse) {
-			handleSyncHighscoreResponse((SyncHighscoreMethod) method, (SyncHighscoreMethodResponse) response);
+		} else if (response instanceof HighscoreSyncMethodResponse) {
+			handleSyncHighscoreResponse((HighscoreSyncMethod) method, (HighscoreSyncMethodResponse) response);
 		}
 
 
@@ -200,7 +200,7 @@ public class Synchronizer extends Observable implements IMessageListener, ICalle
 	 * @param method parameters to the server
 	 * @param response server response
 	 */
-	private void handleSyncHighscoreResponse(SyncHighscoreMethod method, SyncHighscoreMethodResponse response) {
+	private void handleSyncHighscoreResponse(HighscoreSyncMethod method, HighscoreSyncMethodResponse response) {
 		if (response.isSuccessful()) {
 			SceneSwitcher.showSuccessMessage("Successfully synced player highscores");
 		} else {
@@ -213,7 +213,7 @@ public class Synchronizer extends Observable implements IMessageListener, ICalle
 	 * @param method parameters to the server
 	 * @param response server response
 	 */
-	private void handleSyncDownloadResponse(SyncDownloadMethod method, SyncDownloadMethodResponse response) {
+	private void handleSyncDownloadResponse(DownloadSyncMethod method, DownloadSyncMethodResponse response) {
 		if (response.isSuccessful()) {
 			notifyObservers(SyncEvents.COMMUNITY_DOWNLOAD_SUCCESS);
 			SceneSwitcher.showSuccessMessage("Successfully synced community resources");
@@ -273,7 +273,7 @@ public class Synchronizer extends Observable implements IMessageListener, ICalle
 	 * @param method parameters sent to the server
 	 * @param response response from the server
 	 */
-	private void handleSyncUserResourceResponse(SyncUserResourcesMethod method, SyncUserResourcesMethodResponse response) {
+	private void handleSyncUserResourceResponse(UserResourcesSyncMethod method, UserResourcesSyncMethodResponse response) {
 		switch (response.uploadStatus) {
 		case FAILED_CONNECTION:
 		case FAILED_INTERNAL:

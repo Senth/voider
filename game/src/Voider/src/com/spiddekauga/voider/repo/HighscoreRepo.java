@@ -6,8 +6,8 @@ import java.util.UUID;
 import com.spiddekauga.voider.network.entities.HighscoreSyncEntity;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.method.IMethodEntity;
-import com.spiddekauga.voider.network.entities.method.SyncHighscoreMethod;
-import com.spiddekauga.voider.network.entities.method.SyncHighscoreMethodResponse;
+import com.spiddekauga.voider.network.entities.method.HighscoreSyncMethod;
+import com.spiddekauga.voider.network.entities.method.HighscoreSyncMethodResponse;
 import com.spiddekauga.voider.utils.Synchronizer;
 import com.spiddekauga.voider.utils.User;
 
@@ -79,8 +79,8 @@ public class HighscoreRepo extends Repo {
 
 	@Override
 	public void handleWebResponse(IMethodEntity method, IEntity response) {
-		if (response instanceof SyncHighscoreMethodResponse) {
-			handleSyncResponse((SyncHighscoreMethod) method, (SyncHighscoreMethodResponse) response);
+		if (response instanceof HighscoreSyncMethodResponse) {
+			handleSyncResponse((HighscoreSyncMethod) method, (HighscoreSyncMethodResponse) response);
 		}
 	}
 
@@ -89,7 +89,7 @@ public class HighscoreRepo extends Repo {
 	 * @param method parameters to the server
 	 * @param response server response
 	 */
-	private void handleSyncResponse(SyncHighscoreMethod method, SyncHighscoreMethodResponse response) {
+	private void handleSyncResponse(HighscoreSyncMethod method, HighscoreSyncMethodResponse response) {
 		// Set highscores as synced
 		if (response.isSuccessful()) {
 			mLocalRepo.setSynced(method.highscores);

@@ -11,7 +11,7 @@ import com.spiddekauga.voider.network.entities.ResourceRevisionEntity;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
-public class SyncUserResourcesMethod implements IMethodEntity {
+public class UserResourcesSyncMethod implements IMethodEntity {
 	/** All resource revisions that were uploaded */
 	public ArrayList<ResourceRevisionEntity> resources = new ArrayList<>();
 	/** Resources to remove */
@@ -21,6 +21,6 @@ public class SyncUserResourcesMethod implements IMethodEntity {
 
 	@Override
 	public String getMethodName() {
-		return "sync-user-resources";
+		return "user-resources-sync";
 	}
 }

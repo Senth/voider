@@ -1,12 +1,12 @@
 package com.spiddekauga.voider.servlets;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.servlet.ServletException;
 
-import com.google.appengine.api.channel.ChannelMessage;
-import com.google.appengine.api.channel.ChannelService;
-import com.google.appengine.api.channel.ChannelServiceFactory;
+import com.google.appengine.api.datastore.Key;
+import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.method.IMethodEntity;
 import com.spiddekauga.voider.server.util.VoiderServlet;
@@ -24,8 +24,9 @@ public class Upgrade extends VoiderServlet {
 
 	@Override
 	protected IEntity onRequest(IMethodEntity methodEntity) throws ServletException, IOException {
-		ChannelService channelService = ChannelServiceFactory.getChannelService();
-		channelService.sendMessage(new ChannelMessage("Senth", "Testing message"));
+		List<Key> highscores = DatastoreUtils.getKeys("highscore");
+		DatastoreUtils.delete(highscores);
+
 		return null;
 	}
 }
