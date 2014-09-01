@@ -469,12 +469,12 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 	},
 	
 	bookmark: {
-		imageUp: like,
-		imageOver: like_over,
-		imageDown: like_down,
-		imageChecked: like_checked,
-		imageCheckedOver: like_checked_over,
-		imageDisabled: like_disabled
+		imageUp: bookmark,
+		imageOver: bookmark_over,
+		imageDown: bookmark_down,
+		imageChecked: bookmark_checked,
+		imageCheckedOver: bookmark_checked_over,
+		imageDisabled: bookmark_disabled
 	},
 	
 	/** Miscellaneous */
