@@ -46,6 +46,14 @@ public class MessageShower {
 	}
 
 	/**
+	 * Remove all messages directly
+	 */
+	public void removeAllMessages() {
+		mAlignTable.dispose();
+		mWindow.remove();
+	}
+
+	/**
 	 * Adds a new message with the specified label style
 	 * @param message the message to display on the screen
 	 * @param style the label style to use for the message

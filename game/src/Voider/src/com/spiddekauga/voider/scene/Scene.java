@@ -307,7 +307,7 @@ public abstract class Scene extends InputAdapter implements IExceptionHandler {
 	 *       stack).
 	 */
 	protected void onDeactivate() {
-		// Does nothing
+		mGui.hideAllMessages();
 	}
 
 	/**

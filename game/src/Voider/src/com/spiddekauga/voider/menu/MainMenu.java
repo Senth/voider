@@ -325,6 +325,7 @@ public class MainMenu extends Scene implements IResponseListener, Observer {
 			newGui.setMenuScene(this);
 			newGui.initGui();
 			mInputMultiplexer.removeProcessor(mGui.getStage());
+			mGui.hideAllMessages();
 			mGui = newGui;
 			mGuiStack.push(newGui);
 			mInputMultiplexer.addProcessor(0, newGui.getStage());

@@ -628,6 +628,15 @@ public abstract class Gui implements Disposable {
 	}
 
 	/**
+	 * Hide all messages
+	 */
+	public void hideAllMessages() {
+		if (mMessageShower != null) {
+			mMessageShower.removeAllMessages();
+		}
+	}
+
+	/**
 	 * Checks if a button is checked (from the event).
 	 * @param event checks if the target inside the event is a button and it's checked
 	 * @return checked button. If the target isn't a button or the button isn't checked it
