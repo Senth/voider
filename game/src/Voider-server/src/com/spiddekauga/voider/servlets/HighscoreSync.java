@@ -150,7 +150,7 @@ public class HighscoreSync extends VoiderServlet {
 	 * @return level key from the level
 	 */
 	private static Key getLevelKey(UUID levelId) {
-		return DatastoreUtils.getSingleKey("resource_id", new FilterWrapper("resource_id", levelId));
+		return DatastoreUtils.getSingleKey("published", new FilterWrapper("resource_id", levelId));
 	}
 
 	/**

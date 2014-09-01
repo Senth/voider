@@ -3,6 +3,7 @@ package com.spiddekauga.voider.menu;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import com.spiddekauga.utils.scene.ui.UiFactory;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.method.HighscoreGetMethodResponse;
 import com.spiddekauga.voider.network.entities.method.IMethodEntity;
@@ -20,6 +21,8 @@ public class HighscoreScene extends Scene implements IResponseListener {
 	 */
 	public HighscoreScene() {
 		super(new HighscoreSceneGui());
+		((HighscoreSceneGui) mGui).setHighscoreScene(this);
+		setClearColor(UiFactory.getInstance().getStyles().color.sceneBackground);
 	}
 
 	@Override
@@ -64,28 +67,38 @@ public class HighscoreScene extends Scene implements IResponseListener {
 	 * @param response server response
 	 */
 	private void handleGetUserScores(HighscoreGetMethodResponse response) {
-		switch (response.status) {
-		case FAILED_CONNECTION:
-			mGui.showErrorMessage("Failed to connect to the server");
-			break;
-
-		case FAILED_INTERNAL:
-			mGui.showErrorMessage("Internal server error");
-			break;
-
-		case FAILED_USER_NOT_LOGGED_IN:
-			mGui.showErrorMessage("You are not logged in to the server");
-			break;
-
-		case FAILED_LEVEL_NOT_FOUND:
-			mGui.showErrorMessage("Could not find any highscores for this level");
-			break;
-
-		case SUCCESS:
+		if (response.isSuccessful()) {
 			((HighscoreSceneGui) mGui).setFirstPlace(response.firstPlace);
 			((HighscoreSceneGui) mGui).populateUserScores(response.userScore, response.userPlace, response.beforeUser, response.afterUser);
-			break;
+		} else {
+			continueToNextScene();
 		}
+
+		// switch (response.status) {
+		// case FAILED_CONNECTION:
+		// mGui.showErrorMessage("Failed to connect to the server");
+		// break;
+		//
+		// case FAILED_INTERNAL:
+		// mGui.showErrorMessage("Internal server error");
+		// break;
+		//
+		// case FAILED_USER_NOT_LOGGED_IN:
+		// mGui.showErrorMessage("You are not logged in to the server");
+		// break;
+		//
+		// case FAILED_LEVEL_NOT_FOUND:
+		// mGui.showErrorMessage("Could not find any highscores for this level");
+		// break;
+		//
+		// case FAILED_HIGHSCORES_NOT_FOUND:
+		// mGui.showErrorMessage("Didn't find any highscores for this level");
+		// break;
+		//
+		// case SUCCESS:
+		//
+		// break;
+		// }
 	}
 
 	/** Web responses to be processed */

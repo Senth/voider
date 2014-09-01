@@ -2,6 +2,7 @@ package com.spiddekauga.voider.servlets;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 
 import javax.servlet.ServletException;
@@ -55,11 +56,20 @@ public class HighscoreGet extends VoiderServlet {
 					switch (mParameters.fetch) {
 					case FIRST_PLACE:
 						fetchFirstPlace();
-						mResponse.status = Statuses.SUCCESS;
+						if (mResponse.firstPlace != null) {
+							mResponse.status = Statuses.SUCCESS;
+						} else {
+							mResponse.status = Statuses.FAILED_HIGHSCORES_NOT_FOUND;
+						}
 						break;
 
 					case TOP_SCORES:
 						fetchTopScores();
+						if (mResponse.topScores != null) {
+							mResponse.status = Statuses.SUCCESS;
+						} else {
+							mResponse.status = Statuses.FAILED_HIGHSCORES_NOT_FOUND;
+						}
 						break;
 
 					case USER_SCORE:
@@ -67,6 +77,11 @@ public class HighscoreGet extends VoiderServlet {
 						fetchUserScore();
 						fetchUserPos();
 						fetchScoreBeforeAndAfterUser();
+						if (mResponse.userScore != null && mResponse.userPlace > 0 && mResponse.afterUser != null && mResponse.beforeUser != null) {
+							mResponse.status = Statuses.SUCCESS;
+						} else {
+							mResponse.status = Statuses.FAILED_HIGHSCORES_NOT_FOUND;
+						}
 						break;
 					}
 				} else {
@@ -83,7 +98,7 @@ public class HighscoreGet extends VoiderServlet {
 	 */
 	private void fetchUserScore() {
 		Query query = new Query("highscore", mLevelKey);
-		query.setFilter(new FilterPredicate("username", FilterOperator.EQUAL, USERNAME));
+		query.setFilter(new FilterPredicate("username", FilterOperator.EQUAL, mUser.getUsername()));
 
 		PreparedQuery preparedQuery = DatastoreUtils.prepare(query);
 		Entity entity = preparedQuery.asSingleEntity();
@@ -140,6 +155,10 @@ public class HighscoreGet extends VoiderServlet {
 				mResponse.afterUser.add(highscoreEntity);
 			}
 		}
+
+
+		// Reverse before/higher
+		Collections.reverse(mResponse.beforeUser);
 	}
 
 	/**
@@ -190,7 +209,9 @@ public class HighscoreGet extends VoiderServlet {
 	private void fetchTopScores() {
 		Iterator<Entity> entityIt = fetchTopScores(TOP_SCORES);
 
-		mResponse.topScores = new ArrayList<>();
+		if (entityIt.hasNext()) {
+			mResponse.topScores = new ArrayList<>();
+		}
 
 		while (entityIt.hasNext()) {
 			Entity entity = entityIt.next();

@@ -3,6 +3,7 @@ package com.spiddekauga.voider.menu;
 import java.util.ArrayList;
 
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
@@ -12,6 +13,7 @@ import com.spiddekauga.voider.game.PlayerStats;
 import com.spiddekauga.voider.network.entities.HighscoreEntity;
 import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.scene.Gui;
+import com.spiddekauga.voider.utils.User;
 
 /**
  * GUI for the highscore scene
@@ -82,16 +84,28 @@ public class HighscoreSceneGui extends Gui {
 	private void addScoreToTable(int placement, String name, int score) {
 		AlignTable table = mWidgets.scoreTable;
 
+		LabelStyle labelStyle;
+		if (name.equals(User.getGlobalUser().getUsername())) {
+			labelStyle = mUiFactory.getStyles().label.highlight;
+		} else {
+			labelStyle = mUiFactory.getStyles().label.standard;
+		}
+
 		table.row().setFillWidth(true).setHeight(mRowHegiht);
 
-		mUiFactory.addLabel("" + placement + ".", false, table);
-		table.getCell().setWidth(mPlacementWidth);
+		// Placement
+		Label label = new Label("" + placement + ".", labelStyle);
+		table.add(label).setWidth(mPlacementWidth);
 
-		mWidgets.firstPlaceName = mUiFactory.addLabel(name, false, table);
+		// Name
+		label = new Label(name, labelStyle);
+		table.add(label);
 		table.add().setFillWidth(true);
 
+		// Score
 		String scoreString = PlayerStats.formatScore(score);
-		mWidgets.firstPlaceScore = mUiFactory.addLabel(scoreString, false, table);
+		label = new Label(scoreString, labelStyle);
+		table.add(label);
 	}
 
 	/**
@@ -109,6 +123,7 @@ public class HighscoreSceneGui extends Gui {
 		mMainTable.setAlign(Horizontal.CENTER, Vertical.MIDDLE);
 		mMainTable.setKeepWidth(true);
 		mMainTable.setWidth((float) SkinNames.getResource(SkinNames.GeneralVars.HIGHSCORE_SCREEN_WIDTH));
+		mMainTable.setPaddingRowDefault(mUiFactory.getStyles().vars.paddingInner, 0, 0, 0);
 
 		// Level highscores label
 		mUiFactory.addHeader("Level Scores", mMainTable);
@@ -126,8 +141,8 @@ public class HighscoreSceneGui extends Gui {
 
 
 		// User tables
-		mMainTable.row();
-		mMainTable.add(mWidgets.scoreTable);
+		mMainTable.row().setFillWidth(true);
+		mMainTable.add(mWidgets.scoreTable).setFillWidth(true);
 
 		// Continue button
 		ButtonListener buttonListener = new ButtonListener() {
@@ -136,7 +151,7 @@ public class HighscoreSceneGui extends Gui {
 				mScene.continueToNextScene();
 			}
 		};
-		mMainTable.row();
+		mMainTable.row().setPadBottom(0);
 		mUiFactory.addTextButton("Continue", TextButtonStyles.FILLED_PRESS, mMainTable, buttonListener, null, null);
 	}
 

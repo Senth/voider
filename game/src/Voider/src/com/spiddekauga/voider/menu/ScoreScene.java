@@ -3,6 +3,7 @@ package com.spiddekauga.voider.menu;
 import java.util.ArrayList;
 
 import com.spiddekauga.utils.KeyHelper;
+import com.spiddekauga.utils.scene.ui.UiFactory;
 import com.spiddekauga.voider.game.GameScene;
 import com.spiddekauga.voider.game.LevelDef;
 import com.spiddekauga.voider.game.PlayerStats;
@@ -32,6 +33,7 @@ public class ScoreScene extends Scene {
 		mLevelDef = levelDef;
 
 		((ScoreSceneGui) mGui).setScoreScene(this);
+		setClearColor(UiFactory.getInstance().getStyles().color.sceneBackground);
 	}
 
 	/**

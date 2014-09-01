@@ -44,6 +44,8 @@ public class HighscoreGetMethodResponse implements IEntity, ISuccessStatuses {
 	public enum Statuses implements ISuccessStatuses {
 		/** SUCCESS */
 		SUCCESS,
+		/** Didn't find any highscores for the level */
+		FAILED_HIGHSCORES_NOT_FOUND,
 		/** Failed could not find level */
 		FAILED_LEVEL_NOT_FOUND,
 		/** Failed internal error */

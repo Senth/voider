@@ -25,6 +25,7 @@ import com.spiddekauga.utils.PngExport;
 import com.spiddekauga.utils.Screens;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.Config.Debug.Builds;
 import com.spiddekauga.voider.game.actors.Actor;
 import com.spiddekauga.voider.game.actors.PlayerActor;
 import com.spiddekauga.voider.game.actors.PlayerActorDef;
@@ -241,7 +242,6 @@ public class GameScene extends WorldScene {
 		super.onActivate(outcome, message);
 		Actor.setEditorActive(false);
 
-		/** @TODO loading done */
 		if (outcome == Outcomes.LOADING_SUCCEEDED) {
 			fixCamera();
 
@@ -349,16 +349,23 @@ public class GameScene extends WorldScene {
 		mPlayerStats.updateScore(mLevel.getXCoord());
 
 		// End of level, try to set player highscore
-		if (isDone() && ResourceLocalRepo.isPublished(mLevel.getDef().getId())) {
-			HighscoreRepo highscoreRepo = HighscoreRepo.getInstance();
-			if (highscoreRepo.isNewHighscore(mLevel.getDef().getId(), mPlayerStats.getScore())) {
-				highscoreRepo.setHighscoreAndSync(mLevel.getDef().getId(), mPlayerStats.getScore());
-				mPlayerStats.setIsNewHighscore(true);
-			}
+		if (isDone() && isPublished()) {
+			setNewHighscore();
 		}
 
 		// GUI
 		mGui.resetValues();
+	}
+
+	/**
+	 * Tries to set a new highscore for the level
+	 */
+	private void setNewHighscore() {
+		HighscoreRepo highscoreRepo = HighscoreRepo.getInstance();
+		if (highscoreRepo.isNewHighscore(mLevel.getDef().getId(), mPlayerStats.getScore())) {
+			highscoreRepo.setHighscoreAndSync(mLevel.getDef().getId(), mPlayerStats.getScore());
+			mPlayerStats.setIsNewHighscore(true);
+		}
 	}
 
 	@Override
@@ -417,41 +424,44 @@ public class GameScene extends WorldScene {
 			return null;
 		}
 
-		ScoreScene scoreScene = new ScoreScene(mPlayerStats, mLevel.getLevelDef());
-		Scene nextScene = scoreScene;
+		if (super.getNextScene() == null) {
+			ScoreScene scoreScene = new ScoreScene(mPlayerStats, mLevel.getLevelDef());
+			Scene nextScene = scoreScene;
 
-		// Get highscores if online
-		if (ResourceLocalRepo.isPublished(mLevel.getDef().getId()) && User.getGlobalUser().isOnline()) {
-			HighscoreScene highscoreScene = new HighscoreScene();
-			HighscoreRepo.getInstance().getPlayerServerScore(mLevel.getDef().getId(), highscoreScene);
-			highscoreScene.setNextScene(scoreScene);
-			nextScene = highscoreScene;
-		}
-
-		switch (getOutcome()) {
-		case LEVEL_COMPLETED:
-			scoreScene.setLevelCompleted(true);
-			LevelDef levelDef = null;
-			if (mLevelToLoad != null || mGameSave != null) {
-				levelDef = mLevel.getDef();
-				if (levelDef != null && !levelDef.getEpilogue().equals("")) {
-					Scene epilogeScene = new LoadingTextScene(levelDef.getEpilogue());
-					epilogeScene.setNextScene(nextScene);
-					nextScene = epilogeScene;
-				}
+			// Get highscores if online
+			if (isPublished() && User.getGlobalUser().isOnline()) {
+				HighscoreScene highscoreScene = new HighscoreScene();
+				HighscoreRepo.getInstance().getPlayerServerScore(mLevel.getDef().getId(), highscoreScene);
+				highscoreScene.setNextScene(scoreScene);
+				nextScene = highscoreScene;
 			}
-			break;
 
-		case LEVEL_PLAYER_DIED:
-			// Does nothing
-			break;
+			switch (getOutcome()) {
+			case LEVEL_COMPLETED:
+				scoreScene.setLevelCompleted(true);
+				LevelDef levelDef = null;
+				if (mLevelToLoad != null || mGameSave != null) {
+					levelDef = mLevel.getDef();
+					if (levelDef != null && !levelDef.getEpilogue().equals("")) {
+						Scene epilogeScene = new LoadingTextScene(levelDef.getEpilogue());
+						epilogeScene.setNextScene(nextScene);
+						nextScene = epilogeScene;
+					}
+				}
+				break;
 
-		case LEVEL_QUIT:
-		default:
-			nextScene = null;
+			case LEVEL_PLAYER_DIED:
+				// Does nothing
+				break;
+
+			case LEVEL_QUIT:
+			default:
+				nextScene = null;
+			}
+			setNextScene(nextScene);
 		}
 
-		return nextScene;
+		return super.getNextScene();
 	}
 
 	// --------------------------------
@@ -567,6 +577,16 @@ public class GameScene extends WorldScene {
 		// Set level as complete if we want to go back while testing
 		if (keycode == Keys.ESCAPE || keycode == Keys.BACK) {
 			setOutcome(Outcomes.LEVEL_QUIT);
+		}
+
+		// Testing
+		if (Config.Debug.isBuildOrBelow(Builds.NIGHTLY)) {
+			if (keycode == Keys.F12) {
+				setOutcome(Outcomes.LEVEL_COMPLETED);
+				if (isPublished()) {
+					setNewHighscore();
+				}
+			}
 		}
 
 		return false;

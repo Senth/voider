@@ -76,7 +76,7 @@ class HighscoreWebRepo extends WebRepo {
 	 */
 	void get(UUID levelId, Fetch fetchOption, IResponseListener... responseListeners) {
 		HighscoreGetMethod method = new HighscoreGetMethod();
-		method.fetch = Fetch.FIRST_PLACE;
+		method.fetch = fetchOption;
 		method.levelId = levelId;
 
 		HighscoreGetMethodResponse cacheResponse = getCached(levelId, fetchOption);

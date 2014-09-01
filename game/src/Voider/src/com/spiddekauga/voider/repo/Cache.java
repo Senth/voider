@@ -31,7 +31,7 @@ public class Cache<Key, CacheType extends CacheEntity> {
 	public CacheType get(Key key) {
 		CacheType cacheEntity = mEntities.get(key);
 
-		if (cacheEntity.isOutdated()) {
+		if (cacheEntity != null && cacheEntity.isOutdated()) {
 			clearCacheEntity(cacheEntity);
 			cacheEntity = null;
 		}
