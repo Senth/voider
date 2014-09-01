@@ -13,7 +13,7 @@ public class Main {
 		config.height = Config.Graphics.HEIGHT_START;
 
 		// Add icons
-		FileType fileType = Config.File.USE_EXTERNAL_RESOURCES ? FileType.External : FileType.Internal;
+		FileType fileType = Config.File.USE_EXTERNAL_RESOURCES ? FileType.Absolute : FileType.Internal;
 		config.addIcon(InternalNames.ICON_256.getFilePath(), fileType);
 		config.addIcon(InternalNames.ICON_64.getFilePath(), fileType);
 		config.addIcon(InternalNames.ICON_32.getFilePath(), fileType);
