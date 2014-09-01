@@ -2,15 +2,14 @@ package com.spiddekauga.voider.network.entities;
 
 /**
  * Level statistics
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
 public class LevelStatsEntity implements IEntity {
 	/** Total plays */
 	public int cPlayed = 0;
-	/** Total likes */
-	public int cLikes = 0;
+	/** Total bookmarks */
+	public int cBookmarks = 0;
 	/** clear count */
 	public int cCleared = 0;
 	/** number of ratings */

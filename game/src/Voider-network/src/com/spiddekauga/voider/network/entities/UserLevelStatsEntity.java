@@ -4,13 +4,12 @@ import java.util.Date;
 
 /**
  * Level statistics a single player
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
 public class UserLevelStatsEntity implements IEntity {
-	/** If the player has liked the level */
-	public boolean like = false;
+	/** If the player has bookmarked the level */
+	public boolean bookmarked = false;
 	/** Last played */
 	public Date lastPlayed = null;
 	/** Rating */

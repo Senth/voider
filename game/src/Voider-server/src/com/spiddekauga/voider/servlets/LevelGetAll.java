@@ -289,7 +289,7 @@ public class LevelGetAll extends VoiderServlet {
 		userLevelStatsEntity.cCleared = (int) datastoreEntity.getProperty("clear_count");
 		userLevelStatsEntity.cPlayed = (int) datastoreEntity.getProperty("play_count");
 		userLevelStatsEntity.lastPlayed = (Date) datastoreEntity.getProperty("last_played");
-		userLevelStatsEntity.like = (boolean) datastoreEntity.getProperty("like");
+		userLevelStatsEntity.bookmarked = (boolean) datastoreEntity.getProperty("like");
 		userLevelStatsEntity.rating = (int) datastoreEntity.getProperty("rating");
 
 		return userLevelStatsEntity;
@@ -304,7 +304,7 @@ public class LevelGetAll extends VoiderServlet {
 		LevelStatsEntity levelStatsEntity = new LevelStatsEntity();
 
 		levelStatsEntity.cCleared = ((Long) datastoreEntity.getProperty("clear_count")).intValue();
-		levelStatsEntity.cLikes = ((Long) datastoreEntity.getProperty("likes")).intValue();
+		levelStatsEntity.cBookmarks = ((Long) datastoreEntity.getProperty("likes")).intValue();
 		levelStatsEntity.cPlayed = ((Long) datastoreEntity.getProperty("play_count")).intValue();
 		levelStatsEntity.cRatings = ((Long) datastoreEntity.getProperty("ratings")).intValue();
 		levelStatsEntity.ratingAverage = ((Double) datastoreEntity.getProperty("rating_avg")).floatValue();

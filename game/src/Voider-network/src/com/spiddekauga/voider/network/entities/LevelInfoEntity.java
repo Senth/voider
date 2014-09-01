@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 /**
  * Wrapper for all level information
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
@@ -14,7 +13,7 @@ public class LevelInfoEntity implements IEntity {
 	/** Level stats */
 	public LevelStatsEntity stats = null;
 	/** User level stats, null if user haven't played these */
-	public UserLevelStatsEntity userStats = null;
+	@Deprecated public UserLevelStatsEntity userStats = null;
 	/** Level tags */
 	public ArrayList<Tags> tags = null;
 }

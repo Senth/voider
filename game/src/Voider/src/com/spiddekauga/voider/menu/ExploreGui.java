@@ -80,7 +80,7 @@ public class ExploreGui extends Gui {
 			mWidgets.info.name.setText(level.defEntity.name);
 			mWidgets.info.revisedBy.setText(level.defEntity.creator);
 
-			mWidgets.info.likes.setText(String.valueOf(level.stats.cLikes));
+			mWidgets.info.likes.setText(String.valueOf(level.stats.cBookmarks));
 			mWidgets.info.plays.setText(String.valueOf(level.stats.cPlayed));
 			mWidgets.info.rating.setRating((int) (level.stats.ratingAverage + 0.5f));
 
