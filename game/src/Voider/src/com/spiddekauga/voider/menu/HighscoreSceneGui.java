@@ -2,13 +2,14 @@ package com.spiddekauga.voider.menu;
 
 import java.util.ArrayList;
 
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
-import com.spiddekauga.utils.scene.ui.UiFactory.TextButtonStyles;
+import com.spiddekauga.utils.scene.ui.UiFactory.Positions;
 import com.spiddekauga.voider.game.PlayerStats;
 import com.spiddekauga.voider.network.entities.HighscoreEntity;
 import com.spiddekauga.voider.resources.SkinNames;
@@ -64,7 +65,6 @@ public class HighscoreSceneGui extends Gui {
 		}
 
 		// Add player score
-		// TODO use highlight color for player score
 		addScoreToTable(userPlace, userScore.playerName, userScore.score);
 
 		// Add scores after the user
@@ -145,14 +145,14 @@ public class HighscoreSceneGui extends Gui {
 		mMainTable.add(mWidgets.scoreTable).setFillWidth(true);
 
 		// Continue button
-		ButtonListener buttonListener = new ButtonListener() {
+		mMainTable.row().setPadBottom(0);
+		Button button = mUiFactory.addImageButtonLabel(SkinNames.General.GAME_CONTINUE, "Continue", Positions.BOTTOM, mMainTable, null, null);
+		new ButtonListener(button) {
 			@Override
 			protected void onPressed() {
 				mScene.continueToNextScene();
 			}
 		};
-		mMainTable.row().setPadBottom(0);
-		mUiFactory.addTextButton("Continue", TextButtonStyles.FILLED_PRESS, mMainTable, buttonListener, null, null);
 	}
 
 	/** Highscore scene */
