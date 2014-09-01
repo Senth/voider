@@ -12,12 +12,8 @@ import com.spiddekauga.utils.Path;
 import com.spiddekauga.voider.Config.File;
 
 /**
- * All static resources. Name and a corresponding filename
- * This includes:
- * \li Textures
- * \li Music
- * \li Sound
- * 
+ * All static resources. Name and a corresponding filename This includes: \li Textures \li
+ * Music \li Sound
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public enum InternalNames {
@@ -44,19 +40,18 @@ public enum InternalNames {
 	// Images
 	/** Splash Screen */
 	IMAGE_SPLASH_SCREEN("spiddekauga_m.png", Texture.class),
+	/** Icon 256x256 */
+	ICON_256("icon-256.png", Texture.class),
+	/** Icon 64x64 */
+	ICON_64("icon-64.png", Texture.class),
+	/** Icon 32x32 */
+	ICON_32("icon-32.png", Texture.class),
 
 	// Shaders
 	/** Default vertex shader */
 	SHADER_DEFAULT("default", ShaderProgram.class),
 
-	// TESTS
-	/** Texture player */
-	TEXTURE_PLAYER("libgdx.png", Texture.class),
-	/** test */
-	PARTICLE_TEST("test", ParticleEffect.class),
-	/** test */
-	SOUND_TEST("test2", Sound.class);
-
+	;
 
 	/**
 	 * Initializes the enum with a filename
@@ -71,7 +66,7 @@ public enum InternalNames {
 	/**
 	 * @return file path of this resource
 	 */
-	String getFilePath() {
+	public String getFilePath() {
 		return getDirPath(type) + filename;
 	}
 

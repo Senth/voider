@@ -82,7 +82,7 @@ public class ResourceSaverTest {
 
 
 		// Save it again, now a new revision should be created
-		def.addDependency(InternalNames.TEXTURE_PLAYER);
+		def.addDependency(InternalNames.IMAGE_SPLASH_SCREEN);
 		// ResourceSaver.save(def);
 
 		relativePath = ResourceLocalRepo.getFilepath(def);
