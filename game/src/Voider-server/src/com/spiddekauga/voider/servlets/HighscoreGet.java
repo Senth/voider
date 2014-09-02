@@ -18,12 +18,12 @@ import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Query.SortDirection;
 import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.appengine.DatastoreUtils.FilterWrapper;
-import com.spiddekauga.voider.network.entities.HighscoreEntity;
 import com.spiddekauga.voider.network.entities.IEntity;
-import com.spiddekauga.voider.network.entities.method.HighscoreGetMethod;
-import com.spiddekauga.voider.network.entities.method.HighscoreGetMethodResponse;
-import com.spiddekauga.voider.network.entities.method.HighscoreGetMethodResponse.Statuses;
-import com.spiddekauga.voider.network.entities.method.IMethodEntity;
+import com.spiddekauga.voider.network.entities.IMethodEntity;
+import com.spiddekauga.voider.network.entities.stat.HighscoreEntity;
+import com.spiddekauga.voider.network.entities.stat.HighscoreGetMethod;
+import com.spiddekauga.voider.network.entities.stat.HighscoreGetMethodResponse;
+import com.spiddekauga.voider.network.entities.stat.HighscoreGetMethodResponse.Statuses;
 import com.spiddekauga.voider.server.util.VoiderServlet;
 
 

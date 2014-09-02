@@ -5,8 +5,8 @@ import java.util.Iterator;
 
 import com.spiddekauga.utils.scene.ui.UiFactory;
 import com.spiddekauga.voider.network.entities.IEntity;
-import com.spiddekauga.voider.network.entities.method.HighscoreGetMethodResponse;
-import com.spiddekauga.voider.network.entities.method.IMethodEntity;
+import com.spiddekauga.voider.network.entities.IMethodEntity;
+import com.spiddekauga.voider.network.entities.stat.HighscoreGetMethodResponse;
 import com.spiddekauga.voider.repo.IResponseListener;
 import com.spiddekauga.voider.repo.WebWrapper;
 import com.spiddekauga.voider.scene.Scene;

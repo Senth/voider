@@ -7,8 +7,8 @@ import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.utils.scene.ui.TooltipListener;
-import com.spiddekauga.voider.repo.InternalNames;
-import com.spiddekauga.voider.repo.ResourceCacheFacade;
+import com.spiddekauga.voider.repo.resource.InternalNames;
+import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.utils.Messages;
 

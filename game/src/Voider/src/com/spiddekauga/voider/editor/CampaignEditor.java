@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Observable;
 
 import com.spiddekauga.utils.commands.Command;
-import com.spiddekauga.voider.repo.ResourceRepo;
+import com.spiddekauga.voider.repo.resource.ResourceRepo;
 import com.spiddekauga.voider.resources.Def;
 
 /**

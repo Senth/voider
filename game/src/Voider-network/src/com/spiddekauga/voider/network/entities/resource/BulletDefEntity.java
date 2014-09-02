@@ -1,0 +1,11 @@
+package com.spiddekauga.voider.network.entities.resource;
+
+/**
+ * Bullet Definition entity
+ * 
+ * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
+ */
+@SuppressWarnings("serial")
+public class BulletDefEntity extends DefEntity {
+
+}

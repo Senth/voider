@@ -1,7 +1,7 @@
 package com.spiddekauga.voider.repo;
 
 import com.spiddekauga.voider.network.entities.IEntity;
-import com.spiddekauga.voider.network.entities.method.IMethodEntity;
+import com.spiddekauga.voider.network.entities.IMethodEntity;
 
 /**
  * Web response listener for callers

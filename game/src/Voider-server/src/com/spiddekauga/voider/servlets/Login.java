@@ -12,10 +12,10 @@ import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.appengine.DatastoreUtils.FilterWrapper;
 import com.spiddekauga.utils.BCrypt;
 import com.spiddekauga.voider.network.entities.IEntity;
-import com.spiddekauga.voider.network.entities.method.IMethodEntity;
-import com.spiddekauga.voider.network.entities.method.LoginMethod;
-import com.spiddekauga.voider.network.entities.method.LoginMethodResponse;
-import com.spiddekauga.voider.network.entities.method.LoginMethodResponse.Statuses;
+import com.spiddekauga.voider.network.entities.IMethodEntity;
+import com.spiddekauga.voider.network.entities.user.LoginMethod;
+import com.spiddekauga.voider.network.entities.user.LoginMethodResponse;
+import com.spiddekauga.voider.network.entities.user.LoginMethodResponse.Statuses;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
 import com.spiddekauga.voider.server.util.VoiderServlet;
 

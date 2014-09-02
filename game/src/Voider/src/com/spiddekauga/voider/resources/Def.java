@@ -13,7 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Disposable;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.voider.Config;
-import com.spiddekauga.voider.repo.InternalNames;
+import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.utils.Graphics;
 import com.spiddekauga.voider.utils.User;
 

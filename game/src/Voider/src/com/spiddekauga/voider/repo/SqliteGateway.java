@@ -19,7 +19,7 @@ import com.spiddekauga.voider.utils.User.UserEvents;
  * SQLite gateway
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-abstract class SqliteGateway implements Disposable, Observer {
+public abstract class SqliteGateway implements Disposable, Observer {
 	/**
 	 * Closes the database connection to SQLite
 	 */

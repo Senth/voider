@@ -18,12 +18,12 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.spiddekauga.appengine.DatastoreUtils;
-import com.spiddekauga.voider.network.entities.BugReportEntity;
 import com.spiddekauga.voider.network.entities.IEntity;
-import com.spiddekauga.voider.network.entities.method.BugReportMethod;
-import com.spiddekauga.voider.network.entities.method.BugReportMethodResponse;
-import com.spiddekauga.voider.network.entities.method.BugReportMethodResponse.Statuses;
-import com.spiddekauga.voider.network.entities.method.IMethodEntity;
+import com.spiddekauga.voider.network.entities.IMethodEntity;
+import com.spiddekauga.voider.network.entities.misc.BugReportEntity;
+import com.spiddekauga.voider.network.entities.misc.BugReportMethod;
+import com.spiddekauga.voider.network.entities.misc.BugReportMethodResponse;
+import com.spiddekauga.voider.network.entities.misc.BugReportMethodResponse.Statuses;
 import com.spiddekauga.voider.server.util.ServerConfig;
 import com.spiddekauga.voider.server.util.VoiderServlet;
 

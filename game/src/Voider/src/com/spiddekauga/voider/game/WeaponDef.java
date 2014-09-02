@@ -5,7 +5,7 @@ import java.util.UUID;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
 import com.spiddekauga.voider.Config.Editor;
 import com.spiddekauga.voider.game.actors.BulletActorDef;
-import com.spiddekauga.voider.repo.ResourceCacheFacade;
+import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 
 /**
  * Holds all the necessary information about a weapon

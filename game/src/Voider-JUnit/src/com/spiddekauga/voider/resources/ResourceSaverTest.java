@@ -18,8 +18,8 @@ import com.spiddekauga.utils.ObjectCrypter;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.actors.PickupActorDef;
 import com.spiddekauga.voider.repo.ApplicationStub;
-import com.spiddekauga.voider.repo.InternalNames;
-import com.spiddekauga.voider.repo.ResourceLocalRepo;
+import com.spiddekauga.voider.repo.resource.InternalNames;
+import com.spiddekauga.voider.repo.resource.ResourceLocalRepo;
 import com.spiddekauga.voider.utils.Pools;
 
 /**
@@ -51,7 +51,7 @@ public class ResourceSaverTest {
 
 	/**
 	 * Test method for
-	 * {@link com.spiddekauga.voider.repo.ResourceRepo#save(com.spiddekauga.voider.resources.IResource[])}
+	 * {@link com.spiddekauga.voider.repo.resource.ResourceRepo#save(com.spiddekauga.voider.resources.IResource[])}
 	 * .
 	 */
 	@Test

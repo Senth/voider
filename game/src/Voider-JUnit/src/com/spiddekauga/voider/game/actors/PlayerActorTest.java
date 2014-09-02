@@ -5,7 +5,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.esotericsoftware.kryo.KryoPrototypeTest;
-import com.spiddekauga.voider.repo.ResourceCacheFacade;
+import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 
 /**
  * Tests the player actor

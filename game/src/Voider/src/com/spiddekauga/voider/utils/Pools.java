@@ -13,9 +13,9 @@ import com.badlogic.gdx.utils.IdentityMap;
 import com.spiddekauga.utils.scene.ui.Cell;
 import com.spiddekauga.utils.scene.ui.Row;
 import com.spiddekauga.voider.game.actors.BulletActor;
-import com.spiddekauga.voider.network.entities.RevisionEntity;
-import com.spiddekauga.voider.repo.InternalNames;
-import com.spiddekauga.voider.repo.ResourceCacheFacade;
+import com.spiddekauga.voider.network.entities.resource.RevisionEntity;
+import com.spiddekauga.voider.repo.resource.InternalNames;
+import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceItem;
 
 /**

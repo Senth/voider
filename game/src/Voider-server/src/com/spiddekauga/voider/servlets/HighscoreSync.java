@@ -14,14 +14,14 @@ import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.appengine.DatastoreUtils.FilterWrapper;
-import com.spiddekauga.voider.network.entities.ChatMessage;
-import com.spiddekauga.voider.network.entities.ChatMessage.MessageTypes;
-import com.spiddekauga.voider.network.entities.HighscoreSyncEntity;
+import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.entities.IEntity;
-import com.spiddekauga.voider.network.entities.method.HighscoreSyncMethod;
-import com.spiddekauga.voider.network.entities.method.HighscoreSyncMethodResponse;
-import com.spiddekauga.voider.network.entities.method.HighscoreSyncMethodResponse.Statuses;
-import com.spiddekauga.voider.network.entities.method.IMethodEntity;
+import com.spiddekauga.voider.network.entities.misc.ChatMessage;
+import com.spiddekauga.voider.network.entities.misc.ChatMessage.MessageTypes;
+import com.spiddekauga.voider.network.entities.stat.HighscoreSyncEntity;
+import com.spiddekauga.voider.network.entities.stat.HighscoreSyncMethod;
+import com.spiddekauga.voider.network.entities.stat.HighscoreSyncMethodResponse;
+import com.spiddekauga.voider.network.entities.stat.HighscoreSyncMethodResponse.Statuses;
 import com.spiddekauga.voider.server.util.VoiderServlet;
 
 /**

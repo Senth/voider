@@ -12,12 +12,12 @@ import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.appengine.DatastoreUtils.FilterWrapper;
 import com.spiddekauga.voider.network.entities.IEntity;
-import com.spiddekauga.voider.network.entities.ResourceBlobEntity;
-import com.spiddekauga.voider.network.entities.UploadTypes;
-import com.spiddekauga.voider.network.entities.method.IMethodEntity;
-import com.spiddekauga.voider.network.entities.method.DownloadSyncMethod;
-import com.spiddekauga.voider.network.entities.method.DownloadSyncMethodResponse;
-import com.spiddekauga.voider.network.entities.method.DownloadSyncMethodResponse.Statuses;
+import com.spiddekauga.voider.network.entities.IMethodEntity;
+import com.spiddekauga.voider.network.entities.resource.DownloadSyncMethod;
+import com.spiddekauga.voider.network.entities.resource.DownloadSyncMethodResponse;
+import com.spiddekauga.voider.network.entities.resource.ResourceBlobEntity;
+import com.spiddekauga.voider.network.entities.resource.UploadTypes;
+import com.spiddekauga.voider.network.entities.resource.DownloadSyncMethodResponse.Statuses;
 import com.spiddekauga.voider.server.util.ResourceUtils;
 import com.spiddekauga.voider.server.util.VoiderServlet;
 

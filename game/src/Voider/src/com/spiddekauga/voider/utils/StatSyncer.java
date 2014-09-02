@@ -1,7 +1,7 @@
 package com.spiddekauga.voider.utils;
 
 import com.spiddekauga.voider.game.PlayerStats;
-import com.spiddekauga.voider.repo.ResourceLocalRepo;
+import com.spiddekauga.voider.repo.resource.ResourceLocalRepo;
 
 /**
  * Handles sync of all the player statistics

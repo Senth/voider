@@ -7,11 +7,11 @@ import com.spiddekauga.utils.scene.ui.UiFactory;
 import com.spiddekauga.voider.game.GameScene;
 import com.spiddekauga.voider.game.LevelDef;
 import com.spiddekauga.voider.game.PlayerStats;
-import com.spiddekauga.voider.network.entities.HighscoreSyncEntity;
-import com.spiddekauga.voider.network.entities.Tags;
-import com.spiddekauga.voider.repo.HighscoreRepo;
-import com.spiddekauga.voider.repo.InternalNames;
-import com.spiddekauga.voider.repo.ResourceCacheFacade;
+import com.spiddekauga.voider.network.entities.stat.HighscoreSyncEntity;
+import com.spiddekauga.voider.network.entities.stat.Tags;
+import com.spiddekauga.voider.repo.resource.InternalNames;
+import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
+import com.spiddekauga.voider.repo.stat.HighscoreRepo;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 

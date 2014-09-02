@@ -10,8 +10,8 @@ import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
 import com.spiddekauga.utils.ObjectCrypter;
 import com.spiddekauga.voider.Config;
-import com.spiddekauga.voider.repo.ResourceCorruptException;
-import com.spiddekauga.voider.repo.ResourceNotFoundException;
+import com.spiddekauga.voider.repo.resource.ResourceCorruptException;
+import com.spiddekauga.voider.repo.resource.ResourceNotFoundException;
 import com.spiddekauga.voider.utils.Pools;
 
 /**

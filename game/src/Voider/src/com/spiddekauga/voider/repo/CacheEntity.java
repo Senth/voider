@@ -5,7 +5,7 @@ package com.spiddekauga.voider.repo;
  * Base class for caches
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-abstract class CacheEntity {
+public abstract class CacheEntity {
 	/**
 	 * Sets the outdated time for the cache
 	 * @param outdated how long time (in seconds) until the cache should be treated as
@@ -26,7 +26,7 @@ abstract class CacheEntity {
 	/**
 	 * @return true if the cache is outdated
 	 */
-	boolean isOutdated() {
+	public boolean isOutdated() {
 		return mLastUpdated + mOutdatedTime < getCurrentTime();
 	}
 

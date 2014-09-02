@@ -10,14 +10,15 @@ import com.badlogic.gdx.Gdx;
 import com.spiddekauga.utils.IOutstreamProgressListener;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.network.entities.IEntity;
-import com.spiddekauga.voider.network.entities.ResourceRevisionEntity;
-import com.spiddekauga.voider.network.entities.RevisionEntity;
-import com.spiddekauga.voider.network.entities.method.BugReportMethod;
-import com.spiddekauga.voider.network.entities.method.GetUploadUrlMethod;
-import com.spiddekauga.voider.network.entities.method.GetUploadUrlMethodResponse;
-import com.spiddekauga.voider.network.entities.method.IMethodEntity;
-import com.spiddekauga.voider.network.entities.method.NetworkEntitySerializer;
+import com.spiddekauga.voider.network.entities.IMethodEntity;
+import com.spiddekauga.voider.network.entities.NetworkEntitySerializer;
+import com.spiddekauga.voider.network.entities.misc.BugReportMethod;
+import com.spiddekauga.voider.network.entities.misc.GetUploadUrlMethod;
+import com.spiddekauga.voider.network.entities.misc.GetUploadUrlMethodResponse;
+import com.spiddekauga.voider.network.entities.resource.ResourceRevisionEntity;
+import com.spiddekauga.voider.network.entities.resource.RevisionEntity;
 import com.spiddekauga.voider.repo.WebGateway.FieldNameFileWrapper;
+import com.spiddekauga.voider.repo.resource.ResourceLocalRepo;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.utils.Pools;
@@ -26,7 +27,7 @@ import com.spiddekauga.voider.utils.Pools;
  * Common class for all Web Repositories
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-abstract class WebRepo {
+public abstract class WebRepo {
 	/**
 	 * Creates a new thread that will send and receive a HTTP request
 	 * @param methodEntity the entity to send to the server

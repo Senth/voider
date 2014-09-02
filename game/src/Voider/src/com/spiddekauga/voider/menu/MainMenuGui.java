@@ -12,8 +12,8 @@ import com.spiddekauga.utils.scene.ui.TooltipListener;
 import com.spiddekauga.voider.editor.commands.CGameQuit;
 import com.spiddekauga.voider.editor.commands.CUserLogout;
 import com.spiddekauga.voider.menu.MainMenu.Menus;
-import com.spiddekauga.voider.repo.InternalNames;
-import com.spiddekauga.voider.repo.ResourceCacheFacade;
+import com.spiddekauga.voider.repo.resource.InternalNames;
+import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.utils.Messages;
 

@@ -30,12 +30,13 @@ import com.spiddekauga.voider.Config;
  * Network gateway for sending HTTP request to the server
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-class WebGateway {
+public class WebGateway {
 	/**
 	 * Sends bytes over HTTP to the specified server
 	 * @param methodName the method name in the server
 	 * @param entity the entity to send (as bytes)
-	 * @return entity bytes response from the server. Length 0 if no response was found. null if an error occurred.
+	 * @return entity bytes response from the server. Length 0 if no response was found.
+	 *         null if an error occurred.
 	 */
 	public static byte[] sendRequest(String methodName, byte[] entity) {
 		return sendRequest(Config.Network.SERVER_HOST + methodName, entity, (List<FieldNameFileWrapper>) null,
@@ -47,7 +48,8 @@ class WebGateway {
 	 * @param uploadUrl where to upload the files
 	 * @param entity data to send
 	 * @param progressListeners optional progress listeners
-	 * @return entity bytes response from the server. Length 0 if no response was found. null if an error occurred.
+	 * @return entity bytes response from the server. Length 0 if no response was found.
+	 *         null if an error occurred.
 	 */
 	public static byte[] sendRequest(String uploadUrl, byte[] entity, List<IOutstreamProgressListener> progressListeners) {
 		return sendRequest(uploadUrl, entity, null, progressListeners);
@@ -58,7 +60,8 @@ class WebGateway {
 	 * @param uploadUrl where to upload the files
 	 * @param entity data to send
 	 * @param progressListener optional progress listener
-	 * @return entity bytes response from the server. Length 0 if no response was found. null if an error occurred.
+	 * @return entity bytes response from the server. Length 0 if no response was found.
+	 *         null if an error occurred.
 	 */
 	public static byte[] sendRequest(String uploadUrl, byte[] entity, IOutstreamProgressListener progressListener) {
 		return sendRequest(uploadUrl, entity, null, progressListener);
@@ -69,7 +72,8 @@ class WebGateway {
 	 * @param uploadUrl where to upload the files
 	 * @param entity data to send
 	 * @param files optional files to upload
-	 * @return entity bytes response from the server. Length 0 if no response was found. null if an error occurred.
+	 * @return entity bytes response from the server. Length 0 if no response was found.
+	 *         null if an error occurred.
 	 */
 	public static byte[] sendRequest(String uploadUrl, byte[] entity, ArrayList<FieldNameFileWrapper> files) {
 		return sendRequest(uploadUrl, entity, files);
@@ -81,7 +85,8 @@ class WebGateway {
 	 * @param entity data to send
 	 * @param files optional files to upload
 	 * @param progressListener optional progress listeners
-	 * @return entity bytes response from the server. Length 0 if no response was found. null if an error occurred.
+	 * @return entity bytes response from the server. Length 0 if no response was found.
+	 *         null if an error occurred.
 	 */
 	public static byte[] sendRequest(String uploadUrl, byte[] entity, List<FieldNameFileWrapper> files, IOutstreamProgressListener progressListener) {
 		ArrayList<IOutstreamProgressListener> progressListenersList = null;
@@ -99,7 +104,8 @@ class WebGateway {
 	 * @param entity data to send
 	 * @param files optional files to upload
 	 * @param progressListeners optional progress listeners
-	 * @return entity bytes response from the server. Length 0 if no response was found. null if an error occurred.
+	 * @return entity bytes response from the server. Length 0 if no response was found.
+	 *         null if an error occurred.
 	 */
 	public static byte[] sendRequest(String uploadUrl, byte[] entity, List<FieldNameFileWrapper> files,
 			List<IOutstreamProgressListener> progressListeners) {
@@ -198,7 +204,8 @@ class WebGateway {
 	/**
 	 * Reads the entity bytes from a HTTP response
 	 * @param response the HTTP response to read the bytes from
-	 * @return the entity bytes. Length 0 if no response was found. null if an error occurred.
+	 * @return the entity bytes. Length 0 if no response was found. null if an error
+	 *         occurred.
 	 */
 	private static byte[] getEntity(CloseableHttpResponse response) {
 		try {
@@ -222,7 +229,7 @@ class WebGateway {
 	/**
 	 * Wrapper class for a file and field name
 	 */
-	static class FieldNameFileWrapper {
+	public static class FieldNameFileWrapper {
 		/** Field name in the form */
 		public String fieldName = null;
 		/** The file to upload */

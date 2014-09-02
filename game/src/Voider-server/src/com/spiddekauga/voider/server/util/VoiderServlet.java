@@ -17,10 +17,10 @@ import com.google.appengine.api.channel.ChannelService;
 import com.google.appengine.api.channel.ChannelServiceFactory;
 import com.google.gson.Gson;
 import com.spiddekauga.appengine.BlobUtils;
-import com.spiddekauga.voider.network.entities.ChatMessage;
 import com.spiddekauga.voider.network.entities.IEntity;
-import com.spiddekauga.voider.network.entities.method.IMethodEntity;
-import com.spiddekauga.voider.network.entities.method.NetworkEntitySerializer;
+import com.spiddekauga.voider.network.entities.IMethodEntity;
+import com.spiddekauga.voider.network.entities.NetworkEntitySerializer;
+import com.spiddekauga.voider.network.entities.misc.ChatMessage;
 
 
 /**

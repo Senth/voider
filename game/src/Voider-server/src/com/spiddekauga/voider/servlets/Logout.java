@@ -5,9 +5,9 @@ import java.io.IOException;
 import javax.servlet.ServletException;
 
 import com.spiddekauga.voider.network.entities.IEntity;
-import com.spiddekauga.voider.network.entities.method.IMethodEntity;
-import com.spiddekauga.voider.network.entities.method.LogoutMethodResponse;
-import com.spiddekauga.voider.network.entities.method.LogoutMethodResponse.Statuses;
+import com.spiddekauga.voider.network.entities.IMethodEntity;
+import com.spiddekauga.voider.network.entities.user.LogoutMethodResponse;
+import com.spiddekauga.voider.network.entities.user.LogoutMethodResponse.Statuses;
 import com.spiddekauga.voider.server.util.VoiderServlet;
 
 /**

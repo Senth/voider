@@ -27,7 +27,7 @@ import com.spiddekauga.utils.scene.ui.UiFactory.TextButtonStyles;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.editor.commands.CSelectDefSetRevision;
 import com.spiddekauga.voider.menu.SelectDefScene.DefVisible;
-import com.spiddekauga.voider.network.entities.RevisionEntity;
+import com.spiddekauga.voider.network.entities.resource.RevisionEntity;
 import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.utils.User;
