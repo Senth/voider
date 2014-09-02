@@ -6,7 +6,6 @@ import com.spiddekauga.voider.network.entities.IMethodEntity;
 
 /**
  * Gets comment for the specified level
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
@@ -17,7 +16,7 @@ public class LevelGetCommentMethod implements IMethodEntity {
 	public String cursor = null;
 
 	@Override
-	public String getMethodName() {
-		return "level-get-comment";
+	public MethodNames getMethodName() {
+		return MethodNames.LEVEL_GET_COMMENT;
 	}
 }

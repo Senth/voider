@@ -1,10 +1,10 @@
 package com.spiddekauga.voider.network.entities.stat;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
  * All tags
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public enum Tags {
@@ -38,7 +38,6 @@ public enum Tags {
 	BORING(14),
 	/** Fun */
 	FUN(15),
-
 
 
 	// NEXT ID TO USE =>
@@ -86,6 +85,32 @@ public enum Tags {
 	 */
 	public static Tags getEnumFromId(int id) {
 		return mIdToEnum.get(id);
+	}
+
+	/**
+	 * Convert a list of tags into a list of tag ids
+	 * @param tags all tags to convert
+	 * @return list of tag ids
+	 */
+	public static ArrayList<Integer> toIdList(ArrayList<Tags> tags) {
+		ArrayList<Integer> tagIds = new ArrayList<>();
+		for (Tags tag : tags) {
+			tagIds.add(tag.getId());
+		}
+		return tagIds;
+	}
+
+	/**
+	 * Convert a list of tag ids back to a list of tags
+	 * @param tagIds all tag ids to convert
+	 * @return list of tags
+	 */
+	public static ArrayList<Tags> toTagList(ArrayList<? extends Number> tagIds) {
+		ArrayList<Tags> tags = new ArrayList<>();
+		for (Number tagId : tagIds) {
+			tags.add(getEnumFromId(tagId.intValue()));
+		}
+		return tags;
 	}
 
 	/** Human readable name */

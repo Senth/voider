@@ -30,11 +30,19 @@
 		<property name="username" direction="asc"/>
 	</datastore-index>
 
+
 	<!-- PUBLISHED/DOWNLOADED SYNC -->
     <datastore-index kind="sync_published" ancestor="true" source="manual">
         <property name="download_date" direction="asc"/>
     </datastore-index>
 
+
+	<!-- USER_LEVEL_STAT -->
+	<!-- New stats to sync -->
+	<datastore-index kind="user_level_stat" ancestor="true" source="manual">
+		<property name="updated" direction="asc"/>
+	</datastore-index>
+	
 
     <!-- USER RESOURCE SYNC -->
     <!-- Check for conflicts, i.e. if the revision for the resource exists -->

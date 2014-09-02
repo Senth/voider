@@ -7,7 +7,6 @@ import com.spiddekauga.voider.network.entities.stat.Tags;
 
 /**
  * Fetches information about all levels
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
@@ -54,7 +53,7 @@ public class LevelGetAllMethod implements IMethodEntity {
 	}
 
 	@Override
-	public String getMethodName() {
-		return "level-get-all";
+	public MethodNames getMethodName() {
+		return MethodNames.LEVEL_GET_ALL;
 	}
 }

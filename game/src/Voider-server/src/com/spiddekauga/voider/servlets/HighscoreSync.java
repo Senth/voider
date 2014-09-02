@@ -50,7 +50,7 @@ public class HighscoreSync extends VoiderServlet {
 
 		if (methodEntity instanceof HighscoreSyncMethod) {
 			setHighscoresToSyncToClient((HighscoreSyncMethod) methodEntity);
-			checkForConflictsAndResolve((HighscoreSyncMethod) methodEntity);
+			checkAndResolveConflicts((HighscoreSyncMethod) methodEntity);
 			syncNewToClient();
 			syncNewToServer((HighscoreSyncMethod) methodEntity);
 			mResponse.status = Statuses.SUCCESS;
@@ -83,7 +83,7 @@ public class HighscoreSync extends VoiderServlet {
 	 * server (i.e. from and to the client).
 	 * @param methodEntity parameters sent to the server
 	 */
-	private void checkForConflictsAndResolve(HighscoreSyncMethod methodEntity) {
+	private void checkAndResolveConflicts(HighscoreSyncMethod methodEntity) {
 		Iterator<HighscoreSyncEntity> fromClientIt = methodEntity.highscores.iterator();
 		while (fromClientIt.hasNext()) {
 			HighscoreSyncEntity clientHighscore = fromClientIt.next();

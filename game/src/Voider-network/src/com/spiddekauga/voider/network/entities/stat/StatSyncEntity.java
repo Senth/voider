@@ -27,16 +27,18 @@ public class StatSyncEntity implements IEntity {
 		public boolean bookmark;
 		/** Play count (incl. plays to sync) */
 		public int cPlayed;
-		/** Play count to sync */
-		public int cPlaysToSync;
+		/** Play count to sync (only from client) */
+		public int cPlaysToSync = 0;
 		/** Clear count (incl. clears to sync) */
 		public int cCleared;
-		/** Clear count to sync */
-		public int cClearsToSync;
+		/** Clear count to sync (only from client) */
+		public int cClearsToSync = 0;
 		/** Rating rating of the level/campaign */
 		public int rating;
 		/** Last played date */
 		public Date lastPlayed;
+		/** Last updated (only from server) */
+		public Date updated = null;
 		/** Tags */
 		public ArrayList<Tags> tags = new ArrayList<>();
 	}

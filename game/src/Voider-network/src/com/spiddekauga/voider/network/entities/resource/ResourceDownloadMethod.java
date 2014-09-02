@@ -6,7 +6,6 @@ import com.spiddekauga.voider.network.entities.IMethodEntity;
 
 /**
  * Method for downloading resources from the server
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
@@ -15,7 +14,7 @@ public class ResourceDownloadMethod implements IMethodEntity {
 	public UUID resourceId;
 
 	@Override
-	public String getMethodName() {
-		return "resource-download";
+	public MethodNames getMethodName() {
+		return MethodNames.RESOURCE_DOWNLOAD;
 	}
 }

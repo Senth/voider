@@ -20,7 +20,7 @@ public class UserResourcesSyncMethod implements IMethodEntity {
 	public Date lastSync = null;
 
 	@Override
-	public String getMethodName() {
-		return "user-resources-sync";
+	public MethodNames getMethodName() {
+		return MethodNames.USER_RESOURCES_SYNC;
 	}
 }

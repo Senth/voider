@@ -12,8 +12,8 @@ public class StatSyncMethod implements IMethodEntity {
 	public StatSyncEntity syncEntity = null;
 
 	@Override
-	public String getMethodName() {
-		return "stat-sync";
+	public MethodNames getMethodName() {
+		return MethodNames.STAT_SYNC;
 	}
 
 }

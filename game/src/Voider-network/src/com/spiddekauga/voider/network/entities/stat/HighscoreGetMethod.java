@@ -16,8 +16,8 @@ public class HighscoreGetMethod implements IMethodEntity {
 	public Fetch fetch = null;
 
 	@Override
-	public String getMethodName() {
-		return "highscore-get";
+	public MethodNames getMethodName() {
+		return MethodNames.HIGHSCORE_GET;
 	}
 
 	/**

@@ -8,9 +8,9 @@ import com.spiddekauga.voider.network.entities.ISuccessStatuses;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
-public class StatSyncMethodRespons implements IEntity, ISuccessStatuses {
+public class StatSyncMethodResponse implements IEntity, ISuccessStatuses {
 	/** Stats to sync to client */
-	StatSyncEntity syncEntity = null;
+	public StatSyncEntity syncEntity = new StatSyncEntity();
 	/** Response status */
 	public Statuses status = null;
 

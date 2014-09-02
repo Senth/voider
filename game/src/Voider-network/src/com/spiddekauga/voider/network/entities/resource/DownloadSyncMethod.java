@@ -14,8 +14,8 @@ public class DownloadSyncMethod implements IMethodEntity {
 	public Date lastSync = null;
 
 	@Override
-	public String getMethodName() {
-		return "download-sync";
+	public MethodNames getMethodName() {
+		return MethodNames.DOWNLOAD_SYNC;
 	}
 
 }

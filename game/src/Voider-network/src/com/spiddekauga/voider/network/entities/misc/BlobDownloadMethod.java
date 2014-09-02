@@ -4,7 +4,6 @@ import com.spiddekauga.voider.network.entities.IMethodEntity;
 
 /**
  * Method for downloading a blob
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
@@ -13,7 +12,7 @@ public class BlobDownloadMethod implements IMethodEntity {
 	public String blobKey;
 
 	@Override
-	public String getMethodName() {
-		return "blob-download";
+	public MethodNames getMethodName() {
+		return MethodNames.BLOB_DOWNLOAD;
 	}
 }

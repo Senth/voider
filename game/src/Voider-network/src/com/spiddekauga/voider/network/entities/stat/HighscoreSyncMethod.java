@@ -17,7 +17,7 @@ public class HighscoreSyncMethod implements IMethodEntity {
 	public Date lastSync;
 
 	@Override
-	public String getMethodName() {
-		return "highscore-sync";
+	public MethodNames getMethodName() {
+		return MethodNames.HIGHSCORE_SYNC;
 	}
 }

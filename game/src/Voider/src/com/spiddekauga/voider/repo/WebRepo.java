@@ -88,7 +88,7 @@ public abstract class WebRepo {
 	protected static IEntity serializeAndSend(IMethodEntity methodEntity, IOutstreamProgressListener progressListener) {
 		byte[] entitySend = NetworkEntitySerializer.serializeEntity(methodEntity);
 		if (entitySend != null) {
-			byte[] response = WebGateway.sendRequest(methodEntity.getMethodName(), entitySend);
+			byte[] response = WebGateway.sendRequest(methodEntity.getMethodName().toString(), entitySend);
 			if (response != null) {
 				return NetworkEntitySerializer.deserializeEntity(response);
 			}
@@ -108,10 +108,10 @@ public abstract class WebRepo {
 	protected static IEntity serializeAndSend(IMethodEntity method, IOutstreamProgressListener progressListener, ArrayList<FieldNameFileWrapper> files) {
 		// Get upload URL
 		GetUploadUrlMethod uploadMethod = new GetUploadUrlMethod();
-		uploadMethod.redirectMethod = method.getMethodName();
+		uploadMethod.redirectMethod = method.getMethodName().toString();
 		byte[] uploadBytes = NetworkEntitySerializer.serializeEntity(uploadMethod);
 
-		byte[] uploadResponseBytes = WebGateway.sendRequest(uploadMethod.getMethodName(), uploadBytes);
+		byte[] uploadResponseBytes = WebGateway.sendRequest(uploadMethod.getMethodName().toString(), uploadBytes);
 		IEntity uploadResponse = NetworkEntitySerializer.deserializeEntity(uploadResponseBytes);
 
 
@@ -144,7 +144,7 @@ public abstract class WebRepo {
 	 */
 	protected static boolean serializeAndDownload(IMethodEntity method, String filePath) {
 		byte[] methodBytes = NetworkEntitySerializer.serializeEntity(method);
-		return WebGateway.downloadRequest(method.getMethodName(), methodBytes, filePath);
+		return WebGateway.downloadRequest(method.getMethodName().toString(), methodBytes, filePath);
 	}
 
 	/**

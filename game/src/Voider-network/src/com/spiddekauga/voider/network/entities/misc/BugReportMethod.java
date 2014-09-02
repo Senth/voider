@@ -6,7 +6,6 @@ import com.spiddekauga.voider.network.entities.IMethodEntity;
 
 /**
  * Method for reporting bugs to the server
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
@@ -15,7 +14,7 @@ public class BugReportMethod implements IMethodEntity {
 	public ArrayList<BugReportEntity> bugs = new ArrayList<>();
 
 	@Override
-	public String getMethodName() {
-		return "bug-report";
+	public MethodNames getMethodName() {
+		return MethodNames.BUG_REPORT;
 	}
 }
