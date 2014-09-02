@@ -3,7 +3,7 @@ package com.spiddekauga.voider;
 import com.badlogic.gdx.Files.FileType;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
-import com.spiddekauga.voider.repo.InternalNames;
+import com.spiddekauga.voider.repo.resource.InternalNames;
 
 public class Main {
 	public static void main(String[] args) {

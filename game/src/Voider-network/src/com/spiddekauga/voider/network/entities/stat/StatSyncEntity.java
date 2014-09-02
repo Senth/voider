@@ -14,6 +14,8 @@ import com.spiddekauga.voider.network.entities.IEntity;
 public class StatSyncEntity implements IEntity {
 	/** Level/Campaign stats to sync */
 	public ArrayList<LevelStats> levelStats = new ArrayList<>();
+	/** Last sync date */
+	public Date syncDate = null;
 
 	/**
 	 * Level/Campaign stats
