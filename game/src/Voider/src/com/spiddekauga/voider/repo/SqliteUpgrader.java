@@ -95,32 +95,53 @@ class SqliteUpgrader {
 	 * Fill tables variable
 	 */
 	private void fillTables() {
+		// @formatter:off
+
 		// !!! DON'T add table 'version' to this list
 
 		// revisions
 		mNotFoundTables.add("resource_revision");
-		mCreateTableQueries.put("resource_revision",
-				"CREATE TABLE IF NOT EXISTS resource_revision (uuid TEXT, revision INTEGER, date INTEGER, uploaded INTEGER DEFAULT 0);");
+		mCreateTableQueries.put("resource_revision", "CREATE TABLE IF NOT EXISTS resource_revision ("
+				+ "uuid TEXT, "
+				+ "revision INTEGER, "
+				+ "date INTEGER, "
+				+ "uploaded INTEGER DEFAULT 0);");
 
 		// resources
 		mNotFoundTables.add("resource");
-		mCreateTableQueries
-				.put("resource", "CREATE TABLE IF NOT EXISTS resource (uuid TEXT PRIMARY KEY, type INTEGER, published INTEGER DEFAULT 0);");
+		mCreateTableQueries.put("resource", "CREATE TABLE IF NOT EXISTS resource ("
+				+ "uuid TEXT PRIMARY KEY, "
+				+ "type INTEGER, "
+				+ "published INTEGER DEFAULT 0);");
 
 		// Removed resources
 		mNotFoundTables.add("resource_removed");
-		mCreateTableQueries.put("resource_removed", "CREATE TABLE IF NOT EXISTS resource_removed (uuid TEXT PRIMARY KEY);");
+		mCreateTableQueries.put("resource_removed", "CREATE TABLE IF NOT EXISTS resource_removed ("
+				+ "uuid TEXT PRIMARY KEY);");
 
 		// Highscores
 		mNotFoundTables.add("highscore");
-		mCreateTableQueries.put("highscore",
-				"CREATE TABLE IF NOT EXISTS highscore (level_id TEXT PRIMARY KEY, score INTEGER, date INTEGER, synced INTEGER DEFAULT 0);");
+		mCreateTableQueries.put("highscore", "CREATE TABLE IF NOT EXISTS highscore ("
+				+ "level_id TEXT PRIMARY KEY, "
+				+ "score INTEGER, date INTEGER, "
+				+ "synced INTEGER DEFAULT 0);");
 
 		// Level stats
 		mNotFoundTables.add("level_stat");
-		mCreateTableQueries
-				.put("level_stat",
-						"CREATE TABLE IF NOT EXISTS level_stat (level_id TEXT PRIMARY KEY, bookmark INTEGER DEFAULT 0, play_count INTEGER DEFAULT 0, plays_to_sync INTEGER DEFAULT 0, clear_count INTEGER DEFAULT 0, clears_to_sync INTEGER DEFAULT 0, rating INTEGER DEFAULT 0, tags TEXT DEFAULT '', date INTEGER, synced INTEGER DEFAULT 0);");
+		mCreateTableQueries.put("level_stat", "CREATE TABLE IF NOT EXISTS level_stat ("
+				+ "uuid TEXT PRIMARY KEY, "
+				+ "bookmark INTEGER DEFAULT 0, "
+				+ "play_count INTEGER DEFAULT 1, "
+				+ "plays_to_sync INTEGER DEFAULT 1, "
+				+ "clear_count INTEGER DEFAULT 0, "
+				+ "clears_to_sync INTEGER DEFAULT 0, "
+				+ "rating INTEGER DEFAULT 0, "
+				+ "last_played INTEGER, "
+				+ "tags TEXT DEFAULT '', "
+				+ "synced INTEGER DEFAULT 0);");
+
+
+		// @formatter:on
 	}
 
 	/**

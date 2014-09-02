@@ -52,6 +52,8 @@ class HighscoreSqliteGateway extends SqliteGateway {
 			highscore.created = new Date(cursor.getLong(1));
 		}
 
+		cursor.close();
+
 		return highscore;
 	}
 
@@ -73,6 +75,8 @@ class HighscoreSqliteGateway extends SqliteGateway {
 			highscores.add(highscore);
 		}
 
+		cursor.close();
+
 		return highscores;
 	}
 
@@ -86,12 +90,16 @@ class HighscoreSqliteGateway extends SqliteGateway {
 	boolean isNewHighscore(UUID levelId, int score) {
 		DatabaseCursor cursor = rawQuery("SELECT score FROM highscore WHERE level_id='" + levelId + "';");
 
+		boolean newHighscore = true;
+
 		if (cursor.next()) {
 			int currentHighscore = cursor.getInt(0);
-			return score > currentHighscore;
-		} else {
-			return true;
+			newHighscore = score > currentHighscore;
 		}
+
+		cursor.close();
+
+		return newHighscore;
 	}
 
 	/**

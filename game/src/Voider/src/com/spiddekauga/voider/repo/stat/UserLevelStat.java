@@ -1,15 +1,15 @@
-package com.spiddekauga.voider.network.entities.stat;
+package com.spiddekauga.voider.repo.stat;
 
 import java.util.ArrayList;
+import java.util.Date;
 
-import com.spiddekauga.voider.network.entities.IEntity;
+import com.spiddekauga.voider.network.entities.stat.Tags;
 
 /**
- * Level user stats entity
+ * Local user level statistics
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-@SuppressWarnings("serial")
-public class LevelUserStatEntity implements IEntity {
+public class UserLevelStat {
 	/** Total plays */
 	public int cPlayed = 0;
 	/** Total number of clears */
@@ -18,6 +18,8 @@ public class LevelUserStatEntity implements IEntity {
 	public boolean bookmarked = false;
 	/** Rating */
 	public int rating = 0;
+	/** Last played date */
+	public Date lastPlayed = null;
 	/** Tags for the level */
-	public ArrayList<Tags> tags = new ArrayList<>();
+	public ArrayList<Tags> tags = null;
 }
