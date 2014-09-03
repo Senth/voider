@@ -25,7 +25,6 @@ import com.spiddekauga.voider.scene.SceneStub;
 
 /**
  * Tests the resource depnedency loader
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class ResourceDependencyLoaderTest {
@@ -60,7 +59,9 @@ public class ResourceDependencyLoaderTest {
 	}
 
 	/**
-	 * Test method for {@link com.spiddekauga.voider.repo.ResourceDependencyLoader#load(com.spiddekauga.voider.scene.Scene, java.util.UUID, int)}.
+	 * Test method for
+	 * {@link com.spiddekauga.voider.repo.resource.ResourceDependencyLoader#load(com.spiddekauga.voider.scene.Scene, java.util.UUID, int)}
+	 * .
 	 */
 	@Test
 	public void loadUnload() {
@@ -79,10 +80,10 @@ public class ResourceDependencyLoaderTest {
 		loadingDef.addDependency(dep1);
 		loadingDef.addDependency(dep2);
 
-		//		ResourceSaver.save(loadingDef);
-		//		ResourceSaver.save(dep1);
-		//		ResourceSaver.save(dep2);
-		//		ResourceSaver.save(depdep);
+		// ResourceSaver.save(loadingDef);
+		// ResourceSaver.save(dep1);
+		// ResourceSaver.save(dep2);
+		// ResourceSaver.save(depdep);
 
 		Scene scene = new SceneStub();
 
@@ -104,7 +105,7 @@ public class ResourceDependencyLoaderTest {
 		assertTrue("depdep is loaded", !mAssetManager.isLoaded(ResourceLocalRepo.getFilepath(depdep)));
 		assertEquals(0, mAssetManager.getLoadedAssets());
 
-		//		ResourceSaver.clearResources();
+		// ResourceSaver.clearResources();
 	}
 
 	/** Asset manager for all files */

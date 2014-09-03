@@ -1,17 +1,16 @@
 package com.spiddekauga.voider.repo.stat;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.UUID;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.time.DateUtils;
 
 import com.badlogic.gdx.sql.DatabaseCursor;
+import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.network.entities.stat.StatSyncEntity;
 import com.spiddekauga.voider.network.entities.stat.StatSyncEntity.LevelStat;
 import com.spiddekauga.voider.network.entities.stat.Tags;
 import com.spiddekauga.voider.repo.SqliteGateway;
-import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Database gateway for statistics
@@ -122,53 +121,40 @@ class StatSqliteGateway extends SqliteGateway {
 	}
 
 	/**
-	 * Set tags for the level/campaign
+	 * Add a tag for the level/campaign
 	 * @param id level/campaign id
-	 * @param tags all tags
+	 * @param tag
 	 */
-	void setTags(UUID id, ArrayList<Tags> tags) {
-		String tagString = tagsToString(tags);
-		update(id, "tags", tagString);
+	void addTag(UUID id, Tags tag) {
+		execSQL("INSERT INTO level_tag (uuid, tag, date) VALUES ('" + id + "', " + tag.getId() + ", " + new Date().getTime() + ");");
 	}
 
 	/**
-	 * Convert tags to string list
-	 * @param tags all tags to convert to string list
-	 * @return a string with all tag ids
+	 * Checks if a level/campaign is available for tagging.
+	 * @param id level/campaign id
+	 * @return true if the level/campaign is available for tagging
 	 */
-	private static String tagsToString(ArrayList<Tags> tags) {
-		@SuppressWarnings("unchecked")
-		ArrayList<Integer> tagIds = Pools.arrayList.obtain();
+	boolean isTaggable(UUID id) {
+		Date tagDate = getOldDate();
+		DatabaseCursor cursor = rawQuery("SELECT NULL FROM level_tag WHERE uuid='" + id + "' AND date>" + tagDate + ";");
 
-		for (Tags tag : tags) {
-			tagIds.add(tag.getId());
-		}
-
-		return StringUtils.join(tagIds, SEPARATOR);
-	}
-
-	/**
-	 * Convert a string tag list to array list of tags
-	 * @param tagString string of all tags to be converted to a list of tags
-	 * @return list of tags
-	 */
-	private static ArrayList<Tags> stringToTags(String tagString) {
-		String[] tagIds = StringUtils.split(tagString, SEPARATOR);
-		ArrayList<Tags> tags = new ArrayList<>();
-
-		for (String tagId : tagIds) {
-			tags.add(Tags.getEnumFromId(Integer.parseInt(tagId)));
-		}
-
-		return tags;
+		return cursor.getCount() == 0;
 	}
 
 	/**
 	 * Set all stats as synced
 	 */
 	void setAsSynced() {
-		// Level stats
+		// Level stat
 		execSQL("UPDATE level_stat SET synced=1;");
+
+		// Level tag
+		// Prune old tags
+		Date deleteDate = getOldDate();
+		execSQL("DELETE FROM level_tag WHERE date<" + deleteDate.getTime());
+
+		// Set rest as synced
+		execSQL("UPDATE level_tag SET synced=1;");
 	}
 
 	/**
@@ -201,7 +187,6 @@ class StatSqliteGateway extends SqliteGateway {
 				+ "clear_count,"
 				+ "rating,"
 				+ "last_played,"
-				+ "tags"
 				+ "FROM level_stat"
 				+ "WHERE"
 				+ "uuid='" + id + "';");
@@ -216,7 +201,6 @@ class StatSqliteGateway extends SqliteGateway {
 			userLevelStat.cCleared = cursor.getInt(2);
 			userLevelStat.rating = cursor.getInt(3);
 			userLevelStat.lastPlayed = new Date(cursor.getLong(4));
-			userLevelStat.tags = stringToTags(cursor.getString(5));
 		}
 
 		cursor.close();
@@ -243,13 +227,31 @@ class StatSqliteGateway extends SqliteGateway {
 			levelStats.cClearsToSync = cursor.getInt(5);
 			levelStats.rating = cursor.getInt(6);
 			levelStats.lastPlayed = new Date(cursor.getLong(7));
-			levelStats.tags = stringToTags(cursor.getString(8));
+
+			// Add tags
+			DatabaseCursor tagCursor = rawQuery("SELECT tag FROM level_tag WHERE uuid='" + levelStats.id + "' AND synced=0;");
+			while (cursor.next()) {
+				Tags tag = Tags.getEnumFromId(cursor.getInt(0));
+				levelStats.tags.add(tag);
+			}
+
+			tagCursor.close();
+
 
 			syncEntity.levelStats.add(levelStats);
 		}
 		cursor.close();
 
 		return syncEntity;
+	}
+
+	/**
+	 * @return old tagging date
+	 */
+	private static Date getOldDate() {
+		Date date = new Date();
+		DateUtils.addHours(date, -Config.Community.TAGGABLE_DELAY);
+		return date;
 	}
 
 	/**
@@ -262,7 +264,4 @@ class StatSqliteGateway extends SqliteGateway {
 		int cCleared;
 		int cClearsToSync;
 	}
-
-	/** Separator */
-	private static final String SEPARATOR = " ";
 }

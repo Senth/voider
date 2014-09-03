@@ -272,8 +272,6 @@ public class HighscoreGet extends VoiderServlet {
 	private static final int TOP_SCORES = 10;
 	/** Number of scores to fetch before and after the user */
 	private static final int SCORES_BEFORE_AFTER_USER = 5;
-	/** REMOVE username */
-	private static final String USERNAME = "username_10";
 
 	/** Level key */
 	private Key mLevelKey = null;

@@ -36,7 +36,7 @@ public class Messages {
 	 * @return seconds to display the message
 	 */
 	public static float calculateTimeToShowMessage(String message) {
-		return Config.Gui.MESSAGE_TIME_SHOWN_MIN + Config.Gui.MESSAGE_TIME_PER_CHARACTER * message.length();
+		return Config.Gui.MESSAGE_TIME_SHOWN_MIN;
 
 	}
 

@@ -137,7 +137,14 @@ class SqliteUpgrader {
 				+ "clears_to_sync INTEGER DEFAULT 0, "
 				+ "rating INTEGER DEFAULT 0, "
 				+ "last_played INTEGER, "
-				+ "tags TEXT DEFAULT '', "
+				+ "synced INTEGER DEFAULT 0);");
+
+		// Level tags to sync
+		mNotFoundTables.add("level_tag");
+		mCreateTableQueries.put("level_tag", "CREATE TABLE IF NOT EXISTS level_tag ("
+				+ "uuid TEXT,"
+				+ "tag INTEGER,"
+				+ "date INTEGER,"
 				+ "synced INTEGER DEFAULT 0);");
 
 

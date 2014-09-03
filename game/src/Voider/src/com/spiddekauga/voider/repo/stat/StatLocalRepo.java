@@ -1,6 +1,5 @@
 package com.spiddekauga.voider.repo.stat;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.UUID;
 
@@ -16,7 +15,7 @@ public class StatLocalRepo {
 	 * Private constructor to enforce singleton pattern
 	 */
 	private StatLocalRepo() {
-		// TODO auto-generated method
+		// Does nothing
 	}
 
 	/**
@@ -67,12 +66,23 @@ public class StatLocalRepo {
 	}
 
 	/**
-	 * Set tags for the level/campaign
+	 * Add tag for the level/campaign
 	 * @param id level/campaign id
-	 * @param tags all tags
+	 * @param tag the tag to add
 	 */
-	public void setTags(UUID id, ArrayList<Tags> tags) {
-		mSqliteGateway.setTags(id, tags);
+	public void addTag(UUID id, Tags tag) {
+		if (isTaggable(id)) {
+			mSqliteGateway.addTag(id, tag);
+		}
+	}
+
+	/**
+	 * Checks if a level/campaign is available for tagging.
+	 * @param id level/campaign id
+	 * @return true if the level/campaign is available for tagging
+	 */
+	public boolean isTaggable(UUID id) {
+		return mSqliteGateway.isTaggable(id);
 	}
 
 	/**

@@ -1,9 +1,6 @@
 package com.spiddekauga.voider.repo.stat;
 
-import java.util.ArrayList;
 import java.util.Date;
-
-import com.spiddekauga.voider.network.entities.stat.Tags;
 
 /**
  * Local user level statistics
@@ -20,6 +17,4 @@ public class UserLevelStat {
 	public int rating = 0;
 	/** Last played date */
 	public Date lastPlayed = null;
-	/** Tags for the level */
-	public ArrayList<Tags> tags = null;
 }

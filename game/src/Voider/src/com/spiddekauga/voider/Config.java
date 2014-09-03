@@ -105,10 +105,16 @@ public class Config {
 		 * in seconds
 		 */
 		public static final int RESOURCE_BROWSE_TIME = 300;
-		/**
-		 * Highscore cache, in seconds
-		 */
+		/** Highscore cache, in seconds */
 		public static final int HIGHSCORE_TIME = 45;
+	}
+
+	/**
+	 * Community things
+	 */
+	public static class Community {
+		/** How many hours until a level/campaign is taggable again */
+		public static final int TAGGABLE_DELAY = 12;
 	}
 
 	/**
@@ -971,8 +977,6 @@ public class Config {
 		public final static float MESSAGE_FADE_OUT_DURATION = 1.0f;
 		/** Minimum time shown */
 		public final static float MESSAGE_TIME_SHOWN_MIN = 7.0f;
-		/** Time to display error message per character */
-		@Deprecated public final static float MESSAGE_TIME_PER_CHARACTER = 0f;
 	}
 
 	/**
