@@ -15,8 +15,6 @@ public class LevelInfoEntity implements IEntity {
 	public LevelDefEntity defEntity = null;
 	/** Level stats */
 	public LevelStatsEntity stats = null;
-	/** User level stats, null if user haven't played these */
-	@Deprecated public UserLevelStatsEntity userStats = null;
 	/** Level tags */
-	@Deprecated public ArrayList<Tags> tags = null;
+	public ArrayList<Tags> tags = null;
 }

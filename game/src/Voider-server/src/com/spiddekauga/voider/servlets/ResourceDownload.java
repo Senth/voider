@@ -20,8 +20,8 @@ import com.spiddekauga.voider.network.entities.misc.ChatMessage.MessageTypes;
 import com.spiddekauga.voider.network.entities.resource.ResourceBlobEntity;
 import com.spiddekauga.voider.network.entities.resource.ResourceDownloadMethod;
 import com.spiddekauga.voider.network.entities.resource.ResourceDownloadMethodResponse;
-import com.spiddekauga.voider.network.entities.resource.UploadTypes;
 import com.spiddekauga.voider.network.entities.resource.ResourceDownloadMethodResponse.Statuses;
+import com.spiddekauga.voider.network.entities.resource.UploadTypes;
 import com.spiddekauga.voider.server.util.ResourceUtils;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
 import com.spiddekauga.voider.server.util.VoiderServlet;
@@ -69,7 +69,7 @@ public class ResourceDownload extends VoiderServlet {
 			// Create entity if user hasn't downloaded the resource before
 			if (!DatastoreUtils.exists("sync_published", mUser.getKey(), new FilterWrapper("published_key", key))) {
 				Entity entity = new Entity("sync_published", mUser.getKey());
-				entity.setProperty("published_key", key);
+				entity.setUnindexedProperty("published_key", key);
 				entity.setProperty("download_date", new Date());
 
 				DatastoreUtils.put(entity);

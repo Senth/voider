@@ -13,7 +13,6 @@ import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.PreparedQuery;
-import com.google.appengine.api.datastore.PropertyProjection;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
@@ -23,19 +22,17 @@ import com.google.appengine.api.datastore.QueryResultList;
 import com.google.appengine.api.search.Results;
 import com.google.appengine.api.search.ScoredDocument;
 import com.spiddekauga.appengine.DatastoreUtils;
-import com.spiddekauga.appengine.DatastoreUtils.FilterWrapper;
 import com.spiddekauga.appengine.SearchUtils;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.entities.resource.LevelDefEntity;
 import com.spiddekauga.voider.network.entities.resource.LevelGetAllMethod;
 import com.spiddekauga.voider.network.entities.resource.LevelGetAllMethodResponse;
-import com.spiddekauga.voider.network.entities.resource.UploadTypes;
 import com.spiddekauga.voider.network.entities.resource.LevelGetAllMethodResponse.Statuses;
+import com.spiddekauga.voider.network.entities.resource.UploadTypes;
 import com.spiddekauga.voider.network.entities.stat.LevelInfoEntity;
 import com.spiddekauga.voider.network.entities.stat.LevelStatsEntity;
 import com.spiddekauga.voider.network.entities.stat.Tags;
-import com.spiddekauga.voider.network.entities.stat.UserLevelStatsEntity;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
 import com.spiddekauga.voider.server.util.ServerConfig.FetchSizes;
 import com.spiddekauga.voider.server.util.UserRepo;
@@ -102,13 +99,13 @@ public class LevelGetAll extends VoiderServlet {
 		DatastoreTables table = null;
 		switch (mParameters.sort) {
 		// Level stats
-		case LIKES:
+		case BOOKMARKS:
 		case PLAYS:
 		case RATING:
 			table = DatastoreTables.LEVEL_STAT;
 			break;
 
-			// Published table
+		// Published table
 		case NEWEST:
 			table = DatastoreTables.PUBLISHED;
 			break;
@@ -120,8 +117,8 @@ public class LevelGetAll extends VoiderServlet {
 
 		// Set sorting and other filters if necessary
 		switch (mParameters.sort) {
-		case LIKES:
-			query.addSort("likes", SortDirection.DESCENDING);
+		case BOOKMARKS:
+			query.addSort("bookmarks", SortDirection.DESCENDING);
 			break;
 
 		case NEWEST:
@@ -165,7 +162,6 @@ public class LevelGetAll extends VoiderServlet {
 				LevelInfoEntity infoEntity = new LevelInfoEntity();
 				infoEntity.defEntity = getLevelDefEntity(levelKey);
 				infoEntity.stats = convertDatastoreToLevelStatsEntity(statsEntity);
-				infoEntity.userStats = getUserLevelStats(levelKey, mUser.getKey());
 				infoEntity.tags = getLevelTags(levelKey);
 				levels.add(infoEntity);
 			}
@@ -175,7 +171,6 @@ public class LevelGetAll extends VoiderServlet {
 
 				infoEntity.defEntity = convertDatastoreToLevelDefEntity(publishedEntity);
 				infoEntity.stats = getLevelStatsEntity(publishedEntity.getKey());
-				infoEntity.userStats = getUserLevelStats(publishedEntity.getKey(), mUser.getKey());
 				infoEntity.tags = getLevelTags(publishedEntity.getKey());
 				levels.add(infoEntity);
 			}
@@ -211,9 +206,6 @@ public class LevelGetAll extends VoiderServlet {
 		// Sort
 		query.addSort("count", SortDirection.DESCENDING);
 
-		// Only get tag type
-		query.addProjection(new PropertyProjection("tag", Long.class));
-
 		PreparedQuery preparedQuery = DatastoreUtils.prepare(query);
 
 		// Limit
@@ -223,7 +215,7 @@ public class LevelGetAll extends VoiderServlet {
 
 		// Convert tags to enumeration
 		for (Entity entity : entities) {
-			int tagId = (int) entity.getProperty("tag");
+			int tagId = DatastoreUtils.getIntProperty(entity, "tag");
 			Tags tag = Tags.getEnumFromId(tagId);
 			if (tag != null) {
 				tags.add(tag);
@@ -249,22 +241,6 @@ public class LevelGetAll extends VoiderServlet {
 	}
 
 	/**
-	 * Get user stats for a specified level
-	 * @param levelKey key of the level to get the stats from
-	 * @param userKey key of the user to get stats from
-	 * @return new user level stats (network) entity, new empty if not found
-	 */
-	private static UserLevelStatsEntity getUserLevelStats(Key levelKey, Key userKey) {
-		Entity entity = DatastoreUtils.getSingleEntity("user_level_stat", new FilterWrapper("level_key", levelKey));
-
-		if (entity != null) {
-			return convertDatastoreToUserLevelStatsEntity(entity);
-		} else {
-			return new UserLevelStatsEntity();
-		}
-	}
-
-	/**
 	 * Get published level
 	 * @param levelKey key of the level to get
 	 * @return new level def (network) entity, null if not found
@@ -276,23 +252,6 @@ public class LevelGetAll extends VoiderServlet {
 		}
 
 		return null;
-	}
-
-	/**
-	 * Create user level stats entity from a datastore entity
-	 * @param datastoreEntity to convert from
-	 * @return new user level stats (network) entity
-	 */
-	private static UserLevelStatsEntity convertDatastoreToUserLevelStatsEntity(Entity datastoreEntity) {
-		UserLevelStatsEntity userLevelStatsEntity = new UserLevelStatsEntity();
-
-		userLevelStatsEntity.cCleared = (int) datastoreEntity.getProperty("clear_count");
-		userLevelStatsEntity.cPlayed = (int) datastoreEntity.getProperty("play_count");
-		userLevelStatsEntity.lastPlayed = (Date) datastoreEntity.getProperty("last_played");
-		userLevelStatsEntity.bookmarked = (boolean) datastoreEntity.getProperty("like");
-		userLevelStatsEntity.rating = (int) datastoreEntity.getProperty("rating");
-
-		return userLevelStatsEntity;
 	}
 
 	/**
@@ -354,7 +313,8 @@ public class LevelGetAll extends VoiderServlet {
 		ArrayList<LevelInfoEntity> foundLevelsWithTags = mResponse.levels;
 
 		while (foundLevelsWithTags.size() < FetchSizes.LEVELS && mResponse.status != Statuses.SUCCESS_FETCHED_ALL) {
-			ArrayList<LevelInfoEntity> levels = getLevels(FetchSizes.LEVELS * 2);
+			int fetchLimit = (mParameters.tagFilter.size() + 1) * FetchSizes.LEVELS;
+			ArrayList<LevelInfoEntity> levels = getLevels(fetchLimit);
 
 			// Add OK tags
 			for (LevelInfoEntity level : levels) {
@@ -401,7 +361,6 @@ public class LevelGetAll extends VoiderServlet {
 				LevelInfoEntity infoEntity = new LevelInfoEntity();
 				infoEntity.defEntity = getLevelDefEntity(levelKey);
 				infoEntity.stats = getLevelStatsEntity(levelKey);
-				infoEntity.userStats = getUserLevelStats(levelKey, mUser.getKey());
 				infoEntity.tags = getLevelTags(levelKey);
 
 				mResponse.levels.add(infoEntity);

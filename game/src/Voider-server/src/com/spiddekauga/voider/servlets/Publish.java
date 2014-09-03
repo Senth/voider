@@ -21,8 +21,8 @@ import com.google.appengine.api.search.Field;
 import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.appengine.DatastoreUtils.FilterWrapper;
 import com.spiddekauga.appengine.SearchUtils;
-import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.entities.IEntity;
+import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.entities.misc.ChatMessage;
 import com.spiddekauga.voider.network.entities.misc.ChatMessage.MessageTypes;
 import com.spiddekauga.voider.network.entities.resource.BulletDefEntity;
@@ -436,7 +436,7 @@ public class Publish extends VoiderServlet {
 		// Get blob key for level
 		BlobKey blobKey = blobKeys.get(LevelDefEntity.levelId);
 		if (blobKey != null) {
-			DatastoreUtils.setProperty(datastoreEntity, "level_blob_key", blobKey);
+			DatastoreUtils.setUnindexedProperty(datastoreEntity, "level_blob_key", blobKey);
 		} else {
 			mLogger.severe("Could not find blob key for level: " + LevelDefEntity.levelId);
 			return false;
@@ -444,7 +444,7 @@ public class Publish extends VoiderServlet {
 
 
 		// No-test properties
-		DatastoreUtils.setProperty(datastoreEntity, "level_id", LevelDefEntity.levelId);
+		DatastoreUtils.setUnindexedProperty(datastoreEntity, "level_id", LevelDefEntity.levelId);
 		DatastoreUtils.setProperty(datastoreEntity, "level_length", LevelDefEntity.levelLength);
 
 		return appendDefEntity(datastoreEntity, LevelDefEntity, blobKeys);

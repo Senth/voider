@@ -125,10 +125,13 @@ public class UserResourcesSync extends VoiderServlet {
 			DatastoreUtils.delete(entitiesToRemove);
 
 			// Add the resource to the deleted table
-			Entity entity = new Entity("user_resources_deleted", mUser.getKey());
-			DatastoreUtils.setProperty(entity, "resource_id", removeId);
-			DatastoreUtils.setProperty(entity, "date", mResponse.syncTime);
-			DatastoreUtils.put(entity);
+			Entity entity = DatastoreUtils.getSingleEntity("user_resources_deleted", mUser.getKey(), idProperty);
+			if (entity == null) {
+				entity = new Entity("user_resources_deleted", mUser.getKey());
+				DatastoreUtils.setProperty(entity, "resource_id", removeId);
+				DatastoreUtils.setProperty(entity, "date", mResponse.syncTime);
+				DatastoreUtils.put(entity);
+			}
 		}
 	}
 
@@ -173,9 +176,6 @@ public class UserResourcesSync extends VoiderServlet {
 		Filter filter = new Query.FilterPredicate("date", FilterOperator.GREATER_THAN, methodEntity.lastSync);
 		query.setFilter(filter);
 
-		// Only retrieve resource id
-		DatastoreUtils.createUuidProjection(query, "resource_id");
-
 		PreparedQuery preparedQuery = DatastoreUtils.prepare(query);
 
 		for (Entity entity : preparedQuery.asIterable()) {
@@ -196,13 +196,6 @@ public class UserResourcesSync extends VoiderServlet {
 		// Only older than latest sync
 		Filter filter = new Query.FilterPredicate("uploaded", FilterOperator.GREATER_THAN, methodEntity.lastSync);
 		query.setFilter(filter);
-
-		// Only retrieve necessary elements
-		DatastoreUtils.createUuidProjection(query, "resource_id");
-		query.addProjection(new PropertyProjection("revision", Long.class));
-		query.addProjection(new PropertyProjection("type", Long.class));
-		query.addProjection(new PropertyProjection("blob_key", BlobKey.class));
-		query.addProjection(new PropertyProjection("created", Date.class));
 
 		query.addSort("uploaded");
 		query.addSort("revision");
@@ -273,10 +266,10 @@ public class UserResourcesSync extends VoiderServlet {
 		Entity entity = new Entity("user_resources", mUser.getKey());
 		DatastoreUtils.setProperty(entity, "resource_id", resourceRevisionEntity.resourceId);
 		entity.setProperty("revision", revisionEntity.revision);
-		entity.setProperty("type", resourceRevisionEntity.type.getId());
+		entity.setUnindexedProperty("type", resourceRevisionEntity.type.getId());
 		entity.setProperty("created", revisionEntity.date);
 		entity.setProperty("uploaded", mSyncDate);
-		entity.setProperty("blob_key", blobKeys.get(revisionEntity.revision));
+		entity.setUnindexedProperty("blob_key", blobKeys.get(revisionEntity.revision));
 
 		return DatastoreUtils.put(entity);
 	}

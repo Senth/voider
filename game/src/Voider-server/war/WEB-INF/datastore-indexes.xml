@@ -1,52 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <datastore-indexes autoGenerate="false">
-	<!-- HIGHSCORE -->
-    <!-- Score ASC -->
-    <!-- <datastore-index kind="highscore" ancestor="true" source="manual">
-        <property name="score" direction="asc"/>
-        <property name="username" direction="asc"/>
-    </datastore-index> -->
-    
-    <!-- <datastore-index kind="highscore" ancestor="true" source="manual">
-        <property name="score" direction="asc"/>
-    </datastore-index> -->
-    
+	<!-- HIGHSCORE -->   
     <!-- Score DESC -->
     <datastore-index kind="highscore" ancestor="true" source="manual">
         <property name="score" direction="desc"/>
         <property name="username" direction="asc"/>
     </datastore-index>
-    
-	<!-- Get new uploaded highscores -->
-	<!-- <datastore-index kind="highscore" ancestor="false" source="manual">
-		<property name="username" direction="asc"/>
-		<property name="uploaded" direction="asc"/>
-	</datastore-index> -->
 	
-	<!-- Get old highscore and update it -->
-	<!-- <datastore-index kind="highscore" ancestor="false" source="manual">
-		<property name="level_id-least" direction="asc"/>
-		<property name="level_id-most" direction="asc"/>
-		<property name="username" direction="asc"/>
-	</datastore-index> -->
-
-
-	<!-- PUBLISHED/DOWNLOADED SYNC -->
-    <!-- <datastore-index kind="sync_published" ancestor="true" source="manual">
-        <property name="download_date" direction="asc"/>
-    </datastore-index> -->
-
-
-	<!-- USER_LEVEL_STAT -->
-	<!-- Sync to client -->
-	<datastore-index kind="user_level_stat" ancestor="true" source="manual">
-		<property name="updated" direction="asc"/>
-	</datastore-index>
-	
-	<!-- Sync to server -->
-	<!-- <datastore-index kind="user_level_stat" ancestor="true" source="manual">
-		<property name="level_key" direction="asc"/>
-	</datastore-index> -->
+	<!-- Highscores to sync to client -->
+	<datastore-index kind="highscore" ancestor="false" source="manual">
+        <property name="username" direction="asc"/>
+        <property name="uploaded" direction="asc"/>
+    </datastore-index>
 	
 	
 	<!-- LEVEL_STAT -->
@@ -72,6 +37,24 @@
 		<property name="count" direction="desc"/>
 	</datastore-index>
 	
+	
+	<!-- LEVEL_COMMENT -->
+	<datastore-index kind="level_comment" ancestor="true" source="manual">
+		<property name="date" direction="desc"/>
+	</datastore-index>
+	
+	
+	<!-- SYNC PUBLISHED -->
+	<datastore-index kind="sync_published" ancestor="true" source="manual">
+        <property name="download_date" direction="asc"/>
+    </datastore-index>
+    
+
+	<!-- USER RESOURCES DELETED -->
+	<datastore-index kind="user_resources_deleted" ancestor="true" source="manual">
+        <property name="date" direction="asc"/>
+    </datastore-index>
+
 
     <!-- USER RESOURCE SYNC -->
     <!-- Check for conflicts, i.e. if the revision for the resource exists -->
@@ -81,85 +64,15 @@
     	<property name="revision" direction="asc"/>
     </datastore-index>
     
-    <!-- Get all blobs for specific resource, used when deleting -->
-    <datastore-index kind="user_resources" ancestor="false" source="manual">
-    	<property name="resource_id-least" direction="asc"/>
-    	<property name="resource_id-most" direction="asc"/>
-    	<property name="blob_key" direction="asc"/>
+    <!-- Sync new to clients -->
+    <datastore-index kind="user_resources" ancestor="true" source="manual">
+        <property name="uploaded" direction="asc"/>
+        <property name="revision" direction="asc"/>
     </datastore-index>
     
-    <!-- TODO -->
-    <datastore-index kind="user_resources_deleted" ancestor="true" source="auto">
-        <property name="date" direction="asc"/>
-        <property name="resource_id-least" direction="asc"/>
-        <property name="resource_id-most" direction="asc"/>
-    </datastore-index>
-
-    <!-- TODO -->
-    <datastore-index kind="user_resources" ancestor="true" source="auto">
-        <property name="uploaded" direction="asc"/>
-        <property name="resource_id" direction="asc"/>
-        <property name="revision" direction="asc"/>
-        <property name="blob_key" direction="asc"/>
-        <property name="created" direction="asc"/>
-        <property name="resource_id-least" direction="asc"/>
-        <property name="resource_id-most" direction="asc"/>
-        <property name="type" direction="asc"/>
-    </datastore-index>
-
-    <!-- TODO -->
-    <datastore-index kind="user_resources" ancestor="true" source="auto">
-        <property name="uploaded" direction="asc"/>
-    </datastore-index>
-
-    <!-- TODO -->
-    <datastore-index kind="user_resources" ancestor="true" source="auto">
-        <property name="uploaded" direction="asc"/>
-        <property name="blob_key" direction="asc"/>
-        <property name="created" direction="asc"/>
-        <property name="resource_id-least" direction="asc"/>
-        <property name="resource_id-most" direction="asc"/>
-        <property name="revision" direction="asc"/>
-        <property name="type" direction="asc"/>
-    </datastore-index>
-
-    <!-- TODO -->
-    <datastore-index kind="user_resources" ancestor="true" source="auto">
-        <property name="uploaded" direction="asc"/>
-        <property name="resource_id" direction="asc"/>
-        <property name="blob_key" direction="asc"/>
-        <property name="created" direction="asc"/>
-        <property name="resource_id-least" direction="asc"/>
-        <property name="resource_id-most" direction="asc"/>
-        <property name="revision" direction="asc"/>
-        <property name="type" direction="asc"/>
-    </datastore-index>
-
-    <!-- TODO-->
-    <datastore-index kind="user_resources" ancestor="true" source="auto">
-        <property name="uploaded" direction="asc"/>
-        <property name="revision" direction="asc"/>
-        <property name="blob_key" direction="asc"/>
-        <property name="created" direction="asc"/>
-        <property name="resource_id-least" direction="asc"/>
-        <property name="resource_id-most" direction="asc"/>
-        <property name="type" direction="asc"/>
-    </datastore-index>
-
-    <!-- TODO -->
-    <datastore-index kind="user_resources" ancestor="true" source="auto">
-        <property name="uploaded" direction="asc"/>
-        <property name="resource_id-least" direction="asc"/>
-        <property name="reosurce_id-most" direction="asc"/>
-        <property name="revision" direction="asc"/>
-        <property name="blob_key" direction="asc"/>
-        <property name="created" direction="asc"/>
-        <property name="resource_id-most" direction="asc"/>
-        <property name="type" direction="asc"/>
-    </datastore-index>
-    
-        <!-- TODO -->
-    <datastore-index kind="published" ancestor="false" source="auto">
+    <!-- PUBLISHED (EXPLORE) -->
+    <!-- Sort by newest -->   
+    <datastore-index kind="published" ancestor="false" source="manual">
         <property name="type" direction="asc"/>
         <property name="date" direction="desc"/>
     </datastore-index>

@@ -12,7 +12,6 @@ import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.PreparedQuery.TooManyResultsException;
-import com.google.appengine.api.datastore.PropertyProjection;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.appengine.api.datastore.QueryResultList;
@@ -81,12 +80,6 @@ public class LevelGetComment extends VoiderServlet {
 	 */
 	private QueryResultList<Entity> getComments(Key levelKey, String startCursor) {
 		Query query = new Query(DatastoreTables.LEVEL_COMMENT.toString(), levelKey);
-
-
-		// Only get certain properties
-		query.addProjection(new PropertyProjection("user_key", Key.class));
-		query.addProjection(new PropertyProjection("comment", String.class));
-		query.addProjection(new PropertyProjection("date", Date.class));
 
 
 		// Sort after latest comment

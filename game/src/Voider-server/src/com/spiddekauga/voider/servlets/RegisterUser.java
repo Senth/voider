@@ -94,9 +94,10 @@ public class RegisterUser extends VoiderServlet {
 		Entity datastoreEntity = new Entity(DatastoreTables.USERS.toString());
 
 		datastoreEntity.setProperty("username", networkEntity.username);
-		datastoreEntity.setProperty("created", new Date());
-		datastoreEntity.setProperty("logged-in", new Date());
+		datastoreEntity.setUnindexedProperty("created", new Date());
+		datastoreEntity.setUnindexedProperty("logged-in", new Date());
 		datastoreEntity.setProperty("email", networkEntity.email);
+		datastoreEntity.setUnindexedProperty("date_format", "MM/dd/yyyy HH:mm:ss");
 
 		// Private key
 		UUID privateKey = UUID.randomUUID();
