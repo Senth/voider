@@ -104,6 +104,8 @@ public class Synchronizer extends Observable implements IMessageListener, IRespo
 		}
 
 
+		// TODO remove wait window for syncing that doesn't need it
+
 		switch (type) {
 		case COMMUNITY_RESOURCES:
 			mResourceRepo.syncDownload(responseListeners);

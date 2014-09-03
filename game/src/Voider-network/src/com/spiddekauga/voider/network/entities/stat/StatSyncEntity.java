@@ -13,30 +13,30 @@ import com.spiddekauga.voider.network.entities.IEntity;
 @SuppressWarnings("serial")
 public class StatSyncEntity implements IEntity {
 	/** Level/Campaign stats to sync */
-	public ArrayList<LevelStats> levelStats = new ArrayList<>();
+	public ArrayList<LevelStat> levelStats = new ArrayList<>();
 	/** Last sync date */
 	public Date syncDate = null;
 
 	/**
 	 * Level/Campaign stats
 	 */
-	public static class LevelStats {
+	public static class LevelStat {
 		/** Level/Campaign id */
-		public UUID id;
+		public UUID id = null;
 		/** If the level/campaign is bookmarked */
-		public boolean bookmark;
+		public boolean bookmark = false;
 		/** Play count (incl. plays to sync) */
-		public int cPlayed;
+		public int cPlayed = 0;
 		/** Play count to sync (only from client) */
 		public int cPlaysToSync = 0;
 		/** Clear count (incl. clears to sync) */
-		public int cCleared;
+		public int cCleared = 0;
 		/** Clear count to sync (only from client) */
 		public int cClearsToSync = 0;
 		/** Rating rating of the level/campaign */
-		public int rating;
+		public int rating = 0;
 		/** Last played date */
-		public Date lastPlayed;
+		public Date lastPlayed = null;
 		/** Last updated (only from server) */
 		public Date updated = null;
 		/** Tags */

@@ -8,7 +8,7 @@ import org.apache.commons.lang.StringUtils;
 
 import com.badlogic.gdx.sql.DatabaseCursor;
 import com.spiddekauga.voider.network.entities.stat.StatSyncEntity;
-import com.spiddekauga.voider.network.entities.stat.StatSyncEntity.LevelStats;
+import com.spiddekauga.voider.network.entities.stat.StatSyncEntity.LevelStat;
 import com.spiddekauga.voider.network.entities.stat.Tags;
 import com.spiddekauga.voider.repo.SqliteGateway;
 import com.spiddekauga.voider.utils.Pools;
@@ -234,7 +234,7 @@ class StatSqliteGateway extends SqliteGateway {
 		DatabaseCursor cursor = rawQuery("SELECT * FROM level_stat WHERE synced=0");
 
 		while (cursor.next()) {
-			LevelStats levelStats = new LevelStats();
+			LevelStat levelStats = new LevelStat();
 			levelStats.id = UUID.fromString(cursor.getString(0));
 			levelStats.bookmark = cursor.getInt(1) == 1 ? true : false;
 			levelStats.cPlayed = cursor.getInt(2);

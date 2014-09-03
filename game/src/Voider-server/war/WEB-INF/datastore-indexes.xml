@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<datastore-indexes autoGenerate="true">
+<datastore-indexes autoGenerate="false">
 	<!-- HIGHSCORE -->
     <!-- Score ASC -->
-    <datastore-index kind="highscore" ancestor="true" source="manual">
+    <!-- <datastore-index kind="highscore" ancestor="true" source="manual">
         <property name="score" direction="asc"/>
         <property name="username" direction="asc"/>
-    </datastore-index>
+    </datastore-index> -->
     
-     <datastore-index kind="highscore" ancestor="true" source="manual">
+    <!-- <datastore-index kind="highscore" ancestor="true" source="manual">
         <property name="score" direction="asc"/>
-    </datastore-index>
+    </datastore-index> -->
     
     <!-- Score DESC -->
     <datastore-index kind="highscore" ancestor="true" source="manual">
@@ -18,29 +18,58 @@
     </datastore-index>
     
 	<!-- Get new uploaded highscores -->
-	<datastore-index kind="highscore" ancestor="false" source="manual">
+	<!-- <datastore-index kind="highscore" ancestor="false" source="manual">
 		<property name="username" direction="asc"/>
 		<property name="uploaded" direction="asc"/>
-	</datastore-index>
+	</datastore-index> -->
 	
 	<!-- Get old highscore and update it -->
-	<datastore-index kind="highscore" ancestor="false" source="manual">
+	<!-- <datastore-index kind="highscore" ancestor="false" source="manual">
 		<property name="level_id-least" direction="asc"/>
 		<property name="level_id-most" direction="asc"/>
 		<property name="username" direction="asc"/>
-	</datastore-index>
+	</datastore-index> -->
 
 
 	<!-- PUBLISHED/DOWNLOADED SYNC -->
-    <datastore-index kind="sync_published" ancestor="true" source="manual">
+    <!-- <datastore-index kind="sync_published" ancestor="true" source="manual">
         <property name="download_date" direction="asc"/>
-    </datastore-index>
+    </datastore-index> -->
 
 
 	<!-- USER_LEVEL_STAT -->
-	<!-- New stats to sync -->
+	<!-- Sync to client -->
 	<datastore-index kind="user_level_stat" ancestor="true" source="manual">
 		<property name="updated" direction="asc"/>
+	</datastore-index>
+	
+	<!-- Sync to server -->
+	<!-- <datastore-index kind="user_level_stat" ancestor="true" source="manual">
+		<property name="level_key" direction="asc"/>
+	</datastore-index> -->
+	
+	
+	<!-- LEVEL_STAT -->
+	<!-- Explore — Sort by play count -->
+	<datastore-index kind="level_stat" ancestor="true" source="manual">
+		<property name="play_count" direction="desc"/>
+	</datastore-index>
+	
+	<!-- Explore — Sort by rating -->
+	<datastore-index kind="level_stat" ancestor="true" source="manual">
+		<property name="rating_avg" direction="desc"/>
+	</datastore-index>
+	
+	<!-- Explore — Sort by boomark count -->
+	<datastore-index kind="level_stat" ancestor="true" source="manual">
+		<property name="bookmarks" direction="desc"/>
+	</datastore-index>
+	
+	
+	<!-- LEVEL_TAG -->
+	<!-- Get by count -->
+	<datastore-index kind="level_tag" ancestor="true" source="manual">
+		<property name="count" direction="desc"/>
 	</datastore-index>
 	
 
