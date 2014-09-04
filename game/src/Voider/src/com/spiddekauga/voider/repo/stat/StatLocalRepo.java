@@ -104,6 +104,15 @@ public class StatLocalRepo {
 		return syncEntity;
 	}
 
+	/**
+	 * Set all stats as synced
+	 * @param syncDate the new sync date
+	 */
+	void setAsSynced(Date syncDate) {
+		mSqliteGateway.setAsSynced();
+		mPrefsGateway.setSyncDate(syncDate);
+	}
+
 	/** Preferences gateway */
 	private StatPrefsGateway mPrefsGateway = new StatPrefsGateway();
 	/** Sqlite gateway */

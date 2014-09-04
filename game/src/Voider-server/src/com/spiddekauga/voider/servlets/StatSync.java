@@ -17,6 +17,8 @@ import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.appengine.DatastoreUtils.FilterWrapper;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
+import com.spiddekauga.voider.network.entities.misc.ChatMessage;
+import com.spiddekauga.voider.network.entities.misc.ChatMessage.MessageTypes;
 import com.spiddekauga.voider.network.entities.stat.StatSyncEntity;
 import com.spiddekauga.voider.network.entities.stat.StatSyncEntity.LevelStat;
 import com.spiddekauga.voider.network.entities.stat.StatSyncMethod;
@@ -26,7 +28,7 @@ import com.spiddekauga.voider.network.entities.stat.Tags;
 import com.spiddekauga.voider.server.util.VoiderServlet;
 
 /**
- * Synchronizes various statisticts
+ * Synchronizes various statistics
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
@@ -150,6 +152,11 @@ public class StatSync extends VoiderServlet {
 				updateLevelStats(levelKey, levelStat, oldStat);
 				updateLevelTags(levelKey, levelStat.tags);
 			}
+		}
+
+		// Send sync response
+		if (mParameters.levelStats.isEmpty()) {
+			sendMessage(new ChatMessage<>(MessageTypes.SYNC_STAT, mUser.getClientId()));
 		}
 	}
 

@@ -24,6 +24,7 @@ import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.resource.ResourceLocalRepo;
 import com.spiddekauga.voider.repo.resource.ResourceRepo;
 import com.spiddekauga.voider.repo.stat.HighscoreRepo;
+import com.spiddekauga.voider.repo.stat.StatRepo;
 import com.spiddekauga.voider.resources.BugReportDef;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.server.IMessageListener;
@@ -65,11 +66,11 @@ public class Synchronizer extends Observable implements IMessageListener, IRespo
 
 		case SYNC_HIGHSCORE:
 			synchronize(SyncTypes.HIGHSCORES);
-
-		default:
-			// Does nothing
 			break;
 
+		case SYNC_STAT:
+			synchronize(SyncTypes.STATS);
+			break;
 		}
 	}
 
@@ -83,6 +84,25 @@ public class Synchronizer extends Observable implements IMessageListener, IRespo
 	}
 
 	/**
+	 * Add the this class to the front of the response listener
+	 * @param responseListener existing response listener
+	 * @return array of response listener with the Synchronizer placed first
+	 */
+	private IResponseListener[] addSynchronizerToListeners(IResponseListener responseListener) {
+		IResponseListener[] responseListeners = null;
+		if (responseListener != null) {
+			responseListeners = new IResponseListener[2];
+			responseListeners[0] = this;
+			responseListeners[1] = responseListener;
+		} else {
+			responseListeners = new IResponseListener[1];
+			responseListeners[0] = this;
+		}
+
+		return responseListeners;
+	}
+
+	/**
 	 * Synchronize the specified message type
 	 * @param type the synchronize type to synchronize
 	 * @param responseListener use a specified response listener, set to null to skip
@@ -93,15 +113,7 @@ public class Synchronizer extends Observable implements IMessageListener, IRespo
 			return false;
 		}
 
-		IResponseListener[] responseListeners = null;
-		if (responseListener != null) {
-			responseListeners = new IResponseListener[2];
-			responseListeners[0] = this;
-			responseListeners[1] = responseListener;
-		} else {
-			responseListeners = new IResponseListener[1];
-			responseListeners[0] = this;
-		}
+		IResponseListener[] responseListeners = addSynchronizerToListeners(responseListener);
 
 
 		// TODO remove wait window for syncing that doesn't need it
@@ -124,6 +136,9 @@ public class Synchronizer extends Observable implements IMessageListener, IRespo
 		case HIGHSCORES:
 			mHighscoreRepo.sync(responseListeners);
 			break;
+
+		case STATS:
+			mStatRepo.sync(responseListeners);
 		}
 
 		return true;
@@ -325,6 +340,8 @@ public class Synchronizer extends Observable implements IMessageListener, IRespo
 		BUG_REPORTS,
 		/** Highscores */
 		HIGHSCORES,
+		/** Statistics */
+		STATS,
 	}
 
 	/**
@@ -355,6 +372,8 @@ public class Synchronizer extends Observable implements IMessageListener, IRespo
 	private ResourceRepo mResourceRepo = ResourceRepo.getInstance();
 	/** Highscore repository */
 	private HighscoreRepo mHighscoreRepo = HighscoreRepo.getInstance();
+	/** Stats repository */
+	private StatRepo mStatRepo = StatRepo.getInstance();
 
 	/** Instance of this class */
 	private static Synchronizer mInstance = null;

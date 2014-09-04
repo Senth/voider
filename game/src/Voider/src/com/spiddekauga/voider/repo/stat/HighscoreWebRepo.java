@@ -11,12 +11,12 @@ import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.entities.stat.HighscoreEntity;
 import com.spiddekauga.voider.network.entities.stat.HighscoreGetMethod;
+import com.spiddekauga.voider.network.entities.stat.HighscoreGetMethod.Fetch;
 import com.spiddekauga.voider.network.entities.stat.HighscoreGetMethodResponse;
+import com.spiddekauga.voider.network.entities.stat.HighscoreGetMethodResponse.Statuses;
 import com.spiddekauga.voider.network.entities.stat.HighscoreSyncEntity;
 import com.spiddekauga.voider.network.entities.stat.HighscoreSyncMethod;
 import com.spiddekauga.voider.network.entities.stat.HighscoreSyncMethodResponse;
-import com.spiddekauga.voider.network.entities.stat.HighscoreGetMethod.Fetch;
-import com.spiddekauga.voider.network.entities.stat.HighscoreGetMethodResponse.Statuses;
 import com.spiddekauga.voider.repo.Cache;
 import com.spiddekauga.voider.repo.CacheEntity;
 import com.spiddekauga.voider.repo.IResponseListener;
@@ -59,7 +59,7 @@ class HighscoreWebRepo extends WebRepo {
 	}
 
 	/**
-	 * Syncronize highscores
+	 * Synchronize highscores
 	 * @param lastSync date when highscores were last synced
 	 * @param highscores all highscores to synchronize
 	 * @param responseListeners listens to the web response
@@ -151,7 +151,7 @@ class HighscoreWebRepo extends WebRepo {
 	}
 
 	@Override
-	protected void handleResponse(IMethodEntity methodEntity, IEntity response, IResponseListener[] callerResponseListeners) {
+	protected void handleResponse(IMethodEntity methodEntity, IEntity response, IResponseListener[] esponseListeners) {
 		IEntity responseToSend = null;
 
 		if (methodEntity instanceof HighscoreGetMethod) {
@@ -161,7 +161,7 @@ class HighscoreWebRepo extends WebRepo {
 		}
 
 
-		sendResponseToListeners(methodEntity, responseToSend, callerResponseListeners);
+		sendResponseToListeners(methodEntity, responseToSend, esponseListeners);
 	}
 
 	/**

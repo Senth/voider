@@ -75,5 +75,7 @@ public class ChatMessage<DataType> implements IEntity {
 		SYNC_USER_RESOURCES,
 		/** Synchronize highscores */
 		SYNC_HIGHSCORE,
+		/** Synchronize statistics */
+		SYNC_STAT,
 	}
 }
