@@ -115,6 +115,10 @@ public class Config {
 	public static class Community {
 		/** How many hours until a level/campaign is taggable again */
 		public static final int TAGGABLE_DELAY = 12;
+		/** How many tags to display when tagging */
+		public static final int TAGS_TO_DISPLAY = 7;
+		/** Tags per row */
+		public static final int TAGS_PER_ROW = 2;
 	}
 
 	/**

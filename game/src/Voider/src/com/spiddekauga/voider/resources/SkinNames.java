@@ -670,15 +670,15 @@ public class SkinNames {
 		/** Stub image */
 		STUB(null),
 		/** Text button default style */
-		TEXT_BUTTON_PRESS(TextButtonStyle.class, "default"),
-		/** Text button that always is selected */
-		TEXT_BUTTON_SELECTED(TextButtonStyle.class, "selected"),
+		TEXT_BUTTON_TRANSPARENT_PRESS(TextButtonStyle.class, "transparent"),
 		/** Text button that can toggle */
-		TEXT_BUTTON_TOGGLE(TextButtonStyle.class, "toggle"),
+		TEXT_BUTTON_TRANSPARENT_TOGGLE(TextButtonStyle.class, "transparent_toggle"),
 		/** Flat text button */
 		TEXT_BUTTON_FLAT_PRESS(TextButtonStyle.class, "flat_press"),
 		/** Flat toggleable text button */
 		TEXT_BUTTON_FLAT_TOGGLE(TextButtonStyle.class, "flat_toggle"),
+		/** Tag button */
+		TEXT_BUTTON_TAG(TextButtonStyle.class, "tag"),
 		/** Text field default */
 		TEXT_FIELD_DEFAULT(TextFieldStyle.class, "default"),
 		/** Window default style without title */

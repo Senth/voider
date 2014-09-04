@@ -1,18 +1,16 @@
 package com.spiddekauga.voider.servlets;
 
 import java.io.IOException;
-import java.util.Date;
-import java.util.Random;
-import java.util.UUID;
+import java.util.List;
 
 import javax.servlet.ServletException;
 
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.spiddekauga.appengine.DatastoreUtils;
-import com.spiddekauga.appengine.DatastoreUtils.FilterWrapper;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
+import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
 import com.spiddekauga.voider.server.util.VoiderServlet;
 
 /**
@@ -28,34 +26,32 @@ public class Upgrade extends VoiderServlet {
 
 	@Override
 	protected IEntity onRequest(IMethodEntity methodEntity) throws ServletException, IOException {
-		// Add stub highscores to a level
-		UUID levelId = UUID.fromString("2263cb75-59b7-4f32-9398-92cb36287f58");
-		Key levelKey = getLevelKey(levelId);
-		Random random = new Random();
-		Date date = new Date();
+		List<Key> keys = DatastoreUtils.getKeys("published");
 
-		// 100 highscores
-		if (levelKey != null) {
-			for (int i = 0; i < 100; ++i) {
-				Entity entity = new Entity("highscore", levelKey);
-				entity.setProperty("username", "username_" + i);
-				entity.setProperty("score", random.nextInt(1500));
-				entity.setProperty("created", date);
-				entity.setProperty("uploaded", date);
-				DatastoreUtils.setProperty(entity, "level_id", levelId);
-				DatastoreUtils.put(entity);
-			}
+		for (Key levelKey : keys) {
+			createEmptyLevelStatistics(levelKey);
 		}
 
 		return null;
 	}
 
 	/**
-	 * Get level key for the specified level_id
-	 * @param levelId id for the level
-	 * @return level key from the level
+	 * Create empty level statistics
+	 * @param key datastore key of the level entity to add empty statistics for
+	 * @return true if successful, false otherwise
 	 */
-	private static Key getLevelKey(UUID levelId) {
-		return DatastoreUtils.getSingleKey("published", new FilterWrapper("resource_id", levelId));
+	private boolean createEmptyLevelStatistics(Key key) {
+		Entity entity = new Entity(DatastoreTables.LEVEL_STAT.toString(), key);
+
+		entity.setProperty("play_count", 0);
+		entity.setProperty("bookmarks", 0);
+		entity.setProperty("rating_sum", 0);
+		entity.setProperty("ratings", 0);
+		entity.setProperty("rating_avg", 0.0);
+		entity.setProperty("clear_count", 0);
+
+		Key statKey = DatastoreUtils.put(entity);
+
+		return statKey != null;
 	}
 }

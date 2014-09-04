@@ -20,7 +20,7 @@ public class StatSyncEntity implements IEntity {
 	/**
 	 * Level/Campaign stats
 	 */
-	public static class LevelStat {
+	public static class LevelStat implements IEntity {
 		/** Level/Campaign id */
 		public UUID id = null;
 		/** If the level/campaign is bookmarked */

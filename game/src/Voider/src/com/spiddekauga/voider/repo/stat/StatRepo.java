@@ -3,7 +3,6 @@ package com.spiddekauga.voider.repo.stat;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.entities.stat.StatSyncEntity;
-import com.spiddekauga.voider.network.entities.stat.StatSyncMethod;
 import com.spiddekauga.voider.network.entities.stat.StatSyncMethodResponse;
 import com.spiddekauga.voider.repo.IResponseListener;
 import com.spiddekauga.voider.repo.Repo;
@@ -43,18 +42,17 @@ public class StatRepo extends Repo {
 	@Override
 	public void handleWebResponse(IMethodEntity method, IEntity response) {
 		if (response instanceof StatSyncMethodResponse) {
-			handleSyncResponse((StatSyncMethod) method, (StatSyncMethodResponse) response);
+			handleSyncResponse((StatSyncMethodResponse) response);
 		}
 	}
 
 	/**
 	 * Handle sync response from the server
-	 * @param method parameters to the server
 	 * @param response server response
 	 */
-	private void handleSyncResponse(StatSyncMethod method, StatSyncMethodResponse response) {
+	private void handleSyncResponse(StatSyncMethodResponse response) {
 		if (response.isSuccessful()) {
-			mLocalRepo.setAsSynced(method.syncEntity.syncDate);
+			mLocalRepo.setAsSynced(response.syncEntity.syncDate);
 		}
 	}
 

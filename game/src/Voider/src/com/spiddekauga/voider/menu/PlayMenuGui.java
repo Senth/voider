@@ -39,7 +39,7 @@ public class PlayMenuGui extends MenuGui {
 	 * Init the menu
 	 */
 	private void initMenu() {
-		TextButtonStyle textPressStyle = SkinNames.getResource(SkinNames.General.TEXT_BUTTON_PRESS);
+		TextButtonStyle textPressStyle = SkinNames.getResource(SkinNames.General.TEXT_BUTTON_TRANSPARENT_PRESS);
 
 		float maxWidth = Gdx.graphics.getWidth() * 0.66f / 3;
 

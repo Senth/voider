@@ -140,6 +140,14 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 		<servlet-name>HighscoreGet</servlet-name>
 		<url-pattern>/highscore-get</url-pattern>
 	</servlet-mapping>
+	<servlet>
+		<servlet-name>StatSync</servlet-name>
+		<servlet-class>com.spiddekauga.voider.servlets.StatSync</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>StatSync</servlet-name>
+		<url-pattern>/stat-sync</url-pattern>
+	</servlet-mapping>
 	<welcome-file-list>
 		<welcome-file>index.html</welcome-file>
 	</welcome-file-list>

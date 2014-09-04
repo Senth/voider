@@ -24,72 +24,15 @@ class StatSqliteGateway extends SqliteGateway {
 	 * @param cleared true if the level/campaign was cleared
 	 */
 	void increasePlayCount(UUID id, boolean cleared) {
-		PlaysWrapper playCount = getPlayCount(id);
 
-		long lastPlayed = new Date().getTime();
+		String sql = "UPDATE level_stat SET synced=0, play_count=play_count+1, plays_to_sync=plays_to_sync+1";
 
-		// Update existing stats
-		if (playCount != null) {
-			playCount.cPlayed++;
-			playCount.cClearsToSync++;
-
-			if (cleared) {
-				playCount.cCleared++;
-				playCount.cClearsToSync++;
-			}
-
-			// @formatter:off
-			execSQL("UPDATE level_stat SET "
-					+ "play_count=" + playCount.cPlayed
-					+ ", plays_to_sync=" + playCount.cPlaysToSync
-					+ ", clear_count=" + playCount.cCleared
-					+ ", clears_to_sync=" + playCount.cClearsToSync
-					+ ", last_played=" + lastPlayed
-					+ ", synced=0"
-					+ "WHERE"
-					+ "uuid='" + id + "';");
-			// @formatter:on
-		}
-		// Create new stats for level/campaign
-		else {
-			int clearCount = cleared ? 1 : 0;
-
-			// @formatter:off
-			execSQL("INSERT INTO level_stat ("
-					+ "uuid, "
-					+ "clear_count, "
-					+ "clears_to_sync, "
-					+ "last_played) "
-					+ "VALUES ("
-					+ "'" + id + "', "
-					+ clearCount + ", "
-					+ clearCount + ", "
-					+ lastPlayed + ");");
-			// @formatter:on
-		}
-	}
-
-	/**
-	 * Get number of plays from the specified id
-	 * @param id level/campaign id
-	 * @return number of plays, null if no statistics for the level/campaign exists
-	 */
-	private PlaysWrapper getPlayCount(UUID id) {
-		DatabaseCursor cursor = rawQuery("SELECT play_count, plays_to_sync, clear_count, clears_to_sync FROM level_stats WHERE uuid='" + id + "';");
-
-		PlaysWrapper playsWrapper = null;
-
-		if (cursor.next()) {
-			playsWrapper = new PlaysWrapper();
-			playsWrapper.cPlayed = cursor.getInt(0);
-			playsWrapper.cPlaysToSync = cursor.getInt(1);
-			playsWrapper.cCleared = cursor.getInt(2);
-			playsWrapper.cClearsToSync = cursor.getInt(3);
+		if (cleared) {
+			sql += ", clear_count=clear_count+1, clears_to_sync=clears_to_sync+1";
 		}
 
-		cursor.close();
-
-		return playsWrapper;
+		sql += " WHERE uuid='" + id + "';";
+		execSQL(sql);
 	}
 
 	/**
@@ -112,12 +55,29 @@ class StatSqliteGateway extends SqliteGateway {
 	}
 
 	/**
-	 * Sets when the level/ćampaign was last played
-	 * @param id level/ćampaign id
+	 * Sets when the level/campaign was last played
+	 * @param id level/campaign id
 	 * @param date last played date
 	 */
 	void setLastPlayed(UUID id, Date date) {
-		update(id, "last_played", date.getTime());
+		// Update
+		if (statExists(id)) {
+			update(id, "last_played", date.getTime());
+		}
+		// Create new
+		else {
+			execSQL("INSERT INTO level_stat (uuid, last_played) VALUES ('" + id + "', " + date.getTime() + ");");
+		}
+	}
+
+	/**
+	 * Check if stats exists for the specified level/campaign
+	 * @param id level/campaign id
+	 * @return true if stats exists for the level/campaign
+	 */
+	boolean statExists(UUID id) {
+		DatabaseCursor cursor = rawQuery("SELECT NULL FROM level_stat WHERE uuid='" + id + "' LIMIT 1;");
+		return cursor.getCount() == 1;
 	}
 
 	/**
@@ -136,7 +96,7 @@ class StatSqliteGateway extends SqliteGateway {
 	 */
 	boolean isTaggable(UUID id) {
 		Date tagDate = getOldDate();
-		DatabaseCursor cursor = rawQuery("SELECT NULL FROM level_tag WHERE uuid='" + id + "' AND date>" + tagDate + ";");
+		DatabaseCursor cursor = rawQuery("SELECT NULL FROM level_tag WHERE uuid='" + id + "' AND date>" + tagDate.getTime() + ";");
 
 		return cursor.getCount() == 0;
 	}
@@ -146,7 +106,7 @@ class StatSqliteGateway extends SqliteGateway {
 	 */
 	void setAsSynced() {
 		// Level stat
-		execSQL("UPDATE level_stat SET synced=1;");
+		execSQL("UPDATE level_stat SET plays_to_sync=0, clears_to_sync=0, synced=1;");
 
 		// Level tag
 		// Prune old tags
@@ -181,14 +141,14 @@ class StatSqliteGateway extends SqliteGateway {
 	 */
 	UserLevelStat getLevelStats(UUID id) {
 		// @formatter:off
-		DatabaseCursor cursor = rawQuery("SELECT"
-				+ "bookmark,"
-				+ "play_count,"
-				+ "clear_count,"
-				+ "rating,"
-				+ "last_played,"
-				+ "FROM level_stat"
-				+ "WHERE"
+		DatabaseCursor cursor = rawQuery("SELECT "
+				+ "bookmark, "
+				+ "play_count, "
+				+ "clear_count, "
+				+ "rating, "
+				+ "last_played "
+				+ "FROM level_stat "
+				+ "WHERE "
 				+ "uuid='" + id + "';");
 		// @formatter:on
 
@@ -230,7 +190,7 @@ class StatSqliteGateway extends SqliteGateway {
 
 			// Add tags
 			DatabaseCursor tagCursor = rawQuery("SELECT tag FROM level_tag WHERE uuid='" + levelStats.id + "' AND synced=0;");
-			while (cursor.next()) {
+			while (tagCursor.next()) {
 				Tags tag = Tags.getEnumFromId(cursor.getInt(0));
 				levelStats.tags.add(tag);
 			}
@@ -249,19 +209,6 @@ class StatSqliteGateway extends SqliteGateway {
 	 * @return old tagging date
 	 */
 	private static Date getOldDate() {
-		Date date = new Date();
-		DateUtils.addHours(date, -Config.Community.TAGGABLE_DELAY);
-		return date;
-	}
-
-	/**
-	 * Wrapper for number of plays
-	 */
-	@SuppressWarnings("javadoc")
-	private class PlaysWrapper {
-		int cPlayed;
-		int cPlaysToSync;
-		int cCleared;
-		int cClearsToSync;
+		return DateUtils.addHours(new Date(), -Config.Community.TAGGABLE_DELAY);
 	}
 }

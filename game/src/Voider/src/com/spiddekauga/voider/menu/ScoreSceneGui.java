@@ -30,9 +30,12 @@ public class ScoreSceneGui extends Gui {
 	}
 
 	@Override
-	public void reset() {
-		mMainTable.dispose(true);
-	}
+	public void resetValues() {
+		mWidgets.bookmark.setChecked(mScoreScene.isBookmarked());
+		mWidgets.rating.setRating(mScoreScene.getRating());
+
+		// TODO comment
+	};
 
 	@Override
 	public void initGui() {
@@ -66,7 +69,7 @@ public class ScoreSceneGui extends Gui {
 		mUiFactory.addLabel("Rate", false, mMainTable);
 		mMainTable.add().setFillWidth(true);
 		RatingWidget ratingWidget = mUiFactory.addRatingWidget(Touchable.enabled, mMainTable, null);
-		mWidgets.main.rating = ratingWidget;
+		mWidgets.rating = ratingWidget;
 		IRatingListener ratingListener = new IRatingListener() {
 			@Override
 			public void onRatingChange(int newRating) {
@@ -75,24 +78,12 @@ public class ScoreSceneGui extends Gui {
 		};
 		ratingWidget.addListener(ratingListener);
 
-		// Tag
-		mMainTable.row().setFillWidth(true);
-		mUiFactory.addLabel("Tag", false, mMainTable);
-		mMainTable.add().setFillWidth(true);
-		Button button = mUiFactory.addImageButton(SkinNames.General.TAG, mMainTable, null, null);
-		new ButtonListener(button) {
-			@Override
-			protected void onPressed() {
-				// TODO show tags
-			}
-		};
-
 		// Bookmark
 		mMainTable.row().setFillWidth(true);
 		mUiFactory.addLabel("Bookmark", false, mMainTable);
 		mMainTable.add().setFillWidth(true);
-		button = mUiFactory.addImageButton(SkinNames.General.BOOKMARK, mMainTable, null, null);
-		mWidgets.main.bookmark = button;
+		Button button = mUiFactory.addImageButton(SkinNames.General.BOOKMARK, mMainTable, null, null);
+		mWidgets.bookmark = button;
 		new ButtonListener(button) {
 			@Override
 			protected void onChecked(boolean checked) {
@@ -107,7 +98,7 @@ public class ScoreSceneGui extends Gui {
 				mScoreScene.setComment(newText);
 			}
 		};
-		mWidgets.main.comment = mUiFactory.addTextArea(null, "Comment on the level you just played", tableWidth, textFieldListener, mMainTable, null);
+		mWidgets.comment = mUiFactory.addTextArea(null, "Comment on the level you just played", tableWidth, textFieldListener, mMainTable, null);
 
 
 		// -- Buttons --
@@ -180,12 +171,8 @@ public class ScoreSceneGui extends Gui {
 
 	@SuppressWarnings("javadoc")
 	private class InnerWidgets {
-		Main main = new Main();
-
-		class Main {
-			RatingWidget rating = null;
-			Button bookmark = null;
-			TextArea comment = null;
-		}
+		RatingWidget rating = null;
+		Button bookmark = null;
+		TextArea comment = null;
 	}
 }

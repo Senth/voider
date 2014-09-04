@@ -80,7 +80,7 @@ public class ExploreGui extends Gui {
 			mWidgets.info.name.setText(level.defEntity.name);
 			mWidgets.info.revisedBy.setText(level.defEntity.creator);
 
-			mWidgets.info.likes.setText(String.valueOf(level.stats.cBookmarks));
+			mWidgets.info.bookmarks.setText(String.valueOf(level.stats.cBookmarks));
 			mWidgets.info.plays.setText(String.valueOf(level.stats.cPlayed));
 			mWidgets.info.rating.setRating((int) (level.stats.ratingAverage + 0.5f));
 
@@ -93,7 +93,7 @@ public class ExploreGui extends Gui {
 			mWidgets.info.description.setText("");
 			mWidgets.info.name.setText("");
 			mWidgets.info.revisedBy.setText("");
-			mWidgets.info.likes.setText("");
+			mWidgets.info.bookmarks.setText("");
 			mWidgets.info.plays.setText("");
 			mWidgets.info.rating.setRating(0);
 			mWidgets.info.tags.setText("");
@@ -374,7 +374,7 @@ public class ExploreGui extends Gui {
 		mWidgets.info.plays = mUiFactory.addIconLabel(SkinNames.GeneralImages.PLAYS, "", table, null);
 
 		// Likes
-		mWidgets.info.likes = mUiFactory.addIconLabel(SkinNames.GeneralImages.BOOKMARK, "", table, null);
+		mWidgets.info.bookmarks = mUiFactory.addIconLabel(SkinNames.GeneralImages.BOOKMARK, "", table, null);
 
 		// Tags
 		mWidgets.info.tags = mUiFactory.addIconLabel(SkinNames.GeneralImages.TAG, "", table, null);
@@ -814,7 +814,7 @@ public class ExploreGui extends Gui {
 			Label createdBy = null;
 			Label date = null;
 			Label plays = null;
-			Label likes = null;
+			Label bookmarks = null;
 			Label tags = null;
 		}
 

@@ -120,12 +120,12 @@ public class Synchronizer extends Observable implements IMessageListener, IRespo
 		switch (type) {
 		case COMMUNITY_RESOURCES:
 			mResourceRepo.syncDownload(responseListeners);
-			SceneSwitcher.showWaitWindow("Synchronizing downloaded resources\nThis may take a while...");
+			SceneSwitcher.showWaitWindow("Downloading Internet\nThis may take a while...");
 
 			break;
 		case USER_RESOURCES:
 			mResourceRepo.syncUserResources(responseListeners);
-			SceneSwitcher.showWaitWindow("Synchronizing user resources\nThis may take a while...");
+			SceneSwitcher.showWaitWindow("Synchronizing your levels, enemies, and bullets.\nThis may take a while...");
 			break;
 
 		case BUG_REPORTS:
@@ -233,9 +233,9 @@ public class Synchronizer extends Observable implements IMessageListener, IRespo
 	 */
 	private void handleSyncHighscoreResponse(HighscoreSyncMethodResponse response) {
 		if (response.isSuccessful()) {
-			SceneSwitcher.showSuccessMessage("Player highscores synced");
+			SceneSwitcher.showSuccessMessage("Highscores synced");
 		} else {
-			SceneSwitcher.showErrorMessage("Player highscores sync failed");
+			SceneSwitcher.showErrorMessage("Highscores sync failed");
 		}
 	}
 
@@ -264,15 +264,15 @@ public class Synchronizer extends Observable implements IMessageListener, IRespo
 		case FAILED_CONNECTION:
 		case FAILED_SERVER_ERROR:
 		case FAILED_USER_NOT_LOGGED_IN:
-			SceneSwitcher.showErrorMessage("Failed to send saved bug reports");
+			SceneSwitcher.showErrorMessage("Send saved bug reports");
 			break;
 
 		case SUCCESS:
-			SceneSwitcher.showSuccessMessage("Send saved bug reports");
+			SceneSwitcher.showSuccessMessage("Sent saved bug reports");
 			break;
 
 		case SUCCESS_WITH_ERRORS:
-			SceneSwitcher.showHighlightMessage("Some bug reports failed, some succeeded?");
+			SceneSwitcher.showHighlightMessage("Sent some bug reports?");
 			break;
 		}
 
@@ -309,24 +309,24 @@ public class Synchronizer extends Observable implements IMessageListener, IRespo
 		case FAILED_INTERNAL:
 		case FAILED_USER_NOT_LOGGED_IN:
 			if (response.downloadStatus) {
-				SceneSwitcher.showErrorMessage("Downloaded player resources; failed to upload");
+				SceneSwitcher.showErrorMessage("Downloaded player levels; failed to upload");
 			} else {
-				SceneSwitcher.showErrorMessage("Player resources sync failed");
+				SceneSwitcher.showErrorMessage("Player levels sync failed");
 			}
 			notifyObservers(SyncEvents.USER_RESOURCES_UPLOAD_FAILED);
 			break;
 
 		case SUCCESS_ALL:
 			if (response.downloadStatus) {
-				SceneSwitcher.showSuccessMessage("Player resources synced");
+				SceneSwitcher.showSuccessMessage("Player levels synced");
 			} else {
-				SceneSwitcher.showErrorMessage("Uploaded player resources; failed to download");
+				SceneSwitcher.showErrorMessage("Uploaded player levels; failed to download");
 			}
 			notifyObservers(SyncEvents.USER_RESOURCES_UPLOAD_SUCCESS);
 			break;
 
 		case SUCCESS_PARTIAL:
-			SceneSwitcher.showHighlightMessage("Player resources synced; found conflicts");
+			SceneSwitcher.showHighlightMessage("Player synced; found conflicts");
 			// TODO handle conflict
 
 			notifyObservers(SyncEvents.USER_RESOURCES_UPLOAD_CONFLICT);

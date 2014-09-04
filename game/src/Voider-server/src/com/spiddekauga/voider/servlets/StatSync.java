@@ -52,6 +52,8 @@ public class StatSync extends VoiderServlet {
 			syncToClient();
 			checkAndResolveConflicts();
 			syncToServer();
+
+			mResponse.status = Statuses.SUCCESS;
 		}
 
 		return mResponse;
@@ -101,13 +103,13 @@ public class StatSync extends VoiderServlet {
 		serverStats.cPlayed = cPlayed;
 		clientStats.cPlayed = cPlayed;
 
-		int cCleared = serverStats.cCleared + clientStats.cCleared;
+		int cCleared = serverStats.cCleared + clientStats.cClearsToSync;
 		serverStats.cCleared = cCleared;
 		clientStats.cCleared = cCleared;
 	}
 
 	/**
-	 * Set latest settings for level/ćampaign user stats
+	 * Set latest settings for level/campaign user stats
 	 * @param clientStats stats from the client
 	 * @param serverStats stats from the server
 	 */
@@ -175,7 +177,7 @@ public class StatSync extends VoiderServlet {
 
 		// No entity for this level exists yet
 		if (userEntity == null) {
-			userEntity = new Entity("user_level_key", mUser.getKey());
+			userEntity = new Entity("user_level_stat", mUser.getKey());
 			userEntity.setProperty("level_key", levelKey);
 		}
 		// Add old tags and set old rating
@@ -212,10 +214,10 @@ public class StatSync extends VoiderServlet {
 	/**
 	 * Update level stats
 	 * @param levelKey key of the level
-	 * @param newStat new user statistics
-	 * @param oldStat old user statistics
+	 * @param clientStat new user statistics
+	 * @param serverStat old user statistics
 	 */
-	private void updateLevelStats(Key levelKey, LevelStat newStat, LevelStat oldStat) {
+	private void updateLevelStats(Key levelKey, LevelStat clientStat, LevelStat serverStat) {
 		Entity levelEntity = DatastoreUtils.getSingleEntity("level_stat", levelKey);
 
 		// No entity for this
@@ -228,33 +230,33 @@ public class StatSync extends VoiderServlet {
 
 		// Update stats
 		// Play count
-		incrementProperty(levelEntity, "play_count", newStat.cPlaysToSync);
+		incrementProperty(levelEntity, "play_count", clientStat.cPlaysToSync);
 
 		// Clear count
-		incrementProperty(levelEntity, "clear_count", newStat.cClearsToSync);
+		incrementProperty(levelEntity, "clear_count", clientStat.cClearsToSync);
 
 
 		// Removed bookmark
-		if (oldStat.bookmark && !newStat.bookmark) {
+		if (serverStat.bookmark && !clientStat.bookmark) {
 			incrementProperty(levelEntity, "bookmarks", -1);
 		}
 		// Added bookmark
-		else if (!oldStat.bookmark && newStat.bookmark) {
+		else if (!serverStat.bookmark && clientStat.bookmark) {
 			incrementProperty(levelEntity, "bookmarks", 1);
 		}
 
 
 		// Rating
-		if (oldStat.rating != newStat.rating) {
+		if (serverStat.rating != clientStat.rating) {
 			// Sum
-			incrementProperty(levelEntity, "rating_sum", newStat.rating - oldStat.rating);
+			incrementProperty(levelEntity, "rating_sum", clientStat.rating - serverStat.rating);
 
 			// Added rating
-			if (oldStat.rating == 0 && newStat.rating > 0) {
+			if (serverStat.rating == 0 && clientStat.rating > 0) {
 				incrementProperty(levelEntity, "ratings", 1);
 			}
 			// Removed rating
-			else if (newStat.rating == 0 && oldStat.rating > 0) {
+			else if (clientStat.rating == 0 && serverStat.rating > 0) {
 				incrementProperty(levelEntity, "ratings", -1);
 			}
 
@@ -335,6 +337,7 @@ public class StatSync extends VoiderServlet {
 		levelStats.cPlayed = ((Long) serverEntity.getProperty("play_count")).intValue();
 		levelStats.lastPlayed = (Date) serverEntity.getProperty("last_played");
 		levelStats.rating = ((Long) serverEntity.getProperty("rating")).intValue();
+		levelStats.updated = (Date) serverEntity.getProperty("updated");
 
 		levelStats.tags = Tags.toTagList((ArrayList<Long>) serverEntity.getProperty("tags"));
 

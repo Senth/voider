@@ -31,12 +31,14 @@ import com.spiddekauga.voider.game.actors.PlayerActor;
 import com.spiddekauga.voider.game.actors.PlayerActorDef;
 import com.spiddekauga.voider.menu.HighscoreScene;
 import com.spiddekauga.voider.menu.ScoreScene;
+import com.spiddekauga.voider.menu.TagScene;
 import com.spiddekauga.voider.repo.resource.ExternalTypes;
 import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.resource.ResourceLocalRepo;
 import com.spiddekauga.voider.repo.resource.ResourceRepo;
 import com.spiddekauga.voider.repo.stat.HighscoreRepo;
+import com.spiddekauga.voider.repo.stat.StatLocalRepo;
 import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.scene.LoadingScene;
 import com.spiddekauga.voider.scene.Scene;
@@ -164,6 +166,19 @@ public class GameScene extends WorldScene {
 	 * @return true if the level is published.
 	 */
 	boolean isPublished() {
+		UUID levelDefId = getLevelId();
+
+		if (levelDefId != null) {
+			return ResourceLocalRepo.isPublished(levelDefId);
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * @return level id
+	 */
+	private UUID getLevelId() {
 		UUID levelDefId = null;
 
 		if (mLevel != null) {
@@ -174,11 +189,7 @@ public class GameScene extends WorldScene {
 			levelDefId = mLevelToRun.getDef().getId();
 		}
 
-		if (levelDefId != null) {
-			return ResourceLocalRepo.isPublished(levelDefId);
-		} else {
-			return false;
-		}
+		return levelDefId;
 	}
 
 	/**
@@ -250,7 +261,7 @@ public class GameScene extends WorldScene {
 				setLevel(mLevelToRun);
 			}
 
-			// Load level
+			// Loaded level
 			else if (mLevelToLoad != null) {
 				Level level = ResourceCacheFacade.get(mLevelToLoad.getLevelId());
 				level.setStartPosition(level.getLevelDef().getStartXCoord());
@@ -278,6 +289,11 @@ public class GameScene extends WorldScene {
 			createPlayerShip();
 			createMouseJoint();
 			mGui.resetValues();
+
+			// Set last played
+			if (isPublished()) {
+				StatLocalRepo.getInstance().updateLastPlayed(getLevelId());
+			}
 		}
 
 		Actor.setPlayerActor(mPlayerActor);
@@ -351,10 +367,20 @@ public class GameScene extends WorldScene {
 		// End of level, try to set player highscore
 		if (isDone() && isPublished()) {
 			setNewHighscore();
+			updatePlayCount();
 		}
 
 		// GUI
 		mGui.resetValues();
+	}
+
+	/**
+	 * Updates the play count for the player
+	 */
+	private void updatePlayCount() {
+		StatLocalRepo statLocalRepo = StatLocalRepo.getInstance();
+		boolean cleared = Outcomes.LEVEL_COMPLETED == getOutcome();
+		statLocalRepo.increasePlayCount(getLevelId(), cleared);
 	}
 
 	/**
@@ -429,11 +455,19 @@ public class GameScene extends WorldScene {
 			Scene nextScene = scoreScene;
 
 			// Get highscores if online
-			if (isPublished() && User.getGlobalUser().isOnline()) {
+			boolean online = User.getGlobalUser().isOnline();
+			if (online && isPublished()) {
 				HighscoreScene highscoreScene = new HighscoreScene();
-				HighscoreRepo.getInstance().getPlayerServerScore(mLevel.getDef().getId(), highscoreScene);
-				highscoreScene.setNextScene(scoreScene);
+				HighscoreRepo.getInstance().getPlayerServerScore(getLevelId(), highscoreScene);
+				highscoreScene.setNextScene(nextScene);
 				nextScene = highscoreScene;
+			}
+
+			// Get tag if online and can tag
+			if (online && StatLocalRepo.getInstance().isTaggable(getLevelId())) {
+				TagScene tagScene = new TagScene(getLevelId());
+				tagScene.setNextScene(nextScene);
+				nextScene = tagScene;
 			}
 
 			switch (getOutcome()) {
@@ -585,6 +619,7 @@ public class GameScene extends WorldScene {
 				setOutcome(Outcomes.LEVEL_COMPLETED);
 				if (isPublished()) {
 					setNewHighscore();
+					updatePlayCount();
 				}
 			}
 		}

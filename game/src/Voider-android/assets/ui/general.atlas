@@ -1517,6 +1517,30 @@ button_default_down
   orig: 7, 7
   offset: 0, 0
   index: -1
+button_tag_down
+  rotate: false
+  xy: 4049, 350
+  size: 7, 7
+  split: 3, 3, 3, 3
+  orig: 7, 7
+  offset: 0, 0
+  index: -1
+button_transparent_checked
+  rotate: false
+  xy: 4049, 350
+  size: 7, 7
+  split: 3, 3, 3, 3
+  orig: 7, 7
+  offset: 0, 0
+  index: -1
+button_transparent_down
+  rotate: false
+  xy: 4049, 350
+  size: 7, 7
+  split: 3, 3, 3, 3
+  orig: 7, 7
+  offset: 0, 0
+  index: -1
 button_default_checked_over
   rotate: false
   xy: 2299, 242
@@ -1533,6 +1557,30 @@ button_default_over
   orig: 7, 7
   offset: 0, 0
   index: -1
+button_tag_over
+  rotate: false
+  xy: 2299, 242
+  size: 7, 7
+  split: 3, 3, 3, 3
+  orig: 7, 7
+  offset: 0, 0
+  index: -1
+button_transparent_checked_over
+  rotate: false
+  xy: 2299, 242
+  size: 7, 7
+  split: 3, 3, 3, 3
+  orig: 7, 7
+  offset: 0, 0
+  index: -1
+button_transparent_over
+  rotate: false
+  xy: 2299, 242
+  size: 7, 7
+  split: 3, 3, 3, 3
+  orig: 7, 7
+  offset: 0, 0
+  index: -1
 button_default_disabled
   rotate: false
   xy: 2317, 260
@@ -1541,7 +1589,31 @@ button_default_disabled
   orig: 7, 7
   offset: 0, 0
   index: -1
+button_transparent_disabled
+  rotate: false
+  xy: 2317, 260
+  size: 7, 7
+  split: 3, 3, 3, 3
+  orig: 7, 7
+  offset: 0, 0
+  index: -1
 button_default_up
+  rotate: false
+  xy: 13, 4
+  size: 7, 7
+  split: 3, 3, 3, 3
+  orig: 7, 7
+  offset: 0, 0
+  index: -1
+button_tag_up
+  rotate: false
+  xy: 13, 4
+  size: 7, 7
+  split: 3, 3, 3, 3
+  orig: 7, 7
+  offset: 0, 0
+  index: -1
+button_transparent_up
   rotate: false
   xy: 13, 4
   size: 7, 7

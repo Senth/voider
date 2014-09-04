@@ -187,20 +187,22 @@ public class UiFactory {
 
 
 			// Height padding
-			float padHeight = (mStyles.vars.rowHeight - cellHeightDefault - padding) * 0.5f;
+			if (style == TextButtonStyles.TRANSPARENT_PRESS || style == TextButtonStyles.TRANSPARENT_TOGGLE) {
+				float padHeight = (mStyles.vars.rowHeight - cellHeightDefault - padding) * 0.5f;
 
-			// Check for uneven height, then pad extra at the top
-			boolean padExtra = false;
-			if (padHeight != ((int) padHeight)) {
-				padExtra = true;
-				padHeight = (int) padHeight;
+				// Check for uneven height, then pad extra at the top
+				boolean padExtra = false;
+				if (padHeight != ((int) padHeight)) {
+					padExtra = true;
+					padHeight = (int) padHeight;
+				}
+
+				float padTop = padExtra ? padHeight + 1 : padHeight;
+				float padBottom = padHeight;
+
+				cell.setPadTop(padTop);
+				cell.setPadBottom(padBottom);
 			}
-
-			float padTop = padExtra ? padHeight + 1 : padHeight;
-			float padBottom = padHeight;
-
-			cell.setPadTop(padTop);
-			cell.setPadBottom(padBottom);
 		}
 		// Else - Use default button size
 		else {
@@ -975,9 +977,9 @@ public class UiFactory {
 		// Text buttons
 		TextButtonStyles.FILLED_PRESS.setStyle((TextButtonStyle) SkinNames.getResource(SkinNames.General.TEXT_BUTTON_FLAT_PRESS));
 		TextButtonStyles.FILLED_TOGGLE.setStyle((TextButtonStyle) SkinNames.getResource(SkinNames.General.TEXT_BUTTON_FLAT_TOGGLE));
-		TextButtonStyles.TRANSPARENT_PRESS.setStyle((TextButtonStyle) SkinNames.getResource(SkinNames.General.TEXT_BUTTON_PRESS));
-		TextButtonStyles.TRANSPARENT_TOGGLE.setStyle((TextButtonStyle) SkinNames.getResource(SkinNames.General.TEXT_BUTTON_TOGGLE));
-
+		TextButtonStyles.TRANSPARENT_PRESS.setStyle((TextButtonStyle) SkinNames.getResource(SkinNames.General.TEXT_BUTTON_TRANSPARENT_PRESS));
+		TextButtonStyles.TRANSPARENT_TOGGLE.setStyle((TextButtonStyle) SkinNames.getResource(SkinNames.General.TEXT_BUTTON_TRANSPARENT_TOGGLE));
+		TextButtonStyles.TAG.setStyle((TextButtonStyle) SkinNames.getResource(SkinNames.General.TEXT_BUTTON_TAG));
 
 		// Checkbox styles
 		CheckBoxStyles.CHECK_BOX.setStyle((CheckBoxStyle) SkinNames.getResource(SkinNames.General.CHECK_BOX_DEFAULT));
@@ -1061,6 +1063,8 @@ public class UiFactory {
 		TRANSPARENT_PRESS(true),
 		/** Transparent (only text is visible), can be toggled/checked */
 		TRANSPARENT_TOGGLE(true),
+		/** Tag button */
+		TAG(true),
 
 		;
 

@@ -84,32 +84,11 @@ public class TestUiGui extends Gui {
 		mMainTable.row();
 
 		// Default
-		Button button = new TextButton("Test default", mGeneralSkin, SkinNames.General.TEXT_BUTTON_PRESS.toString());
+		Button button = new TextButton("Test default", mGeneralSkin, SkinNames.General.TEXT_BUTTON_TRANSPARENT_PRESS.toString());
 		mMainTable.add(button);
 
 		// Checkable
-		button = new TextButton("Test checkable", mGeneralSkin, SkinNames.General.TEXT_BUTTON_TOGGLE.toString());
-		mMainTable.add(button);
-
-		// Up
-		button = new TextButton("Up", mGeneralSkin, "up");
-		mMainTable.add(button);
-
-		// Down
-		button = new TextButton("Down", mGeneralSkin, "down");
-		mMainTable.add(button);
-
-		// Checked
-		button = new TextButton("Checked", mGeneralSkin, SkinNames.General.TEXT_BUTTON_SELECTED.toString());
-		mMainTable.add(button);
-
-		// Over
-		button = new TextButton("Hover", mGeneralSkin, "over");
-		mMainTable.add(button);
-
-		// Disabled
-		button = new TextButton("Disabled", mGeneralSkin, "default");
-		button.setDisabled(true);
+		button = new TextButton("Test checkable", mGeneralSkin, SkinNames.General.TEXT_BUTTON_TRANSPARENT_TOGGLE.toString());
 		mMainTable.add(button);
 	}
 

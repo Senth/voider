@@ -57,12 +57,11 @@ public class StatLocalRepo {
 	}
 
 	/**
-	 * Sets when the level/ćampaign was last played
-	 * @param id level/ćampaign id
-	 * @param date last played date
+	 * Sets when the level/campaign was last played to current time
+	 * @param id level/campaign id
 	 */
-	public void setLastPlayed(UUID id, Date date) {
-		mSqliteGateway.setLastPlayed(id, date);
+	public void updateLastPlayed(UUID id) {
+		mSqliteGateway.setLastPlayed(id, new Date());
 	}
 
 	/**

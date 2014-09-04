@@ -1,19 +1,20 @@
 package com.spiddekauga.voider.menu;
 
-import java.util.ArrayList;
-
 import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.utils.scene.ui.UiFactory;
 import com.spiddekauga.voider.game.GameScene;
 import com.spiddekauga.voider.game.LevelDef;
 import com.spiddekauga.voider.game.PlayerStats;
 import com.spiddekauga.voider.network.entities.stat.HighscoreSyncEntity;
-import com.spiddekauga.voider.network.entities.stat.Tags;
 import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.repo.stat.HighscoreRepo;
+import com.spiddekauga.voider.repo.stat.StatLocalRepo;
+import com.spiddekauga.voider.repo.stat.UserLevelStat;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
+import com.spiddekauga.voider.utils.Synchronizer;
+import com.spiddekauga.voider.utils.Synchronizer.SyncTypes;
 
 /**
  * Displays the player score and adds the ability for the player to rate, tag, and
@@ -31,6 +32,10 @@ public class ScoreScene extends Scene {
 
 		mPlayerStats = playerStats;
 		mLevelDef = levelDef;
+		mStat = mStatRepo.getLevelStats(mLevelDef.getId());
+		if (mStat == null) {
+			mStat = new UserLevelStat();
+		}
 
 		((ScoreSceneGui) mGui).setScoreScene(this);
 		setClearColor(UiFactory.getInstance().getStyles().color.sceneBackground);
@@ -60,7 +65,7 @@ public class ScoreScene extends Scene {
 	@Override
 	public boolean onKeyDown(int keycode) {
 		if (KeyHelper.isBackPressed(keycode)) {
-			gotoMainMenu();
+			SceneSwitcher.returnTo(MainMenu.class);
 			return true;
 		}
 
@@ -71,6 +76,7 @@ public class ScoreScene extends Scene {
 	 * Go back to main menu
 	 */
 	void gotoMainMenu() {
+		mSynchronizer.synchronize(SyncTypes.STATS);
 		SceneSwitcher.returnTo(MainMenu.class);
 	}
 
@@ -78,6 +84,7 @@ public class ScoreScene extends Scene {
 	 * Try playing the level once again
 	 */
 	void tryAgain() {
+		mSynchronizer.synchronize(SyncTypes.STATS);
 		GameScene gameScene = new GameScene(false, false);
 		gameScene.setLevelToLoad(mLevelDef);
 		setNextScene(gameScene);
@@ -89,23 +96,15 @@ public class ScoreScene extends Scene {
 	 * @param rating new rating for the level
 	 */
 	void setRating(int rating) {
-		// TODO set rating
+		mStat.rating = rating;
+		mStatRepo.setRating(mLevelDef.getId(), rating);
 	}
 
 	/**
 	 * @return player rating of the level
 	 */
 	int getRating() {
-		// TODO
-		return 0;
-	}
-
-	/**
-	 * Set tags for the level
-	 * @param tags list of selected tags
-	 */
-	void setTags(ArrayList<Tags> tags) {
-		// TODO set tags
+		return mStat.rating;
 	}
 
 	/**
@@ -113,15 +112,15 @@ public class ScoreScene extends Scene {
 	 * @param bookmark true if the level should be bookmarked, false removes the bookmark
 	 */
 	void setBookmark(boolean bookmark) {
-		// TODO set bookmark
+		mStat.bookmarked = bookmark;
+		mStatRepo.setBookmark(mLevelDef.getId(), bookmark);
 	}
 
 	/**
 	 * @return true if the player has bookmarked the level
 	 */
 	boolean isBookmarked() {
-		// TODO
-		return true;
+		return mStat.bookmarked;
 	}
 
 	/**
@@ -167,6 +166,12 @@ public class ScoreScene extends Scene {
 		}
 	}
 
+	/** Player stats */
+	private UserLevelStat mStat = null;
+	/** Synchronizer */
+	private Synchronizer mSynchronizer = Synchronizer.getInstance();
+	/** Local stat repository */
+	private StatLocalRepo mStatRepo = StatLocalRepo.getInstance();
 	/** Highscore repository */
 	private HighscoreRepo mHighscoreRepo = HighscoreRepo.getInstance();
 	/** True if the level was completed, false if player died */

@@ -6,15 +6,32 @@
         <property name="score" direction="desc"/>
         <property name="username" direction="asc"/>
     </datastore-index>
+    
+    <!-- Score ASC -->
+    <datastore-index kind="highscore" ancestor="true" source="manual">
+        <property name="score" direction="asc"/>
+        <property name="username" direction="asc"/>
+    </datastore-index>
 	
 	<!-- Highscores to sync to client -->
 	<datastore-index kind="highscore" ancestor="false" source="manual">
         <property name="username" direction="asc"/>
         <property name="uploaded" direction="asc"/>
     </datastore-index>
+    
+    <!-- Get user score -->
+    <datastore-index kind="highscore" ancestor="true" source="manual">
+        <property name="score" direction="asc"/>
+    </datastore-index>
+	
+	<!-- USER LEVEL STAT -->
+	<!-- Sync to client -->
+	<datastore-index kind="user_level_stat" ancestor="true" source="manual">
+        <property name="updated" direction="asc"/>
+    </datastore-index>
 	
 	
-	<!-- LEVEL_STAT -->
+	<!-- LEVEL STAT -->
 	<!-- Explore — Sort by play count -->
 	<datastore-index kind="level_stat" ancestor="true" source="manual">
 		<property name="play_count" direction="desc"/>
@@ -25,7 +42,7 @@
 		<property name="rating_avg" direction="desc"/>
 	</datastore-index>
 	
-	<!-- Explore — Sort by boomark count -->
+	<!-- Explore — Sort by bookmark count -->
 	<datastore-index kind="level_stat" ancestor="true" source="manual">
 		<property name="bookmarks" direction="desc"/>
 	</datastore-index>

@@ -107,8 +107,10 @@ public enum Tags {
 	 */
 	public static ArrayList<Tags> toTagList(ArrayList<? extends Number> tagIds) {
 		ArrayList<Tags> tags = new ArrayList<>();
-		for (Number tagId : tagIds) {
-			tags.add(getEnumFromId(tagId.intValue()));
+		if (tagIds != null) {
+			for (Number tagId : tagIds) {
+				tags.add(getEnumFromId(tagId.intValue()));
+			}
 		}
 		return tags;
 	}

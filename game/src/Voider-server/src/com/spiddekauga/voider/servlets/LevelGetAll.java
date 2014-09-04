@@ -105,7 +105,7 @@ public class LevelGetAll extends VoiderServlet {
 			table = DatastoreTables.LEVEL_STAT;
 			break;
 
-		// Published table
+			// Published table
 		case NEWEST:
 			table = DatastoreTables.PUBLISHED;
 			break;
@@ -263,7 +263,7 @@ public class LevelGetAll extends VoiderServlet {
 		LevelStatsEntity levelStatsEntity = new LevelStatsEntity();
 
 		levelStatsEntity.cCleared = ((Long) datastoreEntity.getProperty("clear_count")).intValue();
-		levelStatsEntity.cBookmarks = ((Long) datastoreEntity.getProperty("likes")).intValue();
+		levelStatsEntity.cBookmarks = ((Long) datastoreEntity.getProperty("bookmarks")).intValue();
 		levelStatsEntity.cPlayed = ((Long) datastoreEntity.getProperty("play_count")).intValue();
 		levelStatsEntity.cRatings = ((Long) datastoreEntity.getProperty("ratings")).intValue();
 		levelStatsEntity.ratingAverage = ((Double) datastoreEntity.getProperty("rating_avg")).floatValue();

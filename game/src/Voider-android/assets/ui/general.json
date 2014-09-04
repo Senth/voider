@@ -484,31 +484,12 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 		imageOver: bugs_over,
 		imageDown: bugs_down
 	},
-	
-	/** Placeholders */
-	
-	stub: {
-		down: button_default_down,
-		up: button_default_up,
-		disabled: button_default_disabled,
-		over: button_default_over,
-		imageUp: stub,
-	},
-	
-	stub_toggle: {
-		down: button_default_down,
-		checked: button_default_checked,
-		up: button_default_up,
-		disabled: button_default_disabled,
-		over: button_default_over,
-		checkedOver: button_default_checked_over,
-		imageUp: stub,
-	},
 },
 
 /** TextButtonStyle */
 
 com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
+	// Deprecated
 	default: {
 		down: button_default_down,
 		up: button_default_up,
@@ -516,6 +497,7 @@ com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
 		over: button_default_over,
 		font: default_font,
 	},
+	// Deprecated
 	toggle: {
 		down: button_default_down,
 		checked: button_default_checked,
@@ -526,6 +508,24 @@ com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
 		font: default_font,
 	},
 	
+	/** Transparent */
+	
+	transparent: {
+		down: button_transparent_down,
+		up: button_transparent_up,
+		disabled: button_transparent_disabled,
+		over: button_transparent_over,
+		font: default_font,
+	},
+	transparent_toggle: {
+		down: button_transparent_down,
+		checked: button_transparent_checked,
+		up: button_transparent_up,
+		disabled: button_transparent_disabled,
+		over: button_transparent_over,
+		checkedOver: button_transparent_checked_over,
+		font: default_font,
+	},
 	
 	/** Flat Button */
 	
@@ -546,29 +546,13 @@ com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
 		font: default_font,
 	},
 	
-	
-	/** Testing */
-	
-	selected: {
-		down: button_default_checked,
-		up: button_default_checked,
-		font: default_font,
+	/** Tag button */
+	tag: {
+		down: button_tag_down,
+		up: button_tag_up,
+		over: button_tag_over,
+		font: default36,
 	},
-	up: {
-		down: button_default_up,
-		up: button_default_up,
-		font: default_font,
-	},
-	down: {
-		down: button_default_down,
-		up: button_default_down,
-		font: default_font,
-	},
-	over: {
-		down: button_default_over,
-		up: button_default_over,
-		font: default_font,
-	}
 },
 
 com.badlogic.gdx.scenes.scene2d.ui.CheckBox$CheckBoxStyle: {
