@@ -11,12 +11,11 @@ import com.spiddekauga.voider.network.entities.misc.BugReportEntity;
 import com.spiddekauga.voider.network.entities.misc.BugReportMethod;
 import com.spiddekauga.voider.network.entities.misc.BugReportMethodResponse;
 import com.spiddekauga.voider.network.entities.misc.ChatMessage;
-import com.spiddekauga.voider.network.entities.resource.DownloadSyncMethod;
 import com.spiddekauga.voider.network.entities.resource.DownloadSyncMethodResponse;
 import com.spiddekauga.voider.network.entities.resource.UserResourcesSyncMethod;
 import com.spiddekauga.voider.network.entities.resource.UserResourcesSyncMethodResponse;
-import com.spiddekauga.voider.network.entities.stat.HighscoreSyncMethod;
 import com.spiddekauga.voider.network.entities.stat.HighscoreSyncMethodResponse;
+import com.spiddekauga.voider.network.entities.stat.StatSyncMethodResponse;
 import com.spiddekauga.voider.repo.IResponseListener;
 import com.spiddekauga.voider.repo.misc.BugReportWebRepo;
 import com.spiddekauga.voider.repo.resource.ExternalTypes;
@@ -139,6 +138,7 @@ public class Synchronizer extends Observable implements IMessageListener, IRespo
 
 		case STATS:
 			mStatRepo.sync(responseListeners);
+			break;
 		}
 
 		return true;
@@ -187,6 +187,7 @@ public class Synchronizer extends Observable implements IMessageListener, IRespo
 		mSyncQueue.add(SyncTypes.COMMUNITY_RESOURCES);
 		mSyncQueue.add(SyncTypes.USER_RESOURCES);
 		mSyncQueue.add(SyncTypes.HIGHSCORES);
+		mSyncQueue.add(SyncTypes.STATS);
 		mSyncQueue.add(SyncTypes.BUG_REPORTS);
 
 		syncNextInQueue();
@@ -201,11 +202,13 @@ public class Synchronizer extends Observable implements IMessageListener, IRespo
 		if (response instanceof UserResourcesSyncMethodResponse) {
 			handleSyncUserResourceResponse((UserResourcesSyncMethod) method, (UserResourcesSyncMethodResponse) response);
 		} else if (response instanceof DownloadSyncMethodResponse) {
-			handleSyncDownloadResponse((DownloadSyncMethod) method, (DownloadSyncMethodResponse) response);
+			handleSyncDownloadResponse((DownloadSyncMethodResponse) response);
 		} else if (response instanceof BugReportMethodResponse) {
 			handlePostBugReport((BugReportMethod) method, (BugReportMethodResponse) response);
 		} else if (response instanceof HighscoreSyncMethodResponse) {
-			handleSyncHighscoreResponse((HighscoreSyncMethod) method, (HighscoreSyncMethodResponse) response);
+			handleSyncHighscoreResponse((HighscoreSyncMethodResponse) response);
+		} else if (response instanceof StatSyncMethodResponse) {
+			handleStatSyncResponse((StatSyncMethodResponse) response);
 		}
 
 
@@ -213,30 +216,40 @@ public class Synchronizer extends Observable implements IMessageListener, IRespo
 	}
 
 	/**
-	 * Handle sync highscore responses
-	 * @param method parameters to the server
+	 * Handle sync statistics response
 	 * @param response server response
 	 */
-	private void handleSyncHighscoreResponse(HighscoreSyncMethod method, HighscoreSyncMethodResponse response) {
+	private void handleStatSyncResponse(StatSyncMethodResponse response) {
 		if (response.isSuccessful()) {
-			SceneSwitcher.showSuccessMessage("Successfully synced player highscores");
+			SceneSwitcher.showSuccessMessage("Stats synced");
 		} else {
-			SceneSwitcher.showErrorMessage("Failed to sync player highscores");
+			SceneSwitcher.showErrorMessage("Stat sync failed");
+		}
+	}
+
+	/**
+	 * Handle sync highscore responses
+	 * @param response server response
+	 */
+	private void handleSyncHighscoreResponse(HighscoreSyncMethodResponse response) {
+		if (response.isSuccessful()) {
+			SceneSwitcher.showSuccessMessage("Player highscores synced");
+		} else {
+			SceneSwitcher.showErrorMessage("Player highscores sync failed");
 		}
 	}
 
 	/**
 	 * Handle sync download responses
-	 * @param method parameters to the server
 	 * @param response server response
 	 */
-	private void handleSyncDownloadResponse(DownloadSyncMethod method, DownloadSyncMethodResponse response) {
+	private void handleSyncDownloadResponse(DownloadSyncMethodResponse response) {
 		if (response.isSuccessful()) {
 			notifyObservers(SyncEvents.COMMUNITY_DOWNLOAD_SUCCESS);
-			SceneSwitcher.showSuccessMessage("Successfully synced community resources");
+			SceneSwitcher.showSuccessMessage("Downloaded resources synced");
 		} else {
 			notifyObservers(SyncEvents.COMMUNITY_DOWNLOAD_FAILED);
-			SceneSwitcher.showErrorMessage("Failed to sync community resources");
+			SceneSwitcher.showErrorMessage("Downloaded resources sync failed");
 		}
 	}
 
@@ -251,15 +264,15 @@ public class Synchronizer extends Observable implements IMessageListener, IRespo
 		case FAILED_CONNECTION:
 		case FAILED_SERVER_ERROR:
 		case FAILED_USER_NOT_LOGGED_IN:
-			SceneSwitcher.showErrorMessage("Failed to upload saved bug reports");
+			SceneSwitcher.showErrorMessage("Failed to send saved bug reports");
 			break;
 
 		case SUCCESS:
-			SceneSwitcher.showSuccessMessage("Successfully sent saved bug reports");
+			SceneSwitcher.showSuccessMessage("Send saved bug reports");
 			break;
 
 		case SUCCESS_WITH_ERRORS:
-			SceneSwitcher.showHighlightMessage("Failed to sent some bug reports");
+			SceneSwitcher.showHighlightMessage("Some bug reports failed, some succeeded?");
 			break;
 		}
 
@@ -296,24 +309,24 @@ public class Synchronizer extends Observable implements IMessageListener, IRespo
 		case FAILED_INTERNAL:
 		case FAILED_USER_NOT_LOGGED_IN:
 			if (response.downloadStatus) {
-				SceneSwitcher.showErrorMessage("Failed to upload user resources, only downloaded");
+				SceneSwitcher.showErrorMessage("Downloaded player resources; failed to upload");
 			} else {
-				SceneSwitcher.showErrorMessage("Failed to sync user resources");
+				SceneSwitcher.showErrorMessage("Player resources sync failed");
 			}
 			notifyObservers(SyncEvents.USER_RESOURCES_UPLOAD_FAILED);
 			break;
 
 		case SUCCESS_ALL:
 			if (response.downloadStatus) {
-				SceneSwitcher.showSuccessMessage("Successfully synced user resources");
+				SceneSwitcher.showSuccessMessage("Player resources synced");
 			} else {
-				SceneSwitcher.showErrorMessage("Failed to download user resources, only uploaded");
+				SceneSwitcher.showErrorMessage("Uploaded player resources; failed to download");
 			}
 			notifyObservers(SyncEvents.USER_RESOURCES_UPLOAD_SUCCESS);
 			break;
 
 		case SUCCESS_PARTIAL:
-			SceneSwitcher.showHighlightMessage("Synced user resources, but found conflicts");
+			SceneSwitcher.showHighlightMessage("Player resources synced; found conflicts");
 			// TODO handle conflict
 
 			notifyObservers(SyncEvents.USER_RESOURCES_UPLOAD_CONFLICT);
