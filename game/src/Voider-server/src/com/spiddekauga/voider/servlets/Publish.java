@@ -109,7 +109,7 @@ public class Publish extends VoiderServlet {
 				success = addSearchDocuments();
 			}
 
-			// TODO remove all user resources
+			// TODO remove all user resources (and blobs)
 			if (success) {
 
 			}

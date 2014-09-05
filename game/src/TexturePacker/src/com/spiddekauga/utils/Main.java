@@ -70,11 +70,7 @@ public class Main {
 		Log.DEBUG();
 		Log.debug(path + "\n\n");
 
-		Settings settings = new Settings();
-		settings.alias = true;
-		settings.maxHeight = 4096;
-		settings.maxWidth = 4096;
-		settings.format = Format.RGBA8888;
+		ArrayList<Thread> threads = new ArrayList<Thread>();
 
 		for (TextureInOutWrapper textureInOutWrapper : mDirs) {
 			String imagesDir = "";
@@ -99,9 +95,20 @@ public class Main {
 					if (listOfFiles[i].isDirectory()) {
 						String filename = listOfFiles[i].getName();
 						String fullPath = listOfFiles[i].getAbsolutePath();
-						TexturePacker2.processIfModified(settings, fullPath, atlasDir, filename);
+						PackThread packThread = new PackThread(fullPath, atlasDir, filename);
+						packThread.start();
+						threads.add(packThread);
 					}
 				}
+			}
+		}
+
+		while (!threads.isEmpty()) {
+			int lastIndex = threads.size() - 1;
+			Thread thread = threads.get(lastIndex);
+
+			if (!thread.isAlive()) {
+				threads.remove(lastIndex);
 			}
 		}
 
@@ -138,6 +145,37 @@ public class Main {
 			e.printStackTrace();
 		}
 		return path;
+	}
+
+	/**
+	 * Runnable thread
+	 */
+	@SuppressWarnings("javadoc")
+	private static class PackThread extends Thread {
+		PackThread(String inputDir, String outputDir, String name) {
+			mInputDir = inputDir;
+			mOutputDir = outputDir;
+			mName = name;
+		}
+
+		@Override
+		public void run() {
+			TexturePacker2.processIfModified(mSettings, mInputDir, mOutputDir, mName);
+		};
+
+		String mInputDir;
+		String mOutputDir;
+		String mName;
+	}
+
+	/** Texture packer settings */
+	private static Settings mSettings = new Settings();
+
+	static {
+		mSettings.alias = true;
+		mSettings.maxHeight = 4096;
+		mSettings.maxWidth = 4096;
+		mSettings.format = Format.RGBA8888;
 	}
 
 	/**
