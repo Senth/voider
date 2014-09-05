@@ -82,7 +82,7 @@ public class ExploreGui extends Gui {
 
 			mWidgets.info.bookmarks.setText(String.valueOf(level.stats.cBookmarks));
 			mWidgets.info.plays.setText(String.valueOf(level.stats.cPlayed));
-			mWidgets.info.rating.setRating((int) (level.stats.ratingAverage + 0.5f));
+			mWidgets.info.rating.setRating((level.stats.getIntRating()));
 
 			// Set tags
 			String tagList = Strings.toStringList(level.tags, ", ");
@@ -262,7 +262,8 @@ public class ExploreGui extends Gui {
 	 * @return all selected tags
 	 */
 	private ArrayList<Tags> getSelectedTags() {
-		@SuppressWarnings("unchecked") ArrayList<Tags> tags = Pools.arrayList.obtain();
+		@SuppressWarnings("unchecked")
+		ArrayList<Tags> tags = Pools.arrayList.obtain();
 
 		for (Button selectedButton : mWidgets.tag.buttonGroup.getAllChecked()) {
 			tags.add(mWidgets.tag.buttonTag.get(selectedButton));
@@ -747,7 +748,8 @@ public class ExploreGui extends Gui {
 
 		// Rating
 		table.row();
-		mUiFactory.addRatingWidget(Touchable.disabled, table, null);
+		RatingWidget ratingWidget = mUiFactory.addRatingWidget(Touchable.disabled, table, null);
+		ratingWidget.setRating(level.stats.getIntRating());
 
 		return table;
 	}

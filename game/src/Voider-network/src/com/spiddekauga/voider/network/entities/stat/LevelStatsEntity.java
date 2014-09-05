@@ -24,4 +24,11 @@ public class LevelStatsEntity implements IEntity {
 	public float ratingAverage = 0;
 	/** Tags for the level */
 	public ArrayList<Tags> tags = new ArrayList<>();
+
+	/**
+	 * @return integer rating of the average rating
+	 */
+	public int getIntRating() {
+		return (int) (ratingAverage + 0.5f);
+	}
 }

@@ -212,13 +212,11 @@ public class LoginScene extends Scene implements IResponseListener {
 	 * @param email the email to register with the username
 	 */
 	void register(String username, String password, String email) {
-		// ((LoginGui) mGui).clearRegisterErrors();
-
 		mLoggingInUser.setUsername(username);
 		mLoggingInUser.setEmail(email);
 		mLoggingInUser.setPassword(password);
 		mUserWebRepo.register(this, username, password, email, UserLocalRepo.getClientId());
-		mGui.showWaitWindow("Contacting server");
+		mGui.showWaitWindow("Registering...");
 	}
 
 	@Override
