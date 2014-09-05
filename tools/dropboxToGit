@@ -1,17 +1,17 @@
 #!/bin/bash
 
-CAN_SYNC=('json' 'game' 'editor' 'general')
+CAN_SYNC=('ui' 'ui-raw' 'gfx')
+UI_RAW=('general' 'game' 'editor')
 DROPBOX_DIR="$HOME/Dropbox"
-DROPBOX_SUB_DIR="$DROPBOX_DIR/Voider exec/Voider - editable resources/internal_resources"
-DROPBOX_UI_PICS_DIR="$DROPBOX_SUB_DIR/ui-editable"
-DROPBOX_JSON_DIR="$DROPBOX_SUB_DIR/ui"
+DROPBOX_ASSET_DIR="$DROPBOX_DIR/Voider exec/Voider - editable resources/internal_resources"
+DROPBOX_UI_RAW_DIR="$DROPBOX_ASSET_DIR/ui-editable"
 GIT_SUB_DIR="$GIT_DIR/game"
-GIT_UI_PICS_DIR="$GIT_SUB_DIR/ui"
-GIT_JSON_DIR="$GIT_SUB_DIR/src/Voider-android/assets"
+GIT_UI_RAW_DIR="$GIT_SUB_DIR/ui"
+GIT_ASSET_DIR="$GIT_SUB_DIR/src/Voider-android/assets"
 
 usage() {
 cat << EOF
-Usage: $0 [json/game/editor/general]
+Usage: $0 [ui/gfx/ui-raw]
 When not specifying anything all are synced from the dropbox directory to the git folder
 
 Options:
@@ -61,20 +61,26 @@ fi
 # printf -- '%s\n' "${syncing[@]}"
 
 
-syncJsonStyles() {
-	cp -rv "$DROPBOX_JSON_DIR" "$GIT_JSON_DIR"
+syncUiRaw() {
+	for ui_dir in "${UI_RAW[@]}"
+	do
+		rm -rf "$GIT_UI_RAW_DIR/$ui_dir"
+		cp -rv "$DROPBOX_UI_RAW_DIR/$ui_dir" "$GIT_UI_RAW_DIR"
+	done
 }
 
-syncPics() {
-	cp -rv "$DROPBOX_UI_PICS_DIR/$1" "$GIT_UI_PICS_DIR"
+syncFiles() {
+	rm -rv "$GIT_ASSET_DIR/$1"
+	cp -rv "$DROPBOX_ASSET_DIR/$1" "$GIT_ASSET_DIR"
 }
 
 for sync_object in "${syncing[@]}"
 do
-	if [ "$sync_object" = "json" ]; then
-		syncJsonStyles
-	# The rest are picture files sync them using syncPics
+	# UI raw is a special case
+	if [ "$sync_object" = "ui-raw" ]; then
+		syncUiRaw
+	# The rest are just folders
 	else
-		syncPics "$sync_object"
+		syncFiles "$sync_object"
 	fi
 done
