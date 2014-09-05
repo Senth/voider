@@ -8,9 +8,7 @@ import com.spiddekauga.voider.game.WeaponDef;
 import com.spiddekauga.voider.resources.Resource;
 
 /**
- * Enemy actor definition, does nothing more than specify that the actor is
- * an enemy
- * 
+ * Enemy actor definition, does nothing more than specify that the actor is an enemy
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class EnemyActorDef extends ActorDef {
@@ -85,8 +83,8 @@ public class EnemyActorDef extends ActorDef {
 	}
 
 	/**
-	 * Sets the minimum distance from the player the enemy shall have.
-	 * Only applicable if the enemy movement is set to AI
+	 * Sets the minimum distance from the player the enemy shall have. Only applicable if
+	 * the enemy movement is set to AI
 	 * @param minDistance the minimum distance from the player
 	 */
 	public void setPlayerDistanceMin(float minDistance) {
@@ -102,16 +100,16 @@ public class EnemyActorDef extends ActorDef {
 	}
 
 	/**
-	 * @return Squared version of minimum distance from the player.
-	 * This has been pre-calculated.
+	 * @return Squared version of minimum distance from the player. This has been
+	 *         pre-calculated.
 	 */
 	public float getPlayerDistanceMinSq() {
 		return mAiMovementVars.playerDistanceMinSq;
 	}
 
 	/**
-	 * Sets the maximum distance from the player the enemy shall have.
-	 * Only applicable if the enemy movement is set to AI
+	 * Sets the maximum distance from the player the enemy shall have. Only applicable if
+	 * the enemy movement is set to AI
 	 * @param maxDistance the maximum distance from the player
 	 */
 	public void setPlayerDistanceMax(float maxDistance) {
@@ -127,8 +125,8 @@ public class EnemyActorDef extends ActorDef {
 	}
 
 	/**
-	 * @return Squared version of maximum distance from the player.
-	 * This has been pre-calculated.
+	 * @return Squared version of maximum distance from the player. This has been
+	 *         pre-calculated.
 	 */
 	public float getPlayerDistanceMaxSq() {
 		return mAiMovementVars.playerDistanceMaxSq;
@@ -152,8 +150,8 @@ public class EnemyActorDef extends ActorDef {
 	}
 
 	/**
-	 * Sets the minimum time that must have passed until the enemy will decide
-	 * on another direction.
+	 * Sets the minimum time that must have passed until the enemy will decide on another
+	 * direction.
 	 * @param minTime how many degrees it will can move
 	 * @see #setMoveRandomly(boolean) to activate/deactivate the random movement
 	 */
@@ -169,8 +167,8 @@ public class EnemyActorDef extends ActorDef {
 	}
 
 	/**
-	 * Sets the maximum time that must have passed until the enemy will decide
-	 * on another direction.
+	 * Sets the maximum time that must have passed until the enemy will decide on another
+	 * direction.
 	 * @param maxTime how many degrees it will can move
 	 * @see #setMoveRandomly(boolean) to activate/deactivate the random movement
 	 */
@@ -270,8 +268,7 @@ public class EnemyActorDef extends ActorDef {
 	}
 
 	/**
-	 * Sets the aim's rotation speed. Only applicable when aim is set
-	 * to rotating.
+	 * Sets the aim's rotation speed. Only applicable when aim is set to rotating.
 	 * @param rotateSpeed new rotation speed
 	 */
 	public void setAimRotateSpeed(float rotateSpeed) {
@@ -289,6 +286,7 @@ public class EnemyActorDef extends ActorDef {
 	 * Enumeration for how to aim
 	 */
 	public enum AimTypes {
+		// !!!NEVER EVER remove or change order of these!!!
 		/** On the player */
 		ON_PLAYER,
 		/** In front of the player */
@@ -331,6 +329,7 @@ public class EnemyActorDef extends ActorDef {
 			result = prime * result + Float.floatToIntBits(turnSpeed);
 			return result;
 		}
+
 		@Override
 		public boolean equals(Object obj) {
 			if (this == obj) {
@@ -376,6 +375,7 @@ public class EnemyActorDef extends ActorDef {
 			result = prime * result + Float.floatToIntBits(randomTimeMin);
 			return result;
 		}
+
 		@Override
 		public boolean equals(Object obj) {
 			if (this == obj) {
@@ -411,6 +411,7 @@ public class EnemyActorDef extends ActorDef {
 			}
 			return true;
 		}
+
 		/** Minimum distance from the player */
 		@Tag(66) float playerDistanceMin = Enemy.Movement.AI_DISTANCE_MIN_DEFAULT;
 		/** Minimum distance from player, squared */

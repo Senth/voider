@@ -1,7 +1,7 @@
 package com.spiddekauga.voider.resources;
 
+import java.util.ArrayList;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -9,7 +9,6 @@ import com.spiddekauga.voider.repo.resource.InternalNames;
 
 /**
  * This resource has dependencies
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public interface IResourceDependency extends IResource {
@@ -26,7 +25,7 @@ public interface IResourceDependency extends IResource {
 	/**
 	 * Adds an external dependency to the resource
 	 * @param dependency the resource dependency
-	 * @see #addDependency(InternalNames)
+	 * @see #addDependency(InternalDeps)
 	 */
 	public void addDependency(IResource dependency);
 
@@ -35,7 +34,7 @@ public interface IResourceDependency extends IResource {
 	 * @param dependency the resource dependency
 	 * @see #addDependency(IResource)
 	 */
-	public void addDependency(InternalNames dependency);
+	public void addDependency(InternalDeps dependency);
 
 	/**
 	 * Removes an external dependency from the resource
@@ -47,7 +46,7 @@ public interface IResourceDependency extends IResource {
 	 * Removes an internal dependency from the resource
 	 * @param dependency the name of the dependency to remove
 	 */
-	public void removeDependency(InternalNames dependency);
+	public void removeDependency(InternalDeps dependency);
 
 	/**
 	 * @return all external dependencies
@@ -57,5 +56,5 @@ public interface IResourceDependency extends IResource {
 	/**
 	 * @return all internal dependencies
 	 */
-	Set<InternalNames> getInternalDependencies();
+	ArrayList<InternalNames> getInternalDependencies();
 }

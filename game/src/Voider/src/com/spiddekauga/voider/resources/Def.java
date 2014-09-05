@@ -1,5 +1,6 @@
 package com.spiddekauga.voider.resources;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -18,9 +19,8 @@ import com.spiddekauga.voider.utils.Graphics;
 import com.spiddekauga.voider.utils.User;
 
 /**
- * Base class for all "definitions", e.g. ActorDef, WeaponDef. All definitions
- * shall derive from this class.
- * 
+ * Base class for all "definitions", e.g. ActorDef, WeaponDef. All definitions shall
+ * derive from this class.
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public abstract class Def extends Resource implements IResourceDependency, IResourceRevision, Disposable, IResourceTexture, IResourcePng {
@@ -55,7 +55,7 @@ public abstract class Def extends Resource implements IResourceDependency, IReso
 	public <ResourceType> ResourceType copyNewResource() {
 		ResourceType copy = super.copyNewResource();
 
-		Def defCopy = (Def)copy;
+		Def defCopy = (Def) copy;
 		defCopy.mCopyParentId = mUniqueId;
 		defCopy.mRevisedBy = mUser.getUsername();
 		defCopy.mRevisedByKey = mUser.getServerKey();
@@ -131,7 +131,7 @@ public abstract class Def extends Resource implements IResourceDependency, IReso
 	}
 
 	@Override
-	public void addDependency(InternalNames dependency) {
+	public void addDependency(InternalDeps dependency) {
 		mInternalDependencies.add(dependency);
 	}
 
@@ -151,7 +151,7 @@ public abstract class Def extends Resource implements IResourceDependency, IReso
 	}
 
 	@Override
-	public void removeDependency(InternalNames dependency) {
+	public void removeDependency(InternalDeps dependency) {
 		mInternalDependencies.remove(dependency);
 	}
 
@@ -192,6 +192,7 @@ public abstract class Def extends Resource implements IResourceDependency, IReso
 	public int getRevision() {
 		return mRevision;
 	}
+
 	/**
 	 * Sets the revision of the resource
 	 * @param revision the new revision of the resource
@@ -206,13 +207,19 @@ public abstract class Def extends Resource implements IResourceDependency, IReso
 	}
 
 	@Override
-	public Set<InternalNames> getInternalDependencies() {
-		return mInternalDependencies;
+	public ArrayList<InternalNames> getInternalDependencies() {
+		ArrayList<InternalNames> dependencies = new ArrayList<>();
+		for (InternalDeps internalDep : mInternalDependencies) {
+			for (InternalNames name : internalDep.getDependencies()) {
+				dependencies.add(name);
+			}
+		}
+		return dependencies;
 	}
 
 	/**
-	 * @return if this object is a copy it will return the parent id which it was
-	 * copied from, null this is the original.
+	 * @return if this object is a copy it will return the parent id which it was copied
+	 *         from, null this is the original.
 	 */
 	public UUID getCopyParentId() {
 		return mCopyParentId;
@@ -233,8 +240,8 @@ public abstract class Def extends Resource implements IResourceDependency, IReso
 	}
 
 	/**
-	 * Sets the PNG image for the actor definition. This will also create a
-	 * texture for this actor.
+	 * Sets the PNG image for the actor definition. This will also create a texture for
+	 * this actor.
 	 * @param pngBytes bytes for the png image
 	 */
 	@Override
@@ -286,8 +293,10 @@ public abstract class Def extends Resource implements IResourceDependency, IReso
 	/** Global user */
 	private static final User mUser = User.getGlobalUser();
 
-	/** The possible texture of the image, used if mPngBytes are set.
-	 * DON'T SAVE THIS as it is automatically generated when this actor def is loaded */
+	/**
+	 * The possible texture of the image, used if mPngBytes are set. DON'T SAVE THIS as it
+	 * is automatically generated when this actor def is loaded
+	 */
 	private TextureRegionDrawable mTextureDrawable = null;
 
 
@@ -295,8 +304,13 @@ public abstract class Def extends Resource implements IResourceDependency, IReso
 	@Tag(108) private byte[] mPngBytes = null;
 	/** Dependencies for the resource */
 	@Tag(43) private Map<UUID, AtomicInteger> mExternalDependencies = new HashMap<UUID, AtomicInteger>();
-	/** Internal dependencies, such as textures, sound, particle effects */
-	@Tag(42) private Set<InternalNames> mInternalDependencies = new HashSet<InternalNames>();
+	/**
+	 * Deprecated storage of internal dependencies. Internal dependencies, such as
+	 * textures, sound, particle effects
+	 */
+	@Deprecated @Tag(42) private Set<InternalNames> mOldInternalDependencies = new HashSet<InternalNames>();
+	/** Internal dependencies */
+	@Tag(124) private Set<InternalDeps> mInternalDependencies = new HashSet<>();
 	/** Name of the definition */
 	@Tag(36) private String mName = Config.Actor.NAME_DEFAULT;
 	/** Original creator key */

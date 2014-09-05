@@ -9,7 +9,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
-import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.utils.Disposable;
@@ -25,7 +24,6 @@ import com.spiddekauga.utils.scene.ui.HideListener;
 import com.spiddekauga.utils.scene.ui.HideManual;
 import com.spiddekauga.utils.scene.ui.HideSliderValue;
 import com.spiddekauga.utils.scene.ui.ResourceTextureButton;
-import com.spiddekauga.utils.scene.ui.SelectBoxListener;
 import com.spiddekauga.utils.scene.ui.SliderListener;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
 import com.spiddekauga.utils.scene.ui.TooltipWidget.CustomTooltip;
@@ -37,7 +35,6 @@ import com.spiddekauga.voider.Config.Editor.Level;
 import com.spiddekauga.voider.editor.LevelEditor.Tools;
 import com.spiddekauga.voider.editor.commands.GuiCheckCommandCreator;
 import com.spiddekauga.voider.game.Path.PathTypes;
-import com.spiddekauga.voider.game.Themes;
 import com.spiddekauga.voider.game.actors.EnemyActorDef;
 import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.resources.SkinNames.EditorIcons;
@@ -170,7 +167,7 @@ class LevelEditorGui extends EditorGui {
 		mWidgets.info.prologue.setText(mLevelEditor.getPrologue());
 		mWidgets.info.epilogue.setText(mLevelEditor.getEpilogue());
 		mWidgets.info.speed.setValue(mLevelEditor.getLevelStartingSpeed());
-		mWidgets.info.theme.setSelectedIndex(mLevelEditor.getTheme().ordinal());
+		// TODO set theme
 	}
 
 	/**
@@ -581,13 +578,7 @@ class LevelEditorGui extends EditorGui {
 		mWidgets.info.nameError = mUiFactory.getLastCreatedErrorLabel();
 
 		// Theme
-		SelectBoxListener selectBoxListener = new SelectBoxListener() {
-			@Override
-			protected void onSelectionChanged(int itemIndex) {
-				mLevelEditor.setTheme(Themes.values()[itemIndex]);
-			}
-		};
-		mWidgets.info.theme = mUiFactory.addSelectBox("Theme", Themes.values(), selectBoxListener, left, mDisabledWhenPublished);
+		// TODO
 
 		// Speed
 		mUiFactory.addSection("Level Speed", left, null);
@@ -991,7 +982,6 @@ class LevelEditorGui extends EditorGui {
 			TextField name = null;
 			TextField description = null;
 			Slider speed = null;
-			SelectBox<Themes> theme = null;
 			TextField prologue = null;
 			TextField epilogue = null;
 			Image image = null;

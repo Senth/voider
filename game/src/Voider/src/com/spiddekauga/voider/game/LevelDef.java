@@ -161,13 +161,13 @@ public class LevelDef extends Def implements KryoPostRead {
 	 */
 	public void setTheme(Themes theme) {
 		if (mTheme != null) {
-			removeDependency(mTheme.getSkin());
+			removeDependency(mTheme.getDependency());
 		}
 
 		mTheme = theme;
 
 		if (mTheme != null) {
-			addDependency(mTheme.getSkin());
+			addDependency(mTheme.getDependency());
 		}
 	}
 
@@ -215,32 +215,24 @@ public class LevelDef extends Def implements KryoPostRead {
 	}
 
 	/** Starting coordinate of the level (right screen edge) */
-	@Tag(78)
-	private float mStartXCoord = 0;
+	@Tag(78) private float mStartXCoord = 0;
 	/** The actual level id, i.e. not this definition's id */
-	@Tag(79)
-	private UUID mLevelId = null;
+	@Tag(79) private UUID mLevelId = null;
 	/** Campaign id the level belongs to, null if it doesn't belong to any */
-	@Tag(80)
-	private UUID mCampaignId = null;
+	@Tag(80) private UUID mCampaignId = null;
 	/** Story before the level, set to null to not show */
-	@Tag(81)
-	private String mPrologue = "";
+	@Tag(81) private String mPrologue = "";
 	/** Story after the level, set to null to not show */
-	@Tag(82)
-	private String mEpilogue = "";
+	@Tag(82) private String mEpilogue = "";
 	/**
 	 * Base speed of the level, the actual level speed may vary as it can be changed by
 	 * triggers
 	 */
-	@Tag(83)
-	private float mSpeed = Config.Editor.Level.LEVEL_SPEED_DEFAULT;
+	@Tag(83) private float mSpeed = Config.Editor.Level.LEVEL_SPEED_DEFAULT;
 	/** End of the map (right screen edge) */
-	@Tag(84)
-	private float mEndXCoord = 100;
+	@Tag(84) private float mEndXCoord = 100;
 	/** Theme of the level */
-	@Tag(109)
-	private Themes mTheme = null;
+	@Tag(109) private Themes mTheme = null;
 	/** Length of the level in seconds */
 	private float mLengthInTime = 0;
 

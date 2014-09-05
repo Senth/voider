@@ -268,7 +268,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 		// Load all themes
 		for (Themes theme : Themes.values()) {
-			ResourceCacheFacade.load(theme.getSkin());
+			ResourceCacheFacade.load(theme.getTopLayer());
+			ResourceCacheFacade.load(theme.getBottomLayer());
 		}
 	}
 
@@ -278,7 +279,8 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 
 		// Unload all themes
 		for (Themes theme : Themes.values()) {
-			ResourceCacheFacade.unload(theme.getSkin());
+			ResourceCacheFacade.unload(theme.getTopLayer());
+			ResourceCacheFacade.unload(theme.getBottomLayer());
 		}
 	}
 
@@ -1488,9 +1490,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	 */
 	void setTheme(Themes theme) {
 		if (mLevel != null) {
-			ResourceCacheFacade.unload(mLevel.getLevelDef().getTheme().getSkin());
 			mLevel.getLevelDef().setTheme(theme);
-			ResourceCacheFacade.load(mLevel.getLevelDef().getTheme().getSkin());
 			setUnsaved();
 		}
 	}

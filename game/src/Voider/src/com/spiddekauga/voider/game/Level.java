@@ -7,9 +7,8 @@ import java.util.Map.Entry;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Disposable;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.KryoSerializable;
@@ -43,7 +42,6 @@ import com.spiddekauga.voider.resources.IResourceRevision;
 import com.spiddekauga.voider.resources.IResourceUpdate;
 import com.spiddekauga.voider.resources.Resource;
 import com.spiddekauga.voider.resources.ResourceBinder;
-import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.utils.Pools;
 
 /**
@@ -51,7 +49,7 @@ import com.spiddekauga.voider.utils.Pools;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class Level extends Resource implements KryoPreWrite, KryoPostWrite, KryoPostRead, KryoTaggedCopyable, KryoSerializable, Disposable,
-		IResourceRevision, IResourceHasDef {
+IResourceRevision, IResourceHasDef {
 	/**
 	 * Constructor which creates an new empty level with the bound level definition
 	 * @param levelDef the level definition of this level
@@ -87,9 +85,8 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 	private void createBackground() {
 		// Set background textures
 		if (mLevelDef.getTheme() != null) {
-			Skin themeSkin = ResourceCacheFacade.get(mLevelDef.getTheme().getSkin());
-			mBackgroundBottom = themeSkin.getRegion(SkinNames.Theme.BOTTOM_LAYER.toString());
-			mBackgroundTop = themeSkin.getRegion(SkinNames.Theme.TOP_LAYER.toString());
+			mBackgroundBottom = ResourceCacheFacade.get(mLevelDef.getTheme().getBottomLayer());
+			mBackgroundTop = ResourceCacheFacade.get(mLevelDef.getTheme().getTopLayer());
 		}
 	}
 
@@ -230,7 +227,7 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 	 * @param background the background to render
 	 * @param layerSpeed the relative speed of the background
 	 */
-	private void renderBackground(SpriteBatch spriteBatch, TextureRegion background, float layerSpeed) {
+	private void renderBackground(SpriteBatch spriteBatch, Texture background, float layerSpeed) {
 		// Calculate top and bottom layer offsets.
 		float diffCoords = mXCoord - mLevelDef.getStartXCoord();
 		float layerOffset = diffCoords * layerSpeed;
@@ -239,11 +236,11 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 		layerOffset /= Config.Graphics.WORLD_SCALE;
 
 		// Modulate to make in the right texture range
-		layerOffset = layerOffset % background.getRegionWidth();
+		layerOffset = layerOffset % background.getWidth();
 
 		// Texture scaling
-		float textureScale = Gdx.graphics.getHeight() / background.getRegionHeight();
-		float width = background.getRegionWidth() * textureScale;
+		float textureScale = Gdx.graphics.getHeight() / background.getHeight();
+		float width = background.getWidth() * textureScale;
 
 		// Draw first time
 		spriteBatch.draw(background, -layerOffset, 0, width, Gdx.graphics.getHeight());
@@ -528,7 +525,8 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 
 		// Remove multiple enemies from the group, i.e. only save the leader.
 		if (Actor.isEditorActive()) {
-			@SuppressWarnings("unchecked") ArrayList<EnemyActor> removeEnemies = Pools.arrayList.obtain();
+			@SuppressWarnings("unchecked")
+			ArrayList<EnemyActor> removeEnemies = Pools.arrayList.obtain();
 
 			for (EnemyActor enemyActor : mResourceBinder.getResources(EnemyActor.class)) {
 				int cEnemiesBefore = removeEnemies.size();
@@ -563,7 +561,8 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 	public void postRead() {
 		// Add all the removed enemies again
 		if (!mGroupEnemiesSave.isEmpty()) {
-			@SuppressWarnings("unchecked") ArrayList<EnemyActor> addEnemies = Pools.arrayList.obtain();
+			@SuppressWarnings("unchecked")
+			ArrayList<EnemyActor> addEnemies = Pools.arrayList.obtain();
 
 			for (Entry<EnemyGroup, Integer> entry : mGroupEnemiesSave.entrySet()) {
 				EnemyGroup enemyGroup = entry.getKey();
@@ -633,34 +632,29 @@ public class Level extends Resource implements KryoPreWrite, KryoPostWrite, Kryo
 
 
 	/** Top layer background */
-	private TextureRegion mBackgroundTop = null;
+	private Texture mBackgroundTop = null;
 	/** Bottom layer background */
-	private TextureRegion mBackgroundBottom = null;
+	private Texture mBackgroundBottom = null;
 	/** Contains all the resources used in this level */
-	@Tag(13)
-	private ResourceBinder mResourceBinder = new ResourceBinder();
+	@Tag(13) private ResourceBinder mResourceBinder = new ResourceBinder();
 	/** All resources that needs updating */
 	private ArrayList<IResourceUpdate> mResourceUpdates = null;
 	/** All resources that shall be rendered */
 	private ArrayList<IResourceRender> mResourceRenders = null;
 	/** Current x coordinate (of the screen's left edge) */
-	@Tag(14)
-	private float mXCoord = 0.0f;
+	@Tag(14) private float mXCoord = 0.0f;
 	/** Level definition for this level */
 	private LevelDef mLevelDef = null;
 	/** Current speed of the level */
-	@Tag(15)
-	private float mSpeed;
+	@Tag(15) private float mSpeed;
 	/** If the level has been completed */
-	@Tag(16)
-	private boolean mCompletedLevel;
+	@Tag(16) private boolean mCompletedLevel;
 	/** True if the level is running */
 	private boolean mRunning = false;
 	/** The player actor */
 	private PlayerActor mPlayerActor = null;
 	/** Multiple enemies in a group, but just save the leader and number of enemies */
-	@Tag(103)
-	private Map<EnemyGroup, Integer> mGroupEnemiesSave = new HashMap<EnemyGroup, Integer>();
+	@Tag(103) private Map<EnemyGroup, Integer> mGroupEnemiesSave = new HashMap<EnemyGroup, Integer>();
 
 	/** Revision of the actor */
 	protected static final int CLASS_REVISION = 1;

@@ -1,36 +1,35 @@
 package com.spiddekauga.voider.game;
 
 import com.spiddekauga.voider.repo.resource.InternalNames;
+import com.spiddekauga.voider.resources.InternalDeps;
 
 /**
  * All the different themes for the game
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public enum Themes {
+	// !!!NEVER EVER remove or change order of these!!!
 	/** Space theme */
-	SPACE(InternalNames.THEME_SPACE),
+	SPACE(InternalDeps.THEME_SPACE),
 	/** Surface of the red planet */
-	RED_PLANET_SURFACE(InternalNames.THEME_RED_PLANET_SURFACE),
+	SURFACE(InternalDeps.THEME_SURFACE),
 	/** Tunnels of the red planet */
-	RED_PLANET_TUNNELS(InternalNames.THEME_RED_PLANET_TUNNELS),
+	TUNNELS(InternalDeps.THEME_TUNNEL),
 	/** Core of the red planet */
-	RED_PLANET_CORE(InternalNames.THEME_RED_PLANET_CORE),
+	CORE(InternalDeps.THEME_CORE),
 
 	;
 
 	/**
-	 * Constructor that sets the skin used with the theme
-	 * @param skin the skin used with the theme
+	 * Constructor that sets the dependency of the theme
+	 * @param dependency dependency of the level
 	 */
-	Themes(InternalNames skin) {
-		mSkin = skin;
-
+	Themes(InternalDeps dependency) {
 		createHumanReadableName();
 	}
 
 	/**
-	 * Creates a human reabale name
+	 * Creates a human readable name
 	 */
 	private void createHumanReadableName() {
 		mName = name().replaceAll("_", " ").toLowerCase();
@@ -48,14 +47,28 @@ public enum Themes {
 	}
 
 	/**
-	 * @return skin used with the theme
+	 * @return top layer of theme
 	 */
-	public InternalNames getSkin() {
-		return mSkin;
+	public InternalNames getTopLayer() {
+		return mDependency.getDependencies()[1];
 	}
 
-	/** The skin used with the theme */
-	InternalNames mSkin;
+	/**
+	 * @return bottom layer of theme
+	 */
+	public InternalNames getBottomLayer() {
+		return mDependency.getDependencies()[0];
+	}
+
+	/**
+	 * @return dependency of the theme
+	 */
+	public InternalDeps getDependency() {
+		return mDependency;
+	}
+
+	/** Dependency */
+	private InternalDeps mDependency;
 	/** Human-readable name of the theme */
-	String mName;
+	private String mName;
 }

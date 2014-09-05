@@ -35,10 +35,10 @@ import com.spiddekauga.voider.utils.Pools;
 
 /**
  * A path that enemies and maybe something else can follow
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public class Path extends Resource implements Disposable, IResourceCorner, IResourceBody, IResourcePosition, IResourceEditorRender, IResourceSelectable, KryoPostRead {
+public class Path extends Resource implements Disposable, IResourceCorner, IResourceBody, IResourcePosition, IResourceEditorRender,
+		IResourceSelectable, KryoPostRead {
 	/**
 	 * Default constructor, sets the unique id of the path
 	 */
@@ -122,8 +122,8 @@ public class Path extends Resource implements Disposable, IResourceCorner, IReso
 	/**
 	 * Calculates the center position of all corners. This is calculated everytime this
 	 * method is called.
-	 * @return center position of all corner. Don't forget to run Pools.free(position) this
-	 * return value
+	 * @return center position of all corner. Don't forget to run Pools.free(position)
+	 *         this return value
 	 */
 	@Override
 	public Vector2 getPosition() {
@@ -221,8 +221,8 @@ public class Path extends Resource implements Disposable, IResourceCorner, IReso
 	}
 
 	/**
-	 * Sets the world for the path, so that a body can be created. This function
-	 * also sets activates all body etc, so that it gets drawn.
+	 * Sets the world for the path, so that a body can be created. This function also sets
+	 * activates all body etc, so that it gets drawn.
 	 * @param world the world for the path, if null it will disable drawing
 	 */
 	public void setWorld(World world) {
@@ -251,8 +251,8 @@ public class Path extends Resource implements Disposable, IResourceCorner, IReso
 	}
 
 	/**
-	 * Sets how the enemy shall follow the path. Only applicable if
-	 * the enemy movement is set to follow a path.
+	 * Sets how the enemy shall follow the path. Only applicable if the enemy movement is
+	 * set to follow a path.
 	 * @param pathType how shall the enemy follow the path
 	 */
 	public void setPathType(PathTypes pathType) {
@@ -260,8 +260,8 @@ public class Path extends Resource implements Disposable, IResourceCorner, IReso
 	}
 
 	/**
-	 * @return how the enemy is following a path. Only applicable if the
-	 * enemy movement is set to follow a path.
+	 * @return how the enemy is following a path. Only applicable if the enemy movement is
+	 *         set to follow a path.
 	 */
 	public PathTypes getPathType() {
 		return mPathType;
@@ -410,17 +410,22 @@ public class Path extends Resource implements Disposable, IResourceCorner, IReso
 	}
 
 	/**
-	 * Different path types, i.e. how the enemy shall follow a path
-	 * (if it is set to follow a path)
+	 * Different path types, i.e. how the enemy shall follow a path (if it is set to
+	 * follow a path)
 	 */
 	public enum PathTypes {
+		// !!!NEVER EVER remove or change order of these!!!
 		/** Goes back and forth on the path */
 		BACK_AND_FORTH,
-		/** Once the enemy comes to the last node in the path it walks
-		 * towards the first node and goes around in a loop */
+		/**
+		 * Once the enemy comes to the last node in the path it walks towards the first
+		 * node and goes around in a loop
+		 */
 		LOOP,
-		/** Follows the path once and then continues in its last direction
-		 * after it has come to the last node */
+		/**
+		 * Follows the path once and then continues in its last direction after it has
+		 * come to the last node
+		 */
 		ONCE
 	}
 
@@ -431,8 +436,8 @@ public class Path extends Resource implements Disposable, IResourceCorner, IReso
 		// Assertion test (to skip crash)
 		if (mCorners.size() >= 2) {
 			Vector2 diff = Pools.vector2.obtain();
-			for (int i = 0; i < mCorners.size() -1; ++i) {
-				diff.set(mCorners.get(i)).sub(mCorners.get(i+1));
+			for (int i = 0; i < mCorners.size() - 1; ++i) {
+				diff.set(mCorners.get(i)).sub(mCorners.get(i + 1));
 				if (diff.len2() <= CHAIN_CORNER_DISTANCE_MIN) {
 					Pools.vector2.free(diff);
 					return;
@@ -626,16 +631,14 @@ public class Path extends Resource implements Disposable, IResourceCorner, IReso
 			if (other.mCorners != null) {
 				return false;
 			}
-		}
-		else if (!mCorners.equals(other.mCorners)) {
+		} else if (!mCorners.equals(other.mCorners)) {
 			return false;
 		}
 		if (mEnemies == null) {
 			if (other.mEnemies != null) {
 				return false;
 			}
-		}
-		else if (!mEnemies.equals(other.mEnemies)) {
+		} else if (!mEnemies.equals(other.mEnemies)) {
 			return false;
 		}
 		if (mPathType != other.mPathType) {
@@ -645,8 +648,7 @@ public class Path extends Resource implements Disposable, IResourceCorner, IReso
 			if (other.mRightestCorner != null) {
 				return false;
 			}
-		}
-		else if (!mRightestCorner.equals(other.mRightestCorner)) {
+		} else if (!mRightestCorner.equals(other.mRightestCorner)) {
 			return false;
 		}
 		return true;
@@ -680,8 +682,10 @@ public class Path extends Resource implements Disposable, IResourceCorner, IReso
 	private ArrayList<Body> mBodyCorners = new ArrayList<Body>();
 	/** Corner furthest to the right */
 	private Vector2 mRightestCorner = null;
-	/** What type of path type the enemy uses, only applicable if movement type
-	 * is set to path */
+	/**
+	 * What type of path type the enemy uses, only applicable if movement type is set to
+	 * path
+	 */
 	@Tag(18) private PathTypes mPathType = PathTypes.ONCE;
 	/** World the path is bound to */
 	private World mWorld = null;

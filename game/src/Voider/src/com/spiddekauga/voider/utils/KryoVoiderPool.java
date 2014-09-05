@@ -67,6 +67,7 @@ import com.spiddekauga.voider.game.triggers.TriggerAction;
 import com.spiddekauga.voider.game.triggers.TriggerInfo;
 import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.resources.BugReportDef;
+import com.spiddekauga.voider.resources.InternalDeps;
 import com.spiddekauga.voider.resources.ResourceBinder;
 import com.spiddekauga.voider.resources.ResourceItem;
 
@@ -238,7 +239,8 @@ public class KryoVoiderPool extends Pool<Kryo> {
 		THEMES(Themes.class),
 		/** BugReportDef */
 		BUG_REPORT_DEF(BugReportDef.class, SerializerType.TAGGED),
-
+		/** InternalDeps */
+		INTERNAL_DEPS(InternalDeps.class),
 
 		;
 

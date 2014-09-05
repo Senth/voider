@@ -28,23 +28,32 @@ public enum InternalNames {
 	UI_GAME("ui/game.json", Skin.class),
 
 	// Themes / Backgrounds
-	/** Space theme, first level */
-	THEME_SPACE("themes/Space.json", Skin.class),
-	/** Abandoned planet */
-	THEME_RED_PLANET_SURFACE("themes/RedPlanet-Surface.json", Skin.class),
-	/** Inner lava level */
-	THEME_RED_PLANET_TUNNELS("themes/RedPlanet-Tunnels.json", Skin.class),
-	/** BioCyber level */
-	THEME_RED_PLANET_CORE("themes/RedPlanet-Core.json", Skin.class),
+	/** Core top */
+	LEVEL_THEME_CORE_TOP("level_theme_core_top.png", Texture.class),
+	/** Core bottom */
+	LEVEL_THEME_CORE_BOTTOM("level_theme_core_bottom.png", Texture.class),
+	/** Space top */
+	LEVEL_THEME_SPACE_TOP("level_theme_space_top.png", Texture.class),
+	/** Space bottom */
+	LEVEL_THEME_SPACE_BOTTOM("level_theme_space_bottom.png", Texture.class),
+	/** Surface top */
+	LEVEL_THEME_SURFACE_TOP("level_theme_surface_top.png", Texture.class),
+	/** Surface bottom */
+	LEVEL_THEME_SURFACE_BOTTOM("level_theme_surface_bottom.png", Texture.class),
+	/** Tunnels top */
+	LEVEL_THEME_TUNNELS_TOP("level_theme_tunnels_top.png", Texture.class),
+	/** Tunnels bottom */
+	LEVEL_THEME_TUNNELS_BOTTOM("level_theme_tunnels_bottom.png", Texture.class),
+
 
 	// Images
 	/** Splash Screen */
 	IMAGE_SPLASH_SCREEN("spiddekauga_m.png", Texture.class),
-	/** Icon 256x256 */
+	/** Game icon 256x256 */
 	ICON_256("icon-256.png", Texture.class),
-	/** Icon 64x64 */
+	/** Game icon 64x64 */
 	ICON_64("icon-64.png", Texture.class),
-	/** Icon 32x32 */
+	/** game icon 32x32 */
 	ICON_32("icon-32.png", Texture.class),
 
 	// Shaders
