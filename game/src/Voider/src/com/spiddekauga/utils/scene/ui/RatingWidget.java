@@ -14,14 +14,13 @@ import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Widget for displaying ratings that can be changed if set
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class RatingWidget extends WidgetGroup implements Disposable {
 
 	/**
-	 * Constructor which sets the style for the rating and number of stars.
-	 * Rating can be changed by pressing on the stars
+	 * Constructor which sets the style for the rating and number of stars. Rating can be
+	 * changed by pressing on the stars
 	 * @param style how the empty and filled stars will look like
 	 * @param ratingMax number of stars used in the rating
 	 * @see #RatingWidget(Drawable, Drawable, int, Touchable)
@@ -58,9 +57,8 @@ public class RatingWidget extends WidgetGroup implements Disposable {
 	}
 
 	/**
-	 * Constructor which sets the filled and empty star drawables and
-	 * the number of stars to show. Rating can be changed by pressing
-	 * on the stars
+	 * Constructor which sets the filled and empty star drawables and the number of stars
+	 * to show. Rating can be changed by pressing on the stars
 	 * @param checked how a filled star looks
 	 * @param empty how an empty star looks
 	 * @param ratingMax number of stars used in the rating
@@ -71,8 +69,8 @@ public class RatingWidget extends WidgetGroup implements Disposable {
 	}
 
 	/**
-	 * Constructor which sets the filled and empty star drawables and
-	 * the number of stars to show
+	 * Constructor which sets the filled and empty star drawables and the number of stars
+	 * to show
 	 * @param checked how a filled star looks
 	 * @param empty how an empty star looks
 	 * @param ratingMax number of stars used in the rating
@@ -90,7 +88,8 @@ public class RatingWidget extends WidgetGroup implements Disposable {
 	}
 
 	/**
-	 * Sets the rating/number of stars. This will send a change event for all IRatingListener
+	 * Sets the rating/number of stars. This will send a change event for all
+	 * IRatingListener
 	 * @param rating new rating of the widget
 	 */
 	public void setRating(int rating) {
@@ -99,7 +98,8 @@ public class RatingWidget extends WidgetGroup implements Disposable {
 		}
 
 
-		// Special case, if we want to set the rating to which it already is, set it to 0 instead
+		// Special case, if we want to set the rating to which it already is, set it to 0
+		// instead
 		if (mRatingCurrent == rating) {
 			mRatingCurrent = 0;
 		} else {
@@ -110,8 +110,8 @@ public class RatingWidget extends WidgetGroup implements Disposable {
 	}
 
 	/**
-	 * Updates the number of shown stars. This does not change the rating
-	 * just how many stars are currently filled
+	 * Updates the number of shown stars. This does not change the rating just how many
+	 * stars are currently filled
 	 * @param cFilledStars number of stars to show.
 	 */
 	private void updateFilledStars(int cFilledStars) {
@@ -143,7 +143,7 @@ public class RatingWidget extends WidgetGroup implements Disposable {
 		if (getTouchable() == Touchable.enabled || getTouchable() == Touchable.childrenOnly) {
 			for (int i = 0; i < mClickListeners.length; ++i) {
 				if (mClickListeners[i].isOver()) {
-					return i+1;
+					return i + 1;
 				}
 			}
 		}
@@ -152,8 +152,8 @@ public class RatingWidget extends WidgetGroup implements Disposable {
 	}
 
 	/**
-	 * Add a rating changed listener. These are only called when the rating
-	 * is changed when a star is pressed, i.e. not when {@link #setRating(int)} is called.
+	 * Add a rating changed listener. These are only called when the rating is changed
+	 * when a star is pressed, i.e. not when {@link #setRating(int)} is called.
 	 * @param listener the listener to add
 	 */
 	public void addListener(IRatingListener listener) {
@@ -245,7 +245,8 @@ public class RatingWidget extends WidgetGroup implements Disposable {
 			mStars[i] = new Image(mStyle.empty);
 			mStars[i].setSize(mStyle.checked.getMinWidth(), mStyle.checked.getMinHeight());
 			mTable.add(mStars[i]);
-			mClickListeners[i] = new ClickListenerImage(i+1);
+			mClickListeners[i] = new ClickListenerImage(i + 1);
+			mStars[i].addListener(mClickListeners[i]);
 		}
 	}
 
@@ -280,8 +281,7 @@ public class RatingWidget extends WidgetGroup implements Disposable {
 	/** Table where the stars are located */
 	private AlignTable mTable = new AlignTable();
 	/** Rating listeners */
-	@SuppressWarnings("unchecked")
-	private ArrayList<IRatingListener> mChangeListeners = Pools.arrayList.obtain();
+	@SuppressWarnings("unchecked") private ArrayList<IRatingListener> mChangeListeners = Pools.arrayList.obtain();
 
 	/**
 	 * Style for rating widget

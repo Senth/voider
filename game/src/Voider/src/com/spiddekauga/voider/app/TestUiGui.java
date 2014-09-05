@@ -1,6 +1,7 @@
 package com.spiddekauga.voider.app;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
@@ -20,8 +21,11 @@ import com.spiddekauga.utils.scene.ui.AlignTable;
 import com.spiddekauga.utils.scene.ui.AnimationWidget;
 import com.spiddekauga.utils.scene.ui.AnimationWidget.AnimationWidgetStyle;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
+import com.spiddekauga.utils.scene.ui.IRatingListener;
 import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
+import com.spiddekauga.utils.scene.ui.RatingWidget;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
+import com.spiddekauga.utils.scene.ui.UiFactory;
 import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.SkinNames;
@@ -46,12 +50,14 @@ public class TestUiGui extends Gui {
 		initButtons();
 		initTextFields();
 		initCheckBoxRadioButtons();
+		initRating();
 		initSliders();
 		initWindows();
 		initScrollPane();
 		initList();
 		initSelectionBox();
 		initWaitAnimation();
+
 	}
 
 	/**
@@ -75,6 +81,21 @@ public class TestUiGui extends Gui {
 		if (mTopRight != null) {
 			mTopRight.dispose();
 		}
+	}
+
+	/**
+	 * Initialize ratings
+	 */
+	private void initRating() {
+		mMainTable.row();
+		RatingWidget ratingWidget = UiFactory.getInstance().addRatingWidget(Touchable.enabled, mMainTable, null);
+		IRatingListener listener = new IRatingListener() {
+			@Override
+			public void onRatingChange(int newRating) {
+				showMessage("Change rating to: " + newRating);
+			}
+		};
+		ratingWidget.addListener(listener);
 	}
 
 	/**

@@ -485,7 +485,7 @@ public class UiFactory {
 	 * @return created rating widget
 	 */
 	public RatingWidget addRatingWidget(Touchable touchable, AlignTable table, GuiHider hider) {
-		RatingWidget rating = new RatingWidget(mStyles.rating.stardard, 5, touchable);
+		RatingWidget rating = new RatingWidget(mStyles.rating.stars, 5, touchable);
 
 		table.add(rating);
 
@@ -944,7 +944,7 @@ public class UiFactory {
 		mStyles.label.tooltip = SkinNames.getResource(SkinNames.General.LABEL_TOOLTIP);
 		mStyles.label.header = SkinNames.getResource(SkinNames.General.LABEL_HEADER);
 		mStyles.select.standard = SkinNames.getResource(SkinNames.General.SELECT_BOX_DEFAULT);
-		mStyles.rating.stardard = SkinNames.getResource(SkinNames.General.RATING_DEFAULT);
+		mStyles.rating.stars = SkinNames.getResource(SkinNames.General.RATING_DEFAULT);
 		mStyles.window.title = SkinNames.getResource(SkinNames.General.WINDOW_TITLE);
 		mStyles.window.noTitle = SkinNames.getResource(SkinNames.General.WINDOW_NO_TITLE);
 		mStyles.scrollPane.windowBackground = SkinNames.getResource(SkinNames.General.SCROLL_PANE_WINDOW_BACKGROUND);
@@ -1205,7 +1205,7 @@ public class UiFactory {
 		}
 
 		public static class Ratings {
-			public RatingWidgetStyle stardard = null;
+			public RatingWidgetStyle stars = null;
 		}
 
 		public static class SelectBoxes {
