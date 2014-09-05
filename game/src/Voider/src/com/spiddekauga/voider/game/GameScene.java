@@ -454,21 +454,21 @@ public class GameScene extends WorldScene {
 			ScoreScene scoreScene = new ScoreScene(mPlayerStats, mLevel.getLevelDef());
 			Scene nextScene = scoreScene;
 
-			// Get highscores if online
+			// Display highscores and tags
 			boolean online = User.getGlobalUser().isOnline();
 			if (online && isPublished()) {
 				HighscoreScene highscoreScene = new HighscoreScene();
 				HighscoreRepo.getInstance().getPlayerServerScore(getLevelId(), highscoreScene);
 				highscoreScene.setNextScene(nextScene);
 				nextScene = highscoreScene;
+
+				if (StatLocalRepo.getInstance().isTaggable(getLevelId())) {
+					TagScene tagScene = new TagScene(getLevelId());
+					tagScene.setNextScene(nextScene);
+					nextScene = tagScene;
+				}
 			}
 
-			// Get tag if online and can tag
-			if (online && StatLocalRepo.getInstance().isTaggable(getLevelId())) {
-				TagScene tagScene = new TagScene(getLevelId());
-				tagScene.setNextScene(nextScene);
-				nextScene = tagScene;
-			}
 
 			switch (getOutcome()) {
 			case LEVEL_COMPLETED:

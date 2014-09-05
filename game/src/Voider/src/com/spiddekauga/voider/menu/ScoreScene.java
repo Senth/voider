@@ -8,6 +8,7 @@ import com.spiddekauga.voider.game.PlayerStats;
 import com.spiddekauga.voider.network.entities.stat.HighscoreSyncEntity;
 import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
+import com.spiddekauga.voider.repo.resource.ResourceLocalRepo;
 import com.spiddekauga.voider.repo.stat.HighscoreRepo;
 import com.spiddekauga.voider.repo.stat.StatLocalRepo;
 import com.spiddekauga.voider.repo.stat.UserLevelStat;
@@ -76,7 +77,10 @@ public class ScoreScene extends Scene {
 	 * Go back to main menu
 	 */
 	void gotoMainMenu() {
-		mSynchronizer.synchronize(SyncTypes.STATS);
+		if (isPublished()) {
+			mSynchronizer.synchronize(SyncTypes.STATS);
+		}
+
 		SceneSwitcher.returnTo(MainMenu.class);
 	}
 
@@ -84,11 +88,21 @@ public class ScoreScene extends Scene {
 	 * Try playing the level once again
 	 */
 	void tryAgain() {
-		mSynchronizer.synchronize(SyncTypes.STATS);
+		if (isPublished()) {
+			mSynchronizer.synchronize(SyncTypes.STATS);
+		}
+
 		GameScene gameScene = new GameScene(false, false);
 		gameScene.setLevelToLoad(mLevelDef);
 		setNextScene(gameScene);
 		setOutcome(Outcomes.NOT_APPLICAPLE);
+	}
+
+	/**
+	 * @return true if the level is published
+	 */
+	boolean isPublished() {
+		return ResourceLocalRepo.isPublished(mLevelDef.getId());
 	}
 
 	/**

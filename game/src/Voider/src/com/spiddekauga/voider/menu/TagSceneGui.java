@@ -2,6 +2,7 @@ package com.spiddekauga.voider.menu;
 
 import java.util.ArrayList;
 
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
@@ -68,7 +69,13 @@ class TagSceneGui extends Gui {
 		mMainTable.row().setHeight(mUiFactory.getStyles().vars.rowHeight);
 		mMainTable.row();
 
-		mUiFactory.addImageButtonLabel(SkinNames.General.GAME_CONTINUE, "Skip", Positions.BOTTOM, mMainTable, null, null);
+		Button button = mUiFactory.addImageButtonLabel(SkinNames.General.GAME_CONTINUE, "Skip", Positions.BOTTOM, mMainTable, null, null);
+		new ButtonListener(button) {
+			@Override
+			protected void onPressed() {
+				mScene.continueToNextScene();
+			};
+		};
 	}
 
 	/** Tag scene */

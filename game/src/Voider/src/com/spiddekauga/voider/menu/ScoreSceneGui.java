@@ -31,10 +31,12 @@ public class ScoreSceneGui extends Gui {
 
 	@Override
 	public void resetValues() {
-		mWidgets.bookmark.setChecked(mScoreScene.isBookmarked());
-		mWidgets.rating.setRating(mScoreScene.getRating());
+		if (mScoreScene.isPublished()) {
+			mWidgets.bookmark.setChecked(mScoreScene.isBookmarked());
+			mWidgets.rating.setRating(mScoreScene.getRating());
 
-		// TODO comment
+			// TODO comment
+		}
 	};
 
 	@Override
@@ -59,52 +61,60 @@ public class ScoreSceneGui extends Gui {
 		LabelStyle myScoreStyle = SkinNames.getResource(SkinNames.General.LABEL_MY_SCORE);
 		addToScoreTable("My Score", myScoreStyle, mScoreScene.getPlayerScore());
 
-		// My top score
-		LabelStyle myHighscore = SkinNames.getResource(SkinNames.General.LABEL_TOP_SCORE);
-		addToScoreTable("My Highscore", myHighscore, mScoreScene.getPlayerHighscore());
+
+		if (mScoreScene.isPublished()) {
+			// My top score
+			LabelStyle myHighscore = SkinNames.getResource(SkinNames.General.LABEL_TOP_SCORE);
+			addToScoreTable("My Highscore", myHighscore, mScoreScene.getPlayerHighscore());
 
 
-		// Rate
-		mMainTable.row().setFillWidth(true).setPadTop(mUiFactory.getStyles().vars.paddingInner);
-		mUiFactory.addLabel("Rate", false, mMainTable);
-		mMainTable.add().setFillWidth(true);
-		RatingWidget ratingWidget = mUiFactory.addRatingWidget(Touchable.enabled, mMainTable, null);
-		mWidgets.rating = ratingWidget;
-		IRatingListener ratingListener = new IRatingListener() {
-			@Override
-			public void onRatingChange(int newRating) {
-				mScoreScene.setRating(newRating);
-			}
-		};
-		ratingWidget.addListener(ratingListener);
+			// Rate
+			mMainTable.row().setFillWidth(true).setPadTop(mUiFactory.getStyles().vars.paddingInner);
+			mUiFactory.addLabel("Rate", false, mMainTable);
+			mMainTable.add().setFillWidth(true);
+			RatingWidget ratingWidget = mUiFactory.addRatingWidget(Touchable.enabled, mMainTable, null);
+			mWidgets.rating = ratingWidget;
+			IRatingListener ratingListener = new IRatingListener() {
+				@Override
+				public void onRatingChange(int newRating) {
+					mScoreScene.setRating(newRating);
+				}
+			};
+			ratingWidget.addListener(ratingListener);
 
-		// Bookmark
-		mMainTable.row().setFillWidth(true);
-		mUiFactory.addLabel("Bookmark", false, mMainTable);
-		mMainTable.add().setFillWidth(true);
-		Button button = mUiFactory.addImageButton(SkinNames.General.BOOKMARK, mMainTable, null, null);
-		mWidgets.bookmark = button;
-		new ButtonListener(button) {
-			@Override
-			protected void onChecked(boolean checked) {
-				mScoreScene.setBookmark(checked);
-			}
-		};
+			// Bookmark
+			mMainTable.row().setFillWidth(true);
+			mUiFactory.addLabel("Bookmark", false, mMainTable);
+			mMainTable.add().setFillWidth(true);
+			Button button = mUiFactory.addImageButton(SkinNames.General.BOOKMARK, mMainTable, null, null);
+			mWidgets.bookmark = button;
+			new ButtonListener(button) {
+				@Override
+				protected void onChecked(boolean checked) {
+					mScoreScene.setBookmark(checked);
+				}
+			};
 
-		// Comment
-		TextFieldListener textFieldListener = new TextFieldListener() {
-			@Override
-			protected void onDone(String newText) {
-				mScoreScene.setComment(newText);
-			}
-		};
-		mWidgets.comment = mUiFactory.addTextArea(null, "Comment on the level you just played", tableWidth, textFieldListener, mMainTable, null);
-
+			// Comment
+			TextFieldListener textFieldListener = new TextFieldListener() {
+				@Override
+				protected void onDone(String newText) {
+					mScoreScene.setComment(newText);
+				}
+			};
+			mWidgets.comment = mUiFactory.addTextArea(null, "Comment on the level you just played", tableWidth, textFieldListener, mMainTable, null);
+		} else {
+			String text = "Highscore, rate, bookmark, and comment features are disabled for unpublished levels. "
+					+ "They will be available once you publish your level :D";
+			mMainTable.row().setPadTop(mUiFactory.getStyles().vars.rowHeight);
+			mUiFactory.addLabel(text, true, mMainTable);
+			mMainTable.getCell().setWidth(tableWidth);
+		}
 
 		// -- Buttons --
 		// Replay
 		mMainTable.row().setAlign(Horizontal.CENTER).setPadTop(mUiFactory.getStyles().vars.rowHeight);
-		button = mUiFactory.addImageButtonLabel(SkinNames.General.REPLAY, "Replay", Positions.BOTTOM, mMainTable, null, null);
+		Button button = mUiFactory.addImageButtonLabel(SkinNames.General.REPLAY, "Replay", Positions.BOTTOM, mMainTable, null, null);
 		new ButtonListener(button) {
 			@Override
 			protected void onPressed() {

@@ -157,7 +157,7 @@ public class StatSync extends VoiderServlet {
 		}
 
 		// Send sync response
-		if (mParameters.levelStats.isEmpty()) {
+		if (!mParameters.levelStats.isEmpty()) {
 			sendMessage(new ChatMessage<>(MessageTypes.SYNC_STAT, mUser.getClientId()));
 		}
 	}
