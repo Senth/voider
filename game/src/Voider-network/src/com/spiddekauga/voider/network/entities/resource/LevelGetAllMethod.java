@@ -31,7 +31,7 @@ public class LevelGetAllMethod implements IMethodEntity {
 		/** Number of plays */
 		PLAYS("Plays"),
 		/** Number of likes */
-		BOOKMARKS("Likes"),
+		BOOKMARKS("Bookmark count"),
 
 		;
 

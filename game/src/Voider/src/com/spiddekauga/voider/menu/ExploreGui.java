@@ -506,6 +506,7 @@ public class ExploreGui extends Gui {
 		};
 		wrapper.add(imageButton);
 		hideListener.addToggleActor(tagTable);
+		mWidgets.sort.hider.addChild(hideListener);
 
 
 		// Clear button

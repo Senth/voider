@@ -16,7 +16,6 @@ import com.spiddekauga.voider.repo.WebRepo;
 
 /**
  * Repository for handling server calls regarding the user
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class UserWebRepo extends WebRepo {
@@ -83,6 +82,7 @@ public class UserWebRepo extends WebRepo {
 		registerMethod.email = email;
 		registerMethod.username = username;
 		registerMethod.password = password;
+		registerMethod.clientId = clientId;
 
 		sendInNewThread(registerMethod, responseListener);
 	}
