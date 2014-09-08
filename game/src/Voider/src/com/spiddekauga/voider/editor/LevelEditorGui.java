@@ -2,6 +2,9 @@ package com.spiddekauga.voider.editor;
 
 import java.util.ArrayList;
 
+import com.badlogic.gdx.Application.ApplicationType;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
@@ -14,6 +17,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.utils.Disposable;
 import com.spiddekauga.utils.commands.CGuiSlider;
+import com.spiddekauga.utils.commands.CInvokerUndoToDelimiter;
 import com.spiddekauga.utils.commands.Invoker;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
@@ -26,6 +30,7 @@ import com.spiddekauga.utils.scene.ui.HideManual;
 import com.spiddekauga.utils.scene.ui.HideSliderValue;
 import com.spiddekauga.utils.scene.ui.ImageScrollButton;
 import com.spiddekauga.utils.scene.ui.ImageScrollButton.ScrollWhen;
+import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
 import com.spiddekauga.utils.scene.ui.ResourceTextureButton;
 import com.spiddekauga.utils.scene.ui.SliderListener;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
@@ -679,6 +684,38 @@ class LevelEditorGui extends EditorGui {
 		Texture topLayer = ResourceCacheFacade.get(theme.getTopLayer());
 		button.addLayer(bottomLayer);
 		button.addLayer(topLayer);
+	}
+
+	/**
+	 * Show theme selection message box
+	 */
+	private void showThemeSelectWindow() {
+		// Show message box
+		if (Gdx.app.getType() == ApplicationType.Desktop) {
+			final String THEME_DELIMETER = "theme-select";
+
+			MsgBoxExecuter msgBox = getFreeMsgBox(true);
+			mInvoker.pushDelimiter(THEME_DELIMETER);
+			msgBox.setTitle("Select Theme");
+
+			// TODO Add content
+
+			// TODO Create common listener for all theme buttons (not a ButtonListener)
+
+			// TODO Create theme list (UiFactory). Should be able to set custom
+			// width/height.
+
+			// Cancel button and undo theme settings
+			msgBox.addCancelButtonAndKeys(new CInvokerUndoToDelimiter(mInvoker, THEME_DELIMETER, false));
+			msgBox.button("Select");
+			msgBox.key(Input.Keys.ENTER, null);
+
+			showMsgBox(msgBox);
+		}
+		// Mobile device, show scene instead
+		else if (Gdx.app.getType() == ApplicationType.Android) {
+			// TODO
+		}
 	}
 
 	@Override

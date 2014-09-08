@@ -153,8 +153,8 @@ public abstract class EditorGui extends Gui {
 	 */
 	protected void initSettingsMenu() {
 		mSettingTabs
-		.setMargin(getTopBottomPadding(), mUiFactory.getStyles().vars.paddingOuter, getTopBottomPadding(),
-				mUiFactory.getStyles().vars.paddingOuter).setAlign(Horizontal.RIGHT, Vertical.TOP).setTabAlign(Horizontal.RIGHT)
+				.setMargin(getTopBottomPadding(), mUiFactory.getStyles().vars.paddingOuter, getTopBottomPadding(),
+						mUiFactory.getStyles().vars.paddingOuter).setAlign(Horizontal.RIGHT, Vertical.TOP).setTabAlign(Horizontal.RIGHT)
 				.setFillHeight(true).setBackground(new Background(mUiFactory.getStyles().color.widgetBackground))
 				.setPaddingContent(mUiFactory.getStyles().vars.paddingInner)
 				.setContentWidth((Float) SkinNames.getResource(SkinNames.GeneralVars.RIGHT_PANEL_WIDTH));
@@ -648,14 +648,16 @@ public abstract class EditorGui extends Gui {
 	 */
 	protected void showInfoDialog() {
 		setInfoNameError("");
-		mInvoker.pushDelimiter("option-dialog");
+		String OPTION_DELIMITER = "option-dialog";
+
+		mInvoker.pushDelimiter(OPTION_DELIMITER);
 		MsgBoxExecuter msgBox = getFreeMsgBox(true);
 		msgBox.setTitle(getResourceTypeNameCapital() + " Options");
 		msgBox.content(mInfoTable);
 		if (mEditor.isJustCreated()) {
 			msgBox.addCancelButtonAndKeys(new CEditorUndoJustCreated(mEditor));
 		} else {
-			msgBox.addCancelButtonAndKeys(new CInvokerUndoToDelimiter(mInvoker, "option-dialog", false));
+			msgBox.addCancelButtonAndKeys(new CInvokerUndoToDelimiter(mInvoker, OPTION_DELIMITER, false));
 		}
 		Command save = new CDefHasValidName(msgBox, this, mEditor, getResourceTypeName());
 		msgBox.button("Save", save);
