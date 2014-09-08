@@ -1,6 +1,5 @@
 package com.spiddekauga.voider.resources;
 
-import com.spiddekauga.voider.game.Themes;
 import com.spiddekauga.voider.repo.resource.InternalNames;
 
 /**
@@ -10,13 +9,13 @@ import com.spiddekauga.voider.repo.resource.InternalNames;
 public enum InternalDeps {
 	// !!!NEVER EVER remove or change order of these!!!
 	/** Space theme */
-	THEME_SPACE(Themes.SPACE.getBottomLayer(), Themes.SPACE.getTopLayer()),
+	THEME_SPACE(InternalNames.LEVEL_THEME_SPACE_BOTTOM, InternalNames.LEVEL_THEME_SPACE_TOP),
 	/** Core theme */
-	THEME_CORE(Themes.CORE.getBottomLayer(), Themes.CORE.getTopLayer()),
+	THEME_CORE(InternalNames.LEVEL_THEME_CORE_BOTTOM, InternalNames.LEVEL_THEME_CORE_TOP),
 	/** Surface theme */
-	THEME_SURFACE(Themes.SURFACE.getBottomLayer(), Themes.SURFACE.getTopLayer()),
+	THEME_SURFACE(InternalNames.LEVEL_THEME_SURFACE_BOTTOM, InternalNames.LEVEL_THEME_SURFACE_TOP),
 	/** Tunnel theme */
-	THEME_TUNNEL(Themes.TUNNELS.getBottomLayer(), Themes.TUNNELS.getTopLayer()),
+	THEME_TUNNEL(InternalNames.LEVEL_THEME_TUNNELS_BOTTOM, InternalNames.LEVEL_THEME_TUNNELS_TOP),
 
 	;
 

@@ -421,6 +421,60 @@ public class SkinNames {
 	}
 
 	/**
+	 * Game Variables
+	 */
+	public enum GameVars implements ISkinNames {
+		/** Speed for the top layer of the level background */
+		TOP_LAYER_SPEED(Float.class),
+		/** Speed for the bottom layer of the level background */
+		BOTTOM_LAYER_SPEED(Float.class),
+
+		;
+
+		/**
+		 * Creates a more user-friendly name for the enumeration
+		 * @param type the class type
+		 */
+		private GameVars(Class<?> type) {
+			mType = type;
+			mName = super.toString().toLowerCase();
+		}
+
+		/**
+		 * Create a custom name for the enumeration
+		 * @param type the class type
+		 * @param jsonName name in the json-file
+		 */
+		private GameVars(Class<?> type, String jsonName) {
+			mType = type;
+			mName = jsonName;
+		}
+
+		@Override
+		public Class<?> getClassType() {
+			return mType;
+		}
+
+		@Override
+		public InternalNames getSkinName() {
+			return InternalNames.UI_GAME;
+		}
+
+		/**
+		 * @return name of the icon inside the skin
+		 */
+		@Override
+		public String toString() {
+			return mName;
+		}
+
+		/** skin name of the icon */
+		private String mName;
+		/** Class type */
+		private Class<?> mType;
+	}
+
+	/**
 	 * General variables
 	 */
 	public enum GeneralVars implements ISkinNames {

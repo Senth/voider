@@ -66,7 +66,7 @@ public class Pool<T> extends ReflectionPool<T> {
 
 	/**
 	 * Creates a pool type
-	 * @param type objct type
+	 * @param type object type
 	 */
 	public Pool(Class<T> type) {
 		super(type);
@@ -94,8 +94,8 @@ public class Pool<T> extends ReflectionPool<T> {
 	}
 
 	/**
-	 * Frees all vectors in the list. This list can contain duplicates
-	 * as this method ensure that each vector is only freed once.
+	 * Frees all vectors in the list. This list can contain duplicates as this method
+	 * ensure that each vector is only freed once.
 	 * @param list list with vectors to free, can contain duplicates.
 	 */
 	public void freeDuplicates(List<T> list) {

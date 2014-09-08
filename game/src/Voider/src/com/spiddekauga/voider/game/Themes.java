@@ -25,6 +25,7 @@ public enum Themes {
 	 * @param dependency dependency of the level
 	 */
 	Themes(InternalDeps dependency) {
+		mDependency = dependency;
 		createHumanReadableName();
 	}
 

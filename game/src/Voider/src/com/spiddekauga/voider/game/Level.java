@@ -29,6 +29,7 @@ import com.spiddekauga.voider.game.actors.MovementTypes;
 import com.spiddekauga.voider.game.actors.PlayerActor;
 import com.spiddekauga.voider.game.triggers.TriggerAction.Actions;
 import com.spiddekauga.voider.game.triggers.TriggerInfo;
+import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.IResource;
@@ -42,6 +43,7 @@ import com.spiddekauga.voider.resources.IResourceRevision;
 import com.spiddekauga.voider.resources.IResourceUpdate;
 import com.spiddekauga.voider.resources.Resource;
 import com.spiddekauga.voider.resources.ResourceBinder;
+import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.utils.Pools;
 
 /**
@@ -87,6 +89,12 @@ IResourceRevision, IResourceHasDef {
 		if (mLevelDef.getTheme() != null) {
 			mBackgroundBottom = ResourceCacheFacade.get(mLevelDef.getTheme().getBottomLayer());
 			mBackgroundTop = ResourceCacheFacade.get(mLevelDef.getTheme().getTopLayer());
+		}
+
+		// Set background speed
+		if (ResourceCacheFacade.isLoaded(InternalNames.UI_GAME)) {
+			mBackgroundBottomSpeed = SkinNames.getResource(SkinNames.GameVars.BOTTOM_LAYER_SPEED);
+			mBackgroundTopSpeed = SkinNames.getResource(SkinNames.GameVars.TOP_LAYER_SPEED);
 		}
 	}
 
@@ -214,10 +222,9 @@ IResourceRevision, IResourceHasDef {
 	 * @param spriteBatch used for rendering sprites.
 	 */
 	public void renderBackground(SpriteBatch spriteBatch) {
-		// TODO use config variables instead
 		if (mBackgroundBottom != null && mBackgroundTop != null) {
-			renderBackground(spriteBatch, mBackgroundBottom, 0.29f);
-			renderBackground(spriteBatch, mBackgroundTop, 0.6f);
+			renderBackground(spriteBatch, mBackgroundBottom, mBackgroundBottomSpeed);
+			renderBackground(spriteBatch, mBackgroundTop, mBackgroundTopSpeed);
 		}
 	}
 
@@ -239,13 +246,14 @@ IResourceRevision, IResourceHasDef {
 		layerOffset = layerOffset % background.getWidth();
 
 		// Texture scaling
-		float textureScale = Gdx.graphics.getHeight() / background.getHeight();
+		float textureScale = ((float) Gdx.graphics.getHeight()) / background.getHeight();
 		float width = background.getWidth() * textureScale;
 
 		// Draw first time
 		spriteBatch.draw(background, -layerOffset, 0, width, Gdx.graphics.getHeight());
 
 		// Do we need to draw second time (i.e. we draw beyond the border)
+		// TODO draw multiple times
 		if (layerOffset - width < Gdx.graphics.getWidth()) {
 			spriteBatch.draw(background, -layerOffset + width, 0, width, Gdx.graphics.getHeight());
 		}
@@ -630,7 +638,10 @@ IResourceRevision, IResourceHasDef {
 		// Does nothing
 	}
 
-
+	/** Top layer background speed */
+	private float mBackgroundTopSpeed = 0;
+	/** Bottom layer background speed */
+	private float mBackgroundBottomSpeed = 0;
 	/** Top layer background */
 	private Texture mBackgroundTop = null;
 	/** Bottom layer background */

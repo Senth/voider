@@ -23,7 +23,6 @@ import com.esotericsoftware.kryo.Serializer;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 import com.esotericsoftware.kryo.serializers.CollectionSerializer;
-import com.esotericsoftware.kryo.serializers.CompatibleFieldSerializer;
 import com.esotericsoftware.kryo.serializers.FieldSerializer;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer;
 import com.spiddekauga.utils.GameTime;
@@ -136,23 +135,23 @@ public class KryoVoiderPool extends Pool<Kryo> {
 		/** BulletActor */
 		BULLET_ACTOR(BulletActor.class, SerializerType.SERIALIZABLE_TAGGED),
 		/** BulletActorDef */
-		BULLET_ACTOR_DEF(BulletActorDef.class, SerializerType.TAGGED),
+		BULLET_ACTOR_DEF(BulletActorDef.class, SerializerType.SERIALIZABLE_TAGGED),
 		/** EnemyActor */
 		ENEMY_ACTOR(EnemyActor.class, SerializerType.SERIALIZABLE_TAGGED),
 		/** EnemyActorDef */
-		ENEMY_ACTOR_DEF(EnemyActorDef.class, SerializerType.TAGGED),
+		ENEMY_ACTOR_DEF(EnemyActorDef.class, SerializerType.SERIALIZABLE_TAGGED),
 		/** PickupActor */
 		PICKUP_ACTOR(PickupActor.class, SerializerType.SERIALIZABLE_TAGGED),
 		/** PickupActorDef */
-		PICKUP_ACTOR_DEF(PickupActorDef.class, SerializerType.TAGGED),
+		PICKUP_ACTOR_DEF(PickupActorDef.class, SerializerType.SERIALIZABLE_TAGGED),
 		/** PlayerActor */
 		PLAYER_ACTOR(PlayerActor.class, SerializerType.SERIALIZABLE_TAGGED),
 		/** PlayerActorDef */
-		PLAYER_ACTOR_DEF(PlayerActorDef.class, SerializerType.TAGGED),
+		PLAYER_ACTOR_DEF(PlayerActorDef.class, SerializerType.SERIALIZABLE_TAGGED),
 		/** StaticTerrainActor */
 		STATIC_TERRAIN_ACTOR(StaticTerrainActor.class, SerializerType.SERIALIZABLE_TAGGED),
 		/** StaticTerrainActorDef */
-		STATIC_TERRAIN_ACTOR_DEF(StaticTerrainActorDef.class, SerializerType.TAGGED),
+		STATIC_TERRAIN_ACTOR_DEF(StaticTerrainActorDef.class, SerializerType.SERIALIZABLE_TAGGED),
 		/** VisualVars */
 		VISUAL_VARS(VisualVars.class, SerializerType.SERIALIZABLE_TAGGED),
 		/** BulletDestroyer */
@@ -250,8 +249,6 @@ public class KryoVoiderPool extends Pool<Kryo> {
 		private enum SerializerType {
 			/** Creates a TaggedFieldSerializer for the type */
 			TAGGED,
-			/** Creates a CompatibleFieldSerializer for the type */
-			COMPATIBLE,
 			/** Creates a SerializableTaggedFieldSerialize for the type */
 			SERIALIZABLE_TAGGED,
 		}
@@ -318,15 +315,6 @@ public class KryoVoiderPool extends Pool<Kryo> {
 				}
 			};
 
-			// HashSet
-			HASH_SET.mSerializer = new CollectionSerializer() {
-				@Override
-				protected Collection create(Kryo kryo, Input input, Class<Collection> type) {
-					HashSet hashSet = Pools.hashSet.obtain();
-					return hashSet;
-				}
-			};
-
 
 			// Create tagged or compatible serializers
 			for (RegisterClasses registerClass : RegisterClasses.values()) {
@@ -334,10 +322,6 @@ public class KryoVoiderPool extends Pool<Kryo> {
 					switch (registerClass.mSerializerType) {
 					case TAGGED:
 						registerClass.mSerializer = new TaggedFieldSerializer<Object>(kryo, registerClass.mType);
-						break;
-
-					case COMPATIBLE:
-						registerClass.mSerializer = new CompatibleFieldSerializer<Object>(kryo, registerClass.mType);
 						break;
 
 					case SERIALIZABLE_TAGGED:

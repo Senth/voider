@@ -13,6 +13,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Disposable;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
+import com.spiddekauga.utils.kryo.KryoPostRead;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.utils.Graphics;
@@ -23,7 +24,8 @@ import com.spiddekauga.voider.utils.User;
  * derive from this class.
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public abstract class Def extends Resource implements IResourceDependency, IResourceRevision, Disposable, IResourceTexture, IResourcePng {
+public abstract class Def extends Resource implements IResourceDependency, IResourceRevision, Disposable, IResourceTexture, IResourcePng,
+KryoPostRead {
 	/**
 	 * Default constructor for the resource.
 	 */
@@ -280,6 +282,29 @@ public abstract class Def extends Resource implements IResourceDependency, IReso
 		disposeTexture();
 	}
 
+	@Override
+	public void postRead() {
+		// Remove NULL
+		if (!mInternalDependencies.isEmpty()) {
+			if (mInternalDependencies.contains(null)) {
+				mInternalDependencies.remove(null);
+			}
+		}
+
+		// Convert old internal dependencies to new
+		for (InternalNames internalName : mOldInternalDependencies) {
+			if (internalName.ordinal() == 4) {
+				mInternalDependencies.add(InternalDeps.THEME_SPACE);
+			} else if (internalName.ordinal() == 5) {
+				mInternalDependencies.add(InternalDeps.THEME_SPACE);
+			} else if (internalName.ordinal() == 6) {
+				mInternalDependencies.add(InternalDeps.THEME_TUNNEL);
+			} else if (internalName.ordinal() == 7) {
+				mInternalDependencies.add(InternalDeps.THEME_CORE);
+			}
+		}
+	}
+
 	/**
 	 * Disposes the texture
 	 */
@@ -310,7 +335,7 @@ public abstract class Def extends Resource implements IResourceDependency, IReso
 	 */
 	@Deprecated @Tag(42) private Set<InternalNames> mOldInternalDependencies = new HashSet<InternalNames>();
 	/** Internal dependencies */
-	@Tag(124) private Set<InternalDeps> mInternalDependencies = new HashSet<>();
+	@Tag(124) private HashSet<InternalDeps> mInternalDependencies = new HashSet<>();
 	/** Name of the definition */
 	@Tag(36) private String mName = Config.Actor.NAME_DEFAULT;
 	/** Original creator key */

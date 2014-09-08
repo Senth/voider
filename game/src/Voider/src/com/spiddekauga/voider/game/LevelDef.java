@@ -4,7 +4,6 @@ import java.util.UUID;
 
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.esotericsoftware.kryo.serializers.TaggedFieldSerializer.Tag;
-import com.spiddekauga.utils.kryo.KryoPostRead;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.Resource;
@@ -14,7 +13,7 @@ import com.spiddekauga.voider.resources.SkinNames;
  * Level definition of a level. I.e. this is the level's header information
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public class LevelDef extends Def implements KryoPostRead {
+public class LevelDef extends Def {
 	/**
 	 * Constructor that create the level id for this definition
 	 */
@@ -196,6 +195,8 @@ public class LevelDef extends Def implements KryoPostRead {
 
 	@Override
 	public void postRead() {
+		super.postRead();
+
 		calculateLength();
 	}
 
