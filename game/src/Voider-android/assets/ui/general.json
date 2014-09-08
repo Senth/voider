@@ -148,6 +148,11 @@ com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
 		fontColor: white,
 	},
 	
+	// Default text for text fields
+	textfield_default: {
+		font: default_font,
+		fontColor: grey_dark,
+	},
 	
 	/** Editor */
 	
@@ -203,6 +208,24 @@ com.spiddekauga.utils.scene.ui.RatingWidget$RatingWidgetStyle:  {
 	default: {
 		checked: star_checked,
 		empty: star,
+	},
+},
+
+com.badlogic.gdx.scenes.scene2d.ui.Button$ButtonStyle: {
+	press: {
+		down: button_default_down,
+		up: button_default_up,
+		disabled: button_default_disabled,
+		over: button_default_over,
+	},
+	
+	toggle: {
+		down: button_default_down,
+		checked: button_default_checked,
+		up: button_default_up,
+		disabled: button_default_disabled,
+		over: button_default_over,
+		checkedOver: button_default_checked_over,
 	},
 },
 

@@ -5,6 +5,7 @@ import java.util.Observable;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -16,6 +17,8 @@ import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.utils.commands.Command;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.Config.Debug;
+import com.spiddekauga.voider.Config.Debug.Builds;
 import com.spiddekauga.voider.Config.Graphics.RenderOrders;
 import com.spiddekauga.voider.editor.commands.CLevelEnemyDefAdd;
 import com.spiddekauga.voider.editor.commands.CLevelPickupDefSelect;
@@ -540,6 +543,14 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 			if (!mSelection.isEmpty()) {
 				mInvoker.execute(new CSelectionSet(mSelection));
 				return true;
+			}
+		}
+
+		// Testing
+		if (Debug.isBuildOrBelow(Builds.DEV_LOCAL)) {
+			// Update theme
+			if (Keys.F12 == keycode) {
+				((LevelEditorGui) mGui).resetTheme();
 			}
 		}
 
@@ -1492,6 +1503,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 		if (mLevel != null) {
 			mLevel.getLevelDef().setTheme(theme);
 			setUnsaved();
+			((LevelEditorGui) mGui).resetTheme();
 		}
 	}
 

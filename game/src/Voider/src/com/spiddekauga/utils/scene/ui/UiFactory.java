@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Button.ButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox.CheckBoxStyle;
@@ -32,6 +33,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.spiddekauga.utils.commands.Invoker;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
+import com.spiddekauga.utils.scene.ui.ImageScrollButton.ScrollWhen;
 import com.spiddekauga.utils.scene.ui.RatingWidget.RatingWidgetStyle;
 import com.spiddekauga.voider.editor.commands.GuiCheckCommandCreator;
 import com.spiddekauga.voider.resources.SkinNames;
@@ -156,6 +158,26 @@ public class UiFactory {
 		doExtraActionsOnActors(hider, createdActors, window);
 
 		return window;
+	}
+
+	/**
+	 * Add an image scroll button to a table
+	 * @param scrollWhen when to scroll the images
+	 * @param width
+	 * @param height
+	 * @param style which button style to use
+	 * @param table the table to add the button to
+	 * @param createdActors optional adds the button ot this list (if not null)
+	 * @return created image scroll button
+	 */
+	public ImageScrollButton addImageScrollButton(ScrollWhen scrollWhen, float width, float height, ButtonStyles style, AlignTable table,
+			ArrayList<Actor> createdActors) {
+		ImageScrollButton imageScrollButton = new ImageScrollButton(style.getStyle(), scrollWhen);
+		table.add(imageScrollButton).setSize(width, height);
+
+		doExtraActionsOnActors(null, createdActors, imageScrollButton);
+
+		return imageScrollButton;
 	}
 
 	/**
@@ -492,6 +514,22 @@ public class UiFactory {
 		doExtraActionsOnActors(hider, null, rating);
 
 		return rating;
+	}
+
+	/**
+	 * Add a label
+	 * @param text the text of the label
+	 * @param wrap if the label should be wrapped
+	 * @param table the table to add the label to
+	 * @param labelStyle style of the label
+	 * @return created label
+	 */
+	public Label addLabel(String text, boolean wrap, AlignTable table, ISkinNames labelStyle) {
+		Label label = new Label(text, (LabelStyle) SkinNames.getResource(labelStyle));
+		label.setWrap(wrap);
+		table.add(label);
+
+		return label;
 	}
 
 	/**
@@ -950,6 +988,7 @@ public class UiFactory {
 		mStyles.scrollPane.windowBackground = SkinNames.getResource(SkinNames.General.SCROLL_PANE_WINDOW_BACKGROUND);
 		mStyles.scrollPane.noBackground = SkinNames.getResource(SkinNames.General.SCROLL_PANE_DEFAULT);
 
+
 		// Colors
 		mStyles.color.sceneBackground = SkinNames.getResource(SkinNames.GeneralVars.SCENE_BACKGROUND_COLOR);
 		mStyles.color.widgetBackground = SkinNames.getResource(SkinNames.GeneralVars.WIDGET_BACKGROUND_COLOR);
@@ -973,6 +1012,10 @@ public class UiFactory {
 		mStyles.vars.textButtonHeight = SkinNames.getResource(SkinNames.GeneralVars.TEXT_BUTTON_HEIGHT);
 		mStyles.vars.textButtonWidth = SkinNames.getResource(SkinNames.GeneralVars.TEXT_BUTTON_WIDTH);
 		mStyles.vars.rightPanelWidth = SkinNames.getResource(SkinNames.GeneralVars.RIGHT_PANEL_WIDTH);
+
+		// Button styles
+		ButtonStyles.PRESS.setStyle((ButtonStyle) SkinNames.getResource(SkinNames.General.BUTTON_PRESS));
+		ButtonStyles.TOGGLE.setStyle((ButtonStyle) SkinNames.getResource(SkinNames.General.BUTTON_TOGGLE));
 
 		// Text buttons
 		TextButtonStyles.FILLED_PRESS.setStyle((TextButtonStyle) SkinNames.getResource(SkinNames.General.TEXT_BUTTON_FLAT_PRESS));
@@ -1049,6 +1092,37 @@ public class UiFactory {
 
 		/** The style variable */
 		private CheckBoxStyle mStyle = null;
+	}
+
+	/**
+	 * Different button styles
+	 */
+	public enum ButtonStyles {
+		/** Default press */
+		PRESS,
+		/** Default toggle */
+		TOGGLE,
+
+		;
+
+		/**
+		 * Set the Scene2D text button style
+		 * @param style the text button style
+		 */
+		private void setStyle(ButtonStyle style) {
+			mStyle = style;
+		}
+
+		/**
+		 * @return get the text button style associated with this enumeration
+		 */
+		private ButtonStyle getStyle() {
+			return mStyle;
+		}
+
+
+		/** Style for the button */
+		ButtonStyle mStyle = null;
 	}
 
 	/**

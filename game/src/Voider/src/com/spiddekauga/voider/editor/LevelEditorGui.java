@@ -2,6 +2,7 @@ package com.spiddekauga.voider.editor;
 
 import java.util.ArrayList;
 
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
@@ -23,11 +24,14 @@ import com.spiddekauga.utils.scene.ui.Cell;
 import com.spiddekauga.utils.scene.ui.HideListener;
 import com.spiddekauga.utils.scene.ui.HideManual;
 import com.spiddekauga.utils.scene.ui.HideSliderValue;
+import com.spiddekauga.utils.scene.ui.ImageScrollButton;
+import com.spiddekauga.utils.scene.ui.ImageScrollButton.ScrollWhen;
 import com.spiddekauga.utils.scene.ui.ResourceTextureButton;
 import com.spiddekauga.utils.scene.ui.SliderListener;
 import com.spiddekauga.utils.scene.ui.TextFieldListener;
 import com.spiddekauga.utils.scene.ui.TooltipWidget.CustomTooltip;
 import com.spiddekauga.utils.scene.ui.TooltipWidget.ITooltip;
+import com.spiddekauga.utils.scene.ui.UiFactory.ButtonStyles;
 import com.spiddekauga.utils.scene.ui.UiFactory.Positions;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Editor;
@@ -35,7 +39,9 @@ import com.spiddekauga.voider.Config.Editor.Level;
 import com.spiddekauga.voider.editor.LevelEditor.Tools;
 import com.spiddekauga.voider.editor.commands.GuiCheckCommandCreator;
 import com.spiddekauga.voider.game.Path.PathTypes;
+import com.spiddekauga.voider.game.Themes;
 import com.spiddekauga.voider.game.actors.EnemyActorDef;
+import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.resources.SkinNames.EditorIcons;
 import com.spiddekauga.voider.utils.Messages;
@@ -93,6 +99,7 @@ class LevelEditorGui extends EditorGui {
 		resetEnemyAddTable();
 		resetTools();
 		resetImage();
+		resetTheme();
 	}
 
 	/**
@@ -578,7 +585,20 @@ class LevelEditorGui extends EditorGui {
 		mWidgets.info.nameError = mUiFactory.getLastCreatedErrorLabel();
 
 		// Theme
-		// TODO
+		mUiFactory.addSection("Theme", left, null);
+		left.row().setFillWidth(true);
+		mUiFactory.addLabel("Select Theme", false, left, SkinNames.General.LABEL_TEXT_FIELD_DEFAULT);
+		left.add().setFillWidth(true);
+		float buttonWidth = mUiFactory.getStyles().vars.textButtonWidth;
+		float buttonHeight = mUiFactory.getStyles().vars.textButtonHeight;
+		mWidgets.info.theme = mUiFactory.addImageScrollButton(ScrollWhen.NEVER, buttonWidth, buttonHeight, ButtonStyles.PRESS, left,
+				mDisabledWhenPublished);
+		new ButtonListener(mWidgets.info.theme) {
+			@Override
+			protected void onPressed() {
+				// TODO Select theme
+			}
+		};
 
 		// Speed
 		mUiFactory.addSection("Level Speed", left, null);
@@ -645,6 +665,20 @@ class LevelEditorGui extends EditorGui {
 		mWidgets.info.image.setSize(width, height);
 		mWidgets.info.image.setVisible(true);
 		mWidgets.info.image.invalidate();
+	}
+
+	/**
+	 * Update theme image button
+	 */
+	void resetTheme() {
+		ImageScrollButton button = mWidgets.info.theme;
+		Themes theme = mLevelEditor.getTheme();
+
+		button.clearLayers();
+		Texture bottomLayer = ResourceCacheFacade.get(theme.getBottomLayer());
+		Texture topLayer = ResourceCacheFacade.get(theme.getTopLayer());
+		button.addLayer(bottomLayer);
+		button.addLayer(topLayer);
 	}
 
 	@Override
@@ -985,6 +1019,7 @@ class LevelEditorGui extends EditorGui {
 			TextField prologue = null;
 			TextField epilogue = null;
 			Image image = null;
+			ImageScrollButton theme = null;
 		}
 
 		class PathOptionWidgets implements Disposable {

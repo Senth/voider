@@ -55,7 +55,7 @@ import com.spiddekauga.voider.utils.Pools;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public abstract class Actor extends Resource implements IResourceUpdate, KryoTaggedCopyable, KryoSerializable, Disposable, Poolable, IResourceBody,
-		IResourcePosition, ITriggerListener, IResourceEditorUpdate, IResourceRender, IResourceEditorRender, IResourceSelectable, IResourceCorner {
+IResourcePosition, ITriggerListener, IResourceEditorUpdate, IResourceRender, IResourceEditorRender, IResourceSelectable, IResourceCorner {
 	/**
 	 * Sets the texture of the actor including the actor definition. Automatically creates
 	 * a body for the actor.
@@ -1198,6 +1198,7 @@ public abstract class Actor extends Resource implements IResourceUpdate, KryoTag
 	/** Physical body */
 	private Body mBody = null;
 
+	// Not saved
 	/** Current actors we're colliding with @todo do we need to save colliding actors? */
 	private ArrayList<ActorDef> mCollidingActors = new ArrayList<ActorDef>();
 	/** World corners of the actor, only used for custom shape and in an editor */

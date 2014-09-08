@@ -2,6 +2,7 @@ package com.spiddekauga.voider.resources;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.scenes.scene2d.ui.Button.ButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox.CheckBoxStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
@@ -659,6 +660,10 @@ public class SkinNames {
 	public enum General implements ISkinNames {
 		/** Wait animation texture */
 		ANIMATION_WAIT(AnimationWidgetStyle.class, "wait"),
+		/** Regular press button */
+		BUTTON_PRESS(ButtonStyle.class, "press"),
+		/** Toggle button */
+		BUTTON_TOGGLE(ButtonStyle.class, "toggle"),
 		/** Check box that uses check boxes */
 		CHECK_BOX_DEFAULT(CheckBoxStyle.class, "default"),
 		/** Check box that uses the radio button style */
@@ -701,6 +706,8 @@ public class SkinNames {
 		LABEL_TOP_SCORE(LabelStyle.class, "top_score"),
 		/** Header label */
 		LABEL_HEADER(LabelStyle.class, "header"),
+		/** Default text for text fields */
+		LABEL_TEXT_FIELD_DEFAULT(LabelStyle.class, "textfield_default"),
 		/** List default */
 		LIST_DEFAULT(ListStyle.class, "default"),
 		/** Logout button */
