@@ -233,7 +233,7 @@ public class UiFactory {
 
 
 		if (listener != null) {
-			listener.setButton(button);
+			button.addListener(listener);
 		}
 
 		doExtraActionsOnActors(hider, createdActors, button);
@@ -769,7 +769,7 @@ public class UiFactory {
 		CheckBox checkBox = new CheckBox("", CheckBoxStyles.CHECK_BOX.getStyle());
 		table.add(checkBox);
 
-		listener.setButton(checkBox);
+		checkBox.addListener(listener);
 
 		doExtraActionsOnActors(tooltipText, hider, createdActors, label, checkBox);
 
@@ -791,7 +791,7 @@ public class UiFactory {
 		table.add(checkBox);
 		group.add(checkBox);
 		if (listener != null) {
-			listener.setButton(checkBox);
+			checkBox.addListener(listener);
 		}
 
 		return checkBox;

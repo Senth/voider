@@ -1,6 +1,7 @@
 package com.spiddekauga.voider.menu;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
@@ -86,7 +87,7 @@ public class LoginGui extends Gui {
 		table.row();
 		ButtonListener buttonListener = new ButtonListener() {
 			@Override
-			protected void onPressed() {
+			protected void onPressed(Button button) {
 				/** @todo forgot password -> send to another GUI screen */
 			}
 		};
@@ -97,7 +98,7 @@ public class LoginGui extends Gui {
 			table.row();
 			buttonListener = new ButtonListener() {
 				@Override
-				protected void onPressed() {
+				protected void onPressed(Button button) {
 					mLoginHider.hide();
 					mRegisterHider.show();
 				}
@@ -117,7 +118,7 @@ public class LoginGui extends Gui {
 		// Exit game
 		buttonListener = new ButtonListener() {
 			@Override
-			protected void onPressed() {
+			protected void onPressed(Button button) {
 				Gdx.app.exit();
 			}
 		};
@@ -126,7 +127,7 @@ public class LoginGui extends Gui {
 		// Login
 		buttonListener = new ButtonListener() {
 			@Override
-			protected void onPressed() {
+			protected void onPressed(Button button) {
 				login();
 			}
 		};
@@ -314,7 +315,7 @@ public class LoginGui extends Gui {
 		table.row().setFillWidth(true).setEqualCellSize(true);
 		ButtonListener buttonListener = new ButtonListener() {
 			@Override
-			protected void onPressed() {
+			protected void onPressed(Button button) {
 				mRegisterHider.hide();
 				mLoginHider.show();
 			}
@@ -324,7 +325,7 @@ public class LoginGui extends Gui {
 		// Register
 		buttonListener = new ButtonListener() {
 			@Override
-			protected void onPressed() {
+			protected void onPressed(Button button) {
 				register();
 			}
 		};

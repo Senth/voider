@@ -90,7 +90,7 @@ public class ScoreSceneGui extends Gui {
 			mWidgets.bookmark = button;
 			new ButtonListener(button) {
 				@Override
-				protected void onChecked(boolean checked) {
+				protected void onChecked(Button button, boolean checked) {
 					mScoreScene.setBookmark(checked);
 				}
 			};
@@ -117,7 +117,7 @@ public class ScoreSceneGui extends Gui {
 		Button button = mUiFactory.addImageButtonLabel(SkinNames.General.REPLAY, "Replay", Positions.BOTTOM, mMainTable, null, null);
 		new ButtonListener(button) {
 			@Override
-			protected void onPressed() {
+			protected void onPressed(Button button) {
 				mScoreScene.tryAgain();
 			}
 		};
@@ -127,7 +127,7 @@ public class ScoreSceneGui extends Gui {
 		button = mUiFactory.addImageButtonLabel(SkinNames.General.GAME_CONTINUE, "Continue", Positions.BOTTOM, mMainTable, null, null);
 		new ButtonListener(button) {
 			@Override
-			protected void onPressed() {
+			protected void onPressed(Button button) {
 				mScoreScene.gotoMainMenu();
 			}
 		};

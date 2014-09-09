@@ -140,7 +140,7 @@ class GameSceneGui extends Gui {
 		mWidgets.screenShot = button;
 		new ButtonListener(button) {
 			@Override
-			protected void onPressed() {
+			protected void onPressed(Button button) {
 				mGameScene.takeScreenshot();
 			}
 		};

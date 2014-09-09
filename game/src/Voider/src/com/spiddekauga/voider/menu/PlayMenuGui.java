@@ -49,7 +49,7 @@ public class PlayMenuGui extends MenuGui {
 		mMainTable.add(button).setSize(maxWidth, maxWidth);
 		new ButtonListener(button) {
 			@Override
-			protected void onPressed() {
+			protected void onPressed(Button button) {
 				mMenuScene.resumeGame();
 			}
 		};
@@ -59,7 +59,7 @@ public class PlayMenuGui extends MenuGui {
 		mMainTable.add(button).setSize(maxWidth, maxWidth);
 		new ButtonListener(button) {
 			@Override
-			protected void onPressed() {
+			protected void onPressed(Button button) {
 				mMenuScene.newGame();
 			}
 		};

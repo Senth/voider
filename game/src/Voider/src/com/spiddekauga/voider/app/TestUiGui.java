@@ -202,7 +202,7 @@ public class TestUiGui extends Gui {
 		mMainTable.add(button);
 		new ButtonListener(button) {
 			@Override
-			protected void onPressed() {
+			protected void onPressed(Button button) {
 				MsgBoxExecuter msgBox = getFreeMsgBox(false);
 				msgBox.content("Modal window");
 				msgBox.addCancelButtonAndKeys("OK");
@@ -215,7 +215,7 @@ public class TestUiGui extends Gui {
 		mMainTable.add(button);
 		new ButtonListener(button) {
 			@Override
-			protected void onPressed() {
+			protected void onPressed(Button button) {
 				MsgBoxExecuter msgBox = getFreeMsgBox(true);
 				msgBox.setTitle("Title");
 				msgBox.content("Modal window");

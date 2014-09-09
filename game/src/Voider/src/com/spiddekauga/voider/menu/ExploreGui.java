@@ -249,7 +249,7 @@ public class ExploreGui extends Gui {
 			table.add(checkBox).setHeight(mUiFactory.getStyles().vars.rowHeight);
 			new ButtonListener(checkBox) {
 				@Override
-				protected void onChecked(boolean checked) {
+				protected void onChecked(Button button, boolean checked) {
 					if (checked) {
 						mExploreScene.fetchInitialLevels(sortOrder, getSelectedTags());
 					}
@@ -416,7 +416,7 @@ public class ExploreGui extends Gui {
 		// Menu
 		ButtonListener buttonListener = new ButtonListener() {
 			@Override
-			protected void onPressed() {
+			protected void onPressed(Button button) {
 				mExploreScene.gotoMainMenu();
 			}
 		};
@@ -427,7 +427,7 @@ public class ExploreGui extends Gui {
 		// Play
 		buttonListener = new ButtonListener() {
 			@Override
-			protected void onPressed() {
+			protected void onPressed(Button button) {
 				mExploreScene.play();
 			}
 		};
@@ -473,7 +473,7 @@ public class ExploreGui extends Gui {
 		for (Tags tag : Tags.values()) {
 			ButtonListener listener = new ButtonListener() {
 				@Override
-				protected void onChecked(boolean checked) {
+				protected void onChecked(Button button, boolean checked) {
 					if (!mClearingTags) {
 						mExploreScene.fetchInitialLevels(getSelectedSortOrder(), getSelectedTags());
 					}
@@ -512,7 +512,7 @@ public class ExploreGui extends Gui {
 		// Clear button
 		ButtonListener buttonListener = new ButtonListener() {
 			@Override
-			protected void onPressed() {
+			protected void onPressed(Button button) {
 				boolean tagsChanged = getSelectedTags().size() > 0;
 
 				mClearingTags = true;
@@ -718,7 +718,7 @@ public class ExploreGui extends Gui {
 		table.add(button).setFillWidth(true).setKeepAspectRatio(true);
 		new ButtonListener(button) {
 			@Override
-			protected void onChecked(boolean checked) {
+			protected void onChecked(Button button, boolean checked) {
 				if (checked) {
 					mExploreScene.setSelectedLevel(level);
 					resetInfo();
@@ -726,12 +726,12 @@ public class ExploreGui extends Gui {
 			}
 
 			@Override
-			protected void onDown() {
-				mWasCheckedOnDown = mButton.isChecked();
+			protected void onDown(Button button) {
+				mWasCheckedOnDown = button.isChecked();
 			}
 
 			@Override
-			protected void onUp() {
+			protected void onUp(Button button) {
 				if (mWasCheckedOnDown) {
 					mExploreScene.play();
 				}

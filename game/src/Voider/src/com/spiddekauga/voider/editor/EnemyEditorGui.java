@@ -611,7 +611,7 @@ public class EnemyEditorGui extends ActorGui {
 		ImageButton imageButton = mUiFactory.addImageButton(SkinNames.EditorIcons.BULLET_SELECT, table, onTab.hider, mDisabledWhenPublished);
 		new ButtonListener(imageButton) {
 			@Override
-			protected void onPressed() {
+			protected void onPressed(Button button) {
 				mEnemyEditor.selectBulletType();
 			}
 		};

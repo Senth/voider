@@ -277,7 +277,7 @@ public abstract class EditorGui extends Gui {
 		if (this.getClass() != CampaignEditorGui.class) {
 			new ButtonListener(button) {
 				@Override
-				protected void onPressed() {
+				protected void onPressed(Button button) {
 					switchReturnTo("Campaign Editor", new CSceneSwitch(CampaignEditor.class), UnsavedActions.CAMPAIGN_EDITOR);
 				}
 			};
@@ -294,7 +294,7 @@ public abstract class EditorGui extends Gui {
 		if (this.getClass() != LevelEditorGui.class) {
 			new ButtonListener(button) {
 				@Override
-				protected void onPressed() {
+				protected void onPressed(Button button) {
 					switchReturnTo("Level Editor", new CSceneSwitch(LevelEditor.class), UnsavedActions.LEVEL_EDITOR);
 				}
 			};
@@ -311,7 +311,7 @@ public abstract class EditorGui extends Gui {
 		if (this.getClass() != EnemyEditorGui.class) {
 			new ButtonListener(button) {
 				@Override
-				protected void onPressed() {
+				protected void onPressed(Button button) {
 					switchReturnTo("Enemy Editor", new CSceneSwitch(EnemyEditor.class), UnsavedActions.ENEMY_EDITOR);
 				}
 			};
@@ -328,7 +328,7 @@ public abstract class EditorGui extends Gui {
 		if (this.getClass() != BulletEditorGui.class) {
 			new ButtonListener(button) {
 				@Override
-				protected void onPressed() {
+				protected void onPressed(Button button) {
 					switchReturnTo("Bullet Editor", new CSceneSwitch(BulletEditor.class), UnsavedActions.BULLET_EDITOR);
 				}
 			};
@@ -347,7 +347,7 @@ public abstract class EditorGui extends Gui {
 		mTooltip.add(button, Messages.EditorTooltips.ACTION_UNDO);
 		new ButtonListener(button) {
 			@Override
-			protected void onPressed() {
+			protected void onPressed(Button button) {
 				mEditor.getInvoker().undo();
 			}
 		};
@@ -357,7 +357,7 @@ public abstract class EditorGui extends Gui {
 		mTooltip.add(button, Messages.EditorTooltips.ACTION_REDO);
 		new ButtonListener(button) {
 			@Override
-			protected void onPressed() {
+			protected void onPressed(Button button) {
 				mEditor.getInvoker().redo();
 			}
 		};
@@ -371,7 +371,7 @@ public abstract class EditorGui extends Gui {
 			DisableListener disableListener = new DisableListener(button);
 			new ButtonListener(button) {
 				@Override
-				protected void onChecked(boolean checked) {
+				protected void onChecked(Button button, boolean checked) {
 					mEditor.setGrid(checked);
 				}
 			};
@@ -383,7 +383,7 @@ public abstract class EditorGui extends Gui {
 			disableListener.addToggleActor(button);
 			new ButtonListener(button) {
 				@Override
-				protected void onChecked(boolean checked) {
+				protected void onChecked(Button button, boolean checked) {
 					mEditor.setGridRenderAboveResources(checked);
 				}
 			};
@@ -398,7 +398,7 @@ public abstract class EditorGui extends Gui {
 			mEnemyHighlight = button;
 			new ButtonListener(button) {
 				@Override
-				protected void onChecked(boolean checked) {
+				protected void onChecked(Button button, boolean checked) {
 					((LevelEditor) mEditor).setEnemyHighlight(checked);
 				}
 			};
@@ -408,7 +408,7 @@ public abstract class EditorGui extends Gui {
 			mTooltip.add(button, Messages.EditorTooltips.ACTION_PLAY);
 			new ButtonListener(button) {
 				@Override
-				protected void onPressed() {
+				protected void onPressed(Button button) {
 					MsgBoxExecuter msgBox = getFreeMsgBox(true);
 
 					msgBox.setTitle(Messages.Level.RUN_INVULNERABLE_TITLE);
@@ -458,7 +458,7 @@ public abstract class EditorGui extends Gui {
 		}
 		new ButtonListener(button) {
 			@Override
-			protected void onPressed() {
+			protected void onPressed(Button button) {
 				executeCommandAndCheckSave(new CEditorNew(mEditor), "New " + getResourceTypeName(), "Save first", "Discard current",
 						Messages.getUnsavedMessage(getResourceTypeName(), UnsavedActions.NEW));
 			}
@@ -472,7 +472,7 @@ public abstract class EditorGui extends Gui {
 		}
 		new ButtonListener(button) {
 			@Override
-			protected void onPressed() {
+			protected void onPressed(Button button) {
 				MsgBoxExecuter msgBox = getFreeMsgBox(true);
 
 				msgBox.setTitle("Duplicate");
@@ -488,7 +488,7 @@ public abstract class EditorGui extends Gui {
 		mTooltip.add(button, Messages.EditorTooltips.FILE_SAVE);
 		new ButtonListener(button) {
 			@Override
-			protected void onPressed() {
+			protected void onPressed(Button button) {
 				mEditor.saveDef();
 			}
 		};
@@ -498,7 +498,7 @@ public abstract class EditorGui extends Gui {
 		mTooltip.add(button, Messages.EditorTooltips.FILE_OPEN);
 		new ButtonListener(button) {
 			@Override
-			protected void onPressed() {
+			protected void onPressed(Button button) {
 				executeCommandAndCheckSave(new CEditorLoad(mEditor), "Load another " + getResourceTypeName(), "Save first", "Discard current",
 						Messages.getUnsavedMessage(getResourceTypeName(), UnsavedActions.LOAD));
 			}
@@ -512,7 +512,7 @@ public abstract class EditorGui extends Gui {
 		}
 		new ButtonListener(button) {
 			@Override
-			protected void onPressed() {
+			protected void onPressed(Button button) {
 				boolean showPublish = true;
 
 				// For level, make sure level has screen shot before publishing
@@ -563,7 +563,7 @@ public abstract class EditorGui extends Gui {
 		}
 		new ButtonListener(button) {
 			@Override
-			protected void onPressed() {
+			protected void onPressed(Button button) {
 				showInfoDialog();
 			}
 		};

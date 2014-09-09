@@ -143,7 +143,7 @@ public class SelectDefGui extends Gui {
 			mUiFactory.addCheckboxPadding(table);
 			ButtonListener buttonListener = new ButtonListener() {
 				@Override
-				protected void onChecked(boolean checked) {
+				protected void onChecked(Button button, boolean checked) {
 					mSelectDefScene.setShowMineOnly(checked);
 				}
 			};
@@ -228,7 +228,7 @@ public class SelectDefGui extends Gui {
 			table.row().setFillWidth(true).setEqualCellSize(true);
 			buttonListener = new ButtonListener() {
 				@Override
-				protected void onPressed() {
+				protected void onPressed(Button button) {
 					showSelectRevisionMsgBox();
 				}
 			};
@@ -241,7 +241,7 @@ public class SelectDefGui extends Gui {
 		table.row().setFillWidth(true).setEqualCellSize(true);
 		buttonListener = new ButtonListener() {
 			@Override
-			protected void onPressed() {
+			protected void onPressed(Button button) {
 				mSelectDefScene.cancel();
 			}
 		};
@@ -251,7 +251,7 @@ public class SelectDefGui extends Gui {
 		// Load/Open
 		buttonListener = new ButtonListener() {
 			@Override
-			protected void onPressed() {
+			protected void onPressed(Button button) {
 				mSelectDefScene.loadDef();
 			}
 		};
@@ -398,7 +398,7 @@ public class SelectDefGui extends Gui {
 		table.add(button).setFillWidth(true).setKeepAspectRatio(true);
 		new ButtonListener(button) {
 			@Override
-			protected void onChecked(boolean checked) {
+			protected void onChecked(Button button, boolean checked) {
 				if (checked) {
 					boolean selectDef = false;
 					if (mAddingContent) {
@@ -430,12 +430,12 @@ public class SelectDefGui extends Gui {
 			}
 
 			@Override
-			protected void onDown() {
-				mWasCheckedOnDown = mButton.isChecked();
+			protected void onDown(Button button) {
+				mWasCheckedOnDown = button.isChecked();
 			}
 
 			@Override
-			protected void onUp() {
+			protected void onUp(Button button) {
 				if (mWasCheckedOnDown) {
 					mSelectDefScene.loadDef();
 				}

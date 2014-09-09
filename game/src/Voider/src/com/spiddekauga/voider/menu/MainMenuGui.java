@@ -76,7 +76,7 @@ public class MainMenuGui extends MenuGui {
 		new TooltipListener(button, Messages.Tooltip.Menus.Main.PLAY);
 		new ButtonListener(button) {
 			@Override
-			protected void onPressed() {
+			protected void onPressed(Button button) {
 				mMenuScene.pushMenu(Menus.PLAY);
 			}
 		};
@@ -88,7 +88,7 @@ public class MainMenuGui extends MenuGui {
 		new TooltipListener(button, Messages.Tooltip.Menus.Main.EXPLORE);
 		new ButtonListener(button) {
 			@Override
-			protected void onPressed() {
+			protected void onPressed(Button button) {
 				mMenuScene.gotoExplore();
 			}
 		};
@@ -100,7 +100,7 @@ public class MainMenuGui extends MenuGui {
 		new TooltipListener(button, Messages.Tooltip.Menus.Main.CREATE);
 		new ButtonListener(button) {
 			@Override
-			protected void onPressed() {
+			protected void onPressed(Button button) {
 				mMenuScene.pushMenu(Menus.EDITOR);
 			}
 		};
@@ -111,7 +111,7 @@ public class MainMenuGui extends MenuGui {
 		mOptionTable.add(button);
 		new ButtonListener(button) {
 			@Override
-			protected void onPressed() {
+			protected void onPressed(Button button) {
 				// TODO go to options
 			}
 		};
@@ -121,7 +121,7 @@ public class MainMenuGui extends MenuGui {
 		mInfoTable.add(button);
 		new ButtonListener(button) {
 			@Override
-			protected void onPressed() {
+			protected void onPressed(Button button) {
 				// TODO go to info
 			}
 		};
@@ -132,7 +132,7 @@ public class MainMenuGui extends MenuGui {
 		new TooltipListener(button, Messages.Tooltip.Menus.Main.LOGOUT);
 		new ButtonListener(button) {
 			@Override
-			protected void onPressed() {
+			protected void onPressed(Button button) {
 				new CUserLogout().execute();
 			}
 		};

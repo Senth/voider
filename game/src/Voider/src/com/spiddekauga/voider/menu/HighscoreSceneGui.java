@@ -149,7 +149,7 @@ public class HighscoreSceneGui extends Gui {
 		Button button = mUiFactory.addImageButtonLabel(SkinNames.General.GAME_CONTINUE, "Continue", Positions.BOTTOM, mMainTable, null, null);
 		new ButtonListener(button) {
 			@Override
-			protected void onPressed() {
+			protected void onPressed(Button button) {
 				mScene.continueToNextScene();
 			}
 		};

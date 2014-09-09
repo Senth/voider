@@ -354,7 +354,7 @@ public abstract class ActorGui extends EditorGui {
 		mTooltip.add(mWidgets.tool.delete, Messages.EditorTooltips.TOOL_DELETE_ACTOR);
 		new ButtonListener(mWidgets.tool.delete) {
 			@Override
-			protected void onChecked(boolean checked) {
+			protected void onChecked(Button button, boolean checked) {
 				if (checked) {
 					mActorEditor.switchTool(Tools.DELETE);
 				}
@@ -367,7 +367,7 @@ public abstract class ActorGui extends EditorGui {
 		mTooltip.add(mWidgets.tool.move, Messages.EditorTooltips.TOOL_MOVE_ACTOR);
 		new ButtonListener(mWidgets.tool.move) {
 			@Override
-			protected void onChecked(boolean checked) {
+			protected void onChecked(Button button, boolean checked) {
 				if (checked) {
 					mActorEditor.switchTool(Tools.MOVE);
 				}
@@ -384,7 +384,7 @@ public abstract class ActorGui extends EditorGui {
 		mTooltip.add(mWidgets.tool.drawAppend, Messages.EditorTooltips.TOOL_DRAW_APPEND_ACTOR);
 		new ButtonListener(mWidgets.tool.drawAppend) {
 			@Override
-			protected void onChecked(boolean checked) {
+			protected void onChecked(Button button, boolean checked) {
 				if (checked) {
 					mActorEditor.switchTool(Tools.DRAW_APPEND);
 				}
@@ -397,7 +397,7 @@ public abstract class ActorGui extends EditorGui {
 		mTooltip.add(mWidgets.tool.drawErase, Messages.EditorTooltips.TOOL_DRAW_ERASE_ACTOR);
 		new ButtonListener(mWidgets.tool.drawErase) {
 			@Override
-			protected void onChecked(boolean checked) {
+			protected void onChecked(Button button, boolean checked) {
 				if (checked) {
 					mActorEditor.switchTool(Tools.DRAW_ERASE);
 				}
@@ -410,7 +410,7 @@ public abstract class ActorGui extends EditorGui {
 		mTooltip.add(mWidgets.tool.addMoveCorner, Messages.EditorTooltips.TOOL_DRAW_CORNER_ADD_ACTOR);
 		new ButtonListener(mWidgets.tool.addMoveCorner) {
 			@Override
-			protected void onChecked(boolean checked) {
+			protected void onChecked(Button button, boolean checked) {
 				if (checked) {
 					mActorEditor.switchTool(Tools.ADD_MOVE_CORNER);
 				}
@@ -422,7 +422,7 @@ public abstract class ActorGui extends EditorGui {
 		mTooltip.add(mWidgets.tool.removeCorner, Messages.EditorTooltips.TOOL_DRAW_CORNER_REMOVE_ACTOR);
 		new ButtonListener(mWidgets.tool.removeCorner) {
 			@Override
-			protected void onChecked(boolean checked) {
+			protected void onChecked(Button button, boolean checked) {
 				if (checked) {
 					mActorEditor.switchTool(Tools.REMOVE_CORNER);
 				}
@@ -439,7 +439,7 @@ public abstract class ActorGui extends EditorGui {
 		mTooltip.add(mWidgets.tool.setCenter, Messages.EditorTooltips.TOOL_CENTER_SET);
 		new ButtonListener(mWidgets.tool.setCenter) {
 			@Override
-			protected void onChecked(boolean checked) {
+			protected void onChecked(Button button, boolean checked) {
 				if (checked) {
 					mActorEditor.switchTool(Tools.SET_CENTER);
 				}
@@ -451,7 +451,7 @@ public abstract class ActorGui extends EditorGui {
 		mTooltip.add(button, Messages.EditorTooltips.TOOL_CENTER_RESET);
 		new ButtonListener(button) {
 			@Override
-			protected void onPressed() {
+			protected void onPressed(Button button) {
 				mInvoker.execute(new CActorEditorCenterReset(mActorEditor));
 			}
 		};
@@ -479,7 +479,7 @@ public abstract class ActorGui extends EditorGui {
 		createdActors.add(mUiFactory.addPanelSection("Collision Destruction", mWidgets.collision.table, null));
 		ButtonListener buttonListener = new ButtonListener() {
 			@Override
-			protected void onChecked(boolean checked) {
+			protected void onChecked(Button button, boolean checked) {
 				mActorEditor.setDestroyOnCollide(checked);
 			}
 		};

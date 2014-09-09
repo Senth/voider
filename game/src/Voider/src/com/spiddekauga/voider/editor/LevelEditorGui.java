@@ -252,9 +252,9 @@ class LevelEditorGui extends EditorGui {
 
 			new ButtonListener(button) {
 				@Override
-				protected void onChecked(boolean checked) {
+				protected void onChecked(Button button, boolean checked) {
 					if (checked) {
-						mLevelEditor.createNewEnemy((EnemyActorDef) ((ResourceTextureButton) mButton).getResource());
+						mLevelEditor.createNewEnemy((EnemyActorDef) ((ResourceTextureButton) button).getResource());
 					}
 				}
 			};
@@ -378,7 +378,7 @@ class LevelEditorGui extends EditorGui {
 		mTooltip.add(mWidgets.tool.select, Messages.EditorTooltips.TOOL_SELECTION);
 		new ButtonListener(mWidgets.tool.select) {
 			@Override
-			protected void onChecked(boolean checked) {
+			protected void onChecked(Button button, boolean checked) {
 				if (checked) {
 					mLevelEditor.switchTool(Tools.SELECTION);
 				}
@@ -395,7 +395,7 @@ class LevelEditorGui extends EditorGui {
 		mTooltip.add(mWidgets.tool.pan, Messages.EditorTooltips.TOOL_PAN_LEVEL);
 		new ButtonListener(mWidgets.tool.pan) {
 			@Override
-			protected void onChecked(boolean checked) {
+			protected void onChecked(Button button, boolean checked) {
 				if (checked) {
 					mLevelEditor.switchTool(Tools.PAN);
 				}
@@ -407,7 +407,7 @@ class LevelEditorGui extends EditorGui {
 		mTooltip.add(mWidgets.tool.move, Messages.EditorTooltips.TOOL_MOVE_LEVEL);
 		new ButtonListener(mWidgets.tool.move) {
 			@Override
-			protected void onChecked(boolean checked) {
+			protected void onChecked(Button button, boolean checked) {
 				if (checked) {
 					mLevelEditor.switchTool(Tools.MOVE);
 				}
@@ -420,7 +420,7 @@ class LevelEditorGui extends EditorGui {
 		mTooltip.add(mWidgets.tool.delete, Messages.EditorTooltips.TOOL_DELETE_LEVEL);
 		new ButtonListener(mWidgets.tool.delete) {
 			@Override
-			protected void onChecked(boolean checked) {
+			protected void onChecked(Button button, boolean checked) {
 				if (checked) {
 					mLevelEditor.switchTool(Tools.DELETE);
 				}
@@ -432,7 +432,7 @@ class LevelEditorGui extends EditorGui {
 		mTooltip.add(button, Messages.EditorTooltips.TOOL_CLEAR_SELECTION);
 		new ButtonListener(button) {
 			@Override
-			protected void onPressed() {
+			protected void onPressed(Button button) {
 				mLevelEditor.clearSelection();
 			}
 		};
@@ -447,7 +447,7 @@ class LevelEditorGui extends EditorGui {
 		mTooltip.add(mWidgets.tool.drawAppend, Messages.EditorTooltips.TOOL_DRAW_APPEND_TERRAIN);
 		new ButtonListener(mWidgets.tool.drawAppend) {
 			@Override
-			protected void onChecked(boolean checked) {
+			protected void onChecked(Button button, boolean checked) {
 				if (checked) {
 					mLevelEditor.switchTool(Tools.TERRAIN_DRAW_APPEND);
 				}
@@ -460,7 +460,7 @@ class LevelEditorGui extends EditorGui {
 		mTooltip.add(mWidgets.tool.drawErase, Messages.EditorTooltips.TOOL_DRAW_ERASE_TERRAIN);
 		new ButtonListener(mWidgets.tool.drawErase) {
 			@Override
-			protected void onChecked(boolean checked) {
+			protected void onChecked(Button button, boolean checked) {
 				if (checked) {
 					mLevelEditor.switchTool(Tools.TERRAIN_DRAW_ERASE);
 				}
@@ -473,7 +473,7 @@ class LevelEditorGui extends EditorGui {
 		mTooltip.add(mWidgets.tool.cornerAdd, Messages.EditorTooltips.TOOL_DRAW_CORNER_ADD_TERRAIN);
 		new ButtonListener(mWidgets.tool.cornerAdd) {
 			@Override
-			protected void onChecked(boolean checked) {
+			protected void onChecked(Button button, boolean checked) {
 				if (checked) {
 					mLevelEditor.switchTool(Tools.ADD_MOVE_CORNER);
 				}
@@ -485,7 +485,7 @@ class LevelEditorGui extends EditorGui {
 		mTooltip.add(mWidgets.tool.cornerRemove, Messages.EditorTooltips.TOOL_DRAW_CORNER_REMOVE_TERRAIN);
 		new ButtonListener(mWidgets.tool.cornerRemove) {
 			@Override
-			protected void onChecked(boolean checked) {
+			protected void onChecked(Button button, boolean checked) {
 				if (checked) {
 					mLevelEditor.switchTool(Tools.REMOVE_CORNER);
 				}
@@ -502,7 +502,7 @@ class LevelEditorGui extends EditorGui {
 		mTooltip.add(mWidgets.tool.enemyAdd, Messages.EditorTooltips.TOOL_ENEMY_ADD);
 		new ButtonListener(mWidgets.tool.enemyAdd) {
 			@Override
-			protected void onChecked(boolean checked) {
+			protected void onChecked(Button button, boolean checked) {
 				if (checked) {
 					mLevelEditor.switchTool(Tools.ENEMY_ADD);
 				}
@@ -514,7 +514,7 @@ class LevelEditorGui extends EditorGui {
 		mTooltip.add(mWidgets.tool.pathAdd, Messages.EditorTooltips.TOOL_PATH);
 		new ButtonListener(mWidgets.tool.pathAdd) {
 			@Override
-			protected void onChecked(boolean checked) {
+			protected void onChecked(Button button, boolean checked) {
 				if (checked) {
 					mLevelEditor.switchTool(Tools.PATH_ADD);
 				}
@@ -529,7 +529,7 @@ class LevelEditorGui extends EditorGui {
 		mTooltip.add(mWidgets.tool.triggerActivate, Messages.EditorTooltips.TOOL_TRIGGER_ACTIVATE);
 		new ButtonListener(mWidgets.tool.triggerActivate) {
 			@Override
-			protected void onChecked(boolean checked) {
+			protected void onChecked(Button button, boolean checked) {
 				if (checked) {
 					mLevelEditor.switchTool(Tools.ENEMY_SET_ACTIVATE_TRIGGER);
 				}
@@ -542,7 +542,7 @@ class LevelEditorGui extends EditorGui {
 		mTooltip.add(mWidgets.tool.triggerDeactivate, Messages.EditorTooltips.TOOL_TRIGGER_DEACTIVATE);
 		new ButtonListener(mWidgets.tool.triggerDeactivate) {
 			@Override
-			protected void onChecked(boolean checked) {
+			protected void onChecked(Button button, boolean checked) {
 				if (checked) {
 					mLevelEditor.switchTool(Tools.ENEMY_SET_DEACTIVATE_TRIGGER);
 				}
@@ -600,7 +600,7 @@ class LevelEditorGui extends EditorGui {
 				mDisabledWhenPublished);
 		new ButtonListener(mWidgets.info.theme) {
 			@Override
-			protected void onPressed() {
+			protected void onPressed(Button button) {
 				// TODO Select theme
 			}
 		};
@@ -698,9 +698,10 @@ class LevelEditorGui extends EditorGui {
 			mInvoker.pushDelimiter(THEME_DELIMETER);
 			msgBox.setTitle("Select Theme");
 
-			// TODO Add content
+			// Add content
 
-			// TODO Create common listener for all theme buttons (not a ButtonListener)
+			// Create common listener for all theme buttons (not a ButtonListener)
+
 
 			// TODO Create theme list (UiFactory). Should be able to set custom
 			// width/height.
@@ -768,7 +769,7 @@ class LevelEditorGui extends EditorGui {
 		mTooltip.add(button, Messages.EditorTooltips.ENEMY_ADD_TO_LIST);
 		new ButtonListener(button) {
 			@Override
-			protected void onPressed() {
+			protected void onPressed(Button button) {
 				mLevelEditor.addEnemyToList();
 			}
 		};
@@ -881,7 +882,7 @@ class LevelEditorGui extends EditorGui {
 		button.addListener(checkCommandCreator);
 		new ButtonListener(button) {
 			@Override
-			protected void onChecked(boolean checked) {
+			protected void onChecked(Button button, boolean checked) {
 				if (checked) {
 					mLevelEditor.setPathType(PathTypes.ONCE);
 				}
@@ -896,7 +897,7 @@ class LevelEditorGui extends EditorGui {
 		button.addListener(checkCommandCreator);
 		new ButtonListener(button) {
 			@Override
-			protected void onChecked(boolean checked) {
+			protected void onChecked(Button button, boolean checked) {
 				if (checked) {
 					mLevelEditor.setPathType(PathTypes.LOOP);
 				}
@@ -912,7 +913,7 @@ class LevelEditorGui extends EditorGui {
 		button.addListener(checkCommandCreator);
 		new ButtonListener(button) {
 			@Override
-			protected void onChecked(boolean checked) {
+			protected void onChecked(Button button, boolean checked) {
 				if (checked) {
 					mLevelEditor.setPathType(PathTypes.BACK_AND_FORTH);
 				}

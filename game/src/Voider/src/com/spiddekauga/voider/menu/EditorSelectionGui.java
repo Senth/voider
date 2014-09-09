@@ -36,7 +36,7 @@ public class EditorSelectionGui extends MenuGui {
 		new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Menus.Editor.CAMPAIGN, "campaign"));
 		new ButtonListener(button) {
 			@Override
-			protected void onPressed() {
+			protected void onPressed(Button button) {
 				mMenuScene.gotoCampaignEditor();
 			}
 		};
@@ -46,7 +46,7 @@ public class EditorSelectionGui extends MenuGui {
 		new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Menus.Editor.LEVEL, "level"));
 		new ButtonListener(button) {
 			@Override
-			protected void onPressed() {
+			protected void onPressed(Button button) {
 				mMenuScene.gotoLevelEditor();
 			}
 		};
@@ -56,7 +56,7 @@ public class EditorSelectionGui extends MenuGui {
 		new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Menus.Editor.ENEMY, "enemy"));
 		new ButtonListener(button) {
 			@Override
-			protected void onPressed() {
+			protected void onPressed(Button button) {
 				mMenuScene.gotoEnemyEditor();
 			}
 		};
@@ -66,7 +66,7 @@ public class EditorSelectionGui extends MenuGui {
 		new TooltipListener(button, Messages.replaceName(Messages.Tooltip.Menus.Editor.BULLET, "bullet"));
 		new ButtonListener(button) {
 			@Override
-			protected void onPressed() {
+			protected void onPressed(Button button) {
 				mMenuScene.gotoBulletEditor();
 			}
 		};

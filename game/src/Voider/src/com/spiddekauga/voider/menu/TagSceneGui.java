@@ -53,7 +53,7 @@ class TagSceneGui extends Gui {
 			// Add tag
 			ButtonListener listener = new ButtonListener() {
 				@Override
-				protected void onPressed() {
+				protected void onPressed(Button button) {
 					mScene.setTag(tag);
 					mScene.continueToNextScene();
 				}
@@ -72,7 +72,7 @@ class TagSceneGui extends Gui {
 		Button button = mUiFactory.addImageButtonLabel(SkinNames.General.GAME_CONTINUE, "Skip", Positions.BOTTOM, mMainTable, null, null);
 		new ButtonListener(button) {
 			@Override
-			protected void onPressed() {
+			protected void onPressed(Button button) {
 				mScene.continueToNextScene();
 			};
 		};
