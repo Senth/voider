@@ -90,6 +90,16 @@ public class ImageScrollButton extends Button {
 		invalidateSizes();
 	};
 
+	@Override
+	public float getPrefHeight() {
+		return getHeight();
+	}
+
+	@Override
+	public float getPrefWidth() {
+		return getWidth();
+	}
+
 	/**
 	 * Update size of all images
 	 */

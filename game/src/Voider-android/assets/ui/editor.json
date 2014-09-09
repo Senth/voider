@@ -5,6 +5,14 @@ java.lang.Float: {
 	// Outline width for enemies that are displayed as 'will activate' when test
 	// running the level. See Color.enemy_activate_test_run_outline_color
 	enemy_activate_on_test_run_outline_width: {value: 0.25},
+	
+	/** Theme settings (only for editor) */
+	
+	// Speed of top/bottom layer when selecting a theme for the level
+	theme_top_layer_speed: {value: 150},
+	theme_bottom_layer_speed: {value: 66.5},
+	// How much wider the theme button is than the height
+	theme_display_ratio: {value: 1.4},
 },
 
 com.badlogic.gdx.graphics.Color: {

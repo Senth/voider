@@ -761,6 +761,8 @@ public class Config {
 		public final static float FRAME_LENGTH_MAX = 0.1f;
 		/** Depth level step size */
 		public final static float DEPTH_STEP_SIZE = 0.001f;
+		/** Widescreen ratio */
+		public final static float WIDESCREEN_RATIO = 1.6f / 0.9f;
 
 		static {
 			if (Debug.BUILD == Builds.NIGHTLY) {
@@ -768,7 +770,7 @@ public class Config {
 				HEIGHT_START = HEIGHT_DEFAULT;
 			} else {
 				WIDTH_START = 1280;
-				HEIGHT_START = 800;
+				HEIGHT_START = 720;
 			}
 		}
 

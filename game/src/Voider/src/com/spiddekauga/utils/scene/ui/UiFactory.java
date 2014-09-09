@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
@@ -17,6 +18,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane.ScrollPaneStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox.SelectBoxStyle;
@@ -36,6 +38,8 @@ import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.ImageScrollButton.ScrollWhen;
 import com.spiddekauga.utils.scene.ui.RatingWidget.RatingWidgetStyle;
 import com.spiddekauga.voider.editor.commands.GuiCheckCommandCreator;
+import com.spiddekauga.voider.game.Themes;
+import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.resources.SkinNames.IImageNames;
 import com.spiddekauga.voider.resources.SkinNames.ISkinNames;
@@ -239,6 +243,53 @@ public class UiFactory {
 		doExtraActionsOnActors(hider, createdActors, button);
 
 		return cell;
+	}
+
+	/**
+	 * Create a scrollable list for all available themes.
+	 * @param width available width for scroll pane
+	 * @param height available height for scroll pane
+	 * @param listener listens to the button presses
+	 * @return created scroll pane.
+	 */
+	public ScrollPane createThemeList(float width, float height, ButtonListener listener) {
+		AlignTable table = new AlignTable();
+		table.setName("theme-table");
+		table.setPaddingCellDefault(0, mStyles.vars.paddingInner, 0, 0);
+		ScrollPane scrollPane = new ScrollPane(table, mStyles.scrollPane.noBackground);
+		scrollPane.setSize(width, height);
+
+		// Calculate button sizes
+		float buttonHeight = height - mStyles.vars.rowHeight * 2;
+		float ratio = SkinNames.getResource(SkinNames.EditorVars.THEME_DISPLAY_RATIO);
+		float buttonWidth = ratio * height;
+
+		ButtonGroup buttonGroup = new ButtonGroup();
+
+		float topLayerSpeed = SkinNames.getResource(SkinNames.EditorVars.THEME_TOP_LAYER_SPEED);
+		float bottomLayerSpeed = SkinNames.getResource(SkinNames.EditorVars.THEME_BOTTOM_LAYER_SPEED);
+
+		for (Themes theme : Themes.values()) {
+			ImageScrollButton button = new ImageScrollButton(ButtonStyles.TOGGLE.getStyle(), ScrollWhen.ALWAYS);
+			button.addListener(listener);
+			button.setUserObject(theme);
+			buttonGroup.add(button);
+
+			Texture bottomLayer = ResourceCacheFacade.get(theme.getBottomLayer());
+			Texture topLayer = ResourceCacheFacade.get(theme.getTopLayer());
+			button.addLayer(bottomLayer, bottomLayerSpeed);
+			button.addLayer(topLayer, topLayerSpeed);
+
+			Cell cell = addButtonLabel(button, theme.toString(), Positions.BOTTOM, table, null, null);
+			cell.setSize(buttonWidth, buttonHeight);
+			table.getCell().setWidth(buttonWidth);
+		}
+
+		// Remove padding from last table
+		table.getCell().setPadRight(0);
+		table.layout();
+
+		return scrollPane;
 	}
 
 	/**
@@ -603,9 +654,26 @@ public class UiFactory {
 
 		// Actors
 		ImageButton imageButton = new ImageButton((ImageButtonStyle) SkinNames.getResource(icon));
+		addButtonLabel(imageButton, text, textPosition, table, hider, createdActors);
+
+		return imageButton;
+	}
+
+	/**
+	 * Add a button label
+	 * @param button the button to add
+	 * @param text text to display somewhere
+	 * @param textPosition location of the text relative to the button
+	 * @param table the table to add the icon to
+	 * @param hider optional hider for icon and label
+	 * @param createdActors all created actors
+	 * @return cell with the button
+	 */
+	private Cell addButtonLabel(Button button, String text, Positions textPosition, AlignTable table, GuiHider hider, ArrayList<Actor> createdActors) {
+		Cell cell = null;
 		Label label = new Label(text, mStyles.label.standard);
 
-		float buttonWidth = imageButton.getPrefWidth();
+		float buttonWidth = button.getPrefWidth();
 
 		// Layout correctly
 		switch (textPosition) {
@@ -613,7 +681,7 @@ public class UiFactory {
 			AlignTable innerTable = new AlignTable();
 			innerTable.setKeepWidth(true).setWidth(buttonWidth);
 			innerTable.setAlignRow(Horizontal.CENTER, Vertical.MIDDLE);
-			innerTable.add(imageButton);
+			cell = innerTable.add(button);
 			innerTable.row().setHeight(mStyles.vars.rowHeight);
 			innerTable.add(label);
 			table.add(innerTable);
@@ -623,11 +691,11 @@ public class UiFactory {
 
 		case LEFT:
 			table.add(label).setPadRight(mStyles.vars.paddingInner);
-			table.add(label);
+			cell = table.add(button);
 			break;
 
 		case RIGHT:
-			table.add(imageButton).setPadRight(mStyles.vars.paddingInner);
+			cell = table.add(button).setPadRight(mStyles.vars.paddingInner);
 			table.add(label);
 			break;
 
@@ -638,16 +706,16 @@ public class UiFactory {
 			innerTable.row().setHeight(mStyles.vars.rowHeight);
 			innerTable.add(label);
 			innerTable.row();
-			innerTable.add(imageButton);
+			cell = innerTable.add(button);
 			table.add(innerTable);
 			doExtraActionsOnActors(hider, createdActors, innerTable);
 			break;
 		}
 		}
 
-		doExtraActionsOnActors(hider, createdActors, imageButton, label);
+		doExtraActionsOnActors(hider, createdActors, button, label);
 
-		return imageButton;
+		return cell;
 	}
 
 	/**
@@ -1001,6 +1069,7 @@ public class UiFactory {
 		mStyles.vars.paddingOuter = SkinNames.getResource(SkinNames.GeneralVars.PADDING_OUTER);
 		mStyles.vars.paddingInner = SkinNames.getResource(SkinNames.GeneralVars.PADDING_INNER);
 		mStyles.vars.paddingExplore = SkinNames.getResource(SkinNames.GeneralVars.PADDING_EXPLORE);
+		mStyles.vars.paddingSeparator = SkinNames.getResource(SkinNames.GeneralVars.PADDING_SEPARATOR);
 		mStyles.vars.paddingTransparentTextButton = SkinNames.getResource(SkinNames.GeneralVars.PADDING_TRANSPARENT_TEXT_BUTTON);
 		mStyles.vars.textFieldNumberWidth = SkinNames.getResource(SkinNames.GeneralVars.TEXT_FIELD_NUMBER_WIDTH);
 		mStyles.vars.textFieldWidth = SkinNames.getResource(SkinNames.GeneralVars.TEXT_FIELD_WIDTH);
@@ -1303,6 +1372,7 @@ public class UiFactory {
 			public float paddingInner = 0;
 			public float paddingExplore = 0;
 			public float paddingTransparentTextButton = 0;
+			public float paddingSeparator = 0;
 			public float rowHeight = 0;
 			public float rowHeightSection = 0;
 			public float textAreaHeight = 0;

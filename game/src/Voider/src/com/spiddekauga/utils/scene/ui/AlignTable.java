@@ -836,7 +836,7 @@ public class AlignTable extends WidgetGroup implements Disposable {
 		// Set position of this table.
 		// If parent is an AlignTable it has already set the correct position for this
 		// table
-		if (!(getParent() instanceof AlignTable)) {
+		if (!(getParent() instanceof AlignTable) && !(getParent() instanceof Table)) {
 			Vector2 position = Pools.vector2.obtain();
 
 

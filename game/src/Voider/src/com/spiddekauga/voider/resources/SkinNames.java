@@ -290,16 +290,14 @@ public class SkinNames {
 		GRID_MILESTONE_COLOR(Color.class),
 		/** Color above and below the level in the editor */
 		LEVEL_ABOVE_BELOW_COLOR(Color.class),
-		/** Padding between editor menu and tools */
-		PADDING_BETWEEN_BAR_AND_TOOLS(Float.class),
-		/** Width of text fields containing only numbers */
-		TEXT_FIELD_NUMBER_WIDTH(Float.class),
-		/** Wait window fade in time */
-		WAIT_WINDOW_FADE_IN(Float.class),
-		/** Wait window fade out time */
-		WAIT_WINDOW_FADE_OUT(Float.class),
 		/** Background color for various widgets */
 		WIDGET_BACKGROUND_COLOR(Color.class),
+		/** Top layer speed when selecting theme */
+		THEME_TOP_LAYER_SPEED(Float.class),
+		/** Top layer speed when selecting theme */
+		THEME_BOTTOM_LAYER_SPEED(Float.class),
+		/** How much wider the theme button is than the height */
+		THEME_DISPLAY_RATIO(Float.class),
 
 		;
 

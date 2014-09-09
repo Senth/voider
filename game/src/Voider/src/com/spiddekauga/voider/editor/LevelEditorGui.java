@@ -601,7 +601,7 @@ class LevelEditorGui extends EditorGui {
 		new ButtonListener(mWidgets.info.theme) {
 			@Override
 			protected void onPressed(Button button) {
-				// TODO Select theme
+				showThemeSelectWindow();
 			}
 		};
 
@@ -698,13 +698,37 @@ class LevelEditorGui extends EditorGui {
 			mInvoker.pushDelimiter(THEME_DELIMETER);
 			msgBox.setTitle("Select Theme");
 
-			// Add content
+			// Listener that set the theme
+			ButtonListener listener = new ButtonListener() {
+				@Override
+				protected void onChecked(Button button, boolean checked) {
+					if (checked) {
+						Object userObject = button.getUserObject();
 
-			// Create common listener for all theme buttons (not a ButtonListener)
+						if (userObject instanceof Themes) {
+							Themes theme = (Themes) userObject;
+							mLevelEditor.setTheme(theme);
+						}
+					}
+				}
+			};
 
+			// Calculate width/height for scroll pane
+			// Try to fit 3 themes on one screen
+			float ratio = SkinNames.getResource(SkinNames.EditorVars.THEME_DISPLAY_RATIO);
+			float width = Gdx.graphics.getWidth() - 2 * mUiFactory.getStyles().vars.paddingSeparator;
 
-			// TODO Create theme list (UiFactory). Should be able to set custom
-			// width/height.
+			float buttonWidth = width / 2.5f;
+			float height = buttonWidth / ratio;
+
+			// Create scroll pane
+			AlignTable content = new AlignTable();
+			ScrollPane scrollPane = mUiFactory.createThemeList(width, height, listener);
+			scrollPane.setForceScroll(true, false);
+			content.setAlign(Horizontal.RIGHT, Vertical.MIDDLE);
+			content.add(scrollPane).setSize(width, height);
+			content.setSize(width, height);
+			msgBox.content(content);
 
 			// Cancel button and undo theme settings
 			msgBox.addCancelButtonAndKeys(new CInvokerUndoToDelimiter(mInvoker, THEME_DELIMETER, false));
