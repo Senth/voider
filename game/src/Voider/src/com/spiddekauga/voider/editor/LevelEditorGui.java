@@ -38,6 +38,7 @@ import com.spiddekauga.utils.scene.ui.TooltipWidget.CustomTooltip;
 import com.spiddekauga.utils.scene.ui.TooltipWidget.ITooltip;
 import com.spiddekauga.utils.scene.ui.UiFactory.ButtonStyles;
 import com.spiddekauga.utils.scene.ui.UiFactory.Positions;
+import com.spiddekauga.utils.scene.ui.UiFactory.ThemeSelectorData;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Editor;
 import com.spiddekauga.voider.Config.Editor.Level;
@@ -49,6 +50,7 @@ import com.spiddekauga.voider.game.actors.EnemyActorDef;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.resources.SkinNames.EditorIcons;
+import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.utils.Messages;
 import com.spiddekauga.voider.utils.Pools;
 
@@ -702,12 +704,16 @@ class LevelEditorGui extends EditorGui {
 			ButtonListener listener = new ButtonListener() {
 				@Override
 				protected void onChecked(Button button, boolean checked) {
-					if (checked) {
-						Object userObject = button.getUserObject();
+					Object userObject = button.getUserObject();
 
-						if (userObject instanceof Themes) {
-							Themes theme = (Themes) userObject;
-							mLevelEditor.setTheme(theme);
+					if (userObject instanceof ThemeSelectorData) {
+						ThemeSelectorData themeData = (ThemeSelectorData) userObject;
+
+						if (checked) {
+							mLevelEditor.setTheme(themeData.theme);
+							themeData.label.setStyle(mUiFactory.getStyles().label.highlight);
+						} else {
+							themeData.label.setStyle(mUiFactory.getStyles().label.standard);
 						}
 					}
 				}
@@ -718,14 +724,13 @@ class LevelEditorGui extends EditorGui {
 			float ratio = SkinNames.getResource(SkinNames.EditorVars.THEME_DISPLAY_RATIO);
 			float width = Gdx.graphics.getWidth() - 2 * mUiFactory.getStyles().vars.paddingSeparator;
 
-			float buttonWidth = width / 2.5f;
-			float height = buttonWidth / ratio;
+			float buttonWidth = (width - (Themes.values().length - 1) * mUiFactory.getStyles().vars.paddingInner) / Themes.values().length;
+			float buttonHeight = buttonWidth / ratio;
+			float height = buttonHeight + mUiFactory.getStyles().vars.rowHeight * 2;
 
 			// Create scroll pane
 			AlignTable content = new AlignTable();
-			ScrollPane scrollPane = mUiFactory.createThemeList(width, height, listener, mLevelEditor.getTheme());
-			scrollPane.setForceScroll(true, false);
-			content.setAlign(Horizontal.RIGHT, Vertical.MIDDLE);
+			ScrollPane scrollPane = mUiFactory.createThemeList(width, height, true, listener, mLevelEditor.getTheme());
 			content.add(scrollPane).setSize(width, height);
 			content.setSize(width, height);
 			msgBox.content(content);
@@ -737,9 +742,45 @@ class LevelEditorGui extends EditorGui {
 
 			showMsgBox(msgBox);
 		}
+
 		// Mobile device, show scene instead
 		else if (Gdx.app.getType() == ApplicationType.Android) {
-			// TODO
+			MsgBoxExecuter msgBox = getFreeMsgBox(true);
+			msgBox.setTitle("Select Theme");
+
+			// Listener to open full screen theme scene
+			ButtonListener listener = new ButtonListener() {
+				@Override
+				protected void onPressed(Button button) {
+					Object userObject = button.getUserObject();
+
+					if (userObject instanceof ThemeSelectorData) {
+						ThemeSelectorData data = (ThemeSelectorData) userObject;
+						SceneSwitcher.switchTo(new ThemeSelectScene(data.theme));
+					}
+				}
+			};
+
+			// Calculate width/height for scroll pane
+			// Try to fit all 4 themes on one screen
+			float ratio = SkinNames.getResource(SkinNames.EditorVars.THEME_DISPLAY_RATIO);
+			float width = Gdx.graphics.getWidth() - 2 * mUiFactory.getStyles().vars.paddingSeparator;
+
+			float buttonWidth = (width - (Themes.values().length - 1) * mUiFactory.getStyles().vars.paddingInner) / Themes.values().length;
+			float buttonHeight = buttonWidth / ratio;
+			float height = buttonHeight + mUiFactory.getStyles().vars.rowHeight * 2;
+
+			// Create scroll pane
+			AlignTable content = new AlignTable();
+			ScrollPane scrollPane = mUiFactory.createThemeList(width, height, false, listener, mLevelEditor.getTheme());
+			content.add(scrollPane).setSize(width, height);
+			content.setSize(width, height);
+			msgBox.content(content);
+
+			// Back buttons
+			msgBox.addCancelButtonAndKeys("Back");
+
+			showMsgBox(msgBox);
 		}
 	}
 

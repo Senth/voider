@@ -2,6 +2,7 @@ package com.spiddekauga.voider.scene;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Stack;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
@@ -195,24 +196,16 @@ public abstract class Gui implements Disposable {
 	public void update() {
 		// Remove active message box if it has been hidden
 		if (!mActiveMsgBoxes.isEmpty()) {
-			MsgBoxExecuter activeMsgBox = mActiveMsgBoxes.get(mActiveMsgBoxes.size() - 1);
+			MsgBoxExecuter activeMsgBox = mActiveMsgBoxes.peek();
 
-			// Has queue, waiting for active message box to be hidden
-			if (mQueuedMsgBox != null) {
-				if (activeMsgBox.isHidden()) {
-					mActiveMsgBoxes.add(mQueuedMsgBox);
-					mQueuedMsgBox.show(mStage);
-					mQueuedMsgBox = null;
-				}
-			}
 			// Else if the active message box becomes hidden. Show the previous one
-			else if (activeMsgBox.isHidden()) {
-				mActiveMsgBoxes.remove(mActiveMsgBoxes.size() - 1);
-				mInactiveMsgBoxes.add(activeMsgBox);
+			if (activeMsgBox.isHidden()) {
+				mActiveMsgBoxes.pop();
+				mFreeMsgBoxes.push(activeMsgBox);
 
 				// Show the previous message box if one exists
 				if (!mActiveMsgBoxes.isEmpty()) {
-					mActiveMsgBoxes.get(mActiveMsgBoxes.size() - 1).show(mStage);
+					mActiveMsgBoxes.peek().show(mStage);
 				}
 			}
 		}
@@ -227,23 +220,18 @@ public abstract class Gui implements Disposable {
 	 * @return free message box
 	 */
 	public MsgBoxExecuter getFreeMsgBox(boolean useTitleStyle) {
-		MsgBoxExecuter msgBox = null;
-
 		String windowStyleName = useTitleStyle ? SkinNames.General.WINDOW_MODAL_TITLE.toString() : SkinNames.General.WINDOW_MODAL.toString();
 
 		// Find a free existing one
-		for (int i = mInactiveMsgBoxes.size() - 1; i >= 0; i--) {
-			if (!mInactiveMsgBoxes.get(i).hasParent()) {
-				msgBox = mInactiveMsgBoxes.get(i);
-				break;
-			}
+		MsgBoxExecuter msgBox = null;
+		if (!mFreeMsgBoxes.isEmpty()) {
+			msgBox = mFreeMsgBoxes.pop();
 		}
 
 		Skin skin = ResourceCacheFacade.get(InternalNames.UI_GENERAL);
 		// No free found, create new
 		if (msgBox == null) {
 			msgBox = new MsgBoxExecuter(skin, windowStyleName);
-			mInactiveMsgBoxes.add(msgBox);
 		} else {
 			msgBox.setStyle(skin.get(windowStyleName, WindowStyle.class));
 		}
@@ -263,18 +251,33 @@ public abstract class Gui implements Disposable {
 			Iterator<MsgBoxExecuter> msgBoxIt = mActiveMsgBoxes.iterator();
 			while (msgBoxIt.hasNext()) {
 				MsgBoxExecuter msgBox = msgBoxIt.next();
+				msgBoxIt.remove();
+				mFreeMsgBoxes.push(msgBox);
 
-				if (msgBox.isHidden()) {
-					msgBoxIt.remove();
-					mInactiveMsgBoxes.add(msgBox);
-				} else {
+				if (!msgBox.isHidden()) {
 					msgBox.hide();
 				}
 			}
 		} else if (mActiveMsgBoxes.size() == 1) {
-			MsgBoxExecuter msgBox = mActiveMsgBoxes.remove(0);
-			mInactiveMsgBoxes.add(msgBox);
+			MsgBoxExecuter msgBox = mActiveMsgBoxes.pop();
+			mFreeMsgBoxes.push(msgBox);
 			msgBox.hide();
+		}
+	}
+
+	/**
+	 * Hide active message box. Will activate the previous message box if one is available
+	 */
+	public void hideMsgBoxActive() {
+		if (!mActiveMsgBoxes.isEmpty()) {
+			MsgBoxExecuter msgBox = mActiveMsgBoxes.pop();
+			msgBox.hide();
+			mFreeMsgBoxes.push(msgBox);
+
+			// Show previous
+			if (!mActiveMsgBoxes.isEmpty()) {
+				mActiveMsgBoxes.peek().show(mStage);
+			}
 		}
 	}
 
@@ -285,22 +288,12 @@ public abstract class Gui implements Disposable {
 	 * @param msgBox the message box to show
 	 */
 	public void showMsgBox(MsgBoxExecuter msgBox) {
-		// No active message box, add directly
-		if (mActiveMsgBoxes.isEmpty()) {
-			int index = mInactiveMsgBoxes.indexOf(msgBox);
-			if (index != -1) {
-				mInactiveMsgBoxes.remove(index);
-				mActiveMsgBoxes.add(msgBox);
-				msgBox.show(mStage);
-			} else {
-				Gdx.app.error("Gui", "Could not find the message box in inactive message boxes!");
-			}
+		// Hide active
+		if (!mActiveMsgBoxes.isEmpty()) {
+			mActiveMsgBoxes.peek().hide();
 		}
-		// Hide the active message box, and queue the specified one.
-		else {
-			mActiveMsgBoxes.get(mActiveMsgBoxes.size() - 1).hide();
-			mQueuedMsgBox = msgBox;
-		}
+		mActiveMsgBoxes.push(msgBox);
+		msgBox.show(mStage);
 	}
 
 	/**
@@ -680,9 +673,9 @@ public abstract class Gui implements Disposable {
 	/** Error message shower */
 	private MessageShower mMessageShower = null;
 	/** Active message boxes */
-	private ArrayList<MsgBoxExecuter> mActiveMsgBoxes = new ArrayList<MsgBoxExecuter>();
+	private Stack<MsgBoxExecuter> mActiveMsgBoxes = new Stack<>();
 	/** Inactive/free message boxes */
-	private ArrayList<MsgBoxExecuter> mInactiveMsgBoxes = new ArrayList<MsgBoxExecuter>();
+	private Stack<MsgBoxExecuter> mFreeMsgBoxes = new Stack<>();
 	/** Queued messages box, will be displayed once the active message box has been hidden */
 	private MsgBoxExecuter mQueuedMsgBox = null;
 	/** Various widgets */

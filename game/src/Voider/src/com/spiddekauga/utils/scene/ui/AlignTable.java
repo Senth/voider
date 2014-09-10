@@ -229,7 +229,7 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	}
 
 	/**
-	 * Sets the top margin (outside) for the table
+	 * Sets the left margin (outside) for the table
 	 * @param marginLeft margin to the left
 	 * @return this table for chaining
 	 */
@@ -240,7 +240,7 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	}
 
 	/**
-	 * Sets the top margin (outside) for the table
+	 * Sets right top margin (outside) for the table
 	 * @param marginRight margin to the right
 	 * @return this table for chaining
 	 */
@@ -262,7 +262,7 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	}
 
 	/**
-	 * Sets the top margin (outside) for the table
+	 * Sets the bottom margin (outside) for the table
 	 * @param marginBottom margin to the bottom
 	 * @return this table for chaining
 	 */

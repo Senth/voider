@@ -51,7 +51,7 @@ import com.spiddekauga.voider.utils.Pools;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class Level extends Resource implements KryoPreWrite, KryoPostWrite, KryoPostRead, KryoTaggedCopyable, KryoSerializable, Disposable,
-IResourceRevision, IResourceHasDef {
+		IResourceRevision, IResourceHasDef {
 	/**
 	 * Constructor which creates an new empty level with the bound level definition
 	 * @param levelDef the level definition of this level
@@ -249,11 +249,12 @@ IResourceRevision, IResourceHasDef {
 		float textureScale = ((float) Gdx.graphics.getHeight()) / background.getHeight();
 		float width = background.getWidth() * textureScale;
 
+		// TODO only draw once, it can be repeated.
+
 		// Draw first time
 		spriteBatch.draw(background, -layerOffset, 0, width, Gdx.graphics.getHeight());
 
 		// Do we need to draw second time (i.e. we draw beyond the border)
-		// TODO draw multiple times
 		if (layerOffset - width < Gdx.graphics.getWidth()) {
 			spriteBatch.draw(background, -layerOffset + width, 0, width, Gdx.graphics.getHeight());
 		}

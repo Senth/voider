@@ -153,6 +153,7 @@ public class ImageScrollButton extends Button {
 
 			// Set image size
 			mImage.setSize(width, height);
+			mValidSize = true;
 		}
 
 		/**
@@ -190,7 +191,7 @@ public class ImageScrollButton extends Button {
 			mOffset += mSpeed * deltaTime;
 
 			if (oldOffset != mOffset) {
-				mRegion.scroll((int) mOffset, 0);
+				mRegion.setRegion((int) mOffset, 0, mRegion.getRegionWidth(), mTexture.getHeight());
 				mImage.invalidate();
 			}
 		}

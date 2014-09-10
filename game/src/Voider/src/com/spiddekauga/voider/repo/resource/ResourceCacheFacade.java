@@ -8,6 +8,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.spiddekauga.voider.Config.Debug;
 import com.spiddekauga.voider.resources.IResource;
+import com.spiddekauga.voider.resources.InternalDeps;
 import com.spiddekauga.voider.resources.Resource;
 import com.spiddekauga.voider.resources.ResourceException;
 import com.spiddekauga.voider.resources.ResourceItem;
@@ -244,11 +245,35 @@ public class ResourceCacheFacade {
 	// Resource names
 	// -----------------------------
 	/**
+	 * Unload all internal dependencies
+	 * @param internalDeps
+	 */
+	public static void unload(InternalDeps... internalDeps) {
+		for (InternalDeps internalDep : internalDeps) {
+			for (InternalNames internalName : internalDep.getDependencies()) {
+				unload(internalName);
+			}
+		}
+	}
+
+	/**
 	 * Unloads a regular resource
 	 * @param resourceName the name of the resource
 	 */
 	public static void unload(InternalNames resourceName) {
 		mAssetManager.unload(resourceName.getFilePath());
+	}
+
+	/**
+	 * Loads all internal dependencies
+	 * @param internalDeps
+	 */
+	public static void load(InternalDeps... internalDeps) {
+		for (InternalDeps internalDep : internalDeps) {
+			for (InternalNames internalName : internalDep.getDependencies()) {
+				load(internalName);
+			}
+		}
 	}
 
 	/**

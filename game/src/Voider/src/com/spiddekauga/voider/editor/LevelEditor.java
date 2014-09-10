@@ -392,6 +392,12 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 				((LevelEditorGui) mGui).resetImage();
 			}
 		}
+		// Theme selected
+		else if (outcome == Outcomes.THEME_SELECTED) {
+			Themes theme = (Themes) message;
+			setTheme(theme);
+			mGui.hideMsgBoxActive();
+		}
 
 		if (mLevel != null) {
 			Actor.setLevel(mLevel);

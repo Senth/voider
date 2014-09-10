@@ -43,6 +43,7 @@ import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.resources.SkinNames.IImageNames;
 import com.spiddekauga.voider.resources.SkinNames.ISkinNames;
+import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Factory for creating UI objects, more specifically combined UI objects. This factory
@@ -249,11 +250,13 @@ public class UiFactory {
 	 * Create a scrollable list for all available themes.
 	 * @param width available width for scroll pane
 	 * @param height available height for scroll pane
+	 * @param checkable true if the buttons should be checkable, otherwise they can only
+	 *        be pressed.
 	 * @param listener listens to the button presses
 	 * @param selectedTheme the default theme to be set as selected
 	 * @return created scroll pane.
 	 */
-	public ScrollPane createThemeList(float width, float height, ButtonListener listener, Themes selectedTheme) {
+	public ScrollPane createThemeList(float width, float height, boolean checkable, ButtonListener listener, Themes selectedTheme) {
 		AlignTable table = new AlignTable();
 		table.setName("theme-table");
 		table.setPaddingCellDefault(0, mStyles.vars.paddingInner, 0, 0);
@@ -263,33 +266,54 @@ public class UiFactory {
 		// Calculate button sizes
 		float buttonHeight = height - mStyles.vars.rowHeight * 2;
 		float ratio = SkinNames.getResource(SkinNames.EditorVars.THEME_DISPLAY_RATIO);
-		float buttonWidth = ratio * height;
-
-		ButtonGroup buttonGroup = new ButtonGroup();
+		float buttonWidth = ratio * buttonHeight;
 
 		float topLayerSpeed = SkinNames.getResource(SkinNames.EditorVars.THEME_TOP_LAYER_SPEED);
 		float bottomLayerSpeed = SkinNames.getResource(SkinNames.EditorVars.THEME_BOTTOM_LAYER_SPEED);
 
-		for (Themes theme : Themes.values()) {
-			ImageScrollButton button = new ImageScrollButton(ButtonStyles.TOGGLE.getStyle(), ScrollWhen.ALWAYS);
-			button.addListener(listener);
-			button.setUserObject(theme);
-			buttonGroup.add(button);
+		@SuppressWarnings("unchecked")
+		ArrayList<Actor> createdActors = Pools.arrayList.obtain();
 
-			if (theme == selectedTheme) {
-				button.setChecked(true);
+		ButtonGroup buttonGroup = checkable ? new ButtonGroup() : null;
+
+		for (Themes theme : Themes.values()) {
+			ButtonStyle buttonStyle;
+			if (checkable) {
+				buttonStyle = ButtonStyles.TOGGLE.getStyle();
+			} else {
+				buttonStyle = theme == selectedTheme ? ButtonStyles.SELECTED_PRESSABLE.getStyle() : ButtonStyles.PRESS.getStyle();
 			}
 
+			// Create image
+			ImageScrollButton button = new ImageScrollButton(buttonStyle, ScrollWhen.ALWAYS);
+			button.addListener(listener);
+			if (checkable) {
+				buttonGroup.add(button);
+			}
 
+			// Add layers
 			Texture bottomLayer = ResourceCacheFacade.get(theme.getBottomLayer());
 			Texture topLayer = ResourceCacheFacade.get(theme.getTopLayer());
 			button.addLayer(bottomLayer, bottomLayerSpeed);
 			button.addLayer(topLayer, topLayerSpeed);
 
-			Cell cell = addButtonLabel(button, theme.toString(), Positions.BOTTOM, table, null, null);
+			// Add to table and get label
+			createdActors.clear();
+			Cell cell = addButtonLabel(button, theme.toString(), Positions.BOTTOM, table, null, createdActors);
 			cell.setSize(buttonWidth, buttonHeight);
 			table.getCell().setWidth(buttonWidth);
+			Label label = (Label) createdActors.get(createdActors.size() - 1);
+
+			button.setUserObject(new ThemeSelectorData(theme, label));
+
+			// Set correct selected
+			if (theme == selectedTheme) {
+				button.setChecked(true);
+				label.setStyle(mStyles.label.highlight);
+			}
 		}
+
+		Pools.arrayList.free(createdActors);
 
 		// Remove padding from last table
 		table.getCell().setPadRight(0);
@@ -681,10 +705,12 @@ public class UiFactory {
 
 		float buttonWidth = button.getPrefWidth();
 
+		AlignTable innerTable = null;
+
 		// Layout correctly
 		switch (textPosition) {
-		case BOTTOM: {
-			AlignTable innerTable = new AlignTable();
+		case BOTTOM:
+			innerTable = new AlignTable();
 			innerTable.setKeepWidth(true).setWidth(buttonWidth);
 			innerTable.setAlignRow(Horizontal.CENTER, Vertical.MIDDLE);
 			cell = innerTable.add(button);
@@ -693,7 +719,7 @@ public class UiFactory {
 			table.add(innerTable);
 			doExtraActionsOnActors(hider, createdActors, innerTable);
 			break;
-		}
+
 
 		case LEFT:
 			table.add(label).setPadRight(mStyles.vars.paddingInner);
@@ -705,8 +731,8 @@ public class UiFactory {
 			table.add(label);
 			break;
 
-		case TOP: {
-			AlignTable innerTable = new AlignTable();
+		case TOP:
+			innerTable = new AlignTable();
 			innerTable.setKeepWidth(true).setWidth(buttonWidth);
 			innerTable.setAlignRow(Horizontal.CENTER, Vertical.MIDDLE);
 			innerTable.row().setHeight(mStyles.vars.rowHeight);
@@ -717,9 +743,12 @@ public class UiFactory {
 			doExtraActionsOnActors(hider, createdActors, innerTable);
 			break;
 		}
-		}
 
-		doExtraActionsOnActors(hider, createdActors, button, label);
+		if (innerTable != null) {
+			doExtraActionsOnActors(hider, createdActors, innerTable, button, label);
+		} else {
+			doExtraActionsOnActors(hider, createdActors, button, label);
+		}
 
 		return cell;
 	}
@@ -976,6 +1005,34 @@ public class UiFactory {
 	}
 
 	/**
+	 * Add button padding to the last cell
+	 * @param position where to add the padding
+	 * @param table the table to add the padding to
+	 */
+	public void addButtonPadding(AlignTable table, Positions position) {
+		Cell cell = table.getCell();
+		float padding = mStyles.vars.paddingButton;
+
+		switch (position) {
+		case BOTTOM:
+			cell.setPadBottom(padding);
+			break;
+
+		case LEFT:
+			cell.setPadLeft(padding);
+			break;
+
+		case RIGHT:
+			cell.setPadRight(padding);
+			break;
+
+		case TOP:
+			cell.setPadTop(padding);
+			break;
+		}
+	}
+
+	/**
 	 * Set tooltip, add actors to hider, add to created actors, or any combination.
 	 * @param tooltipText creates a tooltip for all actors (if not null)
 	 * @param hider add all actors to the hider (if not null)
@@ -1091,6 +1148,8 @@ public class UiFactory {
 		// Button styles
 		ButtonStyles.PRESS.setStyle((ButtonStyle) SkinNames.getResource(SkinNames.General.BUTTON_PRESS));
 		ButtonStyles.TOGGLE.setStyle((ButtonStyle) SkinNames.getResource(SkinNames.General.BUTTON_TOGGLE));
+		ButtonStyles.SELECTED.setStyle((ButtonStyle) SkinNames.getResource(SkinNames.General.BUTTON_SELECTED));
+		ButtonStyles.SELECTED_PRESSABLE.setStyle((ButtonStyle) SkinNames.getResource(SkinNames.General.BUTTON_SELECTED_PRESSABLE));
 
 		// Text buttons
 		TextButtonStyles.FILLED_PRESS.setStyle((TextButtonStyle) SkinNames.getResource(SkinNames.General.TEXT_BUTTON_FLAT_PRESS));
@@ -1177,6 +1236,10 @@ public class UiFactory {
 		PRESS,
 		/** Default toggle */
 		TOGGLE,
+		/** Selected and has hover and down effects */
+		SELECTED_PRESSABLE,
+		/** Always displayed as checked */
+		SELECTED,
 
 		;
 
@@ -1191,7 +1254,7 @@ public class UiFactory {
 		/**
 		 * @return get the text button style associated with this enumeration
 		 */
-		private ButtonStyle getStyle() {
+		public ButtonStyle getStyle() {
 			return mStyle;
 		}
 
@@ -1272,6 +1335,26 @@ public class UiFactory {
 	 */
 	public TabImageWrapper createTabImageWrapper() {
 		return new TabImageWrapper();
+	}
+
+	/**
+	 * Wrapper for a theme and label. Used in theme list selector
+	 */
+	public class ThemeSelectorData {
+		/**
+		 * Private constructor, enforces that only UiFactory can create these objects.
+		 * @param theme theme that is displayed
+		 * @param label text that is displayed below the theme image
+		 */
+		private ThemeSelectorData(Themes theme, Label label) {
+			this.theme = theme;
+			this.label = label;
+		}
+
+		/** Selected theme */
+		public Themes theme;
+		/** Label for the theme */
+		public Label label;
 	}
 
 	/**

@@ -64,6 +64,7 @@ public class MsgBox extends Dialog {
 		getButtonTable().add(mButtonTable);
 		mButtonTable.setPadding(paddingInner);
 		getContentTable().pad(paddingInner);
+		getContentTable().align(Align.center);
 
 		defaults().space(0);
 		defaults().pad(0);

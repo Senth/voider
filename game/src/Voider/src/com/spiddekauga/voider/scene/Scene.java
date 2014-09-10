@@ -406,6 +406,10 @@ public abstract class Scene extends InputAdapter implements IExceptionHandler {
 		LOGGED_IN,
 		/** Logged out */
 		LOGGED_OUT,
+		/** Theme selected */
+		THEME_SELECTED,
+		/** Theme selection canceled */
+		THEME_SELECT_CANCEL,
 
 		/** No outcome when an outcome isn't applicable, e.g. first time */
 		NOT_APPLICAPLE,
