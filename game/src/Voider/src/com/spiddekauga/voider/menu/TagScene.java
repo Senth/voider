@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Random;
 import java.util.UUID;
 
+import com.spiddekauga.utils.scene.ui.UiFactory;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.network.entities.stat.Tags;
 import com.spiddekauga.voider.repo.stat.StatLocalRepo;
@@ -24,6 +25,7 @@ public class TagScene extends Scene {
 		mResourceId = resourceId;
 
 		((TagSceneGui) mGui).setScene(this);
+		setClearColor(UiFactory.getInstance().getStyles().color.sceneBackground);
 	}
 
 	/**
