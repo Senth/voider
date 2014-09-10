@@ -12,7 +12,7 @@ java.lang.Float: {
 	theme_top_layer_speed: {value: 150},
 	theme_bottom_layer_speed: {value: 66.5},
 	// How much wider the theme button is than the height
-	theme_display_ratio: {value: 1.4},
+	theme_display_ratio: {value: 1.2},
 },
 
 com.badlogic.gdx.graphics.Color: {

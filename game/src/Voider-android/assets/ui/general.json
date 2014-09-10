@@ -227,6 +227,16 @@ com.badlogic.gdx.scenes.scene2d.ui.Button$ButtonStyle: {
 		over: button_default_over,
 		checkedOver: button_default_checked_over,
 	},
+	
+	selected_pressable: {
+		up: button_default_checked,
+		over: button_default_checked_over,
+		down: button_default_down,
+	},
+	
+	selected:  {
+		up: button_default_checked,
+	}
 },
 
 com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
