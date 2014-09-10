@@ -256,9 +256,10 @@ public class ResourceCacheFacade {
 	 * textures, music, etc.
 	 * @param resource the name of the resource to load Texture, Music, etc.
 	 */
+	@SuppressWarnings("unchecked")
 	public static void load(InternalNames resource) {
 		String fullPath = resource.getFilePath();
-		mAssetManager.load(fullPath, resource.type);
+		mAssetManager.load(fullPath, resource.type, resource.parameters);
 	}
 
 	/**

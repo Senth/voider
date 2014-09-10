@@ -250,9 +250,10 @@ public class UiFactory {
 	 * @param width available width for scroll pane
 	 * @param height available height for scroll pane
 	 * @param listener listens to the button presses
+	 * @param selectedTheme the default theme to be set as selected
 	 * @return created scroll pane.
 	 */
-	public ScrollPane createThemeList(float width, float height, ButtonListener listener) {
+	public ScrollPane createThemeList(float width, float height, ButtonListener listener, Themes selectedTheme) {
 		AlignTable table = new AlignTable();
 		table.setName("theme-table");
 		table.setPaddingCellDefault(0, mStyles.vars.paddingInner, 0, 0);
@@ -274,6 +275,11 @@ public class UiFactory {
 			button.addListener(listener);
 			button.setUserObject(theme);
 			buttonGroup.add(button);
+
+			if (theme == selectedTheme) {
+				button.setChecked(true);
+			}
+
 
 			Texture bottomLayer = ResourceCacheFacade.get(theme.getBottomLayer());
 			Texture topLayer = ResourceCacheFacade.get(theme.getTopLayer());

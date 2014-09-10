@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.Texture.TextureWrap;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
@@ -50,6 +51,7 @@ public class ImageScrollButton extends Button {
 	 * @param image the image to add
 	 */
 	public void addLayer(Texture image) {
+		image.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
 		mImages.add(new ImageScroll(image, 0));
 	}
 

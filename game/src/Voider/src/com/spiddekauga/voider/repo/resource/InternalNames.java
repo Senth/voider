@@ -3,8 +3,12 @@ package com.spiddekauga.voider.repo.resource;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.badlogic.gdx.assets.AssetLoaderParameters;
+import com.badlogic.gdx.assets.loaders.TextureLoader.TextureParameter;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.Texture.TextureFilter;
+import com.badlogic.gdx.graphics.Texture.TextureWrap;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -79,6 +83,8 @@ public enum InternalNames {
 		return getDirPath(type) + filename;
 	}
 
+	/** Optional parameters */
+	@SuppressWarnings("rawtypes") AssetLoaderParameters parameters = null;
 	/** Filename of the resource */
 	final String filename;
 	/** The resource class type */
@@ -108,10 +114,8 @@ public enum InternalNames {
 	/** Directory for all sound effects */
 	private static String SOUND_PATH = "sound/";
 
-	/**
-	 * Initializes the resource names
-	 */
 	static {
+		// -- Resource names --
 		if (mResourcePaths == null) {
 			mResourcePaths = new HashMap<Class<?>, String>();
 
@@ -132,6 +136,19 @@ public enum InternalNames {
 			mResourcePaths.put(ParticleEffect.class, PARTICLE_PATH);
 			mResourcePaths.put(Skin.class, UI_PATH);
 			mResourcePaths.put(Sound.class, SOUND_PATH);
+		}
+
+
+		// -- Parameters --
+		// Level theme
+		for (int i = LEVEL_THEME_CORE_TOP.ordinal(); i <= LEVEL_THEME_TUNNELS_BOTTOM.ordinal(); ++i) {
+			TextureParameter textureParameter = new TextureParameter();
+			textureParameter.genMipMaps = true;
+			textureParameter.wrapU = TextureWrap.Repeat;
+			textureParameter.wrapV = TextureWrap.Repeat;
+			textureParameter.minFilter = TextureFilter.MipMapLinearLinear;
+			InternalNames internalName = InternalNames.values()[i];
+			internalName.parameters = textureParameter;
 		}
 	}
 }

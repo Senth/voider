@@ -723,7 +723,7 @@ class LevelEditorGui extends EditorGui {
 
 			// Create scroll pane
 			AlignTable content = new AlignTable();
-			ScrollPane scrollPane = mUiFactory.createThemeList(width, height, listener);
+			ScrollPane scrollPane = mUiFactory.createThemeList(width, height, listener, mLevelEditor.getTheme());
 			scrollPane.setForceScroll(true, false);
 			content.setAlign(Horizontal.RIGHT, Vertical.MIDDLE);
 			content.add(scrollPane).setSize(width, height);
