@@ -62,7 +62,7 @@ public class MsgBox extends Dialog {
 		float paddingInner = mUiFactory.getStyles().vars.paddingInner;
 
 		getButtonTable().add(mButtonTable);
-		mButtonTable.setPadding(paddingInner);
+		mButtonTable.setPad(paddingInner);
 		getContentTable().pad(paddingInner);
 		getContentTable().align(Align.center);
 

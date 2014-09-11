@@ -15,7 +15,7 @@ import com.spiddekauga.voider.utils.Pools;
  * Wrapper for a cell. Contains both the actor in the cell and align information
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public class Cell implements Poolable {
+public class Cell implements Poolable, IPadding<Cell> {
 	/**
 	 * Sets the alignment of this cell
 	 * @param horizontal the horizontal alignment
@@ -107,12 +107,8 @@ public class Cell implements Poolable {
 		return this;
 	}
 
-	/**
-	 * Sets the padding for left, right, top, bottom
-	 * @param pad how much padding should be on the sides
-	 * @return this cell for chaining
-	 */
-	public Cell setPadding(float pad) {
+	@Override
+	public Cell setPad(float pad) {
 		setPadLeft(pad);
 		setPadRight(pad);
 		setPadTop(pad);
@@ -121,15 +117,8 @@ public class Cell implements Poolable {
 		return this;
 	}
 
-	/**
-	 * Sets the padding for top, right, bottom, and left.
-	 * @param top top padding
-	 * @param right right padding
-	 * @param bottom bottom padding
-	 * @param left left padding
-	 * @return this cell for chaining
-	 */
-	public Cell setPadding(float top, float right, float bottom, float left) {
+	@Override
+	public Cell setPad(float top, float right, float bottom, float left) {
 		setPadLeft(left);
 		setPadRight(right);
 		setPadTop(top);
@@ -137,12 +126,8 @@ public class Cell implements Poolable {
 		return this;
 	}
 
-	/**
-	 * Sets the padding of the cell
-	 * @param padding padding information
-	 * @return this cell for chaining
-	 */
-	Cell setPadding(Padding padding) {
+	@Override
+	public Cell setPad(Padding padding) {
 		setPadLeft(padding.left);
 		setPadRight(padding.right);
 		setPadTop(padding.top);
@@ -150,80 +135,53 @@ public class Cell implements Poolable {
 		return this;
 	}
 
-	/**
-	 * Sets the padding to the left of the cell
-	 * @param padLeft how much padding should be to the left of the cell
-	 * @return this cell for chaining
-	 */
+	@Override
 	public Cell setPadLeft(float padLeft) {
 		mPadding.left = padLeft;
-
 		return this;
 	}
 
-	/**
-	 * Sets the padding to the right of the cell
-	 * @param padRight how much padding should be on the right of the cell
-	 * @return this cell for chaining
-	 */
+	@Override
 	public Cell setPadRight(float padRight) {
 		mPadding.right = padRight;
-
 		return this;
 	}
 
-	/**
-	 * Sets the padding at the top of the cell
-	 * @param padTop how much padding should be at the top of the cell
-	 * @return this cell for chaining
-	 */
+	@Override
 	public Cell setPadTop(float padTop) {
 		mPadding.top = padTop;
-
 		return this;
 	}
 
-	/**
-	 * Sets the padding at teh bottom of the cell
-	 * @param padBottom how much padding should be at the bottom of the cell
-	 * @return this cell for chaining
-	 */
+	@Override
 	public Cell setPadBottom(float padBottom) {
 		mPadding.bottom = padBottom;
-
 		return this;
 	}
 
-	/**
-	 * @return padding to the left of this cell. If dynamic padding is on this will return
-	 *         the scaled padding instead.
-	 */
+	@Override
 	public float getPadLeft() {
 		return mPadding.left;
 	}
 
-	/**
-	 * @return padding to the right of this cell. If dynamic padding is on this will
-	 *         return the scaled padding instead.
-	 */
+	@Override
 	public float getPadRight() {
 		return mPadding.right;
 	}
 
-	/**
-	 * @return padding to the top of this cell. If dynamic padding is on this will return
-	 *         the scaled padding instead.
-	 */
+	@Override
 	public float getPadTop() {
 		return mPadding.top;
 	}
 
-	/**
-	 * @return padding to the bottom of this cell. If dynamic padding is on this will
-	 *         return the scaled padding instead.
-	 */
+	@Override
 	public float getPadBottom() {
 		return mPadding.bottom;
+	}
+
+	@Override
+	public Padding getPad() {
+		return mPadding;
 	}
 
 	/**

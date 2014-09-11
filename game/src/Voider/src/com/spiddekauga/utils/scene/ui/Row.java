@@ -14,7 +14,7 @@ import com.spiddekauga.voider.utils.Pools;
  * Wrapper for a row Contains all the actors for the current row
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public class Row implements Poolable {
+public class Row implements Poolable, IPadding<Row> {
 	/**
 	 * Default constructor
 	 */
@@ -138,12 +138,8 @@ public class Row implements Poolable {
 		return this;
 	}
 
-	/**
-	 * Sets the padding for left, right, top, bottom
-	 * @param pad how much padding should be on the sides
-	 * @return this row for chaining
-	 */
-	public Row setPadding(float pad) {
+	@Override
+	public Row setPad(float pad) {
 		setPadLeft(pad);
 		setPadRight(pad);
 		setPadTop(pad);
@@ -152,15 +148,8 @@ public class Row implements Poolable {
 		return this;
 	}
 
-	/**
-	 * Sets the padding for top, right, bottom, and left.
-	 * @param top top padding
-	 * @param right right padding
-	 * @param bottom bottom padding
-	 * @param left left padding
-	 * @return this cell for chaining
-	 */
-	public Row setPadding(float top, float right, float bottom, float left) {
+	@Override
+	public Row setPad(float top, float right, float bottom, float left) {
 		setPadLeft(left);
 		setPadRight(right);
 		setPadTop(top);
@@ -168,12 +157,8 @@ public class Row implements Poolable {
 		return this;
 	}
 
-	/**
-	 * Sets the padding of the row
-	 * @param padding padding information
-	 * @return this cell for chaining
-	 */
-	Row setPadding(Padding padding) {
+	@Override
+	public Row setPad(Padding padding) {
 		setPadLeft(padding.left);
 		setPadRight(padding.right);
 		setPadTop(padding.top);
@@ -181,80 +166,54 @@ public class Row implements Poolable {
 		return this;
 	}
 
-	/**
-	 * Sets the padding to the left of the row
-	 * @param padLeft how much padding should be to the left of the row
-	 * @return this row for chaining
-	 */
+	@Override
 	public Row setPadLeft(float padLeft) {
 		mPadding.left = padLeft;
 
 		return this;
 	}
 
-	/**
-	 * Sets the padding to the right of the row
-	 * @param padRight how much padding should be on the right of the row
-	 * @return this row for chaining
-	 */
+	@Override
 	public Row setPadRight(float padRight) {
 		mPadding.right = padRight;
-
 		return this;
 	}
 
-	/**
-	 * Sets the padding at the top of the row
-	 * @param padTop how much padding should be at the top of the row
-	 * @return this row for chaining
-	 */
+	@Override
 	public Row setPadTop(float padTop) {
 		mPadding.top = padTop;
-
 		return this;
 	}
 
-	/**
-	 * Sets the padding at teh bottom of the row
-	 * @param padBottom how much padding should be at the bottom of the row
-	 * @return this row for chaining
-	 */
+	@Override
 	public Row setPadBottom(float padBottom) {
 		mPadding.bottom = padBottom;
-
 		return this;
 	}
 
-	/**
-	 * @return padding to the left of this row. If dynamic padding is on this will return
-	 *         the scaled padding instead.
-	 */
+	@Override
 	public float getPadLeft() {
 		return mPadding.left;
 	}
 
-	/**
-	 * @return padding to the right of this row. If dynamic padding is on this will return
-	 *         the scaled padding instead.
-	 */
+	@Override
 	public float getPadRight() {
 		return mPadding.right;
 	}
 
-	/**
-	 * @return padding to the top of this row. If dynamic padding is on this will return
-	 *         the scaled padding instead.
-	 */
+	@Override
 	public float getPadTop() {
 		return mPadding.top;
 	}
 
-	/**
-	 * @return padding to the bottom of this row. If dynamic padding is on this will
-	 *         return the scaled padding instead.
-	 */
+	@Override
 	public float getPadBottom() {
 		return mPadding.bottom;
+	}
+
+	@Override
+	public Padding getPad() {
+		return mPadding;
 	}
 
 	/**

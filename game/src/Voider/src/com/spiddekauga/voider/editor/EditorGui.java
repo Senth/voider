@@ -29,7 +29,6 @@ import com.spiddekauga.utils.commands.Invoker;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
 import com.spiddekauga.utils.scene.ui.Align.Vertical;
 import com.spiddekauga.utils.scene.ui.AlignTable;
-import com.spiddekauga.utils.scene.ui.Background;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
 import com.spiddekauga.utils.scene.ui.DisableListener;
 import com.spiddekauga.utils.scene.ui.MsgBoxExecuter;
@@ -152,13 +151,7 @@ public abstract class EditorGui extends Gui {
 	 * settings in enemy editor.
 	 */
 	protected void initSettingsMenu() {
-		mSettingTabs
-				.setMargin(getTopBottomPadding(), mUiFactory.getStyles().vars.paddingOuter, getTopBottomPadding(),
-						mUiFactory.getStyles().vars.paddingOuter).setAlign(Horizontal.RIGHT, Vertical.TOP).setTabAlign(Horizontal.RIGHT)
-				.setFillHeight(true).setBackground(new Background(mUiFactory.getStyles().color.widgetBackground))
-				.setPaddingContent(mUiFactory.getStyles().vars.paddingInner)
-				.setContentWidth((Float) SkinNames.getResource(SkinNames.GeneralVars.RIGHT_PANEL_WIDTH));
-
+		mSettingTabs = mUiFactory.createRightPanel();
 		getStage().addActor(mSettingTabs);
 	}
 
@@ -877,5 +870,5 @@ public abstract class EditorGui extends Gui {
 	/** All UI-bodies for collision */
 	private ArrayList<Body> mBodies = null;
 	/** Setting widget */
-	protected TabWidget mSettingTabs = new TabWidget();
+	protected TabWidget mSettingTabs = null;
 }

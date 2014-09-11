@@ -17,7 +17,7 @@ import com.spiddekauga.utils.scene.ui.Align.Vertical;
  * Widget that allows for tab functionality.
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public class TabWidget extends WidgetGroup {
+public class TabWidget extends WidgetGroup implements IMargin<TabWidget>, IPadding<TabWidget> {
 	/**
 	 * Default constructor.
 	 * <ul>
@@ -40,7 +40,8 @@ public class TabWidget extends WidgetGroup {
 		mContentOuterRow = mWrapperTable.row();
 		mContentOuterCell = mWrapperTable.add(mContentOuterTable);
 
-		mContentOuterTable.add(mContentInnerTable);
+		mContentOuterTable.row().setFillWidth(true);
+		mContentOuterTable.add(mContentInnerTable).setFillWidth(true);
 		mContentOuterRowFill = mContentOuterTable.row();
 
 		addActor(mWrapperTable);
@@ -61,7 +62,8 @@ public class TabWidget extends WidgetGroup {
 		button.addListener(mTabVisibilityListener);
 		hider.addToggleActor(table);
 		hider.setButton(button);
-		mContentInnerTable.add(table);
+		mContentInnerTable.add(table).setFillWidth(true);
+		mContentInnerTable.getRow().setFillWidth(true);
 		return button;
 	}
 
@@ -145,106 +147,138 @@ public class TabWidget extends WidgetGroup {
 		return this;
 	}
 
-	/**
-	 * Sets the margin (outside) for this TabWidget.
-	 * @param top margin at the top
-	 * @param right margin to the right
-	 * @param bottom margin at the bottom
-	 * @param left margin to the left
-	 * @return this TabWidget for chaining
-	 */
+	@Override
 	public TabWidget setMargin(float top, float right, float bottom, float left) {
 		mWrapperTable.setMargin(top, right, bottom, left);
 		return this;
 	}
 
-	/**
-	 * Set the margin (outside) for this TabWidget.
-	 * @param margin margin to the left, right, top, and bottom
-	 * @return this TabWidget for chaining
-	 */
+	@Override
 	public TabWidget setMargin(float margin) {
 		mWrapperTable.setMargin(margin);
 		return this;
 	}
 
-	/**
-	 * @return top margin
-	 */
+	@Override
+	public TabWidget setMargin(Padding margin) {
+		mWrapperTable.setMargin(margin);
+		return this;
+	}
+
+	@Override
+	public TabWidget setMarginLeft(float marginLeft) {
+		mWrapperTable.setMarginLeft(marginLeft);
+		return this;
+	}
+
+	@Override
+	public TabWidget setMarginRight(float marginRight) {
+		mWrapperTable.setMarginRight(marginRight);
+		return this;
+	}
+
+	@Override
+	public TabWidget setMarginBottom(float marginBottom) {
+		mWrapperTable.setMarginBottom(marginBottom);
+		return this;
+	}
+
+	@Override
+	public TabWidget setMarginTop(float marginTop) {
+		mWrapperTable.setMarginTop(marginTop);
+		return this;
+	}
+
+	@Override
 	public float getMarginTop() {
 		return mWrapperTable.getMarginTop();
 	}
 
-	/**
-	 * @return right margin
-	 */
+	@Override
 	public float getMarginRight() {
 		return mWrapperTable.getMarginRight();
 	}
 
-	/**
-	 * @return bottom margin
-	 */
+	@Override
 	public float getMarginBottom() {
 		return mWrapperTable.getMarginBottom();
 	}
 
-	/**
-	 * @return left margin
-	 */
+	@Override
 	public float getMarginLeft() {
 		return mWrapperTable.getMarginLeft();
 	}
 
-	/**
-	 * Sets the padding for the content
-	 * @param top padding at the top
-	 * @param right padding to the right
-	 * @param bottom padding at the bottom
-	 * @param left padding to the left
-	 * @return this TabWidget for chaining
-	 */
-	public TabWidget setPaddingContent(float top, float right, float bottom, float left) {
-		mContentOuterTable.setPadding(top, right, bottom, left);
+	@Override
+	public Padding getMargin() {
+		return mWrapperTable.getMargin();
+	};
+
+	@Override
+	public TabWidget setPad(float top, float right, float bottom, float left) {
+		mContentOuterTable.setPad(top, right, bottom, left);
 		return this;
 	}
 
-	/**
-	 * Set the padding for the content.
-	 * @param padding padding to the left, right, top, and bottom
-	 * @return this TabWidget for chaining
-	 */
-	public TabWidget setPaddingContent(float padding) {
-		mContentOuterTable.setPadding(padding);
+	@Override
+	public TabWidget setPad(float padding) {
+		mContentOuterTable.setPad(padding);
 		return this;
 	}
 
-	/**
-	 * @return top padding for the content
-	 */
-	public float getPaddingContentTop() {
-		return mContentOuterTable.getPaddingTop();
+	@Override
+	public TabWidget setPad(Padding padding) {
+		mContentOuterTable.setPad(padding);
+		return this;
 	}
 
-	/**
-	 * @return right padding for the content
-	 */
-	public float getPaddingContentRight() {
-		return mContentOuterTable.getPaddingRight();
+	@Override
+	public TabWidget setPadLeft(float paddingLeft) {
+		mContentOuterTable.setPadLeft(paddingLeft);
+		return this;
 	}
 
-	/**
-	 * @return bottom padding for the content
-	 */
-	public float getPaddingContentBottom() {
-		return mContentOuterTable.getPaddingBottom();
+	@Override
+	public TabWidget setPadRight(float paddingRight) {
+		mContentOuterTable.setPadRight(paddingRight);
+		return this;
 	}
 
-	/**
-	 * @return left padding for the content
-	 */
-	public float getPaddingContentLeft() {
-		return mContentOuterTable.getPaddingLeft();
+	@Override
+	public TabWidget setPadBottom(float paddingBottom) {
+		mContentOuterTable.setPadBottom(paddingBottom);
+		return this;
+	}
+
+	@Override
+	public TabWidget setPadTop(float paddingTop) {
+		mContentOuterTable.setPadTop(paddingTop);
+		return this;
+	}
+
+	@Override
+	public float getPadTop() {
+		return mContentOuterTable.getPadTop();
+	}
+
+	@Override
+	public float getPadRight() {
+		return mContentOuterTable.getPadRight();
+	}
+
+	@Override
+	public float getPadBottom() {
+		return mContentOuterTable.getPadBottom();
+	}
+
+	@Override
+	public float getPadLeft() {
+		return mContentOuterTable.getPadLeft();
+	}
+
+	@Override
+	public Padding getPad() {
+		return mContentOuterTable.getPad();
 	}
 
 	/**

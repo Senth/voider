@@ -23,7 +23,7 @@ import com.spiddekauga.voider.utils.Pools;
  * widgets inside.
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public class AlignTable extends WidgetGroup implements Disposable {
+public class AlignTable extends WidgetGroup implements Disposable, IMargin<AlignTable>, IPadding<AlignTable> {
 	/**
 	 * Constructor, creates an empty first row
 	 */
@@ -207,6 +207,7 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	 * @param left margin to the left
 	 * @return this table for chaining
 	 */
+	@Override
 	public AlignTable setMargin(float top, float right, float bottom, float left) {
 		mMargin.top = top;
 		mMargin.right = right;
@@ -220,6 +221,7 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	 * @param margin margin to the left, right, top, and bottom
 	 * @return this table for chaining
 	 */
+	@Override
 	public AlignTable setMargin(float margin) {
 		mMargin.top = margin;
 		mMargin.right = margin;
@@ -228,131 +230,96 @@ public class AlignTable extends WidgetGroup implements Disposable {
 		return this;
 	}
 
+	@Override
+	public AlignTable setMargin(Padding margin) {
+		mMargin.set(margin);
+		return this;
+	}
+
 	/**
 	 * Sets the left margin (outside) for the table
 	 * @param marginLeft margin to the left
 	 * @return this table for chaining
 	 */
+	@Override
 	public AlignTable setMarginLeft(float marginLeft) {
-		mPadding.left = marginLeft;
-
+		mMargin.left = marginLeft;
 		return this;
 	}
 
-	/**
-	 * Sets right top margin (outside) for the table
-	 * @param marginRight margin to the right
-	 * @return this table for chaining
-	 */
+	@Override
 	public AlignTable setMarginRight(float marginRight) {
-		mPadding.right = marginRight;
-
+		mMargin.right = marginRight;
 		return this;
 	}
 
-	/**
-	 * Sets the top margin (outside) for the table
-	 * @param marginTop margin to the top
-	 * @return this table for chaining
-	 */
+	@Override
 	public AlignTable setMarginTop(float marginTop) {
-		mPadding.top = marginTop;
-
+		mMargin.top = marginTop;
 		return this;
 	}
 
-	/**
-	 * Sets the bottom margin (outside) for the table
-	 * @param marginBottom margin to the bottom
-	 * @return this table for chaining
-	 */
+	@Override
 	public AlignTable setMarginBottom(float marginBottom) {
-		mPadding.bottom = marginBottom;
-
+		mMargin.bottom = marginBottom;
 		return this;
 	}
 
-	/**
-	 * Sets the padding to the left of the table
-	 * @param padLeft how much padding should be to the left of the table
-	 * @return this table for chaining
-	 */
+	@Override
 	public AlignTable setPadLeft(float padLeft) {
 		mPadding.left = padLeft;
 
 		return this;
 	}
 
-	/**
-	 * Sets the padding to the right of the table
-	 * @param padRight how much padding should be on the right of the table
-	 * @return this table for chaining
-	 */
+	@Override
 	public AlignTable setPadRight(float padRight) {
 		mPadding.right = padRight;
 
 		return this;
 	}
 
-	/**
-	 * Sets the padding at the top of the table
-	 * @param padTop how much padding should be at the top of the table
-	 * @return this table for chaining
-	 */
+	@Override
 	public AlignTable setPadTop(float padTop) {
 		mPadding.top = padTop;
 
 		return this;
 	}
 
-	/**
-	 * Sets the padding at teh bottom of the table
-	 * @param padBottom how much padding should be at the bottom of the table
-	 * @return this table for chaining
-	 */
+	@Override
 	public AlignTable setPadBottom(float padBottom) {
 		mPadding.bottom = padBottom;
 
 		return this;
 	}
 
-	/**
-	 * @return top margin
-	 */
+	@Override
 	public float getMarginTop() {
 		return mMargin.top;
 	}
 
-	/**
-	 * @return right margin
-	 */
+	@Override
 	public float getMarginRight() {
 		return mMargin.right;
 	}
 
-	/**
-	 * @return bottom margin
-	 */
+	@Override
 	public float getMarginBottom() {
 		return mMargin.bottom;
 	}
 
-	/**
-	 * @return left margin
-	 */
+	@Override
 	public float getMarginLeft() {
 		return mMargin.left;
 	}
 
-	/**
-	 * Sets the padding (inside) for this table.
-	 * @param top padding at the top
-	 * @param right padding to the right
-	 * @param bottom padding at the bottom
-	 * @param left padding to the left
-	 * @return this table for chaining
-	 */
-	public AlignTable setPadding(float top, float right, float bottom, float left) {
+	@Override
+	public Padding getMargin() {
+		return mMargin;
+	}
+
+	@Override
+	public AlignTable setPad(float top, float right, float bottom, float left) {
 		mPadding.top = top;
 		mPadding.right = right;
 		mPadding.bottom = bottom;
@@ -360,12 +327,8 @@ public class AlignTable extends WidgetGroup implements Disposable {
 		return this;
 	}
 
-	/**
-	 * Set the padding (inside) for this table.
-	 * @param padding padding to the left, right, top, and bottom
-	 * @return this table for chaining
-	 */
-	public AlignTable setPadding(float padding) {
+	@Override
+	public AlignTable setPad(float padding) {
 		mPadding.top = padding;
 		mPadding.right = padding;
 		mPadding.bottom = padding;
@@ -373,32 +336,35 @@ public class AlignTable extends WidgetGroup implements Disposable {
 		return this;
 	}
 
-	/**
-	 * @return top padding
-	 */
-	public float getPaddingTop() {
+	@Override
+	public AlignTable setPad(Padding padding) {
+		mPadding.set(padding);
+		return this;
+	}
+
+	@Override
+	public float getPadTop() {
 		return mPadding.top;
 	}
 
-	/**
-	 * @return right padding
-	 */
-	public float getPaddingRight() {
+	@Override
+	public float getPadRight() {
 		return mPadding.right;
 	}
 
-	/**
-	 * @return bottom padding
-	 */
-	public float getPaddingBottom() {
+	@Override
+	public float getPadBottom() {
 		return mPadding.bottom;
 	}
 
-	/**
-	 * @return left padding
-	 */
-	public float getPaddingLeft() {
+	@Override
+	public float getPadLeft() {
 		return mPadding.left;
+	}
+
+	@Override
+	public Padding getPad() {
+		return mPadding;
 	}
 
 	/**
@@ -469,7 +435,7 @@ public class AlignTable extends WidgetGroup implements Disposable {
 		}
 
 		Cell newCell = Pools.cell.obtain().setActor(actor);
-		newCell.setPadding(mCellPaddingDefault);
+		newCell.setPad(mCellPaddingDefault);
 
 		Row row = mRows.get(mRows.size() - 1);
 		row.add(newCell);
@@ -526,7 +492,7 @@ public class AlignTable extends WidgetGroup implements Disposable {
 	public Row row(Horizontal horizontal, Vertical vertical) {
 		Row row = Pools.row.obtain();
 		row.setAlign(horizontal, vertical);
-		row.setPadding(mRowPaddingDefault);
+		row.setPad(mRowPaddingDefault);
 		mRows.add(row);
 		return row;
 	}

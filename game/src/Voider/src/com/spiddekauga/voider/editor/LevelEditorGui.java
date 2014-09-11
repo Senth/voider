@@ -565,7 +565,7 @@ class LevelEditorGui extends EditorGui {
 		mInfoTable.setAlignRow(Horizontal.LEFT, Vertical.TOP);
 
 		float paddingInner = mUiFactory.getStyles().vars.paddingInner;
-		mInfoTable.setPadding(0, paddingInner, 0, paddingInner);
+		mInfoTable.setPad(0, paddingInner, 0, paddingInner);
 
 		AlignTable left = new AlignTable();
 		AlignTable right = new AlignTable();

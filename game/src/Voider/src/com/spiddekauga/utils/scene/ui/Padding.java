@@ -4,10 +4,9 @@ import com.badlogic.gdx.utils.Pool.Poolable;
 
 /**
  * Wrapper for padding variables
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-class Padding implements Poolable {
+public class Padding implements Poolable {
 	/** Left padding */
 	public float left = 0;
 	/** right padding */

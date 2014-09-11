@@ -1064,6 +1064,29 @@ public class UiFactory {
 	}
 
 	/**
+	 * Create a default right panel widget
+	 * @return default right panel widget
+	 */
+	public TabWidget createRightPanel() {
+		TabWidget tabWidget = new TabWidget();
+
+		// Margin, padding and height
+		float topBottomMargin = mStyles.vars.barUpperLowerHeight + mStyles.vars.paddingOuter;
+		tabWidget.setMargin(topBottomMargin, mStyles.vars.paddingOuter, topBottomMargin, mStyles.vars.paddingOuter);
+		tabWidget.setFillHeight(true);
+		tabWidget.setPad(mStyles.vars.paddingInner);
+		tabWidget.setContentWidth(mStyles.vars.rightPanelWidth);
+
+		// Alignment
+		tabWidget.setAlign(Horizontal.RIGHT, Vertical.TOP).setTabAlign(Horizontal.RIGHT);
+
+		// Background
+		tabWidget.setBackground(new Background(mStyles.color.widgetBackground));
+
+		return tabWidget;
+	}
+
+	/**
 	 * Set tooltip, add actors to hider, add to created actors, or any combination.
 	 * @param hider add all actors to the hider (if not null)
 	 * @param createdActors add all actors to this list (if not null)

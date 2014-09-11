@@ -160,7 +160,7 @@ public class SelectDefGui extends Gui {
 
 		AlignTable table = mWidgets.info.table;
 		table.setName("info-table");
-		table.setPadding(mUiFactory.getStyles().vars.paddingInner);
+		table.setPad(mUiFactory.getStyles().vars.paddingInner);
 		table.setAlignTable(Horizontal.RIGHT, Vertical.TOP);
 		table.setAlignRow(Horizontal.LEFT, Vertical.TOP);
 		table.setBackgroundImage(new Background(mUiFactory.getStyles().color.widgetBackground));

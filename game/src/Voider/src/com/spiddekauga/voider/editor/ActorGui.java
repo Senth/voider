@@ -146,7 +146,7 @@ public abstract class ActorGui extends EditorGui {
 		mInfoTable.setName("info-table");
 		mInfoTable.setAlignTable(Horizontal.LEFT, Vertical.TOP);
 		mInfoTable.setAlignRow(Horizontal.LEFT, Vertical.MIDDLE);
-		mInfoTable.setPadding(mUiFactory.getStyles().vars.paddingInner);
+		mInfoTable.setPad(mUiFactory.getStyles().vars.paddingInner);
 		TextFieldListener listener;
 
 

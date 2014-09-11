@@ -82,7 +82,7 @@ public class TooltipWidget extends WidgetGroup {
 
 
 		// Fill between
-		mTable.add().setPadding(0).setFillWidth(true);
+		mTable.add().setPad(0).setFillWidth(true);
 
 
 		// Youtube

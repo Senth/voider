@@ -49,7 +49,7 @@ java.lang.Float: {
 	/** Padding - General UI */
 	
 	// Padding between some buttons
-	padding_buttons: {value: 1},
+	padding_buttons: {value: 4},
 	// Used to separate group of widgets, e.g. tool groups
 	padding_separator: {value: 32},
 	// Padding after a label before other text, slider, or text field.
