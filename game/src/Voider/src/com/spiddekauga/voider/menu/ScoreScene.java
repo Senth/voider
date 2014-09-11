@@ -142,15 +142,15 @@ public class ScoreScene extends Scene {
 	 * @param comment new comment for this level
 	 */
 	void setComment(String comment) {
-		// TODO set comment
+		mStat.comment = comment;
+		mStatRepo.setComment(mLevelDef.getId(), comment);
 	}
 
 	/**
 	 * @return player comment for the level
 	 */
 	String getComment() {
-		// TODO
-		return "";
+		return mStat.comment;
 	}
 
 	/**

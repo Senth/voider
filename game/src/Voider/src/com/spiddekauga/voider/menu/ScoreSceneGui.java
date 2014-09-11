@@ -34,8 +34,7 @@ public class ScoreSceneGui extends Gui {
 		if (mScoreScene.isPublished()) {
 			mWidgets.bookmark.setChecked(mScoreScene.isBookmarked());
 			mWidgets.rating.setRating(mScoreScene.getRating());
-
-			// TODO comment
+			mWidgets.comment.setText(mScoreScene.getComment());
 		}
 	};
 

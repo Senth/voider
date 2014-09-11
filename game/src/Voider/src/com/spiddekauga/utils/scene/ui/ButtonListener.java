@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputEvent.Type;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent;
 
@@ -59,6 +60,7 @@ public abstract class ButtonListener implements EventListener {
 						mCheckedLast.put(button, lastChecked);
 					}
 
+					removeKeyboardFocus(button.getStage());
 
 					onDown(button);
 				}
@@ -70,6 +72,14 @@ public abstract class ButtonListener implements EventListener {
 			}
 		}
 		return true;
+	}
+
+	/**
+	 * Remove keyboard focus from current text field
+	 * @param stage current stage
+	 */
+	private void removeKeyboardFocus(Stage stage) {
+		stage.setKeyboardFocus(null);
 	}
 
 	/**

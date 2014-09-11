@@ -70,10 +70,17 @@ class SqliteUpgrader {
 	 * @throws SQLiteGdxException
 	 */
 	private void upgradeTable(String table, int fromVersion) throws SQLiteGdxException {
-		// 1 -> 2
-		if (fromVersion == 1) {
+		// 2 — Added uploaded status to resource revision
+		if (fromVersion < 2) {
 			if (table.equals("resource_revision")) {
 				mDatabase.execSQL("ALTER TABLE resource_revision ADD COLUMN uploaded INTEGER DEFAULT 0;");
+			}
+		}
+
+		// 6 — Added comment to level stats
+		if (fromVersion < 6) {
+			if (table.equals("level_stat")) {
+				mDatabase.execSQL("ALTER TABLE level_stat ADD COLUMN comment TEXT DEFAULT '';");
 			}
 		}
 	}
@@ -137,7 +144,8 @@ class SqliteUpgrader {
 				+ "clears_to_sync INTEGER DEFAULT 0, "
 				+ "rating INTEGER DEFAULT 0, "
 				+ "last_played INTEGER, "
-				+ "synced INTEGER DEFAULT 0);");
+				+ "synced INTEGER DEFAULT 0, "
+				+ "comment TEXT DEFAULT '');");
 
 		// Level tags to sync
 		mNotFoundTables.add("level_tag");
@@ -173,7 +181,7 @@ class SqliteUpgrader {
 	/** Create table queries for all tables */
 	private Map<String, String> mCreateTableQueries = new HashMap<String, String>();
 	/** DB version */
-	private static final int DB_VERSION = 5;
+	private static final int DB_VERSION = 6;
 	/** Create version table */
 	private static final String TABLE_VERSION_CREATE = "CREATE TABLE IF NOT EXISTS version (version INTEGER, table_name TEXT);";
 }

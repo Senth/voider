@@ -48,12 +48,21 @@ public class StatLocalRepo {
 	}
 
 	/**
-	 * Set the level/ćampaign as bookmarked
+	 * Set the level/campaign as bookmarked
 	 * @param id level/campaign id
 	 * @param bookmark true if bookmarked
 	 */
 	public void setBookmark(UUID id, boolean bookmark) {
 		mSqliteGateway.setBookmark(id, bookmark);
+	}
+
+	/**
+	 * Set a comment for the level/campaign
+	 * @param id level/campaign id
+	 * @param comment
+	 */
+	public void setComment(UUID id, String comment) {
+		mSqliteGateway.setComment(id, comment);
 	}
 
 	/**

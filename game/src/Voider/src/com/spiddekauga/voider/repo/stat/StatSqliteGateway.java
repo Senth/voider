@@ -55,6 +55,15 @@ class StatSqliteGateway extends SqliteGateway {
 	}
 
 	/**
+	 * Set a comment for the level/campaign
+	 * @param id level/campaign id
+	 * @param comment
+	 */
+	void setComment(UUID id, String comment) {
+		update(id, "comment", comment);
+	}
+
+	/**
 	 * Sets when the level/campaign was last played
 	 * @param id level/campaign id
 	 * @param date last played date
@@ -146,7 +155,8 @@ class StatSqliteGateway extends SqliteGateway {
 				+ "play_count, "
 				+ "clear_count, "
 				+ "rating, "
-				+ "last_played "
+				+ "last_played,"
+				+ "comment "
 				+ "FROM level_stat "
 				+ "WHERE "
 				+ "uuid='" + id + "';");
@@ -161,6 +171,7 @@ class StatSqliteGateway extends SqliteGateway {
 			userLevelStat.cCleared = cursor.getInt(2);
 			userLevelStat.rating = cursor.getInt(3);
 			userLevelStat.lastPlayed = new Date(cursor.getLong(4));
+			userLevelStat.comment = cursor.getString(5);
 		}
 
 		cursor.close();
@@ -187,6 +198,8 @@ class StatSqliteGateway extends SqliteGateway {
 			levelStats.cClearsToSync = cursor.getInt(5);
 			levelStats.rating = cursor.getInt(6);
 			levelStats.lastPlayed = new Date(cursor.getLong(7));
+			// synced is column 8
+			levelStats.comment = cursor.getString(9);
 
 			// Add tags
 			DatabaseCursor tagCursor = rawQuery("SELECT tag FROM level_tag WHERE uuid='" + levelStats.id + "' AND synced=0;");

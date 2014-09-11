@@ -17,4 +17,6 @@ public class UserLevelStat {
 	public int rating = 0;
 	/** Last played date */
 	public Date lastPlayed = null;
+	/** User comment */
+	public String comment = null;
 }
