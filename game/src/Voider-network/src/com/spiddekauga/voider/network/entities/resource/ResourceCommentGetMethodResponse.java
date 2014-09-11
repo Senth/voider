@@ -4,20 +4,21 @@ import java.util.ArrayList;
 
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.ISuccessStatuses;
-import com.spiddekauga.voider.network.entities.stat.LevelCommentEntity;
+import com.spiddekauga.voider.network.entities.stat.ResourceCommentEntity;
 
 /**
  * Returns comments for the specified level
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
-public class LevelGetCommentMethodResponse implements IEntity, ISuccessStatuses{
+public class ResourceCommentGetMethodResponse implements IEntity, ISuccessStatuses {
 	/** All level comments */
-	public ArrayList<LevelCommentEntity> levelComments = new ArrayList<>();
-	/** User level comment, will only be sent if called with offset = 0 and
-	 * the player has made a comment on the level. */
-	public LevelCommentEntity userComment = null;
+	public ArrayList<ResourceCommentEntity> comments = new ArrayList<>();
+	/**
+	 * User level comment, will only be sent if called without cursor and the player has
+	 * made a comment on the level.
+	 */
+	public ResourceCommentEntity userComment = null;
 	/** Cursor to continue query */
 	public String cursor = null;
 	/** True if no more comments exists */
@@ -32,8 +33,10 @@ public class LevelGetCommentMethodResponse implements IEntity, ISuccessStatuses{
 
 	/** Response statuses */
 	public enum Statuses implements ISuccessStatuses {
-		/** SUCCESS */
-		SUCCESS,
+		/** Have fetched all comments */
+		SUCCESS_FETCHED_ALL,
+		/** More comments exists to be fetched */
+		SUCCESS_MORE_EXISTS,
 		/** Failed internal error */
 		FAILED_INTERNAL,
 		/** Failed to connect to server */

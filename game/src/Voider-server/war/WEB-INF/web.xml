@@ -68,15 +68,15 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 		<servlet-name>Publish</servlet-name>
 		<url-pattern>/publish</url-pattern>
 	</servlet-mapping>
-		<servlet>
-		<servlet-name>LevelGetComment</servlet-name>
-		<servlet-class>com.spiddekauga.voider.servlets.LevelGetComment</servlet-class>
+	<servlet>
+		<servlet-name>ResourceCommentGet</servlet-name>
+		<servlet-class>com.spiddekauga.voider.servlets.ResourceCommentGet</servlet-class>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>LevelGetComment</servlet-name>
-		<url-pattern>/level-get-comment</url-pattern>
+		<servlet-name>ResourceCommentGet</servlet-name>
+		<url-pattern>/resource-comment-get</url-pattern>
 	</servlet-mapping>
-		<servlet>
+	<servlet>
 		<servlet-name>LevelGetAll</servlet-name>
 		<servlet-class>com.spiddekauga.voider.servlets.LevelGetAll</servlet-class>
 	</servlet>

@@ -11,30 +11,37 @@ public class ServerConfig {
 		/** Blob information for all blobs */
 		BLOB_INFO("__BlobInfo__"),
 		/** All users */
-		USERS("users"),
+		USERS,
 		/** Published resources */
-		PUBLISHED("published"),
+		PUBLISHED,
 		/** Dependencies */
-		DEPENDENCY("dependency"),
+		DEPENDENCY,
 		/** Different revisions of a resource */
-		REVISION("revision"),
+		REVISION,
 		/** Revision dependencies */
-		REVISION_DEPNDENCY("revision_dependency"),
+		REVISION_DEPNDENCY,
 		/** Level statistics */
-		LEVEL_STAT("level_stat"),
+		LEVEL_STAT,
 		/** Actor stats */
-		ACTOR_STAT("actor_stat"),
+		ACTOR_STAT,
 		/** User level statistics */
-		USER_LEVEL_STAT("user_level_stat"),
+		USER_LEVEL_STAT,
 		/** User level tags */
-		USER_LEVEL_TAG("user_level_tag"),
+		USER_LEVEL_TAG,
 		/** Level tags */
-		LEVEL_TAG("level_tag"),
+		LEVEL_TAG,
 		/** Level comments */
-		LEVEL_COMMENT("level_comment"),
+		RESOURCE_COMMENT,
 
 
 		;
+		/**
+		 * Default constructor, uses lower case enum name
+		 */
+		private DatastoreTables() {
+			mName = name().toLowerCase();
+		}
+
 		/**
 		 * Sets the name of the actual table
 		 * @param name the name of the table

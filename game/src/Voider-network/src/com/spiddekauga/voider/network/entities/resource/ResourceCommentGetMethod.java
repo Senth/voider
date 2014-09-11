@@ -9,14 +9,14 @@ import com.spiddekauga.voider.network.entities.IMethodEntity;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
-public class LevelGetCommentMethod implements IMethodEntity {
-	/** Level id */
-	public UUID levelId;
+public class ResourceCommentGetMethod implements IMethodEntity {
+	/** Resource id */
+	public UUID resourceId;
 	/** Cursor, continues the query if not null */
 	public String cursor = null;
 
 	@Override
 	public MethodNames getMethodName() {
-		return MethodNames.LEVEL_GET_COMMENT;
+		return MethodNames.RESOURCE_COMMENT_GET;
 	}
 }

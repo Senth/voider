@@ -29,7 +29,7 @@ public abstract interface IMethodEntity extends IEntity {
 		/** Get all levels */
 		LEVEL_GET_ALL,
 		/** Get level comments */
-		LEVEL_GET_COMMENT,
+		RESOURCE_COMMENT_GET,
 		/** Publish resources */
 		PUBLISH,
 		/** Download a resources */
