@@ -70,8 +70,25 @@ public class StatSync extends VoiderServlet {
 
 		for (Entity serverEntity : entities) {
 			LevelStat userLevelStats = serverToNetworkEntity(serverEntity);
+			Key levelKey = (Key) serverEntity.getProperty("level_key");
+			getComments(userLevelStats, levelKey);
 			mUserStatsToClient.put(userLevelStats.id, userLevelStats);
 			mResponse.syncEntity.levelStats.add(userLevelStats);
+		}
+	}
+
+	/**
+	 * Get user comments
+	 * @param userLevelStats
+	 * @param levelKey key for the level
+	 */
+	private void getComments(LevelStat userLevelStats, Key levelKey) {
+		FilterWrapper userFilter = new FilterWrapper("username", mUser.getUsername());
+
+		Entity entity = DatastoreUtils.getSingleEntity("level_comment", levelKey, userFilter);
+
+		if (entity != null) {
+			userLevelStats.comment = (String) entity.getProperty("comment");
 		}
 	}
 
@@ -140,6 +157,7 @@ public class StatSync extends VoiderServlet {
 		to.bookmark = from.bookmark;
 		to.rating = from.rating;
 		to.tags = from.tags;
+		to.comment = from.comment;
 	}
 
 	/**
@@ -153,12 +171,47 @@ public class StatSync extends VoiderServlet {
 				LevelStat oldStat = updateUserLevelStats(levelKey, levelStat);
 				updateLevelStats(levelKey, levelStat, oldStat);
 				updateLevelTags(levelKey, levelStat.tags);
+				updatedLevelComment(levelKey, levelStat.comment);
 			}
 		}
 
 		// Send sync response
 		if (!mParameters.levelStats.isEmpty()) {
 			sendMessage(new ChatMessage<>(MessageTypes.SYNC_STAT, mUser.getClientId()));
+		}
+	}
+
+	/**
+	 * Update level comments
+	 * @param levelKey key of the level
+	 * @param comment possibly a new comment
+	 */
+	private void updatedLevelComment(Key levelKey, String comment) {
+		// Get old comment
+		FilterWrapper userFliter = new FilterWrapper("username", mUser.getUsername());
+		Entity oldEntity = DatastoreUtils.getSingleEntity("level_comment", levelKey, userFliter);
+
+		// Maybe update or remove old comment
+		if (oldEntity != null) {
+			String oldComment = (String) oldEntity.getProperty("comment");
+
+			// Remove comment
+			if (comment.isEmpty()) {
+				DatastoreUtils.delete(oldEntity.getKey());
+			}
+			// Update comment
+			else if (!oldComment.equals(comment)) {
+				oldEntity.setUnindexedProperty("comment", comment);
+				oldEntity.setProperty("date", mResponse.syncEntity.syncDate);
+			}
+		}
+		// Create new comment
+		else if (!comment.isEmpty()) {
+			Entity newEntity = new Entity("level_comment", levelKey);
+			newEntity.setProperty("username", mUser.getUsername());
+			newEntity.setUnindexedProperty("comment", comment);
+			newEntity.setProperty("date", mResponse.syncEntity.syncDate);
+			DatastoreUtils.put(newEntity);
 		}
 	}
 

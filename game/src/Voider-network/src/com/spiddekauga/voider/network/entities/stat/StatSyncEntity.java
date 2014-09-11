@@ -35,6 +35,8 @@ public class StatSyncEntity implements IEntity {
 		public int cClearsToSync = 0;
 		/** Rating rating of the level/campaign */
 		public int rating = 0;
+		/** User comment */
+		public String comment = "";
 		/** Last played date */
 		public Date lastPlayed = null;
 		/** Last updated (only from server) */
