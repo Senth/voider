@@ -21,8 +21,6 @@ public class ResourceCommentGetMethodResponse implements IEntity, ISuccessStatus
 	public ResourceCommentEntity userComment = null;
 	/** Cursor to continue query */
 	public String cursor = null;
-	/** True if no more comments exists */
-	public boolean fetchedAll = false;
 	/** Response status */
 	public Statuses status = null;
 

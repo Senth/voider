@@ -569,7 +569,6 @@ public class ExploreGui extends Gui {
 	void resetContent() {
 		ArrayList<LevelInfoEntity> levels = mExploreScene.getLevels();
 		resetContent(levels);
-		Pools.arrayList.free(levels);
 	}
 
 	/**

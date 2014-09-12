@@ -239,8 +239,9 @@ class HighscoreWebRepo extends WebRepo {
 
 	/**
 	 * Common class for highscore caches
+	 * @param <EntityType> derived class
 	 */
-	private abstract class HighscoreCache extends CacheEntity {
+	private abstract class HighscoreCache<EntityType> extends CacheEntity<EntityType> {
 		/**
 		 * Set common outdated time for all highscore caches
 		 */
@@ -252,7 +253,7 @@ class HighscoreWebRepo extends WebRepo {
 	/**
 	 * Cache for first place
 	 */
-	private class FirstPlaceCache extends HighscoreCache {
+	private class FirstPlaceCache extends HighscoreCache<FirstPlaceCache> {
 		/**
 		 * Creates a new first place cache with a new highscore
 		 * @param highscore highscore for the first place
@@ -262,10 +263,29 @@ class HighscoreWebRepo extends WebRepo {
 		}
 
 		/**
+		 * Default constructor
+		 */
+		FirstPlaceCache() {
+		}
+
+		/**
 		 * @return highscore for the first place
 		 */
 		HighscoreEntity get() {
 			return mFirstPlace;
+		}
+
+		@Override
+		public FirstPlaceCache copy() {
+			FirstPlaceCache copy = new FirstPlaceCache();
+			copy(copy);
+			return copy;
+		}
+
+		@Override
+		public void copy(FirstPlaceCache copy) {
+			super.copy(copy);
+			copy.mFirstPlace = mFirstPlace;
 		}
 
 		/** First place highscore */
@@ -275,7 +295,7 @@ class HighscoreWebRepo extends WebRepo {
 	/**
 	 * Cache for top X highscores
 	 */
-	private class TopCache extends HighscoreCache {
+	private class TopCache extends HighscoreCache<TopCache> {
 		/**
 		 * Create top X highscores
 		 * @param highscores all top highscores
@@ -285,11 +305,30 @@ class HighscoreWebRepo extends WebRepo {
 		}
 
 		/**
+		 * Default constructor
+		 */
+		TopCache() {
+		}
+
+		/**
 		 * @return highscore for the top X places
 		 */
 		ArrayList<HighscoreEntity> get() {
 			return mHighscores;
 		}
+
+		@Override
+		public TopCache copy() {
+			TopCache copy = new TopCache();
+			copy(copy);
+			return copy;
+		}
+
+		@Override
+		public void copy(TopCache copy) {
+			super.copy(copy);
+			copy.mHighscores = mHighscores;
+		};
 
 		/** All top X highscores */
 		private ArrayList<HighscoreEntity> mHighscores;
@@ -298,7 +337,7 @@ class HighscoreWebRepo extends WebRepo {
 	/**
 	 * Cache for user highscore, including X above/below the user
 	 */
-	private class UserCache extends HighscoreCache {
+	private class UserCache extends HighscoreCache<UserCache> {
 		/**
 		 * Create user highscores
 		 * @param beforeUser highscores with higher score
@@ -311,6 +350,12 @@ class HighscoreWebRepo extends WebRepo {
 			mAfter = afterUser;
 			mUser = user;
 			mPlace = place;
+		}
+
+		/**
+		 * Default constructor
+		 */
+		UserCache() {
 		}
 
 		/**
@@ -340,6 +385,22 @@ class HighscoreWebRepo extends WebRepo {
 		HighscoreEntity getUserScore() {
 			return mUser;
 		}
+
+		@Override
+		public UserCache copy() {
+			UserCache copy = new UserCache();
+			copy(copy);
+			return copy;
+		}
+
+		@Override
+		public void copy(UserCache copy) {
+			super.copy(copy);
+			copy.mPlace = mPlace;
+			copy.mBefore = mBefore;
+			copy.mAfter = mAfter;
+			copy.mUser = mUser;
+		};
 
 		/** Place of the user */
 		private int mPlace;

@@ -3,7 +3,6 @@ package com.spiddekauga.voider.repo.resource;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -33,6 +32,8 @@ import com.spiddekauga.voider.network.entities.resource.PublishMethod;
 import com.spiddekauga.voider.network.entities.resource.PublishMethodResponse;
 import com.spiddekauga.voider.network.entities.resource.PublishMethodResponse.Statuses;
 import com.spiddekauga.voider.network.entities.resource.ResourceBlobEntity;
+import com.spiddekauga.voider.network.entities.resource.ResourceCommentGetMethod;
+import com.spiddekauga.voider.network.entities.resource.ResourceCommentGetMethodResponse;
 import com.spiddekauga.voider.network.entities.resource.ResourceDownloadMethod;
 import com.spiddekauga.voider.network.entities.resource.ResourceDownloadMethodResponse;
 import com.spiddekauga.voider.network.entities.resource.ResourceRevisionBlobEntity;
@@ -41,7 +42,9 @@ import com.spiddekauga.voider.network.entities.resource.UploadTypes;
 import com.spiddekauga.voider.network.entities.resource.UserResourcesSyncMethod;
 import com.spiddekauga.voider.network.entities.resource.UserResourcesSyncMethodResponse;
 import com.spiddekauga.voider.network.entities.stat.LevelInfoEntity;
+import com.spiddekauga.voider.network.entities.stat.ResourceCommentEntity;
 import com.spiddekauga.voider.network.entities.stat.Tags;
+import com.spiddekauga.voider.repo.Cache;
 import com.spiddekauga.voider.repo.CacheEntity;
 import com.spiddekauga.voider.repo.IResponseListener;
 import com.spiddekauga.voider.repo.WebGateway.FieldNameFileWrapper;
@@ -275,15 +278,65 @@ public class ResourceWebRepo extends WebRepo {
 
 		// Sync downloaded
 		else if (methodEntity instanceof DownloadSyncMethod) {
-			responseToSend = handleSyncDownloadResponse(response);
+			responseToSend = handleDownloadSyncResponse(response);
 		}
 
+		// Sync user resources
 		else if (methodEntity instanceof UserResourcesSyncMethod) {
-			responseToSend = handleSyncUserResourcesResponse(response);
+			responseToSend = handleUserResourcesSyncResponse(response);
 		}
 
+		// Get comments
+		else if (methodEntity instanceof ResourceCommentGetMethod) {
+			responseToSend = handleResourceCommentGetResponse((ResourceCommentGetMethod) methodEntity, response);
+		}
 
 		sendResponseToListeners(methodEntity, responseToSend, callerResponseListeners);
+	}
+
+	/**
+	 * Handle get resource comments response
+	 * @param method
+	 * @param response
+	 * @return a correct response for getting comments
+	 */
+	private IEntity handleResourceCommentGetResponse(ResourceCommentGetMethod method, IEntity response) {
+		if (response instanceof ResourceCommentGetMethodResponse) {
+			if (((ResourceCommentGetMethodResponse) response).isSuccessful()) {
+				cacheComments(method.resourceId, (ResourceCommentGetMethodResponse) response);
+			}
+
+			return response;
+		} else {
+			ResourceCommentGetMethodResponse validResponse = new ResourceCommentGetMethodResponse();
+			validResponse.status = ResourceCommentGetMethodResponse.Statuses.FAILED_CONNECTION;
+			return validResponse;
+		}
+	}
+
+	/**
+	 * Cache comments
+	 * @param resourceId
+	 * @param response
+	 */
+	private void cacheComments(UUID resourceId, ResourceCommentGetMethodResponse response) {
+		// Does the cache exist?
+		CommentCacheEntity cache = mCommentCache.getCopy(resourceId);
+
+		// Create new cache
+		if (cache == null) {
+			cache = new CommentCacheEntity();
+		}
+
+		if (response.userComment != null) {
+			cache.userComment = response.userComment;
+		}
+
+		cache.comments.addAll(response.comments);
+		cache.fetchedAll = response.status == ResourceCommentGetMethodResponse.Statuses.SUCCESS_FETCHED_ALL;
+		cache.serverCursor = response.cursor;
+
+		mCommentCache.add(resourceId, cache);
 	}
 
 	/**
@@ -291,7 +344,7 @@ public class ResourceWebRepo extends WebRepo {
 	 * @param response the response from the server
 	 * @return a correct response for syncing user resource revisions
 	 */
-	private IEntity handleSyncUserResourcesResponse(IEntity response) {
+	private IEntity handleUserResourcesSyncResponse(IEntity response) {
 		if (response instanceof UserResourcesSyncMethodResponse) {
 			return response;
 		} else {
@@ -306,7 +359,7 @@ public class ResourceWebRepo extends WebRepo {
 	 * @param response the response from the server
 	 * @return a correct response for syncing downloaded resources
 	 */
-	private IEntity handleSyncDownloadResponse(IEntity response) {
+	private IEntity handleDownloadSyncResponse(IEntity response) {
 		// Download all resources
 		if (response instanceof DownloadSyncMethodResponse) {
 
@@ -408,12 +461,46 @@ public class ResourceWebRepo extends WebRepo {
 	}
 
 	/**
+	 * Cache a new search level
+	 * @param searchString
+	 * @param response
+	 */
+	private void cacheLevels(String searchString, LevelGetAllMethodResponse response) {
+		LevelCache cache = mSearchCache.get(searchString);
+
+		boolean newCache = false;
+
+		// Create new cache
+		if (cache == null) {
+			cache = new LevelCache();
+			newCache = true;
+		}
+
+		cache.addLevels(response.levels);
+		cache.fetchedAll = response.status == LevelGetAllMethodResponse.Statuses.SUCCESS_FETCHED_ALL;
+		cache.serverCursor = response.cursor;
+
+		if (newCache) {
+			mSearchCache.add(searchString, cache);
+		}
+	}
+
+	/**
+	 * Cache a new sort level
+	 * @param sort
+	 * @param tags
+	 * @param response
+	 */
+	private void cacheLevels(SortOrders sort, ArrayList<Tags> tags, LevelGetAllMethodResponse response) {
+
+	}
+
+	/**
 	 * Handle response from getting levels (as in in)
 	 * @param methodEntity method with parameters that was called on the server
 	 * @param response server response, null if not valid
 	 * @return a correct response for getting levels
 	 */
-	@SuppressWarnings("unchecked")
 	private synchronized IEntity handleLevelGetResponse(LevelGetAllMethod methodEntity, IEntity response) {
 		// Update cache
 		if (response instanceof LevelGetAllMethodResponse) {
@@ -424,25 +511,17 @@ public class ResourceWebRepo extends WebRepo {
 
 				// Search string
 				if (methodEntity.searchString != null && !methodEntity.searchString.equals("")) {
-					levelCache = mSearchCache.get(methodEntity.searchString);
-
-					// Create new
-					if (levelCache == null) {
-						levelCache = createNewLevelCache((LevelGetAllMethodResponse) response);
-						((LevelGetAllMethodResponse) response).levels = (ArrayList<LevelInfoEntity>) levelCache.levels.clone();
-						mSearchCache.put(methodEntity.searchString, levelCache);
-						newCache = true;
-					}
+					cacheLevels(methodEntity.searchString, (LevelGetAllMethodResponse) response);
 				}
 				// Sorting with or without tags
 				else {
 					// Tag list
-					HashMap<ArrayList<Tags>, LevelCache> tagCaches = mSortCache.get(methodEntity.sort);
+					HashMap<ArrayList<Tags>, LevelCache> tagCaches = mOldSortCache.get(methodEntity.sort);
 
 					// Create new tag caches
 					if (tagCaches == null) {
 						tagCaches = new HashMap<>();
-						mSortCache.put(methodEntity.sort, tagCaches);
+						mOldSortCache.put(methodEntity.sort, tagCaches);
 					}
 
 					// Level cache
@@ -486,6 +565,7 @@ public class ResourceWebRepo extends WebRepo {
 		LevelCache levelCache = new LevelCache();
 		levelCache.serverCursor = response.cursor;
 		levelCache.levels = response.levels;
+		levelCache.fetchedAll = response.status == LevelGetAllMethodResponse.Statuses.SUCCESS_FETCHED_ALL;
 		return levelCache;
 	}
 
@@ -496,7 +576,7 @@ public class ResourceWebRepo extends WebRepo {
 	 * @return level cache for this sort order, null if none exists
 	 */
 	private LevelCache getLevelCache(SortOrders sort, ArrayList<Tags> tags) {
-		HashMap<ArrayList<Tags>, LevelCache> tagCaches = mSortCache.get(sort);
+		HashMap<ArrayList<Tags>, LevelCache> tagCaches = mOldSortCache.get(sort);
 		if (tagCaches != null) {
 			return tagCaches.get(tags);
 		}
@@ -510,24 +590,65 @@ public class ResourceWebRepo extends WebRepo {
 	 * @return level cache for this search, null if none exists
 	 */
 	private LevelCache getLevelCache(String searchString) {
-		return mSearchCache.get(searchString);
+		return mSearchCache.getCopy(searchString);
+	}
+
+	/**
+	 * Get comments for a resource. If cached comments exists those will be returned
+	 * directly if fetchMore is set to false.
+	 * @param resourceId id of the resource to get comments from
+	 * @param fetchMore set to true to always fetch more levels if possible.
+	 * @param responseListeners listens to the web response
+	 */
+	public void getComments(UUID resourceId, boolean fetchMore, IResponseListener... responseListeners) {
+		ResourceCommentGetMethod method = new ResourceCommentGetMethod();
+		method.resourceId = resourceId;
+
+		CommentCacheEntity commentCache = mCommentCache.getCopy(resourceId);
+
+		if (commentCache != null) {
+			method.cursor = commentCache.serverCursor;
+		}
+
+		// Fetch more from server
+		if (commentCache == null || (fetchMore && !commentCache.fetchedAll)) {
+			sendInNewThread(method, responseListeners);
+		}
+		// Use cache
+		else {
+			ResourceCommentGetMethodResponse response = new ResourceCommentGetMethodResponse();
+			response.comments = commentCache.comments;
+			response.userComment = commentCache.userComment;
+			response.status = ResourceCommentGetMethodResponse.Statuses.SUCCESS_FETCHED_ALL;
+			sendResponseToListeners(method, response, responseListeners);
+		}
+	}
+
+	/**
+	 * Check if more comments can be fetched for the specified resource.
+	 * @param resourceId
+	 * @return true if more comments can be fetched
+	 */
+	public boolean hasMoreComments(UUID resourceId) {
+		CommentCacheEntity cache = mCommentCache.get(resourceId);
+		return cache == null || !cache.fetchedAll;
 	}
 
 	/**
 	 * Get levels by sorting and specified tags (only definitions)
-	 * @param callerResponseListener the caller to send the response to
 	 * @param sort sorting order of the levels to get
 	 * @param tags all tags the levels have to have
+	 * @param responseListener the caller to send the response to
 	 * @return method that was created and sent
 	 */
-	public synchronized LevelGetAllMethod getLevels(IResponseListener callerResponseListener, SortOrders sort, ArrayList<Tags> tags) {
+	public synchronized LevelGetAllMethod getLevels(SortOrders sort, ArrayList<Tags> tags, IResponseListener responseListener) {
 		LevelGetAllMethod method = new LevelGetAllMethod();
 		method.sort = sort;
 		method.tagFilter = tags;
 
 
 		// Continue from cursor?
-		HashMap<ArrayList<Tags>, LevelCache> tagCaches = mSortCache.get(sort);
+		HashMap<ArrayList<Tags>, LevelCache> tagCaches = mOldSortCache.get(sort);
 		if (tagCaches != null) {
 			LevelCache levelCache = tagCaches.get(method.tagFilter);
 			if (levelCache != null) {
@@ -547,41 +668,40 @@ public class ResourceWebRepo extends WebRepo {
 			}
 		}
 
-		sendInNewThread(method, callerResponseListener);
+		sendInNewThread(method, responseListener);
 		return method;
 	}
 
 	/**
 	 * Get levels by text search
-	 * @param callerResponseListener the caller to send the response to
 	 * @param searchString the string to search for in the levels
-	 * @return method that was created and sent
+	 * @param fetchMore set to true to always fetch more levels
+	 * @param responseListeners the caller to send the response to
 	 */
-	public synchronized LevelGetAllMethod getLevels(IResponseListener callerResponseListener, String searchString) {
+	public void getLevels(String searchString, boolean fetchMore, IResponseListener... responseListeners) {
 		LevelGetAllMethod method = new LevelGetAllMethod();
 		method.searchString = searchString;
 		method.tagFilter = new ArrayList<>();
 
-		// Continue from cursor?
-		LevelCache levelCache = mSearchCache.get(searchString);
-		if (levelCache != null) {
-			// Remove cache if outdated
-			if (levelCache.isOutdated()) {
-				levelCache.dispose();
-				mSearchCache.remove(searchString);
-			}
-			// Fetched all, no need to query server
-			else if (levelCache.fetchedAll) {
-				return method;
-			}
-			// Continue from cursor
-			else {
-				method.nextCursor = levelCache.serverCursor;
-			}
+		// Get cache
+		LevelCache cache = mSearchCache.getCopy(searchString);
+
+		if (cache != null) {
+			method.nextCursor = cache.serverCursor;
 		}
 
-		sendInNewThread(method, callerResponseListener);
-		return method;
+
+		// Fetch more from server
+		if (cache == null || (fetchMore && !cache.fetchedAll)) {
+			sendInNewThread(method, responseListeners);
+		}
+		// Use cache
+		else {
+			LevelGetAllMethodResponse response = new LevelGetAllMethodResponse();
+			response.levels = cache.levels;
+			response.status = LevelGetAllMethodResponse.Statuses.SUCCESS_FETCHED_ALL;
+			sendResponseToListeners(method, response, responseListeners);
+		}
 	}
 
 	/**
@@ -589,6 +709,7 @@ public class ResourceWebRepo extends WebRepo {
 	 * @param method the method that was sent
 	 * @return all cached levels this method has
 	 */
+	@Deprecated
 	public ArrayList<LevelInfoEntity> getCachedLevels(LevelGetAllMethod method) {
 		// Search
 		if (method.searchString != null && !method.searchString.equals("")) {
@@ -612,6 +733,7 @@ public class ResourceWebRepo extends WebRepo {
 	 *         found
 	 */
 	@SuppressWarnings("unchecked")
+	@Deprecated
 	public synchronized ArrayList<LevelInfoEntity> getCachedLevels(SortOrders sort, ArrayList<Tags> tags) {
 		LevelCache levelCache = getLevelCache(sort, tags);
 
@@ -631,6 +753,7 @@ public class ResourceWebRepo extends WebRepo {
 	 *         found
 	 */
 	@SuppressWarnings("unchecked")
+	@Deprecated
 	public synchronized ArrayList<LevelInfoEntity> getCachedLevels(String searchString) {
 		LevelCache levelCache = getLevelCache(searchString);
 
@@ -640,26 +763,6 @@ public class ResourceWebRepo extends WebRepo {
 			return copy;
 		} else {
 			return Pools.arrayList.obtain();
-		}
-	}
-
-	/**
-	 * Check if the server has more levels
-	 * @param method the method that was sent
-	 * @return true if the server has more levels
-	 */
-	public boolean hasMoreLevels(LevelGetAllMethod method) {
-		// Search
-		if (method.searchString != null && !method.searchString.equals("")) {
-			return hasMoreLevels(method.searchString);
-		}
-		// Sort
-		else if (method.sort != null) {
-			return hasMoreLevels(method.sort, method.tagFilter);
-		}
-		// None
-		else {
-			return false;
 		}
 	}
 
@@ -734,15 +837,55 @@ public class ResourceWebRepo extends WebRepo {
 
 	// CACHE
 	/** String search cache */
-	private Map<String, LevelCache> mSearchCache = new HashMap<>();
+	// private Map<String, LevelCache> mOldSearchCache = new HashMap<>();
 	/** Sort cache */
-	private Map<SortOrders, HashMap<ArrayList<Tags>, LevelCache>> mSortCache = new HashMap<>();
+	// private Map<SortOrders, HashMap<ArrayList<Tags>, LevelCache>> mOldSortCache = new
+	// HashMap<>();
+	/** Comment cache */
+	private Cache<UUID, CommentCacheEntity> mCommentCache = new Cache<>();
+	/** Level search cache */
+	private Cache<String, LevelCache> mSearchCache = new Cache<>();
+	/** Level sort cache */
+	private Cache<SortWrapper, LevelCache> mSortCache = new Cache<>();
+
+	/**
+	 * Sort wrapper
+	 */
+	private class SortWrapper {
+		private SortWrapper(SortOrders sort, ArrayList<Tags> tags) {
+			this.sort = sort;
+			this.tags = tags;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj) {
+				return true;
+			}
+			if (obj == null) {
+				return false;
+			}
+			if (getClass() != obj.getClass()) {
+				return false;
+			}
+			SortWrapper other = (SortWrapper) obj;
+			return sort == other.sort && tags.equals(other.tags);
+		}
+
+		@Override
+		public int hashCode() {
+			return sort.hashCode() + tags.hashCode();
+		}
+
+		private SortOrders sort;
+		private ArrayList<Tags> tags;
+	}
 
 	/**
 	 * Level cache when getting levels
 	 * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
 	 */
-	private class LevelCache extends CacheEntity implements Disposable {
+	private class LevelCache extends CacheEntity<LevelCache> implements Disposable {
 		/**
 		 * Create level cache with default cache time
 		 */
@@ -750,12 +893,20 @@ public class ResourceWebRepo extends WebRepo {
 			super(Config.Cache.RESOURCE_BROWSE_TIME);
 		}
 
-		/** All the levels in the cache */
-		@SuppressWarnings("unchecked") ArrayList<LevelInfoEntity> levels = Pools.arrayList.obtain();
-		/** Server cursor to continue the cache with */
-		String serverCursor = null;
-		/** True if we have fetched all */
-		boolean fetchedAll = false;
+		@Override
+		public LevelCache copy() {
+			LevelCache copy = new LevelCache();
+			copy(copy);
+			return copy;
+		}
+
+		@Override
+		public synchronized void copy(LevelCache copy) {
+			super.copy(copy);
+			copy.fetchedAll = fetchedAll;
+			copy.serverCursor = serverCursor;
+			copy.levels.addAll(levels);
+		}
 
 		@Override
 		public void dispose() {
@@ -767,10 +918,56 @@ public class ResourceWebRepo extends WebRepo {
 					}
 					levelInfoEntity.defEntity.drawable = null;
 				}
-
-
-				Pools.arrayList.free(levels);
 			}
 		}
+
+		/**
+		 * Add levels to existing cache
+		 * @param levels
+		 */
+		public synchronized void addLevels(ArrayList<LevelInfoEntity> levels) {
+			levels.addAll(levels);
+		}
+
+		ArrayList<LevelInfoEntity> levels = new ArrayList<>();
+		String serverCursor = null;
+		boolean fetchedAll = false;
+	}
+
+	/**
+	 * Comment cache
+	 */
+	private class CommentCacheEntity extends CacheEntity<CommentCacheEntity> {
+		/**
+		 * Create cache with default cache time
+		 */
+		public CommentCacheEntity() {
+			super(Config.Cache.COMMENT_TIME);
+		}
+
+		@Override
+		public CommentCacheEntity copy() {
+			CommentCacheEntity copy = new CommentCacheEntity();
+			copy(copy);
+			return copy;
+		}
+
+		@Override
+		public void copy(CommentCacheEntity copy) {
+			super.copy(copy);
+			copy.fetchedAll = fetchedAll;
+			copy.userComment = userComment;
+			copy.serverCursor = serverCursor;
+			copy.comments.addAll(comments);
+		}
+
+		/** All comments */
+		ArrayList<ResourceCommentEntity> comments = new ArrayList<>();
+		/** User comment */
+		ResourceCommentEntity userComment = null;
+		/** Server cursor to continue the cache with */
+		String serverCursor = null;
+		/** True if we have fetched all */
+		boolean fetchedAll = false;
 	}
 }

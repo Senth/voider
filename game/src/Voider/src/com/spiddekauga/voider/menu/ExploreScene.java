@@ -11,10 +11,10 @@ import com.spiddekauga.voider.game.LevelDef;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.entities.resource.LevelGetAllMethod;
+import com.spiddekauga.voider.network.entities.resource.LevelGetAllMethod.SortOrders;
 import com.spiddekauga.voider.network.entities.resource.LevelGetAllMethodResponse;
 import com.spiddekauga.voider.network.entities.resource.ResourceDownloadMethod;
 import com.spiddekauga.voider.network.entities.resource.ResourceDownloadMethodResponse;
-import com.spiddekauga.voider.network.entities.resource.LevelGetAllMethod.SortOrders;
 import com.spiddekauga.voider.network.entities.stat.LevelInfoEntity;
 import com.spiddekauga.voider.network.entities.stat.Tags;
 import com.spiddekauga.voider.repo.IResponseListener;
@@ -27,7 +27,6 @@ import com.spiddekauga.voider.repo.resource.ResourceWebRepo;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.utils.Graphics;
-import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Scene for exploring new content
@@ -101,7 +100,7 @@ public class ExploreScene extends Scene implements IResponseListener {
 
 
 			if (response instanceof LevelGetAllMethodResponse) {
-				handleLevelGetAllResponse((LevelGetAllMethod) webWrapper.method, (LevelGetAllMethodResponse) response);
+				mLevelFetch.handleWebResponse((LevelGetAllMethod) webWrapper.method, (LevelGetAllMethodResponse) response);
 			} else if (response instanceof ResourceDownloadMethodResponse) {
 				handleResourceDownloadResponse((ResourceDownloadMethod) webWrapper.method, (ResourceDownloadMethodResponse) response);
 			}
@@ -137,37 +136,6 @@ public class ExploreScene extends Scene implements IResponseListener {
 	}
 
 	/**
-	 * Handles a level get response (fetched level info)
-	 * @param method the method that was called
-	 * @param response response from the server
-	 */
-	private void handleLevelGetAllResponse(LevelGetAllMethod method, LevelGetAllMethodResponse response) {
-		if (method == mLastFetchMethod) {
-			mFetchingLevels = false;
-		}
-
-		switch (response.status) {
-		case FAILED_SERVER_CONNECTION:
-			mGui.showErrorMessage("Failed to connect to the server");
-			break;
-
-		case FAILED_SERVER_ERROR:
-			mGui.showErrorMessage("Internal server error");
-			break;
-
-		case FAILED_USER_NOT_LOGGED_IN:
-			mGui.showErrorMessage("You are not logged in to the server");
-			break;
-
-		case SUCCESS_FETCHED_ALL:
-		case SUCCESS_MORE_EXISTS:
-			createDrawables(response.levels);
-			((ExploreGui) mGui).addContent(response.levels);
-			break;
-		}
-	}
-
-	/**
 	 * Creates drawables for all levels that are missing the drawables
 	 * @param levels all levels to create a drawable for
 	 */
@@ -183,28 +151,14 @@ public class ExploreScene extends Scene implements IResponseListener {
 	 * @return true if the server has more levels
 	 */
 	boolean hasMoreLevels() {
-		if (mLastFetchMethod != null) {
-			return mResourceWebRepo.hasMoreLevels(mLastFetchMethod);
-		} else {
-			return false;
-		}
+		return mLevelFetch.hasMore();
 	}
 
 	/**
 	 * Fetch more levels of the currently displayed type
 	 */
 	void fetchMoreLevels() {
-		if (mLastFetchMethod != null) {
-			if (mResourceWebRepo.hasMoreLevels(mLastFetchMethod)) {
-				if (mLastFetchMethod.searchString != null) {
-					mLastFetchMethod = mResourceWebRepo.getLevels(this, mLastFetchMethod.searchString);
-				} else {
-					mLastFetchMethod = mResourceWebRepo.getLevels(this, mLastFetchMethod.sort, mLastFetchMethod.tagFilter);
-				}
-
-				mFetchingLevels = true;
-			}
-		}
+		mLevelFetch.fetchMore();
 	}
 
 	/**
@@ -213,20 +167,7 @@ public class ExploreScene extends Scene implements IResponseListener {
 	 * @param tags selected tags
 	 */
 	void fetchInitialLevels(SortOrders sort, ArrayList<Tags> tags) {
-		if (sort != null) {
-			ArrayList<LevelInfoEntity> cachedLevels = mResourceWebRepo.getCachedLevels(sort, tags);
-
-			if (cachedLevels.isEmpty()) {
-				mLastFetchMethod = mResourceWebRepo.getLevels(this, sort, tags);
-				mFetchingLevels = true;
-				((ExploreGui) mGui).resetContent();
-			} else {
-				mLastFetchMethod = new LevelGetAllMethod();
-				mLastFetchMethod.sort = sort;
-				mLastFetchMethod.tagFilter = tags;
-				((ExploreGui) mGui).resetContent(cachedLevels);
-			}
-		}
+		mLevelFetch.fetch(sort, tags);
 	}
 
 	/**
@@ -234,22 +175,7 @@ public class ExploreScene extends Scene implements IResponseListener {
 	 * @param searchString the text to search for
 	 */
 	void fetchInitialLevels(String searchString) {
-		if (searchString.length() >= Config.Explore.SEARCH_LENGTH_MIN) {
-			ArrayList<LevelInfoEntity> cachedLevels = mResourceWebRepo.getCachedLevels(searchString);
-
-			if (cachedLevels.isEmpty()) {
-				mLastFetchMethod = mResourceWebRepo.getLevels(this, searchString);
-				mFetchingLevels = true;
-				((ExploreGui) mGui).resetContent();
-			} else {
-				mLastFetchMethod = new LevelGetAllMethod();
-				mLastFetchMethod.searchString = searchString;
-				((ExploreGui) mGui).resetContent(cachedLevels);
-			}
-		} else {
-			mLastFetchMethod = new LevelGetAllMethod();
-			((ExploreGui) mGui).resetContent();
-		}
+		mLevelFetch.fetch(searchString);
 	}
 
 	/**
@@ -291,18 +217,6 @@ public class ExploreScene extends Scene implements IResponseListener {
 	}
 
 	/**
-	 * @return all fetched levels
-	 */
-	@SuppressWarnings("unchecked")
-	ArrayList<LevelInfoEntity> getLevels() {
-		if (mLastFetchMethod != null) {
-			return mResourceWebRepo.getCachedLevels(mLastFetchMethod);
-		} else {
-			return Pools.arrayList.obtain();
-		}
-	}
-
-	/**
 	 * @return the selected level, null if none are selected
 	 */
 	LevelInfoEntity getSelectedLevel() {
@@ -321,9 +235,152 @@ public class ExploreScene extends Scene implements IResponseListener {
 	 * @return true if we're currently fetching levels
 	 */
 	boolean isFetchingLevels() {
-		return mFetchingLevels;
+		return mLevelFetch.isFetching();
 	}
 
+	/**
+	 * Last fetch level parameters
+	 */
+	private class LevelFetch {
+		/**
+		 * Fetch levels from search string
+		 * @param searchString
+		 */
+		void fetch(String searchString) {
+			if (searchString != null && searchString.length() >= Config.Explore.SEARCH_LENGTH_MIN) {
+				((ExploreGui) mGui).resetContent();
+
+				mIsFetching = true;
+				mSearchString = searchString;
+				mSortOrder = null;
+				mTags.clear();
+
+				mResourceWebRepo.getLevels(searchString, false, ExploreScene.this);
+			}
+		}
+
+		/**
+		 * Fetch levels from sort order and tags
+		 * @param sortOrder
+		 * @param tags
+		 */
+		void fetch(SortOrders sortOrder, ArrayList<Tags> tags) {
+			if (sortOrder != null) {
+				((ExploreGui) mGui).resetContent();
+
+				mIsFetching = true;
+				mSearchString = null;
+				mSortOrder = sortOrder;
+				mTags = tags;
+
+				mResourceWebRepo.getLevels(sortOrder, tags, ExploreScene.this);
+			}
+		}
+
+		/**
+		 * Fetch more of same
+		 */
+		void fetchMore() {
+			if (!mIsFetching) {
+				// Search string
+				if (mSearchString != null) {
+					mResourceWebRepo.getLevels(mSearchString, true, ExploreScene.this);
+				}
+				// Sort order
+				else if (mSortOrder != null) {
+					mResourceWebRepo.getLevels(mSortOrder, mTags, ExploreScene.this);
+				}
+			}
+		}
+
+		/**
+		 * @return true if more levels can be fetched
+		 */
+		boolean hasMore() {
+			if (mIsFetching) {
+				return false;
+			}
+
+			// Search
+			if (mSearchString != null) {
+				return mResourceWebRepo.hasMoreLevels(mSearchString);
+			}
+			// Sort order
+			else if (mSortOrder != null) {
+				return mResourceWebRepo.hasMoreLevels(mSortOrder, mTags);
+			}
+
+			return false;
+		}
+
+		/**
+		 * Handle response from server
+		 * @param method
+		 * @param response
+		 */
+		void handleWebResponse(LevelGetAllMethod method, LevelGetAllMethodResponse response) {
+			// Only do something if this was the one we last called
+			if (isLastMethod(method)) {
+				mIsFetching = false;
+
+				switch (response.status) {
+				case FAILED_SERVER_CONNECTION:
+					mGui.showErrorMessage("Failed to connect to the server");
+					break;
+
+				case FAILED_SERVER_ERROR:
+					mGui.showErrorMessage("Internal server error");
+					break;
+
+				case FAILED_USER_NOT_LOGGED_IN:
+					mGui.showErrorMessage("You are not logged in to the server");
+					break;
+
+				case SUCCESS_FETCHED_ALL:
+				case SUCCESS_MORE_EXISTS:
+					createDrawables(response.levels);
+					((ExploreGui) mGui).addContent(response.levels);
+					break;
+				}
+			}
+		}
+
+		/**
+		 * Checks if this was the last method we called
+		 * @param method
+		 * @return true if this was the last method we called
+		 */
+		boolean isLastMethod(LevelGetAllMethod method) {
+			// Search string
+			if (mSearchString != null && method.searchString != null) {
+				return mSearchString.equals(method.searchString);
+			}
+			// Sort order and tags
+			if (mSortOrder != null && method.sort != null) {
+				if (mSortOrder == method.sort) {
+					// Check tags
+					return mTags.equals(method.tagFilter);
+				}
+			}
+
+			return false;
+		}
+
+		/**
+		 * @return true if is fetching levels
+		 */
+		boolean isFetching() {
+			return mIsFetching;
+		}
+
+		private boolean mIsFetching = false;
+		private String mSearchString = null;
+		private SortOrders mSortOrder = null;
+		private ArrayList<Tags> mTags = new ArrayList<>();
+	}
+
+	/** Level fetch helper */
+	LevelFetch mLevelFetch = new LevelFetch();
 	/** Selected level */
 	LevelInfoEntity mSelectedLevel = null;
 	/** Resource web repository */
@@ -333,7 +390,7 @@ public class ExploreScene extends Scene implements IResponseListener {
 	/** Synchronized web responses */
 	private ArrayList<WebWrapper> mWebResponses = new ArrayList<>();
 	/** Last method parameters that was used */
-	private LevelGetAllMethod mLastFetchMethod = null;
+	// private LevelGetAllMethod mLastFetchMethod = null;
 	/** If we're fetching levels */
-	private boolean mFetchingLevels = false;
+	// private boolean mFetchingLevels = false;
 }
