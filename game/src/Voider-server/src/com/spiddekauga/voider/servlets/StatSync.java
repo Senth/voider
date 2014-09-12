@@ -25,6 +25,12 @@ import com.spiddekauga.voider.network.entities.stat.StatSyncMethod;
 import com.spiddekauga.voider.network.entities.stat.StatSyncMethodResponse;
 import com.spiddekauga.voider.network.entities.stat.StatSyncMethodResponse.Statuses;
 import com.spiddekauga.voider.network.entities.stat.Tags;
+import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
+import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CLevelStat;
+import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CLevelTag;
+import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CPublished;
+import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CResourceComment;
+import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CUserLevelStat;
 import com.spiddekauga.voider.server.util.VoiderServlet;
 
 /**
@@ -64,13 +70,13 @@ public class StatSync extends VoiderServlet {
 	 */
 	private void syncToClient() {
 		// Only newer than last sync
-		FilterWrapper filterLastSync = new FilterWrapper("updated", FilterOperator.GREATER_THAN, mParameters.syncDate);
+		FilterWrapper filterLastSync = new FilterWrapper(CUserLevelStat.UPDATED, FilterOperator.GREATER_THAN, mParameters.syncDate);
 
-		Iterable<Entity> entities = DatastoreUtils.getEntities("user_level_stat", mUser.getKey(), filterLastSync);
+		Iterable<Entity> entities = DatastoreUtils.getEntities(T_USER_STAT, mUser.getKey(), filterLastSync);
 
 		for (Entity serverEntity : entities) {
 			LevelStat userLevelStats = serverToNetworkEntity(serverEntity);
-			Key levelKey = (Key) serverEntity.getProperty("level_key");
+			Key levelKey = (Key) serverEntity.getProperty(CUserLevelStat.LEVEL_KEY);
 			getComments(userLevelStats, levelKey);
 			mUserStatsToClient.put(userLevelStats.id, userLevelStats);
 			mResponse.syncEntity.levelStats.add(userLevelStats);
@@ -83,12 +89,12 @@ public class StatSync extends VoiderServlet {
 	 * @param levelKey key for the level
 	 */
 	private void getComments(LevelStat userLevelStats, Key levelKey) {
-		FilterWrapper userFilter = new FilterWrapper("username", mUser.getUsername());
+		FilterWrapper userFilter = new FilterWrapper(CResourceComment.USERNAME, mUser.getUsername());
 
-		Entity entity = DatastoreUtils.getSingleEntity("level_comment", levelKey, userFilter);
+		Entity entity = DatastoreUtils.getSingleEntity(T_COMMENT, levelKey, userFilter);
 
 		if (entity != null) {
-			userLevelStats.comment = (String) entity.getProperty("comment");
+			userLevelStats.comment = (String) entity.getProperty(CResourceComment.COMMENT);
 		}
 	}
 
@@ -188,12 +194,12 @@ public class StatSync extends VoiderServlet {
 	 */
 	private void updatedLevelComment(Key levelKey, String comment) {
 		// Get old comment
-		FilterWrapper userFliter = new FilterWrapper("username", mUser.getUsername());
-		Entity oldEntity = DatastoreUtils.getSingleEntity("level_comment", levelKey, userFliter);
+		FilterWrapper userFliter = new FilterWrapper(CResourceComment.USERNAME, mUser.getUsername());
+		Entity oldEntity = DatastoreUtils.getSingleEntity(T_COMMENT, levelKey, userFliter);
 
 		// Maybe update or remove old comment
 		if (oldEntity != null) {
-			String oldComment = (String) oldEntity.getProperty("comment");
+			String oldComment = (String) oldEntity.getProperty(CResourceComment.COMMENT);
 
 			// Remove comment
 			if (comment.isEmpty()) {
@@ -201,16 +207,16 @@ public class StatSync extends VoiderServlet {
 			}
 			// Update comment
 			else if (!oldComment.equals(comment)) {
-				oldEntity.setUnindexedProperty("comment", comment);
-				oldEntity.setProperty("date", mResponse.syncEntity.syncDate);
+				oldEntity.setUnindexedProperty(CResourceComment.COMMENT, comment);
+				oldEntity.setProperty(CResourceComment.DATE, mResponse.syncEntity.syncDate);
 			}
 		}
 		// Create new comment
 		else if (!comment.isEmpty()) {
-			Entity newEntity = new Entity("level_comment", levelKey);
-			newEntity.setProperty("username", mUser.getUsername());
-			newEntity.setUnindexedProperty("comment", comment);
-			newEntity.setProperty("date", mResponse.syncEntity.syncDate);
+			Entity newEntity = new Entity(T_COMMENT, levelKey);
+			newEntity.setProperty(CResourceComment.USERNAME, mUser.getUsername());
+			newEntity.setUnindexedProperty(CResourceComment.COMMENT, comment);
+			newEntity.setProperty(CResourceComment.DATE, mResponse.syncEntity.syncDate);
 			DatastoreUtils.put(newEntity);
 		}
 	}
@@ -222,41 +228,41 @@ public class StatSync extends VoiderServlet {
 	 * @return old statistics
 	 */
 	private LevelStat updateUserLevelStats(Key levelKey, LevelStat levelStat) {
-		FilterWrapper levelFilter = new FilterWrapper("level_key", levelKey);
-		Entity userEntity = DatastoreUtils.getSingleEntity("user_level_stat", mUser.getKey(), levelFilter);
+		FilterWrapper levelFilter = new FilterWrapper(CUserLevelStat.LEVEL_KEY, levelKey);
+		Entity userEntity = DatastoreUtils.getSingleEntity(T_USER_STAT, mUser.getKey(), levelFilter);
 
 		ArrayList<Integer> tagIds = Tags.toIdList(levelStat.tags);
 		LevelStat oldStat = new LevelStat();
 
 		// No entity for this level exists yet
 		if (userEntity == null) {
-			userEntity = new Entity("user_level_stat", mUser.getKey());
-			userEntity.setProperty("level_key", levelKey);
+			userEntity = new Entity(T_USER_STAT, mUser.getKey());
+			userEntity.setProperty(CUserLevelStat.LEVEL_KEY, levelKey);
 		}
 		// Add old tags and set old rating
 		else {
 			@SuppressWarnings("unchecked")
-			Collection<Long> oldTagIds = (Collection<Long>) userEntity.getProperty("tags");
+			Collection<Long> oldTagIds = (Collection<Long>) userEntity.getProperty(CUserLevelStat.TAGS);
 			if (oldTagIds != null) {
 				for (Long oldTagId : oldTagIds) {
 					tagIds.add(oldTagId.intValue());
 				}
 			}
 
-			oldStat.rating = DatastoreUtils.getIntProperty(userEntity, "rating");
-			oldStat.bookmark = (boolean) userEntity.getProperty("bookmark");
+			oldStat.rating = DatastoreUtils.getIntProperty(userEntity, CUserLevelStat.RATING);
+			oldStat.bookmark = (boolean) userEntity.getProperty(CUserLevelStat.BOOKMARK);
 		}
 
 		// Set stats
-		userEntity.setUnindexedProperty("last_played", levelStat.lastPlayed);
-		userEntity.setUnindexedProperty("rating", levelStat.rating);
-		userEntity.setUnindexedProperty("play_count", levelStat.cPlayed);
-		userEntity.setUnindexedProperty("clear_count", levelStat.cCleared);
-		userEntity.setUnindexedProperty("bookmark", levelStat.bookmark);
-		userEntity.setProperty("updated", mResponse.syncEntity.syncDate);
+		userEntity.setUnindexedProperty(CUserLevelStat.LAST_PLAYED, levelStat.lastPlayed);
+		userEntity.setUnindexedProperty(CUserLevelStat.RATING, levelStat.rating);
+		userEntity.setUnindexedProperty(CUserLevelStat.PLAY_COUNT, levelStat.cPlayed);
+		userEntity.setUnindexedProperty(CUserLevelStat.CLEAR_COUNT, levelStat.cCleared);
+		userEntity.setUnindexedProperty(CUserLevelStat.BOOKMARK, levelStat.bookmark);
+		userEntity.setProperty(CUserLevelStat.UPDATED, mResponse.syncEntity.syncDate);
 
 		if (!tagIds.isEmpty()) {
-			userEntity.setUnindexedProperty("tags", tagIds);
+			userEntity.setUnindexedProperty(CUserLevelStat.TAGS, tagIds);
 		}
 
 		DatastoreUtils.put(userEntity);
@@ -271,53 +277,53 @@ public class StatSync extends VoiderServlet {
 	 * @param serverStat old user statistics
 	 */
 	private void updateLevelStats(Key levelKey, LevelStat clientStat, LevelStat serverStat) {
-		Entity levelEntity = DatastoreUtils.getSingleEntity("level_stat", levelKey);
+		Entity levelEntity = DatastoreUtils.getSingleEntity(T_LEVEL_STAT, levelKey);
 
 		// No entity for this
 		if (levelEntity == null) {
-			levelEntity = new Entity("level_stat", levelKey);
-			levelEntity.setProperty("rating_avg", 0d);
-			levelEntity.setProperty("bookmarks", 0);
+			levelEntity = new Entity(T_LEVEL_STAT, levelKey);
+			levelEntity.setProperty(CLevelStat.RATING_AVG, 0d);
+			levelEntity.setProperty(CLevelStat.BOOKMARS, 0);
 		}
 
 
 		// Update stats
 		// Play count
-		incrementProperty(levelEntity, "play_count", clientStat.cPlaysToSync);
+		incrementProperty(levelEntity, CLevelStat.PLAY_COUNT, clientStat.cPlaysToSync);
 
 		// Clear count
-		incrementProperty(levelEntity, "clear_count", clientStat.cClearsToSync);
+		incrementProperty(levelEntity, CLevelStat.CLEAR_COUNT, clientStat.cClearsToSync);
 
 
 		// Removed bookmark
 		if (serverStat.bookmark && !clientStat.bookmark) {
-			incrementProperty(levelEntity, "bookmarks", -1);
+			incrementProperty(levelEntity, CLevelStat.BOOKMARS, -1);
 		}
 		// Added bookmark
 		else if (!serverStat.bookmark && clientStat.bookmark) {
-			incrementProperty(levelEntity, "bookmarks", 1);
+			incrementProperty(levelEntity, CLevelStat.BOOKMARS, 1);
 		}
 
 
 		// Rating
 		if (serverStat.rating != clientStat.rating) {
 			// Sum
-			incrementProperty(levelEntity, "rating_sum", clientStat.rating - serverStat.rating);
+			incrementProperty(levelEntity, CLevelStat.RATING_SUM, clientStat.rating - serverStat.rating);
 
 			// Added rating
 			if (serverStat.rating == 0 && clientStat.rating > 0) {
-				incrementProperty(levelEntity, "ratings", 1);
+				incrementProperty(levelEntity, CLevelStat.RATINGS, 1);
 			}
 			// Removed rating
 			else if (clientStat.rating == 0 && serverStat.rating > 0) {
-				incrementProperty(levelEntity, "ratings", -1);
+				incrementProperty(levelEntity, CLevelStat.RATINGS, -1);
 			}
 
 			// Calculate new average rating
-			long sum = (long) levelEntity.getProperty("rating_sum");
-			long cRatings = (long) levelEntity.getProperty("ratings");
+			long sum = (long) levelEntity.getProperty(CLevelStat.RATING_SUM);
+			long cRatings = (long) levelEntity.getProperty(CLevelStat.RATINGS);
 			double average = ((double) sum) / cRatings;
-			levelEntity.setProperty("rating_avg", average);
+			levelEntity.setProperty(CLevelStat.RATING_AVG, average);
 		}
 
 		DatastoreUtils.put(levelEntity);
@@ -345,15 +351,15 @@ public class StatSync extends VoiderServlet {
 	 */
 	private void updateLevelTags(Key levelKey, ArrayList<Tags> tags) {
 		for (Tags tag : tags) {
-			FilterWrapper tagFilter = new FilterWrapper("tag", tag.getId());
-			Entity entity = DatastoreUtils.getSingleEntity("level_tag", levelKey, tagFilter);
+			FilterWrapper tagFilter = new FilterWrapper(CLevelTag.TAG, tag.getId());
+			Entity entity = DatastoreUtils.getSingleEntity(T_TAG, levelKey, tagFilter);
 
 			if (entity == null) {
-				entity = new Entity("level_tag", levelKey);
-				entity.setProperty("tag", tag.getId());
+				entity = new Entity(T_TAG, levelKey);
+				entity.setProperty(CLevelTag.TAG, tag.getId());
 			}
 
-			incrementProperty(entity, "count", 1);
+			incrementProperty(entity, CLevelTag.COUNT, 1);
 
 			DatastoreUtils.put(entity);
 		}
@@ -365,7 +371,7 @@ public class StatSync extends VoiderServlet {
 	 * @return level key from the level
 	 */
 	private static Key getLevelKey(UUID levelId) {
-		return DatastoreUtils.getSingleKey("published", new FilterWrapper("resource_id", levelId));
+		return DatastoreUtils.getSingleKey(T_PUBLISHED, new FilterWrapper(CPublished.RESOURCE_ID, levelId));
 	}
 
 	/**
@@ -378,29 +384,34 @@ public class StatSync extends VoiderServlet {
 		LevelStat levelStats = new LevelStat();
 
 		// Set correct level/campaign id
-		Entity levelEntity = DatastoreUtils.getEntity((Key) serverEntity.getProperty("level_key"));
+		Entity levelEntity = DatastoreUtils.getEntity((Key) serverEntity.getProperty(CUserLevelStat.LEVEL_KEY));
 		if (levelEntity != null) {
 			levelStats.id = DatastoreUtils.getUuidProperty(levelEntity, "resource_id");
 		} else {
 			return null;
 		}
 
-		levelStats.bookmark = (boolean) serverEntity.getProperty("bookmark");
-		levelStats.cCleared = ((Long) serverEntity.getProperty("clear_count")).intValue();
-		levelStats.cPlayed = ((Long) serverEntity.getProperty("play_count")).intValue();
-		levelStats.lastPlayed = (Date) serverEntity.getProperty("last_played");
-		levelStats.rating = ((Long) serverEntity.getProperty("rating")).intValue();
-		levelStats.updated = (Date) serverEntity.getProperty("updated");
+		levelStats.bookmark = (boolean) serverEntity.getProperty(CUserLevelStat.BOOKMARK);
+		levelStats.cCleared = ((Long) serverEntity.getProperty(CUserLevelStat.CLEAR_COUNT)).intValue();
+		levelStats.cPlayed = ((Long) serverEntity.getProperty(CUserLevelStat.PLAY_COUNT)).intValue();
+		levelStats.lastPlayed = (Date) serverEntity.getProperty(CUserLevelStat.LAST_PLAYED);
+		levelStats.rating = ((Long) serverEntity.getProperty(CUserLevelStat.RATING)).intValue();
+		levelStats.updated = (Date) serverEntity.getProperty(CUserLevelStat.UPDATED);
 
-		levelStats.tags = Tags.toTagList((ArrayList<Long>) serverEntity.getProperty("tags"));
+		levelStats.tags = Tags.toTagList((ArrayList<Long>) serverEntity.getProperty(CUserLevelStat.TAGS));
 
 		return levelStats;
 	}
 
 	/** User level stats to sync to the client */
 	private HashMap<UUID, LevelStat> mUserStatsToClient = new HashMap<>();
-	/** Parameters */
 	private StatSyncEntity mParameters = null;
-	/** Response */
 	private StatSyncMethodResponse mResponse = new StatSyncMethodResponse();
+
+	// Tables
+	private static final String T_PUBLISHED = DatastoreTables.PUBLISHED;
+	private static final String T_USER_STAT = DatastoreTables.USER_LEVEL_STAT;
+	private static final String T_LEVEL_STAT = DatastoreTables.LEVEL_STAT;
+	private static final String T_COMMENT = DatastoreTables.RESOURCE_COMMENT;
+	private static final String T_TAG = DatastoreTables.LEVEL_TAG;
 }

@@ -24,6 +24,8 @@ import com.spiddekauga.voider.network.entities.resource.ResourceCommentGetMethod
 import com.spiddekauga.voider.network.entities.stat.ResourceCommentEntity;
 import com.spiddekauga.voider.server.util.ServerConfig;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
+import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CPublished;
+import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CResourceComment;
 import com.spiddekauga.voider.server.util.ServerConfig.FetchSizes;
 import com.spiddekauga.voider.server.util.VoiderServlet;
 
@@ -79,7 +81,7 @@ public class ResourceCommentGet extends VoiderServlet {
 	 * @return get resource key
 	 */
 	private Key getResourceKey(UUID resourceId) {
-		FilterWrapper idFilter = new FilterWrapper(C_PUB_ID, resourceId);
+		FilterWrapper idFilter = new FilterWrapper(CPublished.RESOURCE_ID, resourceId);
 		return DatastoreUtils.getSingleKey(T_PUBLISHED, idFilter);
 	}
 
@@ -93,7 +95,7 @@ public class ResourceCommentGet extends VoiderServlet {
 		Query query = new Query(T_COMMENT, resourceKey);
 
 		// Sort after latest comment
-		query.addSort(C_COMMENT_DATE, SortDirection.DESCENDING);
+		query.addSort(CResourceComment.DATE, SortDirection.DESCENDING);
 		PreparedQuery preparedQuery = DatastoreUtils.prepare(query);
 
 		// Limit
@@ -131,7 +133,7 @@ public class ResourceCommentGet extends VoiderServlet {
 	 * @return the user comment, null if not found.
 	 */
 	private ResourceCommentEntity getUserComment(Key levelKey) {
-		Entity entity = DatastoreUtils.getSingleEntity(T_COMMENT, levelKey, new FilterWrapper(C_COMMENT_USERNAME, mUser.getUsername()));
+		Entity entity = DatastoreUtils.getSingleEntity(T_COMMENT, levelKey, new FilterWrapper(CResourceComment.USERNAME, mUser.getUsername()));
 
 		if (entity != null) {
 			return createNetworkEntity(entity);
@@ -147,9 +149,9 @@ public class ResourceCommentGet extends VoiderServlet {
 	 */
 	private ResourceCommentEntity createNetworkEntity(Entity datastoreEntity) {
 		ResourceCommentEntity networkEntity = new ResourceCommentEntity();
-		networkEntity.comment = (String) datastoreEntity.getProperty(C_COMMENT_COMMENT);
-		networkEntity.date = (Date) datastoreEntity.getProperty(C_COMMENT_DATE);
-		networkEntity.username = (String) datastoreEntity.getProperty(C_COMMENT_USERNAME);
+		networkEntity.comment = (String) datastoreEntity.getProperty(CResourceComment.COMMENT);
+		networkEntity.date = (Date) datastoreEntity.getProperty(CResourceComment.DATE);
+		networkEntity.username = (String) datastoreEntity.getProperty(CResourceComment.USERNAME);
 
 		return networkEntity;
 	}
@@ -157,12 +159,6 @@ public class ResourceCommentGet extends VoiderServlet {
 	private ResourceCommentGetMethodResponse mResponse = null;
 
 	// Tables
-	private static final String T_PUBLISHED = DatastoreTables.PUBLISHED.toString();
-	private static final String T_COMMENT = DatastoreTables.RESOURCE_COMMENT.toString();
-
-	// Columns
-	private static final String C_PUB_ID = "resource_id";
-	private static final String C_COMMENT_COMMENT = "comment";
-	private static final String C_COMMENT_DATE = "date";
-	private static final String C_COMMENT_USERNAME = "username";
+	private static final String T_PUBLISHED = DatastoreTables.PUBLISHED;
+	private static final String T_COMMENT = DatastoreTables.RESOURCE_COMMENT;
 }

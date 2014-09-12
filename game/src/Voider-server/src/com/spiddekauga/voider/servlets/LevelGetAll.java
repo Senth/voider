@@ -96,7 +96,7 @@ public class LevelGetAll extends VoiderServlet {
 	 */
 	private ArrayList<LevelInfoEntity> getLevels(int limit) {
 		// Which table to search in?
-		DatastoreTables table = null;
+		String table = null;
 		switch (mParameters.sort) {
 		// Level stats
 		case BOOKMARKS:
@@ -105,7 +105,7 @@ public class LevelGetAll extends VoiderServlet {
 			table = DatastoreTables.LEVEL_STAT;
 			break;
 
-			// Published table
+		// Published table
 		case NEWEST:
 			table = DatastoreTables.PUBLISHED;
 			break;
@@ -154,7 +154,7 @@ public class LevelGetAll extends VoiderServlet {
 		ArrayList<LevelInfoEntity> levels = new ArrayList<>();
 
 		// Convert datastore entities to network entities.
-		if (table == DatastoreTables.LEVEL_STAT) {
+		if (DatastoreTables.LEVEL_STAT.equals(table)) {
 			for (Entity statsEntity : queryResult) {
 				// Get the actual published information
 				Key levelKey = statsEntity.getParent();
@@ -165,7 +165,7 @@ public class LevelGetAll extends VoiderServlet {
 				infoEntity.tags = getLevelTags(levelKey);
 				levels.add(infoEntity);
 			}
-		} else if (table == DatastoreTables.PUBLISHED) {
+		} else if (DatastoreTables.PUBLISHED.equals(table)) {
 			for (Entity publishedEntity : queryResult) {
 				LevelInfoEntity infoEntity = new LevelInfoEntity();
 
