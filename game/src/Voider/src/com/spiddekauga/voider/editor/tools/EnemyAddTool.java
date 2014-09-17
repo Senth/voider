@@ -20,8 +20,6 @@ import com.spiddekauga.voider.utils.Geometry;
 import com.spiddekauga.voider.utils.Pools;
 
 /**
- * 
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class EnemyAddTool extends ActorAddTool {
@@ -33,7 +31,8 @@ public class EnemyAddTool extends ActorAddTool {
 	 * @param editor editor this tool is bound to
 	 * @param actorType the type of actor this tool uses
 	 */
-	public EnemyAddTool(Camera camera, World world, Invoker invoker, ISelection selection, IResourceChangeEditor editor, Class<? extends Actor> actorType) {
+	public EnemyAddTool(Camera camera, World world, Invoker invoker, ISelection selection, IResourceChangeEditor editor,
+			Class<? extends Actor> actorType) {
 		super(camera, world, invoker, selection, editor, actorType);
 
 		mSelectableResourceTypes.add(EnemyActor.class);
@@ -43,7 +42,7 @@ public class EnemyAddTool extends ActorAddTool {
 	protected boolean dragged() {
 		if (mMovingActor != null) {
 			Vector2 newPosition = getNewPosition();
-			setSnapPosition((EnemyActor)mMovingActor, newPosition, (LevelEditor)mEditor, null);
+			setSnapPosition((EnemyActor) mMovingActor, newPosition, (LevelEditor) mEditor, null);
 			Pools.vector2.free(newPosition);
 		}
 		return false;
@@ -55,7 +54,7 @@ public class EnemyAddTool extends ActorAddTool {
 			// Just set the new position
 			if (mCreatedThisEvent) {
 				Vector2 newPosition = getNewPosition();
-				setSnapPosition((EnemyActor)mMovingActor, newPosition, (LevelEditor)mEditor, mInvoker);
+				setSnapPosition((EnemyActor) mMovingActor, newPosition, (LevelEditor) mEditor, mInvoker);
 				Pools.vector2.free(newPosition);
 			}
 			// If not new actor, reset to old position and move using command
@@ -63,7 +62,7 @@ public class EnemyAddTool extends ActorAddTool {
 				// Reset to old position first
 				mMovingActor.setPosition(mDragOrigin);
 				Vector2 newPosition = getNewPosition();
-				setSnapPosition((EnemyActor)mMovingActor, newPosition, (LevelEditor)mEditor, mInvoker);
+				setSnapPosition((EnemyActor) mMovingActor, newPosition, (LevelEditor) mEditor, mInvoker);
 				Pools.vector2.free(newPosition);
 			}
 
@@ -79,8 +78,8 @@ public class EnemyAddTool extends ActorAddTool {
 	 * @param enemyActor the enemy actor to move
 	 * @param newPosition the new position of the actor
 	 * @param levelEditor the level editor to get paths from
-	 * @param invoker set this if you want to move the enemy using a command, set to null to just
-	 * set the position
+	 * @param invoker set this if you want to move the enemy using a command, set to null
+	 *        to just set the position
 	 */
 	protected static void setSnapPosition(EnemyActor enemyActor, Vector2 newPosition, LevelEditor levelEditor, Invoker invoker) {
 		// Non path enemy, just set position
@@ -141,7 +140,7 @@ public class EnemyAddTool extends ActorAddTool {
 			if (path.getCornerCount() >= 2) {
 				ArrayList<Vector2> pathCorners = path.getCorners();
 				for (int i = 0; i < path.getCornerCount() - 1; ++i) {
-					int nextIndex = i+1;
+					int nextIndex = i + 1;
 
 					float diffDistance = Geometry.distBetweenPointLineSegmentSq(pathCorners.get(i), pathCorners.get(nextIndex), position);
 					if (diffDistance < closestDistance) {
@@ -160,7 +159,6 @@ public class EnemyAddTool extends ActorAddTool {
 	/**
 	 * Wrapper class for a pointer and a distance
 	 */
-	@SuppressWarnings("javadoc")
 	private static class PathDistanceWrapper {
 		Path path;
 		float distance;

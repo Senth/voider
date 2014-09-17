@@ -198,7 +198,6 @@ class GameSceneGui extends Gui {
 	/**
 	 * All the widgets which state can be changed and thus reset
 	 */
-	@SuppressWarnings("javadoc")
 	private static class InnerWidgets {
 		Label score = null;
 		Label multiplier = null;

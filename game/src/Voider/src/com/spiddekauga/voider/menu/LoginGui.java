@@ -363,7 +363,6 @@ public class LoginGui extends Gui {
 	/**
 	 * Inner widgets
 	 */
-	@SuppressWarnings("javadoc")
 	private static class InnerWidgets {
 		Login login = new Login();
 		Register register = new Register();

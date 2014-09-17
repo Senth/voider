@@ -548,7 +548,6 @@ public class SelectDefGui extends Gui {
 	/** Inner widgets */
 	private Widgets mWidgets = new Widgets();
 
-	@SuppressWarnings("javadoc")
 	private static class Widgets {
 		Background topBar = null;
 		Search search = new Search();

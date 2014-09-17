@@ -469,15 +469,14 @@ public class ExploreGui extends Gui {
 		HideListener hideListener = new HideListener(imageButton, true) {
 			@Override
 			protected void onShow() {
-				// mWidgets.tag.wrapper.setWidth(tableWidth);
 				mWidgets.tag.wrapper.layout();
-				resetContent();
+				resetContentMargins();
 			}
 
 			@Override
 			protected void onHide() {
 				mWidgets.tag.wrapper.layout();
-				resetContent();
+				resetContentMargins();
 			}
 		};
 		wrapper.add(imageButton);
@@ -567,12 +566,11 @@ public class ExploreGui extends Gui {
 	 * Reset the content
 	 */
 	void resetContent() {
-		ArrayList<LevelInfoEntity> levels = mExploreScene.getLevels();
-		resetContent(levels);
+		mWidgets.content.table.dispose();
 	}
 
 	/**
-	 * Reset content
+	 * Reset content and add these levels
 	 * @param levels level to update
 	 */
 	synchronized void resetContent(ArrayList<LevelInfoEntity> levels) {
@@ -753,7 +751,6 @@ public class ExploreGui extends Gui {
 	/**
 	 * All widgets
 	 */
-	@SuppressWarnings("javadoc")
 	private static class Widgets {
 		View view = new View();
 		Sort sort = new Sort();

@@ -273,7 +273,7 @@ public class ExploreScene extends Scene implements IResponseListener {
 				mSortOrder = sortOrder;
 				mTags = tags;
 
-				mResourceWebRepo.getLevels(sortOrder, tags, ExploreScene.this);
+				mResourceWebRepo.getLevels(sortOrder, tags, false, ExploreScene.this);
 			}
 		}
 
@@ -288,7 +288,7 @@ public class ExploreScene extends Scene implements IResponseListener {
 				}
 				// Sort order
 				else if (mSortOrder != null) {
-					mResourceWebRepo.getLevels(mSortOrder, mTags, ExploreScene.this);
+					mResourceWebRepo.getLevels(mSortOrder, mTags, true, ExploreScene.this);
 				}
 			}
 		}
@@ -389,8 +389,4 @@ public class ExploreScene extends Scene implements IResponseListener {
 	private ResourceRepo mResourceRepo = ResourceRepo.getInstance();
 	/** Synchronized web responses */
 	private ArrayList<WebWrapper> mWebResponses = new ArrayList<>();
-	/** Last method parameters that was used */
-	// private LevelGetAllMethod mLastFetchMethod = null;
-	/** If we're fetching levels */
-	// private boolean mFetchingLevels = false;
 }

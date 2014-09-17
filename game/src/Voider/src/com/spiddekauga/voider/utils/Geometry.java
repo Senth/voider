@@ -93,7 +93,7 @@ public class Geometry {
 			// Check if they're collinear.
 			float y3LessY1 = line2a.y - line1a.y;
 			float collinearityTestForP3 = line1a.x * (line1b.y - line2a.y) + line1b.x * (y3LessY1) + line2a.x * (line1a.y - line1b.y); // see
-																																		// http://mathworld.wolfram.com/Collinear.html
+			// http://mathworld.wolfram.com/Collinear.html
 			// If p3 is collinear with p1 and p2 then p4 will also be collinear, since
 			// p1-p2 is parallel with p3-p4
 			if (collinearityTestForP3 == 0) {
@@ -285,8 +285,9 @@ public class Geometry {
 
 		// Add corners to remove
 		ArrayList<Integer> removeCorners = null;
-		if (fixedIndices.lowIndex != -1) {
-			removeCorners = com.spiddekauga.utils.Collections.getIndicesBetween(corners.size(), lowIndex, false, highIndex, false);
+		if (fixedIndices.lowIndex != -1 && fixedIndices.highIndex != -1) {
+			removeCorners = com.spiddekauga.utils.Collections.getIndicesBetween(corners.size(), fixedIndices.lowIndex, false, fixedIndices.highIndex,
+					false);
 		} else {
 			removeCorners = new ArrayList<>();
 		}
@@ -1247,7 +1248,6 @@ public class Geometry {
 	/**
 	 * Wrapper class for calculating lowest possible triangle when fixing area
 	 */
-	@SuppressWarnings("javadoc")
 	private static class FixAreaWrapper {
 		/**
 		 * Default constructor sets invalid values

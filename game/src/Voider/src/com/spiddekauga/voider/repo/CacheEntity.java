@@ -54,5 +54,5 @@ public abstract class CacheEntity<EntityType> implements ICopyable<EntityType> {
 	private long mOutdatedTime;
 
 	/** Nano seconds to seconds */
-	private final static long NANO_TO_SECONDS = 1000000;
+	private final static long NANO_TO_SECONDS = 1000000000;
 }

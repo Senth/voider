@@ -838,7 +838,6 @@ public class EnemyEditorGui extends ActorGui {
 	/**
 	 * All the widgets which state can be changed and thus reset
 	 */
-	@SuppressWarnings("javadoc")
 	private static class InnerWidgets {
 		MovementWidgets movement = new MovementWidgets();
 		WeaponWidgets weapon = new WeaponWidgets();

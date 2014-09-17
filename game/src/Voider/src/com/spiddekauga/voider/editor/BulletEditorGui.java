@@ -159,7 +159,6 @@ public class BulletEditorGui extends ActorGui {
 	/**
 	 * All inner widgets
 	 */
-	@SuppressWarnings("javadoc")
 	private static class InnerWidgets {
 		WeaponWidgets weapon = new WeaponWidgets();
 

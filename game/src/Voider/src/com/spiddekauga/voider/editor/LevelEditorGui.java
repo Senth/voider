@@ -1023,7 +1023,6 @@ class LevelEditorGui extends EditorGui {
 	/**
 	 * Container for inner widgets
 	 */
-	@SuppressWarnings("javadoc")
 	private class InnerWidgets implements Disposable {
 		EnemyOptionWidgets enemy = new EnemyOptionWidgets();
 		PathOptionWidgets path = new PathOptionWidgets();

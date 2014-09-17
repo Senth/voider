@@ -52,7 +52,6 @@ import com.spiddekauga.voider.repo.WebRepo;
 import com.spiddekauga.voider.resources.Def;
 import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourcePng;
-import com.spiddekauga.voider.utils.Pools;
 
 /**
  * Web repository for resources
@@ -476,9 +475,7 @@ public class ResourceWebRepo extends WebRepo {
 			newCache = true;
 		}
 
-		cache.addLevels(response.levels);
-		cache.fetchedAll = response.status == LevelGetAllMethodResponse.Statuses.SUCCESS_FETCHED_ALL;
-		cache.serverCursor = response.cursor;
+		updateLevelCache(cache, response);
 
 		if (newCache) {
 			mSearchCache.add(searchString, cache);
@@ -492,7 +489,21 @@ public class ResourceWebRepo extends WebRepo {
 	 * @param response
 	 */
 	private void cacheLevels(SortOrders sort, ArrayList<Tags> tags, LevelGetAllMethodResponse response) {
+		SortWrapper sortCacheKey = new SortWrapper(sort, tags);
+		LevelCache cache = mSortCache.get(sortCacheKey);
 
+		boolean newCache = false;
+
+		if (cache == null) {
+			cache = new LevelCache();
+			newCache = true;
+		}
+
+		updateLevelCache(cache, response);
+
+		if (newCache) {
+			mSortCache.add(sortCacheKey, cache);
+		}
 	}
 
 	/**
@@ -501,50 +512,17 @@ public class ResourceWebRepo extends WebRepo {
 	 * @param response server response, null if not valid
 	 * @return a correct response for getting levels
 	 */
-	private synchronized IEntity handleLevelGetResponse(LevelGetAllMethod methodEntity, IEntity response) {
+	private IEntity handleLevelGetResponse(LevelGetAllMethod methodEntity, IEntity response) {
 		// Update cache
 		if (response instanceof LevelGetAllMethodResponse) {
 			if (((LevelGetAllMethodResponse) response).status.isSuccessful()) {
-				// Get or create cache
-				LevelCache levelCache = null;
-				boolean newCache = false;
-
 				// Search string
 				if (methodEntity.searchString != null && !methodEntity.searchString.equals("")) {
 					cacheLevels(methodEntity.searchString, (LevelGetAllMethodResponse) response);
 				}
 				// Sorting with or without tags
 				else {
-					// Tag list
-					HashMap<ArrayList<Tags>, LevelCache> tagCaches = mOldSortCache.get(methodEntity.sort);
-
-					// Create new tag caches
-					if (tagCaches == null) {
-						tagCaches = new HashMap<>();
-						mOldSortCache.put(methodEntity.sort, tagCaches);
-					}
-
-					// Level cache
-					levelCache = tagCaches.get(methodEntity.tagFilter);
-
-					if (levelCache == null) {
-						levelCache = createNewLevelCache((LevelGetAllMethodResponse) response);
-						tagCaches.put(methodEntity.tagFilter, levelCache);
-						newCache = true;
-					}
-				}
-
-				// Fetched all?
-				if (((LevelGetAllMethodResponse) response).status == LevelGetAllMethodResponse.Statuses.SUCCESS_FETCHED_ALL) {
-					levelCache.fetchedAll = true;
-				}
-
-				// Update cursor
-				levelCache.serverCursor = ((LevelGetAllMethodResponse) response).cursor;
-
-				// Add to cache
-				if (!newCache) {
-					levelCache.levels.addAll(((LevelGetAllMethodResponse) response).levels);
+					cacheLevels(methodEntity.sort, methodEntity.tagFilter, (LevelGetAllMethodResponse) response);
 				}
 			}
 
@@ -557,40 +535,14 @@ public class ResourceWebRepo extends WebRepo {
 	}
 
 	/**
-	 * Create new LevelCache from response
+	 * Update existing LevelCache from response
+	 * @param levelCache
 	 * @param response the response from the server
-	 * @return new LevelCache instance
 	 */
-	private LevelCache createNewLevelCache(LevelGetAllMethodResponse response) {
-		LevelCache levelCache = new LevelCache();
+	private static void updateLevelCache(LevelCache levelCache, LevelGetAllMethodResponse response) {
 		levelCache.serverCursor = response.cursor;
-		levelCache.levels = response.levels;
+		levelCache.addLevels(response.levels);
 		levelCache.fetchedAll = response.status == LevelGetAllMethodResponse.Statuses.SUCCESS_FETCHED_ALL;
-		return levelCache;
-	}
-
-	/**
-	 * Get level cache from the a sort order
-	 * @param sort sort order
-	 * @param tags selected tags
-	 * @return level cache for this sort order, null if none exists
-	 */
-	private LevelCache getLevelCache(SortOrders sort, ArrayList<Tags> tags) {
-		HashMap<ArrayList<Tags>, LevelCache> tagCaches = mOldSortCache.get(sort);
-		if (tagCaches != null) {
-			return tagCaches.get(tags);
-		}
-
-		return null;
-	}
-
-	/**
-	 * Get level cache from the a sort order
-	 * @param searchString the text to search for
-	 * @return level cache for this search, null if none exists
-	 */
-	private LevelCache getLevelCache(String searchString) {
-		return mSearchCache.getCopy(searchString);
 	}
 
 	/**
@@ -638,38 +590,34 @@ public class ResourceWebRepo extends WebRepo {
 	 * Get levels by sorting and specified tags (only definitions)
 	 * @param sort sorting order of the levels to get
 	 * @param tags all tags the levels have to have
-	 * @param responseListener the caller to send the response to
-	 * @return method that was created and sent
+	 * @param fetchMore set to true to always fetch more levels from the server (if
+	 *        available)
+	 * @param responseListeners listens to the web response
 	 */
-	public synchronized LevelGetAllMethod getLevels(SortOrders sort, ArrayList<Tags> tags, IResponseListener responseListener) {
+	public void getLevels(SortOrders sort, ArrayList<Tags> tags, boolean fetchMore, IResponseListener... responseListeners) {
 		LevelGetAllMethod method = new LevelGetAllMethod();
 		method.sort = sort;
 		method.tagFilter = tags;
 
+		// Get cache
+		SortWrapper sortCacheKey = new SortWrapper(sort, tags);
+		LevelCache cache = mSortCache.get(sortCacheKey);
 
-		// Continue from cursor?
-		HashMap<ArrayList<Tags>, LevelCache> tagCaches = mOldSortCache.get(sort);
-		if (tagCaches != null) {
-			LevelCache levelCache = tagCaches.get(method.tagFilter);
-			if (levelCache != null) {
-				// Remove cache if outdated
-				if (levelCache.isOutdated()) {
-					levelCache.dispose();
-					tagCaches.remove(method.tagFilter);
-				}
-				// Fetched all, no need to query server, just return
-				else if (levelCache.fetchedAll) {
-					return method;
-				}
-				// Continue from cursor
-				else {
-					method.nextCursor = levelCache.serverCursor;
-				}
-			}
+		if (cache != null) {
+			method.nextCursor = cache.serverCursor;
 		}
 
-		sendInNewThread(method, responseListener);
-		return method;
+		// Fetch more from server
+		if (cache == null || (fetchMore && !cache.fetchedAll)) {
+			sendInNewThread(method, responseListeners);
+		}
+		// Use cache
+		else {
+			LevelGetAllMethodResponse response = new LevelGetAllMethodResponse();
+			response.levels = cache.levels;
+			response.status = LevelGetAllMethodResponse.Statuses.SUCCESS_FETCHED_ALL;
+			sendResponseToListeners(method, response, responseListeners);
+		}
 	}
 
 	/**
@@ -681,7 +629,6 @@ public class ResourceWebRepo extends WebRepo {
 	public void getLevels(String searchString, boolean fetchMore, IResponseListener... responseListeners) {
 		LevelGetAllMethod method = new LevelGetAllMethod();
 		method.searchString = searchString;
-		method.tagFilter = new ArrayList<>();
 
 		// Get cache
 		LevelCache cache = mSearchCache.getCopy(searchString);
@@ -705,76 +652,13 @@ public class ResourceWebRepo extends WebRepo {
 	}
 
 	/**
-	 * Get cached levels
-	 * @param method the method that was sent
-	 * @return all cached levels this method has
-	 */
-	@Deprecated
-	public ArrayList<LevelInfoEntity> getCachedLevels(LevelGetAllMethod method) {
-		// Search
-		if (method.searchString != null && !method.searchString.equals("")) {
-			return getCachedLevels(method.searchString);
-		}
-		// Sort
-		else if (method.sort != null) {
-			return getCachedLevels(method.sort, method.tagFilter);
-		}
-		// None
-		else {
-			return new ArrayList<>();
-		}
-	}
-
-	/**
-	 * Get cached levels
-	 * @param sort sort order to get cached levels from
-	 * @param tags all tags that are checked
-	 * @return all cached levels that match the above criteria, empty if no cache was
-	 *         found
-	 */
-	@SuppressWarnings("unchecked")
-	@Deprecated
-	public synchronized ArrayList<LevelInfoEntity> getCachedLevels(SortOrders sort, ArrayList<Tags> tags) {
-		LevelCache levelCache = getLevelCache(sort, tags);
-
-		if (levelCache != null) {
-			ArrayList<LevelInfoEntity> copy = Pools.arrayList.obtain();
-			copy.addAll(levelCache.levels);
-			return copy;
-		} else {
-			return Pools.arrayList.obtain();
-		}
-	}
-
-	/**
-	 * Get cached levels
-	 * @param searchString the string to search for
-	 * @return all cached levels that match the above criteria, empty if no cache was
-	 *         found
-	 */
-	@SuppressWarnings("unchecked")
-	@Deprecated
-	public synchronized ArrayList<LevelInfoEntity> getCachedLevels(String searchString) {
-		LevelCache levelCache = getLevelCache(searchString);
-
-		if (levelCache != null) {
-			ArrayList<LevelInfoEntity> copy = Pools.arrayList.obtain();
-			copy.addAll(levelCache.levels);
-			return copy;
-		} else {
-			return Pools.arrayList.obtain();
-		}
-	}
-
-	/**
 	 * Check if the server has more levels for this sort order and these tags.
 	 * @param sort sort order to get cached levels from
 	 * @param tags all tags that are checked
 	 * @return true if the server has more levels
 	 */
-	public synchronized boolean hasMoreLevels(SortOrders sort, ArrayList<Tags> tags) {
-		LevelCache levelCache = getLevelCache(sort, tags);
-
+	public boolean hasMoreLevels(SortOrders sort, ArrayList<Tags> tags) {
+		LevelCache levelCache = mSortCache.get(new SortWrapper(sort, tags));
 		return levelCache != null && !levelCache.fetchedAll;
 	}
 
@@ -783,64 +667,14 @@ public class ResourceWebRepo extends WebRepo {
 	 * @param searchString the string to search for
 	 * @return true if the server has more levels
 	 */
-	public synchronized boolean hasMoreLevels(String searchString) {
-		LevelCache levelCache = getLevelCache(searchString);
-
+	public boolean hasMoreLevels(String searchString) {
+		LevelCache levelCache = mSearchCache.get(searchString);
 		return levelCache != null && !levelCache.fetchedAll;
-	}
-
-	/**
-	 * Check if we have cached levels
-	 * @param method the method that was sent
-	 * @return true if we have cached levels
-	 */
-	public boolean hasCachedLevels(LevelGetAllMethod method) {
-		// Search
-		if (method.searchString != null && !method.searchString.equals("")) {
-			return hasCachedLevels(method.searchString);
-		}
-		// Sort
-		else if (method.sort != null) {
-			return hasCachedLevels(method.sort, method.tagFilter);
-		}
-		// None
-		else {
-			return false;
-		}
-	}
-
-	/**
-	 * Check if we have cached levels for this sort order and these tags.
-	 * @param sort sort order to get cached levels from
-	 * @param tags all tags that are checked
-	 * @return true if we have cached levels
-	 */
-	public synchronized boolean hasCachedLevels(SortOrders sort, ArrayList<Tags> tags) {
-		LevelCache levelCache = getLevelCache(sort, tags);
-
-		return levelCache != null;
-	}
-
-	/**
-	 * Check if we have cached levels for this search string
-	 * @param searchString the string to search for
-	 * @return true if we have cached levels
-	 */
-	public synchronized boolean hasCachedLevels(String searchString) {
-		LevelCache levelCache = getLevelCache(searchString);
-
-		return levelCache != null;
 	}
 
 	/** Instance of this class */
 	private static ResourceWebRepo mInstance = null;
 
-	// CACHE
-	/** String search cache */
-	// private Map<String, LevelCache> mOldSearchCache = new HashMap<>();
-	/** Sort cache */
-	// private Map<SortOrders, HashMap<ArrayList<Tags>, LevelCache>> mOldSortCache = new
-	// HashMap<>();
 	/** Comment cache */
 	private Cache<UUID, CommentCacheEntity> mCommentCache = new Cache<>();
 	/** Level search cache */
@@ -849,7 +683,7 @@ public class ResourceWebRepo extends WebRepo {
 	private Cache<SortWrapper, LevelCache> mSortCache = new Cache<>();
 
 	/**
-	 * Sort wrapper
+	 * The key for LevelCache when getting by sort order and tags.
 	 */
 	private class SortWrapper {
 		private SortWrapper(SortOrders sort, ArrayList<Tags> tags) {
@@ -926,7 +760,7 @@ public class ResourceWebRepo extends WebRepo {
 		 * @param levels
 		 */
 		public synchronized void addLevels(ArrayList<LevelInfoEntity> levels) {
-			levels.addAll(levels);
+			this.levels.addAll(levels);
 		}
 
 		ArrayList<LevelInfoEntity> levels = new ArrayList<>();

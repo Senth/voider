@@ -178,7 +178,6 @@ public class ScoreSceneGui extends Gui {
 	/** Inner widgets */
 	private InnerWidgets mWidgets = new InnerWidgets();
 
-	@SuppressWarnings("javadoc")
 	private class InnerWidgets {
 		RatingWidget rating = null;
 		Button bookmark = null;

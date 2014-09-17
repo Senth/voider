@@ -164,7 +164,6 @@ public class HighscoreSceneGui extends Gui {
 	/** Row height of scores */
 	private float mRowHegiht = 0;
 
-	@SuppressWarnings("javadoc")
 	private class InnerWidgets {
 		// First place
 		Label firstPlaceScore = null;

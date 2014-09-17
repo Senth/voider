@@ -25,15 +25,11 @@ import com.esotericsoftware.minlog.Log.Logger;
  */
 public class Main {
 	/** Set to true to compile packer for dropbox */
-	private static final boolean DROPBOX_PACKER = false;
+	private static final boolean DROPBOX_PACKER = true;
 	/** UI directory where all the sub-ui directories are located */
 	private static final String UI_PNG_DIR = DROPBOX_PACKER ? "ui-editable" : "ui-editable";
 	/** Output directory where all the atlases should be stored */
 	private static final String UI_ATLAS_DIR = DROPBOX_PACKER ? "ui" : "ui";
-	/** Theme directory where all the theme png files are located */
-	private static final String THEME_PNG_DIR = DROPBOX_PACKER ? "themes-editable" : "themes-editable";
-	/** Theme atlas output directory */
-	private static final String THEME_ATLAS_DIR = DROPBOX_PACKER ? "themes" : "themes";
 
 	/** All directories to pack */
 	private static ArrayList<TextureInOutWrapper> mDirs = new ArrayList<Main.TextureInOutWrapper>();
@@ -122,7 +118,6 @@ public class Main {
 	 */
 	static private void initPackDirs() {
 		mDirs.add(new TextureInOutWrapper(UI_PNG_DIR, UI_ATLAS_DIR));
-		mDirs.add(new TextureInOutWrapper(THEME_PNG_DIR, THEME_ATLAS_DIR));
 	}
 
 	/**
@@ -150,7 +145,6 @@ public class Main {
 	/**
 	 * Runnable thread
 	 */
-	@SuppressWarnings("javadoc")
 	private static class PackThread extends Thread {
 		PackThread(String inputDir, String outputDir, String name) {
 			mInputDir = inputDir;

@@ -6,7 +6,7 @@ import java.util.Map.Entry;
 import com.badlogic.gdx.utils.Disposable;
 
 /**
- * Cache of a spcific type
+ * Cache of a specific type
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  * @param <Key> key to sort the cache entities by
  * @param <CacheType> type of cache

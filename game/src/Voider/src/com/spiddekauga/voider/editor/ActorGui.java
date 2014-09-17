@@ -558,7 +558,6 @@ public abstract class ActorGui extends EditorGui {
 	/**
 	 * All the widgets which state can be changed and thus reset
 	 */
-	@SuppressWarnings("javadoc")
 	private static class InnerWidgets {
 		VisualWidgets visual = new VisualWidgets();
 		InfoWidgets info = new InfoWidgets();

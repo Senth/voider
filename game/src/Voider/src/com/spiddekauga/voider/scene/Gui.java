@@ -676,13 +676,10 @@ public abstract class Gui implements Disposable {
 	private Stack<MsgBoxExecuter> mActiveMsgBoxes = new Stack<>();
 	/** Inactive/free message boxes */
 	private Stack<MsgBoxExecuter> mFreeMsgBoxes = new Stack<>();
-	/** Queued messages box, will be displayed once the active message box has been hidden */
-	private MsgBoxExecuter mQueuedMsgBox = null;
 	/** Various widgets */
 	private InnerWidgets mWidgets = new InnerWidgets();
 
 	/** Inner widgets */
-	@SuppressWarnings("javadoc")
 	private static class InnerWidgets {
 		WaitWindow waitWindow = new WaitWindow();
 		ProgressBar progressBar = new ProgressBar();
