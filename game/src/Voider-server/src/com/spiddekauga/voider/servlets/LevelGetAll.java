@@ -70,7 +70,7 @@ public class LevelGetAll extends VoiderServlet {
 	 */
 	private void getAndSetLevelResponse() {
 		// Tag filter
-		if (!mParameters.tagFilter.isEmpty()) {
+		if (mParameters.tagFilter != null && !mParameters.tagFilter.isEmpty()) {
 			filterByTags();
 		}
 		// Text search
@@ -105,7 +105,7 @@ public class LevelGetAll extends VoiderServlet {
 			table = DatastoreTables.LEVEL_STAT;
 			break;
 
-		// Published table
+			// Published table
 		case NEWEST:
 			table = DatastoreTables.PUBLISHED;
 			break;
