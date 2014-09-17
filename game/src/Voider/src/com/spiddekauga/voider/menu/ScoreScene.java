@@ -19,7 +19,7 @@ import com.spiddekauga.voider.utils.Synchronizer.SyncTypes;
 
 /**
  * Displays the player score and adds the ability for the player to rate, tag, and
- * bookmark the level if s/he is online.
+ * bookmark the level if player is online.
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class ScoreScene extends Scene {

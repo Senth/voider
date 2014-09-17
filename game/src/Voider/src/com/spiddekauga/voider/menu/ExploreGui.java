@@ -1,11 +1,11 @@
 package com.spiddekauga.voider.menu;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
@@ -14,7 +14,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.CheckBox.CheckBoxStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane.ScrollPaneListener;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane.ScrollPaneStyle;
@@ -29,7 +28,9 @@ import com.spiddekauga.utils.scene.ui.AnimationWidget;
 import com.spiddekauga.utils.scene.ui.AnimationWidget.AnimationWidgetStyle;
 import com.spiddekauga.utils.scene.ui.Background;
 import com.spiddekauga.utils.scene.ui.ButtonListener;
+import com.spiddekauga.utils.scene.ui.GuiHider;
 import com.spiddekauga.utils.scene.ui.HideListener;
+import com.spiddekauga.utils.scene.ui.HideManual;
 import com.spiddekauga.utils.scene.ui.RatingWidget;
 import com.spiddekauga.utils.scene.ui.Row;
 import com.spiddekauga.utils.scene.ui.TabWidget;
@@ -105,7 +106,12 @@ public class ExploreGui extends Gui {
 	 * Resets the comments
 	 */
 	void resetComments() {
-		// TODO
+		if (mWidgets.comment.userComment != null) {
+			mWidgets.comment.userComment.setText("");
+		}
+		if (mWidgets.comment.userDate != null) {
+			mWidgets.comment.userDate.setText("");
+		}
 	}
 
 	/**
@@ -114,8 +120,20 @@ public class ExploreGui extends Gui {
 	 * @param comment the actual comment
 	 * @param date date of the comment
 	 */
-	void addComment(String username, String comment, Date date) {
-		// TODO
+	void addComment(String username, String comment, String date) {
+		AlignTable table = mUiFactory.createComment(username, comment, date, null);
+		mWidgets.comment.comments.row();
+		mWidgets.comment.comments.add(table);
+	}
+
+	/**
+	 * Set the user comment
+	 * @param comment user comment
+	 * @param date when the comment was made
+	 */
+	void setUserComment(String comment, String date) {
+		mWidgets.comment.userComment.setText(comment);
+		mWidgets.comment.userDate.setText(date);
 	}
 
 	@Override
@@ -370,9 +388,23 @@ public class ExploreGui extends Gui {
 	private void initComments() {
 		AlignTable table = mWidgets.comment.table;
 
-		Label label = new Label("STUB", (LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_DEFAULT));
-		table.row().setFillHeight(true);
-		table.add(label);
+
+		// User comment
+		GuiHider userHider = mWidgets.comment.userHider;
+
+		mUiFactory.addPanelSection("Your comment", table, userHider);
+
+		ArrayList<Actor> createdActors = new ArrayList<>();
+		AlignTable userComment = mUiFactory.createComment("", "", "", createdActors);
+		table.row();
+		table.add(userComment);
+		userHider.addToggleActor(userComment);
+
+		// Level comments
+		mUiFactory.addPanelSection("Latest comments", table, null);
+		ScrollPane scrollPane = new ScrollPane(mWidgets.comment.comments);
+		table.row().setFillHeight(true).setFillWidth(true);
+		table.add(scrollPane).setFillHeight(true).setFillWidth(true);
 	}
 
 	/**
@@ -796,6 +828,10 @@ public class ExploreGui extends Gui {
 
 		private static class Comments {
 			AlignTable table = new AlignTable();
+			AlignTable comments = new AlignTable();
+			Label userComment = null;
+			Label userDate = null;
+			HideManual userHider = new HideManual();
 		}
 
 		private static class Tag {

@@ -247,6 +247,28 @@ public class UiFactory {
 	}
 
 	/**
+	 * Create a comment table
+	 * @param username name to display. Can be null or empty if no name should be
+	 *        displayed
+	 * @param comment the comment to display
+	 * @param date date of the comment
+	 * @param createdActors (optional) All created actors (except the returned table) is
+	 *        added to this. In the specified order: username, comment, date.
+	 * @return table with the comment
+	 */
+	public AlignTable createComment(String username, String comment, String date, ArrayList<Actor> createdActors) {
+		AlignTable table = new AlignTable();
+
+		// TODO
+
+
+		// TODO
+		doExtraActionsOnActors(null, createdActors);
+
+		return table;
+	}
+
+	/**
 	 * Create a scrollable list for all available themes.
 	 * @param width available width for scroll pane
 	 * @param height available height for scroll pane

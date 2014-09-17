@@ -2,6 +2,7 @@ package com.spiddekauga.voider.menu;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.UUID;
 
 import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.utils.scene.ui.UiFactory;
@@ -13,6 +14,8 @@ import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.entities.resource.LevelGetAllMethod;
 import com.spiddekauga.voider.network.entities.resource.LevelGetAllMethod.SortOrders;
 import com.spiddekauga.voider.network.entities.resource.LevelGetAllMethodResponse;
+import com.spiddekauga.voider.network.entities.resource.ResourceCommentGetMethod;
+import com.spiddekauga.voider.network.entities.resource.ResourceCommentGetMethodResponse;
 import com.spiddekauga.voider.network.entities.resource.ResourceDownloadMethod;
 import com.spiddekauga.voider.network.entities.resource.ResourceDownloadMethodResponse;
 import com.spiddekauga.voider.network.entities.stat.LevelInfoEntity;
@@ -179,6 +182,41 @@ public class ExploreScene extends Scene implements IResponseListener {
 	}
 
 	/**
+	 * @return true if we're currently fetching levels
+	 */
+	boolean isFetchingLevels() {
+		return mLevelFetch.isFetching();
+	}
+
+	/**
+	 * Fetch initial comments
+	 */
+	void fetchInitialComments() {
+		mCommentFetch.fetch(false);
+	}
+
+	/**
+	 * Fetch more comments
+	 */
+	void fetchMoreComments() {
+		mCommentFetch.fetch(true);
+	}
+
+	/**
+	 * @return true if more comments exists to be fetched
+	 */
+	boolean hasMoreComments() {
+		return mCommentFetch.hasMore();
+	}
+
+	/**
+	 * @return true if we're currently fetching comments
+	 */
+	boolean isFetchingComments() {
+		return mCommentFetch.isFetching();
+	}
+
+	/**
 	 * Go back to main menu
 	 */
 	void gotoMainMenu() {
@@ -232,14 +270,77 @@ public class ExploreScene extends Scene implements IResponseListener {
 	}
 
 	/**
-	 * @return true if we're currently fetching levels
+	 * Class for fetching comments for the current level
 	 */
-	boolean isFetchingLevels() {
-		return mLevelFetch.isFetching();
+	private class CommentFetch {
+		/**
+		 * Fetch initial comments including user comments for current level
+		 * @param fetchMore if more should be fetched
+		 */
+		void fetch(boolean fetchMore) {
+			if (mSelectedLevel != null) {
+				UUID resourceId = mSelectedLevel.defEntity.resourceId;
+				mResourceWebRepo.getComments(resourceId, fetchMore, ExploreScene.this);
+				mIsFetching = true;
+			}
+		}
+
+		/**
+		 * @return true if more comments exist to fetch
+		 */
+		boolean hasMore() {
+			if (mIsFetching || mSelectedLevel == null) {
+				return false;
+			}
+
+			UUID resourceId = mSelectedLevel.defEntity.resourceId;
+			return mResourceWebRepo.hasMoreComments(resourceId);
+		}
+
+		/**
+		 * @return true if we're fetching comments
+		 */
+		boolean isFetching() {
+			return mIsFetching;
+		}
+
+		/**
+		 * Handle web response
+		 * @param method
+		 * @param response
+		 */
+		void handleWebResponse(ResourceCommentGetMethod method, ResourceCommentGetMethodResponse response) {
+			// Only do something if it's comments for the currently selected level
+			if (mSelectedLevel != null && mSelectedLevel.defEntity.resourceId.equals(method.resourceId)) {
+				mIsFetching = false;
+
+				switch (response.status) {
+				case FAILED_CONNECTION:
+					mGui.showErrorMessage("Failed to connect to the server");
+					break;
+
+				case FAILED_INTERNAL:
+					mGui.showErrorMessage("Internal server error");
+					break;
+
+				case FAILED_USER_NOT_LOGGED_IN:
+					mGui.showErrorMessage("You have been logged out");
+					break;
+
+				case SUCCESS_FETCHED_ALL:
+				case SUCCESS_MORE_EXISTS:
+					// TODO
+					break;
+
+				}
+			}
+		}
+
+		boolean mIsFetching = false;
 	}
 
 	/**
-	 * Last fetch level parameters
+	 * Class for fetching levels
 	 */
 	private class LevelFetch {
 		/**
@@ -333,7 +434,7 @@ public class ExploreScene extends Scene implements IResponseListener {
 					break;
 
 				case FAILED_USER_NOT_LOGGED_IN:
-					mGui.showErrorMessage("You are not logged in to the server");
+					mGui.showErrorMessage("You have been logged out");
 					break;
 
 				case SUCCESS_FETCHED_ALL:
@@ -379,13 +480,10 @@ public class ExploreScene extends Scene implements IResponseListener {
 		private ArrayList<Tags> mTags = new ArrayList<>();
 	}
 
-	/** Level fetch helper */
-	LevelFetch mLevelFetch = new LevelFetch();
-	/** Selected level */
-	LevelInfoEntity mSelectedLevel = null;
-	/** Resource web repository */
+	private CommentFetch mCommentFetch = new CommentFetch();
+	private LevelFetch mLevelFetch = new LevelFetch();
+	private LevelInfoEntity mSelectedLevel = null;
 	private ResourceWebRepo mResourceWebRepo = ResourceWebRepo.getInstance();
-	/** Resource repository */
 	private ResourceRepo mResourceRepo = ResourceRepo.getInstance();
 	/** Synchronized web responses */
 	private ArrayList<WebWrapper> mWebResponses = new ArrayList<>();
