@@ -44,7 +44,7 @@ public class ResourceCommentGet extends VoiderServlet {
 
 	@Override
 	protected IEntity onRequest(IMethodEntity methodEntity) throws ServletException, IOException {
-		if (mUser.isLoggedIn()) {
+		if (!mUser.isLoggedIn()) {
 			mResponse.status = Statuses.FAILED_USER_NOT_LOGGED_IN;
 			return mResponse;
 		}

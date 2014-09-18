@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.UUID;
 
+import com.badlogic.gdx.Input;
 import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.utils.scene.ui.UiFactory;
 import com.spiddekauga.voider.Config;
+import com.spiddekauga.voider.Config.Debug.Builds;
 import com.spiddekauga.voider.game.GameScene;
 import com.spiddekauga.voider.game.LevelDef;
 import com.spiddekauga.voider.network.entities.IEntity;
@@ -19,6 +21,7 @@ import com.spiddekauga.voider.network.entities.resource.ResourceCommentGetMethod
 import com.spiddekauga.voider.network.entities.resource.ResourceDownloadMethod;
 import com.spiddekauga.voider.network.entities.resource.ResourceDownloadMethodResponse;
 import com.spiddekauga.voider.network.entities.stat.LevelInfoEntity;
+import com.spiddekauga.voider.network.entities.stat.ResourceCommentEntity;
 import com.spiddekauga.voider.network.entities.stat.Tags;
 import com.spiddekauga.voider.repo.IResponseListener;
 import com.spiddekauga.voider.repo.WebWrapper;
@@ -30,6 +33,7 @@ import com.spiddekauga.voider.repo.resource.ResourceWebRepo;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.utils.Graphics;
+import com.spiddekauga.voider.utils.User;
 
 /**
  * Scene for exploring new content
@@ -83,6 +87,16 @@ public class ExploreScene extends Scene implements IResponseListener {
 			setOutcome(Outcomes.NOT_APPLICAPLE);
 		}
 
+		// Testing - DEV_SERVER
+		if (Config.Debug.isBuildOrBelow(Builds.DEV_SERVER)) {
+			if (keycode == Input.Keys.F5) {
+				((ExploreGui) mGui).addComment("Senth", "This is a very very long test comment to see how it is shown in the panel",
+						"2014-09-18 11:24");
+			} else if (keycode == Input.Keys.F4) {
+				((ExploreGui) mGui).resetComments();
+			}
+		}
+
 		return false;
 	}
 
@@ -106,6 +120,8 @@ public class ExploreScene extends Scene implements IResponseListener {
 				mLevelFetch.handleWebResponse((LevelGetAllMethod) webWrapper.method, (LevelGetAllMethodResponse) response);
 			} else if (response instanceof ResourceDownloadMethodResponse) {
 				handleResourceDownloadResponse((ResourceDownloadMethod) webWrapper.method, (ResourceDownloadMethodResponse) response);
+			} else if (response instanceof ResourceCommentGetMethodResponse) {
+				mCommentFetch.handleWebResponse((ResourceCommentGetMethod) webWrapper.method, (ResourceCommentGetMethodResponse) response);
 			}
 
 			webIt.remove();
@@ -267,6 +283,11 @@ public class ExploreScene extends Scene implements IResponseListener {
 	 */
 	void setSelectedLevel(LevelInfoEntity level) {
 		mSelectedLevel = level;
+
+		((ExploreGui) mGui).resetInfo();
+
+		// Get comments
+		mCommentFetch.fetch(false);
 	}
 
 	/**
@@ -279,6 +300,10 @@ public class ExploreScene extends Scene implements IResponseListener {
 		 */
 		void fetch(boolean fetchMore) {
 			if (mSelectedLevel != null) {
+				if (!fetchMore) {
+					((ExploreGui) mGui).resetComments();
+				}
+				((ExploreGui) mGui).commentWaitIconAdd();
 				UUID resourceId = mSelectedLevel.defEntity.resourceId;
 				mResourceWebRepo.getComments(resourceId, fetchMore, ExploreScene.this);
 				mIsFetching = true;
@@ -313,6 +338,7 @@ public class ExploreScene extends Scene implements IResponseListener {
 			// Only do something if it's comments for the currently selected level
 			if (mSelectedLevel != null && mSelectedLevel.defEntity.resourceId.equals(method.resourceId)) {
 				mIsFetching = false;
+				((ExploreGui) mGui).commentWaitIconRemove();
 
 				switch (response.status) {
 				case FAILED_CONNECTION:
@@ -329,13 +355,25 @@ public class ExploreScene extends Scene implements IResponseListener {
 
 				case SUCCESS_FETCHED_ALL:
 				case SUCCESS_MORE_EXISTS:
-					// TODO
+					// Set user comment
+					if (response.userComment != null) {
+						String dateString = mUser.dateToString(response.userComment.date);
+						((ExploreGui) mGui).setUserComment(response.userComment.comment, dateString);
+					}
+
+					// Add comments
+					for (ResourceCommentEntity commentEntity : response.comments) {
+						String dateString = mUser.dateToString(commentEntity.date);
+						((ExploreGui) mGui).addComment(commentEntity.username, commentEntity.comment, dateString);
+					}
+
 					break;
 
 				}
 			}
 		}
 
+		User mUser = User.getGlobalUser();
 		boolean mIsFetching = false;
 	}
 
@@ -349,12 +387,12 @@ public class ExploreScene extends Scene implements IResponseListener {
 		 */
 		void fetch(String searchString) {
 			if (searchString != null && searchString.length() >= Config.Explore.SEARCH_LENGTH_MIN) {
-				((ExploreGui) mGui).resetContent();
-
 				mIsFetching = true;
 				mSearchString = searchString;
 				mSortOrder = null;
 				mTags.clear();
+
+				((ExploreGui) mGui).resetContent();
 
 				mResourceWebRepo.getLevels(searchString, false, ExploreScene.this);
 			}
@@ -367,12 +405,12 @@ public class ExploreScene extends Scene implements IResponseListener {
 		 */
 		void fetch(SortOrders sortOrder, ArrayList<Tags> tags) {
 			if (sortOrder != null) {
-				((ExploreGui) mGui).resetContent();
-
 				mIsFetching = true;
 				mSearchString = null;
 				mSortOrder = sortOrder;
 				mTags = tags;
+
+				((ExploreGui) mGui).resetContent();
 
 				mResourceWebRepo.getLevels(sortOrder, tags, false, ExploreScene.this);
 			}

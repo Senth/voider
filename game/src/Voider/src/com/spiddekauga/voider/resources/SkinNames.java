@@ -710,6 +710,12 @@ public class SkinNames {
 		LABEL_HEADER(LabelStyle.class, "header"),
 		/** Default text for text fields */
 		LABEL_TEXT_FIELD_DEFAULT(LabelStyle.class, "textfield_default"),
+		/** Player name of the comment */
+		LABEL_COMMENT_NAME(LabelStyle.class, "comment_name"),
+		/** Date of the comment */
+		LABEL_COMMENT_DATE(LabelStyle.class, "comment_date"),
+		/** A Comment */
+		LABEL_COMMENT(LabelStyle.class, "comment"),
 		/** List default */
 		LIST_DEFAULT(ListStyle.class, "default"),
 		/** Logout button */

@@ -55,8 +55,8 @@
 	</datastore-index>
 	
 	
-	<!-- LEVEL_COMMENT -->
-	<datastore-index kind="level_comment" ancestor="true" source="manual">
+	<!-- RESOURCE_COMMENT -->
+	<datastore-index kind="resource_comment" ancestor="true" source="manual">
 		<property name="date" direction="desc"/>
 	</datastore-index>
 	

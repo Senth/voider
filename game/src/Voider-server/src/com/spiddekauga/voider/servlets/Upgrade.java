@@ -1,9 +1,13 @@
 package com.spiddekauga.voider.servlets;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 import javax.servlet.ServletException;
+
+import net._01001111.text.LoremIpsum;
 
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
@@ -11,6 +15,7 @@ import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
+import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CResourceComment;
 import com.spiddekauga.voider.server.util.VoiderServlet;
 
 /**
@@ -29,10 +34,33 @@ public class Upgrade extends VoiderServlet {
 		List<Key> keys = DatastoreUtils.getKeys("published");
 
 		for (Key levelKey : keys) {
-			createEmptyLevelStatistics(levelKey);
+			// createEmptyLevelStatistics(levelKey);
+			createComments(levelKey);
 		}
 
 		return null;
+	}
+
+	private void createComments(Key key) {
+		// Create 100 comments between today and a year ago
+		Date now = new Date();
+		final int yearMillis = 365 * 24 * 60 * 60 * 1000;
+		Random random = new Random();
+
+		final int COMMENTS = 100;
+		LoremIpsum loremIpsum = new LoremIpsum();
+
+		for (int i = 0; i < COMMENTS; ++i) {
+			String comment = loremIpsum.words(25);
+			long dateTime = random.nextInt(yearMillis);
+			Date date = new Date(now.getTime() - dateTime);
+
+			Entity entity = new Entity("resource_comment", key);
+			entity.setProperty(CResourceComment.USERNAME, "player_" + i);
+			entity.setUnindexedProperty(CResourceComment.COMMENT, comment);
+			entity.setProperty(CResourceComment.DATE, date);
+			DatastoreUtils.put(entity);
+		}
 	}
 
 	/**
@@ -40,6 +68,7 @@ public class Upgrade extends VoiderServlet {
 	 * @param key datastore key of the level entity to add empty statistics for
 	 * @return true if successful, false otherwise
 	 */
+	@SuppressWarnings("unused")
 	private boolean createEmptyLevelStatistics(Key key) {
 		Entity entity = new Entity(DatastoreTables.LEVEL_STAT.toString(), key);
 

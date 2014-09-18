@@ -112,6 +112,8 @@ public class ExploreGui extends Gui {
 		if (mWidgets.comment.userDate != null) {
 			mWidgets.comment.userDate.setText("");
 		}
+		mWidgets.comment.userHider.hide();
+		mWidgets.comment.comments.dispose();
 	}
 
 	/**
@@ -134,6 +136,13 @@ public class ExploreGui extends Gui {
 	void setUserComment(String comment, String date) {
 		mWidgets.comment.userComment.setText(comment);
 		mWidgets.comment.userDate.setText(date);
+
+		// Commented something
+		if (!comment.isEmpty()) {
+			mWidgets.comment.userHider.show();
+		} else {
+			mWidgets.comment.userHider.hide();
+		}
 	}
 
 	@Override
@@ -246,11 +255,12 @@ public class ExploreGui extends Gui {
 	 * Initializes sort buttons
 	 */
 	private void initSort() {
-		float paddingSeparator = SkinNames.getResource(SkinNames.GeneralVars.PADDING_SEPARATOR);
+		float paddingSeparator = mUiFactory.getStyles().vars.paddingSeparator;
 
 		AlignTable table = mWidgets.sort.table;
 		table.dispose(true);
 		table.setPaddingCellDefault(0, 0, 0, paddingSeparator);
+		table.row().setPadRight(mUiFactory.getStyles().vars.paddingOuter);
 		table.setAlign(Horizontal.RIGHT, Vertical.TOP);
 		table.setMargin(mUiFactory.getStyles().vars.paddingOuter);
 		mWidgets.sort.hider.addToggleActor(table);
@@ -321,6 +331,7 @@ public class ExploreGui extends Gui {
 		TabWidget tabWidget = mUiFactory.createRightPanel();
 		addActor(tabWidget);
 		mWidgets.tabWidget = tabWidget;
+		tabWidget.setFillHeight(true);
 
 		// Updated bottom margin as play/menu buttons will be available
 		float bottomMargin = mUiFactory.getStyles().vars.textButtonHeight + mUiFactory.getStyles().vars.paddingOuter * 2;
@@ -332,7 +343,7 @@ public class ExploreGui extends Gui {
 
 		// Comments
 		buttonStyle = SkinNames.getResource(SkinNames.General.COMMENTS);
-		tabWidget.addTab(buttonStyle, mWidgets.comment.table);
+		tabWidget.addTab(buttonStyle, mWidgets.comment.table, mWidgets.comment.hider);
 
 		tabWidget.layout();
 	}
@@ -388,20 +399,22 @@ public class ExploreGui extends Gui {
 	private void initComments() {
 		AlignTable table = mWidgets.comment.table;
 
-
 		// User comment
 		GuiHider userHider = mWidgets.comment.userHider;
 
 		mUiFactory.addPanelSection("Your comment", table, userHider);
 
 		ArrayList<Actor> createdActors = new ArrayList<>();
-		AlignTable userComment = mUiFactory.createComment("", "", "", createdActors);
+		AlignTable userComment = mUiFactory.createComment(User.getGlobalUser().getUsername(), "", "", createdActors);
 		table.row();
 		table.add(userComment);
 		userHider.addToggleActor(userComment);
+		mWidgets.comment.userComment = (Label) createdActors.get(1);
+		mWidgets.comment.userDate = (Label) createdActors.get(2);
 
 		// Level comments
 		mUiFactory.addPanelSection("Latest comments", table, null);
+		mWidgets.comment.comments.setAlign(Horizontal.LEFT, Vertical.TOP);
 		ScrollPane scrollPane = new ScrollPane(mWidgets.comment.comments);
 		table.row().setFillHeight(true).setFillWidth(true);
 		table.add(scrollPane).setFillHeight(true).setFillWidth(true);
@@ -599,36 +612,10 @@ public class ExploreGui extends Gui {
 	 */
 	void resetContent() {
 		mWidgets.content.table.dispose();
-	}
-
-	/**
-	 * Reset content and add these levels
-	 * @param levels level to update
-	 */
-	synchronized void resetContent(ArrayList<LevelInfoEntity> levels) {
-		// Populate table
-		AlignTable table = mWidgets.content.table;
-		table.dispose();
-
 		resetContentMargins();
 
-		if (levels.isEmpty()) {
-			return;
-		}
-
-		mWidgets.content.buttonGroup = new ButtonGroup();
-
-
-		addContent(levels);
-
-		resetInfo();
-
-		if (mWidgets.content.scrollPane != null) {
-			mWidgets.content.scrollPane.setScrollPercentY(0);
-		}
-
 		if (mExploreScene.isFetchingLevels()) {
-			addWaitIconToTable(mWidgets.content.table);
+			levelWaitIconAdd();
 		}
 	}
 
@@ -726,7 +713,6 @@ public class ExploreGui extends Gui {
 			protected void onChecked(Button button, boolean checked) {
 				if (checked) {
 					mExploreScene.setSelectedLevel(level);
-					resetInfo();
 				}
 			}
 
@@ -761,16 +747,43 @@ public class ExploreGui extends Gui {
 	}
 
 	/**
+	 * Add wait icon to level table
+	 */
+	void levelWaitIconAdd() {
+		mWidgets.content.waitIconRow = addWaitIconToTable(mWidgets.content.table);
+	}
+
+	/**
+	 * Remove wait icon from comment table
+	 */
+	void commentWaitIconRemove() {
+		if (mWidgets.comment.waitIconRow != null) {
+			mWidgets.comment.comments.removeRow(mWidgets.comment.waitIconRow, false);
+			mWidgets.comment.waitIconRow = null;
+		}
+	}
+
+	/**
+	 * Add wait icon to comment table
+	 */
+	void commentWaitIconAdd() {
+		mWidgets.comment.waitIconRow = addWaitIconToTable(mWidgets.comment.comments);
+	}
+
+	/**
 	 * Add a wait icon to a new row for the specified table
 	 * @param table the table to add the animation wait widget to
+	 * @return row of the wait icon (so it can be removed)
 	 */
-	private void addWaitIconToTable(AlignTable table) {
+	private Row addWaitIconToTable(AlignTable table) {
 		AnimationWidgetStyle waitIconStyle = SkinNames.getResource(SkinNames.General.ANIMATION_WAIT);
 		AnimationWidget waitIcon = new AnimationWidget(waitIconStyle);
 
-		mWidgets.content.waitIconRow = table.row(Horizontal.CENTER, Vertical.MIDDLE);
+		Row row = table.row(Horizontal.CENTER, Vertical.MIDDLE);
 		table.add(waitIcon);
 		table.invalidate();
+
+		return row;
 	}
 
 	/** If we're currently clearing the tags */
@@ -792,7 +805,6 @@ public class ExploreGui extends Gui {
 		Search search = new Search();
 		Background topBar = null;
 		Content content = new Content();
-		// AlignTable rightPanel = new AlignTable();
 		TabWidget tabWidget = null;
 		AlignTable actionTable = new AlignTable();
 
@@ -828,10 +840,16 @@ public class ExploreGui extends Gui {
 
 		private static class Comments {
 			AlignTable table = new AlignTable();
+			HideListener hider = new HideListener(true);
 			AlignTable comments = new AlignTable();
 			Label userComment = null;
 			Label userDate = null;
 			HideManual userHider = new HideManual();
+			Row waitIconRow = null;
+
+			{
+				hider.addChild(userHider);
+			}
 		}
 
 		private static class Tag {

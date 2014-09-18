@@ -154,6 +154,25 @@ com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
 		fontColor: grey_dark,
 	},
 	
+	/** Comments */
+	
+	// Name of comment
+	comment_name: {
+		font: default_font,
+		fontColor: grey_light,
+	},
+	
+	// Date for the comment
+	comment_date: {
+		font: default12,
+		fontColor: grey_light,
+	},
+	
+	comment: {
+		font: default_font,
+		fontColor: white,
+	},
+	
 	/** Editor */
 	
 	editor_name: {

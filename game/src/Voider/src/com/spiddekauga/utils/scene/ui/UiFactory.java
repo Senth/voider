@@ -248,8 +248,7 @@ public class UiFactory {
 
 	/**
 	 * Create a comment table
-	 * @param username name to display. Can be null or empty if no name should be
-	 *        displayed
+	 * @param username name to display. Can be empty if no name should be displayed
 	 * @param comment the comment to display
 	 * @param date date of the comment
 	 * @param createdActors (optional) All created actors (except the returned table) is
@@ -257,13 +256,33 @@ public class UiFactory {
 	 * @return table with the comment
 	 */
 	public AlignTable createComment(String username, String comment, String date, ArrayList<Actor> createdActors) {
+		float width = mStyles.vars.rightPanelWidth;
 		AlignTable table = new AlignTable();
+		table.setWidth(width);
+		table.row().setFillWidth(true).setAlign(Vertical.BOTTOM).setPadTop(mStyles.vars.paddingInner).setPadBottom(mStyles.vars.paddingOuter);
 
-		// TODO
+		// Name
+		LabelStyle style = SkinNames.getResource(SkinNames.General.LABEL_COMMENT_NAME);
+		Label nameLabel = new Label(username, style);
+		table.add(nameLabel);
 
+		// Padding
+		table.add().setFillWidth(true);
 
-		// TODO
-		doExtraActionsOnActors(null, createdActors);
+		// Date
+		style = SkinNames.getResource(SkinNames.General.LABEL_COMMENT_DATE);
+		Label dateLabel = new Label(date, style);
+		table.add(dateLabel);
+
+		// Comment
+		style = SkinNames.getResource(SkinNames.General.LABEL_COMMENT);
+		Label commentLabel = new Label(comment, style);
+		commentLabel.setWrap(true);
+		table.row();
+		table.add(commentLabel).setWidth(width);
+
+		// Add to created actors
+		doExtraActionsOnActors(null, createdActors, nameLabel, commentLabel, dateLabel);
 
 		return table;
 	}

@@ -30,13 +30,13 @@ public abstract class ButtonListener implements EventListener {
 
 	@Override
 	public boolean handle(Event event) {
-		if (event instanceof ChangeEvent) {
+		if (event instanceof ChangeEvent && !(event instanceof VisibilityChangeEvent)) {
 			Button button = getButton(event);
 
 			if (button != null) {
 				AtomicBoolean lastChecked = mCheckedLast.get(button);
 				if (lastChecked == null) {
-					lastChecked = new AtomicBoolean(button.isChecked());
+					lastChecked = new AtomicBoolean(!button.isChecked());
 					mCheckedLast.put(button, lastChecked);
 				}
 

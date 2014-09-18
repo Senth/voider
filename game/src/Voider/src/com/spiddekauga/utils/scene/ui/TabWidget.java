@@ -40,11 +40,22 @@ public class TabWidget extends WidgetGroup implements IMargin<TabWidget>, IPaddi
 		mContentOuterRow = mWrapperTable.row();
 		mContentOuterCell = mWrapperTable.add(mContentOuterTable);
 
-		mContentOuterTable.row().setFillWidth(true);
-		mContentOuterTable.add(mContentInnerTable).setFillWidth(true);
-		mContentOuterRowFill = mContentOuterTable.row();
+		mContentOuterTable.row().setFillWidth(true).setFillHeight(true);
+		mContentOuterTable.add(mContentInnerTable).setFillWidth(true).setFillHeight(true);
 
 		addActor(mWrapperTable);
+	}
+
+	/**
+	 * Set to true to fill the available height
+	 * @param fillHeight true to fill the height
+	 * @return this for chaining
+	 */
+	public TabWidget setFillHeight(boolean fillHeight) {
+		mContentOuterRow.setFillHeight(fillHeight);
+		mContentOuterCell.setFillHeight(fillHeight);
+		mContentOuterTable.invalidateHierarchy();
+		return this;
 	}
 
 	/**
@@ -62,8 +73,8 @@ public class TabWidget extends WidgetGroup implements IMargin<TabWidget>, IPaddi
 		button.addListener(mTabVisibilityListener);
 		hider.addToggleActor(table);
 		hider.setButton(button);
-		mContentInnerTable.add(table).setFillWidth(true);
-		mContentInnerTable.getRow().setFillWidth(true);
+		mContentInnerTable.add(table).setFillWidth(true).setFillHeight(true);
+		mContentInnerTable.getRow().setFillWidth(true).setFillHeight(true);
 		return button;
 	}
 
@@ -305,19 +316,6 @@ public class TabWidget extends WidgetGroup implements IMargin<TabWidget>, IPaddi
 	}
 
 	/**
-	 * Set to true to fill the available height
-	 * @param fillHeight true to fill the height
-	 * @return this for chaining
-	 */
-	public TabWidget setFillHeight(boolean fillHeight) {
-		mContentOuterRow.setFillHeight(fillHeight);
-		mContentOuterCell.setFillHeight(fillHeight);
-		mContentOuterRowFill.setFillHeight(fillHeight);
-		mContentOuterTable.invalidateHierarchy();
-		return this;
-	}
-
-	/**
 	 * Set background for content
 	 * @param background content background image
 	 * @return this for chaining
@@ -359,18 +357,6 @@ public class TabWidget extends WidgetGroup implements IMargin<TabWidget>, IPaddi
 		}
 	}
 
-	// /**
-	// * @return true if all tabs are hidden
-	// */
-	// @Override
-	// public boolean isVisible() {
-	// return mWrapperTable.isVisible();
-	// }
-	//
-	// public void setVisible(boolean visible) {
-	// mWrapperTable.setVisible(true);
-	// };
-
 	/**
 	 * @return true if all tabs are hidden
 	 */
@@ -385,7 +371,7 @@ public class TabWidget extends WidgetGroup implements IMargin<TabWidget>, IPaddi
 	}
 
 	/**
-	 * Listens to visibily change events for tab buttons. I.e. entire tabs are hidden
+	 * Listens to visibility change events for tab buttons. I.e. entire tabs are hidden
 	 */
 	private EventListener mTabVisibilityListener = new EventListener() {
 		@Override
@@ -415,8 +401,6 @@ public class TabWidget extends WidgetGroup implements IMargin<TabWidget>, IPaddi
 	private Row mContentOuterRow = null;
 	/** Cell that contains the outer table */
 	private Cell mContentOuterCell = null;
-	/** Empty row to fill upp the space */
-	private Row mContentOuterRowFill = null;
 	/** Tab button group */
 	private ButtonGroup mButtonGroup = new ButtonGroup();
 }
