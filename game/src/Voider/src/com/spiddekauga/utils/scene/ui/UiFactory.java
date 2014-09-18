@@ -692,12 +692,13 @@ public class UiFactory {
 	 * Add an icon with a label
 	 * @param icon the icon to show
 	 * @param text text after the icon
+	 * @param fillWidth TODO
 	 * @param table the table to add the icon to
 	 * @param hider optional hider for icon and label
 	 * @return created label for the text after the icon
 	 */
-	public Label addIconLabel(IImageNames icon, String text, AlignTable table, GuiHider hider) {
-		table.row().setAlign(Horizontal.LEFT, Vertical.MIDDLE);
+	public Label addIconLabel(IImageNames icon, String text, boolean fillWidth, AlignTable table, GuiHider hider) {
+		table.row().setAlign(Horizontal.LEFT, Vertical.MIDDLE).setFillWidth(fillWidth);
 
 		// Image
 		Image image = new Image(SkinNames.getDrawable(icon));
@@ -705,7 +706,7 @@ public class UiFactory {
 
 		// Label
 		Label label = new Label(text, mStyles.label.standard);
-		table.add(label);
+		table.add(label).setFillWidth(fillWidth);
 
 		doExtraActionsOnActors(hider, null, image, label);
 

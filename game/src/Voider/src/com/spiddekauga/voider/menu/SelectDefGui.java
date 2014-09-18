@@ -179,19 +179,19 @@ public class SelectDefGui extends Gui {
 
 		// Created by
 		mUiFactory.addPanelSection("Created by", table, null);
-		mWidgets.info.createdBy = mUiFactory.addIconLabel(SkinNames.GeneralImages.PLAYER, "", table, null);
+		mWidgets.info.createdBy = mUiFactory.addIconLabel(SkinNames.GeneralImages.PLAYER, "", false, table, null);
 
 		// Revised by
 		mUiFactory.addPanelSection("Revised by", table, null);
-		mWidgets.info.revisedBy = mUiFactory.addIconLabel(SkinNames.GeneralImages.PLAYER, "", table, null);
+		mWidgets.info.revisedBy = mUiFactory.addIconLabel(SkinNames.GeneralImages.PLAYER, "", false, table, null);
 
 		// Date
-		mWidgets.info.date = mUiFactory.addIconLabel(SkinNames.GeneralImages.DATE, "", table, null);
+		mWidgets.info.date = mUiFactory.addIconLabel(SkinNames.GeneralImages.DATE, "", false, table, null);
 
 
 		// Revision
 		if (mSelectDefScene.canChooseRevision()) {
-			mWidgets.info.revision = mUiFactory.addIconLabel(SkinNames.GeneralImages.EDIT, "", table, mWidgets.info.hider);
+			mWidgets.info.revision = mUiFactory.addIconLabel(SkinNames.GeneralImages.EDIT, "", false, table, mWidgets.info.hider);
 		}
 
 		table.row().setFillHeight(true).setFillWidth(true);

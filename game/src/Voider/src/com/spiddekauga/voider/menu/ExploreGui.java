@@ -375,23 +375,24 @@ public class ExploreGui extends Gui {
 
 		// Created by
 		mUiFactory.addPanelSection("Created by", table, null);
-		mWidgets.info.createdBy = mUiFactory.addIconLabel(SkinNames.GeneralImages.PLAYER, "", table, null);
+		mWidgets.info.createdBy = mUiFactory.addIconLabel(SkinNames.GeneralImages.PLAYER, "", false, table, null);
 
 		// Revised by
 		mUiFactory.addPanelSection("Revised by", table, null);
-		mWidgets.info.revisedBy = mUiFactory.addIconLabel(SkinNames.GeneralImages.PLAYER, "", table, null);
+		mWidgets.info.revisedBy = mUiFactory.addIconLabel(SkinNames.GeneralImages.PLAYER, "", false, table, null);
 
 		// Date
-		mWidgets.info.date = mUiFactory.addIconLabel(SkinNames.GeneralImages.DATE, "", table, null);
+		mWidgets.info.date = mUiFactory.addIconLabel(SkinNames.GeneralImages.DATE, "", false, table, null);
 
 		// Plays
-		mWidgets.info.plays = mUiFactory.addIconLabel(SkinNames.GeneralImages.PLAYS, "", table, null);
+		mWidgets.info.plays = mUiFactory.addIconLabel(SkinNames.GeneralImages.PLAYS, "", false, table, null);
 
 		// Likes
-		mWidgets.info.bookmarks = mUiFactory.addIconLabel(SkinNames.GeneralImages.BOOKMARK, "", table, null);
+		mWidgets.info.bookmarks = mUiFactory.addIconLabel(SkinNames.GeneralImages.BOOKMARK, "", false, table, null);
 
 		// Tags
-		mWidgets.info.tags = mUiFactory.addIconLabel(SkinNames.GeneralImages.TAG, "", table, null);
+		mWidgets.info.tags = mUiFactory.addIconLabel(SkinNames.GeneralImages.TAG, "", true, table, null);
+		mWidgets.info.tags.setWrap(true);
 
 
 		// Fill down
