@@ -1,7 +1,8 @@
 package com.spiddekauga.voider.menu;
 
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 
 import com.badlogic.gdx.Input;
@@ -101,30 +102,30 @@ public class ExploreScene extends Scene implements IResponseListener {
 	}
 
 	@Override
-	public synchronized void handleWebResponse(IMethodEntity method, IEntity response) {
+	public void handleWebResponse(IMethodEntity method, IEntity response) {
 		mWebResponses.add(new WebWrapper(method, response));
 	}
 
 	/**
 	 * Handles existing web responses
 	 */
-	private synchronized void handleWepResponses() {
-		Iterator<WebWrapper> webIt = mWebResponses.iterator();
+	private void handleWepResponses() {
 
-		while (webIt.hasNext()) {
-			WebWrapper webWrapper = webIt.next();
-			IEntity response = webWrapper.response;
+		synchronized (mWebResponses) {
+			for (WebWrapper webWrapper : mWebResponses) {
+				IEntity response = webWrapper.response;
 
 
-			if (response instanceof LevelGetAllMethodResponse) {
-				mLevelFetch.handleWebResponse((LevelGetAllMethod) webWrapper.method, (LevelGetAllMethodResponse) response);
-			} else if (response instanceof ResourceDownloadMethodResponse) {
-				handleResourceDownloadResponse((ResourceDownloadMethod) webWrapper.method, (ResourceDownloadMethodResponse) response);
-			} else if (response instanceof ResourceCommentGetMethodResponse) {
-				mCommentFetch.handleWebResponse((ResourceCommentGetMethod) webWrapper.method, (ResourceCommentGetMethodResponse) response);
+				if (response instanceof LevelGetAllMethodResponse) {
+					mLevelFetch.handleWebResponse((LevelGetAllMethod) webWrapper.method, (LevelGetAllMethodResponse) response);
+				} else if (response instanceof ResourceDownloadMethodResponse) {
+					handleResourceDownloadResponse((ResourceDownloadMethod) webWrapper.method, (ResourceDownloadMethodResponse) response);
+				} else if (response instanceof ResourceCommentGetMethodResponse) {
+					mCommentFetch.handleWebResponse((ResourceCommentGetMethod) webWrapper.method, (ResourceCommentGetMethodResponse) response);
+				}
 			}
 
-			webIt.remove();
+			mWebResponses.clear();
 		}
 	}
 
@@ -215,21 +216,9 @@ public class ExploreScene extends Scene implements IResponseListener {
 	 * Fetch more comments
 	 */
 	void fetchMoreComments() {
-		mCommentFetch.fetch(true);
-	}
-
-	/**
-	 * @return true if more comments exists to be fetched
-	 */
-	boolean hasMoreComments() {
-		return mCommentFetch.hasMore();
-	}
-
-	/**
-	 * @return true if we're currently fetching comments
-	 */
-	boolean isFetchingComments() {
-		return mCommentFetch.isFetching();
+		if (mCommentFetch.hasMore()) {
+			mCommentFetch.fetch(true);
+		}
 	}
 
 	/**
@@ -320,13 +309,6 @@ public class ExploreScene extends Scene implements IResponseListener {
 
 			UUID resourceId = mSelectedLevel.defEntity.resourceId;
 			return mResourceWebRepo.hasMoreComments(resourceId);
-		}
-
-		/**
-		 * @return true if we're fetching comments
-		 */
-		boolean isFetching() {
-			return mIsFetching;
 		}
 
 		/**
@@ -524,5 +506,5 @@ public class ExploreScene extends Scene implements IResponseListener {
 	private ResourceWebRepo mResourceWebRepo = ResourceWebRepo.getInstance();
 	private ResourceRepo mResourceRepo = ResourceRepo.getInstance();
 	/** Synchronized web responses */
-	private ArrayList<WebWrapper> mWebResponses = new ArrayList<>();
+	private List<WebWrapper> mWebResponses = Collections.synchronizedList(new ArrayList<WebWrapper>());
 }

@@ -159,7 +159,7 @@ com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
 	// Name of comment
 	comment_name: {
 		font: default_font,
-		fontColor: grey_light,
+		fontColor: highlight,
 	},
 	
 	// Date for the comment

@@ -1690,16 +1690,37 @@ slider_background
   orig: 1, 8
   offset: 0, 0
   index: -1
-modal_fade
+grey
   rotate: false
   xy: 3226, 348
   size: 1, 1
   orig: 1, 1
   offset: 0, 0
   index: -1
-selection
+grey_dark
   rotate: false
   xy: 13, 1
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+grey_light
+  rotate: false
+  xy: 16, 1
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+modal_fade
+  rotate: false
+  xy: 19, 1
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+selection
+  rotate: false
+  xy: 1061, 38
   size: 1, 1
   orig: 1, 1
   offset: 0, 0

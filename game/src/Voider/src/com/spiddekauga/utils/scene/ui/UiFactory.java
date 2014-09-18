@@ -251,15 +251,20 @@ public class UiFactory {
 	 * @param username name to display. Can be empty if no name should be displayed
 	 * @param comment the comment to display
 	 * @param date date of the comment
+	 * @param usePadding if there should be padding above the name and date.
 	 * @param createdActors (optional) All created actors (except the returned table) is
 	 *        added to this. In the specified order: username, comment, date.
 	 * @return table with the comment
 	 */
-	public AlignTable createComment(String username, String comment, String date, ArrayList<Actor> createdActors) {
+	public AlignTable createComment(String username, String comment, String date, boolean usePadding, ArrayList<Actor> createdActors) {
 		float width = mStyles.vars.rightPanelWidth;
 		AlignTable table = new AlignTable();
 		table.setWidth(width);
-		table.row().setFillWidth(true).setAlign(Vertical.BOTTOM).setPadTop(mStyles.vars.paddingInner).setPadBottom(mStyles.vars.paddingOuter);
+		Row row = table.row().setFillWidth(true).setAlign(Vertical.BOTTOM).setPadBottom(mStyles.vars.paddingOuter);
+
+		if (usePadding) {
+			row.setPadTop(mStyles.vars.paddingInner);
+		}
 
 		// Name
 		LabelStyle style = SkinNames.getResource(SkinNames.General.LABEL_COMMENT_NAME);

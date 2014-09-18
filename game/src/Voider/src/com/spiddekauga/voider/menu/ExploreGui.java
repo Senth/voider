@@ -123,7 +123,13 @@ public class ExploreGui extends Gui {
 	 * @param date date of the comment
 	 */
 	void addComment(String username, String comment, String date) {
-		AlignTable table = mUiFactory.createComment(username, comment, date, null);
+		// Use padding
+		boolean usePadding = true;
+		if (mWidgets.comment.comments.getRowCount() == 0) {
+			usePadding = false;
+		}
+
+		AlignTable table = mUiFactory.createComment(username, comment, date, usePadding, null);
 		mWidgets.comment.comments.row();
 		mWidgets.comment.comments.add(table);
 	}
@@ -405,7 +411,7 @@ public class ExploreGui extends Gui {
 		mUiFactory.addPanelSection("Your comment", table, userHider);
 
 		ArrayList<Actor> createdActors = new ArrayList<>();
-		AlignTable userComment = mUiFactory.createComment(User.getGlobalUser().getUsername(), "", "", createdActors);
+		AlignTable userComment = mUiFactory.createComment(User.getGlobalUser().getUsername(), "", "", false, createdActors);
 		table.row();
 		table.add(userComment);
 		userHider.addToggleActor(userComment);
@@ -415,9 +421,19 @@ public class ExploreGui extends Gui {
 		// Level comments
 		mUiFactory.addPanelSection("Latest comments", table, null);
 		mWidgets.comment.comments.setAlign(Horizontal.LEFT, Vertical.TOP);
-		ScrollPane scrollPane = new ScrollPane(mWidgets.comment.comments);
+		ScrollPane scrollPane = new ScrollPane(mWidgets.comment.comments, mUiFactory.getStyles().scrollPane.noBackground);
 		table.row().setFillHeight(true).setFillWidth(true);
 		table.add(scrollPane).setFillHeight(true).setFillWidth(true);
+
+		ScrollPaneListener listener = new ScrollPaneListener() {
+			@Override
+			public void hitEdge(ScrollPane scrollPane, Edge edge) {
+				if (edge == Edge.BOTTOM) {
+					mExploreScene.fetchMoreComments();
+				}
+			}
+		};
+		scrollPane.addListener(listener);
 	}
 
 	/**
