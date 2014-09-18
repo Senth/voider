@@ -171,10 +171,10 @@ public class Config {
 
 		/** Salt for file key */
 		private static final byte[] FILE_KEY_BYTES = { 15, 35, 68, 86, 57, 2, 99, 105, 127, -38, -100, -35, 35, 48, 68, -79, 95, -22, 0, 15, 0, 0,
-				98, 15, 27, 35 };
+			98, 15, 27, 35 };
 		/** Salt for file key */
 		private static final byte[] PASSWORD_KEY_BYTES = { 11, 120, 8, 86, 5, 22, 9, 15, -88, 38, 100, -35, 35, 35, -6, 79, 95, 22, 22, 2, 15, 65, 8,
-				-15, -27, -35 };
+			-15, -27, -35 };
 		/** The actual file key */
 		private static SecretKeySpec mFileKey = null;
 		/** The actual password key */
