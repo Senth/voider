@@ -1,11 +1,10 @@
-package com.spiddekauga.utils;
+package com.spiddekauga.net;
 
 /**
  * Listens to progress updates in an out stream
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-public interface IOutstreamProgressListener {
+public interface IOutstreamProgressListener extends IProgressListener {
 	/**
 	 * Called while writing data
 	 * @param cWrittenBytes number of bytes that has been written

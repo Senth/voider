@@ -9,7 +9,7 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.IdentityMap;
-import com.spiddekauga.utils.IOutstreamProgressListener;
+import com.spiddekauga.net.IOutstreamProgressListener;
 import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.utils.PngExport;
 import com.spiddekauga.utils.Screens;

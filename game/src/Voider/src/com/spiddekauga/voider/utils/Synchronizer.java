@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
 
+import com.spiddekauga.net.IDownloadProgressListener;
 import com.spiddekauga.utils.Observable;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
@@ -114,18 +115,15 @@ public class Synchronizer extends Observable implements IMessageListener, IRespo
 
 		IResponseListener[] responseListeners = addSynchronizerToListeners(responseListener);
 
-
-		// TODO remove wait window for syncing that doesn't need it
-
 		switch (type) {
 		case COMMUNITY_RESOURCES:
-			mResourceRepo.syncDownload(responseListeners);
-			SceneSwitcher.showWaitWindow("Downloading Internet\nThis may take a while...");
+			mResourceRepo.syncDownload(mDownloadProgressListener, responseListeners);
+			SceneSwitcher.showProgressBar("Downloading Internet\nThis may take a while...");
 
 			break;
 		case USER_RESOURCES:
-			mResourceRepo.syncUserResources(responseListeners);
-			SceneSwitcher.showWaitWindow("Synchronizing your levels, enemies, and bullets.\nThis may take a while...");
+			mResourceRepo.syncUserResources(mDownloadProgressListener, responseListeners);
+			SceneSwitcher.showProgressBar("Synchronizing your levels, enemies, and bullets.\nThis may take a while...");
 			break;
 
 		case BUG_REPORTS:
@@ -163,10 +161,6 @@ public class Synchronizer extends Observable implements IMessageListener, IRespo
 			webRepo.sendBugReport(bugsToSend, responseListeners);
 			SceneSwitcher.showWaitWindow("Uploading saved bug reports");
 		}
-		// Hide message window if it has been shown
-		else if (mSyncQueue.isEmpty()) {
-			SceneSwitcher.hideWaitWindow();
-		}
 	}
 
 	/**
@@ -195,9 +189,7 @@ public class Synchronizer extends Observable implements IMessageListener, IRespo
 
 	@Override
 	public void handleWebResponse(IMethodEntity method, IEntity response) {
-		if (mSyncQueue.isEmpty()) {
-			SceneSwitcher.hideWaitWindow();
-		}
+		SceneSwitcher.hideWaitWindow();
 
 		if (response instanceof UserResourcesSyncMethodResponse) {
 			handleSyncUserResourceResponse((UserResourcesSyncMethod) method, (UserResourcesSyncMethodResponse) response);
@@ -387,6 +379,22 @@ public class Synchronizer extends Observable implements IMessageListener, IRespo
 	private HighscoreRepo mHighscoreRepo = HighscoreRepo.getInstance();
 	/** Stats repository */
 	private StatRepo mStatRepo = StatRepo.getInstance();
+	/** Download progress listener */
+	private IDownloadProgressListener mDownloadProgressListener = new IDownloadProgressListener() {
+		@Override
+		public void handleFileDownloaded(int cComplete, int cTotal) {
+			// Hide
+			if (cComplete == cTotal) {
+				SceneSwitcher.hideProgressBar();
+			}
+			// Update
+			else {
+				float completePercent = cComplete / ((float) cTotal) * 100;
+				SceneSwitcher.updateProgressBar(completePercent);
+			}
+		}
+	};
+
 
 	/** Instance of this class */
 	private static Synchronizer mInstance = null;

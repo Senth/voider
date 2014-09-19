@@ -9,7 +9,8 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.badlogic.gdx.Gdx;
-import com.spiddekauga.utils.IOutstreamProgressListener;
+import com.spiddekauga.net.IDownloadProgressListener;
+import com.spiddekauga.net.IOutstreamProgressListener;
 import com.spiddekauga.voider.game.Level;
 import com.spiddekauga.voider.game.actors.ActorDef;
 import com.spiddekauga.voider.network.entities.IEntity;
@@ -62,11 +63,12 @@ public class ResourceRepo extends Repo {
 
 	/**
 	 * Synchronize downloaded/published resources
+	 * @param progressListener listen to the download progress
 	 * @param responseListeners listens to the web response (when syncing is done)
 	 */
-	public void syncDownload(IResponseListener... responseListeners) {
+	public void syncDownload(IDownloadProgressListener progressListener, IResponseListener... responseListeners) {
 		Date lastSync = ResourceLocalRepo.getSyncDownloadDate();
-		mWebRepo.syncDownloaded(lastSync, addToFront(responseListeners, this));
+		mWebRepo.syncDownloaded(lastSync, progressListener, addToFront(responseListeners, this));
 	}
 
 	/**
@@ -101,9 +103,9 @@ public class ResourceRepo extends Repo {
 				// Don't sync via the synchronizer as a wait window will appear, instead
 				// just add the synchronizer as a listener
 				if (responseListener != null) {
-					syncUserResources(Synchronizer.getInstance(), responseListener);
+					syncUserResources(null, Synchronizer.getInstance(), responseListener);
 				} else {
-					syncUserResources(Synchronizer.getInstance());
+					syncUserResources(null, Synchronizer.getInstance());
 				}
 			}
 		}
@@ -122,9 +124,11 @@ public class ResourceRepo extends Repo {
 
 	/**
 	 * Synchronizes the user resource revisions, both upload and download
+	 * @param progressListener download progress listener
 	 * @param responseListeners listens to the web response (when syncing is done)
 	 */
-	public void syncUserResources(IResponseListener... responseListeners) {
+	public void syncUserResources(IDownloadProgressListener progressListener, IResponseListener... responseListeners) {
+		mSyncUserResourcesProgressListener = progressListener;
 		mWebRepo.syncUserResources(ResourceLocalRepo.getUnsyncedUserResources(), ResourceLocalRepo.getRemovedResources(),
 				ResourceLocalRepo.getSyncUserResourceDate(), addToFront(responseListeners, this));
 	}
@@ -222,6 +226,7 @@ public class ResourceRepo extends Repo {
 
 		// Download resources, but remove local first if there exists any revision of
 		// those. I.e. the server's sync was replaced, thus the local should also be
+		ArrayList<ResourceBlobEntity> toDownload = new ArrayList<>();
 		response.downloadStatus = true;
 		for (Entry<UUID, ArrayList<ResourceBlobEntity>> entry : response.blobsToDownload.entrySet()) {
 			UUID resourceId = entry.getKey();
@@ -232,12 +237,11 @@ public class ResourceRepo extends Repo {
 			ResourceLocalRepo.removeRevisions(resourceId, firstRevision);
 
 			// Download resources
-			response.downloadStatus = mWebRepo.downloadResources(revisions);
-
-			if (!response.downloadStatus) {
-				break;
-			}
+			toDownload.addAll(revisions);
 		}
+
+		response.downloadStatus = mWebRepo.downloadResources(toDownload, mSyncUserResourcesProgressListener);
+
 
 		// Add resource locally
 		if (response.downloadStatus) {
@@ -395,6 +399,8 @@ public class ResourceRepo extends Repo {
 		}
 	}
 
+	/** Last progress listener for sync user resources */
+	private IDownloadProgressListener mSyncUserResourcesProgressListener = null;
 
 	/** Instance of this class */
 	private static ResourceRepo mInstance = null;

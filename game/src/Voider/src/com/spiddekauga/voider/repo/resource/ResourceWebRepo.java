@@ -11,7 +11,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Disposable;
-import com.spiddekauga.utils.IOutstreamProgressListener;
+import com.spiddekauga.net.IDownloadProgressListener;
+import com.spiddekauga.net.IOutstreamProgressListener;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.game.LevelDef;
 import com.spiddekauga.voider.game.actors.BulletActorDef;
@@ -80,11 +81,14 @@ public class ResourceWebRepo extends WebRepo {
 	 * Sync all downloaded levels. I.e. download all publish levels that have been
 	 * downloaded on other devices
 	 * @param lastSync last synchronized date
-	 * @param responseListeners listens to the web response.
+	 * @param progressListener listens to downloaded status
+	 * @param responseListeners listens to the web response
 	 */
-	void syncDownloaded(Date lastSync, IResponseListener... responseListeners) {
+	void syncDownloaded(Date lastSync, IDownloadProgressListener progressListener, IResponseListener... responseListeners) {
 		DownloadSyncMethod method = new DownloadSyncMethod();
 		method.lastSync = lastSync;
+
+		mSyncDownloadProgressListener = progressListener;
 
 		sendInNewThread(method, responseListeners);
 	}
@@ -362,7 +366,7 @@ public class ResourceWebRepo extends WebRepo {
 		// Download all resources
 		if (response instanceof DownloadSyncMethodResponse) {
 
-			boolean success = downloadResources(((DownloadSyncMethodResponse) response).resources);
+			boolean success = downloadResources(((DownloadSyncMethodResponse) response).resources, mSyncDownloadProgressListener);
 
 			if (!success) {
 				((DownloadSyncMethodResponse) response).status = DownloadSyncMethodResponse.Statuses.FAILED_DOWNLOAD;
@@ -379,9 +383,10 @@ public class ResourceWebRepo extends WebRepo {
 	/**
 	 * Download all specified resources
 	 * @param resources all resources to download.
+	 * @param progressListener optional progress listener
 	 * @return true if all resources were downloaded.
 	 */
-	boolean downloadResources(ArrayList<ResourceBlobEntity> resources) {
+	boolean downloadResources(ArrayList<ResourceBlobEntity> resources, IDownloadProgressListener progressListener) {
 		// Add all resources to download
 		ArrayList<DownloadResourceWrapper> toDownload = new ArrayList<>();
 
@@ -413,7 +418,7 @@ public class ResourceWebRepo extends WebRepo {
 			}
 		}
 
-		downloadInThreads(toDownload);
+		downloadInThreads(toDownload, progressListener);
 
 		for (ResourceBlobEntity resourceInfo : resources) {
 			if (!resourceInfo.downloaded) {
@@ -433,7 +438,7 @@ public class ResourceWebRepo extends WebRepo {
 		// Download all resources
 		if (response instanceof ResourceDownloadMethodResponse) {
 
-			boolean success = downloadResources(((ResourceDownloadMethodResponse) response).resources);
+			boolean success = downloadResources(((ResourceDownloadMethodResponse) response).resources, null);
 
 			if (!success) {
 				((ResourceDownloadMethodResponse) response).status = ResourceDownloadMethodResponse.Statuses.FAILED_DOWNLOAD;
@@ -686,6 +691,9 @@ public class ResourceWebRepo extends WebRepo {
 	private Cache<String, LevelCache> mSearchCache = new Cache<>();
 	/** Level sort cache */
 	private Cache<SortWrapper, LevelCache> mSortCache = new Cache<>();
+
+	/** Last progress listener for sync download */
+	private IDownloadProgressListener mSyncDownloadProgressListener = null;
 
 	/**
 	 * Resource Blob download wrapper

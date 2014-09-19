@@ -18,7 +18,7 @@ import org.apache.http.entity.mime.content.InputStreamBody;
 import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.util.Args;
 
-import com.spiddekauga.utils.IOutstreamProgressListener;
+import com.spiddekauga.net.IOutstreamProgressListener;
 
 
 /**

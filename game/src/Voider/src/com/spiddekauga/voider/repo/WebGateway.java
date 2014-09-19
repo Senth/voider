@@ -23,7 +23,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
 import com.badlogic.gdx.Gdx;
-import com.spiddekauga.utils.IOutstreamProgressListener;
+import com.spiddekauga.net.IOutstreamProgressListener;
 import com.spiddekauga.voider.Config;
 
 /**

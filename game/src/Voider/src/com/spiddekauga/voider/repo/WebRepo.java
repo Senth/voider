@@ -4,13 +4,16 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
-import com.spiddekauga.utils.IOutstreamProgressListener;
+import com.spiddekauga.net.IDownloadProgressListener;
+import com.spiddekauga.net.IOutstreamProgressListener;
+import com.spiddekauga.net.IProgressListener;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
@@ -47,7 +50,7 @@ public abstract class WebRepo {
 	 * @param progressListener send upload progress to this listener
 	 * @param responseListeners class that invoked the WebRepo
 	 */
-	protected void sendInNewThread(IMethodEntity methodEntity, IOutstreamProgressListener progressListener, IResponseListener... responseListeners) {
+	protected void sendInNewThread(IMethodEntity methodEntity, IProgressListener progressListener, IResponseListener... responseListeners) {
 		sendInNewThread(methodEntity, null, progressListener, responseListeners);
 	}
 
@@ -69,7 +72,7 @@ public abstract class WebRepo {
 	 * @param progressListener send upload progress to this listener
 	 * @param responseListeners class that invoked the WebRepo
 	 */
-	protected void sendInNewThread(IMethodEntity methodEntity, ArrayList<FieldNameFileWrapper> files, IOutstreamProgressListener progressListener,
+	protected void sendInNewThread(IMethodEntity methodEntity, ArrayList<FieldNameFileWrapper> files, IProgressListener progressListener,
 			IResponseListener... responseListeners) {
 		Thread thread = new ThreadSend(responseListeners, this, methodEntity, files, progressListener);
 		thread.start();
@@ -231,28 +234,38 @@ public abstract class WebRepo {
 	/**
 	 * Download blobs in new threads
 	 * @param blobs all blobs to download
+	 * @param progressListener download progress listener
 	 */
-	protected void downloadInThreads(ArrayList<? extends DownloadBlobWrapper> blobs) {
-		ArrayList<DownloadBlobWrapper> blobsLeft = new ArrayList<>();
+	protected void downloadInThreads(ArrayList<? extends DownloadBlobWrapper> blobs, IDownloadProgressListener progressListener) {
+		if (progressListener != null) {
+			progressListener.handleFileDownloaded(0, blobs.size());
+		}
+
+		LinkedList<DownloadBlobWrapper> blobsLeft = new LinkedList<>();
 		blobsLeft.addAll(blobs);
 		ThreadDownload.mToDownload.addAll(blobs);
 		ThreadDownload.createThreads();
 
 		// Wait to return until all blobs have been downloaded or failed
 		while (!blobsLeft.isEmpty()) {
-			DownloadBlobWrapper last = blobsLeft.get(blobsLeft.size() - 1);
+			try {
+				Thread.sleep(20);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 
-			// Wait
-			if (last.isDownloading()) {
-				try {
-					Thread.sleep(20);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
+			boolean removedSome = false;
+			Iterator<DownloadBlobWrapper> it = blobsLeft.iterator();
+			while (it.hasNext()) {
+				DownloadBlobWrapper entity = it.next();
+				if (!entity.isDownloading()) {
+					it.remove();
+					removedSome = true;
 				}
 			}
-			// Done - remove
-			else {
-				blobsLeft.remove(blobsLeft.size() - 1);
+
+			if (removedSome && progressListener != null) {
+				progressListener.handleFileDownloaded(blobs.size() - blobsLeft.size(), blobs.size());
 			}
 		}
 	}
@@ -361,7 +374,7 @@ public abstract class WebRepo {
 		 * @param progressListener send upload progress to this listener
 		 */
 		ThreadSend(IResponseListener[] responseListeners, WebRepo webRepo, IMethodEntity methodEntity, ArrayList<FieldNameFileWrapper> files,
-				IOutstreamProgressListener progressListener) {
+				IProgressListener progressListener) {
 			mMethodEntity = methodEntity;
 			mWebRepo = webRepo;
 			mResponseListeners = responseListeners;
@@ -373,10 +386,16 @@ public abstract class WebRepo {
 		public void run() {
 			try {
 				IEntity response = null;
+
+				IOutstreamProgressListener progressListener = null;
+				if (mProgressListener instanceof IOutstreamProgressListener) {
+					progressListener = (IOutstreamProgressListener) mProgressListener;
+				}
+
 				if (mFiles == null || mFiles.isEmpty()) {
-					response = serializeAndSend(mMethodEntity, mProgressListener);
+					response = serializeAndSend(mMethodEntity, progressListener);
 				} else {
-					response = serializeAndSend(mMethodEntity, mProgressListener, mFiles);
+					response = serializeAndSend(mMethodEntity, progressListener, mFiles);
 				}
 
 				mWebRepo.handleResponse(mMethodEntity, response, mResponseListeners);
@@ -398,6 +417,6 @@ public abstract class WebRepo {
 		/** Caller instance, i.e. the class that invoked the WebRepo */
 		IResponseListener[] mResponseListeners;
 		/** Progress listener */
-		IOutstreamProgressListener mProgressListener;
+		IProgressListener mProgressListener;
 	}
 }

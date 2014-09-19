@@ -12,7 +12,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
-import com.spiddekauga.utils.IOutstreamProgressListener;
+import com.spiddekauga.net.IOutstreamProgressListener;
 import com.spiddekauga.utils.KeyHelper;
 import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.utils.commands.Command;
@@ -745,7 +745,7 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	@Override
 	public void publishDef() {
 		if (mLevel != null) {
-			mGui.showProgressBar();
+			mGui.showProgressBar("Uploading...");
 			mResourceRepo.publish(this, this, mLevel);
 		}
 	}

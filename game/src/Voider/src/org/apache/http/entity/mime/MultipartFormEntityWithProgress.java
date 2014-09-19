@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 
-import com.spiddekauga.utils.IOutstreamProgressListener;
-import com.spiddekauga.utils.OutputStreamProgress;
+import com.spiddekauga.net.IOutstreamProgressListener;
+import com.spiddekauga.net.OutputStreamProgress;
 
 
 /**

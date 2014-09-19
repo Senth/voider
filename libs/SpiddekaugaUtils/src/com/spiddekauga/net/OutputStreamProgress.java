@@ -1,4 +1,4 @@
-package com.spiddekauga.utils;
+package com.spiddekauga.net;
 
 import java.io.IOException;
 import java.io.OutputStream;

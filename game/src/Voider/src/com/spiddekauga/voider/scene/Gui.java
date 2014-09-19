@@ -425,14 +425,17 @@ public abstract class Gui implements Disposable {
 
 	/**
 	 * Shows the a progress bar for loading/downloading/uploading window
+	 * @param message the message to display
 	 */
-	public void showProgressBar() {
+	public void showProgressBar(String message) {
 		if (mWidgets.progressBar.window == null) {
 			return;
 		}
 
+		mWidgets.progressBar.window.clearActions();
+
 		mStage.addActor(mWidgets.progressBar.window);
-		updateProgressBar(0, "");
+		updateProgressBar(0, message);
 
 		float fadeInDuration = (Float) SkinNames.getResource(SkinNames.GeneralVars.WAIT_WINDOW_FADE_IN);
 		mWidgets.progressBar.window.addAction(Actions.fadeIn(fadeInDuration, Interpolation.fade));
@@ -451,7 +454,7 @@ public abstract class Gui implements Disposable {
 	}
 
 	/**
-	 * Updates the progress bar
+	 * Updates the progress bar, doesn't set the text
 	 * @param percentage how many percentage that has been loaded
 	 */
 	public void updateProgressBar(float percentage) {
@@ -461,13 +464,11 @@ public abstract class Gui implements Disposable {
 	/**
 	 * Updates the progress bar
 	 * @param percentage how many percentage that has been loaded
-	 * @param message optional message, ignored if null
+	 * @param message optional message, keeps previous if null
 	 */
 	public void updateProgressBar(float percentage, String message) {
 		if (message != null) {
 			mWidgets.progressBar.label.setText(message);
-		} else {
-			mWidgets.progressBar.label.setText("");
 		}
 		mWidgets.progressBar.slider.setValue(percentage);
 		mWidgets.progressBar.label.pack();
