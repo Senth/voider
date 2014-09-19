@@ -3,6 +3,7 @@ package com.spiddekauga.voider.app;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.spiddekauga.utils.KeyHelper;
+import com.spiddekauga.utils.scene.ui.UiFactory;
 import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.scene.Scene;
@@ -17,6 +18,7 @@ public class TestUiScene extends Scene {
 	 */
 	public TestUiScene() {
 		super(new TestUiGui());
+		setClearColor(UiFactory.getInstance().getStyles().color.sceneBackground);
 	}
 
 	@Override
@@ -44,6 +46,11 @@ public class TestUiScene extends Scene {
 			reloadUi();
 		} else if (KeyHelper.isBackPressed(keycode)) {
 			Gdx.app.exit();
+		} else if (keycode == Input.Keys.F11) {
+			mGui.showProgressBar("This is a progress window that is quite long...\nMultiple lines...");
+			mGui.updateProgressBar(50, "50 / 100");
+		} else if (keycode == Input.Keys.F12) {
+			mGui.hideProgressBar();
 		}
 
 		return false;

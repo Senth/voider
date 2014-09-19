@@ -292,6 +292,26 @@ public class TabWidget extends WidgetGroup implements IMargin<TabWidget>, IPaddi
 		return mContentOuterTable.getPad();
 	}
 
+	@Override
+	public float getPadX() {
+		return mContentOuterTable.getPadX();
+	}
+
+	@Override
+	public float getPadY() {
+		return mContentOuterTable.getPadY();
+	}
+
+	@Override
+	public float getMarginX() {
+		return mWrapperTable.getMarginX();
+	}
+
+	@Override
+	public float getMarginY() {
+		return mWrapperTable.getMarginY();
+	}
+
 	/**
 	 * Set tab alignment
 	 * @param horizontal horizontal alignment

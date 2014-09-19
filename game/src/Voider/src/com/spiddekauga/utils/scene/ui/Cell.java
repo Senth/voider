@@ -184,6 +184,16 @@ public class Cell implements Poolable, IPadding<Cell> {
 		return mPadding;
 	}
 
+	@Override
+	public float getPadX() {
+		return mPadding.left + mPadding.right;
+	}
+
+	@Override
+	public float getPadY() {
+		return mPadding.top + mPadding.bottom;
+	}
+
 	/**
 	 * Sets the size of the cell.
 	 * @note That this will change the preferred size of the cell. Use #resetSize() to
@@ -492,7 +502,11 @@ public class Cell implements Poolable, IPadding<Cell> {
 		if (mActor instanceof AlignTable) {
 			((AlignTable) mActor).calculatePreferredSize();
 		} else if (mActor instanceof Layout) {
-			((Layout) mActor).validate();
+			try {
+				((Layout) mActor).validate();
+			} catch (ArrayIndexOutOfBoundsException e) {
+				// Do nothing...
+			}
 		}
 
 		if (mBoxShape && !mFillWidth && !mFillHeight) {

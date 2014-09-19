@@ -83,4 +83,14 @@ public interface IPadding<ReturnType> {
 	 * @return left padding
 	 */
 	float getPadLeft();
+
+	/**
+	 * @return get padding Y (i.e. padding top + bottom)
+	 */
+	float getPadY();
+
+	/**
+	 * @return get padding X (i.e. padding left + right)
+	 */
+	float getPadX();
 }

@@ -23,6 +23,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.ui.Window.WindowStyle;
+import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Disposable;
@@ -388,10 +389,8 @@ public abstract class Gui implements Disposable {
 			setWaitWindowText(message);
 			mStage.addActor(mWidgets.waitWindow.window);
 
-			// Center the window
-			int xPosition = (int) ((Gdx.graphics.getWidth() - mWidgets.waitWindow.window.getWidth()) * 0.5f);
-			int yPosition = (int) ((Gdx.graphics.getHeight() - mWidgets.waitWindow.window.getHeight()) * 0.5f);
-			mWidgets.waitWindow.window.setPosition(xPosition, yPosition);
+			// Center
+			centerWindow(mWidgets.waitWindow.window);
 
 			float fadeInDuration = (Float) SkinNames.getResource(SkinNames.GeneralVars.WAIT_WINDOW_FADE_IN);
 			mWidgets.waitWindow.window.addAction(Actions.fadeIn(fadeInDuration, Interpolation.fade));
@@ -435,10 +434,16 @@ public abstract class Gui implements Disposable {
 		mWidgets.progressBar.window.clearActions();
 
 		mStage.addActor(mWidgets.progressBar.window);
-		updateProgressBar(0, message);
+		mWidgets.progressBar.label.setText(message);
+		updateProgressBar(0, "");
+		mWidgets.progressBar.window.pack();
+		mWidgets.progressBar.label.pack();
+		mWidgets.progressBar.window.pack();
 
 		float fadeInDuration = (Float) SkinNames.getResource(SkinNames.GeneralVars.WAIT_WINDOW_FADE_IN);
 		mWidgets.progressBar.window.addAction(Actions.fadeIn(fadeInDuration, Interpolation.fade));
+
+		centerWindow(mWidgets.progressBar.window);
 	}
 
 	/**
@@ -464,20 +469,22 @@ public abstract class Gui implements Disposable {
 	/**
 	 * Updates the progress bar
 	 * @param percentage how many percentage that has been loaded
-	 * @param message optional message, keeps previous if null
+	 * @param progressText optional message, keeps previous if null
 	 */
-	public void updateProgressBar(float percentage, String message) {
-		if (message != null) {
-			mWidgets.progressBar.label.setText(message);
+	public void updateProgressBar(float percentage, String progressText) {
+		if (progressText != null) {
+			mWidgets.progressBar.progressLabel.setText(progressText);
 		}
 		mWidgets.progressBar.slider.setValue(percentage);
-		mWidgets.progressBar.label.pack();
 		mWidgets.progressBar.window.pack();
 
-		// Center the window
-		int xPosition = (int) ((Gdx.graphics.getWidth() - mWidgets.progressBar.window.getWidth()) * 0.5f);
-		int yPosition = (int) ((Gdx.graphics.getHeight() - mWidgets.progressBar.window.getHeight()) * 0.5f);
-		mWidgets.progressBar.window.setPosition(xPosition, yPosition);
+		centerWindow(mWidgets.progressBar.window);
+	}
+
+	private static void centerWindow(Window window) {
+		int xPosition = (int) ((Gdx.graphics.getWidth() - window.getWidth()) * 0.5f);
+		int yPosition = (int) ((Gdx.graphics.getHeight() - window.getHeight()) * 0.5f);
+		window.setPosition(xPosition, yPosition);
 	}
 
 	/**
@@ -501,28 +508,54 @@ public abstract class Gui implements Disposable {
 		if (ResourceCacheFacade.isLoaded(InternalNames.UI_GENERAL) && mMessageShower == null) {
 			mMessageShower = new MessageShower(mStage);
 
-			// Wait window
-			mWidgets.waitWindow.window = new Window("", (WindowStyle) SkinNames.getResource(SkinNames.General.WINDOW_MODAL));
-			mWidgets.waitWindow.window.setModal(true);
-			mWidgets.waitWindow.window.setSkin((Skin) ResourceCacheFacade.get(InternalNames.UI_GENERAL));
-			mWidgets.waitWindow.animation = new AnimationWidget((AnimationWidgetStyle) SkinNames.getResource(SkinNames.General.ANIMATION_WAIT));
-			mWidgets.waitWindow.label = new Label("", (LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_DEFAULT));
-			mWidgets.waitWindow.window.add(mWidgets.waitWindow.animation).padRight(
-					(Float) SkinNames.getResource(SkinNames.GeneralVars.PADDING_SEPARATOR));
-			mWidgets.waitWindow.window.add(mWidgets.waitWindow.label);
-
-			// Progress bar
-			mWidgets.progressBar.window = new Window("", (WindowStyle) SkinNames.getResource(SkinNames.General.WINDOW_MODAL));
-			mWidgets.progressBar.window.setModal(true);
-			mWidgets.progressBar.slider = new Slider(0, 100, 0.1f, false, (SliderStyle) SkinNames.getResource(SkinNames.General.SLIDER_LOADING_BAR));
-			mWidgets.progressBar.slider.setTouchable(Touchable.disabled);
-			mWidgets.progressBar.label = new Label("", (LabelStyle) SkinNames.getResource(SkinNames.General.LABEL_DEFAULT));
-			mWidgets.progressBar.window.add(mWidgets.progressBar.label);
-			mWidgets.progressBar.window.row();
-			mWidgets.progressBar.window.add(mWidgets.progressBar.slider);
+			initWaitWindow();
+			initProgressBar();
 		}
 
 		mInitialized = true;
+	}
+
+	/**
+	 * Initialize wait window
+	 */
+	private void initWaitWindow() {
+		mWidgets.waitWindow.window = new Window("", (WindowStyle) SkinNames.getResource(SkinNames.General.WINDOW_MODAL));
+		mWidgets.waitWindow.window.setModal(true);
+		mWidgets.waitWindow.window.setSkin((Skin) ResourceCacheFacade.get(InternalNames.UI_GENERAL));
+		mWidgets.waitWindow.animation = new AnimationWidget((AnimationWidgetStyle) SkinNames.getResource(SkinNames.General.ANIMATION_WAIT));
+		mWidgets.waitWindow.label = new Label("", mUiFactory.getStyles().label.standard);
+		mWidgets.waitWindow.window.add(mWidgets.waitWindow.animation).padRight(mUiFactory.getStyles().vars.paddingSeparator);
+		mWidgets.waitWindow.window.add(mWidgets.waitWindow.label).padRight(mUiFactory.getStyles().vars.paddingInner);
+	}
+
+	/**
+	 * Initialize progress bar
+	 */
+	private void initProgressBar() {
+		Window window = new Window("", (WindowStyle) SkinNames.getResource(SkinNames.General.WINDOW_MODAL));
+		mWidgets.progressBar.window = window;
+		window.setModal(true);
+		window.align(Align.center);
+
+		window.pad(mUiFactory.getStyles().vars.paddingInner);
+
+		// Text
+		mWidgets.progressBar.label = new Label("", mUiFactory.getStyles().label.standard);
+		window.row();
+		window.add(mWidgets.progressBar.label);
+
+		// Progress bar
+		window.row().padTop(mUiFactory.getStyles().vars.paddingInner);
+		mWidgets.progressBar.slider = new Slider(0, 100, 0.1f, false, (SliderStyle) SkinNames.getResource(SkinNames.General.SLIDER_LOADING_BAR));
+		mWidgets.progressBar.slider.setTouchable(Touchable.disabled);
+		window.add(mWidgets.progressBar.slider);
+
+		// Progress text
+		window.row().padTop(mUiFactory.getStyles().vars.paddingInner);
+		mWidgets.progressBar.progressLabel = new Label("", mUiFactory.getStyles().label.standard);
+		window.add(mWidgets.progressBar.progressLabel);
+		mWidgets.progressBar.label.pack();
+		window.pack();
 	}
 
 	/**
@@ -701,6 +734,7 @@ public abstract class Gui implements Disposable {
 		static class ProgressBar {
 			Slider slider = null;
 			Window window = null;
+			Label progressLabel = null;
 			Label label = null;
 
 		}

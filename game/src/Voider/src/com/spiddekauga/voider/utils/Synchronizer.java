@@ -383,14 +383,12 @@ public class Synchronizer extends Observable implements IMessageListener, IRespo
 	private IDownloadProgressListener mDownloadProgressListener = new IDownloadProgressListener() {
 		@Override
 		public void handleFileDownloaded(int cComplete, int cTotal) {
+			float completePercent = cComplete / ((float) cTotal) * 100;
+			SceneSwitcher.updateProgressBar(completePercent, "" + cComplete + " / " + cTotal);
+
 			// Hide
 			if (cComplete == cTotal) {
 				SceneSwitcher.hideProgressBar();
-			}
-			// Update
-			else {
-				float completePercent = cComplete / ((float) cTotal) * 100;
-				SceneSwitcher.updateProgressBar(completePercent);
 			}
 		}
 	};

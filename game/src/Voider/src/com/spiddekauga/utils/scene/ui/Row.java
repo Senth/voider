@@ -216,6 +216,16 @@ public class Row implements Poolable, IPadding<Row> {
 		return mPadding;
 	}
 
+	@Override
+	public float getPadX() {
+		return mPadding.left + mPadding.right;
+	}
+
+	@Override
+	public float getPadY() {
+		return mPadding.top + mPadding.bottom;
+	}
+
 	/**
 	 * @return minimum height of the row. Equals the non-scalable cells' height
 	 */

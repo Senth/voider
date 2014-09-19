@@ -82,4 +82,14 @@ public interface IMargin<ReturnType> {
 	 * @return left margin
 	 */
 	float getMarginLeft();
+
+	/**
+	 * @return get margin Y (i.e. margin top + bottom)
+	 */
+	float getMarginY();
+
+	/**
+	 * @return get margin X (i.e. margin left + right)
+	 */
+	float getMarginX();
 }

@@ -204,21 +204,21 @@ public class Config {
 			public static final boolean LOAD_UNLOAD_DEPENDENCIES = true;
 		}
 
-		/**
-		 * If debugging tests shall be activate. This causes extra runtime, but checks so
-		 * that none of the checks are broken.
-		 */
-		public static boolean DEBUG_TESTS = true;
 		/** Skip loading text */
 		public static final boolean SKIP_LOADING_TIME = true;
 		/** Build level */
 		public static final Builds BUILD = Builds.DEV_LOCAL;
 		/** Set to true to turn on the exception handler */
-		public static boolean EXCEPTION_HANDLER = isBuildOrAbove(Builds.NIGHTLY) || false;
+		public static boolean EXCEPTION_HANDLER = isBuildOrAbove(Builds.NIGHTLY);
 		/** Set to true in JUNIT tests */
 		public static boolean JUNIT_TEST = false;
 		/** Logging verbosity */
 		public static final int LOG_VERBOSITY = isBuildOrAbove(Builds.BETA) ? Application.LOG_ERROR : Application.LOG_DEBUG;
+		/**
+		 * If debugging tests shall be activate. This causes extra runtime, but checks so
+		 * that none of the checks are broken.
+		 */
+		public static boolean DEBUG_TESTS = isBuildOrBelow(Builds.NIGHTLY);
 
 
 		/**

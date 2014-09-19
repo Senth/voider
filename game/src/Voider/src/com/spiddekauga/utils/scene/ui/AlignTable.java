@@ -11,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup;
+import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.Layout;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.SnapshotArray;
@@ -367,6 +368,26 @@ public class AlignTable extends WidgetGroup implements Disposable, IMargin<Align
 		return mPadding;
 	}
 
+	@Override
+	public float getPadX() {
+		return mPadding.left + mPadding.right;
+	}
+
+	@Override
+	public float getPadY() {
+		return mPadding.top + mPadding.bottom;
+	}
+
+	@Override
+	public float getMarginX() {
+		return mMargin.left + mMargin.right;
+	}
+
+	@Override
+	public float getMarginY() {
+		return mMargin.top + mMargin.bottom;
+	}
+
 	/**
 	 * Gets all actors in the table
 	 * @param onlyVisible set to true to get visible actors, false to get all
@@ -645,10 +666,10 @@ public class AlignTable extends WidgetGroup implements Disposable, IMargin<Align
 
 
 		// Add padding
-		mPrefHeight += mPadding.top + mPadding.bottom;
-		mPrefWidth += mPadding.left + mPadding.right;
-		mMinHeight += mPadding.top + mPadding.bottom;
-		mMinWidth += mPadding.left + mPadding.right;
+		mPrefHeight += getPadY() + getMarginY();
+		mPrefWidth += getPadX() + getMarginX();
+		mMinHeight += getPadY() + getMarginY();
+		mMinWidth += getPadX() + getMarginX();
 
 
 		// Change size of table to fit the content
@@ -802,7 +823,7 @@ public class AlignTable extends WidgetGroup implements Disposable, IMargin<Align
 		// Set position of this table.
 		// If parent is an AlignTable it has already set the correct position for this
 		// table
-		if (!(getParent() instanceof AlignTable) && !(getParent() instanceof Table)) {
+		if (!(getParent() instanceof AlignTable) && !(getParent() instanceof Table) && !(getParent() instanceof Window)) {
 			Vector2 position = Pools.vector2.obtain();
 
 
