@@ -1059,6 +1059,8 @@ public class Config {
 		 * point to this build instead
 		 */
 		public static final Builds OVERRIDE_HOST = null;
+		/** Maximum number of connections */
+		public static final int CONNECTIONS_MAX = Debug.isBuildOrBelow(Builds.DEV_LOCAL) ? 1 : 5;
 
 		static {
 			Builds build = Debug.BUILD;

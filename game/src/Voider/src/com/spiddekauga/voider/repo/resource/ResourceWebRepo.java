@@ -382,10 +382,11 @@ public class ResourceWebRepo extends WebRepo {
 	 * @return true if all resources were downloaded.
 	 */
 	boolean downloadResources(ArrayList<ResourceBlobEntity> resources) {
-		for (ResourceBlobEntity resourceInfo : resources) {
-			BlobDownloadMethod blobDownloadMethod = new BlobDownloadMethod();
-			blobDownloadMethod.blobKey = resourceInfo.blobKey;
+		// Add all resources to download
+		ArrayList<DownloadResourceWrapper> toDownload = new ArrayList<>();
 
+
+		for (ResourceBlobEntity resourceInfo : resources) {
 			String resourceFileName = null;
 			if (resourceInfo instanceof ResourceRevisionBlobEntity) {
 				resourceFileName = ResourceLocalRepo.getRevisionFilepath(resourceInfo.resourceId,
@@ -408,11 +409,15 @@ public class ResourceWebRepo extends WebRepo {
 
 				String filePath = Gdx.files.getExternalStoragePath() + resourceFileName;
 
-				resourceInfo.downloaded = serializeAndDownload(blobDownloadMethod, filePath);
+				toDownload.add(new DownloadResourceWrapper(filePath, resourceInfo));
+			}
+		}
 
-				if (!resourceInfo.downloaded) {
-					return false;
-				}
+		downloadInThreads(toDownload);
+
+		for (ResourceBlobEntity resourceInfo : resources) {
+			if (!resourceInfo.downloaded) {
+				return false;
 			}
 		}
 
@@ -681,6 +686,30 @@ public class ResourceWebRepo extends WebRepo {
 	private Cache<String, LevelCache> mSearchCache = new Cache<>();
 	/** Level sort cache */
 	private Cache<SortWrapper, LevelCache> mSortCache = new Cache<>();
+
+	/**
+	 * Resource Blob download wrapper
+	 */
+	private class DownloadResourceWrapper extends DownloadBlobWrapper {
+		/**
+		 * Sets the resource blob information
+		 * @param filepath
+		 * @param resourceInfo
+		 */
+		public DownloadResourceWrapper(String filepath, ResourceBlobEntity resourceInfo) {
+			super(new BlobDownloadMethod(resourceInfo.blobKey), filepath);
+			mResourceInfo = resourceInfo;
+		}
+
+		@Override
+		protected synchronized void setDownloaded(boolean downloaded) {
+			super.setDownloaded(downloaded);
+
+			mResourceInfo.downloaded = downloaded;
+		}
+
+		private ResourceBlobEntity mResourceInfo;
+	}
 
 	/**
 	 * The key for LevelCache when getting by sort order and tags.

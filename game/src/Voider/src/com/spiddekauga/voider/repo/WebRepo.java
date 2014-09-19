@@ -2,7 +2,10 @@ package com.spiddekauga.voider.repo;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.UUID;
 
@@ -12,6 +15,7 @@ import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.entities.NetworkEntitySerializer;
+import com.spiddekauga.voider.network.entities.misc.BlobDownloadMethod;
 import com.spiddekauga.voider.network.entities.misc.BugReportMethod;
 import com.spiddekauga.voider.network.entities.misc.GetUploadUrlMethod;
 import com.spiddekauga.voider.network.entities.misc.GetUploadUrlMethodResponse;
@@ -67,7 +71,7 @@ public abstract class WebRepo {
 	 */
 	protected void sendInNewThread(IMethodEntity methodEntity, ArrayList<FieldNameFileWrapper> files, IOutstreamProgressListener progressListener,
 			IResponseListener... responseListeners) {
-		Thread thread = new ThreadWrapper(responseListeners, this, methodEntity, files, progressListener);
+		Thread thread = new ThreadSend(responseListeners, this, methodEntity, files, progressListener);
 		thread.start();
 	}
 
@@ -225,9 +229,129 @@ public abstract class WebRepo {
 	}
 
 	/**
-	 * Wrapper class for all threads
+	 * Download blobs in new threads
+	 * @param blobs all blobs to download
 	 */
-	private static class ThreadWrapper extends Thread {
+	protected void downloadInThreads(ArrayList<? extends DownloadBlobWrapper> blobs) {
+		ArrayList<DownloadBlobWrapper> blobsLeft = new ArrayList<>();
+		blobsLeft.addAll(blobs);
+		ThreadDownload.mToDownload.addAll(blobs);
+		ThreadDownload.createThreads();
+
+		// Wait to return until all blobs have been downloaded or failed
+		while (!blobsLeft.isEmpty()) {
+			DownloadBlobWrapper last = blobsLeft.get(blobsLeft.size() - 1);
+
+			// Wait
+			if (last.isDownloading()) {
+				try {
+					Thread.sleep(20);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+			// Done - remove
+			else {
+				blobsLeft.remove(blobsLeft.size() - 1);
+			}
+		}
+	}
+
+	/**
+	 * Wrapper class for downloads
+	 */
+	protected class DownloadBlobWrapper {
+		/**
+		 * @param methodEntity
+		 * @param filepath
+		 */
+		protected DownloadBlobWrapper(BlobDownloadMethod methodEntity, String filepath) {
+			mMethodEntity = methodEntity;
+			mFilepath = filepath;
+		}
+
+		/**
+		 * @return true if downloaded
+		 */
+		protected synchronized boolean isDownloaded() {
+			return mDownloaded != null && mDownloaded;
+		}
+
+		/**
+		 * @return true if failed to download
+		 */
+		protected synchronized boolean isFailed() {
+			return mDownloaded != null && !mDownloaded;
+		}
+
+		/**
+		 * @return true if this blob hasn't been downloaded yet
+		 */
+		protected synchronized boolean isDownloading() {
+			return mDownloaded == null;
+		}
+
+		/**
+		 * Set download state
+		 * @param downloaded true if downloaded, false if failed.
+		 */
+		protected synchronized void setDownloaded(boolean downloaded) {
+			mDownloaded = downloaded;
+		}
+
+		private String mFilepath;
+		private BlobDownloadMethod mMethodEntity;
+		private Boolean mDownloaded = null;
+	}
+
+	/**
+	 * Wrapper thread for downloading blobs from the server
+	 */
+	private static class ThreadDownload extends Thread {
+
+		/**
+		 * Creates new threads if necessary
+		 */
+		static void createThreads() {
+			int threadsToCreate = mToDownload.size();
+
+			if (threadsToCreate > Config.Network.CONNECTIONS_MAX) {
+				threadsToCreate = Config.Network.CONNECTIONS_MAX;
+			}
+
+			threadsToCreate -= mThreads.size();
+
+
+			for (int i = 0; i < threadsToCreate; i++) {
+				new ThreadDownload().start();
+			}
+		}
+
+		@Override
+		public void run() {
+			while (!mToDownload.isEmpty()) {
+				try {
+					DownloadBlobWrapper toDownload = mToDownload.remove(0);
+
+					boolean success = serializeAndDownload(toDownload.mMethodEntity, toDownload.mFilepath);
+					toDownload.setDownloaded(success);
+
+				} catch (IndexOutOfBoundsException e) {
+					// Do nothing
+				}
+			}
+		}
+
+		/** All things to download */
+		static List<DownloadBlobWrapper> mToDownload = Collections.synchronizedList(new LinkedList<DownloadBlobWrapper>());
+		/** All active threads */
+		static List<ThreadDownload> mThreads = Collections.synchronizedList(new LinkedList<ThreadDownload>());
+	}
+
+	/**
+	 * Wrapper class for sending information to the server (including uploads)
+	 */
+	private static class ThreadSend extends Thread {
 		/**
 		 * Constructs a web thread
 		 * @param responseListeners class that invoked the WebRepeo
@@ -236,7 +360,7 @@ public abstract class WebRepo {
 		 * @param files all the files to send, set to null to not send any files
 		 * @param progressListener send upload progress to this listener
 		 */
-		ThreadWrapper(IResponseListener[] responseListeners, WebRepo webRepo, IMethodEntity methodEntity, ArrayList<FieldNameFileWrapper> files,
+		ThreadSend(IResponseListener[] responseListeners, WebRepo webRepo, IMethodEntity methodEntity, ArrayList<FieldNameFileWrapper> files,
 				IOutstreamProgressListener progressListener) {
 			mMethodEntity = methodEntity;
 			mWebRepo = webRepo;

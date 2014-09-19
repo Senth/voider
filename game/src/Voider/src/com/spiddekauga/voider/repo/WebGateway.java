@@ -183,13 +183,25 @@ public class WebGateway {
 				BufferedInputStream bis = new BufferedInputStream(httpResponse.getEntity().getContent());
 				BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(new File(filePath)));
 				int inByte;
+				// boolean written = false;
 				while ((inByte = bis.read()) != -1) {
 					bos.write(inByte);
+					// written = true;
 				}
+
+				// if (!written) {
+				// Gdx.app.error(WebGateway.class.getSimpleName(),
+				// "Didn't download file: " + filePath);
+				// System.err.println("Headers:");
+				// for (Header header : httpResponse.getAllHeaders()) {
+				// System.err.println(header.getName() + ": " + header.getValue());
+				// }
+				// }
+
 				bis.close();
 				bos.close();
-
 				httpResponse.close();
+
 				return true;
 			} catch (IOException e) {
 				Gdx.app.log("Network", "Error downloading file");
@@ -222,7 +234,8 @@ public class WebGateway {
 	 */
 	private static void initHttpClient() {
 		if (mHttpClient == null) {
-			mHttpClient = HttpClients.custom().setMaxConnTotal(1).setMaxConnPerRoute(1).build();
+			mHttpClient = HttpClients.custom().setMaxConnTotal(Config.Network.CONNECTIONS_MAX).setMaxConnPerRoute(Config.Network.CONNECTIONS_MAX)
+					.build();
 		}
 	}
 
