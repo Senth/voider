@@ -33,6 +33,7 @@ import com.spiddekauga.voider.network.entities.resource.LevelDefEntity;
 import com.spiddekauga.voider.network.entities.resource.PublishMethod;
 import com.spiddekauga.voider.network.entities.resource.PublishMethodResponse;
 import com.spiddekauga.voider.network.entities.resource.PublishMethodResponse.Statuses;
+import com.spiddekauga.voider.network.entities.resource.UploadTypes;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
 import com.spiddekauga.voider.server.util.ServerConfig.TokenSizes;
 import com.spiddekauga.voider.server.util.UserRepo;
@@ -46,7 +47,7 @@ import com.spiddekauga.voider.server.util.VoiderServlet;
 public class Publish extends VoiderServlet {
 	@Override
 	protected void onInit() {
-		// Does nothing
+		mSearchDocumentsToAdd.clear();
 	}
 
 	@Override
@@ -60,8 +61,6 @@ public class Publish extends VoiderServlet {
 		}
 
 		boolean success = false;
-
-		mSearchDocumentsToAdd.clear();
 
 		if (methodEntity instanceof PublishMethod) {
 			Map<UUID, BlobKey> blobKeys = getUploadedBlobs();
@@ -272,8 +271,8 @@ public class Publish extends VoiderServlet {
 	private boolean addSearchDocuments() {
 		boolean success = true;
 
-		for (Entry<String, ArrayList<Document>> entry : mSearchDocumentsToAdd.entrySet()) {
-			String typeName = entry.getKey();
+		for (Entry<UploadTypes, ArrayList<Document>> entry : mSearchDocumentsToAdd.entrySet()) {
+			String typeName = entry.getKey().toString();
 			ArrayList<Document> documents = entry.getValue();
 
 			success = SearchUtils.indexDocuments(typeName, documents);
@@ -324,7 +323,7 @@ public class Publish extends VoiderServlet {
 		ArrayList<Document> documentList = mSearchDocumentsToAdd.get(defEntity.type.toString());
 		if (documentList == null) {
 			documentList = new ArrayList<>();
-			mSearchDocumentsToAdd.put(defEntity.type.toString(), documentList);
+			mSearchDocumentsToAdd.put(defEntity.type, documentList);
 		}
 
 		documentList.add(builder.build());
@@ -502,5 +501,5 @@ public class Publish extends VoiderServlet {
 	/** Logger */
 	private Logger mLogger = Logger.getLogger(Publish.class.getName());
 	/** Created search documents */
-	private HashMap<String, ArrayList<Document>> mSearchDocumentsToAdd = new HashMap<>();
+	private HashMap<UploadTypes, ArrayList<Document>> mSearchDocumentsToAdd = new HashMap<>();
 }

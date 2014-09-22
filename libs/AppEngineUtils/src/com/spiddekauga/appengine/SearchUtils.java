@@ -17,9 +17,9 @@ import com.google.appengine.api.search.SearchQueryException;
 import com.google.appengine.api.search.SearchServiceFactory;
 import com.google.appengine.api.search.StatusCode;
 
+
 /**
  * Search utilities for Google App Engine
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class SearchUtils {
@@ -152,8 +152,8 @@ public class SearchUtils {
 	/**
 	 * Split words into smaller parts so these can be auto-completed
 	 * @param text the text to tokenize
-	 * @param minSize the minimum size of the tokens/auto-complete, if a word is
-	 * shorter than this size it will still be added as a token.
+	 * @param minSize the minimum size of the tokens/auto-complete, if a word is shorter
+	 *        than this size it will still be added as a token.
 	 * @return auto-complete compatible tokenized text
 	 */
 	public static String tokenizeAutocomplete(String text, int minSize) {

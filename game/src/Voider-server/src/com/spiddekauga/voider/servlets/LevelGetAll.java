@@ -343,7 +343,8 @@ public class LevelGetAll extends VoiderServlet {
 			cursor = com.google.appengine.api.search.Cursor.newBuilder().build(mParameters.nextCursor);
 		}
 
-		Results<ScoredDocument> foundDocuments = SearchUtils.search("level", mParameters.searchString.toLowerCase(), FetchSizes.LEVELS, cursor);
+		Results<ScoredDocument> foundDocuments = SearchUtils.search(UploadTypes.LEVEL_DEF.toString(), mParameters.searchString.toLowerCase(),
+				FetchSizes.LEVELS, cursor);
 
 		if (foundDocuments == null || foundDocuments.getCursor() == null || foundDocuments.getNumberReturned() < FetchSizes.LEVELS) {
 			mResponse.status = Statuses.SUCCESS_FETCHED_ALL;

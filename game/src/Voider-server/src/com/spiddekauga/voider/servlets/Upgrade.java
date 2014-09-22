@@ -1,8 +1,11 @@
 package com.spiddekauga.voider.servlets;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Random;
 
 import javax.servlet.ServletException;
@@ -11,18 +14,25 @@ import net._01001111.text.LoremIpsum;
 
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.api.search.Document;
+import com.google.appengine.api.search.Field;
 import com.spiddekauga.appengine.DatastoreUtils;
+import com.spiddekauga.appengine.SearchUtils;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
+import com.spiddekauga.voider.network.entities.resource.UploadTypes;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CResourceComment;
+import com.spiddekauga.voider.server.util.ServerConfig.TokenSizes;
+import com.spiddekauga.voider.server.util.UserRepo;
 import com.spiddekauga.voider.server.util.VoiderServlet;
 
 /**
  * Does an upgrade for the server
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
-@SuppressWarnings("serial")
+@SuppressWarnings({ "serial", "unused" })
 public class Upgrade extends VoiderServlet {
 	@Override
 	protected void onInit() {
@@ -35,10 +45,61 @@ public class Upgrade extends VoiderServlet {
 
 		for (Key levelKey : keys) {
 			// createEmptyLevelStatistics(levelKey);
-			createComments(levelKey);
+			// createComments(levelKey);
 		}
 
+		// indexDocuments();
+
 		return null;
+	}
+
+	private void indexDocuments() {
+		HashMap<UploadTypes, ArrayList<Document>> documentsToAdd = new HashMap<>();
+
+		for (Entity entity : DatastoreUtils.getEntities("published")) {
+			UploadTypes uploadType = UploadTypes.fromId(DatastoreUtils.getIntProperty(entity, "type"));
+
+			ArrayList<Document> documents = documentsToAdd.get(uploadType);
+
+			if (documents == null) {
+				documents = new ArrayList<>();
+				documentsToAdd.put(uploadType, documents);
+			}
+
+			Document.Builder builder = Document.newBuilder();
+			builder.setId(KeyFactory.keyToString(entity.getKey()));
+
+			String nameTokens = SearchUtils.tokenizeAutocomplete((String) entity.getProperty("name"), TokenSizes.RESOURCE);
+			builder.addField(Field.newBuilder().setName("name").setText(nameTokens).build());
+
+			Date date = (Date) entity.getProperty("date");
+			builder.addField(Field.newBuilder().setName("published").setDate(date));
+
+			String creatorName = UserRepo.getUsername(entity.getParent());
+			String creatorNameTokens = SearchUtils.tokenizeAutocomplete(creatorName.toLowerCase(), TokenSizes.RESOURCE);
+			builder.addField(Field.newBuilder().setName("creator").setText(creatorNameTokens));
+
+			String originalCreatorName = UserRepo.getUsername((Key) entity.getProperty("original_creator_key"));
+			String originalCreatorNameTokens = SearchUtils.tokenizeAutocomplete(originalCreatorName.toLowerCase(), TokenSizes.RESOURCE);
+			builder.addField(Field.newBuilder().setName("original_creator").setText(originalCreatorNameTokens));
+
+			documents.add(builder.build());
+		}
+
+		// Add search documents
+		boolean success = true;
+
+		for (Entry<UploadTypes, ArrayList<Document>> entry : documentsToAdd.entrySet()) {
+			String typeName = entry.getKey().toString();
+			ArrayList<Document> documents = entry.getValue();
+
+			success = SearchUtils.indexDocuments(typeName, documents);
+
+			if (!success) {
+				return;
+			}
+		}
+
 	}
 
 	private void createComments(Key key) {
@@ -68,7 +129,6 @@ public class Upgrade extends VoiderServlet {
 	 * @param key datastore key of the level entity to add empty statistics for
 	 * @return true if successful, false otherwise
 	 */
-	@SuppressWarnings("unused")
 	private boolean createEmptyLevelStatistics(Key key) {
 		Entity entity = new Entity(DatastoreTables.LEVEL_STAT.toString(), key);
 
