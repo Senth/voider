@@ -66,6 +66,9 @@ public class GameScene extends WorldScene {
 		mTesting = testing;
 		mInvulnerable = invulnerable;
 		mSpriteBatch = new SpriteBatch();
+		mSpriteBatch.setShader(SpriteBatch.createDefaultShader());
+		mSpriteBatch.enableBlending();
+		mSpriteBatch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 	}
 
 	@Override
@@ -403,13 +406,10 @@ public class GameScene extends WorldScene {
 			if (defaultShader != null) {
 				mShapeRenderer.setShader(defaultShader);
 			}
-			mSpriteBatch.setShader(SpriteBatch.createDefaultShader());
 			mShapeRenderer.setProjectionMatrix(mCamera.combined);
 
 			// Render sprites
 			mSpriteBatch.begin();
-			mSpriteBatch.enableBlending();
-			mSpriteBatch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 			mLevel.renderBackground(mSpriteBatch);
 			mSpriteBatch.end();
 

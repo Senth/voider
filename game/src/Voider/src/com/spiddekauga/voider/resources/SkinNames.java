@@ -2,6 +2,7 @@ package com.spiddekauga.voider.resources;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.ui.Button.ButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox.CheckBoxStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
@@ -124,6 +125,12 @@ public class SkinNames {
 		MOVE,
 		/** Movement options for enemies */
 		MOVEMENT,
+		/** AI enemy movement */
+		MOVEMENT_AI,
+		/** Path enemy movement */
+		MOVEMENT_PATH,
+		/** Stationary enemy */
+		MOVEMENT_STATIONARY,
 		/** Creates a new resource */
 		NEW,
 		/** Turn something off (e.g. enemy weapons or turn movement) */
@@ -232,10 +239,16 @@ public class SkinNames {
 	 * Editor images
 	 */
 	public enum EditorImages implements IImageNames {
-		/** Youtube icon */
+		/** YouTube icon */
 		YOUTUBE,
 		/** Tooltip */
 		TOOLTIP,
+		/** Enemy AI movement save image */
+		MOVEMENT_AI_SAVE,
+		/** Enemy path movement save image */
+		MOVEMENT_PATH_SAVE,
+		/** Enemy stationary save image */
+		MOVEMENT_STATIONARY_SAVE,
 
 		;
 
@@ -934,6 +947,16 @@ public class SkinNames {
 	public static Drawable getDrawable(IImageNames imageName) {
 		Skin skin = ResourceCacheFacade.get(imageName.getSkinName());
 		return skin.getDrawable(imageName.toString());
+	}
+
+	/**
+	 * Method for getting a texture region
+	 * @param imageName name of the texture region to get
+	 * @return texture region if found
+	 */
+	public static TextureRegion getRegion(IImageNames imageName) {
+		Skin skin = ResourceCacheFacade.get(imageName.getSkinName());
+		return skin.getRegion(imageName.toString());
 	}
 
 	/**

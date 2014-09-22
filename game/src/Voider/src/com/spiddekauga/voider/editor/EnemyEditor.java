@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -18,6 +19,7 @@ import com.spiddekauga.utils.ShapeRendererEx.ShapeType;
 import com.spiddekauga.utils.commands.Command;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.Config.Editor.Enemy;
+import com.spiddekauga.voider.editor.Editor.ImageSaveOnActor.Locations;
 import com.spiddekauga.voider.editor.commands.CEnemyBulletDefSelect;
 import com.spiddekauga.voider.game.CollisionResolver;
 import com.spiddekauga.voider.game.Path;
@@ -35,6 +37,7 @@ import com.spiddekauga.voider.repo.resource.ExternalTypes;
 import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.ResourceItem;
+import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.scene.SceneSwitcher;
 import com.spiddekauga.voider.utils.Messages;
@@ -422,12 +425,53 @@ public class EnemyEditor extends ActorEditor {
 
 	@Override
 	public void saveDef() {
-		setSaving(mDef, new EnemyActor());
+		setSaving(mDef, new EnemyActor(), getSaveImages());
 	}
 
 	@Override
 	public void saveDef(Command command) {
-		setSaving(mDef, new EnemyActor(), command);
+		setSaving(mDef, new EnemyActor(), command, getSaveImages());
+	}
+
+	private ImageSaveOnActor[] getSaveImages() {
+		ImageSaveOnActor[] images = null;
+
+		// Different size depending on weapon
+		if (mDef.hasWeapon()) {
+			images = new ImageSaveOnActor[2];
+		} else {
+			images = new ImageSaveOnActor[1];
+		}
+
+
+		// Bottom right - Movement type
+		TextureRegion movementTexture = null;
+		switch (mDef.getMovementType()) {
+		case AI:
+			movementTexture = SkinNames.getRegion(SkinNames.EditorImages.MOVEMENT_AI_SAVE);
+			break;
+		case PATH:
+			movementTexture = SkinNames.getRegion(SkinNames.EditorImages.MOVEMENT_PATH_SAVE);
+			break;
+		case STATIONARY:
+			movementTexture = SkinNames.getRegion(SkinNames.EditorImages.MOVEMENT_STATIONARY_SAVE);
+			break;
+		}
+
+		if (movementTexture != null) {
+			images[0] = new ImageSaveOnActor(movementTexture, Locations.BOTTOM_RIGHT);
+		}
+
+
+		// Bottom left - Bullet image
+		if (mDef.hasWeapon() && mDef.getWeaponDef().getBulletActorDef() != null) {
+			BulletActorDef bulletActorDef = mDef.getWeaponDef().getBulletActorDef();
+			TextureRegion bulletTexture = bulletActorDef.getTextureRegionDrawable().getRegion();
+
+			images[1] = new ImageSaveOnActor(bulletTexture, Locations.BOTTOM_LEFT);
+		}
+
+		return images;
 	}
 
 	@Override

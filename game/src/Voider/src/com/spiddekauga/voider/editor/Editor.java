@@ -5,7 +5,10 @@ import java.util.ArrayList;
 import java.util.Observer;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.IdentityMap;
@@ -48,6 +51,10 @@ public abstract class Editor extends WorldScene implements IEditor, IResponseLis
 	 */
 	public Editor(Gui gui, float pickRadius) {
 		super(gui, pickRadius);
+
+		mSpriteBatch.setShader(SpriteBatch.createDefaultShader());
+		mSpriteBatch.enableBlending();
+		mSpriteBatch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 	}
 
 	/**
@@ -247,7 +254,43 @@ public abstract class Editor extends WorldScene implements IEditor, IResponseLis
 		mSavingActor.dispose();
 		mSavingActor = null;
 
-		// Take a 200x200 screen shot
+		// Render saving images
+		if (mSavingImages != null && mSavingImages.length > 0) {
+			int imageSize = Config.Actor.SAVE_IMAGE_ON_ACTOR_SIZE;
+
+			mSpriteBatch.begin();
+			for (ImageSaveOnActor imageSaveOnActor : mSavingImages) {
+				int offsetX = 0;
+				int offsetY = 0;
+
+				switch (imageSaveOnActor.mLocation) {
+				case BOTTOM_LEFT:
+					// Does nothing
+					break;
+
+				case BOTTOM_RIGHT:
+					offsetX = Config.Actor.SAVE_TEXTURE_SIZE - imageSize;
+					break;
+
+				case TOP_LEFT:
+					offsetY = Config.Actor.SAVE_TEXTURE_SIZE - imageSize;
+					break;
+
+				case TOP_RIGHT:
+					offsetX = Config.Actor.SAVE_TEXTURE_SIZE - imageSize;
+					offsetY = Config.Actor.SAVE_TEXTURE_SIZE - imageSize;
+					break;
+				}
+
+				mSpriteBatch.draw(imageSaveOnActor.mTextureRegion, offsetX, offsetY, imageSize, imageSize);
+			}
+			mSpriteBatch.end();
+		}
+
+
+		mSavingImages = null;
+
+		// Take a screen shot
 		Pixmap pixmap = Screens.getScreenshot(0, 0, Config.Actor.SAVE_TEXTURE_SIZE, Config.Actor.SAVE_TEXTURE_SIZE, true);
 
 		// Make black color to alpha
@@ -447,9 +490,10 @@ public abstract class Editor extends WorldScene implements IEditor, IResponseLis
 	 * Set the actor as saving. This will create an image of the actor
 	 * @param actorDef the actor definition to save
 	 * @param actor a new empty actor to use for creating a screen shot
+	 * @param images images to render on top of the saving actor
 	 */
-	protected void setSaving(ActorDef actorDef, Actor actor) {
-		setSaving(actorDef, actor, null);
+	protected void setSaving(ActorDef actorDef, Actor actor, ImageSaveOnActor... images) {
+		setSaving(actorDef, actor, null, images);
 	}
 
 	/**
@@ -458,13 +502,15 @@ public abstract class Editor extends WorldScene implements IEditor, IResponseLis
 	 * @param actorDef the actor definition to save
 	 * @param actor a new empty actor to use for creating a screen shot
 	 * @param command the command to be executed after the resource has been saved
+	 * @param images images to render on top of the saving actor
 	 */
-	protected void setSaving(ActorDef actorDef, Actor actor, Command command) {
+	protected void setSaving(ActorDef actorDef, Actor actor, Command command, ImageSaveOnActor... images) {
 		if (!isPublished() && !isSaved()) {
 			mSavingActorDef = actorDef;
 			mSavingActor = actor;
 			mSaving = true;
 			mExecutedAfterSaved = command;
+			mSavingImages = images;
 
 			mGui.setVisible(false);
 			createActorDefTexture();
@@ -505,11 +551,41 @@ public abstract class Editor extends WorldScene implements IEditor, IResponseLis
 	}
 
 	/**
-	 * Called when after the image for the actor definition has been created.
+	 * Called after the image for the actor definition has been created.
 	 */
 	protected abstract void saveToFile();
 
-	/** Resource repo */
+	/**
+	 * Wrapper class for an image to be rendered on top of the saving actor
+	 */
+	protected static class ImageSaveOnActor {
+		/**
+		 * Sets the location and image to render
+		 * @param textureRegion
+		 * @param location
+		 */
+		protected ImageSaveOnActor(TextureRegion textureRegion, Locations location) {
+			mTextureRegion = textureRegion;
+			mLocation = location;
+		}
+
+
+		/** Various location to render the image */
+		@SuppressWarnings("javadoc")
+		protected enum Locations {
+			TOP_LEFT,
+			TOP_RIGHT,
+			BOTTOM_LEFT,
+			BOTTOM_RIGHT,
+		}
+
+		/** Image to render */
+		private TextureRegion mTextureRegion;
+		/** Location to render */
+		private Locations mLocation;
+	}
+
+	/** Resource repository */
 	protected ResourceRepo mResourceRepo = ResourceRepo.getInstance();
 	/** Invoker */
 	protected Invoker mInvoker = new Invoker();
@@ -521,6 +597,8 @@ public abstract class Editor extends WorldScene implements IEditor, IResponseLis
 	private ActorDef mSavingActorDef = null;
 	/** Saving actor */
 	private Actor mSavingActor = null;
+	/** Extra images to save on top of the saving actor */
+	private ImageSaveOnActor[] mSavingImages = null;
 	/** When the resource became unsaved */
 	private float mUnsavedTime = 0;
 	/** Last time the player did some activity */
@@ -531,6 +609,8 @@ public abstract class Editor extends WorldScene implements IEditor, IResponseLis
 	private boolean mGridRender = true;
 	/** If grid shall be rendered in front of the resources */
 	private boolean mGridRenderAboveResources = false;
+	/** For rendering sprites */
+	protected SpriteBatch mSpriteBatch = new SpriteBatch();
 
 	/** Synchronizer */
 	protected static Synchronizer mSynchronizer = Synchronizer.getInstance();

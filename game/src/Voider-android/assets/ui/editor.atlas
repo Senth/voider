@@ -1676,6 +1676,13 @@ movement_ai_down
   orig: 32, 32
   offset: 0, 0
   index: -1
+movement_ai_save
+  rotate: false
+  xy: 2843, 61
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
 movement_ai_checked_over
   rotate: false
   xy: 2877, 95
@@ -1753,6 +1760,13 @@ movement_path_down
   orig: 32, 32
   offset: 0, 0
   index: -1
+movement_path_save
+  rotate: false
+  xy: 2979, 95
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
 movement_path_checked_over
   rotate: false
   xy: 2979, 61
@@ -1789,6 +1803,13 @@ movement_stationary_checked
   offset: 0, 0
   index: -1
 movement_stationary_down
+  rotate: false
+  xy: 3047, 95
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+movement_stationary_save
   rotate: false
   xy: 3047, 95
   size: 32, 32

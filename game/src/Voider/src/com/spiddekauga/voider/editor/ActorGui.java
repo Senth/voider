@@ -307,7 +307,7 @@ public abstract class ActorGui extends EditorGui {
 		sliderListener = new SliderListener() {
 			@Override
 			protected void onChange(float newValue) {
-				mActorEditor.setShapeWidth(newValue);
+				mActorEditor.setShapeHeight(newValue);
 				mWidgets.visual.shapeTriangleHeight.setValue(newValue);
 			}
 		};
@@ -331,7 +331,7 @@ public abstract class ActorGui extends EditorGui {
 		sliderListener = new SliderListener() {
 			@Override
 			protected void onChange(float newValue) {
-				mActorEditor.setShapeWidth(newValue);
+				mActorEditor.setShapeHeight(newValue);
 				mWidgets.visual.shapeRectangleHeight.setValue(newValue);
 			}
 		};
