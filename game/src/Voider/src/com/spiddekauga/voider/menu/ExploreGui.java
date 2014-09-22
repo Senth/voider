@@ -18,7 +18,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane.ScrollPaneListener;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane.ScrollPaneStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
-import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.spiddekauga.utils.Strings;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
@@ -237,7 +236,11 @@ public class ExploreGui extends Gui {
 		mWidgets.search.hider = new HideListener(button, true) {
 			@Override
 			protected void onShow() {
-				mExploreScene.fetchInitialLevels(mWidgets.search.field.getText());
+				if (!mWidgets.search.field.getText().equals("Search")) {
+					mExploreScene.fetchInitialLevels(mWidgets.search.field.getText());
+				} else {
+					mExploreScene.fetchInitialLevels("");
+				}
 			}
 		};
 	}
@@ -310,7 +313,8 @@ public class ExploreGui extends Gui {
 	 * Initializes search bar
 	 */
 	private void initSearchBar() {
-		float infoWidth = SkinNames.getResource(SkinNames.GeneralVars.RIGHT_PANEL_WIDTH);
+		float infoWidth = mUiFactory.getStyles().vars.rightPanelWidth + 2 * mUiFactory.getStyles().vars.paddingInner;
+		float height = mUiFactory.getStyles().vars.rowHeight;
 
 		AlignTable table = mWidgets.search.table;
 		table.dispose(true);
@@ -319,8 +323,8 @@ public class ExploreGui extends Gui {
 		getStage().addActor(table);
 		mWidgets.search.hider.addToggleActor(table);
 
-		TextField textField = new TextField("", (TextFieldStyle) SkinNames.getResource(SkinNames.General.TEXT_FIELD_DEFAULT));
-		table.add(textField).setWidth(infoWidth);
+		TextField textField = new TextField("", mUiFactory.getStyles().textField.standard);
+		table.add(textField).setSize(infoWidth, height);
 		mWidgets.search.field = textField;
 		new TextFieldListener(textField, "Search", null) {
 			@Override
@@ -629,7 +633,9 @@ public class ExploreGui extends Gui {
 	 */
 	void resetContent() {
 		mWidgets.content.table.dispose();
+		mWidgets.content.buttonGroup = new ButtonGroup();
 		resetContentMargins();
+		resetInfo();
 
 		if (mExploreScene.isFetchingLevels()) {
 			levelWaitIconAdd();

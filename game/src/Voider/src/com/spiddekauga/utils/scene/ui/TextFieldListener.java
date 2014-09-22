@@ -174,7 +174,7 @@ public class TextFieldListener implements EventListener {
 					mPrevKeystrokeText = mTextField.getText();
 				}
 			}
-		} else if (event instanceof ChangeEvent) {
+		} else if (event instanceof ChangeEvent && !(event instanceof VisibilityChangeEvent)) {
 			onChange(mTextField.getText());
 			mPrevKeystrokeText = mTextField.getText();
 		}

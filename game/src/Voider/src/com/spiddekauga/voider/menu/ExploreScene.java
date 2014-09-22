@@ -1,9 +1,9 @@
 package com.spiddekauga.voider.menu;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import com.badlogic.gdx.Input;
 import com.spiddekauga.utils.KeyHelper;
@@ -103,16 +103,20 @@ public class ExploreScene extends Scene implements IResponseListener {
 
 	@Override
 	public void handleWebResponse(IMethodEntity method, IEntity response) {
-		mWebResponses.add(new WebWrapper(method, response));
+		try {
+			mWebResponses.put(new WebWrapper(method, response));
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
 	 * Handles existing web responses
 	 */
 	private void handleWepResponses() {
-
-		synchronized (mWebResponses) {
-			for (WebWrapper webWrapper : mWebResponses) {
+		while (!mWebResponses.isEmpty()) {
+			try {
+				WebWrapper webWrapper = mWebResponses.take();
 				IEntity response = webWrapper.response;
 
 
@@ -123,9 +127,9 @@ public class ExploreScene extends Scene implements IResponseListener {
 				} else if (response instanceof ResourceCommentGetMethodResponse) {
 					mCommentFetch.handleWebResponse((ResourceCommentGetMethod) webWrapper.method, (ResourceCommentGetMethodResponse) response);
 				}
+			} catch (InterruptedException e) {
+				e.printStackTrace();
 			}
-
-			mWebResponses.clear();
 		}
 	}
 
@@ -187,6 +191,7 @@ public class ExploreScene extends Scene implements IResponseListener {
 	 * @param tags selected tags
 	 */
 	void fetchInitialLevels(SortOrders sort, ArrayList<Tags> tags) {
+		mSelectedLevel = null;
 		mLevelFetch.fetch(sort, tags);
 	}
 
@@ -195,6 +200,7 @@ public class ExploreScene extends Scene implements IResponseListener {
 	 * @param searchString the text to search for
 	 */
 	void fetchInitialLevels(String searchString) {
+		mSelectedLevel = null;
 		mLevelFetch.fetch(searchString);
 	}
 
@@ -368,13 +374,13 @@ public class ExploreScene extends Scene implements IResponseListener {
 		 * @param searchString
 		 */
 		void fetch(String searchString) {
+			((ExploreGui) mGui).resetContent();
+
 			if (searchString != null && searchString.length() >= Config.Explore.SEARCH_LENGTH_MIN) {
 				mIsFetching = true;
 				mSearchString = searchString;
 				mSortOrder = null;
 				mTags.clear();
-
-				((ExploreGui) mGui).resetContent();
 
 				mResourceWebRepo.getLevels(searchString, false, ExploreScene.this);
 			}
@@ -506,5 +512,6 @@ public class ExploreScene extends Scene implements IResponseListener {
 	private ResourceWebRepo mResourceWebRepo = ResourceWebRepo.getInstance();
 	private ResourceRepo mResourceRepo = ResourceRepo.getInstance();
 	/** Synchronized web responses */
-	private List<WebWrapper> mWebResponses = Collections.synchronizedList(new ArrayList<WebWrapper>());
+	private BlockingQueue<WebWrapper> mWebResponses = new LinkedBlockingQueue<WebWrapper>();
+
 }
