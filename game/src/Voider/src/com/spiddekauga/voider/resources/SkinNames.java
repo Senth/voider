@@ -630,6 +630,10 @@ public class SkinNames {
 		MESSAGE_UNSUCCESSFUL,
 		/** Space background */
 		BACKGROUND_SPACE,
+		/** Sync from cloud */
+		SYNC_CLOUD,
+		/** Sync from device */
+		SYNC_DEVICE,
 
 		;
 

@@ -2,6 +2,7 @@ package com.spiddekauga.voider.network.entities.resource;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.UUID;
 
 import com.spiddekauga.voider.network.entities.IMethodEntity;
@@ -11,16 +12,20 @@ import com.spiddekauga.voider.network.entities.IMethodEntity;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
-public class UserResourcesSyncMethod implements IMethodEntity {
+public class UserResourceSyncMethod implements IMethodEntity {
 	/** All resource revisions that were uploaded */
 	public ArrayList<ResourceRevisionEntity> resources = new ArrayList<>();
 	/** Resources to remove */
 	public ArrayList<UUID> resourceToRemove = null;
 	/** Last sync date */
 	public Date lastSync = null;
+	/** Fix conflicts. True keep local, false keep server, null do nothing */
+	public Boolean conflictKeepLocal = null;
+	/** Conflicts to fix */
+	public HashMap<UUID, ResourceConflictEntity> conflictsToFix = null;
 
 	@Override
 	public MethodNames getMethodName() {
-		return MethodNames.USER_RESOURCES_SYNC;
+		return MethodNames.USER_RESOURCE_SYNC;
 	}
 }

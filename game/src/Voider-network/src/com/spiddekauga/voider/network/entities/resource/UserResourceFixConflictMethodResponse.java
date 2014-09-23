@@ -9,36 +9,32 @@ import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.ISuccessStatuses;
 
 /**
- * Response from when syncing user resource revisions
+ * Response from fixing user resource conflicts
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
-public class UserResourcesSyncMethodResponse implements IEntity, ISuccessStatuses {
-	/** Upload status */
-	public UploadStatuses uploadStatus = null;
-	/** Download status */
-	public boolean downloadStatus = false;
-	/** All conflicting resources */
-	public HashMap<UUID, ResourceConflictEntity> conflicts = new HashMap<>();
-	/** Resources to download */
-	public HashMap<UUID, ArrayList<ResourceBlobEntity>> blobsToDownload = new HashMap<>();
-	/** Resources to remove */
+public class UserResourceFixConflictMethodResponse implements IEntity, ISuccessStatuses {
+	/**
+	 * Resources to download. Even if we should keep client resources new resources
+	 * could've been added.
+	 */
+	public HashMap<UUID, ArrayList<ResourceRevisionBlobEntity>> blobsToDownload = new HashMap<>();
+	/** Resources to delete */
 	public ArrayList<UUID> resourcesToRemove = new ArrayList<>();
-	/** Latest sync time */
-	public Date syncTime;
-
+	/** Status */
+	public Statuses status = null;
+	/** New sync date */
+	public Date syncTime = null;
 
 	@Override
 	public boolean isSuccessful() {
-		return uploadStatus != null && downloadStatus && uploadStatus.isSuccessful();
+		return status != null && status.isSuccessful();
 	}
 
 	/** Success statuses */
-	public enum UploadStatuses implements ISuccessStatuses {
+	public enum Statuses implements ISuccessStatuses {
 		/** Successfully uploaded and synced all resources */
-		SUCCESS_ALL,
-		/** Successfully uploaded some resources */
-		SUCCESS_PARTIAL,
+		SUCCESS,
 		/** Failed internal server error */
 		FAILED_INTERNAL,
 		/** Failed to connect to server */

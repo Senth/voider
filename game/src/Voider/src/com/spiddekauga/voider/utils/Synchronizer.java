@@ -13,8 +13,8 @@ import com.spiddekauga.voider.network.entities.misc.BugReportMethod;
 import com.spiddekauga.voider.network.entities.misc.BugReportMethodResponse;
 import com.spiddekauga.voider.network.entities.misc.ChatMessage;
 import com.spiddekauga.voider.network.entities.resource.DownloadSyncMethodResponse;
-import com.spiddekauga.voider.network.entities.resource.UserResourcesSyncMethod;
-import com.spiddekauga.voider.network.entities.resource.UserResourcesSyncMethodResponse;
+import com.spiddekauga.voider.network.entities.resource.UserResourceSyncMethod;
+import com.spiddekauga.voider.network.entities.resource.UserResourceSyncMethodResponse;
 import com.spiddekauga.voider.network.entities.stat.HighscoreSyncMethodResponse;
 import com.spiddekauga.voider.network.entities.stat.StatSyncMethodResponse;
 import com.spiddekauga.voider.repo.IResponseListener;
@@ -191,8 +191,8 @@ public class Synchronizer extends Observable implements IMessageListener, IRespo
 	public void handleWebResponse(IMethodEntity method, IEntity response) {
 		SceneSwitcher.hideWaitWindow();
 
-		if (response instanceof UserResourcesSyncMethodResponse) {
-			handleSyncUserResourceResponse((UserResourcesSyncMethod) method, (UserResourcesSyncMethodResponse) response);
+		if (response instanceof UserResourceSyncMethodResponse) {
+			handleSyncUserResourceResponse((UserResourceSyncMethod) method, (UserResourceSyncMethodResponse) response);
 		} else if (response instanceof DownloadSyncMethodResponse) {
 			handleSyncDownloadResponse((DownloadSyncMethodResponse) response);
 		} else if (response instanceof BugReportMethodResponse) {
@@ -295,7 +295,7 @@ public class Synchronizer extends Observable implements IMessageListener, IRespo
 	 * @param method parameters sent to the server
 	 * @param response response from the server
 	 */
-	private void handleSyncUserResourceResponse(UserResourcesSyncMethod method, UserResourcesSyncMethodResponse response) {
+	private void handleSyncUserResourceResponse(UserResourceSyncMethod method, UserResourceSyncMethodResponse response) {
 		switch (response.uploadStatus) {
 		case FAILED_CONNECTION:
 		case FAILED_INTERNAL:

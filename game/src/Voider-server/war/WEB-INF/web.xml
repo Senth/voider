@@ -4,6 +4,7 @@ xmlns="http://java.sun.com/xml/ns/javaee"
 xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
 http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
+	<!-- User -->
 	<servlet>
 		<servlet-name>Login</servlet-name>
 		<servlet-class>com.spiddekauga.voider.servlets.Login</servlet-class>
@@ -28,38 +29,9 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 		<servlet-name>Logout</servlet-name>
 		<url-pattern>/logout</url-pattern>
 	</servlet-mapping>
-	<servlet>
-		<servlet-name>Upgrade</servlet-name>
-		<servlet-class>com.spiddekauga.voider.servlets.Upgrade</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>Upgrade</servlet-name>
-		<url-pattern>/upgrade-secret</url-pattern>
-	</servlet-mapping>
-	<servlet>
-		<servlet-name>GetUploadUrl</servlet-name>
-		<servlet-class>com.spiddekauga.voider.servlets.GetUploadUrl</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>GetUploadUrl</servlet-name>
-		<url-pattern>/get-upload-url</url-pattern>
-	</servlet-mapping>
-	<servlet>
-		<servlet-name>BugReport</servlet-name>
-		<servlet-class>com.spiddekauga.voider.servlets.BugReport</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>BugReport</servlet-name>
-		<url-pattern>/bug-report</url-pattern>
-	</servlet-mapping>
-	<servlet>
-		<servlet-name>BlobDownload</servlet-name>
-		<servlet-class>com.spiddekauga.voider.servlets.BlobDownload</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>BlobDownload</servlet-name>
-		<url-pattern>/blob-download</url-pattern>
-	</servlet-mapping>
+	
+	
+	<!-- Published -->
 	<servlet>
 		<servlet-name>Publish</servlet-name>
 		<servlet-class>com.spiddekauga.voider.servlets.Publish</servlet-class>
@@ -101,30 +73,6 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 		<url-pattern>/download-sync</url-pattern>
 	</servlet-mapping>
 	<servlet>
-		<servlet-name>ChatCreate</servlet-name>
-		<servlet-class>com.spiddekauga.voider.servlets.ChatCreate</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>ChatCreate</servlet-name>
-		<url-pattern>/token/*</url-pattern>
-	</servlet-mapping>
-	<servlet>
-		<servlet-name>ChatConnected</servlet-name>
-		<servlet-class>com.spiddekauga.voider.servlets.ChatConnected</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>ChatConnected</servlet-name>
-		<url-pattern>/_ah/channel/connected/</url-pattern>
-	</servlet-mapping>
-	<servlet>
-		<servlet-name>UserResourcesSync</servlet-name>
-		<servlet-class>com.spiddekauga.voider.servlets.UserResourcesSync</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>UserResourcesSync</servlet-name>
-		<url-pattern>/user-resources-sync</url-pattern>
-	</servlet-mapping>
-	<servlet>
 		<servlet-name>HighscoreSync</servlet-name>
 		<servlet-class>com.spiddekauga.voider.servlets.HighscoreSync</servlet-class>
 	</servlet>
@@ -148,6 +96,84 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 		<servlet-name>StatSync</servlet-name>
 		<url-pattern>/stat-sync</url-pattern>
 	</servlet-mapping>
+	
+	
+	<!-- User resources -->
+	<servlet>
+		<servlet-name>UserResourceSync</servlet-name>
+		<servlet-class>com.spiddekauga.voider.servlets.UserResourceSync</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>UserResourceSync</servlet-name>
+		<url-pattern>/user-resource-sync</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>UserResourceFixConflict</servlet-name>
+		<servlet-class>com.spiddekauga.voider.servlets.UserResourceFixConflict</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>UserResourceFixConflict</servlet-name>
+		<url-pattern>/user-resource-fix-conflict</url-pattern>
+	</servlet-mapping>
+	
+	
+	<!-- Upload/Download -->
+	<servlet>
+		<servlet-name>GetUploadUrl</servlet-name>
+		<servlet-class>com.spiddekauga.voider.servlets.GetUploadUrl</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>GetUploadUrl</servlet-name>
+		<url-pattern>/get-upload-url</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>BlobDownload</servlet-name>
+		<servlet-class>com.spiddekauga.voider.servlets.BlobDownload</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>BlobDownload</servlet-name>
+		<url-pattern>/blob-download</url-pattern>
+	</servlet-mapping>
+	
+	
+	<!-- Misc -->
+	<servlet>
+		<servlet-name>BugReport</servlet-name>
+		<servlet-class>com.spiddekauga.voider.servlets.BugReport</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>BugReport</servlet-name>
+		<url-pattern>/bug-report</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>ChatCreate</servlet-name>
+		<servlet-class>com.spiddekauga.voider.servlets.ChatCreate</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ChatCreate</servlet-name>
+		<url-pattern>/token/*</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>ChatConnected</servlet-name>
+		<servlet-class>com.spiddekauga.voider.servlets.ChatConnected</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ChatConnected</servlet-name>
+		<url-pattern>/_ah/channel/connected/</url-pattern>
+	</servlet-mapping>
+	
+	
+	<!-- Testing -->
+	<servlet>
+		<servlet-name>Upgrade</servlet-name>
+		<servlet-class>com.spiddekauga.voider.servlets.Upgrade</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Upgrade</servlet-name>
+		<url-pattern>/upgrade-secret</url-pattern>
+	</servlet-mapping>
+	
+	
 	<welcome-file-list>
 		<welcome-file>index.html</welcome-file>
 	</welcome-file-list>

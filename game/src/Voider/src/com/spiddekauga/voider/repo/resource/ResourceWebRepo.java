@@ -40,8 +40,8 @@ import com.spiddekauga.voider.network.entities.resource.ResourceDownloadMethodRe
 import com.spiddekauga.voider.network.entities.resource.ResourceRevisionBlobEntity;
 import com.spiddekauga.voider.network.entities.resource.ResourceRevisionEntity;
 import com.spiddekauga.voider.network.entities.resource.UploadTypes;
-import com.spiddekauga.voider.network.entities.resource.UserResourcesSyncMethod;
-import com.spiddekauga.voider.network.entities.resource.UserResourcesSyncMethodResponse;
+import com.spiddekauga.voider.network.entities.resource.UserResourceSyncMethod;
+import com.spiddekauga.voider.network.entities.resource.UserResourceSyncMethodResponse;
 import com.spiddekauga.voider.network.entities.stat.LevelInfoEntity;
 import com.spiddekauga.voider.network.entities.stat.ResourceCommentEntity;
 import com.spiddekauga.voider.network.entities.stat.Tags;
@@ -102,7 +102,7 @@ public class ResourceWebRepo extends WebRepo {
 	 */
 	void syncUserResources(HashMap<UUID, ResourceRevisionEntity> uploadResources, ArrayList<UUID> removeResources, Date lastSync,
 			IResponseListener... responseListeners) {
-		UserResourcesSyncMethod method = new UserResourcesSyncMethod();
+		UserResourceSyncMethod method = new UserResourceSyncMethod();
 		method.lastSync = lastSync;
 		method.resourceToRemove = removeResources;
 
@@ -285,7 +285,7 @@ public class ResourceWebRepo extends WebRepo {
 		}
 
 		// Sync user resources
-		else if (methodEntity instanceof UserResourcesSyncMethod) {
+		else if (methodEntity instanceof UserResourceSyncMethod) {
 			responseToSend = handleUserResourcesSyncResponse(response);
 		}
 
@@ -348,11 +348,11 @@ public class ResourceWebRepo extends WebRepo {
 	 * @return a correct response for syncing user resource revisions
 	 */
 	private IEntity handleUserResourcesSyncResponse(IEntity response) {
-		if (response instanceof UserResourcesSyncMethodResponse) {
+		if (response instanceof UserResourceSyncMethodResponse) {
 			return response;
 		} else {
-			UserResourcesSyncMethodResponse methodResponse = new UserResourcesSyncMethodResponse();
-			methodResponse.uploadStatus = UserResourcesSyncMethodResponse.UploadStatuses.FAILED_CONNECTION;
+			UserResourceSyncMethodResponse methodResponse = new UserResourceSyncMethodResponse();
+			methodResponse.uploadStatus = UserResourceSyncMethodResponse.UploadStatuses.FAILED_CONNECTION;
 			return methodResponse;
 		}
 	}
@@ -386,7 +386,7 @@ public class ResourceWebRepo extends WebRepo {
 	 * @param progressListener optional progress listener
 	 * @return true if all resources were downloaded.
 	 */
-	boolean downloadResources(ArrayList<ResourceBlobEntity> resources, IDownloadProgressListener progressListener) {
+	boolean downloadResources(ArrayList<? extends ResourceBlobEntity> resources, IDownloadProgressListener progressListener) {
 		// Add all resources to download
 		ArrayList<DownloadResourceWrapper> toDownload = new ArrayList<>();
 

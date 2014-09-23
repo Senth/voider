@@ -35,7 +35,9 @@ public abstract interface IMethodEntity extends IEntity {
 		/** Download a resources */
 		RESOURCE_DOWNLOAD,
 		/** Synchronize user resources */
-		USER_RESOURCES_SYNC,
+		USER_RESOURCE_SYNC,
+		/** Fix user resource conflicts */
+		USER_RESOURCE_FIX_CONFLICT,
 
 
 		// User

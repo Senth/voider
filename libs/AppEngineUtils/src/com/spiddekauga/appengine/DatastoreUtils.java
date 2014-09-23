@@ -38,7 +38,15 @@ public class DatastoreUtils {
 	 * @param keys deletes all the specified keys
 	 */
 	public static void delete(Key... keys) {
-		mDatastore.delete(keys);
+		Exception exception;
+		do {
+			exception = null;
+			try {
+				mDatastore.delete(keys);
+			} catch (ConcurrentModificationException e) {
+				exception = e;
+			}
+		} while (exception != null);
 	}
 
 	/**
@@ -46,7 +54,15 @@ public class DatastoreUtils {
 	 * @param keys deletes all the specified keys
 	 */
 	public static void delete(Iterable<Key> keys) {
-		mDatastore.delete(keys);
+		Exception exception;
+		do {
+			exception = null;
+			try {
+				mDatastore.delete(keys);
+			} catch (ConcurrentModificationException e) {
+				exception = e;
+			}
+		} while (exception != null);
 	}
 
 	/**
@@ -67,6 +83,25 @@ public class DatastoreUtils {
 		} while (exception != null);
 
 		return key;
+	}
+
+	/**
+	 * Puts several entities to the datastore. This checks for concurrent modifications
+	 * @param entities iteratable object with all entities to put in the datastore
+	 * @return list of all keys that was put
+	 */
+	public static List<Key> put(Iterable<Entity> entities) {
+		Exception exception;
+		List<Key> keys = null;
+		do {
+			exception = null;
+			try {
+				keys = mDatastore.put(entities);
+			} catch (ConcurrentModificationException e) {
+				exception = e;
+			}
+		} while (exception != null);
+		return keys;
 	}
 
 	/**
@@ -148,26 +183,8 @@ public class DatastoreUtils {
 	 * @param properties filter properties
 	 */
 	private static void setFilterProperties(Query query, FilterWrapper[] properties) {
-		if (properties != null) {
-			ArrayList<Filter> filters = new ArrayList<>();
-			for (FilterWrapper property : properties) {
-				Filter filter = null;
-				if (property.value instanceof UUID) {
-					filter = createUuidFilter(property.name, (UUID) property.value);
-				} else if (property.value != null) {
-					filter = new Query.FilterPredicate(property.name, property.operator, property.value);
-				}
-
-				if (filter != null) {
-					filters.add(filter);
-				}
-			}
-
-			if (filters.size() == 1) {
-				query.setFilter(filters.get(0));
-			} else if (filters.size() > 1) {
-				query.setFilter(new Query.CompositeFilter(CompositeFilterOperator.AND, filters));
-			}
+		if (properties != null && properties.length >= 1) {
+			query.setFilter(createCompositeFilter(CompositeFilterOperator.AND, properties));
 		}
 	}
 
@@ -315,6 +332,38 @@ public class DatastoreUtils {
 		}
 
 		return new CompositeFilter(operator, arrayListFilters);
+	}
+
+	/**
+	 * Creates a composite filter out of the specified filters
+	 * @param operator composite filter operator (AND/OR)
+	 * @param filters all the filters to add
+	 * @return a composite filter with the specified filters
+	 */
+	public static Filter createCompositeFilter(CompositeFilterOperator operator, FilterWrapper... filters) {
+		if (filters != null) {
+			ArrayList<Filter> datastoreFilters = new ArrayList<>();
+			for (FilterWrapper property : filters) {
+				Filter filter = null;
+				if (property.value instanceof UUID) {
+					filter = createUuidFilter(property.name, (UUID) property.value);
+				} else if (property.value != null) {
+					filter = new Query.FilterPredicate(property.name, property.operator, property.value);
+				}
+
+				if (filter != null) {
+					datastoreFilters.add(filter);
+				}
+			}
+
+			if (datastoreFilters.size() == 1) {
+				return datastoreFilters.get(0);
+			} else if (datastoreFilters.size() > 1) {
+				return new Query.CompositeFilter(operator, datastoreFilters);
+			}
+		}
+
+		return null;
 	}
 
 	/**

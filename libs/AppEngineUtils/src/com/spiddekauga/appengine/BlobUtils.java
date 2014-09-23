@@ -84,6 +84,25 @@ public class BlobUtils {
 		return resources;
 	}
 
+	/**
+	 * Delete the specified blobs
+	 * @param blobKeys keys to the blobs to delete
+	 */
+	public static void deleteBlob(BlobKey... blobKeys) {
+		mBlobstore.delete(blobKeys);
+	}
+
+	/**
+	 * Delete all specified blobs
+	 * @param blobKeys keys to the blobs to delete
+	 */
+	public static void delete(List<BlobKey> blobKeys) {
+		// Convert to array
+		BlobKey[] array = new BlobKey[blobKeys.size()];
+		blobKeys.toArray(array);
+		mBlobstore.delete(array);
+	}
+
 	/** Blobstore service */
 	private static final BlobstoreService mBlobstore = BlobstoreServiceFactory.getBlobstoreService();
 	/** Logger */
