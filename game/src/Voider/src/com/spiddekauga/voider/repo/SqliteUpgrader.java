@@ -70,16 +70,19 @@ class SqliteUpgrader {
 	 * @throws SQLiteGdxException
 	 */
 	private void upgradeTable(String table, int fromVersion) throws SQLiteGdxException {
-		// 2 — Added uploaded status to resource revision
-		if (fromVersion < 2) {
-			if (table.equals("resource_revision")) {
+		// Resource revision
+		if (table.equals("resource_revision")) {
+			// 2 — Added uploaded status
+			if (fromVersion < 2) {
 				mDatabase.execSQL("ALTER TABLE resource_revision ADD COLUMN uploaded INTEGER DEFAULT 0;");
 			}
 		}
 
-		// 6 — Added comment to level stats
-		if (fromVersion < 6) {
-			if (table.equals("level_stat")) {
+
+		// Level stat
+		if (table.equals("level_stat")) {
+			// 6 — Added comment to level stats
+			if (fromVersion < 6) {
 				mDatabase.execSQL("ALTER TABLE level_stat ADD COLUMN comment TEXT DEFAULT '';");
 			}
 		}

@@ -107,14 +107,6 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 		<servlet-name>UserResourceSync</servlet-name>
 		<url-pattern>/user-resource-sync</url-pattern>
 	</servlet-mapping>
-	<servlet>
-		<servlet-name>UserResourceFixConflict</servlet-name>
-		<servlet-class>com.spiddekauga.voider.servlets.UserResourceFixConflict</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>UserResourceFixConflict</servlet-name>
-		<url-pattern>/user-resource-fix-conflict</url-pattern>
-	</servlet-mapping>
 	
 	
 	<!-- Upload/Download -->

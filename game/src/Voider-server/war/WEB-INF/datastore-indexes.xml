@@ -87,6 +87,14 @@
         <property name="revision" direction="asc"/>
     </datastore-index>
     
+    <!-- Find conflicts to remove -->
+    <datastore-index kind="user_resources" ancestor="true" source="manual">
+        <property name="resource_id-least" direction="asc"/>
+        <property name="resource_id-most" direction="asc"/>
+        <property name="revision" direction="asc"/>
+    </datastore-index>
+    
+    
     <!-- PUBLISHED (EXPLORE) -->
     <!-- Sort by newest -->   
     <datastore-index kind="published" ancestor="false" source="manual">

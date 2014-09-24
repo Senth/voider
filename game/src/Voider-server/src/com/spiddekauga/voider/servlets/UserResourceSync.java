@@ -319,7 +319,7 @@ public class UserResourceSync extends VoiderServlet {
 
 			// Only add if resource isn't in conflict
 			if (!mResponse.conflicts.containsKey(resourceId) && !mResponse.resourcesToRemove.contains(resourceId)
-					&& methodEntity.conflictsToFix != null && !methodEntity.conflictsToFix.containsKey(resourceId)) {
+					&& (methodEntity.conflictsToFix == null || !methodEntity.conflictsToFix.containsKey(resourceId))) {
 				mLogger.fine("Found sync resource: " + resourceId);
 
 				ResourceRevisionBlobEntity blobEntity = new ResourceRevisionBlobEntity();

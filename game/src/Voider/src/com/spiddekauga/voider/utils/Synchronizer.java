@@ -2,10 +2,12 @@ package com.spiddekauga.voider.utils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Queue;
 import java.util.UUID;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.Semaphore;
 
+import com.badlogic.gdx.Gdx;
 import com.spiddekauga.net.IDownloadProgressListener;
 import com.spiddekauga.utils.Observable;
 import com.spiddekauga.voider.network.entities.IEntity;
@@ -44,6 +46,7 @@ public class Synchronizer extends Observable implements IMessageListener, IRespo
 	 */
 	private Synchronizer() {
 		MessageGateway.getInstance().addListener(this);
+		mThread.start();
 	}
 
 	/**
@@ -112,7 +115,11 @@ public class Synchronizer extends Observable implements IMessageListener, IRespo
 	 */
 	public void fixConflict(boolean keepLocal) {
 		if (mConflictsFound != null && User.getGlobalUser().isOnline()) {
-			mResourceRepo.fixUserResourceConflict(mConflictsFound, keepLocal, mDownloadProgressListener, this);
+			try {
+				mSyncQueue.put(new SyncFixConflict(mConflictsFound, keepLocal));
+			} catch (InterruptedException e) {
+				// Does nothing
+			}
 			mConflictsFound = null;
 		}
 	}
@@ -128,9 +135,39 @@ public class Synchronizer extends Observable implements IMessageListener, IRespo
 			return false;
 		}
 
-		IResponseListener[] responseListeners = addSynchronizerToListeners(responseListener);
-
 		switch (type) {
+		case COMMUNITY_RESOURCES:
+		case USER_RESOURCES:
+		case BUG_REPORTS:
+		case HIGHSCORES:
+		case STATS:
+			try {
+				mSyncQueue.put(new SyncClass(type));
+			} catch (InterruptedException e) {
+				// Does nothing
+			}
+			break;
+
+		case USER_RESOURCE_FIX_CONFLICTS:
+			Gdx.app.error("Synchronizer", "Cannot fix user resource conflict through synchronize() method");
+			break;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Synchronize the specified message type
+	 * @param syncClass what to sync
+	 */
+	private void synchronize(SyncClass syncClass) {
+		if (!User.getGlobalUser().isOnline()) {
+			return;
+		}
+
+		IResponseListener[] responseListeners = addSynchronizerToListeners(syncClass.responseListener);
+
+		switch (syncClass.syncType) {
 		case COMMUNITY_RESOURCES:
 			mResourceRepo.syncDownload(mDownloadProgressListener, responseListeners);
 			SceneSwitcher.showProgressBar("Downloading Internet\nThis may take a while...");
@@ -152,9 +189,14 @@ public class Synchronizer extends Observable implements IMessageListener, IRespo
 		case STATS:
 			mStatRepo.sync(responseListeners);
 			break;
-		}
 
-		return true;
+		case USER_RESOURCE_FIX_CONFLICTS:
+			if (syncClass instanceof SyncFixConflict) {
+				mResourceRepo.fixUserResourceConflict(((SyncFixConflict) syncClass).conflicts, ((SyncFixConflict) syncClass).keepLocal,
+						mDownloadProgressListener, responseListeners);
+			}
+			break;
+		}
 	}
 
 	/**
@@ -191,15 +233,11 @@ public class Synchronizer extends Observable implements IMessageListener, IRespo
 	 *        null
 	 */
 	public void synchronizeAll(IResponseListener responseListener) {
-		mResponseListener = responseListener;
-
-		mSyncQueue.add(SyncTypes.COMMUNITY_RESOURCES);
-		mSyncQueue.add(SyncTypes.USER_RESOURCES);
-		mSyncQueue.add(SyncTypes.HIGHSCORES);
-		mSyncQueue.add(SyncTypes.STATS);
-		mSyncQueue.add(SyncTypes.BUG_REPORTS);
-
-		syncNextInQueue();
+		mSyncQueue.add(new SyncClass(SyncTypes.COMMUNITY_RESOURCES, responseListener));
+		mSyncQueue.add(new SyncClass(SyncTypes.USER_RESOURCES, responseListener));
+		mSyncQueue.add(new SyncClass(SyncTypes.HIGHSCORES, responseListener));
+		mSyncQueue.add(new SyncClass(SyncTypes.STATS, responseListener));
+		mSyncQueue.add(new SyncClass(SyncTypes.BUG_REPORTS, responseListener));
 	}
 
 	@Override
@@ -219,7 +257,7 @@ public class Synchronizer extends Observable implements IMessageListener, IRespo
 		}
 
 
-		syncNextInQueue();
+		mSemaphore.release();
 	}
 
 	/**
@@ -296,16 +334,6 @@ public class Synchronizer extends Observable implements IMessageListener, IRespo
 	}
 
 	/**
-	 * Sync the next item in the queue
-	 */
-	private void syncNextInQueue() {
-		boolean handled = false;
-		while (!mSyncQueue.isEmpty() && !handled) {
-			handled = synchronize(mSyncQueue.remove(), mResponseListener);
-		}
-	}
-
-	/**
 	 * Handle user resource revision synchronization
 	 * @param method parameters sent to the server
 	 * @param response response from the server
@@ -369,6 +397,8 @@ public class Synchronizer extends Observable implements IMessageListener, IRespo
 		HIGHSCORES,
 		/** Statistics */
 		STATS,
+		/** Fix conflicts */
+		USER_RESOURCE_FIX_CONFLICTS,
 	}
 
 	/**
@@ -391,10 +421,79 @@ public class Synchronizer extends Observable implements IMessageListener, IRespo
 		COMMUNITY_DOWNLOAD_FAILED,
 	}
 
+	/**
+	 * Base sync class
+	 */
+	private class SyncClass {
+		/**
+		 * Sets the sync type
+		 * @param syncType
+		 */
+		protected SyncClass(SyncTypes syncType) {
+			this.syncType = syncType;
+		}
+
+		/**
+		 * Sets the sync type
+		 * @param syncType
+		 * @param responseListener
+		 */
+		protected SyncClass(SyncTypes syncType, IResponseListener responseListener) {
+			this.syncType = syncType;
+			this.responseListener = responseListener;
+		}
+
+		// Extra response listener
+		private IResponseListener responseListener = null;
+		private SyncTypes syncType;
+	}
+
+	/**
+	 * Sync class for fixing conflicts
+	 */
+	private class SyncFixConflict extends SyncClass {
+		/**
+		 * Sets the conflict variables
+		 * @param conflicts
+		 * @param keepLocal
+		 */
+		private SyncFixConflict(HashMap<UUID, ResourceConflictEntity> conflicts, boolean keepLocal) {
+			super(SyncTypes.USER_RESOURCE_FIX_CONFLICTS);
+			this.conflicts = conflicts;
+			this.keepLocal = keepLocal;
+		}
+
+		private HashMap<UUID, ResourceConflictEntity> conflicts;
+		private boolean keepLocal;
+	}
+
+	/**
+	 * Runs a thread in the background for synchronizing the queue
+	 */
+	private Thread mThread = new Thread() {
+		@Override
+		public void run() {
+			while (true) {
+				if (!mSyncQueue.isEmpty()) {
+					try {
+						mSemaphore.acquire();
+						try {
+							synchronize(mSyncQueue.take());
+						} catch (InterruptedException e) {
+							mSemaphore.release();
+						}
+					} catch (InterruptedException e) {
+						// Does nothing
+					}
+				}
+			}
+		}
+	};
+
+	/** Syncing semaphore (so only one thing is synced at the same time) */
+	private Semaphore mSemaphore = new Semaphore(1);
 	/** Queue for what to synchronize */
-	private Queue<SyncTypes> mSyncQueue = new LinkedList<>();
-	/** Current response listener */
-	private IResponseListener mResponseListener = null;
+	private BlockingQueue<SyncClass> mSyncQueue = new LinkedBlockingQueue<>();
 	/** Resource repository */
 	private ResourceRepo mResourceRepo = ResourceRepo.getInstance();
 	/** Highscore repository */

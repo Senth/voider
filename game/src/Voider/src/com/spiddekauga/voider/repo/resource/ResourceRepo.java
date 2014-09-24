@@ -147,8 +147,18 @@ public class ResourceRepo extends Repo {
 	public void fixUserResourceConflict(HashMap<UUID, ResourceConflictEntity> conflicts, boolean keepLocal,
 			IDownloadProgressListener progressListener, IResponseListener... responseListeners) {
 		mSyncUserResourcesProgressListener = progressListener;
-		mWebRepo.syncUserResources(ResourceLocalRepo.getUnsyncedUserResources(), ResourceLocalRepo.getRemovedResources(),
-				ResourceLocalRepo.getSyncUserResourceDate(), conflicts, keepLocal, addToFront(responseListeners, this));
+
+		HashMap<UUID, ResourceRevisionEntity> unsyncedResources = ResourceLocalRepo.getUnsyncedUserResources();
+
+		// Remove conflicted unsynced resources when keeping server version
+		if (!keepLocal) {
+			for (UUID conflictId : conflicts.keySet()) {
+				unsyncedResources.remove(conflictId);
+			}
+		}
+
+		mWebRepo.syncUserResources(unsyncedResources, ResourceLocalRepo.getRemovedResources(), ResourceLocalRepo.getSyncUserResourceDate(),
+				conflicts, keepLocal, addToFront(responseListeners, this));
 	}
 
 	/**
@@ -214,17 +224,19 @@ public class ResourceRepo extends Repo {
 	 */
 	private void handleSyncUserResourcesResponse(UserResourceSyncMethod method, UserResourceSyncMethodResponse response) {
 		if (response.uploadStatus.isSuccessful()) {
-
 			// Set the successful revisions as uploaded/synced
 			for (ResourceRevisionEntity resource : method.resources) {
-				if (!response.conflicts.containsKey(resource.resourceId) && !resource.revisions.isEmpty()) {
+				if (!resource.revisions.isEmpty()) {
 					int fromRevision = resource.revisions.get(0).revision;
 					int toRevision = resource.revisions.get(resource.revisions.size() - 1).revision;
 
 					// Same amount of revisions
 					assert (toRevision - fromRevision == resource.revisions.size() - 1);
 
-					ResourceLocalRepo.setSyncedUserResource(resource.resourceId, fromRevision, toRevision);
+					// Set as uploaded
+					if (!response.conflicts.containsKey(resource.resourceId)) {
+						ResourceLocalRepo.setSyncedUserResource(resource.resourceId, fromRevision, toRevision);
+					}
 				}
 			}
 
