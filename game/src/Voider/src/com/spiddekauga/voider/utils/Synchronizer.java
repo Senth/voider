@@ -138,6 +138,13 @@ public class Synchronizer extends Observable implements IMessageListener, IRespo
 		switch (type) {
 		case COMMUNITY_RESOURCES:
 		case USER_RESOURCES:
+			try {
+				mSyncQueue.put(new SyncDownload(type, responseListener, false));
+			} catch (InterruptedException e1) {
+				// Does nothing
+			}
+			break;
+
 		case BUG_REPORTS:
 		case HIGHSCORES:
 		case STATS:
@@ -169,13 +176,31 @@ public class Synchronizer extends Observable implements IMessageListener, IRespo
 
 		switch (syncClass.syncType) {
 		case COMMUNITY_RESOURCES:
-			mResourceRepo.syncDownload(mDownloadProgressListener, responseListeners);
-			SceneSwitcher.showProgressBar("Downloading Internet\nThis may take a while...");
-
+			if (syncClass instanceof SyncDownload) {
+				// Show progress bar
+				if (((SyncDownload) syncClass).showProgress) {
+					mResourceRepo.syncDownload(mDownloadProgressListener, responseListeners);
+					SceneSwitcher.showProgressBar("Downloading Internet\nThis may take a while...");
+				}
+				// Silent sync
+				else {
+					mResourceRepo.syncDownload(null, responseListeners);
+				}
+			}
 			break;
+
 		case USER_RESOURCES:
-			mResourceRepo.syncUserResources(mDownloadProgressListener, responseListeners);
-			SceneSwitcher.showProgressBar("Synchronizing your levels, enemies, and bullets.\nThis may take a while...");
+			if (syncClass instanceof SyncDownload) {
+				// Show progress bar
+				if (((SyncDownload) syncClass).showProgress) {
+					mResourceRepo.syncUserResources(mDownloadProgressListener, responseListeners);
+					SceneSwitcher.showProgressBar("Synchronizing your levels, enemies, and bullets.\nThis may take a while...");
+				}
+				// Silent sync
+				else {
+					mResourceRepo.syncUserResources(null, responseListeners);
+				}
+			}
 			break;
 
 		case BUG_REPORTS:
@@ -217,6 +242,8 @@ public class Synchronizer extends Observable implements IMessageListener, IRespo
 		if (!bugsToSend.isEmpty()) {
 			webRepo.sendBugReport(bugsToSend, responseListeners);
 			SceneSwitcher.showWaitWindow("Uploading saved bug reports");
+		} else {
+			mSemaphore.release();
 		}
 	}
 
@@ -233,8 +260,8 @@ public class Synchronizer extends Observable implements IMessageListener, IRespo
 	 *        null
 	 */
 	public void synchronizeAll(IResponseListener responseListener) {
-		mSyncQueue.add(new SyncClass(SyncTypes.COMMUNITY_RESOURCES, responseListener));
-		mSyncQueue.add(new SyncClass(SyncTypes.USER_RESOURCES, responseListener));
+		mSyncQueue.add(new SyncDownload(SyncTypes.COMMUNITY_RESOURCES, responseListener, true));
+		mSyncQueue.add(new SyncDownload(SyncTypes.USER_RESOURCES, responseListener, true));
 		mSyncQueue.add(new SyncClass(SyncTypes.HIGHSCORES, responseListener));
 		mSyncQueue.add(new SyncClass(SyncTypes.STATS, responseListener));
 		mSyncQueue.add(new SyncClass(SyncTypes.BUG_REPORTS, responseListener));
@@ -255,7 +282,6 @@ public class Synchronizer extends Observable implements IMessageListener, IRespo
 		} else if (response instanceof StatSyncMethodResponse) {
 			handleStatSyncResponse((StatSyncMethodResponse) response);
 		}
-
 
 		mSemaphore.release();
 	}
@@ -344,9 +370,9 @@ public class Synchronizer extends Observable implements IMessageListener, IRespo
 		case FAILED_INTERNAL:
 		case FAILED_USER_NOT_LOGGED_IN:
 			if (response.downloadStatus) {
-				SceneSwitcher.showErrorMessage("Downloaded player levels; failed to upload");
+				SceneSwitcher.showErrorMessage("Downloaded player resources; failed to upload");
 			} else {
-				SceneSwitcher.showErrorMessage("Player levels sync failed");
+				SceneSwitcher.showErrorMessage("Player resources sync failed");
 			}
 			notifyObservers(SyncEvents.USER_RESOURCES_UPLOAD_FAILED);
 			break;
@@ -355,9 +381,9 @@ public class Synchronizer extends Observable implements IMessageListener, IRespo
 			// No Conflicts
 			if (method.conflictKeepLocal == null) {
 				if (response.downloadStatus) {
-					SceneSwitcher.showSuccessMessage("Player levels synced");
+					SceneSwitcher.showSuccessMessage("Player resources synced");
 				} else {
-					SceneSwitcher.showErrorMessage("Uploaded player levels; failed to download");
+					SceneSwitcher.showErrorMessage("Uploaded player resources; failed to download");
 				}
 			}
 			// Conflicts
@@ -449,6 +475,24 @@ public class Synchronizer extends Observable implements IMessageListener, IRespo
 	}
 
 	/**
+	 * Sync class for downloading stuff
+	 */
+	private class SyncDownload extends SyncClass {
+		/**
+		 * Sets the sync type
+		 * @param syncType
+		 * @param responseListener
+		 * @param showProgress true if we want to show the progress bar
+		 */
+		private SyncDownload(SyncTypes syncType, IResponseListener responseListener, boolean showProgress) {
+			super(syncType, responseListener);
+			this.showProgress = showProgress;
+		}
+
+		private boolean showProgress;
+	}
+
+	/**
 	 * Sync class for fixing conflicts
 	 */
 	private class SyncFixConflict extends SyncClass {
@@ -482,6 +526,12 @@ public class Synchronizer extends Observable implements IMessageListener, IRespo
 						} catch (InterruptedException e) {
 							mSemaphore.release();
 						}
+					} catch (InterruptedException e) {
+						// Does nothing
+					}
+				} else {
+					try {
+						sleep(1000);
 					} catch (InterruptedException e) {
 						// Does nothing
 					}

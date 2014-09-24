@@ -38,6 +38,7 @@ import com.spiddekauga.voider.resources.IResource;
 import com.spiddekauga.voider.resources.IResourceRevision;
 import com.spiddekauga.voider.utils.Pools;
 import com.spiddekauga.voider.utils.Synchronizer;
+import com.spiddekauga.voider.utils.Synchronizer.SyncTypes;
 import com.spiddekauga.voider.utils.User;
 
 /**
@@ -102,13 +103,7 @@ public class ResourceRepo extends Repo {
 
 		if (upload) {
 			if (User.getGlobalUser().isOnline()) {
-				// Don't sync via the synchronizer as a wait window will appear, instead
-				// just add the synchronizer as a listener
-				if (responseListener != null) {
-					syncUserResources(null, Synchronizer.getInstance(), responseListener);
-				} else {
-					syncUserResources(null, Synchronizer.getInstance());
-				}
+				Synchronizer.getInstance().synchronize(SyncTypes.USER_RESOURCES, responseListener);
 			}
 		}
 	}
