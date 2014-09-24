@@ -18,9 +18,7 @@ import com.spiddekauga.voider.scene.Scene;
 import com.spiddekauga.voider.utils.Pools;
 
 /**
- * Makes sure that all dependencies to the specified resource is loaded
- * and unloaded.
- * 
+ * Makes sure that all dependencies to the specified resource is loaded and unloaded.
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 class ResourceDependencyLoader implements Disposable {
@@ -40,11 +38,12 @@ class ResourceDependencyLoader implements Disposable {
 
 	/**
 	 * Loads the definition including all its dependencies.
-	 * @note it will load the definition first, as it needs to read
-	 * its dependencies which is in the file.
+	 * @note it will load the definition first, as it needs to read its dependencies which
+	 *       is in the file.
 	 * @param <ResourceType> class of the resourceId to load
 	 * @param scene the scene to load this resource into
-	 * @param resourceId the id of the resource which we want to load, including its dependencies
+	 * @param resourceId the id of the resource which we want to load, including its
+	 *        dependencies
 	 * @param revision the revision of the resource, -1 to use latest revision
 	 */
 	<ResourceType> void load(Scene scene, UUID resourceId, int revision) {
@@ -61,9 +60,8 @@ class ResourceDependencyLoader implements Disposable {
 	}
 
 	/**
-	 * Checks whether the resources have been loaded and then if it
-	 * has any dependencies that shall be loaded. If so it will add
-	 * these to the queue.
+	 * Checks whether the resources have been loaded and then if it has any dependencies
+	 * that shall be loaded. If so it will add these to the queue.
 	 * @return true if it has finished all the loading
 	 */
 	boolean update() {
@@ -135,37 +133,40 @@ class ResourceDependencyLoader implements Disposable {
 	 */
 	private static void debugLoadUnload(Scene scene, IResourceDependency resource, boolean load) {
 		if (Config.Debug.Messages.LOAD_UNLOAD && Config.Debug.Messages.LOAD_UNLOAD_DEPENDENCIES) {
-			//			if (resource.getExternalDependenciesCount() > 0) {
+			// if (resource.getExternalDependenciesCount() > 0) {
 			//
-			//				String resourceName = "";
-			//				if (resource instanceof Def) {
-			//					resourceName = ((Def) resource).getName();
-			//				}
+			// String resourceName = "";
+			// if (resource instanceof Def) {
+			// resourceName = ((Def) resource).getName();
+			// }
 			//
-			//				String resourceType = resource.getClass().getSimpleName();
+			// String resourceType = resource.getClass().getSimpleName();
 			//
-			//				String loadUnloadString = "";
-			//				if (load) {
-			//					loadUnloadString = "+++";
-			//				} else {
-			//					loadUnloadString = "---";
-			//				}
+			// String loadUnloadString = "";
+			// if (load) {
+			// loadUnloadString = "+++";
+			// } else {
+			// loadUnloadString = "---";
+			// }
 			//
-			//				String message = Strings.padLeft(loadUnloadString, 6) + "  " +
-			//						Strings.padRight(scene.getClass().getSimpleName(), 15) +
-			//						Strings.padRight(resourceType, 18) +
-			//						Strings.padRight(resourceName, Config.Editor.NAME_LENGTH_MAX + 2) +
-			//						"---------->>>";
+			// String message = Strings.padLeft(loadUnloadString, 6) + "  " +
+			// Strings.padRight(scene.getClass().getSimpleName(), 15) +
+			// Strings.padRight(resourceType, 18) +
+			// Strings.padRight(resourceName, Config.Editor.NAME_LENGTH_MAX + 2) +
+			// "---------->>>";
 			//
 			//
-			//				for (Map.Entry<UUID, AtomicInteger> entry : resource.getExternalDependencies().entrySet()) {
-			//					ResourceInfo resourceInfo = ResourceDatabaseOld.getResourceInfo(entry.getKey());
+			// for (Map.Entry<UUID, AtomicInteger> entry :
+			// resource.getExternalDependencies().entrySet()) {
+			// ResourceInfo resourceInfo =
+			// ResourceDatabaseOld.getResourceInfo(entry.getKey());
 			//
-			//					message += "\n" + Strings.padLeft("", 49) + Strings.padRight(resourceInfo.type.getSimpleName(), 16) + entry.getKey();
-			//				}
+			// message += "\n" + Strings.padLeft("", 49) +
+			// Strings.padRight(resourceInfo.type.getSimpleName(), 16) + entry.getKey();
+			// }
 			//
-			//				Gdx.app.debug("ResourceDependencyLoader", message);
-			//			}
+			// Gdx.app.debug("ResourceDependencyLoader", message);
+			// }
 		}
 	}
 

@@ -17,7 +17,7 @@ public class UserResourceSyncMethodResponse implements IEntity, ISuccessStatuses
 	/** Upload status */
 	public UploadStatuses uploadStatus = null;
 	/** Download status */
-	public boolean downloadStatus = false;
+	public boolean downloadStatus = true;
 	/** All conflicting resources */
 	public HashMap<UUID, ResourceConflictEntity> conflicts = new HashMap<>();
 	/** Resources to download */

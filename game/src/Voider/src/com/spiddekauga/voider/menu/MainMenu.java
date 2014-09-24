@@ -56,7 +56,6 @@ public class MainMenu extends Scene implements IResponseListener, Observer {
 	protected void loadResources() {
 		super.loadResources();
 		ResourceCacheFacade.load(InternalNames.UI_GENERAL);
-		// ResourceCacheFacade.loadAllOf(this, ExternalTypes.LEVEL_DEF, false);
 		ResourceCacheFacade.loadAllOf(this, ExternalTypes.GAME_SAVE_DEF, false);
 		ResourceCacheFacade.loadAllOf(this, ExternalTypes.BUG_REPORT, true);
 	}
@@ -114,8 +113,10 @@ public class MainMenu extends Scene implements IResponseListener, Observer {
 			/** @todo handle missing file */
 		} else if (outcome == Outcomes.DEF_SELECTED) {
 			if (message instanceof ResourceItem) {
-				LevelDef loadedLevelDef = ResourceCacheFacade.get(((ResourceItem) message).id);
 				GameScene gameScene = new GameScene(false, false);
+				ResourceCacheFacade.load(gameScene, ((ResourceItem) message).id, false);
+				ResourceCacheFacade.finishLoading();
+				LevelDef loadedLevelDef = ResourceCacheFacade.get(((ResourceItem) message).id);
 				gameScene.setLevelToLoad(loadedLevelDef);
 				SceneSwitcher.switchTo(gameScene);
 				Pools.resourceItem.free((ResourceItem) message);

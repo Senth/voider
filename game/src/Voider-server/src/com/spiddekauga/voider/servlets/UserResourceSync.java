@@ -64,28 +64,33 @@ public class UserResourceSync extends VoiderServlet {
 		}
 
 		if (methodEntity instanceof UserResourceSyncMethod) {
-			syncDeletedToClient((UserResourceSyncMethod) methodEntity);
-			syncDeletedToServer((UserResourceSyncMethod) methodEntity);
+			UserResourceSyncMethod userMethod = (UserResourceSyncMethod) methodEntity;
+
+			syncDeletedToClient(userMethod);
+			syncDeletedToServer(userMethod);
 
 			// Conflicts
-			checkForConflicts((UserResourceSyncMethod) methodEntity);
+			checkForConflicts(userMethod);
 
-			if (((UserResourceSyncMethod) methodEntity).keepLocalConflicts()) {
-				fixConflictsKeepClient((UserResourceSyncMethod) methodEntity);
-			} else if (((UserResourceSyncMethod) methodEntity).keepServerConflicts()) {
-				fixConflictsKeepServer((UserResourceSyncMethod) methodEntity);
+			if (userMethod.keepLocalConflicts()) {
+				fixConflictsKeepClient(userMethod);
+			} else if (userMethod.keepServerConflicts()) {
+				fixConflictsKeepServer(userMethod);
 			}
 
-			syncNewToClient((UserResourceSyncMethod) methodEntity);
-			syncNewToServer((UserResourceSyncMethod) methodEntity);
+			syncNewToClient(userMethod);
+			syncNewToServer(userMethod);
 			mResponse.syncTime = mSyncDate;
 
 			// Send sync message
 			if (mResponse.isSuccessful()) {
-				ChatMessage<Object> chatMessage = new ChatMessage<>();
-				chatMessage.skipClient = mUser.getClientId();
-				chatMessage.type = MessageTypes.SYNC_USER_RESOURCES;
-				sendMessage(chatMessage);
+				if (!userMethod.resources.isEmpty() || !userMethod.resourceToRemove.isEmpty()
+						|| (userMethod.conflictKeepLocal != null && userMethod.conflictKeepLocal)) {
+					ChatMessage<Object> chatMessage = new ChatMessage<>();
+					chatMessage.skipClient = mUser.getClientId();
+					chatMessage.type = MessageTypes.SYNC_USER_RESOURCES;
+					sendMessage(chatMessage);
+				}
 			}
 		}
 

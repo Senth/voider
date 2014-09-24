@@ -261,7 +261,6 @@ public class ResourceRepo extends Repo {
 		// Download resources, but remove local first if there exists any revision of
 		// those. I.e. the server's sync was replaced, thus the local should also be
 		ArrayList<ResourceRevisionBlobEntity> toDownload = new ArrayList<>();
-		response.downloadStatus = true;
 		for (Entry<UUID, ArrayList<ResourceRevisionBlobEntity>> entry : response.blobsToDownload.entrySet()) {
 			UUID resourceId = entry.getKey();
 			ArrayList<ResourceRevisionBlobEntity> revisions = entry.getValue();
