@@ -2,6 +2,7 @@ package com.spiddekauga.voider.repo.resource;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -22,6 +23,7 @@ import com.spiddekauga.voider.network.entities.resource.LevelDefEntity;
 import com.spiddekauga.voider.network.entities.resource.PublishMethod;
 import com.spiddekauga.voider.network.entities.resource.PublishMethodResponse;
 import com.spiddekauga.voider.network.entities.resource.ResourceBlobEntity;
+import com.spiddekauga.voider.network.entities.resource.ResourceConflictEntity;
 import com.spiddekauga.voider.network.entities.resource.ResourceDownloadMethod;
 import com.spiddekauga.voider.network.entities.resource.ResourceDownloadMethodResponse;
 import com.spiddekauga.voider.network.entities.resource.ResourceRevisionBlobEntity;
@@ -130,7 +132,23 @@ public class ResourceRepo extends Repo {
 	public void syncUserResources(IDownloadProgressListener progressListener, IResponseListener... responseListeners) {
 		mSyncUserResourcesProgressListener = progressListener;
 		mWebRepo.syncUserResources(ResourceLocalRepo.getUnsyncedUserResources(), ResourceLocalRepo.getRemovedResources(),
-				ResourceLocalRepo.getSyncUserResourceDate(), addToFront(responseListeners, this));
+				ResourceLocalRepo.getSyncUserResourceDate(), null, null, addToFront(responseListeners, this));
+	}
+
+	/**
+	 * Synchronizes the user resource revisions, both upload and download and fixes
+	 * conflicts
+	 * @param conflicts all conflicts to resolve
+	 * @param keepLocal how to resolve the conflicts. True if keep local versions, false
+	 *        if use server versions.
+	 * @param progressListener download progress listener
+	 * @param responseListeners listens to the web response (when syncing is done)
+	 */
+	public void fixUserResourceConflict(HashMap<UUID, ResourceConflictEntity> conflicts, boolean keepLocal,
+			IDownloadProgressListener progressListener, IResponseListener... responseListeners) {
+		mSyncUserResourcesProgressListener = progressListener;
+		mWebRepo.syncUserResources(ResourceLocalRepo.getUnsyncedUserResources(), ResourceLocalRepo.getRemovedResources(),
+				ResourceLocalRepo.getSyncUserResourceDate(), conflicts, keepLocal, addToFront(responseListeners, this));
 	}
 
 	/**
@@ -220,6 +238,15 @@ public class ResourceRepo extends Repo {
 			// Remove resources that were synced as removed from this client to the server
 			for (UUID removedId : method.resourceToRemove) {
 				ResourceLocalRepo.removeFromRemoved(removedId);
+			}
+		}
+
+
+		// Delete conflicted resources locally
+		if (method.keepServerConflicts() && method.conflictsToFix != null) {
+			for (Entry<UUID, ResourceConflictEntity> entry : method.conflictsToFix.entrySet()) {
+				ResourceConflictEntity conflictEntity = entry.getValue();
+				ResourceLocalRepo.removeRevisions(conflictEntity.resourceId, conflictEntity.fromRevision);
 			}
 		}
 

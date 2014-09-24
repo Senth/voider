@@ -70,12 +70,10 @@ public class UserResourceSync extends VoiderServlet {
 			// Conflicts
 			checkForConflicts((UserResourceSyncMethod) methodEntity);
 
-			if (((UserResourceSyncMethod) methodEntity).conflictKeepLocal != null) {
-				if (((UserResourceSyncMethod) methodEntity).conflictKeepLocal) {
-					fixConflictsKeepClient((UserResourceSyncMethod) methodEntity);
-				} else {
-					fixConflictsKeepServer((UserResourceSyncMethod) methodEntity);
-				}
+			if (((UserResourceSyncMethod) methodEntity).keepLocalConflicts()) {
+				fixConflictsKeepClient((UserResourceSyncMethod) methodEntity);
+			} else if (((UserResourceSyncMethod) methodEntity).keepServerConflicts()) {
+				fixConflictsKeepServer((UserResourceSyncMethod) methodEntity);
 			}
 
 			syncNewToClient((UserResourceSyncMethod) methodEntity);

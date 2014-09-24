@@ -19,8 +19,6 @@ import com.spiddekauga.voider.editor.LevelEditor;
 import com.spiddekauga.voider.game.GameSaveDef;
 import com.spiddekauga.voider.game.GameScene;
 import com.spiddekauga.voider.game.LevelDef;
-import com.spiddekauga.voider.game.PlayerStats;
-import com.spiddekauga.voider.game.actors.PlayerActor;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.entities.user.LogoutMethodResponse;
@@ -58,7 +56,7 @@ public class MainMenu extends Scene implements IResponseListener, Observer {
 	protected void loadResources() {
 		super.loadResources();
 		ResourceCacheFacade.load(InternalNames.UI_GENERAL);
-		ResourceCacheFacade.loadAllOf(this, ExternalTypes.LEVEL_DEF, false);
+		// ResourceCacheFacade.loadAllOf(this, ExternalTypes.LEVEL_DEF, false);
 		ResourceCacheFacade.loadAllOf(this, ExternalTypes.GAME_SAVE_DEF, false);
 		ResourceCacheFacade.loadAllOf(this, ExternalTypes.BUG_REPORT, true);
 	}
@@ -83,7 +81,7 @@ public class MainMenu extends Scene implements IResponseListener, Observer {
 			case COMMUNITY_DOWNLOAD_SUCCESS:
 			case USER_RESOURCES_DOWNLOAD_SUCCESS:
 				ResourceCacheFacade.loadAllOf(this, ExternalTypes.GAME_SAVE_DEF, false);
-				ResourceCacheFacade.loadAllOf(this, ExternalTypes.LEVEL_DEF, false);
+				// ResourceCacheFacade.loadAllOf(this, ExternalTypes.LEVEL_DEF, false);
 				ResourceCacheFacade.finishLoading();
 				break;
 
@@ -159,9 +157,7 @@ public class MainMenu extends Scene implements IResponseListener, Observer {
 				String message = "This is a longer error message with more text, a lot more text, see if it will wrap correctly later...";
 				mGui.showMessage(message);
 			} else if (keycode == Input.Keys.F10) {
-				PlayerStats playerStats = new PlayerStats(0, 1, new PlayerActor());
-				LevelDef levelDef = (LevelDef) ResourceCacheFacade.getAll(ExternalTypes.LEVEL_DEF).get(0);
-				SceneSwitcher.switchTo(new ScoreScene(playerStats, levelDef));
+				mGui.showConflictWindow();
 			} else if (keycode == Input.Keys.F11) {
 				User.getGlobalUser().makeOffline();
 			} else if (keycode == Input.Keys.F12) {

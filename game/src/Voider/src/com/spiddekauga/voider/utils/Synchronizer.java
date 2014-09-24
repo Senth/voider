@@ -1,8 +1,10 @@
 package com.spiddekauga.voider.utils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.UUID;
 
 import com.spiddekauga.net.IDownloadProgressListener;
 import com.spiddekauga.utils.Observable;
@@ -13,6 +15,7 @@ import com.spiddekauga.voider.network.entities.misc.BugReportMethod;
 import com.spiddekauga.voider.network.entities.misc.BugReportMethodResponse;
 import com.spiddekauga.voider.network.entities.misc.ChatMessage;
 import com.spiddekauga.voider.network.entities.resource.DownloadSyncMethodResponse;
+import com.spiddekauga.voider.network.entities.resource.ResourceConflictEntity;
 import com.spiddekauga.voider.network.entities.resource.UserResourceSyncMethod;
 import com.spiddekauga.voider.network.entities.resource.UserResourceSyncMethodResponse;
 import com.spiddekauga.voider.network.entities.stat.HighscoreSyncMethodResponse;
@@ -100,6 +103,18 @@ public class Synchronizer extends Observable implements IMessageListener, IRespo
 		}
 
 		return responseListeners;
+	}
+
+	/**
+	 * Fix conflicts
+	 * @param keepLocal true if we want to keep the local versions, false if we want to
+	 *        keep the server version.
+	 */
+	public void fixConflict(boolean keepLocal) {
+		if (mConflictsFound != null && User.getGlobalUser().isOnline()) {
+			mResourceRepo.fixUserResourceConflict(mConflictsFound, keepLocal, mDownloadProgressListener, this);
+			mConflictsFound = null;
+		}
 	}
 
 	/**
@@ -309,17 +324,24 @@ public class Synchronizer extends Observable implements IMessageListener, IRespo
 			break;
 
 		case SUCCESS_ALL:
-			if (response.downloadStatus) {
-				SceneSwitcher.showSuccessMessage("Player levels synced");
-			} else {
-				SceneSwitcher.showErrorMessage("Uploaded player levels; failed to download");
+			// No Conflicts
+			if (method.conflictKeepLocal == null) {
+				if (response.downloadStatus) {
+					SceneSwitcher.showSuccessMessage("Player levels synced");
+				} else {
+					SceneSwitcher.showErrorMessage("Uploaded player levels; failed to download");
+				}
+			}
+			// Conflicts
+			else {
+				SceneSwitcher.showSuccessMessage("Conflicts resolved");
 			}
 			notifyObservers(SyncEvents.USER_RESOURCES_UPLOAD_SUCCESS);
 			break;
 
 		case SUCCESS_PARTIAL:
-			SceneSwitcher.showHighlightMessage("Player synced; found conflicts");
-			// TODO handle conflict
+			mConflictsFound = response.conflicts;
+			SceneSwitcher.showConflictWindow();
 
 			notifyObservers(SyncEvents.USER_RESOURCES_UPLOAD_CONFLICT);
 			break;
@@ -392,7 +414,8 @@ public class Synchronizer extends Observable implements IMessageListener, IRespo
 			}
 		}
 	};
-
+	/** Last found conflicts */
+	private HashMap<UUID, ResourceConflictEntity> mConflictsFound = null;
 
 	/** Instance of this class */
 	private static Synchronizer mInstance = null;

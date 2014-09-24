@@ -35,6 +35,7 @@ import com.spiddekauga.voider.network.entities.resource.PublishMethodResponse.St
 import com.spiddekauga.voider.network.entities.resource.ResourceBlobEntity;
 import com.spiddekauga.voider.network.entities.resource.ResourceCommentGetMethod;
 import com.spiddekauga.voider.network.entities.resource.ResourceCommentGetMethodResponse;
+import com.spiddekauga.voider.network.entities.resource.ResourceConflictEntity;
 import com.spiddekauga.voider.network.entities.resource.ResourceDownloadMethod;
 import com.spiddekauga.voider.network.entities.resource.ResourceDownloadMethodResponse;
 import com.spiddekauga.voider.network.entities.resource.ResourceRevisionBlobEntity;
@@ -98,13 +99,18 @@ public class ResourceWebRepo extends WebRepo {
 	 * @param uploadResources all resources that should be uploaded
 	 * @param removeResources these will be deleted on the server
 	 * @param lastSync last synchronized date
+	 * @param conflicts optional conflicts to resolve (null if not used)
+	 * @param keepLocal optional how to resolve conflicts. True keeps local versions,
+	 *        false server version, null returns the conflicts.
 	 * @param responseListeners listens to the web response
 	 */
 	void syncUserResources(HashMap<UUID, ResourceRevisionEntity> uploadResources, ArrayList<UUID> removeResources, Date lastSync,
-			IResponseListener... responseListeners) {
+			HashMap<UUID, ResourceConflictEntity> conflicts, Boolean keepLocal, IResponseListener... responseListeners) {
 		UserResourceSyncMethod method = new UserResourceSyncMethod();
 		method.lastSync = lastSync;
 		method.resourceToRemove = removeResources;
+		method.conflictKeepLocal = keepLocal;
+		method.conflictsToFix = conflicts;
 
 		for (Entry<UUID, ResourceRevisionEntity> entry : uploadResources.entrySet()) {
 			method.resources.add(entry.getValue());
@@ -400,7 +406,7 @@ public class ResourceWebRepo extends WebRepo {
 				resourceFileName = ResourceLocalRepo.getFilepath(resourceInfo.resourceId);
 			}
 
-			// Only download if we don't have it
+			// Create directories
 			FileHandle file = Gdx.files.external(resourceFileName);
 			if (!file.exists()) {
 				// Create revision directory if it doesn't exist
@@ -411,11 +417,10 @@ public class ResourceWebRepo extends WebRepo {
 						parentDir.mkdirs();
 					}
 				}
-
-				String filePath = Gdx.files.getExternalStoragePath() + resourceFileName;
-
-				toDownload.add(new DownloadResourceWrapper(filePath, resourceInfo));
 			}
+
+			String filePath = Gdx.files.getExternalStoragePath() + resourceFileName;
+			toDownload.add(new DownloadResourceWrapper(filePath, resourceInfo));
 		}
 
 		downloadInThreads(toDownload, progressListener);

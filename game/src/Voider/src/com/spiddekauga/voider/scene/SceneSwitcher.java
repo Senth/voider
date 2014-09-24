@@ -416,6 +416,15 @@ public class SceneSwitcher {
 	}
 
 	/**
+	 * Show conflict window
+	 */
+	public static void showConflictWindow() {
+		if (!mScenes.isEmpty()) {
+			mScenes.peek().mGui.showConflictWindow();
+		}
+	}
+
+	/**
 	 * Show wait window
 	 * @param message optional message to display
 	 */

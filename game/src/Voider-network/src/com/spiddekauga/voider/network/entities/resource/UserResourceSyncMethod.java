@@ -24,6 +24,20 @@ public class UserResourceSyncMethod implements IMethodEntity {
 	/** Conflicts to fix */
 	public HashMap<UUID, ResourceConflictEntity> conflictsToFix = null;
 
+	/**
+	 * @return true if local conflicts should be kept
+	 */
+	public boolean keepLocalConflicts() {
+		return conflictKeepLocal != null && conflictKeepLocal;
+	}
+
+	/**
+	 * @return true if server conflicts should be kept
+	 */
+	public boolean keepServerConflicts() {
+		return conflictKeepLocal != null && !conflictKeepLocal;
+	}
+
 	@Override
 	public MethodNames getMethodName() {
 		return MethodNames.USER_RESOURCE_SYNC;

@@ -38,6 +38,7 @@ import com.spiddekauga.utils.scene.ui.TextFieldListener;
 import com.spiddekauga.utils.scene.ui.UiFactory;
 import com.spiddekauga.voider.editor.commands.CBugReportSend;
 import com.spiddekauga.voider.editor.commands.CGameQuit;
+import com.spiddekauga.voider.editor.commands.CSyncFixConflict;
 import com.spiddekauga.voider.repo.resource.InternalNames;
 import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.SkinNames;
@@ -661,6 +662,63 @@ public abstract class Gui implements Disposable {
 		if (mMessageShower != null) {
 			mMessageShower.removeAllMessages();
 		}
+	}
+
+	/**
+	 * Show conflict window
+	 */
+	public void showConflictWindow() {
+		MsgBoxExecuter msgBox = getFreeMsgBox(true);
+
+		msgBox.setTitle("Sync Conflict");
+		msgBox.getContentTable();
+
+
+		// Set layout
+		float buttonWidth = mUiFactory.getStyles().vars.textButtonWidth * 1.5f;
+		msgBox.contentRow();
+		msgBox.content().width(buttonWidth);
+		msgBox.content().width(buttonWidth);
+		msgBox.content().width(buttonWidth);
+		msgBox.contentRow();
+		msgBox.getContentTable().padBottom(0);
+		msgBox.getButtonTable().padTop(0);
+
+		// Text
+		// @formatter:off
+		LabelStyle errorStyle = mUiFactory.getStyles().label.error;
+		Label label = new Label("Due to some event, one or more of your levels, enemies, or bullets are in conflict.\n"
+				+ "Which version would you like to keep?\n\n"
+				+ "Choose carefully! As the other choice will be discarded.", errorStyle);
+		label.setAlignment(Align.center);
+		label.setWrap(true);
+		label.setWidth(buttonWidth * 3);
+		msgBox.content(label).width(buttonWidth * 3).colspan(3);
+		// @formatter:on
+
+
+		// Button text
+		msgBox.contentRow();
+		msgBox.content("Cloud Version", Align.center).padTop(mUiFactory.getStyles().vars.paddingSeparator);
+		msgBox.content();
+		msgBox.content("Local Version", Align.center).padTop(mUiFactory.getStyles().vars.paddingSeparator);
+
+		// Button icon
+		msgBox.contentRow();
+		Image image = new Image(SkinNames.getDrawable(SkinNames.GeneralImages.SYNC_CLOUD));
+		msgBox.content(image);
+		msgBox.content();
+		image = new Image(SkinNames.getDrawable(SkinNames.GeneralImages.SYNC_DEVICE));
+		msgBox.content(image);
+
+		// Buttons
+		msgBox.button("Download & Continue", new CSyncFixConflict(false));
+		msgBox.getButtonCell().setPadRight(buttonWidth).setWidth(buttonWidth);
+		msgBox.button("Upload & Continue", new CSyncFixConflict(true));
+		msgBox.getButtonCell().setWidth(buttonWidth);
+
+
+		showMsgBox(msgBox);
 	}
 
 	/**

@@ -17,6 +17,7 @@ import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.reflect.ClassReflection;
 import com.badlogic.gdx.utils.reflect.Field;
 import com.badlogic.gdx.utils.reflect.ReflectionException;
+import com.esotericsoftware.tablelayout.Cell;
 import com.spiddekauga.utils.commands.Command;
 import com.spiddekauga.utils.scene.ui.UiFactory.TextButtonStyles;
 
@@ -62,7 +63,7 @@ public class MsgBox extends Dialog {
 		float paddingInner = mUiFactory.getStyles().vars.paddingInner;
 
 		getButtonTable().add(mButtonTable);
-		mButtonTable.setPad(paddingInner);
+		getButtonTable().pad(paddingInner);
 		getContentTable().pad(paddingInner);
 		getContentTable().align(Align.center);
 
@@ -134,16 +135,25 @@ public class MsgBox extends Dialog {
 	}
 
 	/**
+	 * Adds nothing to the content table
+	 * @return cell for this content
+	 */
+	public Cell<?> content() {
+		return getContentTable().add();
+	}
+
+	/**
 	 * Adds an actor to the content table
 	 * @param actor will be added to the content table
-	 * @return this message box for chaining
+	 * @return cell for this content
 	 */
-	public MsgBox content(Actor actor) {
-		getContentTable().add(actor);
+	public Cell<? extends Actor> content(Actor actor) {
+		@SuppressWarnings("unchecked")
+		Cell<? extends Actor> cell = getContentTable().add(actor);
 		if (actor instanceof AlignTable) {
 			((AlignTable) actor).layout();
 		}
-		return this;
+		return cell;
 	}
 
 	/**
@@ -153,12 +163,25 @@ public class MsgBox extends Dialog {
 	 * @see #text(String) does exactly the same thing
 	 * @return this message box for chaining
 	 */
-	public MsgBox content(String text) {
+	public Cell<? extends Actor> content(String text) {
+		return content(text, (Integer) null);
+	}
+
+	/**
+	 * Adds a label to the content table. The dialog must have been constructed with a
+	 * skin to use this method.
+	 * @param text the text to write in the content
+	 * @param alignment text alignment, null to use default
+	 * @see #text(String) does exactly the same thing
+	 * @return this message box for chaining
+	 */
+	public Cell<? extends Actor> content(String text, Integer alignment) {
 		if (mSkin == null) {
 			throw new IllegalStateException("This method may only be used if the message box was constructed with a Skin.");
 		}
 		return content(text, mSkin.get(LabelStyle.class));
 	}
+
 
 	/**
 	 * Adds a label to the content table.
@@ -166,7 +189,22 @@ public class MsgBox extends Dialog {
 	 * @param labelStyle what label style to use for the label
 	 * @return this message box for chaining
 	 */
-	public MsgBox content(String text, LabelStyle labelStyle) {
+	public Cell<? extends Actor> content(String text, LabelStyle labelStyle) {
+		return content(text, null, labelStyle);
+	}
+
+	/**
+	 * Adds a label to the content table.
+	 * @param text text to write in the content
+	 * @param alignment text alignment, null ot use default
+	 * @param labelStyle what label style to use for the label
+	 * @return this message box for chaining
+	 */
+	public Cell<? extends Actor> content(String text, Integer alignment, LabelStyle labelStyle) {
+		Label label = new Label(text, labelStyle);
+		if (alignment != null) {
+			label.setAlignment(alignment);
+		}
 		return content(new Label(text, labelStyle));
 	}
 
@@ -235,7 +273,7 @@ public class MsgBox extends Dialog {
 	 */
 	@Override
 	public MsgBox button(String text, Object object) {
-		Cell cell = mUiFactory.addTextButton(text, TextButtonStyles.FILLED_PRESS, mButtonTable, null, null, null);
+		com.spiddekauga.utils.scene.ui.Cell cell = mUiFactory.addTextButton(text, TextButtonStyles.FILLED_PRESS, mButtonTable, null, null, null);
 		setObject(cell.getActor(), object);
 		return this;
 	}
@@ -266,6 +304,14 @@ public class MsgBox extends Dialog {
 		mButtonTable.add(button);
 		setObject(button, object);
 		return this;
+	}
+
+	/**
+	 * @return get last button cell, null if no buttons have been added in the current
+	 *         row.
+	 */
+	public com.spiddekauga.utils.scene.ui.Cell getButtonCell() {
+		return mButtonTable.getCell();
 	}
 
 	/** {@link #pack() Packs} the dialog and adds it to the stage, centered. */

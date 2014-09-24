@@ -2,13 +2,14 @@ package com.spiddekauga.voider.repo;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.UUID;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import com.badlogic.gdx.Gdx;
 import com.spiddekauga.net.IDownloadProgressListener;
@@ -243,7 +244,7 @@ public abstract class WebRepo {
 
 		LinkedList<DownloadBlobWrapper> blobsLeft = new LinkedList<>();
 		blobsLeft.addAll(blobs);
-		ThreadDownload.mToDownload.addAll(blobs);
+		ThreadDownload.addBlobsToDownload(blobs);
 		ThreadDownload.createThreads();
 
 		// Wait to return until all blobs have been downloaded or failed
@@ -344,21 +345,35 @@ public abstract class WebRepo {
 		public void run() {
 			while (!mToDownload.isEmpty()) {
 				try {
-					DownloadBlobWrapper toDownload = mToDownload.remove(0);
+					DownloadBlobWrapper toDownload = mToDownload.take();
 
 					boolean success = serializeAndDownload(toDownload.mMethodEntity, toDownload.mFilepath);
 					toDownload.setDownloaded(success);
 
-				} catch (IndexOutOfBoundsException e) {
+				} catch (IndexOutOfBoundsException | InterruptedException e) {
+					// Do nothing
+				}
+			}
+		}
+
+		/**
+		 * Add all blobs to download
+		 * @param blobs all blobs to download
+		 */
+		public static void addBlobsToDownload(List<? extends DownloadBlobWrapper> blobs) {
+			for (DownloadBlobWrapper downloadBlobWrapper : blobs) {
+				try {
+					mToDownload.put(downloadBlobWrapper);
+				} catch (InterruptedException e) {
 					// Do nothing
 				}
 			}
 		}
 
 		/** All things to download */
-		static List<DownloadBlobWrapper> mToDownload = Collections.synchronizedList(new LinkedList<DownloadBlobWrapper>());
+		static BlockingQueue<DownloadBlobWrapper> mToDownload = new LinkedBlockingQueue<DownloadBlobWrapper>();
 		/** All active threads */
-		static List<ThreadDownload> mThreads = Collections.synchronizedList(new LinkedList<ThreadDownload>());
+		static BlockingQueue<ThreadDownload> mThreads = new LinkedBlockingQueue<ThreadDownload>();
 	}
 
 	/**
