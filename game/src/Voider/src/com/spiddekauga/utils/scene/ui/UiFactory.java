@@ -31,6 +31,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.ui.Window.WindowStyle;
+import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.spiddekauga.utils.commands.Invoker;
 import com.spiddekauga.utils.scene.ui.Align.Horizontal;
@@ -43,6 +44,7 @@ import com.spiddekauga.voider.repo.resource.ResourceCacheFacade;
 import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.resources.SkinNames.IImageNames;
 import com.spiddekauga.voider.resources.SkinNames.ISkinNames;
+import com.spiddekauga.voider.scene.Gui;
 import com.spiddekauga.voider.utils.Pools;
 
 /**
@@ -66,6 +68,62 @@ public class UiFactory {
 			mInstance = new UiFactory();
 		}
 		return mInstance;
+	}
+
+	/**
+	 * Create 'update message box' to show an update message dialog
+	 * @param message message to display
+	 * @param changeLog all new changes to display
+	 * @param gui GUI class to create the message box in
+	 */
+	public void createUpdateMessageBox(final String message, final String changeLog, final Gui gui) {
+		MsgBoxExecuter msgBox = gui.getFreeMsgBox(true);
+
+		final int width = Gdx.graphics.getWidth() / 2;
+		final int maxHeight = Gdx.graphics.getHeight() / 2;
+
+		msgBox.setTitle("Update Required");
+		Label label = new Label(message, mStyles.label.highlight);
+		label.setWrap(true);
+		label.setWidth(width);
+		label.setAlignment(Align.center);
+		msgBox.content(label);
+
+		// Add change-log
+		msgBox.button("ChangeLog");
+		new ButtonListener((Button) msgBox.getButtonCell().getActor()) {
+			@Override
+			protected void onPressed(Button button) {
+				MsgBoxExecuter changeLogMsgBox = gui.getFreeMsgBox(true);
+				changeLogMsgBox.setTitle("ChangeLog");
+				changeLogMsgBox.content("Changes since your current version", Align.center).padBottom(mStyles.vars.paddingSeparator);
+				changeLogMsgBox.contentRow();
+
+
+				Label label = new Label(changeLog, mStyles.label.standard);
+				label.setWrap(true);
+				label.setWidth(width);
+
+
+				// Too high, use scroll pane
+				label.layout();
+				if (label.getHeight() > maxHeight) {
+					ScrollPane scrollPane = new ScrollPane(label, mStyles.scrollPane.noBackground);
+					scrollPane.setFadeScrollBars(false);
+					changeLogMsgBox.content(scrollPane).size(width, maxHeight);
+				} else {
+					changeLogMsgBox.content(label);
+				}
+
+
+				changeLogMsgBox.addCancelButtonAndKeys("OK");
+
+				gui.showMsgBox(changeLogMsgBox);
+			}
+		};
+
+		msgBox.addCancelButtonAndKeys("OK");
+		gui.showMsgBox(msgBox);
 	}
 
 	/**

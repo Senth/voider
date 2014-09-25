@@ -11,12 +11,15 @@ import com.google.appengine.api.datastore.KeyFactory;
 import com.spiddekauga.appengine.DatastoreUtils;
 import com.spiddekauga.appengine.DatastoreUtils.FilterWrapper;
 import com.spiddekauga.utils.BCrypt;
+import com.spiddekauga.voider.ClientVersion;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
 import com.spiddekauga.voider.network.entities.user.LoginMethod;
 import com.spiddekauga.voider.network.entities.user.LoginMethodResponse;
+import com.spiddekauga.voider.network.entities.user.LoginMethodResponse.ClientVersionStatuses;
 import com.spiddekauga.voider.network.entities.user.LoginMethodResponse.Statuses;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
+import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CUsers;
 import com.spiddekauga.voider.server.util.VoiderServlet;
 
 /**
@@ -28,52 +31,93 @@ public class Login extends VoiderServlet {
 
 	@Override
 	protected void onInit() {
-		// Does nothing
+		mResponse = new LoginMethodResponse();
+		mResponse.status = Statuses.FAILED_SERVER_ERROR;
 	}
 
 	@Override
 	protected IEntity onRequest(IMethodEntity methodEntity) throws ServletException, IOException {
-		LoginMethodResponse methodResponse = new LoginMethodResponse();
-		methodResponse.status = Statuses.FAILED_SERVER_ERROR;
-
 		// Skip if already logged in
 		if (!mUser.isLoggedIn()) {
 			if (methodEntity instanceof LoginMethod) {
-				// Check username vs username first
-				FilterWrapper property = new FilterWrapper("username", ((LoginMethod) methodEntity).username);
-				Entity datastoreEntity = DatastoreUtils.getSingleEntity(DatastoreTables.USERS.toString(), property);
-				// Check username vs email
-				if (datastoreEntity == null) {
-					property = new FilterWrapper("email", ((LoginMethod) methodEntity).username);
-					datastoreEntity = DatastoreUtils.getSingleEntity(DatastoreTables.USERS.toString(), property);
-				}
+				LoginMethod loginMethod = (LoginMethod) methodEntity;
+				checkClientVersion(loginMethod);
+				login(loginMethod);
+			}
+		}
 
-				if (datastoreEntity != null) {
-					// Test password / private key
-					if (isPrivateKeyMatch(datastoreEntity, ((LoginMethod) methodEntity).privateKey)) {
-						methodResponse.status = Statuses.SUCCESS;
-					} else if (isPasswordMatch(datastoreEntity, ((LoginMethod) methodEntity).password)) {
-						methodResponse.status = Statuses.SUCCESS;
-					}
+		return mResponse;
+	}
 
-					// Login and update last logged in date
-					if (methodResponse.status == Statuses.SUCCESS) {
-						methodResponse.userKey = KeyFactory.keyToString(datastoreEntity.getKey());
-						methodResponse.privateKey = DatastoreUtils.getUuidProperty(datastoreEntity, "private_key");
-						methodResponse.username = (String) datastoreEntity.getProperty("username");
-						methodResponse.dateFormat = (String) datastoreEntity.getProperty("date_format");
-						mUser.login(datastoreEntity.getKey(), methodResponse.username, ((LoginMethod) methodEntity).clientId);
-						updateLastLoggedIn(datastoreEntity);
-					}
-				}
+	/**
+	 * Check client version and sets the client version status in the response depending
+	 * on the client version.
+	 * @param method
+	 */
+	private void checkClientVersion(LoginMethod method) {
+		boolean updateAvailable = !ClientVersion.isLatestVersion(method.clientVersion);
 
-				if (methodResponse.status != Statuses.SUCCESS) {
-					methodResponse.status = Statuses.FAILED_USERNAME_PASSWORD_MISMATCH;
+		// Check client needs to be updated
+		if (updateAvailable) {
+			if (ClientVersion.isUpdateNeeded(method.clientVersion)) {
+				mResponse.clientVersionStatus = ClientVersionStatuses.UPDATE_REQUIRED;
+			} else {
+				mResponse.clientVersionStatus = ClientVersionStatuses.NEW_VERSION_AVAILABLE;
+			}
+			mResponse.changeLogMessage = ClientVersion.getChangeLogs(method.clientVersion);
+		} else {
+			mResponse.clientVersionStatus = ClientVersionStatuses.UP_TO_DATE;
+		}
+	}
+
+	/**
+	 * Try to login
+	 * @param method
+	 */
+	private void login(LoginMethod method) {
+		// Check username vs username first
+		FilterWrapper property = new FilterWrapper(CUsers.USERNAME, method.username);
+		Entity datastoreEntity = DatastoreUtils.getSingleEntity(DatastoreTables.USERS.toString(), property);
+		// Check username vs email
+		if (datastoreEntity == null) {
+			property = new FilterWrapper(CUsers.EMAIL, method.username);
+			datastoreEntity = DatastoreUtils.getSingleEntity(DatastoreTables.USERS.toString(), property);
+		}
+
+		if (datastoreEntity != null) {
+			// Test password / private key
+			if (isPrivateKeyMatch(datastoreEntity, method.privateKey)) {
+				mResponse.status = Statuses.SUCCESS;
+			} else if (isPasswordMatch(datastoreEntity, method.password)) {
+				mResponse.status = Statuses.SUCCESS;
+			}
+
+			// Login and update last logged in date
+			if (mResponse.status == Statuses.SUCCESS) {
+				mResponse.userKey = KeyFactory.keyToString(datastoreEntity.getKey());
+				mResponse.privateKey = DatastoreUtils.getUuidProperty(datastoreEntity, CUsers.PRIVATE_KEY);
+				mResponse.username = (String) datastoreEntity.getProperty(CUsers.USERNAME);
+				mResponse.dateFormat = (String) datastoreEntity.getProperty(CUsers.DATE_FORMAT);
+				updateLastLoggedIn(datastoreEntity);
+
+				// Only login online if we have a valid version
+				switch (mResponse.clientVersionStatus) {
+				case NEW_VERSION_AVAILABLE:
+				case UP_TO_DATE:
+					mUser.login(datastoreEntity.getKey(), mResponse.username, method.clientId);
+					break;
+
+				case UNKNOWN:
+				case UPDATE_REQUIRED:
+					// Do nothing
+					break;
 				}
 			}
 		}
 
-		return methodResponse;
+		if (mResponse.status != Statuses.SUCCESS) {
+			mResponse.status = Statuses.FAILED_USERNAME_PASSWORD_MISMATCH;
+		}
 	}
 
 	/**
@@ -87,7 +131,7 @@ public class Login extends VoiderServlet {
 			return false;
 		}
 
-		UUID datastorePrivateKey = DatastoreUtils.getUuidProperty(datastoreEntity, "private_key");
+		UUID datastorePrivateKey = DatastoreUtils.getUuidProperty(datastoreEntity, CUsers.PRIVATE_KEY);
 		return privateKey.equals(datastorePrivateKey);
 	}
 
@@ -102,7 +146,7 @@ public class Login extends VoiderServlet {
 			return false;
 		}
 
-		String hashedPassword = (String) datastoreEntity.getProperty("password");
+		String hashedPassword = (String) datastoreEntity.getProperty(CUsers.PASSWORD);
 		return BCrypt.checkpw(password, hashedPassword);
 	}
 
@@ -111,7 +155,9 @@ public class Login extends VoiderServlet {
 	 * @param userEntity the user that logged in
 	 */
 	private void updateLastLoggedIn(Entity userEntity) {
-		userEntity.setProperty("logged-in", new Date());
+		userEntity.setProperty(CUsers.LOGGED_IN, new Date());
 		DatastoreUtils.put(userEntity);
 	}
+
+	private LoginMethodResponse mResponse = null;
 }

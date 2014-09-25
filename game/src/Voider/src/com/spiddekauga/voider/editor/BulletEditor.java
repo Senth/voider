@@ -58,14 +58,14 @@ public class BulletEditor extends ActorEditor {
 	}
 
 	@Override
-	protected void onActivate(Outcomes outcome, Object message) {
-		super.onActivate(outcome, message);
+	protected void onActivate(Outcomes outcome, Object message, Outcomes loadingOutcome) {
+		super.onActivate(outcome, message, loadingOutcome);
 
 		Actor.setEditorActive(true);
 		Actor.setWorld(mWorld);
 		Actor.setLevel(null);
 
-		if (outcome == Outcomes.LOADING_SUCCEEDED) {
+		if (loadingOutcome == Outcomes.LOADING_SUCCEEDED) {
 			mInvoker.dispose();
 
 			ShaderProgram defaultShader = ResourceCacheFacade.get(InternalNames.SHADER_DEFAULT);

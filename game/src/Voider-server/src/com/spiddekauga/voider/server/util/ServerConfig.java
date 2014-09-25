@@ -1,6 +1,7 @@
 package com.spiddekauga.voider.server.util;
 
 
+
 /**
  * Server configuration
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>

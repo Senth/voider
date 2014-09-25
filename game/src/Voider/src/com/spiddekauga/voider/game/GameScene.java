@@ -252,11 +252,11 @@ public class GameScene extends WorldScene {
 	}
 
 	@Override
-	protected void onActivate(Outcomes outcome, Object message) {
-		super.onActivate(outcome, message);
+	protected void onActivate(Outcomes outcome, Object message, Outcomes loadingOutcome) {
+		super.onActivate(outcome, message, loadingOutcome);
 		Actor.setEditorActive(false);
 
-		if (outcome == Outcomes.LOADING_SUCCEEDED) {
+		if (loadingOutcome == Outcomes.LOADING_SUCCEEDED) {
 			fixCamera();
 
 			// Start a level

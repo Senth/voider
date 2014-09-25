@@ -531,7 +531,7 @@ public class Synchronizer extends Observable implements IMessageListener, IRespo
 					}
 				} else {
 					try {
-						sleep(1000);
+						sleep(200);
 					} catch (InterruptedException e) {
 						// Does nothing
 					}

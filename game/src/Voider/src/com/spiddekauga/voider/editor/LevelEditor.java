@@ -313,14 +313,14 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 	}
 
 	@Override
-	protected void onActivate(Outcomes outcome, Object message) {
-		super.onActivate(outcome, message);
+	protected void onActivate(Outcomes outcome, Object message, Outcomes loadingOutcome) {
+		super.onActivate(outcome, message, loadingOutcome);
 
 		Actor.setEditorActive(true);
 		Actor.setWorld(mWorld);
 
 		// Check so that all resources have been loaded
-		if (outcome == Outcomes.LOADING_SUCCEEDED) {
+		if (loadingOutcome == Outcomes.LOADING_SUCCEEDED) {
 			// Loading a level
 			if (mLoadingLevel != null) {
 				Level loadedLevel;
@@ -334,10 +334,10 @@ public class LevelEditor extends Editor implements IResourceChangeEditor, ISelec
 					Gdx.app.error("LevelEditor", "Could not find level (" + mLoadingLevel.getLevelId() + ")");
 				}
 			}
-		} else if (outcome == Outcomes.LOADING_FAILED_CORRUPT_FILE) {
+		} else if (loadingOutcome == Outcomes.LOADING_FAILED_CORRUPT_FILE) {
 			/** @todo loading failed, load backup? */
 			mLoadingLevel = null;
-		} else if (outcome == Outcomes.LOADING_FAILED_MISSING_FILE) {
+		} else if (loadingOutcome == Outcomes.LOADING_FAILED_MISSING_FILE) {
 			/** @todo loading failed, missing file */
 			mLoadingLevel = null;
 		} else if (outcome == Outcomes.DEF_SELECTED) {

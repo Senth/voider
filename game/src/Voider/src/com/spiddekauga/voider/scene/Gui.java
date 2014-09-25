@@ -197,11 +197,11 @@ public abstract class Gui implements Disposable {
 	 */
 	public void update() {
 		// Remove active message box if it has been hidden
-		if (!mActiveMsgBoxes.isEmpty()) {
+		if (!mActiveMsgBoxes.isEmpty() && !isWaitOrProgressShowing()) {
 			MsgBoxExecuter activeMsgBox = mActiveMsgBoxes.peek();
 
 			// Else if the active message box becomes hidden. Show the previous one
-			if (activeMsgBox.isHidden()) {
+			if (activeMsgBox != null && activeMsgBox.isHidden()) {
 				mActiveMsgBoxes.pop();
 				mFreeMsgBoxes.push(activeMsgBox);
 
@@ -234,6 +234,7 @@ public abstract class Gui implements Disposable {
 		// No free found, create new
 		if (msgBox == null) {
 			msgBox = new MsgBoxExecuter(skin, windowStyleName);
+			msgBox.setButtonPad(mUiFactory.getStyles().vars.paddingButton);
 		} else {
 			msgBox.setStyle(skin.get(windowStyleName, WindowStyle.class));
 		}
@@ -278,6 +279,7 @@ public abstract class Gui implements Disposable {
 
 			// Show previous
 			if (!mActiveMsgBoxes.isEmpty()) {
+				mActiveMsgBoxes.peek().clearActions();
 				mActiveMsgBoxes.peek().show(mStage);
 			}
 		}
@@ -290,12 +292,26 @@ public abstract class Gui implements Disposable {
 	 * @param msgBox the message box to show
 	 */
 	public void showMsgBox(MsgBoxExecuter msgBox) {
-		// Hide active
-		if (!mActiveMsgBoxes.isEmpty()) {
-			mActiveMsgBoxes.peek().hide();
+		// Progress bar or wait window is showing
+		if (isWaitOrProgressShowing()) {
+			mActiveMsgBoxes.push(msgBox);
+			msgBox.setVisible(false);
+		} else {
+			// Hide active
+			if (!mActiveMsgBoxes.isEmpty()) {
+				mActiveMsgBoxes.peek().hide();
+			}
+			mActiveMsgBoxes.push(msgBox);
 		}
-		mActiveMsgBoxes.push(msgBox);
 		msgBox.show(mStage);
+	}
+
+	/**
+	 * @return true if either wait window or progress bar is showing
+	 */
+	private boolean isWaitOrProgressShowing() {
+		return (mWidgets.waitWindow.window != null && mWidgets.waitWindow.window.getStage() != null)
+				|| (mWidgets.progressBar.window != null && mWidgets.progressBar.window.getStage() != null);
 	}
 
 	/**
@@ -381,6 +397,11 @@ public abstract class Gui implements Disposable {
 			return;
 		}
 
+		// Hide message box
+		if (!mActiveMsgBoxes.isEmpty()) {
+			mActiveMsgBoxes.peek().setVisible(false);
+		}
+
 		// Show window if it doesn't belong to a stage
 		if (mWidgets.waitWindow.window.getStage() == null) {
 
@@ -421,6 +442,8 @@ public abstract class Gui implements Disposable {
 
 		float fadeOutDuriation = (Float) SkinNames.getResource(SkinNames.GeneralVars.WAIT_WINDOW_FADE_OUT);
 		mWidgets.waitWindow.window.addAction(Actions.sequence(Actions.fadeOut(fadeOutDuriation, Interpolation.fade), Actions.removeActor()));
+
+		fadeInMessageBox();
 	}
 
 	/**
@@ -430,6 +453,11 @@ public abstract class Gui implements Disposable {
 	public void showProgressBar(String message) {
 		if (mWidgets.progressBar.window == null) {
 			return;
+		}
+
+		// Hide message box
+		if (!mActiveMsgBoxes.isEmpty()) {
+			mActiveMsgBoxes.peek().setVisible(false);
 		}
 
 		mWidgets.progressBar.window.clearActions();
@@ -455,8 +483,25 @@ public abstract class Gui implements Disposable {
 			return;
 		}
 
+		// Fade out
 		float fadeOutDuriation = (Float) SkinNames.getResource(SkinNames.GeneralVars.WAIT_WINDOW_FADE_OUT);
+		mWidgets.progressBar.window.clearActions();
 		mWidgets.progressBar.window.addAction(Actions.sequence(Actions.fadeOut(fadeOutDuriation, Interpolation.fade), Actions.removeActor()));
+
+		// Fade in message box
+		fadeInMessageBox();
+	}
+
+	/**
+	 * Fade in message box after wait window or progress bar is removed.
+	 */
+	private void fadeInMessageBox() {
+		if (!mActiveMsgBoxes.isEmpty()) {
+			float fadeOutDuriation = (Float) SkinNames.getResource(SkinNames.GeneralVars.WAIT_WINDOW_FADE_OUT);
+			float fadeInDuration = (Float) SkinNames.getResource(SkinNames.GeneralVars.WAIT_WINDOW_FADE_IN);
+			final MsgBoxExecuter msgBox = mActiveMsgBoxes.peek();
+			msgBox.addAction(Actions.sequence(Actions.delay(fadeOutDuriation + 0.1f), Actions.show(), Actions.fadeIn(fadeInDuration)));
+		}
 	}
 
 	/**
@@ -577,7 +622,7 @@ public abstract class Gui implements Disposable {
 	 * Renders the GUI
 	 */
 	public final void render() {
-		mStage.act(SceneSwitcher.getGameTime().getDeltaTime());
+		mStage.act(Gdx.graphics.getDeltaTime());
 		mStage.draw();
 	}
 

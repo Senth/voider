@@ -6,7 +6,6 @@ import com.spiddekauga.voider.repo.resource.ResourceNotFoundException;
 
 /**
  * Base class for all loading scenes
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public abstract class LoadingScene extends Scene {
@@ -14,15 +13,15 @@ public abstract class LoadingScene extends Scene {
 	 * Constructor which takes the GUI object
 	 * @param gui the GUI this loading scene is bound to.
 	 */
-	public LoadingScene(Gui gui){
+	public LoadingScene(Gui gui) {
 		super(gui);
 	}
 
 	@Override
-	protected void onActivate(Outcomes outcome, Object message) {
-		super.onActivate(outcome, message);
+	protected void onActivate(Outcomes outcome, Object message, Outcomes loadingOutcome) {
+		super.onActivate(outcome, message, loadingOutcome);
 
-		if (outcome == Outcomes.LOADING_SUCCEEDED) {
+		if (loadingOutcome == Outcomes.LOADING_SUCCEEDED) {
 			if (mSceneToLoad != null) {
 				mSceneToLoad.loadResources();
 			}

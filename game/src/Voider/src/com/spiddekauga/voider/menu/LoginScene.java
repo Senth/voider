@@ -47,8 +47,8 @@ public class LoginScene extends Scene implements IResponseListener {
 	}
 
 	@Override
-	public void onActivate(Outcomes outcome, Object message) {
-		super.onActivate(outcome, message);
+	public void onActivate(Outcomes outcome, Object message, Outcomes loadingOutcome) {
+		super.onActivate(outcome, message, loadingOutcome);
 
 		login();
 	}
@@ -96,12 +96,21 @@ public class LoginScene extends Scene implements IResponseListener {
 
 		switch (response.status) {
 		case SUCCESS:
-			// Update last user to login for auto-login
-			UserLocalRepo.setLastUser(response.username, response.privateKey, response.userKey);
-			mUser.login(response.username, response.userKey, true);
-			setOutcome(Outcomes.LOGGED_IN);
-			break;
+			switch (response.clientVersionStatus) {
+			case NEW_VERSION_AVAILABLE:
+			case UP_TO_DATE:
+				UserLocalRepo.setLastUser(response.username, response.privateKey, response.userKey);
+				mUser.login(response.username, response.userKey, true);
+				setOutcome(Outcomes.LOGGED_IN, response);
+				break;
 
+			case UNKNOWN:
+			case UPDATE_REQUIRED:
+				loginOffline(response, "");
+				break;
+			}
+
+			break;
 
 		case FAILED_USERNAME_PASSWORD_MISMATCH:
 			if (mAutoLogin) {
@@ -114,31 +123,58 @@ public class LoginScene extends Scene implements IResponseListener {
 				mGui.showErrorMessage("No username with that password exists");
 			}
 			((LoginGui) mGui).focusUsernameField();
+
+			// Show update available windows
+			switch (response.clientVersionStatus) {
+			case NEW_VERSION_AVAILABLE:
+				((LoginGui) mGui).showUpdateAvailable(response.latestClientVersion, response.changeLogMessage);
+				break;
+
+			case UPDATE_REQUIRED:
+				((LoginGui) mGui).showUpdateNeeded(response.latestClientVersion, response.changeLogMessage);
+				break;
+
+			case UNKNOWN:
+			case UP_TO_DATE:
+				// Does nothing
+				break;
+			}
 			break;
 
 
 		case FAILED_SERVER_ERROR:
 		case FAILED_SERVER_CONNECTION:
-			// Login offline if tried to auto-login
-			if (mAutoLogin) {
-				try {
-					mUser.login(mLoggingInUser.getUsername(), mLoggingInUser.getServerKey(), false);
-					setOutcome(Outcomes.LOGGED_IN);
-				} catch (GdxRuntimeException e) {
-					// Error with connection
-					if (e.getCause() instanceof SQLiteGdxException) {
-						mGui.showErrorMessage("Another instance with this user is already running");
-					}
-					((LoginGui) mGui).focusUsernameField();
-				}
-			} else {
-				mGui.showErrorMessage("Could not connect to server");
-				((LoginGui) mGui).focusUsernameField();
-			}
+			loginOffline(response, "Could not connect to server");
 			break;
 		}
 
 		mGui.hideWaitWindow();
+	}
+
+	/**
+	 * Login offline (if available and after server response)
+	 * @param response
+	 * @param failMessage the message to cannot login offline
+	 */
+	private void loginOffline(LoginMethodResponse response, String failMessage) {
+		// Login offline if tried to auto-login
+		if (mAutoLogin) {
+			try {
+				mUser.login(mLoggingInUser.getUsername(), mLoggingInUser.getServerKey(), false);
+				setOutcome(Outcomes.LOGGED_IN, response);
+			} catch (GdxRuntimeException e) {
+				// Error with connection
+				if (e.getCause() instanceof SQLiteGdxException) {
+					mGui.showErrorMessage("Another instance with this user is already running");
+				}
+				((LoginGui) mGui).focusUsernameField();
+			}
+		} else {
+			if (failMessage != null && !failMessage.isEmpty()) {
+				mGui.showErrorMessage(failMessage);
+			}
+			((LoginGui) mGui).focusUsernameField();
+		}
 	}
 
 	/**

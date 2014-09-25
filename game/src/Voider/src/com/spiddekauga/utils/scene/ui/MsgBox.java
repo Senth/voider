@@ -251,7 +251,7 @@ public class MsgBox extends Dialog {
 	 * @return this message box for chaining
 	 */
 	public MsgBox buttonRow() {
-		mButtonTable.row();
+		mButtonTable.row().setPadTop(mUiFactory.getStyles().vars.paddingButton);
 		return this;
 	}
 
@@ -274,6 +274,12 @@ public class MsgBox extends Dialog {
 	@Override
 	public MsgBox button(String text, Object object) {
 		com.spiddekauga.utils.scene.ui.Cell cell = mUiFactory.addTextButton(text, TextButtonStyles.FILLED_PRESS, mButtonTable, null, null, null);
+
+		// Pad every cell except first
+		if (mButtonTable.getRow().getCellCount() > 1) {
+			cell.setPadLeft(mButtonPad);
+		}
+
 		setObject(cell.getActor(), object);
 		return this;
 	}
@@ -409,6 +415,16 @@ public class MsgBox extends Dialog {
 		}
 	}
 
+	/**
+	 * Set button padding
+	 * @param pad padding between buttons
+	 */
+	public void setButtonPad(float pad) {
+		mButtonPad = pad;
+	}
+
+	/** Button padding */
+	private float mButtonPad = 0;
 	/** Pointer to cancelHide in Dialog */
 	Field mfCancelHide = null;
 	/** Objects associated with a button */

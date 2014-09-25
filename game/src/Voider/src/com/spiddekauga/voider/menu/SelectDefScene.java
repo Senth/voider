@@ -76,10 +76,10 @@ public class SelectDefScene extends Scene implements Observer {
 	}
 
 	@Override
-	protected void onActivate(Outcomes outcome, Object message) {
-		super.onActivate(outcome, message);
+	protected void onActivate(Outcomes outcome, Object message, Outcomes loadingOutcome) {
+		super.onActivate(outcome, message, loadingOutcome);
 
-		if (outcome == Outcomes.LOADING_SUCCEEDED) {
+		if (loadingOutcome == Outcomes.LOADING_SUCCEEDED) {
 			reloadDefinitions();
 
 			mGui.resetValues();

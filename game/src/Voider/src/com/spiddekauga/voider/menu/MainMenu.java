@@ -21,6 +21,7 @@ import com.spiddekauga.voider.game.GameScene;
 import com.spiddekauga.voider.game.LevelDef;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
+import com.spiddekauga.voider.network.entities.user.LoginMethodResponse;
 import com.spiddekauga.voider.network.entities.user.LogoutMethodResponse;
 import com.spiddekauga.voider.repo.IResponseListener;
 import com.spiddekauga.voider.repo.resource.ExternalTypes;
@@ -104,8 +105,8 @@ public class MainMenu extends Scene implements IResponseListener, Observer {
 	}
 
 	@Override
-	protected void onActivate(Outcomes outcome, Object message) {
-		super.onActivate(outcome, message);
+	protected void onActivate(Outcomes outcome, Object message, Outcomes loadingOutcome) {
+		super.onActivate(outcome, message, loadingOutcome);
 
 		if (outcome == Outcomes.LOADING_FAILED_CORRUPT_FILE) {
 			/** @todo handle corrupt file */
@@ -129,8 +130,9 @@ public class MainMenu extends Scene implements IResponseListener, Observer {
 		mGui.initGui();
 		mGui.resetValues();
 
+
 		// Show if logged in online
-		if (mFirstTimeActivation) {
+		if (outcome == Outcomes.LOGGED_IN) {
 			// Synchronize
 			if (mUser.isOnline()) {
 				mGui.showSuccessMessage(mUser.getUsername() + " is now online!");
@@ -139,7 +141,23 @@ public class MainMenu extends Scene implements IResponseListener, Observer {
 				mGui.showHighlightMessage(mUser.getUsername() + " is now offline!");
 			}
 
-			mFirstTimeActivation = false;
+			if (message instanceof LoginMethodResponse) {
+				LoginMethodResponse response = (LoginMethodResponse) message;
+				switch (response.clientVersionStatus) {
+				case NEW_VERSION_AVAILABLE:
+					((MainMenuGui) mGui).showUpdateAvailable(response.latestClientVersion, response.changeLogMessage);
+					break;
+
+				case UPDATE_REQUIRED:
+					((MainMenuGui) mGui).showUpdateNeeded(response.latestClientVersion, response.changeLogMessage);
+					break;
+
+				case UNKNOWN:
+				case UP_TO_DATE:
+					// Does nothing
+					break;
+				}
+			}
 		}
 	}
 
@@ -375,29 +393,12 @@ public class MainMenu extends Scene implements IResponseListener, Observer {
 		if (response instanceof LogoutMethodResponse) {
 			clearCurrentUser();
 		}
-		// else if (response instanceof SyncDownloadMethodResponse) {
-		// handleSyncDownloadResponse((SyncDownloadMethodResponse) response);
-		// }
 	}
-
-	// /**
-	// * Handle sync download response
-	// * @param response web response
-	// */
-	// private void handleSyncDownloadResponse(SyncDownloadMethodResponse response) {
-	// if (response.isSuccessful()) {
-	// if (!response.resources.isEmpty()) {
-	// ResourceCacheFacade.loadAllOf(this, ExternalTypes.LEVEL_DEF, false);
-	// }
-	// }
-	// }
 
 	/** Global user */
 	private static final User mUser = User.getGlobalUser();
 	/** Synchronizer */
 	private static Synchronizer mSynchronizer = Synchronizer.getInstance();
-	/** First time we activated the scene */
-	private boolean mFirstTimeActivation = true;
 	/** GUI stack */
 	private LinkedList<Gui> mGuiStack = new LinkedList<Gui>();
 }

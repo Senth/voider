@@ -95,15 +95,15 @@ public class EnemyEditor extends ActorEditor {
 	}
 
 	@Override
-	protected void onActivate(Outcomes outcome, Object message) {
-		super.onActivate(outcome, message);
+	protected void onActivate(Outcomes outcome, Object message, Outcomes loadingOutcome) {
+		super.onActivate(outcome, message, loadingOutcome);
 
 		Actor.setEditorActive(true);
 		Actor.setWorld(mWorld);
 		Actor.setLevel(null);
 		Actor.setPlayerActor(mPlayerActor);
 
-		if (outcome == Outcomes.LOADING_SUCCEEDED) {
+		if (loadingOutcome == Outcomes.LOADING_SUCCEEDED) {
 			// Does nothing
 		} else if (outcome == Outcomes.DEF_SELECTED) {
 			if (message instanceof ResourceItem) {

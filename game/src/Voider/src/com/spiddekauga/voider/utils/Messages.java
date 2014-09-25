@@ -1,6 +1,7 @@
 package com.spiddekauga.voider.utils;
 
 import com.spiddekauga.utils.scene.ui.TooltipWidget.ITooltip;
+import com.spiddekauga.voider.ClientVersion;
 import com.spiddekauga.voider.Config;
 
 /**
@@ -9,6 +10,7 @@ import com.spiddekauga.voider.Config;
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 public class Messages {
+	// @formatter:off
 
 	/**
 	 * Print this string when no definition is selected
@@ -339,6 +341,53 @@ public class Messages {
 			public final static String TRIGGER_ADD = "Add triggers";
 			public final static String CANCEL = "Clear current selection";
 		}
+	}
+
+	/**
+	 * Client version messages
+	 */
+	public static class Version {
+
+		/**
+		 * Get required update message
+		 * @param newVersion latest client version available
+		 * @return required message update
+		 */
+		public static String getRequiredUpdate(String newVersion) {
+			String message = UPDATE_REQUIRED;
+			message = message.replaceAll(OLD_VERSION_STRING, ClientVersion.getLatest().toString());
+			message = message.replaceAll(NEW_VERSION_STRING, newVersion);
+			return message;
+		}
+
+		/**
+		 * Get available update message
+		 * @param newVersion latest client version available
+		 * @return available message update
+		 */
+		public static String getOptionalUpdate(String newVersion) {
+			String message = UPDATE_OPTIONAL;
+			message = message.replaceAll(OLD_VERSION_STRING, ClientVersion.getLatest().toString());
+			message = message.replaceAll(NEW_VERSION_STRING, newVersion);
+			return message;
+		}
+
+		private static final String OLD_VERSION_STRING = "OLD-VERSION";
+		private static final String NEW_VERSION_STRING = "NEW-VERSION";
+
+		/** Update required message */
+		private static final String UPDATE_REQUIRED = "You are offline!\n"
+				+ "A _mandatory_ update is available for Voider. "
+				+ "Please update Voider to get all online features.\n\n"
+				+ "Your version: " + OLD_VERSION_STRING + "\n"
+				+ "Latest version: " + NEW_VERSION_STRING;
+
+		/** Update available message */
+		private static final String UPDATE_OPTIONAL = "An optional update is available for Voider. "
+				+ "Please update Voider for bugfixes and new features.\n\n"
+				+ "Your version: " + OLD_VERSION_STRING + "\n"
+				+ "Latest version: " + NEW_VERSION_STRING;
+
 	}
 
 	/**

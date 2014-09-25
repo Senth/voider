@@ -15,6 +15,7 @@ import com.spiddekauga.utils.scene.ui.UiFactory.TextButtonStyles;
 import com.spiddekauga.voider.Config;
 import com.spiddekauga.voider.resources.SkinNames;
 import com.spiddekauga.voider.scene.Gui;
+import com.spiddekauga.voider.utils.Messages;
 
 /**
  * GUI for login
@@ -349,6 +350,26 @@ public class LoginGui extends Gui {
 
 		msgBox.addCancelButtonAndKeys("OK");
 		showMsgBox(msgBox);
+	}
+
+	/**
+	 * Show update needed
+	 * @param newVersion new client version
+	 * @param changeLog
+	 */
+	void showUpdateNeeded(String newVersion, String changeLog) {
+		String message = Messages.Version.getRequiredUpdate(newVersion);
+		mUiFactory.createUpdateMessageBox(message, changeLog, this);
+	}
+
+	/**
+	 * Show update available
+	 * @param newVersion new client version
+	 * @param changeLog
+	 */
+	void showUpdateAvailable(String newVersion, String changeLog) {
+		String message = Messages.Version.getOptionalUpdate(newVersion);
+		mUiFactory.createUpdateMessageBox(message, changeLog, this);
 	}
 
 	/** The login scene */

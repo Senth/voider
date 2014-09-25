@@ -256,7 +256,7 @@ public abstract class Scene extends InputAdapter implements IExceptionHandler {
 	}
 
 	/**
-	 * Called first time the scene activates, before {@link #onActivate(Outcomes, Object)}
+	 * Called first time the scene activates, before {@link #onActivate(Outcomes, Object, Outcomes)}
 	 * .
 	 */
 	protected void onInit() {
@@ -293,8 +293,9 @@ public abstract class Scene extends InputAdapter implements IExceptionHandler {
 	 *        any, else null.
 	 * @param message the outcome message provided with the outcome, null if none was
 	 *        provided.
+	 * @param loadingOutcome TODO
 	 */
-	protected void onActivate(Outcomes outcome, Object message) {
+	protected void onActivate(Outcomes outcome, Object message, Outcomes loadingOutcome) {
 		if (!mGui.isInitialized()) {
 			Gdx.app.error("Scene", "Failed to load scene!");
 		}

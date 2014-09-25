@@ -138,6 +138,26 @@ public class MainMenuGui extends MenuGui {
 		};
 	}
 
+	/**
+	 * Show update needed
+	 * @param newVersion new client version
+	 * @param changeLog
+	 */
+	void showUpdateNeeded(String newVersion, String changeLog) {
+		String message = Messages.Version.getRequiredUpdate(newVersion);
+		mUiFactory.createUpdateMessageBox(message, changeLog, this);
+	}
+
+	/**
+	 * Show update available
+	 * @param newVersion new client version
+	 * @param changeLog
+	 */
+	void showUpdateAvailable(String newVersion, String changeLog) {
+		String message = Messages.Version.getOptionalUpdate(newVersion);
+		mUiFactory.createUpdateMessageBox(message, changeLog, this);
+	}
+
 	/** Option table */
 	private AlignTable mOptionTable = new AlignTable();
 	/** Info table */

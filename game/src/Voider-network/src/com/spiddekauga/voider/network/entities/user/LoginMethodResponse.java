@@ -2,13 +2,13 @@ package com.spiddekauga.voider.network.entities.user;
 
 import java.util.UUID;
 
+import com.spiddekauga.voider.ClientVersion;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.ISuccessStatuses;
 
 
 /**
  * Response from the login method
- * 
  * @author Matteus Magnusson <matteus.magnusson@spiddekauga.com>
  */
 @SuppressWarnings("serial")
@@ -23,10 +23,30 @@ public class LoginMethodResponse implements IEntity, ISuccessStatuses {
 	public String userKey = null;
 	/** Date format */
 	public String dateFormat = null;
+	/** Client version status */
+	public ClientVersionStatuses clientVersionStatus = ClientVersionStatuses.UNKNOWN;
+	/** Latest client version */
+	public String latestClientVersion = ClientVersion.getLatest().toString();
+	/** Change-log for new versions that are available */
+	public String changeLogMessage = null;
 
 	@Override
 	public boolean isSuccessful() {
 		return status != null && status.isSuccessful();
+	}
+
+	/**
+	 * Client status
+	 */
+	public enum ClientVersionStatuses {
+		/** Client is up to date */
+		UP_TO_DATE,
+		/** A new version is available, update not required */
+		NEW_VERSION_AVAILABLE,
+		/** A new version is available and required to login online */
+		UPDATE_REQUIRED,
+		/** Unknown status */
+		UNKNOWN,
 	}
 
 	/**

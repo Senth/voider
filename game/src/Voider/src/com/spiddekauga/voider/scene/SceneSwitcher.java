@@ -537,20 +537,20 @@ public class SceneSwitcher {
 					// Loading done -> Activate scene
 					if (allLoaded) {
 						if (mOutcome != null) {
-							activateCurrentScene(mOutcome, mOutcomeMessage);
+							activateCurrentScene(mOutcome, mOutcomeMessage, Outcomes.LOADING_SUCCEEDED);
 							mOutcome = null;
 							mOutcomeMessage = null;
 						} else {
-							activateCurrentScene(Outcomes.LOADING_SUCCEEDED, null);
+							activateCurrentScene(Outcomes.NOT_APPLICAPLE, null, Outcomes.LOADING_SUCCEEDED);
 						}
 						currentScene.setLoading(false);
 					}
 				} catch (ResourceNotFoundException e) {
 					e.printStackTrace();
-					activateCurrentScene(Outcomes.LOADING_FAILED_MISSING_FILE, e.toString());
+					activateCurrentScene(Outcomes.NOT_APPLICAPLE, e.toString(), Outcomes.LOADING_FAILED_MISSING_FILE);
 				} catch (ResourceCorruptException e) {
 					e.printStackTrace();
-					activateCurrentScene(Outcomes.LOADING_FAILED_CORRUPT_FILE, e.toString());
+					activateCurrentScene(Outcomes.NOT_APPLICAPLE, e.toString(), Outcomes.LOADING_FAILED_CORRUPT_FILE);
 				}
 				Gdx.input.setInputProcessor(currentScene.getInputMultiplexer());
 			}
@@ -594,13 +594,23 @@ public class SceneSwitcher {
 	 * @param message message of the previous scene
 	 */
 	private static void activateCurrentScene(Outcomes outcome, Object message) {
+		activateCurrentScene(outcome, message, Outcomes.NOT_APPLICAPLE);
+	}
+
+	/**
+	 * Activates the current scene
+	 * @param outcome the outcome of the previous scene
+	 * @param message message of the previous scene
+	 * @param loadingOutcome outcome from loading scene
+	 */
+	private static void activateCurrentScene(Outcomes outcome, Object message, Outcomes loadingOutcome) {
 		Scene currentScene = mScenes.peek();
 
 		if (!currentScene.isInitialized()) {
 			currentScene.onInit();
 		}
 
-		currentScene.onActivate(outcome, message);
+		currentScene.onActivate(outcome, message, loadingOutcome);
 	}
 
 	/**
@@ -624,6 +634,8 @@ public class SceneSwitcher {
 		// Go to next scene, or return to the previous?
 		// Go to next scene
 		if (poppedScene.getNextScene() != null) {
+			mOutcome = outcome;
+			mOutcomeMessage = outcomeMessage;
 			mScenes.push(poppedScene.getNextScene());
 			loadActiveSceneResources();
 		}
