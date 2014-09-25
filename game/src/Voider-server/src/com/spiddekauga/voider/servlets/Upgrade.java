@@ -18,6 +18,7 @@ import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.search.Document;
 import com.google.appengine.api.search.Field;
 import com.spiddekauga.appengine.DatastoreUtils;
+import com.spiddekauga.appengine.DatastoreUtils.FilterWrapper;
 import com.spiddekauga.appengine.SearchUtils;
 import com.spiddekauga.voider.network.entities.IEntity;
 import com.spiddekauga.voider.network.entities.IMethodEntity;
@@ -41,10 +42,11 @@ public class Upgrade extends VoiderServlet {
 
 	@Override
 	protected IEntity onRequest(IMethodEntity methodEntity) throws ServletException, IOException {
-		List<Key> keys = DatastoreUtils.getKeys("published");
+		FilterWrapper levelFilter = new FilterWrapper("type", UploadTypes.LEVEL_DEF.getId());
+		List<Key> levelkeys = DatastoreUtils.getKeys("published", levelFilter);
 
-		for (Key levelKey : keys) {
-			// createEmptyLevelStatistics(levelKey);
+		for (Key levelKey : levelkeys) {
+			createEmptyLevelStatistics(levelKey);
 			// createComments(levelKey);
 		}
 

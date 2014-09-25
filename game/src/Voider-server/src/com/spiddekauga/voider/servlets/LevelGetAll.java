@@ -34,6 +34,9 @@ import com.spiddekauga.voider.network.entities.stat.LevelInfoEntity;
 import com.spiddekauga.voider.network.entities.stat.LevelStatsEntity;
 import com.spiddekauga.voider.network.entities.stat.Tags;
 import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables;
+import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CLevelStat;
+import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CLevelTag;
+import com.spiddekauga.voider.server.util.ServerConfig.DatastoreTables.CPublished;
 import com.spiddekauga.voider.server.util.ServerConfig.FetchSizes;
 import com.spiddekauga.voider.server.util.UserRepo;
 import com.spiddekauga.voider.server.util.VoiderServlet;
@@ -118,22 +121,22 @@ public class LevelGetAll extends VoiderServlet {
 		// Set sorting and other filters if necessary
 		switch (mParameters.sort) {
 		case BOOKMARKS:
-			query.addSort("bookmarks", SortDirection.DESCENDING);
+			query.addSort(CLevelStat.BOOKMARS, SortDirection.DESCENDING);
 			break;
 
 		case NEWEST:
-			query.addSort("date", SortDirection.DESCENDING);
+			query.addSort(CPublished.DATE, SortDirection.DESCENDING);
 			// Only search for levels
-			Filter levelFilter = new FilterPredicate("type", FilterOperator.EQUAL, UploadTypes.LEVEL_DEF.getId());
+			Filter levelFilter = new FilterPredicate(CPublished.TYPE, FilterOperator.EQUAL, UploadTypes.LEVEL_DEF.getId());
 			query.setFilter(levelFilter);
 			break;
 
 		case PLAYS:
-			query.addSort("play_count", SortDirection.DESCENDING);
+			query.addSort(CLevelStat.PLAY_COUNT, SortDirection.DESCENDING);
 			break;
 
 		case RATING:
-			query.addSort("rating_avg", SortDirection.DESCENDING);
+			query.addSort(CLevelStat.RATING_AVG, SortDirection.DESCENDING);
 			break;
 		}
 
@@ -197,10 +200,10 @@ public class LevelGetAll extends VoiderServlet {
 	private static ArrayList<Tags> getLevelTags(Key levelKey) {
 		ArrayList<Tags> tags = new ArrayList<>();
 
-		Query query = new Query("level_tag", levelKey);
+		Query query = new Query(DatastoreTables.LEVEL_TAG, levelKey);
 
 		// Sort
-		query.addSort("count", SortDirection.DESCENDING);
+		query.addSort(CLevelTag.COUNT, SortDirection.DESCENDING);
 
 		PreparedQuery preparedQuery = DatastoreUtils.prepare(query);
 
@@ -211,7 +214,7 @@ public class LevelGetAll extends VoiderServlet {
 
 		// Convert tags to enumeration
 		for (Entity entity : entities) {
-			int tagId = DatastoreUtils.getIntProperty(entity, "tag");
+			int tagId = DatastoreUtils.getIntProperty(entity, CLevelTag.TAG);
 			Tags tag = Tags.getEnumFromId(tagId);
 			if (tag != null) {
 				tags.add(tag);
@@ -227,7 +230,7 @@ public class LevelGetAll extends VoiderServlet {
 	 * @return new level stats (network) entity, null if not found
 	 */
 	private static LevelStatsEntity getLevelStatsEntity(Key levelKey) {
-		Entity entity = DatastoreUtils.getSingleEntity("level_stat", levelKey);
+		Entity entity = DatastoreUtils.getSingleEntity(DatastoreTables.LEVEL_STAT, levelKey);
 
 		if (entity != null) {
 			return convertDatastoreToLevelStatsEntity(entity);
@@ -258,12 +261,12 @@ public class LevelGetAll extends VoiderServlet {
 	private static LevelStatsEntity convertDatastoreToLevelStatsEntity(Entity datastoreEntity) {
 		LevelStatsEntity levelStatsEntity = new LevelStatsEntity();
 
-		levelStatsEntity.cCleared = ((Long) datastoreEntity.getProperty("clear_count")).intValue();
-		levelStatsEntity.cBookmarks = ((Long) datastoreEntity.getProperty("bookmarks")).intValue();
-		levelStatsEntity.cPlayed = ((Long) datastoreEntity.getProperty("play_count")).intValue();
-		levelStatsEntity.cRatings = ((Long) datastoreEntity.getProperty("ratings")).intValue();
-		levelStatsEntity.ratingAverage = ((Double) datastoreEntity.getProperty("rating_avg")).floatValue();
-		levelStatsEntity.ratingSum = ((Long) datastoreEntity.getProperty("rating_sum")).intValue();
+		levelStatsEntity.cCleared = ((Long) datastoreEntity.getProperty(CLevelStat.CLEAR_COUNT)).intValue();
+		levelStatsEntity.cBookmarks = ((Long) datastoreEntity.getProperty(CLevelStat.BOOKMARS)).intValue();
+		levelStatsEntity.cPlayed = ((Long) datastoreEntity.getProperty(CLevelStat.PLAY_COUNT)).intValue();
+		levelStatsEntity.cRatings = ((Long) datastoreEntity.getProperty(CLevelStat.RATINGS)).intValue();
+		levelStatsEntity.ratingAverage = ((Double) datastoreEntity.getProperty(CLevelStat.RATING_AVG)).floatValue();
+		levelStatsEntity.ratingSum = ((Long) datastoreEntity.getProperty(CLevelStat.RATING_SUM)).intValue();
 
 		return levelStatsEntity;
 	}
@@ -276,21 +279,21 @@ public class LevelGetAll extends VoiderServlet {
 	private static LevelDefEntity convertDatastoreToLevelDefEntity(Entity datastoreEntity) {
 		LevelDefEntity networkEntity = new LevelDefEntity();
 
-		networkEntity.copyParentId = DatastoreUtils.getUuidProperty(datastoreEntity, "copy_parent_id");
+		networkEntity.copyParentId = DatastoreUtils.getUuidProperty(datastoreEntity, CPublished.COPY_PARENT_ID);
 
-		networkEntity.date = (Date) datastoreEntity.getProperty("date");
-		networkEntity.description = (String) datastoreEntity.getProperty("description");
-		networkEntity.levelId = DatastoreUtils.getUuidProperty(datastoreEntity, "level_id");
-		networkEntity.levelLength = ((Double) datastoreEntity.getProperty("level_length")).floatValue();
-		networkEntity.name = (String) datastoreEntity.getProperty("name");
-		networkEntity.resourceId = DatastoreUtils.getUuidProperty(datastoreEntity, "resource_id");
-		networkEntity.png = DatastoreUtils.getByteArrayProperty(datastoreEntity, "png");
+		networkEntity.date = (Date) datastoreEntity.getProperty(CPublished.DATE);
+		networkEntity.description = (String) datastoreEntity.getProperty(CPublished.DESCRIPTION);
+		networkEntity.levelId = DatastoreUtils.getUuidProperty(datastoreEntity, CPublished.LEVEL_ID);
+		networkEntity.levelLength = ((Double) datastoreEntity.getProperty(CPublished.LEVEL_LENGTH)).floatValue();
+		networkEntity.name = (String) datastoreEntity.getProperty(CPublished.NAME);
+		networkEntity.resourceId = DatastoreUtils.getUuidProperty(datastoreEntity, CPublished.RESOURCE_ID);
+		networkEntity.png = DatastoreUtils.getByteArrayProperty(datastoreEntity, CPublished.PNG);
 		networkEntity.type = UploadTypes.LEVEL_DEF;
 
 
 		// Set creators
 		Key creatorKey = datastoreEntity.getParent();
-		Key originalCreatorKey = (Key) datastoreEntity.getProperty("original_creator_key");
+		Key originalCreatorKey = (Key) datastoreEntity.getProperty(CPublished.ORIGINAL_CREATOR_KEY);
 		networkEntity.creatorKey = KeyFactory.keyToString(creatorKey);
 		networkEntity.originalCreatorKey = KeyFactory.keyToString(originalCreatorKey);
 		networkEntity.creator = UserRepo.getUsername(creatorKey);
